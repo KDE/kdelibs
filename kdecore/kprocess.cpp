@@ -22,24 +22,7 @@
 */
 
 
-//
-//  KPROCESS -- A class for handling child processes in KDE without
-//  having to take care of Un*x specific implementation details
-//
-//  version 0.3.1, Jan 8th 1998
-//
-//  (C) Christian Czezatke
-//  e9025461@student.tuwien.ac.at
-//
-// Changes:
-//
-// March 2nd, 1998: Changed parameter list for KShellProcess:
-//   Arguments are now placed in a single string so that
-//   <shell> -c <commandstring> is passed to the shell
-//   to make the use of "operator<<" consistent with KProcess
-
 #include "kprocess.h"
-#define _MAY_INCLUDE_KPROCESSCONTROLLER_
 #include "kprocctrl.h"
 
 #include <config.h>
@@ -76,7 +59,6 @@
 #include <errno.h>
 #include <assert.h>
 #include <fcntl.h>
-#include <grp.h>
 #include <time.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -124,7 +106,6 @@ extern "C" {
 
 #include <qfile.h>
 #include <qsocketnotifier.h>
-#include <qregexp.h>
 #include <qapplication.h>
 
 #include <kdebug.h>
@@ -276,8 +257,7 @@ KProcess::KProcess( QObject* parent, const char *name )
     communication(NoCommunication),
     input_data(0),
     input_sent(0),
-    input_total(0),
-    d(0)
+    input_total(0)
 {
   d = new KProcessPrivate;
 
@@ -301,8 +281,7 @@ KProcess::KProcess()
     communication(NoCommunication),
     input_data(0),
     input_sent(0),
-    input_total(0),
-    d(0)
+    input_total(0)
 {
   d = new KProcessPrivate;
 
@@ -439,32 +418,31 @@ void KProcess::clearArguments()
 
 bool KProcess::start(RunMode runmode, Communication comm)
 {
-  uint i;
-  uint n = arguments.count();
-  char **arglist;
-
-  if (runs || (n == 0)) {
-        return false;  // cannot start a process that is already running
-        // or if no executable has been assigned
+  if (runs) {
+    kdDebug(175) << "Attempted to start an already running process" << endl;
+    return false;
   }
-  run_mode = runmode;
-  status = 0;
 
+  uint n = arguments.count();
+  if (n == 0) {
+    kdDebug(175) << "Attempted to start a process without arguments" << endl;
+    return false;
+  }
+  char **arglist;
   QCString shellCmd;
   if (d->useShell)
   {
-      if (d->shell.isEmpty())
-      {
-          kdDebug() << "Could not find a valid shell\n" << endl;
-              return false;
+      if (d->shell.isEmpty()) {
+        kdDebug(175) << "Invalid shell specified" << endl;
+        return false;
       }
-      
-      arglist = static_cast<char **>(malloc( (4)*sizeof(char *)));
-      for (i=0; i < n; i++) {
+
+      for (uint i = 0; i < n; i++) {
           shellCmd += arguments[i];
           shellCmd += " "; // CC: to separate the arguments
       }
 
+      arglist = static_cast<char **>(malloc( 4 * sizeof(char *)));
       arglist[0] = d->shell.data();
       arglist[1] = (char *) "-c";
       arglist[2] = shellCmd.data();
@@ -472,15 +450,18 @@ bool KProcess::start(RunMode runmode, Communication comm)
   }
   else
   {
-      arglist = static_cast<char **>(malloc( (n+1)*sizeof(char *)));
-      for (i=0; i < n; i++)
+      arglist = static_cast<char **>(malloc( (n + 1) * sizeof(char *)));
+      for (uint i = 0; i < n; i++)
          arglist[i] = arguments[i].data();
-      arglist[n]= 0;
+      arglist[n] = 0;
   }
+
+  run_mode = runmode;
 
   if (!setupCommunication(comm))
   {
-      kdDebug(175) << "Could not setup Communication!\n";
+      kdDebug(175) << "Could not setup Communication!" << endl;
+      free(arglist);
       return false;
   }
 
@@ -491,36 +472,33 @@ bool KProcess::start(RunMode runmode, Communication comm)
 #endif
 
   int fd[2];
-  if (pipe(fd) < 0)
-  {
+  if (pipe(fd))
      fd[0] = fd[1] = -1; // Pipe failed.. continue
-  }
 
   runs = true;
 
   QApplication::flushX();
 
-  // WABA: Note that we use fork() and not vfork() because
-  // vfork() has unclear semantics and is not standardized.
+  // we don't use vfork() because
+  // - it has unclear semantics and is not standardized
+  // - we do way too much magic in the child
   pid_ = fork();
-
   if (pid_ == 0) {
-        if (fd[0] >= 0)
-           close(fd[0]);
+        // The child process
+
+        close(fd[0]);
+        // Closing of fd[1] indicates that the execvp() succeeded!
+        fcntl(fd[1], F_SETFD, FD_CLOEXEC);
 
         // reset all signal handlers
+        struct sigaction act;
+        sigemptyset(&act.sa_mask);
+        act.sa_handler = SIG_DFL;
+        act.sa_flags = 0;
         for (int sig = 1; sig < NSIG; sig++)
-        {
-          struct sigaction act;
-          sigemptyset(&(act.sa_mask));
-          sigaddset(&(act.sa_mask), sig);
-          act.sa_handler = SIG_DFL;
-          act.sa_flags = 0;
           sigaction(sig, &act, 0L);
-        }
 
-        // The child process
-        if(!commSetupDoneC())
+        if (!commSetupDoneC())
           kdDebug(175) << "Could not finish comm setup in child!" << endl;
 
         if (!runPrivileged())
@@ -532,86 +510,75 @@ bool KProcess::start(RunMode runmode, Communication comm)
 #endif
            setuid(getuid());
         }
-          
+
         setupEnvironment();
 
-        // Matthias
-        if (run_mode == DontCare)
+        if (runmode == DontCare)
           setsid();
-
-        // We set the close on exec flag.
-        // Closing of fd[1] indicates that the execvp succeeded!
-        if (fd[1] >= 0)
-          fcntl(fd[1], F_SETFD, FD_CLOEXEC);
 
         const char *executable = arglist[0];
         if (!d->executable.isEmpty())
            executable = d->executable.data();
-
         execvp(executable, arglist);
 
         char resultByte = 1;
-        if (fd[1] >= 0)
-          write(fd[1], &resultByte, 1);
+        write(fd[1], &resultByte, 1);
         _exit(-1);
   } else if (pid_ == -1) {
         // forking failed
 
+        // commAbort();
+        pid_ = 0;
         runs = false;
         free(arglist);
         return false;
-  } else {
-        if (fd[1] >= 0)
-          close(fd[1]);
-        // the parent continues here
-
-        // Discard any data for stdin that might still be there
-        input_data = 0;
-
-        if (!commSetupDoneP())  // finish communication socket setup for the parent
-          kdDebug(175) << "Could not finish comm setup in parent!" << endl;
-
-        // Check whether client could be started.
-        if (fd[0] >= 0) for(;;)
-        {
-           char resultByte;
-           int n = ::read(fd[0], &resultByte, 1);
-           if (n == 1)
-           {
-               // Error
-               runs = false;
-               close(fd[0]);
-               free(arglist);
-               ::waitpid( pid_, 0, 0 );
-               pid_ = 0;
-               commClose();
-               return false;
-           }
-           if (n == -1)
-           {
-              if ((errno == ECHILD) || (errno == EINTR))
-                 continue; // Ignore
-           }
-           break; // success
-        }
-        if (fd[0] >= 0)
-           close(fd[0]);
-
-        if (run_mode == Block) {
-          commClose();
-
-          // The SIGCHLD handler of the process controller will catch
-          // the exit and set the status
-          while(runs)
-          {
-             KProcessController::theKProcessController->
-                  waitForProcessExit(10);
-          }
-          runs = FALSE;
-          emit processExited(this);
-        }
   }
+  // the parent continues here
   free(arglist);
+
+  input_data = 0; // Discard any data for stdin that might still be there
+  if (!commSetupDoneP())
+    kdDebug(175) << "Could not finish comm setup in parent!" << endl;
+
+  // Check whether client could be started.
+  close(fd[1]);
+  for(;;)
+  {
+     char resultByte;
+     int n = ::read(fd[0], &resultByte, 1);
+     if (n == 1)
+     {
+         // exec() failed
+         runs = false;
+         close(fd[0]);
+         waitpid(pid_, 0, 0);
+         pid_ = 0;
+         commClose();
+         return false;
+     }
+     if (n == -1)
+     {
+        if (errno == EINTR)
+           continue; // Ignore
+     }
+     break; // success
+  }
+  close(fd[0]);
+
+  if (run_mode == Block) {
+    commClose();
+
+    // The SIGCHLD handler of the process controller will catch
+    // the exit and set the status
+    while(runs)
+    {
+       KProcessController::theKProcessController->
+            waitForProcessExit(10);
+    }
+    runs = FALSE;
+    emit processExited(this);
+  }
+
   return true;
 }
 
@@ -619,12 +586,10 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
 bool KProcess::kill(int signo)
 {
-  bool rv=false;
-
-  if (pid_ != 0)
-    rv= (-1 != ::kill(pid_, signo));
-  // probably store errno somewhere...
-  return rv;
+  if (runs)
+    if (!::kill(pid_, signo))
+      return true;
+  return false;
 }
 
 
@@ -645,27 +610,23 @@ pid_t KProcess::pid() const
 
 bool KProcess::normalExit() const
 {
-  int _status = status;
-  return (pid_ != 0) && (!runs) && (WIFEXITED((_status)));
+  return (pid_ != 0) && !runs && WIFEXITED(status);
 }
 
 
 
 int KProcess::exitStatus() const
 {
-  int _status = status;
-  return WEXITSTATUS((_status));
+  return WEXITSTATUS(status);
 }
 
 
 
 bool KProcess::writeStdin(const char *buffer, int buflen)
 {
-  bool rv;
-
   // if there is still data pending, writing new data
   // to stdout is not allowed (since it could also confuse
-  // kprocess...
+  // kprocess ...)
   if (input_data != 0)
     return false;
 
@@ -675,69 +636,62 @@ bool KProcess::writeStdin(const char *buffer, int buflen)
     input_total = buflen;
     slotSendData(0);
     innot->setEnabled(true);
-    rv = true;
+    return true;
   } else
-    rv = false;
-  return rv;
+    return false;
 }
 
 void KProcess::suspend()
 {
-  if ((communication & Stdout) && outnot)
+  if (outnot)
      outnot->setEnabled(false);
 }
 
 void KProcess::resume()
 {
-  if ((communication & Stdout) && outnot)
+  if (outnot)
      outnot->setEnabled(true);
 }
 
 bool KProcess::closeStdin()
 {
-  bool rv;
-
   if (communication & Stdin) {
     communication = (Communication) (communication & ~Stdin);
     delete innot;
     innot = 0;
     if (!d->usePty)
       close(in[1]);
-    rv = true;
+    in[1] = -1;
+    return true;
   } else
-    rv = false;
-  return rv;
+    return false;
 }
 
 bool KProcess::closeStdout()
 {
-  bool rv;
-
   if (communication & Stdout) {
     communication = (Communication) (communication & ~Stdout);
     delete outnot;
     outnot = 0;
     if (!d->usePty)
       close(out[0]);
-    rv = true;
+    out[0] = -1;
+    return true;
   } else
-    rv = false;
-  return rv;
+    return false;
 }
 
 bool KProcess::closeStderr()
 {
-  bool rv;
-
   if (communication & Stderr) {
-    communication = static_cast<Communication>(communication & ~Stderr);
+    communication = (Communication) (communication & ~Stderr);
     delete errnot;
     errnot = 0;
     close(err[0]);
-    rv = true;
+    err[0] = -1;
+    return true;
   } else
-    rv = false;
-  return rv;
+    return false;
 }
 
 
@@ -780,7 +734,7 @@ void KProcess::setUseShell(bool useShell, const char *shell)
 void KProcess::setUsePty(bool usePty, bool addUtmp)
 {
   d->usePty = usePty;
-  d->addUtmp = addUtmp;  
+  d->addUtmp = addUtmp;
 }
   
 void KProcess::setPtySize(int lines, int columns)
@@ -822,7 +776,7 @@ int KProcess::ptySlaveFd()
 QString KProcess::quote(const QString &arg)
 {
     QString res = arg;
-    res.replace(QString::fromLatin1("\'"), QString::fromLatin1("'\\''"));
+    res.replace(QString::fromLatin1("'"), QString::fromLatin1("'\\''"));
     res.prepend('\'');
     res.append('\'');
     return res;
@@ -832,7 +786,6 @@ QString KProcess::quote(const QString &arg)
 //////////////////////////////
 // private member functions //
 //////////////////////////////
-
 
 
 void KProcess::processHasExited(int state)
@@ -877,17 +830,17 @@ int KProcess::childOutput(int fdno)
   }
 }
 
-
-
 int KProcess::childError(int fdno)
 {
-  char buffer[1024];
+  char buffer[1025];
   int len;
 
   len = ::read(fdno, buffer, 1024);
 
-  if ( len > 0)
-        emit receivedStderr(this, buffer, len);
+  if (len > 0) {
+     buffer[len] = 0; // Just in case.
+     emit receivedStderr(this, buffer, len);
+  }
   return len;
 }
 
@@ -1290,24 +1243,9 @@ int KProcess::commSetupDoneC()
       ok &= !setsockopt(err[1], SOL_SOCKET, SO_LINGER, reinterpret_cast<char *>(&so), sizeof(so));
     }
   }
-  
-#if 0
-  // Skip fd[1]
-  // Skip fd == 3 when using ptys
 
-  // close all fds
-  const int open_max = sysconf( _SC_OPEN_MAX );
-  for( int i = 0;
-       i < open_max;
-       ++i )
-  {
-      if( i != STDIN_FILENO && i != STDOUT_FILENO && i != STDERR_FILENO )
-      {
-          close( i );
-      }
-  }
-#endif
-          
+  // don't even think about closing all open fds here or anywhere else
+
   return ok;
 }
 
