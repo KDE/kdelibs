@@ -42,6 +42,10 @@ k_dcop:
                          const QString &text, QString sound, QString file,
                          int present, int level);
 
+	void notify(const QString &event, const QString &fromApp,
+                         const QString &text, QString sound, QString file,
+                         int present, int level, int winId);
+
 	void reconfigure();
 	void setVolume( int volume );
 
@@ -50,7 +54,8 @@ protected:
 	bool notifyByMessagebox(const QString &text, int level);
 	bool notifyByLogfile(const QString &text, const QString &file);
 	bool notifyByStderr(const QString &text);
-	bool notifyByPassivePopup(const QString &text, const QString &appName);
+	bool notifyByPassivePopup(const QString &text, const QString &appName,
+                                  int winId = 0 );
 	bool notifyByExecute(const QString &command);
 	
 	void connectSoundServer();

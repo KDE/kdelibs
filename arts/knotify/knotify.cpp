@@ -263,6 +263,13 @@ void KNotify::notify(const QString &event, const QString &fromApp,
                      const QString &text, QString sound, QString file,
                      int present, int level)
 {
+    notify( event, fromApp, text, sound, file, present, level, 0 );
+}
+
+void KNotify::notify(const QString &event, const QString &fromApp,
+                     const QString &text, QString sound, QString file,
+                     int present, int level, int winId )
+{
     // kdDebug() << "event=" << event << " fromApp=" << fromApp << " text=" << text << " sound=" << sound <<
     //    " file=" << file << " present=" << present << " level=" << level << endl;
 
@@ -333,7 +340,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
         notifyBySound( sound, fromApp );
 
     if ( present & KNotifyClient::PassivePopup )
-        notifyByPassivePopup( text, fromApp);
+        notifyByPassivePopup( text, fromApp, winId );
 
     else if ( present & KNotifyClient::Messagebox )
         notifyByMessagebox( text, level );
@@ -463,30 +470,34 @@ bool KNotify::notifyByMessagebox(const QString &text, int level)
     return true;
 }
 
-bool KNotify::notifyByPassivePopup( const QString &text, const QString &appName )
+bool KNotify::notifyByPassivePopup( const QString &text, 
+                                    const QString &appName,
+                                    int senderWinId )
 {
-    QCString senderId = kapp->dcopClient()->senderId();
-    int senderWinId = 0;
-    QCString compare = (appName + "-mainwindow").latin1();
-    int len = compare.length();
-    // kdDebug() << "notifyByPassivePopup: appName=" << appName << " sender=" << senderId << endl;
-    QCStringList objs = kapp->dcopClient()->remoteObjects( senderId );
-    for (QCStringList::ConstIterator it = objs.begin(); it != objs.end(); it++ ) {
-        QCString obj( *it );
-        if ( obj.left(len) == compare) {
-            // kdDebug( ) << "found " << obj << endl;
-            QCString replyType;
-            QByteArray data, replyData;
+    if ( senderWinId == 0 )
+    {
+        QCString senderId = kapp->dcopClient()->senderId();
+        QCString compare = (appName + "-mainwindow").latin1();
+        int len = compare.length();
+        // kdDebug() << "notifyByPassivePopup: appName=" << appName << " sender=" << senderId << endl;
+    
+        QCStringList objs = kapp->dcopClient()->remoteObjects( senderId );
+        for (QCStringList::ConstIterator it = objs.begin(); it != objs.end(); it++ ) {
+            QCString obj( *it );
+            if ( obj.left(len) == compare) {
+                // kdDebug( ) << "found " << obj << endl;
+                QCString replyType;
+                QByteArray data, replyData;
 
-            if ( kapp->dcopClient()->call(senderId, obj, "getWinID()", data, replyType, replyData) ) {
-		QDataStream answer(replyData, IO_ReadOnly);
-		if (replyType == "int") {
-		    answer >> senderWinId;
-		    // kdDebug() << "SUCCESS, found getWinID(): type='" << QString(replyType)
-                    //      << "' senderWinId=" << senderWinId << endl;
+                if ( kapp->dcopClient()->call(senderId, obj, "getWinID()", data, replyType, replyData) ) {
+                    QDataStream answer(replyData, IO_ReadOnly);
+                    if (replyType == "int") {
+                        answer >> senderWinId;
+                        // kdDebug() << "SUCCESS, found getWinID(): type='" << QString(replyType)
+                        //      << "' senderWinId=" << senderWinId << endl;
+                    }
 		}
             }
-
         }
     }
     KIconLoader iconLoader( appName );
