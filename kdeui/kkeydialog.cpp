@@ -416,7 +416,8 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 {
 	KShortcutList* pList = d->rgpLists[iList];
 
-	//d->pList->setSorting( -1 );
+        if( m_type == Global || m_type == ApplicationGlobal )
+	    d->pList->setSorting( -1 );
 	KListViewItem *pProgramItem, *pGroupItem = 0, *pParentItem, *pItem;
 
 	QString str = (title.isEmpty() ? i18n("Shortcuts") : title);
