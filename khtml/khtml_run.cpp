@@ -25,16 +25,15 @@
 #include <kio/job.h>
 
 KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url )
-: KRun( url.url(), 0, false, false /* No GUI */ )
+: KRun( url, 0, false, false /* No GUI */ )
 {
   m_part = part;
   m_child = child;
-  m_url = url;
 }
 
 void KHTMLRun::foundMimeType( const QString &mimetype )
 {
-  m_part->processObjectRequest( m_child, m_url, mimetype );
+  m_part->processObjectRequest( m_child, m_strURL, mimetype );
   m_bFinished = true;
   m_timer.start( 0, true );
 }
@@ -67,6 +66,8 @@ void KHTMLRun::slotKHTMLScanFinished(KIO::Job *job)
 void KHTMLRun::slotKHTMLMimetype(KIO::Job *, const QString &type)
 {
   KIO::SimpleJob *job = (KIO::SimpleJob *) m_job;
+  // Update our URL in case of a redirection
+  m_strURL = job->url();
 
   // Make copy to avoid dead reference
   QString _type = type;

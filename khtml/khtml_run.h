@@ -51,7 +51,6 @@ protected slots:
 private:
   KHTMLPart *m_part;
   khtml::ChildFrame *m_child;
-  KURL m_url;
 };
 
 #endif
