@@ -527,7 +527,7 @@ void SlaveBase::listEntries( const UDSEntryList& list )
 {
     kdDebug(7019) << "listEntries " << list.count() << endl;
 
-    KIO_DATA << list.count();
+    KIO_DATA << (uint)list.count();
     UDSEntryListConstIterator it = list.begin();
     UDSEntryListConstIterator end = list.end();
     for (; it != end; ++it)
