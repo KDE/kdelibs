@@ -1,0 +1,9 @@
+# KDE Config File
+[KDE Desktop Entry]
+Type=MimeType
+MimeType=audio/x-midi
+Icon=sound.xpm
+Patterns=*.mid;*.MID;
+Comment=Midi file
+Comment[de]=Midi Dokument
+Comment[nl]=Midi bestand
