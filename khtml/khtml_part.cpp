@@ -1304,7 +1304,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_cacheId = 0;
   d->m_bComplete = false;
 
-  KHTMLFactory::vLinks()->insert( url.prettyURL() );
+  KHTMLFactory::vLinks()->insert( url.url() );
 
   // ###
   //stopParser();
@@ -2181,7 +2181,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
 // no need to do that here, the historymngr is going to be notified
 // about this new URL sooner or later anyway
-//  KHTMLFactory::vLinks()->insert( cURL.prettyURL() );
+//  KHTMLFactory::vLinks()->insert( cURL.url() );
 
   if ( button == LeftButton && ( state & ShiftButton ) && !cURL.isMalformed() )
   {
