@@ -41,7 +41,6 @@ kprocess.cpp: kprocess.moc
 kprocctrl.cpp: kprocctrl.moc
 kiconloader.cpp: kiconloader.moc
 kdebug.cpp: kdebugdialog.moc
-kstdaccel.cpp: kstdaccel.moc
 kconfigbase.cpp: kconfigbase.moc
 kconfig.cpp: kconfig.moc
 ksimpleconfig.cpp: ksimpleconfig.moc
@@ -75,9 +74,6 @@ kiconloader.moc: kiconloader.h
 
 kdebugdialog.moc: kdebugdialog.h
 	$(MOC) kdebugdialog.h -o kdebugdialog.moc
-
-kstdaccel.moc: kstdaccel.h
-	$(MOC) kstdaccel.h -o kstdaccel.moc
 
 kconfig.moc: kconfig.h
 	$(MOC) kconfig.h -o kconfig.moc
