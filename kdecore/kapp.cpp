@@ -2177,7 +2177,7 @@ void KApplication::setTopWidget( QWidget *topWidget )
   }
 }
 
-const QCString KApplication::startupId() const
+QCString KApplication::startupId() const
 {
     return d->startup_id;
 }

@@ -554,7 +554,7 @@ public:
   /**
    * Returns the app startup notification identifier for this running application.
    */
-  const QCString startupId() const;
+  QCString startupId() const;
   
   /**
    * Sets a new value for the application startup notification window property for newly
@@ -836,6 +836,14 @@ private:
 #endif
 
 // $Log$
+// Revision 1.229  2001/08/08 14:19:15  hausmann
+// - cleaned up the '### KDE 3.0: merge with above' methods (a
+//   const QCString &startup_id with a default of "" was added to
+//   startServiceBy*)
+// - made _KShared_count() const and made the count member private
+//   (it's just too annoying that when inheriting from KShared you can't have
+//    a member named 'count' :)
+//
 // Revision 1.228  2001/08/06 17:17:42  mueller
 // increasing version number
 //
