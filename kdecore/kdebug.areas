@@ -482,6 +482,9 @@
 60010   libkcddb
 65432   juk
 66666	noatun
+67000	kscd
+67100	kmix
+67200	kmid
 
 # kdebindings
 70001	dcoppython
@@ -501,6 +504,7 @@
 90170	konq-plugins (kimgalleryplugin)
 90180	konq-plugins (domtreeviewer)
 90190	konq-plugins (dirfilter)
+90200	kicker-applets (mediacontrol)
 
 
 # kdenonbeta
