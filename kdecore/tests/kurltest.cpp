@@ -91,6 +91,7 @@ int main(int argc, char *argv[])
   url1 = u1;
   check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref");
   check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
+  check("KURL::isLocalFile()", url1.isLocalFile() ? "yes" : "no", "no"); // Not strictly local!
   //check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
   //check("KURL::htmlRef()", url1.htmlRef(), "myref");
