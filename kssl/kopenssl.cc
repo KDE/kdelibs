@@ -19,6 +19,7 @@
 #include <config.h>
 
 #include <kdebug.h>
+#include <kconfig.h>
 
 #ifdef HAVE_SSL
 #define crypt _openssl_crypt
@@ -86,6 +87,13 @@ KOpenSSLProxy::KOpenSSLProxy() {
 KLibLoader *ll = KLibLoader::self();
 _ok = false;
 QStringList libpaths, libnamesc, libnamess;
+KConfig *cfg;
+
+   cfg = new KConfig("cryptodefaults", false, false);
+   cfg->setGroup("OpenSSL");
+   QString upath = cfg->readEntry("Path", "");
+   if (upath.length() > 0)
+      libpaths << upath;
 
    libpaths << "/usr/lib/"
             << "/usr/local/lib/"
