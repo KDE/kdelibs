@@ -89,7 +89,9 @@ public:
 // procedure.
 KArtsServer *soundServer;
 
-int main(int argc, char **argv)
+extern "C"{
+
+int kdemain(int argc, char **argv)
 {
     KAboutData aboutdata("knotify", I18N_NOOP("KNotify"),
                          "3.0", I18N_NOOP("KDE Notification Server"),
@@ -203,7 +205,7 @@ int main(int argc, char **argv)
     delete dispatcher;
     return ret;
 }
-
+}// end extern "C"
 
 KNotify::KNotify( bool useArts )
     : QObject(), DCOPObject("Notify")

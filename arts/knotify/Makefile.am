@@ -3,7 +3,7 @@ INCLUDES= -I$(top_srcdir)/arts/kde -I$(includedir)/arts $(all_includes)
 
 ####### Files
 
-lib_LTLIBRARIES = knotify.la
+kde_module_LTLIBRARIES = knotify.la
 
 knotify_la_SOURCES	= knotify.cpp knotify.skel
 knotify_la_LIBADD	= -lsoundserver_idl -lqtmcop $(LIB_KDEUI) $(top_builddir)/arts/kde/libartskde.la
