@@ -77,7 +77,7 @@ KAudio::~KAudio()
 bool KAudio::play()
 {
   if(!ServerContacted) return false;
-  printf("Arts server PLAY REQUEST %s (clientID=%d)\n",wavName.c_str(),clientID);
+  printf("Arts server PLAY REQUEST %s (clientID=%ld)\n",wavName.c_str(),clientID);
 
   //execID = AudioManager->playWav(clientID,wavName.c_str());
   if(autosync) sync();
@@ -116,10 +116,6 @@ bool KAudio::setFilename(const char *filename)
     cerr << "Failed sending PLAY\n";
   else
     cerr << "Asking ARTS to play " << l_s_WAVname ;
-
-  char l_s_artsAnswer[256];
-
-
 
   return true;
 }
