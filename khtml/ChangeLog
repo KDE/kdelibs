@@ -1,3 +1,8 @@
+2004-01-19  Stephan Kulow  <coolo@kde.org>
+
+       * css/cssstyleselector.cpp (parseValue): unify handling
+       of inherited css properties (based on safari patch)
+
 2004-01-18  Dirk Mueller  <mueller@kde.org>
 
 	* rendering/render_container.cpp (addChild): make sure
