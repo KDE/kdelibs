@@ -110,8 +110,8 @@ namespace KParts
  *
  * If Java and JavaScript are enabled by default depends on the user's
  * settings. If you do not need them, and escpecially if you display
- * unfiltered data from untrusted sources, it is strongly recommended to 
- * turn them off. In that case, you should also turn off the automatic 
+ * unfiltered data from untrusted sources, it is strongly recommended to
+ * turn them off. In that case, you should also turn off the automatic
  * redirect and plugins:
  *
  * <pre>
@@ -814,6 +814,9 @@ protected:
   // question only once per mimetype
   bool pluginPageQuestionAsked( const QString& mimetype ) const;
   void setPluginPageQuestionAsked( const QString& mimetype );
+
+  enum PageSecurity { NotCrypted, Encrypted, Mixed };
+  void setPageSecurity( PageSecurity sec );
 
 public slots:
 
