@@ -41,13 +41,14 @@
 #include <qfile.h>
 #include <kmessageboxwrapper.h>
 
-#include <ksimpleconfig.h>
 #include <kapp.h>
-#include <kstddirs.h>
-#include <klocale.h>
-#include <kurl.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
+#include <kdirwatch.h>
+#include <klocale.h>
+#include <ksimpleconfig.h>
+#include <kstddirs.h>
+#include <kurl.h>
 
 template class KSharedPtr<KMimeType>;
 template class QValueList<KMimeType::Ptr>;
@@ -748,6 +749,8 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
     lst.append( u );
     KRun::run( _service.m_strExec, lst, _service.m_strName, _service.m_strIcon,
 	       _service.m_strIcon, _url );
+    // The action may update the desktop file. Example: eject unmounts (#5129).
+    KDirWatch::self()->setFileDirty( _url );
     return;
   }
   else if ( _service.m_type == ST_MOUNT || _service.m_type == ST_UNMOUNT )
