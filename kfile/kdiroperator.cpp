@@ -71,14 +71,18 @@ KDirOperator::KDirOperator(const KURL& url,
     d = new KDirOperatorPrivate;
     d->onlyDoubleClickSelectsFiles = false;
 
-    if (url.isEmpty()) // no dir specified -> current dir
-      {
+    if (url.isEmpty()) { // no dir specified -> current dir
 	QString strPath = QDir::currentDirPath();
 	strPath.append('/');
-	lastDirectory = new KURL(strPath);
-      }
-    else
+	lastDirectory = new KURL;
+	lastDirectory->setProtocol(QString::fromLatin1("file"));
+	lastDirectory->setPath(strPath);
+    }
+    else {
 	lastDirectory = new KURL(url);
+	if ( lastDirectory->protocol().isEmpty() )
+	    lastDirectory->setProtocol(QString::fromLatin1("file"));
+    }
 
     dir = new KFileReader(*lastDirectory);
     dir->setAutoUpdate( true );
@@ -405,6 +409,9 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
 void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
 {
     KURL newurl = _newurl;
+    if ( newurl.protocol().isEmpty() ) {
+	newurl.setProtocol(QString::fromLatin1("file"));
+    }
 
     QString pathstr = newurl.path(+1);
 

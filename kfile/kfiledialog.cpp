@@ -446,8 +446,9 @@ void KFileDialog::slotStatResult(KIO::Job* job)
     kdDebug(kfile_area) << "slotStatResult" << endl;
     KIO::StatJob *sJob = static_cast<KIO::StatJob *>( job );
 
-    if ( !d->statJobs.removeRef( sJob ) )
-       return;
+    if ( !d->statJobs.removeRef( sJob ) ) {
+	return;
+    }
 
     int count = d->statJobs.count();
 
@@ -1054,12 +1055,19 @@ KURL::List KFileDialog::selectedURLs() const
 
 KURL::List& KFileDialog::parseSelectedURLs() const
 {
-    if ( d->filenames.isEmpty() )
+    if ( d->filenames.isEmpty() ) {
 	return d->urlList;
+    }
 
     d->urlList.clear();
     if ( d->filenames.contains( '/' )) { // assume _one_ absolute filename
-	KURL u( d->filenames );
+	static QString prot = QString::fromLatin1(":/");
+	KURL u;
+	if ( d->filenames.find( prot ) != -1 )
+	    u = d->filenames;
+	else
+	    u.setPath( d->filenames );
+
 	if ( !u.isMalformed() )
 	    d->urlList.append( u );
 	else
