@@ -1019,6 +1019,10 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
     }
     if(pKStyle)
 	connect(pKStyle, SIGNAL(destroyed()), SLOT(kstyleDestroyed()));
+    
+    // WABA: Hack to get the button background right.
+    QApplication::setPalette(palette(), true);
+    // WABA: End-hack
 }
 
 // in case someone calls QApplication::setStyle(), our kstyle would get deleted
@@ -1125,15 +1129,14 @@ void KApplication::kdisplaySetPalette()
     KConfigBase* config = KGlobal::config();
     KConfigGroupSaver saver( config, "General" );
 
-    QColor buttonFallback = config->readColorEntry( "background", &lightGray );
-    QColor button = config->readColorEntry( "buttonBackground", &buttonFallback );
-    QColor buttonTextFallback = config->readColorEntry( "foreground", &black );
-    QColor buttonText = config->readColorEntry( "buttonForeground", &buttonTextFallback );
     QColor background = config->readColorEntry( "background", &lightGray );
+    QColor foreground = config->readColorEntry( "foreground", &black );
+    QColor button = config->readColorEntry( "buttonBackground", &background );
+    QColor buttonText = config->readColorEntry( "buttonForeground", &foreground );
     QColor highlight = config->readColorEntry( "selectBackground", &darkBlue);
     QColor highlightedText = config->readColorEntry( "selectForeground", &white );
     QColor base = config->readColorEntry( "windowBackground", &white );
-    QColor foreground = config->readColorEntry( "windowForeground", &black );
+    QColor baseText = config->readColorEntry( "windowForeground", &black );
 
     int highlightVal, lowlightVal;
     highlightVal = 100 + (2*contrast_+4)*16/10;
@@ -1148,7 +1151,7 @@ void KApplication::kdisplaySetPalette()
     QColorGroup colgrp(foreground, background, background.light(highlightVal),
                        background.dark(lowlightVal),
                        background.dark(120),
-                       foreground, base);
+                       baseText, base);
 
     int inlowlightVal = lowlightVal-25;
     if(inlowlightVal < 120)
