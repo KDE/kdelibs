@@ -1675,6 +1675,8 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
     return;
   }
 
+  child->m_args.reload = d->m_bReloading;
+  
   child->m_bCompleted = false;
   if ( child->m_extension )
     child->m_extension->setURLArgs( child->m_args );
