@@ -329,6 +329,9 @@ void SlaveBase::finished()
     if (!mOutgoingMetaData.isEmpty())
        sendMetaData();
     m_pConnection->send( MSG_FINISHED );
+
+    // reset
+    listEntryCurrentSize = 100;
 }
 
 void SlaveBase::needSubURLData()
@@ -473,7 +476,7 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
 {
     static struct timeval tp;
     static const int maximum_updatetime = 300;
-    static const int minimum_updatetime = (maximum_updatetime * 3) / 4;
+    static const int minimum_updatetime = 100;
 
     if (!_ready) {
     pendingListEntries.append(entry);
@@ -503,6 +506,7 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
 
     listEntries( pendingListEntries );
     pendingListEntries.clear();
+
     }
 }
 
