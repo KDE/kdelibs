@@ -38,6 +38,7 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <signal.h>
+#include <errno.h>
 #include <iostream>
 
 #if TIME_WITH_SYS_TIME
@@ -56,6 +57,8 @@ using namespace Arts;
 
 namespace Arts {
 
+class DispatcherWakeUpHandler;
+
 class DispatcherPrivate {
 public:
 	GlobalComm globalComm;
@@ -65,7 +68,75 @@ public:
 	DelayedReturn *delayedReturn;
 	bool allowNoAuthentication;
 	Mutex mutex;
-	bool mutexLocked;
+
+	/*
+	 * Thread condition that gets signalled whenever something relevant for
+	 * waitForResult happens. Note that broken connections are also relevant
+	 * for waitForResult.
+	 */
+	ThreadCondition requestResultCondition;
+
+	/*
+	 * Thread condition that gets signalled whenever something relevant for
+	 * the server connection process happens. This is either:
+	 *  - authentication fails
+	 *  - authentication succeeds
+	 *  - a connection breaks
+	 */
+	ThreadCondition serverConnectCondition;
+
+	DispatcherWakeUpHandler *wakeUpHandler;
+};
+
+/**
+ * Class that performs dispatcher wakeup.
+ *
+ * The sending thread (requesting wakeup) writes a byte to a pipe. The
+ * main thread watches the pipe, and as soon as the byte arrives, gets
+ * woken by the IOManager. This should work, no matter what type of IOManager
+ * is used (i.e. StdIOManager/GIOManager/QIOManager).
+ */
+class DispatcherWakeUpHandler : public IONotify {
+private:
+	enum { wReceive = 0, wSend = 1 };
+	int wakeUpPipe[2];
+
+public:
+	DispatcherWakeUpHandler()
+	{
+		if(pipe(wakeUpPipe) != 0)
+			arts_fatal("can't initialize wakeUp pipe (%s)",strerror(errno));
+
+		Dispatcher::the()->ioManager()->watchFD(wakeUpPipe[wReceive],
+									IOType::read | IOType::reentrant, this);
+	}
+	virtual ~DispatcherWakeUpHandler()
+	{
+		Dispatcher::the()->ioManager()->remove(this, IOType::all);
+
+		close(wakeUpPipe[wSend]);
+		close(wakeUpPipe[wReceive]);
+	}
+	void notifyIO(int fd, int type)
+	{
+		arts_return_if_fail(fd == wakeUpPipe[wReceive]);
+		arts_return_if_fail(type == IOType::read);
+
+		mcopbyte one;
+		int result;
+		do
+			result = read(wakeUpPipe[wReceive],&one,1);
+		while(result < 0 && errno == EINTR);
+	}
+	void wakeUp()
+	{
+		mcopbyte one = 1;
+
+		int result;
+		do
+			result = write(wakeUpPipe[wSend],&one,1);
+		while(result < 0 && errno == EINTR);
+	}
 };
 
 };
@@ -79,7 +150,6 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	
 	/* private data pointer */
 	d = new DispatcherPrivate();
-	d->mutexLocked = false;
 
 	lock();
 
@@ -95,6 +165,8 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 		_ioManager = new StdIOManager;
 		deleteIOManagerOnExit = true;
 	}
+
+	d->wakeUpHandler = new DispatcherWakeUpHandler;
 
 	objectManager = new ObjectManager;
 
@@ -214,6 +286,8 @@ Dispatcher::~Dispatcher()
 		Connection *conn = *ci;
 		conn->drop();
 	}
+	d->requestResultCondition.wakeAll();
+	d->serverConnectCondition.wakeAll();
 
 	/*
 	 * remove signal handler for SIGPIPE
@@ -257,6 +331,12 @@ Dispatcher::~Dispatcher()
 		objectManager->removeExtensions();
 		delete objectManager;
 		objectManager = 0;
+	}
+
+	if(d->wakeUpHandler)
+	{
+		delete d->wakeUpHandler;
+		d->wakeUpHandler = 0;
 	}
 
 	if(deleteIOManagerOnExit)
@@ -329,10 +409,15 @@ Dispatcher *Dispatcher::the()
 
 Buffer *Dispatcher::waitForResult(long requestID, Connection *connection)
 {
+	bool isMainThread = SystemThreads::the()->isMainThread();
 	Buffer *b = requestResultPool[requestID];
 
 	while(!b && !connection->broken()) {
-		_ioManager->processOneEvent(true);
+		if(isMainThread)
+			_ioManager->processOneEvent(true);
+		else
+			d->requestResultCondition.wait(d->mutex);
+
 		b = requestResultPool[requestID];
 	}
 
@@ -382,8 +467,6 @@ Buffer *Dispatcher::createOnewayRequest(long objectID, long methodID)
 
 void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 {
-	assert(d->mutexLocked);
-
 	_activeConnection = conn;
 
 #ifdef DEBUG_IO
@@ -457,6 +540,7 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 #endif
 				long requestID = buffer->readLong();
 				requestResultPool[requestID] = buffer;
+				d->requestResultCondition.wakeAll();
 
 				return;		/* everything ok - leave here */
 			}
@@ -620,7 +704,7 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 #endif
 
 				conn->setConnState(Connection::established);
-
+				d->serverConnectCondition.wakeAll();
 				return;		/* everything ok - leave here */
 			}
 			break;
@@ -739,6 +823,7 @@ Connection *Dispatcher::connectObjectRemote(ObjectReference& reference)
 	}
 
 	/* try to connect the server */
+	bool isMainThread = SystemThreads::the()->isMainThread();
 
 	vector<string>::iterator ui;
 	for(ui = reference.urls.begin(); ui != reference.urls.end(); ui++)
@@ -760,14 +845,17 @@ Connection *Dispatcher::connectObjectRemote(ObjectReference& reference)
 			while((conn->connState() != Connection::established)
 			       && !conn->broken())
 			{
-				_ioManager->processOneEvent(true);
+				if(isMainThread)
+					_ioManager->processOneEvent(true);
+				else
+					d->serverConnectCondition.wait(d->mutex);
 			}
 
 			if(conn->connState() == Connection::established)
 			{
 				connections.push_back(conn);
 
-				assert(conn->isConnected(reference.serverID));
+				assert(conn->isConnected(reference.serverID));	// FIXME
 				return conn;
 			}
 			arts_debug("bad luck: connecting server didn't work");
@@ -828,6 +916,7 @@ void Dispatcher::handleCorrupt(Connection *connection)
 		cerr << "received corrupt message on unauthenticated connection" <<endl;
 		cerr << "closing connection." << endl;
 		connection->drop();
+		d->serverConnectCondition.wakeAll();
 	}
 	else
 	{
@@ -848,6 +937,9 @@ void Dispatcher::handleConnectionClose(Connection *connection)
 		Object_skel *skel = objectPool[l]; 
 		if(skel) skel->_disconnectRemote(connection);
 	}
+
+	d->requestResultCondition.wakeAll();
+	d->serverConnectCondition.wakeAll();
 
 	/*
 	 * FIXME:
@@ -888,13 +980,16 @@ DelayedReturn *Dispatcher::delayReturn()
 void Dispatcher::lock()
 {
 	_instance->d->mutex.lock();
-	assert(!_instance->d->mutexLocked);
-	_instance->d->mutexLocked = true;
 }
 
 void Dispatcher::unlock()
 {
-	assert(_instance->d->mutexLocked);
-	_instance->d->mutexLocked = false;
 	_instance->d->mutex.unlock();
+}
+
+void Dispatcher::wakeUp()
+{
+	if(SystemThreads::the()->isMainThread()) return;
+
+	_instance->d->wakeUpHandler->wakeUp();
 }

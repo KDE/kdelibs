@@ -26,27 +26,60 @@
 
 /* only compile this if we have libpthread available */
 #ifdef HAVE_LIBPTHREAD
+
 #include <pthread.h>
+#include <debug.h>
+#include <string.h>
 
 #include "thread.h"
+
+/*
+ * define this if you want to protect mutexes against being locked twice by
+ * the same thread
+ */
+#define PTHREAD_DEBUG 1
 
 namespace Arts {
 namespace PosixThreads {
 
+class ThreadCondition_impl;
+
 class Mutex_impl : public Arts::Mutex_impl {
 protected:
+	friend class ThreadCondition_impl;
 	pthread_mutex_t mutex;
+
+#ifdef PTHREAD_DEBUG
+	pthread_t owner;
+#endif
+
 public:
 	Mutex_impl()
 	{
-		pthread_mutex_init(&mutex,0);
+		pthread_mutex_init(&mutex, 0);
+		owner = 0;
 	}
 	void lock()
 	{
+#ifdef PTHREAD_DEBUG
+		pthread_t self = pthread_self();
+		arts_assert(owner != self);
+#endif
+
 		pthread_mutex_lock(&mutex);
+
+#ifdef PTHREAD_DEBUG
+		arts_assert(!owner);
+		owner = self;
+#endif
 	}
 	void unlock()
 	{
+#ifdef PTHREAD_DEBUG
+		arts_assert(owner == pthread_self());
+		owner = 0;
+#endif
+
 		pthread_mutex_unlock(&mutex);
 	}
 };
@@ -77,6 +110,40 @@ public:
 	}
 };
 
+class ThreadCondition_impl : public Arts::ThreadCondition_impl {
+protected:
+	pthread_cond_t cond;
+
+public:
+	ThreadCondition_impl() {
+		pthread_cond_init(&cond, 0);
+	}
+	~ThreadCondition_impl() {
+		pthread_cond_destroy(&cond);
+	}
+	void wakeOne() {
+		pthread_cond_signal(&cond);
+	}
+	void wakeAll() {
+		pthread_cond_broadcast(&cond);
+	}
+	void wait(Arts::Mutex_impl *mutex) {
+#ifdef PTHREAD_DEBUG
+		pthread_t self = pthread_self();
+		arts_assert(((Mutex_impl *)mutex)->owner == self);
+		((Mutex_impl *)mutex)->owner = 0;
+#endif
+
+		pthread_cond_wait(&cond, &((Mutex_impl*)mutex)->mutex);
+
+#ifdef PTHREAD_DEBUG
+		arts_assert(((Mutex_impl *)mutex)->owner == 0);
+		((Mutex_impl *)mutex)->owner = self;
+#endif
+	}
+};
+
+
 class PosixThreads : public SystemThreads {
 private:
 	pthread_t mainThread;
@@ -89,10 +156,13 @@ public:
 	}
 	Arts::Mutex_impl *createMutex_impl() {
 		return new Mutex_impl();
-	};
+	}
 	Arts::Thread_impl *createThread_impl(Arts::Thread *thread) {
 		return new Thread_impl(thread);
-	};
+	}
+	Arts::ThreadCondition_impl *createThreadCondition_impl() {
+		return new ThreadCondition_impl();
+	}
 };
 
 // set posix threads on startup

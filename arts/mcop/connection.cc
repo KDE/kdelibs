@@ -34,7 +34,7 @@ namespace Arts {
 class ConnectionPrivate {
 public:
 	struct Data {
-	        Data() : data(0), len(0) { }
+        Data() : data(0), len(0) { }
 		Data(unsigned char *data, long len) : data(data), len(len) { }
 		Data(const Data& d) : data(d.data), len(d.len) { }
 		unsigned char *data;

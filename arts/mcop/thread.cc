@@ -44,6 +44,17 @@ Mutex_impl::~Mutex_impl()
 {
 }
 
+// ThreadCondition:
+
+ThreadCondition::~ThreadCondition()
+{
+	delete impl;
+}
+
+ThreadCondition_impl::~ThreadCondition_impl()
+{
+}
+
 // No threading:
 
 namespace Arts {
@@ -69,6 +80,13 @@ public:
 	void waitDone() {};
 };
 
+class SystemThreadsNoThreadCondition_impl : public ThreadCondition_impl {
+public:
+	void wakeOne() {};
+	void wakeAll() {};
+	void wait(Mutex_impl *) {};
+};
+
 class SystemThreadsNone : public SystemThreads {
 public:
 	bool isMainThread() {
@@ -79,6 +97,9 @@ public:
 	}
 	Thread_impl *createThread_impl(Thread *thread) {
 		return new SystemThreadsNoThread_impl(thread);
+	}
+	ThreadCondition_impl *createThreadCondition_impl() {
+		return new SystemThreadsNoThreadCondition_impl();
 	}
 };
 

@@ -25,8 +25,9 @@
 
 namespace Arts {
 
-class Thread_impl;
 class Mutex_impl;
+class Thread_impl;
+class ThreadCondition_impl;
 class Thread;
 
 /**
@@ -49,9 +50,18 @@ public:
 	 */
 	static bool supported();
 
+	/**
+	 * Check wether the current thread is the main thread
+	 *
+	 * The main thread is the thread that the application's main() was
+	 * executed in. The IOManager event loop will only run in the main
+	 * thread.
+	 */
 	virtual bool isMainThread() = 0;
+
 	virtual Mutex_impl *createMutex_impl() = 0;
 	virtual Thread_impl *createThread_impl(Thread *thread) = 0;
+	virtual ThreadCondition_impl *createThreadCondition_impl() = 0;
 	virtual ~SystemThreads();
 };
 
@@ -75,6 +85,18 @@ public:
 	virtual void unlock() = 0;
 	virtual ~Mutex_impl();
 };
+
+/**
+ * Base class for platform specific thread condition code
+ */
+class ThreadCondition_impl {
+public:
+	virtual void wakeOne() = 0;
+	virtual void wakeAll() = 0;
+	virtual void wait(Mutex_impl *impl) = 0;
+	virtual ~ThreadCondition_impl();
+};
+
 
 /**
  * A thread of execution
@@ -154,6 +176,7 @@ public:
 class Mutex {
 private:
 	Mutex_impl *impl;
+	friend class ThreadCondition;
 
 public:
 	/**
@@ -182,6 +205,79 @@ public:
 		impl->unlock();
 	}
 };
+
+/**
+ * A thread condition
+ *
+ * Thread conditions are used to let a different thread know that a certain
+ * condition might have changed. For instance, if you have a thread that
+ * waits until a counter exceeds a limit, the thread would look like this:
+ *
+ * <pre>
+ * class WaitCounter : public Arts::Thread 
+ * {
+ *   int counter;
+ *   Arts::Mutex mutex;
+ *   Arts::ThreadCondition cond;
+ * 
+ * public:
+ *   WaitCounter() : counter(0) {}
+ *
+ *   void run() {  // run will terminate once the counter reaches 20
+ *     mutex.lock();
+ *     while(counter < 20)
+ *       cond.wait(mutex);
+ *     mutex.unlock();
+ *   }
+ *
+ *   void inc() {  // inc will increment the counter and indicate the change
+ *     mutex.lock();
+ *     counter++;
+ *     cond.wakeOne();
+ *     mutex.unlock();
+ *   }
+ * };
+ * </pre>
+ */
+class ThreadCondition {
+private:
+	ThreadCondition_impl *impl;
+		 
+public:
+	ThreadCondition()
+		: impl(SystemThreads::the()->createThreadCondition_impl())
+	{
+	}
+	
+	virtual ~ThreadCondition();
+
+	/**
+	 * wakes one waiting thread
+	 */
+	inline void wakeOne()
+	{
+		impl->wakeOne();
+	}
+
+	/**
+	 * wakes all waiting threads
+	 */
+	inline void wakeAll()
+	{
+		impl->wakeAll();
+	}
+
+	/**
+	 * Waits until the condition changes. You will need to lock the mutex
+	 * before calling this. Internally it will unlock the mutex (to let
+	 * others change the condition), and relock it once the wait succeeds.
+	 */
+	inline void wait(Mutex& mutex)
+	{
+		impl->wait(mutex.impl);
+	}
+};
+
 
 };
 

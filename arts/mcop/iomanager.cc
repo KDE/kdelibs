@@ -293,6 +293,7 @@ void StdIOManager::run()
 	assert(SystemThreads::the()->isMainThread());
 	assert(level == 0);
 
+	// FIXME: this might not be threadsafe, as there is no lock here!
 	terminated = false;
 	while(!terminated)
 		processOneEvent(true);
@@ -301,6 +302,7 @@ void StdIOManager::run()
 void StdIOManager::terminate()
 {
 	terminated = true;
+	Dispatcher::wakeUp();
 }
 
 void StdIOManager::watchFD(int fd, int types, IONotify *notify)
@@ -320,6 +322,7 @@ void StdIOManager::watchFD(int fd, int types, IONotify *notify)
 	// FIXME: might want to reuse old watches
 	fdList.push_back(new IOWatchFD(fd,types,notify));
 	fdListChanged = true;
+	Dispatcher::wakeUp();
 }
 
 void StdIOManager::remove(IONotify *notify, int types)
@@ -337,7 +340,8 @@ void StdIOManager::remove(IONotify *notify, int types)
 		if(!w->types())		// nothing left to watch
 		{
 			fdList.erase(i);
-			delete w;
+			delete w;		// FIXME: shouldn't we have a destroy() similar
+			                // to the one for timers
 
 			i = fdList.begin();
 		}
@@ -349,6 +353,7 @@ void StdIOManager::remove(IONotify *notify, int types)
 void StdIOManager::addTimer(int milliseconds, TimeNotify *notify)
 {
 	timeList.push_back(new TimeWatcher(milliseconds,notify));
+	Dispatcher::wakeUp();
 }
 
 void StdIOManager::removeTimer(TimeNotify *notify)

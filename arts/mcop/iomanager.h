@@ -55,6 +55,7 @@ namespace Arts {
  *
  * That way, you get a multiple level stack:
  *
+ * <pre>
  *    [...]
  *      |
  * [ Hander for I/O ]
@@ -68,6 +69,7 @@ namespace Arts {
  * [ IOManager ]              level 1
  *      |
  * [ main() ]
+ * </pre>
  *
  * What reentrant does, is to allow that IO Watch to be activated at levels
  * higher than one.
@@ -83,6 +85,8 @@ struct IOType {
  * IONotify is the base class you can derive from to receive callbacks about
  * IO activity. You will need to call the watchFD function of the IOManager
  * to start watching a filedescriptor.
+ *
+ * @see Arts::IOManager
  */
 class IONotify {
 public:
@@ -109,8 +113,21 @@ public:
 	inline void remove(int types) { _types &= ~types; }
 };
 
+/**
+ * TimeNotify is the base class you can derive from to receive timer callbacks.
+ * You will need to call the addTimer function of the IOManager to start
+ * watching a filedescriptor.
+ *
+ * @see Arts::IOManager
+ */
 class TimeNotify {
 public:
+	/**
+	 * This function gets whenever the timer is activated. Note that the
+	 * IOManager will try to "catch up" lost time, that is, if you have a
+	 * 300ms timer that didn't get called for a second (because there was
+	 * something else to do), you'll receive three calls in a row.
+	 */
 	virtual void notifyTime() = 0;
 };
 
@@ -159,6 +176,9 @@ public:
 	 *
 	 * notifies the notify object when e.g. the fd requires (allows) reading
 	 * and types contained IOType::read.
+	 *
+	 * @see Arts::IOType
+	 * @see Arts::IONotify
 	 */
 	virtual void watchFD(int fd, int types, IONotify *notify) = 0;
 
@@ -169,6 +189,8 @@ public:
 
 	/**
 	 * starts a periodic timer
+	 *
+	 * @see Arts::TimeNotify
 	 */
 	virtual void addTimer(int milliseconds, TimeNotify *notify) = 0;
 

@@ -209,6 +209,15 @@ public:
 	static void unlock();
 
 	/**
+	 * Wakes the dispatcher - normally, the dispatcher will go to sleep in
+	 * it's event loop, when nothing is to be done. If you change things from
+	 * another thread, like: add a new Timer, write something to a connection,
+	 * and so on, the dispatcher will not notice it. To wake the dispatcher
+	 * up, this call is provided.
+	 */
+	static void wakeUp();
+
+	/**
 	 * - internal usage only -
 	 *
 	 * this will return the Connection the last request came from
