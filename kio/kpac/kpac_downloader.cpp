@@ -39,7 +39,8 @@ bool KPACDownloader::download(const KURL &url)
         QFile f(url.path());
         if (!f.open(IO_ReadOnly))
             return false;
-        m_data = f.readAll();
+        QByteArray arr = f.readAll();
+        m_data = QCString( arr.data(), arr.size()+1 );
         return true;
     }
     m_working = true;
