@@ -275,7 +275,8 @@ KImageIOFactory::load()
         it != list.end();
         ++it)
    {
-      KImageIOFormat *format = dynamic_cast<KImageIOFormat *>(static_cast<KSycocaEntry *>(*it));
+      KSycocaEntry *entry = static_cast<KSycocaEntry *>(*it);
+      KImageIOFormat *format = static_cast<KImageIOFormat *>(entry);
 
       // Since Qt doesn't allow us to unregister image formats
       // we have to make sure not to add them a second time.
