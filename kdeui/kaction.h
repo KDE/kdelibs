@@ -417,15 +417,15 @@ public:
      */
     static int getToolButtonID();
 
+
+    void unplugAll();
+
+public slots:
     /**
      * Emulate user's interaction programmatically, by activating the action.
      * The implementation simply emits activated().
      */
     void activate();
-
-    void unplugAll();
-
-public slots:
     virtual void setEnabled(bool enable);
 
 protected slots:
@@ -564,17 +564,18 @@ public:
     virtual int plug( QWidget*, int index = -1 );
 
     /**
-     *  Sets the state of the action.
-     */
-    virtual void setChecked( bool );
-
-    /**
      *  Retrieves the actual state of the action.
      */
     bool isChecked() const;
 
     virtual void setExclusiveGroup( const QString& name );
     virtual QString exclusiveGroup() const;
+
+public:
+    /**
+     *  Sets the state of the action.
+     */
+    virtual void setChecked( bool );
 
 protected slots:
     virtual void slotActivated();
@@ -922,15 +923,17 @@ public:
      */
     virtual ~KListAction();
 
+
+    virtual QString currentText() const;
+    virtual int currentItem() const;
+
+public slots:
     /**
      *  Sets the currently checked item.
      *
      *  @param index Index of the item (remember the first item is zero).
      */
     virtual void setCurrentItem( int index );
-
-    virtual QString currentText() const;
-    virtual int currentItem() const;
 
 private:
     class KListActionPrivate;
@@ -1040,6 +1043,7 @@ public:
    */
   virtual ~KRecentFilesAction();
 
+public slots:
   /**
    *  Retrieves the maximum of items in the recent files list.
    */
@@ -1102,7 +1106,6 @@ signals:
   void urlSelected( const KURL& url );
 
 protected slots:
-
   /**
    *
    */
@@ -1211,14 +1214,8 @@ public:
     virtual int plug( QWidget* widget, int index = -1 );
     virtual void unplug( QWidget* widget );
 
-    // To be removed (BCI)
-    virtual void setEnabled(bool b) { KAction::setEnabled(b); }
 protected:
-    // To be removed (BCI)
-    virtual void setEnabled(int i, bool enable);
-
     virtual void setText( int id, const QString& text );
-
     virtual void setIconSet( int id, const QIconSet& iconSet );
 
 private:
