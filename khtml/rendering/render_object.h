@@ -101,6 +101,7 @@ private:
 public:
     virtual const char *renderName() const { return "RenderObject"; }
 #ifndef NDEBUG
+    QString information() const;
     virtual void printTree(int indent=0) const;
     virtual void dump(QTextStream *stream, QString ind = "") const;
 #endif

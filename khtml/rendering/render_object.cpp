@@ -518,6 +518,43 @@ void RenderObject::repaintRectangle(int x, int y, int w, int h, bool f)
 
 #ifndef NDEBUG
 
+QString RenderObject::information() const 
+{
+    int childcount = 0;
+    for(RenderObject* c = firstChild(); c; c = c->nextSibling())
+        childcount++;
+    QString str;
+    QTextStream ts( &str, IO_WriteOnly );
+    ts << renderName()
+	<< (childcount ?
+	    (QString::fromLatin1("[") + QString::number(childcount) + QString::fromLatin1("]"))
+	    : QString::null)
+	<< "(" << (style() ? style()->refCount() : 0) << ")"
+	<< ": " << (void*)this
+	<< " il=" << (int)isInline()
+	<< " ci=" << (int) childrenInline()
+	<< " fl=" << (int)isFloating()
+	<< " rp=" << (int)isReplaced()
+	<< " an=" << (int)isAnonymousBox()
+	<< " ps=" << (int)isPositioned()
+	<< " oc=" << (int)overhangingContents()
+	<< " lt=" << (int)layouted()
+	<< " mk=" << (int)minMaxKnown()
+	<< " rmm=" << (int)m_recalcMinMax
+	<< " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
+	<< (isTableCell() ?
+	    ( QString::fromLatin1(" [row=") +
+	      QString::number( static_cast<const RenderTableCell *>(this)->row() ) +
+	      QString::fromLatin1(" col=") +
+	      QString::number( static_cast<const RenderTableCell *>(this)->col() ) +
+	      QString::fromLatin1(" rowspan=") +
+	      QString::number( static_cast<const RenderTableCell *>(this)->rowSpan() ) +
+	      QString::fromLatin1(" colspan=") +
+	      QString::number( static_cast<const RenderTableCell *>(this)->colSpan() ) +
+	      QString::fromLatin1("]") ) : QString::null );
+	return str;
+}
+
 void RenderObject::printTree(int indent) const
 {
     QString ind;
