@@ -118,9 +118,9 @@ KJSO Screen::get(const UString &p) const
   else if (p == "availTop")
     return Number(info.workArea().top());
   else if (p == "availHeight")
-    return Number(info.workArea().width());
-  else if (p == "availWidth")
     return Number(info.workArea().height());
+  else if (p == "availWidth")
+    return Number(info.workArea().width());
   else
     return Undefined();
 }
