@@ -58,7 +58,7 @@ namespace KIO {
 	
 	void init(int fd_in, int fd_out);
 	
-	bool inited() const { return (fd_in != 0) && (f_out != 0); }
+	bool inited() const { return (fd_in != -1) && (f_out != 0); }
 	
 	// send (queues the command to be sent)
 	void send(int cmd, const QByteArray &arr = QByteArray());

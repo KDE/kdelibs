@@ -49,7 +49,7 @@ template class QList<Task>;
 Connection::Connection()
 {
     f_out = 0;
-    fd_in = 0;
+    fd_in = -1;
     socket = 0;
     notifier = 0;
     receiver = 0;
@@ -87,7 +87,7 @@ void Connection::close()
     if (f_out)
        fclose(f_out);
     f_out = 0;
-    fd_in = 0;
+    fd_in = -1;
 }
 
 void Connection::send(int cmd, const QByteArray& data)
@@ -143,10 +143,11 @@ void Connection::init(KSocket *sock)
     socket = sock;
     fd_in = socket->socket();
     f_out = fdopen( socket->socket(), "wb" );
-    if (receiver && fd_in) {
+    if (receiver && ( fd_in != -1 )) {
 	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
-        if ( m_suspended )
+	if ( m_suspended ) {
             suspend();
+	}
 	QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
     }
     dequeue();
@@ -158,7 +159,7 @@ void Connection::connect(QObject *_receiver, const char *_member)
     member = _member;
     delete notifier;
     notifier = 0;
-    if (receiver && fd_in) {
+    if (receiver && (fd_in != -1 )) {
 	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
         if ( m_suspended )
             suspend();
@@ -196,7 +197,7 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
 
 int Connection::read( int* _cmd, QByteArray &data )
 {
-    if (!fd_in) {
+    if (fd_in == -1 ) {
 	kdError(7017) << "read: not yet inited" << endl;
 	return -1;
     }
@@ -243,7 +244,7 @@ int Connection::read( int* _cmd, QByteArray &data )
 		kdError(7017) << "Data read failed, errno=" << errno << endl;
 		return -1;
 	    }
-	
+
 	    bytesRead += n;
 	    bytesToGo -= n;
 	}
