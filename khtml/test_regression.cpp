@@ -1273,7 +1273,7 @@ void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename,
         } else if ( saw_failure ) {
             if ( !expected_failure )
                 doFailureReport( m_currentCategory + "/" + m_currentTest, JSFailure );
-            reportResult( !expected_failure, "saw 'failed!'" );
+            reportResult( expected_failure, "saw 'failed!'" );
         } else {
             reportResult( !expected_failure, "passed" );
         }
