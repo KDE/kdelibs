@@ -734,15 +734,8 @@ bool KURL::isParentOf( const KURL& _u ) const
        m_strRef_encoded == _u.m_strRef_encoded &&
        m_iPort == _u.m_iPort )
   {
-    QDir dir1( m_strPath );
-    QDir dir2( _u.path() );
-
-    QString p1( dir1.canonicalPath() );
-    QString p2( dir2.canonicalPath() );
-    if ( p1.isEmpty() )
-      p1 = m_strPath;
-    if ( p2.isEmpty() )
-      p2 = _u.path();
+    QString p1( QDir::cleanDirPath( path(1) ) );
+    QString p2( QDir::cleanDirPath( _u.path(1) ) );
 
     //kdDebug(126) << "p1=" << p1 << endl;
     //kdDebug(126) << "p2=" << p2 << endl;
