@@ -85,6 +85,7 @@ Lexer *Lexer::curr()
 void Lexer::setCode(const UChar *c, unsigned int len)
 {
   yylineno = 0;
+  restrKeyword = false;
   delimited = false;
   stackToken = -1;
   pos = 0;
