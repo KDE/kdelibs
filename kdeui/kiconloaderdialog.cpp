@@ -351,9 +351,11 @@ void KIconLoaderButton::setIconType(const QString& _resType)
 	    QStringList::Iterator iit = list.begin();
 	    for ( ; iit != list.end(); ++iit)
 		{
-		    icon_dirs.append((*iit) + QString::fromLatin1("large/hicolor/apps"));
+                    if ( QPixmap::defaultDepth() > 8 )
+                        icon_dirs.append((*iit) + QString::fromLatin1("large/hicolor/apps"));
 		    icon_dirs.append((*iit) + QString::fromLatin1("large/locolor/apps"));
-		    icon_dirs.append((*iit) + QString::fromLatin1("medium/hicolor/apps"));
+                    if ( QPixmap::defaultDepth() > 8 )
+                        icon_dirs.append((*iit) + QString::fromLatin1("medium/hicolor/apps"));
 		    icon_dirs.append((*iit) + QString::fromLatin1("medium/locolor/apps"));
 		}
 	}
