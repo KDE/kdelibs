@@ -33,7 +33,20 @@ X-KDE-WMClass=<string>
         window, WMCLASS value for this app should be any of the strings listed
         in the WM_CLASS property ( it's usually the same as the name of the
         app's binary file, in such case it doesn't need to be explicitly set )
-
+MapNotify=<bool>
+    - this key is obsolete
+    - true is equivalent to X-KDE-StartupNotify=true and no X-KDE-WMClass set
+    - false is equivalent to X-KDE-StartupNotify=true and X-KDE-WMClass=0
+        - many .desktop files in KDE ( especially in kdebase/kappfinder )
+            seem to have MapNotify=false even though it's not needed, this
+            needs to be checked and replaced by the needed X-KDE-* values,
+            often just X-KDE-StartupNotify=true should be enough
+        
+The best way to check if the entries are set correctly is to start
+    the application and switch to other desktop. If the startup notification
+    disappears and the application appears on the desktop on which it was
+    started, it's correct ( with X-KDE-WMClass=0, the start-on-desktop
+    feature may not work ).
 ---
 
 
