@@ -87,7 +87,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     // initialize QScrollview
 
     enableClipper(true);
-
+    
     viewport()->setMouseTracking(true);
     //viewport()->setBackgroundMode(PaletteBase);
     viewport()->setBackgroundMode(NoBackground);
@@ -161,6 +161,7 @@ void KHTMLView::clear()
     if(d->useSlowRepaints) {
 	delete paintBuffer;
 	paintBuffer = 0;
+	setStaticBackground(false);
     }
 	
     delete d;
@@ -209,10 +210,10 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 	kdDebug(0) << "using slow repaints" << endl;
 	// used in case some element defines a fixed background or we have fixed positioning
 	// #### flickers terribly, but that will need some support in Qt to work.
-	ex = contentsX();
-	ey = contentsY();
-	ew = visibleWidth();
-	eh = visibleHeight();
+	//ex = contentsX();
+	//ey = contentsY();
+	//ew = visibleWidth();
+	//eh = visibleHeight();
 	//int tx, ty;
 	//contentsToViewport(ex, ey, tx, ty);
 	//p->setClipping(false);
@@ -831,6 +832,7 @@ void KHTMLView::useSlowRepaints()
 {
     kdDebug(0) << "slow repaints requested" << endl;
     d->useSlowRepaints = true;
+    setStaticBackground(true);
 }
 
 
