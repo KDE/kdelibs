@@ -25,6 +25,7 @@
 
 #include <kiconloader.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 QString smbPasswordString(const QString& login, const QString& password)
 {
@@ -94,6 +95,8 @@ void SmbView::endProcess()
 	m_state = Idle;
 	QApplication::restoreOverrideCursor();
 	emit running(false);
+	// clean up for future usage
+	m_proc->clearArguments();
 }
 
 void SmbView::slotProcessExited(KProcess*)
@@ -108,7 +111,7 @@ void SmbView::slotReceivedStdout(KProcess*, char *buf, int len)
 
 void SmbView::init()
 {
-	QString	cmd("nmblookup -M - | grep '<01>' | awk '{print $1}' | xargs nmblookup -A | grep '<1d>' | awk '{print $1}'");
+	QString	cmd("nmblookup -M - | grep '<01>' | awk '{print $1}' | xargs nmblookup -A | grep '<1d>'");
 	*m_proc << cmd;
 	startProcess(GroupListing);
 }
@@ -120,14 +123,14 @@ void SmbView::setOpen(QListViewItem *item, bool on)
 		if (item->depth() == 0)
 		{ // opening group
 			m_current = item;
-			QString	cmd = QString("nmblookup -M %1 -S | grep '<20>' | awk '{print $1}' | xargs -iserv_name smbclient -L serv_name -W %2 %3").arg(item->text(0)).arg(item->text(0)).arg(smbPasswordString(m_login,m_password));
+			QString	cmd = QString("nmblookup -M %1 -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -iserv_name smbclient -L 'serv_name' -W %2 %3").arg(KShellProcess::quote(item->text(0))).arg(KShellProcess::quote(item->text(0))).arg(smbPasswordString(m_login,m_password));
 			*m_proc << cmd;
 			startProcess(ServerListing);
 		}
 		else if (item->depth() == 1)
 		{ // opening server
 			m_current = item;
-			QString	cmd = QString("smbclient -L %1 -W %2 %3").arg(item->text(0)).arg(item->parent()->text(0)).arg(smbPasswordString(m_login,m_password));
+			QString	cmd = QString("smbclient -L %1 -W %2 %3").arg(KShellProcess::quote(item->text(0))).arg(KShellProcess::quote(item->parent()->text(0))).arg(smbPasswordString(m_login,m_password));
 			*m_proc << cmd;
 			startProcess(ShareListing);
 		}
@@ -141,7 +144,10 @@ void SmbView::processGroups()
 	clear();
 	for (QStringList::ConstIterator it=grps.begin(); it!=grps.end(); ++it)
 	{
-		QListViewItem	*item = new QListViewItem(this,*it);
+		int	p = (*it).find("<1d>");
+		if (p == -1)
+			continue;
+		QListViewItem	*item = new QListViewItem(this,(*it).left(p).stripWhiteSpace());
 		item->setExpandable(true);
 		item->setPixmap(0,SmallIcon("network"));
 	}
