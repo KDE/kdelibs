@@ -284,10 +284,10 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     QWidget *w = static_cast<QWidget *>( o );
     hideWidget = w;
 
-    if ( t == QEvent::Leave || t == QEvent::FocusOut ) {
+    if ( t == QEvent::Leave || t == QEvent::FocusOut || t == QEvent::Destroy) {
         autoHideTimer->stop();
 
-        if ( isCursorHidden )
+        if ( isCursorHidden && t != QEvent::Destroy )
             unhideCursor( w );
 
         isCursorHidden = false;
