@@ -1166,7 +1166,7 @@ void KDockWidget::loseFormerBrotherDockWidget()
 {
   if( formerBrotherDockWidget != 0L)
   	QObject::disconnect( formerBrotherDockWidget, SIGNAL(iMBeingClosed()),
-	  									   this, SLOT(loseFormerBrotherKockWidget()) );
+	  									   this, SLOT(loseFormerBrotherDockWidget()) );
 	formerBrotherDockWidget = 0L;
 	repaint();
 }
