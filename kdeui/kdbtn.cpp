@@ -30,14 +30,12 @@
 KDirectionButton::KDirectionButton(QWidget *parent, const char *name)
  : QButton(parent, name)
 {
-  initMetaObject();
   direct = RightArrow;
 }
 
 KDirectionButton::KDirectionButton(ArrowType d, QWidget *parent, const char *name)
  : QButton(parent, name)
 {
-  initMetaObject();
   direct = d;
 }
 
@@ -253,13 +251,11 @@ void KDirectionButton::drawButton( QPainter *p)
 KTabButton::KTabButton(QWidget *parent, const char *name)
  : KDirectionButton(parent, name)
 {
-  initMetaObject();
 }
 
 KTabButton::KTabButton(ArrowType d, QWidget *parent, const char *name)
  : KDirectionButton(d, parent, name)
 {
-  initMetaObject();
 }
 
 void KTabButton::drawButton( QPainter *p)
