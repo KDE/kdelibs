@@ -79,6 +79,7 @@ public:
 
     /**
      * Use this method for a widget (and it's children) you want no accels to be set on.
+     * @since 3.4
      */
     static void setNoAccel( QWidget *widget );
 };
