@@ -1339,6 +1339,8 @@ int KSelectAction::plug( QWidget *widget, int index )
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
+    setCurrentItem( containerCount() - 1, currentItem() );
+
     return containerCount() - 1;
   }
 
