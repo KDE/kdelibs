@@ -17,12 +17,16 @@
    Boston, MA 02111-1307, USA.
 */
 /*
- * $Id:$
+ * $Id$
  *
- * $Log:$
+ * $Log$
+ * Revision 1.1  1999/05/06 02:46:13  steffen
+ * Drag&drop for colors. Qt drag&drop is really easy to use. We should have stuff like this all over KDE.
+ *
  *
  */
 
+#include <qpainter.h> 
 #include "kcolordrag.h"
 
 static const char *color_mime_string = "application/x-color";
@@ -71,13 +75,21 @@ KColorDrag::decode( QMimeSource *e, QColor &color)
      return true;
 }
 
+
 KColorDrag* 
 KColorDrag::makeDrag( const QColor &color,QWidget *dragsource)
 {
      KColorDrag *d = new KColorDrag( color, dragsource);
      QPixmap colorpix( 25, 20);
      colorpix.fill( color);
+     QPainter p( &colorpix );
+     p.setPen( black );
+     p.drawRect(0,0,25,20);
+     p.end();
      d->setPixmap(colorpix, QPoint(-5,-7));
      return d;
 }
 #include "kcolordrag.moc"
+
+
+
