@@ -101,6 +101,8 @@ kckey_h : $(srcdir)/generate_keys.sh $(QNAMESPACE_H)
 	(cd $(srcdir) && ./generate_keys.sh $(QNAMESPACE_H))
 
 install-data-local:
+	$(mkinstalldirs) $(DESTDIR)$(kde_locale)
+	$(INSTALL_DATA) $(srcdir)/all_languages.desktop $(DESTDIR)$(kde_locale)/all_languages
 	$(mkinstalldirs) $(DESTDIR)$(includedir)/kio
 	$(mkinstalldirs) $(DESTDIR)$(kde_datadir)/knotify
 	$(INSTALL_DATA) $(srcdir)/eventsrc $(DESTDIR)$(kde_datadir)/knotify/eventsrc
@@ -115,7 +117,8 @@ uninstall-local:
 
 EXTRA_DIST = generate_keys.sh $(kdebug_DATA) Web.colors \
 	Royal.colors 40.colors DESIGN.COLOR KCONFIG_DESIGN eventsrc \
-	kentities.c kentities.gperf makeentities kmdcodec_compat.h
+	kentities.c kentities.gperf makeentities kmdcodec_compat.h \
+	all_languages.desktop
 
 kcharsets.lo: kentities.c
 

@@ -809,6 +809,26 @@ public:
 		      const char *message) const;
 
   /**
+   * Returns list of all known ISO 639-1 codes
+   */
+  QStringList allLanguagesTwoAlpha() const;
+
+  /**
+   * Convert a ISO 639-1 code to a human readable form
+   */
+  QString twoAlphaToLanguageName(const QString &) const;
+
+  /**
+   * Returns list of all known country codes
+   */
+  QStringList allCountriesTwoAlpha() const;
+
+  /**
+   * Convert a country code to a human readable form
+   */
+  QString twoAlphaToCountryName(const QString &) const;
+
+  /**
    * Returns the parts of the parameter str understood as language setting
    * the format is language_COUNTRY.charset
    *
@@ -854,6 +874,7 @@ public:
    * @return Name of the default country
    */
   static QString defaultCountry();
+
 
   /**
    * @internal Called from KConfigBackend to initialize language.

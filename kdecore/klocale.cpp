@@ -60,6 +60,7 @@ public:
   int /*QPrinter::PageSize*/ pageSize;
   KLocale::MeasureSystem measureSystem;
   QStringList langTwoAlpha;
+  KConfig *languages;
 };
 
 static KLocale *this_klocale = 0;
@@ -68,6 +69,7 @@ KLocale::KLocale( const QString & catalogue, KConfig * config )
 {
   d = new KLocalePrivate;
   d->config = config;
+  d->languages = 0;
 
   initCatalogue(catalogue);
   initEncoding(0);
@@ -548,6 +550,7 @@ void KLocale::setActiveCatalogue(const QString &catalogue)
 
 KLocale::~KLocale()
 {
+  delete d->languages;
   delete d;
 }
 
@@ -1943,6 +1946,45 @@ QStringList KLocale::languagesTwoAlpha() const
   return result;
 }
 
+QStringList KLocale::allLanguagesTwoAlpha() const
+{
+  if (!d->languages)
+    d->languages = new KConfig("all_languages", true, false, "locale");
+  
+  return d->languages->groupList();
+}
+
+QString KLocale::twoAlphaToLanguageName(const QString &code) const
+{
+  if (!d->languages)
+    d->languages = new KConfig("all_languages", true, false, "locale");
+
+  d->languages->setGroup(code.lower());
+  return d->languages->readEntry("Name");
+}
+
+QStringList KLocale::allCountriesTwoAlpha() const
+{
+  QStringList countries;
+  QStringList paths = KGlobal::dirs()->findAllResources("locale", "l10n/*/entry.desktop");
+  for(QStringList::ConstIterator it = paths.begin();
+      it != paths.end(); ++it)
+  {
+    QString code = (*it).mid((*it).length()-16, 2);
+    if (code != "/C")
+       countries.append(code);
+  }
+  return countries;
+}
+
+QString KLocale::twoAlphaToCountryName(const QString &code) const
+{
+  KConfig cfg("l10n/"+code.lower()+"/entry.desktop", true, false, "locale");
+  cfg.setGroup("KCM Locale");
+  return cfg.readEntry("Name");
+}
+
+
 KLocale::KLocale(const KLocale & rhs)
 {
   d = new KLocalePrivate;
@@ -1976,6 +2018,7 @@ KLocale & KLocale::operator=(const KLocale & rhs)
 
   // the assignment operator works here
   *d = *rhs.d;
+  d->languages = 0; // Don't copy languages
 
   return *this;
 }
