@@ -23,12 +23,15 @@
 #include "kkeydialog.h"
 #include "kkeybutton.h"
 
-#include <qlayout.h>
-#include <qpainter.h>
-#include <qdrawutil.h>
-#include <qradiobutton.h>
-#include <qlabel.h>
+#include <string.h>
+
 #include <qbuttongroup.h>
+#include <qlabel.h>
+#include <qlayout.h>
+#include <qdrawutil.h>
+#include <qpainter.h>
+#include <qradiobutton.h>
+#include <qregexp.h>
 #include <qwhatsthis.h>
 
 #include <kaccel.h>
@@ -84,7 +87,8 @@ class KKeyChooserItem : public KListViewItem
 	void commitChanges();
 
 	virtual QString text( int iCol ) const;
-
+	virtual int compare( QListViewItem*, int iCol, bool bAscending ) const;
+    
  protected:
 	KShortcutList* m_pList;
 	uint m_iAction;
@@ -757,6 +761,28 @@ QString KKeyChooserItem::text( int iCol ) const
 		return m_cut.seq(iCol-1).toString();
 	else
 		return QString::null;
+}
+
+int KKeyChooserItem::compare( QListViewItem* item, int iCol, bool bAscending ) const
+{
+	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>( item );
+	if( iCol == 0 && pItem ) {
+		const char* psName1 = m_pList->name(m_iAction).latin1();
+		const char* psName2 = pItem->m_pList->name(pItem->m_iAction).latin1();
+		QRegExp rxNumber1( " (\\d+)$" );
+		QRegExp rxNumber2( " (\\d+)$" );
+		int iNumber1 = rxNumber1.search( psName1 );
+		int iNumber2 = rxNumber2.search( psName2 );
+
+		// Check if the last word is one or more digits
+		if( iNumber1 >= 0 && iNumber1 == iNumber2 && !strncmp( psName1, psName2, iNumber1+1 ) ) {
+			int n1 = rxNumber1.cap(1).toInt();
+			int n2 = rxNumber2.cap(1).toInt();
+			return (n1 < n2) ? -1 : (n1 > n2) ? 1 : 0;
+		}
+	}
+
+	return QListViewItem::compare( item, iCol, bAscending );
 }
 
 /************************************************************************/
