@@ -1,7 +1,7 @@
 /*
  * This file is part of the KDE project.
  * Copyright (C) 2003 Carsten Pfeiffer <pfeiffer@kde.org>
- *               
+ *
  * You can Freely distribute this program under the GNU Library General Public
  * License. See the file "COPYING" for the exact licensing terms.
  */
@@ -21,7 +21,7 @@ KFileMetaPreview::KFileMetaPreview( QWidget *parent, const char *name )
     : KPreviewWidgetBase( parent, name ),
       haveAudioPreview( false )
 {
-    QHBoxLayout *layout = new QHBoxLayout( this );
+    QHBoxLayout *layout = new QHBoxLayout( this, 0, 0 );
     m_stack = new QWidgetStack( this );
     layout->addWidget( m_stack );
 
@@ -38,13 +38,13 @@ void KFileMetaPreview::initPreviewProviders()
 {
     m_previewProviders.clear();
     // hardcoded so far
-    
+
     // image previews
     KImageFilePreview *imagePreview = new KImageFilePreview( m_stack );
     (void) m_stack->addWidget( imagePreview );
     m_stack->raiseWidget( imagePreview );
     resize( imagePreview->sizeHint() );
-    
+
     QStringList mimeTypes = KIO::PreviewJob::supportedMimeTypes();
     QStringList::ConstIterator it = mimeTypes.begin();
     for ( ; it != mimeTypes.end(); ++it )
@@ -78,7 +78,7 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
             }
         }
     }
-              
+
     // with the new mimetypes from the audio-preview, try again
     provider = m_previewProviders.find( mimeType );
     if ( provider )
@@ -92,7 +92,7 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
         if ( provider )
             return provider;
     }
-    
+
     return 0L;
 }
 
@@ -104,7 +104,7 @@ void KFileMetaPreview::showPreview(const KURL &url)
     {
         if ( provider != m_stack->visibleWidget() ) // stop the previous preview
             clearPreview();
-        
+
         m_stack->setEnabled( true );
         m_stack->raiseWidget( provider );
         provider->showPreview( url );
@@ -119,7 +119,7 @@ void KFileMetaPreview::clearPreview()
         static_cast<KPreviewWidgetBase*>( m_stack->visibleWidget() )->clearPreview();
 }
 
-void KFileMetaPreview::addPreviewProvider( const QString& mimeType, 
+void KFileMetaPreview::addPreviewProvider( const QString& mimeType,
                                            KPreviewWidgetBase *provider )
 {
     m_previewProviders.insert( mimeType, provider );
@@ -130,7 +130,7 @@ void KFileMetaPreview::clearPreviewProviders()
     QDictIterator<KPreviewWidgetBase> it( m_previewProviders );
     for ( ; it.current(); ++it )
         m_stack->removeWidget( it.current() );
-    
+
     m_previewProviders.clear();
 }
 
