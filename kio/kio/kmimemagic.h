@@ -152,8 +152,7 @@ public:
    * read from a file.
    *
    * Instead a buffer can be supplied which
-   * is examined. The integer parameter supplies the length of
-   * the buffer.
+   * is examined.
    *
    * @return A pointer to the result object. Do @em not delete the
    *         result object. After another call to KMimeMagic
