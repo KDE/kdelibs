@@ -33,22 +33,41 @@
  * Various parsing functions *
  *****************************/
 
-// extract a line from a QTextStream ('#' -> comments, '\' -> line continue)
+// Extract a line from a QTextStream:
+//	'#' -> comments
+//	'\' -> line continue
+//	':' or '|' -> line continue (LPRng)
+//
+// New entry is detected by a line which have first character different from
+// '#', '|', ':'. The line is then put back in the IODevice.
 QString readLine(QTextStream& t)
 {
 	QString	line, buffer;
+	bool	lineContinue(false);
 	while (!t.eof())
 	{
 		buffer = t.readLine().stripWhiteSpace();
 		if (buffer.isEmpty() || buffer[0] == '#')
 			continue;
-		line.append(buffer);
-		if (line.right(1) == "\\")
+		if (buffer[0] == '|' || buffer[0] == ':' || lineContinue || line.isEmpty())
 		{
-			line.truncate(line.length()-1);
-			line = line.stripWhiteSpace();
+			line.append(buffer);
+			if (line.right(1) == "\\")
+			{
+				line.truncate(line.length()-1);
+				line = line.stripWhiteSpace();
+				lineContinue = true;
+			}
+			else
+				lineContinue = false;
 		}
-		else break;
+		else
+		{
+			QIODevice	*iodev = t.device();
+			for (int i=buffer.length()-1;i>=0;i--)
+				iodev->ungetch(buffer[i].unicode());
+			break;
+		}
 	}
 	return line;
 }
@@ -102,7 +121,7 @@ void KMLpdUnixManager::parseEtcPrintcap()
 		while (!t.eof())
 		{
 			entry = readEntry(t);
-			if (entry.isEmpty() || !entry.contains("printer-name"))
+			if (entry.isEmpty() || !entry.contains("printer-name") || entry.contains("server"))
 				continue;
 			KMPrinter	*printer = ::createPrinter(entry);
 			if (entry.contains("rm"))
