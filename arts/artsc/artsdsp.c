@@ -537,12 +537,12 @@ int munmap(void *start, size_t length)
 
   if(start != mmapemu_obuffer || mmapemu_obuffer == 0)
     return orig_munmap(start,length);
-  else
-  {
-	artsdspdebug ("aRts: /dev/dsp munmap...\n");
-	mmapemu_obuffer = 0;
-	free(start);
-  }
+
+  artsdspdebug ("aRts: /dev/dsp munmap...\n");
+  mmapemu_obuffer = 0;
+  free(start);
+
+  return 0;
 }
 
 #ifdef HAVE_ARTSDSP_STDIO_EMU
