@@ -439,7 +439,7 @@
 30519        import-export-openoffice-filter-lib
 30520        kword-1.3-filter
 30521        gnumeric-filter
-# 30522
+30522        latex-filter
 30523        quattro-pro-filter
 31000        koffice
 32001        kword
