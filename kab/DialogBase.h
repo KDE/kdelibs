@@ -37,7 +37,6 @@
 #include <qsize.h>
 
 class QPixmap;
-class QToolButton;
 
 class DialogBase : public DialogBaseData
 {
@@ -119,13 +118,11 @@ protected:
   static const int Grid;
   static DialogBase *dummy;
   QWidget *main;
-  QToolButton *buttonWhatsThis;
   bool mainTile, baseTile; 
   // one static object to be able to send signals from static members:
   void emitBackgroundChanged();
   // events:
   void resizeEvent(QResizeEvent*);
-  // void paintEvent(QPaintEvent*);
   // overloaded slot from base class:
   void applyPressed();
   // ----------------------------------------------------------------------------

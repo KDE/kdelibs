@@ -18,6 +18,7 @@
 #include "widgets.h"
 #include <qlabel.h>
 #include <qcolor.h>
+#include <qtooltip.h>
 class QPushButton;
 #include <kdatepik.h>
 

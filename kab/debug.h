@@ -61,10 +61,6 @@ extern "C" {
 // ------------------------------------------------------------------------------
 #endif // defined REMOVE_NANA
 // ##############################################################################
-// general defines:
-// #ifndef i18n
-// #define i18n(X) KApplication::getKApplication()->getLocale()->translate(X)
-// #endif
 // kab's (libkab's) own assertions, overriding some Nana keywords:
 #ifdef assert
 #undef assert

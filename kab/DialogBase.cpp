@@ -12,11 +12,13 @@
  */
 #include "DialogBase.h"
 #include <qpixmap.h>
-#include <qwhatsthis.h>
+// #include <qwhatsthis.h>
 #include <qtoolbutton.h>
 #include <qpainter.h>
 #include <qrect.h>
 #include "debug.h"
+
+#include <kquickhelp.h>
 
 QPixmap* DialogBase::tile=0;
 const int DialogBase::Grid=3;
@@ -58,16 +60,13 @@ DialogBase::DialogBase(QWidget* parent, const char* name, bool modal)
   connect(this, SIGNAL(backgroundChanged()), SLOT(updateBackground()));
   connect(kapp, SIGNAL(appearanceChanged()), SLOT(initializeGeometry()));
   // -----
-  buttonWhatsThis=QWhatsThis::whatsThisButton(this);
-  CHECK(buttonWhatsThis!=0 && "WhatsThis-button creation failed!");
-  // -----
   updateBackground(); // set it once
   initializeGeometry();
   resize(minimumSize());
   // -----
-  QWhatsThis::add(buttonOK, WhatsOK);
-  QWhatsThis::add(buttonCancel, WhatsCancel);
-  QWhatsThis::add(buttonApply, WhatsApply);
+  KQuickHelp::add(buttonOK, WhatsOK);
+  KQuickHelp::add(buttonCancel, WhatsCancel);
+  KQuickHelp::add(buttonApply, WhatsApply);
   // ############################################################################
 }
 
@@ -131,7 +130,8 @@ void DialogBase::updateBackground()
       frameBase->setBackgroundMode(PaletteBackground);
       frameMain->setBackgroundMode(PaletteBackground);
     }
-  repaint(true); // needed?
+  // -----
+  // repaint(true); // needed?
   // ############################################################################
 }
 
@@ -149,11 +149,13 @@ void DialogBase::resizeEvent(QResizeEvent*)
 		     QMAX(buttonCancel->sizeHint().width(),
 			  buttonApply->sizeHint().width())),
     FrameBaseFrameWidth=frameBase->frameWidth(),
-    FrameMainWidth=width()-2*Grid-2*FrameBaseFrameWidth,
-    WhatsThisWidth=buttonWhatsThis->sizeHint().width(),
-    WhatsThisHeight=buttonWhatsThis->sizeHint().height(),
-    HLHeight=WhatsThisHeight;
+    FrameMainWidth=width()-2*Grid-2*FrameBaseFrameWidth;
   // -----
+  ID(if(width()<sizeHint.width() || height()<sizeHint().height())
+     {
+       debug("DialogBase::resizeEvent: "
+	     "warning - size is smaller than size hint.");
+     }); // ID( ..) --> .. is only compiled in when logging is enabled
   int count, x, y, frameMainHeight, cx, cy;
   QPushButton *buttons[]= { buttonOK, buttonApply, 0, buttonCancel};
   const int Size=sizeof(buttons)/sizeof(buttons[0]);
@@ -172,10 +174,10 @@ void DialogBase::resizeEvent(QResizeEvent*)
 	  x+=16;
 	}
     }
-  frameMainHeight=height()-2*FrameBaseFrameWidth-4*Grid-ButtonHeight-HLHeight;
+  frameMainHeight=height()-2*FrameBaseFrameWidth-3*Grid-ButtonHeight;
   // ----- 3. set geometry of inner "main" frame:
   x=FrameBaseFrameWidth+Grid;
-  frameMain->setGeometry(x, x+Grid+HLHeight, FrameMainWidth, frameMainHeight);
+  frameMain->setGeometry(x, x, FrameMainWidth, frameMainHeight);
   // ----- 4. set geometry of main widget:
   if(main!=0)
     {
@@ -188,32 +190,11 @@ void DialogBase::resizeEvent(QResizeEvent*)
   // ----- 5. set geometry of headline label and whats-this-button:
   x=FrameBaseFrameWidth+Grid;
   y=x;
-  cx=width()-2*frameMain->frameWidth()-3*Grid-WhatsThisWidth;
-  // labelDesc->setGeometry(x, y, cx, DescHeight);
-  x=width()-x-WhatsThisWidth;
-  buttonWhatsThis->setGeometry(x, y, WhatsThisWidth, WhatsThisHeight);
+  cx=width()-2*frameMain->frameWidth()-3*Grid /* -WhatsThisWidth */;
+  x=width()-x /* -WhatsThisWidth */;
   // ############################################################################
 }
 
-/*
-void DialogBase::paintEvent(QPaintEvent* e)
-{
-  // ############################################################################
-  const int FrameBaseFrameWidth=frameBase->frameWidth(),
-    WhatsThisWidth=buttonWhatsThis->sizeHint().width();
-    const QRect Rect=fontMetrics().boundingRect
-    (0, 0, width()-3*Grid-2*FrameBaseFrameWidth-WhatsThisWidth, height(), 
-     WordBreak | AlignLeft | AlignTop, desc.c_str());
-  QPainter paint;
-  // -----
-  QDialog::paintEvent(e);
-  // -----
-  paint.begin(this );
-  paint.drawText(Rect, WordBreak | AlignLeft | AlignTop, desc.c_str());
-  paint.end();
-  // ############################################################################
-}
-*/
 void DialogBase::applyPressed()
 {
   // ############################################################################
@@ -280,12 +261,10 @@ void DialogBase::getBorderWidths(int& ulx, int& uly, int& lrx, int& lry) const
   // ############################################################################
   const int FrameBaseFrameWidth=frameBase->frameWidth(),
     FrameMainFrameWidth=frameMain->frameWidth(),
-    ButtonHeight=buttonOK->sizeHint().height(),
-    WhatsThisHeight=buttonWhatsThis->sizeHint().height(),
-    HLHeight=WhatsThisHeight;
+    ButtonHeight=buttonOK->sizeHint().height();
   // -----
   ulx=FrameBaseFrameWidth+Grid+FrameMainFrameWidth;
-  uly=ulx+Grid+HLHeight;
+  uly=ulx;
   lrx=ulx;
   lry=FrameBaseFrameWidth+2*Grid+ButtonHeight+FrameMainFrameWidth;
   ENSURE(ulx>0 && uly>0 && lrx>0 && lry>0);
@@ -360,9 +339,9 @@ QWidget* DialogBase::getMainWidget()
 void DialogBase::initializeGeometry()
 {
   // ############################################################################
-  const int ButtonWidth=QMAX(buttonOK->sizeHint().width(), 
-			     QMAX(buttonCancel->sizeHint().width(),
-				  buttonApply->sizeHint().width()));
+  const int ButtonWidth=
+    QMAX(buttonCancel->sizeHint().width(), 
+	 QMAX(buttonOK->sizeHint().width(), buttonApply->sizeHint().width()));
   QSize size;
   int cx, cy; 
   int ulx, uly, lrx, lry;

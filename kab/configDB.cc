@@ -138,9 +138,7 @@ bool ConfigDB::setFileName
 		  return false;
 		}
 	    }
-	  // make sure the file exists on disk before calling
-	  // storeFileAge() ! 
-	  // storeFileAge(); CHECK(storeFileAge());
+	  storeFileAge();
 	  return true;
 	}
     }
@@ -657,6 +655,7 @@ bool ConfigDB::storeFileAge()
       return true;
     } else {
       LG(GUARD, "ConfigDB::save: could not stat file.\n");
+      mtime=0;
       return false;
     }  
   // ########################################################

@@ -19,6 +19,7 @@
 #include <qpushbutton.h>
 #include <qmessagebox.h>
 #include <qkeycode.h>
+#include <qtooltip.h>
 #include <kapp.h>
 #include "debug.h"
 
@@ -35,6 +36,7 @@ EditEntryDialog::EditEntryDialog(QWidget* parent, const char* name)
   // ------
   createTabs();
   setCaption(i18n("Edit the current entry"));
+  resize(minimumSize());
   // ############################################################################
   LG(GUARD, "EditEntryDialog constructor: done.\n");
 }
@@ -47,9 +49,8 @@ void EditEntryDialog::createTabs()
   QLabel* label=0;
   QWidget *name, *address, *org, *contact, *others;
   int count, x, y;
-  int widestTab=0;
-  int highestTab=0;
-  const int Border=5;
+  const int Border=3;
+  const int MaxRows=6;
   // ------  
   // a tab for the basics: title, name, firstname, additional and formatted name
   LG(GUARD, "EditEntryDialog::createTabs: creating name tab.\n");
@@ -71,7 +72,7 @@ void EditEntryDialog::createTabs()
     const int Size=sizeof(labels)/sizeof(labels[0]);
     CHECK(Size==sizeof(ledits)/sizeof(ledits[0]));
     name=new QWidget(this);
-    layout=new QGridLayout(name, Size, 2, Border);
+    layout=new QGridLayout(name, QMAX(Size, MaxRows), 2, Border);
     layout->setColStretch(0, 1);
     layout->setColStretch(1, 2);
     for(count=0; count<Size; count++)
@@ -85,12 +86,10 @@ void EditEntryDialog::createTabs()
 	layout->addWidget(*ledits[count], count, 1);
       }  
     addTab(name, i18n("&Name"));
-    y=(Size+1)*Border+Size*((*ledits[0])->sizeHint().height());
-    if(y>highestTab) highestTab=y;
     x=3*Border+3*widestString; // see column stretch factors
-    if(x>widestTab) widestTab=x;
+    y=(Size+1)*Border+Size*((*ledits[0])->sizeHint().height());
     layout->activate();
-    name->setFixedHeight(y);
+    name->setMinimumSize(x, y);  
     LG(GUARD, "EditEntryDialog::createTabs: finished, %ix%i pixels.\n", x, y);
   }
   // end of first tab "&Name"
@@ -115,7 +114,7 @@ void EditEntryDialog::createTabs()
     const int Size=sizeof(labels)/sizeof(labels[0]);
     CHECK(Size==sizeof(ledits)/sizeof(ledits[0]));
     address=new QWidget(this);
-    layout=new QGridLayout(address, Size, 2, Border);
+    layout=new QGridLayout(address, QMAX(Size, MaxRows), 2, Border);
     layout->setColStretch(0, 1);
     layout->setColStretch(1, 2);
     for(count=0; count<Size; count++)
@@ -129,12 +128,10 @@ void EditEntryDialog::createTabs()
 	layout->addWidget(*ledits[count], count, 1);
       }      
     addTab(address, i18n("&Address"));
-    y=(Size+1)*Border+Size*((*ledits[0])->sizeHint().height());
-    if(y>highestTab) highestTab=y;
     x=3*Border+3*widestString; // see column stretch factors
-    if(x>widestTab) widestTab=x;
+    y=(Size+1)*Border+Size*((*ledits[0])->sizeHint().height());
     layout->activate();
-    address->setFixedHeight(y);
+    address->setMinimumSize(x, y);
     LG(GUARD, "EditEntryDialog::createTabs: finished, %ix%i pixels.\n", x, y);
   }
   // end of tab "&Address"
@@ -157,7 +154,7 @@ void EditEntryDialog::createTabs()
     const int Size=sizeof(labels)/sizeof(labels[0]);
     CHECK(Size==sizeof(ledits)/sizeof(ledits[0]));
     org=new QWidget(this);
-    layout=new QGridLayout(org, Size, 2, Border);
+    layout=new QGridLayout(org, QMAX(Size, MaxRows), 2, Border);
     layout->setColStretch(0, 1);
     layout->setColStretch(1, 2);     
     for(count=0; count<Size; count++)
@@ -170,12 +167,10 @@ void EditEntryDialog::createTabs()
 	layout->addWidget(*ledits[count], count, 1);
       }  
     addTab(org, i18n("&Organization"));
-    y=(Size+1)*Border+Size*((*ledits[0])->sizeHint().height());
-    if(y>highestTab) highestTab=y;
     x=3*Border+3*widestString;
-    if(x>widestTab) widestTab=x;
+    y=(Size+1)*Border+Size*((*ledits[0])->sizeHint().height());
     layout->activate();
-    org->setFixedHeight(y);
+    org->setMinimumSize(x, y);
     LG(GUARD, "EditEntryDialog::createTabs: finished, %ix%i pixels.\n", x, y);
   }
   // end of "org" tab
@@ -190,12 +185,11 @@ void EditEntryDialog::createTabs()
       i18n("Fax:"),
       i18n("Modem:"),
       i18n("Homepage (URL):") };
-    QLineEdit** ledits[]= {
-      &leTelephone, &leFax, &leModem, &leURL };
-    const int Size=sizeof(labels)/sizeof(labels[0]);
-    CHECK(Size==sizeof(ledits)/sizeof(ledits[0]));
+    QLineEdit** ledits[]= { &leTelephone, &leFax, &leModem, &leURL };
+    const int Size=sizeof(labels)/sizeof(labels[0])+2;
+    CHECK(Size==sizeof(ledits)/sizeof(ledits[0])+2);
     contact=new QWidget(this);
-    layout=new QGridLayout(contact, Size+2, 2, Border);
+    layout=new QGridLayout(contact, QMAX(Size, MaxRows), 2, Border);
     layout->setColStretch(0, 1);
     layout->setColStretch(1, 2);     
     //       add email addresses button:
@@ -212,7 +206,7 @@ void EditEntryDialog::createTabs()
     pbTalk->setText(i18n("Edit talk addresses"));
     layout->addWidget(pbTalk, 1, 1);
     //       add other widgets:
-    for(count=0; count<Size; count++)
+    for(count=0; count<Size-2; count++)
       {
 	label=new QLabel(labels[count], contact);
 	y=label->fontMetrics().width(labels[count]);
@@ -222,13 +216,11 @@ void EditEntryDialog::createTabs()
 	layout->addWidget(*ledits[count], count+2, 1);
       }
     addTab(contact, i18n("&Contact"));
-    y=(Size+3)*Border+Size*((*ledits[0])->sizeHint().height())
-      +pbEmails->sizeHint().height()+pbTalk->sizeHint().height();
-    if(y>highestTab) highestTab=y;
     x=3*Border+3*widestString;
-    if(x>widestTab) widestTab=x;
+    y=(Size+3)*Border+(Size-2)*((*ledits[0])->sizeHint().height())
+      +pbEmails->sizeHint().height()+pbTalk->sizeHint().height();
     layout->activate();
-    contact->setFixedHeight(y);
+    contact->setMinimumSize(x, y);
     LG(GUARD, "EditEntryDialog::createTabs: finished, %ix%i pixels.\n", x, y);
   }
   // end of tab "&Contact"
@@ -254,7 +246,7 @@ void EditEntryDialog::createTabs()
    label=new QLabel(i18n("Birthday:"), others);
    dlBirthDay=new DateLabel(others, 0, QDate());
    dlBirthDay->enableChangeDialog(true);
-
+   QToolTip::add(dlBirthDay, i18n("Double click to set date"));
    layout->addWidget(label, 1, 0);
    layout->addWidget(dlBirthDay, 1, 1);   
    y=label->fontMetrics().width(label->text());
@@ -263,20 +255,10 @@ void EditEntryDialog::createTabs()
    layout->setRowStretch(1, 1);
    addTab(others, i18n("O&thers"));
    layout->activate();
-   // careful: leName must be created until here!
-   y=7*leName->sizeHint().height()+8*Border;
-   others->setFixedHeight(y);
-   if(y>highestTab) highestTab=y;
    x=3*Border+3*widestString;
-   if(x>widestTab) widestTab=x;
+   y=6*leName->sizeHint().height()+7*Border;
+   others->setMinimumSize(x, y);
   }
-  // ------
-  // set the height and width of the tab dialog
-  // name->setFixedWidth(widestTab);
-  // address->setFixedWidth(widestTab);
-  // org->setFixedWidth(widestTab);  
-  // contact->setFixedWidth(widestTab);
-  // others->setFixedWidth(widestTab);
   // ############################################################################
 }
 

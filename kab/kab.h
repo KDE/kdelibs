@@ -117,6 +117,7 @@ public slots:
   void changed();
   void remove(); // current entry 
   void mail();
+  void mail(const char*);
   void browse();
   void talk();
   void save();

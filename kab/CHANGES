@@ -37,4 +37,9 @@ October 16, 1998:
 	The files
 		dialog_background.jpg
 	has been added. 
-
+October 24, 1998:
+	I debugged the appearance of the EditEntry-dialog. It resizes now
+	automatically and more accurately.
+	The about dialog now contains a KURLLabel that opens an email composer
+	when the user clicks on it.
+	

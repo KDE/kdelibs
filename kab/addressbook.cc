@@ -100,7 +100,7 @@ AddressBook::AddressBook(bool readonly_)
 	     "kfm once to automatically create it.") << endl;
 	  ::exit(-1);
 	} else {
-	  CHECK(access(dir.c_str(), R_OK | W_OK | X_OK | F_OK));
+	  CHECK(access(dir.c_str(), X_OK | F_OK /* R_OK | W_OK | */ )==0);
 	  cerr << i18n("The directory has been created.\n") << endl;
 	}
     } else {
@@ -186,6 +186,7 @@ AddressBook::AddressBook(bool readonly_)
 	    {
 	      if(setFileName(backupfilename, false, false))
 		{
+		  CHECK(!isRO());
 		  if(!save("backup file for addressbook database"))
 		    {
 		      cerr << i18n("Unable to save to backup file.") << endl;
