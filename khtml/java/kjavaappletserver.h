@@ -138,6 +138,8 @@ public:
     bool putMember(QStringList & args);
     bool callMember(QStringList & args, QStringList & ret_args);
     void derefObject(QStringList & args);
+
+    bool usingKIO();
 protected:
     void setupJava( KJavaProcess* p );
 

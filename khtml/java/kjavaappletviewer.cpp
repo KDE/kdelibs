@@ -230,30 +230,34 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     applet->setBaseURL (baseurl);
     applet->setCodeBase (codebase);
     applet->setAppletClass (classname);
-    applet->setAppletContext (serverMaintainer->getContext (parent, baseurl));
+    KJavaAppletContext * cxt = serverMaintainer->getContext (parent, baseurl);
+    applet->setAppletContext (cxt);
 
-    KIO::AuthInfo info;
-    QString errorMsg;
-    QCString replyType;
-    QByteArray params;
-    QByteArray reply;
-    KIO::AuthInfo authResult;
+    if (!cxt->getServer ()->usingKIO ()) {
+        /* if this page needs authentication */
+        KIO::AuthInfo info;
+        QString errorMsg;
+        QCString replyType;
+        QByteArray params;
+        QByteArray reply;
+        KIO::AuthInfo authResult;
 
-    //(void) dcopClient(); // Make sure to have a dcop client.
-    info.url = baseurl;
-    info.verifyPath = true;
+        //(void) dcopClient(); // Make sure to have a dcop client.
+        info.url = baseurl;
+        info.verifyPath = true;
 
-    QDataStream stream(params, IO_WriteOnly);
-    stream << info << m_view->topLevelWidget()->winId();
+        QDataStream stream(params, IO_WriteOnly);
+        stream << info << m_view->topLevelWidget()->winId();
 
-    if (!kapp->dcopClient ()->call( "kded", "kpasswdserver", "checkAuthInfo(KIO::AuthInfo, long int)", params, replyType, reply ) ) {
-        kdWarning() << "Can't communicate with kded_kpasswdserver!" << endl;
-    } else if ( replyType == "KIO::AuthInfo" ) {
-        QDataStream stream2( reply, IO_ReadOnly );
-        stream2 >> authResult;
-        applet->setUser (authResult.username);
-        applet->setPassword (authResult.password);
-        applet->setAuthName (authResult.realmValue);
+        if (!kapp->dcopClient ()->call( "kded", "kpasswdserver", "checkAuthInfo(KIO::AuthInfo, long int)", params, replyType, reply ) ) {
+            kdWarning() << "Can't communicate with kded_kpasswdserver!" << endl;
+        } else if ( replyType == "KIO::AuthInfo" ) {
+            QDataStream stream2( reply, IO_ReadOnly );
+            stream2 >> authResult;
+            applet->setUser (authResult.username);
+            applet->setPassword (authResult.password);
+            applet->setAuthName (authResult.realmValue);
+        }
     }
 
     /* install event filter for close events */

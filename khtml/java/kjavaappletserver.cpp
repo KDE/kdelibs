@@ -106,6 +106,7 @@ private:
    JSStack jsstack;
    KIOJobMap kiojobs;
    bool javaProcessFailed;
+   bool useKIO;
    //int locked_context;
    //QValueList<QByteArray> java_requests;
 };
@@ -267,7 +268,8 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
                               "org.kde.kjas.server.KJASSecurityManager" );
     }
 
-    if( config.readBoolEntry( "UseKio", false) )
+    d->useKIO = config.readBoolEntry( "UseKio", false);
+    if( d->useKIO )
     {
         p->setSystemProperty( "kjas.useKio", QString::null );
     }
@@ -639,4 +641,9 @@ bool KJavaAppletServer::callMember(QStringList & args, QStringList & ret_args) {
 void KJavaAppletServer::derefObject( QStringList & args ) {
     process->send( KJAS_DEREF_OBJECT, args );
 }
+
+bool KJavaAppletServer::usingKIO() {
+    return d->useKIO;
+}
+
 #include "kjavaappletserver.moc"
