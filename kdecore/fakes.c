@@ -284,3 +284,36 @@ int revoke(const char *tty)
         return -1;
 }
 #endif
+
+#ifndef HAVE_STRLCPY
+size_t strlcpy(char* d, const char* s, size_t bufsize)
+{
+    size_t len = strlen(s);
+    size_t ret = len;
+
+    if(bufsize <= 0) return 0;
+    if(len >= bufsize) len = bufsize-1;
+    memcpy(d, s, len);
+    d[len] = '\0';
+    return ret;
+}
+#endif
+
+#ifndef HAVE_STRLCAT
+size_t strlcat(char* d, const char* s, size_t bufsize)
+{
+    size_t len1 = strlen(d);
+    size_t len2 = strlen(s);
+    size_t ret = len1 + len2;
+
+    if(ret >= bufsize)
+        len2 = bufsize - len1 - 1;
+    if(len2 > 0) {
+        memcpy(d+len1,s,len2);
+        d[len1+len2] = '\0';
+    }
+    return ret;
+}
+#endif
+        
+      
