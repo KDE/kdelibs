@@ -179,7 +179,7 @@ Compile Problems
 ----------------
 Often, KDE compile failures are not KDE's faults but the one of the
 compiler or the distribution used. For that reason, please have a look at
-http://www.kde.org/compilationfaq.html for know issues in certain OS
+http://developer.kde.org/build/compilationfaq.html for known issues in certain OS
 environments before reporting bugs or going mad :). 
 
 gcc 3.0/3.0.1 is not yet able to compile all of KDE without errors, mostly 
