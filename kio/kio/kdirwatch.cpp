@@ -436,6 +436,18 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
     e->dn_dirty = false;
     if (e->m_status == Normal) {
       int fd = open(QFile::encodeName(e->path).data(), O_RDONLY);
+      // Migrate fd to somewhere above 128. Some libraries have 
+      // constructs like:
+      //    fd = socket(...)
+      //    if (fd > ARBITRARY_LIMIT)
+      //       return error;
+      //
+      // Since programs might end up using a lot of KDirWatch objects 
+      // for a rather long time the above braindamage could get
+      // triggered.
+      // 
+      // By moving the kdirwatch fd's to > 128, calls like socket() will keep
+      // returning fd's < ARBITRARY_LIMIT for a bit longer.
       int fd2 = fcntl(fd, F_DUPFD, 128);
       if (fd2 >= 0)
       {
