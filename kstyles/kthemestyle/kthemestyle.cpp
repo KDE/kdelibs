@@ -296,7 +296,7 @@ QSize KThemeStyle::sizeFromContents( ContentsType contents,
 }
 
 
-int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget = 0 ) const
+int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget) const
 {
     int m;
     switch ( metric )
@@ -618,7 +618,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
 			x+=2; y+=2;
 			w-=4;h-=4;
 
-			if (w&1 == 0) //Even width
+			if ((w&1) == 0) //Even width
 				w-=1;
 
 			points[0]=x;           points[1]=y+h-1;
@@ -651,7 +651,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
 			x+=2; y+=2;
 			w-=4;h-=4;
 
-			if (w&1 == 0) //Even width
+			if ((w&1) == 0) //Even width
 				w-=1;
 
 			points[0]=x;           points[1]=y;
@@ -1685,7 +1685,8 @@ void KThemeStyle::drawKStylePrimitive( KStylePrimitive kpe,
 					p2.end();
 					QWMatrix r270;
 					r270.rotate(270);
-					bitBlt(p->device(), x, y, &bf.xForm(r270));
+					QPixmap px = bf.xForm(r270);
+					bitBlt(p->device(), x, y, &px);
 				}
             }
             else
