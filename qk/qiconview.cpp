@@ -2909,6 +2909,7 @@ void QIconView::clear()
     QIconViewItem *item = d->firstItem, *tmp;
     while ( item ) {
 	tmp = item->next;
+	item->setView(0);
 	delete item;
 	item = tmp;
     }
