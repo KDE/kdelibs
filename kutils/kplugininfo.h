@@ -92,13 +92,32 @@ class KPluginInfo
 
 		/**
 		 * Set whether the plugin is currently loaded.
+		 *
+		 * You might need to reimplement this method for special needs.
 		 */
-		void setPluginLoaded( bool loaded );
+		virtual void setPluginLoaded( bool loaded );
 
 		/**
 		 * @return Whether the plugin is currently loaded.
+		 *
+		 * You might need to reimplement this method for special needs.
 		 */
-		bool pluginLoaded() const;
+		virtual bool pluginLoaded() const;
+
+		/**
+		 * @return The default value whether the plugin is enabled or not.
+		 * Defaults to false.
+		 *
+		 * @see setPluginEnabledByDefault( bool )
+		 */
+		bool pluginEnabledByDefault() const;
+
+		/**
+		 * Set the default value, whether the plugin is enabled or not.
+		 *
+		 * @see pluginEnabledByDefault()
+		 */
+		void setPluginEnabledByDefault( bool );
 
 		/**
 		 * @return The string associated with the @p key.

@@ -21,320 +21,152 @@
 #define KPLUGINSELECTOR_H
 
 #include <qwidget.h>
-#include <qmap.h>
 #include <qstring.h>
 
-class KConfig;
 class KInstance;
-class QStrList;
-class QListViewItem;
-class KPreferencesModule;
+class KPluginInfo;
+class QWidgetStack;
+class KConfig;
 
 /**
- * Information about a plugin.
+ * @short A widget to select what plugins to load and configure the plugins.
  *
- * This holds all the information about a plugin there is. It's used for the
- * user to decide whether he want's to use this plugin or not.
- *
- * @author Matthias Kretz <kretz@kde.org>
- * @version $Id$
- * @since 3.2
- */
-class KPluginInfo
-{
-	public:
-		/**
-		 * Read plugin info from @p filename.
-		 *
-		 * The file should be of the following form:
-		 * \code
-		   [Desktop Entry]
-		   Name=User Visible Name
-		   Comment=Description of what the plugin does
-		   Type=Plugin
-
-		   [X-KDE Plugin Info]
-		   Author=Author's Name
-		   Email=author@foo.bar
-		   PluginName=internalname
-		   Version=1.1
-		   Website=http://www.plugin.org/
-		   Type=playlist
-		   Require=plugin1,plugin3
-		   License=GPL
-		 * \endcode
-		 * The first three entries in the "Desktop Entry" group always need to be
-		 * present. The Type is always "Plugin". Be aware, that there's a Type
-		 * key in the "X-KDE Plugin Info" group, too. This is the type of the
-		 * plugin @see type().
-		 *
-		 * In the "X-KDE Plugin Info" section you may add further entries which
-		 * will be available using property(). The Website,Type,Require
-		 * keys are optional.
-		 */
-		KPluginInfo( const QString & filename );
-
-		/**
-		 * Create an empty hidden plugin.
-		 * @internal
-		 */
-		KPluginInfo();
-
-		//copy ctor
-		KPluginInfo( const KPluginInfo & );
-		//copy operator
-		const KPluginInfo & operator=( const KPluginInfo & );
-
-		virtual ~KPluginInfo();
-
-		/**
-		 * @return Whether the plugin should be hidden.
-		 */
-		bool isHidden() const;
-
-		/**
-		 * Set whether the plugin is currently loaded.
-		 */
-		void setPluginLoaded( bool loaded );
-
-		/**
-		 * @return Whether the plugin is currently loaded.
-		 */
-		bool pluginLoaded() const;
-
-		/**
-		 * @return The string associated with the @p key.
-		 *
-		 * @see operator[]
-		 */
-		const QString & property( const QString & key ) const { return m_propertymap[ key ]; }
-
-		/**
-		 * This is the same as property(). It is provided for convenience.
-		 *
-		 * @return The string associated with the @p key.
-		 *
-		 * @see property()
-		 */
-		const QString & operator[]( const QString & key ) const { return property( key ); }
-
-		/**
-		 * @return The user visible name of the plugin.
-		 */
-		const QString & name() const
-			{ return m_propertymap[ QString::fromLatin1("Name") ]; }
-
-		/**
-		 * @return A comment describing the plugin.
-		 */
-		const QString & comment() const
-			{ return m_propertymap[ QString::fromLatin1("Comment") ]; }
-
-		/**
-		 * @return The file containing the information about the plugin.
-		 */
-		const QString & specfile() const;
-
-		/**
-		 * @return The author of this plugin.
-		 */
-		const QString & author() const
-			{ return m_propertymap[ QString::fromLatin1("Author") ]; }
-
-		/**
-		 * @return The email address of the author.
-		 */
-		const QString & email() const
-			{ return m_propertymap[ QString::fromLatin1("Email") ]; }
-
-		/**
-		 * @return The type of this plugin (e.g. playlist/skin).
-		 */
-		const QString & type() const
-			{ return m_propertymap[ QString::fromLatin1("Type") ]; }
-
-		/**
-		 * @return The internal name of the plugin (for KParts Plugins this is
-		 * the same name as set in the .rc file).
-		 */
-		const QString & pluginname() const
-			{ return m_propertymap[ QString::fromLatin1("PluginName") ]; }
-
-		/**
-		 * @return The version of the plugin.
-		 */
-		const QString & version() const
-			{ return m_propertymap[ QString::fromLatin1("Version") ]; }
-
-		/**
-		 * @return The website of the plugin/author.
-		 */
-		const QString & website() const
-			{ return m_propertymap[ QString::fromLatin1("Website") ]; }
-
-
-		/**
-		 * @return The license of this plugin.
-		 */
-		const QString & license() const
-			{ return m_propertymap[ QString::fromLatin1("License") ]; }
-
-		/**
-		 * @return A list of plugins required for this plugin to be enabled. Use
-		 *         the pluginname in this list.
-		 */
-		const QStringList & requirements() const;
-
-	private:
-		QMap<QString,QString> m_propertymap;
-		bool m_loaded;
-
-		class KPluginInfoPrivate;
-		KPluginInfoPrivate * d;
-};
-
-/**
- * This is a widget to configure what Plugins should be loaded. Normally
- * you'd put this widget into your applications configuration dialog.
+ * It shows the list of available plugins on top (if there's more than one
+ * category this is a TabWidget) and the configuration of the selected plugin
+ * below that.
  *
  * Since the user needs a way to know what a specific plugin does every plugin
- * sould install a desktop file containing a name, comment and type field. The
- * type is useful for applications that can use different kinds of plugins like
+ * sould install a desktop file containing a name, comment and category field. The
+ * category is usefull for applications that can use different kinds of plugins like
  * a playlist, skin or visualization.
  *
  * The location of these desktop files is the
- * share/apps/\<instancename\>/\<plugindir\> directory. But if you need you may use
+ * share/apps/&lt;instancename&gt;/&lt;plugindir&gt; directory. But if you need you may use
  * a different directory.
  *
+ * Often a program has more than one kind of plugin. In that case you want to
+ * make a visible distinction between those plugins. All you have to do is to
+ * create a @ref KPluginSelectionWidget for every category and then add them all
+ * to the KPluginSelector.
+ *
  * @author Matthias Kretz <kretz@kde.org>
- * @version $Id$
  * @since 3.2
  */
 class KPluginSelector : public QWidget
 {
-	friend class KPreferencesModule;
+	friend class KPluginSelectionWidget;
 
 	Q_OBJECT
 	public:
 		/**
-		 * Create a new Plugin Selector widget for KParts plugins.
+		 * Create a new KPluginSelector.
+		 */
+		KPluginSelector( QWidget * parent, const char * name = 0 );
+		~KPluginSelector();
+
+		/**
+		 * Add a list of KParts plugins
 		 *
-		 * If you want to support different
-		 * types of plugins use the following constructor.
-		 * Using this constructor the Type field will be ignored.
+		 * If you want to support non-KParts plugins use the following
+		 * function.
 		 *
 		 * The information about the plugins will be loaded from the
-		 * share/apps/\<instancename\>/kpartplugins directory.
+		 * share/apps/&lt;instancename&gt;/kpartplugins directory.
 		 *
 		 * @param instance     The KInstance object of the plugin's parent.
-		 * @param parent       The parent of the widget.
+		 * @param catname      The translated name of the category. This is the
+		 *                     name that is shown in the TabWidget if there is
+		 *                     more than one category.
+		 * @param category     When you have different categories of KParts
+		 *                     plugins you distinguish between the plugins using
+		 *                     the Category key in the .desktop file. Use this
+		 *                     parameter to select only those KParts plugins
+		 *                     with the Category key == @p category. If @p
+		 *                     category is not set the Category key is ignored
+		 *                     and all plugins are shown.
+		 * @param config       The KConfig object that holds the state of the
+		 *                     plugins being enabled or not. By default it will
+		 *                     use instance->config().
 		 */
-		KPluginSelector( KInstance * instance, QWidget * parent, const char * name = 0 );
+		void addPlugins( KInstance * instance,
+				const QString & catname = QString::null,
+				const QString & category = QString::null,
+				KConfig * config = 0 );
 
 		/**
-		 * Create a new Plugin Selector widget for KParts plugins.
+		 * Add a list of non-KParts plugins
 		 *
-		 * The information about the plugins will be loaded from the
-		 * share/apps/\<instancename\>/kpartplugins directory.
-		 *
-		 * @param types        A list of strings identifying the possible types
-		 *                     of plugins that should be listed. These strings
-		 *                     need to marked for translation with I18N_NOOP().
-		 *                     Every type will be available in it's own tab.
-		 * @param instance     The KInstance object of the plugin's parent.
-		 * @param parent       The parent of the widget.
-		 */
-		KPluginSelector( const QStrList & types, KInstance * instance, QWidget * parent,
-				const char * name = 0 );
-
-		/**
-		 * Create a new Plugin Selector widget for non-KParts plugins.
-		 *
-		 * If you want to support different
-		 * types of plugins use the following constructor.
-		 * Using this constructor the Type field will be ignored.
-		 *
-		 * @param plugininfos  A list of KPluginInfo objects containing the
+		 * @param plugininfos  A list of @ref KPluginInfo objects containing the
 		 *                     necessary information for the plugins you want to
-		 *                     add the selector's list.
+		 *                     add to the list.
+		 * @param catname      The translated name of the category. This is the
+		 *                     name that is shown in the TabWidget if there is
+		 *                     more than one category.
+		 * @param category     When you have different categories of KParts
+		 *                     plugins you distinguish between the plugins using
+		 *                     the Category key in the .desktop file. Use this
+		 *                     parameter to select only those KParts plugins
+		 *                     with the Category key == @p category. If @p
+		 *                     category is not set the Category key is ignored
+		 *                     and all plugins are shown.
+		 * @param config       The KConfig object that holds the state of the
+		 *                     plugins being enabled or not. By default it will
+		 *                     use KGlobal::config().
 		 */
-		KPluginSelector( const QValueList<KPluginInfo> & plugininfos, QWidget * parent,
-				const char * name = 0 );
+		void addPlugins( const QValueList<KPluginInfo> & plugininfos,
+				const QString & catname = QString::null,
+				const QString & category = QString::null,
+				KConfig * config = 0 );
 
 		/**
-		 * Create a new Plugin Selector widget for non-KParts plugins.
-		 *
-		 * @param plugininfos  A list of KPluginInfo objects containing the
-		 *                     necessary information for the plugins you want to
-		 *                     add the selector's list.
-		 * @param types        A list of strings identifying the possible types
-		 *                     of plugins that should be listed. These strings
-		 *                     need to marked for translation with I18N_NOOP().
-		 *                     Every type will be available in it's own tab.
+		 * Load the state of the plugins (selected or not) from the KPluginInfo
+		 * objects. For KParts plugins everything should work automatically. For
+		 * your own type of plugins you might need to reimplement the
+		 * KPluginInfo::pluginLoaded() method. If that doesn't fit your needs
+		 * you can also reimplement this method.
 		 */
-		KPluginSelector( const QStrList & types, const QValueList<KPluginInfo> & plugininfos,
-				QWidget * parent, const char * name = 0 );
-
-		virtual ~KPluginSelector();
+		void load();
 
 		/**
-		 * Save the current state (which one's are enabled/disabled) to a
-		 * KConfig object.
-		 *
-		 * @param config  The KConfig object to save to. If you used one of the
-		 *                KParts constructors you may ignore this. The
-		 *                configuration will be saved in the "KParts Plugins"
-		 *                group.
-		 *
-		 *                If you used a different constructor you have to pass a
-		 *                KConfig object. The configuration will be saved in the
-		 *                "Plugins" group.
+		 * Save the configuration 
 		 */
-		virtual void save( KConfig * config = 0 );
+		void save();
 
 		/**
-		 * @return whether the plugin is enabled in the ListView or not.
+		 * Change to applications defaults
 		 */
-		bool pluginChecked( const QString & pluginname ) const;
+		void defaults();
 
-	protected:
+	signals:
 		/**
-		 * Reimplement in your subclass if you have special needs: The standard
-		 * implementation looks at the KPluginInfo objects to find the
-		 * needed information. But if, for some reason, your program doesn't
-		 * work with that here's your chance to get it working.
-		 *
-		 * @return Whether the plugin is loaded.
+		 * Tells you whether the configuration is changed or not.
 		 */
-		virtual bool pluginIsLoaded( const QString & pluginname ) const;
+		void changed( bool );
 
 	private:
 		/**
+		 * return the KCM widgetstack
+		 *
 		 * @internal
-		 * for the plugin's KPM to embedd itself in this widget
 		 */
-		void registerPlugin( const QString &, KPreferencesModule * );
+		QWidgetStack * widgetStack();
+
+		enum InfoPageName { NoKCM = 1, NothingSelected = 2 };
+		/**
+		 * Show an info page in the widgetstack.
+		 *
+		 * @internal
+		 */
+		void configPage( int id );
+
 		/**
 		 * @internal
-		 * for the plugin's KPM to remove itself from this widget
 		 */
-		void unregisterPlugin( const QString & );
+		void checkNeedForTabWidget();
 
-	private slots:
-		void executed( QListViewItem * );
-		void updateConfigPage( const QString & pluginname, bool checked );
-
-	private:
-		QValueList<KPluginInfo> kpartsPluginInfos() const;
-		void init( const QValueList<KPluginInfo> & plugininfos, const QStrList * types );
-		enum InfoPageName { LoadedAndEnabled, LoadedAndDisabled, NotLoadedAndEnabled, NotLoadedAndDisabled };
-		void infoPage( InfoPageName id );
-		void checkDependencies( const KPluginInfo & );
-
-		struct KPluginSelectorPrivate;
+		class KPluginSelectorPrivate;
 		KPluginSelectorPrivate * d;
 };
 
 // vim: sw=4 ts=4
-
 #endif // KPLUGINSELECTOR_H

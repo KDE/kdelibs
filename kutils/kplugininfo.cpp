@@ -25,7 +25,9 @@
 class KPluginInfo::KPluginInfoPrivate
 {
 	public:
-		KPluginInfoPrivate() : hidden( false ) {}
+		KPluginInfoPrivate() : hidden( false ), enabledbydefault( false )
+		{}
+
 		QString specfile; // the filename of the file containing all the info
 /*		QString name;
 		QString comment;
@@ -39,6 +41,7 @@ class KPluginInfo::KPluginInfoPrivate
 		QStringList requirements;
 		QValueList<KService::Ptr> services;
 		bool hidden;
+		bool enabledbydefault;
 		/** WARNING: add every entry to the cctor and operator= */
 };
 
@@ -100,6 +103,7 @@ KPluginInfo::KPluginInfo( const KPluginInfo & tocp )
 	d->specfile = tocp.d->specfile;
 	d->requirements = tocp.d->requirements;
 	d->hidden = tocp.d->hidden;
+	d->enabledbydefault = tocp.d->enabledbydefault;
 	d->services = tocp.d->services;
 }
 
@@ -112,6 +116,7 @@ const KPluginInfo & KPluginInfo::operator=( const KPluginInfo & tocp )
 	d->specfile = tocp.d->specfile;
 	d->requirements = tocp.d->requirements;
 	d->hidden = tocp.d->hidden;
+	d->enabledbydefault = tocp.d->enabledbydefault;
 	d->services = tocp.d->services;
 	return *this;
 }
@@ -134,6 +139,16 @@ void KPluginInfo::setPluginLoaded( bool loaded )
 bool KPluginInfo::pluginLoaded() const
 {
 	return m_loaded;
+}
+
+bool KPluginInfo::pluginEnabledByDefault() const
+{
+	return d->enabledbydefault;
+}
+
+void KPluginInfo::setPluginEnabledByDefault( bool ebd )
+{
+	d->enabledbydefault = ebd;
 }
 
 const QString & KPluginInfo::specfile() const
