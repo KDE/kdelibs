@@ -1078,6 +1078,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     /*
                         Mozilla 1.5 doesn't accept the text/javascript1.x formats, but WinIE 6 does.
                         Mozilla 1.5 doesn't accept text/jscript, text/ecmascript, and text/livescript, but WinIE 6 does.
+			Mozilla 1.5 accepts application/x-javascript, WinIE 6 doesn't.
                         Mozilla 1.5 allows leading and trailing whitespace, but WinIE 6 doesn't.
                         Mozilla 1.5 and WinIE 6 both accept the empty string, but neither accept a whitespace-only string.
                         We want to accept all the values that either of these browsers accept, but not other values.
@@ -1092,7 +1093,8 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         type.compare("text/javascript1.5") != 0 &&
                         type.compare("text/jscript") != 0 &&
                         type.compare("text/ecmascript") != 0 &&
-                        type.compare("text/livescript") )
+                        type.compare("text/livescript") != 0 &&
+			type.compare("application/x-javascript") != 0 )
                         javascript = false;
                 } else if( a ) {
                     /*
