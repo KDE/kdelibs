@@ -57,6 +57,7 @@ static class h_date * hebrewToGregorian(int y, int m, int d)
     d++;
   if (s % 10 < 4 && m > 3)  /* short Kislev */
     d--;
+  // ### HPB: Broken in leap years
   if (s > 365 && m > 6)  /* leap year */
     d += 30;
   d -= 6002;
