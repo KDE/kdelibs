@@ -852,15 +852,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 if(curchar <= '>') {
                     if(curchar <= ' ' || curchar == '=' || curchar == '>') {
                         unsigned int a;
-                        if(cBufferPos) {
-                            cBuffer[cBufferPos] = '\0';
-                            a = khtml::getAttrID(cBuffer, cBufferPos);
-                        }
-                        else {
-                            a = 0;
-                            // ugh, expensive!!
+                        cBuffer[cBufferPos] = '\0';
+                        a = khtml::getAttrID(cBuffer, cBufferPos);
+                        if ( !a )
                             attrName = QString::fromLatin1(QCString(cBuffer, cBufferPos+1).data());
-                        }
 
                         dest = buffer;
                         *dest++ = a;
