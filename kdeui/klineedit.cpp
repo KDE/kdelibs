@@ -148,11 +148,12 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
 
 void KLineEdit::setCompletedText( const QString& t, bool marked )
 {
+    if ( !d->autoSuggest ) return;
     QString txt = text();
     if ( t != txt )
     {
-        int curpos = marked ? txt.length() : t.length();
-        validateAndSet( t, curpos, curpos, t.length() );
+        int start = marked ? txt.length() : t.length();
+        validateAndSet( t, cursorPosition(), start, t.length() );
         setUserSelection(false);
     }
     else
@@ -262,23 +263,32 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         KGlobalSettings::Completion mode = completionMode();
         bool noModifier = (e->state() == NoButton || e->state()== ShiftButton);
 
-        if ( ( mode == KGlobalSettings::CompletionAuto || mode == KGlobalSettings::CompletionPopupAuto ) && noModifier )
+        if ( ( mode == KGlobalSettings::CompletionAuto ||
+	       mode == KGlobalSettings::CompletionPopupAuto ||
+	       mode == KGlobalSettings::CompletionMan) && noModifier )
 	{
-            if ( !d->userSelection && ( e->key() == Key_Left || e->key() == Key_Right ) &&
+            if ( !d->userSelection && hasSelectedText() &&
+	         ( e->key() == Key_Right ||
+		 ( e->key() == Key_Left ) ) &&
                  e->state()==NoButton )
             {
-
+	    
                 QString old_txt = text();
-                d->disableRestoreSelection=true;
+                d->disableRestoreSelection = true;
+		int start,end;
+		getSelection(&start, &end);
 
                 deselect();
                 QLineEdit::keyPressEvent ( e );
                 int cPosition=cursorPosition();
-                validateAndSet(old_txt, cPosition, cPosition, old_txt.length());
+                if (e->key() ==Key_Right && cPosition > start )
+                    validateAndSet(old_txt, cPosition, cPosition, old_txt.length());
+                else
+                    validateAndSet(old_txt, cPosition, start, old_txt.length());
 
-                d->disableRestoreSelection=false;
+                d->disableRestoreSelection = false;
                 return;
-            }
+            } 
 
             if ( e->key() == Key_Escape )
             {
@@ -301,19 +311,37 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
               mode == KGlobalSettings::CompletionMan) && noModifier )
         {
             QString keycode = e->text();
-            if ( !keycode.isNull() && (keycode.unicode()->isPrint() || (e->key() == Key_Backspace )))
+            if ( !keycode.isNull() && (keycode.unicode()->isPrint() ||
+                e->key() == Key_Backspace || e->key() == Key_Delete ) )
             {
                 bool hasUserSelection=d->userSelection;
                 bool hadSelection=hasSelectedText();
+  
+                bool cursorNotAtEnd=false;
+  
+                int start,end;
+                getSelection(&start, &end);
+                int cPos = cursorPosition();
+
+                // When moving the cursor, we want to keep the autocompletion as an
+                // autocompletion, so we want to process events at the cursor position
+                // as if there was no selection. After processing the key event, we
+                // can set the new autocompletion again.
+                if ( hadSelection && !hasUserSelection && start>cPos )
+                {
+                    del();
+                    setCursorPosition(cPos);
+                    cursorNotAtEnd=true;
+                }
 
                 QLineEdit::keyPressEvent ( e );
                 QString txt = text();
                 int len = txt.length();
-                if ( !hasSelectedText() && len && cursorPosition() == len )
+                if ( !hasSelectedText() && len /*&& cursorPosition() == len */)
                 {
                     if ( e->key() == Key_Backspace )
                     {
-                        if ( hadSelection && !hasUserSelection )
+                        if ( hadSelection && !hasUserSelection && !cursorNotAtEnd )
                         {
                             backspace();
                             txt = text();
@@ -332,7 +360,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                     if ( handleSignals() )
                         makeCompletion( txt );
 
-		    if(  (e->key() == Key_Backspace || e->key() == Key_Delete ) )
+		    if(  (e->key() == Key_Backspace || e->key() == Key_Delete) )
                         d->autoSuggest=true;
 
                     e->accept();
@@ -348,6 +376,22 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
 	    bool hasUserSelection=d->userSelection;
 	    bool hadSelection=hasSelectedText();
+            bool cursorNotAtEnd=false;
+
+            int start,end;
+	    getSelection(&start, &end);
+	    int cPos = cursorPosition();
+	    
+	    // When moving the cursor, we want to keep the autocompletion as an
+	    // autocompletion, so we want to process events at the cursor position
+	    // as if there was no selection. After processing the key event, we
+	    // can set the new autocompletion again.
+            if (hadSelection && !hasUserSelection && start>cPos )
+	    {
+                del();
+                setCursorPosition(cPos);
+		cursorNotAtEnd=true;
+	    }
 
             uint selectedLength=selectedText().length();
 
@@ -360,15 +404,14 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
             int len = txt.length();
             QString keycode = e->text();
 
-            if ( txt != old_txt && len && cursorPosition() == len &&
+            if ( txt != old_txt && len/* && ( cursorPosition() == len || force )*/ &&
                  ( (!keycode.isNull() && keycode.unicode()->isPrint()) ||
                    e->key() == Key_Backspace || e->key() == Key_Delete) )
             {
-
                 if ( e->key() == Key_Backspace )
                 {
 
-                    if ( hadSelection && !hasUserSelection )
+                    if ( hadSelection && !hasUserSelection && !cursorNotAtEnd )
                     {
                         backspace();
                         txt = text();
@@ -389,7 +432,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 		if ( handleSignals() )
 		  makeCompletion( txt );  // handle when requested...
 
-		if ( (e->key() == Key_Backspace || e->key() == Key_Delete ) && mode ==  KGlobalSettings::CompletionPopupAuto )
+		if ( (e->key() == Key_Backspace || e->key() == Key_Delete ) && mode == KGlobalSettings::CompletionPopupAuto )
 		  d->autoSuggest=true;
 
                 e->accept();
