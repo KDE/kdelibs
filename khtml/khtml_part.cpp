@@ -5053,22 +5053,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
   }
 #ifndef QT_NO_CLIPBOARD
   if ((d->m_guiProfile == BrowserViewGUI) && (_mouse->button() == MidButton) && (event->url().isNull()))
-  {
-    QCString plain("plain");
-    QString url = QApplication::clipboard()->text(plain,QClipboard::Selection).stripWhiteSpace();
-
-    // Check if it's a URL
-    KURIFilterData m_filterData;
-    m_filterData.setData( url );
-    if (KURIFilter::self()->filterURI(m_filterData))
-    {
-      int uriType = m_filterData.uriType();
-      if ( uriType == KURIFilterData::LOCAL_FILE
-           || uriType == KURIFilterData::LOCAL_DIR
-           || uriType == KURIFilterData::NET_PROTOCOL )
-        emit d->m_extension->openURLRequest( m_filterData.uri().url() );
-    }
-  }
+     d->m_extension->pasteRequest(); 
 #endif
 
 #ifndef KHTML_NO_SELECTION

@@ -19,13 +19,18 @@
 */
 #include "browserextension.h"
 
+#include <qapplication.h>
+#include <qclipboard.h>
 #include <qtimer.h>
 #include <qobjectlist.h>
 #include <qmetaobject.h>
 #include <qstrlist.h>
 
 #include <kdebug.h>
+#include <klocale.h>
+#include <kmessagebox.h>
 #include <kstaticdeleter.h>
+#include <kurifilter.h>
 #include <assert.h>
 
 using namespace KParts;
@@ -417,6 +422,43 @@ void BrowserExtension::slotCompleted()
 {
   //empty the argument stuff, to avoid bogus/invalid values when opening a new url
   setURLArgs( URLArgs() );
+}
+
+void BrowserExtension::pasteRequest()
+{
+    QCString plain("plain");
+    QString url = QApplication::clipboard()->text(plain, QClipboard::Selection).stripWhiteSpace();
+
+    // Check if it's a URL
+    QStringList filters = KURIFilter::self()->pluginNames();
+    filters.remove( "kuriikwsfilter" );
+    filters.remove( "localdomainurifilter" );
+    KURIFilterData filterData;
+    filterData.setData( url );
+    if ( KURIFilter::self()->filterURI( filterData, filters ) )
+    {
+        switch ( filterData.uriType() )
+	{
+	    case KURIFilterData::LOCAL_FILE:
+	    case KURIFilterData::LOCAL_DIR:
+	    case KURIFilterData::NET_PROTOCOL:
+	        slotOpenURLRequest( filterData.uri(), KParts::URLArgs() );
+		break;
+	    case KURIFilterData::ERROR:
+		KMessageBox::sorry( m_part->widget(), filterData.errorMsg() );
+		break;
+	    default:
+		break;
+	}
+    }
+    else if ( KURIFilter::self()->filterURI( filterData, "kuriikwsfilter" ) )
+    {
+        if ( KMessageBox::questionYesNo( m_part->widget(),
+		    i18n( "<qt>Do you want to search the internet for <b>%1</b>" ).arg( url ),
+		    i18n( "Internet Search" ), i18n( "&Search" ),
+		    i18n( "&Cancel" ) ) == KMessageBox::Yes)
+        slotOpenURLRequest( filterData.uri(), KParts::URLArgs() );
+    }
 }
 
 void BrowserExtension::slotOpenURLRequest( const KURL &url, const KParts::URLArgs &args )
