@@ -28,6 +28,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include "klibloader.h"
+#include "kstaticdeleter.h"
 #include <kconfig.h>
 
 #include <sys/types.h>
@@ -186,14 +187,15 @@ KDanteSocksTable::~KDanteSocksTable() {
 //////////////////////////////////////////////////////////////////
 
 
-KSocks *KSocks::_me = NULL;
+KSocks *KSocks::_me = 0;
 bool KSocks::_disabled = false;
+static KStaticDeleter<KSocks> med;
 
 void KSocks::disable() { _disabled = true; }
 
 KSocks *KSocks::self() {
   if (!_me) {
-    _me = new KSocks;
+    _me = med.setObject(new KSocks);
   }
   return _me;
 }
@@ -215,7 +217,7 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
              << "libsocks5.so"                 // ?
              << "libsocks5_sh.so";             // NEC
 
-   cfg = new KConfig("ksocksrc", false, false);
+   cfg = new KConfig("ksocksrc", true, false);
 
    // Add the custom library paths here
    QStringList newlibs = cfg->readListEntry("Lib Path");
@@ -372,16 +374,14 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL) {
 KSocks::~KSocks() {
   stopSocks();
   delete cfg;
+  _me = med.setObject(0);
 }
 
 
 void KSocks::die() {
-  if (_me) {
-    _me = NULL;
+  if (_me == this) 
     delete this;
-  }
 }
-
 
 void KSocks::stopSocks() {
    if (_hasSocks) {
@@ -399,7 +399,7 @@ void KSocks::stopSocks() {
 
  
 bool KSocks::usingSocks() {
-return _useSocks;
+   return _useSocks;
 }
 
 

@@ -21,6 +21,7 @@
 #include <qstringlist.h>
 #include <ksockaddr.h>
 #include <sys/types.h>
+#include <kstaticdeleter.h>
 
 class KSocksTable;
 class KSocksPrivate;
@@ -30,6 +31,8 @@ struct sockaddr;
 
 
 class KSocks {
+   friend class KStaticDeleter<KSocks>;
+
 public:
 
    /**
