@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <stdlib.h>
 
 #include <kaboutdata.h>
 #include <kapp.h>
@@ -7,8 +8,9 @@
 #include <kcmdlineargs.h>
 
 #include "kurifilter.h"
+#include <qdir.h>
 
-void filter( const char* u, QStringList list = QStringList(), const char * expectedResult = 0 )
+void filter( const char* u, const char * expectedResult = 0, QStringList list = QStringList() )
 {
     QString a = QString::fromLatin1( u );
     KURIFilterData * m_filterData = new KURIFilterData;
@@ -40,7 +42,7 @@ void filter( const char* u, QStringList list = QStringList(), const char * expec
     kdDebug() << "-----" << endl;
     if ( expectedResult )
         if ( m_filterData->uri().url() != QString::fromLatin1( expectedResult ) )
-            kdWarning() << " Got " << m_filterData->uri().url() << " expected " << expectedResult << endl;
+            kdFatal() << " Got " << m_filterData->uri().url() << " expected " << expectedResult << endl;
     delete m_filterData;
 }
 
@@ -51,42 +53,53 @@ int main(int argc, char **argv) {
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;
 
+    QStringList minicliFilters;
+    minicliFilters << "kshorturifilter" << "kurisearchfilter";
+
     // URI that should require no filtering
-    filter( "http://www.kde.org" );
+    filter( "http://www.kde.org", "http://www.kde.org" );
 
     // ShortURI tests
-    filter( "linuxtoday.com" );
-    filter( "LINUXTODAY.COM" );
-    filter( "kde.org" );
-    filter( "mosfet.org" );
-    filter( "~/.kde", "ShortURIFilter" );
+    filter( "linuxtoday.com", "http://linuxtoday.com" );
+    filter( "LINUXTODAY.COM", "http://LINUXTODAY.COM" );
+    filter( "kde.org", "http://kde.org" );
+    filter( "mosfet.org", "http://mosfet.org" );
+    filter( "/", "file:/" );
+    filter( "/", "file:/", "kshorturifilter" );
+    filter( "~/.kde", QCString("file:")+QDir::homeDirPath().local8Bit()+"/.kde", "kshorturifilter" );
 
     // SMB share test with a specific filter chosen
-    filter( "\\\\THUNDER\\", "ShortURIFilter" );
-    filter( "smb://", "ShortURIFilter" );
-    filter( "smb://THUNDER\\WORKGROUP", "ShortURIFilter" );
-    filter( "smb:/THUNDER/WORKGROUP", "ShortURIFilter" );
-    filter( "smb:///", "ShortURIFilter" ); // use specific filter.
-    filter( "smb:", "ShortURIFilter" ); // use specific filter.
-    filter( "smb:/", "ShortURIFilter" ); // use specific filter.
+    // TODO: put the expected results instead of 0
+    filter( "\\\\THUNDER\\", 0, "kshorturifilter" );
+    filter( "smb://", 0, "kshorturifilter" );
+    filter( "smb://THUNDER\\WORKGROUP", 0, "kshorturifilter" );
+    filter( "smb:/THUNDER/WORKGROUP", 0, "kshorturifilter" );
+    filter( "smb:///", 0, "kshorturifilter" ); // use specific filter.
+    filter( "smb:", 0, "kshorturifilter" ); // use specific filter.
+    filter( "smb:/", 0, "kshorturifilter" ); // use specific filter.
 
     // Executable tests
-    filter( "kppp", "ShortURIFilter", "kppp" );
-    filter( "xemacs", QStringList(), "xemacs" );
+    filter( "kppp", "kppp", "kshorturifilter" );
+    filter( "xemacs", "xemacs" );
 
     // IKWS test
-    filter( "KDE" );
-    filter( "GNOME" );
+    filter( "KDE", "http://navigation.realnames.com/resolver.dll?realname=KDE&charset=utf-8&providerid=180" );
+    filter( "GNOME", "http://navigation.realnames.com/resolver.dll?realname=GNOME&charset=utf-8&providerid=180" );
+    // No IKWS in minicli
+    filter( "KDE", "KDE", minicliFilters );
+    filter( "I/dont/exist", "I/dont/exist", minicliFilters );
 
     // ENVIRONMENT variable
     filter( "$KDEDIR/kdelibs/kio" ); // note: this dir doesn't exist...
+        // and this currently launches realnames, which is wrong IMHO. Maybe
+        // we should prevent realnames from happening when there is a '/' ?
     filter( "$KDEDIR/include" );
     filter( "$HOME/.kde/share" );
     filter( "$HOME/$KDEDIR/kdebase/kcontrol/ebrowsing" );
     filter( "$1/$2/$3" );  // can be used as bogus or valid test
     filter( "$$$$" ); // worst case scenarios.
-    filter( "$QTDIR", "ShortURIFilter" ); //use specific filter.
-    filter( "$KDEDIR", "ShortURIFilter" ); //use specific filter.
+    filter( "$QTDIR", QCString("file:")+getenv("QTDIR"), "kshorturifilter" ); //use specific filter.
+    filter( "$KDEDIR", QCString("file:")+getenv("KDEDIR"), "kshorturifilter" ); //use specific filter.
 
     return 0;
 }
