@@ -270,7 +270,10 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
     else if(rule == "font-face")
     {
         startP = curP++;
-        curP = parseToChar(startP, endP, '}', false);
+        curP = parseToChar(startP, endP, '{', false);
+	if ( !curP || curP >= endP ) return 0;
+	curP++;
+        curP = parseToChar(curP, endP, '}', false);
 #ifdef CSS_DEBUG
         kdDebug( 6080 ) << "font rule = " << QString(startP, curP - startP) << endl;
 #endif
@@ -278,7 +281,10 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
     else if(rule == "media")
     {
         startP = curP++;
-        curP = parseToChar(startP, endP, '}', false);
+        curP = parseToChar(startP, endP, '{', false);
+	if ( !curP || curP >= endP ) return 0;
+	curP++;
+        curP = parseToChar(curP, endP, '}', false);
 #ifdef CSS_DEBUG
         kdDebug( 6080 ) << "media rule = " << QString(startP, curP - startP) << endl;
 #endif
@@ -286,7 +292,10 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
     else if(rule == "page")
     {
         startP = curP++;
-        curP = parseToChar(startP, endP, '}', false);
+        curP = parseToChar(startP, endP, '{', false);
+	if ( !curP || curP >= endP ) return 0;
+	curP++;
+        curP = parseToChar(curP, endP, '}', false);
 #ifdef CSS_DEBUG
         kdDebug( 6080 ) << "page rule = " << QString(startP, curP - startP) << endl;
 #endif
@@ -2187,6 +2196,7 @@ QString StyleBaseImpl::preprocess(const QString &str)
         ++ch;
     }
 
+    processed += ' ';
     return processed;
 }
 

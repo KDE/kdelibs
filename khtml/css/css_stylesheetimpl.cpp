@@ -230,7 +230,7 @@ bool CSSStyleSheetImpl::parseString(const DOMString &string, bool strict)
 #endif
 
     const QChar *curP = preprocessed.unicode();
-    const QChar *endP = preprocessed.unicode()+preprocessed.length();
+    const QChar *endP = preprocessed.unicode()+preprocessed.length() - 1;
 
 #ifdef CSS_STYLESHEET_DEBUG
     kdDebug( 6080 ) << "preprocessed sheet, len=" << preprocessed.length() << ", sheet is " << preprocessed << endl;
