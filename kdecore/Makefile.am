@@ -77,7 +77,8 @@ install-data-local: charsets.config
 	$(INSTALL_DATA) $(srcdir)/../libltdl/ltdl.h $(includedir)/ltdl.h
 	$(mkinstalldirs) $(kde_confdir)
 	$(INSTALL_DATA) $(srcdir)/charsets.config $(kde_confdir)/charsets
-	$(INSTALL_DATA) $(srcdir)/eventsrc $(kde_confdir)/eventsrc
+	$(mkinstalldirs) $(kde_datadir)/knotify
+	$(INSTALL_DATA) $(srcdir)/eventsrc $(kde_datadir)/knotify/eventsrc
 	$(mkinstalldirs) $(kde_confdir)/colors
 	$(INSTALL_DATA) $(srcdir)/40.colors "$(DESTDIR)$(kde_confdir)/colors/40 Colors"
 	$(INSTALL_DATA) $(srcdir)/Web.colors $(kde_confdir)/colors/Web
