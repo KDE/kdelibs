@@ -166,9 +166,19 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
         }
 	case CheckOutput: {
             QString filename = args[0].toString(exec).qstring();
-	    QString fullName = RegressionTest::curr->m_currentCategory+"/"+filename+"-dom";
-            m_regTest->reportResult(m_regTest->checkOutput(fullName),
-				    "Output match for script-generated " + filename);
+	    filename = RegressionTest::curr->m_currentCategory+"/"+filename;
+            if ( m_regTest->m_genOutput ) {
+                m_regTest->reportResult( m_regTest->checkOutput(filename+"-dom"),
+                                         "Script-generated " + filename + "-dom");
+                m_regTest->reportResult( m_regTest->checkOutput(filename+"-render"),
+                                         "Script-generated " + filename + "-render");
+            } else {
+                // compare with output file
+                if ( ::access( QFile::encodeName( m_regTest->m_baseDir + "/baseline/" + filename + "-dom" ), R_OK ) ||
+                     m_regTest->reportResult(  m_regTest->checkOutput(filename+"-dom") ) )
+                    if ( !::access( QFile::encodeName(  m_regTest->m_baseDir + "/baseline/" + filename + "-render" ), R_OK ) )
+                         m_regTest->reportResult( m_regTest->checkOutput(filename+"-render"));
+            }
             break;
         }
         case Quit:
