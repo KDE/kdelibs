@@ -131,8 +131,6 @@ public:
   bool autoErrorHandlingEnabled();
   void setAutoErrorHandlingEnabled( bool enable, QWidget* parent );
 
-  virtual void handleError( KIO::Job* );
-
   /**
    * @return whether dotfiles are shown
    */
