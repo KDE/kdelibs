@@ -454,7 +454,7 @@ KAction *KStdAction::saveAs(const QObject *recvr, const char *slot,
 KAction *KStdAction::revert(const QObject *recvr, const char *slot,
 							QObject *parent, const char *name )
 {
-    return new KAction(i18n("Re&vert"), 0, recvr, slot, parent,
+    return new KAction(i18n("Re&vert"), "reload", 0, recvr, slot, parent,
                        name ? name : stdName(Revert));
 }
 
@@ -555,7 +555,8 @@ KAction *KStdAction::find(const QObject *recvr, const char *slot,
 KAction *KStdAction::findNext(const QObject *recvr, const char *slot,
                               QObject *parent, const char *name )
 {
-    return new KAction(i18n("Find &Next"), KStdAccel::key(KStdAccel::FindNext),
+    return new KAction(i18n("Find &Next"), "next",
+                       KStdAccel::key(KStdAccel::FindNext),
                        recvr, slot, parent,
                        name ? name : stdName(FindNext));
 }
@@ -563,7 +564,8 @@ KAction *KStdAction::findNext(const QObject *recvr, const char *slot,
 KAction *KStdAction::findPrev(const QObject *recvr, const char *slot,
                               QObject *parent, const char *name )
 {
-    return new KAction(i18n("Find &Previous"), KStdAccel::key(KStdAccel::FindPrev),
+    return new KAction(i18n("Find &Previous"), "prev",
+                       KStdAccel::key(KStdAccel::FindPrev),
                        recvr, slot, parent, name ? name : stdName(FindPrev));
 }
 
