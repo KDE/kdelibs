@@ -379,3 +379,16 @@ bool KSSLCertificateCache::removeByCertificate(KSSLCertificate& cert) {
 }
 
 
+QDataStream& operator<<(QDataStream& s, const KSSLCertificateCache::KSSLCertificatePolicy& p) {
+  s << (Q_UINT8)p;
+return s;
+}
+
+
+QDataStream& operator>>(QDataStream& s, KSSLCertificateCache::KSSLCertificatePolicy& p) {
+  s >> (Q_UINT8)p;
+return s;
+}
+
+
+

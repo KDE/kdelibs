@@ -430,10 +430,10 @@ int operator==(KSSLCertificate &x, KSSLCertificate &y) {
 }
 
 
-KSSLCertificate::KSSLCertificate(KSSLCertificate& x) {
+KSSLCertificate::KSSLCertificate(const KSSLCertificate& x) {
   KSSLCertificate();
 #ifdef HAVE_SSL
-  setCert(d->kossl->X509_dup(x.getCert()));
+  setCert(d->kossl->X509_dup(const_cast<KSSLCertificate&>(x).getCert()));
   KSSLCertChain *c = x.d->_chain.replicate();
   setChain(c->rawChain());
   delete c;
@@ -582,5 +582,53 @@ KTempFile ktf;
 #endif
 return text;
 }
+
+
+
+bool KSSLCertificate::setCert(QString& cert) {
+#ifdef HAVE_SSL
+    QByteArray qba, qbb = cert.local8Bit().copy();
+    KCodecs::base64Decode(qbb, qba);
+    unsigned char *qbap = reinterpret_cast<unsigned char *>(qba.data());
+    X509 *x5c = KOSSL::self()->d2i_X509(NULL, &qbap, qba.size());
+    if (x5c) {
+       setCert(x5c);
+       return true;
+    }
+#endif
+return false;
+}
+
+
+QDataStream& operator<<(QDataStream& s, const KSSLCertificate& r) {
+QStringList qsl;
+QList<KSSLCertificate> cl = const_cast<KSSLCertificate&>(r).chain().getChain();
+
+      for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
+         //kdDebug() << "Certificate in chain: " <<  c->toString() << endl;
+         qsl << c->toString();
+      }
+
+      cl.setAutoDelete(true);
+
+s << const_cast<KSSLCertificate&>(r).toString() << qsl;
+
+return s;
+}
+
+
+QDataStream& operator>>(QDataStream& s, KSSLCertificate& r) {
+QStringList qsl;
+QString cert;
+
+s >> cert >> qsl;
+
+       if (r.setCert(cert))
+          r.chain().setChain(qsl);
+
+return s;
+}
+
+
 
 

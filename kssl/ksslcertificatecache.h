@@ -25,6 +25,8 @@
 
 class QString;
 class KSSLCertificate;
+#include <qcstring.h>
+
 
 class KSSLCertificateCache {
 public:
@@ -79,6 +81,7 @@ private:
 };
 
 
-
+QDataStream& operator<<(QDataStream& s, const KSSLCertificateCache::KSSLCertificatePolicy& p);
+QDataStream& operator>>(QDataStream& s, KSSLCertificateCache::KSSLCertificatePolicy& p);
 
 #endif
