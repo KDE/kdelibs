@@ -21,7 +21,6 @@
  * $Id$
  */
 #include <config.h>
-#include <klibloader.h>
 #include <klocale.h>
 
 #include "render_applet.h"
