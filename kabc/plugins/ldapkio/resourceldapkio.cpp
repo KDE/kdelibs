@@ -529,6 +529,8 @@ bool ResourceLDAPKIO::load()
 {
   kdDebug(7125) << "ResourceLDAPKIO::load()" << endl;
   KIO::Job *job;
+
+  clear();
   //clear the addressee
   d->mAddr = Addressee();
   d->mAd = Address( Address::Home );
@@ -564,6 +566,7 @@ bool ResourceLDAPKIO::load()
 
 bool ResourceLDAPKIO::asyncLoad()
 {
+  clear();
   //clear the addressee
   d->mAddr = Addressee();
   d->mAd = Address( Address::Home );
@@ -675,6 +678,7 @@ void ResourceLDAPKIO::data( KIO::Job *, const QByteArray &data )
       case LDIF::EndEntry: {
         d->mAddr.setResource( this );
         d->mAddr.insertAddress( d->mAd );
+ 	d->mAddr.setChanged( false );
         insertAddressee( d->mAddr );
         //clear the addressee
         d->mAddr = Addressee();
