@@ -149,7 +149,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
   if ( !_fast_mode && !_is_local_file && _url.isLocalFile() )
     _is_local_file = true;
 
-  if ( !_fast_mode && _is_local_file && _mode == 0 )
+  if ( !_fast_mode && _is_local_file && (_mode == 0 || _mode == (mode_t)-1) )
   {
     struct stat buff;
     if ( stat( _url.path().ascii(), &buff ) != -1 )
