@@ -64,8 +64,8 @@ public slots:
 
 class QIOManager : public IOManager {
 protected:
-	list<QIOWatch *> fdList;
-	list<QTimeWatch *> timeList;
+	std::list<QIOWatch *> fdList;
+	std::list<QTimeWatch *> timeList;
 
 public:
 	QIOManager();

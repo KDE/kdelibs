@@ -90,7 +90,7 @@ public:
 /* some marshalling helpers */
 
 template<class T>
-void freeTypeSeq(vector<T *>& sequence) {
+void freeTypeSeq(std::vector<T *>& sequence) {
 	for(unsigned long l=0;l<sequence.size();l++)
 		delete sequence[l];
 
@@ -98,7 +98,7 @@ void freeTypeSeq(vector<T *>& sequence) {
 };
 
 template<class T>
-void readTypeSeq(Buffer& stream, vector<T *>& sequence) {
+void readTypeSeq(Buffer& stream, std::vector<T *>& sequence) {
 	freeTypeSeq(sequence);
 
 	unsigned long l = stream.readLong();
@@ -106,7 +106,7 @@ void readTypeSeq(Buffer& stream, vector<T *>& sequence) {
 };
 
 template<class T>
-void writeTypeSeq(Buffer& stream, const vector<T *>& sequence) {
+void writeTypeSeq(Buffer& stream, const std::vector<T *>& sequence) {
 	stream.writeLong(sequence.size());
 	for(unsigned long l=0;l<sequence.size();l++)
 		sequence[l]->writeType(stream);
@@ -121,7 +121,7 @@ void writeObject(Buffer& stream, T* object) {
 	 	 * for more speed
 	 	 */
 
-		string s = object->_toString();
+		std::string s = object->_toString();
 
 		Buffer buffer;
 		buffer.fromString(s,"MCOP-Object");

@@ -36,15 +36,15 @@ class Cache;
 class CachedObject
 {
 private:
-	string _object_key;
+	std::string _object_key;
 	int _ref_cnt;
 	time_t _lastAccess;
 
 protected:
-	void setKey(string key);
+	void setKey(std::string key);
 
 public:
-	string getKey();
+	std::string getKey();
 
 	time_t lastAccess();
 
@@ -62,7 +62,7 @@ public:
 class Cache
 {
 protected:
-	list<CachedObject *> objects;
+	std::list<CachedObject *> objects;
 	Cache();
 	~Cache();
 
@@ -74,7 +74,7 @@ public:
 
 	static long memused;
 
-	CachedObject *get(string key);
+	CachedObject *get(std::string key);
 	void add(CachedObject *object);
 
 	// garbage collection; returns amount of memory used (after cleaning)

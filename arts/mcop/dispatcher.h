@@ -52,9 +52,9 @@ protected:
 
 	Pool<Buffer> requestResultPool;
 	Pool<Object_skel> objectPool;
-	list<Connection *> connections;
+	std::list<Connection *> connections;
 
-	string serverID;
+	std::string serverID;
 	void generateServerID();	// helper function
 
 	bool deleteIOManagerOnExit;
@@ -113,7 +113,7 @@ public:
 	 * connects to a local object, returning a readily casted "interface" *
 	 * if success, or NULL if this object is not local
 	 */
-	void *connectObjectLocal(ObjectReference& reference, string interface);
+	void *connectObjectLocal(ObjectReference& reference, std::string interface);
 
 	/**
 	 * connects to a remote object, establishing a connection if necessary
@@ -127,13 +127,13 @@ public:
 	 * stringification of objects (only used by the object implementations,
 	 * which in turn provide a _toString method)
 	 */
-	string objectToString(long objectID);
+	std::string objectToString(long objectID);
 
 	/**
 	 * destringification of objects (mainly used by the object implementations,
 	 * which in turn provide a _fromString method)
 	 */
-	bool stringToObjectReference(ObjectReference& r, string s);
+	bool stringToObjectReference(ObjectReference& r, std::string s);
 
 	/**
 	 * main loop

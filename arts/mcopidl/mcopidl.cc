@@ -223,11 +223,11 @@ string createTypeCode(string type, const string& name, long model,
 	else if(type == "float")
 	{
 		if(model==MODEL_MEMBER)		result = "float";
-		if(model==MODEL_MEMBER_SEQ) result = "vector<float>";
+		if(model==MODEL_MEMBER_SEQ) result = "std::vector<float>";
 		if(model==MODEL_ARG)		result = "float";
-		if(model==MODEL_ARG_SEQ)	result = "const vector<float>&";
+		if(model==MODEL_ARG_SEQ)	result = "const std::vector<float>&";
 		if(model==MODEL_RESULT)		result = "float";
-		if(model==MODEL_RESULT_SEQ)	result = "vector<float> *";
+		if(model==MODEL_RESULT_SEQ)	result = "std::vector<float> *";
 		if(model==MODEL_STREAM)		result = "float *"+name;
 		if(model==MODEL_MSTREAM)	result = "float **"+name;
 
@@ -251,11 +251,11 @@ string createTypeCode(string type, const string& name, long model,
 	else if(type == "boolean")
 	{
 		if(model==MODEL_MEMBER)		result = "bool";
-		if(model==MODEL_MEMBER_SEQ) result = "vector<bool>";
+		if(model==MODEL_MEMBER_SEQ) result = "std::vector<bool>";
 		if(model==MODEL_ARG)		result = "bool";
-		if(model==MODEL_ARG_SEQ)	result = "const vector<bool>&";
+		if(model==MODEL_ARG_SEQ)	result = "const std::vector<bool>&";
 		if(model==MODEL_RESULT)		result = "bool";
-		if(model==MODEL_RESULT_SEQ)	result = "vector<bool> *";
+		if(model==MODEL_RESULT_SEQ)	result = "std::vector<bool> *";
 		if(model==MODEL_READ)
 			result = name+" = stream.readBool()";
 		if(model==MODEL_RES_READ)
@@ -276,11 +276,11 @@ string createTypeCode(string type, const string& name, long model,
 	else if(type == "long")
 	{
 		if(model==MODEL_MEMBER)		result = "long";
-		if(model==MODEL_MEMBER_SEQ) result = "vector<long>";
+		if(model==MODEL_MEMBER_SEQ) result = "std::vector<long>";
 		if(model==MODEL_ARG)		result = "long";
-		if(model==MODEL_ARG_SEQ)	result = "const vector<long>&";
+		if(model==MODEL_ARG_SEQ)	result = "const std::vector<long>&";
 		if(model==MODEL_RESULT)		result = "long";
-		if(model==MODEL_RESULT_SEQ)	result = "vector<long> *";
+		if(model==MODEL_RESULT_SEQ)	result = "std::vector<long> *";
 		if(model==MODEL_READ)
 			result = name+" = stream.readLong()";
 		if(model==MODEL_READ_SEQ)
@@ -302,24 +302,24 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_INVOKE)
 			result = indent + "result->writeLong("+name+");\n";
 	} else if(type == "string") {
-		if(model==MODEL_MEMBER)		result = "string";
-		if(model==MODEL_MEMBER_SEQ)	result = "vector<string>";
-		if(model==MODEL_ARG)		result = "const string&";
-		if(model==MODEL_ARG_SEQ)	result = "const vector<string>&";
-		if(model==MODEL_RESULT)		result = "string";
-		if(model==MODEL_RESULT_SEQ)	result = "vector<string> *";
+		if(model==MODEL_MEMBER)		result = "std::string";
+		if(model==MODEL_MEMBER_SEQ)	result = "std::vector<std::string>";
+		if(model==MODEL_ARG)		result = "const std::string&";
+		if(model==MODEL_ARG_SEQ)	result = "const std::vector<std::string>&";
+		if(model==MODEL_RESULT)		result = "std::string";
+		if(model==MODEL_RESULT_SEQ)	result = "std::vector<std::string> *";
 		if(model==MODEL_READ)
 			result = "stream.readString("+name+")";
 		if(model==MODEL_READ_SEQ)
 			result = "stream.readStringSeq("+name+")";
 		if(model==MODEL_REQ_READ)
 		{
-			result = indent + "string "+name+";\n"
+			result = indent + "std::string "+name+";\n"
 				   + indent + "request->readString("+name+");\n";
 		}
 		if(model==MODEL_RES_READ)
 		{
-			result = indent + "string returnCode;\n";
+			result = indent + "std::string returnCode;\n";
 			result += indent + "result->readString(returnCode);\n";
 			result += indent + "delete result;\n";
 			result += indent + "return returnCode;\n";
@@ -336,12 +336,12 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_MEMBER)
 			result = type;
 		if(model==MODEL_MEMBER_SEQ)
-			result = "vector<"+type+" *>";
+			result = "std::vector<"+type+" *>";
 
 		if(model==MODEL_ARG)	
 			result = "const "+type+"&";
 		if(model==MODEL_ARG_SEQ)
-			result = "const vector<"+type+" *>&";
+			result = "const std::vector<"+type+" *>&";
 
 		if(model==MODEL_READ)
 			result = name+".readType(stream)";
@@ -372,14 +372,14 @@ string createTypeCode(string type, const string& name, long model,
 		}
 
 		if(model==MODEL_RESULT)		result = type+"*";
-		if(model==MODEL_RESULT_SEQ)	result = "vector<"+type+" *> *";
+		if(model==MODEL_RESULT_SEQ)	result = "std::vector<"+type+" *> *";
 	} else if(isEnum(type)) {
 		if(model==MODEL_MEMBER)		result = type;
-		if(model==MODEL_MEMBER_SEQ) result = "vector<"+type+">";
+		if(model==MODEL_MEMBER_SEQ) result = "std::vector<"+type+">";
 		if(model==MODEL_ARG)		result = type;
-		if(model==MODEL_ARG_SEQ)	result = "const vector<"+type+">&";
+		if(model==MODEL_ARG_SEQ)	result = "const std::vector<"+type+">&";
 		if(model==MODEL_RESULT)		result = type;
-		if(model==MODEL_RESULT_SEQ)	result = "vector<"+type+"> *";
+		if(model==MODEL_RESULT_SEQ)	result = "std::vector<"+type+"> *";
 		if(model==MODEL_READ)
 			result = name+" = ("+type+")stream.readLong()";
 		if(model==MODEL_READ_SEQ)
@@ -404,11 +404,11 @@ string createTypeCode(string type, const string& name, long model,
 			result = indent + "result->writeLong("+name+");\n";
 	} else if(isInterface(type)) {
 		if(model==MODEL_MEMBER)		result = type+"_var";
-		//if(model==MODEL_MEMBER_SEQ) result = "vector<"+type+">";
+		//if(model==MODEL_MEMBER_SEQ) result = "std::vector<"+type+">";
 		if(model==MODEL_ARG)		result = type+" *";
-		//if(model==MODEL_ARG_SEQ)	result = "const vector<"+type+">&";
+		//if(model==MODEL_ARG_SEQ)	result = "const std::vector<"+type+">&";
 		if(model==MODEL_RESULT)		result = type+" *";
-		//if(model==MODEL_RESULT_SEQ)	result = "vector<"+type+"> *";
+		//if(model==MODEL_RESULT_SEQ)	result = "std::vector<"+type+"> *";
 		if(model==MODEL_READ)
 			result = name+" = readObject<"+type+">(stream)";
 		//if(model==MODEL_READ_SEQ)
@@ -816,7 +816,7 @@ void doInterfacesHeader(FILE *header)
 
 		fprintf(header,"class %s : %s {\n",d->name.c_str(),inherits.c_str());
 		fprintf(header,"public:\n");
-		fprintf(header,"\tstatic %s *_fromString(string objectref);\n",
+		fprintf(header,"\tstatic %s *_fromString(std::string objectref);\n",
 														d->name.c_str());
 		fprintf(header,"\tstatic %s *_fromReference(ObjectReference ref,"
 		                                " bool needcopy);\n\n",d->name.c_str());
@@ -958,10 +958,10 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"public:\n");
 		fprintf(header,"\t%s_skel();\n\n",d->name.c_str());
 
-		fprintf(header,"\tstatic string _interfaceNameSkel();\n");
-		fprintf(header,"\tstring _interfaceName();\n");
+		fprintf(header,"\tstatic std::string _interfaceNameSkel();\n");
+		fprintf(header,"\tstd::string _interfaceName();\n");
 		fprintf(header,"\tvoid _buildMethodTable();\n");
-		fprintf(header,"\tvoid *_cast(string interface);\n");
+		fprintf(header,"\tvoid *_cast(std::string interface);\n");
 		fprintf(header,"\tvoid dispatch(Buffer *request, Buffer *result,"
 						"long methodID);\n");
 		fprintf(header,"};\n\n");
@@ -986,7 +986,7 @@ void doInterfacesSource(FILE *source)
 
 		// create static functions
 
-		fprintf(source,"%s *%s::_fromString(string objectref)\n",
+		fprintf(source,"%s *%s::_fromString(std::string objectref)\n",
 											d->name.c_str(),d->name.c_str());
 		fprintf(source,"{\n");
 		fprintf(source,"\tObjectReference r;\n\n");
@@ -1078,20 +1078,20 @@ void doInterfacesSource(FILE *source)
 		// create skeleton
 
 		/** _interfaceName **/
-		fprintf(source,"string %s_skel::_interfaceName()\n",	
+		fprintf(source,"std::string %s_skel::_interfaceName()\n",	
 													d->name.c_str());
 		fprintf(source,"{\n");
 		fprintf(source,"\treturn \"%s\";\n",d->name.c_str());
 		fprintf(source,"}\n\n");
 
-		fprintf(source,"string %s_skel::_interfaceNameSkel()\n",	
+		fprintf(source,"std::string %s_skel::_interfaceNameSkel()\n",	
 													d->name.c_str());
 		fprintf(source,"{\n");
 		fprintf(source,"\treturn \"%s\";\n",d->name.c_str());
 		fprintf(source,"}\n\n");
 
 		/** _cast operation **/
-		fprintf(source,"void *%s_skel::_cast(string interface)\n",
+		fprintf(source,"void *%s_skel::_cast(std::string interface)\n",
 			d->name.c_str());
 		fprintf(source,"{\n");
 		fprintf(source,"\tif(interface == \"%s\") return (%s *)this;\n",

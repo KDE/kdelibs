@@ -30,12 +30,12 @@
 
 class ExecRequest {
 	ArtsServer *_Server;
-	vector<ModuleDesc *> _Modules;
+	std::vector<ModuleDesc *> _Modules;
 	long _ServerID,_StructureID,mid;
-	string _structureName;
+	std::string _structureName;
 
 public:
-	ExecRequest(ArtsServer *Server, long StructureID, const string&
+	ExecRequest(ArtsServer *Server, long StructureID, const std::string&
 																structureName);
 
 	//const Arts::ModuleDescSeq& Modules();		// FIXME: remove me?

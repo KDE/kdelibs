@@ -34,11 +34,11 @@
 
 class SocketConnection :public Connection, public IONotify {
 protected:
-	string serverID;
+	std::string serverID;
 	int fd;
 	bool _broken;
 
-	list<Buffer *> pending;
+	std::list<Buffer *> pending;
 	void writeBuffer(Buffer *buffer);
 
 	SocketConnection();

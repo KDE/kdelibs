@@ -105,7 +105,7 @@ ServerHello::ServerHello()
 {
 }
 
-ServerHello::ServerHello(const string& serverID, const vector<string>& authProtocols, const string& authSeed)
+ServerHello::ServerHello(const std::string& serverID, const std::vector<std::string>& authProtocols, const std::string& authSeed)
 {
 	this->serverID = serverID;
 	this->authProtocols = authProtocols;
@@ -154,7 +154,7 @@ ClientHello::ClientHello()
 {
 }
 
-ClientHello::ClientHello(const string& serverID, const string& authProtocol, const string& authData)
+ClientHello::ClientHello(const std::string& serverID, const std::string& authProtocol, const std::string& authData)
 {
 	this->serverID = serverID;
 	this->authProtocol = authProtocol;
@@ -203,7 +203,7 @@ ObjectReference::ObjectReference()
 {
 }
 
-ObjectReference::ObjectReference(const string& serverID, long objectID, const vector<string>& urls)
+ObjectReference::ObjectReference(const std::string& serverID, long objectID, const std::vector<std::string>& urls)
 {
 	this->serverID = serverID;
 	this->objectID = objectID;
@@ -252,7 +252,7 @@ ParamDef::ParamDef()
 {
 }
 
-ParamDef::ParamDef(const string& type, const string& name)
+ParamDef::ParamDef(const std::string& type, const std::string& name)
 {
 	this->type = type;
 	this->name = name;
@@ -298,7 +298,7 @@ MethodDef::MethodDef()
 {
 }
 
-MethodDef::MethodDef(const string& name, const string& type, long flags, const vector<ParamDef *>& signature)
+MethodDef::MethodDef(const std::string& name, const std::string& type, long flags, const std::vector<ParamDef *>& signature)
 {
 	this->name = name;
 	this->type = type;
@@ -351,7 +351,7 @@ AttributeDef::AttributeDef()
 {
 }
 
-AttributeDef::AttributeDef(const string& name, const string& type, AttributeType flags)
+AttributeDef::AttributeDef(const std::string& name, const std::string& type, AttributeType flags)
 {
 	this->name = name;
 	this->type = type;
@@ -400,7 +400,7 @@ InterfaceDef::InterfaceDef()
 {
 }
 
-InterfaceDef::InterfaceDef(const string& name, const vector<string>& inheritedInterfaces, const vector<MethodDef *>& methods, const vector<AttributeDef *>& attributes)
+InterfaceDef::InterfaceDef(const std::string& name, const std::vector<std::string>& inheritedInterfaces, const std::vector<MethodDef *>& methods, const std::vector<AttributeDef *>& attributes)
 {
 	this->name = name;
 	this->inheritedInterfaces = inheritedInterfaces;
@@ -454,7 +454,7 @@ TypeComponent::TypeComponent()
 {
 }
 
-TypeComponent::TypeComponent(const string& type, const string& name)
+TypeComponent::TypeComponent(const std::string& type, const std::string& name)
 {
 	this->type = type;
 	this->name = name;
@@ -500,7 +500,7 @@ TypeDef::TypeDef()
 {
 }
 
-TypeDef::TypeDef(const string& name, const vector<TypeComponent *>& contents)
+TypeDef::TypeDef(const std::string& name, const std::vector<TypeComponent *>& contents)
 {
 	this->name = name;
 	this->contents = contents;
@@ -547,7 +547,7 @@ EnumComponent::EnumComponent()
 {
 }
 
-EnumComponent::EnumComponent(const string& name, long value)
+EnumComponent::EnumComponent(const std::string& name, long value)
 {
 	this->name = name;
 	this->value = value;
@@ -593,7 +593,7 @@ EnumDef::EnumDef()
 {
 }
 
-EnumDef::EnumDef(const string& name, const vector<EnumComponent *>& contents)
+EnumDef::EnumDef(const std::string& name, const std::vector<EnumComponent *>& contents)
 {
 	this->name = name;
 	this->contents = contents;
@@ -640,7 +640,7 @@ ModuleDef::ModuleDef()
 {
 }
 
-ModuleDef::ModuleDef(const string& moduleName, const vector<ModuleDef *>& modules, const vector<EnumDef *>& enums, const vector<TypeDef *>& types, const vector<InterfaceDef *>& interfaces)
+ModuleDef::ModuleDef(const std::string& moduleName, const std::vector<ModuleDef *>& modules, const std::vector<EnumDef *>& enums, const std::vector<TypeDef *>& types, const std::vector<InterfaceDef *>& interfaces)
 {
 	this->moduleName = moduleName;
 	this->modules = modules;
@@ -695,19 +695,27 @@ void ModuleDef::writeType(Buffer& stream) const
 	writeTypeSeq<InterfaceDef>(stream,interfaces);
 }
 
-InterfaceRepo *InterfaceRepo::_fromString(string objectref)
+InterfaceRepo *InterfaceRepo::_fromString(std::string objectref)
 {
-	InterfaceRepo *result = 0;
 	ObjectReference r;
 
 	if(Dispatcher::the()->stringToObjectReference(r,objectref))
+		return InterfaceRepo::_fromReference(r,true);
+	return 0;
+}
+
+InterfaceRepo *InterfaceRepo::_fromReference(ObjectReference r, bool needcopy)
+{
+	InterfaceRepo *result;
+	result = (InterfaceRepo *)Dispatcher::the()->connectObjectLocal(r,"InterfaceRepo");
+	if(!result)
 	{
-		result = (InterfaceRepo *)Dispatcher::the()->connectObjectLocal(r,"InterfaceRepo");
-		if(!result)
+		Connection *conn = Dispatcher::the()->connectObjectRemote(r);
+		if(conn)
 		{
-			Connection *conn = Dispatcher::the()->connectObjectRemote(r);
-			if(conn)
-				result = new InterfaceRepo_stub(conn,r.objectID);
+			result = new InterfaceRepo_stub(conn,r.objectID);
+			if(needcopy) result->_copyRemote();
+			result->_useRemote();
 		}
 	}
 	return result;
@@ -756,7 +764,7 @@ void InterfaceRepo_stub::removeModule(long moduleID)
 	delete result;
 }
 
-InterfaceDef* InterfaceRepo_stub::queryInterface(const string& name)
+InterfaceDef* InterfaceRepo_stub::queryInterface(const std::string& name)
 {
 	long methodID = _lookupMethodFast("method:0f0000007175657279496e74657266616365000d000000496e7465726661636544656600000000000100000007000000737472696e6700050000006e616d6500");
 	long requestID;
@@ -773,7 +781,7 @@ InterfaceDef* InterfaceRepo_stub::queryInterface(const string& name)
 	return _returnCode;
 }
 
-TypeDef* InterfaceRepo_stub::queryType(const string& name)
+TypeDef* InterfaceRepo_stub::queryType(const std::string& name)
 {
 	long methodID = _lookupMethodFast("method:0a00000071756572795479706500080000005479706544656600000000000100000007000000737472696e6700050000006e616d6500");
 	long requestID;
@@ -790,17 +798,17 @@ TypeDef* InterfaceRepo_stub::queryType(const string& name)
 	return _returnCode;
 }
 
-string InterfaceRepo_skel::_interfaceName()
+std::string InterfaceRepo_skel::_interfaceName()
 {
 	return "InterfaceRepo";
 }
 
-string InterfaceRepo_skel::_interfaceNameSkel()
+std::string InterfaceRepo_skel::_interfaceNameSkel()
 {
 	return "InterfaceRepo";
 }
 
-void *InterfaceRepo_skel::_cast(string interface)
+void *InterfaceRepo_skel::_cast(std::string interface)
 {
 	if(interface == "InterfaceRepo") return (InterfaceRepo *)this;
 	return 0;
@@ -823,7 +831,7 @@ static void _dispatch_InterfaceRepo_01(void *object, Buffer *request, Buffer *)
 // queryInterface
 static void _dispatch_InterfaceRepo_02(void *object, Buffer *request, Buffer *result)
 {
-	string name;
+	std::string name;
 	request->readString(name);
 	InterfaceDef *_returnCode = ((InterfaceRepo_skel *)object)->queryInterface(name);
 	_returnCode->writeType(*result);
@@ -833,7 +841,7 @@ static void _dispatch_InterfaceRepo_02(void *object, Buffer *request, Buffer *re
 // queryType
 static void _dispatch_InterfaceRepo_03(void *object, Buffer *request, Buffer *result)
 {
-	string name;
+	std::string name;
 	request->readString(name);
 	TypeDef *_returnCode = ((InterfaceRepo_skel *)object)->queryType(name);
 	_returnCode->writeType(*result);

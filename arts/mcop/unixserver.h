@@ -35,16 +35,16 @@ class UnixServer :public IONotify {
 protected:
 	Dispatcher *dispatcher;
 
-	string xserverpath;
+	std::string xserverpath;
 	int theSocket;
 	bool socketOk;
-	bool initSocket(string serverID);
+	bool initSocket(std::string serverID);
 
 public:
-	UnixServer(Dispatcher *dispatcher, string serverID);
+	UnixServer(Dispatcher *dispatcher, std::string serverID);
 	virtual ~UnixServer();
 	bool running();
-	string url();
+	std::string url();
 
 	void notifyIO(int fd, int types);
 };

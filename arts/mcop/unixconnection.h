@@ -30,7 +30,7 @@
 
 class UnixConnection :public SocketConnection {
 public:
-	UnixConnection(string url);
+	UnixConnection(std::string url);
 };
 
 #endif /* UNIXCONNECTION_H */

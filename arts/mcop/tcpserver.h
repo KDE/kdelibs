@@ -44,7 +44,7 @@ public:
 	TCPServer(Dispatcher *dispatcher);
 	virtual ~TCPServer();
 	bool running();
-	string url();
+	std::string url();
 
 	void notifyIO(int fd, int types);
 };

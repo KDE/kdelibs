@@ -38,7 +38,7 @@ public:
 	 * The result is something like /tmp/mcop-<username>/name, the directory
 	 * will be created when necessary.
 	 */
-	static string createFilePath(string name);
+	static std::string createFilePath(std::string name);
 };
 
 #endif /* MCOPUTILS_H */

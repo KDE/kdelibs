@@ -50,7 +50,7 @@ public:
 };
 
 class AudioSubSystem {
-	string _error;
+	std::string _error;
 	int audio_fd;
 	int fragment_size;
 	char *fragment_buffer;

@@ -38,8 +38,8 @@
 
 template <class T>
 class Pool {
-	stack<unsigned long> freeIDs;
-	vector<T *> storage;
+	std::stack<unsigned long> freeIDs;
+	std::vector<T *> storage;
 public:
 	inline T*& operator[](unsigned long n) { return storage[n]; }
 	inline void releaseSlot(unsigned long n) {
@@ -60,9 +60,9 @@ public:
 		freeIDs.pop();
 		return slot;
 	}
-	list<T *> enumerate() {
-		list<T *> items;
-		//vector<T *>::iterator i;
+	std::list<T *> enumerate() {
+		std::list<T *> items;
+		//std::vector<T *>::iterator i;
 		int n,max = storage.size();
 
 		for(n=0; n < max; n++)

@@ -46,8 +46,8 @@ class InterfaceRepo_impl : virtual public InterfaceRepo_skel {
 		}
 	};
 
-	list<TypeEntry *> types;
-	list<InterfaceEntry *> interfaces;
+	std::list<TypeEntry *> types;
+	std::list<InterfaceEntry *> interfaces;
 
 	long nextModuleID;
 public:
@@ -56,8 +56,8 @@ public:
 
 	long insertModule(const ModuleDef& newModule);
 	void removeModule(long moduleID);
-	InterfaceDef* queryInterface(const string& name);
-	TypeDef* queryType(const string& name);
+	InterfaceDef* queryInterface(const std::string& name);
+	TypeDef* queryType(const std::string& name);
 };
 
 #endif /* IFACEREPO_H */

@@ -47,15 +47,15 @@ public:
 class ServerHello : public Type {
 public:
 	ServerHello();
-	ServerHello(const string& serverID, const vector<string>& authProtocols, const string& authSeed);
+	ServerHello(const std::string& serverID, const std::vector<std::string>& authProtocols, const std::string& authSeed);
 	ServerHello(Buffer& stream);
 	ServerHello(const ServerHello& copyType);
 	ServerHello& operator=(const ServerHello& assignType);
 	virtual ~ServerHello();
 
-	string serverID;
-	vector<string> authProtocols;
-	string authSeed;
+	std::string serverID;
+	std::vector<std::string> authProtocols;
+	std::string authSeed;
 
 // marshalling functions
 	void readType(Buffer& stream);
@@ -65,15 +65,15 @@ public:
 class ClientHello : public Type {
 public:
 	ClientHello();
-	ClientHello(const string& serverID, const string& authProtocol, const string& authData);
+	ClientHello(const std::string& serverID, const std::string& authProtocol, const std::string& authData);
 	ClientHello(Buffer& stream);
 	ClientHello(const ClientHello& copyType);
 	ClientHello& operator=(const ClientHello& assignType);
 	virtual ~ClientHello();
 
-	string serverID;
-	string authProtocol;
-	string authData;
+	std::string serverID;
+	std::string authProtocol;
+	std::string authData;
 
 // marshalling functions
 	void readType(Buffer& stream);
@@ -83,15 +83,15 @@ public:
 class ObjectReference : public Type {
 public:
 	ObjectReference();
-	ObjectReference(const string& serverID, long objectID, const vector<string>& urls);
+	ObjectReference(const std::string& serverID, long objectID, const std::vector<std::string>& urls);
 	ObjectReference(Buffer& stream);
 	ObjectReference(const ObjectReference& copyType);
 	ObjectReference& operator=(const ObjectReference& assignType);
 	virtual ~ObjectReference();
 
-	string serverID;
+	std::string serverID;
 	long objectID;
-	vector<string> urls;
+	std::vector<std::string> urls;
 
 // marshalling functions
 	void readType(Buffer& stream);
@@ -101,14 +101,14 @@ public:
 class ParamDef : public Type {
 public:
 	ParamDef();
-	ParamDef(const string& type, const string& name);
+	ParamDef(const std::string& type, const std::string& name);
 	ParamDef(Buffer& stream);
 	ParamDef(const ParamDef& copyType);
 	ParamDef& operator=(const ParamDef& assignType);
 	virtual ~ParamDef();
 
-	string type;
-	string name;
+	std::string type;
+	std::string name;
 
 // marshalling functions
 	void readType(Buffer& stream);
@@ -118,16 +118,16 @@ public:
 class MethodDef : public Type {
 public:
 	MethodDef();
-	MethodDef(const string& name, const string& type, long flags, const vector<ParamDef *>& signature);
+	MethodDef(const std::string& name, const std::string& type, long flags, const std::vector<ParamDef *>& signature);
 	MethodDef(Buffer& stream);
 	MethodDef(const MethodDef& copyType);
 	MethodDef& operator=(const MethodDef& assignType);
 	virtual ~MethodDef();
 
-	string name;
-	string type;
+	std::string name;
+	std::string type;
 	long flags;
-	vector<ParamDef *> signature;
+	std::vector<ParamDef *> signature;
 
 // marshalling functions
 	void readType(Buffer& stream);
@@ -137,14 +137,14 @@ public:
 class AttributeDef : public Type {
 public:
 	AttributeDef();
-	AttributeDef(const string& name, const string& type, AttributeType flags);
+	AttributeDef(const std::string& name, const std::string& type, AttributeType flags);
 	AttributeDef(Buffer& stream);
 	AttributeDef(const AttributeDef& copyType);
 	AttributeDef& operator=(const AttributeDef& assignType);
 	virtual ~AttributeDef();
 
-	string name;
-	string type;
+	std::string name;
+	std::string type;
 	AttributeType flags;
 
 // marshalling functions
@@ -155,16 +155,16 @@ public:
 class InterfaceDef : public Type {
 public:
 	InterfaceDef();
-	InterfaceDef(const string& name, const vector<string>& inheritedInterfaces, const vector<MethodDef *>& methods, const vector<AttributeDef *>& attributes);
+	InterfaceDef(const std::string& name, const std::vector<std::string>& inheritedInterfaces, const std::vector<MethodDef *>& methods, const std::vector<AttributeDef *>& attributes);
 	InterfaceDef(Buffer& stream);
 	InterfaceDef(const InterfaceDef& copyType);
 	InterfaceDef& operator=(const InterfaceDef& assignType);
 	virtual ~InterfaceDef();
 
-	string name;
-	vector<string> inheritedInterfaces;
-	vector<MethodDef *> methods;
-	vector<AttributeDef *> attributes;
+	std::string name;
+	std::vector<std::string> inheritedInterfaces;
+	std::vector<MethodDef *> methods;
+	std::vector<AttributeDef *> attributes;
 
 // marshalling functions
 	void readType(Buffer& stream);
@@ -174,14 +174,14 @@ public:
 class TypeComponent : public Type {
 public:
 	TypeComponent();
-	TypeComponent(const string& type, const string& name);
+	TypeComponent(const std::string& type, const std::string& name);
 	TypeComponent(Buffer& stream);
 	TypeComponent(const TypeComponent& copyType);
 	TypeComponent& operator=(const TypeComponent& assignType);
 	virtual ~TypeComponent();
 
-	string type;
-	string name;
+	std::string type;
+	std::string name;
 
 // marshalling functions
 	void readType(Buffer& stream);
@@ -191,14 +191,14 @@ public:
 class TypeDef : public Type {
 public:
 	TypeDef();
-	TypeDef(const string& name, const vector<TypeComponent *>& contents);
+	TypeDef(const std::string& name, const std::vector<TypeComponent *>& contents);
 	TypeDef(Buffer& stream);
 	TypeDef(const TypeDef& copyType);
 	TypeDef& operator=(const TypeDef& assignType);
 	virtual ~TypeDef();
 
-	string name;
-	vector<TypeComponent *> contents;
+	std::string name;
+	std::vector<TypeComponent *> contents;
 
 // marshalling functions
 	void readType(Buffer& stream);
@@ -208,13 +208,13 @@ public:
 class EnumComponent : public Type {
 public:
 	EnumComponent();
-	EnumComponent(const string& name, long value);
+	EnumComponent(const std::string& name, long value);
 	EnumComponent(Buffer& stream);
 	EnumComponent(const EnumComponent& copyType);
 	EnumComponent& operator=(const EnumComponent& assignType);
 	virtual ~EnumComponent();
 
-	string name;
+	std::string name;
 	long value;
 
 // marshalling functions
@@ -225,14 +225,14 @@ public:
 class EnumDef : public Type {
 public:
 	EnumDef();
-	EnumDef(const string& name, const vector<EnumComponent *>& contents);
+	EnumDef(const std::string& name, const std::vector<EnumComponent *>& contents);
 	EnumDef(Buffer& stream);
 	EnumDef(const EnumDef& copyType);
 	EnumDef& operator=(const EnumDef& assignType);
 	virtual ~EnumDef();
 
-	string name;
-	vector<EnumComponent *> contents;
+	std::string name;
+	std::vector<EnumComponent *> contents;
 
 // marshalling functions
 	void readType(Buffer& stream);
@@ -242,17 +242,17 @@ public:
 class ModuleDef : public Type {
 public:
 	ModuleDef();
-	ModuleDef(const string& moduleName, const vector<ModuleDef *>& modules, const vector<EnumDef *>& enums, const vector<TypeDef *>& types, const vector<InterfaceDef *>& interfaces);
+	ModuleDef(const std::string& moduleName, const std::vector<ModuleDef *>& modules, const std::vector<EnumDef *>& enums, const std::vector<TypeDef *>& types, const std::vector<InterfaceDef *>& interfaces);
 	ModuleDef(Buffer& stream);
 	ModuleDef(const ModuleDef& copyType);
 	ModuleDef& operator=(const ModuleDef& assignType);
 	virtual ~ModuleDef();
 
-	string moduleName;
-	vector<ModuleDef *> modules;
-	vector<EnumDef *> enums;
-	vector<TypeDef *> types;
-	vector<InterfaceDef *> interfaces;
+	std::string moduleName;
+	std::vector<ModuleDef *> modules;
+	std::vector<EnumDef *> enums;
+	std::vector<TypeDef *> types;
+	std::vector<InterfaceDef *> interfaces;
 
 // marshalling functions
 	void readType(Buffer& stream);
@@ -261,15 +261,23 @@ public:
 
 class InterfaceRepo : virtual public Object {
 public:
-	static InterfaceRepo *_fromString(string objectref);
+	static InterfaceRepo *_fromString(std::string objectref);
+	static InterfaceRepo *_fromReference(ObjectReference ref, bool needcopy);
+
+	inline InterfaceRepo *_copy() {
+		assert(_refCnt > 0);
+		_refCnt++;
+		return this;
+	}
 
 	virtual long insertModule(const ModuleDef& newModule) = 0;
 	virtual void removeModule(long moduleID) = 0;
-	virtual InterfaceDef* queryInterface(const string& name) = 0;
-	virtual TypeDef* queryType(const string& name) = 0;
+	virtual InterfaceDef* queryInterface(const std::string& name) = 0;
+	virtual TypeDef* queryType(const std::string& name) = 0;
 };
 
 typedef ReferenceHelper<InterfaceRepo> InterfaceRepo_var;
+
 class InterfaceRepo_stub : virtual public InterfaceRepo, virtual public Object_stub {
 protected:
 	InterfaceRepo_stub();
@@ -279,18 +287,18 @@ public:
 
 	long insertModule(const ModuleDef& newModule);
 	void removeModule(long moduleID);
-	InterfaceDef* queryInterface(const string& name);
-	TypeDef* queryType(const string& name);
+	InterfaceDef* queryInterface(const std::string& name);
+	TypeDef* queryType(const std::string& name);
 };
 
 class InterfaceRepo_skel : virtual public InterfaceRepo, virtual public Object_skel {
 public:
 	InterfaceRepo_skel();
 
-	static string _interfaceNameSkel();
-	string _interfaceName();
+	static std::string _interfaceNameSkel();
+	std::string _interfaceName();
 	void _buildMethodTable();
-	void *_cast(string interface);
+	void *_cast(std::string interface);
 	void dispatch(Buffer *request, Buffer *result,long methodID);
 };
 

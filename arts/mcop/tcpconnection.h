@@ -30,7 +30,7 @@
 
 class TCPConnection :public SocketConnection {
 public:
-	TCPConnection(string url);
+	TCPConnection(std::string url);
 };
 
 #endif /* TCPCONNECTION_H */

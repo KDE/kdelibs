@@ -42,7 +42,7 @@ public:
 
 class PipeBuffer {
 protected:
-	list<PipeSegment *> segments;
+	std::list<PipeSegment *> segments;
 	long _size;
 
 public:

@@ -121,9 +121,9 @@ public:
 
 class StdIOManager : public IOManager {
 protected:
-	list<IOWatchFD *> fdList;
-	list<TimeWatcher *> timeList;
-	stack< pair<IOWatchFD *,int> > notifyStack;
+	std::list<IOWatchFD *> fdList;
+	std::list<TimeWatcher *> timeList;
+	std::stack< std::pair<IOWatchFD *,int> > notifyStack;
 
 	bool terminated;
 

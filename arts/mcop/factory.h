@@ -38,11 +38,11 @@ public:
 	virtual std::string interfaceName() = 0;
 };
 
-#define REGISTER_IMPLEMENTATION(impl)                             \
-  class impl ## _Factory : virtual public Factory {               \
-  public:                                                         \
-	string interfaceName() { return impl ## ::_interfaceNameSkel(); } \
-	Object_skel *createInstance() { return new impl ; }           \
+#define REGISTER_IMPLEMENTATION(impl)                                      \
+  class impl ## _Factory : virtual public Factory {                        \
+  public:                                                                  \
+    std::string interfaceName() { return impl ## ::_interfaceNameSkel(); } \
+	Object_skel *createInstance() { return new impl ; }                    \
 } The_ ## impl ## _Factory;
 
 #endif

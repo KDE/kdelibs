@@ -56,16 +56,16 @@ class StdScheduleNode;
 class Port {
 protected:
 	AttributeType _flags;
-	string _name;
+	std::string _name;
 	void *_ptr;
 	StdScheduleNode *parent;
 
 public:
-	Port(string name, void *ptr, long flags, StdScheduleNode* parent);
+	Port(std::string name, void *ptr, long flags, StdScheduleNode* parent);
 	virtual ~Port();
 
 	AttributeType flags();
-	string name();
+	std::string name();
 	void setPtr(void *ptr);
 
 	virtual class AudioPort *audioPort();
@@ -77,7 +77,7 @@ public:
 
 class AudioPort : public Port {
 protected:
-	list<AudioPort *> destinations;
+	std::list<AudioPort *> destinations;
 	AudioPort *source;
 
 	void removeDestination(AudioPort *dest);
@@ -87,7 +87,7 @@ public:
 	SynthBuffer *buffer, *lbuffer;
 	unsigned long destcount, position;
 
-	AudioPort(string name, void *ptr, long flags,StdScheduleNode *parent);
+	AudioPort(std::string name, void *ptr, long flags,StdScheduleNode *parent);
 	~AudioPort();
 
 	virtual class AudioPort *audioPort();
@@ -155,14 +155,14 @@ public:
 
 class MultiPort : public Port {
 protected:
-	list<AudioPort *> parts;
+	std::list<AudioPort *> parts;
 	typedef float *float_ptr;
 	float **conns;
 	long nextID;
 	void initConns();
 
 public:
-	MultiPort(string name, void *ptr, long flags,StdScheduleNode *parent);
+	MultiPort(std::string name, void *ptr, long flags,StdScheduleNode *parent);
 	~MultiPort();
 
 	void connect(Port *port);
@@ -176,7 +176,7 @@ class StdScheduleNode :public ScheduleNode
 	Object_skel *object;
 	SynthModule *module;
 	FlowSystem *flowSystem;
-	list<Port *> ports;
+	std::list<Port *> ports;
 	AudioPort **inConn;
 	AudioPort **outConn;
 	unsigned long inConnCount, outConnCount;
@@ -186,7 +186,7 @@ class StdScheduleNode :public ScheduleNode
 	void rebuildConn();
 	void accessModule();
 
-	Port *findPort(string name);
+	Port *findPort(std::string name);
 
 	/** scheduling variables - directly accessed by other schedNodes **/
 
@@ -196,7 +196,7 @@ public:
 
 	StdScheduleNode(Object_skel *object, FlowSystem *flowSystem);
 	virtual ~StdScheduleNode();
-	void initStream(string name, void *ptr, long flags);
+	void initStream(std::string name, void *ptr, long flags);
 	void addDynamicPort(Port *port);
 	void removeDynamicPort(Port *port);
 
@@ -205,10 +205,10 @@ public:
 	void requireFlow();
 
 
-	void connect(string port, ScheduleNode *dest, string destport);
-	void disconnect(string port, ScheduleNode *dest, string destport);
+	void connect(std::string port, ScheduleNode *dest, std::string destport);
+	void disconnect(std::string port, ScheduleNode *dest, std::string destport);
 
-	void setFloatValue(string port, float value);
+	void setFloatValue(std::string port, float value);
 	long request(long amount);
 	unsigned long calc(unsigned long cycles);
 };
