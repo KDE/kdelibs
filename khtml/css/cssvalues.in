@@ -94,12 +94,12 @@ left
 right
 center
 justify
-konq-center
+-konq-center
 #
 # CSS_PROP_LIST_STYLE_POSITION: 
 #
-inside
 outside
+inside
 #
 # CSS_PROP_LIST_STYLE_TYPE:
 #
@@ -237,6 +237,9 @@ ultra-condensed
 ultra-expanded
 underline
 wider
+# CSS_PROP__KONQ_FLOW_MODE
+-konq-normal
+-konq-around-floats
 #
 # Not supported CSS 2 Aural values
 #

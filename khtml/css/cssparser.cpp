@@ -22,7 +22,7 @@
  * $Id$
  */
 
-#define CSS_DEBUG
+//#define CSS_DEBUG
 //#define CSS_AURAL
 //#define CSS_DEBUG_BCKGR
 
@@ -1222,7 +1222,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     {
         if (cssval) {
             int id = cssval->id;
-            if (id >= CSS_VAL_LEFT && id <= CSS_VAL_KONQ_CENTER) {
+            if (id >= CSS_VAL_LEFT && id <= CSS_VAL__KONQ_CENTER) {
                 parsedValue = new CSSPrimitiveValueImpl(cssval->id);
                 break;
             }
@@ -1306,7 +1306,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         const struct css_value *cssval1 = findValue( property1.string().ascii(),
                                                      property1.string().length());
         if ( !cssval1 ) {
-            int properties[2] = { CSS_PROP_KONQ_BGPOS_X, CSS_PROP_KONQ_BGPOS_Y };
+            int properties[2] = { CSS_PROP__KONQ_BGPOS_X, CSS_PROP__KONQ_BGPOS_Y };
             return parseShortHand(curP, endP, properties, 2);
         }
         const struct css_value *cssval2 = 0;
@@ -1355,19 +1355,19 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
          * -> No mix between keywords and other units.
          */
         if (valX !=-1 && valY !=-1) {
-                setParsedValue( CSS_PROP_KONQ_BGPOS_X,
+                setParsedValue( CSS_PROP__KONQ_BGPOS_X,
                                 new CSSPrimitiveValueImpl(valX, CSSPrimitiveValue::CSS_PERCENTAGE));
-                setParsedValue( CSS_PROP_KONQ_BGPOS_Y,
+                setParsedValue( CSS_PROP__KONQ_BGPOS_Y,
                                 new CSSPrimitiveValueImpl(valY, CSSPrimitiveValue::CSS_PERCENTAGE));
                 return true;
         }
         break;
     }
-    case CSS_PROP_KONQ_BGPOS_X:
-    case CSS_PROP_KONQ_BGPOS_Y:
+    case CSS_PROP__KONQ_BGPOS_X:
+    case CSS_PROP__KONQ_BGPOS_Y:
     {
 #ifdef CSS_DEBUG
-        kdDebug( 6080 ) << "CSS_PROP_KONQ_BGPOS_{X|Y}: " << val << endl;
+        kdDebug( 6080 ) << "CSS_PROP__KONQ_BGPOS_{X|Y}: " << val << endl;
 #endif
         parsedValue = parseUnit(curP, endP, PERCENT | NUMBER | LENGTH);
         break;
@@ -1457,15 +1457,14 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 #endif
         } else {
 			const QString str(value.stripWhiteSpace()); // ### Optimize
-			// ### short term hack to fix background image
-            //if (str.left(4).lower() == "url(") {
+            if (str.left(4).lower() == "url(") {
 				DOMString value(curP, endP - curP);
 				value = khtml::parseURL(value);
             	parsedValue = new CSSImageValueImpl(value, baseUrl(), this);
 #ifdef CSS_DEBUG
             kdDebug( 6080 ) << "image, url=" << value.string() << " base=" << baseUrl().string() << endl;
 #endif
-			//}
+			}
         }
         break;
     }
@@ -1715,7 +1714,12 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         }
         break;
     }
-
+    case CSS_PROP__KONQ_FLOW_MODE:
+    {
+        if (cssval->id==CSS_VAL__KONQ_NORMAL || cssval->id==CSS_VAL__KONQ_AROUND_FLOATS) 
+        parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+        break;
+    }
     /* shorthand properties */
 
     case CSS_PROP_BACKGROUND:  

@@ -63,9 +63,9 @@ DOM::DOMString getValueName(unsigned short id);
 #define CSS_VAL_RIGHT 52
 #define CSS_VAL_CENTER 53
 #define CSS_VAL_JUSTIFY 54
-#define CSS_VAL_KONQ_CENTER 55
-#define CSS_VAL_INSIDE 56
-#define CSS_VAL_OUTSIDE 57
+#define CSS_VAL__KONQ_CENTER 55
+#define CSS_VAL_OUTSIDE 56
+#define CSS_VAL_INSIDE 57
 #define CSS_VAL_DISC 58
 #define CSS_VAL_CIRCLE 59
 #define CSS_VAL_SQUARE 60
@@ -180,7 +180,9 @@ DOM::DOMString getValueName(unsigned short id);
 #define CSS_VAL_ULTRA_EXPANDED 169
 #define CSS_VAL_UNDERLINE 170
 #define CSS_VAL_WIDER 171
+#define CSS_VAL__KONQ_NORMAL 172
+#define CSS_VAL__KONQ_AROUND_FLOATS 173
 
-#define CSS_VAL_TOTAL 172
+#define CSS_VAL_TOTAL 174
 #endif
 

@@ -170,7 +170,7 @@ void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
 	    p = m_lstValues->next();
 	}
     } else if((unsigned) pos == m_lstValues->count() )
-	kdDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property=" << id << "value: " << value.string() << endl;
+	kdDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property=" << id << " value: " << value.string() << endl;
     if (m_node)
 	m_node->setChanged(true);
 }

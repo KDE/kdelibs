@@ -62,9 +62,9 @@ left, CSS_VAL_LEFT
 right, CSS_VAL_RIGHT
 center, CSS_VAL_CENTER
 justify, CSS_VAL_JUSTIFY
-konq-center, CSS_VAL_KONQ_CENTER
-inside, CSS_VAL_INSIDE
+-konq-center, CSS_VAL__KONQ_CENTER
 outside, CSS_VAL_OUTSIDE
+inside, CSS_VAL_INSIDE
 disc, CSS_VAL_DISC
 circle, CSS_VAL_CIRCLE
 square, CSS_VAL_SQUARE
@@ -179,4 +179,6 @@ ultra-condensed, CSS_VAL_ULTRA_CONDENSED
 ultra-expanded, CSS_VAL_ULTRA_EXPANDED
 underline, CSS_VAL_UNDERLINE
 wider, CSS_VAL_WIDER
+-konq-normal, CSS_VAL__KONQ_NORMAL
+-konq-around-floats, CSS_VAL__KONQ_AROUND_FLOATS
 %%

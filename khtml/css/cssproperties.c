@@ -26,7 +26,7 @@ hash_prop (register const char *str, register unsigned int len)
       717, 717, 717, 717, 717, 717, 717, 717, 717, 717,
       717, 717, 717, 717, 717, 717, 717, 717, 717, 717,
       717, 717, 717, 717, 717, 717, 717, 717, 717, 717,
-      717, 717, 717, 717, 717,   0, 717,  10,  40,   0,
+      717, 717, 717, 717, 717, 717, 717,  10,  40,   0,
         0,   0,  30,   0,  15,   0,   0, 180,   0,  55,
        45,   0,  80,   5,   0, 145,   0,  60,  10, 135,
       180,  65,   0, 717, 717, 717, 717, 717, 717, 717,
@@ -114,7 +114,7 @@ findProp (register const char *str, register unsigned int len)
 {
   enum
     {
-      TOTAL_KEYWORDS = 111,
+      TOTAL_KEYWORDS = 112,
       MIN_WORD_LENGTH = 3,
       MAX_WORD_LENGTH = 26,
       MIN_HASH_VALUE = 5,
@@ -223,16 +223,17 @@ findProp (register const char *str, register unsigned int len)
       {"background-repeat", CSS_PROP_BACKGROUND_REPEAT},
       {"font-size-adjust", CSS_PROP_FONT_SIZE_ADJUST},
       {"marker-offset", CSS_PROP_MARKER_OFFSET},
+      {"-konq-flow-mode", CSS_PROP__KONQ_FLOW_MODE},
       {"text-transform", CSS_PROP_TEXT_TRANSFORM},
       {"background-attachment", CSS_PROP_BACKGROUND_ATTACHMENT},
       {"text-shadow", CSS_PROP_TEXT_SHADOW},
       {"list-style-type", CSS_PROP_LIST_STYLE_TYPE},
       {"scrollbar-shadow-color", CSS_PROP_SCROLLBAR_SHADOW_COLOR},
       {"page-break-inside", CSS_PROP_PAGE_BREAK_INSIDE},
-      {"konq_bgpos_y", CSS_PROP_KONQ_BGPOS_Y},
+      {"-konq-bgpos-y", CSS_PROP__KONQ_BGPOS_Y},
       {"background-position", CSS_PROP_BACKGROUND_POSITION},
       {"list-style-position", CSS_PROP_LIST_STYLE_POSITION},
-      {"konq_bgpos_x", CSS_PROP_KONQ_BGPOS_X},
+      {"-konq-bgpos-x", CSS_PROP__KONQ_BGPOS_X},
       {"scrollbar-darkshadow-color", CSS_PROP_SCROLLBAR_DARKSHADOW_COLOR}
     };
 
@@ -284,32 +285,32 @@ findProp (register const char *str, register unsigned int len)
        -1,  -1,  -1,  -1,  -1,  -1,  96,  -1,  -1,  -1,
        -1,  -1,  97,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  98,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  99,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 100,
+       -1,  -1,  -1,  99,  -1, 100,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 101,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1, 101,  -1,  -1,  -1,  -1, 102,  -1,  -1,  -1,
+       -1, 102,  -1,  -1,  -1,  -1, 103,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1, 103,  -1,  -1,  -1,  -1,
-       -1,  -1, 104,  -1,  -1,  -1,  -1, 105,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1, 106,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1, 104,  -1,  -1,  -1,  -1,
+       -1,  -1, 105,  -1,  -1,  -1,  -1, 106,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1, 107,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1, 107,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1, 108,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1, 109,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1,  -1, 109,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
+       -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 110,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
        -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,
-       -1,  -1,  -1,  -1,  -1,  -1, 110
+       -1,  -1,  -1,  -1,  -1,  -1, 111
     };
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
@@ -450,8 +451,6 @@ static const char * propertyList[] = {
 "margin", 
 "outline", 
 "padding", 
-"konq_bgpos_x", 
-"konq_bgpos_y", 
 "scrollbar-face-color", 
 "scrollbar-shadow-color", 
 "scrollbar-highlight-color", 
@@ -459,6 +458,9 @@ static const char * propertyList[] = {
 "scrollbar-darkshadow-color", 
 "scrollbar-track-color", 
 "scrollbar-arrow-color", 
+"-konq-flow-mode", 
+"-konq-bgpos-x", 
+"-konq-bgpos-y", 
     0
 };
 DOMString getPropertyName(unsigned short id)

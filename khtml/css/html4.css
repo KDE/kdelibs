@@ -76,6 +76,7 @@ blockquote {
 	display: block;
 	margin-left: 40px; 
 	margin-right: 40px;
+        -konq-flow-mode: -konq-around-floats
 }
 
 IFRAME {
@@ -94,7 +95,7 @@ APPLET {
 CENTER { 
 	display: block;
 	/* special centering to be able to emulate the html4/netscape behaviour */
-	text-align: konq-center;
+	text-align: -konq-center;
 }  
       
 HR  { 
@@ -105,6 +106,7 @@ HR  {
         border-style: inset;
         margin-left: 1px; /* will be overwritten by ALIGN */ 
         margin-right: 1px; /* will be overwritten by ALIGN */
+        -konq-flow-mode: -konq-around-floats
 } 
  
 MAP { 
@@ -181,6 +183,7 @@ TABLE {
 	border-style: outset;
 	border-width: 0px;
 	padding: 1px;
+        -konq-flow-mode: -konq-around-floats;
 }
       
 TABLE[align="center"] { 
@@ -238,7 +241,7 @@ TH {
 
 CAPTION { 
 	display: table-caption;  
-	text-align: konq-center; 
+	text-align: -konq-center; 
 }
 
 /* don't use "TD[align=...] > *". This sould give problems with
@@ -267,6 +270,7 @@ UL, MENU, DIR {
         list-style-type: disc;
         margin: 1em 0;
         padding-left: 40px;
+        -konq-flow-mode: -konq-around-floats
 }
 
 OL {
@@ -274,6 +278,7 @@ OL {
         list-style-type: decimal;
         margin: 1em 0;
         padding-left: 40px;
+        -konq-flow-mode: -konq-around-floats
 }
 
 LI {
@@ -288,9 +293,6 @@ UL UL UL {
 	list-style-type: square;
 }
       
-LI { 
-	display: list-item;
-}
 
 DD {
 	display: block;
@@ -299,6 +301,7 @@ DD {
 
 DL {
 	display: block;
+        -konq-flow-mode: -konq-around-floats
 } 
 
 DT {

@@ -1115,7 +1115,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         }
         if(!primitiveValue) return;
         if(primitiveValue->getIdent())
-            style->setListStylePosition( (EListStylePosition) (primitiveValue->getIdent() - CSS_VAL_INSIDE) );
+            style->setListStylePosition( (EListStylePosition) (primitiveValue->getIdent() - CSS_VAL_OUTSIDE) );
         return;
     }
 
@@ -1268,7 +1268,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_BACKGROUND_POSITION:
         // CSS2BackgroundPosition
         break;
-    case CSS_PROP_KONQ_BGPOS_X:
+    case CSS_PROP__KONQ_BGPOS_X:
       {
       if(!primitiveValue) break;
       Length l;
@@ -1282,7 +1282,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
       style->setBackgroundXPosition(l);
       break;
       }
-    case CSS_PROP_KONQ_BGPOS_Y:
+    case CSS_PROP__KONQ_BGPOS_Y:
       {
       if(!primitiveValue) break;
       Length l;
@@ -2092,7 +2092,21 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         }
         break;
     }
-
+    
+    case CSS_PROP__KONQ_FLOW_MODE:
+        if(value->valueType() == CSSValue::CSS_INHERIT)
+        {
+            if(!e->parentNode()) return;
+            style->setFlowAroundFloats(e->parentNode()->style()->flowAroundFloats());
+            return;
+        }
+        if(!primitiveValue) return;
+        if(primitiveValue->getIdent())
+        {
+            style->setFlowAroundFloats( primitiveValue->getIdent() == CSS_VAL__KONQ_AROUND_FLOATS );
+            return;
+        }
+        break;
 //     case CSS_PROP_VOICE_FAMILY:
 //         // list of strings and i
 //         break;
