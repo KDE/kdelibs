@@ -141,7 +141,8 @@ public:
   /**
    * Adds a widget to the list of widgets that should be parsed for any 
    * children that KAutoConfig might know when retrieveSettings() is
-   * called.
+   * called.  All calls to this function should be made before calling
+   * retrieveSettings().
    * @param widget - Pointer to the widget to add.
    * @param group - Name of the group from which all of the settings for this
    * widget will be located.  If a child of 'widget' needs to be in a separate
@@ -152,7 +153,8 @@ public:
 
   /**
    * Ignore the specified child widget when performing an action.  Doesn't
-   * effect widgets that were added with addWidget() only their children.
+   * effect widgets that were added with addWidget() only their children. All
+   * calls to this function should be made before calling retrieveSettings().
    * @param widget - Pointer to the widget that should be ignored.
    * Note: Widgets that don't have a name are ignored automatically.
    **/ 
