@@ -541,6 +541,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
   {
     job->showErrorDialog();
     d->m_job = 0L;
+    emit canceled( job->errorString() ); 
     // TODO: what else ?
     return;
   }
@@ -1842,13 +1843,13 @@ bool KHTMLPart::openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs 
 
 void KHTMLPart::setDNDEnabled( bool b )
 {
-  d->m_view->setDNDEnabled( b ); 
+  d->m_view->setDNDEnabled( b );
 }
 
 bool KHTMLPart::dndEnabled() const
 {
-  return d->m_view->dndEnabled(); 
-} 
+  return d->m_view->dndEnabled();
+}
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
