@@ -262,10 +262,12 @@ AC_CHECK_ARTSDSP_STDIO_EMU
 KDE_CHECK_THREADING
 
 dnl somewhat more deeply nested template code than gcc understands by default
-KDE_CHECK_COMPILER_FLAG(ftemplate-depth-99,
-[
-  CXXFLAGS="$CXXFLAGS -ftemplate-depth-99"
-])
+if test "$GXX" = "yes"; then
+  KDE_CHECK_COMPILER_FLAG(ftemplate-depth-99,
+  [
+    CXXFLAGS="$CXXFLAGS -ftemplate-depth-99"
+  ])
+fi
  
 arts_with_alsa=yes
 AC_ARG_WITH(alsa, [  --with-alsa             enable aRts ALSA support],
