@@ -31,7 +31,7 @@ protected:
 	TraderHelper();
 	~TraderHelper();
 	void addDirectory(const string& directory, const string& iface = "",
-						map< pair<int,int>, bool > *dirsDone = 0);
+						map< pair<dev_t,ino_t>, bool > *dirsDone = 0);
 
 public:
 	vector<TraderOffer> *doQuery(const vector<TraderRestriction>& query);
@@ -212,14 +212,14 @@ TraderHelper::~TraderHelper()
 }
 
 void TraderHelper::addDirectory(const string& directory, const string& iface,
-								map< pair<int,int>, bool > *dirsDone)
+								map< pair<dev_t,ino_t>, bool > *dirsDone)
 {
 	arts_debug("addDirectory(%s,%s)", directory.c_str(), iface.c_str());
 
 	if(!dirsDone)
 	{
 		/* map to prevent doing directories again due to symlinks */
-		dirsDone = new map< pair<int,int>, bool >;
+		dirsDone = new map< pair<dev_t,ino_t>, bool >;
 
 		struct stat st;
 		stat(directory.c_str(), &st);
