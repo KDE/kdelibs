@@ -67,12 +67,13 @@ struct KSycocaPrivate {
     QString language;
     bool readError;
     Q_UINT32 updateSig;
+    QStringList allResourceDirs;
 };
 
 // Read-only constructor
 KSycoca::KSycoca()
   : DCOPObject("ksycoca"), m_lstFactories(0), m_str(0), bNoDatabase(false),
-    m_sycoca_size(0), m_sycoca_mmap(0)
+    m_sycoca_size(0), m_sycoca_mmap(0), m_timeStamp(0)
 {
    d = new KSycocaPrivate;
    // Register app as able to receive DCOP messages
@@ -350,6 +351,7 @@ QString KSycoca::kfsstnd_prefixes()
    (*m_str) >> m_timeStamp;
    KSycocaEntry::read(*m_str, d->language);
    (*m_str) >> d->updateSig;
+   KSycocaEntry::read(*m_str, d->allResourceDirs);
    return prefixes;
 }
 
@@ -372,6 +374,13 @@ QString KSycoca::language()
    if (d->language.isEmpty())
       (void) kfsstnd_prefixes();
    return d->language;
+}
+
+QStringList KSycoca::allResourceDirs()
+{
+   if (!m_timeStamp)
+      (void) kfsstnd_prefixes();
+   return d->allResourceDirs;
 }
 
 QString KSycoca::determineRelativePath( const QString & _fullpath, const char *_resource )

@@ -82,7 +82,12 @@ public slots:
    /**
     * Collect all directories to watch
     */
-   void build();
+   void updateDirWatch();
+
+   /**
+    * Update directories to watch
+    */
+   void updateResourceList();
 
    /**
     * An application unregistered itself with DCOP
@@ -145,6 +150,7 @@ protected:
    QAsciiDict<QObject> m_dontLoad;
    QAsciiDict<QValueList<long> > m_windowIdList;
    QIntDict<long> m_globalWindowIdList;
+   QStringList m_allResourceDirs;
      
    static Kded *_self;
 };

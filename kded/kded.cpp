@@ -22,8 +22,6 @@
 #include "kded.h"
 #include "kdedmodule.h"
 
-#include <kbuildservicetypefactory.h>
-#include <kbuildservicefactory.h>
 #include <kresourcelist.h>
 #include <kcrash.h>
 
@@ -76,27 +74,6 @@ static void runDontChangeHostname(const QCString &oldName, const QCString &newNa
    args.append(QFile::decodeName(newName));
    KApplication::kdeinitExecWait( "kdontchangethehostname", args );
 }
-
-class KBuildSycoca : public KSycoca
-{
-public:
-   KBuildSycoca() : KSycoca(true) { }
-
-   static KBuildSycoca* createBuildSycoca() 
-   { 
-      if (_self)
-         delete _self;
-      return new KBuildSycoca();
-   }
-
-   KSycocaFactoryList* factoryList() { return m_lstFactories; }
-
-   /**
-    * return true if building
-    */
-   virtual bool isBuilding() { return true; }
-};
-
 
 Kded::Kded(bool checkUpdates)
   : DCOPObject("kbuildsycoca"), DCOPObjectProxy(), 
@@ -280,11 +257,9 @@ void Kded::slotApplicationRemoved(const QCString &appId)
   }
 }
 
-void Kded::build()
+void Kded::updateDirWatch()
 {
   if (!b_checkUpdates) return;
-
-  KBuildSycoca* kbs = KBuildSycoca::createBuildSycoca();
 
   delete m_pDirWatch;
   m_pDirWatch = new KDirWatch;
@@ -296,42 +271,30 @@ void Kded::build()
   QObject::connect( m_pDirWatch, SIGNAL(deleted(const QString&)),
            this, SLOT(dirDeleted(const QString&)));
 
-  // It is very important to build the servicetype one first
-  // Both are registered in KSycoca, no need to keep the pointers
-  KSycocaFactory *stf = new KBuildServiceTypeFactory;
-  KBuildServiceGroupFactory *bsgf = new KBuildServiceGroupFactory;
-  (void) new KBuildServiceFactory(stf, bsgf);
-  // We don't include KImageIOFactory here because it doesn't add
-  // new resourceList entries anyway.
-  //(void) KImageIOFactory::self();
-  // Same for KBuildProtocolInfoFactory
-
-  KSycocaFactoryList *factoryList = kbs->factoryList();
-
-  // For each factory
-  QPtrListIterator<KSycocaFactory> factit ( *factoryList );
-  for (KSycocaFactory *factory = factoryList->first();
-       factory;
-       factory = factoryList->first() )
+  // For each resource 
+  for( QStringList::ConstIterator it = m_allResourceDirs.begin();
+       it != m_allResourceDirs.end();
+       ++it )
   {
-    // For each resource the factory deals with
-    for( KSycocaResourceList::ConstIterator it1 = factory->resourceList()->begin();
-         it1 != factory->resourceList()->end();
-         ++it1 )
-    {
-      KSycocaResource res = (*it1);
-      QStringList dirs = KGlobal::dirs()->resourceDirs( res.resource.ascii() );
-      // For each resource the factory deals with
-      for( QStringList::ConstIterator it2 = dirs.begin();
-           it2 != dirs.end();
-           ++it2 )
-      {
-	readDirectory( *it2 );
-      }
-    }
-    factoryList->removeRef(factory);
+     readDirectory( *it );
   }
-  delete kbs;
+}
+
+void Kded::updateResourceList()
+{
+  delete KSycoca::self();
+  QStringList dirs = KSycoca::self()->allResourceDirs();
+  // For each resource 
+  for( QStringList::ConstIterator it = dirs.begin();
+       it != dirs.end();
+       ++it )
+  {
+     if (m_allResourceDirs.find(*it) == m_allResourceDirs.end())
+     {
+        m_allResourceDirs.append(*it);
+        readDirectory(*it);
+     }
+  }
 }
 
 void Kded::crashHandler(int)
@@ -355,9 +318,11 @@ void Kded::recreate()
    // Using KLauncher here is difficult since we might not have a
    // database
 
-   build(); // Update tree first, to be sure to miss nothing.
+   updateDirWatch(); // Update tree first, to be sure to miss nothing.
 
    runBuildSycoca();
+   
+   updateResourceList();
 
    while( !m_requests.isEmpty())
    {

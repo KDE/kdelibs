@@ -34,7 +34,7 @@ class KSycocaFactoryList;
  * If the existing file is outdated, it will not get read
  * but instead we'll ask kded to regenerate a new one...
 */
-#define KSYCOCA_VERSION 61
+#define KSYCOCA_VERSION 62
 
 /**
  * @internal
@@ -102,6 +102,12 @@ public:
     * from scratch.
     */
    Q_UINT32 updateSignature();
+
+   /**
+    * @internal - returns all directories with information 
+    * stored inside sycoca.
+    */
+   QStringList allResourceDirs();
 
    /**
     * @internal - add a factory

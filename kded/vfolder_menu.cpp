@@ -94,6 +94,38 @@ static void replaceNode(QDomElement &docElem, QDomNode &n, const QStringList &li
 //   kdDebug(7021) << "Next tag = " << n.toElement().tagName() << endl;
 }
 
+void VFolderMenu::registerFile(const QString &file)
+{
+   int i = file.findRev('/');
+   if (i < 0)
+      return;
+   
+   QString dir = file.left(i+1); // Include trailing '/'
+   registerDirectory(dir);
+}
+
+void VFolderMenu::registerDirectory(const QString &directory)
+{
+   for(QStringList::Iterator it = m_allDirectories.begin();
+       it != m_allDirectories.end(); ++it)
+   {
+       if (directory.startsWith(*it))
+          return;
+       if ((*it).startsWith(directory))
+       {
+          // We only keep the most top-level directory.
+          *it = directory;
+          return;
+       }
+   }
+   m_allDirectories.prepend(directory);
+}
+
+QStringList VFolderMenu::allDirectories()
+{
+   return m_allDirectories;
+}
+
 void
 VFolderMenu::includeItems(QDict<KService> *items1, QDict<KService> *items2)
 {
@@ -514,6 +546,7 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
       else if( e.tagName() == "MergeDir") {
          QString dir = absoluteDir(e.text());
 
+         registerDirectory(dir);
          // We look for a set of files.
          DIR *dp = opendir( QFile::encodeName(dir));
          if (dp)
@@ -563,7 +596,9 @@ VFolderMenu::pushDocInfo(const QString &fileName)
 {
    m_docInfoStack.push(m_docInfo);
    QString baseName = fileName;
-   if (!baseName.startsWith("/"))
+   if (baseName.startsWith("/"))
+      registerFile(baseName);
+   else
       baseName = m_docInfo.baseDir + baseName;
    int i;
    
@@ -604,14 +639,22 @@ VFolderMenu::allConfLocations(const QString &fileName)
    QString tmp;
 
    tmp = KStandardDirs::realPath(m_desktopUserDir+fileName);
-   if (!locations.contains(tmp)) locations.append(tmp);
+   if (!locations.contains(tmp)) 
+   {
+      registerFile(tmp);
+      locations.append(tmp);
+   }
 
    for(QStringList::ConstIterator it = m_desktopSystemDirs.begin();
        it != m_desktopSystemDirs.end();
        ++it)
    {
       tmp = KStandardDirs::realPath((*it) + "etc/"+fileName);
-      if (!locations.contains(tmp)) locations.append(tmp);
+      if (!locations.contains(tmp)) 
+      {
+         registerFile(tmp);
+         locations.append(tmp);
+      }
    }
 
    // TODO: The spec refers to "sysconfdir" here
@@ -620,11 +663,19 @@ VFolderMenu::allConfLocations(const QString &fileName)
        ++it)
    {
       tmp = KStandardDirs::realPath((*it) + "share/" + fileName);
-      if (!locations.contains(tmp)) locations.append(tmp);
+      if (!locations.contains(tmp)) 
+      {
+         registerFile(tmp);
+         locations.append(tmp);
+      }
    }
    
    tmp = KStandardDirs::realPath("/etc/desktop/" + fileName);
-   if (!locations.contains(tmp)) locations.append(tmp);
+   if (!locations.contains(tmp))
+   {
+      registerFile(tmp);
+      locations.append(tmp);
+   }
 
    return locations;
 }
@@ -874,7 +925,7 @@ void
 VFolderMenu::loadApplications(const QString &dir, const QString &relDir)
 {
    kdDebug(7021) << "Looking up applications under " << dir << endl;
-   
+
    // We look for a set of files.
    DIR *dp = opendir( QFile::encodeName(dir));
    if (!dp)
@@ -1171,6 +1222,7 @@ kdDebug(7021) << "VFolder: adding menu " << name << endl;
             createAppsInfo(name);
             QString dir = absoluteDir(e.text());
             
+            registerDirectory(dir);
 
             loadApplications(dir, QString::null);
          }
@@ -1216,6 +1268,8 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
             {
                SubMenu *oldMenu = m_currentMenu;
                m_currentMenu = new SubMenu;
+
+               registerDirectory(dir);
 
                processLegacyDir(dir, QString::null);
 

@@ -45,7 +45,7 @@ public:
     */
    void recreate();
 
-   static bool checkTimestamps( Q_UINT32 timestamp );
+   static bool checkTimestamps( Q_UINT32 timestamp, const QStringList &dirs );
 
    static QStringList existingResourceDirs();
 
@@ -92,6 +92,8 @@ protected:
     * @return true if building (i.e. if a KBuildSycoca);
     */
    virtual bool isBuilding() { return true; }
+
+   QStringList m_allResourceDirs;
 };
 
 #endif

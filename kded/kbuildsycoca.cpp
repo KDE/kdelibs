@@ -69,6 +69,7 @@ static const char *g_resource = 0;
 static myEntryDict *g_entryDict = 0;
 static KSycocaEntryListList *g_allEntries = 0;
 static QStringList *g_changeList = 0;
+static QStringList *g_allResourceDirs = 0;
 static bool g_changed = false;
 
 static VFolderMenu *g_vfolder = 0;
@@ -343,6 +344,9 @@ bool KBuildSycoca::build()
 
      g_bsgf->addNew("/", QString::null);
      createMenu(QString::null, kdeMenu);
+     
+     (void) existingResourceDirs();
+     *g_allResourceDirs += g_vfolder->allDirectories(); 
 
      disconnect(g_vfolder, SIGNAL(newService(const QString &, KService **)),
              this, SLOT(slotCreateEntry(const QString &, KService **)));
@@ -426,6 +430,7 @@ void KBuildSycoca::recreate()
   QDataStream str( &ksycocastamp );
   str << newTimestamp;
   str << existingResourceDirs();
+  str << g_vfolder->allDirectories(); // Extra resource dirs
 
   // Recreate compatibility symlink
   QString oldPath = oldSycocaPath();
@@ -471,6 +476,7 @@ void KBuildSycoca::save()
    (*m_str) << newTimestamp;
    (*m_str) << KGlobal::locale()->language();
    (*m_str) << KGlobal::dirs()->calcResourceHash("services", "update_ksycoca", true);
+   (*m_str) << (*g_allResourceDirs);
 
    // Write factory data....
    for(KSycocaFactory *factory = m_lstFactories->first();
@@ -543,13 +549,12 @@ bool KBuildSycoca::checkDirTimestamps( const QString& dirname, const QDateTime& 
 // and also their directories
 // if all of them all older than the timestamp in file ksycocastamp, this
 // means that there's no need to rebuild ksycoca
-bool KBuildSycoca::checkTimestamps( Q_UINT32 timestamp )
+bool KBuildSycoca::checkTimestamps( Q_UINT32 timestamp, const QStringList &dirs )
 {
    kdDebug( 7021 ) << "checking file timestamps" << endl;
-   QStringList dirs = existingResourceDirs();
    QDateTime stamp;
    stamp.setTime_t( timestamp );
-   for( QStringList::Iterator it = dirs.begin();
+   for( QStringList::ConstIterator it = dirs.begin();
         it != dirs.end();
         ++it )
    {
@@ -566,6 +571,7 @@ QStringList KBuildSycoca::existingResourceDirs()
    if( dirs != NULL )
        return *dirs;
    dirs = new QStringList;
+   g_allResourceDirs = new QStringList;
    // these are all resources cached by ksycoca
    QStringList resources;
    resources += KBuildServiceTypeFactory::resourceTypes();
@@ -579,6 +585,9 @@ QStringList KBuildSycoca::existingResourceDirs()
       *dirs += KGlobal::dirs()->resourceDirs( res.latin1());
       resources.remove( res ); // remove this 'res' and all its duplicates
    }
+   
+   *g_allResourceDirs = *dirs;
+   
    for( QStringList::Iterator it = dirs->begin();
         it != dirs->end(); )
    {
@@ -689,26 +698,34 @@ int main(int argc, char **argv)
 
    bool checkstamps = incremental && args->isSet("checkstamps");
    Q_UINT32 filestamp = 0;
+   QStringList oldresourcedirs;
    if( checkstamps && incremental )
-       {
+   {
        QString path = KGlobal::dirs()->saveLocation("cache")+"ksycocastamp";
        QFile ksycocastamp(path);
        if( ksycocastamp.open( IO_ReadOnly ))
-           {
+       {
            QDataStream str( &ksycocastamp );
            str >> filestamp;
-           QStringList oldresourcedirs;
            str >> oldresourcedirs;
            if( oldresourcedirs != KBuildSycoca::existingResourceDirs())
                checkstamps = false;
+           if (!str.atEnd())
+           {
+              QStringList extraResourceDirs;
+              str >> extraResourceDirs;
+              oldresourcedirs += extraResourceDirs;
            }
+       }
        else
+       {
            checkstamps = false;
        }
+   }
 
    newTimestamp = (Q_UINT32) time(0);
 
-   if( !checkstamps || !KBuildSycoca::checkTimestamps( filestamp ))
+   if( !checkstamps || !KBuildSycoca::checkTimestamps( filestamp, oldresourcedirs ))
    {
       QCString qSycocaPath = QFile::encodeName(sycocaPath());
       cSycocaPath = qSycocaPath.data();

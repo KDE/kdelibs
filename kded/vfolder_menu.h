@@ -48,6 +48,15 @@ public:
    * directory should be processed at least once.
    */
   SubMenu *parseMenu(const QString &file, bool forceLegacyLoad=false);
+  
+  /**
+   * Returns a list of all directories involved in the last call to 
+   * parseMenu(), excluding the KDE Legacy directories.
+   *
+   * A change in any of these directories or in any of their child-
+   * directories can result in changes to the menu.
+   */
+  QStringList allDirectories();
 
 signals:
   void newService(const QString &path, KService **entry);
@@ -66,6 +75,8 @@ public:
   };
 
 public:  
+  QStringList m_allDirectories; // A list of all the directories that we touch
+
   QStringList m_desktopSystemDirs;
 
   QStringList m_defaultDataDirs;
@@ -199,6 +210,18 @@ private:
    * Any missing sub-menus are created.
    */
   void insertService(SubMenu *parentMenu, const QString &name, KService *newService);
+
+  /**
+   * Register the directory that @p file is in.
+   * @see allDirectories()
+   */
+  void registerFile(const QString &file);
+
+  /**
+   * Register @p directory
+   * @see allDirectories()
+   */
+  void registerDirectory(const QString &directory);
 
   void processKDELegacyDirs();
   void processLegacyDir(const QString &dir, const QString &relDir);
