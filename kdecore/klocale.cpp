@@ -800,10 +800,10 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 	rst.replace(i, 2, QString().sprintf("%2d", pTime.hour()));
 	continue;
       case 'I':
-	rst.replace(i, 2, QString().sprintf("%02d", pTime.hour() % 12?pTime.hour() % 12 : 12));
+	rst.replace(i, 2, QString().sprintf("%02d", (pTime.hour() + 11) % 12 + 1));
 	continue;
       case 'l':
-	rst.replace(i, 2, QString().sprintf("%2d", (pTime.hour() - 1) % 12 + 1));
+	rst.replace(i, 2, QString().sprintf("%2d",  (pTime.hour() + 11) % 12 + 1));
 	continue;
       case 'M':
 	rst.replace(i, 2, QString().sprintf("%02d", pTime.minute()));
