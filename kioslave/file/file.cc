@@ -154,8 +154,6 @@ void FileProtocol::get( const KURL& url )
 
     totalSize( buff.st_size );
     KIO::filesize_t processed_size = 0;
-    time_t t_start = time( 0L );
-    time_t t_last = t_start;
 
     char buffer[ MAX_IPC_SIZE ];
     QByteArray array;
@@ -179,13 +177,7 @@ void FileProtocol::get( const KURL& url )
        array.resetRawData(buffer, n);
 
        processed_size += n;
-       time_t t = time( 0L );
-       if ( t - t_last >= 1 )
-       {
-          processedSize( processed_size );
-          speed( processed_size / ( t - t_start ) );
-          t_last = t;
-       }
+       processedSize( processed_size );
     }
 
     data( QByteArray() );
@@ -193,10 +185,6 @@ void FileProtocol::get( const KURL& url )
     close( fd );
 
     processedSize( buff.st_size );
-    time_t t = time( 0L );
-    if ( t - t_start >= 1 )
-	speed( processed_size / ( t - t_start ) );
-
     finished();
 }
 
@@ -457,8 +445,6 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
 
     totalSize( buff_src.st_size );
     KIO::filesize_t processed_size = 0;
-    time_t t_start = time( 0L );
-    time_t t_last = t_start;
 
     char buffer[ MAX_IPC_SIZE ];
     QByteArray array;
@@ -496,13 +482,7 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
        }
 
        processed_size += n;
-       time_t t = time( 0L );
-       if ( t - t_last >= 1 )
-       {
-          processedSize( processed_size );
-	  speed( processed_size / ( t - t_start ) );
-	  t_last = t;
-       }
+       processedSize( processed_size );
     }
 
     close( src_fd );
@@ -531,10 +511,6 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
         kdWarning() << QString::fromLatin1("Couldn't preserve access and modification time for\n%1").arg( dest.path() ) << endl;
 
     processedSize( buff_src.st_size );
-    time_t t = time( 0L );
-    if ( t - t_start >= 1 )
-	speed( processed_size / ( t - t_start ) );
-
     finished();
 }
 
