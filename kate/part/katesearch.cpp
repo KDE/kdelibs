@@ -87,10 +87,16 @@ void KateSearch::addToList( QStringList& list, const QString& s )
 
 void KateSearch::find()
 {
-  KFindDialog *findDialog = new KFindDialog (  m_view, "", KateViewConfig::global()->searchFlags(),
+  // if multiline selection around, search in it
+  long searchf = KateViewConfig::global()->searchFlags();
+  if (m_doc->hasSelection() && m_doc->selStartLine() != m_doc->selEndLine())
+    searchf |= KFindDialog::SelectedText;
+
+  KFindDialog *findDialog = new KFindDialog (  m_view, "", searchf,
                                                s_searchList, m_doc->hasSelection() );
 
   findDialog->setPattern (getSearchText());
+
 
   if( findDialog->exec() == QDialog::Accepted ) {
     s_searchList =  findDialog->findHistory () ;
@@ -132,7 +138,12 @@ void KateSearch::replace()
 {
   if (!doc()->isReadWrite()) return;
 
-  KReplaceDialog *replaceDialog = new KReplaceDialog (  m_view, "", KateViewConfig::global()->searchFlags(),
+  // if multiline selection around, search in it
+  long searchf = KateViewConfig::global()->searchFlags();
+  if (m_doc->hasSelection() && m_doc->selStartLine() != m_doc->selEndLine())
+    searchf |= KFindDialog::SelectedText;
+
+  KReplaceDialog *replaceDialog = new KReplaceDialog (  m_view, "", searchf,
                                                s_searchList, s_replaceList, m_doc->hasSelection() );
 
   replaceDialog->setPattern (getSearchText());
