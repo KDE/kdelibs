@@ -266,9 +266,6 @@ class AddressBook : public QObject
   private:
     struct AddressBookData;
     AddressBookData *d;
-
-  protected:
-    QPtrList<Resource> mResources;
 };
 
 QDataStream &operator<<( QDataStream &, const AddressBook & );

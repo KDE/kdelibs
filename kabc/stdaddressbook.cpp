@@ -62,38 +62,37 @@ bool StdAddressBook::save()
 StdAddressBook::StdAddressBook()
 {
   kdDebug() << "StdAddressBook::StdAddressBook()" << endl;
+  
+    KSimpleConfig config( "kabcrc", true );
+    ResourceFactory *factory = ResourceFactory::self();
+    config.setGroup( "General" );
 
-  KSimpleConfig config( "kabcrc", true );
-  ResourceFactory *factory = ResourceFactory::self();
-  config.setGroup( "General" );
+    QStringList keys = config.readListEntry( "ResourceKeys" );
+    for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
+	config.setGroup( "Resource_" + (*it) );
+	QString type = config.readEntry( "ResourceType" );
 
-  QStringList keys = config.readListEntry( "ResourceKeys" );
-  for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
-    kdDebug() << " -- " << (*it) << endl; 
-    config.setGroup( "Resource_" + (*it) );
-    QString type = config.readEntry( "ResourceType" );
+	Resource *resource = factory->resource( type, this, &config );
 
-    Resource *resource = factory->resource( type, this, &config );
+	if ( !resource )
+	    continue;
 
-    if ( !resource ) continue;
+	resource->setReadOnly( config.readBoolEntry( "ResourceIsReadOnly" ) );
+	resource->setFastResource( config.readBoolEntry( "ResourceIsFast" ) );
+	resource->setName( config.readEntry( "ResourceName" ) );
 
-    resource->setReadOnly( config.readBoolEntry( "ResourceIsReadOnly" ) );
-    resource->setFastResource( config.readBoolEntry( "ResourceIsFast" ) );
-    resource->setName( config.readEntry( "ResourceName" ) );
+	if ( !addResource( resource ) )
+	    delete resource;
+    }
 
-    if ( !addResource( resource ) ) delete resource;
-  }
-
-  if ( mResources.count() == 0 ) {  // default resource
-    kdDebug() << "Default resource" << endl;
-
-    Resource *resource = new ResourceFile( this, fileName(), new VCardFormat );
-    resource->setName( "Default" );
-    resource->setReadOnly( false );
-    resource->setFastResource( true );
-        
-    if ( !addResource( resource ) ) delete resource;
-  }
+    QPtrList<Resource> list = resources();
+    if ( list.count() == 0 ) {  // default resource
+	Resource *resource = new ResourceFile( this,
+		locateLocal( "data", "kabc/std.vcf" ), new VCardFormat );
+	resource->setName( "Default" );
+	resource->setReadOnly( false );
+	resource->setFastResource( true );
+    }
 
   load();
 }

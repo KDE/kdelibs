@@ -42,7 +42,7 @@ class Resource {
 
     AddressBook *addressBook() { return mAddressBook; }
 
-    virtual QString identifier();
+    virtual QString identifier() const;
 
     virtual void removeAddressee( const Addressee& addr );
 

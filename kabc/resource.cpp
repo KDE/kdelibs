@@ -48,7 +48,7 @@ Ticket *Resource::createTicket( Resource *resource )
   return new Ticket( resource );
 }
 
-QString Resource::identifier()
+QString Resource::identifier() const
 {
   return "NoIdentifier";
 }
