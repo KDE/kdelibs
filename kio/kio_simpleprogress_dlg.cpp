@@ -76,7 +76,7 @@ KIOSimpleProgressDlg::KIOSimpleProgressDlg( KIOJob* _job, bool m_bStartIconified
 }
 
 
-void KIOSimpleProgressDlg::done( int r ) 
+void KIOSimpleProgressDlg::done( int ) 
 {
   if ( m_pJob )
     m_pJob->m_pSimpleProgressDlg = 0L;

@@ -321,7 +321,7 @@ void KIOListProgressDlg::slotUpdate()
 }
 
 
-void KIOListProgressDlg::slotSelected( int id )
+void KIOListProgressDlg::slotSelected( int )
 {
   updateToolBar();
 }

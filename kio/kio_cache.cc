@@ -544,7 +544,7 @@ QString KIOCache::trimURL(const QString &url)
   return u.url();
 }
 
-QDateTime KIOCache::defaultExpire(const KIOCacheEntry *entry)
+QDateTime KIOCache::defaultExpire(const KIOCacheEntry *)
 {
     // Not really implemented yet, simply return an invalid date
     // meaning 'expire never'. 

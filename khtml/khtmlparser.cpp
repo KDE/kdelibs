@@ -430,19 +430,19 @@ void KHTMLParser::freeBlock()
     blockStack = 0;
 }
 
-void KHTMLParser::blockEnd( HTMLStackElem *Elem)
+void KHTMLParser::blockEnd( HTMLStackElem *)
 {
     vspace_inserted = insertVSpace( vspace_inserted );
     flow = 0;
 }
 
-void KHTMLParser::blockEndAnchor( HTMLStackElem *Elem)
+void KHTMLParser::blockEndAnchor( HTMLStackElem *)
 {  
     url = 0;
     target = 0;
 }
 
-void KHTMLParser::blockEndPre( HTMLStackElem *Elem)
+void KHTMLParser::blockEndPre( HTMLStackElem *)
 {
     // We add a hidden space to get the height
     // If there is no flow box, we add one.
@@ -488,14 +488,14 @@ void KHTMLParser::blockEndFrameSet( HTMLStackElem *Elem)
     frameSet = oldFrameSet;
 }
 
-void KHTMLParser::blockEndForm( HTMLStackElem *Elem)
+void KHTMLParser::blockEndForm( HTMLStackElem *)
 {
     vspace_inserted = insertVSpace( vspace_inserted );
     flow = 0;
     form = 0;
 }
 
-void KHTMLParser::blockEndTextarea( HTMLStackElem *Elem)
+void KHTMLParser::blockEndTextarea( HTMLStackElem *)
 {
     formTextArea->setText( formText );
     inTextArea = false;
@@ -503,7 +503,7 @@ void KHTMLParser::blockEndTextarea( HTMLStackElem *Elem)
     formTextArea = 0;
 }
 
-void KHTMLParser::blockEndTitle( HTMLStackElem *Elem)
+void KHTMLParser::blockEndTitle( HTMLStackElem *)
 {
     HTMLWidget->setNewTitle( title.data() );
     inTitle = false;	

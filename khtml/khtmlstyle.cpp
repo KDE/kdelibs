@@ -165,14 +165,14 @@ CSSStyleSheet::newStyle(CSSStyle *parentStyle)
 }
 
 void
-CSSStyleSheet::getStyle(int tagID, HTMLStackElem *tagStack, 
-                        CSSStyle *styleElem, 
-                        const char *klass, const char *id)
+CSSStyleSheet::getStyle(int /*tagID*/, HTMLStackElem */*tagStack*/, 
+                        CSSStyle */*styleElem*/, 
+                        const char */*klass*/, const char */*id*/)
 {
 }
 
 void
-CSSStyleSheet::addStyle(CSSStyle *currentStyle, const char *CSSString)
+CSSStyleSheet::addStyle(CSSStyle */*currentStyle*/, const char */*CSSString*/)
 {
 }
 

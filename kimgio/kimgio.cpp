@@ -22,6 +22,18 @@ static int registered = 0;
 #include <ltdl.h>
 #include "kimgio-config.h"
 
+#ifdef LINKED_png
+extern void kimgio_init_png();
+#endif
+
+#ifdef LINKED_jpeg
+extern void kimgio_init_jpeg();
+#endif
+
+#ifdef LINKED_tiff
+extern kimgio_init_tiff();
+#endif
+
 void kimgioRegister(void)
 {
 	if( registered ) {

@@ -65,7 +65,7 @@ hash (register const char *str, register int len)
 
 static const struct tags wordlist[] =
 {
-      {"",}, 
+      {"", 0}, 
       {"a",  ID_A},
       {"tt",  ID_TT},
       {"s",  ID_S},
@@ -159,7 +159,7 @@ static const struct tags wordlist[] =
       {"noscript",  ID_NOSCRIPT},
       {"blockquote",  ID_BLOCKQUOTE},
       {"colgroup",  ID_COLGROUP},
-      {"optgroup",  ID_OPTGROUP},
+      {"optgroup",  ID_OPTGROUP}
 };
 
 static const short lookup[] =

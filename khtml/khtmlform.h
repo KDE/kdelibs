@@ -83,7 +83,7 @@ public:
 
 	virtual void calcAbsolutePos( int , int ) {}
 
-	virtual void resetElement(const char *data = 0) { }
+	virtual void resetElement(const char * = 0) { }
 
 protected:
 	// encode special characters

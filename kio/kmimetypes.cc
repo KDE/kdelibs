@@ -541,7 +541,7 @@ bool KDEDesktopMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
   return true;
 }
 
-bool KDEDesktopMimeType::runApplication( const QString& _url, KSimpleConfig &cfg )
+bool KDEDesktopMimeType::runApplication( const QString& , KSimpleConfig &cfg )
 {
   KService s( cfg, false );
   if ( !s.isValid() )
@@ -569,7 +569,7 @@ bool KDEDesktopMimeType::runLink( const QString& _url, KSimpleConfig &cfg )
   return true;
 }
 
-bool KDEDesktopMimeType::runMimeType( const QString& _url, KSimpleConfig &cfg )
+bool KDEDesktopMimeType::runMimeType( const QString& , KSimpleConfig & )
 {
   // HACK: TODO
   return false;

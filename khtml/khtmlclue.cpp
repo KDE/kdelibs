@@ -2069,7 +2069,7 @@ int HTMLClueFlow::calcPreferredWidth()
 // A second difference is that the size of a HTMLClueAligned is always
 // equal to its actual contents. 
 //
-void HTMLClueAligned::calcSize( HTMLClue *parent )
+void HTMLClueAligned::calcSize( HTMLClue * )
 {
     HTMLObject *obj;
     int new_width = 0;

@@ -211,7 +211,7 @@ int KHTMLWidget::cacheSize()
 /////////////////////////////////////////////////// 
                                               
 void KHTMLWidget::requestFile( HTMLObject *_obj, const char *_url, 
-			       bool update )
+			       bool )
 {
   printf("==== REQUEST %s  ====\n", _url );
   
@@ -645,7 +645,7 @@ const char* KHTMLWidget::getURL( QPoint &p )
     return 0;
 }
 
-void KHTMLWidget::select( QPainter * _painter, QRect &_rect )
+void KHTMLWidget::select( QPainter * , QRect &_rect )
 {
     if ( clue == 0 )
 	return;
@@ -1853,7 +1853,7 @@ void KHTMLWidget::slotUpdateSelectText( int )
 	}
 }
 
-void KHTMLWidget::select( QPainter *_painter, bool _select )
+void KHTMLWidget::select( QPainter *, bool _select )
 {
     if ( clue == 0 )
 	return;
@@ -1866,7 +1866,7 @@ void KHTMLWidget::select( QPainter *_painter, bool _select )
     clue->select( this, &chain, _select, tx, ty );
 }
 
-void KHTMLWidget::selectByURL( QPainter *_painter, const char *_url, bool _select )
+void KHTMLWidget::selectByURL( QPainter *, const char *_url, bool _select )
 {
     if ( clue == 0 )
 	return;
@@ -1879,7 +1879,7 @@ void KHTMLWidget::selectByURL( QPainter *_painter, const char *_url, bool _selec
     clue->selectByURL( this, &chain, _url, _select, tx, ty );
 }
 
-void KHTMLWidget::select( QPainter *_painter, QRegExp& _pattern, bool _select )
+void KHTMLWidget::select( QPainter *, QRegExp& _pattern, bool _select )
 {
     if ( clue == 0 )
 	return;

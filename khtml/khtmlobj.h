@@ -101,9 +101,9 @@ public:
      * If 'startOfLine' is 'false', this function may return 'HTMLNoFit' to 
      * indicate it is not possible to use the specified 'widthLeft'.
      */
-    virtual HTMLFitType fitLine( bool startOfLine, 
-				 bool firstRun, 
-				 int widthLeft ) 
+    virtual HTMLFitType fitLine( bool , 
+				 bool , 
+				 int ) 
     { return HTMLCompleteFit; }
     
     /**
@@ -128,7 +128,7 @@ public:
 
     virtual void setMaxAscent( int ) { }
     virtual void setMaxDescent( int ) { }
-    virtual void setMaxWidth( int _w ) { }
+    virtual void setMaxWidth( int ) { }
     virtual int  findPageBreak( int _y );
 
     /**
@@ -434,15 +434,15 @@ public:
     virtual int  calcMinWidth() { return minWidth; }
     virtual int  calcPreferredWidth() { return prefWidth; }
     virtual HTMLFitType fitLine( bool startOfLine, bool firstRun, int widthLeft );
-    virtual bool print( QPainter *_painter, int _x, int _y, int _width,
-					    int _height, int _tx, int _ty, bool toPrinter )
+    virtual bool print( QPainter *, int , int , int ,
+					    int , int , int , bool )
 	    { return false; } // Dummy
-    virtual void print( QPainter *, int _tx, int _ty )
+    virtual void print( QPainter *, int , int )
     	{ } // Dummy
     virtual void recalcBaseSize( QPainter * ) 
         { } // Dummy
-    virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
-							 int _y1, int _x2, int _y2, int _tx, int _ty )
+    virtual bool selectText( KHTMLWidget *, HTMLChain *, int ,
+				 int , int , int , int , int  )
 		{ return false; } // Dummy
     virtual bool selectText( const QRegExp & ) { return false; }
 

@@ -129,50 +129,50 @@ void KFM::openURL()
   warning("Deprecated KFM::openURL called. Use 'kfmclient openURL' instead.");
 }
 
-void KFM::openURL( const char *_url )
+void KFM::openURL( const char * )
 {
   warning("Deprecated KFM::openURL called. Use 'kfmclient openURL' instead.");
 }
 
-void KFM::list( const char *_url )
+void KFM::list( const char * )
 {
 }
 
-void KFM::refreshDirectory( const char *_url )
+void KFM::refreshDirectory( const char *)
 {
 }
 
-void KFM::openProperties( const char *_url )
+void KFM::openProperties( const char * )
 {
   warning("Deprecated KFM::openURL called. Use PropertiesDialog (kio_dlgprops.h) instead.");
 }
 
-void KFM::exec( const char *_url, const char *_binding )
+void KFM::exec( const char *, const char * )
 {
   warning("Deprecated KFM::openURL called. Use KRun instead.");
 }
 
-void KFM::copy( const char *_src, const char *_dest )
+void KFM::copy( const char *, const char * )
 {
   warning("Deprecated KFM::copy called. Use KIOJob instead.");
 }
 
-void KFM::move( const char *_src, const char *_dest )
+void KFM::move( const char *, const char * )
 {
   warning("Deprecated KFM::move called. Use KIOJob instead.");
 }
 
-void KFM::copyClient( const char *_src, const char *_dest )
+void KFM::copyClient( const char *, const char * )
 {
   warning("Deprecated KFM::copyClient called. Use KIOJob instead.");
 }
 
-void KFM::moveClient( const char *_src, const char *_dest )
+void KFM::moveClient( const char *, const char * )
 {
   warning("Deprecated KFM::moveClient called. Use KIOJob instead.");
 }
 
-void KFM::selectRootIcons( int _x, int _y, int _w, int _h, bool _add )
+void KFM::selectRootIcons( int , int , int, int,  bool )
 {
 }
 

@@ -69,7 +69,7 @@ void KThemeStyle::unPolish(QWidget* w)
 
 void KThemeStyle::drawBaseButton(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool sunken, bool
-                                 rounded, WidgetType type, const QBrush *fill)
+                                 rounded, WidgetType type, const QBrush *)
 {
     int offset = decoWidth(type);
     QPen oldPen = p->pen();
@@ -153,7 +153,7 @@ void KThemeStyle::drawComboButtonMask(QPainter *p, int x, int y, int w, int h)
  
 void KThemeStyle::drawBevelButton(QPainter *p, int x, int y, int w, int h,
                                   const QColorGroup &g, bool sunken,
-                                  const QBrush *fill)
+                                  const QBrush *)
 {
     drawBaseButton(p, x, y, w, h, g, sunken, false, Bevel);
 }
@@ -263,8 +263,7 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
 }
 
 void KThemeStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
-                                 const QColorGroup &g, bool horizontal,
-                                 QBrush *)
+                                 const QColorGroup &g, bool, QBrush *)
 {
     drawBaseButton(p, x, y, w, h, g, false, false, BarHandle);
 }
@@ -283,7 +282,7 @@ QRect KThemeStyle::buttonRect(int x, int y, int w, int h)
 
 void KThemeStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
                                   const QColorGroup &g, bool sunken, bool,
-                                  bool, const QBrush *fill)
+                                  bool, const QBrush *)
 {
     drawBaseButton(p, x, y, w, h, g, sunken, false, ComboBox);
     if(isPixmap(ComboDeco))
@@ -665,7 +664,7 @@ int KThemeStyle::sliderLength() const
 
 void KThemeStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
                             int y, int w, int h, const QColorGroup &g,
-                            bool enabled, const QBrush *fill)
+                            bool enabled, const QBrush *)
 {
     if(arrowType() == MotifArrow)
         qDrawArrow(p, type, Qt::MotifStyle, down, x, y, w, h, g, enabled);

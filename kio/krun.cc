@@ -237,7 +237,7 @@ bool KRun::run( const QString& _cmd )
   return true;
 }
 
-bool KRun::runOldApplication( const QString& _exec, QStringList& _urls, bool _allow_multiple )
+bool KRun::runOldApplication( const QString& , QStringList& _urls, bool _allow_multiple )
 {
   char **argv = 0L;
   

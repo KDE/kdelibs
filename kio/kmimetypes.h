@@ -49,22 +49,22 @@ public:
    * @param _url may be empty.
    * @returns the path to the icon associated with this MIME type.
    */
-  virtual QString icon( const QString& _url, bool _is_local ) const { return m_strIcon; }
+  virtual QString icon( const QString& , bool ) const { return m_strIcon; }
   /**
    * this function differs from the above only in that a KURL may be
    * provided instead of a QString for convenience.
    */
-  virtual QString icon( const KURL& _url, bool _is_local ) const { return m_strIcon; }
+  virtual QString icon( const KURL& , bool ) const { return m_strIcon; }
   /**
    * @param _url may be 0L
    * @returns the descriptive comment associated with the MIME type, if any.
    */
-  virtual QString comment( const QString& _url, bool _is_local ) const { return m_strComment; }
+  virtual QString comment( const QString&, bool ) const { return m_strComment; }
   /**
    * this function differs from the above only in that a KURL may be
    * provided instead of a QString for convenience.
    */
-  virtual QString comment( const KURL& _url, bool _is_local ) const { return m_strComment; }
+  virtual QString comment( const KURL&, bool ) const { return m_strComment; }
   /**
    * @deprecated
    * Use @ref KServiceType::name instead.

@@ -136,7 +136,7 @@ HTMLElement::~HTMLElement()
 
 HTMLWidgetElement *HTMLWidgetElement::currentFormFocusWidget = 0L;
 
-HTMLWidgetElement::HTMLWidgetElement( const char *n, const HTMLFont *f = 0 ) 
+HTMLWidgetElement::HTMLWidgetElement( const char *n, const HTMLFont *f) 
     : HTMLElement( n )
 { 
     _absX = 0; 
@@ -234,7 +234,7 @@ void HTMLWidgetElement::paintWidget( QWidget *widget )
      }  
 }
 
-HTMLObject *HTMLWidgetElement::mouseEvent( int _x, int _y, int button, int state )
+HTMLObject *HTMLWidgetElement::mouseEvent( int , int, int , int )
 {
 //    printf("currentFormFocusWidget = %p ; this = %p \n", currentFormFocusWidget, this );
 
@@ -420,7 +420,7 @@ QString HTMLSelect::encoding()
     return _encoding;
 }
 
-void HTMLSelect::resetElement(const char *data)
+void HTMLSelect::resetElement(const char *)
 {
 	if ( _size > 1 )
 		((QListBox *)widget())->setCurrentItem( _defSelected );
@@ -600,7 +600,7 @@ QString HTMLCheckBox::encoding()
 	return _encoding;
 }
 
-void HTMLCheckBox::resetElement(const char *data)
+void HTMLCheckBox::resetElement(const char *)
 {
 	((QCheckBox *)widget())->setChecked( _defCheck );
 }
@@ -668,7 +668,7 @@ QString HTMLRadio::encoding()
 	return _encoding;
 }
 
-void HTMLRadio::resetElement(const char *data)
+void HTMLRadio::resetElement(const char *)
 {
 	((QRadioButton *)widget())->setChecked( _defCheck );
 }
@@ -1038,8 +1038,8 @@ void HTMLMultiLineEditWidget::paintEvent( QPaintEvent *pe )
 
 //----------------------------------------------------------------------------
 
-HTMLPushButtonWidget::HTMLPushButtonWidget( HTMLWidgetElement *htmlParent, QWidget *parent = 0, const char *name = 0)
-: QPushButton( parent )
+HTMLPushButtonWidget::HTMLPushButtonWidget( HTMLWidgetElement *htmlParent, QWidget *parent, const char *name)
+: QPushButton( parent , name)
 {
   widgetElement = htmlParent;
 }
@@ -1048,7 +1048,7 @@ HTMLPushButtonWidget::~HTMLPushButtonWidget()
 {
 }
 
-void HTMLPushButtonWidget::paintEvent( QPaintEvent *pe )
+void HTMLPushButtonWidget::paintEvent( QPaintEvent * )
 {
   QPainter painter;
   
@@ -1061,8 +1061,8 @@ void HTMLPushButtonWidget::paintEvent( QPaintEvent *pe )
 
 //----------------------------------------------------------------------------
 
-HTMLRadioButtonWidget::HTMLRadioButtonWidget( HTMLWidgetElement *htmlParent, QWidget *parent = 0, const char *name = 0)
-: QRadioButton( parent )
+HTMLRadioButtonWidget::HTMLRadioButtonWidget( HTMLWidgetElement *htmlParent, QWidget *parent, const char *name)
+: QRadioButton( parent, name )
 {
   widgetElement = htmlParent;
 }
@@ -1071,7 +1071,7 @@ HTMLRadioButtonWidget::~HTMLRadioButtonWidget()
 {
 }
 
-void HTMLRadioButtonWidget::paintEvent( QPaintEvent *pe )
+void HTMLRadioButtonWidget::paintEvent( QPaintEvent * )
 {
   QPainter painter;
   
@@ -1084,8 +1084,8 @@ void HTMLRadioButtonWidget::paintEvent( QPaintEvent *pe )
 
 //----------------------------------------------------------------------------
 
-HTMLCheckBoxWidget::HTMLCheckBoxWidget( HTMLWidgetElement *htmlParent, QWidget *parent = 0, const char *name = 0)
-: QCheckBox( parent )
+HTMLCheckBoxWidget::HTMLCheckBoxWidget( HTMLWidgetElement *htmlParent, QWidget *parent, const char *name)
+: QCheckBox( parent, name )
 {
   widgetElement = htmlParent;
 }
@@ -1094,7 +1094,7 @@ HTMLCheckBoxWidget::~HTMLCheckBoxWidget()
 {
 }
 
-void HTMLCheckBoxWidget::paintEvent( QPaintEvent *pe )
+void HTMLCheckBoxWidget::paintEvent( QPaintEvent * )
 {
   QPainter painter;
   

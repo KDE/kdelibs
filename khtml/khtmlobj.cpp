@@ -621,7 +621,7 @@ HTMLTextMaster::HTMLTextMaster( const char* _text, const HTMLFont *_font,
 
 
 
-HTMLFitType HTMLTextMaster::fitLine( bool startOfLine, bool firstRun, int widthLeft )
+HTMLFitType HTMLTextMaster::fitLine( bool , bool , int )
 {
     /* split ourselves up :) */
     if ( isNewline() )
@@ -1048,8 +1048,8 @@ bool HTMLTextSlave::selectText( KHTMLWidget *_htmlw,
 }
 
 bool HTMLTextSlave::print( QPainter *_painter,
-                                   int _x, int _y,
-                                   int _width, int _height,
+                                   int , int _y,
+                                   int , int _height,
                                    int _tx, int _ty, bool toPrinter )
 {
     if ( _y + _height < y - getAscent() || _y > y + getDescent() )
@@ -1657,7 +1657,7 @@ HTMLMap::~HTMLMap()
 	htmlWidget->cancelRequestFile( this );
 }
 
-bool HTMLMap::fileLoaded( const char* _url, QBuffer& _buffer, bool )
+bool HTMLMap::fileLoaded( const char*, QBuffer& _buffer, bool )
 {
   if ( !_buffer.open( IO_ReadOnly ) )
   {
