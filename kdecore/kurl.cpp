@@ -261,7 +261,7 @@ void KURL::parse( const QString& _url )
   //m_strProtocol.ascii(), m_strUser.ascii(), m_strPass.ascii(),
   //m_strHost.ascii(), m_strPath.ascii(), m_strQuery_encoded.ascii(),
   //m_strRef_encoded.ascii(), m_iPort );
-  if ( !KProtocolManager::self().isKnownProtocol( m_strProtocol ) )
+  if ( m_strProtocol != "file" && !KProtocolManager::self().isKnownProtocol( m_strProtocol ) )
   {
     debug("Unknown protocol %s", m_strProtocol.data() );
     m_bIsMalformed = TRUE;  
