@@ -71,6 +71,7 @@ public:
    bool isWindowRegistered(long windowId);
    void registerWindowId(long windowId);
    void unregisterWindowId(long windowId);
+   void recreate(bool async);
 
 public slots:
 
@@ -122,18 +123,12 @@ protected slots:
    void installCrashHandler();
 
 protected:
-
-
    /**
     * Scans dir for new files and new subdirectories.
     */
    void readDirectory(const QString& dir );
 
-   void recreate(bool async);
-
    static void crashHandler(int);
-   
-protected:
 
    /**
     * Pointer to the dirwatch class which tells us, when some directories
