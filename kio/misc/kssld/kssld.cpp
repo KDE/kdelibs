@@ -163,7 +163,7 @@ void KSSLD::cacheLoadDefaultPolicies() {
     cfg->setGroup(*i);
 
     // remove it if it has expired
-    if (cfg->readDateTimeEntry("Expires") < QDateTime::currentDateTime()) {
+    if (!cfg->readBoolEntry("Permanent") && cfg->readDateTimeEntry("Expires") < QDateTime::currentDateTime()) {
        cfg->deleteGroup(*i);
        continue;
     }
