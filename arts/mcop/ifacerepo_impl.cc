@@ -37,6 +37,7 @@ InterfaceRepo_impl::InterfaceRepo_impl()
 	tiMap["boolean"] = tiBoolean;
 	tiMap["float"] = tiFloat;
 	tiMap["long"] = tiLong;
+	tiMap["object"] = tiInterface;
 }
 
 InterfaceRepo_impl::~InterfaceRepo_impl()
