@@ -124,13 +124,13 @@ void RenderFrameSet::layout( )
              if(m_rows->at(i)->type == Fixed || m_rows->at(i)->type == Percent)
             {
                 m_rowHeight[i] = QMAX(m_rows->at(i)->width(heightAvailable), 14);
-		if( m_rowHeight[i] > remainingHeight )
-		    m_rowHeight[i] = remainingHeight;
+                if( m_rowHeight[i] > remainingHeight )
+                    m_rowHeight[i] = remainingHeight;
                  remainingHeight -= m_rowHeight[i];
-		if( m_rows->at(i)->type == Percent)
-		    rowsPercent++;
-		if( m_rows->at(i)->type == Percent)
-		    rowsPercent++;
+                if( m_rows->at(i)->type == Percent)
+                    rowsPercent++;
+                if( m_rows->at(i)->type == Percent)
+                    rowsPercent++;
             }
             else if(m_rows->at(i)->type == Relative)
             {
@@ -162,16 +162,16 @@ void RenderFrameSet::layout( )
         {
             // just distribute it over all columns...
             int rows = m_frameset->totalRows();
-	    if ( rowsPercent )
-		rows = rowsPercent;
+            if ( rowsPercent )
+                rows = rowsPercent;
             for(i = 0; i< m_frameset->totalRows(); i++) {
-		if( !rowsPercent || m_rows->at(i)->type == Percent ) {
-		    int toAdd = remainingHeight/rows;
-		    rows--;
-		    m_rowHeight[i] += toAdd;
-		    remainingHeight -= toAdd;
-		}
-	    }
+                if( !rowsPercent || m_rows->at(i)->type == Percent ) {
+                    int toAdd = remainingHeight/rows;
+                    rows--;
+                    m_rowHeight[i] += toAdd;
+                    remainingHeight -= toAdd;
+                }
+            }
         }
     }
     else
@@ -187,11 +187,11 @@ void RenderFrameSet::layout( )
             if(m_cols->at(i)->type == Fixed || m_cols->at(i)->type == Percent)
             {
                 m_colWidth[i] = QMAX(m_cols->at(i)->width(widthAvailable), 14);
-		if( m_colWidth[i] > remainingWidth )
-		    m_colWidth[i] = remainingWidth;
+                if( m_colWidth[i] > remainingWidth )
+                    m_colWidth[i] = remainingWidth;
                 remainingWidth -= m_colWidth[i];
-		if( m_cols->at(i)->type == Percent)
-		    colsPercent++;
+                if( m_cols->at(i)->type == Percent)
+                    colsPercent++;
             }
             else if(m_cols->at(i)->type == Relative)
             {
@@ -223,16 +223,16 @@ void RenderFrameSet::layout( )
         {
             // just distribute it over all columns...
             int cols = m_frameset->totalCols();
-	    if ( colsPercent )
-		cols = colsPercent;
+            if ( colsPercent )
+                cols = colsPercent;
             for(i = 0; i< m_frameset->totalCols(); i++) {
-		if( !colsPercent || m_cols->at(i)->type == Percent ) {
-		    int toAdd = remainingWidth/cols;
-		    cols--;
-		    m_colWidth[i] += toAdd;
-		    remainingWidth -= toAdd;
-		}
-	    }
+                if( !colsPercent || m_cols->at(i)->type == Percent ) {
+                    int toAdd = remainingWidth/cols;
+                    cols--;
+                    m_colWidth[i] += toAdd;
+                    remainingWidth -= toAdd;
+                }
+            }
         }
 
     }
@@ -604,8 +604,12 @@ void RenderPartObject::close()
             return;
         }
 
+        KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
+
         params.append( QString::fromLatin1("NSPLUGINEMBED=\"YES\"") );
-        static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType, params );
+        params.append( QString::fromLatin1("NSPLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
+
+        part->requestObject( this, url, serviceType, params );
      } else
      {
         // render embed object
@@ -617,8 +621,11 @@ void RenderPartObject::close()
             return;
         }
 
-        embed->param.append( QString::fromLatin1("NSPLUGINEMBED=\"YES\"") );
         KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
+
+        embed->param.append( QString::fromLatin1("NSPLUGINEMBED=\"YES\"") );
+        embed->param.append( QString::fromLatin1("NSPLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
+
         bool ok = part->requestObject( this, url, serviceType, embed->param );
         kdDebug() << "RenderPartObject::close - ok=" << ok << " url=" << url << " serviceType=" << serviceType << endl;
         if ( !ok && !embed->pluginPage.isEmpty() ) {
@@ -636,8 +643,11 @@ void RenderPartObject::close()
          return;
      }
 
-     o->param.append( QString::fromLatin1("NSPLUGINEMBED=\"YES\"") );
      KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
+
+     o->param.append( QString::fromLatin1("NSPLUGINEMBED=\"YES\"") );
+     o->param.append( QString::fromLatin1("NSPLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
+
      bool ok = part->requestObject( this, url, serviceType, o->param );
      if ( !ok && !o->pluginPage.isEmpty() ) {
          KParts::BrowserExtension *ext = part->browserExtension();
