@@ -21,6 +21,7 @@
 #include <qfile.h>
 
 #include <kbookmarkbar.h>
+#include <kbookmarkdrag.h>
 
 #include <kaction.h>
 #include <kbookmarkmenu.h>
@@ -321,12 +322,14 @@ failure_exit:
     return a;
 }
 
-static KAction* handleToolbarMouseButton(QPoint pos, QPtrList<KAction> actions, KBookmarkManager * /*mgr*/, QPoint & pt) 
+static KAction* handleToolbarMouseButton(QPoint pos, QPtrList<KAction> actions, 
+	                                 KBookmarkManager * /*mgr*/, QPoint & pt,
+					 KToolBarButton ** p_b = 0) 
 {
     KToolBar *tb = dynamic_cast<KToolBar*>(actions.first()->container(0));
     Q_ASSERT(tb);
 
-    KToolBarButton* b;
+    KToolBarButton *b;
     b = dynamic_cast<KToolBarButton*>(tb->childAt(pos)); 
     if (!b)
         return 0;
@@ -336,17 +339,11 @@ static KAction* handleToolbarMouseButton(QPoint pos, QPtrList<KAction> actions, 
     Q_ASSERT(a);
     pt = tb->mapToGlobal(pos);
 
+    if (p_b)
+	(*p_b) = b;
+
     return a;
 }
-
-// TODO    *** for dragging ***
-// init    - validDrag == false
-// release - validDrag == false
-// press   - validDrag == true
-//           and set startDragDos = ev->pos 
-// move    - when ((startDragPos - ev->pos()).manhattanLength() > QApplication::startDragDistance())
-//           validDrag == false 
-//           and do the funky kbookmarkdrag stuff
 
 // TODO    *** drop improvements ***
 // open submenus on drop interactions
@@ -359,7 +356,7 @@ template<> QPtrDict<RMB>* dPtrTemplate<KBookmarkBar, RMB>::d_ptr = 0;
 
 static RMB* rmbSelf(KBookmarkBar *m) { return KBookmarkBarRMBAssoc::d(m); }
 
-#define INIT                                      \
+#define BEGIN_RMB_ACTION                          \
   RMB *s = rmbSelf(this);                         \
   s->recv = this;                                 \
   s->m_parentAddress = QString::null;             \
@@ -371,57 +368,90 @@ static RMB* rmbSelf(KBookmarkBar *m) { return KBookmarkBarRMBAssoc::d(m); }
 static QString s_highlightedAddress;
 
 void KBookmarkBar::slotRMBActionEditAt( int val )
-{ INIT; rmbSelf(this)->slotRMBActionEditAt( val ); }
+{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionEditAt( val ); }
 
 void KBookmarkBar::slotRMBActionProperties( int val )
-{ INIT; rmbSelf(this)->slotRMBActionProperties( val ); }
+{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionProperties( val ); }
 
 void KBookmarkBar::slotRMBActionInsert( int val )
-{ INIT; rmbSelf(this)->slotRMBActionInsert( val ); }
+{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionInsert( val ); }
 
 void KBookmarkBar::slotRMBActionRemove( int val )
-{ INIT; rmbSelf(this)->slotRMBActionRemove( val ); }
+{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionRemove( val ); }
 
 void KBookmarkBar::slotRMBActionCopyLocation( int val )
-{ INIT; rmbSelf(this)->slotRMBActionCopyLocation( val ); }
+{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionCopyLocation( val ); }
+
+#include <qapplication.h>
 
 void KBookmarkBar::slotRMBActionOpen( int val )
-{ INIT; rmbSelf(this)->slotRMBActionOpen( val ); }
+{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionOpen( val ); }
 
 bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
 {
+    static bool shuffling = false;
     static bool atFirst = false;
     static KAction* a = 0;
+    QPoint origPos;
     if (dptr()->m_readOnly)
         return false; // todo: make this limit the actions
     kdDebug(7043) << "FOOOO>>>> got an event (" << e << ") of type" << e->type() << endl;
-    if ( e->type() == QEvent::MouseButtonRelease || e->type() == QEvent::MouseButtonPress )
+
+    bool release = (e->type() == QEvent::MouseButtonRelease);
+    bool press   = (e->type() == QEvent::MouseButtonPress);
+    if ( e->type() == QEvent::MouseMove && shuffling )
     {
-        kdDebug(7043) << "FOOOO>>>> got an mouse button release" << endl;
+        kdDebug(7043) << "FOOOO>>>> got an mouse move event" << e->type() << endl;
+
+	QString address = a->property("address").toString();
+	KBookmark bookmark = m_pManager->findByAddress( address );
+
+        kdDebug(7043) << "FOOOO>>>> moving thingy" << bookmark.url().url() << endl;
+    }
+    else if ( release || press )
+    {
         QMouseEvent *mev = (QMouseEvent*)e;
 
-        QPoint pt;
-        KAction *_a; 
-        _a = handleToolbarMouseButton( mev->pos(), dptr()->m_actions, m_pManager, pt );
+	QPoint pt;
+	KAction *_a; 
 
-        KPopupMenu *pm = new KPopupMenu;
+	KToolBarButton *b = 0;
+	_a = handleToolbarMouseButton( mev->pos(), dptr()->m_actions, m_pManager, pt, &b );
 
-        if (_a)
-        {
-            s_highlightedAddress = _a->property("address").toString();
-            KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
+	if (_a)
+	{
+	    if (mev->button() == Qt::RightButton)
+	    {
+		s_highlightedAddress = _a->property("address").toString();
+		KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
+	 
+		BEGIN_RMB_ACTION; 
+		KPopupMenu *pm = new KPopupMenu;
+		rmbSelf(this)->fillContextMenu(pm, s_highlightedAddress, 0);
+		pm->popup( pt );
+	 
+		mev->accept();
+	    }
+	    else if (mev->button() == Qt::MidButton)
+	    {
+		shuffling = press;
+		m_toolBar->setMouseTracking(shuffling);
+		a = _a;
 
-            kdDebug(7043) << "FOOOO>>>> " << bookmark.url().url() << endl;
-
-            INIT; 
-            rmbSelf(this)->fillContextMenu(pm, s_highlightedAddress, 0);
-
-            pm->popup( pt );
-
-            mev->accept();
-        }
-
-        return !!_a;
+		static QColor origBgColor;
+		if ( shuffling )
+		{
+		    origBgColor = b->paletteBackgroundColor();
+		    b->setPaletteBackgroundColor( QColor(230,190,190) );
+		}
+		else
+		{
+		    b->setPaletteBackgroundColor( origBgColor );
+		}
+	    }
+	     
+	    return !!_a;
+	}
     }
     else if ( e->type() == QEvent::DragLeave )
     {

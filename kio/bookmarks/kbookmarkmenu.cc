@@ -202,7 +202,9 @@ template<> QPtrDict<RMB>* dPtrTemplate<KBookmarkMenu, RMB>::d_ptr = 0;
 
 static RMB* rmbSelf(KBookmarkMenu *m) { return KBookmarkMenuRMBAssoc::d(m); }
 
-#define INIT                                      \
+// TODO check via dcop before making any changes to the bookmarks file???
+
+#define BEGIN_RMB_ACTION                          \
   RMB *s = rmbSelf(this);                         \
   s->recv = this;                                 \
   s->m_parentAddress = m_parentAddress;           \
@@ -387,25 +389,25 @@ void RMB::slotRMBActionOpen( int val )
 }
 
 void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val )
-{ INIT; rmbSelf(this)->fillContextMenu(contextMenu, address, val); }
+{ BEGIN_RMB_ACTION; rmbSelf(this)->fillContextMenu(contextMenu, address, val); }
 
 void KBookmarkMenu::slotRMBActionEditAt( int val )
-{ INIT; rmbSelf(this)->slotRMBActionEditAt( val ); }
+{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionEditAt( val ); }
 
 void KBookmarkMenu::slotRMBActionProperties( int val )
-{ INIT; rmbSelf(this)->slotRMBActionProperties( val ); }
+{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionProperties( val ); }
 
 void KBookmarkMenu::slotRMBActionInsert( int val )
-{ INIT; rmbSelf(this)->slotRMBActionInsert( val ); }
+{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionInsert( val ); }
 
 void KBookmarkMenu::slotRMBActionRemove( int val )
-{ INIT; rmbSelf(this)->slotRMBActionRemove( val ); }
+{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionRemove( val ); }
 
 void KBookmarkMenu::slotRMBActionCopyLocation( int val )
-{ INIT; rmbSelf(this)->slotRMBActionCopyLocation( val ); }
+{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionCopyLocation( val ); }
 
 void KBookmarkMenu::slotRMBActionOpen( int val )
-{ INIT; rmbSelf(this)->slotRMBActionOpen( val ); }
+{ BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionOpen( val ); }
 
 void RMB::hidePopup() { 
   KPopupMenu::contextMenuFocus()->hideContextMenu(); 
