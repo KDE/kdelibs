@@ -42,6 +42,7 @@
 #include <kurl.h>
 #include <kmimetype.h>
 #include <kwin.h>
+#include <kseparator.h>
 #include <kstringhandler.h>
 #include <kstdguiitem.h>
 #include <kguiitem.h>
@@ -309,16 +310,25 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
         QLabel *lb = new QLabel( sentence1 + i18n("Do you want to use another file name?"), this );
         d->m_pLayout->addWidget(lb);
     }
+    QHBoxLayout* layout2 = new QHBoxLayout();
+    d->m_pLayout->addLayout( layout2 );
+    
     d->m_pLineEdit = new QLineEdit( this );
-    d->m_pLayout->addWidget( d->m_pLineEdit );
+    layout2->addWidget( d->m_pLineEdit );
     QString fileName = KURL(d->dest).fileName();
     d->m_pLineEdit->setText( KIO::decodeFileName( fileName ) );
     if (d->b1)
         connect(d->m_pLineEdit, SIGNAL(textChanged(const QString &)),
                 SLOT(enableRenameButton(const QString &)));
+    if ( d->b8 )
+    {
+	layout2->addWidget( d->b8 );
+	setTabOrder( d->m_pLineEdit, d->b8 );
+    }
 
-    d->m_pLayout->addSpacing( 10 );
-
+    KSeparator* separator = new KSeparator( this );
+    d->m_pLayout->addWidget( separator );
+    
     QHBoxLayout* layout = new QHBoxLayout();
     d->m_pLayout->addLayout( layout );
 
@@ -328,11 +338,6 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
     {
         layout->addWidget( d->b1 );
 	setTabOrder( d->b1, d->b0 );
-    }
-    if( d->b8 )
-    {
-        layout->addWidget( d->b8 );
-	setTabOrder( d->b8, d->b0 );
     }
     if ( d->b2 )
     {
