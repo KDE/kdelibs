@@ -32,6 +32,7 @@
 #include <qpainter.h>
 #include <qradiobutton.h>
 #include <qregexp.h>
+#include <qtoolbutton.h>
 #include <qwhatsthis.h>
 
 #include <kaccel.h>
@@ -43,6 +44,8 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kglobalaccel.h>
+#include <kiconloader.h>
+#include <klistviewsearchline.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kshortcut.h>
@@ -291,19 +294,38 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
 
   QBoxLayout *topLayout = new QVBoxLayout( this, 0, KDialog::spacingHint() );
 
-  QGridLayout *stackLayout = new QGridLayout(2, 2, 2);
-  topLayout->addLayout( stackLayout, 10 );
-  stackLayout->setRowStretch( 1, 10 ); // Only list will stretch
+  //
+  // ADD SEARCHLINE
+  //
+  QHBoxLayout* searchLayout = new QHBoxLayout(this, 0, KDialog::spacingHint());
+  topLayout->addLayout(searchLayout, 10);
+
+  QToolButton *clearSearch = new QToolButton(this);
+  clearSearch->setTextLabel(i18n("Clear Search"), true);
+  clearSearch->setIconSet(SmallIconSet("locationbar_erase"));
+  searchLayout->addWidget(clearSearch);
+  searchLayout->addWidget(new QLabel(i18n("&Search:"), this));
+  KListViewSearchLine* listViewSearch = new KListViewSearchLine(this);
+  searchLayout->addWidget(listViewSearch);
+
+  connect(clearSearch, SIGNAL(pressed()), listViewSearch, SLOT(clear()));
+
 
   //
   // CREATE SPLIT LIST BOX
   //
   // fill up the split list box with the action/key pairs.
   //
+  QGridLayout *stackLayout = new QGridLayout(2, 2, 2);
+  topLayout->addLayout( stackLayout, 10 );
+  stackLayout->setRowStretch( 1, 10 ); // Only list will stretch
+
   d->pList = new KListView( this );
   d->pList->setFocus();
+  listViewSearch->setListView(d->pList); // Plug into search line
 
   stackLayout->addMultiCellWidget( d->pList, 1, 1, 0, 1 );
+
   QString wtstr = i18n("Here you can see a list of key bindings, "
                        "i.e. associations between actions (e.g. 'Copy') "
                        "shown in the left column and keys or combination "
