@@ -995,7 +995,7 @@ int main(int argc, char **argv, char **envp)
 #ifndef NDEBUG
       fprintf(stderr, "kdeinit: Launched KDED, pid = %ld result = %d\n", (long) pid, d.result);
 #endif
-      WaitPid(pid);
+      handle_requests(pid);
    }
 
    X11fd = initXconnection();
@@ -1008,8 +1008,6 @@ int main(int argc, char **argv, char **envp)
 #ifndef NDEBUG
       fprintf(stderr, "kdeinit: Launched '%s', pid = %ld result = %d\n", safe_argv[i]+1, (long) pid, d.result);
 #endif
-
-//         WaitPid(pid);
          handle_requests(pid);
       }
       else if (safe_argv[i][0] == '-')
