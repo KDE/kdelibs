@@ -63,7 +63,7 @@ DriverView::DriverView(QWidget *parent, const char *name)
 			" </ul>"
 			" <p><b>Note.</b> The number of available job options depends strongly on the actual "
 			" driver used for your print queue. <em>'Raw'</em> queues do not have a driver or a  "
-			" PPD. For raw queues this tab page is not loaded by KSEPrint, and thus is not present "
+			" PPD. For raw queues this tab page is not loaded by KDEPrint, and thus is not present "
 			" in the kprinter dialog.</p> "
 			" </qt>" );
 
@@ -87,7 +87,7 @@ DriverView::DriverView(QWidget *parent, const char *name)
 			" </ul>"
 			" <p><b>Note.</b> The number of available job options depends strongly on the actual "
 			" driver used for your print queue. <em>'Raw'</em> queues do not have a driver or a  "
-			" PPD. For raw queues this tab page is not loaded by KSEPrint, and thus is not present "
+			" PPD. For raw queues this tab page is not loaded by KDEPrint, and thus is not present "
 			" in the kprinter dialog.</p> "
 			" </qt>" );
 
