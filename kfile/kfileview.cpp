@@ -153,9 +153,8 @@ void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
 	sortedArray[index] = it;
 
     ASSERT(index == counter);
-    //debug("quicksort -- optimize here");
+
     QuickSort(sortedArray, 0, counter - 1);
-    //debug("end quicksort");
     tfirst = sortedArray[0];
     tfirst->setNext(0);
 
@@ -355,7 +354,7 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
       case QDir::Name:
       default:
 	if ( (mySorting & QDir::IgnoreCase) == QDir::IgnoreCase )
-	  bigger = (fi1->name().lower() > fi2->name().lower());
+	  bigger = (fi1->name( true ) > fi2->name( true ));
 	else
 	  bigger = (fi1->name() > fi2->name());
 	break;

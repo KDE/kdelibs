@@ -103,8 +103,17 @@ public:
       *
       * Note: If this object does not refer to a real file
       * (broken symlink), it will return QString::null
+      * If you set @param @p lowerCase to true, you will get the name in
+      * lower case (doh). Useful to speed up sorting case insensitively.
       **/
-    QString name() const { return myName; }
+    QString name( bool lowerCase = false ) const {
+	if ( !lowerCase )
+	    return myName;
+	else 
+	    if ( myLowerCaseName.isNull() )
+		myLowerCaseName = myName.lower();
+	return myLowerCaseName;
+    }
 
     QString url() const;
 
@@ -213,6 +222,7 @@ private:
     mutable QString myOwner;
     mutable QString myGroup;
     mutable QString myAccess;
+    mutable QString myLowerCaseName;
 
     time_t myDate_t;
     uid_t myOwner_t;
