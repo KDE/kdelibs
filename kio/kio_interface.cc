@@ -216,7 +216,7 @@ bool ConnectionSignals::mkdir( const char *_url, int _mode )
   return true;
 }
 
-bool ConnectionSignals::data( void *_buffer, int _len )
+bool ConnectionSignals::data( const void *_buffer, int _len )
 {
   assert( m_pConnection );
 

@@ -167,7 +167,7 @@ bool IOJob::mkdir( const char *_url, int _mode )
   return ConnectionSignals::mkdir( _url, _mode );
 }
 
-bool IOJob::data( void *_p, int _len )
+bool IOJob::data( const void *_p, int _len )
 {
   assert( m_cmd == CMD_PUT && m_bIsReady );
   

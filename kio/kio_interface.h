@@ -183,7 +183,7 @@ public:
   ///////////
   // Message Signals
   ///////////
-  virtual bool data( void *, int _len );
+  virtual bool data( const void *, int _len );
   virtual bool dataEnd();
   virtual bool error( int _errid, const char *_text );
   virtual bool ready();

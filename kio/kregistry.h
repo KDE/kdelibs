@@ -181,7 +181,7 @@ protected:
  * Database is internal - no special files are created.  The database
  * is self updating - you don't have to notify <b>KRegistry</b> if you
  * or anyone make changes to (local or global) 'applnk' or 'mimelnk
- * directories'. Updating is inteligent; only changed directories are
+ * directories'. Updating is intelligent; only changed directories are
  * scanned and only changed items (desktop entries) are reread. This makes
  * <b>KRegistry</b> very fast.<br>
  *
@@ -208,8 +208,8 @@ public:
   KRegistry();
    
   /**
-   * Destructor. Untill integration with KApplication you should
-   * delete registry on app exit to avoid memory leak.
+   * Destructor. Until integration with KApplication you should
+   * delete the registry on app exit to avoid memory leaks.
    */
   ~KRegistry();
 

@@ -32,7 +32,7 @@ public:
   virtual bool unmount( const char *_point );
   virtual bool mount( bool _ro, const char *_fstype, const char* _dev, const char *_point );
   
-  virtual bool data( void *_p, int _len );
+  virtual bool data( const void *_p, int _len );
   
   virtual void slotReady();
   virtual void slotFinished();
