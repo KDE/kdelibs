@@ -30,7 +30,7 @@
 #include <klocale.h>
 #include <khtml_ext.h>
 
-KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, 
+KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url,
                     const KParts::URLArgs &args, bool hideErrorDialog )
 : KRun( url, 0, false, false /* No GUI */ ) , m_part( part ),
   m_args( args ), m_child( child ), m_hideErrorDialog( hideErrorDialog )
@@ -101,7 +101,7 @@ bool KHTMLRun::askSave( const KURL & url, KService::Ptr offer, const QString & m
     int choice = KMessageBox::warningYesNoCancel(
         0L, question, QString::null,
         i18n("Save to disk"), i18n("Open"),
-        QString::fromLatin1("askSave")+mimeType); // dontAskAgainName  
+        QString::fromLatin1("askSave")+mimeType); // dontAskAgainName
     if ( choice == KMessageBox::Yes ) // Save
         KHTMLPopupGUIClient::saveURL( m_part->widget(), i18n( "Save As..." ), url, QString::null, 0, suggestedFilename );
 
@@ -119,7 +119,7 @@ void KHTMLRun::scanFile()
   // No check for well-known extensions, since we don't trust HTTP
 
   KIO::TransferJob *job;
-  if ( m_args.postData.size() > 0 )
+  if ( m_args.doPost() )
   {
       job = KIO::http_post( m_strURL, m_args.postData, false );
       job->addMetaData("content-type", m_args.contentType());
@@ -141,7 +141,7 @@ void KHTMLRun::slotKHTMLScanFinished(KIO::Job *job)
 {
   if ( m_hideErrorDialog && job->error() )
       handleError();
-  else 
+  else
       KRun::slotScanFinished(job);
 }
 
@@ -176,7 +176,7 @@ void KHTMLRun::handleError()
     m_job = 0;
     m_bFault = true;
     m_bFinished = true;
- 
+
     m_timer.start( 0, true );
 }
 
