@@ -345,7 +345,17 @@ namespace KJS {
   }; \
   };
 
-
+  // To be used in all call() implementations, before casting the type of thisObj
+#define KJS_CHECK_THIS( ClassName, theObj ) \
+  if (theObj.isNull() || !theObj.inherits(&ClassName::info)) { \
+    KJS::UString errMsg = "Attempt at calling a function that expects a "; \
+    errMsg += ClassName::info.className; \
+    errMsg += " on a "; \
+    errMsg += thisObj.className(); \
+    KJS::Object err = KJS::Error::create(exec, KJS::TypeError, errMsg.ascii()); \
+    exec->setException(err); \
+    return err; \
+  }
 
   /*
    * List of things to do when porting an objectimp to the 'static hashtable' mechanism:

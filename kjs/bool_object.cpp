@@ -26,6 +26,7 @@
 #include "operations.h"
 #include "bool_object.h"
 #include "error_object.h"
+#include "lookup.h"
 
 #include <assert.h>
 
@@ -79,11 +80,7 @@ bool BooleanProtoFuncImp::implementsCall() const
 Value BooleanProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &/*args*/)
 {
   // no generic function. "this" has to be a Boolean object
-  if (!thisObj.inherits(&BooleanInstanceImp::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( BooleanInstanceImp, thisObj );
 
   // execute "toString()" or "valueOf()", respectively
 

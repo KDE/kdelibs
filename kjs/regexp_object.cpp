@@ -30,6 +30,7 @@
 #include "regexp.h"
 #include "regexp_object.h"
 #include "error_object.h"
+#include "lookup.h"
 
 using namespace KJS;
 
@@ -69,11 +70,7 @@ bool RegExpProtoFuncImp::implementsCall() const
 
 Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
-  if (!thisObj.inherits(&RegExpImp::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( RegExpImp, thisObj );
 
   RegExpImp *reimp = static_cast<RegExpImp*>(thisObj.imp());
   RegExp *re = reimp->regExp();

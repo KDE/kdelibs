@@ -83,11 +83,7 @@ Value NumberProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &/*a
   Value result;
 
   // no generic function. "this" has to be a Number object
-  if (!thisObj.inherits(&NumberInstanceImp::info)) {
-    Object err = Error::create(exec,TypeError);
-    exec->setException(err);
-    return err;
-  }
+  KJS_CHECK_THIS( NumberInstanceImp, thisObj );
 
   // execute "toString()" or "valueOf()", respectively
   Value v = thisObj.internalValue();

@@ -121,11 +121,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 
   // toString and valueOf are no generic function.
   if (id == ToString || id == ValueOf) {
-    if (thisObj.isNull() || !thisObj.inherits(&StringInstanceImp::info)) {
-      Object err = Error::create(exec,TypeError);
-      exec->setException(err);
-      return err;
-    }
+    KJS_CHECK_THIS( StringInstanceImp, thisObj );
 
     return String(thisObj.internalValue().toString(exec));
   }
