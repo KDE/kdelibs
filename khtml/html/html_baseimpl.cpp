@@ -272,7 +272,7 @@ void HTMLFrameElementImpl::attach()
     while ((part = part->parentPart()))
         depth++;
 
-    if (depth > 6 || url.isNull()) {
+    if (depth > 6) {
         style()->setDisplay( NONE );
         return;
     }
@@ -309,6 +309,7 @@ void HTMLFrameElementImpl::attach()
       kdDebug( 6030 ) << "creating frame name: " << name.string() << endl;
     }
 
+    if (!url.isNull())
     w->part()->requestFrame( renderFrame, url.string(), name.string() );
 
     HTMLElementImpl::attach();
