@@ -322,8 +322,8 @@ public:
      * </pre>
      *
      * @param aboutAppText The string that is used in the application
-     *        specific dialog box. Note: The help menu will not open
-     *        this dialog box if you don't define a string.
+     *        specific dialog box. If you don't specify a string the
+     *        KAboutData of the application is used.
      *
      * @param showWhatsThis Set this to false if you do not want to include
      *        the "What's This" menu entry.
