@@ -955,12 +955,13 @@ void Window::clear( ExecState *exec )
 {
   kdDebug(6070) << "Window::clear " << this << endl;
   delete winq;
-  winq = new WindowQObject(this);;
+  winq = 0L;
   // Get rid of everything, those user vars could hold references to DOM nodes
   deleteAllProperties( exec );
   // Really delete those properties, so that the DOM nodes get deref'ed
   KJS::Collector::collect();
   if (!m_part.isNull()) {
+    winq = new WindowQObject(this);
     // Now recreate a working global object for the next URL that will use us
     KJS::Interpreter *interpreter = KJSProxy::proxy( m_part )->interpreter();
     interpreter->initGlobalObject();
@@ -1405,8 +1406,11 @@ WindowQObject::WindowQObject(Window *w)
 {
   //kdDebug(6070) << "WindowQObject::WindowQObject " << this << endl;
   part = parent->m_part;
-  connect( parent->m_part, SIGNAL( destroyed() ),
-           this, SLOT( parentDestroyed() ) );
+  if ( !part )
+      kdWarning() << "null part in " << k_funcinfo << endl;
+  else
+      connect( part, SIGNAL( destroyed() ),
+               this, SLOT( parentDestroyed() ) );
 }
 
 WindowQObject::~WindowQObject()
