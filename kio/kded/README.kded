@@ -1,0 +1,95 @@
+Welcome to this readme about KDED. 
+
+KDED stands for KDE Daemon which isn't very descriptive.
+KDED runs in the background and performs a number of small tasks.
+Some of these tasks are build in, others are started on demand.
+
+Build in tasks
+==============
+*) Checking for newly installed software and updating ksycoca when new
+software is detected. Updating of ksycoca is done by the program kbuildsycoca
+which gets started by kded. When kded is first started it always runs
+kbuildsycoca to ensure that ksycoca is up to date.
+
+*) Checking for newly installed update files. Applications can install
+*.upd update files. These *.upd files are used to update configuration files 
+of users, primarily when new versions of applications are installed with
+(slightly) different configuration file formats. Updating of configuration
+files is done by kconf_update. kded starts kconf_update when it detects a 
+new update file. When kded is first started it always runs kconf_update to
+ensure that it has not missed any update files. kconf_update keeps track
+of which update files have been processed already in the config-file
+kconf_updaterc. It only performs a certain update once.
+
+*) Checking for hostname changes. It is a really bad idea to change the 
+hostname of a running system and it usually only happens with incorrectly
+configured dial-up connections. Never the less, kded will check for hostname
+changes and if it detects one it will make the necassery changes to the
+KDE environemnt and X-server to allow continued proper operation. The 
+program kdontchangethehostname is executed to make the actual changes.
+
+Configuration of build in tasks.
+================================
+The build in tasks have some configuration options that can be changed by
+editing the kdedrc configuration file. Changes need to be made with a text-
+editor, there is no GUI available. All options are listed under the [General]
+group:
+
+PollInterval: This can be used to adjust the time interval at which the local
+filesystem is checked for new software or update files. The time is specified
+in milliseconds and has a default of 500 (0.5 seconds).
+
+NFSPollInterval: This can be used to adjust the time interval at which remote
+filesystems, such as NFS or Samba, are ebing checked for new software or 
+update files. The time is specified in milliseconds and has a default of 5000
+(5 seconds).
+
+The above options are not used when FAM is used to watch for changes in the
+filesystem. Specifying larger intervals may reduce the CPU load and/or
+network traffic. Shorter intervals are not recommended.
+
+HostnamePollInterval: This can be used to adjust the time interval at which
+the hostname is checked for changes. The time is specified in milliseconds
+and has a default of 5000 (5 seconds).
+
+CheckSycoca: This option can be used to disable checking for new software.
+ksycoca will still be build when kded starts up and when applications
+explicitly request for a rebuild of the ksycoca database. The user can 
+also manually rebuild ksycoca by running the kbuildsycoca program.
+The default value of this option is "true". Checking can be disabled by 
+setting this option to "false".
+
+CheckUpdates: This option can be used to disable checking for update files.
+kconf_update will still be run when kded starts up.
+The default value of this option is "true". Checking can be disabled by 
+setting this option to "false".
+
+CheckHostname: This option can be used to disable checking for hostname 
+changes. The default value of this option is "true". Checking can be 
+disabled by setting this option to "false".
+
+Example kdedrc file with default values:
+
+[General]
+PollInterval=500
+NFSPollInterval=5000
+HostnamePollInterval=5000
+CheckSycoca=true
+CheckUpdates=true
+CheckHostname=true
+
+
+Tasks loaded on demand
+======================
+Some things can be greatly simplified if they can be coordinated from a 
+central place. KDED has support for modules that will be demand-loaded 
+whenever an application attempts to make DCOP call to the module.
+This can be usefull for central administration tasks.
+
+An example of a KDED module is the print module. When an application prints
+a file, the print module will watch over the print-job while the file
+is being printed. This allows you to close the application after submitting
+your print-command to the printer, the print module will make sure to
+inform the user when a print problem occurs (printer out of paper, printer
+on fire)
+
