@@ -1683,6 +1683,8 @@ void KApplication::kdisplaySetPalette()
     QColor highlightedText = config->readColorEntry( "selectForeground", &white );
     QColor base = config->readColorEntry( "windowBackground", &white );
     QColor baseText = config->readColorEntry( "windowForeground", &black );
+    QColor link = config->readColorEntry( "linkColor", &blue );
+    QColor visitedLink = config->readColorEntry( "visitedLinkColor", &magenta );
 
     int highlightVal, lowlightVal;
     highlightVal = 100 + (2*contrast_+4)*16/10;
@@ -1722,10 +1724,14 @@ void KApplication::kdisplaySetPalette()
     colgrp.setColor(QColorGroup::Button, button);
     colgrp.setColor(QColorGroup::ButtonText, buttonText);
     colgrp.setColor(QColorGroup::Midlight, background.light(110));
+    colgrp.setColor(QColorGroup::Link, link);
+    colgrp.setColor(QColorGroup::LinkVisited, visitedLink);
 
     disabledgrp.setColor(QColorGroup::Button, button);
     disabledgrp.setColor(QColorGroup::ButtonText, buttonText);
     disabledgrp.setColor(QColorGroup::Midlight, background.light(110));
+    disabledgrp.setColor(QColorGroup::Link, link);
+    disabledgrp.setColor(QColorGroup::LinkVisited, visitedLink);
 
     QPalette newPal(colgrp, disabledgrp, colgrp);
 /*
