@@ -632,12 +632,11 @@ void RenderPartObject::updateWidget()
       {
           url = o->url;
           serviceType = o->serviceType;
-          if(serviceType.isEmpty() || serviceType.isNull()) {
-              if(!o->classId.isEmpty()) {
-                  // We have a clsid, means this is activex (Niko)
-                  serviceType = "application/x-activex-handler";
-                  url = "dummy"; // Not needed, but KHTMLPart aborts the request if empty
-              }
+          if(serviceType.isEmpty() && !o->classId.isEmpty()) {
+
+              // We have a clsid, means this is activex (Niko)
+              serviceType = "application/x-activex-handler";
+              url = "dummy"; // Not needed, but KHTMLPart aborts the request if empty
 
               if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
                   // It is ActiveX, but the nsplugin system handling
@@ -650,6 +649,9 @@ void RenderPartObject::updateWidget()
               }
               else if(o->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")))
                   serviceType = "audio/x-pn-realaudio-plugin";
+
+              else
+                  kdDebug(6031) << "ActiveX classId " << o->classId << endl;
 
               // TODO: add more plugins here
           }
@@ -676,7 +678,7 @@ void RenderPartObject::updateWidget()
 
           if ( url.isEmpty() && serviceType.isEmpty() ) {
 #ifdef DEBUG_LAYOUT
-              kdDebug() << "RenderPartObject::close - empty url and serverType" << endl;
+              kdDebug(6031) << "RenderPartObject::close - empty url and serviceType" << endl;
 #endif
               return;
           }
@@ -689,7 +691,7 @@ void RenderPartObject::updateWidget()
 
           if ( url.isEmpty() && serviceType.isEmpty() ) {
 #ifdef DEBUG_LAYOUT
-              kdDebug() << "RenderPartObject::close - empty url and serverType" << endl;
+              kdDebug(6031) << "RenderPartObject::close - empty url and serviceType" << endl;
 #endif
               return;
           }
@@ -704,7 +706,7 @@ void RenderPartObject::updateWidget()
 
       if ( url.isEmpty() && serviceType.isEmpty() ) {
 #ifdef DEBUG_LAYOUT
-          kdDebug() << "RenderPartObject::close - empty url and serverType" << endl;
+          kdDebug(6031) << "RenderPartObject::close - empty url and serviceType" << endl;
 #endif
           return;
       }
@@ -739,7 +741,7 @@ void RenderPartObject::close()
 bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KURL& url, const QString& serviceType )
 {
     KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
-    //kdDebug() << "RenderPartObject::partLoadingErrorNotify serviceType=" << serviceType << endl;
+    kdDebug(6031) << "RenderPartObject::partLoadingErrorNotify serviceType=" << serviceType << endl;
     // Check if we just tried with e.g. nsplugin
     // and fallback to the activexhandler if there is a classid
     // and a codebase, where we may download the ocx if it's missing
@@ -760,6 +762,7 @@ bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, co
         {
             KParts::URLArgs args;
             args.serviceType = "application/x-activex-handler";
+            kdDebug(6031) << "set to activex" << endl;
             if (part->requestObject( childFrame, url, args ))
                 return true; // success
         }
