@@ -400,6 +400,8 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
         else
             removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
         break;
+    case ATTR_NOSAVE:
+	break;	
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -454,6 +456,8 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
             removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
         break;
     }
+    case ATTR_NOSAVE:
+	break;	
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -675,6 +679,8 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
         else
             removeCSSProperty(CSS_PROP_HEIGHT);
         break;
+    case ATTR_NOSAVE:
+	break;	
     default:
         HTMLTablePartElementImpl::parseAttribute(attr);
     }
