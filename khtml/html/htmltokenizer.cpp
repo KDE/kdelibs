@@ -529,23 +529,22 @@ void HTMLTokenizer::parseProcessingInstruction(DOMStringIt &src)
     while ( src.length() )
     {
         char chbegin = src[0].latin1();
-        // Look for '?>'
-        if ( chbegin == '?' )
-        {
-            if (searchCount < 1)        // Watch out for '--->'
-                searchCount++;
+        if(chbegin == '\'') {
+            tquote = tquote == SingleQuote ? NoQuote : SingleQuote;
         }
-        else if ((searchCount == 1) && (chbegin == '>'))
+        else if(chbegin == '\"') {
+            tquote = tquote == DoubleQuote ? NoQuote : DoubleQuote;
+        }
+        // Look for '?>'
+        // some crappy sites omit the "?" before it, so
+        // we look for an unquoted '>' instead. (IE compatible)
+        else if ( !tquote && chbegin == '>' )
         {
             // We got a '?>' sequence
             processingInstruction = false;
             ++src;
             discard=LFDiscard;
             return; // Finished parsing comment!
-        }
-        else
-        {
-            searchCount = 0;
         }
         ++src;
     }
@@ -1353,6 +1352,7 @@ void HTMLTokenizer::write( const QString &str )
             {
                 // xml processing instruction
                 processingInstruction = true;
+                tquote = NoQuote;
                 parseProcessingInstruction(src);
                 continue;
 
