@@ -83,7 +83,7 @@ class KURL;
  * KComboBox *combo = new KComboBox( true, this, "mywidget" );
  * KCompletion *comp = combo->completionObject();
  * // Connect to the return pressed signal - optional
- * connect(combo,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
+ * connect(combo,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&)));
  *
  * // Provide the to be completed strings. Note that those are separate from the combo's
  * // contents.
@@ -97,7 +97,7 @@ class KURL;
  * KURLCompletion *comp = new KURLCompletion();
  * combo->setCompletionObject( comp );
  * // Connect to the return pressed signal - optional
- * connect(combo,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
+ * connect(combo,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&)));
  * \endcode
  *
  * Note that you have to either delete the allocated completion object
