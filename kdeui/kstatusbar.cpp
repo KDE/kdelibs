@@ -107,6 +107,7 @@ void KStatusBar::insertItem( const QString& text, int id, int stretch, bool perm
   KStatusBarLabel *l = new KStatusBarLabel (text, id, this);
   items.insert(id, l);
   addWidget (l, stretch, permanent);
+  l->show();
 }
 
 void KStatusBar::removeItem (int id)
