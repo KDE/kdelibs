@@ -222,3 +222,69 @@ Hopefully this document will get you well on your way into the world
 of inter-process communication with KDE!  Please direct all comments
 and/or suggestions to Preston Brown <pbrown@kde.org>.
 
+
+Performance Tests:
+------------------
+A few back-of-the-napkin tests folks:
+ 
+Code:
+ 
+#include <kapp.h>
+ 
+int main(int argc, char **argv)
+{
+  KApplication *app;
+ 
+  app = new KApplication(argc, argv, "testit");
+  return app->exec();
+}
+ 
+Compiled with:
+ 
+g++ -O2 -o testit testit.cpp -I$QTDIR/include -L$QTDIR/lib -lkdecore
+ 
+on Linux yields the following memory use statistics:
+ 
+VmSize:     8076 kB
+VmLck:         0 kB
+VmRSS:      4532 kB
+VmData:      208 kB
+VmStk:        20 kB
+VmExe:         4 kB
+VmLib:      6588 kB
+ 
+If I create the KApplication's DCOPClient, and call attach() and
+registerAs(), it changes to this:
+ 
+VmSize:     8080 kB
+VmLck:         0 kB
+VmRSS:      4624 kB
+VmData:      208 kB
+VmStk:        20 kB
+VmExe:         4 kB
+VmLib:      6588 kB
+ 
+Basically it appears that using DCOP causes 100k more memory to be
+resident, but no more data or stack.  So this will be shared between all
+processes, right?  100k to enable DCOP in all apps doesn't seem bad at
+all. :) 
+
+OK now for some timings.  Just creating a KApplication and then exiting
+(i.e. removing the call to KApplication::exec) takes this much time:
+ 
+0.28user 0.02system 0:00.32elapsed 92%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1084major+62minor)pagefaults 0swaps
+ 
+I.e. about 1/3 of a second on my PII-233.  Now, if we create our DCOP
+object and attach to the server, it takes this long:
+ 
+0.27user 0.03system 0:00.34elapsed 87%CPU (0avgtext+0avgdata 0maxresident)k
+0inputs+0outputs (1107major+65minor)pagefaults 0swaps
+ 
+I.e. about 1/3 of a second.  Basically DCOPClient creation and attaching
+gets lost in the statistical variation ("noise").  I was getting times
+between .32 and .48 over several runs for both of the example programs, so
+obviously system load is more relevant than the extra two calls to
+DCOPClient::attach and DCOPClient::registerAs, as well as the actual
+DCOPClient constructor time.
+
