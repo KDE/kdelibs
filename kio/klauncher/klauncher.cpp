@@ -468,7 +468,6 @@ KLauncher::requestStart(KLaunchRequest *request)
        it != request->arg_list.end();
        it++)
    {
-      fprintf(stderr,"LAUNCHER_EXEC: arg %s", (*it).data());
       strcpy(p, (*it).data());
       p += strlen(p) + 1;
    }
