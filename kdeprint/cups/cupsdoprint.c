@@ -53,17 +53,45 @@ void usage()
 	error("usage: cupsdoprint [-H host[:port]][-P dest][-J name][-o opt=value[,...]][-U login[:password]] files...");
 }
 
+static char * shell_quote(const char *s)
+{
+   char *result;
+   char *p;
+   p = result = malloc(strlen(s)*5+1);
+   while(*s)
+   {
+     if (*s == '\'')
+     {
+        *p++ = '\'';
+        *p++ = '"';
+        *p++ = *s++;
+        *p++ = '"';
+        *p++ = '\'';
+     }
+     else
+     {
+        *p++ = *s++;
+     }
+   }
+   *p = '\0';
+   return result;
+}
+
 const char* getPasswordCB(const char* prompt)
 {
 	if (pwd_asked != 0 || passwd[0] == 0)
 	{
 		int	len = 0;
 		char	buf[256], *c;
+		char*   _cupsUser = shell_quote(cupsUser());
 		FILE	*output;
 
-		sprintf(buf, "dcop kded kdeprintd openPassDlg %s", cupsUser());
+                
+		snprintf(buf, sizeof(buf)-1, "dcop kded kdeprintd openPassDlg %s", _cupsUser);
+		buf[sizeof(buf)-1] = '\0';
+		free (_cupsUser);
 		output = popen(buf, "r");
-		while (fgets(buf, 256, output))
+		while (fgets(buf, sizeof(buf)-1, output))
 		{
 			len = strlen(buf);
 			while (len > 0 && isspace(buf[len-1]))
@@ -71,14 +99,15 @@ const char* getPasswordCB(const char* prompt)
 			pwd_asked = 1;
 			if (len == 0 || strcmp(buf, "<QString>") == 0)
 				return NULL;
+			passwd[BUFSIZE2-1] = '\0';
 			if ((c=strchr(buf, ':')) != NULL)
 			{
 				*c = 0;
 				cupsSetUser(buf);
-				strncpy(passwd, ++c, BUFSIZE2);
+				strncpy(passwd, ++c, BUFSIZE2-1);
 			}
 			else
-				strncpy(passwd, buf, BUFSIZE2);
+				strncpy(passwd, buf, BUFSIZE2-1);
 		}
 	}
 	return passwd;
@@ -153,10 +182,11 @@ int main(int argc, char* argv[])
 	}
 
 	/* check the printer */
-	if (printer[0] == 0)
+	if (!*printer)
 	{
+		printer[BUFSIZE-1] = '\0';
 		if (getenv("PRINTER") != NULL)
-			strncpy(printer, getenv("PRINTER"), BUFSIZE);
+			strncpy(printer, getenv("PRINTER"), BUFSIZE-1);
 		else
 			error("No printer specified (and PRINTER variable is empty)");
 	}
