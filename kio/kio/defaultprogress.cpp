@@ -181,6 +181,8 @@ DefaultProgress::~DefaultProgress()
 
 void DefaultProgress::slotTotalSize( KIO::Job*, KIO::filesize_t bytes )
 {
+  if ( m_iTotalSize == bytes )
+      return;
   m_iTotalSize = bytes;
   if (d->startTime.isNull())
     d->startTime.start();
@@ -189,6 +191,8 @@ void DefaultProgress::slotTotalSize( KIO::Job*, KIO::filesize_t bytes )
 
 void DefaultProgress::slotTotalFiles( KIO::Job*, unsigned long files )
 {
+  if ( m_iTotalFiles == files )
+      return;
   m_iTotalFiles = files;
   showTotals();
 }
@@ -196,6 +200,8 @@ void DefaultProgress::slotTotalFiles( KIO::Job*, unsigned long files )
 
 void DefaultProgress::slotTotalDirs( KIO::Job*, unsigned long dirs )
 {
+  if ( m_iTotalDirs == dirs )
+      return;
   m_iTotalDirs = dirs;
   showTotals();
 }
@@ -248,6 +254,8 @@ void DefaultProgress::slotInfoMessage( KIO::Job*, const QString & msg )
 
 
 void DefaultProgress::slotProcessedSize( KIO::Job*, KIO::filesize_t bytes ) {
+  if ( m_iProcessedSize == bytes )
+    return;
   m_iProcessedSize = bytes;
 
   QString tmp;
@@ -258,6 +266,8 @@ void DefaultProgress::slotProcessedSize( KIO::Job*, KIO::filesize_t bytes ) {
 
 void DefaultProgress::slotProcessedDirs( KIO::Job*, unsigned long dirs )
 {
+  if ( m_iProcessedDirs == dirs )
+    return;
   m_iProcessedDirs = dirs;
 
   QString tmps;
@@ -270,6 +280,8 @@ void DefaultProgress::slotProcessedDirs( KIO::Job*, unsigned long dirs )
 
 void DefaultProgress::slotProcessedFiles( KIO::Job*, unsigned long files )
 {
+  if ( m_iProcessedFiles == files )
+    return;
   m_iProcessedFiles = files;
 
   QString tmps;
@@ -295,7 +307,7 @@ void DefaultProgress::slotSpeed( KIO::Job*, unsigned long bytes_per_second )
 
 void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
 {
-    if ( d->noCaptionYet ) {
+  if ( d->noCaptionYet ) {
     setCaption(i18n("Copy File(s) Progress"));
     d->noCaptionYet = false;
   }
