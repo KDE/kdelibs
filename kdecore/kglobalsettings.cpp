@@ -648,7 +648,9 @@ QRect KGlobalSettings::desktopGeometry(QWidget* w)
         KConfigGroup group(KGlobal::config(), "Windows");
         if (group.readBoolEntry("XineramaEnabled", true) &&
             group.readBoolEntry("XineramaPlacementEnabled", true)) {
-            return dw->screenGeometry(dw->screenNumber(w));
+            if (w)
+                return dw->screenGeometry(dw->screenNumber(w));
+            else return dw->screenGeometry(-1);
         } else {
             return dw->geometry();
         }
