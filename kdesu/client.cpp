@@ -49,7 +49,7 @@ KDEsuClient::KDEsuClient()
 	kdWarning(900) << k_lineinfo << "$DISPLAY is not set\n";
 	return;
     }
-    sock.sprintf("/tmp/kdesud_%d_%s", (int) getuid(), dpy);
+    sock = QFile::encodeName(locateLocal("socket", QString("kdesud_%1").arg(dpy)));
     connect();
 }
 
@@ -82,10 +82,35 @@ int KDEsuClient::connect()
 
     if (::connect(sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0) 
     {
-	kdWarning(900) << k_lineinfo << "connect():" << perror << "\n";
+        kdWarning(900) << k_lineinfo << "connect():" << perror << endl;
 	close(sockfd); sockfd = -1;
 	return -1;
     }
+
+    // We check the owner of the socket after we have connected.
+    // If the socket was somehow not ours an attacker will be able
+    // to delete it after we connect but shouldn't be able to
+    // create a socket that is owned by us.
+    struct stat s;
+    if (lstat(sock, &s)!=0)
+    {
+        kdWarning(900) << "stat failed (" << sock << ")" << endl;
+	close(sockfd); sockfd = -1;
+	return -1;
+    }
+    if (s.st_uid != getuid())
+    {
+        kdWarning(900) << "socket not owned by me! socket uid = " << s.st_uid << endl;
+	close(sockfd); sockfd = -1;
+	return -1;
+    }
+    if (!S_ISSOCK(s.st_mode))
+    {
+        kdWarning(900) << "socket is not a socket (" << sock << ")" << endl;
+	close(sockfd); sockfd = -1;
+	return -1;
+    }
+
     return 0;
 }
 
