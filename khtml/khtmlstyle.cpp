@@ -85,18 +85,39 @@ public:
     CSSSelector(void);
     ~CSSSelector(void);
     void print(void);
-    // tag == 0 means apply to all elements (Selector = *) 
+    // tag == -1 means apply to all elements (Selector = *)
     int          tag;
+
+    enum Match
+    {
+	Exact = 0,
+	Set,
+	List,
+	Hyphen
+    };
+
+    Match 	 match;
     int          attr;
     QString      value;
+
+    enum Relation
+    {
+	Descendant = 0,
+	Child,
+	Sibling
+    };
+
+    Relation relation;
     CSSSelector *tagHistory;
     CSSPropList *propList;
 };
 
 CSSSelector::CSSSelector(void)
-: tag(-1), tagHistory(0), propList(0)
+: tag(0), tagHistory(0), propList(0)
 {
     attr = 0;
+    match = Exact;
+    relation = Descendant;
 }
 
 CSSSelector::~CSSSelector(void)
@@ -109,8 +130,8 @@ CSSSelector::~CSSSelector(void)
 
 void CSSSelector::print(void)
 {
-    printf("[Selector: tag = %d, attr = \"%d\", value = \"%s\"\n",
-    	tag, attr, value.data());
+    printf("[Selector: tag = %d, attr = \"%d\", value = \"%s\" relation = %d\n",
+    	tag, attr, value.data(), (int)relation);
 }
 
 CSSStyleSheet::CSSStyleSheet(const HTMLSettings *_settings)
@@ -161,7 +182,7 @@ CSSStyleSheet::newStyle(CSSStyle *parentStyle)
     newStyle->box.borderColor = newStyle->font.color;
     newStyle->box.border = 2;
     newStyle->box.borderStyle = CSSStyleBox::borderNone;
-    newStyle->bgtransparant = true;
+    newStyle->bgtransparent = true;
     newStyle->width = UNDEFINED;
     newStyle->width_percent = UNDEFINED;
     newStyle->height = UNDEFINED;
@@ -309,22 +330,22 @@ CSSStyleSheet::parseSelector2(const QChar *curP, const QChar *endP)
     QString selecString( curP, endP - curP );
 
 printf("selectString = \"%s\"\n", selecString.ascii());
-    
+
     if (*curP == '#')
     {
-	cs->tag = 0;
+	cs->tag = -1;
 	cs->attr = ATTR_ID;
 	cs->value = QString( curP + 1, endP - curP -1 );
     }
     else if (*curP == '.')
     {
-	cs->tag = 0;
+	cs->tag = -1;
 	cs->attr = ATTR_CLASS;
 	cs->value = QString( curP + 1, endP - curP -1 );
     }
     else if (*curP == ':')
     {
-	cs->tag = 0;
+	cs->tag = -1;
 	cs->attr = ATTR_CLASS;
 	cs->value = QString( curP, endP - curP );
     }
@@ -347,6 +368,7 @@ printf("selectString = \"%s\"\n", selecString.ascii());
                 tag = QString( startP, curP - startP );
                 QString tmp( curP + 1, endP - curP - 1);
 		cs->attr = ATTR_CLASS;
+		cs->match = CSSSelector::List;
                 cs->value = tmp;
                 break;
             }
@@ -375,12 +397,11 @@ printf("selectString = \"%s\"\n", selecString.ascii());
             tag = QString( startP, curP - startP );
         }
 	if(tag == "*")
-	    cs->tag = 0;
+	    cs->tag = -1;
 	else
 	    cs->tag = getTagID(tag.lower().data(), tag.length());
 	printf("found tag \"%s\"\n", tag.ascii());
    }
-   cs->print();
    if (cs->tag == 0)
    {
        delete cs;
@@ -401,7 +422,7 @@ CSSStyleSheet::parseSelector1(const QChar *curP, const QChar *endP)
     const QChar *startP = curP;
     while (curP <= endP)
     {
-        if ((curP == endP) || isspace(*curP))
+        if ((curP == endP) || isspace(*curP) || *curP == '+' || *curP == '>')
         {
             CSSSelector *cs = parseSelector2(startP, curP);
             if (cs)
@@ -409,10 +430,31 @@ CSSStyleSheet::parseSelector1(const QChar *curP, const QChar *endP)
                 cs->tagHistory = selecStack;
                 selecStack = cs;
             }
+	    else
+	    {
+		// invalid selector, delete
+		delete selecStack;
+		return 0;
+	    }
+		    
             curP = parseSpace(curP, endP);
             if (!curP)
                 return(selecStack);
 
+	    if(*curP == '+')
+	    {
+		cs->relation = CSSSelector::Sibling;
+		curP++;
+		curP = parseSpace(curP, endP);
+	    }
+	    else if(*curP == '>')
+	    {
+		cs->relation = CSSSelector::Child;
+		curP++;
+		curP = parseSpace(curP, endP);
+	    }
+	    if(cs)
+		cs->print();
             startP = curP;
         }
         else
@@ -445,6 +487,12 @@ CSSStyleSheet::parseSelector(const QChar *curP, const QChar *endP)
             }
             slist->append(selector);
         }
+	else
+	{
+	    // invalid selector, delete
+	    delete slist;
+	    return 0;
+	}
         curP++;
     }
     return(slist);
@@ -568,6 +616,7 @@ CSSStyleSheet::parseRule(const QChar *curP, const QChar *endP)
         return(curP);
     }
 
+    
     // Add rule to our data structures...
     // WABA: To be done
     return(curP);
@@ -612,7 +661,7 @@ CSSStyleSheet::test(void)
     int len = read(fd, buf, 40000);
 
     QString str = buf;
-    
+
     close(fd);
 
     parseSheet(str.unicode(), len);

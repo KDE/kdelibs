@@ -181,7 +181,7 @@ public:
     CSSStyleText text;
     CSSStyleBox  box;
     CSSStyleList list;
-    bool         bgtransparant;
+    bool         bgtransparent;
     QColor       bgcolor;
     int          width;
     int          width_percent;
