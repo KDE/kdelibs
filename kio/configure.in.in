@@ -8,3 +8,10 @@ AC_SUBST(LIBFAM)
 if test $kde_have_fam = yes; then
   AC_DEFINE_UNQUOTED(HAVE_FAM, 1, [Define if your system has libfam])
 fi
+
+dnl ------------------------------------------------------------------------
+dnl Try to find if LIBZ is installed
+dnl ------------------------------------------------------------------------
+dnl
+
+AC_FIND_ZLIB
