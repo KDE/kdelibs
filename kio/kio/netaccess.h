@@ -27,7 +27,9 @@
 #include <qobject.h>
 #include <qstring.h>
 #include <kio/global.h>
+
 class QStringList;
+class QWidget;
 class KURL;
 
 namespace KIO {
@@ -92,11 +94,20 @@ public:
      * events during the download.
      *
      * @param src URL Reference to the file to download.
-     *
      * @param target String containing the final local location of the
      *               file.  If you insert an empty string, it will
      *               return a location in a temporary spot.
+     * @param window main window associated with this job. This is used to
+     *               automatically cache and discard authentication information
+     *               as needed. If NULL, authentication information will be
+     *               cached only for a short duration after which the user will
+     *               again be prompted for passwords as needed.
      * @return true if successful, false for failure
+     */   
+    static bool download(const KURL& src, QString & target, QWidget* window);
+    
+    /**
+     * @deprecated. Use the function above instead.
      */
     static bool download(const KURL& src, QString & target);
 
@@ -122,12 +133,21 @@ public:
      * case with @ref #copy.
      *
      * @param src URL Referencing the file to upload.
+     * @param target URL containing the final location of the file.
+     * @param window main window associated with this job. This is used to
+     *               automatically cache and discard authentication information
+     *               as needed. If NULL, authentication information will be cached
+     *               only for a short duration after which the user will again be
+     *               prompted for passwords as needed.
      *
-     * @param target URL containing the final location of the
-     *               file.
      * @return true if successful, false for failure
      */
-    static bool upload(const QString& src, const KURL& target);
+    static bool upload(const QString& src, const KURL& target, QWidget* window);
+    
+    /**
+     * @deprecated. Use the function above instead.
+     */
+    static bool upload(const QString& src, const KURL& target);    
 
     /**
      * Alternative to @ref upload for copying over the network.
@@ -137,12 +157,22 @@ public:
      * of @ref KIO::file_copy (not KIO::copy!).
      * 
      * @param src URL Referencing the file to upload.
-     * @param target URL containing the final location of the
-     *               file.
+     * @param target URL containing the final location of the file.
+     * @param window main window associated with this job. This is used to
+     *               automatically cache and discard authentication information
+     *               as needed. If NULL, authentication information will be cached
+     *               only for a short duration after which the user will again be
+     *               prompted for passwords as needed.
+     *
      * @return true if successful, false for failure
+     */    
+    static bool copy( const KURL& src, const KURL& target, QWidget* window );
+    
+    /**
+     * @deprecated. Use the function above instead.
      */
     static bool copy( const KURL& src, const KURL& target );
-
+    
     /**
      * Alternative method for copying over the network.
      * Overwrite is false, so this will fail if @p target exists.
@@ -152,9 +182,19 @@ public:
      * @param src URL Referencing the file to upload.
      * @param target URL containing the final location of the
      *               file.
+     * @param window main window associated with this job. This is used to
+     *               automatically cache and discard authentication information
+     *               as needed. If NULL, authentication information will be cached
+     *               only for a short duration after which the user will again be
+     *               prompted for passwords as needed.     
      * @return true if successful, false for failure
      */
-    static bool dircopy( const KURL& src, const KURL& target );
+    static bool dircopy( const KURL& src, const KURL& target, QWidget* window );
+    
+    /**
+     * @deprecated. Use the function above instead.
+     */
+    static bool dircopy( const KURL& src, const KURL& target );    
 
     /**
      * Tests whether a URL exists.
@@ -163,8 +203,18 @@ public:
      * (it saves creating a slot and testing for the job result).
      *
      * @param url the url we are testing
+     * @param window main window associated with this job. This is used to
+     *               automatically cache and discard authentication information
+     *               as needed. If NULL, authentication information will be
+     *               cached only for a short duration after which the user will
+     *               again be prompted for passwords as needed.     
      * @return true if the URL exists, false otherwise
      */
+    static bool exists(const KURL& url, QWidget* window);
+    
+    /**
+     * @deprecated. Use the function above instead.
+     */    
     static bool exists(const KURL& url);
 
     /**
@@ -178,10 +228,20 @@ public:
      * @param url the url we are testing
      * @param source if true, we want to read from that URL.
      *               If false, we want to write to it.
+     * @param window main window associated with this job. This is used to
+     *               automatically cache and discard authentication information
+     *               as needed. If NULL, authentication information will be
+     *               cached only for a short duration after which the user will
+     *               again be prompted for passwords as needed.     
      * @return true if the URL exists and we can do the operation specified by
      *              @p source, false otherwise
      */
-    static bool exists(const KURL& url, bool source);
+    static bool exists(const KURL& url, bool source, QWidget* window);
+    
+    /**
+     * @deprecated. Use the function above instead.
+     */    
+    static bool exists(const KURL& url, bool source);    
 
     /**
      * Tests whether a URL exists and return information on it.
@@ -191,8 +251,18 @@ public:
      *
      * @param url The URL we are testing.
      * @param entry The result of the stat. Iterate over the list
+     * @param window main window associated with this job. This is used to
+     *               automatically cache and discard authentication information
+     *               as needed. If NULL, authentication information will be
+     *               cached only for a short duration after which the user will
+     *               again be prompted for passwords as needed.     
      * of atoms to get hold of name, type, size, etc., or use @ref KFileItem.
      * @return true if successful, false for failure
+     */
+    static bool stat(const KURL& url, KIO::UDSEntry & entry, QWidget* window);
+    
+    /**
+     * @deprecated. Use the function above instead.
      */
     static bool stat(const KURL& url, KIO::UDSEntry & entry);
 
@@ -203,8 +273,18 @@ public:
      * (it saves creating a slot and testing for the job result).
      *
      * @param url The file or directory to delete.
+     * @param window main window associated with this job. This is used to
+     *               automatically cache and discard authentication information
+     *               as needed. If NULL, authentication information will be
+     *               cached only for a short duration after which the user will
+     *               again be prompted for passwords as needed.     
      * @return true on success, false on failure.
      */
+    static bool del( const KURL & url, QWidget* window );
+        
+    /**
+     * @deprecated. Use the function above instead.
+     */     
     static bool del( const KURL & url );
 
     /**
@@ -214,8 +294,18 @@ public:
      * (it saves creating a slot and testing for the job result).
      *
      * @param url The directory to create.
+     * @param window main window associated with this job. This is used to
+     *               automatically cache and discard authentication information
+     *               as needed. If NULL, authentication information will be
+     *               cached only for a short duration after which the user will
+     *               again be prompted for passwords as needed.     
      * @return true on success, false on failure.
      */
+    static bool mkdir( const KURL & url, QWidget* window, int permissions = -1 );
+    
+    /**
+     * @deprecated. Use the function above instead.
+     */    
     static bool mkdir( const KURL & url, int permissions = -1 );
 
 
@@ -234,7 +324,17 @@ public:
      * used.
      *
      * @param url The URL whose mimetype we are interested in.
+     * @param window main window associated with this job. This is used to
+     *               automatically cache and discard authentication information
+     *               as needed. If NULL, authentication information will be
+     *               cached only for a short duration after which the user will
+     *               again be prompted for passwords as needed.     
      * @return The mimetype name.
+     */
+    static QString mimetype( const KURL & url, QWidget* window );
+    
+    /**
+     * @deprecated. Use the function above instead.
      */
     static QString mimetype( const KURL & url );
 
@@ -249,22 +349,25 @@ private:
      * Private constructor
      */
     NetAccess() {}
+    
     /**
      * Private destructor
      */
     ~NetAccess() {}
+    
     /**
      * Internal methods
-     */
-    bool copyInternal(const KURL& src, const KURL& target, bool overwrite);
-    bool dircopyInternal(const KURL& src, const KURL& target);
-    bool statInternal(const KURL & url, int details, bool source);
+     */    
+    bool copyInternal(const KURL& src, const KURL& target, bool overwrite, QWidget* window = 0);
+    bool dircopyInternal(const KURL& src, const KURL& target, QWidget* window = 0);
+    bool statInternal(const KURL & url, int details, bool source, QWidget* window = 0);
     UDSEntry m_entry;
-    bool delInternal(const KURL & url);
-    bool mkdirInternal(const KURL & url, int permissions);
-    QString mimetypeInternal(const KURL & url);
+    bool delInternal(const KURL & url, QWidget* window = 0);
+    bool mkdirInternal(const KURL & url, int permissions, QWidget* window = 0);
+    QString mimetypeInternal(const KURL & url, QWidget* window = 0);
     void enter_loop();
     QString m_mimetype;
+    
     /**
      * List of temporary files
      */
