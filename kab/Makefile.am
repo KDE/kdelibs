@@ -110,7 +110,7 @@ DISTCLEANFILES = $(BUILTSOURCES)
 
 # make messages.po. Move this one to ../po/ and "make merge" in po
 messages:
-	$(XGETTEXT) -C -ktranslate $(kab_SOURCES)
+	$(XGETTEXT) -C -ktranslate -ki18n -x ../po/kde.pot $(kab_SOURCES)
 
 # just install datas here. Use install-exec-data for scripts and etc.
 # the binary itself is already installed from automake
