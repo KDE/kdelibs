@@ -46,6 +46,7 @@ using namespace DOM;
 
 #include <kstddirs.h>
 #include <kcharsets.h>
+#include <kglobal.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qfontdatabase.h>
@@ -743,7 +744,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	{
 	    if(!e->parentNode()) return;
 	    f.setItalic(e->parentNode()->style()->font().italic());
-	    f.setCharSet(e->ownerDocument()->view()->part()->settings()->charset);
+	    //KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
 	    style->setFont(f);
 	    return;
 	}
@@ -761,7 +762,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	default:
 	    return;
 	}
-	f.setCharSet(e->ownerDocument()->view()->part()->settings()->charset);
+	//KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
 	style->setFont(f);
 	break;
     }
@@ -778,7 +779,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	{
 	    if(!e->parentNode()) return;
 	    f.setWeight(e->parentNode()->style()->font().weight());
-	    f.setCharSet(e->ownerDocument()->view()->part()->settings()->charset);
+	    //KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
 	    style->setFont(f);
 	    return;
 	}
@@ -805,7 +806,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	{
 	    // ### fix parsing of 100-900 values in parser, apply them here
 	}
-	f.setCharSet(e->ownerDocument()->view()->part()->settings()->charset);
+	//KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
 	style->setFont(f);
 	break;
     }
@@ -1359,7 +1360,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 		size = bestSize;
 	}	
 	f.setPointSize(size);
-	f.setCharSet(e->ownerDocument()->view()->part()->settings()->charset);
+	//KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
 	style->setFont(f);
 	return;
     }
@@ -1485,7 +1486,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    if(!strcasecmp(fi.family().ascii(), face.ascii()))
 	    {
 		//printf("=====> setting font family to %s\n", face.ascii());
-		f.setCharSet(e->ownerDocument()->view()->part()->settings()->charset);
+		//KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
 		style->setFont(f);
 		break;
 	    }

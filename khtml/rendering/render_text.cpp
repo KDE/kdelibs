@@ -293,6 +293,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
 
     p->setFont( m_style->font() );
+    //printf("charset used: %d\n", m_style->font().charSet());
 #if 0
     printf("charset used: %d mapper: %s\n", m_style->font().charSet(), fm->mapper()->name());
 #endif
@@ -490,9 +491,9 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 	deleteChar = true;
 	// reverse String
 	QString aStr = QConstString(str->s+from, len).string();
-#ifdef DEBUG_LAYOUT
+	//#ifdef DEBUG_LAYOUT
 	printf("reversing '%s' len=%d\n", (const char *)aStr.utf8(), len);
-#endif
+	//#endif
 	aStr.compose();
 	len = aStr.length();
 	ch = new QChar[len];
