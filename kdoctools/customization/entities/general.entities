@@ -235,7 +235,7 @@
 <!ENTITY kreversi	"<application>KReversi</application>">
 <!ENTITY kruler	"<application>KRuler</application>">
 <!ENTITY ksame	"<application>KSame</application>">
-<!ENTITY kscd	"<application>KSCD</application>">
+<!ENTITY kscd	"<application>Kscd</application>">
 <!ENTITY kscore "<application>KScore</application>">
 <!ENTITY kscreensaver	"<application>KScreensaver</application>">
 <!ENTITY ksgmltools	"<application>ksgmltools</application>">
