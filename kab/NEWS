@@ -12,5 +12,10 @@ October 10, 1998:
 October 24, 1998:
 	You may click on the email address in the about dialog to send me an
 	email now.
-
-
+November 4, 1998:
+	Did you ever wonder that the "Edit email address" dialog was nearly
+	unusable? If you did, you should have a look at it. It has been 
+	improved to be more intuitive.
+	The bug that prevented you from storing something in the country 
+	fields has been removed now.
+	The dialog for editing the entry is now resized more properly.

@@ -977,6 +977,12 @@ void AddressWidget::search()
   string value;
   // -----
   CHECK(section!=0); // DB needs to be initialized
+  if(noOfEntries()==0)
+    {
+      emit(setStatus(i18n("No entries.")));
+      qApp->beep();
+      return;
+    }
   if(dialog.exec())
     {
       QApplication::setOverrideCursor(waitCursor);
@@ -1026,6 +1032,8 @@ void AddressWidget::search()
 	}
     } else {
       LG(GUARD, "AddressWidget::search: dialog rejected.\n");
+      emit(setStatus(i18n("Rejected.")));
+      qApp->beep();
     }
   LG(GUARD, "AddressWidget::search: done.\n");
   // ############################################################################
@@ -1942,11 +1950,13 @@ void AddressWidget::print()
   if(noOfEntries()==0)
     {
       setStatus(i18n("No entries."));
+      qApp->beep();
       return;
     }
   if(!prt.setup(this)) 
     {
       emit(setStatus(i18n("Printing cancelled.")));
+      qApp->beep();
       return;
     }
   prt.setCreator("KDE Addressbook");
@@ -1969,12 +1979,13 @@ void AddressWidget::print()
     {
       LG(GUARD, "AddressWidget::print: could not query fields to print.\n");
       emit(setStatus(i18n("Rejected.")));
+      qApp->beep();
       return;
     }
   if(!dialog.selector()->getSelection(indizes))
     {
-      emit(setStatus
-	   (i18n("Nothing to print.")));
+      emit(setStatus(i18n("Nothing to print.")));
+      qApp->beep();
       return;
     }
   // ----- find selected keys:
@@ -1991,12 +2002,14 @@ void AddressWidget::print()
     {
       LG(GUARD, "AddressWidget::print: printing setup rejected\n");
       emit(setStatus(i18n("Rejected.")));
+      qApp->beep();
       return;
     }
   // ----- call the printing subroutines:
   if(!print(prt, keys, printDialog.getHeadline(), printDialog.getLeftFooter(),
 	    printDialog.getRightFooter()))
      {
+       qApp->beep();
        QMessageBox::information(this, i18n("Error"), i18n("Printing failed!"));
      }
   emit(setStatus(i18n("Printing finished successfully.")));

@@ -10,7 +10,7 @@
  * $Revision$
  */
 
-#include "StringListDialog.h"
+#include "StringListEditDialog.h"
 #include "editentry.h"
 #include "widgets.h"
 #include "kab.h"
@@ -284,7 +284,8 @@ void EditEntryDialog::okPressed()
     &entry.telephone,
     &entry.fax,
     &entry.modem,
-    &entry.URL };
+    &entry.URL,
+    &entry.country };
   QLineEdit* ledits[]= {
     leTitle,
     leFirstName,
@@ -303,7 +304,8 @@ void EditEntryDialog::okPressed()
     leTelephone,
     leFax,
     leModem,
-    leURL };
+    leURL,
+    leCountry };
   const int Size=sizeof(entries)/sizeof(entries[0]);
   int count;
   // -----
@@ -393,13 +395,13 @@ void EditEntryDialog::editTalkAddresses()
   ID(bool GUARD=false);
   LG(GUARD, "EditEntryDialog::editTalkAddresses: called.\n");
   // ############################################################################
-  StringListDialog dialog(this);
+  StringListEditDialog dialog(this);
   // -----
   dialog.setCaption(i18n("Edit talk addresses"));
-  dialog.set(entry.talk);
+  dialog.setStrings(entry.talk);
   if(dialog.exec())
     {
-      entry.talk=dialog.get();
+      dialog.getStrings(entry.talk);
     } else {
       qApp->beep();
     }
@@ -411,13 +413,13 @@ void EditEntryDialog::editEmailAddresses()
   ID(bool GUARD=false);
   LG(GUARD, "EditEntryDialog::editEmailAddresses: called.\n");
   // ############################################################################
-  StringListDialog dialog(this);
+  StringListEditDialog dialog(this);
   // -----
   dialog.setCaption(i18n("Edit email addresses"));
-  dialog.set(entry.emails);
+  dialog.setStrings(entry.emails);
   if(dialog.exec())
     {
-      entry.emails=dialog.get();
+      dialog.getStrings(entry.emails);
     } else {
       qApp->beep();
     }

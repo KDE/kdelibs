@@ -42,4 +42,28 @@ October 24, 1998:
 	automatically and more accurately.
 	The about dialog now contains a KURLLabel that opens an email composer
 	when the user clicks on it.
+November 2, 1998:
+	I missed to store the contents of the "country" field, this bug is fixed
+	now.
+	Since I reworked the former StringListDialog, all files regarding the 
+	old one have changed. These are removed:
+		StringListDialog.dlg
+		StringListDialog.h  
+		StringListDialog.cpp
+		StringListDialogData.h 
+		StringListDialogData.cpp,
+	these are added, they contain the new main widget for the DialogBase 
+	deriven dialog class:
+		StringListEditWidget.dlg
+		StringListEditWidget.h 
+		StringListEditWidget.cpp
+		StringListEditWidgetData.h
+		StringListEditWidgetData.cpp,
+	and these contin the dialog itselfes, they are also new:
+		StringListEditDialog.h
+		StringListEditDialog.cpp.
+	Writing dialogs becomes more and more easy using the DialogBase class.
+
 	
+
+

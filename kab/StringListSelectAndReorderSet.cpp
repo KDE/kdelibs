@@ -540,57 +540,10 @@ StringListSAndRSetDialog::StringListSAndRSetDialog
   // buttonCancel->setText(i18n("Cancel"));
   enableButtonApply(false);
   setMainWidget(sar);
-  // ----- create connections:
-  connect(kapp, SIGNAL(appearanceChanged()), SLOT(initializeGeometry()));
   // ----- set up geometry:
-  // initializeGeometry();
   resize(minimumSize());
   // ############################################################################
 }
-
-/*
-void StringListSAndRSetDialog::initializeGeometry()
-{
-  // ############################################################################
-  QSize sarSize=sar->sizeHint();
-  const int Grid=5,
-    ButtonHeight=buttonOK->sizeHint().height(),
-    ButtonWidth=QMAX(buttonOK->sizeHint().width(),
-		     buttonCancel->sizeHint().width());
-  int cx, cy;
-  // ----- calculate the needed size:
-  cx=QMAX(sarSize.width(), 3*Grid+2*ButtonWidth); 
-  cy=sarSize.height()+Grid+ButtonHeight;
-  // ----- set either minimum or fixed size:
-  if(sizeIsFixed)
-    {
-      setFixedSize(cx, cy);
-    } else {
-      setMinimumSize(cx, cy);
-    }
-  // ############################################################################
-}
-*/
-
-/*
-void StringListSAndRSetDialog::resizeEvent(QResizeEvent*)
-{
-  // ############################################################################
-  // CONSTS:
-  const int Grid=5,
-    ButtonHeight=buttonOK->sizeHint().height(),
-    ButtonWidth=QMAX(buttonOK->sizeHint().width(),
-		     buttonCancel->sizeHint().width()),
-    SARHeight=height()-ButtonHeight-Grid,
-    ButtonY=SARHeight+Grid;
-  // CODE:
-  sar->setGeometry(0, 0, width(), SARHeight);
-  buttonOK->setGeometry(0, ButtonY, ButtonWidth, ButtonHeight);
-  buttonCancel->setGeometry
-    (width()-ButtonWidth, ButtonY, ButtonWidth, ButtonHeight);
-  // ############################################################################
-}
-*/
 
 void StringListSAndRSetDialog::fixSize(bool state)
 {
@@ -626,3 +579,4 @@ StringListSelectAndReorderSet* StringListSAndRSetDialog::selector()
 #include "StringListSelectAndReorderSet.moc"
 #include "StringListSelectAndReorderSetData.moc"
 // #############################################################################
+

@@ -1,18 +1,17 @@
 DlgEdit:v1.2:Dialog:
 Dialog {
-	ClassHeader {StringListDialog.h}
-	ClassSource {StringListDialog.cpp}
-	ClassName {StringListDialog}
-	DataHeader {StringListDialogData.h}
-	DataSource {StringListDialogData.cpp}
-	DataName {StringListDialogData}
-	WindowBaseClass {QDialog}
-	IsModal {TRUE}
+	ClassHeader {StringListEditWidget.h}
+	ClassSource {StringListEditWidget.cpp}
+	ClassName {StringListEditWidget}
+	DataHeader {StringListEditWidgetData.h}
+	DataSource {StringListEditWidgetData.cpp}
+	DataName {StringListEditWidgetData}
+	WindowBaseClass {QWidget}
 	WindowFlags {0}
 }
 WidgetLayout {
 InitialPos {-1 -1}
-Size {290 250}
+Size {290 200}
 MinSize {0 0}
 MaxSize {32767 32767}
 Grid {10}
@@ -28,18 +27,10 @@ ListBox {
 		MultiSelection {FALSE}
 		Style {51}
 		LineWidth {2}
-		Rect {10 40 230 150}
+		Rect {10 50 230 140}
 		Name {ListBox_2}
 		Variable {lbStrings}
-		LayoutStatus {NoLayout}
-		MinimumSize {10 10}
-		MaximumSize {32767 32767}
-}
-Frame {
-		Style {36}
-		Rect {10 200 270 10}
-		Name {Frame_1}
-		Variable {frameLine}
+		Signal {[Protected]  highlighted --> itemSelected  (int)}
 		LayoutStatus {NoLayout}
 		MinimumSize {10 10}
 		MaximumSize {32767 32767}
@@ -51,37 +42,7 @@ PushButton {
 		Text {}
 		AutoRepeat {FALSE}
 		AutoResize {FALSE}
-		Rect {10 210 100 30}
-		Name {PushButton_1}
-		Variable {buttonOK}
-		Signal {[Protected]  clicked --> accept  ()}
-		LayoutStatus {NoLayout}
-		MinimumSize {10 10}
-		MaximumSize {32767 32767}
-}
-PushButton {
-		ToggleButton {FALSE}
-		Default {FALSE}
-		AutoDefault {FALSE}
-		Text {}
-		AutoRepeat {FALSE}
-		AutoResize {FALSE}
-		Rect {180 210 100 30}
-		Name {PushButton_2}
-		Variable {buttonCancel}
-		Signal {[Protected]  clicked --> reject  ()}
-		LayoutStatus {NoLayout}
-		MinimumSize {10 10}
-		MaximumSize {32767 32767}
-}
-PushButton {
-		ToggleButton {FALSE}
-		Default {FALSE}
-		AutoDefault {FALSE}
-		Text {}
-		AutoRepeat {FALSE}
-		AutoResize {FALSE}
-		Rect {250 40 30 30}
+		Rect {250 50 30 30}
 		Name {PushButton_3}
 		Variable {buttonUp}
 		Signal {[Protected]  clicked --> upPressed  ()}
@@ -96,7 +57,7 @@ PushButton {
 		Text {}
 		AutoRepeat {FALSE}
 		AutoResize {FALSE}
-		Rect {250 80 30 30}
+		Rect {250 90 30 30}
 		Name {PushButton_4}
 		Variable {buttonDown}
 		Signal {[Protected]  clicked --> downPressed  ()}
@@ -124,10 +85,25 @@ LineEdit {
 		EchoMode {Normal}
 		MaxLength {32767}
 		FrameShown {TRUE}
-		Rect {10 10 270 20}
+		Rect {10 10 230 30}
 		Name {LineEdit_2}
 		Variable {leLine}
-		Signal {[Protected]  returnPressed --> addString  ()}
+		Signal {[Protected]  textChanged --> itemChanged  (const char*)}
+		LayoutStatus {NoLayout}
+		MinimumSize {10 10}
+		MaximumSize {32767 32767}
+}
+PushButton {
+		ToggleButton {FALSE}
+		Default {FALSE}
+		AutoDefault {FALSE}
+		Text {}
+		AutoRepeat {FALSE}
+		AutoResize {FALSE}
+		Rect {250 10 30 30}
+		Name {ButtonNew}
+		Variable {buttonNew}
+		Signal {[Protected]  clicked --> newItem  ()}
 		LayoutStatus {NoLayout}
 		MinimumSize {10 10}
 		MaximumSize {32767 32767}
