@@ -1,7 +1,21 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 12 October 1997 - Martin Jones.
+Last Change: 23 October 1997 - Martin Jones.
+
+Version 0.11.01 - Martin
+-----------------------
+
+More ampseqs including Greek characters, plus binary searching for ampseqs
+ from Norman Markgraf <markgraf@hydra2.geol3.ruhr-uni-bochum.de>.
+Ooops.  Even if you have setAutoDelete(true) for a stack, pop() does not
+ delete the item. Must use remove().
+Ignore additional </ul>, </ol>, </dir>, etc.
+</a was being matched for </address.
+Fixes for aligned clues.
+Send documentChanged in KHTMLWidget::calcSize()
+Initialize KHTMLWidget::url and KHTMLWidget::target to 0
+
 
 Version 0.11.0 - Martin
 -----------------------
