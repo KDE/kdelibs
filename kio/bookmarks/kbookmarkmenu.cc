@@ -57,8 +57,6 @@
 
 template class QPtrList<KBookmarkMenu>;
 
-// kbookmark material?
-
 static QString makeTextNodeMod(KBookmark bk, const QString &m_nodename, const QString &m_newText) {
   QDomNode subnode = bk.internalElement().namedItem(m_nodename);
   if (subnode.isNull()) {
@@ -79,11 +77,9 @@ static QString makeTextNodeMod(KBookmark bk, const QString &m_nodename, const QS
   return m_oldText;
 }
 
-/********************************************************************
- *
- * KBookmarkMenu
- *
- ********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
 
 KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
                               KBookmarkOwner * _owner, KPopupMenu * _parentMenu,
@@ -196,6 +192,10 @@ void KBookmarkMenu::slotActionHighlighted( KAction* action )
     s_highlightedImportLocation = QString::null;
   }
 }
+
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
 
 class KBookmarkMenuRMBAssoc : public dPtrTemplate<KBookmarkMenu, RMB> { };
 template<> QPtrDict<RMB>* dPtrTemplate<KBookmarkMenu, RMB>::d_ptr = 0;
@@ -394,6 +394,14 @@ void RMB::slotRMBActionOpen( int val )
   m_pOwner->openBookmarkURL( bookmark.url().url() );
 }
 
+void RMB::hidePopup() { 
+  KPopupMenu::contextMenuFocus()->hideContextMenu(); 
+}
+
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+
 void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val )
 { 
    BEGIN_RMB_ACTION; rmbSelf(this)->fillContextMenu(contextMenu, address, val);
@@ -417,10 +425,6 @@ void KBookmarkMenu::slotRMBActionCopyLocation( int val )
 
 void KBookmarkMenu::slotRMBActionOpen( int val )
 { BEGIN_RMB_ACTION; rmbSelf(this)->slotRMBActionOpen( val ); }
-
-void RMB::hidePopup() { 
-  KPopupMenu::contextMenuFocus()->hideContextMenu(); 
-}
 
 void KBookmarkMenu::slotBookmarksChanged( const QString & groupAddress )
 {
@@ -734,8 +738,6 @@ KExtendedBookmarkOwner* KBookmarkMenu::extOwner()
   return dynamic_cast<KExtendedBookmarkOwner*>(m_pOwner);
 }
 
-// -----------------------------------------------------------------------------
-
 void KBookmarkMenu::slotNSLoad()
 {
   // only fill menu once
@@ -746,7 +748,9 @@ void KBookmarkMenu::slotNSLoad()
   importer.openBookmarks(s_highlightedImportLocation, s_highlightedImportType);
 }
 
-// -----------------------------------------------------------------------------
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
 
 KBookmarkEditFields::KBookmarkEditFields(QWidget *main, QBoxLayout *vbox, FieldsSet fieldsSet)
 {
@@ -779,6 +783,10 @@ void KBookmarkEditFields::setLocation(const QString &str)
 { 
   m_url->setText(str); 
 }
+
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
 
 KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr, BookmarkEditType editType,
                                          QWidget * parent, const char * name, const QString& caption)
@@ -872,7 +880,9 @@ void KBookmarkEditDialog::slotUser1()
   KBookmarkFolderTree::fillTree( m_folderTree, m_mgr );
 }
 
-// -----------------------------------------------------------------------------
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
 
 static void fillGroup( KBookmarkFolderTreeItem * parentItem, KBookmarkGroup group )
 {
@@ -954,7 +964,9 @@ void KBookmarkFolderTree::setAddress( QListView *listview, const QString & addre
   listview->setCurrentItem( it );
 }
 
-// -----------------------------------------------------------------------------
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
 
 // toplevel item
 KBookmarkFolderTreeItem::KBookmarkFolderTreeItem( QListView *parent, const KBookmark & gp )
@@ -972,8 +984,9 @@ KBookmarkFolderTreeItem::KBookmarkFolderTreeItem( KBookmarkFolderTreeItem *paren
   setExpandable(true);
 }
 
-// -----------------------------------------------------------------------------
-
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
 
 // NOTE - KBookmarkMenuNSImporter is really === KBookmarkMenuImporter 
 //        i.e, it is _not_ ns specific. and in KDE4 it should be renamed.
@@ -1044,6 +1057,10 @@ void KBookmarkMenuNSImporter::endFolder()
 {
   mstack.pop();
 }
+
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
 
 KBookmarkMenu::DynMenuInfo KBookmarkMenu::showDynamicBookmarks( const QString &id )
 {
