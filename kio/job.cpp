@@ -1066,6 +1066,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, unsigned long offset )
 
         m_getJob = get( m_src, false, false /* no GUI */ );
         kdDebug(7007) << "FileCopyJob: m_getJob = " << m_getJob << endl;
+        m_getJob->addMetaData( "errorPage", "false" );
         if (offset)
         {
             kdDebug(7007) << "Setting metadata for resume" << endl;

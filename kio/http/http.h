@@ -338,6 +338,9 @@ protected:
   // Flag that indicates whether there was some connection
   // error...
   bool m_bError;
+  
+  // Flag that indicates application prefers errorPage() instead over error.
+  bool m_bErrorPage;
 
   DCOPClient *m_dcopClient;
 

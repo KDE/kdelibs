@@ -41,4 +41,12 @@ disposition     string          Suggested name to Save a file as as returned by 
 
 http-refresh    string          Passes HTTP Refresh meta-data back to the application.
 
+cookies		"auto"		Use kcookiejar to lookup and collect cookies (default)
+		"manual"	Cookies set in "setcookies" are send, received cookies are reported via "setcookies".
+		"none"		No cookies are send, received cookies are discarded.
+
+setcookies	string		Used to send/receive HTTP cookies when "cookies" is set to "manual".
+
+errorPage	bool		Flag that indicates that an errorPage() is preferred over an error(). (default:true)
+
 ** NOTE: Anything in quotes ("") under Value(s) indicates literal value.
