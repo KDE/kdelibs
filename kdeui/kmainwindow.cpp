@@ -453,13 +453,14 @@ void KMainWindow::setupGUI( int options ) {
                       SLOT(configureToolbars() ), actionCollection());
     }
 
+    if( options & Create ){
+        createGUI();
+    }
+
     if( options & Save ){
         setAutoSaveSettings();
     }
 
-    if( options & Create ){
-        createGUI();
-    }
 }
 
 void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )

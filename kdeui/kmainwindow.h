@@ -538,16 +538,16 @@ public:
 	StatusBar = 4,
         
 	/**
-	 * auto-saves the toolbar/menubar/statusbar settings and
-         * window size using the default name.  @see setAutoSaveSettings
-	 */
-	Save = 8,
-	
-	/**
 	 * calls createGUI() once all of the other options have been
          * taken care of.  @see createGUI
          */
 	Create = 16,
+	
+	/**
+	 * auto-saves (and loads) the toolbar/menubar/statusbar settings and
+         * window size using the default name.  @see setAutoSaveSettings
+	 */
+	Save = 8,
     };
     
     /**
