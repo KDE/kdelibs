@@ -14,7 +14,7 @@
  *
  * The only difference is that KTMainWindow is per default created with
  * the WDestructiveClose flag. This means, it is automatically 
- * deleted when the widget accepts a close event. A KTMainWindow
+ * deleted when the widget accepts a close event. A KTopLevelWidget
  * needs to be deleted manually ( it is basically a just a KTMainWindow( "name", 0 ); )
  *
  *
@@ -23,7 +23,7 @@
  * @author Stephan Kulow (coolo@kde.org), was maintained by Sven Radej (radej@kde.org)
  */
 
-class KTMainWindow : public KTMainWindow {
+class KTopLevelWidget : public KTMainWindow {
     Q_OBJECT
 
      friend class KToolBar;
@@ -32,11 +32,11 @@ public:
     /**
      * Constructor.
      */
-    KTMainWindow( const char *name = 0L );
+    KTopLevelWidget( const char *name = 0L );
     /**
      * Destructor.
      */
-    ~KTMainWindow();
+    ~KTopLevelWidget();
 
 protected:
 
