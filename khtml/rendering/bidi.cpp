@@ -853,7 +853,7 @@ void RenderFlow::layoutInlineChildren()
 #ifndef QT_NO_UNICODETABLES
                 while(!start.atEnd() && start.direction() == QChar::DirWS )
 #else
-                while(!start.atEnd() && start.direction() <= ' ' )
+                while(!start.atEnd() && start.direction() == ' ' )
 #endif
                     ++start;
             }
