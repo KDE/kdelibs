@@ -100,7 +100,9 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List
       str += args[i].toString(exec);
     if (id == HTMLDocument::WriteLn)
       str += "\n";
-    //kdDebug(6070) << "document.write: " << str.string().string() << endl;
+#ifdef KJS_VERBOSE
+    kdDebug(6070) << "document.write: " << str.string().string() << endl;
+#endif
     doc.write(str.string());
     return Undefined();
   }
@@ -3281,7 +3283,10 @@ void Image::putValueProperty(ExecState *exec, int token, const Value& value, int
     break;
   }
   case OnLoad:
+    if ( m_onLoadListener )
+        m_onLoadListener->deref();
     m_onLoadListener = Window::retrieveActive(exec)->getJSEventListener(value,true);
+    m_onLoadListener->ref();
     break;
   default:
     kdWarning() << "Image::putValueProperty unhandled token " << token << endl;
@@ -3304,6 +3309,8 @@ void Image::notifyFinished(khtml::CachedObject * finishedObj)
 Image::~Image()
 {
   if ( img ) img->deref(this);
+  if ( m_onLoadListener )
+      m_onLoadListener->deref();
 }
 
 Value KJS::getHTMLCollection(ExecState *exec,DOM::HTMLCollection c)
