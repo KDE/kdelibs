@@ -452,7 +452,7 @@ bool ReadWritePart::saveToURL()
 {
   if ( m_url.isLocalFile() )
   {
-    m_bModified = false;
+    setModified( false );
     emit completed();
     return true; // Nothing to do
   }
@@ -470,7 +470,7 @@ void ReadWritePart::slotUploadFinished( KIO::Job * job )
     emit canceled( job->errorString() );
   else
   {
-    m_bModified = false;
+    setModified( false );
     if ( m_bClosing )
       ReadOnlyPart::closeURL();
     emit completed();
