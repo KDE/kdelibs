@@ -1096,15 +1096,7 @@ void KStandardDirs::addKDEDefaults()
     }
     else
     {
-       if (getuid())
-       {
-          localXdgDir =  QDir::homeDirPath() + "/.config/";
-       }
-       else
-       {
-          struct passwd *pw = getpwuid(0);
-          localXdgDir =  QFile::decodeName((pw && pw->pw_dir) ? pw->pw_dir : "/root")  + "/.config/";
-       }
+       localXdgDir =  QDir::homeDirPath() + "/.config/";
     }
 
     localXdgDir = KShell::tildeExpand(localXdgDir);
@@ -1148,15 +1140,7 @@ void KStandardDirs::addKDEDefaults()
     }
     else
     {
-       if (getuid())
-       {
-          localXdgDir =  QDir::homeDirPath() + "/.local/share/";
-       }
-       else
-       {
-          struct passwd *pw = getpwuid(0);
-          localXdgDir =  QFile::decodeName((pw && pw->pw_dir) ? pw->pw_dir : "/root")  + "/.local/share/";
-       }
+       localXdgDir = QDir::homeDirPath() + "/.local/share/";
     }
 
     localXdgDir = KShell::tildeExpand(localXdgDir);
