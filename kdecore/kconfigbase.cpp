@@ -117,11 +117,6 @@ done:
 #undef X
 
 
-KConfigGroup::~KConfigGroup()
-{
-	mBase->sync();
-}
-
 KConfigBase::KConfigBase()
   : backEnd(0L), bDirty(false), bLocaleInitialized(false),
     bReadOnly(false), bExpand(false)
@@ -159,7 +154,11 @@ void KConfigBase::setGroup( const QString& group )
   bCheckGroup = true;
 }
 
-/*
+void KConfigBase::setGroup( const char *pGroup )
+{
+  setGroup(QCString(pGroup));
+}
+
 void KConfigBase::setGroup( const QCString &group )
 {
   if ( group.isEmpty() )
@@ -168,29 +167,32 @@ void KConfigBase::setGroup( const QCString &group )
     mGroup = group;
   bCheckGroup = true;
 }
-*/
+
+QString KConfigBase::group() const {
+  return QString::fromUtf8(mGroup);
+}
 
 void KConfigBase::setDesktopGroup()
 {
   mGroup = "Desktop Entry";
 }
 
-QString KConfigGroup::readEntry( const QString& pKey,
+QString KConfigBase::readEntry( const QString& pKey,
                                 const QString& aDefault ) const
 {
-   return KConfigGroup::readEntry(pKey.utf8().data(), aDefault);
+   return KConfigBase::readEntry(pKey.utf8().data(), aDefault);
 }
 
-QString KConfigGroup::readEntry( const char *pKey,
+QString KConfigBase::readEntry( const char *pKey,
                                 const QString& aDefault ) const
 {
   // we need to access _locale instead of the method locale()
   // because calling locale() will create a locale object if it
   // doesn't exist, which requires KConfig, which will create a infinite
   // loop, and nobody likes those.
-  if (!mBase->bLocaleInitialized && KGlobal::_locale) {
+  if (!bLocaleInitialized && KGlobal::_locale) {
     // get around const'ness.
-    KConfigBase *that = const_cast<KConfigBase *>(mBase);
+    KConfigBase *that = const_cast<KConfigBase *>(this);
     that->setLocale();
   }
 
@@ -202,7 +204,7 @@ QString KConfigGroup::readEntry( const char *pKey,
   KEntryKey entryKey(mGroup, 0);
   entryKey.c_key = pKey;
   entryKey.bLocal = true;
-  aEntryData = mBase->lookupData(entryKey);
+  aEntryData = lookupData(entryKey);
   if (!aEntryData.mValue.isNull()) {
 
     // for GNOME .desktop
@@ -221,7 +223,7 @@ QString KConfigGroup::readEntry( const char *pKey,
     }
   } else {
     entryKey.bLocal = false;
-    aEntryData = mBase->lookupData(entryKey);
+    aEntryData = lookupData(entryKey);
     if (!aEntryData.mValue.isNull()) {
       aValue = QString::fromUtf8(aEntryData.mValue.data());
       if (aValue.isNull())
@@ -235,7 +237,7 @@ QString KConfigGroup::readEntry( const char *pKey,
   }
 
   // only do dollar expansion if so desired
-  if( mBase->bExpand )
+  if( bExpand )
     {
       // check for environment variables and make necessary translations
       int nDollarPos = aValue.find( '$' );
@@ -274,23 +276,23 @@ QString KConfigGroup::readEntry( const char *pKey,
   return aValue;
 }
 
-QCString KConfigBase::readEntryUtf8( const QCString &group, const char *pKey) const
+QCString KConfigBase::readEntryUtf8( const char *pKey) const
 {
   // We don't try the localized key
   KEntry aEntryData;
-  KEntryKey entryKey(group, 0);
+  KEntryKey entryKey(mGroup, 0);
   entryKey.c_key = pKey;
   aEntryData = lookupData(entryKey);
   return aEntryData.mValue;
 }
 
-QVariant KConfigGroup::readPropertyEntry( const QString& pKey,
+QVariant KConfigBase::readPropertyEntry( const QString& pKey,
                                           QVariant::Type type ) const
 {
   return readPropertyEntry(pKey.utf8().data(), type);
 }
 
-QVariant KConfigGroup::readPropertyEntry( const char *pKey,
+QVariant KConfigBase::readPropertyEntry( const char *pKey,
                                           QVariant::Type type ) const
 {
   QValueList<QVariant> list;
@@ -360,20 +362,20 @@ QVariant KConfigGroup::readPropertyEntry( const char *pKey,
   return QVariant();
 }
 
-int KConfigGroup::readListEntry( const QString& pKey,
+int KConfigBase::readListEntry( const QString& pKey,
                                 QStrList &list, char sep ) const
 {
   return readListEntry(pKey.utf8().data(), list, sep);
 }
 
-int KConfigGroup::readListEntry( const char *pKey,
+int KConfigBase::readListEntry( const char *pKey,
                                 QStrList &list, char sep ) const
 {
   if( !hasKey( pKey ) )
     return 0;
 
   QCString str_list, value;
-  str_list = mBase->readEntryUtf8( mGroup, pKey );
+  str_list = readEntryUtf8( pKey );
   if (str_list.isEmpty())
     return 0;
 
@@ -406,12 +408,12 @@ int KConfigGroup::readListEntry( const char *pKey,
   return list.count();
 }
 
-QStringList KConfigGroup::readListEntry( const QString& pKey, char sep ) const
+QStringList KConfigBase::readListEntry( const QString& pKey, char sep ) const
 {
   return readListEntry(pKey.utf8().data(), sep);
 }
 
-QStringList KConfigGroup::readListEntry( const char *pKey, char sep ) const
+QStringList KConfigBase::readListEntry( const char *pKey, char sep ) const
 {
   QStringList list;
   if( !hasKey( pKey ) )
@@ -444,12 +446,12 @@ QStringList KConfigGroup::readListEntry( const char *pKey, char sep ) const
   return list;
 }
 
-QValueList<int> KConfigGroup::readIntListEntry( const QString& pKey ) const
+QValueList<int> KConfigBase::readIntListEntry( const QString& pKey ) const
 {
   return readIntListEntry(pKey.utf8().data());
 }
 
-QValueList<int> KConfigGroup::readIntListEntry( const char *pKey ) const
+QValueList<int> KConfigBase::readIntListEntry( const char *pKey ) const
 {
   QStringList strlist = readListEntry(pKey);
   QValueList<int> list;
@@ -461,33 +463,33 @@ QValueList<int> KConfigGroup::readIntListEntry( const char *pKey ) const
   return list;
 }
 
-QString KConfigGroup::readPathEntry( const QString& pKey, const QString& pDefault ) const
+QString KConfigBase::readPathEntry( const QString& pKey, const QString& pDefault ) const
 {
   return readPathEntry(pKey.utf8().data(), pDefault);
 }
 
-QString KConfigGroup::readPathEntry( const char *pKey, const QString& pDefault ) const
+QString KConfigBase::readPathEntry( const char *pKey, const QString& pDefault ) const
 {
   // get around const'ness.
-  KConfigGroup *that = const_cast<KConfigGroup *>(this);
-  bool bExpandSave = mBase->bExpand;
-  that->mBase->bExpand = true;
+  KConfigBase *that = const_cast<KConfigBase *>(this);
+  bool bExpandSave = bExpand;
+  that->bExpand = true;
   QString aValue = readEntry( pKey, pDefault );
-  that->mBase->bExpand = bExpandSave;
+  that->bExpand = bExpandSave;
   return aValue;
 }
 
-int KConfigGroup::readNumEntry( const QString& pKey, int nDefault) const
+int KConfigBase::readNumEntry( const QString& pKey, int nDefault) const
 {
   return readNumEntry(pKey.utf8().data(), nDefault);
 }
 
-int KConfigGroup::readNumEntry( const char *pKey, int nDefault) const
+int KConfigBase::readNumEntry( const char *pKey, int nDefault) const
 {
   bool ok;
   int rc;
 
-  QCString aValue = mBase->readEntryUtf8( mGroup, pKey );
+  QCString aValue = readEntryUtf8( pKey );
   if( aValue.isNull() )
     return nDefault;
   else if( aValue == "true" )
@@ -504,17 +506,17 @@ int KConfigGroup::readNumEntry( const char *pKey, int nDefault) const
 }
 
 
-unsigned int KConfigGroup::readUnsignedNumEntry( const QString& pKey, unsigned int nDefault) const
+unsigned int KConfigBase::readUnsignedNumEntry( const QString& pKey, unsigned int nDefault) const
 {
   return readUnsignedNumEntry(pKey.utf8().data(), nDefault);
 }
 
-unsigned int KConfigGroup::readUnsignedNumEntry( const char *pKey, unsigned int nDefault) const
+unsigned int KConfigBase::readUnsignedNumEntry( const char *pKey, unsigned int nDefault) const
 {
   bool ok;
   unsigned int rc;
 
-  QCString aValue = mBase->readEntryUtf8( mGroup, pKey );
+  QCString aValue = readEntryUtf8( pKey );
   if( aValue.isNull() )
     return nDefault;
   else
@@ -525,17 +527,17 @@ unsigned int KConfigGroup::readUnsignedNumEntry( const char *pKey, unsigned int 
 }
 
 
-long KConfigGroup::readLongNumEntry( const QString& pKey, long nDefault) const
+long KConfigBase::readLongNumEntry( const QString& pKey, long nDefault) const
 {
   return readLongNumEntry(pKey.utf8().data(), nDefault);
 }
 
-long KConfigGroup::readLongNumEntry( const char *pKey, long nDefault) const
+long KConfigBase::readLongNumEntry( const char *pKey, long nDefault) const
 {
   bool ok;
   long rc;
 
-  QCString aValue = mBase->readEntryUtf8( mGroup, pKey );
+  QCString aValue = readEntryUtf8( pKey );
   if( aValue.isNull() )
     return nDefault;
   else
@@ -546,17 +548,17 @@ long KConfigGroup::readLongNumEntry( const char *pKey, long nDefault) const
 }
 
 
-unsigned long KConfigGroup::readUnsignedLongNumEntry( const QString& pKey, unsigned long nDefault) const
+unsigned long KConfigBase::readUnsignedLongNumEntry( const QString& pKey, unsigned long nDefault) const
 {
   return readUnsignedLongNumEntry(pKey.utf8().data(), nDefault);
 }
 
-unsigned long KConfigGroup::readUnsignedLongNumEntry( const char *pKey, unsigned long nDefault) const
+unsigned long KConfigBase::readUnsignedLongNumEntry( const char *pKey, unsigned long nDefault) const
 {
   bool ok;
   unsigned long rc;
 
-  QCString aValue = mBase->readEntryUtf8( mGroup, pKey );
+  QCString aValue = readEntryUtf8( pKey );
   if( aValue.isNull() )
     return nDefault;
   else
@@ -566,17 +568,17 @@ unsigned long KConfigGroup::readUnsignedLongNumEntry( const char *pKey, unsigned
     }
 }
 
-double KConfigGroup::readDoubleNumEntry( const QString& pKey, double nDefault) const
+double KConfigBase::readDoubleNumEntry( const QString& pKey, double nDefault) const
 {
   return readDoubleNumEntry(pKey.utf8().data(), nDefault);
 }
 
-double KConfigGroup::readDoubleNumEntry( const char *pKey, double nDefault) const
+double KConfigBase::readDoubleNumEntry( const char *pKey, double nDefault) const
 {
   bool ok;
   double rc;
 
-  QCString aValue = mBase->readEntryUtf8( mGroup, pKey );
+  QCString aValue = readEntryUtf8( pKey );
   if( aValue.isNull() )
     return nDefault;
   else
@@ -587,14 +589,14 @@ double KConfigGroup::readDoubleNumEntry( const char *pKey, double nDefault) cons
 }
 
 
-bool KConfigGroup::readBoolEntry( const QString& pKey, const bool bDefault ) const
+bool KConfigBase::readBoolEntry( const QString& pKey, const bool bDefault ) const
 {
    return readBoolEntry(pKey.utf8().data(), bDefault);
 }
 
-bool KConfigGroup::readBoolEntry( const char *pKey, const bool bDefault ) const
+bool KConfigBase::readBoolEntry( const char *pKey, const bool bDefault ) const
 {
-  QCString aValue = mBase->readEntryUtf8( mGroup, pKey );
+  QCString aValue = readEntryUtf8( pKey );
 
   if( aValue.isNull() )
     return bDefault;
@@ -614,12 +616,12 @@ bool KConfigGroup::readBoolEntry( const char *pKey, const bool bDefault ) const
     }
 }
 
-QFont KConfigGroup::readFontEntry( const QString& pKey, const QFont* pDefault ) const
+QFont KConfigBase::readFontEntry( const QString& pKey, const QFont* pDefault ) const
 {
   return readFontEntry(pKey.utf8().data(), pDefault);
 }
 
-QFont KConfigGroup::readFontEntry( const char *pKey, const QFont* pDefault ) const
+QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) const
 {
   QFont aRetFont;
 
@@ -729,14 +731,14 @@ QFont KConfigGroup::readFontEntry( const char *pKey, const QFont* pDefault ) con
 }
 
 
-QRect KConfigGroup::readRectEntry( const QString& pKey, const QRect* pDefault ) const
+QRect KConfigBase::readRectEntry( const QString& pKey, const QRect* pDefault ) const
 {
   return readRectEntry(pKey.utf8().data(), pDefault);
 }
 
-QRect KConfigGroup::readRectEntry( const char *pKey, const QRect* pDefault ) const
+QRect KConfigBase::readRectEntry( const char *pKey, const QRect* pDefault ) const
 {
-  QCString aValue = mBase->readEntryUtf8(mGroup, pKey);
+  QCString aValue = readEntryUtf8(pKey);
 
   if (!aValue.isEmpty())
   {
@@ -753,16 +755,16 @@ QRect KConfigGroup::readRectEntry( const char *pKey, const QRect* pDefault ) con
 }
 
 
-QPoint KConfigGroup::readPointEntry( const QString& pKey,
+QPoint KConfigBase::readPointEntry( const QString& pKey,
                                     const QPoint* pDefault ) const
 {
   return readPointEntry(pKey.utf8().data(), pDefault);
 }
 
-QPoint KConfigGroup::readPointEntry( const char *pKey,
+QPoint KConfigBase::readPointEntry( const char *pKey,
                                     const QPoint* pDefault ) const
 {
-  QCString aValue = mBase->readEntryUtf8(mGroup, pKey);
+  QCString aValue = readEntryUtf8(pKey);
 
   if (!aValue.isEmpty())
   {
@@ -778,16 +780,16 @@ QPoint KConfigGroup::readPointEntry( const char *pKey,
   return QPoint();
 }
 
-QSize KConfigGroup::readSizeEntry( const QString& pKey,
+QSize KConfigBase::readSizeEntry( const QString& pKey,
                                   const QSize* pDefault ) const
 {
   return readSizeEntry(pKey.utf8().data(), pDefault);
 }
 
-QSize KConfigGroup::readSizeEntry( const char *pKey,
+QSize KConfigBase::readSizeEntry( const char *pKey,
                                   const QSize* pDefault ) const
 {
-  QCString aValue = mBase->readEntryUtf8(mGroup, pKey);
+  QCString aValue = readEntryUtf8(pKey);
 
   if (!aValue.isEmpty())
   {
@@ -804,13 +806,13 @@ QSize KConfigGroup::readSizeEntry( const char *pKey,
 }
 
 
-QColor KConfigGroup::readColorEntry( const QString& pKey,
+QColor KConfigBase::readColorEntry( const QString& pKey,
                                     const QColor* pDefault ) const
 {
   return readColorEntry(pKey.utf8().data(), pDefault);
 }
 
-QColor KConfigGroup::readColorEntry( const char *pKey,
+QColor KConfigBase::readColorEntry( const char *pKey,
                                     const QColor* pDefault ) const
 {
   QColor aRetColor;
@@ -869,13 +871,13 @@ QColor KConfigGroup::readColorEntry( const char *pKey,
 }
 
 
-QDateTime KConfigGroup::readDateTimeEntry( const QString& pKey,
+QDateTime KConfigBase::readDateTimeEntry( const QString& pKey,
                                           const QDateTime* pDefault ) const
 {
   return readDateTimeEntry(pKey.utf8().data(), pDefault);
 }
 
-QDateTime KConfigGroup::readDateTimeEntry( const char *pKey,
+QDateTime KConfigBase::readDateTimeEntry( const char *pKey,
                                           const QDateTime* pDefault ) const
 {
   QStrList list;
@@ -908,7 +910,7 @@ QDateTime KConfigGroup::readDateTimeEntry( const char *pKey,
   return aRetDateTime;
 }
 
-void KConfigGroup::writeEntry( const QString& pKey, const QString& value,
+void KConfigBase::writeEntry( const QString& pKey, const QString& value,
                                  bool bPersistent,
                                  bool bGlobal,
                                  bool bNLS )
@@ -916,7 +918,7 @@ void KConfigGroup::writeEntry( const QString& pKey, const QString& value,
    writeEntry(pKey.utf8().data(), value, bPersistent,  bGlobal, bNLS);
 }
 
-void KConfigGroup::writeEntry( const char *pKey, const QString& value,
+void KConfigBase::writeEntry( const char *pKey, const QString& value,
                                  bool bPersistent,
                                  bool bGlobal,
                                  bool bNLS )
@@ -927,10 +929,10 @@ void KConfigGroup::writeEntry( const char *pKey, const QString& value,
   // from under us before we read. A race condition is still
   // possible but minimized.
   if( bPersistent )
-    mBase->bDirty = true;
+    bDirty = true;
 
-  if (!mBase->bLocaleInitialized && KGlobal::locale())
-    mBase->setLocale();
+  if (!bLocaleInitialized && KGlobal::locale())
+    setLocale();
 
   KEntryKey entryKey(mGroup, pKey);
   entryKey.bLocal = bNLS;
@@ -944,18 +946,18 @@ void KConfigGroup::writeEntry( const char *pKey, const QString& value,
     aEntryData.bDirty = true;
 
   // rewrite the new value
-  mBase->putData(entryKey, aEntryData, mBase->bCheckGroup);
-  mBase->bCheckGroup = false;
+  putData(entryKey, aEntryData, bCheckGroup);
+  bCheckGroup = false;
 }
 
-void KConfigGroup::writePathEntry( const QString& pKey, const QString & path,
+void KConfigBase::writePathEntry( const QString& pKey, const QString & path,
                                   bool bPersistent, bool bGlobal,
                                   bool bNLS)
 {
    writePathEntry(pKey.utf8().data(), path, bPersistent, bGlobal, bNLS);
 }
 
-void KConfigGroup::writePathEntry( const char *pKey, const QString & path,
+void KConfigBase::writePathEntry( const char *pKey, const QString & path,
                                   bool bPersistent, bool bGlobal,
                                   bool bNLS)
 {
@@ -970,14 +972,14 @@ void KConfigGroup::writePathEntry( const char *pKey, const QString & path,
 }
 
 
-void KConfigGroup::deleteEntry( const QString& pKey,
+void KConfigBase::deleteEntry( const QString& pKey,
                                  bool bNLS,
                                  bool bGlobal)
 {
    deleteEntry(pKey.utf8().data(), bNLS, bGlobal);
 }
 
-void KConfigGroup::deleteEntry( const char *pKey,
+void KConfigBase::deleteEntry( const char *pKey,
                                  bool bNLS,
                                  bool bGlobal)
 {
@@ -986,10 +988,10 @@ void KConfigGroup::deleteEntry( const char *pKey,
   // classes do caching, they won't try and flush the cache out
   // from under us before we read. A race condition is still
   // possible but minimized.
-  mBase->bDirty = true;
+  bDirty = true;
 
-  if (!mBase->bLocaleInitialized && KGlobal::locale())
-    mBase->setLocale();
+  if (!bLocaleInitialized && KGlobal::locale())
+    setLocale();
 
   KEntryKey entryKey(mGroup, pKey);
   KEntry aEntryData;
@@ -1000,13 +1002,8 @@ void KConfigGroup::deleteEntry( const char *pKey,
   aEntryData.bDeleted = true;
 
   // rewrite the new value
-  mBase->putData(entryKey, aEntryData, mBase->bCheckGroup);
-  mBase->bCheckGroup = false;
-}
-
-bool KConfigGroup::hasKey(const QString &pKey) const
-{
-  return mBase->hasKey(mGroup, pKey);
+  putData(entryKey, aEntryData, bCheckGroup);
+  bCheckGroup = false;
 }
 
 bool KConfigBase::deleteGroup( const QString& group, bool bDeep )
@@ -1036,14 +1033,14 @@ qWarning("Deleting key = %s", aIt.key().mKey.data());
   return true;
 }
 
-void KConfigGroup::writeEntry ( const QString& pKey, const QVariant &prop,
+void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
                                bool bPersistent,
                                bool bGlobal, bool bNLS )
 {
   writeEntry(pKey.utf8().data(), prop, bPersistent, bGlobal, bNLS);
 }
 
-void KConfigGroup::writeEntry ( const char *pKey, const QVariant &prop,
+void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
                                bool bPersistent,
                                bool bGlobal, bool bNLS )
 {
@@ -1123,14 +1120,14 @@ void KConfigGroup::writeEntry ( const char *pKey, const QVariant &prop,
   Q_ASSERT( 0 );
 }
 
-void KConfigGroup::writeEntry ( const QString& pKey, const QStrList &list,
+void KConfigBase::writeEntry ( const QString& pKey, const QStrList &list,
                                char sep , bool bPersistent,
                                bool bGlobal, bool bNLS )
 {
   writeEntry(pKey.utf8().data(), list, sep, bPersistent, bGlobal, bNLS);
 }
 
-void KConfigGroup::writeEntry ( const char *pKey, const QStrList &list,
+void KConfigBase::writeEntry ( const char *pKey, const QStrList &list,
                                char sep , bool bPersistent,
                                bool bGlobal, bool bNLS )
 {
@@ -1165,14 +1162,14 @@ void KConfigGroup::writeEntry ( const char *pKey, const QStrList &list,
   writeEntry( pKey, str_list, bPersistent, bGlobal, bNLS );
 }
 
-void KConfigGroup::writeEntry ( const QString& pKey, const QStringList &list,
+void KConfigBase::writeEntry ( const QString& pKey, const QStringList &list,
                                char sep , bool bPersistent,
                                bool bGlobal, bool bNLS )
 {
   writeEntry(pKey.utf8().data(), list, sep, bPersistent, bGlobal, bNLS);
 }
 
-void KConfigGroup::writeEntry ( const char *pKey, const QStringList &list,
+void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
                                char sep , bool bPersistent,
                                bool bGlobal, bool bNLS )
 {
@@ -1200,13 +1197,13 @@ void KConfigGroup::writeEntry ( const char *pKey, const QStringList &list,
   writeEntry( pKey, str_list, bPersistent, bGlobal, bNLS );
 }
 
-void KConfigGroup::writeEntry ( const QString& pKey, const QValueList<int> &list,
+void KConfigBase::writeEntry ( const QString& pKey, const QValueList<int> &list,
                                bool bPersistent, bool bGlobal, bool bNLS )
 {
   writeEntry(pKey.utf8().data(), list, bPersistent, bGlobal, bNLS);
 }
 
-void KConfigGroup::writeEntry ( const char *pKey, const QValueList<int> &list,
+void KConfigBase::writeEntry ( const char *pKey, const QValueList<int> &list,
                                bool bPersistent, bool bGlobal, bool bNLS )
 {
     QStringList strlist;
@@ -1216,29 +1213,14 @@ void KConfigGroup::writeEntry ( const char *pKey, const QValueList<int> &list,
     writeEntry(pKey, strlist, ',', bPersistent, bGlobal, bNLS );
 }
 
-void KConfigGroup::writeEntry( const QString& pKey, int nValue,
+void KConfigBase::writeEntry( const QString& pKey, int nValue,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
   writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
 }
 
-void KConfigGroup::writeEntry( const char *pKey, int nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
-}
-
-
-void KConfigGroup::writeEntry( const QString& pKey, unsigned int nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
-}
-
-void KConfigGroup::writeEntry( const char *pKey, unsigned int nValue,
+void KConfigBase::writeEntry( const char *pKey, int nValue,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
@@ -1246,29 +1228,14 @@ void KConfigGroup::writeEntry( const char *pKey, unsigned int nValue,
 }
 
 
-void KConfigGroup::writeEntry( const QString& pKey, long nValue,
+void KConfigBase::writeEntry( const QString& pKey, unsigned int nValue,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
   writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
 }
 
-void KConfigGroup::writeEntry( const char *pKey, long nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
-}
-
-
-void KConfigGroup::writeEntry( const QString& pKey, unsigned long nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 bool bNLS )
-{
-  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
-}
-
-void KConfigGroup::writeEntry( const char *pKey, unsigned long nValue,
+void KConfigBase::writeEntry( const char *pKey, unsigned int nValue,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
@@ -1276,7 +1243,37 @@ void KConfigGroup::writeEntry( const char *pKey, unsigned long nValue,
 }
 
 
-void KConfigGroup::writeEntry( const QString& pKey, double nValue,
+void KConfigBase::writeEntry( const QString& pKey, long nValue,
+                                 bool bPersistent, bool bGlobal,
+                                 bool bNLS )
+{
+  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+}
+
+void KConfigBase::writeEntry( const char *pKey, long nValue,
+                                 bool bPersistent, bool bGlobal,
+                                 bool bNLS )
+{
+  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+}
+
+
+void KConfigBase::writeEntry( const QString& pKey, unsigned long nValue,
+                                 bool bPersistent, bool bGlobal,
+                                 bool bNLS )
+{
+  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+}
+
+void KConfigBase::writeEntry( const char *pKey, unsigned long nValue,
+                                 bool bPersistent, bool bGlobal,
+                                 bool bNLS )
+{
+  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+}
+
+
+void KConfigBase::writeEntry( const QString& pKey, double nValue,
                                  bool bPersistent, bool bGlobal,
                                  char format, int precision,
                                  bool bNLS )
@@ -1285,7 +1282,7 @@ void KConfigGroup::writeEntry( const QString& pKey, double nValue,
                      bPersistent, bGlobal, bNLS );
 }
 
-void KConfigGroup::writeEntry( const char *pKey, double nValue,
+void KConfigBase::writeEntry( const char *pKey, double nValue,
                                  bool bPersistent, bool bGlobal,
                                  char format, int precision,
                                  bool bNLS )
@@ -1295,7 +1292,7 @@ void KConfigGroup::writeEntry( const char *pKey, double nValue,
 }
 
 
-void KConfigGroup::writeEntry( const QString& pKey, bool bValue,
+void KConfigBase::writeEntry( const QString& pKey, bool bValue,
                                  bool bPersistent,
                                  bool bGlobal,
                                  bool bNLS )
@@ -1303,7 +1300,7 @@ void KConfigGroup::writeEntry( const QString& pKey, bool bValue,
   writeEntry(pKey.utf8().data(), bValue, bPersistent, bGlobal, bNLS);
 }
 
-void KConfigGroup::writeEntry( const char *pKey, bool bValue,
+void KConfigBase::writeEntry( const char *pKey, bool bValue,
                                  bool bPersistent,
                                  bool bGlobal,
                                  bool bNLS )
@@ -1319,14 +1316,14 @@ void KConfigGroup::writeEntry( const char *pKey, bool bValue,
 }
 
 
-void KConfigGroup::writeEntry( const QString& pKey, const QFont& rFont,
+void KConfigBase::writeEntry( const QString& pKey, const QFont& rFont,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
   writeEntry(pKey.utf8().data(), rFont, bPersistent, bGlobal, bNLS);
 }
 
-void KConfigGroup::writeEntry( const char *pKey, const QFont& rFont,
+void KConfigBase::writeEntry( const char *pKey, const QFont& rFont,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
@@ -1334,14 +1331,14 @@ void KConfigGroup::writeEntry( const char *pKey, const QFont& rFont,
 }
 
 
-void KConfigGroup::writeEntry( const QString& pKey, const QRect& rRect,
+void KConfigBase::writeEntry( const QString& pKey, const QRect& rRect,
                               bool bPersistent, bool bGlobal,
                               bool bNLS )
 {
   writeEntry(pKey.utf8().data(), rRect, bPersistent, bGlobal, bNLS);
 }
 
-void KConfigGroup::writeEntry( const char *pKey, const QRect& rRect,
+void KConfigBase::writeEntry( const char *pKey, const QRect& rRect,
                               bool bPersistent, bool bGlobal,
                               bool bNLS )
 {
@@ -1356,14 +1353,14 @@ void KConfigGroup::writeEntry( const char *pKey, const QRect& rRect,
 }
 
 
-void KConfigGroup::writeEntry( const QString& pKey, const QPoint& rPoint,
+void KConfigBase::writeEntry( const QString& pKey, const QPoint& rPoint,
                               bool bPersistent, bool bGlobal,
                               bool bNLS )
 {
   writeEntry(pKey.utf8().data(), rPoint, bPersistent, bGlobal, bNLS);
 }
 
-void KConfigGroup::writeEntry( const char *pKey, const QPoint& rPoint,
+void KConfigBase::writeEntry( const char *pKey, const QPoint& rPoint,
                               bool bPersistent, bool bGlobal,
                               bool bNLS )
 {
@@ -1376,14 +1373,14 @@ void KConfigGroup::writeEntry( const char *pKey, const QPoint& rPoint,
 }
 
 
-void KConfigGroup::writeEntry( const QString& pKey, const QSize& rSize,
+void KConfigBase::writeEntry( const QString& pKey, const QSize& rSize,
                               bool bPersistent, bool bGlobal,
                               bool bNLS )
 {
   writeEntry(pKey.utf8().data(), rSize, bPersistent, bGlobal, bNLS);
 }
 
-void KConfigGroup::writeEntry( const char *pKey, const QSize& rSize,
+void KConfigBase::writeEntry( const char *pKey, const QSize& rSize,
                               bool bPersistent, bool bGlobal,
                               bool bNLS )
 {
@@ -1395,7 +1392,7 @@ void KConfigGroup::writeEntry( const char *pKey, const QSize& rSize,
   writeEntry( pKey, list, ',', bPersistent, bGlobal, bNLS );
 }
 
-void KConfigGroup::writeEntry( const QString& pKey, const QColor& rColor,
+void KConfigBase::writeEntry( const QString& pKey, const QColor& rColor,
                               bool bPersistent,
                               bool bGlobal,
                               bool bNLS  )
@@ -1403,7 +1400,7 @@ void KConfigGroup::writeEntry( const QString& pKey, const QColor& rColor,
   writeEntry( pKey.utf8().data(), rColor, bPersistent, bGlobal, bNLS);
 }
 
-void KConfigGroup::writeEntry( const char *pKey, const QColor& rColor,
+void KConfigBase::writeEntry( const char *pKey, const QColor& rColor,
                               bool bPersistent,
                               bool bGlobal,
                               bool bNLS  )
@@ -1417,14 +1414,14 @@ void KConfigGroup::writeEntry( const char *pKey, const QColor& rColor,
   writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
 }
 
-void KConfigGroup::writeEntry( const QString& pKey, const QDateTime& rDateTime,
+void KConfigBase::writeEntry( const QString& pKey, const QDateTime& rDateTime,
                               bool bPersistent, bool bGlobal,
                               bool bNLS )
 {
   writeEntry(pKey.utf8().data(), rDateTime, bPersistent, bGlobal, bNLS);
 }
 
-void KConfigGroup::writeEntry( const char *pKey, const QDateTime& rDateTime,
+void KConfigBase::writeEntry( const char *pKey, const QDateTime& rDateTime,
                               bool bPersistent, bool bGlobal,
                               bool bNLS )
 {

@@ -102,7 +102,7 @@ public:
    *
    * @param key The key to search for.
    */
-  virtual bool hasKey(const QCString &group, const QString &key) const;
+  virtual bool hasKey(const QString &key) const;
 
   /**
    * Returns a map (tree) of entries for all entries in a particular
@@ -188,12 +188,7 @@ public:
    */
   virtual bool hasGroup(const QCString &group) const;
   virtual bool hasGroup(const char *_pGroup) const;
-  virtual bool hasKey(const QCString &group, const char *pKey) const;
-  bool hasKey(const QString& key) const
-  {
-    return hasKey(mGroup, key);
-  }
-
+  virtual bool hasKey(const char *pKey) const;
 
 private:
   /**

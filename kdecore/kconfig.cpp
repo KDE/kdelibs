@@ -125,14 +125,14 @@ QStringList KConfig::groupList() const
   return retList;
 }
 
-bool KConfig::hasKey(const QCString &group, const QString &key) const
+bool KConfig::hasKey(const QString &key) const
 {
-   return KConfig::hasKey(group, key.utf8().data());
+   return KConfig::hasKey(key.utf8().data());
 }
 
-bool KConfig::hasKey(const QCString &group, const char *pKey) const
+bool KConfig::hasKey(const char *pKey) const
 {
-  KEntryKey aEntryKey(group, 0);
+  KEntryKey aEntryKey(mGroup, 0);
   aEntryKey.c_key = pKey;
 
   KEntryMapConstIterator aIt;
