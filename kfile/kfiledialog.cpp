@@ -24,6 +24,7 @@
 #include <qaccel.h>
 #include <kurl.h>
 #include <ktoolbar.h>
+#include <ktoolbarbutton.h>
 #include <kstddirs.h>
 #include <kiconloader.h>
 #include "kfiledialogconf.h"
