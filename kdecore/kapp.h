@@ -1,6 +1,10 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.18  1997/09/04 16:31:58  kdecvs
+// Coolo: I have introduced some dependecies, that I can't resolve.
+// 	Kalle knows about it.
+//
 // Revision 1.17  1997/08/31 19:18:33  kdecvs
 // Kalle:
 // new usage of KLocale
@@ -139,6 +143,10 @@
 #include <Kconfig.h>
 #endif
 // Save icon and mini-icon pixmap
+// SORRY, BUTTHH THIS IS AGAIN BINARY INCOMPATIBLE!!!!!!!!!!!!!!!
+//
+// Revision 1.23  1997/09/29 18:57:36  kalle
+// BINARY INCOMPATIBLE!!!!!!!!!!!!!!!!!!!!!!
 // Support for session management
 // make KDebug compile on HP-UX
 //

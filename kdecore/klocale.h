@@ -4,10 +4,6 @@
 #include <qintdict.h>
 #include <qstring.h>
 
-#ifndef klocale
-#define klocale KApplication::getKApplication()->getLocale()
-#endif
-
 /**
   *
   * KLocale provides support for country specific stuff like
