@@ -46,7 +46,7 @@ KMDBCreator::~KMDBCreator()
 {
 	if (m_proc.isRunning())
 		m_proc.kill();
-	if (m_dlg) delete m_dlg;
+	delete m_dlg;
 }
 
 bool KMDBCreator::checkDriverDB(const QString& dirname, const QDateTime& d)
@@ -105,20 +105,18 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 		started = false;
 	}
 
-	// Create the dialog is the process is running
+	// Create the dialog if the process is running and if needed
 	if (started)
 	{
-		if (m_dlg)
+		if (!m_dlg)
 		{
-			delete m_dlg;
-			m_dlg = 0;
+			m_dlg = new QProgressDialog(parent,"progress-dialog",true);
+			m_dlg->setLabelText(i18n("Please wait while KDE rebuilds a driver database."));
+			m_dlg->setCaption(i18n("Driver Database"));
+			connect(m_dlg,SIGNAL(cancelled()),SLOT(slotCancelled()));
 		}
-		m_dlg = new QProgressDialog(parent,"progress-dialog",true);
-		m_dlg->setLabelText(i18n("Please wait while KDE rebuilds a driver database."));
-		m_dlg->setCaption(i18n("Driver Database"));
 		m_dlg->setMinimumDuration(0);	// always show the dialog
 		m_dlg->setProgress(0);		// to force showing
-		connect(m_dlg,SIGNAL(cancelled()),SLOT(slotCancelled()));
 	}
 	else
 		// be sure to emit this signal otherwise the DB widget won't never be notified
@@ -164,8 +162,7 @@ void KMDBCreator::slotProcessExited(KProcess*)
 	// delete the progress dialog
 	if (m_dlg)
 	{
-		delete m_dlg;
-		m_dlg = 0;
+		m_dlg->reset();
 	}
 
 	// set exit status
