@@ -19,6 +19,9 @@
 // $Id$
 
 #include <sys/time.h>
+#include <pwd.h>
+#include <grp.h>
+#include <sys/types.h>
 
 #include <assert.h>
 #include <unistd.h>
@@ -163,17 +166,17 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
        * This is the reason for the -1
        */
       struct stat buf;
-      if ( lstat( QFile::encodeName(m_url.path( -1 )), &buf ) == 0 ) // set mode only if lstat succeeded! otherwise buf is
-                                                  // undefined! (Simon)
+      QCString path = QFile::encodeName(m_url.path( -1 ));
+      if ( lstat( path.data(), &buf ) == 0 )
       {
         mode = buf.st_mode;
-
         if ( S_ISLNK( mode ) )
         {
           m_bLink = true;
-          stat( QFile::encodeName(m_url.path( -1 )), &buf ); // shouldn't we check if stat() succeeded or not? (before
-                                          // taking buf.st_mode blindly ) (Simon)
-          mode = buf.st_mode;
+          if ( stat( path.data(), &buf ) == 0 )
+              mode = buf.st_mode;
+          else // link pointing to nowhere (see kio/file/file.cc)
+              mode = (S_IFMT-1) | S_IRWXU | S_IRWXG | S_IRWXO;
         }
       }
     }
@@ -258,6 +261,41 @@ time_t KFileItem::time( unsigned int which ) const
         static_cast<time_t>(0); // We can't determine creation time for local files
   }
   return static_cast<time_t>(0);
+}
+
+
+QString KFileItem::user() const
+{
+  if ( m_user.isEmpty() && m_bIsLocalURL )
+  {
+    struct stat buff;
+    if ( lstat( QFile::encodeName(m_url.path( -1 )), &buff ) == 0) // get uid/gid of the link, if it's a link
+    {
+      struct passwd *user = getpwuid( buff.st_uid );
+      if ( user != 0L )
+        m_user = QString::fromLocal8Bit(user->pw_name);
+    }
+  }
+  return m_user;
+}
+
+QString KFileItem::group() const
+{
+  if (m_group.isEmpty() && m_bIsLocalURL )
+  {
+    struct stat buff;
+    if ( lstat( QFile::encodeName(m_url.path( -1 )), &buff ) == 0) // get uid/gid of the link, if it's a link
+    {
+      struct group *ge = getgrgid( buff.st_gid );
+      if ( ge != 0L ) {
+        m_group = QString::fromLocal8Bit(ge->gr_name);
+        if (m_group.isEmpty())
+          m_group.sprintf("%d",ge->gr_gid);
+      } else
+        m_group.sprintf("%d",buff.st_gid);
+    }
+  }
+  return m_group;
 }
 
 QString KFileItem::mimetype() const

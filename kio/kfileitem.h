@@ -124,12 +124,12 @@ public:
   /**
    * @return the owner of the file.
    */
-  QString user() const { return m_user; }
+  QString user() const;
 
   /**
    * @return the group of the file.
    */
-  QString group() const { return m_group; }
+  QString group() const;
 
   /**
    * @returns true if this item represents a link in the UNIX sense of
@@ -329,7 +329,7 @@ protected:
   /**
    * the user and group assigned to the file.
    */
-  QString m_user, m_group;
+  mutable QString m_user, m_group;
 
   /**
    * Whether the file is a link
