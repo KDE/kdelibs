@@ -1,6 +1,6 @@
 /****************************************************************************
     Implementation of QXEmbed class
-    
+
    Copyright (C) 1999-2000 Troll Tech AS
 
     This library is free software; you can redistribute it and/or
@@ -121,14 +121,19 @@ static void send_xembed_message( WId window, int message, int detail = 0 )
 
 bool QXEmbedAppFilter::eventFilter( QObject *o, QEvent * e)
 {
+    static bool obeyFocus = FALSE; 
     switch ( e->type() ) {
+    case QEvent::MouseButtonPress:
+	if ( !((QWidget*)o)->isActiveWindow() )
+	    obeyFocus = TRUE;
+	break;
     case QEvent::FocusIn:
 	if ( qApp->focusWidget() == o &&
 	     ((QPublicWidget*)qApp->focusWidget()->topLevelWidget())->topData()->embedded ) {
-	    QFocusEvent* fe = (QFocusEvent*) e; 
-		
-	    if (fe->reason() == QFocusEvent::Mouse ||
-		fe->reason() == QFocusEvent::Shortcut ) {
+	    QFocusEvent* fe = (QFocusEvent*) e;
+
+	    if ( obeyFocus || fe->reason() == QFocusEvent::Mouse ||
+		 fe->reason() == QFocusEvent::Shortcut ) { 
 		WId window = ((QPublicWidget*)qApp->focusWidget()->topLevelWidget())->topData()->parentWinId;
 		focusMap->remove( qApp->focusWidget()->topLevelWidget() );
 		send_xembed_message( window, XEMBED_REQUEST_FOCUS );
@@ -138,6 +143,7 @@ bool QXEmbedAppFilter::eventFilter( QObject *o, QEvent * e)
 				  new QGuardedPtr<QWidget>(qApp->focusWidget()->topLevelWidget()->focusWidget() ) );
 		qApp->focusWidget()->clearFocus();
 	    }
+	    obeyFocus = FALSE;
 	}
 	break;
     default:
@@ -155,8 +161,8 @@ static int qxembed_x11_event_filter( XEvent* e)
 	if ( kc == XK_Tab || kc == XK_ISO_Left_Tab ) {
 	    tabForward = (e->xkey.state & ShiftMask) == 0;
 	    QWidget* w = QWidget::find( e->xkey.window );
-	    if ( w && w->isActiveWindow() && qApp->focusWidget() && 
-		 qApp->focusWidget()->topLevelWidget() == w->topLevelWidget() && 
+	    if ( w && w->isActiveWindow() && qApp->focusWidget() &&
+		 qApp->focusWidget()->topLevelWidget() == w->topLevelWidget() &&
 		 ((QPublicWidget*)w->topLevelWidget())->topData()->embedded ) {
 		WId window = ((QPublicWidget*)w->topLevelWidget())->topData()->parentWinId;
 		QFocusData *fd = ((QPublicWidget*)w)->focusData();
@@ -231,7 +237,7 @@ static int qxembed_x11_event_filter( XEvent* e)
 		qApp->x11ProcessEvent( &ev );
 	    }
 	    break;
-	    case XEMBED_FOCUS_IN: 
+	    case XEMBED_FOCUS_IN:
 		{
 		    QWidget* focusCurrent = 0;
 		    QGuardedPtr<QWidget>* fw = focusMap->find( w->topLevelWidget() );
@@ -246,7 +252,7 @@ static int qxembed_x11_event_filter( XEvent* e)
 			else if ( !w->topLevelWidget()->focusWidget() )
 			    w->topLevelWidget()->setFocus();
 			break;
-		    case XEMBED_FOCUS_FIRST: 
+		    case XEMBED_FOCUS_FIRST:
 			{
 			    QFocusData *fd = ((QPublicWidget*)w)->focusData();
 			    while ( fd->next() != w->topLevelWidget() )
@@ -260,7 +266,7 @@ static int qxembed_x11_event_filter( XEvent* e)
 			    QFocusEvent::resetReason();
 			}
 			break;
-		    case XEMBED_FOCUS_LAST: 
+		    case XEMBED_FOCUS_LAST:
 			{
 			    QFocusData *fd = ((QPublicWidget*)w)->focusData();
 			    while ( fd->next() != w->topLevelWidget() )
@@ -300,9 +306,9 @@ static int qxembed_x11_event_filter( XEvent* e)
     return FALSE;
 }
 
-/*!  
-  Initializes the xembed system. 
-  
+/*!
+  Initializes the xembed system.
+
   This function is called automatically when using
   embedClientIntoWindow() or creating an instance of QXEmbed You may
   have to call it manually for a client when using embedder-side
@@ -318,7 +324,7 @@ void QXEmbed::initialize()
 
     focusMap = new QPtrDict<QGuardedPtr<QWidget> >;
     focusMap->setAutoDelete( TRUE );
-    
+
     filter = new QXEmbedAppFilter;
 
     is_initialized = TRUE;
@@ -538,7 +544,9 @@ void QXEmbed::embed(WId w)
     }
     windowChanged( window );
     send_xembed_message( window, XEMBED_EMBEDDED_NOTIFY );
-    send_xembed_message( window, this == qApp->focusWidget()?XEMBED_FOCUS_IN :XEMBED_FOCUS_OUT);
+    send_xembed_message( window, isActiveWindow() ? XEMBED_WINDOW_ACTIVATE : XEMBED_WINDOW_DEACTIVATE );
+    if ( hasFocus() )
+	send_xembed_message( window, XEMBED_FOCUS_IN );
 }
 
 
