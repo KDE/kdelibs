@@ -77,10 +77,8 @@ KURL::KURL( const KURL& _u, const QString& _rel_url )
   else
   {
     *this = _u;
-    QString tmp = _rel_url;
-    decode( tmp );
-    setFileName( tmp.data() );
-    setHTMLRef( QString::null );
+    *this = url() + _rel_url;
+    cleanPath();
   }
 }
 
