@@ -268,7 +268,7 @@ void KHTMLParser::parseToken(Token *t)
     if ( !insertNode(n, t->flat) ) {
         // we couldn't insert the node...
 #ifdef PARSER_DEBUG
-        kdDebug( 6035 ) << "insertNode failed current=" << current->tid() << ", new=" << n->id() << "!" << endl;
+        kdDebug( 6035 ) << "insertNode failed current=" << current->id() << ", new=" << n->id() << "!" << endl;
 #endif
         if (map == n)
         {
