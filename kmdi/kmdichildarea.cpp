@@ -617,5 +617,14 @@ void KMdiChildArea::setMdiCaptionInactiveBackColor(const QColor &clr)
    m_captionInactiveBackColor = clr;
 }
 
+//KDE4: remove
+void KMdiChildArea::getCaptionColors( const QPalette & /*pal*/, 
+    QColor &activeBG, QColor &activeFG, QColor &inactiveBG, QColor &inactiveFG )
+{
+   activeBG = KGlobalSettings::activeTitleColor();
+   activeFG = KGlobalSettings::activeTextColor();
+   inactiveBG = KGlobalSettings::inactiveTitleColor();
+   inactiveFG = KGlobalSettings::inactiveTextColor();
+}
 
 // kate: space-indent on; indent-width 2; replace-tabs on;
