@@ -250,7 +250,7 @@ public:
    *
    *  This means basically applying the right window caption and
    *  icon. An application may have several top widgets. You don't
-   *  need to call this function manually when using @ref KTMainWindow.
+   *  need to call this function manually when using @ref KMainWindow.
    *
    *  @see icon(), caption()
    **/
@@ -672,12 +672,12 @@ public:
       Session management asks you to save the state of your application.
 
      This signal is provided for compatibility only. For new
-     appliations, simply use KTMainWindow. By reimplementing @ref
-     KTMainWindow::queryClose(), @ref KTMainWindow::saveProperties() and
-     @ref KTMainWindow::readProperties() you can simply handle session
+     appliations, simply use KMainWindow. By reimplementing @ref
+     KMainWindow::queryClose(), @ref KMainWindow::saveProperties() and
+     @ref KMainWindow::readProperties() you can simply handle session
      management for applications with multiple toplevel windows.
 
-     For purposes without KTMainWindow, create an instance of
+     For purposes without KMainWindow, create an instance of
      KSessionManaged and reimplement the functions @ref
      KSessionManaged::commitData() and/or @ref
      KSessionManaged::saveState()
@@ -749,12 +749,12 @@ class KSessionManagedPrivate;
 
    KSessionManaged makes it possible to provide implementations for
    @ref QApplication::commitData() and @ref QApplication::saveState(), without
-   subclassing KApplication. KTMainWindow internally makes use of this.
+   subclassing KApplication. KMainWindow internally makes use of this.
 
    You don't need to do anything with this class when using
-   KTMainWindow. Instead, use @ref KTMainWindow::saveProperties(),
-   @ref KTMainWindow::readProperties(), @ref KTMainWindow::queryClose(),
-   @ref KTMainWindow::queryExit() and friends.
+   KMainWindow. Instead, use @ref KMainWindow::saveProperties(),
+   @ref KMainWindow::readProperties(), @ref KMainWindow::queryClose(),
+   @ref KMainWindow::queryExit() and friends.
 
   @short Highlevel access to session management.
   @author Matthias Ettrich <ettrich@kde.org>
@@ -786,6 +786,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.184  2000/08/24 12:44:48  porten
+// "friend class" patches from Thomas Kunert <kunert@physik.tu-dresden.de>
+//
 // Revision 1.183  2000/08/22 14:02:22  raabe
 // Added method KApplication::invokeMailer(const KURL&), this fixed bug #5708
 // and makes the mailto parser comply to RFC 2368.

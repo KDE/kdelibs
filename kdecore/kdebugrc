@@ -6,7 +6,7 @@
 [125]
 InfoOutput=4
 
-# KTMainWindow debug info off
+# KMainWindow debug info off
 [200]
 InfoOutput=4
 

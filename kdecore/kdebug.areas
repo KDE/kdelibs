@@ -8,7 +8,7 @@
 126	kdecore (KURL)
 127	kdecore (KProtocolManager)
 150	kdecore (KLibLoader)
-200	kdeui (KTMW)
+200	kdeui (KMainWindow)
 220	kdeui (KToolBar)
 250	kfile (kdelibs)
 264	kdecore (KIconLoader)
