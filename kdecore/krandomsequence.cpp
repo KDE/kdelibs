@@ -18,6 +18,8 @@
   Boston, MA 02111-1307, USA.
 */
 
+#include <qlist.h>
+
 #include "krandomsequence.h"
 #include "kapp.h"
 
@@ -179,4 +181,24 @@ KRandomSequence::getBool()
   Draw();
 
   return (((unsigned long) m_lngShufflePos) & 1);  
+}
+
+class KRandomSequenceList : public QGList
+{
+  friend KRandomSequence;
+public:
+  KRandomSequenceList() : QGList() { }
+};
+
+void
+KRandomSequence::randomize(QGList *_list)
+{
+  KRandomSequenceList *list = (KRandomSequenceList *)_list;
+  KRandomSequenceList l;
+  while(list->count())
+     l.append(list->takeFirst());
+
+  list->append(l.takeFirst()); // Start with 1
+  while(l.count())
+     list->insertAt(getLong(list->count()+1), l.takeFirst());
 }

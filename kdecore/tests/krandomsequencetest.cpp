@@ -16,6 +16,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qlist.h>
+
 #include "krandomsequence.h"
 #include "kapp.h"
 
@@ -51,5 +53,39 @@ main(int argc, char *argv[])
    seq.setSeed(seed);printf("Seed = %4ld :", seed);
    for(int i = 0; i < 20; i++)
       printf("%3ld ", seq.getLong(100));
+
+   seq.setSeed(kapp->random());
+
+   QList<QString> list;
+   list.append(new QString("A"));
+   list.append(new QString("B"));
+   list.append(new QString("C"));
+   list.append(new QString("D"));
+   list.append(new QString("E"));
+   list.append(new QString("F"));
+   list.append(new QString("G"));
+
+   for(QString *str = list.first(); str; str = list.next())
+      printf("%s", str->latin1());
+   printf("\n\n");
+
+   seq.randomize(&list);
+
+   for(QString *str = list.first(); str; str = list.next())
+      printf("%s", str->latin1());
+   printf("\n\n");
+
+   seq.randomize(&list);
+
+   for(QString *str = list.first(); str; str = list.next())
+      printf("%s", str->latin1());
+   printf("\n\n");
+
+   seq.randomize(&list);
+
+   for(QString *str = list.first(); str; str = list.next())
+      printf("%s", str->latin1());
+   printf("\n\n");
+
    printf("\n");
 }

@@ -19,7 +19,7 @@
 #define K_RANDOM_SEQUENCE_H
 
 class KRandomSequencePrivate;
-
+class QGList;
 /**
  * A class to create a pseudo-random sequence
  *
@@ -86,6 +86,12 @@ public:
    */
   bool getBool(); 
 
+  /**
+   * Put a list in random order
+   *
+   * @return modifies the order of @list
+   */
+  void randomize(QGList *list);
 	
 private:
   void Draw(); // Generate the random number
