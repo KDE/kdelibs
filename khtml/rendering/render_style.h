@@ -980,7 +980,7 @@ public:
     static EClear initialClear() { return CNONE; }
     static EDirection initialDirection() { return LTR; }
     static EDisplay initialDisplay() { return INLINE; }
-    static EEmptyCell initialEmptyCells() { return HIDE; }
+    static EEmptyCell initialEmptyCells() { return SHOW; }
     static EFloat initialFloating() { return FNONE; }
     static EListStylePosition initialListStylePosition() { return OUTSIDE; }
     static EListStyleType initialListStyleType() { return DISC; }

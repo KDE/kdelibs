@@ -23,5 +23,6 @@ TABLE {
     line-height: normal;
     color: -khtml-text;
     font-size: medium;
+    empty-cells: hide;
 }
 
