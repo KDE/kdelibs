@@ -16,6 +16,7 @@ or <a href="http://doc.trolltech.com/porting.html">this page online</a>.<P>
 
 <UL>
 <LI><A HREF="#gettingstarted">Getting Started</A></LI>
+<LI><A HREF="#kdecore">Changes in kdecore</A></LI>
 <LI><A HREF="#kdeui">Changes in kdeui</A></LI>
 <LI><A HREF="#khtmlpart">API-cleanup in KHTML</A></LI>
 </UL>
@@ -39,6 +40,14 @@ or <a href="http://doc.trolltech.com/porting.html">this page online</a>.<P>
   recommended, as those backward compatibility "hacks" are not kept for
   long.
 </p>
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="kdecore">Changes in kdecore</A></H3>
+
+<H4>KDesktopWidget</H4>
+KDesktopWidget is obsolete. Include &lt;qdesktopwidget.h&gt; and use QDesktopWidget
+instead, everything else is source compatible.
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
