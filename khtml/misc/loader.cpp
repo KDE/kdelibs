@@ -2,7 +2,7 @@
     This file is part of the KDE libraries
 
     Copyright (C) 1998 Lars Knoll (knoll@mpi-hd.mpg.de)
-    Copyright (C) 2000 Dirm Mueller (mueller@kde.org)
+    Copyright (C) 2001 Dirk Mueller (mueller@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -230,9 +230,6 @@ void CachedScript::error( int /*err*/, const char */*text*/ )
 namespace khtml
 {
 
-  /*
-     * Defines the DataSource for incremental loading of images.
-     */
     class ImageSource : public QDataSource
     {
     public:
@@ -275,9 +272,9 @@ namespace khtml
         */
         void cleanBuffer();
 
-    private:
         QByteArray buffer;
         unsigned int pos;
+    private:
         bool eof     : 1;
         bool rew     : 1;
         bool rewable : 1;
@@ -459,12 +456,16 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     // no error indication for background images
     if(errorOccured) return *Cache::nullPixmap;
 
-    if ((r.width() < BGMINWIDTH) || (r.height() < BGMINHEIGHT) || newc != bgColor)
+    if (newc != bgColor)
     {
         bool isvalid = newc.isValid();
         QSize s(pixmap_size());
-        int w = ((BGMINWIDTH  / s.width())+1) * s.width();
-        int h = ((BGMINHEIGHT / s.height())+1) * s.height();
+        int w = r.width();
+        int h = r.height();
+        if ( r.width() < BGMINWIDTH )
+            w = ((BGMINWIDTH  / s.width())+1) * s.width();
+        if ( r.height() < BGMINHEIGHT )
+            h = ((BGMINHEIGHT / s.height())+1) * s.height();
 
         bg = new QPixmap(w, h);
         QPixmap pix = pixmap();
@@ -656,7 +657,7 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
         if ( formatType )  // movie format exists
         {
             imgSource = new ImageSource( _buffer.buffer());
-            m = new QMovie( imgSource, 1024);
+            m = new QMovie( imgSource, 4096 );
             m->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
             m->connectStatus( this, SLOT( movieStatus(int)));
         }
@@ -665,7 +666,9 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
     if ( imgSource )
     {
         imgSource->setEOF(eof);
-        imgSource->maybeReady();
+        m->pushData( ( const unsigned char* ) _buffer.buffer().data()+imgSource->pos,
+                     _buffer.size()-imgSource->pos );
+        imgSource->pos = _buffer.size();
     }
 
     if(eof)
