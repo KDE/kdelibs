@@ -28,7 +28,6 @@
 #include <qdir.h>
 #include <qfile.h>
 #include <kdebug.h>
-#include <kurl.h>
 #include <kmimetype.h>
 
 #include <kfilterdev.h>
@@ -163,7 +162,7 @@ bool KTar::openArchive( int mode )
         if ( n == 0x200 && buffer[0] != 0 )
         {
             // Make sure this is actually a tar header
-            if (strncmp(buffer + 257, "ustar", 5)) 
+            if (strncmp(buffer + 257, "ustar", 5))
             {
                 // The magic isn't there (broken/old tars), but maybe a correct checksum?
                 QCString s;
@@ -171,13 +170,13 @@ bool KTar::openArchive( int mode )
                 int check = 0;
                 for( uint j = 0; j < 0x200; ++j )
                     check += buffer[j];
-                
+
                 // adjust checksum to count the checksum fields as blanks
                 for( uint j = 0; j < 8 /*size of the checksum field including the \0 and the space*/; j++ )
                     check -= buffer[148 + j];
                 check += 8 * ' ';
 
-                s.sprintf("%o", check ); 
+                s.sprintf("%o", check );
 
                 // only compare those of the 6 checksum digits that mean something,
                 // because the other digits are filled with all sorts of different chars by different tars ...
@@ -276,14 +275,14 @@ bool KTar::openArchive( int mode )
                 while( *p == ' ' ) ++p;
                 int size = (int)strtol( p, &dummy, 8 );
 
-                // for isDumpDir we will skip the additional info about that dirs contents 
+                // for isDumpDir we will skip the additional info about that dirs contents
                 if ( isDumpDir )
                 {
 		    e = new KArchiveDirectory( this, nm, access, time, user, group, symlink );
                 }
 		else
 		{
-            
+
                     // Let's hack around hard links. Our classes don't support that, so make them symlinks
                     if ( typeflag == '1' )
                     {
@@ -295,7 +294,7 @@ bool KTar::openArchive( int mode )
 
                     e = new KArchiveFile( this, nm, access, time, user, group, symlink,
                                           dev->at(), size );
-		}			  
+		}
 
                 // Skip contents + align bytes
                 int rest = size % 0x200;

@@ -35,8 +35,6 @@
 #include <qfile.h>
 
 #include <kdebug.h>
-#include <kurl.h>
-#include <kmimetype.h>
 #include <kfilterdev.h>
 #include <kfilterbase.h>
 
