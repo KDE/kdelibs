@@ -16,7 +16,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-/* $Id$
+/* Written by Stefan Taferner <taferner@kde.org>
  * A multi column listbox. Requires the Qt widget set.
  */
 #ifndef KTabListBox_h

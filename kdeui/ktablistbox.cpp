@@ -16,15 +16,15 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-// $Id$
+//  Written by Stefan Taferner <taferner@kde.org>
 
 #include "ktablistbox.h"
 #include <qfontmet.h>
 #include <qpainter.h>
 #include <qkeycode.h>
 #include <qpixmap.h>
-#include <qapp.h>
 #include <qdrawutl.h>
+#include <qscrbar.h>
 #include <kapp.h>
 
 #include <stdarg.h>
@@ -825,7 +825,7 @@ void KTabListBox::doMouseResizeCol(QMouseEvent* e)
   if (mMouseCol >= 0)
   {
     w = mMouseColWidth + (e->pos().x() - mMouseColLeft);
-    if (w < 0) w = 0;
+    if (w < 2) w = 2;
 
     colList[mMouseCol]->setWidth(w);
     repaint();
@@ -974,7 +974,7 @@ void KTabListBoxTable::mouseDoubleClickEvent(QMouseEvent* e)
 void KTabListBoxTable::doItemSelection(QMouseEvent* e, int idx)
 {
   KTabListBox* owner =(KTabListBox*)parentWidget();
-  int i, di;
+  int i, di, colnr;
 
   owner->unmarkAll();
   if ((e->state()&ShiftButton)!=0 && owner->currentItem()>=0)
@@ -988,7 +988,11 @@ void KTabListBoxTable::doItemSelection(QMouseEvent* e, int idx)
       i += di;
     }
   }
-  else owner->setCurrentItem(idx);
+  else
+  {
+    colnr = findCol(e->pos().x());
+    owner->setCurrentItem(idx,colnr);
+  }
 }
 
 
@@ -1080,11 +1084,12 @@ void KTabListBoxTable::mouseMoveEvent(QMouseEvent* e)
 //-----------------------------------------------------------------------------
 void KTabListBoxTable::reconnectSBSignals(void)
 {
-  QWidget* hsb =(QWidget*)horizontalScrollBar();
+  QScrollBar* hsb = (QScrollBar*)horizontalScrollBar();
   KTabListBox* owner =(KTabListBox*)parentWidget();
 
   if (!hsb) return;
 
+  hsb->setTracking(TRUE);
   connect(hsb, SIGNAL(valueChanged(int)), owner, SLOT(horSbValue(int)));
   connect(hsb, SIGNAL(sliderReleased()), owner, SLOT(horSbSlidingDone()));
 }
