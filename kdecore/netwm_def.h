@@ -314,6 +314,8 @@ public:
        @li BottomLeft
        @li Left
        @li Move (for movement only)
+       @li KeyboardSize (resizing via keyboard)
+       @li KeyboardMove (movement via keyboard)
     **/
 
     enum Direction {
@@ -325,7 +327,9 @@ public:
 	Bottom       = 5,
 	BottomLeft   = 6,
 	Left         = 7,
-	Move         = 8  // movement only
+	Move         = 8,  // movement only
+	KeyboardSize = 9,  // size via keyboard
+	KeyboardMove = 10  // move via keyboard
     };
 
     /**
