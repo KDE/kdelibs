@@ -36,6 +36,7 @@
 #include "kautomount.h"
 
 #include <qstring.h>
+#include <qfile.h>
 #include <kmessageboxwrapper.h>
 
 #include <ksimpleconfig.h>
@@ -349,31 +350,35 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
   KURL u( _url );
   u.addPath( ".directory" );
 
-  KSimpleConfig cfg( u.path(), true );
-  cfg.setDesktopGroup();
-  QString icon = cfg.readEntry( "Icon" );
-  QString empty_icon = cfg.readEntry( "EmptyIcon" );
-  
-  if ( !empty_icon.isEmpty() )
+  QString icon;
+  if ( QFile::exists( u.path() ) )
   {
-    bool isempty = false;
-    DIR *dp = 0L;
-    struct dirent *ep;
-    dp = opendir( _url.path().ascii() );
-    if ( dp )
-    {
-      ep=readdir( dp );
-      ep=readdir( dp );      // ignore '.' and '..' dirent
-      if ( (ep=readdir( dp )) == 0L ) // third file is NULL entry -> empty directory
-        isempty = true;
-      // if third file is .directory and no fourth file -> empty directory
-      if (!isempty && !strcmp(ep->d_name, ".directory"))
-        isempty = (readdir(dp) == 0L);
-      closedir( dp );
-    }
+    KSimpleConfig cfg( u.path(), true );
+    cfg.setDesktopGroup();
+    icon = cfg.readEntry( "Icon" );
+    QString empty_icon = cfg.readEntry( "EmptyIcon" );
     
-    if ( isempty )
-      return empty_icon;
+    if ( !empty_icon.isEmpty() )
+    {
+      bool isempty = false;
+      DIR *dp = 0L;
+      struct dirent *ep;
+      dp = opendir( _url.path().ascii() );
+      if ( dp )
+      {
+        ep=readdir( dp );
+        ep=readdir( dp );      // ignore '.' and '..' dirent
+        if ( (ep=readdir( dp )) == 0L ) // third file is NULL entry -> empty directory
+          isempty = true;
+        // if third file is .directory and no fourth file -> empty directory
+        if (!isempty && !strcmp(ep->d_name, ".directory"))
+          isempty = (readdir(dp) == 0L);
+        closedir( dp );
+      }
+      
+      if ( isempty )
+        return empty_icon;
+    }
   }
   
   if ( icon.isEmpty() )
