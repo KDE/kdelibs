@@ -2714,7 +2714,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
       KDockWidget* d2 = getDockWidgetFromName( list.current() );
       tabDockGroup = d2->manualDock( d1, KDockWidget::DockCenter );
       if ( tabDockGroup ){
-        KDockTabGroup* tab = (KDockTabGroup*)tabDockGroup->widget;
+        KDockTabGroup* tab = dynamic_cast<KDockTabGroup*>( tabDockGroup->widget );
         list.next();
         while ( list.current() && tabDockGroup ){
           KDockWidget* tabDock = getDockWidgetFromName( list.current() );
@@ -2724,7 +2724,8 @@ void KDockManager::readConfig( KConfig* c, QString group )
         if ( tabDockGroup ){
           tabDockGroup->setName( oname.latin1() );
           c->setGroup( group );
-          tab->showPage( tab->page( c->readNumEntry( oname+":curTab" ) ) );
+	  if ( tab )
+            tab->showPage( tab->page( c->readNumEntry( oname+":curTab" ) ) );
         }
       }
       obj = tabDockGroup;
