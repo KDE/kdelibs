@@ -27,6 +27,10 @@
 #include <kio/kpac.h>
 
 class KURL;
+namespace KIO
+{
+    class Job;
+};
 
 class KPACImpl : public KPAC
 {
@@ -40,6 +44,24 @@ public:
 private:
     KJScript *m_kjs;
     bool m_configRead;
+};
+
+// can't inherit KPACImpl from QObject
+class KPACDownloader : public QObject
+{
+    Q_OBJECT
+public:
+    static const QCString download(const KURL &url);
+
+private slots:
+    void slotData(KIO::Job *, const QByteArray &);
+    void slotResult(KIO::Job *);
+
+private:
+    KPACDownloader(const KURL &url);
+
+    QCString m_data;
+    bool m_downloading;
 };
 
 #endif

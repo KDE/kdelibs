@@ -23,8 +23,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include <qfile.h>
-
+#include <kapp.h>
 #include <kdebug.h>
 #include <kinstance.h>
 #include <klibloader.h>
@@ -33,10 +32,10 @@
 #include <kjs/types.h>
 #include <ksimpleconfig.h>
 #include <kstddirs.h>
-#include <kio/netaccess.h>
+#include <kio/job.h>
 
 #include "kproxybindings.h"
-#include "kpac_impl.h"
+#include "kpac_impl.moc"
 
 using namespace KJS;
 
@@ -114,8 +113,8 @@ bool KPACImpl::init(const KURL &url)
         m_configRead = false;
     }
 
-    QString fileName;
-    if (!KIO::NetAccess::download(url, fileName))
+    QCString code = KPACDownloader::download(url);
+    if (code.isEmpty())
     {
         kdError(7025) << "KPACImpl::init(): couldn't download proxy config script " << url.url() << endl;
         return false;
@@ -129,23 +128,12 @@ bool KPACImpl::init(const KURL &url)
         global.put("ProxyConfig", bindings);
         global.setPrototype(bindings);
     }
-    QFile f(fileName);
-    if (f.open(IO_ReadOnly))
+
+    if (!(m_configRead = m_kjs->evaluate(code)))
     {
-        char *code = (char *)malloc(f.size() + 1);
-        f.readBlock(code, f.size());
-        code[f.size()] = 0;
-        if (!(m_configRead = m_kjs->evaluate(code)))
-        {
-            kdError(7025) << "KPACImpl::init(): JS error in config file" << endl;
-            m_kjs->clear();
-        }
-        free(code);
-        f.close();
+        kdError(7025) << "KPACImpl::init(): JS error in config file" << endl;
+        m_kjs->clear();
     }
-    else
-        kdError(7025) << "KPACImpl::init(): can't read config file, very strange" << endl;
-    KIO::NetAccess::removeTempFile(fileName);
 
     return m_configRead;
 }
@@ -155,6 +143,35 @@ void KPACImpl::badProxy(const QString &proxy)
     kdDebug(7025) << "KPACImpl::badProxy(), proxy=" << proxy << endl;
     KSimpleConfig blackList(locateLocal("tmp", "badproxies"));
     blackList.writeEntry(proxy, time(0));
+}
+
+const QCString KPACDownloader::download(const KURL &url)
+{
+    KPACDownloader downloader(url);
+    while (downloader.m_downloading)
+        kapp->processOneEvent();
+    return downloader.m_data;
+}
+
+KPACDownloader::KPACDownloader(const KURL &url)
+    : QObject()
+{
+    KIO::TransferJob *job = KIO::get(url, false /* reload */, false /* No GUI */);
+    m_downloading = true;
+    connect(job, SIGNAL(data(KIO::Job *, const QByteArray &)), SLOT(slotData(KIO::Job *, const QByteArray &)));
+    connect(job, SIGNAL(result(KIO::Job *)), SLOT(slotResult(KIO::Job *)));
+}
+
+void KPACDownloader::slotData(KIO::Job *, const QByteArray &data)
+{
+    m_data += data;
+}
+
+void KPACDownloader::slotResult(KIO::Job *job)
+{
+    if (job->error())
+        m_data = 0;
+    m_downloading = false;
 }
 
 extern "C"

@@ -249,7 +249,7 @@ QString KProtocolManager::proxyFor( const QString& protocol )
 
 QString KProtocolManager::proxyForURL( const KURL &url )
 {
-  if (pac())
+  if (!url.host().isEmpty() && pac())
     return pac()->proxyForURL( url );
   else
   {
