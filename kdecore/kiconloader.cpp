@@ -198,10 +198,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     if (!def->isValid())
     {
 	delete def;
-	if (QPixmap::defaultDepth() > 8)
-	    def = new KIconTheme(QString::fromLatin1("hicolor"), appname);
-	else
-	    def = new KIconTheme(QString::fromLatin1("locolor"), appname);
+	def = new KIconTheme(QString::fromLatin1("hicolor"), appname);
     }
     d->mpThemeRoot = new KIconThemeNode(def);
     d->mThemesInTree += KIconTheme::current();
@@ -221,7 +218,11 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 	config->setGroup(QString::fromLatin1(groups[i]) + "Icons");
 	d->mpGroups[i].size = config->readNumEntry("Size", 0);
 	d->mpGroups[i].dblPixels = config->readBoolEntry("DoublePixels", false);
-	d->mpGroups[i].alphaBlending = config->readBoolEntry("AlphaBlending", false);
+	if (QPixmap::defaultDepth()>8)
+	    d->mpGroups[i].alphaBlending = config->readBoolEntry("AlphaBlending", false);
+	else
+	    d->mpGroups[i].alphaBlending = false;
+
 	if (!d->mpGroups[i].size)
 	    d->mpGroups[i].size = d->mpThemeRoot->theme->defaultSize(i);
     }
@@ -267,24 +268,10 @@ void KIconLoader::addAppThemes(const QString& appname)
     KIconThemeNode *node = 0L;
     KIconTheme *theme = 0L;
 
-    if (QPixmap::defaultDepth() > 8)
-    {
-	theme = new KIconTheme("hicolor", appname);
-	if (theme->isValid())
-	    node = new KIconThemeNode(theme);
-	else
-	    delete theme;
-    }
-
-    theme = new KIconTheme("locolor", appname);
+    theme = new KIconTheme("hicolor", appname);
     if (theme->isValid())
-    {
-	KIconThemeNode *tmp = new KIconThemeNode(theme);
-	if (node)
-	    node->links.append(tmp);
-	else
-	    node = tmp;
-    } else
+	node = new KIconThemeNode(theme);
+    else
 	delete theme;
 
     if (node)
