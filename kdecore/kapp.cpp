@@ -72,7 +72,9 @@
 #undef KeyPress
 #endif
 
-#include "qplatinumstyle.h"
+#include <kstyle.h>
+#include <qplatinumstyle.h>
+#include <qcdestyle.h>
 #include <kconfig.h>
 
 KCharsets* KApplication::pCharsets = 0L;
@@ -142,6 +144,7 @@ void KApplication::init()
   bLocaleConstructed = false; // no work around mutual dependencies
 
   pIconLoader = 0L;
+  styleHandle = 0;
 
   // create the config directory ~/.kde/share/config
   QString configPath = KApplication::localkdedir();
@@ -247,7 +250,6 @@ void KApplication::init()
   kdisplaySetPalette();
   kdisplaySetStyleAndFont();
 
-  setStyle(new QPlatinumStyle());
   // install an event filter for KDebug
   installEventFilter( this );
 
@@ -822,34 +824,104 @@ bool KApplication::x11EventFilter( XEvent *_event )
 }
 
 void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
-/*
-  QApplication::setStyle( applicationStyle );
-
-  // get list of toplevels
-  QWidgetList *wl = QApplication::topLevelWidgets();
-  QWidgetListIt wl_it( *wl );
-
-  // foreach toplevel ...
-  while(wl_it.current()) {
-    QWidget *w = wl_it.current();
-
-    // set new style
-    w->setStyle(newstyle);
-    QObjectList *ol = w->queryList("QWidget", 0, 0, TRUE);
-    QObjectListIt ol_it( *ol );
-
-    // set style to child widgets
-    while ( ol_it.current() ) {
-      QWidget *child = (QWidget *)(ol_it.current());
-      child->setStyle(newstyle);
-      ++ol_it;
+    /* Hey, we actually do stuff here now :)
+     * The widgetStyle key is used as a style string. If it matches a
+     * Qt internal style that is used, otherwise it is checked to see
+     * if it matches a lib name in either $(KDEDIR)/lib or
+     * ~/.kde/share/apps/kstyle/modules. If it does we assume it's a style
+     * plugin and try to dlopen and allocate a KStyle. If libtool dlopen
+     * isn't supported that's no problem, plugins just won't work and you'll
+     * be restricted to the internal styles.
+     *
+     * mosfet@jorsm.com
+     */
+ 
+    static bool dlregistered = false;
+ 
+    QString oldGroup = pConfig->group();
+    pConfig->setGroup("KDE");
+    QString styleStr = pConfig->readEntry("widgetStyle", "Platinum");
+ 
+    if(styleHandle){
+        warning(i18n("KApp: Unloading previous style plugin."));
+        lt_dlclose(styleHandle);
+        styleHandle = NULL;
     }
-    delete ol;
-    ++wl_it;
-  }
-
-  delete wl;
-*/
+ 
+    if(styleStr == "Platinum"){
+        pKStyle=NULL;
+        setStyle(new QPlatinumStyle);
+    }
+    else if(styleStr == "Windows 95"){
+        pKStyle=NULL;
+        setStyle(new QWindowsStyle);
+    }
+    else if(styleStr == "CDE"){
+        pKStyle=NULL;
+        setStyle(new QCDEStyle);
+    }
+    else if(styleStr == "Motif"){
+        pKStyle=NULL;
+        setStyle(new QMotifStyle);
+    }
+    else{
+        if(!dlregistered){
+            dlregistered = true;
+            lt_dlinit();
+            lt_dladdsearchdir(localkdedir() + "/share/apps/kstyle/modules");
+            lt_dladdsearchdir(kde_bindir() + "/../lib");
+        }
+ 
+        QDir dir(localkdedir() + "/share/apps/kstyle/modules/", styleStr);
+        if(!dir.count()){
+            dir.setPath(kde_bindir() + "/../lib/");
+            if(!dir.count()){
+                warning(i18n("KApp: Unable to find style plugin %s."),
+                        (const char *)styleStr);
+                pKStyle = NULL;
+                setStyle(new QPlatinumStyle);
+                return;
+            }
+        }
+        styleStr = dir.path() + "/" + styleStr;
+        styleHandle = lt_dlopen(styleStr);
+ 
+        if(!styleHandle){
+            warning(i18n("KApp: Unable to open style plugin %s (%s)."),
+                    (const char *)styleStr, lt_dlerror());
+            pKStyle = NULL;
+            setStyle(new QPlatinumStyle);
+        }
+        else{
+            lt_ptr_t alloc_func = lt_dlsym(styleHandle,
+                                           "allocate");
+            if(!alloc_func){
+                warning(i18n("KApp: Unable to init style plugin %s (%s)."),
+                    (const char *)styleStr, lt_dlerror());
+                pKStyle = NULL;
+                lt_dlclose(styleHandle);
+                styleHandle = 0;
+                setStyle(new QPlatinumStyle);
+            }
+            else{
+                KStyle* (*alloc_ptr)();
+                alloc_ptr = (KStyle* (*)(void))alloc_func;
+                pKStyle = alloc_ptr();
+                if(pKStyle){
+                    warning(i18n("KApp: Style plugin successfully allocated."));
+                    setStyle(pKStyle);
+                }
+                else{
+                    warning(i18n("KApp: Style plugin unable to allocate style."));
+                    pKStyle = NULL;
+                    setStyle(new QPlatinumStyle);
+                    lt_dlclose(styleHandle);
+                    styleHandle = 0;
+                }
+            }
+        }
+    }
+    pConfig->setGroup(oldGroup);
 }
 
 

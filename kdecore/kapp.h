@@ -35,11 +35,13 @@ class KConfig;
 class KIconLoader;
 class KCharsets;
 class KLocale;
+class KStyle;
 
 typedef unsigned long Atom; 
 
 #include <qapplication.h>
 #include <qpixmap.h>
+#include <ltdl.h> // For the style plugin, if supported. (mosfet)
 class QPopupMenu;
 class QStrList;
 class KDNDDropZone;
@@ -276,6 +278,13 @@ public:
 	*/
   void invokeHTMLHelp( QString aFilename, QString aTopic ) const;
 
+  /**
+   * Returns a KDE style object if a plugin is in use, or else NULL
+   * if a Qt internal style is being used.
+   *
+   */
+  KStyle* kstyle() const {return(pKStyle);}
+  
   /**
    * Returns the directory where KDE stores its HTML documentation
    *
@@ -594,7 +603,9 @@ private:
   bool bSessionManagementUserDefined;
   QPixmap aIconPixmap;
   QPixmap aMiniIconPixmap;
-
+  KStyle *pKStyle; // A KDE style object if available (mosfet)
+  lt_dlhandle styleHandle; // A KDE style dlopen handle, if used
+  
   void init( );
   void parseCommandLine( int&, char** ); // search for special KDE arguments
 
@@ -721,6 +732,12 @@ private:
 #endif
 
 // $Log$
+// Revision 1.68  1999/04/19 15:49:31  kulow
+// cleaning up yet some more header files (fixheaders is your friend).
+// Adding copy constructor to KPixmap to avoid casting while assingment.
+//
+// The rest of the fixes in kdelibs and kdebase I will commit silently
+//
 // Revision 1.67  1999/04/17 19:15:41  kulow
 // cleaning up kapp.h, so that only needed headers are included. Guess how
 // many files include kapp.h because it includes almost anything they need ;)
