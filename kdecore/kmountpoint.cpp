@@ -37,6 +37,8 @@
 #endif
 #ifdef HAVE_MNTENT_H
 #include <mntent.h>
+#elif HAVE_SYS_MNTENT_H
+#include <sys/mntent.h>
 #endif
 
 // This is the *BSD branch
