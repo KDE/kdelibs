@@ -325,9 +325,7 @@ void KCryptoConfig::configChanged()
 void KCryptoConfig::load()
 {
   KConfig *config = new KConfig("cryptodefaults");
-#if 0
-  bGrp->setButton(config->readNumEntry("ServerType", 0));
-#endif
+
   config->setGroup("TLSv1");
   mUseTLS->setChecked(config->readBoolEntry("Enabled", false));
 
