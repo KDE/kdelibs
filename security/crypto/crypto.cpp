@@ -1235,7 +1235,7 @@ void KCryptoConfig::defaults()
 
 QString KCryptoConfig::quickHelp() const
 {
-  return i18n("<h1>crypto</h1> This module allows you to configure SSL for"
+  return i18n("<h1>Crypto</h1> This module allows you to configure SSL for"
      " use with most KDE applications, as well as manage your personal"
      " certificates and the known certificate authorities.");
 }
