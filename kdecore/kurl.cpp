@@ -1034,7 +1034,7 @@ QString KURL::path( int _trailing ) const
 bool KURL::isLocalFile() const
 {
   static const QString & fileProt = KGlobal::staticQString( "file" );
-  return ( ( m_strProtocol == fileProt ) && ( m_strHost.isEmpty()) );
+  return ( ( m_strProtocol == fileProt ) && ( m_strHost.isEmpty()) && !hasSubURL() );
 }
 
 bool KURL::hasSubURL() const
