@@ -308,7 +308,7 @@ public:
      *
      * @return the name of a configuration module or @p null if none.
      */
-    virtual QString configName() const { return QString::null; }
+    virtual QString configName() const { return name(); }
 
 protected:
 

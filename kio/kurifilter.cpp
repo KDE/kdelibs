@@ -206,7 +206,7 @@ void KURIFilter::loadPlugins()
 	    if ((*it)->library().isEmpty()) { continue; }
         KLibFactory *factory = KLibLoader::self()->factory((*it)->library().latin1());						
     	if (!factory) { continue; }
-    	KURIFilterPlugin *plugin = (KURIFilterPlugin *) factory->create(0, (*it)->name().latin1(), "KURIFilterPlugin");
+    	KURIFilterPlugin *plugin = (KURIFilterPlugin *) factory->create(0, (*it)->desktopEntryName().latin1(), "KURIFilterPlugin");
 	    if ( plugin ) { m_lstPlugins.append( plugin ); }
     }
     m_lstPlugins.sort(); // TODO: Prioritize based on the user preference from control module.
