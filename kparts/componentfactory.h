@@ -59,7 +59,7 @@ namespace KParts
                                              const char *name = 0,
                                              const QStringList &args = QStringList() )
         {
-            QObject *object = factory->create( parent, name, 
+            QObject *object = factory->create( parent, name,
                                                T::staticMetaObject()->className(),
                                                args );
 
@@ -89,15 +89,15 @@ namespace KParts
          *         factory was unable to create an object of the given type.
          */
         template <class T>
-        static T *createPartInstanceFromFactory( KParts::Factory *factory, 
+        static T *createPartInstanceFromFactory( KParts::Factory *factory,
                                                  QWidget *parentWidget = 0,
-                                                 const char *widgetName = 0, 
+                                                 const char *widgetName = 0,
                                                  QObject *parent = 0,
                                                  const char *name = 0,
                                                  const QStringList &args = QStringList() )
         {
             KParts::Part *object = factory->createPart( parentWidget, widgetName,
-                                                        parent, name, 
+                                                        parent, name,
                                                         T::staticMetaObject()->className(),
                                                         args );
 
@@ -116,13 +116,13 @@ namespace KParts
          * @param name The name of the object to create (see QObject constructor)
          * @param args A list of string arguments, passed to the factory and possibly
          *             to the component (see KLibFactory)
-         * @param error 
+         * @param error
          * @return A pointer to the newly created object or a null pointer if the
          *         factory was unable to create an object of the given type.
          */
         template <class T>
-        static T *createInstanceFromLibrary( const char *libraryName, QObject *parent = 0, 
-                                             const char *name = 0, 
+        static T *createInstanceFromLibrary( const char *libraryName, QObject *parent = 0,
+                                             const char *name = 0,
                                              const QStringList &args = QStringList(),
                                              int *error = 0 )
         {
@@ -152,11 +152,11 @@ namespace KParts
         }
 
         template <class T>
-        static T *createPartInstanceFromLibrary( const char *libraryName, 
-                                                 QWidget *parentWidget = 0, 
+        static T *createPartInstanceFromLibrary( const char *libraryName,
+                                                 QWidget *parentWidget = 0,
                                                  const char *widgetName = 0,
-                                                 QObject *parent = 0, 
-                                                 const char *name = 0, 
+                                                 QObject *parent = 0,
+                                                 const char *name = 0,
                                                  const QStringList &args = QStringList(),
                                                  int *error = 0 )
         {
@@ -183,7 +183,7 @@ namespace KParts
                     *error = ErrNoFactory;
                 return 0;
             }
-            T *res = createPartInstanceFromFactory<T>( partFactory, parentWidget, 
+            T *res = createPartInstanceFromFactory<T>( partFactory, parentWidget,
                                                        widgetName, parent, name, args );
             if ( !res )
             {
@@ -209,7 +209,7 @@ namespace KParts
                 return 0;
             }
 
-            return createInstanceFromLibrary<T>( library.local8Bit().data(), parent, 
+            return createInstanceFromLibrary<T>( library.local8Bit().data(), parent,
 	    					 name, args, error );
         }
 
@@ -258,11 +258,11 @@ namespace KParts
                 *error = ErrNoServiceFound;
 
             return 0;
- 
+
         }
 
         template <class T, class ServiceIterator>
-        static T *createPartInstanceFromServices( ServiceIterator begin, 
+        static T *createPartInstanceFromServices( ServiceIterator begin,
                                                   ServiceIterator end,
                                                   QWidget *parentWidget = 0,
                                                   const char *widgetName = 0,
@@ -279,7 +279,7 @@ namespace KParts
                     *error = 0;
 
                 T *component = createPartInstanceFromService<T>( service, parentWidget,
-                                                                 widgetName, parent, 
+                                                                 widgetName, parent,
                                                                  name, args, error );
                 if ( component )
                     return component;
@@ -289,7 +289,7 @@ namespace KParts
                 *error = ErrNoServiceFound;
 
             return 0;
- 
+
         }
 
         template <class T>
@@ -351,7 +351,7 @@ namespace KParts
                                                const QStringList &args = QStringList(),
                                                int *error = 0 )
         {
-            KTrader::OfferList offers = KTrader::self()->query( serviceType, "KParts/ReadOnlyPart", constraint, QString::null );
+            KTrader::OfferList offers = KTrader::self()->query( serviceType, QString::fromLatin1("KParts/ReadOnlyPart"), constraint, QString::null );
             if ( offers.isEmpty() )
             {
                 if ( error )
@@ -363,7 +363,7 @@ namespace KParts
                                                       parentWidget, widgetName,
                                                       parent, name, args, error );
         }
- 
+
     }
 
 }
