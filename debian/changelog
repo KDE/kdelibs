@@ -1,10 +1,10 @@
-kdelibs (4:2.1-20010118-2) unstable; urgency=low
+kdelibs (4:2.1-20010122-1) unstable; urgency=low
  
    * more upstream bug fixes
      more html and js fixes
    * Fixing shlibs
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 21 Jan 2001 12:51:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 22 Jan 2001 00:10:00 -0700
 
 kdelibs (4:2.1-20010118-1) unstable; urgency=low
  
