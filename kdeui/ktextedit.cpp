@@ -114,13 +114,23 @@ void KTextEdit::keyPressEvent( QKeyEvent *e )
     }
     else if ( KStdAccel::backwardWord().contains( key ) )
     {
-      moveCursor(MoveWordBackward, false );
+      CursorAction action = MoveWordBackward;
+      int para, index;
+      getCursorPosition( &para, & index );
+      if (text(para).isRightToLeft())
+           action = MoveWordForward;
+      moveCursor(action, false );
       e->accept();
       return;
     }
     else if ( KStdAccel::forwardWord().contains( key ) )
     {
-      moveCursor( MoveWordForward, false );
+      CursorAction action = MoveWordForward;
+      int para, index;
+      getCursorPosition( &para, & index );
+      if (text(para).isRightToLeft())
+	  action = MoveWordBackward;
+      moveCursor( action, false );
       e->accept();
       return;
     }
