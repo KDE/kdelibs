@@ -12,6 +12,7 @@ public:
 	virtual ~PlainAuthModule();
 	virtual QString auth_method();
 	virtual QString auth_response(const QString &challenge, const KURL &auth_url);
+	virtual void get_usercredentials() {;}
 };
 
 class PlainAuthModuleFactory : public KLibFactory

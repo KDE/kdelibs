@@ -13,6 +13,7 @@ public:
 	virtual ~KSASLAuthModule(){;}
 	virtual QString auth_method()=0;
 	virtual QString auth_response(const QString &challenge, const KURL &auth_url)=0;
+	virtual void get_usercredentials()=0;
 };
 
 #endif
