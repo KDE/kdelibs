@@ -36,8 +36,8 @@
 #endif
 
 
-// Copied from kdecore/kglobal.h
-#if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 2)
+// Copied from kdecore/kdemacros.h
+#if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 4)
 #  define KDE_NO_EXPORT __attribute__ ((visibility("hidden")))
 #else
 #  define KDE_NO_EXPORT
