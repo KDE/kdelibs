@@ -32,6 +32,7 @@
 #include <kdebug.h>
 
 #include "rendering/render_object.h"
+#include "rendering/render_text.h"
 #include <qrect.h>
 
 #define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ 2*( N ) ]
@@ -868,19 +869,12 @@ void NodeBaseImpl::cloneChildNodes(NodeImpl *clone, int &exceptioncode)
 bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos)
 {
     if (!m_render)
-    {
-	kdDebug(6000) << "HTMLElementImpl::getAnchorPosition: no rendering object.\n";
 	return false;
-    }
-    m_render->absolutePosition( xPos, yPos );
+    RenderObject *o = m_render;
+    o->absolutePosition( xPos, yPos );
     if ( !isInline() ) 
 	return true;
-//     if (m_render->containingBlock())
-// 	m_render->containingBlock()->absolutePosition( xPos, yPos );
-//     else
-	m_render->absolutePosition(xPos, yPos);
 
-    RenderObject *o = m_render;
     // find the next text/image after the anchor, to get a position
     while(o) {
 	if(o->firstChild())
@@ -897,7 +891,10 @@ bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos)
 	    o = next;
 	}
 	if(o->isText() || o->isReplaced()) {
-	    xPos += o->xPos();
+	    if (o->isText())
+		xPos += static_cast<RenderText *>(o)->minXPos();
+	    else
+		xPos += o->xPos();
 	    yPos += o->yPos();
 	    return true;
 	}
@@ -908,41 +905,31 @@ bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos)
 bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos)
 {
     if (!m_render)
-    {
-	kdDebug(6000) << "HTMLElementImpl::getAnchorBounds: no rendering object.\n";
 	return false;
-    }
-
-    RenderObject *myRenderer;
-    if (m_render->containingBlock())
-    {
-	myRenderer=m_render->containingBlock();
-    }
-    else
-    {
-	myRenderer=m_render;
-    }
-
-    myRenderer->absolutePosition( xPos, yPos );
 
     RenderObject *o = m_render;
-    // find the next text/image after the anchor, to get a position
+    o->absolutePosition( xPos, yPos );
+
+    // find the last text/image in the anchor, to get a position
     while(o) {
-	if(o->firstChild())
-	    o = o->firstChild();
-	else if(o->nextSibling())
-	    o = o->nextSibling();
+	if(o->lastChild())
+	    o = o->lastChild();
+	else if(o->previousSibling())
+	    o = o->previousSibling();
 	else {
-	    RenderObject *next = 0;
-	    while(!next) {
+	    RenderObject *prev = 0;
+	    while(!prev) {
 		o = o->parent();
 		if(!o) return false;
-		next = o->nextSibling();
+		prev = o->previousSibling();
 	    }
-	    o = next;
+	    o = prev;
 	}
 	if(o->isText() || o->isReplaced()) {
-	    xPos += o->xPos()+o->width();
+	    if (o->isText())
+		xPos += static_cast<RenderText *>(o)->minXPos() + o->width();
+	    else
+		xPos += o->xPos()+o->intrinsicWidth();
 	    yPos += o->yPos()+o->height();
 	    return true;
 	}
@@ -953,9 +940,26 @@ bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos)
 QRect NodeBaseImpl::getRect()
 {
     int xPos, yPos;
-    getUpperLeftCorner(xPos, yPos);
+    if (!getUpperLeftCorner(xPos,yPos))
+    {
+	xPos=0;
+	yPos=0;
+    }
     int xEnd, yEnd;
-    getLowerRightCorner(xEnd, yEnd);
+    if (!getLowerRightCorner(xEnd,yEnd))
+    {
+	if (xPos)
+	    xEnd = xPos;
+	if (yPos)
+	    yEnd = yPos;
+    }
+    else
+    {
+	if (xPos==0)
+	    xPos = xEnd;
+	if (yPos==0)
+	    yPos = yEnd;
+    }
     return QRect(xPos, yPos, xEnd - xPos, yEnd - yPos);
 }
 

@@ -31,6 +31,7 @@
 template<class C> class QList;
 
 class QPainter;
+class QRect;
 
 namespace DOM {
     class HTMLDocumentImpl;
@@ -200,15 +201,10 @@ protected:
 
 private:
     /**
-     * move the view towards the currently selected node
-     * and paint the cursor
+     * move the view towards the given rectangle be up to one page.
+     * return true if reached.
      */
-    bool gotoLink();
-
-    /**
-     * move the view towards a given element.
-     */
-    bool gotoLink(DOM::ElementImpl *);
+    bool paginateTo(const QRect &);
 
     /**
      * move the view towards the next node

@@ -665,12 +665,24 @@ void RenderText::calcMinMaxWidth()
     setMinMaxKnown();
 }
 
+int RenderText::minXPos() const
+{
+    if (!m_lines.count())
+	return 0;
+    unsigned int retval=6666666;
+    for (int i=0;i<m_lines.count();i++)
+    {
+	retval = QMIN ( retval, m_lines[i]->m_x);
+    }
+    return retval;
+}
+
 int RenderText::xPos() const
 {
     if (m_lines.count())
-        return m_lines[0]->m_x;
+	return m_lines[0]->m_x;
     else
-        return 0;
+	return 0;
 }
 
 int RenderText::yPos() const

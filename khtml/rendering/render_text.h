@@ -162,6 +162,10 @@ public:
     virtual short minWidth() const { return m_minWidth; }
     virtual short maxWidth() const { return m_maxWidth; }
 
+    // returns the minimum x position of all slaves relative to the parent.
+    // defaults to 0.
+    int minXPos() const;
+
     virtual int xPos() const;
     virtual int yPos() const;
 
