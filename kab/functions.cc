@@ -16,11 +16,13 @@
 #include "debug.h"
 #include <stdlib.h>
 
+string AuthorEmailAddress;
+
 string ReadLineFromStream(ifstream& stream)
 {
-  // ########################################################
   ID(bool GUARD=false);
   REQUIRE(stream.good());
+  // ############################################################################
   string line;
   // -----
   LG(GUARD, "ReadLineFromStream:: reading line.\n");
@@ -31,24 +33,22 @@ string ReadLineFromStream(ifstream& stream)
 	{
 	  if(isComment(line))
 	    {
-	      LG(GUARD, "ReadLineFromStream: line \"%s\" is"
-		 " a comment, skipping.\n",
-		 line.c_str());
+	      LG(GUARD, "ReadLineFromStream: line \"%s\" is a comment, "
+		 "skipping.\n", line.c_str());
 	      line.ERASE(); // empty line
 	      continue;
 	    }
 	}
       break;
     }
-  LG(GUARD, "ReadLineFromStream:: line \"%s\" read.\n",
-     line.c_str());
+  LG(GUARD, "ReadLineFromStream:: line \"%s\" read.\n", line.c_str());
   return line;
-  // ########################################################
+  // ############################################################################
 }
 
 bool isComment(string line)
 {
-  // ########################################################
+  // ############################################################################
   string::size_type first, second;
   // -----
   if(!line.empty())
@@ -60,39 +60,37 @@ bool isComment(string line)
 	  return true;
 	}
       return false;
-    } else {
-      // line is empty but not a comment
+    } else { // line is empty but not a comment
       return false;
     }
-  // ########################################################
+  // ############################################################################
 }
   
 bool getHomeDirectory(string& ref)
 {
   ID(bool GUARD=false);
-  // ########################################################  
+  // ############################################################################  
   char* temp=getenv("HOME");
   // -----
   if(temp!=0)
     {
       ref=temp;
       ref+="/";
-      LG(GUARD, "getHomeDirectory: home is \"%s\".\n",
-	 ref.c_str());
+      LG(GUARD, "getHomeDirectory: home is \"%s\".\n", ref.c_str());
       return true;
     } else {
       LG(GUARD, "getHomeDirectory: cannot find home of user"
 	 " by searching environment var \"HOME\".\n");
       return false;
     }
-  // ########################################################
+  // ############################################################################
 }
 
 bool htmlizeString(const string& orig, string& target)
 {
   ID(bool GUARD=true);
   LG(GUARD, "htmlizeString: called.\n");
-  // ########################################################
+  // ############################################################################
   string temp;
   char current;
   unsigned int index;
@@ -101,18 +99,17 @@ bool htmlizeString(const string& orig, string& target)
     { // ----- the following code is character set depending 
       //       and will possibly need recompilation for EVERY
       //       system using another charset than the machine
-      //       it was compiled on!
+      //       it was compiled on! Lets see.
       current=orig[index];
       switch(current)
 	{
 	case 'ä':
-	default:
-	  temp+=current;
+	default: temp+=current;
 	}
     }
   target=temp;
   LG(GUARD, "htmlizeString: done.\n");
   return false; // not implemented
-  // ########################################################
+  // ############################################################################
 }
-  
+

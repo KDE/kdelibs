@@ -17,13 +17,18 @@
 #define StringListSelectSetDialog_included
 
 #include "stl_headers.h"
+#include "DialogBase.h"
 #include <qstring.h>
 #include <qstrlist.h> 
-#include "StringListSelectSetDialogData.h"
+// #include "StringListSelectSetDialogData.h"
 
-class StringListSelectSetDialog : public StringListSelectSetDialogData
+class QListBox;
+
+class StringListSelectSetDialog : public DialogBase
 {
+  // ############################################################################
   Q_OBJECT
+  // ----------------------------------------------------------------------------
 public:
   StringListSelectSetDialog(QWidget* parent=0, const char* name=0);
   virtual ~StringListSelectSetDialog();
@@ -36,8 +41,13 @@ public:
   // methods to retrieve the selected strings:
   bool getSelection(list<string>&);
   bool getSelection(QStrList&);
+  // ----------------------------------------------------------------------------
 protected slots:
   void initializeGeometry();
+  // ----------------------------------------------------------------------------
+protected:
+    QListBox* lbStrings;
+  // ############################################################################
 };
 
 #endif // StringListSelectSetDialog_included

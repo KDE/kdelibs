@@ -3,77 +3,54 @@
  */
 
 #include "StringListSelectSetDialog.h"
-#include <qcombobox.h>
+#include <qlistbox.h>
 #include <kapp.h>
 
 extern "C" {
 #include <assert.h>
 	   }
 
-#define Inherited StringListSelectSetDialogData
-
 StringListSelectSetDialog::StringListSelectSetDialog
-(QWidget* parent,
- const char* name)
-  : Inherited( parent, name )
+(QWidget* parent, const char* name)
+  : DialogBase(parent, name)
 {
-    // ########################################################
-  buttonOK->setDefault(true);
-  buttonOK->setFocus();
+  // ############################################################################
+  lbStrings=new QListBox(this);
+  lbStrings->setMultiSelection(true);
+  setMainWidget(lbStrings);
+  enableButtonApply(false);
   initializeGeometry();
-  buttonOK->setText(i18n("OK"));
-  buttonCancel->setText(i18n("Cancel"));
-  // -----
-  connect(kapp, SIGNAL(appearanceChanged()),
-	  SLOT(initializeGeometry()));
-  // ########################################################    
+  resize(minimumSize());
+  // ############################################################################
 }
 
 StringListSelectSetDialog::~StringListSelectSetDialog()
 {
-  // ########################################################  
-  // ########################################################  
+  // ############################################################################  
+  // ############################################################################  
 }
 
 void StringListSelectSetDialog::initializeGeometry()
 {
-  // ########################################################  
-  const int Grid=5;
-  const int     ButtonHeight=buttonOK->sizeHint().height(),
-    ButtonWidth=QMAX(buttonOK->sizeHint().width(),
-		 buttonCancel->sizeHint().width()),
-    LBWidth=QMAX(lbStrings->sizeHint().width(),
-		 3*ButtonWidth),
-    LBHeight=QMAX(lbStrings->sizeHint().height(),
-		  7*lbStrings->itemHeight()
-		  +2*lbStrings->frameWidth());
-  int cx, cy;
-  // ----- determine preferred height and width:
-  cx=LBWidth+2*Grid+2*frameBase->frameWidth();
-  cy=LBHeight+3*Grid+ButtonHeight+2*frameBase->frameWidth();
-  setFixedSize(cx, cy);
-  // ----- set subwidget geometries:
-  frameBase->setGeometry(0, 0, cx, cy);
-  lbStrings->setGeometry
-    (frameBase->frameWidth()+Grid, 
-     frameBase->frameWidth()+Grid, 
-     cx-2*(Grid+frameBase->frameWidth()),
-     cy-3*Grid-2*frameBase->frameWidth()-ButtonHeight);
-  buttonOK->setGeometry
-    (lbStrings->x(), 
-     cy-Grid-frameBase->frameWidth()-ButtonHeight,
-     ButtonWidth, ButtonHeight);
-  buttonCancel->setGeometry
-    (lbStrings->x()+lbStrings->width()-ButtonWidth, 
-     cy-Grid-frameBase->frameWidth()-ButtonHeight,
-     ButtonWidth, ButtonHeight);
-  // ########################################################    
+  // ############################################################################  
+  QSize size=lbStrings->sizeHint();
+  // -----
+  if(size.height()<=10)
+    { 
+      size.setHeight(5*lbStrings->itemHeight()+2*lbStrings->frameWidth());
+    }
+  if(size.width()<=10) 
+    {
+      size.setWidth(lbStrings->fontMetrics().width("This is a long string."));
+    }
+  lbStrings->setMinimumSize(size);
+  DialogBase::initializeGeometry();
+  // ############################################################################
 }
 
-bool StringListSelectSetDialog::setValues
-(const list<string>& values)
+bool StringListSelectSetDialog::setValues(const list<string>& values)
 {
-  // ########################################################    
+  // ############################################################################
   list<string>::const_iterator pos;
   // -----
   lbStrings->clear();
@@ -83,23 +60,22 @@ bool StringListSelectSetDialog::setValues
     }
   assert(lbStrings->count()==values.size());
   return true;
-  // ########################################################    
+  // ############################################################################
 }
 
-bool StringListSelectSetDialog::setValues
-(const QStrList& values)
+bool StringListSelectSetDialog::setValues(const QStrList& values)
 {
-  // ########################################################    
+  // ############################################################################
   lbStrings->clear();
   lbStrings->insertStrList(&values);
   assert(lbStrings->count()==values.count());
   return true;
-  // ########################################################    
+  // ############################################################################
 }
 
 bool StringListSelectSetDialog::getSelection(list<int>& s)
 {
-  // ########################################################    
+  // ############################################################################
   unsigned int index;
   // -----
   for(index=0; index<lbStrings->count(); index++)
@@ -115,12 +91,12 @@ bool StringListSelectSetDialog::getSelection(list<int>& s)
     } else {
       return true;
     }
-  // ########################################################    
+  // ############################################################################
 }
 
 bool StringListSelectSetDialog::getSelection(QList<int>& s)
 {
-  // ########################################################    
+  // ############################################################################
   int index;
   // -----
   for(index=0; (unsigned)index<lbStrings->count(); index++)
@@ -136,12 +112,12 @@ bool StringListSelectSetDialog::getSelection(QList<int>& s)
     } else { //       nothing selected
       return false;
     }      
-  // ########################################################    
+  // ############################################################################
 }
 
 bool StringListSelectSetDialog::getSelection(list<string>& s)
 {
-  // ########################################################    
+  // ############################################################################
   unsigned int index;
   // -----
   for(index=0; index<lbStrings->count(); index++)
@@ -157,12 +133,12 @@ bool StringListSelectSetDialog::getSelection(list<string>& s)
     } else {
       return true;
     }  
-  // ########################################################    
+  // ############################################################################
 }
 
 bool StringListSelectSetDialog::getSelection(QStrList& s)
 {
-  // ########################################################    
+  // ############################################################################
   unsigned int index;
   // -----
   for(index=0; index<lbStrings->count(); index++)
@@ -178,8 +154,12 @@ bool StringListSelectSetDialog::getSelection(QStrList& s)
     } else { //       nothing selected
       return false;
     }      
-  // ########################################################    
+  // ############################################################################
 }
 
+// #############################################################################
+// MOC OUTPUT FILES:
 #include "StringListSelectSetDialog.moc"
-#include "StringListSelectSetDialogData.moc"
+// #############################################################################
+
+

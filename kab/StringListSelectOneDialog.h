@@ -20,15 +20,22 @@
 #ifndef StringListSelectOneDialog_included
 #define StringListSelectOneDialog_included
 
-#include "StringListSelectOneDialogData.h"
+#include "DialogBase.h"
 #include "stl_headers.h"
 #include <qstring.h>
 #include <qstrlist.h> 
+#include <qsize.h>
 
+class QVBoxLayout;
+class QComboBox;
+class QLabel;
+class QWidget;
 
-class StringListSelectOneDialog : public StringListSelectOneDialogData
+class StringListSelectOneDialog : public DialogBase
 {
+  // ############################################################################
   Q_OBJECT
+  // ----------------------------------------------------------------------------
 public:
   StringListSelectOneDialog(QWidget* parent=0, const char* name=0);
   virtual ~StringListSelectOneDialog();
@@ -56,15 +63,24 @@ public:
   void fixSize(bool state); 
   // ----- method for querying "fixed size" state of the dialog:
   bool isSizeFixed();
+  // ----- the size hint ( a recommended MINIMUM size):
+  QSize sizeHint() const;
+  // ----------------------------------------------------------------------------
 protected slots:
   void initializeGeometry();
+  // ----------------------------------------------------------------------------
 signals:
   void stringAdded(string); // not implemented!
   // void stringAdded(int); // not implemented!
+  // ----------------------------------------------------------------------------
 protected:
   bool sizeIsFixed;
-  // ----- events:
-  void resizeEvent(QResizeEvent*);
+  QComboBox *comboStrings; // contains the strings 
+  QLabel *labelHeadline; // the headline above the combobox
+  QVBoxLayout *layout; // box layout for the main widget
+  QWidget *widget; // the main widget, containing the layout
+  // ############################################################################
 };
 
 #endif // StringListSelectOneDialog_included
+

@@ -32,9 +32,17 @@
 */
 #define KAB_FILE_FORMAT 2
 // -----------------------------
+// this float value will contain the program version used
+// for different purposes:
+#ifdef KAB_VERSION
+#undef KAB_VERSION
+#endif
+#define KAB_VERSION 0.9
+// -----------------------------
 
 class AddressBook : public ConfigDB
 {
+  // ############################################################################
 public:
   /** An object of the class {\em Entry} represents one entry.
     * More fields can easily be added: add a new string, find a
@@ -98,6 +106,7 @@ public:
   /** The number of elements in Fields.
     */
   static const int NoOfFields;
+  // ----------------------------------------------------------------------------
 protected:
   /** This method will be called by all REQUIRE and ENSURE statements. It
     * returns {\tt true} if no inconsistencies regarding the internal 
@@ -152,6 +161,7 @@ protected:
   string nextAvailEntryKey();  
   // creates a new database:
   bool createNew(string filename);
+  // ----------------------------------------------------------------------------
 public:
   /// This methods retrieve the current entry.
   bool currentEntry(Section**);
@@ -250,6 +260,7 @@ public:
   void restoreDefaults();
   void changed(); // virtual from ConfigDB
   virtual void currentChanged(); // for notifications
+  // ############################################################################
 };
 
 #endif // ADDRESSBOOK_H

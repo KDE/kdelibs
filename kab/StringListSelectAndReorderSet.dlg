@@ -6,7 +6,7 @@ Dialog {
 	DataHeader {StringListSelectAndReorderSetData.h}
 	DataSource {StringListSelectAndReorderSetData.cpp}
 	DataName {StringListSelectAndReorderSetData}
-	WindowBaseClass {QFrame}
+	WindowBaseClass {QWidget}
 	WindowFlags {0}
 }
 WidgetLayout {

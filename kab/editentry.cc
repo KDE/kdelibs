@@ -22,33 +22,28 @@
 #include <kapp.h>
 #include "debug.h"
 
-EditEntryDialog::EditEntryDialog(QWidget* parent, 
-				 const char* name)
+EditEntryDialog::EditEntryDialog(QWidget* parent, const char* name)
   : QTabDialog(parent, name, true)
 {
   ID(bool GUARD=false);
-  // ########################################################
-  LG(GUARD, "EditEntryDialog constructor: "
-     "creating dialog.\n");
+  // ############################################################################
+  LG(GUARD, "EditEntryDialog constructor: creating dialog.\n");
   setCancelButton();
   // ------
-  connect(this, SIGNAL(applyButtonPressed()),
-  	  SLOT(okPressed()));
-  connect(this, SIGNAL(cancelButtonPressed()),
-	  SLOT(cancelPressed()));
+  connect(this, SIGNAL(applyButtonPressed()), SLOT(okPressed()));
+  connect(this, SIGNAL(cancelButtonPressed()), SLOT(cancelPressed()));
   // ------
   createTabs();
   setCaption(i18n("Edit the current entry"));
-  // ########################################################
+  // ############################################################################
   LG(GUARD, "EditEntryDialog constructor: done.\n");
 }
 
 void EditEntryDialog::createTabs()
 {
   ID(bool GUARD=true);
-  // ########################################################
-  LG(GUARD, "EditEntryDialog::createTabs: "
-     "creating tabbed dialog.\n");
+  // ############################################################################
+  LG(GUARD, "EditEntryDialog::createTabs: creating tabbed dialog.\n");
   QLabel* label=0;
   QWidget *name, *address, *org, *contact, *others;
   int count, x, y;
@@ -56,10 +51,8 @@ void EditEntryDialog::createTabs()
   int highestTab=0;
   const int Border=5;
   // ------  
-  // a tab for the basics: title, name, firstname, 
-  // additional name, formatted name
-  LG(GUARD, "EditEntryDialog::createTabs:"
-     " creating name tab.\n");
+  // a tab for the basics: title, name, firstname, additional and formatted name
+  LG(GUARD, "EditEntryDialog::createTabs: creating name tab.\n");
   {
     QGridLayout *layout;
     int widestString=0;
@@ -92,22 +85,19 @@ void EditEntryDialog::createTabs()
 	layout->addWidget(*ledits[count], count, 1);
       }  
     addTab(name, i18n("&Name"));
-    y=(Size+1)*Border
-      +Size*((*ledits[0])->sizeHint().height());
+    y=(Size+1)*Border+Size*((*ledits[0])->sizeHint().height());
     if(y>highestTab) highestTab=y;
     x=3*Border+3*widestString; // see column stretch factors
     if(x>widestTab) widestTab=x;
     layout->activate();
     name->setFixedHeight(y);
-    LG(GUARD, "EditEntryDialog::createTabs: "
-       "finished, %ix%i pixels.\n", x, y);
+    LG(GUARD, "EditEntryDialog::createTabs: finished, %ix%i pixels.\n", x, y);
   }
   // end of first tab "&Name"
   // ------
   // a tab containing the different address fields
   {
-    LG(GUARD, "EditEntryDialog::createTabs:"
-       " creating address tab.\n");
+    LG(GUARD, "EditEntryDialog::createTabs: creating address tab.\n");
     QGridLayout *layout;
     int widestString=0;
     const char* labels[]= { 
@@ -139,21 +129,18 @@ void EditEntryDialog::createTabs()
 	layout->addWidget(*ledits[count], count, 1);
       }      
     addTab(address, i18n("&Address"));
-    y=(Size+1)*Border
-      +Size*((*ledits[0])->sizeHint().height());
+    y=(Size+1)*Border+Size*((*ledits[0])->sizeHint().height());
     if(y>highestTab) highestTab=y;
     x=3*Border+3*widestString; // see column stretch factors
     if(x>widestTab) widestTab=x;
     layout->activate();
     address->setFixedHeight(y);
-    LG(GUARD, "EditEntryDialog::createTabs: "
-       "finished, %ix%i pixels.\n", x, y);
+    LG(GUARD, "EditEntryDialog::createTabs: finished, %ix%i pixels.\n", x, y);
   }
   // end of tab "&Address"
   // ------  
   // a tab for the organizational data
-  LG(GUARD, "EditEntryDialog::createTabs: "
-     "creating org tab.\n");
+  LG(GUARD, "EditEntryDialog::createTabs: creating org tab.\n");
   {
     QGridLayout *layout;
     int widestString=0;
@@ -183,21 +170,18 @@ void EditEntryDialog::createTabs()
 	layout->addWidget(*ledits[count], count, 1);
       }  
     addTab(org, i18n("&Organization"));
-    y=(Size+1)*Border
-      +Size*((*ledits[0])->sizeHint().height());
+    y=(Size+1)*Border+Size*((*ledits[0])->sizeHint().height());
     if(y>highestTab) highestTab=y;
     x=3*Border+3*widestString;
     if(x>widestTab) widestTab=x;
     layout->activate();
     org->setFixedHeight(y);
-    LG(GUARD, "EditEntryDialog::createTabs: "
-       "finished, %ix%i pixels.\n", x, y);
+    LG(GUARD, "EditEntryDialog::createTabs: finished, %ix%i pixels.\n", x, y);
   }
   // end of "org" tab
   // ------
   // a tab for email addresses, telefon numbers and URLs
-  LG(GUARD, "EditEntryDialog::createTabs: "
-     "creating contact tab.\n");
+  LG(GUARD, "EditEntryDialog::createTabs: creating contact tab.\n");
   {
     QGridLayout *layout;
     int widestString=0;
@@ -239,15 +223,13 @@ void EditEntryDialog::createTabs()
       }
     addTab(contact, i18n("&Contact"));
     y=(Size+3)*Border+Size*((*ledits[0])->sizeHint().height())
-      +pbEmails->sizeHint().height()
-      +pbTalk->sizeHint().height();
+      +pbEmails->sizeHint().height()+pbTalk->sizeHint().height();
     if(y>highestTab) highestTab=y;
     x=3*Border+3*widestString;
     if(x>widestTab) widestTab=x;
     layout->activate();
     contact->setFixedHeight(y);
-    LG(GUARD, "EditEntryDialog::createTabs: "
-       "finished, %ix%i pixels.\n", x, y);
+    LG(GUARD, "EditEntryDialog::createTabs: finished, %ix%i pixels.\n", x, y);
   }
   // end of tab "&Contact"
   // ------
@@ -269,7 +251,6 @@ void EditEntryDialog::createTabs()
    y=label->fontMetrics().width(label->text());
    if(y>widestString) widestString=y;
    
-
    label=new QLabel(i18n("Birthday:"), others);
    dlBirthDay=new DateLabel(others, 0, QDate());
    dlBirthDay->enableChangeDialog(true);
@@ -291,19 +272,18 @@ void EditEntryDialog::createTabs()
   }
   // ------
   // set the height and width of the tab dialog
-  //   name->setFixedWidth(widestTab);
-  //   address->setFixedWidth(widestTab);
-  //   org->setFixedWidth(widestTab);  
-  //   contact->setFixedWidth(widestTab);
-  //   others->setFixedWidth(widestTab);
-  // ########################################################
+  // name->setFixedWidth(widestTab);
+  // address->setFixedWidth(widestTab);
+  // org->setFixedWidth(widestTab);  
+  // contact->setFixedWidth(widestTab);
+  // others->setFixedWidth(widestTab);
+  // ############################################################################
 }
 
 void EditEntryDialog::okPressed()
 {
-  // ########################################################
-  // these two arrays contain lineedits and 
-  // corresponding string objects:
+  // ############################################################################
+  // these two arrays contain lineedits and corresponding string objects:
   string* entries[]= {
     &entry.title,
     &entry.firstname,
@@ -319,7 +299,6 @@ void EditEntryDialog::okPressed()
     &entry.orgUnit,
     &entry.orgSubUnit,
     &entry.role,
-    // &entry.email, &entry.email2, &entry.email3,
     &entry.telephone,
     &entry.fax,
     &entry.modem,
@@ -339,13 +318,13 @@ void EditEntryDialog::okPressed()
     leOrgUnit,
     leOrgSubUnit,
     leRole,
-    // leEmail1, leEmail2, leEmail3,
     leTelephone,
     leFax,
     leModem,
     leURL };
   const int Size=sizeof(entries)/sizeof(entries[0]);
   int count;
+  // -----
   CHECK(Size==sizeof(ledits)/sizeof(ledits[0]));
   for(count=0; count<Size; count++)
     {
@@ -354,29 +333,28 @@ void EditEntryDialog::okPressed()
   entry.comment=mleComment->text();
   entry.birthday=dlBirthDay->getDate();
   emit(accept());
-  // ########################################################
+  // ############################################################################
 }
 
 void EditEntryDialog::cancelPressed()
 {
-  // ########################################################
+  // ############################################################################
   emit(reject());
-  // ########################################################
+  // ############################################################################
 }
 
 AddressBook::Entry EditEntryDialog::getEntry()
 {
-  // ########################################################
+  // ############################################################################
   return entry;
-  // ########################################################
+  // ############################################################################
 }
 
 void EditEntryDialog::setEntry(const AddressBook::Entry& data)
 {
-  // ########################################################
+  // ############################################################################
   entry=data;
-   // these two arrays contain lineedits and 
-  // corresponding string objects:
+  // these two arrays contain lineedits and corresponding string objects:
   const string* entries[]= {
     &data.title,
     &data.firstname,
@@ -389,7 +367,6 @@ void EditEntryDialog::setEntry(const AddressBook::Entry& data)
     &data.orgUnit,
     &data.orgSubUnit,
     &data.role,
-    // &data.email, &data.email2, &data.email3,
     &data.telephone,
     &data.fax,
     &data.modem,
@@ -409,7 +386,6 @@ void EditEntryDialog::setEntry(const AddressBook::Entry& data)
     leOrgUnit,
     leOrgSubUnit,
     leRole,
-    // leEmail1, leEmail2, leEmail3,
     leTelephone,
     leFax,
     leModem,
@@ -419,6 +395,7 @@ void EditEntryDialog::setEntry(const AddressBook::Entry& data)
     leCountry };
   const int Size=sizeof(entries)/sizeof(entries[0]);
   int count;
+  // -----
   CHECK(Size==sizeof(ledits)/sizeof(ledits[0]));
   for(count=0; count<Size; count++)
     {
@@ -426,15 +403,16 @@ void EditEntryDialog::setEntry(const AddressBook::Entry& data)
     } 
   mleComment->setText(data.comment.c_str());
   dlBirthDay->setDate(data.birthday);
-  // ########################################################
+  // ############################################################################
 }
 
 void EditEntryDialog::editTalkAddresses()
 {
   ID(bool GUARD=false);
   LG(GUARD, "EditEntryDialog::editTalkAddresses: called.\n");
-  // ########################################################
+  // ############################################################################
   StringListDialog dialog(this);
+  // -----
   dialog.setCaption(i18n("Edit talk addresses"));
   dialog.set(entry.talk);
   if(dialog.exec())
@@ -443,15 +421,16 @@ void EditEntryDialog::editTalkAddresses()
     } else {
       qApp->beep();
     }
-  // ########################################################
+  // ############################################################################
 }
 
 void EditEntryDialog::editEmailAddresses()
 {
   ID(bool GUARD=false);
   LG(GUARD, "EditEntryDialog::editEmailAddresses: called.\n");
-  // ########################################################
+  // ############################################################################
   StringListDialog dialog(this);
+  // -----
   dialog.setCaption(i18n("Edit email addresses"));
   dialog.set(entry.emails);
   if(dialog.exec())
@@ -460,8 +439,11 @@ void EditEntryDialog::editEmailAddresses()
     } else {
       qApp->beep();
     }
-  // ########################################################
+  // ############################################################################
 }
 
+// #############################################################################
+// MOC OUTPUT FILES:
 #include "editentry.moc"
+// #############################################################################
 

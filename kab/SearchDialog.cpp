@@ -11,12 +11,8 @@
  */
 
 #include "SearchDialog.h"
-#include <kapp.h>
-
+#include "SearchDialogMainWidget.h"
 #include "debug.h"
-
-#undef Inherited
-#define Inherited SearchDialogData
 
 const char* SearchDialog::Keys[]= {
   "title",
@@ -42,20 +38,11 @@ const char* SearchDialog::Keys[]= {
   /* , "deliveryLabel" */ };
   
 
-SearchDialog::SearchDialog
-(
-	QWidget* parent,
-	const char* name
-)
-	:
-	Inherited( parent, name )
+SearchDialog::SearchDialog(QWidget* parent, const char* name)
+  : DialogBase(parent, name),
+    widget(0)
 {
-  // ########################################################
-  setCaption(i18n("Search entries"));
-  buttonSearch->setText(i18n("Search"));
-  buttonCancel->setText(i18n("Cancel"));
-  labelContains->setText(i18n("contains"));
-
+  // ############################################################################
   const char* Descriptions[]= {
     i18n("The title"),
     i18n("The first name"),
@@ -76,101 +63,58 @@ SearchDialog::SearchDialog
     i18n("The fax number"),
     i18n("The modem number"),
     i18n("The homepage URL"),
-    i18n("The comment")
-    /*, i18n("The delivery label") */ };
-  const int Size
-    =sizeof(Descriptions)/sizeof(Descriptions[0]);
+    i18n("The comment") };
+  const int Size=sizeof(Descriptions)/sizeof(Descriptions[0]);
   int count;
-  // ---------
+  // ----- create main widget:
+  widget=new SearchDialogMainWidget(this);
+  CHECK(widget!=0);
+  setMainWidget(widget);
+  // ----- configure dialog:
+  setCaption(i18n("kab: Search entries"));
+  enableButtonApply(false);
+  // showMainFrameTile(false);
+  // -----
   for(count=0; count<Size; count++)
     {
-      comboSelector->insertItem(Descriptions[count]);
+      widget->comboSelector->insertItem(Descriptions[count]);
     }
-  connect(comboSelector, SIGNAL(activated(int)),
-	  SLOT(keySelected(int)));
-  connect(leWhat, SIGNAL(textChanged(const char*)),
+  connect(widget->comboSelector, SIGNAL(activated(int)), SLOT(keySelected(int)));
+  connect(widget->lePattern, SIGNAL(textChanged(const char*)), 
 	  SLOT(valueChanged(const char*)));
+  connect(widget, SIGNAL(sizeChanged()), SLOT(initializeGeometry()));
   keySelected(0);
-  // ----------
-  initializeGeometry();
-  // ########################################################
+  resize(minimumSize());
+  widget->lePattern->setFocus();
+  // ############################################################################
 }
 
 
 SearchDialog::~SearchDialog()
 {
+  // ############################################################################
+  // ############################################################################
 }
 
 void SearchDialog::keySelected(int index)
 {
-  REQUIRE(index>=0 
-	  && (unsigned)index<(sizeof(Keys)
-			      /sizeof(Keys[0])));
-  // ########################################################
-  L("SearchDialog::keySelected: key %s selected.\n",
-    Keys[index]);
+  REQUIRE(index>=0 && (unsigned)index<(sizeof(Keys)/sizeof(Keys[0])));
+  // ############################################################################
+  L("SearchDialog::keySelected: key %s selected.\n", Keys[index]);
   key=Keys[index];
-  // ########################################################
+  // ############################################################################
 }
 
 void SearchDialog::valueChanged(const char* value)
 {
-  // ########################################################
-  L("SearchDialog::valueChanged: new value %s.\n",
-    value);
+  // ############################################################################
+  L("SearchDialog::valueChanged: new value %s.\n", value);
   data=value;
-  // ########################################################
+  // ############################################################################
 }
 
-void SearchDialog::initializeGeometry()
-{
-  ID(bool GUARD=true);
-  LG(GUARD, "SearchDialog::initializeGeometry: called.\n");
-  CHECK(comboSelector->count()>0);
-  // ########################################################
-  // ----- we assume the entries in comboSelector are 
-  //       already inserted and the text for labelContains 
-  //       to be set
-  const int Grid=5;
-  const int LeWidth=
-    leWhat->fontMetrics().width("This is a long string.");
-  const int ComboWidth=comboSelector->sizeHint().width();
-  const int ComboHeight=comboSelector->sizeHint().height();
-  const int LabelWidth=labelContains->sizeHint().width()
-    // workaround: width of non-standard characters is 
-    // measured wrong, adding width of an "a" (in German, the
-    // test contains an "ae" (same width)
-    // this will disappear after this problems are fixed
-    // WORK_TO_DO
-    +labelContains->fontMetrics().width("a");
-  int cx, cy=Grid, x, y;
-  // ----- find width:
-  cx=4*Grid+ComboWidth+LabelWidth+LeWidth;
-  // ----- now set geometries:
-  x=Grid; 
-  comboSelector->setGeometry(x, cy, ComboWidth, ComboHeight);
-  x+=ComboWidth+Grid;
-  labelContains->setGeometry(x, cy, LabelWidth, ComboHeight);
-  x+=LabelWidth+Grid;
-  leWhat->setGeometry(x, cy, LeWidth, ComboHeight);
-  cy+=comboSelector->sizeHint().height()+Grid;
-  // ----- the horizontal line
-  frameHorLine->setGeometry(Grid, cy, cx-2*Grid, 2*Grid);
-  cy+=2*Grid;
-  // ----- the buttons
-  buttonSearch->sizeHint().width()
-    >buttonCancel->sizeHint().width()
-    ? x=buttonSearch->sizeHint().width()
-    : x=buttonCancel->sizeHint().width();
-  y=buttonSearch->sizeHint().height();
-  buttonSearch->setGeometry(Grid, cy, x, y);
-  buttonCancel->setGeometry(cx-Grid-x, cy, x, y);
-  cy+=y+Grid;
-  // ------
-  setFixedSize(cx, cy);
-  LG(GUARD, "SearchDialog::initializeGeometry: done.\n");
-  // ########################################################
-}
-
+// ##############################################################################
+// MOC OUTPUT FILES:
 #include "SearchDialog.moc"
-#include "SearchDialogData.moc"
+// ##############################################################################
+

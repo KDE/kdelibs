@@ -1,19 +1,23 @@
-// #############################################################################
-// INCLUDE FILES:
+/*-*- C++ -*-
+ * A dialog to configure printing.
+ * Deklaration
+ *
+ * the KDE addressbook
+ * copyright:  (C) Mirko Sucker, 1998
+ * license:    GNU Public License, Version 2
+ * mail to:    Mirko Sucker <mirko.sucker@unibw-hamburg.de>
+ * requires:   C++-compiler, STL, string class, Qt > 1.40
+ *             NANA (for debugging)
+ * $Revision$
+ */
+
 #include "PrintDialog.h"
 #include "debug.h"
-// #############################################################################
-// DEFINES:
-#define Inherited PrintDialogData
-// #############################################################################
 
-PrintDialog::PrintDialog
-(
-	QWidget* parent,
-	const char* name
-)
-	:
-	Inherited( parent, name )
+#define Inherited PrintDialogData
+
+PrintDialog::PrintDialog(QWidget* parent, const char* name)
+  : Inherited( parent, name )
 {
   // ###########################################################################
   buttonOK->setDefault(true);
@@ -82,3 +86,25 @@ void PrintDialog::initializeGeometry()
 #include "PrintDialog.moc"
 #include "PrintDialogData.moc"
 // #############################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -30,43 +30,36 @@ BusinessCard::BusinessCard(QWidget* parent, const char* name)
     background(0)
 {
   ID(bool GUARD=false);
-  // ########################################################
+  // ############################################################################
   LG(GUARD, "BusinessCard constructor: creating object.\n");
-  // background=new QPixmap(310, 160); // width x height
-  // background->fill(); // white
   resize(310, 160);
-  // ########################################################
+  // ############################################################################
 }
 
 BusinessCard::~BusinessCard()
 {
   ID(bool GUARD=false);
-  // ########################################################
+  // ############################################################################
   if(background!=0) delete background;
   LG(GUARD, "BusinessCard destructor: object removed.\n");
-  // ########################################################
+  // ############################################################################
 }
   
 void BusinessCard::paintEvent(QPaintEvent*)
 {
   ID(bool GUARD=false);
-  // ########################################################
   LG(GUARD, "BusinessCard::paintEvent: repainting.\n");
-  QFont original;
-  QFont font;
+  // ############################################################################
+  QFont original, font;
   QRect rect;
-  bool drawSeparator=false;
-  int posSeparator=0;
-  string temp;
-  int cy, addressHeight, contactHeight;
   QPixmap pm(width(), height());
   QPainter p;     
-  bool useTile;
+  bool drawSeparator=false, useTile;
+  int posSeparator=0, cy, addressHeight, contactHeight;
+  string temp;
   // ----- initialize painter and draw background:
   p.begin(&pm);
-  useTile=(background==0 
-	   ? false 
-	   : (!background->isNull() && tile));
+  useTile=(background==0 ? false : (!background->isNull() && tile));
   if(useTile)
     {
       CHECK(background!=0 && !background->isNull());
@@ -85,13 +78,10 @@ void BusinessCard::paintEvent(QPaintEvent*)
   // ----- print the birthday in the upper right corner 
   //       if it has been entered:
   if(current.birthday.isValid())
-    { //       by now I do not take care if there is enough 
-      //       space left
+    { //       by now I do not take care if there is enough space left
       p.drawText
-	(width()-Grid-
-	 p.fontMetrics().width(current.birthday.toString()),
-	 Grid+p.fontMetrics().ascent(),
-	 current.birthday.toString());
+	(width()-Grid-p.fontMetrics().width(current.birthday.toString()),
+	 Grid+p.fontMetrics().ascent(), current.birthday.toString());
     }
   // ----- now draw the contact data:
   cy=height()-Grid;
@@ -141,8 +131,7 @@ void BusinessCard::paintEvent(QPaintEvent*)
   CHECK(contactHeight>0);
   if(drawSeparator)
     {
-      p.drawLine(Grid, posSeparator, 
-		 width()-Grid, posSeparator);
+      p.drawLine(Grid, posSeparator, width()-Grid, posSeparator);
     }
   // ----- draw the address
   cy=Grid; // begin at top
@@ -183,8 +172,7 @@ void BusinessCard::paintEvent(QPaintEvent*)
       font.setItalic(true);
       p.setFont(font);
       p.setPen(blue);
-      p.drawText(2*Grid, cy+p.fontMetrics().height(), 
-		 temp.c_str());
+      p.drawText(2*Grid, cy+p.fontMetrics().height(), temp.c_str());
       font.setItalic(false);
       p.setFont(font);
       p.setPen(black);
@@ -192,14 +180,12 @@ void BusinessCard::paintEvent(QPaintEvent*)
     }
   if(!current.role.empty())
     {
-      p.drawText(2*Grid, cy+p.fontMetrics().height(), 
-		 current.role.c_str());
+      p.drawText(2*Grid, cy+p.fontMetrics().height(), current.role.c_str());
       cy+=p.fontMetrics().height();
     }        
   if(!current.address.empty())
     {
-      p.drawText(2*Grid, cy+p.fontMetrics().height(),
-		 current.address.c_str());
+      p.drawText(2*Grid, cy+p.fontMetrics().height(), current.address.c_str());
       cy+=p.fontMetrics().height();
     }        
   temp=current.zip;
@@ -210,106 +196,91 @@ void BusinessCard::paintEvent(QPaintEvent*)
 	  temp+=" ";
 	}
       temp+=current.town;
-      p.drawText(2*Grid, cy+p.fontMetrics().height(), 
-		 temp.c_str());
+      p.drawText(2*Grid, cy+p.fontMetrics().height(), temp.c_str());
       cy+=p.fontMetrics().height();
     } 
   if(!current.state.empty())
     {
-      p.drawText(2*Grid, cy+p.fontMetrics().height(),
-		 current.state.c_str());
+      p.drawText(2*Grid, cy+p.fontMetrics().height(), current.state.c_str());
       cy+=p.fontMetrics().height();
     }        
   if(!current.country.empty())
     {
-      p.drawText(2*Grid, cy+p.fontMetrics().height(),
-		 current.country.c_str());
+      p.drawText(2*Grid, cy+p.fontMetrics().height(), current.country.c_str());
       cy+=p.fontMetrics().height();
     }        
   addressHeight=cy+Grid;
   // ----- now draw the comment:
   if(!current.comment.empty())
     {
-      if(height()-addressHeight-contactHeight
-	 >p.fontMetrics().height())
+      if(height()-addressHeight-contactHeight > p.fontMetrics().height())
 	{
 	  cy=height()-addressHeight-contactHeight;
 	  addressHeight+=cy%p.fontMetrics().height();
 	  cy-=cy%p.fontMetrics().height();
-	  p.drawText(Grid, addressHeight, 
-		     width()-2*Grid, cy,
+	  p.drawText(Grid, addressHeight, width()-2*Grid, cy,
 		     AlignHCenter | AlignBottom | WordBreak,
 		     current.comment.c_str(), -1, &rect);
-// 	  if(rect.height()<2*p.fontMetrics().height())
-// 	    { // only one line needed for comment
-// 	      LG(GUARD, "BusinessCard::paintEvent: "
-// 		 "comment fits in 1 line only.\n");
-// 	      cy-=p.fontMetrics().height()+Grid;
-// 	    } else {
-// 	      LG(GUARD, "BusinessCard::paintEvent: "
-// 		 "comment needs more than 1 line.\n");	  
-// 	      cy-=2*p.fontMetrics().height()+Grid;
-// 	    }
 	}
     }
   // ----- finish painting:
   p.end();
   bitBlt(this, 0, 0, &pm);
-  // ########################################################
+  // ############################################################################
 }
 
 void BusinessCard::currentChanged(AddressBook::Entry entry)
 {
   ID(bool GUARD=false);
-  // ########################################################
-  LG(GUARD, "BusinessCard::currentChanged: "
-     "updating and repainting.\n");
+  // ############################################################################
+  LG(GUARD, "BusinessCard::currentChanged: updating and repainting.\n");
   current=entry;
   repaint(false);
-  // ########################################################
+  // ############################################################################
 }
 
 void BusinessCard::setBackground(QPixmap* pixmap)
 {
   ID(bool GUARD=false);
-  // ########################################################
-  LG(GUARD, "BusinessCard::setBackground: "
-     "background pixmap changed.\n");
+  // ############################################################################
+  LG(GUARD, "BusinessCard::setBackground: background pixmap changed.\n");
   if(background==0)
     {
       background=new QPixmap;
     }
   CHECK(background!=0);
   *background=*pixmap;
-  // ########################################################
+  // ############################################################################
 }
 
 void BusinessCard::setBackground(const string& path)
 {
   ID(bool GUARD=false);
-  // ########################################################
+  // ############################################################################
   QPixmap pixmap;
   if(!pixmap.load(path.c_str()))
     {
       QMessageBox::information
-	(this, "Image load failure",
-	 "Could not load background image!");
+	(this, "Image load failure", "Could not load background image!");
       return;
     }
-  LG(GUARD, "BusinessCard::setBackground: loaded image from "
-     "file \"%s\".\n", path.c_str());
+  LG(GUARD, "BusinessCard::setBackground: loaded image from file \"%s\".\n", 
+     path.c_str());
   filename=path;
   tile=true; // WORK_TO_DO: respect settings!
   setBackground(&pixmap);
-  // ########################################################
+  // ############################################################################
 }
 
 void BusinessCard::useTile(bool what)
 {
-  // ########################################################
+  // ############################################################################
   tile=what;
   repaint(false);
-  // ########################################################
+  // ############################################################################
 }
 
+// #############################################################################
+// MOC OUTPUT FILES:
 #include "businesscard.moc"
+// #############################################################################

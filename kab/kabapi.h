@@ -66,7 +66,9 @@ class QFrame;
 
 class KabAPI : public QDialog
 {
+  // ############################################################################
   Q_OBJECT
+  // ----------------------------------------------------------------------------
 public:
   /** ErrorCode is used in all methods that may return more status 
     * codes than true or false.<br>
@@ -115,19 +117,19 @@ public:
     * @param key Reference to a string where the key of the entry is stored.
     */
   ErrorCode getEntry(AddressBook::Entry& entry, string& key);
-  /** Using the method getEntries, the caller will get a copy of all entries in the 
-    *  database. This might seem unneeded, but the address database can be 
-    *  used by multiple instances of the kab API at the same time, so that, 
-    *  if the programmer wants, for example, print a letter header for all 
-    *  persons, the database might change during the operation. That is why 
-    *  she can retrieve the whole database in one operation. 
-    *  It is required that the referenced list is empty.
-    *  Note that the function returns NoEntry if the database is empty.
-    * @see #ErrorCode
-    * @short Retrieves all entries out of the database.
-    * @param entries Reference to a list of entries.
-    * @return NoError or a valid error code. 
-    */
+  /** Using the method getEntries, the caller will get a copy of all entries 
+   *  in the database. This might seem unneeded, but the address database can be 
+   *  used by multiple instances of the kab API at the same time, so that, 
+   *  if the programmer wants, for example, print a letter header for all 
+   *  persons, the database might change during the operation. That is why 
+   *  she can retrieve the whole database in one operation. 
+   *  It is required that the referenced list is empty.
+   *  Note that the function returns NoEntry if the database is empty.
+   * @see #ErrorCode
+   * @short Retrieves all entries out of the database.
+   * @param entries Reference to a list of entries.
+   * @return NoError or a valid error code. 
+   */
   ErrorCode getEntries(list<AddressBook::Entry>& entries);
   /** The method requires that the database is not opened readonly.
     * A dialog will show up that allows the users to edit the entry
@@ -147,7 +149,7 @@ public:
     * method even if your database object is read only. 
     * @short Opens the kab edit dialog to edit the entry.
     * @param entry The entry to be edited.
-    * @return NoError if the user accepted the dialog or Rejected if she rejeccted it.
+    * @return NoError if the user accepted the dialog or Rejected if she rejected it.
     */
   ErrorCode edit(AddressBook::Entry& entry);
   /** In difference to the other edit method, this one will edit an entry 
@@ -193,13 +195,21 @@ public:
   ErrorCode getEntryByName(const AddressBook::Entry& pattern,
 			   list<AddressBook::Entry>& entries,
 			   const int max=5);
+  /** This method uses kab's configuration to call the (KDE ?) mailer or
+   *  whatever is configured to send an email in kab.
+   */
+  ErrorCode sendEmail(const string& address, const string& subject="");
+  // ----------------------------------------------------------------------------
 protected:
   AddressWidget* widget;
   QPushButton* buttonOK;
   QPushButton* buttonCancel;
   QFrame* frameLine;
+  // ----------------------------------------------------------------------------
 public slots:
   void initializeGeometry();
+  // ############################################################################
 };
 
 #endif // KABAPI_H
+

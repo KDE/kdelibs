@@ -1,4 +1,5 @@
-/* A dialog to handle assertions raised in the code.
+/* -*- C++ -*-
+ * A dialog to handle assertions raised in the code.
  *
  * the KDE addressbook
  * copyright:  (C) Mirko Sucker, 1998
@@ -12,16 +13,22 @@
 #ifndef AssertDialog_included
 #define AssertDialog_included
 
-#include <qradiobutton.h>
+class QRadioButton;
+
 #include "stl_headers.h"
 #include "AssertDialogData.h"
 
 class AssertDialog : public AssertDialogData
 {
+  // ############################################################################
   Q_OBJECT
+  // ----------------------------------------------------------------------------
 public:
   AssertDialog(QWidget* parent=0, const char* name=0);
   virtual ~AssertDialog();
+  void setMailAddress(const char*);
+  const string& getMailAddress();
+  // ----------------------------------------------------------------------------
 public slots:
   void initializeGeometry();
   void setFile(string);
@@ -30,12 +37,21 @@ public slots:
   // actions may be Ignore (0), Kill (1), Mail (2)
   void setAction(int i);
   int getAction();
+  // ----------------------------------------------------------------------------
 protected:
   // the radio button:
   QRadioButton *buttonIgnore, *buttonKill, *buttonMail;
   int action;
-  string file, line, condition;
+  string file, line, condition, email;
   void setErrorText();
+  // ############################################################################
 };
 
 #endif // AssertDialog_included
+
+
+
+
+
+
+

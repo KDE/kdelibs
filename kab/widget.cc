@@ -2,15 +2,16 @@
  * This file implements the "main view" widget for the 
  * addressbook
  * 
- * the KDE addressbook.
+ * the KDE addressbook
  * copyright:  (C) Mirko Sucker, 1998
  * license:    GNU Public License, Version 2
  * mail to:    Mirko Sucker <mirko.sucker@unibw-hamburg.de>
- * requires:   C++-compiler, STL, string class,
- *             Nana for debugging
+ * requires:   C++-compiler, STL, string class, Qt > 1.40
+ *             NANA (for debugging)
  * $Revision$
  */
 
+#include <fnmatch.h>
 #include <qprinter.h>
 #include "stl_headers.h"
 #include <qwidget.h>
@@ -38,7 +39,6 @@
 #include "editentry.h"
 #include "functions.h"
 #include "SearchDialog.h"
-// #include "TalkDialog.h"
 #include "businesscard.h"
 #include "searchresults.h"
 #include "StringListSelectSetDialog.h"
@@ -59,52 +59,41 @@
 const unsigned int AddressWidget::Grid=3;
 const unsigned int AddressWidget::ButtonSize=24;
 
-AddressWidget::AddressWidget
-(QWidget* parent, 
- const char* name,
- bool readonly_)
+AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
   : QWidget(parent, name),
     AddressBook(readonly_),
     showSearchResults(false),
     kfm(0)
 {
   ID(bool GUARD=true);
-  // ########################################################  
+  // ############################################################################
   LG(GUARD, "AddressWidget constructor: creating object.\n");
   string bgFilename="background_1.jpg";
+  string dlgBackground="dialog_background.jpg";
   string path;
   string lastCurrentKey;
   KeyValueMap* keys;
+  QPixmap pixmap;
   // ----- 
   readonlyGUI=readonly_;
   // -----
-  QBitmap first
-    (16, 16, (unsigned char*)previous_xbm_bits, true);
-  QBitmap previous
-    (16, 16, (unsigned char*)arrow_left_bits, true);
-  QBitmap next
-    (16, 16, (unsigned char*)arrow_right_bits, true);
-  QBitmap last
-    (16, 16, (unsigned char*)next_xbm_bits, true);
-  QBitmap search
-    (16, 16, (unsigned char*)binoculars_bits, true);
-  QBitmap erase
-    (16, 16, (unsigned char*)trashcan_bits, true);
-  QBitmap create_new
-    (16, 16, (unsigned char*)textrect0_bits, true);
-  QBitmap change_entry
-    (16, 16, (unsigned char*)select_bits, true);
-  // ------
+  QBitmap first(16, 16, (unsigned char*)previous_xbm_bits, true);
+  QBitmap previous(16, 16, (unsigned char*)arrow_left_bits, true);
+  QBitmap next(16, 16, (unsigned char*)arrow_right_bits, true);
+  QBitmap last(16, 16, (unsigned char*)next_xbm_bits, true);
+  QBitmap search(16, 16, (unsigned char*)binoculars_bits, true);
+  QBitmap erase(16, 16, (unsigned char*)trashcan_bits, true);
+  QBitmap create_new(16, 16, (unsigned char*)textrect0_bits, true);
+  QBitmap change_entry(16, 16, (unsigned char*)select_bits, true);
+  // -----
   comboSelector=new QComboBox(FALSE, this); 
   CHECK(comboSelector!=0);
   frameSeparator1=new QFrame(this); 
   CHECK(frameSeparator1!=0);
-  frameSeparator1->setFrameStyle(QFrame::HLine 
-				 | QFrame::Raised);
+  frameSeparator1->setFrameStyle(QFrame::HLine | QFrame::Raised);
   frameSeparator2=new QFrame(this); 
   CHECK(frameSeparator2!=0);
-  frameSeparator2->setFrameStyle(QFrame::HLine 
-				 | QFrame::Raised);
+  frameSeparator2->setFrameStyle(QFrame::HLine | QFrame::Raised);
   buttonFirst=new KButton(this); 
   CHECK(buttonFirst!=0);
   buttonFirst->setPixmap(first);
@@ -126,22 +115,19 @@ AddressWidget::AddressWidget
   buttonRemove=new KButton(this); 
   CHECK(buttonRemove!=0);
   buttonRemove->setPixmap(erase);
-  // Mirko: added April 27 1998:
   buttonSearch=new KButton(this);
   CHECK(buttonSearch!=0);
   buttonSearch->setPixmap(search);
-  // ------
+  // -----
   card=new BusinessCard(this);
-  // ------
+  // -----
   dropZone=new KDNDDropZone(this, DndText);
-  // ------
+  // -----
   searchResults=new SearchResults(this);
-  connect(searchResults, SIGNAL(closed()),
-	  SLOT(searchResultsClose()));
-  connect(searchResults, 
-	  SIGNAL(entrySelected(const char*)),
+  connect(searchResults, SIGNAL(closed()), SLOT(searchResultsClose()));
+  connect(searchResults, SIGNAL(entrySelected(const char*)),
 	  SLOT(selectEntry(const char*)));
-  // ------
+  // -----
   initializeGeometry(); // sets fixed size
   createConnections(); 
   createTooltips();
@@ -162,8 +148,7 @@ AddressWidget::AddressWidget
   // do sessionmanagement "light":
   if(keys->get("LastCurrentKey", lastCurrentKey))
     {
-      LG(GUARD, "AddressWidget constructor: "
-	 "last current key was %s.\n",
+      LG(GUARD, "AddressWidget constructor: last current key was %s.\n",
 	 lastCurrentKey.c_str());
       if(!setCurrent(lastCurrentKey))
 	{
@@ -178,31 +163,38 @@ AddressWidget::AddressWidget
       LG(GUARD, "AddressWidget constructor: "
 	 "last current key has not been saved.\n");
     }
-  // ------
+  // -----
   keys->get("Background", bgFilename);
   CHECK(keys->get("Background", bgFilename));
   path=KApplication::getKApplication()->kde_datadir();
   path+=(string)"/kab/pics/"+bgFilename;
-  LG(GUARD, "AddressWidget constructor: loading background "
+  LG(GUARD, "AddressWidget constructor: loading widget background "
      "from file \n             \"%s\".\n", path.c_str());
   card->setBackground(path.c_str());
-  // ------
+  // -----
+  path=KApplication::getKApplication()->kde_datadir();
+  path+=(string)"/kab/pics/"+dlgBackground;
+  LG(GUARD, "AddressWidget constructor: loading dialog background "
+     "from file \n             \"%s\".\n", path.c_str());
+  pixmap.load(path.c_str());
+  DialogBase::setBackgroundTile(&pixmap);
+  // -----
   timer=new QTimer(this);
   CHECK(timer!=0);
-  connect(timer, SIGNAL(timeout()),
-	  SLOT(checkFile()));
+  connect(timer, SIGNAL(timeout()), SLOT(checkFile()));
   timer->start(1000);
-  // ------
+  // -----
   comboSelector->setFocus();
-  // ########################################################  
+  // ############################################################################
 }
 
 bool AddressWidget::updateDB()
 {
   ID(bool GUARD=true);
   LG(GUARD, "AddressWidget::updateDB: updating database.\n");
-  // ########################################################  
+  // ############################################################################
   int format=0;
+  double kabVersion=0.0;
   KeyValueMap* keys;
   Section::StringSectionMap::iterator pos;
   Entry entry;
@@ -222,7 +214,22 @@ bool AddressWidget::updateDB()
       LG(GUARD, "AddressWidget::updateDB: "
 	 "no file format information in database.\n");
     }
-  if(format==KAB_FILE_FORMAT)
+  // ----- warn about a known bug for kab until 0.9:
+  keys->get("Version", kabVersion); // possibly undefined key
+  if(kabVersion<0.9)
+    {
+      LG(GUARD, "AddressWidget::updateDB: used old version "
+	 "with update bug before.\n");
+      QMessageBox::information
+	(this, i18n("kab: Removed bug warning"), 
+	 i18n("The version of kab you used before had an\n"
+	      "error regarding the upgrading of the database\n"
+	      "for new versions. This error has been removed\n"
+	      "now and will not affect you anymore.\n"
+	      "All configuration values have been reset to\n"
+	      "its default settings."));
+    }          
+  if((format==KAB_FILE_FORMAT)&&(kabVersion>=0.9))
     {
       LG(GUARD, "AddressWidget::updateDB: same format.\n");
       return true;
@@ -246,7 +253,7 @@ bool AddressWidget::updateDB()
 	 i18n("Kab will move all your email addresses to\n"
 	      "the new style supporting unlimited numbers\n"
 	      "of email addresses per entry."));
-      for(pos=entrySection()->sectionsBegin(); 
+      for(pos=entrySection()->sectionsBegin();
 	  pos!=entrySection()->sectionsEnd(); 
 	  pos++)
 	{
@@ -268,8 +275,7 @@ bool AddressWidget::updateDB()
 	    }
 	  if(!change((*pos).first, entry))
 	    {
-	      LG(GUARD, "AddressWidget::updateDB: "
-		 "failed to change entry %s.\n",
+	      LG(GUARD, "AddressWidget::updateDB: failed to change entry %s.\n",
 		 (*pos).first.c_str());
 	    }
 	}
@@ -315,16 +321,16 @@ bool AddressWidget::updateDB()
   LG(GUARD, "AddressWidget::updateDB: done.\n");
   // ----- reset database configuration to the defaults:
   restoreDefaults();
+  save();
   return true;
-  // ########################################################  
+  // ############################################################################
 }
 
 AddressWidget::~AddressWidget()
 {
   ID(bool GUARD=true);
-  LG(GUARD, "AddressWidget destructor: trying to save "
-     "and clear database.\n");
-  // ########################################################  
+  LG(GUARD, "AddressWidget destructor: trying to save and clear database.\n");
+  // ############################################################################
   // ----- let us try to handle autosaving here:
   Section* section=entrySection();
   KeyValueMap* keys;
@@ -335,11 +341,9 @@ AddressWidget::~AddressWidget()
 	 "been destroyed before.\n");
       return;
     }
-  timer->stop();  
   if(readonlyGUI)
     {
-      LG(GUARD, "AddressWidget destructor: GUI is read-only, "
-	 "not saving.\n");
+      LG(GUARD, "AddressWidget destructor: GUI is read-only, not saving.\n");
     } else {
       LG(GUARD, "AddressWidget destructor: saving database.\n"); 
       CHECK(configSection()!=0);
@@ -347,24 +351,39 @@ AddressWidget::~AddressWidget()
       if(noOfEntries()!=0)
 	{
 	  // save current entry position:
-	  LG(GUARD, "AddressWidget destructor: "
-	     "saving last current key %s.\n", 
+	  LG(GUARD, "AddressWidget destructor: saving last current key %s.\n", 
 	     (*current).second.c_str());
 	  keys->insert("LastCurrentKey", (*current).second, true);
 	} else {
-	  L("AddressWidget destructor: "
-	    "cannot save current entry: no entries.\n");
+	  L("AddressWidget destructor: cannot save current entry, "
+	    "no entries.\n");
 	}
       keys->get("SaveOnExit", setting);
       if(setting)
-	{
-	  // save();
-	  if(!AddressBook::save())
-	    {
-	      cerr << "AddressWidget destructor: Cannot "
-		   << "save database, all changes are lost." 
+	{ // Saving using the GUI save method does not work since
+	  // it is unsure wether we still may use the GUI or not.
+	  // That is why only text output is generated.
+	  // set r/w mode:
+	  if(setFileName(fileName(), true, false))
+	    { // save the database:
+	      CHECK(!isRO());
+	      if(!ConfigDB::save())
+		{
+		  cerr << "AddressWidget destructor: " << endl
+		       << "  Cannot save database, all changes are lost." 
+		       << endl;
+		}
+	      if(!setFileName(fileName(), true, true))
+		{
+		  cerr << "AddressWidget destructor: " << endl 
+		       << "  Error resetting read only mode. "
+		       << "You may ignore this problem." << endl;
+		}
+	    } else {
+	      cerr << "AddressWidget destructor: " << endl 
+		   << "  Error setting r/w mode. Cannot save database."
 		   << endl;
-	    }
+	    } 
 	}
     }
   LG(GUARD, "AddressWidget destructor: clearing database.\n");
@@ -383,15 +402,14 @@ AddressWidget::~AddressWidget()
       dropZone=0;
     }
   LG(GUARD, "AddressWidget destructor: done.\n");
-  // ########################################################  
+  // ############################################################################
 }      
 
 void AddressWidget::initializeGeometry()
 {
   ID(bool GUARD=false);
-  // ########################################################  
-  LG(GUARD, "AddressWidget::initializeGeometry: "
-     "setting widget geometry.\n");
+  // ############################################################################
+  LG(GUARD, "AddressWidget::initializeGeometry: setting widget geometry.\n");
   QButton* buttons[]= { buttonFirst, buttonPrevious, 0, 
 			buttonNext, buttonLast, 0,
 			buttonSearch, 0, 
@@ -414,14 +432,11 @@ void AddressWidget::initializeGeometry()
   cy+=2*Grid; 
   // now place and resize the buttons
   i=Grid;
-  for(count=0; 
-      count<(sizeof(buttons)/sizeof(buttons[0])); 
-      count++)
+  for(count=0; count<(sizeof(buttons)/sizeof(buttons[0])); count++)
     {
       if(buttons[count]!=0)
 	{
-	  buttons[count]
-	    ->setGeometry(i, cy, ButtonSize, ButtonSize);
+	  buttons[count]->setGeometry(i, cy, ButtonSize, ButtonSize);
 	  i+=ButtonSize+Grid;
    	} else {  // this inserts a space only
    	  i+=10;
@@ -430,8 +445,7 @@ void AddressWidget::initializeGeometry()
   cy+=ButtonSize+Grid;
   // now resize all widgets that depend 
   // on the space needed for the others
-  comboSelector->resize(cx-2*Grid, 
-			comboSelector->sizeHint().height());
+  comboSelector->resize(cx-2*Grid, comboSelector->sizeHint().height());
   frameSeparator1->resize(cx-2*Grid, Grid);
   frameSeparator2->resize(cx-2*Grid, Grid);
   // place the search results window below if it is set
@@ -439,9 +453,8 @@ void AddressWidget::initializeGeometry()
     {
       LG(GUARD, "AddressWidget::initializeGeometry: "
 	 "search results window exists, displaying.\n");
-      searchResults->setGeometry
-	(Grid, cy, cx-2*Grid, 
-	 searchResults->sizeHint().height());
+      searchResults->setGeometry(Grid, cy, cx-2*Grid, 
+				 searchResults->sizeHint().height());
       searchResults->show();
       cy+=Grid+searchResults->sizeHint().height();
     } else {
@@ -450,12 +463,12 @@ void AddressWidget::initializeGeometry()
   // fix widget size
   setFixedSize(cx, cy);
   emit(sizeChanged());
-  // ########################################################  
+  // ############################################################################
 }
 
 void AddressWidget::createTooltips()
 {
-  // ########################################################  
+  // ############################################################################
   QButton* buttons[]= { buttonFirst, buttonPrevious,
 			buttonNext, buttonLast,
 			buttonSearch, 
@@ -469,94 +482,90 @@ void AddressWidget::createTooltips()
 			i18n("add a new entry"), 
 			i18n("change this entry"), 
 			i18n("remove this entry") };
-  const unsigned int Size=
-    sizeof(buttons)/sizeof(buttons[0]);
+  const unsigned int Size=sizeof(buttons)/sizeof(buttons[0]);
   unsigned int i;
+  // -----
   for(i=0; i<Size; i++)
     {
       QToolTip::add(buttons[i], tips[i]);
     }
-  // ########################################################  
+  // ############################################################################
 }
 
 void AddressWidget::createConnections()
 {
-  // ########################################################  
+  // ############################################################################
   connect(buttonFirst, SIGNAL(clicked()), SLOT(first()));
-  connect(buttonPrevious, SIGNAL(clicked()), 
-	  SLOT(previous()));
+  connect(buttonPrevious, SIGNAL(clicked()), SLOT(previous()));
   connect(buttonNext, SIGNAL(clicked()), SLOT(next()));
   connect(buttonLast, SIGNAL(clicked()), SLOT(last()));
   connect(buttonAdd, SIGNAL(clicked()), SLOT(add()));
   connect(buttonChange, SIGNAL(clicked()), SLOT(edit()));
   connect(buttonRemove, SIGNAL(clicked()), SLOT(remove()));
   connect(buttonSearch, SIGNAL(clicked()), SLOT(search()));
-  connect(comboSelector, SIGNAL(activated(int)),
-	  SLOT(select(int)));
+  connect(comboSelector, SIGNAL(activated(int)), SLOT(select(int)));
   // to handle appearance change events:
-  connect(KApplication::getKApplication(),
-	  SIGNAL(appearanceChanged()), 
+  connect(KApplication::getKApplication(), SIGNAL(appearanceChanged()), 
 	  SLOT(initializeGeometry()));
   // to receive drop actions:
   connect(dropZone, SIGNAL(dropAction(KDNDDropZone *)), 
 	  this, SLOT( dropAction(KDNDDropZone *)));
-  // ########################################################  
+  // ############################################################################
 }
 
 void AddressWidget::first()
 {
-  // ########################################################  
+  // ############################################################################
   if(!AddressBook::first())
     {
       qApp->beep();
     } else {
       emit(setStatus(i18n("Switched to first entry.")));
     }
-  // ########################################################  
+  // ############################################################################
 }
 
 void AddressWidget::previous()
 {
-  // ########################################################  
+  // ############################################################################
   if(!AddressBook::previous())
     {
       qApp->beep();
     }
-  // ########################################################  
+  // ############################################################################
 }
 
 void AddressWidget::next()
 {
-  // ########################################################  
+  // ############################################################################
   if(!AddressBook::next())
     {
       qApp->beep();
     }
-  // ########################################################  
+  // ############################################################################
 }
 
 void AddressWidget::last()
 {
-  // ########################################################  
+  // ############################################################################
   if(!AddressBook::last())
     {
       qApp->beep();
     } else {
       emit(setStatus(i18n("Switched to last entry.")));
     }
-  // ########################################################  
+  // ############################################################################
 }
 
 void AddressWidget::currentChanged()
 {
   ID(bool GUARD=false);
-  LG(GUARD, "AddressWidget::currentChanged: current entry "
-     "changed.\n");
-  // ########################################################
+  LG(GUARD, "AddressWidget::currentChanged: current entry changed.\n");
+  // ############################################################################
   unsigned int which=0;
-  AddressBook::currentChanged(); // keep the  chain
   Entry entry;
   // -----
+  AddressBook::currentChanged(); // keep the  chain
   currentEntry(entry);
   card->currentChanged(entry);
   enableWidgets();
@@ -573,19 +582,19 @@ void AddressWidget::currentChanged()
       ++which;
     }
   emit(entrySelected(which, noOfEntries()));
-  // ########################################################
+  // ############################################################################
 }  
 
 void AddressWidget::changed()
 {
-  // ########################################################
+  // ############################################################################
   // this is needed for the consistency of the mirror map,
   // the call chain should always be kept
   // (would be easier with signals...)
   AddressBook::changed();
   // update combobox contents:
   updateSelector();
-  // ########################################################
+  // ############################################################################
   ENSURE(noOfEntries()==(unsigned)comboSelector->count());
 }
 
@@ -594,7 +603,7 @@ void AddressWidget::remove()
   ID(bool GUARD=false);
   REQUIRE(isRO());
   LG(GUARD, "AddressWidget::remove: removing entry ...");
-  // ########################################################  
+  // ############################################################################
   if(noOfEntries()>0)
     {
       // ----- until now we only have RO access:
@@ -623,8 +632,7 @@ void AddressWidget::remove()
 	     i18n("Really remove this entry?"), 1, 2)==1)
 	 : 1)
 	{
-	  LG(GUARD, " %i %s ... ", 
-	     noOfEntries(),
+	  LG(GUARD, " %i %s ... ", noOfEntries(),
 	     noOfEntries()==1 ? "entry" : "entries");
 	  bool rc; rc=AddressBook::remove(); 
 	  // WORK_TO_DO: CHECK FOR ERRORS without variable
@@ -641,7 +649,7 @@ void AddressWidget::remove()
     }
   emit(setStatus(i18n("Entry deleted.")));
   ENSURE(isRO());
-  // ########################################################  
+  // ############################################################################
 }
 
 void AddressWidget::add()
@@ -649,7 +657,7 @@ void AddressWidget::add()
   ID(bool GUARD=false);
   REQUIRE(isRO());
   LG(GUARD, "AddressWidget::add: adding an empty entry.\n");
-  // ########################################################  
+  // ############################################################################
   Entry dummy;
   string theNewKey;
   // ----- until now we only have RO access:
@@ -674,8 +682,7 @@ void AddressWidget::add()
       updateSelector();
       setCurrent(theNewKey);
       emit(setStatus(i18n("Added a new entry.")));
-      LG(GUARD, "AddressWidget::add: added key %s.\n",
-	 theNewKey.c_str());
+      LG(GUARD, "AddressWidget::add: added key %s.\n", theNewKey.c_str());
     } else {
       LG(GUARD, "AddressWidget::add: failed.\n");
       qApp->beep();
@@ -683,13 +690,13 @@ void AddressWidget::add()
   // -----
   save();
   setFileName(filename, true, true);
-  // ########################################################  
+  // ############################################################################
 }
 
 void AddressWidget::updateSelector()
 {
   ID(bool GUARD=false);
-  // ########################################################  
+  // ############################################################################
   LG(GUARD, "AddressWidget::updateSelector: doing it.\n");
   StringStringMap::iterator pos;
   string line;
@@ -705,24 +712,23 @@ void AddressWidget::updateSelector()
       CHECK(description((*pos).second, line, true));
       comboSelector->insertItem(line.c_str());
     } 
-  // ########################################################  
+  // ############################################################################
 }
 
 void AddressWidget::select(int index)
 {
   ID(bool GUARD=false);
-  // ########################################################  
-  LG(GUARD, "AddressWidget::select: item %i selected.\n", 
-     index);
+  // ############################################################################
+  LG(GUARD, "AddressWidget::select: item %i selected.\n", index);
   setCurrent(index);
   CHECK(setCurrent(index));
-  // ########################################################  
+  // ############################################################################
 }
 
 void AddressWidget::enableWidgets()
 {
   ID(bool GUARD=false);
-  // ########################################################
+  // ############################################################################
   LG(GUARD, "AddressWidget::enableWidgets: doing it.\n");
   QWidget* widgets[]= {comboSelector, buttonFirst, 
    		       buttonPrevious, buttonNext, 
@@ -730,6 +736,7 @@ void AddressWidget::enableWidgets()
    		       buttonRemove, buttonSearch };  
   int Size=(sizeof(widgets)/sizeof(widgets[0])); 
   int index; 
+  // -----
   if(noOfEntries()==0)
     {
       for(index=0; index<Size; index++)
@@ -774,124 +781,14 @@ void AddressWidget::enableWidgets()
       buttonChange->show();
       buttonRemove->show();
     }
-  // ########################################################
-}
-
-void AddressWidget::mail()
-{
-  ID(bool GUARD=true);
-  LG(GUARD, "AddressWidget::mail: calling mail composer.\n");
-  // ########################################################
-  KProcess proc;
-  list<string>::iterator it;
-  string address;
-  string command; 
-  list<string> params;
-  string::size_type pos;
-  Entry entry;
-  KeyValueMap* keys=configSection()->getKeys();
-  bool found=false;
-  // -----
-  if(!keys->get("MailCommand", command))
-    {
-      QMessageBox::information
-	(this, i18n("Error"), 
-	 i18n("The mail command must be configured before!"));
-    }
-  if(!currentEntry(entry))
-    {
-      emit(setStatus(i18n("No entries.")));
-      qApp->beep();
-      return;
-    }
-  /*
-  if(entry.email.empty())
-    {
-      qApp->beep();
-      LG(GUARD, "AddressWidget::mail: empty email "
-	 "address.\n");
-      emit(setStatus(i18n("Empty email address.")));
-      return;
-    }
-  */
-  if(entry.emails.empty())
-    { //       complain:
-      qApp->beep();
-      LG(GUARD, "AddressWidget::mail: empty email "
-	 "address.\n");
-      emit(setStatus(i18n("Empty email address.")));
-      return;
-    } else { //       select address:
-      if(entry.emails.size()>1)
-	{
-	  // WORK_TO_DO: respect configuration!
-	  if(!emailAddress((*current).second, 
-			   address, true))
-	    {
-	      qApp->beep();
-	      setStatus(i18n("Rejected."));
-	      return;
-	    }
-	} else {
-	  address=entry.emails.front();
-	}
-    }
-  if(!keys->get("MailParameters", params))
-    {
-      QMessageBox::information
-	(this, i18n("Mail configuration"),
-	 i18n("Please configure the parameters for "
-	      "the email command."));
-      return;
-    } 
-  LG(GUARD, "AddressWidget::mail: parsing mail parameters.\n");
-  for(it=params.begin(); it!=params.end(); it++)
-    {
-      LG(GUARD, "                     parsing %s.\n",
-	 (*it).c_str());
-      pos=(*it).find("<person>");
-      if(pos==string::npos)
-	{
-	  continue;
-	} else {
-	  found=true;
-	}
-      // WORK_TO_DO: use "replace" here
-      (*it).ERASE(pos, 8); // 8 letters = <person>
-      (*it).insert(pos, address);
-      LG(GUARD, "                     changed to %s.\n",
-	 (*it).c_str());
-    }
-  if(!found)
-    {
-      QMessageBox::information
-	(this, i18n("Error"),
-	 i18n("The email command parameters are wrong."));
-      return;
-    }
-  proc << command.c_str();
-  for(it=params.begin(); it!=params.end(); it++)
-    {
-      proc << (*it).c_str();
-    }
-  if(proc.start(KProcess::DontCare)!=true)
-    {
-      QMessageBox::information
-	(this, i18n("Error"), 
-	 i18n("Email command failed.\n"
-	      "Make sure you did setup your email command "
-	      "and parameter!"));
-    } else {
-      emit(setStatus(i18n("Mail program started.")));
-    }
-  // ########################################################
+  // ############################################################################
 }
 
 void AddressWidget::browse()
 {
   ID(bool GUARD=false);
   LG(GUARD, "AddressWidget::browse: calling kfm.\n");
-  // ########################################################
+  // ############################################################################
   Entry entry;
   if(kfm==0)
     {
@@ -917,17 +814,17 @@ void AddressWidget::browse()
 	}
     } else {
       QMessageBox::information
-	(this, i18n("Sorry"),
+	(this, i18n("Sorry"), 
 	 i18n("The filemanager is busy, please try again."));
     }
-  // ########################################################
+  // ############################################################################
   ENSURE(kfm==0);
 } 
 
 
 void AddressWidget::save()
 {
-  // ########################################################
+  // ############################################################################
   bool wasLocked=locked;
   // -----
   if(!wasLocked)
@@ -951,34 +848,46 @@ void AddressWidget::save()
 	}
     }
   // ----- the file is opened for reading and writing now:
-  if(!AddressBook::save())
+  for(;;)
     {
+      if(AddressBook::save())
+	{
+	  emit(setStatus(i18n("Database saved successfully.")));
+	  break;
+	}
       qApp->beep();
-      QMessageBox::information
-	(this, i18n("Error"),
-	 i18n("Could not save database."));
-    } else {
-      emit(setStatus(i18n("Database saved successfully.")));
+      switch(QMessageBox::information
+	     (this, i18n("kab: File error"), i18n("Could not save database."),
+	      i18n("&Retry"), i18n("&Ignore"), 0))
+	{
+	case 1: { // cancel saving
+	    emit(setStatus(i18n("Saving cancelled.\n")));
+	    qApp->beep();
+	    break;
+	  }
+	default:
+	  break; // do nothing
+	}
     }
   if(!wasLocked)
     {
       setFileName(filename, true, true);
     }
-  // ########################################################
+  // ############################################################################
 }
 
 void AddressWidget::dropAction(KDNDDropZone*)
 {
   ID(bool GUARD=false);
-  // ########################################################
+  // ############################################################################
   LG(GUARD, "AddressWidget::dropAction: got drop event.\n");
-  // ########################################################
+  // ############################################################################
 }
   
 void AddressWidget::edit()
 {
   ID(bool GUARD=true);
-  // ########################################################
+  // ############################################################################
   LG(GUARD, "AddressWidget::edit: called.\n");
   Entry entry;
   string temp;
@@ -1020,8 +929,7 @@ void AddressWidget::edit()
 	  CHECK(setCurrent(temp));
 	  emit(setStatus(i18n("Entry changed.")));
 	} else {
-	  LG(GUARD, "AddressWidget::edit: "
-	     "changes discarded.\n");
+	  LG(GUARD, "AddressWidget::edit: changes discarded.\n");
 	  qApp->beep();
 	  rejected=true;
 	}
@@ -1036,75 +944,66 @@ void AddressWidget::edit()
     }
   ENSURE(isRO());
   LG(GUARD, "AddressWidget::edit: done.\n");
-  // ########################################################
+  // ############################################################################
 }
 
 bool AddressWidget::edit(Entry& entry)
 {
   ID(bool GUARD=false);
-  // ########################################################
+  // ############################################################################
   LG(GUARD, "AddressWidget::edit: creating edit dialog.\n");
   EditEntryDialog dialog(this);
   dialog.setEntry(entry);
   if(dialog.exec())
     {
-      LG(GUARD, "AddressWidget::edit: "
-	 "dialog finished with accept().\n");
+      LG(GUARD, "AddressWidget::edit: dialog finished with accept().\n");
       entry=dialog.getEntry();
       return true;
     } else {
-      LG(GUARD, "AddressWidget::edit: "
-	 "dialog finished with reject().\n");
+      LG(GUARD, "AddressWidget::edit: dialog finished with reject().\n");
       return false;
     }
-  // ########################################################
+  // ############################################################################
 }
 
 void AddressWidget::search()
 {
   ID(bool GUARD=false);
-  // ########################################################
-  LG(GUARD, "AddressWidget::search: "
-     "creating search dialog.\n");
+  // ############################################################################
+  LG(GUARD, "AddressWidget::search: creating search dialog.\n");
   SearchDialog dialog(this);
   Section* section=entrySection();
-  CHECK(section!=0); // DB needs to be initialized
   Section::StringSectionMap::iterator pos;
   string value;
+  // -----
+  CHECK(section!=0); // DB needs to be initialized
   if(dialog.exec())
     {
       QApplication::setOverrideCursor(waitCursor);
       searchResults->clear();
-      LG(GUARD, "AddressWidget::search: "
-	 "dialog finished with accept(), searching "
-	 "all \"%s\" field for \"%s\".\n",
-	 dialog.getKey().c_str(), 
-	 dialog.getValue().c_str());
-      for(pos=section->sectionsBegin(); 
-	  pos!=section->sectionsEnd();
-	  pos++)
+      LG(GUARD, "AddressWidget::search: dialog finished with accept(), "
+	 "searching all \"%s\" field for \"%s\".\n",
+	 dialog.getKey().c_str(), dialog.getValue().c_str());
+      for(pos=section->sectionsBegin(); pos!=section->sectionsEnd(); pos++)
 	{
 	  value="";
-	  if((*pos).second
-	     ->getKeys()->get(dialog.getKey(), value))
+	  if((*pos).second ->getKeys()->get(dialog.getKey(), value))
 	    { // the entry has the selected key defined
-	      if(value.find(dialog.getValue())!=string::npos)
+	      if(fnmatch(dialog.getValue().c_str(), value.c_str(),
+			 FNM_NOESCAPE | FNM_PERIOD)==0)
+		 /* value.find(dialog.getValue())!=string::npos */
 		{
-		  LG(GUARD, "AddressWidget::search: "
-		     "found match %s.\n", 
+		  LG(GUARD, "AddressWidget::search: found match %s.\n", 
 		     (*pos).first.c_str());
 		  // construct name:
-		  // ----------
 		  searchResults->add((*pos).first.c_str(),
 				     getName((*pos).first));
 		} else {
-		  LG(GUARD, "AddressWidget::search: "
-		     "%s does not match.\n",
+		  LG(GUARD, "AddressWidget::search: %s does not match.\n",
 		     (*pos).first.c_str());
 		}
 	    } else {
-	      LG(GUARD, "AddressWidget::search: "
-		 "key not defined in entry %s.\n",
+	      LG(GUARD, "AddressWidget::search: key not defined in entry %s.\n",
 		 (*pos).first.c_str());
 	    }
 	}
@@ -1118,8 +1017,7 @@ void AddressWidget::search()
 	  searchResults->select(0);
 	} else {
 	  QMessageBox::information
-	    (this, i18n("Results"),
-	     i18n("No entry matches this."));
+	    (this, i18n("Results"), i18n("No entry matches this."));
 	  if(showSearchResults==true)
 	    {
 	      showSearchResults=false;
@@ -1127,21 +1025,19 @@ void AddressWidget::search()
 	    }
 	}
     } else {
-      LG(GUARD, "AddressWidget::search: "
-	 "dialog rejected.\n");
+      LG(GUARD, "AddressWidget::search: dialog rejected.\n");
     }
   LG(GUARD, "AddressWidget::search: done.\n");
-  // ########################################################
+  // ############################################################################
 }
 
 void AddressWidget::searchResultsClose()
 {
   ID(bool GUARD=false);
-  // ########################################################
+  // ############################################################################
   if(showSearchResults==true)
     {
-      LG(GUARD, "AddressWidget::searchResultsClose: "
-	 "hiding search results.\n");
+      LG(GUARD, "AddressWidget::searchResultsClose: hiding search results.\n");
       showSearchResults=false;
       initializeGeometry();
       emit(setStatus(i18n("Search results window closed.")));
@@ -1149,21 +1045,19 @@ void AddressWidget::searchResultsClose()
       L("AddressWidget::searchResultsClose: "
 	"called, but widget is not created.\n");
     }
-  // ########################################################
+  // ############################################################################
 }
 
 void AddressWidget::selectEntry(const char* key)
 {
-  // ########################################################
+  // ############################################################################
   setCurrent(key);
-  // ########################################################
+  // ############################################################################
 }
 
-int AddressWidget::printHeadline(QPainter* p, 
-				 QRect pageSize, 
-				 const string& text)
+int AddressWidget::printHeadline(QPainter* p, QRect pageSize, const string& text)
 {
-  // ########################################################
+  // ############################################################################
   const int Grid=5;
   QRect rect;
   int y;
@@ -1171,29 +1065,22 @@ int AddressWidget::printHeadline(QPainter* p,
     LeftMargin=pageSize.left(),
     PageWidth=pageSize.width(),
     PageHeight=pageSize.height();
-  // draw headline
-  // set large Times font, italic
+  // ----- draw headline
+  //       set large Times font, italic
   p->setFont(QFont("times", 24, QFont::Normal, true));
-  p->drawText(LeftMargin, TopMargin, 
-	      PageWidth, PageHeight,
-	      AlignTop | AlignHCenter,
-	      text.c_str(),
-	      -1, &rect);
+  p->drawText(LeftMargin, TopMargin, PageWidth, PageHeight,
+	      AlignTop | AlignHCenter, text.c_str(), -1, &rect);
   y=TopMargin+rect.height()+Grid;
-  p->drawLine(LeftMargin, y, 
-	      PageWidth+LeftMargin, y);
+  p->drawLine(LeftMargin, y, PageWidth+LeftMargin, y);
   y+=Grid;
   return y;
-  // ########################################################
+  // ############################################################################
 }
 
-int AddressWidget::printFooter(QPainter* p,
-			       QRect pageSize,
-			       int pageNum,
-			       string left,
-			       string right)
+int AddressWidget::printFooter(QPainter* p, QRect pageSize, int pageNum,
+			       string left, string right)
 {
-  // ########################################################
+  // ############################################################################
   QRect rect;
   const int Grid=5;
   const int TopMargin=pageSize.top(),
@@ -1203,7 +1090,7 @@ int AddressWidget::printFooter(QPainter* p,
   char buffer[64]; 
   string::size_type pos;
   int y;
-  // set small Times font, italic
+  // ----- set small Times font, italic
   p->setFont(QFont("times", 12, QFont::Normal, true));
   // check strings for "<p>" that is replaced with pagenumber
   sprintf(buffer, "%i", pageNum);
@@ -1220,29 +1107,23 @@ int AddressWidget::printFooter(QPainter* p,
       right.insert(pos, buffer);
     }
   // -----
-  p->drawText(LeftMargin, TopMargin, 
-	      PageWidth, PageHeight,
-	      AlignLeft | AlignBottom,
-	      left.c_str(),
-	      -1, &rect);
+  p->drawText(LeftMargin, TopMargin, PageWidth, PageHeight, AlignLeft | AlignBottom,
+	      left.c_str(), -1, &rect);
   p->drawText(LeftMargin, TopMargin, PageWidth, PageHeight,
-	      AlignRight | AlignBottom,
-	      right.c_str());
+	      AlignRight | AlignBottom, right.c_str());
   y=rect.height()+Grid;
-  p->drawLine(LeftMargin, 
-	      TopMargin+PageHeight-y,
-	      LeftMargin+PageWidth, 
+  p->drawLine(LeftMargin, TopMargin+PageHeight-y, LeftMargin+PageWidth, 
 	      TopMargin+PageHeight-y);
   y+=Grid;
   return y;
-  // ########################################################
+  // ############################################################################
 }  
 
 void AddressWidget::talk()
 {
   ID(bool GUARD=true);
   LG(GUARD, "AddressWidget::browse: calling talk client.\n");
-  // ########################################################
+  // ############################################################################
   KProcess proc;
   list<string>::iterator it;
   string command; 
@@ -1264,8 +1145,7 @@ void AddressWidget::talk()
     {
       QMessageBox::information
 	(this, i18n("Talk configuration"),
-	 i18n("Please configure the parameters for "
-	      "the talk command."));
+	 i18n("Please configure the parameters for the talk command."));
       return;
     }
   if(!currentEntry(entry))
@@ -1277,8 +1157,7 @@ void AddressWidget::talk()
   // ----- add talk addresses to dialog:
   if(entry.talk.empty())
     { // ----- is possible: valid lists may be empty
-      LG(GUARD, "AddressWidget::talk: no talk "
-	 "address.\n");
+      LG(GUARD, "AddressWidget::talk: no talk address.\n");
       emit(setStatus(i18n("No talk address.")));
       qApp->beep();
       return;
@@ -1286,14 +1165,6 @@ void AddressWidget::talk()
       LG(GUARD, "AddressWidget::talk: %i talk addresses.\n",
 	 entry.talk.size());
     }
-  /*
-  for(it=entry.talk.begin(); 
-      it!=entry.talk.end(); 
-      it++) 
-    {
-      dialog.add(*it);
-    }
-  */
   dialog.setValues(entry.talk);
   dialog.setCaption(i18n("kab: Talk addresses"));
   dialog.setHeadline(i18n("Available talk addresses:"));
@@ -1309,8 +1180,7 @@ void AddressWidget::talk()
   LG(GUARD, "AddressWidget::talk: parsing talk parameters.\n");
   for(it=params.begin(); it!=params.end(); it++)
     {
-      LG(GUARD, "                     parsing %s.\n", 
-	 (*it).c_str());
+      LG(GUARD, "                     parsing %s.\n", (*it).c_str());
       pos=(*it).find("<person>");
       if(pos==string::npos)
 	{
@@ -1321,14 +1191,12 @@ void AddressWidget::talk()
       // WORK_TO_DO: use "replace" here
       (*it).ERASE(pos, 8); // 8 letters = <person>
       (*it).insert(pos, address);
-      LG(GUARD, "                     changed to %s.\n",
-	 (*it).c_str());
+      LG(GUARD, "                     changed to %s.\n", (*it).c_str());
     }
   if(!found)
     {
       QMessageBox::information
-	(this, i18n("Error"),
-	 i18n("The talk command parameters are wrong."));
+	(this, i18n("Error"), i18n("The talk command parameters are wrong."));
       return;
     }
   proc << command.c_str();
@@ -1341,23 +1209,22 @@ void AddressWidget::talk()
       QMessageBox::information
 	(this, i18n("Error"), 
 	 i18n("Talk command failed.\n"
-	      "Make sure you did setup your talk command "
-	      "and parameter!"));
+	      "Make sure you did setup your talk command and parameter!"));
     } else {
       emit(setStatus(i18n("Talk program started.")));
     }  
-  // ########################################################
+  // ############################################################################
 }
 
 void AddressWidget::setReadonlyGUI(bool state)
 {
   ID(bool GUARD=true);
-  LG(GUARD, "AddressWidget::setReadonlyGUI: setting GUI to "
-     "%s.\n", state ? "true" : "false");
-  // ########################################################
+  LG(GUARD, "AddressWidget::setReadonlyGUI: setting GUI to %s.\n", 
+     state ? "true" : "false");
+  // ############################################################################
   readonlyGUI=state;
   enableWidgets();
-  // ########################################################
+  // ############################################################################
 }  
 
 void AddressWidget::checkFile()
@@ -1365,13 +1232,12 @@ void AddressWidget::checkFile()
   ID(bool GUARD=true);
   // this produces too much noise:
   // LG(GUARD, "AddressWidget::checkFile: called.\n");
-  // ########################################################
+  // ############################################################################
   string lastKey=currentEntry();;
   // -----
   if(fileChanged())
     {
-      LG(GUARD, "AddressWidget::checkFile: file has been "
-	 "changed.\n");
+      LG(GUARD, "AddressWidget::checkFile: file has been changed.\n");
       clear();
       if(load())
 	{
@@ -1384,23 +1250,18 @@ void AddressWidget::checkFile()
       // ----- try to be convinient:
       setCurrent(lastKey);
     }
-  // ########################################################
+  // ############################################################################
 }
 
-bool AddressWidget::print
-(QPrinter& printer,
- const list<string>& fields,
- const string& header,
- const string& ftLeft,
- const string& ftRight)
+bool AddressWidget::print(QPrinter& printer, const list<string>& fields,
+			  const string& header, const string& ftLeft,
+			  const string& ftRight)
 {
   ID(bool GUARD=true);
   REQUIRE(fields.size()!=0);
   debug(i18n("Attention: printing is still experimental!"));
-  // ########################################################
-  LG(GUARD, "AddressWidget::print: "
-     "%i fields to be printed.\n",
-     fields.size());
+  // ############################################################################
+  LG(GUARD, "AddressWidget::print: %i fields to be printed.\n", fields.size());
   string path;
   KeyValueMap* keys;
   Section* section=entrySection();
@@ -1410,8 +1271,7 @@ bool AddressWidget::print
   list<string>::const_iterator pos;
   list<int> bdList; // for parsing birthdays
   string text;
-  // Qt handles top, bottom and right margin,
-  // but uses a left margin of zero.
+  // Qt handles top, bottom and right margin, but uses a left margin of zero.
   QPaintDeviceMetrics metrics(&printer);
   const QFont PrintFont("Helvetica", 8);
   const int 
@@ -1424,8 +1284,7 @@ bool AddressWidget::print
     Spacing=2; // points 
   QPainter p;
   QRect rect;
-  int footerHeight, headlineHeight, count, temp, cy, cx,
-    commentFieldWidth=0;
+  int footerHeight, headlineHeight, count, temp, cy, cx, commentFieldWidth=0;
   int* fieldWidth=new int[fields.size()];
   bool comment=false;
   float stretch;
@@ -1434,8 +1293,7 @@ bool AddressWidget::print
   // draw main part of page
   p.begin(&printer);
   LG(GUARD, "AddressWidget::print: printing %i entries,"
-     "\n                      stage 1: placement.\n",
-     noOfEntries());
+     "\n                      stage 1: placement.\n", noOfEntries());
   count=0;
   // find place needed for columns:
   // for all fields that should be printed:
@@ -1446,8 +1304,8 @@ bool AddressWidget::print
     {
       if((*pos)!="comment")
 	{
-	  LG(GUARD, "AddressWidget::print: "
-	     "measuring %s-fields.\n", (*pos).c_str());
+	  LG(GUARD, "AddressWidget::print: measuring %s-fields.\n", 
+	     (*pos).c_str());
 	  fieldWidth[count]=0;
 	  // iterate over all entries:
 	  for(entryPos=section->sectionsBegin();
@@ -1460,18 +1318,15 @@ bool AddressWidget::print
 	      keys->get((*pos), text);
 	      // find largest value in pixels:
 	      rect=p.boundingRect(0, 0, PageWidth, PageHeight,
-				  AlignLeft | AlignTop,
-				  text.c_str());
+				  AlignLeft | AlignTop, text.c_str());
 	      if(fieldWidth[count]<rect.width()+2*Spacing)
 		{
 		  fieldWidth[count]=rect.width()+2*Spacing;
 		}
 	    }
-	  LG(GUARD, "AddressWidget::print: "
-	     "width is %i.\n", fieldWidth[count]);
+	  LG(GUARD, "AddressWidget::print: width is %i.\n", fieldWidth[count]);
 	} else {
-	  LG(GUARD, "AddressWidget::print: "
-	     "found comment field.\n");
+	  LG(GUARD, "AddressWidget::print: found comment field.\n");
 	  fieldWidth[count]=0;
 	  comment=true;
 	}
@@ -1494,9 +1349,8 @@ bool AddressWidget::print
 	  temp+=fieldWidth[count];
 	}
       stretch=(float)PageWidth/(float)temp;
-      LG(GUARD, "AddressWidget::print: "
-	 "stretch*points is %f, page width is %i.\n",
-	 stretch*temp, PageWidth);
+      LG(GUARD, "AddressWidget::print: stretch*points is %f, "
+	 "page width is %i.\n", stretch*temp, PageWidth);
     }
   if(stretch<1)
     {
@@ -1504,8 +1358,7 @@ bool AddressWidget::print
 	 (this, i18n("Page size problem"),
 	  i18n("The fields you requested to print do\n"
 	       "not fit into the page width."),
-	  i18n("Continue"), 
-	  i18n("Cancel"))==1)
+	  i18n("Continue"), i18n("Cancel"))==1)
 	{
 	  p.end();
 	  printer.abort();	  
@@ -1514,8 +1367,7 @@ bool AddressWidget::print
     }
   // -----
   // ----- stretch the fields:
-  LG(GUARD, "AddressWidget::print: "
-     "calculated a stretch factor of %f.\n",
+  LG(GUARD, "AddressWidget::print: calculated a stretch factor of %f.\n",
      stretch);
   if(comment)
     { // ----- comment field will be printed
@@ -1530,17 +1382,13 @@ bool AddressWidget::print
 	{ // comment field gets 20%, rest gets stretched
 	  stretch=(0.80*(float)PageWidth)/(float)temp;
 	  pos=fields.begin();
-	  for(count=0; 
-	      (unsigned)count<fields.size(); 
-	      count++)
+	  for(count=0; (unsigned)count<fields.size(); count++)
 	    {
 	      if(*pos!="comment")
 		{
-		  fieldWidth[count]=(int)
-		    (stretch*(float)fieldWidth[count]+0.5);
+		  fieldWidth[count]=(int)(stretch*(float)fieldWidth[count]+0.5);
 		} else {
-		  fieldWidth[count]=(int)
-		    (0.20*(float)PageWidth+0.5);
+		  fieldWidth[count]=(int)(0.20*(float)PageWidth+0.5);
 		  commentFieldWidth=fieldWidth[count];
 		}
 	      ++pos;
@@ -1552,8 +1400,7 @@ bool AddressWidget::print
 	     (this, i18n("Page size problem"),
 	      i18n("The fields you requested to print do\n"
 		   "not fit into the page width."),
-	      i18n("Continue"), 
-	      i18n("Cancel"))==1)
+	      i18n("Continue"), i18n("Cancel"))==1)
 	    {
 	      p.end();
 	      printer.abort();	  
@@ -1563,22 +1410,19 @@ bool AddressWidget::print
     } else { // comment field will not be printed
       for(count=0; (unsigned)count<fields.size(); count++)
 	{
-	  fieldWidth[count]=(int)
-	    (stretch*(float)fieldWidth[count]+0.5);
+	  fieldWidth[count]=(int)(stretch*(float)fieldWidth[count]+0.5);
 	}
       commentFieldWidth=-1;
     }
   // -----
   // ----- now print the page:
-  LG(GUARD, "AddressWidget::print: "
-     "stage 2: actual printing.\n");
+  LG(GUARD, "AddressWidget::print: stage 2: actual printing.\n");
   cy=0;
   CHECK(section==entrySection());
   entry=entries.begin();
   LG(GUARD, "AddressWidget::print: page size is %ix%i dots.\n"
      "                      page size is %ix%i mm.\n",
-     metrics.width(), metrics.height(),
-     metrics.widthMM(), metrics.heightMM());
+     metrics.width(), metrics.height(), metrics.widthMM(), metrics.heightMM());
   for(;;)
     {
       CHECK(entry!=entries.end());
@@ -1586,29 +1430,21 @@ bool AddressWidget::print
       // -----
       // ----- draw a headline
       headlineHeight=printHeadline
-	(&p, 
-	 QRect(LeftMargin, TopMargin, PageWidth, PageHeight),
-	 header);
+	(&p, QRect(LeftMargin, TopMargin, PageWidth, PageHeight), header);
       CHECK(headlineHeight>=0);
       // -----
       // ----- draw a footer
       footerHeight=printFooter
-	(&p,
-	 QRect(LeftMargin, TopMargin, PageWidth, PageHeight),
-	 pageNum,
-	 ftLeft, ftRight);
+	(&p, QRect(LeftMargin, TopMargin, PageWidth, PageHeight),
+	 pageNum, ftLeft, ftRight);
       CHECK(footerHeight>=0);
       // -----
       // ----- print lines between columns:
       temp=LeftMargin;
       for(count=0; (unsigned)count<=fields.size(); count++)
 	{
-	  p.drawLine(temp, 
-		     headlineHeight,
-		     temp, 
-		     metrics.height()
-		     -BottomMargin
-		     -footerHeight);
+	  p.drawLine(temp, headlineHeight, temp, 
+		     metrics.height()-BottomMargin-footerHeight);
 	  if((unsigned)count!=fields.size())
 	    {
 	      temp+=fieldWidth[count];
@@ -1620,9 +1456,7 @@ bool AddressWidget::print
       cy=headlineHeight;
       for(;;) 
 	{
-	  path=EntrySection
-	    +(string)"/"
-	    +(string)(*entry).second;
+	  path=EntrySection+(string)"/"+(string)(*entry).second;
 	  get(path, keys);
 	  CHECK(get(path, keys));
 	  cy+=Spacing;
@@ -1636,24 +1470,18 @@ bool AddressWidget::print
 	      int lineHeight=p.fontMetrics().height();
 	      if(keys->get("comment", text))
 		{
-		  rect=p.boundingRect
-		    (0, 0, 
-		     commentFieldWidth, 
-		     PageHeight,
-		     AlignLeft | AlignTop | WordBreak, 
+		  rect=p.boundingRect(0, 0, commentFieldWidth, 
+		     PageHeight, AlignLeft | AlignTop | WordBreak, 
 		     text.c_str());
 		  commentHeight=rect.height();
 		}
-	      commentHeight>lineHeight 
-		? temp=commentHeight
-		: temp=lineHeight;
+	      commentHeight>lineHeight ? temp=commentHeight : temp=lineHeight;
 	      temp+=Spacing;
 	    } else {
 	      temp=p.fontMetrics().height()+Spacing;
 	    }
 	  // break if entry does not fit on page:
-	  if(cy+temp+Spacing
-	     >TopMargin+PageHeight-footerHeight)
+	  if(cy+temp+Spacing>TopMargin+PageHeight-footerHeight)
 	    { // exit if it does not fit:
 	      break; // exit : if ...
 	    }
@@ -1668,12 +1496,9 @@ bool AddressWidget::print
 		  keys->get(*pos, text);
 		  if(!text.empty())
 		    {
-		      p.drawText
-			(cx+Spacing, cy, 
-			 fieldWidth[count], 
-			 PageHeight,
-			 AlignLeft | AlignTop | WordBreak, 
-			 text.c_str(), -1, &rect);
+		      p.drawText(cx+Spacing, cy, fieldWidth[count], PageHeight,
+				 AlignLeft | AlignTop | WordBreak, 
+				 text.c_str(), -1, &rect);
 		      if(temp<rect.height()+Spacing)
 			{
 			  temp=rect.height()+Spacing;
@@ -1700,11 +1525,8 @@ bool AddressWidget::print
 			  QDate date(year, month, day);
 			  if(date.isValid())
 			    {
-			      p.drawText
-				(cx+Spacing, cy, 
-				 fieldWidth[count], 
-				 PageHeight,
-				 AlignLeft | AlignTop, 
+			      p.drawText(cx+Spacing, cy, fieldWidth[count], 
+				 PageHeight, AlignLeft | AlignTop, 
 				 date.toString());
 			    }
 			} else {
@@ -1720,17 +1542,13 @@ bool AddressWidget::print
 		  continue;
 		}
 	      keys->get(*pos, text);
-	      p.drawText
-		(cx+Spacing, cy, 
-		 fieldWidth[count], 
-		 PageHeight,
+	      p.drawText(cx+Spacing, cy, fieldWidth[count], PageHeight,
 		 AlignLeft | AlignTop, text.c_str());
 	      cx+=fieldWidth[count];
 	      count++;
 	    }
 	  cy+=temp;
-	  p.drawLine(LeftMargin, cy, 
-		     PageWidth+LeftMargin, cy);
+	  p.drawLine(LeftMargin, cy, PageWidth+LeftMargin, cy);
 	  entry++;
 	  // exit if all entries have been printed:
 	  if(entry==entries.end()) break;
@@ -1759,30 +1577,25 @@ bool AddressWidget::print
   delete fieldWidth;
   emit(setStatus(i18n("Printing finished successfully.")));
   return true;
-  // ########################################################
+  // ############################################################################
 }
 
-bool AddressWidget::emailAddress
-(const string& key, 
- string& address,
- bool select)
+bool AddressWidget::emailAddress(const string& key, string& address, bool select)
 {
   ID(bool GUARD=true);
   LG(GUARD, "AddressWidget::emailAddress: called.\n");
-  // ########################################################
+  // ############################################################################
   Entry entry;
   StringListSelectOneDialog dialog(this);
   // -----
   if(!getEntry(key, entry))
     {
-      LG(GUARD, "AddressWidget::emailAddress: "
-	 "no such entry.\n");
+      LG(GUARD, "AddressWidget::emailAddress: no such entry.\n");
       return false;
     }
   if(entry.emails.empty())
     {
-      LG(GUARD, "AddressWidget::emailAddress: "
-	 "no email address.\n");
+      LG(GUARD, "AddressWidget::emailAddress: no email address.\n");
       return false;
     }
   if(select)
@@ -1802,7 +1615,7 @@ bool AddressWidget::emailAddress
       address=entry.emails.front();
       return true;
     }
-  // ########################################################  
+  // ############################################################################
 }
 
 
@@ -1810,29 +1623,29 @@ void AddressWidget::exportPlain()
 {
   ID(bool GUARD=true);
   LG(GUARD, "AddressWidget::exportPlain: called.\n");
-  // ########################################################
-  // ########################################################
+  // ############################################################################
+  // ############################################################################
 }
 
 void AddressWidget::exportTeXTable()
 {
   ID(bool GUARD=true);
   LG(GUARD, "AddressWidget::exportTeXTable: called.\n");
-  // ########################################################
-  // ########################################################
+  // ############################################################################
+  // ############################################################################
 }
 
 void AddressWidget::exportTeXLabels()
 {
   ID(bool GUARD=true);
   LG(GUARD, "AddressWidget::exportTeXLabels: called.\n");
-  // ########################################################
-  // ########################################################
+  // ############################################################################
+  // ############################################################################
 }
 
 void AddressWidget::copy()
 {
-  // ########################################################
+  // ############################################################################
   //       an array containing the keys for all fields:
   StringListSelectSetDialog dialog(this);
   int index;
@@ -1913,14 +1726,14 @@ void AddressWidget::copy()
     }
   // ----- copy data to the clipboard:
   QApplication::clipboard()->setText(data.c_str());
-  // ########################################################
+  // ############################################################################
 }
 
 void AddressWidget::exportHTML()
 {
   ID(bool GUARD=true);
   LG(GUARD, "AddressWidget::exportHTML: called.\n");
-  // ########################################################
+  // ############################################################################
   const string background=card->getBackground();;
   const string title=i18n("KDE addressbook overview");
   string header=
@@ -1955,8 +1768,7 @@ void AddressWidget::exportHTML()
       return;
     }
   // ----- create the table:
-  body+=(string)"<"+alignment+(string)">"
-    +(string)"<table border>\n";
+  body+=(string)"<"+alignment+(string)">"+(string)"<table border>\n";
   //       select what fields to add to the table:
   // fields.erase(fields.begin(), fields.end());
   for(i=0; i<NoOfFields; i++)
@@ -1967,7 +1779,7 @@ void AddressWidget::exportHTML()
 	}
       fields.push_back(temp.c_str());
     }
-  fields.push_front(i18n("Name-Email-Link (recommended!)"));
+  fields.push_front(i18n("Name-Email-Link (!!)"));
   pDialog.selector()->setValues(fields);
   pDialog.setCaption(i18n("Select table columns"));
   if(pDialog.exec())
@@ -1999,9 +1811,7 @@ void AddressWidget::exportHTML()
     }
   //       create table headers:
   body+="<tr>\n";
-  for(fieldPos=fields.begin(); 
-      fieldPos!=fields.end();
-      fieldPos++)
+  for(fieldPos=fields.begin(); fieldPos!=fields.end(); fieldPos++)
     {
       if(*fieldPos=="name-email-link")
 	{
@@ -2009,8 +1819,7 @@ void AddressWidget::exportHTML()
 	} else {
 	  if(!nameOfField(*fieldPos, temp))
 	    {
-	      L("AddressWidget::exportHTML: "
-		"could not get name for field %s.\n",
+	      L("AddressWidget::exportHTML: could not get name for field %s.\n",
 		(*fieldPos).c_str());
 	      temp="(unknown field name)";
 	    }
@@ -2026,9 +1835,7 @@ void AddressWidget::exportHTML()
       keys=entry->getKeys();
       CHECK(keys!=0);
       body+="<tr>\n";
-      for(fieldPos=fields.begin(); 
-	  fieldPos!=fields.end();
-	  fieldPos++)
+      for(fieldPos=fields.begin(); fieldPos!=fields.end(); fieldPos++)
 	{
 	  if(*fieldPos=="birthday")
 	    {
@@ -2068,8 +1875,7 @@ void AddressWidget::exportHTML()
 	    }
 	  if(!keys->get(*fieldPos, temp))
 	    {
-	      L("AddressWidget::exportHTML: "
-		"could not get data for key %s.\n",
+	      L("AddressWidget::exportHTML: could not get data for key %s.\n",
 		(*fieldPos).c_str());
 	      temp="";
 	    }
@@ -2084,19 +1890,16 @@ void AddressWidget::exportHTML()
   if(!getHomeDirectory(home))
     {
       QMessageBox::information
-	(this, i18n("Sorry"),
-	 i18n("Could not find the users home directory."));
+	(this, i18n("Sorry"), i18n("Could not find the users home directory."));
       emit(setStatus(i18n("Intern error!"))); 
       qApp->beep();
       return;
     }
-  dummy=KFileDialog::getOpenFileName
-    (home.c_str(), "*html", this);
+  dummy=KFileDialog::getOpenFileName(home.c_str(), "*html", this);
   if(!dummy.isEmpty())
     {
       file=dummy;
-      LG(GUARD, "AddressWidget::exportHTML: "
-	 "filename is %s.\n", file.c_str());
+      LG(GUARD, "AddressWidget::exportHTML: filename is %s.\n", file.c_str());
     } else {
       emit(setStatus(i18n("Cancelled.")));
       qApp->beep();
@@ -2107,9 +1910,8 @@ void AddressWidget::exportHTML()
   if(!stream.good())
     {
       QMessageBox::information
-	(this, i18n("Error"),
-	 i18n("Could not open the file to create the HTML "
-	      "table."));
+	(this, i18n("Error"), 
+	 i18n("Could not open the file to create the HTML table."));
     }
   LG(GUARD, "AddressWidget::exportHTML: writing the file.\n");
   //        htmlizeString is n.i., but may already be called:
@@ -2120,7 +1922,233 @@ void AddressWidget::exportHTML()
 	 << body << endl 
 	 << footer << endl;
   LG(GUARD, "AddressWidget::exportHTML: done.\n");
-  // ########################################################
+  // ############################################################################
 }
  
+void AddressWidget::print()
+{
+  ID(bool GUARD=true);
+  // ############################################################################
+  LG(GUARD, "AddressWidget::print: printing database.\n");
+  QPrinter prt;
+  int temp;
+  string text;
+  list<string> keys;
+  StringListSAndRSetDialog dialog(this);
+  PrintDialog printDialog(this);
+  list<int> indizes; // selected fields
+  list<int>::iterator pos;
+  // ----- setup QPrinter object:
+  if(noOfEntries()==0)
+    {
+      setStatus(i18n("No entries."));
+      return;
+    }
+  if(!prt.setup(this)) 
+    {
+      emit(setStatus(i18n("Printing cancelled.")));
+      return;
+    }
+  prt.setCreator("KDE Addressbook");
+  prt.setDocName("address database overview");
+  // ----- set dialog textes, abusing "keys":
+  for(temp=0; temp<NoOfFields; temp++)
+    {
+      if(nameOfField(Fields[temp], text))
+	{
+	  keys.push_back(text);
+	} else {
+	  CHECK(false);
+	}
+    }
+  dialog.setCaption(i18n("kab: Select columns for printing"));
+  dialog.selector()->setValues(keys);
+  keys.erase(keys.begin(), keys.end());
+  // ----- query fields to print:
+  if(!dialog.exec())
+    {
+      LG(GUARD, "AddressWidget::print: could not query fields to print.\n");
+      emit(setStatus(i18n("Rejected.")));
+      return;
+    }
+  if(!dialog.selector()->getSelection(indizes))
+    {
+      emit(setStatus
+	   (i18n("Nothing to print.")));
+      return;
+    }
+  // ----- find selected keys:
+  for(pos=indizes.begin(); pos!=indizes.end(); pos++)
+    {
+      CHECK((*pos)<NoOfFields);
+      keys.push_back(Fields[*pos]);
+    }
+  // ----- now configure the printing:
+  printDialog.setHeadline(i18n("KDE addressbook overview"));
+  printDialog.setRightFooter(i18n("Page <p>"));
+  printDialog.setLeftFooter(i18n("KDE - the professionals choice."));
+  if(!printDialog.exec())
+    {
+      LG(GUARD, "AddressWidget::print: printing setup rejected\n");
+      emit(setStatus(i18n("Rejected.")));
+      return;
+    }
+  // ----- call the printing subroutines:
+  if(!print(prt, keys, printDialog.getHeadline(), printDialog.getLeftFooter(),
+	    printDialog.getRightFooter()))
+     {
+       QMessageBox::information(this, i18n("Error"), i18n("Printing failed!"));
+     }
+  emit(setStatus(i18n("Printing finished successfully.")));
+  // ############################################################################
+}
+
+void AddressWidget::mail()
+{
+  REQUIRE(configSection()!=0);
+  ID(bool GUARD=true);
+  LG(GUARD, "AddressWidget::mail: calling mail composer.\n");
+  // ############################################################################
+  KeyValueMap* keys=configSection()->getKeys();
+  string address;
+  Entry entry;
+  /* Wether to ask which mail address to use in case of multiple addresses.
+   * The setting is stored in the key "MailSelectAddress" in the configuration
+   * section.
+   */
+  bool ask=true; 
+  // -----
+  if(!currentEntry(entry))
+    {
+      emit(setStatus(i18n("No entries.")));
+      qApp->beep();
+      return;
+    }
+  if(entry.emails.empty())
+    { //       complain:
+      qApp->beep();
+      LG(GUARD, "AddressWidget::mail: empty email address.\n");
+      emit(setStatus(i18n("Empty email address.")));
+      return;
+    } else { //       select address:
+      if(entry.emails.size()>1)
+	{
+	  //       what to do:
+	  keys->get("MailSelectAddress", ask);
+	  if(!ask)
+	    { //       select address:
+	      address=entry.emails.front();
+	    }
+	  //       query:
+	  if(!emailAddress((*current).second, address, ask))
+	    {
+	      qApp->beep();
+	      if(ask)
+		{
+		  emit(setStatus(i18n("Rejected.")));
+		} else {
+		  emit(setStatus(i18n("No email address.")));
+		  CHECK(false);
+		}
+	      return;
+	    }
+	} else {
+	  address=entry.emails.front();
+	}
+      if(!sendEmail(address))
+	{
+	  emit(setStatus(i18n("Error calling mailer.")));
+	} else {
+	  emit(setStatus(i18n("Mailer called.")));
+	}
+    }
+  // ############################################################################
+}
+
+bool AddressWidget::sendEmail(const string& address, const string& subject)
+{
+  ID(bool GUARD=true);
+  REQUIRE(configSection()!=0);
+  // ############################################################################
+  KProcess proc;
+  KeyValueMap* keys=configSection()->getKeys();
+  bool found=false;
+  list<string> params;
+  list<string>::iterator it;
+  string::size_type pos;
+  string command; 
+  // -----
+  if(!keys->get("MailCommand", command))
+    {
+      QMessageBox::information
+	(this, i18n("Error"), i18n
+	 ("The mail command must be configured before!"));
+    }
+  if(!keys->get("MailParameters", params))
+    {
+      QMessageBox::information
+	(this, i18n("Mail configuration"),
+	 i18n("Please configure the parameters for the email command."));
+      return false;
+    } 
+  LG(GUARD, "AddressWidget::mail: parsing mail parameters.\n");
+  for(it=params.begin(); it!=params.end(); it++)
+    {
+      LG(GUARD, "                     parsing %s.\n", (*it).c_str());
+      pos=0;
+      while(pos!=string::npos)
+	{
+	  pos=(*it).find("<person>", pos);
+	  if(pos!=string::npos)
+	    {
+	      found=true;
+	      // WORK_TO_DO: use "replace" here
+	      (*it).ERASE(pos, 8); // 8 letters = <person>
+	      (*it).insert(pos, address);
+	      LG(GUARD, "                     changed to %s.\n", (*it).c_str());
+	    }
+	}
+      /* if(!subject.empty()) { */
+      pos=0;
+      while(pos!=string::npos)
+	{
+	  pos=(*it).find("<subject>");
+	  if(pos!=string::npos)
+	    {
+	      // WORK_TO_DO: use "replace" here
+	      (*it).ERASE(pos, 9); // 9 letters = <subject>
+	      (*it).insert(pos, subject);
+	      LG(GUARD, "                     changed to %s.\n", (*it).c_str());
+	    }
+	  /* } */
+	}
+    }
+  if(!found) // subject param is mandatory
+    {
+      QMessageBox::information
+	(this, i18n("Error"), i18n("The email command parameters are wrong."));
+      return false;
+    }
+  proc << command.c_str();
+  for(it=params.begin(); it!=params.end(); it++)
+    {
+      proc << (*it).c_str();
+    }
+  if(proc.start(KProcess::DontCare)!=true)
+    {
+      QMessageBox::information
+	(this, i18n("Error"), 
+	 i18n("Email command failed.\n"
+	      "Make sure you did setup your email command and parameter!"));
+      return false;
+    } else {
+      emit(setStatus(i18n("Mail program started.")));
+      return true;
+    }  
+  // ############################################################################
+}
+
+// #############################################################################
+// MOC OUTPUT FILES:
 #include "widget.moc"
+// #############################################################################

@@ -1,42 +1,47 @@
-/*-*- C++ -*-
- *********************************************************************
-
-	--- Qt Architect generated file ---
-
-	File: SearchDialog.h
-	Last generated: Wed Feb 25 17:48:48 1998
-
- *********************************************************************/
+/* -*- C++ -*-
+ * The dialog for searching the database.
+ * Declaration
+ *
+ * the KDE addressbook
+ * copyright:  (C) Mirko Sucker, 1998
+ * license:    GNU Public License, Version 2
+ * mail to:    Mirko Sucker <mirko.sucker@unibw-hamburg.de>
+ * requires:   C++-compiler, STL, string class, Qt > 1.40
+ *             NANA (for debugging)
+ * $Revision$
+ */
 
 #ifndef SearchDialog_included
 #define SearchDialog_included
 
-#include "SearchDialogData.h"
-#include <string>
+#include "DialogBase.h"
+#include "SearchDialogMainWidget.h"
+#include "stl_headers.h"
 
-class SearchDialog : public SearchDialogData
+class SearchDialog : public DialogBase
 {
-    Q_OBJECT
-
+  // ############################################################################
+  Q_OBJECT
+  // ----------------------------------------------------------------------------
 public:
-
-    SearchDialog
-    (
-        QWidget* parent = NULL,
-        const char* name = NULL
-    );
-
-    virtual ~SearchDialog();
+  SearchDialog(QWidget* parent=0, const char* name=0);
+  virtual ~SearchDialog();
   string getKey() { return key; }
   string getValue() { return data; }
+  // ----------------------------------------------------------------------------
 protected:
-  void initializeGeometry();
   static const char* Keys[];
   // Search criteria (simple by now, only one):
   string key; // which field
-  string data; // contains what?
+  string data; // matches what?
+  SearchDialogMainWidget* widget;
+  // ----------------------------------------------------------------------------
 public slots:
   void keySelected(int);
   void valueChanged(const char*);
+  // ############################################################################
 };
+
 #endif // SearchDialog_included
+
+

@@ -14,27 +14,18 @@ extern "C" {
 	   }
 #include <kapp.h>
 
-#define Inherited StringListSelectAndReorderSetData
+const int StringListSelectAndReorderSet::Grid=3;
 
-const int StringListSelectAndReorderSet::Grid=5;
-
-StringListSelectAndReorderSet::StringListSelectAndReorderSet
-(QWidget* parent, const char* name)
-  : Inherited( parent, name )
+StringListSelectAndReorderSet::StringListSelectAndReorderSet(QWidget* parent, 
+							     const char* name)
+  : StringListSelectAndReorderSetData(parent, name)
 {
-  // ########################################################
-  // ----- set the frame style:
-  setFrameStyle(51);
-  setLineWidth(2);
+  // ############################################################################
   // ----- create the bitmaps:
-  QBitmap previous
-    (16, 16, (unsigned char*)arrow_left_bits, true);
-  QBitmap next
-    (16, 16, (unsigned char*)arrow_right_bits, true);  
-  QBitmap up
-    (16, 16, (unsigned char*)uparrow_bits, true);
-  QBitmap down
-    (16, 16, (unsigned char*)arrow_down_bits, true);
+  QBitmap previous(16, 16, (unsigned char*)arrow_left_bits, true);
+  QBitmap next(16, 16, (unsigned char*)arrow_right_bits, true);  
+  QBitmap up(16, 16, (unsigned char*)uparrow_bits, true);
+  QBitmap down(16, 16, (unsigned char*)arrow_down_bits, true);
   // ----- set the button faces:
   buttonSelect->setPixmap(next);
   buttonUnselect->setPixmap(previous);
@@ -43,63 +34,55 @@ StringListSelectAndReorderSet::StringListSelectAndReorderSet
   labelPossible->setText(i18n("Possible values:"));
   labelSelected->setText(i18n("Selected values:"));
   // ----- setup the dialog:
-  connect(lbSelected, SIGNAL(highlighted(int)), 
-	  SLOT(enableButtons(int)));
+  connect(lbSelected, SIGNAL(highlighted(int)), SLOT(enableButtons(int)));
   enableButtons(0);
-  // ########################################################
+  // ----- 
+  setMinimumSize(sizeHint());
+  // ############################################################################
 }
 
 
 StringListSelectAndReorderSet::~StringListSelectAndReorderSet
 ()
 {
-  // ########################################################
-  // ########################################################
+  // ############################################################################
+  // ############################################################################
 }
 
-void StringListSelectAndReorderSet::resizeEvent
-(QResizeEvent*)
+void StringListSelectAndReorderSet::resizeEvent(QResizeEvent*)
 {
-  // ########################################################
+  // ############################################################################
   const int ButtonSize=22,
     LabelHeight=labelPossible->sizeHint().height();
   int lbHeight, x, y, tempx;
   // ----- calculate listbox width and height:
-  tempx=(width()-2*frameWidth()-2*ButtonSize-5*Grid)/2;
-  lbHeight=height()-2*frameWidth()-3*Grid-LabelHeight;
+  tempx=(width()-2*ButtonSize-3*Grid)/2;
+  lbHeight=height()-Grid-LabelHeight;
   if(tempx<10 || lbHeight<10) 
     { //       do nothing
       return;
     }
-  x=frameWidth()+Grid; // current placement x
-  y=frameWidth()+Grid; // current placement y
+  x=0; // current placement x
+  y=0; // current placement y
   // ----- place the labels:
-  labelPossible->setGeometry
-    (x, y, tempx, LabelHeight);
-  labelSelected->setGeometry
-    (x+tempx+2*Grid+ButtonSize, y, tempx, LabelHeight);
+  labelPossible->setGeometry(x, y, tempx, LabelHeight);
+  labelSelected->setGeometry(x+tempx+2*Grid+ButtonSize, y, tempx, LabelHeight);
   y+=LabelHeight+Grid;
   // ----- place the listboxes and the buttons:
-  lbPossible->setGeometry
-    (x, y, tempx, lbHeight);
-  buttonSelect->setGeometry
-    (x+Grid+tempx, y, ButtonSize, ButtonSize);
+  lbPossible->setGeometry(x, y, tempx, lbHeight);
+  buttonSelect->setGeometry(x+Grid+tempx, y, ButtonSize, ButtonSize);
   buttonUnselect->setGeometry
     (x+Grid+tempx, y+ButtonSize, ButtonSize, ButtonSize);
-  lbSelected->setGeometry
-    (x+2*Grid+tempx+ButtonSize, y, tempx, lbHeight);
-  buttonUp->setGeometry
-    (x+3*Grid+2*tempx+ButtonSize, y, ButtonSize, ButtonSize);
+  lbSelected->setGeometry(x+2*Grid+tempx+ButtonSize, y, tempx, lbHeight);
+  buttonUp->setGeometry(x+3*Grid+2*tempx+ButtonSize, y, ButtonSize, ButtonSize);
   buttonDown->setGeometry
-    (x+3*Grid+2*tempx+ButtonSize, y+ButtonSize, 
-     ButtonSize, ButtonSize);
-  // ########################################################
+    (x+3*Grid+2*tempx+ButtonSize, y+ButtonSize, ButtonSize, ButtonSize);
+  // ############################################################################
 }
 
-bool StringListSelectAndReorderSet::setValues
-(const list<string>& values)
+bool StringListSelectAndReorderSet::setValues(const list<string>& values)
 { 
-  // ########################################################
+  // ############################################################################
   list<string>::const_iterator pos;
   int i=0;
   // ----- copy values:
@@ -118,13 +101,12 @@ bool StringListSelectAndReorderSet::setValues
   assert(values.size()==possible.size());
   enableButtons(0);
   return true;
-  // ########################################################
+  // ############################################################################
 }
 
-bool StringListSelectAndReorderSet::setValues
-(const QStrList& values)
+bool StringListSelectAndReorderSet::setValues(const QStrList& values)
 { 
-  // ########################################################
+  // ############################################################################
   int index;
   // -----
   possible.erase(possible.begin(), possible.end());
@@ -141,13 +123,12 @@ bool StringListSelectAndReorderSet::setValues
   assert(values.count()==possible.size()); 
   enableButtons(0);
   return false; 
-  // ########################################################
+  // ############################################################################
 }
 
-bool StringListSelectAndReorderSet::getSelection
-(list<int>& indizes)
+bool StringListSelectAndReorderSet::getSelection(list<int>& indizes)
 { 
-  // ########################################################
+  // ############################################################################
   if(selected.empty())
     {
       return false;
@@ -157,13 +138,12 @@ bool StringListSelectAndReorderSet::getSelection
       assert(indizes.size()==selected.size());
       return true;
     }
-  // ########################################################
+  // ############################################################################
 }
 
-bool StringListSelectAndReorderSet::getSelection
-(QList<int>& indizes)
+bool StringListSelectAndReorderSet::getSelection(QList<int>& indizes)
 { 
-  // ########################################################
+  // ############################################################################
   list<int>::iterator pos;
   // -----
   if(selected.empty())
@@ -178,13 +158,12 @@ bool StringListSelectAndReorderSet::getSelection
       assert(indizes.count()==selected.size());
       return true;
     }
-  // ########################################################
+  // ############################################################################
 }
 
-bool StringListSelectAndReorderSet::getSelection
-(list<string>& values)
+bool StringListSelectAndReorderSet::getSelection(list<string>& values)
 {
-  // ########################################################
+  // ############################################################################
   list<int>::iterator pos;
   list<string>::iterator text;
   // -----
@@ -203,13 +182,12 @@ bool StringListSelectAndReorderSet::getSelection
       assert(values.size()==selected.size());
       return true;
     }
-  // ########################################################
+  // ############################################################################
 }
 
-bool StringListSelectAndReorderSet::getSelection
-(QStrList& values)
+bool StringListSelectAndReorderSet::getSelection(QStrList& values)
 { 
-  // ########################################################
+  // ############################################################################
   list<int>::iterator pos;
   list<string>::iterator text;
   // -----
@@ -228,13 +206,12 @@ bool StringListSelectAndReorderSet::getSelection
       assert(values.count()==selected.size());
       return true;
     }
-  // ########################################################
+  // ############################################################################
 }
-
 
 bool StringListSelectAndReorderSet::select(int index)
 {
-  // ########################################################
+  // ############################################################################
   list<int>::iterator pos;
   int number=-1;
   // -----
@@ -255,13 +232,12 @@ bool StringListSelectAndReorderSet::select(int index)
 	}
     }
   enableButtons(0);
-  // ########################################################
+  // ############################################################################
 }
 
-bool StringListSelectAndReorderSet::select
-(int* indizes, int no)
+bool StringListSelectAndReorderSet::select(int* indizes, int no)
 { 
-  // ########################################################
+  // ############################################################################
   bool error=false;
   int index;
   // -----
@@ -274,12 +250,11 @@ bool StringListSelectAndReorderSet::select
     }
   enableButtons(0);
   return !error;
-  // ########################################################
+  // ############################################################################
 }
-bool StringListSelectAndReorderSet::select
-(const list<int>& indizes)
+bool StringListSelectAndReorderSet::select(const list<int>& indizes)
 {
-  // ########################################################
+  // ############################################################################
   list<int>::const_iterator pos;
   bool error=false;
   // -----
@@ -292,13 +267,12 @@ bool StringListSelectAndReorderSet::select
     }
   enableButtons(0);
   return !error;
-  // ########################################################
+  // ############################################################################
 }
 
-bool StringListSelectAndReorderSet::select
-(const QList<int>& indizes)
+bool StringListSelectAndReorderSet::select(const QList<int>& indizes)
 { 
-  // ########################################################
+  // ############################################################################
   bool error=false;
   int index;
   // -----
@@ -311,12 +285,12 @@ bool StringListSelectAndReorderSet::select
     }
   enableButtons(0);
   return !error;
-  // ########################################################
+  // ############################################################################
 }
 
 bool StringListSelectAndReorderSet::selectItem(int index)
 {
-  // ########################################################
+  // ############################################################################
   string text;
   int temp;
   list<int>::iterator pos=possible.begin();
@@ -340,12 +314,12 @@ bool StringListSelectAndReorderSet::selectItem(int index)
   assert(lbSelected->count()==selected.size());
   enableButtons(0);
   return true;
-  // ########################################################
+  // ############################################################################
 }
 
 bool StringListSelectAndReorderSet::unselectItem(int index)
 {
-  // ########################################################
+  // ############################################################################
   int temp;
   string text;
   list<int>::iterator pos=selected.begin();
@@ -369,12 +343,12 @@ bool StringListSelectAndReorderSet::unselectItem(int index)
   assert(lbSelected->count()==selected.size());
   enableButtons(0);
   return true;
-  // ########################################################
+  // ############################################################################
 }
 
 void StringListSelectAndReorderSet::selectPressed()
 {
-  // ########################################################
+  // ############################################################################
   int index;
   // -----
   if(lbPossible->count()==0)
@@ -394,12 +368,12 @@ void StringListSelectAndReorderSet::selectPressed()
       qApp->beep();
       return;
     }
-  // ########################################################
+  // ############################################################################
 }
 
 void StringListSelectAndReorderSet::unselectPressed()
 {
-  // ########################################################
+  // ############################################################################
   int index;
   // -----
   if(lbSelected->count()==0)
@@ -419,12 +393,12 @@ void StringListSelectAndReorderSet::unselectPressed()
       qApp->beep();
       return;
     }
-  // ########################################################
+  // ############################################################################
 }
 
 void StringListSelectAndReorderSet::up()
 {
-  // ########################################################
+  // ############################################################################
   int index, temp;
   string text;
   list<int>::iterator pos;
@@ -460,12 +434,12 @@ void StringListSelectAndReorderSet::up()
   // ----- keep the same current item:
   lbSelected->setCurrentItem(index-1);
   enableButtons(0);
-  // ########################################################
+  // ############################################################################
 }
 
 void StringListSelectAndReorderSet::down()
 {
-  // ########################################################
+  // ############################################################################
   int index, temp;
   string text;
   list<int>::iterator pos;
@@ -501,12 +475,12 @@ void StringListSelectAndReorderSet::down()
   // ----- keep the same current item:
   lbSelected->setCurrentItem(index+1);
   enableButtons(0);
-  // ########################################################
+  // ############################################################################
 }
 
 void StringListSelectAndReorderSet::enableButtons(int) 
 { 
-  // ########################################################
+  // ############################################################################
   if(lbPossible->count()==0)
     {
       buttonSelect->setEnabled(false);
@@ -519,8 +493,7 @@ void StringListSelectAndReorderSet::enableButtons(int)
     } else {
       buttonUnselect->setEnabled(true);
     }
-  if(lbSelected->currentItem()==0 
-     || lbSelected->count()<2)
+  if(lbSelected->currentItem()==0 || lbSelected->count()<2)
     {
       buttonUp->setEnabled(false);
     } else {
@@ -533,58 +506,52 @@ void StringListSelectAndReorderSet::enableButtons(int)
     } else {
       buttonDown->setEnabled(true);
     }
-  // ########################################################
+  // ############################################################################
 }
 
 QSize StringListSelectAndReorderSet::sizeHint() const
 {
-  // ########################################################
+  // ############################################################################
   const int ButtonSize=22;
+  int x;
   // -----
+  x=lbPossible->fontMetrics().width("This is a very very long string");
   return QSize
     (/* x */ 
-     2*frameWidth()+5*Grid+2*ButtonSize
-     +2*QMAX(lbPossible->sizeHint().width(),
-	     lbPossible->fontMetrics().width
-	     ("This is a very long string")
-	     +2*lbPossible->frameWidth()),
+     3*Grid+2*ButtonSize
+     +2*QMAX(lbPossible->sizeHint().width(), x+2*lbPossible->frameWidth()),
      /* y */ 
-     2*frameWidth()+3*Grid
-     +QMAX(lbPossible->sizeHint().height(),
-	   7*lbPossible->itemHeight()
-	   +2*lbPossible->frameWidth()));
-  // ########################################################
+     Grid+QMAX(lbPossible->sizeHint().height(),
+	       7*lbPossible->itemHeight()+2*lbPossible->frameWidth()));
+  // ############################################################################
 }
-
 
 // ----- definition of the dialog class:
 
 StringListSAndRSetDialog::StringListSAndRSetDialog
-(QWidget* par, const char* text, bool modal)
-  : QDialog(par, text, modal),
+(QWidget* parent, const char* text, bool modal)
+  : DialogBase(parent, text, modal),
     sar(new StringListSelectAndReorderSet(this)),
-    buttonOK(new QPushButton(this)),
-    buttonCancel(new QPushButton(this)),
     sizeIsFixed(false)
 {
-  // ########################################################
+  // ############################################################################
   // ----- manage subwidgets:
-  buttonOK->setText(i18n("OK"));
-  buttonCancel->setText(i18n("Cancel"));
-  // ----- set up geometry:
-  initializeGeometry();
-  resize(minimumSize());
+  // buttonOK->setText(i18n("OK"));
+  // buttonCancel->setText(i18n("Cancel"));
+  enableButtonApply(false);
+  setMainWidget(sar);
   // ----- create connections:
-  connect(buttonOK, SIGNAL(clicked()), SLOT(accept()));
-  connect(buttonCancel, SIGNAL(clicked()), SLOT(reject()));
-  connect(kapp, SIGNAL(appearanceChanged()),
-	  SLOT(initializeGeometry()));
-  // ########################################################
+  connect(kapp, SIGNAL(appearanceChanged()), SLOT(initializeGeometry()));
+  // ----- set up geometry:
+  // initializeGeometry();
+  resize(minimumSize());
+  // ############################################################################
 }
 
+/*
 void StringListSAndRSetDialog::initializeGeometry()
 {
-  // ########################################################
+  // ############################################################################
   QSize sarSize=sar->sizeHint();
   const int Grid=5,
     ButtonHeight=buttonOK->sizeHint().height(),
@@ -592,8 +559,7 @@ void StringListSAndRSetDialog::initializeGeometry()
 		     buttonCancel->sizeHint().width());
   int cx, cy;
   // ----- calculate the needed size:
-  cx=QMAX(sarSize.width(),
-	  3*Grid+2*ButtonWidth); 
+  cx=QMAX(sarSize.width(), 3*Grid+2*ButtonWidth); 
   cy=sarSize.height()+Grid+ButtonHeight;
   // ----- set either minimum or fixed size:
   if(sizeIsFixed)
@@ -602,12 +568,14 @@ void StringListSAndRSetDialog::initializeGeometry()
     } else {
       setMinimumSize(cx, cy);
     }
-  // ########################################################
+  // ############################################################################
 }
+*/
 
+/*
 void StringListSAndRSetDialog::resizeEvent(QResizeEvent*)
 {
-  // ########################################################
+  // ############################################################################
   // CONSTS:
   const int Grid=5,
     ButtonHeight=buttonOK->sizeHint().height(),
@@ -617,35 +585,44 @@ void StringListSAndRSetDialog::resizeEvent(QResizeEvent*)
     ButtonY=SARHeight+Grid;
   // CODE:
   sar->setGeometry(0, 0, width(), SARHeight);
-  buttonOK->setGeometry
-    (0, ButtonY, ButtonWidth, ButtonHeight);
-  buttonCancel->setGeometry(width()-ButtonWidth, ButtonY, 
-			    ButtonWidth, ButtonHeight);
-  // ########################################################
+  buttonOK->setGeometry(0, ButtonY, ButtonWidth, ButtonHeight);
+  buttonCancel->setGeometry
+    (width()-ButtonWidth, ButtonY, ButtonWidth, ButtonHeight);
+  // ############################################################################
 }
+*/
 
 void StringListSAndRSetDialog::fixSize(bool state)
 {
-  // ########################################################
-  sizeIsFixed=state;
-  initializeGeometry();
-  // ########################################################
+  // ############################################################################
+  if(state!=sizeIsFixed)
+    {
+      sizeIsFixed=state;
+      initializeGeometry();
+      if(state==true)
+	{
+	  setFixedSize(minimumSize());
+	}
+    }
+  // ############################################################################
 }
 
 bool StringListSAndRSetDialog::isSizeFixed()
 {
-  // ########################################################
+  // ############################################################################
   return sizeIsFixed;
-  // ########################################################
+  // ############################################################################
 }
 
-StringListSelectAndReorderSet* 
-StringListSAndRSetDialog::selector() 
+StringListSelectAndReorderSet* StringListSAndRSetDialog::selector() 
 { 
-  // ########################################################
+  // ############################################################################
   return sar; 
-  // ########################################################
+  // ############################################################################
 }
 
+// #############################################################################
+// MOC OUTPUT FILES:
 #include "StringListSelectAndReorderSet.moc"
 #include "StringListSelectAndReorderSetData.moc"
+// #############################################################################

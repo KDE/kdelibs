@@ -33,10 +33,12 @@ libkab_la_SOURCES	= \
 	kabapi.cc \
 	AssertDialog.cpp \
 	AssertDialogData.cpp \
+	DialogBase.cpp \
+	DialogBaseData.cpp \
 	PrintDialog.cpp \
 	PrintDialogData.cpp \
 	SearchDialog.cpp \
-	SearchDialogData.cpp \
+#	SearchDialogData.cpp \
 	StringListDialog.cpp \
 	StringListDialogData.cpp \
 	addressbook.cc \
@@ -51,12 +53,14 @@ libkab_la_SOURCES	= \
 	keyvaluemap.cc \
 	functions.cc \
 	StringListSelectOneDialog.cpp \
-	StringListSelectOneDialogData.cpp \
+#	StringListSelectOneDialogData.cpp \
 	StringListSelectSetDialog.cpp \
-	StringListSelectSetDialogData.cpp \
+#	StringListSelectSetDialogData.cpp \
 	StringListSelectAndReorderSet.cpp \
 	StringListSelectAndReorderSetData.cpp \
-	widgets.cc 
+	widgets.cc \
+	SearchDialogMainWidget.cpp \
+	SearchDialogMainWidgetData.cpp 
 
 include_HEADERS = \
 	stl_headers.h \
@@ -89,7 +93,8 @@ libkab_la_LDFLAGS = @all_libraries@
 
 # Usually I define MS_NANA_LIBS to "-lnana" if DEBUG is defined as a 
 # compiler directive.
-libkab_la_LIBADD   = $(LIB_KFM) 
+libkab_la_LIBADD   = -lkfm -lkdeui -lkdecore -lqt \
+	-lX11 -lXext @LIBSOCKET@ 
 # $(MS_NANA_LIBS)
 
 # this option you can leave out. Just, if you use "make dist", you need it
@@ -97,19 +102,27 @@ libkab_la_LIBADD   = $(LIB_KFM)
 # just to make sure, automake makes them 
 BUILTSOURCES =	addressbook.moc widgets.moc widget.moc \
 		AssertDialog.moc AssertDialogData.moc \
+		DialogBase.moc DialogBaseData.moc \
 		SearchDialog.moc searchresults.moc \
 		editentry.moc datepickerdialog.moc businesscard.moc \
 		StringListDialog.moc StringListDialogData.moc \
 		StringListSelectOneDialog.moc \
-		StringListSelectOneDialogData.moc \
+#		StringListSelectOneDialogData.moc \
 		StringListSelectSetDialog.moc \
-		StringListSelectSetDialogData.moc \
+#		StringListSelectSetDialogData.moc \
 		StringListSelectAndReorderSet.moc \
-		StringListSelectAndReorderSetData.moc
+		StringListSelectAndReorderSetData.moc \
+		SearchDialogMainWidget.moc \
+		SearchDialogMainWidgetData.moc
+
 
 # if you "make distclean", this files get removed. If you want to remove
 # them while "make clean", use CLEANFILES
 DISTCLEANFILES = $(BUILTSOURCES)
+CLEANFILES = $(BUILTSOURCES)
+# make messages.po. Move this one to ../po/ and "make merge" in po
+messages:
+	$(XGETTEXT) -C -ktranslate -ki18n -x ../po/kde.pot $(kab_SOURCES)
 
 # just install datas here. Use install-exec-data for scripts and etc.
 # the binary itself is already installed from automake
@@ -117,6 +130,13 @@ DISTCLEANFILES = $(BUILTSOURCES)
 # don't install a list of file. Just one file per install.
 # if you have more of them, create a subdirectory with an extra Makefile 
 install-data-local:
+	$(mkinstalldirs) $(kde_datadir)
+	$(mkinstalldirs) $(kde_datadir)/kab/
+	$(mkinstalldirs) $(kde_datadir)/kab/pics/
+	$(INSTALL_DATA) dialog_background.jpg \
+		$(kde_datadir)/kab/pics/dialog_background.jpg
+	$(INSTALL_DATA) background_1.jpg \
+		$(kde_datadir)/kab/pics/background_1.jpg
 
 # remove ALL you have installed in install-data-local or install-exec-local
 uninstall-local:
@@ -150,9 +170,10 @@ datepickerdialog.moc:datepickerdialog.h
 businesscard.cc:businesscard.moc
 businesscard.moc:businesscard.h
 
-SearchDialog.cpp:SearchDialog.moc SearchDialogData.moc
+SearchDialog.cpp:SearchDialog.moc 
+# SearchDialogData.moc
 SearchDialog.moc:SearchDialog.h
-SearchDialogData.moc:SearchDialogData.h
+# SearchDialogData.moc:SearchDialogData.h
 
 AddressBookAbout.cpp:AddressBookAbout.moc AddressBookAboutData.moc
 AddressBookAbout.moc:AddressBookAbout.h
@@ -169,21 +190,34 @@ StringListDialogData.moc:StringListDialogData.h
 kabapi.cc:kabapi.moc
 kabapi.moc:kabapi.h
 
-StringListSelectOneDialog.cpp:StringListSelectOneDialog.moc \
-				StringListSelectOneDialogData.moc
-StringListSelectOneDialog.moc:StringListSelectOneDialog.h
-StringListSelectOneDialogData.moc:StringListSelectOneDialogData.h
+StringListSelectOneDialog.cpp:StringListSelectOneDialog.moc
+#			StringListSelectOneDialogData.moc
 
-StringListSelectSetDialog.cpp:StringListSelectSetDialog.moc \
-				StringListSelectSetDialogData.moc
+StringListSelectOneDialog.moc:StringListSelectOneDialog.h
+# StringListSelectOneDialogData.moc:StringListSelectOneDialogData.h
+
+StringListSelectSetDialog.cpp:StringListSelectSetDialog.moc 
+#				StringListSelectSetDialogData.moc
+
 StringListSelectSetDialog.moc:StringListSelectSetDialog.h
-StringListSelectSetDialogData.moc:StringListSelectSetDialogData.h
+# StringListSelectSetDialogData.moc:StringListSelectSetDialogData.h
 
 StringListSelectAndReorderSet.cpp:StringListSelectAndReorderSet.moc \
 				StringListSelectAndReorderSetData.moc
 StringListSelectAndReorderSet.moc:StringListSelectAndReorderSet.h
 StringListSelectAndReorderSetData.moc:StringListSelectAndReorderSetData.h
 
-AssertDialog.cpp:AssertDialog.moc AssertDialogData.moc
-AssertDialog.moc:AssertDialog.h
-AssertDialogData.moc:AssertDialogData.h
+AssertDialog.cpp		:	AssertDialog.moc \
+					AssertDialogData.moc
+AssertDialog.moc		:	AssertDialog.h
+AssertDialogData.moc		:	AssertDialogData.h
+
+DialogBase.cpp			:	DialogBase.moc DialogBaseData.moc
+DialogBase.moc			:	DialogBase.h
+DialogBaseData.moc		:	DialogBaseData.h
+
+SearchDialogMainWidget.cpp	:	SearchDialogMainWidget.moc \
+			   		SearchDialogMainWidgetData.moc
+SearchDialogMainWidget.moc	:	SearchDialogMainWidget.h
+SearchDialogMainWidgetData.moc	:	SearchDialogMainWidgetData.h
+

@@ -1,4 +1,5 @@
-/* A dialog to handle assertions raised in the code.
+/* -*- C++ -*-
+ * A dialog to handle assertions raised in the code.
  * Implementation.
  *
  * the KDE addressbook
@@ -15,8 +16,12 @@ extern "C" {
 #include <string.h>
 #include "bug_3d.xpm"
 	   }
+#include <qmessagebox.h>
+#include <qradiobutton.h>
+#include <iostream.h>
 #include "AssertDialog.h"
-#include <kapp.h>
+#include "kabapi.h"
+#include "debug.h"
 
 AssertDialog::AssertDialog(QWidget* parent, const char* name)
   : AssertDialogData(parent, name),
@@ -35,7 +40,6 @@ AssertDialog::AssertDialog(QWidget* parent, const char* name)
   labelHeadline->setText(temp.c_str());
   // pixmap.load("bug_3d.xpm");
   labelImage->setPixmap(pixmap);
-  labelImage->adjustSize();
   buttonIgnore=new QRadioButton(bgActions);
   buttonIgnore->setText
     (i18n("Ignore the error, possibly causing much more damage"));
@@ -43,7 +47,7 @@ AssertDialog::AssertDialog(QWidget* parent, const char* name)
   buttonKill->setText(i18n("Kill the application, loosing all data"));
   buttonMail=new QRadioButton(bgActions);
   buttonMail->setText(i18n("Send an email to the application maintainer"));
-  buttonMail->setEnabled(false);
+  // buttonMail->setEnabled(false);
   buttonOK->setText(i18n("OK"));
   bgActions->setButton(0);
   // -----
@@ -51,7 +55,6 @@ AssertDialog::AssertDialog(QWidget* parent, const char* name)
   initializeGeometry();
   // ###########################################################################
 }
-
 
 AssertDialog::~AssertDialog()
 {
@@ -65,6 +68,9 @@ void AssertDialog::initializeGeometry()
   const int Grid=3;
   int cx, cy, x1, y1, x2, y2;
   // ----- 1. measure button group:
+  labelHeadline->adjustSize();
+  labelImage->adjustSize();
+  labelError->adjustSize();
   x2=QMAX(buttonIgnore->sizeHint().width(), 
 	  QMAX(buttonKill->sizeHint().width(), 
 	       buttonMail->sizeHint().width()))+2*bgActions->frameWidth();  
@@ -135,8 +141,7 @@ void AssertDialog::setErrorText()
     +(string)i18n("In file ")+file+(string)i18n(", line ")+line+(string)":\n"
     +condition;
   labelError->setText(temp.c_str());
-  labelError->adjustSize();
-  // initializeGeometry();
+  initializeGeometry();
   // ###########################################################################
 }
 
@@ -160,28 +165,94 @@ void evaluate_assertion(bool condition, const char* file, int line,
 {
   // ###########################################################################
   char buffer[64];
-  // -----
-  sprintf(buffer, "%i", line);
-  if(!condition)
+  KabAPI *api;
+  static int InProcess; // initialized to 0
+  string subject;
+  // ----- do the evaluation first to save run time:
+  if(condition)
     {
-      AssertDialog dialog;
-      dialog.setFile(file);
-      dialog.setLine(buffer);
-      dialog.setCondition(cond_text);
-      dialog.exec();
-      switch(dialog.getAction())
+      return;
+    }
+  // ----- assertions inside this functions will not be evaluated (!!):
+  if(InProcess!=0)
+    { 
+      return;
+    }
+  InProcess=1;
+  // ----- no do it:
+  api=new KabAPI;
+  if(api->init()!=KabAPI::NoError) 
+    { 
+      cerr << "Assertion handler: intern error, aborting." << endl;
+      raise(SIGABRT);
+    }
+  sprintf(buffer, "%i", line);
+  AssertDialog dialog;
+  dialog.setMailAddress(AuthorEmailAddress.c_str());
+  dialog.setFile(file);
+  dialog.setLine(buffer);
+  dialog.setCondition(cond_text);
+  dialog.exec();
+  switch(dialog.getAction())
+    {
+    case 0: { // ignore the failure
+      break;
+    }
+    case 2: { // send mail to author
+      subject=(string)"["+(string)kapp->appName()+(string)"]"
+	+(string)" assertion failed (file "+file
+	+(string)", line "+(string)buffer
+	+(string)"): "+cond_text;
+      if(!dialog.getMailAddress().empty())
 	{
-	case 0: { // ignore the failure
-	  break;
+	  if(api->sendEmail(dialog.getMailAddress(), subject)
+	     !=KabAPI::NoError)
+	    {
+	      QMessageBox::information
+		(0, i18n("Error handling error"),
+		 i18n("Could not send message."));
+	    }
+	} else {
+	  QMessageBox::information
+	    (0, i18n("Error handling error"),
+	     i18n("The author did not publish an email address."));
 	}
-	default: // kill the app
-	  raise(SIGABRT);
-	  return; // never reached, I suppose
-	}
+      break;
+    }
+    default: // kill the app
+      raise(SIGABRT);
+      return; // never reached, I suppose
+    }
+  // ----- remove trash:
+  delete api; 
+  InProcess=0;
+  // ###########################################################################
+}
+
+void AssertDialog::setMailAddress(const char* address)
+{
+  // ###########################################################################
+  if(address)
+    { // careful with Null pointers!
+      email=address;
+    } else {
+      email="";
     }
   // ###########################################################################
 }
 
+const string& AssertDialog::getMailAddress()
+{
+  // ###########################################################################
+  return email;
+  // ###########################################################################
+}
 
+// #############################################################################
+// MOC OUTPUT FILES:
 #include "AssertDialog.moc"
 #include "AssertDialogData.moc"
+// #############################################################################
+
+
+

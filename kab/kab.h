@@ -1,19 +1,18 @@
-/*  -*- C++ -*-
- * Qt widget for the addressbook example.
- * Declaration.
+/* -*- C++ -*-
+ * Qt widget for the addressbook.
+ * Declaration
  *
- * the Configuration Database library
+ * the KDE addressbook
  * copyright:  (C) Mirko Sucker, 1998
  * license:    GNU Public License, Version 2
- * mail to:    Mirko Sucker <mirko.sucker@hamburg.netsurf.de>
- *                          <mirko.sucker@unibw-hamburg.de>
- * requires:   C++-compiler, STL, string class, 
- *             NANA (only for debugging)
+ * mail to:    Mirko Sucker <mirko.sucker@unibw-hamburg.de>
+ * requires:   C++-compiler, STL, string class, Qt > 1.40
+ *             NANA (for debugging)
  * $Revision$
  */
 
-#ifndef QADDRESSBOOK_WIDGET_H
-#define QADDRESSBOOK_WIDGET_H
+#ifndef ADDRESSBOOK_WIDGET_H
+#define ADDRESSBOOK_WIDGET_H
 
 class QLineEdit;
 class QFrame;
@@ -24,23 +23,19 @@ class QTimer;
 
 #include <qprinter.h>
 #include "addressbook.h"
-// #include "businesscard.h"
 class BusinessCard;
 class SearchResults;
-// #include "searchresults.h"
 #include <drag.h>
 
 class KFM;
 
-class AddressWidget 
-  : public QWidget,
-    public AddressBook
+class AddressWidget : public QWidget, public AddressBook
 {
+  // ############################################################################
   Q_OBJECT
+  // ----------------------------------------------------------------------------
 public:
-  AddressWidget(QWidget* parent=0, 
-		const char* name=0,
-		bool readonly=false);
+  AddressWidget(QWidget* parent=0, const char* name=0, bool readonly=false);
   ~AddressWidget();
   /** This method returns an email address. It is rather the first 
     * address or a user selection, if select is true.
@@ -65,6 +60,10 @@ public:
     * configuration section for this.
     */
   bool updateDB();
+  /** sendEmail sends an email to the address given.
+   */
+  bool sendEmail(const string& address, const string& subject="");
+  // ----------------------------------------------------------------------------
 protected:
   // the child widgets:
   QComboBox* comboSelector;
@@ -104,6 +103,7 @@ protected:
   // CONSTS
   static const unsigned int ButtonSize;
   static const unsigned int Grid;
+  // ----------------------------------------------------------------------------
 public slots:
   void initializeGeometry();
   void first();
@@ -134,12 +134,14 @@ public slots:
   void selectEntry(const char*); // the key
   void setReadonlyGUI(bool state=true);
   void checkFile();
+  // ----------------------------------------------------------------------------
 signals:
   void entrySelected(int current, int count);
   void sizeChanged();
   void enableMail(bool);
   void enableBrowse(bool);
   void setStatus(const char*);
+  // ############################################################################
 };
 
-#endif // QADDRESSBOOK_WIDGET_H
+#endif // ADDRESSBOOK_WIDGET_H

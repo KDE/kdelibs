@@ -24,12 +24,14 @@
 #include "stl_headers.h"
 #include <qlist.h>
 #include <qsize.h>
-#include <qdialog.h>
+#include "DialogBase.h"
 
 class StringListSelectAndReorderSet // a widget!, see dialog class below
   : public StringListSelectAndReorderSetData
 {
+  // ############################################################################
   Q_OBJECT
+  // ----------------------------------------------------------------------------
 public:
   StringListSelectAndReorderSet(QWidget* parent=0, const char* name=0); 
   virtual ~StringListSelectAndReorderSet(); 
@@ -52,9 +54,11 @@ public:
   bool select(const QList<int>& indizes);
   // the sizehint
   QSize sizeHint() const;
+  // ----------------------------------------------------------------------------
 protected slots:
    // enable or disable buttons
   void enableButtons(int);
+  // ----------------------------------------------------------------------------
 protected:
   // events:
   void resizeEvent(QResizeEvent*); 
@@ -73,22 +77,22 @@ protected:
   void down();
   void selectPressed();
   void unselectPressed();
+  // ############################################################################
 };
 
 // class name abbreviated...
 
 class StringListSAndRSetDialog
-  : public QDialog
+  : public DialogBase
 {
+  // ############################################################################
   Q_OBJECT
+  // ----------------------------------------------------------------------------
 public:
-  StringListSAndRSetDialog
-  (QWidget* par=0, const char* text=0, bool modal=true);
-  // this method returns the "core" selector widget:
-  // (use its methods)
+  StringListSAndRSetDialog(QWidget* par=0, const char* text=0, bool modal=true);
+  // this method returns the "core" selector widget (use its methods):
   StringListSelectAndReorderSet* selector();
-  /** You may allow the user to resize the dialog by calling
-    * fixSize(false);
+  /** You may allow the user to resize the dialog by calling fixSize(false);
     * By default the dialog has a fixed size computed at startup.
     * With variable sizes, the dialog sets a minimum size that 
     * the window manager hopefully respects (kwm does).
@@ -97,16 +101,22 @@ public:
   void fixSize(bool state); 
   // ----- method for querying "fixed size" state of the dialog:
   bool isSizeFixed();
+  // ----------------------------------------------------------------------------
 protected slots:
-  void initializeGeometry();
+  // void initializeGeometry();
+  // ----------------------------------------------------------------------------
+signals:
+  void sizeChanged();
+  // ----------------------------------------------------------------------------
 protected:
   StringListSelectAndReorderSet* sar;
   // events:
-  void resizeEvent(QResizeEvent*);
+  // void resizeEvent(QResizeEvent*);
   // the buttons:
-  QPushButton *buttonOK, *buttonCancel;
+  // QPushButton *buttonOK, *buttonCancel;
   // others: 
   bool sizeIsFixed; 
+  // ############################################################################
 };
 
 #endif // StringListSelectAndReorderSet_included

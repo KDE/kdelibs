@@ -1,6 +1,6 @@
 /* -*- C++ -*-
- * This class displays the search results inside the main view.
- * 
+ * A dialog to handle assertions raised in the code.
+ *
  * the Configuration Database library
  * copyright:  (C) Mirko Sucker, 1998
  * license:    GNU Public License, Version 2
@@ -23,29 +23,33 @@
 
 class SearchResults : public QWidget
 {
+  // ############################################################################
   Q_OBJECT
+  // ----------------------------------------------------------------------------
 public:
-  SearchResults(QWidget* parent=0, 
-		const char* name=0);
+  SearchResults(QWidget* parent=0, const char* name=0);
   void add(const string& key, const string& name);
   void clear(); // deletes all entries
   QSize sizeHint();
   void select(int);
   int size() { return results.size(); }
+  // ----------------------------------------------------------------------------
 protected:
   list<string> results;
   QListBox* listbox;
   QPushButton* buttonClose;
   QFrame* frameHorline;
-
   void resizeEvent(QResizeEvent*);
   static const int Grid;
+  // ----------------------------------------------------------------------------
 signals:
   void closed();
   void entrySelected(const char*);
+  // ----------------------------------------------------------------------------
 public slots:
   void closeClicked();
   void selected(int);
+  // ############################################################################
 };
 
 #endif // SEARCHRESULTS_H

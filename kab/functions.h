@@ -1,7 +1,5 @@
-#ifndef MS_CONFIGDATABASE_FUNCTIONS_H_INCLUDED
-#define MS_CONFIGDATABASE_FUNCTIONS_INCLUDED
-
-/* This file declares global functions.
+/* -*- C++ -*-
+ * This file declares global functions.
  * 
  * the Configuration Database library
  * copyright:  (C) Mirko Sucker, 1998
@@ -12,6 +10,9 @@
  *             Nana (only for debugging)
  * $Revision$
  */
+
+#ifndef MS_FUNCTIONS_H_INCLUDED
+#define MS_FUNCTIONS_INCLUDED
 
 #pragma interface
 
@@ -35,4 +36,4 @@ bool getHomeDirectory(string&);
   */
 bool htmlizeString(const string& orig, string& target);
 
-#endif // MS_CONFIGDATABASE_FUNCTIONS_H_INCLUDED
+#endif // MS_FUNCTIONS_H_INCLUDED

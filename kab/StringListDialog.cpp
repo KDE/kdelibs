@@ -20,22 +20,16 @@
 #include "arrow_down.xbm"
 #include "trash_open.xbm"
 
-#define Inherited StringListDialogData
-
 const int StringListDialog::ButtonSize=24;
 
-StringListDialog::StringListDialog
-(QWidget* parent, const char* name)
-  : Inherited( parent, name )
+StringListDialog::StringListDialog(QWidget* parent, const char* name)
+  : StringListDialogData(parent, name)
 {
-  // ########################################################
+  // ############################################################################
   // ----- load bitmaps:
-  QBitmap up
-    (16, 16, (unsigned char*)uparrow_bits, true);
-  QBitmap down
-    (16, 16, (unsigned char*)arrow_down_bits, true);
-  QBitmap erase
-    (16, 16, (unsigned char*)trashcan_bits, true);
+  QBitmap up(16, 16, (unsigned char*)uparrow_bits, true);
+  QBitmap down(16, 16, (unsigned char*)arrow_down_bits, true);
+  QBitmap erase(16, 16, (unsigned char*)trashcan_bits, true);
   // ----- set button texts and bitmaps
   buttonOK->setText(i18n("OK"));
   buttonCancel->setText(i18n("Cancel"));
@@ -44,72 +38,58 @@ StringListDialog::StringListDialog
   buttonDelete->setPixmap(erase);
   // ----- setup geometry:
   initializeGeometry();
-  // ########################################################
+  // ############################################################################
 }
 
 StringListDialog::~StringListDialog()
 {
+  // ############################################################################
+  // ############################################################################
 }
 
 void StringListDialog::initializeGeometry()
 {
-  // ########################################################
+  // ############################################################################
   const int Grid=5;
-  int cx, cy, tempy, tempx, buttonWidth, buttonHeight,
-    lbHeight;
+  int cx, cy, tempy, tempx, buttonWidth, buttonHeight, lbHeight;
   // ----- calculate size:
   tempy=leLine->sizeHint().height();
   tempx=(int)(1.5*leLine->sizeHint().width());
-  buttonWidth=
-    (buttonOK->sizeHint().width()>
-     buttonCancel->sizeHint().width())
-    ? buttonOK->sizeHint().width()
-    : buttonCancel->sizeHint().width();
+  buttonWidth=QMAX(buttonOK->sizeHint().width(),
+		   buttonCancel->sizeHint().width());
   buttonHeight=buttonOK->sizeHint().height();
-  tempx=
-    (tempx>(2*buttonWidth+Grid))
-    ? tempx
-    : 2*buttonWidth+Grid;
+  tempx=QMAX(tempx, 2*buttonWidth+Grid);
   cx=2*Grid+tempx;
   // ----- the line edit:
-  leLine->setGeometry
-    (Grid, Grid, tempx, tempy);
+  leLine->setGeometry(Grid, Grid, tempx, tempy);
   cy=tempy+2*Grid;
   // ----- the buttons and the listbox:
   lbHeight=7*lbStrings->itemHeight()+4;
-  lbStrings->setGeometry
-    (Grid, cy, cx-3*Grid-ButtonSize, 
-     lbHeight);
+  lbStrings->setGeometry(Grid, cy, cx-3*Grid-ButtonSize, lbHeight);
   tempx=2*Grid+lbStrings->width();
   tempy=0;
-  buttonUp->setGeometry
-    (tempx, cy+tempy, ButtonSize, ButtonSize);
+  buttonUp->setGeometry(tempx, cy+tempy, ButtonSize, ButtonSize);
   tempy+=ButtonSize+Grid;
-  buttonDown->setGeometry
-    (tempx, cy+tempy, ButtonSize, ButtonSize);
+  buttonDown->setGeometry(tempx, cy+tempy, ButtonSize, ButtonSize);
   tempy+=ButtonSize+Grid;
-  buttonDelete->setGeometry
-    (tempx, cy+tempy, ButtonSize, ButtonSize);
+  buttonDelete->setGeometry(tempx, cy+tempy, ButtonSize, ButtonSize);
   tempy+=ButtonSize+Grid;
-  cy+=tempy>lbHeight ? tempy : lbHeight;
+  cy+=QMAX(tempy, lbHeight);
   // ----- the horizontal line:
-  frameLine->setGeometry
-    (Grid, cy, cx-2*Grid, Grid);
+  frameLine->setGeometry(Grid, cy, cx-2*Grid, Grid);
   cy+=2*Grid;
   // ----- the cancel & the ok button:
-  buttonOK->setGeometry
-    (Grid, cy, buttonWidth, buttonHeight);
-  buttonCancel->setGeometry
-    (cx-Grid-buttonWidth, cy, buttonWidth, buttonHeight);
+  buttonOK->setGeometry(Grid, cy, buttonWidth, buttonHeight);
+  buttonCancel->setGeometry(cx-Grid-buttonWidth, cy, buttonWidth, buttonHeight);
   cy+=buttonHeight+Grid;
   // ----- resize the widget:
   setFixedSize(cx, cy);
-  // ########################################################
+  // ############################################################################
 }
 
 void StringListDialog::set(const list<string>& strings)
 {
-  // ########################################################
+  // ############################################################################
   list<string>::const_iterator pos;
   // -----
   lbStrings->clear();
@@ -118,12 +98,12 @@ void StringListDialog::set(const list<string>& strings)
       lbStrings->insertItem((*pos).c_str());
     }
   CHECK(lbStrings->count()==strings.size());
-  // ########################################################
+  // ############################################################################
 }
 
 list<string> StringListDialog::get()
 {
-  // ########################################################
+  // ############################################################################
   list<string> strings;
   unsigned int count;
   // -----
@@ -131,50 +111,50 @@ list<string> StringListDialog::get()
     {
       strings.push_back(lbStrings->text(count));
     }
-  CHECK(strings.size()==lbStrings->count());
+  ENSURE(strings.size()==lbStrings->count());
   return strings;
-  // ########################################################
+  // ############################################################################
 }
 
 void StringListDialog::addString()
 {
-  // ########################################################
+  // ############################################################################
   string text=leLine->text();
+  // ----
   if(text.empty())
     {
       qApp->beep();
     } else {
       lbStrings->insertItem(text.c_str());
     }
-  // ########################################################
+  // ############################################################################
 }
 
 void StringListDialog::deletePressed()
 {
-  // ########################################################
+  // ############################################################################
   int index=lbStrings->currentItem();
+  // -----
   if(index==-1)
     {
       qApp->beep();
     } else {
       lbStrings->removeItem(index);
     }
-  // ########################################################
+  // ############################################################################
 }
 
 void StringListDialog::upPressed()
 {
   ID(bool GUARD=true);
-  // ########################################################
+  // ############################################################################
   int index=lbStrings->currentItem();
   string text;
   // -----
-  LG(GUARD, "StringListDialog::upPressed: "
-     "moving item %i up.\n", index);
+  LG(GUARD, "StringListDialog::upPressed: moving item %i up.\n", index);
   if(index==-1 || lbStrings->count()<2)
     {
-      LG(GUARD, "StringListDialog::upPressed: "
-	 "nothing selected.\n");
+      LG(GUARD, "StringListDialog::upPressed: nothing selected.\n");
       qApp->beep();
     } else {
       if(index!=0)
@@ -188,22 +168,20 @@ void StringListDialog::upPressed()
 	  qApp->beep();
 	}
     }	  
-  // ########################################################
+  // ############################################################################
 }
 
 void StringListDialog::downPressed()
 {
   ID(bool GUARD=true);
-  // ########################################################
+  // ############################################################################
   int index=lbStrings->currentItem();
   string text;
   // -----
-  LG(GUARD, "StringListDialog::downPressed: "
-     "moving item %i down.\n", index);
+  LG(GUARD, "StringListDialog::downPressed: moving item %i down.\n", index);
   if(index==-1 || lbStrings->count()<2)
     {
-      LG(GUARD, "StringListDialog::downPressed: "
-	 "nothing selected.\n");
+      LG(GUARD, "StringListDialog::downPressed: nothing selected.\n");
       qApp->beep();
     } else {
       if((unsigned)index+1!=lbStrings->count())
@@ -217,9 +195,12 @@ void StringListDialog::downPressed()
 	  qApp->beep();
 	}
     }
-  // ########################################################
+  // ############################################################################
 }
 
+// #############################################################################
+// MOC OUTPUT FILES:
 #include "StringListDialog.moc"
 #include "StringListDialogData.moc"
+// #############################################################################
 

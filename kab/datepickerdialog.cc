@@ -17,11 +17,10 @@
 #include <qpushbutton.h>
 #include <qdialog.h>
 
-DatePickerDialog::DatePickerDialog
-(QWidget* parent, const char* name)
+DatePickerDialog::DatePickerDialog(QWidget* parent, const char* name)
   : QDialog(parent, name, TRUE)
 {
-  // ########################################################
+  // ############################################################################
   datePicker=new KDatePicker(this);
   ok=new QPushButton(i18n("OK"), this);
   cancel=new QPushButton(i18n("Cancel"), this);
@@ -33,51 +32,45 @@ DatePickerDialog::DatePickerDialog
   connect(cancel, SIGNAL(clicked()), SLOT(reject()));
   connect(ok, SIGNAL(clicked()), SLOT(accept()));
   setCaption(i18n("Select birthday"));
-  // ########################################################
+  // ############################################################################
 }
 
 void DatePickerDialog::initializeGeometry()
 {
-  // ########################################################
+  // ############################################################################
   const int Grid=5;
   QSize size;
   int x=0, y=Grid, cx, cy;
-  CHECK_PTR(ok); CHECK_PTR(cancel); 
-  CHECK_PTR(datePicker); CHECK_PTR(dateLabel);
   // -----
   size=datePicker->sizeHint();
-  datePicker->setGeometry(Grid, y, 
-			  size.width(), size.height());
+  datePicker->setGeometry(Grid, y, size.width(), size.height());
   y+=size.height()+Grid;
   x+=2*Grid+size.width();
   // -----
-  dateLabel->setGeometry(Grid, y, 
-			 x-2*Grid, 
-			 dateLabel->sizeHint().height());
+  dateLabel->setGeometry(Grid, y, x-2*Grid, dateLabel->sizeHint().height());
   y+=dateLabel->sizeHint().height()+Grid;
   // -----
   cy=ok->sizeHint().height();
-  (ok->sizeHint().width()>cancel->sizeHint().width())
-    ? cx=ok->sizeHint().width() 
-    : cx=cancel->sizeHint().width();
+  ok->sizeHint().width()>cancel->sizeHint().width()
+    ? cx=ok->sizeHint().width() : cx=cancel->sizeHint().width();
   ok->setGeometry(Grid, y, cx, cy);
   cancel->setGeometry(x-Grid-cx, y, cx, cy);
   y+=cy+Grid;
   // -----
   setFixedSize(x, y);
-  // ########################################################
+  // ############################################################################
 }  
 
 const QDate& DatePickerDialog::getDate()
 {
-  // ########################################################
+  // ############################################################################
   return dateLabel->getDate();
-  // ########################################################
+  // ############################################################################
 }
 
 bool DatePickerDialog::setDate(const QDate& newdate)
 {
-  // ########################################################
+  // ############################################################################
   if(newdate.isValid())
     {
       datePicker->setDate(newdate);
@@ -86,31 +79,31 @@ bool DatePickerDialog::setDate(const QDate& newdate)
     } else {
       return false;
     }
-  // ########################################################
+  // ############################################################################
 }
 DatePickerDialog::~DatePickerDialog()
 {
+  // ############################################################################
+  // ############################################################################
 }
 
-DateLabel::DateLabel
-(QWidget* parent=0, 
- const char* name=0, 
- const QDate& dateToSet)
+DateLabel::DateLabel(QWidget* parent=0, const char* name=0, 
+		     const QDate& dateToSet)
   : QLabel(parent, name),
     date(dateToSet),
     changeDate(false)
 {
-  // ########################################################
+  // ############################################################################
   setAlignment(AlignVCenter | AlignCenter);
   setBackgroundColor("peachpuff");
   setFrameStyle(QFrame::Box | QFrame::Plain);
   setText(date.toString());
-  // ########################################################
+  // ############################################################################
 }
 
 void DateLabel::setDate(QDate newDate)
 {
-  // ########################################################
+  // ############################################################################
   date=newDate;
   if(newDate.isValid())
     {
@@ -119,47 +112,48 @@ void DateLabel::setDate(QDate newDate)
       setText("");
     }
   emit(dateSelected(date));
-  // ########################################################
+  // ############################################################################
 }
 
 void DateLabel::setDate()
 {
-  // ########################################################
+  // ############################################################################
   DatePickerDialog* datePicker=new DatePickerDialog(this);
+  // -----
   datePicker->setDate(date);
   if(datePicker->exec())
-    {
-      // ok was pressed
+    { // ok was pressed
       setDate(datePicker->getDate());
-    } else {
-      // abandon all changes
     }
-  // ########################################################
+  delete datePicker;
+  // ############################################################################
 }
 
 void DateLabel::enableChangeDialog(bool state)
 {
-  // ########################################################
+  // ############################################################################
   changeDate=state;
-  // ########################################################
+  // ############################################################################
 }
 
 void DateLabel::mouseDoubleClickEvent(QMouseEvent*)
 {
-  // ########################################################
+  // ############################################################################
   if(changeDate)
     {
       setDate();
     }
-  // ########################################################
+  // ############################################################################
 }
 
 const QDate& DateLabel::getDate()
 {
-  // ########################################################
+  // ############################################################################
   return date;
-  // ########################################################
+  // ############################################################################
 }
 
-
+// #############################################################################
+// MOC OUTPUT FILES:
 #include "datepickerdialog.moc"
+// #############################################################################

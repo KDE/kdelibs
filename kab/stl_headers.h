@@ -6,12 +6,12 @@
  * with g++ 2.7.2 and the SGI STL shipped with later 
  * versions.
  * 
- * the Configuration Database library
+ * the KDE addressbook
  * copyright:  (C) Mirko Sucker, 1998
  * license:    GNU Public License, Version 2
- * mail to:    Mirko Sucker <mirko.sucker@hamburg.netsurf.de>
- *                          <mirko.sucker@unibw-hamburg.de>
- * requires:   C++-compiler, STL, string class, NANA
+ * mail to:    Mirko Sucker <mirko.sucker@unibw-hamburg.de>
+ * requires:   C++-compiler, STL, string class, Qt > 1.40
+ *             NANA (for debugging)
  * $Revision$
  */
 

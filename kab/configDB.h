@@ -118,9 +118,11 @@ public:
 protected:
   list<string> stringToKeylist(const string&);
   // data elements
-  string filename; bool readonly; bool locked;
+  string filename; 
+  bool readonly; 
+  bool locked;
   // to recognize file changes, 0 if unknown (new file):
-  time_t mtime;
+  time_t mtime; // stores modification time of last check
   // for internal use: lock other files:
   bool lock(const string& file);
   // debugging aid: called from REQUIRE and ENSURE macros:

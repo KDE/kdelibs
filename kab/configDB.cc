@@ -26,7 +26,8 @@ list<string> ConfigDB::LockFiles;
 
 ConfigDB::ConfigDB()
   : readonly(true),
-    locked(false)
+    locked(false),
+    mtime(0)
 {
   // ########################################################
   // ########################################################
@@ -137,7 +138,9 @@ bool ConfigDB::setFileName
 		  return false;
 		}
 	    }
-	  storeFileAge(); CHECK(storeFileAge());
+	  // make sure the file exists on disk before calling
+	  // storeFileAge() ! 
+	  // storeFileAge(); CHECK(storeFileAge());
 	  return true;
 	}
     }
@@ -288,6 +291,7 @@ bool ConfigDB::createSection(const list<string>& key)
 	      section=temp; 
 	    } else {
 	      CHECK(false); // this may not happen
+	      delete temp;
 	    }
 	}
       ++pos;
@@ -625,11 +629,17 @@ bool ConfigDB::fileChanged()
 	}
     } else {
       LG(GUARD, "ConfigDB::save: could not stat file, "
-	 "aborting.\n");
-      // error stating an existing file? very strange!
-      CHECK(false);
+	 "file does not exist.\n");
+      if(mtime==0)
+	{ // the file did never exist for us:
+	  return false; // ... so it has not changed
+	} else { // it existed, and now it does no more
+	  return true;
+	}
+      //       // error stating an existing file? very strange!
+      //       CHECK(false);
     }
-  return false; // should be unreachable
+  // return false; // should be unreachable
   // ########################################################
 }
   

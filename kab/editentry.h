@@ -1,8 +1,5 @@
-// -*- C++ -*-
-#ifndef EDITENTRYDIALOG_H
-#define EDITENTRYDIALOG_H
-
-/* This file implements the dialog for editing an entry.
+/* -*- C++ -*-
+ * This file implements the dialog for editing an entry.
  * Declaration
  *
  * the Configuration Database library
@@ -15,6 +12,9 @@
  * $Revision$
  */
 
+#ifndef EDITENTRYDIALOG_H
+#define EDITENTRYDIALOG_H
+
 #include <qtabdialog.h>
 #include <qlineedit.h>
 #include <qmultilinedit.h> 
@@ -24,11 +24,14 @@
 
 class EditEntryDialog : public QTabDialog
 {
+  // ############################################################################
   Q_OBJECT
+  // ----------------------------------------------------------------------------
 public:
   EditEntryDialog(QWidget* parent=0, const char* name=0);
   AddressBook::Entry getEntry();
   void setEntry(const AddressBook::Entry&);
+  // ----------------------------------------------------------------------------
 protected:
   // the "name" tab
   QLineEdit *leTitle, *leFirstName, *leAddName, 
@@ -39,23 +42,25 @@ protected:
   // the "organization" tab
   QLineEdit *leOrg, *leOrgUnit, *leOrgSubUnit;
   // the "contact" tab
-  QLineEdit // *leEmail1, *leEmail2, *leEmail3,
-    *leTelephone, *leFax, *leModem, *leURL;
+  QLineEdit *leTelephone, *leFax, *leModem, *leURL;
   // the "others" tab
   QMultiLineEdit* mleComment;
   DateLabel* dlBirthDay;
-  QPushButton* pbTalk;
-  QPushButton* pbEmails;
-  // ------
+  QPushButton *pbTalk, *pbEmails;
   AddressBook::Entry entry;
   // ------
   void createTabs();
+  // ----------------------------------------------------------------------------
 public slots:
   void okPressed();
   void cancelPressed();
   void editTalkAddresses();
   void editEmailAddresses();
+  // ############################################################################
 };
 
 #endif // EDITENTRYDIALOG_H
+
+
+
 
