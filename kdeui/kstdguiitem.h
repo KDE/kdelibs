@@ -16,10 +16,11 @@
    Boston, MA 02111-1307, USA.
 */
 
-class KGuiItem;
-
 #ifndef __kstdguiitem_h
 #define __kstdguiitem_h
+
+// Needed for the template below
+#include <kguiitem.h>
 
 #include <qstring.h>
 #include <qpair.h>
