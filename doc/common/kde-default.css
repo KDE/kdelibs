@@ -299,6 +299,7 @@ div.mediaobject {
 
 .caption { 
   margin: 0em 2em 3em 2em; 
+  text-align: center;
 }
 
 .inlinemediaobject { 
