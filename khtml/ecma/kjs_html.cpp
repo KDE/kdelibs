@@ -108,6 +108,9 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
   case Anchors:
     coll = doc.anchors();
     break;
+  case All:
+    coll = doc.all();
+    break;
 /*  ### document.open() and document.close() disabled for now because they cause crashes
   case Open:
     doc.open();
