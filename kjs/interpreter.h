@@ -390,9 +390,14 @@ namespace KJS {
     Value exception() const;
     bool hadException() const;
 
+    /*
+     * request for ending execution with an exception
+     */
+    static void requestTerminate() { terminate_request = true; }
   private:
     ExecState(Interpreter *interp, ContextImp *con);
     ExecStateImp *rep;
+    static bool terminate_request;
   };
 
 }; // namespace
