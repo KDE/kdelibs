@@ -148,7 +148,7 @@ void KStartupInfo::new_startup_info_internal( const KStartupInfoId& id_P,
         d->startups[ id_P ].update( data_P );
         d->startups[ id_P ].age = 0; // CHECKME
         kdDebug( 172 ) << "updating" << endl;
-        emit gotStartupChange( id_P, data_P );
+        emit gotStartupChange( id_P, d->startups[ id_P ] );
         return;
         }
     if( update_only_P )
