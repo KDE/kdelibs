@@ -4,222 +4,222 @@
 #
 #Format : number<tab>description
 
-125	kdecore (KAccel)
-126	kdecore (KURL)
-127	kdecore (KProtocolManager)
-128	kdecore (KRegExp)
-150	kdecore (KLibLoader)
-160	kdecore (KNotifyClient)
-170	kdecore (KSocket)
-171	kdecore (KSocks)
-200	kdeui (KMainWindow)
-220	kdeui (KToolBar)
-230	kdeui (KCommand)
-250	kfile (kdelibs)
-264	kdecore (KIconLoader)
-265	kdecore (KIconEffect)
-270	kdeui (KRootPixmap)
-280	kdeui (KSharedPixmap)
-290	kdeui (KPixmapIO)
-291	kdeui (KAboutDialog)
-750	kspell (kdelibs)
-800	kabapi (kdelibs)
-900	kdesu (kdelibs)
+125        kdecore (KAccel)
+126        kdecore (KURL)
+127        kdecore (KProtocolManager)
+128        kdecore (KRegExp)
+150        kdecore (KLibLoader)
+160        kdecore (KNotifyClient)
+170        kdecore (KSocket)
+171        kdecore (KSocks)
+200        kdeui (KMainWindow)
+220        kdeui (KToolBar)
+230        kdeui (KCommand)
+250        kfile (kdelibs)
+264        kdecore (KIconLoader)
+265        kdecore (KIconEffect)
+270        kdeui (KRootPixmap)
+280        kdeui (KSharedPixmap)
+290        kdeui (KPixmapIO)
+291        kdeui (KAboutDialog)
+750        kspell (kdelibs)
+800        kabapi (kdelibs)
+900        kdesu (kdelibs)
 
-1000	kparts
-1001	kparts (mainwindow)
-1002	kparts (factory)
+1000        kparts
+1001        kparts (mainwindow)
+1002        kparts (factory)
 
 # kdebase
-1201	konqtree
-1202	konqueror
-1203	libkonq
-1204	kdesktop
-1205	kdesud
-1206	kdesu
-1207	kdesktop (Minicli)
-1208	kcontrol
-1210	kicker
-1211	konsole
+1201        konqtree
+1202        konqueror
+1203        libkonq
+1204        kdesktop
+1205        kdesud
+1206        kdesu
+1207        kdesktop (Minicli)
+1208        kcontrol
+1210        kicker
+1211        konsole
 
-1400	khelpcenter (kdebase)
+1400        khelpcenter (kdebase)
 
-1420	kikbd
-1421	ki18b_keys (kcmodule)
+1420        kikbd
+1421        ki18b_keys (kcmodule)
 
-1430	nspluginviewer (Qt/Xt)
-1431	nspluginviewer (plugin)
-1432	nspluginviewer (part)
-1433	nspluginscan
+1430        nspluginviewer (Qt/Xt)
+1431        nspluginviewer (plugin)
+1432        nspluginviewer (part)
+1433        nspluginscan
 
 # kdeutils
-1501	khexedit (kdeutils)
-1511	kdessh (kdeutils)
-1512	kdepasswd (kdeutils)
-1520	knotes (kdeutils)
-1601	ark (kdeutils)
-1901	kfind
-1902	kfind (KfindWindow::updateResults)
-1903	kfind (KfindTabDialog::createQuery)
-2000	kfind
+1501        khexedit (kdeutils)
+1511        kdessh (kdeutils)
+1512        kdepasswd (kdeutils)
+1520        knotes (kdeutils)
+1601        ark (kdeutils)
+1901        kfind
+1902        kfind (KfindWindow::updateResults)
+1903        kfind (KfindTabDialog::createQuery)
+2000        kfind
 
 # kdeadmin
-3000	ksysv 
+3000        ksysv 
 3100    ksysv (model)
 
 # kdegraphics
-4300	kdvi (kdegraphics)
-4400	kpaint (kdegraphics)
-4500	kghostview (kdegraphics)
+4300        kdvi (kdegraphics)
+4400        kpaint (kdegraphics)
+4500        kghostview (kdegraphics)
 
 # kdenetwork
-5001	caitoo
-5002	kppp
-5003	knode
-5004	kdict
-5005	knewsticker
-5100	libkdenetwork
+5001        caitoo
+5002        kppp
+5003        knode
+5004        kdict
+5005        knewsticker
+5100        libkdenetwork
 
 # kdepim
-5510	kpilot
-5511	kpilotdaemon
-5512	kpilotconduit
+5510        kpilot
+5511        kpilotdaemon
+5512        kpilotconduit
 5600    gofai
 
 # libkhtml
-6000	khtml
-6005	khtml (encoding)
-6010	khtml (dom)
-6020	khtml (xml)
-6030	khtml (html)
-6031	khtml (frames & objects)
-6035	khtml (parser)
-6036	khtml (tokenizer)
-6040	khtml (render)
-6041	khtml (bidi)
-6045	khtml (rendering tree)
-6050	khtml (part)
-6060	khtml (cache)
-6070	khtml (jscript)
-6080	khtml (css)
-6090	khtml (memory)
-6100	kjas
+6000        khtml
+6005        khtml (encoding)
+6010        khtml (dom)
+6020        khtml (xml)
+6030        khtml (html)
+6031        khtml (frames & objects)
+6035        khtml (parser)
+6036        khtml (tokenizer)
+6040        khtml (render)
+6041        khtml (bidi)
+6045        khtml (rendering tree)
+6050        khtml (part)
+6060        khtml (cache)
+6070        khtml (jscript)
+6080        khtml (css)
+6090        khtml (memory)
+6100        kjas
 # libkio
-7001	kio (KDirWatch)
-7002	kio (Slave)
-7003	kio (KDirLister)
-7005	kio (Filter)
-7006	kio (Scheduler)
-7007	kio (KIOJob)
-7009	kio (KMimeType)
-7010	kio (KRun)
-7011	kio (KSycoca)
-7012	kio (KService*)
-7013	kio (KPing)
-7014	kio (KTrader)
-7015	kio (KAutoMount)
-7016	kio (KLauncher)
-7017	kio (KIOConnection)
-7018	kio (KMimeMagic)
-7019	kio (kioslave)
-7020	kded
-7021	kbuildsycoca
-7022	kurifilter
-7023	kurifilter (plugins)
-7024	kio (UIServer)
+7001        kio (KDirWatch)
+7002        kio (Slave)
+7003        kio (KDirLister)
+7005        kio (Filter)
+7006        kio (Scheduler)
+7007        kio (KIOJob)
+7009        kio (KMimeType)
+7010        kio (KRun)
+7011        kio (KSycoca)
+7012        kio (KService*)
+7013        kio (KPing)
+7014        kio (KTrader)
+7015        kio (KAutoMount)
+7016        kio (KLauncher)
+7017        kio (KIOConnection)
+7018        kio (KMimeMagic)
+7019        kio (kioslave)
+7020        kded
+7021        kbuildsycoca
+7022        kurifilter
+7023        kurifilter (plugins)
+7024        kio (UIServer)
 
-# 71xx	are for kioslaves
-7101	kio_file
-7102	kio_ftp
-7103	kio_http
-7104	kcookiejar
-7105	kio_pop3
-7106	kio_smb
-7107	kio_man
-7108	kio_info
-7109	kio_tar
-7110	kio_gzip
-7111	kio_sql
-7113	kio_http_debug
-7114	kio_nntp
-7115	kio_thumbnail
-7116	kio_imap
+# 71xx        are for kioslaves
+7101        kio_file
+7102        kio_ftp
+7103        kio_http
+7104        kcookiejar
+7105        kio_pop3
+7106        kio_smb
+7107        kio_man
+7108        kio_info
+7109        kio_tar
+7110        kio_gzip
+7111        kio_sql
+7113        kio_http_debug
+7114        kio_nntp
+7115        kio_thumbnail
+7116        kio_imap
 
 # kdevelop
-9000	kdevelop (core)
-9001	kdevelop (grep view)
-9002	kdevelop (doc tree view)
-9003	kdevelop (class view)
-9004	kdevelop (output views)
-9005	kdevelop (qextmdi)
-9006	kdevelop (cvs interface)
-9007	kdevelop (cpp support)
-9008	kdevelop (gcc options)
-9009	kdevelop (projectview)
-9020	kdevelop (kdeprojectspace)
+9000        kdevelop (core)
+9001        kdevelop (grep view)
+9002        kdevelop (doc tree view)
+9003        kdevelop (class view)
+9004        kdevelop (output views)
+9005        kdevelop (qextmdi)
+9006        kdevelop (cvs interface)
+9007        kdevelop (cpp support)
+9008        kdevelop (gcc options)
+9009        kdevelop (projectview)
+9020        kdevelop (kdeprojectspace)
 
 # toys and games
-10000	amor
-11000	libkdegames
-11001	libkdegames (KGame)
+10000        amor
+11000        libkdegames
+11001        libkdegames (KGame)
 
-#Kate/KWrite
+#Kate/Kant/KWrite 
 13000   Kate
-13010   Kate (XML)
+13010   Kate (XML/Syntax)
 13020   Kate (Document)
 13030   Kate (View)
 13040   Kate (Plugins)
 
 
 # KDB
-20000	KDB (core)
-20001	KDB (ui)
-20010	KDB (DBEngine)
-20011	KDB (Connection)
-20012	KDB (plugin)
+20000        KDB (core)
+20001        KDB (ui)
+20010        KDB (DBEngine)
+20011        KDB (Connection)
+20012        KDB (plugin)
 
 # kafka
-25000	Kafka (kafkapp)
-25001	Kafka (kafkaeditpart)
-25002	Kafka (kafkapluginloader)
-25003	Kafka (kafkaplugins)
-25004	Kafka (kafkaobjectmgr)
-25005	Kafka (kafkadom)
+25000        Kafka (kafkapp)
+25001        Kafka (kafkaeditpart)
+25002        Kafka (kafkapluginloader)
+25003        Kafka (kafkaplugins)
+25004        Kafka (kafkaobjectmgr)
+25005        Kafka (kafkadom)
 
 # libkscan / kooka
 28000   Kooka
 29000   libkscan
 
 # 30001-40000 are for KOffice
-30001	koffice (lib koml)
-30002	koffice (lib store)
-30003	koffice (lib kofficecore)
-30004	koffice (lib kofficeui)
-30501	csvfilter
-30502	asciifilter
-30503	htmlfilter
-30504	wmffilter
-30505	msodfilter
-30506	abiwordfilter
-30510	ole-lib
-30511	ole-excel
-30512	ole-powerpoint
-30513	ole-winword
-31000	koffice
-32001	kword
-32002	kword (formatting)
-32003	kword (UI)
-33000	kword
-33001	kpresenter
-34000	kpresenter
-34001	klyx
-35000	klyx
-35001	kchart
-36000	kchart
-36001	kspread
-36002	kspread (cell)
-37000	kspread
-37001	graphite
-38000	killustrator
-39001	kformula
-40000	kformula
+30001        koffice (lib koml)
+30002        koffice (lib store)
+30003        koffice (lib kofficecore)
+30004        koffice (lib kofficeui)
+30501        csvfilter
+30502        asciifilter
+30503        htmlfilter
+30504        wmffilter
+30505        msodfilter
+30506        abiwordfilter
+30510        ole-lib
+30511        ole-excel
+30512        ole-powerpoint
+30513        ole-winword
+31000        koffice
+32001        kword
+32002        kword (formatting)
+32003        kword (UI)
+33000        kword
+33001        kpresenter
+34000        kpresenter
+34001        klyx
+35000        klyx
+35001        kchart
+36000        kchart
+36001        kspread
+36002        kspread (cell)
+37000        kspread
+37001        graphite
+38000        killustrator
+39001        kformula
+40000        kformula
