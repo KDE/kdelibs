@@ -25,7 +25,7 @@ KAutoConfigDialog::KAutoConfigDialog(QWidget *parent,const char *name,
   openDialogs.insert(name, this);
   kdialogbase = new KDialogBase( dialogType, i18n("Configure"), parent, name, modal,
 	Qt::WStyle_DialogBorder | Qt::WDestructiveClose,
-	KDialogBase::Default | KDialogBase::Ok | KDialogBase::Apply | KDialogBase::Cancel);
+	KDialogBase::Default | KDialogBase::Ok | KDialogBase::Apply | KDialogBase::Cancel | KDialogBase::Help );
 
   kautoconfig = new KAutoConfig(kdialogbase, "kautoconfig");
   connect(kautoconfig, SIGNAL(settingsChanged()), this, SIGNAL(settingsChanged()));
