@@ -164,6 +164,7 @@ main
 	  {
 	  }
 	| /* empty */
+	;
 	
 includes
 	: T_INCLUDE includes
@@ -181,6 +182,7 @@ includes
 dcoptag
 	: T_DCOP { $$ = 1; }
 	| /* empty */ { $$ = 0; }
+	;
 
 declaration
 	: T_CLASS Identifier class_header dcoptag body T_SEMICOLON
@@ -239,10 +241,12 @@ declaration
 	| enum
 	  {
 	  }
+	;
 
 member_list
 	: member member_list
 	| /* empty */
+	;
 
 bool_value: T_TRUE | T_FALSE;
 
@@ -261,12 +265,15 @@ nodcop_area_begin
 	  dcop_area = 0;
 	  dcop_signal_area = 0;
 	}
+	;
 
 dcop_area_begin
 	: T_DCOP_AREA T_COLON
 	{
 	  dcop_area = 1;
+	  dcop_signal_area = 1;
 	}
+	;
 
 dcop_signal_area_begin
 	: T_DCOP_SIGNAL_AREA T_COLON
@@ -278,7 +285,8 @@ dcop_signal_area_begin
 	  dcop_area = 1;
 	  dcop_signal_area = 1;
 	}
-
+	;
+	
 Identifier
 	: T_IDENTIFIER {
 	  $$ = $1;
@@ -288,6 +296,7 @@ Identifier
            *tmp = tmp->arg(*($1)).arg(*($3));
            $$ = tmp;
 	}
+	;
 		
 super_class_name
 	: Identifier
@@ -302,6 +311,7 @@ super_class_name
 		*tmp = tmp->arg( *($1) + "&lt" + *($3) + "&gt;" );
 		$$ = tmp;
 	  }
+	;
 
 super_class
 	: virtual_qualifier T_PUBLIC super_class_name
@@ -409,20 +419,24 @@ body
           {
                 $$ = $6;
           }
+	;
 
 enum
 	: T_ENUM T_IDENTIFIER T_LEFT_CURLY_BRACKET enum_list T_RIGHT_CURLY_BRACKET T_IDENTIFIER T_SEMICOLON
 	| T_ENUM T_IDENTIFIER T_LEFT_CURLY_BRACKET enum_list T_RIGHT_CURLY_BRACKET T_SEMICOLON
 	| T_ENUM T_LEFT_CURLY_BRACKET enum_list T_RIGHT_CURLY_BRACKET T_IDENTIFIER T_SEMICOLON
 	| T_ENUM T_LEFT_CURLY_BRACKET enum_list T_RIGHT_CURLY_BRACKET T_SEMICOLON
+	;
 
 enum_list
 	: enum_item T_COMMA enum_list
 	| enum_item
+	;
 
 enum_item
 	: T_IDENTIFIER T_EQUAL int_expression {}
 	| T_IDENTIFIER {}
+	;
 
 number
 	: T_CHARACTER_LITERAL {}
@@ -430,11 +444,13 @@ number
 	| T_MINUS T_INTEGER_LITERAL {}
 	| T_NULL {}
 	| Identifier {}
+	;
 	
 int_expression
 	: number {}
 	| number T_PLUS number {}
 	| number T_SHIFT number {}
+	;
 
 typedef
 	: T_TYPEDEF Identifier T_LESS type_list T_GREATER Identifier T_SEMICOLON
@@ -452,6 +468,7 @@ typedef
 		if (dcop_area)
 		  yyerror("scoped template typedefs are not supported in dcop areas!");
 	  }
+	;
 
 const_qualifier
 	: /* empty */
@@ -485,10 +502,12 @@ int_type
 	| T_CHAR { $$ = new QString("char"); }
 	| T_SIGNED T_CHAR { $$ = new QString("signed char"); }
 	| T_UNSIGNED T_CHAR { $$ = new QString("unsigned char"); }
+	;
 
 asterisks
 	: T_ASTERISK asterisks
 	| T_ASTERISK
+	;
 
 params
 	: /* empty */
@@ -521,6 +540,7 @@ type_name
 		*tmp = tmp->arg(*($6));
 		$$ = tmp;
 	 }
+	;
 
 /* List of types inside a template def like QMap< blah, blah > */
 templ_type_list
@@ -532,6 +552,7 @@ templ_type_list
   	  {
  	    $$ = $1;
 	  }
+	;
 
 /* One type inside a template. No '&' or const here. */
 templ_type
@@ -544,6 +565,7 @@ templ_type
   	  {
  	    $$ = $1;
 	  }
+	;
 
 /* The hi-level, complete definition of a type, which also generates
    the <TYPE> tag for it */
@@ -580,7 +602,7 @@ type
 	    if (dcop_area)
 	      yyerror("in dcop areas are no pointers allowed");
 	  }
-
+	;
 
 type_list
 	: type T_COMMA type_list
@@ -591,6 +613,7 @@ type_list
   	  {
  	    $$ = $1;
 	  }
+	;
 	
 param
 	: type Identifier default
@@ -616,6 +639,7 @@ param
 			yyerror("variable arguments not supported in dcop area.");
 		$$ = new QString("");
 	  }
+	;
 
 default
 	: /* empty */
@@ -650,9 +674,11 @@ default_value
 virtual_qualifier
 	: /* empty */ { $$ = 0; }
 	| T_VIRTUAL { $$ = 1; }
+	;
 
 operator
-	: T_MISCOPERATOR | T_SHIFT | T_GREATER | T_LESS | T_EQUAL ;
+	: T_MISCOPERATOR | T_SHIFT | T_GREATER | T_LESS | T_EQUAL
+	;
 
 function_header
 	: type Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS const_qualifier
@@ -692,22 +718,27 @@ function_header
 		yyerror("operators aren't allowed in dcop areas!");
 	     $$ = new QString("");
 	  }
+	;
 
 argument
     : number {}
     | bool_value {}
     | T_IDENTIFIER T_LEFT_PARANTHESIS T_RIGHT_PARANTHESIS {}
+	;
 
 arguments
 	: argument {}
 	| argument T_COMMA arguments {}
+	;
 	
 init_item
 	: T_IDENTIFIER T_LEFT_PARANTHESIS arguments T_RIGHT_PARANTHESIS {}
+	;
 
 init_list
 	: init_item {}
 	| init_item T_COMMA init_list {}
+	;
 
 function
 	: function_header function_body
@@ -751,33 +782,41 @@ function
                  $$ = new QString();
               }  
 	  }      
+	;
 
 function_begin : T_LEFT_CURLY_BRACKET
 	{
 		function_mode = 1;
 	}
+	;
 	
 function_body
 	: T_SEMICOLON
 	| function_begin function_lines T_RIGHT_CURLY_BRACKET
 	| function_begin function_lines T_RIGHT_CURLY_BRACKET T_SEMICOLON
+	;
 
 function_lines
 	: function_line function_lines {}
 	| /* empty */ {}
+	;
 
 function_line
 	: T_SEMICOLON /* dummy */
+	;
 
 Identifier_list_rest
 	: T_COMMA Identifier_list
 	| /* empty */
+	;
 
 Identifier_list_entry : T_IDENTIFIER {}
                       | T_IDENTIFIER T_EQUAL default_value {}
                       | asterisks T_IDENTIFIER {}
+	;
 
 Identifier_list : Identifier_list_entry Identifier_list_rest {}
+	;
 
 member
 	: type Identifier_list T_SEMICOLON {}
@@ -785,6 +824,7 @@ member
 	| T_STATIC type T_IDENTIFIER default T_SEMICOLON {}
 	| T_MUTABLE type T_IDENTIFIER default T_SEMICOLON {}
 	| type T_IDENTIFIER T_ARRAY_OPEN int_expression T_ARRAY_CLOSE T_SEMICOLON {}
+	;
 
 %%
 
