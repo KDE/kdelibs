@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <ktempfile.h>
 #include <qcolor.h>
+#include <qcstring.h>
 #include <qfile.h>
 #include <qimage.h>
 
@@ -16,6 +17,7 @@
 // code taken in parts from JasPer's jiv.c
 
 namespace {
+	const float DEFAULT_RATE = 0.10;
 	const unsigned MAXCMPTS = 256;
 
 	typedef struct {
@@ -243,9 +245,149 @@ kimgio_jp2_read( QImageIO* io )
 } // kimgio_jp2_read
 
 
+namespace { // _write helpers
+	jas_image_t*
+	create_image( const QImage& qi )
+	{
+		// prepare the component parameters
+		jas_image_cmptparm_t* cmptparms = new jas_image_cmptparm_t[ 3 ];
+
+		// x and y offset
+		cmptparms[0].tlx = 0;
+		cmptparms[0].tly = 0;
+
+		// the resulting image will be hstep*width x vstep*height !
+		cmptparms[0].hstep = 1;
+		cmptparms[0].vstep = 1;
+		cmptparms[0].width = qi.width();
+		cmptparms[0].height = qi.height();
+
+		// we write everything as 24bit truecolor ATM
+		cmptparms[0].prec = 8;
+		cmptparms[0].sgnd = false;
+
+		cmptparms[1] = cmptparms[2] = cmptparms[0];
+		
+		jas_image_t* ji = jas_image_create( 3, cmptparms, JAS_IMAGE_CS_RGB );
+		delete[] cmptparms;
+
+		// returning 0 is ok
+		return ji;
+	} // create_image
+
+
+	bool
+	write_components( jas_image_t* ji, const QImage& qi )
+	{
+		const unsigned height = qi.height();
+		const unsigned width = qi.width();
+
+		jas_matrix_t* m = jas_matrix_create( height, width );
+		if( !m ) return false;
+
+		jas_image_setcmpttype( ji, 0, JAS_IMAGE_CT_RGB_R );
+		for( uint y = 0; y < height; ++y )
+			for( uint x = 0; x < width; ++x )
+				jas_matrix_set( m, y, x, qRed( qi.pixel( x, y ) ) );
+		jas_image_writecmpt( ji, 0, 0, 0, width, height, m );
+
+		jas_image_setcmpttype( ji, 1, JAS_IMAGE_CT_RGB_G );
+		for( uint y = 0; y < height; ++y )
+			for( uint x = 0; x < width; ++x )
+				jas_matrix_set( m, y, x, qGreen( qi.pixel( x, y ) ) );
+		jas_image_writecmpt( ji, 1, 0, 0, width, height, m );
+
+		jas_image_setcmpttype( ji, 2, JAS_IMAGE_CT_RGB_B );
+		for( uint y = 0; y < height; ++y )
+			for( uint x = 0; x < width; ++x )
+				jas_matrix_set( m, y, x, qBlue( qi.pixel( x, y ) ) );
+		jas_image_writecmpt( ji, 2, 0, 0, width, height, m );
+		jas_matrix_destroy( m );
+
+		return true;
+	} // write_components
+} // namespace
+
 void
-kimgio_jp2_write( QImageIO* )
+kimgio_jp2_write( QImageIO* io )
 {
+	if( jas_init() ) return;
+
+	// open the stream. we write directly to the file if possible, to a
+	// temporary file otherwise.
+	jas_stream_t* stream = 0;
+
+	QFile* qf = 0;
+	KTempFile* ktempf = 0;
+	if( ( qf = dynamic_cast<QFile*>( io->ioDevice() ) ) ) {
+		// jas_stream_fdopen works here, but not when reading...
+		stream = jas_stream_fdopen( qf->handle(), "w" );
+	} else {
+		ktempf = new KTempFile;
+		ktempf->setAutoDelete( true );
+		stream = jas_stream_fdopen( ktempf->handle(), "w" );
+	} // else
+
+	// by here, a jas_stream_t is open
+	if( !stream ) return;
+
+	jas_image_t* ji = create_image( io->image() );
+	if( !ji ) {
+		delete ktempf;
+		jas_stream_close( stream );
+		return;
+	} // if
+
+	if( !write_components( ji, io->image() ) ) {
+		delete ktempf;
+		jas_stream_close( stream );
+		jas_image_destroy( ji );
+		return;
+	} // if
+
+	// optstr:
+	// - rate=#B => the resulting file size is about # bytes
+	// - rate=0.0 .. 1.0 => the resulting file size is about the factor times
+	//                      the uncompressed size
+	QString rate;
+	QTextStream ts( &rate, IO_WriteOnly );
+	ts << "rate="
+		<< ( (io->quality() < 0) ? DEFAULT_RATE : io->quality() / 100.0F );
+	// optstr is a char*, not a const char*
+	char* options = qstrdup( rate.ascii() );
+	int i = jp2_encode( ji, stream, options );
+
+	jas_image_destroy( ji );
+	jas_stream_close( stream );
+
+	if( i != 0 ) { delete ktempf; return; }
+
+	if( ktempf ) {
+		// We've written to a tempfile. Copy the data to the final destination.
+		QFile* in = ktempf->file();
+
+		QByteArray b( 4096 );
+		Q_LONG size;
+
+		// seek to the beginning of the file.
+		if( !in->at( 0 ) ) { delete ktempf; return; }
+
+		// 0 or -1 is EOF / error
+		while( ( size = in->readBlock( b.data(), 4096 ) ) > 0 ) {
+			if( ( io->ioDevice()->writeBlock( b.data(), size ) ) == -1 ) {
+				delete ktempf;
+				return;
+			} // if
+		} // while
+		io->ioDevice()->flush();
+		delete ktempf;
+
+		// see if we've left the while loop due to an error.
+		if( size == -1 ) return;
+	} // if
+
+	// everything went fine
+	io->setStatus( 0 );
 } // kimgio_jp2_write
 
 #endif // HAVE_JASPER
