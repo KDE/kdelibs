@@ -57,9 +57,18 @@
       	    	    	    text-align: inherit;
 			 }
       TABLE[align="center"] { margin-left: auto; margin-right: auto }
-      TD[align="center"] > * { margin-left: auto; margin-right: auto; text-align: justify; }
-      TD[align="right"] > * { margin-left: auto; margin-right: 0px; text-align: right; }
-      TD[align="left"] > * { margin-left: 0px; margin-right: auto; text-align: left; }
+	/* don't use "TD[align=...] > *". This sould give problems with
+	    constructs as <td align=left><ul><li>.... 
+	    Hope the next ones cover all relevant cases. Lars */ 
+      TD[align="center"] > TABLE { margin-left: auto; margin-right: auto; text-align: justify; }
+      TD[align="right"] > TABLE { margin-left: auto; margin-right: 0px; text-align: right; }
+      TD[align="left"] > TABLE { margin-left: 0px; margin-right: auto; text-align: left; }
+      TD[align="center"] > DIV { margin-left: auto; margin-right: auto; text-align: justify; }
+      TD[align="right"] > DIV { margin-left: auto; margin-right: 0px; text-align: right; }
+      TD[align="left"] > DIV { margin-left: 0px; margin-right: auto; text-align: left; }
+      TD[align="center"] > P { margin-left: auto; margin-right: auto; text-align: justify; }
+      TD[align="right"] > P { margin-left: auto; margin-right: 0px; text-align: right; }
+      TD[align="left"] > P { margin-left: 0px; margin-right: auto; text-align: left; }
       CAPTION         { display: table-caption;  }
       TH              { font-weight: bolder; text-align: center }
       CAPTION         { text-align: center }
@@ -72,6 +81,12 @@
       FIELDSET, FORM,
       OL, DL, DIR,
       MENU            { margin: 1.0em 0 }
+	/* for right to left */
+      BLOCKQUOTE *[dir="rtl"], 
+      UL *[dir="rtl"], 
+      FIELDSET *[dir="rtl"],  FORM *[dir="rtl"], 
+      OL *[dir="rtl"],  DL *[dir="rtl"],  DIR *[dir="rtl"], 
+      MENU *[dir="rtl"]           { margin: 1.0em 0 }
       H5              { font-size: .83em; line-height: 1.17em; margin: 1.67em 0 }
       H6              { font-size: .67em; margin: 2.33em 0 }
       H1, H2, H3, H4,
