@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.132  1999/10/10 08:18:57  bero
+// Code cleanup ((void) stuff)
+//
 // Revision 1.131  1999/10/08 23:11:12  bero
 // Fix compilation
 //
@@ -767,7 +770,7 @@ void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
 		if (mouseEntered)
 		{
 			mouseEntered = false;
-			repaint();
+			repaint(false);
 		}
 		return;
 	}
@@ -778,7 +781,7 @@ void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
 		if (!mouseEntered)
 		{
 			mouseEntered = true;
-			repaint();
+			repaint(false);
 		}
 	}
 		
@@ -1903,8 +1906,10 @@ void KToolBar::leaveEvent (QEvent *)
 {
   if (mgr)
     return;
-  mouseEntered = false;
-  repaint();
+  if ( mouseEntered ) {
+      mouseEntered = false;
+      repaint( false );
+  }
 }
 
 
