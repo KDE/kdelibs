@@ -63,8 +63,14 @@
 #define FTP_LOGIN   QString::fromLatin1("anonymous")
 #define FTP_PASSWD  QString::fromLatin1("anonymous@")
 
+#ifdef HAVE_STRTOLL
+#define STRTOLL strtoll
+#else
+#define STRTOLL strtol
+#endif
 
-size_t Ftp::UnknownSize = (size_t)-1;
+
+KIO::filesize_t Ftp::UnknownSize = (KIO::filesize_t)-1;
 
 using namespace KIO;
 
@@ -1875,7 +1881,7 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                     // than the user ??
                     de.owner    = QString::fromLatin1(p_owner);
                     de.group    = QString::fromLatin1(p_group);
-                    de.size     = atoi(p_size);
+                    de.size     = STRTOLL(p_size, 0, 10);
                     QCString tmp( p_name );
                     // Some sites put more than one space between the date and the name
                     // e.g. ftp://ftp.uni-marburg.de/mirror/
@@ -2015,15 +2021,15 @@ void Ftp::get( const KURL & url )
   // Read the size from the response string
   if ( strlen( rspbuf ) > 4 && m_size == UnknownSize ) {
     const char * p = strrchr( rspbuf, '(' );
-    if ( p != 0L ) m_size = atol( p + 1 );
+    if ( p != 0L ) m_size = STRTOLL( p + 1, 0, 10 );
   }
 
-  size_t bytesLeft = 0;
+  KIO::filesize_t bytesLeft = 0;
   if ( m_size != UnknownSize )
     bytesLeft = m_size - offset;
 
   kdDebug(7102) << "Ftp::get starting with offset=" << offset << endl;
-  int processed_size = offset;
+  KIO::fileoffset_t processed_size = offset;
 
   char buffer[ 2048 ];
   QByteArray array;
@@ -2339,18 +2345,18 @@ bool Ftp::ftpSize( const QString & path, char mode )
     return false;
   }
 
-  m_size = atol(rspbuf+4); // skip leading "213 " (response code)
+  m_size = STRTOLL(rspbuf+4, 0, 10); // skip leading "213 " (response code)
   return true;
 }
 
 
-size_t Ftp::ftpRead(void *buffer, long len)
+KIO::filesize_t Ftp::ftpRead(void *buffer, long len)
 {
-  size_t n = KSocks::self()->read( sData, buffer, len );
+  KIO::filesize_t n = KSocks::self()->read( sData, buffer, len );
   return n;
 }
 
-size_t Ftp::ftpWrite(void *buffer, long len)
+KIO::filesize_t Ftp::ftpWrite(void *buffer, long len)
 {
   return( KSocks::self()->write( sData, buffer, len ) );
 }

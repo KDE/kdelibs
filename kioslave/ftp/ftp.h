@@ -44,7 +44,7 @@ struct FtpEntry
   QString group;
   QString link;
 
-  long size;
+  KIO::filesize_t size;
   mode_t type;
   mode_t access;
   time_t date;
@@ -202,8 +202,8 @@ private:
    */
   int ftpAcceptConnect();
 
-  size_t ftpRead( void *buffer, long len );
-  size_t ftpWrite( void *buffer, long len );
+  KIO::filesize_t ftpRead( void *buffer, long len );
+  KIO::filesize_t ftpWrite( void *buffer, long len );
 
   bool ftpChmod( const QString & path, int permissions );
 
@@ -274,8 +274,8 @@ private: // data members
   bool m_bUseProxy;
   bool m_bPersistent;
 
-  size_t m_size;
-  static size_t UnknownSize;
+  KIO::filesize_t m_size;
+  static KIO::filesize_t UnknownSize;
 
   enum
   {
