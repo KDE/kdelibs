@@ -579,8 +579,13 @@ void KAction::setText( int i, const QString &text )
   else if ( w->inherits( "KToolBar" ) )
   {
     QWidget *button = static_cast<KToolBar *>(w)->getWidget( itemId( i ) );
-    if ( button->inherits( "KToolBarButton" ) )
-      static_cast<KToolBarButton *>(button)->setText( text );
+    if ( button->inherits( "KToolBarButton" ) ) {
+      QString stripped( text );
+      int pos;
+      while( ( pos = stripped.find( '&' ) ) != -1 )
+        stripped.replace( pos, 1, QString::null );
+      static_cast<KToolBarButton *>(button)->setText( stripped );
+    }
   }
 }
 
