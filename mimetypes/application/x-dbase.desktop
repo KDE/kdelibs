@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Icon=
+Icon=document
 Type=MimeType
 MimeType=application/x-dbase
 Patterns=*.dbf;*.DBF;
