@@ -18,7 +18,8 @@
 
 INCLUDES= -I$(top_srcdir)/kio $(all_includes)
 
-bin_PROGRAMS = ksycocatest getalltest
+bin_PROGRAMS = ksycocatest getalltest kruntest
+
 ksycocatest_LDADD = $(top_builddir)/kio/libkio.la
 ksycocatest_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 ksycocatest_SOURCES = ksycocatest.cpp
@@ -26,4 +27,8 @@ ksycocatest_SOURCES = ksycocatest.cpp
 getalltest_LDADD = $(top_builddir)/kio/libkio.la
 getalltest_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 getalltest_SOURCES = getalltest.cpp
+
+kruntest_LDADD = $(top_builddir)/kio/libkio.la
+kruntest_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+kruntest_SOURCES = kruntest.cpp
 
