@@ -51,7 +51,8 @@ class NodeIterator
 public:
     NodeIterator();
     NodeIterator(const NodeIterator &other);
-
+    NodeIterator(Node n, NodeFilter *f=0);
+    
     NodeIterator & operator = (const NodeIterator &other);
 
     ~NodeIterator();
@@ -99,6 +100,13 @@ public:
      */
     void deleteNode(Node n);
 
+    /**
+     *  Move the Iterators referenceNode within the subtree. Does not set a new root node.
+     */
+    void moveReferenceNode(Node n);
+    /**
+     * Sets the iterators referenceNode and sets a new root node
+     */
     void setReferenceNode(Node n);
     short isAccepted(Node n);
     Node getNextNode(Node n);

@@ -43,6 +43,16 @@ NodeIterator::NodeIterator(const NodeIterator &other)
   expandEntityReferences = other.expandEntityReferences;
 }
 
+NodeIterator::NodeIterator(Node n, NodeFilter *f)
+{
+  if( !n.isNull() )
+    {
+      rootNode = n;
+      referenceNode = n;
+      filter = f;
+    }
+}
+
 NodeIterator &NodeIterator::operator = (const NodeIterator &other)
 {
     NodeIterator::operator = (other);
@@ -60,8 +70,17 @@ NodeIterator::~NodeIterator()
 
 void NodeIterator::setWhatToShow(short _whatToShow)
 {
-  // has to to some checking if _whatToShow is a legal value
   whatToShow = _whatToShow;
+}
+
+void NodeIterator::moveReferenceNode(Node n)
+{
+  if( !n.isNull() )
+    {
+      // cheching if they are in the same subtree??
+      referenceNode = n;
+      inFront = true;
+    }
 }
 
 void NodeIterator::setReferenceNode(Node n)
@@ -77,7 +96,12 @@ void NodeIterator::setReferenceNode(Node n)
 void NodeIterator::setFilter(NodeFilter *_filter)
 {
   if(_filter != 0)
-    filter = _filter;
+    {
+      if( filter != 0 )
+        delete filter;
+
+      filter = _filter;
+    }
 }
 
 void NodeIterator::setExpandEntityReferences(bool value)
