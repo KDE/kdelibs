@@ -2463,6 +2463,16 @@ KInstance *KActionCollection::instance() const
   return d->m_instance;
 }
 
+void KActionCollection::setHighlightingEnabled( bool enable )
+{
+  d->m_highlight = enable;
+}
+
+bool KActionCollection::highlightingEnabled() const
+{
+  return d->m_highlight; 
+} 
+
 void KActionCollection::connectHighlight( QWidget *container, KAction *action )
 {
   if ( !d->m_highlight )
