@@ -811,7 +811,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   }
   grid->addWidget(iconArea, curRow, 0, AlignLeft);
 
-  if (d->bMultiple || isTrash || isIntoTrash || isDevice || filename == QString::fromLatin1("/"))
+  if (d->bMultiple || isTrash || isIntoTrash || isDevice || hasRoot)
   {
     QLabel *lab = new QLabel(d->m_frame );
     if ( d->bMultiple )
