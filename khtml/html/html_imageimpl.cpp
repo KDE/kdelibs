@@ -315,6 +315,7 @@ HTMLAreaElementImpl::HTMLAreaElementImpl(DocumentImpl *doc)
     coords=0L;
     href = 0;
     target = 0;
+    shape = Unknown;
 }
 
 HTMLAreaElementImpl::~HTMLAreaElementImpl()
@@ -357,7 +358,7 @@ void HTMLAreaElementImpl::parseAttribute(Attribute *attr)
 	    shape = Circle;
 	else if ( strcasecmp( attr->value(), "poly" ) == 0 )
 	    shape = Poly;
-	else
+	else if ( strcasecmp( attr->value(), "rect" ) == 0 )
 	    shape = Rect;	
 	break;
     case ATTR_COORDS:	
@@ -390,7 +391,7 @@ HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 {
     //cout << "area:mapMouseEvent " << endl;
     bool inside = false;
-    if (!(width_==lastw && height_==lasth))
+    if (width_ != lastw || height_ != lasth)
     {
     	region=getRegion(width_, height_);
 	lastw=width_; lasth=height_;
@@ -415,11 +416,14 @@ HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 QRegion HTMLAreaElementImpl::getRegion(int width_, int height_)
 {
     QRegion region;
-    //cout << "getting region" << endl;
     if (!coords)
     	return region;
 
-    if (shape==Poly)
+    // added broken HTML support (Dirk): some pages omit the SHAPE
+    // attribute, so we try to guess by looking at the coords count
+    // what the HTML author tried to tell us.
+
+    if (shape==Poly || shape==Unknown && coords->count() > 4)
     {
         //cout << " poly " << endl;	
 	bool xcoord=true;
@@ -443,7 +447,18 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_)
 	}
 	region = QRegion(points);	
     }
-    else if (shape==Rect && coords->count()>=4)
+    else if (shape==Circle && coords->count()>=3 || shape==Unknown && coords->count() == 3)
+    {
+    	//cout << " circle " << endl;
+    	int cx = coords->at(0)->minWidth(width_);
+	int cy = coords->at(1)->minWidth(height_);
+	int r1 = coords->at(2)->minWidth(width_);
+	int r2 = coords->at(2)->minWidth(height_);
+	int r  = QMIN(r1, r2);
+
+    	region = QRegion(cx-r, cy-r, 2*r, 2*r,QRegion::Ellipse);
+    }
+    else if (shape==Rect && coords->count()>=4 || shape==Unknown && coords->count() == 4)
     {
         //cout << " rect " << endl;
     	int x0 = coords->at(0)->minWidth(width_);
@@ -452,21 +467,8 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_)
 	int y1 = coords->at(3)->minWidth(height_);
     	region = QRegion(x0,y0,x1-x0,y1-y0);
     }
-    else if (shape==Circle && coords->count()>=3)
-    {
-    	//cout << " circle " << endl;
-    	int cx = coords->at(0)->minWidth(width_);
-	int cy = coords->at(1)->minWidth(height_);
-	int r1 = coords->at(2)->minWidth(width_);
-	int r2 = coords->at(2)->minWidth(height_);
-	int r;
-	if (r1<r2)
-	    r = r1;
-	else
-	    r = r2;
-
-    	region = QRegion(cx-r, cy-r, 2*r, 2*r,QRegion::Ellipse);
-    } else if (shape==Default) {
+    else /*if (shape==Default || shape == Unknown)*/ {
+        //cout << "default/unknown" << endl;
     	region = QRegion(0,0,width_,height_);
     }
 

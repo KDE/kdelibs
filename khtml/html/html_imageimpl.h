@@ -82,7 +82,7 @@ class HTMLAreaElementImpl : public HTMLElementImpl
 {
 public:
 
-    enum Shape { Default, Poly, Rect, Circle };
+    enum Shape { Default, Poly, Rect, Circle, Unknown };
 
     HTMLAreaElementImpl(DocumentImpl *doc);
 
