@@ -20,6 +20,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.122.4.2  1999/04/22 23:04:13  pfeiffer
+// I think http://buglist.kde.org is deprecated, so I changed it (in the
+// about-box) to http://bugs.kde.org, as in the HEAD-Branch.
+//
 // Revision 1.122.4.1  1999/04/13 00:20:22  dmuell
 // don't create /.kde/share/config for kdm.
 //
@@ -1424,7 +1428,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 	   */
 	  setuid( getuid() );
 	  setgid( getgid() );
-	  char* shell = "/bin/sh";
+	  const char* shell = "/bin/sh";
 	  if (getenv("SHELL"))
 		shell = getenv("SHELL");
          file.prepend("kdehelp ");
