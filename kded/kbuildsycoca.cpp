@@ -50,6 +50,7 @@
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
 
 static Q_UINT32 newTimestamp = 0;
 

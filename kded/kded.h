@@ -20,8 +20,6 @@
 #ifndef __kded_h__
 #define __kded_h__ 
 
-#include <time.h>
-
 #include <qobject.h>
 #include <qstring.h>
 #include <qtimer.h>
