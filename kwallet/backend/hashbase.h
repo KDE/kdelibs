@@ -40,7 +40,7 @@ class HashBase {
      /*
       *  Process a block of data for the hash function.
       */
-     virtual int process(void *block, int len) = 0;
+     virtual int process(const void *block, int len) = 0;
      
      /*
       *  Return the digest.

@@ -201,7 +201,7 @@ bool SHA1::readyToGo() {
 
 
 
-int SHA1::process(void *block, int len) {
+int SHA1::process(const void *block, int len) {
 if (!_init) return -1;
 
 unsigned char *_block = (unsigned char *)block;

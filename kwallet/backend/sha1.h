@@ -41,7 +41,7 @@ class SHA1 {
      /*
       *  Process a block of data for the hash function.
       */
-     virtual int process(void *block, int len);
+     virtual int process(const void *block, int len);
      
      /*
       *  Return the digest as a 20 byte array reference.
