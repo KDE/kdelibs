@@ -3194,8 +3194,7 @@ QString KHTMLPart::selectedTextAsHTML() const
     kdDebug() << "invalid values for end/startOffset " << d->m_startOffset << " " << d->m_endOffset << endl;
     return QString::null;
   }
-  return QString::null; //FIXME:  Disabled just for now.  selection() causes an exception the end of the selection is an image.  I don't know why.
-//  return selection().toHTML().string();
+  return selection().toHTML().string();
 }
 
 QString KHTMLPart::selectedText() const
@@ -3350,8 +3349,34 @@ bool KHTMLPart::hasSelection() const
 DOM::Range KHTMLPart::selection() const
 {
     DOM::Range r = document().createRange();
-    r.setStart( d->m_selectionStart, d->m_startOffset );
-    r.setEnd( d->m_selectionEnd, d->m_endOffset );
+
+    const NodeImpl *n = d->m_selectionStart.handle();
+    if(!n->parentNode()) {
+        r.setStart( d->m_selectionStart, d->m_startOffset );	 
+    } else if(!n->renderer()) {
+        r.setStart( d->m_selectionStart, d->m_startOffset );
+    } else if(!n->renderer()->isReplaced() && !n->renderer()->isBR()) {
+	r.setStart( d->m_selectionStart, d->m_startOffset );
+    } else {    
+        int o_start = 0;
+        while ((n = n->previousSibling()))
+            o_start++;
+	r.setStart( d->m_selectionStart.parentNode(), o_start + d->m_startOffset );
+    }
+ 
+    n = d->m_selectionEnd.handle();
+    if(!n->parentNode()) {
+        r.setEnd( d->m_selectionEnd, d->m_endOffset );	 
+    } else if(!n->renderer()) {
+        r.setEnd( d->m_selectionEnd, d->m_endOffset );
+    } else if(!n->renderer()->isReplaced() && !n->renderer()->isBR()) {
+	r.setEnd( d->m_selectionEnd, d->m_endOffset );
+    } else {    
+        int o_end = 0;
+        while ((n = n->previousSibling()))
+            o_end++;
+	r.setEnd( d->m_selectionEnd.parentNode(), o_end + d->m_endOffset );
+    }
     return r;
 }
 
