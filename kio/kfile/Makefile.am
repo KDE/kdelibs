@@ -33,7 +33,7 @@ include_HEADERS = kfiledialog.h kfilebookmark.h  \
 	kurlcombobox.h kurlrequesterdlg.h kopenwith.h kpropsdlg.h \
 	kicondialog.h kdirsize.h kpreviewwidgetbase.h kimagefilepreview.h \
 	kfiletreeview.h kfiletreeviewitem.h kfiletreebranch.h \
-	kdirselectdialog.h kurlbar.h
+	kdirselectdialog.h kurlbar.h kpropertiesdialog.h
 
 noinst_HEADERS = kfiledialogconf.h config-kfile.h krecentdirs.h kmetaprops.h
 
@@ -43,7 +43,7 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
 	krecentdocument.cpp kfiledialog.cpp kdiroperator.cpp \
 	kfiledetailview.cpp kcombiview.cpp kurlrequester.cpp \
 	kfilepreview.cpp kurlcombobox.cpp kurlrequesterdlg.cpp \
-	kopenwith.cpp kpropsdlg.cpp kicondialog.cpp kdirsize.cpp \
+	kopenwith.cpp kpropertiesdialog.cpp kicondialog.cpp kdirsize.cpp \
 	krecentdirs.cpp kdiskfreesp.cpp kimagefilepreview.cpp \
 	kurlbar.cpp kmetaprops.cpp\
 	kfiletreeview.cpp kfiletreeviewitem.cpp kfiletreebranch.cpp kdirselectdialog.cpp
