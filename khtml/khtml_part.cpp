@@ -39,6 +39,7 @@
 #include "html/html_imageimpl.h"
 #include "rendering/render_text.h"
 #include "rendering/render_frames.h"
+#include "rendering/render_layer.h"
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
 #include "xml/dom2_eventsimpl.h"
@@ -1092,8 +1093,14 @@ void KHTMLPart::slotDebugScript()
 void KHTMLPart::slotDebugRenderTree()
 {
 #ifndef NDEBUG
-  if ( d->m_doc )
+  if ( d->m_doc ) {
     d->m_doc->renderer()->printTree();
+    // dump out the contents of the rendering & DOM trees
+    QString dumps;
+    QTextStream outputStream(dumps,IO_WriteOnly);
+    d->m_doc->renderer()->layer()->dump( outputStream );
+    kdDebug() << "dump output:" << "\n" + dumps;
+  }
 #endif
 }
 
@@ -1557,9 +1564,9 @@ void KHTMLPart::slotFinished( KIO::Job * job )
   if (job->error())
   {
     KHTMLPageCache::self()->cancelEntry(d->m_cacheId);
-    
+
     // The following catches errors that occur as a result of HTTP
-    // to FTP redirections where the FTP URL is a directory. Since 
+    // to FTP redirections where the FTP URL is a directory. Since
     // KIO cannot change a redirection request from GET to LISTDIR,
     // we have to take care of it here once we know for sure it is
     // a directory...
@@ -1575,7 +1582,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
       checkCompleted();
       showError( job );
     }
-    
+
     return;
   }
   //kdDebug( 6050 ) << "slotFinished" << endl;
@@ -1971,7 +1978,7 @@ void KHTMLPart::checkCompleted()
      sheets = d->m_doc->availableStyleSheets();
   sheets.prepend( i18n( "Automatic Detection" ) );
   d->m_paUseStylesheet->setItems( sheets );
-  
+
   d->m_paUseStylesheet->setEnabled( sheets.count() > 2);
   if (sheets.count() > 2)
   {
@@ -3498,7 +3505,7 @@ void KHTMLPart::slotSetEncoding()
 
 void KHTMLPart::slotUseStylesheet()
 {
-  if (d->m_doc) 
+  if (d->m_doc)
   {
     bool autoselect = (d->m_paUseStylesheet->currentItem() == 0);
     d->m_sheetUsed = autoselect ? QString() : d->m_paUseStylesheet->currentText();
