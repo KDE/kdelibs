@@ -1,0 +1,5 @@
+This is a collection of changes which should eventually be done:
+
+- Emit resourceClosed(Resource*) signal in Resource::close(). For othogonality
+we should probably also emit resourceOpened(), resourceLoaded(), resourceSaved()
+signals.
