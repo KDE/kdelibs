@@ -71,6 +71,19 @@
 <!--ENTITY % edbsyn SYSTEM "edbsyn/edbsyn.dtd"			       >
 %edbsyn; -->
 
+<!-- Make ID compulsory for qandasets; cannot be done in redeclaration
+     files -->
+<!ENTITY % qandset.attlist "IGNORE">
+<!-- here could the original declaration come, eg %DocBookDTD;
+     (it's a nice way of doing this; other customisations should
+     be redone following this `architecture': the result might be
+     much simpler) -->
+<!ATTLIST QandASet 
+                DefaultLabel (qanda|number|none) #IMPLIED 
+                %common.idreq.attrib; 
+                %qandset.role.attrib; 
+                %local.qandset.attrib;>
+
 
 <!-- ============================================================= -->
 <!--			 Original DocBook DTD			   -->
@@ -79,7 +92,6 @@
 <!ENTITY % DocBookDTD	    PUBLIC
   "-//OASIS//DTD DocBook V3.1//EN"				     >
 %DocBookDTD;
-
 
 <!-- ============================================================= -->
 <!--		    Extensions to the DocBook DTD		   -->
