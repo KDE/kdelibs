@@ -1092,7 +1092,16 @@ Completion WindowFunc::tryExecute(const List &args)
       int i = args[1].toInt32();
       int r = (const_cast<Window*>(window))->installTimeout(s.value(), i, true /*single shot*/);
       result = Number(r);
-    } else
+    }
+    else if (args.size() >= 2 && v.derivedFrom(FunctionType)) {
+      KJSO func = args[0];
+      List *funcArgs = args.copy();
+      funcArgs->removeFirst(); // all args after 2 go to the function
+      funcArgs->removeFirst();
+      int r = (const_cast<Window*>(window))->installTimeout(s.value(), i, true /*single shot*/);
+      result = Number(r);
+    }
+    else
       result = Undefined();
     break;
   case SetInterval:
@@ -1100,7 +1109,16 @@ Completion WindowFunc::tryExecute(const List &args)
       int i = args[1].toInt32();
       int r = (const_cast<Window*>(window))->installTimeout(s.value(), i, false);
       result = Number(r);
-    } else
+    }
+    else if (args.size() >= 2 && v.derivedFrom(FunctionType)) {
+      KJSO func = args[0];
+      List *funcArgs = args.copy();
+      funcArgs->removeFirst(); // all args after 2 go to the function
+      funcArgs->removeFirst();
+      int r = (const_cast<Window*>(window))->installTimeout(s.value(), i, false);
+      result = Number(r);
+    }
+    else
       result = Undefined();
     break;
   case ClearTimeout:
@@ -1152,6 +1170,45 @@ Completion WindowFunc::tryExecute(const List &args)
 
 }
 
+////////////////////// ScheduledAction ////////////////////////
+
+ScheduledAction::ScheduledAction(KJSO _func, List *_args, bool _singleShot)
+{
+  func = _func;
+  args = _args;
+  isFunction = true;
+  singleShot = _singleShot;
+}
+
+ScheduledAction::ScheduledAction(QString _code, bool _singleShot)
+{
+  func = 0;
+  args = 0;
+  code = _code;
+  isFunction = false;
+  singleShot = _singleShot;
+}
+
+void ScheduledAction::execute(Window *window)
+{
+  if (isFunction) {
+    if (func.implementsCall()) {
+      func.executeCall(window,args);
+    }
+  }
+  else {
+    window->m_part->executeScript(code);
+  }
+}
+
+ScheduledAction::~ScheduledAction()
+{
+  if (isFunction)
+    delete args;
+}
+
+////////////////////// WindowQObject ////////////////////////
+
 WindowQObject::WindowQObject(Window *w)
   : parent(w)
 {
@@ -1168,35 +1225,54 @@ WindowQObject::~WindowQObject()
 void WindowQObject::parentDestroyed()
 {
   killTimers();
-  map.clear();
+  QMapIterator<int,ScheduledAction*> it;
+  for (it = scheduledActions.begin(); it != scheduledActions.end(); ++it) {
+    ScheduledAction *action = *it;
+    scheduledActions.remove(it);
+    //    ### delete action;
+  } 
 }
 
 int WindowQObject::installTimeout(const UString &handler, int t, bool singleShot)
 {
   int id = startTimer(t);
-  QString hnd = handler.qstring();
-  // prepend 0 or 1 to differentiate between single timeouts and intervals
-  hnd.prepend(singleShot ? "0" : "1");
-  map.insert(id, hnd);
-
+  scheduledActions.insert(id, new ScheduledAction(handler.qstring(),singleShot));
   return id;
 }
 
-void WindowQObject::clearTimeout(int timerId)
+int WindowQObject::installTimeout(const KJSO &func, List *args, int t, bool singleShot)
+{
+  int id = startTimer(t);
+  scheduledActions.insert(id, new ScheduledAction(func,args,singleShot));
+  return id;
+}
+
+void WindowQObject::clearTimeout(int timerId, bool delAction)
 {
   killTimer(timerId);
-  map.remove(timerId);
+  if (delAction) {
+    QMapIterator<int,ScheduledAction*> it = scheduledActions.find(timerId);
+    if (it != scheduledActions.end()) {
+      ScheduledAction *action = *it;
+      scheduledActions.remove(it);
+      //      delete action;
+    }
+  }
 }
 
 void WindowQObject::timerEvent(QTimerEvent *e)
 {
-  if (!parent->part().isNull()) {
-    QString hnd = map[e->timerId()];
-    parent->part()->executeScript(hnd.mid(1));
-    // remove single shots installed by setTimeout()
-    if (hnd.startsWith("0"))
-      clearTimeout(e->timerId());
-  }
+  ScheduledAction *action = scheduledActions[e->timerId()];
+
+  // remove single shots installed by setTimeout()
+  if (action->singleShot)
+    clearTimeout(e->timerId(),false);
+
+  if (!parent->part().isNull())
+    action->execute(parent);
+
+  //  if (action->singleShot)
+    //    delete action; // already cleared by now
 }
 
 void WindowQObject::timeoutClose()

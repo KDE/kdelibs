@@ -173,8 +173,10 @@ protected:
     void parseEntity(khtml::DOMStringIt &str, QChar *&dest, bool start = false);
     void parseProcessingInstruction(khtml::DOMStringIt &str);
     void scriptHandler();
-    void scriptExecution(const QString& script);
+    void scriptExecution(const QString& script, QString scriptURL = QString(),
+                         int baseLine = 0);
     void addPendingSource();
+    void setSrc(QString source);
 
     // check if we have enough space in the buffer.
     // if not enlarge it
@@ -343,6 +345,11 @@ protected:
     // if we found one broken comment, there are most likely others as well
     // store a flag to get rid of the O(n^2) behaviour in such a case.
     bool brokenComments;
+    // current line number
+    int lineno;
+    // line number at which the current <script> started
+    int scriptStartLineno;
+    int tagStartLineno;
 
 #define CBUFLEN 14
     char cBuffer[CBUFLEN+2];

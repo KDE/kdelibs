@@ -27,6 +27,8 @@ class KConfig;
 #include <qfont.h>
 #include <qmap.h>
 
+class KHTMLSettingsPrivate;
+
 /**
  * Settings for the HTML view.
  */
@@ -47,6 +49,7 @@ public:
      * @internal Constructor
      */
     KHTMLSettings();
+    KHTMLSettings(const KHTMLSettings &other);
 
     /** Called by constructor and reparseConfiguration */
     void init();
@@ -58,12 +61,12 @@ public:
     void init( KConfig * config, bool reset = true );
 
     /** Destructor. Don't delete any instance by yourself. */
-    virtual ~KHTMLSettings() {};
+    virtual ~KHTMLSettings();
 
     // Behaviour settings
-    bool changeCursor() { return m_bChangeCursor; }
-    bool underlineLink() { return m_underlineLink; }
-    bool hoverLink() { return m_hoverLink; }
+    bool changeCursor();
+    bool underlineLink();
+    bool hoverLink();
 
     // Font settings
     QString stdFontName() const;
@@ -77,36 +80,37 @@ public:
     void setStdFontName(const QString &n);
     void setFixedFontName(const QString &n);
 
-    const QValueList<int> &fontSizes() const { return m_fontSizes; }
+    const QValueList<int> &fontSizes() const;
     void setFontSizes(const QValueList<int> &newFontSizes );
     void resetFontSizes();
 
-    int minFontSize() const { return m_minFontSize; }
+    int minFontSize() const;
 
     // the charset used to display the current document.
 #if QT_VERSION < 300
-    QFont::CharSet charset() const { return m_charset; }
+    QFont::CharSet charset() const;
     void setCharset( QFont::CharSet c );
-    QFont::CharSet script() const { return m_script; }
+    QFont::CharSet script() const;
     void setScript( QFont::CharSet c );
     void resetCharset( );
 
     void setDefaultCharset( QFont::CharSet c, bool b );
 #endif
 
-    const QString &encoding() const { return m_encoding; }
+    const QString &encoding() const;
 
     // Color settings
-    const QColor& textColor() { return m_textColor; }
-    const QColor& linkColor() { return m_linkColor; }
-    const QColor& vLinkColor() { return m_vLinkColor; }
+    const QColor& textColor();
+    const QColor& linkColor();
+    const QColor& vLinkColor();
 
     // Autoload images
-    bool autoLoadImages() { return m_bAutoLoadImages; }
+    bool autoLoadImages();
 
     // Java and JavaScript
     bool isJavaEnabled( const QString& hostname = QString::null );
     bool isJavaScriptEnabled( const QString& hostname = QString::null );
+    bool isJavaScriptDebugEnabled( const QString& hostname = QString::null );
     bool isPluginsEnabled( const QString& hostname = QString::null );
     bool isCSSEnabled( const QString& hostname = QString::null );
 
@@ -117,13 +121,13 @@ public:
     static const char* adviceToStr(KJavaScriptAdvice _advice);
 
     QString settingsToCSS() const;
-    QString availableFamilies() const { return availFamilies; }
+    QString availableFamilies() const;
 
     QString userStyleSheet() const;
 
     // Form completion
-    bool isFormCompletionEnabled() const { return m_formCompletionEnabled; }
-    int maxFormCompletionItems() const { return m_maxFormCompletionItems; }
+    bool isFormCompletionEnabled() const;
+    int maxFormCompletionItems() const;
 
 private:
 #if QT_VERSION < 300
@@ -136,47 +140,7 @@ private:
     QString lookupFont(int , int i) const;
 #endif
     
-private:
-    bool m_bChangeCursor;
-    bool m_underlineLink;
-    bool m_hoverLink;
-
-    int m_fontSize;
-    QValueList<int>     m_fontSizes;
-    int m_minFontSize;
-
-#if QT_VERSION < 300
-    QFont::CharSet m_charset;
-    QFont::CharSet m_script;
-    QFont::CharSet m_defaultCharset;
-#else
-    int m_charset;
-#endif
-    bool enforceCharset;
-    QString m_encoding;
-    QString m_userSheet;
-    
-    QColor m_textColor;
-    QColor m_linkColor;
-    QColor m_vLinkColor;
-
-    bool m_bAutoLoadImages;
-    bool m_bEnableJava;
-    bool m_bEnableJavaScript;
-    bool m_bEnablePlugins;
-    bool m_bEnableCSS;
-    QMap<QString,KJavaScriptAdvice> javaDomainPolicy;
-    QMap<QString,KJavaScriptAdvice> javaScriptDomainPolicy;
-#if QT_VERSION < 300
-    QMap<QFont::CharSet, QStringList> fontsForCharset;
-#else
-    QStringList fonts;
-#endif
-    QStringList defaultFonts;
-    QString availFamilies;
-
-    bool m_formCompletionEnabled;
-    int m_maxFormCompletionItems;
+    KHTMLSettingsPrivate *d;
 };
 
 #endif

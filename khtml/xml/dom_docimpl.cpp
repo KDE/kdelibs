@@ -39,6 +39,8 @@
 #include "misc/helper.h"
 #include "css/csshelper.h"
 
+#include "ecma/kjs_proxy.h"
+
 #include <qstring.h>
 #include <qstack.h>
 #include <qlist.h>
@@ -759,6 +761,9 @@ void DocumentImpl::open(  )
     m_tokenizer = createTokenizer();
     connect(m_tokenizer,SIGNAL(finishedParsing()),this,SIGNAL(finishedParsing()));
     m_tokenizer->begin();
+
+    if (m_view->part()->jScript())
+        m_view->part()->jScript()->setSourceFile(m_url,"");
 }
 
 void DocumentImpl::close(  )
@@ -774,14 +779,16 @@ void DocumentImpl::close(  )
 
 void DocumentImpl::write( const DOMString &text )
 {
-    if(m_tokenizer)
-        m_tokenizer->write(text.string(), false);
+    write(text.string());
 }
 
 void DocumentImpl::write( const QString &text )
 {
     if(m_tokenizer)
         m_tokenizer->write(text, false);
+
+    if (m_view->part()->jScript())
+        m_view->part()->jScript()->appendSourceFile(m_url,text);
 }
 
 void DocumentImpl::writeln( const DOMString &text )

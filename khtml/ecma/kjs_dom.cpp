@@ -1139,4 +1139,3 @@ KJSO KJS::getDOMExceptionPrototype()
         return domExceptionProto;
     }
 }
-

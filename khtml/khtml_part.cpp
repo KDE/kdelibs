@@ -245,6 +245,7 @@ public:
   KLibrary *m_kjs_lib;
   int m_runningScripts;
   bool m_bJScriptEnabled :1;
+  bool m_bJScriptDebugEnabled :1;
   bool m_bJavaEnabled :1;
   bool m_bPluginsEnabled :1;
   bool m_bJScriptForce :1;
@@ -512,6 +513,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   // set the default java(script) flags according to the current host.
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled();
+  d->m_bJScriptDebugEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled();
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled();
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled();
 
@@ -601,6 +603,7 @@ bool KHTMLPart::restoreURL( const KURL &url )
 
   // set the java(script) flags according to the current host.
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
+  d->m_bJScriptDebugEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled();
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
   d->m_haveCharset = true;
@@ -695,6 +698,7 @@ bool KHTMLPart::openURL( const KURL &url )
 
   // set the javascript flags according to the current url
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
+  d->m_bJScriptDebugEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled();
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
 #if QT_VERSION < 300
@@ -856,6 +860,8 @@ KJSProxy *KHTMLPart::jScript()
     d->m_jscript = (*initSym)(this);
     d->m_kjs_lib = lib;
     kjs_lib_count++;
+    if (d->m_bJScriptDebugEnabled)
+        d->m_jscript->setDebugEnabled(true);
   }
 
   return d->m_jscript;
@@ -873,10 +879,11 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 
   //kdDebug(6070) << "executeScript: " << script.latin1() << endl;
 
-  if (!proxy)
+  if (!proxy || proxy->paused())
     return QVariant();
   d->m_runningScripts++;
-  QVariant ret = proxy->evaluate( script.unicode(), script.length(), n );
+  QVariant ret = proxy->evaluate( "(unknown file)", 0, script.unicode(),
+				  script.length(), n );
   d->m_runningScripts--;
   if ( d->m_submitForm )
       submitFormAgain();
@@ -1472,6 +1479,8 @@ void KHTMLPart::write( const char *str, int len )
       d->m_doc->applyChanges(true, true);
   }
 
+  if (jScript())
+    jScript()->appendSourceFile(m_url.url(),decoded);
   Tokenizer* t = d->m_doc->tokenizer();
   if(t)
     t->write( decoded, true );
@@ -1487,6 +1496,8 @@ void KHTMLPart::write( const QString &str )
       d->m_doc->setParseMode( DocumentImpl::Strict );
       d->m_bFirstData = false;
   }
+  if (jScript())
+    jScript()->appendSourceFile(m_url.url(),str);
   Tokenizer* t = d->m_doc->tokenizer();
   if(t)
     t->write( str, true );
@@ -3591,6 +3602,7 @@ void KHTMLPart::reparseConfiguration()
   setAutoloadImages( settings->autoLoadImages() );
 
   d->m_bJScriptEnabled = settings->isJavaScriptEnabled(m_url.host());
+  d->m_bJScriptDebugEnabled = settings->isJavaScriptDebugEnabled();
   d->m_bJavaEnabled = settings->isJavaEnabled(m_url.host());
   d->m_bPluginsEnabled = settings->isPluginsEnabled(m_url.host());
   delete d->m_settings;
@@ -4318,6 +4330,18 @@ bool KHTMLPart::checkLinkSecurity(const KURL &linkURL,const QString &message, co
   return true;
 }
 
+QVariant KHTMLPart::executeScript(QString filename, int baseLine, const DOM::Node &n, const QString &script)
+{
+  KJSProxy *proxy = jScript();
+
+  if (!proxy || proxy->paused())
+    return QVariant();
+  QVariant ret = proxy->evaluate(filename,baseLine,script.unicode(), script.length(), n );
+  if ( d->m_doc )
+    d->m_doc->updateRendering();
+  return ret;
+}
+
 void KHTMLPart::slotPartRemoved( KParts::Part *part )
 {
 //    kdDebug(6050) << "KHTMLPart::slotPartRemoved " << part << endl;
@@ -4392,7 +4416,7 @@ DOM::EventListener *KHTMLPart::createHTMLEventListener( QString code )
   if (!proxy)
     return 0;
 
-  return proxy->createHTMLEventHandler( code );
+  return proxy->createHTMLEventHandler( m_url.url(), code );
 }
 
 KHTMLPart *KHTMLPart::opener()

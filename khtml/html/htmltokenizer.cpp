@@ -42,7 +42,9 @@
 #include "khtml_part.h"
 #include "htmlparser.h"
 #include "html_documentimpl.h"
+#include "xml/dom_docimpl.h"
 #include "css/csshelper.h"
+#include "ecma/kjs_proxy.h"
 #include "dtd.h"
 #include "htmlhashes.h"
 #include <kcharsets.h>
@@ -191,6 +193,9 @@ void HTMLTokenizer::begin()
     pendingSrc = "";
     noMoreData = false;
     brokenComments = false;
+    lineno = 0;
+    scriptStartLineno = 0;
+    tagStartLineno = 0;
 }
 
 void HTMLTokenizer::processListing(DOMStringIt list)
@@ -275,6 +280,8 @@ void HTMLTokenizer::parseSpecial(DOMStringIt &src, bool begin)
     assert( textarea || !Entity );
     assert( !tag );
     assert( xmp+textarea+style+script == 1 );
+    if (script)
+        scriptStartLineno = lineno+src.lineCount();
 
     if ( begin ) {
         if ( script )        { searchStopper = scriptEnd;   }
@@ -369,8 +376,7 @@ void HTMLTokenizer::scriptHandler()
 //                 qDebug( "src: *%s*", QString( src.current(), src.length() ).latin1() );
 //                 qDebug( "pending: *%s*", pendingSrc.latin1() );
         pendingSrc.prepend( QString(src.current(), src.length() ) );
-        _src = QString::null;
-        src = DOMStringIt(_src);
+        setSrc(QString::null);
         scriptCodeSize = scriptCodeResync = 0;
         cachedScript->ref(this);
         // will be 0 if script was already loaded and ref() executed it
@@ -383,11 +389,10 @@ void HTMLTokenizer::scriptHandler()
         else
             prependingSrc = QString( src.current(), src.length() ); // deep copy
 
-        _src = QString::null;
-        src = DOMStringIt( _src );
+        setSrc(QString::null);
         QString exScript( scriptCode, scriptCodeSize ); // deep copy
         scriptCodeSize = scriptCodeResync = 0;
-        scriptExecution( exScript );
+        scriptExecution( exScript, QString(), scriptStartLineno );
     }
     script = false;
     scriptCodeSize = scriptCodeResync = 0;
@@ -397,12 +402,19 @@ void HTMLTokenizer::scriptHandler()
         write( prependingSrc, false );
 }
 
-void HTMLTokenizer::scriptExecution( const QString& str )
+void HTMLTokenizer::scriptExecution( const QString& str, QString scriptURL,
+                                     int baseLine)
 {
     bool oldscript = script;
     m_executingScript++;
     script = false;
-    view->part()->executeScript(str);
+    QString url;
+    if (scriptURL.isNull())
+      url = static_cast<DocumentImpl*>(view->part()->document().handle())->URL();
+    else
+      url = scriptURL;
+      
+    view->part()->executeScript(url,baseLine,Node(),str);
     m_executingScript--;
     script = oldscript;
 }
@@ -1169,13 +1181,11 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
     if ( onHold ) {
         QString rest = QString( src.current(), src.length() );
         rest += str;
-        _src = rest;
+        setSrc(rest);
         return;
     }
     else
-        _src = str;
-
-    src = DOMStringIt(_src);
+        setSrc(str);
 
     if (Entity)
         parseEntity(src, dest);
@@ -1295,6 +1305,7 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
         }
         else if ( cc == '<' && !src.escaped())
         {
+            tagStartLineno = lineno+src.lineCount();
             ++src;
             startTag = true;
             discard = NoneDiscard;
@@ -1447,6 +1458,9 @@ void HTMLTokenizer::finish()
 
 void HTMLTokenizer::processToken()
 {
+    KJSProxy *jsProxy = view->part()->jScript();
+    if (jsProxy)
+        jsProxy->setEventHandlerLineno(tagStartLineno);
     if ( dest > buffer )
     {
 #ifdef TOKEN_DEBUG
@@ -1472,6 +1486,8 @@ void HTMLTokenizer::processToken()
     }
     else if(!currToken.id) {
         currToken.reset();
+        if (jsProxy)
+            jsProxy->setEventHandlerLineno(lineno+src.lineCount());
         return;
     }
 
@@ -1505,6 +1521,8 @@ void HTMLTokenizer::processToken()
     parser->parseToken(&currToken);
 
     currToken.reset();
+    if (jsProxy)
+        jsProxy->setEventHandlerLineno(0);
 }
 
 
@@ -1543,13 +1561,13 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 #ifdef TOKEN_DEBUG
         kdDebug( 6036 ) << "External script is:" << endl << scriptSource.string() << endl;
 #endif
+//         pendingSrc.prepend( QString( src.current(), src.length() ) ); // deep copy - again
+        setSrc(QString::null);
+	scriptExecution( scriptSource.string(), cachedScript->url().string() );
+
         cachedScript->deref(this);
         cachedScript = 0;
 
-//         pendingSrc.prepend( QString( src.current(), src.length() ) ); // deep copy - again
-        _src = QString::null;
-        src = DOMStringIt( _src );
-        scriptExecution( scriptSource.string() );
         // 'script' is true when we are called synchronously from
         // parseScript(). In that case parseScript() will take care
         // of 'scriptOutput'.
@@ -1566,9 +1584,15 @@ void HTMLTokenizer::addPendingSource()
 //    kdDebug( 6036 ) << "adding pending Output to parsed string" << endl;
     QString newStr = QString(src.current(), src.length());
     newStr += pendingSrc;
-    _src = newStr;
-    src = DOMStringIt(_src);
+    setSrc(newStr);
     pendingSrc = "";
+}
+
+void HTMLTokenizer::setSrc(QString source)
+{
+    lineno += src.lineCount();
+    _src = source;
+    src = DOMStringIt(_src);
 }
 
 void HTMLTokenizer::setOnHold(bool _onHold)

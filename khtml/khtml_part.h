@@ -146,6 +146,8 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class DOM::DocumentImpl;
   friend class DOM::HTMLDocumentImpl;
   friend class KHTMLPartBrowserHostExtension;
+  friend class HTMLTokenizer;
+  friend class XMLTokenizer;
   
   Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE setJScriptEnabled )
   Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE setJavaEnabled )
@@ -995,6 +997,7 @@ private:
   khtml::ChildFrame *recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args, bool callParent = true );
 
   bool checkLinkSecurity(const KURL &linkURL,const QString &message = QString::null, const QString &button = QString::null);
+  QVariant executeScript(QString filename, int baseLine, const DOM::Node &n, const QString &script);
 
   KJSProxy *jScript();
 

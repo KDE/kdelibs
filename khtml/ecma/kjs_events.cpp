@@ -23,6 +23,7 @@
 #include "kjs_events.h"
 #include "kjs_views.h"
 #include "kjs_proxy.h"
+#include "kjs_debugwin.h"
 #include <dom_string.h>
 #include <qptrdict.h>
 #include <qlist.h>
@@ -52,6 +53,10 @@ JSEventListener::~JSEventListener()
 
 void JSEventListener::handleEvent(DOM::Event &evt)
 {
+#ifdef KJS_DEBUGGER
+  if (KJSDebugWin::instance() && KJSDebugWin::instance()->inSession())
+    return;
+#endif
   if (listener.implementsCall() && static_cast<Window*>(win.imp())->part() ) {
     KJScript *scr = static_cast<Window*>(win.imp())->part()->jScript()->jScript();
     List args;

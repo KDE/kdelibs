@@ -61,6 +61,7 @@ namespace KJS {
     friend class Location;
     friend class WindowFunc;
     friend class WindowQObject;
+    friend class ScheduledAction;
   public:
     Window(KHTMLPart *p);
   public:
@@ -123,13 +124,33 @@ namespace KJS {
     int id;
   };
 
+  /**
+   * An action (either function or string) to be executed after a specified
+   * time interval, either once or repeatedly. Used for window.setTimeout()
+   * and window.setInterval()
+   */
+  class ScheduledAction {
+  public:
+    ScheduledAction(KJSO _func, List *_args, bool _singleShot);
+    ScheduledAction(QString _code, bool _singleShot);
+    ~ScheduledAction();
+    void execute(Window *window);
+
+    KJSO func;
+    List *args;
+    QString code;
+    bool isFunction;
+    bool singleShot;
+  };
+
   class WindowQObject : public QObject {
     Q_OBJECT
   public:
     WindowQObject(Window *w);
     ~WindowQObject();
     int installTimeout(const UString &handler, int t, bool singleShot);
-    void clearTimeout(int timerId);
+    int installTimeout(const KJSO &func, List *args, int t, bool singleShot);
+    void clearTimeout(int timerId, bool delAction = true);
   public slots:
     void timeoutClose();
   protected slots:
@@ -139,7 +160,7 @@ namespace KJS {
   private:
     Window *parent;
     KHTMLPart *part;   		// not guarded, may be dangling
-    QMap<int, QString> map;
+    QMap<int, ScheduledAction*> scheduledActions;
   };
 
   class Location : public HostImp {

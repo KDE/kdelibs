@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -43,10 +44,6 @@ extern "C" {
   KJSProxy *kjs_html_init(KHTMLPart *khtmlpart);
 }
 
-#ifdef KJS_DEBUGGER
-static KJSDebugWin *kjs_html_debugger = 0;
-#endif
-
 QVariant KJS::KJSOToVariant(KJSO obj) {
   QVariant res;
   switch (obj.type()) {
@@ -67,108 +64,192 @@ QVariant KJS::KJSOToVariant(KJSO obj) {
 }
 
 
+class KJSProxyImpl : public KJSProxy {
+public:
+  KJSProxyImpl(KHTMLPart *part);
+  virtual ~KJSProxyImpl();
+  virtual QVariant evaluate(QString filename, int baseLine, const QChar *c,
+		    unsigned int len, const DOM::Node &n);
+  virtual void clear();
+  virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString code);
+  virtual KJScript *jScript();
+
+  virtual void setDebugEnabled(bool enabled);
+  virtual bool paused() const;
+  virtual void setSourceFile(QString url, QString code);
+  virtual void appendSourceFile(QString url, QString code);
+
+  KJScript* create(KHTMLPart *khtmlpart);
+
+private:
+  bool m_inEvaluate; // ### remove
+  KJScript* m_script;
+};
+
+
+KJSProxyImpl::KJSProxyImpl(KHTMLPart *part)
+{
+  m_script = new KJScript();
+  m_inEvaluate = false;
+  m_part = part;
+
+#ifdef KJS_DEBUGGER
+  m_script->enableDebug();
+#endif
+
+  KJS::Imp *global = m_script->globalObject();
+  global->setPrototype(new Window(m_part));
+}
+
+KJSProxyImpl::~KJSProxyImpl()
+{
+  delete m_script;
+}
+
+
+QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
+			    const QChar *c, unsigned int len,
+			    const DOM::Node &n) {
+  // evaluate code. Returns the JS return value or an invalid QVariant
+  // if there was none, an error occured or the type couldn't be converted.
+
+  QVariant ret;
+
+
+  QVariant r;
+  bool wasInEvaluate = m_inEvaluate;
+  if (!wasInEvaluate)
+    m_inEvaluate = true;
+
+  m_script->init(); // set a valid current interpreter
+
+#ifdef KJS_DEBUGGER
+  // ###    KJSDebugWin::instance()->attach(m_script);
+  if (KJSDebugWin::instance())
+    KJSDebugWin::instance()->setNextSourceInfo(filename,baseLine);
+  //    KJSDebugWin::instance()->setMode(KJS::Debugger::Step);
+#endif
+
+  KJS::KJSO thisNode = n.isNull() ? KJSO( Window::retrieve( m_part ) ) : getDOMNode(n);
+
+  KJS::Global::current().setExtra(m_part);
+  bool success = m_script->evaluate(thisNode, c, len);
+//  if (m_script->recursion() == 0)
+//    KJS::Global::current().setExtra(0L);
+
+#ifdef KJS_DEBUGGER
+    //    KJSDebugWin::instance()->setCode(QString::null);
+#endif
+
+  // let's try to convert the return value
+  if (success && m_script->returnValue())
+    ret = KJSOToVariant(m_script->returnValue());
+  else
+    ret = QVariant();
+
+  if (!wasInEvaluate)
+    m_inEvaluate = false;
+
+  return ret;
+}
+
+void KJSProxyImpl::clear() {
+  // clear resources allocated by the interpreter
+  if (m_script) {
+#ifdef KJS_DEBUGGER
+    KJSDebugWin *debugWin = KJSDebugWin::instance();
+    if (debugWin && debugWin->currentScript() == m_script) {
+        debugWin->setMode(KJSDebugWin::Stop);
+//        debugWin->leaveSession();
+    }
+#endif
+
+    // ### hack to ensure window remains prototype of the global object
+    KJSO oldProto = m_script->globalObject()->prototype();
+
+    m_script->clear();
+
+    m_script->init();
+    m_script->globalObject()->setPrototype(oldProto);
+
+    Window *win = Window::retrieveWindow(m_part);
+    if (win)
+        win->clear();
+    //    delete m_script;
+    //m_script = 0L;
+  }
+}
+
+DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QString code)
+{
+#ifdef KJS_DEBUGGER
+  if (KJSDebugWin::instance())
+    KJSDebugWin::instance()->setNextSourceInfo(sourceUrl,m_handlerLineno);
+#endif
+
+  m_script->init(); // set a valid current interpreter
+  KJS::Global::current().setExtra(m_part);
+  KJS::Constructor constr(KJS::Global::current().get("Function").imp());
+  KJS::List args;
+  args.append(KJS::String("event"));
+  args.append(KJS::String(code));
+  KJS::KJSO handlerFunc = constr.construct(args);
+//  if (m_script->recursion() == 0)
+//    KJS::Global::current().setExtra(0L);
+
+  return KJS::Window::retrieveWindow(m_part)->getJSEventListener(handlerFunc,true);
+}
+
+KJScript *KJSProxyImpl::jScript()
+{
+  return m_script;
+}
+
+void KJSProxyImpl::setDebugEnabled(bool enabled)
+{
+#ifdef KJS_DEBUGGER
+  m_script->setDebuggingEnabled(enabled);
+  // NOTE: this is consistent across all KJSProxyImpl instances, as we only
+  // ever have 1 debug window
+  if (!enabled && KJSDebugWin::instance()) {
+    KJSDebugWin::destroyInstance();
+  }
+  else if (enabled && !KJSDebugWin::instance()) {
+    KJSDebugWin::createInstance();
+    KJSDebugWin::instance()->attach(m_script);
+  }
+#endif
+}
+
+bool KJSProxyImpl::paused() const
+{
+#ifdef KJS_DEBUGGER
+  if (KJSDebugWin::instance())
+    return KJSDebugWin::instance()->inSession();
+#endif
+  return false;
+}
+
+void KJSProxyImpl::setSourceFile(QString url, QString code)
+{
+#ifdef KJS_DEBUGGER
+  if (KJSDebugWin::instance())
+    KJSDebugWin::instance()->setSourceFile(url,code);
+#endif
+}
+
+void KJSProxyImpl::appendSourceFile(QString url, QString code)
+{
+#ifdef KJS_DEBUGGER
+  if (KJSDebugWin::instance())
+    KJSDebugWin::instance()->appendSourceFile(url,code);
+#endif
+}
+
 // initialize HTML module
 KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
 {
-  KJScript *script = kjs_create(khtmlpart);
-
-  // proxy class operating via callback functions
-  KJSProxy *proxy = new KJSProxy(script, &kjs_create, &kjs_eval,
-                                 &kjs_clear, &kjs_special, &kjs_destroy,
-				 &kjs_createHTMLEventHandler);
-  proxy->khtmlpart = khtmlpart;
-
-#ifdef KJS_DEBUGGER
-  // ### share and destroy
-  if (!kjs_html_debugger)
-      kjs_html_debugger = new KJSDebugWin();
-#endif
-
-  return proxy;
+  return new KJSProxyImpl(khtmlpart);
 }
 
-// init the interpreter
-KJScript* kjs_create(KHTMLPart *khtmlpart)
-{
-    // Creating an interpreter doesn't mean it should be made current !
-    KJScript *current = KJScript::current();
 
-    KJScript *script = new KJScript();
-#ifndef NDEBUG
-    script->enableDebug();
-#endif
-    KJS::Imp *global = script->globalObject();
-
-    global->setPrototype(new Window(khtmlpart));
-
-    KJScript::setCurrent(current);
-    return script;
-}
-
-  // evaluate code. Returns the JS return value or an invalid QVariant
-  // if there was none, an error occured or the type couldn't be converted.
-QVariant kjs_eval(KJScript *script, const QChar *c, unsigned int len,
-                  const DOM::Node &n, KHTMLPart *khtmlpart)
-{
-    script->init(); // set a valid current interpreter
-
-#ifdef KJS_DEBUGGER
-    kjs_html_debugger->attach(script);
-    kjs_html_debugger->setCode(QString(c, len));
-    kjs_html_debugger->setMode(KJS::Debugger::Step);
-#endif
-
-    KJS::KJSO thisNode = n.isNull() ? KJSO( Window::retrieve( khtmlpart ) ) : getDOMNode(n);
-
-    KJS::Global::current().setExtra(khtmlpart);
-    bool ret = script->evaluate(thisNode, c, len);
-    if (script->recursion() == 0)
-        KJS::Global::current().setExtra(0L);
-
-#ifdef KJS_DEBUGGER
-    kjs_html_debugger->setCode(QString::null);
-#endif
-
-    // let's try to convert the return value
-    if (ret && script->returnValue())
-      return KJSOToVariant(script->returnValue());
-    else
-      return QVariant();
-}
-
-  // clear resources allocated by the interpreter
-void kjs_clear(KJScript *script, KHTMLPart * part)
-{
-    script->clear();
-    Window *win = Window::retrieveWindow(part);
-    if (win)
-        win->clear();
-    //    delete script;
-}
-
-  // for later extensions.
-const char *kjs_special(KJScript *, const char *)
-{
-    // return something like a version number for now
-    return "1";
-}
-
-void kjs_destroy(KJScript *script)
-{
-    delete script;
-}
-
-DOM::EventListener* kjs_createHTMLEventHandler(KJScript *script, QString code, KHTMLPart *part)
-{
-    script->init(); // set a valid current interpreter
-    KJS::Global::current().setExtra(part);
-    KJS::Constructor constr(KJS::Global::current().get("Function").imp());
-    KJS::List args;
-    args.append(KJS::String("event"));
-    args.append(KJS::String(code));
-    KJS::KJSO handlerFunc = constr.construct(args);
-    if (script->recursion() == 0)
-        KJS::Global::current().setExtra(0L);
-
-    return KJS::Window::retrieveWindow(part)->getJSEventListener(handlerFunc,true);
-}

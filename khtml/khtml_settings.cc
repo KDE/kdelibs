@@ -31,6 +31,53 @@
 
 typedef QMap<QString,KHTMLSettings::KJavaScriptAdvice> PolicyMap;
 
+class KHTMLSettingsPrivate
+{
+public:
+    bool m_bChangeCursor;
+    bool m_underlineLink;
+    bool m_hoverLink;
+
+    int m_fontSize;
+    QValueList<int>     m_fontSizes;
+    int m_minFontSize;
+
+#if QT_VERSION < 300
+    QFont::CharSet m_charset;
+    QFont::CharSet m_script;
+    QFont::CharSet m_defaultCharset;
+#else
+    int m_charset;
+#endif
+    bool enforceCharset;
+    QString m_encoding;
+    QString m_userSheet;
+    
+    QColor m_textColor;
+    QColor m_linkColor;
+    QColor m_vLinkColor;
+
+    bool m_bAutoLoadImages;
+    bool m_bEnableJava;
+    bool m_bEnableJavaScript;
+    bool m_bEnableJavaScriptDebug;
+    bool m_bEnablePlugins;
+    bool m_bEnableCSS;
+    QMap<QString,KHTMLSettings::KJavaScriptAdvice> javaDomainPolicy;
+    QMap<QString,KHTMLSettings::KJavaScriptAdvice> javaScriptDomainPolicy;
+#if QT_VERSION < 300
+    QMap<QFont::CharSet, QStringList> fontsForCharset;
+#else
+    QStringList fonts;
+#endif
+    QStringList defaultFonts;
+    QString availFamilies;
+
+    bool m_formCompletionEnabled;
+    int m_maxFormCompletionItems;
+};
+
+
 KHTMLSettings::KJavaScriptAdvice KHTMLSettings::strToAdvice(const QString& _str)
 {
   KJavaScriptAdvice ret = KJavaScriptDunno;
@@ -89,7 +136,34 @@ void KHTMLSettings::splitDomainAdvice(const QString& configStr, QString &domain,
 
 KHTMLSettings::KHTMLSettings()
 {
+  d = new KHTMLSettingsPrivate();
   init();
+}
+
+KHTMLSettings::KHTMLSettings(const KHTMLSettings &other)
+{
+  d = new KHTMLSettingsPrivate();
+  *d = *other.d;
+}
+
+KHTMLSettings::~KHTMLSettings()
+{
+  delete d;
+}
+
+bool KHTMLSettings::changeCursor()
+{
+  return d->m_bChangeCursor;
+}
+
+bool KHTMLSettings::underlineLink()
+{
+  return d->m_underlineLink;
+}
+
+bool KHTMLSettings::hoverLink()
+{
+  return d->m_hoverLink;
 }
 
 void KHTMLSettings::init()
@@ -113,21 +187,21 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 {
     // Fonts and colors
     if( reset ) {
-	defaultFonts = QStringList();
-	defaultFonts.append( config->readEntry( "StandardFont", KGlobalSettings::generalFont().family() ) );
-	defaultFonts.append( config->readEntry( "FixedFont", KGlobalSettings::fixedFont().family() ) );
-	defaultFonts.append( config->readEntry( "SerifFont", HTML_DEFAULT_VIEW_SERIF_FONT ) );
-	defaultFonts.append( config->readEntry( "SansSerifFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT ) );
-	defaultFonts.append( config->readEntry( "CursiveFont", HTML_DEFAULT_VIEW_CURSIVE_FONT ) );
-	defaultFonts.append( config->readEntry( "FantasyFont", HTML_DEFAULT_VIEW_FANTASY_FONT ) );
-	defaultFonts.append( QString( "0" ) ); // font size adjustment
+	d->defaultFonts = QStringList();
+	d->defaultFonts.append( config->readEntry( "StandardFont", KGlobalSettings::generalFont().family() ) );
+	d->defaultFonts.append( config->readEntry( "FixedFont", KGlobalSettings::fixedFont().family() ) );
+	d->defaultFonts.append( config->readEntry( "SerifFont", HTML_DEFAULT_VIEW_SERIF_FONT ) );
+	d->defaultFonts.append( config->readEntry( "SansSerifFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT ) );
+	d->defaultFonts.append( config->readEntry( "CursiveFont", HTML_DEFAULT_VIEW_CURSIVE_FONT ) );
+	d->defaultFonts.append( config->readEntry( "FantasyFont", HTML_DEFAULT_VIEW_FANTASY_FONT ) );
+	d->defaultFonts.append( QString( "0" ) ); // font size adjustment
     }
 
     if ( reset || config->hasKey( "MinimumFontSize" ) )
-        m_minFontSize = config->readNumEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
+        d->m_minFontSize = config->readNumEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
 
     if ( reset || config->hasKey( "MediumFontSize" ) ) {
-        m_fontSize = config->readNumEntry( "MediumFontSize", 10 );
+        d->m_fontSize = config->readNumEntry( "MediumFontSize", 10 );
         resetFontSizes();
     }
 
@@ -139,39 +213,39 @@ void KHTMLSettings::init( KConfig * config, bool reset )
             if( fonts.count() == 6 ) // backwards compatibility
                 fonts.append( QString( "0" ) );
             if ( fonts.count() != 7 )
-              fonts = defaultFonts;
-            fontsForCharset[KGlobal::charsets()->xNameToID(*it)] = fonts;
+              fonts = d->defaultFonts;
+            d->fontsForCharset[KGlobal::charsets()->xNameToID(*it)] = fonts;
         }
     }
 #else
-    fonts = config->readListEntry( "Fonts" );
+    d->fonts = config->readListEntry( "Fonts" );
 #endif
 
     if ( reset || config->hasKey( "DefaultEncoding" ) ) {
-        m_encoding = config->readEntry( "DefaultEncoding", "" );
-        if ( m_encoding.isEmpty() )
-            m_encoding = KGlobal::locale()->charset();
+        d->m_encoding = config->readEntry( "DefaultEncoding", "" );
+        if ( d->m_encoding.isEmpty() )
+            d->m_encoding = KGlobal::locale()->charset();
 
 #if QT_VERSION < 300
-        m_defaultCharset = KGlobal::charsets()->nameToID( m_encoding );
-        internalSetCharset( m_defaultCharset );
+        d->m_defaultCharset = KGlobal::charsets()->nameToID( d->m_encoding );
+        internalSetCharset( d->m_defaultCharset );
 #endif
     }
 
     if ( reset || config->hasKey( "EnforceDefaultCharset" ) )
-        enforceCharset = config->readBoolEntry( "EnforceDefaultCharset", false );
+        d->enforceCharset = config->readBoolEntry( "EnforceDefaultCharset", false );
 
   // Behaviour
   if ( reset || config->hasKey( "ChangeCursor" ) )
-      m_bChangeCursor = config->readBoolEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
+      d->m_bChangeCursor = config->readBoolEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
 
   if ( reset || config->hasKey("UnderlineLinks") )
-      m_underlineLink = config->readBoolEntry( "UnderlineLinks", true );
+      d->m_underlineLink = config->readBoolEntry( "UnderlineLinks", true );
 
   if ( reset || config->hasKey( "HoverLinks" ) )
   {
-    if ( ( m_hoverLink = config->readBoolEntry( "HoverLinks", false ) ) )
-        m_underlineLink = false;
+    if ( ( d->m_hoverLink = config->readBoolEntry( "HoverLinks", false ) ) )
+        d->m_underlineLink = false;
   }
 
   // Colors
@@ -179,13 +253,13 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   {
     config->setGroup( "General" ); // group will be restored by cgs anyway
     if ( reset || config->hasKey( "TextColor" ) )
-      m_textColor = config->readColorEntry( "foreground", &HTML_DEFAULT_TXT_COLOR );
+      d->m_textColor = config->readColorEntry( "foreground", &HTML_DEFAULT_TXT_COLOR );
 
     if ( reset || config->hasKey( "linkColor" ) )
-      m_linkColor = config->readColorEntry( "linkColor", &HTML_DEFAULT_LNK_COLOR );
+      d->m_linkColor = config->readColorEntry( "linkColor", &HTML_DEFAULT_LNK_COLOR );
 
     if ( reset || config->hasKey( "visitedLinkColor" ) )
-      m_vLinkColor = config->readColorEntry( "visitedLinkColor", &HTML_DEFAULT_VLNK_COLOR);
+      d->m_vLinkColor = config->readColorEntry( "visitedLinkColor", &HTML_DEFAULT_VLNK_COLOR);
   }
 
   // Other
@@ -195,19 +269,19 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     config->setGroup( "HTML Settings" ); // group will be restored by cgs anyway
 
     if ( reset || config->hasKey( "AutoLoadImages" ) )
-      m_bAutoLoadImages = config->readBoolEntry( "AutoLoadImages", true );
+      d->m_bAutoLoadImages = config->readBoolEntry( "AutoLoadImages", true );
 
     // The global setting for CSS
     if ( reset || config->hasKey( "EnableCSS" ) )
-        m_bEnableCSS = config->readBoolEntry( "EnableCSS", true );
+        d->m_bEnableCSS = config->readBoolEntry( "EnableCSS", true );
 
     if ( config->readBoolEntry( "UserStyleSheetEnabled", false ) == true ) {
 	if ( reset || config->hasKey( "UserStyleSheet" ) )
-	    m_userSheet = config->readEntry( "UserStyleSheet", "" );
+	    d->m_userSheet = config->readEntry( "UserStyleSheet", "" );
     }
 
-    m_formCompletionEnabled = config->readBoolEntry("FormCompletion", true);
-    m_maxFormCompletionItems = config->readNumEntry("MaxFormCompletionItems", 10);
+    d->m_formCompletionEnabled = config->readBoolEntry("FormCompletion", true);
+    d->m_maxFormCompletionItems = config->readNumEntry("MaxFormCompletionItems", 10);
   }
 
   if( reset || config->hasGroup( "Java/JavaScript Settings" ) ) {
@@ -215,15 +289,19 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
         // The global setting for Java
     if ( reset || config->hasKey( "EnableJava" ) )
-      m_bEnableJava = config->readBoolEntry( "EnableJava", false );
+      d->m_bEnableJava = config->readBoolEntry( "EnableJava", false );
 
         // The global setting for JavaScript
     if ( reset || config->hasKey( "EnableJavaScript" ) )
-      m_bEnableJavaScript = config->readBoolEntry( "EnableJavaScript", true );
+      d->m_bEnableJavaScript = config->readBoolEntry( "EnableJavaScript", true );
+
+        // The global setting for JavaScript debugging
+    if ( reset || config->hasKey( "EnableJavaScriptDebug" ) )
+      d->m_bEnableJavaScriptDebug = config->readBoolEntry( "EnableJavaScriptDebug", false );
 
         // The global setting for Plugins (there's no local setting yet)
     if ( reset || config->hasKey( "EnablePlugins" ) )
-      m_bEnablePlugins = config->readBoolEntry( "EnablePlugins", true );
+      d->m_bEnablePlugins = config->readBoolEntry( "EnablePlugins", true );
 
     // The domain-specific settings.
     bool check_old_java = true;
@@ -236,7 +314,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         KJavaScriptAdvice javaAdvice;
         KJavaScriptAdvice javaScriptAdvice;
         splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
-        javaDomainPolicy[domain] = javaAdvice;
+        d->javaDomainPolicy[domain] = javaAdvice;
       }
 	}
 
@@ -250,7 +328,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         KJavaScriptAdvice javaAdvice;
         KJavaScriptAdvice javaScriptAdvice;
         splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
-        javaScriptDomainPolicy[domain] = javaScriptAdvice;
+        d->javaScriptDomainPolicy[domain] = javaScriptAdvice;
       }
 	}
 
@@ -264,16 +342,16 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         KJavaScriptAdvice javaScriptAdvice;
         splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
 		if( check_old_java )
-		  javaDomainPolicy[domain] = javaAdvice;
+		  d->javaDomainPolicy[domain] = javaAdvice;
 		if( check_old_ecma )
-          javaScriptDomainPolicy[domain] = javaScriptAdvice;
+          d->javaScriptDomainPolicy[domain] = javaScriptAdvice;
       }
 
 	  //save all the settings into the new keywords if they don't exist
 	  if( check_old_java ){
 	    QStringList domainConfig;
 	  	PolicyMap::Iterator it;
-	  	for( it = javaDomainPolicy.begin(); it != javaDomainPolicy.end(); ++it ){
+	  	for( it = d->javaDomainPolicy.begin(); it != d->javaDomainPolicy.end(); ++it ){
           QCString javaPolicy = adviceToStr( it.data() );
           QCString javaScriptPolicy = adviceToStr( KJavaScriptDunno );
           domainConfig.append(QString::fromLatin1("%1:%2:%3").arg(it.key()).arg(javaPolicy).arg(javaScriptPolicy));
@@ -284,7 +362,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 	  if( check_old_ecma ){
 	    QStringList domainConfig;
 	    PolicyMap::Iterator it;
-	  	for( it = javaScriptDomainPolicy.begin(); it != javaScriptDomainPolicy.end(); ++it ){
+	  	for( it = d->javaScriptDomainPolicy.begin(); it != d->javaScriptDomainPolicy.end(); ++it ){
           QCString javaPolicy = adviceToStr( KJavaScriptDunno );
           QCString javaScriptPolicy = adviceToStr( it.data() );
           domainConfig.append(QString::fromLatin1("%1:%2:%3").arg(it.key()).arg(javaPolicy).arg(javaScriptPolicy));
@@ -340,18 +418,24 @@ static bool lookup_hostname_policy(const QString& hostname,
 
 bool KHTMLSettings::isJavaEnabled( const QString& hostname )
 {
-  return lookup_hostname_policy(hostname, javaDomainPolicy, m_bEnableJava);
+  return lookup_hostname_policy(hostname, d->javaDomainPolicy, d->m_bEnableJava);
 }
 
 bool KHTMLSettings::isJavaScriptEnabled( const QString& hostname )
 {
-  return lookup_hostname_policy(hostname, javaScriptDomainPolicy, m_bEnableJavaScript);
+  return lookup_hostname_policy(hostname, d->javaScriptDomainPolicy, d->m_bEnableJavaScript);
+}
+
+bool KHTMLSettings::isJavaScriptDebugEnabled( const QString& /*hostname*/ )
+{
+  // debug setting is global for now, but could change in the future
+  return d->m_bEnableJavaScriptDebug;
 }
 
 bool KHTMLSettings::isPluginsEnabled( const QString& hostname )
 {
   // FIXME: hostname is ignored (dnaber, 2001-01-03)
-  return m_bEnablePlugins;
+  return d->m_bEnablePlugins;
 }
 
 bool KHTMLSettings::isCSSEnabled( const QString& /*hostname*/ )
@@ -369,14 +453,14 @@ bool KHTMLSettings::isCSSEnabled( const QString& /*hostname*/ )
 
 #endif
   // No domain-specific entry, or was dunno: use global setting
-  return m_bEnableCSS;
+  return d->m_bEnableCSS;
 }
 
 
 void KHTMLSettings::resetFontSizes()
 {
-    m_fontSizes.clear();
-    int sizeAdjust = m_fontSize + lookupFont(m_charset,6).toInt() + 3;
+    d->m_fontSizes.clear();
+    int sizeAdjust = d->m_fontSize + lookupFont(d->m_charset,6).toInt() + 3;
     if ( sizeAdjust < 0 )
 	sizeAdjust = 0;
     if ( sizeAdjust > 9 )
@@ -385,22 +469,27 @@ void KHTMLSettings::resetFontSizes()
     const float factor = 1.2;
     float scale = 1.0 / ( factor*factor*factor );
     for ( int i = 0; i < MAXFONTSIZES; i++ ) {
-      	m_fontSizes << ( KMAX( int( m_fontSize * scale + 0.5), m_minFontSize ) );
+      	d->m_fontSizes << ( KMAX( int( d->m_fontSize * scale + 0.5), d->m_minFontSize ) );
         scale *= factor;
     }
+}
+
+int KHTMLSettings::minFontSize() const
+{
+  return d->m_minFontSize;
 }
 
 void KHTMLSettings::setFontSizes(const QValueList<int> &_newFontSizes )
 {
     QValueList<int> newFontSizes;
     newFontSizes = _newFontSizes;
-    while ( newFontSizes.count() > m_fontSizes.count() )
+    while ( newFontSizes.count() > d->m_fontSizes.count() )
       newFontSizes.remove( newFontSizes.fromLast() );
 
     QValueList<int>::ConstIterator it = newFontSizes.begin();
     QValueList<int>::ConstIterator end = newFontSizes.end();
     for (int i = 0; it != end; it++ )
-      m_fontSizes[ i++ ] = *it;
+      d->m_fontSizes[ i++ ] = *it;
 }
 
 
@@ -408,31 +497,36 @@ QString KHTMLSettings::settingsToCSS() const
 {
     // lets start with the link properties
     QString str = "a:link {\ncolor: ";
-    str += m_linkColor.name();
+    str += d->m_linkColor.name();
     str += ";";
-    if(m_underlineLink)
+    if(d->m_underlineLink)
 	str += "\ntext-decoration: underline;";
 
-    if( m_bChangeCursor )
+    if( d->m_bChangeCursor )
     {
 	str += "\ncursor: pointer;";
         str += "\n}\ninput[type=image] { cursor: pointer;";
     }
     str += "\n}\n";
     str += "a:visited {\ncolor: ";
-    str += m_vLinkColor.name();
+    str += d->m_vLinkColor.name();
     str += ";";
-    if(m_underlineLink)
+    if(d->m_underlineLink)
 	str += "\ntext-decoration: underline;";
 
-    if( m_bChangeCursor )
+    if( d->m_bChangeCursor )
 	str += "\ncursor: pointer;";
     str += "\n}\n";
 
-    if(m_hoverLink)
+    if(d->m_hoverLink)
         str += "a:link:hover, a:visited:hover { text-decoration: underline; }\n";
 
     return str;
+}
+
+QString KHTMLSettings::availableFamilies() const
+{
+  return d->availFamilies;
 }
 
 #if QT_VERSION < 300
@@ -443,49 +537,49 @@ QString KHTMLSettings::lookupFont(int, int i) const
 {
     QString font;
 #if QT_VERSION < 300
-    const QStringList &fontList = fontsForCharset[charset];
+    const QStringList &fontList = d->fontsForCharset[charset];
     if (fontList.count() > (uint) i)
        font = fontList[i];
 #endif
     if (font.isEmpty())
-        font = defaultFonts[i];
+        font = d->defaultFonts[i];
     return font;
 }
 
 QString KHTMLSettings::stdFontName() const
 {
-    return lookupFont(m_charset,0);
+    return lookupFont(d->m_charset,0);
 }
 
 QString KHTMLSettings::fixedFontName() const
 {
-    return lookupFont(m_charset,1);
+    return lookupFont(d->m_charset,1);
 }
 
 QString KHTMLSettings::serifFontName() const
 {
-    return lookupFont(m_charset,2);
+    return lookupFont(d->m_charset,2);
 }
 
 QString KHTMLSettings::sansSerifFontName() const
 {
-    return lookupFont(m_charset,3);
+    return lookupFont(d->m_charset,3);
 }
 
 QString KHTMLSettings::cursiveFontName() const
 {
-    return lookupFont(m_charset,4);
+    return lookupFont(d->m_charset,4);
 }
 
 QString KHTMLSettings::fantasyFontName() const
 {
-    return lookupFont(m_charset,5);
+    return lookupFont(d->m_charset,5);
 }
 
 #if QT_VERSION < 300
 void KHTMLSettings::setFont(const QFont::CharSet &charset, int i, const QString &n)
 {
-    QStringList fontList = fontsForCharset[charset];
+    QStringList fontList = d->fontsForCharset[charset];
     while (fontList.count() <= (uint)i)
       fontList.append(QString::null);
     fontList[i] = n;
@@ -498,50 +592,100 @@ void KHTMLSettings::setFont(int, int, const QString &)
 
 void KHTMLSettings::setStdFontName(const QString &n)
 {
-    setFont(m_charset, 0, n);
+    setFont(d->m_charset, 0, n);
 }
 
 void KHTMLSettings::setFixedFontName(const QString &n)
 {
-    setFont(m_charset, 1, n);
+    setFont(d->m_charset, 1, n);
+}
+
+const QValueList<int> &KHTMLSettings::fontSizes() const
+{
+  return d->m_fontSizes;
 }
 
 #if QT_VERSION < 300
 void KHTMLSettings::setDefaultCharset( QFont::CharSet c, bool enforce )
 {
-    m_defaultCharset = c;
-    enforceCharset = enforce;
+    d->m_defaultCharset = c;
+    d->enforceCharset = enforce;
     if(enforce)
         internalSetCharset(c);
 }
 
 void KHTMLSettings::resetCharset()
 {
-    internalSetCharset(m_defaultCharset);
-    setScript( m_defaultCharset );
+    internalSetCharset(d->m_defaultCharset);
+    setScript( d->m_defaultCharset );
+}
+
+QFont::CharSet KHTMLSettings::charset() const
+{
+  return d->m_charset;
 }
 
 void KHTMLSettings::setCharset( QFont::CharSet c)
 {
-    if (!enforceCharset)
+    if (!d->enforceCharset)
        internalSetCharset(c);
 }
 
 void KHTMLSettings::internalSetCharset( QFont::CharSet c )
 {
-    m_charset = c;
-    availFamilies = KGlobal::charsets()->availableFamilies( m_charset ).join(",");
+    d->m_charset = c;
+    d->availFamilies = KGlobal::charsets()->availableFamilies( d->m_charset ).join(",");
     resetFontSizes();
+}
+
+QFont::CharSet KHTMLSettings::script() const
+{
+  return d->m_script;
 }
 
 void KHTMLSettings::setScript( QFont::CharSet c )
 {
     //kdDebug(6050) << "KHTMLSettings::setScript to " << c << endl;
-    m_script = c;
+    d->m_script = c;
 }
 #endif
 
 QString KHTMLSettings::userStyleSheet() const
 {
-    return m_userSheet;
+    return d->m_userSheet;
+}
+
+bool KHTMLSettings::isFormCompletionEnabled() const
+{
+  return d->m_formCompletionEnabled;
+}
+
+int KHTMLSettings::maxFormCompletionItems() const
+{
+  return d->m_maxFormCompletionItems;
+}
+
+const QString &KHTMLSettings::encoding() const
+{
+  return d->m_encoding;
+}
+
+const QColor& KHTMLSettings::textColor()
+{
+  return d->m_textColor;
+}
+
+const QColor& KHTMLSettings::linkColor()
+{
+  return d->m_linkColor;
+}
+
+const QColor& KHTMLSettings::vLinkColor()
+{
+  return d->m_vLinkColor;
+}
+
+bool KHTMLSettings::autoLoadImages()
+{
+  return d->m_bAutoLoadImages;
 }
