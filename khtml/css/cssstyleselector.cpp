@@ -59,6 +59,7 @@ using namespace DOM;
 #include <qdatetime.h>
 #include <assert.h>
 #include <qpaintdevicemetrics.h>
+#include <qintcache.h>
 
 CSSStyleSelectorList *CSSStyleSelector::defaultStyle = 0;
 CSSStyleSelectorList *CSSStyleSelector::userStyle = 0;
@@ -173,6 +174,7 @@ void CSSStyleSelector::clear()
 }
 
 static bool strictParsing;
+static QList<RenderStyle>* styleElementCache = 0;
 
 RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 {
@@ -186,7 +188,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     // the higher the offset or important number, the later the rules get applied.
 
     pseudoState = PseudoUnknown;
-
 
     if(defaultStyle) defaultStyle->collect(propsToApply, e, 0x00100000); // no important rules here
     // important rules from user styles are higher than important rules from author styles.
@@ -204,7 +205,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
     propsToApply->sort();
 
-    RenderStyle *style;
+    RenderStyle* style;
     if(e->parentNode())
     {
         assert(e->parentNode()->style() != 0);
@@ -212,6 +213,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     }
     else
         style = new RenderStyle();
+
 
     if ( propsToApply->count() != 0 ) {
 
@@ -245,6 +247,29 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 	style->setHasFocus();
     if ( usedDynamicStates & StyleSelector::Active )
 	style->setHasActive();
+
+
+#if 0
+    bool found = false;
+    if(!styleElementCache) styleElementCache = new QList<RenderStyle>;
+    for(RenderStyle* hashedStyle = styleElementCache->first(); hashedStyle; hashedStyle = styleElementCache->next())
+        if(*hashedStyle == *style) {
+            styleElementCache->prepend(styleElementCache->take());
+            delete style;
+            style = hashedStyle;
+            found = true;
+            break;
+        }
+
+    if(!found) {
+        if(styleElementCache->count() > 15) {
+            styleElementCache->getLast()->deref();
+            styleElementCache->removeLast();
+        }
+        styleElementCache->append(style);
+        style->ref();
+    }
+#endif
 
     return style;
 }
@@ -1150,9 +1175,30 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_SPEAK_NUMERAL:
     case CSS_PROP_SPEAK_PUNCTUATION:
     case CSS_PROP_TABLE_LAYOUT:
-    case CSS_PROP_TEXT_TRANSFORM:
     case CSS_PROP_UNICODE_BIDI:
         break;
+    case CSS_PROP_TEXT_TRANSFORM:
+        {
+        if(value->valueType() == CSSValue::CSS_INHERIT) {
+            if(!e->parentNode()) return;
+            style->setTextTransform(e->parentNode()->style()->textTransform());
+            return;
+        }
+
+        if(!primitiveValue->getIdent()) return;
+
+        ETextTransform tt;
+        switch(primitiveValue->getIdent()) {
+        case CSS_VAL_CAPITALIZE:  tt = CAPITALIZE;  break;
+        case CSS_VAL_UPPERCASE:   tt = UPPERCASE;   break;
+        case CSS_VAL_LOWERCASE:   tt = LOWERCASE;   break;
+        case CSS_VAL_NONE:
+        default:                  tt = TTNONE;      break;
+        }
+        style->setTextTransform(tt);
+        break;
+        }
+
     case CSS_PROP_VISIBILITY:
         {
         if(value->valueType() == CSSValue::CSS_INHERIT) {
