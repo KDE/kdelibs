@@ -206,7 +206,7 @@ K_DCOP			return T_DCOP;
 
 %%
 
-void kidlInitFlex( const char *_code )
+void dcopidlInitFlex( const char *_code )
 {
    yy_switch_to_buffer( yy_scan_string( _code ) );
 }

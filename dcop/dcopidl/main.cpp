@@ -2,7 +2,7 @@
 #include <qfile.h>
 #include <qcstring.h>
 
-void kidlParse( const char *_code );
+void dcopidlParse( const char *_code );
 
 int idl_line_no;
 
@@ -10,7 +10,7 @@ int main( int argc, char** argv )
 {
     if (argc != 2)
     {
-        fprintf(stderr, "Usage : kidl input_file\n");
+        fprintf(stderr, "Usage : dcopidl input_file\n");
         return -1;
     }
     QFile file( argv[1] );
@@ -25,7 +25,7 @@ int main( int argc, char** argv )
     arr.resize( len + 1 );
     arr[ len ] = 0;
     
-    kidlParse( arr.data() );
+    dcopidlParse( arr.data() );
 		     
     file.close();
     return 0;

@@ -4,13 +4,13 @@ LDFLAGS   = $(all_libraries)
 
 ####### Files
 
-bin_PROGRAMS = kidl
+bin_PROGRAMS = dcopidl
 
-kidl_SOURCES = main.cpp yacc.cc scanner.cc
+dcopidl_SOURCES = main.cpp yacc.cc scanner.cc
 noinst_HEADERS = yacc.cc.h
 
-kidl_LDADD = $(LIB_QT)
-kidl_LDFLAGS = $(KDE_RPATH)
+dcopidl_LDADD = $(LIB_QT)
+dcopidl_LDFLAGS = $(KDE_RPATH)
 
 DISTCLEANFILES = $(SRCMETA)
 

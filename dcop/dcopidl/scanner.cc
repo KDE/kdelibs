@@ -1970,7 +1970,7 @@ int main()
 #line 207 "scanner.ll"
 
 
-void kidlInitFlex( const char *_code )
+void dcopidlInitFlex( const char *_code )
 {
    yy_switch_to_buffer( yy_scan_string( _code ) );
 }

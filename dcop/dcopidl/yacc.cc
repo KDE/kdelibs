@@ -49,7 +49,7 @@ extern int yylex();
 // extern QString idl_lexFile;
 extern int idl_line_no;
 
-void kidlInitFlex( const char *_code );
+void dcopidlInitFlex( const char *_code );
 
 void yyerror( const char *s )
 {
@@ -1325,10 +1325,10 @@ yyerrhandle:
 #line 326 "yacc.yy"
 
 
-void kidlParse( const char *_code )
+void dcopidlParse( const char *_code )
 {
     printf("<!DOCTYPE DCOP-IDL><DCOP-IDL>\n");
-    kidlInitFlex( _code );
+    dcopidlInitFlex( _code );
     yyparse();
     printf("</DCOP-IDL>\n");
 }
