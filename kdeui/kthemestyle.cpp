@@ -575,7 +575,6 @@ void KThemeStyle::drawIndicator(QPainter* p, int x, int y, int w, int h,
     }
 }
 
-// I have no idea of why the y offset is off but it is...
 void KThemeStyle::drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
                                              int h, bool on)
 {
@@ -583,7 +582,7 @@ void KThemeStyle::drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
         const QBitmap *mask = uncached((on) ? ExIndicatorOn : ExIndicatorOff)->
             mask();
         if(mask){
-            p->drawPixmap(x, 0, *mask);
+            p->drawPixmap(x, y, *mask);
         }
         else
             p->fillRect(x, y, w, h, QBrush(color1, SolidPattern));
