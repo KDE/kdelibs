@@ -234,6 +234,14 @@ void HTMLFrameElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLFrameElementImpl::attach(KHTMLView *w)
 {
+    // limit to how deep we can nest frames
+    KHTMLPart *part = w->part();
+    int depth = 0;
+    while ((part = part->parentPart()))
+	depth++;
+    if (depth > 10)
+	return;
+
     // inherit default settings from parent frameset
     HTMLElementImpl* node = static_cast<HTMLElementImpl*>(parentNode());
     while(node)
@@ -524,6 +532,14 @@ void HTMLIFrameElementImpl::parseAttribute(AttrImpl *attr )
 
 void HTMLIFrameElementImpl::attach(KHTMLView *w)
 {
+  // limit to how deep we can nest frames
+  KHTMLPart *part = w->part();
+  int depth = 0;
+  while ((part = part->parentPart()))
+    depth++;
+  if (depth > 10)
+    return;
+	
   setStyle(document->styleSelector()->styleForElement( this ));
 
   khtml::RenderObject *r = _parent->renderer();
