@@ -676,7 +676,8 @@ bool KProcess::closeStdin()
     communication = (Communication) (communication & ~Stdin);
     delete innot;
     innot = 0;
-    close(in[1]);
+    if (!d->usePty)
+      close(in[1]);
     rv = true;
   } else
     rv = false;
@@ -691,7 +692,8 @@ bool KProcess::closeStdout()
     communication = (Communication) (communication & ~Stdout);
     delete outnot;
     outnot = 0;
-    close(out[0]);
+    if (!d->usePty)
+      close(out[0]);
     rv = true;
   } else
     rv = false;
@@ -1083,9 +1085,17 @@ int KProcess::setupCommunication(Communication comm)
     if (d->ptyMasterFd < 0)
        return 0;
 
-    out[0] = d->ptyMasterFd;
-    out[1] = dup(2); // Dummy
-    communication = (Communication) (comm | Stdout & !Stdin & !Stderr);
+    if (comm & Stdin)
+    {
+      in[0] = -1;
+      in[1] = d->ptyMasterFd;
+    }
+    if (comm & Stdout)
+    {
+      out[0] = d->ptyMasterFd;
+      out[1] = -1; // Dummy
+    }
+    communication = (Communication) (comm & ~Stderr);
     return 1;
   }
 
@@ -1140,12 +1150,15 @@ int KProcess::commSetupDoneP()
   }
 
   if (communication != NoCommunication) {
-        if (communication & Stdin)
-          close(in[0]);
-        if (communication & Stdout)
-          close(out[1]);
-        if (communication & Stderr)
-          close(err[1]);
+        if (!d->usePty)
+        {
+          if (communication & Stdin)
+            close(in[0]);
+          if (communication & Stdout)
+            close(out[1]);
+          if (communication & Stderr)
+            close(err[1]);
+        }
 
         // Don't create socket notifiers and set the sockets non-blocking if
         // blocking is requested.
@@ -1309,6 +1322,8 @@ void KProcess::commClose()
 #endif
      if (d->ptyNeedGrantPty) 
         kprocess_chownpty(d->ptyMasterFd, false);
+     close(d->ptyMasterFd);
+     d->ptyMasterFd = -1;
   }
   // End of PTY stuff //
 
@@ -1384,17 +1399,25 @@ void KProcess::commClose()
           }
         }
 
-        if (communication & Stdin) {
-	    communication = (Communication) (communication & ~Stdin);
+        if (d->usePty)
+        {
+          close(d->ptyMasterFd);
+          communication = (Communication) (communication & ~(Stdin|Stdout));
+        }
+        else
+        {
+          if (communication & Stdin) {
+            communication = (Communication) (communication & ~Stdin);
             close(in[1]);
-        }
-        if (communication & Stdout) {
-	    communication = (Communication) (communication & ~Stdout);
+          }
+          if (communication & Stdout) {
+            communication = (Communication) (communication & ~Stdout);
             close(out[0]);
-        }
-        if (communication & Stderr) {
-	    communication = (Communication) (communication & ~Stderr);
+          }
+          if (communication & Stderr) {
+            communication = (Communication) (communication & ~Stderr);
             close(err[0]);
+          }
         }
   }
 }
