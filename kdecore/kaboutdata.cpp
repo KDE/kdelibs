@@ -264,7 +264,7 @@ QString
 KAboutData::aboutTranslationTeam()
 {
     return i18n("replace this with information about your translation team",
-            "<p>KDE is translated in many languages thanks to the work "
+            "<p>KDE is translated into many languages thanks to the work "
             "of the translation teams all over the world.</p>"
             "<p>For more information on KDE internationalization "
             "visit http://i18n.kde.org</p>");

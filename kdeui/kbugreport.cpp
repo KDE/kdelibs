@@ -119,7 +119,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     glay->addMultiCellWidget( m_configureEmail, 0, 2, 2, 2, AlignTop|AlignRight );
 
     // To
-    qwtstr = i18n( "The e-mail address, this bugreport is sent to." );
+    qwtstr = i18n( "The e-mail address this bug report is sent to." );
     tmpLabel = new QLabel( i18n("To:"), parent );
     glay->addWidget( tmpLabel, ++row,0 );
     QWhatsThis::add( tmpLabel, qwtstr );
@@ -128,8 +128,8 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     QWhatsThis::add( tmpLabel, qwtstr );
 
     setButtonOKText(i18n("&Send"),
-                    i18n("Send bugreport."),
-                    i18n("Send this bugreport to the KDE buglist."));
+                    i18n("Send bug report."),
+                    i18n("Send this bug report to the KDE buglist."));
 
   }
   else
@@ -282,7 +282,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
 
     lay->addSpacing(20);
     QString text = i18n("To submit a bug report, click on the link below.\n"
-                        "This will open a Web Browser window on http://bugs.kde.org where you'll find a form to fill in.\n"
+                        "This will open a web browser window on http://bugs.kde.org where you'll find a form to fill in.\n"
                         "The information displayed above will be transferred to that server.");
     QLabel * label = new QLabel( text, parent, "label");
     lay->addWidget( label );
@@ -395,7 +395,7 @@ void KBugReport::slotOk( void )
             if ( KMessageBox::questionYesNo( this, i18n(
                 "<p>You chose the severity <b>Critical</b>. "
                 "Please note that this severity is intended only for bugs that</p>"
-                "<ul><li>make unrelated software on the system (or the whole system) break</li>"
+                "<ul><li>break unrelated software on the system (or the whole system)</li>"
                 "<li>cause serious data loss</li>"
                 "<li>introduce a security hole on the system where the affected package is installed</li></ul>\n"
                 "<p>Does the bug you are reporting cause any of the above damage? "

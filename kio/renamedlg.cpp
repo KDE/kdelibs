@@ -118,8 +118,8 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
       gridLayout->setColStretch(1,10);
 
       QString sentence1 = (mtimeDest < mtimeSrc)
-                         ? i18n("An older item named '%1' already exists")
-                         : i18n("A newer item named '%1' already exists");
+                         ? i18n("An older item named '%1' already exists.")
+                         : i18n("A newer item named '%1' already exists.");
       QLabel * lb1 = new QLabel( sentence1.arg(KStringHandler::csqueeze(dest,100)), this );
       gridLayout->addMultiCellWidget( lb1, 0, 0, 0, 1 ); // takes the complete first line
 

@@ -538,7 +538,7 @@ pid_t KDEDesktopMimeType::run( const KURL& u, bool _is_local )
   if ( type.isEmpty() )
   {
     QString tmp = i18n("The desktop entry file\n%1\n"
-		       "has no Type=... entry").arg(u.path() );
+		       "has no Type=... entry.").arg(u.path() );
     KMessageBoxWrapper::error( 0, tmp);
     return 0;
   }
@@ -558,7 +558,7 @@ pid_t KDEDesktopMimeType::run( const KURL& u, bool _is_local )
     return runMimeType( u, cfg );
 
 
-  QString tmp = i18n("The desktop entry of type\n%1\nis unknown").arg( type );
+  QString tmp = i18n("The desktop entry of type\n%1\nis unknown.").arg( type );
   KMessageBoxWrapper::error( 0, tmp);
 
   return 0;
@@ -572,7 +572,7 @@ pid_t KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cf
 
   if ( dev.isEmpty() )
   {
-    QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry").arg( _url.path() );
+    QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.").arg( _url.path() );
     KMessageBoxWrapper::error( 0, tmp);
     return retval;
   }
@@ -637,7 +637,7 @@ pid_t KDEDesktopMimeType::runLink( const KURL& _url, const KSimpleConfig &cfg )
   QString url = cfg.readEntry( "URL" );
   if ( url.isEmpty() )
   {
-    QString tmp = i18n("The desktop entry file\n%1\nis of type Link but has no URL=... entry").arg( _url.url() );
+    QString tmp = i18n("The desktop entry file\n%1\nis of type Link but has no URL=... entry.").arg( _url.url() );
     KMessageBoxWrapper::error( 0, tmp );
     return 0;
   }
@@ -677,7 +677,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( con
     QString dev = cfg.readEntry( "Dev" );
     if ( dev.isEmpty() )
     {
-      QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry").arg( _url.path() );
+      QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.").arg( _url.path() );
       KMessageBoxWrapper::error( 0, tmp);
     }
     else
@@ -772,7 +772,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
 
     if ( bInvalidMenu )
     {
-      QString tmp = i18n("The desktop entry file\n%1\n has an invalid menu entry\n%2").arg( path ).arg( *it );
+      QString tmp = i18n("The desktop entry file\n%1\n has an invalid menu entry\n%2.").arg( path ).arg( *it );
       KMessageBoxWrapper::error( 0, tmp );
     }
   }
@@ -815,7 +815,7 @@ void KDEDesktopMimeType::executeService( const KURL::List& urls, KDEDesktopMimeT
     QString dev = cfg.readEntry( "Dev" );
     if ( dev.isEmpty() )
     {
-      QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry").arg( path );
+      QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.").arg( path );
       KMessageBoxWrapper::error( 0, tmp );
       return;
     }

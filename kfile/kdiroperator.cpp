@@ -389,7 +389,7 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
         writeOk = KIO::NetAccess::mkdir( url );
 
     if ( !writeOk )
-        KMessageBox::sorry(viewWidget(), i18n("You don't have permissions to "
+        KMessageBox::sorry(viewWidget(), i18n("You don't have permission to "
 					      "create that directory." ));
     else {
         if ( enterDirectory )

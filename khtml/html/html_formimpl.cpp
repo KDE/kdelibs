@@ -152,7 +152,7 @@ void HTMLFormElementImpl::i18nData()
                         "it might be possible for others to capture it as plain text.\n\n"
                         "Do you want to continue?");
     QString foo4 = i18n("You're about to transfer the following files from\n"
-                        "your local computer to the internet.\n\n"
+                        "your local computer to the Internet.\n\n"
                         "Do you really want to continue?");
     QString foo5 = i18n("Your data submission is redirected to\n"
                         "an insecure site. The data is sent unencrypted.\n\n"
@@ -1146,7 +1146,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
                 }
                 else
                 {
-                    KMessageBox::error(0L, i18n("Cannot open downloaded file.\nSubmit a bugreport"));
+                    KMessageBox::error(0L, i18n("Cannot open downloaded file.\nSubmit a bug report."));
                     KIO::NetAccess::removeTempFile( local );
                     return false;
                 }

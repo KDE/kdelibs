@@ -474,8 +474,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paDebugDOMTree = new KAction( "print DOM tree to stdout", 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
 
   QString foo1 = i18n("Show Images");
-  QString foo2 = i18n("Show animated Images");
-  QString foo3 = i18n("Stop animated Images");
+  QString foo2 = i18n("Show Animated Images");
+  QString foo3 = i18n("Stop Animated Images");
 
   d->m_paSetEncoding = new KSelectAction( i18n( "Set &Encoding" ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "setEncoding" );
   QStringList encodings = KGlobal::charsets()->descriptiveEncodingNames();

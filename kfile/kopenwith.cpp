@@ -267,7 +267,7 @@ KOpenWithDlg::KOpenWithDlg( const KURL::List& _urls, QWidget* parent )
     }
     else
         // Should never happen ??
-        text = i18n( "Choose the name of the program to open the selected files with." );
+        text = i18n( "Choose the name of the program with which to open the selected files." );
     setServiceType( _urls );
     init( text, QString() );
 }
