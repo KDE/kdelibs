@@ -81,6 +81,7 @@ KDE_CHECK_HEADERS(X11/extensions/shape.h,,,[#include <X11/Xlib.h>])
 KDE_CHECK_HEADERS(X11/extensions/XShm.h, 
   [have_mitshm=yes], [have_mitshm=no], [#include <X11/Xlib.h>])
 KDE_CHECK_HEADERS(X11/ICE/ICElib.h)
+KDE_CHECK_HEADER(sys/sendfile.h, [have_sendfile=yes], )
 ac_cpp=$ac_cpp_safe
 CPPFLAGS=$ac_CPPFLAGS_safe
 
@@ -189,6 +190,21 @@ AC_SUBST(LIB_KPARTS, '$(top_builddir)/kparts/libkparts.la')
 AC_SUBST(LIB_KIMGIO, '$(top_builddir)/kimgio/libkimgio.la')
 
 AC_SUBST(EXTRA_SUBDIRS)
+
+AC_MSG_CHECKING(if sendfile() is wanted)
+AC_ARG_ENABLE(sendfile,
+[  --enable-sendfile      enable the use of sendfile() (Linux only)],
+[if test "$enableval" = yes; then
+  AC_MSG_RESULT(yes)
+  want_sendfile="yes"
+else
+  AC_MSG_RESULT(no)
+fi], [AC_MSG_RESULT(no)])
+
+if test "$want_sendfile" = "yes" -a "$have_sendfile" = "yes"; then
+  AC_SUBST(HAVE_SENDFILE)
+  AC_DEFINE(HAVE_SENDFILE,1,[Define if you want sendfile() support])
+fi
 
 AC_MSG_CHECKING(if MIT-SHM support is wanted)
 AC_ARG_ENABLE(mitshm,

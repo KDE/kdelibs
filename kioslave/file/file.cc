@@ -24,11 +24,21 @@
 
 #include <config.h>
 
+#include <qglobal.h> //for Q_OS_XXX
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
+#endif
+
+//sendfile has different semantics in different platforms
+#if defined HAVE_SENDFILE && defined Q_OS_LINUX
+#define USE_SENDFILE 1
+#endif
+
+#ifdef USE_SENDFILE
+#include <sys/sendfile.h>
 #endif
 
 #include <assert.h>
@@ -510,18 +520,41 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
     }
 
     totalSize( buff_src.st_size );
-    KIO::filesize_t processed_size = 0;
 
+    off_t processed_size = 0;
     char buffer[ MAX_IPC_SIZE ];
-    QByteArray array;
-
+    int n;
+#ifdef USE_SENDFILE
+    bool use_sendfile=true;
+#endif
     while( 1 )
     {
-       int n = ::read( src_fd, buffer, MAX_IPC_SIZE );
+#ifdef USE_SENDFILE
+       if (use_sendfile) {
+            n = ::sendfile( dest_fd, src_fd, &processed_size, MAX_IPC_SIZE );
+            if ( n == -1 && errno == EINVAL ) { //not all filesystems support sendfile()
+                kdDebug(7101) << "sendfile() not supported, falling back " << endl;
+                use_sendfile = false;
+            }
+       }
+       if (!use_sendfile) 
+#endif
+        n = ::read( src_fd, buffer, MAX_IPC_SIZE );
+
        if (n == -1)
        {
           if (errno == EINTR)
               continue;
+#ifdef USE_SENDFILE
+          if ( use_sendfile ) {        
+            kdDebug(7101) << "sendfile() error:" << strerror(errno) << endl;
+            if ( errno == ENOSPC ) // disk full
+            {
+                error( KIO::ERR_DISK_FULL, dest.path());
+                remove( _dest.data() );
+            }
+          } else  
+#endif
           error( KIO::ERR_COULD_NOT_READ, src.path());
           close(src_fd);
           close(dest_fd);
@@ -529,25 +562,30 @@ void FileProtocol::copy( const KURL &src, const KURL &dest,
        }
        if (n == 0)
           break; // Finished
+#ifdef USE_SENDFILE
+       if ( !use_sendfile ) {
+#endif
+         if (write_all( dest_fd, buffer, n))
+         {
+           close(src_fd);
+           close(dest_fd);
 
-       if (write_all( dest_fd, buffer, n))
-       {
-          close(src_fd);
-          close(dest_fd);
-          if ( errno == ENOSPC ) // disk full
-          {
+           if ( errno == ENOSPC ) // disk full
+           {
               error( KIO::ERR_DISK_FULL, dest.path());
               remove( _dest.data() );
-          }
-          else
-          {
+           }
+           else
+           {
               kdWarning(7101) << "Couldn't write[2]. Error:" << strerror(errno) << endl;
               error( KIO::ERR_COULD_NOT_WRITE, dest.path());
-          }
-          return;
+           }
+           return;
+         }
+         processed_size += n;
+#ifdef USE_SENDFILE
        }
-
-       processed_size += n;
+#endif
        processedSize( processed_size );
     }
 
