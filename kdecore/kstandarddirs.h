@@ -97,7 +97,7 @@ class KStandardDirsPrivate;
 * So while you had to @ref locate("data", "appname/filename") so you can
 * also write @ref locate("appdata", "filename") if your KApplication instance
 * is called "appname" (as set via KApplication's constructor or KAboutData, if
-* you use the global KStandardDirs object @ref KGlobal::dirs()). 
+* you use the global KStandardDirs object @ref KGlobal::dirs()).
 * Please note though that you cannot use the "appdata"
 * type if you intend to use it in an applet for Kicker because 'appname' would
 * be "Kicker" instead of the applet's name. Therefore, for applets, you've got
@@ -115,7 +115,7 @@ class KStandardDirsPrivate;
 * @li KDEHOME: The directory where changes are saved to. This directory is
 *          used to search for resources first. If KDEHOME is not
 *          specified it defaults to "$HOME/.kde"
-* @li KDEROOTHOME: Like KDEHOME, but used for the root user. 
+* @li KDEROOTHOME: Like KDEHOME, but used for the root user.
 *          If KDEROOTHOME is not set it defaults to the .kde directory in the
 *          home directory of root, usually "/root/.kde".
 *          Note that the setting of $HOME is ignored in this case.
@@ -322,7 +322,7 @@ public:
 	 * @see findAllExe()
 	 * @param appname The name of the executable file for which to search.
 	 * @param pathstr The path which will be searched. If this is
-	 * 		0 (default), the $PATH environment variable will
+	 * 		null (default), the $PATH environment variable will
 	 *		be searched.
 	 * @param ignoreExecBit	If true, an existing file will be returned
 	 *			even if its executable bit is not set.
