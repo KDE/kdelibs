@@ -97,7 +97,13 @@ int main(int argc, char **argv)
 	/* drop root priviliges if running setuid root
 	   (due to realtime priority stuff) */
 	if (geteuid() != getuid()) 
+	{
+#ifdef HAVE_SETEUID
 		seteuid(getuid());
+#else
+		setreuid(-1, getuid());
+#endif
+	}
 
 	if(argc == 0)
 		return 1;
