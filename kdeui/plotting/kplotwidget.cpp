@@ -50,8 +50,7 @@ KPlotWidget::KPlotWidget( double x1, double x2, double y1, double y2, QWidget *p
 
 KPlotWidget::~KPlotWidget()
 {
-  if (buffer)
-   delete (buffer);
+	delete (buffer);
 }
 
 void KPlotWidget::setLimits( double x1, double x2, double y1, double y2 ) {
