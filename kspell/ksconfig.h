@@ -45,10 +45,8 @@ enum Encoding {
   KS_E_LATIN15=10,
   KS_E_UTF8=11,
   KS_E_KOI8R=12,
-  KS_E_KOI8U=13, 
-#if QT_VERSION >= 224
+  KS_E_KOI8U=13,
   KS_E_CP1251=14
-#endif
 };
 
 enum KSpellClients {
@@ -60,13 +58,13 @@ enum KSpellClients {
  * A configuration class/dialog for @ref KSpell.
  *
  * It contains all of the options settings.The options are set to default
- * values by the constructor and can be reset either by using the 
- * public interface or by using KSpellConfig as a widget in a dialog 
- * (or, preferably a tabbed dialog using @ref KDialogBase) and letting 
- * the user change the settings. This way an application that uses 
- * @ref KSpell can either rely on the default settings (in the simplest 
- * case), offer a dialog to configure @ref KSpell, or offer a dialog to 
- * configure @ref KSpell _for_this_app_only_ (in which case, the application 
+ * values by the constructor and can be reset either by using the
+ * public interface or by using KSpellConfig as a widget in a dialog
+ * (or, preferably a tabbed dialog using @ref KDialogBase) and letting
+ * the user change the settings. This way an application that uses
+ * @ref KSpell can either rely on the default settings (in the simplest
+ * case), offer a dialog to configure @ref KSpell, or offer a dialog to
+ * configure @ref KSpell _for_this_app_only_ (in which case, the application
  * should save the settings for use next time it is run).
  * This last option might be useful in an email program, for example, where
  * people may be writing in a language different from that used for
@@ -83,11 +81,11 @@ class KSpellConfig : public QWidget
 
   public:
     /**
-     * Constructs a KSpellConfig with default or custom settings. 
+     * Constructs a KSpellConfig with default or custom settings.
      *
      * @param parent Parent of the widget.
      * @param name Widget name.
-     * @param spellConfig Predefined configuration. If this parameter 
+     * @param spellConfig Predefined configuration. If this parameter
      *        is 0, a default configuration will be used.
      * @param addHelpButton Enabled or hides a help button. See
      *        @ref activateHelp for more information.
@@ -111,9 +109,9 @@ class KSpellConfig : public QWidget
      * The @p _ignorelist contains words you'd like @ref KSpell
      * to ignore when it is spellchecking.  When you get a KSpellConfig
      * object back from @ref KSpell (using @ref KSpell::kcConfig()),
-     * the @p _ignorelist contains whatever was put in by you plus 
-     * any words the user has chosen to ignore via the dialog box.  
-     * It may be useful to save this list with the document being 
+     * the @p _ignorelist contains whatever was put in by you plus
+     * any words the user has chosen to ignore via the dialog box.
+     * It may be useful to save this list with the document being
      * edited to facilitate quicker future spellchecking.
      */
     void setIgnoreList (QStringList _ignorelist);
@@ -158,23 +156,23 @@ class KSpellConfig : public QWidget
     int client () const; //see enums at top of file
 
     /**
-     * Call this method before this class is deleted  if you want 
-     * the settings you have (or the user has) chosen to become the 
+     * Call this method before this class is deleted  if you want
+     * the settings you have (or the user has) chosen to become the
      * global, default settings.
      */
     bool writeGlobalSettings ();
-    
+
   protected:
     void fillInDialog();
     bool readGlobalSettings();
 
     /**
-     * This takes a dictionary file name (fname) and returns a language 
+     * This takes a dictionary file name (fname) and returns a language
      * abbreviation (lname; like de for German), appropriate for the
      * $LANG variable, and a human-readble name (hname; like "Deutsch").
      *
      * It also truncates ".aff" at the end of fname.
-     * 
+     *
      * TRUE is returned if lname.data()==$LANG
      */
     bool interpret( QString &fname, QString &lname, QString &hname );
@@ -182,12 +180,12 @@ class KSpellConfig : public QWidget
 
   public slots:
     /**
-     * Use this function to activate the help information for this 
+     * Use this function to activate the help information for this
      * widget. The function is particulary useful if the help button is
      * not displayed as specified by the constructor. Normally you want
      * to hide the help button if this widget is embedded into a larger
-     * dialog box that has its own help button. See kedit 
-     * (optiondialog.cpp) for an example 
+     * dialog box that has its own help button. See kedit
+     * (optiondialog.cpp) for an example
      */
     void activateHelp( void );
 
@@ -208,20 +206,20 @@ class KSpellConfig : public QWidget
 
   protected:
     // The options
-    int enc;			//1 ==> -Tlatin1			  
+    int enc;			//1 ==> -Tlatin1
     bool bnorootaffix;		// -m
     bool bruntogether;		// -B
-    bool dictfromlist;				  
+    bool dictfromlist;
     bool nodialog;
     QString qsdict;		// -d [dict]
     QString qspdict;		// -p [dict]
     QStringList ignorelist;
     enum {rdictlist=3, rencoding=4, rhelp=6};
-    KConfig *kc;			 
+    KConfig *kc;
     int iclient;            // defaults to ispell, may be aspell, too
 
     QCheckBox *cb1, *cb2;
-    //KLineEdit *kle1, *kle2;	  
+    //KLineEdit *kle1, *kle2;
     //QButtonGroup *dictgroup;
     //QRadioButton *dictlistbutton, *dicteditbutton;
     QLabel *dictlist;

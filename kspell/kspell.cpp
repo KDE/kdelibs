@@ -150,11 +150,9 @@ KSpell::KSpell (QWidget *_parent, const QString &_caption,
   case KS_E_KOI8U:
       codec = QTextCodec::codecForName("KOI8-U");
       break;
-#if QT_VERSION >= 224
   case KS_E_CP1251:
       codec = QTextCodec::codecForName("CP1251");
       break;
-#endif
   default:
      break;
   }
