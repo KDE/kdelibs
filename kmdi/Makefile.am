@@ -14,3 +14,5 @@ include_HEADERS = kmdichildarea.h kmdichildfrm.h kmdichildfrmcaption.h kmdidefin
                   kmditaskbar.h kmdichildview.h kmditoolviewaccessor.h
 
 METASOURCES = AUTO
+
+include ../admin/Doxyfile.am
