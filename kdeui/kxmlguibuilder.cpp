@@ -151,7 +151,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
       i18nText = i18n( "No text!" );
     else
       i18nText = i18n( text );
-		
+
     QString icon = element.attribute( d->attrIcon );
     QPixmap pix;
 
@@ -188,14 +188,14 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 
     KToolBar *bar = 0;
     if ( d->m_widget->inherits( "KMainWindow" ) )
-	bar = new KToolBar( ( (KMainWindow*)d->m_widget ), element.attribute( d->attrName ).utf8(), honor, false);
+        bar = new KToolBar( ( (KMainWindow*)d->m_widget ), element.attribute( d->attrName ).utf8(), honor, false);
     else
-	bar = new KToolBar( d->m_widget, element.attribute( d->attrName ).utf8(), honor, false);
+        bar = new KToolBar( d->m_widget, element.attribute( d->attrName ).utf8(), honor, false);
 
     if ( d->m_widget->inherits( "KMainWindow" ) )
     {
-	if ( d->m_client && !d->m_client->xmlFile().isEmpty() )
-	    bar->setXMLGUIClient( d->m_client );
+        if ( d->m_client && !d->m_client->xmlFile().isEmpty() )
+            bar->setXMLGUIClient( d->m_client );
     }
 
     bar->loadState( element );
@@ -224,10 +224,13 @@ void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomE
 
   if ( container->inherits( "QPopupMenu" ) )
   {
-    if ( parent->inherits( "KMenuBar" ) )
-      static_cast<KMenuBar *>(parent)->removeItem( id );
-    else if ( parent->inherits( "QPopupMenu" ) )
-      static_cast<QPopupMenu *>(parent)->removeItem( id );
+    if ( parent )
+    {
+        if ( parent->inherits( "KMenuBar" ) )
+            static_cast<KMenuBar *>(parent)->removeItem( id );
+        else if ( parent->inherits( "QPopupMenu" ) )
+            static_cast<QPopupMenu *>(parent)->removeItem( id );
+    }
 
     delete container;
   }
@@ -240,7 +243,7 @@ void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomE
   else if ( container->inherits( "KStatusBar" ) )
   {
     if ( d->m_widget->inherits( "KMainWindow" ) )
-	container->hide();
+        container->hide();
     else
       delete static_cast<KStatusBar *>(container);
   }
@@ -272,13 +275,13 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
       for (; i < attributes.length(); i++ )
       {
         QDomAttr attr = attributes.item( i ).toAttr();
-	
+
         if ( attr.name().lower() == d->attrLineSeparator &&
-	     attr.value().lower() == QString::fromLatin1("true") )
-	{
-	  isLineSep = true;
-	  break;
-	}
+             attr.value().lower() == QString::fromLatin1("true") )
+        {
+          isLineSep = true;
+          break;
+        }
       }
 
       if ( isLineSep )
@@ -330,11 +333,11 @@ void KXMLGUIBuilder::setBuilderInstance( KInstance *instance )
 void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
 {
     if ( !d->m_widget || !d->m_widget->inherits( "KMainWindow" ) )
-	return;
+        return;
     KToolBar *toolbar = 0;
     QListIterator<KToolBar> it( ( (KMainWindow*)d->m_widget )->toolBarIterator() );
     while ( ( toolbar = it.current() ) ) {
-	++it;
-	toolbar->positionYourself();
+        ++it;
+        toolbar->positionYourself();
     }
 }
