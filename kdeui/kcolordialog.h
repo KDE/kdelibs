@@ -154,6 +154,13 @@ private:
 };
 
 
+/**
+ * A color class that preserves both rgb and hsv-values, this is
+ * unlike QColor which only preserves rgb values and recalculates hsv
+ * values. The QColor behavior leads to an accumulation of rounding 
+ * errors whn working in the hsv color space.
+ * @author Waldo Bastian <bastian@kde.org>
+ **/
 class KColor : public QColor
 {
 public:
