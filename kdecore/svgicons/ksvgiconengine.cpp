@@ -317,9 +317,41 @@ public:
 
 	void handleTags(QDomElement element, bool paint)
 	{
+		if(element.tagName() == "linearGradient")
+		{
+			ArtGradientLinear *gradient = new ArtGradientLinear();
+
+			int offsets = -1;
+			gradient->stops = parseGradientStops(element, offsets);
+			gradient->n_stops = offsets + 1;
+			
+			QString spread = element.attribute("spreadMethod");
+			if(spread == "repeat")
+				gradient->spread = ART_GRADIENT_REPEAT;
+			else if(spread == "reflect")
+				gradient->spread = ART_GRADIENT_REFLECT;
+			else
+				gradient->spread = ART_GRADIENT_PAD;
+		
+			m_engine->painter()->addLinearGradient(element.attribute("id"), gradient);	
+			m_engine->painter()->addLinearGradientElement(gradient, element);	
+			return;
+		}
+		else if(element.tagName() == "radialGradient")
+		{
+			ArtGradientRadial *gradient = new ArtGradientRadial();
+
+			int offsets = -1;
+			gradient->stops = parseGradientStops(element, offsets);
+			gradient->n_stops = offsets + 1;
+				
+			m_engine->painter()->addRadialGradient(element.attribute("id"), gradient);	
+			m_engine->painter()->addRadialGradientElement(gradient, element);	
+			return;
+		}
 		if(!paint)
 			return;
-		
+
 		// TODO: Default attribute values
 		if(element.tagName() == "rect")
 		{
@@ -404,36 +436,6 @@ public:
 				filled = false;
 
 			m_engine->painter()->drawPath(element.attribute("d"), filled);
-		}
-		else if(element.tagName() == "linearGradient")
-		{
-			ArtGradientLinear *gradient = new ArtGradientLinear();
-
-			int offsets = -1;
-			gradient->stops = parseGradientStops(element, offsets);
-			gradient->n_stops = offsets + 1;
-			
-			QString spread = element.attribute("spreadMethod");
-			if(spread == "repeat")
-				gradient->spread = ART_GRADIENT_REPEAT;
-			else if(spread == "reflect")
-				gradient->spread = ART_GRADIENT_REFLECT;
-			else
-				gradient->spread = ART_GRADIENT_PAD;
-		
-			m_engine->painter()->addLinearGradient(element.attribute("id"), gradient);	
-			m_engine->painter()->addLinearGradientElement(gradient, element);	
-		}
-		else if(element.tagName() == "radialGradient")
-		{
-			ArtGradientRadial *gradient = new ArtGradientRadial();
-
-			int offsets = -1;
-			gradient->stops = parseGradientStops(element, offsets);
-			gradient->n_stops = offsets + 1;
-				
-			m_engine->painter()->addRadialGradient(element.attribute("id"), gradient);	
-			m_engine->painter()->addRadialGradientElement(gradient, element);	
 		}
 	}
 	
