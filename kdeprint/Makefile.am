@@ -4,7 +4,7 @@ LIBVERSION = 1:0
 
 SUBDIRS = $(CUPSSUBDIR) pdq . standalone pics
 
-INCLUDES = -I./cups -I./pdq $(all_includes)
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kdeprint/cups -I$(top_srcdir)/kdeprint/pdq $(all_includes)
 
 lib_LTLIBRARIES = libkdeprint.la
 libkdeprint_la_SOURCES = kdialogimpl.cpp kprintcopiespage.cpp kprintdialog.cpp kprinter.cpp kprinteritem.cpp \
@@ -13,7 +13,7 @@ libkdeprint_la_SOURCES = kdialogimpl.cpp kprintcopiespage.cpp kprintdialog.cpp k
 			 klpddialogimpl.cpp klpdprinter.cpp previewshell.cpp kjoblister.cpp
 libkdeprint_la_METASOURCES = AUTO
 libkdeprint_la_LDFLAGS = -version-info $(LIBVERSION) $(all_libraries)
-libkdeprint_la_LIBADD = $(LIB_KDEPRINT_CUPS) ./pdq/libkdeprint_pdq.la $(LIB_KPARTS) $(LIB_KFILE)
+libkdeprint_la_LIBADD = $(LIB_KDEPRINT_CUPS) $(top_builddir)/kdeprint/pdq/libkdeprint_pdq.la $(LIB_KPARTS) $(LIB_KFILE)
 
 noinst_HEADERS = kprintcopiespage.h kprintdialog.h \
 		 kprinterpropertydialog.h kprintsizecolorpage.h klpddialogimpl.h klpdprinter.h \
