@@ -295,6 +295,7 @@ AC_SUBST(LIBART_CFLAGS)
 AC_SUBST(LIBART_RPATH)
 AM_CONDITIONAL(include_SVGICONS, test -n "$SVGICONS")
 
+AC_CHECK_HEADERS([sys/stropts.h sys/select.h libutil.h util.h termios.h pty.h])
 AC_MSG_CHECKING([for revoke(tty) in unistd.h])
 AC_TRY_LINK(dnl
       [
