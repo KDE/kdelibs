@@ -825,8 +825,10 @@ KJSProxy *KHTMLPart::jScript()
   if ( !d->m_jscript )
   {
     KLibrary *lib = KLibLoader::self()->library("kjs_html");
-    if ( !lib )
+    if ( !lib ) {
+      setJScriptEnabled( false );
       return 0;
+    }
     // look for plain C init function
     void *sym = lib->symbol("kjs_html_init");
     if ( !sym ) {
