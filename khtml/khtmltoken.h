@@ -44,7 +44,7 @@ public:
 	{
 	    id = _id;
 	    v = val.implementation();
-	    v->ref();
+	    if(v) v->ref();
 	}
 
     Attribute(int _id, DOMStringImpl *val)
@@ -53,7 +53,7 @@ public:
 	{
 	    id = other.id;
 	    v = other.v;
-	    v->ref();
+	    if(v) v->ref();
 	}
 
     ~Attribute()

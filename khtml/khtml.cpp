@@ -30,8 +30,9 @@
 #include <kurl.h>
 #include <kapp.h>
 #include <kdebug.h>
-#include <khtml.h>
-#include <khtmldata.h>
+#include "khtml.h"
+#include "khtmldata.h"
+#include "khtmlattrs.h"
 
 #include <kmessagebox.h>
 #include <klocale.h>
@@ -1479,6 +1480,7 @@ void KHTMLWidget::saveState( QDataStream &stream )
 		{
 		    printf("frame\n");
 		    HTMLFrameElementImpl *f = static_cast<HTMLFrameElementImpl *>(current);
+		    f->setAttribute(ATTR_SRC, DOMString());
 		    stream << (int)current->id();
 		    stream << *f;
 		    f->view->saveState(stream);

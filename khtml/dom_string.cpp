@@ -254,6 +254,13 @@ int DOM::strcasecmp( const DOMString &a, const DOMString &b )
     return strncasecmp(a, b, l);
 }
 
+
+bool DOMString::isEmpty()
+{ 
+    if (impl == 0) return true; 
+    return (impl->l == 0);
+}
+
 //-----------------------------------------------------------------------------
 
 bool DOM::operator==( const DOMString &a, const DOMString &b )

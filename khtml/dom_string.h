@@ -33,7 +33,7 @@ namespace DOM {
 class DOMStringImpl;
 
 /**
- * This class implements the basic string we use in the DOM. We do not use 
+ * This class implements the basic string we use in the DOM. We do not use
  * QString for 2 reasons: Memory overhead, and the missing explicit sharing
  * of strings we need for the DOM.
  *
@@ -51,13 +51,13 @@ public:
     DOMString();
     /* constructs an empty DOMString. Like this assignment to 0 works */
     DOMString(int);
-    /** if copy == false, takes over the QChar * array. It'll get deleted, 
+    /** if copy == false, takes over the QChar * array. It'll get deleted,
      * when the string gets deleted...
      */
     DOMString(QChar *str, uint len, bool copy = true);
     DOMString(const QChar *str, uint len);
     DOMString(const QString &);
-    DOMString(const char *str); 
+    DOMString(const char *str);
     DOMString(DOMStringImpl *i);
     virtual ~DOMString();
 
@@ -65,11 +65,11 @@ public:
     DOMString(const DOMString &str);
     DOMString &operator =(const DOMString &str);
 
-    /** 
+    /**
      * append str to this string
-     */ 
+     */
     DOMString &operator += (const DOMString &str);
-    /** 
+    /**
      * add two DOMString's
      */
     DOMString operator + (const DOMString &str);
@@ -95,6 +95,9 @@ public:
 
     DOMString copy() const;
 
+    bool isNull() { return (impl == 0); }
+    bool isEmpty();
+    
     /**
      * @internal get a handle to the imlementation of the DOMString
      * Use at own risk!!!
