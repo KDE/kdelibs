@@ -184,7 +184,6 @@ namespace KJS {
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
   private:
-    DOM::Element dummyElement();
     DOM::HTMLSelectElement element;
   };
 

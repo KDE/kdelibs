@@ -2037,14 +2037,20 @@ void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, 
       // read-only: text  <--- According to the DOM, but JavaScript and JScript both allow changes.
       // So, we'll do it here and not add it to our DOM headers.
       case OptionText:            { DOM::NodeList nl(option.childNodes());
-                                         for (unsigned int i = 0; i < nl.length(); i++) {
-                                             if (nl.item(i).nodeType() == DOM::Node::TEXT_NODE) {
-                                                 static_cast<DOM::Text>(nl.item(i)).setData(str);
-                                                 return;
-                                             }
-                                         }
-                                         kdWarning() << "HTMLElement::putValue OptionText, put failed, no text node in option" << endl;
-                                         return;
+                                    for (unsigned int i = 0; i < nl.length(); i++) {
+                                        if (nl.item(i).nodeType() == DOM::Node::TEXT_NODE) {
+                                            static_cast<DOM::Text>(nl.item(i)).setData(str);
+                                            return;
+                                        }
+                                  }
+                                  // No child text node found, creating one
+                                  DOM::Text t = option.ownerDocument().createTextNode(str);
+                                  try { option.appendChild(t); }
+                                  catch(DOM::DOMException& e) {
+                                    // #### exec->setException ?
+                                  }
+
+                                  return;
       }
       // read-only: index
       case OptionDisabled:        { option.setDisabled(value.toBoolean(exec)); return; }
@@ -2767,16 +2773,6 @@ Value KJS::HTMLSelectCollection::tryGet(ExecState *exec, const UString &p) const
   return  HTMLCollection::tryGet(exec, p);
 }
 
-DOM::Element KJS::HTMLSelectCollection::dummyElement()
-{
-  DOM::Document doc = element.ownerDocument();
-  DOM::Element dummy = doc.createElement("OPTION");
-  // Add an empty textnode inside, so that the text can be set from Javascript.
-  DOM::Text text = doc.createTextNode( "" );
-  dummy.appendChild( text );
-  return dummy;
-}
-
 void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int)
 {
 #ifdef KJS_VERBOSE
@@ -2789,7 +2785,7 @@ void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const UString &propertyN
 
     if (diff < 0) { // add dummy elements
       do {
-        element.add(dummyElement(), DOM::HTMLElement());
+        element.add(element.ownerDocument().createElement("OPTION"), DOM::HTMLElement());
       } while (++diff);
     }
     else // remove elements
@@ -2821,7 +2817,7 @@ void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const UString &propertyN
   // out of array bounds ? first insert empty dummies
   if (diff > 0) {
     while (diff--) {
-      element.add(dummyElement(), before);
+      element.add(element.ownerDocument().createElement("OPTION"), before);
     }
     // replace an existing entry ?
   } else if (diff < 0) {
