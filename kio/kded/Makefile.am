@@ -45,3 +45,6 @@ METASOURCES = AUTO
 
 noinst_HEADERS = kbuildsycoca.h kbuildservicetypefactory.h \
 		kbuildservicefactory.h
+
+dummy.cpp:
+	echo > dummy.cpp

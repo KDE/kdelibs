@@ -37,3 +37,6 @@ kioconfigdir = $(kde_confdir)/protocols
 
 kdelnkdir = $(kde_servicesdir)
 kdelnk_DATA = http_cache_cleaner.desktop
+
+dummy.cpp:
+	echo > dummy.cpp
