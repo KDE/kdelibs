@@ -10,9 +10,9 @@ DummyMeta::DummyMeta( QObject *parent, const char *name, const QStringList &pref
     qDebug("---- DummyMeta::DummyMeta: got %i preferred items.", preferredItems.count());
 }
 
-KFileMetaInfo * DummyMeta::createInfo( const KURL& url )
+KFileMetaInfo * DummyMeta::createInfo( const QString& path )
 {
-   qDebug("#### DummyMeta:: createInfo: %s", url.url().latin1());
+   qDebug("#### DummyMeta:: createInfo: %s", path.latin1() );
    return 0L;
 }
 

@@ -7,7 +7,8 @@
 
 KFileMetaInfoItem::KFileMetaInfoItem( const QString& key,
                                       const QString& translatedKey,
-                                      const QVariant& value,
+                                      const QVariant& value, 
+                                      QVariant::Type type,
                                       bool editable,
                                       const QString& prefix,
                                       const QString& postfix )
@@ -19,6 +20,7 @@ KFileMetaInfoItem::KFileMetaInfoItem( const QString& key,
       m_editable( editable ),
       m_dirty( false )
 {
+    Q_ASSERT( value.type() == type );
 }
 
 KFileMetaInfoItem::~KFileMetaInfoItem()
@@ -27,11 +29,17 @@ KFileMetaInfoItem::~KFileMetaInfoItem()
 
 void KFileMetaInfoItem::setValue( const QVariant& value )
 {
-    if ( !isEditable() )
+    if ( !isEditable() || value.type() != m_type )
         return;
 
     m_dirty = (value != m_value);
     m_value = value;
+}
+
+void KFileMetaInfoItem::remove()
+{
+    m_value.clear();
+    m_dirty = true;
 }
 
 
@@ -40,8 +48,8 @@ void KFileMetaInfoItem::setValue( const QVariant& value )
 
 // this is one object per file
 
-KFileMetaInfo::KFileMetaInfo( const KURL& url )
-    : m_url( url )
+KFileMetaInfo::KFileMetaInfo( const QString& path )
+    : m_path( path )
 {
 }
 
@@ -62,6 +70,12 @@ QStringList KFileMetaInfo::preferredKeys() const
 bool KFileMetaInfo::supportsVariableKeys() const
 {
     return false;
+}
+
+KFileMetaInfoItem * KFileMetaInfo::addItem( const QString& key, 
+                                            const QVariant& value )
+{
+    return 0L;
 }
 
 void KFileMetaInfo::applyChanges()
@@ -117,18 +131,14 @@ KFileMetaInfoProvider::~KFileMetaInfoProvider()
 }
 
 
-KFileMetaInfo * KFileMetaInfoProvider::metaInfo( const KFileItem *item )
+KFileMetaInfo * KFileMetaInfoProvider::metaInfo( const QString& path )
 {
-    return metaInfo( item->url(), item->mimetype() );
+    KURL url;
+    url.setPath( path );
+    return metaInfo( path, KMimeType::findByURL(path, 0, true )->name());
 }
 
-KFileMetaInfo * KFileMetaInfoProvider::metaInfo( const KURL& url )
-{
-    return metaInfo( url,
-                     KMimeType::findByURL(url, 0, url.isLocalFile())->name() );
-}
-
-KFileMetaInfo * KFileMetaInfoProvider::metaInfo( const KURL& url,
+KFileMetaInfo * KFileMetaInfoProvider::metaInfo( const QString& path,
                                                  const QString& mimeType )
 {
     KFilePlugin *plugin = m_plugins.find( mimeType );
@@ -150,7 +160,7 @@ KFileMetaInfo * KFileMetaInfoProvider::metaInfo( const KURL& url,
         m_plugins.insert( mimeType, plugin );
     }
 
-    return plugin->createInfo( url ); // ### who cleans up?
+    return plugin->createInfo( path ); // ### who cleans up?
 }
 
 

@@ -8,13 +8,9 @@ int main( int argc, char **argv )
     KApplication app( argc, argv, "kfilemetatest" );
 
     KFileMetaInfoProvider *prov = KFileMetaInfoProvider::self();
-    KURL u;
-    if (argv[1])
-      u.setPath(argv[1]);
-    else
-      u.setPath("/tmp/metatest.txt");
 
-    KFileMetaInfo* info = prov->metaInfo( u );
+    QString path = argv[1] ? argv[1] : "/tmp/metatest.txt";
+    KFileMetaInfo* info = prov->metaInfo( path );
 
     if (!info) return 1;
 

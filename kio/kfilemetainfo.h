@@ -15,7 +15,8 @@ class KFileMetaInfoItem
 {
 public:
     KFileMetaInfoItem( const QString& key, const QString& translatedKey,
-                       const QVariant& value, bool editable = false,
+                       const QVariant& value, QVariant::Type type, 
+                       bool editable = false,
                        const QString& prefix  = QString::null,
                        const QString& postfix = QString::null );
     virtual ~KFileMetaInfoItem();
@@ -25,7 +26,10 @@ public:
 
     const QVariant& value() const               { return m_value;         }
     virtual void setValue( const QVariant& value );
+    QVariant::Type type() const                 { return m_type;          }
     bool isEditable() const                     { return m_editable;      }
+    void remove();
+    bool isRemoved() const                      { return !m_value.isValid(); }
     bool isModified() const                     { return m_dirty;         }
 
     const QString& prefix()  const              { return m_prefix;        }
@@ -39,6 +43,7 @@ protected:
     QString             m_postfix;
 
     QVariant            m_value;
+    QVariant::Type      m_type;
 
     bool m_editable :1;
     bool m_dirty    :1;
@@ -52,7 +57,7 @@ protected:
 class KFileMetaInfo
 {
 public:
-    KFileMetaInfo( const KURL& url );
+    KFileMetaInfo( const QString& path );
     virtual ~KFileMetaInfo();
 
     virtual KFileMetaInfoItem * item( const QString& key ) const;
@@ -69,14 +74,14 @@ public:
             return i->value();
         return QVariant();
     }
-    
+
     virtual QStringList supportedKeys() const = 0;
     virtual QStringList preferredKeys() const;
     virtual bool supportsVariableKeys() const;
 
+    virtual KFileMetaInfoItem * addItem( const QString& key, 
+                                         const QVariant& value );
     virtual void applyChanges();
-
-    const KURL& url() const { return m_url; }
 
     /**
      * Creates a validator for this item. Make sure to supply a proper parent
@@ -85,10 +90,12 @@ public:
     virtual QValidator * createValidator( const QString& key, QObject *parent, const char *name ) const;
 
 protected:
+    const QString& path() const { return m_path; }
+
     QDict<KFileMetaInfoItem> m_items;
 
 private:
-    KURL m_url;
+    QString m_path;
 
 };
 
@@ -108,7 +115,7 @@ public:
     KFilePlugin( QObject *parent, const char *name, const QStringList& preferredItems );
     virtual ~KFilePlugin();
 
-    virtual KFileMetaInfo * createInfo( const KURL& url ) = 0;
+    virtual KFileMetaInfo * createInfo( const QString& path ) = 0;
 
 };
 
@@ -118,7 +125,7 @@ public:
 
 
 /**
- * Synchronous access.
+ * Synchronous access to metadata of a local file.
  */
 class KFileMetaInfoProvider
 {
@@ -127,12 +134,10 @@ public:
     KFileMetaInfoProvider();
     virtual ~KFileMetaInfoProvider();
 
-    KFileMetaInfo * metaInfo( const KURL& url );
-    KFileMetaInfo * metaInfo( const KFileItem *item );
+    KFileMetaInfo * metaInfo( const QString& path );
+    KFileMetaInfo * metaInfo( const QString& path, const QString& mimeType );
 
 protected:
-    KFileMetaInfo * metaInfo( const KURL& url, const QString& mimeType );
-
     QDict<KFilePlugin> m_plugins;
 
 private:
