@@ -107,6 +107,9 @@ class Wallet : public QObject, public DCOPObject {
 	k_dcop:
 		ASYNC slotWalletClosed(int handle);
 
+	private slots:
+		void slotAppUnregistered(const QCString&);
+
 	private:
 		class WalletPrivate;
 		WalletPrivate *d;

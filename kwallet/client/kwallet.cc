@@ -47,7 +47,14 @@ const QString Wallet::FormDataFolder("Form Data");
 
 Wallet::Wallet(int handle, const QString& name)
 : QObject(0L), DCOPObject(), d(0L), _name(name), _handle(handle) {
+
 	_dcopRef = new DCOPRef("kded", "kwalletd");
+
+	_dcopRef->dcopClient()->setNotifications(true);
+	connect(_dcopRef->dcopClient(),
+		SIGNAL(applicationRemoved(const QCString&)),
+		this,
+		SLOT(slotAppUnregistered(const QCString&)));
 
 	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "walletClosed(int)", "slotWalletClosed(int)", false);
 
@@ -435,6 +442,13 @@ long rc = 0;
 	}
 
 return static_cast<EntryType>(rc);
+}
+
+
+void Wallet::slotAppUnregistered(const QCString& app) {
+	if (_handle >= 0 && app == "kded") {
+		slotWalletClosed(_handle);
+	}
 }
 
 
