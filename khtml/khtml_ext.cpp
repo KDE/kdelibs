@@ -433,7 +433,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     {
       new KAction( i18n( "&Save Link As..." ), 0, this, SLOT( slotSaveLinkAs() ),
                  actionCollection(), "savelinkas" );
-      new KAction( i18n( "Copy Link Location" ), 0, this, SLOT( slotCopyLinkLocation() ),
+      new KAction( i18n( "Copy Link Address" ), 0, this, SLOT( slotCopyLinkLocation() ),
                  actionCollection(), "copylinklocation" );
     }
   }
