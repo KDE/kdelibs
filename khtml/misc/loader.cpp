@@ -967,7 +967,7 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
     DOCLOADER_SECCHECK(!userSheet);
 
     CachedCSSStyleSheet* s = Cache::requestObject<CachedCSSStyleSheet, CachedObject::CSSStyleSheet>( this, fullURL, accept );
-    if ( s ) {
+    if ( s && !charset.isEmpty() ) {
         s->setCharset( charset );
     }
     return s;
@@ -980,7 +980,7 @@ CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const QString
 	return 0L;
 
     CachedScript* s = Cache::requestObject<CachedScript, CachedObject::Script>( this, fullURL, 0 );
-    if ( s )
+    if ( s && !charset.isEmpty() )
         s->setCharset( charset );
     return s;
 }

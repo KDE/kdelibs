@@ -1,3 +1,7 @@
+2005-03-22  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * misc/loader.cpp: Do not override existing charset with an empty one.
+
 2005-03-21  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * html/htmltokenizer.cpp:
