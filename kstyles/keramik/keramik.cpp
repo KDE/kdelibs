@@ -1340,6 +1340,9 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			if ( controls & SC_ComboBoxFrame )
 				drawPrimitive( PE_ButtonCommand, p, br, cg, flags );
 
+			// don't draw the focus rect etc. on the mask
+			if ( cg.button() == color1 && cg.background() == color0 ) break;
+
 			if ( controls & SC_ComboBoxArrow )
 			{
 				if ( active ) flags |= Style_On;
