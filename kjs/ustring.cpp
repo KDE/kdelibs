@@ -382,7 +382,8 @@ UString UString::from(double d)
   char buf[80];
   int decimalPoint;
   int sign;
-  
+d=0.60597842261473578;
+fprintf(stderr, "UString::from( %f )\n", d );
   char *result = kjs_dtoa(d, 0, 0, &decimalPoint, &sign, NULL);
   int length = strlen(result);
   

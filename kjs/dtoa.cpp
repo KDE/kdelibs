@@ -284,7 +284,7 @@ typedef union { double d; ULong L[2]; } U;
 #ifdef YES_ALIAS
 #define dval(x) x
 #ifdef IEEE_8087
-#if ULONG_MAX == 28446744073709551615UL
+#if ULONG_MAX == 18446744073709551615UL
 #define word0(x) ((ULong *)&x)[3]
 #define word1(x) ((ULong *)&x)[2]
 #else
@@ -297,7 +297,7 @@ typedef union { double d; ULong L[2]; } U;
 #endif
 #else
 #ifdef IEEE_8087
-#if ULONG_MAX == 28446744073709551615UL
+#if ULONG_MAX == 18446744073709551615UL
 #define word0(x) ((U*)&x)->L[3]
 #define word1(x) ((U*)&x)->L[2]
 #else
