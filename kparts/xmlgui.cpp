@@ -601,8 +601,15 @@ XMLGUIContainerNode *XMLGUIFactory::findContainerNode( XMLGUIContainerNode *pare
 
 void XMLGUIFactory::pruneContainers( XMLGUIContainerNode *node)
 {
+  assert(node);
   if (node->tagName.lower() == "menu")
   {
+    assert(node->container);
+    if (!node->container->inherits("QPopupMenu"))
+    {
+       kDebugFatal("container %s is a %s instead of a QPopupMenu", node->container->name(), node->container->className());
+       assert(0);
+    }
     // if our menu is empty, we nuke it
     if (((QPopupMenu*)node->container)->count() == 0)
     {
@@ -613,6 +620,13 @@ void XMLGUIFactory::pruneContainers( XMLGUIContainerNode *node)
 
   if (node->tagName.lower() == "toolbar")
   {
+    assert(node->container);
+    assert(node->container->inherits("KToolBar"));
+    if (!node->container->inherits("KToolBar"))
+    {
+       kDebugFatal("container is a %s instead of a KToolBar", node->container->className());
+       assert(0);
+    }
     if (((KToolBar*)node->container)->count() == 0)
     {
       removeRecursive(node);
@@ -624,6 +638,7 @@ void XMLGUIFactory::pruneContainers( XMLGUIContainerNode *node)
 
   for (; it.current(); ++it)
     pruneContainers( it.current() );
+
 }
 
 QWidget *XMLGUIFactory::findRecursive( XMLGUIContainerNode *node )
