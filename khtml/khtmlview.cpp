@@ -608,14 +608,21 @@ bool KHTMLView::gotoLink(bool forward)
 	return false;
     int currentTabIndex =
 	(d->currentNode?((HTMLAreaElementImpl*)d->currentNode)->tabIndex():0);
-    bool inTabIndex = (currentTabIndex!=-1);
+    bool inTabIndex = ((d->currentNode) && (currentTabIndex!=-1));
 
-    DOM::NodeImpl *n = m_part->docImpl()->findLink(d->currentNode, forward, inTabIndex?(currentTabIndex+(forward?1:-1)):-1);
+    // search next link in current scope
+    // (scope means either the links without tabindex or with tabindex)
+    DOM::NodeImpl *n = m_part->docImpl()->findLink(inTabIndex?0:d->currentNode, forward, inTabIndex?(currentTabIndex+(forward?1:-1)):-1);
     if (!n)
     {
-	kdDebug(6000)<< " next Link in same scope not found.";
 	int maxTabIndex = m_part->docImpl()->findHighestTabIndex();
+	// search for link in complementary scope
 	n = m_part->docImpl()->findLink(0, forward, (inTabIndex?-1:(forward?maxTabIndex:(maxTabIndex>0?0:maxTabIndex))));
+	// if complementary scope is empty, redo search in original scope from
+	// the beginning.
+	if  (!n && maxTabIndex>=0)
+	    n = m_part->docImpl()->findLink(0, forward, forward?0:maxTabIndex);
+
     };
     return gotoLink(n);
 }

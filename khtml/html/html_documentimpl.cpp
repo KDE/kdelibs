@@ -551,6 +551,8 @@ NodeImpl *HTMLDocumentImpl::findLink(NodeImpl *n, bool forward, int tabIndexHint
     // is encountered.
     // if tabIndex is -1, items containing tabIndex should be skipped.
 
+  kdDebug(6000)<<"HTMLDocumentImpl:findLink: Node: "<<n<<" forward: "<<(forward?"true":"false")<<" tabIndexHint: "<<tabIndexHint<<"\n";
+
     int maxTabIndex;
 
     if (forward)
@@ -566,8 +568,7 @@ NodeImpl *HTMLDocumentImpl::findLink(NodeImpl *n, bool forward, int tabIndexHint
 
 	    // this is alright even for non-tabindex-searches,
 	    // because DOM::NodeImpl::tabIndex() defaults to -1.
-	    if (n)
-		kdDebug(6000) << "n:" << n << "ti:" << ((HTMLAreaElementImpl *)n)->tabIndex() << "\n";
+
 	} while (n && (((HTMLAreaElementImpl *)n)->tabIndex()!=tabIndexHint));
 	if (n)
 	    break;
@@ -577,17 +578,21 @@ NodeImpl *HTMLDocumentImpl::findLink(NodeImpl *n, bool forward, int tabIndexHint
 	    {
 		tabIndexHint++;
 		if (tabIndexHint>maxTabIndex)
-		    n=0;
+		    tabIndexHint=-1;
+		n=0;
 	    }
 	    else
+	    {
 		tabIndexHint--;
+		n=0;
+	    }
 	}
-	// this is not like else ... ,
+	// this is not the same as else ... ,
 	// since tabIndexHint may be changed in the block above.
 	if (tabIndexHint==-1)
-	    n=0;
+	    break;
     }
-    while(n); // or break.
+    while(1); // break.
 
     return n;
 }
