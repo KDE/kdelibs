@@ -48,4 +48,11 @@ public:
 	inline const std::string& string() const {return mys;}
 };
 
+class SmartWrapper {
+protected:
+	bool _autoCreate;
+public:
+	SmartWrapper() { _autoCreate = true; }
+};
+
 #endif

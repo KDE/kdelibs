@@ -1200,62 +1200,147 @@ void doInterfacesHeader(FILE *header)
 		
 		inherits = buildInheritanceList(*d,"");
 		bool hasParent = (inherits != "");
+
 		if (haveStreams(d)) {
 			if (hasParent) inherits = ", " + inherits;
+			else inherits = ", virtual public SmartWrapper";
 			inherits = ": virtual public Component" + inherits;
 		} else {
 			if (hasParent) inherits = ": " + inherits;
+			else inherits = ": virtual public SmartWrapper";
 		}
 		// Now create the constructor init list
 		string parentConstructorsInit = "";
+		string parentAssignBase = "";
 		if (hasParent) {
 			vector<string>::const_iterator ii;
-			bool first = true;
+			/*bool first = true;*/
 			for (ii = d->inheritedInterfaces.begin();
 				ii != d->inheritedInterfaces.end(); ii++)
 			{
-				if (!first) parentConstructorsInit += ", "; else first = false;
-				parentConstructorsInit += *ii + "(this)";
+				//if (!first) parentConstructorsInit += ", "; else first = false;
+				parentConstructorsInit += "" + *ii + "(), ";
+				parentAssignBase = "\t\t_" + (*ii) + "_redirect = base;\n";
 			}
-			parentConstructorsInit = " : " + parentConstructorsInit;
 		}
+		parentConstructorsInit = " : " + parentConstructorsInit;
+		parentConstructorsInit += "_"+d->name+"_redirect(0)";
+
 		fprintf(header,"class %s %s {\n",d->name.c_str(),inherits.c_str());
 		fprintf(header,"protected:\n");
-		// Constructor that does nothing, used when creating a child
-		// => do not create all the parent implementations!
-		fprintf(header,"\tinline %s(const %s*)%s {}\n",
-			d->name.c_str(), d->name.c_str(), parentConstructorsInit.c_str());
-		fprintf(header,"\t%s_var redirect;\n\n",d->name.c_str());
+		/*
+		   redirection
+		 */
+		fprintf(header,"\t%s_base *_%s_redirect;\n\n",d->name.c_str(),
+		                                             d->name.c_str());
+		/*
+		   internal assignment operator -> this assigns recursively the
+		   redirect thingy to the "smart wrapper"
+		 */
+		fprintf(header,"\tinline void _assign_%s_base(%s_base *base) {\n",
+			d->name.c_str(), d->name.c_str());
+		fprintf(header,"\t\tif(_%s_redirect != 0) _%s_redirect->_release();\n",
+			d->name.c_str(), d->name.c_str());
+		fprintf(header,"\t\t_%s_redirect = base;\n%s",
+			d->name.c_str(),parentAssignBase.c_str());
+		fprintf(header,"\t	_autoCreate = false;\n");
+		fprintf(header,"\t}\n");
+
+		/*
+		   create operation for auto create
+		*/
+		fprintf(header,"virtual void _create() {\n");
+		fprintf(header,"\t\t_assign_%s_base(%s_base::_create());\n",
+								d->name.c_str(),d->name.c_str());
+		fprintf(header,"\t}\n");
+
+		/*
+		   access to the _redirect_%s var, which also dynamically creates
+		   the thing if it was not assigned already
+		 */
+		fprintf(header,"\tinline %s_base *_%s_base() {\n",
+								d->name.c_str(),d->name.c_str());
+		fprintf(header,"\t\tif(_%s_redirect == 0 && _autoCreate) _create();"
+					"  // lazy on-demand creation\n", d->name.c_str());
+		fprintf(header,"\t\treturn _%s_redirect;",
+								d->name.c_str());
+		fprintf(header,"\t}\n");
 
 		fprintf(header,"public:\n");
-		fprintf(header,"\tinline %s()%s {redirect = %s_base::_create();}\n",
-			d->name.c_str(), parentConstructorsInit.c_str(), d->name.c_str());
-		fprintf(header,"\tinline %s(const SubClass &s)%s {redirect"
-			" = %s_base::_create(s.string());}\n",
-			d->name.c_str(), parentConstructorsInit.c_str(), d->name.c_str());
-		fprintf(header,"\tinline %s(const Reference &r)%s {redirect = "
+
+		/* empty constructor: do nothing */
+
+		fprintf(header,"\tinline %s()%s { /* nothing to be done*/ }\n",
+			d->name.c_str(), parentConstructorsInit.c_str());
+
+		/* destructor - take care of reference counting */
+
+		fprintf(header,"\tinline virtual ~%s() { _assign_%s_base(0); }\n",
+			d->name.c_str(), d->name.c_str());
+
+		/* constructor from subclass - create here */
+		fprintf(header,"\tinline %s(const SubClass &s)%s {\n",
+			d->name.c_str(), parentConstructorsInit.c_str());
+		fprintf(header,"\t\t_assign_%s_base(%s_base::_create(s.string()));\n",
+								d->name.c_str(),d->name.c_str());
+		fprintf(header,"\t}\n");
+
+		/* constructor from reference - convert here */
+		fprintf(header,"\tinline %s(const Reference &r)%s {\n",
+			d->name.c_str(), parentConstructorsInit.c_str());
+		fprintf(header,"\t\t_assign_%s_base("
 			"r.isString()?(%s_base::_fromString(r.string())):"
-			"(%s_base::_fromReference(r.reference(),true));}\n",
-			d->name.c_str(), parentConstructorsInit.c_str(), d->name.c_str(), d->name.c_str());
-		fprintf(header,"\tinline %s(const %s& target)%s {redirect = "
-			"target.redirect->_copy();}\n",
+			"(%s_base::_fromReference(r.reference(),true)));\n",
+			d->name.c_str(),d->name.c_str(), d->name.c_str());
+		fprintf(header,"\t}\n");
+
+		/* constructor from other "smartwrapper" */
+		fprintf(header,"\tinline %s(%s& target)%s {\n",
 			d->name.c_str(), d->name.c_str(), parentConstructorsInit.c_str());
-		fprintf(header,"\tinline %s& operator=(const %s& target) {"
-			"redirect = target.redirect->_copy(); return *this;}\n",
+		fprintf(header,"\t\t_assign_%s_base(target._%s_base()->_copy());\n",
+			d->name.c_str(),d->name.c_str());
+		fprintf(header,"\t}\n");
+
+		/* assignment to other "smartwrapper" */
+		fprintf(header,"\tinline %s& operator=(%s& target) {",
 			d->name.c_str(), d->name.c_str());
-		fprintf(header,"\tinline %s(const %s_var& target)%s {redirect = "
-			"target->_copy();}\n",
+		fprintf(header,"\t\t_assign_%s_base(target._%s_base()->_copy());\n",
+			d->name.c_str(),d->name.c_str());
+		fprintf(header,"\t\treturn *this;\n");
+		fprintf(header,"\t}\n");
+
+		/* constructor from base object */
+		fprintf(header,"\tinline %s(%s_base *target)%s {\n",
 			d->name.c_str(), d->name.c_str(), parentConstructorsInit.c_str());
-		fprintf(header,"\tinline %s& operator=(const %s_var& target) {"
-			"redirect = target->_copy(); return *this;}\n",
+		fprintf(header,"\t\t_assign_%s_base(target->_copy());\n",
+			d->name.c_str());
+		fprintf(header,"\t}\n");
+
+		/* assigment from base object */
+		fprintf(header,"\tinline %s& operator=(%s_base *target) {\n",
 			d->name.c_str(), d->name.c_str());
-		fprintf(header,"\tinline std::string toString() {return redirect->_toString();}\n");
-		fprintf(header,"\tinline operator %s_var&() {return redirect;}\n", d->name.c_str());
-		fprintf(header,"\tinline bool isNull() {return (%s_base*)redirect==0;}\n", d->name.c_str());
-		
+		fprintf(header,"\t\t_assign_%s_base(target->_copy());\n",
+			d->name.c_str());
+		fprintf(header,"\t\treturn *this;\n");
+		fprintf(header,"\t}\n");
+
+		/* conversion to string */
+		fprintf(header,"\tinline std::string toString() "
+						"{return _%s_base()->_toString();}\n",d->name.c_str());
+
+		/* conversion to base* object */
+		fprintf(header,"\tinline operator %s_base*()"
+						" {return _%s_base();}\n",
+						d->name.c_str(),d->name.c_str());
+
+		/* is null reference? */
+		fprintf(header,"\tinline bool isNull() {return _%s_base()==0;}\n",
+			d->name.c_str());
+
 		if (haveStreams(d)) {
 			fprintf(header,"\n");
-			fprintf(header,"\tinline void start() {redirect->_node()->start();}\n");
+			fprintf(header,"\tinline void start() {_%s_base()->_node()->start();}\n",
+						d->name.c_str());
 			// Component virtual has to be coded in the cc
 			fprintf(header,"\tScheduleNode *node();\n");
 		}
@@ -1272,13 +1357,15 @@ void doInterfacesHeader(FILE *header)
 			{
 				if(ad->flags & streamOut)  /* readable from outside */
 				{
-					fprintf(header,"\t%s %s() {return redirect->%s();}\n",
-						rc.c_str(), ad->name.c_str(), ad->name.c_str());
+					fprintf(header,"\t%s %s() {return _%s_base()->%s();}\n",
+						rc.c_str(), ad->name.c_str(), d->name.c_str(),
+						ad->name.c_str());
 				}
 				if(ad->flags & streamIn)  /* writeable from outside */
 				{
-					fprintf(header,"\tvoid %s(%s) {redirect->%s(newValue);}\n",
-						ad->name.c_str(), pc.c_str(), ad->name.c_str());
+					fprintf(header,"\tvoid %s(%s) {_%s_base()->%s(newValue);}\n",
+						ad->name.c_str(), pc.c_str(), d->name.c_str(),
+						ad->name.c_str());
 				}
 			}
 		}
@@ -1293,14 +1380,16 @@ void doInterfacesHeader(FILE *header)
 
 			// map constructor methods to the real things
 			if (md->name == "constructor") {
-				fprintf(header,"\tinline %s(%s)%s {redirect = %s_base::_create(); "
-					"redirect->constructor(%s);}\n",d->name.c_str(),
+				fprintf(header,"\tinline %s(%s)%s {"
+					"_assign_%s_base(%s_base::_create()); "
+					"_%s_base()->constructor(%s);}\n",d->name.c_str(),
 					params.c_str(),	parentConstructorsInit.c_str(),
-					d->name.c_str(), callparams.c_str());
+					d->name.c_str(),d->name.c_str(),d->name.c_str(),
+					callparams.c_str());
 			} else {
-				fprintf(header,"\tinline %s %s(%s) {return redirect->%s(%s);}\n",
+				fprintf(header,"\tinline %s %s(%s) {return _%s_base()->%s(%s);}\n",
 					rc.c_str(),	md->name.c_str(), params.c_str(),
-					md->name.c_str(), callparams.c_str());
+					d->name.c_str(),md->name.c_str(), callparams.c_str());
 			}
 		}
 		fprintf(header,"};\n\n");
@@ -1601,7 +1690,8 @@ void doInterfacesSource(FILE *source)
 		if (haveStreams(d)) {
 			// Component virtual
 			fprintf(source,"ScheduleNode *%s::node()"
-				" {return redirect->_node();}\n\n",d->name.c_str());
+				" {return _%s_base()->_node();}\n\n",
+					d->name.c_str(),d->name.c_str());
 		}
 	}
 }

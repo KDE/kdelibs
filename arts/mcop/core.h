@@ -323,27 +323,51 @@ public:
 
 #include "reference.h"
 
-class InterfaceRepo  {
+class InterfaceRepo : virtual public SmartWrapper {
 protected:
-	inline InterfaceRepo(const InterfaceRepo*) {}
-	InterfaceRepo_var redirect;
+	InterfaceRepo_base *_InterfaceRepo_redirect;
 
+	inline void _assign_InterfaceRepo_base(InterfaceRepo_base *base) {
+		if(_InterfaceRepo_redirect != 0) _InterfaceRepo_redirect->_release();
+		_InterfaceRepo_redirect = base;
+		_autoCreate = false;
+	}
+virtual void _create() {
+		_assign_InterfaceRepo_base(InterfaceRepo_base::_create());
+	}
+	inline InterfaceRepo_base *_InterfaceRepo_base() {
+		if(_InterfaceRepo_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
+		return _InterfaceRepo_redirect;	}
 public:
-	inline InterfaceRepo() {redirect = InterfaceRepo_base::_create();}
-	inline InterfaceRepo(const SubClass &s) {redirect = InterfaceRepo_base::_create(s.string());}
-	inline InterfaceRepo(const Reference &r) {redirect = r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true));}
-	inline InterfaceRepo(const InterfaceRepo& target) {redirect = target.redirect->_copy();}
-	inline InterfaceRepo& operator=(const InterfaceRepo& target) {redirect = target.redirect->_copy(); return *this;}
-	inline InterfaceRepo(const InterfaceRepo_var& target) {redirect = target->_copy();}
-	inline InterfaceRepo& operator=(const InterfaceRepo_var& target) {redirect = target->_copy(); return *this;}
-	inline std::string toString() {return redirect->_toString();}
-	inline operator InterfaceRepo_var&() {return redirect;}
-	inline bool isNull() {return (InterfaceRepo_base*)redirect==0;}
+	inline InterfaceRepo() : _InterfaceRepo_redirect(0) { /* nothing to be done*/ }
+	inline virtual ~InterfaceRepo() { _assign_InterfaceRepo_base(0); }
+	inline InterfaceRepo(const SubClass &s) : _InterfaceRepo_redirect(0) {
+		_assign_InterfaceRepo_base(InterfaceRepo_base::_create(s.string()));
+	}
+	inline InterfaceRepo(const Reference &r) : _InterfaceRepo_redirect(0) {
+		_assign_InterfaceRepo_base(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true)));
+	}
+	inline InterfaceRepo(InterfaceRepo& target) : _InterfaceRepo_redirect(0) {
+		_assign_InterfaceRepo_base(target._InterfaceRepo_base()->_copy());
+	}
+	inline InterfaceRepo& operator=(InterfaceRepo& target) {		_assign_InterfaceRepo_base(target._InterfaceRepo_base()->_copy());
+		return *this;
+	}
+	inline InterfaceRepo(InterfaceRepo_base *target) : _InterfaceRepo_redirect(0) {
+		_assign_InterfaceRepo_base(target->_copy());
+	}
+	inline InterfaceRepo& operator=(InterfaceRepo_base *target) {
+		_assign_InterfaceRepo_base(target->_copy());
+		return *this;
+	}
+	inline std::string toString() {return _InterfaceRepo_base()->_toString();}
+	inline operator InterfaceRepo_base*() {return _InterfaceRepo_base();}
+	inline bool isNull() {return _InterfaceRepo_base()==0;}
 
-	inline long insertModule(const ModuleDef& newModule) {return redirect->insertModule(newModule);}
-	inline void removeModule(long moduleID) {return redirect->removeModule(moduleID);}
-	inline InterfaceDef* queryInterface(const std::string& name) {return redirect->queryInterface(name);}
-	inline TypeDef* queryType(const std::string& name) {return redirect->queryType(name);}
+	inline long insertModule(const ModuleDef& newModule) {return _InterfaceRepo_base()->insertModule(newModule);}
+	inline void removeModule(long moduleID) {return _InterfaceRepo_base()->removeModule(moduleID);}
+	inline InterfaceDef* queryInterface(const std::string& name) {return _InterfaceRepo_base()->queryInterface(name);}
+	inline TypeDef* queryType(const std::string& name) {return _InterfaceRepo_base()->queryType(name);}
 };
 
 class FlowSystemSender_base : virtual public Object {
@@ -386,24 +410,48 @@ public:
 
 #include "reference.h"
 
-class FlowSystemSender  {
+class FlowSystemSender : virtual public SmartWrapper {
 protected:
-	inline FlowSystemSender(const FlowSystemSender*) {}
-	FlowSystemSender_var redirect;
+	FlowSystemSender_base *_FlowSystemSender_redirect;
 
+	inline void _assign_FlowSystemSender_base(FlowSystemSender_base *base) {
+		if(_FlowSystemSender_redirect != 0) _FlowSystemSender_redirect->_release();
+		_FlowSystemSender_redirect = base;
+		_autoCreate = false;
+	}
+virtual void _create() {
+		_assign_FlowSystemSender_base(FlowSystemSender_base::_create());
+	}
+	inline FlowSystemSender_base *_FlowSystemSender_base() {
+		if(_FlowSystemSender_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
+		return _FlowSystemSender_redirect;	}
 public:
-	inline FlowSystemSender() {redirect = FlowSystemSender_base::_create();}
-	inline FlowSystemSender(const SubClass &s) {redirect = FlowSystemSender_base::_create(s.string());}
-	inline FlowSystemSender(const Reference &r) {redirect = r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true));}
-	inline FlowSystemSender(const FlowSystemSender& target) {redirect = target.redirect->_copy();}
-	inline FlowSystemSender& operator=(const FlowSystemSender& target) {redirect = target.redirect->_copy(); return *this;}
-	inline FlowSystemSender(const FlowSystemSender_var& target) {redirect = target->_copy();}
-	inline FlowSystemSender& operator=(const FlowSystemSender_var& target) {redirect = target->_copy(); return *this;}
-	inline std::string toString() {return redirect->_toString();}
-	inline operator FlowSystemSender_var&() {return redirect;}
-	inline bool isNull() {return (FlowSystemSender_base*)redirect==0;}
+	inline FlowSystemSender() : _FlowSystemSender_redirect(0) { /* nothing to be done*/ }
+	inline virtual ~FlowSystemSender() { _assign_FlowSystemSender_base(0); }
+	inline FlowSystemSender(const SubClass &s) : _FlowSystemSender_redirect(0) {
+		_assign_FlowSystemSender_base(FlowSystemSender_base::_create(s.string()));
+	}
+	inline FlowSystemSender(const Reference &r) : _FlowSystemSender_redirect(0) {
+		_assign_FlowSystemSender_base(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true)));
+	}
+	inline FlowSystemSender(FlowSystemSender& target) : _FlowSystemSender_redirect(0) {
+		_assign_FlowSystemSender_base(target._FlowSystemSender_base()->_copy());
+	}
+	inline FlowSystemSender& operator=(FlowSystemSender& target) {		_assign_FlowSystemSender_base(target._FlowSystemSender_base()->_copy());
+		return *this;
+	}
+	inline FlowSystemSender(FlowSystemSender_base *target) : _FlowSystemSender_redirect(0) {
+		_assign_FlowSystemSender_base(target->_copy());
+	}
+	inline FlowSystemSender& operator=(FlowSystemSender_base *target) {
+		_assign_FlowSystemSender_base(target->_copy());
+		return *this;
+	}
+	inline std::string toString() {return _FlowSystemSender_base()->_toString();}
+	inline operator FlowSystemSender_base*() {return _FlowSystemSender_base();}
+	inline bool isNull() {return _FlowSystemSender_base()==0;}
 
-	inline void processed() {return redirect->processed();}
+	inline void processed() {return _FlowSystemSender_base()->processed();}
 };
 
 class FlowSystemReceiver_base : virtual public Object {
@@ -446,24 +494,48 @@ public:
 
 #include "reference.h"
 
-class FlowSystemReceiver  {
+class FlowSystemReceiver : virtual public SmartWrapper {
 protected:
-	inline FlowSystemReceiver(const FlowSystemReceiver*) {}
-	FlowSystemReceiver_var redirect;
+	FlowSystemReceiver_base *_FlowSystemReceiver_redirect;
 
+	inline void _assign_FlowSystemReceiver_base(FlowSystemReceiver_base *base) {
+		if(_FlowSystemReceiver_redirect != 0) _FlowSystemReceiver_redirect->_release();
+		_FlowSystemReceiver_redirect = base;
+		_autoCreate = false;
+	}
+virtual void _create() {
+		_assign_FlowSystemReceiver_base(FlowSystemReceiver_base::_create());
+	}
+	inline FlowSystemReceiver_base *_FlowSystemReceiver_base() {
+		if(_FlowSystemReceiver_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
+		return _FlowSystemReceiver_redirect;	}
 public:
-	inline FlowSystemReceiver() {redirect = FlowSystemReceiver_base::_create();}
-	inline FlowSystemReceiver(const SubClass &s) {redirect = FlowSystemReceiver_base::_create(s.string());}
-	inline FlowSystemReceiver(const Reference &r) {redirect = r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true));}
-	inline FlowSystemReceiver(const FlowSystemReceiver& target) {redirect = target.redirect->_copy();}
-	inline FlowSystemReceiver& operator=(const FlowSystemReceiver& target) {redirect = target.redirect->_copy(); return *this;}
-	inline FlowSystemReceiver(const FlowSystemReceiver_var& target) {redirect = target->_copy();}
-	inline FlowSystemReceiver& operator=(const FlowSystemReceiver_var& target) {redirect = target->_copy(); return *this;}
-	inline std::string toString() {return redirect->_toString();}
-	inline operator FlowSystemReceiver_var&() {return redirect;}
-	inline bool isNull() {return (FlowSystemReceiver_base*)redirect==0;}
+	inline FlowSystemReceiver() : _FlowSystemReceiver_redirect(0) { /* nothing to be done*/ }
+	inline virtual ~FlowSystemReceiver() { _assign_FlowSystemReceiver_base(0); }
+	inline FlowSystemReceiver(const SubClass &s) : _FlowSystemReceiver_redirect(0) {
+		_assign_FlowSystemReceiver_base(FlowSystemReceiver_base::_create(s.string()));
+	}
+	inline FlowSystemReceiver(const Reference &r) : _FlowSystemReceiver_redirect(0) {
+		_assign_FlowSystemReceiver_base(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true)));
+	}
+	inline FlowSystemReceiver(FlowSystemReceiver& target) : _FlowSystemReceiver_redirect(0) {
+		_assign_FlowSystemReceiver_base(target._FlowSystemReceiver_base()->_copy());
+	}
+	inline FlowSystemReceiver& operator=(FlowSystemReceiver& target) {		_assign_FlowSystemReceiver_base(target._FlowSystemReceiver_base()->_copy());
+		return *this;
+	}
+	inline FlowSystemReceiver(FlowSystemReceiver_base *target) : _FlowSystemReceiver_redirect(0) {
+		_assign_FlowSystemReceiver_base(target->_copy());
+	}
+	inline FlowSystemReceiver& operator=(FlowSystemReceiver_base *target) {
+		_assign_FlowSystemReceiver_base(target->_copy());
+		return *this;
+	}
+	inline std::string toString() {return _FlowSystemReceiver_base()->_toString();}
+	inline operator FlowSystemReceiver_base*() {return _FlowSystemReceiver_base();}
+	inline bool isNull() {return _FlowSystemReceiver_base()==0;}
 
-	long receiveHandlerID() {return redirect->receiveHandlerID();}
+	long receiveHandlerID() {return _FlowSystemReceiver_base()->receiveHandlerID();}
 };
 
 class FlowSystem_base : virtual public Object {
@@ -516,29 +588,53 @@ public:
 
 #include "reference.h"
 
-class FlowSystem  {
+class FlowSystem : virtual public SmartWrapper {
 protected:
-	inline FlowSystem(const FlowSystem*) {}
-	FlowSystem_var redirect;
+	FlowSystem_base *_FlowSystem_redirect;
 
+	inline void _assign_FlowSystem_base(FlowSystem_base *base) {
+		if(_FlowSystem_redirect != 0) _FlowSystem_redirect->_release();
+		_FlowSystem_redirect = base;
+		_autoCreate = false;
+	}
+virtual void _create() {
+		_assign_FlowSystem_base(FlowSystem_base::_create());
+	}
+	inline FlowSystem_base *_FlowSystem_base() {
+		if(_FlowSystem_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
+		return _FlowSystem_redirect;	}
 public:
-	inline FlowSystem() {redirect = FlowSystem_base::_create();}
-	inline FlowSystem(const SubClass &s) {redirect = FlowSystem_base::_create(s.string());}
-	inline FlowSystem(const Reference &r) {redirect = r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true));}
-	inline FlowSystem(const FlowSystem& target) {redirect = target.redirect->_copy();}
-	inline FlowSystem& operator=(const FlowSystem& target) {redirect = target.redirect->_copy(); return *this;}
-	inline FlowSystem(const FlowSystem_var& target) {redirect = target->_copy();}
-	inline FlowSystem& operator=(const FlowSystem_var& target) {redirect = target->_copy(); return *this;}
-	inline std::string toString() {return redirect->_toString();}
-	inline operator FlowSystem_var&() {return redirect;}
-	inline bool isNull() {return (FlowSystem_base*)redirect==0;}
+	inline FlowSystem() : _FlowSystem_redirect(0) { /* nothing to be done*/ }
+	inline virtual ~FlowSystem() { _assign_FlowSystem_base(0); }
+	inline FlowSystem(const SubClass &s) : _FlowSystem_redirect(0) {
+		_assign_FlowSystem_base(FlowSystem_base::_create(s.string()));
+	}
+	inline FlowSystem(const Reference &r) : _FlowSystem_redirect(0) {
+		_assign_FlowSystem_base(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true)));
+	}
+	inline FlowSystem(FlowSystem& target) : _FlowSystem_redirect(0) {
+		_assign_FlowSystem_base(target._FlowSystem_base()->_copy());
+	}
+	inline FlowSystem& operator=(FlowSystem& target) {		_assign_FlowSystem_base(target._FlowSystem_base()->_copy());
+		return *this;
+	}
+	inline FlowSystem(FlowSystem_base *target) : _FlowSystem_redirect(0) {
+		_assign_FlowSystem_base(target->_copy());
+	}
+	inline FlowSystem& operator=(FlowSystem_base *target) {
+		_assign_FlowSystem_base(target->_copy());
+		return *this;
+	}
+	inline std::string toString() {return _FlowSystem_base()->_toString();}
+	inline operator FlowSystem_base*() {return _FlowSystem_base();}
+	inline bool isNull() {return _FlowSystem_base()==0;}
 
-	inline void startObject(Object_base * node) {return redirect->startObject(node);}
-	inline void stopObject(Object_base * node) {return redirect->stopObject(node);}
-	inline void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return redirect->connectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return redirect->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline AttributeType queryFlags(Object_base * node, const std::string& port) {return redirect->queryFlags(node, port);}
-	inline FlowSystemReceiver_base * createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender_base * sender) {return redirect->createReceiver(destObject, destPort, sender);}
+	inline void startObject(Object_base * node) {return _FlowSystem_base()->startObject(node);}
+	inline void stopObject(Object_base * node) {return _FlowSystem_base()->stopObject(node);}
+	inline void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return _FlowSystem_base()->connectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return _FlowSystem_base()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline AttributeType queryFlags(Object_base * node, const std::string& port) {return _FlowSystem_base()->queryFlags(node, port);}
+	inline FlowSystemReceiver_base * createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender_base * sender) {return _FlowSystem_base()->createReceiver(destObject, destPort, sender);}
 };
 
 class GlobalComm_base : virtual public Object {
@@ -585,26 +681,50 @@ public:
 
 #include "reference.h"
 
-class GlobalComm  {
+class GlobalComm : virtual public SmartWrapper {
 protected:
-	inline GlobalComm(const GlobalComm*) {}
-	GlobalComm_var redirect;
+	GlobalComm_base *_GlobalComm_redirect;
 
+	inline void _assign_GlobalComm_base(GlobalComm_base *base) {
+		if(_GlobalComm_redirect != 0) _GlobalComm_redirect->_release();
+		_GlobalComm_redirect = base;
+		_autoCreate = false;
+	}
+virtual void _create() {
+		_assign_GlobalComm_base(GlobalComm_base::_create());
+	}
+	inline GlobalComm_base *_GlobalComm_base() {
+		if(_GlobalComm_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
+		return _GlobalComm_redirect;	}
 public:
-	inline GlobalComm() {redirect = GlobalComm_base::_create();}
-	inline GlobalComm(const SubClass &s) {redirect = GlobalComm_base::_create(s.string());}
-	inline GlobalComm(const Reference &r) {redirect = r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true));}
-	inline GlobalComm(const GlobalComm& target) {redirect = target.redirect->_copy();}
-	inline GlobalComm& operator=(const GlobalComm& target) {redirect = target.redirect->_copy(); return *this;}
-	inline GlobalComm(const GlobalComm_var& target) {redirect = target->_copy();}
-	inline GlobalComm& operator=(const GlobalComm_var& target) {redirect = target->_copy(); return *this;}
-	inline std::string toString() {return redirect->_toString();}
-	inline operator GlobalComm_var&() {return redirect;}
-	inline bool isNull() {return (GlobalComm_base*)redirect==0;}
+	inline GlobalComm() : _GlobalComm_redirect(0) { /* nothing to be done*/ }
+	inline virtual ~GlobalComm() { _assign_GlobalComm_base(0); }
+	inline GlobalComm(const SubClass &s) : _GlobalComm_redirect(0) {
+		_assign_GlobalComm_base(GlobalComm_base::_create(s.string()));
+	}
+	inline GlobalComm(const Reference &r) : _GlobalComm_redirect(0) {
+		_assign_GlobalComm_base(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true)));
+	}
+	inline GlobalComm(GlobalComm& target) : _GlobalComm_redirect(0) {
+		_assign_GlobalComm_base(target._GlobalComm_base()->_copy());
+	}
+	inline GlobalComm& operator=(GlobalComm& target) {		_assign_GlobalComm_base(target._GlobalComm_base()->_copy());
+		return *this;
+	}
+	inline GlobalComm(GlobalComm_base *target) : _GlobalComm_redirect(0) {
+		_assign_GlobalComm_base(target->_copy());
+	}
+	inline GlobalComm& operator=(GlobalComm_base *target) {
+		_assign_GlobalComm_base(target->_copy());
+		return *this;
+	}
+	inline std::string toString() {return _GlobalComm_base()->_toString();}
+	inline operator GlobalComm_base*() {return _GlobalComm_base();}
+	inline bool isNull() {return _GlobalComm_base()==0;}
 
-	inline bool put(const std::string& variable, const std::string& value) {return redirect->put(variable, value);}
-	inline std::string get(const std::string& variable) {return redirect->get(variable);}
-	inline void erase(const std::string& variable) {return redirect->erase(variable);}
+	inline bool put(const std::string& variable, const std::string& value) {return _GlobalComm_base()->put(variable, value);}
+	inline std::string get(const std::string& variable) {return _GlobalComm_base()->get(variable);}
+	inline void erase(const std::string& variable) {return _GlobalComm_base()->erase(variable);}
 };
 
 class TmpGlobalComm_base : virtual public GlobalComm_base {
@@ -647,20 +767,45 @@ public:
 
 class TmpGlobalComm : virtual public GlobalComm {
 protected:
-	inline TmpGlobalComm(const TmpGlobalComm*) : GlobalComm(this) {}
-	TmpGlobalComm_var redirect;
+	TmpGlobalComm_base *_TmpGlobalComm_redirect;
 
+	inline void _assign_TmpGlobalComm_base(TmpGlobalComm_base *base) {
+		if(_TmpGlobalComm_redirect != 0) _TmpGlobalComm_redirect->_release();
+		_TmpGlobalComm_redirect = base;
+		_GlobalComm_redirect = base;
+		_autoCreate = false;
+	}
+virtual void _create() {
+		_assign_TmpGlobalComm_base(TmpGlobalComm_base::_create());
+	}
+	inline TmpGlobalComm_base *_TmpGlobalComm_base() {
+		if(_TmpGlobalComm_redirect == 0 && _autoCreate) _create();  // lazy on-demand creation
+		return _TmpGlobalComm_redirect;	}
 public:
-	inline TmpGlobalComm() : GlobalComm(this) {redirect = TmpGlobalComm_base::_create();}
-	inline TmpGlobalComm(const SubClass &s) : GlobalComm(this) {redirect = TmpGlobalComm_base::_create(s.string());}
-	inline TmpGlobalComm(const Reference &r) : GlobalComm(this) {redirect = r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true));}
-	inline TmpGlobalComm(const TmpGlobalComm& target) : GlobalComm(this) {redirect = target.redirect->_copy();}
-	inline TmpGlobalComm& operator=(const TmpGlobalComm& target) {redirect = target.redirect->_copy(); return *this;}
-	inline TmpGlobalComm(const TmpGlobalComm_var& target) : GlobalComm(this) {redirect = target->_copy();}
-	inline TmpGlobalComm& operator=(const TmpGlobalComm_var& target) {redirect = target->_copy(); return *this;}
-	inline std::string toString() {return redirect->_toString();}
-	inline operator TmpGlobalComm_var&() {return redirect;}
-	inline bool isNull() {return (TmpGlobalComm_base*)redirect==0;}
+	inline TmpGlobalComm() : GlobalComm(), _TmpGlobalComm_redirect(0) { /* nothing to be done*/ }
+	inline virtual ~TmpGlobalComm() { _assign_TmpGlobalComm_base(0); }
+	inline TmpGlobalComm(const SubClass &s) : GlobalComm(), _TmpGlobalComm_redirect(0) {
+		_assign_TmpGlobalComm_base(TmpGlobalComm_base::_create(s.string()));
+	}
+	inline TmpGlobalComm(const Reference &r) : GlobalComm(), _TmpGlobalComm_redirect(0) {
+		_assign_TmpGlobalComm_base(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true)));
+	}
+	inline TmpGlobalComm(TmpGlobalComm& target) : GlobalComm(), _TmpGlobalComm_redirect(0) {
+		_assign_TmpGlobalComm_base(target._TmpGlobalComm_base()->_copy());
+	}
+	inline TmpGlobalComm& operator=(TmpGlobalComm& target) {		_assign_TmpGlobalComm_base(target._TmpGlobalComm_base()->_copy());
+		return *this;
+	}
+	inline TmpGlobalComm(TmpGlobalComm_base *target) : GlobalComm(), _TmpGlobalComm_redirect(0) {
+		_assign_TmpGlobalComm_base(target->_copy());
+	}
+	inline TmpGlobalComm& operator=(TmpGlobalComm_base *target) {
+		_assign_TmpGlobalComm_base(target->_copy());
+		return *this;
+	}
+	inline std::string toString() {return _TmpGlobalComm_base()->_toString();}
+	inline operator TmpGlobalComm_base*() {return _TmpGlobalComm_base();}
+	inline bool isNull() {return _TmpGlobalComm_base()==0;}
 
 };
 
