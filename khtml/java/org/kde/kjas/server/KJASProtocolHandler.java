@@ -288,23 +288,12 @@ public class KJASProtocolHandler
         if (cmd_code_value == CallMember)
         {
             new Thread("CallMember") {
-                byte [] command;
+                int ticketnr, objid;
+                String contextID, appletID, name;
+                java.util.List args = new java.util.Vector();
                 public void run() {
-                    String contextID = getArg( command );
-                    String appletID  = getArg( command );
-                    int ticketnr = Integer.parseInt( getArg( command ) );
-                    int objid  = Integer.parseInt( getArg( command ) );
-                    String name  = getArg( command );
                     int [] ret_type_obj = { -1, 0 };
                     StringBuffer value = new StringBuffer();
-                    java.util.List args = new java.util.Vector();
-                    try { // fix getArg
-                        String param = getArg(command);
-                        while (param != null) {
-                            args.add(param);
-                            param = getArg(command);
-                        }
-                    } catch (Exception e) {}
                     int type = 0;
 
                     KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
@@ -314,7 +303,18 @@ public class KJASProtocolHandler
                     sendMemberValue(contextID, CallMember, ticketnr, ret_type_obj[0], ret_type_obj[1], value.toString()); 
                 }
                 void startIt(byte [] cmd) {
-                    command = cmd;
+                    contextID = getArg( cmd );
+                    appletID  = getArg( cmd );
+                    ticketnr = Integer.parseInt( getArg( cmd ) );
+                    objid  = Integer.parseInt( getArg( cmd ) );
+                    name  = getArg( cmd );
+                    try { // fix getArg
+                        String param = getArg(cmd);
+                        while (param != null) {
+                            args.add(param);
+                            param = getArg(cmd);
+                        }
+                    } catch (Exception e) {}
                     start();
                 }
             }.startIt(command);
