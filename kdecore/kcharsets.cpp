@@ -180,7 +180,7 @@ static struct Builtin
     { "usascii", "iso 8859-1" },
     { "x-utf-8", "utf8" },
     { "x-utf-7", "utf7" },
-    { "ucs2", "utf16" },
+    { "ucs2", "iso-10646-ucs-2" },
     { "iso10646-1", "iso-10646-ucs-2" },
     { "gbk-0", "gbk" },
     { "gb2312", "gbk" },
@@ -291,6 +291,7 @@ static struct ConversionHints
     { "cp1250", "iso-8859-2" },
     { "koi8-r", "iso-8859-5" },
     { "koi8-u", "koi8-r" },
+    { "utf16", "iso-10646-ucs-2" },
     { 0, 0 }};
 
 
