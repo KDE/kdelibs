@@ -2,6 +2,7 @@
 #define KAUTOCONFIG_H
 
 #include <qobject.h>
+#include <kglobal.h>
 #include <qptrlist.h>
 
 class KConfig;
