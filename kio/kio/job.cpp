@@ -503,7 +503,7 @@ void SimpleJob::slotFinished( )
 
     if (subjobs.isEmpty())
     {
-        if ( !m_error )
+        if ( !m_error && (m_command == CMD_MKDIR || m_command == CMD_RENAME ) )
         {
             KDirNotify_stub allDirNotify( "*", "KDirNotify*" );
             if ( m_command == CMD_MKDIR )
@@ -512,7 +512,7 @@ void SimpleJob::slotFinished( )
                 urlDir.setPath( urlDir.directory() );
                 allDirNotify.FilesAdded( urlDir );
             }
-            else if ( m_command == CMD_RENAME )
+            else /*if ( m_command == CMD_RENAME )*/
             {
                 KURL src, dst;
                 QDataStream str( m_packedArgs, IO_ReadOnly );
