@@ -423,6 +423,7 @@ void KFontChooser::enableColumn( int column, bool state )
 void KFontChooser::setFont( const QFont& aFont, bool onlyFixed )
 {
   selFont = aFont;
+  selectedSize=aFont.pointSize();
   if( onlyFixed != usingFixed)
   {
     usingFixed = onlyFixed;
@@ -531,6 +532,10 @@ void KFontChooser::family_chosen_slot(const QString& family)
             currentStyles.insert(style, *it);
         }
     }
+    if(styleListBox->count()==0) {
+        styleListBox->insertItem(i18n("Regular"));
+        currentStyles.insert(i18n("Regular"), "Normal");
+    }
 
     QString origSelectedStyle = selectedStyle; // don't let the next line overwrite our cache via signals/slots..
     styleListBox->setSelected(styleListBox->findItem(selectedStyle), true);
@@ -540,35 +545,14 @@ void KFontChooser::family_chosen_slot(const QString& family)
         style = styleListBox->text(0);
     }
 
-    sizeListBox->clear();
-    if(dbase.isSmoothlyScalable(family)) {  // is vector font
-        // TODO set an appropriate "Vector" background to the preview area.
-        fillSizeList();
-    } else {                                // is bitmap font.
-        // TODO set an appropriate "Bitmap" background to the preview area.
-        QValueList<int> sizes = dbase.smoothSizes(family, style);
-        if(sizes.count() > 0) {
-            QValueList<int>::iterator it;
-            for ( it = sizes.begin(); it != sizes.end(); ++it ) {
-                sizeListBox->insertItem(QString::number(*it));
-            }
-        } else { // there are times QT does not provide the list..
-            fillSizeList(); 
-        }
-    }
-    int origSelectedSize = selectedSize; // same as selectedStyle above.
-    // The next command will emit the fontSelected signal for a second time, no idea how to avoid it..
-    sizeListBox->setSelected(sizeListBox->findItem(QString::number(selectedSize)), true);
-
-    if(styleListBox->currentItem() < 0 ||  sizeListBox->currentItem() < 0) { 
-        // only do this if the style was not present; because the slot of either list would have done this 
+    if(styleListBox->currentItem() < 0) { 
+        // only do this if the style was not present; because the slot of the style list would have done this 
         // allready
-        //kdDebug() << "Showing: " << family << ", " << currentStyles[style] << ", " << origSelectedSize << endl;
-        selFont= dbase.font(family, currentStyles[style], origSelectedSize);
+        //kdDebug() << "Showing2: " << family << ", " << currentStyles[style] << ", " << selectedSize << endl;
+        selFont= dbase.font(family, currentStyles[style], selectedSize);
         emit fontSelected(selFont);
         selectedStyle = origSelectedStyle;
     }
-    selectedSize=origSelectedSize;
 }
 
 void KFontChooser::size_chosen_slot(const QString& size){
@@ -581,12 +565,37 @@ void KFontChooser::size_chosen_slot(const QString& size){
 
 void KFontChooser::style_chosen_slot(const QString& style)
 {
-  selectedStyle= style;
+    int diff=0; // the difference between the font size requested and what we can show.
 
-  QFontDatabase dbase;
-  //kdDebug() << "Showing: " << familyListBox->currentText() << ", " << currentStyles[style] << ", " << selectedSize << endl;
-  selFont = dbase.font(familyListBox->currentText(), currentStyles[style], selectedSize);
-  emit fontSelected(selFont);
+    sizeListBox->clear();
+    QFontDatabase dbase;
+    if(dbase.isSmoothlyScalable(familyListBox->currentText(), currentStyles[style])) {  // is vector font
+        //sampleEdit->setPaletteBackgroundPixmap( VectorPixmap ); // TODO
+        fillSizeList();
+    } else {                                // is bitmap font.
+        //sampleEdit->setPaletteBackgroundPixmap( BitmapPixmap ); // TODO
+        QValueList<int> sizes = dbase.smoothSizes(familyListBox->currentText(), currentStyles[style]);
+        if(sizes.count() > 0) {
+            QValueList<int>::iterator it;
+            diff=1000;
+            for ( it = sizes.begin(); it != sizes.end(); ++it ) {
+                if(*it <= selectedSize || diff > *it - selectedSize) diff = selectedSize - *it;
+                sizeListBox->insertItem(QString::number(*it));
+            }
+        } else // there are times QT does not provide the list..
+            fillSizeList(); 
+    }
+    int origSelectedSize = selectedSize; // backup
+    sizeListBox->setSelected(sizeListBox->findItem(QString::number(selectedSize)), true);
+    if(! sizeListBox->itemVisible (sizeListBox->findItem(QString::number(selectedSize)) ) ) {
+        sizeListBox->centerCurrentItem();
+    }
+
+    //kdDebug() << "Showing: " << familyListBox->currentText() << ", " << currentStyles[style] << ", " << selectedSize-diff << endl;
+    selFont = dbase.font(familyListBox->currentText(), currentStyles[style], selectedSize-diff);
+    emit fontSelected(selFont);
+    selectedSize=origSelectedSize;
+    selectedStyle= style;
 }
 
 void KFontChooser::displaySample(const QFont& font)
@@ -595,6 +604,10 @@ void KFontChooser::displaySample(const QFont& font)
   sampleEdit->setCursorPosition(0);
   xlfdEdit->setText(font.rawName());
   xlfdEdit->setCursorPosition(0);
+
+  //QFontInfo a = QFontInfo(font);
+  //kdDebug() << "font: " << a.family () << ", " << a.pointSize () << endl;
+  //kdDebug() << "      (" << font.toString() << ")\n";
 }
 
 void KFontChooser::setupDisplay()
@@ -792,6 +805,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.82  2001/12/21 20:32:08  zander
+* Remove a method that is not used and can only work on X11 systems. Remove it also since it was the source of ambiguous-errors elsewhere.
+*
 * Revision 1.81  2001/12/21 20:08:35  zander
 * For more control over which fonts are shown in the font dialog:
 * -  static void getFontList( QStringList &list, bool fixed );
