@@ -184,7 +184,7 @@ void KFileList::addFiles(const KURL::List& files)
 		// for each file, download it (if necessary) and add it
 		QString	downloaded;
 		for (KURL::List::ConstIterator it=files.begin(); it!=files.end(); ++it)
-			if (KIO::NetAccess::download(*it, downloaded))
+			if (KIO::NetAccess::download(*it, downloaded, this))
 			{
 				KURL	url;
 				url.setPath(downloaded);
