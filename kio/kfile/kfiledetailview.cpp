@@ -29,7 +29,7 @@
 #include <kfileitem.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
-#include <kiconloader.cpp>
+#include <kiconloader.h>
 #include <kicontheme.h>
 #include <klocale.h>
 #include <kdebug.h>
