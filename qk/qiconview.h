@@ -203,6 +203,8 @@ public:
 
     void rename();
 
+    virtual int compare( QIconViewItem *i ) const;
+
 signals:
     void renamed( const QString &text );
     void renamed();
@@ -351,13 +353,13 @@ public:
     int maxItemWidth() const;
     virtual void setMaxItemTextLength( int w );
     int maxItemTextLength() const;
-    void setReorderItemsWhenInsert( bool b );
-    bool reorderItemsWhenInsert() const;
-    void setResortItemsWhenInsert( bool sort, bool ascending = TRUE );
-    bool resortItemsWhenInsert() const;
-    bool sortOrder() const;
-    virtual void setRearrangeEnabled( bool b );
-    bool rearrangeEnabled() const;
+    void setAlignItemsWhenInsert( bool b );
+    bool alignItemsWhenInsert() const;
+    void setSortItemsWhenInsert( bool sort, bool ascending = TRUE );
+    bool sortItemsWhenInsert() const;
+    bool sortDirection() const;
+    virtual void setEnableMoveItems( bool b );
+    bool enableMoveItems() const;
     virtual void setWordWrapIconText( bool b );
     bool wordWrapIconText() const;
 
@@ -370,10 +372,9 @@ public:
     QSizePolicy sizePolicy() const;
     QSize sizeHint() const;
 
-    virtual void sortItems( bool ascending = TRUE );
+    virtual void sort( bool ascending = TRUE );
 
 public slots:
-    virtual void orderItemsInGrid();
     virtual void alignItemsInGrid( const QSize &grid );
     virtual void alignItemsInGrid();
     virtual void setContentsPos( int x, int y );
@@ -428,16 +429,15 @@ protected:
     virtual QDragObject *dragObject();
     virtual void startDrag();
     virtual void insertInGrid( QIconViewItem *item );
-    virtual void drawDragShade( const QPoint &pnt );
-    virtual void initDrag( QDropEvent *e );
+    virtual void drawDragShapes( const QPoint &pnt );
+    virtual void initDragEnter( QDropEvent *e );
     virtual void drawBackground( QPainter *p, const QRect &r );
 
     void emitSelectionChanged();
     void emitNewSelectionNumber();
     void emitRenamed( QIconViewItem *item );
 
-    void setDragObjectIsKnown( bool b );
-    void setIconDragData( const QValueList<QIconDragItem> &lst );
+    void setDragObjectIsKnown( QDropEvent *e );
     void setNumDragItems( int num );
     QIconViewItem *makeRowLayout( QIconViewItem *begin, int &y );
 
