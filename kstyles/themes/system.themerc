@@ -266,8 +266,8 @@ Comment[sv]=Systemets temade stil
 [General]
 foreground=0,0,0
 selectForeground=255,255,255
-selectBackground=0,0,128
-background=192,192,192
+selectBackground=90,36,0
+background=211,211,211
 windowForeground=0,0,0
 windowBackground=255,255,255
 
