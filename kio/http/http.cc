@@ -3076,9 +3076,12 @@ bool HTTPProtocol::getAuthorization()
       result = true;
     else
     {
-      kdDebug( 7113 ) << "About to prompt user for authorization..." << endl;
-      promptInfo( info );
-      result = openPassDlg( info );
+      if ( config()->readBoolEntry( "DisablePassDlg", false ) == false )
+      {
+        kdDebug( 7113 ) << "About to prompt user for authorization..." << endl;
+        promptInfo( info );
+        result = openPassDlg( info );
+      }
     }
   }
 
