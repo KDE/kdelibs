@@ -1,7 +1,8 @@
 
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Stephan Kulow <coolo@kde.org>
+    Copyright (c) 1997 Stephan Kulow <coolo@kde.org>
     Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+    Copyright (c) 1999 Hans Petter Bieker <bieker@pvv.ntnu.no>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -335,7 +336,7 @@ void KLocale::initFormat()
   KConfig* config = KGlobal::config();
 
   // Numeric
-  KSimpleConfig numentry(locate("locale", number + "/entry.desktop"), true);
+  KSimpleConfig numentry(locate("locale", "l10n/" + number + "/entry.desktop"), true);
   QString str = config->readEntry("Numeric", lang);
   numentry.setGroup("KCM Locale");
 
@@ -347,7 +348,7 @@ void KLocale::initFormat()
   if (_thousandsSeparator.isNull())
     _thousandsSeparator = numentry.readEntry("ThousandsSeparator", ",");
 
-  KSimpleConfig monentry(locate("locale", money + "/entry.desktop"), true);
+  KSimpleConfig monentry(locate("locale", "l10n/" + money + "/entry.desktop"), true);
   monentry.setGroup("KCM Locale");
 
   _currencySymbol = config->readEntry("CurrencySymbol");
@@ -390,7 +391,7 @@ void KLocale::initFormat()
     _negativeMonetarySignPosition = (SignPosition)monentry.readNumEntry("NegativeMonetarySignPosition", ParensAround);
 
   // date and time
-  KSimpleConfig timentry(locate("locale", time + "/entry.desktop"), true);
+  KSimpleConfig timentry(locate("locale", "l10n/" + time + "/entry.desktop"), true);
   timentry.setGroup("KCM Locale");
 
   _timefmt = config->readEntry("TimeFormat");
