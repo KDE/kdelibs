@@ -1560,7 +1560,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLObjectElement object = element;
     switch (token) {
     case ObjectForm:            return getDOMNode(exec,object.form()); // type HTMLFormElement
-    case ObjectCode:            return getString(object.code());
+    case ObjectCode:            return String(object.code()); // not getString, cf DOM2TS-HTMLObjectElement02.html
     case ObjectAlign:           return getString(object.align());
     case ObjectArchive:         return getString(object.archive());
     case ObjectBorder:          return getString(object.border());
