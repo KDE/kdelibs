@@ -51,12 +51,12 @@ class KPopupMenu;
 
 class KImportedBookmarksActionMenu : public KActionMenu {
   Q_OBJECT
-  Q_PROPERTY( QString type READ getType WRITE setType )
-  Q_PROPERTY( QString location READ getLocation WRITE setLocation )
+  Q_PROPERTY( QString type READ type WRITE setType )
+  Q_PROPERTY( QString location READ location WRITE setLocation )
 public:
-  const QString getType() const { return m_type; }
+  const QString type() const { return m_type; }
   void setType(const QString &type) { m_type = type; }
-  const QString getLocation() const { return m_location; }
+  const QString location() const { return m_location; }
   void setLocation(const QString &location) { m_location = location; }
 private:
   QString m_type;
@@ -72,15 +72,15 @@ public:
 
 class KBookmarkActionMenu : public KActionMenu {
   Q_OBJECT
-  Q_PROPERTY( QString url READ getUrl WRITE setUrl )
-  Q_PROPERTY( QString address READ getAddress WRITE setAddress )
-  Q_PROPERTY( bool readOnly READ getReadOnly WRITE setReadOnly )
+  Q_PROPERTY( QString url READ url WRITE setUrl )
+  Q_PROPERTY( QString address READ address WRITE setAddress )
+  Q_PROPERTY( bool readOnly READ readOnly WRITE setReadOnly )
 public:
-  const QString getUrl() const { return m_url; }
+  const QString url() const { return m_url; }
   void setUrl(const QString &url) { m_url = url; }
-  const QString getAddress() const { return m_address; }
+  const QString address() const { return m_address; }
   void setAddress(const QString &address) { m_address = address; }
-  bool getReadOnly() const { return m_readOnly; }
+  bool readOnly() const { return m_readOnly; }
   void setReadOnly(bool readOnly) { m_readOnly = readOnly; }
 private:
   QString m_url;
@@ -97,12 +97,12 @@ public:
 
 class KBookmarkAction : public KAction {
   Q_OBJECT
-  Q_PROPERTY( QString url READ getUrl WRITE setUrl )
-  Q_PROPERTY( QString address READ getAddress WRITE setAddress )
+  Q_PROPERTY( QString url READ url WRITE setUrl )
+  Q_PROPERTY( QString address READ address WRITE setAddress )
 public:
-  const QString getUrl() const { return m_url; }
+  const QString url() const { return m_url; }
   void setUrl(const QString &url) { m_url = url; }
-  const QString getAddress() const { return m_address; }
+  const QString address() const { return m_address; }
   void setAddress(const QString &address) { m_address = address; }
 private:
   QString m_url;
