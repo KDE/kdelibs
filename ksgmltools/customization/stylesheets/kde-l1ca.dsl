@@ -37,7 +37,7 @@
 (define %kde-ca-logo% "")
 (define %kde-gentext-ca-date-phrase% "&LastUpdated;: ")
 ; <!-- (define %kde-gentext-ca-author-phrase% "&by; ") -->
-(define %kde-gentext-ca-releaseinfo-phrase% "&Version; ") 
+(define %kde-gentext-ca-releaseinfo-phrase% "&Version; ")
 
    </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
