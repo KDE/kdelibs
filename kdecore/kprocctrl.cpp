@@ -140,6 +140,8 @@ KProcessController::~KProcessController()
   act.sa_flags = 0;
   sigaction( SIGCHLD, &act, NULL);
   
+  close(fd[0]);
+  close(fd[1]);
   delete processList;
   delete notifier;
 }
