@@ -51,6 +51,8 @@
 #include <X11/Xlib.h>
 
 int waitForPid;
+int X11fd;
+static Display *X11display = 0;
 
 /* Group data */
 struct {
@@ -602,6 +604,8 @@ static void handle_requests()
    int max_sock = d.wrapper;
    if (d.launcher_pid && (d.launcher[0] > max_sock))
       max_sock = d.launcher[0];
+   if (X11fd > max_sock)
+      max_sock = X11fd;
    max_sock++;
 
    while(1)
@@ -647,6 +651,7 @@ static void handle_requests()
       }
       FD_SET(d.wrapper, &rd_set);
       FD_SET(d.deadpipe[0], &rd_set);
+      if(X11fd >= 0) FD_SET(X11fd, &rd_set);
 
       printf("Entering select...\n");
       result = select(max_sock, &rd_set, &wr_set, &e_set, 0);
@@ -677,6 +682,15 @@ static void handle_requests()
          handle_launcher_request();
       }
 
+	  /* Look for incoming X11 events */
+      if((result > 0) && (X11fd >= 0))
+	  {
+	    if(FD_ISSET(X11fd,&rd_set))
+	    {
+	      XEvent event_return;
+          if (X11display != 0) XNextEvent(X11display, &event_return);
+		}
+	  }
    }
 }
 
@@ -715,19 +729,22 @@ int kdeinit_xio_errhandler( Display * )
 }
 
 // Borrowed from kdebase/kaudio/kaudioserver.cpp
-static void initXconnection()
+static int initXconnection()
 {
-  Display *dpy = XOpenDisplay(NULL);
-  if ( dpy != 0 ) {
+  X11display = XOpenDisplay(NULL);
+  if ( X11display != 0 ) {
     XSetIOErrorHandler(kdeinit_xio_errhandler);
-    XCreateSimpleWindow(dpy, DefaultRootWindow(dpy), 0,0,1,1, \
+    XCreateSimpleWindow(X11display, DefaultRootWindow(X11display), 0,0,1,1, \
         0,
-        BlackPixelOfScreen(DefaultScreenOfDisplay(dpy)),
-        BlackPixelOfScreen(DefaultScreenOfDisplay(dpy)) );
-    qDebug("kdeinit: opened connection to %s", DisplayString(dpy));
+        BlackPixelOfScreen(DefaultScreenOfDisplay(X11display)),
+        BlackPixelOfScreen(DefaultScreenOfDisplay(X11display)) );
+    qDebug("kdeinit: opened connection to %s", DisplayString(X11display));
+	return XConnectionNumber( X11display );
   } else
     fprintf(stderr, "kdeinit: Can't connect to the X Server.\n" \
      "kdeinit: Might not terminate at end of session.\n");
+
+  return -1;
 }
 
 int main(int argc, char **argv, char **envp)
@@ -817,7 +834,7 @@ int main(int argc, char **argv, char **envp)
    if (fork() > 0) // Go into background
       exit(0);
 
-   initXconnection();
+   X11fd = initXconnection();
 
    handle_requests();
    
