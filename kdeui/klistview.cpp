@@ -496,21 +496,25 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
   QListView::contentsMouseMoveEvent( e );
 
   // I have just started to move my mouse..
-  if ((e->state() == LeftButton) && d->startDragPos.isNull())
+  if (e->state() == LeftButton)
 	{
-	  d->startDragPos = e->pos();
+	  if (d->startDragPos.isNull())
+		{
+		  d->startDragPos = e->pos();
+	  
+		  kdDebug () << "Pos x = " << d->startDragPos.x() << ", pos y = " << d->startDragPos.y() << endl;
+		}
+	  else if (dragEnabled())
+		{			  
+		  // Have we moved the mouse far enough?
+		  if ((d->startDragPos - e->pos()).manhattanLength() > QApplication::startDragDistance())
+			{
+			  d->startDragPos = e->pos();
+			  
+			  startDrag();
+			}
+		}
 	}
-  else // Now, I may begin dragging!
-	if ((e->state() == LeftButton) && dragEnabled())
-	  {
-		// Have we moved the mouse far enough?
-		if ((d->startDragPos - e->pos()).manhattanLength() > QApplication::startDragDistance())
-		  {
-			d->startDragPos = e->pos();
-		
-			startDrag();
-		  }
-	  }
 }
 
 void KListView::contentsMouseDoubleClickEvent ( QMouseEvent *e )
@@ -634,99 +638,100 @@ QListViewItem *KListView::lastItem() const
 
 void KListView::startDrag()
 {
-	QDragObject *drag = dragObject();
-	if ( !drag )
-		return;
+  QDragObject *drag = dragObject();
+  
+  if (!drag)
+	return;
 
-	if (drag->drag())
-		if ( drag->target() != viewport() )
-			emit moved();
+  if (drag->drag())
+	if ( drag->target() != viewport() )
+	  emit moved();
 }
 
 QDragObject *KListView::dragObject() const
 {
-	if (!currentItem())
-		return 0;
-	
-	return new QStoredDrag("application/x-qlistviewitem", viewport());
+  if (!currentItem())
+	return 0;
+  
+  return new QStoredDrag("application/x-qlistviewitem", viewport());
 }
 
 void KListView::setItemsMovable(bool b)
 {
-	d->itemsMovable=b;
+  d->itemsMovable=b;
 }
 
 bool KListView::itemsMovable() const
 {
-	return d->itemsMovable;
+  return d->itemsMovable;
 }
 
 void KListView::setItemsRenameable(bool b)
 {
-	d->itemsRenameable=b;
+  d->itemsRenameable=b;
 }
 
 bool KListView::itemsRenameable() const
 {
-	return d->itemsRenameable;
+  return d->itemsRenameable;
 }
 
 
 void KListView::setDragEnabled(bool b)
 {
-	d->dragEnabled=b;
+  d->dragEnabled=b;
 }
 
 bool KListView::dragEnabled() const
 {
-	return d->dragEnabled;
+  return d->dragEnabled;
 }
 
 void KListView::setAutoOpen(bool b)
 {
-	d->autoOpen=b;
+  d->autoOpen=b;
 }
 
 bool KListView::autoOpen() const
 {
-	return d->autoOpen;
+  return d->autoOpen;
 }
 
 bool KListView::dropVisualizer() const
 {
-	return d->dropVisualizer;
+  return d->dropVisualizer;
 }
 
 void KListView::setDropVisualizer(bool b)
 {
-	d->dropVisualizer=b;
+  d->dropVisualizer=b;
 }
 
 QList<QListViewItem> KListView::selectedItems() const
 {
-	QList<QListViewItem> list;
-	for (QListViewItem *i=firstChild(); i!=0; i=i->itemBelow())
-		if (i->isSelected()) list.append(i);
-	return list;
+  QList<QListViewItem> list;
+  for (QListViewItem *i=firstChild(); i!=0; i=i->itemBelow())
+	if (i->isSelected()) list.append(i);
+  return list;
 }
 
 
 void KListView::moveItem(QListViewItem *item, QListViewItem *parent, QListViewItem *after)
 {
-	// Basically reimplementing the QListViewItem(QListViewItem*, QListViewItem*) constructor
-	// in here, without ever deleting the item.
-	if (item->parent())
-		item->parent()->takeItem(item);
-	else
-		takeItem(item);
-		
-	if (parent)
-		parent->insertItem(item);
-	else
-		insertItem(item);
-	
-	if (after)
-		item->moveToJustAfter(after);
+  // Basically reimplementing the QListViewItem(QListViewItem*, QListViewItem*) constructor
+  // in here, without ever deleting the item.
+  if (item->parent())
+	item->parent()->takeItem(item);
+  else
+	takeItem(item);
+  
+  if (parent)
+	parent->insertItem(item);
+  else
+	insertItem(item);
+  
+  if (after)
+	item->moveToJustAfter(after);
 }
 
 void KListView::contentsDragEnterEvent(QDragEnterEvent *event)
