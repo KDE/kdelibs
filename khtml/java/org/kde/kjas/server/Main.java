@@ -65,6 +65,10 @@ public class Main
         protocol        = new KJASProtocolHandler( System.in, protocol_stdout );
         Main.debug( "JVM version = " + System.getProperty( "java.version" ) );
         String version = System.getProperty("java.version").substring( 0, 3 );
+        // Hack for SGI Java2 runtime
+        if (version == "Jav") {     // Skip over JavaVM-  (the first 7 chars)
+            version = System.getProperty("java.version").substring(7,3);
+        }
         Main.debug( "JVM numerical version = " + version );
         try
         {
