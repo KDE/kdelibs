@@ -725,7 +725,8 @@ KAction *KStdAction::lastPage(const QObject *recvr, const char *slot,
 KAction *KStdAction::addBookmark(const QObject *recvr, const char *slot,
                                  QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Add Bookmark"), KStdAccel::key(KStdAccel::AddBookmark),
+    return new KAction(i18n("&Add Bookmark"), "bookmark_add",
+                       KStdAccel::key(KStdAccel::AddBookmark),
                        recvr, slot, parent,
 					   name ? name : stdName(AddBookmark));
 }
@@ -733,7 +734,7 @@ KAction *KStdAction::addBookmark(const QObject *recvr, const char *slot,
 KAction *KStdAction::editBookmarks(const QObject *recvr, const char *slot,
                                   QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Edit Bookmarks..."), 0, recvr, slot, parent,
+    return new KAction(i18n("&Edit Bookmarks..."), "bookmark", 0, recvr, slot, parent,
                        name ? name : stdName(EditBookmarks));
 }
 
