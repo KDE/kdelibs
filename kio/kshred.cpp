@@ -31,6 +31,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <stdlib.h>
+#include <kapp.h>
 
 KShred::KShred(QString fileName)
 {
@@ -128,7 +129,6 @@ KShred::fillrandom()
   if (file == 0L)
     return false;
 
-  srandom((unsigned int) time(0L));
   long int buff[4096 / sizeof(long int)];
   unsigned int n;
 
@@ -138,7 +138,7 @@ KShred::fillrandom()
     // assumes that 4096 is a multipe of sizeof(long int)
     int limit = (n + sizeof(long int) - 1) / sizeof(long int);
     for (int i = 0; i < limit; i++)
-      buff[i] = random();
+      buff[i] = kapp->random();
 
     if (!writeData((unsigned char *) buff, n))
       return false;
