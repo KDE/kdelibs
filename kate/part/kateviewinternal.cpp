@@ -2703,7 +2703,7 @@ void KateViewInternal::mouseReleaseEvent( QMouseEvent* e )
       }
 
       if (dragInfo.state == diPending)
-        placeCursor( e->pos() );
+        placeCursor( e->pos(), e->state() & ShiftButton );
       else if (dragInfo.state == diNone)
         m_scrollTimer.stop ();
 
@@ -2933,7 +2933,7 @@ void KateViewInternal::dragMoveEvent( QDragMoveEvent* event )
 {
   // track the cursor to the current drop location
   placeCursor( event->pos(), true, false );
-  
+
   // important: accept action to switch between copy and move mode
   // without this, the text will always be copied.
   event->acceptAction();
