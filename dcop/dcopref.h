@@ -33,7 +33,7 @@ class DCOPObject;
  * object in a DCOP interface, then you have to return
  * a DCOPRef object.
  *
- * @auther Torben Weis <weis@kde.org>
+ * @author Torben Weis <weis@kde.org>
  */
 class DCOPRef
 {
