@@ -1,1 +1,1 @@
-/etc/kde2 /usr/share/kde2/config
+/etc/kde2/system.kdeglobals /etc/kderc
