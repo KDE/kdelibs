@@ -41,6 +41,7 @@
 
 #include "rendering/render_form.h"
 
+#include <kcharsets.h>
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kmessagebox.h>
