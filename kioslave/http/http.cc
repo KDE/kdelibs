@@ -3368,11 +3368,6 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
                   !m_qContentEncodings.isEmpty() );
   bool useMD5 = !m_sContentMD5.isEmpty();
 
-  // Get the starting time.  This is used
-  // later to compute the transfer speed.
-  time_t t_start = time(0L);
-  time_t t_last = t_start;
-
   // Deal with the size of the file.
   KIO::filesize_t sz = m_request.offset;
   if ( sz )
@@ -3410,11 +3405,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
      }
      if ( !dataInternal )
        processedSize( sz );
-     // FINALLY, we compute our final speed and let everybody know that we
-     // are done
-     t_last = time(0L);
-     if (sz && t_last - t_start && !dataInternal )
-       speed(sz / (t_last - t_start));
+
      m_bufReceive.resize( 0 );
      if ( !dataInternal )
        data( QByteArray() );
@@ -3537,35 +3528,9 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
         sz += bytesReceived;
         if (!dataInternal)
-        {
-            struct timeval tv;
-            if ( gettimeofday( &tv, 0L ) == 0 )
-            {
-                // Compute difference, in ms
-                int msecdiff = 1000 * ( tv.tv_sec - last_tv.tv_sec );
-                int usecdiff = tv.tv_usec - last_tv.tv_usec;
-                if ( usecdiff < 0 ) {
-                    msecdiff--;
-                    msecdiff += 1000;
-                }
-                msecdiff += usecdiff / 1000;
+	  processedSize( sz );
 
-                if ( msecdiff >= 200 ) // emit size 5 times a second
-                {
-                  processedSize( sz );
-                  last_tv = tv;
-                }
-            }
-
-            time_t t = time(0L);
-            if ( t - t_last >= 1 ) // emit speed every second
-            {
-              speed( (sz - m_request.offset) / ( t - t_start ) );
-              t_last = t;
-            }
-        }
-      }
-      else
+      } else
       {
         // nope.  slap this all onto the end of a big buffer for later use
         unsigned int old_len = 0;
@@ -3626,6 +3591,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     uint bytesToSend = MAX_IPC_SIZE;
     if ( !dataInternal )
       totalSize( bytesReceived );
+
     if ( bytesReceived > bytesToSend )
     {
       sz = 0;
@@ -3682,12 +3648,6 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
      if (m_bCachedWrite && m_fcache)
         closeCacheEntry();
   }
-
-  // FINALLY, we compute our final speed and let
-  // everybody know that we are done...
-  t_last = time(0L);
-  if (t_last - t_start && !dataInternal )
-    speed((sz - m_request.offset) / (t_last - t_start));
 
   if (!dataInternal)
     data( QByteArray() );
