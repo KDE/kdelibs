@@ -1006,7 +1006,8 @@ void QIconViewItem::setSelected( bool s, bool cb )
 	selected = s;
 
 	repaint();
-	view->emitSelectionChanged();
+	if ( !view->signalsBlocked() )
+	    view->emitSelectionChanged();
     }
 }
 
@@ -2437,10 +2438,52 @@ QIconSet::Size QIconView::viewMode() const
 
 void QIconView::doAutoScroll()
 {
+    QRect oldRubber = QRect( *d->rubber );
+
     QPoint pos = QCursor::pos();
     pos = viewport()->mapFromGlobal( pos );
     pos = viewportToContents( pos );
 
+    d->rubber->setRight( pos.x() );
+    d->rubber->setBottom( pos.y() );
+
+    int minx = contentsWidth(), miny = contentsHeight();
+    int maxx = 0, maxy = 0;
+    int selected = 0;
+    bool changed = FALSE;
+    bool block = signalsBlocked();
+
+    QList<QIconViewItem> lst;
+        
+    blockSignals( TRUE );
+    QIconViewItem *item = d->firstItem;
+    viewport()->setUpdatesEnabled( FALSE );
+    for ( ; item; item = item->next ) {
+	if ( !item->intersects( d->rubber->normalize() ) ) {
+	    if ( item->isSelected() ) {
+		item->setSelected( FALSE );
+		changed = TRUE;
+		lst.append( item );
+	    }
+	} else if ( item->intersects( d->rubber->normalize() ) ) {
+	    if ( !item->isSelected() ) {
+		item->setSelected( TRUE, TRUE );
+		changed = TRUE;
+		lst.append( item );
+	    }
+	    ++selected;
+	    minx = QMIN( minx, item->x() - 1 );
+	    miny = QMIN( miny, item->y() - 1 );
+	    maxx = QMAX( maxx, item->x() + item->width() + 1 );
+	    maxy = QMAX( maxy, item->y() + item->height() + 1 );
+	}
+    }
+    viewport()->setUpdatesEnabled( TRUE );
+    blockSignals( block );
+
+    QRect r = *d->rubber;
+    *d->rubber = oldRubber;
+    
     QPainter p;
     p.begin( viewport() );
     p.setRasterOp( NotROP );
@@ -2449,18 +2492,14 @@ void QIconView::doAutoScroll()
     drawRubber( &p );
     p.end();
 
+    *d->rubber = r;
+    
+    if ( changed ) {
+	for ( item = lst.first(); item; item = lst.next() )
+	    item->repaint();
+    }
+    
     ensureVisible( pos.x(), pos.y() );
-
-    pos = QCursor::pos();
-    pos = viewport()->mapFromGlobal( pos );
-    pos = viewportToContents( pos );
-
-    QRect oldRubber = QRect( *d->rubber );
-
-    d->rubber->setRight( pos.x() );
-    d->rubber->setBottom( pos.y() );
-
-    selectByRubber( oldRubber );
 
     p.begin( viewport() );
     p.setRasterOp( NotROP );
@@ -2470,8 +2509,12 @@ void QIconView::doAutoScroll()
 
     p.end();
 
-    pos = QCursor::pos();
-    pos = mapFromGlobal( pos );
+    if ( changed ) {
+	emit selectionChanged();
+	emit selectionChanged( selected );
+	if ( d->selectionMode == Single )
+	    emit selectionChanged( d->currentItem );
+    }
 
     if ( !QRect( 0, 0, viewport()->width(), viewport()->height() ).contains( pos ) &&
 	 !d->scrollTimer ) {
@@ -3991,50 +4034,6 @@ void QIconView::focusOutEvent( QFocusEvent * )
 {
     if ( d->currentItem )
 	repaintItem( d->currentItem );
-}
-
-/*!
-  Selects items by the rubber band.
-*/
-
-void QIconView::selectByRubber( QRect oldRubber )
-{
-    if ( !d->rubber )
-	return;
-
-    oldRubber = oldRubber.normalize();
-    int minx = contentsWidth(), miny = contentsHeight();
-    int maxx = 0, maxy = 0;
-    int selected = 0;
-    bool changed = FALSE;
-    bool block = signalsBlocked();
-
-    blockSignals( TRUE );
-    QIconViewItem *item = d->firstItem;
-    for ( ; item; item = item->next ) {
-	if ( !item->intersects( d->rubber->normalize() ) ) {
-	    if ( !changed )
-		changed = item->isSelected();
-	    item->setSelected( FALSE );
-	} else if ( item->intersects( d->rubber->normalize() ) ) {
-	    if ( !changed )
-		changed = !item->isSelected();
-	    item->setSelected( TRUE, TRUE );
-	    ++selected;
-	    minx = QMIN( minx, item->x() - 1 );
-	    miny = QMIN( miny, item->y() - 1 );
-	    maxx = QMAX( maxx, item->x() + item->width() + 1 );
-	    maxy = QMAX( maxy, item->y() + item->height() + 1 );
-	}
-    }
-    blockSignals( block );
-
-    if ( changed ) {
-	emit selectionChanged();
-	emit selectionChanged( selected );
-	if ( d->selectionMode == Single )
-	    emit selectionChanged( d->currentItem );
-    }
 }
 
 /*!
