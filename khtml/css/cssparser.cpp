@@ -497,9 +497,9 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP, CSSSelector 
 CSSSelector *
 StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
 {
-//#ifdef CSS_DEBUG
+#ifdef CSS_DEBUG
     kdDebug( 6080 ) << "selector1 is \'" << QString(curP, endP-curP) << "\'" << endl;
-//#endif
+#endif
 
     CSSSelector *selecStack=0;
 
