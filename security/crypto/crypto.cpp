@@ -1385,11 +1385,15 @@ OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
 
 
 void KCryptoConfig::slotRemoveCert() {
-OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
+QListViewItem *act = otherSSLBox->selectedItem();
+OtherCertItem *x = static_cast<OtherCertItem *>(act);
    if (x) {
+      QListViewItem *next = act->itemBelow();
+      if (!next) next = act->itemAbove();
       otherSSLBox->takeItem(x);
       otherCertDelList.append(x);
       configChanged();
+      if (next) otherSSLBox->setSelected(next, true);
    }
 }
 
@@ -2171,12 +2175,16 @@ void KCryptoConfig::slotNewHostAuth() {
 
 
 void KCryptoConfig::slotRemoveHostAuth() {
-HostAuthItem *x = static_cast<HostAuthItem *>(hostAuthList->selectedItem());
+QListViewItem *act = hostAuthList->selectedItem();
+HostAuthItem *x = static_cast<HostAuthItem *>(act);
 
   if (x) {
+      QListViewItem *next = act->itemBelow();
+      if (!next) next = act->itemAbove();
       hostAuthList->takeItem(x);
       authDelList.append(x);
       configChanged();
+      if (next) hostAuthList->setSelected(next, true);
   }
 }
 
