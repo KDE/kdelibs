@@ -130,7 +130,8 @@ QRegExp rx;
 		// foo.example.com but not bar.foo.example.com
 		// (ie. they must have the same number of parts)
 		if (QRegExp(cn, false, true).exactMatch(d->peerHost) &&
-		    parts.count() == QStringList::split('.', d->peerHost, false).count())
+		    QStringList::split('.', cn, false).count() == 
+		    QStringList::split('.', d->peerHost, false).count())
 			return true;
 
 		return false;
