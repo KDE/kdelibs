@@ -25,6 +25,16 @@
 #include <qstring.h>
 #include <qpair.h>
 
+/**
+ * @short Provides a set of standardized KGuiItems. 
+ *
+ * The various static methods returns standardized @ref KGuiItem's
+ * conforming to the KDE UI Standards. Use them instead of creating 
+ * your own.
+ *
+ * @author Holger Freyther <freyther@kde.org>
+ * @version $Id
+ */
 class KStdGuiItem
 {
 public:

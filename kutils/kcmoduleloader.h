@@ -27,14 +27,14 @@
 class QWidget;
 class KLibLoader;
 
+/**
+ * @description loads a KControl Module
+ * @author Matthias Hoelzer-Kluepfel <mhk@kde.org>
+ * @since 3.2
+ * @internal
+**/
 class KCModuleLoader
 {
-  /**
-   * @description loads a KControl Module
-   * @author Matthias Hoelzer-Kluepfel <mhk@kde.org>
-   * @since 3.2
-   * @internal
-   **/
 public:
   static KCModule *loadModule(const KCModuleInfo &mod, bool withfallback=true, QWidget * parent = 0, const char * name = 0, const QStringList & args = QStringList() );
   static KCModule *loadModule(const QString &module, QWidget *parent = 0,
