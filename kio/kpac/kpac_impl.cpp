@@ -83,9 +83,11 @@ QString KPACImpl::proxyForURL(const KURL &url)
             QString proxy = (*it).simplifyWhiteSpace();
             if (proxy.left(5) == "PROXY")
             {
-                proxy = proxy.mid(5).stripWhiteSpace();
-                if (proxy.left(7) != "http://")
-                    proxy = "http://" + proxy;
+                KURL proxyURL(proxy = proxy.mid(5).stripWhiteSpace());
+                // if the URL is invalid, simply calling setProtocol() on it
+                // trashes the whole URL
+                if (!proxyURL.isValid())
+                    proxy.prepend("http://");
                 time_t badMark = blackList.readNumEntry(proxy);
                 if (badMark < time(0) - 1800)
                 {
@@ -94,6 +96,12 @@ QString KPACImpl::proxyForURL(const KURL &url)
                     kdDebug(7025) << "KPACImpl::proxyForURL(): returning " << proxy << endl;
                     return proxy;
                 }
+            }
+            else if (proxy.left(5) == "SOCKS")
+            {
+                // FIXME
+                kdWarning(7025) << "KPACImpl::proxyForURL(): SOCKS support not implemented yet" << endl;
+                return "DIRECT";
             }
             else if (proxy == "DIRECT")
             {
