@@ -8,7 +8,7 @@ using namespace std;
 
 class StereoFFTScope_impl : public StereoFFTScope_skel, public StdSynthModule {
 protected:
-	enum { SAMPLES = 4096 };
+	static const unsigned long SAMPLES = 4096;
 	vector<float> _scope;
 	/*
 	 * some gcc versions expose ugly behaviour with virtual inheritance:
@@ -18,7 +18,7 @@ protected:
 	 */
 	float *window;
 	float *inbuffer;
-	long inbufferpos;
+	unsigned long inbufferpos;
 public:
 	void do_fft()
 	{
@@ -26,8 +26,8 @@ public:
 		fft_float(SAMPLES,0,inbuffer,0,out_real,out_img);
 
 		_scope.clear();
-    	int i = 3;
-    	int j = 0;
+    	unsigned int i = 3;
+    	unsigned int j = 0;
     	for(;;) {
         	float xrange = 0.0;
         	while(j != i)
