@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1997 David Sweet <dsweet@kde.org>
+   Copyright (C) 2000 Rik Hemsley <rik@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -18,16 +19,14 @@
 #ifndef __KSPELLDLG_H__
 #define __KSPELLDLG_H__
 
-//#include "dialog1.h"
-#include <qdialog.h>
-#include <qpushbutton.h>
-#include <qbutton.h>
-#include <qlabel.h>
-#include <qlayout.h>
+#include <kdialogbase.h>
 
-#include <klistbox.h>
-#include <klineedit.h>
-#include <kprogress.h>
+class QStringList;
+class QLabel;
+class QPushButton;
+class KListBox;
+class KLineEdit;
+class KProgress;
 
 //Possible result codes
 enum KS_RESULT {
@@ -40,11 +39,7 @@ enum KS_RESULT {
   KS_STOP=       7
 };
 
-enum Geometries {buttonwidth=80, labelwidth=100};
-
-class QStringList;
-
-class KSpellDlg : public QWidget
+class KSpellDlg : public KDialogBase
 {
   Q_OBJECT
 
@@ -56,8 +51,6 @@ class KSpellDlg : public QWidget
   QStringList *sugg;
   QPushButton *qpbrep, *qpbrepa;
   QLabel *wordlabel;
-  QList<QWidget> *children;
-  QGridLayout *layout;
   QString word, newword;
   bool progressbar;
 
@@ -75,11 +68,7 @@ public:
    **/
   void init (const QString& _word, QStringList *_sugg);
 
-  /**
-   * Disable some buttons and gray out the misspelled word.
-   **/
-  void standby ();
-
+  void standby() { emit(ready(false)); }
 
   public slots:
   /**
@@ -96,6 +85,8 @@ protected:
       This signal is emitted when a button is pressed.
       */
   void command (int);
+
+  void ready(bool);
 
 protected slots:
   void ignore();
