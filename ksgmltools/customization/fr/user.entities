@@ -6,4 +6,16 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
+<!ENTITY cdrom	'<hardware>lecteur CD-ROM</hardware>'>
+<!ENTITY dpi	'<acronym>dpi</acronym>'>
+<!ENTITY eg     "par exemple">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
+<!ENTITY FAQ	'<acronym>FAQ</acronym>'>
+<!ENTITY ie     "c'est-à-dire">
+<!ENTITY kcontrol	'<application>Centre de Configuration de &kde;</application>'>
+<!ENTITY khelpcenter	'<application>Aide dentralisée de &kde;</application>'>
+<!ENTITY LMB    "bouton <mousebutton>gauche</mousebutton> de la souris">
+<!ENTITY MMB    "bouton <mousebutton>central</mousebutton> de la souris">
+<!ENTITY RMB    "bouton <mousebutton>droit</mousebutton> de la souris">
+<!ENTITY OS	"operating system" -- <acronym>OS</acronym>-->
+
