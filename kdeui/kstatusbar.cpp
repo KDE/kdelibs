@@ -88,6 +88,12 @@ KStatusBar::KStatusBar( QWidget *parent, const char *name )
   bool grip_enabled = config->readBoolEntry(QString::fromLatin1("SizeGripEnabled"), false);
   setSizeGripEnabled(grip_enabled);
   config->setGroup(group);
+
+  // Peter Putzer 2000-07-14
+  // fixes strange warnings in KSysV
+  // because resizeEvent is somehow called with a too small
+  // width()
+  resize (QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 }
 
 KStatusBar::~KStatusBar ()
