@@ -537,26 +537,26 @@ double KFormula::evaluate(QStrList &vars, const QArray<double> &vals,
 
     QString fun = b->b1->text.stripWhiteSpace();
 
-    if(!strcmp(fun.ascii(), "sqrt")) return sqrt(b2);
-    if(!strcmp(fun.ascii(), "log")) return log(b2);
-    if(!strcmp(fun.ascii(), "exp")) return exp(b2);
-    if(!strcmp(fun.ascii(), "floor")) return floor(b2);
-    if(!strcmp(fun.ascii(), "ceil")) return ceil(b2);
-    if(!strcmp(fun.ascii(), "abs")) return fabs(b2);
+    if(fun == "sqrt") return sqrt(b2);
+    if(fun == "log") return log(b2);
+    if(fun == "exp") return exp(b2);
+    if(fun == "floor") return floor(b2);
+    if(fun == "ceil") return ceil(b2);
+    if(fun == "abs") return fabs(b2);
 
-    if(!strcmp(fun.ascii(), "sin")) return sin(b2);
-    if(!strcmp(fun.ascii(), "cos")) return cos(b2);
-    if(!strcmp(fun.ascii(), "tan")) return tan(b2);
-    if(!strcmp(fun.ascii(), "sinh")) return sinh(b2);
-    if(!strcmp(fun.ascii(), "cosh")) return cosh(b2);
-    if(!strcmp(fun.ascii(), "tanh")) return tanh(b2);
+    if(fun == "sin") return sin(b2);
+    if(fun == "cos") return cos(b2);
+    if(fun == "tan") return tan(b2);
+    if(fun == "sinh") return sinh(b2);
+    if(fun == "cosh") return cosh(b2);
+    if(fun == "tanh") return tanh(b2);
 
-    if(!strcmp(fun.ascii(), "asin")) return asin(b2);
-    if(!strcmp(fun.ascii(), "acos")) return acos(b2);
-    if(!strcmp(fun.ascii(), "atan")) return atan(b2);
-    if(!strcmp(fun.ascii(), "asinh")) return asinh(b2);
-    if(!strcmp(fun.ascii(), "acosh")) return acosh(b2);
-    if(!strcmp(fun.ascii(), "atanh")) return atanh(b2);
+    if(fun == "asin") return asin(b2);
+    if(fun == "acos") return acos(b2);
+    if(fun == "atan") return atan(b2);
+    if(fun == "asinh") return asinh(b2);
+    if(fun == "acosh") return acosh(b2);
+    if(fun == "atanh") return atanh(b2);
 
     break;
   }
