@@ -57,12 +57,12 @@ class CachedWav : public CachedObject
 protected:
 	struct stat oldstat;
 	string filename;
+	bool initOk;
 
 	CachedWav(Cache *cache, string filename);
 	~CachedWav();
 
 	typedef unsigned char uchar;
-
 public:
 	double samplingRate;
 	long bufferSize;
@@ -71,7 +71,16 @@ public:
 	unsigned char *buffer;
 
 	static CachedWav *load(Cache *cache, string filename);
+	/**
+	 * validity test for the cache - returns false if the object is having
+	 * reflecting the correct contents anymore (e.g. if the file on the
+	 * disk has changed), and there is no point in keeping it in the cache any
+	 * longer
+	 */
 	bool isValid();
+	/**
+	 * memory usage for the cache
+	 */
 	int memoryUsage();
 };
 
@@ -80,13 +89,24 @@ CachedWav *CachedWav::load(Cache *cache, string filename)
 	CachedWav *wav;
 
 	wav = (CachedWav *)cache->get(string("CachedWav:")+filename);
-	if(!wav) wav = new CachedWav(cache,filename);
+	if(!wav) {
+		wav = new CachedWav(cache,filename);
+
+		if(!wav->initOk)		// loading failed
+		{
+			wav->decRef();
+			return 0;
+		}
+	}
 
 	return(wav);
 }
 
 bool CachedWav::isValid()
 {
+	if(!initOk)
+		return false;
+
 	struct stat newstat;
 
 	lstat(filename.c_str(),&newstat);
@@ -98,19 +118,29 @@ int CachedWav::memoryUsage()
 	return(bufferSize);
 }
 
-CachedWav::CachedWav(Cache *cache, string filename) : CachedObject(cache)
+CachedWav::CachedWav(Cache *cache, string filename) : CachedObject(cache),
+								 filename(filename),initOk(false), buffer(0)
 {
 	int sampleFormat;
 	AFframecount	frameCount;
 	AFfilehandle	file;
 	int				byteorder;
 
-	this->filename = filename;
 	setKey(string("CachedWav:")+filename);
 
-	lstat(filename.c_str(),&oldstat);
+	if(lstat(filename.c_str(),&oldstat) == -1)
+	{
+		cerr << "CachedWav: Can't stat file '" << filename << "'" << endl;
+		return;
+	}
 
 	file = afOpenFile(filename.c_str(), "r", NULL);
+	if(!file)
+	{
+		cerr << "CachedWav: Can't read file '" << filename << "'" << endl;
+		return;
+	}
+
 	frameCount = afGetFrameCount(file, AF_DEFAULT_TRACK);
 	channelCount = afGetChannels(file, AF_DEFAULT_TRACK);
 	afGetSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
@@ -126,8 +156,9 @@ CachedWav::CachedWav(Cache *cache, string filename) : CachedObject(cache)
 		afSetVirtualByteOrder(file,AF_DEFAULT_TRACK, AF_BYTEORDER_LITTLEENDIAN);
 
 	printf("loaded wav %s\n",filename.c_str());
-	printf("  sample format: %d, sample width: %d\n",sampleFormat,sampleWidth);
-	printf("  channelCount%d\n",channelCount);
+	printf("  sample format: %d, sample width: %d\n",
+		sampleFormat,sampleWidth);
+	printf("  channelCount: %d\n",channelCount);
 
 	// different handling required for other sample widths
 	assert(sampleWidth == 16 || sampleWidth == 8);
@@ -141,11 +172,13 @@ CachedWav::CachedWav(Cache *cache, string filename) : CachedObject(cache)
 	afReadFrames(file, AF_DEFAULT_TRACK, buffer, frameCount);
 
 	afCloseFile(file);
+	initOk = true;
 }
 
 CachedWav::~CachedWav()
 {
-	delete[] buffer;
+	if(buffer)
+		delete[] buffer;
 }
 
 class Synth_PLAY_WAV_impl : public Synth_PLAY_WAV_skel, StdSynthModule {
@@ -188,12 +221,13 @@ public:
 	Synth_PLAY_WAV_impl();
 	~Synth_PLAY_WAV_impl();
 
+	void initialize();
 	void calculateBlock(unsigned long samples);
 };
 
-Synth_PLAY_WAV_impl::Synth_PLAY_WAV_impl() {
+Synth_PLAY_WAV_impl::Synth_PLAY_WAV_impl()
+{
 	cachedwav = 0;
-	_finished = false;
 	_speed = 1.0;
 	_filename = "";
 }
@@ -203,34 +237,37 @@ Synth_PLAY_WAV_impl::~Synth_PLAY_WAV_impl()
 	unload();
 }
 
+void Synth_PLAY_WAV_impl::initialize()
+{
+	_finished = false;
+}
+
 static const int samplingRate=44100;
 
 void Synth_PLAY_WAV_impl::calculateBlock(unsigned long samples)
 {
-	float allSamples = cachedwav->bufferSize*8 /
-	                   cachedwav->sampleWidth/cachedwav->channelCount;
-	float fHaveSamples = allSamples - flpos;
-	float speed = cachedwav->samplingRate / (float)samplingRate * _speed;
+	float speed = 0.0;
+	unsigned long haveSamples = 0;
 
-	fHaveSamples /= speed;
-	fHaveSamples -= 2.0;		// one due to interpolation and another against
+	if(cachedwav)
+	{
+		float allSamples = cachedwav->bufferSize*8 /
+	    				   cachedwav->sampleWidth/cachedwav->channelCount;
+		float fHaveSamples = allSamples - flpos;
+
+		speed = cachedwav->samplingRate / (float)samplingRate * _speed;
+
+		fHaveSamples /= speed;
+		fHaveSamples -= 2.0;	// one due to interpolation and another against
 								// rounding errors
-
-	unsigned long haveSamples;
-
-	if(fHaveSamples < 0)
-	{
-		haveSamples = 0;
-	}
-	else
-	{
-		haveSamples = (int)fHaveSamples;
-		if(haveSamples > samples) haveSamples = samples;
+		if(fHaveSamples > 0)
+		{
+			haveSamples = (int)fHaveSamples;
+			if(haveSamples > samples) haveSamples = samples;
+		}
 	}
 
-	unsigned long i;
-
-	if(haveSamples)
+	if(haveSamples)				// something left to play?
 	{
 		if(cachedwav->channelCount == 1)
 		{
@@ -261,10 +298,13 @@ void Synth_PLAY_WAV_impl::calculateBlock(unsigned long samples)
 		flpos += (float)haveSamples * speed;
 	}
 
-	_finished = false;
-	for(i=haveSamples;i<samples;i++)
+	if(haveSamples != samples)
 	{
-		left[i] = right[i] = 0.0;
+		unsigned long i;
+
+		for(i=haveSamples;i<samples;i++)
+			left[i] = right[i] = 0.0;
+
 		_finished = true;
 	}
 }
