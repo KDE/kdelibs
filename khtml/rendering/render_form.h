@@ -202,7 +202,7 @@ public:
     virtual void reset();
 
 public slots:	
-    void slotClicked();
+    virtual void slotClicked();
 
 protected:
     bool m_clicked;
