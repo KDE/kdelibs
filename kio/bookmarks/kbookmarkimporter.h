@@ -43,7 +43,7 @@ public:
     virtual void parse() = 0;
     virtual QString findDefaultLocation(bool forSaving = false) const = 0;
 
-    void setupSignalForwards(QObject *src, QObject *src);
+    void setupSignalForwards(QObject *src, QObject *dst);
     static KBookmarkImporterBase *factory(const QString &type);
 
 signals:
