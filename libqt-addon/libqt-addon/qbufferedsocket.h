@@ -1,7 +1,6 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
  *
- *  $Id$
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
  *  a copy of this software and associated documentation files (the
@@ -42,8 +41,7 @@ class QBufferedSocketPrivate;
  * such as those used in most Internet connections. This class is
  * also the one that resembles the most to the old @ref QSocket implementation.
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
 class QBufferedSocket: public QStreamSocket
 {
@@ -148,7 +146,7 @@ public:
    * never grow bigger. However, this class also provides grow and shrink
    * on demand capabilities.
    *
-   * @author Thiago Macieira <thiagom@mail.com>
+   * @author Thiago Macieira <thiago.macieira@kdemail.net>
    */
   class SizedBuffer: public Buffer
   {

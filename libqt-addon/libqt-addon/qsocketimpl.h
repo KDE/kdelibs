@@ -1,7 +1,6 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
  *
- *  $Id$
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
  *  a copy of this software and associated documentation files (the
@@ -46,8 +45,7 @@ class QSocketImplPrivate;
  * Descended classes from this one provide some other kinds of socket functionality,
  * like proxying or specific socket types.
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
 class QSocketImpl: public QActiveSocketBase, public QPassiveSocketBase
 {

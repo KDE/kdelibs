@@ -1,7 +1,6 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
  *
- *  $Id$
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
  *  a copy of this software and associated documentation files (the
@@ -59,7 +58,6 @@ class QUnixSocketAddress;
  * bytes. Also note that there is no sharing of data.
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
- * @version $Id$
  */
 class QIpAddress
 {
@@ -392,8 +390,7 @@ class QSocketAddressData;
  *
  * This class holds one generic socket address.
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
 class QSocketAddress
 {
@@ -621,8 +618,7 @@ public:				// static
  *
  * This is an IPv4 or IPv6 address of the Internet.
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
 class QInetSocketAddress: public QSocketAddress
 {
@@ -811,8 +807,7 @@ private:
  * Note that this class uses QStrings to represent filenames, which means
  * the proper encoding is used to translate into valid filesystem file names.
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
 class QUnixSocketAddress: public QSocketAddress
 {

@@ -1,7 +1,6 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
  *
- *  $Id$
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
  *  a copy of this software and associated documentation files (the

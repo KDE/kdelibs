@@ -1,7 +1,6 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
  *
- *  $Id$
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
  *  a copy of this software and associated documentation files (the
@@ -45,8 +44,7 @@ class QClientSocketBasePrivate;
  * @note This class is abstract. If you're looking for a normal,
  *       client socket class, see @ref QStreamSocket and QBufferedSocket
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
 class QClientSocketBase : public QObject, public QActiveSocketBase
 {

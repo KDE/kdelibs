@@ -1,7 +1,6 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
  *
- *  $Id$
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
  *  a copy of this software and associated documentation files (the
@@ -45,8 +44,7 @@ class QMulticastSocketPrivate;
  * directly with the @ref QMulticastSocketImpl class returned by 
  * @ref multicastSocketDevice.
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
 class QMulticastSocket: public QDatagramSocket
 {

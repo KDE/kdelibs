@@ -1,7 +1,6 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
  *
- *  $Id$
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
  *  a copy of this software and associated documentation files (the
@@ -60,8 +59,7 @@ class QSocketBasePrivate;
  *
  * @note This class is abstract.
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
 class QSocketBase
 {
@@ -354,8 +352,7 @@ private:
  * This class provides the standard interfaces for active sockets, i.e.,
  * sockets that are used to connect to external addresses.
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
 class QActiveSocketBase: public QIODevice, virtual public QSocketBase
 {
@@ -586,8 +583,7 @@ protected:
  * This socket provides the initial functionality for passive sockets,
  * i.e., sockets that accept incoming connections.
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
 class QPassiveSocketBase: virtual public QSocketBase
 {

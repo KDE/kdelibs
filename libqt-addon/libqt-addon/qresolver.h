@@ -1,7 +1,6 @@
 /*  -*- mode: C++; coding: utf-8; -*-
- *  Copyright (C) 2003 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
  *
- *  $Id$
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
  *  a copy of this software and associated documentation files (the
@@ -62,8 +61,7 @@ class QResolverEntryPrivate;
  * QResolverEntry objects implicitly share data, so copying them
  * is quite efficient.
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
 class QResolverEntry
 {
@@ -184,8 +182,7 @@ class QResolverResultsPrivate;
  * Note Resolver also uses QResolverResults objects to indicate failure, so
  * you should test for failure.
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
 class QResolverResults: public QValueList<QResolverEntry>
 {
@@ -284,8 +281,7 @@ namespace Internal { class QResolverManager; }
  * @li protocol: implementation-defined. Generally, TCP
  * @li host and service: unset
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
 class QResolver: public QObject
 {

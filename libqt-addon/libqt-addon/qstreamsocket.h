@@ -1,7 +1,6 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
  *
- *  $Id$
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
  *  a copy of this software and associated documentation files (the
@@ -46,9 +45,8 @@ class QStreamSocketPrivate;
  *
  * @todo Add timeout handling and add synchronous connection
  *
- * @author Thiago Macieira <thiagom@mail.com>
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  * @version 0.9
- * $Id$
  */
 class QStreamSocket: public QClientSocketBase
 {

@@ -1,7 +1,6 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiagom@mail.com>
+ *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
  *
- *  $Id$
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
  *  a copy of this software and associated documentation files (the
@@ -47,8 +46,7 @@ class QResolverEntry;
  * This is a lightweight class. Data is stored in a @ref QByteArray, which means
  * that it is explicitly shared.
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
 class QDatagramPacket
 {
@@ -180,8 +178,7 @@ class QDatagramSocketPrivate;
  * This class in specific provides easy access to the system's connectionless
  * SOCK_DGRAM sockets. 
  *
- * @author Thiago Macieira <thiagom@mail.com>
- * @version $Id$
+ * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
 class QDatagramSocket: public QClientSocketBase
 {
