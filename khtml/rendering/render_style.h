@@ -708,7 +708,7 @@ public:
     EUnicodeBidi unicodeBidi() const { return noninherited_flags._unicodeBidi; }
 
     EClear clear() const { return  noninherited_flags._clear; }
-    ETableLayout inheritedLayout() const { return  noninherited_flags._table_layout; }
+    ETableLayout tableLayout() const { return  noninherited_flags._table_layout; }
 
     short colSpan() const { return visual->colspan; }
 
