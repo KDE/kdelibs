@@ -242,7 +242,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
       QStringList defaults = QStringList::split( ",", defaultValue );
       QStringList::ConstIterator it;
       for( it = defaults.begin(); it != defaults.end(); ++it ) {
-        cpp << "  default" << name << ".append( \"" << *it << "\" );"
+        cpp << "  default" << name << ".append( QString::fromUtf8( \"" << *it << "\" ) );"
             << endl;
       }
       defaultValue = "default" + name;
@@ -676,7 +676,7 @@ QString paramString(const QString &group, const QStringList &parameters)
   if (arguments.isEmpty())
     return "\""+group+"\"";
 
-  return "QString(\""+paramString+"\")"+arguments;
+  return "QString::fromLatin1( \""+paramString+"\" )"+arguments;
 }
 
 QString userTextsFunctions( CfgEntry *e )
@@ -968,7 +968,7 @@ int main( int argc, char **argv )
         h << cppType(e->paramType()) << " i, ";
       h << param( t ) << " v )" << endl;
       h << "    {" << endl;
-      h << "      if (!" << This << "isImmutable( \"" << n << "\" ))" << endl;
+      h << "      if (!" << This << "isImmutable( QString::fromLatin1( \"" << n << "\" ) ))" << endl;
       h << "        " << This << varName(n);
       if (!e->param().isEmpty())
         h << "[i]";
@@ -1134,8 +1134,9 @@ int main( int argc, char **argv )
   cpp << " )" << endl;
 
   cpp << "  : " << inherits << "(";
-  if ( !cfgFileName.isEmpty() ) cpp << " \"" << cfgFileName << "\" ";
+  if ( !cfgFileName.isEmpty() ) cpp << " QString::fromLatin1( \"" << cfgFileName << "\" ";
   if ( cfgFileNameArg ) cpp << " config ";
+  if ( !cfgFileName.isEmpty() ) cpp << ") ";
   cpp << ")" << endl;
 
   // Store parameters
@@ -1157,7 +1158,7 @@ int main( int argc, char **argv )
     if ( e->group() != group ) {
       if ( !group.isEmpty() ) cpp << endl;
       group = e->group();
-      cpp << "  setCurrentGroup( " << paramString(group, parameters) << " );" << endl << endl;
+      cpp << "  setCurrentGroup( QString::fromLatin1( " << paramString(group, parameters) << " ) );" << endl << endl;
     }
 
     QString key = paramString(e->key(), parameters);
@@ -1202,7 +1203,7 @@ int main( int argc, char **argv )
       cpp << "  addItem( " << itemVar(e);
       QString quotedName = e->name();
       addQuotes( quotedName );
-      if ( quotedName != key ) cpp << ", \"" << e->name() << "\"";
+      if ( quotedName != key ) cpp << ", QString::fromLatin1( \"" << e->name() << "\" )";
       cpp << " );" << endl;
     }
     else
