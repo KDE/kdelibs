@@ -229,6 +229,8 @@ KToolBar::~KToolBar()
 void KToolBar::init( bool readConfig, bool honorStyle )
 {
     d = new KToolBarPrivate;
+    // Get the default iconSize sense m_iconSize == 0 which isn't the default
+    d->IconSizeDefault = iconSize();
     setFullSize( TRUE );
     d->m_honorStyle = honorStyle;
     context = 0;
@@ -1601,6 +1603,12 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
         bool newLine = config->readBoolEntry(attrNewLine, d->NewLineDefault);
         bool hidden = config->readBoolEntry(attrHidden, d->HiddenDefault);
 
+        // Store the default values.
+        d->IndexDefault = index;
+        d->OffsetDefault = offset;
+        d->NewLineDefault = newLine;
+        d->HiddenDefault = hidden;
+
         Dock pos(DockTop);
         if ( position == "Top" )
             pos = DockTop;
@@ -1632,10 +1640,15 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
             // showIt = true, so we loose our visibility status
             bool doHide = isHidden();
 
-			mw->moveDockWindow( this, pos, newLine, index, offset );
+            mw->moveDockWindow( this, pos, newLine, index, offset );
             //kdDebug(220) << "KToolBar::applySettings " << name() << " moveDockWindow with pos=" << pos << " newLine=" << newLine << " idx=" << index << " offs=" << offset << endl;
             if ( doHide )
                 hide();
+            // Get the possably new default index value
+            QString tempDock;
+            QString tempIconText;
+            getAttributes( tempDock, tempIconText, d->IndexDefault );
+
         }
         if (isVisible ())
             updateGeometry();
