@@ -82,7 +82,7 @@ private:
 
 KClipboard * KClipboard::s_self = 0L;
 bool KClipboard::s_sync = false;
-bool KClipboard::s_implicitSelection = true;
+bool KClipboard::s_implicitSelection = false;
 bool KClipboard::s_blocked = false;
 
 KClipboard * KClipboard::self()
