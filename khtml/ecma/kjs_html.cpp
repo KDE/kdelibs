@@ -118,16 +118,18 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
     result = Undefined();
     break;
 */
-    case Write:
-    s = v.toString();
-    doc.write(s.value().string());
+  case Write:
+  case WriteLn: {                      
+    // DOM only specifies single string argument, but NS & IE allow multiple
+    UString str = v.toString().value();
+    for (int i = 1; i < args.size(); i++)
+      str += args[i].toString().value();
+    if (id == WriteLn)
+      str += "\n";
+    doc.write(str.string());
     result = Undefined();
     break;
-  case WriteLn:
-    s = v.toString();
-    doc.write((s.value() + "\n").string());
-    result = Undefined();
-    break;
+  }
   case GetElementById:
     s = v.toString();
     result = getDOMNode(doc.getElementById(s.value().string()));
