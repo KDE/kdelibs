@@ -11,6 +11,8 @@
 
 class QPixmap;
 
+#warning KPixmapCache is deprecated. Use one of the KMimeType::pixmap methods instead.
+
 class KPixmapCache
 {
 public:
