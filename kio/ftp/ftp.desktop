@@ -1,6 +1,5 @@
-# KDE Config File
 [Protocol]
-lib=kio_ftp.la
+exec=kio_ftp
 protocol=ftp
 input=none
 output=filesystem
