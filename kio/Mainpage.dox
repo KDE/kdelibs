@@ -1,5 +1,5 @@
 /**
- * @libdoc A network-enabled file management system in a library.
+ * \mainpage A network-enabled file management system in a library
  *
  * This library implements almost all the file management functions you
  * will ever need. In fact, the KDE file manager, Konqueror also uses
@@ -11,28 +11,28 @@
  *
  * This library also implements the System Configuration Cache (KSycoca).
  *
- * @ref KMimeType :
+ * @ref KMimeType:
  *   The notion of a file type, already existing in KDE-1.x
  *
- * @ref KService :
+ * @ref KService:
  *   To a mimetype are bound one or more applications, now called services.
  *   Services can be applications, but also libraries, dynamically opened.
  *
- * @ref KServiceType :
+ * @ref KServiceType:
  *   A service type allows the same mechanism to be extended to components.
  *   For instance : the question "what are the koffice plugins" is solved by
  *   a service type called KOfficePlugin, and by every plugin providing
  *   a .desktop file stating that it is a service that implements the servicetype
  *   KOfficePlugin.
  *
- * @ref KServiceTypeProfile :
+ * @ref KServiceTypeProfile:
  *   Stores the user's preferences for services bound to mimetypes/servicetypes.
  *
- * @ref KTrader :
+ * @ref KTrader:
  *   Use it to query for which services implement a given mimetype/servicetype.
  *   Has its own language, in order to allow complex queries.
  *
-
+ *
  * \section KDE Filedialog widget and associated classes.
  *
  * This library also provides the KDE file selector widget,
@@ -75,45 +75,45 @@
  * with.
  *
  *
- * @ref KFileDialog :
+ * @ref KFileDialog:
  *   The class providing the file selector dialog. It combines a KDirOperator,
  *   KURLBar and several other widgets.
  *
- * @ref KDirOperator :
+ * @ref KDirOperator:
  *   The class encapsulating different KFileViews, offering file browsing and
  *   file selection. Asynchronous, network transparent reading of directories
  *   is performed via the @ref KIO library.
  *
- * @ref KURLRequester :
+ * @ref KURLRequester:
  *   A widget to be used for asking for a filename/path/URL. It consists of a
  *   @ref KLineEdit (or @ref KComboBox) and a button. Activating the button
  *   will open a @ref KFileDialog. Typing in the lineedit is aided with
  *   filename completion.
  *
- * @ref KURLRequesterDlg  :
+ * @ref KURLRequesterDlg:
  *   A dialog to ask for a filename/path/URL, using KURLRequester.
  *
- * @ref KFileView  :
+ * @ref KFileView:
  *   The base class for all views to be used with KDirOperator.
  *
- * @ref KFileIconView :
+ * @ref KFileIconView:
  *   The KFileView based on KIconView.
  *
- * @ref KFileDetailView :
+ * @ref KFileDetailView:
  *   The KFileView based on KListView.
  *
- * @ref KFilePreview :
+ * @ref KFilePreview:
  *   The KFileView, combining a widget showing preview for a selected file
  *   and another KFileView for browsing.
  *
- * @ref KURLBar :
+ * @ref KURLBar:
  *   A widget offering a number of clickable entries which represent a URL,
  *   aligned horizontally or vertically. The entries are customizable by the
  *   user both on a per application basis or for all applications (URLs, their
  *   icon and the description can be added, removed or edited by the user).
  *   This is the widget used as "sidebar" in the @ref KFileDialog.
  *
- * @ref KFileMetaInfoWidget :
+ * @ref KFileMetaInfoWidget:
  *   A widget that allows viewing and editing of meta data of a file, utilizing
  *   @ref KFileMetaInfo.
  *
