@@ -683,7 +683,7 @@ void GUSOut::patchesLoadingOrder(int *patchesused,int *patchesordered)
 }
 
 //char *GUSOut::GUS_patches_directory="/mnt/dosc/gravis/patches";
-const char *GUSOut::GUS_patches_directory="/dos/ultrasnd/midi";
+const char *GUSOut::GUS_patches_directory="/usr/share/ultrasnd";
 
 int GUSOut::delete_GUS_patches_directory = 0;
 /* No, this doesn't delete any file :-) it's just for internal use */
