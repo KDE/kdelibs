@@ -103,11 +103,12 @@ protected:
   /**
    * Ensure path exists, create otherwise.
    * This handles tar files missing directory entries, like mico-2.3.0.tar.gz :)
-   *  @internal
+   * @internal
    */
   KTarDirectory * findOrCreate( const QString & path );
 
-  /** @internal
+  /** 
+   * @internal
    * Fills @p buffer for writing a file as required by the tar format
    * Has to be called LAST, since it does the checksum
    * (normally, only the name has to be filled in before)

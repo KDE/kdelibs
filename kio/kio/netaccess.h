@@ -124,7 +124,7 @@ public:
 
     /**
      * Alternative method for copying over the network.
-     * Overwrite is false, so this will fail if @target exists.
+     * Overwrite is false, so this will fail if @p target exists.
      *
      * This one takes two URLs and is a direct equivalent
      * of @ref KIO::file_copy (not KIO::copy!).

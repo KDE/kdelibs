@@ -50,6 +50,14 @@ k_dcop:
    */
   virtual ASYNC FilesRemoved( const KURL::List & fileList ) = 0;
 
+  /**
+   * Notify that files have been changed.
+   * At the moment, this is only used for new icon, but it could be
+   * used for size etc. as well.
+   * Note: this is ASYNC so that it can be used with a broadcast
+   */
+  virtual ASYNC FilesChanged( const KURL::List & fileList ) = 0;
+
 private:
   // @internal
   static int s_serial;

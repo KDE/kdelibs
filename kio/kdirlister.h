@@ -142,14 +142,14 @@ public:
    * @param _url the item URL
    * @returns the pointer to the KFileItem
    **/
-  KFileItem* find( const KURL& _url );
+  KFileItem* find( const KURL& _url ) const;
 
   /**
    * Find an item by its name
    * @param name the item name
    * @returns the pointer to the KFileItem
    **/
-  KFileItem* findByName( const QString& name );
+  KFileItem* findByName( const QString& name ) const;
 
   /**
    * @returns the list of file items. The list may be incomplete if
@@ -160,9 +160,9 @@ public:
   /**
    * @return the file item for url() itself (".")
    */
-  KFileItem * rootItem() { return m_rootFileItem; }
+  KFileItem * rootItem() const { return m_rootFileItem; }
 
-  KIO::ListJob * job() { return m_job; }
+  KIO::ListJob * job() const { return m_job; }
 
   /**
    * Call this with @p dirsOnly = true to list only directories
@@ -172,7 +172,7 @@ public:
   /**
    * @return true if setDirOnlyMode(true) was called
    */
-  bool dirOnlyMode() { return m_bDirOnlyMode; }
+  bool dirOnlyMode() const { return m_bDirOnlyMode; }
 
   /**
    * Set a name filter to only list items matching this name, e.g. "*.cpp".
@@ -186,7 +186,7 @@ public:
   void setNameFilter(const QString&);
 
   /**
-   * @returns true if @param name matches a filter in the list,
+   * @returns true if @p name matches a filter in the list,
    * otherwise fale.
    * @see #setNameFilter
    */
@@ -208,6 +208,14 @@ public:
    * Reimplemented from KDirNotify.
    */
   virtual void FilesRemoved( const KURL::List & fileList );
+
+  /**
+   * Notify that files have been changed.
+   * At the moment, this is only used for new icon, but it could be
+   * used for size etc. as well.
+   * Note: this is ASYNC so that it can be used with a broadcast
+   */
+  virtual void FilesChanged( const KURL::List & fileList );
 
   /**
    * Returns true if no io operation is currently in progress.
@@ -270,7 +278,7 @@ protected:
    * @param url the URL of the DIRECTORY where this item is.
    */
   virtual KFileItem * createFileItem( const KIO::UDSEntry&, const KURL&url,
-				      bool determineMimeTypeOnDemand );
+                                      bool determineMimeTypeOnDemand );
 
   /**
    * Called for every item after @ref #createFileItem().
@@ -284,7 +292,7 @@ protected:
    * @see #matchesFilter
    * @see #setNameFilter
    */
-  virtual bool matchesFilter( const KFileItem * );
+  virtual bool matchesFilter( const KFileItem * ) const;
 
   /**
    * Unregister dirs from kdirwatch and clear list of dirs
@@ -300,7 +308,7 @@ protected:
    * Checks if a url is malformed or not and displays an error message if it
    * is. Returns true if it is valid, otherwise false.
    */
-  bool validURL( const KURL& );
+  bool validURL( const KURL& ) const;
 
   /**
    * The url that we used to list (can be different in case of redirect)

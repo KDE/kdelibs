@@ -47,7 +47,8 @@ public:
    * @param caption the caption for the dialog box
    * @param src the url to the file/dir we're trying to copy, as it's part of the text message
    * @param dest the path to destination file/dir, i.e. the one that already exists
-   * @param mode parameters for the dialog (which buttons to show...), @see RenameDlg_Mode
+   * @param mode parameters for the dialog (which buttons to show...), 
+   * @see RenameDlg_Mode
    *
    * The following parameters bring optionnal information about @p src and @p dest
    * @param sizeSrc size of source file
@@ -115,7 +116,8 @@ protected slots:
    * @param caption the caption for the dialog box
    * @param src the file/dir we're trying to copy, as it's part of the text message
    * @param dest the destination file/dir, i.e. the one that already exists
-   * @param mode parameters for the dialog (which buttons to show...), @see RenameDlg_Mode
+   * @param mode parameters for the dialog (which buttons to show...), 
+   * @see RenameDlg_Mode
    * @param newDest the new destination path, valid if R_RENAME was returned.
    *
    * The following parameters bring optionnal information about @p src and @p dest

@@ -52,7 +52,7 @@ protected:
     { return 0; }                                                    
 
   /**
-   * @internal 
+   * @internal
    */
   virtual KProtocolInfo *createEntry(int offset);
 

@@ -148,7 +148,9 @@ public:
     static KTrader* self();
 
 protected:
-    /** @internal */
+    /**
+     * @internal  
+     */
     KTrader();
 
 private:

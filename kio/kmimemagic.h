@@ -150,7 +150,7 @@ public:
    * is examined. The integer parameter supplies the length of
    * the buffer.
    *
-   * @return A pointer to the result object. Do @rm not delete the
+   * @return A pointer to the result object. Do @em not delete the
    *         result object. After another call to KMimeMagic
    *         the returned result object changes its value
    *         since it is reused by KMimeMagic.

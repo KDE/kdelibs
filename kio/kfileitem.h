@@ -161,7 +161,7 @@ public:
   /**
    * @returns the name of the file item (without a path)
    * Similar to @ref text(), but unencoded, i.e. the original name
-   * If @param lowerCase is true, the name will be returned in lower case,
+   * If @p lowerCase is true, the name will be returned in lower case,
    * which is useful to speed up sorting by name, case insensitively.
    */
   const QString& name( bool lowerCase = false ) const {
