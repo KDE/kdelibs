@@ -143,7 +143,7 @@ void HTMLLIElementImpl::attach()
 
     HTMLElementImpl::attach();
 
-    if ( m_render->style()->display() == LIST_ITEM ) {
+    if ( m_render && m_render->style()->display() == LIST_ITEM ) {
 	// If we are first, and the OL has a start attr.
 	if (parentNode() && parentNode()->id() == ID_OL) {
 	    HTMLOListElementImpl *ol = static_cast<HTMLOListElementImpl *>(parentNode());
