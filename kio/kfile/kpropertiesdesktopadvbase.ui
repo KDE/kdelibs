@@ -158,7 +158,7 @@
                     </item>
                     <item>
                         <property name="text">
-                            <string>Run till finished</string>
+                            <string>Run Till Finished</string>
                         </property>
                     </item>
                     <property name="name">

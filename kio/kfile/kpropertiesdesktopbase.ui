@@ -135,7 +135,7 @@
                 <cstring>textLabel7</cstring>
             </property>
             <property name="text">
-                <string>&amp;Supported File Types:</string>
+                <string>&amp;Supported file types:</string>
             </property>
             <property name="buddy" stdset="0">
                 <cstring>filetypeList</cstring>
@@ -242,7 +242,7 @@
                         <cstring>advancedButton</cstring>
                     </property>
                     <property name="text">
-                        <string>Ad&amp;vanced options...</string>
+                        <string>Ad&amp;vanced Options...</string>
                     </property>
                     <property name="accel">
                         <string>Alt+V</string>
