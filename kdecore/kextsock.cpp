@@ -1914,15 +1914,15 @@ void KExtendedSocket::socketActivityRead()
 	      else if (len == 0)
 		{
 		  // EOF condition here
-		  emit closed(involuntary |
-			      (readBufferSize() ? availRead : 0) |
-			      (writeBufferSize() ? dirtyWrite : 0));
 		  ::close(sockfd);
 		  sockfd = -1;	// we're closed
 		  d->qsnIn->deleteLater();
 		  delete d->qsnOut;
 		  d->qsnIn = d->qsnOut = NULL;
 		  d->status = done;
+		  emit closed(involuntary |
+			      (readBufferSize() ? availRead : 0) |
+			      (writeBufferSize() ? dirtyWrite : 0));
 		  return;
 		}
 	      else
@@ -1954,10 +1954,10 @@ void KExtendedSocket::socketActivityRead()
 	{
 	  // yes, it's an EOF condition
 	  d->qsnIn->setEnabled(false);
-	  emit closed(involuntary);
 	  ::close(sockfd);
 	  sockfd = -1;
 	  d->status = done;
+	  emit closed(involuntary);
 	  return;
 	}
     }
@@ -1993,13 +1993,13 @@ void KExtendedSocket::socketActivityWrite()
     {
       // done sending the missing data!
       d->status = done;
-      emit closed(delayed | (readBufferSize() ? availRead : 0));
 
       delete d->qsnOut;
       ::close(sockfd);
 
       d->qsnOut = NULL;
       sockfd = -1;
+      emit closed(delayed | (readBufferSize() ? availRead : 0));
     }
 }
 
