@@ -52,6 +52,8 @@ public:
    ~KonfUpdate();
    QStringList findUpdateFiles(bool dirtyOnly);
 
+   QTextStream &log();
+
    bool checkFile(const QString &filename);
    void checkGotFile(const QString &_file, const QString &id);
 
@@ -81,6 +83,7 @@ protected:
 
    QString oldFile;
    QString newFile;
+   QString newFileName;
    KConfig *oldConfig1; // Config to read keys from.
    KConfig *oldConfig2; // Config to delete keys from.
    KConfig *newConfig;
@@ -94,9 +97,14 @@ protected:
    bool m_bOverwrite;
    bool m_bUseConfigInfo;
    QString m_arguments;
+   QTextStream *m_textStream;
+   QFile *m_file;
+   QString m_line;
+   int m_lineCount;
 };
 
 KonfUpdate::KonfUpdate()
+ : m_textStream(0), m_file(0)
 {
    oldConfig1 = 0;
    oldConfig2 = 0;
@@ -115,6 +123,7 @@ KonfUpdate::KonfUpdate()
       if (file.isEmpty())
       {
          qWarning("File '%s' not found.", args->getOption("check").data());
+         log() << "File '" << QFile::decodeName(args->getOption("check")) << "' passed on command line not found" << endl;
          return;
       }
       updateFiles.append(file);
@@ -164,6 +173,31 @@ KonfUpdate::KonfUpdate()
 KonfUpdate::~KonfUpdate()
 {
    delete config;
+   delete m_file;
+   delete m_textStream;
+}
+
+QTextStream &
+KonfUpdate::log()
+{
+   if (!m_textStream)
+   {
+      QString file = locateLocal("data", "kconf_update/update.log");
+      m_file = new QFile(file);
+      if (m_file->open(IO_WriteOnly | IO_Append))
+      {
+        m_textStream = new QTextStream(m_file);
+      }
+      else
+      {
+        // Error
+        m_textStream = new QTextStream(stderr, IO_WriteOnly);
+      }
+   }
+   
+   (*m_textStream) << QDateTime::currentDateTime().toString( Qt::ISODate ) << " ";
+   
+   return *m_textStream;
 }
 
 QStringList KonfUpdate::findUpdateFiles(bool dirtyOnly)
@@ -238,7 +272,7 @@ void KonfUpdate::checkGotFile(const QString &_file, const QString &id)
       file = _file.mid(i+1).stripWhiteSpace();
    }
 
-   qDebug("File %s, id %s", file.latin1(), id.latin1());
+//   qDebug("File %s, id %s", file.latin1(), id.latin1());
 
    KSimpleConfig cfg(file);
    cfg.setGroup("$Version");
@@ -279,60 +313,64 @@ bool KonfUpdate::updateFile(const QString &filename)
    if (!file.open(IO_ReadOnly))
       return false;
 
+   log() << "Checking update-file '" << filename << "' for new updates" << endl; 
+
    QTextStream ts(&file);
    ts.setEncoding(QTextStream::Latin1);
-   int lineCount = 0;
+   m_lineCount = 0;
    resetOptions();
    while(!ts.atEnd())
    {
-      QString line = ts.readLine().stripWhiteSpace();
-      lineCount++;
-      if (line.isEmpty() || (line[0] == '#'))
+      m_line = ts.readLine().stripWhiteSpace();
+      m_lineCount++;
+      if (m_line.isEmpty() || (m_line[0] == '#'))
          continue;
-      if (line.startsWith("Id="))
-         gotId(line.mid(3));
+      if (m_line.startsWith("Id="))
+         gotId(m_line.mid(3));
       else if (skip)
          continue;
-      else if (line.startsWith("Options="))
-         gotOptions(line.mid(8));
-      else if (line.startsWith("File="))
-         gotFile(line.mid(5));
-      else if (line.startsWith("Group="))
-         gotGroup(line.mid(6));
-      else if (line.startsWith("RemoveGroup="))
+      else if (m_line.startsWith("Options="))
+         gotOptions(m_line.mid(8));
+      else if (m_line.startsWith("File="))
+         gotFile(m_line.mid(5));
+      else if (m_line.startsWith("Group="))
+         gotGroup(m_line.mid(6));
+      else if (m_line.startsWith("RemoveGroup="))
       {
-         gotRemoveGroup(line.mid(12));
+         gotRemoveGroup(m_line.mid(12));
          resetOptions();
       }
-      else if (line.startsWith("Script="))
+      else if (m_line.startsWith("Script="))
       {
-         gotScript(line.mid(7));
+         gotScript(m_line.mid(7));
          resetOptions();
       }
-      else if (line.startsWith("ScriptArguments="))
-         gotScriptArguments(line.mid(16));
-      else if (line.startsWith("Key="))
+      else if (m_line.startsWith("ScriptArguments="))
+         gotScriptArguments(m_line.mid(16));
+      else if (m_line.startsWith("Key="))
       {
-         gotKey(line.mid(4));
+         gotKey(m_line.mid(4));
          resetOptions();
       }
-      else if (line.startsWith("RemoveKey="))
+      else if (m_line.startsWith("RemoveKey="))
       {
-         gotRemoveKey(line.mid(10));
+         gotRemoveKey(m_line.mid(10));
          resetOptions();
       }
-      else if (line == "AllKeys")
+      else if (m_line == "AllKeys")
       {
          gotAllKeys();
          resetOptions();
       }
-      else if (line == "AllGroups")
+      else if (m_line == "AllGroups")
       {
          gotAllGroups();
          resetOptions();
       }
       else
-         qWarning("%s:%d parse error '%s'", filename.latin1(), lineCount, line.latin1());
+      {
+         log() << currentFilename << ": parse error in line " << m_lineCount << " : '" << m_line << "'" << endl;
+      }
    }
    // Flush.
    gotId(QString::null);
@@ -350,6 +388,18 @@ bool KonfUpdate::updateFile(const QString &filename)
 
 void KonfUpdate::gotId(const QString &_id)
 {
+   if (!id.isEmpty() && !skip)
+   {
+       config->setGroup(currentFilename);
+       QStringList ids = config->readListEntry("done");
+       if (!ids.contains(id))
+       {
+          ids.append(id);
+          config->writeEntry("done", ids);
+          config->sync();
+       }
+   }
+
    // Flush pending changes
    gotFile(QString::null);
 
@@ -357,13 +407,7 @@ void KonfUpdate::gotId(const QString &_id)
    QStringList ids = config->readListEntry("done");
    if (!_id.isEmpty())
    {
-       if (!ids.contains(_id))
-       {
-          ids.append(_id);
-          config->writeEntry("done", ids);
-          config->sync();
-       }
-       else
+       if (ids.contains(_id))
        {
           //qDebug("Id '%s' was already in done-list", _id.latin1());
           if (!m_bUseConfigInfo)
@@ -374,6 +418,10 @@ void KonfUpdate::gotId(const QString &_id)
        }
        skip = false;
        id = _id;
+       if (m_bUseConfigInfo)
+          log() << currentFilename << ": Checking update '" << _id << "'" << endl;
+       else
+          log() << currentFilename << ": Found new update '" << _id << "'" << endl;
    }
 }
 
@@ -387,6 +435,15 @@ void KonfUpdate::gotFile(const QString &_file)
       // Close old file.
       delete oldConfig1;
       oldConfig1 = 0;
+
+      oldConfig2->setGroup("$Version");
+      QStringList ids = oldConfig2->readListEntry("update_info");
+      QString cfg_id = currentFilename + ":" + id;
+      if (!ids.contains(cfg_id) && !skip)
+      {
+         ids.append(cfg_id);
+         oldConfig2->writeEntry("update_info", ids);
+      }
       oldConfig2->sync();
       delete oldConfig2;
       oldConfig2 = 0;
@@ -407,6 +464,14 @@ void KonfUpdate::gotFile(const QString &_file)
    if (!newFile.isEmpty())
    {
       // Close new file.
+      newConfig->setGroup("$Version");
+      QStringList ids = newConfig->readListEntry("update_info");
+      QString cfg_id = currentFilename + ":" + id;
+      if (!ids.contains(cfg_id) && !skip)
+      {
+         ids.append(cfg_id);
+         newConfig->writeEntry("update_info", ids);
+      }
       newConfig->sync();
       delete newConfig;
       newConfig = 0;
@@ -430,33 +495,42 @@ void KonfUpdate::gotFile(const QString &_file)
    
    if (!oldFile.isEmpty())
    {
-      oldConfig1 = new KConfig(oldFile, true, false);
       oldConfig2 = new KConfig(oldFile, false, false);
+      QString cfg_id = currentFilename + ":" + id;
+      oldConfig2->setGroup("$Version");
+      QStringList ids = oldConfig2->readListEntry("update_info");
+      if (ids.contains(cfg_id))
+      {
+         skip = true;
+         newFile = QString::null;
+         log() << currentFilename << ": Skipping update '" << id << "'" << endl;
+      }
+
       if (!newFile.isEmpty())
       {
          newConfig = new KConfig(newFile, false, false);
+         newConfig->setGroup("$Version");
+         ids = newConfig->readListEntry("update_info");
+         if (ids.contains(cfg_id))
+         {
+            skip = true;
+            log() << currentFilename << ": Skipping update '" << id << "'" << endl;
+         }
       }
       else
       {
          newConfig = oldConfig2;
       }
-      newConfig->setGroup("$Version");
-      QStringList ids = newConfig->readListEntry("update_info");
-      QString cfg_id = currentFilename + ":" + id;
-      if (!ids.contains(cfg_id))
-      {
-         ids.append(cfg_id);
-         newConfig->writeEntry("update_info", ids);
-      }
-      else
-      {
-         skip = true;
-      }
+
+      oldConfig1 = new KConfig(oldFile, true, false);
    }
    else
    {
       newFile = QString::null;
    }
+   newFileName = newFile;
+   if (newFileName.isEmpty())
+      newFileName = oldFile;
 }
 
 void KonfUpdate::gotGroup(const QString &_group)
@@ -480,7 +554,7 @@ void KonfUpdate::gotRemoveGroup(const QString &_group)
 
    if (!oldConfig1)
    {
-      qWarning("RemoveGroup without file specification.");
+      log() << currentFilename << ": !! RemoveGroup without previous File specification in line " << m_lineCount << " : '" << m_line << "'" << endl;
       return;
    }
 
@@ -488,7 +562,7 @@ void KonfUpdate::gotRemoveGroup(const QString &_group)
       return;
    // Delete group.
    oldConfig2->deleteGroup(oldGroup, true);
-   qDebug("Removing group %s (FORCED)", oldGroup.isEmpty() ? "<empty>" : oldGroup.latin1());
+   log() << currentFilename << ": RemoveGroup removes group " << oldFile << ":" << oldGroup << endl;
 }
 
 
@@ -508,12 +582,12 @@ void KonfUpdate::gotKey(const QString &_key)
 
    if (oldKey.isEmpty() || newKey.isEmpty())
    {
-      qWarning("Invalid key.");
+      log() << currentFilename << ": !! Key specifies invalid key in line " << m_lineCount << " : '" << m_line << "'" << endl;
       return;
    }
    if (!oldConfig1)
    {
-      qWarning("Key without file specification.");
+      log() << currentFilename << ": !! Key without previous File specification in line " << m_lineCount << " : '" << m_line << "'" << endl;
       return;
    }
    oldConfig1->setGroup(oldGroup);
@@ -523,10 +597,10 @@ void KonfUpdate::gotKey(const QString &_key)
    newConfig->setGroup(newGroup);
    if (!m_bOverwrite && newConfig->hasKey(newKey))
    {
-      qWarning("Skipping %s", newKey.latin1());
+      log() << currentFilename << ": Skipping " << newFileName << ":" << newGroup << ":" << newKey << ", already exists."<< endl;
       return;
    }
-   qDebug("Write %s -> %s", newKey.latin1(), value.isEmpty() ? "<empty>" : value.latin1());
+   log() << currentFilename << ": Updating " << newFileName << ":" << newGroup << ":" << newKey << " to '" << value << "'" << endl;
    newConfig->writeEntry(newKey, value);
 
    if (m_bCopy)
@@ -539,8 +613,9 @@ void KonfUpdate::gotKey(const QString &_key)
       return; // Don't delete!
    oldConfig2->setGroup(oldGroup);
    oldConfig2->deleteEntry(oldKey, false);
+   log() << currentFilename << ": Removing " << oldFile << ":" << oldGroup << ":" << oldKey << ", moved." << endl;
    if (oldConfig2->deleteGroup(oldGroup, false)) { // Delete group if empty.
-      qDebug("Removing group %s", oldGroup.isEmpty() ? "<empty>" : oldGroup.latin1());
+      log() << currentFilename << ": Removing empty group " << oldFile << ":" << oldGroup << endl;
    }
 }
 
@@ -550,26 +625,26 @@ void KonfUpdate::gotRemoveKey(const QString &_key)
 
    if (oldKey.isEmpty())
    {
-      qWarning("Invalid key.");
+      log() << currentFilename << ": !! RemoveKey specifies invalid key in line " << m_lineCount << " : '" << m_line << "'" << endl;
       return;
    }
 
    if (!oldConfig1)
    {
-      qWarning("RemoveKey without file specification.");
+      log() << currentFilename << ": !! Key without previous File specification in line " << m_lineCount << " : '" << m_line << "'" << endl;
       return;
    }
 
    oldConfig1->setGroup(oldGroup);
    if (!oldConfig1->hasKey(oldKey))
       return;
-   qDebug("Remove Key '%s'/'%s'", oldGroup.isEmpty() ? "empty" : oldGroup.latin1(), oldKey.latin1());
+   log() << currentFilename << ": RemoveKey removes " << oldFile << ":" << oldGroup << ":" << oldKey << endl;
 
    // Delete old entry
    oldConfig2->setGroup(oldGroup);
    oldConfig2->deleteEntry(oldKey, false);
    if (oldConfig2->deleteGroup(oldGroup, false)) { // Delete group if empty.
-      qDebug("Removing group %s", oldGroup.isEmpty() ? "<empty>" : oldGroup.latin1());
+      log() << currentFilename << ": Removing empty group " << oldFile << ":" << oldGroup << endl;
    }
 }
 
@@ -577,7 +652,7 @@ void KonfUpdate::gotAllKeys()
 {
    if (!oldConfig1)
    {
-      qWarning("AllKeys without file specification.");
+      log() << currentFilename << ": !! AllKeys without previous File specification in line " << m_lineCount << " : '" << m_line << "'" << endl;
       return;
    }
 
@@ -593,7 +668,7 @@ void KonfUpdate::gotAllGroups()
 {
    if (!oldConfig1)
    {
-      qWarning("AllGroups without file specification.");
+      log() << currentFilename << ": !! AllGroups without previous File specification in line " << m_lineCount << " : '" << m_line << "'" << endl;
       return;
    }
 
@@ -655,18 +730,19 @@ void KonfUpdate::gotScript(const QString &_script)
 
    if (!oldConfig1)
    {
-      qWarning("Script without file specification.");
+      log() << currentFilename << ": !! Script without previous File specification in line " << m_lineCount << " : '" << m_line << "'" << endl;
+      skip = true;
       return;
    }
 
    if (script.isEmpty())
    {
-      qWarning("No script specified.");
+      log() << currentFilename << ": !! Script fails to specifiy filename in line " << m_lineCount << " : '" << m_line << "'" << endl;
+      skip = true;
       return;
    } 
-   qDebug("Running script '%s'", script.latin1());
-   if( !m_arguments.isNull())
-      qDebug("With arguments: %s", m_arguments.latin1());
+
+
 
    QString path = locate("data","kconf_update/"+script);
    if (path.isEmpty())
@@ -676,15 +752,23 @@ void KonfUpdate::gotScript(const QString &_script)
 
       if (path.isEmpty())
       {
-        qWarning("Script '%s' not found.", script.latin1());
+        log() << currentFilename << ": !! Script '" << script << "' not found in line " << m_lineCount << " : '" << m_line << "'" << endl;
+        skip = true;
         return;
       }
    }
+
+   if( !m_arguments.isNull())
+      log() << currentFilename << ": Running script '" << script << "' with arguments '" << m_arguments << "'" << endl;
+   else
+      log() << currentFilename << ": Running script '" << script << "'" << endl;
 
    KTempFile tmp1;
    tmp1.setAutoDelete(true);
    KTempFile tmp2;
    tmp2.setAutoDelete(true);
+   KTempFile tmp3;
+   tmp3.setAutoDelete(true);
    KSimpleConfig cfg(tmp1.name());
 
    if (oldGroup.isEmpty())
@@ -703,7 +787,6 @@ void KonfUpdate::gotScript(const QString &_script)
        copyGroup(oldConfig1, oldGroup, &cfg, QString::null);
    }
    cfg.sync();
-   qDebug("Script: Writing entries to %s", tmp1.name().latin1());
 
    QString cmd;
    if (interpreter.isEmpty())
@@ -716,14 +799,27 @@ void KonfUpdate::gotScript(const QString &_script)
       cmd += ' ';
       cmd += m_arguments;
    }
-   int result = system(QFile::encodeName(QString("%1 < %2 > %3").arg(cmd).arg(tmp1.name()).arg(tmp2.name())));
+   int result = system(QFile::encodeName(QString("%1 < %2 > %3 2> %4").arg(cmd, tmp1.name(), tmp2.name(), tmp3.name())));
    if (result)
    {
-      qWarning("Script: Error running '%s'", cmd.latin1());
+      log() << currentFilename << ": !! An error occured while running '" << cmd << "'" << endl;
       return;
    }
 
-   qDebug("Script: Filtered entries written to %s", tmp2.name().latin1());
+   // Copy script stderr to log file
+   {
+     QFile output(tmp3.name());
+     if (output.open(IO_ReadOnly))
+     { 
+       QTextStream ts( &output );
+       ts.setEncoding(QTextStream::UnicodeUTF8);
+       while(!ts.atEnd())
+       {
+         QString line = ts.readLine();
+         log() << "[Script] " << line << endl;
+       }
+     }
+   }
 
    // Deleting old entries
    {
@@ -756,8 +852,9 @@ void KonfUpdate::gotScript(const QString &_script)
             }
             oldConfig2->setGroup(group);
             oldConfig2->deleteEntry(key, false);
+            log() << currentFilename << ": Script removes " << oldFile << ":" << group << ":" << key << endl;
             if (oldConfig2->deleteGroup(group, false)) { // Delete group if empty.
-               qDebug("Removing group %s", group.isEmpty() ? "<empty>" : group.latin1());
+               log() << currentFilename << ": Removing empty group " << oldFile << ":" << group << endl;
 	    }
          }
          else if (line.startsWith("# DELETEGROUP"))
@@ -772,7 +869,7 @@ void KonfUpdate::gotScript(const QString &_script)
                }
             }
             if (oldConfig2->deleteGroup(group, true)) { // Delete group
-               qDebug("Removing group %s (FORCED)", group.isEmpty() ? "<empty>" : group.latin1());
+               log() << currentFilename << ": Script removes group " << oldFile << ":" << group << endl;
 	    }
           }
        }
