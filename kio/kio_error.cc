@@ -22,7 +22,7 @@ QString kioErrorString( int _errid, const char *_errortext )
       ksprintf( &result, i18n( "Could not start process\n%s" ), _errortext );
       break;
     case  ERR_INTERNAL:
-      ksprintf( &result, i18n( "Internel Error\nPlease send a full bugreport to kde-bugs@kde.org\n\n%s" ), _errortext );
+      ksprintf( &result, i18n( "Internal Error\nPlease send a full bugreport to kde-bugs@kde.org\n\n%s" ), _errortext );
       break;
     case  ERR_MALFORMED_URL:
       ksprintf( &result, i18n( "Malformed URL\n%s" ), _errortext );
