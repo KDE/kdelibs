@@ -160,6 +160,12 @@ public:
 
   /**
    * Definition of an extra field in the UDS entries, returned by a listDir operation.
+   *
+   * The name is the name of the column, translated.
+   *
+   * The type name comes from QVariant::typeName()
+   * Currently supported types: "QString", "QDateTime" (ISO-8601 format)
+   *
    * @since 3.2
    */
   struct ExtraField {
@@ -168,7 +174,7 @@ public:
       : name(_name), type(_type) {
     }
     QString name;
-    QString type;
+    QString type; // KDE4: make it QVariant::Type
   };
   typedef QValueList<ExtraField > ExtraFieldList;
   /**
@@ -176,6 +182,8 @@ public:
    *
    * This corresponds to the "ExtraNames=" and "ExtraTypes=" fields in the protocol description file.
    * Those two lists should be separated with ',' in the protocol description file.
+   * See ExtraField for details about names and types
+   *
    * @since 3.2
    */
   static ExtraFieldList extraFields( const KURL& url );
