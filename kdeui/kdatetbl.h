@@ -52,7 +52,7 @@ public:
   QSize sizeHint() const;
   /** Return the result. 0 means no selection (reject()), 1..12 are the
       months. */
-  int getResult();
+  int getResult() const;
 protected:
   /** Set up the painter. */
   void setupPainter(QPainter *p);
@@ -188,7 +188,7 @@ public:
     void setFontSize(int size);
     /** Select and display this date. */
     bool setDate(const QDate&);
-    const QDate& getDate();
+    const QDate& getDate() const;
 
 
 protected:

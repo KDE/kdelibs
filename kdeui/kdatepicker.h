@@ -81,7 +81,7 @@ public:
   /**
    * Returns the selected date.
    **/
-  const QDate& getDate();
+  const QDate& getDate() const;
 
   /**
    * Enables or disables the widget.

@@ -368,7 +368,7 @@ KDateTable::setDate(const QDate& date_)
 }
 
 const QDate&
-KDateTable::getDate()
+KDateTable::getDate() const
 {
   return date;
 }
@@ -439,7 +439,7 @@ KDateInternalMonthPicker::sizeHint() const
 }
 
 int
-KDateInternalMonthPicker::getResult()
+KDateInternalMonthPicker::getResult() const
 {
   return result;
 }
