@@ -54,7 +54,9 @@ KPassivePopup::~KPassivePopup()
 
 void KPassivePopup::setView( QWidget *child )
 {
+    delete msgView;
     msgView = child;
+    
     delete layout;
     layout = new QVBoxLayout( this, KDialog::marginHint(), KDialog::spacingHint() );
     layout->addWidget( msgView );
