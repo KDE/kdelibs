@@ -204,7 +204,7 @@ KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 	setWhatsThis( item.whatsThis() );
 }
 
-#if KDE_VERSION < KDE_IS_VERSION( 4,0,0 )
+#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
 KAction::KAction( const QString& text, const KShortcut& cut,
                   QObject* parent, const char* name )
  : QObject( parent, name )
@@ -470,7 +470,7 @@ bool KAction::setShortcut( const KShortcut& cut )
     insertKAccel( kaccel );
 
   if( bChanged ) {
-#if KDE_VERSION < KDE_IS_VERSION( 4,0,0 )
+#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
     if ( d->m_kaccel )
       d->m_kaccel->setShortcut( name(), cut );
 #endif
@@ -534,7 +534,7 @@ void KAction::removeKAccel( KAccel* kaccel )
   }
 }
 
-#if KDE_VERSION < KDE_IS_VERSION( 4,0,0 )
+#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
 void KAction::setAccel( int keyQt )
 {
   setShortcut( KShortcut(keyQt) );
@@ -851,7 +851,7 @@ void KAction::setEnabled(bool enable)
   if ( enable == d->isEnabled() )
     return;
 
-#if KDE_VERSION < KDE_IS_VERSION( 4,0,0 )
+#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
   if (d->m_kaccel)
     d->m_kaccel->setEnabled(name(), enable);
 #endif
@@ -887,7 +887,7 @@ void KAction::setShortcutConfigurable( bool b )
 
 void KAction::setText( const QString& text )
 {
-#if KDE_VERSION < KDE_IS_VERSION( 4,0,0 )
+#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
   if (d->m_kaccel) {
     KAccelAction* pAction = d->m_kaccel->actions().actionPtr(name());
     if (pAction)
@@ -1116,7 +1116,7 @@ void KAction::slotDestroyed()
   kdDebug(129) << "KAction::slotDestroyed(): this = " << this << ", name = \"" << name() << "\", sender = " << sender() << endl;
   const QObject* o = sender();
 
-#if KDE_VERSION < KDE_IS_VERSION( 4,0,0 )
+#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
   if ( o == d->m_kaccel )
   {
     d->m_kaccel = 0;
@@ -3116,7 +3116,7 @@ KActionCollection::KActionCollection( QWidget *watch, QObject* parent, const cha
   setInstance( instance );
 }
 
-#if KDE_VERSION < KDE_IS_VERSION( 4,0,0 )
+#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
 KActionCollection::KActionCollection( QObject *parent, const char *name,
                                       KInstance *instance )
   : QObject( parent, name )
@@ -3626,7 +3626,7 @@ KAction *KActionCollection::findAction( QWidget *container, int id )
   return 0;
 }
 
-#if KDE_VERSION < KDE_IS_VERSION( 4,0,0 )
+#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
 KActionCollection KActionCollection::operator+(const KActionCollection &c ) const
 {
   kdWarning(129) << "KActionCollection::operator+(): function is severely deprecated." << endl;
