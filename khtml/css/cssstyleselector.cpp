@@ -194,9 +194,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     ::usedDynamicStates = StyleSelector::None;
     ::encodedurl = &encodedurl;
     ::pseudoState = PseudoUnknown;
-    CSSOrderedPropertyList *propsToApply = new CSSOrderedPropertyList;
-    propsToApply->setAutoDelete( true );
 
+    CSSOrderedPropertyList *propsToApply = new CSSOrderedPropertyList;
     CSSOrderedPropertyList *pseudoProps = new CSSOrderedPropertyList;
 
     // try to sort out most style rules as early as possible.
@@ -217,7 +216,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 		//qDebug("adding property" );
                 for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
                     for ( unsigned int j = 0; j < (unsigned int )selectorCache[i].props[p+1]; ++j )
-                        static_cast<QList<CSSOrderedProperty>*>(propsToApply)->append( new CSSOrderedProperty(*properties[selectorCache[i].props[p]+j] ) );
+                        static_cast<QList<CSSOrderedProperty>*>(propsToApply)->append( properties[selectorCache[i].props[p]+j] );
 	    } else if ( selectorCache[i].state == AppliesPseudo ) {
                 for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
                     for ( unsigned int j = 0; j < (unsigned int) selectorCache[i].props[p+1]; ++j )
@@ -234,7 +233,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
     // inline style declarations, after all others. non css hints
     // count as author rules, and come before all other style sheets, see hack in append()
-    if(e->styleRules()) propsToApply->append( e->styleRules(), 0, 0, Inline, InlineImportant );
+    if(e->styleRules()) 
+	addInlineDeclarations( e->styleRules(), propsToApply );
 
     propsToApply->sort();
     pseudoProps->sort();
@@ -279,6 +279,54 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
     return style;
 }
+
+void CSSStyleSelector::addInlineDeclarations(DOM::CSSStyleDeclarationImpl *decl,
+					     CSSOrderedPropertyList *list )
+{
+    QList<CSSProperty> *values = decl->values();
+    if(!values) return;
+    int len = values->count();
+    
+    if ( inlineProps.size() < (uint)len )
+	inlineProps.resize( len+1 );
+
+    CSSOrderedProperty *array = (CSSOrderedProperty *)inlineProps.data();
+    for(int i = 0; i < len; i++)
+    {
+        CSSProperty *prop = values->at(i);
+	Source source = Inline;
+
+	if( prop->nonCSSHint )
+	    source = NonCSSHint;
+	else if( prop->m_bImportant )
+	    source = InlineImportant;
+
+	bool first = false;
+        // give special priority to font-xxx, color properties
+        switch(prop->m_id)
+        {
+        case CSS_PROP_FONT_SIZE:
+        case CSS_PROP_FONT:
+        case CSS_PROP_COLOR:
+        case CSS_PROP_BACKGROUND_IMAGE:
+            // these have to be applied first, because other properties use the computed
+            // values of these porperties.
+	    first = true;
+            break;
+        default:
+            break;
+        }
+
+	array->prop = prop;
+	array->pseudoId = RenderStyle::NOPSEUDO;
+	array->selector = 0;
+	array->position = i;
+	array->priority = (!first << 30) | (source << 24);
+	static_cast<QList<CSSOrderedProperty>*>(list)->append( array );
+	array++;
+    }
+}
+
 
 
 void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)

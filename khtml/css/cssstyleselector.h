@@ -47,6 +47,7 @@ namespace khtml
     class CSSStyleSelectorList;
     class CSSOrderedRule;
     class CSSOrderedProperty;
+    class CSSOrderedPropertyList;
     class RenderStyle;
 
     // independent of classes. Applies on styleDeclaration to the RenderStyle style
@@ -139,6 +140,9 @@ namespace khtml
 	/* builds up the selectors and properties lists from the CSSStyleSelectorList's */
 	void buildLists();
 	void clearLists();
+
+	void addInlineDeclarations(DOM::CSSStyleDeclarationImpl *decl,
+				   CSSOrderedPropertyList *list );
 	
 	static DOM::CSSStyleSheetImpl *defaultSheet;
 	static CSSStyleSelectorList *defaultStyle;
@@ -166,6 +170,7 @@ namespace khtml
 	
 	unsigned int properties_size;
 	CSSOrderedProperty **properties;
+	QArray<CSSOrderedProperty> inlineProps;
     };
 
     /*
