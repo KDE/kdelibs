@@ -156,8 +156,17 @@ public:
     virtual void detach();
     virtual void recalcStyle();
     virtual void setOwnerDocument(DocumentImpl *_document);
-
+    
+    virtual bool mouseEvent( int x, int y, int button,
+			     MouseEventType type, int _tx, int _ty,
+			     DOMString &url,
+                             NodeImpl *&innerNode, long &offset);
+    
+    virtual void mouseEventHandler( int /*button*/, MouseEventType /*type*/, bool /*inside*/ ) {};
+    
 protected: // member variables
+        
+    
 
     NamedAttrMapImpl *namedAttrMap;
 

@@ -70,53 +70,6 @@ HTMLElementImpl::~HTMLElementImpl()
     //kdDebug( 6030 ) << "Element destructor: this=" << nodeName().string() << endl;
 }
 
-bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
-				  int _tx, int _ty, DOMString &url,
-                                  NodeImpl *&innerNode, long &offset)
-{
-#ifdef EVENT_DEBUG
-    kdDebug( 6030 ) << nodeName().string() << "::mouseEvent" << endl;
-#endif
-    bool inside = false;
-
-    if(!m_render) return false;
-
-    RenderObject *p = m_render->parent();
-    while( p && p->isAnonymousBox() ) {
-// 	kdDebug( 6030 ) << "parent is anonymous!" << endl;
-	// we need to add the offset of the anonymous box
-	_tx += p->xPos();
-	_ty += p->yPos();
-	p = p->parent();
-    }
-
-    if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating() )
-    {
-        m_render->absolutePosition(_tx, _ty);
-
-	inside = true;
-	if( (_y < _ty ) || (_y >= _ty + m_render->height() ) ||
-	    (_x < _tx ) || (_x >= _tx + m_render->width() ) )
-	    inside = false;
-	else
-	    innerNode = this;
-    }
-
-    NodeImpl *child = firstChild();
-    while(child != 0) {
-	if(child->mouseEvent(_x, _y, button, type, _tx, _ty, url, innerNode, offset))
-	    inside = true;
-	child = child->nextSibling();
-    }
-
-#ifdef EVENT_DEBUG
-    if(inside) kdDebug( 6030 ) << "    --> inside" << endl;
-#endif
-    // dynamic HTML...
-    if(inside || mouseInside()) mouseEventHandler(button, type, inside);
-
-    return inside;
-}
 
 void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bool inside )
 {

@@ -43,9 +43,6 @@ public:
     // make it pure virtual...
     virtual ushort id() const = 0;
 
-    virtual bool mouseEvent( int x, int y, int button, MouseEventType,
-			     int _tx, int _ty, DOMString &url,
-                             NodeImpl *&innerNode, long &offset);
     virtual void mouseEventHandler( int button, MouseEventType type, bool inside );
 
     virtual void parseAttribute(AttrImpl *token);
