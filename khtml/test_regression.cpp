@@ -433,7 +433,6 @@ int main(int argc, char *argv[])
 
     toplevel->setCentralWidget( part->widget() );
     part->setJScriptEnabled(true);
-    part->setPluginsEnabled(false);
 
     part->executeScript(DOM::Node(), ""); // force the part to create an interpreter
 //    part->setJavaEnabled(true);
