@@ -53,14 +53,19 @@ namespace KIO { class Job; }
 /**
  * The main properties dialog class.
  * A Properties Dialog is a dialog which displays various information
- * about a particular file or URL, or several ones.
+ * about a particular file or URL, or several files or URLs.
  * This main class holds various related classes, which are instantiated in
  * the form of tab entries in the tabbed dialog that this class provides.
- * The various tabs themselves will let the user view or change information
- * about the file or URL.
+ * The various tabs themselves will let the user view, and sometimes change,
+ * information about the file or URL.
+ *
+ * \image html kpropertiesdialog.png "Typical KProperties Dialog"
  *
  * This class must be created with (void)new KPropertiesDialog(...)
  * It will take care of deleting itself.
+ * 
+ * If you are looking for more flexibility, see KFileMetaInfo and
+ * KFileMetaInfoWidget.
  */
 class KPropertiesDialog : public KDialogBase
 {
@@ -69,36 +74,43 @@ class KPropertiesDialog : public KDialogBase
 public:
 
   /**
-   * @return whether there are any property pages available for the
-   * given file items
+   * Determine whether there are any property pages available for the
+   * given file items.
+   * @param _items the list of items to check.
+   * @return true if there are any property pages, otherwise false.
    */
   static bool canDisplay( KFileItemList _items );
 
   /**
-   * Brings up a Properties dialog. Normal constructor for
-   * file-manager-like applications.  Normally you will use this
+   * Brings up a Properties dialog, as shown above. 
+   * This is the normal constructor for
+   * file-manager type applications, where you have a KFileItem instance 
+   * to work with.  Normally you will use this
    * method rather than the one below.
    *
    * @param item file item whose properties should be displayed.
    * @param parent is the parent of the dialog widget.
    * @param name is the internal name.
    * @param modal tells the dialog whether it should be modal.
-   * @param autoShow tells the dialog whethr it should show itself automatically.
+   * @param autoShow tells the dialog whether it should show itself automatically.
    */
   KPropertiesDialog( KFileItem * item,
                      QWidget* parent = 0L, const char* name = 0L,
                      bool modal = false, bool autoShow = true);
+
   /**
-   * Brings up a Properties dialog. Normal constructor for
-   * file-manager-like applications.
+   * \overload
    *
-   * @param _items list of file items whose properties should be
-   * displayed.
+   * You use this constructor for cases where you have a number of items,
+   * rather than a single item. Be careful which methods you use
+   * when passing a list of files or URLs, since some of them will only
+   * work on the first item in a list.
    *
+   * @param _items list of file items whose properties should be displayed.
    * @param parent is the parent of the dialog widget.
    * @param name is the internal name.
    * @param modal tells the dialog whether it should be modal.
-   * @param autoShow tells the dialog whethr it should show itself automatically.
+   * @param autoShow tells the dialog whether it should show itself automatically.
    */
   KPropertiesDialog( KFileItemList _items,
                      QWidget *parent = 0L, const char* name = 0L,
@@ -106,17 +118,15 @@ public:
 
 #ifndef KDE_NO_COMPAT
   /**
-   * @deprecated
-   *
-   * Brings up a Properties dialog. Convenience constructor for
-   * non-file-manager applications.
+   * @deprecated  You should use the following constructor instead of this one.
+   * The only change that is required is to delete the _mode argument.
    *
    * @param _url the URL whose properties should be displayed
    * @param _mode unused.
    * @param parent is the parent of the dialog widget.
    * @param name is the internal name.
    * @param modal tells the dialog whether it should be modal.
-   * @param autoShow tells the dialog whethr it should show itself automatically.  */
+   * @param autoShow tells the dialog whether it should show itself automatically.  */
   KPropertiesDialog( const KURL& _url, mode_t _mode,
                      QWidget* parent = 0L, const char* name = 0L,
                      bool modal = false, bool autoShow = true) KDE_DEPRECATED;
@@ -124,7 +134,8 @@ public:
 
   /**
    * Brings up a Properties dialog. Convenience constructor for
-   * non-file-manager applications.
+   * non-file-manager applications, where you have a KURL rather than a
+   * KFileItem or KFileItemList.
    *
    * @param _url the URL whose properties should be displayed
    * @param parent is the parent of the dialog widget.
@@ -145,7 +156,7 @@ public:
   /**
    * Creates a properties dialog for a new .desktop file (whose name
    * is not known yet), based on a template. Special constructor for
-   * "File / New" in file-manager applications.
+   * "File / New" in file-manager type applications.
    *
    * @param _tempUrl template used for reading only
    * @param _currentDir directory where the file will be written to
@@ -185,28 +196,32 @@ public:
    * Adds a "3rd party" properties plugin to the dialog.  Useful
    * for extending the properties mechanism.
    *
-   * To create a new plugin type, inherit from the base class KPropsPlugin
+   * To create a new plugin type, inherit from the base class KPropsDlgPlugin
    * and implement all the methods. If you define a service .desktop file
    * for your plugin, you do not need to call insertPlugin().
    *
-   * @param plugin is a pointer to the PropsPlugin. The Properties
-   *        dialog will do destruction for you. The KPropsPlugin MUST
+   * @param plugin is a pointer to the KPropsDlgPlugin. The Properties
+   *        dialog will do destruction for you. The KPropsDlgPlugin \b must
    *        have been created with the KPropertiesDialog as its parent.
    * @see KPropsDlgPlugin
    */
   void insertPlugin (KPropsDlgPlugin *plugin);
 
   /**
+   * The URL of the file that has its properties being displayed. 
+   * This is only valid if the KPropertiesDialog was created/shown
+   * for one file or URL.
+   *
    * @return a parsed URL.
-   * Valid only if dialog shown for one file/url.
    */
   const KURL& kurl() const { return m_singleUrl; }
 
   /**
    * @return the file item for which the dialog is shown
-   * Warning, it returns the first item of the list.
-   * This means, use this only if you are sure the dialog is used
-   * for a single item.
+   *
+   * Warning: this method returns the first item of the list.
+   * This means that you should use this only if you are sure the dialog is used
+   * for a single item. Otherwise, you probably want items() instead.
    */
   KFileItem *item() { return m_items.first(); }
 
@@ -217,37 +232,45 @@ public:
 
   /**
    * @return a pointer to the dialog
-   * @deprecated the class directly inherits from KDialogBase, so use this instead
+   * @deprecated KPropertiesDialog directly inherits from KDialogBase, so use \a this instead
    */
   KDE_DEPRECATED KDialogBase* dialog() { return this; }
+  /**
+   * @return a pointer to the dialog
+   * @deprecated KPropertiesDialog directly inherits from KDialogBase, so use \a this instead
+   */
   KDE_DEPRECATED const KDialogBase* dialog() const { return this; }
 
   /**
-   * If we are building this dialog from a template,
-   * @return the current directory
-   * QString::null means no template used
+   * If the dialog is being built from a template, this method
+   * returns the current directory. If no template, it returns QString::null.
+   * See the template form of the constructor.
+   *
+   * @return the current directory or QString::null
    */
   const KURL& currentDir() const { return m_currentDir; }
 
   /**
-   * If we are building this dialog from a template,
-   * @return the default name (see 3rd constructor)
-   * QString::null means no template used
+   * If the dialog is being built from a template, this method
+   * returns the default name. If no template, it returns QString::null.
+   * See the template form of the constructor.
+   * @return the default name or QString::null
    */
   const QString& defaultName() const { return m_defaultName; }
 
   /**
-   * Updates the item url (either called by rename or because
+   * Updates the item URL (either called by rename or because
    * a global apps/mimelnk desktop file is being saved)
-   * Can only be called if the dialog applies to a single file/URL.
+   * Can only be called if the dialog applies to a single file or URL.
    * @param _newUrl the new URL
    */
   void updateUrl( const KURL& _newUrl );
 
   /**
-   * #see FilePropsPlugin::applyChanges
-   * Can only be called if the dialog applies to a single file/URL.
+   * Renames the item to the specified name. This can only be called if
+   * the dialog applies to a single file or URL.
    * @param _name new filename, encoded.
+   * \see FilePropsDlgPlugin::applyChanges
    */
   void rename( const QString& _name );
 
@@ -258,17 +281,19 @@ public:
 
   /**
    * Shows the page that was previously set by
-   * setFileSharingPage, or does nothing if no page
+   * setFileSharingPage(), or does nothing if no page
    * was set yet.
-   * #see setFileSharingPage
+   * \see setFileSharingPage
    * @since 3.1
    */
   void showFileSharingPage();
   
   /**
    * Sets the file sharing page.
-   * This page is shown when calling showFileSharingPage.
-   * #see showFileSharingPage
+   * This page is shown when calling showFileSharingPage().
+   *
+   * @param page the page to set
+   * \see showFileSharingPage
    * @since 3.3
    */
   void setFileSharingPage(QWidget* page);
@@ -276,6 +301,7 @@ public:
    /**
     * Call this to make the filename lineedit readonly, to prevent the user
     * from renaming the file.
+    * \param ro true if the lineedit should be read only
     * @since 3.2
     */
   void setFileNameReadOnly( bool ro );
@@ -285,16 +311,30 @@ public slots:
    * Called when the user presses 'Ok'.
    */
   virtual void slotOk();      // Deletes the PropertiesDialog instance
+  /**
+   * Called when the user presses 'Cancel'.
+   */
   virtual void slotCancel();     // Deletes the PropertiesDialog instance
 
 signals:
   /**
-   * Emitted when we have finished with the properties (be it Apply or Cancel)
+   * This signal is emitted when the Properties Dialog is closed (for
+   * example, with OK or Cancel buttons)
    */
-  void propertiesClosed();
-  void applied();
-  void canceled();
+  void propertiesClosed()
 
+  /**
+   * This signal is emitted when the properties changes are applied (for
+   * example, with the OK button)
+   */
+  void applied();
+
+  /**
+   * This signal is emitted when the properties changes are aborted (for
+   * example, with the Cancel button)
+   */
+
+  void canceled();
   /**
    * Emitted before changes to @p oldUrl are saved as @p newUrl.
    * The receiver may change @p newUrl to point to an alternative
@@ -347,7 +387,7 @@ private:
 /**
  * A Plugin in the Properties dialog
  * This is an abstract class. You must inherit from this class
- * to build a new kind of page.
+ * to build a new kind of tabbed page for the KPropertiesDialog.
  * A plugin in itself is just a library containing code, not a dialog's page.
  * It's up to the plugin to insert pages into the parent dialog.
  *
