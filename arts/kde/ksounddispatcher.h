@@ -23,8 +23,12 @@
 #define KSOUNDDISPATCHER_H
 
 #include <qobject.h>
-#include <arts/iomanager.h>
-#include <arts/dispatcher.h>
+
+namespace Arts
+{
+    class IOManager;
+	class Dispatcher;
+};
 
 class KSoundDispatcher : public QObject
 {

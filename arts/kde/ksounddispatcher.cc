@@ -22,6 +22,9 @@
 #include <kdebug.h>
 #include "ksounddispatcher.moc"
 
+#include "iomanager.h"
+#include "dispatcher.h"
+
 Arts::Dispatcher *KSoundDispatcher::artsDispatcher = 0;
 
 KSoundDispatcher::KSoundDispatcher() : QObject()
