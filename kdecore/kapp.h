@@ -1,6 +1,15 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.9  1997/05/17 20:38:22  kalle
+// Kalle:
+// - Bugfix for KPanner (from Paul Kendall)
+// - Better colors with kdisplay schemes (from Bernd Wuebben)
+// - new behavior in KApplication::invokeHTMLHelp(): if the first
+//   argument (the filename) is empty, the filename is defaulted to
+// 	$KDEDIR/doc/HTML/<appname>/<appname>.html
+// - KApplication::getCaption for Matthias added (breaks binary compatibility!)
+//
 // Revision 1.8  1997/05/15 20:33:20  wuebben
 // Bernd: Added signals:
 // kdisplayFontChanged()
@@ -102,99 +111,114 @@
 // MD: Implemented reading of the colour scheme contrast variable. This allows
 // you to choose the highlights and lowlights used to draw widgets and has been
 // part of the colour scheme specification for some time
-/// KApplication: A base class for all KDE applications
-/** KApplication provides the application with KDE defaults such as
-  accelerators, common menu entries, a KConfig object
-  etc. KApplication installs a signal handler for the SIGCHLD signal
-  in order to avoid zombie children. If you want to catch this signal
-  yourself or don't want it to be catched at all, you have set a new
-  signal handler (or SIG_IGN) after KApplication's constructor has
-  run. */ 
+/** A base class for all KDE applications.
+// Revision 1.20  1997/09/11 19:44:54  kalle
+// New debugging scheme for KDE (binary incompatible!)
+
+
+#ifndef klocale
+#define klocale KApplication::getKApplication()->getLocale()
+#endif
+#define i18n KApplication::getKApplication()->getLocale()->translate
+#ifndef i18n
+* @version $Id$
+#endif
 
 class KIconLoader;
-  Q_OBJECT
+  Q_OBJECT;
 
-  /// Constructor: pass command-line arguments
-  /** Constructor. Pass command-line arguments. A KConfig object is
-	created that contains an application-specific config file whose
-	name is "~/." + argv[0] + "rc". This constructor should be considered
-	obsolete. The state of the application-specific config file may be
-	queried afterwards with getConfigState(). */
+/** Constructor. Pass command-line arguments. A KConfig object is
+#include <drag.h>
+* @version $Id$
+#include <qapp.h>
+#include <qfile.h>
+/** 
 * Constructor. Pass command-line arguments. 
 *
-  /// Constructor: pass command-line arguments and set a logical app name
-  /** Constructor. Pass command-line arguments. A KConfig object is
-	created that contains an application-specific config file whose
-	name is "~/." + rAppName + "rc". The state of the application-specific 
-	config file may be queried afterwards with getConfigState(). */
+/** Constructor. Pass command-line arguments. A KConfig object is
+* queried afterwards with getConfigState(). 
+*/
+* accelerators, common menu entries, a KConfig object
+* etc. KApplication installs a signal handler for the SIGCHLD signal
 /** 
 * Constructor. Pass command-line arguments. 
-  /// Destructor
-  /** Destructor */
+/** Destructor */
 * name is "~/." + rAppName + "rc". The state of the application-specific 
 * Destructor 
-  /// Return the current application object
-  /** Return the current application object */
+/** Return the current application object.
+	*
+	* A KConfig object is
+	* created that contains an application-specific config file whose
+	* name is "~/." + argv[0] + "rc". This constructor should be considered
+	* obsolete. The state of the application-specific config file may be
 /** 
 * Return the current application object.
-  /// Return the logical application name
-  /** Return the logical application name as set in the constructor */
+/** Return the logical application name as set in the constructor.
+* to the single global KApplication object, since more than one cannot be
 * created in the same application. It saves the trouble of having to pass
 * the pointer to it explicitly to every function that may require it.
-  /// Retrieve the application config object.
-  /** Retrieve the application config object. */
+/** Retrieve the application config object. 
+/** 
+*
+* Return the logical application name as set in the constructor.
+*/
 
   /** 
+/** Possible return values for getConfigState().
+	{ return aIconPixmap; }
+* @see getConfigState
+  
   /**
 	* Get the mini-icon for the application.
 	* @return a QPixmap with the icon.
-  /// Retrieve the state of the app-config object.
-  /** Retrieve the state of the app-config object. Possible return values
-	are APPCONFIG_NONE (the application-specific config file could not be
-	opened neither read-write nor read-only), APPCONFIG_READONLY (the
-	application-specific config file is opened read-only, but not
-	read-write) and APPCONFIG_READWRITE (the application-specific config
-	file is opened read-write).
-	*/
+/** Retrieve the state of the app-config object. Possible return values
+*/
+
+  /** Sets the top widget of the application . This widget will
+    * be used for communication with the session manager.
+/** 
+* Retrieve the state of the app-config object. 
+* @see ConfigState
+* Possible return values
 * are APPCONFIG_NONE (the application-specific config file could not be
 * opened neither read-write nor read-only), APPCONFIG_READONLY (the
-  /// Invoke kdehelp
-  /** Invoke the kdehelp HTML help viewer. The directory is computed
-	  automatically according to the KFSSTND. If aFilename is empty,
-	  the logical appname with .html appended to it is used.
-	  You can provide context-sensitive help by setting aTopic which
-	  will be added to the pathname, together with a separating hash
-	  mark. 
-	*/
+/** Invoke the kdehelp HTML help viewer. 
+*
+* @see #ConfigState
+*/
+  void registerTopWidget();
+  /* obsolete, will dissappear (Matthias) */
+/**
+* Invoke the kdehelp HTML help viewer. 
+*
 * @param aFilename	The filename that is to be loaded. Its location
 *			is computed automatically according to the KFSSTND. 
-  /// Get the KDE base dir
-  /** Returns the KDE base dir. This is the value of the KDEDIR
-	  environment variable if it is set in the process' environment,
-	  the compile time default of, if this was not present, either,
-	  /usr/local/kde. 
-  */
+/** Get the KDE base dir. This is the value of the KDEDIR
+*			a "#" (hash) character.
+*/
+	* Retrieve the state of the app-config object. 
+	*
 /** 
 * Get the KDE base dir. 
-  /// Find a file using standard KDE search paths.
-  /** Find a file using standard KDE search paths.  Possible search paths
-    include $KDEDIR, $KDEPATH, and "[KDE Setup]:Path=" entry in a config
-	file. If file is not found, isEmpty() will return True
+/** Find a file using standard KDE search paths.  Possible search paths
+	* @return the name of the directory
 	*/
+  static const QString& kde_configdir();
 
 /** 
-  /// Get the KDE font list
-  /** This method allows you to get the KDE font list which was composed by 
-      the user with kfontmanager. Usually you should work only with those
-      fonts in your kapplication. getKDEFonts returns true on success.
-	*/
+/** Get the KDE font list. This method allows you to get the KDE font 
+*  list which was composed by the user with kfontmanager. Usually you should 
+*  work only with those fonts in your kapplication. 
+  /**
+	* Get the local KDE base dir
+/** 
 * Get the KDE font list.
 *
 * This method allows you to get the KDE font 
-  /// Return a text for the window caption
-  /** returns an argument that was given with "-caption"
-	  or (if undefined) the name of the application
-	  */
+/** Return a text for the window caption. This would be set either by
+*/
+	* Get the local KDE config dir
+	*
 	* This is usually $HOME/.kde/share/config
 /**
   //@Man: Drag 'n Drop stuff
@@ -221,35 +245,36 @@ class KIconLoader;
   //@}
 	* An X11 atom used for IPC
   * Used by KDNDDropZone during shutdown
-  //@Man: Drag 'n Drop stuff
-  //@{
-  /// List of all DropZones.
+//@Man: Drag 'n Drop stuff
+//@{
+/// List of all DropZones.
   * Set the DropZone which reveives root drop events.
-  /// The last drop zone the mouse was over
-  /**
-    If we get a DndLeaveProtocol we must inform 'lastEnteredDropZone'
-    that the mouse left the DropZone.
-    */
+  */
+/** The last drop zone the mouse was over.
+/**
+* List of all DropZones.
+*/
 	*/
-  /// The DropZone which receives root drop events.
+  Atom getDndRootProtocolAtom() { return DndRootProtocol; }    
+/// The DropZone which receives root drop events.
 * If we get a DndLeaveProtocol we must inform 'lastEnteredDropZone'
 * that the mouse left the DropZone.
-  /// Used to catch X11 events
+/// Used to catch X11 events
 /**
 * The DropZone which receives root drop events.
-  /// An X11 atom used for IPC
+/// An X11 atom used for IPC
   /**
-  /// An X11 atom used for IPC
+/// An X11 atom used for IPC
 	* List of all DropZones.
-  /// An X11 atom used for IPC
+/// An X11 atom used for IPC
 	*/
-  /// An X11 atom used for IPC
+/// An X11 atom used for IPC
   QList<KDNDDropZone> dropZones;
-  /// An X11 atom used for IPC
+/// An X11 atom used for IPC
 
-  /// The X11 display
+/// The X11 display
 	* that the mouse left the DropZone.
-  //@}
+//@}
 	*/
   KDNDDropZone *lastEnteredDropZone;
 
@@ -295,27 +320,28 @@ private:
   bool bSessionManagementUserDefined;
   QPixmap aIconPixmap;
   QPixmap aMiniIconPixmap;
-  /// KApplication has changed its Palette on behalf of kdisplay.
-  /** Connect to this if you need to know when the KApplication changes 
-      its palette on behalf of kdisplay.
-      */
+/** KApplication has changed its Palette on behalf of kdisplay.
+
+  void buildSearchPaths();
+  void appendSearchPath( const char *path );
 
 signals:
-  /// KApplication has changed its Syle on behalf of kdisplay.
-  /** Connect to this if you need to know when the KApplication changes 
-      its style on behalf of kdisplay.
-      */
+/** KApplication has changed its GUI Style on behalf of kdisplay.
+* Normally, widgets will update their palettes automatically, but you
+* should connect to this to program special behaviour.
+*/
+
 public:
 /** 
-  /// KApplication has changed its Font on behalf of kdisplay.
-  /** Connect to this if you need to know when the KApplication changes 
-      its font on behalf of kdisplay.
-      */
+/** KApplication has changed its Font on behalf of kdisplay.
+* respond to an explicit setGUIStyle() call), but you should connect to
+* this to program special behaviour.
+*/
+  QColor selectColor;
   QColor selectTextColor;
   void kdisplayStyleChanged();
 
   /**
-
 	* KApplication has changed its Font due to a KDisplay request.
 	*
 	* Normally widgets will update their fonts automatically, but you should
