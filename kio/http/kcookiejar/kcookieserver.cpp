@@ -135,10 +135,10 @@ bool KCookieServer::cookiesPending( const QString &url )
      return false;
   if (!KCookieJar::parseURL(url, fqdn, path))
      return false;
-  if (!KCookieJar::extractDomains( fqdn, domains))
-     return false;
+
+  KCookieJar::extractDomains( fqdn, domains );
   for( KHttpCookie *cookie = mPendingCookies->first();
-       cookie;
+       cookie != 0L;
        cookie = mPendingCookies->next())
   {
        if (cookie->match( fqdn, domains, path))
@@ -285,40 +285,40 @@ void KCookieServer::saveCookieJar()
     mTimer->start( 1000*60*SAVE_DELAY );
 }
 
-void KCookieServer::putCookie( QStringList *out, KHttpCookie *cookie,
-                               const QValueList<int> *fields )
+void KCookieServer::putCookie( QStringList& out, KHttpCookie *cookie,
+                               const QValueList<int>& fields )
 {
-    QValueList<int>::ConstIterator i = fields->begin();
-    for ( ; i != fields->end(); ++i )
+    QValueList<int>::ConstIterator i = fields.begin();
+    for ( ; i != fields.end(); ++i )
     {
         switch(*i)
         {
          case CF_DOMAIN :
-            *out << cookie->domain();
+            out << cookie->domain();
             break;
          case CF_NAME :
-            *out << cookie->name();
+            out << cookie->name();
             break;
          case CF_PATH :
-            *out << cookie->path();
+            out << cookie->path();
             break;
          case CF_HOST :
-            *out << cookie->host();
+            out << cookie->host();
             break;
          case CF_VALUE :
-            *out << cookie->value();
+            out << cookie->value();
             break;
          case CF_EXPIRE :
-            *out << QString::number(cookie->expireDate());
+            out << QString::number(cookie->expireDate());
             break;
          case CF_PROVER :
-            *out << QString::number(cookie->protocolVersion());
+            out << QString::number(cookie->protocolVersion());
             break;
          case CF_SECURE :
-            *out << QString::number( cookie->isSecure() ? 1 : 0 );
+            out << QString::number( cookie->isSecure() ? 1 : 0 );
             break;
          default :
-            *out << QString::null;
+            out << QString::null;
         }
     }
 }
@@ -360,13 +360,15 @@ QStringList
 KCookieServer::findDomains()
 {
    QStringList result;
-   const QStringList *domains = mCookieJar->getDomainList();
-   for (QStringList::ConstIterator domIt = domains->begin(); domIt != domains->end(); ++domIt)
+   const QStringList domains = mCookieJar->getDomainList();
+   for ( QStringList::ConstIterator domIt = domains.begin();
+         domIt != domains.end(); ++domIt )
    {
        // Ignore domains that have policy set for but contain
        // no cookies whatsoever...
-       if ( mCookieJar->getCookieList(*domIt)->count() != 0 )
-           result << *domIt;
+       const KHttpCookieList* list =  mCookieJar->getCookieList(*domIt, "");
+       if ( list && !list->isEmpty() )
+          result << *domIt;
    }
    return result;
 }
@@ -379,34 +381,25 @@ KCookieServer::findCookies(QValueList<int> fields,
                            QString path,
                            QString name)
 {
-   QString _domain;
    QStringList result;
    bool allDomCookies = name.isEmpty();
 
-   if ( domain.isEmpty() )
+   const KHttpCookieList* list =  mCookieJar->getCookieList(domain, fqdn);
+   if ( list && !list->isEmpty() )
    {
-      mCookieJar->extractDomains( fqdn, result );
-      _domain = result[0];
-      result.clear();
-   }
-   else
-      _domain = domain;
-
-   QListIterator<KHttpCookie>it (*(mCookieJar->getCookieList(_domain)));
-   if ( !it.isEmpty() )
-   {
+      QListIterator<KHttpCookie>it( *list );
       for ( ; it.current(); ++it )
       {
          if ( !allDomCookies )
          {
             if ( cookieMatches(it.current(), domain, fqdn, path, name) )
             {
-               putCookie(&result, it.current(), &fields);
+               putCookie(result, it.current(), fields);
                break;
             }
          }
          else
-            putCookie(&result, it.current(), &fields);
+            putCookie(result, it.current(), fields);
       }
    }
    return result;
@@ -440,19 +433,10 @@ void
 KCookieServer::deleteCookie(QString domain, QString fqdn,
                             QString path, QString name)
 {
-   QString _domain;
-   if ( domain.isEmpty() )
+   const KHttpCookieList* list = mCookieJar->getCookieList( domain, fqdn );
+   if ( list && !list->isEmpty() )
    {
-      QStringList list;
-      mCookieJar->extractDomains( fqdn, list );
-      _domain = list[0];
-   }
-   else
-      _domain = domain;
-
-   QListIterator<KHttpCookie>it (*mCookieJar->getCookieList(_domain));
-   if ( !it.isEmpty() )
-   {
+      QListIterator<KHttpCookie>it (*list);
       for ( ; it.current(); ++it )
       {
          if( cookieMatches(it.current(), domain, fqdn, path, name) )
