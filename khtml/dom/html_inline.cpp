@@ -26,6 +26,7 @@
 #include "html_inline.h"
 #include "html_inlineimpl.h"
 #include "html_baseimpl.h"
+#include "dom_docimpl.h"
 using namespace DOM;
 
 #include "htmlhashes.h"
@@ -200,14 +201,14 @@ void HTMLAnchorElement::setType( const DOMString &value )
 
 void HTMLAnchorElement::blur(  )
 {
-    if(impl)
-        ((HTMLAnchorElementImpl *)impl)->blur(  );
+    if(impl && impl->ownerDocument() && impl->ownerDocument()->focusNode()==impl)
+        impl->ownerDocument()->setFocusNode(0);
 }
 
 void HTMLAnchorElement::focus(  )
 {
-    if(impl)
-        ((HTMLAnchorElementImpl *)impl)->focus(  );
+    if(impl && impl->ownerDocument())
+        impl->ownerDocument()->setFocusNode(static_cast<ElementImpl*>(impl));
 }
 
 // --------------------------------------------------------------------------

@@ -543,28 +543,20 @@ void HTMLGenericFormElementImpl::onChange()
         view->part()->executeScript(Node(this), script.string());
 }
 
-
-void HTMLGenericFormElementImpl::blur()
-{
-    if(m_render)
-        static_cast<RenderFormElement*>(m_render)->blur();
-    onBlur();
-}
-
-void HTMLGenericFormElementImpl::focus()
-{
-    if(m_render)
-        static_cast<RenderFormElement*>(m_render)->focus();
-    onFocus();
-}
-
 void HTMLGenericFormElementImpl::setFocus(bool received)
 {
     if (received)
-	focus();
+    {   
+	if(m_render)
+	    static_cast<RenderFormElement*>(m_render)->focus();
+	onFocus();
+    }
     else
-	blur();
-    HTMLElementImpl::setFocus(received);
+    {
+	if(m_render)
+	    static_cast<RenderFormElement*>(m_render)->blur();
+	onBlur();
+    }
 }
 
 bool HTMLGenericFormElementImpl::isSelectable() const
@@ -779,17 +771,12 @@ void HTMLInputElementImpl::restoreState(const QString &state)
     setChanged(true);
 }
 
-
-void HTMLInputElementImpl::blur(  )
+void HTMLInputElementImpl::setFocus(bool received)
 {
     if (m_type != IMAGE)
-        HTMLGenericFormElementImpl::blur();
-}
-
-void HTMLInputElementImpl::focus(  )
-{
-    if (m_type != IMAGE)
-        HTMLGenericFormElementImpl::focus();
+        HTMLGenericFormElementImpl::setFocus(received);
+    else
+	HTMLElementImpl::setFocus(received);
 }
 
 void HTMLInputElementImpl::select(  )

@@ -44,9 +44,6 @@ public:
     virtual tagStatus startTag() const { return AStartTag; }
     virtual tagStatus endTag() const { return AEndTag; }
 
-    void blur (  );
-    void focus (  );
-
     DOMString areaHref() const { return href; }
     DOMString targetRef() const { return target; }
 

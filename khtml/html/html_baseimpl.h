@@ -89,6 +89,9 @@ public:
 
     bool noResize() { return noresize; }
 
+    virtual bool isSelectable() const;
+    virtual void setFocus(bool);
+
 protected:
     DOMString url;
     DOMString name;

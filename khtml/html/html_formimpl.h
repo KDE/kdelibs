@@ -157,9 +157,6 @@ public:
      */
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool) { return false; }
 
-    virtual void blur();
-    virtual void focus();
-
     virtual void setFocus(bool);
 
 protected:
@@ -270,8 +267,8 @@ public:
     virtual QString state();
     virtual void restoreState(const QString &);
 
-    virtual void blur();
-    virtual void focus();
+    virtual void setFocus(bool=true);
+
     void select();
     void click();
 

@@ -27,6 +27,7 @@
 #include "dom_string.h"
 #include "html_miscimpl.h"
 #include "dom_exception.h"
+#include "dom_docimpl.h"
 using namespace DOM;
 
 #include "htmlhashes.h"
@@ -535,14 +536,14 @@ void HTMLInputElement::setValue( const DOMString &value )
 
 void HTMLInputElement::blur(  )
 {
-    if(impl)
-        ((HTMLInputElementImpl *)impl)->blur(  );
+    if(impl && impl->ownerDocument() && impl->ownerDocument()->focusNode()==impl)
+        impl->ownerDocument()->setFocusNode(0);
 }
 
 void HTMLInputElement::focus(  )
 {
-    if(impl)
-        ((HTMLInputElementImpl *)impl)->focus(  );
+    if(impl && impl->ownerDocument())
+        impl->ownerDocument()->setFocusNode(static_cast<ElementImpl*>(impl));
 }
 
 void HTMLInputElement::select(  )
@@ -896,12 +897,14 @@ void HTMLSelectElement::remove( long index )
 
 void HTMLSelectElement::blur(  )
 {
-    if(impl) static_cast<HTMLSelectElementImpl*>(impl)->blur(  );
+    if(impl && impl->ownerDocument() && impl->ownerDocument()->focusNode()==impl)
+        impl->ownerDocument()->setFocusNode(0);
 }
 
 void HTMLSelectElement::focus(  )
 {
-    if(impl) static_cast<HTMLSelectElementImpl*>(impl)->focus(  );
+    if(impl && impl->ownerDocument())
+        impl->ownerDocument()->setFocusNode(static_cast<ElementImpl*>(impl));
 }
 
 // --------------------------------------------------------------------------
@@ -1061,14 +1064,14 @@ void HTMLTextAreaElement::setValue( const DOMString &value )
 
 void HTMLTextAreaElement::blur(  )
 {
-    if(impl)
-        ((HTMLTextAreaElementImpl *)impl)->blur(  );
+    if(impl && impl->ownerDocument() && impl->ownerDocument()->focusNode()==impl)
+        impl->ownerDocument()->setFocusNode(0);
 }
 
 void HTMLTextAreaElement::focus(  )
 {
-    if(impl)
-        ((HTMLTextAreaElementImpl *)impl)->focus(  );
+    if(impl && impl->ownerDocument())
+        impl->ownerDocument()->setFocusNode(static_cast<ElementImpl*>(impl));
 }
 
 void HTMLTextAreaElement::select(  )

@@ -62,14 +62,6 @@ ushort HTMLAnchorElementImpl::id() const
     return ID_A;
 }
 
-void HTMLAnchorElementImpl::blur(  )
-{
-}
-
-void HTMLAnchorElementImpl::focus(  )
-{
-}
-
 bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y,
                                         int _tx, int _ty,
                                         MouseEvent *ev)

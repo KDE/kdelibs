@@ -295,6 +295,22 @@ void HTMLFrameElementImpl::detach()
     HTMLElementImpl::detach();
 }
 
+bool HTMLFrameElementImpl::isSelectable() const
+{
+    return m_render!=0;
+}
+
+void HTMLFrameElementImpl::setFocus(bool received)
+{
+    HTMLElementImpl::setFocus(received);
+    khtml::RenderFrame *renderFrame = static_cast<khtml::RenderFrame *>(m_render);
+    if (!renderFrame || !renderFrame->m_widget)
+	return;
+    if (received)
+	renderFrame->m_widget->setFocus();
+    else
+	renderFrame->m_widget->clearFocus();
+}
 // -------------------------------------------------------------------------
 
 HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentImpl *doc)
