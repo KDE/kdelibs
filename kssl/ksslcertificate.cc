@@ -422,6 +422,8 @@ KSSLCertificate *KSSLCertificate::replicate() {
 }
 
 
+// FIXME: call toDer() and just encode it to base64 instead of duplicating
+//        code here.
 QString KSSLCertificate::toString() {
 #ifdef HAVE_SSL
       unsigned int certlen = d->kossl->i2d_X509(getCert(), NULL);
@@ -433,7 +435,6 @@ QString KSSLCertificate::toString() {
         {
         QByteArray qba;
  
-        // FIXME: return code!
         d->kossl->i2d_X509(getCert(), (unsigned char **)&p);
  
         // encode it into a QString
