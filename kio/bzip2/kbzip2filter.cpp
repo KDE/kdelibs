@@ -18,7 +18,14 @@
 
 #include "kbzip2filter.h"
 #define BZ_NO_STDIO // we don't need that
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <bzlib.h>
+#ifdef __cplusplus
+}
+#endif
+
 #include <kdebug.h>
 #include <klibloader.h>
 
