@@ -345,9 +345,7 @@ void KDockWidgetHeader::setDragPanel( KDockWidgetHeaderDrag* nd )
   layout->addWidget( closeButton );
   layout->activate();
   kdDebug(282)<<"KdockWidgetHeader::setDragPanel:minimum height="<<layout->minimumSize().height()<<endl;
-#ifdef __GNUC__
-#warning FIXME
-#endif
+  //FIXME somebody left this here, but we don't know what the hell it's for.
   drag->setFixedHeight( closeButton->height()); // /*layout->minimumS*/sizeHint().height() );
 }
 
@@ -949,12 +947,14 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 {
   if (this == target)
     return 0L;  // docking to itself not possible
-//  kdDebug(282)<<"manualDock called "<<endl;
-  bool succes = true; // tested flag
 
-  // check allowed this dock submit this operations
+//  kdDebug(282)<<"manualDock called "<<endl;
+  bool success = true; // tested flag
+
+  // Check to make sure that we can dock in to the position wee
+  // were told to dock in to
   if ( !(eDocking & (int)dockPos) ){
-    succes = false;
+    success = false;
 //  kdDebug(282)<<"KDockWidget::manualDock(): success = false (1)"<<endl;
   }
 
@@ -978,27 +978,36 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 	default: tmpTarget=0;
   }
 
-  if (this!=tmpTarget) {
-    if (target && (target==dockManager()->d->mainDockWidget) && tmpTarget) {
-  	return manualDock(tmpTarget,DockCenter,spliPos,pos,check,tabIndex);
+  //If we're not the target, and the target is our dock manager's main window
+  //dock into the temp target as chosen above
+  if ( tmpTarget && this != tmpTarget)
+  {
+    if ( target && target == dockManager()->d->mainDockWidget )
+    {
+      return manualDock(tmpTarget,DockCenter,spliPos,pos,check,tabIndex);
     }
   }
 
-  // check allowed target submit this operations
+  // check if the target allows us to oock into the requested position
   if ( target && !(target->sDocking & (int)dockPos) ){
-    succes = false;
+    success = false;
 //  kdDebug(282)<<"KDockWidget::manualDock(): success = false (2)"<<endl;
   }
 
+  /* if we have a parent, and it's not a KDockSplitter, and we don't have a parent
+   * dock tab group, and our parent isn't a KDockContainer, and we have no explicit
+   * parent dock container...we can't do much yet */
   if ( parent() && !parent()->inherits("KDockSplitter") && !parentDockTabGroup() &&
   	!(dynamic_cast<KDockContainer*>(parent())) && !parentDockContainer()){
 //  kdDebug(282)<<"KDockWidget::manualDock(): success = false (3)"<<endl;
 //  kdDebug(282)<<parent()->name()<<endl;
-    succes = false;
+    success = false;
   }
 
-//  kdDebug(282)<<"KDockWidget::manualDock(): success == false "<<endl;
-  if ( !succes ){
+  /* If all of our attempts to dock back so far have failed and we have a target
+   * and we're not being called recursively (i guess that's what check is for)
+   * then attempt to dock back to ourselves. */
+  if ( !success ){
     // try to make another manualDock
     KDockWidget* dock_result = 0L;
     if ( target && !check ){
@@ -1020,6 +1029,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
   undock();
   d->blockHasUndockedSignal = false;
 
+  //we have no docking target, so we're undocking
   if ( !target ){
     move( pos );
     show();
