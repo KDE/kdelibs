@@ -504,7 +504,8 @@ void DOM::addForbidden(int tagId, ushort *forbiddenTags)
     switch(tagId)
     {
     case ID_A:
-	forbiddenTags[ID_A]++;
+	// we allow nested anchors. The innermost one wil be taken...
+	//forbiddenTags[ID_A]++;
 	break;
     case ID_PRE:
 	//forbiddenTags[ID_IMG]++;
@@ -574,7 +575,7 @@ void DOM::removeForbidden(int tagId, ushort *forbiddenTags)
     switch(tagId)
     {
     case ID_A:
-	forbiddenTags[ID_A]--;
+	//forbiddenTags[ID_A]--;
 	break;
     case ID_PRE:
 	//forbiddenTags[ID_IMG]--;
