@@ -270,7 +270,7 @@ class KAboutData
     /**
      * @return the copyright statement.
      */
-    QString copyrightStatement() const { return( mCopyrightStatement ); }
+    QString copyrightStatement() const { return( QString::fromLatin1(mCopyrightStatement )); }
 
   private:
     const char *mAppName;
