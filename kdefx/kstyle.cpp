@@ -1060,6 +1060,8 @@ void KStyle::drawComplexControl( ComplexControl control,
 
 			// Draw the slider handle
 			if ((controls & SC_SliderHandle) && handle.isValid()) {
+				if (active == SC_SliderHandle)
+					flags |= Style_Active;
 				drawKStylePrimitive( KPE_SliderHandle, &p2, widget, handle, cg, flags, opt );
 			}
 
