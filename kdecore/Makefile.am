@@ -49,7 +49,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h \
 	kextsock.h kextendedsocket.h ksockaddr.h kprocio.h kasyncio.h \
 	kbufferedio.h kurldrag.h kmimesourcefactory.h kmdcodec.h ksocks.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
-	klargefile.h kmultipledrag.h kgenericfactory.h kgenericfactory.tcc
+	klargefile.h kmultipledrag.h kgenericfactory.h kgenericfactory.tcc \
 	ktypelist.h ksortablevaluelist.h kdebugclasses.h kclipboard.h \
 	kcalendarsystem.h kcalendarsystemfactory.h kmacroexpander.h \
 	kmanagerselection.h \
