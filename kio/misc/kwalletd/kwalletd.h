@@ -109,6 +109,8 @@ class KWalletD : public KDEDModule {
 		// Disconnect an app from a wallet
 		virtual bool disconnectApplication(const QString& wallet, const QCString& application);
 
+		virtual void reconfigure();
+
 	private slots:
 		void slotAppUnregistered(const QCString& app);
 		void emitWalletListDirty();
@@ -129,6 +131,8 @@ class KWalletD : public KDEDModule {
 		QMap<QString,QCString> _passwords;
 		KDirWatch *_dw;
 		int _failed;
+
+		bool _leaveOpen, _closeIdle, _launchManager;
 };
 
 

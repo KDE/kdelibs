@@ -24,6 +24,7 @@
 
 #include <dcopclient.h>
 #include <kapplication.h>
+#include <kconfig.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <kglobal.h>
@@ -51,6 +52,7 @@ extern "C" {
 KWalletD::KWalletD(const QCString &name)
 : KDEDModule(name), _failed(0) {
 	srand(time(0));
+	reconfigure();
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
 	KApplication::dcopClient()->setNotifications(true);
 	connect(KApplication::dcopClient(),
@@ -151,7 +153,7 @@ bool brandNew = false;
 				emitDCOPSignal("walletCreated(QString)", data);
 			}
 			emitDCOPSignal("walletOpened(QString)", data);
-			if (_wallets.count() == 1) {
+			if (_wallets.count() == 1 && _launchManager) {
 				KApplication::startServiceByDesktopName("kwalletmanager");
 			}
 		} else {
@@ -302,7 +304,7 @@ bool contains = false;
 		}
 
 		// watch the side effect of the deref()
-		if ((contains && w->deref() == 0) || force) {
+		if ((contains && w->deref() == 0 && !_leaveOpen) || force) {
 			_wallets.remove(handle);
 			if (force) {
 				invalidateHandle(handle);
@@ -734,6 +736,15 @@ void KWalletD::emitFolderUpdated(const QString& wallet, const QString& folder) {
 
 void KWalletD::emitWalletListDirty() {
 	emitDCOPSignal("walletListDirty()", QByteArray());
+}
+
+
+void KWalletD::reconfigure() {
+	KConfig cfg("kwalletrc");
+	cfg.setGroup("Wallet");
+	_launchManager = cfg.readBoolEntry("Launch Manager", true);
+	_leaveOpen = cfg.readBoolEntry("Leave Open", false);
+	_closeIdle = cfg.readBoolEntry("Close When Idle", false);
 }
 
 #include "kwalletd.moc"
