@@ -208,7 +208,6 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
     // Collect only quirks-mode rules.
     defaultQuirksStyle = new CSSStyleSelectorList();
     defaultQuirksStyle->append( defaultSheet, "screen", 2 );
-    kdDebug() << "CSSStyleSelector: quirks style has " << defaultQuirksStyle->count() << " elements"<< endl;
 
     defaultPrintStyle = new CSSStyleSelectorList();
     defaultPrintStyle->append( defaultSheet, "print" );
@@ -875,10 +874,8 @@ void CSSStyleSelector::buildLists()
     else if(defaultStyle) defaultStyle->collect( &selectorList, &propertyList,
       Default, Default );
 
-    if (!strictParsing && defaultQuirksStyle) {
-	qDebug("getting properties from quirks style!");
+    if (!strictParsing && defaultQuirksStyle)
         defaultQuirksStyle->collect( &selectorList, &propertyList, Default, Default );
-    }
 
     if(userStyle) userStyle->collect(&selectorList, &propertyList, User, UserImportant );
     if(authorStyle) authorStyle->collect(&selectorList, &propertyList, Author, AuthorImportant );
