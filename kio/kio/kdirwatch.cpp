@@ -168,7 +168,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   sigaction(SIGRTMIN, &act, NULL);
 #endif
 
-  kdDebug(7001) << "Available methods: " << available << endl;    
+  kdDebug(7001) << "Available methods: " << available << endl;
 }
 
 
@@ -194,7 +194,7 @@ void KDirWatchPrivate::slotActivated()
 {
    char dummy_buf[100];
    read(mPipe[0], &dummy_buf, 100);
-   
+
    if (!mTimer.isActive())
       mTimer.start(200, true);
 }
@@ -217,7 +217,7 @@ void KDirWatchPrivate::Entry::propagate_dirty()
 }
 
 #else // !HAVE_DNOTIFY
-// slots always have to be defined... 
+// slots always have to be defined...
 void KDirWatchPrivate::slotActivated() {}
 #endif
 
@@ -229,7 +229,7 @@ void KDirWatchPrivate::Entry::addClient(KDirWatch* instance)
   Client* client = m_clients.first();
   for(;client; client = m_clients.next())
     if (client->instance == instance) break;
-  
+
   if (client) {
     client->count++;
     return;
@@ -241,7 +241,7 @@ void KDirWatchPrivate::Entry::addClient(KDirWatch* instance)
   client->watchingStopped = instance->isStopped();
   client->pending = NoChange;
 
-  m_clients.append(client);  
+  m_clients.append(client);
 }
 
 void KDirWatchPrivate::Entry::removeClient(KDirWatch* instance)
@@ -343,8 +343,8 @@ bool KDirWatchPrivate::useFAM(Entry* e)
 	use_fam=false;
 	return false;
       }
-      
-      kdDebug(7001) << " Setup FAM (Req " 
+
+      kdDebug(7001) << " Setup FAM (Req "
 		    << FAMREQUEST_GETREQNUM(&(e->fr))
 		    << ") for " << e->path << endl;
     }
@@ -361,7 +361,7 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
   e->dn_fd = 0;
   if (!supports_dnotify) return false;
 
-  e->m_mode = DNotifyMode;	  
+  e->m_mode = DNotifyMode;
 
   if (e->isDir) {
     e->dn_dirty = false;
@@ -371,7 +371,7 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
 	e->m_mode = UnknownMode;
 	return false;
       }
-      
+
       int mask = DN_DELETE|DN_CREATE|DN_RENAME|DN_MULTISHOT;
       // if dependant is a file watch, we check for MODIFY & ATTRIB too
       for(Entry* dep=e->m_entries.first();dep;dep=e->m_entries.next())
@@ -379,7 +379,7 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
 
       if(fcntl(fd, F_SETSIG, SIGRTMIN) < 0 ||
 	 fcntl(fd, F_NOTIFY, mask) < 0) {
-	
+
 	kdDebug(7001) << "Not using Linux Directory Notifications."
 		      << endl;
 	supports_dnotify = false;
@@ -391,7 +391,7 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
       fd_Entry.replace(fd, e);
       e->dn_fd = fd;
 
-      kdDebug(7001) << " Setup DNotify (fd " << fd 
+      kdDebug(7001) << " Setup DNotify (fd " << fd
 		    << ") for " << e->path << endl;
     }
     else { // NotExisting
@@ -427,7 +427,7 @@ bool KDirWatchPrivate::useStat(Entry* e)
     }
   }
 
-  kdDebug(7001) << " Setup Stat (freq " << e->freq 
+  kdDebug(7001) << " Setup Stat (freq " << e->freq
 		<< ") for " << e->path << endl;
 
   return true;
@@ -452,7 +452,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   {
     if (sub_entry) {
        (*it).m_entries.append(sub_entry);
-       kdDebug(7001) << "Added already watched Entry " << path 
+       kdDebug(7001) << "Added already watched Entry " << path
 		     << " (for " << sub_entry->path << ")" << endl;
     }
     else {
@@ -496,7 +496,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   else
     e->addClient(instance);
 
-  kdDebug(7001) << "Added " << (e->isDir ? "Dir ":"File ") << path 
+  kdDebug(7001) << "Added " << (e->isDir ? "Dir ":"File ") << path
 		<< QString((e->m_status==NonExistent)?" NotExisting":"")
 		<< (sub_entry ? QString(" for %1").arg(sub_entry->path) : "")
 		<< (instance ? QString(" [%1]").arg(instance->name()) : "")
@@ -514,12 +514,12 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 #ifdef HAVE_DNOTIFY
   if (useDNotify(e)) return;
 #endif
-  
+
   useStat(e);
 }
 
 
-void KDirWatchPrivate::removeEntry( KDirWatch* instance, 
+void KDirWatchPrivate::removeEntry( KDirWatch* instance,
 				    const QString& _path, Entry* sub_entry )
 {
   Entry* e = entry(_path);
@@ -581,7 +581,7 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
   if (e->m_mode == StatMode) {
     statEntries--;
     if ( statEntries == 0 ) {
-      timer->stop(); // stop timer if lists are empty    
+      timer->stop(); // stop timer if lists are empty
       kdDebug(7001) << " Stopped Polling Timer" << endl;
     }
   }
@@ -730,7 +730,7 @@ void KDirWatchPrivate::resetList( KDirWatch* instance,
 }
 
 // Return event happened on <e>
-// 
+//
 int KDirWatchPrivate::scanEntry(Entry* e)
 {
 #ifdef HAVE_FAM
@@ -769,7 +769,7 @@ int KDirWatchPrivate::scanEntry(Entry* e)
       return Created;
     }
 
-    if ( e->m_ctime.isValid() && 
+    if ( e->m_ctime.isValid() &&
 	 (info.lastModified() != e->m_ctime) ) {
       e->m_ctime = info.lastModified();
       return Changed;
@@ -777,7 +777,7 @@ int KDirWatchPrivate::scanEntry(Entry* e)
 
     return NoChange;
   }
-  
+
   // dir/file doesn't exist
 
   if (!e->m_ctime.isValid())
@@ -801,7 +801,7 @@ void KDirWatchPrivate::emitEvent(Entry* e, int event)
 
     if (c->watchingStopped) {
       // add event to pending...
-      if (event == Changed) 
+      if (event == Changed)
 	c->pending |= event;
       else if (event == Created || event == Deleted)
 	c->pending = event;
@@ -834,11 +834,16 @@ void KDirWatchPrivate::emitEvent(Entry* e, int event)
       if (e->isDir)
 	c->instance->setDirDirty(e->path);
       else
-	c->instance->setFileDirty(e->path);      
+	c->instance->setFileDirty(e->path);
     }
   }
 }
 
+struct EmitEntry {
+  EmitEntry(KDirWatchPrivate::Entry _entry, int _event)
+    : entry(_entry), event(_event) {};
+  KDirWatchPrivate::Entry entry; int event;
+};
 
 /* Scan all entries to be watched for changes. This is done regularly
  * when polling and once after a DNOTIFY signal. This is NOT used by FAM.
@@ -846,6 +851,11 @@ void KDirWatchPrivate::emitEvent(Entry* e, int event)
 void KDirWatchPrivate::slotRescan()
 {
   EntryMap::Iterator it;
+
+  // Buffer events to be emitted, so that it won't crash if an app
+  // calls removeDir() in slotDirty().
+  QPtrList<EmitEntry> emitList;
+  emitList.setAutoDelete(true);
 
 #ifdef HAVE_DNOTIFY
   QPtrList<Entry> dList, cList;
@@ -867,7 +877,7 @@ void KDirWatchPrivate::slotRescan()
     if ((*it).m_mode == DNotifyMode) {
       if ((*it).isDir && (ev == Deleted)) {
 	dList.append( &(*it) );
-      
+
 	// must close the FD.
 	if ((*it).dn_fd) {
 	  ::close((*it).dn_fd);
@@ -889,7 +899,12 @@ void KDirWatchPrivate::slotRescan()
     }
 #endif
 
-    emitEvent( &(*it), ev);    
+    if ( ev != NoChange )
+      emitList.append(new EmitEntry(*it, ev));
+  }
+
+  for(EmitEntry* e = emitList.first(); e; e = emitList.next() ) {
+    emitEvent( &e->entry, e->event);
   }
 
 #ifdef HAVE_DNOTIFY
@@ -902,7 +917,6 @@ void KDirWatchPrivate::slotRescan()
   for(e=cList.first();e;e=cList.next())
     removeEntry(0, QDir::cleanDirPath( e->path+"/.."), e);
 #endif
-      
 }
 
 #ifdef HAVE_FAM
@@ -926,9 +940,9 @@ void KDirWatchPrivate::famEventReceived()
 	  if (useDNotify( &(*it) )) continue;
 #endif
 	  useStat( &(*it) );
-	}    
+	}
     }
-    else 
+    else
       checkFAMEvent(&fe);
   }
 }
@@ -961,7 +975,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 		<< ", " << fe->filename
 		<< ", Req " << FAMREQUEST_GETREQNUM(&(e->fr))
 		<< ")" << endl;
-  
+
   if (!e) {
     // this happens e.g. for FAMAcknowledge after deleting a dir...
     //    kdDebug(7001) << "No entry for FAM event ?!" << endl;
@@ -981,7 +995,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
     return;
   }
 
-  /* only interested in 
+  /* only interested in
    * - dir/file creation inside a watched dir
    * - dir/file deletion inside a watched dir
    * - deletion of a watched dir
@@ -1013,14 +1027,14 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 	sub_entry->m_status = Normal;
 	if (!useFAM(sub_entry))
 	  useStat(sub_entry);
-	
+
 	emitEvent(sub_entry, Created);
       }
     }
 
     return;
   }
-  
+
   if (fe->code == FAMDeleted) {
     // a watched directory was deleted
 
@@ -1074,7 +1088,7 @@ void KDirWatchPrivate::statistics()
 	  pending = ", stopped" + pending;
 	}
 	kdDebug(7001) << "    by " << c->instance->name()
-		      << " (" << c->count << " times)" 
+		      << " (" << c->count << " times)"
 		      << pending << endl;
       }
       if (e->m_entries.count()>0) {
@@ -1083,7 +1097,7 @@ void KDirWatchPrivate::statistics()
 	for(;d; d = e->m_entries.next()) {
 	  kdDebug(7001) << "      " << d->path << endl;
 	}
-      }  
+      }
     }
   }
 }
@@ -1100,7 +1114,7 @@ KDirWatch* KDirWatch::self()
   if ( !s_pSelf ) {
     s_pSelf = new KDirWatch;
   }
-    
+
   return s_pSelf;
 }
 
@@ -1109,7 +1123,7 @@ KDirWatch::KDirWatch (QObject* parent, const char* name)
 {
   if (!name) {
     static int nameCounter = 0;
-    
+
     nameCounter++;
     setName(QString("KDirWatch-%1").arg(nameCounter).ascii());
   }
@@ -1122,9 +1136,9 @@ KDirWatch::KDirWatch (QObject* parent, const char* name)
 }
 
 KDirWatch::~KDirWatch()
-{  
+{
   if (d) d->removeEntries(this);
-  // we don't remove singleton KDirWatchPrivate 
+  // we don't remove singleton KDirWatchPrivate
 }
 
 
