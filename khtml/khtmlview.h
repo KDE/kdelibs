@@ -40,6 +40,7 @@ namespace DOM {
     class HTMLGenericFormElementImpl;
     class HTMLFormElementImpl;
     class HTMLAnchorElementImpl;
+    class HTMLInputElementImpl;
     class Range;
     class NodeImpl;
     class CSSProperty;
@@ -57,6 +58,7 @@ namespace khtml {
     class RenderPartObject;
     class RenderWidget;
     class CSSStyleSelector;
+    class LineEditWidget;
     void applyRule(DOM::CSSProperty *prop);
 };
 
@@ -77,6 +79,7 @@ class KHTMLView : public QScrollView
     friend class DOM::HTMLGenericFormElementImpl;
     friend class DOM::HTMLFormElementImpl;
     friend class DOM::HTMLAnchorElementImpl;
+    friend class DOM::HTMLInputElementImpl;
     friend class DOM::DocumentImpl;
     friend class KHTMLPart;
     friend class khtml::RenderRoot;
@@ -85,6 +88,7 @@ class KHTMLView : public QScrollView
     friend class khtml::RenderPartObject;
     friend class khtml::RenderWidget;
     friend class khtml::CSSStyleSelector;
+    friend class khtml::LineEditWidget;
     friend class KJS::WindowFunc;
     friend void khtml::applyRule(DOM::CSSProperty *prop);
 
