@@ -549,9 +549,9 @@ void SimpleJob::slotProcessedSize( KIO::filesize_t size )
 {
     //kdDebug(7007) << "SimpleJob::slotProcessedSize " << KIO::number(size) << endl;
     emit processedSize( this, size );
-    if ( size > m_totalSize )
-      slotTotalSize(size); // safety
-
+    if ( size > m_totalSize ) {
+        slotTotalSize(size); // safety
+    }
     emitPercent( size, m_totalSize );
 }
 
@@ -1248,6 +1248,7 @@ FileCopyJob::~FileCopyJob()
 void FileCopyJob::setSourceSize( off_t size )
 {
     d->m_sourceSize = size;
+    m_totalSize = size;
 }
 
 void FileCopyJob::startCopyJob()
@@ -1280,8 +1281,9 @@ void FileCopyJob::connectSubjob( SimpleJob * job )
 void FileCopyJob::slotProcessedSize( KIO::Job *, KIO::filesize_t size )
 {
     emit processedSize( this, size );
-    if ( size > m_totalSize )
-         slotTotalSize( this, size ); // safety
+    if ( size > m_totalSize ) {
+        slotTotalSize( this, size ); // safety
+    }
     emitPercent( size, m_totalSize );
 }
 
@@ -1358,6 +1360,9 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
         //kdDebug(7007) << "FileCopyJob: m_getJob = " << m_getJob << endl;
         m_getJob->addMetaData( "errorPage", "false" );
         m_getJob->addMetaData( "AllowCompressedPage", "false" );
+        // Set size in subjob. This helps if the slave doesn't emit totalSize.
+        if ( d->m_sourceSize != (off_t)-1 )
+            m_getJob->slotTotalSize( d->m_sourceSize );
         if (offset)
         {
             kdDebug(7007) << "Setting metadata for resume to " << (unsigned long) offset << endl;
@@ -2734,16 +2739,16 @@ void CopyJob::deleteNextDir()
 
 void CopyJob::slotProcessedSize( KIO::Job*, KIO::filesize_t data_size )
 {
-  //kdDebug(7007) << "CopyJob::slotProcessedSize " << data_size << endl;
+  //kdDebug(7007) << "CopyJob::slotProcessedSize " << (unsigned long)data_size << endl;
   m_fileProcessedSize = data_size;
 
   if ( m_processedSize + m_fileProcessedSize > m_totalSize )
   {
     m_totalSize = m_processedSize + m_fileProcessedSize;
-    //kdDebug(7007) << "Adjusting m_totalSize to " << (unsigned int) m_totalSize << endl;
+    //kdDebug(7007) << "Adjusting m_totalSize to " << (unsigned long) m_totalSize << endl;
     emit totalSize( this, m_totalSize ); // safety
   }
-  //kdDebug(7007) << "emit processedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
+  //kdDebug(7007) << "emit processedSize " << (unsigned long) (m_processedSize + m_fileProcessedSize) << endl;
   emit processedSize( this, m_processedSize + m_fileProcessedSize );
   emitPercent( m_processedSize + m_fileProcessedSize, m_totalSize );
 }
@@ -2756,7 +2761,7 @@ void CopyJob::slotTotalSize( KIO::Job*, KIO::filesize_t size )
   // so we'd rather rely on the size given for the transfer
   if ( m_bSingleFileCopy )
   {
-    //kdDebug(7007) << "Single file -> updating totalsize to " << size << endl;
+    //kdDebug(7007) << "Single file -> updating totalsize to " << (long)size << endl;
     m_totalSize = size;
     emit totalSize( this, size );
   }

@@ -416,6 +416,13 @@ namespace KIO {
          */
         int command() const { return m_command; }
 
+    public slots:
+        /**
+         * Forward signal from the slave
+         * Can also be called by the parent job, when it knows the size
+         */
+        void slotTotalSize( KIO::filesize_t data_size );
+
     protected slots:
         /**
          * Called when the slave marks the job
@@ -439,10 +446,6 @@ namespace KIO {
          */
         void slotConnected();
 
-        /**
-         * Forward signal from the slave
-         */
-        void slotTotalSize( KIO::filesize_t data_size );
         /**
          * Forward signal from the slave
          */
