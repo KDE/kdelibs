@@ -79,7 +79,7 @@ public:
    * Creates a new module.
    */
   KCModule(QWidget *parent=0, const char *name=0)
-	: QWidget(parent, name), _btn(Help|Default|Reset|Cancel|Apply|Ok) {}
+	: QWidget(parent, name), _btn(Help|Default|Apply) {}
   /**
    * Load the configuration data into the module.
    *
