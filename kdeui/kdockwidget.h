@@ -46,10 +46,9 @@
 #include <qframe.h>
 #include <qdom.h>
 
-#include <netwm_def.h>
-
 #ifndef NO_KDE2
 #include <kmainwindow.h>
+#include <netwm_def.h>
 #undef  EXPORT_DOCKCLASS
 #define EXPORT_DOCKCLASS
 #else
@@ -543,12 +542,16 @@ public:
    */
   KDockTabGroup* parentDockTabGroup() { return parentTabGroup(); };
 
+#ifndef NO_KDE2
+
     /**
    * Sets the type of the dock window
    *
    * @param windowType is type of dock window
    */
   void setDockWindowType (NET::WindowType windowType);
+
+#endif
 
  /**
    * Sets the type of the dock window

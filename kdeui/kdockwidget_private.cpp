@@ -281,7 +281,10 @@ KDockWidgetPrivate::KDockWidgetPrivate()
   ,pendingFocusInEvent(false)
   ,blockHasUndockedSignal(false)
 {
+#ifndef NO_KDE2
   windowType = NET::Normal;
+#endif
+
   _parent = 0L;
   transient = false;
 }

@@ -20,7 +20,10 @@
 
 #include <qwidget.h>
 #include <qpushbutton.h>
+
+#ifndef NO_KDE2
 #include <netwm_def.h>
+#endif
 
 class QFrame;
 
@@ -104,7 +107,11 @@ public:
   int splitPosInPercent;
   bool pendingFocusInEvent;
   bool blockHasUndockedSignal;
+
+#ifndef NO_KDE2
   NET::WindowType windowType;
+#endif
+
   QWidget *_parent;
   bool transient;
 };

@@ -28,8 +28,6 @@
 #include <X11/X.h>
 #include <X11/Xlib.h>
 
-#include <kwin.h>
-
 #ifndef NO_KDE2
 #include <kapp.h>
 #include <kconfig.h>
@@ -416,7 +414,10 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
     if (d->transient && d->_parent)
       XSetTransientForHint( qt_xdisplay(), winId(), d->_parent->winId() );
 
+#ifndef NO_KDE2
     KWin::setType( winId(), d->windowType );
+#endif
+
   }
   updateHeader();
 }
@@ -437,11 +438,15 @@ void KDockWidget::show()
     }
 }
 
+#ifndef NO_KDE2
+
 void KDockWidget::setDockWindowType (NET::WindowType windowType)
 {
   d->windowType = windowType;
   applyToWidget( parentWidget(), QPoint(0,0) );
 }
+
+#endif
 
 void KDockWidget::setDockWindowTransient (bool transientEnabled)
 {
