@@ -24,6 +24,8 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "mediatool.h"
 #include "chunk.h"
 
@@ -174,6 +176,7 @@ void MdConnectNew(MediaCon *mcon)
   struct stat	finfo;
   int		ret, ref, newRefnum;
   FILE		*fid;
+  int		fdes;
   MdCh_IHDR	HeadChunk;
   MdCh_KEYS	KeysChunk;
   MdCh_STAT	StatChunk;
@@ -196,12 +199,23 @@ void MdConnectNew(MediaCon *mcon)
 
   ret = stat(pathkey, &finfo);
   if ( ret < 0 ) {
-    fid = fopen(pathkey, "w");
-    if ( fid==NULL ) {
-      LogError("Could not create a shared talk key file.");
+    fdes = open(pathkey, O_WRONLY | O_CREAT | O_EXCL);
+    if (fdes != -1) {
+      // open() worked
+      if ( (fid = fdopen(fdes, "w") ) == NULL ) {
+        // open() worked, but fdopen() failed
+        LogError("Could not create a shared talk key file (fdopen).\n");
+        close (fdes);
+        return;
+      }
+      else // everything went well
+        fclose (fid);
+    }
+    else {
+      // open() failed
+      LogError("Could not create a shared talk key file (open).\n");
       return;
     }
-    fclose(fid);
   }
 
   /* Now it is guaranteed, a file exists. Get the adress. */
