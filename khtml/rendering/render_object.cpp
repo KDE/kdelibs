@@ -27,6 +27,7 @@
 #include "rendering/render_table.h"
 #include "rendering/render_list.h"
 #include "rendering/render_canvas.h"
+//#include "rendering/render_replaced.h"
 #include "xml/dom_elementimpl.h"
 #include "xml/dom_docimpl.h"
 #include "misc/htmlhashes.h"
@@ -80,7 +81,9 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
         break;
     case RUN_IN:
     case COMPACT:
+        break;
     case INLINE_BLOCK:
+//        o = new (arena) RenderReplacedFlow(node);
         break;
     case TABLE:
     case INLINE_TABLE:

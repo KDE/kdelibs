@@ -416,9 +416,13 @@ InlineFlowBox* RenderFlow::createLineBoxes(RenderObject* obj)
     // as well.  In this situation our inline has actually been split in two on
     // the same line (this can happen with very fancy language mixtures).
     if (!box || box->isConstructed() || box->nextOnLine()) {
+        // ### hack to prevent crash on replaced elements
+	bool oldReplaced = obj->isReplaced();
+	obj->setReplaced(false);
         // We need to make a new box for this render object.  Once
         // made, we need to place it at the end of the current line.
         InlineBox* newBox = obj->createInlineBox(false);
+	obj->setReplaced(oldReplaced);
         KHTMLAssert(newBox->isInlineFlowBox());
         box = static_cast<InlineFlowBox*>(newBox);
 	// FIXME: not ported yet, it is set explicitly in computePositions...
