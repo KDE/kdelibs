@@ -1,4 +1,5 @@
-<?xml version="1.0" ?><!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN" "dtd/kdex.dtd" [
+<?xml version="1.0" ?>
+<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN" "dtd/kdex.dtd" [
   <!ENTITY kappname "&kspell;">
   <!ENTITY % English "INCLUDE" > <!-- change language only here -->
   <!ENTITY % addindex "IGNORE">
@@ -22,7 +23,7 @@
 <!-- TRANS:ROLES_OF_TRANSLATORS -->
 
 </authorgroup>
-<date>05/10/1999</date>
+<date>1999-10-05</date>
 <releaseinfo>1.00.00</releaseinfo>
 <abstract>
 <para>KSpell is the spelling checker used by KDE applications such as KEdit,
