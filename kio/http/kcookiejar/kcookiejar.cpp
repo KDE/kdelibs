@@ -87,13 +87,13 @@ KCookieAdvice KCookieJar::strToAdvice(const QString &_str)
     QString advice = _str.lower();
 
     if (advice == "accept")
-		return KCookieAccept;
+        return KCookieAccept;
     else if (advice == "reject")
-		return KCookieReject;
+        return KCookieReject;
     else if (advice == "ask")
-		return KCookieAsk;
+        return KCookieAsk;
 
-    return KCookieDunno;	
+    return KCookieDunno;
 }
 
 // KHttpCookie
@@ -244,8 +244,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
     }
 
     extractDomains(fqdn, domains);
-    bool secureRequest = (_url.find( "https://", 0, false) == 0);
-    // kdDebug(7104) << "KCookieJar::findCookies: IsSecure: " << secureRequest << endl;
+    bool secureRequest = (_url.find( "https://", 0, false) == 0);    
     for(QStringList::ConstIterator it = domains.begin();
         it != domains.end();
         ++it)
@@ -307,7 +306,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
 // '\n' - Another header follows
 static const char * parseNameValue(const char *header,
                                   QString &Name,
-                                  QString &Value, 
+                                  QString &Value,
                                   bool keepQuotes=false)
 {
     const char *s = header;
@@ -413,11 +412,10 @@ bool KCookieJar::parseURL(const QString &_url,
        return false;
 
     _fqdn = kurl.host().lower();
-    // Home Insurance policy:  You might not really need it
-    // but you (or rather I) feel better knowing I have it
-    // just in case it is needed...  This is what the code
-    // below does.  It makes sure we will not be spoofed
-    // under no circumstance :))  Won't break anything...
+
+    // Cookie spoofing protection.  Since there is no way a path separator
+    // or escape encoded character is allowed in the hostname according
+    // to RFC 2396, reject attempts to include such things there!
     if(_fqdn.find('/') > -1 || _fqdn.find('%') > -1)
     {
         return false;  // deny everything!!
@@ -517,8 +515,7 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
             // Host = FQDN
             // Default domain = ""
             // Default path = ""
-            KHttpCookie *cookie = new KHttpCookie(fqdn, QString::null, QString::null,
-                                     Name, Value );
+            KHttpCookie *cookie = new KHttpCookie(fqdn, "", "", Name, Value);
             cookie->mWindowId = windowId;
 
             // Insert cookie in chain
@@ -590,26 +587,7 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
                 lastCookie->mSecure = true;
             }
         }
-/*
-        // We have to default the path if the server did not
-        // provide one according to RFC 2109 sec 4.3.1 as well
-        // as the original Netscape spec.  Otherwise, we will
-        // definitetly send cookies where we should not in terms
-        // of the path. (DA)
-        if( lastCookie && lastCookie->mPath.isEmpty() )
-        {
-            QString dir = path;
-            if( dir != "/" )
-            {
-                int last_slash = dir.findRev('/');
-                if( last_slash > 0 )
-                    dir.truncate( last_slash );
-                else
-                    dir = '/';  // Use root directory...
-            }
-            lastCookie->mPath = dir;
-        }
-*/
+
         if (*cookieStr == '\0')
             break; // End of header
 
@@ -672,21 +650,7 @@ KHttpCookiePtr KCookieJar::makeDOMCookies(const QString &_url,
             cookieChain = cookie;
 
         lastCookie = cookie;
-/*
-        // We have to default the path.
-        // Is this right for script cookies?
-        QString dir = path;
-        if( dir != "/" )
-        {
-            int last_slash = dir.findRev('/');
-            if( last_slash > 0 )
-                dir.truncate( last_slash );
-            else
-                dir = '/';  // Use root directory...
-        }
-        lastCookie->mPath = dir;
-        kdDebug(7104) << "Setting path for script cookie to: " << dir << endl;
-*/
+
         if (*cookieStr != '\0')
             cookieStr++;         // Skip ';' or '\n'
      }
@@ -706,10 +670,6 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
 
     if (!cookieList)
     {
-//        kdDebug(7104) << "Creating new list for domain: " << domain << endl;
-//        kdDebug(7104) << "Cookie host: " << cookiePtr->host() << endl;
-//        kdDebug(7104) << "Cookie Domain: " << cookiePtr->domain() << endl;
-//        kdDebug(7104) << "Cookie Path: " << cookiePtr->path() << endl;
         // Make a new cookie list
         cookieList = new KHttpCookieList();
 
@@ -736,7 +696,6 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
         {
             KHttpCookiePtr old_cookie = cookie;
             cookie = cookieList->next();
-            cookieList->removeRef( old_cookie );
             cookiesChanged = true;
         }
         else
@@ -748,7 +707,7 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
     // Add the cookie to the cookie list
     // The cookie list is sorted 'longest path first'
     if (!cookiePtr->isExpired(time(0)))
-    {
+    {        
         cookieList->inSort( cookiePtr );
         cookiesChanged = true;
     }
@@ -1088,7 +1047,7 @@ static const char *parseField(charPtr &buffer, bool keepQuotes=false)
         result = buffer;
         while((*buffer != ' ') && (*buffer != '\t') && (*buffer != '\n') && (*buffer))
     	    buffer++;
-    }	    	
+    }
     if (!*buffer)
     	return result; //
     *buffer++ = '\0';
@@ -1130,7 +1089,7 @@ bool KCookieJar::loadCookies(const QString &_filename)
     	    // Skip lines which begin with '#' or '['
     	    if ((line[0] == '#') || (line[0] == '['))
     	    	continue;
-	
+
 	    const char *host( parseField(line) );
 	    const char *domain( parseField(line) );
 	    const char *path( parseField(line) );
@@ -1149,7 +1108,7 @@ bool KCookieJar::loadCookies(const QString &_filename)
             }
 	    const char *value( parseField(line, keepQuotes) );
 	    bool secure = atoi( parseField(line) );
-		
+
 
 	    // Parse error
 	    if (!value) continue;
@@ -1167,11 +1126,10 @@ bool KCookieJar::loadCookies(const QString &_filename)
                 if (checkDomain != domain)
                     continue;
             }
-#endif
-
+#endif	    
 	    KHttpCookie *cookie = new KHttpCookie(host, domain, path,
 	    	name, value, expDate, protVer, secure);
-	    addCookie(cookie);	
+	    addCookie(cookie);
     	}
     }
     delete [] buffer;
