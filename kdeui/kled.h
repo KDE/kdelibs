@@ -103,7 +103,7 @@ public:
    * @param name     Will be handed over to QWidget.
    * @short Constructor
    */
-  KLed(const QColor &col=Qt::green, QWidget *parent=0, const char *name=0);
+  KLed(const QColor &col, QWidget *parent=0, const char *name=0);
 
   /**
    * Constructor with the ledcolor, ledstate, ledlook,
