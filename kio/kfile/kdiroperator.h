@@ -378,7 +378,9 @@ class KDirOperator : public QWidget
      * "preview" and "single" actions are in an exclusive group.
      *
      * You can e.g. use
-     * \codeactionCollection()->action( "up" )->plug( someToolBar );\endcode
+     * \code
+     * actionCollection()->action( "up" )->plug( someToolBar );
+     * \endcode
      * to add a button into a toolbar, which makes the dirOperator change to
      * its parent directory.
      *
@@ -538,12 +540,13 @@ class KDirOperator : public QWidget
 
     /**
      * Sets up the action menu.
-     * @param actionTypes is an value of OR'd @ref ActionTypes that controls which actions to show in the action menu
+     * @param whichActions is an value of OR'd @ref ActionTypes that controls which actions to show in the action menu
      */
     void setupMenu(int whichActions);
 
     /**
      * Reimplemented - allow dropping of files if @p b is true
+     * @param b true if the widget should allow dropping of files
      */
     virtual void setAcceptDrops(bool b);
 

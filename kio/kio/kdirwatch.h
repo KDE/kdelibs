@@ -105,7 +105,7 @@ class KDirWatch : public QObject
 
    /**
     * Returns the time the directory/file was last changed.
-    * @param file the file to check
+    * @param path the file to check
     * @return the date of the last modification
     */
    QDateTime ctime(const QString& path);
@@ -114,7 +114,7 @@ class KDirWatch : public QObject
     * Removes a directory from the list of scanned directories.
     *
     * If specified path is not in the list this does nothing.
-    * @param dir the path of the dir to be removed from the list
+    * @param path the path of the dir to be removed from the list
     */
    void removeDir(const QString& path);
 
