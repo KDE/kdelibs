@@ -409,12 +409,14 @@ void KPropertiesDialog::insertPages()
 
 void KPropertiesDialog::updateUrl( const KURL& _newUrl )
 {
+  kdDebug() << "KPropertiesDialog::updateUrl " << _newUrl.url() << endl;
   m_singleUrl = _newUrl;
   assert(!m_singleUrl.isEmpty());
 }
 
 void KPropertiesDialog::rename( const QString& _name )
 {
+  kdDebug() << "KPropertiesDialog::rename " << _name << endl;
   KURL newUrl;
   // if we're creating from a template : use currentdir
   if ( !m_currentDir.isEmpty() )
@@ -831,6 +833,11 @@ void KFilePropsPlugin::applyChanges()
     n = KIO::encodeFileName(((QLabel *) nameArea)->text());
   else
     n = KIO::encodeFileName(((QLineEdit *) nameArea)->text());
+  // Remove trailing spaces (#4345)
+  while ( n[n.length()-1].isSpace() )
+      n.truncate( n.length() - 1 );
+  if ( n.isEmpty() )
+      return; // TODO KMessageBox
 
   // Do we need to rename the file ?
   kdDebug(250) << "oldname = " << oldName << endl;
@@ -868,6 +875,7 @@ void KFilePropsPlugin::applyChanges()
 
 void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
 {
+  kdDebug() << "KFilePropsPlugin::slotCopyFinished" << endl;
   if (job)
   {
     // allow apply() to return
