@@ -1,7 +1,7 @@
-Installation guide to KDE documentation tools (version 0.1-1)
-Eric Bischoff, 16 September 1999
+Installation guide to KDE documentation tools
+Eric Bischoff, 07 June 2000
 
-==============================================================================
+=======================================================================
 
 Introduction
 ============
@@ -73,10 +73,10 @@ You will need to download at least four packages:
 
 - jade: the SGML parser and DSSSL engine;
 
-- docbook-dtd31: the SGML document type definition for DocBook version
-  3.1;
+- docbook-dtd31-sgml: the SGML document type definition for DocBook
+  version 3.1;
 
-- docbook-stylesheets: the style sheets for HTML or TeX rendering.
+- docbook-stylesheets-dsssl: the style sheets for HTML or TeX rendering.
 
 You may also need one of the two other optional packages:
 
@@ -167,16 +167,13 @@ You will find the necessary files in the kdelibs package.
 
 If you have installed RPM packages, go to the directory where you
 have downloaded the kdelibs package, enter the "kdelibs"
-subdirectory and type (as normal user) the commands:
+subdirectory and type the commands:
 
 	make -f Makefile.cvs
 	./configure
-
-then type (as root) the following command:
-
 	make install
 
-and that's all !
+and that's all!
 
 If you have installed SRPMs or tarballs, it's slightly more complicated. The
 idea is to control directly Jade. Here is a small script I use to convert
@@ -200,15 +197,14 @@ C - Running
 1 - How do I process DocBook files?
 -----------------------------------
 
-At the present time, one of the few things you can do with DocBook files
-is to convert them to some other format. This limited usage is not too
-bad: DocBook is a very good format for documentation, and it allows you
-to focus on the contents of your documents instead of their presentation.
-
-Maybe someday it will be possible to browse directly the DocBook files
-contents, for example with a new KDE help center. But let's stop speaking
-about the future, and let's see how to convert DocBook files to some
-other format.
+At the present time, one of the few things you can do with DocBook
+files is to convert them to some other format. This is not too bad a
+restriction: DocBook is a very good format for documentation, and it
+allows you to focus on the contents of your documents instead of their
+presentation. Maybe someday it will be possible to browse directly the
+DocBook files contents, for example with a new KDE help center. But
+let's stop speaking about the future, and let's see how to convert
+DocBook files to some other format.
 
 If you have installed RPMs, type:
 
@@ -230,8 +226,8 @@ documents:
 		template.docbook
 
 This should produce a new directory named HTML/ that contains the
-resulting HTML files. If you want to type less and to avoid the -c
-argument, you must add a pointer
+resulting HTML files. If you get bored with typing -c parameter, you
+can add a pointer
 
 	CATALOG /usr/share/apps/ksgmltools/catalog
 
@@ -242,8 +238,15 @@ Another tool is used for translations: sgmldiff.pl. It verifies if the
 DocBook markup has not been altered by the translation process. For
 example, you can type:
 
-	sgmldiff kdebase/doc/konsole/index.docbook \
+	perl sgmldiff \
+		 kdebase/doc/konsole/index.docbook \
 		 kde-i18n/it/docs/kdebase/konsole/index.docbook
+
+sgmldiff has a number of options to refine problems detection. Type
+
+	sgmldiff --help
+
+to have more information on this.
 
 
 2 - How do I learn DocBook syntax?
@@ -252,8 +255,8 @@ example, you can type:
 Where will you go next? Maybe you will try to learn how the DocBook
 syntax.
 
-You might find two other documents (also in the kdelibs package) very
-useful for that purpose:
+You might find two other documents (also in the kdelibs package, in
+the doc/ksgmltools directory) very useful for that purpose:
 
 - the template file: if you have to write a new DocBook file, just fill in
   the blanks
@@ -265,9 +268,8 @@ It can be found at:
 
 	http://www.oasis-open.org/docbook/documentation
 
-(or the locations listed in the crash course).
-
-Don't forget to check on a regular basis the documentation homepage:
+Some other useful locations are listed in the crash course. Don't forget
+to check on a regular basis the documentation homepage:
 
 	http://i18n.kde.org/doc/index.html
 
@@ -282,6 +284,7 @@ In case you should run into problems, write me at the address:
 
 	mailto:ebisch@cybercable.tm.fr
 
-Please also report any bug you could find in this small installation guide.
+Please also report any bug you could find in this small installation
+guide.
 
 Have a lot of fun with DocBook !
