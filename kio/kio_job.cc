@@ -761,6 +761,12 @@ void KIOJob::slotError( int _errid, const char *_txt )
   }
 }
 
+void KIOJob::slotReady()
+{
+  m_bIsReady = true;
+
+  emit sigReady( m_id );
+}
 
 void KIOJob::slotRenamed( const char *_new )
 {

@@ -188,6 +188,7 @@ public:
   
   virtual void slotData( void *_p, int _len );
   virtual void slotError( int _errid, const char *_txt );
+  virtual void slotReady();
   virtual void slotFinished();
   virtual void slotIsDirectory();
   virtual void slotIsFile();
@@ -296,6 +297,7 @@ signals:
    */
   void sigPreData( int id, const char *data, int len );
   void sigData( int id, const char *data, int len );
+  void sigReady( int id );
   void sigRedirection( int id, const char *url );
   void sigIsDirectory( int id );
   void sigIsFile( int id );
