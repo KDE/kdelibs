@@ -714,8 +714,9 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
 		User3|User2|User1|Cancel, User3, false,
 		i18n("Replace &All"), i18n("&Replace"), i18n("&Find") )
 {
-  QWidget *page = new QWidget( this );
-  setMainWidget(page);
+  setButtonBoxOrientation( Vertical );
+
+  QFrame *page = makeMainWidget();
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
 
   QString text = i18n("Find:");
