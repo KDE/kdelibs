@@ -30,7 +30,10 @@
 
 namespace KDE
 {
-    const char *version();
+    unsigned int versionMajor();
+    unsigned int versionMinor();
+    unsigned int versionRelease();
+    const char *versionString();
 };
 
 #endif // _KDE_VERSION_H_
