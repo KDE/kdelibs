@@ -386,7 +386,6 @@ QString KBookmark::encode( const char *_str )
 {
   QString str( _str );
 
-/* FIXME: temporarily disabled... I'm too lazy to fix this now ;) (Simon)
   int i = 0;
   while ( ( i = str.find( "%", i ) ) != -1 )
   {
@@ -395,7 +394,6 @@ QString KBookmark::encode( const char *_str )
   }
   while ( ( i = str.find( "/" ) ) != -1 )
       str.replace( i, 1, "%2f");
-*/
   return str;
 }
 
@@ -403,8 +401,6 @@ QString KBookmark::decode( const char *_str )
 {
   QString str( _str );
 
-/* FIXME: temporarily disabled... I'm too lazy to fix this now ;) (Simon)
-  
   int i = 0;
   while ( ( i = str.find( "%%", i ) ) != -1 )
   {
@@ -416,7 +412,6 @@ QString KBookmark::decode( const char *_str )
       str.replace( i, 3, "/");
   while ( ( i = str.find( "%2F" ) ) != -1 )
       str.replace( i, 3, "/");
-*/
   return str;
 }
 

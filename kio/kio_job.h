@@ -159,6 +159,10 @@ public:
   virtual bool getSize( const char *_url );
 
   virtual bool listDir( const char *_url );
+  /**
+   * Tests whether _url is a directory.
+   * Will emit @ref #sigIsDirectory or @ref #sigIsFile depending on which one it is.
+   */
   virtual bool testDir( const char *_url );
 
   virtual bool mount( bool _ro, const char *_fstype, const char* _dev, const char *_point );
