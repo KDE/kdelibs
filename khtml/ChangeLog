@@ -1,4 +1,4 @@
-2003-10-20  Dirk Mueller  <dmuell@gmx.net>
+2003-10-20  Dirk Mueller  <mueller@kde.org>
 
 	* html/html_formimpl.cpp (value): return the DOM "defaultValue" when we have
 	no renderer.
@@ -17,7 +17,7 @@
 
 	* rendering/render_list.cpp: ListItems are no longer floats.
 
-2003-10-19  Dirk Mueller  <dmuell@gmx.net>
+2003-10-19  Dirk Mueller  <mueller@kde.org>
 
 	* html/html_headimpl.cpp (childrenChanged): make sure that we respect the media
 	attribute of <style> (#47786).
@@ -27,12 +27,12 @@
 	* html/html_documentimpl.cpp (setCookie): use latin1 encoding to
 	have a 1:1 translation of the lowest Unicode row.
 
-2003-10-19  Dirk Mueller  <dmuell@gmx.net>
+2003-10-19  Dirk Mueller  <mueller@kde.org>
 
 	* html/htmltokenizer.cpp (parseEntity): when entity is terminated and result
 	is not-ascii, require ending ';'. khtmltests/html/parser/obscure_entity_tokenizing.html
 
-2003-10-18  Dirk Mueller  <dmuell@gmx.net>
+2003-10-18  Dirk Mueller  <mueller@kde.org>
 
 	* css/cssstyleselector.cpp (checkOneSelector): fix selector list matching
 	when substrings match in a word. we have to test if we matched a complete word,
@@ -68,7 +68,7 @@
 
 	* ecma/kjs_html.cpp (toString): make use of alt attribute if set
 
-2003-10-09  Dirk Mueller  <dmuell@gmx.net>
+2003-10-09  Dirk Mueller  <mueller@kde.org>
 
 	* ecma/kjs_dom.cpp (putValueProperty): don't scroll layer when there is is nothing
 	to scroll. (David Hyatt)
