@@ -107,7 +107,7 @@ void KRootProp::setProp( const QString& rProp )
 			if( i != -1 ) {
 				key = keypair.left( i );
 				value = keypair.right( keypair.length() - i - 1 );
-				propDict.insert( key.data(), new QString( value.data() ) );
+				propDict.insert( key.data(), new QString( value ) );
 			}
 		}
 	}
@@ -265,7 +265,7 @@ QString KRootProp::writeEntry( const QString& rKey, const QString& rValue )
 	if( propDict[ rKey.data() ] )
 		aValue = propDict[ rKey.data() ];
 
-	propDict.replace( rKey.data(), new QString( rValue.data() ) );
+	propDict.replace( rKey.data(), new QString( rValue ) );
 	
 	if ( !aValue )
 	    *aValue = rValue;
