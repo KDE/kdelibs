@@ -150,6 +150,29 @@ KReadWritePart::~KReadWritePart()
 {
 }
 
+KPartGUIServant::KPartGUIServant( KPart *part )
+  : QObject( part )
+{
+  m_part = part;
+}
 
+QAction *KPartGUIServant::action( const QDomElement &element )
+{
+  if ( element.tagName() == "Action" )
+   return m_part->action( element.attribute( "name" ) );
+  else if ( element.tagName() == "PluginAction" )
+  {
+    KPlugin *plugin = m_part->plugin( element.attribute( "plugin" ) );
+    if ( plugin )
+      return plugin->action( element.attribute( "name" ) );
+  }
+
+  return 0;
+}
+
+QString KPartGUIServant::xml()
+{
+  return m_part->config();
+}
 
 #include "kpart.moc"

@@ -8,9 +8,9 @@ libkparts2_la_LIBADD  = $(LIB_KIO)
 
 lib_LTLIBRARIES = libkparts2.la
 
-libkparts2_la_SOURCES = kpart.cpp kplugin.cpp kembedmanager.cpp kshell.cpp
+libkparts2_la_SOURCES = kpart.cpp kplugin.cpp kembedmanager.cpp kshell.cpp kxmlgui.cpp
 
-include_HEADERS = kpart.h kplugin.h kembedmanager.h kshell.h
+include_HEADERS = kpart.h kplugin.h kembedmanager.h kshell.h kxmlgui.h
 
 libkparts2_la_METASOURCES = kpart.moc kplugin.moc kembedmanager.moc kshell.moc
 

@@ -5,9 +5,11 @@
 #include <qwidget.h>
 #include <qlist.h>
 #include <qstring.h>
+#include <qdom.h>
 #include <kurl.h>
 
 #include "kplugin.h"
+#include "kxmlgui.h"
 
 class KPart : public QWidget
 {
@@ -77,6 +79,20 @@ public:
 
   virtual bool save( const QString &url ) = 0;
   // to re_upload the file
+};
+
+class KPartGUIServant : public QObject, public KXMLGUIServant
+{
+  Q_OBJECT
+ public:
+  KPartGUIServant( KPart *part );
+
+  virtual QAction *action( const QDomElement &element );
+
+  virtual QString xml();
+
+ private:
+  KPart *m_part;
 };
 
 #endif
