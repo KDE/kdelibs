@@ -825,17 +825,21 @@ bool KHTMLView::gotoLink(bool forward)
             }
 
             setContentsPos(contentsX(), (forward?0:contentsHeight()));
-            if (nextTarget)
+            d->scrollBarMoved = false;
+
+            if (!nextTarget)
+                return true;
+            else
             {
                 QRect nextRect = nextTarget->getRect();
                 if (nextRect.top()  < contentsY() ||
                     nextRect.bottom() > contentsY()+visibleHeight())
                     return true;
             }
-            else return true;
         }
     }
 
+    d->scrollBarMoved = false;
     if (!currentNode && d->borderStart != forward)
 	nextTarget = 0;
 
@@ -1209,6 +1213,7 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
         e->accept();
     }
     else {
+        d->scrollBarMoved = true;
         QScrollView::viewportWheelEvent( e );
     }
 }
