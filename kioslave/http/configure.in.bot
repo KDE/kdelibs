@@ -1,0 +1,20 @@
+dnl put here things which have to be done as very last part of configure
+
+if test "x$with_gssapi" == xNOTFOUND; then
+  echo ""
+  echo "You're missing GSSAPI/Kerberos."
+  echo "KDE can use GSSAPI/Kerberos to authenticate on certain secure websites."
+  echo "GSSAPI/Kerberos authentication is typically used on intranets."
+  echo ""
+  all_tests=bad
+fi
+
+if test "x$with_ntlm" == xNOTFOUND; then
+  echo ""
+  echo "You're missing libntlm."
+  echo "KDE can use NTLM to authenticate on certain secure websites."
+  echo "NTLM authentication is typically used on intranets with Microsoft webservers."
+  echo ""
+  all_tests=bad
+fi
+

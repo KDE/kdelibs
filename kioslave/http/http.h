@@ -58,7 +58,7 @@ public:
   enum HTTP_REV    {HTTP_None, HTTP_Unknown, HTTP_10, HTTP_11, SHOUTCAST};
 
   /** Authorization method used **/
-  enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest, AUTH_Negotiate};
+  enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest, AUTH_Negotiate, AUTH_NTLM};
 
   /** HTTP / DAV method **/
   // Removed to interfaces/kio/http.h
@@ -432,6 +432,11 @@ protected:
    * Creates the entity-header for Digest authentication.
    */
   QString createDigestAuth( bool isForProxy = false );
+
+  /**
+   * Creates the entity-header for NTLM authentication.
+   */
+  QString createNTLMAuth( bool isForProxy = false );
 
   /**
    * Creates the entity-header for Negotiate authentication.

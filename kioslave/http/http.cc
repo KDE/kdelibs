@@ -84,6 +84,10 @@
 
 #endif /* HAVE_LIBGSSAPI */
 
+#ifdef HAVE_LIBNTLM
+#include <ntlm.h>
+#endif
+
 using namespace KIO;
 
 extern "C" {
@@ -2381,11 +2385,12 @@ bool HTTPProtocol::httpOpen()
         info.username = m_request.user;
       if ( checkCachedAuthentication( info ) && !info.digestInfo.isEmpty() )
       {
-        Authentication = info.digestInfo.startsWith("Basic") ? AUTH_Basic : AUTH_Digest ;
+        Authentication = info.digestInfo.startsWith("Basic") ? AUTH_Basic : info.digestInfo.startsWith("NTLM") ? AUTH_NTLM : AUTH_Digest ;
         m_state.user   = info.username;
         m_state.passwd = info.password;
         m_strRealm = info.realmValue;
-        m_strAuthorization = info.digestInfo;
+        if ( Authentication != AUTH_NTLM ) // don't use the cached challenge
+          m_strAuthorization = info.digestInfo;
       }
     }
     else
@@ -2404,6 +2409,11 @@ bool HTTPProtocol::httpOpen()
 #ifdef HAVE_LIBGSSAPI
       case AUTH_Negotiate:
           header += createNegotiateAuth();
+          break;
+#endif
+#ifdef HAVE_LIBNTLM
+      case AUTH_NTLM:
+          header += createNTLMAuth();
           break;
 #endif
       case AUTH_None:
@@ -3407,7 +3417,14 @@ bool HTTPProtocol::readHeader()
     {
         if ( getAuthorization() )
         {
-           httpCloseConnection();
+           // for NTLM Authentication we have to keep the connection open!
+           if ( (Authentication == AUTH_NTLM) && (m_prevResponseCode != 0) )
+           {
+             m_bKeepAlive = true;
+             readBody( true );
+           }
+           else
+             httpCloseConnection();
            return false; // Try again.
         }
 
@@ -4827,6 +4844,14 @@ void HTTPProtocol::configAuth( char *p, bool b )
     };
   }
 #endif
+#ifdef HAVE_LIBNTLM
+  else if ( strncasecmp( p, "NTLM", 4 ) == 0)
+  {
+    f = AUTH_NTLM;
+    memcpy((void *)p, "NTLM", 4); // Correct for upper-case variations.
+    p += 4;
+  }
+#endif
   else
   {
     kdWarning(7113) << "(" << m_pid << ") Unsupported or invalid authorization "
@@ -5021,6 +5046,34 @@ bool HTTPProtocol::getAuthorization()
         }
       }
     }
+
+#ifdef HAVE_LIBNTLM
+    if ( Authentication == AUTH_NTLM )
+    {
+      QString auth = ( m_responseCode == 401 ) ? m_strAuthorization : m_strProxyAuthorization;
+      if ( auth.length() > 4 )
+      {
+        prompt = false;
+        result = true;
+        kdDebug(7113) << "(" << m_pid << ") NTLM auth second phase, "
+                      << "sending response..." << endl;
+        if ( m_responseCode == 401 )
+        {
+          info.username = m_request.user;
+          info.password = m_request.passwd;
+          info.realmValue = m_strRealm;
+          info.digestInfo = m_strAuthorization;
+        }
+        else if ( m_responseCode == 407 )
+        {
+          info.username = m_proxyURL.user();
+          info.password = m_proxyURL.pass();
+          info.realmValue = m_strProxyRealm;
+          info.digestInfo = m_strProxyAuthorization;
+        }
+      }
+    }
+#endif
 
     if ( prompt )
     {
@@ -5284,6 +5337,74 @@ QCString HTTPProtocol::gssError( int, int )
 
 // Dummy
 QString HTTPProtocol::createNegotiateAuth()
+{
+  return QString::null;
+}
+#endif
+
+#ifdef HAVE_LIBNTLM
+QString HTTPProtocol::createNTLMAuth( bool isForProxy )
+{
+  uint len;
+  QString auth;
+  QCString user, passwd, strauth;
+  QByteArray buf;
+
+  if ( isForProxy )
+  {
+    auth = "Proxy-Authorization: NTLM ";
+    user = m_proxyURL.user().latin1();
+    passwd = m_proxyURL.pass().latin1();
+    strauth = m_strProxyAuthorization.latin1();
+    len = m_strProxyAuthorization.length();
+  }
+  else
+  {
+    auth = "Authorization: NTLM ";
+    user = m_state.user.latin1();
+    passwd = m_state.passwd.latin1();
+    strauth = m_strAuthorization.latin1();
+    len = m_strAuthorization.length();
+  }
+  kdDebug(7113) << "(" << m_pid << ") NTLM length: " << len << endl;
+  if ( user.isEmpty() || passwd.isEmpty() || len < 4 )
+    return QString::null;
+
+  if ( len > 4 )
+  {
+    // create a response
+    tSmbNtlmAuthChallenge challenge;
+    tSmbNtlmAuthResponse  response;
+
+    KCodecs::base64Decode( strauth.right( len - 5 ), buf );
+    memcpy((void *)&challenge, (const void *)buf.data(), sizeof(challenge));
+    buildSmbNtlmAuthResponse(&challenge, &response, user, passwd);
+    buf.duplicate((const char *)&response, SmbLength(&response));
+  }
+  else
+  {
+    // create a request
+    tSmbNtlmAuthRequest   request;
+
+    buildSmbNtlmAuthRequest(&request, user, NULL);
+    buf.duplicate((const char *)&request, SmbLength(&request));
+  }
+
+  // remove the challenge to prevent reuse
+  if ( isForProxy )
+    m_strProxyAuthorization = "NTLM";
+  else
+    m_strAuthorization = "NTLM";
+
+  auth += KCodecs::base64Encode( buf );
+  auth += "\r\n";
+
+  return auth;
+}
+#else
+
+// Dummy
+QString HTTPProtocol::createNTLMAuth( bool /*isForProxy*/ )
 {
   return QString::null;
 }
@@ -5684,6 +5805,8 @@ QString HTTPProtocol::proxyAuthenticationHeader()
         ProxyAuthentication = AUTH_None;
       else if( m_strProxyAuthorization.startsWith("Basic") )
         ProxyAuthentication = AUTH_Basic;
+      else if( m_strProxyAuthorization.startsWith("NTLM") )
+        ProxyAuthentication = AUTH_NTLM;
       else
         ProxyAuthentication = AUTH_Digest;
     }
@@ -5697,6 +5820,8 @@ QString HTTPProtocol::proxyAuthenticationHeader()
         m_strProxyAuthorization = info.digestInfo;
         if( m_strProxyAuthorization.startsWith("Basic") )
           ProxyAuthentication = AUTH_Basic;
+        else if( m_strProxyAuthorization.startsWith("NTLM") )
+          ProxyAuthentication = AUTH_NTLM;
         else
           ProxyAuthentication = AUTH_Digest;
       }
@@ -5727,6 +5852,11 @@ QString HTTPProtocol::proxyAuthenticationHeader()
     case AUTH_Digest:
       header += createDigestAuth( true );
       break;
+#ifdef HAVE_LIBNTLM
+    case AUTH_NTLM:
+      header += createNTLMAuth( true );
+      break;
+#endif
     case AUTH_None:
     default:
       break;
