@@ -222,7 +222,14 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
     QPtrListIterator<KAction> it( actions );
     kdDebug(7043) << "pos() == " << pos << endl;
     bool found = false;
+
     // search for a toolbarbutton at pos
+
+    // assumption that .first() c + b are consistant with 
+    // rest of collection can be made as its non hierchical
+    // and only one bookmarks bar is used. possibly more can
+    // exist though, so, this should be fixed somehow at some
+    // point in the future.
     for (; (*it); ++it )
     {
         a = (*it);
@@ -235,23 +242,40 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
             break;
         }
     }
-    /*
     if (found)
     {
         index = tb->itemIndex(b->id());
         QRect r = b->geometry();
+        kdDebug(7043) << "found " << b << " at " << r << " with index " << index << endl;
+        kdDebug(7043) << "id was == " << b->id() << endl;
         if (pos.x() <= ((r.left() + r.right())/2) && index > 0)
         {
-            QPoint p(r.topLeft());
-            p.setX(p.x() - 5);
-            --it;
-            a = (*it);
-            found = fillinButtonInfo(b, tb, a, p);
-            Q_ASSERT(found);
-            // index = tb->itemIndex(b->id());
+            found = false;
+            index--;
+            // we have the index now work out the rest
+            int id = tb->idAt(index);
+            kdDebug(7043) << "id for prev index == " << id << endl;
+            if (id != -9999) // fixme
+            {
+               b = tb->getButton(id);
+               Q_ASSERT(id == b->id());
+               it.toFirst();
+               kdDebug(7043) << "searching for id == " << id << endl;
+               for (; (*it); ++it )
+               {
+                   a = (*it);
+                   QWidget *c = a->container(0);
+                   if (a->isPlugged(c, id))
+                   {
+                       found = true;
+                       index = tb->itemIndex(id);
+                       kdDebug(7043) << "prev index = " << index << endl;
+                       break;
+                   }
+               }
+           }
         }
     }
-    */
     return found;
 }
 
