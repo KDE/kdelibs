@@ -668,6 +668,9 @@ void RenderPartObject::updateWidget()
   QStringList params;
   KHTMLPart *part = m_view->part();
 
+  setMinMaxKnown(false);
+  setLayouted(false);
+  
   // ### this should be constant true - move iframe to somewhere else
   if (element()->id() == ID_OBJECT || element()->id() == ID_EMBED) {
 
@@ -797,8 +800,6 @@ void RenderPartObject::updateWidget()
       KHTMLView *v = static_cast<KHTMLView *>(m_view);
       v->part()->requestFrame( this, url, o->name.string(), QStringList(), true );
   }
-  setMinMaxKnown(false);
-  setLayouted(false);
 }
 
 // ugly..
@@ -902,8 +903,7 @@ void RenderPartObject::layout( )
     KHTMLAssert( !layouted() );
     KHTMLAssert( minMaxKnown() );
 
-    qDebug("RenderPartObject::layout()");
-    qDebug("parent: %p", RenderObject::parent());
+    //qDebug("RenderPartObject::layout()");
 
     short m_oldwidth = m_width;
     int m_oldheight = m_height;
@@ -914,7 +914,8 @@ void RenderPartObject::layout( )
     if (m_width != m_oldwidth || m_height != m_oldheight)
         RenderPart::layout();
 
-    setLayouted(!style()->width().isPercent());
+    //qDebug("parent: %p width=%d", RenderObject::parent(), m_width);
+    setLayouted();
 }
 
 void RenderPartObject::slotViewCleared()
