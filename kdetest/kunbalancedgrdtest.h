@@ -18,12 +18,12 @@ class KGradientWidget : public QWidget
 public:
     KGradientWidget(QWidget *parent=0, const char *name=0);
 
-    void setBalance(int a) { balance = a; }
+    void setBalance(int a, int b) { xbalance = a; ybalance = b; }
 protected:
     void paintEvent(QPaintEvent *ev);
 private:
     KPixmap pix;
-    int balance;
+    int xbalance, ybalance;
     QTime time;
  
 };
@@ -36,10 +36,14 @@ public:
   
 private:
   QLabel *bLabel;
-  QSlider *bSlider;
+  QSlider *xSlider, *ySlider;
   KGradientWidget *grds;
 
+  QTime time;
+
+  int itime, otime;
+
 private slots:
-  void rebalance(int);
+  void rebalance();
 };
 #endif

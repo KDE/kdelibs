@@ -31,14 +31,14 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
     // draw once, so that the benchmarking be fair :-)
     KPixmapEffect::unbalancedGradient(pix,ca, cb, 
 				      KPixmapEffect::VerticalGradient,
-				      balance);
+				      xbalance, ybalance);
 
     // vertical
     time.start();
     it = time.elapsed();
     KPixmapEffect::unbalancedGradient(pix,ca, cb, 
 				      KPixmapEffect::VerticalGradient,
-				      balance);
+				      xbalance, ybalance);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms, Vertical";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
@@ -48,7 +48,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
     it = time.elapsed();
     KPixmapEffect::unbalancedGradient(pix,ca, cb, 
 				      KPixmapEffect::HorizontalGradient,
-				      balance);
+				      xbalance, ybalance);
     ft = time.elapsed() ;
     say.setNum( ft - it); say += " ms, Horizontal";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
@@ -58,7 +58,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
     it = time.elapsed();
     KPixmapEffect::unbalancedGradient(pix, ca, cb, 
 				      KPixmapEffect::EllipticGradient,
-				      balance);
+				      xbalance, ybalance);
     ft = time.elapsed() ;
     say.setNum( ft - it); say += " ms, Elliptic";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
@@ -71,7 +71,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
     it = time.elapsed();
     KPixmapEffect::unbalancedGradient(pix,ca, cb, 
 				      KPixmapEffect::DiagonalGradient,
-				      balance);
+				      xbalance, ybalance);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms, Diagonal";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
@@ -81,7 +81,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
     it = time.elapsed();
     KPixmapEffect::unbalancedGradient(pix,ca, cb,
 				      KPixmapEffect::CrossDiagonalGradient,
-				      balance);
+				      xbalance, ybalance);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms, CrossDiagonal";
     p.drawPixmap(width()/cols, y*height()/rows, pix);
@@ -95,7 +95,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
     it = time.elapsed();
     KPixmapEffect::unbalancedGradient(pix, ca, cb, 
 				      KPixmapEffect::PyramidGradient,
-				      balance);
+				      xbalance, ybalance);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms, Pyramid";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
@@ -105,7 +105,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
     it = time.elapsed();
     KPixmapEffect::unbalancedGradient(pix, ca, cb, 
 				      KPixmapEffect::RectangleGradient,
-				      balance);
+				      xbalance, ybalance);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms, Rectangle";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
@@ -115,7 +115,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
     it = time.elapsed();
     KPixmapEffect::unbalancedGradient(pix, ca, cb, 
 				      KPixmapEffect::PipeCrossGradient,
-				      balance);
+				      xbalance, ybalance);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms, PipeCross";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
@@ -126,29 +126,43 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
 myTopWidget::myTopWidget (QWidget *parent, const char *name=0)
   :QWidget(parent, name)
 {
-  QGridLayout *lay = new QGridLayout (this, 2, 2, 0);
+  QGridLayout *lay = new QGridLayout (this, 2, 3, 0);
 
   grds = new KGradientWidget(this);
   lay->addMultiCellWidget(grds, 0, 0 ,0, 1);
 
-  bLabel = new QLabel("Balance: 0.00", this);
+  bLabel = new QLabel("Balance: X = 000; Y = 000", this);
   lay->addWidget(bLabel, 1, 0);
 
-  bSlider = new QSlider ( 1, 100, 1, 10, QSlider::Horizontal, this);
-  lay->addWidget(bSlider, 1, 1);
+  xSlider = new QSlider ( -200, 200, 1, 100, QSlider::Horizontal, this);
+  lay->addWidget(xSlider, 1, 1);
 
-  connect(bSlider, SIGNAL(valueChanged(int)), this, SLOT(rebalance(int)));
+  ySlider = new QSlider ( -200, 200, 1, 100, QSlider::Horizontal, this);
+  lay->addWidget(ySlider, 1, 2);
 
-  rebalance(30);
+  connect(xSlider, SIGNAL(valueChanged(int)), this, SLOT(rebalance()));
+  connect(ySlider, SIGNAL(valueChanged(int)), this, SLOT(rebalance()));
+
+  rebalance();
+
+  itime = otime = 0;
+  time.start();
 }
 
-void myTopWidget::rebalance(int a)
+void myTopWidget::rebalance()
 {
-  QString val; val.sprintf("Balance: %3.2f", (float)a/100);
+  itime = time.elapsed();
+
+  QString val; val.sprintf("Balance: X = %3d; Y = %3d", 
+			   xSlider->value(), ySlider->value());
 
   bLabel->setText(val);
-  grds->setBalance(a);
-  grds->repaint(false);
+  grds->setBalance(xSlider->value(), ySlider->value());
+
+  if (itime - otime > 500)
+    grds->repaint(false);
+
+  otime = time.elapsed();
 }
 
 int main(int argc, char **argv)
