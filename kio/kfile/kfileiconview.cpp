@@ -173,7 +173,6 @@ void KFileIconView::readConfig( KConfig *kc, const QString& group )
     QString small = QString::fromLatin1("SmallColumns");
     d->previewIconSize = kc->readNumEntry( "Preview Size", 60 );
     d->previews->setChecked( kc->readBoolEntry( "ShowPreviews", false ) );
-    qDebug("*** readConfig!: %i", d->previews->isChecked());
 
     if ( kc->readEntry("ViewMode", small ) == small ) {
 	d->smallColumns->setChecked( true );
@@ -183,7 +182,7 @@ void KFileIconView::readConfig( KConfig *kc, const QString& group )
 	d->largeRows->setChecked( true );
 	slotLargeRows();
     }
-    
+
     if ( d->previews->isChecked() )
         showPreviews();
 }
@@ -302,7 +301,7 @@ void KFileIconView::insertItem( KFileItem *i )
 {
     KFileView::insertItem( i );
 
-    KFileIconViewItem *item = 
+    KFileIconViewItem *item =
         new KFileIconViewItem( (QIconView*)this, i->text(),
                                i->pixmap( iconSizeFor( i ) ), i);
     initItem( item, i, false );
@@ -709,7 +708,7 @@ void KFileIconView::initItem( KFileIconViewItem *item, const KFileItem *i,
     item->setText( i->text() , false, false );
         item->setPixmap( i->pixmap( iconSizeFor( i ) ) );
     }
-    
+
     // see also setSorting()
     QDir::SortSpec spec = KFileView::sorting();
 
