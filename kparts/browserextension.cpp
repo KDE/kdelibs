@@ -189,8 +189,10 @@ QMap<QCString,QCString> BrowserExtension::actionSlotMap()
   res.insert( "editMimeType", SLOT( editMimeType() ) );
   res.insert( "print", SLOT( print() ) );
   res.insert( "saveLocalProperties", SLOT( saveLocalProperties() ) );
-  res.insert( "reparseConfiguration", SLOT( reparseConfiguration() ) );
-  res.insert( "refreshMimeTypes", SLOT( refreshMimeTypes() ) );
+  // Tricky. Those aren't actions in fact, but simply methods that a browserextension
+  // can have or not. No need to return them here.
+  //res.insert( "reparseConfiguration", SLOT( reparseConfiguration() ) );
+  //res.insert( "refreshMimeTypes", SLOT( refreshMimeTypes() ) );
 
   return res;
 }
