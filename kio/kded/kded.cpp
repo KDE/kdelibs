@@ -128,7 +128,6 @@ void Kded::recreate()
    proc << locate("exe","kbuildsycoca");
    proc << "--incremental";
    proc.start( KProcess::Block );
-
    build();
 }
 
@@ -166,14 +165,21 @@ void Kded::readDirectory( const QString& _path )
 {
   // kdDebug(7020) << QString("reading %1").arg(_path) << endl;
 
-  QDir d( _path, QString::null, QDir::Unsorted, QDir::AccessMask | QDir::Dirs );
-  // set QDir ...
-  if ( !d.exists() )                            // exists&isdir?
-    return;                             // return false
-
   QString path( _path );
   if ( path.right(1) != "/" )
     path += "/";
+
+  if ( m_pDirWatch->contains( path ) ) // Already seen this one?
+     return;
+
+  QDir d( _path, QString::null, QDir::Unsorted, QDir::AccessMask | QDir::Dirs );
+  // set QDir ...
+  if ( !d.exists() )                            // exists&isdir?
+  {
+    kdDebug(7020) << QString("Does not exist! (%1)").arg(_path) << endl;
+    return;                             // return false
+  }
+
 
   QString file;
 
@@ -181,17 +187,13 @@ void Kded::readDirectory( const QString& _path )
   //                           Setting dirs
   //************************************************************************
 
-  if ( !m_pDirWatch->contains( path ) ) // New dir?
+  m_pDirWatch->addDir(path);          // add watch on this dir
+  if (!m_needUpdate)
   {
-    m_pDirWatch->addDir(path);          // add watch on this dir
-    if (!m_needUpdate)
-    {
-       time_t ctime = m_pDirWatch->ctime(path);
-       if (ctime && (ctime > m_sycocaDate))
-          m_needUpdate = true;
-    }
+     time_t ctime = m_pDirWatch->ctime(path);
+     if (ctime && (ctime > m_sycocaDate))
+        m_needUpdate = true;
   }
-
   // Note: If some directory is gone, dirwatch will delete it from the list.
 
   //************************************************************************
