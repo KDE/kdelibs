@@ -1,0 +1,27 @@
+{
+  local: _ZNK5khtml*;
+         _ZN5khtml*;
+         _ZN3DOM19HTMLBodyElementImpl*;
+         _ZN3DOM16NodeIteratorImpl*;
+         _ZN3DOM16NamedAttrMapImpl*;
+         _ZN3DOM17CSSImageValueImpl*;
+         _ZN3DOM17CSSPrimitiveValue*;
+         _ZN3DOM12DocumentImpl*;
+         _ZN3DOM14TreeWalkerImpl*;
+         _ZN3DOM14XMLElementImpl*;
+         _ZN3DOM13StyleBaseImpl*;
+         _ZN3DOM13MediaListImpl*;
+         _ZN3DOM16HTMLDocumentImpl*;
+         _ZN3DOM17CharacterDataImpl*;
+         _ZN3DOM17CSSStyleSheetImpl*;
+         _ZN3DOM11CSSRuleImpl*;
+         _ZN3DOM11ElementImpl*;
+         _ZN3DOM12CSSValueImpl*;
+         _ZN3DOM12NotationImpl*;
+         _ZN3DOM12NodeBaseImpl*;
+         _ZN3DOM13DOMStringImpl*;
+         _ZN3DOM13MediaListImpl*;
+         _ZN3DOM19HTMLFormElementImpl*;
+         _ZN3DOM19HTMLHtmlElementImpl*;
+         _ZN13HTMLTokenizer*;
+};
