@@ -36,87 +36,7 @@
 #include "kconfigbackend.h"
 #include "kdebug.h"
 #include "kstandarddirs.h"
-
-static bool isUtf8(const char *buf) {
-  int i, n;
-  register unsigned char c;
-  bool gotone = false;
-
-#define F 0   /* character never appears in text */
-#define T 1   /* character appears in plain ASCII text */
-#define I 2   /* character appears in ISO-8859 text */
-#define X 3   /* character appears in non-ISO extended ASCII (Mac, IBM PC) */
-
-  static const unsigned char text_chars[256] = {
-  /*                  BEL BS HT LF    FF CR    */
-        F, F, F, F, F, F, F, T, T, T, T, F, T, T, F, F,  /* 0x0X */
-        /*                              ESC          */
-        F, F, F, F, F, F, F, F, F, F, F, T, F, F, F, F,  /* 0x1X */
-        T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T,  /* 0x2X */
-        T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T,  /* 0x3X */
-        T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T,  /* 0x4X */
-        T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T,  /* 0x5X */
-        T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T,  /* 0x6X */
-        T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, F,  /* 0x7X */
-        /*            NEL                            */
-        X, X, X, X, X, T, X, X, X, X, X, X, X, X, X, X,  /* 0x8X */
-        X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,  /* 0x9X */
-        I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I,  /* 0xaX */
-        I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I,  /* 0xbX */
-        I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I,  /* 0xcX */
-        I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I,  /* 0xdX */
-        I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I,  /* 0xeX */
-        I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I   /* 0xfX */
-  };
-
-  /* *ulen = 0; */
-  for (i = 0; (c = buf[i]); i++) {
-    if ((c & 0x80) == 0) {        /* 0xxxxxxx is plain ASCII */
-      /*
-       * Even if the whole file is valid UTF-8 sequences,
-       * still reject it if it uses weird control characters.
-       */
-
-      if (text_chars[c] != T)
-        return false;
-
-    } else if ((c & 0x40) == 0) { /* 10xxxxxx never 1st byte */
-      return false;
-    } else {                           /* 11xxxxxx begins UTF-8 */
-      int following;
-
-    if ((c & 0x20) == 0) {             /* 110xxxxx */
-      following = 1;
-    } else if ((c & 0x10) == 0) {      /* 1110xxxx */
-      following = 2;
-    } else if ((c & 0x08) == 0) {      /* 11110xxx */
-      following = 3;
-    } else if ((c & 0x04) == 0) {      /* 111110xx */
-      following = 4;
-    } else if ((c & 0x02) == 0) {      /* 1111110x */
-      following = 5;
-    } else
-      return false;
-
-      for (n = 0; n < following; n++) {
-        i++;
-        if (!(c = buf[i]))
-          goto done;
-
-        if ((c & 0x80) == 0 || (c & 0x40))
-          return false;
-      }
-      gotone = true;
-    }
-  }
-done:
-  return gotone;   /* don't claim it's UTF-8 if it's all 7-bit */
-}
-
-#undef F
-#undef T
-#undef I
-#undef X
+#include "kstringhandler.h"
 
 class KConfigBase::KConfigBasePrivate
 {
@@ -311,22 +231,9 @@ QString KConfigBase::readEntry( const char *pKey,
   entryKey.bLocal = true;
   aEntryData = lookupData(entryKey);
   if (!aEntryData.mValue.isNull()) {
-
     // for GNOME .desktop
-    // const char *data = aEntryData.mValue.char();
-    if ( isUtf8(aEntryData.mValue.data() ) )
-      aValue = QString::fromUtf8( aEntryData.mValue.data() );
-    else
-      aValue = QString::fromLocal8Bit(aEntryData.mValue.data());
+    aValue = KStringHandler::from8Bit( aEntryData.mValue.data() );
     expand = aEntryData.bExpand;
-
-    // Ok this sucks. QString::fromUtf8("").isNull() is true,
-    // but QString::fromLatin1("").isNull() returns false.
-    if (aValue.isNull())
-    {
-      static const QString &emptyString = KGlobal::staticQString("");
-      aValue = emptyString;
-    }
   } else {
     entryKey.bLocal = false;
     aEntryData = lookupData(entryKey);
@@ -393,10 +300,7 @@ QString KConfigBase::readEntry( const char *pKey,
 	    // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
 	    // A environment variables may contain values in 8bit
 	    // locale cpecified encoding or in UTF8 encoding.
-	    if (isUtf8( pEnv ))
-		aValue.replace( nDollarPos, nEndPos-nDollarPos, QString::fromUtf8(pEnv) );
-	    else
-		aValue.replace( nDollarPos, nEndPos-nDollarPos, QString::fromLocal8Bit(pEnv) );
+	    aValue.replace( nDollarPos, nEndPos-nDollarPos, KStringHandler::from8Bit( pEnv ) );
           } else
             aValue.remove( nDollarPos, nEndPos-nDollarPos );
         } else {
@@ -1159,7 +1063,7 @@ static QString translatePath( QString path )
    if (path.isEmpty())
        return path;
 
-   bool startsWithFile = path.left(5).lower() == QString::fromLatin1("file:");
+   bool startsWithFile = path.startsWith("file:", false);
 
    // return original path, if it refers to another type of URL (e.g. http:/), or
    // if the path is already relative to another directory
@@ -1410,10 +1314,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QStrList &list,
       // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
       // A QStrList may contain values in 8bit locale cpecified
       // encoding or in UTF8 encoding.
-      if (isUtf8(it.current()))
-        value = QString::fromUtf8(it.current());
-      else
-        value = QString::fromLocal8Bit(it.current());
+      value = KStringHandler::from8Bit(it.current());
       for( i = 0; i < value.length(); i++ )
         {
           if( value[i] == sep || value[i] == '\\' )
