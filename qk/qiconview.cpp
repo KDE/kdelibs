@@ -283,13 +283,12 @@ void QIconViewItemLineEdit::focusOutEvent( QFocusEvent * )
   You also may add methods to add/get the data you store here.
 
   An example, how to implement this, is in the QtFileIconView example.
-
-  \sa QtFileIconDragItem::QtFileIconDragItem()
+  (qt/examples/qfileiconview/qfileiconview.h and qt/examples/qfileiconview/qfileiconview.cpp)
 */
 
 /*!
   Constructs and empty QIconDragItem.
- */
+*/
 
 QIconDragItem::QIconDragItem()
     : iconRect_(), textRect_()
@@ -300,7 +299,7 @@ QIconDragItem::QIconDragItem()
 /*!
   Constructs and QIconDragItem. \a ir is the icon rectangle and
   \a tr the bounding rectangle of the icon text.
- */
+*/
 
 QIconDragItem::QIconDragItem( const QRect &ir, const QRect &tr )
     : iconRect_( ir ), textRect_( tr )
@@ -310,7 +309,7 @@ QIconDragItem::QIconDragItem( const QRect &ir, const QRect &tr )
 
 /*!
   Destructor.
- */
+*/
 
 QIconDragItem::~QIconDragItem()
 {
@@ -319,7 +318,7 @@ QIconDragItem::~QIconDragItem()
 /*!
   Returns TRUE if \a icon is smaller than this item, else
   FALSE.
- */
+*/
 
 bool QIconDragItem::operator<( const QIconDragItem &icon ) const
 {
@@ -328,7 +327,7 @@ bool QIconDragItem::operator<( const QIconDragItem &icon ) const
 
 /*!
   Returns TRUE if \a icon is equal to this item.
- */
+*/
 
 bool QIconDragItem::operator==( const QIconDragItem &icon ) const
 {
@@ -337,7 +336,7 @@ bool QIconDragItem::operator==( const QIconDragItem &icon ) const
 
 /*!
   Generates a unique key which describes this item.
- */
+*/
 
 void QIconDragItem::makeKey()
 {
@@ -350,7 +349,7 @@ void QIconDragItem::makeKey()
 /*!
   Returns the bounding rectangle of the text of the icon which
   data is stored in this item.
- */
+*/
 
 QRect QIconDragItem::textRect() const
 {
@@ -369,7 +368,7 @@ QRect QIconDragItem::iconRect() const
 
 /*!
   Returns the key of this item.
- */
+*/
 
 QString QIconDragItem::key() const
 {
@@ -378,7 +377,7 @@ QString QIconDragItem::key() const
 
 /*!
   Sets \a r as the rectangle of the icon.
- */
+*/
 
 void QIconDragItem::setIconRect( const QRect &r )
 {
@@ -416,16 +415,15 @@ void QIconDragItem::setTextRect( const QRect &r )
   handling. Because if you do this, the position information will be stored
   in the drag object too.
 
-  An example, how to implement this, is in the QtFileIconView example.
-
-  \sa QtFileIconDrag::QtFileIconDrag()
+  An example, how to implement this, is in the QtFileIconView example
+  (qt/examples/qfileiconview/qfileiconview.h and qt/examples/qfileiconview/qfileiconview.cpp)
 */
 
 /*!
   Constructs a icon dragobject which contains a list of \a icons (list of QIconDragItems).
   \a dragSource  is the widget which started the dragand \a name the name of the object.
 
-  \sa QIconDragItem::QIconDragItem()
+  \sa QIconDragItem
 */
 
 QIconDrag::QIconDrag( const QIconList &icons_, QWidget * dragSource, const char* name )
@@ -435,7 +433,7 @@ QIconDrag::QIconDrag( const QIconList &icons_, QWidget * dragSource, const char*
 
 /*!
   \reimp
- */
+*/
 
 QIconDrag::QIconDrag( QWidget * dragSource, const char* name )
     : QDragObject( dragSource, name )
@@ -444,7 +442,7 @@ QIconDrag::QIconDrag( QWidget * dragSource, const char* name )
 
 /*!
   Destructor.
- */
+*/
 
 QIconDrag::~QIconDrag()
 {
@@ -454,7 +452,7 @@ QIconDrag::~QIconDrag()
   Sets the \a list of icon drag items which should be stored in this
   dragobject.
 
-  \sa QIconDragItem::QIconDragItem()
+  \sa QIconDragItem
 */
 
 void QIconDrag::setIcons( const QIconList &list_ )
@@ -466,7 +464,7 @@ void QIconDrag::setIcons( const QIconList &list_ )
   Appends an icon drag item which should be stored in this
   dragobject.
 
-  \sa QIconDragItem::QIconDragItem()
+  \sa QIconDragItem
 */
 
 void QIconDrag::append( const QIconDragItem &icon_ )
@@ -604,7 +602,7 @@ bool QIconDrag::decode( QMimeSource* e, QIconList &list_ )
 
 /*!
   \class QIconViewItem qiconview.h
-  \brief The QIconViewItem class implements a iconview item.
+  \brief The QIconViewItem class implements an iconview item.
 
   An iconview item is a object containing an icon and a text, which can
   display itself in an iconview.
@@ -657,8 +655,8 @@ bool QIconDrag::decode( QMimeSource* e, QIconList &list_ )
 */
 
 /*!
- Constructs an iconview item with no text and a default icon, and
- inserts it into the iconview \a parent.
+  Constructs an iconview item with no text and a default icon, and
+  inserts it into the iconview \a parent.
 */
 
 QIconViewItem::QIconViewItem( QIconView *parent )
@@ -670,8 +668,8 @@ QIconViewItem::QIconViewItem( QIconView *parent )
 }
 
 /*!
- Constructs an iconview item with no text and a default icon, and inserts
- it into the iconview \a parent after the iconview item \a after.
+  Constructs an iconview item with no text and a default icon, and inserts
+  it into the iconview \a parent after the iconview item \a after.
 */
 
 QIconViewItem::QIconViewItem( QIconView *parent, QIconViewItem *after )
@@ -765,7 +763,7 @@ void QIconViewItem::init( QIconViewItem *after )
 QIconViewItem::~QIconViewItem()
 {
     if ( view )
-	view->removeItem( this );
+	view->takeItem( this );
     delete d;
     delete f;
     delete c;
@@ -792,6 +790,8 @@ void QIconViewItem::setText( const QString &text )
 /*!
   Sets \a k as key of the iconview item. This is
   used for sorting.
+  
+  \sa compareItems()
 */
 
 void QIconViewItem::setKey( const QString &k )
@@ -881,6 +881,8 @@ void QIconViewItem::setDropEnabled( bool allow )
 
 /*!
   Returns the text of the iconview item.
+  
+  \sa setText()
 */
 
 QString QIconViewItem::text() const
@@ -890,6 +892,8 @@ QString QIconViewItem::text() const
 
 /*!
   Returns the key of the iconview item.
+  
+  \sa setKey(), compareItems()
 */
 
 QString QIconViewItem::key() const
@@ -899,6 +903,8 @@ QString QIconViewItem::key() const
 
 /*!
   Returns the icon of the iconview item.
+  
+  \sa setIcon()
 */
 
 QIconSet QIconViewItem::icon() const
@@ -909,6 +915,8 @@ QIconSet QIconViewItem::icon() const
 /*!
   Returns TRUE, if the item can be renamed ny the user with in-place renaming,
   else FALSE.
+  
+  \sa setRenameEnabled()
 */
 
 bool QIconViewItem::renameEnabled() const
@@ -918,6 +926,8 @@ bool QIconViewItem::renameEnabled() const
 
 /*!
   Returns TRUE, if the user is allowed to drag the iconview item, else FALSE.
+  
+  \sa setDragEnabled()
 */
 
 bool QIconViewItem::dragEnabled() const
@@ -928,6 +938,8 @@ bool QIconViewItem::dragEnabled() const
 /*!
   Returns TRUE, if the user is allowed to drop something onto the item,
   otherwise FALSE.
+  
+  \sa setDropEnabled()
 */
 
 bool QIconViewItem::dropEnabled() const
@@ -945,7 +957,7 @@ QIconView *QIconViewItem::iconView() const
 }
 
 /*!
-  Returns a pointer to the previous item, or NULL if this is the first item
+  Returns a pointer to the previous item, or 0 if this is the first item
   of the iconview.
 */
 
@@ -955,7 +967,7 @@ QIconViewItem *QIconViewItem::prevItem() const
 }
 
 /*!
-  Returns a pointer to the next item, or NULL if this is the last item
+  Returns a pointer to the next item, or 0 if this is the last item
   of the iconview.
 */
 
@@ -978,14 +990,15 @@ int QIconViewItem::index() const
 }
 
 /*!
-  Selects / Unselects the item depending on the selectionMode of the iconview.
+  Selects / Unselects the item depending on the QIconView::selectionMode() of the iconview.
 
   If \a s is FALSE, the item gets unselected. If \a s is TRUE
-  <li> and QIconView::selectionMode is Single, the item gets selected and the
+  <li> and QIconView::selectionMode() is Single, the item gets selected and the
   item which was selected, gets unselected
-  <li> and QIconView::selectionMode is Extended and \a cb is TRUE, the
-  item gets selected
-  <li> and QIconView::selectionMode is Multi the item gets selected.
+  <li> and QIconView::selectionMode() is Extended \a item gets selected, and if
+  \a cb is TRUE, the other items of the iconview are not touched, else they are
+  all unselected.
+  <li> and QIconView::selectionMode() is Multi the item gets selected.
 
   The item redraws itself if the selection changed.
 */
@@ -1024,6 +1037,8 @@ void QIconViewItem::setSelectable( bool s )
 
 /*!
   Returns TRUE, if the item is selected, else FALSE.
+  
+  \sa setSelected()
 */
 
 bool QIconViewItem::isSelected() const
@@ -1033,6 +1048,8 @@ bool QIconViewItem::isSelected() const
 
 /*!
   Returns TRUE, of the item is selectable, else FALSE.
+  
+  \sa setSelectable()
 */
 
 bool QIconViewItem::isSelectable() const
@@ -1115,7 +1132,7 @@ int QIconViewItem::y() const
 }
 
 /*!
-  Returns the  width of the item.
+  Returns the width of the item.
 */
 
 int QIconViewItem::width() const
@@ -1203,7 +1220,7 @@ bool QIconViewItem::intersects( QRect r ) const
 }
 
 /*!
-  Changes the font of this item to \a font.
+  Changes the text font of this item to \a font.
 */
 
 void QIconViewItem::setFont( const QFont &font )
@@ -1222,7 +1239,7 @@ void QIconViewItem::setFont( const QFont &font )
 
 
 /*!
-  Changes the color of this item to \a color.
+  Changes the text color of this item to \a color.
 */
 
 void QIconViewItem::setColor( const QColor &color )
@@ -1235,7 +1252,9 @@ void QIconViewItem::setColor( const QColor &color )
 }
 
 /*!
-  Returns the color of this item.
+  Returns the text color of this item.
+  
+  \sa setColor()
 */
 
 QColor QIconViewItem::color() const
@@ -1246,7 +1265,9 @@ QColor QIconViewItem::color() const
 }
 
 /*!
-  Returns the font of this item.
+  Returns the text font of this item.
+  
+  \sa setFont()
 */
 
 QFont QIconViewItem::font() const
@@ -1289,8 +1310,6 @@ QIconSet::Size QIconViewItem::viewMode() const
 
   The default implementation does nothing and returns always TRUE. A
   subclass should reimplement this to allow dropping something on an item.
-
-  \sa QFileIconViewItem::acceptDrop()
 */
 
 bool QIconViewItem::acceptDrop( const QMimeSource * ) const
@@ -1327,6 +1346,8 @@ void QIconViewItem::rename()
 
   The default implementation uses QIconViewItem::key() to compare the
   items. A reimplementation may use different values.
+  
+  \sa key()
 */
 
 int QIconViewItem::compare( QIconViewItem *i ) const
@@ -1567,8 +1588,6 @@ void QIconViewItem::paintFocus( QPainter *p )
 
   The default implementation does nothing, subclasses should reimplement this
   method.
-
-  \sa QFileIconViewItem::dropped()
 */
 
 void QIconViewItem::dropped( QDropEvent * )
@@ -1598,7 +1617,9 @@ void QIconViewItem::dragLeft()
 }
 
 /*!
-  Sets the iconview of the item ot \a v.
+  Sets the iconview of the item ot \a v. Normally you should
+  not make use of this methode, only if you really know what
+  you are doing!
 */
 
 void QIconViewItem::setView( QIconView *v )
@@ -1683,7 +1704,7 @@ void QIconViewItem::calcTmpText()
   Items can be inserted in a grid and can flow from top to bottom (South) or from
   left to right (East). The text can be either displayed at the bottom of the icons
   or the the right of the icons. Items can also be inserted in a sorted order. There
-  are also methodes to re-align and sort the items after they have been inserted.
+  are also methods to re-align and re-sort the items after they have been inserted.
 
   There is a variety of selection modes, described in the
   QIconView::SelectionMode documentation. The default is
@@ -1700,22 +1721,21 @@ void QIconViewItem::calcTmpText()
   Items can also be in-place renamed.
 
   The normal way to insert some items is to create QIconViewItems
-  and pass the iconview as parent. But using insertItem(), items
-  can be inserted manually too. The QIconView offers basic methodes
-  similar to the QListView and QListBox, like QIconView::removeItem(),
+  and pass the iconview as parent. By using insertItem(), items
+  can be inserted manually too. The QIconView offers basic methods
+  similar to the QListView and QListBox, like QIconView::takeItem(),
   QIconView::clearSelection(), QIconView::setSelected(),
   QIconView::setCurrentItem(), QIconView::currentItem() and much more.
 
-  As the internal structure to store the iconview items is linear, no
-  iterator class is needed to iterate over all items. This can be easily
-  done with a code like
+  As the internal structure to store the iconview items is linear (a double 
+  linked list), no iterator class is needed to iterate over all items. This can 
+  be easily done with a code like
 
   \code
   QIconView *iv = the iconview
   for ( QIconViewItem *i = iv->firstItem(); i; i = i->nextItem() ) {
       i->doSmething();
   }
-
   \endcode
 
   To notify the application about changes in the iconview there
@@ -1725,6 +1745,22 @@ void QIconViewItem::calcTmpText()
   the iconview itself using DnD. So the QIconView provides some methods for
   extended DnD too. To use DnD correctly in the iconview, please read following
   instructions:
+
+  There are two different ways to do that, depending what you want. The first case
+  is the simple one, in which case just the dragobject you created is dragged
+  around. If you want, that drag shapes (the rectangles of the dragged items with
+  exact positions) are drawn, you have to choose the more complicated way. Here
+  first the simple case is described:
+  
+  In the simple case you only need for starting a drag to reimplement 
+  QIconView::dragObject(). There you create a QDragObject with the data
+  you want to drag and return it. And for entering drags you don't need to do 
+  anything special then. Just connect to dropped() signal to get notified about
+  drops onto the viewport and reimplement QIconViewItem::acceptDrop() and 
+  QIconViewItem::dropped() to be able to react on drops onto an iconview item.
+  
+  If you want to have drag shapes drawn, you have to do quite a bit more and
+  complex things:
 
   The first part is starting drags:
   If you want to reimplement DnD in the QIconView, because you need some
@@ -1737,7 +1773,7 @@ void QIconViewItem::calcTmpText()
   So you implement MyIconDrag which contains a list of MyIconDragItems. See
   the documentation of QIconDrag and QIconDragItem for more information.
 
-  Finally, you need to overload QIconView::dragObject(). This method is called
+  Finally, you need to reimplement QIconView::dragObject(). This method is called
   by QIconView to get the drag object when starting a drag. In this method
   you have to create and return an instance of MyIconDrag which contains a list of
   MyIconDragItems (normally one MyIconDragItem for each selected item
@@ -1748,7 +1784,7 @@ void QIconViewItem::calcTmpText()
   QIconDrag) we also know the coordinates of the icons which are
   dragged around. So, we can draw drag shapes of the dragged items.
   For that some stuff has to be initialized. So, when a drag enters, the
-  iconview calls QIconView::initDragEnter(). Reimplement this methode
+  iconview calls QIconView::initDragEnter(). Reimplement this method
   to do your initialization. For more information about that, see the
   documentation of QIconView::initDragEnter().
 
@@ -1758,18 +1794,8 @@ void QIconViewItem::calcTmpText()
   QIconViewItem::dropped() in your iconview item subclass, as this method
   is called when a drag is dropped onto an iconview item.
 
-  For an example implementation of all the Drag'n'Drop stuff look at the
-  qfileiconview example (QtFileIconView::QtFileIconView())
-
-  The Drag'n'Drop functionality described here may sound a bit complicated. This
-  is only because you have to store the data + the geometry of the dragged
-  items in a dragobject. All this complexity is only needed for drawing the drag
-  shapes of the dragged items. If you don't need or want the QIconView to
-  draw drag shapes of the dragged items during a drag, you don't need to
-  implement all this comlexity. In this case you only need for starting a
-  drag to reimplement QIconView::dragObject() and return a dragobject there
-  which contains the data which should be dragged. And for entering drags
-  you don't need to do anything special then.
+  For an example implementation of the complex Drag'n'Drop stuff look at the
+  qfileiconview example (qt/examples/qfileiconview)
 
   Finally, see also QIconViewItem::setDragEnabled(), QIconViewItem::setDropEnabled(),
       QIconViewItem::acceptDrop() and QIconViewItem::dropped()
@@ -1892,7 +1918,7 @@ void QIconViewItem::calcTmpText()
 /*! \fn void  QIconView::selectionChanged (int numItems)
   This signal is emitted when the selection has been changed.
   \a numItems specifies the number of selected items. This
-  signals is only emitted in mult- and extended selection mode.
+  signals is only emitted in multi- and extended selection mode.
 */
 
 /*! \fn void  QIconView::selectionChanged( QIconViewItem *item )
@@ -1902,12 +1928,12 @@ void QIconViewItem::calcTmpText()
 */
 
 /*! \fn void QIconView::currentChanged ()
-  This signal is emitted, when the different items got current.
+  This signal is emitted, when a different items got current.
 */
 
 /*! \fn void QIconView::currentChanged ( QIconViewItem *item )
   This signal is emitted, when the different items got current.
-  \a item is the new current item of 0, if no items is current now.
+  \a item is the new current item or 0, if no item is current now.
 */
 
 /*! \fn void  QIconView::onItem( QIconViewItem *i )
@@ -1936,21 +1962,21 @@ void QIconViewItem::calcTmpText()
   \fn void QIconView::rightButtonPressed (QIconViewItem * item, const QPoint & pos)
   This signal is emitted when the user pressed with the right mouse button on
   either and item (then \a item is the item under the mouse cursor) or
-  somewhere else (then \a item is NULL). \a pos the position of the mouse cursor.
+  somewhere else (then \a item is 0). \a pos the position of the mouse cursor.
 */
 
 /*!
   \fn void QIconView::rightButtonClicked (QIconViewItem * item, const QPoint & pos)
   This signal is emitted when the user clicked (pressed + released) with the right
   mouse button on either and item (then \a item is the item under the mouse cursor) or
-  somewhere else (then \a item is NULL). \a pos the position of the mouse cursor.
+  somewhere else (then \a item is 0). \a pos the position of the mouse cursor.
 */
 
 /*!
   \fn void QIconView::mouseButtonPressed (int button, QIconViewItem * item, const QPoint & pos)
   This signal is emitted when the user pressed with any mouse button on
   either and item (then \a item is the item under the mouse cursor) or
-  somewhere else (then \a item is NULL). \a button is the number of the mouse button which
+  somewhere else (then \a item is 0). \a button is the number of the mouse button which
   the user pressed, and \a pos the position of the mouse cursor.
 */
 
@@ -1958,7 +1984,7 @@ void QIconViewItem::calcTmpText()
   \fn void QIconView::mouseButtonClicked (int button, QIconViewItem * item, const QPoint & pos)
   This signal is emitted when the user clicked (pressed + released) with any mouse button on
   either and item (then \a item is the item under the mouse cursor) or
-  somewhere else (then \a item is NULL). \a button is the number of the mouse button which
+  somewhere else (then \a item is 0). \a button is the number of the mouse button which
   the user clicked, and \a pos the position of the mouse cursor.
 */
 
@@ -1966,28 +1992,28 @@ void QIconViewItem::calcTmpText()
   \fn void QIconView::clicked ( QIconViewItem * item, const QPoint & pos)
   This signal is emitted when the user clicked (pressed + released) with any mouse button on
   either and item (then \a item is the item under the mouse cursor) or
-  somewhere else (then \a item is NULL). \a pos the position of the mouse cursor.
+  somewhere else (then \a item is 0). \a pos the position of the mouse cursor.
 */
 
 /*!
   \fn void QIconView::pressed ( QIconViewItem * item, const QPoint & pos)
   This signal is emitted when the user pressed with any mouse button on
   either and item (then \a item is the item under the mouse cursor) or
-  somewhere else (then \a item is NULL). \a pos the position of the mouse cursor.
+  somewhere else (then \a item is 0). \a pos the position of the mouse cursor.
 */
 
 /*!
   \fn void QIconView::clicked ( QIconViewItem * item )
   This signal is emitted when the user clicked (pressed + released) with any mouse button on
   either and item (then \a item is the item under the mouse cursor) or
-  somewhere else (then \a item is NULL).
+  somewhere else (then \a item is 0).
 */
 
 /*!
   \fn void QIconView::pressed ( QIconViewItem * item )
   This signal is emitted when the user pressed with any mouse button on
   either and item (then \a item is the item under the mouse cursor) or
-  somewhere else (then \a item is NULL).
+  somewhere else (then \a item is 0).
 */
 
 /*!
@@ -2098,7 +2124,7 @@ QIconView::~QIconView()
 }
 
 /*!
-  Inserts the iconview item \a item after \a after. If \a after is NULL,
+  Inserts the iconview item \a item after \a after. If \a after is 0,
   \a item is appended.
 
   You should never need to call this method yourself, you should rather do
@@ -2173,7 +2199,8 @@ void QIconView::insertItem( QIconViewItem *item, QIconViewItem *after )
   inserting a new item, but with a very small delay using a QTimer. The
   result of this is, that if lots of items are inserted in a short time
   (e.g. in a loop), the iconview is not redrawn after each inserted item,
-  but after inserting all of them, which makes the operation much faster.
+  but after inserting all of them, which makes the operation much faster
+  and flickerfree.
 */
 
 void QIconView::slotUpdate()
@@ -2232,13 +2259,13 @@ void QIconView::slotUpdate()
 }
 
 /*!
-  Removes the iconview item \a item from the iconview. You should never
-  need to call this method yourself, just delete an item to get rid of it. The
-  destructor of QIconViewItem does everything, which is required for removing
-  and item.
+  Takes the iconview item \a item out of the iconview. The item is not
+  deleted. You should never need to call this method yourself, just delete an item 
+  to get rid of it. The destructor of QIconViewItem does everything, which is required 
+  for removing and item.
 */
 
-void QIconView::removeItem( QIconViewItem *item )
+void QIconView::takeItem( QIconViewItem *item )
 {
     if ( !item )
 	return;
@@ -2328,7 +2355,7 @@ QIconViewItem *QIconView::selectedItem() const
 }
 
 /*!
-  Returns a pointer to the first item fo the iconview, or NULL, if there
+  Returns a pointer to the first item fo the iconview, or 0, if there
   are no items in the iconview.
 */
 
@@ -2338,7 +2365,7 @@ QIconViewItem *QIconView::firstItem() const
 }
 
 /*!
-  Returns a pointer to the last item fo the iconview, or NULL, if there
+  Returns a pointer to the last item fo the iconview, or 0, if there
   are no items in the iconview.
 */
 
@@ -2348,7 +2375,7 @@ QIconViewItem *QIconView::lastItem() const
 }
 
 /*!
-  Returns a pointer to the current item fo the iconview, or NULL, if no
+  Returns a pointer to the current item fo the iconview, or 0, if no
   item is current.
 */
 
@@ -2375,14 +2402,15 @@ void QIconView::setCurrentItem( QIconViewItem *item )
 }
 
 /*!
-  Selects / Unselects the \a item depending on the selectionMode of the iconview.
+  Selects / Unselects the \a item depending on the selectionMode() 
+  of the iconview.
 
   If \a s is FALSE, the item gets unselected. If \a s is TRUE
-  <li> and QIconView::selectionMode is Single, the item gets selected and the
+  <li> and QIconView::selectionMode() is Single, the item gets selected and the
   item which was selected, gets unselected
-  <li> and QIconView::selectionMode is Extended and \a cb is TRUE, the
-  item gets selected
-  <li> and QIconView::selectionMode is Multi the item gets selected.
+  <li> and QIconView::selectionMode() is Extended the \a item gets selected. If 
+  \a cb is TRUE other items are not touched, else all others get unselected.
+  <li> and QIconView::selectionMode() is Multi the item gets selected.
 
   The item redraws itself if the selection changed.
 */
@@ -2425,6 +2453,8 @@ void QIconView::setViewMode( QIconSet::Size mode )
 
 /*!
   Returns the viewmode of the iconview.
+  
+  \sa setViewMode()
 */
 
 QIconSet::Size QIconView::viewMode() const
@@ -2561,7 +2591,7 @@ void QIconView::drawContents( QPainter *p, int cx, int cy, int cw, int ch )
 }
 
 /*!
-  Align all items in the grid. For the grid the the specified
+  Align all items in the grid. For the grid the specified
   values, given by QIconView::setGridX() and QIconView::setGridY()
   are used.
   Even if QIconView::sorting() is enabled, the items are not resorted
@@ -2701,6 +2731,8 @@ void QIconView::setSelectionMode( SelectionMode m )
 
 /*!
   Returns the selection mode of the iconview.
+
+  \sa setSelectionMode()
 */
 
 QIconView::SelectionMode QIconView::selectionMode() const
@@ -2715,7 +2747,7 @@ QIconView::SelectionMode QIconView::selectionMode() const
   \a highlightedTextCol the color which should be used for the icon
   text, when the icon is highlighted (means, when the mouse cursor is
   over the item). \a highlightedCursor is the mouse cursor which should
-  be used when the mouse is over an item. Passing NULL for one of these
+  be used when the mouse is over an item. Passing 0 for one of these
   parameters lets the iconview use the default value.
   \a setCurrentInterval specifies the time interval (in ms) after which
   a highlighted item (item over which the mouse is) gets the current
@@ -2724,6 +2756,9 @@ QIconView::SelectionMode QIconView::selectionMode() const
   The QIconView takes the ownership of the passed pointers. This means
   you must not delete them! The QIconView cares about deleting them.
 
+  You have to switch the iconview to single click mode first, to
+  make these setting working using setUseSingleClickMode()
+  
   \sa QIconView::setUseSingleClickMode()
 */
 
@@ -2742,7 +2777,7 @@ void QIconView::setSingleClickConfiguration( QFont *normalText, QColor *normalTe
 }
 
 /*!
-  This methode gives back the current single click configuration
+  This method gives back the current single click configuration
   using the parameters.
 
   \sa QIconView::setSingleClickConfiguration(), QIconView::setUseSingleClickMode()
@@ -2798,6 +2833,9 @@ bool QIconView::useSingleClickMode() const
 /*!
   Sets the \a font for the text of all items in the iconview.
   New items which are inserted also get this settings.
+  
+  By default the normal font() of the iconview is used
+  for the item text.
 */
 
 void QIconView::setItemFont( const QFont &font )
@@ -2814,6 +2852,9 @@ void QIconView::setItemFont( const QFont &font )
 /*!
   Sets the \a color for the text of all items in the iconview.
   New items which are inserted also get this settings.
+  
+  By default the text color of QIconView's colorGroup()
+  is used.
 */
 
 void QIconView::setItemColor( const QColor &color )
@@ -2925,7 +2966,7 @@ void QIconView::ensureItemVisible( QIconViewItem *item )
 }
 
 /*!
-  Finds the first item which is visible on the viewport. If no items is
+  Finds the first item which is visible on the viewport. If no items are
   visible at all, 0 is returned.
 */
 
@@ -3098,6 +3139,8 @@ void QIconView::setItemTextBackground( const QBrush &brush )
 
 /*!
   Returns the brush which is used to draw the background of an item text
+
+  \sa setItemTextBackground()
 */
 
 QBrush QIconView::itemTextBackground() const
@@ -3161,8 +3204,8 @@ QIconView::ResizeMode QIconView::resizeMode() const
 }
 
 /*!
-  Sets the maximum width, which an item may have. If a raster X is set,
-  this value is ignoredm, and the raster X value is used.
+  Sets the maximum width, which an item may have. If a gridX() is set,
+  this value is ignored, and the gridX() value is used.
 */
 
 void QIconView::setMaxItemWidth( int w )
@@ -4051,9 +4094,12 @@ void QIconView::drawRubber( QPainter *p )
 }
 
 /*!
-  Returns the QDragObject which should be used for DnD.  Subclasses may reimplement this.
+  Returns the QDragObject which should be used for DnD. This method
+  is called by the iconview when starting a drag to get the dragobject
+  which should be used for the drag.
+  Subclasses may reimplement this.
 
-  \sa QIconDrag::QIconDrag()
+  \sa QIconDrag
 */
 
 QDragObject *QIconView::dragObject()
@@ -4211,7 +4257,7 @@ void QIconView::emitRenamed( QIconViewItem *item )
 }
 
 /*!
-  If a drag enters the iconview, shades of the objects, which the drag
+  If a drag enters the iconview, shapes of the objects, which the drag
   contains are drawn, usnig \a pos as origin.
 */
 
@@ -4261,24 +4307,28 @@ void QIconView::drawDragShapes( const QPoint &pos )
   (e.g. shapes of icons which are dragged). To get this information
   e.g. try to decode the drag.
 
+  So, if you want to have the iconview drawing drag shapes,
+  read further in and reimplement this method. Else you don't 
+  need to care about that.
+  
   There are three possibilities:
   <ul>
-  <li>Knowing the drag very well: The drag ca nbe decoded and it contains
+  <li>Knowing the drag very well: The drag can be decoded and it contains
   all coordinates of the drag shapes. If this is the case, call
   QIconView::setDragObjectIsKnown() and specify as argument \a e.
-  <li>Knowing the drag, but not very well: The drag contains which can
+  <li>Knowing the drag, but not very well: The drag contains data which can
   be decoded. So the number of items in the drag is known, but no
-  coordinates. If this is the case,  set the number
+  coordinates. If this is the case, set the number
   of items using QIconView::setNumDragItems() so that the iconview
   can draw a sort of drag shapes.
   <li>The drag is unknown: The drag can't be decoded. Call the base implementation
   QIconView::initDragEnter().
   </ul>
 
-  See the qfileiconview example for a demonstration of using this method.
+  See the qt/examples/qfileiconview/qfileiconview.cpp example for a 
+  demonstration of using this method.
 
-  \sa QFileIconView::initDragEnter(), QIconView::setDragObjectIsKnown(),
-  QIconView::setNumDragItems()
+  \sa QIconView::setDragObjectIsKnown(), QIconView::setNumDragItems()
 */
 
 void QIconView::initDragEnter( QDropEvent *e )
@@ -4332,8 +4382,6 @@ void QIconView::setNumDragItems( int num )
 
   The default implementation only fills \a r with colorGroup().base(). Subclasses
   may reimplement this to draw fency backgrounds.
-
-  \sa QFileIconView::drawBackground()
 */
 
 void QIconView::drawBackground( QPainter *p, const QRect &r )
@@ -4609,7 +4657,7 @@ int QIconView::calcGridNum( int w, int x ) const
 
 /*!
   \internal
-  Returns the first item of the row which cntains \a item.
+  Returns the first item of the row which contains \a item.
 */
 
 QIconViewItem *QIconView::rowBegin( QIconViewItem * ) const
