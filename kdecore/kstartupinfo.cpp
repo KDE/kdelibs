@@ -383,7 +383,7 @@ QString KStartupInfo::check_required_startup_fields( const QString& msg, const K
     QString ret = msg;
     if( data_P.name().isEmpty())
         {
-        kdWarning( 172 ) << "NAME not specified in initial startup message" << endl;
+//        kdWarning( 172 ) << "NAME not specified in initial startup message" << endl;
         QString name = data_P.bin();
         if( name.isEmpty())
             name = "UNKNOWN";
