@@ -819,6 +819,7 @@ private:
   KJSProxy *jScript();
 
   KHTMLPartPrivate *d;
+  friend class KHTMLPartPrivate;
 };
 
 

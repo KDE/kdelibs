@@ -126,7 +126,7 @@ typedef FrameList::Iterator FrameIt;
 class KHTMLPartPrivate
 {
 public:
-  KHTMLPartPrivate()
+  KHTMLPartPrivate(QObject* parent)
   {
     m_doc = 0L;
     m_decoder = 0L;
@@ -155,12 +155,26 @@ public:
     m_findDialog = 0;
     m_ssl_in_use = false;
     m_javaContext = 0;
+    m_cacheId = 0;
+    m_frameNameId = 1;
+
     m_bJScriptForce = false;
     m_bJScriptOverride = false;
     m_bJavaForce = false;
     m_bJavaOverride = false;
-    m_frameNameId = 1;
-    m_cacheId = 0;
+
+    // inherit security settings from parent
+    if(parent && parent->inherits("KHTMLPart"))
+    {
+        KHTMLPart* part = static_cast<KHTMLPart*>(parent);
+        if(part->d)
+        {
+            m_bJScriptForce = part->d->m_bJScriptForce;
+            m_bJScriptOverride = part->d->m_bJScriptOverride;
+            m_bJavaForce = part->d->m_bJavaForce;
+            m_bJavaOverride = part->d->m_bJavaOverride;
+  }
+    }
   }
   ~KHTMLPartPrivate()
   {
@@ -364,6 +378,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, const char *name, GUIProfile prof )
 : KParts::ReadOnlyPart( parent, name )
 {
+    d = 0;
   KHTMLFactory::registerPart( this );
   setInstance( KHTMLFactory::instance() );
   assert( view );
@@ -379,7 +394,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   else if ( prof == BrowserViewGUI )
     setXMLFile( "khtml_browser.rc" );
 
-  d = new KHTMLPartPrivate;
+  d = new KHTMLPartPrivate(parent());
   kdDebug() << "KHTMLPart::init this=" << this << " d=" << d << endl;
 
   d->m_view = view;
@@ -632,10 +647,15 @@ void KHTMLPart::enableJScript( bool enable )
 {
   d->m_bJScriptForce = enable;
   d->m_bJScriptOverride = true;
+  qDebug("KHTMLPart::enableJScript(%d)", enable);
+
 }
 
 bool KHTMLPart::jScriptEnabled() const
 {
+    qDebug("::jScriptEnabled: so: %d, sf: %d, se: %d",
+           d->m_bJScriptOverride, d->m_bJScriptForce, d->m_bJScriptEnabled);
+
   if ( d->m_bJScriptOverride )
       return d->m_bJScriptForce;
   return d->m_bJScriptEnabled;
