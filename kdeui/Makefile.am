@@ -172,6 +172,6 @@ ktablistbox.moc: ktablistbox.h
 knewpanner.moc: knewpanner.h
 	$(MOC) knewpanner.h -o knewpanner.moc
 
-data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm
+data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm
 datadir = $(kde_datadir)/kde/pics
 

@@ -192,8 +192,15 @@ QSize KButtonBox::bestButtonSize() const {
       if(b->style() == MotifStyle && b->isDefault()) {
 	// this is a motif default button, remove the
 	// space for the default ring
-	bs.setWidth(bs.width() - extraMotifWidth);
-	bs.setHeight(bs.height() - extraMotifHeight);
+	
+	// Mark Donohoe
+	// 16-11-97
+	// The button size hint for Qt 1.31
+	// doesn't count the extra Motif width and height 
+	// used for drawing a default button.
+	
+	//bs.setWidth(bs.width() - extraMotifWidth);
+	//bs.setHeight(bs.height() - extraMotifHeight);
       }
 
       if(bs.width() > s.width())
