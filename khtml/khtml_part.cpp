@@ -1550,8 +1550,8 @@ void KHTMLPart::slotJobDone( KIO::Job* /*job*/ )
 
 void KHTMLPart::checkCompleted()
 {
-//   kdDebug( 6050 ) << "KHTMLPart::checkCompleted() parsing: " << d->m_doc->parsing() << endl;
-//   kdDebug( 6050 ) << "                           complete: " << d->m_bComplete << endl;
+  //kdDebug( 6050 ) << "KHTMLPart::checkCompleted() parsing: " << (d->m_doc && d->m_doc->parsing()) << endl;
+  //kdDebug( 6050 ) << "                           complete: " << d->m_bComplete << endl;
 
   // restore the cursor position
   if (d->m_doc && !d->m_doc->parsing() && !d->m_focusNodeRestored)
@@ -1655,17 +1655,15 @@ void KHTMLPart::checkEmitLoadEvent()
     if ( !(*it).m_bCompleted ) // still got a frame running -> too early
       return;
 
-#if 0 // TODO test for side effects
   // Still waiting for images/scripts from the loader ?
   // (onload must happen afterwards, #45607)
-  // ## This makes this code very similar to checkCompleted. A brave soul should try merging them.
+  // ## This makes this method very similar to checkCompleted. A brave soul should try merging them.
   int requests = 0;
   if ( d->m_doc && d->m_doc->docLoader() )
     requests = khtml::Cache::loader()->numRequests( d->m_doc->docLoader() );
 
   if ( requests > 0 )
     return;
-#endif
 
   d->m_bLoadEventEmitted = true;
   if (d->m_doc)
@@ -4368,8 +4366,7 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
   khtml::RenderObject* obj = node->renderer();
   QString str;
   int len = 0;
-  Q_ASSERT( obj->isText() );
-  if ( obj->isText() ) {
+  if ( obj->isText() ) { // can be false e.g. when double-clicking on a disabled submit button
     str = static_cast<khtml::RenderText *>(obj)->data().string();
     len = str.length();
   }
