@@ -452,6 +452,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	}
 	case ID_MAP:
 	case ID_FORM:
+	case ID_SCRIPT:
 	{
 	    kdDebug( 6035 ) << "--> badly placed element!!!" << endl;
 	    NodeImpl *node = current;
