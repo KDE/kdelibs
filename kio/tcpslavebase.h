@@ -139,6 +139,15 @@ protected:
      * Same as above except it reads data one line at a time.
      */
     ssize_t readLine(char *data, ssize_t len);
+ 
+    /**
+     * Sets the maximum size of blocks read in during calls to readLine().
+     * This allows a slave to optimize for the protocol which it implements.
+     * Ideally this should be (common_line_length+1) or so.
+     * Making this too large will have adverse effects on performance.
+     * Initial/default value is 256(bytes)
+     */
+    void setBlockSize(int sz);
 
     /**
      * Determines the appropiate port to use.

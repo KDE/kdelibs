@@ -60,7 +60,7 @@ class TCPSlaveBase::TcpSlaveBasePrivate
 {
 public:
 
-  TcpSlaveBasePrivate() : militantSSL(false) {}
+  TcpSlaveBasePrivate() : rblockSz(256), militantSSL(false) {}
   ~TcpSlaveBasePrivate() {}
 
   KSSL *kssl;
@@ -74,6 +74,7 @@ public:
 
   int status;
   int timeout;
+  int rblockSz;			// Size for reading blocks in readLine()
   bool block;
   bool useSSLTunneling;
   bool needSSLHandShake;
@@ -162,6 +163,13 @@ ssize_t TCPSlaveBase::read(void *data, ssize_t len)
     return KSocks::self()->read(m_iSock, data, len);
 }
 
+
+void TCPSlaveBase::setBlockSize(int sz) {
+	if (sz <= 0) sz = 1;
+	d->rblockSz = sz;
+}
+
+
 ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
 {
 // Optimization:
@@ -169,39 +177,82 @@ ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
 //   speed connections.  I moved 3 if statements out of the while loop
 //   so that the while loop is as small as possible.  (GS)
 
-    // let's not segfault!
-    if (!data) return -1;
-
-    *data = 0;
-    // ugliness alert!!  calling read() so many times can't be good...
-    int clen = 0;
-    char *buf = data;
-
-if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {
-            if ( d->needSSLHandShake )
-                (void) doSSLHandShake( true );
-    while (clen < len) {
-        int rc;
-            rc = d->kssl->read(buf, 1);
-            if (rc < 0) 
+	// let's not segfault!
+	if (!data) 
 		return -1;
-	    clen++;
-            if (*buf++ == '\n')
-                break;
-    }
-} else {
-    while (clen < len) {
-        int rc;
-            rc = KSocks::self()->read(m_iSock, buf, 1);
-            if (rc < 0) 
-		return -1;
-            clen++;
-            if (*buf++ == '\n')
-                break;
-    }
+
+	char tmpbuf[1024];   // 1kb temporary buffer for peeking
+	*data = 0;
+	int clen = 0;
+	char *buf = data;
+	int rc = 0;
+
+if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {       // SSL CASE
+	if ( d->needSSLHandShake )
+		(void) doSSLHandShake( true );
+
+	while (clen < len) {
+		rc = d->kssl->pending();
+		if (rc > 0) {   // Read a chunk
+			int bytes = rc;
+			if (bytes > d->rblockSz)
+				 bytes = d->rblockSz;
+
+			rc = d->kssl->peek(tmpbuf, bytes);
+			if (rc <= 0) {
+				// FIXME: this doesn't cover rc == 0 case
+				return -1;
+			}
+
+			bytes = rc;   // in case it contains no \n
+			for (int i = 0; i < rc; i++) {
+				if (tmpbuf[i] == '\n') {
+					bytes = i+1;
+					break;
+				}
+			}
+
+			rc = d->kssl->read(buf, bytes);
+			if (rc > 0) {
+				clen += rc;
+				buf += (rc-1);
+				if (*buf++ == '\n')
+					break;
+			} else {
+				// FIXME: different case if rc == 0;
+				return -1;
+			}
+		} else {        // Read a byte
+			rc = d->kssl->read(buf, 1);
+			if (rc <= 0) {
+				return -1;
+				// hm rc = 0 then
+				// SSL_read says to call SSL_get_error to see if
+				// this was an error.    FIXME
+			} else {
+				clen++;
+				if (*buf++ == '\n')
+					break;
+			}
+		}
+	}
+} else {                                                      // NON SSL CASE
+	while (clen < len) {
+		rc = KSocks::self()->read(m_iSock, buf, 1);
+		if (rc <= 0) {
+			// FIXME: this doesn't cover rc == 0 case
+			return -1;
+		} else {
+			clen++;
+			if (*buf++ == '\n')
+				break;
+		}
+	}
 }
-    *buf = 0;
-    return clen;
+
+	// Both cases fall through to here
+	*buf = 0;
+return clen;
 }
 
 unsigned short int TCPSlaveBase::port(unsigned short int _p)
