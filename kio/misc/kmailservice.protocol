@@ -9,4 +9,5 @@ reading=false
 writing=false
 makedir=false
 deleting=false
+DocPath=kioslave/mailto.html
 Icon=mail_new
