@@ -37,12 +37,13 @@ class KStdAccel
 public:
   KStdAccel() {}
 
+  // Always add new std-accels to the end of this enum, never in the middle!
   enum StdAccel {
     Open=0, New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo, Redo,
-    Find, Replace, Insert, Home, End, Prior, Next, GotoLine, Help, FindNext, FindPrev,
+    Find, Replace, Insert, Home, End, Prior, Next, Help, FindNext, FindPrev,
     ZoomIn, ZoomOut, AddBookmark, TextCompletion, PrevCompletion, NextCompletion,
     RotateUp, RotateDown, PopupMenuContext, WhatThis, Reload, SelectAll, Up, Back,
-    Forward, ShowMenubar, NB_STD_ACCELS
+    Forward, ShowMenubar, GotoLine, NB_STD_ACCELS
   };
 
   /** Open file. Default: Ctrl-o */
