@@ -62,5 +62,21 @@ bool KWalletBackend::changeWallet(QString name) {
 }
 
 
+const QPtrList<KWalletEntry>& KWalletBackend::getEntriesByApp(QString app) const {
+	return _entries[app];
+}
+
+
+const QStringList KWalletBackend::getAppList() const {
+QStringList list;
+
+	for (QMap< QString, QPtrList< KWalletEntry > >::ConstIterator i = _entries.begin(); i != _entries.end(); ++i) {
+		list << i.key();
+	}
+	return list;
+}
+
+
+
 
 

@@ -19,8 +19,8 @@
  */ 
 
 
-#ifndef _KWALLETBACKENTRY_H
-#define _KWALLETBACKENTRY_H
+#ifndef _KWALLETENTRY_H
+#define _KWALLETENTRY_H
 
 
 #include <qcstring.h>
@@ -28,10 +28,10 @@
 #include <qstringlist.h>
 
 
-class KWalletBackEntry {
+class KWalletEntry {
 	public:
-		KWalletBackEntry();
-		~KWalletBackEntry();
+		KWalletEntry();
+		~KWalletEntry();
 		
 		bool isDirty() const;
 
@@ -45,8 +45,8 @@ class KWalletBackEntry {
 	protected:
 
 	private:
-		class KWalletBackEntryPrivate;
-		KWalletBackEntryPrivate *d;
+		class KWalletEntryPrivate;
+		KWalletEntryPrivate *d;
 		QString _app;
 		bool _dirty;
 		QStringList _key;

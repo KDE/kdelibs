@@ -1,16 +1,15 @@
 
-INCLUDES= -I$(srcdir) $(all_includes)
+INCLUDES= -I$(srcdir) $(all_includes) -I../client
 
 lib_LTLIBRARIES = libkwalletbackend.la
 
 libkwalletbackend_la_LDFLAGS = $(all_libraries) -version-info 1:0 -no-undefined
-libkwalletbackend_la_LIBADD = $(LIB_QT)
+libkwalletbackend_la_LIBADD = $(LIB_QT) -L../client -lkwalletclient
 libkwalletbackend_la_SOURCES = blockcipher.cc		\
 			       blowfish.cc		\
 			       cbc.cc			\
 			       hashbase.cc		\
 			       sha1.cc			\
-			       kwalletbackentry.cc	\
 			       kwalletbackend.cc
 
 

@@ -18,48 +18,49 @@
  * Boston, MA 02111-1307, USA.
  */ 
 
-#include "kwalletbackentry.h"
+#include "kwalletentry.h"
 
 
 
 
 
-KWalletBackEntry::KWalletBackEntry() {
+KWalletEntry::KWalletEntry() {
 	_dirty = false;
 }
 
 
-KWalletBackEntry::~KWalletBackEntry() {
+KWalletEntry::~KWalletEntry() {
 }
 
 
-bool KWalletBackEntry::isDirty() const {
+bool KWalletEntry::isDirty() const {
 	return _dirty;
 }
 
 
-const QStringList& KWalletBackEntry::key() const {
+const QStringList& KWalletEntry::key() const {
 	return _key;
 }
 
 
-const QByteArray& KWalletBackEntry::value() const {
+const QByteArray& KWalletEntry::value() const {
 	return _value;
 }
 
 
-void KWalletBackEntry::setValue(QByteArray& val) {
+void KWalletEntry::setValue(QByteArray& val) {
 	// do a direct copy from one into the other without
 	// temporary variables
+	val.duplicate(_value);
 }
 
 
-void KWalletBackEntry::setKey(QStringList key) {
+void KWalletEntry::setKey(QStringList key) {
 	_key = key;
 }
 
 
-void KWalletBackEntry::addKey(QString key) {
+void KWalletEntry::addKey(QString key) {
 	_key << key;
 }
 

@@ -1,4 +1,4 @@
 
-SUBDIRS=backend
+SUBDIRS=client backend
 
 

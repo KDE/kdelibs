@@ -25,6 +25,9 @@
 
 #include <qcstring.h>
 #include <qstring.h>
+#include <qptrlist.h>
+#include <qmap.h>
+#include "kwalletentry.h"
 
 
 class KWalletBackend {
@@ -49,6 +52,11 @@ class KWalletBackend {
 		// add
 		// remove
 
+		//
+		const QPtrList<KWalletEntry>& getEntriesByApp(QString app) const;
+
+		const QStringList getAppList() const;
+
 	protected:
 
 	private:
@@ -56,6 +64,7 @@ class KWalletBackend {
 		KWalletBackendPrivate *d;
 		QString _name;
 		bool _open;
+		QMap< QString,QPtrList< KWalletEntry > > _entries;
 };
 
 
