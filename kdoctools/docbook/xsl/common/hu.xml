@@ -281,23 +281,23 @@
    </context>
 
    <context name="xref">
-      <template name="appendix" text="F&#252;ggel&#233;k %n. %t"/>
+      <template name="appendix" text="%n. f&#252;ggel&#233;k - %t"/>
       <template name="article" text="%t"/>
       <template name="bibliography" text="%t"/>
       <template name="book" text="%t"/>
-      <template name="chapter" text="Fejezet %n. %t"/>
+      <template name="chapter" text="%n. fejezet - %t"/>
       <template name="colophon" text="%t"/>
       <template name="dedication" text="%t"/>
-      <template name="example" text="P&#233;lda %n. %t"/>
-      <template name="figure" text="&#193;bra %n. %t"/>
+      <template name="example" text="%n. p&#233;lda - %t"/>
+      <template name="figure" text="%n. &#225;bra - %t"/>
       <template name="glossary" text="%t"/>
       <template name="index" text="%t"/>
-      <template name="part" text="R&#233;sz %n. %t"/>
+      <template name="part" text="%n. r&#233;sz - %t"/>
       <template name="preface" text="%t"/>
       <template name="reference" text="%t"/>
       <template name="set" text="%t"/>
       <template name="setindex" text="%t"/>
-      <template name="table" text="T&#225;bl&#225;zat %n. %t"/>
+      <template name="table" text="%n. t&#225;bl&#225;zat - %t"/>
    </context>
 
    <context name="section-xref">
@@ -311,12 +311,12 @@
    </context>
 
    <context name="section-xref-numbered">
-      <template name="sect1" text="Szakasz %n"/>
-      <template name="sect2" text="Szakasz %n"/>
-      <template name="sect3" text="Szakasz %n"/>
-      <template name="sect4" text="Szakasz %n"/>
-      <template name="sect5" text="Szakasz %n"/>
-      <template name="section" text="Szakasz %n"/>
+      <template name="sect1" text="%n. szakasz"/>
+      <template name="sect2" text="%n. szakasz"/>
+      <template name="sect3" text="%n. szakasz"/>
+      <template name="sect4" text="%n. szakasz"/>
+      <template name="sect5" text="%n. szakasz"/>
+      <template name="section" text="%n. szakasz"/>
       <template name="simplesect" text="&#8220;%t&#8221;"/>
    </context>
 
