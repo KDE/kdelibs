@@ -39,7 +39,7 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kurllabel.h kruler.h kquickhelp.h kcursor.h kaccelmenu.h \
 		klineeditdlg.h kurlcompletion.h kwidgetid.h kthemebase.h \
 		kthemestyle.h kcharselect.h kcolordrag.h kaction.h \
-		kuiactions.h kintlineedit.h kactmenubuilder.h
+		kuiactions.h kintlineedit.h kactmenubuilder.h qxembed.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp \
 		kselect.cpp kdatepik.cpp kdatetbl.cpp kfontdialog.cpp \
@@ -56,8 +56,7 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp \
 		kaccelmenu.cpp klineeditdlg.cpp kurlcompletion.cpp \
 		kthemebase.cpp kthemestyle.cpp kcharselect.cpp \
 		kcolordrag.cpp kaction.cpp kuiactions.cpp \
-		kactmenubuilder.cpp kintlineedit.cpp
-		
+		kactmenubuilder.cpp kintlineedit.cpp qxembed.cpp
 
 
 libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
@@ -72,7 +71,7 @@ libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	ktopwidget.moc ktreelist.moc kurllabel.moc kwizard.moc kwmmapp.moc \
 	kaccelmenu.moc klineeditdlg.moc kurlcompletion.moc kthemebase.moc \
 	kthemestyle.moc kcharselect.moc kcolordrag.moc kaction.moc \
-	kuiactions.moc kintlineedit.moc
+	kuiactions.moc kintlineedit.moc qxembed.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm \
 	arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	
