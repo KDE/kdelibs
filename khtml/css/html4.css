@@ -406,6 +406,11 @@ INPUT[type="radio"], INPUT[type="checkbox"] {
 INPUT[type="text"], INPUT[type="password"] {
 	cursor: text;
         font-family: monospace;
+        text-align: left;
+}
+
+INPUT[dir="rtl"] {
+        text-align: right;
 }
 
 INPUT[type="submit"], INPUT[type="reset"], INPUT[type="button"] { 

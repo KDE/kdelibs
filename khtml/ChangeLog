@@ -1,3 +1,8 @@
+2003-12-03  Stephan Kulow  <coolo@kde.org>
+
+	* css/html4.css: define default text-alignments for input fields to avoid
+	problems with inherited attributes
+
 2003-12-02  Stephan Kulow  <coolo@kde.org>
 
 	* html/htmltokenizer.cpp: do not discard any line feed from parsing textareas
