@@ -513,7 +513,7 @@ class KAccel : public QAccel
 	 *
 	 * N.B.: @p sKey must @em not be @ref i18n()'d!
 	 */
-	static uint stringToKey( const QString& sKey );
+	static int stringToKey( const QString& sKey );
 
 	/**
 	 * Retrieve a string corresponding to the key code @p keyCode,
