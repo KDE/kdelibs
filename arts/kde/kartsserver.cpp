@@ -46,8 +46,13 @@ KArtsServer::~KArtsServer(void)
 
 Arts::SoundServerV2 KArtsServer::server(void)
 {
-	if(d->server.isNull())
+	bool error = d->server.error();
+	if( d->server.isNull() || error )
+	{
 		d->server = Arts::Reference("global:Arts_SoundServerV2");
+		if( error && !d->server.isNull() && !d->server.error() )
+			emit restartedServer();
+	}
 
 	if(!d->server.isNull() && !d->server.error())
 		return d->server;
