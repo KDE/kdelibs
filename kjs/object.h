@@ -36,6 +36,7 @@ namespace KJS {
   class ObjectImpPrivate;
   class PropertyMap;
   class HashTable;
+  class HashEntry;
   class ListImp;
 
   // ECMA 262-3 8.6.1
@@ -63,7 +64,7 @@ namespace KJS {
     /**
      * Static hash-table of properties.
      */
-    HashTable *propHashTable;
+    const HashTable *propHashTable;
     /**
      * Reserved for future extension.
      */
@@ -557,6 +558,7 @@ namespace KJS {
     Object toObject(ExecState *exec) const;
 
   private:
+    const HashEntry* findPropertyHashEntry( const UString& propertyName ) const;
     ObjectImpPrivate *_od;
     PropertyMap *_prop;
     ValueImp *_proto;

@@ -26,6 +26,7 @@
 #include "object.h"
 #include "types.h"
 #include "interpreter.h"
+#include "lookup.h"
 
 #include <assert.h>
 #include <math.h>
@@ -282,9 +283,8 @@ UString ObjectImp::getClass() const
 
 Value ObjectImp::get(ExecState *exec, const UString &propertyName) const
 {
-  Object proto = Object::dynamicCast(prototype());
-
   if (propertyName == "__proto__") {
+    Object proto = Object::dynamicCast(prototype());
     // non-standard netscape extension
     if (proto.isNull())
       return Null();
@@ -300,6 +300,7 @@ Value ObjectImp::get(ExecState *exec, const UString &propertyName) const
     pr = pr->next;
   }
 
+  Object proto = Object::dynamicCast(prototype());
   if (proto.isNull())
     return Undefined();
 
@@ -319,8 +320,10 @@ void ObjectImp::put(ExecState *exec, const UString &propertyName,
   // putValue() is used for JS assignemnts. It passes no attribute.
   // Assume that a C++ implementation knows what it is doing
   // and let it override the canPut() check.
-  if (attr == None && !canPut(exec,propertyName))
+  if (attr == None && !canPut(exec,propertyName)) {
+    //fprintf( stderr, "canPut %s said NO\n", propertyName.ascii() );
     return;
+  }
 
   if (propertyName == "__proto__") {
     // non-standard netscape extension
@@ -369,6 +372,12 @@ bool ObjectImp::canPut(ExecState *exec, const UString &propertyName) const
     }
   }
 
+  // Look in the static hashtable of properties
+  const HashEntry* e = findPropertyHashEntry(propertyName);
+  if (e)
+    return !(e->attr & ReadOnly);
+
+  // Look in the prototype
   Object proto = Object::dynamicCast(prototype());
   if (proto.isNull())
     return true;
@@ -386,6 +395,11 @@ bool ObjectImp::hasProperty(ExecState *exec, const UString &propertyName, bool r
     pr = pr->next;
   }
 
+  // Look in the static hashtable of properties
+  if (findPropertyHashEntry(propertyName))
+      return true;
+
+  // Look in the prototype
   Object proto = Object::dynamicCast(prototype());
   if (proto.isNull() || !recursive)
     return false;
@@ -409,6 +423,9 @@ bool ObjectImp::deleteProperty(ExecState */*exec*/, const UString &propertyName)
     prev = &(pr->next);
     pr = pr->next;
   }
+  // Look in the static hashtable of properties
+  if (findPropertyHashEntry(propertyName))
+    return false; // No builtin property can be deleted
   return true;
 }
 
@@ -461,6 +478,20 @@ Value ObjectImp::defaultValue(ExecState *exec, Type hint) const
   Object err = Error::create(exec, TypeError, I18N_NOOP("No default value"));
   exec->setException(err);
   return err;
+}
+
+const HashEntry* ObjectImp::findPropertyHashEntry( const UString& propertyName ) const
+{
+  const ClassInfo *info = classInfo();
+  while (info) {
+    if (info->propHashTable) {
+      const HashEntry *e = Lookup::findEntry(info->propHashTable, propertyName);
+      if (e)
+        return e;
+    }
+    info = info->parentClass;
+  }
+  return 0L;
 }
 
 bool ObjectImp::implementsConstruct() const
@@ -517,6 +548,20 @@ List ObjectImp::propList(ExecState *exec, bool recursive)
     if (!(pr->attribute & DontEnum))
       list.append(Reference(this,pr->name));
     pr = pr->next;
+  }
+
+  // Add properties from the static hashtable of properties
+  const ClassInfo *info = classInfo();
+  while (info) {
+    if (info->propHashTable) {
+      int size = info->propHashTable->size;
+      const HashEntry *e = info->propHashTable->entries;
+      for (int i = 0; i < size; ++i, ++e) {
+        if ( e->s && !(e->attr & DontEnum) )
+          list.append(Reference(this,e->s)); /// ######### check for duplicates with the propertymap
+      }
+    }
+    info = info->parentClass;
   }
 
   return list;

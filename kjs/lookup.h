@@ -24,6 +24,7 @@
 #define _KJSLOOKUP_H_
 
 #include "ustring.h"
+#include "value.h"
 
 namespace KJS {
 
@@ -36,7 +37,10 @@ namespace KJS {
     /** value is the result value (usually an enum value) */
     int value;
     /** attr is a set for flags (e.g. the property flags, see object.h) */
-    int attr;
+    short int attr;
+    /** params is another number. For property hashtables, it is used to
+        denote the number of argument of the function */
+    short int params;
     /** next is the pointer to the next entry for the same hash value */
     const HashEntry *next;
   };
@@ -91,6 +95,56 @@ namespace KJS {
     static unsigned int hash(const UChar *c, unsigned int len);
     static unsigned int hash(const char *s);
   };
+
+  class ExecState;
+  class UString;
+  /**
+   * Helper method for property lookups
+   *
+   * This method does it all (looking in the hashtable, checking for function
+   * overrides, creating the function or retrieving from cache, calling
+   * getValue in case of a non-function property, forwarding to parent if
+   * unknown property).
+   *
+   * Template arguments:
+   * @param FuncImp the class which implements this object's functions
+   * @param ThisImp the class of "this". It must implement the getValue(exec,token) method,
+   * for non-function properties.
+   * @param ParentImp the class of the parent, to propagate the lookup.
+   *
+   * Method arguments:
+   * @param exec execution state, as usual
+   * @param propertyName the property we're looking for
+   * @param table the static hashtable for this class
+   * @param thisObj "this"
+   */
+  template <class FuncImp, class ThisImp, class ParentImp>
+  inline Value lookupOrCreate( ExecState *exec, const UString &propertyName,
+                               const HashTable* table, const ThisImp* thisObj )
+  {
+    const HashEntry* entry = Lookup::findEntry(table, propertyName);
+
+    if (!entry) // not found, forward to parent
+      return thisObj->ParentImp::get(exec, propertyName);
+
+    int token = entry->value;
+    //fprintf( stderr, "MathObjectImp::get, found value=%d attr=%d\n", entry->value, entry->attr );
+    if (entry->attr & Function)
+    {
+      // Look for cached value in dynamic map of properties (in ObjectImp)
+      Value cachedVal = thisObj->ObjectImp::get(exec, propertyName);
+      //fprintf( stderr, "MathObjectImp::get Function -> looked up in ObjectImp, found type=%d (object=%d)\n",
+      //         cachedVal.type(),  ObjectType);
+      if ( cachedVal.type() == ObjectType )
+        return cachedVal;
+
+      cachedVal = new FuncImp(exec,
+                              entry->value, entry->params);
+      const_cast<ThisImp *>(thisObj)->put(exec, propertyName, cachedVal, entry->attr);
+      return cachedVal;
+    }
+    return thisObj->getValue(exec, token);
+  }
 
 }; // namespace
 

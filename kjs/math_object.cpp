@@ -22,6 +22,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <assert.h>
 
 #include "value.h"
@@ -31,51 +32,100 @@
 #include "operations.h"
 #include "math_object.h"
 
+#include "lookup.h"
+#include "math_object.lut.h"
+
 using namespace KJS;
 
 // ------------------------------ MathObjectImp --------------------------------
 
-MathObjectImp::MathObjectImp(ExecState *exec,
-                             ObjectPrototypeImp *objProto,
-                             FunctionPrototypeImp *funcProto)
+const ClassInfo MathObjectImp::info = { "Math", 0, &mathTable, 0 };
+
+/* Source for math_object.lut.h
+@begin mathTable 21
+  E		MathObjectImp::Euler	DontEnum|DontDelete|ReadOnly
+  LN2		MathObjectImp::Ln2	DontEnum|DontDelete|ReadOnly
+  LN10		MathObjectImp::Ln10	DontEnum|DontDelete|ReadOnly
+  LOG2E		MathObjectImp::Log2E	DontEnum|DontDelete|ReadOnly
+  LOG10E	MathObjectImp::Log10E	DontEnum|DontDelete|ReadOnly
+  PI		MathObjectImp::Pi	DontEnum|DontDelete|ReadOnly
+  SQRT1_2	MathObjectImp::Sqrt1_2	DontEnum|DontDelete|ReadOnly
+  SQRT2		MathObjectImp::Sqrt2	DontEnum|DontDelete|ReadOnly
+  abs		MathObjectImp::Abs	DontEnum|DontDelete|ReadOnly|Function 1
+  acos		MathObjectImp::ACos	DontEnum|DontDelete|ReadOnly|Function 1
+  asin		MathObjectImp::ASin	DontEnum|DontDelete|ReadOnly|Function 1
+  atan		MathObjectImp::ATan	DontEnum|DontDelete|ReadOnly|Function 1
+  atan2		MathObjectImp::ATan2	DontEnum|DontDelete|ReadOnly|Function 2
+  ceil		MathObjectImp::Ceil	DontEnum|DontDelete|ReadOnly|Function 1
+  cos		MathObjectImp::Cos	DontEnum|DontDelete|ReadOnly|Function 1
+  exp		MathObjectImp::Exp	DontEnum|DontDelete|ReadOnly|Function 1
+  floor		MathObjectImp::Floor	DontEnum|DontDelete|ReadOnly|Function 1
+  log		MathObjectImp::Log	DontEnum|DontDelete|ReadOnly|Function 1
+  max		MathObjectImp::Max	DontEnum|DontDelete|ReadOnly|Function 2
+  min		MathObjectImp::Min	DontEnum|DontDelete|ReadOnly|Function 2
+  pow		MathObjectImp::Pow	DontEnum|DontDelete|ReadOnly|Function 2
+  random	MathObjectImp::Random	DontEnum|DontDelete|ReadOnly|Function 0
+  round		MathObjectImp::Round	DontEnum|DontDelete|ReadOnly|Function 1
+  sin		MathObjectImp::Sin	DontEnum|DontDelete|ReadOnly|Function 1
+  sqrt		MathObjectImp::Sqrt	DontEnum|DontDelete|ReadOnly|Function 1
+  tan		MathObjectImp::Tan	DontEnum|DontDelete|ReadOnly|Function 1
+@end
+*/
+
+MathObjectImp::MathObjectImp(ExecState * /*exec*/,
+                             ObjectPrototypeImp *objProto)
   : ObjectImp(objProto)
 {
-  Value protect(this);
-  // ECMA 15.8
+}
 
-  put(exec,"E",       Number(exp(1.0)),             DontEnum|DontDelete|ReadOnly);
-  put(exec,"LN10",    Number(log(10.0)),            DontEnum|DontDelete|ReadOnly);
-  put(exec,"LN2",     Number(log(2.0)),             DontEnum|DontDelete|ReadOnly);
-  put(exec,"LOG2E",   Number(1.0/log(2.0)),         DontEnum|DontDelete|ReadOnly);
-  put(exec,"LOG10E",  Number(1.0/log(10.0)),        DontEnum|DontDelete|ReadOnly);
-  put(exec,"PI",      Number(2.0 * asin(1.0)),      DontEnum|DontDelete|ReadOnly);
-  put(exec,"SQRT1_2", Number(sqrt(0.5)),            DontEnum|DontDelete|ReadOnly);
-  put(exec,"SQRT2",   Number(sqrt(2.0)),            DontEnum|DontDelete|ReadOnly);
+// ECMA 15.8
+Value MathObjectImp::get(ExecState *exec, const UString &propertyName) const
+{
+  return lookupOrCreate<MathFuncImp, MathObjectImp, ObjectImp>( exec, propertyName, &mathTable, this );
+}
 
-  put(exec,"abs",     new MathFuncImp(exec,funcProto,MathFuncImp::Abs,1),    DontEnum|DontDelete|ReadOnly);
-  put(exec,"acos",    new MathFuncImp(exec,funcProto,MathFuncImp::ACos,1),   DontEnum|DontDelete|ReadOnly);
-  put(exec,"asin",    new MathFuncImp(exec,funcProto,MathFuncImp::ASin,1),   DontEnum|DontDelete|ReadOnly);
-  put(exec,"atan",    new MathFuncImp(exec,funcProto,MathFuncImp::ATan,1),   DontEnum|DontDelete|ReadOnly);
-  put(exec,"atan2",   new MathFuncImp(exec,funcProto,MathFuncImp::ATan2,2),  DontEnum|DontDelete|ReadOnly);
-  put(exec,"ceil",    new MathFuncImp(exec,funcProto,MathFuncImp::Ceil,1),   DontEnum|DontDelete|ReadOnly);
-  put(exec,"cos",     new MathFuncImp(exec,funcProto,MathFuncImp::Cos,1),    DontEnum|DontDelete|ReadOnly);
-  put(exec,"exp",     new MathFuncImp(exec,funcProto,MathFuncImp::Exp,1),    DontEnum|DontDelete|ReadOnly);
-  put(exec,"floor",   new MathFuncImp(exec,funcProto,MathFuncImp::Floor,1),  DontEnum|DontDelete|ReadOnly);
-  put(exec,"log",     new MathFuncImp(exec,funcProto,MathFuncImp::Log,1),    DontEnum|DontDelete|ReadOnly);
-  put(exec,"max",     new MathFuncImp(exec,funcProto,MathFuncImp::Max,2),    DontEnum|DontDelete|ReadOnly);
-  put(exec,"min",     new MathFuncImp(exec,funcProto,MathFuncImp::Min,2),    DontEnum|DontDelete|ReadOnly);
-  put(exec,"pow",     new MathFuncImp(exec,funcProto,MathFuncImp::Pow,2),    DontEnum|DontDelete|ReadOnly);
-  put(exec,"random",  new MathFuncImp(exec,funcProto,MathFuncImp::Random,0), DontEnum|DontDelete|ReadOnly);
-  put(exec,"round",   new MathFuncImp(exec,funcProto,MathFuncImp::Round,1),  DontEnum|DontDelete|ReadOnly);
-  put(exec,"sin",     new MathFuncImp(exec,funcProto,MathFuncImp::Sin,1),    DontEnum|DontDelete|ReadOnly);
-  put(exec,"sqrt",    new MathFuncImp(exec,funcProto,MathFuncImp::Sqrt,1),   DontEnum|DontDelete|ReadOnly);
-  put(exec,"tan",     new MathFuncImp(exec,funcProto,MathFuncImp::Tan,1),    DontEnum|DontDelete|ReadOnly);
+Value MathObjectImp::getValue(ExecState *, int token) const
+{
+  double d = -42; // ;)
+  switch (token) {
+  case Euler:
+    d = exp(1.0);
+    break;
+  case Ln2:
+    d = log(2.0);
+    break;
+  case Ln10:
+    d = log(10.0);
+    break;
+  case Log2E:
+    d = 1.0/log(2.0);
+    break;
+  case Log10E:
+    d = 1.0/log(10.0);
+    break;
+  case Pi:
+    d = 2.0 * asin(1.0);
+    break;
+  case Sqrt1_2:
+    d = sqrt(0.5);
+    break;
+  case Sqrt2:
+    d = sqrt(2.0);
+    break;
+  default:
+    fprintf( stderr, "Internal error in MathObjectImp: unhandled token %d\n", token );
+    break;
+  }
+
+  return Number(d);
 }
 
 // ------------------------------ MathObjectImp --------------------------------
 
-MathFuncImp::MathFuncImp(ExecState *exec, FunctionPrototypeImp *funcProto, int i, int l)
-  : InternalFunctionImp(funcProto), id(i)
+MathFuncImp::MathFuncImp(ExecState *exec, int i, int l)
+  : InternalFunctionImp(
+    static_cast<FunctionPrototypeImp*>(exec->interpreter()->builtinFunctionPrototype().imp())
+    ), id(i)
 {
   Value protect(this);
   put(exec,"length",Number(l),DontDelete|ReadOnly|DontEnum);
@@ -98,43 +148,43 @@ Value MathFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
   double result;
 
   switch (id) {
-  case Abs:
+  case MathObjectImp::Abs:
     result = ( arg < 0 ) ? (-arg) : arg;
     break;
-  case ACos:
+  case MathObjectImp::ACos:
     result = ::acos(arg);
     break;
-  case ASin:
+  case MathObjectImp::ASin:
     result = ::asin(arg);
     break;
-  case ATan:
+  case MathObjectImp::ATan:
     result = ::atan(arg);
     break;
-  case ATan2:
+  case MathObjectImp::ATan2:
     result = ::atan2(arg, arg2);
     break;
-  case Ceil:
+  case MathObjectImp::Ceil:
     result = ::ceil(arg);
     break;
-  case Cos:
+  case MathObjectImp::Cos:
     result = ::cos(arg);
     break;
-  case Exp:
+  case MathObjectImp::Exp:
     result = ::exp(arg);
     break;
-  case Floor:
+  case MathObjectImp::Floor:
     result = ::floor(arg);
     break;
-  case Log:
+  case MathObjectImp::Log:
     result = ::log(arg);
     break;
-  case Max: // TODO: support variable args
+  case MathObjectImp::Max: // TODO: support variable args
     result = ( arg > arg2 ) ? arg : arg2;
     break;
-  case Min: // TODO: support variable args
+  case MathObjectImp::Min: // TODO: support variable args
     result = ( arg < arg2 ) ? arg : arg2;
     break;
-  case Pow:
+  case MathObjectImp::Pow:
     // ECMA 15.8.2.1.13 (::pow takes care of most of the critera)
     if (KJS::isNaN(arg2))
       result = NaN;
@@ -157,11 +207,11 @@ Value MathFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
     else
       result = ::pow(arg, arg2);
     break;
-  case Random:
+  case MathObjectImp::Random:
     result = ::rand();
     result = result / RAND_MAX;
     break;
-  case Round:
+  case MathObjectImp::Round:
     if (isNaN(arg))
       result = arg;
     if (isInf(arg) || isInf(-arg))
@@ -171,13 +221,13 @@ Value MathFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
     else
       result = (double)(arg >= 0.0 ? int(arg + 0.5) : int(arg - 0.5));
     break;
-  case Sin:
+  case MathObjectImp::Sin:
     result = ::sin(arg);
     break;
-  case Sqrt:
+  case MathObjectImp::Sqrt:
     result = ::sqrt(arg);
     break;
-  case Tan:
+  case MathObjectImp::Tan:
     result = ::tan(arg);
     break;
 

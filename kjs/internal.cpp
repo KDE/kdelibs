@@ -909,7 +909,7 @@ InterpreterImp::InterpreterImp(Interpreter *interp, const Object &glob)
   global.put(globExec,"unescape",   new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::UnEscape,   1), DontEnum);
 
   // built-in objects
-  global.put(globExec,"Math", new MathObjectImp(globExec,objProto,funcProto), DontEnum);
+  global.put(globExec,"Math", new MathObjectImp(globExec,objProto), DontEnum);
 
   recursion = 0;
 }
