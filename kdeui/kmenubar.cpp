@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.50  1998/11/23 09:57:49  ettrich
+// small improvement, hope Sven likes it
+//
 // Revision 1.49  1998/11/23 00:12:27  radej
 // sven: MACMenu: doesn't show if app doesn't want it to (kvt) + icon size fix
 //
@@ -121,6 +124,8 @@
 
 // Revision 1.25  1998/05/07 23:13:09  radej
 // Moving with KToolBoxManager
+//
+
 _menuBar::_menuBar (QWidget *parent, const char *name)
   : QMenuBar (parent, name)
 {
@@ -246,8 +251,14 @@ void KMenuBar::ContextCallback( int )
           handle->hide();
           int dim = fontMetrics().height();
           QPixmap px(KWM::miniIcon(Parent->winId(), dim, dim));
-          if (!px.isNull())
-            menu->insertItem(px, 0, this, SLOT(slotSysMenu()), 0, -2, 0);
+          if (px.isNull()){
+	      if (!miniGo)
+		  miniGo = new QPixmap(kapp->kde_datadir() + "/kpanel/pics/mini/go.xpm");
+	      px = *miniGo;
+	  }
+          if (!px.isNull()){
+	      menu->insertItem(px, 0, this, SLOT(slotSysMenu()), 0, -2, 0);
+	  }
       }
   }
 
@@ -404,7 +415,7 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
       Parent->removeEventFilter(this); //One time only
       return false;
   }
-  
+
   if (mgr)
     if (ev->type() == Event_MouseButtonPress)
 
@@ -585,7 +596,7 @@ void KMenuBar::enableMoving(bool flag)
   moving = flag;
   if (position == Floating && standalone_menubar == true)
     return; // Ignore positioning of Mac menubar
-  
+{
     if (position == FloatingSystem && standalone_menubar == true) {
 	return; // Ignore positioning of Mac menubar
      if (mpos == Floating)
