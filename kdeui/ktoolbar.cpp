@@ -19,6 +19,7 @@
 #include "ktoolbar.moc"
 #include <klocale.h>
 #include <kapp.h>
+#include <kwm.h>
   default:
 // Since I didn't get any answers about should
 // toolbar be raise or not, I leave it to
@@ -274,8 +275,10 @@ void KToolBar::ContextCallback( int index )
    case CONTEXT_FLOAT:
      if (position == Floating)
        setBarPos (lastPosition);
-     else
+     else{
        setBarPos( Floating );
+       move(QCursor::pos());
+     }
     break;
   }
 }
@@ -506,7 +509,8 @@ void KToolBar::updateRects( bool res )
 
 void KToolBar::mousePressEvent ( QMouseEvent *m )
 {
-  if ( moving )
+  pointerOffset = m->pos();
+  if ( moving && m->button() != LeftButton)
     context->popup( mapToGlobal( m->pos() ), 0 );
 }
 
@@ -1280,42 +1284,45 @@ void KToolBar::enableMoving(bool flag)
   moving = flag; 
 }
 
-void KToolBar::setBarPos(BarPosition pos)
+void KToolBar::setBarPos(BarPosition bpos)
 {
-  if (position != pos)
+  if (position != bpos)
    {
-     if (pos == Floating)
+     if (bpos == Floating)
       {
         lastPosition = position;
-        position = pos;
+        position = bpos;
         oldX = x();
         oldY = y();
         oldWFlags = getWFlags();
+	QPoint p = mapToGlobal(QPoint(0,0));
+	parentOffset = pos();
         hide();
-        recreate(0, WStyle_Customize | WStyle_Title | WStyle_Minimize | WStyle_DialogBorder,
-                 QCursor::pos(), TRUE);
+        recreate(0, 0,
+                 p, TRUE);
+	XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
+	KWM::setDecoration(winId(), FALSE);
+	setCaption("toolbar");
         updateRects (TRUE);
         //show();
-        if (title != 0)
-          setCaption (title);
         context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
-        emit moved (pos);
+        emit moved (bpos);
         return;
       }
      else if (position == Floating) // was floating
       {
-        position = pos;
+        position = bpos;
         hide();
         recreate(Parent, oldWFlags, QPoint(oldX, oldY), TRUE);
         updateRects (TRUE);
         context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
-        emit moved (pos);
+        emit moved (bpos);
         return;
       }
      else
       {
-        position = pos;
-        emit moved ( pos );
+        position = bpos;
+        emit moved ( bpos );
         return;
       }
    }
@@ -1370,6 +1377,46 @@ void KToolBar::setItemPixmap( int _id, const QPixmap& _pixmap )
   warning ("KToolBar: setItemPixmap is obsolete. Use setButtonPixmap");
   this->setButtonPixmap (_id, _pixmap);
 }
+
+void KToolBar::mouseMoveEvent(QMouseEvent* m){
+  if (!moving || !m->state() & MouseButtonMask)
+    return;
+  if (position != Floating){
+    QPoint p = mapFromGlobal(QCursor::pos()) - pointerOffset;
+    if (p.x()*p.x()+p.y()*p.y()<169)
+      return;
+    
+    XUngrabPointer( qt_xdisplay(), CurrentTime );
+    setBarPos(Floating);
+    QApplication::syncX();
+    while(XGrabPointer( qt_xdisplay(), winId(), TRUE,
+			ButtonPressMask | ButtonReleaseMask |
+			PointerMotionMask | EnterWindowMask | LeaveWindowMask,
+			GrabModeAsync, GrabModeAsync,
+			None, None, CurrentTime ) != GrabSuccess);
+    grabMouse();
+  }
+  move(QCursor::pos() - pointerOffset);    
+  QPoint p = QCursor::pos() - pointerOffset - (Parent->mapToGlobal(QPoint(0,0)) + parentOffset);
+
+  if (p.x()*p.x()+p.y()*p.y()<169){
+    releaseMouse();
+    setBarPos(lastPosition);
+    QApplication::syncX();
+    while(XGrabPointer( qt_xdisplay(), winId(), TRUE,
+			ButtonPressMask | ButtonReleaseMask |
+			PointerMotionMask | EnterWindowMask | LeaveWindowMask,
+			GrabModeAsync, GrabModeAsync,
+			None, None, CurrentTime ) != GrabSuccess);
+    grabMouse();
+    pointerOffset = mapFromGlobal(QCursor::pos());
+  }
+}
+
+void KToolBar::mouseReleaseEvent ( QMouseEvent * ){
+  releaseMouse();
+}
+
 
 
 // sven

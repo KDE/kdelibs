@@ -64,7 +64,7 @@ class KMenuBar : public QFrame
     * Enables/disables floating.
     */
    void enableFloating(bool flag = TRUE);
-   void setMenuBarPos(menuPosition pos);
+
    /**
     * Sets position. Can be used when floating or moving is disabled.
     */
@@ -105,6 +105,8 @@ class KMenuBar : public QFrame
  protected:
 
    void init();
+   void mousePressEvent ( QMouseEvent *m );
+   void resizeEvent( QResizeEvent *e );
    
  private:
    void leaveEvent (QEvent *e);
@@ -118,6 +120,9 @@ private:
    menuPosition position;
    menuPosition lastPosition;
    menuPosition movePosition;
+   QFrame *handle;
+   QPoint pointerOffset;
+   QPoint parentOffset;
      
    QPopupMenu *context;
    QMenuBar *menu;
@@ -134,7 +139,7 @@ signals:
      */
     void highlighted(int id);
 
-
+    
    KToolBoxManager *mgr;
    bool highlight;
    bool transparent;

@@ -421,7 +421,7 @@ public:
    * Sets position of toolbar
    * @see #BarPosition
    */
-  void setBarPos (BarPosition pos);
+  void setBarPos (BarPosition bpos);
 
   /**
    * Returns position of toolbar
@@ -603,5 +603,13 @@ protected slots:
   void ButtonReleased(int);
   void ContextCallback(int);
 
+
+protected:
+  void mouseMoveEvent(QMouseEvent*);
+  void mouseReleaseEvent ( QMouseEvent *);
+
+private:
+   QPoint pointerOffset;
+   QPoint parentOffset;
 };
 #endif
