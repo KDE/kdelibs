@@ -122,7 +122,6 @@ Value Screen::get(ExecState *exec, const UString &p) const
 Value Screen::getValueProperty(ExecState *, int token) const
 {
   KWinModule info;
-
   switch( token ) {
   case Height:
     return Number(QApplication::desktop()->height());
@@ -1062,7 +1061,12 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       if ( tl->x()+dest.width() <= QApplication::desktop()->width() &&
            tl->y()+dest.height() <= QApplication::desktop()->height() &&
            dest.width() >= 100 && dest.height() >= 100 )
-        tl->resize( dest );
+      {
+        // Take into account the window frame
+        int deltaWidth = tl->frameGeometry().width() - tl->width();
+        int deltaHeight = tl->frameGeometry().height() - tl->height();
+        tl->resize( dest.width() - deltaWidth, dest.height() - deltaHeight );
+      }
     }
     return Undefined();
   case Window::ResizeTo:
@@ -1074,7 +1078,12 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       if ( tl->x()+dest.width() <= QApplication::desktop()->width() &&
            tl->y()+dest.height() <= QApplication::desktop()->height() &&
            dest.width() >= 100 && dest.height() >= 100 )
-        tl->resize( dest );
+      {
+        // Take into account the window frame
+        int deltaWidth = tl->frameGeometry().width() - tl->width();
+        int deltaHeight = tl->frameGeometry().height() - tl->height();
+        tl->resize( dest.width() - deltaWidth, dest.height() - deltaHeight );
+      }
     }
     return Undefined();
   case Window::SetTimeout:
