@@ -1,6 +1,8 @@
 [Desktop Entry]
 MimeType=text/rdf
-Comment=Ressource Definition File
+Comment=Resource Definition File
+Comment[da]=Ressource Definitionsfil
+Comment[nl]=Ressource Definition-bestand
 Icon=news
 Type=MimeType
 Patterns=*.rdf;*.RDF;
