@@ -1013,7 +1013,7 @@ void KSpell::slotModalReady()
 {
     // qDebug("MODAL READY");
     ASSERT( m_status == Running );
-    connect( this, SIGNAL( done( const QString & ) ), this, SLOT( slotModalDone( const char* ) ) );
+    connect( this, SIGNAL( done( const QString & ) ), this, SLOT( slotModalDone( const QString & ) ) );
     check( modaltext );
 }
 
