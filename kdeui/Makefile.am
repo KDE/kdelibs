@@ -59,7 +59,7 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 		kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h \
 		kdatewidget.h karrowbutton.h kguiitem.h kstdguiitem.h \
 		kstringvalidator.h kaccelmanager.h kwindowinfo.h \
-		ktextedit.h
+		ktextedit.h kpassivepopup.h
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
