@@ -69,8 +69,8 @@ class KEditToolbarWidgetPrivate;
  * void MyClass::slotNewToolbarConfig() // This is called when OK or Apply is clicked
  * {
  *    ...if you use any action list, use plugActionList on each here...
- *    applyMainWindowSettings( KGlobal::config(), "MainWindow" );
  *    createGUI();
+ *    applyMainWindowSettings( KGlobal::config(), "MainWindow" );
  * }
  * </pre>
  *
@@ -93,8 +93,8 @@ class KEditToolbarWidgetPrivate;
  * void MyClass::slotNewToolbarConfig() // This is called when OK or Apply is clicked
  * {
  *    ...if you use any action list, use plugActionList on each here...
- *    applyMainWindowSettings( KGlobal::config(), "MainWindow" );
  *    // Do NOT call createGUI()!
+ *    applyMainWindowSettings( KGlobal::config(), "MainWindow" );
  * }
  * </pre>
  *
