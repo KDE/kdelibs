@@ -344,6 +344,11 @@ signals:
 
   /**
    * Signal an item to remove.
+   *
+   * ATTENTION: if @p _fileItem == @p rootItem() the directory this lister
+   *            is holding was deleted and you HAVE to release especially the
+   *            rootItem of this lister otherwise your app will CRASH!!
+   *            The clear() signals have been emitted already.
    */
   void deleteItem( KFileItem *_fileItem );
 
@@ -379,11 +384,6 @@ signals:
    * Emitted to display information about the speed of the jobs.
    */
   void speed( int bytes_per_second );
-                                                                             
-  /**
-   * Instruct the view to close itself, since the dir was just deleted.
-   */
-  void closeView();
 
 protected slots:
   void slotInfoMessage( KIO::Job *, const QString& );
