@@ -479,7 +479,7 @@ static char *unique_filename (const char *path, const char *prefix, int *pFd)
     char tempFile[PATH_MAX];
     char *ptr;
 
-    snprintf (tempFile, "%s/%sXXXXXX", path, prefix);
+    snprintf (tempFile, PATH_MAX, "%s/%sXXXXXX", path, prefix);
     ptr = static_cast<char *>(malloc(strlen(tempFile) + 1));
     if (ptr != NULL)
 	{
