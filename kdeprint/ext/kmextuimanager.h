@@ -29,6 +29,7 @@ public:
 	~KMExtUiManager();
 
 	int pluginPageCap();
+	void setupPrinterPropertyDialog( KPrinterPropertyDialog* );
 };
 
 #endif

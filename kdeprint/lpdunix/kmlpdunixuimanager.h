@@ -29,6 +29,7 @@ public:
 	~KMLpdUnixUiManager();
 
 	int pluginPageCap();
+	void setupPrinterPropertyDialog( KPrinterPropertyDialog* );
 };
 
 #endif
