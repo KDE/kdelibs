@@ -1462,6 +1462,25 @@ KJSO Konqueror::get(const UString &p) const
   if ( p == "goHistory" || part->url().protocol() != "http" || part->url().host() != "localhost" )
     return Undefined();
 
+  KParts::BrowserExtension *ext = part->browserExtension();
+  if ( ext ) {
+    KParts::BrowserInterface *iface = ext->browserInterface();
+    if ( iface ) {
+      QVariant prop = iface->property( p.qstring().latin1() );
+
+      if ( prop.isValid() ) {
+        switch( prop.type() ) {
+        case QVariant::Int:
+          return Number( prop.toInt() );
+        case QVariant::String:
+          return String( prop.toString() );
+        default:
+          break;
+        }
+      }
+    }
+  }
+
   return Function( new KonquerorFunc(this, p.qstring().latin1() ) );
 }
 
