@@ -30,7 +30,7 @@ As a start you should have a look at doc/porting.doc in the Qt package.<P>
 <LI><A HREF="#KDialog">KDialog</A></LI>
 <LI><A HREF="#KTMainWidget">KTMainWidget</A></LI>
 <LI><A HREF="#automoc">automoc</A></LI>
-<LI><A HREF="#kcharsets1">kcharsets</A></LI>
+<LI><A HREF="#kcharsets">kcharsets</A></LI>
 <LI><A HREF="#KWizard">KWizard, KNoteBook</A></LI>
 <LI><A HREF="#KSpinBox">KSpinBox, KNumericSpinBox</A></LI>
 <LI><A HREF="#KClipboard">KClipboard</A></LI>
@@ -43,13 +43,11 @@ As a start you should have a look at doc/porting.doc in the Qt package.<P>
 <LI><A HREF="#KTabListBox">KTabListBox</A></LI>
 <LI><A HREF="#KToolBarButton">KToolBarButton &amp; KRadioGroup</A></LI>
 <LI><A HREF="#KAccel">KAccel</A></LI>
-<LI><A HREF="#KIO">KIO</A></LI>
 <LI><A HREF="#kstring">kstring.h / KString</A></LI>
 <LI><A HREF="#ktopwidget">ktopwidget.h / KTopWidget</A></LI>
 <LI><A HREF="#kbutton">kbutton.h / KButton</A></LI>
 <LI><A HREF="#kbuttonbox">kbuttonbox.h / KButtonBox</A></LI>
 <LI><A HREF="#kcolorgroup">kcolorgroup.h / KColorGroup</A></LI>
-<LI><A HREF="#kcharsets2">kcharsets.h / KCharsets</A></LI>
 <LI><A HREF="#get">Methods for getting the value of a member object named getXy*() are renamed to xy*()</A></LI>
 <LI><A HREF="#kled">kled.h, kledlamp.h / KLed, KLedLamp</A></LI>
 <LI><A HREF="#KDockWidget">KDockWidget</A></LI>
@@ -436,7 +434,7 @@ by am_edit which provides a lot of additional features.<P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
-<H3><A NAME="kcharsets1">kcharsets</A></H3>
+<H3><A NAME="kcharsets">kcharsets</A></H3>
 
 The kcharsets class has been completely rewritten, and most of it has
 vanished, since support for it moved to Qt.<P>
@@ -614,19 +612,6 @@ declared globally in kaccel.h are now static methods in KAccel.<P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
-<H3><A NAME="KIO">KIO</A></H3>
-
-All of the UDS_XXX and ERR_XXX constants are now in the KIO class. This
-class is just a namespace, so you can either inherit from it, or reference
-the constants as KIO::UDS_XXX. The names of all of the classes have been
-changed to start with a 'k', this prevents namespace pollution. This should
-not cause too many problems as most of the KIO classes now inherit the
-namespace. Finally you should not longer include userpaths.h, its methods
-have been moved to kglobalsettings.h. If you have any questions about the 
-changes then mail me Richard J. Moore &lt;<A HREF="mailto:rich@kde.org">rich@kde.org</A>&gt;.<P>
-
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-
 <H3><A NAME="kstring">kstring.h / KString</A></H3>
 
 The KString class is obsolete and is not defined in
@@ -664,14 +649,6 @@ functionality is provided by Qt. It has been removed. (<A HREF="mailto:mirko@kde
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
-<H3><A NAME="kcharsets2">kcharsets.h / KCharsets</A></H3>
-
-This functionality is removed from the KDE core and used from Qt, so it
-has been removed. Use QStrings (unicode) for this
-purpose. (<A HREF="mailto:mirko@kde.org">mirko@kde.org</A>)<P>
-
-<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
-
 <H3><A NAME="get">Methods for getting the value of a member object named getXy*() are renamed to xy*()</A></H3>
 
 If your code does not compile and complains about missing member
@@ -692,7 +669,7 @@ Please adjust your code accordingly.<P>
 <H3><A NAME="KDockWidget">KDockWidget</A></H3>
 
 KDockWidget inherits form KMainWindow instead of KTMainWindow now.
-See <A HREF="KTMainWindow>KTMainWindow</A> for more details.
+See <A HREF="KTMainWindow">KTMainWindow</A> for more details.
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
@@ -708,10 +685,10 @@ addToolBar() has been revmoed, it is not needed any more.<p>
 setMenu(...) has been removed, it is not needed any more.<p>
 setStatusBar(...) has been removed, it is not needed any more.<p>
 updateRects() has been removed, it is not needed any more.<p>
-enableStatusBar(...) has been removed, use statusBar()->show() and/or
-statusBar()->hide() instead.<p>
-enableToolBar(...) has been removed, use toolBar()->show() and/or 
-toolBar()->hide() instead. <p>
+enableStatusBar(...) has been removed, use statusBar()-&gt;show() and/or
+statusBar()-&gt;hide() instead.<p>
+enableToolBar(...) has been removed, use toolBar()-&gt;show() and/or 
+toolBar()-&gt;hide() instead. <p>
 
 view_* public variables do no longer exist. There is really no reason
 for an app to use this information. If you do need it anyway, use
