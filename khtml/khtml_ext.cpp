@@ -174,6 +174,8 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, cons
 {
   KFileDialog *dlg = new KFileDialog( QString::null, filter, parent, "filedia", true );
 
+  dlg->setKeepLocation( true );
+
   dlg->setCaption( caption );
 
   dlg->setSelection( url.fileName() );
