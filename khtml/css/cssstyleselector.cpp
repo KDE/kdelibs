@@ -492,6 +492,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     {
 // ident only properties
     case CSS_PROP_BACKGROUND_ATTACHMENT:
+	kdDebug(0) << "background attachment" << endl;
 	if(value->valueType() == CSSValue::CSS_INHERIT)
 	{
 	    if(!e->parentNode()) return;
@@ -502,8 +503,13 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	switch(primitiveValue->getIdent())
 	{
 	case CSS_VAL_FIXED:
-	    style->setBackgroundAttachment(false);
-	    break;
+	    {
+		style->setBackgroundAttachment(false);
+		DocumentImpl *doc = e->ownerDocument();
+		if(doc && doc->view())
+		    doc->view()->useSlowRepaints();
+		break;
+	    }
 	case CSS_VAL_SCROLL:
 	    style->setBackgroundAttachment(true);
 	    break;

@@ -224,24 +224,36 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
 	//kdDebug( 6040 ) << "printing bgimage at " << _tx << "/" << _ty << endl;
 	// ### might need to add some correct offsets
 	// ### use paddingX/Y
-        switch(m_style->backgroundRepeat())
-        {
-        case REPEAT_X:
-        //p->drawPixmap(_tx, _ty, m_bgImage->pixmap());
-            p->drawTiledPixmap(_tx, _ty, w, m_bgImage->pixmap().height(),m_bgImage->pixmap());
-            break;
-        case REPEAT_Y:
-            p->drawTiledPixmap(_tx, _ty, m_bgImage->pixmap().width(), h,m_bgImage->pixmap());
-            break;
-        case NO_REPEAT:
-            p->drawPixmap(_tx, _ty, m_bgImage->pixmap());
-            break;
-        case REPEAT:
-        default:
-	    //kdDebug(0) << "drawing tiled pixmap" << endl;
-            p->drawTiledPixmap(_tx, _ty, w, h, m_bgImage->tiled_pixmap());
-            return;
-        }
+	
+	int sx = 0;
+	int sy = 0;
+	
+	if( !m_style->backgroundAttachment() ) {
+	    kdDebug(0) << "fixed background" << endl;
+	    QRect r = viewRect();
+	    sx = _tx - r.x();
+	    sy = _ty - r.y();
+	    
+	} else
+	    kdDebug(0) << "scrolling background" << endl;
+	    
+        
+	switch(m_style->backgroundRepeat()) {
+	case NO_REPEAT:
+	    if(m_bgImage->pixmap().width() < w)
+		h = m_bgImage->pixmap().width();
+	case REPEAT_X:
+	    if(m_bgImage->pixmap().height() < h)
+		h = m_bgImage->pixmap().height();
+	    break;
+	case REPEAT_Y:
+	    if(m_bgImage->pixmap().width() < h)
+		h = m_bgImage->pixmap().width();
+	    break;
+	case REPEAT:
+	    break;
+	}
+	p->drawTiledPixmap(_tx, _ty, w, h,m_bgImage->pixmap(), sx, sy);
     }
 
     if(m_style->hasBorder())

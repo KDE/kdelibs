@@ -34,16 +34,20 @@ class QPainter;
 
 namespace DOM {
     class HTMLDocumentImpl;
+    class ElementImpl;
     class HTMLElementImpl;
     class HTMLTitleElementImpl;
     class Range;
     class NodeImpl;
+    class CSSProperty;
 };
 
 namespace khtml {
     class RenderObject;
     class RenderRoot;
-}
+    class RenderStyle;
+    void applyRule(RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e);
+};
 
 class KHTMLPart;
 class KHTMLViewPrivate;
@@ -62,7 +66,8 @@ class KHTMLView : public QScrollView
     friend DOM::HTMLTitleElementImpl;
     friend class KHTMLPart;
     friend khtml::RenderRoot;
-
+    friend void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e);
+    
 public:
     /**
      * Construct a @ref KHTMLView.
@@ -174,6 +179,8 @@ private:
 
     void followLink();
 
+    void useSlowRepaints();
+    
     // ------------------------------------- member variables ------------------------------------
 
     /**

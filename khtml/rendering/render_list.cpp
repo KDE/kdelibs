@@ -102,12 +102,9 @@ void RenderListItem::calcListValue()
 	m_marker->val = 1;
     else
     {
-	RenderObject *prev = m_previous;
-	while(prev && !prev->isListItem())
-	    prev = prev->previousSibling();
-	if(prev)
+	if(m_previous && m_previous->isListItem())
 	{
-	    RenderListItem *item = static_cast<RenderListItem *>(prev);
+	    RenderListItem *item = static_cast<RenderListItem *>(m_previous);
 	    m_marker->val = item->value() + 1;
 	}
 	else

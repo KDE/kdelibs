@@ -59,6 +59,7 @@ public:
     {
 	underMouse = 0;
 	linkPressed = false;
+	useSlowRepaints = false;
 	currentNode = 0;
  	originalNode= 0;
  	tabIndex=0;
@@ -70,6 +71,7 @@ public:
     NodeImpl *originalNode;
 
     bool linkPressed;
+    bool useSlowRepaints;
     short tabIndex;
 
     QTimer resizeTimer;
@@ -198,33 +200,46 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     }
     //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << "wflag=" << testWFlags(WPaintClever) << endl;
 
+    if(d->useSlowRepaints) {
+	kdDebug(0) << "using slow repaints" << endl;
+	// used in case some element defines a fixed background or we have fixed positioning
+	// #### flickers terribly, but that will need some support in Qt to work.
+	ex = contentsX();
+	ey = contentsY();
+	ew = visibleWidth();
+	eh = visibleHeight();
+	//int tx, ty;
+	//contentsToViewport(ex, ey, tx, ty);
+	//p->setClipping(false);
+	//p->setClipRect(tx, ty, ew, eh);
+    }
+
     if ( paintBuffer->width() < visibleWidth() ) {
 	paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
     }
 
-//    QTime qt;
-//    qt.start();
+    //    QTime qt;
+    //    qt.start();
 
     int py=0;
-    while (py < eh)
-    {
+    while (py < eh) {
 	QPainter* tp = new QPainter;
 	tp->begin( paintBuffer );
 	tp->translate(-ex,-ey-py);
-
-    	int ph = eh-py<PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;	
+	
+	int ph = eh-py<PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;	
 
 	// ### fix this for frames...
 
-       	tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Background));
+	tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Background));
 	m_part->docImpl()->renderer()->print(tp, ex, ey+py, ew, ph, 0, 0);
 	tp->end();
 
 	delete tp;
 
-    	//kdDebug( 6000 ) << "bitBlt x=" << ex << ",y=" << ey+py << ",sw=" << ew << ",sh=" << ph << endl;
+	//kdDebug( 6000 ) << "bitBlt x=" << ex << ",y=" << ey+py << ",sw=" << ew << ",sh=" << ph << endl;
 	p->drawPixmap(ex, ey+py, *paintBuffer, 0, 0, ew, ph);
-	
+		
 	py += PAINT_BUFFER_HEIGHT;
     }
 }
@@ -234,15 +249,13 @@ void KHTMLView::layout(bool force)
     //### take care of frmaes (hide scrollbars,...)
 
 
-    if( m_part->docImpl() )
-    {	
-        DOM::HTMLDocumentImpl *document = m_part->docImpl();
+    if( m_part->docImpl() ) {
+	DOM::HTMLDocumentImpl *document = m_part->docImpl();
 
-        khtml::RenderObject* root = document->renderer();
+	khtml::RenderObject* root = document->renderer();
 
 	NodeImpl *body = document->body();
-	if(body && body->id() == ID_FRAMESET)
-	{
+	if(body && body->id() == ID_FRAMESET) {
 	    setVScrollBarMode(AlwaysOff);
 	    setHScrollBarMode(AlwaysOff);
 	    _width = visibleWidth();
@@ -255,27 +268,27 @@ void KHTMLView::layout(bool force)
 	int w = visibleWidth();
 	_height = visibleHeight();
 
-    	if (w != _width || force) {
+	if (w != _width || force) {
 	    //kdDebug( 6000 ) << "layouting document" << endl;
 
-    	    _width = w;
+	    _width = w;
 
-//	    QTime qt;
-//	    qt.start();
+	    //	    QTime qt;
+	    //	    qt.start();
 
 	    root->layout(true);
-	    
+	
 	    int rw = root->width()+root->marginLeft()+root->marginRight();
 	    int rh = root->height()+root->marginTop()+root->marginBottom();
 
 	    resizeContents(rw, rh);
 
-//	    kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
+	    //	    kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
 	    viewport()->repaint(false);
 	    //QApplication::postEvent(viewport(), new QPaintEvent( QRegion( 0, 0, visibleWidth(), visibleHeight()), false ));
-	    
+	
 	} else {
-	   root->layout(false);
+	    root->layout(false);
 	}
     } else {
 	_width = visibleWidth();
@@ -317,8 +330,8 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     // Make this frame the active one
     // ### need some visual indication for the active frame.
     /* ### use PartManager (Simon)
-    if ( _isFrame && !_isSelected )
-    {
+       if ( _isFrame && !_isSelected )
+       {
 	kdDebug( 6000 ) << "activating frame!" << endl;
 	topView()->setFrameSelected(this);
     }*/
@@ -805,6 +818,10 @@ void KHTMLView::toggleActLink(bool actState)
 }
 
 
-
+void KHTMLView::useSlowRepaints()
+{
+    kdDebug(0) << "slow repaints requested" << endl;
+    d->useSlowRepaints = true;
+}
 
 
