@@ -1,0 +1,8 @@
+# KDE Config File
+[Desktop Entry]
+Encoding=UTF-8
+Name=Contacts
+Type=Service
+ServiceTypes=KResources/Manager
+
+X-KDE-ResourceFamily=contact
