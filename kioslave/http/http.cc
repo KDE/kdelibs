@@ -1967,10 +1967,12 @@ bool HTTPProtocol::httpOpen()
       header = "PROPFIND ";
       davData = true;
       davHeader = "Depth: ";
-      if ( hasMetaData( "davDepth" ) ) {
+      if ( hasMetaData( "davDepth" ) ) 
+      {
         kdDebug(7113) << "Reading DAV depth from metadata: " << metaData( "davDepth" ) << endl;
         davHeader += metaData( "davDepth" );
-      } else
+      } 
+      else
       {
         if ( m_request.davData.depth == 2 )
           davHeader += "infinity";
@@ -2038,7 +2040,7 @@ bool HTTPProtocol::httpOpen()
       header = "POLL ";
       m_request.bCachedWrite = false;
       break;
-  case HTTP_UNKNOWN:
+  default:
       error (ERR_UNSUPPORTED_ACTION, QString::null);
       return false;
   }
@@ -2256,11 +2258,9 @@ bool HTTPProtocol::httpOpen()
     {
       case AUTH_Basic:
           header += createBasicAuth();
-          header += "\r\n";
           break;
       case AUTH_Digest:
           header += createDigestAuth();
-          header += "\r\n";
           break;
       case AUTH_None:
       default:
@@ -4940,6 +4940,8 @@ QString HTTPProtocol::createBasicAuth( bool isForProxy )
   user += ':';
   user += passwd;
   auth += KCodecs::base64Encode( user );
+  auth += "\r\n";
+
   return auth;
 }
 
@@ -4969,12 +4971,12 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, QCString& Response )
   }
   HA1 = md.hexDigest();
 
-  kdDebug(7113) << "(" << m_pid << ") A1 => " << HA1 << endl;
+  kdDebug(7113) << "(" << m_pid << ") calculateResponse(): A1 => " << HA1 << endl;
 
   // Calcualte H(A2)
   authStr = info.method;
   authStr += ':';
-  authStr += info.digestURI.at( 0 );
+  authStr += m_request.url.encodedPathAndQuery(0, true).latin1();
   if ( info.qop == "auth-int" )
   {
     authStr += ':';
@@ -4984,7 +4986,8 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, QCString& Response )
   md.update( authStr );
   HA2 = md.hexDigest();
 
-  kdDebug(7113) << "(" << m_pid << ") A2 => " << HA2 << endl;
+  kdDebug(7113) << "(" << m_pid << ") calculateResponse(): A2 => "
+                << HA2 << endl;
 
   // Calcualte the response.
   authStr = HA1;
@@ -5005,7 +5008,8 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, QCString& Response )
   md.update( authStr );
   Response = md.hexDigest();
 
-  kdDebug(7113) << "(" << m_pid << ") Response => " << Response << endl;
+  kdDebug(7113) << "(" << m_pid << ") calculateResponse(): Response => "
+                << Response << endl;
 }
 
 QString HTTPProtocol::createDigestAuth ( bool isForProxy )
@@ -5110,9 +5114,17 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
       {
         pos = uri.find( ',', pos );
         if ( pos != -1 )
-          info.digestURI.append( uri.mid(idx, pos-idx) );
+        {
+          KURL u (m_request.url, uri.mid(idx, pos-idx));
+          if (!u.isMalformed ())
+            info.digestURI.append( u.url().latin1() );
+        }
         else
-          info.digestURI.append( uri.mid(idx, uri.length()-idx) );
+        {
+          KURL u (m_request.url, uri.mid(idx, uri.length()-idx));
+          if (!u.isMalformed ())
+            info.digestURI.append( u.url().latin1() );
+        }
         idx = pos+1;
       } while ( pos != -1 );
     }
@@ -5140,8 +5152,50 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
     p+=(i+1);
   }
 
-  if ( info.digestURI.isEmpty() )
-    info.digestURI.append( m_request.path.latin1() );
+  // If the "domain" attribute was not specified and the current response code
+  // is authentication needed, add the current request url to the list over which
+  // this credential can be automatically applied.
+  if (info.digestURI.isEmpty() && (m_responseCode == 401 || m_responseCode == 407))
+    info.digestURI.append (m_request.url.url().latin1());
+  else
+  {
+    // Verify whether or not we should send a cached credential to the
+    // server based on the stored "domain" attribute...
+    bool send = true;
+
+    // Determine the path of the request url...
+    QString requestPath = m_request.url.directory(false, false);
+    if (requestPath.isEmpty())
+      requestPath = "/";
+
+    int count = info.digestURI.count();
+
+    for (int i = 0; i < count; i++ )
+    {
+      KURL u = info.digestURI.at(i);
+
+      send &= (m_request.url.protocol().lower() == u.protocol().lower());
+      send &= (m_request.hostname.lower() == u.host().lower());
+
+      if (m_request.port > 0 && u.port() > 0)
+        send &= (m_request.port == u.port());
+
+      QString digestPath = u.directory (false, false);
+      if (digestPath.isEmpty())
+        digestPath = "/";
+
+      send &= (requestPath.startsWith(digestPath));
+
+      if (send)
+        break;
+    }
+
+    kdDebug(7113) << "(" << m_pid << ") createDigestAuth(): passed digest "
+                     "authentication credential test: " << send << endl;
+
+    if (!send)
+      return QString::null;
+  }
 
   kdDebug(7113) << "(" << m_pid << ") RESULT OF PARSING:" << endl;
   kdDebug(7113) << "(" << m_pid << ")   algorithm: " << info.algorithm << endl;
@@ -5149,11 +5203,6 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   kdDebug(7113) << "(" << m_pid << ")   nonce:     " << info.nonce << endl;
   kdDebug(7113) << "(" << m_pid << ")   opaque:    " << opaque << endl;
   kdDebug(7113) << "(" << m_pid << ")   qop:       " << info.qop << endl;
-
-  int count = info.digestURI.count();
-  for( int i = 0; i < count; i++ )
-    kdDebug(7113) << "(" << m_pid << ")   domain[" << i << "]:    "
-                  << info.digestURI.at(i) << endl;
 
   // Calculate the response...
   calculateResponse( info, Response );
@@ -5169,7 +5218,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   auth += info.nonce;
 
   auth += "\", uri=\"";
-  auth += info.digestURI.at(0);
+  auth += m_request.url.encodedPathAndQuery(0, true);
 
   auth += "\", algorithm=\"";
   auth += info.algorithm;
@@ -5192,9 +5241,8 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
     auth += "\", opaque=\"";
     auth += opaque;
   }
-  auth += "\"";
+  auth += "\"\r\n";
 
-  kdDebug(7113) << "(" << m_pid << ") Digest header: " << auth << endl;
   return auth;
 }
 
@@ -5259,11 +5307,9 @@ QString HTTPProtocol::proxyAuthenticationHeader()
   {
     case AUTH_Basic:
       header += createBasicAuth( true );
-      header += "\r\n";
       break;
     case AUTH_Digest:
       header += createDigestAuth( true );
-      header += "\r\n";
       break;
     case AUTH_None:
     default:
