@@ -22,5 +22,9 @@ I got a patch from Andreas "highstick" Hochsteger, he added yearwise up
 and down buttons. I was very happy as I intended to do the same, and 
 now he did. It looks good.
 
-last change: May 28 1998			Mirko Sucker.
+Sep 25 1999:
+The new implementation has been committed. It fits more into the overall
+KDE style.
+
+last change: Sep 25 1999			Mirko Sucker.
 
