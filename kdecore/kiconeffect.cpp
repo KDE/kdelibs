@@ -195,7 +195,6 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
 	const QColor col, bool trans)
 {
     QPixmap result;
-    QImage tmpImg;
 
     if (effect >= LastEffect )
     {
@@ -208,12 +207,14 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
         result = pixmap;
         semiTransparent(result);
     }
-    else
+    else if ( effect != NoEffect )
     {
-        tmpImg = pixmap.convertToImage();
+        QImage tmpImg = pixmap.convertToImage();
         tmpImg = apply(tmpImg, effect, value, col, trans);
         result.convertFromImage(tmpImg);
     }
+    else
+        result = pixmap;
 
     return result;
 }
