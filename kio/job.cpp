@@ -95,7 +95,7 @@ Job::~Job()
 
 void Job::addSubjob(Job *job)
 {
-    kdDebug(7007) << "addSubjob(" << job << ") this = " << this << endl;
+    //kdDebug(7007) << "addSubjob(" << job << ") this = " << this << endl;
     subjobs.append(job);
 
     connect( job, SIGNAL(result(KIO::Job*)),
@@ -2344,11 +2344,16 @@ CopyJob *KIO::linkAs(const KURL& src, const KURL& destDir, bool showProgressInfo
 //////////
 
 DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
-    : Job(showProgressInfo), m_srcList(src), m_srcListCopy(src), m_shred(shred)
+: Job(showProgressInfo)
+, m_srcList(src)
+, m_srcListCopy(src)
+, m_shred(shred)
+,m_reportTimer(0)
 {
   if ( showProgressInfo ) {
     connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
              Observer::self(), SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
+
     connect( this, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
              Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
 
@@ -2359,51 +2364,85 @@ DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
 
     connect( this, SIGNAL( deleting( KIO::Job*, const KURL& ) ),
              Observer::self(), SLOT( slotDeleting( KIO::Job*, const KURL& ) ) );
+
+    m_reportTimer=new QTimer(this);
+    connect(m_reportTimer,SIGNAL(timeout()),this,SLOT(slotReport()));
+    //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
+    m_reportTimer->start(200,false);
   }
+
   startNextJob();
 }
 
+void DeleteJob::slotReport()
+{
+   if (state==STATE_DELETING_DIRS)
+   {
+      emit processedDirs( this, m_processedDirs );
+      emitPercent( m_processedFiles + m_processedDirs, m_totalFilesDirs );
+   };
+
+   emit deleting( this, m_currentURL );
+
+   if (state==STATE_DELETING_FILES)
+   {
+      emit processedFiles( this, m_processedFiles );
+      if (!m_shred)
+         emitPercent( m_processedFiles, m_totalFilesDirs );
+   };
+};
+
+
 void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 {
-    UDSEntryListConstIterator it = list.begin();
-    UDSEntryListConstIterator end = list.end();
-    for (; it != end; ++it) {
-        UDSEntry::ConstIterator it2 = (*it).begin();
-        bool bDir = false;
-        bool bLink = false;
-        QString relName;
-        for( ; it2 != (*it).end(); it2++ ) {
-            switch ((*it2).m_uds) {
-                case UDS_FILE_TYPE:
-                    bDir = S_ISDIR((*it2).m_long);
-                    break;
-                case UDS_NAME:
-                    relName = ((*it2).m_str);
-                    break;
-                case UDS_LINK_DEST:
-                    bLink = !(*it2).m_str.isEmpty();
-                    break;
-                case UDS_SIZE:
-                    m_totalSize += (off_t)((*it2).m_long);
-                    break;
-                default:
-                    break;
-            }
-        }
-        assert(!relName.isEmpty());
-        if (relName != ".." && relName != ".")
-        {
-            KURL url = ((SimpleJob *)job)->url(); // assumed to be a dir
-            url.addPath( relName );
-            kdDebug(7007) << "DeleteJob::slotEntries " << relName << " (" << url.prettyURL() << ")" << endl;
-            if ( bLink )
-                symlinks.append( url );
-            else if ( bDir )
-                dirs.append( url );
-            else
-                files.append( url );
-        }
-    }
+   UDSEntryListConstIterator it = list.begin();
+   UDSEntryListConstIterator end = list.end();
+   for (; it != end; ++it)
+   {
+      UDSEntry::ConstIterator it2 = (*it).begin();
+      bool bDir = false;
+      bool bLink = false;
+      QString relName;
+      int atomsFound(0);
+      for( ; it2 != (*it).end(); it2++ )
+      {
+         switch ((*it2).m_uds)
+         {
+         case UDS_FILE_TYPE:
+            bDir = S_ISDIR((*it2).m_long);
+            atomsFound++;
+            break;
+         case UDS_NAME:
+            relName = ((*it2).m_str);
+            atomsFound++;
+            break;
+         case UDS_LINK_DEST:
+            bLink = !(*it2).m_str.isEmpty();
+            atomsFound++;
+            break;
+         case UDS_SIZE:
+            m_totalSize += (off_t)((*it2).m_long);
+            atomsFound++;
+            break;
+         default:
+            break;
+         }
+         if (atomsFound==4) break;
+      }
+      assert(!relName.isEmpty());
+      if (relName != ".." && relName != ".")
+      {
+         KURL url = ((SimpleJob *)job)->url(); // assumed to be a dir
+         url.addPath( relName );
+         //kdDebug(7007) << "DeleteJob::slotEntries " << relName << " (" << url.prettyURL() << ")" << endl;
+         if ( bLink )
+            symlinks.append( url );
+         else if ( bDir )
+            dirs.append( url );
+         else
+            files.append( url );
+      }
+   }
 }
 
 
@@ -2442,6 +2481,8 @@ void DeleteJob::startNextJob()
             KDirNotify_stub allDirNotify("*", "KDirNotify*");
             allDirNotify.FilesRemoved( m_srcListCopy );
         }
+        if (m_reportTimer!=0)
+           m_reportTimer->stop();
         emitResult();
     }
 }
@@ -2466,17 +2507,21 @@ void DeleteJob::deleteNextFile()
             // KShred your KTie
             KIO_ARGS << int(3) << (*it).path();
             job = KIO::special(KURL("file:/"), packedArgs, false /*no GUI*/);
-            emit deleting( this, *it );
+            m_currentURL=(*it);
+            //emit deleting( this, *it );
             connect( job, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
                      this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
         } else
         {
             // Normal deletion
             job = KIO::file_delete( *it, false /*no GUI*/);
-            emit deleting( this, *it );
+            m_currentURL=(*it);
+            //emit deleting( this, *it );
         }
-        if ( isLink ) symlinks.remove(it);
-                 else files.remove(it);
+        if ( isLink )
+           symlinks.remove(it);
+        else
+           files.remove(it);
         addSubjob(job);
     } else
     {
@@ -2501,171 +2546,190 @@ void DeleteJob::deleteNextDir()
 
 void DeleteJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
 {
-  // Note: this is the same implementation as CopyJob::slotProcessedSize but
-  // it's different from FileCopyJob::slotProcessedSize - which is why this
-  // is not in Job.
+   // Note: this is the same implementation as CopyJob::slotProcessedSize but
+   // it's different from FileCopyJob::slotProcessedSize - which is why this
+   // is not in Job.
 
-  m_fileProcessedSize = data_size;
+   m_fileProcessedSize = data_size;
 
-  kdDebug(7007) << "DeleteJob::slotProcessedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
-  emit processedSize( this, m_processedSize + m_fileProcessedSize );
+   //kdDebug(7007) << "DeleteJob::slotProcessedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
 
-  // calculate percents
-  unsigned long ipercent = m_percent;
+   emit processedSize( this, m_processedSize + m_fileProcessedSize );
 
-  if ( m_totalSize == 0 )
-    m_percent = 100;
-  else
-    m_percent = (unsigned long)(( (float)(m_processedSize + m_fileProcessedSize) / (float)m_totalSize ) * 100.0);
+   // calculate percents
+   unsigned long ipercent = m_percent;
 
-  if ( m_percent > ipercent ) {
-    emit percent( this, m_percent );
-    kdDebug(7007) << "DeleteJob::slotProcessedSize - percent =  " << (unsigned int) m_percent << endl;
-  }
+   if ( m_totalSize == 0 )
+      m_percent = 100;
+   else
+      m_percent = (unsigned long)(( (float)(m_processedSize + m_fileProcessedSize) / (float)m_totalSize ) * 100.0);
+
+   if ( m_percent > ipercent )
+   {
+      emit percent( this, m_percent );
+      //kdDebug(7007) << "DeleteJob::slotProcessedSize - percent =  " << (unsigned int) m_percent << endl;
+   }
 
 }
 
 void DeleteJob::slotResult( Job *job )
 {
-    switch ( state ) {
-        case STATE_STATING:
-        {
-            // Was there an error while stating ?
-            if (job->error() )
+   switch ( state )
+   {
+   case STATE_STATING:
+      {
+         // Was there an error while stating ?
+         if (job->error() )
+         {
+            // Probably : doesn't exist
+            Job::slotResult( job ); // will set the error and emit result(this)
+            return;
+         }
+
+         // Is it a file or a dir ?
+         UDSEntry entry = ((StatJob*)job)->statResult();
+         bool bDir = false;
+         bool bLink = false;
+         unsigned long size = 0L;
+         UDSEntry::ConstIterator it2 = entry.begin();
+         int atomsFound(0);
+         for( ; it2 != entry.end(); it2++ )
+         {
+            if ( ((*it2).m_uds) == UDS_FILE_TYPE )
             {
-                // Probably : doesn't exist
-                Job::slotResult( job ); // will set the error and emit result(this)
-                return;
+               bDir = S_ISDIR( (mode_t)(*it2).m_long );
+               atomsFound++;
             }
-
-            // Is it a file or a dir ?
-            UDSEntry entry = ((StatJob*)job)->statResult();
-            bool bDir = false;
-            bool bLink = false;
-            unsigned long size = 0L;
-            UDSEntry::ConstIterator it2 = entry.begin();
-            for( ; it2 != entry.end(); it2++ ) {
-                if ( ((*it2).m_uds) == UDS_FILE_TYPE )
-                    bDir = S_ISDIR( (mode_t)(*it2).m_long );
-                else if ( ((*it2).m_uds) == UDS_LINK_DEST )
-                    bLink = !((*it2).m_str.isEmpty());
-                else if ( ((*it2).m_uds) == UDS_SIZE )
-                    size = (*it2).m_long;
-            }
-
-            KURL url = ((SimpleJob*)job)->url();
-
-            if (bDir && !bLink)
+            else if ( ((*it2).m_uds) == UDS_LINK_DEST )
             {
-                // Add toplevel dir in list of dirs
-                dirs.append( url );
+               bLink = !((*it2).m_str.isEmpty());
+               atomsFound++;
+            }
+            else if ( ((*it2).m_uds) == UDS_SIZE )
+            {
+               size = (*it2).m_long;
+               atomsFound++;
+            };
+            if (atomsFound==3) break;
+         }
 
-                subjobs.remove( job );
-                assert( subjobs.isEmpty() );
+         KURL url = ((SimpleJob*)job)->url();
 
-                kdDebug(7007) << " Target is a directory " << endl;
-                // List it
-                state = STATE_LISTING;
-                ListJob *newjob = listRecursive( url, false );
-                connect(newjob, SIGNAL(entries( KIO::Job *,
-                                                const KIO::UDSEntryList& )),
-                        SLOT( slotEntries( KIO::Job*,
-                                           const KIO::UDSEntryList& )));
-                addSubjob(newjob);
+         if (bDir && !bLink)
+         {
+            // Add toplevel dir in list of dirs
+            dirs.append( url );
+
+            subjobs.remove( job );
+            assert( subjobs.isEmpty() );
+
+            //kdDebug(7007) << " Target is a directory " << endl;
+            // List it
+            state = STATE_LISTING;
+            ListJob *newjob = listRecursive( url, false );
+            connect(newjob, SIGNAL(entries( KIO::Job *,
+                                            const KIO::UDSEntryList& )),
+                    SLOT( slotEntries( KIO::Job*,
+                                       const KIO::UDSEntryList& )));
+            addSubjob(newjob);
+         }
+         else
+         {
+            subjobs.remove( job );
+            assert( subjobs.isEmpty() );
+
+            //kdDebug(7007) << " Target is a file (or a symlink) " << endl;
+            // Remove it
+
+            m_currentURL=url;
+            //emit deleting( this, url );
+            m_totalSize = size;
+            m_totalFilesDirs = 1;
+            emit totalSize( this, size );
+            state = STATE_DELETING_FILES;
+            SimpleJob *newjob;
+            if ( m_shred && url.isLocalFile() && !bLink )
+            {
+               // KShred your KTie
+               KIO_ARGS << int(3) << url.path();
+               newjob = KIO::special(KURL("file:/"), packedArgs, false);
+               addSubjob(newjob);
+               connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
             }
             else
             {
-                subjobs.remove( job );
-                assert( subjobs.isEmpty() );
-
-                kdDebug(7007) << " Target is a file (or a symlink) " << endl;
-                // Remove it
-
-                emit deleting( this, url );
-                m_totalSize = size;
-                m_totalFilesDirs = 1;
-                emit totalSize( this, size );
-                state = STATE_DELETING_FILES;
-                SimpleJob *newjob;
-                if ( m_shred && url.isLocalFile() && !bLink )
-                {
-                    // KShred your KTie
-                    KIO_ARGS << int(3) << url.path();
-                    newjob = KIO::special(KURL("file:/"), packedArgs, false);
-                    addSubjob(newjob);
-                    connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
-                             this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
-                }
-                else
-                {
-                   // Normal deletion
-                   newjob = KIO::file_delete(url, false/*no GUI*/);
-                   addSubjob( newjob );
-                }
+               // Normal deletion
+               newjob = KIO::file_delete(url, false/*no GUI*/);
+               addSubjob( newjob );
             }
-        }
-        break;
-        case STATE_LISTING:
-            if ( job->error() )
-            {
-                /*
-                Job::slotResult( job ); // will set the error and emit result(this)
-                */
-                // Try deleting nonetheless, it may be empty (and non-listable)
-                subjobs.remove( job );
-                assert( subjobs.isEmpty() );
-                state = STATE_DELETING_DIRS;
-                deleteNextDir();
-                return;
-            }
-            subjobs.remove( job );
-            assert( subjobs.isEmpty() );
-            kdDebug(7007) << "totalSize: " << (unsigned int) m_totalSize << " files: " << files.count()+symlinks.count() << " dirs: " << dirs.count() << endl;
+         }
+      }
+      break;
+   case STATE_LISTING:
+      if ( job->error() )
+      {
+         /*
+          Job::slotResult( job ); // will set the error and emit result(this)
+          */
+         // Try deleting nonetheless, it may be empty (and non-listable)
+         subjobs.remove( job );
+         assert( subjobs.isEmpty() );
+         state = STATE_DELETING_DIRS;
+         deleteNextDir();
+         return;
+//         Job::slotResult( job ); // will set the error and emit result(this)
+//         return;
+      }
+      subjobs.remove( job );
+      assert( subjobs.isEmpty() );
+      //kdDebug(7007) << "totalSize: " << (unsigned int) m_totalSize << " files: " << files.count()+symlinks.count() << " dirs: " << dirs.count() << endl;
 
-            // emit all signals for total numbers
-            emit totalSize( this, m_totalSize );
-            emit totalFiles( this, files.count()+symlinks.count() );
-            emit totalDirs( this, dirs.count() );
-            // This is just in case we are job number two (several source URLs)
-            // Remove this when we do all in one operation
-            emit processedFiles( this, 0 );
-            emit processedDirs( this, 0 );
-            m_totalFilesDirs = files.count()+symlinks.count() + dirs.count();
+      // emit all signals for total numbers
+      emit totalSize( this, m_totalSize );
+      emit totalFiles( this, files.count()+symlinks.count() );
+      emit totalDirs( this, dirs.count() );
+      // This is just in case we are job number two (several source URLs)
+      // Remove this when we do all in one operation
+      emit processedFiles( this, 0 );
+      emit processedDirs( this, 0 );
+      m_totalFilesDirs = files.count()+symlinks.count() + dirs.count();
 
-            state = STATE_DELETING_FILES;
-            deleteNextFile();
-            break;
-        case STATE_DELETING_FILES:
-            if ( job->error() )
-            {
-                Job::slotResult( job ); // will set the error and emit result(this)
-                return;
-            }
-            subjobs.remove( job );
-            assert( subjobs.isEmpty() );
-            m_processedFiles++;
-            emit processedFiles( this, m_processedFiles );
-            if (!m_shred)
-               emitPercent( m_processedFiles, m_totalFilesDirs );
-            deleteNextFile();
-            break;
-        case STATE_DELETING_DIRS:
-            if ( job->error() )
-            {
-                Job::slotResult( job ); // will set the error and emit result(this)
-                return;
-            }
-            subjobs.remove( job );
-            assert( subjobs.isEmpty() );
-            m_processedDirs++;
-            emit processedDirs( this, m_processedDirs );
-            if (!m_shred)
-               emitPercent( m_processedFiles + m_processedDirs, m_totalFilesDirs );
-            deleteNextDir();
-            break;
-        default:
-            assert(0);
-    }
+      state = STATE_DELETING_FILES;
+      deleteNextFile();
+      break;
+   case STATE_DELETING_FILES:
+      if ( job->error() )
+      {
+         Job::slotResult( job ); // will set the error and emit result(this)
+         return;
+      }
+      subjobs.remove( job );
+      assert( subjobs.isEmpty() );
+      m_processedFiles++;
+
+      /*emit processedFiles( this, m_processedFiles );
+       if (!m_shred)
+       emitPercent( m_processedFiles, m_totalFilesDirs );*/
+      deleteNextFile();
+      break;
+   case STATE_DELETING_DIRS:
+      if ( job->error() )
+      {
+         Job::slotResult( job ); // will set the error and emit result(this)
+         return;
+      }
+      subjobs.remove( job );
+      assert( subjobs.isEmpty() );
+      m_processedDirs++;
+      //emit processedDirs( this, m_processedDirs );
+      //if (!m_shred)
+         //emitPercent( m_processedFiles + m_processedDirs, m_totalFilesDirs );
+
+      deleteNextDir();
+      break;
+   default:
+      assert(0);
+   }
 }
 
 DeleteJob *KIO::del( const KURL& src, bool shred, bool showProgressInfo )

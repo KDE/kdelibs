@@ -800,6 +800,7 @@ namespace KIO {
     protected slots:
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
         virtual void slotResult( KIO::Job *job );
+        void slotReport();
 
         /**
          * Forward signal from subjob
@@ -815,12 +816,14 @@ namespace KIO {
         int m_processedFiles;
         int m_processedDirs;
         int m_totalFilesDirs;
+        KURL m_currentURL;
         KURL::List files;
         KURL::List symlinks;
         KURL::List dirs;
         KURL::List m_srcList; // is emptied while deleting
         KURL::List m_srcListCopy;
         bool m_shred;
+        QTimer *m_reportTimer;
     };
 
 };
