@@ -1152,13 +1152,14 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
            {
               item->setSelected(!item->isSelected());
            };
+            item->repaint();
+
             nextItem=item->itemBelow();
             if (nextItem!=0)
             {
                 setCurrentItem(nextItem);
                 ensureItemVisible(nextItem);
-            }
-            else item->repaint();
+            };
             emit selectionChanged();
             break;
 
@@ -1174,6 +1175,7 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
             }
             else if ((d->selectedBySimpleMove) && (nextItem!=0))
                item->setSelected(false);
+            item->repaint();
 
             if (nextItem!=0)
             {
@@ -1181,8 +1183,7 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
                   nextItem->setSelected(true);
                 setCurrentItem(nextItem);
                 ensureItemVisible(nextItem);
-            }
-            else item->repaint();
+            };
             /*if ((shiftOrCtrl) || (d->selectedBySimpleMove))
             {
                 emit selectionChanged();
@@ -1203,6 +1204,7 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
             }
             else if ((d->selectedBySimpleMove) && (nextItem!=0))
                item->setSelected(false);
+            item->repaint();
 
             if (nextItem!=0)
             {
@@ -1210,8 +1212,7 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
                   nextItem->setSelected(true);
                 setCurrentItem(nextItem);
                 ensureItemVisible(nextItem);
-            }
-            else item->repaint();
+            };
             /*if ((shiftOrCtrl) || (d->selectedBySimpleMove))
             {
                 emit selectionChanged();
@@ -1355,6 +1356,7 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
             if (d->selectedBySimpleMove)
             {
                currentItem()->setSelected(true);
+               currentItem()->repaint();
 //               emit selectionChanged();
             }
             break;
