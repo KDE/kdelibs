@@ -397,13 +397,13 @@ QCString fromUnicode( const QString &data )
         for ( uint i = 0; i < len; i++ ) {
             QCString test = locale->fromUnicode( part.mid( i, 1 ) );
             if ( locale->toUnicode( test ) == part.mid( i, 1 ) ) {
-                strcpy( buffer + buffer_len, test.data() );
+                strlcpy( buffer + buffer_len, test.data(), sizeof(buffer) );
                 buffer_len += test.length();
             } else {
                 QString res;
                 res.sprintf( "&#%d;", part.at( i ).unicode() );
                 test = locale->fromUnicode( res );
-                strcpy( buffer + buffer_len, test.data() );
+                strlcpy( buffer + buffer_len, test.data(), sizeof(buffer) );
                 buffer_len += test.length();
             }
         }
