@@ -114,7 +114,7 @@ public:
    * @param entries Reference to a list of entries.
    * @return NoError or a valid error code. 
    */
-  AddressBook::ErrorCode getEntries(list<AddressBook::Entry>& entries);
+  AddressBook::ErrorCode getEntries(std::list<AddressBook::Entry>& entries);
   /** The method requires that the database is not opened readonly.
     * @short Adds an entry to the users default database.
     * @return NoError if all succeeded or a valid ErrorCode, especially PermDenied.
@@ -164,7 +164,7 @@ public:
     * @return NoError if an entry is found or NoEntry.
     */
   AddressBook::ErrorCode getEntryByName(const QString& name, 
-			   list<AddressBook::Entry>& entries,
+			   std::list<AddressBook::Entry>& entries,
 			   const int max=5);
   /** This method also searches for close matches to the pattern,
     * but it compares the whole entry given. This way you can search for,
@@ -177,7 +177,7 @@ public:
     * @return NoError if an entry is found or NoEntry.
     */    
   AddressBook::ErrorCode getEntryByName(const AddressBook::Entry& pattern,
-			   list<AddressBook::Entry>& entries,
+			   std::list<AddressBook::Entry>& entries,
 			   const int max=5);
   /** This method uses kab's configuration to call the (KDE ?) mailer or
    *  whatever is configured to send an email in kab.

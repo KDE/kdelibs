@@ -20,6 +20,7 @@ extern "C" {
 // #include <qstring.h>
 #include <qtextstream.h>
 #include <qfile.h>
+#include <iostream.h>
 #include <qtimer.h>
 #include <qdatetime.h>
 #include <qfileinfo.h>
@@ -654,7 +655,7 @@ KeyValueMap::insert(const QCString& key, const QString& value, bool force)
   // -----
   v=value.utf8();
   LG(GUARD, "KeyValueMap::insert[QString]: trying to insert \"%s\" for key\n       "
-     "    -->%s<--.\n", value==true ? "true" : "false", (const char*)v);
+     "    -->%s<--.\n", !value.isNull() ? "TRUe" : "false", (const char*)v);
   return insert(key, v, force);
   // ###########################################################################
 }

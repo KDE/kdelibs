@@ -20,6 +20,8 @@
 
 #include "kabapi.moc"
 
+using namespace std;
+
 KabAPI::KabAPI(QWidget* parent, const char* name)
   : KDialogBase(parent, name),
     book(0),

@@ -309,7 +309,7 @@ public:
       QString state; /**< The state for federal states. */
     };
     /** Contains one or more Address objects. */
-    list<AddressBook::Entry::Address> addresses; 
+    std::list<AddressBook::Entry::Address> addresses; 
     // methods:
     /** Use this method to retrieve the address at the given \a index.
      *  The method is provided for convenience. The address data is
@@ -372,7 +372,7 @@ public:
   /** Retrieve the Section of the entry directly, returning a section object. */
   ErrorCode getEntry(const KabKey& key, Section*&);
   /** Get all entries in displaying order. This method might be slow (O(n)). */
-  ErrorCode getEntries(list<Entry>&);
+  ErrorCode getEntries(std::list<Entry>&);
   /** Add an ::Entry, \a return the new key for further operations.
    *  If update is false, the mirror map will not be affected, if it is true,
    *  the mirror map gets updated, too. */
