@@ -112,7 +112,7 @@ static KTLWSessionManaged* ksm = 0;
 static bool initing = FALSE;
 
 KTMainWindow::KTMainWindow( const char *name, WFlags f )
-    : QWidget( 0L, name, f ), KXMLGUIBase()
+    : QWidget( 0L, name, f ), KXMLGUIBuilder( this )
 {
     d = new KTMainWindowPrivate();
 
@@ -856,140 +856,6 @@ KXMLGUIFactory *KTMainWindow::guiFactory()
   return d->m_factory;
 }
 
-QWidget *KTMainWindow::createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id )
-{
-  id = -1;
-
-  if ( element.tagName().lower() == "menubar" )
-  {
-    KMenuBar *bar = menuBar();
-    if ( !bar->isVisible() )
-      bar->show();
-    return bar;
-  }
-
-  if ( element.tagName().lower() == "menu" && parent )
-  {
-    QPopupMenu *popup = new QPopupMenu( this, element.attribute( "name" ).utf8());
-
-    QString text = i18n(element.namedItem( "text" ).toElement().text().utf8());
-    if (text.isEmpty())  // try with capital T
-      text = i18n(element.namedItem( "Text" ).toElement().text().utf8());
-    if (text.isEmpty())  // still no luck
-      text = i18n("No text!");
-
-    if ( parent->inherits( "KMenuBar" ) )
-      id = ((KMenuBar *)parent)->insertItem( text, popup, -1, index );
-    else if ( parent->inherits( "QPopupMenu" ) )
-      id = ((QPopupMenu *)parent)->insertItem( text, popup, -1, index );
-
-    return popup;
-  }
-
-  if ( element.tagName().lower() == "toolbar" )
-  {
-    bool honor = (element.attribute( "name" ) == "mainToolBar") ? true : false;
-    KToolBar *bar = new KToolBar(this, element.attribute( "name" ).utf8(), honor);
-
-    addToolBar( bar );
-
-    QString attrFullWidth = element.attribute( "fullWidth" ).lower();
-    QString attrPosition = element.attribute( "position" ).lower();
-
-    if ( honor || ( !attrFullWidth.isEmpty() && attrFullWidth == "true" ) )
-      bar->setFullWidth( true );
-    else
-      bar->setFullWidth( false );
-
-    if ( !attrPosition.isEmpty() && containerStateBuffer.size() == 0 )
-    {
-      if ( attrPosition == "top" )
-        bar->setBarPos( KToolBar::Top );
-      else if ( attrPosition == "left" )
-        bar->setBarPos( KToolBar::Left );
-      else if ( attrPosition == "right" )
-	bar->setBarPos( KToolBar::Right );
-      else if ( attrPosition == "bottom" )
-	bar->setBarPos( KToolBar::Bottom );
-      else if ( attrPosition == "floating" )
-	bar->setBarPos( KToolBar::Floating );
-      else if ( attrPosition == "flat" )
-	bar->setBarPos( KToolBar::Flat );
-    }
-    else if ( containerStateBuffer.size() > 0 )
-    {
-      QDataStream stream( containerStateBuffer, IO_ReadOnly );
-      Q_INT32 i;
-      stream >> i;
-      bar->setBarPos( (KToolBar::BarPosition)i );
-      stream >> i;
-      bar->setIconText( (KToolBar::IconText)i );
-    }
-
-    bar->show();
-
-    return bar;
-  }
-
-  if ( element.tagName().lower() == "statusbar" )
-  {
-    enableStatusBar( KStatusBar::Show );
-    return statusBar();
-  }
-
-  return 0L;
-}
-
-QByteArray KTMainWindow::removeContainer( QWidget *container, QWidget *parent, int id )
-{
-  // Warning parent can be 0L
-  QByteArray stateBuff;
-
-  if ( container->inherits( "QPopupMenu" ) )
-  {
-    if ( parent->inherits( "KMenuBar" ) )
-      ((KMenuBar *)parent)->removeItem( id );
-    else if ( parent->inherits( "QPopupMenu" ) )
-      ((QPopupMenu *)parent)->removeItem( id );
-
-    delete container;
-  }
-  else if ( container->inherits( "KToolBar" ) )
-  {
-    QDataStream stream( stateBuff, IO_WriteOnly );
-    stream << (int)((KToolBar *)container)->barPos() << (int)((KToolBar *)container)->iconText();
-    delete (KToolBar *)container;
-  }
-  else if ( container->inherits( "KStatusBar" ) )
-  {
-    enableStatusBar( KStatusBar::Hide );
-  }
-
-  return stateBuff;
-}
-
-int KTMainWindow::insertSeparator( QWidget *parent, int index )
-{
-  if ( parent->inherits( "QPopupMenu" ) )
-    return ((QPopupMenu *)parent)->insertSeparator( index );
-  else if ( parent->inherits( "QMenuBar" ) )
-    return ((QMenuBar *)parent)->insertSeparator( index );
-  else if ( parent->inherits( "KToolBar" ) )
-    return ((KToolBar *)parent)->insertSeparator( index );
-
-  return 0;
-}
-
-void KTMainWindow::removeSeparator( QWidget *parent, int id )
-{
-  if ( parent->inherits( "QPopupMenu" ) )
-    ((QPopupMenu *)parent)->removeItem( id );
-  else if ( parent->inherits( "QMenuBar" ) )
-    ((QMenuBar *)parent)->removeItem( id );
-  else if ( parent->inherits( "KToolBar" ) )
-    ((KToolBar *)parent)->removeItem( id );
-}
-
 void KTMainWindow::createGUI( const QString &xmlfile )
 {
   setUpdatesEnabled( false );
@@ -1004,7 +870,7 @@ void KTMainWindow::createGUI( const QString &xmlfile )
   else
     setXML( QString::null, true );
 
-  guiFactory()->addServant( this );
+  guiFactory()->addClient( this );
 
   conserveMemory();
 

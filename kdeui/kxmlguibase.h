@@ -16,21 +16,25 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-#ifndef _KXMLGUIBASE_H
-#define _KXMLGUIBASE_H
+#ifndef _KXMLGUICLIENT_H
+#define _KXMLGUICLIENT_H
 
-#include <kxmlgui.h>
+#include <qdom.h>
+#include <qlist.h>
 
 class QAction;
 class QActionCollection;
 class KInstance;
-class KXMLGUIBasePrivate;
+class KXMLGUIClientPrivate;
+class KXMLGUIFactory;
+class KXMLGUIBuilder;
 
-class KXMLGUIBase : public KXMLGUIServant
+class KXMLGUIClient
 {
 public:
-  KXMLGUIBase();
-  virtual ~KXMLGUIBase();
+  KXMLGUIClient();
+  KXMLGUIClient( KXMLGUIClient *parent );
+  virtual ~KXMLGUIClient();
 
   QAction* action( const char* name );
   virtual QAction *action( const QDomElement &element );
@@ -46,8 +50,33 @@ public:
    * setXMLFile() or @ref setXML()
    */
   virtual QDomDocument document() const;
+  /**
+   * default implementation, storing the given data in an internal
+   * map. Called from KKXMLGUIFactory when removing containers which
+   * were owned by the servant.
+   */
+  virtual void storeContainerStateBuffer( const QString &key, const QByteArray &data );
 
-protected:  
+  /**
+   * default implementation, returning a previously via
+   * @ref storeContainerStateBuffer saved data. Called from
+   * KKXMLGUIFactory when creating a new container.
+   */
+  virtual QByteArray takeContainerStateBuffer( const QString &key );
+
+  void setFactory( KXMLGUIFactory *factory );
+  KXMLGUIFactory *factory() const;
+
+  KXMLGUIClient *parentClient() const;
+
+  void insertChildClient( KXMLGUIClient *child );
+  void removeChildClient( KXMLGUIClient *child );
+  const QList<KXMLGUIClient> *childClients();
+
+  void setClientBuilder( KXMLGUIBuilder *builder );
+  KXMLGUIBuilder *clientBuilder() const;
+
+protected:
   /**
    * Set the instance (@ref KInstance) for this part.
    *
@@ -89,7 +118,7 @@ private:
   QDomElement findMatchingElement( const QDomElement &base,
                                    const QDomElement &additive );
 
-  KXMLGUIBasePrivate *d;
+  KXMLGUIClientPrivate *d;
 };
 
 #endif

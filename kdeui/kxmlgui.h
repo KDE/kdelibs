@@ -27,104 +27,8 @@
 
 class QAction;
 class KXMLGUIFactoryPrivate;
-
-/**
- * @internal
- * Abstract interface for a "GUI builder", used by the GUIFactory
- * This interface is implemented by @ref MainWindow for the case where
- * the toplevel widget is a KTMainWindow. Other implementations may appear
- * in the future (dialogs for instance)
- */
-class KXMLGUIBuilder
-{
- public:
-
-  KXMLGUIBuilder() {}
-  virtual ~KXMLGUIBuilder() {}
-
-  /**
-   * Create a container (menubar/menu/toolbar/statusbar/separator/...)
-   * from an element in the XML file
-   *
-   * @param parent The parent for the container
-   * @param index The index where the container should be inserted
-   *              into the parent container/widget
-   * @param element The element from the DOM tree describing the
-   *                container (use it to access container specified
-   *                attributes or child elements)
-   * @param containerStateBuffer A buffer which possibibly contains
-   *                             previously saved container state
-   *                             information, return via @ref
-   *                             removeContainer .
-   */
-  virtual QWidget *createContainer( QWidget *parent, int index,
-          const QDomElement &element, const QByteArray &containerStateBuffer,
-          int &id ) = 0;
-
-  /**
-   * Remove the given (and previously via @ref createContainer )
-   * created container.
-   *
-   * @return A buffer containing state information about the deleted
-   *         container (like the last position of a toolbar container
-   *         for example). The buffer is passed again to
-   *         @ref createContainer when the same container is about to be
-   *         created again later.
-   */
-  virtual QByteArray removeContainer( QWidget *container, QWidget *parent,
-          int id ) = 0;
-
-  virtual int insertSeparator( QWidget *parent, int index ) = 0;
-  virtual void removeSeparator( QWidget *parent, int id ) = 0;
-};
-
-class KXMLGUIServantPrivate;
-class KXMLGUIFactory;
-
-/**
- * @internal
- * Abstract interface for serving actions and xml to the GUI factory
- */
-class KXMLGUIServant
-{
- public:
-  KXMLGUIServant();
-  KXMLGUIServant( KXMLGUIServant *parent );
-  virtual ~KXMLGUIServant();
-
-  virtual QAction *action( const QDomElement &element ) = 0;
-
-  virtual QDomDocument document() const = 0;
-
-  /**
-   * default implementation, storing the given data in an internal
-   * map. Called from KKXMLGUIFactory when removing containers which
-   * were owned by the servant.
-   */
-  virtual void storeContainerStateBuffer( const QString &key, const QByteArray &data );
-  /**
-   * default implementation, returning a previously via
-   * @ref storeContainerStateBuffer saved data. Called from
-   * KKXMLGUIFactory when creating a new container.
-   */
-  virtual QByteArray takeContainerStateBuffer( const QString &key );
-
-  void setFactory( KXMLGUIFactory *factory );
-  KXMLGUIFactory *factory() const;
-
-  KXMLGUIServant *parentServant() const;
-
-  void insertChildServant( KXMLGUIServant *child );
-  void removeChildServant( KXMLGUIServant *child );
-  const QList<KXMLGUIServant> *childServants();
-
-  void setServantBuilder( KXMLGUIBuilder *builder );
-  KXMLGUIBuilder *servantBuilder() const;
-
- private:
-  KXMLGUIServantPrivate *d;
-};
-
+class KXMLGUIClient;
+class KXMLGUIBuilder;
 class KXMLGUIContainerNode;
 class KXMLGUIContainerClient;
 
@@ -145,20 +49,20 @@ class KXMLGUIFactory
   static QString readConfigFile( const QString &filename );
 
   /**
-   * Creates the GUI described by the QDomDocument of the servant,
-   * using the servant's actions, and merges it with the previously
+   * Creates the GUI described by the QDomDocument of the client,
+   * using the client's actions, and merges it with the previously
    * created GUI.
    */
-  void addServant( KXMLGUIServant *servant );
+  void addClient( KXMLGUIClient *client );
 
   /**
-   * Removes the GUI described by the servant, by unplugging all
+   * Removes the GUI described by the client, by unplugging all
    * provided actions and removing all owned containers (and storing
-   * container state information in the given servant)
+   * container state information in the given client)
    */
-  void removeServant( KXMLGUIServant *servant );
+  void removeClient( KXMLGUIClient *client );
 
-  QWidget *container( const QString &containerName, KXMLGUIServant *servant );
+  QWidget *container( const QString &containerName, KXMLGUIClient *client );
 
  private:
   void buildRecursive( const QDomElement &element, KXMLGUIContainerNode *parentNode );
@@ -179,7 +83,7 @@ class KXMLGUIFactory
 
   KXMLGUIContainerClient *findClient( KXMLGUIContainerNode *node, const QString &groupName );
 
-  KXMLGUIServant *m_servant;
+  KXMLGUIClient *m_client;
   KXMLGUIBuilder *m_builder;
 
   KXMLGUIFactoryPrivate *d;

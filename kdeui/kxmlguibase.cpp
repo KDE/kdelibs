@@ -17,7 +17,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <kxmlguibase.h>
+#include "kxmlguibase.h"
+#include "kxmlgui.h"
 
 #include <qdom.h>
 #include <qaction.h>
@@ -35,69 +36,89 @@ static void dump_xml(const QDomElement& elem)
     qDebug("%s", doc.ascii());
 }
 
-class KXMLGUIBasePrivate
+class KXMLGUIClientPrivate
 {
 public:
-  KXMLGUIBasePrivate()
+  KXMLGUIClientPrivate()
   {
     m_instance = KGlobal::instance();
-    m_doc = new QDomDocument;
+    m_factory = 0L;
+    m_parent = 0L;
+    m_builder = 0L;
   }
-  ~KXMLGUIBasePrivate()
+  ~KXMLGUIClientPrivate()
   {
-    if (m_doc)
-      delete m_doc;
-    m_doc = 0;
   }
 
   KInstance *m_instance;
 
-  QDomDocument* m_doc;
+  QDomDocument m_doc;
   QActionCollection m_actionCollection;
+  QMap<QString,QByteArray> m_containerStates;
+  KXMLGUIFactory *m_factory;
+  KXMLGUIClient *m_parent;
+  QList<KXMLGUIClient> m_children;
+  KXMLGUIBuilder *m_builder;
 };
 
-KXMLGUIBase::KXMLGUIBase()
+KXMLGUIClient::KXMLGUIClient()
 {
-  d = new KXMLGUIBasePrivate; 
+  d = new KXMLGUIClientPrivate;
 }
 
-KXMLGUIBase::~KXMLGUIBase()
+KXMLGUIClient::KXMLGUIClient( KXMLGUIClient *parent )
 {
-  delete d; 
+  d = new KXMLGUIClientPrivate;
+  d->m_parent = parent;
+} 
+
+KXMLGUIClient::~KXMLGUIClient()
+{
+  if ( d->m_parent )
+    d->m_parent->removeChildClient( this );
+
+  QListIterator<KXMLGUIClient> childIt( d->m_children );
+  for (; childIt.current(); ++childIt )
+    childIt.current()->d->m_parent = 0L;
+
+  d->m_children.setAutoDelete( true );
+  d->m_children.clear();
+
+  delete d;
 }
 
-QAction *KXMLGUIBase::action( const char *name )
+QAction *KXMLGUIClient::action( const char *name )
 {
-  return d->m_actionCollection.action( name ); 
+  return d->m_actionCollection.action( name );
 }
 
-QActionCollection *KXMLGUIBase::actionCollection() const
+QActionCollection *KXMLGUIClient::actionCollection() const
 {
-  return &d->m_actionCollection; 
+  return &d->m_actionCollection;
 }
 
-QAction *KXMLGUIBase::action( const QDomElement &element )
+QAction *KXMLGUIClient::action( const QDomElement &element )
 {
-  static QString attrName = QString::fromLatin1( "name" ); 
+  static QString attrName = QString::fromLatin1( "name" );
   return action( element.attribute( attrName ).ascii() );
 }
 
-KInstance *KXMLGUIBase::instance() const
+KInstance *KXMLGUIClient::instance() const
 {
-  return d->m_instance; 
-} 
+  return d->m_instance;
+}
 
-QDomDocument KXMLGUIBase::document() const
+QDomDocument KXMLGUIClient::document() const
 {
-  return *(d->m_doc); 
-} 
+  return d->m_doc;
+}
 
-void KXMLGUIBase::setInstance( KInstance *instance )
+void KXMLGUIClient::setInstance( KInstance *instance )
 {
   d->m_instance = instance;
-} 
+}
 
-void KXMLGUIBase::setXMLFile( QString file, bool merge )
+void KXMLGUIClient::setXMLFile( QString file, bool merge )
 {
   if ( file[0] != '/' )
   {
@@ -113,11 +134,11 @@ void KXMLGUIBase::setXMLFile( QString file, bool merge )
   setXML( xml, merge );
 }
 
-void KXMLGUIBase::setXML( const QString &document, bool merge )
+void KXMLGUIClient::setXML( const QString &document, bool merge )
 {
   if ( merge )
   {
-    QDomElement base = d->m_doc->documentElement();
+    QDomElement base = d->m_doc.documentElement();
     QDomDocument doc;
 
     if ( !document.isNull() )
@@ -128,13 +149,13 @@ void KXMLGUIBase::setXML( const QString &document, bool merge )
 
     // we want some sort of failsafe.. just in case
     if ( base.isNull() )
-      d->m_doc->setContent( document );
+      d->m_doc.setContent( document );
   }
   else
-    d->m_doc->setContent( document );
-} 
+    d->m_doc.setContent( document );
+}
 
-bool KXMLGUIBase::mergeXML( QDomElement &base, const QDomElement &additive, QActionCollection *actionCollection )
+bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, QActionCollection *actionCollection )
 {
   static QString tagAction = QString::fromLatin1( "Action" );
   static QString tagMerge = QString::fromLatin1( "Merge" );
@@ -246,7 +267,7 @@ bool KXMLGUIBase::mergeXML( QDomElement &base, const QDomElement &additive, QAct
       if ( !matchingElement.isNull() )
       {
         matchingElement.setAttribute( attrAlreadyVisited, (uint)1 );
-        
+
         if ( mergeXML( currElement, matchingElement, actionCollection ) )
           base.removeChild( currElement );
         continue;
@@ -353,7 +374,7 @@ bool KXMLGUIBase::mergeXML( QDomElement &base, const QDomElement &additive, QAct
   return deleteMe;
 }
 
-QDomElement KXMLGUIBase::findMatchingElement( const QDomElement &base, const QDomElement &additive )
+QDomElement KXMLGUIClient::findMatchingElement( const QDomElement &base, const QDomElement &additive )
 {
   static QString tagAction = QString::fromLatin1( "Action" );
   static QString tagMergeLocal = QString::fromLatin1( "MergeLocal" );
@@ -380,9 +401,69 @@ QDomElement KXMLGUIBase::findMatchingElement( const QDomElement &base, const QDo
   return e;
 }
 
-void KXMLGUIBase::conserveMemory()
+void KXMLGUIClient::conserveMemory()
 {
-  if (d->m_doc)
-    delete d->m_doc;
-  d->m_doc = 0;
+  d->m_doc = QDomDocument(); 
+}
+
+void KXMLGUIClient::storeContainerStateBuffer( const QString &key, const QByteArray &data )
+{
+  d->m_containerStates.replace( key, data );
+}
+
+QByteArray KXMLGUIClient::takeContainerStateBuffer( const QString &key )
+{
+  QByteArray res;
+
+  QMap<QString,QByteArray>::Iterator it = d->m_containerStates.find( key );
+  if ( it != d->m_containerStates.end() )
+  {
+    res = it.data();
+    d->m_containerStates.remove( it );
+  }
+
+  return res;
+}
+
+void KXMLGUIClient::setFactory( KXMLGUIFactory *factory )
+{
+  d->m_factory = factory;
+}
+
+KXMLGUIFactory *KXMLGUIClient::factory() const
+{
+  return d->m_factory;
+}
+
+KXMLGUIClient *KXMLGUIClient::parentClient() const
+{
+  return d->m_parent;
+}
+
+void KXMLGUIClient::insertChildClient( KXMLGUIClient *child )
+{
+  if ( child->parentClient() )
+    child->parentClient()->removeChildClient( child );
+
+  d->m_children.append( child );
+}
+
+void KXMLGUIClient::removeChildClient( KXMLGUIClient *child )
+{
+  d->m_children.removeRef( child );
+}
+
+const QList<KXMLGUIClient> *KXMLGUIClient::childClients()
+{
+  return &d->m_children;
+}
+
+void KXMLGUIClient::setClientBuilder( KXMLGUIBuilder *builder )
+{
+  d->m_builder = builder;
+}
+
+KXMLGUIBuilder *KXMLGUIClient::clientBuilder() const
+{
+  return d->m_builder;
 }
