@@ -73,8 +73,11 @@ KZoneAllocator::~KZoneAllocator()
     delete currentBlock;
     count++;
   }
+#ifndef NDEBUG // as this is called quite late in the app, we don't care
+	       // to use kdDebug
   if (count > 1)
     qDebug("zone still contained %d blocks", count);
+#endif
 }
 
 void KZoneAllocator::insertHash(MemBlock *b)
