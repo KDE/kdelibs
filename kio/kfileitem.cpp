@@ -404,9 +404,10 @@ QString KFileItem::getStatusBarInfo()
 
 void KFileItem::run()
 {
+  KURL url( m_url );
   if ( m_bLink )
-    m_url = KURL( m_url, linkDest() );
-  (void) new KRun( m_url, m_fileMode, m_bIsLocalURL );
+    url = KURL( m_url, linkDest() );
+  (void) new KRun( url, m_fileMode, m_bIsLocalURL );
 }
 
 bool KFileItem::cmp( const KFileItem & item )
