@@ -318,7 +318,7 @@ void KJavaProcess::slotReceivedData( int fd, int& )
 
     QByteArray qb;
     emit received( qb.duplicate( msg, num_len ) );
-    delete msg;
+    delete[] msg;
 }
 
 
