@@ -137,7 +137,7 @@ void KMJobViewer::initActions()
 	KAction	*ract = new KAction(i18n("Resume"),"run",0,this,SLOT(slotResume()),actionCollection(),"job_resume");
 	KAction	*dact = new KAction(i18n("Remove"),"edittrash",Qt::Key_Delete,this,SLOT(slotRemove()),actionCollection(),"job_remove");
 	KAction *sact = new KAction(i18n("Restart"),"redo",0,this,SLOT(slotRestart()),actionCollection(),"job_restart");
-	KActionMenu *mact = new KActionMenu(i18n("Move to printer..."),"fileprint",actionCollection(),"job_move");
+	KActionMenu *mact = new KActionMenu(i18n("Move to Printer..."),"fileprint",actionCollection(),"job_move");
 	mact->setDelayed(false);
 	connect(mact->popupMenu(),SIGNAL(activated(int)),SLOT(slotMove(int)));
 	connect(mact->popupMenu(),SIGNAL(aboutToShow()),SLOT(slotShowMenu()));
@@ -162,10 +162,10 @@ void KMJobViewer::initActions()
 	}
 
 	// Filter actions
-	KActionMenu	*fact = new KActionMenu(i18n("Modify filter..."),"filter",actionCollection(),"filter_modify");
+	KActionMenu	*fact = new KActionMenu(i18n("Modify Filter..."),"filter",actionCollection(),"filter_modify");
 	fact->setDelayed(false);
-	new KAction(i18n("All printers"),0,this,SLOT(slotAllPrinters()),actionCollection(),"filter_all");
-	new KAction(i18n("No printer"),0,this,SLOT(slotAllPrinters()),actionCollection(),"filter_none");
+	new KAction(i18n("All Printers"),0,this,SLOT(slotAllPrinters()),actionCollection(),"filter_all");
+	new KAction(i18n("No Printer"),0,this,SLOT(slotAllPrinters()),actionCollection(),"filter_none");
 	new KActionSeparator(actionCollection(),"filter_sep");
 
 	initPrinterActions();

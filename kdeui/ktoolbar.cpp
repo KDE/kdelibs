@@ -2022,10 +2022,10 @@ KPopupMenu *KToolBar::contextMenu()
   orient->insertItem( i18n("min toolbar", "Flat"), CONTEXT_FLAT );
 
   KPopupMenu *mode = new KPopupMenu( context, "mode" );
-  mode->insertItem( i18n("Icons only"), CONTEXT_ICONS );
-  mode->insertItem( i18n("Text only"), CONTEXT_TEXT );
-  mode->insertItem( i18n("Text aside icons"), CONTEXT_TEXTRIGHT );
-  mode->insertItem( i18n("Text under icons"), CONTEXT_TEXTUNDER );
+  mode->insertItem( i18n("Icons Only"), CONTEXT_ICONS );
+  mode->insertItem( i18n("Text Only"), CONTEXT_TEXT );
+  mode->insertItem( i18n("Text Aside Icons"), CONTEXT_TEXTRIGHT );
+  mode->insertItem( i18n("Text Under Icons"), CONTEXT_TEXTUNDER );
 
   KPopupMenu *size = new KPopupMenu( context, "size" );
   size->insertItem( i18n("Default"), CONTEXT_ICONSIZES );
@@ -2054,9 +2054,9 @@ KPopupMenu *KToolBar::contextMenu()
 
   context->insertItem( i18n("Orientation"), orient );
   orient->setItemChecked(CONTEXT_TOP, true);
-  context->insertItem( i18n("Text position"), mode );
+  context->insertItem( i18n("Text Position"), mode );
   context->setItemChecked(CONTEXT_ICONS, true);
-  context->insertItem( i18n("Icon size"), size );
+  context->insertItem( i18n("Icon Size"), size );
 
   connect( context, SIGNAL( aboutToShow() ), this, SLOT( slotContextAboutToShow() ) );
   return context;
