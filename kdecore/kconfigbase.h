@@ -22,6 +22,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.25  1999/05/25 20:38:26  kulow
+// sorted some headers - no need to include kconfigbackend in kconfig.h.
+// Just makes parsing slower
+//
 // Revision 1.24  1999/05/23 21:59:06  pbrown
 // new kconfig system is in.  External API remains the same, but the in-memory
 // and on-disk formats have been abstracted.  KConfigBase now is an ADT with
@@ -165,7 +169,7 @@ public:
    * @return The number of entries in the list.
    */
   int readListEntry( const QString& pKey, QStrList &list,
-                     char sep = ';' ) const;
+                     char sep = ',' ) const;
  
   /**
    * Read a list of strings.
