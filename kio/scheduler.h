@@ -56,6 +56,9 @@ namespace KIO {
 	Scheduler();
 
     private:
+        class ProtocolInfo;
+        class ProtocolInfoDict;
+        
 	Scheduler(const Scheduler&);
 
 	static Scheduler *self();
@@ -79,6 +82,8 @@ namespace KIO {
 	 */
 	SlaveList *slaveList;
 	SlaveList *idleSlaves;
+	
+	ProtocolInfoDict *protInfoDict;
     };
 };
 

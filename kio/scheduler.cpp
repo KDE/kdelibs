@@ -1,6 +1,7 @@
 #include "scheduler.h"
 #include "slave.h"
 #include <qlist.h>
+#include <qdict.h>
 #include <kdebug.h>
 #include <assert.h>
 
@@ -13,6 +14,36 @@ using namespace KIO;
 
 Scheduler *Scheduler::instance = 0;
 
+class KIO::Scheduler::ProtocolInfo
+{
+  public: 
+     ProtocolInfo() : activeSlaves(0), idleSlaves(0), maxSlaves(5) { }
+    
+     int activeSlaves;
+     int idleSlaves;
+     int maxSlaves;
+};
+
+class KIO::Scheduler::ProtocolInfoDict : public QDict<KIO::Scheduler::ProtocolInfo>
+{
+  public:
+    ProtocolInfoDict() { }
+
+    KIO::Scheduler::ProtocolInfo *get( const QString &key);
+};
+
+KIO::Scheduler::ProtocolInfo *
+KIO::Scheduler::ProtocolInfoDict::get(const QString &key)
+{
+  ProtocolInfo *info = find(key);
+  if (!info)
+  {
+     info = new ProtocolInfo;
+     insert(key, info);     
+  }
+  return info;
+}
+
 class KIO::SlaveList: public QList<Slave>
 {
    public:
@@ -24,6 +55,7 @@ Scheduler::Scheduler()
     mytimer(this, "Scheduler::mytimer"),
     cleanupTimer(this, "Scheduler::cleanupTimer")
 {
+    protInfoDict = new ProtocolInfoDict;
     slaveList = new SlaveList;
     idleSlaves = new SlaveList;
     connect(&mytimer, SIGNAL(timeout()),
@@ -43,7 +75,9 @@ Scheduler::debug_info()
     Slave *slave = slaveList->first();
     for(; slave; slave = slaveList->next())
     {
+        ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
         kdDebug(7006) << " Slave: " << slave->protocol() << " " << slave->host() << slave->port() << endl;
+        kdDebug(7006) << " -- activeSlaves: " << protInfo->activeSlaves << endl;
     }
     kDebugInfo(7006, "Idle Slaves: %d", idleSlaves->count());
     slave = idleSlaves->first();
@@ -70,6 +104,8 @@ void Scheduler::_cancelJob(SimpleJob *job) {
     kDebugInfo(7006, "Scheduler: canceling job %p", job);
     if ( job->slave() ) // was running
     {
+        ProtocolInfo *protInfo = protInfoDict->get(job->slave()->protocol());
+        protInfo->activeSlaves--;
         job->slave()->kill();
         _jobFinished( job, job->slave() );
     } else { // was not yet running (don't call this on a finished job!)
@@ -84,6 +120,7 @@ void Scheduler::startStep()
        kDebugInfo(7006, "Scheduling job");
        SimpleJob *job = joblist.at(0);
        QString protocol = job->url().protocol();
+       ProtocolInfo *protInfo = protInfoDict->get(protocol);
        QString host = job->url().host();
        int port = job->url().port();
        QString user = job->url().user();
@@ -104,13 +141,14 @@ void Scheduler::startStep()
 
        if (!slave)
        {
-          if (slaveList->count() < 5)
+          if (protInfo->activeSlaves < protInfo->maxSlaves)
           {
              int error;
              QString errortext;
              slave = Slave::createSlave(job->url(), error, errortext);
              if (slave)
              {
+                protInfo->idleSlaves++;
                 newSlave = true;
                 slaveList->append(slave);
                 idleSlaves->append(slave);
@@ -145,6 +183,8 @@ void Scheduler::startStep()
 	  return;
        }
 
+       protInfo->idleSlaves--;
+       protInfo->activeSlaves++;
        idleSlaves->removeRef(slave);
        joblist.removeRef(job);
        kDebugInfo(7006, "scheduler: job started %p", job);
@@ -170,10 +210,13 @@ void Scheduler::slotSlaveStatus(pid_t pid, const QCString &protocol, const QStri
 
 void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
 {
+    ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
     slave->disconnect(job);
+    protInfo->activeSlaves--;
     if (slave->isAlive())
     {
        idleSlaves->append(slave);
+       protInfo->idleSlaves++;
        slave->setIdle();
        _scheduleCleanup();
        if (joblist.count())
@@ -208,6 +251,8 @@ void Scheduler::slotCleanIdleSlaves()
       {
          kdDebug(7006) << "Removing idle slave: " << slave->protocol() << " " << slave->host() << endl;
          Slave *removeSlave = slave;
+         ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
+         protInfo->idleSlaves--;
          slave = idleSlaves->next();
          idleSlaves->removeRef(removeSlave);
          slaveList->removeRef(removeSlave);
