@@ -120,7 +120,7 @@ namespace khtml {
         PartStyleSheetLoader(KHTMLPart *part, DOM::DOMString url, DocLoader* dl)
         {
             m_part = part;
-            m_cachedSheet = Cache::requestStyleSheet(dl, url );
+            m_cachedSheet = dl->requestStyleSheet(url, QString::null );
             if (m_cachedSheet)
 		m_cachedSheet->ref( this );
         }
@@ -1390,7 +1390,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     // Support Content-Location per section 14.14 of RFC 2616.
     QString baseURL = d->m_job->queryMetaData ("content-location");
     if (!baseURL.isEmpty())
-      d->m_doc->setBaseURL(d->m_doc->completeURL(baseURL));
+      d->m_doc->setBaseURL(KURL( d->m_doc->completeURL(baseURL) ));
 
 
     if ( !m_url.isLocalFile() ) {
@@ -1666,7 +1666,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     d->m_doc->attach( );
   // We prefer m_baseURL over m_url because m_url changes when we are
   // about to load a new page.
-  d->m_doc->setBaseURL( baseurl.url() );
+  d->m_doc->setBaseURL( baseurl );
   d->m_doc->docLoader()->setShowAnimations( KHTMLFactory::defaultHTMLSettings()->showAnimations() );
   emit docCreated(); // so that the parent can set the domain
 
@@ -2048,7 +2048,7 @@ QString KHTMLPart::baseTarget() const
 
 KURL KHTMLPart::completeURL( const QString &url )
 {
-  if ( !d->m_doc ) return url;
+  if ( !d->m_doc ) return KURL( url );
 
   if (d->m_decoder)
     return KURL(d->m_doc->completeURL(url), d->m_decoder->codec()->mibEnum());
@@ -2079,7 +2079,8 @@ void KHTMLPart::slotRedirect()
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
-    
+  d->m_referrer = "";
+
   // SYNC check with ecma/kjs_window.cpp::goURL !
   if ( u.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
@@ -3263,12 +3264,12 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   args.metaData().insert("PropagateHttpHeader", "true");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
   args.metaData().insert("ssl_activate_warnings", "TRUE");
-  // WABA: When we select the link explicitly we should treat this new URL as the 
+  // WABA: When we select the link explicitly we should treat this new URL as the
   // toplevel url and it should never be considered cross-domain.
   // However this function is also called for javascript and META-tag based
   // redirections:
-  //   - In such case, we don't take cross-domain-ness in consideration if we are the 
-  //   toplevel frame because the new URL may be in a different domain as the current URL 
+  //   - In such case, we don't take cross-domain-ness in consideration if we are the
+  //   toplevel frame because the new URL may be in a different domain as the current URL
   //   but that's ok.
   //   - If we are not the toplevel frame then we check against the toplevelURL()
   if (args.redirectedRequest() && parentPart())
@@ -4892,7 +4893,7 @@ QString KHTMLPart::referrer() const
 
 QString KHTMLPart::pageReferrer() const
 {
-   KURL referrerURL = d->m_pageReferrer;
+   KURL referrerURL = KURL( d->m_pageReferrer );
    if (referrerURL.isValid())
    {
       QString protocol = referrerURL.protocol();
@@ -6072,10 +6073,10 @@ KURL KHTMLPart::toplevelURL()
   KHTMLPart* part = this;
   while (part->parentPart())
     part = part->parentPart();
-  
+
   if (!part)
     return KURL();
-       
+
   return part->url();
 }
 

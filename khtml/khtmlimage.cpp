@@ -147,9 +147,9 @@ bool KHTMLImage::openURL( const KURL &url )
         impl->docLoader()->setCachePolicy( KIO::CC_Refresh );
 
     khtml::DocLoader *dl = impl ? impl->docLoader() : 0;
-    m_image = khtml::Cache::requestImage( dl, m_url.url(), true /*reload*/ );
-    assert( m_image );
-    m_image->ref( this );
+    m_image = dl->requestImage( m_url.url() );
+    if ( m_image )
+        m_image->ref( this );
 
     m_khtml->write( html.arg( m_url.url() ) );
     m_khtml->end();

@@ -1118,8 +1118,8 @@ Value DOMDOMImplementationProtoFunc::tryCall(ExecState *exec, Object &thisObj, c
     // host/domain for security checks. The URL will be updated if Document.load() is called.
     Document doc = implementation.createDocument(args[0].toString(exec).string(),args[1].toString(exec).string(),toNode(args[2]));
     KHTMLPart *part = static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part();
-    QString url = static_cast<DocumentImpl*>(part->document().handle())->URL();
-    static_cast<DocumentImpl*>(doc.handle())->setURL(url);
+    KURL url = static_cast<DocumentImpl*>(part->document().handle())->URL();
+    static_cast<DocumentImpl*>(doc.handle())->setURL(url.url());
     return getDOMNode(exec,doc);
   }
   case DOMDOMImplementation::CreateCSSStyleSheet: // DOM2

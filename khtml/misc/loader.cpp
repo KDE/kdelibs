@@ -23,19 +23,31 @@
 
     This class provides all functionality needed for loading images, style sheets and html
     pages from the web. It has a memory cache for these objects.
+
+    // regarding the LRU:
+    // http://www.is.kyusan-u.ac.jp/~chengk/pub/papers/compsac00_A07-07.pdf
 */
 
 #undef CACHE_DEBUG
 //#define CACHE_DEBUG
+
+#ifdef CACHE_DEBUG
+#define CDEBUG kdDebug(6060)
+#else
+#define CDEBUG kndDebug()
+#endif
+
+#undef LOADER_DEBUG
+#define LOADER_DEBUG
+
 #include <assert.h>
 
-#include "loader.h"
+#include "misc/loader.h"
+#include "misc/seed.h"
 
-// up to which size is a picture for sure cacheable
-#define MAXCACHEABLE 40*1024
 // default cache size
-#define DEFCACHESIZE 4096*1024
-#define MAX_JOB_COUNT 50
+#define DEFCACHESIZE 2096*1024
+#define MAX_JOB_COUNT 32
 
 #include <qasyncio.h>
 #include <qasyncimageio.h>
@@ -81,35 +93,7 @@ CachedObject::~CachedObject()
 
 void CachedObject::finish()
 {
-    if( m_size > MAXCACHEABLE )
-        m_status = Uncacheable;
-    else
-        m_status = Cached;
-    KURL url(m_url.string());
-    if (m_expireDateChanged && url.protocol().startsWith("http"))
-    {
-        m_expireDateChanged = false;
-        KIO::http_update_cache(url, false, m_expireDate);
-#ifdef CACHE_DEBUG
-        kdDebug(6060) << " Setting expire date for image "<<m_url.string()<<" to " << m_expireDate << endl;
-#endif
-    }
-#ifdef CACHE_DEBUG
-    else kdDebug(6060) << " No expire date for image "<<m_url.string()<<endl;
-#endif
-}
-
-void CachedObject::setExpireDate(time_t _expireDate, bool changeHttpCache)
-{
-    if ( _expireDate == m_expireDate)
-        return;
-
-    if (m_status == Uncacheable || m_status == Cached)
-        finish();
-
-    m_expireDate = _expireDate;
-    if (changeHttpCache && m_expireDate)
-       m_expireDateChanged = true;
+    m_status = Cached;
 }
 
 bool CachedObject::isExpired() const
@@ -123,11 +107,20 @@ void CachedObject::setRequest(Request *_request)
 {
     if ( _request && !m_request )
         m_status = Pending;
+
+    if ( allowInLRUList() )
+        Cache::removeFromLRUList( this );
+
     m_request = _request;
+
+    if ( allowInLRUList() )
+        Cache::insertInLRUList( this );
 }
 
 void CachedObject::ref(CachedObjectClient *c)
 {
+    assert( !m_clients.find( c ) );
+    assert( !free() );
     m_clients.replace(c,c);
     Cache::removeFromLRUList(this);
     m_accessCount++;
@@ -135,6 +128,13 @@ void CachedObject::ref(CachedObjectClient *c)
 
 void CachedObject::deref(CachedObjectClient *c)
 {
+    assert( c );
+    assert( m_clients.count() );
+    assert( !canDelete() );
+    assert( m_clients.find( c ) );
+
+    Cache::flush();
+
     m_clients.remove(c);
 
     if (allowInLRUList())
@@ -143,15 +143,21 @@ void CachedObject::deref(CachedObjectClient *c)
 
 void CachedObject::setSize(int size)
 {
-    bool sizeChanged = Cache::adjustSize(this, size - m_size);
+    bool sizeChanged;
 
-    // The object must now be moved to a different queue, since its size has been changed.
-    if (sizeChanged && allowInLRUList())
+    if ( !m_next && !m_prev && getLRUListFor(this)->m_head != this )
+        sizeChanged = false;
+    else
+        sizeChanged = ( size - m_size ) != 0;
+
+    // The object must now be moved to a different queue,
+    // since its size has been changed.
+    if ( sizeChanged  && allowInLRUList())
         Cache::removeFromLRUList(this);
 
     m_size = size;
 
-    if (sizeChanged && allowInLRUList())
+    if ( sizeChanged && allowInLRUList())
         Cache::insertInLRUList(this);
 }
 
@@ -181,15 +187,14 @@ QTextCodec* CachedObject::codecForBuffer( const QString& charset, const QByteArr
         return c;
     }
 
-
     return QTextCodec::codecForMib(4); // latin-1
 }
 
 // -------------------------------------------------------------------------------------------
 
 CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, KIO::CacheControl _cachePolicy,
-					 time_t _expireDate, const QString& charset, const char *accept)
-    : CachedObject(url, CSSStyleSheet, _cachePolicy, _expireDate, 0)
+					 const char *accept)
+    : CachedObject(url, CSSStyleSheet, _cachePolicy, 0)
 {
     // Set the type we want (probably css or xml)
     QString ah = QString::fromLatin1( accept );
@@ -202,21 +207,16 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, KI
     // load the file
     Cache::loader()->load(dl, this, false);
     m_loading = true;
-    m_charset = charset;
 }
 
 CachedCSSStyleSheet::CachedCSSStyleSheet(const DOMString &url, const QString &stylesheet_data)
-    : CachedObject(url, CSSStyleSheet, KIO::CC_Verify, 0, stylesheet_data.length())
+    : CachedObject(url, CSSStyleSheet, KIO::CC_Verify, stylesheet_data.length())
 {
     m_loading = false;
     m_status = Persistent;
     m_sheet = DOMString(stylesheet_data);
 }
 
-
-CachedCSSStyleSheet::~CachedCSSStyleSheet()
-{
-}
 
 void CachedCSSStyleSheet::ref(CachedObjectClient *c)
 {
@@ -228,12 +228,6 @@ void CachedCSSStyleSheet::ref(CachedObjectClient *c)
 	else
 	    c->setStyleSheet( m_url, m_sheet );
     }
-}
-
-void CachedCSSStyleSheet::deref(CachedObjectClient *c)
-{
-    Cache::flush();
-    CachedObject::deref(c);
 }
 
 void CachedCSSStyleSheet::data( QBuffer &buffer, bool eof )
@@ -255,9 +249,7 @@ void CachedCSSStyleSheet::checkNotify()
 {
     if(m_loading || m_hadError) return;
 
-#ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << "CachedCSSStyleSheet:: finishedLoading " << m_url.string() << endl;
-#endif
+    CDEBUG << "CachedCSSStyleSheet:: finishedLoading " << m_url.string() << endl;
 
     // it() first increments, then returnes the current item.
     // this avoids skipping an item when setStyleSheet deletes the "current" one.
@@ -281,8 +273,8 @@ void CachedCSSStyleSheet::error( int err, const char* text )
 
 // -------------------------------------------------------------------------------------------
 
-CachedScript::CachedScript(DocLoader* dl, const DOMString &url, KIO::CacheControl _cachePolicy, time_t _expireDate, const QString& charset)
-    : CachedObject(url, Script, _cachePolicy, _expireDate, 0)
+CachedScript::CachedScript(DocLoader* dl, const DOMString &url, KIO::CacheControl _cachePolicy, const char*)
+    : CachedObject(url, Script, _cachePolicy, 0)
 {
     // It's javascript we want.
     // But some websites think their scripts are <some wrong mimetype here>
@@ -291,19 +283,14 @@ CachedScript::CachedScript(DocLoader* dl, const DOMString &url, KIO::CacheContro
     // load the file
     Cache::loader()->load(dl, this, false);
     m_loading = true;
-    m_charset = charset;
 }
 
 CachedScript::CachedScript(const DOMString &url, const QString &script_data)
-    : CachedObject(url, Script, KIO::CC_Verify, 0, script_data.length())
+    : CachedObject(url, Script, KIO::CC_Verify, script_data.length())
 {
     m_loading = false;
     m_status = Persistent;
     m_script = DOMString(script_data);
-}
-
-CachedScript::~CachedScript()
-{
 }
 
 void CachedScript::ref(CachedObjectClient *c)
@@ -311,12 +298,6 @@ void CachedScript::ref(CachedObjectClient *c)
     CachedObject::ref(c);
 
     if(!m_loading) c->notifyFinished(this);
-}
-
-void CachedScript::deref(CachedObjectClient *c)
-{
-    Cache::flush();
-    CachedObject::deref(c);
 }
 
 void CachedScript::data( QBuffer &buffer, bool eof )
@@ -351,131 +332,84 @@ void CachedScript::error( int /*err*/, const char* /*text*/ )
 namespace khtml
 {
 
-    class ImageSource : public QDataSource
+class ImageSource : public QDataSource
+{
+public:
+    ImageSource(QByteArray buf)
+        : buffer( buf ), pos( 0 ), eof( false ), rew(false ), rewable( false )
+        {}
+
+    int readyToSend()
     {
-    public:
-        ImageSource(QByteArray buf);
+        if(eof && pos == buffer.size())
+            return -1;
 
-        /**
-         * Overload QDataSource::readyToSend() and returns the number
-         * of bytes ready to send if not eof instead of returning -1.
-         */
-        int readyToSend();
-
-        /*!
-          Reads and sends a block of data.
-        */
-        void sendTo(QDataSink*, int count);
-
-        /**
-         * Sets the EOF state.
-         */
-        void setEOF( bool state );
-
-        /*!
-          KHTMLImageSource's is rewindable.
-        */
-        bool rewindable() const;
-
-        /*!
-          Enables rewinding.  No special action is taken.
-        */
-        void enableRewind(bool on);
-
-        /*
-          Calls reset() on the QIODevice.
-        */
-        void rewind();
-
-        /*
-          Indicates that the buffered data is no longer
-          needed.
-        */
-        void cleanBuffer();
-
-        QByteArray buffer;
-        unsigned int pos;
-    private:
-        bool eof     : 1;
-        bool rew     : 1;
-        bool rewable : 1;
-    };
-}
-
-
-ImageSource::ImageSource(QByteArray buf)
-{
-  buffer = buf;
-  rew = false;
-  pos = 0;
-  eof = false;
-  rewable = true;
-}
-
-int ImageSource::readyToSend()
-{
-    if(eof && pos == buffer.size())
-        return -1;
-
-    return  buffer.size() - pos;
-}
-
-void ImageSource::sendTo(QDataSink* sink, int n)
-{
-    sink->receive((const uchar*)&buffer.at(pos), n);
-
-    pos += n;
-
-    // buffer is no longer needed
-    if(eof && pos == buffer.size() && !rewable)
-    {
-        buffer.resize(0);
-        pos = 0;
+        return  buffer.size() - pos;
     }
-}
 
-void ImageSource::setEOF( bool state )
-{
-    eof = state;
-}
-
-// ImageSource's is rewindable.
-bool ImageSource::rewindable() const
-{
-    return rewable;
-}
-
-// Enables rewinding.  No special action is taken.
-void ImageSource::enableRewind(bool on)
-{
-    rew = on;
-}
-
-// Calls reset() on the QIODevice.
-void ImageSource::rewind()
-{
-    pos = 0;
-    if (!rew) {
-        QDataSource::rewind();
-    } else
-        ready();
-}
-
-void ImageSource::cleanBuffer()
-{
-    // if we need to be able to rewind, buffer is needed
-    if(rew)
-        return;
-
-    rewable = false;
-
-    // buffer is no longer needed
-    if(eof && pos == buffer.size())
+    void sendTo(QDataSink* sink, int n)
     {
-        buffer.resize(0);
-        pos = 0;
+        sink->receive((const uchar*)&buffer.at(pos), n);
+
+        pos += n;
+
+        // buffer is no longer needed
+        if(eof && pos == buffer.size() && !rewable)
+        {
+            buffer.resize(0);
+            pos = 0;
+        }
     }
-}
+
+    /**
+     * Sets the EOF state.
+     */
+    void setEOF( bool state ) { eof = state; }
+
+    bool rewindable() const { return rewable; }
+    void enableRewind(bool on) { rew = on; }
+
+    /*
+      Calls reset() on the QIODevice.
+    */
+    void rewind()
+    {
+        pos = 0;
+        if (!rew) {
+            QDataSource::rewind();
+        } else
+            ready();
+    }
+
+    /*
+      Indicates that the buffered data is no longer
+      needed.
+    */
+    void cleanBuffer()
+    {
+        // if we need to be able to rewind, buffer is needed
+        if(rew)
+            return;
+
+        rewable = false;
+
+        // buffer is no longer needed
+        if(eof && pos == buffer.size())
+        {
+            buffer.resize(0);
+            pos = 0;
+        }
+    }
+
+    QByteArray buffer;
+    unsigned int pos;
+private:
+    bool eof     : 1;
+    bool rew     : 1;
+    bool rewable : 1;
+};
+
+} // end namespace
 
 static QString buildAcceptHeader()
 {
@@ -490,8 +424,8 @@ static QString buildAcceptHeader()
 
 // -------------------------------------------------------------------------------------
 
-CachedImage::CachedImage(DocLoader* dl, const DOMString &url, KIO::CacheControl _cachePolicy, time_t _expireDate)
-    : QObject(), CachedObject(url, Image, _cachePolicy, _expireDate, 0)
+CachedImage::CachedImage(DocLoader* dl, const DOMString &url, KIO::CacheControl _cachePolicy, const char*)
+    : QObject(), CachedObject(url, Image, _cachePolicy, 0)
 {
     static const QString &acceptHeader = KGlobal::staticQString( buildAcceptHeader() );
 
@@ -517,10 +451,7 @@ CachedImage::~CachedImage()
 
 void CachedImage::ref( CachedObjectClient *c )
 {
-#ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << this << " CachedImage::ref(" << c << ") pixmap.isNull()=" << pixmap().isNull() << " valid_rect.isNull()=" << valid_rect().isNull()<< " status=" << m_status << endl;
-#endif
-
+    qDebug( "CachedImage:: %p ref from %p %s", this, c, kdBacktrace().latin1() );
     CachedObject::ref(c);
 
     if( m ) {
@@ -530,16 +461,15 @@ void CachedImage::ref( CachedObjectClient *c )
     }
 
     // for mouseovers, dynamic changes
-    if ( m_status >= Persistent && !valid_rect().isNull() )
+    if ( m_status >= Persistent && !valid_rect().isNull() ) {
         c->setPixmap( pixmap(), valid_rect(), this);
+        c->notifyFinished( this );
+    }
 }
 
 void CachedImage::deref( CachedObjectClient *c )
 {
-#ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << this << " CachedImage::deref(" << c << ") " << endl;
-#endif
-    Cache::flush();
+    qDebug( "CachedImage:: %p deref from %p %s", this, c, kdBacktrace().latin1() );
     CachedObject::deref(c);
     if(m && m_clients.isEmpty() && m->running())
         m->pause();
@@ -689,7 +619,7 @@ void CachedImage::do_notify(const QPixmap& p, const QRect& r)
 
 void CachedImage::movieUpdated( const QRect& r )
 {
-#ifdef CACHE_DEBUG
+#ifdef LOADER_DEBUG
     qDebug("movie updated %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
            m->framePixmap().size().width(), m->framePixmap().size().height());
 #endif
@@ -699,7 +629,7 @@ void CachedImage::movieUpdated( const QRect& r )
 
 void CachedImage::movieStatus(int status)
 {
-#ifdef CACHE_DEBUG
+#ifdef LOADER_DEBUG
     qDebug("movieStatus(%d)", status);
 #endif
 
@@ -762,13 +692,13 @@ void CachedImage::movieStatus(int status)
             }
         }
         for (QPtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
-            it()->notifyFinished(this);
+            it()->notifyFinished( this );
     }
 
 #if 0
     if((status == QMovie::EndOfFrame) || (status == QMovie::EndOfMovie))
     {
-#ifdef CACHE_DEBUG
+#ifdef LOADER_DEBUG
         QRect r(valid_rect());
         qDebug("movie Status frame update %d/%d/%d/%d, pixmap size %d/%d", r.x(), r.y(), r.right(), r.bottom(),
                pixmap().size().width(), pixmap().size().height());
@@ -790,7 +720,6 @@ void CachedImage::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimati
         imgSource->cleanBuffer();
         delete p;
         p = new QPixmap(m->framePixmap());
-
         m->disconnectUpdate( this, SLOT( movieUpdated( const QRect &) ));
         m->disconnectStatus( this, SLOT( movieStatus( int ) ));
         m->disconnectResize( this, SLOT( movieResize( const QSize& ) ) );
@@ -822,7 +751,7 @@ void CachedImage::clear()
 
 void CachedImage::data ( QBuffer &_buffer, bool eof )
 {
-#ifdef CACHE_DEBUG
+#ifdef LOADER_DEBUG
     kdDebug( 6060 ) << this << "in CachedImage::data(buffersize " << _buffer.buffer().size() <<", eof=" << eof << endl;
 #endif
     if ( !typeChecked )
@@ -872,9 +801,6 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
                 else
                     do_notify(*p, p->rect());
         }
-
-        QSize s = pixmap_size();
-        setSize( s.width() * s.height() * 2);
     }
 }
 
@@ -886,6 +812,8 @@ void CachedImage::finish()
 	const QPixmap &pm = pixmap();
 	do_notify( pm, pm.rect() );
     }
+    QSize s = pixmap_size();
+    setSize( s.width() * s.height() * 2);
 }
 
 
@@ -955,6 +883,13 @@ void DocLoader::setExpireDate(time_t _expireDate, bool relative)
 #endif
 }
 
+void DocLoader::insertCachedObject( CachedObject* o ) const
+{
+    m_docObjects.insert( o, o );
+    if ( m_docObjects.count() > 3 * m_docObjects.size() )
+        m_docObjects.resize(khtml::nextSeed( m_docObjects.size() ) );
+}
+
 bool DocLoader::needReload(const KURL &fullURL)
 {
     bool reload = false;
@@ -987,39 +922,48 @@ bool DocLoader::needReload(const KURL &fullURL)
     return reload;
 }
 
+#define DOCLOADER_SECCHECK \
+    KURL fullURL (m_doc->completeURL( url.string() )); \
+    if ( !fullURL.isValid() || \
+         ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file" && fullURL.protocol() != "data") || \
+         ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL))) \
+         return 0L;
+
 CachedImage *DocLoader::requestImage( const DOM::DOMString &url)
 {
-    KURL fullURL = m_doc->completeURL( url.string() );
-    if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file" && fullURL.protocol() != "data") return 0;
-    if ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL.url())) return 0;
+    DOCLOADER_SECCHECK;
 
-    bool reload = needReload(fullURL);
+    CachedImage* i = Cache::requestObject<CachedImage, CachedObject::Image>( this, fullURL, 0);
 
-    return Cache::requestImage(this, url, reload, m_expireDate);
+    if (i && i->status() == CachedObject::Unknown && autoloadImages())
+        Cache::loader()->load(this, i, true);
+
+    return i;
 }
 
 CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, const QString& charset,
 						   const char *accept )
 {
-    KURL fullURL = m_doc->completeURL( url.string() );
-    if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file" && fullURL.protocol() != "data") return 0;
-    if ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL.url())) return 0;
+    DOCLOADER_SECCHECK;
 
-    bool reload = needReload(fullURL);
-
-    return Cache::requestStyleSheet(this, url, reload, m_expireDate, charset, accept);
+    CachedCSSStyleSheet* s = Cache::requestObject<CachedCSSStyleSheet, CachedObject::CSSStyleSheet>( this, fullURL, accept );
+    if ( s ) {
+        s->setCharset( charset );
+    }
+    return s;
 }
 
 CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const QString& charset)
 {
-    KURL fullURL = m_doc->completeURL( url.string() );
-    if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file" && fullURL.protocol() != "data") return 0;
-    if ( kapp && m_doc && !kapp->authorizeURLAction("redirect", m_doc->URL(), fullURL.url())) return 0;
+    DOCLOADER_SECCHECK;
 
-    bool reload = needReload(fullURL);
-
-    return Cache::requestScript(this, url, reload, m_expireDate, charset);
+    CachedScript* s = Cache::requestObject<CachedScript, CachedObject::Script>( this, fullURL, 0 );
+    if ( s )
+        s->setCharset( charset );
+    return s;
 }
+
+#undef DOCLOADER_SECCHECK
 
 void DocLoader::setAutoloadImages( bool enable )
 {
@@ -1030,10 +974,10 @@ void DocLoader::setAutoloadImages( bool enable )
 
     if ( !m_bautoloadImages ) return;
 
-    for ( const CachedObject* co=m_docObjects.first(); co; co=m_docObjects.next() )
-        if ( co->type() == CachedObject::Image )
+    for ( QPtrDictIterator<CachedObject> it( m_docObjects ); it.current(); ++it )
+        if ( it.current()->type() == CachedObject::Image )
         {
-            CachedImage *img = const_cast<CachedImage*>( static_cast<const CachedImage *>( co ) );
+            CachedImage *img = const_cast<CachedImage*>( static_cast<const CachedImage *>( it.current()) );
 
             CachedObject::Status status = img->status();
             if ( status != CachedObject::Unknown )
@@ -1043,29 +987,18 @@ void DocLoader::setAutoloadImages( bool enable )
         }
 }
 
-void DocLoader::setCachePolicy( KIO::CacheControl cachePolicy )
-{
-    m_cachePolicy = cachePolicy;
-}
-
 void DocLoader::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimations )
 {
     if ( showAnimations == m_showAnimations ) return;
     m_showAnimations = showAnimations;
 
-    const CachedObject* co;
-    for ( co=m_docObjects.first(); co; co=m_docObjects.next() )
-        if ( co->type() == CachedObject::Image )
+    for ( QPtrDictIterator<CachedObject> it( m_docObjects ); it.current(); ++it )
+        if ( it.current()->type() == CachedObject::Image )
         {
-            CachedImage *img = const_cast<CachedImage*>( static_cast<const CachedImage *>( co ) );
+            CachedImage *img = const_cast<CachedImage*>( static_cast<const CachedImage *>( it.current() ) );
 
-            img->setShowAnimations( showAnimations );
+            img->setShowAnimations( m_showAnimations );
         }
-}
-
-void DocLoader::removeCachedObject( CachedObject* o ) const
-{
-    m_docObjects.removeRef( o );
 }
 
 // ------------------------------------------------------------------------------------------
@@ -1094,7 +1027,7 @@ void Loader::servePendingRequests()
         // get the first pending request
         Request *req = m_requestsPending.take(0);
 
-#ifdef CACHE_DEBUG
+#ifdef LOADER_DEBUG
   kdDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
 #endif
 
@@ -1106,7 +1039,7 @@ void Loader::servePendingRequests()
             job->addMetaData("accept", req->object->accept());
         if ( req->m_docLoader )
         {
-            job->addMetaData( "referrer",  req->m_docLoader->doc()->URL() );
+            job->addMetaData( "referrer",  req->m_docLoader->doc()->URL().url() );
 
             KHTMLPart *part = req->m_docLoader->part();
             if (part )
@@ -1138,7 +1071,7 @@ void Loader::slotFinished( KIO::Job* job )
 
   if (j->error() || j->isErrorPage())
   {
-#ifdef CACHE_DEBUG
+#ifdef LOADER_DEBUG
       kdDebug(6060) << "Loader::slotFinished, with error. job->error()= " << j->error() << " job->isErrorPage()=" << j->isErrorPage() << endl;
 #endif
       r->object->error( job->error(), job->errorText().ascii() );
@@ -1149,15 +1082,15 @@ void Loader::slotFinished( KIO::Job* job )
       r->object->data(r->m_buffer, true);
       emit requestDone( r->m_docLoader, r->object );
       time_t expireDate = j->queryMetaData("expire-date").toLong();
-#ifdef CACHE_DEBUG
+#ifdef LOADER_DEBUG
       kdDebug(6060) << "Loader::slotFinished, url = " << j->url().url() << " expires " << ctime(&expireDate) << endl;
 #endif
-      r->object->setExpireDate(expireDate, false);
+      r->object->setExpireDate( expireDate );
   }
 
   r->object->finish();
 
-#ifdef CACHE_DEBUG
+#ifdef LOADER_DEBUG
   kdDebug( 6060 ) << "Loader:: JOB FINISHED " << r->object << ": " << r->object->url().string() << endl;
 #endif
 
@@ -1203,17 +1136,11 @@ int Loader::numRequests( DocLoader* dl ) const
 
 void Loader::cancelRequests( DocLoader* dl )
 {
-    //kdDebug( 6060 ) << "void Loader::cancelRequests()" << endl;
-    //kdDebug( 6060 ) << "got " << m_requestsPending.count() << " pending requests" << endl;
     QPtrListIterator<Request> pIt( m_requestsPending );
-    while ( pIt.current() )
-    {
+    while ( pIt.current() ) {
         if ( pIt.current()->m_docLoader == dl )
         {
-#ifdef CACHE_DEBUG
-            kdDebug( 6060 ) << "canceling pending request for " << pIt.current()->object->url().string() << endl;
-#endif
-            //emit requestFailed( dl, pIt.current()->object );
+            CDEBUG << "canceling pending request for " << pIt.current()->object->url().string() << endl;
             Cache::removeCacheEntry( pIt.current()->object );
             m_requestsPending.remove( pIt );
         }
@@ -1264,10 +1191,7 @@ QPtrList<CachedObject> *Cache::freeList;
 Loader *Cache::m_loader;
 
 int Cache::maxSize = DEFCACHESIZE;
-int Cache::flushCount;
-CachedObject* Cache::m_headOfUncacheableList;
-int Cache::m_totalSizeOfLRULists;
-int Cache::m_countOfLRUAndUncacheableLists;
+int Cache::totalSizeOfLRU;
 
 QPixmap *Cache::nullPixmap;
 QPixmap *Cache::brokenPixmap;
@@ -1295,13 +1219,6 @@ void Cache::init()
     }
 }
 
-void Cache::flushFreeList()
-{
-    for ( CachedObject* p = freeList->first(); p; p = freeList->next() )
-        if (p->canDelete())
-            freeList->remove();
-}
-
 void Cache::clear()
 {
     if ( !cache ) return;
@@ -1312,8 +1229,12 @@ void Cache::clear()
     cache->setAutoDelete( true );
 
 #ifndef NDEBUG
-    for (QDictIterator<CachedObject> it(*cache); it.current(); ++it)
+    for (QDictIterator<CachedObject> it(*cache); it.current(); ++it) {
+        qDebug( "it.current(): %p type: %d canDelete: %d clients: %d request: %d",
+                it.current(), it.current()->type(), it.current()->canDelete(), it.current()->count(), -1 );
         assert(it.current()->canDelete());
+
+    }
     for (QPtrListIterator<CachedObject> it(*freeList); it.current(); ++it)
         assert(it.current()->canDelete());
 #endif
@@ -1321,107 +1242,26 @@ void Cache::clear()
     delete cache; cache = 0;
     delete nullPixmap; nullPixmap = 0;
     delete brokenPixmap; brokenPixmap = 0;
-    delete m_loader;   m_loader = 0;
+    delete m_loader;  m_loader = 0;
     delete docloader; docloader = 0;
     delete freeList; freeList = 0;
 }
 
-CachedImage *Cache::requestImage( DocLoader* dl, const DOMString & url, bool reload, time_t _expireDate )
+template<typename CachedObjectType, enum CachedObject::Type CachedType>
+CachedObjectType* Cache::requestObject( DocLoader* dl, const KURL& kurl, const char* accept )
 {
-    // this brings the _url to a standard form...
-    KURL kurl;
-    KIO::CacheControl cachePolicy;
-    if ( dl )
-    {
-        kurl = dl->m_doc->completeURL( url.string() );
-        cachePolicy = dl->cachePolicy();
-    }
-    else
-    {
-        kurl = url.string();
-        cachePolicy = KIO::CC_Verify;
+    KIO::CacheControl cachePolicy = dl ? dl->cachePolicy() : KIO::CC_Verify;
+
+    CachedObject* o = cache->find(kurl.url());
+
+    if ( o && o->type() != CachedType ) {
+        removeCacheEntry( o );
+        o = 0;
     }
 
-    if( !kurl.isValid() )
-    {
-#ifdef CACHE_DEBUG
-      kdDebug( 6060 ) << "Cache: Malformed url: " << kurl.url() << endl;
-#endif
-      return 0;
-    }
-
-    CachedObject *o = 0;
-    if (!reload)
-        o = cache->find(kurl.url());
-    if(!o)
-    {
-#ifdef CACHE_DEBUG
-        kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
-#endif
-        CachedImage *im = new CachedImage(dl, kurl.url(), cachePolicy, _expireDate);
-        cache->insert( kurl.url(), im );
-        moveToFront(im);
-        o = im;
-    }
-
-    if (o->status() == CachedObject::Unknown && dl && dl->autoloadImages())
-        Cache::loader()->load(dl, o, true);
-
-    o->setExpireDate(_expireDate, true);
-
-    if(!(o->type() == CachedObject::Image))
-    {
-#ifdef CACHE_DEBUG
-        kdDebug( 6060 ) << "Cache::Internal Error in requestImage url=" << kurl.url() << "!" << endl;
-#endif
-        return 0;
-    }
-
-#ifdef CACHE_DEBUG
-    if( o->status() == CachedObject::Pending )
-        kdDebug( 6060 ) << "Cache: loading in progress: " << kurl.url() << endl;
-    else
-        kdDebug( 6060 ) << "Cache: using cached: " << kurl.url() << ", status " << o->status() << endl;
-#endif
-
-    moveToFront(o);
-    if ( dl ) {
-        dl->m_docObjects.remove( o );
-        dl->m_docObjects.append( o );
-    }
-    return static_cast<CachedImage *>(o);
-}
-
-CachedCSSStyleSheet *Cache::requestStyleSheet( DocLoader* dl, const DOMString & url, bool /*reload*/,
-					       time_t _expireDate, const QString& charset, const char *accept)
-{
-    // this brings the _url to a standard form...
-    KURL kurl;
-    KIO::CacheControl cachePolicy;
-    if ( dl )
-    {
-        kurl = dl->m_doc->completeURL( url.string() );
-        cachePolicy = dl->cachePolicy();
-    }
-    else
-    {
-        kurl = url.string();
-        cachePolicy = KIO::CC_Verify;
-    }
-
-    if( !kurl.isValid() )
-    {
-      kdDebug( 6060 ) << "Cache: Malformed url: " << kurl.url() << endl;
-      return 0;
-    }
-
-    CachedObject *o = cache->find(kurl.url());
-    if ( o && o->type() != CachedObject::CSSStyleSheet ) {
-#ifdef CACHE_DEBUG
-	    kdDebug( 6060 ) << "An object for " << kurl.url() << " was present, but was not a stylesheet. Removing it." << endl;
-#endif
-	    removeCacheEntry( o );
-	    o = 0;
+    if ( o && dl->needReload( kurl ) ) {
+        o = 0;
+        assert( cache->find( kurl.url() ) == 0 );
     }
 
     if(!o)
@@ -1429,20 +1269,22 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( DocLoader* dl, const DOMString & 
 #ifdef CACHE_DEBUG
         kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
 #endif
-        CachedCSSStyleSheet *sheet = new CachedCSSStyleSheet(dl, kurl.url(), cachePolicy, _expireDate, charset, accept);
-        cache->insert( kurl.url(), sheet );
-        o = sheet;
+        CachedObjectType* cot = new CachedObjectType(dl, kurl.url(), cachePolicy, accept);
+        cache->insert( kurl.url(), cot );
+        if ( cot->allowInLRUList() )
+            insertInLRUList( cot );
+        o = cot;
     }
-
-    o->setExpireDate(_expireDate, true);
-
-    moveToFront(o);
-
-    if ( dl ) {
-        dl->m_docObjects.remove( o );
-        dl->m_docObjects.append( o );
+#ifdef CACHE_DEBUG
+    else {
+    kdDebug( 6060 ) << "Cache: using pending/cached: " << kurl.url() << endl;
     }
-    return static_cast<CachedCSSStyleSheet *>(o);
+#endif
+
+
+    dl->insertCachedObject( o );
+
+    return static_cast<CachedObjectType *>(o);
 }
 
 void Cache::preloadStyleSheet( const QString &url, const QString &stylesheet_data)
@@ -1453,56 +1295,6 @@ void Cache::preloadStyleSheet( const QString &url, const QString &stylesheet_dat
 
     CachedCSSStyleSheet *stylesheet = new CachedCSSStyleSheet(url, stylesheet_data);
     cache->insert( url, stylesheet );
-}
-
-CachedScript *Cache::requestScript( DocLoader* dl, const DOM::DOMString &url, bool /*reload*/, time_t _expireDate, const QString& charset)
-{
-    // this brings the _url to a standard form...
-    KURL kurl;
-    KIO::CacheControl cachePolicy;
-    if ( dl )
-    {
-        kurl = dl->m_doc->completeURL( url.string() );
-        cachePolicy = dl->cachePolicy();
-    }
-    else
-    {
-        kurl = url.string();
-        cachePolicy = KIO::CC_Verify;
-    }
-
-    if( !kurl.isValid() )
-    {
-      kdDebug( 6060 ) << "Cache: Malformed url: " << kurl.url() << endl;
-      return 0;
-    }
-
-    CachedObject *o = cache->find(kurl.url());
-    if ( o && o->type() != CachedObject::Script ) {
-#ifdef CACHE_DEBUG
-	    kdDebug( 6060 ) << "An object for " << kurl.url() << " was present, but was not a script. Removing it." << endl;
-#endif
-	    removeCacheEntry( o );
-	    o = 0;
-    }
-    if(!o)
-    {
-#ifdef CACHE_DEBUG
-        kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
-#endif
-        CachedScript *script = new CachedScript(dl, kurl.url(), cachePolicy, _expireDate, charset);
-        cache->insert( kurl.url(), script );
-        o = script;
-    }
-
-    o->setExpireDate(_expireDate, true);
-
-    moveToFront(o);
-    if ( dl ) {
-        dl->m_docObjects.remove( o );
-        dl->m_docObjects.append( o );
-    }
-    return static_cast<CachedScript *>(o);
 }
 
 void Cache::preloadScript( const QString &url, const QString &script_data)
@@ -1517,86 +1309,29 @@ void Cache::preloadScript( const QString &url, const QString &script_data)
 
 void Cache::flush(bool force)
 {
-    if (force)
-       flushCount = 0;
-    if ( m_countOfLRUAndUncacheableLists < flushCount )
-       return;
-
     init();
 
-    flushFreeList();
+    if ( force || totalSizeOfLRU > maxSize + maxSize/4) {
+        for ( int i = MAX_LRU_LISTS-1; i >= 0 && totalSizeOfLRU > maxSize; --i )
+            while ( totalSizeOfLRU > maxSize && m_LRULists[i].m_tail )
+                removeCacheEntry( m_LRULists[i].m_tail );
 
-#ifdef CACHE_DEBUG
-    statistics();
-    kdDebug( 6060 ) << "Cache: flush()" << endl;
-#endif
-
-    while ( m_headOfUncacheableList )
-        removeCacheEntry( m_headOfUncacheableList );
-
-    for ( int i = MAX_LRU_LISTS-1; i >= 0 && m_totalSizeOfLRULists > maxSize; --i )
-        while ( m_totalSizeOfLRULists > maxSize && m_LRULists[i].m_tail )
-            removeCacheEntry( m_LRULists[i].m_tail );
-
-    flushCount = m_countOfLRUAndUncacheableLists+10;
-
-#ifdef CACHE_DEBUG
-    //statistics();
-#endif
-}
-
-#if 0
-void Cache::checkLRUAndUncacheableListIntegrity()
-{
-    int count = 0;
-
-         {
-        int size = 0;
-        CachedObject *prev = 0;
-        for (CachedObject *o = m_headOfLRUList; o; o = o->m_next) {
-            ASSERT(o->allowInLRUList());
-            ASSERT(o->status() != CachedObject::Uncacheable);
-            ASSERT(o->m_prev == prev);
-            size += o->size();
-            prev = o;
-            ++count;
-        }
-        ASSERT(m_tailOfLRUList == prev);
-        ASSERT(m_totalSizeOfLRUList == size);
+//#ifdef CACHE_DEBUG
+        statistics();
+//#endif
     }
-    {
-        CachedObject *prev = 0;
-        for (CachedObject *o = m_headOfUncacheableList; o; o = o->m_next) {
-            ASSERT(o->allowInLRUList());
-            ASSERT(o->status() == CachedObject::Uncacheable);
-            ASSERT(o->m_prev == prev);
-            prev = o;
-            ++count;
-        }
-     }
-    ASSERT(m_countOfLRUAndUncacheableLists == count);
+
+    for ( CachedObject* p = freeList->first(); p; p = freeList->next() ) {
+        if ( p->canDelete() )
+            freeList->remove();
+    }
+
 }
-#endif
 
 void Cache::setSize( int bytes )
 {
     maxSize = bytes;
-    // may be we need to clear parts of the cache
-    flushCount = 0;
-    flush(true);
-}
-
-bool Cache::adjustSize(CachedObject* object, int delta)
-{
-    if ( object->status() == CachedObject::Uncacheable )
-        return false;
-
-    if ( !object->m_next && !object->m_prev &&
-         getLRUListFor(object)->m_head != object )
-        return false;
-
-    m_totalSizeOfLRULists += delta;
-    return delta;
+    flush(true /* force */);
 }
 
 void Cache::statistics()
@@ -1651,38 +1386,38 @@ void Cache::statistics()
 
 void Cache::removeCacheEntry( CachedObject *object )
 {
-  QString key = object->url().string();
+    QString key = object->url().string();
 
-  cache->remove( key );
-  removeFromLRUList( object );
+    cache->remove( key );
+    removeFromLRUList( object );
 
-  const DocLoader* dl;
-  for ( dl=docloader->first(); dl; dl=docloader->next() )
-      dl->removeCachedObject( object );
+    for (const DocLoader* dl=docloader->first(); dl; dl=docloader->next() )
+        dl->removeCachedObject( object );
 
-  object->setFree();
+    if ( !object->free() ) {
+        Cache::freeList->append( object );
+        object->m_free = true;
+    }
 }
 
-#define FAST_LOG2(_log2,_n)   \
-      unsigned int j_ = (unsigned int)(_n);   \
-      (_log2) = 0;                    \
-      if ((j_) & ((j_)-1))            \
-      (_log2) += 1;               \
-      if ((j_) >> 16)                 \
-      (_log2) += 16, (j_) >>= 16; \
-      if ((j_) >> 8)                  \
-      (_log2) += 8, (j_) >>= 8;   \
-      if ((j_) >> 4)                  \
-      (_log2) += 4, (j_) >>= 4;   \
-      if ((j_) >> 2)                  \
-      (_log2) += 2, (j_) >>= 2;   \
-      if ((j_) >> 1)                  \
-      (_log2) += 1;
+static inline int FastLog2(unsigned int j)
+{
+   unsigned int log2;
+   log2 = 0;
+   if (j & (j-1))
+       log2 += 1;
+   if (j >> 16)
+       log2 += 16, j >>= 16;
+   if (j >> 8)
+       log2 += 8, j >>= 8;
+   if (j >> 4)
+       log2 += 4, j >>= 4;
+   if (j >> 2)
+       log2 += 2, j >>= 2;
+   if (j >> 1)
+       log2 += 1;
 
-int FastLog2(unsigned int i) {
-   int log2;
-    FAST_LOG2(log2,i);
-    return log2;
+   return log2;
 }
 
 static LRUList* getLRUListFor(CachedObject* o)
@@ -1706,10 +1441,9 @@ void Cache::removeFromLRUList(CachedObject *object)
 {
     CachedObject *next = object->m_next;
     CachedObject *prev = object->m_prev;
-    bool uncacheable = object->status() == CachedObject::Uncacheable;
 
-    LRUList* list = uncacheable ? 0 : getLRUListFor(object);
-    CachedObject *&head = uncacheable ? m_headOfUncacheableList : list->m_head;
+    LRUList* list = getLRUListFor(object);
+    CachedObject *&head = getLRUListFor(object)->m_head;
 
     if (next == 0 && prev == 0 && head != object) {
         return;
@@ -1720,7 +1454,7 @@ void Cache::removeFromLRUList(CachedObject *object)
 
     if (next)
         next->m_prev = prev;
-    else if (!uncacheable && list->m_tail == object)
+    else if (list->m_tail == object)
        list->m_tail = prev;
 
     if (prev)
@@ -1728,41 +1462,31 @@ void Cache::removeFromLRUList(CachedObject *object)
     else if (head == object)
         head = next;
 
-    --m_countOfLRUAndUncacheableLists;
-
-    if (!uncacheable)
-        m_totalSizeOfLRULists -= object->size();
-}
-
-void Cache::moveToFront(CachedObject *object)
-{
-    insertInLRUList(object);
+    totalSizeOfLRU -= object->size();
 }
 
 void Cache::insertInLRUList(CachedObject *object)
 {
     removeFromLRUList(object);
 
-    if (!object->allowInLRUList())
-        return;
+    assert( object );
+    assert( !object->free() );
+    assert( object->canDelete() );
+    assert( object->allowInLRUList() );
 
     LRUList* list = getLRUListFor(object);
 
-    bool uncacheable = object->status() == CachedObject::Uncacheable;
-    CachedObject *&head = uncacheable ? m_headOfUncacheableList : list->m_head;
+    CachedObject *&head = list->m_head;
 
     object->m_next = head;
     if (head)
         head->m_prev = object;
     head = object;
 
-    if (object->m_next == 0 && !uncacheable)
+    if (object->m_next == 0)
         list->m_tail = object;
 
-    ++m_countOfLRUAndUncacheableLists;
-
-    if (!uncacheable)
-        m_totalSizeOfLRULists += object->size();
+    totalSizeOfLRU += object->size();
 }
 
 // --------------------------------------
@@ -1772,5 +1496,6 @@ void CachedObjectClient::setStyleSheet(const DOM::DOMString &/*url*/, const DOM:
 void CachedObjectClient::notifyFinished(CachedObject * /*finishedObj*/) {}
 void CachedObjectClient::error(int /*err*/, const QString &/*text*/) {}
 
+#undef CDEBUG
 
 #include "loader.moc"

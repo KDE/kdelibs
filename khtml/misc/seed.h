@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  *
  */
- 
+
 #ifndef html_seed_h
 #define html_seed_h
 
@@ -27,14 +27,14 @@
 
 namespace khtml {
 
-static const int primes_t[] = 
+static const int primes_t[] =
 {
     31,    61,   107,   233,   353,   541,
-   821,  1237,  1861,  2797,  4201,  6311,  
+   821,  1237,  1861,  2797,  4201,  6311,
   9467, 14207, 21313, 31973, 47963,  0
 };
 
-int nextSeed(int curSize) {
+static inline int nextSeed(int curSize) {
     for (int i = 0 ; primes_t[i] ; i++)
         if (primes_t[i] > curSize)
             return primes_t[i];

@@ -429,7 +429,7 @@ void HTMLTokenizer::scriptExecution( const QString& str, const QString& scriptUR
     script = false;
     QString url;
     if (scriptURL.isNull() && view)
-      url = static_cast<DocumentImpl*>(view->part()->document().handle())->URL();
+      url = static_cast<DocumentImpl*>(view->part()->document().handle())->URL().url();
     else
       url = scriptURL;
 
@@ -1544,7 +1544,7 @@ void HTMLTokenizer::processToken()
     dest = buffer;
 
 #ifdef TOKEN_DEBUG
-    QString name = getTagName(currToken.tid).string();
+    QString name = QString( getTagName(currToken.tid) );
     QString text;
     if(currToken.text)
         text = QConstString(currToken.text->s, currToken.text->l).string();

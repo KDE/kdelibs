@@ -121,7 +121,7 @@ DOMString HTMLDocument::lastModified() const
 DOMString HTMLDocument::URL() const
 {
     if(!impl) return DOMString();
-    return ((HTMLDocumentImpl *)impl)->URL();
+    return ((HTMLDocumentImpl *)impl)->URL().url();
 }
 
 HTMLElement HTMLDocument::body() const

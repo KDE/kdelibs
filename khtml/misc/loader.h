@@ -92,26 +92,22 @@ namespace khtml
 	};
 
 	enum Status {
-	    NotCached,    // this URL is not cached
 	    Unknown,      // let imagecache decide what to do with it
 	    New,          // inserting new image
             Pending,      // only partially loaded
 	    Persistent,   // never delete this pixmap
-	    Cached,       // regular case
-	    Uncacheable   // to big to be cached,
-	};  	          // will be destroyed as soon as possible
+	    Cached        // regular case
+	};
 
-	CachedObject(const DOM::DOMString &url, Type type, KIO::CacheControl _cachePolicy, time_t _expireDate, int size)
+	CachedObject(const DOM::DOMString &url, Type type, KIO::CacheControl _cachePolicy, int size)
             : m_url(url), m_type(type), m_cachePolicy(_cachePolicy),
-              m_expireDate(_expireDate), m_size(size)
+              m_expireDate(0), m_size(size)
 	{
 	    m_status = Pending;
             m_accessCount = 0;
 	    m_cachePolicy = _cachePolicy;
 	    m_request = 0;
-	    m_expireDate = _expireDate;
             m_deleted = false;
-            m_expireDateChanged = false;
             m_free = false;
             m_hadError = false;
             m_prev = m_next = 0;
@@ -137,14 +133,7 @@ namespace khtml
 
 	int size() const { return m_size; }
 
-	/**
-	 * computes the status of an object after loading.
-	 * the result depends on the objects size and the size of the cache
-	 * also updates the expire date on the cache entry file
-	 */
-	virtual void finish();
-
-        void setFree();
+        bool free() const { return m_free; }
 
         KIO::CacheControl cachePolicy() const { return m_cachePolicy; }
 
@@ -152,11 +141,12 @@ namespace khtml
 
         bool canDelete() const { return (m_clients.count() == 0 && !m_request); }
 
-	void setExpireDate(time_t _expireDate, bool changeHttpCache);
+	void setExpireDate(time_t _expireDate) {  m_expireDate = _expireDate; }
 
 	bool isExpired() const;
 
         virtual bool schedule() const { return false; }
+	virtual void finish();
 
         /**
          * List of acceptable mimetypes separated by ",". A mimetype may contain a wildcard.
@@ -179,12 +169,11 @@ namespace khtml
 	int m_size;
         bool m_deleted : 1;
         bool m_loading : 1;
-        bool m_expireDateChanged : 1;
         bool m_free : 1;
 	bool m_hadError : 1;
 
     private:
-        bool allowInLRUList() const { return canDelete() && status() != Persistent; }
+        bool allowInLRUList() const { return canDelete() && !m_free && status() != Persistent; }
         CachedObject* m_next;
         CachedObject* m_prev;
         friend class Cache;
@@ -200,19 +189,18 @@ namespace khtml
     {
     public:
 	CachedCSSStyleSheet(DocLoader* dl, const DOM::DOMString &url, KIO::CacheControl cachePolicy,
-			    time_t _expireDate, const QString& charset, const char *accept);
+			    const char *accept);
 	CachedCSSStyleSheet(const DOM::DOMString &url, const QString &stylesheet_data);
-	virtual ~CachedCSSStyleSheet();
 
 	const DOM::DOMString &sheet() const { return m_sheet; }
 
 	virtual void ref(CachedObjectClient *consumer);
-	virtual void deref(CachedObjectClient *consumer);
 
 	virtual void data( QBuffer &buffer, bool eof );
 	virtual void error( int err, const char *text );
 
         virtual bool schedule() const { return true; }
+        void setCharset( const QString& charset ) { m_charset = charset; }
 
     protected:
         void checkNotify();
@@ -229,14 +217,12 @@ namespace khtml
     class CachedScript : public CachedObject
     {
     public:
-	CachedScript(DocLoader* dl, const DOM::DOMString &url, KIO::CacheControl cachePolicy, time_t _expireDate, const QString& charset);
+	CachedScript(DocLoader* dl, const DOM::DOMString &url, KIO::CacheControl cachePolicy, const char* accept );
 	CachedScript(const DOM::DOMString &url, const QString &script_data);
-	virtual ~CachedScript();
 
 	const DOM::DOMString &script() const { return m_script; }
 
 	virtual void ref(CachedObjectClient *consumer);
-	virtual void deref(CachedObjectClient *consumer);
 
 	virtual void data( QBuffer &buffer, bool eof );
 	virtual void error( int err, const char *text );
@@ -246,6 +232,7 @@ namespace khtml
 	void checkNotify();
 
         bool isLoaded() const { return !m_loading; }
+        void setCharset( const QString& charset ) { m_charset = charset; }
 
     protected:
         QString m_charset;
@@ -261,7 +248,7 @@ namespace khtml
     {
 	Q_OBJECT
     public:
-	CachedImage(DocLoader* dl, const DOM::DOMString &url, KIO::CacheControl cachePolicy, time_t _expireDate);
+	CachedImage(DocLoader* dl, const DOM::DOMString &url, KIO::CacheControl cachePolicy, const char* accept);
 	virtual ~CachedImage();
 
 	const QPixmap &pixmap() const;
@@ -347,9 +334,10 @@ namespace khtml
         void setCacheCreationDate( time_t );
         void setExpireDate( time_t, bool relative );
         void setAutoloadImages( bool );
-        void setCachePolicy( KIO::CacheControl cachePolicy );
+        void setCachePolicy( KIO::CacheControl cachePolicy ) { m_cachePolicy = cachePolicy; }
         void setShowAnimations( KHTMLSettings::KAnimationAdvice );
-        void removeCachedObject( CachedObject*) const;
+        void insertCachedObject( CachedObject* o ) const;
+        void removeCachedObject( CachedObject* o) const { m_docObjects.remove( o ); }
 
     private:
         bool needReload(const KURL &fullUrl);
@@ -358,7 +346,7 @@ namespace khtml
         friend class DOM::DocumentImpl;
 
         QStringList m_reloadedURLs;
-        mutable QPtrList<CachedObject> m_docObjects;
+        mutable QPtrDict<CachedObject> m_docObjects;
 	time_t m_expireDate;
 	time_t m_creationDate;
 	KIO::CacheControl m_cachePolicy;
@@ -428,6 +416,10 @@ namespace khtml
     class Cache
     {
 	friend class DocLoader;
+
+        template<typename CachedObjectType, enum CachedObject::Type CachedType>
+        static CachedObjectType* Cache::requestObject( DocLoader* dl, const KURL& kurl, const char* accept );
+
     public:
 	/**
 	 * init the cache in case it's not already. This needs to get called once
@@ -441,50 +433,22 @@ namespace khtml
          * if the DocLoader is zero, the url must be full-qualified.
          * Otherwise, it is automatically base-url expanded
 	 */
-	static CachedImage *requestImage( DocLoader* l, const DOM::DOMString &url, bool reload=false, time_t _expireDate=0);
-
-	/**
-	 * Ask the cache for some url. Will return a cachedObject, and
-	 * load the requested data in case it's not cached
-	 */
-	static CachedCSSStyleSheet *requestStyleSheet( DocLoader* l, const DOM::DOMString &url, bool reload=false,
-						       time_t _expireDate=0, const QString& charset = QString::null,
-						       const char *accept = "text/css");
+// 	static CachedImage *requestImage(const KURL& url)
+//         { return Cache::requestObject<CachedImage, CachedObject::Image>( 0, url, 0 ); }
 
         /**
          * Pre-loads a stylesheet into the cache.
          */
         static void preloadStyleSheet(const QString &url, const QString &stylesheet_data);
 
-	/**
-	 * Ask the cache for some url. Will return a cachedObject, and
-	 * load the requested data in case it's not cached
-	 */
-	static CachedScript *requestScript( DocLoader* l, const DOM::DOMString &url, bool reload=false, time_t _expireDate=0, const QString& charset=QString::null);
-
         /**
          * Pre-loads a script into the cache.
          */
         static void preloadScript(const QString &url, const QString &script_data);
 
-	/**
-	 * sets the size of the cache. This will only hod approximately, since the size some
-	 * cached objects (like stylesheets) take up in memory is not exaclty known.
-	 */
 	static void setSize( int bytes );
-	/**
-	 * returns the size of the cache
-	 */
 	static int size() { return maxSize; };
-
-	/**
-	 * prints some statistics to stdout
-	 */
 	static void statistics();
-
-	/**
-	 * clean up cache
-	 */
 	static void flush(bool force=false);
 
 	/**
@@ -504,7 +468,7 @@ namespace khtml
 
     private:
 
-        static void flushFreeList();
+        static void checkLRUAndUncacheableListIntegrity();
 
         friend class CachedObject;
 
@@ -513,27 +477,12 @@ namespace khtml
         static QPtrList<CachedObject> *freeList;
         static void insertInLRUList(CachedObject*);
         static void removeFromLRUList(CachedObject*);
-        static bool adjustSize(CachedObject*, int sizeDelta);
-        static void moveToFront(CachedObject*);
 
+        static int totalSizeOfLRU;
 	static int maxSize;
-	static int flushCount;
 
 	static Loader *m_loader;
-        static int m_totalSizeOfLRULists;
-
-        static CachedObject *m_headOfUncacheableList;
-        static int m_countOfLRUAndUncacheableLists;
-
-        static unsigned long s_ulRefCnt;
     };
-
-    inline void CachedObject::setFree() {
-        if (!m_free)  {
-            Cache::freeList->append(this);
-            m_free = true;
-        }
-    }
 
 } // namespace
 

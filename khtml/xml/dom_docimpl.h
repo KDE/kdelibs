@@ -249,11 +249,11 @@ public:
     void writeln ( const DOMString &text );
     void finishParsing (  );
 
-    QString URL() const { return m_url; }
+    KURL URL() const { return m_url; }
     void setURL(const QString& url) { m_url = url; }
 
-    QString baseURL() const { return m_baseURL.isEmpty() ? m_url : m_baseURL; }
-    void setBaseURL(const QString& baseURL) { m_baseURL = baseURL; }
+    KURL baseURL() const { return m_baseURL.isEmpty() ? m_url : m_baseURL; }
+    void setBaseURL(const KURL& baseURL) { m_baseURL = baseURL; }
 
     QString baseTarget() const { return m_baseTarget; }
     void setBaseTarget(const QString& baseTarget) { m_baseTarget = baseTarget; }
@@ -430,8 +430,8 @@ protected:
 
     khtml::DocLoader *m_docLoader;
     Tokenizer *m_tokenizer;
-    QString m_url;
-    QString m_baseURL;
+    KURL m_url;
+    KURL m_baseURL;
     QString m_baseTarget;
 
     DocumentTypeImpl *m_doctype;

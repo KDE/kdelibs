@@ -1177,7 +1177,7 @@ void DocumentImpl::setUserStyleSheet( const QString& sheet )
 CSSStyleSheetImpl* DocumentImpl::elementSheet()
 {
     if (!m_elemSheet) {
-        m_elemSheet = new CSSStyleSheetImpl(this, baseURL() );
+        m_elemSheet = new CSSStyleSheetImpl(this, baseURL().url() );
         m_elemSheet->ref();
     }
     return m_elemSheet;
@@ -1482,7 +1482,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
             str = parseURL( DOMString(str) ).string();
             QString newURL = getDocument()->completeURL( str );
             if ( ok || !fract)
-                v->part()->scheduleRedirection(delay, getDocument()->completeURL( str ),  delay < 2 || newURL == URL());
+                v->part()->scheduleRedirection(delay, getDocument()->completeURL( str ),  delay < 2 || newURL == URL().url());
         }
     }
     else if(strcasecmp(equiv, "expires") == 0)
@@ -1811,7 +1811,7 @@ void DocumentImpl::recalcStyleSelector()
     QPtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
     QString sheetUsed = view() ? view()->part()->d->m_sheetUsed : QString();
-    bool autoselect = sheetUsed.isEmpty(); 
+    bool autoselect = sheetUsed.isEmpty();
     if (autoselect && !m_preferredStylesheetSet.isEmpty())
         sheetUsed = m_preferredStylesheetSet.string();
     NodeImpl *n;
@@ -1912,7 +1912,7 @@ void DocumentImpl::recalcStyleSelector()
         // we're done if we don't select an alternative sheet
         // or we found the sheet we selected
         if (sheetUsed.isEmpty() ||
-            (!canResetSheet && tokenizer()) ||          
+            (!canResetSheet && tokenizer()) ||
             m_availableSheets.contains(sheetUsed)) {
             break;
         }
@@ -1920,7 +1920,7 @@ void DocumentImpl::recalcStyleSelector()
         // the alternative sheet we used doesn't exist anymore
         // so try from scratch again
         if (view())
-            view()->part()->d->m_sheetUsed = QString::null;          
+            view()->part()->d->m_sheetUsed = QString::null;
         if (!m_preferredStylesheetSet.isEmpty() && !(sheetUsed == m_preferredStylesheetSet))
             sheetUsed = m_preferredStylesheetSet.string();
         else
