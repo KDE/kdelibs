@@ -220,19 +220,28 @@ KDirWatchPrivate::KDirWatchPrivate()
     mSn = new QSocketNotifier( mPipe[0], QSocketNotifier::Read, this);
     connect(mSn, SIGNAL(activated(int)), this, SLOT(slotActivated()));
     connect(&mTimer, SIGNAL(timeout()), this, SLOT(slotRescan()));
-    struct sigaction act;
-    act.sa_sigaction = KDirWatchPrivate::dnotify_handler;
-    sigemptyset(&act.sa_mask);
-    act.sa_flags = SA_SIGINFO;
+    // Install the signal handler only once
+    if ( dnotify_signal == 0 )
+    {
+       dnotify_signal = SIGRTMIN + 8;
+
+       struct sigaction act;
+       act.sa_sigaction = KDirWatchPrivate::dnotify_handler;
+       sigemptyset(&act.sa_mask);
+       act.sa_flags = SA_SIGINFO;
 #ifdef SA_RESTART
-    act.sa_flags |= SA_RESTART;
+       act.sa_flags |= SA_RESTART;
 #endif
-    if( dnotify_signal == 0 )
-        dnotify_signal = SIGRTMIN + 8;
-    sigaction(dnotify_signal, &act, NULL);
+       sigaction(dnotify_signal, &act, NULL);
     
-    act.sa_sigaction = KDirWatchPrivate::dnotify_sigio_handler;
-    sigaction(SIGIO, &act, &old_sigio_act);
+       act.sa_sigaction = KDirWatchPrivate::dnotify_sigio_handler;
+       sigaction(SIGIO, &act, &old_sigio_act);
+    }
+  }
+  else
+  {
+    mPipe[0] = -1;
+    mPipe[1] = -1;
   }
 #endif
 
@@ -253,7 +262,10 @@ KDirWatchPrivate::~KDirWatchPrivate()
     kdDebug(7001) << "KDirWatch deleted (FAM closed)" << endl;
   }
 #endif
-
+#ifdef HAVE_DNOTIFY
+  close(mPipe[0]);
+  close(mPipe[1]);
+#endif
 }
 
 #ifdef HAVE_DNOTIFY
