@@ -43,7 +43,6 @@ static bool sendNotifyEvent(const QString &message, const QString &text,
   QString appname = kapp->name();
   ds << message << appname << text << sound << file << present << level;
 
-  KNotifyClient::startDaemon();
   return client->send(daemonName, "Notify", "notify(QString,QString,QString,QString,QString,int,int)", data, true);
 }
 
