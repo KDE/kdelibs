@@ -1,8 +1,9 @@
+
 INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow \
    -I$(top_builddir)/arts/flow
 LDFLAGS   = $(all_libraries) $(top_builddir)/arts/mcop/libmcop.la
 MCOPIDL   = $(top_builddir)/arts/mcopidl/mcopidl
-FLOWLIBS  = $(LDFLAGS) $(top_builddir)/arts/flow/libartsflow.la
+FLOWLIBS  = $(top_builddir)/arts/flow/libartsflow.la
 
 ####### libsoundserver_idl (idl file as library)
 
@@ -27,13 +28,13 @@ closure: $(libsoundserver_idl_la_OBJECTS)
 
 bin_PROGRAMS = artsd artsplay
 
-artsd_LDFLAGS = libsoundserver_idl.la $(FLOWLIBS) $(LIBAUDIOFILE)
+artsd_LDADD = libsoundserver_idl.la $(FLOWLIBS) $(LIBAUDIOFILE)
 artsd_SOURCES = simplesoundserver_impl.cc artsd.cc
 
-artsplay_LDFLAGS = libsoundserver_idl.la
+artsplay_LDADD = libsoundserver_idl.la
 artsplay_SOURCES = artsplay.cc
 
-DISTCLEANFILES = $(SRCMETA) soundserver.cc soundserver.h
+DISTCLEANFILES = soundserver.cc soundserver.h
 
 ####### Build rules
 
