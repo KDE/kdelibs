@@ -488,7 +488,7 @@ void ListProgress::applySettings()
       continue;
 
     iEnabledCols++;
-    
+
     // Add new or reuse existing column
     if ( iEnabledCols > columns() )
       m_lpcc[i].index=addColumn(m_lpcc[i].title, m_fixedColumnWidths?m_lpcc[i].width:-1);
@@ -497,7 +497,7 @@ void ListProgress::applySettings()
       m_lpcc[i].index = iEnabledCols - 1;
       setColumnText(m_lpcc[i].index, m_lpcc[i].title);
     }
-    
+
     setColumnWidth(m_lpcc[i].index, m_lpcc[i].width); //yes, this is required here, alexxx
     if (m_fixedColumnWidths)
         setColumnWidthMode(m_lpcc[i].index, Manual);
@@ -678,7 +678,7 @@ void UIServer::slotShowContextMenu(KListView*, QListViewItem* /*item*/, const QP
      }
    }
    m_contextMenu->setItemEnabled( m_idCancelItem, enabled);
-   
+
    m_contextMenu->popup(pos);
 }
 
@@ -724,7 +724,7 @@ void UIServer::slotApplyConfig()
 
 
    applySettings();
-   listProgress->applySettings(); 
+   listProgress->applySettings();
    writeSettings();
    listProgress->writeSettings();
 }
@@ -1285,7 +1285,7 @@ void UIServer::readSettings() {
   m_initWidth=config.readNumEntry("InitialWidth",460);
   m_initHeight=config.readNumEntry("InitialHeight",150);
   m_bShowList = config.readBoolEntry( "ShowList", false );
-  m_showSystemTray=config.readBoolEntry("ShowSystemTray", true);
+  m_showSystemTray=config.readBoolEntry("ShowSystemTray", false);
 }
 
 void UIServer::writeSettings() {
