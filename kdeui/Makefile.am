@@ -28,7 +28,7 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kselect.moc ktabctl.moc kdatepik.moc kedit.moc\
 		kmsgbox.moc kpopmenu.moc ktreelist.moc kdatetbl.moc\
-		kfontdialog.moc ktoolbar.moc kstatusbar.moc kmenubar.cpp \
+		kfontdialog.moc ktoolbar.moc kstatusbar.moc kmenubar.moc \
 		ktopwidget.moc kbutton.moc kslider.moc kiconloader.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm
