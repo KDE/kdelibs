@@ -608,6 +608,7 @@ public:
     virtual void calcVerticalMargins() {}
     void removeFromObjectLists();
 
+    virtual void deleteInlineBoxes(RenderArena* arena=0) {(void)arena;}
     virtual void detach( );
 
     const QFont &font(bool firstLine) const {

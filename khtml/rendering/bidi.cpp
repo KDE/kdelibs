@@ -191,18 +191,13 @@ inline bool operator!=( const BidiIterator &it1, const BidiIterator &it2 )
     return false;
 }
 
-static inline RenderObject *Bidinext(RenderObject *par, RenderObject *current,
-                                     bool skipInlines = true, bool* endOfInline = 0)
+static inline RenderObject *Bidinext(RenderObject *par, RenderObject *current, bool skipInlines = true)
 {
     RenderObject *next = 0;
-    bool oldEndOfInline = endOfInline ? *endOfInline : false;
-    if (endOfInline)
-        *endOfInline = false;
-
     while(current != 0)
     {
         //kdDebug( 6040 ) << "current = " << current << endl;
-	if (!oldEndOfInline && !current->isFloating() && !current->isReplaced() && !current->isPositioned()) {
+	if (!current->isFloating() && !current->isReplaced() && !current->isPositioned()) {
 	    next = current->firstChild();
 	    if ( next && adjustEmbeddding ) {
 		EUnicodeBidi ub = next->style()->unicodeBidi();
@@ -216,13 +211,6 @@ static inline RenderObject *Bidinext(RenderObject *par, RenderObject *current,
 	    }
 	}
 	if (!next) {
-	    if (!skipInlines && !oldEndOfInline && current->isInlineFlow()) {
-		next = current;
-		if (endOfInline)
-		    *endOfInline = true;
-		break;
-	    }
-
 	    while (current && current != par) {
 		next = current->nextSibling();
 		if (next) break;
@@ -230,12 +218,6 @@ static inline RenderObject *Bidinext(RenderObject *par, RenderObject *current,
 		    embed( QChar::DirPDF );
 		}
 		current = current->parent();
-		if (!skipInlines && current && current != par && current->isInlineFlow()) {
-		    next = current;
-		    if (endOfInline)
-			*endOfInline = true;
-		    break;
-		}
 	    }
 	}
 
@@ -1152,14 +1134,17 @@ void RenderBlock::layoutInlineChildren( bool relayoutChildren )
     toAdd += paddingBottom();
 
     // Clear out our line boxes.
-    deleteLineBoxes();
+    deleteInlineBoxes();
 
     if(firstChild()) {
         // layout replaced elements
-        bool endOfInline = false;
         RenderObject *o = first( this, false /*skipInlines*/ );
         while ( o ) {
-            if(o->isReplaced() || o->isFloating() || o->isPositioned()) {
+            if (o->isReplaced() || o->isFloating() || o->isPositioned()) {
+                // clear the placeHolderBox
+                if (o->isBox())
+                    static_cast<RenderBox*>(o)->RenderBox::deleteInlineBoxes();
+
                 //kdDebug(6041) << "layouting replaced or floating child" << endl;
                 if (relayoutChildren || o->style()->width().isPercent() || o->style()->height().isPercent())
                     o->setLayouted(false);
@@ -1167,12 +1152,10 @@ void RenderBlock::layoutInlineChildren( bool relayoutChildren )
                     o->layout();
                 if ( o->isPositioned() )
                     o->containingBlock()->insertPositionedObject(  o );
+            } else {
+               o->deleteInlineBoxes();
             }
-            else if(o->isText())
-                static_cast<RenderText *>(o)->deleteTextBoxes();
-            else if (o->isInlineFlow() && !endOfInline)
-                static_cast<RenderFlow*>(o)->deleteLineBoxes();
-            o = Bidinext( this, o, false /*skipInlines*/, &endOfInline );
+            o = Bidinext( this, o, false /*skipInlines*/ );
         }
 
         BidiContext *startEmbed;

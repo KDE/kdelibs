@@ -105,6 +105,7 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
 void RenderWidget::detach()
 {
     remove();
+    deleteInlineBoxes();
 
     if ( m_widget ) {
         if ( m_view ) {

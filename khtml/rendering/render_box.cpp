@@ -65,6 +65,7 @@ RenderBox::RenderBox(DOM::NodeImpl* node)
     m_staticX = 0;
     m_staticY = 0;
 
+    m_placeHolderBox = 0;
     m_layer = 0;
 }
 
@@ -144,6 +145,19 @@ void RenderBox::detach()
 
     if (layer)
         layer->detach(arena);
+}
+
+InlineBox* RenderBox::createInlineBox(bool /*makePlaceHolderBox*/, bool /*isRootLineBox*/)
+{
+    return (m_placeHolderBox = new (renderArena()) InlineBox(this));
+}
+
+void RenderBox::deleteInlineBoxes(RenderArena* arena)
+{
+    if (m_placeHolderBox) {
+        m_placeHolderBox->detach( arena ? arena : renderArena() );
+        m_placeHolderBox = 0;
+    }
 }
 
 short RenderBox::contentWidth() const

@@ -1,3 +1,26 @@
+2004-06-22  Germain Garand  <germain@ebooksfrance.org>
+
+        Scope: avoid leaking placeholder InlineBoxes. Cleanups.
+
+        * rendering/bidi.cpp (Bidinext): simplified logic. Do not return each 
+        InlineFlow twice.
+        (layoutInlineChildren): clear InlineBoxes on relayout.
+
+        * rendering/render_object.{cpp,h}: 
+        (deleteInlineBoxes): new virtual method.
+
+        * rendering/render_box.{cpp,h}: added m_placeHolderBox member.
+        (createInlineBox/deleteInlineBoxes): reimplemented. 
+
+        * rendering/render_flow.{cpp,h}:
+        (createInlineBox/deleteInlineBoxes): ditto. 
+
+        * rendering/render_replaced.cpp (detach): call deleteLineBoxes
+
+        * rendering/render_text.{cpp,h} (deleteInlineBoxes): reimplemented, replacing 
+        deleteTextBoxes
+        (~RenderText): no need to clear lineboxes twice.
+
 2004-06-13  Leo Savernik  <l.savernik@aon.at>
 
 	* khtml_part.cpp: (clear) Stopping marquees.

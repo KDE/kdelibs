@@ -532,18 +532,11 @@ void RenderText::setStyle(RenderStyle *_style)
 
 RenderText::~RenderText()
 {
-    deleteTextBoxes();
+    KHTMLAssert(m_lines.count() == 0);
     if(str) str->deref();
 }
 
-
-void RenderText::detach()
-{
-    deleteTextBoxes();
-    RenderObject::detach();
-}
-
-void RenderText::deleteTextBoxes()
+void RenderText::deleteInlineBoxes(RenderArena* arena)
 {
     // this is a slight variant of QArray::clear().
     // We don't delete the array itself here because its
@@ -551,11 +544,13 @@ void RenderText::deleteTextBoxes()
     // us resize() calls
     unsigned int len = m_lines.size();
     if (len) {
+        if (!arena)
+            arena = renderArena();
         for(unsigned int i=0; i < len; i++) {
             InlineTextBox* s = m_lines.at(i);
             if (s)
-                s->detach(renderArena());
-        m_lines.remove(i);
+                s->detach(arena);
+            m_lines.remove(i);
         }
     }
 
@@ -1200,7 +1195,6 @@ short RenderText::baselinePosition( bool firstLine ) const
 InlineBox* RenderText::createInlineBox(bool, bool isRootLineBox)
 {
     KHTMLAssert( !isRootLineBox );
-    // FIXME: Either ditch the array or get this object into it.
     return new (renderArena()) InlineTextBox(this);
 }
 

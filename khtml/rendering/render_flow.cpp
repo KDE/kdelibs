@@ -126,7 +126,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     return addChildToFlow(newChild, beforeChild);
 }
 
-void RenderFlow::deleteLineBoxes(RenderArena* arena)
+void RenderFlow::deleteInlineBoxes(RenderArena* arena)
 {
     if (m_firstLineBox) {
         if (!arena)
@@ -138,14 +138,9 @@ void RenderFlow::deleteLineBoxes(RenderArena* arena)
             curr = next;
         }
         m_firstLineBox = 0;
-        m_lastLineBox = 0;
+        m_lastLineBox = 0;  
     }
-}
-
-void RenderFlow::detach()
-{
-    deleteLineBoxes(renderArena());
-    RenderBox::detach();
+    RenderBox::deleteInlineBoxes(arena);
 }
 
 InlineBox* RenderFlow::createInlineBox(bool makePlaceHolderBox, bool isRootLineBox)
@@ -160,9 +155,9 @@ InlineBox* RenderFlow::createInlineBox(bool makePlaceHolderBox, bool isRootLineB
     else
         flowBox = new (renderArena()) RootInlineBox(this);
 
-    if (!m_firstLineBox)
+    if (!m_firstLineBox) {
         m_firstLineBox = m_lastLineBox = flowBox;
-    else {
+    } else {
         m_lastLineBox->setNextLineBox(flowBox);
         flowBox->setPreviousLineBox(m_lastLineBox);
         m_lastLineBox = flowBox;

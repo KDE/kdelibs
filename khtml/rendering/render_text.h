@@ -156,8 +156,7 @@ public:
 
     virtual void paint( PaintInfo& i, int tx, int ty );
 
-    void deleteTextBoxes();
-    void detach();
+    virtual void deleteInlineBoxes(RenderArena* arena=0);
 
     DOM::DOMString data() const { return str; }
     DOM::DOMStringImpl *string() const { return str; }

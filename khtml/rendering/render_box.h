@@ -50,6 +50,9 @@ public:
 
     virtual void close();
 
+    virtual InlineBox* createInlineBox(bool makePlaceHolderBox, bool isRootLineBox);
+    virtual void deleteInlineBoxes(RenderArena* arena=0);
+    
     virtual void detach();
 
     virtual short minWidth() const { return m_minWidth; }
@@ -161,6 +164,12 @@ protected:
     int m_staticY;
 
     RenderLayer *m_layer;
+
+    /* A box used to represent this object on a line
+     * when its inner content isn't contextually relevant
+     * (e.g replaced or positioned elements)
+     */
+    InlineBox *m_placeHolderBox; 
 };
 
 

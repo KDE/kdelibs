@@ -57,8 +57,8 @@ public:
 
     static RenderFlow* createFlow(DOM::NodeImpl* node, RenderStyle* style, RenderArena* arena);
 
-    void deleteLineBoxes(RenderArena* arena=0);
-    virtual void detach();
+    virtual void deleteInlineBoxes(RenderArena* arena=0);
+
 
     InlineFlowBox* firstLineBox() const { return m_firstLineBox; }
     InlineFlowBox* lastLineBox() const { return m_lastLineBox; }

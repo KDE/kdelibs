@@ -1398,6 +1398,7 @@ RenderArena* RenderObject::renderArena() const
 
 void RenderObject::detach()
 {
+    deleteInlineBoxes();
     remove();
 
     // by default no refcounting
@@ -1739,10 +1740,10 @@ void RenderObject::removeLeftoverAnonymousBoxes()
 {
 }
 
-InlineBox* RenderObject::createInlineBox(bool /*makePlaceHolderBox*/, bool isRootLineBox)
+InlineBox* RenderObject::createInlineBox(bool /*makePlaceHolderBox*/, bool /*isRootLineBox*/)
 {
-    KHTMLAssert( !isRootLineBox );
-    return new (renderArena()) InlineBox(this);
+    KHTMLAssert(false);
+    return 0;
 }
 
 void RenderObject::getTextDecorationColors(int decorations, QColor& underline, QColor& overline,
