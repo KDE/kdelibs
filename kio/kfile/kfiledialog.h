@@ -632,7 +632,7 @@ public:
     virtual void show();
 
     /**
-     * @deprecated use setMode( unsigned int ) instead
+     * Convenient overload of the other setMode(unsigned int) method.
      */
     void setMode( KFile::Mode m );
 
