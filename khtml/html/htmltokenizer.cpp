@@ -1597,8 +1597,8 @@ void HTMLTokenizer::addScriptOutput()
 {
     if ( !scriptOutput.isEmpty() ) {
 //      kdDebug( 6036 ) << "adding scriptOutput to parsed string" << endl;
-        QString newStr = QString(src.current(), src.length());
-        newStr += scriptOutput;
+        QString newStr = scriptOutput;
+        newStr += QString(src.current(), src.length());
         _src = newStr;
         src = DOMStringIt(_src);
         scriptOutput = "";
