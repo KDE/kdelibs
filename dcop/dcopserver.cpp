@@ -428,7 +428,7 @@ void DCOPServer::removeConnection( void* data )
       datas << conn->appId;
       QByteArray ba;
       QDataStream ds( ba, IO_WriteOnly );
-      ds << QCString("") << QCString("") << QCString("applicationRemoved") << data;
+      ds << QCString("") << QCString("") << QCString("void applicationRemoved(QCString)") << data;
       int datalen = ba.size();
       DCOPMsg *pMsg = 0;
       while ( it.current() ) {
