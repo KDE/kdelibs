@@ -245,7 +245,6 @@ protected:
    * Parses a date & time string
    */
   long parseDateTime( const QString& input, const QString& type );
-  QDateTime parseDateISO8601( const QString& input, int& offset );
 
   /**
    * Extracts locks from metadata

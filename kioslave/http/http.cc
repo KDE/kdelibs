@@ -758,114 +758,18 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
 
 long HTTPProtocol::parseDateTime( const QString& input, const QString& type )
 {
-  QDateTime dt;
   if ( type == "dateTime.tz" ) {
-    int offset;
-    dt = parseDateISO8601( input, offset );
-    dt.addSecs( offset * 60 );
+    return KRFCDate::parseDateISO8601( input );
   } else if ( type == "dateTime.rfc1123" ) {
     return KRFCDate::parseDate( input );
-  } else {
-    // format not advertised... try to parse anyway
-    time_t time = KRFCDate::parseDate( input );
-    if ( time != 0 )
-      return time;
+  } 
 
-    int offset;
-    dt = parseDateISO8601( input, offset );
-    dt.addSecs( offset * 60 );
-  }
+  // format not advertised... try to parse anyway
+  time_t time = KRFCDate::parseDate( input );
+  if ( time != 0 )
+    return time;
 
-  static const QDateTime jan1970( QDate(1970,1,1), QTime(00,00) );
-  return -dt.secsTo( jan1970 );
-}
-
-/**
- * Parse an ISO 8601 date, including possible extension suffixes.
- * Thanks to Rik Hemsley (rikkus) <rik@kde.org> for this one
- */
-QDateTime HTTPProtocol::parseDateISO8601( const QString& input, int& offset )
-{
-  // These dates look like this:
-  // YYYY-MM-DDTHH:MM:SS
-  // But they may also have 0, 1 or 2 suffixes.
-  // Suffix 1: .secfrac (fraction of second)
-  // Suffix 2: Either 'Z' or +zone or -zone, where zone is HHMM
-
-  unsigned int year     = 0;
-  unsigned int month    = 0;
-  unsigned int mday     = 0;
-  unsigned int hour     = 0;
-  unsigned int min      = 0;
-  unsigned int sec      = 0;
-  unsigned int secfrac  = 0;
-
-  offset = 0;
-
-  // First find the 'T' separator.
-  int tPos = input.find('T');
-
-  if (-1 == tPos)
-    return QDateTime();
-
-  // Now parse the date part.
-
-  QString dateString = input.left(tPos).stripWhiteSpace();
-
-  QString timeString = input.mid(tPos + 1).stripWhiteSpace();
-
-  QStringList l = QStringList::split('-', dateString);
-
-  year   = l[0].toUInt();
-  month  = l[1].toUInt();
-  mday   = l[2].toUInt();
-
-  // Z suffix means UTC.
-  if ('Z' == timeString.at(timeString.length() - 1)) {
-    timeString.remove(timeString.length() - 1, 1);
-  }
-
-  // +zone or -zone suffix (offset from UTC).
-
-  int plusPos = timeString.findRev('+');
-
-  if (-1 != plusPos) {
-    QString offsetString = timeString.mid(plusPos + 1);
-
-    offset = offsetString.left(2).toUInt() * 60 + offsetString.right(2).toUInt();
-
-    timeString = timeString.left(plusPos);
-  } else {
-    int minusPos = timeString.findRev('-');
-
-    if (-1 != minusPos) {
-      QString offsetString = timeString.mid(minusPos + 1);
-
-      offset = offsetString.left(2).toUInt() * 60 + offsetString.right(2).toUInt();
-
-      timeString = timeString.left(minusPos);
-    }
-  }
-
-  // secfrac suffix.
-  int dotPos = timeString.findRev('.');
-
-  if (-1 != dotPos) {
-    secfrac = timeString.mid(dotPos + 1).toUInt();
-
-    timeString = timeString.left(dotPos);
-  }
-
-  // Now parse the time part.
-
-  l = QStringList::split(':', timeString);
-
-  hour   = l[0].toUInt();
-  min    = l[1].toUInt();
-  sec    = l[2].toUInt();
-
-  return QDateTime
-    (QDate(year, month, mday), QTime(hour, min, sec, secfrac * 10));
+  return KRFCDate::parseDate( input );
 }
 
 QString HTTPProtocol::processLocks()
