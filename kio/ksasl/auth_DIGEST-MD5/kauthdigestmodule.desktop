@@ -1,0 +1,7 @@
+[Desktop Entry]
+Icon=
+InitialPreference=5
+Name=CramMD5Auth
+ServiceTypes=KSASL/Module
+Type=Service
+X-KDE-Library=ksasl_auth_cram
