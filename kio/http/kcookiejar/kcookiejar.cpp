@@ -1160,10 +1160,11 @@ void KCookieJar::loadConfig(KConfig *_config)
 
     // Reset current domain settings first
     for ( QStringList::Iterator it=domainList.begin(); 
-    	  it != domainList.end(); 
-    	  it++)
+    	  it != domainList.end();)
     {
-         setDomainAdvice( *it, KCookieDunno);
+         QString domain = *it++;
+         // Be carefull, setDomainAdvice might change "domainList"
+         setDomainAdvice( domain, KCookieDunno);
     }
     // Read the old group name if we did not yet save to
     // the new group name.
@@ -1177,10 +1178,9 @@ void KCookieJar::loadConfig(KConfig *_config)
     domainSettings = _config->readListEntry("CookieDomainAdvice");
 
     for ( QStringList::Iterator it=domainSettings.begin(); 
-    	  it != domainSettings.end(); 
-    	  it++)
+    	  it != domainSettings.end();)
     {
-        const QString &value = *it;
+        const QString &value = *it++;
         kdDebug(7104) << "The Cookie Domain advice being processed is " << value.latin1() << endl;
         int sepPos = value.find(':');
         if (sepPos <= 0)
