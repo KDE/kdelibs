@@ -22,6 +22,7 @@
 
 #ifdef KJS_DEBUGGER
 
+#include <assert.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qtextedit.h>
@@ -39,11 +40,14 @@
 #include <kmessagebox.h>
 
 #include "kjs_dom.h"
+#include <kjs/ustring.h>
+#include <kjs/object.h>
+#include <kjs/function.h>
+#include <kjs/interpreter.h>
 
 using namespace KJS;
 
-static KJSDebugWin *kjs_html_debugger = 0;
-
+KJSDebugWin * KJSDebugWin::kjs_html_debugger = 0;
 
 bool FakeModal::eventFilter( QObject *o, QEvent *e )
 {
@@ -169,21 +173,29 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   m_stepButton = new QPushButton(i18n("&Step"), this);
   m_continueButton = new QPushButton(i18n("&Continue"), this);
   m_stopButton = new QPushButton(i18n("St&op"), this);
+  m_breakButton = new QPushButton(i18n("&Break at next statement"), this);
+  m_breakpointButton = new QPushButton(i18n("&Toggle Breakpoint"), this);
   hl2->addWidget(m_nextButton);
   hl2->addWidget(m_stepButton);
   hl2->addWidget(m_continueButton);
   hl2->addWidget(m_stopButton);
+  hl2->addWidget(m_breakButton);
+  hl2->addWidget(m_breakpointButton);
   hl2->addStretch();
 
   connect(m_nextButton, SIGNAL(clicked()), SLOT(next()));
   connect(m_stepButton, SIGNAL(clicked()), SLOT(step()));
   connect(m_continueButton, SIGNAL(clicked()), SLOT(cont()));
   connect(m_stopButton, SIGNAL(clicked()), SLOT(stop()));
+  connect(m_breakButton, SIGNAL(clicked()), SLOT(breakNext()));
+  connect(m_breakpointButton, SIGNAL(clicked()), SLOT(toggleBreakpoint()));
 
   m_nextButton->setEnabled(false);
   m_stepButton->setEnabled(false);
   m_continueButton->setEnabled(false);
   m_stopButton->setEnabled(false);
+  m_breakButton->setEnabled(true);
+  m_breakpointButton->setEnabled(false);
 
   // frame list
   m_frames.setAutoDelete(true);
@@ -211,13 +223,11 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
 
   updateFrameList();
   m_inSession = false;
-  m_curContext = 0;
-  m_curScript = 0;
+  m_curExecState = 0;
 }
 
 KJSDebugWin::~KJSDebugWin()
 {
-  //  detach();
 }
 
 
@@ -234,11 +244,6 @@ void KJSDebugWin::destroyInstance()
   assert(kjs_html_debugger);
   kjs_html_debugger->hide();
   delete kjs_html_debugger;
-}
-
-KJSDebugWin *KJSDebugWin::instance()
-{
-  return kjs_html_debugger;
 }
 
 void KJSDebugWin::next()
@@ -265,6 +270,29 @@ void KJSDebugWin::stop()
   leaveSession();
 }
 
+void KJSDebugWin::breakNext()
+{
+  m_mode = Step;
+}
+
+void KJSDebugWin::toggleBreakpoint()
+{
+    int line = m_sourceDisplay->currentItem();
+    if (line >= 0) {
+        QString text(m_sourceDisplay->item(line)->text()); 
+        m_sourceDisplay->removeItem(line);
+        QListBoxPixmap *item;
+        if (setBreakpoint(m_frames.last()->sourceId, line)) {
+            item = new QListBoxPixmap(m_stopIcon,text);
+        } else {
+            deleteBreakpoint(m_frames.last()->sourceId, line);
+            item = new QListBoxPixmap(m_emptyIcon,text);
+        }
+        m_sourceDisplay->insertItem(item, line);
+        m_sourceDisplay->setCurrentItem(line);
+    }
+}
+
 void KJSDebugWin::showFrame(int frameno)
 {
   StackFrame *frame = m_frames.at(frameno);
@@ -279,27 +307,26 @@ void KJSDebugWin::sourceSelected(int sourceSelIndex)
   // and hilight the line if it's in the current stack frame
   if (sourceSelIndex < 0 || sourceSelIndex >= (int)m_sourceSel->count())
     return;
-
   SourceFile *sourceFile = m_sourceSelFiles[sourceSelIndex];
-  if (m_curSourceFile != sourceFile)
-      setCode(sourceFile->code);
+  bool newsource = m_curSourceFile != sourceFile;
   m_curSourceFile = sourceFile;
 
   SourceFragment *lastFragment = 0;
   StackFrame *curFrame = m_frames.at(m_frameList->currentItem() >= 0 ? m_frameList->currentItem() : m_frames.count()-1);
   if (curFrame)
     lastFragment = m_sourceFragments[curFrame->sourceId];
-
-  if (lastFragment && lastFragment->sourceFile == m_curSourceFile)
+  if (newsource)
+      setCode(sourceFile->code, curFrame ? curFrame->sourceId : -1);
+  if (lastFragment && lastFragment->sourceFile == m_curSourceFile) {
     m_sourceDisplay->setCurrentItem(lastFragment->baseLine+curFrame->lineno);
-  else
+  } else
     m_sourceDisplay->setCurrentItem(-1);
 }
 
 void KJSDebugWin::eval()
 {
   // evaluate the js code from m_evalEdit
-
+/*
   if (!m_inSession)
     return;
 
@@ -316,6 +343,7 @@ void KJSDebugWin::eval()
   KJSO ret = m_curContext->executeCall(m_curScript,func,func,0);
   KMessageBox::information(this, ret.toString().value().qstring(), "JavaScript eval");
   m_mode = oldMode;
+  */
 }
 
 void KJSDebugWin::closeEvent(QCloseEvent *e)
@@ -325,16 +353,16 @@ void KJSDebugWin::closeEvent(QCloseEvent *e)
   return QWidget::closeEvent(e);
 }
 
-bool KJSDebugWin::sourceParsed(KJScript */*script*/, int sourceId,
-			       const UString &source, int /*errorLine*/)
+bool KJSDebugWin::sourceParsed(KJS::ExecState * exec, int sourceId,
+                               const KJS::UString &source, int /*errorLine*/)
 {
   // the interpreter has parsed some js code - store it in a SourceFragment object
   // ### report errors (errorLine >= 0)
 
   SourceFile *sourceFile = m_sourceFiles[m_nextSourceUrl];
   if (!sourceFile) {
-    sourceFile = new SourceFile("(unknown)",source.qstring());
-    m_sourceSelFiles[m_sourceSel->count()] = sourceFile;
+    sourceFile = new SourceFile("(unknown)",source.qstring(),m_sourceSel->count());
+    m_sourceSelFiles[sourceFile->index] = sourceFile;
     if (m_nextSourceUrl.isNull() || m_nextSourceUrl == "")
         m_sourceSel->insertItem("???");
     else
@@ -351,116 +379,116 @@ bool KJSDebugWin::sourceParsed(KJScript */*script*/, int sourceId,
   return (m_mode != Stop);
 }
 
-bool KJSDebugWin::sourceUnused(KJScript */*script*/, int sourceId)
+bool KJSDebugWin::sourceUnused(KJS::ExecState * /*exec*/, int sourceId)
 {
   // the source fragment is no longer in use, so we can free it
 
   SourceFragment *fragment = m_sourceFragments[sourceId];
-  m_sourceFragments.erase(sourceId);
-  delete fragment;
+  if (fragment) {
+      m_sourceFragments.erase(sourceId);
+      SourceFile *sourceFile = fragment->sourceFile;
+      delete fragment;
+      if (sourceFile->hasOneRef()) {
+          m_sourceSel->removeItem(sourceFile->index);
+          for (int i = sourceFile->index; i < m_sourceSel->count(); i++) {
+              m_sourceSelFiles[i+1]->index--;
+              m_sourceSelFiles[i] = m_sourceSelFiles[i+1];
+          }
+          m_sourceSelFiles.erase(m_sourceSel->count());
+          sourceFile->deref();
+      }
+  }
   return (m_mode != Stop);
 }
 
-bool KJSDebugWin::error(KJScript */*script*/, int /*sourceId*/, int /*lineno*/,
-			int /*errorType*/, const KJS::UString &errorMessage)
+bool KJSDebugWin::exception(KJS::ExecState *exec, int /*sourceId*/, 
+        int /*lineno*/, KJS::Object &exceptionObj)
 {
   // ### bring up source & hilight line
-  KMessageBox::error(this, errorMessage.qstring(), "JavaScript error");
+  KMessageBox::error(this, exceptionObj.toString(exec).qstring(), "JavaScript error");
   return (m_mode != Stop);
 }
 
-bool KJSDebugWin::atLine(KJScript *script, int sourceId, int lineno,
-			 const ExecutionContext *execContext)
+bool KJSDebugWin::atStatement(KJS::ExecState *exec, int sourceId, 
+                              int firstLine, int lastLine)
 {
-  const ExecutionContext *oldCurContext = m_curContext;
-  KJScript *oldCurScript = m_curScript;
-  m_curContext = execContext;
-  m_curScript = script;
-  /*
-  if (haveBreakpoint(sourceId,lineno)) {
+  KJS::ExecState *oldCurExecState = m_curExecState;
+  m_curExecState = exec;
+  
+  if (haveBreakpoint(sourceId,firstLine, lastLine)) {
     m_mode = Next;
     m_frames.last()->next = true;
   }
-  */
 
   m_frames.last()->sourceId = sourceId;
-  m_frames.last()->lineno = lineno;
+  m_frames.last()->lineno = firstLine;
   //  highLight(sourceId,lineno);
   if (m_mode == KJSDebugWin::Step || m_mode == KJSDebugWin::Next) {
     if (m_frames.last()->next)
       enterSession();
   }
 
-  m_curContext = oldCurContext;
-  m_curScript = oldCurScript;
+  m_curExecState = oldCurExecState;
   return (m_mode != Stop);
 }
 
-bool KJSDebugWin::callEvent(KJScript *script, int sourceId, int lineno,
-			    const ExecutionContext *execContext,
-			    FunctionImp *function, const List */*args*/)
+bool KJSDebugWin::callEvent(KJS::ExecState *exec, int sourceId, int lineno,
+        KJS::Object &function, const KJS::List & /*args*/)
 {
   //  highLight(sourceId,lineno);
-  const ExecutionContext *oldCurContext = m_curContext;
-  KJScript *oldCurScript = m_curScript;
-  m_curContext = execContext;
-  m_curScript = script;
-  QString name = function->name().qstring();
+  KJS::ExecState *oldCurExecState = m_curExecState;
+  m_curExecState = exec;
+  KJS::FunctionImp *fimp = static_cast<KJS::FunctionImp*>(function.imp()); 
+  QString name = fimp->name().qstring();
   StackFrame *sf = new StackFrame(sourceId,lineno,name,m_mode == Step);
   m_frames.append(sf);
   if (m_mode == Step)
     enterSession();
-  m_curContext = oldCurContext;
-  m_curScript = oldCurScript;
+  m_curExecState = oldCurExecState;
   return (m_mode != Stop);
 }
 
-bool KJSDebugWin::returnEvent(KJScript *script, int sourceId, int lineno,
-			      const ExecutionContext *execContext,
-			      FunctionImp */*function*/)
+bool KJSDebugWin::returnEvent(KJS::ExecState *exec, int sourceId, int lineno,
+        KJS::Object & /*function*/)
 {
   //  highLight(sourceId,lineno);
-  const ExecutionContext *oldCurContext = m_curContext;
-  KJScript *oldCurScript = m_curScript;
-  m_curContext = execContext;
-  m_curScript = script;
+  KJS::ExecState *oldCurExecState = m_curExecState;
+  m_curExecState = exec;
   m_frames.last()->sourceId = sourceId;
   m_frames.last()->lineno = lineno;
   if (m_frames.last()->step)
     enterSession();
   m_frames.removeLast();
   //  m_frameList->removeItem(m_frameList->count()-1);
-  m_curContext = oldCurContext;
-  m_curScript = oldCurScript;
+  m_curExecState = oldCurExecState;
   return (m_mode != Stop);
 }
 
-void KJSDebugWin::setCode(const QString &code)
+void KJSDebugWin::setCode(const QString &code, int sourceId)
 {
   const QChar *chars = code.unicode();
   uint len = code.length();
   QChar newLine('\n');
-  uint lineStart = 0;
+  QChar cr('\r');
+  QChar tab('\t');
+  QString tabstr("        ");
+  QString line;
   m_sourceDisplay->clear();
-  // ### support for \r\n and \n\r (?)
+  int numlines = 0;
   for (uint i = 0; i < len; i++) {
-    if (chars[i] == newLine) {
-      QString line;
-      if (lineStart == i)
-	line = "";
-      else
-	line = QString(chars+lineStart,i-lineStart);
-
-      QListBoxPixmap *qbp;
-      if (m_sourceDisplay->count() == 5)
-	qbp = new QListBoxPixmap(m_stopIcon,line);
-      else
-	qbp = new QListBoxPixmap(m_emptyIcon,line);
-      m_sourceDisplay->insertItem(qbp);
-
-      lineStart = i+1;
-    }
+      if (chars[i] == cr)
+          continue;
+      else if (chars[i] == newLine) {
+          m_sourceDisplay->insertItem(new QListBoxPixmap(haveBreakpoint(sourceId, numlines, numlines) ? m_stopIcon : m_emptyIcon,line));
+          numlines++;
+          line = "";
+      } else if (chars[i] == tab) {
+          line += tabstr;
+      } else
+          line += chars[i];
   }
+  if (line.length())
+      m_sourceDisplay->insertItem(new QListBoxPixmap(haveBreakpoint(sourceId, numlines, numlines) ? m_stopIcon : m_emptyIcon,line));
 }
 
 void KJSDebugWin::highLight(int sourceId, int line)
@@ -473,8 +501,10 @@ void KJSDebugWin::highLight(int sourceId, int line)
     return;
 
   SourceFile *sourceFile = source->sourceFile;
-  if (m_curSourceFile != source->sourceFile)
-      setCode(sourceFile->code);
+  if (m_curSourceFile != source->sourceFile) {
+      m_sourceSel->setCurrentItem(source->sourceFile->index);
+      setCode(sourceFile->code, sourceId);
+  }
   m_curSourceFile = source->sourceFile;
 
   if (line >= 0)
@@ -492,10 +522,16 @@ void KJSDebugWin::setNextSourceInfo(QString url, int baseLine)
 void KJSDebugWin::setSourceFile(QString url, QString code)
 {
   SourceFile *existing = m_sourceFiles[url];
-  if (existing)
-    existing->deref();
-  SourceFile *newSF = new SourceFile(url,code);
+  int newindex = m_sourceSel->count();
+  if (existing) {
+      newindex = existing->index;
+      m_sourceSel->removeItem(existing->index);
+      existing->deref();
+  }
+  SourceFile *newSF = new SourceFile(url,code,newindex);
   m_sourceFiles[url] = newSF;
+  m_sourceSelFiles[newindex] = newSF;
+  m_sourceSel->insertItem(url,newindex);
 }
 
 void KJSDebugWin::appendSourceFile(QString url, QString code)
@@ -524,6 +560,8 @@ void KJSDebugWin::enterSession()
   m_continueButton->setEnabled(true);
   m_stopButton->setEnabled(true);
   m_evalButton->setEnabled(true);
+  m_breakButton->setEnabled(false);
+  m_breakpointButton->setEnabled(true);
   updateFrameList();
 
   qApp->enter_loop(); // won't return until leaveSession() is called
@@ -542,6 +580,8 @@ void KJSDebugWin::leaveSession()
   m_continueButton->setEnabled(false);
   m_stopButton->setEnabled(false);
   m_evalButton->setEnabled(false);
+  m_breakButton->setEnabled(true);
+  m_breakpointButton->setEnabled(false);
   m_inSession = false;
   qApp->exit_loop();
   m_fakeModal.disable();
@@ -594,7 +634,7 @@ bool KJSDebugWin::deleteBreakpoint(int sourceId, int line)
 	// was the first breakpoint
 	Breakpoint *next = bp->next;
 	delete bp;
-	bp = next;
+	sbp->breakpoints = next;
 	return true;
       }
 
@@ -602,9 +642,9 @@ bool KJSDebugWin::deleteBreakpoint(int sourceId, int line)
 	bp = bp->next;
       if (bp->next && bp->next->lineno == line) {
 	// found at subsequent breakpoint
-	Breakpoint *next = bp->next;
-	delete bp;
-	bp = next;
+	Breakpoint *next = bp->next->next;
+	delete bp->next;
+	bp->next = next;
 	return true;
       }
       return false;

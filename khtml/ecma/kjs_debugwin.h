@@ -23,17 +23,13 @@
 
 #include <qglobal.h>
 
-#ifdef __GNUC__
-#warning TODO port the debugger
-#endif
-
 //#define KJS_DEBUGGER
 
 #ifdef KJS_DEBUGGER
 
 #include <qwidget.h>
 #include <qpixmap.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 #include <kjs/debugger.h>
 
@@ -43,11 +39,11 @@ class QListBox;
 class QComboBox;
 class QLineEdit;
 class QPushButton;
-class KJScript;
 
 namespace KJS {
   class FunctionImp;
   class List;
+  class ScriptInterpreter;
 };
 
 /**
@@ -93,9 +89,10 @@ class StackFrame {
 
 class SourceFile : public DOM::DomShared {
  public:
-  SourceFile(QString u, QString c) : url(u), code(c) {}
+  SourceFile(QString u, QString c, int i) : url(u), code(c), index(i) {}
   QString url;
   QString code;
+  int index;
 };
 
 /**
@@ -140,7 +137,7 @@ public:
 
   static KJSDebugWin *createInstance();
   static void destroyInstance();
-  static KJSDebugWin *instance();
+  static KJSDebugWin *instance() { return kjs_html_debugger; }
 
   enum Mode { Disabled = 0, // No break on any statements
 	      Next     = 1, // Will break on next statement in current context
@@ -155,14 +152,27 @@ public:
   void setSourceFile(QString url, QString code);
   void appendSourceFile(QString url, QString code);
   bool inSession() const { return m_inSession; }
-  KJScript *currentScript() { return m_curScript; }
   void setMode(Mode m) { m_mode = m; }
 
+  // functions overridden from KJS:Debugger
+  bool sourceParsed(KJS::ExecState *exec, int sourceId,
+                    const KJS::UString &source, int errorLine);
+  bool sourceUnused(KJS::ExecState * exec, int sourceId);
+  bool exception(KJS::ExecState *exec, int sourceId, 
+                 int lineno, KJS::Object &exceptionObj);
+  bool atStatement(KJS::ExecState *exec, int sourceId, 
+                   int firstLine, int lastLine);
+  bool callEvent(KJS::ExecState *exec, int sourceId, int lineno,
+          KJS::Object &function, const KJS::List &args);
+  bool returnEvent(KJS::ExecState *exec, int sourceId, 
+                   int lineno, KJS::Object &function);
 public slots:
   void next();
   void step();
   void cont();
   void stop();
+  void breakNext();
+  void toggleBreakpoint();
   void showFrame(int frameno);
   void sourceSelected(int sourceSelIndex);
   void eval();
@@ -171,30 +181,10 @@ protected:
 
   virtual void closeEvent(QCloseEvent *e);
 
-  // functions overridden from KJS:Debugger
-  virtual bool sourceParsed(KJScript *script, int sourceId,
-			    const KJS::UString &source, int errorLine);
-
-  virtual bool sourceUnused(KJScript *script, int sourceId);
-
-  virtual bool error(KJScript *script, int sourceId, int lineno,
-		     int errorType, const KJS::UString &errorMessage);
-
-  virtual bool atLine(KJScript *script, int sourceId, int lineno,
-		      const KJS::ExecState *execContext);
-
-  virtual bool callEvent(KJScript *script, int sourceId, int lineno,
-			 const KJS::ExecState *execContext,
-			 KJS::FunctionImp *function, const KJS::List *args);
-
-  virtual bool returnEvent(KJScript *script, int sourceId, int lineno,
-			   const KJS::ExecState *execContext,
-			   KJS::FunctionImp *function);
-
 private:
   void enterSession();
   void leaveSession();
-  void setCode(const QString &code);
+  void setCode(const QString &code,int SourceId);
   void updateFrameList();
 
   struct Breakpoint {
@@ -222,6 +212,8 @@ private:
   QPushButton *m_nextButton;
   QPushButton *m_continueButton;
   QPushButton *m_stopButton;
+  QPushButton *m_breakButton;
+  QPushButton *m_breakpointButton;
   QComboBox *m_sourceSel;
   QPixmap m_stopIcon;
   QPixmap m_emptyIcon;
@@ -229,17 +221,22 @@ private:
   QPushButton *m_evalButton;
 
   SourceFile *m_curSourceFile;
-  QList<StackFrame> m_frames;
+  QPtrList<StackFrame> m_frames;
   Mode m_mode;
+  /* url->SourceFile mapping*/
   QMap<QString,SourceFile*> m_sourceFiles;
+  /* SourceId->SourceFragment mapping*/
   QMap<int,SourceFragment*> m_sourceFragments;
+  /* combobox index->SourceFile mapping*/
   QMap<int,SourceFile*> m_sourceSelFiles;
 
   QString m_nextSourceUrl;
   int m_nextSourceBaseLine;
   FakeModal m_fakeModal;
   //const KJS::ExecutionContext *m_curContext;
-  KJScript *m_curScript;
+  //KJScript *m_curScript;
+  KJS::ExecState *m_curExecState;
+  static KJSDebugWin *kjs_html_debugger;
 };
 
 #endif // KJS_DEBUGGER
