@@ -39,7 +39,7 @@ namespace
   class ToolbarListView;
 }
 /**
- * This is a dialog used to customize or configure toolbars.
+ * @short A dialog used to customize or configure toolbars.
  *
  * This dialog only works if your application uses the XML UI
  * framework for creating menus and toolbars.  It depends on the XML
@@ -83,10 +83,10 @@ namespace
  * Note that the procedure is a bit different for KParts applications.
  * In this case, you need only pass along a pointer to your
  * application's KXMLGUIFactory object.  The editor will take care of
- * finding all of the action collections and xml files.  The editor
+ * finding all of the action collections and XML files.  The editor
  * aims to be semi-intelligent about where it assigns any
  * modifications.  In other words, it will not write out part specific
- * changes to your shell's xml file.
+ * changes to your shell's XML file.
  *
  * An example would be:
  *
@@ -104,7 +104,6 @@ namespace
  * }
  * \endcode
  *
- * @short A dialog used to customize or configure toolbars.
  * @author Kurt Granroth <granroth@kde.org>
  * @version $Id$
  */
@@ -245,7 +244,7 @@ private:
 
 
 /**
- * This is a widget used to customize or configure toolbars
+ * @short A widget used to customize or configure toolbars
  *
  * This is the widget that does all of the work for the
  * KEditToolbar dialog.  In most cases, you will want to use the
@@ -260,7 +259,6 @@ private:
  * files to describe the toolbar layouts and it requires the actions
  * to determine which buttons are active.
  *
- * @short A widget used to customize or configure toolbars
  * @author Kurt Granroth <granroth@kde.org>
  * @version $Id$
  */
