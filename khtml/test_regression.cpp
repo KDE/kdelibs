@@ -195,4 +195,4 @@ bool RegressionTest::checkFile(QString filename, QByteArray data)
     return (fileData == data);
 }
 
-
+#include "test_regression.moc"
