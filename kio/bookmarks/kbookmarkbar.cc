@@ -393,37 +393,35 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
 {
     static bool atFirst = false;
     static KAction* a = 0;
+
     if (dptr()->m_readOnly)
         return false; // todo: make this limit the actions
-    kdDebug(7043) << "FOOOO>>>> got an event (" << e << ") of type" << e->type() << endl;
 
     if ( (e->type() == QEvent::MouseButtonRelease) || (e->type() == QEvent::MouseButtonPress) )
     {
         QMouseEvent *mev = (QMouseEvent*)e;
 
-	QPoint pt;
-	KAction *_a; 
+        QPoint pt;
+        KAction *_a; 
 
-	_a = handleToolbarMouseButton( mev->pos(), dptr()->m_actions, m_pManager, pt );
+        _a = handleToolbarMouseButton( mev->pos(), dptr()->m_actions, m_pManager, pt );
 
-	if (_a)
-	{
-	    if (mev->button() == Qt::RightButton)
-	    {
-		s_highlightedAddress = _a->property("address").toString();
-		KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
-	 
-      RMB::begin_rmb_action(this); 
-		KPopupMenu *pm = new KPopupMenu;
-		rmbSelf(this)->fillContextMenu( pm, s_highlightedAddress, 0 );
-		emit aboutToShowContextMenu( rmbSelf(this)->atAddress( s_highlightedAddress ), pm );
-		pm->popup( pt );
-	 
-		mev->accept();
-	    }
-	     
-	    return !!_a;
-	}
+        if (_a)
+        {
+            if (mev->button() == Qt::RightButton)
+            {
+                s_highlightedAddress = _a->property("address").toString();
+                KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
+                RMB::begin_rmb_action(this); 
+                KPopupMenu *pm = new KPopupMenu;
+                rmbSelf(this)->fillContextMenu( pm, s_highlightedAddress, 0 );
+                emit aboutToShowContextMenu( rmbSelf(this)->atAddress( s_highlightedAddress ), pm );
+                pm->popup( pt );
+                mev->accept();
+            }
+
+            return !!_a;
+        }
     }
     else if ( e->type() == QEvent::DragLeave )
     {
@@ -435,23 +433,23 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
         removeTempSep();
         QDropEvent *dev = (QDropEvent*)e;
         if ( !KBookmarkDrag::canDecode( dev ) )
-           return false;
+            return false;
         QValueList<KBookmark> list = KBookmarkDrag::decode( dev );
         if (list.count() > 1)
-           kdWarning(7043) << "Sorry, currently you can only drop one address "
-                              "onto the bookmark bar!" << endl;
+            kdWarning(7043) << "Sorry, currently you can only drop one address "
+                "onto the bookmark bar!" << endl;
         KBookmark toInsert = list.first();
         QString address = a->property("address").toString();
         KBookmark bookmark = m_pManager->findByAddress( address );
         Q_ASSERT(!bookmark.isNull());
         kdDebug(7043) << "inserting " 
-                      << QString(atFirst ? "before" : "after")
-                      << " address == " << address << endl;
+            << QString(atFirst ? "before" : "after")
+            << " address == " << address << endl;
         KBookmarkGroup parentBookmark = bookmark.parentGroup();
         Q_ASSERT(!parentBookmark.isNull());
         KBookmark newBookmark = parentBookmark.addBookmark( 
-                                      m_pManager, toInsert.fullText(),
-                                      toInsert.url() );
+                m_pManager, toInsert.fullText(),
+                toInsert.url() );
         parentBookmark.moveItem( newBookmark, atFirst ? KBookmark() : bookmark );
         m_pManager->emitChanged( parentBookmark );
         return true;
