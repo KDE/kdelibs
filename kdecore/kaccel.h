@@ -221,7 +221,7 @@ class KAccel : public QAccel
 	static int stringToKey( const QString& );
 
 	/**
-	 * @depricated.  Use shortcut().
+	 * @deprecated.  Use shortcut().
 	 * Retrieve the key code of the accelerator item with the action name
 	 * @p action, or zero if either the action name cannot be
 	 * found or the current key is set to no key.
@@ -229,7 +229,7 @@ class KAccel : public QAccel
 	int currentKey( const QString& action ) const;
 
 	/**
-	 * @depricated.  Use actions().actionPtr().
+	 * @deprecated.  Use actions().actionPtr().
 	 * Return the name of the accelerator item with the keycode @p key,
 	 * or @ref QString::null if the item cannot be found.
 	 */
