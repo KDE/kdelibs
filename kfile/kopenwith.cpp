@@ -42,6 +42,7 @@
 #include <kmimemagic.h>
 #include <krun.h>
 #include <kstddirs.h>
+#include <kurlcompletion.h>
 #include <kurlrequester.h>
 #include <dcopclient.h>
 #include <kmimetype.h>
