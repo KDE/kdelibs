@@ -22,9 +22,11 @@
 #include <dcopobject.h>
 #include <qstringlist.h>
 #include <qcstring.h>
+#include <dcopref.h>
 
 class KDCOPActionProxy;
 class KMainWindow;
+
 /**
 This is the main interface to the @ref KMainWindow.  This will provide a consistant
 dcop interface to all KDE applications that use it.
@@ -84,7 +86,7 @@ k_dcop:
 	can actions can be found by calling @ref actions().
 	@returns The state of the current Actions, TRUE - enabled, FALSE - disabled.
 	*/
-	bool status( QCString action);
+	bool isEnabled( QCString action);
 
 	/**
 	Returns the tool tip text of the requested action.
@@ -93,12 +95,21 @@ k_dcop:
 	@return A QCString containing the text of the actions tool tip.
 	*/
 	QCString tooltip( QCString action);
-//	virtual QCStringList functions();
-//	virtual QCStringList interfaces();
-//	virtual bool process( const QCString &functionName, const QByteArray &argData, QCString &returnType, QByteArray &returnData);
 
+	/**
+	Returns a dcop reference to the selected KAction
+	@param action The name of the action to activate, The names of valid
+	actions can be found by calling @actions().
+	@return A @DCOPRef for the kaction.
+	**/
+	DCOPRef action( const QCString &name );
+
+	/**
+	Returns and action map
+	**/
+    	QMap<QCString,DCOPRef> actionMap();
 private:
-	KMainWindow * m_pMainWindow;
+	KMainWindow *m_MainWindow;
 	KDCOPActionProxy *m_dcopActionProxy;
 };
 

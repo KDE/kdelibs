@@ -25,30 +25,36 @@
 #include <kmainwindow.h>
 #include <kaction.h>
 
+
 KMainWindowInterface::KMainWindowInterface(KMainWindow * mainWindow)
 	: DCOPObject( mainWindow->name())
 {
-	m_dcopActionProxy = new KDCOPActionProxy( mainWindow->actionCollection(), this );
+	m_MainWindow = mainWindow;
+	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
 }
 
 KMainWindowInterface::~KMainWindowInterface()
 {
-  delete m_dcopActionProxy;
+	delete m_dcopActionProxy;
 }
 
 QCStringList KMainWindowInterface::actions()
 {
+	delete m_dcopActionProxy;
+	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
 	QCStringList tmp_actions;
 	QValueList<KAction *> lst = m_dcopActionProxy->actions();
 	QValueList<KAction *>::ConstIterator it = lst.begin();
 	QValueList<KAction *>::ConstIterator end = lst.end();
 	for (; it != end; ++it )
-		if ( (*it)->isEnabled())
+		if ((*it)->isPlugged())
 			tmp_actions.append( (QCString)(*it)->name() );
 	return tmp_actions;
 }
 bool KMainWindowInterface::activate( QCString action)
 {
+	delete m_dcopActionProxy;
+	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
 	KAction *tmp_Action = m_dcopActionProxy->action(action);
 	if (tmp_Action)
 	{
@@ -60,39 +66,61 @@ bool KMainWindowInterface::activate( QCString action)
 }
 bool KMainWindowInterface::disable( QCString action)
 {
-
-}
-bool KMainWindowInterface::enable( QCString action)
-{
-
-}
-bool KMainWindowInterface::status( QCString action)
-{
-
-}
-QCString KMainWindowInterface::tooltip( QCString action)
-{
-
-}
-
-/*
-QCStringList KMainWindowInterface::interfaces()
-{
-	QCStringList tmp_DCOPinterfaces = DCOPObject::interfaces();
-
-	return tmp_DCOPinterfaces;
-}
-bool KMainWindowInterface::process( const QCString &functionName, const QByteArray &argData, QCString &returnType, QByteArray &returnData)
-{
-	QCString tmp_actionName = functionName;
-	tmp_actionName.truncate( functionName.length()-2 );
-	KAction *tmp_Action = m_dcopActionProxy->action(tmp_actionName);
-	if (tmp_Action->isEnabled())
+	delete m_dcopActionProxy;
+	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
+	KAction *tmp_Action = m_dcopActionProxy->action(action);
+	if (tmp_Action)
 	{
-		tmp_Action->activate();
+		tmp_Action->setEnabled(false);
 		return true;
 	}
 	else
-		return DCOPObject::process( functionName, argData, returnType, returnData );
+		return false;
 }
-*/
+bool KMainWindowInterface::enable( QCString action)
+{
+	delete m_dcopActionProxy;
+	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
+	KAction *tmp_Action = m_dcopActionProxy->action(action);
+	if (tmp_Action)
+	{
+		tmp_Action->setEnabled(true);
+		return true;
+	}
+	else
+		return false;
+}
+bool KMainWindowInterface::isEnabled( QCString action)
+{
+	delete m_dcopActionProxy;
+	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
+	KAction *tmp_Action = m_dcopActionProxy->action(action);
+	if (tmp_Action)
+	{
+		return tmp_Action->isEnabled();
+	}
+	else
+		return false;
+}
+QCString KMainWindowInterface::tooltip( QCString action)
+{
+	delete m_dcopActionProxy;
+	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
+	KAction *tmp_Action = m_dcopActionProxy->action(action);
+	if (tmp_Action)
+	{
+		return tmp_Action->toolTip().utf8();
+	}
+	else
+		return "Error no such object!";
+}
+
+DCOPRef KMainWindowInterface::action( const QCString &name )
+{
+	return DCOPRef( kapp->dcopClient()->appId(), m_dcopActionProxy->actionObjectId( name ) );
+}
+
+QMap<QCString,DCOPRef> KMainWindowInterface::actionMap()
+{
+	return m_dcopActionProxy->actionMap();
+}
