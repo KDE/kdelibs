@@ -1583,7 +1583,8 @@ static QString get_mount_info(const QString& filename,
             if (ismanual == Unseen)
             {
                 struct fstab *ft = getfsfile(mounted[i].f_mntonname);
-                if (!ft || strstr(ft->fs_mntops, "noauto"))
+                if (!ft || strstr(ft->fs_mntops, "noauto")
+                    || strcmp(ft->fs_vfstype,"supermount")==0)
                   ismanual = Right;
             }
         }
@@ -1690,7 +1691,8 @@ static QString get_mount_info(const QString& filename,
             if (ismanual == Unseen)
             {
                 struct fstab *ft = getfsfile(MOUNTPOINT(me));
-                if (!ft || strstr(ft->fs_mntops, "noauto"))
+                if (!ft || strstr(ft->fs_mntops, "noauto")
+                    || strcmp(ft->fs_vfstype, "supermount")==0)
                   ismanual = Right;
             }
         }
