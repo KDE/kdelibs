@@ -2557,6 +2557,9 @@ bool HTTPProtocol::readHeader()
       else if (m_responseCode >= 301 && m_responseCode<= 303)
       {
         // 301 Moved permanently
+        if (m_responseCode == 301)
+           setMetaData("permanent-redirect", "true");
+
         // 302 Found (temporary location)
         // 303 See Other
         if (m_request.method != HTTP_HEAD && m_request.method != HTTP_GET)
