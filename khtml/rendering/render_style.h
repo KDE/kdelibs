@@ -56,18 +56,18 @@ public:
 
     const DATA* get() const
     {
-//    	printf("get\n");
+//    	kdDebug(300) << "get" << endl;
 	return data;
     }
 
     DATA* set()
     {    	
-//    	printf("set\n");
+//    	kdDebug(300) << "set" << endl;
 //    	if (data==0)
 //	    createData();
     	if (!data->hasOneRef())
 	{
-//	    printf("copy\n");
+//	    kdDebug(300) << "copy" << endl;
 	    data->deref();
 	    data = new DATA(*data);
 	    data->ref();
@@ -77,7 +77,7 @@ public:
 
     void createData()
     {
-//    	printf("create\n");
+//    	kdDebug(300) << "create" << endl;
     	if (data)
     	    data->deref();
     	data = new DATA;
@@ -86,7 +86,7 @@ public:
 
     DataRef<DATA>& operator=(const DataRef<DATA>& d)
     {
-    	//printf("op=\n");
+    	//kdDebug(300) << "op=" << endl;
     	if (data==d.data)
 	    return *this;
     	if (data)
@@ -111,7 +111,7 @@ public:
 
     void ref() { _ref++;  }
     void deref() { if(_ref) _ref--; if(_ref<=0) delete this; }
-    bool hasOneRef() { //printf("ref=%d\n",_ref);
+    bool hasOneRef() { //kdDebug(300) << "ref=" << _ref << endl;
     	return _ref==1; }
 
     static int counter;

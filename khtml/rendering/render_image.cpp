@@ -29,7 +29,7 @@
 #include <qdrawutil.h>
 #include <qpalette.h>
 
-#include <stdio.h>
+#include <kdebug.h>
 
 #include "rendering/render_style.h"
 
@@ -53,7 +53,7 @@ void RenderImage::setPixmap( const QPixmap &p )
 {
 
     // Image dimensions have been changed, recalculate layout
-    //printf("Image: recalculating layout\n");
+    //kdDebug(300) << "Image: recalculating layout" << endl;
     if(p.width() != pixmap.width() || p.height() != pixmap.height())
     {
 	pixmap = p;
@@ -73,7 +73,7 @@ void RenderImage::setPixmap( const QPixmap &p )
 
 void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 {
-    //printf("Image::printObject (%d/%d)\n", width(), height());
+    //kdDebug(300) << "Image::printObject (" << width() << "/" << height() << ")" << endl;
 
     int contentWidth = m_width;
     int contentHeight = m_height;
@@ -98,7 +98,7 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
     contentWidth -= leftBorder + rightBorder;
     contentHeight -= topBorder + bottomBorder;
 
-    //printf("    contents (%d/%d) border=%d padding=%d\n", contentWidth, contentHeight, borderLeft(), paddingLeft());
+    //kdDebug(300) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
 
     QRect rect( 0, 0, contentWidth, contentHeight );
 
@@ -128,9 +128,7 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 	    contentHeight != pixmap.height() ) &&
 	    pixmap.width() && pixmap.height() )
 	{
-	  //printf("have to scale: width:%d<-->%d height %d<-->%d\n",
-	  //   width - border*2, pixmap.width(),
-	  //   getHeight() - border, pixmap.height() );
+	  //kdDebug(300) << "have to scale: width:" << //   width - border*2 << "<-->" << pixmap.width() << " height " << //   getHeight() - border << "<-->" << pixmap.height() << endl;
 	    if (resizeCache.isNull())
 	    {
 		QWMatrix matrix;
@@ -150,7 +148,7 @@ void RenderImage::calcMinMaxWidth()
 {
     if(minMaxKnown()) return;
 #ifdef DEBUG_LAYOUT
-    printf("Image::calcMinMaxWidth() known=%d\n", minMaxKnown());
+    kdDebug(300) << "Image::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
     setMinMaxKnown();
 
@@ -187,7 +185,7 @@ void RenderImage::calcMinMaxWidth()
 	    // NO! Images don't scale unless told to. Ever.  -AKo
 	    //if(availableWidth < width) width = availableWidth;
 	    m_minWidth = m_width;
-	    //printf("IMG Width changed, width=%d\n",width);
+	    //kdDebug(300) << "IMG Width changed, width=" << width << endl;
 	}
     }
     m_maxWidth = m_minWidth;
@@ -206,7 +204,7 @@ void RenderImage::layout(bool)
 {
     if(layouted()) return;
 #ifdef DEBUG_LAYOUT
-    printf("Image::layout(?) width=%d, layouted=%d\n", m_width, layouted());
+    kdDebug(300) << "Image::layout(?) width=" << m_width << ", layouted=" << layouted() << endl;
 #endif
 
     calcMinMaxWidth(); // ### just to be sure here...

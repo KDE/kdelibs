@@ -33,7 +33,7 @@
 #include "qnamespace.h"
 #include "qpainter.h"
 
-#include <stdio.h>
+#include <kdebug.h>
 #include <qpainter.h>
 #include <qcolor.h>
 #include <qpen.h>
@@ -59,7 +59,7 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl *node)
     case TABLE:
     case INLINE_TABLE:
 	// ### set inline/block right
-	printf("creating RenderTable\n");
+	kdDebug(300) << "creating RenderTable" << endl;
 	return new RenderTable(style);
     case TABLE_ROW_GROUP:
     case TABLE_HEADER_GROUP:
@@ -138,7 +138,7 @@ bool RenderObject::deleteMe()
 void RenderObject::addChild(RenderObject *newChild)
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(RenderObject)::addChild( %s )\n", renderName(), newChild->renderName());
+    kdDebug(300) << renderName() << "(RenderObject)::addChild( " << newChild->renderName() << " )" << endl;
 #endif
 
     newChild->setParsing();
@@ -184,7 +184,7 @@ void RenderObject::setContainingBlock()
     // the case below should never happen...
     if(!o)
     {
-	printf("%s(RenderObject)::setContainingBlock() containingBlock == 0, setting to this\n", renderName());
+	kdDebug(300) << renderName() << "(RenderObject)::setContainingBlock() containingBlock == 0, setting to this" << endl;
 	m_containingBlock = this;
     }
     else
@@ -300,10 +300,11 @@ bool RenderObject::isSpecial() const
 
 void RenderObject::printTree(int indent) const
 {
-    for (int i=0; i<indent; i++) printf(" ");	
-    printf("%s: %p il=%d fl=%d rp=%d laytd=%d (%d,%d,%d,%d)\n",
-	renderName(),this,isInline(),isFloating(),isReplaced(),layouted(),
-	xPos(),yPos(),width(),height());
+    for (int i=0; i<indent; i++) kdDebug(300) << " " << endl;
+    kdDebug(300) << renderName() << ": " << (void*)this << " il=" << isInline()
+                 << " fl=" << isFloating() << " rp=" << isReplaced()
+                 << " laytd=" << layouted()
+                 << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")" << endl;
     RenderObject *child = firstChild();
     while( child != 0 )
     {    	

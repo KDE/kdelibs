@@ -43,6 +43,7 @@
 #include <qstring.h>
 #include <qcolor.h>
 #include <qrect.h>
+#include <kdebug.h>
 
 using namespace khtml;
 using namespace DOM;
@@ -55,7 +56,7 @@ void TextSlave::print( QPainter *p, int _tx, int _ty)
 
 //    p->setPen(QColor("#000000"));
     QConstString s(m_text , len);
-    //printf("textSlave::printing(%s) at(%d/%d)\n", s.string().ascii(), x+_tx, y+_ty);
+    //kdDebug(300) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
     p->drawText(x + _tx, y + _ty, s.string());
 }
 
@@ -87,7 +88,7 @@ void TextSlave::printSelection(QPainter *p, int tx, int ty, int startPos, int en
 
     ty += m_baseline;
 
-    //printf("textSlave::printing(%s) at(%d/%d)\n", s.string().ascii(), x+_tx, y+_ty);
+    //kdDebug(300) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
     p->drawText(x + tx + _offset, y + ty, s.string());
 
 
@@ -115,7 +116,7 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderText *p, int _tx, int _t
     _tx += x;
     _ty += y - p->paddingTop() - p->borderTop();
 
-    //printf("renderBox::printDecorations()\n");
+    //kdDebug(300) << "renderBox::printDecorations()" << endl;
     RenderStyle *style = p->style();
 
     int width = m_width;
@@ -206,7 +207,7 @@ RenderText::RenderText(RenderStyle *style, DOMStringImpl *_str)
 
 #ifdef DEBUG_LAYOUT
     QConstString cstr(str->s, str->l);
-    printf("RenderText::setText '%s'\n", (const char *)cstr.string().utf8());
+    kdDebug(300) << "RenderText::setText '" << (const char *)cstr.string().utf8() << "'" << endl;
 #endif
 
     // ### add line-height property
@@ -256,7 +257,7 @@ bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
 		delta -= w;
 	    }
 	    offset = off + pos;
-	    //printf(" Text  --> inside at position %d\n", offset);
+	    //kdDebug(300) << " Text  --> inside at position " << offset << endl;
 
 	    return true;
 	}
@@ -298,11 +299,11 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
 void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 		      int tx, int ty)
 {
-    //printf("Text::printObject(long)\n");
+    //kdDebug(300) << "Text::printObject(long)" << endl;
 
     TextSlave *s = m_first;
 
-    //printf("Text::printObject(2)\n");
+    //kdDebug(300) << "Text::printObject(2)" << endl;
 
     bool start = true;
 #ifndef BIDI_DEBUG
@@ -325,9 +326,9 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
 
     p->setFont( m_style->font() );
-    //printf("charset used: %d\n", m_style->font().charSet());
+    //kdDebug(300) << "charset used: " << m_style->font().charSet() << endl;
 #if 0
-    printf("charset used: %d mapper: %s\n", m_style->font().charSet(), fm->mapper()->name());
+    kdDebug(300) << "charset used: " << m_style->font().charSet() << " mapper: " << fm->mapper()->name() << endl;
 #endif
     p->setPen( m_style->color() );
     while(s)
@@ -371,7 +372,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 	    }
 	    else if(selectionState() == SelectionEnd)
 		startPos = 0;
-	    printf("selectionstartend start=%d end=%d\n", startPos, endPos);
+	    kdDebug(300) << "selectionstartend start=" << startPos << " end=" << endPos << endl;
 	}
 	
 	while(s && endPos)
@@ -395,7 +396,7 @@ void RenderText::print( QPainter *p, int x, int y, int w, int h,
 
 void RenderText::calcMinMaxWidth()
 {
-    //printf("Text::calcMinMaxWidth(): known=%d\n", minMaxKnown());
+    //kdDebug(300) << "Text::calcMinMaxWidth(): known=" << minMaxKnown() << endl;
 
     if(minMaxKnown()) return;
 
@@ -432,7 +433,7 @@ void RenderText::calcMinMaxWidth()
 	}
 	else
 	{
-	    //printf("c = %x\n", c.unicode());
+	    //kdDebug(300) << "c = " << c.unicode() << endl;
 	    int w = fm->width(c);
 	    currMinWidth += w;
 	    currMaxWidth += w;
@@ -476,7 +477,7 @@ void RenderText::setText(DOMStringImpl *text)
     containingBlock()->layout();
 #ifdef DEBUG_LAYOUT
     QConstString cstr(str->s, str->l);
-    printf("RenderText::setText '%s'\n", (const char *)cstr.string().utf8());
+    kdDebug(300) << "RenderText::setText '" << (const char *)cstr.string().utf8() << "'" << endl;
 #endif
 }
 
@@ -527,7 +528,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 	aStr.compose();
 #endif
 #ifdef DEBUG_LAYOUT
-	printf("reversing '%s' len=%d oldlen=%d\n", (const char *)aStr.utf8(), aStr.length(), len);
+	kdDebug(300) << "reversing '" << (const char *)aStr.utf8() << "' len=" << aStr.length() << " oldlen=" << len << endl;
 #endif
 	len = aStr.length();
 	ch = new QChar[len];
@@ -552,7 +553,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 
 #ifdef DEBUG_LAYOUT
     QConstString cstr(ch, len);
-    printf("setting slave text to '%s' len=%d width=%d at (%d/%d)\n", (const char *)cstr.string().utf8(), len, width, x, y);
+    kdDebug(300) << "setting slave text to '" << (const char *)cstr.string().utf8() << "' len=" << len << " width=" << width << " at (" << x << "/" << y << ")" << endl;
 #endif
 
     TextSlave *s = new TextSlave(x, y, ch, len,
@@ -586,7 +587,7 @@ unsigned int RenderText::width( int from, int len) const
 	    w += borderRight() + paddingRight();
     }
 
-    //printf("RenderText::width(%d, %d) = %d\n", from, len, w);
+    //kdDebug(300) << "RenderText::width(" << from << ", " << len << ") = " << w << endl;
     return w;
 }
 

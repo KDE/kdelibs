@@ -179,27 +179,27 @@ void RenderStyle::mergeData(RenderStyle* other)
     if ( box.get()!=other->box.get() &&
     	*box.get() == *other->box.get()) {
     	box=other->box;
-//	printf("STYLE box merge \n");
+//	kdDebug(300) << "STYLE box merge " << endl;
 	}
     if (visual.get()!=other->visual.get() &&
     	*visual.get() == *other->visual.get()) {
     	visual=other->visual;
-//	printf("STYLE visual merge \n");
+//	kdDebug(300) << "STYLE visual merge " << endl;
 	}
     if (background.get()!=other->background.get() &&
      	*background.get() == *other->background.get()) {
     	background=other->background;
-//	printf("STYLE bg merge \n");
+//	kdDebug(300) << "STYLE bg merge " << endl;
 	}
     if (surround.get()!=other->surround.get() &&
     	*surround.get() == *other->surround.get()) {
     	surround=other->surround;
-//	printf("STYLE surround merge \n");
+//	kdDebug(300) << "STYLE surround merge " << endl;
 	}
     if (inherited.get()!=other->inherited.get() &&
     	*inherited.get() == *other->inherited.get()) {
     	inherited=other->inherited;
-//	printf("STYLE text merge \n");
+//	kdDebug(300) << "STYLE text merge " << endl;
 	}
 
 }

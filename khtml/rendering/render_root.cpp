@@ -23,7 +23,7 @@
 #include "render_root.h"
 
 #include "khtmlview.h"
-#include <stdio.h>
+#include <kdebug.h>
 using namespace khtml;
 
 RenderRoot::RenderRoot(RenderStyle *style, KHTMLView *view)
@@ -100,7 +100,7 @@ void RenderRoot::repaintRectangle(int x, int y, int w, int h)
 {
     x += m_x;
     y += m_y;
- //   printf("updating views contents (%d/%d) (%d/%d)\n", x,y,w,h);
+ //   kdDebug(300) << "updating views contents (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     if (m_view) m_view->updateContents(x, y, w, h);
 }
 
@@ -127,7 +127,7 @@ void RenderRoot::updateSize()
 
 void RenderRoot::updateHeight()
 {
-//    printf("%s(RenderRoot)::updateSize()\n", renderName());
+//    kdDebug(300) << renderName() << "(RenderRoot)::updateSize()" << endl;
     //int oldMin = m_minWidth;
     setLayouted(false);
 
@@ -146,7 +146,7 @@ void RenderRoot::updateHeight()
     layout(true);	
     if(m_height != oldHeight)
     {
-//    	printf("resizing %d,%d\n",m_width,m_height);
+//    	kdDebug(300) << "resizing " << m_width << "," << m_height << endl;
     	m_view->resizeContents(m_width,m_height);
     	m_view->repaintContents(0,0,m_width,m_height);	//sync repaint!
     }
@@ -163,7 +163,7 @@ void RenderRoot::close()
 void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
 {
 
-    //printf("RenderRoot::setSelection(%x,%d,%x,%d)\n", s,sp,e,ep);
+    //kdDebug(300) << "RenderRoot::setSelection(" << s << "," << sp << "," << e << "," << ep << ")" << endl;
 
     clearSelection();
 
@@ -183,7 +183,7 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
     	if (o->selectionState()!=SelectionInside)
 	    o->repaint();
     	o->setSelectionState(SelectionInside);	
-//	printf("setting selected %x, %d\n",o, o->isText());
+//	kdDebug(300) << "setting selected " << o << ", " << o->isText() << endl;
     	RenderObject* no;
     	if ( !(no = o->firstChild()) )
     	    if ( !(no = o->nextSibling()) )

@@ -25,7 +25,7 @@
 
 //#define BUTTON_DEBUG
 
-#include <stdio.h>
+#include <kdebug.h>
 
 #include <klocale.h>
 #include <klistbox.h>
@@ -142,7 +142,7 @@ QString RenderFormElement::decodeString( QString e )
 
 void RenderFormElement::layout(bool)
 {
-    printf("inside RenderFormElement::layout()\n");
+    kdDebug(300) << "inside RenderFormElement::layout()" << endl;
 
     // honor style sheet stuff
     int h = 0;
@@ -150,13 +150,13 @@ void RenderFormElement::layout(bool)
 #if 0
     if(parent()) {
         if((h = m_style->width().width(containingBlockWidth())) > 0) {
-            printf("overwriting width to %d\n", h);
+            kdDebug(300) << "overwriting width to " << h << endl;
             m_width = h;
         }
 
 
         if((h = m_style->height().width(containingBlockHeight())) > 0) {
-            printf("overwriting height to %d\n", h);
+            kdDebug(300) << "overwriting height to " << h << endl;
             m_height = h;
         }
     }
@@ -172,7 +172,7 @@ void RenderFormElement::calcMinMaxWidth()
 {
     layout(false);
 
-    printf("inside RenderFormElement::calcMinMaxWidth()\n");
+    kdDebug(300) << "inside RenderFormElement::calcMinMaxWidth()" << endl;
 
     m_minWidth = m_width;
     m_maxWidth = m_width;

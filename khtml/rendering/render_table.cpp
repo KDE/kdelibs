@@ -43,7 +43,7 @@
 #include "misc/helper.h"
 #include "misc/khtmllayout.h"
 
-#include <stdio.h>
+#include <kdebug.h>
 #include <assert.h>
 
 using namespace khtml;
@@ -156,7 +156,7 @@ RenderTable::ColInfo::update()
 void RenderTable::addChild(RenderObject *child)
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(Table)::addChild( %s )\n", renderName(), child->renderName());
+    kdDebug(300) << renderName() << "(Table)::addChild( " << child->renderName() << " )" << endl;
 #endif
 
     switch(child->style()->display())
@@ -227,7 +227,7 @@ void RenderTable::setCells( unsigned int r, unsigned int c,
 				     RenderTableCell *cell )
 {
 #ifdef TABLE_DEBUG
-    printf("span = %ld/%ld\n", cell->rowSpan(), cell->colSpan());
+    kdDebug(300) << "span = " << cell->rowSpan() << "d/" << cell->colSpan() << "d" << endl;
 #endif
     cell->setRow(r);
     cell->setCol(c);
@@ -279,7 +279,7 @@ void RenderTable::addRows( int num )
 void RenderTable::addColumns( int num )
 {
 #ifdef TABLE_DEBUG
-    printf("addColumns() totalCols=%d new=%d\n", totalCols, num);
+    kdDebug(300) << "addColumns() totalCols=" << totalCols << " new=" << num << endl;
 #endif
     RenderTableCell **newCells;
 
@@ -343,9 +343,9 @@ void RenderTable::addColInfo(RenderTableCol *colel)
     for (int n=0; n<span; ++n)
     {
 #ifdef TABLE_DEBUG
-	printf("COL\n");
-	printf("    startCol=%d span=%d\n", _startCol, span);
-	printf("    min=%d max=%d val=%d\n", _minSize, _maxSize,_width.value );    	
+	kdDebug(300) << "COL" << endl;
+	kdDebug(300) << "    startCol=" << _startCol << " span=" << span << endl;
+	kdDebug(300) << "    min=" << _minSize << " max=" << _maxSize << " val=" << _width.value << endl;
 #endif
         addColInfo(_startCol+n, 1 , _minSize, _maxSize, _width ,0);
     }
@@ -376,10 +376,10 @@ void RenderTable::addColInfo(int _startCol, int _colSpan,
 				      Length _width, RenderTableCell* _cell)
 {
 #ifdef TABLE_DEBUG
-    printf("addColInfo():\n");
-    printf("    startCol=%d span=%d\n", _startCol, _colSpan);
-    printf("    min=%d max=%d\n", _minSize, _maxSize );
-    printf("    totalCols=%d\n", totalCols );
+    kdDebug(300) << "addColInfo():" << endl;
+    kdDebug(300) << "    startCol=" << _startCol << " span=" << _colSpan << endl;
+    kdDebug(300) << "    min=" << _minSize << " max=" << _maxSize << endl;
+    kdDebug(300) << "    totalCols=" << totalCols << endl;
 #endif
 
     if (_startCol + _colSpan > (int) totalCols)
@@ -428,8 +428,7 @@ void RenderTable::addColInfo(int _startCol, int _colSpan,
     setMinMaxKnown(false);
 
 #ifdef TABLE_DEBUG
-    printf("  end: min=%d max=%d act=%d\n", colMinWidth[_startCol],
-	   colMaxWidth[_startCol], actColWidth[_startCol]);
+    kdDebug(300) << "  end: min=" << colMinWidth[_startCol] << " max=" << colMaxWidth[_startCol] << " act=" << actColWidth[_startCol] << endl;
 #endif
 }
 
@@ -437,7 +436,7 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
     int distmax, LengthType type)
 {
 #ifdef TABLE_DEBUG
-    printf("RenderTable::spreadSpanMinMax() %d\n",distmin);
+    kdDebug(300) << "RenderTable::spreadSpanMinMax() " << distmin << endl;
 #endif
 
     if (distmin<1 && distmax<1)
@@ -464,7 +463,7 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
 	c=col;	
 	while(tmax)
 	{
-//	    printf("tmax remaining %d\n",tmax);
+//	    kdDebug(300) << "tmax remaining " << tmax << endl;
 	    if (colType[c]<=type)
 	    {
 		colMaxWidth[c]+=distmax/span;
@@ -525,7 +524,7 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
 void RenderTable::calcSingleColMinMax(int c, ColInfo* col)
 {
 #ifdef TABLE_DEBUG
-    printf("RenderTable::calcSingleColMinMax()\n");
+    kdDebug(300) << "RenderTable::calcSingleColMinMax()" << endl;
 #endif
 
     int span=col->span;
@@ -545,7 +544,7 @@ void RenderTable::calcSingleColMinMax(int c, ColInfo* col)
     	
     if (span==1)
     {
-      //printf("col (s=1) c=%d,m=%d,x=%d\n",c,smin,smax);
+      //kdDebug(300) << "col (s=1) c=" << c << ",m=" << smin << ",x=" << smax << endl;
         colMinWidth[c] = smin;
         colMaxWidth[c] = smax;
         colValue[c] = col->value;
@@ -555,7 +554,7 @@ void RenderTable::calcSingleColMinMax(int c, ColInfo* col)
     {	
 	int spreadmin = smin-oldmin-(span-1)*spacing;
 //	int spreadmax = smax-oldmax-(span-1)*spacing;
-	//printf("spreading span %d,%d\n",spreadmin, spreadmax);
+	//kdDebug(300) << "spreading span " << spreadmin << "," << spreadmax << endl;
 	spreadSpanMinMax
 	    (c, span, spreadmin, 0 , col->type);
     }
@@ -565,7 +564,7 @@ void RenderTable::calcSingleColMinMax(int c, ColInfo* col)
 void RenderTable::calcFinalColMax(int c, ColInfo* col)
 {
 #ifdef TABLE_DEBUG
-    printf("RenderTable::calcPercentRelativeMax()\n");
+    kdDebug(300) << "RenderTable::calcPercentRelativeMax()" << endl;
 #endif
     int span=col->span;
 
@@ -596,17 +595,17 @@ void RenderTable::calcFinalColMax(int c, ColInfo* col)
     smax = MAX(smax,oldmin);
 //    smax = MIN(smax,m_width);
 
-//    printf("smin %d smax %d span %d\n",smin,smax,span);
+//    kdDebug(300) << "smin " << smin << " smax " << smax << " span " << span << endl;
     if (span==1)
     {
-//       printf("col (s=1) c=%d,m=%d,x=%d\n",c,smin,smax);
+//       kdDebug(300) << "col (s=1) c=" << c << ",m=" << smin << ",x=" << smax << endl;
        colMaxWidth[c] = smax;
        colType[c] = col->type;
     }
     else
     {	
 	int spreadmax = smax-oldmax-(span-1)*spacing;
-//	printf("spreading span %d\n",spreadmax);
+//	kdDebug(300) << "spreading span " << spreadmax << endl;
 	spreadSpanMinMax
 	    (c, span, 0, spreadmax, col->type);
     }
@@ -623,7 +622,7 @@ void RenderTable::calcColMinMax()
 
 
 #ifdef TABLE_DEBUG
-    printf("RenderTable::calcColMinMax(), %d\n", minMaxKnown());
+    kdDebug(300) << "RenderTable::calcColMinMax(), " << minMaxKnown() << endl;
 #endif
 
     // PHASE 1, prepare
@@ -651,7 +650,7 @@ void RenderTable::calcColMinMax()
 	    if (!col || col->span==0)
 		continue;
 #ifdef TABLE_DEBUG
-    	    printf(" s=%d c=%d min=%d value=%d\n",s,c,col->min,col->value);
+    	    kdDebug(300) << " s=" << s << " c=" << c << " min=" << col->min << " value=" << col->value << endl;
 #endif	
 
     	    col->update();
@@ -732,19 +731,16 @@ void RenderTable::calcColMinMax()
     {
 	m_width = m_style->width().minWidth(availableWidth);
 	if(m_minWidth > m_width) m_width = m_minWidth;
-/*	printf("1 width=%d minWidth=%d m_availableWidth=%d \n",
-	    width,minWidth,m_availableWidth);
+/*	kdDebug(300) << "1 width=" << width << " minWidth=" << minWidth << " m_availableWidth=" << m_availableWidth << " " << endl;
 	if (width>1000) for(int i = 0; i < totalCols; i++)
     	{		
-	    printf("DUMP col=%d type=%d max=%d min=%d value=%d\n",
-	    	i,colType[i],colMaxWidth[i],colMinWidth[i],colValue[i]);
+	    kdDebug(300) << "DUMP col=" << i << " type=" << colType[i] << " max=" << colMaxWidth[i] << " min=" << colMinWidth[i] << " value=" << colValue[i] << endl;
 	}*/
 	
     }
     else if (hasPercent && !hasFixed)
     {    	
-//	printf("2 percentWidest=%d percentWidestPercent=%d \n",
-//	    percentWidest, percentWidestPercent);
+//	kdDebug(300) << "2 percentWidest=" << //	    percentWidest << " percentWidestPercent=" << percentWidestPercent << " " << endl;
 	m_width = percentWidest;
 	m_width += (totalCols+1)*spacing+1;
 	int tot = MIN(99,totalPercent);
@@ -755,7 +751,7 @@ void RenderTable::calcColMinMax()
     else if (hasPercent && hasFixed)
     {    	
     	totalPercent = MIN(99,totalPercent);
-//	printf("3 maxFixed=%d  totalPercent=%d\n",maxFixed,totalPercent);
+//	kdDebug(300) << "3 maxFixed=" << maxFixed << "  totalPercent=" << totalPercent << endl;
 	m_width = (maxFixed + minVar + minRel) * 100 /
     	    (100 - totalPercent);
     	m_width = MIN (m_width, availableWidth);
@@ -767,7 +763,7 @@ void RenderTable::calcColMinMax()
 
     m_width = MAX (m_width, m_minWidth);
     	
-//    printf("TABLE width %d\n", m_width);
+//    kdDebug(300) << "TABLE width " << m_width << endl;
 
 
     // PHASE 4, calculate maximums for percent and relative columns
@@ -814,9 +810,9 @@ void RenderTable::calcColWidth(void)
 {
 
 #ifdef TABLE_DEBUG
-    printf("START calcColWidth() this = %p\n", this);
-    printf("---- %d ----\n", totalColInfos);
-    printf("maxColSpan = %d\n", maxColSpan);
+    kdDebug(300) << "START calcColWidth() this = " << this << endl;
+    kdDebug(300) << "---- " << totalColInfos << " ----" << endl;
+    kdDebug(300) << "maxColSpan = " << maxColSpan << endl;
 #endif
 
     if (totalCols==0)
@@ -889,15 +885,14 @@ void RenderTable::calcColWidth(void)
 #ifdef TABLE_DEBUG
     for(int i = 1; i <= (int)totalCols; i++)
     {
-	printf("Start->target %d: %d->%d\n", i, actColWidth[i-1],colMaxWidth[i-1]);
+	kdDebug(300) << "Start->target " << i << ": " << actColWidth[i-1] << "->" << colMaxWidth[i-1] << endl;
     }
 #endif
 
     int tooAdd = m_width - actWidth;      // what we can add
 
 #ifdef TABLE_DEBUG
-    printf("tooAdd = width - actwidth: %d = %d - %d\n",
-    	tooAdd, m_width, actWidth);
+    kdDebug(300) << "tooAdd = width - actwidth: " << tooAdd << " = " << m_width << " - " << actWidth << endl;
 #endif
 
     /*
@@ -921,7 +916,7 @@ void RenderTable::calcColWidth(void)
     tooAdd = distributeRest(tooAdd,Percent,maxPercent);
 
 #ifdef TABLE_DEBUG
-    printf("final tooAdd %d\n",tooAdd);
+    kdDebug(300) << "final tooAdd " << tooAdd << endl;
 #endif
 
     /*
@@ -934,14 +929,13 @@ void RenderTable::calcColWidth(void)
     {
     	columnPos[i] += columnPos[i-1] + actColWidth[i-1] + spacing;
 #ifdef TABLE_DEBUG
-	printf("Actual width col %d: %d pos = %d\n", i,
-	       actColWidth[i-1], columnPos[i-1]);
+	kdDebug(300) << "Actual width col " << i << ": " << actColWidth[i-1] << " pos = " << columnPos[i-1] << endl;
 #endif
     }
 
 #ifdef TABLE_DEBUG
-    if(m_width != columnPos[totalCols] ) printf("========> table layout error!!! <===============================\n");
-    printf("total width = %d\n", m_width);
+    if(m_width != columnPos[totalCols] ) kdDebug(300) << "========> table layout error!!! <===============================" << endl;
+    kdDebug(300) << "total width = " << m_width << endl;
 #endif
 
 }
@@ -953,7 +947,7 @@ int RenderTable::distributeWidth(int distrib, LengthType type, int typeCols )
     int c=0;
 
     int tdis = distrib;
-//    printf("DISTRIBUTING %d pixels to type %d cols\n", distrib, type);
+//    kdDebug(300) << "DISTRIBUTING " << distrib << " pixels to type " << type << " cols" << endl;
 
     while(tdis>0)
     {
@@ -983,7 +977,7 @@ int RenderTable::distributeRest(int distrib, LengthType type, int divider )
     if (!divider)
     	return distrib;
 
-//    printf("DISTRIBUTING rest, %d pixels to type %d cols\n", distrib, type);
+//    kdDebug(300) << "DISTRIBUTING rest, " << distrib << " pixels to type " << type << " cols" << endl;
 
     int olddis=0;
     int c=0;
@@ -1015,8 +1009,7 @@ int RenderTable::distributeRest(int distrib, LengthType type, int divider )
 int RenderTable::distributeMinWidth(int distrib, LengthType distType,
     	    LengthType toType, int start, int span, bool mlim )
 {
-//    printf("MINDIST, %d pixels of type %d"
-//    	"to type %d cols sp=%d \n", distrib, distType, toType,span);
+//    kdDebug(300) << "MINDIST, " << distrib << " pixels of type " << distType << " to type " << toType << " cols sp=" << span << " " << endl;
 
     int olddis=0;
     int c=start;
@@ -1025,7 +1018,7 @@ int RenderTable::distributeMinWidth(int distrib, LengthType distType,
 
     while(tdis>0)
     {
-//    	printf ("ct=%d\n",colType[c]);
+//    	kdDebug(300) << "ct=" << colType[c] << endl;
 	if (colType[c]==toType)
 	{
 	    int delta = distrib/span;
@@ -1135,7 +1128,7 @@ void RenderTable::layout(bool deep)
     m_height = 0;
 
 #ifdef DEBUG_LAYOUT
-    printf("%s(Table)::layout(%d) width=%d, layouted=%d\n",  renderName(), deep, width(),layouted());
+    kdDebug(300) << renderName() << "(Table)::layout(" << deep << ") width=" << width() << ", layouted=" << layouted() << endl;
 #endif
 
 
@@ -1207,8 +1200,7 @@ void RenderTable::layoutRow(int r)
 	if ( ( rindx = r-cell->rowSpan()+1 ) < 0 )
 	    rindx = 0;
 
-	//printf("setting position %d/%d-%d: %d/%d \n", r, indx, c,
-	//columnPos[indx] + padding, rowHeights[rindx]);
+	//kdDebug(300) << "setting position " << r << "/" << indx << "-" << c << ": " << //columnPos[indx] + padding << "/" << rowHeights[rindx] << " " << endl;
 	rHeight = rowHeights[r+1] - rowHeights[rindx] -
 	    spacing;
 
@@ -1236,7 +1228,7 @@ void RenderTable::layoutRow(int r)
     	    break;
 	}
 #ifdef DEBUG_LAYOUT
-	printf("CELL te=%d, be=%d, rHeight=%d\n", te, rHeight - cell->height() - te, rHeight);
+	kdDebug(300) << "CELL te=" << te << ", be=" << rHeight - cell->height() - te << ", rHeight=" << rHeight << endl;
 #endif
 	cell->setCellTopExtra( te );
 	cell->setCellBottomExtra( rHeight - cell->height() - te);
@@ -1280,7 +1272,7 @@ void RenderTable::refreshRow(int r)
 void RenderTable::setAvailableWidth(int w)
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(Table, this=0x%p)::setAvailableWidth(%d)\n",  renderName(), this, w);
+    kdDebug(300) << renderName() << "(Table, this=0x" << this << ")::setAvailableWidth(" << w << ")" << endl;
 #endif
 
     int availableWidth = containingBlockWidth();
@@ -1302,7 +1294,7 @@ void RenderTable::setAvailableWidth(int w)
 	    int w = columnPos[c+1] - columnPos[ indx ] - spacing ; //- padding*2;
 
 #ifdef TABLE_DEBUG
-	    printf("0x%p: setting width %d/%d-%d (0x%p): %d \n", this, r, indx, c, cell, w);
+	    kdDebug(300) << "0x" << this << ": setting width " << r << "/" << indx << "-" << c << " (0x" << cell << "): " << w << " " << endl;
 #endif
 	
 	    static_cast<RenderTableCell *>(cell)->setAvailableWidth( w );
@@ -1322,13 +1314,13 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     _ty += yPos();
 
 #ifdef TABLE_DEBUG
-    printf("RenderTable::print() w/h = (%d/%d)\n", width(), height());
+    kdDebug(300) << "RenderTable::print() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
     if((_ty > _y + _h) || (_ty + height() < _y)) return;
     if((_tx > _x + _w) || (_tx + width() < _x)) return;
 
 #ifdef DEBUG_LAYOUT
-     printf("RenderTable::print(2) %d/%d (%d/%d)\n", _tx, _ty, _x, _y);
+     kdDebug(300) << "RenderTable::print(2) " << _tx << "/" << _ty << " (" << _x << "/" << _y << ")" << endl;
 #endif
 
     printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
@@ -1342,7 +1334,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     FOR_EACH_CELL(r, c, cell)
     {
 #ifdef DEBUG_LAYOUT
-	printf("printing cell %d/%d\n", r, c);
+	kdDebug(300) << "printing cell " << r << "/" << c << endl;
 #endif
         cell->print( p, _x, _y, _w, _h, _tx, _ty);
     }
@@ -1357,7 +1349,7 @@ void RenderTable::printBorders( QPainter* /*p*/, int, int,
 					int, int, int /*_tx*/, int /*_ty*/)
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(Table)::printObject()\n",  renderName());
+    kdDebug(300) << renderName() << "(Table)::printObject()" << endl;
 #endif
 
     // ### don't call children here...
@@ -1371,7 +1363,7 @@ void RenderTable::printBorders( QPainter* /*p*/, int, int,
 void RenderTable::calcMinMaxWidth()
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(Table)::calcMinMaxWidth() known=%d\n", renderName(), minMaxKnown());
+    kdDebug(300) << renderName() << "(Table)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
     calcColMinMax();
@@ -1388,7 +1380,7 @@ void RenderTable::close()
 
 void RenderTable::updateSize()
 {
-//    printf("RenderTable::updateSize()\n");
+//    kdDebug(300) << "RenderTable::updateSize()" << endl;
 
 //    setMinMaxKnown(false);
 //    setLayouted(false);
@@ -1480,7 +1472,7 @@ void RenderTableSection::print(QPainter *p, int _x, int _y,
 void RenderTableSection::addChild(RenderObject *child)
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(TableSection)::addChild( %s )\n",  renderName(), child->renderName());
+    kdDebug(300) << renderName() << "(TableSection)::addChild( " << child->renderName() << " )" << endl;
 #endif
 
     table->startRow();
@@ -1515,7 +1507,7 @@ void RenderTableRow::setRowIndex( long  )
 void RenderTableRow::addChild(RenderObject *child)
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(TableRow)::addChild( %s )\n",  renderName(), child->renderName());
+    kdDebug(300) << renderName() << "(TableRow)::addChild( " << child->renderName() << " )" << endl;
 #endif    
 
     RenderTableCell *cell =
@@ -1550,7 +1542,7 @@ RenderTableCell::~RenderTableCell()
 void RenderTableCell::calcMinMaxWidth()
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(TableCell)::calcMinMaxWidth() known=%d\n", renderName(), minMaxKnown());
+    kdDebug(300) << renderName() << "(TableCell)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
     if(minMaxKnown()) return;
@@ -1584,12 +1576,12 @@ void RenderTableCell::setContainingBlock()
 
 void RenderTableCell::close()
 {
-    //printf("renderFlow::close()\n");
+    //kdDebug(300) << "renderFlow::close()" << endl;
     setParsing(false);
     if(haveAnonymousBox())
     {
 	m_last->close();
-	//printf("RenderFlow::close(): closing anonymous box\n");
+	//kdDebug(300) << "RenderFlow::close(): closing anonymous box" << endl;
 	setHaveAnonymousBox(false);
     }
 
@@ -1607,14 +1599,14 @@ void RenderTableCell::close()
     table->updateSize();
 
 #ifdef DEBUG_LAYOUT
-    printf("%s(RenderTableCell)::close() total height =%d\n", renderName(), m_height);
+    kdDebug(300) << renderName() << "(RenderTableCell)::close() total height =" << m_height << endl;
 #endif
 }
 
 
 void RenderTableCell::updateSize()
 {
-//    printf("%s(RenderBox)::updateSize()\n", renderName());
+//    kdDebug(300) << renderName() << "(RenderBox)::updateSize()" << endl;
 
     RenderFlow::updateSize();
 
@@ -1645,7 +1637,7 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
 				       int _w, int _h, int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(RenderTableCell)::print() w/h = (%d/%d)\n", renderName(), width(), height());
+    kdDebug(300) << renderName() << "(RenderTableCell)::print() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
 
 //    if (!layouted())
@@ -1678,7 +1670,7 @@ RenderTableCol::~RenderTableCol()
 void RenderTableCol::addChild(RenderObject *child)
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(Table)::addChild( %s )\n",  renderName(), child->renderName());
+    kdDebug(300) << renderName() << "(Table)::addChild( " << child->renderName() << " )" << endl;
 #endif
 
     if (child->style()->display() == TABLE_COLUMN)
@@ -1687,7 +1679,7 @@ void RenderTableCol::addChild(RenderObject *child)
 	RenderObject::addChild(child);
 	RenderTableCol* colel = static_cast<RenderTableCol *>(child);
 	colel->setStartCol(_currentCol);
-//	printf("_currentCol=%d\n",_currentCol);
+//	kdDebug(300) << "_currentCol=" << _currentCol << endl;
 	table->addColInfo(colel);
 	_currentCol++;
     }

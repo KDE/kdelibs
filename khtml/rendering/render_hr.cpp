@@ -29,7 +29,7 @@
 #include <qdrawutil.h>
 #include <qpalette.h>
 
-#include <stdio.h>
+#include <kdebug.h>
 
 #include "rendering/render_style.h"
 

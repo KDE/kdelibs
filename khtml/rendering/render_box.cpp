@@ -47,7 +47,7 @@
 
 #include "render_root.h"
 
-#include <stdio.h>
+#include <kdebug.h>
 #include <assert.h>
 
 #include "misc/loader.h"
@@ -80,7 +80,7 @@ RenderBox::RenderBox(RenderStyle* style)
     default:
 	if(style->isFloating())
 	{
-	    //printf("floating element\n");
+	    //kdDebug(300) << "floating element" << endl;
 	    m_floating = true;
 	}
     }
@@ -88,7 +88,7 @@ RenderBox::RenderBox(RenderStyle* style)
 
 RenderBox::~RenderBox()
 {
-    //printf("Element destructor: this=%s\n", nodeName().string().ascii());
+    //kdDebug(300) << "Element destructor: this=" << nodeName().string() << endl;
 }
 
 QSize RenderBox::contentSize() const
@@ -112,13 +112,13 @@ QSize RenderBox::contentSize() const
 short RenderBox::contentWidth() const
 {
     short w = m_width;
-    //printf("RenderBox::contentWidth(1) = %d\n", m_width);
+    //kdDebug(300) << "RenderBox::contentWidth(1) = " << m_width << endl;
     if(m_style->hasBorder())
 	w -= borderLeft() + borderRight();
     if(m_style->hasPadding())
 	w -= paddingLeft() + paddingRight();
 
-    //printf("RenderBox::contentWidth(2) = %d\n", w);
+    //kdDebug(300) << "RenderBox::contentWidth(2) = " << w << endl;
     return w;
 }
 
@@ -187,7 +187,7 @@ void RenderBox::setPixmap(const QPixmap &)
 void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
 				       int, int _h, int _tx, int _ty)
 {
-    //printf("renderBox::printDecorations()\n");
+    //kdDebug(300) << "renderBox::printDecorations()" << endl;
 
     QColor c = m_style->backgroundColor();
 
@@ -279,7 +279,7 @@ void RenderBox::absolutePosition(int &xPos, int &yPos)
 
 void RenderBox::updateSize()
 {
-//    printf("%s(RenderBox) %x ::updateSize()\n", renderName(), this);
+//    kdDebug(300) << renderName() << "(RenderBox) " << this << " ::updateSize()" << endl;
 
     int oldMin = m_minWidth;
     int oldMax = m_maxWidth;
@@ -299,7 +299,7 @@ void RenderBox::updateSize()
 
 void RenderBox::updateHeight()
 {
-//    printf("%s(RenderBox) %x ::updateHeight()\n", renderName(), this);
+//    kdDebug(300) << renderName() << "(RenderBox) " << this << " ::updateHeight()" << endl;
 
     if (parsing())
     {
@@ -341,7 +341,7 @@ short RenderBox::verticalPositionHint() const
     switch(vAlign())
     {
     case BASELINE:
-	//printf("aligned to baseline\n");
+	//kdDebug(300) << "aligned to baseline" << endl;
 	return contentHeight();
     case SUB:
 	// ###
@@ -367,7 +367,7 @@ short RenderBox::baselineOffset() const
     switch(vAlign())
     {
     case BASELINE:
-//	printf("aligned to baseline\n");
+//	kdDebug(300) << "aligned to baseline" << endl;
 	return m_height;
     case SUB:
 	// ###
@@ -395,7 +395,7 @@ int RenderBox::bidiHeight() const
 
 void RenderBox::repaint()
 {
-    //printf("repaint!\n");
+    //kdDebug(300) << "repaint!" << endl;
     repaintRectangle(0, 0, m_width, m_height);
 }
 
@@ -403,7 +403,7 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h)
 {
     x += m_x;
     y += m_y;
-    // printf("RenderBox(%s)::repaintRectangle (%d/%d) (%d/%d)\n", renderName(), x, y, w, h);
+    // kdDebug(300) << "RenderBox(" << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     if(m_parent) m_parent->repaintRectangle(x, y, w, h);
 }
 
