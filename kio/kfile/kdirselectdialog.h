@@ -24,6 +24,7 @@
 #include <kurl.h>
 
 class QVBoxLayout;
+class QPopupMenu;
 class KConfig;
 class KFileTreeBranch;
 class KFileTreeView;
