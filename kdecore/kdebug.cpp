@@ -149,7 +149,7 @@ void kdebug( ushort nLevel, ushort nArea,
   switch( nLevel )
         {
         case KDEBUG_INFO:
-          nOutput = kapp->getConfig()->readNumEntry( "InfoOutput", 2 );
+          nOutput = kapp->getConfig()->readNumEntry( "InfoOutput", 4 );
           aCaption = "Info (" + aAppName.copy() + ")";
           nPriority = LOG_INFO;
           break;
