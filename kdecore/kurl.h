@@ -106,6 +106,8 @@ public:
    * @param _rel_url A relative or absolute URL.
    * If this is an absolute URL then @p _baseurl will be ignored.
    * If this is a relative URL it will be combined with @p _baseurl.
+   * Note that _rel_url should be encoded too, in any case.
+   * So do NOT pass a path here (use setPath or addPath instead).
    * @param encoding_hint Reserved, should be 0.
    */
   KURL( const KURL& _baseurl, const QString& _rel_url, int encoding_hint=0 );
