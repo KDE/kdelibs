@@ -41,6 +41,48 @@
 using namespace std;
 using namespace Arts;
 
+/*
+ * Enable this if you want to debug how long certain plugins / operations
+ * take to perform. You'll get the times between two select() calls that are
+ * done by the IOManager, which is equivalent to the time the input/output
+ * remains unserved. For apps like artsd, it gives the minimum audio latency
+ * users will need to specify to avoid dropouts.
+ */
+#undef IOMANAGER_DEBUG_LATENCY
+
+#ifdef IOMANAGER_DEBUG_LATENCY
+static timeval iomanager_debug_latency_time = { 0, 0 };
+
+static void iomanager_debug_latency_end()
+{
+	if(iomanager_debug_latency_time.tv_sec)
+	{
+		timeval end;
+		gettimeofday(&end,0);
+
+		float diff = (end.tv_usec-iomanager_debug_latency_time.tv_usec)/1000.0
+				   + (end.tv_sec-iomanager_debug_latency_time.tv_sec)*1000.0;
+
+		/* change this value if you get your screen filled up with messages */
+		if(diff >= 1.5)
+			fprintf(stderr,"IOManager: latency for operation: %2.3f ms\n",diff);
+	}
+}
+
+static void iomanager_debug_latency_start()
+{
+	gettimeofday(&iomanager_debug_latency_time,0);
+}
+#else
+static inline void iomanager_debug_latency_end()
+{
+}
+
+static inline void iomanager_debug_latency_start()
+{
+}
+#endif
+
 IOWatchFD::IOWatchFD(int fd, int types, IONotify *notify)
 {
 	_fd = fd;
@@ -150,7 +192,11 @@ void StdIOManager::processOneEvent(bool blocking)
 	select_timeout.tv_sec = selectabs / 1000000;
 	select_timeout.tv_usec = selectabs % 1000000;
 
+	if(level == 1) iomanager_debug_latency_end();
+
 	int retval = select(maxfd+1,&rfd,&wfd,&efd,&select_timeout);
+
+	if(level == 1) iomanager_debug_latency_start();
 
 	if(retval > 0)
 	{
