@@ -1,8 +1,11 @@
 [KDE Print Entry]
 PrintSystem=lpr
 Comment=LPR/LPRng Print System
+Comment[af]= lpr /lprng druk stelsel
 Comment[be]=LPR/LPRng сістэма друку
 Comment[bs]=LPR/LPRng sistem štampe
+Comment[cs]=Tiskový systém LPR/LPRng
+Comment[da]=LPR/LPRng-udskrivningssystem
 Comment[es]=Sistema de impresión LPR/LPRNg
 Comment[he]=מערכת ההדפסה LPR/LPRng
 Comment[ko]=LPR/LPRng 인쇄 시스템
