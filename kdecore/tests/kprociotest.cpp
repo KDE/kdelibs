@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
  b = p.fputs("This is a test. It should come out in reverse (esrever)");
  printf("fputs returns %s\n", b ? "true" : "false");
  
- // p.closeWhenDone();
+ p.closeWhenDone();
 
  printf("Entering man Qt event loop -- press <CTRL><C> to abort\n");
  app.exec();
