@@ -101,11 +101,6 @@ public:
     QString dirPath();
     
     /**
-      * Set the directory to view.
-      */
-    void setDir(const char *);
-    
-    /**
       * Rereads the currently selected directory.
       */
     void rereadDir();
@@ -161,11 +156,6 @@ public:
     void cdUp();
 
     /**
-      * Makes a new directory in current directory
-      */
-    void mkdir();
-    
-    /**
       * Returns true for local files, false for remote files.
       */
     bool dirIsLocal() const { return !acceptUrls; }
@@ -218,8 +208,13 @@ public:
     QStrList getSaveFileURLList(const char *url= 0, const char *filter= 0,
 				QWidget *parent= 0, const char *name= 0);
     
-    
-    signals:
+    /**
+      * Sets the directory to view 
+      * @param name URL to show
+      */
+    void setDir(const char *name) { setDir(name, true); }
+
+signals:
     /**
       * Emitted when the user selects a file.
       */
@@ -240,8 +235,6 @@ public:
       */
     void historyUpdate(bool, bool);
 
-
-    
 protected:
     KToolBar *toolbar;
     KFileInfoContents *fileList;
@@ -321,10 +314,17 @@ protected:
     virtual KFileInfoContents *initFileList( QWidget *parent );
 
     /**
-      * Set the directory to view for internal use
-      * @internal
+      * Overload this function, if you want the filter shown/unshown
       */
-    void setDir2(const char *, bool clearforward = true);
+    virtual bool getShowFilter();
+    
+    /**
+      * Set the directory to view 
+      * @param name URL to show
+      * @param clearforward indicate, if the forward queue 
+      * should be cleared
+      */
+    void setDir(const char *name, bool clearforward = true);
 
     /**
       * adds a entry of the current directory. If disableUpdating is set
@@ -332,8 +332,20 @@ protected:
       **/
     void addDirEntry(KFileInfo *entry, bool disableUpdating);
 
+    /**
+      * rebuild geometry managment. 
+      *
+      */
     void initGUI();
 
+    /**
+      * Makes a new directory in current directory after prompting for
+      * user name
+      */
+    void mkdir();
+
+    void KFileDialog::checkPath(const char *_txt, bool check = false);
+    
 protected slots:
     void pathChanged();
     void comboActivated(int);

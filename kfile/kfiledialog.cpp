@@ -68,7 +68,7 @@ const int idStart = 1;
 KFileDialog::KFileDialog(const char *dirName, const char *filter,
 			 QWidget *parent, const char *name, bool modal,
 			 bool acceptURLs)
-    : QDialog(parent, name, modal)
+    : QDialog(parent, name, modal), boxLayout(0)
 {
     QAccel *a = new QAccel( this );
     a->connectItem(a->insertItem(Key_S + CTRL), this,
@@ -82,10 +82,32 @@ KFileDialog::KFileDialog(const char *dirName, const char *filter,
 
     // Create the KDir
     if (dirName != 0) {
-	if (dirName[strlen(dirName) - 1] == '/')
+	/* KDir should handle this
+	   if (dirName[strlen(dirName) - 1] == '/')
+	   dir = new KDir(dirName);
+	   else
+	   dir = new KDir(dirName + QString("/"));
+	*/
+	KFileInfo i(dirName);
+	if (i.isDir())
 	    dir = new KDir(dirName);
-	else
-	    dir = new KDir(dirName + QString("/"));
+	else {
+	    debug("I got a filename");
+	    QString filename = dirName;
+	    int sep = filename.findRev('/');
+	    if (sep < 0) {
+		dir = new KDir(filename.left(sep));
+		filename_ = filename;
+	    } else {
+		dir = new KDir(); // take current path
+		if (acceptURLs)
+		    filename_ = dir->url() + filename;
+		else
+		    filename_ = dir->path() + filename;
+	    }
+	   
+	}
+	    
     } else 
 	dir = new KDir();
     
@@ -126,8 +148,8 @@ KFileDialog::KFileDialog(const char *dirName, const char *filter,
     int h = c->readNumEntry("Height", 400);
     
     showHidden = (c->readNumEntry("ShowHidden", 0) != 0);
-    showFilter = (c->readNumEntry("ShowFilter", 1) != 0);
-    
+    showFilter = getShowFilter();
+
     showStatusLine = (c->readNumEntry("ShowStatusLine", 1) != 0);
       
     resize(w, h);
@@ -304,11 +326,19 @@ KFileDialog::KFileDialog(const char *dirName, const char *filter,
        pathChanged();
 
     c->setGroup(oldgroup); // reset the group
-      
+
+    if (!filename_.isNull()) {
+	debug("edit %s", locationEdit->text(0));
+	checkPath(filename_);
+	locationEdit->setText(filename_);
+    }
 }
 
 void KFileDialog::initGUI()
 {
+    if (boxLayout)
+	delete boxLayout; // deletes all sub layouts
+
     boxLayout = new QVBoxLayout(wrapper, 4);
     boxLayout->addSpacing(toolbar->height());
     boxLayout->addWidget(fileList->widget(), 4);
@@ -359,6 +389,11 @@ void KFileDialog::help() // SLOT
     kapp->invokeHTMLHelp("kfiledialog/index.html", "");
 }
 
+bool KFileDialog::getShowFilter() 
+{
+    return (kapp->getConfig()->readNumEntry("ShowFilter", 1) != 0);
+}
+
 void KFileDialog::filterChanged() // SLOT
 {
     if (!showFilter)
@@ -389,30 +424,37 @@ void KFileDialog::setHiddenToggle(bool b) // SLOT
     pathChanged();
 }
 
-void KFileDialog::locationChanged(const char *_txt) // SLOT
+void KFileDialog::locationChanged(const char *_txt)
+{
+    debug("highlighted \"%s\" \"%s\"", _txt, locationEdit->text(0));
+    bool highlighted = strcmp(_txt, locationEdit->text(0));
+    checkPath(_txt, highlighted);
+}
+
+void KFileDialog::checkPath(const char *_txt, bool check) // SLOT
 {
     QString text = _txt;
     text = text.stripWhiteSpace();
+    if (text.find(':') < 0 && text[0] != '/')
+	text.insert(0, dir->url());
+    
     KURL u = text.data(); // I have to take care of entered URLs
     bool filenameEntered = false;
     
     if (u.isLocalFile()) {
 	// the empty path is kind of a hack
-	QString t = u.path();
-	KFileInfo *i = new KFileInfo("", t); 
-	if (i->isDir())
-	    setDir2(text, true);
+	KFileInfo i("", u.path()); 
+	if (i.isDir())
+	    setDir(text, true);
 	else {
-	    bool highlighted = strcmp(_txt, locationEdit->text(0));
-	    if (highlighted)
-		if (!acceptOnlyExisting || i->isFile())
-		    filenameEntered = true;
-		else
+	    if (check)
+		if (acceptOnlyExisting && !i.isFile())
 		    warning("you entered an invalid URL");
+		else
+		    filenameEntered = true;
 	}
-	delete i;
     } else
-	setDir2(text, true);
+	setDir(text, true);
 
     if (filenameEntered) {
 	if (acceptUrls)
@@ -421,7 +463,9 @@ void KFileDialog::locationChanged(const char *_txt) // SLOT
 	    filename_ = u.path();
 	emit fileSelected(filename_);
 	accept();
-    }
+    } else
+	debug("no filename");
+    
 }
 
 
@@ -436,12 +480,7 @@ QString KFileDialog::dirPath()
     return dir->path();
 }
 
-void KFileDialog::setDir(const char *pathstr)
-{
-    setDir2(pathstr, true);
-}
-
-void KFileDialog::setDir2(const char *_pathstr, bool clearforward)
+void KFileDialog::setDir(const char *_pathstr, bool clearforward)
 {
     QString pathstr = _pathstr;
     
@@ -501,6 +540,8 @@ void KFileDialog::setDir2(const char *_pathstr, bool clearforward)
 
 void KFileDialog::rereadDir()
 {
+    // some would call this dirty. I don't ;)
+    dir->setPath(dir->url());
     pathChanged();
 }
 
@@ -669,7 +710,7 @@ void KFileDialog::comboActivated(int index)
 	debug("cdUp %s",tmp.url().data());
 	tmp.cdUp();
     }
-    setDir2(tmp.url(), true);
+    setDir(tmp.url(), true);
 }
 
 // Code pinched from kfm then hacked
@@ -685,7 +726,7 @@ void KFileDialog::back()
 
     updateHistory( true, !backStack.isEmpty());
 
-    setDir2(*s, false);
+    setDir(*s, false);
 }
 
 // Code pinched from kfm then hacked
@@ -699,7 +740,7 @@ void KFileDialog::forward()
 
     QString *s = forwardStack.pop();
     updateHistory( !forwardStack.isEmpty(), true);
-    setDir2(*s, false);
+    setDir(*s, false);
 }
 
 // SLOT
@@ -763,9 +804,7 @@ void KFileDialog::toolbarCallback(int i) // SLOT
 	home();
 	break;
     case RELOAD_BUTTON:
-	// some would call this dirty. I don't ;)
-	dir->setPath(dir->url());
-	pathChanged();
+	rereadDir();
 	break;
     case HOTLIST_BUTTON:
 	// It's done on the pressed() signal
@@ -786,12 +825,14 @@ void KFileDialog::toolbarCallback(int i) // SLOT
 	conf.exec();
 	fileList->widget()->hide(); 
 	delete boxLayout; // this removes all child layouts too
+	boxLayout = 0;
 
 	// recreate this widget
 	delete fileList;
         fileList = initFileList( wrapper );
 	initGUI(); // add them back to the layout managment
 	fileList->widget()->show();
+	resize(width(), height());
 	pathChanged(); // refresh now
 	break;
     }
@@ -805,12 +846,12 @@ void KFileDialog::cdUp()
 {
     KURL u = dir->url().data();
     u.cd("..");
-    setDir2(u.url(), true);
+    setDir(u.url(), true);
 }
 
 void KFileDialog::home()
 {
-    setDir2( QDir::homeDirPath(), true);
+    setDir( QDir::homeDirPath(), true);
 }
 
 
@@ -872,7 +913,7 @@ void KFileDialog::mkdir()
     ed->grabKeyboard();
     if ( lMakeDir->exec() == Accepted ) {
 	if ( QDir(dir->path()).mkdir(ed->text()) == true ) {  // !! don't like this move it into KDir ??
-	    setDir2( QString(dir->url()+ed->text()), true );
+	    setDir( QString(dir->url()+ed->text()), true );
 	} else {
 
 	    /* Stephan: I don't understand, what this is meant for:
@@ -937,7 +978,7 @@ void KFileDialog::toolbarPressedCallback(int i)
 	       b != 0; b= root->getChildren().next()) {
 	    if (i == choice) {
 	      fprintf(stderr, "opening bookmark to %s\n", b->getURL());
-	      setDir(b->getURL());
+	      setDir(b->getURL(), true);
 	    }
 	    i++;
 	  }
@@ -958,7 +999,7 @@ void KFileDialog::dirActivated()
     tmp += tmps;
     tmp += "/";
     debug("dirActivated %s", tmp.data());
-    setDir2(tmp, true);
+    setDir(tmp, true);
 }
 
 void KFileDialog::fileActivated()
@@ -1066,7 +1107,7 @@ void KFileDialog::completion() // SLOT
 	int l = text.length() - 1;
 	while (!text.isEmpty() && text[l] != '/')
 	    l--;
-	setDir2(text.left(l), true);
+	setDir(text.left(l), true);
 	locationEdit->setText(text);
 	// this recursion is very dangerous.
 	// I'm not *that* sure, that it works in every case
@@ -1100,7 +1141,7 @@ QString KFileDialog::selectedFileURL()
 	return 0;
     else {
 	KURL u = filename_.data();
-	return u.url(); // let KURL check the 
+	return u.url(); // let KURL check the rest
     }
 
 }
@@ -1131,10 +1172,14 @@ class KDirDialog : public KFileDialog
 public:
     
     KDirDialog(const char *url, QWidget *parent, const char *name) 
-	: KFileDialog(url, 0, parent, name, true, false) { debug("cons"); }
+	: KFileDialog(url, 0, parent, name, true, false) 
+	{
+	    debug("cons"); 
+	}
     
 protected:
     virtual KFileInfoContents *initFileList( QWidget *parent );
+    virtual bool showFilter() { return false; }
 };
 
 KFileInfoContents *KDirDialog::initFileList( QWidget *parent )

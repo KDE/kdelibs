@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <qdir.h>
 
 #include "kfiledialog.h"
 #include <qmsgbox.h>
@@ -32,16 +33,40 @@
 
 int main(int argc, char **argv)
 {
-    const char filter[] = "*";
-    // "*.cpp|C++-Files (*.cpp)\t*.h|Header-Files (*.h)\t*.o *.a|Object-Files";
-
     KApplication a(argc, argv, "kfstest");
     QString name1;
     
-    if (argc == 2 && QString(argv[1]) == "dirs")
+    if (argc != 2) {
+	warning("usage: %s {dirs, filter, preselect, normal}", argv[0]);
+	exit(0);
+    }
+    
+    enum { Dirs, Filter, Preselect, Normal } mode;
+    
+    if (QString(argv[1]) == "dirs")
+	mode = Dirs;
+    else if (QString(argv[1]) == "filter")
+	mode = Filter;
+    else if (QString(argv[1]) == "preselect")
+	mode = Preselect;
+    else mode = Normal;
+
+    switch (mode) {
+    case Dirs:
 	name1 = KFileDialog::getDirectory(0);
-    else
-	name1= KFileDialog::getOpenFileURL(0, filter);
+	break;
+    case Filter:
+	name1 = KFileDialog::getOpenFileURL(0, 
+					   "*.cpp|C++-Files (*.cpp)\n"
+					   "*.h|Header-Files (*.h)\n"
+					   "*.o *.a|Object-Files");
+	break;
+    case Preselect:
+	name1 = KFileDialog::getOpenFileURL("/text.txt");
+	break;
+    case Normal:
+	name1 = KFileDialog::getOpenFileURL();
+    }
     
     if (!(name1.isNull()))
 	QMessageBox::message("Your Choice",

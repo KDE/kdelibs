@@ -43,8 +43,11 @@ toolbar_DATA = configure.xpm
 # I'm not sure, if they really should go there
 toolbardir = $(kde_toolbardir)
 
+LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) 
+libkfile_la_LDFLAGS = -version-info 0:90 $(LDFLAGS)
+libkfile_la_LIBADD = -lqt -lXext -lX11 $(LIBSOCKET)
+
 check_PROGRAMS = kfstest
-kfstest_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) -version-info 0:90
 kfstest_LDADD = libkfile.la ../kdecore/libkdecore.la ../kdeui/libkdeui.la ../kfmlib/libkfm.la -lqt -lXext -lX11 $(LIBSOCKET)
 
 bookmark.cpp:bookmark.moc

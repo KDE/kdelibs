@@ -1,3 +1,9 @@
+Sat Mar 28 14:49:00 1998  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: changed the meaning of the dirName argument
+
+	* kfiledialog.h: added getShowFilter
+
 Thu Mar 26 12:47:42 1998  Stephan Kulow  <coolo@kde.org>
 	
 	* kfilesimpleview.cpp: improved scrolling in simple view
