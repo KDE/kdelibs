@@ -1658,8 +1658,8 @@ private:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    class KToggleToolbarActionPrivate;
-    KToggleToolbarActionPrivate *d;
+    class KWidgetActionPrivate;
+    KWidgetActionPrivate *d;
 };
 
 class KActionSeparator : public KAction
