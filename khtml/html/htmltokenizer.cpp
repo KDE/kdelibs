@@ -35,7 +35,7 @@
 #include "config.h"
 #endif
 
-#include "kentities.c"
+#include <string.h>
 #include "htmltokenizer.h"
 #include "misc/loader.h"
 #include "khtmlview.h"
@@ -51,6 +51,7 @@
 #include <kdebug.h>
 
 #include "kjs.h"
+#include "kentities.c"
 
 using namespace khtml;
 
