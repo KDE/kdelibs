@@ -412,7 +412,8 @@ int KDockTabBarPainter::findBarByPos( int x, int y )
   int end = 0;
   int find = -1;
   int findWidth = -1;
-  for ( uint k = 0; k < mainData->count(); k++ ){
+  uint k;
+  for ( k = 0; k < mainData->count(); k++ ){
     end += mainData->at(k)->width;
     if ( x < end ){
       find = k;
@@ -423,7 +424,7 @@ int KDockTabBarPainter::findBarByPos( int x, int y )
 
   int idCurTab = bar->_currentTab;
   int curTab = -1;
-  for ( uint k = 0; k < mainData->count(); k++ )
+  for ( k = 0; k < mainData->count(); k++ )
     if ( mainData->at(k)->id == idCurTab ){
       curTab = k;
       break;
@@ -470,7 +471,8 @@ QRect KDockTabBarPainter::findBarRectByPos( int x, int y)
   int end = 0;
   int find = -1;
   int findWidth = -1;
-  for ( uint k = 0; k < mainData->count(); k++ ){
+  uint k;
+  for ( k = 0; k < mainData->count(); k++ ){
     end += mainData->at(k)->width;
     if ( x < end ){
       find = k;
@@ -481,7 +483,7 @@ QRect KDockTabBarPainter::findBarRectByPos( int x, int y)
 
   int idCurTab = bar->_currentTab;
   int curTab = -1;
-  for ( uint k = 0; k < mainData->count(); k++ )
+  for ( k = 0; k < mainData->count(); k++ )
     if ( mainData->at(k)->id == idCurTab ){
       curTab = k;
       break;
