@@ -117,11 +117,9 @@ unsigned long HTMLCollectionImpl::calcLength(NodeImpl *current) const
                     if(!e->getAttribute(ATTR_HREF).isNull())
                         len++;
                 break;
-            case DOC_ANCHORS:      // all A elements with a value for name and all elements with an id attribute
-                if ( e->hasID() )
-                    len++;
-                else if(e->id() == ID_A) {
-                    if(!e->getAttribute(ATTR_NAME).isNull())
+            case DOC_ANCHORS:      // all A elements with a value for name and/or id
+                if(e->id() == ID_A) {
+                    if(e->hasID() || !e->getAttribute(ATTR_NAME).isNull())
                         len++;
                 }
                 break;
@@ -205,11 +203,10 @@ NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len) co
                         len++;
                 break;
             case DOC_ANCHORS:      // all A elements with a value for name or an id attribute
-                if( e->hasID() )
-                    len++;
-                else if(e->id() == ID_A)
-                    if(!e->getAttribute(ATTR_NAME).isNull())
+                if(e->id() == ID_A) {
+                    if(e->hasID() || !e->getAttribute(ATTR_NAME).isNull())
                         len++;
+                }
                 break;
             case DOC_ALL:
                 len++;
@@ -331,11 +328,10 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
                         check = true;
                 break;
             case DOC_ANCHORS:      // all A elements with a value for name
-                if( e->hasID() )
-                    check = true;
-                else if(e->id() == ID_A)
-                    if(!e->getAttribute(ATTR_NAME).isNull())
+                if(e->id() == ID_A) {
+                    if(e->hasID() || !e->getAttribute(ATTR_NAME).isNull())
                         check = true;
+                }
                 break;
             case DOC_ALL:
                 check = true;
