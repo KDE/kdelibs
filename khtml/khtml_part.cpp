@@ -936,6 +936,10 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
   if (!d->m_jsedlg) {
     d->m_jsedlg = new KJSErrorDlg;
     d->m_jsedlg->setURL(m_url.prettyURL());
+    if (KGlobalSettings::showIconsOnPushButtons()) {
+      d->m_jsedlg->_clear->setIconSet(SmallIconSet("locationbar_erase"));
+      d->m_jsedlg->_close->setIconSet(SmallIconSet("fileclose"));
+    }
   }
   return d->m_jsedlg;
 }
@@ -3501,7 +3505,8 @@ void KHTMLPart::slotViewDocumentSource()
 void KHTMLPart::slotViewPageInfo()
 {
   KHTMLInfoDlg *dlg = new KHTMLInfoDlg(NULL, "KHTML Page Info Dialog", false, WDestructiveClose);
-
+  dlg->_close->setGuiItem(KStdGuiItem::close());
+  
   if (d->m_doc)
      dlg->_title->setText(d->m_doc->title().string());
 
