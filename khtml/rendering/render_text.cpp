@@ -122,39 +122,43 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
     _ty += m_y;
 
     bool parentInline = p->parent()->isInline();
-
-    //kdDebug( 6040 ) << "renderBox::printDecorations()" << endl;
-    if (parentInline)
-        _ty -= p->paddingTop() + p->borderTop();
-
     int width = m_width;
-    if(begin && parentInline)
+    int height = m_height;
+
+    if (parentInline) {
+        _ty -= p->paddingTop() + p->borderTop();
+        height += p->paddingTop() + p->borderTop() + p->paddingBottom() + p->borderBottom();
+    }
+
+    if(begin && parentInline) {
         _tx -= p->paddingLeft() + p->borderLeft();
+        width += p->paddingLeft() + p->borderLeft();
+    }
+
+    if ( end && parentInline )
+        width += p->paddingRight() + p->borderRight();
 
     QColor c = style->backgroundColor();
     CachedImage *i = style->backgroundImage();
-    if(c.isValid() && (!i || i->tiled_pixmap(c).mask()))
-        pt->fillRect(_tx, _ty, width, m_height, c);
+     if(c.isValid() && (!i || i->tiled_pixmap(c).mask()))
+         pt->fillRect(_tx, _ty, width, height, c);
 
-    if(i)
-    {
+    if(i) {
         // ### might need to add some correct offsets
         // ### use paddingX/Y
-        pt->drawTiledPixmap(_tx + p->borderLeft(), _ty + p->borderTop(),
-                            m_width + p->paddingLeft() + p->paddingRight(),
-                            m_height + p->paddingTop() + p->paddingBottom(), i->tiled_pixmap(c));
+        pt->drawTiledPixmap(_tx, _ty, width, height, i->tiled_pixmap(c));
     }
 
+
     if(style->hasBorder())
-        p->printBorder(pt, _tx, _ty, width, m_height + p->paddingTop() + p->paddingBottom() +
-                       p->borderTop() + p->borderBottom(), style, begin, end);
+        p->printBorder(pt, _tx, _ty, width, height, style, begin, end);
 
 #ifdef BIDI_DEBUG
     int h = m_height + p->paddingTop() + p->paddingBottom() + p->borderTop() + p->borderBottom();
     QColor c2 = QColor("#0000ff");
     p->drawBorder(pt, _tx, _ty, _tx, _ty + h, 1,
                   RenderObject::BSLeft, c2, c2, SOLID, false, false);
-    p->drawBorder(pt, _tx + width, _ty, _tx + width, _ty + h, 1,
+    p->drawBorder(pt, _tx + m_width, _ty, _tx + m_width, _ty + h, 1,
                   RenderObject::BSRight, c2, c2, SOLID, false, false);
 #endif
 }
@@ -561,7 +565,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             if((hasSpecialObjects()  &&
                 (parent()->isInline() || pseudoStyle)) &&
                (!pseudoStyle || s->m_firstLine))
-                s->printBoxDecorations(p, _style, this, tx, ty, si == 0, si == (int)m_lines.count());
+                s->printBoxDecorations(p, _style, this, tx, ty, si == 0, si == (int)m_lines.count()-1);
 
             if(_style->font() != p->font())
                 p->setFont(_style->font());
