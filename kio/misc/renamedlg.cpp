@@ -179,7 +179,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 	delete obj;
 	continue;
       }
-      if( plugin->initialize( _src, _dest, d->mimeSrc, 
+      if( plugin->initialize( _mode, _src, _dest, d->mimeSrc, 
 			      d->mimeDest, sizeSrc, sizeDest,
 			      ctimeSrc, ctimeDest,
 			      mtimeSrc, mtimeDest ) ) {
@@ -453,7 +453,7 @@ void RenameDlg::pluginHandling()
 }
 QString RenameDlg::mime( const QString &src )
 {
-  KMimeType::Ptr type = KMimeType::findByURL(d->src );
+  KMimeType::Ptr type = KMimeType::findByURL(src );
   //if( type->name() == KMimeType::defaultMimeType() ){ // ok no mimetype
     //    QString ty = KIO::NetAccess::mimetype(d->src );
     // return ty;
