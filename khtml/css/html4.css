@@ -79,6 +79,20 @@ blockquote {
         -konq-flow-mode: -konq-around-floats
 }
 
+Q        {
+         display: inline;
+}
+
+Q:before {
+         content: '"';
+    /*   content: open-quote;   */
+}
+
+Q:after  {
+         content: '"';
+    /*   content: close-quote;  */
+}
+
 IFRAME {
 	display: block;
 }
