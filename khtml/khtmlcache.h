@@ -45,21 +45,15 @@ class QMovie;
 #include <qasyncio.h>
 
 class KHTMLWidget;
+class KHTMLCachedImage;
 
 /**
  * Defines the DataSource for incremental loading of images.
  */
 class KHTMLImageSource : public QDataSource
 {
-  const int buf_size;
-  uchar *buffer;
-  QIODevice* iod;
-  bool rew;
-  bool eof;
-  int pos;
-
  public:
-  KHTMLImageSource(QIODevice*, int bufsize=8192);
+  KHTMLImageSource(QByteArray buf);
   ~KHTMLImageSource();
  
   /**
@@ -87,6 +81,18 @@ class KHTMLImageSource : public QDataSource
     Calls reset() on the QIODevice.
   */
   void rewind();
+
+  /**
+   * Sets the EOF state.
+   */
+  void setEOF( bool state );
+
+ private:
+
+  QByteArray buffer;
+  bool rew;
+  int pos;
+  bool eof;
 };
 
 /** 
@@ -135,7 +141,7 @@ public slots:
      * gets called, whenever a QMovie changes frame
      */
     void movieUpdated( const QRect &rect );
- 
+
 public:
     QPixmap *p;
     QMovie *m;
@@ -148,14 +154,13 @@ public:
     bool gotFrame;
 
 private:
-    // Buffer of the incremental loaded picture
-    QBuffer* incBuffer;
-
     // Is the name of the movie format type
     const char* formatType;
 
     // Is set if movie format type ( incremental/animation) was checked
     bool typeChecked;
+
+    KHTMLImageSource* imgSource;
 };
 
 class ImageList : public QStringList

@@ -37,29 +37,24 @@
 
 #include <sys/stat.h>
 #include <unistd.h>
+#include <string.h>
   
 /*!
   This Class defines the DataSource for incremental loading of images.
 */
-KHTMLImageSource::KHTMLImageSource(QIODevice* device, int buffer_size) :
-    buf_size(buffer_size),
-    buffer(new uchar[buf_size]),
-    iod(device),
-    rew(FALSE),
-    eof(FALSE),
-    pos(0)
+KHTMLImageSource::KHTMLImageSource(QByteArray buf)
 {
+  buffer = buf;
+  rew = false;
+  pos = 0;
+  eof = false;
 }
 
 /*!
   Destroys the QIODeviceSource, deleting the QIODevice from which it was
   constructed.
 */
-KHTMLImageSource::~KHTMLImageSource()
-{
-    delete iod;
-    delete [] buffer;
-}
+KHTMLImageSource::~KHTMLImageSource() {}
 
 /**
  * Overload QDataSource::readyToSend() and returns the number
@@ -67,27 +62,12 @@ KHTMLImageSource::~KHTMLImageSource()
 */
 int KHTMLImageSource::readyToSend()
 {
-  if ( !(iod->state() & IO_Open) )
-    {
-      if ( (int) iod->size() == pos)
-	return -1;
+  int n = buffer.size() - pos;
 
-      // This indicates that the end of the buffer is the end 
-      // of the file.
+  if ( !n && !eof )
+    return n;
 
-      iod->open( IO_ReadOnly );
-      eof = true;
-    }
-
-  if ( iod->status() != IO_Ok || !(iod->state() & IO_Open) )
-    return -1;
-
-  int n = QMIN((uint)buf_size, iod->size() - pos);
-  
-  if ( !n && eof )
-    return -1;
-
-  return n;
+  return n ? n : -1;
 }
 
 /*!
@@ -114,10 +94,8 @@ void KHTMLImageSource::rewind()
   pos = 0;
   if (!rew) {
     QDataSource::rewind();
-  } else {
-    iod->reset();
+  } else
     ready();
-  }
 }
 
 /*!
@@ -125,14 +103,17 @@ void KHTMLImageSource::rewind()
 */
 void KHTMLImageSource::sendTo(QDataSink* sink, int n)
 {
-  int oldPos = iod->at(); // save old position
-  
-  iod->at( pos );
-  iod->readBlock((char*)buffer, n);
-  sink->receive(buffer, n);
-  iod->at( oldPos ); // restore old position
+  sink->receive((const uchar*)&buffer.at(pos), n);
   
   pos += n;
+}
+
+/**
+ * Sets the EOF state.
+ */
+void KHTMLImageSource::setEOF( bool state )
+{
+  eof = state;
 }
 
 KHTMLCachedImage::KHTMLCachedImage()
@@ -141,17 +122,16 @@ KHTMLCachedImage::KHTMLCachedImage()
     p = 0;
     m = 0;
     typeChecked = false;
-    incBuffer = 0;
     formatType = 0;
     status = KHTMLCache::Unknown;
     size = 0;
+    imgSource = 0;
 }
 
 KHTMLCachedImage::~KHTMLCachedImage()
 {
     if( m ) delete m;
     if( p ) delete p;
-    if( incBuffer ) delete incBuffer;
     if ( formatType ) delete formatType;
 }
 
@@ -167,7 +147,7 @@ void
 KHTMLCachedImage::remove( HTMLObject *o ) 
 { 
   clients.remove( o ); 
-  if(m && clients.isEmpty() && !m->finished())
+  if(m && clients.isEmpty() && m->running())
     m->pause();
 }
 
@@ -200,16 +180,15 @@ KHTMLCachedImage::clear()
 	delete p;
 	p = 0;
     }
-    if ( incBuffer ) {
-        delete incBuffer;
-	incBuffer = 0;
-    }
     if ( formatType ) {
       delete formatType;
       formatType = 0;
     }
     typeChecked = false;
     size = 0;
+
+    // No need to delete imageSource - QMovie does it for us
+    imgSource = 0;
 }
 
 void
@@ -281,34 +260,21 @@ KHTMLCachedImage::data ( QBuffer & _buffer, bool eof )
 	
 	if ( formatType )  // movie format exists
 	  {
-	    incBuffer = new QBuffer();
-	    incBuffer->open(IO_ReadWrite);
-	    // write at least some data so that the decoder can 
-	    // determine the right format type
-	    incBuffer->writeBlock( _buffer.buffer(), _buffer.size()); 
-	    m = new QMovie( new KHTMLImageSource(incBuffer) );
-	    m->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
+	    imgSource = new KHTMLImageSource( _buffer.buffer());
+	    m = new QMovie( imgSource );
+ 	    m->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
 	    gotFrame = false;
 	    return false;
 	  }
       }
     
-    if ( formatType )  // movie format exists
-      {
-	int bufSize = incBuffer->size(),
-	    length = _buffer.size()-bufSize;
-	
-	if ( length )
-	  {
-	    m->pause();
-	    incBuffer->at(bufSize);
-	    incBuffer->writeBlock( &_buffer.buffer().at(bufSize), length);
-	    m->unpause();
-	  }
-      }
-    
     if ( !eof )
-      return false;
+      {
+	if ( imgSource )
+	  imgSource->maybeReady();
+
+	return false;
+      }
 
     if( !formatType )
       {
@@ -322,8 +288,12 @@ KHTMLCachedImage::data ( QBuffer & _buffer, bool eof )
       }
     else
       {
-	incBuffer->close();
-	size = incBuffer->size();
+	size = _buffer.size();
+	if ( imgSource )
+	  {
+	    imgSource->setEOF( true );
+	    imgSource->maybeReady();
+	  }
       }
 
     computeStatus();
