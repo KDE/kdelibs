@@ -620,7 +620,7 @@ void KNotifyWidget::commandlineChanged( const QString& text )
     emit changed( true );
 }
 
-void KNotifyWidget::slotItemClicked( QListViewItem *item, const QPoint&, 
+void KNotifyWidget::slotItemClicked( QListViewItem *item, const QPoint&,
                                      int col )
 {
     if ( !item || !item->isSelected() )
@@ -629,11 +629,15 @@ void KNotifyWidget::slotItemClicked( QListViewItem *item, const QPoint&,
     Event *event = currentEvent();
     if ( !event )
         return; // very unlikely, but safety first
+
+    bool doShowAdvanced = false;
     
     switch( col )
     {
         case COL_EXECUTE:
             m_execute->toggle();
+            m_executePath->setFocus();
+            doShowAdvanced = true;
             break;
         case COL_STDERR:
             m_stderr->toggle();
@@ -644,12 +648,20 @@ void KNotifyWidget::slotItemClicked( QListViewItem *item, const QPoint&,
             break;
         case COL_LOGFILE:
             m_logToFile->toggle();
+            m_logfilePath->setFocus();
+            doShowAdvanced = true;
             break;
         case COL_SOUND:
             m_playSound->toggle();
             break;
         default: // do nothing
             break;
+    }
+    
+    if ( doShowAdvanced && !m_logToFile->isVisible() )
+    {
+        showAdvanced( true );
+        m_listview->ensureItemVisible( m_listview->currentItem() );
     }
 }
 
@@ -963,7 +975,7 @@ void Application::reloadEvents( bool revertToDefaults )
 
             else { // load the event
                 // default to passive popups over plain messageboxes
-                int default_rep = kc->readNumEntry("default_presentation", 
+                int default_rep = kc->readNumEntry("default_presentation",
                                                    0 | KNotifyClient::PassivePopup);
                 QString default_logfile = kc->readEntry("default_logfile");
                 QString default_soundfile = kc->readEntry("default_sound");
