@@ -165,6 +165,28 @@ public:
   int buttons() { return _btn; };
 
 
+signals:
+
+  /**
+   * Indicate that the state of the modules contents has changed.
+   *
+   * This signal is emitted whenever the state of the configuration
+   * shown in the module changes. It allows the control center to
+   * keep track of unsaved changes.
+   *
+   */
+  void changed(bool state);
+
+  /**
+   * Indicate that the module's quickhelp has changed.
+   *
+   * Emit this signal whenever the module's quickhelp changes.
+   * Modules implemented as tabbed dialogs might want to implement
+   * per-tab quickhelp for example.
+   *
+   */
+  void quickHelpChanged();
+
 protected:
 
   /**
@@ -181,20 +203,6 @@ protected:
    * @see KCModule::buttons
    */
   void setButtons(int btn) { _btn = btn; };
-
-
-signals:
-
-  /**
-   * Indicate the the state of the modules contents has changed.
-   *
-   * This signal is emitted whenever the state of the configuration
-   * shown in the module changes. It allows the control center to
-   * keep track of unsaved changes.
-   *
-   */
-  void changed(bool state);
-
 
 private:
 
