@@ -26,7 +26,7 @@
 #define _KJS_VALUE_H_
 
 // Uncomment this to enable very verbose output from KJS
-#define KJS_VERBOSE
+//#define KJS_VERBOSE
 // Uncomment this to debug memory allocation and garbage collection
 //#define KJS_DEBUG_MEM
 
