@@ -524,7 +524,7 @@ protected:
      * given by @p info.
      *
      * Use this function to check if any cached password exists
-     * for the @p URL given by @p info.  If @p AuthInfo::realValue
+     * for the URL given by @p info.  If @p AuthInfo::realmValue
      * is present and/or the @p AuthInfo::verifyPath flag is set,
      * then they will also be factored in determining the presence
      * of a cached password.  Note that @p Auth::url is a required
@@ -539,11 +539,11 @@ protected:
      *
      * If the protocol allows multiple resources within the same
      * location to be protected by different passwords, then to
-     * determine the correct password and still be able to send the
-     * correct password pre-emtively, i.e. before the other end requires
-     * it, you can use one or both of the following methods: set the
-     * unique identifier using @p AuthInfo::realValue or require that
-     * a path match be performed using @p AuthInfo::verifyPath.
+     * determine the correct password and send pre-emtively, i.e.
+     * before the other end requires it, you can use one or both
+     * of the following methods: set the unique identifier using
+     * @p AuthInfo::realmValue or require that a path match be
+     * performed using @p AuthInfo::verifyPath.
      *
      * <pre>
      * info.url = KURL("http://www.foobar.org/foo/bar");
@@ -595,25 +595,36 @@ protected:
 
 
     /**
-     * Caches authentication information in "kdesud".
+     * Caches authentication information in the "kdesud" deamon.
      *
      * Use this function to cache correct authorization information
      * so that you will not have to request it again from the end
-     * user.  By default is automatically deleted if the application
-     * that cached it is shutdown properly. You can change this by
-     * setting the @AuthInfo::keepPassword flag so that the password
-     * is cached for the duration of the current KDE session or the
-     * end-user manually does "kdesu -s" to stop the running "kdesud"
-     * process.  Additionally, this function does not check whether
-     * the provided authorization info is already cached and will
-     * simply overwrite it.
+     * user.  By default this info is automatically deleted if the
+     * application that cached it is shutdown properly.  You can
+     * change this by setting the @AuthInfo::keepPassword flag so
+     * that the password is cached for the duration of the current
+     * KDE session or the end-user manually does "kdesu -s" to stop
+     * the running "kdesud" process.
      *
-     * NOTE: A call to this function can also fail and result
-     * in a return value of @p false, if "kdesud" could not be
-     * started for whatever reason or when no URL was supplied.
-     * Additionally, if application that cached the password
-     * crashes, the password will be kept for the duration of
-     * the current KDE session.
+     * This method allows for caching of different passwords for the
+     * same location if a uniquie identifier is supplied through @ref
+     * AuthInfo::realmValue.  This identifier can be any unique value
+     * such as the path.  Multiple passwords for the same site are
+     * groupped under a group key so that they can be properly discarded
+     * when the last application referencing it is shut down.
+     *
+     * Note that this function does not check whether the provided
+     * authorization info is already cached and hence will simply
+     * overwrite it.  This means that if the same key is generated
+     * by the call @ref createAuthenticationKey, the last caching
+     * request always wins.  Also note that a call to this function
+     * can fail and result in a return value of @p false, if the
+     * "kdesud" daemon used to cache the password is not running and
+     * cannot not be started for whatever reason. This also applies
+     * when no URL is supplied and thus a caching key could not be
+     * generated!  Additionally, if application that cached the password
+     * crashes, the password will be kept for the duration of the current
+     * KDE session.
      *
      * @param       See @ref AuthInfo.
      * @return      @p TRUE if the authorization info was sucessfully cached.
@@ -650,11 +661,20 @@ protected:
     /**
      * Sends the authentication key to the application.
      *
-     * @param
-     * @param
-     * @param
+     * This method informs the scheduler about the password
+     * to be cached so that it can be removed promptly when
+     * the application closes if the keep flag is not set.
+     *
+     * Note that the reason for having and sending two keys
+     * is so that all passwords for a specific site get deleted
+     * properly.  This becomes an issue when some protocols such
+     * as
+     *
+     * @param gKey  the group id for auth-info stored
+     * @param key   modified group-key based on realm value
+     * @param keep  indicates password should be cahed for entire KDE session or not.
      */
-    void sendAuthenticationKey( const QCString&, const QCString&, bool );
+    void sendAuthenticationKey( const QCString& gKey, const QCString& key, bool keep );
 
     /**
      * Delete any cached password with the given key.

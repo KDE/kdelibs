@@ -79,14 +79,23 @@ namespace KIO {
         void setConfig(const MetaData &config);
 
         /**
-         * @return Protocol handled by this slave, as seen by the user
-         * (For FTP-proxy, this is FTP)
+	 * The protocol this slave handles.
+	 * 
+         * @return name of protocol handled by this slave, as seen by the user
          */
         QString protocol() { return m_protocol; }
 
         /**
-         * @return Protocol handled by this slave, internally
-         * (For FTP-proxy, this is HTTP)
+	 * The actual protocol used to handle the request.
+	 * 
+	 * This method will return a different protocol than
+	 * the one obtained by using @ref protocol() if a 
+	 * proxy-server is used for the given protocol.  This
+	 * usually means that this method will return "http"
+	 * when the actuall request was to retrieve a resource
+	 * from an "ftp" server by going through a proxy server.
+	 * 
+         * @return the actual protocol (io-slave) that handled the request
          */
         QString slaveProtocol() { return m_slaveProtocol; }
 
