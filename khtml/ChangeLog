@@ -1,3 +1,7 @@
+2005-03-01  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * html/html_formimpl.cpp: Report content position rather than viewport position in "image" forms
+
 2005-03-01  David Faure  <faure@kde.org>
 
         * html/html_formimpl.cpp (setType): Implemented, to make it possible
@@ -25,12 +29,12 @@
 
 2005-02-27  Harri Porten  <porten@kde.org>
 
-        * ecma/kjs_events.cpp: bind keyboard modifier properties like ctrlKey 
+        * ecma/kjs_events.cpp: bind keyboard modifier properties like ctrlKey
 
         * xml/dom2_eventsimpl.cpp: returning meaningful keyCode() values
         for "special" keys
 
-        * dom/dom2_events.cpp: make which() equivalent to keyCode() 
+        * dom/dom2_events.cpp: make which() equivalent to keyCode()
 
 2005-02-20  Germain Garand  <germain@ebooksfrance.org>
 
@@ -50,7 +54,7 @@
 
         * rendering/render_box.{h,cpp}
         (calcPercentageHeight): make const.  Fix calculation of percentage
-        height within table cells to match other engines. 
+        height within table cells to match other engines.
         Do not subtract PB for table elements.
         (calcReplacedHeightUsing): use calcPercentageHeight for Percent.
         Looking for available height is an IE quirk and is thusly only done in quirk mode now.
@@ -79,7 +83,7 @@
          fixes #68523 + crashes on early pop-up closing.
 
         * html/htmltokenizer.{h,cpp} (setAutoClose/timerEvent/...): add timer driven auto-close mode for
-          e.g cross-frame scripts. 
+          e.g cross-frame scripts.
 
         * khtml_part.{h,cpp} (resetFromScript): reset the part to a sane state before reopening
           a closed document.
@@ -93,7 +97,7 @@
 
 	* rendering/render_table.{cpp,h} (RenderCell::nodeAtPoint):
 	Including top and bottom extra space in hit testing.
-	
+
 2005-02-15  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implement genererated content: counter and quotes
@@ -115,20 +119,20 @@
 2005-02-14  David Faure  <faure@kde.org>
 
         * html/html_formimpl.cpp (value): Fix for textarea onChange not emitted:
-        emit it when updating m_value in value(), since this happens before the 
+        emit it when updating m_value in value(), since this happens before the
         focusOut event, which doesn't do it since m_dirtyvalue is then false.
 
 2005-02-13  Leo Savernik  <l.savernik@aon.at>
 
 	* rendering/render_block.{cpp,h} (paintObject): Added parameter to only
 	paint the block's outline on demand.
-	
+
 	* rendering/render_flow.cpp (repaint): Fix repaint rectangle to also
 	encompass the top and bottom overflow of the root inline box.
-	
+
 	* rendering/render_line.{cpp,h} (InlineBox::root): Ported over from
 	WebCore. Returns the root inline box of this box.
-	
+
 	* rendering/render_table.{cpp,h} (RenderTableCell::repaintRectangle):
 	Use full height of table cell, otherwise outline won't be fully
 	repainted.
@@ -154,13 +158,13 @@
 2005-02-12  Germain Garand  <germain@ebooksfrance.org>
 
         fix inline formatting model
-        
-        * rendering/render_line.cpp (placeBoxesVertically): shrink/enlarge inlineboxes' height according to rendered gliphes, 
+
+        * rendering/render_line.cpp (placeBoxesVertically): shrink/enlarge inlineboxes' height according to rendered gliphes,
         but only if the calculated leading delta is superior to our font's natural leading
 
         * rendering/render_text.cpp (paintSelection): use the linebox's height, not the line-height anymore.
 
-        * rendering/render_inline.cpp (collectVerticalBoxCoordinates): previous linebox's bottomPosition 
+        * rendering/render_inline.cpp (collectVerticalBoxCoordinates): previous linebox's bottomPosition
         might now be lower than current linebox's topPosition. Adjust outline algorithm.
 
 2005-02-08  David Faure  <faure@kde.org>
@@ -189,18 +193,18 @@
 2005-02-07  Germain Garand  <germain@ebooksfrance.org>
 
         * css/html4.css: the -around-floats flow mode can only be applied to elements defining a
-        new block formatting context (see CSS2.1 - 9.5). 
+        new block formatting context (see CSS2.1 - 9.5).
         Blockquote and DL don't by any stretch of the mind, so clear this property for those.
         Also, don't center fieldset.
 
-        * rendering/render_block.cpp (layoutBlock): make flowAroundFloats encompass their own floats 
+        * rendering/render_block.cpp (layoutBlock): make flowAroundFloats encompass their own floats
         (#85984).
 
 2005-02-02  Leo Savernik  <l.savernik@aon.at>
 
 	* dom/dom_doc.{cpp,h}: Added Document::addStyleSheet/removeStyleSheet
 	interface methods for programmatically adding/removing style sheets.
-	
+
 	* xml/dom_docimpl.{cpp,h}: Added DocumentImpl::addStyleSheet/
 	removeStyleSheet methods.
 	Added list storing programmatically added style sheets.
@@ -236,25 +240,25 @@
 
 2005-01-25  Germain Garand  <germain@ebooksfrance.org>
 
-        * khtmlview.cpp (viewportWheelEvent): discard wheel events occuring before the first relayout (avoids blanking the view). 
+        * khtmlview.cpp (viewportWheelEvent): discard wheel events occuring before the first relayout (avoids blanking the view).
          Also support Horizontal wheel events (needs qt-copy/patch #61).
 
 2005-01-25  Germain Garand  <germain@ebooksfrance.org>
-        
+
         fix #95704: float double-painting bug.  Most of the work done by Charles Samuels.
 
-        * rendering/render_block.h (FloatingObject::FloatingObject): add crossedLayer flag to prevent noPaint from 
+        * rendering/render_block.h (FloatingObject::FloatingObject): add crossedLayer flag to prevent noPaint from
         being toggled off once we have crossed a layer during the float propagation process
 
         * rendering/render_block.cpp (addOverHangingFloats): use/update said flag.
 
 2005-01-19  Allan Sandfeld Jensen <kde@carewolf.com>
-        
+
         * css/*: Parse opacity and outline-offset
         * rendering/*: Implement outline-offset
 
 2005-01-12  Allan Sandfeld Jensen <kde@carewolf.com>
-        
+
         * css/cssstyleselector.cpp: Match :contains() against innerText on HTMLElements
 
 2005-01-11  Leo Savernik  <l.savernik@aon.at>
@@ -267,22 +271,22 @@
         * ecma/kjs_html.cpp: Support for document.body.onload.
 
 2005-01-06  Allan Sandfeld Jensen <kde@carewolf.com>
-        
+
         * khtml_part.cpp: Fix selection by selecting the text in the cleaned string rather
         than in the DOM.
         * xml/dom_textimpl.{h,cpp}: Add renderString() to return the possibly transformed string.
 
 2004-12-29  Allan Sandfeld Jensen <kde@carewolf.com>
-        
+
         Implement CSS 2.1 white-space: pre, pre-line and pre-wrap
 
         * html/htmltokenizer.cpp: Merge white-space related parsing from Webcore
         * html/htmlparser.cpp: Ditto
-        * rendering/render_text.cpp: Introduce text transformation that cleans excess 
+        * rendering/render_text.cpp: Introduce text transformation that cleans excess
         white-space and linefeeds when style()->whitespace() changes.
-        * rendering/render_style.h: Introduce pre-wrap and pre-line. 
+        * rendering/render_style.h: Introduce pre-wrap and pre-line.
         Add helper functions autoWrap(), preserveLF() and preserveWS()
-        * rendering/bidi.cpp: Replace checks of whiteSpace==PRE/NORMAL with new the 
+        * rendering/bidi.cpp: Replace checks of whiteSpace==PRE/NORMAL with new the
         more finegrained autoWrap, preserveLF and preserveWS functions.
         * css/*: Add pre-line and pre-wrap as possible CSS values
 
