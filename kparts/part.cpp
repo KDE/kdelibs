@@ -56,13 +56,13 @@ public:
 
 PartBase::PartBase()
 {
-  d = new PartBasePrivate; 
+  d = new PartBasePrivate;
   m_obj = 0L;
 }
 
 PartBase::~PartBase()
 {
-  delete d; 
+  delete d;
 }
 
 void PartBase::setObject( QObject *obj )
@@ -80,7 +80,7 @@ void PartBase::setInstance( KInstance *inst, bool loadPlugins )
   KXMLGUIBase::setInstance( inst );
   if ( loadPlugins )
     Plugin::loadPlugins( m_obj, instance() );
-} 
+}
 
 Part::Part( QObject *parent, const char* name )
  : QObject( parent, name )
@@ -215,13 +215,13 @@ class ReadOnlyPartPrivate
 public:
   ReadOnlyPartPrivate()
   {
-    m_jobId = 0;
+    m_job = 0L;
   }
   ~ReadOnlyPartPrivate()
   {
   }
 
-  int m_jobId;
+  KIO::FileCopyJob * m_job;
 };
 
 };
@@ -259,28 +259,21 @@ bool ReadOnlyPart::openURL( const KURL &url )
     m_bTemp = true;
     m_file = tmpnam(0);
     // We can't use mkstemp since we don't want to create the file here
-    // KIOJob has to create it
+    // KIO::Job has to create it
 
-    KIOJob * job = new KIOJob;
-    d->m_jobId = job->id();
-    emit started( d->m_jobId );
-    connect( job, SIGNAL( sigFinished (int) ), this, SLOT( slotJobFinished (int) ) );
-    connect( job, SIGNAL( sigError( int, int, const char * ) ),
-             this, SLOT( slotJobError ( int, int, const char * ) ) );
-    job->copy( m_url.url(), m_file );
+    d->m_job = KIO::file_copy( m_url, m_file );
+    emit started( d->m_job );
+    connect( d->m_job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotJobFinished ( KIO::Job * ) ) );
     return true;
   }
 }
 
 void ReadOnlyPart::abortLoad()
 {
-  if ( d->m_jobId )
+  if ( d->m_job )
   {
-    KIOJob *job = KIOJob::find( d->m_jobId );
-    if ( job )
-      job->kill();
-
-    d->m_jobId = 0;
+    d->m_job->kill();
+    d->m_job = 0;
   }
 }
 
@@ -299,17 +292,17 @@ bool ReadOnlyPart::closeURL()
   return true;
 }
 
-void ReadOnlyPart::slotJobFinished( int /*_id*/ )
+void ReadOnlyPart::slotJobFinished( KIO::Job * job )
 {
-  d->m_jobId = 0;
-  openFile();
-  emit completed();
-}
-
-void ReadOnlyPart::slotJobError( int, int, const char * text )
-{
-  d->m_jobId = 0;
-  emit canceled( QString(text) );
+  assert( job == d->m_job );
+  if (job->error())
+    emit canceled( job->errorString() );
+  else
+  {
+    openFile();
+    emit completed();
+  }
+  d->m_job = 0;
 }
 
 void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
@@ -409,26 +402,23 @@ bool ReadWritePart::saveToURL()
   }
   else
   {
-    KIOJob * job = new KIOJob;
-    connect( job, SIGNAL( sigFinished (int) ), this, SLOT( slotUploadFinished (int) ) );
-    connect( job, SIGNAL( sigError( int, int, const char * ) ),
-             this, SLOT( slotUploadError ( int, int, const char * ) ) );
-    job->copy( m_file, m_url.url() );
+    KIO::Job * job = KIO::file_copy( m_file, m_url );
+    connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotUploadFinished (KIO::Job *) ) );
     return true;
   }
 }
 
-void ReadWritePart::slotUploadFinished( int /*_id*/ )
+void ReadWritePart::slotUploadFinished( KIO::Job * job )
 {
-  m_bModified = false;
-  if ( m_bClosing )
-    ReadOnlyPart::closeURL();
-  emit completed();
-}
-
-void ReadWritePart::slotUploadError( int, int, const char * text )
-{
-  emit canceled( QString(text) );
+  if (job->error())
+    emit canceled( job->errorString() );
+  else
+  {
+    m_bModified = false;
+    if ( m_bClosing )
+      ReadOnlyPart::closeURL();
+    emit completed();
+  }
 }
 
 #include "part.moc"

@@ -153,7 +153,7 @@ signals:
   /**
    * Since the part emits the jobid in the started() signal,
    * progress information is automatically displayed.
-   * However, if you don't use a KIOJob in the part,
+   * However, if you don't use a KIO::Job in the part,
    * you can use @ref loadingProgress and @ref speedProgress
    * to display progress information
    */

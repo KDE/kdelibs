@@ -14,6 +14,10 @@ class QAction;
 class QActionCollection;
 class QEvent;
 
+namespace KIO {
+  class Job;
+}
+
 namespace KParts
 {
 
@@ -35,7 +39,7 @@ class PartBase : virtual public KXMLGUIBase
 public:
 
   /**
-   *  Constructor. 
+   *  Constructor.
    */
   PartBase();
 
@@ -49,7 +53,7 @@ public:
    */
   void setObject( QObject *object );
 
-protected:  
+protected:
   /**
    * Set the instance (@ref KInstance) for this part.
    *
@@ -98,7 +102,7 @@ private:
 class Part : public QObject, public PartBase
 {
     Q_OBJECT
-    
+
 public:
 
     /**
@@ -135,7 +139,7 @@ public:
 
     // Only called by PartManager - should be protected and using friend ?
     virtual void setManager( PartManager * manager );
-    
+
     /**
      * @return The part manager handling this part, if any (0L otherwise).
      */
@@ -224,7 +228,7 @@ public:
    * See also @ref Part for the setXXX methods to call.
    */
   ReadOnlyPart( QObject *parent = 0, const char *name = 0 );
-  
+
   /**
    * Destructor
    */
@@ -259,10 +263,10 @@ public:
 signals:
   /**
    * The part emits this when starting data.
-   * If using a KIOJob, it sets the jobId in the signal, so that
-   * progress information can be shown. Otherwise, jobId is 0.
+   * If using a KIO::Job, it sets the job in the signal, so that
+   * progress information can be shown. Otherwise, job is 0.
    **/
-  void started( int jobId );
+  void started( KIO::Job * );
   /**
    * Emit this when you have completed loading data.
    * Hosting apps will want to know when the process of loading the data
@@ -275,8 +279,7 @@ signals:
   void canceled( const QString &errMsg );
 
 protected slots:
-  void slotJobFinished( int _id );
-  void slotJobError( int, int, const char * );
+  void slotJobFinished( KIO::Job * job );
 
 protected:
   /**
@@ -425,8 +428,7 @@ protected:
   virtual bool saveToURL();
 
 protected slots:
-  void slotUploadFinished( int _id );
-  void slotUploadError( int, int, const char * );
+  void slotUploadFinished( KIO::Job * job );
 
 private:
   bool m_bModified;
