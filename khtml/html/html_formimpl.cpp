@@ -806,8 +806,8 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
         case EventImpl::MOUSEMOVE_EVENT:
         case EventImpl::MOUSEOUT_EVENT:
         case EventImpl::MOUSEOVER_EVENT:
-        case EventImpl::KHTML_KEYDOWN_EVENT:
-        case EventImpl::KHTML_KEYUP_EVENT:
+        case EventImpl::KEYDOWN_EVENT:
+        case EventImpl::KEYUP_EVENT:
         case EventImpl::KHTML_KEYPRESS_EVENT:
             if (static_cast<RenderWidget*>(renderer())->handleEvent(*evt))
 		evt->setDefaultHandled();
@@ -826,11 +826,11 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
             if (ext)
                 ext->editableWidgetFocused(widget);
         }
-        if (evt->id()==EventImpl::MOUSEDOWN_EVENT || evt->id()==EventImpl::KHTML_KEYDOWN_EVENT)
+        if (evt->id()==EventImpl::MOUSEDOWN_EVENT || evt->id()==EventImpl::KEYDOWN_EVENT)
         {
             setActive();
         }
-        else if (evt->id() == EventImpl::MOUSEUP_EVENT || evt->id()==EventImpl::KHTML_KEYUP_EVENT)
+        else if (evt->id() == EventImpl::MOUSEUP_EVENT || evt->id()==EventImpl::KEYUP_EVENT)
         {
 	    if (m_active)
 	    {
@@ -927,7 +927,7 @@ void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
 {
     if (m_type != BUTTON && !m_disabled) {
 	bool act = (evt->id() == EventImpl::DOMACTIVATE_EVENT);
-	if (!act && evt->id()==EventImpl::KHTML_KEYUP_EVENT) {
+	if (!act && evt->id()==EventImpl::KEYUP_EVENT) {
 	    QKeyEvent *ke = static_cast<TextEventImpl *>(evt)->qKeyEvent;
 	    if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		act = true;
@@ -1466,14 +1466,14 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 
         if (m_type == RADIO || m_type == CHECKBOX || m_type == SUBMIT || m_type == RESET || m_type == BUTTON ) {
 	    bool check = false;
-	    if (active() && ( evt->id() == EventImpl::KHTML_KEYUP_EVENT ||
+	    if (active() && ( evt->id() == EventImpl::KEYUP_EVENT ||
 	                      evt->id() == EventImpl::KHTML_KEYPRESS_EVENT ) ) {
 		TextEventImpl *te = static_cast<TextEventImpl *>(evt);
 		if (te->keyVal() == ' ')
 		    check = true;
 	    }
 	    if (check) {
-	        if (evt->id() == EventImpl::KHTML_KEYUP_EVENT) {
+	        if (evt->id() == EventImpl::KEYUP_EVENT) {
 		    if (m_type == RADIO || m_type == CHECKBOX)
 		        setChecked(m_type == RADIO ? true : !checked());
 		    click();
@@ -1490,7 +1490,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
         // must dispatch a DOMActivate event - a click event will not do the job.
         if (m_type == IMAGE || m_type == SUBMIT || m_type == RESET) {
 	    bool act = (evt->id() == EventImpl::DOMACTIVATE_EVENT);
-	    if (!act && evt->id() == EventImpl::KHTML_KEYUP_EVENT) {
+	    if (!act && evt->id() == EventImpl::KEYUP_EVENT) {
 		QKeyEvent *ke = static_cast<TextEventImpl *>(evt)->qKeyEvent;
 		if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		    act = true;

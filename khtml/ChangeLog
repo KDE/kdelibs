@@ -1,5 +1,8 @@
 2004-02-24  Dirk Mueller  <mueller@kde.org>
 
+	* xml/dom2_eventsimpl.h (EventImpl): rename KHTML_KEYUP/DOWN_EVENT
+	to KEYUP/DOWN_EVENT. Add events needed for XMLHttpRequest.
+
 	* rendering/render_object.h (class RenderObject): introduce a PaintInfo
 	struct that contains the information necessary for all those paint..() methods.
 	Requires much less parameters to pass and is therefore faster. While being

@@ -51,7 +51,7 @@ NodeImpl::Id HTMLAnchorElementImpl::id() const
 
 void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    bool keydown = evt->id() == EventImpl::KHTML_KEYDOWN_EVENT;
+    bool keydown = evt->id() == EventImpl::KEYDOWN_EVENT;
 
     // React on clicks and on keypresses.
     // Don't make this KEYUP_EVENT again, it makes khtml follow links
