@@ -95,8 +95,20 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
   kdDebug(7010) << "KRun::run " << _service.desktopEntryPath() << endl;
   if (!_urls.isEmpty())
     kdDebug(7010) << "First url " << _urls.first().url() << endl;
-  QString miniicon = _service.icon();
+
   QString exec = _service.exec();
+  QString miniicon = _service.icon();
+  QString user = _service.username();
+  if (_service.substituteUid() && !user.isEmpty())
+  {
+    if (_service.terminal())
+      exec = QString("konsole %1 -e su %2 -c \"%3\"").arg(_service.terminalOptions()).arg(user).arg(exec);
+    else
+      exec = QString("kdesu -u %1 -- %2").arg(user).arg(exec);
+  } else if (_service.terminal())
+     exec = QString("konsole %1 -e /bin/sh -c \"%2\"").arg(_service.terminalOptions()).arg(exec); 
+  else
+  {
   QString error;
   int /*pid_t*/ pid;
 
@@ -134,11 +146,12 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
       return 0;
     }
   }
+  }
 
   // Fall back on normal running
   QString name = _service.name();
   QString icon = _service.icon();
-  return KRun::run( _service.exec(), _urls, name, icon, miniicon );
+  return KRun::run( exec, _urls, name, icon, miniicon );
 }
 
 pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _name,
