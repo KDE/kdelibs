@@ -99,17 +99,29 @@ public:
             ::no_query_exit = true;
             for (it.toFirst(); it.current() && !cancelled;){
                 KMainWindow *window = *it;
-                ++it; // Update now, the current window might get deleted 
+                ++it; // Update now, the current window might get deleted
                 if ( !window->testWState( Qt::WState_ForceHide ) ) {
                     QCloseEvent e;
                     QApplication::sendEvent( window, &e );
                     cancelled = !e.isAccepted();
-//                     if ( !cancelled && window->testWFlags( Qt::WDestructiveClose ) )
-//                       delete window;
+		    /* Don't even think_about deleting widgets with
+		     Qt::WDestructiveClose flag set at this point. We
+		     are faking a close event, but we are *not*_
+		     closing the window. The purpose of the faked
+		     close event is to prepare the application so it
+		     can safely be quit without the user losing data
+		     (possibly showing a message box "do you want to
+		     save this or that?"). It is possible that the
+		     session manager quits the application later
+		     (emitting QApplication::aboutToQuit() when this
+		     happens), but it is also possible that the user
+		     cancels the shutdown, so the application will
+		     continue to run.
+		     */
                 }
             }
             ::no_query_exit = false;
-            if (cancelled) 
+            if (cancelled)
                return false;
 
             KMainWindow* last = 0;
