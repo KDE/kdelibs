@@ -297,7 +297,7 @@ if test -z "$x_includes" || test "x$x_includes" = xNONE; then
   X_INCLUDES="-I$x_includes"
 fi
 
-if test -z "$x_libraries" || test "$x_libraries" = xNONE; then
+if test -z "$x_libraries" || test "x$x_libraries" = xNONE; then
   X_LDFLAGS=""
   x_libraries="/usr/lib"; dnl better than nothing :-
   all_libraries=""
