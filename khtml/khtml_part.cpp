@@ -858,7 +858,7 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   d->m_runningScripts++;
   QVariant ret = proxy->evaluate( script.unicode(), script.length(), n );
   d->m_runningScripts--;
-  if ( d->m_submitForm && !d->m_bParsing )
+  if ( d->m_submitForm && !d->m_bParsing && !d->m_runningScripts)
       submitFormAgain();
   if ( d->m_doc )
     d->m_doc->updateRendering();
