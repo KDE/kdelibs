@@ -218,6 +218,40 @@ QString KCompletion::makeCompletion( const QString& string )
 }
 
 
+QStringList KCompletion::substringCompletion( const QString& string ) const
+{
+    QStringList matches;
+    QStringList list = items(); // ### maybe cache this!
+
+    // subStringMatches is invoked manually, via a shortcut, so we should
+    // beep here, if necessary.
+    if ( list.isEmpty() ) {
+        doBeep( NoMatch );
+        return list;
+    }
+
+    if ( string.isEmpty() ) { // shortcut
+        postProcessMatches( &list );
+        return list;
+    }
+
+    QStringList::ConstIterator it = list.begin();
+
+    for( ; it != list.end(); ++it ) {
+        QString item = *it;
+        if ( item.find( string, 0, false ) != -1 ) { // always case insensitive
+            postProcessMatch( &item );
+            matches.append( item );
+        }
+    }
+
+    if ( matches.isEmpty() )
+        doBeep( NoMatch );
+
+    return matches;
+}
+
+
 void KCompletion::setCompletionMode( KGlobalSettings::Completion mode )
 {
     myCompletionMode = mode;
@@ -234,12 +268,12 @@ QStringList KCompletion::allMatches()
     return l;
 }
 
-QStringList KCompletion::allMatches( const QString &text )
+QStringList KCompletion::allMatches( const QString &string )
 {
     // Don't use myMatches since calling postProcessMatches()
     // on myMatches here would interfere with call to
     // postProcessMatch() during rotation
-    QStringList l = findAllCompletions( text );
+    QStringList l = findAllCompletions( string );
     postProcessMatches( &l );
     return l;
 }
@@ -524,7 +558,7 @@ void KCompletion::extractStringsFromNodeCI( const KCompTreeNode *node,
 }
 
 
-void KCompletion::doBeep( BeepMode mode )
+void KCompletion::doBeep( BeepMode mode ) const
 {
     if ( !myBeep )
 	return;
@@ -613,18 +647,19 @@ void KCompTreeNode::remove( const QString& string )
 
     if ( string.isEmpty() ) {
         child = find( 0x0 );
-	myChildren.remove( child );
-	return;
+        delete child;
+        myChildren.remove( child );
+        return;
     }
 
     QChar ch = string.at(0);
     child = find( ch );
     if ( child ) {
         child->remove( string.right( string.length() -1 ) );
-	if ( child->myChildren.count() == 0 ) {
-	    delete child;
-	    myChildren.remove( child );
-	}
+        if ( child->myChildren.count() == 0 ) {
+            delete child;
+            myChildren.remove( child );
+        }
     }
 }
 

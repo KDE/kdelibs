@@ -58,14 +58,6 @@ KCompletion* KCompletionBase::completionObject( bool hsig )
     return m_pCompObj;
 }
 
-KCompletion* KCompletionBase::completionObject( bool create, bool hsig )
-{
-    if ( !create )
-	return m_pCompObj;
-
-    return completionObject( hsig );
-}
-
 void KCompletionBase::setCompletionObject( KCompletion* compObj, bool hsig )
 {
     if ( m_bAutoDelCompObj && compObj != m_pCompObj )
@@ -117,6 +109,7 @@ void KCompletionBase::useGlobalKeyBindings()
     m_keyMap.insert( TextCompletion, 0 );
     m_keyMap.insert( PrevCompletionMatch, 0 );
     m_keyMap.insert( NextCompletionMatch, 0 );
+    m_keyMap.insert( SubstringCompletion, 0 );
 }
 
 void KCompletionBase::setup( bool autodel, bool hsig, bool esig )
