@@ -15,8 +15,9 @@ kdelibs (4:2.2.2-1) unstable; urgency=low
   * Include SSL support in main package
   * Update build-depends
   * Fix overwrite issues (Closes: #118802)
+  * Updates to take care of changes in Qt 2.3.2 (Closes: #118868)
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 08 Nov 2001 09:49:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 09 Nov 2001 10:39:00 -0700
 
 kdelibs (4:2.2.1-14) unstable; urgency=low
 
