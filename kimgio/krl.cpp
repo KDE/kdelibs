@@ -42,9 +42,8 @@ void kimgio_krl_read( QImageIO *iio )
 
 	Q_INT16 w = LOCAL_ENDIAN( buffer[ 35 ], buffer[ 34 ] );
 	Q_INT16 h = LOCAL_ENDIAN( buffer[ 37 ], buffer[ 36 ] );
-w=423;h=279;
 
-	int samples = (int)(w*h);
+	Q_UINT32 samples = (int)(w*h);
 
 	//debug( "kimgio_krl_read: image w: %d, h: %d samples: %d",
 	//		(int)w, (int)h, samples );
@@ -58,7 +57,7 @@ w=423;h=279;
 
 //First, we have to guess the maximum and minimum
         rbytes = io->readBlock( (char *)buffer, BUF_SIZE );
-        for ( int samp = 0; samp < samples; samp++, currptr++ ) {
+        for ( Q_UINT32 samp = 0; samp < samples; samp++, currptr++ ) {
                 if ( currptr >= endptr ) {
                         rbytes = io->readBlock( (char *)buffer, BUF_SIZE );
                         currptr = (Q_INT16 *)buffer;
@@ -73,7 +72,7 @@ w=423;h=279;
 
 //Let's do a real read
 	io->at(512);
-	for ( int samp = 0; samp < samples; samp++, currptr++, ptr++ ) {
+	for ( Q_UINT32 samp = 0; samp < samples; samp++, currptr++, ptr++ ) {
 		if ( currptr >= endptr ) {
 			rbytes = io->readBlock( (char *)buffer, BUF_SIZE );
 			currptr = (Q_INT16 *)buffer;
