@@ -1208,8 +1208,14 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
 
 void KToolBar::paintEvent(QPaintEvent *)
 {
+    QColorGroup g = QWidget::colorGroup();
+    QPainter paint;
+    paint.begin( this );
+    
     if ( widgets.isEmpty() ) {
         //hide(); // don't hide! e.g. it breaks the taskbar mechanism in KDevelop
+        paint.fillRect( 0, 0, width(), height(), QBrush( g.background() ) );// , false, 1 );
+        paint.end();
         return;
     }
     bool moving = FALSE;
@@ -1218,7 +1224,6 @@ void KToolBar::paintEvent(QPaintEvent *)
     // Moved around a little to make variables available for KStyle (mosfet).
 
     int stipple_height;
-    QColorGroup g = QWidget::colorGroup();
     // Took higlighting handle from kmenubar - sven 040198
     QBrush b;
     if ( /*mouseEntered && d->m_highlight */ FALSE ) // ##############
@@ -1226,9 +1231,6 @@ void KToolBar::paintEvent(QPaintEvent *)
     // the hardwired value used before!!
     else
         b = QWidget::backgroundColor();
-
-    QPainter *paint = new QPainter();
-    paint->begin( this );
 
     KStyle::KToolBarPos pos = KStyle::Top;
     if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) ) {
@@ -1240,67 +1242,65 @@ void KToolBar::paintEvent(QPaintEvent *)
     }
 
     if(kapp->kstyle()){
-        kapp->kstyle()->drawKToolBar(paint, 0, 0, width(), height(),
+        kapp->kstyle()->drawKToolBar(&paint, 0, 0, width(), height(),
                                      colorGroup(), pos,
                                      &b);
         if( moving ){
             if( orientation() == Horizontal )
-                kapp->kstyle()->drawKBarHandle(paint, 0, 0, 9, height(),
+                kapp->kstyle()->drawKBarHandle(&paint, 0, 0, 9, height(),
                                                colorGroup(), pos, &b);
             else
-                kapp->kstyle()->drawKBarHandle(paint, 0, 0, width(), 9,
+                kapp->kstyle()->drawKBarHandle(&paint, 0, 0, width(), 9,
                                                colorGroup(), pos, &b);
         }
-        paint->end();
-        delete paint;
+        paint.end();
         return;
     }
     if (moving) {
         // Handle point
         if ( orientation() == Horizontal ) {
-            qDrawShadePanel( paint, 0, 0, 9, height(),
+            qDrawShadePanel( &paint, 0, 0, 9, height(),
                              g , false, 1, &b);
-            paint->setPen( g.light() );
-            paint->drawLine( 9, 0, 9, height());
+            paint.setPen( g.light() );
+            paint.drawLine( 9, 0, 9, height());
             stipple_height = 3;
             while ( stipple_height < height()-4 ) {
-                paint->drawPoint( 1, stipple_height+1);
-                paint->drawPoint( 4, stipple_height);
+                paint.drawPoint( 1, stipple_height+1);
+                paint.drawPoint( 4, stipple_height);
                 stipple_height+=3;
             }
-            paint->setPen( g.dark() );
+            paint.setPen( g.dark() );
             stipple_height = 4;
             while ( stipple_height < height()-4 ) {
-                paint->drawPoint( 2, stipple_height+1);
-                paint->drawPoint( 5, stipple_height);
+                paint.drawPoint( 2, stipple_height+1);
+                paint.drawPoint( 5, stipple_height);
                 stipple_height+=3;
             }
         } else {
-            qDrawShadePanel( paint, 0, 0, width(), 9,
+            qDrawShadePanel( &paint, 0, 0, width(), 9,
                              g , false, 1, &b);
 
-            paint->setPen( g.light() );
-            paint->drawLine( 0, 9, width(), 9);
+            paint.setPen( g.light() );
+            paint.drawLine( 0, 9, width(), 9);
             stipple_height = 3;
             while ( stipple_height < width()-4 ) {
-                paint->drawPoint( stipple_height+1, 1);
-                paint->drawPoint( stipple_height, 4 );
+                paint.drawPoint( stipple_height+1, 1);
+                paint.drawPoint( stipple_height, 4 );
                 stipple_height+=3;
             }
-            paint->setPen( g.dark() );
+            paint.setPen( g.dark() );
             stipple_height = 4;
             while ( stipple_height < width()-4 ) {
-                paint->drawPoint( stipple_height+1, 2 );
-                paint->drawPoint( stipple_height, 5);
+                paint.drawPoint( stipple_height+1, 2 );
+                paint.drawPoint( stipple_height, 5);
                 stipple_height+=3;
             }
         }
     } //endif moving
 
-    qDrawShadePanel(paint, 0, 0, width(), height(), g , false, 1);
+    qDrawShadePanel(&paint, 0, 0, width(), height(), g , false, 1);
 
-    paint->end();
-    delete paint;
+    paint.end();
 }
 
 void KToolBar::rebuildLayout()
