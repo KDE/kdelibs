@@ -34,8 +34,8 @@ build-stamp:
 	if test ! -f configure; then \
 	  $(MAKE) -f admin/Makefile.common ;\
 	fi
-	$(COMPILER_FLAGS) \
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
+	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
 	--includedir=/usr/include/kde --without-ssl --without-alsa \
 	--disable-cups
