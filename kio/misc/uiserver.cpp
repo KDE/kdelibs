@@ -565,8 +565,11 @@ void ListProgress::writeSettings() {
    // write listview geometry properties
    config.setGroup( "ProgressList" );
    for ( int i = 0; i < TB_MAX; i++ ) {
-      if (!m_lpcc[i].enabled)
+      if (!m_lpcc[i].enabled) {
+         QString tmps= "Enabled" + QString::number(i);
+         config.writeEntry( tmps, false );
          continue;
+      }
       m_lpcc[i].width=columnWidth(m_lpcc[i].index);
       QString tmps="Col"+QString::number(i);
       config.writeEntry( tmps, m_lpcc[i].width);
