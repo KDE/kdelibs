@@ -25,6 +25,7 @@
 #include "css/cssstyleselector.h"
 #include "html/html_imageimpl.h"
 #include "rendering/render_style.h"
+#include "misc/loader.h"
 
 #include <kinstance.h>
 #include <kaboutdata.h>
@@ -99,6 +100,7 @@ KHTMLFactory::~KHTMLFactory()
 	khtml::CSSStyleSelector::clear();
 	DOM::HTMLMapElementImpl::clear();
 	khtml::RenderStyle::cleanup();
+	khtml::Cache::clear();
     }
     else
         deref();
