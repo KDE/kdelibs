@@ -467,11 +467,31 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
     }
 }
 
+void KListView::focusInEvent( QFocusEvent *fe )
+{
+   kdDebug()<<"KListView::focusInEvent()"<<endl;
+  QListView::focusInEvent( fe );
+
+  if ((d->selectedBySimpleMove) && (currentItem()!=0))
+  {
+      currentItem()->setSelected(true);
+      currentItem()->repaint();
+  };
+}
+
+
+
 void KListView::focusOutEvent( QFocusEvent *fe )
 {
   cleanDropVisualizer();
 
   d->autoSelect.stop();
+
+  if ((d->selectedBySimpleMove) && (currentItem()!=0))
+  {
+      currentItem()->setSelected(false);
+      currentItem()->repaint();
+  };
 
   QListView::focusOutEvent( fe );
 }

@@ -531,6 +531,15 @@ protected:
    *
    * The API is unaffected.
    */
+   virtual void focusInEvent(QFocusEvent* fe);
+
+   /**
+   * Reimplemented for internal reasons.
+   * Further reimplementations should call this function or else
+   * some features may not work correctly.
+   *
+   * The API is unaffected.
+   */
   virtual void focusOutEvent( QFocusEvent *fe );
 
   /**
