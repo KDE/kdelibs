@@ -750,7 +750,7 @@ protected:
    * @p text kio additional information text.
    * @p url the url that triggered the error.
    */
-  void htmlError(int errorCode, const QString& text, const KURL& url);
+  void htmlError(int errorCode, const QString& text, const KURL& reqUrl);
 
   virtual void customEvent( QCustomEvent *event );
 

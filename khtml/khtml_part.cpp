@@ -1415,12 +1415,9 @@ void KHTMLPart::showError( KIO::Job* job )
     bool bJSOO = d->m_bJScriptOverride;
     d->m_bJScriptForce = false;
     d->m_bJScriptOverride = true;*/
-    /**
-     * FIXME
-     * rodda: I am not up to speed on the config of khtml errors...
-     * the 1 should be "if user has chosen verbose/detailed error messages"
-     */
-    if ( 1 ) {
+
+    if ( KGlobal::locale()->defaultLanguage() == "en" ||
+         KGlobal::locale()->defaultLanguage().left(2) == "en_" ) {
       htmlError( job->error(), job->errorString(), d->m_workingURL );
     } else {
       begin();
@@ -1451,10 +1448,73 @@ void KHTMLPart::showError( KIO::Job* job )
 }
 
 // This is a protected method, placed here because of it's relevance to showError
-void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& url )
+void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUrl )
 {
   begin();
-  write( KIO::buildHTMLErrorString( errorCode, text, &url ) );
+
+  QString errorName, techName, description;
+  QStringList causes, solutions;
+
+  QByteArray raw = KIO::rawErrorDetail( errorCode, text, &reqUrl );
+  QDataStream stream(raw, IO_ReadOnly);
+
+  stream >> errorName >> techName >> description >> causes >> solutions;
+
+  QString url, protocol, datetime;
+  url = reqUrl.prettyURL();
+  protocol = reqUrl.protocol();
+  datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
+                                                false );
+
+  QString doc = QString::fromLatin1( "<html><head><title>" );
+  doc += i18n( "Error: " );
+  doc += errorName;
+  doc += QString::fromLatin1( " - %1</title></head><body><h1>" ).arg( url );
+  doc += i18n( "The requested operation could not be completed" );
+  doc += QString::fromLatin1( "</h1><h2>" );
+  doc += errorName;
+  doc += QString::fromLatin1( "</h2>" );
+  if ( techName != QString::null ) {
+    doc += QString::fromLatin1( "<h2>" );
+    doc += i18n( "Technical Reason: " );
+    doc += techName;
+    doc += QString::fromLatin1( "</h2>" );
+  }
+  doc += QString::fromLatin1( "<h3>" );
+  doc += i18n( "Details of the Request:" );
+  doc += QString::fromLatin1( "</h3><ul><li>" );
+  doc += i18n( "URL: %1" ).arg( url );
+  doc += QString::fromLatin1( "</li><li>" );
+  if ( protocol != QString::null ) {
+    doc += i18n( "Protocol: %1 - <a href=\"help://kioslave/%1\">click here</a>"
+                 " for documentation." ).arg( protocol ).arg( protocol );
+    doc += QString::fromLatin1( "</li><li>" );
+  }
+  doc += i18n( "Date and Time: %1" ).arg( datetime );
+  doc += QString::fromLatin1( "</li><li>" );
+  doc += i18n( "Additional Information: %1" ).arg( text );
+  doc += QString::fromLatin1( "</li></ul><h3>" );
+  doc += i18n( "Description:" );
+  doc += QString::fromLatin1( "</h3><p>" );
+  doc += description;
+  doc += QString::fromLatin1( "</p>" );
+  if ( causes.count() ) {
+    doc += QString::fromLatin1( "<h3>" );
+    doc += i18n( "Possible Causes:" );
+    doc += QString::fromLatin1( "</h3><ul><li>" );
+    doc += causes.join( "</li><li>" );
+    doc += QString::fromLatin1( "</li></ul>" );
+  }
+  if ( solutions.count() ) {
+    doc += QString::fromLatin1( "<h3>" );
+    doc += i18n( "Possible Solutions:" );
+    doc += QString::fromLatin1( "</h3><ul><li>" );
+    doc += solutions.join( "</li><li>" );
+    doc += QString::fromLatin1( "</li></ul>" );
+  }
+  doc += QString::fromLatin1( "</body></html>" );
+
+  write( doc );
   end();
 }
 
