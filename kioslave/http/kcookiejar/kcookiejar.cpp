@@ -634,7 +634,8 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
             {
                 lastCookie->mProtocolVersion = Value.toInt();
             }
-            else if (Name == "secure")
+            else if ((Name == "secure") || 
+                     (Name.isEmpty() && Value.lower() == "secure"))
             {
                 lastCookie->mSecure = true;
             }
