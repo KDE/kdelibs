@@ -12,7 +12,7 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-   
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -25,6 +25,7 @@
 #include <assert.h>
 
 typedef int (*backend_init_ptr)();
+typedef int (*backend_suspend_ptr)();
 typedef void (*backend_free_ptr)();
 typedef arts_stream_t (*backend_play_stream_ptr)(int,int,int,const char*);
 typedef arts_stream_t (*backend_record_stream_ptr)(int,int,int,const char*);
@@ -40,6 +41,7 @@ static struct arts_backend {
 	lt_dlhandle handle;
 
 	backend_init_ptr init;
+	backend_suspend_ptr suspend;
 	backend_free_ptr free;
 	backend_play_stream_ptr play_stream;
 	backend_record_stream_ptr record_stream;
@@ -61,6 +63,8 @@ static void arts_backend_ref()
 		{
 			backend.init = (backend_init_ptr)
 				lt_dlsym(backend.handle, "arts_backend_init");
+			backend.suspend = (backend_suspend_ptr)
+				lt_dlsym(backend.handle, "arts_backend_suspend");
 			backend.free = (backend_free_ptr)
 				lt_dlsym(backend.handle, "arts_backend_free");
 			backend.play_stream = (backend_play_stream_ptr)
@@ -81,7 +85,8 @@ static void arts_backend_ref()
 
 		if(backend.handle && backend.init && backend.free && backend.play_stream
 			&& backend.record_stream && backend.close_stream && backend.write
-			&& backend.read && backend.stream_set && backend.stream_get)
+			&& backend.read && backend.stream_set && backend.stream_get
+			&& backend.suspend)
 			backend.available = 1;
 		else
 			backend.available = 0;
@@ -116,6 +121,11 @@ int arts_init()
 	if(rc < 0) arts_backend_release();
 
 	return rc;
+}
+
+int arts_suspend()
+{
+	if (backend.available) backend.suspend();
 }
 
 void arts_free()

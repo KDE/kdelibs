@@ -12,7 +12,7 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-   
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -43,7 +43,7 @@ using namespace Arts;
 class Sender :	public ByteSoundProducer_skel,
 				public StdSynthModule
 {
-	SimpleSoundServer server;
+	SoundServer server;
 	float serverBufferTime;
 
 	/*
@@ -206,12 +206,12 @@ protected:
              * assumption that aRts will not block when an infinite amount
              * of notifications is pending - I mean: will it ever happen?)
              */
-            Dispatcher::the()->ioManager()->processOneEvent(false);             
+            Dispatcher::the()->ioManager()->processOneEvent(false);
 		}
 	}
 
 public:
-	Sender(SimpleSoundServer server, int rate, int bits, int channels,
+	Sender(SoundServer server, int rate, int bits, int channels,
 		string name) : server(server), _finished(false), isAttached(false),
 		_samplingRate(rate), _bits(bits), _channels(channels), pos(0),
 		_name(name)
@@ -330,6 +330,15 @@ public:
 		bsWrapper = ByteSoundProducer::null();
 	}
 
+	int suspend()
+	{
+		if(isAttached)
+		{
+			return server.suspend();
+		}
+		return 0;
+	}
+
 	int write(const mcopbyte *data, int size)
 	{
 		attach();
@@ -385,9 +394,9 @@ protected:
 	int refcnt;
 
 	Dispatcher dispatcher;
-	SimpleSoundServer server;
+	SoundServer server;
 
-	ArtsCApi() : refcnt(1), server(Reference("global:Arts_SimpleSoundServer"))
+	ArtsCApi() : refcnt(1), server(Reference("global:Arts_SoundServer"))
 	{
 		//
 	}
@@ -399,6 +408,12 @@ public:
 			return ARTS_E_NOSERVER;
 
 		return 0;
+	}
+
+	int suspend() {
+		if(!server.isNull()) 
+			return server.suspend()? 1:0;
+		return ARTS_E_NOSERVER;
 	}
 
 	void free() {
@@ -498,6 +513,13 @@ extern "C" int arts_backend_init()
 	int rc = ArtsCApi::the()->init();
 	if(rc < 0) ArtsCApi::release();
 	return rc;
+}
+
+extern "C" int arts_backend_suspend()
+{
+	if(!ArtsCApi::the()) return ARTS_E_NOINIT;
+	arts_backend_debug("arts_backend_suspend");
+	return ArtsCApi::the()->suspend();	
 }
 
 extern "C" void arts_backend_free()

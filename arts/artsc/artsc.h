@@ -12,7 +12,7 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-   
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -69,7 +69,7 @@ enum arts_parameter_t_enum {
 
 /**
  * parameters for streams
- * 
+ *
  * @li ARTS_P_BUFFER_SIZE (rw)
  *   The size of the internal buffers used for streaming to the server - this
  *   directly affects the latency that will occur. If you never set it
@@ -117,7 +117,7 @@ enum arts_parameter_t_enum {
  *   really consists of (ARTS_P_PACKET_SIZE) * (ARTS_P_PACKET_COUNT).
  *
  * @li ARTS_P_PACKET_COUNT (r)
- *   This returns the number of the packets are used for buffering. See 
+ *   This returns the number of the packets are used for buffering. See
  *   ARTS_P_PACKET_SIZE for more.
  *
  * @li ARTS_P_PACKET_SETTINGS (rw)
@@ -130,7 +130,7 @@ typedef enum arts_parameter_t_enum arts_parameter_t;
 
 /**
  * initializes the aRts C API, and connects to the sound server
- * 
+ *
  * @return 0 if everything is all right, an error code otherwise
  */
 
@@ -140,6 +140,12 @@ int arts_init(void);
  * disconnects from the sound server and frees the aRts C API internals
  */
 void arts_free(void);
+
+/**
+ * asks aRtsd to free the DSP device and return 1 if it was successful,
+ * 0 if there were active non-suspendable modules
+ */
+int arts_suspend(void);
 
 /**
  * converts an error code to a human readable error message

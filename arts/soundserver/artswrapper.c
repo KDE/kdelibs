@@ -2,6 +2,7 @@
 #include <sys/stat.h>
 #include <sys/resource.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
 
@@ -36,7 +37,7 @@ void adjust_priority()
 		struct sched_param sp;
 		long priority = (sched_get_priority_max(SCHED_FIFO) +
 			             sched_get_priority_min(SCHED_FIFO))/2;
-		              
+		
 		sp.sched_priority = priority;
 
 		if(sched_setscheduler(0, SCHED_FIFO, &sp) == 0)
@@ -99,6 +100,8 @@ int main(int argc, char **argv)
 
 	if(argc == 0)
 		return 1;
+
+	putenv("STARTED_TROUGH_ARTSWRAPPER=1");
 
 	argv[0] = EXECUTE;
 	execv(EXECUTE,argv);

@@ -37,7 +37,7 @@ interface SimpleSoundServer : PlayObjectFactory
 	/**
 	 * returns true if the sound in ID is still playing
 	 */
-	//bool isPlaying(long ID);
+	//boolean isPlaying(long ID);
 
 	/**
 	 * stops a playing sound by ID
@@ -75,6 +75,30 @@ interface SimpleSoundServer : PlayObjectFactory
 	void detach(ByteSoundProducer producer);
 
 	object createObject(string name);
+};
+
+enum RealtimeStatus { rtRealtime, rtNoSupport, rtNoWrapper, rtNoRealtime };
+
+/**
+ * This is an enhanced sound server interface which can be used to
+ * query status information or suspend the soundserver right away
+ */
+interface SoundServer : SimpleSoundServer
+{
+	readonly attribute RealtimeStatus realtimeStatus;
+
+	/**
+	 * Returns how many seconds you have to wait _now_ for the soundserver
+	 * to suspend. A value of -1 signals that the sound server is busy and
+	 * will not suspend automatically at the moment.
+	 */
+	readonly attribute long secondsUntilSuspend;
+
+	/**
+	 * Makes the soundserver suspend now _if_ it is not busy playing, that
+	 * is, if it is "suspendable". Returns true if successful.
+	 */
+	boolean suspend();
 };
 
 /**

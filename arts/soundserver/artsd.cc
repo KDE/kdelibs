@@ -46,7 +46,7 @@ static void initSignals()
 {
     signal(SIGHUP ,stopServer);
     signal(SIGINT ,stopServer);
-    signal(SIGTERM,stopServer);                                                 
+    signal(SIGTERM,stopServer);
 }
 
 static void exitUsage(const char *progname)
@@ -100,20 +100,21 @@ static void handleArgs(int argc, char **argv)
 			case 'u': cfgServers = static_cast<Dispatcher::StartServer>( cfgServers | Dispatcher::noAuthentication);
 				break;
 			case 'h':
-			default: 
+			default:
 					exitUsage(argc?argv[0]:"artsd");
 				break;
 		}
 	}
 }
 
-static bool publishReferences(SimpleSoundServer server,
-								AudioManager audioManager, bool silent)
+static bool publishReferences(SoundServer server,
+							  AudioManager audioManager, bool silent)
 {
 	ObjectManager *om = ObjectManager::the();
 	bool result;
 
-	result=om->addGlobalReference(server,"Arts_SimpleSoundServer")
+	result=om->addGlobalReference(server,"Arts_SoundServer")
+	    && om->addGlobalReference(server,"Arts_SimpleSoundServer")
         && om->addGlobalReference(server,"Arts_PlayObjectFactory")
         && om->addGlobalReference(audioManager,"Arts_AudioManager");
 	
@@ -124,6 +125,7 @@ static bool publishReferences(SimpleSoundServer server,
               << endl <<
 "       If you are sure it is not already running, remove the relevant files:"
               << endl << endl <<
+"       "<< MCOPUtils::createFilePath("Arts_SoundServer") << endl <<
 "       "<< MCOPUtils::createFilePath("Arts_SimpleSoundServer") << endl <<
 "       "<< MCOPUtils::createFilePath("Arts_PlayObjectFactory") << endl <<
 "       "<< MCOPUtils::createFilePath("Arts_AudioManager") << endl << endl;
@@ -153,6 +155,7 @@ static void cleanUnusedReferences()
 
 	sleep(1); // maybe an artsd process has just started (give it some time)
 
+	i += cleanReference("Arts_SoundServer");	
 	i += cleanReference("Arts_SimpleSoundServer");	
 	i += cleanReference("Arts_PlayObjectFactory");
 	i += cleanReference("Arts_AudioManager");
@@ -190,7 +193,7 @@ int main(int argc, char **argv)
 	}
 
 	/* start sound server implementation */
-	SimpleSoundServer server;
+	SoundServer server;
 	AudioManager audioManager;
 
 	/* make global MCOP references available */
@@ -205,7 +208,9 @@ int main(int argc, char **argv)
 }
 
 #ifdef __SUNPRO_CC
-/* See simplesoundserver_impl.cc for the reason this is here.  */
+/* See bottom of simplesoundserver_impl.cc for the reason this is here.  */
 #include "simplesoundserver_impl.h"
 REGISTER_IMPLEMENTATION(SimpleSoundServer_impl);
+#include "soundserver_impl.h"
+REGISTER_IMPLEMENTATION(SoundServer_impl);
 #endif

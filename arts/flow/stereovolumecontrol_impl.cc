@@ -12,7 +12,7 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-   
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -76,14 +76,14 @@ public:
 			/* measure volume */
 			float delta;
 
-				// left
+			// left
 			delta = fabs(outleft[i])-_currentVolumeLeft;
 			if(delta > 0.0)
 				_currentVolumeLeft += 0.01 * delta;
 			else
 				_currentVolumeLeft += 0.0003 * delta;
 
-				// right
+			// right
 			delta = fabs(outright[i])-_currentVolumeRight;
 			if(delta > 0.0)
 				_currentVolumeRight += 0.01 * delta;
@@ -91,6 +91,12 @@ public:
 				_currentVolumeRight += 0.0003 * delta;
 		}
 	}
+
+	AutoSuspendState autoSuspend() {
+		return (_currentVolumeLeft+_currentVolumeRight<0.001)? 
+			asSuspend : asNoSuspend;
+	}
+
 };
 
 REGISTER_IMPLEMENTATION(StereoVolumeControl_impl);

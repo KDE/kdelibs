@@ -33,7 +33,7 @@ libartswavplayobject_la_LDFLAGS = -no-undefined -module
 bin_PROGRAMS = artsd artsplay artscat artswrapper
 
 artsd_LDADD = libsoundserver_idl.la $(FLOWLIBS)
-artsd_SOURCES = simplesoundserver_impl.cc artsd.cc cpuusage.cc
+artsd_SOURCES = soundserver_impl.cc simplesoundserver_impl.cc artsd.cc cpuusage.cc
 
 artscat_LDADD = libsoundserver_idl.la $(FLOWLIBS)
 artscat_SOURCES = artscat.cc
