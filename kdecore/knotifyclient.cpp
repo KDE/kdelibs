@@ -179,6 +179,12 @@ void KNotifyClient::beep(const QString& reason)
       return;
     }
   }
+  // The kaccess daemon handles visual and other audible beeps
+  if ( client->isApplicationRegistered( "kaccess" ) )
+  {
+      QApplication::beep();
+      return;
+  }
 
   KNotifyClient::event(KNotifyClient::notification, reason);
 }
