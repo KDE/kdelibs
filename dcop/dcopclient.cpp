@@ -91,7 +91,7 @@ DCOPClient *findLocalClient( const QCString &_appId )
 {
     return cliMap()->find(_appId.data());
 }
-    
+
 static
 void registerLocalClient( const QCString &_appId, DCOPClient *client )
 {
@@ -218,14 +218,14 @@ static QCString dcopServerFile(const QCString &hostname, bool old)
 }
 
 
-// static 
+// static
 QCString DCOPClient::dcopServerFile(const QCString &hostname)
 {
    return ::dcopServerFile(hostname, false);
 }
 
 
-// static 
+// static
 QCString DCOPClient::dcopServerFileOld(const QCString &hostname)
 {
    return ::dcopServerFile(hostname, true);
@@ -708,7 +708,7 @@ QCString DCOPClient::registerAs( const QCString &appId, bool addPID )
 	pid.sprintf("-%d", getpid());
 	_appId = _appId + pid;
     }
-    
+
     if( d->appId == _appId )
         return d->appId;
 
@@ -1426,7 +1426,7 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 	    qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", remApp.data(), remObjId.data(), remFun.data() );
 	return b;
     }
-		
+
     return callInternal(remApp, remObjId, remFun, data,
                          replyType, replyData, useEventLoop, DCOPCall);
 }
@@ -1528,7 +1528,9 @@ void DCOPClient::processSocketData(int)
     }
 
     if (!d->iceConn) {
-        qWarning("received an error processing data from the DCOP server!");
+	d->notifier->deleteLater();
+	d->notifier = 0;
+	qWarning("received an error processing data from the DCOP server!");
         return;
     }
 
