@@ -165,6 +165,12 @@ HTMLCollection HTMLDocument::anchors() const
     return HTMLCollection(impl, HTMLCollectionImpl::DOC_ANCHORS);
 }
 
+HTMLCollection HTMLDocument::all() const
+{
+    if(!impl) return HTMLCollection();
+    return HTMLCollection(impl, HTMLCollectionImpl::DOC_ALL);
+}
+
 DOMString HTMLDocument::cookie() const
 {
     // ###

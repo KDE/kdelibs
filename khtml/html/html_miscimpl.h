@@ -68,7 +68,8 @@ public:
 	// from SELECT
 	SELECT_OPTIONS,
 	// from HTMLMap
-	MAP_AREAS
+	MAP_AREAS,
+	DOC_ALL        // "all" elements
     };
 
     HTMLCollectionImpl(NodeImpl *_base, int _tagId);

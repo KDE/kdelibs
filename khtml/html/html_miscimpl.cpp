@@ -136,6 +136,12 @@ unsigned long HTMLCollectionImpl::calcLength(NodeImpl *current) const
 		    if(e->getAttribute(ATTR_NAME) != 0)
 			len++;
 		break;
+	    case DOC_ALL:      // "all" elements
+		if(e->id() == ID_IMG || e->id() == ID_FORM ||
+		   e->id() == ID_OBJECT || e->id() == ID_APPLET ||
+		   e->id() == ID_A || e->id() == ID_AREA)
+			len++;
+		break;
 	    default:
 		kdDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!" << endl;
 	    }
@@ -226,6 +232,12 @@ NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len) co
 	    case DOC_ANCHORS:      // all A elements with a value for name
 		if(e->id() == ID_A)
 		    if(e->getAttribute(ATTR_NAME) != 0)
+			len++;
+		break;
+	    case DOC_ALL:
+		if(e->id() == ID_IMG || e->id() == ID_FORM ||
+		   e->id() == ID_OBJECT || e->id() == ID_APPLET ||
+		   e->id() == ID_A || e->id() == ID_AREA)
 			len++;
 		break;
 	    default:
@@ -325,6 +337,12 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
 	    case DOC_ANCHORS:      // all A elements with a value for name
 		if(e->id() == ID_A)
 		    if(e->getAttribute(ATTR_NAME) != 0)
+			check = true;
+		break;
+	    case DOC_ALL:
+		if(e->id() == ID_IMG || e->id() == ID_FORM ||
+		   e->id() == ID_OBJECT || e->id() == ID_APPLET ||
+		   e->id() == ID_A || e->id() == ID_AREA)
 			check = true;
 		break;
 	    default:

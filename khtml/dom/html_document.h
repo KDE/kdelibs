@@ -176,6 +176,13 @@ public:
     HTMLCollection anchors() const;
 
     /**
+     * A collection of all the <code>IMG</code>, <code>OBJECT</code>,
+     * <code>AREA</code>, <code>A</code>, forms and anchor elements of
+     * a document.
+     */
+    HTMLCollection all() const;
+
+    /**
      * The cookies associated with this document. If there are none,
      * the value is an empty string. Otherwise, the value is a string:
      * a semicolon-delimited list of "name, value" pairs for all the
