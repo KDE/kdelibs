@@ -73,17 +73,20 @@
      only done for encoding reasons afaik).
  -->
 <!ENTITY % lang.attrib
-        "lang           (af|az|bg|bo|br|bs|ca|cs|cy|da|de|el|en|en-GB|en-US|eo
-                        |es|et|eu|fa|fi|fo|fr|ga|gl|he|hi|hr|hu|id|is|it|ja|kn|ko
-                        |lt|lv|mi|mk|mt|nl|no|nb|nn|nso|oc|pl|pt|pt-BR|pt-PT
-                        |ro|ru|si|sk|sl|sr|st|sv|ta|te|tg|th|tr|uk|vi|x-wa
+        "lang           (af|ar|az|be|bg|bn|bo|br|bs|ca|cs|cy|da|de|el|en|en-GB|en-US|eo
+                        |es|et|eu|fa|fi|fo|fr|ga|gl|gu|he|hi|hr|hu|id|is|it|ja|kn|km|ko|ku
+                        |lt|lv|mi|mk|mr|mt|nl|no|nb|nn|nso|oc|pl|pt|pt-BR|pt-PT
+                        |ro|ru|si|sk|sl|sq|sr|st|sv|ta|te|tg|th|tr|uk|ven|vi|wa
                         |xh|zh|zh-CN|zh-TW|zu)
                         #IMPLIED">
 <!-- List of languages
      (Languages that only have a three-character code from 639-2, must use 
      that one)
 af      Afrikaans
+ar	Arabic
 az	Azerbaijani
+be	Belarusian
+bn	Bengali
 bg      Bulgarian
 bo      Tibetan
 br      Breton
@@ -105,6 +108,7 @@ fo      Faroese
 fr      French
 ga      Irish
 gl	Gallegan
+gu	Gujarati
 he      Hebrew
 hi      Hindi
 hr      Croatian
@@ -113,12 +117,15 @@ id      Indonesian
 is      Icelandic
 it      Italian
 ja      Japanese
+km	Khmer
 kn      Kannada
 ko      Korean
+ku	Kurdish
 lt      Lituanian
 lv	Latvian
 mi      Maori
 mk      Macedonian
+mr	Marathi
 mt	Maltese
 nb      Norwegian Bokmal
 nl      Dutch
@@ -133,6 +140,7 @@ ru      Russian
 si      Sinhalese
 sk      Slovak
 sl      Slovenian
+sq	Albanian
 sr      Serbian
 st	Sesotho (souther Sotho)
 sv      Swedish
@@ -142,7 +150,9 @@ tg	Tajik
 th      Thai
 tr      Turkish
 uk      Ukrainian
+ven	Venda
 vi	Vietnamese
+wa	Walloon
 xh	Xhosa
 zh      Chinese
 zu	Zulu
