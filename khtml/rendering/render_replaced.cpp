@@ -47,7 +47,7 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
         return;
 
     _tx += m_x;
-    _ty += m_y;
+    _ty += m_y + marginTop();
 
     if((_ty > _y + _h) || (_ty + m_height < _y)) return;
 
