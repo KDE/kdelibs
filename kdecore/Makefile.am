@@ -34,8 +34,8 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 
 noinst_HEADERS = kdebugdialog.h kckey.h kregpriv.h
 
-libkdecore_la_SOURCES = kstddirs.cpp kglobalaccel.cpp kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
-	kdesktopfile.cpp \
+libkdecore_la_SOURCES = kstddirs.cpp kglobalaccel.cpp \
+	kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp kdesktopfile.cpp \
 	kconfigbackend.cpp kcolorgroup.cpp kapp.cpp ksock.cpp\
 	kprocess.cpp kprocctrl.cpp libintl.cpp klocale.cpp \
 	fakes.cpp kiconloader.cpp kdebug.cpp \
