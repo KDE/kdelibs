@@ -537,7 +537,7 @@ KHTMLPart::~KHTMLPart()
     // No need to, I would say. We specify "this" as parent qobject
     // in ::partManager() (Simon)
   }
-  kdDebug() << "KHTMLPart::~KHTMLPart " << this <<endl; 
+
   stopAutoScroll();
   d->m_redirectionTimer.stop();
 
