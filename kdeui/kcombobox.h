@@ -70,10 +70,22 @@ class KURL;
  * useGlobalSettings(). An alternate method would be to default individual
  * key-bindings by usning setKeyBinding() with the default second argument.
  *
- * In non-editable (select-only) mode only one completion mode, @p CompletionAuto,
- * is available. All the other modes are simply ignored. Moreover, the CompletionAuto
- * mode, unlike in the read-write mode, works by matching any typed key with the
- * first letter of entries in the combobox.
+ * A non-editable combobox only has one completion mode, @p CompletionAuto.
+ * Unlike an editable combobox the CompletionAuto mode, works by matching 
+ * any typed key with the first letter of entries in the combobox. Please note
+ * that if you call setEditable( false ) to change an editable combobox to a
+ * non-editable one, the text completion object associated with the combobox will
+ * no longer exist unless you created the completion object yourself and assigned
+ * it to this widget or you called setAutoDeleteCompletionObject( false ). In other
+ * words do not do the following:
+ *
+ * \code
+ * KComboBox* combo = new KCompletionBox(true, this, "mywidget");
+ * KCompletion* comp = combo->completionObject();
+ * combo->setEditable( false );
+ * comp->clear(); // CRASH: completion object does not exist anymore. 
+ * \endcode
+ *
  *
  * A read-only KComboBox will have the same background color as a 
  * disabled KComboBox, but its foreground color will be the one used for

@@ -915,6 +915,8 @@ void KConfigSkeleton::setDefaults()
 void KConfigSkeleton::readConfig()
 {
   kdDebug(177) << "KConfigSkeleton::readConfig()" << endl;
+  
+  QString origGroup = mConfig->group();
 
   KConfigSkeletonItem::List::ConstIterator it;
   for( it = mItems.begin(); it != mItems.end(); ++it )
@@ -923,11 +925,15 @@ void KConfigSkeleton::readConfig()
   }
 
   usrReadConfig();
+  
+  mConfig->setGroup(origGroup);
 }
 
 void KConfigSkeleton::writeConfig()
 {
   kdDebug(177) << "KConfigSkeleton::writeConfig()" << endl;
+
+  QString origGroup = mConfig->group();
 
   KConfigSkeletonItem::List::ConstIterator it;
   for( it = mItems.begin(); it != mItems.end(); ++it )
@@ -940,6 +946,8 @@ void KConfigSkeleton::writeConfig()
   mConfig->sync();
 
   readConfig();
+
+  mConfig->setGroup(origGroup);
 }
 
 void KConfigSkeleton::addItem( KConfigSkeletonItem *item, const QString &name )

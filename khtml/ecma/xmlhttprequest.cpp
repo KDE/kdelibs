@@ -653,6 +653,6 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
   return Undefined();
 }
 
-}; // end namespace
+} // end namespace
 
 #include "xmlhttprequest.moc"

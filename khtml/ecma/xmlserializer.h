@@ -49,6 +49,6 @@ namespace KJS {
     friend class XMLSerializerProtoFunc;
   };
 
-}; // namespace
+} // namespace
 
 #endif

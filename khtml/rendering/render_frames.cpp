@@ -530,14 +530,6 @@ void RenderPart::setWidget( QWidget *widget )
     slotViewCleared();
 }
 
-bool RenderPart::eventFilter(QObject *o, QEvent *e)
-{
-    if (element() && element()->id() == ID_FRAME && e->type()==QEvent::FocusIn) {
-	element()->getDocument()->setFocusNode(element());
-    }
-    return RenderWidget::eventFilter(o, e);
-}
-
 bool RenderPart::partLoadingErrorNotify(khtml::ChildFrame *, const KURL& , const QString& )
 {
     return false;
@@ -715,8 +707,6 @@ void RenderPartObject::updateWidget()
       }
       if ((url.isEmpty() && !embed) || !document()->isURLAllowed(url) || !part->requestObject( this, url, serviceType, params ))
           objbase->renderAlternative();
-      else
-          objbase->setLiveConnect(part->liveConnectExtension(this));
   }
 }
 

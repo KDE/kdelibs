@@ -58,6 +58,8 @@ class KURLRequester : public QHBox
     Q_OBJECT
     Q_PROPERTY( QString url READ url WRITE setURL )
     Q_PROPERTY( bool showLocalProtocol READ showLocalProtocol WRITE setShowLocalProtocol )
+    Q_PROPERTY( QString filter READ filter WRITE setFilter )
+    Q_PROPERTY( uint mode READ mode WRITE setMode )
 
 public:
     /**
@@ -105,13 +107,27 @@ public:
      * so KFile::Files doesn't make much sense.
      * @see KFileDialog::setMode()
      */
-    void setMode( unsigned int m );
+    void setMode( uint m );
+
+    /**
+    * Returns the current mode
+    * @see KFileDialog::mode()
+    * @since 3.3
+    */
+    uint mode() const;
 
     /**
      * Sets the filter for the file dialog.
      * @see KFileDialog::setFilter()
      */
     void setFilter( const QString& filter );
+
+    /**
+    * Returns the current filter for the file dialog.
+    * @see KFileDialog::filter()
+    * @since 3.3
+    */
+    QString filter() const;
 
     /**
      * @returns whether local files will be prefixed with file:/ in the

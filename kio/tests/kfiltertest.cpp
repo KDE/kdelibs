@@ -23,7 +23,6 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <kdebug.h>
-#include <kbufferediodevice.h>
 #include <kinstance.h>
 
 void test_block( const QString & fileName )
@@ -64,22 +63,6 @@ void test_block_write( const QString & fileName )
     delete dev;
 }
 
-void test_block_write_buffered( const QString & fileName )
-{
-    QIODevice * dev = KFilterDev::deviceForFile( fileName );
-    if (!dev) { kdWarning() << "dev=0" << endl; return; }
-    if ( !dev->open( IO_WriteOnly ) ) { kdWarning() << "open failed " << endl; return; }
-    KBufferedIODevice buf( dev, 100 /*for testing*/ );
-    QCString s("hello buffer\n");
-    for ( uint i = 0; i < 10000 ; ++i ) {
-        /*int ret =*/ buf.writeBlock( s, s.size()-1 );
-        //kdDebug() << "writeBlock ret=" << ret << endl;
-    }
-    buf.close();
-    dev->close();
-    delete dev;
-}
-
 void test_getch( const QString & fileName )
 {
     QIODevice * dev = KFilterDev::deviceForFile( fileName );
@@ -114,8 +97,6 @@ int main()
 
     kdDebug() << " -- test_block_write gzip -- " << endl;
     test_block_write(pathgz);
-    kdDebug() << " -- test_block_write buffered bzip2 -- " << endl;
-    test_block_write_buffered(pathbz2);
     kdDebug() << " -- test_block_write bzip2 -- " << endl;
     test_block_write(pathbz2);
 

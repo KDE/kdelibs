@@ -134,6 +134,6 @@ namespace KJS {
     XMLHttpRequest *jsObject;
   };
 
-}; // namespace
+} // namespace
 
 #endif

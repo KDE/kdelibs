@@ -57,6 +57,7 @@
 #include <kconfigbase.h>
 #include <kapplication.h>
 #include <dcop/dcopclient.h>
+#include <kstringhandler.h> 
 
 #include "kjs_dom.h"
 #include "kjs_binding.h"
@@ -830,9 +831,9 @@ bool KJSDebugWin::exception(ExecState *exec, const Value &value, bool inTryCatch
     Context ctx = m_execs[m_execsCount-1]->context();
     SourceFragment *sourceFragment = m_sourceFragments[ctx.sourceId()];
     QString msg = i18n("An error occurred while attempting to run a script on this page.\n\n%1 line %2:\n%3")
-		  .arg(sourceFragment->sourceFile->url)
-		  .arg(sourceFragment->baseLine+ctx.curStmtFirstLine()-1)
-		  .arg(exceptionMsg);
+		  .arg(KStringHandler::rsqueeze( sourceFragment->sourceFile->url,80),
+		  QString::number( sourceFragment->baseLine+ctx.curStmtFirstLine()-1),
+		  exceptionMsg);
 
     KJSErrorDialog dlg(dlgParent,msg,true);
     dlg.exec();
