@@ -243,7 +243,7 @@ void Dialog::parseGroupFile( const QString & filename )
 		file.setGroup( id.utf8() );
 		group.name = file.readEntry( "Name" );
 		group.comment = file.readEntry( "Comment" );
-		group.weight = file.readNumEntry( "Weight", -1 );
+		group.weight = file.readNumEntry( "Weight", 100 );
 		group.parent = file.readEntry( "Parent" );
 		d->groupmap[ id ] = group;
 	}

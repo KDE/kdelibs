@@ -115,7 +115,7 @@ KCModuleInfo::loadAll()
 
   // read weight
   tmp = _service->property( "X-KDE-Weight", QVariant::Int );
-  setWeight( tmp.isValid() ? tmp.toInt() : -1 );
+  setWeight( tmp.isValid() ? tmp.toInt() : 100 );
 
   // does the module need super user privileges?
   tmp = _service->property( "X-KDE-RootOnly", QVariant::Bool );
