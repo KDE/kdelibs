@@ -489,7 +489,7 @@ void KMCupsManager::processRequest(IppRequest* req)
 			if ((value & CUPS_PRINTER_IMPLICIT)) printer->addType(KMPrinter::Implicit);
 
 			// convert printer-type attribute
-			//printer->setPrinterCap( ( value & CUPS_PRINTER_OPTIONS ) >> 2 );
+			printer->setPrinterCap( ( value & CUPS_PRINTER_OPTIONS ) >> 2 );
 		}
 		else if (attrname == "printer-state")
 		{

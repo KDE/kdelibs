@@ -34,6 +34,7 @@ KMPrinter::KMPrinter()
 	m_harddefault = m_softdefault = m_ownsoftdefault = false;
 	m_driver = 0;
 	m_isedited = false;
+	m_printercap = 0;
 }
 
 KMPrinter::KMPrinter(const KMPrinter& p)
@@ -70,6 +71,7 @@ void KMPrinter::copy(const KMPrinter& p)
 	//m_harddefault = p.m_harddefault;
 	//m_softdefault = p.m_softdefault;
 	m_options = p.m_options;
+	m_printercap = p.m_printercap;
 	setDiscarded(false);
 }
 

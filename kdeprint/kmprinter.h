@@ -54,6 +54,22 @@ public:
 		Rejecting  = 0x08,
 		StateMask  = 0x07
 	};
+	enum PrinterCap {
+		CapBW       = 0x0001,
+		CapColor    = 0x0002,
+		CapDuplex   = 0x0004,
+		CapStaple   = 0x0008,
+		CapCopies   = 0x0010,
+		CapCollate  = 0x0020,
+		CapPunch    = 0x0040,
+		CapCover    = 0x0080,
+		CapBind     = 0x0100,
+		CapSort     = 0x0200,
+		CapSmall    = 0x0400,
+		CapMedium   = 0x0800,
+		CapLarge    = 0x1000,
+		CapVariable = 0x2000
+	};
 
 	// constructor functions
 	KMPrinter();
@@ -94,6 +110,9 @@ public:
 	void setModel(const QString& s)		{ m_model = s; }
 	const QString& driverInfo() const	{ return m_driverinfo; }
 	void setDriverInfo(const QString& s)	{ m_driverinfo = s; }
+	int printerCap() const              { return m_printercap; }
+	void setPrinterCap( int c )         { m_printercap = c; }
+	void addPrinterCap( int c )         { m_printercap |= c; }
 
 	// some useful functions
 	bool isClass(bool useImplicit = true) const	{ return ((m_type & KMPrinter::Class) || (useImplicit && isImplicit())); }
@@ -186,6 +205,9 @@ protected:
 	QMap<QString,QString>	m_defaultoptions;
 	QMap<QString,QString>	m_editedoptions;
 	bool			m_isedited;
+
+	// printer capabilities (based on CUPS model)
+	int m_printercap;
 };
 
 class KMPrinterList : public QPtrList<KMPrinter>

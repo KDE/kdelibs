@@ -81,17 +81,25 @@ static int findOption(const char *strs[], int n, const QString& txt)
 //*************************************************************************************************
 
 // default values in case of NULL driver
-#define	DEFAULT_SIZE	16
 static const char*	default_size[] = {
 	"A4", I18N_NOOP("ISO A4"),
 	"Letter", I18N_NOOP("US Letter"),
 	"Legal", I18N_NOOP("US Legal"),
 	"Ledger", I18N_NOOP("Ledger"),
-	"Tabloid", I18N_NOOP("Tabloid"),
 	"Folio", I18N_NOOP("Folio"),
 	"Comm10", I18N_NOOP("US #10 Envelope"),
-	"DL", I18N_NOOP("ISO DL Envelope")
+	"DL", I18N_NOOP("ISO DL Envelope"),
+	"Tabloid", I18N_NOOP("Tabloid"),
+	"A3", I18N_NOOP( "ISO A3" ),
+	"A2", I18N_NOOP( "ISO A2" ),
+	"A1", I18N_NOOP( "ISO A1" ),
+	"A0", I18N_NOOP( "ISO A0" )
 };
+#define SMALLSIZE_BEGIN   0
+#define MEDIUMSIZE_BEGIN 14
+#define HIGHSIZE_BEGIN   20
+#define DEFAULT_SIZE     24
+
 #define	DEFAULT_SOURCE	8
 static const char*	default_source[] = {
 	"Upper", I18N_NOOP("Upper Tray"),
@@ -260,8 +268,14 @@ void KPGeneralPage::initialize()
 	else
 	{
 		// PageSize
-		for (int i=1;i<DEFAULT_SIZE;i+=2)
+		for (int i=SMALLSIZE_BEGIN+1;i<MEDIUMSIZE_BEGIN;i+=2)
 			m_pagesize->insertItem(i18n(default_size[i]));
+		if ( printer()->printerCap() & KMPrinter::CapMedium )
+			for ( int i=MEDIUMSIZE_BEGIN+1; i<HIGHSIZE_BEGIN; i+=2 )
+				m_pagesize->insertItem(i18n(default_size[i]));
+		if ( printer()->printerCap() & KMPrinter::CapLarge )
+			for ( int i=HIGHSIZE_BEGIN+1; i<DEFAULT_SIZE; i+=2 )
+				m_pagesize->insertItem(i18n(default_size[i]));
 		// set default page size using locale settings
 		QString	psname = pageSizeToPageName((KPrinter::PageSize)(KGlobal::locale()->pageSize()));
 		int index = findOption(default_size, DEFAULT_SIZE, psname);
@@ -273,6 +287,9 @@ void KPGeneralPage::initialize()
 		// PageSize
 		for (int i=1;i<DEFAULT_SOURCE;i+=2)
 			m_inputslot->insertItem(i18n(default_source[i]));
+
+		// Enable duplex setting if supported
+		m_duplexbox->setEnabled( printer()->printerCap() & KMPrinter::CapDuplex );
 	}
 
 	// Banners
