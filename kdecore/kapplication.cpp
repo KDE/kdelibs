@@ -74,6 +74,7 @@
 #include <kstartupinfo.h>
 
 #include <dcopclient.h>
+#include <dcopref.h>
 
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
@@ -1822,14 +1823,7 @@ void KApplication::invokeHelp( const QString& anchor,
        }
    }
    else
-   {
-       QByteArray data;
-       QDataStream arg(data, IO_WriteOnly);
-       arg << url;
-       dcopClient()->send("khelpcenter", "KHelpCenterIface",
-                          "openURL(QString)", data);
-   }
-
+       DCOPRef( "khelpcenter", "KHelpCenterIface" ).send( "openURL", url );
 }
 
 void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topic ) const
@@ -1859,13 +1853,7 @@ void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topi
        }
    }
    else
-   {
-       QByteArray data;
-       QDataStream arg(data, IO_WriteOnly);
-       arg << url;
-       dcopClient()->send("khelpcenter", "KHelpCenterIface",
-                          "openURL(QString)", data);
-   }
+       DCOPRef( "khelpcenter", "KHelpCenterIface" ).send( "openURL", url );
 }
 
 
