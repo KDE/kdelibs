@@ -1,3 +1,11 @@
+2004-12-13  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Be more IE-compatible in IE-compatible key-event extension
+
+        * ecma/kjs_events.{h,cpp}: Add charCode
+        * dom/dom2_events.{h,cpp}: Glue
+        * xml/dom2_eventsimpl.{h,cpp}: Make keyCode return windows key codes and add charCode.
+
 2004-12-12  Germain Garand  <germain@ebooksfrance.org>
 
         Pragmatic incremental repaints: be accurate on layered objects, conservative on
@@ -48,7 +56,7 @@
         * khtmlpart_p.h: add boolean to record whether we need to restore a
         stored scroll offset or honour an anchor
 
-2004-12-29  Allan Sandfeld Jensen <kde@carewolf.com>
+2004-12-09  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Add :enabled and :disabled pseudo-classes
 

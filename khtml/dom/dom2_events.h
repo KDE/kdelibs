@@ -326,6 +326,12 @@ public:
     int keyCode() const;
 
     /**
+     * IE extension
+     *
+     */
+    int charCode() const;
+
+    /**
      *
      * Netscape extension. only returns something useful when the mouse
      * was involved. Otherwise its 0

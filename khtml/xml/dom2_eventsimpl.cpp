@@ -240,16 +240,16 @@ DOMString EventImpl::idToType(EventImpl::EventId id)
         return "resize";
     case SCROLL_EVENT:
         return "scroll";
+    case KEYDOWN_EVENT:
+        return "keydown";
+    case KEYUP_EVENT:
+        return "keyup";
+
+    //khtml extensions
     case KHTML_ECMA_DBLCLICK_EVENT:
         return "dblclick";
     case KHTML_ECMA_CLICK_EVENT:
         return "click";
-    case KEYDOWN_EVENT:
-        return "keydown";
-    case KEYUP_EVENT:
-        return "khtml_keyup";
-
-    //khtml extensions
     case KHTML_DRAGDROP_EVENT:
         return "khtml_dragdrop";
     case KHTML_ERROR_EVENT:
@@ -725,6 +725,33 @@ void TextEventImpl::initModifier(unsigned long modifierArg,
   else
       m_modifier &= (modifierArg ^ 0xFFFFFFFF);
 }
+
+int TextEventImpl::keyCode() const
+{
+    if (!qKeyEvent)
+        return 0;
+
+    switch(m_virtKeyVal) {
+        case DOM_VK_UP:
+            return 0x26; // Windows key-codes
+        case DOM_VK_DOWN:
+            return 0x28;
+        default:
+            return charCode();
+    }
+}
+
+int TextEventImpl::charCode() const
+{
+    if (!qKeyEvent)
+        return 0;
+
+    if (m_outputString.length() != 1)
+        return 0;
+
+    return m_outputString[0].unicode();
+}
+
 
 bool TextEventImpl::isTextEvent() const
 {

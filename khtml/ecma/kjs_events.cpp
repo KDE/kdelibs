@@ -460,6 +460,7 @@ const ClassInfo DOMUIEvent::info = { "UIEvent", &DOMEvent::info, &DOMUIEventTabl
   view		DOMUIEvent::View	DontDelete|ReadOnly
   detail	DOMUIEvent::Detail	DontDelete|ReadOnly
   keyCode	DOMUIEvent::KeyCode	DontDelete|ReadOnly
+  charCode	DOMUIEvent::CharCode	DontDelete|ReadOnly
   layerX	DOMUIEvent::LayerX	DontDelete|ReadOnly
   layerY	DOMUIEvent::LayerY	DontDelete|ReadOnly
   pageX		DOMUIEvent::PageX	DontDelete|ReadOnly
@@ -499,6 +500,9 @@ Value DOMUIEvent::getValueProperty(ExecState *exec, int token) const
   case KeyCode:
     // IE-compatibility
     return Number(static_cast<DOM::UIEvent>(event).keyCode());
+  case CharCode:
+    // IE-compatibility
+    return Number(static_cast<DOM::UIEvent>(event).charCode());
   case LayerX:
     // NS-compatibility
     return Number(static_cast<DOM::UIEvent>(event).layerX());

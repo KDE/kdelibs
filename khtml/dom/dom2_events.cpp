@@ -252,7 +252,18 @@ int UIEvent::keyCode() const
     if ( !impl ) throw DOMException( DOMException::INVALID_STATE_ERR );
 
     if( impl->isTextEvent() )
-        return static_cast<TextEventImpl*>( impl )->keyVal();
+        return static_cast<TextEventImpl*>( impl )->keyCode();
+
+    return 0;
+}
+
+int UIEvent::charCode() const
+{
+    if (!impl)
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    if( impl->isTextEvent() )
+        return static_cast<TextEventImpl*>( impl )->charCode();
 
     return 0;
 }

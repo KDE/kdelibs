@@ -344,6 +344,8 @@ public:
     unsigned long    virtKeyVal() const { return m_virtKeyVal; }
     bool             numPad() const { return m_numPad; }
     DOMString        outputString() const { return m_outputString; }
+    int keyCode() const;
+    int charCode() const;
 
   virtual bool isTextEvent() const;
 
