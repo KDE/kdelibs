@@ -104,7 +104,6 @@
 <!ENTITY GNU	"<acronym>GNU</acronym>">
 <!ENTITY GPL	"<acronym>GPL</acronym>">
 <!ENTITY GUI	"<acronym>GUI</acronym>">
-<!ENTITY HewlettPackard	'<trademark class="registered">Hewlett-Packard</trademark>' -- obsolete: use Hewlett-Packard instead; will be removed with version update -->
 <!ENTITY Hewlett-Packard	'<trademark class="registered">Hewlett-Packard</trademark>'>
 <!ENTITY HP	'<trademark class="registered">HP</trademark>'>
 <!ENTITY HP-UX	'<trademark class="registered">HP-UX</trademark>'>
@@ -259,8 +258,15 @@
 <!ENTITY URL	"<acronym>URL</acronym>">
 <!ENTITY windowmaker	"<application>Window Maker</application>">
 <!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
-<!ENTITY X	"<trademark>X Window System</trademark>" -- obsolete: use X-Windows instead; it will be removed in the next version -->
 <!ENTITY X-Windows	'<trademark class="registered">X Windows</trademark>'>
 <!ENTITY XHTML	"<trademark>XHTML</trademark>">
 <!ENTITY XML	"<trademark>XML</trademark>">
 <!ENTITY XSL	"<trademark>XSL</trademark>">
+
+<!-- Obsolete entities -->
+
+<!ENTITY % DBGED1.0 "INCLUDE">
+<![%DBGED1.0;[
+<!ENTITY HewlettPackard	'<trademark class="registered">Hewlett-Packard</trademark>' -- use Hewlett-Packard instead -->
+<!ENTITY X	"<trademark>X Window System</trademark>" -- use X-Windows instead -->
+]]>
