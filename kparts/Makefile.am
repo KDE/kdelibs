@@ -14,7 +14,7 @@ check-local:
 
 lib_LTLIBRARIES = libkparts.la
 
-libkparts_la_SOURCES = part.cpp plugin.cpp partmanager.cpp mainwindow.cpp event.cpp
+libkparts_la_SOURCES = part.cpp plugin.cpp partmanager.cpp mainwindow.cpp event.cpp browserextension.cpp
 
 kpartsincludedir = $(includedir)/kparts
 kpartsinclude_HEADERS = part.h plugin.h partmanager.h mainwindow.h event.h \

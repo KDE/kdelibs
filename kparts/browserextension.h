@@ -41,18 +41,41 @@ class OpenURLEvent : public Event
 public:
   // arghl, shouldn't we move this into *some* lib, in order to make that string a static const char * ?
   // do we need a lib for that ? (David) - we can add this to kparts anyway.
-  OpenURLEvent( ReadOnlyPart *part, const KURL &url ) 
-  : Event( "BrowserExtension/OpenURLEvent" ), m_part( part ), m_url( url ) {}
+  OpenURLEvent( ReadOnlyPart *part, const KURL &url )
+  : Event( s_strOpenURLEvent ), m_part( part ), m_url( url ) {}
 
   ReadOnlyPart *part() const { return m_part; }
   KURL url() const { return m_url; }
 
-  static bool test( const QEvent *event ) { return Event::test( event, "BrowserExtension/OpenURLEvent" ); }
+  static bool test( const QEvent *event ) { return Event::test( event, s_strOpenURLEvent ); }
 
 private:
+  static const char *s_strOpenURLEvent;
   ReadOnlyPart *m_part;
   KURL m_url;
 };
+
+struct URLArgsPrivate;
+
+struct URLArgs
+{
+  URLArgs();
+  URLArgs( const URLArgs &args );
+  URLArgs( bool reload, int xOffset, int yOffset, const QString &serviceType = QString::null );
+  virtual ~URLArgs();
+
+  bool reload;
+  int xOffset;
+  int yOffset;
+  QString serviceType;
+
+  QByteArray postData; //khtml specific stuff
+  QString frameName;
+
+  URLArgsPrivate *d;
+};
+
+class BrowserExtensionPrivate;
 
  /**
   * The following standard actions are defined by the host of the view :
@@ -88,10 +111,14 @@ public:
    * @param name an optionnal name for the extension
    */
   BrowserExtension( KParts::ReadOnlyPart *parent,
-                    const char *name = 0L ) :
-    QObject( parent, name ), m_part( parent ) {}
+                    const char *name = 0L );
 
-  virtual ~BrowserExtension() { }
+
+  virtual ~BrowserExtension();
+
+  virtual void setURLArgs( const URLArgs &args );
+
+  virtual URLArgs urlArgs();
 
   /**
    * Move the view to the position (x,y)
@@ -99,17 +126,18 @@ public:
    *  position it was when we left it, during navigation)
    * For a scrollview, implement this using setContentsPos()
    */
-  virtual void setXYOffset( int /* x */, int /* y */ ) {};
+  virtual void setXYOffset( int /* x */, int /* y */ );
+
   /**
    * @return the current x offset
    * For a scrollview, implement this using contentsX()
    */
-  virtual int xOffset() { return 0; }
+  virtual int xOffset();
   /**
    * @return the current y offset
    * For a scrollview, implement this using contentsY()
    */
-  virtual int yOffset() { return 0; }
+  virtual int yOffset();
 
   /**
    * Used by the browser to save the current state of the view
@@ -117,8 +145,7 @@ public:
    * If you want to save additionnal properties, reimplement it
    * but don't forget to call the parent method (probably first).
    */
-  virtual void saveState( QDataStream &stream )
-  { stream << m_part->url() << (Q_INT32)xOffset() << (Q_INT32)yOffset(); }
+  virtual void saveState( QDataStream &stream );
 
   /**
    * Used by the browser to restore the view in the state
@@ -126,9 +153,7 @@ public:
    * If you saved additionnal properties, reimplement it
    * but don't forget to call the parent method (probably first).
    */
-  virtual void restoreState( QDataStream &stream )
-  { KURL u; Q_INT32 xOfs, yOfs; stream >> u >> xOfs >> yOfs;
-    m_part->openURL( u ); setXYOffset( xOfs, yOfs ); }
+  virtual void restoreState( QDataStream &stream );
 
 signals:
   /**
@@ -142,7 +167,7 @@ signals:
    * optionnally setting the x and y offsets.
    * The @serviceType allows to ...
    */
-  void openURLRequest( const KURL &url, bool reload, int xOffset, int yOffset, const QString &serviceType = QString::null );
+  void openURLRequest( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
    * Update the URL shown in the browser's location bar to @p url
@@ -170,8 +195,13 @@ signals:
    */
   void popupMenu( const QPoint &global, const KFileItemList &items );
 
+private slots:
+  void slotCompleted();
+
 private:
   KParts::ReadOnlyPart *m_part;
+  URLArgs m_args;
+  BrowserExtensionPrivate *d;
 };
 
 };
