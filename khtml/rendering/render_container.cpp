@@ -46,6 +46,9 @@ RenderContainer::RenderContainer(DOM::NodeImpl* node)
 
 void RenderContainer::detach(RenderArena* renderArena)
 {
+    if (continuation())
+        continuation()->detach(renderArena);
+
     RenderObject* next;
     for(RenderObject* n = m_first; n; n = next ) {
 	n->removeFromFloatingObjects();
@@ -177,10 +180,14 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
     setLayouted( false );
     setMinMaxKnown( false );
 
+#if 0
+    // this gives crashes when used with the continuation code. Never
+    // really was the right place to do the cleanup anyways.
     if ( isAnonymousBox() && !firstChild() ) {
 	// we are an empty anonymous box. There is no reason for us to continue living.
 	detach( renderArena() );
     }
+#endif
 
     return oldChild;
 }
@@ -276,7 +283,7 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
     child->setParent(this);
 
     // Keep our layer hierarchy updated.
-    // XXX Need this to do an insertion and really find the right place to
+    // ### Need this to do an insertion and really find the right place to
     // put the new layer. Not a big deal though. -dwh
     child->appendLayers(enclosingLayer());
 
@@ -307,7 +314,7 @@ void RenderContainer::removeLeftoverAnonymousBoxes()
     while( child ) {
 	RenderObject *next = child->nextSibling();
 
-	if ( child->isFlow() && child->isAnonymousBox() &&
+	if ( child->isFlow() && child->isAnonymousBox() && !child->continuation() &&
              !child->childrenInline() && !child->isTableCell() ) {
 	    RenderObject *firstAnChild = child->firstChild();
 	    RenderObject *lastAnChild = child->lastChild();

@@ -757,6 +757,8 @@ QString RenderObject::information() const
 	      QString::fromLatin1("]") ) : QString::null );
     if ( layer() )
 	ts << " layer=" << layer();
+    if ( continuation() )
+	ts << " continuation=" << continuation();
     return str;
 }
 
@@ -845,9 +847,9 @@ void RenderObject::setStyle(RenderStyle *style)
 	if(nb) nb->ref(this);
     }
 
-   
-    setShouldPaintBackgroundOrBorder(m_style->backgroundColor().isValid() || 
-                                        m_style->hasBorder() || nb ); 
+
+    setShouldPaintBackgroundOrBorder(m_style->backgroundColor().isValid() ||
+                                        m_style->hasBorder() || nb );
     m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
 
     if ( d >= RenderStyle::Position && m_parent ) {
@@ -1096,9 +1098,8 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
             info.setInnerNonSharedNode(element());
 
         if (!info.URLElement()) {
-            //RenderObject* p = (!isInline() && continuation()) ? continuation() : this;
-	    RenderObject *p = this;
-            while (p) {
+            RenderObject* p = (!isInline() && continuation()) ? continuation() : this;
+	    while (p) {
                 if (p->element() && p->element()->hasAnchor()) {
                     info.setURLElement(p->element());
                     break;

@@ -150,6 +150,7 @@ private:
 
 public:
     RenderArena* renderArena() const;
+    virtual RenderFlow* continuation() const { return 0; }
 
     // some helper functions...
     virtual bool childrenInline() const { return false; }

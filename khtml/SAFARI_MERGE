@@ -98,11 +98,16 @@ Needs other stuff before it can be applied:
 # rendering
 ===========================================================================
 
-done so far:
-- RenderArena support. Usage of the arena is disabled for now. Needs testing before
-  I'll enable it.
+done so far: 
+
+- RenderArena support. Usage of the arena is disabled for now. Needs
+  testing before I'll enable it.
 
 - renamed print methods to paint
+
+- RendeLayer code is used. Needs to be updated to apples latest version.
+
+- Handling of block within inlines via continuations is done.
 
 changes that need to be merged:
 
@@ -113,12 +118,23 @@ changes that need to be merged:
   IMO to speed up style stuff. Should IMO be separated out into a font_mac.cpp
   and font_x11.cpp
 
+- repaint has gotten a bool immediate
+
 - render_applet.cpp: small #ifdef APPLE changes
+
+- render_box.cpp:
+	paintBackground has some fixes for background position in
+	table cells and repeat handling. Need to examine in detail
+
+	calcWidth has some code for min and max width constraints
+	calcHeight has a hack for "height: 100%". Not sure I understand it.
+	
+- render_container:
+	some hack to avoid an infinite recursion on one of the evil tests.
+	Since I fixed anonymous table insertion, I doubt it is still needed. Needs testing.
 
 ....
 
-general API changes:
-- repaint has gotten a bool immediate.
 
 ===========================================================================
 # xml

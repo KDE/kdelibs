@@ -54,7 +54,20 @@ public:
 
     virtual bool isFlow() const { return true; }
     virtual bool childrenInline() const { return m_childrenInline; }
+    void setChildrenInline(bool b) { m_childrenInline = b; }
     virtual bool isRendered() const { return true; }
+
+    virtual RenderFlow* continuation() const { return m_continuation; }
+    void setContinuation(RenderFlow* c) { m_continuation = c; }
+    RenderFlow* continuationBefore(RenderObject* beforeChild);
+
+    void splitInlines(RenderFlow* fromBlock, RenderFlow* toBlock, RenderFlow* middleBlock,
+                      RenderObject* beforeChild, RenderFlow* oldCont);
+    void splitFlow(RenderObject* beforeChild, RenderFlow* newBlockBox,
+                   RenderObject* newChild, RenderFlow* oldCont);
+    void addChildWithContinuation(RenderObject* newChild, RenderObject* beforeChild);
+    void addChildToFlow(RenderObject* newChild, RenderObject* beforeChild);
+    void removeChild(RenderObject *oldChild);
 
     void makeChildrenNonInline(RenderObject *box2Start = 0);
 
@@ -164,14 +177,28 @@ protected:
     QPtrList<FloatingObject>* floatingObjects;
 
 private:
-    // width/height of overflowing contents
-    int m_overflowHeight;
-    short m_overflowWidth;
+    bool m_childrenInline    : 1;
+    bool m_pre               : 1;
+    bool firstLine           : 1; // used in inline layouting
+    EClear m_clearStatus     : 2; // used during layuting of paragraphs
+    bool m_topMarginQuirk    : 1;
+    bool m_bottomMarginQuirk : 1;
+    uint unused : 9;
 
-    bool m_childrenInline : 1;
-    bool m_pre            : 1;
-    bool firstLine        : 1; // used in inline layouting
-    EClear m_clearStatus  : 2; // used during layuting of paragraphs
+    short m_maxTopPosMargin;
+    short m_maxTopNegMargin;
+    short m_maxBottomPosMargin;
+    short m_maxBottomNegMargin;
+
+    // width/height of overflowing contents
+    short m_overflowWidth;
+    int m_overflowHeight;
+
+    // An inline can be split with blocks occurring in between the inline content.
+    // When this occurs we need a pointer to our next object.  We can basically be
+    // split into a sequence of inlines and blocks.  The continuation will either be
+    // an anonymous block (that houses other blocks) or it will be an inline flow.
+    RenderFlow* m_continuation;
 };
 
 

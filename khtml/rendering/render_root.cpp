@@ -144,7 +144,6 @@ void RenderRoot::layout()
         setHeight(  m_viewportHeight = s.height() );
     }
 
-
     // ### we could maybe do the call below better and only pass true if the docsize changed.
     layoutPositionedObjects( true );
 
@@ -383,6 +382,7 @@ int RenderRoot::docHeight() const
         if( dh > h )
             h = dh;
     }
+    h = QMAX( h, m_layer->height() );
     return h;
 }
 
@@ -403,5 +403,6 @@ int RenderRoot::docWidth() const
         if( dw > w )
             w = dw;
     }
+    w = QMAX( w, m_layer->width() );
     return w;
 }

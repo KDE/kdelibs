@@ -331,7 +331,6 @@ void RenderTable::layout()
     layoutPositionedObjects( true );
 
     setLayouted();
-
 }
 
 void RenderTable::setCellWidths()
