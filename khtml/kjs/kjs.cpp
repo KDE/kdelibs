@@ -166,7 +166,7 @@ bool KJScript::useModule(const char *module, void *arg)
   initFunction initSym = (initFunction) sym;
 
   if ((*initSym)(arg)) {
-    fprintf(stderr, "initialization of module %s failed\n", name);
+    fprintf(stderr, "initialization of module %s failed\n", name.ascii());
     return false;
   }
 
