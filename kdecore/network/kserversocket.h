@@ -48,6 +48,7 @@ class KServerSocketPrivate;
  *
  * A typical example would look like:
  * \code
+ *   QString server = "http";
  *   KServerSocket *ss = new KServerSocket(service);
  *   QObject::connect(ss, SIGNAL(readyAccept()), this, SLOT(slotReadyAccept()))
  *   ss->listen();
@@ -57,6 +58,11 @@ class KServerSocketPrivate;
  * service pointed to by @p service and will emit the @ref readyAccept signal
  * when a connection is ready for accepting. The called slot is responsible for
  * calling @ref accept.
+ * 
+ * The location of the services file (where @p service is looked up) 
+ * is defined by _PATH_SERVICES in /usr/include/netdb.h.  This is
+ * usually set to /etc/services.
+ * See RFC 1700 for more information on services.
  *
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
@@ -82,6 +88,11 @@ public:
    * If the binding address isn't changed by setAddress, this socket will
    * bind to all interfaces and will listen on the port specified by
    * @p service.
+   * 
+   * The location of the services file (where @p service is looked up) 
+   * is defined by _PATH_SERVICES in /usr/include/netdb.h.  This is
+   * usually set to /etc/services.
+   * See RFC 1700 for more information on services.
    *
    * @param service		the service name to listen on
    * @param parent		the parent QObject object
@@ -95,6 +106,11 @@ public:
    * If the binding address isn't changed by setAddress, this socket will
    * bind to the interface specified by @p node and the port specified by
    * @p service.
+   *   
+   * The location of the services file (where @p service is looked up) 
+   * is defined by _PATH_SERVICES in /usr/include/netdb.h.  This is
+   * usually set to /etc/services.
+   * See RFC 1700 for more information on services.   
    *
    * @param node		the node to bind to
    * @param service		the service port to listen on
@@ -160,8 +176,13 @@ public:
 
   /**
    * Sets the address on which we will listen. The port to listen on is given by
-   * @p and we will bind to all interfaces. To let the operating system choose a
+   * @p service, and we will bind to all interfaces. To let the operating system choose a
    * port, set the service to "0".
+   *
+   * The location of the services file (where @p service is looked up) 
+   * is defined by _PATH_SERVICES in /usr/include/netdb.h.  This is
+   * usually set to /etc/services.
+   * See RFC 1700 for more information on services.
    *
    * @param service		the service name to listen on
    */
