@@ -7,7 +7,7 @@ Standards-Version: 2.1.2.2
 Package: kdelibs3
 Architecture: any
 Section: x11
-Depends: ${shlibs:Depends}, libjpeg62, qt2beta, libjpeg62, xlib6, mico (= 2.2.3), python-base (>= 1.5.1)
+Depends: ${shlibs:Depends}, libjpeg62, qt2beta, libjpeg62, xlib6, mico (>= 2.2.3), python-base (>= 1.5.1)
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
@@ -15,7 +15,7 @@ Description: KDE core libraries (runtime files)
 Package: kdelibs3-dev
 Architecture: any
 Section: x11
-Depends: kdelibs3 (= ${Source-Version}), qt2beta-dev, libjpeg62-dev, xlib6g-dev, mico-dev (= 2.2.3), python-dev (>= 1.5.1)
+Depends: kdelibs3 (= ${Source-Version}), qt2beta-dev, libjpeg62-dev, xlib6g-dev, mico-dev (>= 2.2.3), python-dev (>= 1.5.1)
 Conflicts: kdelibs0-dev, kdelibs2g-dev
 Description: KDE core libraries (development files)
  KDE core libraries.

@@ -72,7 +72,7 @@ kckey.h : generate_keys.sh $(QNAMESPACE_H)
 
 install-data-local: charsets.config 
 	$(mkinstalldirs) $(kde_confdir)
-	$(INSTALL_DATA) $(srcdir)/charsets.config $(DESTDIR)$(kde_confdir)/charsets
+	$(INSTALL_DATA) $(srcdir)/charsets.config $(kde_confdir)/charsets
 
 uninstall-local:
 	-rm -f $(kde_confdir)/charsets
