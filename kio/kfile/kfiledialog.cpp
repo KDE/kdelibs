@@ -188,6 +188,7 @@ KFileDialog::~KFileDialog()
 
     config->sync();
 
+    delete d->bookmarkHandler; // Should be deleted before ops!
     delete ops;
     delete d;
 }

@@ -56,7 +56,7 @@ KFileBookmarkHandler::KFileBookmarkHandler( KFileDialog *dialog )
 
 KFileBookmarkHandler::~KFileBookmarkHandler()
 {
-    //     delete m_bookmarkMenu; ###
+    delete m_bookmarkMenu;
 }
 
 QString KFileBookmarkHandler::currentURL() const
