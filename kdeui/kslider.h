@@ -77,7 +77,7 @@ private:
   void drawShadeLine( QPainter *painter );
   void drawTickMarks( QPainter *painter );
   void drawTicks( QPainter * p, int d, int w, int i=1 );
-  void drawWinGroove(class QPainter *, short int);
+  void drawWinGroove(class QPainter *, QCOORD);
   void drawFocusBar(QPainter *painter, const QRect & );
   virtual void paintEvent( QPaintEvent * );
 
