@@ -28,7 +28,7 @@
 #include <qdict.h>
 
 #include "manageriface.h"
-#include <kresources/manager.h>
+#include <kresources/resource.h>
 
 class KConfig;
 
