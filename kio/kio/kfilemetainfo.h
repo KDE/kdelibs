@@ -641,6 +641,7 @@ public:
 
 protected:
     void setAdded();
+    void setRemoved();
 
     void ref();
     void deref();
