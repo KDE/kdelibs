@@ -64,7 +64,19 @@ public:
     Orientation orientation() const;
     
 public slots:
+    
+    /*!
+      Tells the applet container that the applet wants to be
+      removed. Subclasses should provide a context menu with a
+      "Remove" item connected to this slot.
+     */
     void removeRequest();
+
+    /*!
+      Tells the applet container that the applet wants to be
+      moved around. Subclasses should provide a context menu with a
+      "Move" item connected to this slot.
+     */
     void moveRequest();
 
 private:
