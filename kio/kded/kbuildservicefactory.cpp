@@ -74,11 +74,12 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
 
   KService * serv = new KService( &desktopFile );
 
-  if ( serv->isValid() ) 
+  if ( serv->isValid() && !serv->isDeleted() ) 
   {
      return serv;
   } else {
-     kdWarning(7012) << "Invalid Service : " << file << endl;
+     if (!serv->isValid())
+        kdWarning(7012) << "Invalid Service : " << file << endl;
      delete serv;
      return 0L;
   }
