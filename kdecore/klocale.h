@@ -56,7 +56,7 @@ QString i18n(const char *text);
 class KLocale {
 
       friend class KGlobal;
-      friend class KLocaleConfigAdvanced;
+      friend class KLocaleAdvanced;
 public:
     /**
       * Create a KLocale with the given catalogue name.
