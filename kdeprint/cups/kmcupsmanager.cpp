@@ -703,12 +703,10 @@ bool KMCupsManager::restartServer()
 
 bool KMCupsManager::configureServer(QWidget *parent)
 {
-	QString	configfile = cupsInstallDir();
-	configfile.append("/etc/cups/cupsd.conf");
-	bool (*f2)(const QString&,QWidget*) = (bool(*)(const QString&,QWidget*))loadCupsdConfFunction("configureServer");
+	bool (*f2)(QWidget*) = (bool(*)(QWidget*))loadCupsdConfFunction("configureServer");
 	bool 	result(false);
 	if (f2)
-		result = f2(configfile,parent);
+		result = f2(parent);
 	unloadCupsdConf();
 	return result;
 }
