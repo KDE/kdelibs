@@ -43,7 +43,11 @@ class KSSL;
 class KSSLCertificatePrivate;
 class QDateTime;
 
+#ifdef HAVE_SSL
 typedef struct x509_st X509;
+#else
+class X509;
+#endif
 
 class KSSLCertificate {
 friend class KSSL;
