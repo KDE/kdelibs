@@ -33,18 +33,15 @@
 #include <qevent.h>
 #include <qapplication.h>
 #include <qlineedit.h>
-#include <qobjectlist.h>
-#include <qscrollview.h>
-
-#include <kdebug.h>
 #include <kglobalsettings.h>
+#include <qobjectlist.h>
+
 #include "khtml_ext.h"
 #include "khtmlview.h"
 #include "xml/dom2_eventsimpl.h"
 #include "khtml_part.h"
 #include "xml/dom_docimpl.h"
-#include <kurlrequester.h>
-#include <klineedit.h>
+#include <kdebug.h>
 
 bool khtml::allowWidgetPaintEvents = false;
 
@@ -98,8 +95,6 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     assert(!isAnonymous());
     m_view = node->getDocument()->view();
     m_resizePending = false;
-
-    m_ignoreEvents = false;
 
     // this is no real reference counting, its just there
     // to make sure that we're not deleted while we're recursed
@@ -186,14 +181,7 @@ void RenderWidget::setQWidget(QWidget *widget)
     if (widget != m_widget)
     {
         if (m_widget) {
-
-	    if (m_widget->inherits("QScrollView"))
-		static_cast<QScrollView*>(m_widget)->viewport()->removeEventFilter(this);
-	    else if (m_widget->inherits("KURLRequester"))
-		static_cast<KURLRequester*>(m_widget)->lineEdit()->removeEventFilter(this);
-	    else
             m_widget->removeEventFilter(this);
-
             disconnect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             delete m_widget;
             m_widget = 0;
@@ -201,20 +189,13 @@ void RenderWidget::setQWidget(QWidget *widget)
         m_widget = widget;
         if (m_widget) {
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
-
-	    if (m_widget->inherits("QScrollView"))
-		static_cast<QScrollView*>(m_widget)->viewport()->installEventFilter(this);
-	    else if (m_widget->inherits("KURLRequester"))
-		static_cast<KURLRequester*>(m_widget)->lineEdit()->installEventFilter(this);
-	    else
             m_widget->installEventFilter(this);
 
             if ( !strcmp(m_widget->name(), "__khtml"))
                 m_widget->setBackgroundMode( QWidget::NoBackground );
 
-	    m_widget->setFocusPolicy(QWidget::NoFocus);
-	    m_widget->setMouseTracking(true);
-
+            if (m_widget->focusPolicy() > QWidget::StrongFocus)
+                m_widget->setFocusPolicy(QWidget::StrongFocus);
             // if we're already layouted, apply the calculated space to the
             // widget immediately
             if (layouted()) {
@@ -474,24 +455,11 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
     allowWidgetPaintEvents = false;
 }
 
-/*
- before an event is received by the widget,
- we filter it out in RenderWidget::eventFilter() and propagate it through the DOM.
- When it arrives at the RenderWidget again, handleEvent() converts the DOM event
- back to a QEvent and sends it to the widget by calling sendEventToWidget().
- Events dispatched via sendEventToWidget() must not be filtered again,
- but they have to be sent via QApplication::notify(),
- so that other existing event filters aren't skipped.
-*/
-
-bool RenderWidget::eventFilter(QObject* o, QEvent* e)
+bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 {
     // no special event processing if this is a frame (in which case KHTMLView handles it all)
     if ( ::qt_cast<KHTMLView *>( m_widget ) )
         return false;
-
-    if ( m_ignoreEvents ) return false;
-
     if ( !element() ) return true;
 
     ref();
@@ -507,49 +475,21 @@ bool RenderWidget::eventFilter(QObject* o, QEvent* e)
         if ( QFocusEvent::reason() != QFocusEvent::Popup )
             handleFocusOut();
         break;
+    case QEvent::FocusIn:
+        //kdDebug(6000) << "RenderWidget::eventFilter captures FocusIn" << endl;
+        element()->getDocument()->setFocusNode(element());
+//         if ( isEditable() ) {
+//             KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( element()->view->part()->browserExtension() );
+//             if ( ext )  ext->editableWidgetFocused( m_widget );
+//         }
+        break;
     case QEvent::KeyPress:
     case QEvent::KeyRelease:
-	element()->getDocument()->view()->event(e);
+    // TODO this seems wrong - Qt events are not correctly translated to DOM ones,
+    // like in KHTMLView::dispatchKeyEvent()
+        if (element()->dispatchKeyEvent(static_cast<QKeyEvent*>(e),false))
             filtered = true;
         break;
-
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick: {
-
-	QWidget *w = ::qt_cast<QWidget*>(o);
-	QMouseEvent *me = static_cast<QMouseEvent *>(e);
-	QPoint pt = me->pos();
-
-	while (w != element()->getDocument()->view()) {
-	    if (element()->getDocument()->view()->childX(w) ||
-		element()->getDocument()->view()->childY(w))
-		{
-		    pt += QPoint(element()->getDocument()->view()->childX(w), element()->getDocument()->view()->childY(w));
-        break;
-		}
-	    pt += w->pos();
-	    w = w->parentWidget();
-	}
-
-	pt = element()->getDocument()->view()->contentsToViewport(pt);
-
-	kdDebug(6000)<<"mouse event in RenderWidget with coords (" << pt.x()<<"/"<<pt.y()<<")\n";
-
-	QMouseEvent me2(me->type(), pt, me->button(), me->state());
-
-	if (e->type() == QEvent::MouseMove)
-	    element()->getDocument()->view()->viewportMouseMoveEvent(&me2);
-	else if(e->type() == QEvent::MouseButtonPress)
-	    element()->getDocument()->view()->viewportMousePressEvent(&me2);
-	else if(e->type() == QEvent::MouseButtonRelease)
-	    element()->getDocument()->view()->viewportMouseReleaseEvent(&me2);
-	else
-	    element()->getDocument()->view()->viewportMouseDoubleClickEvent(&me2);
-
-	filtered = true;
-	break; }
 
     case QEvent::Wheel:
         if (widget()->parentWidget() == view()->viewport()) {
@@ -578,7 +518,30 @@ bool RenderWidget::eventFilter(QObject* o, QEvent* e)
     return filtered;
 }
 
-// called from GenericFormElementImpl::defaultEventHandler:
+void RenderWidget::EventPropagator::sendEvent(QEvent *e) {
+    switch(e->type()) {
+    case QEvent::MouseButtonPress:
+        mousePressEvent(static_cast<QMouseEvent *>(e));
+        break;
+    case QEvent::MouseButtonRelease:
+        mouseReleaseEvent(static_cast<QMouseEvent *>(e));
+        break;
+    case QEvent::MouseButtonDblClick:
+        mouseDoubleClickEvent(static_cast<QMouseEvent *>(e));
+        break;
+    case QEvent::MouseMove:
+        mouseMoveEvent(static_cast<QMouseEvent *>(e));
+        break;
+    case QEvent::KeyPress:
+        keyPressEvent(static_cast<QKeyEvent *>(e));
+        break;
+    case QEvent::KeyRelease:
+        keyReleaseEvent(static_cast<QKeyEvent *>(e));
+        break;
+    default:
+        break;
+    }
+}
 
 bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 {
@@ -644,14 +607,14 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 //                   << " pos=" << p << " type=" << type
 //                   << " button=" << button << " state=" << state << endl;
         QMouseEvent e(type, p, button, state);
-	sendEventToWidget(&e);
-
+        static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
         break;
     }
     case EventImpl::KEYDOWN_EVENT:
     case EventImpl::KEYUP_EVENT: {
         QKeyEvent *ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
-	sendEventToWidget(ke);
+        if (ke)
+            static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
         break;
     }
     case EventImpl::KHTML_KEYPRESS_EVENT: {
@@ -670,38 +633,26 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         if (ke && ke->isAutoRepeat()) {
             QKeyEvent releaseEv( QEvent::KeyRelease, ke->key(), ke->ascii(), ke->state(),
                                ke->text(), ke->isAutoRepeat(), ke->count() );
-
-	    sendEventToWidget(&releaseEv);
-	    sendEventToWidget(ke);
+            static_cast<EventPropagator *>(m_widget)->sendEvent(&releaseEv);
+            static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
         }
+
 	break;
     }
     case EventImpl::MOUSEOUT_EVENT: {
 	QEvent moe( QEvent::Leave );
-	sendEventToWidget(&moe);
+	QApplication::sendEvent(m_widget, &moe);
 	break;
     }
     case EventImpl::MOUSEOVER_EVENT: {
 	QEvent moe( QEvent::Enter );
-	sendEventToWidget(&moe);
+	QApplication::sendEvent(m_widget, &moe);
 	break;
     }
     default:
         break;
     }
     return true;
-}
-
-void RenderWidget::sendEventToWidget(QEvent *e)
-{
-    m_ignoreEvents = true;
-    if (m_widget->inherits("QScrollView"))
-	qApp->notify(static_cast<QScrollView*>(m_widget)->viewport(), e);
-    else if (m_widget->inherits("KURLRequester"))
-	qApp->notify(static_cast<KURLRequester*>(m_widget)->lineEdit(), e);
-    else
-	qApp->notify(m_widget, e);
-    m_ignoreEvents = false;
 }
 
 void RenderWidget::deref()

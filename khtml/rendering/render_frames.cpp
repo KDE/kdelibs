@@ -530,18 +530,6 @@ void RenderPart::setWidget( QWidget *widget )
     slotViewCleared();
 }
 
-bool RenderPart::eventFilter(QObject *o, QEvent *e)
-{
-    // ### hack to let frame parts manage themselves.
-    // TODO would be clearly to propagate events though the DOM
-    // of the frameset first and through the frame's DOM after that.
-
-    if (e->type()==QEvent::FocusIn) {
-	element()->getDocument()->setFocusNode(element());
-    }
-    return false;
-}
-
 bool RenderPart::partLoadingErrorNotify(khtml::ChildFrame *, const KURL& , const QString& )
 {
     return false;
