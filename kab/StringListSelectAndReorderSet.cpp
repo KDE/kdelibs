@@ -11,7 +11,9 @@
 #include "arrow_right.xbm"
 #include "arrow_up.xbm"
 #include "arrow_down.xbm"
+#ifdef KDE_USE_FINAL
 #include "trash_open.xbm"
+#endif
 #define BITMAPS_INCLUDED
 #endif
 extern "C" {

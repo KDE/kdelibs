@@ -13,8 +13,10 @@
 #include <kglobal.h>
 
 #ifndef BITMAPS_INCLUDED
+#ifdef KDE_USE_FINAL
 #include "arrow_left.xbm"
 #include "arrow_right.xbm"
+#endif
 #include "arrow_up.xbm"
 #include "arrow_down.xbm"
 #include "trash_open.xbm"
