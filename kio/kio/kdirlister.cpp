@@ -715,7 +715,7 @@ void KDirListerCache::FilesChanged( const KURL::List &fileList )
       // For remote files, refresh() won't be able to figure out the new information.
       // Let's update the dir.
       KURL dir( *it );
-      dir.setPath( dir.directory(false) );
+      dir.setPath( dir.directory( true ) );
       if ( dirsToUpdate.find( dir ) == dirsToUpdate.end() )
         dirsToUpdate.prepend( dir );
     }
