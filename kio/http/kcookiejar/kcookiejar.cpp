@@ -140,7 +140,9 @@ QString KHttpCookie::cookieStr(bool useDOMFormat)
 
     if (useDOMFormat || (mProtocolVersion == 0))
     {
-        result = mName + "=" + mValue;
+        if ( !mName.isEmpty() )
+           result = mName + '=';
+        result += mValue;
     }
     else
     {
@@ -166,17 +168,17 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
         if (fqdn != mHost)
         {
           // If hostnames do not match, check if the TLD of the
-          // cookie and the request URL match.  If they do send 
+          // cookie and the request URL match.  If they do send
           // the cookie.  This means a cookie without a domain=
-          // field is available to every host under the TLD of 
-          // its fqdn.          
+          // field is available to every host under the TLD of
+          // its fqdn.
           if ( domains.isEmpty() )
             return false;
-          
+
           int len = domains.count();
           QString fqdnTLD = domains[len-2];
           int matchpos = mHost.find(fqdnTLD, 0, false);
-          
+
           if ((matchpos == -1 && domains[len-1] != mHost) ||
               (matchpos > -1 && (matchpos+fqdnTLD.length() != mHost.length())))
               return false;
@@ -268,7 +270,8 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
         it != domains.end();
         ++it)
     {
-       KHttpCookieList *cookieList = cookieDomains[(*it)];  // Why not simply use the deref'ed string directly ?
+       QString key = (*it).isNull() ? "" : (*it);
+       KHttpCookieList *cookieList = cookieDomains[key];
 
        if (!cookieList)
           continue; // No cookies for this domain
@@ -284,15 +287,15 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat)
               // the TLD of the cookie in question!
              QStringList cookieDomainList;
              extractDomains( cookie->host(), cookieDomainList );
-             
-             int fqdnCount = domains.count();             
+
+             int fqdnCount = domains.count();
              int cookieDomainCount = cookieDomainList.count();
-             
+
              if ( domains[fqdnCount-2] != cookieDomainList[cookieDomainCount-2] &&
                   domains[fqdnCount-1] != cookieDomainList[cookieDomainCount-1] )
                 continue;
           }
-             
+
 
           if( cookie->isSecure() && !secureRequest )
              continue;
@@ -351,11 +354,12 @@ static const char * parseNameValue(const char *header,
     {
         if ((*s=='\0') || (*s==';') || (*s=='\n'))
         {
-            // End of Name
-            Value = "";
-            Name = header;
-            Name.truncate( s - header );
-            Name = Name.stripWhiteSpace();
+            // No '=' sign -> use string as the value, name is empty
+            // (behaviour found in Mozilla and IE)
+            Name = "";
+            Value = header;
+            Value.truncate( s - header );
+            Value = Value.stripWhiteSpace();
             return (s);
         }
     }
@@ -540,9 +544,6 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
         {
             cookieStr = parseNameValue(cookieStr+11, Name, Value, true);
 
-            if (Name.isEmpty())
-                continue;
-
             // Host = FQDN
             // Default domain = ""
             // Default path = ""
@@ -660,13 +661,6 @@ KHttpCookiePtr KCookieJar::makeDOMCookies(const QString &_url,
     {
         cookieStr = parseNameValue(cookieStr, Name, Value);
 
-        if (Name.isEmpty()) {
-            if (*cookieStr != '\0')
-                cookieStr++;         // Skip ';' or '\n'
-
-            continue;
-        }
-
         // Host = FQDN
         // Default domain = ""
         // Default path = ""
@@ -708,7 +702,8 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
           (it != domains.end() && !cookieList);
           ++it )
     {
-        KHttpCookieList *list= cookieDomains[(*it)];
+        QString key = (*it).isNull() ? "" : (*it);
+        KHttpCookieList *list= cookieDomains[key];
         if ( !list ) continue;
 
         for ( KHttpCookiePtr cookie=list->first(); cookie != 0; )
@@ -729,7 +724,8 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
     }
 
     domain = stripDomain( cookiePtr );
-    cookieList = cookieDomains[ domain ];
+    QString key = domain.isNull() ? "" : domain;
+    cookieList = cookieDomains[ key ];
     if (!cookieList)
     {
         // Make a new cookie list
@@ -868,7 +864,7 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
             (_advice == KCookieDunno))
         {
             // This deletes cookieList!
-            cookieDomains.remove(domain);			
+            cookieDomains.remove(domain);
             domainList.remove(domain);
         }
     }
