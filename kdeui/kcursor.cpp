@@ -58,3 +58,73 @@ QCursor KCursor::handCursor()
 	CHECK_PTR(hand_cursor);
 	return *hand_cursor;
 }
+
+/**
+ * All of the follow functions will return the Qt default for now regardless
+ * of the style.  This will change at some later date
+ */
+QCursor KCursor::arrowCursor()
+{
+	return ::arrowCursor;
+}
+
+
+QCursor KCursor::upArrowCursor()
+{
+	return ::upArrowCursor;
+}
+
+
+QCursor KCursor::crossCursor()
+{
+	return ::crossCursor;
+}
+
+
+QCursor KCursor::waitCursor()
+{
+	return ::waitCursor;
+}
+
+
+QCursor KCursor::ibeamCursor()
+{
+	return ::ibeamCursor;
+}
+
+
+QCursor KCursor::sizeVerCursor()
+{
+	return ::sizeVerCursor;
+}
+
+
+QCursor KCursor::sizeHorCursor()
+{
+	return ::sizeHorCursor;
+}
+
+
+QCursor KCursor::sizeBDiagCursor()
+{
+	return ::sizeBDiagCursor;
+}
+
+
+QCursor KCursor::sizeFDiagCursor()
+{
+	return ::sizeFDiagCursor;
+}
+
+
+QCursor KCursor::sizeAllCursor()
+{
+	return ::sizeAllCursor;
+}
+
+
+QCursor KCursor::blankCursor()
+{
+	return ::blankCursor;
+}
+

@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.1  1998/11/28 06:30:59  granroth
+ * Added KCursor -- a simple wrapper around QCursor allowing for "themable"
+ * cursors.  Currently, it only supports a 'handCursor'.
+ *
  */
 #ifndef _KCURSOR_H
 #define _KCURSOR_H
@@ -52,5 +56,70 @@ public:
 	 * the current GUI style.
 	 */
 	static QCursor handCursor();
+
+	/**
+	 * Static function returning the proper arrow cursor according to
+	 * the current GUI style.
+	 */
+	static QCursor arrowCursor();
+
+	/**
+	 * Static function returning the proper up arrow cursor according to
+	 * the current GUI style.
+	 */
+	static QCursor upArrowCursor();
+
+	/**
+	 * Static function returning the proper cross-hair cursor according to
+	 * the current GUI style.
+	 */
+	static QCursor crossCursor();
+
+	/**
+	 * Static function returning the proper hourglass cursor according to
+	 * the current GUI style.
+	 */
+	static QCursor waitCursor();
+
+	/**
+	 * Static function returning the proper text cursor according to
+	 * the current GUI style.
+	 */
+	static QCursor ibeamCursor();
+
+	/**
+	 * Static function returning the proper vertical resize cursor
+	 * according to the current GUI style.
+	 */
+	static QCursor sizeVerCursor();
+
+	/**
+	 * Static function returning the proper horizontal resize cursor
+	 * according to the current GUI style.
+	 */
+	static QCursor sizeHorCursor();
+
+	/**
+	 * Static function returning the proper diagonal resize (/) cursor
+	 * according to the current GUI style.
+	 */
+	static QCursor sizeBDiagCursor();
+
+	/**
+	 * Static function returning the proper diagonal resize (\) cursor
+	 * according to the current GUI style.
+	 */
+	static QCursor sizeFDiagCursor();
+
+	/**
+	 * Static function returning the proper all directions resize cursor
+	 * according to the current GUI style.
+	 */
+	static QCursor sizeAllCursor();
+
+	/**
+	 * Static function returning a blank or invisible cursor
+	 */
+	static QCursor blankCursor();
 };
 #endif // _KCURSOR_H
