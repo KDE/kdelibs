@@ -1,5 +1,8 @@
 <!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
- <!ENTITY kapp   "<application>kapp</application>">
+ <!ENTITY kapp   "<application>Kapp</application>">
+ <!ENTITY % FDLNotice PUBLIC
+          "-//KDE//ENTITIES KDE GNU FDL 1.1 Notice Entities//EN">
+ %FDLNotice;
  <!ENTITY % addindex "IGNORE">
  <![ %addindex; [ <!ENTITY kdedocindex SYSTEM "docindex.docbook"> ]]>
 ]>
@@ -44,6 +47,10 @@ as Authors, publish date, the abstract, and Keywords -->
 </author>
 </authorgroup>
 
+<!-- Put here the FDL notice.  Read the explanation in fdl-notice.docbook 
+     and in the FDL itself on how to use it. -->
+<legalnotice>&FDLNotice;</legalnotice>
+
 <!-- This is a set of Keywords for indexing by search engines.
 Please at least include KDE, the KDE package it is in, the name
  of your application, and a few relevant keywords. -->
@@ -70,7 +77,7 @@ Unlike the preceeding information, this is not mandatory.
 Try to keep this section brief.
 This is the history of the *documentation* (the history of the *application*
 goes to the introduction), but nothing prevents you from using the same
-release numbers for both the application the documentation. 
+release numbers for both the application the documentation.
 -->
 
 <revhistory>
@@ -95,7 +102,7 @@ release numbers for both the application the documentation.
 
 <abstract>
 <para>
-<application>Kapp</application> is an application specially designed to do nothing you would ever want.
+&kapp; is an application specially designed to do nothing you would ever want.
 </para>
 </abstract>
 
@@ -119,7 +126,7 @@ report problems, and a brief revision history of teh app. Basically a long
 version of the abstract. -->
 
 <para>
-<application>Kapp</application> is a program that lets you do absolutely
+&kapp; is a program that lets you do absolutely
 nothing. Please report any problems or feature requests to the KDE mailing
 lists.</para>
 
@@ -146,9 +153,9 @@ features.</para></listitem>
 <title>How to obtain Kapp</title>
 
 <para>
-<application>Kapp</application> is part of the KDE project
+&kapp; is part of the KDE project
 <ulink url="http://www.kde.org">http://www.kde.org</ulink>.
-<application>Kapp</application> can be found in the kdeutils package on
+&kapp; can be found in the kdeutils package on
 <ulink url="ftp://ftp.kde.org/pub/kde/">ftp://ftp.kde.org/pub/kde/</ulink>, the
 main ftp site of the KDE project. </para>
 </sect1>
@@ -168,15 +175,15 @@ information here.
 -->
 
 <para>
-In order to successfully use <application>Kapp</application>, you need KDE 1.1. Foobar.lib is required
-in order to support the advanced <application>Kapp</application> features. <application>Kapp</application> uses about 5 megs of
+In order to successfully use &kapp;, you need KDE 1.1. Foobar.lib is required
+in order to support the advanced &kapp; features. &kapp; uses about 5 megs of
 memory to run, but this may vary depending on your platform and
 configuration.
 </para>
 
 <para>
-All required libraries as well as <application>Kapp</application> itself can be found
-on <ulink url="ftp://ftp.kapp.org">The <application>Kapp</application> home page</ulink>.
+All required libraries as well as &kapp; itself can be found
+on <ulink url="ftp://ftp.kapp.org">The &kapp; home page</ulink>.
 </para>
 
 </sect1>
@@ -222,8 +229,18 @@ your application. -->
 patent issues. -->
 
 <screenshot>
-<screeninfo>Here's a screenshot of <application>Kapp</application></screeninfo>
-<graphic fileref="screenshot.png" format="png"></graphic>
+<screeninfo>Here's a screenshot of &kapp;</screeninfo>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="screenshot.png" format="png">
+	  </imageobject>
+	  <imageobject>
+	    <imagedata fileref="screenshot.eps" format="eps">
+	  </imageobject>
+	  <textobject>
+	    <phrase>Screenshot</phrase>
+	  </textobject>
+	</mediaobject>
 </screenshot>
 </para>
 
@@ -233,8 +250,18 @@ patent issues. -->
 
 <para>It slices! It dices! and it comes with a free toaster!</para>
 <para>
-The Squiggle Tool <guiicon><inlinegraphic fileref="squiggle.png" format="png"></inlinegraphic></guiicon> is used to draw squiggly lines all
-over the <application>Kapp</application> main window. It's not a bug, it's a feature!
+The Squiggle Tool <guiicon><inlinemediaobject>
+	  <imageobject>
+	    <imagedata fileref="squiggle.png" format="png">
+	  </imageobject>
+	  <imageobject>
+	    <imagedata fileref="squiggle.eps" format="eps">
+	  </imageobject>
+	  <textobject>
+	    <phrase>Squiggle</phrase>
+	  </textobject>
+</inlinemediaobject></guiicon> is used to draw squiggly lines all over
+the &kapp; main window. It's not a bug, it's a feature!
 </para>
 
 </sect1>
@@ -287,7 +314,7 @@ or menu bars. -->
 <guimenu>File</guimenu>
 <guimenuitem>Quit</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Quits <application>Kapp</application></action></para></listitem>
+<listitem><para><action>Quits &kapp;</action></para></listitem>
 </varlistentry>
 </variablelist>
 </para>
@@ -304,7 +331,7 @@ used for apps that use plugins or that provide their own scripting hooks
 and/or development libraries. -->
 
 <para>
-Programming <application>Kapp</application> plugins is a joy to behold. Just read through the next
+Programming &kapp; plugins is a joy to behold. Just read through the next
 66 pages of API's to learn how!
 </para>
 
@@ -456,7 +483,7 @@ application work. -->
 <qandaset>
 <qandaentry>
 <question>
-<para>My Mouse doesn't work. How do I quit <application>Kapp</application>?</para>
+<para>My Mouse doesn't work. How do I quit &kapp;?</para>
 </question>
 <answer>
 <para>You silly goose! Check out the <link linkend="commands">Commands
@@ -485,7 +512,7 @@ distribution. -->
 <title>Credits and License</title>
 
 <para>
-<application>Kapp</application>
+&kapp;
 </para>
 <para>
 Program copyright 1997 John Q. Hacker <email>jqh@kde.org</email>
@@ -519,10 +546,18 @@ This link will normally point to $KDEDIR/share/doc/HTML/en/common,
 where "en" should be replaced with the current language. -->
 
 <para>
-This program is licensed under the terms of the
-<ulink url="common/gpl-licence.html">GNU GPL</ulink>.
+This program is licensed under the terms of the <ulink
+url="common/gpl-licence.html">GNU General Public License</ulink>.  The
+documentation is licensed under the terms of the <ulink
+url="common/fdl-licence.html">GNU Free Documentation License.</ulink>
 </para>
 </chapter>
 
 <![ %addindex; [ &kdedocindex; ]]>
 </book>
+<!--
+Local Variables:
+sgml-minimize-attributes: nil
+sgml-general-insert-case: lower
+End:
+-->
