@@ -24,7 +24,7 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION_STRING "1.91 Beta >= 20000608"
+#define KDE_VERSION_STRING "1.91 Beta >= 20000614"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 9
 #define KDE_VERSION_RELEASE 3
@@ -748,6 +748,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.162  2000/06/13 04:13:01  waba
+// WABA: Keep track of whether we are a DSO loaded by kdeinit or not.
+//
 // Revision 1.161  2000/06/08 06:00:51  hoelzer
 // Adjusted versions.
 //
