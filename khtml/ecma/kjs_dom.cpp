@@ -314,8 +314,6 @@ Completion DOMDocFunction::tryExecute(const List &args)
   String str = args[0].toString();
   DOM::DOMString s = str.value().string();
 
-  DOM::HTMLDocument d = DOM::HTMLDocument();
-
   switch(id) {
   case CreateElement:
     result = getDOMNode(doc.createElement(s));
