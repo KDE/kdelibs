@@ -156,7 +156,7 @@ PhoneNumber Addressee::phoneNumber( int type ) const
 {
   PhoneNumber::List::ConstIterator it;
   for( it = mData->phoneNumbers.begin(); it != mData->phoneNumbers.end(); ++it ) {
-    if ( (*it).type() & type ) {
+    if ( (*it).type() == type ) {
       return *it;
     }
   }
@@ -182,17 +182,17 @@ PhoneNumber Addressee::findPhoneNumber( const QString &id ) const
 
 void Addressee::dump() const
 {
-  kdDebug() << "Addressee {" << endl;
+  kdDebug(5700) << "Addressee {" << endl;
 
   --DEBUG--
   
-  kdDebug() << "  PhoneNumbers {" << endl;
+  kdDebug(5700) << "  PhoneNumbers {" << endl;
   PhoneNumber::List p = phoneNumbers();
   PhoneNumber::List::ConstIterator it;
   for( it = p.begin(); it != p.end(); ++it ) {
-    kdDebug() << "    Type: " << int((*it).type()) << " Number: " << (*it).number() << endl;
+    kdDebug(5700) << "    Type: " << int((*it).type()) << " Number: " << (*it).number() << endl;
   }
-  kdDebug() << "  }" << endl;
+  kdDebug(5700) << "  }" << endl;
 
   Address::List a = addresses();
   Address::List::ConstIterator it2;
@@ -200,7 +200,7 @@ void Addressee::dump() const
     (*it2).dump();
   }
 
-  kdDebug() << "}" << endl;
+  kdDebug(5700) << "}" << endl;
 }
 
 
@@ -235,7 +235,7 @@ Address Addressee::address( int type ) const
 {
   Address::List::ConstIterator it;
   for( it = mData->addresses.begin(); it != mData->addresses.end(); ++it ) {
-    if ( (*it).type() & type ) {
+    if ( (*it).type() == type ) {
       return *it;
     }
   }
@@ -297,6 +297,8 @@ QStringList Addressee::categories() const
 void Addressee::insertCustom( const QString &app, const QString &name,
                               const QString &value )
 {
+  if ( value.isNull() || name.isEmpty() || app.isEmpty() ) return;
+
   detach();
   
   QString qualifiedName = app + "-" + name + ":";

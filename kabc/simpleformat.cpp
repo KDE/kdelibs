@@ -31,7 +31,7 @@ using namespace KABC;
 
 bool SimpleFormat::load( AddressBook *addressBook, const QString &fileName )
 {
-  kdDebug() << "SimpleFormat::load(): " << fileName << endl;
+  kdDebug(5700) << "SimpleFormat::load(): " << fileName << endl;
 
   KSimpleConfig cfg( fileName );
   
@@ -63,7 +63,7 @@ bool SimpleFormat::load( AddressBook *addressBook, const QString &fileName )
 
 bool SimpleFormat::save( AddressBook *addressBook, const QString &fileName )
 {
-  kdDebug() << "SimpleFormat::save(): " << fileName << endl;
+  kdDebug(5700) << "SimpleFormat::save(): " << fileName << endl;
 
   QFile::remove( fileName );
 

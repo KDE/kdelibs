@@ -186,20 +186,20 @@ Addressee::List AddressBook::findByCategory( const QString &category )
 
 bool AddressBook::lock( const QString &fileName )
 {
-  kdDebug() << "AddressBook::lock()" << endl;
+  kdDebug(5700) << "AddressBook::lock()" << endl;
 
   QString fn = fileName;
   fn.replace( QRegExp("/"), "_" );
 
   QString lockName = locateLocal( "data", "kabc/lock/" + fn + ".lock" );
-  kdDebug() << "-- lock name: " << lockName << endl;
+  kdDebug(5700) << "-- lock name: " << lockName << endl;
 
   if (QFile::exists( lockName )) return false;
 
   QString lockUniqueName;
   lockUniqueName = fn + kapp->randomString(8);
   mLockUniqueName = locateLocal( "data", "kabc/lock/" + lockUniqueName );
-  kdDebug() << "-- lock unique name: " << mLockUniqueName << endl;
+  kdDebug(5700) << "-- lock unique name: " << mLockUniqueName << endl;
 
   // Create unique file
   QFile file( mLockUniqueName );
@@ -255,7 +255,7 @@ void AddressBook::checkFile()
   int result = stat( QFile::encodeName( mFileName ), &s );
 
 #if 0
-  kdDebug() << "AddressBook::checkFile() result: " << result
+  kdDebug(5700) << "AddressBook::checkFile() result: " << result
             << " new ctime: " << s.st_ctime
             << " old ctime: " << mChangeTime
             << endl;
@@ -270,12 +270,12 @@ void AddressBook::checkFile()
 
 void AddressBook::dump() const
 {
-  kdDebug() << "AddressBook::dump() --- begin ---" << endl;
+  kdDebug(5700) << "AddressBook::dump() --- begin ---" << endl;
 
   ConstIterator it;
   for( it = begin(); it != end(); ++it ) {
     (*it).dump();
   }
 
-  kdDebug() << "AddressBook::dump() ---  end  ---" << endl;
+  kdDebug(5700) << "AddressBook::dump() ---  end  ---" << endl;
 }

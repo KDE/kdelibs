@@ -37,12 +37,12 @@ int main(int argc,char **argv)
 
   KApplication app;
 
-  kdDebug() << "Converting old-style kab addressbook to "
+  kdDebug(5700) << "Converting old-style kab addressbook to "
                "new-style kabc addressbook." << endl;
 
   KabAPI kab(0);
   if (kab.init() != ::AddressBook::NoError) {
-    kdDebug() << "Error initing kab" << endl;
+    kdDebug(5700) << "Error initing kab" << endl;
     exit(1);
   }
 
@@ -53,16 +53,16 @@ int main(int argc,char **argv)
 
   int num = kab.addressbook()->noOfEntries();
   
-  kdDebug() << "kab Addressbook has " << num << " entries." << endl;
+  kdDebug(5700) << "kab Addressbook has " << num << " entries." << endl;
   
   for (int i = 0; i < num; ++i) {
     if (::AddressBook::NoError != kab.addressbook()->getKey(i,key)) {
-      kdDebug() << "Error getting key for index " << i << " from kab." << endl;
+      kdDebug(5700) << "Error getting key for index " << i << " from kab." << endl;
       continue;
     }
     if (::AddressBook::NoError != kab.addressbook()->getEntry(key,entry))
     {
-      kdDebug() << "Error getting entry for index " << i << " from kab." << endl;
+      kdDebug(5700) << "Error getting entry for index " << i << " from kab." << endl;
       continue;
     }
 
@@ -82,9 +82,9 @@ int main(int argc,char **argv)
       entry.custom << "X-KABC-UID:" + a.uid();
       ::AddressBook::ErrorCode error = kab.addressbook()->change( key, entry );
       if (error != ::AddressBook::NoError) {
-        kdDebug() << "kab.change returned with error " << error << endl;
+        kdDebug(5700) << "kab.change returned with error " << error << endl;
       } else {
-        kdDebug() << "Wrote back to kab uid " << a.uid() << endl;
+        kdDebug(5700) << "Wrote back to kab uid " << a.uid() << endl;
       }
     }
     
@@ -165,7 +165,7 @@ int main(int argc,char **argv)
     
     a.setCategories( entry.categories );
 
-    kdDebug() << "Addressee: " << a.familyName() << endl;
+    kdDebug(5700) << "Addressee: " << a.familyName() << endl;
 
     kabcBook->insertAddressee( a );
   }
@@ -174,5 +174,5 @@ int main(int argc,char **argv)
 
   StdAddressBook::save();
   
-  kdDebug() << "Saved kabc addressbook to '" << kabcBook->fileName() << "'" << endl;
+  kdDebug(5700) << "Saved kabc addressbook to '" << kabcBook->fileName() << "'" << endl;
 }

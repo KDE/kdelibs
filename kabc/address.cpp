@@ -33,7 +33,22 @@ Address::Address() :
 
 bool Address::isEmpty() const
 {
-  return mEmpty;
+  if ( mPostOfficeBox.isEmpty() &&
+       mExtended.isEmpty() &&
+       mStreet.isEmpty() &&
+       mLocality.isEmpty() &&
+       mRegion.isEmpty() &&
+       mPostalCode.isEmpty() &&
+       mCountry.isEmpty() &&
+       mLabel.isEmpty() ) {
+    return true;
+  }
+  return false;
+}
+
+void Address::clear()
+{
+  *this = Address();
 }
 
 void Address::setId( const QString &id )
@@ -165,11 +180,11 @@ QString Address::label() const
 
 void Address::dump() const
 {
-  kdDebug() << "  Address {" << endl;
-  kdDebug() << "    Id: " << id() << endl;
-  kdDebug() << "    Extended: " << extended() << endl;
-  kdDebug() << "    Street: " << street() << endl;
-  kdDebug() << "    Postal Code: " << postalCode() << endl;
-  kdDebug() << "    Locality: " << locality() << endl;
-  kdDebug() << "  }" << endl;
+  kdDebug(5700) << "  Address {" << endl;
+  kdDebug(5700) << "    Id: " << id() << endl;
+  kdDebug(5700) << "    Extended: " << extended() << endl;
+  kdDebug(5700) << "    Street: " << street() << endl;
+  kdDebug(5700) << "    Postal Code: " << postalCode() << endl;
+  kdDebug(5700) << "    Locality: " << locality() << endl;
+  kdDebug(5700) << "  }" << endl;
 }

@@ -63,6 +63,11 @@ class Address
     bool isEmpty() const;
 
     /**
+      Clear all entries of the address.
+    */
+    void clear();
+
+    /**
       Set unique id.
     */
     void setId( const QString & );

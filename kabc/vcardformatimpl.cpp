@@ -147,7 +147,7 @@ bool VCardFormatImpl::load( AddressBook *addressBook, const QString &fileName )
           break;
           
         default:
-          kdDebug() << "VCardFormat::load(): Unsupported entity: "
+          kdDebug(5700) << "VCardFormat::load(): Unsupported entity: "
                     << int( type ) << ": " << cl->asString() << endl;
           break;
       }
@@ -440,7 +440,7 @@ QString VCardFormatImpl::readTextValue( ContentLine *cl )
   if ( value ) {
     return QString::fromUtf8( value->asString() );
   } else {
-    kdDebug() << "No value: " << cl->asString() << endl;
+    kdDebug(5700) << "No value: " << cl->asString() << endl;
     return QString::null;
   }
 }

@@ -29,7 +29,7 @@ AddressBook *StdAddressBook::mSelf = 0;
 
 AddressBook *StdAddressBook::self()
 {
-  kdDebug() << "StdAddressBook::self()" << endl;
+  kdDebug(5700) << "StdAddressBook::self()" << endl;
 
   if ( !mSelf ) {
     mSelf = new StdAddressBook;
