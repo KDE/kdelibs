@@ -394,13 +394,17 @@ void KJanusWidget::addPageWidget( QFrame *page, const QString &itemName,
       }
 
       //
+      // 2000-02-26 Espen Sand
       // Make sure the listbox is wide enough to avoid a horizontal scrollbar.
       // Note that the listbox width is set in the eventfilter as well.
+      // I have yet not understood why I have to multiply by 4 instead of 2
+      // below.
       //
+      iw  += (mIconList->frameWidth()*4);
       int lw = mIconList->minimumWidth();
-      if( lw < iw+mIconList->frameWidth()*2 )
+      if( lw < iw )
       {
-	mIconList->setFixedWidth( iw+mIconList->frameWidth()*2 );
+	mIconList->setFixedWidth( iw );
       }
     }
 
@@ -652,17 +656,29 @@ QSize KJanusWidget::minimumSizeHint( void ) const
 {
   if( mFace == TreeList || mFace == IconList )
   {
-    QSize m( KDialog::spacingHint()+style().splitterWidth(), 
-	     KDialog::spacingHint()*2 );
-    QSize s1( mFace == TreeList ? mTreeList->minimumSize() : 
-	      mIconList->minimumSize() );
-    QSize s2( mTitleLabel->sizeHint() );
-    QSize s3( mPageStack->sizeHint() );
+    QSize s1( KDialog::spacingHint(), KDialog::spacingHint()*2 );
+    QSize s2(0,0);
+    QSize s3(0,0);
+    QSize s4( mPageStack->sizeHint() );
+
+    if( mFace == TreeList )
+    {
+      s1.rwidth() += style().splitterWidth();
+      s2 = mTreeList->minimumSize();
+    }
+    else
+    {
+      s2 = mIconList->minimumSize();
+    }
     
-    return( QSize(
-      s1.width() + QMAX( s2.width(), s3.width() ) + m.width(),
-      s2.height() + s3.height() + m.height() + 
-      mTitleSep->minimumSize().height() ));
+    if( mTitleLabel->isVisible() == true )
+    {
+      s3 += mTitleLabel->sizeHint();
+      s3.rheight() += mTitleSep->minimumSize().height();
+    }
+
+    return( QSize( s1.width() + s2.width() + QMAX( s3.width(), s4.width() ),
+		   s1.height() + s3.height() + s4.height() ) );
   }
   else if( mFace == Tabbed )
   {
@@ -727,7 +743,7 @@ bool KJanusWidget::eventFilter( QObject *o, QEvent *e )
     {
       int lw = item->width( mIconList );
       int sw = mIconList->verticalScrollBar()->sizeHint().width();
-      mIconList->setFixedWidth( lw+sw+mIconList->frameWidth()*2 );
+      mIconList->setFixedWidth( lw+sw+mIconList->frameWidth()*4 );
     }
   }
   else if( e->type() == QEvent::Hide )
@@ -736,7 +752,7 @@ bool KJanusWidget::eventFilter( QObject *o, QEvent *e )
     if( item != 0 )
     {
       int lw = item->width( mIconList );
-      mIconList->setFixedWidth( lw+mIconList->frameWidth()*2 );
+      mIconList->setFixedWidth( lw+mIconList->frameWidth()*4 );
     }
   }
   return QWidget::eventFilter( o, e );
@@ -794,7 +810,7 @@ const QPixmap &IconListItem::defaultPixmap( void )
 void IconListItem::paint( QPainter *painter )
 {
   QFontMetrics fm = painter->fontMetrics();
-  int wt = fm.width( text() );
+  int wt = fm.boundingRect(text()).width();
   int wp = mPixmap.width();
   int ht = fm.lineSpacing();
   int hp = mPixmap.height();  
@@ -826,7 +842,7 @@ int IconListItem::height( const QListBox *lb ) const
 
 int IconListItem::width( const QListBox *lb ) const
 {
-  int wt = lb->fontMetrics().width( text() ) + 10;
+  int wt = lb->fontMetrics().boundingRect(text()).width()+10;
   int wp = mPixmap.width() + 10;
   int w  = QMAX( wt, wp );
   return( QMAX( w, mMinimumWidth ) );
