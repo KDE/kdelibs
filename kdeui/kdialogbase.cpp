@@ -1598,6 +1598,48 @@ void KDialogBase::showTile( bool state )
   }
 }
 
+QSize KDialogBase::configDialogSize( const QString& groupName ) const
+{
+   int w, h;
+   QWidget *desk = QApplication::desktop();
+   w = QMIN( 530, (int) (desk->width() * 0.5)); // maximum default width = 530
+   h = (int) (desk->height() * 0.4);
+
+   KConfig *kc = KGlobal::config();
+
+   if( kc && desk )
+   {
+      QString oldGroup = kc->group();
+      w = kc->readNumEntry( QString::fromLatin1("Width %1").arg( desk->width()), w );
+      h = kc->readNumEntry( QString::fromLatin1("Height %1").arg( desk->height()), h );
+
+      kc->setGroup( oldGroup );
+   }
+   return( QSize( w, h ) );
+}
+
+
+void KDialogBase::saveDialogSize( const QString& groupName, bool global )
+{
+   int w, h;
+   QWidget *desk = QApplication::desktop();
+   KConfig *kc = KGlobal::config();
+   
+   if( kc && desk )
+   {
+      QString oldGroup = kc->group();
+      QSize sizeToSave = size();
+      
+      kc->setGroup( groupName );
+      
+      kc->writeEntry( QString::fromLatin1("Width %1").arg( desk->width()),
+		      QString::number( sizeToSave.width()), true, global);
+      kc->writeEntry( QString::fromLatin1("Height %1").arg( desk->height()),
+		      QString::number( sizeToSave.height()), true, global);
+      
+      kc->setGroup( oldGroup );
+   }
+}
 
 
 KDialogBaseButton::KDialogBaseButton( const KGuiItem &item, int key,
