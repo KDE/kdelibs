@@ -233,6 +233,9 @@ void KToolBar::init( bool readConfig, bool honorStyle )
     if ( mainWindow() )
         connect( mainWindow(), SIGNAL( toolBarPositionChanged( QToolBar * ) ),
                  this, SLOT( toolBarPosChanged( QToolBar * ) ) );
+
+    // Hack to make sure we recalculate our size when we dock.
+    connect( this, SIGNAL(placeChanged(QDockWindow::Place)), SLOT(rebuildLayout()) );
 }
 
 int KToolBar::insertButton(const QString& icon, int id, bool enabled,
@@ -1677,9 +1680,9 @@ void KToolBar::loadState( const QDomElement &element )
     QString attrOffset = element.attribute( "offset" ).lower();
     QString attrNewLine = element.attribute( "newline" ).lower();
     QString attrHidden = element.attribute( "hidden" ).lower();
-    
+
     d->HiddenDefault =  attrHidden == "true" ? TRUE : FALSE;
-    
+
     if ( !attrFullWidth.isEmpty() ) {
         if ( attrFullWidth == "true" )
             setFullSize( TRUE );
@@ -1739,7 +1742,7 @@ void KToolBar::loadState( const QDomElement &element )
     if ( !attrIconSize.isEmpty() )
         setIconSize( attrIconSize.toInt() );
     d->IconSizeDefault = iconSize();
-	
+
     // Apply the highlight button setting
     d->m_highlight = highlightSetting();
 
@@ -1752,7 +1755,7 @@ void KToolBar::loadState( const QDomElement &element )
         hide();
     else
         show();
-    
+
     getAttributes(d->PositionDefault, d->IconTextDefault, d->IndexDefault,
 		   d->OffsetDefault,  d->NewLineDefault);
 }
