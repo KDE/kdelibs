@@ -619,7 +619,6 @@ static void check_mount_point(const char *mountpoint, const char *mounttype,
 bool KIO::probably_slow_mounted(const QString& filename)
 {
     char                realname[MAXPATHLEN];
-    char    realpath_buffer[MAXPATHLEN];
 
     memset(realname, 0, MAXPATHLEN);
 

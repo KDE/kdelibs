@@ -68,6 +68,7 @@ static Q_UINT8 PADDING[64]=
 static char Base64EncMap[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 static char* Base64DecMap = new char[128] ;
 
+#if 0
 // uuencode/uudecode stuff
 static char UUEncMap[64] =
 {
@@ -81,6 +82,7 @@ static char UUEncMap[64] =
   0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F
 };
 static char* UUDecMap = new char[128];
+#endif
 
 // ROTATE_LEFT rotates x left n bits.
 inline Q_UINT32 rotate_left  (Q_UINT32 x, Q_UINT32 n)
