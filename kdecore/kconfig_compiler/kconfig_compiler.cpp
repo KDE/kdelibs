@@ -674,7 +674,7 @@ QString paramString(const QString &group, const QStringList &parameters)
      }
   }
   if (arguments.isEmpty())
-    return "\""+group+"\"";
+    return "QString::fromLatin1( \""+group+"\" )";
 
   return "QString::fromLatin1( \""+paramString+"\" )"+arguments;
 }
@@ -1158,7 +1158,7 @@ int main( int argc, char **argv )
     if ( e->group() != group ) {
       if ( !group.isEmpty() ) cpp << endl;
       group = e->group();
-      cpp << "  setCurrentGroup( QString::fromLatin1( " << paramString(group, parameters) << " ) );" << endl << endl;
+      cpp << "  setCurrentGroup( " << paramString(group, parameters) << " );" << endl << endl;
     }
 
     QString key = paramString(e->key(), parameters);
@@ -1174,7 +1174,7 @@ int main( int argc, char **argv )
       for( it = choices.begin(); it != choices.end(); ++it ) {
         cpp << "  {" << endl;
         cpp << "    KConfigSkeleton::ItemEnum::Choice choice;" << endl;
-        cpp << "    choice.name = \"" << (*it).name << "\";" << endl;
+        cpp << "    choice.name = QString::fromLatin1( \"" << (*it).name << "\" );" << endl;
         if ( setUserTexts ) {
           if ( !(*it).label.isEmpty() )
             cpp << "    choice.label = i18n(\"" << (*it).label << "\");" << endl;
