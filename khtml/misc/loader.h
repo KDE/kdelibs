@@ -111,6 +111,7 @@ namespace khtml
 	    m_expireDate = _expireDate;
             m_deleted = false;
             m_expireDateChanged = false;
+            m_free = false;
             m_prev = m_next = 0;
 	}
         virtual ~CachedObject();
@@ -175,6 +176,7 @@ namespace khtml
         bool m_deleted : 1;
         bool m_loading : 1;
         bool m_expireDateChanged : 1;
+        bool m_free : 1;
 
     private:
         bool allowInLRUList() const { return canDelete() && status() != Persistent; }
@@ -523,7 +525,10 @@ namespace khtml
     };
 
     inline void CachedObject::setFree() {
-        Cache::freeList->append(this);
+        if (!m_free)  {
+            Cache::freeList->append(this);
+            m_free = true;
+        }
     }
 
 } // namespace
