@@ -1559,7 +1559,11 @@ void HTTPProtocol::httpCheckConnection()
   if ( m_iSock != -1 )
   {
      bool closeDown = false;
-     if ( m_request.doProxy && m_state.doProxy )
+     if ( m_request.method != HTTP_GET )
+     {
+        closeDown = true;
+     }
+     else if ( m_request.doProxy && m_state.doProxy )
      {
         // Keep the connection to the proxy.
      }
@@ -3189,11 +3193,7 @@ void HTTPProtocol::httpClose()
 
   m_bIsTunneled = false;
 
-  // Only allow persistent connections for GET requests.
-  // NOTE: we might even want to narrow this down to non-form
-  // based submit requests which will require a meta-data from
-  // khtml.
-  if (m_bKeepAlive && m_request.method == HTTP_GET)
+  if (m_bKeepAlive)
   {
     kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive" << endl;
     return;
