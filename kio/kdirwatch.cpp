@@ -42,6 +42,7 @@
 #undef _XOPEN_SOURCE
 #define _XOPEN_SOURCE 500
 #endif
+#define _POSIX_C_SOURCE 199506L
 #include <fcntl.h>
 #include <signal.h>
 #include <qintdict.h>
