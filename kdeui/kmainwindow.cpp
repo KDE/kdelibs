@@ -972,10 +972,6 @@ QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
     if( sb && !sb->isHidden() )
        size += QSize(0, sb->sizeHint().height());
 
-#if QT_VERSION == 302
-    size += QSize(0,2); // Qt 3.0.2 insists on wasting 2 pixels it seems.
-#endif
-
     return size;
 }
 
