@@ -64,12 +64,11 @@
 #include <kprocess.h>
 
 #ifdef HAVE_VOLMGT
-	#include <volmgt.h>
-	#include <sys/mnttab.h>
-#else
-	#include <kstddirs.h>
+#include <volmgt.h>
+#include <sys/mnttab.h>
 #endif
 
+#include <kstandarddirs.h>
 #include <kio/ioslave_defaults.h>
 #include <klargefile.h>
 #include <kglobal.h>
@@ -1063,7 +1062,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     if(!epath.isEmpty())
         path += QString::fromLatin1(":") + epath;
     QString mountProg = KGlobal::dirs()->findExe("mount", path);
-    if (mountProg.isEmpty()) 
+    if (mountProg.isEmpty())
         mountProg = "mount";
 
     // Two steps, in case mount doesn't like it when we pass all options
@@ -1245,7 +1244,7 @@ void FileProtocol::unmount( const QString& _point )
        path += ":" + epath;
     QString umountProg = KGlobal::dirs()->findExe("umount", path);
 
-    if (umountProg.isEmpty()) 
+    if (umountProg.isEmpty())
         umountProg = "umount";
     buffer.sprintf( "%s %s 2>%s", umountProg.latin1(), QFile::encodeName(KProcess::quote(_point)).data(), tmp );
     system( buffer.data() );
