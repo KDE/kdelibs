@@ -1029,9 +1029,6 @@ bool TextAreaWidget::event( QEvent *e )
 
 // -------------------------------------------------------------------------
 
-// ### allow contents to be manipulated via DOM - will require updating
-// of text node child
-
 RenderTextArea::RenderTextArea(HTMLTextAreaElementImpl *element)
     : RenderFormElement(element)
 {

@@ -337,6 +337,7 @@ class HTMLSelectElementImpl : public HTMLGenericFormElementImpl
 
 public:
     HTMLSelectElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
+    ~HTMLSelectElementImpl();
 
     virtual Id id() const;
 
@@ -495,6 +496,7 @@ public:
     };
 
     HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
+    ~HTMLTextAreaElementImpl();
 
     virtual Id id() const;
 

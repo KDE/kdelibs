@@ -80,9 +80,6 @@ public:
     virtual void detach();
     virtual void layout( );
 
-    virtual void handleDOMEvent(DOM::EventImpl *evt);
-
-    bool sendWidgetEvent(QEvent *event);
     QWidget *widget() const { return m_widget; }
     KHTMLView* view() const { return m_view; }
 

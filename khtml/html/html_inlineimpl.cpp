@@ -64,8 +64,6 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
     // when pressing Enter in the combo.
     if ( ( evt->id() == EventImpl::KHTML_CLICK_EVENT ||
          ( evt->id() == EventImpl::KHTML_KEYDOWN_EVENT && m_focused)) && m_hasAnchor) {
-
-       qDebug("HTMLAnchorElementImpl::defaultEventHandler");
         MouseEventImpl *e = 0;
         if ( evt->id() == EventImpl::KHTML_CLICK_EVENT )
             e = static_cast<MouseEventImpl*>( evt );

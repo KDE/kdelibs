@@ -29,7 +29,6 @@
 #include <kdebug.h>
 #include <qregexp.h>
 
-#define MAXFONTSIZES 15
 
 typedef QMap<QString,KHTMLSettings::KJavaScriptAdvice> PolicyMap;
 
@@ -61,7 +60,6 @@ public:
 
     QMap<QString,KHTMLSettings::KJavaScriptAdvice> javaDomainPolicy;
     QMap<QString,KHTMLSettings::KJavaScriptAdvice> javaScriptDomainPolicy;
-    QValueList<int>     m_fontSizes;
     QStringList fonts;
     QStringList defaultFonts;
 };
@@ -188,10 +186,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     if ( reset || config->hasKey( "MinimumFontSize" ) )
         d->m_minFontSize = config->readNumEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
 
-    if ( reset || config->hasKey( "MediumFontSize" ) ) {
+    if ( reset || config->hasKey( "MediumFontSize" ) )
         d->m_fontSize = config->readNumEntry( "MediumFontSize", 10 );
-        resetFontSizes();
-    }
 
     d->fonts = config->readListEntry( "Fonts" );
 
@@ -422,41 +418,15 @@ bool KHTMLSettings::isPluginsEnabled( const QString& /* hostname */ )
   return d->m_bEnablePlugins;
 }
 
-void KHTMLSettings::resetFontSizes()
+int KHTMLSettings::mediumFontSize() const
 {
-    d->m_fontSizes.clear();
-    int sizeAdjust = d->m_fontSize + lookupFont(6).toInt() + 3;
-    if ( sizeAdjust < 0 )
-        sizeAdjust = 0;
-    if ( sizeAdjust > 9 )
-        sizeAdjust = 9;
-    //kdDebug(6050) << "KHTMLSettings::resetFontSizes adjustment is " << sizeAdjust << endl;
-    const float factor = 1.2;
-    float scale = 1.0 / ( factor*factor*factor );
-    for ( int i = 0; i < MAXFONTSIZES; i++ ) {
-              d->m_fontSizes << ( KMAX( int( d->m_fontSize * scale + 0.5), d->m_minFontSize ) );
-        scale *= factor;
-    }
+    return d->m_fontSize;
 }
 
 int KHTMLSettings::minFontSize() const
 {
   return d->m_minFontSize;
 }
-
-void KHTMLSettings::setFontSizes(const QValueList<int> &_newFontSizes )
-{
-    QValueList<int> newFontSizes;
-    newFontSizes = _newFontSizes;
-    while ( newFontSizes.count() > d->m_fontSizes.count() )
-      newFontSizes.remove( newFontSizes.fromLast() );
-
-    QValueList<int>::ConstIterator it = newFontSizes.begin();
-    QValueList<int>::ConstIterator end = newFontSizes.end();
-    for (int i = 0; it != end; it++ )
-      d->m_fontSizes[ i++ ] = *it;
-}
-
 
 QString KHTMLSettings::settingsToCSS() const
 {
@@ -564,11 +534,6 @@ void KHTMLSettings::setFixedFontName(const QString &n)
     while(d->fonts.count() <= 1)
         d->fonts.append(QString::null);
     d->fonts[1] = n;
-}
-
-const QValueList<int> &KHTMLSettings::fontSizes() const
-{
-  return d->m_fontSizes;
 }
 
 QString KHTMLSettings::userStyleSheet() const

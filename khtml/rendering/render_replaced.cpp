@@ -278,137 +278,14 @@ void RenderWidget::printObject(QPainter* /*p*/, int, int, int, int, int _tx, int
     m_widget->show();
 }
 
-void RenderWidget::handleDOMEvent(EventImpl *evt)
-{
-    // Since the widget is stored outside of the normal viewing area and doesn't receive the events directly (the
-    // events are recevied by our KHTMLView), we have to pass the events on to the widget. Doing this also ensures that
-    // widgets only receive events if the event occurs over part of the widget that is visible, e.g. if there is an
-    // object with a higher z-index partially obscuring the widget and the user clicks on it, the widget won't get the
-    // event
-
-    if (!m_widget)
-	return;
-
-    if (evt->isMouseEvent()) {
-	MouseEventImpl *mev = static_cast<MouseEventImpl*>(evt);
-        //kdDebug() << "RenderWidget("<<this<<")::handleDOMEvent for a mouse event of type " << mev->type().string() << endl;
-
-	// Work out event type
-	QEvent::Type qtype = QEvent::None;
-	if (mev->id() == EventImpl::MOUSEDOWN_EVENT)
-	    qtype = QEvent::MouseButtonPress;
-	else if (mev->id() == EventImpl::MOUSEUP_EVENT)
-	    qtype = QEvent::MouseButtonRelease;
-	else if (mev->id() == EventImpl::MOUSEMOVE_EVENT)
-	    qtype = QEvent::MouseMove;
-	else if (mev->id() == EventImpl::MOUSEOVER_EVENT)
-	    qtype = QEvent::Enter;
-	else if (mev->id() == EventImpl::MOUSEOUT_EVENT)
-	    qtype = QEvent::Leave;
-	else if (mev->id() == EventImpl::KHTML_ORIGCLICK_MOUSEUP_EVENT)
-	    qtype = QEvent::MouseButtonRelease;
-
-	// Work out button
-	int button;
-	if (mev->button() == 2)
-	    button = Qt::RightButton;
-	else if (mev->button() == 1)
-	    button = Qt::MidButton;
-	else
-	    button = Qt::LeftButton;
-
-	// Work out key modifier state
-	int state = 0;
-	if (mev->ctrlKey())
-	    state |= Qt::ControlButton;
-	if (mev->altKey())
-	    state |= Qt::AltButton;
-	if (mev->shiftKey())
-	    state |= Qt::ShiftButton;
-	// ### meta key ?
-
-	// Get local & global positions for the mouse event
-	int xpos = 0;
-	int ypos = 0;
-	absolutePosition(xpos,ypos);
-	QPoint pos(mev->clientX()-xpos,mev->clientY()-ypos);
-	QPoint globalPos(mev->screenX(),mev->screenY());
-
-	// Create the event
-	QEvent *event = 0;
-	if (qtype == QEvent::MouseButtonPress || qtype == QEvent::MouseButtonRelease || qtype == QEvent::MouseMove)
-	    event = new QMouseEvent(qtype,pos,globalPos,button,state);
-	else if (qtype == QEvent::Enter || qtype == QEvent::Leave)
-	    event = new QEvent(qtype);
-
-	// Send the actual event to the widget
-	if (event) {
-	    sendWidgetEvent(event);
-	    delete event;
-	}
-    }
-    else if (evt->id() == EventImpl::DOMFOCUSIN_EVENT) {
-	QFocusEvent focusEvent(QEvent::FocusIn);
-
-	// This broke restoring lineedit cursor when alt+tabbing into khtml. (David)
-	// Reason: KHTMLView doesn't handle focusin events. It wouldn't know which
-	// widget should receive the focusin event anyway.
-	//m_widget->setFocusProxy(m_view);
-	//m_view->setFocus();
-
-        m_widget->setFocus();
-
-	sendWidgetEvent(&focusEvent);
-    }
-    else if (evt->id() == EventImpl::DOMFOCUSOUT_EVENT) {
-	QFocusEvent focusEvent(QEvent::FocusOut);
-
-	//m_widget->setFocusProxy(0);
-
-	sendWidgetEvent(&focusEvent);
-    }
-    else if (evt->id() == EventImpl::KHTML_KEYDOWN_EVENT ||
-             evt->id() == EventImpl::KHTML_KEYPRESS_EVENT || // necessary for auto-repeat keys
-	     evt->id() == EventImpl::KHTML_KEYUP_EVENT) {
-	KeyEventImpl *keyEvent = static_cast<KeyEventImpl*>(evt);
-        //kdDebug(6000) << "RenderWidget("<<this<<")::handleDOMEvent for a key event ("<<keyEvent->outputString().string()<< ") type " << keyEvent->type().string() << endl;
-
-	if (sendWidgetEvent(keyEvent->qKeyEvent)) {
-            //kdDebug(6000) << "RenderWidget("<<this<<")::handleDOMEvent key event accepted" << endl;
-	    keyEvent->qKeyEvent->accept();
-        } else {
-            //kdDebug(6000) << "RenderWidget("<<this<<")::handleDOMEvent key event NOT accepted" << endl;
-        }
-    }
-
-    evt->setDefaultHandled();
-}
-
-bool RenderWidget::sendWidgetEvent(QEvent *event)
-{
-    //kdDebug() << "RenderWidget("<<this<<")::sendWidgetEvent sending event to render-widget " << m_widget << endl;
-    m_view->setIgnoreEvents(true);
-    QWidget *prevFocusWidget = qApp->focusWidget();
-    DocumentImpl *doc = m_view->part()->xmlDocImpl();
-    if (doc->focusNode() && doc->focusNode()->renderer() == this)
-        m_widget->setFocus();
-
-    bool eventHandled = QApplication::sendEvent(m_widget,event);
-
-    if (prevFocusWidget)
-        prevFocusWidget->setFocus();
-
-    m_view->setIgnoreEvents(false);
-
-    return eventHandled;
-}
-
 bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 {
     if ( !element() ) return true;
 
     ref();
     element()->ref();
+
+    bool filtered = false;
 
     //kdDebug() << "RenderWidget::eventFilter type=" << e->type() << endl;
     switch(e->type()) {
@@ -485,16 +362,24 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 //         // ### change cursor like in KHTMLView?
 //     }
     break;
+    case QEvent::KeyPress:
+    case QEvent::KeyRelease:
+    {
+        if (!element()->dispatchKeyEvent(static_cast<QKeyEvent*>(e)))
+            filtered = true;
+        break;
+    }
     default: break;
     };
 
     element()->deref();
 
     // stop processing if the widget gets deleted, but continue in all other cases
-    bool deleted = hasOneRef();
+    if (hasOneRef())
+        filtered = true;
     deref();
 
-    return deleted;
+    return filtered;
 }
 
 

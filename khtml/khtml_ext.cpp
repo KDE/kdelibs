@@ -505,7 +505,7 @@ bool KHTMLPartBrowserHostExtension::openURLInFrame( const KURL &url, const KPart
   return m_part->openURLInFrame( url, urlArgs );
 }
 
-KHTMLFontSizeAction::KHTMLFontSizeAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const QObject *receiver, const char *slot, QObject *parent, const char *name )
+KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &text, const QString &icon, const QObject *receiver, const char *slot, QObject *parent, const char *name )
     : KAction( text, icon, 0, receiver, slot, parent, name )
 {
     m_direction = direction;
@@ -528,12 +528,12 @@ KHTMLFontSizeAction::KHTMLFontSizeAction( KHTMLPart *part, bool direction, const
     connect( m_popup, SIGNAL( activated( int ) ), this, SLOT( slotActivated( int ) ) );
 }
 
-KHTMLFontSizeAction::~KHTMLFontSizeAction()
+KHTMLZoomFactorAction::~KHTMLZoomFactorAction()
 {
     delete m_popup;
 }
 
-int KHTMLFontSizeAction::plug( QWidget *w, int index )
+int KHTMLZoomFactorAction::plug( QWidget *w, int index )
 {
     int containerId = KAction::plug( w, index );
     if ( containerId == -1 || !w->inherits( "KToolBar" ) )
@@ -547,16 +547,15 @@ int KHTMLFontSizeAction::plug( QWidget *w, int index )
     return containerId;
 }
 
-void KHTMLFontSizeAction::slotActivated( int id )
+void KHTMLZoomFactorAction::slotActivated( int id )
 {
     int idx = m_popup->indexOf( id );
 
-    if ( idx == 0 )
-        m_part->setFontBaseInternal( 0, true );
+    if (idx == 0)
+        m_part->setZoomFactor(100);
     else
-        m_part->setFontBaseInternal( idx * ( m_direction ? 1 : -1 ), false );
+        m_part->setZoomFactor(m_part->zoomFactor() + (m_direction ? 10 : -10) * idx);
 }
 
-using namespace KParts;
 #include "khtml_ext.moc"
 

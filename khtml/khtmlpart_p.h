@@ -1,5 +1,5 @@
-#ifndef khtml_part_p_h
-#define khtml_part_p_h
+#ifndef khtmlpart_p_h
+#define khtmlpart_p_h
 
 /* This file is part of the KDE project
  *
@@ -106,7 +106,7 @@ public:
     m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
     m_bClearing = false;
     m_bCleared = false;
-    m_fontBase = 0;
+    m_zoomFactor = 100;
     m_bDnd = true;
     m_startOffset = m_endOffset = 0;
     m_startBeforeEnd = true;
@@ -265,8 +265,8 @@ public:
   KAction *m_paSecurity;
   KSelectAction *m_paSetEncoding;
   KSelectAction *m_paUseStylesheet;
-  KHTMLFontSizeAction *m_paIncFontSizes;
-  KHTMLFontSizeAction *m_paDecFontSizes;
+  KHTMLZoomFactorAction *m_paIncZoomFactor;
+  KHTMLZoomFactorAction *m_paDecZoomFactor;
   KAction *m_paLoadImages;
   KAction *m_paFind;
   KAction *m_paPrintFrame;
@@ -278,7 +278,7 @@ public:
 
   QString m_popupMenuXML;
 
-  int m_fontBase;
+  int m_zoomFactor;
 
   int m_findPos;
   DOM::NodeImpl *m_findNode;
@@ -315,7 +315,6 @@ public:
   bool m_bClearing:1;
   bool m_bCleared:1;
   bool m_bSecurityInQuestion:1;
-  bool m_bFirstSubmit:1;
   bool m_focusNodeRestored:1;
 
   int m_focusNodeNumber;

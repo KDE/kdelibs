@@ -34,6 +34,7 @@ class KHTMLPart;
 class KURL;
 
 namespace DOM {
+    class DocumentImpl;
     class NodeImpl;
     class ElementImpl;
     class StyleSheetImpl;
@@ -106,7 +107,7 @@ namespace khtml
 	 * Also takes into account special cases for HTML documents,
 	 * including the defaultStyle (which is html only)
 	 */
-	CSSStyleSelector( KHTMLView *view, QString userStyleSheet, DOM::StyleSheetListImpl *styleSheets, const KURL &url,
+	CSSStyleSelector( DOM::DocumentImpl* doc, QString userStyleSheet, DOM::StyleSheetListImpl *styleSheets, const KURL &url,
                           bool _strictParsing );
 	/**
 	 * same as above but for a single stylesheet.
@@ -122,12 +123,16 @@ namespace khtml
 
 	virtual RenderStyle *styleForElement(DOM::ElementImpl *e, int state = None );
 
+        QValueList<int> fontSizes() const { return m_fontSizes; }
+
 	bool strictParsing;
 	struct Encodedurl {
 	    QString host; //also contains protocol
 	    QString path;
 	    QString file;
 	} encodedurl;
+
+        void computeFontSizes(QPaintDeviceMetrics* paintDeviceMetrics, int zoomFactor);
     protected:
 
 	/* checks if the complete selector (which can be build up from a few CSSSelector's
@@ -149,6 +154,9 @@ namespace khtml
 	CSSStyleSelectorList *authorStyle;
         CSSStyleSelectorList *userStyle;
         DOM::CSSStyleSheetImpl *userSheet;
+
+    private:
+        void init();
 
     public: // we need to make the enum public for SelectorCache
 	enum SelectorState {
@@ -184,8 +192,8 @@ namespace khtml
 	CSSOrderedProperty **properties;
 	QMemArray<CSSOrderedProperty> inlineProps;
         QString m_medium;
-	
-	
+
+
 	int dynamicState;
 	RenderStyle::PseudoId dynamicPseudo;
 	int usedDynamicStates;
@@ -199,7 +207,8 @@ namespace khtml
 	KHTMLPart *part;
 	const KHTMLSettings *settings;
 	QPaintDeviceMetrics *paintDeviceMetrics;
-		
+        QValueList<int>     m_fontSizes;
+
 	bool fontDirty;
 
 	void applyRule(DOM::CSSProperty *prop);

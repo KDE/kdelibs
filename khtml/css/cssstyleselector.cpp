@@ -31,6 +31,7 @@
 #include "dom/css_rule.h"
 #include "dom/css_value.h"
 #include "khtml_factory.h"
+#include "khtmlpart_p.h"
 using namespace khtml;
 using namespace DOM;
 
@@ -73,18 +74,24 @@ static CSSStyleSelector::Encodedurl *encodedurl = 0;
 enum PseudoState { PseudoUnknown, PseudoNone, PseudoLink, PseudoVisited};
 static PseudoState pseudoState;
 
-CSSStyleSelector::CSSStyleSelector( KHTMLView *view, QString userStyleSheet, StyleSheetListImpl *styleSheets,
+CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, StyleSheetListImpl *styleSheets,
                                     const KURL &url, bool _strictParsing )
 {
+    init();
+
+    KHTMLView* view = doc->view();
     strictParsing = _strictParsing;
     if(!defaultStyle) loadDefaultStyle(view ? view->part()->settings() : 0);
     m_medium = view ? view->mediaType() : "all";
 
     selectors = 0;
     selectorCache = 0;
+    settings = view ? view->part()->settings() : 0;
     properties = 0;
     userStyle = 0;
     userSheet = 0;
+    paintDeviceMetrics = doc->paintDeviceMetrics();
+    computeFontSizes(paintDeviceMetrics, view ? view->part()->zoomFactor() : 100);
 
     if ( !userStyleSheet.isEmpty() ) {
         userSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl *)0);
@@ -130,11 +137,20 @@ CSSStyleSelector::CSSStyleSelector( KHTMLView *view, QString userStyleSheet, Sty
 
 CSSStyleSelector::CSSStyleSelector( CSSStyleSheetImpl *sheet )
 {
+    init();
+
     if(!defaultStyle) loadDefaultStyle();
     m_medium = sheet->doc()->view()->mediaType();
 
     authorStyle = new CSSStyleSelectorList();
     authorStyle->append( sheet, m_medium );
+}
+
+void CSSStyleSelector::init()
+{
+    element = 0;
+    settings = 0;
+    paintDeviceMetrics = 0;
 }
 
 CSSStyleSelector::~CSSStyleSelector()
@@ -190,6 +206,38 @@ void CSSStyleSelector::clear()
     defaultSheet = 0;
 }
 
+#define MAXFONTSIZES 15
+
+void CSSStyleSelector::computeFontSizes(QPaintDeviceMetrics* paintDeviceMetrics,  int zoomFactor)
+{
+    // ### get rid of float / double
+    float toPix = paintDeviceMetrics->logicalDpiY()/72.;
+    if (toPix  < 96./72.) toPix = 96./72.;
+
+    m_fontSizes.clear();
+    const float factor = 1.2;
+    float scale = 1.0 / (factor*factor*factor);
+    float mediumFontSize;
+    float minFontSize;
+    if (!khtml::printpainter) {
+        scale *= zoomFactor / 100.0;
+        mediumFontSize = settings->mediumFontSize() * toPix;
+        minFontSize = settings->minFontSize() * toPix;
+    }
+    else {
+        // ## depending on something / configurable ?
+        mediumFontSize = 12;
+        minFontSize = 6;
+    }
+
+    for ( int i = 0; i < MAXFONTSIZES; i++ ) {
+        m_fontSizes << int(KMAX( mediumFontSize * scale + 0.5f, minFontSize));
+        scale *= factor;
+    }
+}
+
+#undef MAXFONTSIZES
+
 RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 {
     // set some variables we will need
@@ -203,7 +251,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     parentStyle = ( parentNode && parentNode->renderer()) ? parentNode->renderer()->style() : 0;
     view = element->getDocument()->view();
     part = view->part();
-    settings = part->settings();
     paintDeviceMetrics = element->getDocument()->paintDeviceMetrics();
 
     CSSOrderedPropertyList *propsToApply = new CSSOrderedPropertyList;
@@ -1812,7 +1859,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
             style->setBorderLeftWidth(width);
             break;
         case CSS_PROP_OUTLINE_WIDTH:
-	    style->setOutlineWidth(width);
+            style->setOutlineWidth(width);
             break;
         default:
             return;
@@ -2106,32 +2153,22 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 
         if(parentNode) {
             oldSize = parentStyle->font().pixelSize();
-        } else {
-            oldSize = (int)(part->fontSizes()[3]*toPix);
-        }
+        } else
+            oldSize = m_fontSizes[3];
 
         if(value->cssValueType() == CSSValue::CSS_INHERIT) {
             size = oldSize;
         } else if(primitiveValue->getIdent()) {
-	    QValueList<int> standardSizes = part->fontSizes();
             switch(primitiveValue->getIdent())
             {
-            case CSS_VAL_XX_SMALL:
-                size = standardSizes[0]*toPix; break;
-            case CSS_VAL_X_SMALL:
-                size = standardSizes[1]*toPix; break;
-            case CSS_VAL_SMALL:
-                size = standardSizes[2]*toPix; break;
-            case CSS_VAL_MEDIUM:
-                size = standardSizes[3]*toPix; break;
-            case CSS_VAL_LARGE:
-                size = standardSizes[4]*toPix; break;
-            case CSS_VAL_X_LARGE:
-                size = standardSizes[5]*toPix; break;
-            case CSS_VAL_XX_LARGE:
-                size = standardSizes[6]*toPix; break;
-            case CSS_VAL__KONQ_XXX_LARGE:
-                size = ( standardSizes[6]*toPix*5 )/3; break;
+            case CSS_VAL_XX_SMALL: size = m_fontSizes[0]; break;
+            case CSS_VAL_X_SMALL:  size = m_fontSizes[1]; break;
+            case CSS_VAL_SMALL:    size = m_fontSizes[2]; break;
+            case CSS_VAL_MEDIUM:   size = m_fontSizes[3]; break;
+            case CSS_VAL_LARGE:    size = m_fontSizes[4]; break;
+            case CSS_VAL_X_LARGE:  size = m_fontSizes[5]; break;
+            case CSS_VAL_XX_LARGE: size = m_fontSizes[6]; break;
+            case CSS_VAL__KONQ_XXX_LARGE:  size = ( m_fontSizes[6]*5 )/3; break;
             case CSS_VAL_LARGER:
                 // ### use the next bigger standardSize!!!
                 size = oldSize * 1.2;
@@ -2149,9 +2186,12 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
                 size = primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics);
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
                 size = (primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
-                                  * parentStyle->font().pixelSize()) / 100;
+                        * parentStyle->font().pixelSize()) / 100;
             else
                 return;
+
+            if (!khtml::printpainter && element && element->getDocument()->view())
+                size *= element->getDocument()->view()->part()->zoomFactor() / 100.0;
         }
 
         if(size <= 0) return;

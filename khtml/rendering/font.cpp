@@ -155,8 +155,8 @@ void Font::update( QPaintDeviceMetrics* devMetrics ) const
             size = (bestSize*lDpiY) / 72;
     }
 
-//     qDebug("setting font to %s, italic=%d, weight=%d, size=%d", fontDef.family.latin1(), fontDef.italic,
-//  	   fontDef.weight, size );
+//      qDebug("setting font to %s, italic=%d, weight=%d, size=%d", fontDef.family.latin1(), fontDef.italic,
+//   	   fontDef.weight, size );
 
     f.setPixelSize( size );
 

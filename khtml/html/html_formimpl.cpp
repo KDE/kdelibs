@@ -798,6 +798,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl
 
 HTMLInputElementImpl::~HTMLInputElementImpl()
 {
+    if (getDocument()) getDocument()->deregisterMaintainsState(this);
 }
 
 NodeImpl::Id HTMLInputElementImpl::id() const
@@ -995,7 +996,7 @@ void HTMLInputElementImpl::init()
         QString value = m_value.string();
         // remove newline stuff..
         QString nvalue;
-        for (int i = 0; i < value.length(); ++i)
+        for (unsigned int i = 0; i < value.length(); ++i)
             if (value[i] >= ' ')
                 nvalue += value[i];
         m_value = nvalue;
@@ -1362,6 +1363,11 @@ HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentPtr *doc, HTMLFormElementIm
     // 0 means invalid (i.e. not set)
     m_size = 0;
     m_minwidth = 0;
+}
+
+HTMLSelectElementImpl::~HTMLSelectElementImpl()
+{
+    if (getDocument()) getDocument()->deregisterMaintainsState(this);
 }
 
 NodeImpl::Id HTMLSelectElementImpl::id() const
@@ -1986,6 +1992,11 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormEleme
     m_cols = 20;
     m_wrap = ta_Virtual;
     m_dirtyvalue = true;
+}
+
+HTMLTextAreaElementImpl::~HTMLTextAreaElementImpl()
+{
+    if (getDocument()) getDocument()->deregisterMaintainsState(this);
 }
 
 NodeImpl::Id HTMLTextAreaElementImpl::id() const

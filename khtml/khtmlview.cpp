@@ -34,6 +34,7 @@
 #include "rendering/render_style.h"
 #include "rendering/render_replaced.h"
 #include "xml/dom2_eventsimpl.h"
+#include "css/cssstyleselector.h"
 #include "misc/htmlhashes.h"
 #include "misc/helper.h"
 #include "khtml_settings.h"
@@ -50,6 +51,7 @@
 #include <kapplication.h>
 
 #include <kimageio.h>
+#include <assert.h>
 #include <kdebug.h>
 #include <kurldrag.h>
 #include <qobjectlist.h>
@@ -123,7 +125,6 @@ public:
         hmode = QScrollView::AlwaysOff;
 #endif
         scrollBarMoved = false;
-        ignoreEvents = false;
         ignoreWheelEvents = false;
 	borderX = 30;
 	borderY = 30;
@@ -158,7 +159,6 @@ public:
     bool prevScrollbarVisible;
     bool linkPressed;
     bool useSlowRepaints;
-    bool ignoreEvents;
     bool ignoreWheelEvents;
 
     int borderX, borderY;
@@ -402,8 +402,6 @@ void KHTMLView::layout()
 
 void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 {
-    if (d->ignoreEvents)
-        return;
     if(!m_part->xmlDocImpl()) return;
 
     int xm, ym;
@@ -450,8 +448,6 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 
 void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 {
-    if (d->ignoreEvents)
-        return;
     if(!m_part->xmlDocImpl()) return;
 
     int xm, ym;
@@ -493,8 +489,6 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 
 void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 {
-    if (d->ignoreEvents)
-        return;
     if(!m_part->xmlDocImpl()) return;
 
     int xm, ym;
@@ -594,8 +588,6 @@ void KHTMLView::resetCursor()
 
 void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 {
-    if (d->ignoreEvents)
-        return;
     if ( !m_part->xmlDocImpl() ) return;
 
     int xm, ym;
@@ -625,15 +617,13 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
 void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 {
-    if (d->ignoreEvents)
-        return;
 
     if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()) {
         if (m_part->xmlDocImpl()->focusNode()->dispatchKeyEvent(_ke))
-	{
+        {
             _ke->accept();
-	    return;
-	}
+            return;
+        }
     }
 
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
@@ -727,19 +717,22 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 
 void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 {
-    if (d->ignoreEvents)
-        return;
-
-    if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()) {
-        if (m_part->xmlDocImpl()->focusNode()->dispatchKeyEvent(_ke))
-            _ke->accept();
+    if(m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()) {
+        // Qt is damn buggy. we receive release events from our child
+        // widgets. therefore, do not support keyrelease event on generic
+        // nodes for now until we found  a workaround for the Qt bugs. (Dirk)
+//         if (m_part->xmlDocImpl()->focusNode()->dispatchKeyEvent(_ke)) {
+//             _ke->accept();
+//             return;
+//         }
+//        QScrollView::keyReleaseEvent(_ke);
+        Q_UNUSED(_ke);
     }
 }
 
 void KHTMLView::contentsContextMenuEvent ( QContextMenuEvent *_ce )
 {
-    if (d->ignoreEvents || !m_part->xmlDocImpl())
-        return;
+    if (!m_part->xmlDocImpl()) return;
     int xm = _ce->x();
     int ym = _ce->y();
 
@@ -755,19 +748,16 @@ void KHTMLView::contentsContextMenuEvent ( QContextMenuEvent *_ce )
 
         QWidget *w = static_cast<RenderWidget*>(targetNode->renderer())->widget();
         QContextMenuEvent cme(_ce->reason(),pos,_ce->globalPos(),_ce->state());
-        setIgnoreEvents(true);
+// ### what kind of c*** is that ?
+//        setIgnoreEvents(true);
         QApplication::sendEvent(w,&cme);
-        setIgnoreEvents(false);
+//        setIgnoreEvents(false);
     }
 
 }
 
 bool KHTMLView::focusNextPrevChild( bool next )
 {
-    if (d->ignoreEvents) {
-        return true;
-    }
-
     // Now try to find the next child
     if (m_part->xmlDocImpl()) {
         focusNextPrevNode(next);
@@ -1010,12 +1000,10 @@ void KHTMLView::print()
         m_part->xmlDocImpl()->setPaintDevice( printer );
         QString oldMediaType = mediaType();
         setMediaType( "print" );
-	//m_part->xmlDocImpl()->setPrintStyleSheet( printer->colorMode() == KPrinter::GrayScale ?
-	m_part->xmlDocImpl()->setPrintStyleSheet( printer->option("kde-khtml-printfriendly") == "true" ?
-						  "* { background-image: none !important;"
-						  "    background-color: transparent !important;"
-						  "    color: black !important }" :
-						  "" );
+        m_part->xmlDocImpl()->setPrintStyleSheet( printer->option("kde-khtml-printfriendly") == "true" ?
+                                                  "* { background-image: none !important;"
+                                                  "    background-color: transparent !important;"
+                                                  "    color: black !important }" : "" );
 
         QPaintDeviceMetrics metrics( printer );
 
@@ -1029,16 +1017,8 @@ void KHTMLView::print()
         root->setPrintingMode(true);
         root->setWidth(metrics.width());
 
-        QValueList<int> oldSizes = m_part->fontSizes();
-
-        const int printFontSizes[] = { 6, 7, 8, 10, 12, 14, 18, 24,
-                                       28, 34, 40, 48, 56, 68, 82, 100, 0 };
-        QValueList<int> fontSizes;
-        for ( int i = 0; printFontSizes[i] != 0; i++ )
-            fontSizes << printFontSizes[ i ];
-        m_part->setFontSizes(fontSizes);
+        m_part->xmlDocImpl()->styleSelector()->computeFontSizes(&metrics, 100);
         m_part->xmlDocImpl()->updateStyleSelector();
-
         root->setPrintImages( printer->option("kde-khtml-printimages") == "true");
         root->setLayouted( false );
         root->setMinMaxKnown( false );
@@ -1088,7 +1068,7 @@ void KHTMLView::print()
         khtml::setPrintPainter( 0 );
         setMediaType( oldMediaType );
         m_part->xmlDocImpl()->setPaintDevice( this );
-        m_part->setFontSizes(oldSizes);
+        m_part->xmlDocImpl()->styleSelector()->computeFontSizes(m_part->xmlDocImpl()->paintDeviceMetrics(), m_part->zoomFactor());
         m_part->xmlDocImpl()->updateStyleSelector();
         viewport()->unsetCursor();
     }
@@ -1333,16 +1313,6 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
     }
 
     return swallowEvent;
-}
-
-void KHTMLView::setIgnoreEvents(bool ignore)
-{
-    d->ignoreEvents = ignore;
-}
-
-bool KHTMLView::ignoreEvents()
-{
-    return d->ignoreEvents;
 }
 
 void KHTMLView::setIgnoreWheelEvents( bool e )

@@ -91,11 +91,8 @@ public:
     void setStdFontName(const QString &n);
     void setFixedFontName(const QString &n);
 
-    const QValueList<int> &fontSizes() const;
-    void setFontSizes(const QValueList<int> &newFontSizes );
-    void resetFontSizes();
-
     int minFontSize() const;
+    int mediumFontSize() const;
 
     const QString &encoding() const;
 
@@ -130,7 +127,6 @@ public:
 
 private:
     friend class KHTMLFactory;
-    void setFont(int, int i, const QString &n);
     QString lookupFont(int i) const;
 
     KHTMLSettingsPrivate *d;

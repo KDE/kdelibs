@@ -229,9 +229,6 @@ private:
 			    int detail,QMouseEvent *_mouse, bool setUnder,
 			    int mouseEventType);
 
-    void setIgnoreEvents(bool ignore);
-    bool ignoreEvents();
-
     void complete();
 
     // ------------------------------------- member variables ------------------------------------

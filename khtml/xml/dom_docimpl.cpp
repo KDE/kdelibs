@@ -42,6 +42,7 @@
 #include <kstaticdeleter.h>
 
 #include "rendering/render_root.h"
+#include "rendering/render_replaced.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -275,7 +276,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_inDocument = true;
     m_styleSelectorDirty = false;
 
-    m_styleSelector = new CSSStyleSelector( m_view, m_usersheet, m_styleSheets, m_url,
+    m_styleSelector = new CSSStyleSelector( this, m_usersheet, m_styleSheets, m_url,
                                             pMode == Strict );
     m_windowEventListeners.setAutoDelete(true);
 }
@@ -743,10 +744,9 @@ QString DocumentImpl::nextState()
 QStringList DocumentImpl::docState()
 {
     QStringList s;
-    for (NodeImpl *n = this; n != 0; n = n->traverseNextNode()) {
-	if (n->maintainsState())
-	    s.append(n->state());
-    }
+    for (QPtrListIterator<NodeImpl> it(m_maintainsState); it.current(); ++it)
+        s.append(it.current()->state());
+
     return s;
 }
 
@@ -812,16 +812,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
 	    if ( !stdfont.isEmpty() )
 		fontDef.family = stdfont;
 
-            QValueList<int> fs = settings->fontSizes();
-            float dpiY = 72.; // fallback
-            if ( !khtml::printpainter )
-                dpiY = paintDeviceMetrics()->logicalDpiY();
-            if ( !khtml::printpainter && dpiY < 96 )
-                dpiY = 96.;
-            float size = fs[3] * dpiY / 72.;
-            if(size < settings->minFontSize())
-                size = settings->minFontSize();
-            fontDef.size = int(size);
+            fontDef.size = m_styleSelector->fontSizes()[3];
         }
 
         //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
@@ -905,6 +896,7 @@ void DocumentImpl::attach()
 
     // Create the rendering tree
     m_render = new RenderRoot(this, m_view);
+    m_styleSelector->computeFontSizes(paintDeviceMetrics(), m_view ? m_view->part()->zoomFactor() : 100);
     recalcStyle( Force );
 
     RenderObject* render = m_render;
@@ -1774,7 +1766,7 @@ void DocumentImpl::recalcStyleSelector()
     QString usersheet = m_usersheet;
     if ( m_view && m_view->mediaType() == "print" )
 	usersheet += m_printSheet;
-    m_styleSelector = new CSSStyleSelector( m_view, usersheet, m_styleSheets, m_url,
+    m_styleSelector = new CSSStyleSelector( this, usersheet, m_styleSheets, m_url,
                                             pMode == Strict );
 
     m_styleSelectorDirty = false;
@@ -1813,11 +1805,14 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
             m_focusNode->dispatchUIEvent(EventImpl::DOMFOCUSIN_EVENT);
             if (m_focusNode == newFocusNode) {
                 m_focusNode->setFocus();
-                // eww, I suck. set the focs back to the view.
+                // eww, I suck. set the qt focus correctly
                 // ### find a better place in the code for this
-                if ((!m_focusNode->renderer() || !m_focusNode->renderer()->isWidget()) &&
-                    getDocument()->view())
-                    getDocument()->view()->setFocus();
+                if (getDocument()->view()) {
+                    if (!m_focusNode->renderer() || !m_focusNode->renderer()->isWidget())
+                        getDocument()->view()->setFocus();
+                    else
+                        static_cast<RenderWidget*>(m_focusNode->renderer())->widget()->setFocus();
+                }
             }
         }
     }

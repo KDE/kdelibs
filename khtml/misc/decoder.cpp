@@ -110,8 +110,7 @@ const unsigned char KanjiCode::kanji_map_sjis[] =
 
 /*
  * Maybe we should use QTextCodec::heuristicContentMatch()
- * But it fails detection.
- * It's not useful.
+ * But it fails detection. It's not useful.
  */
 
 enum KanjiCode::Type KanjiCode::judge(const char *str)
@@ -124,7 +123,7 @@ enum KanjiCode::Type KanjiCode::judge(const char *str)
     int euc = 0;
 
     const unsigned char *ptr = (const unsigned char *) str;
-    size_t size = strlen(str);
+    int size = strlen(str);
 
     code = ASCII;
 

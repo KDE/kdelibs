@@ -718,10 +718,6 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
 
 void NodeImpl::defaultEventHandler(EventImpl *evt)
 {
-    // Perform any special rendering updates as necessary for the event, e.g. passing appropriate QEvents to form
-    // controls
-    if (m_render)
-        m_render->handleDOMEvent(evt);
 }
 
 unsigned long NodeImpl::childNodeCount()

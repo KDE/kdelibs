@@ -180,15 +180,15 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   QString foo3 = i18n("Stop Animated Images");
 
   d->m_paSetEncoding = new KSelectAction( i18n( "Set &Encoding" ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "setEncoding" );
-  d->m_paUseStylesheet = new KSelectAction( i18n( "&Use Stylesheet"), 0, this, SLOT( slotUseStylesheet() ), actionCollection(), "useStylesheet" );
   QStringList encodings = KGlobal::charsets()->descriptiveEncodingNames();
   encodings.prepend( i18n( "Auto" ) );
   d->m_paSetEncoding->setItems( encodings );
   d->m_paSetEncoding->setCurrentItem(0);
 
-  d->m_paIncFontSizes = new KHTMLFontSizeAction( this, true, i18n( "Increase Font Sizes" ), "viewmag+", this, SLOT( slotIncFontSizes() ), actionCollection(), "incFontSizes" );
-  d->m_paDecFontSizes = new KHTMLFontSizeAction( this, false, i18n( "Decrease Font Sizes" ), "viewmag-", this, SLOT( slotDecFontSizes() ), actionCollection(), "decFontSizes" );
-  d->m_paDecFontSizes->setEnabled( false );
+  d->m_paUseStylesheet = new KSelectAction( i18n( "&Use Stylesheet"), 0, this, SLOT( slotUseStylesheet() ), actionCollection(), "useStylesheet" );
+
+  d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, i18n( "Increase Font Sizes" ), "viewmag+", this, SLOT( slotIncZoom() ), actionCollection(), "incFontSizes" );
+  d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, i18n( "Decrease Font Sizes" ), "viewmag-", this, SLOT( slotDecZoom() ), actionCollection(), "decFontSizes" );
 
   d->m_paFind = KStdAction::find( this, SLOT( slotFind() ), actionCollection(), "find" );
   if ( parentPart() )
@@ -384,7 +384,6 @@ bool KHTMLPart::openURL( const KURL &url )
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
   args.metaData().insert("ssl_activate_warnings", "TRUE" );
   d->m_bReloading = args.reload;
-  d->m_bFirstSubmit = true;
 
   if ( args.doPost() && (url.protocol().startsWith("http")) )
   {
@@ -1234,12 +1233,6 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
 
-  // ### the setFontSizes in restore currently doesn't seem to work,
-  // so let's also reset the font base here, so that the font buttons start
-  // at 0 and not at the last used value (would make sense if the sizes
-  // would be restored properly though)
-  d->m_fontBase = 0;
-
   if(url.isValid()) {
       QString urlString = url.url();
       KHTMLFactory::vLinks()->insert( urlString );
@@ -1714,21 +1707,6 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   d->m_view->setContentsPos(x-50, y-50);
 
   return true;
-}
-
-void KHTMLPart::setFontSizes( const QValueList<int> &newFontSizes )
-{
-  d->m_settings->setFontSizes( newFontSizes );
-}
-
-QValueList<int> KHTMLPart::fontSizes() const
-{
-  return d->m_settings->fontSizes();
-}
-
-void KHTMLPart::resetFontSizes()
-{
-  d->m_settings->resetFontSizes();
 }
 
 void KHTMLPart::setStandardFont( const QString &name )
@@ -2751,7 +2729,7 @@ void KHTMLPart::submitFormAgain()
 
 void KHTMLPart::submitForm( const char *action, const QString &url, const QByteArray &formData, const QString &_target, const QString& contentType, const QString& boundary )
 {
-  kdDebug(6000) << "KHTMLPart::submitForm target=" << _target << " url=" << url << endl;
+  kdDebug(6000) << this << ": KHTMLPart::submitForm target=" << _target << " url=" << url << endl;
   KURL u = completeURL( url );
 
   if ( !u.isValid() )
@@ -2769,8 +2747,6 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
    */
 
   // This causes crashes... needs to be fixed.
-  if (d->m_bFirstSubmit) {
-     d->m_bFirstSubmit = false;
   if (u.protocol() != "https") {
 	if (d->m_ssl_in_use) {    // Going from SSL -> nonSSL
 		int rc = KMessageBox::warningContinueCancel(NULL, i18n("Warning:  This is a secure form but it is attempting to send your data back unencrypted."
@@ -2804,7 +2780,6 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
       	}
     }
   }
-  }  // if m_bFirstSubmit
 
   // End form security checks
   //
@@ -3145,10 +3120,9 @@ void KHTMLPart::saveState( QDataStream &stream )
   {
      docState = d->m_doc->docState();
   }
-  stream << (Q_UINT32) 0 << d->m_encoding << d->m_sheetUsed << docState;
+  stream << d->m_encoding << d->m_sheetUsed << docState;
 
-  // Save font data
-  stream << fontSizes() << d->m_fontBase;
+  stream << d->m_zoomFactor;
 
   // Save ssl data
   stream << d->m_ssl_in_use
@@ -3202,7 +3176,6 @@ void KHTMLPart::restoreState( QDataStream &stream )
   KURL::List frameURLs;
   QValueList<QByteArray> frameStateBuffers;
   QValueList<int> fSizes;
-  Q_INT32 charset;
   QString encoding, sheetUsed;
   long old_cacheId = d->m_cacheId;
 
@@ -3219,15 +3192,13 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
   stream >> d->m_cacheId;
 
-  stream >> charset >> encoding >> sheetUsed >> docState;
+  stream >> encoding >> sheetUsed >> docState;
   d->m_encoding = encoding;
   d->m_sheetUsed = sheetUsed;
-  kdDebug(6050)<<"restoring charset to:"<< charset << endl;
 
-  stream >> fSizes >> d->m_fontBase;
-  // ### odd: this doesn't appear to have any influence on the used font
-  // sizes :(
-  setFontSizes( fSizes );
+  int zoomFactor;
+  stream >> zoomFactor;
+  setZoomFactor(zoomFactor);
 
   // Restore ssl data
   stream >> d->m_ssl_in_use
@@ -3394,35 +3365,70 @@ void KHTMLPart::emitSelectionChanged()
   emit selectionChanged();
 }
 
-void KHTMLPart::slotIncFontSizes()
+int KHTMLPart::zoomFactor() const
 {
-  updateFontSize( ++d->m_fontBase );
-  if ( !d->m_paDecFontSizes->isEnabled() )
-    d->m_paDecFontSizes->setEnabled( true );
+  return d->m_zoomFactor;
 }
 
-void KHTMLPart::slotDecFontSizes()
-{
-  if ( d->m_fontBase >= 1 )
-    updateFontSize( --d->m_fontBase );
+// ### make the list configurable ?
+static const int zoomSizes[] = { 20, 40, 60, 80, 90, 95, 100, 105, 110, 120, 140, 160, 180, 200, 250, 300 };
+static const int zoomSizeCount = (sizeof(zoomSizes) / sizeof(int));
+static const int minZoom = 20;
+static const int maxZoom = 300;
 
-  if ( d->m_fontBase == 0 )
-    d->m_paDecFontSizes->setEnabled( false );
+void KHTMLPart::slotIncZoom()
+{
+  int zoomFactor = d->m_zoomFactor;
+
+  if (zoomFactor < maxZoom) {
+    // find the entry nearest to the given zoomsizes
+    for (int i = 0; i < zoomSizeCount; ++i)
+      if (zoomSizes[i] > zoomFactor) {
+        zoomFactor = zoomSizes[i];
+        break;
+      }
+    setZoomFactor(zoomFactor);
+  }
 }
 
-void KHTMLPart::setFontBaseInternal( int base, bool absolute )
+void KHTMLPart::slotDecZoom()
 {
-    if ( absolute )
-      d->m_fontBase = base;
-    else
-      d->m_fontBase += base;
+    int zoomFactor = d->m_zoomFactor;
+    if (zoomFactor > minZoom) {
+      // find the entry nearest to the given zoomsizes
+      for (int i = zoomSizeCount-1; i >= 0; --i)
+        if (zoomSizes[i] < zoomFactor) {
+          zoomFactor = zoomSizes[i];
+          break;
+        }
+      setZoomFactor(zoomFactor);
+    }
+}
 
-    if ( d->m_fontBase < 0 )
-        d->m_fontBase = 0;
+void KHTMLPart::setZoomFactor (int percent)
+{
+  if (percent < minZoom) percent = minZoom;
+  if (percent > maxZoom) percent = maxZoom;
+  d->m_zoomFactor = percent;
 
-   d->m_paDecFontSizes->setEnabled( d->m_fontBase > 0 );
+  if(d->m_doc) {
+      QApplication::setOverrideCursor( waitCursor );
+    if (d->m_doc->styleSelector())
+      d->m_doc->styleSelector()->computeFontSizes(d->m_doc->paintDeviceMetrics(), d->m_zoomFactor);
+    d->m_doc->recalcStyle( NodeImpl::Force );
+    QApplication::restoreOverrideCursor();
+  }
 
-    updateFontSize( d->m_fontBase );
+  ConstFrameIt it = d->m_frames.begin();
+  ConstFrameIt end = d->m_frames.end();
+  for (; it != end; ++it )
+    if ( !( *it ).m_part.isNull() && ( *it ).m_part->inherits( "KHTMLPart" ) ) {
+      KParts::ReadOnlyPart* p = ( *it ).m_part;
+      static_cast<KHTMLPart*>( p )->setZoomFactor(d->m_zoomFactor);
+    }
+
+  d->m_paDecZoomFactor->setEnabled( d->m_zoomFactor > minZoom );
+  d->m_paIncZoomFactor->setEnabled( d->m_zoomFactor < maxZoom );
 }
 
 void KHTMLPart::setJSStatusBarText( const QString &text )
@@ -3455,23 +3461,6 @@ QString KHTMLPart::referrer() const
 QString KHTMLPart::lastModified() const
 {
   return d->m_lastModified;
-}
-
-void KHTMLPart::updateFontSize( int add )
-{
-  resetFontSizes();
-  QValueList<int> sizes = fontSizes();
-
-  QValueList<int>::Iterator it = sizes.begin();
-  QValueList<int>::Iterator end = sizes.end();
-  for (; it != end; ++it )
-    (*it) += add;
-
-  setFontSizes( sizes );
-
-  QApplication::setOverrideCursor( waitCursor );
-  if(d->m_doc) d->m_doc->recalcStyle( NodeImpl::Force );
-  QApplication::restoreOverrideCursor();
 }
 
 void KHTMLPart::slotLoadImages()

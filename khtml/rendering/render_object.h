@@ -422,8 +422,6 @@ public:
 	return style( firstLine )->fontMetrics();
     }
 
-    virtual void handleDOMEvent(DOM::EventImpl */*evt*/) {}
-
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 

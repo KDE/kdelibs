@@ -25,7 +25,6 @@
 #ifndef _DOM_DocumentImpl_h_
 #define _DOM_DocumentImpl_h_
 
-#include "xml/dom_nodeimpl.h"
 #include "xml/dom_elementimpl.h"
 #include "xml/dom2_traversalimpl.h"
 
@@ -174,6 +173,8 @@ public:
 
     // Query all registered elements for their state
     QStringList docState();
+    void registerMaintainsState(NodeImpl* e) { m_maintainsState.append(e); }
+    void deregisterMaintainsState(NodeImpl* e) { m_maintainsState.removeRef(e); }
 
     // Set the state the document should restore to
     void setRestoreState( const QStringList &s) { m_state = s; }
@@ -417,6 +418,7 @@ protected:
     StyleSheetListImpl* m_styleSheets;
     LocalStyleRefs m_localStyleRefs; // references to inlined style elements
     QPtrList<RegisteredEventListener> m_windowEventListeners;
+    QPtrList<NodeImpl> m_maintainsState;
 
     bool m_loadingSheet;
     bool visuallyOrdered;
