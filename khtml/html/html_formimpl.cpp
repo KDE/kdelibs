@@ -216,7 +216,7 @@ void HTMLFormElementImpl::submit(  )
 
     DOMString script = getAttribute(ATTR_ONSUBMIT);
     if (!script.isNull())
-	view->part()->executeScript(script.string());
+	view->part()->executeScript(Node(this), script.string());
 
     QByteArray form_data = formData();
 
@@ -241,7 +241,7 @@ void HTMLFormElementImpl::reset(  )
 
     DOMString script = getAttribute(ATTR_ONRESET);
     if (!script.isNull())
-	view->part()->executeScript(script.string());
+	view->part()->executeScript(Node(this), script.string());
 
     HTMLGenericFormElementImpl *current = formElements.first();
     while(current)
@@ -426,28 +426,28 @@ void HTMLGenericFormElementImpl::onBlur()
 {
     DOMString script = getAttribute(ATTR_ONBLUR);
     if (!script.isEmpty())
-	view->part()->executeScript(script.string());
+	view->part()->executeScript(Node(this), script.string());
 }
 
 void HTMLGenericFormElementImpl::onFocus()
 {
     DOMString script = getAttribute(ATTR_ONFOCUS);
     if (!script.isEmpty())
-	view->part()->executeScript(script.string());
+	view->part()->executeScript(Node(this), script.string());
 }
 
 void HTMLGenericFormElementImpl::onSelect()
 {
     DOMString script = getAttribute(ATTR_ONSELECT);
     if (!script.isEmpty())
-	view->part()->executeScript(script.string());
+	view->part()->executeScript(Node(this), script.string());
 }
 
 void HTMLGenericFormElementImpl::onChange()
 {
     DOMString script = getAttribute(ATTR_ONCHANGE);
     if (!script.isEmpty())
-	view->part()->executeScript(script.string());
+	view->part()->executeScript(Node(this), script.string());
 }
 
 
