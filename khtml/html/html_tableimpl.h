@@ -105,8 +105,10 @@ protected:
     HTMLTableSectionElementImpl *firstBody;
     HTMLTableCaptionElementImpl *tCaption;
 
+#if 0
     Frame frame;
     Rules rules;
+#endif
 
     bool m_noBorder     : 1;
     bool m_solid        : 1;

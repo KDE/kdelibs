@@ -53,8 +53,10 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentPtr *doc)
     foot = 0;
     firstBody = 0;
 
+#if 0
     rules = None;
     frame = Void;
+#endif
     padding = 1;
 
     m_noBorder = true;
@@ -457,7 +459,7 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
             addCSSLength(CSS_PROP_PADDING_LEFT, attr->value(), true);
             addCSSLength(CSS_PROP_PADDING_BOTTOM, attr->value(), true);
             addCSSLength(CSS_PROP_PADDING_RIGHT, attr->value(), true);
-	    padding = attr->value().toInt();
+	    padding = QMAX( 0, attr->value().toInt() );
         }
         else {
             removeCSSProperty(CSS_PROP_PADDING_TOP);
