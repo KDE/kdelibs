@@ -70,9 +70,22 @@ void KSSLKeyGen::slotGenerate() {
 	// Show a progress box
 
 	// Generate the CSR
+	int bits;
+	switch (_idx) {
+	case 0:
+		bits = 1024;
+		break;
+	case 1:
+		bits = 768;
+		break;
+	case 2:
+		bits = 512;
+		break;
+	default:
+		return;
+	}
 
-	// Store
-
+	int rc = generateCSR("This CSR", page2->_password1->text(), bits, 0x10001);
 }
 
 
@@ -107,9 +120,18 @@ int rc;
 	// back from there.  Yes it's inefficient, but it doesn't happen
 	// often and this way things are uniform.
   
+	FILE *fp;
+	fp = fopen("keygencsrtest.der", "w");
+
+	kossl->i2d_X509_REQ_fp(fp, req);
+
+	fclose(fp);
+
 	// FIXME: private key!
 
+	// FIXME: do we have to free "rsakey" ourself?  Small leak anyways..
 	
+	kossl->X509_REQ_free(req);
 
 return 0;
 #else

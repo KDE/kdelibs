@@ -731,6 +731,9 @@ public:
     */
    int X509_REQ_set_pubkey(X509_REQ *x, EVP_PKEY *pkey);
 
+   /* for testing */
+   int i2d_X509_REQ_fp(FILE *fp, X509_REQ *x);
+
 
 
 #endif
