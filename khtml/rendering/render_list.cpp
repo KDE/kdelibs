@@ -84,7 +84,7 @@ static QString toHebrew( int number ) {
   	letter = toHebrew(number/1000) + QString::fromLatin1("'");
    	number = number%1000;
     }
-    
+
     int hunderts = (number/400);
     if (hunderts > 0) {
 	for(int i=0; i<hunderts; i++) {
@@ -102,7 +102,7 @@ static QString toHebrew( int number ) {
     }
     if (number == 15 || number == 16) { // special because of religious
 	letter += QChar(1487 + 9);       // reasons
-    	letter += QChar(1487 + number - 9); 
+    	letter += QChar(1487 + number - 9);
     } else {
         number = number % 10;
         if (number != 0) {
@@ -244,7 +244,7 @@ void RenderListItem::printObject(QPainter *p, int _x, int _y,
 // -----------------------------------------------------------
 
 RenderListMarker::RenderListMarker()
-    : RenderBox(), m_value(-1), m_listImage(0)
+    : RenderBox(), m_listImage(0), m_value(-1)
 {
     // init RenderObject attributes
     setInline(true);   // our object is Inline
@@ -316,20 +316,20 @@ void RenderListMarker::printObject(QPainter *p, int, int,
     switch(style()->listStyleType()) {
     case DISC:
         p->setBrush( color );
-        p->drawEllipse( _tx + xoff, _ty + 1.5 * yoff, (offset>>1)+1, (offset>>1)+1 );
+        p->drawEllipse( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1)+1, (offset>>1)+1 );
         return;
     case CIRCLE:
         p->setBrush( Qt::NoBrush );
-        p->drawEllipse( _tx + xoff, _ty + 1.5 * yoff, (offset>>1)+1, (offset>>1)+1 );
+        p->drawEllipse( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1)+1, (offset>>1)+1 );
         return;
     case SQUARE:
         p->setBrush( color );
-        p->drawRect( _tx + xoff, _ty + 1.5 * yoff, (offset>>1)+1, (offset>>1)+1 );
+        p->drawRect( _tx + xoff, _ty + (3 * yoff)/2, (offset>>1)+1, (offset>>1)+1 );
         return;
     case LNONE:
         return;
     default:
-        if (m_item != QString::null) { 
+        if (m_item != QString::null) {
        	    //_ty += fm.ascent() - fm.height()/2 + 1;
             if(style()->listStylePosition() == INSIDE) {
             	if(style()->direction() == LTR)
@@ -456,7 +456,7 @@ void RenderListMarker::calcMinMaxWidth()
 
     if(style()->listStylePosition() == INSIDE)
 	m_width = fm.width(m_item);
- 
+
 end:
 
     m_minWidth = m_width;
