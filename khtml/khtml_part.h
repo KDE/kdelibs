@@ -536,6 +536,11 @@ public:
 
   const QList<KParts::ReadOnlyPart> frames() const;
 
+  /**
+   * Find a frame by name. Returns 0L if frame can't be found.
+   */
+  KHTMLPart *findFrame( const QString &f );
+
   bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
 
 signals:

@@ -2051,6 +2051,19 @@ khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
   return 0L;
 }
 
+KHTMLPart *KHTMLPart::findFrame( const QString &f )
+{
+  // ### http://www.w3.org/TR/html4/appendix/notes.html#notes-frames
+  ConstFrameIt it = d->m_frames.find( f );
+  if ( it == d->m_frames.end() )
+    return 0L;
+  else {
+    KParts::ReadOnlyPart *p = it.data().m_part;
+    assert( p->inherits( "KHTMLPart" ));
+    return (KHTMLPart*)p;
+  }
+}
+
 KHTMLPart *KHTMLPart::parentPart()
 {
   if ( !parent() || !parent()->inherits( "KHTMLPart" ) )
