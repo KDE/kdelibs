@@ -280,7 +280,8 @@ public class KJASAppletContext implements AppletContext
     public AudioClip getAudioClip( URL url )
     {
         Main.debug( "getAudioClip, url = " + url );
-        AudioClip clip = java.applet.Applet.newAudioClip(url); 
+        //AudioClip clip = java.applet.Applet.newAudioClip(url); 
+        AudioClip clip = new KJASAudioClip(url); 
         Main.debug( "got AudioClip " + clip);
         return clip;
         // return new KJASSoundPlayer( myID, url );
