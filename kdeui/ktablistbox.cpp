@@ -187,8 +187,8 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
 //-----------------------------------------------------------------------------
 void KTabListBoxColumn::paint(QPainter* paint)
 {
-  const QFontMetrics* fm = &paint->fontMetrics();
-  paint->drawText(3, fm->ascent() +(fm->leading()),(const char*)name());
+  QFontMetrics fm = paint->fontMetrics();
+  paint->drawText(3, fm.ascent() +(fm.leading()),(const char*)name());
 }
 
 
@@ -200,10 +200,10 @@ void KTabListBoxColumn::paint(QPainter* paint)
 //
 //=============================================================================
 KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
-			    WFlags f): 
-  KTabListBoxInherited(parent, name, f), lbox(this)
+			 WFlags _f): 
+    KTabListBoxInherited(parent, name, _f), lbox(this)
 {
-  const QFontMetrics* fm = &fontMetrics();
+  QFontMetrics fm = fontMetrics();
   QString f;
   QColorGroup g = colorGroup();
 
@@ -220,8 +220,8 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
   colList   = NULL;
   itemList  = NULL;
   sepChar   = '\n';
-  labelHeight = fm->height() + 4;
-  columnPadding = fm->height() / 2;
+  labelHeight = fm.height() + 4;
+  columnPadding = fm.height() / 2;
   highlightColor = g.mid();
   mResizeCol = FALSE;
   mSortCol   = -1;
