@@ -164,17 +164,6 @@ void MyURL::init(const QString &url)
 	//kdDebug() << "m_dir=" << m_dir << endl;
 	//kdDebug() << "m_file=" << m_file << endl;
 
-	// Workaroud for KURL assuming 'a' in 'file:a' is a directory
-	// Move everything behind the last '/' from m_dir to m_file
-	if ( m_dir[m_dir.length()-1] != '/' ) {
-		int last_slash_pos = m_dir.findRev('/');
-
-		m_file = m_dir.mid( last_slash_pos + 1 );
-		m_dir.truncate( last_slash_pos + 1 );
-	        //kdDebug() << "m_dir now " << m_dir << endl;
-	        //kdDebug() << "m_file now " << m_file << endl;
-	}
-
 	// URL with file stripped
 	m_orgUrlWithoutFile = m_url.left( m_url.length() - m_file.length() );
         //kdDebug() << "m_orgUrlWithoutFile=" << m_orgUrlWithoutFile << endl;
