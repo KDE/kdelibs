@@ -1554,6 +1554,13 @@ bool HTTPProtocol::readHeader()
          (m_request.url.path().right(4) == ".tar"))
         m_strMimeType = QString::fromLatin1("application/x-tgz");
   }
+  
+  // Some webservers say "text/plain" when they mean "application/x-bzip2"
+  if (m_strMimeType == "text/plain")
+  {
+     if (m_request.url.path().right(4) == ".bz2")
+        m_strMimeType = QString::fromLatin1("application/x-bzip2");
+  }
 
   if (!m_qContentEncodings.isEmpty())
   {
