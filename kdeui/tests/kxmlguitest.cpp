@@ -1,7 +1,7 @@
 
 #include <kapplication.h>
 #include <kmainwindow.h>
-#include <kxmlgui.h>
+#include <kxmlguifactory.h>
 #include <kxmlguiclient.h>
 #include <kxmlguibuilder.h>
 #include <kaction.h>

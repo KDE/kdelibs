@@ -74,7 +74,7 @@ using namespace DOM;
 #include <kfiledialog.h>
 #include <ktrader.h>
 #include <kparts/partmanager.h>
-#include <kxmlgui.h>
+#include <kxmlguifactory.h>
 #include <kcursor.h>
 #include <kdatastream.h>
 #include <ktempfile.h>
