@@ -68,7 +68,7 @@ extern "C" {
     global.put("window", window);
     global.put("document", document);
     global.put("navigator", KJSO(new Navigator()));
-    global.put("Image", KJSO(new ImageObject(global)));
+    global.put("Image", KJSO(new ImageConstructor(global)));
 
     return script;
   }
