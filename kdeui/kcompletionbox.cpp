@@ -26,8 +26,9 @@
 #include <kdebug.h>
 #include <knotifyclient.h>
 
+
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
-    : KListBox( 0L, name, WStyle_Customize | WStyle_Tool )
+    : KListBox( parent, name, WStyle_Customize | WStyle_Tool )
 {
     m_parent = parent;
 
@@ -64,6 +65,7 @@ void KCompletionBox::slotActivated( QListBoxItem *item )
     if ( !item )
         return;
 
+    hide();
     emit activated( item->text() );
 }
 
@@ -99,14 +101,23 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                     pageDown();
                     ev->accept();
                     return true;
-                case Key_Home:
-                    home();
-                    ev->accept();
-                    return true;
-                case Key_End:
-                    end();
-                    ev->accept();
-                    return true;
+                case Key_Home: {
+		    // shift/ctrl involved -> let our parent handle that!
+		    bool ours = (ev->state() == 0);
+		    if ( ours ) {
+			home();
+			ev->accept();
+		    }
+		    return ours;
+		}
+                case Key_End: {
+		    bool ours = (ev->state() == 0);
+		    if ( ours ) {
+			end();
+			ev->accept();
+		    }
+                    return ours;
+		}
                 case  Key_Escape:
                     hide();
                     ev->accept();
@@ -115,34 +126,33 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                     break;
                 }
             }
+	
+	    // parent loses focus -> we hide
+	    else if ( type == QEvent::FocusOut ) {
+		hide();
+		return false;
+	    }
         }
     }
-    else {
+
+    else if ( o == this ) {
         switch( type ) {
         case QEvent::Show:
             if ( m_parent ) {
                 move( m_parent->mapToGlobal( QPoint(0, m_parent->height())) );
-                m_parent->installEventFilter( this );
+		m_parent->installEventFilter( this );
             }
             resize( sizeHint() );
             break;
         case QEvent::Hide:
             if ( m_parent )
-                m_parent->removeEventFilter( this );
+		m_parent->removeEventFilter( this );
             break;
-        case QEvent::MouseButtonPress: {
-            QMouseEvent *me = static_cast<QMouseEvent*>(e);
-            QPoint pos = mapFromGlobal( me->globalPos() );
-            if ( me->button()!=0 && !rect().contains( pos ) ) {
-                // outside
-                hide();
-                return FALSE;
-            }
-        }
         default:
             break;
-        }
+	}
     }
+
     return KListBox::eventFilter( o, e );
 }
 
