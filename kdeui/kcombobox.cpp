@@ -54,9 +54,9 @@ KComboBox::~KComboBox()
 
 void KComboBox::init()
 {
-	// Do not put text in the list, but do not loose
-	// it either when rotating up.
-	m_strCurrentText = QString::null;
+    // Do not put text in the list, but do not loose
+    // it either when rotating up.
+    m_strCurrentText = QString::null;
 	
     // Permanently set some parameters in the parent object.
     QComboBox::setAutoCompletion( false );
@@ -90,46 +90,49 @@ void KComboBox::makeCompletion( const QString& text )
 {
     if( m_pEdit )
     {
-	    KCompletion *comp = compObj();
-	    
-	    // We test for zero length text because for some
-	    // reason we get an extra text completion with an empty
-	    // text when the insertion policy is set to "NoInsertion"	
-	    if( !comp || text.length() == 0 )
-	    {
-	        return; // No Completion object or empty completion text allowed!!
-	    }
+	KCompletion *comp = compObj();
+	
+	// We test for zero length text because for some
+	// reason we get an extra text completion with an empty
+	// text when the insertion policy is set to "NoInsertion"	
+	if( !comp || text.length() == 0 ) {
+	    qDebug("**** LALALALLA *********");
+	    return; // No Completion object or empty completion text allowed!!
+	}
 
-		QString match;
+	QString match;
     	int pos = cursorPosition();		
     	KGlobalSettings::Completion mode = completionMode();
 
+#if 0
+	// what is this?? this breaks completion and doesn't make much sense.
+	// same in KLineEdit
     	if( mode == KGlobalSettings::CompletionShell &&
     		comp->hasMultipleMatches() &&
     		text != comp->lastMatch() )
     	{
-	    	match = comp->nextMatch();
-	    }
-	    else
-	    {
-	    	match = comp->makeCompletion( text );
-	    }
+	    match = comp->nextMatch();
+	}
+	else {
+	    match = comp->makeCompletion( text );
+	}
+#endif
+	match = comp->makeCompletion( text );
 	     	
         // If no match or the same text, simply return without completing.
         if( match.isNull() || match == text )
         {
        	    // Put the cursor at the end when in semi-automatic
-		    // mode and completion is invoked with the same text.
-    		if( mode == KGlobalSettings::CompletionMan )
-	    	{
-    			m_pEdit->end( false );
-    		}    	
-         	return;
+	    // mode and completion is invoked with the same text.
+	    if( mode == KGlobalSettings::CompletionMan ) {
+		m_pEdit->end( false );
+	    }    	
+	    return;
       	}
       	
       	// Set the current text to the one completed.
-	    setEditText( match );
-	    
+	setEditText( match );
+	
 	    // Hightlight the text whenever appropriate.
     	if( mode == KGlobalSettings::CompletionAuto ||
 	    	mode == KGlobalSettings::CompletionMan )
@@ -196,7 +199,7 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
         	   Other insertion policies are not well equipped to support
        	       "save the last written text" feature of *nix like shells.
         	   Note: we do not support the edit previous entry feature!! We
-        	   just remeber the text a user types before he started the 
+        	   just remeber the text a user types before he started the
         	   rotation... */
         	int index = -1;        	
 			QComboBox::Policy policy = insertionPolicy();

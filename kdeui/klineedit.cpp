@@ -88,45 +88,50 @@ void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
 
 void KLineEdit::makeCompletion( const QString& text )
 {
-	KCompletion *comp = compObj();
-	if( !comp && text.length() == 0 )
-	{
-	    return;  // No completion object...
-	}
+    KCompletion *comp = compObj();
+    if( !comp && text.length() == 0 )
+    {
+	return;  // No completion object...
+    }
 	
-	QString match;
-   	int pos = cursorPosition();
-   	KGlobalSettings::Completion mode = completionMode();
-    	
-	if( mode == KGlobalSettings::CompletionShell &&	
-	   	comp->hasMultipleMatches() && text != comp->lastMatch() )
-	{
-    	match = comp->nextMatch();
- 	}
+    QString match;
+    int pos = cursorPosition();
+    KGlobalSettings::Completion mode = completionMode();
+    
+#if 0
+    // what is this? breaks completion and doesn't make sense to me
+    // same in KComboBox
+    if( mode == KGlobalSettings::CompletionShell &&	
+	comp->hasMultipleMatches() && text != comp->lastMatch() ) {
+	match = comp->nextMatch();
+    }
     else
     {
-	    match = comp->makeCompletion( text );
-	}    	
+	match = comp->makeCompletion( text );
+    }
+#endif
+    
+    match = comp->makeCompletion( text );
     // If no match or the same match, simply return
     // without completing.
     if( match.isNull() || match == text )
     {
-	    // Put the cursor at the end when in semi-automatic
-	    // mode and completion is invoked with the same text.
+	// Put the cursor at the end when in semi-automatic
+	// mode and completion is invoked with the same text.
     	if( mode == KGlobalSettings::CompletionMan )
     	{
-    		end( false );
+	    end( false );
     	}
         return;
     }
 
     setText( match );
-	if( mode == KGlobalSettings::CompletionAuto ||
-		mode == KGlobalSettings::CompletionMan )
-	{
-		setSelection( pos, match.length() );
-		setCursorPosition( pos );
-	}
+    if( mode == KGlobalSettings::CompletionAuto ||
+	mode == KGlobalSettings::CompletionMan )
+    {
+	setSelection( pos, match.length() );
+	setCursorPosition( pos );
+    }
 }
 
 void KLineEdit::connectSignals( bool handle ) const
@@ -142,7 +147,7 @@ void KLineEdit::connectSignals( bool handle ) const
     {
         disconnect( this, SIGNAL( completion( const QString& ) ),
                     this, SLOT( makeCompletion( const QString& ) ) );
-        disconnect( this, SIGNAL( textRotation( KCompletionBase::KeyBindingType ) ), 
+        disconnect( this, SIGNAL( textRotation( KCompletionBase::KeyBindingType ) ),
                     this, SLOT( rotateText( KCompletionBase::KeyBindingType ) ) );
     }
 }
