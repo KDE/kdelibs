@@ -1,4 +1,12 @@
+2004-02-25  Dirk Mueller  <mueller@kde.org>
+
+	* khtml_settings.cc (init)/html4.css: MediumFontSize up to 12. Form elements
+	get font-size: small instead.
+
 2004-02-24  Dirk Mueller  <mueller@kde.org>
+
+	* ecma/xmlhttprequest.h/cpp: Implement asynchronous interface
+	enough to pass the tests on http://www.mozilla.org/xmlextras/tests.html
 
 	* xml/dom2_eventsimpl.h (EventImpl): rename KHTML_KEYUP/DOWN_EVENT
 	to KEYUP/DOWN_EVENT. Add events needed for XMLHttpRequest.
