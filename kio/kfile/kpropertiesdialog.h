@@ -529,6 +529,8 @@ private slots:
 
 private:
 
+    QLabel *terminalLabel;
+    QLabel *suidLabel;
     KLineEdit *execEdit;
     QCheckBox *terminalCheck;
     QCheckBox *suidCheck;

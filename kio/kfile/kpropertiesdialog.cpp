@@ -1600,102 +1600,101 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
 {
   d = new KExecPropsPluginPrivate;
   d->m_frame = properties->dialog()->addPage(i18n("E&xecute"));
-  QVBoxLayout * mainlayout = new QVBoxLayout( d->m_frame, KDialog::spacingHint());
+  QVBoxLayout * mainlayout = new QVBoxLayout( d->m_frame );
+  mainlayout->setSpacing( KDialog::spacingHint() );
 
   // Now the widgets in the top layout
 
   QLabel* l;
-  l = new QLabel( d->m_frame );
-  l->setText( i18n("Command:") );
-  mainlayout->addWidget(l, 1);
+  l = new QLabel( i18n( "Comman&d:" ), d->m_frame );
+  mainlayout->addWidget(l);
 
   QHBoxLayout * hlayout;
   hlayout = new QHBoxLayout(KDialog::spacingHint());
   mainlayout->addLayout(hlayout);
 
-  execEdit = new KLineEdit( d->m_frame, "LineEdit_1" );
+  execEdit = new KLineEdit( d->m_frame );
   hlayout->addWidget(execEdit, 1);
 
-  execBrowse = new QPushButton( d->m_frame, "Button_1" );
+  l->setBuddy( execEdit );
+
+  execBrowse = new QPushButton( d->m_frame );
   execBrowse->setText( i18n("&Browse...") );
   hlayout->addWidget(execBrowse);
 
-  hlayout->addSpacing(KDialog::spacingHint());
-
   // The groupbox about swallowing
   QGroupBox* tmpQGroupBox;
-  tmpQGroupBox = new QGroupBox( i18n("Panel Embedding"), d->m_frame, "GroupBox_1" );
-  tmpQGroupBox->setFrameStyle(49);
-  mainlayout->addWidget(tmpQGroupBox, 2); // 2 vertical items
+  tmpQGroupBox = new QGroupBox( i18n("Panel Embedding"), d->m_frame );
+  tmpQGroupBox->setColumnLayout( 0, Qt::Horizontal );
 
-  QVBoxLayout * grouplayout;
-  grouplayout = new QVBoxLayout(tmpQGroupBox, KDialog::spacingHint());
-  grouplayout->addSpacing( d->m_frame->fontMetrics().height() );
+  mainlayout->addWidget(tmpQGroupBox);
 
-  QGridLayout *grid = new QGridLayout(KDialog::spacingHint(), 0, 2);
+  QGridLayout *grid = new QGridLayout(tmpQGroupBox->layout(), 2, 2);
+  grid->setSpacing( KDialog::spacingHint() );
   grid->setColStretch(1, 1);
-  grouplayout->addLayout(grid);
 
-  l = new QLabel( tmpQGroupBox, "Label_6" );
-  l->setText( i18n("Execute on click:") );
+  l = new QLabel( i18n( "&Execute on click:" ), tmpQGroupBox );
   grid->addWidget(l, 0, 0);
 
-  swallowExecEdit = new KLineEdit( tmpQGroupBox, "LineEdit_3" );
+  swallowExecEdit = new KLineEdit( tmpQGroupBox );
   grid->addWidget(swallowExecEdit, 0, 1);
 
-  l = new QLabel( tmpQGroupBox, "Label_7" );
-  l->setText( i18n("Window Title:") );
+  l->setBuddy( swallowExecEdit );
+
+  l = new QLabel( i18n( "&Window Title:" ), tmpQGroupBox );
   grid->addWidget(l, 1, 0);
 
-  swallowTitleEdit = new KLineEdit( tmpQGroupBox, "LineEdit_4" );
+  swallowTitleEdit = new KLineEdit( tmpQGroupBox );
   grid->addWidget(swallowTitleEdit, 1, 1);
+
+  l->setBuddy( swallowTitleEdit );
 
   // The groupbox about run in terminal
 
-  tmpQGroupBox = new QGroupBox( d->m_frame, "GroupBox_2" );
-  tmpQGroupBox->setFrameStyle( 49 );
-  tmpQGroupBox->setAlignment( 1 );
-  mainlayout->addWidget(tmpQGroupBox, 2);  // 2 vertical items -> stretch = 2
+  tmpQGroupBox = new QGroupBox( d->m_frame );
+  tmpQGroupBox->setColumnLayout( 0, Qt::Horizontal );
 
-  grouplayout = new QVBoxLayout(tmpQGroupBox, KDialog::spacingHint());
+  mainlayout->addWidget(tmpQGroupBox);
 
-  terminalCheck = new QCheckBox( tmpQGroupBox, "RadioButton_3" );
-  terminalCheck->setText( i18n("Run in terminal") );
-  grouplayout->addWidget(terminalCheck, 0);
+  grid = new QGridLayout(tmpQGroupBox->layout(), 2, 2);
+  grid->setSpacing( KDialog::spacingHint() );
+  grid->setColStretch(1, 1);
 
-  hlayout = new QHBoxLayout(KDialog::spacingHint());
-  grouplayout->addLayout(hlayout, 1);
+  terminalCheck = new QCheckBox( tmpQGroupBox );
+  terminalCheck->setText( i18n("&Run in terminal") );
+  grid->addMultiCellWidget(terminalCheck, 0, 0, 0, 1);
 
-  l = new QLabel( tmpQGroupBox, "Label_5" );
-  l->setText( i18n("Terminal Options") );
-  hlayout->addWidget(l, 0);
+  terminalLabel = new QLabel( i18n( "&Terminal Options:" ), tmpQGroupBox );
+  grid->addWidget(terminalLabel, 1, 0);
 
-  terminalEdit = new KLineEdit( tmpQGroupBox, "LineEdit_5" );
-  hlayout->addWidget(terminalEdit, 1);
+  terminalEdit = new KLineEdit( tmpQGroupBox );
+  grid->addWidget(terminalEdit, 1, 1);
 
-  mainlayout->addStretch(2);
+  terminalLabel->setBuddy( terminalEdit );
 
   // The groupbox about run with substituted uid.
 
-  tmpQGroupBox = new QGroupBox( d->m_frame, "GroupBox_3");
-  tmpQGroupBox->setFrameStyle(QFrame::Sunken|QFrame::Box);
-  tmpQGroupBox->setAlignment(Qt::AlignLeft);
-  mainlayout->addWidget(tmpQGroupBox, 2);
+  tmpQGroupBox = new QGroupBox( d->m_frame );
+  tmpQGroupBox->setColumnLayout( 0, Qt::Horizontal );
 
-  grouplayout = new QVBoxLayout(tmpQGroupBox, KDialog::spacingHint());
-  suidCheck = new QCheckBox(tmpQGroupBox, "RadioButton_4");
-  suidCheck->setText(i18n("Run as a different user"));
-  grouplayout->addWidget(suidCheck, 0);
+  mainlayout->addWidget(tmpQGroupBox);
 
-  hlayout = new QHBoxLayout(KDialog::spacingHint());
-  grouplayout->addLayout(hlayout, 1);
-  l = new QLabel(tmpQGroupBox, "Label_6");
-  l->setText(i18n("Username"));
-  hlayout->addWidget(l, 0);
-  suidEdit = new KLineEdit(tmpQGroupBox, "LineEdit_6");
-  hlayout->addWidget(suidEdit, 1);
-  mainlayout->addStretch(2);
+  grid = new QGridLayout(tmpQGroupBox->layout(), 2, 2);
+  grid->setColStretch(1, 1);
 
+  suidCheck = new QCheckBox(tmpQGroupBox);
+  suidCheck->setText(i18n("Ru&n as a different user"));
+  grid->addMultiCellWidget(suidCheck, 0, 0, 0, 1);
+
+  suidLabel = new QLabel(i18n( "&Username:" ), tmpQGroupBox);
+  grid->addWidget(suidLabel, 1, 0);
+
+  suidEdit = new KLineEdit(tmpQGroupBox);
+  grid->addWidget(suidEdit, 1, 1);
+
+  suidLabel->setBuddy( suidEdit );
+
+  mainlayout->addStretch(1);
 
   // now populate the page
   QString path = _props->kurl().path();
@@ -1785,12 +1784,16 @@ KExecPropsPlugin::~KExecPropsPlugin()
 
 void KExecPropsPlugin::enableCheckedEdit()
 {
-  terminalEdit->setEnabled(terminalCheck->isChecked());
+  bool checked = terminalCheck->isChecked();
+  terminalLabel->setEnabled( checked );
+  terminalEdit->setEnabled( checked );
 }
 
 void KExecPropsPlugin::enableSuidEdit()
 {
-  suidEdit->setEnabled(suidCheck->isChecked());
+  bool checked = suidCheck->isChecked();
+  suidLabel->setEnabled( checked );
+  suidEdit->setEnabled( checked );
 }
 
 bool KExecPropsPlugin::supports( KFileItemList _items )
