@@ -249,9 +249,9 @@ namespace khtml {
 static QString splitUrlTarget(const QString &url, QString *target=0)
 {
    QString result = url;
-   KURL u(url);
-   if(u.protocol() == "target")
+   if(url.left(7) == "target:")
    {
+      KURL u(url);
       result = u.ref();
       if (target)
          *target = u.host();
@@ -930,43 +930,16 @@ KURL KHTMLPart::completeURL( const QString &url, const QString &/*target*/ )
     return m_url;
   }
 
-/* ###  KURL orig;
-  if(url[0] == '#' && !target.isEmpty() && findFrame(target))
+  if (d->m_baseURL.isEmpty())
   {
-    orig = KURL(findFrame(target)->url());
-  }
-  else */
-
-  // Changed the code below so that we do not do
-  // unecessary double parsing in KURL.  Also made
-  // sure we do not take short-cuts when rebuilding
-  // a complete URL from a base URL and a relative
-  // url.  Calling setEncodedPathAndQuery is a big
-  // mistake when rebuilding such URLs because the
-  // query and fragment ( reference ) separators might
-  // get encoded as well!! Always use the relative URL
-  // constructor when re-building relative URLs. (DA)
-  if( d->m_baseURL.isEmpty())
-  {
-    KURL u( m_url, url );
-    return u;
+     KURL u ( m_url, url );
+     return u;
   }
   else
   {
-    KURL u ( d->m_baseURL, url );
-    return u;
+     KURL u ( d->m_baseURL, url );
+     return u;
   }
-
-/*
-  if(url[0] != '/')
-  {
-    KURL u( orig, url );
-    return cURL;
-  }	
-  orig.setEncodedPathAndQuery( url );
-  return orig;
-*/
-
 }
 
 void KHTMLPart::scheduleRedirection( int delay, const QString &url )
@@ -2219,10 +2192,15 @@ void KHTMLPart::reparseConfiguration()
   KHTMLSettings *settings = KHTMLFactory::defaultHTMLSettings();
   settings->init();
 
+  // WABA: This needs some more synchronisation.
+  // We probably need to stop loading the current page and
+  // reload it from the cache.
   autoloadImages( settings->autoLoadImages() );
 
   d->m_bJScriptEnabled = settings->enableJavaScript();
   d->m_bJavaEnabled = settings->enableJava();
+  delete d->m_settings;
+  d->m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
 }
 
 QStringList KHTMLPart::frameNames() const

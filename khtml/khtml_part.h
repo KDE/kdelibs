@@ -593,6 +593,7 @@ protected:
 					    const QString &mimetype, QString &serviceName, QStringList &serviceTypes,
 					    const QStringList &params);
 
+protected slots:
   /**
    * Internal. Called by the @ref BrowserExtension .
    */
