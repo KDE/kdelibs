@@ -1,3 +1,10 @@
+Thu Oct 21 23:18:54 1999  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfiledialog.cpp (init): removed "[development only] from tooltip
+	(sorry to break the translations, but this HAD to go)
+
+	* don't update anything when leaving the configure-dialog with Cancel
+
 Wed Oct 20 15:07:16 1999  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kfileinfo.cpp,h: implemented KFileInfo::filePath() and fixed 

@@ -175,7 +175,7 @@ void KFileBaseDialog::init()
 			  i18n("Search for a file"));
     toolbar->insertButton(BarIcon("configure"),
 			  CONFIGURE_BUTTON, true,
-			  i18n("Configure this dialog [development only]"));
+			  i18n("Configure this dialog"));
 
     connect(toolbar, SIGNAL(clicked(int)),
 	    SLOT(toolbarCallback(int)));
@@ -583,7 +583,7 @@ void KFileBaseDialog::pathChanged()
     // Not forgetting of course the path combo box
     toolbar->clearCombo(PATH_COMBO);
 
-    // TODO: converting QString to char * isn't good idea. 
+    // TODO: converting QString to char * isn't good idea.
     // Someday, it must be changed to use QString itself.
     char *path = qstrdup(dir->path().local8Bit().data());
 
@@ -847,20 +847,21 @@ void KFileBaseDialog::toolbarCallback(int i) // SLOT
     }
     case CONFIGURE_BUTTON: {
 	KFileDialogConfigureDlg conf(this, "filedlgconf");
-	conf.exec();
-	fileList->widget()->hide();
-	showHidden = c->readBoolEntry("ShowHidden", DefaultShowHidden);
-	hiddenToggle->setChecked(showHidden);
-	delete boxLayout; // this removes all child layouts too
-	boxLayout = 0;
+	if (conf.exec() == QDialog::Accepted) {
+	  fileList->widget()->hide();
+	  showHidden = c->readBoolEntry("ShowHidden", DefaultShowHidden);
+	  hiddenToggle->setChecked(showHidden);
+	  delete boxLayout; // this removes all child layouts too
+	  boxLayout = 0;
 
-	// recreate this widget
-	delete fileList;
-        fileList = initFileList( wrapper );
-	initGUI(); // add them back to the layout managment
-	fileList->widget()->show();
-	resize(width(), height());
-	pathChanged(); // refresh now
+	  // recreate this widget
+	  delete fileList;
+	  fileList = initFileList( wrapper );
+	  initGUI(); // add them back to the layout managment
+	  fileList->widget()->show();
+	  resize(width(), height());
+	  pathChanged(); // refresh now
+	}
 	break;
     }
     default:
@@ -1272,7 +1273,7 @@ void KFileBaseDialog::saveRecentDesktopFile(const QString &openStr, bool isUrl)
             --i, ++it;
         }
     }
-                     
+
     // create the applnk
     QFile dFile(dStr);
     dFile.open(IO_ReadWrite);
@@ -1338,9 +1339,9 @@ QString KFileDialog::getSaveFileURL(const QString& url, const QString& filter,
     return retval;
 }
 
-QStringList KFileDialog::getOpenFileNames(const QString& dir, 
+QStringList KFileDialog::getOpenFileNames(const QString& dir,
 					  const QString& filter,
-					  QWidget *parent, 
+					  QWidget *parent,
 					  const char *name)
 {
     KFileDialog *dlg = new KFileDialog(dir, filter, parent, name, true, false);
