@@ -64,6 +64,7 @@ void KCombiView::setRight(KFileView *view)
     setResizeMode( left, QSplitter::KeepSize );
 
     right->setOperator(this);
+    right->setOnlyDoubleClickSelectsFiles( onlyDoubleClickSelectsFiles() );
 }
 
 void KCombiView::insertSorted(KFileViewItem *tfirst, uint )
@@ -205,7 +206,7 @@ void KCombiView::ensureItemVisible(const KFileViewItem *item)
     right->ensureItemVisible( item );
 }
 
-// *****************************************************************************
+// ***************************************************************************
 
 #include "kcombiview.moc"
 

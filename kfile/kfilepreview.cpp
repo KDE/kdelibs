@@ -50,8 +50,10 @@ KFilePreview::~KFilePreview() {
     }
 }
 
-void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &u) {
-
+void KFilePreview::setPreviewWidget(const QWidget *w, const KURL &u) 
+{
+    left->setOnlyDoubleClickSelectsFiles( onlyDoubleClickSelectsFiles() );
+    
     if(w!=0L) {
         previewMode=true;
         connect(this, SIGNAL(showPreview(const KURL &)),

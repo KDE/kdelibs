@@ -595,6 +595,7 @@ void KDirOperator::setView( KFile::FileView view )
 
     if (separateDirs) {
         KCombiView *combi = new KCombiView(this, "combi view");
+	combi->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
         new_view = combi;
 
         if ( (view & KFile::Simple) == KFile::Simple ) {
@@ -615,6 +616,7 @@ void KDirOperator::setView( KFile::FileView view )
 
         else { // FIXME: make Preview and Detail possible?
             KFilePreview *tmp = new KFilePreview(this, "preview");
+	   tmp->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
             tmp->setPreviewWidget(myPreview, url());
             new_view=tmp;
         }
