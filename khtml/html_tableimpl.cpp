@@ -1173,7 +1173,7 @@ int HTMLTableElementImpl::distributeWidth(int distrib, LengthType type, int type
 int HTMLTableElementImpl::distributeRest(int distrib, LengthType type, int divider )
 {
     if (!divider)
-    	return;
+    	return -1;
 
     int olddis=0;
     int c=0;
