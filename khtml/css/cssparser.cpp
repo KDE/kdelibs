@@ -773,6 +773,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_BORDER_BOTTOM_COLOR:
     case CSS_PROP_BORDER_LEFT_COLOR:
     case CSS_PROP_COLOR:
+    case CSS_PROP_TEXT_DECORATION_COLOR:
     case CSS_PROP_OUTLINE_COLOR:
     {
 	QString value(curP, endP - curP);

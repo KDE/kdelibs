@@ -89,6 +89,7 @@ stress
 table-layout
 text-align
 text-decoration
+text-decoration-color
 text-indent
 text-shadow
 text-transform

@@ -926,6 +926,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_BORDER_LEFT_COLOR:
     case CSS_PROP_COLOR:
     case CSS_PROP_OUTLINE_COLOR:
+	// this property is an extension used to get HTML4 <font> right.
+    case CSS_PROP_TEXT_DECORATION_COLOR:
     {
 	QColor col;
 	if(value->valueType() == CSSValue::CSS_INHERIT)
@@ -945,7 +947,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    case CSS_PROP_COLOR:
 		style->setColor(e->parentNode()->style()->color()); break;
 	    case CSS_PROP_OUTLINE_COLOR:
-	    // ###
+	    default:
+		// ###
 		break;
 	    }
 	    return;
@@ -969,6 +972,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    style->setBorderLeftColor(col); break;
 	case CSS_PROP_COLOR:
 	    style->setColor(col); break;
+	case CSS_PROP_TEXT_DECORATION_COLOR:
+	    style->setTextDecorationColor(col); break;
 	case CSS_PROP_OUTLINE_COLOR:
 	    // ###
 	default:
