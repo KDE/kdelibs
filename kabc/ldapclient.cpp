@@ -154,8 +154,10 @@ void LdapClient::cancelQuery()
 
 void LdapClient::slotData( KIO::Job*, const QByteArray& data )
 {
+#ifndef NDEBUG // don't create the QString
   QString str( data );
-  kdDebug(5700) << "Got" << str.latin1() << endl;
+  kdDebug(5700) << "Got \"" << str.latin1() << "\"\n";
+#endif
   parseLDIF( data );
 }
 
@@ -210,7 +212,7 @@ void LdapClient::parseLDIF( const QByteArray& data )
   //qDebug("%s", data.data());
   if ( data.isNull() || data.isEmpty() )
     return;
-  mBuf += QCString( data ); // collect data in buffer
+  mBuf += QCString( data, data.size() + 1 ); // collect data in buffer
   int nl;
   while ( (nl = mBuf.find('\n')) != -1 ) {
     // Run through it line by line
