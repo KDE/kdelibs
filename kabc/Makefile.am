@@ -106,8 +106,8 @@ kcm_kabc_la_SOURCES = kcmkabc.cpp
 kcm_kabc_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
 kcm_kabc_la_LIBADD = $(LIB_KIO) libkabc.la
 
-data_DATA = kabc.desktop
-datadir = $(kde_appsdir)/Settings/Components
+kabcdata_DATA = kabc.desktop
+kabcdatadir = $(kde_appsdir)/Settings/Components
 
 map_DATA = countrytransl.map
 mapdir = $(kde_datadir)/kabc/

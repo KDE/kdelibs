@@ -1,4 +1,4 @@
-data_DATA =  klineedit.png ktextbrowser.png kpasswordedit.png kdatewidget.png \
+kdewidgetsdata_DATA =  klineedit.png ktextbrowser.png kpasswordedit.png kdatewidget.png \
              kurlrequester.png kcombobox.png kintspinbox.png \
              kled.png ksqueezedtextlabel.png  kprogress.png kurllabel.png \
              kruler.png kcmodule.png kdoublenuminput.png \
@@ -10,6 +10,6 @@ data_DATA =  klineedit.png ktextbrowser.png kpasswordedit.png kdatewidget.png \
              kintnuminput.png krestrictedline.png ktextedit.png \
              kurlcomborequester.png kkeybutton.png
 
-datadir = $(kde_datadir)/kdewidgets/pics
+kdewidgetsdatadir = $(kde_datadir)/kdewidgets/pics
 
 EXTRA_DIST = $(data_DATA)
