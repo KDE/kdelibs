@@ -311,10 +311,12 @@ pid_t KRun::runCommand( QString cmd )
   return KRun::run( cmd );
 }
 
-// deprecated
-pid_t KRun::runCommand( const QString& cmd, const QString &/*execName*/, const QString &/*iconName*/ )
+pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QString &/*iconName*/ )
 {
-  return KRun::run( cmd );
+  kdDebug(7010) << "runCommand " << cmd << "," << execName << endl;
+  KShellProcess * proc = new KShellProcess;
+  *proc << cmd;
+  return KProcessRunner::run( proc, execName );
 }
 
 pid_t KRun::run( const QString& _cmd )
@@ -327,13 +329,20 @@ pid_t KRun::run( const QString& _cmd )
   KShellProcess * proc = new KShellProcess;
   *proc << _cmd;
 
-  return KProcessRunner::run(proc);
+  // This version can't check whether the binary exists
+  return KProcessRunner::run(proc, QString::null);
 }
 
 pid_t KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool _allow_multiple )
 {
   // find kfmexec in $PATH
   QString kfmexec = KStandardDirs::findExe( "kfmexec" );
+  if (kfmexec.isEmpty())
+  {
+    // this is written this way to avoid a new string to translate
+    KMessageBox::sorry( 0L, i18n("Couldn't launch %1").arg( "kfmexec" ) );
+    return 0;
+  }
 
   if ( _allow_multiple )
   {
@@ -346,7 +355,7 @@ pid_t KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool
     for( ; it != _urls.end(); ++it )
         *proc << (*it).url();
 
-    return KProcessRunner::run(proc);
+    return KProcessRunner::run(proc, QString::null);
   }
   else
   {
@@ -360,7 +369,7 @@ pid_t KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool
         *proc << app;
         *proc << (*it).url();
 
-        retval = KProcessRunner::run(proc);
+        retval = KProcessRunner::run(proc, QString::null);
     }
 
     return retval;
@@ -440,18 +449,14 @@ void KRun::init()
   else if ( KProtocolInfo::isHelperProtocol( m_strURL.protocol() ) ) {
     kdDebug(7010) << "Helper protocol" << endl;
 
-    emit finished();
-
     KURL::List urls;
     urls.append( m_strURL );
-    run( KProtocolInfo::exec( m_strURL.protocol() ),
-         urls );
+    QString exec = KProtocolInfo::exec( m_strURL.protocol() );
+    run( exec, urls );
 
-    kdDebug(7010) << "Launched helper:" << endl;
-
-    if ( m_bAutoDelete )
-      delete this;
-
+    m_bFinished = true;
+    // will emit the error and autodelete this
+    m_timer.start( 0, true );
     return;
   }
 
@@ -718,14 +723,15 @@ bool KOpenWithHandler::displayOpenWithDialog( const KURL::List& )
 }
 
   pid_t
-KProcessRunner::run(KProcess * p)
+KProcessRunner::run(KProcess * p, const QString & binName)
 {
-  return (new KProcessRunner(p))->pid();
+  return (new KProcessRunner(p, binName))->pid();
 }
 
-KProcessRunner::KProcessRunner(KProcess * p)
+KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName )
   : QObject(),
-    process_(p)
+    process_(p),
+    binName( _binName )
 {
   QObject::connect(
       process_, SIGNAL(processExited(KProcess *)),
@@ -750,6 +756,19 @@ KProcessRunner::slotProcessExited(KProcess * p)
 {
   if (p != process_)
     return; // Eh ?
+
+  //kdDebug() << "slotProcessExited " << binName << endl;
+  //kdDebug() << "normalExit " << process_->normalExit() << endl;
+  //kdDebug() << "exitStatus " << process_->exitStatus() << endl;
+  if ( !binName.isEmpty() &&
+       process_->normalExit() && process_->exitStatus() == 127 )
+  {
+    // Often we get 127 because the binary doesn't exist.
+    // We can't just rely on that, but it's a good hint.
+    if ( KStandardDirs::findExe( binName ).isEmpty() )
+      KMessageBox::sorry( 0L, i18n("Couldn't launch %1").arg( binName ) );
+    // TODO after 2.0: turn this into "Couldn't file the program named %1" or so.
+  }
 
   QByteArray params;
   QDataStream stream(params, IO_WriteOnly);
