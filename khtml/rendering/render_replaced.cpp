@@ -426,6 +426,22 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
         // This still doesn't work nicely for textareas. Probably need
         // to fix qtextedit for that.
         // KHTMLView::eventFilter()
+        if (pI.p->device()->isExtDev())
+        {
+           QScrollView *sv = dynamic_cast<QScrollView *>(widget);
+           if (sv && sv->viewport())
+           {
+              QWidget *w = sv->viewport();
+              bool dsbld = QSharedDoubleBuffer::isDisabled();
+              QSharedDoubleBuffer::setDisabled(true);
+              QPixmap pm = copyWidget(tx, ty, p, w);
+              QSharedDoubleBuffer::setDisabled(dsbld);
+              p->drawPixmap(tx, ty, pm);
+              p->setPen(Qt::black);
+              p->setBrush(Qt::NoBrush);
+              p->drawRect(tx, ty, pm.width(), pm.height());
+           }
+        }
 #if 0
         QPaintEvent e( widget->rect(), false );
         QApplication::sendEvent( widget, &e );
