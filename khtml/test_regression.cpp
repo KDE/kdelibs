@@ -152,7 +152,7 @@ void PartMonitor::partCompleted()
     disconnect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
 }
 
-void signal_handler( int )
+void signal_handler( int x )
 {
     printf( "timeout\n" );
     abort();
@@ -844,19 +844,10 @@ QImage RegressionTest::renderToImage()
     if (ew * eh > 4000 * 4000) // don't DoS us
         return QImage();
 
-    QImage img( ew, eh, 8 );
+    QImage img( ew, eh, 32 );
     img.fill( 0xff0000 );
     if (!m_paintBuffer )
         m_paintBuffer = new QPixmap( 512, 128, -1, QPixmap::MemoryOptim );
-
-    img.setNumColors( 5 * 5 * 5 );
-    for ( int r = 0; r < 5; r++ )
-        for ( int g = 0; g < 5; g++ )
-            for ( int b = 0; b < 5; b++ )
-                img.setColor( r * 5 * 5 + g * 5 + b,
-                              qRgb( r * 255 / 4 ,
-                                    g * 255 / 4 ,
-                                    b * 255 / 4  ) );
 
     for ( int py = 0; py < eh; py += 128 ) {
         for ( int px = 0; px < ew; px += 512 ) {
@@ -870,31 +861,23 @@ QImage RegressionTest::renderToImage()
 
             // now fill the chunk into our image
             QImage chunk = m_paintBuffer->convertToImage();
-            assert( chunk.depth() == 32);
-            // "dither" to limited pallete so display differences to do
-            // matter that much - and we save space in the baseline
-            for ( int y = 0; y < 128 && py + y < eh; ++y ) {
-                for ( int x = 0; x < kMin( 512, ew-px ); x++ ) {
-                    QRgb rgb = chunk.pixel( x, y );
-                    int index = ( qRed( rgb ) + 32 ) / 64 * 5 * 5;
-                    index += ( qGreen( rgb ) + 32 ) / 64 * 5;
-                    index += ( qBlue( rgb ) + 32 ) / 64;
-                    img.setPixel( px + x, py + y, index);
-                }
-            }
+            assert( chunk.depth() == 32 );
+            for ( int y = 0; y < 128 && py + y < eh; ++y )
+                memcpy( img.scanLine( py+y ) + px*4, chunk.scanLine( y ), kMin( 512, ew-px )*4 );
         }
     }
 
-    assert( img.depth() == 8 );
+    assert( img.depth() == 32 );
     return img;
 }
 
 bool RegressionTest::imageEqual( const QImage &lhsi, const QImage &rhsi )
 {
-    if ( lhsi.width() != rhsi.width() || lhsi.height() != rhsi.height() || lhsi.depth() != rhsi.depth()) {
+    if ( lhsi.width() != rhsi.width() || lhsi.height() != rhsi.height() ) {
         kdDebug() << "dimensions different " << lhsi.size() << " " << rhsi.size() << endl;
         return false;
     }
+    int w = lhsi.width();
     int h = lhsi.height();
     int bytes = lhsi.bytesPerLine();
 
@@ -902,8 +885,18 @@ bool RegressionTest::imageEqual( const QImage &lhsi, const QImage &rhsi )
     {
         QRgb* ls = ( QRgb* ) lhsi.scanLine( y );
         QRgb* rs = ( QRgb* ) rhsi.scanLine( y );
-        if ( memcmp( ls, rs, bytes ) )
-            return false;
+        if ( memcmp( ls, rs, bytes ) ) {
+            for ( int x = 0; x < w; ++x ) {
+                QRgb l = ls[x];
+                QRgb r = rs[x];
+                if ( ( abs( qRed( l ) - qRed(r ) ) < 20 ) &&
+                     ( abs( qGreen( l ) - qGreen(r ) ) < 20 ) &&
+                     ( abs( qBlue( l ) - qBlue(r ) ) < 20 ) )
+                    continue;
+                 kdDebug() << "pixel (" << x << ", " << y << ") is different " << QColor(  lhsi.pixel (  x, y ) ) << " " << QColor(  rhsi.pixel (  x, y ) ) << endl;
+                return false;
+            }
+        }
     }
 
     return true;
