@@ -32,6 +32,7 @@ public:
   virtual ~KHTMLFind();
 
   KHTMLPart *part() const { return m_part; }
+  void setNewSearch();
 
 private slots:
   void slotDone();

@@ -86,4 +86,10 @@ void KHTMLFind::slotSearch()
     KMessageBox::information( this, i18n( "Search string not found." ), i18n( "Find" ) );
 }
 
+void KHTMLFind::setNewSearch()
+{
+  m_first = true;
+  m_found = false;
+}
+
 #include "khtml_find.moc"
