@@ -167,7 +167,7 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 	g= color.green() + 2;
 	b = color.blue() + 2;
 	
-	int i = qGray(color.rgb());
+//	int i = qGray(color.rgb());
 	
 	bool brightMode = false; //Hue, too?
 	//if (qGray(color.rgb())>220 || s<32 )

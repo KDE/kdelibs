@@ -17,7 +17,7 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-// $Id: $
+// $Id$
 
 #include <qpainter.h>
 #include <qrect.h>
@@ -34,10 +34,10 @@ namespace
 	struct GradientCacheEntry
 	{
 		QPixmap* m_pixmap;
-		QRgb      m_color;
-		bool        m_menu;
-		int          m_width;
-		int          m_height;
+		QRgb     m_color;
+		bool     m_menu;
+		int      m_width;
+		int      m_height;
 		
 		GradientCacheEntry(int width, int height, const QColor& color, bool menu):
 			m_pixmap(0), m_color(color.rgb()), m_menu(menu), m_width(width), m_height(height)
@@ -79,8 +79,8 @@ namespace
 			mShare *= mShare;
 			
 			int diff = factor - 100;
-			int hd  = mShare*diff;
-			int delta  =  (diff - hd)*7.55;  
+			int hd  = (int)mShare*diff;
+			int delta  =  (int)((diff - hd)*7.55);
 			
 			QColor wrk = in.light(100+hd);
 			
@@ -195,3 +195,5 @@ void GradientPainter::renderGradient( QPainter* p, const QRect& r, QColor c, boo
 	p->drawTiledPixmap(r, *imgToAdd->m_pixmap);
 	entry.m_pixmap = 0;//Don't free too early..
 };
+
+// vim: ts=4 sw=4 noet

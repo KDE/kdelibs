@@ -268,7 +268,7 @@ namespace Keramik
 		
 		virtual ~RowPainter() {};
 	protected:
-		virtual int tileName( unsigned int column, unsigned int row ) const
+		virtual int tileName( unsigned int column, unsigned int /*row*/) const
 		{
 			return column + 3; //So can use cl, cc, cr
 		}
@@ -297,7 +297,7 @@ namespace Keramik
 		
 		virtual ~ProgressBarPainter() {};
 	protected:
-		virtual int tileName( unsigned int column, unsigned int row ) const
+		virtual int tileName( unsigned int column, unsigned int /*row*/ ) const
 		{
 			if (m_reverse)
 			{

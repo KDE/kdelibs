@@ -286,7 +286,8 @@ int main(int argc, char** argv)
 			
 			v=qGray(basePix);
 
-			int targetColorAlpha = 0 , greyAdd = 0 , srcAlpha = qAlpha(basePix);
+			int targetColorAlpha = 0 , greyAdd = 0;
+			//int srcAlpha = qAlpha(basePix);
 			
 			if (useMaskImage)
 			{
@@ -309,7 +310,7 @@ int main(int argc, char** argv)
 					{
 						float effectPortion = (16 - s)/15.0;
 						
-						greyAdd            = v/4.0 * effectPortion*1.2;
+						greyAdd             = (int)(v/4.0 * effectPortion*1.2);
 						targetColorAlpha = v - greyAdd;
 					}
 					else
@@ -427,5 +428,7 @@ int main(int argc, char** argv)
 	
 	ts<<"#endif\n";
 	
-
+	return 0;
 }
+
+// vim: ts=4 sw=4 noet

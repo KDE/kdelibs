@@ -308,7 +308,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		case PE_ButtonDropDown:
 		case PE_ButtonTool:
 		{
-			bool sunken = on || down;
+//			bool sunken = on || down;
 			
 			int x2 = x+w-1;
 			int y2 = y+h-1;
@@ -1541,7 +1541,7 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				else if (onToolbar)
 				{
 					QToolBar* parent = (QToolBar*)widget->parent();
-					QRect pr = parent->rect();
+//					QRect pr = parent->rect();
 
 					//TODO: Subrect, px, etc.?
 					Keramik::GradientPainter::renderGradient( p, r, cg.button(), parent->orientation() == Qt::Horizontal );
