@@ -342,6 +342,10 @@ public:
    * @li NoResolve: request that no external resolution be performed. The given
    *		nodename and servicename will be resolved locally only.
    * @li NoSrv: don't try to use SRV-based name-resolution.
+   * @li Multiport: the port/service argument is a list of port numbers and
+   *		ranges. (future extension)
+   *
+   * @note SRV-based lookup and Multiport are not implemented yet.
    */
   enum Flags
     {
