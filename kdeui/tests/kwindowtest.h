@@ -7,13 +7,13 @@
 #include <kmenubar.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>
-#include <ktmainwindow.h>
+#include <kmainwindow.h>
 
 class QMultiLineEdit;
 class KToolBarRadioGroup;
 class KHelpMenu;
 
-class testWindow  : public KTMainWindow
+class testWindow  : public KMainWindow
 {
     Q_OBJECT
 
@@ -58,8 +58,6 @@ protected:
     KHelpMenu *helpMenu;
     KToolBar *toolBar;
     KToolBar *tb1;
-    int toolbar1;
-    int toolbar2;
     bool lineL;
     bool exitB;
     bool greenF;

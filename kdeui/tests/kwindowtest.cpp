@@ -11,6 +11,7 @@
 #include <kapp.h>
 #include <kcombobox.h>
 #include <khelpmenu.h>
+#include <kcmdlineargs.h>
 #include <ktmainwindow.h>
 #include <kmenubar.h>
 #include <ktoolbarradiogroup.h>
@@ -24,24 +25,23 @@
 //#include <dclock.h>
 
 /*
- Ok this is a constructor of our top widget. It inherits KTW.
+ Ok this is a constructor of our top widget. It inherits KMainWindow.
  In constructor wi will create all of our interface elements:
  menubar, toolbar(s), statusbar, and main widget. Non of those
  interface is obligatory, i.e. you don't have to use menubar,
  toolbars or statusbar if you don't want to. Theoreticly, you
  don't need even main widget (but in that case, you'll get blank
- KTW).
+ KMainWindow).
  */
 
-testWindow::testWindow (QWidget *, const char *name)
-    : KTMainWindow (name)
+testWindow::testWindow (QWidget *parent, const char *name)
+    : KMainWindow (parent,name)
 {
     ena=false;
-    setCaption ("Test KTW");
+    setCaption("test window");
     /******************************/
     /* First, we setup setup Menus */
     /******************************/
-    // Create menubar. Delete it in destructor!
     menuBar = new KMenuBar (this);
 
     // First popup... 
@@ -77,9 +77,9 @@ testWindow::testWindow (QWidget *, const char *name)
     //itemsMenu->insertItem ("Insert clock!", this, SLOT(slotInsertClock()));
     itemsMenu->insertItem ("Important!", this, SLOT(slotImportant()));
 
-	menuBar->insertSeparator();
-	helpMenu = new KHelpMenu(this, "KWindowTest was programmed by Sven Radej");
-	menuBar->insertItem( "&Help", helpMenu->menu() );
+    menuBar->insertSeparator();
+    helpMenu = new KHelpMenu(this, "KWindowTest was programmed by Sven Radej");
+    menuBar->insertItem( "&Help", helpMenu->menu() );
 
     /**************************************************/
     /*Now, we setup statusbar order is not important. */
@@ -215,12 +215,9 @@ testWindow::testWindow (QWidget *, const char *name)
 
     // Setup is now complete
 
-    // install menuBar
-    setMenu (menuBar);
-
     // add two toolbars
-    toolbar2 = addToolBar (tb1);
-    toolbar1 = addToolBar (toolBar);
+    addToolBar (tb1);
+    addToolBar (toolBar);
 
     connect (toolBar, SIGNAL(highlighted(int,bool)), this, SLOT(slotMessage(int, bool)));
     connect (tb1, SIGNAL(highlighted(int, bool)), this, SLOT(slotMessage(int, bool)));
@@ -230,16 +227,13 @@ testWindow::testWindow (QWidget *, const char *name)
     // tb1->enableFloating(TRUE);
 
     // Show toolbars
-    enableToolBar(KToolBar::Toggle, toolbar1);
-    enableToolBar(KToolBar::Toggle, toolbar2);
-
-    // install statusbar
-    setStatusBar (statusBar);
+    toolBar->show();
+    tb1->show();
 
     //... and main widget
-    setView (widget, FALSE);
+    setCentralWidget (widget);
 
-    // This is not strictly related to tollbars, menubars or KTW.
+    // This is not strictly related to toolbars, menubars or KMainWindow.
     // Setup popup for completions
     completions = new QPopupMenu;
   
@@ -363,12 +357,12 @@ void testWindow::slotCompletionsMenu(int id)
 
 void testWindow::slotHide2 ()
 {
-  enableToolBar(KToolBar::Toggle, toolbar2);
+  tb1->show();
 }
 
 void testWindow::slotHide1 ()
 {
-  enableToolBar(KToolBar::Toggle, toolbar1);
+  toolBar->show();
 }
 
 testWindow::~testWindow ()
@@ -382,11 +376,8 @@ testWindow::~testWindow ()
   delete tb1->getWidget(8);
   //debug ("kwindowtest: deleted clock");
   
-  if (toolBar)
-    delete toolBar;
-  if (tb1)
-    delete tb1;
-  if (menuBar)
+  delete toolBar;
+  delete tb1;
   delete menuBar;
 
   qDebug ("kwindowtest finished");
@@ -513,9 +504,10 @@ void testWindow::slotMakeItem3Current()
 int main( int argc, char *argv[] )
 {
     int i;
-    KApplication *myApp = new KApplication( argc, argv, "KWindowTest" );
+    KCmdLineArgs::init(argc, argv, "KWindowTest", "description", "version");
+
+    KApplication *myApp = new KApplication();
     testWindow *test = new testWindow;
-//    testWindow test;
 
     myApp->setMainWidget(test);
 
@@ -527,7 +519,7 @@ int main( int argc, char *argv[] )
         test->beYFixed();
 
     test->show();
-	test->resize(400, 500);
+    test->resize(400, 500);
     int ret = myApp->exec();
 
     //delete test;
