@@ -35,6 +35,7 @@
 #include <knotifydialog.h>
 #include <kstandarddirs.h>
 #include <kurlrequester.h>
+#include <kio/netaccess.h>
 
 #include <qcheckbox.h>
 #include <qgroupbox.h>
@@ -913,6 +914,33 @@ void KNotifyWidget::openExecDialog( KURLRequester *requester )
 
 void KNotifyWidget::playSound()
 {
+    if (!KIO::NetAccess::exists( m_soundPath->url(), true, 0 )) {        
+        bool foundSound=false;
+
+        // find the first "sound"-resource that contains files
+        const Application *app = currentEvent()->application();
+        QStringList soundDirs = KGlobal::dirs()->findDirs("data", app->appName() + "/sounds");
+        soundDirs += KGlobal::dirs()->resourceDirs( "sound" );
+
+        if ( !soundDirs.isEmpty() ) {
+           QDir dir;
+           dir.setFilter( QDir::Files | QDir::Readable );
+           QStringList::ConstIterator it = soundDirs.begin();
+           while ( it != soundDirs.end() ) {
+               dir = *it;
+               if ( dir.isReadable() && dir.count() > 2 && 
+	            KIO::NetAccess::exists( *it + m_soundPath->url(), true, 0 )) {
+                       foundSound=true;
+                       break;
+               }
+               ++it;
+           }
+        }
+        if ( !foundSound ) {
+            KMessageBox::sorry(this, i18n("The specified file does not exist." ));
+            return;
+        }
+    }
     KAudioPlayer::play( m_soundPath->url() );
 }
 
