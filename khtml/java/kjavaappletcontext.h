@@ -33,7 +33,6 @@
  * on contexts).  Currently, each document in KHTML creates one context, in
  * which multiple applets can run.
  *
- * @version $Id$
  * @author Richard J. Moore, rich@kde.org
  * @author Wynn Wilkes, wynnw@caldera.com
  */
@@ -62,7 +61,7 @@ public:
     void setContextId( int id );
 
     /**
-     * registers applet 
+     * registers applet
      **/
     void registerApplet( KJavaApplet* );
 
@@ -98,10 +97,6 @@ public:
     void processCmd( QString cmd, QStringList args );
 
     /**
-     * Check if the applets are loaded by the Java Virtual Machine
-     **/
-    bool appletsLoaded() const;
-    /**
      * LiveConnect functions
      */
     bool getMember(QStringList & args, QStringList & ret_args);
@@ -135,6 +130,7 @@ protected:
 
 protected slots:
     void received( const QString& cmd, const QStringList& arg );
+    void javaProcessExited(int);
 
 private:
     int id;

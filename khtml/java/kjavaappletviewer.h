@@ -101,6 +101,8 @@ public slots:
     void infoMessage (const QString &);
 protected:
     bool openFile();
+private slots:
+    void delayedCreateTimeOut ();
 private:
     QGuardedPtr <CoverWidget> m_view;
     KConfig * m_config;

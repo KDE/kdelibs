@@ -34,12 +34,22 @@
 
 #include <kio/job.h>
 #include <kio/kprotocolmanager.h>
+#include <ksslcertificate.h>
+#include <ksslcertchain.h>
+#include <kssl.h>
 
 #include <qtimer.h>
 #include <qguardedptr.h>
 #include <qvaluelist.h>
+#include <qptrlist.h>
 #include <qdir.h>
 #include <qeventloop.h>
+#include <qapplication.h>
+#include <qlabel.h>
+#include <qdialog.h>
+#include <qpushbutton.h>
+#include <qlayout.h>
+#include <qregexp.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -71,6 +81,7 @@
 #define KJAS_DATA_COMMAND      (char)25
 #define KJAS_PUT_URLDATA       (char)26
 #define KJAS_PUT_DATA          (char)27
+#define KJAS_SECURITY_CONFIRM  (char)28
 
 
 class JSStackFrame;
@@ -101,7 +112,10 @@ class KJavaAppletServerPrivate
 {
 friend class KJavaAppletServer;
 private:
-   //KJavaAppletServerPrivate() : locked_context(-1) {}
+   KJavaAppletServerPrivate() : kssl( 0L ) {}
+   ~KJavaAppletServerPrivate() {
+       delete kssl;
+   }
    int counter;
    QMap< int, QGuardedPtr<KJavaAppletContext> > contexts;
    QString appletLabel;
@@ -109,6 +123,7 @@ private:
    KIOJobMap kiojobs;
    bool javaProcessFailed;
    bool useKIO;
+   KSSL * kssl;
    //int locked_context;
    //QValueList<QByteArray> java_requests;
 };
@@ -164,13 +179,13 @@ KJavaAppletServer* KJavaAppletServer::allocateJavaServer()
       self->d->counter = 0;
    }
 
-   self->d->counter++;
+   ++(self->d->counter);
    return self;
 }
 
 void KJavaAppletServer::freeJavaServer()
 {
-    self->d->counter--;
+    --(self->d->counter);
 
     if( self->d->counter == 0 )
     {
@@ -181,7 +196,7 @@ void KJavaAppletServer::freeJavaServer()
         config.setGroup( "Java/JavaScript Settings" );
         if( config.readBoolEntry( "ShutdownAppletServer", true )  )
         {
-            int value = config.readNumEntry( "AppletServerTimeout", 60 );
+            const int value = config.readNumEntry( "AppletServerTimeout", 60 );
             QTimer::singleShot( value*1000, self, SLOT( checkShutdown() ) );
         }
     }
@@ -209,16 +224,16 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
         // Cut off trailing slash if any
         if( jPath[jPath.length()-1] == '/' )
             jPath.remove(jPath.length()-1, 1);
-            
+
         QDir dir( jPath );
         if( dir.exists( "bin/java" ) )
         {
             jvm_path = jPath + "/bin/java";
-        } 
+        }
         else if (dir.exists( "/jre/bin/java" ) )
-        { 
+        {
             jvm_path = jPath + "/jre/bin/java";
-        } 
+        }
         else if( QFile::exists(jPath) )
         {
             //check here to see if they entered the whole path the java exe
@@ -239,21 +254,24 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     dir.cdUp();
     kdDebug(6100) << "dir = " << dir.absPath() << endl;
 
-    QStringList entries = dir.entryList( "*.jar" );
+    const QStringList entries = dir.entryList( "*.jar" );
     kdDebug(6100) << "entries = " << entries.join( ":" ) << endl;
 
     QString classes;
-    for( QStringList::Iterator it = entries.begin();
-         it != entries.end(); it++ )
     {
-        if( !classes.isEmpty() )
-            classes += ":";
-        classes += dir.absFilePath( *it );
+        QStringList::ConstIterator it = entries.begin();
+	const QStringList::ConstIterator itEnd = entries.end();
+        for( ; it != itEnd; ++it )
+        {
+            if( !classes.isEmpty() )
+                classes += ":";
+            classes += dir.absFilePath( *it );
+        }
     }
     p->setClasspath( classes );
 
     // Fix all the extra arguments
-    QString extraArgs = config.readEntry( "JavaArgs" );
+    const QString extraArgs = config.readEntry( "JavaArgs" );
     p->setExtraArgs( extraArgs );
 
     if( config.readBoolEntry( "ShowJavaConsole", false) )
@@ -283,11 +301,11 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
         // we do not know the applet url here so we just use a dummy url
         // this is a workaround for now
         // FIXME
-        KURL dummyURL( "http://www.kde.org/" );
-        QString httpProxy = KProtocolManager::proxyForURL(dummyURL);
+        const KURL dummyURL( "http://www.kde.org/" );
+        const QString httpProxy = KProtocolManager::proxyForURL(dummyURL);
         kdDebug(6100) << "httpProxy is " << httpProxy << endl;
 
-        KURL url( httpProxy );
+        const KURL url( httpProxy );
         p->setSystemProperty( "http.proxyHost", url.host() );
         p->setSystemProperty( "http.proxyPort", QString::number( url.port() ) );
     }
@@ -359,13 +377,14 @@ bool KJavaAppletServer::createApplet( int contextId, int appletId,
     args.append( windowTitle );
 
     //add on the number of parameter pairs...
-    int num = params.count();
-    QString num_params = QString("%1").arg( num, 8 );
+    const int num = params.count();
+    const QString num_params = QString("%1").arg( num, 8 );
     args.append( num_params );
 
-    QMap< QString, QString >::ConstIterator it;
+    QMap< QString, QString >::ConstIterator it = params.begin();
+    const QMap< QString, QString >::ConstIterator itEnd = params.end();
 
-    for( it = params.begin(); it != params.end(); ++it )
+    for( ; it != itEnd; ++it )
     {
         args.append( it.key() );
         args.append( it.data() );
@@ -427,7 +446,7 @@ void KJavaAppletServer::sendURLData( int loaderID, int code, const QByteArray& d
 
 void KJavaAppletServer::removeDataJob( int loaderID )
 {
-    KIOJobMap::iterator it = d->kiojobs.find( loaderID );
+    const KIOJobMap::iterator it = d->kiojobs.find( loaderID );
     if (it != d->kiojobs.end()) {
         it.data()->deleteLater();
         d->kiojobs.erase( it );
@@ -436,7 +455,7 @@ void KJavaAppletServer::removeDataJob( int loaderID )
 
 void KJavaAppletServer::quit()
 {
-    QStringList args;
+    const QStringList args;
 
     process->send( KJAS_SHUTDOWN_SERVER, args );
     process->flushBuffers();
@@ -450,10 +469,10 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
     QString cmd;
     QStringList args;
     int index = 0;
-    int qb_size = qb.size();
+    const int qb_size = qb.size();
 
     //get the command code
-    char cmd_code = qb[ index++ ];
+    const char cmd_code = qb[ index++ ];
     ++index; //skip the next sep
 
     //get contextID
@@ -463,8 +482,8 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
         contextID += qb[ index++ ];
     }
     bool ok;
-    int ID_num = contextID.toInt( &ok ); // context id or kio job id
-    /*if (d->locked_context > -1 && 
+    const int ID_num = contextID.toInt( &ok ); // context id or kio job id
+    /*if (d->locked_context > -1 &&
         ID_num != d->locked_context &&
         (cmd_code == KJAS_JAVASCRIPT_EVENT ||
          cmd_code == KJAS_APPLET_STATE ||
@@ -526,28 +545,28 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             break;
 
         case KJAS_GET_URLDATA:
-            if (ok && args.size () > 0) {
-                d->kiojobs.insert(ID_num, new KJavaDownloader(ID_num, args[0]));
-                kdDebug(6100) << "GetURLData(" << ID_num << ") url=" << args[0] << endl;
+            if (ok && !args.empty() ) {
+                d->kiojobs.insert(ID_num, new KJavaDownloader(ID_num, args.first()));
+                kdDebug(6100) << "GetURLData(" << ID_num << ") url=" << args.first() << endl;
             } else
                 kdError(6100) << "GetURLData error " << ok << " args:" << args.size() << endl;
             return;
         case KJAS_PUT_URLDATA:
-            if (ok && args.size () > 0) {
-                KJavaUploader *job = new KJavaUploader(ID_num, args[0]);
+            if (ok && !args.empty()) {
+                KJavaUploader* const job = new KJavaUploader(ID_num, args.first());
                 d->kiojobs.insert(ID_num, job);
                 job->start();
-                kdDebug(6100) << "PutURLData(" << ID_num << ") url=" << args[0] << endl;
+                kdDebug(6100) << "PutURLData(" << ID_num << ") url=" << args.first() << endl;
             } else
                 kdError(6100) << "PutURLData error " << ok << " args:" << args.size() << endl;
             return;
         case KJAS_DATA_COMMAND:
-            if (ok && args.size () > 0) {
-                int cmd = args[0].toInt( &ok );
+            if (ok && !args.empty()) {
+                const int cmd = args.first().toInt( &ok );
                 KIOJobMap::iterator it = d->kiojobs.find( ID_num );
                 if (ok && it != d->kiojobs.end())
                     it.data()->jobCommand( cmd );
-                kdDebug(6100) << "KIO Data command: " << ID_num << " " << args[0] << endl;
+                kdDebug(6100) << "KIO Data command: " << ID_num << " " << args.first() << endl;
             } else
                 kdError(6100) << "KIO Data command error " << ok << " args:" << args.size() << endl;
             return;
@@ -559,10 +578,10 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
         case KJAS_GET_MEMBER:
         case KJAS_PUT_MEMBER:
         case KJAS_CALL_MEMBER: {
-            int ticket = args[0].toInt();
+            const int ticket = args[0].toInt();
             JSStack::iterator it = d->jsstack.find(ticket);
             if (it != d->jsstack.end()) {
-                kdDebug(6100) << "slotJavaRequest: " << ticket << endl; 
+                kdDebug(6100) << "slotJavaRequest: " << ticket << endl;
                 args.pop_front();
                 it.data()->args.operator=(args); // just in case ..
                 it.data()->ready = true;
@@ -591,6 +610,82 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             kdDebug(6100) << "Applet " << args[0] << " Failed: " << args[1] << endl;
             cmd = QString::fromLatin1( "AppletFailed" );
             break;
+        case KJAS_SECURITY_CONFIRM: {
+            if (KSSL::doesSSLWork() && !d->kssl)
+                d->kssl = new KSSL;
+            QStringList sl;
+            QCString answer( "invalid" );
+
+            if (!d->kssl) {
+                answer = "nossl";
+            } else if (args.size() > 2) {
+                const int certsnr = args[1].toInt();
+                QString text;
+                QPtrList<KSSLCertificate> certs;
+                certs.setAutoDelete( true );
+                for (int i = certsnr; i >= 0; --i) {
+                    KSSLCertificate * cert = KSSLCertificate::fromString(args[i+2].ascii());
+                    if (cert) {
+                        certs.prepend(cert);
+                        if (cert->isSigner())
+                            text += i18n("Signed by (validation: ");
+                        else
+                            text += i18n("Certificate (validation: ");
+                        switch (cert->validate()) {
+                            case KSSLCertificate::Ok:
+                                text += i18n("Ok"); break;
+                            case KSSLCertificate::NoCARoot:
+                                text += i18n("NoCARoot"); break;
+                            case KSSLCertificate::InvalidPurpose:
+                                text += i18n("InvalidPurpose"); break;
+                            case KSSLCertificate::PathLengthExceeded:
+                                text += i18n("PathLengthExceeded"); break;
+                            case KSSLCertificate::InvalidCA:
+                                text += i18n("InvalidCA"); break;
+                            case KSSLCertificate::Expired:
+                                text += i18n("Expired"); break;
+                            case KSSLCertificate::SelfSigned:
+                                text += i18n("SelfSigned"); break;
+                            case KSSLCertificate::ErrorReadingRoot:
+                                text += i18n("ErrorReadingRoot"); break;
+                            case KSSLCertificate::Revoked:
+                                text += i18n("Revoked"); break;
+                            case KSSLCertificate::Untrusted:
+                                text += i18n("Untrusted"); break;
+                            case KSSLCertificate::SignatureFailed:
+                                text += i18n("SignatureFailed"); break;
+                            case KSSLCertificate::Rejected:
+                                text += i18n("Rejected"); break;
+                            case KSSLCertificate::PrivateKeyFailed:
+                                text += i18n("PrivateKeyFailed"); break;
+                            case KSSLCertificate::InvalidHost:
+                                text += i18n("InvalidHost"); break;
+                            case KSSLCertificate::Unknown:
+                            default:
+                                text += i18n("Unknown"); break;
+                        }
+                        text += QString(")\n");
+                        QString subject = cert->getSubject() + QChar('\n');
+                        QRegExp reg(QString("/[A-Z]+="));
+                        int pos = 0;
+                        while ((pos = subject.find(reg, pos)) > -1)
+                            subject.replace(pos, 1, QString("\n    "));
+                        text += subject.mid(1);
+                    }
+                }
+                kdDebug(6100) << "Security confirm " << args.first() << certs.count() << endl;
+		if ( !certs.isEmpty() ) {
+                    KSSLCertChain chain;
+                    chain.setChain( certs );
+                    if ( chain.isValid() )
+                        answer = PermissionDialog( qApp->activeWindow() ).exec( text, args[0] );
+                }
+            }
+            sl.push_front( QString(answer) );
+            sl.push_front( QString::number(ID_num) );
+            process->send( KJAS_SECURITY_CONFIRM, sl );
+            return;
+        }
         default:
             return;
             break;
@@ -603,10 +698,10 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
         return;
     }
 
-    KJavaAppletContext* context = d->contexts[ ID_num ];
+    KJavaAppletContext* const context = d->contexts[ ID_num ];
     if( context )
         context->processCmd( cmd, args );
-    else if (cmd != "AppletStateNotification") 
+    else if (cmd != "AppletStateNotification")
         kdError(6100) << "no context object for this id" << endl;
 }
 
@@ -614,7 +709,8 @@ void KJavaAppletServer::endWaitForReturnData() {
     kdDebug(6100) << "KJavaAppletServer::endWaitForReturnData" << endl;
     killTimers();
     JSStack::iterator it = d->jsstack.begin();
-    for (; it != d->jsstack.end(); ++it)
+    JSStack::iterator itEnd = d->jsstack.end();
+    for (; it != itEnd; ++it)
         it.data()->exit = true;
 }
 
@@ -671,6 +767,65 @@ void KJavaAppletServer::derefObject( QStringList & args ) {
 
 bool KJavaAppletServer::usingKIO() {
     return d->useKIO;
+}
+
+
+PermissionDialog::PermissionDialog( QWidget* parent )
+    : QObject(parent), m_button("no")
+{}
+
+QCString PermissionDialog::exec( const QString & cert, const QString & perm ) {
+    QGuardedPtr<QDialog> dialog = new QDialog( static_cast<QWidget*>(parent()), "PermissionDialog");
+
+    dialog->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)1, (QSizePolicy::SizeType)1, 0, 0, dialog->sizePolicy().hasHeightForWidth() ) );
+    dialog->setModal( true );
+    dialog->setCaption( i18n("Security Alert") );
+
+    QVBoxLayout* const dialogLayout = new QVBoxLayout( dialog, 11, 6, "dialogLayout");
+
+    dialogLayout->addWidget( new QLabel( i18n("Do you grant Java applet with certificate(s):"), dialog ) );
+    dialogLayout->addWidget( new QLabel( cert, dialog, "message" ) );
+    dialogLayout->addWidget( new QLabel( i18n("the following permission"), dialog, "message" ) );
+    dialogLayout->addWidget( new QLabel( perm, dialog, "message" ) );
+    QSpacerItem* const spacer2 = new QSpacerItem( 20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding );
+    dialogLayout->addItem( spacer2 );
+
+    QHBoxLayout* const buttonLayout = new QHBoxLayout( 0, 0, 6, "buttonLayout");
+
+    QPushButton* const no = new QPushButton( i18n("&No"), dialog, "no" );
+    no->setDefault( true );
+    buttonLayout->addWidget( no );
+
+    QPushButton* const reject = new QPushButton( i18n("&Reject All"), dialog, "reject" );
+    buttonLayout->addWidget( reject );
+
+    QPushButton* const yes = new QPushButton( i18n("&Yes"), dialog, "yes" );
+    buttonLayout->addWidget( yes );
+
+    QPushButton* const grant = new QPushButton( i18n("&Grant All"), dialog, "grant" );
+    buttonLayout->addWidget( grant );
+    dialogLayout->addLayout( buttonLayout );
+    dialog->resize( dialog->minimumSizeHint() );
+    //clearWState( WState_Polished );
+
+    connect( no, SIGNAL( clicked() ), this, SLOT( clicked() ) );
+    connect( reject, SIGNAL( clicked() ), this, SLOT( clicked() ) );
+    connect( yes, SIGNAL( clicked() ), this, SLOT( clicked() ) );
+    connect( grant, SIGNAL( clicked() ), this, SLOT( clicked() ) );
+
+    dialog->exec();
+    delete dialog;
+
+    return m_button;
+}
+
+PermissionDialog::~PermissionDialog()
+{}
+
+void PermissionDialog::clicked()
+{
+    m_button = sender()->name();
+    static_cast<const QWidget*>(sender())->parentWidget()->close();
 }
 
 #include "kjavaappletserver.moc"

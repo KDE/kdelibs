@@ -28,8 +28,8 @@ public class KJASProtocolHandler
     private static final int URLDataCode         = 13;
     private static final int ShutdownServerCode  = 14;
     private static final int JavaScriptEvent     = 15;
-    private static final int GetMember           = 16;
-    private static final int CallMember          = 17;
+    static final int GetMember                   = 16;
+    static final int CallMember                  = 17;
     private static final int PutMember           = 18;
     private static final int DerefObject         = 19;
 
@@ -42,6 +42,7 @@ public class KJASProtocolHandler
     private static final int DataCommand         = 25;
     private static final int PutURLDataCode      = 26;
     private static final int PutDataCode         = 27;
+    private static final int SecurityConfirmCode = 28;
 
     //Holds contexts in contextID-context pairs
     private Hashtable contexts;
@@ -227,7 +228,7 @@ public class KJASProtocolHandler
         if( cmd_code_value == ShutdownServerCode )
         {
             Main.debug( "shutDownServer received" );
-            KJASAppletStub.waitForDestroyThreads();
+            KJASAppletStub.waitForAppletThreads();
             System.exit( 1 );
         }
         else
@@ -248,28 +249,14 @@ public class KJASProtocolHandler
         } else
         if (cmd_code_value == GetMember)
         {
-            new Thread("GetMember") {
-                int ticketnr, objid;
-                String contextID, appletID, name;
-                public void run() {
-                    int [] ret_type_obj = { -1, 0 };
-                    StringBuffer value = new StringBuffer();
-                    int type = 0;
-                    KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
-                    if ( context != null )
-                        ret_type_obj = context.getMember(appletID, objid, name, value);
-                    Main.debug( "GetMember " + name + "=" + value.toString());
-                    sendMemberValue(contextID, GetMember, ticketnr, ret_type_obj[0], ret_type_obj[1], value.toString()); 
-                }
-                void startIt(byte [] cmd) {
-                    ticketnr = Integer.parseInt( getArg( cmd ) );
-                    contextID = getArg( cmd );
-                    appletID  = getArg( cmd );
-                    objid  = Integer.parseInt( getArg( cmd ) );
-                    name  = getArg( cmd );
-                    start();
-                }
-            }.startIt(command);
+            int ticketnr = Integer.parseInt( getArg( command ) );
+            String contextID = getArg( command );
+            String appletID  = getArg( command );
+            int objid  = Integer.parseInt( getArg( command ) );
+            String name  = getArg( command );
+            KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
+            if ( context == null || !context.getMember(appletID, ticketnr, objid, name))
+                sendMemberValue(contextID, GetMember, ticketnr, -1, 0, ""); 
         } else
         if (cmd_code_value == PutMember)
         {
@@ -281,48 +268,28 @@ public class KJASProtocolHandler
             String value  = getArg( command );
             boolean ret = false;
             KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
-            if ( context != null )
-                ret = context.putMember(appletID, objid, name, value);
-            Main.debug( "PutMember " + name + "=" + value);
-            sendPutMember(contextID, ticketnr, ret); 
+            if (context == null || !context.putMember(appletID, ticketnr, objid, name, value))
+                sendPutMember(contextID, ticketnr, false); 
         } else
         if (cmd_code_value == CallMember)
         {
-            new Thread("CallMember") {
-                int ticketnr, objid;
-                String contextID, appletID, name;
-                java.util.List args = new java.util.Vector();
-                public void run() {
-                    int [] ret_type_obj = { -1, 0 };
-                    StringBuffer value = new StringBuffer();
-                    int type = 0;
+            int ticketnr = Integer.parseInt( getArg( command ) );
+            String contextID = getArg( command );
+            String appletID  = getArg( command );
+            int objid  = Integer.parseInt( getArg( command ) );
+            String name  = getArg( command );
+            java.util.List args = new java.util.Vector();
+            try { // fix getArg
+                String param = getArg(command);
+                while (param != null) {
+                    args.add(param);
+                    param = getArg(command);
+                }
+            } catch (Exception e) {}
 
-                    KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
-                    if ( context != null )
-                        ret_type_obj = context.callMember(appletID, objid, name, value, args);
-                    Main.debug( "CallMember " + name + "=" + value.toString());
-                    sendMemberValue(contextID, CallMember, ticketnr, ret_type_obj[0], ret_type_obj[1], value.toString()); 
-                }
-                void startIt(byte [] cmd) {
-                    ticketnr = Integer.parseInt( getArg( cmd ) );
-                    contextID = getArg( cmd );
-                    appletID  = getArg( cmd );
-                    objid  = Integer.parseInt( getArg( cmd ) );
-                    name  = getArg( cmd );
-                    try { // fix getArg
-                        String param = getArg(cmd);
-                        while (param != null) {
-                            args.add(param);
-                            param = getArg(cmd);
-                        }
-                    } catch (Exception e) {}
-                    start();
-                }
-            }.startIt(command);
-        /*    if ( context != null )
-                ret_type_obj = context.callMember(appletID, objid, name, value, args);
-            Main.debug( "CallMember " + name + "=" + value.toString());
-            sendMemberValue(contextID, CallMember, ret_type_obj[0], ret_type_obj[1], value.toString()); */
+            KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
+            if ( context == null || !context.callMember(appletID, ticketnr, objid, name, args))
+                Main.protocol.sendMemberValue(contextID, CallMember, ticketnr, -1, 0, ""); 
         } else
         if (cmd_code_value == DerefObject)
         {
@@ -331,8 +298,21 @@ public class KJASProtocolHandler
             String objid  = getArg( command );
             KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
             if ( context != null )
-                context.derefObject(Integer.parseInt(objid));
+                context.derefObject(appletID, Integer.parseInt(objid));
             Main.debug( "DerefObject " + objid);
+        } else
+        if (cmd_code_value == SecurityConfirmCode)
+        {
+            String id = getArg( command );
+            String confirm = getArg( command );
+            Thread t = (Thread) KJASSecurityManager.confirmRequests.get(id);
+            Main.debug( "SecurityConfirmCode " + id + " confirm:" + confirm );
+            if (t != null) {
+                KJASSecurityManager.confirmRequests.put(id, confirm);
+                try {
+                    t.interrupt();
+                } catch (SecurityException se) {}
+            }
         }
         else
         {
@@ -828,6 +808,46 @@ public class KJASProtocolHandler
         System.arraycopy( ret_bytes, 0, bytes, index, ret_bytes.length );
         index += ret_bytes.length;
         bytes[index++] = sep;
+
+        signals.write( bytes, 0, bytes.length );
+    }
+    public void sendSecurityConfirm( String [] certs, int certsnr, String perm, String id )
+    {
+        Main.debug("sendSecurityConfirm, ID = " + id + " certsnr = " + certsnr);
+
+        byte [] id_bytes = id.getBytes();
+        byte [] perm_bytes = perm.getBytes();
+        byte [] certsnr_bytes = String.valueOf( certsnr ).getBytes();
+        int length = perm_bytes.length + id_bytes.length + certsnr_bytes.length + 5;
+        for (int i = 0; i < certsnr; i++)
+            length += certs[i].length() + 1;
+        byte [] bytes = new byte[ length + 8 ]; //for length of message
+        byte [] tmp_bytes = getPaddedLengthBytes( length );
+        int index = 0;
+
+        System.arraycopy( tmp_bytes, 0, bytes, index, tmp_bytes.length );
+        index += tmp_bytes.length;
+        bytes[index++] = (byte) SecurityConfirmCode;
+        bytes[index++] = sep;
+
+        System.arraycopy( id_bytes, 0, bytes, index, id_bytes.length );
+        index += id_bytes.length;
+        bytes[index++] = sep;
+
+        System.arraycopy( perm_bytes, 0, bytes, index, perm_bytes.length );
+        index += perm_bytes.length;
+        bytes[index++] = sep;
+
+        System.arraycopy( certsnr_bytes, 0, bytes, index, certsnr_bytes.length );
+        index += certsnr_bytes.length;
+        bytes[index++] = sep;
+
+        for (int i = 0; i < certsnr; i++) {
+            byte [] cert_bytes = certs[i].getBytes();
+            System.arraycopy( cert_bytes, 0, bytes, index, cert_bytes.length );
+            index += cert_bytes.length;
+            bytes[index++] = sep;
+        }
 
         signals.write( bytes, 0, bytes.length );
     }

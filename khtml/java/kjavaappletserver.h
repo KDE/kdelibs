@@ -32,7 +32,6 @@
 /**
  * @short Communicates with a KJAS server to display and control Java applets.
  *
- * @version $Id$
  * @author Richard J. Moore, rich@kde.org
  */
 
@@ -128,6 +127,7 @@ public:
      * Shut down the KJAS server.
      */
     void quit();
+    KJavaProcess* javaProcess() { return process; }
 
     QString appletLabel();
 
@@ -153,6 +153,23 @@ protected slots:
 private:
     KJavaAppletServerPrivate* d;
 
+};
+
+
+class PermissionDialog : public QObject
+{
+    Q_OBJECT
+public:
+    PermissionDialog( QWidget* );
+    ~PermissionDialog();
+
+    QCString exec( const QString & cert, const QString & perm );
+
+private slots:
+     void clicked();
+
+private:
+    QCString m_button;
 };
 
 #endif // KJAVAAPPLETSERVER_H

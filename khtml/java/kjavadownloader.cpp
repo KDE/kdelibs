@@ -98,7 +98,7 @@ KJavaDownloader::~KJavaDownloader()
 
 void KJavaDownloader::slotData( KIO::Job*, const QByteArray& qb )
 {
-    kdDebug(6100) << "slotData(" << d->loaderID << ")" << endl;
+    //kdDebug(6100) << "slotData(" << d->loaderID << ")" << endl;
 
     KJavaAppletServer* server = KJavaAppletServer::allocateJavaServer();
     if (d->isfirstdata) {
@@ -147,8 +147,6 @@ void KJavaDownloader::slotResult( KIO::Job* )
     }
     else
     {
-        kdDebug(6100) << "slave got all its data, sending to KJAS" << endl;
-        kdDebug(6100) << "size of data = " << d->file.size() << endl;
         server->sendURLData( d->loaderID, FINISHED, d->file );
     }
     d->job = 0L; // signal KIO::Job::result deletes itself

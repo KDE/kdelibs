@@ -1,7 +1,8 @@
 package org.kde.javascript;
 
 import java.applet.Applet;
-import org.kde.kjas.server.*;
+import org.kde.kjas.server.KJASAppletContext;
+import org.kde.kjas.server.Main;
 
 public class JSObject extends netscape.javascript.JSObject {
     public String returnvalue = null;
@@ -15,7 +16,7 @@ public class JSObject extends netscape.javascript.JSObject {
     /* JavaScript code:
      * __lc=[[JS objects],call func(index,script,appletname,isglobal)]
      */
-    private final String decls = "if(!window.__lc) window.__lc=[[window],function(i,s,a,g){var r;var len=window.__lc[0].length;if(i>=len)r='E ';else{try{r=eval((g?'':'window.__lc[0][i]')+s);}catch(e){r='E ';}finally{var t=typeof r;var v;if(t=='undefined')v='V ';else if(t=='number')v='N '+r;else if(t=='string')if(r=='E ')v='E ';else v='S '+r;else{window.__lc[0][len]=r;v=''+len+' '+(r==window.__lc?'[array]':r);}}}a.__lc_ret=v},0]";
+    private final String decls = "if(!window.__lc) window.__lc=[[window],function(i,s,a,g){var v;var len=window.__lc[0].length;if(i>=len)v='E unknown object';else{var r;try{r=eval((g?'':'window.__lc[0][i]')+s);}catch(e){v='E '+e;r='E ';}finally{var t=typeof r;if(t=='undefined')v='V ';else if(t=='number')v='N '+r;else if(t=='string'){if(r!='E ')v='S '+r;}else{window.__lc[0][len]=r;v=''+len+' '+(r==window.__lc?'[array]':r);}}}a.__lc_ret=v},0]";
 
     public JSObject(Applet a, String name, int _id) {
         Main.info("JSObject.ctor: " + name);
@@ -93,11 +94,11 @@ public class JSObject extends netscape.javascript.JSObject {
         String retval = returnvalue;
         int pos = retval.indexOf(' ');
         String type = retval.substring(0, pos);
-        if (type.equals("E")) // Error
-            throw new netscape.javascript.JSException("Script error");
         if (type.equals("V")) // Void
             return null;
         String value = retval.substring(pos+1);
+        if (type.equals("E")) // Error
+            throw new netscape.javascript.JSException("Script error: " + value);
         Main.info("value=" + value + " (type=" + type + ")");
         if (type.equals("N")) // Number
             return new Double(value);
@@ -122,7 +123,7 @@ public class JSObject extends netscape.javascript.JSObject {
             int p1 = value.indexOf("ref=");
             int p2 = value.indexOf(']', p1+4);
             int objecthashcode = Integer.parseInt(value.substring(p1+4, p2));
-            return kc.getJSReferencedObject(objecthashcode);
+            return kc.getJSReferencedObject(applet, objecthashcode);
         }
         /* Ok, make it a JSObject */
         return new JSObject(applet, value, Integer.parseInt(type));
