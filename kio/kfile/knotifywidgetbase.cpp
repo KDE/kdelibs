@@ -2,7 +2,7 @@
 /****************************************************************************
 ** Form implementation generated from reading ui file './knotifywidgetbase.ui'
 **
-** Created: Sam Aug 3 12:14:07 2002
+** Created: Mit Aug 21 21:16:47 2002
 **      by:  The User Interface Compiler (uic)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -30,7 +30,7 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
 {
     if ( !name )
 	setName( "KNotifyWidgetBase" );
-    resize( 618, 512 ); 
+    resize( 618, 516 ); 
     setCaption( tr2i18n( "Form2" ) );
     KNotifyWidgetBaseLayout = new QVBoxLayout( this, 11, 6, "KNotifyWidgetBaseLayout"); 
 
@@ -96,7 +96,7 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
     m_messageBox = new QCheckBox( m_actionsBox, "m_messageBox" );
     m_messageBox->setText( tr2i18n( "Show a &message in a pop-up window" ) );
     Layout27->addWidget( m_messageBox );
-    QSpacerItem* spacer = new QSpacerItem( 20, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    QSpacerItem* spacer = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
     Layout27->addItem( spacer );
     m_actionsBoxLayout->addLayout( Layout27 );
 
@@ -108,7 +108,7 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
     m_passivePopup->setEnabled( FALSE );
     m_passivePopup->setText( tr2i18n( "&Use a passive window that does not interrupt other work" ) );
     Layout28->addWidget( m_passivePopup );
-    QSpacerItem* spacer_3 = new QSpacerItem( 20, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    QSpacerItem* spacer_3 = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
     Layout28->addItem( spacer_3 );
     m_actionsBoxLayout->addLayout( Layout28 );
 
@@ -117,7 +117,7 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
     m_stderr = new QCheckBox( m_actionsBox, "m_stderr" );
     m_stderr->setText( tr2i18n( "Print a message to standard &error output" ) );
     Layout29->addWidget( m_stderr );
-    QSpacerItem* spacer_4 = new QSpacerItem( 20, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    QSpacerItem* spacer_4 = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
     Layout29->addItem( spacer_4 );
     m_actionsBoxLayout->addLayout( Layout29 );
     KNotifyWidgetBaseLayout->addWidget( m_actionsBox );
@@ -134,11 +134,11 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
     m_affectAllApps->setText( tr2i18n( "Apply to all app&lications" ) );
     m_controlsBoxLayout->addWidget( m_affectAllApps );
 
-    Layout12 = new QHBoxLayout( 0, 0, 6, "Layout12");
+    Layout12 = new QHBoxLayout( 0, 0, 6, "Layout12"); 
     QSpacerItem* spacer_5 = new QSpacerItem( 30, 20, QSizePolicy::Fixed, QSizePolicy::Minimum );
     Layout12->addItem( spacer_5 );
 
-    Layout4 = new QGridLayout( 0, 1, 1, 0, 6, "Layout4");
+    Layout4 = new QGridLayout( 0, 1, 1, 0, 6, "Layout4"); 
 
     m_buttonDisable = new QPushButton( m_controlsBox, "m_buttonDisable" );
     m_buttonDisable->setText( tr2i18n( "Turn O&ff All" ) );
@@ -160,16 +160,25 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
 
     Layout4->addWidget( m_comboDisable, 1, 1 );
     Layout12->addLayout( Layout4 );
-    QSpacerItem* spacer_6 = new QSpacerItem( 20, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    QSpacerItem* spacer_6 = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
     Layout12->addItem( spacer_6 );
     m_controlsBoxLayout->addLayout( Layout12 );
     KNotifyWidgetBaseLayout->addWidget( m_controlsBox );
+
+    Layout8 = new QHBoxLayout( 0, 0, 6, "Layout8"); 
 
     m_extension = new QPushButton( this, "m_extension" );
     m_extension->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)4, (QSizePolicy::SizeType)0, 0, 0, m_extension->sizePolicy().hasHeightForWidth() ) );
     m_extension->setText( tr2i18n( "Less Options" ) );
     m_extension->setToggleButton( FALSE );
-    KNotifyWidgetBaseLayout->addWidget( m_extension );
+    Layout8->addWidget( m_extension );
+    QSpacerItem* spacer_7 = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    Layout8->addItem( spacer_7 );
+
+    m_playerButton = new QPushButton( this, "m_playerButton" );
+    m_playerButton->setText( tr2i18n( "Player Settings..." ) );
+    Layout8->addWidget( m_playerButton );
+    KNotifyWidgetBaseLayout->addLayout( Layout8 );
 
     // signals and slots connections
     connect( m_messageBox, SIGNAL( toggled(bool) ), m_passivePopup, SLOT( setEnabled(bool) ) );
