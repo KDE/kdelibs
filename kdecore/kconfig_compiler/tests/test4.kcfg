@@ -31,9 +31,9 @@
     </entry>
     <entry name="FooBar" key="foo bar" type="String"/>
     <entry name="Age" type="Int">
+      <default>35</default>
       <min>8</min>
       <max>88</max>
-      <default>35</default>
     </entry>
   </group>
 
