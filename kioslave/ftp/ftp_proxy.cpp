@@ -267,7 +267,7 @@ int KProtocolProxyFTP::ProcessHeader()
 		   && !secondtry ) {
 		secondtry = 1;
 		Close();
-		path = path.left(path.length()-1);
+		path.truncate(path.length() - 1);
 		KURL u2( u, path.data());
 		return Open( &u2, currentMode );
 	      } else { // A real error occured

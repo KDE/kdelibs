@@ -89,9 +89,9 @@ QString KConfigBase::readEntry( const QString& aKey,
 
   // construct a localized version of the key
   QString aLocalizedKey = QString( aKey );
-  aLocalizedKey += "[";
+  aLocalizedKey += '[';
   aLocalizedKey += aLocaleString;
-  aLocalizedKey += "]";
+  aLocalizedKey += ']';
   // find the value for the key in the current group
 
   // try the localized key first

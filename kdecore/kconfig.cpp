@@ -127,9 +127,10 @@ bool KConfig::hasKey(const QString &pKey) const
 
   if (!locale().isNull()) {
     // try the localized key first
-    QString aKey = pKey + "[";
+    QString aKey = pKey;
+    aKey += '[';
     aKey += locale();
-    aKey += "]";
+    aKey += ']';
 
     aEntryKey.group = group();
     aEntryKey.key = aKey;
