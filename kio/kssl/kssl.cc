@@ -257,7 +257,7 @@ return initialize();
 }
 
 // get the callback file - it's hidden away in here
-#include "ksslcallback.c"
+//#include "ksslcallback.c"
 
 
 bool KSSL::setVerificationLogic() {
