@@ -48,6 +48,7 @@ EmailSelectDialog::EmailSelectDialog( const QStringList &emails, const QString &
 
   mButtonGroup = new QButtonGroup( 1, Horizontal, i18n("Email Addresses"),
                                    topFrame );
+  mButtonGroup->setRadioButtonExclusive( true );
   topLayout->addWidget( mButtonGroup );
 
   QStringList::ConstIterator it;
