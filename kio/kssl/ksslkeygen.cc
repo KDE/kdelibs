@@ -26,6 +26,7 @@
 #include "keygenwizard2.h"
 #include <qlineedit.h>
 #include <qpushbutton.h>
+#include <kmessagebox.h>
 
 #include <assert.h>
 
@@ -66,6 +67,12 @@ void KSSLKeyGen::slotPassChanged() {
 
 void KSSLKeyGen::slotGenerate() {
 	assert(_idx >= 0 && _idx < 3);   // for now
+
+// FOR NOW, it's DISABLED
+
+	KMessageBox::sorry(NULL, i18n("Sorry, certificate request generation has been disabled for this release due to incomplete code."), i18n("KDE SSL Information"));
+	return;
+
 
 	// Show a progress box
 
