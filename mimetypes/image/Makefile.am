@@ -9,8 +9,8 @@ data_DATA = jpeg.desktop tiff.desktop x-xpm.desktop x-xbm.desktop \
 datadir = $(kde_mimedir)/image
 
 install-data-local: uninstall.desktop
-	$(mkinstalldirs) $(datadir)
-	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(datadir)/wmf.desktop
+	$(mkinstalldirs) $(DESTDIR)$(datadir)
+	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(datadir)/wmf.desktop
 
 EXTRA_DIST = $(data_DATA)
 

@@ -33,7 +33,7 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 datadir = $(kde_mimedir)/application
 
 install-data-local: uninstall.desktop
-	$(mkinstalldirs) $(datadir)
-	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(datadir)/x-applix.desktop
+	$(mkinstalldirs) $(DESTDIR)$(datadir)
+	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(DESTDIR)$(datadir)/x-applix.desktop
 
 EXTRA_DIST = $(data_DATA)
