@@ -192,6 +192,10 @@ int kde_getaddrinfo(const char *name, const char *service,
   register struct addrinfo *p = make_unix(NULL, service);
   if (p == NULL)
     return EAI_MEMORY;
+  if (hint != NULL)
+    p->ai_socktype = hint->ai_socktype;
+  if (p->ai_socktype == 0)
+    p->ai_socktype = SOCK_STREAM; // default
   *result = p;
   return 0;
 }

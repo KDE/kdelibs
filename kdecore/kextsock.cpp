@@ -1093,9 +1093,19 @@ KSocketAddress *KExtendedSocket::localAddress(int fd)
     return NULL;		// error!
 
   /* was it enough? */
-  if (len > sizeof(static_sa))
+  if (len > sizeof(static_sa)
+#ifdef HAVE_SOCKADDR_SA_LEN
+      || sa->sa_len > sizeof(static_sa)
+#endif
+      )
     {
       /* nope, malloc a new socket with the proper size */
+
+#ifdef HAVE_SOCKADDR_SA_LEN
+      if (sa->sa_len != len)
+        len = sa->sa_len;
+#endif
+
       sa = (sockaddr*)malloc(len);
       if (sa == NULL)
 	return NULL;		// out of memory
@@ -1131,9 +1141,19 @@ KSocketAddress *KExtendedSocket::peerAddress(int fd)
     return NULL;		// error!
 
   /* was it enough? */
-  if (len > sizeof(static_sa))
+  if (len > sizeof(static_sa)
+#ifdef HAVE_SOCKADDR_SA_LEN
+      || sa->sa_len > sizeof(static_sa)
+#endif
+      )
     {
       /* nope, malloc a new socket with the proper size */
+
+#ifdef HAVE_SOCKADDR_SA_LEN
+      if (sa->sa_len != len)
+        len = sa->sa_len;
+#endif
+
       sa = (sockaddr*)malloc(len);
       if (sa == NULL)
 	return NULL;		// out of memory
