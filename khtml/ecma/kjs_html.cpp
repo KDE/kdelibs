@@ -226,7 +226,7 @@ const ClassInfo KJS::HTMLDocument::info =
 bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &p, bool recursive) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "KJS::HTMLDocument::hasProperty " << p.qstring() << endl;
+  kdDebug(6070) << "KJS::HTMLDocument::hasProperty " << p.qstring() << endl;
 #endif
   if (!static_cast<DOM::HTMLDocument>(node).all().
       namedItem(p.string()).isNull())
@@ -237,7 +237,7 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &p, bool recu
 Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << endl;
+  kdDebug(6070) << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << endl;
 #endif
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
   DOM::HTMLBodyElement body = doc.body();
@@ -321,7 +321,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
   if (DOMDocument::hasProperty(exec, propertyName, true))
     return DOMDocument::tryGet(exec, propertyName);
 
-  //kdDebug() << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << " not found, returning element" << endl;
+  //kdDebug(6070) << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << " not found, returning element" << endl;
   if(!element.isNull())
     return getDOMNode(exec,element);
   return Undefined();
@@ -330,7 +330,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
 void KJS::HTMLDocument::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "KJS::HTMLDocument::tryPut " << propertyName.qstring() << endl;
+  kdDebug(6070) << "KJS::HTMLDocument::tryPut " << propertyName.qstring() << endl;
 #endif
   DOMObjectLookupPut<HTMLDocument, DOMDocument>( exec, propertyName, value, attr, &HTMLDocumentTable, this );
 }
@@ -388,7 +388,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
 {
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
-  kdDebug() << "KJS::HTMLElement::tryGet " << p.qstring() << " id=" << element.elementId() << endl;
+  kdDebug(6070) << "KJS::HTMLElement::tryGet " << p.qstring() << " id=" << element.elementId() << endl;
 #endif
 
   switch (element.elementId()) {
@@ -1194,7 +1194,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
   DOM::Node n = (new DOMNode(exec, KJS::toNode(v)))->toNode();
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
-  kdDebug() << "KJS::HTMLElement::tryPut " << p.qstring() << " id=" << element.elementId() << " str=" << str.string() << endl;
+  kdDebug(6070) << "KJS::HTMLElement::tryPut " << p.qstring() << " id=" << element.elementId() << " str=" << str.string() << endl;
 #endif
 
   switch (element.elementId()) {
@@ -1867,7 +1867,7 @@ DOM::Element KJS::HTMLSelectCollection::dummyElement()
 void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int)
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "KJS::HTMLSelectCollection::tryPut " << propertyName.qstring() << endl;
+  kdDebug(6070) << "KJS::HTMLSelectCollection::tryPut " << propertyName.qstring() << endl;
 #endif
   // resize ?
   if (propertyName == "length") {
