@@ -734,37 +734,38 @@ void HCStyle::drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,
                          bool horiz)
 {
     if(horiz){
-        int y = r.y() + (r.height()-6)/2;
-        if(r.width() >= 32){
-            int x = r.x() + (r.width()-22)/2;
-            qDrawShadePanel(p, x, y, 6, 6, g, false, 1);
-            qDrawShadePanel(p, x+8, y, 6, 6, g, false, 1);
-            qDrawShadePanel(p, x+16, y, 6, 6, g, false, 1);
+        if(r.width() >= 15){
+            int y = r.y()+3;
+            int x = r.x() + (r.width()-7)/2;
+            int y2 = r.bottom()-3;
+            p->setPen(g.light());
+            p->drawLine(x, y, x, y2);
+            p->drawLine(x+3, y, x+3, y2);
+            p->drawLine(x+6, y, x+6, y2);
+
+            p->setPen(g.mid());
+            p->drawLine(x+1, y, x+1, y2);
+            p->drawLine(x+4, y, x+4, y2);
+            p->drawLine(x+7, y, x+7, y2);
         }
-        else if(r.width() >= 24 ){
-            int x = r.x() + (r.width()-14)/2;
-            qDrawShadePanel(p, x, y, 6, 6, g, false, 1);
-            qDrawShadePanel(p, x+8, y, 6, 6, g, false, 1);
-        }
-        else if(r.width() >= 16)
-            qDrawShadePanel(p, r.x()+(r.width()-6)/2, y, 6, 6, g, false, 1);
     }
     else{
-        int x = r.x() + (r.width()-6)/2;
-        if(r.height() >= 32){
-            int y = r.y() + (r.height()-22)/2;
-            qDrawShadePanel(p, x, y, 6, 6, g, false, 1);
-            qDrawShadePanel(p, x, y+8, 6, 6, g, false, 1);
-            qDrawShadePanel(p, x, y+16, 6, 6, g, false, 1);
+        if(r.height() >= 15){
+            int x = r.x()+3;
+            int y = r.y() + (r.height()-7)/2;
+            int x2 = r.right()-3;
+            p->setPen(g.light());
+            p->drawLine(x, y, x2, y);
+            p->drawLine(x, y+3, x2, y+3);
+            p->drawLine(x, y+6, x2, y+6);
+
+            p->setPen(g.mid());
+            p->drawLine(x, y+1, x2, y+1);
+            p->drawLine(x, y+4, x2, y+4);
+            p->drawLine(x, y+7, x2, y+7);
         }
-        else if(r.height() >= 24 ){
-            int y = r.y() + (r.height()-14)/2;
-            qDrawShadePanel(p, x, y, 6, 6, g, false, 1);
-            qDrawShadePanel(p, x, y+8, 6, 6, g, false, 1);
-        }
-        else if(r.height() >= 16)
-            qDrawShadePanel(p, x, r.y()+(r.height()-6)/2, 6, 6, g, false, 1);
     }
+
 }
 
 
@@ -1654,6 +1655,94 @@ void HCStyle::drawHGradient(QPainter *p, const QBrush &fill, int x, int y,
         p->drawTiledPixmap(x, y, hLarge->width(), h, *hLarge);
     }
 }
+
+void HCStyle::drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
+                                      const QColorGroup &g, QBrush *)
+{
+    if(h > w){
+        int y2 = y+h-1;
+
+        p->setPen(g.light());
+
+        p->drawLine(x+1, y+2, x+1, y2-2);
+        p->drawLine(x+3, y+2, x+3, y2-2);
+        p->drawLine(x+5, y+2, x+5, y2-2);
+
+        p->setPen(g.mid());
+        p->drawLine(x+2, y+2, x+2, y2-2);
+        p->drawLine(x+4, y+2, x+4, y2-2);
+        p->drawLine(x+6, y+2, x+6, y2-2);
+
+    }
+    else{
+        int x2 = x+w-1;
+
+        p->setPen(g.light());
+
+        p->drawLine(x+2, y+1, x2-2, y+1);
+        p->drawLine(x+2, y+3, x2-2, y+3);
+        p->drawLine(x+2, y+5, x2-2, y+5);
+
+        p->setPen(g.mid());
+        p->drawLine(x+2, y+2, x2-2, y+2);
+        p->drawLine(x+2, y+4, x2-2, y+4);
+        p->drawLine(x+2, y+6, x2-2, y+6);
+    }
+        
+}
+
+void HCStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
+                                  const QColorGroup &g,
+                                  const QString &text, bool sunken,
+                                  QPixmap *pixmap, QBrush *)
+{
+    int x2 = x+w-1;
+    int y2 = y+h-1;
+    if(sunken)
+        p->fillRect(x+1, y+1, w-2, h-2, g.brush(QColorGroup::Mid));
+    else
+        p->drawTiledPixmap(x+1, y+1, w-2, h-2, sunken ? *vLarge : *vSmall);
+        
+    p->setPen(sunken ? Qt::black : g.light());
+    p->drawLine(x, y, x2-1, y);
+    p->drawLine(x, y, x, y2-1);
+    p->setPen(sunken ? g.midlight() : g.mid());
+    p->drawLine(x+1, y2-1, x2-1, y2-1);
+    p->drawLine(x2-1, y+1, x2-1, y2-1);
+    p->setPen(sunken ? g.light() : Qt::black);
+    p->drawLine(x, y2, x2, y2);
+    p->drawLine(x2, y, x2, y2);
+
+    const int pxWidth = 20;
+    QRect br(buttonRect(x, y, w, h));
+
+    if ( pixmap && !pixmap->isNull() ) {
+        int dx = ( pxWidth - pixmap->width() ) / 2;
+        int dy = ( h - pixmap->height() ) / 2;
+        if (sunken) {
+            dx++;
+            dy++;
+        }
+        p->drawPixmap( br.x()+dx, dy, *pixmap );
+    }
+    p->setPen(sunken ? g.light() : g.buttonText());
+
+    if (!text.isNull()){
+        QString s2 = text;
+        if (p->fontMetrics().width(s2) > br.width()-pxWidth){
+            while (s2.length()>0 &&
+                   p->fontMetrics().width(s2) > br.width() - pxWidth
+                   - p->fontMetrics().width("...")) {
+                s2.truncate( s2.length() - 1 );
+            }
+            s2.append("...");
+        }
+        p->drawText(br.x()+ pxWidth, 0, w-pxWidth, h,
+                    AlignLeft|AlignVCenter, s2);
+    }
+}
+
+
 
 void HCStyle::makeWallpaper(QPixmap &dest, const QColor &base)
 {

@@ -1,5 +1,5 @@
-#ifndef B2STYLE_H
-#define B2STYLE_H
+#ifndef HCSTYLE_H
+#define HCSTYLE_H
 
 #include <kstyle.h>
 #include <qpainter.h>
@@ -155,6 +155,13 @@ public:
     void drawPanel(QPainter *p, int x, int y, int w, int h,
                    const QColorGroup &g, bool sunken, int lineWidth,
                    const QBrush *fill);
+    void drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
+                                const QColorGroup &g, QBrush *);
+    void drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
+                              const QColorGroup &g,
+                              const QString &title, bool active,
+                              QPixmap *icon, QBrush *fill);
+
     // for repainting toolbuttons when the toolbar is resized
     bool eventFilter(QObject *obj, QEvent *ev);
 protected:
