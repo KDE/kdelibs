@@ -1466,7 +1466,7 @@ void KApplication::applyGUIStyle()
         qDebug( "trying to open styleStr..: %s", styleStr.latin1() );
 
         QStyle* sp = QStyleFactory::create( styleStr );
-        qDebug( "got %p", sp );
+        qDebug( "got %p", (void *)sp );
         if ( sp )
             setStyle(sp);
     }
