@@ -21,6 +21,7 @@ public class Main
     private static final boolean             show_console;
     public  static final boolean             Debug;
     public  static final boolean             log;
+    static final boolean                     cacheImages;
     public  static String                    liveconnect_returnval = null;
     public  static Thread                    liveconnect_thread = null;
     private static boolean                   good_jdk = true;
@@ -44,6 +45,12 @@ public class Main
             log = true;
         else
             log = false;
+        
+        if ( System.getProperty( "kjas.noImageCache" ) != null ) {
+            cacheImages = false;
+        } else {
+            cacheImages = true;
+        }
 
         protocol_stdout = System.out;
         console         = new KJASConsole();
@@ -71,6 +78,9 @@ public class Main
         {
             System.out.println( "KJAS: " + msg );
         }
+    }
+    public static void info (String msg ) {
+        System.out.println( "KJAS: " + msg );
     }
 
     public static void kjas_err( String msg, Exception e )

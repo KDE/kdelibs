@@ -36,6 +36,11 @@
 #define KJAS_CALL_MEMBER       (char)17
 #define KJAS_PUT_MEMBER        (char)18
 #define KJAS_DEREF_OBJECT      (char)19
+#define KJAS_AUDIOCLIP_PLAY    (char)20
+#define KJAS_AUDIOCLIP_LOOP    (char)21
+#define KJAS_AUDIOCLIP_STOP    (char)22
+
+
 
 // For future expansion
 class KJavaAppletServerPrivate
@@ -205,6 +210,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
         p->setSystemProperty( "http.proxyHost", url.host() );
         p->setSystemProperty( "http.proxyPort", QString::number( url.port() ) );
     }
+    // p->setSystemProperty("kjas.debug", "");
 
     //set the main class to run
     p->setMainClass( "org.kde.kjas.server.Main" );
@@ -370,7 +376,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
         d->wait_args = args;
         d->wait_command = 0;
         return;
-    } 
+    }
     //here I should find the context and call the method directly
     //instead of emitting signals
     switch( cmd_code )
@@ -405,6 +411,18 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
         case KJAS_PUT_MEMBER:
         case KJAS_CALL_MEMBER:
             kdDebug(6100) << "Error: Missed return member data" << endl;
+            break;
+        case KJAS_AUDIOCLIP_PLAY:
+            cmd = QString::fromLatin1( "audioclip_play" );
+            kdDebug(6100) << "Audio Play: url=" << args[0] << endl;
+            break;
+        case KJAS_AUDIOCLIP_LOOP:
+            cmd = QString::fromLatin1( "audioclip_loop" );
+            kdDebug(6100) << "Audio Loop: url=" << args[0] << endl;
+            break;
+        case KJAS_AUDIOCLIP_STOP:
+            cmd = QString::fromLatin1( "audioclip_stop" );
+            kdDebug(6100) << "Audio Stop: url=" << args[0] << endl;
             break;
 
         default:

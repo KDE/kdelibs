@@ -94,7 +94,7 @@ public class KJASAppletStub extends Frame
                             app.setVisible( false );
                             panel.add( "Center", app );
                             panel.validate();
-
+                            
                             initApplet();
 
                             panel.validate();
@@ -107,7 +107,7 @@ public class KJASAppletStub extends Frame
                         {
                             panel.add( "Center", new Label( "Applet Failed", Label.CENTER ) );
                         }
-            	    }catch( InstantiationException e )
+                    }catch( InstantiationException e )
                     {
                         Main.kjas_err( "Could not instantiate applet", e );
                         panel.add( "Center", new Label( "Applet Failed", Label.CENTER ) );
@@ -120,10 +120,11 @@ public class KJASAppletStub extends Frame
                     finally
                     {
                         show();
+                        Thread.yield();
                     }
                 }
             }
-        );
+        , "KJAS-AppletStub-" + appletName);
         runThread.start();
     }
 

@@ -145,6 +145,9 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
             KJavaApplet* tmp = d->applets[appletID];
             tmp->resizeAppletWidget( width, height );
         }
+    } 
+    else if (cmd.startsWith(QString::fromLatin1("audioclip_"))) {
+        kdDebug(6002) << "process Audio command (not yet implemented): " << cmd  << " " << arg[0] << endl;
     }
 }
 

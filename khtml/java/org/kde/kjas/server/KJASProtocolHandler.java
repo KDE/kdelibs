@@ -33,6 +33,11 @@ public class KJASProtocolHandler
     private static final int PutMember           = 18;
     private static final int DerefObject         = 19;
 
+    private static final int AudioClipPlayCode   = 20;
+    private static final int AudioClipLoopCode   = 21;
+    private static final int AudioClipStopCode   = 22;
+
+
     //Holds contexts in contextID-context pairs
     private Hashtable contexts;
 
@@ -299,7 +304,7 @@ public class KJASProtocolHandler
             if ( context != null )
                 type = context.callMember(appletID, name, value, args);
             Main.debug( "CallMember " + name);
-            sendMemberValue(contextID, CallMember, value.toString(), type); 
+            sendMemberValue(contextID, CallMember, value.toString(), type);
         } else
         if (cmd_code_value == DerefObject)
         {
@@ -311,7 +316,6 @@ public class KJASProtocolHandler
                 context.derefObject(Integer.parseInt(objid));
             Main.debug( "DerefObject " + objid);
         }
- 
         else
         {
            throw new IllegalArgumentException( "Unknown command code" );
@@ -330,7 +334,7 @@ public class KJASProtocolHandler
         {
             ID_str = loaderID;
             file_str = new URL( new URL(loaderID), file ).toString();
-        } catch( MalformedURLException e ) 
+        } catch( MalformedURLException e )
         {
             //this is an image request, take the file argument as is
             ID_str = loaderID;
@@ -455,7 +459,7 @@ public class KJASProtocolHandler
     public void sendResizeAppletCmd( String contextID, String appletID,
                                      int width, int height )
     {
-        Main.debug( "sendResizeAppletCmd, contextID = " + contextID + ", appletID = " + 
+        Main.debug( "sendResizeAppletCmd, contextID = " + contextID + ", appletID = " +
                     appletID + ", width = " + width + ", height = " + height );
 
         String width_str = String.valueOf( width );
@@ -553,6 +557,41 @@ public class KJASProtocolHandler
 
         signals.print( chars );
     }
+
+    private void sendAudioClipCommand(String contextId, String url, int cmd) {
+        int length = contextId.length() + url.length() + 4;
+        char[] chars = new char[ length + 8 ];
+        char[] tmpchar = getPaddedLength( length );
+        int index = 0;
+
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = (char)cmd;
+        chars[index++] = sep;
+
+            tmpchar = contextId.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+            tmpchar = url.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        signals.print( chars );
+    }
+    
+    public void sendAudioClipPlayCommand(String contextId, String url) {
+        sendAudioClipCommand(contextId, url, AudioClipPlayCode);
+    }
+    public void sendAudioClipLoopCommand(String contextId, String url) {
+        sendAudioClipCommand(contextId, url, AudioClipLoopCode);
+    }
+    public void sendAudioClipStopCommand(String contextId, String url) {
+        sendAudioClipCommand(contextId, url, AudioClipStopCode);
+    }
+
     public void sendPutMember( String contextID, boolean success )
     {
         Main.debug("sendPutMember, contextID = " + contextID + " success = " + success);

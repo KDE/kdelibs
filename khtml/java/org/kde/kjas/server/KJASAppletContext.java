@@ -16,6 +16,7 @@ public class KJASAppletContext implements AppletContext
 {
     private Hashtable stubs;
     private Hashtable images;
+    private Vector    pendingImages;
     private Hashtable streams;
 
     private String myID;
@@ -42,6 +43,7 @@ public class KJASAppletContext implements AppletContext
     {
         stubs  = new Hashtable();
         images = new Hashtable();
+        pendingImages = new Vector();
         streams = new Hashtable();
         jsReferencedObjects = new Hashtable();
         myID   = _contextID;
@@ -229,29 +231,49 @@ public class KJASAppletContext implements AppletContext
     public AudioClip getAudioClip( URL url )
     {
         Main.debug( "getAudioClip, url = " + url );
-
-        return new KJASSoundPlayer( url );
+        return new KJASSoundPlayer( myID, url );
     }
 
     public void addImage( String url, byte[] data )
     {
         Main.debug( "addImage for url = " + url );
         images.put( url, data );
+        if (Main.cacheImages) {
+            pendingImages.remove(url);
+        }
     }
-    
+
     public Image getImage( URL url )
     {
         if( active && url != null )
         {
-            //check with the Web Server        
+            // directly load images using JVM
+            //if (false) {
+            //    Toolkit kit = Toolkit.getDefaultToolkit();
+            //    return kit.createImage( url );
+            //}
+
+            //check with the Web Server
             String str_url = url.toString();
             Main.debug( "getImage, url = " + str_url );
-            Main.protocol.sendGetURLDataCmd( myID, str_url );
-
-            while( !images.containsKey( str_url ) && active )
-        {
-                try { Thread.sleep( 200 ); }
-                catch( InterruptedException e ){}
+            if (Main.cacheImages && images.containsKey(str_url)) {
+                Main.debug("Cached: url=" + str_url);
+            }
+            else
+            {
+                if (Main.cacheImages) {
+                    if (!pendingImages.contains(str_url)) {
+                        Main.protocol.sendGetURLDataCmd( myID, str_url );
+                        pendingImages.add(str_url);
+                    }
+                } else {
+                    Main.protocol.sendGetURLDataCmd( myID, str_url );
+                }
+                while( !images.containsKey( str_url ) && active )
+                {
+                    try { Thread.sleep( 200 ); }
+                    catch( InterruptedException e ){}
+                }
             }
             if( images.containsKey( str_url ) )
             {
