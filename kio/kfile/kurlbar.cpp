@@ -224,6 +224,17 @@ int KURLBarItem::height( const QListBox *lb ) const
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
+class KURLBar::KURLBarPrivate
+{
+public:
+    KURLBarPrivate()
+    {
+        currentURL.setPath( QDir::homeDirPath() );
+    }
+
+    KURL currentURL;
+};
+
 
 KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, WFlags f )
     : QFrame( parent, name, f ),
@@ -234,6 +245,8 @@ KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, WFlags
       m_listBox( 0L ),
       m_iconSize( KIcon::SizeMedium )
 {
+    d = new KURLBarPrivate();
+
     setListBox( 0L );
     setSizePolicy( QSizePolicy( isVertical() ?
                                 QSizePolicy::Maximum :
@@ -248,6 +261,7 @@ KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, WFlags
 
 KURLBar::~KURLBar()
 {
+    delete d;
 }
 
 KURLBarItem * KURLBar::insertItem(const KURL& url, const QString& description,
@@ -412,6 +426,8 @@ void KURLBar::slotSelected( QListBoxItem *item )
 
 void KURLBar::setCurrentItem( const KURL& url )
 {
+    d->currentURL = url;
+
     QString u = url.url(-1);
 
     if ( m_activeItem && m_activeItem->url().url(-1) == u )
@@ -646,9 +662,7 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
 
 bool KURLBar::addNewItem()
 {
-    KURL url;
-    url.setPath( QDir::homeDirPath() );
-    KURLBarItem *item = new KURLBarItem( this, url,
+    KURLBarItem *item = new KURLBarItem( this, d->currentURL,
                                          i18n("Enter a description") );
     if ( editItem( item ) ) {
         m_listBox->insertItem( item );
