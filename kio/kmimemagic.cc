@@ -14,7 +14,8 @@ KMimeMagic* KMimeMagic::s_pSelf = 0L;
 
 KMimeMagic* KMimeMagic::self()
 {
-  assert( s_pSelf );
+  if( !s_pSelf )
+    initStatic();
   return s_pSelf;
 }
 

@@ -121,7 +121,6 @@ public:
   KMimeMagicResult * findBufferFileType( const char *_sample, int _len, const char *_filename );
 
   static KMimeMagic* self();
-  static void initStatic();
   
 protected:
   /**
@@ -129,6 +128,7 @@ protected:
    */
   KMimeMagicResult * magicResult;
 
+  static void initStatic();
   static KMimeMagic* s_pSelf;
   
 private:
