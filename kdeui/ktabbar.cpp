@@ -47,9 +47,7 @@ KTabBar::KTabBar( QWidget *parent, const char *name )
     mActivateDragSwitchTabTimer = new QTimer( this );
     connect( mActivateDragSwitchTabTimer, SIGNAL( timeout() ), SLOT( activateDragSwitchTab() ) );
 
-#if QT_VERSION >= 0x030200
     connect(this, SIGNAL(layoutChanged()), SLOT(onLayoutChange()));
-#endif
 }
 
 KTabBar::~KTabBar()
@@ -163,18 +161,6 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
 
     if ( mHoverCloseButtonEnabled && mReorderStartTab==-1) {
         QTab *t = selectTab( e->pos() );
-
-        //BEGIN Workaround
-        //Qt3.2.0 (and 3.2.1) emit wrong local coordinates
-        //for MouseMove events when the pointer leaves a widget. Discard those
-        //to avoid enabling the wrong hover button
-#ifdef __GNUC__
-#warning "Workaround for Qt 3.2.0, 3.2.1 bug"
-#endif
-        if ( e->globalPos() != mapToGlobal( e->pos() ) )
-            return;
-        //END Workaround
-
         if( t && t->iconSet() && t->isEnabled() ) {
             QPixmap pixmap = t->iconSet()->pixmap( QIconSet::Small, QIconSet::Normal );
             QRect rect( 0, 0, pixmap.width() + 4, pixmap.height() +4);
@@ -182,13 +168,8 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
             int xoff = 0, yoff = 0;
             // The additional offsets were found by try and error, TODO: find the rational behind them
             if ( t == tab( currentTab() ) ) {
-#if QT_VERSION >= 0x030200
                 xoff = style().pixelMetric( QStyle::PM_TabBarTabShiftHorizontal, this ) + 3;
                 yoff = style().pixelMetric( QStyle::PM_TabBarTabShiftVertical, this ) - 4;
-#else
-                xoff = 3;
-                yoff = -4;
-#endif
             }
             else {
                 xoff = 7;
@@ -243,8 +224,8 @@ void KTabBar::activateDragSwitchTab()
 void KTabBar::mouseReleaseEvent( QMouseEvent *e )
 {
     if( e->button() == MidButton ) {
-        QTab *tab = selectTab( e->pos() );
         if ( mReorderStartTab==-1 ) {
+            QTab *tab = selectTab( e->pos() );
             if( tab!= 0L ) {
                 emit( mouseMiddleClick( indexOf( tab->identifier() ) ) );
                 return;
@@ -402,9 +383,6 @@ void KTabBar::setTabCloseActivatePrevious( bool on )
 void KTabBar::closeButtonClicked()
 {
     emit closeRequest( indexOf( mHoverCloseButtonTab->identifier() ) );
-#if QT_VERSION < 0x030200
-    onLayoutChange();
-#endif
 }
 
 void KTabBar::setHoverCloseButton( bool button )
