@@ -23,6 +23,8 @@
 #include <kdelibs_export.h>
 
 /**
+ * @short A variant of QListBox that honors KDE's system-wide settings.
+ *
  * Extends the functionality of QListBox to honor the system
  * wide settings for Single Click/Double Click mode, Auto Selection and
  * Change Cursor over Link.
@@ -34,8 +36,6 @@
  * mentioned. This way you don't need to care about the current
  * settings.  If you want to get informed when the user selects
  * something connect to the QListBox::selectionChanged() signal.
- *
- * @short A variant of QListBox that honors KDE's system-wide settings.
  **/
 class KDEUI_EXPORT KListBox : public QListBox
 {
