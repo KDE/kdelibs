@@ -80,7 +80,9 @@ Completion DOMFunction::execute(const List &args)
     completion = tryExecute(args);
   }
   catch (DOM::DOMException e) {
-    completion = Completion(Normal,Undefined());
+    Number v(e.code); /* TODO: what kind of object should this be ? */
+    v.put("code", Number(e.code));
+    completion = Completion(Throw, v);
   }
   return completion;
 }
