@@ -1692,6 +1692,7 @@ void KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
 {
   if ( child->m_bPreloaded )
   {
+      kdDebug() << "requestObject preload" << endl;
     if ( child->m_frame && child->m_part )
       child->m_frame->setWidget( child->m_part->widget() );
 
@@ -1699,14 +1700,7 @@ void KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
     return;
   }
 
-  QString urlStr = url.url();
-  if ( urlStr.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
-  {
-      executeScript( urlStr.right( urlStr.length() - 11) );
-      return;
-  }
-
-  KParts::URLArgs args( _args );
+   KParts::URLArgs args( _args );
 
   if ( child->m_run )
     delete (KHTMLRun *)child->m_run;
@@ -1980,7 +1974,6 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
   khtml::ChildFrame *child = frame( sender()->parent() );
 
   QString frameName = args.frameName.lower();
-
   if ( !frameName.isEmpty() )
   {
     if ( frameName == QString::fromLatin1( "_top" ) )
@@ -2015,13 +2008,20 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
     }
   }
 
-  if ( child )
-    requestObject( child, url, args );
-  else if ( frameName == QString::fromLatin1("_self") ) // this is for embedded objects (via <object>) which want to replace the current document
+  // TODO: handle child target correctly! currently the script are always executed fur the parent
+  QString urlStr = url.url();
+  if ( urlStr.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
+      executeScript( urlStr.right( urlStr.length() - 11) );
+      return;
+  }
+
+  if ( child ) {
+      requestObject( child, url, args );
+  }  else if ( frameName==QString::fromLatin1("_self") ) // this is for embedded objects (via <object>) which want to replace the current document
   {
-    KParts::URLArgs newArgs( args );
-    newArgs.frameName = QString::null;
-    emit d->m_extension->openURLRequest( url, newArgs );
+      KParts::URLArgs newArgs( args );
+      newArgs.frameName = QString::null;
+      emit d->m_extension->openURLRequest( url, newArgs );
   }
 }
 
