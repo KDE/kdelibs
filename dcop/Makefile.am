@@ -57,6 +57,7 @@ testdcop_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 testdcop_SOURCES = testdcop.cpp
 testdcop_LDADD = ../kdecore/libkdecore.la
 
+testdcopc_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 testdcopc_SOURCES = testdcopc.c dcopc.c
 testdcopc_LDADD =  KDE-ICE/libkICE.la $(LIBSM)
 
