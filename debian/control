@@ -50,7 +50,7 @@ Section: libs
 Replaces: libkmid0-alsa, libkmid, libkmid-alsa
 Depends: ${shlibs:Depends}
 Enhances: kdebase
-Conflicts: libkmid0-alsa, libkmid-alsa
+Conflicts: libkmid0-alsa, libkmid-alsa, libkmid
 Description: aRts Sound system (midi/kmedia support libraries)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
@@ -69,6 +69,7 @@ Replaces: libkmid0, libkmid, libkmid-alsa
 Depends: ${shlibs:Depends}
 Enhances: kdebase
 Provides: libkmid0
+Conflicts: libkmid, libkmid-alsa
 Description: aRts Sound system (midi/kmedia support libraries with alsa)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
