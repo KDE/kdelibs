@@ -34,6 +34,8 @@
 // a static pointer (too bad we cannot have static objects in libraries)
 QList<KTMainWindow>* KTMainWindow::memberList = 0L;
 
+template class QList<KTMainWindow>;
+
 class KTLWSessionManaged : public KSessionManaged
 {
 public:

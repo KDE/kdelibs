@@ -38,6 +38,7 @@
 
 KDialogBaseTile *KDialogBase::mTile = 0;
 
+template class QList<KDialogBaseButton>;
 
 KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
 			  const QString &caption, int buttonMask, 

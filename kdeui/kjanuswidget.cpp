@@ -34,7 +34,7 @@
 
 #include "kjanuswidget.h"
 
-
+template class QList<QListViewItem>;
 
 KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
   : QWidget( parent, name, 0 ),
