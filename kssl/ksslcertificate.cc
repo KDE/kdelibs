@@ -721,6 +721,8 @@ const char *footer = "-----END CERTIFICATE-----\n";
       thecert.insert(64*(i+1)+i, '\n');
    }
    thecert.prepend(header);
+   if (thecert[thecert.length()-1] != '\n')
+      thecert += "\n";
    thecert.append(footer);
 
    qba.duplicate(thecert.local8Bit(), thecert.length());
