@@ -118,7 +118,8 @@ bool KConfigINIBackEnd::parseConfigFiles()
     for (it = kdercs.fromLast(); it != kdercs.end(); it--) {
 
       QFile aConfigFile( *it );
-      aConfigFile.open( IO_ReadOnly );
+      if (!aConfigFile.open( IO_ReadOnly ))
+	   continue;
       parseSingleConfigFile( aConfigFile, 0L, true );
       aConfigFile.close();
     }
