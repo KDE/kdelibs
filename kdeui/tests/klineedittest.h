@@ -16,17 +16,19 @@ class KLineEditTest : public QWidget
 public:
    KLineEditTest ( QWidget *parent=0, const char *name=0 );
    ~KLineEditTest();
-   KLineEdit* lineEdit() const { return lineedit; }
+   KLineEdit* lineEdit() const { return m_lineedit; }
 
 private slots:
    void quitApp();
+   void readOnly (bool);
    void slotReturnPressed();
    void slotReturnPressed(const QString&);
    void resultOutput( const QString& );
 
 protected:
-   QGuardedPtr<KLineEdit> lineedit;
-   QPushButton* button;
+   QGuardedPtr<KLineEdit> m_lineedit;
+   QPushButton* m_btnExit;
+   QPushButton* m_btnReadOnly;   
 };
 
 #endif

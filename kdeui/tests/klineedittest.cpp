@@ -19,24 +19,30 @@ KLineEditTest::KLineEditTest (QWidget* widget, const char* name )
     QStringList list;
     list << "Tree" << "Suuupa" << "Stroustrup" << "Stone" << "Slick"
          << "Slashdot" << "Send" << "Peables" << "Mankind" << "Ocean"
-         << "Chips" << "Computer" << "Sandworm" << "Sandstorm" 
-	 << "Chops";
+         << "Chips" << "Computer" << "Sandworm" << "Sandstorm" << "Chops";
     list.sort();
 
-    lineedit = new KLineEdit( this, "klineedittest" );
-    lineedit->completionObject()->setItems( list );
-    lineedit->setFixedSize(500,30);
-    lineedit->setFocus();
-    connect( lineedit, SIGNAL( returnPressed() ), SLOT( slotReturnPressed() ) );
-    connect( lineedit, SIGNAL( returnPressed(const QString&) ), 
+    m_lineedit = new KLineEdit( this, "klineedittest" );
+    m_lineedit->completionObject()->setItems( list );
+    m_lineedit->setFixedSize(500,30);
+    m_lineedit->setFocus();
+    m_lineedit->setText ("Whateverkdlsjfldskjf;alskj;ldskjf;lsdjfl;sdkjf;lsdjf;lsdjflkasjfd;lsdjfldskfj;ldskjf;lsdkjf;lsdkjf;sdlfks;dlkfj;lsdkfj;lsdkjflsdkjflsdkjf;lsdkjfs;dlkfs;dlkfsldkjf;lks");
+    connect( m_lineedit, SIGNAL( returnPressed() ), SLOT( slotReturnPressed() ) );
+    connect( m_lineedit, SIGNAL( returnPressed(const QString&) ), 
              SLOT( slotReturnPressed(const QString&) ) );
 
-    button = new QPushButton( "E&xit", this );
-    button->setFixedSize(100,30);
-    connect( button, SIGNAL( clicked() ), SLOT( quitApp() ) );
+    m_btnExit = new QPushButton( "E&xit", this );
+    m_btnExit->setFixedSize(100,30);
+    connect( m_btnExit, SIGNAL( clicked() ), SLOT( quitApp() ) );
+    
+    m_btnReadOnly = new QPushButton( "&ReadOnly", this );
+    m_btnReadOnly->setToggleButton (true);
+    m_btnReadOnly->setFixedSize(100,30);
+    connect( m_btnReadOnly, SIGNAL( toggled(bool) ), SLOT( readOnly(bool) ) );
 
-    layout->addWidget( lineedit );
-    layout->addWidget( button );
+    layout->addWidget( m_lineedit );
+    layout->addWidget( m_btnExit );
+    layout->addWidget( m_btnReadOnly );
     setCaption( "KLineEdit Unit Test" );
 }
 
@@ -58,6 +64,15 @@ void KLineEditTest::slotReturnPressed( const QString& text )
 void KLineEditTest::resultOutput( const QString& text )
 {
     kdDebug() << "KlineEditTest Debug: " << text << endl;
+}
+
+void KLineEditTest::readOnly (bool ro)
+{
+    m_lineedit->setReadOnly (ro);
+    if (ro)
+      m_btnReadOnly->setText ("&Read Write");
+    else
+      m_btnReadOnly->setText ("&Read Only");
 }
 
 KLineEditTest::~KLineEditTest()
