@@ -509,7 +509,7 @@ QString MaticHandler::printOptions(KPrinter *printer)
 	QString	str;
 	for (QMap<QString,QString>::Iterator it=opts.begin(); it!=opts.end(); ++it)
 	{
-		if (it.key().startsWith("kde-") || it.key().startsWith("_kde"))
+		if (it.key().startsWith("kde-") || it.key().startsWith("_kde-") || it.key().startsWith( "app-" ))
 			continue;
 		str += (" " + it.key() + "=" + (*it));
 	}
