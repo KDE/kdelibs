@@ -328,6 +328,11 @@ int main(int argc, char *argv[])
   check("http: URL with incorrect encoded query", waba1.url(),
         "http://www.kde.org/cgi/test.cgi?hello=My%20Value");
 
+  // URL with ':' in query (':' should NOT be encoded!)
+  waba1.setQuery("hello:My Value");
+  check("http: URL with ':' in query", waba1.url(),
+        "http://www.kde.org/cgi/test.cgi?hello:My%20Value");
+
   // URLs who forgot to encode spaces in the query. 
   waba1 = "http://www.kde.org/cgi/test.cgi?hello=My Value+20";
   check("http: URL with incorrect encoded query", waba1.url(),
