@@ -101,7 +101,10 @@ public:
 		if(audiofd >= 0)
 		{
 			IOManager *iom = Dispatcher::the()->ioManager();
-			iom->watchFD(audiofd,IOType::write|IOType::except,this);
+			int types = IOType::write|IOType::except;
+
+			if(as->fullDuplex()) types |= IOType::read;
+			iom->watchFD(audiofd,types,this);
 		}
 	}
 
@@ -167,14 +170,6 @@ public:
 		}
 		assert(fd == audiofd);
 
-		switch(type)
-		{
-			case IOType::read: type = AudioSubSystem::ioRead;
-					break;
-			case IOType::write: type = AudioSubSystem::ioWrite;
-					break;
-			default: assert(false);
-		}
 		if(inProgress)
 		{
 			if(!restartIOHandling)
@@ -186,9 +181,17 @@ public:
 			}
 			return;
 		}
+
+		// convert iomanager notification types to audiosubsys notification
+		int asType = 0;
+
+		if(type & IOType::read)		asType |= AudioSubSystem::ioRead;
+		if(type & IOType::write)	asType |= AudioSubSystem::ioWrite;
+		assert(asType != 0);
+
 		restartIOHandling = false;
 		inProgress = true;
-		as->handleIO(type);
+		as->handleIO(asType);
 		inProgress = false;
 		if(restartIOHandling) streamStart();
 	}

@@ -45,6 +45,7 @@
 #include <unistd.h>
 #include <iostream>
 
+#include "debug.h"
 #include "audiosubsys.h"
 
 #define DEVICE_NAME "/dev/dsp"
@@ -199,6 +200,29 @@ int AudioSubSystem::open()
 	// audio subsystem again if anything else goes wrong
 	_running = true;
 
+	/*
+	 * check device capabilities
+	 */
+	int device_caps;
+	if(ioctl(audio_fd,SNDCTL_DSP_GETCAPS,&device_caps) == -1)
+	{
+		_error = "SNDCTL_DSP_GETCAPS failed - ";
+		_error += strerror(errno);
+
+		close();
+		return -1;
+	}
+
+	artsdebug("device capabilities: ");
+	artsdebug("revision%d ",device_caps & DSP_CAP_REVISION);
+	if(device_caps & DSP_CAP_DUPLEX) artsdebug("duplex ");
+	if(device_caps & DSP_CAP_REALTIME) artsdebug("realtime ");
+	if(device_caps & DSP_CAP_BATCH) artsdebug("batch ");
+	if(device_caps & DSP_CAP_COPROC) artsdebug("coproc ");
+	if(device_caps & DSP_CAP_TRIGGER) artsdebug("trigger ");
+	if(device_caps & DSP_CAP_MMAP) artsdebug("mmap ");
+	artsdebug("\n");
+
 	int format = AFMT_S16_LE;  
 	if (ioctl(audio_fd, SNDCTL_DSP_SETFMT, &format)==-1)  
 	{
@@ -303,18 +327,6 @@ int AudioSubSystem::open()
 
 	// FIXME: check here if frag_arg changed
 
-	int enable_bits = ~(PCM_ENABLE_OUTPUT|PCM_ENABLE_INPUT);
-	if(_fullDuplex)
-	{
-		if(ioctl(audio_fd,SNDCTL_DSP_SETTRIGGER, &enable_bits) == -1)
-		{
-			_error = "can't request synchronous start of fullduplex operation";
-
-			close();
-			return -1;
-		}
-	}
-
 	/*
 	 * Workaround for broken kernel drivers: usually filling up the audio
 	 * buffer is _only_ required if _fullDuplex is true. However, there
@@ -327,16 +339,26 @@ int AudioSubSystem::open()
 		/* fills up the audio buffer */;
 	free(zbuffer);
 
-	if(_fullDuplex)
+	/*
+	 * Triggering - the original aRts code did this for full duplex:
+	 *
+	 *  - stop audio i/o using SETTRIGGER(~(PCM_ENABLE_INPUT|PCM_ENABLE_OUTPUT))
+	 *  - fill buffer (see zbuffer code two lines above
+	 *  - start audio i/o using SETTRIGGER(PCM_ENABLE_INPUT|PCM_ENABLE_OUTPUT)
+	 *
+	 * this should guarantee synchronous start of input/output. Today, it
+	 * seems there are too many broken drivers around for this.
+	 */
+
+	if(device_caps & DSP_CAP_TRIGGER)
 	{
-		/*
-	 	 * Go now, and hope! that the application does the select trick
-	 	 * correctly, otherwise we'll get buffer over/underruns soon
-	 	 */
-		enable_bits = PCM_ENABLE_OUTPUT|PCM_ENABLE_INPUT;
+		int enable_bits = PCM_ENABLE_OUTPUT;
+
+		if(_fullDuplex) enable_bits |= PCM_ENABLE_INPUT;
+
 		if(ioctl(audio_fd,SNDCTL_DSP_SETTRIGGER, &enable_bits) == -1)
 		{
-			_error = "can't start of fullduplex operation";
+			_error = "can't start of sound i/o operation";
 
 			close();
 			return -1;
@@ -438,14 +460,17 @@ void AudioSubSystem::read(void *buffer, int size)
 	while(rBuffer.size() < size)
 	{
 		fd_set readfds;
+		timeval select_timeout;
+		long selectabs = 50000;	// 50 ms
+		select_timeout.tv_sec = selectabs / 1000000;
+		select_timeout.tv_usec = selectabs % 1000000;
 
 		FD_ZERO(&readfds);
 		FD_SET(audio_fd,&readfds);
 
-		//printf("must use select\n");
-		int rc = select(audio_fd+1,&readfds,NULL,NULL,NULL);
-		assert(rc > 0);
-
+		int rc = select(audio_fd+1,&readfds,NULL,NULL,&select_timeout);
+		if(rc <= 0)
+			cout << "full duplex: timeout occured" << endl;
 		handleIO(ioRead);
 	}
 	int rSize = rBuffer.read(size,buffer);

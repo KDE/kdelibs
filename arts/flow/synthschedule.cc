@@ -932,7 +932,11 @@ void StdFlowSystem::schedule(unsigned long samples)
 		{
 			StdScheduleNode *node = *ni;
 
-			if(node->outConnCount == 0 && node->running)
+            int outConnections = 0,c;
+            for(c=0;c<node->outConnCount && !outConnections;c++)
+                outConnections += node->outConn[c]->destcount;                  
+
+			if(outConnections == 0 && node->running)
 			{
 				//printf("consumber = %s,done = %d, samples = %d\n",SynthModules[i]->getClassName(),done[i],samples);
 				/* a module whose input is not comsumed from other modules
