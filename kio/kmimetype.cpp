@@ -557,13 +557,20 @@ bool KDEDesktopMimeType::runApplication( const KURL& , const QString & _serviceF
     // The error message was already displayed, so we can just quit here
     return false;
 
+  QString user = s.username();
+  QString opts = s.terminalOptions();
+  if (opts.isNull())
+    opts = "";
+
   QString cmd = s.exec();
-  if (s.substituteUid()) {
-    QString user = s.username();
-    if (!user.isEmpty())
-      cmd.prepend( QString("kdesu -u %1 ").arg(user) );
-    kDebugInfo("command: %s", cmd.latin1());
-  }
+  if (s.substituteUid() && !user.isEmpty())
+  {
+    if (s.terminal()) 
+      cmd = QString("konsole %1 -e su -- %2 -c \"%3\"").arg(opts).arg(user).arg(cmd);
+    else
+      cmd = QString("kdesu -u %1 -- %2").arg(user).arg(cmd);
+  } else if (s.terminal())
+    cmd = QString("konsole %1 -e /bin/sh -- -c \"%2\"").arg(opts).arg(cmd);
 
   KURL::List empty;
   bool res = KRun::run( cmd, empty, s.name(), s.icon(), s.icon() );
