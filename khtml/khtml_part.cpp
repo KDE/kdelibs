@@ -1215,10 +1215,14 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *
 
   KParts::ReadOnlyPart *res = 0L;
 
+  char *className = "KParts::ReadOnlyPart";
+  if ( service->serviceTypes().contains( "Browser/View" ) )
+    className = "Browser/View";
+  
   if ( factory->inherits( "KParts::Factory" ) )
-    res = static_cast<KParts::ReadOnlyPart *>(static_cast<KParts::Factory *>( factory )->createPart( parentWidget, widgetName, parent, name, "KParts::ReadOnlyPart" ));
+    res = static_cast<KParts::ReadOnlyPart *>(static_cast<KParts::Factory *>( factory )->createPart( parentWidget, widgetName, parent, name, className ));
   else
-  res = static_cast<KParts::ReadOnlyPart *>(factory->create( parentWidget, widgetName, "KParts::ReadOnlyPart" ));
+  res = static_cast<KParts::ReadOnlyPart *>(factory->create( parentWidget, widgetName, className ));
 
   if ( !res )
     return res;
