@@ -5,6 +5,7 @@
               (C) 2000 Kurt Granroth <granroth@kde.org>
               (C) 2000 Michael Koch <koch@kde.org>
               (C) 2001 Holger Freyther <freyther@kde.org>
+              (C) 2002 Ellis Whitehead <ellis@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -30,6 +31,7 @@
 #include <qvaluelist.h>
 #include <kguiitem.h>
 #include <kshortcut.h>
+#include <kstdaction.h>
 
 class QMenuBar;
 class QPopupMenu;
@@ -95,7 +97,7 @@ class KPopupMenu;
  * The steps to using actions are roughly as follows
  *
  * @li Decide which attributes you want to associate with a given
- *     action (icons, text, keyboard accelerator, etc)
+ *     action (icons, text, keyboard shortcut, etc)
  * @li Create the action using KAction (or derived or super class).
  * @li "Plug" the Action into whatever GUI element you want.  Typically,
  *      this will be a menu or toolbar.
@@ -105,12 +107,13 @@ class KPopupMenu;
  * Here is an example of enabling a "New [document]" action
  * <PRE>
  * KAction *newAct = new KAction(i18n("&New"), "filenew",
- *                               KStdAccel::key(KStdAccel::New), this,
- *                               SLOT(fileNew()), this);
+ *                               KStdAccel::shortcut(KStdAccel::New),
+ *                               this, SLOT(fileNew()),
+ *                               actionCollection(), "new");
  * </PRE>
  * This line creates our action.  It says that wherever this action is
  * displayed, it will use "&New" as the text, the standard icon, and
- * the standard accelerator.  It further says that whenever this action
+ * the standard shortcut.  It further says that whenever this action
  * is invoked, it will use the fileNew() slot to execute it.
  *
  * <PRE>
@@ -153,18 +156,6 @@ class KPopupMenu;
  * GUI (it's how the builder code knows which actions are valid and
  * which aren't).
  *
- * Inserting your action into the collection is very simple.  To use a
- * previous example:
- *
- * <pre>
- * KAction *newAct = new KAction(i18n("&New"), "filenew",
- *                               KStdAccel::key(KStdAccel::New), this,
- *                               SLOT(fileNew()), actionCollection());
- * </pre>
- *
- * The only change is to use 'actionCollection()' as the parent of the
- * action.  That's it!
- *
  * Also, if you use the XML builder framework, then you do not ever
  * have to plug your actions into containers manually.  The framework
  * does that for you.
@@ -180,7 +171,6 @@ class KAction : public QObject
   Q_PROPERTY( QPixmap pixmap READ pixmap )
   Q_PROPERTY( QString plainText READ plainText )
   Q_PROPERTY( QString text READ text WRITE setText )
-  //Q_PROPERTY( int accel READ accel WRITE setAccel )
   Q_PROPERTY( QString shortcut READ shortcutText WRITE setShortcutText )
   Q_PROPERTY( bool enabled READ isEnabled WRITE setEnabled )
   Q_PROPERTY( QString group READ group WRITE setGroup )
@@ -190,24 +180,12 @@ class KAction : public QObject
   Q_PROPERTY( QString icon READ icon WRITE setIcon )
 public:
     /**
-     * Constructs an action with text and potential keyboard
-     * accelerator but nothing else.  Use this only if you really
-     * know what you are doing.
-     *
-     * @param text The text that will be displayed.
-     * @param cut The corresponding keyboard accelerator (shortcut).
-     * @param parent This action's parent.
-     * @param name An internal name for this action.
-     */
-    KAction( const QString& text, const KShortcut& cut = KShortcut(), QObject* parent = 0, const char* name = 0 );
-
-    /**
      * Constructs an action with text, potential keyboard
-     * accelerator, and a SLOT to call when this action is invoked by
+     * shortcut, and a SLOT to call when this action is invoked by
      * the user.
      *
-     * If you do not want or have a keyboard accelerator,
-     * set the @p accel param to 0.
+     * If you do not want or have a keyboard shortcut,
+     * set the @p cut param to 0.
      *
      * This is the most common KAction used when you do not have a
      * corresponding icon (note that it won't appear in the current version
@@ -215,71 +193,22 @@ public:
      * plugged in a toolbar...).
      *
      * @param text The text that will be displayed.
-     * @param cut The corresponding keyboard accelerator (shortcut).
+     * @param cut The corresponding keyboard shortcut.
      * @param receiver The SLOT's parent.
      * @param slot The SLOT to invoke to execute this action.
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
     KAction( const QString& text, const KShortcut& cut,
-             const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
-
-    /**
-     * Constructs an action with a KGuiItem providing the text and icon,
-     * potential keyboard accelerator, and a SLOT to call when this action is
-     * invoked by the user.
-     *
-     * If you do not want or have a keyboard accelerator,
-     * set the @p accel param to 0.
-     *
-     * @param item The KGuiItem with the text and (optional) icon.
-     * @param accel The corresponding keyboard accelerator (shortcut).
-     * @param receiver The SLOT's parent.
-     * @param slot The SLOT to invoke to execute this action.
-     * @param parent This action's parent.
-     * @param name An internal name for this action.
-     */
-    KAction( const KGuiItem& item, const KShortcut& cut,
-             const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
-
-    /**
-     * Constructs an action with text, icon, and a potential keyboard
-     * accelerator.
-     *
-     * This Action cannot execute any command.  Use this only if you
-     * really know what you are doing.
-     *
-     * @param text The text that will be displayed.
-     * @param pix The icons that go with this action.
-     * @param cut The corresponding keyboard accelerator (shortcut).
-     * @param parent This action's parent.
-     * @param name An internal name for this action.
-     */
-    KAction( const QString& text, const QIconSet& pix, const KShortcut& cut = KShortcut(),
-             QObject* parent = 0, const char* name = 0 );
-
-    /**
-     * Constructs an action with text, automatically loaded icon, and a
-     * potential keyboard accelerator.
-     *
-     * This Action cannot execute any command.  Use this only if you
-     * really know what you are doing.
-     *
-     * @param text The text that will be displayed.
-     * @param pix The icons that go with this action.
-     * @param cut The corresponding keyboard accelerator (shortcut).
-     * @param parent This action's parent.
-     * @param name An internal name for this action.
-     */
-    KAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
-             QObject* parent = 0, const char* name = 0 );
+             const QObject* receiver, const char* slot,
+             KActionCollection* parent, const char* name );
 
     /**
      * Constructs an action with text, icon, potential keyboard
-     * accelerator, and a SLOT to call when this action is invoked by
+     * shortcut, and a SLOT to call when this action is invoked by
      * the user.
      *
-     * If you do not want or have a keyboard accelerator, set the
+     * If you do not want or have a keyboard shortcut, set the
      * @p cut param to 0.
      *
      * This is the other common KAction used.  Use it when you
@@ -287,22 +216,23 @@ public:
      *
      * @param text The text that will be displayed.
      * @param pix The icon to display.
-     * @param cut The corresponding keyboard accelerator (shortcut).
+     * @param cut The corresponding keyboard shortcut.
      * @param receiver The SLOT's parent.
      * @param slot The SLOT to invoke to execute this action.
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
     KAction( const QString& text, const QIconSet& pix, const KShortcut& cut,
-             const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+             const QObject* receiver, const char* slot,
+             KActionCollection* parent, const char* name );
 
     /**
      * Constructs an action with text, icon, potential keyboard
-     * accelerator, and a SLOT to call when this action is invoked by
+     * shortcut, and a SLOT to call when this action is invoked by
      * the user.  The icon is loaded on demand later based on where it
      * is plugged in.
      *
-     * If you do not want or have a keyboard accelerator, set the
+     * If you do not want or have a keyboard shortcut, set the
      * @p cut param to 0.
      *
      * This is the other common KAction used.  Use it when you
@@ -310,29 +240,48 @@ public:
      *
      * @param text The text that will be displayed.
      * @param pix The icon to display.
-     * @param cut The corresponding keyboard accelerator (shortcut).
+     * @param cut The corresponding keyboard shortcut (shortcut).
      * @param receiver The SLOT's parent.
      * @param slot The SLOT to invoke to execute this action.
      * @param parent This action's parent.
      * @param name An internal name for this action.
      */
     KAction( const QString& text, const QString& pix, const KShortcut& cut,
-             const QObject* receiver, const char* slot, QObject* parent,
-         const char* name = 0 );
+             const QObject* receiver, const char* slot,
+             KActionCollection* parent, const char* name );
 
     /**
-     * Constructs a null action.
-     * This is not recommended since all actions should have a text,
-     * for the "Edit ToolBar" dialog. So don't forget to call setText later :)
+     * The same as the above constructor, but with a KGuiItem providing
+     * the text and icon.
      *
-     * @param parent This action's parent.
-     * @param name An internal name for this action.
+     * @param item The KGuiItem with the label and (optional) icon.
      */
-    KAction( QObject* parent = 0, const char* name = 0 );
+    KAction( const KGuiItem& item, const KShortcut& cut,
+             const QObject* receiver, const char* slot,
+             KActionCollection* parent, const char* name );
 
-    /**
-     * Standard destructor
-     */
+	/** @obsolete */
+	KAction( const QString& text, const KShortcut& cut = KShortcut(), QObject* parent = 0, const char* name = 0 );
+	/** @obsolete */
+	KAction( const QString& text, const KShortcut& cut,
+		const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+	/** @obsolete */
+	KAction( const QString& text, const QIconSet& pix, const KShortcut& cut = KShortcut(),
+		QObject* parent = 0, const char* name = 0 );
+	/** @obsolete */
+	KAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
+		QObject* parent = 0, const char* name = 0 );
+	/** @obsolete */
+	KAction( const QString& text, const QIconSet& pix, const KShortcut& cut,
+		const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+	/** @obsolete */
+	KAction( const QString& text, const QString& pix, const KShortcut& cut,
+		const QObject* receiver, const char* slot, QObject* parent,
+		const char* name = 0 );
+	/** @obsolete */
+	KAction( QObject* parent = 0, const char* name = 0 );
+
+    /** Standard destructor */
     virtual ~KAction();
 
     /**
@@ -356,7 +305,7 @@ public:
      * that are only activated by keyboard).
      *
      * @param cut The KAccel which activates this action
-     * @param configurable If the accelerator is configurable via
+     * @param configurable If the shortcut is configurable via
      * the KAccel configuration dialog (this is somehow deprecated since
      * there is now a KAction key configuration dialog).
      */
@@ -420,8 +369,7 @@ public:
     /**
      * Get the default shortcut for this action.
      */
-    // BCI: make this virtual
-    const KShortcut& shortcutDefault() const;
+    virtual const KShortcut& shortcutDefault() const;
 
     // These two methods are for Q_PROPERTY
     QString shortcutText() const;
@@ -429,6 +377,9 @@ public:
 
     /** Returns true if this action is enabled. */
     virtual bool isEnabled() const;
+
+    /** Returns true if this action's shortcut is configurable. */
+    virtual bool isConfigurable() const;
 
     virtual QString group() const;
 
@@ -469,7 +420,7 @@ public slots:
     virtual void setText(const QString &text);
 
     /**
-     * Sets the keyboard accelerator associated with this action.
+     * Sets the keyboard shortcut associated with this action.
      */
     virtual void setShortcut( const KShortcut& );
 
@@ -506,6 +457,9 @@ public slots:
      */
     virtual void setEnabled(bool enable);
 
+    /** Indicate whether the user may configure the action's shortcut. */
+    virtual void setConfigurable( bool );
+
     /**
      * Emulate user's interaction programmatically, by activating the action.
      * The implementation simply emits activated().
@@ -527,7 +481,8 @@ protected:
     void addContainer( QWidget* parent, int id );
     void addContainer( QWidget* parent, QWidget* representative );
 
-    virtual void setShortcut( int id, const KShortcut& cut );
+    virtual void setShortcut( int i );
+    virtual void setShortcut( QPopupMenu* menu, int id );
     virtual void setGroup( int id, const QString& grp );
     virtual void setText(int i, const QString &text);
     virtual void setEnabled(int i, bool enable);
@@ -546,6 +501,9 @@ private:
     QString whatsThisWithIcon() const;
     class KActionPrivate;
     KActionPrivate *d;
+
+    void initPrivate( const QString& text, const KShortcut& cut,
+                  const QObject* receiver, const char* slot );
 
 #ifndef KDE_NO_COMPAT
 public:
@@ -1458,7 +1416,6 @@ public:
 public slots:
     virtual void setEnabled( bool b );
 protected:
-    virtual void setEnabled( int i, bool enable );
     virtual void setText( int id, const QString& text );
     virtual void setIconSet( int id, const QIconSet& iconSet );
 
@@ -1537,7 +1494,7 @@ public:
      */
     KToolBarPopupAction( const KGuiItem& item, const KShortcut& cut,
                          const QObject* receiver, const char* slot,
-                         QObject* parent = 0, const char* name = 0 );
+                         KActionCollection* parent, const char* name );
 
     virtual ~KToolBarPopupAction();
 
@@ -1602,7 +1559,36 @@ private:
 };
 
 /**
- * A set of KAction objects.
+ * A set of pointers to possibly unrelated KAction objects from zero or
+ * more KActionCollections.
+ */
+class KActionPtrList : public QValueList<KAction*>
+{
+public:
+  KActionPtrList();
+  KActionPtrList( const KActionPtrList& );
+  KActionPtrList( const KActionCollection& );
+  virtual ~KActionPtrList();
+
+  virtual void insert( KAction* );
+  virtual KAction* take( KAction* );
+
+  virtual KAction* action( int index ) const;
+  virtual KAction* action( const char* name, const char* classname = 0 ) const;
+
+  virtual void createKeyMap( KAccelActions& );
+  virtual void setKeyMap( const KAccelActions& map );
+
+  virtual KActionPtrList &operator=( const KActionPtrList &c );
+  virtual KActionPtrList &operator=( const KActionCollection &c );
+  virtual KActionPtrList &operator+=( const KActionCollection &c );
+
+protected:
+  class KActionPtrListPrivate* d;
+};
+
+/**
+ * A managed set of KAction objects.
  */
 class KActionCollection : public QObject
 {
@@ -1610,31 +1596,24 @@ class KActionCollection : public QObject
 
   Q_OBJECT
 public:
-  KActionCollection( QObject *parent = 0, const char *name = 0, KInstance *instance = 0 );
+  KActionCollection( QWidget *parent, const char *name = 0, KInstance *instance = 0 );
   KActionCollection( const KActionCollection &copy );
   virtual ~KActionCollection();
 
-  virtual void insert( KAction* );
-  virtual void remove( KAction* );
-  virtual KAction* take( KAction* );
-
-  virtual KAction* action( int index ) const;
+  /* Return the collection's KAccel object */
+  virtual KAccel* accel();
+  virtual const KAccel* accel() const;
   virtual uint count() const;
   bool isEmpty() const { return count() == 0; }
+  virtual KAction* action( int index ) const;
   virtual KAction* action( const char* name, const char* classname = 0 ) const;
 
   virtual QStringList groups() const;
-  virtual QValueList<KAction*> actions( const QString& group ) const;
-  virtual QValueList<KAction*> actions() const;
-
-  KActionCollection operator+ (const KActionCollection& ) const;
-  KActionCollection& operator= (const KActionCollection& );
-  KActionCollection& operator+= (const KActionCollection& );
+  virtual KActionPtrList actions( const QString& group ) const;
+  virtual KActionPtrList actions() const;
 
   virtual void createKeyMap( KAccelActions& );
-  //virtual void updateConnections();
   virtual void setKeyMap( const KAccelActions& map );
-  //virtual KAccelActions& keyMap();
 
   void setInstance( KInstance *instance );
   KInstance *instance() const;
@@ -1662,6 +1641,22 @@ signals:
   void actionStatusText( const QString &text );
   void clearStatusText();
 
+#ifndef KDE_NO_COMPAT
+public:
+  virtual void insert( KAction* );
+  virtual void remove( KAction* );
+  virtual KAction* take( KAction* );
+#else
+protected:
+  virtual void insert( KAction* );
+  virtual void remove( KAction* );
+  virtual KAction* take( KAction* );
+#endif
+
+protected:
+  /** @internal */
+  void setAccel( KAccel* );
+
 private slots:
    void slotMenuItemHighlighted( int id );
    void slotToolBarButtonHighlighted( int id, bool highlight );
@@ -1672,6 +1667,15 @@ private:
    KAction *findAction( QWidget *container, int id );
    class KActionCollectionPrivate;
    KActionCollectionPrivate *d;
+
+#ifndef KDE_NO_COMPAT
+public:
+  KActionCollection( QObject *parent, const char *name = 0, KInstance *instance = 0 );
+
+  KActionCollection operator+ ( const KActionCollection& ) const;
+  KActionCollection& operator= ( const KActionCollection& );
+  KActionCollection& operator+= ( const KActionCollection& );
+#endif // !KDE_NO_COMPAT
 };
 
 #endif

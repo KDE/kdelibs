@@ -6,6 +6,7 @@
               (C) 2000 Kurt Granroth <granroth@kde.org>
               (C) 2000 Michael Koch <koch@kde.org>
 	      (C) 2001 Holger Freyther <freyther@kde.org>
+              (C) 2002 Ellis Whitehead <ellis@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -96,12 +97,13 @@ class KAction::KActionPrivate : public KGuiItem
 public:
   KActionPrivate() : KGuiItem()
   {
-    m_kaccel    = 0;
-    m_cut       = 0;
+    m_kaccel = 0;
+    m_configurable = true;
   }
   ~KActionPrivate()
   {
   }
+
   KAccel *m_kaccel;
 
   QString m_groupText;
@@ -109,6 +111,8 @@ public:
 
   KShortcut m_cut;
   KShortcut m_cutDefault;
+
+  bool m_configurable;
 
   struct Container
   {
@@ -124,19 +128,50 @@ public:
 };
 
 KAction::KAction( const QString& text, const KShortcut& cut,
+             const QObject* receiver, const char* slot,
+             KActionCollection* parent, const char* name )
+: QObject( parent, name )
+{
+	initPrivate( text, cut, receiver, slot );
+}
+
+KAction::KAction( const QString& text, const QIconSet& iconset, const KShortcut& cut,
+             const QObject* receiver, const char* slot,
+             KActionCollection* parent, const char* name )
+: QObject( parent, name )
+{
+	initPrivate( text, cut, receiver, slot );
+	setIconSet( iconset );
+}
+
+KAction::KAction( const QString& text, const QString& sIconName, const KShortcut& cut,
+	const QObject* receiver, const char* slot,
+	KActionCollection* parent, const char* name )
+: QObject( parent, name )
+{
+	initPrivate( text, cut, receiver, slot );
+	d->setIconName( sIconName );
+}
+
+KAction::KAction( const KGuiItem& item, const KShortcut& cut,
+	const QObject* receiver, const char* slot,
+	KActionCollection* parent, const char* name )
+: QObject( parent, name )
+{
+	initPrivate( item.text(), cut, receiver, slot );
+	if( item.hasIconSet() )
+		setIcon( item.iconName() );
+
+	if( receiver )
+		connect( this, SIGNAL(activated()), receiver, slot );
+}
+
+#ifndef KDE_NO_COMPAT
+KAction::KAction( const QString& text, const KShortcut& cut,
                   QObject* parent, const char* name )
  : QObject( parent, name )
 {
-    d = new KActionPrivate;
-
-    m_parentCollection = parentCollection();
-    if ( m_parentCollection ) {
-        d->m_cut = cut;      // default key binding
-        m_parentCollection->insert( this );
-    }
-
-    setShortcut( cut );
-    setText( text );
+    initPrivate( text, cut, 0, 0 );
 }
 
 KAction::KAction( const QString& text, const KShortcut& cut,
@@ -144,41 +179,7 @@ KAction::KAction( const QString& text, const KShortcut& cut,
                   const char* slot, QObject* parent, const char* name )
  : QObject( parent, name )
 {
-    d = new KActionPrivate;
-
-    m_parentCollection = parentCollection();
-    if ( m_parentCollection ) {
-        d->m_cut = d->m_cutDefault = cut;      // default key binding
-        m_parentCollection->insert( this );
-    }
-
-    setShortcut( cut );
-    setText( text );
-
-    if ( receiver )
-    connect( this, SIGNAL( activated() ), receiver, slot );
-}
-
-KAction::KAction( const KGuiItem& item, const KShortcut& cut,
-                  const QObject* receiver,
-                  const char* slot, QObject* parent, const char* name )
-: QObject( parent, name )
-{
-    d = new KActionPrivate;
-
-    m_parentCollection = parentCollection();
-    if ( m_parentCollection ) {
-        d->m_cut = cut;      // default key binding
-        m_parentCollection->insert( this );
-    }
-
-    setShortcut( cut );
-    setText( item.text() );
-    if( item.hasIconSet() )
-        setIcon( item.iconName() );
-
-    if ( receiver )
-        connect( this, SIGNAL( activated() ), receiver, slot );
+    initPrivate( text, cut, receiver, slot );
 }
 
 KAction::KAction( const QString& text, const QIconSet& pix,
@@ -186,16 +187,7 @@ KAction::KAction( const QString& text, const QIconSet& pix,
                   QObject* parent, const char* name )
  : QObject( parent, name )
 {
-    d = new KActionPrivate;
-
-    m_parentCollection = parentCollection();
-    if ( m_parentCollection ) {
-        d->m_cut = d->m_cutDefault = cut;      // default key binding
-        m_parentCollection->insert( this );
-    }
-
-    setShortcut( cut );
-    setText( text );
+    initPrivate( text, cut, 0, 0 );
     setIconSet( pix );
 }
 
@@ -204,17 +196,7 @@ KAction::KAction( const QString& text, const QString& pix,
                   QObject* parent, const char* name )
 : QObject( parent, name )
 {
-    d = new KActionPrivate;
-
-    m_parentCollection = parentCollection();
-    if ( m_parentCollection ) {
-        d->m_cut = d->m_cutDefault = cut;      // default key binding
-        m_parentCollection->insert( this );
-    }
-
-    setText( text );
-    setShortcut( cut );
-
+    initPrivate( text, cut, 0, 0 );
     d->setIconName( pix );
 }
 
@@ -224,20 +206,8 @@ KAction::KAction( const QString& text, const QIconSet& pix,
                   const char* name )
  : QObject( parent, name )
 {
-    d = new KActionPrivate;
-
-    m_parentCollection = parentCollection();
-    if ( m_parentCollection ) {
-        ;      // default key binding
-        m_parentCollection->insert( this );
-    }
-
-    setShortcut( cut );
-    setText( text );
+    initPrivate( text, cut, receiver, slot );
     setIconSet( pix );
-
-    if ( receiver )
-      connect( this, SIGNAL( activated() ), receiver, slot );
 }
 
 KAction::KAction( const QString& text, const QString& pix,
@@ -246,32 +216,17 @@ KAction::KAction( const QString& text, const QString& pix,
                   const char* name )
   : QObject( parent, name )
 {
-    d = new KActionPrivate;
-
-    m_parentCollection = parentCollection();
-    if ( m_parentCollection ) {
-        d->m_cut = cut;      // default key binding
-        m_parentCollection->insert( this );
-    }
-
-    setShortcut( cut );
-    setText( text );
-
+    initPrivate( text, cut, receiver, slot );
     d->setIconName(pix);
-
-    if ( receiver )
-      connect( this, SIGNAL( activated() ), receiver, slot );
 }
 
 KAction::KAction( QObject* parent, const char* name )
  : QObject( parent, name )
 {
+    initPrivate( QString::null, KShortcut(), 0, 0 );
     d = new KActionPrivate;
-    m_parentCollection = parentCollection();
-    if ( m_parentCollection ) {
-        m_parentCollection->insert( this );
-    }
 }
+#endif
 
 KAction::~KAction()
 {
@@ -282,6 +237,26 @@ KAction::~KAction()
       m_parentCollection->take( this );
 
     delete d; d = 0;
+}
+
+void KAction::initPrivate( const QString& text, const KShortcut& cut,
+                  const QObject* receiver, const char* slot )
+{
+    d = new KActionPrivate;
+
+    d->m_cutDefault = cut;
+
+    m_parentCollection = dynamic_cast<KActionCollection *>( parent() );
+    if ( m_parentCollection )
+        m_parentCollection->insert( this );
+
+    setShortcut( cut );
+    d->setText( text );
+
+    if ( receiver )
+        connect( this, SIGNAL( activated() ), receiver, slot );
+
+    kdDebug(125) << "KAction::initPrivate(): name = \"" << name() << "\" cut = " << d->m_cut.toString() << " m_parentCollection = " << m_parentCollection << endl;
 }
 
 bool KAction::isPlugged() const
@@ -322,76 +297,63 @@ void KAction::setShortcut( const KShortcut& cut )
 {
   d->m_cut = cut;
 
-  if( d->m_kaccel )
+  if( !d->m_kaccel ) {
+    // Don't insert action into KAccel if it doesn't have a shortcut.
+    if( cut.isNull() )
+      return;
+    if( m_parentCollection && m_parentCollection->accel() )
+      plugAccel( m_parentCollection->accel() );
+  }
+  else
     d->m_kaccel->setShortcut( name(), cut );
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
-    setShortcut( i, cut );
+    setShortcut( i );
 }
 
 void KAction::setAccel( int keyQt )
 {
-/*
-#ifdef Q_WS_X11
-  // Make sure that we are really
-  //  using the right modifier combination by converting to its X equivalent
-  //  and back. Neccessary for punctuation keys on varying layouts.
-  uint keySymX, keyModX;
-  KKeyX11::keyQtToKeyX( qkey, 0, &keySymX, &keyModX );
-  qkey = KKeyX11::keySymXToKeyQt( keySymX, keyModX );
-#endif
-*/
   setShortcut( keyQt );
 }
 
-/*void KAction::setAccel( int i, const QKeySequence& a )
+void KAction::setShortcut( int i )
 {
-  QWidget* w = container( i );
-  if ( w->inherits( "QPopupMenu" ) )
-    static_cast<QPopupMenu*>(w)->setAccel( a, itemId( i ) );
-  else if ( w->inherits( "QMenuBar" ) )
-    static_cast<QMenuBar*>(w)->setAccel( a, itemId( i ) );
-
-  if ( !d->m_kaccel && a ) {// this case happens after configuring key bindings
-      plugMainWindowAccel( w );
-  }
-}*/
-
-void KAction::setShortcut( int i, const KShortcut& cut )
-{
-  int a = cut.keyCodeQt();
   int id = itemId( i );
 
   QWidget* w = container( i );
   if ( w->inherits( "QPopupMenu" ) ) {
     QPopupMenu* menu = static_cast<QPopupMenu*>(w);
-
-    //if( a || cut.seq(0).isNull() )
-    //  menu->setAccel( a, id );
-    //else {
-    {
-      QString s = menu->text( id );
-      int i = s.find( '\t' );
-      if ( i >= 0 )
-        s.replace( i+1, s.length()-i, cut.toString() );
-      else
-        s += "\t" + cut.toString();
-
-      QPixmap *pp = menu->pixmap( id );
-      if( pp && !pp->isNull() )
-        menu->changeItem( *pp, s, id );
-      else
-        menu->changeItem( s, id );
-    }
+    setShortcut( menu, id );
   }
+  // FIXME: It may be that the following should only be done
+  //  if d->m_kaccel == 0, otherwise we may be setting up
+  //  the shortcut twice. --ellis 2002/01/18
   else if ( w->inherits( "QMenuBar" ) )
-    static_cast<QMenuBar*>(w)->setAccel( a, id );
+    static_cast<QMenuBar*>(w)->setAccel( d->m_cut.keyCodeQt(), id );
+}
 
-  // Does this ever happen anymore?  I don't think so... --ellis 12/31/01
-  if ( !d->m_kaccel && a ) {// this case happens after configuring key bindings
-      plugMainWindowAccel( w );
+void KAction::setShortcut( QPopupMenu* menu, int id )
+{
+  // If the action has a KAccel object,
+  //  show the string representation of its shortcut.
+  if ( d->m_kaccel ) {
+    QString s = menu->text( id );
+    int i = s.find( '\t' );
+    if ( i >= 0 )
+      s.replace( i+1, s.length()-i, d->m_cut.toString() );
+    else
+      s += "\t" + d->m_cut.toString();
+
+    QPixmap *pp = menu->pixmap( id );
+    if ( pp && !pp->isNull() )
+      menu->changeItem( *pp, s, id );
+    else
+      menu->changeItem( s, id );
   }
+  // Otherwise insert the shortcut itself into the popup menu.
+  else
+    menu->setAccel( d->m_cut.keyCodeQt(), id );
 }
 
 const KShortcut& KAction::shortcut() const
@@ -443,6 +405,11 @@ bool KAction::isEnabled() const
   return d->isEnabled();
 }
 
+bool KAction::isConfigurable() const
+{
+  return d->m_configurable;
+}
+
 void KAction::setToolTip( const QString& tt )
 {
   d->setToolTip( tt );
@@ -472,6 +439,7 @@ int KAction::plug( QWidget *w, int index )
 	kdWarning() << "KAction::plug called with 0 argument\n";
  	return -1;
   }
+
   // Plug into the KMainWindow accel so that keybindings work for
   // actions that are only plugged into a toolbar, and in case of
   // hiding the menubar.
@@ -481,9 +449,9 @@ int KAction::plug( QWidget *w, int index )
   if ( w->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( w );
-    //int keyQt = d->m_cut.keyCodeQt();
-    int keyQt = 0;
     int id;
+    // Don't insert shortcut into menu if it's already in a KAccel object.
+    int keyQt = (d->m_kaccel) ? 0 : d->m_cut.keyCodeQt();
 
     if ( d->hasIconSet() )
         id = menu->insertItem( iconSet(), d->text(), this,//dsweet
@@ -494,24 +462,10 @@ int KAction::plug( QWidget *w, int index )
                                SLOT( slotActivated() ),  //dsweet
                                keyQt, -1, index );
 
-    // This is copied from setShortcut( int, ... ) below.
-    // TODO: place this in its own function, like setShortcut( menu, id, cut ); --ellis, 12/31/01
-    //if( keyQt == 0 && !d->m_cut.isNull() ) {
-    {
-      const KShortcut& cut = d->m_cut;
-      QString s = menu->text( id );
-      int i = s.find( '\t' );
-      if ( i >= 0 )
-        s.replace( i+1, s.length()-i, cut.toString() );
-      else
-        s += "\t" + cut.toString();
-
-      QPixmap *pp = menu->pixmap( id );
-      if( pp && !pp->isNull() )
-        menu->changeItem( *pp, s, id );
-      else
-        menu->changeItem( s, id );
-    }
+    // If the shortcut is already in a KAccel object, then
+    //  we need to set the menu item's shortcut text.
+    if ( d->m_kaccel )
+        setShortcut( menu, id );
 
     // call setItemEnabled only if the item really should be disabled,
     // because that method is slow and the item is per default enabled
@@ -611,12 +565,16 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
   if ( d->m_kaccel )
     unplugAccel();
 
+  // If the parent collection's accel ptr isn't set yet
+  if ( m_parentCollection && !m_parentCollection->accel() )
+    m_parentCollection->setAccel( kacc );
+
   // We can only plug this action into the given KAccel object
   //  if it does not already contain an action with the same name.
   if ( !kacc->actions().actionPtr(name()) )
   {
     d->m_kaccel = kacc;
-    d->m_kaccel->insertAction(name(), d->plainText(), QString::null,
+    d->m_kaccel->insert(name(), d->plainText(), QString::null,
         KShortcut(d->m_cut),
         this, SLOT(slotActivated()),
         configurable, isEnabled());
@@ -632,7 +590,7 @@ void KAction::unplugAccel()
   kdDebug(125) << "KAction::unplugAccel()" << endl; // -- ellis
   if ( d->m_kaccel )
   {
-    d->m_kaccel->removeAction(name());
+    d->m_kaccel->remove(name());
     d->m_kaccel = 0;
   }
 }
@@ -648,8 +606,8 @@ void KAction::plugMainWindowAccel( QWidget *w )
   KMainWindow * mw = dynamic_cast<KMainWindow *>(tl); // try to see if it's a kmainwindow
   if (mw)
     plugAccel( mw->accel() );
-//    else
-//      kdDebug() << "KAction::plug: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
+  else
+    kdDebug(125) << "KAction::plugMainWindowAccel: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
 }
 
 void KAction::setEnabled(bool enable)
@@ -679,6 +637,11 @@ void KAction::setEnabled( int i, bool e )
       static_cast<QMenuBar*>(w)->setItemEnabled( itemId( i ), e );
     else if ( w->inherits( "KToolBar" ) )
       static_cast<KToolBar*>(w)->setItemEnabled( itemId( i ), e );
+}
+
+void KAction::setConfigurable( bool b )
+{
+    d->m_configurable = b;
 }
 
 void KAction::setText( const QString& text )
@@ -965,7 +928,7 @@ void KAction::slotKeycodeChanged()
 
 KActionCollection *KAction::parentCollection() const
 {
-    return dynamic_cast<KActionCollection *>( parent() );
+    return m_parentCollection;
 }
 
 void KAction::unplugAll()
@@ -2466,12 +2429,6 @@ void KActionMenu::setEnabled( bool b )
   KAction::setEnabled( b );
 }
 
-// To be removed (BCI)
-void KActionMenu::setEnabled( int id, bool b )
-{
-  KAction::setEnabled( id, b );
-}
-
 void KActionMenu::setText( int id, const QString& text )
 {
   QWidget *w = container( id );
@@ -2526,7 +2483,7 @@ KToolBarPopupAction::KToolBarPopupAction( const QString& text,
 KToolBarPopupAction::KToolBarPopupAction( const KGuiItem& item,
                                           const KShortcut& cut,
                                           const QObject* receiver,
-                                          const char* slot, QObject* parent,
+                                          const char* slot, KActionCollection* parent,
                                           const char* name )
   : KAction( item, cut, receiver, slot, parent, name )
 {
@@ -2714,11 +2671,104 @@ void KActionSeparator::unplug( QWidget *widget )
   return;
 }
 
+KActionPtrList::KActionPtrList()
+{
+}
+
+KActionPtrList::KActionPtrList( const KActionPtrList& coll )
+{
+  static_cast<QValueList<KAction*>&>(*this) = static_cast<const QValueList<KAction*>&>(coll);
+}
+
+KActionPtrList::KActionPtrList( const KActionCollection& coll )
+{
+  static_cast<QValueList<KAction*>&>(*this) = static_cast<const QValueList<KAction*>&>(coll.actions());
+}
+
+KActionPtrList::~KActionPtrList()
+{
+}
+
+void KActionPtrList::insert( KAction* pAction )
+{
+  append( pAction );
+}
+
+KAction* KActionPtrList::take( KAction* pAction )
+{
+  if( remove( pAction ) > 0 )
+    return pAction;
+  else
+    return 0;
+}
+
+KAction* KActionPtrList::action( int index ) const
+{
+  return *at( index );
+}
+
+KAction* KActionPtrList::action( const char* name, const char* classname = 0 ) const
+{
+  for( ConstIterator it = begin(); it != end(); ++it )
+  {
+    if ( ( !name || strcmp( (*it)->name(), name ) == 0 ) &&
+        ( !classname || strcmp( (*it)->className(), classname ) == 0 ) )
+      return (*it);
+  }
+  return 0;
+}
+
+void KActionPtrList::createKeyMap( KAccelActions& map )
+{
+  kdDebug(125) << "KActionCollection::createKeyMap( " << &map << ")" << endl; // -- ellis
+  map.clear();
+  for( ConstIterator it = begin(); it != end(); ++it ) {
+    KAction* action = *it;
+    if( action->isConfigurable() ) {
+      map.insert( action->name(), action->plainText(), QString::null,
+        action->shortcutDefault(), action->shortcutDefault() );
+      if( action->shortcut() != action->shortcutDefault() ) {
+        KAccelAction* pAccelAction = map.actionPtr( action->name() );
+        if( pAccelAction )
+          pAccelAction->setShortcut( action->shortcut() );
+      }
+    }
+  }
+}
+
+void KActionPtrList::setKeyMap( const KAccelActions& map )
+{
+  kdDebug(125) << "KActionCollection::setKeyMap( " << &map << " )" << endl; // -- ellis
+  for( uint i = 0; i < map.count(); i++ )
+  {
+    const KAccelAction* aa = map.actionPtr( i );
+    KAction* act = action( aa->name().latin1() );
+    if( act )
+      act->setShortcut( aa->shortcut() );
+  }
+}
+
+KActionPtrList& KActionPtrList::operator=( const KActionPtrList &c )
+{
+  static_cast<QValueList<KAction*>&>(*this) = static_cast<const QValueList<KAction*>&>(c);
+}
+
+KActionPtrList& KActionPtrList::operator=( const KActionCollection &c )
+{
+  static_cast<QValueList<KAction*>&>(*this) = static_cast<const QValueList<KAction*>&>(c.actions());
+}
+
+KActionPtrList& KActionPtrList::operator+=( const KActionCollection &c )
+{
+  static_cast<QValueList<KAction*>&>(*this) += static_cast<const QValueList<KAction*>&>(c.actions());
+}
+
 class KActionCollection::KActionCollectionPrivate
 {
 public:
   KActionCollectionPrivate()
   {
+    m_kaccel = 0;
     m_dctHighlightContainers.setAutoDelete( true );
     m_highlight = false;
     m_currentHighlightAction = 0;
@@ -2728,28 +2778,47 @@ public:
   {
   }
   KInstance *m_instance;
+  KAccel *m_kaccel;
   QAsciiDict<KAction> m_actionDict;
   QPtrDict< QPtrList<KAction> > m_dctHighlightContainers;
   bool m_highlight;
-  //KAccelActions m_keyMap;
   KAction *m_currentHighlightAction;
   bool m_statusCleared;
 };
 
+KActionCollection::KActionCollection( QWidget *parent, const char *name,
+                                      KInstance *instance )
+  : QObject( parent, name )
+{
+  d = new KActionCollectionPrivate;
+  if( parent )
+    d->m_kaccel = new KAccel( parent, "KActionCollection-KAccel" );
+  else
+    d->m_kaccel = 0;
+  setInstance( instance );
+}
+
+#ifndef KDE_NO_COMPAT
 KActionCollection::KActionCollection( QObject *parent, const char *name,
                                       KInstance *instance )
   : QObject( parent, name )
 {
   d = new KActionCollectionPrivate;
+  QWidget* w = dynamic_cast<QWidget*>( parent );
+  if( w )
+    d->m_kaccel = new KAccel( w, "KActionCollection-KAccel" );
+  else
+    d->m_kaccel = 0;
   setInstance( instance );
 }
+#endif
 
 KActionCollection::KActionCollection( const KActionCollection &copy )
     : QObject()
 {
   d = new KActionCollectionPrivate;
+  d->m_kaccel = copy.d->m_kaccel;
   d->m_actionDict = copy.d->m_actionDict;
-  //d->m_keyMap.init( copy.d->m_keyMap );
   setInstance( copy.instance() );
 }
 
@@ -2763,10 +2832,16 @@ KActionCollection::~KActionCollection()
   delete d; d = 0;
 }
 
+void KActionCollection::setAccel( KAccel* accel )
+{
+  if ( !d->m_kaccel )
+    d->m_kaccel = accel;
+}
+
 void KActionCollection::insert( KAction* action )
 {
   KAction *a = d->m_actionDict[ action->name() ];
-  if ( a && a == action )
+  if ( a == action )
       return;
 
   d->m_actionDict.insert( action->name(), action );
@@ -2785,7 +2860,6 @@ KAction* KActionCollection::take( KAction* action )
   if ( !a || a != action )
       return 0;
 
-  //d->m_keyMap.removeAction( a->name() );
   emit removed( action );
   return a;
 }
@@ -2795,6 +2869,16 @@ void KActionCollection::clear()
   QAsciiDictIterator<KAction> it( d->m_actionDict );
   while ( it.current() )
     remove( it.current() );
+}
+
+KAccel* KActionCollection::accel()
+{
+  return d->m_kaccel;
+}
+
+const KAccel* KActionCollection::accel() const
+{
+  return d->m_kaccel;
 }
 
 KAction* KActionCollection::action( const char* name, const char* classname ) const
@@ -2827,12 +2911,14 @@ void KActionCollection::createKeyMap( KAccelActions& map )
   QAsciiDictIterator<KAction> it( d->m_actionDict );
   for( ; it.current(); ++it ) {
     KAction* action = it.current();
-    map.insertAction( action->name(), action->plainText(), QString::null,
-      action->shortcutDefault(), action->shortcutDefault() );
-    if( action->shortcut() != action->shortcutDefault() ) {
-      KAccelAction* pAccelAction = map.actionPtr( action->name() );
-      if( pAccelAction )
-        pAccelAction->setShortcut( action->shortcut() );
+    if( action->isConfigurable() ) {
+      map.insert( action->name(), action->plainText(), QString::null,
+        action->shortcutDefault(), action->shortcutDefault() );
+      if( action->shortcut() != action->shortcutDefault() ) {
+        KAccelAction* pAccelAction = map.actionPtr( action->name() );
+        if( pAccelAction )
+          pAccelAction->setShortcut( action->shortcut() );
+      }
     }
   }
 }
@@ -2840,7 +2926,7 @@ void KActionCollection::createKeyMap( KAccelActions& map )
 void KActionCollection::setKeyMap( const KAccelActions& map )
 {
   kdDebug(125) << "KActionCollection::setKeyMap( " << &map << " )" << endl; // -- ellis
-  for( uint i = 0; i < map.size(); i++ )
+  for( uint i = 0; i < map.count(); i++ )
   {
     const KAccelAction* aa = map.actionPtr( i );
     KAction* act = action( aa->name().latin1() );
@@ -2865,9 +2951,9 @@ QStringList KActionCollection::groups() const
   return lst;
 }
 
-QValueList<KAction*> KActionCollection::actions( const QString& group ) const
+KActionPtrList KActionCollection::actions( const QString& group ) const
 {
-  QValueList<KAction*> lst;
+  KActionPtrList lst;
 
   QAsciiDictIterator<KAction> it( d->m_actionDict );
   for( ; it.current(); ++it )
@@ -2879,9 +2965,9 @@ QValueList<KAction*> KActionCollection::actions( const QString& group ) const
   return lst;
 }
 
-QValueList<KAction*> KActionCollection::actions() const
+KActionPtrList KActionCollection::actions() const
 {
-  QValueList<KAction*> lst;
+  KActionPtrList lst;
 
   QAsciiDictIterator<KAction> it( d->m_actionDict );
   for( ; it.current(); ++it )
@@ -2890,7 +2976,7 @@ QValueList<KAction*> KActionCollection::actions() const
   return lst;
 }
 
-KActionCollection KActionCollection::operator+(const KActionCollection &c ) const
+/*KActionCollection KActionCollection::operator+(const KActionCollection &c ) const
 {
   KActionCollection ret( *this );
 
@@ -2918,7 +3004,7 @@ KActionCollection &KActionCollection::operator+=( const KActionCollection &c )
     insert( it.current() );
 
   return *this;
-}
+}*/
 
 void KActionCollection::setInstance( KInstance *instance )
 {
@@ -3076,6 +3162,38 @@ KAction *KActionCollection::findAction( QWidget *container, int id )
 
   return 0;
 }
+
+#ifndef KDE_NO_COMPAT
+KActionCollection KActionCollection::operator+(const KActionCollection &c ) const
+{
+  KActionCollection ret( *this );
+
+  QValueList<KAction *> actions = c.actions();
+  QValueList<KAction *>::ConstIterator it = actions.begin();
+  QValueList<KAction *>::ConstIterator end = actions.end();
+  for (; it != end; ++it )
+    ret.insert( *it );
+
+  return ret;
+}
+
+KActionCollection &KActionCollection::operator=( const KActionCollection &c )
+{
+  d->m_kaccel = c.d->m_kaccel;
+  d->m_actionDict = c.d->m_actionDict;
+  setInstance( c.instance() );
+  return *this;
+}
+
+KActionCollection &KActionCollection::operator+=( const KActionCollection &c )
+{
+  QAsciiDictIterator<KAction> it(c.d->m_actionDict);
+  for ( ; it.current(); ++it )
+    insert( it.current() );
+
+  return *this;
+}
+#endif
 
 #include "kaction.moc"
 
