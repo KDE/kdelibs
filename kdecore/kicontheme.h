@@ -87,6 +87,8 @@ public:
     enum StdSizes {
         /// small icons for menu entries
         SizeSmall=16,
+        /// slightly larger small icons for toolbars, panels, etc
+        SizeSmallMedium=22,
         /// medium sized icons for the desktop
         SizeMedium=32,
         /// large sized icons for the panel
