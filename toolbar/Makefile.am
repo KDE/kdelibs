@@ -6,7 +6,7 @@ kde_toolbar_DATA = add_point.png airbrush.png blend.png \
 	delete.png droplet.png dropper.png edit_point.png \
 	eraser.png \
 	exclamation.png exit.png filefloppy.png filemail.png \
-	filenew.png filenew2.png fileopen.png fileprint.png find.png \
+	filenew.png filenew2.png fileopen.png find.png \
 	flag.png help.png idea.png \
 	image.png kde1.png kde2.png kde3.png kde4.png kde5.png kde6.png \
         kde7.png kde8.png kde9.png \
