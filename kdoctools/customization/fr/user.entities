@@ -13,7 +13,7 @@
 <!ENTITY BDS            	"bouton <mousebutton>droit</mousebutton> de la souris">   <!-- English: &RMB; -->
 <!ENTITY cad            	"c'est-à-dire">                                         <!-- English: &ie; -->
 <!ENTITY cdrom          	'<hardware>lecteur de CD-ROM</hardware>'>
-<!ENTITY centreAide     	'<application>Centre d'aide de &kde;</application>'>
+<!ENTITY centreAide     	"<application>Centre d'aide de &kde;</application>">
 <!ENTITY centreConfiguration    '<application>Centre de configuration de &kde;</application>'>
 <!-- ENTITY Ctrl        	"<keycap>Ctrl</keycap>" -->
 <!ENTITY dpi            	'<acronym>dpi</acronym>'>
