@@ -219,8 +219,11 @@ KNotify::KNotify( bool useArts )
     d->audioManager = 0;
     if( useArts )
     {
-        connect( soundServer, SIGNAL( restartedServer() ), this, SLOT( restartedArtsd() ) );
         restartedArtsd(); //started allready need to initialize d->audioManager
+        // FIXME: Under certain circumstances the restartedServer() signal is
+        //        emitted in the restartedArtsd() slot. This can lead to
+        //        infinite looping.
+        connect( soundServer, SIGNAL( restartedServer() ), this, SLOT( restartedArtsd() ) );
     }
 
     d->volume = 100;
