@@ -1,5 +1,23 @@
 [Misc]
 Name=HighColor Default
+Name[de]=Standard für 64000 Farben
+Name[eo]=Implicita kun multagaj koloroj
+Name[hu]=Sok-színű alapértelmezett
+Name[it]=Molti colori predefinito
+Name[nl]=Standaard hoge kleuren
+Name[no]=Mange farger-standard
+Name[no_NY]=Mange farger-standard
+Name[sl]=Številne barve privzete
+Name[tr]=Yüksek Renk Öntanýmlý
 Comment=Highcolor version of the default style
+Comment[de]=64000-Farben-Version des Standardstils
+Comment[eo]=Implicita stilo kun multegaj koloroj
+Comment[hu]=Az alapértelmezett stílus sok-színű változata
+Comment[it]=Versione con molti colori dello stile predefinito
+Comment[nl]=Hoge-kleuren-versie van het standaard-type
+Comment[no]=Mange farger-versjon med standard stil
+Comment[no_NY]=Mange farger-versjon med standard stil
+Comment[sl]=Raznobarvna različica privzetega sloga
+Comment[tr]=Öntanýmlý stilin yüksek renk versiyonu
 [KDE]
 widgetStyle=hcstyle.la

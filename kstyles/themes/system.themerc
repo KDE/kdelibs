@@ -237,6 +237,7 @@ Name[ja]=システム
 Name[nl]=Systeem
 Name[pt]=Sistema
 Name[ro]=Sistem
+Name[ru]=Система
 Name[sl]=Sistem
 Name[sr]=Sistem
 Name[ta]=கணிபெபாறி
@@ -261,7 +262,7 @@ Comment[ro]=Stil sistem cu temă
 Comment[sl]=Sistemski tematski slog
 Comment[sr]=System tema
 Comment[sv]=Systemets temade stil
-Comment[tr]=Sistem dekorlu stil
+Comment[tr]=Sistem temalý stil
 
 [General]
 foreground=0,0,0
