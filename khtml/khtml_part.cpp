@@ -4669,7 +4669,7 @@ QString KHTMLPart::pageReferrer() const
           return referrerURL.url();
       }
    }
-   
+
    return QString::null;
 }
 
@@ -5000,7 +5000,7 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
  */
 bool isBeforeNode(DOM::Node start_sp, DOM::Node end_sp) {
   if ( start_sp.isNull() || end_sp.isNull() ) return true;
-  
+
   bool result = false;
   int start_depth=0, end_depth=0;
   // First we find the depths of the two nodes in the tree (start_depth, end_depth)
@@ -5740,6 +5740,25 @@ khtml::Decoder *KHTMLPart::createDecoder()
 
 void KHTMLPart::emitCaretPositionChanged(const DOM::Node &node, long offset) {
   emit caretPositionChanged(node, offset);
+}
+
+KWallet::Wallet* KHTMLPart::wallet()
+{
+  // ### close wallet after a certain timeout period automatically
+  // ### close wallet after screensaver was enabled
+
+  KHTMLPart* p;
+
+  for (p = parentPart(); p; p = p->parentPart())
+    ;
+
+  if (p)
+    return p->wallet();
+
+  if (!d->m_wallet)
+    d->m_wallet = KWallet::Wallet::openWallet(KWallet::Wallet::NetworkWallet());
+
+  return d->m_wallet;
 }
 
 using namespace KParts;

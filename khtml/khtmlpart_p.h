@@ -32,6 +32,7 @@
 #include <kaction.h>
 #include <kparts/partmanager.h>
 #include <kparts/statusbarextension.h>
+#include <kwallet.h>
 #include <qtimer.h>
 
 #include "khtml_run.h"
@@ -112,6 +113,7 @@ public:
     m_doc = 0L;
     m_decoder = 0L;
     m_jscript = 0L;
+    m_wallet = 0L;
     m_runningScripts = 0;
     m_kjs_lib = 0;
     m_job = 0L;
@@ -204,6 +206,7 @@ public:
     delete m_extension;
     delete m_settings;
     delete m_jscript;
+    delete m_wallet;
     if ( m_kjs_lib)
        m_kjs_lib->unload();
 #ifndef Q_WS_QWS
@@ -228,6 +231,7 @@ public:
   DOM::Node scheduledScriptNode;
 
   KJSProxy *m_jscript;
+  KWallet::Wallet* m_wallet;
   KLibrary *m_kjs_lib;
   int m_runningScripts;
   bool m_bBackRightClick :1;

@@ -94,6 +94,11 @@ namespace KParts
   class LiveConnectExtension;
 }
 
+namespace KWallet
+{
+  class Wallet;
+}
+
 /**
  * This class is khtml's main class. It features an almost complete
  * web browser, and html renderer.
@@ -821,7 +826,7 @@ signals:
   /**
    * @internal */
   void docCreated();
-  
+
   /**
    * This signal is emitted whenever the caret position has been changed.
    *
@@ -1148,6 +1153,8 @@ private:
   void overURL( const QString &url, const QString &target, bool shiftPressed = false );
 
   bool processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype );
+
+  KWallet::Wallet* wallet();
 
   /**
    * @internal
