@@ -883,7 +883,7 @@ void KCryptoConfig::load()
   CipherItem *item = static_cast<CipherItem *>(SSLv2Box->firstChild());
   while ( item ) {
       item->setOn(config->readBoolEntry(item->configName(),
-					item->bits() >= 40));
+					item->bits() >= 56));
       item = static_cast<CipherItem *>(item->nextSibling());
   }
 
@@ -891,7 +891,7 @@ void KCryptoConfig::load()
   item = static_cast<CipherItem *>(SSLv3Box->firstChild());
   while ( item ) {
       item->setOn(config->readBoolEntry(item->configName(),
-					item->bits() >= 40));
+					item->bits() >= 56));
       item = static_cast<CipherItem *>(item->nextSibling());
   }
 
@@ -1206,7 +1206,7 @@ void KCryptoConfig::defaults()
 
 #ifdef HAVE_SSL
     // We don't want to make
-    // ciphers < 40 bit a default selection.  This is very unsafe and
+    // ciphers < 56 bit a default selection.  This is very unsafe and
     // I have already witnessed OpenSSL negotiate a 0 bit connection
     // on me after tracing the https ioslave on a suspicion.
 
