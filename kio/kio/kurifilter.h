@@ -48,7 +48,7 @@ class KCModule;
 * URI.
 *
 * @sect Example
-* <pre>
+* \code
 *   QString text = "kde.org";
 *   KURIFilterData d = text;
 *   bool filtered = KURIFilter::self()->filter( d );
@@ -56,15 +56,15 @@ class KCModule;
 *        << "Filtered URL: " << d.uri().url().latin1() << endl
 *        << "URI Type: " << d.uriType() << endl
 *        << "Was Filtered: " << filtered << endl;
-* </pre>
+* \endcode
 *
 * The above code should yield the following output:
-* <pre>
+* \code
 *   URI: kde.org
 *   Filtered URI: http://kde.org
 *   URI Type: 0            <== means NET_PROTOCOL
 *   Was Filtered: 1        <== means the URL was successfully filtered
-* </pre>
+* \endcode
 *
 * @short A message object for exchanging filtering URI info.
 * @author Dawit Alemayehu <adawit at kde.org>
@@ -473,24 +473,24 @@ private:
  *
  * To simply filter a given string:
  *
- * <pre>
+ * \code
  * bool filtered = KURIFilter::self()->filterURI( "kde.org" );
- * </pre>
+ * \endcode
  *
  * You can alternatively use a KURL:
  *
- * <pre>
+ * \code
  * KURL url = "kde.org";
  * bool filtered = KURIFilter::self()->filterURI( url );
- * </pre>
+ * \endcode
  *
  * If you have a constant string or a constant URL, simply invoke the
  * corresponding function to obtain the filtered string or URL instead
  * of a boolean flag:
  *
- * <pre>
+ * \code
  * QString u = KURIFilter::self()->filteredURI( "kde.org" );
- * </pre>
+ * \endcode
  *
  * You can also restrict the filter(s) to be used by supplying
  * the name of the filter(s) to use.  By defualt all available
@@ -501,16 +501,16 @@ private:
  * filter called kshorturifilter while the second example uses
  * multiple filters:
  *
- * <pre>
+ * \code
  * QString text = "kde.org";
  * bool filtered = KURIFilter::self()->filterURI( text, "kshorturifilter" );
- * </pre>
+ * \endcode
  *
- * <pre>
+ * \code
  * QStringList list;
  * list << "kshorturifilter" << "localdomainfilter";
  * bool filtered = KURIFilter::self()->filterURI( text, list );
- * </pre>
+ * \endcode
  *
  * KURIFilter also allows richer data exchange through a simple
  * meta-object called @p KURIFilterData. Using this meta-object

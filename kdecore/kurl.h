@@ -32,16 +32,16 @@ class KURLPrivate;
  * Represents and parses a URL.
  *
  * A prototypical URL looks like:
- * <pre>
+ * \code
  *   protocol:/user:password\@hostname:port/path/to/file.ext#reference
- * </pre>
+ * \endcode
  *
  * KURL has some restrictions regarding the path
  * encoding. KURL works internally with the decoded path and
  * and encoded query. For example,
- * <pre>
+ * \code
  * http://localhost/cgi-bin/test%20me.pl?cmd=Hello%20you
- * </pre>
+ * \endcode
  * would result in a decoded path "/cgi-bin/test me.pl"
  * and in the encoded query "?cmd=Hello%20you".
  * Since path is internally always encoded you may @em not use
@@ -605,9 +605,9 @@ public:
   /**
    * Returns the URL as string in human-friendly format.
    * Example: 
-   * <pre>
+   * \code
    * http://localhost:8080/test.cgi?test=hello world&name=fred
-   * </pre>
+   * \endcode
    * @param _trailing -1 to strip a trailing '/' from the path, +1 adds
    *                  a trailing '/' if there is none yet and 0 returns the
    *                  path unchanged.
@@ -629,9 +629,9 @@ public:
   /**
    * Returns the URL as string, escaped for HTML.
    * Example: 
-   * <pre>
+   * \code
    * http://localhost:8080/test.cgi?test=hello world&name=fred
-   * </pre>
+   * \endcode
    * @return A human readable URL, with no non-necessary encodings/escaped
    * characters. Password will not be shown.
    */
@@ -740,10 +740,10 @@ public:
   /**
    * Creates a KURL object from a QString representing either an absolute path
    * or a real URL. Use this method instead of
-   * <pre>
+   * \code
    * QString someDir = ...
    * KURL url = someDir;
-   * </pre>
+   * \endcode
    *
    * Otherwise some characters (e.g. the '#') won't be encoded properly.
    * @param text the string representation of the URL to convert

@@ -44,7 +44,7 @@ class QStrIList;
  *
  * For KDE 3.2, the API has been extended to allow transparent use of
  * all currently supported SASL mechanisms. Example:
- * <pre>
+ * \code
  * KDESasl sasl( myUser, myPass, myProtocol );
  * if ( !sasl.chooseMethod( myMechanismsSupportedByServer ) )
  *   return false; // couldn't agree on a method
@@ -61,7 +61,7 @@ class QStrIList;
  *   mySendResponse( sasl.getResponse( challenge ) );
  * }
  * return myCheckSuccess();
- * </pre>
+ * \endcode
  *
  * @author Michael Häckel <haeckel@kde.org>
  * @version $Id$

@@ -213,9 +213,9 @@ typedef KKeyChooser KKeyChooser;
  * Three static methods are supplied which provide the most convienient interface
  * to the dialog. The most common and most encouraged use is with KActionCollection.
  *
- * <pre>
+ * \code
  * KKeyDialog::configure( actionCollection() );
- * </pre>
+ * \endcode
  *
  * @short Dialog for configuration of @ref KActionCollection, @ref KAccel, and @ref KGlobalAccel.
  * @version $Id$

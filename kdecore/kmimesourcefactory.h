@@ -60,8 +60,8 @@ public:
    * of \<category>|\<icon>.
    *
    * Example:
-   * <pre> "<img src=\"user|ksysv_start\"/>", "<img src="\desktop|trash\">", ...
-   * </pre>
+   * \code "<img src=\"user|ksysv_start\"/>", "<img src="\desktop|trash\">", ...
+   * \endcode
    *
    * @param abs_or_rel_name is the absolute or relative pathname.
    * @param context is the path of the context object for the queried resource. Almost always empty.

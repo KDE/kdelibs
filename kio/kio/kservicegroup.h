@@ -38,7 +38,7 @@ class KBuildServiceGroupFactory;
  * screensavers.
  * This class is typically used like this:
  *
- * <pre>
+ * \code
  * // Lookup screensaver group
  * KServiceGroup::Ptr group = KServiceGroup::baseGroup("screensavers");
  * if (!group || !group->isValid()) return;
@@ -61,7 +61,7 @@ class KBuildServiceGroupFactory;
  *       // Sub group ...
  *    }
  * }
- * </pre>
+ * \endcode
  * @short Represents a group of services
  */
 class KServiceGroup : public KSycocaEntry

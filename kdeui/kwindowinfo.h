@@ -18,18 +18,18 @@
  * transient with the original title and icon being restored automatically
  * after a specified time. The simplest use displays a text message in the
  * window title:
- * <pre>
+ * \code
  *    KWindowInfo::showMessage( this, &quot;Message Body&quot; );
- * </pre>
+ * \endcode
  * This more complex example changes the window icon, as well as
  * displaying the text. In addition, this example overrides the
  * default timeout to ensure the message is only displayed for 1
  * second.
- * <pre>
+ * \code
  *    QPixmap px;
  *    px.load( &quot;lo16-app-logtracker.png&quot; );
  *    KWindowInfo::showMessage( this, &quot;Message Body&quot;, px, 1000 );
- * </pre>
+ * \endcode
  * If the parent window inherits KSystemTray then KWindowInfo changes the
  * pixmap and tooltip of the system window to display the message.
  *

@@ -76,7 +76,7 @@ public:
    * and will be received once the application enters the event loop.
    *
    * Typically this is used like:
-   * <pre>
+   * \code
    * int main(int argc, char **argv) {
    *    KAboutData about("myappname", "myAppName", .....);
    *    KCmdLineArgs::init(argc, argv, &about);
@@ -90,7 +90,7 @@ public:
    *    KUniqueApplication a;
    *    a.exec();
    * }
-   * </pre>
+   * \endcode
    * Note that it's not necessary to call @ref start() explicitly. It will be
    * called automatically before creating KUniqueApplication if it hasn't
    * been called yet, without any performance impact.

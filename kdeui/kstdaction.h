@@ -92,9 +92,9 @@ class KToggleToolBarAction;
  * you instantiate it as in the the 'openNew' example above... or you
  * could do it the hard way:
  *
- * <pre>
+ * \code
  * KAction *cut = actionCollection()->action(KStdAction::stdName(KStdAction::Cut));
- * </pre>
+ * \endcode
  *
  * Another non-standard usage concerns instantiating the action in the
  * first place.  Usually, you would use the member functions as
@@ -103,10 +103,10 @@ class KToggleToolBarAction;
  * think of a reason why you would want to, but, hey, if you do,
  * here's how:
  *
- * <pre>
+ * \code
  * (void)KStdAction::action(KStdAction::New, this, SLOT(fileNew()), actionCollection());
  * (void)KStdAction::action(KStdAction::Cut, this, SLOT(editCut()), actionCollection());
- * </pre>
+ * \endcode
  *
  * @author Kurt Granroth <granroth@kde.org>
  */

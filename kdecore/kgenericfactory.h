@@ -133,15 +133,15 @@ KInstance *KGenericFactoryBase<T>::instance()
  * The creation of the KInstance object can be customized by inheriting
  * from this template class and re-implementing the virtual createInstance
  * method. For example it could look like this:
- * <pre>
+ * \code
  *     KInstance *MyFactory::createInstance()
  *     {
  *         return new KInstance( myAboutData );
  *     }
- * </pre>
+ * \endcode
  *
  * Example of usage of the whole template:
- * <pre>
+ * \code
  *     class MyPlugin : public KParts::Plugin
  *     {
  *         Q_ OBJECT
@@ -152,7 +152,7 @@ KInstance *KGenericFactoryBase<T>::instance()
  *     };
  *
  *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;MyPlugin&gt; );
- * </pre>
+ * \endcode
  */
 template <class Product, class ParentType = QObject>
 class KGenericFactory : public KLibFactory, public KGenericFactoryBase<Product>
@@ -208,15 +208,15 @@ protected:
  * The creation of the KInstance object can be customized by inheriting
  * from this template class and re-implementing the virtual createInstance
  * method. For example it could look like this:
- * <pre>
+ * \code
  *     KInstance *MyFactory::createInstance()
  *     {
  *         return new KInstance( myAboutData );
  *     }
- * </pre>
+ * \endcode
  *
  * Example of usage of the whole template:
- * <pre>
+ * \code
  *     class MyPlugin : public KParts::Plugin
  *     {
  *         Q_ OBJECT
@@ -237,7 +237,7 @@ protected:
  *
  *     typedef K_TYPELIST_2( MyPlugin, MyDialogComponent ) Products;
  *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;Products&gt; );
- * </pre>
+ * \endcode
  */
 template <class Product, class ProductListTail>
 class KGenericFactory< KTypeList<Product, ProductListTail>, QObject > 
@@ -295,15 +295,15 @@ protected:
  * The creation of the KInstance object can be customized by inheriting
  * from this template class and re-implementing the virtual createInstance
  * method. For example it could look like this:
- * <pre>
+ * \code
  *     KInstance *MyFactory::createInstance()
  *     {
  *         return new KInstance( myAboutData );
  *     }
- * </pre>
+ * \endcode
  *
  * Example of usage of the whole template:
- * <pre>
+ * \code
  *     class MyPlugin : public KParts::Plugin
  *     {
  *         Q_ OBJECT
@@ -324,7 +324,7 @@ protected:
  *
  *     typedef K_TYPELIST_2( MyPlugin, MyDialogComponent ) Products;
  *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;Products&gt; );
- * </pre>
+ * \endcode
  */
 template <class Product, class ProductListTail,
           class ParentType, class ParentTypeListTail>

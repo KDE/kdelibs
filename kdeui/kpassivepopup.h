@@ -27,18 +27,18 @@ class QVBox;
  *     itself if it is visible, and at the edge of the desktop otherwise.
  *
  * The most basic use of KPassivePopup displays a popup containing a piece of text:
- * <pre>
+ * \code
  *    KPassivePopup::message( &quot;This is the message&quot;, this );
- * </pre>
+ * \endcode
  * We can create popups with titles and icons too, as this example shows:
- * <pre>
+ * \code
  *    QPixmap px;
  *    px.load( &quot;hi32-app-logtracker.png&quot; );
  *    KPassivePopup::message( &quot;Some title&quot;, &quot;This is the main text&quot;, px, this );
- * </pre>
+ * \endcode
  * For more control over the popup, you can use the @ref setView(QWidget *) method
  * to create a custom popup.
- * <pre>
+ * \code
  *    KPassivePopup *pop = new KPassivePopup( parent );
  *
  *    QVBox *vb = new QVBox( pop );
@@ -50,7 +50,7 @@ class QVBox;
  *
  *    pop->setView( vb );
  *    pop->show();
- * </pre>
+ * \endcode
  *
  * @version $Id$
  * @since 3.1

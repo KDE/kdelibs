@@ -848,13 +848,13 @@ public:
      * tests if this Node is 0. Useful especially, if casting to a derived
      * class:
      *
-     * <pre>
+     * \code
      * Node n = .....;
      * // try to convert into an Element:
      * Element e = n;
      * if( e.isNull() )
      *   kdDebug(300) << "node isn't an element node" << endl;
-     * </pre>
+     * \endcode
      */
     bool isNull() const { return !impl; }
 

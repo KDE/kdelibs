@@ -90,23 +90,23 @@ class KURL;
  *
  * To enable the basic completion feature :
  *
- * <pre>
+ * \code
  * KLineEdit *edit = new KLineEdit( this, "mywidget" );
  * KCompletion *comp = edit->completionObject();
  * // Connect to the return pressed signal - optional
  * connect(edit,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
- * </pre>
+ * \endcode
  *
  * To use a customized completion objects or your
  * own completion object :
  *
- * <pre>
+ * \code
  * KLineEdit *edit = new KLineEdit( this,"mywidget" );
  * KURLCompletion *comp = new KURLCompletion();
  * edit->setCompletionObject( comp );
  * // Connect to the return pressed signal - optional
  * connect(edit,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
- * </pre>
+ * \endcode
  *
  * Note that you have to either delete the allocated completion object
  * when you don't need it anymore, or call
@@ -114,7 +114,7 @@ class KURL;
  *
  * @sect Miscellaneous function calls :
  *
- * <pre>
+ * \code
  * // Tell the widget not to handle completion and
  * // iteration internally.
  * edit->setHandleSignals( false );
@@ -127,7 +127,7 @@ class KURL;
  * edit->disableSignals();
  * // Default the key-bindings to system settings.
  * edit->useGlobalKeyBindings();
- * </pre>
+ * \endcode
  *
  * @short An enhanced single line input widget.
  * @author Dawit Alemayehu <adawit@kde.org>

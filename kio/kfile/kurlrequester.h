@@ -156,11 +156,11 @@ public:
      * @returns an object, suitable for use with KEditListBox. It allows you
      * to put this KURLRequester into a KEditListBox.
      * Basically, do it like this:
-     * <pre>
+     * \code
      * KURLRequester *req = new KURLRequester( someWidget );
      * [...]
      * KEditListBox *editListBox = new KEditListBox( i18n("Some Title"), req->customEditor(), someWidget );
-     * </pre>
+     * \endcode
      * @since 3.1
      */
     KEditListBox::CustomEditor customEditor();

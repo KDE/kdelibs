@@ -59,10 +59,10 @@ class kdbgstreamprivate;
  * @ref kdWarning(), @ref kdError() or @ref kdFatal to obtain one.
  *
  * Example:
- * <pre>
+ * \code
  *    int i = 5;
  *    kdDebug() << "The value of i is " << i << endl;
- * </pre>
+ * \endcode
  * @see kndbgstream
  */
 class kdbgstream {

@@ -59,7 +59,7 @@ class KGlobalSettings
      * which should originate from oldPos.
      *
      * Example code:
-     * <pre>
+     * \code
      * void KColorCells::mousePressEvent( QMouseEvent *e )
      * {
      *    mOldPos = e->pos();
@@ -83,7 +83,7 @@ class KGlobalSettings
      *       }
      *    }
      * }
-     * </pre>
+     * \endcode
      * @return the threshold for drag & drop in pixels
      */
 

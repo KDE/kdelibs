@@ -47,17 +47,17 @@ class KHelpMenuPrivate;
  *
  * The usage is simple:
  *
- * <pre>
+ * \code
  * mHelpMenu = new KHelpMenu( this, <someText> );
  * kmenubar->insertItem(i18n("&Help"), mHelpMenu->menu() );
- * </pre>
+ * \endcode
  *
  * or if you just want to open a dialog box:
  *
- * <pre>
+ * \code
  * mHelpMenu = new KHelpMenu( this, <someText> );
  * connect( this, SIGNAL(someSignal()), mHelpMenu,SLOT(mHelpMenu->aboutKDE()));
- * </pre>
+ * \endcode
  *
  * IMPORTANT:
  * The first time you use @ref KHelpMenu::menu(), a @ref KPopupMenu object is
@@ -69,12 +69,12 @@ class KHelpMenuPrivate;
  * The KHelpMenu object will be deleted when its parent is destroyed but you
  * can delete it yourself if you want. The code below will always work.
  *
- * <pre>
+ * \code
  * MyClass::~MyClass()
  * {
  *   delete mHelpMenu;
  * }
- * </pre>
+ * \endcode
  *
  *
  * Using your own "about application" dialog box:
@@ -87,7 +87,7 @@ class KHelpMenuPrivate;
  * will not be displayed:
  *
  * Example 1 Using @ref showAboutApplication signal (preferred)
- * <pre>
+ * \code
  *
  * void MyClass::myFunc()
  * {
@@ -102,11 +102,11 @@ class KHelpMenuPrivate;
  * {
  *   <activate your custom dialog>
  * }
- * </pre>
+ * \endcode
  *
  *
  * Example 2 Old style - connecting directly to the menu entry.
- * <pre>
+ * \code
  *
  * void MyClass::myFunc()
  * {
@@ -119,7 +119,7 @@ class KHelpMenuPrivate;
  * {
  *   <activate your custom dialog>
  * }
- * </pre>
+ * \endcode
  *
  * @short Standard KDE help menu with dialog boxes.
  * @author Espen Sand (espen@kde.org)

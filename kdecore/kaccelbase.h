@@ -73,7 +73,7 @@ class QWidget;
  *
  * The translated first argument for @ref insertItem() is used only
  * in the configuration dialog.
- *<pre>
+ *\code
  * KAccel *a = new KAccel( myWindow );
  * // Insert an action "Scroll Up" which is associated with the "Up" key:
  * a->insertItem( i18n("Scroll Up"), "Scroll Up", "Up" );
@@ -86,16 +86,16 @@ class QWidget;
  * a->connectItem(KStdAccel::Print, myWindow, SLOT( printDoc() ) );
  *
  * a->readSettings();
- *</pre>
+ *\endcode
  *
  * If a shortcut has a menu entry as well, you could insert them like
  * this. The example is again the @ref KStdAccel::Print from above.
  *
- * <pre>
+ * \code
  * int id;
  * id = popup->insertItem("&Print",this, SLOT(printDoc()));
  * a->changeMenuAccel(popup, id, KStdAccel::Print );
- * </pre>
+ * \endcode
  *
  * If you want a somewhat "exotic" name for your standard print action, like
  *   id = popup->insertItem(i18n("Print &Document"),this, SLOT(printDoc()));
@@ -106,10 +106,10 @@ class QWidget;
  * This technique works for other actions as well.  Your "scroll up" function
  * in a menu could be done with
  *
- * <pre>
+ * \code
  *    id = popup->insertItem(i18n"Scroll &up",this, SLOT(scrollUp()));
  *    a->changeMenuAccel(popup, id, "Scroll Up" );
- * </pre>
+ * \endcode
  *
  * Please keep the order right:  First insert all functions in the
  * acceleratior, then call a -> @ref readSettings() and @em then build your

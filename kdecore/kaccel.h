@@ -67,7 +67,7 @@ class KAccelPrivate;
  *
  * The translated first argument for @ref insertItem() is used only
  * in the configuration dialog.
- *<pre>
+ *\code
  * KAccel* pAccel = new KAccel( this );
  *
  * // Insert an action "Scroll Up" which is associated with the "Up" key:
@@ -80,7 +80,7 @@ class KAccelPrivate;
  * // Update the shortcuts by read any user-defined settings from the
  * //  application's config file.
  * pAccel->readSettings();
- *</pre>
+ *\endcode
  *
  * @short Configurable shortcut support for widgets.
  * @see KGlobalAccel
@@ -162,12 +162,12 @@ class KAccel : public QAccel
 	 * Create an accelerator action.
 	 *
 	 * Usage:
-	 *<pre>
+	 *\code
 	 * insert( "Do Something", i18n("Do Something"),
 	 *   i18n("This action allows you to do something really great with this program to "
 	 *        "the currently open document."),
 	 *   ALT+Key_D, this, SLOT(slotDoSomething()) );
-	 *</pre>
+	 *\endcode
 	 *
 	 * @param sAction The internal name of the action.
 	 * @param sLabel An i18n'ized short description of the action displayed when
@@ -197,9 +197,9 @@ class KAccel : public QAccel
 	 * of the action as for the user-visible label.
 	 *
 	 * Usage: 
-	 * <pre>
+	 * \code
 	 * insert( I18N_NOOP("Do Something"), ALT+Key_D, this, SLOT(slotDoSomething()) );
-	 * </pre>
+	 * \endcode
 	 *
 	 * @param psAction The name AND label of the action.
 	 * @param cutDef The default shortcut for this action.

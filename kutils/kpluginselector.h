@@ -47,7 +47,7 @@ class KPluginInfo
 		 * Read plugin info from @p filename.
 		 *
 		 * The file should be of the following form:
-		 * <pre>
+		 * \code
 		   [Desktop Entry]
 		   Name=User Visible Name
 		   Comment=Description of what the plugin does
@@ -62,7 +62,7 @@ class KPluginInfo
 		   Type=playlist
 		   Require=plugin1,plugin3
 		   License=GPL
-		 * </pre>
+		 * \endcode
 		 * The first three entries in the "Desktop Entry" group always need to be
 		 * present. The Type is always "Plugin". Be aware, that there's a Type
 		 * key in the "X-KDE Plugin Info" group, too. This is the type of the

@@ -37,7 +37,7 @@ class QStrList;
  * See the example code below for how to connect to these..
  *
  * Use it like this:
- * <pre>
+ * \code
  *  // fetch the Library..
  *  KLibFactory* factory = KLibLoader::self()->factory( "libkonsolepart" );
  *  if ( factory == 0L )
@@ -76,7 +76,7 @@ class QStrList;
  *  //             this, SLOT( shellExited( int ) ) );
  *  // etc.
  *
- * </pre>
+ * \endcode
  *
  * @warning This interface is only present since KDE 3.2.  Do _NOT_
  *          use if you want your app to work on previous versions of

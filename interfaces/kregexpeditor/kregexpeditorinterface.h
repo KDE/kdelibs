@@ -14,14 +14,14 @@
  *
  * To check if kregexpeditor in kdeutils is installed and available use this line:
  * 
- * <pre>
+ * \code
  * bool installed=!KTrader::self()->query("KRegExpEditor/KRegExpEditor").isEmpty();
- * </pre>
+ * \endcode
  *
  * The following is a template for what you need to do to create an instance of the
  * regular expression dialog:
  *
- * <pre>
+ * \code
  * QDialog *editorDialog = KParts::ComponentFactory::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor" );
  * if ( editorDialog ) {
  *   // kdeutils was installed, so the dialog was found fetch the editor interface
@@ -37,17 +37,17 @@
  * else {
  *   // Don't offer the dialog.
  * }
- * </pre>
+ * \endcode
  *
  * Note: signals and slots must be connected to the editorDialog object, not to the editor object:
- * <pre>
+ * \code
  * connect( editorDialog, SIGNAL( canUndo( bool ) ), undoBut, SLOT( setEnabled( bool ) ) );
- * </pre>
+ * \endcode
  *
  * If you want to create an instance of the editor widget, i.e. not the
  * dialog, then you must do it in the following way:
  *
- * <pre>
+ * \code
  * QWidget *editorWidget =
  * KParts::ComponentFactory::createInstanceFromQuery<QWidget>( 
  *     "KRegExpEditor/KRegExpEditor", QString::null, parent );
@@ -65,7 +65,7 @@
  * else {
  *   // Don't offer the editor widget.
  * }
- * </pre>
+ * \endcode
  *
  */
 class KRegExpEditorInterface

@@ -81,14 +81,14 @@ public:
      * this, (assuming @p u is a string which represents a URL and your
      * application has a @ref loadFile() function):
      *
-     * <pre>
+     * \code
      * QString tmpFile;
      * if( KIO::NetAccess::download( u, tmpFile ) )
      * {
      *   loadFile( tmpFile );
      *   KIO::NetAccess::removeTempFile( tmpFile );
      *   }
-     * </pre>
+     * \endcode
      *
      * Of course, your user interface will still process exposure/repaint
      * events during the download.

@@ -40,11 +40,11 @@ create the popup menu and insert it into the context menu manager with
 the static function @ref #insert().
 
 Example:
-<pre>
+\code
    #include <kcmenumngr.h>
    ...
    KContextMenuManager::insert( myWidget, myPopupMenu );
-</pre>
+\endcode
 
 
 Context menus are invoked with either a special shortcut key (usually
@@ -52,22 +52,22 @@ the menu key) or the right mouse button.
 
 Menus are configurable in the [ContextMenus] group of the application's
 configuration file, usually in kdeglobals:
-<pre>
+\code
     [ContextMenus]
     ShowOnPress=true|false
-</pre>
+\endcode
 
 @p ShowOnPress defines whether the menu shall be shown on mouse
 press or on mouse release.
 
 The shortcut key to invoke the context menu is defined in the standard
 [Keys] section of the application configuration:
-<pre>
+\code
    [Keys]
    ...
    PopupContextMenu=Menu
    ...
-</pre>
+\endcode
 The key can be configured with the standard keys module in the KDE control center.
 
 If the popup menu is invoked with the keyboard shortcut, it's shown at

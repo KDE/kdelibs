@@ -43,7 +43,7 @@ struct FormatInfo
  *
  * Example:
  *
- * <pre>
+ * \code
  * KABC::FormatFactory *factory = KABC::FormatFactory::self();
  *
  * QStringList list = factory->formats();
@@ -52,7 +52,7 @@ struct FormatInfo
  *   KABC::FormatPlugin *format = factory->format( (*it) );
  *   // do something with format
  * }
- * </pre>
+ * \endcode
  */
 class FormatFactory
 {

@@ -37,7 +37,7 @@ class DrMain;
  * accessible via @ref KPrinter::option(). The option name should follow the form
  * "kde-appname-optionname" for internal reasons.
  *
- * <pre>
+ * \code
  * #include <kdeprint/kprintdialogpage.h>
  *
  * class MyDialogPage : public KPrintDialogPage
@@ -81,7 +81,7 @@ class DrMain;
  *   }
  *   return true;
  * }
- * </pre>
+ * \endcode
  *
  * @short Base class for customized print dialog pages.
  * @see KPrinter

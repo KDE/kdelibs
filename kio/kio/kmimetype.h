@@ -313,11 +313,11 @@ public:
    * "application/octet-stream" is returned otherwise.
    *
    * Equivalent to
-   *   <pre>
+   *   \code
    *        KURL u;
    *        u.setPath(path);
    *        return findByURL( u, mode, true, fast_mode );
-   *   </pre>
+   *   \endcode
    * @param path the path to the file
    * @param _mode the mode of the file (used, for example, to identify
    *              executables)

@@ -47,7 +47,7 @@ class DrPageSize;
  * Basically, a KDE application will use the KPrinter object as a paint device, and will draw
  * on it using @ref QPainter. In a standard application, the use of the KPrinter class will
  * look like this:
- * <pre>
+ * \code
  * #include <kprinter.h>
  * #include <qpainter.h>
  *
@@ -71,7 +71,7 @@ class DrPageSize;
  *     painter.end();
  *   }
  * }
- * </pre>
+ * \endcode
  *
  * The KPrinter interface also allows some more advanced possibilities, like the customization
  * of the print dialog to integrate application specific print options. This is done by subclassing
@@ -372,7 +372,7 @@ public:
 	 *            and @ref setOutputFileName()
 	 * @li %psl : the page size in lower case. This may be useful with some
 	 *            programs like gs.
-	 * <pre>
+	 * \code
 	 * void createPNGOutputFile(const QString& filename)
 	 * {
 	 *   // use a clean KPrinter object
@@ -385,7 +385,7 @@ public:
 	 *   QPainter painter( &prt );
 	 *   doPaint( &painter );
 	 * }
-	 * </pre>
+	 * \endcode
 	 * @param cmd the print command line (containing at least the @p %in tag)
 	 * @see printProgram()
 	 */
@@ -408,7 +408,7 @@ public:
 	 * selected "current page" in the print dialog. This option will only be
 	 * enabled if the application does page selection itself and the application
 	 * has called @ref setCurrentPage() before opening the print dialog:
-	 * <pre>
+	 * \code
 	 * MyClass::MyClass()
 	 * {
 	 *   // declares my application able to do page selection
@@ -427,7 +427,7 @@ public:
 	 *     ...
 	 *   }
 	 * }
-	 * </pre>
+	 * \endcode
 	 * @param p the current page number (starting from 1)
 	 */
 	void setCurrentPage(int p = 0);
@@ -491,7 +491,7 @@ public:
 	 * Sets the KPrinter object to preview mode if @p on is true. In this mode, nothing will be
 	 * printed but only a preview dialog will be popped up with the single "Close" action. Using
 	 * this mode, any application can easily implement a preview action:
-	 * <pre>
+	 * \code
 	 * void MyClass:doPreview()
 	 * {
 	 *   // use a "clean" KPrinter object (independant from previous print jobs),
@@ -502,7 +502,7 @@ public:
 	 *   QPainter painter( &prt );
 	 *   doPrint( &painter );
 	 * }
-	 * </pre>
+	 * \endcode
 	 * @param on the preview-only state
 	 * @see previewOnly()
 	 */
@@ -620,7 +620,7 @@ public:
 	 * into the KPrinter object using this QMap<QString,QString> structure. After showing the
 	 * print dialog, your application can then access these options using this method. The
 	 * custom option name should follow the form "kde-appname-optionname".
-	 * <pre>
+	 * \code
 	 * void MyClass::doPrint()
 	 * {
 	 *   KPrinter prt;
@@ -637,7 +637,7 @@ public:
 	 *      ...
 	 *   }
 	 * }
-	 * </pre>
+	 * \endcode
 	 * @param key the option name (key)
 	 * @returns the option value correponding to the key, or QString::null
 	 * @see KPrintDialogPage, setOption, options(), setOptions()

@@ -40,7 +40,7 @@
  * To use the class to implement a complete find feature:
  *
  * In the slot connected to the find action, after using KFindDialog:
- * <pre>
+ * \code
  *
  *  // This creates a find-next-prompt dialog if needed.
  *  m_find = new KFind(pattern, options, this);
@@ -52,7 +52,7 @@
  *  // Connect findNext signal - called when pressing the button in the dialog
  *  connect( m_find, SIGNAL( findNext() ),
  *          this, SLOT( slotFindNext() ) );
- * </pre>
+ * \endcode
  *
  * If you are using a non-modal find dialog (the recommended new way
  * in KDE-3.2), you should call right away m_find->closeFindNextDialog().
@@ -65,7 +65,7 @@
  *  Swap begin and end if FindBackwards.
  *  Finally, call slotFindNext();
  *
- * <pre>
+ * \code
  *  void slotFindNext()
  *  {
  *      KFind::Result res = KFind::NoMatch;
@@ -86,7 +86,7 @@
  *           or           if ( m_find->shouldRestart() ) { reinit (w/o FromCursor) and call slotFindNext(); }
  *                        else { m_find->closeFindNextDialog(); }>
  *  }
- * </pre>
+ * \endcode
  *
  *  Don't forget delete m_find in the destructor of your class,
  *  unless you gave it a parent widget on construction.

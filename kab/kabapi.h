@@ -34,7 +34,7 @@ class KListBox;
   * can be used as a KDE dialog where the user may select a person
   * out of the entries in his personal database.
   * The following code may be used to let the user select an address:
-  * <pre>
+  * \code
   * KabAPI kabapi(this);
   * if(dialog.init()!=KabAPI::NoError)
   *   {
@@ -51,7 +51,7 @@ class KListBox;
   *       }
   *   }
   * ...
-  * </pre>
+  * \endcode
   * Some methods declared here return keys of entries. The keys are of the
   * datatype KabKey. Every key
   * is (of course) unique and identifying. If you store it, you can access

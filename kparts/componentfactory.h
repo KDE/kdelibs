@@ -42,9 +42,9 @@ namespace KParts
          * instance of the given template type.
          *
          * Example of usage:
-         * <pre>
+         * \code
          *     MyPlugin *plugin = KParts::ComponentFactory::createInstanceFromFactory&lt;MyPlugin&gt;( factory, parent );
-         * </pre>
+         * \endcode
          *
          * @param factory The factory to ask for the creation of the component
          * @param parent The parent object (see QObject constructor)
@@ -74,9 +74,9 @@ namespace KParts
          * instance of the given template type.
          *
          * Example of usage:
-         * <pre>
+         * \code
          *     KViewPart *doc = KParts::ComponentFactory::createPartInstanceFromFactory&lt;KViewPart&gt;( factory, parent );
-         * </pre>
+         * \endcode
          *
          * @param factory The factory to ask for the creation of the component
          * @param parentWidget the parent widget for the part
@@ -318,7 +318,7 @@ namespace KParts
          *
          * You can use this method to create a generic viewer - that can display any
          * kind of file, provided that there is a ReadOnlyPart installed for it - in 5 lines:
-         * <pre>
+         * \code
          *     // Given the following: KURL url, QWidget* parentWidget and QObject* parentObject.
          *     QString mimetype = KMimeType::findByURL( url )->name();
          *     KParts::ReadOnlyPart* part = KParts::ComponentFactory::createPartInstanceFromQuery<KParts::ReadOnlyPart>( mimetype, QString::null, parentWidget, 0, parentObject, 0 );
@@ -326,7 +326,7 @@ namespace KParts
          *         part->openURL( url );
          *         part->widget()->show();  // also insert the widget into a layout, or simply use a QVBox as parentWidget
          *     }
-         * </pre>
+         * \endcode
          *
          * @param serviceType the type of service for which to find a part, e.g. a mimetype
          * @param constraint an optionnal constraint to pass to the trader (see KTrader)

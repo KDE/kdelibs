@@ -101,13 +101,13 @@ namespace KParts
  * The easiest way to use this class (if you just want to display a an HTML
  * page at some URL) is the following:
  *
- * <pre>
+ * \code
  * KURL url = "http://www.kde.org";
  * KHTMLPart *w = new KHTMLPart();
  * w->openURL(url);
  * w->view()->resize(500, 400);
  * w->show();
- * </pre>
+ * \endcode
  *
  * Java and JavaScript are enabled by default depending on the user's
  * settings. If you do not need them, and especially if you display
@@ -115,31 +115,31 @@ namespace KParts
  * turn them off. In that case, you should also turn off the automatic
  * redirect and plugins:
  *
- * <pre>
+ * \code
  * w->setJScriptEnabled(false);
  * w->setJavaEnabled(false);
  * w->setMetaRefreshEnabled(false);
  * w->setPluginsEnabled(false);
- * </pre>
+ * \endcode
  *
  * You may also wish to disable external references.  This will prevent KHTML
  * from loading images, frames, etc,  or redirecting to external sites.
  *
- * <pre>
+ * \code
  * w->setOnlyLocalReferences(true);
- * </pre>
+ * \endcode
  *
  * Some apps want to write their HTML code directly into the widget instead of
  * opening an url. You can do this in the following way:
  *
- * <pre>
+ * \code
  * QString myHTMLCode = ...;
  * KHTMLPart *w = new KHTMLPart();
  * w->begin();
  * w->write(myHTMLCode);
  * ...
  * w->end();
- * </pre>
+ * \endcode
  *
  * You can do as many calls to write() as you wish.  There are two
  * @ref write() methods, one accepting a @ref QString and one accepting a

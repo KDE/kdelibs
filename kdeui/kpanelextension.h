@@ -72,7 +72,7 @@ class KPanelExtensionPrivate;
  * factory function in your DSO.  A sample factory function could look
  * like this:
  *
- * <pre>
+ * \code
  *
  * extern "C"
  * {
@@ -85,7 +85,7 @@ class KPanelExtensionPrivate;
  *     }
  * }
  *
- * </pre>
+ * \endcode
  *
  * Note: Don't change the factory function signature or the panel will
  * fail to load your extension.

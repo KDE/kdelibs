@@ -387,19 +387,19 @@ public:
    * iterator.
    * Checking if the extension implements a certain slot can be done like this:
    *
-   * <pre>
+   * \code
    *   extension->metaObject()->slotNames().contains( actionName + "()" )
-   * </pre>
+   * \endcode
    *
    * (note that @p actionName is the iterator's key value if already
    *  iterating over the action slot map, returned by this method)
    *
    * Connecting to the slot can be done like this:
    *
-   * <pre>
+   * \code
    *   connect( yourObject, SIGNAL( yourSignal() ),
    *            extension, mapIterator.data() )
-   * </pre>
+   * \endcode
    *
    * (where "mapIterator" is your QMap<QCString,QCString> iterator)
    */

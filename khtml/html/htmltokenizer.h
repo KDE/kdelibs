@@ -244,7 +244,7 @@ protected:
 
     QChar EntityChar;
 
-    // Are we in a <pre> ... </pre> block
+    // Are we in a \code ... \endcode block
     bool pre;
 
     // if 'pre == true' we track in which column we are

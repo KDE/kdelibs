@@ -165,7 +165,7 @@ class AddresseeList : public QValueList<Addressee>
      * However, if you do want to use some special sorting criterion, you can
      * write a trait class that will be provided to this templated method.
      * This trait class has to have a class declaration like the following:
-     * <pre>
+     * \code
      * class MySortingTrait {
      *   public:
      *     // eq returns true if a1 and a2 are equal
@@ -173,11 +173,11 @@ class AddresseeList : public QValueList<Addressee>
      *     // lt returns true is a1 is "less than" a2
      *     static bool lt(KABC::Addressee a1, KABC::Addressee a2);
      * };
-     * </pre>
+     * \endcode
      * You can then pass this class to the sortByTrait method like this:
-     * <pre>
+     * \code
      * myAddresseelist.sortByTrait&lt;MySortingTrait&gt;();
-     * </pre>
+     * \endcode
      * Please note that the {@link #sort} method can not be used to repeat the
      * sorting of the last <tt>sortByTrait</tt> action.
      *

@@ -39,12 +39,12 @@ class QTextView;
  conflicts in menu and widgets. Put the following in your kdeglobals (or the config
  file for the application you're testing):
 
- <pre>
+ \code
  [Development]
  CheckAccelerators=F12
  AutoCheckAccelerators=false
  AlwaysShowCheckAccelerators=false
- </pre>
+ \endcode
 
  The checking can be either manual or automatic. To perform manual check, press
  the keyboard shortcut set to 'CheckAccelerators' (here F12). If automatic checking

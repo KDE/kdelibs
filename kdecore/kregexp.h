@@ -37,19 +37,19 @@ class KRegExpPrivate;
  * in Perl.
  *
  * Example:
- * <pre>
+ * \code
  *  KRegExp ex( "([A-Za-z]+) (.+)" );
  *  ex.match( "42 Torben Weis" );
  *  kdDebug() << ex.group(0) << endl;
  *  kdDebug() << ex.group(1) << endl;
  *  kdDebug() << ex.group(2) << endl;
- * </pre>
+ * \endcode
  * Output:
- * <pre>
+ * \code
  *  Torben Weis
  *  Torben
  *  Weis
- * </pre>
+ * \endcode
  *
  * Please notice that KRegExp does @em not support unicode.
  *

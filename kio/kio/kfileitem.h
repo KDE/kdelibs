@@ -361,15 +361,15 @@ public:
    * I.e. a KFileIconView that associates a KFileIconViewItem (an item suitable
    * for use with QIconView) does
    *
-   * <pre>
+   * \code
    * kfileItem->setExtraData( this, iconViewItem );
-   * </pre>
+   * \endcode
    *
    * and can later access the iconViewItem by doing
    *
-   * <pre>
+   * \code
    * KFileIconViewItem *iconViewItem = static_cast<KFileIconViewItem*>( kfileItem->extraData( this ));
-   * </pre>
+   * \endcode
    *
    * This is usually more efficient then having every view associate data to
    * items by using a separate QDict or QMap.

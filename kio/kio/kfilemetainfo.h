@@ -510,9 +510,9 @@ public:
 
     /**
      * The assignment operator, so you can do:
-     * <pre>
+     * \code
      *    KFileMetaInfoItem item = info.item("Title");
-     * </pre>
+     * \endcode
      *
      * This will create a shared copy of the object. The actual data
      * is automatically deleted if all copies go out of scope
@@ -685,9 +685,9 @@ public:
 
     /**
      * The assignment operator, so you can do:
-     * <pre>
+     * \code
      *    KFileMetaInfoGroup group = info.group("Technical");
-     * </pre>
+     * \endcode
      *
      * This will create a shared copy of the object. The actual data
      * is automatically deleted if all copies go out of scope
@@ -964,10 +964,10 @@ public:
 
     /**
      * The assignment operator, so you can do e.g.:
-     * <pre>
+     * \code
      *    KFileMetaInfo info;
      *    if (something) info = KFileMetaInfo("/the/file");
-     * </pre>
+     * \endcode
      *
      * This will create a shared copy of the object. The actual data
      * is automatically deleted if all copies go out of scope.
@@ -1183,10 +1183,10 @@ private:
  * In your plugin, you need to create a factory for the KFilePlugin
  *
  * Example:
- *  <pre>
+ *  \code
  * typedef KGenericFactory<MyPlugin> MyFactory;
  * K_EXPORT_COMPONENT_FACTORY(kfile_foo, MyFactory("kfile_foo"));
- *  </pre>
+ *  \endcode
  *
  * and then just overwrite the methods your plugin supports. If your plugin
  * can only read data, it is sufficient to only write a @ref readInfo() method.

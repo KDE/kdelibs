@@ -565,7 +565,7 @@ public:
      * why a previous authorization attempt failed. Here is a very
      * simple example:
      *
-     * <pre>
+     * \code
      * KIO::AuthInfo authInfo;
      * if ( openPassDlg( authInfo ) )
      * {
@@ -574,12 +574,12 @@ public:
      *    kdDebug() << QString::fromLatin1("Password: ")
      *              << QString::fromLatin1("Not displayed here!") << endl;
      * }
-     * </pre>
+     * \endcode
      *
      * You can also preset some values like the username, caption or
      * comment as follows:
      *
-     * <pre>
+     * \code
      * KIO::AuthInfo authInfo;
      * authInfo.caption= "Acme Password Dialog";
      * authInfo.username= "Wile E. Coyote";
@@ -591,7 +591,7 @@ public:
      *    kdDebug() << QString::fromLatin1("Password: ")
      *              << QString::fromLatin1("Not displayed here!") << endl;
      * }
-     * </pre>
+     * \endcode
      *
      * NOTE: A call to this function can fail and return @p false,
      * if the UIServer could not be started for whatever reason.
@@ -621,7 +621,7 @@ public:
      * parameter when attempting to check for cached authorization
      * info. Here is a simple example:
      *
-     * <pre>
+     * \code
      * AuthInfo info;
      * info.url = KURL("http://www.foobar.org/foo/bar");
      * info.username = "somename";
@@ -631,7 +631,7 @@ public:
      *    if ( !openPassDlg(info) )
      *     ....
      * }
-     * </pre>
+     * \endcode
      *
      * @param       See @ref AuthInfo.
      * @return      @p true if cached Authorization is found, false otherwise.

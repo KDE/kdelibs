@@ -37,14 +37,14 @@ class KAnimWidgetPrivate;
  * mouse press event.
  *
  * A quick example:
- * <pre>
+ * \code
  * QStringList icons;
  * icons.append("one");
  * icons.append("two");
  * icons.append("three");
  * KAnimWidget *anim = new KAnimWidget(icons, 0, this);
  * anim->start();
- * </pre>
+ * \endcode
  *
  * That example will search for the pixmaps "one.png", "two.png", and
  * "three.png" in the share/icons/small/ directories as well as the

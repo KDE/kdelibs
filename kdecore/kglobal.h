@@ -88,14 +88,14 @@ public:
      * Creates a static QString.
      *
      * To be used inside functions(!) like:
-     * <pre>
+     * \code
      * static const QString &myString = KGlobal::staticQString("myText");
-     * </pre>
+     * \endcode
      *
      * !!! Do _NOT_ use: !!!
-     * <pre>
+     * \code
      * static QString myString = KGlobal::staticQString("myText");
-     * </pre>
+     * \endcode
      * This creates a static object (instead of a static reference)
      * and as you know static objects are EVIL.
      * @param str the string to create
@@ -107,14 +107,14 @@ public:
      * Creates a static QString.
      *
      * To be used inside functions(!) like:
-     * <pre>
+     * \code
      * static const QString &myString = KGlobal::staticQString(i18n("My Text"));
-     * </pre>
+     * \endcode
      *
      * !!! Do _NOT_ use: !!!
-     * <pre>
+     * \code
      * static QString myString = KGlobal::staticQString(i18n("myText"));
-     * </pre>
+     * \endcode
      * This creates a static object (instead of a static reference)
      * and as you know static objects are EVIL.
      * @param str the string to create

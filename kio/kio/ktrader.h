@@ -48,13 +48,13 @@
  * furthermore, they must be applications (Type=Application).  You
  * then will use @ref KRun::run() to invoke the application.  In "trader-speak",
  * this looks like so:
- * <pre>
+ * \code
  * KTrader::OfferList offers = KTrader::self()->query("text/html", "Type == 'Application'");
  * KService::Ptr ptr = offers.first();
  * KURL::List lst;
  * lst.append("http://www.kde.org/index.html");
  * KRun::run(*ptr, lst);
- * </pre>
+ * \endcode
  *
  * It should be noted that in the above example, using
  * @ref KServiceTypeProfile would be the better choice since you would
@@ -70,13 +70,13 @@
  * will need to use the @ref KLibFactory and @ref KLibLoader to
  * actually do something with our query, then.  Our code would look
  * like so:
- * <pre>
+ * \code
  * KTrader::OfferList offers = KTrader::self()->query("text/html", "'KParts/ReadOnlyPart' in ServiceTypes");
  * KService::Ptr ptr = offers.first();
  * KLibFactory *factory = KLibLoader::self()->factory( ptr->library() );
  * if (factory)
  *   part = static_cast<KParts::ReadOnlyPart *>(factory->create(this, ptr->name(), "KParts::ReadOnlyPart"));
- * </pre>
+ * \endcode
  *
  * Please note that when including property names containing arithmetic operators like - or +, then you have
  * to put brackets around the property name, in order to correctly separate arithmetic operations from
@@ -123,9 +123,9 @@ public:
      * The @p constraint language is rather full.  The most common
      * keywords are AND, OR, NOT, IN, and EXIST, all used in an
      * almost spoken-word form.  An example is:
-     * <pre>
+     * \code
      * (Type == 'Service') and (('KParts/ReadOnlyPart' in ServiceTypes) or (exist Exec))
-     * </pre>
+     * \endcode
      *
      * The keys used in the query (Type, ServiceType, Exec) are all
      * fields found in the .desktop files.

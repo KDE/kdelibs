@@ -38,7 +38,7 @@ namespace Arts
  * Using KArtsDispatcher is especially useful in setups where another plugin
  * might also already use an Arts::Dispatcher, for instance in konqueror.
  *
- * <pre>
+ * \code
  * {
  *   // old code
  *   Arts::QIOManager qiomanager;
@@ -47,9 +47,9 @@ namespace Arts
  *   Arts::SoundServer server = Arts::Reference("global:Arts_SoundServer");
  *   server.play("/usr/share/sounds/pop.wav");
  * }
- * </pre>
+ * \endcode
  *
- * <pre>
+ * \code
  * {
  *   // new code
  *   KArtsDispatcher dispatcher;
@@ -57,7 +57,7 @@ namespace Arts
  *   Arts::SoundServer server = Arts::Reference("global:Arts_SoundServer");
  *   server.play("/usr/share/sounds/pop.wav");
  * }
- * </pre>
+ * \endcode
  */
 class KArtsDispatcher : public QObject
 {

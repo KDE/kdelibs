@@ -38,7 +38,7 @@ class KConfig;
  * 
  * Here is an example usage of KAutoConfigDialog:
  *
- * <pre> 
+ * \code 
  * void KCoolApp::showSettings(){
  *   if(KAutoConfigDialog::showDialog("settings"))
  *     return;
@@ -49,7 +49,7 @@ class KConfig;
  *   connect(dialog, SIGNAL(settingsChanged()), this, SLOT(loadSettings()));
  *   dialog->show();
  * }
- * </pre>
+ * \endcode
  * 
  * Other then the above code each class that has settings in the dialog should
  * have a loadSettings() type slot to read settings and perform any

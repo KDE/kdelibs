@@ -71,7 +71,7 @@ namespace KIO {
  * This widget is the one used in the KFileDialog.
  *
  * Basic usage is like this:
- * <pre>
+ * \code
  *   KDirOperator *op = new KDirOperator( KURL( "file:/home/gis" ), this );
  *   // some signals you might be interested in
  *   connect(op, SIGNAL(urlEntered(const KURL&)),
@@ -85,7 +85,7 @@ namespace KIO {
  *
  *   op->readConfig( KGlobal::config(), "Your KDiroperator ConfigGroup" );
  *   op->setView(KFile::Default);
- * </pre>
+ * \endcode
  *
  * This will create a childwidget of 'this' showing the directory contents
  * of /home/gis in the default-view. The view is determined by the readConfig()
@@ -159,11 +159,11 @@ class KDirOperator : public QWidget
      * will be shown.
      *
      * Example:
-     * <pre>
+     * \code
      * QStringList filter;
      * filter << "text/html" << "image/png" << "inode/directory";
      * dirOperator->setMimefilter( filter );
-     * </pre>
+     * \endcode
      *
      * Node: Without the mimetype inode/directory, only files would be shown.
      * Call @ref updateDir() to apply it.
@@ -378,7 +378,7 @@ class KDirOperator : public QWidget
      * "preview" and "single" actions are in an exclusive group.
      *
      * You can e.g. use
-     * <pre>actionCollection()->action( "up" )->plug( someToolBar );</pre>
+     * \codeactionCollection()->action( "up" )->plug( someToolBar );\endcode
      * to add a button into a toolbar, which makes the dirOperator change to
      * its parent directory.
      *
@@ -428,9 +428,9 @@ class KDirOperator : public QWidget
      * Reads the default settings for a view, i.e. the default KFile::FileView.
      * Also reads the sorting and whether hidden files should be shown.
      * Note: the default view will not be set - you have to call
-     * <pre>
+     * \code
      * setView( KFile::Default )
-     * </pre>
+     * \endcode
      * to apply it.
      *
      * @see setView

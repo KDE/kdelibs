@@ -103,12 +103,12 @@ private:
  *
  * @sect Usage example
  *
- * <pre>
+ * \code
  * QCString password;
  * int result = KPasswordDialog::getPassword(password, i18n("Password"));
  * if (result == KPasswordDialog::Accepted)
  *     use(password);
- * </pre>
+ * \endcode
  *
  * @sect Security notes
  *

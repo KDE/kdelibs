@@ -150,7 +150,7 @@ public:
       * does a repaint of the view.
       *
       * The default implementation calls
-      * <pre>widget()->repaint(f)</pre>
+      * \codewidget()->repaint(f)\endcode
       **/
     virtual void updateView(bool f = true);
 

@@ -50,9 +50,9 @@ namespace KIO {
      * slave that is idle or it will create a new slave for the job.
      *
      * Example:
-     * <pre>
+     * \code
      *    TransferJob *job = KIO::get(KURL("http://www.kde.org"));
-     * </pre>
+     * \endcode
      *
      *
      * <h3>2. Scheduled</h3>
@@ -63,10 +63,10 @@ namespace KIO {
      * a job from the queue.
      *
      * Example:
-     * <pre>
+     * \code
      *    TransferJob *job = KIO::get(KURL("http://www.kde.org"));
      *    KIO::Scheduler::scheduleJob(job);
-     * </pre>
+     * \endcode
      *
      * <h3>3. Connection Oriented</h3>
      * For some operations it is important that multiple jobs use
@@ -79,7 +79,7 @@ namespace KIO {
      * one after the other.
      *
      * Example:
-     * <pre>
+     * \code
      *    Slave *slave = KIO::Scheduler::getConnectedSlave(
      *            KURL("pop3://bastian:password@mail.kde.org"));
      *    TransferJob *job1 = KIO::get(
@@ -95,7 +95,7 @@ namespace KIO {
      *    // ... Wait for jobs to finish...
      *
      *    KIO::Scheduler::disconnectSlave(slave);
-     * </pre>
+     * \endcode
      * @see KIO::Slave
      * @see KIO::Job
      **/

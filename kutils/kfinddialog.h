@@ -45,16 +45,16 @@ class QCheckBox;
  *
  * To use the basic modal find dialog, and then run the search:
  *
- * <pre>
+ * \code
  *  KFindDialog dlg(....)
  *  if ( dlg.exec() != QDialog::Accepted )
  *      return;
  *
  *  // proceed with KFind from here
- * </pre>
+ * \endcode
  *
  * To create a non-modal find dialog:
- * <pre>
+ * \code
  *   if ( m_findDia )
  *     KWin::setActiveWindow( m_findDia->winId() );
  *   else
@@ -62,14 +62,12 @@ class QCheckBox;
  *     m_findDia = new KFindDialog(false,...);
  *     connect( m_findDia, SIGNAL(okClicked()), this, SLOT(findTextNext()) );
  *   }
- * </pre>
+ * \endcode
  * Don't forget to delete and reset m_findDia when closed.
  * (But do NOT delete your KFind object at that point, it's needed for "Find Next")
  *
  * To use your own extensions: see @ref findExtension().
  *
- * <pre>
- * </pre>
  */
 class KFindDialog:
     public KDialogBase

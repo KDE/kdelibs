@@ -84,7 +84,7 @@ class KPty;
  * in a clean fashion (no null-terminated stringlists and such...)
  *
  * A small usage example:
- * <pre>
+ * \code
  *   KProcess *proc = new KProcess;
  *
  *   *proc << "my_executable";
@@ -92,7 +92,7 @@ class KPty;
  *   QApplication::connect(proc, SIGNAL(processExited(KProcess *)),
  *                         pointer_to_my_object, SLOT(my_objects_slot(KProcess *)));
  *   proc->start();
- * </pre>
+ * \endcode
  *
  * This will start "my_executable" with the commandline arguments "These"...
  *
@@ -208,11 +208,11 @@ public:
    * Sets the executable and the command line argument list for this process.
    *
    * For example, doing an "ls -l /usr/local/bin" can be achieved by:
-   *  <pre>
+   *  \code
    *  KProcess p;
    *  ...
    *  p << "ls" << "-l" << "/usr/local/bin"
-   *  </pre>
+   *  \endcode
    *
    * @param arg the argument to add
    * @return a reference to this KProcess
@@ -550,9 +550,9 @@ signals:
    * You should copy the information contained in @p buffer to your private
    * data structures before returning from the slot.
    * Example:
-   * <pre>
+   * \code
    *     QString myBuf = QString::fromLatin1(buffer, buflen);
-   * </pre>
+   * \endcode
    **/
   void receivedStdout(KProcess *proc, char *buffer, int buflen);
 

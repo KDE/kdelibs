@@ -29,7 +29,7 @@
  *
  * The vertical ruler looks similar to this:
  *
- *<pre>
+ *\code
  *    meters                       inches
  *
  *    ------   <--- end mark  ---> ------
@@ -46,7 +46,7 @@
  *        --                            -
  *      |>--   <--ruler pointer-->   |>--
  *
- * </pre>
+ * \endcode
  *
  * There are tiny marks, little marks, medium marks, and big marks along the
  *  ruler.

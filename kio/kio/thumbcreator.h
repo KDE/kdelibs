@@ -33,7 +33,7 @@ class QImage;
  *     generate a thumbnail for the given file-path.
  * @li Provide a factory method in your implementation file to instantiate
  * your plugin, e.g.:
- * <pre>
+ * \code
  * extern "C"
  * {
  *   ThumbCreator *new_creator()
@@ -41,21 +41,21 @@ class QImage;
  *     return new YourThumbCreator();
  *   }
  * };
- * </pre>
+ * \endcode
  *
  * Compile your ThumbCreator as a module. The contents of Makefile.am
  * need to look like this:
- * <pre>
+ * \code
  * INCLUDES = $(all_includes)
  * kde_module_LTLIBRARIES = yourthumbcreator.la
  * yourthumbcreator_la_SOURCES = yourthumbcreator.cpp
  * yourthumbcreator_la_LIBADD = $(LIB_KIO)
  * yourthumbcreator_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
  * kde_services_DATA = yourthumbcreator.desktop
- * </pre>
+ * \endcode
  *
  * @li Create a file yourthumbcreator.desktop with the following contents:
- * <pre>
+ * \code
  * [Desktop Entry]
  * Encoding=UTF-8
  * Type=Service
@@ -64,14 +64,14 @@ class QImage;
  * MimeTypes=application/x-somemimetype
  * CacheThumbnail=true
  * X-KDE-Library=yourthumbcreator
- * </pre>
+ * \endcode
  *
  * You can supply a comma-separated list of mimetypes to the MimeTypes entry,
  * naming all mimetypes your ThumbCreator supports. You can also use simple
  * wildcards, like (where you see [slash], put a /)
- * <pre>
+ * \code
  *              text[slash]* or image[slash]*.
- * </pre>
+ * \endcode
  *
  * If your plugin is rather inexpensive (e.g. like the text preview ThumbCreator),
  * you can set CacheThumbnail=false to prevent your thumbnails from being cached

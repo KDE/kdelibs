@@ -30,11 +30,11 @@
  * Uses @ref KMimeType::pixmapForURL() to resolve icons.
  *
  * Instatiate this class and supply it to the desired class, e.g.
- * <pre>
+ * \code
  * KHistoryCombo *combo = new KHistoryCombo( this );
  * combo->setPixmapProvider( new KURLPixmapProvider );
  * [...]
- * </pre>
+ * \endcode
  *
  * @short Resolves pixmaps for URLs
  * @author Carsten Pfeiffer <pfeiffer@kde.org>

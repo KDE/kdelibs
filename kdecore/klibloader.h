@@ -297,18 +297,18 @@ private:
  * If you develop a library that is to be loaded dynamically at runtime, then
  * you should return a pointer to your factory. The K_EXPORT_COMPONENT_FACTORY
  * macro is provided for this purpose:
- * <pre>
+ * \code
  *   K_EXPORT_COMPONENT_FACTORY( libkspread, KSpreadFactory )
- * </pre>
+ * \endcode
  *
  * The first macro argument is the name of your library, the second specifies the name
  * of your factory.
  *
  * In the constructor of your factory you should create an instance of @ref KInstance
  * like this:
- * <pre>
+ * \code
  *     s_global = new KInstance( "kspread" );
- * </pre>
+ * \endcode
  * This @ref KInstance is comparable to @ref KGlobal used by normal applications.
  * It allows you to find resource files (images, XML, sound etc.) belonging
  * to the library.

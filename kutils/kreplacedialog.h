@@ -46,13 +46,13 @@ class QRect;
  *
  * To use the basic replace dialog:
  *
- * <pre>
- * </pre>
+ * \code
+ * \endcode
  *
  * To use your own extensions:
  *
- * <pre>
- * </pre>
+ * \code
+ * \endcode
  */
 class KReplaceDialog:
     public KFindDialog

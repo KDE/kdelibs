@@ -43,9 +43,9 @@ namespace KNotify
  * of its own notifications available here.
  *
  * Typical usage is calling the static @ref configure() method:
- * <pre>
+ * \code
  * (void) KNotifyDialog::configure( someParentWidget );
- * </pre>
+ * \endcode
  *
  * @since 3.1
  * @author Carsten Pfeiffer <pfeiffer@kde.org>

@@ -62,11 +62,11 @@ class QWidget;
  * For example (note that KColorButton is already added and it doesn't need to  
  * manually added):
  * 
- * <pre>
+ * \code
  * QSqlPropertyMap *map = QSqlPropertyMap::defaultMap();
  * map.insert("KColorButton", "color");
  * QSqlPropertyMap::installDefaultMap(map);
- * </pre>
+ * \endcode
  *
  * If you add a new widget to the QSqlPropertyMap and wish to be notified when
  * it is modified you should add its signal using @ref addWidgetChangedSignal().
@@ -171,9 +171,9 @@ public:
    * widgetModified().  This function should be called before 
    *
    * Example:
-   * <pre>
+   * \code
    * addWidgetChangedSignal( "QCheckbox", SIGNAL(stateChanged(int)) );
-   * </pre>
+   * \endcode
    *
    * This is generally used in conjunction with the addition of a class
    * to QSqlPropertyMap so KAutoConfig can get/set its values.

@@ -72,12 +72,12 @@ public:
    * It normally comes up with all font families present on the system; the
    * getFont method below does allow some more fine-tuning of the selection of fonts
    * that will be displayed in the dialog.
-   * <p>Consider the following code snippet;<pre>
+   * <p>Consider the following code snippet;\code
    *
    *    QStringList list;
    *    KFontChooser::getFontList(list,SmoothScalableFonts);
    *    KFontChooser chooseFont = new KFontChooser(0, "FontList", false, list);
-   * </pre>
+   * \endcode
    * <p>The above creates a font chooser dialog with only SmoothScaleble fonts.
    *
    * @param parent The parent widget.
@@ -305,12 +305,12 @@ private:
  *
  * Example:
  *
- * <pre>
+ * \code
  *      QFont myFont;
  *      int result = KFontDialog::getFont( myFont );
  *      if ( result == KFontDialog::Accepted )
  *            ...
- * </pre>
+ * \endcode
  *
  * \image html kfontdialog.png "KDE Font Dialog"
  *
@@ -415,14 +415,14 @@ public:
    * @param diffFlags a reference to the int into which the chosen
    *        difference selection bitmask should be written.
    *        Check the returned bitmask like:
-   *        <pre>
+   *        \code
    *        if ( diffFlags & KFontChooser::FontDiffFamily )
    *            [...]
    *        if ( diffFlags & KFontChooser::FontDiffStyle )
    *            [...]
    *        if ( diffFlags & KFontChooser::FontDiffSize )
    *            [...]
-   *        </pre>
+   *        \endcode
    * @param onlyFixed if true, only select from fixed-width fonts.
    * @param parent Parent widget of the dialog. Specifying a widget different
    *        from 0 (Null) improves centering (looks better).

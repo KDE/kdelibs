@@ -36,7 +36,7 @@ namespace KABC {
   
   Example:
  
-  <pre>
+  \code
   KABC::AddressBook *ab = KABC::StdAddressBook::self();
  
   KABC::AddressBook::Iterator it;
@@ -47,7 +47,7 @@ namespace KABC {
   }
  
   KABC::StdAddressBook::save();
-  </pre>
+  \endcode
 */
 class StdAddressBook : public AddressBook
 {

@@ -108,10 +108,10 @@ namespace KJS {
    * UCharReference is the dynamic counterpart of @ref UChar. It's used when
    * characters retrieved via index from a @ref UString are used in an
    * assignment expression (and therefore can't be treated as being const):
-   * <pre>
+   * \code
    * UString s("hello world");
    * s[0] = 'H';
-   * </pre>
+   * \endcode
    *
    * If that sounds confusing your best bet is to simply forget about the
    * existence of this class and treat is as being identical to @ref UChar.

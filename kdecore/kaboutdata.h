@@ -286,10 +286,10 @@ class KAboutData
      * on the language, just use a dummy text marked for translation.
      *
      * For example:
-     * <pre>
+     * \code
      * setTranslator(I18N_NOOP("_: NAME OF TRANSLATORS\\nYour names")
      * ,I18N_NOOP("_: EMAIL OF TRANSLATORS\\nYour emails"));
-     * </pre>
+     * \endcode
      *
      * The translator can then translate this dummy text with his name
      * or with a list of names separated with ",".
@@ -314,9 +314,9 @@ class KAboutData
      * translations with the I18N_NOOP() macro.
      *
      * Example:
-     * <pre>
+     * \code
      * setLicenseText( I18N_NOOP("This is my license"));
-     * </pre>
+     * \endcode
      *
      * NOTE: No copy of the text is made.
      *

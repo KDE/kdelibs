@@ -37,7 +37,7 @@ class QImage;
  *
  * Typical usage looks like this (e.g. in a slotShowScanDialog() method):
  *
- * <pre>
+ * \code
  * if ( !m_scanDialog ) {
  *     m_scanDialog = KScanDialog::getScanDialog( this, "scandialog" );
  *     if ( !m_scanDialog ) // no scanning support installed?
@@ -49,7 +49,7 @@ class QImage;
  *
  * if ( m_scanDialog->setup() ) // only if scanner configured/available
  *     m_scanDialog->show();
- * </pre>
+ * \endcode
  *
  * This will create and show a non-modal scanning dialog. Connect to more
  * signals if you like.

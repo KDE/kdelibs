@@ -144,7 +144,7 @@ class KDialogBaseTile;
  *
  * Example:
  *
- * <pre>
+ * \code
  * UrlDlg::UrlDlg( QWidget *parent, const QString& caption,
  *                 const QString& urltext)
  *   : KDialogBase( parent, "urldialog", true, caption,
@@ -163,12 +163,12 @@ class KDialogBaseTile;
  *
  *   topLayout->addStretch(10);
  * }
- * </pre>
+ * \endcode
  *
  * If you use @ref makeVBoxMainWidget(), then the dialog above can be made
  * simpler but you lose the ability to add a stretchable area:
  *
- * <pre>
+ * \code
  * UrlDlg::UrlDlg( QWidget *parent, const QString& caption,
  *		const QString& urltext)
  * : KDialogBase( parent, "urldialog", true, caption,
@@ -180,7 +180,7 @@ class KDialogBaseTile;
  *   lineedit = new QLineEdit( urltext, page, "lineedit" );
  *   lineedit->setMinimumWidth(fontMetrics().maxWidth()*20);
  * }
- * </pre>
+ * \endcode
  *
  * This class can be used in many ways. Note that most KDE ui widgets
  * and many of KDE core applications use the KDialogBase so for more
@@ -462,13 +462,13 @@ class KDialogBase : public KDialog
      * layout manager associated with it. In order to use it you must
      * create a layout yourself as the example below illustrates:
      *
-     * <pre>
+     * \code
      * QFrame *page = addPage( i18n("Layout") );
      * QVBoxLayout *topLayout = new QVBoxLayout( page, 0, 6 );
      * QLabel *label = new QLabel( i18n("Layout type"), page );
      * topLayout->addWidget( label );
      * ..
-     * </pre>
+     * \endcode
      *
      * @param itemName String used in the list or as tab item name.
      * @param header Header text use in the list modes. Ignored in @p Tabbed
@@ -507,11 +507,11 @@ class KDialogBase : public KDialog
      * layout so the widget children are lined up vertically.  You can
      * use it as follows:
      *
-     * <pre>
+     * \code
      * QVBox *page = addVBoxPage( i18n("Layout") );
      * QLabel *label = new QLabel( i18n("Layout type"), page );
      * ..
-     * </pre>
+     * \endcode
      *
      * @param itemName String used in the list or as tab item name.
      * @param header Header text use in the list modes. Ignored in @p Tabbed

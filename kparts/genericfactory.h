@@ -73,10 +73,10 @@ namespace KParts
      * called in createPartObject.
      *
      * Use the factory through the K_EXPORT_COMPONENT_FACTORY macro, like that:
-     * <pre>
+     * \code
      * typedef KParts::GenericFactory&lt;YourKPart&gt; YourKPartFactory;
      * K_EXPORT_COMPONENT_FACTORY( yourlibrary, YourKPartFactory );
-     * </pre>
+     * \endcode
      * yourlibrary is the library name that you compiled your KPart into.
      */
     template <class T>

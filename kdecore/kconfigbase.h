@@ -1870,7 +1870,7 @@ class KConfigGroupSaverPrivate;
   * @ref KConfig @ref KSimpleConfig object to the group they want to read from
   * and set it back to the old one of afterwards. This is usually
   * written as:
-  * <pre>
+  * \code
   *
   * QString oldgroup config->group();
   * config->setGroup( "TheGroupThatIWant" );
@@ -1878,7 +1878,7 @@ class KConfigGroupSaverPrivate;
   * config->writeEntry( "Blah", "Blubb" );
   *
   * config->setGroup( oldgroup );
-  * </pre>
+  * \endcode
   *
   * In order to facilitate this task, you can use
   * KConfigGroupSaver. Simply construct such an object ON THE STACK

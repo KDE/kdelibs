@@ -42,7 +42,7 @@
  * 
  * @sect Example
  *
- * <pre>
+ * \code
 	#include<qpixmap.h>
  	#include<kimgio.h>
 
@@ -53,7 +53,7 @@
 		
 		...	// start main program
 	}
- * </pre>
+ * \endcode
  *
  * @see KImageIO, QPixmap, QImage, QImageIO
  * @author Sirtaj Singh Kang

@@ -38,11 +38,11 @@ class KSharedPixmapPrivate;
  * kdebase/kdesktop/pixmapserver.cc.
  *
  * An example: copy from a shared pixmap:
- * <pre>
+ * \code
  *   KSharedPixmap *pm = new KSharedPixmap;
  *   connect(pm, SIGNAL(done(bool)), SLOT(slotDone(bool)));
  *   pm->loadFromShared("My Pixmap");
- * </pre>
+ * \endcode
  *
  * @author Geert Jansen <jansen@kde.org>
  * @version $Id$

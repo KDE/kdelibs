@@ -178,11 +178,11 @@ class DistributionListManager
 
   Exapmle:
   
-  <pre>
+  \code
   KABC::DistributionListWatcher *watchdog = KABC::DistributionListWatcher::self()
 
   connect( watchdog, SIGNAL( changed() ), SLOT( doSomething() ) );
-  </pre>
+  \endcode
 */
 
 class DistributionListWatcher : public QObject

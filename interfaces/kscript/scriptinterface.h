@@ -75,9 +75,9 @@ class KScriptClientInterface;
 		/**
 		*	This is the method for sending feedback to applications.
 		*	example of how this works:
-		*	<pre>
+		*	\code
 		*		ScriptClientInterface->error( message_to_send_back_to_the_main_application );
-		*	</pre>
+		*	\endcode
 		*	Will send the error message back to the main application.
 		**/
 		KScriptClientInterface	*ScriptClientInterface;

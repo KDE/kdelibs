@@ -803,17 +803,17 @@ private:
    Since we work with fixed-point numbers internally, the maximum
    precision is a function of the valid range and vice versa. More
    precisely, the following relations hold:
-   <pre>
+   \code
    max( abs(minValue()), abs(maxValue() ) <= INT_MAX/10^precision
    maxPrecision = floor( log10( INT_MAX/max(abs(minValue()),abs(maxValue())) ) )
-   </pre>
+   \endcode
 
    Since the value, bounds and step are rounded to the current
    precision, you may experience that the order of setting above
    parameters matters. E.g. the following are @em not equivalent (try
    it!):
 
-   <pre>
+   \code
    // sets precision,
    // then min/max value (rounded to precison and clipped to obtainable range if needed)
    // then value and lineStep
@@ -826,7 +826,7 @@ private:
    spin->setMaxValue( 9.999 );
    spin->setValue( 4.321 );
    spin->setPrecision( 3 );
-   </pre>
+   \endcode
 
    @short A spin box for fractional numbers.
    @author Marc Mutz <mutz@kde.org>

@@ -38,12 +38,12 @@ class KMultipleDragPrivate;
  *
  * Sample code for this:
  *
- * <pre>
+ * \code
  * KMultipleDrag *drag = new KMultipleDrag( parentWidget );
  * drag->addDragObject( new QImageDrag( someQImage, 0L ) );
  * drag->addDragObject( KURLDrag::newDrag( someKURL, 0L ) );
  * drag->drag();
- * </pre>
+ * \endcode
  *
  * Note that the drag objects added to the multiple drag become owned by it.
  * For that reason their parent should be 0L.

@@ -44,20 +44,20 @@ class KEditToolbarWidgetPrivate;
  * standard action in your application.  In your slot to this action,
  * you would have something like so:
  *
- * <pre>
+ * \code
  * KEditToolbar dlg(actionCollection());
  * if (dlg.exec())
  * {
  *   createGUI();
  * }
- * </pre>
+ * \endcode
  *
  * That code snippet also takes care of redrawing the menu and
  * toolbars if you have made any changes.
  *
  * If you are using KMainWindow's settings methods (either save/apply manually
  * or autoSaveSettings), you should write something like:
- * <pre>
+ * \code
  * void MyClass::slotConfigureToolbars()
  * {
  *   saveMainWindowSettings( KGlobal::config(), "MainWindow" );
@@ -72,7 +72,7 @@ class KEditToolbarWidgetPrivate;
  *    createGUI();
  *    applyMainWindowSettings( KGlobal::config(), "MainWindow" );
  * }
- * </pre>
+ * \endcode
  *
  * Note that the procedure is a bit different for KParts applications.
  * In this case, you need only pass along a pointer to your
@@ -84,7 +84,7 @@ class KEditToolbarWidgetPrivate;
  *
  * An example would be:
  *
- * <pre>
+ * \code
  * saveMainWindowSettings( KGlobal::config(), "MainWindow" );
  * KEditToolbar dlg(factory());
  * connect(&dlg,SIGNAL(newToolbarConfig()),this,SLOT(slotNewToolbarConfig()));
@@ -96,7 +96,7 @@ class KEditToolbarWidgetPrivate;
  *    // Do NOT call createGUI()!
  *    applyMainWindowSettings( KGlobal::config(), "MainWindow" );
  * }
- * </pre>
+ * \endcode
  *
  * @short A dialog used to customize or configure toolbars.
  * @author Kurt Granroth <granroth@kde.org>
@@ -164,11 +164,11 @@ public:
    * xml files) and the toolbar editor uses that.
    *
    * Use this like so:
-   * <pre>
+   * \code
    * KEditToolbar edit(factory());
    * if ( edit.exec() )
    * ...
-   * </pre>
+   * \endcode
    *
    * @param factory Your application's factory object
    * @param parent The usual parent for the dialog.
@@ -313,11 +313,11 @@ public:
    * The second parameter, @ref #parent, is the standard parent
    *
    * Use this like so:
-   * <pre>
+   * \code
    * KEditToolbar edit(factory());
    * if ( edit.exec() )
    * ...
-   * </pre>
+   * \endcode
    *
    * @param factory Your application's factory object
    * @param parent This widget's parent

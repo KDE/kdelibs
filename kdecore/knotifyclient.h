@@ -29,7 +29,7 @@ class KInstance;
  * $KDEDIR/share/apps/appname/eventsrc which contains the events.
  *
  * The file looks like this:
- * <pre>
+ * \code
  * [!Global!]
  * IconName=Filename (e.g. kdesktop, without any extension)
  * Comment=FriendlyNameOfApp
@@ -42,7 +42,7 @@ class KInstance;
  * default_commandline=command
  * default_presentation=1
  *  ...
- * </pre>
+ * \endcode
  * default_presentation contains these ORed events:
  *	None=0, Sound=1, Messagebox=2, Logfile=4, Stderr=8, PassivePopup=16,
  *      Execute=32, Taskbar=64
@@ -83,10 +83,10 @@ namespace KNotifyClient
      * that is not the application.
      *
      * Use like this:
-     * <pre>
+     * \code
      * KNotifyClient::Instance(myInstance);
      * KNotifyClient::event("MyEvent");
-     * </pre>
+     * \endcode
      *
      * @short Enables @ref KNotifyClient to use a different @ref KInstance
      */
@@ -260,9 +260,9 @@ namespace KNotifyClient
 	/**
 	 * This is a simple substitution for QApplication::beep().
 	 * It simply calls
-	 * <pre>
+	 * \code
 	 * KNotifyClient::event( KNotifyClient::notification, reason );
-	 * </pre>
+	 * \endcode
 	 * @param reason the reason, can be QString::null.
 	 */
 	void beep(const QString& reason=QString::null);
@@ -270,9 +270,9 @@ namespace KNotifyClient
 	/**
 	 * Gets the presentation associated with a certain event name
 	 * Remeber that they may be ORed:
-	 * <pre>
+	 * \code
 	 * if (present & KNotifyClient::Sound) { [Yes, sound is a default] }	
-	 * </pre>
+	 * \endcode
 	 * @param eventname the event name to check
 	 * @return the presentation methods
 	 */
@@ -291,9 +291,9 @@ namespace KNotifyClient
 	/**
 	 * Gets the default presentation for the event of this program.
 	 * Remember that the Presentation may be ORed.  Try this:
-	 * <pre>
+	 * \code
 	 * if (present & KNotifyClient::Sound) { [Yes, sound is a default] }
-	 * </pre>
+	 * \endcode
 	 * @return the presentation methods
 	 */
 	int getDefaultPresentation(const QString &eventname);

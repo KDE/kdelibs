@@ -79,7 +79,7 @@ class KURL;
  *
  * To enable the basic completion feature:
  *
- * <pre>
+ * \code
  * KComboBox *combo = new KComboBox( true, this, "mywidget" );
  * KCompletion *comp = combo->completionObject();
  * // Connect to the return pressed signal - optional
@@ -88,17 +88,17 @@ class KURL;
  * // Provide the to be completed strings. Note that those are separate from the combo's
  * // contents.
  * comp->insertItems( someQStringList );
- * </pre>
+ * \endcode
  *
  * To use your own completion object:
  *
- * <pre>
+ * \code
  * KComboBox *combo = new KComboBox( this,"mywidget" );
  * KURLCompletion *comp = new KURLCompletion();
  * combo->setCompletionObject( comp );
  * // Connect to the return pressed signal - optional
  * connect(combo,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
- * </pre>
+ * \endcode
  *
  * Note that you have to either delete the allocated completion object
  * when you don't need it anymore, or call
@@ -106,14 +106,14 @@ class KURL;
  *
  * Miscellaneous function calls:
  *
- * <pre>
+ * \code
  * // Tell the widget not to handle completion and rotation
  * combo->setHandleSignals( false );
  * // Set your own completion key for manual completions.
  * combo->setKeyBinding( KCompletionBase::TextCompletion, Qt::End );
  * // Hide the context (popup) menu
  * combo->setContextMenuEnabled( false );
- * </pre>
+ * \endcode
  *
  * @short An enhanced combo box.
  * @author Dawit Alemayehu <adawit@kde.org>
@@ -524,10 +524,10 @@ public:
      * yourself via the slot @ref addToHistory. If you want every item added,
      * use
      *
-     * <pre>
+     * \code
      * connect( combo, SIGNAL( activated( const QString& )),
      *          combo, SLOT( addToHistory( const QString& )));
-     * </pre>
+     * \endcode
      *
      * Use @ref QComboBox::setMaxCount() to limit the history.
      *
@@ -570,7 +570,7 @@ public:
      * completion object as well.
      * You won't have the benefit of weighted completion though, so normally
      * you should do something like
-     * <pre>
+     * \code
      * KConfig *config = kapp->config();
      * QStringList list;
      *
@@ -588,7 +588,7 @@ public:
      * config->writeEntry( "Completion list", list );
      * list = combo->historyItems();
      * config->writeEntry( "History list", list );
-     * </pre>
+     * \endcode
      *
      * Be sure to use different names for saving with KConfig if you have more
      * than one KHistoryCombo.

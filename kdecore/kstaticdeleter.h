@@ -54,13 +54,13 @@ public:
  * are destroyed, which in turn destroys those static objects properly.
  *
  * A typical use is
- * <pre>
+ * \code
  * static KStaticDeleter<MyClass> sd;
  *
  * MyClass::self() {
  *   if (!_self) { sd.setObject(_self, new MyClass()); }
  * }
- * </pre>
+ * \endcode
  */
 template<class type> class KStaticDeleter : public KStaticDeleterBase {
 public:

@@ -74,13 +74,13 @@ public:
      * window with @ref hasWId() before any operations.
      *
      * Iteration over this list can be done easily with
-     * <pre>
+     * \code
      *  QValueList<WId>::ConstIterator it;
      *  for ( it = module->windows().begin();
      *        it != modules->windows().end(); ++it ) {
      *     ... do something here,  (*it) is the current WId.
      *       }
-     * </pre>
+     * \endcode
      * @return the list of all toplevel windows
      */
     const QValueList<WId>& windows() const;

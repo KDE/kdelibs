@@ -45,12 +45,12 @@ class DistributionListManager;
  
   Example:
  
-  <pre>
+  \code
   KABC::DistributionListDialog *dlg = new
           KABC::DistributionListDialog( KABC::StdAddressBook::self(), this );
  
   dlg->exec();
-  </pre>
+  \endcode
 */
 class DistributionListDialog : public KDialogBase
 {

@@ -42,7 +42,7 @@ class Job;
 *
 * Usage of StatusbarProgress is little different.
 * This dialog will be a part of some application.
-* <pre>
+* \code
 * // create a dialog
 * StatusbarProgress *statusProgress;
 * statusProgress = new StatusbarProgress( statusBar() );
@@ -52,7 +52,7 @@ class Job;
 * CopyJob* job = KIO::copy(...);
 * statusProgress->setJob( job );
 * ...
-* </pre>
+* \endcode
 *
 * @short IO progress widget for embedding in a statusbar.
 * @author Matej Koss <koss@miesto.sk>

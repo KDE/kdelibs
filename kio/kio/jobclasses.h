@@ -48,19 +48,19 @@ namespace KIO {
      * The base class for all jobs.
      * For all jobs created in an application, the code looks like
      *
-     * <pre>
+     * \code
      *   KIO::Job * job = KIO::someoperation( some parameters );
      *   connect( job, SIGNAL( result( KIO::Job * ) ),
      *            this, SLOT( slotResult( KIO::Job * ) ) );
-     * </pre>
+     * \endcode
      *   (other connects, specific to the job)
      *
      * And slotResult is usually at least:
      *
-     * <pre>
+     * \code
      *  if ( job->error() )
      *      job->showErrorDialog( this or 0L  );
-     * </pre>
+     * \endcode
      * @see KIO::Scheduler
      * @see KIO::Slave
      */
@@ -116,9 +116,9 @@ namespace KIO {
          * message using %1.
          *
          * Example for errid == ERR_CANNOT_OPEN_FOR_READING:
-	 * <pre>
+	 * \code
          *   i18n( "Could not read\n%1" ).arg( errortext );
-	 * </pre>
+	 * \endcode
          * Use this to display the error yourself, but for a dialog box
          * use @ref Job::showErrorDialog. Do not call it if @ref error()
 	 * is not 0.

@@ -205,11 +205,11 @@ namespace KIO {
      * HTTP POST (for form data).
      *
      * Example:
-     * <pre>
+     * \code
      *    job = KIO::http_post( url, postData, false );
      *    job->addMetaData("content-type", contentType );
      *    job->addMetaData("referrer", referrerURL);
-     * </pre>
+     * \endcode
      *
      * @p postData is the data that you want to send and
      * @p contentType is the complete HTTP header line that

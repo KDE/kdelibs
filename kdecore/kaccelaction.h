@@ -40,7 +40,7 @@ class KConfigBase;
  * "What's this" string and a @ref KShortcut. The user can configure and 
  * enable/disable them using @ref KKeyDialog. 
  *
- * <pre>
+ * \code
  *	1) KAccelAction = "Run Command"
  *		Default3 = "Alt+F2"
  *		Default4 = "Meta+Enter;Alt+F2"
@@ -62,7 +62,7 @@ class KConfigBase;
  *				2) KKey = "Asterisk"
  *					1) Shift+8 (English layout)
  *					2) Keypad_Asterisk
- * </pre>
+ * \endcode
  * @short An accelerator action
  * @see KAccel
  * @see KGlobalAccel

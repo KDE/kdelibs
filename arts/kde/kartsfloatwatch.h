@@ -30,22 +30,22 @@ namespace Arts { class KFloatWatchProxy_impl; }
  * KArtsFloatWatch offers an easy way to watch aRts streams via Qt signals.
  * For instance, if you have an object of the following type:
  *
- * <pre>
+ * \code
  * interface StereoVolumeControl : StereoEffect {
  *   attribute float scaleFactor;
  *   readonly attribute float currentVolumeLeft;
  *   readonly attribute float currentVolumeRight;
  * };
- * </pre>
+ * \endcode
  *
  * and you want to get notified when scaleFactor changes, you could do it
  * like this:
  *
- * <pre>
+ * \code
  *   StereoVolumeControl stereoVolumeControl = ...;
  *   KArtsFloatWatch *w = new KArtsFloatWatch(stereoVolumeControl, "scaleFactor_changed", this);
  *   connect(w, SIGNAL(valueChanged(float)), this, SLOT(setValue(float)));
- * </pre>
+ * \endcode
  */
 class KArtsFloatWatch : public QObject {
 	Q_OBJECT

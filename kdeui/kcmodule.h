@@ -44,12 +44,12 @@ class KInstance;
  * To write a config module, you have to create a library
  * that contains at one factory function like this:
  *
- * <pre>
+ * \code
  * #include <kgenericfactory.h>
  *
  * typedef KGenericFactory<YourKCModule, QWidget> YourKCModuleFactory;
  * K_EXPORT_COMPONENT_FACTORY( yourLibName, YourKCModuleFactory("name_of_the_po_file") );
- * </pre>
+ * \endcode
  *
  * The parameter "name_of_the_po_file" has to correspond with the messages target
  * that you created in your Makefile.am.

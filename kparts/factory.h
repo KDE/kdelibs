@@ -52,17 +52,17 @@ public:
      * name="value" pairs. This is the way additional arguments will get passed
      * to the part from eg. khtml. You can for example emebed the part into HTML
      * by using the following code:
-     * <pre>
+     * \code
      *    <object type="my_mimetype" data="url_to_my_data">
      *        <param name="name1" value="value1">
      *        <param name="name2" value="value2">
      *    </object>
-     * </pre>
+     * \endcode
      * This could result in a call to
-     * <pre>
+     * \code
      *     createPart( parentWidget, name, parentObject, parentName, "Kparts::Part",
      *                 QStringList("name1="value1"", "name2="value2") );
-     * </pre>
+     * \endcode
      *
      * @returns the newly created part.
      *
@@ -83,17 +83,17 @@ protected:
      * name="value" pairs. This is the way additional arguments will get passed
      * to the part from eg. khtml. You can for example emebed the part into HTML
      * by using the following code:
-     * <pre>
+     * \code
      *    <object type="my_mimetype" data="url_to_my_data">
      *        <param name="name1" value="value1">
      *        <param name="name2" value="value2">
      *    </object>
-     * </pre>
+     * \endcode
      * This could result in a call to
-     * <pre>
+     * \code
      *     createPart( parentWidget, name, parentObject, parentName, "Kparts::Part",
      *                 QStringList("name1="value1"", "name2="value2") );
-     * </pre>
+     * \endcode
      *
      * @returns the newly created part.
      */

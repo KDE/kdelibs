@@ -192,7 +192,7 @@ public:
      * In this case, you need to call setAutoHideCursor( widget, true, true );
      * to tell KCursor not to install an eventFilter. Then you call this method
      * from the beginning of your eventFilter, for example:
-     * <pre>
+     * \code
      * edit = new KEdit( this, "some edit widget" );
      * edit->installEventFilter( this );
      * KCursor::setAutoHideCursor( edit, true, true );
@@ -207,7 +207,7 @@ public:
      *     // now you can do your own event-processing
      *     [...]
      * }
-     * </pre>
+     * \endcode
      *
      * Note that you must not call KCursor::autoHideEventFilter() when you
      * didn't enable or after disabling auto-hiding.

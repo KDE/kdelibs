@@ -458,14 +458,14 @@ public:
    *
    * You will insert a normal button with connection (or use signals from
    * toolbar):
-   * <pre>
+   * \code
    * bar->insertButton(icon, id, SIGNAL(clicked ()), this,
    *                   SLOT (slotClick()), true, "click or wait for popup");
-   * </pre>
+   * \endcode
    * And then add a delayed popup:
-   * <pre>
+   * \code
    * bar->setDelayedPopup (id, historyPopup);
-   * </pre>
+   * \endcode
    *
    * Don't add delayed popups to buttons which have normal popups.
    *
@@ -586,9 +586,9 @@ public:
    * @return a pointer to the combobox with @p id.
    *
    * Example:
-   * <pre>
+   * \code
    * KComboBox *combo = toolbar->getCombo(combo_id);
-   * </pre>
+   * \endcode
    * That way you can get access to other public methods
    * that @ref KComboBox provides.
    */
@@ -599,9 +599,9 @@ public:
    * @return a pointer to KToolBarLined with @p id.
    *
    * Example:
-   * <pre>
+   * \code
    * KLineEdit * lined = toolbar->getKToolBarLined(lined_id);
-   * </pre>
+   * \endcode
    * That way you can get access to other public methods
    * that @ref KLineEdit provides. @ref KLineEdit is the same thing
    * as @ref QLineEdit plus completion signals.
@@ -612,9 +612,9 @@ public:
    * Returns a pointer to KToolBarButton.
    *
    * Example:
-   * <pre>
+   * \code
    * KToolBarButton * button = toolbar->getButton(button_id);
-   * </pre>
+   * \endcode
    * That way you can get access to other public methods
    * that @ref KToolBarButton provides.
    *

@@ -90,7 +90,7 @@ class QPopupMenu;
  * from @ref KGlobalSettings::completionMode().
  *
  * A short example:
- * <pre>
+ * \code
  * KCompletion completion;
  * completion.setOrder( KCompletion::Sorted );
  * completion.addItem( "pfeiffer@kde.org" );
@@ -99,7 +99,7 @@ class QPopupMenu;
  * completion.addItem( "carp@cs.tu-berlin.de" );
  *
  * cout << completion.makeCompletion( "ca" ).latin1() << endl;
- * </pre>
+ * \endcode
  * In shell-completion-mode, this will be "carp"; in auto-completion-
  * mode it will be "carp@cs.tu-berlin.de", as that is alphabetically
  * smaller.
@@ -593,13 +593,13 @@ class KCompletionMatchesPrivate;
  * after that in order to have the matches ordered correctly
  *
  * Example (a simplified example of what Konqueror's completion does):
- * <pre>
+ * \code
  * KCompletionMatches matches = completion->allWeightedMatches( location );
  * if( !location.startsWith( "www." ))
        matches += completion->allWeightedmatches( "www." + location" );
  * matches.removeDuplicates();
  * QStringList list = matches.list();
- * </pre>
+ * \endcode
  *
  * @short List for keeping matches returned from KCompletion
  */

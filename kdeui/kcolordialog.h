@@ -390,12 +390,12 @@ private:
  *
  * Example:
  *
- * <pre>
+ * \code
  * 	QColor myColor;
  * 	int result = KColorDialog::getColor( myColor );
  *         if ( result == KColorDialog::Accepted )
  *            ...
- * </pre>
+ * \endcode
  *
  * @image html kcolordialog.png "KDE Color Dialog"
  *

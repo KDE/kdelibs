@@ -475,36 +475,36 @@ public slots:
   /**
    * If the widget with focus provides a cut() slot, call that slot.  Thus for a
    * simple application cut can be implemented as:
-   * <pre>
+   * \code
    * KStdAction::cut( kapp, SLOT( cut() ), actionCollection() );
-   * </pre>
+   * \endcode
    */
   void cut();
 
   /**
    * If the widget with focus provides a copy() slot, call that slot.  Thus for a
    * simple application copy can be implemented as:
-   * <pre>
+   * \code
    * KStdAction::copy( kapp, SLOT( copy() ), actionCollection() );
-   * </pre>
+   * \endcode
    */
   void copy();
 
   /**
    * If the widget with focus provides a paste() slot, call that slot.  Thus for a
    * simple application copy can be implemented as:
-   * <pre>
+   * \code
    * KStdAction::paste( kapp, SLOT( paste() ), actionCollection() );
-   * </pre>
+   * \endcode
    */
   void paste();
 
   /**
    * If the widget with focus provides a clear() slot, call that slot.  Thus for a
    * simple application clear() can be implemented as:
-   * <pre>
+   * \code
    * new KAction( i18n( "Clear" ), "editclear", 0, kapp, SLOT( clear() ), actionCollection(), "clear" );
-   * </pre>
+   * \endcode
    *
    * Note that for some widgets, this may not provide the intended bahavior.  For
    * example if you make use of the code above and a KListView has the focus, clear()
@@ -513,7 +513,7 @@ public slots:
    * this slot.  For example the following code would implement a KListView without this
    * behavior:
    *
-   * <pre>
+   * \code
    * class MyListView : public KListView {
    *   Q_OBJECT
    * public:
@@ -522,16 +522,16 @@ public slots:
    * public slots:
    *   virtual void clear() {}
    * };
-   * </pre>
+   * \endcode
    */
   void clear();
 
   /**
    * If the widget with focus provides a selectAll() slot, call that slot.  Thus for a
    * simple application select all can be implemented as:
-   * <pre>
+   * \code
    * KStdAction::selectAll( kapp, SLOT( selectAll() ), actionCollection() );
-   * </pre>
+   * \endcode
    */
   void selectAll();
 
@@ -994,19 +994,19 @@ protected:
    * This method can be used in KApplication subclasses to implement application wide
    * edit actions not supported by the KApplication class.  For example (in your subclass):
    *
-   * <pre>
+   * \code
    * void MyApplication::deselect()
    * {
    *   invokeEditSlot( SLOT( deselect() ) );
    * }
-   * </pre>
+   * \endcode
    *
    * Now in your application calls to MyApplication::deselect() will call this slot on the
    * focused widget if it provides this slot.  You can combine this with KAction with:
    *
-   * <pre>
+   * \code
    * KStdAction::deselect( static_cast<MyApplication *>( kapp ), SLOT( cut() ), actionCollection() );
-   * </pre>
+   * \endcode
    *
    * @see cut()
    * @see copy()

@@ -50,7 +50,7 @@
  *
  * Quick example on how to use:
  *
- * <pre>
+ * \code
  * KStringHandler kstr;
  * QString line = "This is a test of the strings";
  *
@@ -58,7 +58,7 @@
  * cout << "2> " << kstr.remrange( line , "2:5" ) << "\n";
  * cout << "2> " << kstr.reverse( line ) << "\n";
  * cout << "2> " << kstr.center( kstr.word( line , 4 ) , 15 ) << "\n";
- * </pre>
+ * \endcode
  *
  * and so forth.
  *
@@ -324,10 +324,10 @@ public:
      * will be extracted. The final token will be the remainder of the string.
      *
      * Example:
-     * <pre>
+     * \code
      * perlSplit("__", "some__string__for__you__here", 4)
      * QStringList contains: "some", "string", "for", "you__here"
-     * </pre>
+     * \endcode
      *
      * @param sep is the string to use to delimit s.
      * @param s is the input string
@@ -344,10 +344,10 @@ public:
      * will be extracted. The final token will be the remainder of the string.
      *
      * Example:
-     * <pre>
+     * \code
      * perlSplit(' ', "kparts reaches the parts other parts can't", 3)
      * QStringList contains: "kparts", "reaches", "the parts other parts can't"
-     * </pre>
+     * \endcode
      *
      * @param sep is the character to use to delimit s.
      * @param s is the input string
@@ -364,10 +364,10 @@ public:
      * will be extracted. The final token will be the remainder of the string.
      *
      * Example:
-     * <pre>
+     * \code
      * perlSplit(QRegExp("[! ]", "Split me up ! I'm bored ! OK ?", 3)
      * QStringList contains: "Split", "me", "up ! I'm bored, OK ?"
-     * </pre>
+     * \endcode
      *
      * @param sep is the regular expression to use to delimit s.
      * @param s is the input string

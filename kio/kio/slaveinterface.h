@@ -169,7 +169,7 @@ protected:
     * the end user. For example to open an empty password dialog
     * using default values:
     *
-    * <pre>
+    * \code
     * KIO::AuthInfo authInfo;
     * bool result = openPassDlg( authInfo );
     * if ( result )
@@ -177,12 +177,12 @@ protected:
     *    printf( "Username: %s", result.username.latin1() );
     *    printf( "Username: %s", result.username.latin1() );
     * }
-    * </pre>
+    * \endcode
     *
     * You can also pre-set some values like the username before hand
     * if it is known as well as the comment and caption to be displayed:
     *
-    * <pre>
+    * \code
     * authInfo.comment= "Enter username and password to access acmeone";
     * authInfo.caption= "Acme Password Dialog";
     * authInfo.username= "Wily E. kaiody";
@@ -192,7 +192,7 @@ protected:
     *    printf( "Username: %s", result.username.latin1() );
     *    printf( "Username: %s", result.username.latin1() );
     * }
-    * </pre>
+    * \endcode
     *
     * NOTE: A call to this function can also fail and result
     * in a return value of @p false, if the UIServer could not

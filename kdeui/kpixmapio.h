@@ -30,11 +30,11 @@ class KPixmapIOPrivate;
  *
  * You can use KPixmapIO for load/saving pixmaps.
  *
- * <pre>
+ * \code
  * KPixmapIO io;
  * pixmap = io.convertToPixmap(image);
  * image = io.convertToImage(pixmap);
- * </pre>
+ * \endcode
  *
  * It also has functionality for partially updating/saving pixmaps, see
  * @ref #putImage and @ref #getImage.

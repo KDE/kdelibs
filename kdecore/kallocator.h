@@ -93,13 +93,13 @@ public:
      * @em including @p ptr itself.
      *
      * The intended use is something along the lines of:
-     * <pre>
+     * \code
      * KZoneAllocator alloc(8192);
      * void *remember_me = alloc.allocate(0);
      * for (int i = 0; i < 1000; i++)
      *   do_something_with (alloc.allocate(12));
      * alloc.free_since (remember_me);
-     * </pre>
+     * \endcode
      * Note, that we don't need to remember all the pointers to the 12-byte
      * objects for freeing them.  The @ref free_since() does deallocate them
      * all at once.

@@ -38,14 +38,14 @@ class Kded;
  * To write a config module, you have to create a library
  * that contains at least one factory function like this:
  *
- * <pre>
+ * \code
  *   extern "C" {
  *     KDEDModule *create_xyz(QCString *name)
  *     {
  *       return new XYZ(name);
  *     }
  *   }
- * </pre>
+ * \endcode
  *
  * See kdelibs/kded/HOWTO for more detailed documentation.
  *

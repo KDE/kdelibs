@@ -32,7 +32,7 @@ class KPixmapSplitterPrivate;
  *
  * For example, if you have a pixmap with 25 items and you want to get the
  * 4th item as a pixmap (every item being 20x10 pixels):
- * <pre>
+ * \code
  * KPixmapSplitter splitter;
  * splitter.setPixmap( somePixmap );
  * splitter.setItemSize( QSize( 20, 10 ));
@@ -42,7 +42,7 @@ class KPixmapSplitterPrivate;
  * QRect rect = splitter.coordinates( 4 );
  * if ( !rect.isEmpty() )
  *     bitBlt( &item, QPoint(0,0), &somePixmap, rect, CopyROP );
- * </pre>
+ * \endcode
  *
  * @short A class to split a pixmap into several items.
  * @author Carsten Pfeiffer <pfeiffer@kde.org>

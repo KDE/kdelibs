@@ -127,7 +127,7 @@ public:
      * you do not want this behavior.
      *
      * KMainWindows must be created on the heap with 'new', like:
-     *  <pre> KMainWindow *kmw = new KMainWindow (...</pre>
+     *  \code KMainWindow *kmw = new KMainWindow (...\endcode
      **/
     KMainWindow( QWidget* parent = 0, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
 
@@ -161,10 +161,10 @@ public:
      * and an "About KDE" dialog box.
      *
      * Example (adding a standard help menu to your application):
-     * <pre>
+     * \code
      * KPopupMenu *help = helpMenu( <myTextString> );
      * menuBar()->insertItem( i18n("&Help"), help );
-     * </pre>
+     * \endcode
      *
      * @param aboutAppText The string that is used in the application
      *        specific dialog box. If you leave this string empty the
@@ -192,9 +192,9 @@ public:
      * information.
      *
      * Example (adding a help menu to your application):
-     * <pre>
+     * \code
      * menuBar()->insertItem( i18n("&Help"), customHelpMenu() );
-     * </pre>
+     * \endcode
      *
      * @param showWhatsThis Set this to @p false if you do not want to include
      *        the "What's This" menu entry.
@@ -212,7 +212,7 @@ public:
      * is not changed and @p false returned.
      *
      * That means clients could simply do the following:
-     * <pre>
+     * \code
      * if (kapp->isRestored()){
      *   int n = 1;
      *   while (KMainWindow::canBeRestored(n)){
@@ -222,7 +222,7 @@ public:
      * } else {
      * // create default application as usual
      * }
-     * </pre>
+     * \endcode
      * Note that @ref QWidget::show() is called implicitly in restore.
      *
      * With this you can easily restore all toplevel windows of your
@@ -237,13 +237,13 @@ public:
      * should be pretty usual) then you should use the RESTORE-macro
      * for backwards compatibility with 3.1 and 3.0 branches:
      *
-     * <pre>
+     * \code
      * if (kapp->isRestored())
      *   RESTORE(childMW)
      * else {
      * // create default application as usual
      * }
-     * </pre>
+     * \endcode
      *
      * The macro expands to the term above but is easier to use and
      * less code to write.
@@ -252,13 +252,13 @@ public:
      * widget (each derived from @ref KMainWindow, of course), you can
      * use the templated @ref kRestoreMainWindows global functions:
      *
-     * <pre>
+     * \code
      * if (kapp->isRestored())
      *   kRestoreMainWindows< childMW1, childMW2, childMW3 >();
      * else {
      * // create default application as usual
      * }
-     * </pre>
+     * \endcode
      *
      * Currently, these functions are provided for up to three
      * template arguments. If you need more, tell us. To help you in
@@ -583,12 +583,12 @@ public slots:
      *
      * Example (adding a help button to the first toolbar):
      *
-     * <pre>
+     * \code
      * KIconLoader &loader = *KGlobal::iconLoader();
      * QPixmap pixmap = loader.loadIcon( "help" );
      * toolBar(0)->insertButton( pixmap, 0, SIGNAL(clicked()),
      *   this, SLOT(appHelpActivated()), true, i18n("Help") );
-     * </pre>
+     * \endcode
      *
      */
     void appHelpActivated( void );
@@ -698,7 +698,7 @@ protected:
 
        Reimplement this function to prevent the user from losing data.
        Example:
-       <pre>
+       \code
            switch ( KMessageBox::warningYesNoCancel( this,
 				   i18n("Save changes to document foo?")) ) {
            case KMessageBox::Yes :
@@ -708,7 +708,7 @@ protected:
              return TRUE;
            default: // cancel
              return FALSE;
-       </pre>
+       \endcode
 
        Note that you should probably @em not actually close the document from
        within this method, as it may be called by the session manager before the
@@ -802,7 +802,7 @@ protected slots:
     * by @ref customHelpMenu.
     *
     * Example:
-    * <pre>
+    * \code
     *
     * void MyMainLevel::setupInterface()
     * {
@@ -815,7 +815,7 @@ protected slots:
     * {
     *   <activate your custom dialog>
     * }
-    * </pre>
+    * \endcode
     */
     virtual void showAboutApplication();
 

@@ -135,9 +135,9 @@ public:
     * @ref commentLabel can be used to describe the server that
     * requested the authentication:
     *
-    *  <pre>
+    *  \code
     *  Server:   Squid Proxy @ foo.com
-    *  </pre>
+    *  \endcode
     *
     * where "Server:" is the commentLabel and the rest is the
     * actual comment.  Note that it is always better to use

@@ -71,12 +71,12 @@ class KGlobalAccel : public QObject
 	 * Create an accelerator action.
 	 *
 	 * Usage:
-	 *<pre>
+	 *\code
 	 * insert( "Do Something", i18n("Do Something"),
 	 *   i18n("This action allows you to do something really great with this program to "
 	 *        "the currently open document."),
 	 *   ALT+CTRL+Key_Q, KKey::QtWIN+CTRL+Key_Q, this, SLOT(slotDoSomething()) );
-	 *</pre>
+	 *\endcode
 	 *
 	 * @param sAction The internal name of the action.
 	 * @param sLabel An i18n'ized short description of the action displayed when

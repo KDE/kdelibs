@@ -100,9 +100,9 @@ private:
  * particular mime type isn't yet registered. It suffices for the name
  * to adhere to the production
  *
- * <pre>
+ * \code
  * mime-type := token "/" token ; 'token' is defined in rfc2045
- * </pre>
+ * \endcode
  *
  * The fixup will simply remove all non-token characters.
  *

@@ -51,7 +51,7 @@ namespace KIO
 * @ref #slotPercent() and @ref #slotSpeed().
 *
 * Custom progress dialog will be used like this :
-* <pre>
+* \code
 * // create job
 * CopyJob* job = KIO::copy(...);
 * // create a dialog
@@ -60,7 +60,7 @@ namespace KIO
 * // connect progress with job
 * customProgress->setJob( job );
 * ...
-* </pre>
+* \endcode
 *
 * There is a special method @ref #setStopOnClose() that controls the behavior of
 * the dialog.

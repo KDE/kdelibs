@@ -39,16 +39,16 @@ class KAudioPlayerPrivate;
  *
  * An example of using this class is:
  *
- * <pre>
+ * \code
  *   KAudioPlayer::play("/var/share/foo.wav");
- * </pre>
+ * \endcode
  *
  * If you want to use signals & slots, you can do something like:
  *
- * <pre>
+ * \code
  *   KAudioPlayer player("/var/share/foo.wav");
  *   connect(&button, SIGNAL(clicked()), &player, SLOT(play()));
- * </pre>
+ * \endcode
  *
  */
 //REVISED: hausmann
