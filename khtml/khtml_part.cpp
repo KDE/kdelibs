@@ -1867,10 +1867,22 @@ bool KHTMLPart::hasSelection() const
 
 DOM::Range KHTMLPart::selection() const
 {
-    // ###
-    return DOM::Range();
+    DOM::Range r = document().createRange();DOM::Range();
+    r.setStart( d->m_selectionStart, d->m_startOffset );
+    r.setEnd( d->m_selectionEnd, d->m_endOffset );    
+    return r;
 }
 
+
+void KHTMLPart::setSelection( const DOM::Range &r )
+{
+    d->m_selectionStart = r.startContainer();
+    d->m_startOffset = r.startOffset();
+    d->m_selectionEnd = r.endContainer();
+    d->m_endOffset = r.endOffset();
+    d->m_doc->setSelection(d->m_selectionStart.handle(),d->m_endOffset,
+			   d->m_selectionEnd.handle(),d->m_startOffset);
+}
 
 void KHTMLPart::overURL( const QString &url, const QString &target )
 {

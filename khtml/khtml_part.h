@@ -518,6 +518,11 @@ public:
    */
   DOM::Range selection() const;
 
+    /** 
+     * set the current selection
+     */
+    void setSelection( const DOM::Range & );
+    
   /**
    * Has the user selected anything?
    *
