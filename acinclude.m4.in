@@ -452,7 +452,7 @@ AC_DEFUN(AC_CHECK_USLEEP,
 AC_LANG_CPLUSPLUS
 
 AC_MSG_CHECKING(for usleep)
-AC_TRY_COMPILE([
+AC_TRY_LINK([
 #include <stdlib.h>
 #include <unistd.h>
 ],
