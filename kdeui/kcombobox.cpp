@@ -68,7 +68,7 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
 {
     init();
 
-    if ( rw ) 
+    if ( rw )
     {
         KLineEdit *edit = new KLineEdit( this, "combo lineedit" );
         setLineEdit( edit );
@@ -105,7 +105,7 @@ bool KComboBox::contains( const QString& _text ) const
     if ( _text.isEmpty() )
         return false;
 
-    for (int i = 0; i < count(); i++ ) 
+    for (int i = 0; i < count(); i++ )
     {
         if ( text(i) == _text )
             return true;
@@ -274,15 +274,8 @@ void KComboBox::create( WId id, bool initializeWindow, bool destroyOldWindow )
 
 void KComboBox::wheelEvent( QWheelEvent *ev )
 {
-    // don't let wheel events change the current item, only let it do so in the
-    // poppable listbox (Simon)
-    QListBox *lb = listBox();
-    if ( lb && lb->isVisible() )
-    {
-        QApplication::sendEvent( lb, ev );
-        return;
-    }
-    ev->ignore();
+    // Not necessary anymore
+    QComboBox::wheelEvent( ev );
 }
 
 void KComboBox::setLineEdit( QLineEdit *edit )
@@ -321,7 +314,7 @@ void KComboBox::setLineEdit( QLineEdit *edit )
 void KComboBox::setCurrentItem( const QString& item, bool insert, int index )
 {
     int sel = -1;
-    
+
     for (int i = 0; i < count(); ++i)
     {
         if (text(i) == item)
@@ -330,7 +323,7 @@ void KComboBox::setCurrentItem( const QString& item, bool insert, int index )
             break;
         }
     }
-    
+
     if (sel == -1 && insert)
     {
         insertItem(item, index);
@@ -375,7 +368,7 @@ void KHistoryCombo::init( bool useCompletion )
     QCString histControl = getenv("HISTCONTROL");
     if ( histControl == "ignoredups" || histControl == "ignoreboth" )
         setDuplicatesEnabled( false );
-    
+
     connect( this, SIGNAL(aboutToShowContextMenu(QPopupMenu*)),
              SLOT(addContextMenuItems(QPopupMenu*)) );
     connect( this, SIGNAL( activated(int) ), SLOT( slotReset() ));
@@ -493,72 +486,102 @@ bool KHistoryCombo::removeFromHistory( const QString& item )
     return removed;
 }
 
-void KHistoryCombo::keyPressEvent( QKeyEvent *e )
+void KHistoryCombo::rotateUp()
 {
     // save the current text in the lineedit
     if ( myIterateIndex == -1 )
         myText = currentText();
 
-    // going up in the history, rotating when reaching QListBox::count()
-    if ( KStdAccel::isEqual( e, KStdAccel::rotateUp() ) ) {
+    myIterateIndex++;
+
+    // skip duplicates/empty items
+    while ( myIterateIndex < count()-1 &&
+            (currentText() == text( myIterateIndex ) ||
+             text( myIterateIndex ).isEmpty()) )
         myIterateIndex++;
 
-        // skip duplicates/empty items
-        while ( myIterateIndex < count()-1 &&
-                (currentText() == text( myIterateIndex ) ||
-                text( myIterateIndex ).isEmpty()) )
-            myIterateIndex++;
+    if ( myIterateIndex >= count() ) {
+        myRotated = true;
+        myIterateIndex = -1;
 
-        if ( myIterateIndex >= count() ) {
-            myRotated = true;
-            myIterateIndex = -1;
+        // if the typed text is the same as the first item, skip the first
+        if ( myText == text(0) )
+            myIterateIndex = 0;
 
-            // if the typed text is the same as the first item, skip the first
-            if ( myText == text(0) )
-                myIterateIndex = 0;
-
-            setEditText( myText );
-        }
-        else
-            setEditText( text( myIterateIndex ));
+        setEditText( myText );
     }
+    else
+        setEditText( text( myIterateIndex ));
+}
+
+void KHistoryCombo::rotateDown()
+{
+    // save the current text in the lineedit
+    if ( myIterateIndex == -1 )
+        myText = currentText();
+
+    myIterateIndex--;
+
+    // skip duplicates/empty items
+    while ( myIterateIndex >= 0 &&
+            (currentText() == text( myIterateIndex ) ||
+             text( myIterateIndex ).isEmpty()) )
+        myIterateIndex--;
 
 
+    if ( myIterateIndex < 0 ) {
+        if ( myRotated && myIterateIndex == -2 ) {
+            myRotated = false;
+            myIterateIndex = count() - 1;
+            setEditText( text(myIterateIndex) );
+        }
+        else { // bottom of history
+            if ( myIterateIndex == -2 ) {
+                KNotifyClient::event( KNotifyClient::notification,
+                                      i18n("No further item in the history."));
+            }
+
+            myIterateIndex = -1;
+            if ( currentText() != myText )
+                setEditText( myText );
+        }
+    }
+    else
+        setEditText( text( myIterateIndex ));
+
+}
+
+void KHistoryCombo::keyPressEvent( QKeyEvent *e )
+{
+    // going up in the history, rotating when reaching QListBox::count()
+    if ( KStdAccel::isEqual( e, KStdAccel::rotateUp() ) ) {
+        rotateUp();
+    }
     // going down in the history, no rotation possible. Last item will be
     // the text that was in the lineedit before Up was called.
     else if ( KStdAccel::isEqual( e, KStdAccel::rotateDown() ) ) {
-        myIterateIndex--;
-
-        // skip duplicates/empty items
-        while ( myIterateIndex >= 0 &&
-                (currentText() == text( myIterateIndex ) ||
-                text( myIterateIndex ).isEmpty()) )
-            myIterateIndex--;
-
-
-        if ( myIterateIndex < 0 ) {
-            if ( myRotated && myIterateIndex == -2 ) {
-                myRotated = false;
-                myIterateIndex = count() - 1;
-                setEditText( text(myIterateIndex) );
-            }
-            else { // bottom of history
-                if ( myIterateIndex == -2 ) {
-                    KNotifyClient::event( KNotifyClient::notification,
-                                      i18n("No further item in the history."));
-                }
-
-                myIterateIndex = -1;
-                if ( currentText() != myText )
-                    setEditText( myText );
-            }
-        }
-        else
-            setEditText( text( myIterateIndex ));
+        rotateDown();
     }
-
     else
         KComboBox::keyPressEvent( e );
+}
+
+void KHistoryCombo::wheelEvent( QWheelEvent *ev )
+{
+    // Pass to poppable listbox if it's up
+    QListBox *lb = listBox();
+    if ( lb && lb->isVisible() )
+    {
+        QApplication::sendEvent( lb, ev );
+        return;
+    }
+    // Otherwise make it change the text without emitting activated
+    if ( ev->delta() > 0 ) {
+        rotateUp();
+    } else {
+        rotateDown();
+    }
+    ev->accept();
 }
 
 void KHistoryCombo::slotReset()

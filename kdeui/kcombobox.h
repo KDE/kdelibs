@@ -45,20 +45,20 @@ class KURL;
  * key-bindings to activate these features, and a popup-menu item that can be
  * used to allow the user to change the text completion mode on the fly.
  *
- * To support these new features KComboBox emits a few additional signals 
+ * To support these new features KComboBox emits a few additional signals
  * such as @ref completion( const QString& ) and @ref textRotation( KeyBindgingType ).
- * The completion signal can be connected to a slot that will assist the user in 
+ * The completion signal can be connected to a slot that will assist the user in
  * filling out the remaining text while the rotation signal can be used to traverse
  * through all possible matches whenever text completion results in multiple matches.
  * Additionally, a @ref returnPressed() and a @ref returnPressed( const QString& )
  * signals are emitted when the user presses the Enter/Return key.
  *
- * KCombobox by default creates a completion object when you invoke the 
- * @ref completionObject( bool ) member function for the first time or 
+ * KCombobox by default creates a completion object when you invoke the
+ * @ref completionObject( bool ) member function for the first time or
  * explicitly use @ref setCompletionObject( KCompletion*, bool ) to assign your
- * own completion object.  Additionally, to make this widget more functional, 
+ * own completion object.  Additionally, to make this widget more functional,
  * KComboBox will by default handle text rotation and completion events
- * internally whenever a completion object is created through either one of the 
+ * internally whenever a completion object is created through either one of the
  * methods mentioned above.  If you do not need this functionality, simply use
  * @ref KCompletionBase::setHandleSignals(bool) or alternatively set the boolean
  * parameter in the @p setCompletionObject call to FALSE.
@@ -66,11 +66,11 @@ class KURL;
  * The default key-bindings for completion and rotation is determined from the
  * global settings in @ref KStdAccel. These values, however, can be overriden
  * locally by invoking @ref KCompletionBase::setKeyBinding(). The values can
- * easily be reverted back to the default setting, by simply calling 
+ * easily be reverted back to the default setting, by simply calling
  * @ref useGlobalSettings(). An alternate method would be to default individual
  * key-bindings by usning @ref setKeyBinding() with the default second argument.
  *
- * In non-editable (select-only) mode only one completion mode, @p CompletionAuto, 
+ * In non-editable (select-only) mode only one completion mode, @p CompletionAuto,
  * is available. All the other modes are simply ignored. Moreover, the CompletionAuto
  * mode, unlike in the read-write mode, works by matching any typed key with the
  * first letter of entries in the combobox.
@@ -495,7 +495,7 @@ private:
      * Initializes the variables upon construction.
      */
     void init();
-    
+
     // BC: No longer needed...
     bool m_bEnableMenu;
 
@@ -520,8 +520,8 @@ class KPixmapProvider;
  * load and save the completion list to preserve the weighting between
  * sessions.
  *
- * KHistoryCombo obeys the HISTCONTROL environment variable to determine 
- * whether duplicates in the history should be tolerated in 
+ * KHistoryCombo obeys the HISTCONTROL environment variable to determine
+ * whether duplicates in the history should be tolerated in
  * @ref addToHistory() or not. During construction of KHistoryCombo,
  * duplicates will be disabled when HISTCONTROL is set to "ignoredups" or
  * "ignoreboth". Otherwise, duplicates are enabled by default.
@@ -707,6 +707,10 @@ protected:
      */
     virtual void keyPressEvent( QKeyEvent * );
 
+    /**
+     * Handling wheel-events, to rotate the items.
+     */
+    virtual void wheelEvent( QWheelEvent *ev );
 
     /**
      * Inserts @p items into the combo, honouring @ref pixmapProvider()
@@ -742,6 +746,8 @@ private slots:
 
 private:
     void init( bool useCompletion );
+    void rotateUp();
+    void rotateDown();
 
     /**
      * The current position (index) in the combobox, used for Up and Down
