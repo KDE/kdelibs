@@ -688,7 +688,8 @@ pid_t KRun::runCommand( QString cmd )
 pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QString & iconName )
 {
   kdDebug(7010) << "runCommand " << cmd << "," << execName << endl;
-  KShellProcess * proc = new KShellProcess;
+  KProcess * proc = new KProcess;
+  proc->setUseShell(true);
   *proc << cmd;
   return runCommandInternal( proc, binaryName( cmd, false ), execName, iconName );
 }
