@@ -50,6 +50,11 @@ class DCOPClient : public QObject
   bool detach();
 
   /**
+   * Query whether or not the client is attached to the server.
+   */
+  bool isAttached() const;
+
+  /**
    * return the socket over which DCOP is communicating with the server.
    */
   int socket() const;

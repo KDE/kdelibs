@@ -222,6 +222,11 @@ bool DCOPClient::detach()
     return true;
 }
 
+bool DCOPClient::isAttached() const
+{
+  return (IceConnectionStatus(d->iceConn) == IceConnectAccepted)
+}
+
 int DCOPClient::socket() const
 {
   return IceConnectionNumber(d->iceConn);
