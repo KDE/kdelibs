@@ -689,9 +689,9 @@ KCmdLineArgs::usage(const char *id)
      while(option && option->name)
      {
        if (option->name[0] == '+')
-       {
           usage = usage + (option->name+1) + " ";
-       }
+       else if ( option->name[0] == '!' && option->name[1] == '+' )
+          usage = usage + (option->name+2) + " ";
 
        option++;
      }
@@ -758,6 +758,9 @@ KCmdLineArgs::usage(const char *id)
             dl.remove( dl.begin() );
          }
          QCString name = option->name;
+         if (name[0] == '!')
+             name = name.mid(1);
+
          if (name[0] == '+')
          {
             if (!hasArgs)
@@ -782,9 +785,6 @@ KCmdLineArgs::usage(const char *id)
                   printQ(optionHeaderString.arg(QString::fromLatin1(args->name)+" options"));
                hasOptions = true;
             }
-
-            if (name[0] == '!')
-               name = name.mid(1);
 
             if ((name.length() == 1) || (name[1] == ' '))
                name = "-"+name;
