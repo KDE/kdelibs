@@ -228,7 +228,12 @@ KJSArgList *ArgumentListNode::evaluateList()
 // ECMA 11.8
 KJSO *RelationalNode::evaluate()
 {
-  /* TODO */
+  Ptr e1 = expr1->evaluate();
+  Ptr v1 = e1->getValue();
+  Ptr e2 = expr2->evaluate();
+  Ptr v2 = e2->getValue();
+  /* TODO: abstract relational comparison */
+  return new KJSBoolean(true);
 }
 
 // ECMA 11.9
