@@ -1329,8 +1329,6 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
                         addPending();
                     *dest = '<';
                     dest++;
-                    *dest++ = src[0];
-                    ++src;
                     continue;
                 }
             }
