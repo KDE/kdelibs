@@ -137,7 +137,7 @@ class KWalletD : public KDEDModule {
 		KDirWatch *_dw;
 		int _failed;
 
-		bool _leaveOpen, _closeIdle, _launchManager, _enabled;
+		bool _leaveOpen, _closeIdle, _launchManager, _enabled, _openPrompt;
 		int _idleTime;
 };
 

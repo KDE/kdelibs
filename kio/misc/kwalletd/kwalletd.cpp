@@ -163,7 +163,7 @@ bool brandNew = false;
 		} else {
 			int response = KMessageBox::Yes;
 			
-			if (!_handles[dc->senderId()].contains(rc)) {
+			if (_openPrompt && !_handles[dc->senderId()].contains(rc)) {
 				response = KMessageBox::questionYesNo(0L, i18n("The application '%1' has requested access to the open wallet '%2'.  Do you wish to permit this?").arg(dc->senderId()).arg(wallet), i18n("KDE Wallet Service"));
 			}
 
@@ -612,7 +612,7 @@ void KWalletD::slotAppUnregistered(const QCString& app) {
 		for (QValueList<int>::Iterator i = l.begin(); i != l.end(); i++) {
 			_handles[app].remove(*i);
 			KWallet::Backend *w = _wallets.find(*i);
-			if (w && 0 == w->deref()) {
+			if (w && !_leaveOpen && 0 == w->deref()) {
 				close(w->walletName(), true);
 			}
 		}
@@ -756,6 +756,7 @@ void KWalletD::reconfigure() {
 	_launchManager = cfg.readBoolEntry("Launch Manager", true);
 	_leaveOpen = cfg.readBoolEntry("Leave Open", false);
 	_closeIdle = cfg.readBoolEntry("Close When Idle", false);
+	_openPrompt = cfg.readBoolEntry("Prompt on Open", true);
 	_idleTime = cfg.readNumEntry("Idle Timeout", 10);
 
 	if (!_enabled) { // close all wallets
