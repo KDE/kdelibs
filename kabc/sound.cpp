@@ -80,6 +80,12 @@ bool Sound::isIntern() const
   return mIntern;
 }
 
+bool Sound::isEmpty() const
+{
+  return (!mIntern) && mUrl.isEmpty();
+
+}
+
 QString Sound::url() const
 {
   return mUrl;

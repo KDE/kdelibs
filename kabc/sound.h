@@ -101,6 +101,13 @@ public:
   void setUrl( const QString &url );
 
   /**
+   * Test if this sound file has been set.
+   * Just does:  !isIntern() && url.isEmpty()
+   * @since 3.4
+   */
+  bool isEmpty() const;
+  
+  /**
    * Sets the raw data of the sound. When using this function,
    * isIntern() will return 'true' until you use setUrl().
    *
