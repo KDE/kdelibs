@@ -65,6 +65,11 @@ public:
    */
   ~KJScript();
   /**
+   * Force a "context switch". You usually do not need to do that,
+   * evaluate() does it too.
+   */
+  void init();
+  /**
    * Asks the interpreter to evaluate a piece of code. If called more than
    * once the state (global variables, functions etc.) will be preserved
    * between each call.

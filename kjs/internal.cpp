@@ -441,16 +441,18 @@ KJScriptImp::KJScriptImp()
 
 KJScriptImp::~KJScriptImp()
 {
+  KJScriptImp::curr = this;
+
 #ifdef KJS_DEBUGGER
   attachDebugger(0L);
 #endif
 
   clear();
 
-  KJScriptImp::curr = this;
-
   delete lex;
   lex = 0L;
+
+  KJScriptImp::curr = 0L;
 }
 
 void KJScriptImp::mark()

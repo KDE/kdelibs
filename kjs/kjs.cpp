@@ -44,6 +44,11 @@ KJScript::~KJScript()
 #endif
 }
 
+void KJScript::init()
+{
+  rep->init();
+}
+
 bool KJScript::evaluate(const char *code)
 {
   return rep->evaluate(UString(code).data(), strlen(code));
