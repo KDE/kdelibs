@@ -26,12 +26,12 @@
 #include <stdlib.h>
 #include <qwidget.h>
 #include <qlist.h>
-#include <qlayout.h>
 #include <ktoolbar.h>
-#include <kmenubar.h>
 #include <kstatusbar.h>
-#include <kconfig.h>
-#include <ktmlayout.h>
+
+class KConfig;
+class KTMLayout;
+class KMenuBar;
 
 /**
  * Top level widget that provides toolbars, a status line and a frame.

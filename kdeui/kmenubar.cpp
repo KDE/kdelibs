@@ -32,12 +32,11 @@
 #include <qframe.h>
 #include <qmenudata.h>
 
-
 #include <klocale.h>
 #include <kglobal.h>
 #include <kstddirs.h>
 #include <kapp.h>
-#include <kwm.h>
+#include <kconfig.h>
 #include <ktoolboxmgr.h>
 #include <kwm.h>
 #include <kstyle.h>
@@ -49,6 +48,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.81  1999/07/25 09:24:04  kulow
+// good news - the workaround is not needed anymore. I left a
+// comment in the Makefile for now
+//
 // Revision 1.80  1999/07/25 09:11:28  kulow
 // /me thinks these warnings should be default for the moment to bug
 // Mosfet :)

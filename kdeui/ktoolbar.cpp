@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.125  1999/07/07 19:12:12  cschlaeg
+// removed horizontal/vertical flipping for floating bars during resize
+//
 // Revision 1.124  1999/06/20 10:49:35  mario
 // Mario: the menu bar was not correctly drawn. This hack fixes that
 //
@@ -306,10 +309,10 @@
 #include <klocale.h>
 #include <kapp.h>
 #include <kglobal.h>
+#include <kconfig.h>
 #include <kwm.h>
 #include <ktoolboxmgr.h>
 #include <kstyle.h>
-
 
 // Use enums instead of defines. We are C++ and NOT C !
 enum {
