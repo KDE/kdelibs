@@ -1701,12 +1701,12 @@ int KStyle::styleHint( StyleHint sh, const QWidget* w,
 		case SH_ItemView_ChangeHighlightOnFocus:
 		case SH_Slider_SloppyKeyEvents:
 		case SH_MainWindow_SpaceBelowMenuBar:
+		case SH_PopupMenu_AllowActiveAndDisabled:        
 			return 0;
-
+            
 		case SH_Slider_SnapToValue:
 		case SH_PrintDialog_RightAlignButtons:
 		case SH_FontDialog_SelectAssociatedText:
-		case SH_PopupMenu_AllowActiveAndDisabled:
 		case SH_MenuBar_MouseTracking:
 		case SH_PopupMenu_MouseTracking:
 		case SH_ComboBox_ListMouseTracking:
