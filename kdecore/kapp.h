@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 290
-#define KDE_VERSION_STRING "pre-2.9 CVS >= 20010806"
+#define KDE_VERSION_STRING "pre-2.9 CVS >= 20010901"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 9
 #define KDE_VERSION_RELEASE 0
@@ -845,6 +845,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.233  2001/08/29 15:25:38  bero
+// _WS_X11_ -> Q_WS_X11
+// _WS_QWS_ -> Q_WS_QWS
+//
 // Revision 1.232  2001/08/26 11:35:23  faure
 // Never heard that a public header file should never include config.h ?
 // I can't see why you included it, in addition. _WS_blah_ are all defined in Qt,
