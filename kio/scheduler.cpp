@@ -61,7 +61,7 @@ KIO::Scheduler::ProtocolInfoDict::get(const QString &_key)
 {
   // The key is the protocol of the job, except when using an ftp proxy
   QString key = KProtocolManager::slaveProtocol( _key );
-  kdDebug() << "ProtocolInfoDict::get(" << _key << ")  getting info for " << key << endl;
+  //kdDebug() << "ProtocolInfoDict::get(" << _key << ")  getting info for " << key << endl;
 
   ProtocolInfo *info = find(key);
   if (!info)
