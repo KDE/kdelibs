@@ -2131,9 +2131,13 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
             block = false;
 
           // if there is a frame with the target name, don't block
-          if ( (view && view->part() && view->part()->parentPart())   ) {
-            if( view->part()->parentPart()->frameExists( form.target().string() ) ) {
-	      block = false;
+          if ( view && view->part() )  {
+            // search all (possibly nested) framesets
+            KHTMLPart *currentPart = view->part()->parentPart();
+            while( currentPart != 0L ) {
+              if( currentPart->frameExists( form.target().string() ) ) 
+                block = false;
+              currentPart = currentPart->parentPart();
             }
           }
 
