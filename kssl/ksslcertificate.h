@@ -46,6 +46,7 @@
 #include <qstring.h>
 
 class KSSL;
+class KSSLCertificatePrivate;
  
 class KSSLCertificate {
 friend class KSSL;
@@ -67,16 +68,15 @@ public:
   
 
 private:
-
-  class KSSLCertificatePrivate;
   KSSLCertificatePrivate *d;
+
 
 protected:
   KSSLCertificate();
-#ifdef HAVE_SSL
-  X509 *m_cert;
-#endif
 
+  #ifdef HAVE_SSL
+  void setCert(X509 *c);
+  #endif
 };
 
 

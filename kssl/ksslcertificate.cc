@@ -21,18 +21,33 @@
 #include "ksslcertificate.h"
 
 
+class KSSLCertificatePrivate {
+public:
+  KSSLCertificatePrivate() {
+  }
+
+  ~KSSLCertificatePrivate() {
+  }
+
+  #ifdef HAVE_SSL
+    X509 *m_cert;
+  #endif
+};
+
 KSSLCertificate::KSSLCertificate() {
+  d = new KSSLCertificatePrivate;
 #ifdef HAVE_SSL
-  m_cert = NULL;
+  d->m_cert = NULL;
 #endif
 }
 
 
 KSSLCertificate::~KSSLCertificate() {
 #ifdef HAVE_SSL
-  if (m_cert)
-    X509_free(m_cert);
+  if (d->m_cert)
+    X509_free(d->m_cert);
 #endif
+  delete d;
 }
 
 
@@ -40,7 +55,7 @@ QString KSSLCertificate::getSubject() const {
 QString rc = "";
 
 #ifdef HAVE_SSL
-  char *t = X509_NAME_oneline(X509_get_subject_name(m_cert), 0, 0);
+  char *t = X509_NAME_oneline(X509_get_subject_name(d->m_cert), 0, 0);
   if (!t) return rc;
   rc = t;
   Free(t);    // NOTE - _Free_  *NOT*  _free_
@@ -54,7 +69,7 @@ QString KSSLCertificate::getIssuer() const {
 QString rc = "";
 
 #ifdef HAVE_SSL
-  char *t = X509_NAME_oneline(X509_get_issuer_name(m_cert), 0, 0);
+  char *t = X509_NAME_oneline(X509_get_issuer_name(d->m_cert), 0, 0);
   if (!t) return rc;
   rc = t;
   Free(t);    // NOTE - _Free_  *NOT*  _free_
@@ -63,4 +78,10 @@ QString rc = "";
 return rc;
 }
 
+
+#ifdef HAVE_SSL
+void KSSLCertificate::setCert(X509 *c) {
+  d->m_cert = c;
+}
+#endif
 

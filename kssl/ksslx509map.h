@@ -17,63 +17,29 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+ 
+#ifndef _KSSLX509MAP_H
+#define _KSSLX509MAP_H
 
-#ifndef _KSSL_H
-#define _KSSL_H
+#include <qmap.h>
+#include <qstring.h>
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
 
-#ifdef HAVE_SSL
-#include <openssl/ssl.h>
-#endif
-
-#include <ksslsettings.h>
-#include <ksslpeerinfo.h>
-#include <ksslconnectioninfo.h>
-
-class KSSLPrivate;
-
-class KSSL {
-
+class KSSLX509Map {
 public:
-  KSSL(bool init = true);
+  KSSLX509Map(const QString& name);
+  ~KSSLX509Map();
 
-  ~KSSL();
-
-  static bool doesSSLWork();
-
-  bool initialize();
-  void close();
-  bool reInitialize();
-
-  bool reconfig();
-  void setAutoReconfig(bool ar);
-  bool setSettings(KSSLSettings *settings);
-
-  int connect(int sock);
-
-  int read(void *buf, int len);
-  int write(const void *buf, int len);
-
-  const KSSLConnectionInfo& connectionInfo() const;
-  const KSSLPeerInfo& peerInfo() const;
-
+  void setValue(const QString& key, const QString& value);
+  QString getValue(const QString& key) const;
+  void reset(const QString& name = "");
+  
 private:
-  static bool m_bSSLWorks;
-  bool m_bInit;
-  bool m_bAutoReconfig;
-  KSSLSettings *m_cfg;
-  KSSLConnectionInfo m_ci;
-  KSSLPeerInfo m_pi;
+  class KSSLX509MapPrivate;
+  KSSLX509MapPrivate *d;
+  QMap<QString, QString> m_pairs;
 
-  KSSLPrivate *d;
-
-  void setConnectionInfo();
-  void setPeerInfo();
+  void parse(const QString& name);
 };
 
-
 #endif
-

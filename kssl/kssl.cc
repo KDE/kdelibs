@@ -23,7 +23,26 @@
 
 #include <kdebug.h>
 
+class KSSLPrivate {
+public:
+  KSSLPrivate() {
+
+  }
+
+  ~KSSLPrivate() {
+
+  }
+
+  #ifdef HAVE_SSL
+    SSL *m_ssl;
+    SSL_CTX *m_ctx;
+    SSL_METHOD *m_meth;
+  #endif
+};
+
+
 KSSL::KSSL(bool init) {
+  d = new KSSLPrivate;
   m_bInit = false;
   m_bAutoReconfig = true;
   m_cfg = new KSSLSettings();
@@ -34,6 +53,7 @@ KSSL::KSSL(bool init) {
 KSSL::~KSSL() {
   close();
   delete m_cfg;
+  delete d;
 }
 
 
@@ -49,24 +69,24 @@ bool KSSL::initialize() {
   //        version is turned on.  IMHO this is the safest one to
   //        use as the default anyways, so I'm not changing it yet.
   if (m_cfg->tlsv1())
-    m_meth = TLSv1_client_method();
+    d->m_meth = TLSv1_client_method();
   else if (m_cfg->sslv2() && m_cfg->sslv3())
-    m_meth = SSLv23_client_method();
+    d->m_meth = SSLv23_client_method();
   else if (m_cfg->sslv3())
-    m_meth = SSLv3_client_method();
+    d->m_meth = SSLv3_client_method();
   else
-    m_meth = SSLv2_client_method();
+    d->m_meth = SSLv2_client_method();
  
   SSLeay_add_ssl_algorithms();
-  m_ctx=SSL_CTX_new(m_meth);
-  if (m_ctx == NULL) {
+  d->m_ctx=SSL_CTX_new(d->m_meth);
+  if (d->m_ctx == NULL) {
     return false;
   }
 
   // set cipher list
   QString clist = m_cfg->getCipherList();
   if (!clist.isEmpty()) 
-    SSL_CTX_set_cipher_list(m_ctx, clist.ascii());
+    SSL_CTX_set_cipher_list(d->m_ctx, clist.ascii());
 
   m_bInit = true;
 return true;
@@ -81,9 +101,9 @@ return false;
 void KSSL::close() {
 #ifdef HAVE_SSL
   if (!m_bInit) return;
-  SSL_shutdown(m_ssl);
-  SSL_free(m_ssl);
-  SSL_CTX_free(m_ctx);
+  SSL_shutdown(d->m_ssl);
+  SSL_free(d->m_ssl);
+  SSL_CTX_free(d->m_ctx);
   m_bInit = false;
 #endif
 }
@@ -99,10 +119,10 @@ int KSSL::connect(int sock) {
 #ifdef HAVE_SSL
 int rc;
   if (!m_bInit) return -1;
-  m_ssl = SSL_new(m_ctx);
-  if (!m_ssl) return -1;
-  SSL_set_fd(m_ssl, sock);
-  rc = SSL_connect(m_ssl);
+  d->m_ssl = SSL_new(d->m_ctx);
+  if (!d->m_ssl) return -1;
+  SSL_set_fd(d->m_ssl, sock);
+  rc = SSL_connect(d->m_ssl);
   if (rc != -1) {
     setConnectionInfo();
     setPeerInfo();
@@ -117,7 +137,7 @@ int rc;
 int KSSL::read(void *buf, int len) {
 #ifdef HAVE_SSL
   if (!m_bInit) return -1;
-  return SSL_read(m_ssl, (char *)buf, len);
+  return SSL_read(d->m_ssl, (char *)buf, len);
 #else
 return -1;
 #endif
@@ -127,7 +147,7 @@ return -1;
 int KSSL::write(const void *buf, int len) {
 #ifdef HAVE_SSL
   if (!m_bInit) return -1;
-  return SSL_write(m_ssl, (const char *)buf, len);
+  return SSL_write(d->m_ssl, (const char *)buf, len);
 #else
 return -1;
 #endif
@@ -167,7 +187,7 @@ void KSSL::setConnectionInfo() {
 SSL_CIPHER *sc;
 char buf[1024];
 
-  sc = SSL_get_current_cipher(m_ssl);
+  sc = SSL_get_current_cipher(d->m_ssl);
   // set the number of bits, bits used
   m_ci.m_iCipherUsedBits = SSL_CIPHER_get_bits(sc, &(m_ci.m_iCipherBits));
   // set the cipher version
@@ -183,7 +203,7 @@ char buf[1024];
 
 void KSSL::setPeerInfo() {
 #ifdef HAVE_SSL
-  m_pi.m_cert.m_cert = SSL_get_peer_certificate(m_ssl);
+  m_pi.m_cert.setCert(SSL_get_peer_certificate(d->m_ssl));
 #endif
 }
 
