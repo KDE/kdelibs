@@ -48,7 +48,7 @@ KardSvc::KardSvc(const QCString &name) : KDEDModule(name)
 	_pcsc = new KPCSC;
 	_timer = new QTimer(this);
 	connect(_timer, SIGNAL(timeout()), this, SLOT(poll()));
-	_timer->start(2500, false);
+	_timer->start(1500, false);
 	_readers = _pcsc->listReaders(NULL);
 }
   
@@ -89,12 +89,16 @@ QStringList newReaders = _pcsc->listReaders(&err);
 			for (QStringList::Iterator s = _readers.begin();
 			     s != _readers.end();
 			     ++s) {
+				
 				if (!newReaders.contains(*s) && 
 						_states[*s] != 0) {
 					_states[*s] = 0;
 					kdDebug() << "kardsvc: card removed from slot " 
 						  << *s << endl;
 				}
+
+				if (!newReaders.contains(*s))
+					_states.remove(*s);
 			}
 			_readers = newReaders;
 		} else return;
@@ -105,20 +109,22 @@ QStringList newReaders = _pcsc->listReaders(&err);
 	     s != _readers.end();
 	     ++s) {
 		KCardReader *_card = _pcsc->getReader(*s);
-		if (_card) {
-			if (_states[*s] == 0) {
+		if (_card && _card->isCardPresent()) {
+			if (!_states.contains(*s) || _states[*s] == 0) {
 				_states[*s] = 1;
 				kdDebug() << "kardsvc: card inserted in slot " 
 					  << *s << endl;
 			}
-			delete _card;
 		} else {
-			if (_states[*s] == 1) {
+			if (_states.contains(*s) && _states[*s] == 1) {
 				_states[*s] = 0;
 				kdDebug() << "kardsvc: card removed from slot " 
 					  << *s << endl;
 			}
 		}
+		
+		if (_card)
+			delete _card;
 	}
 }
 
