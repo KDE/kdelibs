@@ -1465,6 +1465,7 @@ int LightStyleV2::styleHint( StyleHint stylehint,
     case SH_MenuBar_MouseTracking:
     case SH_PopupMenu_MouseTracking:
     case SH_ComboBox_ListMouseTracking:
+    case SH_ScrollBar_MiddleClickAbsolutePosition:
 	ret = 1;
 	break;
 
