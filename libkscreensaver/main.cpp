@@ -54,7 +54,9 @@ static const KCmdLineOptions options[] =
 
 static void crashHandler( int sig )
 {
-    signal( sig, SIG_DFL );
+#ifdef SIGABRT
+    signal (SIGABRT, SIG_DFL);
+#endif
     abort();
 }
 
