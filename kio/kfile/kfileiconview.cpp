@@ -32,6 +32,7 @@
 #include <kapplication.h>
 #include <klocale.h>
 #include <kfileitem.h>
+#include <kiconeffect.h>
 #include <kglobalsettings.h>
 #include <kurldrag.h>
 #include <kio/previewjob.h>
@@ -575,10 +576,18 @@ void KFileIconView::slotPreviewResult( KIO::Job *job )
 }
 
 void KFileIconView::gotPreview( const KFileItem *item, const QPixmap& pix )
-{
+{   
     KFileIconViewItem *it = viewItem( item );
     if ( it )
-        it->setPixmap( pix );
+        if( item->overlays() & KIcon::HiddenOverlay )
+        {
+            QPixmap p( pix );
+
+            KIconEffect::semiTransparent( p );
+            it->setPixmap( p );
+        }
+        else
+            it->setPixmap( pix );
 }
 
 bool KFileIconView::canPreview( const KFileItem *item ) const
