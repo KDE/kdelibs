@@ -1039,20 +1039,20 @@ public:
    * Returns the KAddressInfo's KSocketAddress.
    * Only valid as long as the KAddressInfo exists.
    */
-  inline operator const ::KSocketAddress*() const KDE_DEPRECATED
+  inline KDE_DEPRECATED operator const ::KSocketAddress*() const 
   { return addr; }
 
   /**
    * Returns the KAddressInfo's addrinfo.
    */
-  inline operator const addrinfo&() const KDE_DEPRECATED
+  inline KDE_DEPRECATED operator const addrinfo&() const
   { return *ai; }
 
   /**
    * Returns a pointer to KAddressInfo's addrinfo.
    * Only valid as long as the KAddressInfo exists.
    */
-  inline operator const addrinfo*() const KDE_DEPRECATED
+  inline KDE_DEPRECATED operator const addrinfo*() const
   { return ai; }
 
   /**
@@ -1060,7 +1060,7 @@ public:
    * Only valid as long as the KAddressInfo exists.
    * @return the KAddressInfo's KSocketAddress.
    */
-  inline const ::KSocketAddress* address() const KDE_DEPRECATED
+  inline KDE_DEPRECATED const ::KSocketAddress* address() const
   { return addr; }
 
   /**
