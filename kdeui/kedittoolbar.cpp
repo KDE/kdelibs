@@ -629,9 +629,12 @@ void KEditToolbarWidget::loadToolbarStyles(QDomElement& elem)
 
 void KEditToolbarWidget::loadActionList(QDomElement& elem)
 {
-  static QString attrSeparator = QString::fromLatin1( "Separator" );
-  static QString attrMerge     = QString::fromLatin1( "Merge" );
-  static QString attrName      = QString::fromLatin1( "name" );
+  static QString tagSeparator = QString::fromLatin1( "Separator" );
+  static QString tagMerge     = QString::fromLatin1( "Merge" );
+  static QString attrName     = QString::fromLatin1( "name" );
+
+  int     sep_num = 0;
+  QString sep_name("separator_%1");
 
   // clear our lists
   m_inactiveList->clear();
@@ -648,14 +651,15 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   QDomElement it = elem.lastChild().toElement();
   for( ; !it.isNull(); it = it.previousSibling().toElement() )
   {
-    if (it.tagName() == attrSeparator)
+    if (it.tagName() == tagSeparator)
     {
-      ToolbarItem *act = new ToolbarItem(m_activeList, QString::null);
+      ToolbarItem *act = new ToolbarItem(m_activeList, sep_name.arg(sep_num++));
       act->setText(1, "-----");
+      it.setAttribute( attrName, act->internalName() );
       continue;
     }
 
-    if (it.tagName() == attrMerge)
+    if (it.tagName() == tagMerge)
     {
       ToolbarItem *act = new ToolbarItem(m_activeList, "merge");
       act->setText(1, "<Merge>");
@@ -703,7 +707,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   }
 
   // finally, add a default separator to the inactive list
-  ToolbarItem *act = new ToolbarItem(m_inactiveList, QString::null);
+  ToolbarItem *act = new ToolbarItem(m_inactiveList, sep_name.arg(sep_num++));
   act->setText(1, "-----");
 }
 
@@ -807,13 +811,11 @@ void KEditToolbarWidget::slotInsertButton()
 
   QDomElement new_item;
   // let's handle the separator specially
-  if (item->text(1) != "-----")
-  {
-    new_item = document().createElement(tagAction);
-    new_item.setAttribute(attrName, item->internalName());
-  }
-  else
+  if (item->text(1) == "-----")
     new_item = document().createElement(tagSeparator);
+  else
+    new_item = document().createElement(tagAction);
+  new_item.setAttribute(attrName, item->internalName());
 
   if (m_activeList->currentItem())
   {
@@ -834,13 +836,13 @@ void KEditToolbarWidget::slotInsertButton()
   {
     // just stick it at the end of this
     d->m_currentToolbarElem.appendChild(new_item);
-
-    // and set this container as a noMerge
-    d->m_currentToolbarElem.setAttribute(QString::fromLatin1("noMerge"), "1");
-
-    // update the local doc
-    updateLocal(d->m_currentToolbarElem);
   }
+
+  // and set this container as a noMerge
+  d->m_currentToolbarElem.setAttribute(QString::fromLatin1("noMerge"), "1");
+
+  // update the local doc
+  updateLocal(d->m_currentToolbarElem);
 
   slotToolbarSelected( m_toolbarCombo->currentText() );
 }
