@@ -398,7 +398,7 @@ void HTMLTokenizer::scriptHandler()
             scriptCodeSize = scriptCodeResync = 0;
             cs->ref(this);
             // will be 0 if script was already loaded and ref() executed it
-            if (!cachedScript.isEmpty())
+            if (cachedScript.count())
                 loadingExtScript = true;
         }
         else if (view && doScriptExec && javascript ) {
@@ -1611,17 +1611,18 @@ void HTMLTokenizer::enlargeScriptBuffer(int len)
 void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 {
     assert(!cachedScript.isEmpty());
-    while (!cachedScript.isEmpty() && cachedScript.head()->isLoaded()) {
+    bool finished = false;
+    while (!finished && cachedScript.head()->isLoaded()) {
 #ifdef TOKEN_DEBUG
         kdDebug( 6036 ) << "Finished loading an external script" << endl;
 #endif
         CachedScript* cs = cachedScript.dequeue();
-        loadingExtScript = !cachedScript.isEmpty();
+        finished = cachedScript.isEmpty();
+        if (finished) loadingExtScript = false;
         DOMString scriptSource = cs->script();
 #ifdef TOKEN_DEBUG
         kdDebug( 6036 ) << "External script is:" << endl << scriptSource.string() << endl;
 #endif
-//         pendingSrc.prepend( QString( src.current(), src.length() ) ); // deep copy - again
         setSrc(QString::null);
 
         // make sure we forget about the script before we execute the new one
@@ -1638,6 +1639,8 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
             QString rest = pendingSrc;
             pendingSrc = "";
             write(rest, false);
+            // we might be deleted at this point, do not
+            // access any members.
         }
     }
 }
