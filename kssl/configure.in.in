@@ -1,22 +1,4 @@
 dnl ------------------------------------------------------------------------
-dnl Try to determine if the system has /dev/[u]random                       
-dnl ------------------------------------------------------------------------
-dnl
-AC_DEFUN(AC_HAVE_DEVRANDOM,
-[
-AC_MSG_CHECKING([for /dev/random or /dev/urandom])
-  if test -c "/dev/random" || test -c "/dev/urandom"; then
-    have_dev_random=yes
-    AC_DEFINE(HAVE_DEV_RANDOM, 1, [If we are going to use /dev/random])
-  else
-    have_dev_random=no
-  fi
-AC_MSG_RESULT([$have_dev_random])
-])
-
-AC_HAVE_DEVRANDOM
-
-dnl ------------------------------------------------------------------------
 dnl Try to find the SSL headers and libraries.
 dnl $(SSL_LDFLAGS) will be -Lsslliblocation (if needed)
 dnl and $(SSL_INCLUDES) will be -Isslhdrlocation (if needed)
