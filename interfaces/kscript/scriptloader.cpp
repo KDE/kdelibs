@@ -100,3 +100,5 @@ void ScriptLoader::stopAction()
 {
 
 }
+
+#include "scriptloader.moc"

@@ -21,7 +21,7 @@
 #include <qptrlist.h>
 #include <kmainwindow.h>
 #include <kaction.h>
-#include <scriptinterface.h>
+#include <kscript/scriptinterface.h>
 
 class ScriptLoader : virtual public QObject
 {
