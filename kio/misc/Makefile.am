@@ -29,8 +29,7 @@ kio_uiserver_SOURCES = dummy.cpp
 kio_uiserver_LDADD = kio_uiserver.la
 kio_uiserver_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
-kio_uiserver_la_SOURCES = uiserver.cpp uiserver.skel observer.stub \
-	renamedlg.cpp skipdlg.cpp
+kio_uiserver_la_SOURCES = uiserver.cpp uiserver.skel observer.stub
 kio_uiserver_la_LIBADD = $(LIB_KIO)
 kio_uiserver_la_LDFLAGS = $(all_libraries) -module -avoid-version
 
@@ -55,5 +54,5 @@ protocol_DATA = kmailservice.protocol telnet.protocol rlogin.protocol rtsp.proto
 protocoldir = $(kde_servicesdir)
 
 kiomiscdir = $(includedir)/kio
-kiomisc_HEADERS = uiserver.h renamedlg.h skipdlg.h
+kiomisc_HEADERS = uiserver.h
 
