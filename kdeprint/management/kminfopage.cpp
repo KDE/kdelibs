@@ -121,21 +121,7 @@ void KMInfoPage::setPrinter(KMPrinter *p)
 		else if (p->isSpecial())
 			m_type->setText(i18n("Special (pseudo) printer"));
 		else m_type->setText(i18n("Unknown"));
-		switch (p->state())
-		{
-			case KMPrinter::Idle:
-				m_state->setText(i18n("Idle"));
-				break;
-			case KMPrinter::Stopped:
-				m_state->setText(i18n("Stopped"));
-				break;
-			case KMPrinter::Processing:
-				m_state->setText(i18n("Processing..."));
-				break;
-			default:
-				m_state->setText(i18n("Unknown"));
-				break;
-		}
+		m_state->setText(p->stateString());
 		m_location->setText(p->location());
 		m_description->setText(p->description());
 		m_uri->setText(p->uri().prettyURL());

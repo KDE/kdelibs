@@ -22,6 +22,8 @@
 #include "kmprinter.h"
 #include "driver.h"
 
+#include <klocale.h>
+
 KMPrinter::KMPrinter()
 : KMObject()
 {
@@ -125,4 +127,15 @@ int KMPrinter::compare(KMPrinter *p1, KMPrinter *p2)
 		}
 	}
 	return 0;
+}
+
+QString KMPrinter::stateString() const
+{
+	switch (m_state)
+	{
+		case KMPrinter::Idle: return i18n("Idle");
+		case KMPrinter::Processing: return i18n("Processing...");
+		case KMPrinter::Stopped: return i18n("Stopped");
+		default: return i18n("Unknown");
+	}
 }

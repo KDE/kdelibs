@@ -248,21 +248,7 @@ void KPrintDialog::slotPrinterSelected(int index)
 			m_location->setText(p->location());
 			m_comment->setText(p->driverInfo());
 			m_type->setText(p->description());
-			switch (p->state())
-			{
-				case KMPrinter::Idle:
-					m_state->setText(i18n("Printer idle"));
-					break;
-				case KMPrinter::Processing:
-					m_state->setText(i18n("Processing..."));
-					break;
-				case KMPrinter::Stopped:
-					m_state->setText(i18n("Stopped"));
-					break;
-				default:
-					m_state->setText(QString::fromLatin1(""));
-					break;
-			}
+			m_state->setText(p->stateString());
 			ok = p->isValid();
 			enableSpecial(p->isSpecial());
 			enableOutputFile(p->option("kde-special-file") == "1");

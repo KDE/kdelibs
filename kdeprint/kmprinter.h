@@ -69,6 +69,7 @@ public:
 	void setType(int t) 			{ m_type = t; }
 	void addType(int t) 			{ m_type |= t; }
 	PrinterState state() const 		{ return m_state; }
+	QString stateString() const;
 	void setState(PrinterState s) 		{ m_state = s; }
 	const KURL& device() const 		{ return m_device; }
 	void setDevice(const KURL& d) 		{ m_device = d; }
