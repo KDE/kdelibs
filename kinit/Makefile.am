@@ -34,3 +34,5 @@ kdeinit_wrapper_SOURCES = wrapper.c
 kdeinit_wrapper_LDADD = $(LIBSOCKET)
 
 lnusertemp_SOURCES = lnusertemp.c 
+lnusertemp_LDFLAGS = $(KDE_RPATH)
+
