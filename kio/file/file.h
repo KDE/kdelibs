@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <qintdict.h>
 #include <qstring.h>
 #include <qvaluelist.h>
 
@@ -18,7 +19,7 @@ class FileProtocol : public KIOProtocol
 public:
   FileProtocol( KIOConnection *_conn );
 //   virtual ~FileProtocol() { }
-  
+
   virtual void slotGet( const char *_url );
   virtual void slotGetSize( const char *_url );
 
@@ -40,14 +41,14 @@ public:
 
   virtual void slotUnmount( const char *_point );
   virtual void slotMount( bool _ro, const char *_fstype, const char* _dev, const char *_point );
-  
+
   virtual void slotData( void *_p, int _len );
   virtual void slotDataEnd();
-  
+
   KIOConnection* connection() { return KIOConnectionSignals::m_pConnection; }
 
   void jobError( int _errid, const char *_txt );
-  
+
 protected:
   struct Copy
   {
@@ -56,7 +57,7 @@ protected:
     mode_t m_mode;
     off_t m_size;
   };
-  
+
   struct CopyDir
   {
     QString m_strAbsSource;
@@ -64,7 +65,7 @@ protected:
     mode_t m_mode;
     ino_t m_ino;
   };
-  
+
   struct Del
   {
     QString m_strAbsSource;
@@ -82,15 +83,18 @@ protected:
 
   int m_cmd;
   bool m_bIgnoreJobErrors;
-  
+
   FILE* m_fPut;
+  QIntDict<QString> usercache;      // maps long ==> QString *
+  QIntDict<QString> groupcache;
+
 };
 
 class FileIOJob : public KIOJobBase
 {
 public:
   FileIOJob( KIOConnection *_conn, FileProtocol *_File );
-  
+
   virtual void slotError( int _errid, const char *_txt );
 
 protected:

@@ -51,7 +51,7 @@ int main( int , char ** )
   KInstance instance( "kio_file" );
 
   KIOConnection parent( 0, 1 );
-  
+
   FileProtocol file( &parent );
   file.dispatchLoop();
 
@@ -62,6 +62,8 @@ FileProtocol::FileProtocol( KIOConnection *_conn ) : KIOProtocol( _conn )
 {
   m_cmd = CMD_NONE;
   m_bIgnoreJobErrors = false;
+  usercache.setAutoDelete( TRUE );
+  groupcache.setAutoDelete( TRUE );
 }
 
 
@@ -127,7 +129,7 @@ void FileProtocol::slotCopy( const char* _source, const char *_dest )
 {
   QStringList lst;
   lst.append( _source );
-  
+
   doCopy( lst, _dest, true );
 }
 
@@ -142,7 +144,7 @@ void FileProtocol::slotMove( const char* _source, const char *_dest )
 {
   QStringList lst;
   lst.append( _source );
-  
+
   doCopy( lst, _dest, true, true );
 }
 
@@ -156,7 +158,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
 
   // Check whether the URLs are wellformed
   QStringList::Iterator source_files_it = _source.begin();
-  while (source_files_it != _source.end()) {    
+  while (source_files_it != _source.end()) {
     qDebug( "kio_file : Checking %s", (*source_files_it).ascii() );
     KURL usrc(*source_files_it);
     if ( usrc.isMalformed() ) {
@@ -236,7 +238,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
   struct stat buff2;
   if ( udest.isLocalFile() && stat( udest.path(), &buff2 ) == 0 ) {
     bool b_error = false;
-    for ( source_files_it = _source.begin(); source_files_it != _source.end(); ++source_files_it ) {    
+    for ( source_files_it = _source.begin(); source_files_it != _source.end(); ++source_files_it ) {
       KURL usrc( (*source_files_it).ascii() );
 
       struct stat buff1;
@@ -374,7 +376,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
       if ( job.hasError() ) {
 	// Can we prompt the user and ask for a solution ?
 	if ( /* m_bGUI && */ job.errorId() == ERR_DOES_ALREADY_EXIST )
-	{    
+	{
 	  QString old_path = ud.path( 1 );
 	  QString old_url = ud.url( 1 );
 	  // Should we skip automatically ?
@@ -408,7 +410,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
 	    QString tmp3 = u.path( 1 );
 	    renamed( tmp3 );
 	    ///////
-	    // Replace old path with tmp3 
+	    // Replace old path with tmp3
 	    ///////
 	    QValueList<CopyDir>::Iterator dir_it2 = dir_it;
 	    // Change the current one and strip the trailing '/'
@@ -456,7 +458,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
       }
     }
     while( job.hasError() );
-      
+
     processedDirs( ++processed_dirs );
     ++dir_it;
   }
@@ -471,13 +473,13 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
   time_t t_last = t_start;
 
   fit = files.begin();
-  for( ; fit != files.end(); fit++ ) { 
+  for( ; fit != files.end(); fit++ ) {
 
     bool overwrite = false;
     bool skip_copying = false;
 
     // Repeat until we got no error
-    do { 
+    do {
       job.clearError();
 
       KURL ud( dest );
@@ -550,7 +552,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
 	// Can we prompt the user and ask for a solution ?
 	else if ( /* m_bGUI && */ currentError == ERR_DOES_ALREADY_EXIST ||
 				  currentError == ERR_DOES_ALREADY_EXIST_FULL )
-	{    
+	{
 	  // Should we skip automatically ?
 	  if ( auto_skip ) {
 	    job.clearError();
@@ -565,7 +567,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
 	  QString n;
 	  RenameDlg_Result r = open_RenameDlg((*fit).m_strAbsSource, tmp2, m, n );
 
-	  if ( r == R_CANCEL ) 
+	  if ( r == R_CANCEL )
 	  {
 	    error( ERR_USER_CANCELED, "" );
 	    m_cmd = CMD_NONE;
@@ -606,7 +608,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
 	}
 	// No need to ask the user, so raise an error
 	else
-	{    
+	{
 	  error( currentError, job.errorText() );
 	  m_cmd = CMD_NONE;
 	  return;
@@ -619,7 +621,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
       continue;
 
     //qDebug( "kio_file : Opening %s", (*fit).m_strAbsSource );
-    
+
     FILE *f = fopen( (*fit).m_strAbsSource, "rb" );
     if ( f == 0L ) {
       error( ERR_CANNOT_OPEN_FOR_READING, (*fit).m_strAbsSource );
@@ -643,7 +645,7 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
 	speed( processed_size / ( t - t_start ) );
 	t_last = t;
       }
-      
+
       // Check parent
       while ( check( connection() ) )
 	dispatch();
@@ -662,14 +664,14 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
     }
 
     job.dataEnd();
-  
+
     fclose( f );
 
     while( !job.hasFinished() )
       job.dispatch();
 
     time_t t = time( 0L );
-    
+
     processedSize( processed_size );
     if ( t - t_start >= 1 )
     {
@@ -688,10 +690,10 @@ void FileProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename
   {
     finished();
     m_cmd = CMD_NONE;
-  }    
+  }
 }
 
-  
+
 void FileProtocol::slotGet( const char *_url )
 {
   KURL usrc( _url );
@@ -721,7 +723,7 @@ void FileProtocol::slotGet( const char *_url )
   }
 
   m_cmd = CMD_GET;
-  
+
   FILE *f = fopen( usrc.path(), "rb" );
   if ( f == 0L ) {
     error( ERR_CANNOT_OPEN_FOR_READING, strdup(_url) );
@@ -732,12 +734,12 @@ void FileProtocol::slotGet( const char *_url )
   ready();
 
   gettingFile( _url );
-  
-  totalSize( buff.st_size );  
+
+  totalSize( buff.st_size );
   int processed_size = 0;
   time_t t_start = time( 0L );
   time_t t_last = t_start;
-  
+
   char buffer[ 4096 ];
   while( !feof( f ) )
   {
@@ -755,7 +757,7 @@ void FileProtocol::slotGet( const char *_url )
   }
 
   dataEnd();
-  
+
   fclose( f );
 
   processedSize( buff.st_size );
@@ -771,7 +773,7 @@ void FileProtocol::slotGet( const char *_url )
 void FileProtocol::slotGetSize( const char *_url )
 {
   m_cmd = CMD_GET_SIZE;
-  
+
   KURL usrc( _url );
   if ( usrc.isMalformed() ) {
     error( ERR_MALFORMED_URL, strdup(_url) );
@@ -799,7 +801,7 @@ void FileProtocol::slotGetSize( const char *_url )
   }
 
   totalSize( buff.st_size );
-  
+
   finished();
   m_cmd = CMD_NONE;
 }
@@ -844,7 +846,7 @@ void FileProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _
 	error( ERR_DOES_ALREADY_EXIST_FULL, udest_orig.path() );
       else
 	error( ERR_DOES_ALREADY_EXIST, udest_orig.path() );
-      
+
       finished();
       m_cmd = CMD_NONE;
       return;
@@ -880,7 +882,7 @@ void FileProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _
   /* if ( access( udest.path(), W_OK ) == -1 )
   {
     qDebug("Write Access denied for '%s' %d",udest.path(),errno );
-    
+
     error( ERR_WRITE_ACCESS_DENIED, strdup(_url) );
     finished();
     m_cmd = CMD_NONE;
@@ -905,7 +907,7 @@ void FileProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _
 
   // We are ready for receiving data
   ready();
-  
+
   // Loop until we got 'dataEnd'
   while ( m_cmd == CMD_PUT && dispatch() );
 
@@ -953,7 +955,7 @@ void FileProtocol::slotDel( QStringList& _source )
 {
   // Check whether the URLs are wellformed
   QStringList::Iterator source_it = _source.begin();
-  for( ; source_it != _source.end(); ++source_it ) {    
+  for( ; source_it != _source.end(); ++source_it ) {
     qDebug( "kio_file : Checking %s", (*source_it).ascii() );
     KURL usrc( *source_it );
     if ( usrc.isMalformed() ) {
@@ -1009,7 +1011,7 @@ void FileProtocol::slotDel( QStringList& _source )
    *****/
 
   QValueList<Copy>::Iterator fit = fs.begin();
-  for( ; fit != fs.end(); fit++ ) { 
+  for( ; fit != fs.end(); fit++ ) {
 
     QString filename = (*fit).m_strAbsSource;
     qDebug( "kio_file : Deleting file %s", filename.ascii() );
@@ -1028,7 +1030,7 @@ void FileProtocol::slotDel( QStringList& _source )
    *****/
 
   QValueList<CopyDir>::Iterator dit = ds.fromLast();
-  for( ; dit != ds.end(); dit-- ) { 
+  for( ; dit != ds.end(); dit-- ) {
 
     QString dirname = (*dit).m_strAbsSource;
     qDebug( "kio_file : Deleting directory %s", dirname.ascii() );
@@ -1043,7 +1045,7 @@ void FileProtocol::slotDel( QStringList& _source )
   }
 
   finished();
-  
+
   m_cmd = CMD_NONE;
 }
 
@@ -1078,7 +1080,7 @@ void FileProtocol::slotListDir( const char *_url )
   }
 
   m_cmd = CMD_LIST;
-  
+
   DIR *dp = 0L;
   struct dirent *ep;
 
@@ -1105,14 +1107,14 @@ void FileProtocol::slotListDir( const char *_url )
     atom.m_uds = UDS_NAME;
     atom.m_str = ep->d_name;
     entry.append( atom );
-  
+
     QString tmp = usrc.path( 1 );
     tmp += ep->d_name;
 
     QString slink = "";
     mode_t type;
     mode_t access;
- 
+
     struct stat buff;
     struct stat lbuff;
     if ( stat( tmp.ascii(), &buff ) == -1 )  {
@@ -1132,7 +1134,7 @@ void FileProtocol::slotListDir( const char *_url )
       type = buff.st_mode;
       access = buff.st_mode;
       // Is it a link
-      if ( S_ISLNK( lbuff.st_mode ) ) {  
+      if ( S_ISLNK( lbuff.st_mode ) ) {
 	// type |= S_IFLNK; No !! This screws S_ISDIR and friends. (David)
         // caller should check UDS_LINK_DEST instead
 	char buffer2[ 1000 ];
@@ -1145,9 +1147,7 @@ void FileProtocol::slotListDir( const char *_url )
       else
 	type &= S_IFMT;
     }
-    
-    struct passwd * user = getpwuid( buff.st_uid );
-    struct group * grp = getgrgid( buff.st_gid );
+
 
     atom.m_uds = UDS_FILE_TYPE;
     atom.m_long = type;
@@ -1166,11 +1166,35 @@ void FileProtocol::slotListDir( const char *_url )
     entry.append( atom );
 
     atom.m_uds = UDS_USER;
-    atom.m_str = (( user != 0L ) ? user->pw_name : "???" );
+    uid_t uid = buff.st_uid;
+    QString *temp = usercache.find( uid );
+    if ( !temp ) {
+      struct passwd *user = getpwuid( uid );
+      if ( user ) {
+	usercache.insert( uid, new QString(user->pw_name) );
+	atom.m_str = user->pw_name;
+      }
+      else
+	atom.m_str = "???";
+    }
+    else
+      atom.m_str = *temp;
     entry.append( atom );
 
     atom.m_uds = UDS_GROUP;
-    atom.m_str = (( grp != 0L ) ? grp->gr_name : "???" );
+    gid_t gid = buff.st_gid;
+    temp = groupcache.find( gid );
+    if ( !temp ) {
+      struct group *grp = getgrgid( gid );
+      if ( grp ) {
+	groupcache.insert( gid, new QString(grp->gr_name) );
+	atom.m_str = grp->gr_name;
+      }
+      else
+	atom.m_str = "???";
+    }
+    else
+      atom.m_str = *temp;
     entry.append( atom );
 
     atom.m_uds = UDS_LINK_DEST;
@@ -1179,7 +1203,7 @@ void FileProtocol::slotListDir( const char *_url )
 
     atom.m_uds = UDS_ACCESS_TIME;
     atom.m_long = buff.st_atime;
-    entry.append( atom );    
+    entry.append( atom );
 
     atom.m_uds = UDS_CREATION_TIME;
     atom.m_long = buff.st_ctime;
@@ -1187,16 +1211,16 @@ void FileProtocol::slotListDir( const char *_url )
 //    listEntry( entry );
     entries.append( entry );
   }
-  
+
   closedir( dp );
-  
+
   totalFiles( entries.count() );
-  
+
   QValueList<KUDSEntry>::Iterator it = entries.begin();
   QValueList<KUDSEntry>::Iterator end = entries.end();
   for (; it != end; ++it )
     listEntry( *it );
-  
+
   qDebug( "kio_file : ============= COMPLETED LIST ============" );
 
   m_cmd = CMD_NONE;
@@ -1242,7 +1266,7 @@ void FileProtocol::slotMount( bool _ro, const char *_fstype, const char* _dev, c
   char buffer[ 1024 ];
 
   int t = (int)time( 0L );
-    
+
   // Look in /etc/fstab ?
   if ( *_fstype == 0 || *_point == 0 )
     sprintf( buffer, "mount %s 2>/tmp/mnt%i",_dev, t );
@@ -1250,11 +1274,11 @@ void FileProtocol::slotMount( bool _ro, const char *_fstype, const char* _dev, c
     sprintf( buffer, "mount -rt %s %s %s 2>/tmp/mnt%i",_fstype, _dev, _point, t );
   else
     sprintf( buffer, "mount -t %s %s %s 2>/tmp/mnt%i",_fstype, _dev, _point, t );
-  
+
   system( buffer );
-  
+
   sprintf( buffer, "/tmp/mnt%i", t );
-  
+
   QString err = testLogFile( buffer );
   if ( err.isEmpty() ) {
     finished();
@@ -1273,7 +1297,7 @@ void FileProtocol::slotUnmount( const char *_point )
   char buffer[ 1024 ];
 
   int t = (int)time( 0L );
-    
+
   sprintf( buffer, "umount %s 2>/tmp/mnt%i",_point, t );
   system( buffer );
 
@@ -1306,7 +1330,7 @@ void FileProtocol::slotDataEnd()
 {
   switch( m_cmd )
     {
-    case CMD_PUT:  
+    case CMD_PUT:
       m_cmd = CMD_NONE;
     }
 }
@@ -1337,14 +1361,14 @@ long FileProtocol::listRecursive( const char *_path, QValueList<Copy>&
     c.m_ino = buff.st_ino;
     c.m_mode = buff.st_mode;
     _dirs.append( c );
-    
+
     return listRecursive2( "/", c.m_strRelDest, _files, _dirs );
   }
-  
+
   QString p( _path );
   p.truncate( len );
   qDebug( "kio_file : ########## RECURSIVE LISTING %s", p.ascii() );
-  
+
   if ( stat( p, &buff ) == -1 ) {
     error( ERR_DOES_NOT_EXIST, p );
     return -1;
@@ -1404,7 +1428,7 @@ long FileProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
 				   QValueList<Copy>& _files, QValueList<CopyDir>& _dirs )
 {
   long size = 0;
-  
+
   QString p = _abs_path;
   p += _rel_path;
 
@@ -1412,23 +1436,23 @@ long FileProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
   struct dirent *ep;
 
   scanningDir( p );
-  
+
   dp = opendir( p );
   if ( dp == 0L )
   {
     error( ERR_CANNOT_ENTER_DIRECTORY, p );
     return -1;
   }
-    
+
   while ( ( ep = readdir( dp ) ) != 0L )
   {
     if ( strcmp( ep->d_name, "." ) == 0 || strcmp( ep->d_name, ".." ) == 0 )
       continue;
-    
+
     QString p2 = p;
     p2 += "/";
     p2 += ep->d_name;
-  
+
     struct stat buff;
     if ( stat( p2, &buff ) == -1 )
     {
@@ -1441,7 +1465,7 @@ long FileProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
 //     if ( tmp != "" )
       tmp += "/";
     tmp += ep->d_name;
-  
+
     if ( !S_ISDIR( buff.st_mode ) )
     {
       Copy c;
@@ -1460,7 +1484,7 @@ long FileProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
 	  error( ERR_CYCLIC_LINK, p2 );
 	  return -1;
 	}
-      
+
       CopyDir c;
       c.m_strAbsSource = p2;
       c.m_strRelDest = tmp;
@@ -1474,9 +1498,9 @@ long FileProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
       size += s;
     }
   }
-  
+
   closedir( dp );
-  
+
   return size;
 }
 
@@ -1496,7 +1520,7 @@ FileIOJob::FileIOJob( KIOConnection *_conn, FileProtocol *_File ) : KIOJobBase( 
 {
   m_pFile = _File;
 }
-  
+
 void FileIOJob::slotError( int _errid, const char *_txt )
 {
   KIOJobBase::slotError( _errid, _txt );
@@ -1515,14 +1539,14 @@ QString testLogFile( const char *_filename )
   struct stat buff;
 
   QString result;
-  
+
   stat( _filename, &buff );
   int size = buff.st_size;
   if ( size == 0 ) {
     unlink( _filename );
     return result;
   }
-  
+
   FILE * f = fopen( _filename, "rb" );
   if ( f == 0L ) {
     unlink( _filename );
@@ -1530,8 +1554,8 @@ QString testLogFile( const char *_filename )
     result += _filename;
     return result;
   }
-  
-  result = "";  
+
+  result = "";
   const char *p = "";
   while ( p != 0L ) {
     p = fgets( buffer, sizeof(buffer)-1, f );
@@ -1540,7 +1564,7 @@ QString testLogFile( const char *_filename )
   }
 
   fclose( f );
-    
+
   unlink( _filename );
 
   return result;
@@ -1556,7 +1580,7 @@ int check( KIOConnection *_con )
   fd_set rfds;
   FD_ZERO( &rfds );
   FD_SET( _con->inFD(), &rfds );
-  
+
 again:
   if ( ( err = select( _con->inFD(), &rfds, 0L, 0L, &tv ) ) == -1 && errno == EINTR )
     goto again;
@@ -1564,7 +1588,7 @@ again:
   // No error and something to read ?
   if ( err != -1 && err != 0 )
     return 1;
-  
+
   return 0;
 }
 
