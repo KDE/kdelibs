@@ -1,3 +1,10 @@
+1998-11-23  Alex Zepeda  <garbanzo@hooked.net>
+
+	* mediatool.h: Removed some empty lines.
+
+	* kaudio.h: kdocified!  (All the comments were there, they just
+	needed to be formatted)
+
 1998-06-17  Christian Esken  <esken@kde.org>
 
 	* ADDING MdDisconnect() implementation. *BSD users should be
