@@ -148,7 +148,7 @@ X509_STORE_CTX *certStoreCTX;
 
   if (qsl.isEmpty()) {
     X509_STORE_free(certStore);
-    return KSSLCertificate::Unknown;
+    return KSSLCertificate::NoCARoot;
   }
 
   for (QValueListIterator<QString> j = qsl.begin();
