@@ -3698,7 +3698,7 @@ void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
   } else if ((encoding == "x-deflate") || (encoding == "deflate")) {
     encs.append(QString::fromLatin1("deflate"));
   } else {
-    kdWarning(7113) << "(" << m_pid << ") Unknown encoding encountered.  "
+    kdDebug(7113) << "(" << m_pid << ") Unknown encoding encountered.  "
                     << "Please write code. Encoding = \"" << encoding
                     << "\"" << endl;
   }
@@ -4856,6 +4856,10 @@ void HTTPProtocol::configAuth( char *p, bool b )
   {
     kdWarning(7113) << "(" << m_pid << ") Unsupported or invalid authorization "
                     << "type requested" << endl;
+    if (b)
+      kdWarning(7113) << "(" << m_pid << ") Proxy URL: " << m_proxyURL << endl;
+    else
+      kdWarning(7113) << "(" << m_pid << ") URL: " << m_request.url << endl;
     kdWarning(7113) << "(" << m_pid << ") Request Authorization: " << p << endl;
   }
 
@@ -5272,9 +5276,32 @@ QString HTTPProtocol::createNegotiateAuth()
   gss_ctx_id_t ctx;
   gss_OID mech_oid;
   static gss_OID_desc krb5_oid_desc = {9, (void *) "\x2a\x86\x48\x86\xf7\x12\x01\x02\x02"};
+  static gss_OID_desc spnego_oid_desc = {6, (void *) "\x2b\x06\x01\x05\x05\x02"};
+  int found = 0;
+  unsigned int i;
+  gss_OID_set mech_set;
+  gss_OID tmp_oid;
 
   ctx = GSS_C_NO_CONTEXT;
   mech_oid = &krb5_oid_desc;
+
+  // see whether we can use the SPNEGO mechanism
+  major_status = gss_indicate_mechs(&minor_status, &mech_set);
+  if (GSS_ERROR(major_status)) {
+    kdDebug(7113) << "(" << m_pid << ") gss_indicate_mechs failed: " << gssError(major_status, minor_status) << endl;
+  } else {
+    for (i=0; i<mech_set->count && !found; i++) {
+      tmp_oid = &mech_set->elements[i];
+      if (tmp_oid->length == spnego_oid_desc.length &&
+        !memcmp(tmp_oid->elements, spnego_oid_desc.elements, tmp_oid->length)) {
+        kdDebug(7113) << "(" << m_pid << ") createNegotiateAuth: found SPNEGO mech" << endl;
+        found = 1;
+        mech_oid = &spnego_oid_desc;
+        break;
+      }
+    }
+    gss_release_oid_set(&minor_status, &mech_set);
+  }
 
   // the service name is "HTTP/f.q.d.n"
   servicename = "HTTP@";
@@ -5290,7 +5317,7 @@ QString HTTPProtocol::createNegotiateAuth()
   input_token.length = 0;
 
   if (GSS_ERROR(major_status)) {
-    kdWarning(7113) << "(" << m_pid << ") gss_import_name failed: " << gssError(major_status, minor_status) << endl;
+    kdDebug(7113) << "(" << m_pid << ") gss_import_name failed: " << gssError(major_status, minor_status) << endl;
     return QString::null;
   }
 
@@ -5303,7 +5330,7 @@ QString HTTPProtocol::createNegotiateAuth()
 
 
   if (GSS_ERROR(major_status) || (output_token.length == 0)) {
-    kdWarning(7113) << "(" << m_pid << ") gss_init_sec_context failed: " << gssError(major_status, minor_status) << endl;
+    kdDebug(7113) << "(" << m_pid << ") gss_init_sec_context failed: " << gssError(major_status, minor_status) << endl;
     gss_release_name(&minor_status, &server);
     if (ctx != GSS_C_NO_CONTEXT) {
       gss_delete_sec_context(&minor_status, &ctx, GSS_C_NO_BUFFER);
