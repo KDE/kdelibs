@@ -332,7 +332,6 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 	int rc = -1;
 	bool brandNew = false;
 
-	kdDebug() << "Internal Open " << appid << " " << wallet << endl;
 	for (QIntDictIterator<KWallet::Backend> i(_wallets); i.current(); ++i) {
 		if (i.current()->walletName() == wallet) {
 			rc = i.currentKey();
@@ -347,16 +346,21 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 		}
 
 		KWallet::Backend *b = new KWallet::Backend(wallet, isPath);
-		KPasswordDialog *kpd;
+		KPasswordDialog *kpd = 0L;
+		bool emptyPass = false;
 		if ((isPath || QFile::exists(wallet)) || KWallet::Backend::exists(wallet)) {
-			kpd = new KPasswordDialog(KPasswordDialog::Password, false, 0);
-			if (appid.isEmpty()) {
-				kpd->setPrompt(i18n("<qt>KDE has requested to open the wallet '<b>%1</b>'. Please enter the password for this wallet below.").arg(QStyleSheet::escape(wallet)));
+			if (0 != b->open(QByteArray()) || !b->isOpen()) {
+				kpd = new KPasswordDialog(KPasswordDialog::Password, false, 0);
+				if (appid.isEmpty()) {
+					kpd->setPrompt(i18n("<qt>KDE has requested to open the wallet '<b>%1</b>'. Please enter the password for this wallet below.").arg(QStyleSheet::escape(wallet)));
+				} else {
+					kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to open the wallet '<b>%2</b>'. Please enter the password for this wallet below.").arg(QStyleSheet::escape(appid)).arg(QStyleSheet::escape(wallet)));
+				}
+				brandNew = false;
+				kpd->setButtonOKText(i18n("&Open"));
 			} else {
-				kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to open the wallet '<b>%2</b>'. Please enter the password for this wallet below.").arg(QStyleSheet::escape(appid)).arg(QStyleSheet::escape(wallet)));
+				emptyPass = true;
 			}
-			brandNew = false;
-			kpd->setButtonOKText(i18n("&Open"));
 		} else if (wallet == KWallet::Wallet::LocalWallet() ||
 				wallet == KWallet::Wallet::NetworkWallet()) {
 			// Auto create these wallets.
@@ -379,7 +383,11 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 			kpd->setButtonOKText(i18n("&Create"));
 		}
 
-		kpd->setCaption(i18n("KDE Wallet Service"));
+		if (kpd) {
+			kpd->setCaption(i18n("KDE Wallet Service"));
+			kpd->setAllowEmptyPasswords(true);
+		}
+
 		const char *p = 0L;
 		while (!b->isOpen()) {
 			XSetTransientForHint(qt_xdisplay(), kpd->winId(), w);
@@ -397,7 +405,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 			}
 		}
 
-		if (!p || !b->isOpen()) {
+		if (!emptyPass && (!p || !b->isOpen())) {
 			delete b;
 			delete kpd;
 			return -1;
@@ -432,10 +440,10 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 
 		if (_openPrompt && !_handles[appid].contains(rc) && !implicitAllow(wallet, appid)) {
 			if (appid.isEmpty()) {
-				response = KMessageBox::questionYesNoCancel(0L, i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.").arg(QStyleSheet::escape(wallet)),
-                                                            i18n("KDE Wallet Service"), i18n("Allow &Once"), i18n("Allow &Always"));
+				response = KMessageBox::questionYesNoCancelWId(w, i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.").arg(QStyleSheet::escape(wallet)),
+						i18n("KDE Wallet Service"), i18n("Allow &Once"), i18n("Allow &Always"));
 			} else {
-				response = KMessageBox::questionYesNoCancel(0L, i18n("<qt>The application '<b>%1</b>' has requested access to the open wallet '<b>%2</b>'.").arg(QStyleSheet::escape(QString(appid))).arg(QStyleSheet::escape(wallet)), i18n("KDE Wallet Service"), i18n("Allow &Once"), i18n("Allow &Always"));
+				response = KMessageBox::questionYesNoCancelWId(w, i18n("<qt>The application '<b>%1</b>' has requested access to the open wallet '<b>%2</b>'.").arg(QStyleSheet::escape(QString(appid))).arg(QStyleSheet::escape(wallet)), i18n("KDE Wallet Service"), i18n("Allow &Once"), i18n("Allow &Always"));
 			}
 		}
 
@@ -528,6 +536,7 @@ void KWalletD::doTransactionChangePassword(const QCString& appid, const QString&
 	kpd = new KPasswordDialog(KPasswordDialog::NewPassword, false, 0);
 	kpd->setPrompt(i18n("<qt>Please choose a new password for the wallet '<b>%1</b>'.").arg(QStyleSheet::escape(wallet)));
 	kpd->setCaption(i18n("KDE Wallet Service"));
+	kpd->setAllowEmptyPasswords(true);
 	XSetTransientForHint(qt_xdisplay(), kpd->winId(), wId);
 	if (kpd->exec() == KDialog::Accepted) {
 		const char *p = kpd->password();

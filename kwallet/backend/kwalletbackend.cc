@@ -525,22 +525,13 @@ int Backend::sync(const QByteArray& password) {
 		hashStream << static_cast<Q_UINT32>(i.data().count());
 
 		for (EntryMap::ConstIterator j = i.data().begin(); j != i.data().end(); ++j) {
-			switch (j.data()->type()) {
-			case KWallet::Wallet::Password:
-			case KWallet::Wallet::Stream:
-			case KWallet::Wallet::Map:
-				dStream << j.key();
-				dStream << static_cast<Q_INT32>(j.data()->type());
-				dStream << j.data()->value();
+			dStream << j.key();
+			dStream << static_cast<Q_INT32>(j.data()->type());
+			dStream << j.data()->value();
 
-				md5.reset();
-				md5.update(j.key().utf8());
-				hashStream.writeRawBytes(reinterpret_cast<const char*>(&(md5.rawDigest()[0])), 16);
-				break;
-			default:
-				assert(0);
-				break;
-			}
+			md5.reset();
+			md5.update(j.key().utf8());
+			hashStream.writeRawBytes(reinterpret_cast<const char*>(&(md5.rawDigest()[0])), 16);
 		}
 	}
 
