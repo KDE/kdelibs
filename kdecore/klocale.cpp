@@ -473,11 +473,14 @@ QString KLocale::formatNumber(const QString &numStr) const
 
 QString KLocale::formatDate(const QDate &pDate) const
 {
-  struct tm tm;
+  // #### is it the right way to initialize the struct ? (Nicolas)
+  // #### strftime() was causing a segfault on my system
+  time_t t = time(0); // get current time
+  struct tm tm = *localtime(&t); // initialize with local time
   char s[256];
 
   tm.tm_mday = pDate.day();
-  tm.tm_mon = pDate.month() - 1;
+  tm.tm_mon  = pDate.month() - 1;
   tm.tm_year = pDate.year() - 1900;
 
   if (strftime(s, 255, "%x", &tm) != 0)
@@ -488,7 +491,10 @@ QString KLocale::formatDate(const QDate &pDate) const
 
 QString KLocale::formatTime(const QTime &pTime) const
 {
-  struct tm tm;
+  // #### is it the right way to initialize the struct ? (Nicolas)
+  // #### strftime() was causing a segfault on my system
+  time_t t = time(0); // get current time
+  struct tm tm = *localtime(&t); // initialize with local time
   char s[256];
 
   tm.tm_sec = pTime.second();
