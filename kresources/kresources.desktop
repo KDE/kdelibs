@@ -33,6 +33,7 @@ Name[hi]=केडीई रिसोर्सेस कॉन्फ़िगु
 Name[hr]=Podešavanje KDE resursa
 Name[hu]=Erőforrás-beállító
 Name[id]=Konfigurasi Resource KDE
+Name[is]=Skilgreiningaskrá auðlinda
 Name[it]=Configurazione risorse KDE
 Name[ko]=KDE 자원 설정
 Name[lt]=KDE resursų derinimas
@@ -63,6 +64,15 @@ Name[zh_CN]=KDE 资源配置
 Name[zh_TW]=KDE 資源組態
 
 Comment=Configure KDE Resources
-Comment[de]=KDE Ressourcen einrichten
+Comment[da]=Indstil KDE's ressourcer
+Comment[et]=KDE ressurside seadistamine
+Comment[hu]=A KDE-s erőforrások beállítása
+Comment[is]=Stilla KDE auðlindir
+Comment[pt]=Configurar Recursos do KDE
+Comment[pt_BR]=Configurar Recursos do KDE
+Comment[sv]=Anpassa KDE-resurser
+Comment[ta]=KDE வளங்களை உள்ளமை
+
+Keywords=resources,konnector resource,contact resource,calendar resource,notes resource,imap
 
 Categories=Qt;KDE;X-KDE-settings-components
