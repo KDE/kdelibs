@@ -276,6 +276,7 @@ void KDirListerCache::stop( KDirLister *lister )
 {
   kdDebug(7004) << k_funcinfo << lister << endl;
   bool stopped = false;
+  KIO::Job *job_tokill = 0;
 
   QDictIterator< QPtrList<KDirLister> > it( urlsCurrentlyListed );
   while ( it.current() )
@@ -313,7 +314,7 @@ void KDirListerCache::stop( KDirLister *lister )
           {
             jobs.remove( jobIt );
             job->disconnect( this );
-            job->kill();
+	    job_tokill = job;
             break;
           }
           ++jobIt;
@@ -333,12 +334,16 @@ void KDirListerCache::stop( KDirLister *lister )
     lister->d->complete = true;
   }
 
+  if (job_tokill)
+      job_tokill->kill();
+
   Q_ASSERT( lister->d->complete );
 }
 
 void KDirListerCache::stop( KDirLister *lister, const KURL& _u )
 {
   KURL _url( _u.url(-1) );
+  KIO::Job *job_tokill = 0;
 
   // TODO: consider to stop all the "child jobs" of _url as well
   kdDebug(7004) << k_funcinfo << lister << " url=" << _url.prettyURL() << endl;
@@ -362,7 +367,7 @@ void KDirListerCache::stop( KDirLister *lister, const KURL& _u )
       {
         jobs.remove( it );
         job->disconnect( this );
-        job->kill();
+	job_tokill = job;
         break;
       }
       ++it;
@@ -389,6 +394,9 @@ void KDirListerCache::stop( KDirLister *lister, const KURL& _u )
     // we killed the last job for lister
     emit lister->canceled();
   }
+
+  if (job_tokill)
+      job_tokill->kill();
 }
 
 void KDirListerCache::setAutoUpdate( KDirLister *lister, bool enable )
