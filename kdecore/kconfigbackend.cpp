@@ -857,7 +857,18 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
 
   if (pConfigFile)
   {
-     pConfigFile->close();
+     bool bEmptyFile = (ftell(pStream) == 0);
+     if ( bEmptyFile && ((fileMode == -1) || (fileMode == 0600)) )
+     {
+        // File is empty and doesn't have special permissions: delete it.
+        ::unlink(QFile::encodeName(filename));
+        pConfigFile->abort();
+     }
+     else
+     {
+        // Normal case: Close the file
+        pConfigFile->close();
+     }
      delete pConfigFile;
   }
   else
