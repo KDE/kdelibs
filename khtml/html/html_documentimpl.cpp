@@ -334,6 +334,7 @@ HTMLElementImpl *HTMLDocumentImpl::findSelectableElement(NodeImpl *start, bool f
 		    if (pa->previousSibling())
 		    {
 			start = pa->previousSibling();
+			pa = 0;
 			break;
 		    }
 		}
