@@ -32,7 +32,7 @@ class QValidator;
  * @author David Faure <faure@kde.org>, layout management by Preston Brown <pbrown@kde.org>
  */
 
-class KLineEditDlg : public KDialogBase
+class KLineEditDlg : public KDialogBase   // KDE4: Rename to KLineEditDialog
 {
   Q_OBJECT
 public:
