@@ -134,6 +134,9 @@ class DCOPObject
    * The object id of this DCOPObject.
    */
   QCString ident;
+
+  class DCOPObjectPrivate;
+  DCOPObjectPrivate *d;
 };
 
 /**
@@ -169,6 +172,9 @@ public:
 			  QCString& replyType, QByteArray &replyData );
 private:
     DCOPClient* parent;
+
+    class DCOPObjectPrivate;
+    DCOPObjectPrivate *d;
 };
 
 

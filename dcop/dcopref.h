@@ -84,6 +84,9 @@ public:
 private:
     QCString m_app;
     QCString m_obj;
+
+    class DCOPRefPrivate;
+    DCOPRefPrivate *d;
 };
 
 /**

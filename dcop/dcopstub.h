@@ -37,6 +37,9 @@ public:
 private:
     QCString m_app;
     QCString m_obj;
+
+    class DCOPStubPrivate;
+    DCOPStubPrivate *d;
 };
 
 #endif
