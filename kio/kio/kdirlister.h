@@ -117,7 +117,7 @@ public:
    * @return whether KDirWatch is used to automatically update directories.
    * This is enabled by default.
    */
-  virtual bool autoUpdate() const;
+  bool autoUpdate() const;
 
   /**
    * Enable/disable automatic directory updating, when a directory changes
@@ -136,7 +136,7 @@ public:
   /**
    * @return whether dotfiles are shown
    */
-  virtual bool showingDotFiles() const;
+  bool showingDotFiles() const;
 
   /**
    * Changes the "is viewing dot files" setting.
@@ -147,7 +147,7 @@ public:
   /**
    * @return true if setDirOnlyMode(true) was called
    */
-  virtual bool dirOnlyMode() const;
+  bool dirOnlyMode() const;
 
   /**
    * Call this with @p dirsOnly == true to list only directories
@@ -160,7 +160,7 @@ public:
    * It might be different from the one given with @ref openURL() or @ref setURL()
    * if there was a redirection.
    */
-  virtual const KURL& url() const;
+  const KURL& url() const;
 
   /**
    * actually emit the changes made with setShowingDotFiles, setDirOnlyMode,
@@ -180,12 +180,12 @@ public:
   /**
    * Returns true if no io operation is currently in progress.
    */
-  virtual bool isFinished() const;
+  bool isFinished() const;
   
   /**
    * @return the file item for url() itself (".")
    */
-  virtual KFileItem* rootItem() const;
+  KFileItem* rootItem() const;
 
   /**
    * Find an item by its URL
@@ -219,7 +219,7 @@ public:
   /**
    * @return the current name filter, as set via @ref setNameFilter()
    */
-  virtual const QString& nameFilter() const;
+  const QString& nameFilter() const;
 
   /**
    * Set mime-based filter to only list items matching the given mimetypes
@@ -245,7 +245,7 @@ public:
    * @return the list of mime based filters, as set via @ref setMimeFilter().
    * Empty, when no mime filter is set.
    */
-  virtual const QStringList& mimeFilters() const;
+  const QStringList& mimeFilters() const;
 
   /**
    * @return true if @p name matches a filter in the list,
