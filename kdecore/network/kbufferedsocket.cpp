@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -40,6 +40,8 @@ public:
 
   KBufferedSocketPrivate()
   {
+    input = 0L;
+    output = 0L;
   }
 };
 
@@ -58,6 +60,7 @@ KBufferedSocket::~KBufferedSocket()
   closeNow();
   delete d->input;
   delete d->output;
+  delete d;
 }
 
 void KBufferedSocket::setSocketDevice(KSocketDevice* device)
@@ -166,7 +169,7 @@ Q_LONG KBufferedSocket::writeBlock(const char *data, Q_ULONG len)
   return KStreamSocket::writeBlock(data, len);
 }
 
-Q_LONG KBufferedSocket::writeBlock(const char *data, Q_ULONG maxlen, 
+Q_LONG KBufferedSocket::writeBlock(const char *data, Q_ULONG maxlen,
 				   const KSocketAddress&)
 {
   // ignore the third parameter
