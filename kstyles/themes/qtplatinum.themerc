@@ -1,5 +1,6 @@
 [Misc]
 Name=Qt Platinum
+Name[ca]=Qt Platí
 Name[de]=Qt Platin
 Name[eo]=Qt Plateno
 Name[fi]=Qt Platinium
@@ -7,6 +8,7 @@ Name[hu]=Qt Platina
 Name[ro]=Stil Platinum Qt
 Name[sl]=Platinasti Qt
 Comment=Built-in unthemed Platinum style
+Comment[ca]=Estil incorporat Platí sense temes
 Comment[cs]=Zabudovaný styl Platinum (netémovaný)
 Comment[de]=Eingebauter Platin-Stil (kein komplettes Design)
 Comment[eo]=Originala Platena stilo neetosa
@@ -15,7 +17,7 @@ Comment[fr]=Style Platinum d'origine sans thème
 Comment[hu]=Beépített platina kinézet
 Comment[ja]=Platinumスタイル
 Comment[no]=Innebygget Platinum-stil uten tema
-Comment[no_NY]=Innebygget Platinum-stil uten tema
+Comment[no_NY]=Innebygd Platinum-stil
 Comment[ro]=Stil Platinum fără temă, intern
 Comment[sl]=Netematski vgrajeni platinasti slog
 Comment[sv]=Inbyggd otemad platinumstil
