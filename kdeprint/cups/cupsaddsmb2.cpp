@@ -283,7 +283,7 @@ void CupsAddSmb::slotProcessExited(KProcess*)
 	{
 		showError(
 				i18n("Operation failed. Possible reasons are: permission denied "
-				     "or invalid samba configuration (see <a href=\"man:/cupsaddsmb\">"
+				     "or invalid Samba configuration (see <a href=\"man:/cupsaddsmb\">"
 					 "cupsaddsmb</a> manual page for detailed information, you need "
 					 "<a href=\"http://www.cups.org\">CUPS</a> version 1.1.11 or higher). "
 					 "You may want to try again with another login/password."));

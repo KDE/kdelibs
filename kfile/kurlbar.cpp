@@ -712,7 +712,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
                          i18n("Select this setting if you want the\n"
                               "entry only for the current application.\n\n"
                               "Otherwise it will be available in all\n"
-                              "in all applications."));
+                              "applications."));
     }
     else
         m_appLocal = 0L;

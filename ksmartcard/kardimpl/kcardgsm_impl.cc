@@ -70,7 +70,7 @@ int KCardGsmImplementation::selectFile (const QString fileID){
   }
 
 
-  
+
 
   //And then i send a 'getstatus' command to retrieve the file information:
   //file type, length, access conditions...
@@ -80,7 +80,7 @@ int KCardGsmImplementation::selectFile (const QString fileID){
   _errno = _kcardreader->doCommand(getResponse,_fileHeader,status);
 
   if ( _errno )
-    
+
     {
       _errorMessage= i18n("Error sending command: ")+KPCSC::translateError(_errno);
       _fileHeader=QString::null;
@@ -88,8 +88,8 @@ int KCardGsmImplementation::selectFile (const QString fileID){
     }
 
   else if (status.left(2)!= "90" && status.left(2)!= "91") {
-    
-    _errorMessage= i18n("Error when retrieving  file information: ")+fileID;
+
+    _errorMessage= i18n("Error when retrieving file information: ")+fileID;
     _errorMessage+=KCardGsmImplementation::getStatusString (status);
     _fileHeader=QString::null;
     return -1;
