@@ -16,6 +16,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
+#include <qbuffer.h>
+
 #include <kdebug.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
@@ -26,15 +28,23 @@
 #define TEST_BLOCK_LEN 1000             // Length of test blocks.
 #define TEST_BLOCK_COUNT 10000          // Number of test blocks.
 
+enum Codec {
+    Unspecified=0,
+    Base64Encode,
+    Base64Decode,
+    UUEncode,
+    UUDecode,
+    QPEncode,
+    QPDecode
+};
+
 void MD5_timeTrial ();
 void MD5_testSuite ();
 void MD5_string ( const char *, const char *expected = 0, bool rawOutput = false);
 void MD5_file ( const char * , bool rawOutput = false );
 void MD5_verify( const char*, const char*, bool );
-void Base64Encode( const char*, bool );
-void Base64Decode( const char*, bool );
-void UUEncode( const char*, bool );
-void UUDecode( const char*, bool );
+void testCodec( const char*, Codec, bool );
+
 
 // Returns the file descriptor if successful, -1 otherwise.
 int openFile( const char* filename, const char* err_msg )
@@ -81,117 +91,85 @@ int readContent( int fd, const char* err_msg, QByteArray& buf, bool closefd = tr
     return result;
 }
 
-void Base64Encode( const char* msg, bool isFile )
+void testCodec( const char* msg, Codec type, bool isFile )
 {
-    QCString data;
+    QByteArray output;
     if ( isFile )
     {
         int old_size;
-        QCString encoded_data;
         const char* err_msg = "Encoding with \"base64\" failed!";
         int res, fd = openFile( msg, err_msg );
         if ( fd == -1 ) return;
-        while (1)
+        QBuffer buf (output);
+        buf.open( IO_WriteOnly | IO_Append );
+        do
         {
-            res = readContent( fd, err_msg, data );
+            QByteArray data, encoded;
+            res = readContent(fd, err_msg, data);
             if ( res == -1 ) return;
-            else if ( res == 0 ) break;
-            data = KCodecs::base64Encode(data);
-            old_size = encoded_data.size();
-            encoded_data.resize( old_size+data.size() );
-            memcpy(encoded_data.data()+old_size, data.data(), data.size());
-        }
-        kdDebug() << "Base64 Encoded data: " << endl << encoded_data << endl;
+            switch (type)
+            {
+              case Base64Encode:
+                KCodecs::base64Encode(data, encoded);
+                break;
+              case Base64Decode:
+                KCodecs::base64Decode(data, encoded);
+                break;
+              case UUEncode:
+                KCodecs::uuencode(data, encoded);
+                break;
+              case UUDecode:
+                KCodecs::uudecode(data, encoded);
+                break;
+#if 0
+              case QPEncode:
+                KCodecs::quotedPrintableEncode(data, encoded);
+                break;
+              case QPDecode:
+                KCodecs::quotedPrintableDecode(data, encoded);
+                break;
+#endif
+              default:
+                break;
+            }
+            buf.writeBlock(encoded.data(), encoded.size());
+        } while( res != 0 );
+        buf.close();
+        kdDebug() << output.data() << endl;
     }
     else
     {
-        data = msg;
-        kdDebug() << "Base64 Encoded data: " << KCodecs::base64Encode(data) << endl;
-    }
-}
-
-void Base64Decode( const char* msg, bool isFile )
-{
-    QCString data;
-    if ( isFile )
-    {
-        int old_size;
-        QCString decoded_data;
-        const char* err_msg = "Decoding with \"base64\" failed!";
-        int res, fd = openFile( msg, err_msg );
-        if ( fd == -1 ) return;
-        while (1)
+        int size = strlen(msg);
+        output.resize(size);
+        memcpy( output.data(), msg, size );
+        QCString out;
+        switch (type)
         {
-            res = readContent( fd, err_msg, data );
-            if ( res == -1 ) return;
-            else if ( res == 0 ) break;
-            data = KCodecs::base64Decode(data);
-            old_size = decoded_data.size();
-            decoded_data.resize( old_size+data.size() );
-            memcpy(decoded_data.data()+old_size, data.data(), data.size());
+          case Base64Encode:
+            out = KCodecs::base64Encode(output);
+            break;
+          case Base64Decode:
+            out = KCodecs::base64Decode(output);
+            break;
+          case UUEncode:
+            out = KCodecs::uuencode(output);
+            break;
+          case UUDecode:
+            out = KCodecs::uudecode(output);
+            break;
+#if 0
+          case QPEncode:
+            out = KCodecs::quotedPrintableEncode(output);
+            break;
+          case QPDecode:
+            out = KCodecs::quotedPrintableDecode(output);
+            break;
+#endif
+          default:
+            break;
         }
-        kdDebug() << "Decoded data (base64): " << endl
-                  << decoded_data << endl;
+        kdDebug() << out << endl;
     }
-    else
-    {
-        data = msg;
-        kdDebug() << "Decoded data (base64): " << KCodecs::base64Decode(data) << endl;
-    }
-}
-
-void UUEncode( const char* msg, bool isFile )
-{
-    if ( isFile )
-    {
-        int old_size;
-        QCString data, encoded_data;
-        const char* err_msg = "Encoding with \"uuencode\" failed!";
-        int res, fd = openFile( msg, err_msg );
-        if ( fd == -1 ) return;
-        while (1)
-        {
-            res = readContent( fd, err_msg, data );
-            if ( res == -1 ) return;
-            else if ( res == 0 ) break;
-            data = KCodecs::uuencode( data );
-            old_size = encoded_data.size();
-            encoded_data.resize( old_size+data.size() );
-            memcpy(encoded_data.data()+old_size, data.data(), data.size());
-        }
-        kdDebug() << "UUEncoded data: " << endl
-                  << encoded_data << endl;
-    }
-    else
-        kdDebug() << "UUEncoded data: " << endl
-                  << KCodecs::uuencode( QCString(msg) ) << endl;
-}
-
-void UUDecode( const char* msg, bool isFile )
-{
-    if ( isFile )
-    {
-        int old_size;
-        QCString data, decoded_data;
-        const char* err_msg = "Decoding a uuencoded message failed!";
-        int res, fd = openFile( msg, err_msg );
-        if ( fd == -1 ) return;
-        while (1)
-        {
-            res = readContent( fd, err_msg, data );
-            if ( res == -1 ) return;
-            else if ( res == 0 ) break;
-            data = KCodecs::uudecode(data);
-            old_size = decoded_data.size();
-            decoded_data.resize( old_size+data.size() );
-            memcpy(decoded_data.data()+old_size, data.data(), data.size());
-        }
-        kdDebug() << "Decoded data (uudecode): " << endl
-                  << decoded_data << endl;
-    }
-    else
-        kdDebug() << "Decoded data (uudecode): " << endl
-                  << KCodecs::uudecode( QCString(msg) ) << endl;
 }
 
 // Measures the time to digest TEST_BLOCK_COUNT TEST_BLOCK_LEN-byte blocks.
@@ -313,6 +291,10 @@ int main (int argc, char *argv[])
         { "d", "decode the given string or file using base64", 0 },
         { "e", "encode the given string or file using base64", 0 },
         { "f", "the filename to be used as input", "default" },
+#if 0
+        { "p", "encode the given string or file using quoted-printable", 0},
+        { "q", "decode the given string or file using quoted-printable", 0},
+#endif
         { "r", "calculate the raw md5 for the given string or file", 0 },
         { "s", "the string to be used as input", 0 },
         { "t", "perform a timed message-digest test", 0 },
@@ -342,63 +324,37 @@ int main (int argc, char *argv[])
     {
        bool isVerify = args->isSet("c");
        bool isString = args->isSet("s");
-       bool isBase64Encode = args->isSet("e");
-       bool isBase64Decode = args->isSet("d");
-       bool isUUEncode = args->isSet("u");
-       bool isUUDecode = args->isSet("x");
+       bool isFile = args->isSet( "f" );
+       Codec type = Unspecified;
+       if ( args->isSet("d") )
+          type = Base64Decode;
+       else if ( args->isSet("e") )
+          type = Base64Encode;
+       else if ( args->isSet("u") )
+          type = UUEncode;
+       else if ( args->isSet("x") )
+          type = UUDecode;
        if ( isVerify )
        {
-          if ( (args->isSet("f") && isString) ||
-               isUUEncode || isUUDecode ||
-               isBase64Encode || isBase64Decode )
-            args->usage();
           const char* opt = args->getOption( "c" ).data();
           for ( int i=0 ; i < count; i++ )
-            MD5_verify ( QCString(args->arg(i)), opt, !isString );
-       }
-       else if ( isString )
-       {
-          if ( args->isSet("f") ||
-               (isUUEncode && isBase64Encode) ||
-               (isUUDecode && isBase64Decode) ||
-               (isUUEncode && isUUDecode) ||
-               (isBase64Decode && isBase64Encode) )
-            args->usage();
-          for ( int i=0 ; i < count; i++ )
-          {
-            if ( isBase64Decode )
-              Base64Decode( args->arg( i ), false );
-            else if ( isBase64Encode )
-              Base64Encode( args->arg( i ), false );
-            else if ( isUUEncode )
-              UUEncode( args->arg( i ), false );
-            else if ( isUUDecode )
-              UUDecode( args->arg( i ), false );
-            else
-              MD5_string( args->arg( i ), 0, args->isSet("r") );
-          }
+            MD5_verify ( QCString(args->arg(i)), opt, (isString || !isFile) );
        }
        else
        {
-            if ( (isUUEncode && isBase64Encode) ||
-                 (isUUDecode && isBase64Decode) ||
-                 (isUUEncode && isUUDecode)     ||
-                 (isBase64Decode && isBase64Encode) )
-                args->usage();
-            for ( int i=0 ; i < count; i++ )
+          for ( int i=0 ; i < count; i++ )
+          {
+            if ( type != Unspecified )
+              testCodec( args->arg(i), type, isFile );
+            else
             {
-                if ( isBase64Decode )
-                    Base64Decode( args->arg( i ), true );
-                else if ( isBase64Encode )
-                    Base64Encode( args->arg( i ), true );
-                else if ( isUUEncode )
-                    UUEncode( args->arg( i ), true );
-                else if ( isUUDecode )
-                    UUDecode( args->arg( i ), true );
-                else
-                    MD5_file( args->arg( i ), args->isSet("r") );
-             }
-        }
+              if ( isString )
+                MD5_string( args->arg( i ), 0, args->isSet("r") );
+              else
+                MD5_file( args->arg( i ), args->isSet("r") );
+            }
+          }
+       }
     }
     args->clear();
     return (0);
