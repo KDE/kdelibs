@@ -117,7 +117,7 @@ void Global::setFilter(const KJSO &f)
 KJSO Global::filter() const
 {
   Imp *f = static_cast<GlobalImp*>(rep)->filter;
-  return f ? KJSO(f) : Null();
+  return f ? KJSO(f) : KJSO(Null());
 }
 
 GlobalImp::GlobalImp()
