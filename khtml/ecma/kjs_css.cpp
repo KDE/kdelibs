@@ -75,5 +75,5 @@ void Style::put(const UString &p, const KJSO& v)
     }
     el.removeCSSProperty( prop );
     if(!propvalue.isEmpty())
-        static_cast<HTMLElementImpl*>(el.handle())->addCSSProperty( prop, DOM::DOMString(propvalue), false );
+        static_cast<DOM::HTMLElementImpl*>(el.handle())->addCSSProperty( prop, DOM::DOMString(propvalue), false );
 }
