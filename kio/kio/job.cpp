@@ -412,8 +412,12 @@ void SimpleJob::kill( bool quietly )
 
 void SimpleJob::putOnHold()
 {
-    Scheduler::putSlaveOnHold(this, m_url);
-    m_slave = 0;
+    Q_ASSERT( m_slave );
+    if ( m_slave )
+    {
+        Scheduler::putSlaveOnHold(this, m_url);
+        m_slave = 0;
+    }
     kill(true);
 }
 
@@ -1710,6 +1714,8 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
             if (offset)
             {
                 //kdDebug(7007) << "Setting metadata for resume to " << (unsigned long) offset << endl;
+		// TODO KDE4: rename to seek or offset and document it
+		// This isn't used only for resuming, but potentially also for extracting (#72302).
                 m_getJob->addMetaData( "resume", KIO::number(offset) );
 
                 // Might or might not get emitted
