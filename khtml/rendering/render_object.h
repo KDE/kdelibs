@@ -26,7 +26,6 @@
 #define render_object_h
 
 #include <qcolor.h>
-#include <qsize.h>
 #include <qrect.h>
 
 #include "xml/dom_nodeimpl.h"
@@ -95,9 +94,6 @@ public:
     static RenderObject *createObject(DOM::NodeImpl *node);
 
     // some helper functions...
-    /**
-     * is an Element that should be floated in the textstream
-     */
     virtual bool childrenInline() const { return false; }
     virtual bool isRendered() const { return false; }
     virtual bool isFlow() const { return false; }
@@ -114,11 +110,6 @@ public:
     virtual bool isBody() const { return false; }
     virtual bool isFormElement() const { return false; }
 
-    /**
-     * a block box that holds inline content or vice versa.
-     * All inline children of a block level element box become anonymous
-     * boxes as soon as they have any block level siblings.
-     */
     bool isAnonymousBox() const { return m_isAnonymous; }
     void setIsAnonymousBox(bool b) { m_isAnonymous = b; }
 
@@ -165,31 +156,19 @@ public:
     // the offset of baseline from the top of the object.
     virtual short baselinePosition() const;
     
-    /**
-     * Print the object and it's children, but only if it fits in the
-     * rectangle given by x,y,w,h. (tx|ty) is parents position.
+    /*
+     * Print the object and it's children, clipped by (x|y|w|h).
+     * (tx|ty) is the calculated position of the parent
      */
     virtual void print( QPainter *p, int x, int y, int w, int h, int tx, int ty);
 
-    /**
-     * assumes (_tx/_ty) point to the upper left corner of the object
-     * prints only this object without calling print for the children.
-     */
     virtual void printObject( QPainter */*p*/, int /*x*/, int /*y*/,
                         int /*w*/, int /*h*/, int /*tx*/, int /*ty*/) {}
-
-    /**
-     * prints the Box decoration borders
-     */
     void printBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin=true, bool end=true);
-
-    /**
-     * prints the Box outline borders
-     */
     void printOutline(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style);
 
 
-    /**
+    /*
      * This function calculates the minimum & maximum width that the object
      * can be set to.
      *
@@ -204,13 +183,13 @@ public:
      */
     virtual void calcMinMaxWidth() { }
 
-    /**
+    /*
      * Calculates the actual width of the object (only for non inline
      * objects)
      */
     virtual void calcWidth() {}
 
-    /**
+    /*
      * This function should cause the Element to calculate its
      * width and height and the layout of it's content
      *
@@ -222,145 +201,47 @@ public:
      */
     virtual void layout() = 0;
 
-    /**
-     * this function gets called when a child changed it's geometry
-     * (because an image got loaded or some changes in the DOM...)
-     */
+    // propagates size changes upwards in the tree
     virtual void updateSize();
-
-    /**
-     * this function gets called when a child changed it's height
-     * (because an image got loaded or some changes in the DOM...)
-     */
     virtual void updateHeight() {}
-
-    /**
-     * This function gets called as soon as the parser leaves the element
-     *
-     */
+    
+    // The corresponding closing element has been parsed. 
     virtual void close() { setParsing(false); }
 
-    /**
-     * set the style of the object. This _has_ to be called after
-     * the objects constructor to set the correct style. Also used for
-     * dhtml to change the objects current style.
-     *
-     * If changing the style dynamically, you might need to call
-     * updateSize() after applying the style change to force a
-     * relayout/repaint
-     */
+    // set the style of the object.
     virtual void setStyle(RenderStyle *style);
 
-
-    /**
-     * returns the containing block level element for this element.
-     * needed to compute margins and paddings
-     *
-     * objects with positioning set to absolute and fixed have to be added
-     * to this objects rendering list
-     *
-     * function must not be called before the Element has been added
-     * to the Renderingtree.
-     */
+    // returns the containing block level element for this element.
     RenderObject *containingBlock() const;
 
-    /**
-     * return the size of the containing block.
-     * Needed for layout calculations, see CSS2 specs, 10.1
-     */
-    virtual QSize containingBlockSize() const;
-
-    /**
-     * returns the width of the block the current Element is in. useful
-     * for relative width/height calculations.
-     *
-     * must not be called before the Element has been added to the
-     * Renderingtree.
-     */
+    // return just the width of the containing block
     virtual short containingBlockWidth() const;
-
-    /**
-     * returns the height of the block the current Element is in. useful
-     * for relative width/height calculations.
-     *
-     * must not be called before the Element has been added to the
-     * Renderingtree.
-     */
+    // return just the height of the containing block
     virtual int containingBlockHeight() const;
 
-    /**
-     * the original size of the content area
-     * (see CSS2 visual formatting details)
-     */
-    virtual QSize contentSize() const;
-
-    /**
-     * the original width of the content area
-     */
+    // size of the content area (box size minus padding/border)
     virtual short contentWidth() const { return 0; }
-
-    /**
-     * the original height of the content area
-     */
     virtual int contentHeight() const { return 0; }
 
-    /**
-     * A helper value for calculating the layout
-     * extent of a replaced element. for images, it is the physical
-     * width of the image.
-     * Note that this value can differ from the layouted size as
-     * retrieved by @ref contentWidth(), i.e. if the image is scaled.
-     *
-     * for inlined elements, the value is undefined, and 0 is returned.
-     */
+    // intrinsic extend of replaced elements. undefined otherwise
     virtual short intrinsicWidth() const { return 0; }
-
-    /**
-     * A helper value for calculating the layout
-     * extent of a replaced element. for images, it is the physical
-     * height of the image.
-     * Note that this value can differ from the layouted size as
-     * retrieved by @ref contentHeight(), i.e. if the image is scaled.
-     *
-     * for inlined elements, the value is undefined, and 0 is returned.
-     */
     virtual int intrinsicHeight() const { return 0; }
-
-
-    /**
-     * the offset of the contents relative to the box borders
-     * (basically border+padding)
-     */
-    virtual QSize contentOffset() const;
-    // the size of the content + padding
-    virtual QSize paddingSize() const;
-    // the size of the box (including padding and border)
-    virtual QSize size() const;
-
 
     // relative to parent node
     virtual void setPos( int /*xPos*/, int /*yPos*/ ) { }
-    virtual void setSize( int /*width*/, int /*height*/ ) { }
     virtual void setWidth( int /*width*/ ) { }
     virtual void setHeight( int /*height*/ ) { }
 
-    /**
-     * Get the X-Position of this object relative to its parent
-     */
     virtual int xPos() const { return 0; }
-
-    /**
-     * Get the Y-Position of this object relative to its parent
-     */
     virtual int yPos() const { return 0; }
 
+    // calculate client position of box
     virtual bool absolutePosition(int &/*xPos*/, int &/*yPos*/, bool fixed = false);
 
     // width and height are without margins but include paddings and borders
     virtual short width() const { return 0; }
     virtual int height() const { return 0; }
 
-    // these are just for convinience
     virtual short marginTop() const { return 0; }
     virtual short marginBottom() const { return 0; }
     virtual short marginLeft() const { return 0; }
@@ -390,25 +271,20 @@ public:
 
     virtual void setTable(RenderTable*) {};
 
-    /*
-     * force a full repaint of the rendering tree
-     */
+    // force a complete repaint 
     virtual void repaint() { if(m_parent) m_parent->repaint(); }
     virtual void repaintRectangle(int x, int y, int w, int h);
 
     virtual unsigned int length() const { return 1; }
 
     virtual bool isHidden() const { return isFloating() || isPositioned(); }
-    /*
-     * Special objects are objects that should be floated
-     * but draw themselves (i.e. have content)
-     */
+    
+    // Special objects are objects that are neither really inline nor blocklevel
     bool isSpecial() const { return (isFloating() || isPositioned()); };
     virtual bool containsSpecial() { return false; }
     virtual bool hasOverhangingFloats() { return false; }
 
-    // helper function for layoutInlineChildren to position the
-    // children RenderObjects
+    // positioning of inline childs (bidi)
     virtual void position(int, int, int, int, int, bool, bool) {}
 
     enum SelectionState {
@@ -423,19 +299,12 @@ public:
     virtual void setSelectionState(SelectionState) {}
 
     virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/);
-
-    /**
-     * absolute lowest position (highest y-value) the object covers
-     */
+    
     virtual int lowestPosition() const {return 0;}
-    /**
-     * absolute rightmost position (highest x-value) the object covers
-     */
+    
     virtual int rightmostPosition() const {return 0;}
     
-    /*
-        recursively invalidate current layout
-    */
+    // recursively invalidate current layout
     void invalidateLayout();
     
     virtual void calcVerticalMargins() {}
@@ -448,14 +317,6 @@ public:
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 
-    /**
-     * helper function for RenderObject::print().
-     * Draws the box decorations:
-     * - DOC: (what box decorations are there?)
-     * -
-     * -
-     * the coordinates are meant relative to the contents area.
-     */
     virtual void printBoxDecorations(QPainter* /*p*/, int /*_x*/, int /*_y*/,
                                      int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/) {}
 

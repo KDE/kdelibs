@@ -191,23 +191,6 @@ RenderObject *RenderObject::containingBlock() const
         return o;
 }
 
-QSize RenderObject::containingBlockSize() const
-{
-    RenderObject *o = containingBlock();
-
-    if(m_style->position() == ABSOLUTE)
-    {
-        if(o->isInline())
-        {
-            // ### fixme
-        }
-        else
-            return o->paddingSize();
-    }
-
-    return o->contentSize();
-}
-
 short RenderObject::containingBlockWidth() const
 {
     // ###
@@ -218,27 +201,6 @@ int RenderObject::containingBlockHeight() const
 {
     // ###
     return containingBlock()->contentHeight();
-}
-
-
-QSize RenderObject::contentSize() const
-{
-    return QSize(0, 0);
-}
-
-QSize RenderObject::contentOffset() const
-{
-    return QSize(0, 0);
-}
-
-QSize RenderObject::paddingSize() const
-{
-    return QSize(0, 0);
-}
-
-QSize RenderObject::size() const
-{
-    return QSize(0, 0);
 }
 
 void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int width,
@@ -738,18 +700,19 @@ short RenderObject::verticalPositionHint() const
 	return PositionTop;
     if ( va == BOTTOM )
 	return PositionBottom;
+
     if ( va == LENGTH ) {
 	return -style()->verticalAlignLength().width( lineHeight() );
     }
     if ( !parent() || !parent()->childrenInline() )
 	return 0;
+
     int vpos = parent()->verticalPositionHint();
-    // ### don't allow elements nested inside text-top to have a different valignment. it completely fucks up the
-    // algorithm.
+    // don't allow elements nested inside text-top to have a different valignment.
     if ( va == BASELINE || vpos == PositionTop || vpos == PositionBottom )
 	return vpos;
-    QFont f = parent()->style()->font();
 
+    QFont f = parent()->style()->font();
     if ( va == SUB )
 	vpos += f.pixelSize()/5 + 1;
     else if ( va == SUPER )
@@ -758,21 +721,22 @@ short RenderObject::verticalPositionHint() const
 	vpos += -QFontMetrics(f).ascent() + baselinePosition();
     } else if ( va == MIDDLE ) {
 	QRect b = QFontMetrics(f).boundingRect('x');
-	vpos += -b.height()/2 - contentHeight()/2 + baselinePosition();
+	vpos += -b.height()/2 - lineHeight()/2 + baselinePosition();
     } else if ( va == TEXT_BOTTOM ) {
 	if ( parent()->isInline() )
-	    vpos += parent()->contentHeight() - parent()->baselinePosition();
-	vpos += contentHeight() - baselinePosition();
+	    vpos += parent()->lineHeight() - parent()->baselinePosition();
+	vpos += -lineHeight() + baselinePosition();
     } else if ( va == BASELINE_MIDDLE )
-	vpos += - contentHeight()/2 + baselinePosition();
+	vpos += - lineHeight()/2 + baselinePosition();
     return vpos;
 }
 
 
 int RenderObject::lineHeight() const
 {
-    if ( isReplaced() )
-	return intrinsicHeight();
+    // is this method ever called?
+    //assert( 0 );
+
     // ### optimise and don't ignore :first-line
     return style()->lineHeight().width(QFontMetrics(style()->font()).height());
 }
