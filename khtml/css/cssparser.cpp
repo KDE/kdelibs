@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#define CSS_DEBUG
+//#define CSS_DEBUG
 //#define TOKEN_DEBUG
 #define YYDEBUG 0
 
