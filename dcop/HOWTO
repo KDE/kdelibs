@@ -223,6 +223,41 @@ of inter-process communication with KDE!  Please direct all comments
 and/or suggestions to Preston Brown <pbrown@kde.org>.
 
 
+Inter-user communication
+------------------------
+
+Sometimes it might be interesting to use DCOP between processes
+belonging to different users, e.g. a frontend process running
+with the user's id, and a backend process running as root.
+
+To do this, two steps have to be taken:
+
+a) both processes need to talk to the same DCOP server
+b) the authentication must be ensured
+
+For the first step, you simply pass the server address (as
+found in .DCOPserver) to the second process. For the authentication,
+you can use the ICEAUTHORITY environment variable to tell the
+second process where to find the authentication information.
+(Note that this implies that the second process is able to 
+read the authentication file, so it will probably only work
+if the second process runs as root. If it should run as another
+user, a similar approach to what kdesu does with xauth must
+be taken. In fact, it would be a very good idea to add DCOP
+support to kdesu!)
+
+For example
+
+ICEAUTHORITY=~user/.ICEauthority kdesu root -c kcmroot -dcopserver `cat ~user/.DCOPserver`
+
+will, after kdesu got the root password, execute kcmroot as root, talking
+to the user's dcop server.
+
+
+NOTE: DCOP communication is not encrypted, so please do not
+pass important information around this way. 
+
+
 Performance Tests:
 ------------------
 A few back-of-the-napkin tests folks:
