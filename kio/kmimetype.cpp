@@ -621,12 +621,12 @@ bool KDEDesktopMimeType::runLink( const KURL& _url, const KSimpleConfig &cfg )
 
 bool KDEDesktopMimeType::runMimeType( const KURL& url , const KSimpleConfig & )
 {
+  // Hmm, can't really use keditfiletype since we might be looking
+  // at the global file, or at a file not in share/mimelnk...
   QCString cmd = "kfmclient openProperties \"";
   cmd += url.path().local8Bit();
   cmd += "\"";
   system(cmd.data());
-  // Can't do that, it's in libkfile...
-  // (void) new PropertiesDialog( url.path() );
   return true;
 }
 
