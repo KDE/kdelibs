@@ -21,6 +21,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.43  1998/08/01 21:59:29  radej
+ // sven: inherits KTMainWindow now. KTW is dead.
+ //
  // Revision 1.42  1998/06/18 19:17:02  radej
  // sven: That was kfind bug! And I fixed it there and forgot about it.
  //       No changes but I don't know how to stop this thing.
@@ -83,3 +86,7 @@ KTopLevelWidget::KTopLevelWidget( const char *name )
 KTopLevelWidget::~KTopLevelWidget()
 {}
 
+void KTopLevelWidget::closeEvent (QCloseEvent *ev)
+{
+  ev->accept();
+}

@@ -25,6 +25,14 @@ public:
      * Destructor. 
      */
     ~KTopLevelWidget();
+
+protected:
+    /**
+     * This is called when the widget is closed.
+     * The default implementation jut calls accepts the event.
+     */
+    virtual void closeEvent ( QCloseEvent *);
+
 };
 
 #endif
