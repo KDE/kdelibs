@@ -42,8 +42,11 @@ class Resource;
  * Example:
  *
  * \code
- * KABC::Resource *res = KABC::SelectDialog::getResource();
- * if ( !( res ) ) {
+ *
+ * QPtrList<Resource> list = ... // can be retrived from KRES::Manager (e.g. KABC::AddressBook)
+ *
+ * KABC::Resource *res = KABC::SelectDialog::getResource( list, parentWdg );
+ * if ( !res ) {
  *   // no resource selected
  * } else {
  *   // do something with resource
@@ -55,22 +58,20 @@ class SelectDialog : KDialog
   public:
     /**
      * Constructor.
-     * @param ab     The address book you want to select the resource from
+     * @param list   The list of available resources
      * @param parent The parent widget
      * @param name   The name of the dialog
      */
     SelectDialog( QPtrList<Resource> list, QWidget *parent = 0,
         const char *name = 0);
 
-  //  ~SelectDialog();
-
     /**
-     * Return selected resource.
+     * Returns selected resource.
      */
     Resource *resource();
 
     /**
-     * Open a dialog showing the available resources and return the resource the
+     * Opens a dialog showing the available resources and returns the resource the
      * user has selected. Returns 0, if the dialog was canceled.
      */
     static Resource *getResource( QPtrList<Resource> list, QWidget *parent = 0 );
