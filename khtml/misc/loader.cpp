@@ -586,15 +586,18 @@ const QPixmap &CachedImage::pixmap( ) const
 
     if(m)
     {
-        if(m->framePixmap().size() != m->getValidRect().size() && m->getValidRect().isValid())
-        {
+        if(m->framePixmap().size() != m->getValidRect().size())
+        {   
             // pixmap is not yet completely loaded, so we
             // return a clipped version. asserting here
             // that the valid rect is always from 0/0 to fullwidth/ someheight
-            if(!pixPart) pixPart = new QPixmap(m->getValidRect().size());
+            if(!pixPart) pixPart = new QPixmap();
 
             (*pixPart) = m->framePixmap();
-            pixPart->resize(m->getValidRect().size());
+            if (m->getValidRect().size().isValid())
+                pixPart->resize(m->getValidRect().size());
+            else
+                pixPart->resize(0, 0);
             return *pixPart;
         }
         else
