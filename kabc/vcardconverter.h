@@ -103,7 +103,10 @@ class VCardConverter
     /**
       Parses a string in vCard format and returns a list of contact objects.
      */
+    // FIXME: Add error handling
     Addressee::List parseVCards( const QString& vcard );
+
+    // FIXME: Add "bool parseVCards( AddressBook *, const QString &vcard )"
 
     /**
       @deprecated
