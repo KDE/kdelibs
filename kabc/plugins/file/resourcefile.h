@@ -30,6 +30,12 @@
 
 class QTimer;
 
+class KTempFile;
+
+namespace KIO {
+class Job;
+}
+
 namespace KABC {
 
 class FormatPlugin;
@@ -42,116 +48,122 @@ class ResourceFile : public Resource
 {
   Q_OBJECT
 
-public:
+  public:
+    /**
+      Constructor.
 
-  /**
-    Constructor.
+      @param cfg The config object where custom resource settings are stored.
+     */
+    ResourceFile( const KConfig *cfg );
 
-    @param cfg The config object where custom resource settings are stored.
-  */
-  ResourceFile( const KConfig *cfg );
+    /**
+      Construct file resource on file @arg fileName using format @arg formatName.
+     */
+    ResourceFile( const QString &fileName, const QString &formatName = "vcard" );
 
-  /**
-    Construct file resource on file @arg fileName using format @arg formatName.
-  */
-  ResourceFile( const QString &fileName, const QString &formatName = "vcard" );
+    /**
+      Destructor.
+     */
+    ~ResourceFile();
 
-  /**
-   * Destructor.
-   */
-  ~ResourceFile();
+    /**
+      Writes the config back.
+     */
+    virtual void writeConfig( KConfig *cfg );
 
-  /**
-    Writes the config back.
-   */
-  virtual void writeConfig( KConfig *cfg );
+    /**
+      Tries to open the file and checks for the proper format.
+      This method should be called before load().
+     */
+    virtual bool doOpen();
 
-  /**
-   * Tries to open the file and checks for the proper format.
-   * This method should be called before load().
-   */
-  virtual bool doOpen();
-
-  /**
-   * Closes the file again.
-   */
-  virtual void doClose();
+    /**
+      Closes the file again.
+     */
+    virtual void doClose();
   
-  /**
-   * Requests a save ticket, that is used by save()
-   */
-  virtual Ticket *requestSaveTicket();
+    /**
+      Requests a save ticket, that is used by save()
+     */
+    virtual Ticket *requestSaveTicket();
 
-  virtual void releaseSaveTicket( Ticket* );
+    virtual void releaseSaveTicket( Ticket* );
 
-  /**
-   * Loads all addressees from file to the address book.
-   * Returns true if all addressees could be loaded otherwise false.
-   */
-  virtual bool load();
+    /**
+      Loads all addressees from file to the address book.
+      Returns true if all addressees could be loaded otherwise false.
+     */
+    virtual bool load();
 
-  virtual bool asyncLoad();
+    virtual bool asyncLoad();
 
-  /**
-   * Saves all addresses from address book to file.
-   * Returns true if all addressees could be saved otherwise false.
-   *
-   * @param ticket  The ticket returned by requestSaveTicket()
-   */
-  virtual bool save( Ticket *ticket );
+    /**
+      Saves all addresses from address book to file.
+      Returns true if all addressees could be saved otherwise false.
 
-  virtual bool asyncSave( Ticket *ticket );
+      @param ticket  The ticket returned by requestSaveTicket()
+     */
+    virtual bool save( Ticket *ticket );
 
-  /**
-   * Set name of file to be used for saving.
-   */
-  void setFileName( const QString & );
+    virtual bool asyncSave( Ticket *ticket );
 
-  /**
-   * Return name of file used for loading and saving the address book.
-   */
-  QString fileName() const;
+    /**
+      Set name of file to be used for saving.
+     */
+    void setFileName( const QString & );
 
-  /**
-    Sets a new format by name.
-   */
-  void setFormat( const QString &name );
+    /**
+      Return name of file used for loading and saving the address book.
+     */
+    QString fileName() const;
 
-  /**
-    Returns the format name.
-   */
-  QString format() const;
+    /**
+      Sets a new format by name.
+     */
+    void setFormat( const QString &name );
 
-  /**
-   * Remove a addressee from its source.
-   * This method is mainly called by KABC::AddressBook.
-   */
-  virtual void removeAddressee( const Addressee& addr );
+    /**
+      Returns the format name.
+     */
+    QString format() const;
 
-  /**
-   * This method is called by an error handler if the application
-   * crashed
-   */
-  virtual void cleanUp();
+    /**
+      Remove a addressee from its source.
+      This method is mainly called by KABC::AddressBook.
+     */
+    virtual void removeAddressee( const Addressee& addr );
 
-protected slots:
-  void fileChanged();
+    /**
+      This method is called by an error handler if the application
+      crashed
+     */
+    virtual void cleanUp();
 
-protected:
-  void init( const QString &fileName, const QString &format );
+  private slots:
+    void downloadFinished( KIO::Job* );
+    void uploadFinished( KIO::Job* );
 
-  bool lock( const QString &fileName );
-  void unlock( const QString &fileName );
+  protected slots:
+    void fileChanged();
 
-private:
-  QString mFileName;
-  QString mFormatName;
+  protected:
+    void init( const QString &fileName, const QString &format );
 
-  FormatPlugin *mFormat;
+    bool lock( const QString &fileName );
+    void unlock( const QString &fileName );
 
-  QString mLockUniqueName;
+  private:
+    QString mFileName;
+    QString mFormatName;
+
+    FormatPlugin *mFormat;
+
+    QString mLockUniqueName;
     
-  KDirWatch mDirWatch;
+    KDirWatch mDirWatch;
+
+    QString mTempFile;
+    KTempFile *mLocalTempFile;
 };
 
 }

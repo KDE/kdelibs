@@ -278,7 +278,8 @@ void ResourceDir::unlock( const QString &path )
 void ResourceDir::setPath( const QString &path )
 {
   mDirWatch.stopScan();
-  mDirWatch.removeDir( mPath );
+  if ( mDirWatch.contains( mPath ) )
+    mDirWatch.removeDir( mPath );
 
   mPath = path;
   mDirWatch.addDir( mPath, true );

@@ -175,18 +175,18 @@ bool ResourceNet::asyncSave( Ticket* )
   QFile file( mTempFile );
 
   if ( !file.open( IO_WriteOnly ) ) {
-    addressBook()->error( i18n( "Unable to open file '%1'." ).arg( mTempFile ) );
+    emit savingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile ) );
     return false;
   }
   
   mFormat->saveAll( addressBook(), this, &file );
   file.close();
 
-  KURL source;
-  source.setPath( mTempFile );
+  KURL src;
+  src.setPath( mTempFile );
 
   KIO::Scheduler::checkSlaveOnHold( true );
-  KIO::Job * job = KIO::file_copy( source, mUrl, -1, true, false );
+  KIO::Job * job = KIO::file_copy( src, mUrl, -1, true, false );
   connect( job, SIGNAL( result( KIO::Job* ) ),
            this, SLOT( uploadFinished( KIO::Job* ) ) );
 

@@ -29,9 +29,11 @@
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
+#include <kio/scheduler.h>
 #include <klocale.h>
 #include <ksavefile.h>
 #include <kstandarddirs.h>
+#include <ktempfile.h>
 
 #include "formatfactory.h"
 #include "resourcefileconfig.h"
@@ -163,14 +165,25 @@ bool ResourceFile::load()
 
 bool ResourceFile::asyncLoad()
 {
-  bool ok = load();
-  if ( !ok )
-    emit loadingError( this, i18n( "Loading resource '%1' failed!" )
-                       .arg( resourceName() ) );
-  else
-    emit loadingFinished( this );
+  if ( mLocalTempFile ) {
+    kdDebug(5700) << "stale temp file dedected " << mLocalTempFile->name() << endl;
+    mLocalTempFile->setAutoDelete( true );
+    delete mLocalTempFile;
+  }
 
-  return ok;
+  mLocalTempFile = new KTempFile();
+  mTempFile = mLocalTempFile->name();
+
+  KURL dest, src;
+  dest.setPath( mTempFile );
+  src.setPath( mFileName );
+
+  KIO::Scheduler::checkSlaveOnHold( true );
+  KIO::Job * job = KIO::file_copy( src, dest, -1, true, false );
+  connect( job, SIGNAL( result( KIO::Job* ) ),
+           this, SLOT( downloadFinished( KIO::Job* ) ) );
+
+  return true;
 }
 
 bool ResourceFile::save( Ticket* )
@@ -196,16 +209,28 @@ bool ResourceFile::save( Ticket* )
   return ok;
 }
 
-bool ResourceFile::asyncSave( Ticket *ticket )
+bool ResourceFile::asyncSave( Ticket* )
 {
-  bool ok = save( ticket );
-  if ( !ok )
-    emit savingError( this, i18n( "Saving resource '%1' failed!" )
-                      .arg( resourceName() ) );
-  else
-    emit savingFinished( this );
+  QFile file( mTempFile );
 
-  return ok;
+  if ( !file.open( IO_WriteOnly ) ) {
+    emit savingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile ) );
+    return false;
+  }
+  
+  mFormat->saveAll( addressBook(), this, &file );
+  file.close();
+
+  KURL src, dest;
+  src.setPath( mTempFile );
+  dest.setPath( mFileName );
+
+  KIO::Scheduler::checkSlaveOnHold( true );
+  KIO::Job * job = KIO::file_copy( src, dest, -1, true, false );
+  connect( job, SIGNAL( result( KIO::Job* ) ),
+           this, SLOT( uploadFinished( KIO::Job* ) ) );
+
+  return true;
 }
 
 bool ResourceFile::lock( const QString &fileName )
@@ -258,7 +283,8 @@ void ResourceFile::unlock( const QString &fileName )
 void ResourceFile::setFileName( const QString &fileName )
 {
   mDirWatch.stopScan();
-  mDirWatch.removeFile( mFileName );
+  if ( mDirWatch.contains( mFileName ) )
+    mDirWatch.removeFile( mFileName );
 
   mFileName = fileName;
 
@@ -305,6 +331,31 @@ void ResourceFile::removeAddressee( const Addressee &addr )
 void ResourceFile::cleanUp()
 {
   unlock( mFileName );
+}
+
+void ResourceFile::downloadFinished( KIO::Job* )
+{
+  if ( !mLocalTempFile )
+    emit loadingError( this, i18n( "Download failed in some way!" ) );
+
+  QFile file( mTempFile );
+  if ( !file.open( IO_ReadOnly ) ) {
+    emit loadingError( this, i18n( "Unable to open file '%1'." ).arg( mTempFile ) );
+    return;
+  }
+
+  if ( !mFormat->loadAll( addressBook(), this, &file ) )
+    emit loadingError( this, i18n( "Problems during parsing file '%1'." ).arg( mTempFile ) );
+  else
+    emit loadingFinished( this );
+}
+
+void ResourceFile::uploadFinished( KIO::Job *job )
+{
+  if ( job->error() )
+    emit savingError( this, job->errorString() );
+  else
+    emit savingFinished( this );
 }
 
 #include "resourcefile.moc"

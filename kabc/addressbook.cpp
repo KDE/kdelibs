@@ -815,10 +815,10 @@ void AddressBook::cleanUp()
 void AddressBook::resourceLoadingFinished( Resource *res )
 {
   d->mPendingLoadResources.remove( res );
+  emit loadingFinished( res );
+
   if ( d->mPendingLoadResources.count() == 0 )
     emit addressBookChanged( this );
-
-  emit loadingFinished( res );
 }
 
 void AddressBook::resourceSavingFinished( Resource *res )
