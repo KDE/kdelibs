@@ -6,7 +6,7 @@
 MOC = @MOC@
 INCLUDES = -I$(topdir)/kdeui -I$(topdir)/kdecore -I@qt_includes@ -I@x_includes@
 
-LDADD =  -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs \
+LDADD =  -L$(topdir)/kdecore/_libs -L$(topdir)/kdeui/_libs \
 	-lkdeui -lkdecore @QT_LDFLAGS@ -lqt @X_LDFLAGS@ -lX11 -lXext
 
 CLEANFILES = *.moc
