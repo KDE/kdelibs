@@ -29,6 +29,7 @@
 #include <qfile.h>
 #include <cups/cups.h>
 #include <stdlib.h>
+#include <kprocess.h>
 
 static void mapToCupsOptions(const QMap<QString,QString>& opts, QString& cmd);
 
@@ -123,7 +124,7 @@ static void mapToCupsOptions(const QMap<QString,QString>& opts, QString& cmd)
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
 	{
 		// only encode those options that doesn't start with "kde-" or "app-".
-		if (!it.key().startsWith("kde-") && !it.key().startsWith("app-"))
+		if (!it.key().startsWith("kde-") && !it.key().startsWith("app-") && !it.key().startsWith("_kde"))
 		{
 			optstr.append(" ").append(it.key());
 			if (!it.data().isEmpty())
@@ -131,5 +132,5 @@ static void mapToCupsOptions(const QMap<QString,QString>& opts, QString& cmd)
 		}
 	}
 	if (!optstr.isEmpty())
-		cmd.append(" -o '").append(optstr).append("'");
+		cmd.append(" -o ").append( KShellProcess::quote( optstr ) );
 }

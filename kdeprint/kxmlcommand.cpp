@@ -34,6 +34,7 @@
 #include <ksimpleconfig.h>
 #include <kdialogbase.h>
 #include <kdebug.h>
+#include <kprocess.h>
 
 static void setOptionText(DrBase *opt, const QString& s)
 {
@@ -350,6 +351,7 @@ QString KXmlCommand::buildCommand(const QMap<QString,QString>& opts, bool pipein
 	check(true);
 
 	QString		str, cmd = d->m_command;
+	QRegExp re( "%value" ), quotedRe( "'%value'" );
 
 	if (d->m_driver)
 	{
@@ -363,7 +365,19 @@ QString KXmlCommand::buildCommand(const QMap<QString,QString>& opts, bool pipein
 			if (dopt)
 			{
 				QString	format = dopt->get("format");
-				format.replace(QRegExp("%value"), dopt->valueText());
+				QString value = dopt->valueText();
+				if ( format.find( "'%value'" ) != -1 )
+				{
+					if ( ( value.right( 1 ) == "'" && value.left( 1 ) == "'" )  ||
+					     ( value.right( 1 ) == "\"" && value.left( 1 ) == "\"" ) )
+						format.replace( quotedRe, value );
+					else
+						format.replace( re, value );
+				}
+				else
+				{
+					format.replace( re, KShellProcess::quote( dopt->valueText() ) );
+				}
 				str.append(format).append(" ");
 			}
 		}
