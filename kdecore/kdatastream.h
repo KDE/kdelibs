@@ -33,3 +33,12 @@ QDataStream & operator >> (QDataStream & str, long & l)
 }
 #endif
 
+QDataStream & operator << (QDataStream & str, bool b)
+{
+  return operator << (str, (int)l);
+}
+
+QDataStream & operator >> (QDataStream & str, bool & b)
+{
+  return operator >> (str, (int)l);
+}
