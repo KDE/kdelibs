@@ -1,6 +1,9 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.16  1997/08/04 17:51:29  ettrich
+ * Matthias: again: sync() => no longer dirty entries
+ *
  * Revision 1.15  1997/08/04 17:14:04  ettrich
  * Matthis: clear dirty flag after sync()
  *
@@ -708,7 +711,7 @@ void KConfig::sync()
   // re-parse all config files
   // These could be modified by configuration programs
   parseConfigFiles();
-  pData->bDirty = false;
+  rollback();
 
 }
 
