@@ -1114,10 +1114,10 @@ QString locateLocal( const char *type,
     // create the subdir first
     int slash = filename.findRev('/')+1;
     if (!slash) // only one filename
-	return inst->dirs()->saveLocation(type) + filename;
+	return inst->dirs()->saveLocation(type, QString::null, true) + filename;
 
     // split path from filename
     QString dir = filename.left(slash);
     QString file = filename.mid(slash);
-    return inst->dirs()->saveLocation(type, dir) + file;
+    return inst->dirs()->saveLocation(type, dir, true) + file;
 }
