@@ -49,7 +49,7 @@ KFileInfo::KFileInfo(const KUDSEntry &e)
     myIsReadable = true;
 
     debugC("KFileInfo::KFileInfo");
-    UDSEntry::ConstIterator it = e.begin();
+    KUDSEntry::ConstIterator it = e.begin();
     for( ; it != e.end(); it++ ) {
 	switch (( *it ).m_uds) {
 	case UDS_NAME:

@@ -220,7 +220,7 @@ protected slots:
     /**
       * Called when a directory entry is received.
       */
-    void slotListEntry(int id, const UDSEntry&);
+    void slotListEntry(int id, const KUDSEntry&);
     
     /**
       * Called when kfm has finished the current network operation.

@@ -382,7 +382,7 @@ bool KDir::startLoading()
     return false;
 }
 
-void KDir::slotListEntry(int, const UDSEntry& entry) // SLOT
+void KDir::slotListEntry(int, const KUDSEntry& entry) // SLOT
 {
     debugC("slotListEntry");
     KFileInfo *i= new KFileInfo(entry);
