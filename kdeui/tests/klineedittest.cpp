@@ -16,7 +16,7 @@ int main ( int argc, char **argv)
     KLineEdit *l = new KLineEdit( w, "mylineedit" );
     //l->hideModeChanger();
     QStringList list;
-    list << "Stone" << "Tree" << "Peables" << "Ocean" << "Sand" << "Chips" << "Computer" << "Mankind" << "Super" << "Sapperlot" << "Sushi" << "Supermuschi";
+    list << "Stone" << "Tree" << "Peables" << "Ocean" << "Sand" << "Chips" << "Computer" << "Mankind";
     list.sort();
     l->completionObject()->setItems( list );
     // Shows of the value of the returnPressed signals with the QString argument.

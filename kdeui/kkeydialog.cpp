@@ -593,8 +593,6 @@ void KKeyChooser::toChange( QListViewItem *item )
 
         /* Is the key configurable or has the user turned it off ? */
         if ( !(*it).bConfigurable || d->kbMode == NoKey ) {
-	    qDebug("*** FSCK!, configurable: %i", (*it).bConfigurable );
-	    
                 d->lInfo->setEnabled( false );
                 d->cShift->setEnabled( false );
                 d->cCtrl->setEnabled( false );
