@@ -95,7 +95,7 @@ KSpellDlg::KSpellDlg( QWidget * parent, const char * name, bool _progressbar, bo
            SLOT(slotConfigChanged()) );
 
   setHelp( "spelldlg", "kspell" );
-
+  setMinimumSize( d->ui->sizeHint() );
   emit ready( false );
 }
 
@@ -110,7 +110,6 @@ KSpellDlg::init( const QString & _word, QStringList * _sugg )
   for ( QStringList::Iterator it = _sugg->begin(); it != _sugg->end(); ++it ) {
     new QListViewItem( d->ui->m_suggestions, *it );
   }
-
   kdDebug(750) << "KSpellDlg::init [" << word << "]" << endl;
 
   emit ready( true );

@@ -225,14 +225,6 @@ KSpell::startIspell()
       }
     }
 
-  /*
-  if (ksconfig->personalDict()[0]!='\0')
-    {
-      kdDebug(750) << "personal dictionary [" << ksconfig->personalDict() << "]" << endl;
-      *proc << "-p";
-      *proc << ksconfig->personalDict();
-    }
-    */
   // -a : pipe mode
   // -S : sort suggestions by probable correctness
   }
