@@ -118,5 +118,3 @@ Resource *SelectDialog::getResource( QPtrList<Resource> list, QWidget *parent )
   if ( dlg.exec() == KDialog::Accepted ) return dlg.resource();
   else return 0;
 }
-
-// #include "selectdialog.moc"

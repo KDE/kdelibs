@@ -52,7 +52,6 @@ class Resource;
  */
 class SelectDialog : KDialog
 {
-    // Q_OBJECT
   public:
     /**
      * Constructor.
