@@ -129,8 +129,8 @@ QString KStandardDirs::findResourceDir( const QString& type,
 	    return *it;
     }
     
-    debug("KStdDirs::findResDir(): can't find \"%s\" in type \"%s\".",
-          filename.ascii(), type.ascii());
+    // debug("KStdDirs::findResDir(): can't find \"%s\" in type \"%s\".",
+    //      filename.ascii(), type.ascii());
           
     return QString::null;
 }
@@ -169,7 +169,7 @@ QStringList KStandardDirs::getResourceDirs(const QString& type) const
 		 it != dirs->end(); it++) {
 	      testdir.setPath(*it);
 	      if (testdir.exists() && !candidates->contains(*it)) {
-		debug("adding abs %s for type %s", (*it).ascii(), type.ascii());
+	// debug("adding abs %s for type %s", (*it).ascii(), type.ascii());
 		candidates->append(*it);
 	      }
 	    }
@@ -183,7 +183,7 @@ QStringList KStandardDirs::getResourceDirs(const QString& type) const
 		    QString path = *pit + *it;
 		    testdir.setPath(path);
 		    if (testdir.exists() && !candidates->contains(path)) {
-		      debug("adding mix %s for type %s", path.ascii(), type.ascii());
+	// debug("adding mix %s for type %s", path.ascii(), type.ascii());
 		      candidates->append(path);
 		    }
 		}
