@@ -172,12 +172,13 @@ int main(int argc, char **argv) {
     filter( "about:", "about:konqueror", KURIFilterData::NET_PROTOCOL ); // cf kshorturifilter
 
     // Absolute Path tests for kshorturifilter
-    // This test is against the specification of setAbsolutePath !!
-    // It says a _PATH_ must be used! However kshorturifilter can cope...
-    filter( "../../index.html", "http://www.kde.org/index.html", KURIFilterData::NET_PROTOCOL, "kshorturifilter", "http://www.kde.org/tes1/tes2/" );
     filter( "./", home+"/.kde/share", KURIFilterData::LOCAL_DIR, "kshorturifilter", home+"/.kde/share/" ); // cleanDirPath removes the trailing slash
     filter( "../", home+"/.kde", KURIFilterData::LOCAL_DIR, "kshorturifilter", home+"/.kde/share" );
     filter( "apps", home+"/.kde/share/apps", KURIFilterData::LOCAL_DIR, "kshorturifilter", home+"/.kde/share" );
+    // This test is against the specification of setAbsolutePath !!
+    // It says a _PATH_ must be used!
+    // kshorturifilter had code for this, but it broke, since it couldn't check that the resulting URL existed. Disabled.
+    //filter( "../../index.html", "http://www.kde.org/index.html", KURIFilterData::NET_PROTOCOL, "kshorturifilter", "http://www.kde.org/tes1/tes2/" );
 
     // User defined entries...
     filter( "localhost", "http://localhost", KURIFilterData::NET_PROTOCOL );
