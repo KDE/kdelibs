@@ -83,5 +83,9 @@ int main(int argc, char *argv[])
   check( "tagURLs()", KStringHandler::tagURLs( test ),
 	"Click on <a href=\"http://foo@bar:www.kde.org/yoyo/dyne.html#a1\">http://foo@bar:www.kde.org/yoyo/dyne.html#a1</a> for info." );
 
+  test = "&lt;a href=www.foo.com&gt;";
+  check( "tagURLs()", KStringHandler::tagURLs( test ),
+	 "&lt;a href=<a href=\"www.foo.com\">www.foo.com</a>&gt;" );
+
   printf("\nTest OK !\n");
 }
