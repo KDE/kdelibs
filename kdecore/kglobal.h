@@ -121,6 +121,10 @@ public:
  * A typesafe function to find the maximum of the two arguments.
  */
 #define KMAX(a,b)	kMax(a,b)
+/** @relates KGlobal
+ * A typesafe function to determine the absolut value of the argument.
+ */
+#define KABS(a)	kAbs(a)
 
 
 template<class T>
@@ -128,6 +132,9 @@ inline const T& kMin (const T& a, const T& b) { return a < b ? a : b; }
 
 template<class T>
 inline const T& kMax (const T& a, const T& b) { return b < a ? a : b; }
+
+template<class T>
+inline const T& kAbs (const T& a) { return a < 0 ? -a : a; }
 
 /**
  * @libdoc The KDE Core Functionality Library
