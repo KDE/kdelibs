@@ -634,7 +634,7 @@
 >>16    beshort         4               application/x-core
 #
 # DOS
-0	string		MZ		application/x-executable
+0	string		MZ		application/x-msdos-program
 #
 # KDE desktop file
 0		string  [Desktop\ Entry]        application/x-desktop

@@ -1,0 +1,5 @@
+[KDE Desktop Entry]
+Comment=Windows Executable
+Icon=wine_doc
+Type=MimeType
+MimeType=application/x-msdos-program
