@@ -1,11 +1,16 @@
 [Desktop Entry]
 MimeType=text/x-makefile
 Comment=Makefile
+Comment[da]=Makefil
 Comment[eo]=Muntdosiero
+Comment[he]=Make ץבוק
 Comment[hu]=Makefájl
-Comment[no_NY]='Make'-fil
+Comment[is]=Make-skrá
+Comment[mk]=Makefile датотека
+Comment[no_NY]=Make-fil
 Comment[ro]=Fişier Makefile
-DefaultApp=kwrite
+Comment[ta]=ெசயஂேகாபஂபு
+Comment[uk]=Файл Makefile
 Type=MimeType
 Patterns=Makefile*;makefile*;
 Icon=make
