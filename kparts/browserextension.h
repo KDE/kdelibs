@@ -63,6 +63,26 @@ struct URLArgs
   URLArgsPrivate *d;
 };
 
+struct WindowArgsPrivate;
+
+struct WindowArgs
+{
+    WindowArgs();
+    WindowArgs( const WindowArgs &args );
+    WindowArgs &operator=( const WindowArgs &args );
+    WindowArgs( const QRect &_geometry, bool _fullscreen, bool _menuBarVisible,
+                bool _toolBarsVisible, bool _statusBarVisible, bool _resizable );
+
+    QRect geometry;
+    bool fullscreen; //defaults to false
+    bool menuBarVisible; //defaults to true
+    bool toolBarsVisible; //defaults to true
+    bool statusBarVisible; //defaults to true
+    bool resizable; //defaults to true
+
+    WindowArgsPrivate *d; // yes, I am paranoid :-)
+};
+
 class OpenURLEvent : public Event
 {
 public:
@@ -258,6 +278,16 @@ signals:
    * @see KParts::URLArgs
    */
   void createNewWindow( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
+
+  /**
+   * Ask the hosting browser to open a new window for the given @url
+   * and return a reference to the content part.
+   * The request for a reference to the part is only fullfilled/processed
+   * if the serviceType is set in the @p args . (otherwise the request cannot be
+   * processed synchroniously.
+   */
+  void createNewWindow( const KURL &url, const KParts::URLArgs &args,
+                        const KParts::WindowArgs &windowArgs, KParts::ReadOnlyPart *&part );
 
   /**
    * Since the part emits the jobid in the @ref started() signal,

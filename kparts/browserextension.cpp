@@ -112,6 +112,66 @@ URLArgs::~URLArgs()
 namespace KParts
 {
 
+struct WindowArgsPrivate
+{
+};
+
+};
+
+WindowArgs::WindowArgs()
+{
+    fullscreen = false;
+    menuBarVisible = true;
+    toolBarsVisible = true;
+    statusBarVisible = true;
+    resizable = true;
+    d = 0;
+}
+
+WindowArgs::WindowArgs( const WindowArgs &args )
+{
+    d = 0;
+    (*this) = args;
+}
+
+WindowArgs &WindowArgs::operator=( const WindowArgs &args )
+{
+    if ( this == &args ) return *this;
+
+    delete d; d = 0;
+
+    geometry = args.geometry;
+    fullscreen = args.fullscreen;
+    menuBarVisible = args.menuBarVisible;
+    toolBarsVisible = args.toolBarsVisible;
+    statusBarVisible = args.statusBarVisible;
+    resizable = args.resizable;
+
+    /*
+    if ( args.d )
+    {
+      [ ... ]
+    }
+    */
+
+    return *this;
+}
+
+WindowArgs::WindowArgs( const QRect &_geometry, bool _fullscreen, bool _menuBarVisible,
+                        bool _toolBarsVisible, bool _statusBarVisible, bool _resizable )
+{
+    d = 0;
+    geometry = _geometry;
+    fullscreen = _fullscreen;
+    menuBarVisible = _menuBarVisible;
+    toolBarsVisible = _toolBarsVisible;
+    statusBarVisible = _statusBarVisible;
+    resizable = _resizable;
+}
+
+namespace KParts
+{
+
 class BrowserExtensionPrivate
 {
 public:
