@@ -441,7 +441,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
 
   m_actionCollection = new KActionCollection(this);
   m_actionCollection->setInstance(this);
-  m_nextAction       = new KAction(i18n("&Next"),"dbgnext",KShortcut(),this,SLOT(slotNext()),
+  m_nextAction       = new KAction(i18n("Next breakpoint","&Next"),"dbgnext",KShortcut(),this,SLOT(slotNext()),
 				   m_actionCollection,"next");
   m_stepAction       = new KAction(i18n("&Step"),"dbgstep",KShortcut(),this,SLOT(slotStep()),
 				   m_actionCollection,"step");
@@ -452,7 +452,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   m_breakAction      = new KAction(i18n("&Break at Next Statement"),"dbgrunto",KShortcut(),this,SLOT(slotBreakNext()),
 				   m_actionCollection,"breaknext");
 
-  m_nextAction->setToolTip(i18n("Next"));
+  m_nextAction->setToolTip(i18n("Next breakpoint","Next"));
   m_stepAction->setToolTip(i18n("Step"));
   m_continueAction->setToolTip(i18n("Continue"));
   m_stopAction->setToolTip(i18n("Stop"));

@@ -165,7 +165,7 @@ i18n( "&New View");
 i18n( "&Insert");
 // (Rikkus) Removed << and >> for next and previous and put '+ " >>"' in
 // kwizard.h - fixes translation ?
-i18n( "&Next");
+i18n( "Opposite to Previous","&Next");
 i18n( "&Previous");
 i18n( "Replace");
 i18n( "&Replace...");

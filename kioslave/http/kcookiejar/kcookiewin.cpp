@@ -291,7 +291,7 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
 
     if ( cookieCount > 1 )
     {
-        QPushButton* btnNext = new QPushButton( i18n("&Next >>"), this );
+        QPushButton* btnNext = new QPushButton( i18n("Next cookie","&Next >>"), this );
         btnNext->setFixedSize( btnNext->sizeHint() );
         grid->addMultiCellWidget( btnNext, 8, 8, 0, 1 );
         connect( btnNext, SIGNAL(clicked()), SLOT(slotNextCookie()) );

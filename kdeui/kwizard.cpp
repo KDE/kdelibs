@@ -46,7 +46,7 @@ KWizard::KWizard( QWidget *parent, const char *name, bool modal, WFlags f )
     helpButton()->setIconSet( SmallIconSet( "help" ) );
 
     backButton()->setText( i18n( "&Back" ) );
-    nextButton()->setText( i18n( "&Next" ) );
+    nextButton()->setText( i18n( "Opposite to Back","&Next" ) );
   }
 
   QFont font = titleFont();
