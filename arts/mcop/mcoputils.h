@@ -79,6 +79,11 @@ public:
 	static const std::vector<std::string> *extensionPath();
 
 	/**
+	 * Returns the full path of the ~/.mcop directory
+	 */
+	static string mcopDirectory();
+
+	/**
 	 * Tokenization of a key = value1, "value 2", "value III" line into the key
 	 * and the values.
 	 */

@@ -256,8 +256,8 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	 * installations wipe /tmp on reboot.
 	 */
 	string seedpath = MCOPUtils::createFilePath("random-seed");
-	char *home = getenv("HOME");
-	if(home != 0) seedpath = string(home) + "/.MCOP-random-seed";
+	string mcopdir = MCOPUtils::mcopDirectory();
+	if(mcopdir != "") seedpath = mcopdir + "/random-seed";
 	md5_auth_init_seed(seedpath.c_str());
 
 	/*

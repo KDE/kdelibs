@@ -211,6 +211,38 @@ const vector<string> *MCOPUtils::traderPath()
 	return result;
 }
 
+string MCOPUtils::mcopDirectory()
+{
+	static bool initialized = false;
+	static string mcopDirectory;
+
+	if(initialized)
+		return mcopDirectory;
+	initialized = true;
+
+	const char *home = getenv("HOME");
+	arts_return_val_if_fail(home != 0, "");
+
+	mcopDirectory = home + string("/.mcop");
+
+	mkdir(home,0755);
+	if(mkdir(mcopDirectory.c_str(),0755) != 0)
+	{
+		string why = strerror(errno);
+
+		struct stat st;
+		stat(mcopDirectory.c_str(),&st);
+		if(!S_ISDIR(st.st_mode))
+		{
+			arts_warning("can't create directory %s (%s)",
+					 	 mcopDirectory.c_str(), why.c_str());
+
+			mcopDirectory = "";
+		}
+	}
+	return mcopDirectory;
+}
+
 bool MCOPUtils::tokenize(const string& line, string& key,vector<string>& values)
 {
 	string value;
