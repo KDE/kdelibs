@@ -336,9 +336,10 @@ void KFileReader::slotIOFinished( KIO::Job * job )
 
 }
 
-void KFileReader::slotDirDirty( const QString& )
+void KFileReader::slotDirDirty( const QString& dir )
 {
-    slotDirUpdate();
+    if ( dir == path(-1) ) // no a slash at the end
+        slotDirUpdate();
 }
 
 // this is similar to getEntries(), but it's a bit different, because
