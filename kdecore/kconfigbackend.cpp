@@ -166,8 +166,6 @@ class KConfigBackEnd::KConfigBackEndPrivate
 public:
    QDateTime localLastModified;
    uint      localLastSize;
-   QDateTime globalLastModified;
-   uint      globalLastSize;
 };
 
 void KConfigBackEnd::changeFileName(const QString &_fileName,
@@ -192,8 +190,6 @@ void KConfigBackEnd::changeFileName(const QString &_fileName,
 
    d->localLastModified = QDateTime();
    d->localLastSize = 0;
-   d->globalLastModified = QDateTime();
-   d->globalLastSize = 0;
 }
 
 KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
@@ -269,13 +265,6 @@ bool KConfigINIBackEnd::parseConfigFiles()
       aConfigFile.close();
       if (bFileImmutable)
          break;
-    }
-
-    if (!pConfig->isReadOnly())
-    {
-       QFileInfo info(mGlobalFileName);
-       d->globalLastModified = info.lastModified();
-       d->globalLastSize = info.size();
     }
   }
 
@@ -676,33 +665,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
 
     // can we allow the write? (see above)
     if (checkAccess ( mGlobalFileName, W_OK )) {
-      bool mergeGlobalFile = bMerge;
-      // Check if the file has been updated since.
-      if (mergeGlobalFile)
-      {
-         QFileInfo info(mGlobalFileName);
-         if ((d->globalLastSize == info.size()) &&
-             (d->globalLastModified == info.lastModified()))
-         {
-            // Not changed, don't merge.
-            mergeGlobalFile = false;
-         }
-         else
-         {
-            // Changed...
-            d->globalLastModified = QDateTime();
-            d->globalLastSize = 0;
-         }
-      }
-
-      writeConfigFile( mGlobalFileName, true, mergeGlobalFile );
-
-      if (!mergeGlobalFile)
-      {
-         QFileInfo info(mGlobalFileName);
-         d->globalLastModified = info.lastModified();
-         d->globalLastSize = info.size();
-      }
+      writeConfigFile( mGlobalFileName, true, bMerge ); // Always merge
     }
   }
 
