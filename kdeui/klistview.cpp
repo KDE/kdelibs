@@ -27,7 +27,9 @@
 #include <kipc.h>
 #include <kdebug.h>
 
+#define CHEAT
 #include "klistview.h"
+#undef CHEAT
 #include "klistviewlineedit.h"
 
 #include <X11/Xlib.h>
@@ -46,6 +48,8 @@ public:
   bool dragEnabled;
   bool autoOpen;
   bool dropVisualizer;
+
+  int toolTipRow;
 };
 
 
@@ -116,6 +120,7 @@ KListView::KListView( QWidget *parent, const char *name )
 		d->itemsRenameable=false;
 		d->dragEnabled=false;
 		d->autoOpen=true;
+		d->toolTipRow=0;
 		connect(d->editor, SIGNAL(done(QListViewItem*,int)), this, SLOT(doneEditing(QListViewItem*,int)));
 	}
 
@@ -689,5 +694,47 @@ bool KListView::acceptDrag(QDropEvent*) const
 	return true;
 }
 
+void KListView::showToolTip(QListViewItem *item)
+{
+	showToolTip(item, toolTipRow());
+}
+/*
+Charles vs. Peter:
+
+> > Yes, tooltips & context menus are rather easy to implement. BUT I don't
+> > think every app should have to do that, AND I think you're wrong regarding
+> > usage, at least context menus are used a lot.
+> with context menus, I think it's far too easy to consider implementing.
+>
+> >
+> > As for tooltips, IMHO The Windows Way (tm) isn't too bad: tooltips are
+> > automatically displayed when an item doesn't fit on screen (i.e. when the
+> > listview has got a horizontal scrollbar)...
+> The Windows Way (tm) isn't bad at all, so I guess I can implement it, but only
+> for the first column.
+
+How about making that column configurable? Imagine having an icon in
+column one, no use to show a tooltip for that...
+*/
+
+void KListView::showToolTip(QListViewItem */*item*/, int /*row*/)
+{
+
+}
+
+int KListView::toolTipRow() const
+{
+	return d->toolTipRow;
+}
+
+void KListView::setToolTipRow(int row)
+{
+	d->toolTipRow=row;
+}
+
+bool KListView::showToolTip(QListViewItem *item, const QPoint &pos, int row) const
+{
+	return ((item->text(row).length()>0) && (row==toolTipRow()));
+}
 
 #include "klistviewlineedit.moc"

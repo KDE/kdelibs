@@ -20,9 +20,15 @@
 #define KLISTVIEW_H
 
 #include <qcursor.h>
-#define private public
+
+#ifdef CHEAT
+#define private protected
 #include <qlistview.h>
 #undef private
+#else
+#include <qlistview.h>
+#endif
+
 #include <qlist.h>
 
 class QDragObject;
@@ -70,6 +76,7 @@ public:
   bool autoOpen() const;
   bool getRenameableRow(int row) const;
   bool dropVisualizer() const;
+  int toolTipRow() const;
 
 signals:
 
@@ -134,6 +141,10 @@ public slots:
   virtual void setDragEnabled(bool b);
   virtual void setAutoOpen(bool b);
   virtual void setDropVisualizer(bool b);
+  virtual void setToolTipRow(int row);
+
+  void showToolTip(QListViewItem *item);
+  virtual void showToolTip(QListViewItem *item, int row);
 
 protected slots:
   void slotOnItem( QListViewItem *item );
@@ -155,6 +166,8 @@ protected:
   virtual void contentsMouseMoveEvent( QMouseEvent *e );
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent *e );
 
+  virtual bool showToolTip(QListViewItem *item, const QPoint &pos, int row) const;
+
   /**
    * Override this method.  event is as you'd expect
    * after is the item to drop this after
@@ -168,7 +181,6 @@ protected:
   virtual void dragMoveEvent(QDragMoveEvent *event);
   virtual void viewportPaintEvent(QPaintEvent *event);
   virtual void dragLeaveEvent(QDragLeaveEvent *event);
-	
   virtual void contentsMouseReleaseEvent(QMouseEvent*);
   virtual void dragEnterEvent(QDragEnterEvent *);
 
@@ -180,6 +192,8 @@ protected:
    * paint the drag line.  if painter is null, don't try to :)
    **/
   virtual QRect drawDropVisualizer(QPainter *painter, int depth, QListViewItem *after);	
+
+  virtual void startDrag();
 
   QCursor oldCursor;
   bool m_bUseSingle;
@@ -204,7 +218,6 @@ private:
    * Where is the nearest QListViewItem that I'm going to drop after?
    **/
   QListViewItem* findDrop(const QPoint &p);
-  void startDrag();
 
 private:
   class KListViewPrivate;
