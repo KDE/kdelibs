@@ -163,6 +163,12 @@ public:
 
     /**
      * @internal
+     * Loads and caches an overlay.
+     */
+     QImage *loadOverlay(const QString& name, int size) const;
+
+    /**
+     * @internal
      * adds themes installed in the application's directory. Only locolor
      * and hicolor are currently supported to be installed in kde_datadir
      **/
@@ -173,7 +179,7 @@ public:
      * below (the fallbacks of the theme) in the tree.
      * @internal
      */
-    void addIconTheme(KIconThemeNode *node);
+    void addBaseThemes(KIconThemeNode *node);
 
     // @internal the data object
     KIconLoaderPrivate *d;
