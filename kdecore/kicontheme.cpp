@@ -178,14 +178,14 @@ QStringList KIconTheme::queryIcons(int size, int context)
 	    return dir->iconList();
     }
 
-    // Find best match
+    // Find close match
     KIconThemeDir *best = 0L;
     for (dir=mDirs.first(); dir!=0L; dir=mDirs.next())
     {
 	if ((context != KIcon::Any) && (context != dir->context()))
 	    continue;
 	dw = abs(dir->size() - size);
-	if (dw >= delta)
+	if (dw >= QMIN(5,delta))
 	    continue;
 	delta = dw;
 	best = dir;
@@ -213,7 +213,7 @@ KIcon KIconTheme::iconPath(QString name, int size, int match)
 	} else
 	{
 	    dw = abs(dir->size() - size);
-	    if (dw >= delta)
+	    if (dw >= QMIN(5,delta))
 		continue;
 	}
 

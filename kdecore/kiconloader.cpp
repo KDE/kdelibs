@@ -373,7 +373,6 @@ QPixmap KIconLoader::loadIcon(QString name, int group_or_size,
 	pix.load(path);
 	if (path_store != 0L)
 	    *path_store = path;
-	kdDebug(264) << "User icon resolved to " << path << "\n";
 	return pix;
     }
 
