@@ -243,7 +243,7 @@ bool KRun::runOldApplication( const QString& , QStringList& _urls, bool _allow_m
 {
   char **argv = 0L;
 
-  QString kfmexec = kapp->kde_bindir();
+  QString kfmexec = locate( "exe", "" );
   kfmexec += "/kfmexec";
 
   if ( _allow_multiple )
