@@ -64,18 +64,18 @@ class KURLLabel;
  * buttons. Each button has a virtual slot so you can overload the method 
  * when required. The default slots emit a signal as well, so you can choose
  * to connect a signal instead of overriding the slot.
- * The default implementation of slotHelp() will automatically enable the 
- * help system if you have provided a path to the help text. @ref slotCancel() 
- * and @ref slotClose() will run reject() while @ref slotOk() will run 
- * accept(). You define a default button in the constructor.
+ * The default implementation of @ref slotHelp will automatically enable the 
+ * help system if you have provided a path to the help text. @ref slotCancel 
+ * and @ref slotClose will run @ref QDialog::reject while @ref slotOk will run 
+ * @ref QDialog::accept. You define a default button in the constructor.
  *
  * Dialog shapes:
  * You can either use one of the prebuild, easy to use, faces or define 
  * your own main widget. The dialog provides ready to use TreeList,  
  * Tabbed, Plain and Swallow faces. For the first two you then add pages 
- * with @ref addPage(). If you want complete control on how the dialog 
+ * with @ref addPage. If you want complete control on how the dialog 
  * contents should look like, then you can define a main widget by using 
- * @ref setMainWidget(). You only need to set the minimum size of that 
+ * @ref setMainWidget. You only need to set the minimum size of that 
  * widget and the dialog will resize itself to fit this minimum size. 
  * The dialog is resizeable, but can not be made smaller than its minimum 
  * size.
@@ -88,8 +88,8 @@ class KURLLabel;
  *
  * Standard compliance:
  * The class is derived form @ref KDialog, so you get automatic access to
- * the @ref KDialog::marginHint(), @ref KDialog::spacingHint() and the 
- * extended @ref KDialog::setCaption() method.
+ * the @ref KDialog::marginHint, @ref KDialog::spacingHint and the 
+ * extended @ref KDialog::setCaption method.
  *
  * @short A dialog base class which standard buttons and predefined layouts.
  * @author Mirko Sucker (mirko@kde.org) and Espen Sand (espensa@online.no)
@@ -111,7 +111,7 @@ class KDialogBase : public KDialog
       User1   = 0x00000080,
       User2   = 0x00000100,
       User3   = 0x00000200,
-      Stretch = 0x80000000,
+      Stretch = 0x80000000
     };
 
     enum ActionButtonStyle
@@ -121,7 +121,7 @@ class KDialogBase : public KDialog
       ActionStyle2,
       ActionStyle3,
       ActionStyle4,
-      ActionStyleMAX,
+      ActionStyleMAX
     };
 
     enum DialogType
@@ -130,6 +130,13 @@ class KDialogBase : public KDialog
       Tabbed   = KJanusWidget::Tabbed,
       Plain    = KJanusWidget::Plain,
       Swallow  = KJanusWidget::Swallow
+    };
+
+    enum ResizeMode
+    {
+      ResizeFixed=0,
+      ResizeMinimum,
+      ResizeFree
     };
 
   private:
@@ -185,7 +192,7 @@ class KDialogBase : public KDialog
 
     /** 
      * Constructor for the standard mode where you must specify the main widget
-     * with @ref setMainWidget() .
+     * with @ref setMainWidget .
      * 
      * @param parent Parent of the dialog.
      * @param name Dialog name (for internal use only)
@@ -366,6 +373,23 @@ class KDialogBase : public KDialog
      */
     QWidget *getMainWidget( void ); 
 
+    /**
+     * Sets the resize mode.
+     *
+     * @param int mode The resize mode. It can be ResizeFixed (no resize
+     * possible), ResizeMinimum (resize is allowed, but limited by the 
+     * minimum size) or ResizeFree (the main widget can be resized to zero
+     * size )
+     */
+    void setResizeMode( int mode );
+
+    /**
+     * Updates the size of the dialog and the resize constraints depending
+     * on the current resize mode. THis method is executed from 
+     * @ref setResizeMode so you should not need to use this method.
+     */
+    void updateSize( void );
+
     /** 
      * Sets the text of the OK button. If the default parameters are used 
      * (that is, if no parameters are given) the standard texts are set:
@@ -513,7 +537,7 @@ class KDialogBase : public KDialog
 
     /** 
      * Initializes the minimum size of the dialog. You do not need to
-     * use this method. It is used automatically in @ref show().
+     * use this method. It is used automatically in @ref show.
      */
     void initializeGeometry( void );
 
@@ -714,7 +738,7 @@ class KDialogBase : public KDialog
 
     /**
      * This method is ran once in the for a KDialogBase object. It is done
-     * automatically in @ref show() Never use this method yourself.
+     * automatically in @ref show Never use this method yourself.
      */
     void activateCore( void );
 
@@ -747,6 +771,8 @@ class KDialogBase : public KDialog
     static QPixmap *mTile;
     static KDialogBase *mRelay;
     bool   mShowTile;
+
+    int mResizeMode;
 };
 
 

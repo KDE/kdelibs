@@ -47,7 +47,7 @@ KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
 			  const QString &user3 )
   :KDialog( parent, name, modal, WStyle_Customize|WStyle_DialogBorder),
    mMainWidget(0), mJanus(0), mActionSep(0), mIsActivated(false),
-   mShowTile(false)
+   mShowTile(false), mResizeMode(ResizeMinimum)
 {
   setCaption( caption );
 
@@ -70,7 +70,7 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
 			  const QString &user3 )
   :KDialog( parent, name, modal, WStyle_Customize|WStyle_DialogBorder ),
    mMainWidget(0), mJanus(0), mActionSep(0), mIsActivated(false),
-   mShowTile(false)
+   mShowTile(false), mResizeMode(ResizeMinimum)
 {
   setCaption( caption );
 
@@ -161,22 +161,31 @@ QWidget *KDialogBase::plainPage( void )
 void KDialogBase::show( void )
 {
   activateCore();
-  QDialog::show();
 
-  //
-  // 1999-09-09-ES
-  // Sometimes it seems that the dialog needs to be kicked into orbit. 
-  // This is either a Qt error or something I don't understand because 
-  // the dialog is not redrawn until an event occurs (mouse movement, 
-  // timer etc).
-  //
-  kapp->processOneEvent();
+  if( isVisible() == true )
+  {
+    raise();
+  }
+  else
+  {
+    QDialog::show();
+
+    //
+    // 1999-09-09-ES
+    // Sometimes it seems that the dialog needs to be kicked into orbit. 
+    // This is either a Qt error or something I don't understand because 
+    // the dialog is not redrawn until an event occurs (mouse movement, 
+    // timer etc).
+    //
+    kapp->processOneEvent();
+  }
 }
 
 
 void KDialogBase::show( QWidget *centerParent )
 {
   activateCore();
+
   if( centerParent != 0 )
   {
     QPoint point = centerParent->mapToGlobal( QPoint(0,0) );
@@ -185,8 +194,16 @@ void KDialogBase::show( QWidget *centerParent )
 		 point.y() + pos.height()/2 - height()/2, 
 		 width(), height() );
   }
-  QDialog::show();
-  kapp->processOneEvent();
+  
+  if( isVisible() == true )
+  {
+    raise();
+  }
+  else
+  {
+    QDialog::show();
+    kapp->processOneEvent(); // See explanation above
+  }
 }
 
 
@@ -199,7 +216,6 @@ void KDialogBase::activateCore( void )
 
   mIsActivated = true;
   initializeGeometry();
-  resize( minimumSize() );
 
   if( mJanus != 0 )
   {
@@ -742,11 +758,10 @@ void KDialogBase::enableLinkedHelp( bool state )
     setMinimumSize( minimumSize() + QSize(0,box->minimumSize().height()) );
   }
 
-  if( isVisible() == false )
+  if( mIsActivated == true )
   {
-    return;
+    resize(s);
   }
-  resize( s );
 }
 
 
@@ -846,12 +861,38 @@ QSize KDialogBase::calculateSize(int w, int h)
 }
 
 
+void KDialogBase::setResizeMode( int mode )
+{
+  mResizeMode = mode;
+  initializeGeometry();
+}
+
+
+void KDialogBase::updateSize( void )
+{
+  if( mResizeMode == ResizeFree )
+  {
+    cout << "KDialogBase: FreeResize not yet implemented" << endl;
+    resize( minimumSize() );
+  }
+  else if( mResizeMode == ResizeFixed )
+  {
+    setFixedSize( minimumSize() );
+    resize( minimumSize() );
+  }
+  else
+  {
+    resize( minimumSize() );
+  }
+}
+
+
+
 void KDialogBase::updateGeometry( void )
 {
   setUrlBoxGeometry();
   setButtonStyle( mButton.style );
   initializeGeometry();
-  resize( minimumSize() );
 }
 
 
@@ -898,6 +939,11 @@ void KDialogBase::initializeGeometry( void )
   int h = s1.height() + s2.height() + s3.height() + s4.height();
 
   setMinimumSize( w, h );
+
+  if( mIsActivated == true )
+  {
+    updateSize();
+  }
 }
 
 
