@@ -130,7 +130,8 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
             int val = name.right(5).toInt(&ok, 16);
             if(ok)
             {
-                color.setRgb((0xff << 24) | (val * 16 + val&0xf));
+                const QString lastDigit(name.at(5));
+                color.setRgb((0xff << 24) |  (val * 16 + lastDigit.toInt(&ok, 16)));
                 return;
             }
         }
