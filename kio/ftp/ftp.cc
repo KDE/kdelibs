@@ -237,20 +237,20 @@ void Ftp::setHost( const QString& _host, int _port, const QString& _user, const 
   kdDebug(7102) << "Ftp::setHost " << _host << endl;
   QString user = _user;
   QString pass = _pass;
-  if( !_user.isEmpty() )
+  if ( !_user.isEmpty() )
   {
       user = _user;
-      if ( !_pass.isEmpty() )
-          pass = _pass;
-      else
-          pass = QString::null;
-  } else {
+      pass = _pass.isEmpty() ? QString::null:_pass;
+  }
+  else
+  {
       user = FTP_LOGIN;
       pass = FTP_PASSWD;
   }
 
   if ( m_host != _host || m_port != _port || m_user != user || m_pass != pass )
       closeConnection( );
+
   m_host = _host;
   m_port = _port;
   m_user = user;
@@ -367,23 +367,22 @@ bool Ftp::ftpLogin()
 
   if ( !m_user.isEmpty() )
   {
-    QString msg;
+    AuthInfo info;
     QCString tempbuf;
     int failedAuth = 0;
 
     // Construct the URL to be used as key for caching.
-    KURL url;
-    url.setProtocol( QString::fromLatin1("ftp") );
-    url.setHost( m_host );
-    url.setPort( m_port );
+    info.url.setProtocol( QString::fromLatin1("ftp") );
+    info.url.setHost( m_host );
+    info.url.setPort( m_port );
 
-    while( ++failedAuth )
+    while ( ++failedAuth )
     {
       // Ask user if we should retry after login failure.
       if( failedAuth > 2 )
       {
-        msg = i18n("Login Failed! Do you want to retry ?");
-        if( messageBox(QuestionYesNo, msg, i18n("Authorization")) != 3 )
+        info.prompt = i18n("Login Failed! Do you want to retry ?");
+        if( messageBox(QuestionYesNo, info.prompt, i18n("Authorization")) != 3 )
         {
           kdDebug(7102) << "Login aborted by user!" << endl;
           error( ERR_USER_CANCELED, QString::null);
@@ -394,28 +393,31 @@ bool Ftp::ftpLogin()
       // Check the cache and/or prompt user for password if 1st
       // login attempt failed OR the user supplied a login name,
       // but no password.
-      if( failedAuth > 1 || (!m_user.isEmpty() && m_pass.isEmpty()) )
+      if ( failedAuth > 1 || (!m_user.isEmpty() && m_pass.isEmpty()) )
       {
-        QString usr = (m_user == FTP_LOGIN &&
-                       m_pass == FTP_PASSWD) ? QString::null : m_user;
-        if ( checkCachedAuthentication( url, usr , m_pass ) )
+        if ( m_user != FTP_LOGIN && m_pass != FTP_PASSWD )
+            info.username = m_user;
+        if ( checkCachedAuthentication( info ) )
         {
-          m_user = usr;
+          m_user = info.username;
+          m_pass = info.password;
         }
         else
         {
-          msg = i18n("Authorization is required to access"
-                     "<center><b>%1</b></center>"
-                     "Enter login information:").arg(m_host);
+          info.prompt = i18n("You need to supply a username and a password "
+                             "to access this site.");
+          info.commentLabel = i18n( "Site:" );
+          info.comment = i18n("<b>%1</b>").arg( m_host );
 
-          if ( !openPassDlg( msg, usr, m_pass ) )
+          if ( !openPassDlg( info ) )
           {
             error( ERR_USER_CANCELED, m_host );
             return false;
           }
           else
           {
-            m_user = usr;
+            m_user = info.username;
+            m_pass = info.password;
           }
         }
       }
@@ -427,7 +429,7 @@ bool Ftp::ftpLogin()
       bool needPass = !strncmp( rspbuf, "331", 3);
       // Prompt user for login info if we do not
       // get back a "230" or "331".
-      if( !loggedIn && !needPass )
+      if ( !loggedIn && !needPass )
       {
         kdDebug(7102) << "1> " << rspbuf << endl;
         continue;  // Well we failed, prompt the user please!!
@@ -441,19 +443,12 @@ bool Ftp::ftpLogin()
         loggedIn = (ftpSendCmd( tempbuf, '2' ) && !strncmp(rspbuf, "230", 3));
       }
 
-      if( loggedIn )
+      if ( loggedIn )
       {
         // Do not cache the default login!!
         if( m_user != FTP_LOGIN && m_pass != FTP_PASSWD )
-          cacheAuthentication(url, m_user, m_pass);
+          cacheAuthentication( info );
         failedAuth = -1;
-      }
-      else
-      {
-        // TODO: Need to parse error messages here!!
-        // Currently the user is prompted for password
-        // even if login attempt failed because the server
-        // reached its limit!!!
       }
     }
   }
