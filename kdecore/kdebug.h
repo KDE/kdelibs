@@ -37,6 +37,8 @@ class QStringList;
 class QColor;
 class QPen;
 class QBrush;
+template <class T>
+class QValueList;
 
 class kdbgstream;
 class kndbgstream;
