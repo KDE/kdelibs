@@ -74,28 +74,31 @@ KIMProxy::~KIMProxy( )
 
 bool KIMProxy::initialize()
 {
-	// So there is no error from a failed query when using kdelibs 3.2, which don't have this servicetype
-	if ( KServiceType::serviceType( IM_SERVICE_TYPE ) ) 
-	{
-		kdDebug( 5301 ) << k_funcinfo << endl;
-		QCString dcopObjectId = "KIMIface";
-	
-		// see what apps implementing our service type are out there
-		KService::List offers = KServiceType::offers( IM_SERVICE_TYPE );
-		KService::List::iterator it;
-		m_apps_available = false;
-		for ( it = offers.begin(); it != offers.end(); ++it )
-		{
-			m_apps_available = true;
-			QCString dcopService = (*it)->property("X-DCOP-ServiceName").toString().latin1();
-			kdDebug( 5301 ) << " app name: " << (*it)->name() << " dcopService: " << dcopService << endl;
-			if ( !dcopService.isEmpty() && m_dc->isApplicationRegistered( dcopService ) && !m_im_client_stubs.find( dcopService ) )
-			{
-				kdDebug( 5301 ) << "inserting new stub for " << dcopService << " dcopObjectId " << dcopObjectId << endl;
-				m_im_client_stubs.insert( dcopService, new KIMIface_stub( m_dc, dcopService, dcopObjectId ) );
-			}
-		}
-	}
+	if ( m_im_client_stubs.count() == 0 )
+    {
+      // So there is no error from a failed query when using kdelibs 3.2, which don't have this servicetype
+      if ( KServiceType::serviceType( IM_SERVICE_TYPE ) ) 
+      {
+          kdDebug( 5301 ) << k_funcinfo << endl;
+          QCString dcopObjectId = "KIMIface";
+      
+          // see what apps implementing our service type are out there
+          KService::List offers = KServiceType::offers( IM_SERVICE_TYPE );
+          KService::List::iterator it;
+          m_apps_available = false;
+          for ( it = offers.begin(); it != offers.end(); ++it )
+          {
+              m_apps_available = true;
+              QCString dcopService = (*it)->property("X-DCOP-ServiceName").toString().latin1();
+              kdDebug( 5301 ) << " app name: " << (*it)->name() << " dcopService: " << dcopService << endl;
+              if ( !dcopService.isEmpty() && m_dc->isApplicationRegistered( dcopService ) && !m_im_client_stubs.find( dcopService ) )
+              {
+                  kdDebug( 5301 ) << "inserting new stub for " << dcopService << " dcopObjectId " << dcopObjectId << endl;
+                  m_im_client_stubs.insert( dcopService, new KIMIface_stub( m_dc, dcopService, dcopObjectId ) );
+              }
+          }
+      }
+    }
 	return m_im_client_stubs.count() != 0;
 }
 
@@ -175,6 +178,18 @@ bool KIMProxy::isPresent( const QString& uid )
 		}
     }
     return present;
+}
+
+QString KIMProxy::displayName( const QString& uid )
+{
+	QString name;
+	if ( initialize() )
+	{
+		kdDebug( 5301 ) << "initialized OK!"<<endl;
+        name = stubForUid( uid )->displayName( uid );
+	}
+	kdDebug( 5301 ) << k_funcinfo << name << endl;
+    return name;
 }
 
 int KIMProxy::presenceNumeric( const QString& uid )
@@ -260,7 +275,12 @@ void KIMProxy::sendFile(const QString &uid, const KURL &sourceURL, const QString
 {
 	if ( initialize() )
 	{
-		stubForUid( uid )->sendFile( uid, sourceURL, altFileName, fileSize );
+		QDictIterator<KIMIface_stub> it( m_im_client_stubs );
+		for ( ; it.current(); ++it )
+		{
+			if ( it.current()->canReceiveFiles( uid ) )
+				it.current()->sendFile( uid, sourceURL, altFileName, fileSize );
+		}	
 	}
 	return;
 }
