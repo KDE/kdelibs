@@ -120,6 +120,7 @@
     <Separator/>
     <MergeLocal/>
   </Menu>
+  <MergeLocal name="settings_merge"/>
   <Menu name="help"><text>&amp;Help</text>
     <Action name="help_contents"/>
     <Action name="help_whats_this"/>
