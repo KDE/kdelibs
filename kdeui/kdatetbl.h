@@ -18,6 +18,12 @@
 #include <qtablevw.h>
 #include <qdatetm.h>
 
+
+/**
+* Draws a calendar table.
+* @author Tim D. Gilman
+* @version $Id$
+*/
 class KDateTable: public QTableView {
    Q_OBJECT
  public:

@@ -39,7 +39,6 @@ typedef QStack<QString> KPath;
 
 class KTreeList;		// forward declaration
 
-/// Items for the KTreeList widget
 /** Items for the KTreeList widget */
 class KTreeListItem
 {
@@ -208,8 +207,9 @@ struct KItemSearchInfo {
   KItemSearchInfo() : count(0), index(0), foundItem(0) {}
 };
 
-/// A treelist widget like in Win95/NT
-/**
+/** 
+  A collapsible treelist widget.
+
   1. Introduction
   2. Features
   3. Installation

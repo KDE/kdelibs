@@ -4,6 +4,10 @@
 #include <qpixmap.h>
 #include <qbutton.h>
 
+/**
+* Provides active-raise/lower buttons.
+* @version $Id$
+*/
 class KButton : public QButton
 {
     Q_OBJECT

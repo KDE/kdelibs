@@ -10,18 +10,34 @@
 
 #include <qimage.h>
 
+/**
+* Allows Floyd-Steinberg dithering for low-colour situations.
+* @short Floyd-Steinberg dithering.
+* @version $Id$
+* @author Marv Luse (tm Addison Wesley Publishing)
+*/
 class kFSDither
 {
 public:
+	/**
+	*/
 	kFSDither( const QColor *pal, int pSize );
 
+	/**
+	*/
 	QImage dither( const QImage &i );
 
 private:
+	/**
+	*/
 	int nearestColor( int r, int g, int b );
 
 private:
+	/**
+	*/
 	const QColor *palette;
+	/**
+	*/
 	int palSize;
 };
 

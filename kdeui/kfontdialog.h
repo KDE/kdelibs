@@ -22,6 +22,13 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+    *** empty log message ***
+
+    Revision 1.5  1997/10/21 20:45:01  kulow
+    removed all NULLs and replaced it with 0L or "".
+    There are some left in mediatool, but this is not C++
+
+    Revision 1.4  1997/10/16 11:15:22  torben
     Kalle: Copyright headers
     kdoctoolbar removed
 
@@ -71,7 +78,11 @@
 #include <qbttngrp.h>
 #include <qchkbox.h>
 #include <qcombo.h>
-
+#include <qframe.h>
+#include <qgrpbox.h>
+#include <qlabel.h>
+* @version $Id$
+#include <qlistbox.h>
 #include <qpushbt.h>
 #include <qradiobt.h>
 #include <qscrbar.h>

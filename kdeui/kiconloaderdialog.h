@@ -39,6 +39,12 @@
 #include <kapp.h>
 #include <kiconloader.h>
 
+/**
+* Internal display class for @ref KIconLoaderDialog
+* @short Internal display class for KIconLoaderDialog
+* @version $Id$
+* @author Christoph.Neerfeld@bonn.netsurf.de
+*/
 class KIconLoaderCanvas : public QTableView
 {
   Q_OBJECT
@@ -70,11 +76,12 @@ protected:
   QStrList       name_list;
 };
 
-/// Select icons from the IconPath by name
-/**
-   KIconLoaderDialog is a derived class from QDialog.
-   It provides one function selectIcon() which displays a dialog.
-   This dialog lets you select the icons within the IconPath by image.
+/** 
+* Dialog for interactive selection of icons.
+*
+* KIconLoaderDialog is a derived class from QDialog.
+* It provides one function selectIcon() which displays a dialog.
+* This dialog lets you select the icons within the IconPath by image.
 */
 class KIconLoaderDialog : public QDialog
 {

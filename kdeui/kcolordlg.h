@@ -18,6 +18,9 @@
 
 //-----------------------------------------------------------------------------
 
+/**
+* Pushbutton for interactive Hue/Saturation selection.
+*/
 class KHSSelector : public KXYSelector
 {
   Q_OBJECT
@@ -36,7 +39,9 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
-
+/**
+* Pushbutton for interactive Hue/Saturation selection.
+*/
 class KValueSelector : public KSelector
 {
   Q_OBJECT
@@ -111,19 +116,27 @@ private:
 //-----------------------------------------------------------------------------
 
 /// KDE Color Selection dialog
-/** KDE Color Selection dialog
+/** 
+KDE Color Selection dialog.
+
 Features:
 
-Colour selection from a standard system palette.
-Colour selection from a Palette of H vs S and V selectors (similar to windoze).
-Direct input of HSV or RGB values.
-Saving of custom colors
+<ul>
+<li>Colour selection from a standard system palette.</li>
+<li>Colour selection from a Palette of H vs S and V selectors 
+	(similar to windoze).</li>
+<li>Direct input of HSV or RGB values.</li>
+<li>Saving of custom colors.</li>
+</ul>
 
 simplest use:
+
+<pre>
 QColor myColor;
 int result = KColorDialog::getColor( myColor );
+</pre>
 
- */
+*/
 class KColorDialog : public QDialog
 {
   Q_OBJECT

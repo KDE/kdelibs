@@ -12,6 +12,10 @@
 #include "kcombo.h"
 #include "ktoolbar.h"
 
+/**
+* Floating/Docking toolbar.
+* @short Floating/Docking toolbar.
+*/
 class KDockToolBar : public KToolBar
 {
   Q_OBJECT
