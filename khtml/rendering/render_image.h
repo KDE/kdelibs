@@ -24,15 +24,15 @@
 #ifndef RENDER_IMAGE_H
 #define RENDER_IMAGE_H
 
-#include "dtd.h"
+#include "html/dtd.h"
 #include "render_replaced.h"
+#include "dom/dom_string.h"
 
 #include <qmap.h>
 #include <qpixmap.h>
 
-#include <dom/dom_string.h>
-
 namespace DOM {
+
     class HTMLElementImpl;
 }
 
@@ -85,11 +85,9 @@ private:
     DOM::DOMString alt;
 
     CachedImage *image;
+    DOM::HTMLElementImpl* m_element;
     bool berrorPic : 1;
-
-    DOM::HTMLElementImpl *element;
-
-    bool loadEventSent;
+    bool loadEventSent : 1;
 };
 
 

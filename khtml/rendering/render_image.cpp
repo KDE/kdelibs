@@ -50,7 +50,7 @@ RenderImage::RenderImage(HTMLElementImpl *_element)
     setSpecialObjects();
     image = 0;
     berrorPic = false;
-    element = _element;
+    m_element = _element;
     loadEventSent = false;
 
     setIntrinsicWidth( 0 );
@@ -96,7 +96,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
         int ih = p.height() + 8;
 
         // we have an alt and the user meant it (its not a text we invented)
-        if ( !alt.isEmpty() && !element->getAttribute( ATTR_ALT ).isNull()) {
+        if ( !alt.isEmpty() && !m_element->getAttribute( ATTR_ALT ).isNull()) {
             QFontMetrics fm = fontMetrics( style()->font() );
             QRect br = fm.boundingRect (  0, 0, 1024, 256, Qt::AlignAuto|Qt::WordBreak, alt.string() );
             if ( br.width() > iw )
@@ -333,8 +333,8 @@ void RenderImage::setAlt(DOM::DOMString text)
 
 void RenderImage::notifyFinished(CachedObject *finishedObj)
 {
-    if (image == finishedObj && element && !loadEventSent) {
+    if (image == finishedObj && !loadEventSent) {
         loadEventSent = true;
-        element->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
+        m_element->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
     }
 }

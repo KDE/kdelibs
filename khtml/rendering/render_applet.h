@@ -23,11 +23,11 @@
 #ifndef render_applet_h
 #define render_applet_h
 
-#include "render_replaced.h"
+#include "rendering/render_replaced.h"
+#include "html/html_objectimpl.h"
 
 #include <qwidget.h>
 #include <qmap.h>
-#include <html_objectimpl.h>
 
 class QScrollView;
 
@@ -49,7 +49,7 @@ public:
 private:
     void processArguments( QMap<QString, QString> args );
 
-    DOM::HTMLElementImpl *m_applet;
+    DOM::HTMLElementImpl* m_element;
 };
 
 class RenderEmptyApplet : public RenderWidget

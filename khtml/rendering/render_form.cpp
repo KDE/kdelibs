@@ -30,10 +30,9 @@
 #include <kcursor.h>
 
 #include <qstyle.h>
+
 #include "misc/helper.h"
-
-#include "dom2_eventsimpl.h"
-
+#include "xml/dom2_eventsimpl.h"
 #include "html/html_formimpl.h"
 #include "misc/htmlhashes.h"
 

@@ -260,15 +260,15 @@ public:
     int paddingLeft() const;
     int paddingRight() const;
 
-    int borderTop() const { return m_style->borderTopWidth(); }
-    int borderBottom() const { return m_style->borderBottomWidth(); }
-    int borderLeft() const { return m_style->borderLeftWidth(); }
-    int borderRight() const { return m_style->borderRightWidth(); }
+    int borderTop() const { return style()->borderTopWidth(); }
+    int borderBottom() const { return style()->borderBottomWidth(); }
+    int borderLeft() const { return style()->borderLeftWidth(); }
+    int borderRight() const { return style()->borderRightWidth(); }
 
     virtual short minWidth() const { return 0; }
     virtual short maxWidth() const { return 0; }
 
-    virtual RenderStyle* style() const { return m_style; }
+    RenderStyle* style() const { return m_style; }
 
     enum BorderSide {
         BSTop, BSBottom, BSLeft, BSRight
@@ -343,7 +343,7 @@ protected:
     short getVerticalPosition( bool firstLine ) const;
 
 private:
-    RenderStyle *m_style;
+    RenderStyle* m_style;
     RenderObject *m_parent;
     RenderObject *m_previous;
     RenderObject *m_next;

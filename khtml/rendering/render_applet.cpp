@@ -45,7 +45,7 @@ RenderApplet::RenderApplet(QScrollView *view,
 {
     // init RenderObject attributes
     setInline(true);
-    m_applet = applet;
+    m_element = applet;
 
     KJavaAppletContext *context = 0;
     KHTMLView *_view = static_cast<KHTMLView*>(view);
@@ -98,7 +98,7 @@ void RenderApplet::layout()
 
     KJavaAppletWidget *tmp = static_cast<KJavaAppletWidget*>(m_widget);
     if ( tmp ) {
-        NodeImpl *child = m_applet->firstChild();
+        NodeImpl *child = m_element->firstChild();
 
         while(child) {
 

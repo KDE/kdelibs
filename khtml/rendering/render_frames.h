@@ -24,7 +24,7 @@
 #ifndef __render_frames_h__
 #define __render_frames_h__
 
-#include "render_replaced.h"
+#include "rendering/render_replaced.h"
 #include "xml/dom_nodeimpl.h"
 
 class KHTMLView;
@@ -61,24 +61,24 @@ public:
   bool userResize( DOM::MouseEventImpl *evt );
   bool canResize( int _x, int _y, DOM::NodeImpl::MouseEventType type );
 
-  DOM::HTMLFrameSetElementImpl *frameSetImpl() const { return m_frameset; }
+  DOM::HTMLFrameSetElementImpl *frameSetImpl() const { return m_element; }
 
   virtual void dump(QTextStream *stream, QString ind = "") const;
 
 private:
-  DOM::HTMLFrameSetElementImpl *m_frameset;
-  KHTMLView *m_view;
-  int *m_rowHeight;
-  int *m_colWidth;
-  bool *m_hSplitVar; // is this split variable?
-  bool *m_vSplitVar;
+    KHTMLView *m_view;
+    DOM::HTMLFrameSetElementImpl* m_element;
+    int *m_rowHeight;
+    int *m_colWidth;
+    bool *m_hSplitVar; // is this split variable?
+    bool *m_vSplitVar;
 
-  int m_hSplit;     // the split currently resized
-  int m_vSplit;
-  int m_hSplitPos;
-  int m_vSplitPos;
+    int m_hSplit;     // the split currently resized
+    int m_vSplit;
+    int m_hSplitPos;
+    int m_vSplitPos;
 
-  bool m_resizing;
+    bool m_resizing;
 };
 
 class RenderPart : public khtml::RenderWidget
@@ -121,13 +121,13 @@ public:
 
     virtual const char *renderName() const { return "RenderFrame"; }
 
-    DOM::HTMLFrameElementImpl *frameImpl() const { return m_frame; }
+    DOM::HTMLFrameElementImpl *frameImpl() const { return m_element; }
 
 public slots:
     void slotViewCleared();
 
 private:
-    DOM::HTMLFrameElementImpl *m_frame;
+    DOM::HTMLFrameElementImpl* m_element;
 };
 
 // I can hardly call the class RenderObject ;-)
@@ -144,14 +144,15 @@ public:
     virtual void layout( );
     virtual void updateWidget();
 
-    DOM::HTMLElementImpl *m_obj;
-
     virtual bool partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KURL& url, const QString& serviceType );
 
 public slots:
     void slotViewCleared();
 private slots:
     void slotPartLoadingErrorNotify();
+
+private:
+    DOM::HTMLElementImpl* m_element;
 };
 
 };
