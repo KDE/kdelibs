@@ -57,7 +57,7 @@
 static bool atoms_created = false;
 extern Atom qt_wm_protocols;
 extern Time qt_x_time;
-extern Time qt_x_last_input_time;
+extern Time qt_x_user_time;
 
 static Atom net_wm_context_help;
 static Atom kde_wm_change_state;
@@ -208,7 +208,7 @@ void KWin::activateWindow( WId win, long time )
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
     NETRootInfo info( qt_xdisplay(), 0 );
     if( time == 0 )
-        time = qt_x_last_input_time;
+        time = qt_x_user_time;
     info.setActiveWindow( win, NET::FromApplication, time );
 #endif // Q_WS_X11 ...
 }

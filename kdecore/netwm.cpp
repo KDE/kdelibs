@@ -1435,9 +1435,9 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
         p->properties[ PROTOCOLS ] |= WMKDEFrameStrut;
 }
 
-extern Time qt_x_last_input_time;
+extern Time qt_x_user_time;
 void NETRootInfo::setActiveWindow(Window window) {
-    setActiveWindow( window, FromUnknown, qt_x_last_input_time );
+    setActiveWindow( window, FromUnknown, qt_x_user_time );
 }
 
 void NETRootInfo::setActiveWindow(Window window, NET::RequestSource src,

@@ -148,9 +148,9 @@ static Atom atom_KdeNetUserTime;
 static Atom kde_net_wm_user_time     = 0;
 #if KDE_IS_VERSION( 3, 2, 90 )
 #warning This should be in Qt already, check.
-// remove things related to qt_x_last_input_time that should be in Qt by now (l.lunak@kde.org)
+// remove things related to qt_x_user_time that should be in Qt by now (l.lunak@kde.org)
 #endif
-Time   qt_x_last_input_time = CurrentTime;
+Time   qt_x_user_time = CurrentTime;
 extern Time qt_x_time;
 
 template class QPtrList<KSessionManaged>;
@@ -482,15 +482,9 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     if( event->type() == QEvent::Show && receiver->isWidgetType())
     {
 	QWidget* w = static_cast< QWidget* >( receiver );
-	if( w->isTopLevel() && qt_x_last_input_time != CurrentTime ) // CurrentTime means no input event yet
+	if( w->isTopLevel() && qt_x_user_time != CurrentTime ) // CurrentTime means no input event yet
             XChangeProperty( qt_xdisplay(), w->winId(), kde_net_wm_user_time, XA_CARDINAL,
-                32, PropModeReplace, (unsigned char*)&qt_x_last_input_time, 1 );
-    }
-    if( event->type() == QEvent::Hide && receiver->isWidgetType())
-    {
-	QWidget* w = static_cast< QWidget* >( receiver );
-	if( w->isTopLevel() && w->winId() != 0 )
-            XDeleteProperty( qt_xdisplay(), w->winId(), kde_net_wm_user_time );
+                32, PropModeReplace, (unsigned char*)&qt_x_user_time, 1 );
     }
     if( event->type() == QEvent::Show && receiver->isWidgetType())
     {
@@ -1545,13 +1539,13 @@ bool KApplication::x11EventFilter( XEvent *_event )
         case XKeyPress:
         {
 	    if( _event->type == ButtonPress )
-		qt_x_last_input_time = _event->xbutton.time;
+		qt_x_user_time = _event->xbutton.time;
 	    else // KeyPress
-		qt_x_last_input_time = _event->xkey.time;
+		qt_x_user_time = _event->xkey.time;
 	    QWidget* w = activeWindow();
 	    if( w ) {
     		XChangeProperty( qt_xdisplay(), w->winId(), kde_net_wm_user_time, XA_CARDINAL,
-        	    32, PropModeReplace, (unsigned char*)&qt_x_last_input_time, 1 );
+        	    32, PropModeReplace, (unsigned char*)&qt_x_user_time, 1 );
     		timeval tv;
 		gettimeofday( &tv, NULL );
 		unsigned long now = tv.tv_sec * 10 + tv.tv_usec / 100000;
@@ -1668,7 +1662,7 @@ void KApplication::updateUserTimestamp( unsigned long time )
         time = ev.xproperty.time;
         XDestroyWindow( qt_xdisplay(), w );
     }
-    qt_x_last_input_time = time;
+    qt_x_user_time = time;
 #endif
 }
 
