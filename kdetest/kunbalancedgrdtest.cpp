@@ -134,7 +134,7 @@ myTopWidget::myTopWidget (QWidget *parent, const char *name=0)
   bLabel = new QLabel("Balance: 0.00", this);
   lay->addWidget(bLabel, 1, 0);
 
-  bSlider = new QSlider ( -100, 100, 1, 10, QSlider::Horizontal, this);
+  bSlider = new QSlider ( 1, 100, 1, 10, QSlider::Horizontal, this);
   lay->addWidget(bSlider, 1, 1);
 
   connect(bSlider, SIGNAL(valueChanged(int)), this, SLOT(rebalance(int)));
