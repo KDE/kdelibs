@@ -4,6 +4,7 @@
  *
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
+ *                    Antonio Larrosa <larrosa@kde.org>
  *
  * This is free software; it comes under the GNU Library General
  * Public License, version 2. See the file "COPYING.LIB" for the

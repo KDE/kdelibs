@@ -4,6 +4,7 @@
  *
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
+ *                    Antonio Larrosa <larrosa@kde.org>
  *
  * This is free software; it comes under the GNU Library General
  * Public License, version 2. See the file "COPYING.LIB" for the
@@ -77,48 +78,45 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     d = new KIconThemePrivate;
 
     QStringList icnlibs;
-    QStringList::ConstIterator it;
-    QString appIconPath;
+    QStringList::ConstIterator it, itDir;
+    QStringList themeDirs;
+    QString cDir;
 
     // Applications can have local additions to the global "locolor" and
     // "hicolor" icon themes. For these, the _global_ theme description
     // files are used..
 
-    bool isApp = !appName.isEmpty();
-    if (isApp)
+    if (!appName.isEmpty() && ( name== "hicolor" || name == "locolor" ) )
     {
-        if ((name != "hicolor") && (name != "locolor"))
-        {
-            kdDebug(264) << "Only hicolor and locolor themes can be local.\n";
-            return;
-        }
-
-        icnlibs = KGlobal::dirs()->resourceDirs("data");
-        for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
-        {
-            appIconPath = *it + appName + "/icons/" + name;
-            if (QFile::exists( appIconPath ))
-                break;
-        }
-        if (it == icnlibs.end())
-            return;
+	icnlibs = KGlobal::dirs()->resourceDirs("data");
+	for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
+	{
+	    cDir = *it + appName + "/icons/" + name;
+	    if (QFile::exists( cDir ))
+		themeDirs += cDir + "/";
+	}
     }
-
     // Find the theme description file. These are always global.
 
     icnlibs = KGlobal::dirs()->resourceDirs("icon");
     for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
     {
-        if (KStandardDirs::exists(*it + name + "/index.desktop"))
-            break;
+        cDir = *it + name + "/";
+        if (KStandardDirs::exists(cDir))
+        {
+            themeDirs += cDir;
+	    if (mDir.isEmpty() 
+		    && KStandardDirs::exists( cDir + "index.desktop"))
+		mDir = cDir;
+        }
     }
-    if (it == icnlibs.end())
+
+    if (mDir.isEmpty())
     {
         kdDebug(264) << "Icon theme " << name << " not found.\n";
         return;
     }
 
-    mDir = *it + name + "/";
     KSimpleConfig cfg(mDir + "index.desktop");
     cfg.setGroup("KDE Icon Theme");
     mName = cfg.readEntry("Name");
@@ -131,19 +129,14 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     d->lockOverlay = cfg.readEntry("LockOverlay", "lock");
     d->zipOverlay = cfg.readEntry("ZipOverlay", "zip");
 
-    if (isApp)
-    {
-        mDir = appIconPath + "/";
-        mName += "-";
-        mName += appName;
-    }
-
     QStringList dirs = cfg.readListEntry("Directories");
     mDirs.setAutoDelete(true);
     for (it=dirs.begin(); it!=dirs.end(); it++)
     {
 	cfg.setGroup(*it);
-	mDirs.append(new KIconThemeDir(mDir + *it, &cfg));
+	for (itDir=themeDirs.begin(); itDir!=themeDirs.end(); itDir++)
+	    if (KStandardDirs::exists(*itDir + *it + "/"))
+		mDirs.append(new KIconThemeDir(*itDir + *it, &cfg));
     }
 
     // Expand available sizes for scalable icons to their full range

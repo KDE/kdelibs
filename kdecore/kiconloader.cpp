@@ -4,6 +4,7 @@
  *
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
+ *                    Antonio Larrosa <larrosa@kde.org>
  *
  * This is free software; it comes under the GNU Library General
  * Public License, version 2. See the file "COPYING.LIB" for the
@@ -181,19 +182,23 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
         return;
     }
 
+    QString appname = _appname;
+    if (appname.isEmpty())
+	appname = KGlobal::instance()->instanceName();
+
     // Add the default theme and its base themes to the theme tree
-    KIconTheme *def = new KIconTheme(KIconTheme::current());
+    KIconTheme *def = new KIconTheme(KIconTheme::current(), appname);
     if (!def->isValid())
     {
 	delete def;
 	if (QPixmap::defaultDepth() > 8)
-	    def = new KIconTheme(QString::fromLatin1("hicolor"));
+	    def = new KIconTheme(QString::fromLatin1("hicolor"), appname);
 	else
-	    def = new KIconTheme(QString::fromLatin1("locolor"));
+	    def = new KIconTheme(QString::fromLatin1("locolor"), appname);
     }
     d->mpThemeRoot = new KIconThemeNode(def);
     d->mThemesInTree += KIconTheme::current();
-    addBaseThemes(d->mpThemeRoot);
+    addBaseThemes(d->mpThemeRoot, appname);
 
     // These have to match the order in kicontheme.h
     const char *groups[] = { "Desktop", "Toolbar", "MainToolbar", "Small", "Panel", 0L };
@@ -214,10 +219,10 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     }
 
     // Insert application specific themes at the top.
-    QString appname = _appname;
-    if (appname.isEmpty())
-	appname = KGlobal::instance()->instanceName();
-    addAppDir(appname);
+    d->mpDirs->addResourceType("appicon", KStandardDirs::kde_default("data") +
+		appname + "/pics/");
+    d->mpDirs->addResourceType("appicon", KStandardDirs::kde_default("data") +
+		appname + "/toolbar/");
 
     // Add legacy icon dirs.
     QStringList dirs;
@@ -278,9 +283,10 @@ void KIconLoader::addAppThemes(const QString& appname)
 	node->links.append(d->mpThemeRoot);
 	d->mpThemeRoot = node;
     }
+
 }
 
-void KIconLoader::addBaseThemes(KIconThemeNode *node)
+void KIconLoader::addBaseThemes(KIconThemeNode *node, const QString &appname)
 {
     QStringList lst = node->theme->inherits();
     QStringList::ConstIterator it;
@@ -289,12 +295,12 @@ void KIconLoader::addBaseThemes(KIconThemeNode *node)
     {
 	if (!d->mThemeList.contains(*it) || d->mThemesInTree.contains(*it))
 	    continue;
-	KIconTheme *theme = new KIconTheme(*it);
+	KIconTheme *theme = new KIconTheme(*it,appname);
 	if (!theme->isValid())
 	    continue;
         KIconThemeNode *n = new KIconThemeNode(theme);
 	d->mThemesInTree.append(*it);
-	addBaseThemes(n);
+	addBaseThemes(n, appname);
 	node->links.append(n);
     }
 }
