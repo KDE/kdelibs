@@ -20,6 +20,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.110  1998/09/10 23:47:29  markus
+// //$markus: replaced NULL with 0L in aboutKDE(). This caused trouble on
+// the netwinder.
+//
 // Revision 1.109  1998/09/01 20:21:14  kulow
 // I renamed all old qt header files to the new versions. I think, this looks
 // nicer (and gives the change in configure a sense :)
@@ -292,6 +296,14 @@
 #include <qwidcoll.h>
 
 #include "kprocctrl.h"
+
+#ifdef HAVE_PATHS_H
+#include <paths.h>
+#endif
+
+#ifndef _PATH_TMP
+#define _PATH_TMP "/tmp/"
+#endif
 
 KCharsets* KApplication::pCharsets = 0L;
 
@@ -1564,8 +1576,8 @@ const char* KApplication::tempSaveName( const char* pFilename )
 	{
 	  if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )
 		{
-		  // Last chance: use /tmp
-		  aAutosaveDir.setPath( "/tmp" );
+		  // Last chance: use _PATH_TMP
+		  aAutosaveDir.setPath( _PATH_TMP );
 		}
 	}
 
@@ -1593,8 +1605,8 @@ const char* KApplication::checkRecoverFile( const char* pFilename,
 	{
 	  if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )
 		{
-		  // Last chance: use /tmp
-		  aAutosaveDir.setPath( "/tmp" );
+		  // Last chance: use _PATH_TMP
+		  aAutosaveDir.setPath( _PATH_TMP );
 		}
 	}
 

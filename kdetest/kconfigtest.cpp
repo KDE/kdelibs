@@ -19,6 +19,9 @@
 /* $Id$
 
  * $Log$
+ * Revision 1.13  1998/05/26 14:17:34  kalle
+ * tests for KLed
+ *
  * Revision 1.12  1998/01/16 21:29:33  kalle
  * mention the new bug site in the about dialog
  *
@@ -155,6 +158,14 @@
 
 // KDE includes
 #include <kconfig.h>
+
+#ifdef HAVE_PATHS_H
+#include <paths.h>
+#endif
+
+#ifndef _PATH_TMP
+#define _PATH_TMP "/tmp/"
+#endif
 
 //
 // KConfigTestView contains lots of Qt widgets.
@@ -332,7 +343,7 @@ int main( int argc, char **argv )
 	fprintf( stderr, "Recover file does not exist, use %s\n", pRecoverFile );
   free( pRecoverFile );
 
-  KSimpleConfig sc( "/tmp/sc.cfg" );
+  KSimpleConfig sc( _PATH_TMP"sc.cfg" );
 	/*
     sc.writeEntry( "Bua", "Brumm" );
 
