@@ -139,7 +139,6 @@ public:
     virtual void close();
 
     virtual void setWidget( QWidget *widget );
-    virtual void setSize( int w, int h );
 
     virtual void layout( );
     virtual void updateWidget();

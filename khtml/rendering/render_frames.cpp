@@ -598,10 +598,6 @@ void RenderPart::layout( )
 {
   if ( m_widget )
     m_widget->resize( m_width, m_height );
-  if (isPositioned()) {
-    calcAbsoluteHorizontal();
-    calcAbsoluteVertical();
-  }
 }
 
 void RenderPart::partLoadingErrorNotify()
@@ -709,7 +705,7 @@ void RenderPartObject::updateWidget()
               // serviceType with application/x-activex-handler
               // but let the KTrader in khtmlpart::createPart() detect
               // the user's preference: launch with activex viewer or
-              // with nspluginviewer (Niko) 
+              // with nspluginviewer (Niko)
               serviceType = "application/x-shockwave-flash";
            }
            else if(o->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")))
@@ -765,8 +761,8 @@ void RenderPartObject::updateWidget()
 
         params.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
         params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
-        params.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) ); 
-        params.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) ); 
+        params.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) );
+        params.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) );
 
         part->requestObject( this, url, serviceType, params );
      } else
@@ -786,8 +782,8 @@ void RenderPartObject::updateWidget()
 
         embed->param.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
         embed->param.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
-        embed->param.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) ); 
-        embed->param.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) ); 
+        embed->param.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) );
+        embed->param.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) );
 
         // Check if serviceType can be handled by ie. nsplugin
         // else default to the activexhandler if there is a classid
@@ -885,22 +881,18 @@ void RenderPartObject::setWidget( QWidget *w )
   slotViewCleared(); // WABA ??
 }
 
-void RenderPartObject::setSize( int w, int h )
-{
-  m_width = w;
-  m_height = h;
-  m_minWidth = m_maxWidth = w;
-}
-
 void RenderPartObject::layout( )
 {
-  setSize( style()->width().minWidth( containingBlockWidth() ),
-           style()->height().minWidth( containingBlockHeight() ) );
-  calcHorizontalMargins(style()->marginLeft(),style()->marginRight(),
-          containingBlockWidth());
-  RenderPart::layout();
-}
+    if(layouted()) return;
 
+    calcWidth();
+    calcHeight();
+
+    if ( !style()->width().isPercent() )
+        setLayouted();
+
+    RenderPart::layout();
+}
 
 void RenderPartObject::slotViewCleared()
 {
