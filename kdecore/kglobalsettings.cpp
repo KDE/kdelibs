@@ -19,6 +19,7 @@
 #include "kglobalsettings.h"
 
 #include <qdir.h>
+#include <qpixmap.h>
 #include <kconfig.h>
 #include <kapp.h>
 #include <kipc.h>
@@ -353,8 +354,12 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
 
 void KGlobalSettings::initColors()
 {
-    if (!kde2Blue)
-        kde2Blue = new QColor(0, 128, 128);
+    if (!kde2Blue) {
+      if (QPixmap::defaultDepth() > 8)
+        kde2Blue = new QColor(84, 112, 152);
+      else
+        kde2Blue = new QColor(0, 0, 192);
+    }
 }
 
 void KGlobalSettings::rereadFontSettings()
