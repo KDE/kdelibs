@@ -160,8 +160,10 @@ bool KTar::openArchive( int mode )
         if ( n == 0x200 && buffer[0] != 0 )
         {
             // Make sure this is actually a tar header
-            if (strncmp(buffer + 257, "ustar", 5))
+            if (strncmp(buffer + 257, "ustar", 5)) {
+                kdWarning() << "KTar: invalid TAR file. Header is: " << QCString( buffer+257, 5 ) << endl;
                 return false;
+	    }
 
             QString name( QString::fromLocal8Bit(buffer) );
 
@@ -237,7 +239,7 @@ bool KTar::openArchive( int mode )
             else
             {
                 // read size
-                buffer[ 0x87 ] = 0;
+                buffer[ 0x88 ] = 0; // was 0x87, but 0x88 fixes BR #26437
                 char *dummy;
                 const char* p = buffer + 0x7c;
                 while( *p == ' ' ) ++p;
@@ -250,15 +252,15 @@ bool KTar::openArchive( int mode )
                     kdDebug() << "HARD LINK, setting size to " << size << endl;
                 }
 
-                int rest = size % 0x200;
                 //kdDebug() << "KArchive::open file " << nm << " size=" << size << endl;
 
                 e = new KArchiveFile( this, nm, access, time, user, group, symlink,
                                       dev->at(), size );
 
                 // Skip contents + align bytes
+                int rest = size % 0x200;
                 int skip = size + (rest ? 0x200 - rest : 0);
-                //kdDebug() << "KArchive::open skipping " << skip << endl;
+                //kdDebug() << "KArchive::open, at()=" << dev->at() << " rest=" << rest << " skipping " << skip << endl;
                 if (! dev->at( dev->at() + skip ) )
                     kdWarning() << "KArchive::open skipping " << skip << " failed" << endl;
             }
