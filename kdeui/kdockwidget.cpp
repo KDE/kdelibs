@@ -483,6 +483,7 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
   ,widget(0L)
   ,pix(new QPixmap(pixmap))
   ,prevSideDockPosBeforeDrag(DockNone)
+  ,isGroup(false)
 {
   d = new KDockWidgetPrivate();  // create private data
 
@@ -497,7 +498,6 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
 
   eDocking = DockFullDocking;
   sDocking = DockFullSite;
-  isGroup = false;
 
   header = 0L;
   setHeader( new KDockWidgetHeader( this, "AutoCreatedDockHeader" ) );
@@ -1438,7 +1438,8 @@ void KDockWidget::setWidget( QWidget* mw )
   layout = new QVBoxLayout( this );
   layout->setResizeMode( QLayout::Minimum );
 
-  if (dynamic_cast<KDockContainer*>(widget))
+  KDockContainer* dc = dynamic_cast<KDockContainer*>(widget);
+  if (dc)
   {
     d->isContainer=true;
     manager->d->containerDocks.append(this);
@@ -2145,7 +2146,7 @@ void KDockManager::writeConfig(QDomElement &base)
                              || nameList.find(obj->lastName.latin1()) == -1)) {
             // Skip until children are saved (why?)
             nList.next();
-            if ( !nList.current() ) nList.first();
+//falk?            if ( !nList.current() ) nList.first();
             continue;
         }
 
