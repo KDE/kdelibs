@@ -1,5 +1,4 @@
 /*
- * $Id$
  *
  * KStyle
  * Copyright (C) 2001-2002 Karol Szwed <gallium@kde.org>
@@ -53,7 +52,7 @@
 
 //#if defined Q_WS_X11
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h> //schroder
+#include <X11/Xlib.h>
 #  ifdef HAVE_XRENDER
 #  include <X11/extensions/Xrender.h> // schroder
 extern bool qt_use_xrender;
@@ -1944,9 +1943,7 @@ void TransparencyHandler::createShadowWindows(const QPopupMenu* p)
 	XMapWindow(qt_xdisplay(), se.w1->winId());
 	XMapWindow(qt_xdisplay(), se.w2->winId());
 #else
-	// fix compiler warning
-	int foo = p->width();
-	foo++;
+	Q_UNUSED( p )
 #endif
 }
 
@@ -1965,9 +1962,7 @@ void TransparencyHandler::removeShadowWindows(const QPopupMenu* p)
 		shadowMap().erase(it);
 	}
 #else
-	// fix compiler warning
-	int foo = p->width();
-	foo++;
+	Q_UNUSED( p )
 #endif
 }
 
