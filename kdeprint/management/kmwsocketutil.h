@@ -36,6 +36,7 @@ struct SocketInfo
 class QProgressBar;
 class QLineEdit;
 class QComboBox;
+class KMWSocketUtil;
 
 class SocketConfig : public KDialog
 {
