@@ -47,6 +47,17 @@ class KSqueezedTextLabel : public QLabel {
 
 public:
   /**
+   * Implements the actual squeezing algorithm.
+   * @param s string to squeeze.
+   * @param fm font metrics to use while squeezing.
+   * @param width width which the string should be squeezed into.
+   * @return string which when displayed with the given font metrics will
+   * not exceed the given width.
+   * @since 3.3
+   */
+  static QString squeeze( const QString &s, const QFontMetrics &fm, int width );
+
+  /**
    * Default constructor.
    */
   KSqueezedTextLabel( QWidget *parent, const char *name = 0 );
