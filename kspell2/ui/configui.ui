@@ -96,7 +96,7 @@
                 <cstring>groupBox1</cstring>
             </property>
             <property name="title">
-                <string>Extra options:</string>
+                <string>Extra Options</string>
             </property>
             <vbox>
                 <property name="name">
@@ -133,7 +133,7 @@
                         <cstring>m_ignoreListBox</cstring>
                     </property>
                     <property name="title">
-                        <string>Ignore the following words</string>
+                        <string>Ignore Following Words</string>
                     </property>
                 </widget>
             </vbox>
