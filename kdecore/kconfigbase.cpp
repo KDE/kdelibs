@@ -1023,9 +1023,9 @@ void KConfigBase::writeEntry( const QString& pKey, const QDateTime& rDateTime,
   QTime time = rDateTime.time();
   QDate date = rDateTime.date();
 
-  list.insert( 0, tempstr.setNum( date.day() ) );
+  list.insert( 0, tempstr.setNum( date.year() ) );
   list.insert( 1, tempstr.setNum( date.month() ) );
-  list.insert( 2, tempstr.setNum( date.year() ) );
+  list.insert( 2, tempstr.setNum( date.day() ) );
 
   list.insert( 3, tempstr.setNum( time.hour() ) );
   list.insert( 4, tempstr.setNum( time.minute() ) );
