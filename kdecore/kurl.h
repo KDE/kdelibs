@@ -48,7 +48,7 @@
 *
 * First version by Torben Weis, redesigned by Steffen Hansen (stefh@mip.ou.dk),
 * maintained by Torben Weis (weis@kde.org). Endcoding/Decoding done by
-* Stephan Coolo (coolo@kde.org).
+* Stephan Kulow (coolo@kde.org).
 *
 * @author Torben Weis (weis@kde.org)
 *
