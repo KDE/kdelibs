@@ -46,12 +46,7 @@ HTMLTableCaptionElement::HTMLTableCaptionElement(HTMLTableCaptionElementImpl *im
 
 HTMLTableCaptionElement &HTMLTableCaptionElement::operator = (const Node &other)
 {
-    if(other.elementId() != ID_CAPTION)
-    {
-	impl = 0;
-	return *this;
-    }
-    Node::operator = (other);
+    assignOther( other, ID_CAPTION );
     return *this;
 }
 
@@ -95,10 +90,11 @@ HTMLTableCellElement &HTMLTableCellElement::operator = (const Node &other)
     if( other.elementId() != ID_TD &&
 	other.elementId() != ID_TH )
     {
+	if ( impl ) impl->deref();
 	impl = 0;
-	return *this;
-    }
+    } else {
     Node::operator = (other);
+    }
     return *this;
 }
 
@@ -303,10 +299,11 @@ HTMLTableColElement &HTMLTableColElement::operator = (const Node &other)
     if( other.elementId() != ID_COL &&
 	other.elementId() != ID_COLGROUP )
     {
+	if ( impl ) impl->deref();
 	impl = 0;
-	return *this;
-    }
+    } else {
     Node::operator = (other);
+    }
     return *this;
 }
 
@@ -405,12 +402,7 @@ HTMLTableElement::HTMLTableElement(HTMLTableElementImpl *impl) : HTMLElement(imp
 
 HTMLTableElement &HTMLTableElement::operator = (const Node &other)
 {
-    if(other.elementId() != ID_TABLE)
-    {
-	impl = 0;
-	return *this;
-    }
-    Node::operator = (other);
+    assignOther( other, ID_TABLE );
     return *this;
 }
 
@@ -640,12 +632,7 @@ HTMLTableRowElement::HTMLTableRowElement(HTMLTableRowElementImpl *impl) : HTMLEl
 
 HTMLTableRowElement &HTMLTableRowElement::operator = (const Node &other)
 {
-    if(other.elementId() != ID_TR)
-    {
-	impl = 0;
-	return *this;
-    }
-    Node::operator = (other);
+    assignOther( other, ID_TR );
     return *this;
 }
 
@@ -779,10 +766,11 @@ HTMLTableSectionElement &HTMLTableSectionElement::operator = (const Node &other)
        other.elementId() != ID_THEAD &&
        other.elementId() != ID_TFOOT )
     {
+	if ( impl ) impl->deref();
 	impl = 0;
-	return *this;
-    }
+    } else {
     Node::operator = (other);
+    }
     return *this;
 }
 
