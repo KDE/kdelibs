@@ -360,18 +360,19 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
         KCursor::autoHideEventFilter( m_pEdit, ev );
 
         int type = ev->type();
-        if (  type == QEvent::KeyPress )
+        if ( type == QEvent::KeyPress )
         {
             QKeyEvent *e = static_cast<QKeyEvent *>( ev );
             if ( e->key() == Key_Return || e->key() == Key_Enter)
             {
-                if ( d->completionBox )
-                    d->completionBox->hide();
-
                 // On Return pressed event, emit both
                 // returnPressed(const QString&) and returnPressed() signals
                 emit returnPressed();
                 emit returnPressed( currentText() );
+
+		if ( d->completionBox && d->completionBox->isVisible() )
+                    d->completionBox->hide();
+
                 return m_trapReturnKey;
             }
         }
@@ -583,9 +584,18 @@ void KComboBox::setCompletedItems( const QStringList& items )
     }
 }
 
+// ### merge these two for 3.0
 KCompletionBox * KComboBox::completionBox()
 {
     makeCompletionBox();
+    return d->completionBox;
+}
+
+KCompletionBox * KComboBox::completionBox( bool create )
+{
+    if ( create )
+	makeCompletionBox();
+
     return d->completionBox;
 }
 

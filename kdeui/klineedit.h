@@ -268,6 +268,11 @@ public:
     KCompletionBox * completionBox();
 
     /**
+     * @returns the completion box or 0L if none is available
+     */
+    KCompletionBox * completionBox( bool create );
+
+    /**
      * Reimplemented for internal reasons, the API is not affected.
      */
     virtual void setCompletionObject( KCompletion *, bool hsig = true );

@@ -331,6 +331,11 @@ public:
     KCompletionBox * completionBox();
 
     /**
+     * @returns the completion box or 0L if none is available
+     */
+    KCompletionBox * completionBox( bool create );
+
+    /**
      * Returns a pointer to the popup used as the a context menu.
      *
      * <u>NOTE:</u> The popupmenu is automatically deleted whenever

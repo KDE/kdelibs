@@ -396,19 +396,20 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
     if( o == this )
     {
         KCursor::autoHideEventFilter( this, ev );
-        if( ev && (ev->type() == QEvent::KeyPress ||
-                    ev->type() == QEvent::KeyRelease) )
+        if( ev->type() == QEvent::KeyPress )
         {
             QKeyEvent *e = static_cast<QKeyEvent *>( ev );
             if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
             {
-                if( ev->type() == QEvent::KeyPress )
-                    emit returnPressed( displayText() );
-                if( d->grabReturnKeyEvents )
-                {
-                    e->accept();
-                    return true;
-                }
+		emit QLineEdit::returnPressed();
+		emit returnPressed( displayText() );
+
+		bool trap = d->completionBox && d->completionBox->isVisible();
+		if ( trap )
+		    d->completionBox->hide();
+		
+		// don't go to QLineEdit::eventFilter!
+                return  d->grabReturnKeyEvents || trap;
             }
         }
     }
@@ -494,9 +495,18 @@ void KLineEdit::setCompletedItems( const QStringList& items )
     }
 }
 
+// ### merge these two for 3.0
 KCompletionBox * KLineEdit::completionBox()
 {
     makeCompletionBox();
+    return d->completionBox;
+}
+
+KCompletionBox * KLineEdit::completionBox( bool create )
+{
+    if ( create )
+	makeCompletionBox();
+	
     return d->completionBox;
 }
 
