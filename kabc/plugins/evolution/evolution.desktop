@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Service
+
+[Misc]
+Encoding=UTF-8
+Name=Evolution
+
+[Plugin]
+Type=Ximian Evolution
+X-KDE-Library=kabc_evo
