@@ -419,7 +419,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
 
   if ( name.isEmpty() ) {
     name = key;
-    name.replace( " ", "" );
+    name.replace( " ", QString::null );
   } else if ( name.contains( ' ' ) ) {
     kdWarning()<<"Entry '"<<name<<"' contains spaces! <name> elements can't contain speces!"<<endl;
     name.remove( ' ' );
@@ -621,7 +621,7 @@ static QString itemDeclaration(const CfgEntry *e)
 
   return "  KConfigSkeleton::Item"+itemType( e->type() ) +
          "  *item" + e->name() + 
-         ( (!e->param().isEmpty())?(QString("[%1]").arg(e->paramMax()+1)):"") + 
+         ( (!e->param().isEmpty())?(QString("[%1]").arg(e->paramMax()+1)) : QString::null) + 
          ";\n";
 }
 
@@ -642,7 +642,7 @@ QString newItem( const QString &type, const QString &name, const QString &key,
   if ( type == "Enum" ) t += ", values" + name;
   if ( !defaultValue.isEmpty() ) {
     t += ", ";
-    if ( type == "String" ) t += "QString::fromLatin1( " + defaultValue + " )";
+    if ( type == "String" ) t += defaultValue;
     else t+= defaultValue;
   }
   t += " );";
@@ -883,7 +883,7 @@ int main( int argc, char **argv )
 
   QString headerFileName = baseName + ".h";
   QString implementationFileName = baseName + ".cpp";
-  QString cppPreamble = ""; // code to be inserted at the beginnin of the cpp file, e.g. initialization of static values
+  QString cppPreamble; // code to be inserted at the beginnin of the cpp file, e.g. initialization of static values
 
   QFile header( baseDir + headerFileName );
   if ( !header.open( IO_WriteOnly ) ) {
@@ -1009,7 +1009,7 @@ int main( int argc, char **argv )
       if (!e->param().isEmpty()) {
         h << e->paramName().replace("$("+e->param()+")", "%1") << "\" ).arg( ";
         if ( e->paramType() == "Enum" ) {
-				  h << "QString::fromLatin1( ";
+          h << "QString::fromLatin1( ";
           if (globalEnums) 
             h << enumName(e->name()) << "ToString[i]";
           else 
@@ -1292,9 +1292,9 @@ int main( int argc, char **argv )
           cpp << userTextsFunctions( e, itemVarStr, e->paramName() );
 
         // Make mutators for enum parameters work by adding them with $(..) replaced by the 
-				// param name. The check for isImmutable in the set* functions doesn't have the param 
-				// name available, just the corresponding enum value (int), so we need to store the 
-				// param names in a separate static list!.
+        // param name. The check for isImmutable in the set* functions doesn't have the param 
+        // name available, just the corresponding enum value (int), so we need to store the 
+        // param names in a separate static list!.
         cpp << "  addItem( " << itemVarStr << ", QString::fromLatin1( \"";
         if ( e->paramType()=="Enum" )
           cpp << e->paramName().replace( "$("+e->param()+")", "%1").arg(e->paramValues()[i] );
