@@ -1,3 +1,12 @@
+2004-01-22  David Faure  <faure@kde.org>
+
+	* dom/dom_element.cpp (setAttributeNode): removed tests for
+	WRONG_DOCUMENT_ERR and INUSE_ATTRIBUTE_ERR, the latter being incorrect and
+	both being already done by setNamedItem
+
+	* xml/dom_elementimpl.cpp (setNamedItem): if attribute exists already,
+	return it, to fix DOMTS-Core-level1 test hc_elementreplaceattributewithself
+
 2004-01-19  Dirk Mueller  <mueller@kde.org>
 
 	* rendering/render_object.cpp (getVerticalPosition): improve
