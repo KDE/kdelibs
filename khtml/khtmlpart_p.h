@@ -504,11 +504,11 @@ public:
 
   struct findState
   {
-    findState()
-    { options = 0; }
+    findState() : options( 0 ), last_dir( -1 ) {}
     QStringList history;
     QString text;
     int options;
+    int last_dir; // -1=unknown,0=forward,1=backward
   };
 
   findState m_lastFindState;
@@ -517,8 +517,11 @@ public:
 
   DOM::NodeImpl *m_findNode; // current node
   DOM::NodeImpl *m_findNodeEnd; // end node
+  DOM::NodeImpl *m_findNodeStart; // start node
+  DOM::NodeImpl *m_findNodePrevious; // previous node used for find
   int m_findPos; // current pos in current node
   int m_findPosEnd; // pos in end node
+  int m_findPosStart; // pos in start node
   /////////
 
   //QGuardedPtr<KParts::Part> m_activeFrame;

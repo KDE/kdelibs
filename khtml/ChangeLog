@@ -3,6 +3,7 @@
         * khtmlview.{h,cpp}: Use KActions for type ahead find.
         * khtml_part.{h,cpp}: ditto.
         * khtml_part.{h,cpp}: Add Find Previous action.
+        * khtml_part.cpp (findTextNext): Fix changing direction while searching text.
 
 2005-04-05  Lubos Lunak <l.lunak@kde.org>
 
