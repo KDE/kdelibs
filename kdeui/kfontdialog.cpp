@@ -245,7 +245,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   sizeOfFont->setEnabled( !diff );
   if( sizeIsRelativeState ) {
     QString sizeIsRelativeCBText =
-      i18n("relative");
+      i18n("Relative");
     QString sizeIsRelativeCBToolTipText =
       i18n("Font size<br><i>fixed</i> or <i>relative</i><br>to environment");
     QString sizeIsRelativeCBWhatsThisText =
