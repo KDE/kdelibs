@@ -116,7 +116,8 @@ bool KCModuleInfo::operator!=( const KCModuleInfo & rhs ) const
   return ! operator==( rhs );
 }
 
-KCModuleInfo::~KCModuleInfo() { }
+KCModuleInfo::~KCModuleInfo()
+{ delete d; }
 
 void KCModuleInfo::init(KService::Ptr s)
 {
