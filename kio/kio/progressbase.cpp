@@ -72,14 +72,24 @@ void KIOProgressBase::refill() {
   slotTotalDirs( m_pJob->m_id, m_pJob->m_iTotalDirs );
   
   slotPercent( m_pJob->m_id, m_pJob->m_iPercent );
-  slotProcessedDirs( m_pJob->m_id, m_pJob->m_iProcessedDirs );
-  slotProcessedFiles( m_pJob->m_id, m_pJob->m_iProcessedFiles );
+
+  if ( m_pJob->m_iTotalDirs > 1 ) {
+    slotProcessedDirs( m_pJob->m_id, m_pJob->m_iProcessedDirs );
+  }
+
+  if ( m_pJob->m_iTotalFiles > 1 ) {
+    slotProcessedFiles( m_pJob->m_id, m_pJob->m_iProcessedFiles );
+  }
   
   slotSpeed( m_pJob->m_id, m_pJob->m_iSpeed );
 }
 
 
 void KIOProgressBase::setJob( KIOJob *job ) {
+  if ( m_pJob ) {
+    disconnect( m_pJob ); // completely forget about that job
+  }
+
   m_pJob = job;
   Connect();
 }
