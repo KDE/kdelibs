@@ -276,8 +276,18 @@ public:
 
   virtual ~BrowserExtension();
 
+  /**
+   * Set the parameters to use for opening the next URL.
+   * This is called by the "hosting" application, to pass parameters to the part.
+   * @see URLArgs
+   */
   virtual void setURLArgs( const URLArgs &args );
 
+  /**
+   * Retrieve the set of parameters to use for opening the URL
+   * (this must be called from openURL() in the part).
+   * @see URLArgs
+   */
   URLArgs urlArgs() const;
 
   /**
@@ -529,7 +539,7 @@ signals:
    * Used when a set of URLs is selected.
    */
   void selectionInfo( const KURL::List &urls );
-  
+
   /**
    * Inform the hosting application that the user moved the mouse over an item.
    * Used when the mouse is on an URL.
@@ -609,15 +619,15 @@ private:
 /**
  * An extension class for LiveConnect, i.e. a call from JavaScript
  * from a HTML page which embeds this part.
- * A part can have an object hierarchie by using objid as a reference 
+ * A part can have an object hierarchie by using objid as a reference
  * to an object.
  */
 class LiveConnectExtension : public QObject
 {
   Q_OBJECT
 public:
-  enum Type { 
-      TypeVoid=0, TypeBool, TypeFunction, TypeNumber, TypeObject, TypeString 
+  enum Type {
+      TypeVoid=0, TypeBool, TypeFunction, TypeNumber, TypeObject, TypeString
   };
   typedef QValueList<QPair<Type, QString> > ArgList;
 
