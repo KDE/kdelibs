@@ -430,7 +430,7 @@ public:
    * Reset the point sizes to be associated with the HTML-sizes used in
    * <FONT size=Html-Font-Size> to their default.
    *
-   * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
+   * Html-Font-Sizes range from 0 (smallest) to 6 (biggest).
    */
   void resetFontSizes();
 
