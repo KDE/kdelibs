@@ -100,13 +100,13 @@ int main(int argc, char *argv[])
    if (!kapp->dcopClient()->isApplicationRegistered("kcookiejar"))
    {
       QString error;
-       if (KApplication::startServiceByDesktopName("kcookiejar", QStringList(), &error ))
-       {
+      if (KApplication::startServiceByDesktopName("kcookiejar", QStringList(), &error ))
+      {
           // Error starting kcookiejar.
           printf("Error starting KCookiejar: %s\n", error.latin1());
-       }
+      }
    }
-
+   
    // Add cookies...
    arg1 = "http://w.y.z/";
    printf("Set-Cookie request for: %s\n", arg1.latin1());
@@ -310,7 +310,7 @@ int main(int argc, char *argv[])
    arg1 = "http://x.y.foo.com/";
    printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
-   printf("EXPECTED: %s\n", "Cookie set_by_A=x.y.foo.com set_by_9=y.foo.com" );
+   printf("EXPECTED: %s\n", "Cookie: set_by_A=x.y.foo.com set_by_9=y.foo.com" );
    printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
    // Should PASS.
