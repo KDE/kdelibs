@@ -37,8 +37,6 @@ public class KJASAppletContext implements AppletContext
                               String width, String height,
                               String windowName, Hashtable params )
     {
-        Main.debug( "KJASAppletContext.createApplet begin" );
-
         //do kludges to support mess with parameter table and
         //the applet variables
         String key = new String( "archive" ).toUpperCase();
@@ -99,8 +97,6 @@ public class KJASAppletContext implements AppletContext
         {
             Main.kjas_err( "Something bad happened in createApplet: " + e, e );
         }
-
-        Main.debug( "KJASAppletContext.createApplet end" );
     }
 
     public void initApplet( String appletID )
@@ -174,7 +170,6 @@ public class KJASAppletContext implements AppletContext
         }
 
         stubs.clear();
-        KJASAppletClassLoader.removeLoader( loader );
     }
 
     /***************************************************************************

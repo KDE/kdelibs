@@ -153,18 +153,6 @@ public class KJASProtocolHandler
             final KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
             if( context != null )
             {
-//                new Thread
-//                (
-//                    new Runnable()
-//                    {
-//                        public void run()
-//                        {
-//                            context.createApplet( appletID, appletName, className,
-//                                                  baseURL, codeBase, archives,
-//                                                  width, height, title, params );
-//                        }
-//                    }
-//                ).start();
                 context.createApplet( appletID, appletName, className,
                                       baseURL, codeBase, archives,
                                       width, height, title, params );

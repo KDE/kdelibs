@@ -76,7 +76,6 @@ public class KJASAppletStub extends Frame
                 }
             }
         );
-
         setupWindowThread.start();
     }
 
@@ -99,7 +98,6 @@ public class KJASAppletStub extends Frame
                 }
             }
         );
-
         classLoadingThread.start();
     }
 
@@ -161,7 +159,7 @@ public class KJASAppletStub extends Frame
                 app = (Applet) appletClass.newInstance();
                 app.setStub( this );
                 app.resize( appletSize );
-                app.setVisible( false ); //hide();
+                app.setVisible( false );
                 panel.add( "Center", app );
                 panel.validate();
 
@@ -171,7 +169,7 @@ public class KJASAppletStub extends Frame
                 app.resize( appletSize );
                 app.start();  //We're already in a thread, so don't create a new one
                 panel.validate();
-                app.setVisible( true ); //show();
+                app.setVisible( true );
             }
             else
             {
@@ -192,17 +190,20 @@ public class KJASAppletStub extends Frame
 
     public void startApplet()
     {
-        app.start();
+        if( app != null )
+            app.start();
     }
 
     public void stopApplet()
     {
-        app.stop();
+        if( app != null )
+            app.stop();
     }
 
     public void die()
     {
-        app.stop();
+        if( app != null )
+            app.stop();
         dispose();
     }
 
@@ -293,16 +294,6 @@ public class KJASAppletStub extends Frame
         {
             return size;
         }
-
-//        public Dimension preferredSize()
-//        {
-//            return size;
-//        }
-//
-//        public Dimension minimumSize()
-//        {
-//            return size;
-//        }
     }
 
 }

@@ -45,12 +45,6 @@ public class KJASAppletClassLoader
         }
     }
 
-    public static void removeLoader( KJASAppletClassLoader loader )
-    {
-        loaders.remove( loader.getKey() );
-    }
-
-
     private URL docBaseURL  = null;
     private URL codeBaseURL = null;
     private Vector archives = null;
@@ -61,7 +55,7 @@ public class KJASAppletClassLoader
         key = docBase + codeBase;
         archives = new Vector();
         Main.debug( "Creating classloader with docBase = " + docBase +
-                         " and codeBase = " + codeBase );
+                    " and codeBase = " + codeBase );
 
         try
         {
@@ -69,20 +63,17 @@ public class KJASAppletClassLoader
             //#1. codeBase is absolute URL- use that
             //#2. codeBase is relative to docBase, create url from those
             //#3. last resort, use docBase as the codeBase
-
             try
             {
                 docBaseURL = new URL( docBase );
             }
             catch ( MalformedURLException mue )
             {
-                Main.debug( "Could not create URL from docBase, not creating applet" );
                 return;
             }
 
             if(codeBase != null)
             {
-                Main.debug( "codeBase not null, trying to create URL from it" );
                 //we need to do this since codeBase should be a directory
                 //and URLclassLoader assumes anything without a / on the end
                 //is a jar file
@@ -96,12 +87,8 @@ public class KJASAppletClassLoader
                 {
                     try
                     {
-                        Main.debug( "could not create URL from codeBase alone" );
                         codeBaseURL = new URL( docBaseURL, codeBase );
-                    } catch( MalformedURLException mue2 )
-                    {
-                        Main.debug( "could not create URL from docBaseURL and codeBase" );
-                    }
+                    } catch( MalformedURLException mue2 ) {}
                 }
             }
 
@@ -112,7 +99,6 @@ public class KJASAppletClassLoader
                 // we do need to make sure that the docBaseURL is fixed if
                 // it is something like http://www.foo.com/foo.asp
                 // It's got to be a directory.....
-                Main.debug( "codeBaseURL still null, defaulting to docBase" );
                 String file = docBaseURL.getFile();
                 if( file == null )
                     codeBaseURL = docBaseURL;
@@ -125,7 +111,7 @@ public class KJASAppletClassLoader
                     String urlString = docBaseURL.toString();
                     int dot_index = urlString.lastIndexOf( '/' );
                     String newfile = urlString.substring( 0, dot_index+1 );
-                    codeBaseURL = new URL( urlString );
+                    codeBaseURL = new URL( newfile );
                 }
             }
 
@@ -209,25 +195,6 @@ public class KJASAppletClassLoader
         }
     }
 
-    public Class findClass(String name)
-        throws ClassNotFoundException
-    {
-        if( name.endsWith( ".class" ) )
-        {
-            name = name.substring( 0, name.lastIndexOf( ".class" ) );
-        }
-
-        try
-        {
-            return super.findClass( name );
-        }
-        catch( ClassNotFoundException e )
-        {
-            Main.debug( "could not find the class: " + name + ", exception = " + e );
-            throw e;
-        }
-    }
-
     /***************************************************************************
      * Security Manager stuff
      **************************************************************************/
@@ -279,29 +246,4 @@ public class KJASAppletClassLoader
         return perms;
     }
 
-    public static void main( String[] args )
-    {
-        System.out.println( "num args = " + args.length );
-        System.out.println( "args[0] = " + args[0] );
-        System.out.println( "args[1] = " + args[1] );
-
-        try
-        {
-            URL location = new URL( args[0] );
-            if( location.getFile() == null )
-            {
-                System.out.println( "getFile returned null" );
-            }
-
-            KJASAppletClassLoader loader = new KJASAppletClassLoader( args[1], args[1] );
-            Class foo = loader.loadClass( args[1] );
-
-            System.out.println( "loaded class: " + foo );
-        }
-            catch( Exception e )
-        {
-            System.out.println( "Couldn't load class " + args[1] );
-            e.printStackTrace();
-        }
-    }
 }
