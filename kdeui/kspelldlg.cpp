@@ -39,6 +39,9 @@
 #include "kspelldlg.h"
 #include "kspellui.h"
 
+//to initially disable sorting in the suggestions listview
+#define NONSORTINGCOLUMN 2
+
 class KSpellDlg::KSpellDlgPrivate {
 public:
   KSpellUI* ui;
@@ -113,9 +116,11 @@ KSpellDlg::init( const QString & _word, QStringList * _sugg )
   word = _word;
 
   d->ui->m_suggestions->clear();
-
+  d->ui->m_suggestions->setSorting( NONSORTINGCOLUMN );
   for ( QStringList::Iterator it = _sugg->begin(); it != _sugg->end(); ++it ) {
-    new QListViewItem( d->ui->m_suggestions, *it );
+    QListViewItem *item = new QListViewItem( d->ui->m_suggestions,
+                                             d->ui->m_suggestions->lastItem() );
+    item->setText( 0, *it );
   }
   kdDebug(750) << "KSpellDlg::init [" << word << "]" << endl;
 
@@ -145,9 +150,11 @@ KSpellDlg::init( const QString& _word, QStringList* _sugg,
   word = _word;
 
   d->ui->m_suggestions->clear();
-
+  d->ui->m_suggestions->setSorting( NONSORTINGCOLUMN );
   for ( QStringList::Iterator it = _sugg->begin(); it != _sugg->end(); ++it ) {
-    new QListViewItem( d->ui->m_suggestions, *it );
+      QListViewItem *item = new QListViewItem( d->ui->m_suggestions,
+                                               d->ui->m_suggestions->lastItem() );
+      item->setText( 0, *it );
   }
 
   kdDebug(750) << "KSpellDlg::init [" << word << "]" << endl;
