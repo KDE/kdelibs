@@ -47,9 +47,9 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
     "The K Desktop Environment has a bug tracking system. Visit "
     "<A HREF=\"http://bugs.kde.org/\">http://bugs.kde.org/</A> or "
     "use the \"Report Bug\" dialog to report bugs.<br><br>"
-    "If you have a suggestion for improvement then you are welcome to visit "
-    "<A HREF=\"http://wishlist.kde.org/\">http://wishlist.kde.org/</A> and "
-    "register your wish." );
+    "If you have a suggestion for improvement then you are welcome to use "
+    "the bug tracking system to register your wish. Make sure you use the "
+    "Severity called \"Wishlist\"." );
 
   const QString text3 = i18n(""
     "You don't have to be a software developer to be a member of the "
