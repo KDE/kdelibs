@@ -107,6 +107,8 @@ static QCString stringToPrintable(const QCString& str){
   register char *r = result.data();
   register char *s = str.data();
 
+  if (!s) return QCString("");
+
   // Escape leading space
   if (*s == ' ')
   {
