@@ -1139,11 +1139,9 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
 
             processToken();
 
-            // lets see if we're still in parsing mood for spaces
-            pre = parser->preMode();
-
             switch( tagID ) {
             case ID_PRE:
+                pre = beginTag;
                 prePos = 0;
                 discard = AllDiscard;
                 break;

@@ -186,7 +186,6 @@ void KHTMLParser::reset()
     inSelect = false;
     m_inline = false;
 
-    inPre = 0;
     form = 0;
     map = 0;
     head = 0;
@@ -373,10 +372,10 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                         n->attach();
 #endif
                 }
-                
+
                 return true;
             }
-                        
+
             break;
         case ID_HTML:
             if (!current->isDocumentNode() ) {
@@ -907,7 +906,6 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLHRElementImpl(document);
         break;
     case ID_PRE:
-        ++inPre;
     case ID_XMP:
     case ID_PLAINTEXT:
         n = new HTMLPreElementImpl(document, t->tid);
@@ -1138,6 +1136,7 @@ bool KHTMLParser::isResidualStyleTag(int _id)
     switch (_id) {
         case ID_A:
         case ID_FONT:
+        case ID_SPAN:
         case ID_TT:
         case ID_U:
         case ID_B:
@@ -1505,8 +1504,6 @@ void KHTMLParser::popOneBlock(bool delBlock)
     blockStack = Elem->next;
     // we only set inline to false, if the element we close is a block level element.
     // This helps getting cases as <p><b>bla</b> <b>bla</b> right.
-    if (current->id() == ID_PRE)
-        --inPre;
 
     m_inline = Elem->m_inline;
 
