@@ -30,7 +30,7 @@ build-stamp:
 	fi
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
-	--includedir=/usr/include/kde --with-ssl --without-alsa \
+	--includedir=/usr/include/kde --without-ssl --without-alsa \
 	--disable-cups
 
 	$(MAKE)
@@ -43,7 +43,7 @@ alsa-stamp:
 	-$(MAKE) -C arts/ clean
 	-$(MAKE) -C libkmid/ clean
 	-$(MAKE) -C kdeprint/cups clean
-	./configure $(configkde) --with-alsa --with-ssl --enable-cups \
+	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
 		--includedir=/usr/include/kde
 	$(MAKE) -C libkmid/ 
 	$(MAKE) -C arts/ 
@@ -154,11 +154,11 @@ binary-arch:  build install
 	dh_movefiles -plibarts-alsa --sourcedir=debian/alsa-tmp
 	dh_movefiles -plibkmid-alsa --sourcedir=debian/alsa-tmp
 	# ssl cleanup
-	#-rm -rf debian/kdelibs3/usr/share/apps/kssl
-	#mv debian/kdelibs3/usr/lib/kde2/kio_https.so debian/kdelibs3/usr/lib/kde2/kio_https-nossl.so
-	#mv debian/kdelibs3/usr/lib/kde2/kio_https.la debian/kdelibs3/usr/lib/kde2/kio_https-nossl.la
-	#mv debian/kdelibs3/usr/lib/libkssl.so.2.0.0 debian/kdelibs3/usr/lib/libkssl-nossl.so.2.0.0
-	#mv debian/kdelibs3/usr/lib/libkssl.la debian/kdelibs3/usr/lib/libkssl-nossl.la
+	-rm -rf debian/kdelibs3/usr/share/apps/kssl
+	mv debian/kdelibs3/usr/lib/kde2/kio_https.so debian/kdelibs3/usr/lib/kde2/kio_https-nossl.so
+	mv debian/kdelibs3/usr/lib/kde2/kio_https.la debian/kdelibs3/usr/lib/kde2/kio_https-nossl.la
+	mv debian/kdelibs3/usr/lib/libkssl.so.2.0.0 debian/kdelibs3/usr/lib/libkssl-nossl.so.2.0.0
+	mv debian/kdelibs3/usr/lib/libkssl.la debian/kdelibs3/usr/lib/libkssl-nossl.la
 	dh_installchangelogs -a 
 	dh_strip -a
 	for i in `find debian/ -type l -name "common"`; do \
