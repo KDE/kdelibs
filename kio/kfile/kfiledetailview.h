@@ -116,7 +116,7 @@ public:
 
     virtual QWidget *widget() { return this; }
     virtual void clearView();
-    virtual void setAutoUpdate( bool ) {}
+    virtual void setAutoUpdate( bool ) {} // ### unused. remove in KDE4
 
     virtual void setSelectionMode( KFile::SelectionMode sm );
 
