@@ -21,7 +21,6 @@
 #include "kxmlgui.h"
 
 #include <qdom.h>
-#include <qaction.h>
 
 #include <kinstance.h>
 #include <kstddirs.h>
@@ -86,17 +85,17 @@ KXMLGUIClient::~KXMLGUIClient()
   delete d;
 }
 
-QAction *KXMLGUIClient::action( const char *name )
+KAction *KXMLGUIClient::action( const char *name )
 {
   return d->m_actionCollection.action( name );
 }
 
-QActionCollection *KXMLGUIClient::actionCollection() const
+KActionCollection *KXMLGUIClient::actionCollection() const
 {
   return &d->m_actionCollection;
 }
 
-QAction *KXMLGUIClient::action( const QDomElement &element )
+KAction *KXMLGUIClient::action( const QDomElement &element )
 {
   static QString attrName = QString::fromLatin1( "name" );
   return action( element.attribute( attrName ).ascii() );
@@ -173,7 +172,7 @@ void KXMLGUIClient::setXML( const QString &document, bool merge )
     d->m_doc.setContent( document );
 }
 
-bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, QActionCollection *actionCollection )
+bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KActionCollection *actionCollection )
 {
   static QString tagAction = QString::fromLatin1( "Action" );
   static QString tagMerge = QString::fromLatin1( "Merge" );

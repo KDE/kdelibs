@@ -19,29 +19,24 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-
 #ifndef __kaction_h__
 #define __kaction_h__ $Id$
 
-#include <qaction.h>
-#include <qfontdatabase.h>
+#include <qobject.h>
 #include <kstdaccel.h>
+
+class QMenuBar;
+class QPopupMenu;
+class QComboBox;
+class QPoint;
+class QIconSet;
+class QString;
 
 class KAccel;
 class KConfig;
 class KURL;
-class KActionPrivate;
-class KToggleActionPrivate;
-class KRadioActionPrivate;
-class KSelectActionPrivate;
-class KListActionPrivate;
-class KRecentFilesActionPrivate;
-class KFontActionPrivate;
-class KFontSizeActionPrivate;
-class KActionMenuPrivate;
-class KActionSeparatorPrivate;
-class KActionCollectionPrivate;
 class KInstance;
+class KToolBar;
 
 /**
  * The KAction class (and derived and super classes) provide a way to
@@ -140,7 +135,7 @@ class KInstance;
  * If you are using KAction within the context of the XML menu and
  * toolbar building framework, then there are a few tiny changes.  The
  * first is that you must insert your new action into an action
- * collection.  The action collection (a @ref QActionCollection) is,
+ * collection.  The action collection (a @ref KActionCollection) is,
  * logically enough, a central collection of all of the actions
  * defined in your application.  The XML UI framework code in KXMLGUI
  * classes needs access to this collection in order to build up the
@@ -166,7 +161,7 @@ class KInstance;
  * @see KStdAction
  * @short Class to encapsulate user-driven action or event
  */
-class KAction : public QAction
+class KAction : public QObject
 {
   Q_OBJECT
 public:
@@ -294,6 +289,9 @@ public:
      */
     virtual ~KAction();
 
+    // DOCUMENT ME!
+    virtual void update();
+
     /**
      * "Plug" or insert this action into a given widget.
 
@@ -307,15 +305,15 @@ public:
      */
     virtual int plug( QWidget *w, int index = -1 );
 	
+    // DOCUMENT ME!
 	virtual void plugAccel(KAccel *accel, bool configurable = true);
 
     /**
      * "Unplug" or remove this action from a given widget.
-
-     * This will
-     * typically be a menu or a toolbar.  This is rarely used in
-     * "normal" application.  Typically, it would be used if your
-     * application has several views or modes, each with a
+     *
+     * This will typically be a menu or a toolbar.  This is rarely
+     * used in "normal" application.  Typically, it would be used if
+     * your application has several views or modes, each with a
      * completely different menu structure.  If you simply want to
      * disable an action for a given period, use @ref setEnabled()
      * instead.
@@ -324,16 +322,49 @@ public:
      */
     virtual void unplug( QWidget *w );
 	
+    // DOCUMENT ME!
 	virtual void unplugAccel();
 	
+    // DOCUMENT ME!
 	virtual bool isPlugged() const;
 
-    virtual void setText(const QString &text);
-    virtual void setAccel(int a);
-    virtual void setEnabled(bool enable);
-    virtual void setIconSet( const QIconSet &iconSet );
-    virtual void setIcon( const QString& icon );
+    QWidget* container( int index );
+    QWidget* representative( int index );
+    int containerCount() const;
 
+    virtual QPixmap pixmap() const;
+
+    virtual bool hasIconSet() const;
+    virtual QString plainText() const;
+
+    virtual QObject* component();
+    virtual void setComponent( QObject* );
+
+    virtual void setText(const QString &text);
+    virtual QString text() const;
+
+    virtual void setAccel(int a);
+    virtual int accel() const;
+
+    virtual bool isEnabled() const;
+    virtual void setEnabled(bool enable);
+
+    virtual void setGroup( const QString& );
+    virtual QString group() const;
+
+    virtual void setWhatsThis( const QString& text );
+    virtual QString whatsThis() const;
+
+    virtual void setToolTip( const QString& );
+    virtual QString toolTip() const;
+
+    virtual void setShortText( const QString& );
+    virtual QString shortText() const;
+
+    virtual void setIconSet( const QIconSet &iconSet );
+    virtual QIconSet iconSet() const;
+
+    virtual void setIcon( const QString& icon );
     virtual QString iconName() const;
 
     /**
@@ -343,18 +374,36 @@ public:
     static int getToolButtonID();
 
 protected slots:
-	virtual void slotDestroyed();
-	virtual void slotKeycodeChanged();
+    virtual void slotDestroyed();
+    virtual void slotKeycodeChanged();
+    virtual void slotActivated();
 	
 protected:
+    KToolBar* toolBar( int index );
+    QPopupMenu* popupMenu( int index );
+    int menuId( int index );
+    void removeContainer( int index );
+    int findContainer( QWidget* widget );
+
+    void addContainer( QWidget* parent, int id );
+    void addContainer( QWidget* parent, QWidget* representative );
+
+    virtual void setAccel( int id, int accel );
+    virtual void setGroup( int id, const QString& grp );
     virtual void setText(int i, const QString &text);
     virtual void setEnabled(int i, bool enable);
     virtual void setIconSet(int i, const QIconSet &iconSet);
     virtual void setIcon( int i, const QString& icon );
+    virtual void setToolTip( int id, const QString& tt );
+    virtual void setShortText( int id, const QString& st );
+    virtual void setWhatsThis( int id, const QString& text );
+
+signals:
+    void activated();
+    void enabled( bool );
 
 private:
-	KAccel  *kaccel;
-
+    class KActionPrivate;
     KActionPrivate *d;
 };
 
@@ -365,7 +414,7 @@ private:
  *
  *  @short Checkbox like action.
  */
-class KToggleAction : public QToggleAction
+class KToggleAction : public KAction
 {
     Q_OBJECT
 
@@ -448,17 +497,15 @@ public:
     /**
      *  "Plug" or insert this action into a given widget.
      *
-     *  This will typically be a menu or a toolbar.
-     *  From this point on, you will never need to directly
-     *  manipulate the item in the menu or toolbar.
-     *  You do all enabling/disabling/manipulation directly with your KToggleAction object.
+     *  This will typically be a menu or a toolbar.  From this point
+     *  on, you will never need to directly manipulate the item in the
+     *  menu or toolbar.  You do all enabling/disabling/manipulation
+     *  directly with your KToggleAction object.
      *
      *  @param widget The GUI element to display this action.
      *  @param index  The index of the item.
      */
     virtual int plug( QWidget*, int index = -1 );
-
-    virtual void unplug( QWidget *w );
 
     /**
      *  Sets the state of the action.
@@ -470,21 +517,20 @@ public:
      */
     bool isChecked() const;
 
-    virtual void setText(const QString &text)
-       { QToggleAction::setText(text); }   // nasty compilers...
+    virtual void setExclusiveGroup( const QString& name );
+    virtual QString exclusiveGroup() const;
 
 protected slots:
-
     virtual void slotActivated();
 
 protected:
     virtual void setChecked( int id, bool checked );
-    virtual void setText(int i, const QString &text);
 
+signals:
+    void toggled( bool );
 
-    bool locked, locked2;
-    bool checked;
-
+private:
+    class KToggleActionPrivate;
     KToggleActionPrivate *d;
 };
 
@@ -570,6 +616,7 @@ protected:
     virtual void slotActivated();
 
 private:
+    class KRadioActionPrivate;
     KRadioActionPrivate *d;
 };
 
@@ -584,7 +631,7 @@ private:
  *
  *  @short Action for selecting one of several items
  */
-class KSelectAction : public QSelectAction
+class KSelectAction : public KAction
 {
     Q_OBJECT
 
@@ -665,6 +712,11 @@ public:
     KSelectAction( QObject* parent = 0, const char* name = 0 );
 
     /**
+     * Destructor
+     */
+    virtual ~KSelectAction();
+
+    /**
      *  "Plug" or insert this action into a given widget.
      *
      *  This will typically be a menu or a toolbar.
@@ -688,12 +740,26 @@ public:
 
     virtual void clear();
 
-protected slots:
+    void setEditable( bool );
+    bool isEditable() const;
 
+    QStringList items();
+    virtual void changeItem( int index, const QString& text );
+    QString currentText();
+    int currentItem();
+
+    QPopupMenu* popupMenu();
+
+protected:
+    virtual void changeItem( int id, int index, const QString& text );
+
+protected slots:
+    void slotActivated( int id );
     void slotActivated( const QString &text );
 
 signals:
-
+    void activated( int index );
+    void activated( const QString& text );
     void activate();
 
 protected:
@@ -704,8 +770,7 @@ protected:
     virtual void clear( int id );
 
 private:
-    bool m_lock;
-
+    class KSelectActionPrivate;
     KSelectActionPrivate *d;
 };
 
@@ -790,6 +855,11 @@ public:
     KListAction( QObject* parent = 0, const char* name = 0 );
 
     /**
+     * Destructor
+     */
+    virtual ~KListAction();
+
+    /**
      *  Sets the currently checked item.
      *
      *  @param index Index of the item (remember the first item is zero).
@@ -800,7 +870,7 @@ public:
     int currentItem();
 
 private:
-    int m_current;
+    class KListActionPrivate;
     KListActionPrivate *d;
 };
 
@@ -974,7 +1044,7 @@ protected slots:
   void itemSelected( const QString& string );
 
 private:
-  unsigned int m_maxItems;
+  class KRecentFilesActionPrivate;
   KRecentFilesActionPrivate *d;
 };
 
@@ -1009,7 +1079,7 @@ public:
     int plug( QWidget*, int index = -1 );
 
 private:
-    QStringList fonts;
+    class KFontActionPrivate;
     KFontActionPrivate *d;
 };
 
@@ -1034,8 +1104,10 @@ public:
                      QObject* parent, const char* name = 0 );
     KFontSizeAction( QObject* parent = 0, const char* name = 0 );
 
-    void setFontSize( int size );
-    int fontSize();
+    virtual ~KFontSizeAction();
+
+    virtual void setFontSize( int size );
+    virtual int fontSize();
 
 protected slots:
     virtual void slotActivated( int );
@@ -1047,12 +1119,11 @@ signals:
 private:
     void init();
 
-    bool m_lock;
-
+    class KFontSizeActionPrivate;
     KFontSizeActionPrivate *d;
 };
 
-class KActionMenu : public QActionMenu
+class KActionMenu : public KAction
 {
   Q_OBJECT
 public:
@@ -1063,6 +1134,13 @@ public:
     KActionMenu( const QString& text, const QString& icon,
                  QObject* parent = 0, const char* name = 0 );
     KActionMenu( QObject* parent = 0, const char* name = 0 );
+    virtual ~KActionMenu();
+
+    virtual void insert( KAction*, int index = -1 );
+    virtual void remove( KAction* );
+
+    QPopupMenu* popupMenu();
+    void popup( const QPoint& global );
 
     virtual int plug( QWidget* widget, int index = -1 );
     virtual void unplug( QWidget* widget );
@@ -1075,29 +1153,44 @@ protected:
     virtual void setIconSet( int id, const QIconSet& iconSet );
 
 private:
+    class KActionMenuPrivate;
     KActionMenuPrivate *d;
 };
 
-class KActionSeparator : public QActionSeparator
+class KActionSeparator : public KAction
 {
     Q_OBJECT
 public:
     KActionSeparator( QObject* parent = 0, const char* name = 0 );
+    virtual ~KActionSeparator();
 
     virtual int plug( QWidget*, int index = -1 );
     virtual void unplug( QWidget* );
 
 private:
+    class KActionSeparatorPrivate;
     KActionSeparatorPrivate *d;
 };
 
-class KActionCollection : public QActionCollection
+class KActionCollection : public QObject
 {
   Q_OBJECT
 public:
   KActionCollection( QObject *parent = 0, const char *name = 0, KInstance *instance = 0 );
   KActionCollection( const KActionCollection &copy );
   virtual ~KActionCollection();
+
+  virtual void insert( KAction* );
+  virtual void remove( KAction* );
+  virtual KAction* take( KAction* );
+
+  virtual KAction* action( int index );
+  virtual uint count() const;
+  virtual KAction* action( const char* name, const char* classname = 0, QObject* component = 0 );
+
+  virtual QStringList groups() const;
+  virtual QValueList<KAction*> actions( const QString& group ) const;
+  virtual QValueList<KAction*> actions() const;
 
   KActionCollection operator+ (const KActionCollection& ) const;
   KActionCollection& operator= (const KActionCollection& );
@@ -1106,7 +1199,15 @@ public:
   void setInstance( KInstance *instance );
   KInstance *instance() const;
 
+signals:
+    void inserted( KAction* );
+    void removed( KAction* );
+
+protected:
+    void childEvent( QChildEvent* );
+
 private:
+  class KActionCollectionPrivate;
   KActionCollectionPrivate *d;
 };
 

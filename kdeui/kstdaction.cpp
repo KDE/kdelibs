@@ -35,10 +35,10 @@ KStdAction::~KStdAction()
 {
 }
 
-QAction *KStdAction::action(StdAction act_enum, const QObject *recvr,
+KAction *KStdAction::action(StdAction act_enum, const QObject *recvr,
                             const char *slot, QObject *parent, const char *name )
 {
-    QAction *act;
+    KAction *act;
     switch (act_enum)
     {
     case New:

@@ -23,8 +23,8 @@
 #include <qlist.h>
 #include <qmap.h>
 
-class QAction;
-class QActionCollection;
+class KAction;
+class KActionCollection;
 class KInstance;
 class KXMLGUIClientPrivate;
 class KXMLGUIFactory;
@@ -37,9 +37,9 @@ public:
   KXMLGUIClient( KXMLGUIClient *parent );
   virtual ~KXMLGUIClient();
 
-  QAction* action( const char* name );
-  virtual QAction *action( const QDomElement &element );
-  virtual QActionCollection* actionCollection() const;
+  KAction* action( const char* name );
+  virtual KAction *action( const QDomElement &element );
+  virtual KActionCollection* actionCollection() const;
 
   /**
    * @return The instance (@ref KInstance) for this part.
@@ -140,7 +140,7 @@ protected:
 
 private:
   bool mergeXML( QDomElement &base, const QDomElement &additive,
-                 QActionCollection *actionCollection );
+                 KActionCollection *actionCollection );
   QDomElement findMatchingElement( const QDomElement &base,
                                    const QDomElement &additive );
 

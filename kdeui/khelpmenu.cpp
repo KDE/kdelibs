@@ -66,7 +66,7 @@ KHelpMenu::KHelpMenu( QWidget *parent, const QString &aboutAppText,
 }
 
 KHelpMenu::KHelpMenu( QWidget *parent, const KAboutData *aboutData,
-		      bool showWhatsThis, QActionCollection *actions )
+		      bool showWhatsThis, KActionCollection *actions )
   : QObject(parent), mMenu(0), mAboutApp(0), mAboutKDE(0), mBugReport(0),
     d(new KHelpMenuPrivate)
 {

@@ -25,7 +25,7 @@
 #include <qmap.h>
 #include <qlist.h>
 
-class QAction;
+class KAction;
 class KXMLGUIFactoryPrivate;
 class KXMLGUIClient;
 class KXMLGUIBuilder;

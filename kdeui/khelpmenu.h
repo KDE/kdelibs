@@ -25,7 +25,7 @@
 #include <qobject.h>
 #include <qstring.h>
 
-class QActionCollection;
+class KActionCollection;
 class QMessageBox;
 class QPopupMenu;
 class QWidget;
@@ -160,7 +160,7 @@ class KHelpMenu : public QObject
      * 
      */
     KHelpMenu( QWidget *parent, const KAboutData *aboutData,
-	       bool showWhatsThis=true, QActionCollection *actions = 0 );
+	       bool showWhatsThis=true, KActionCollection *actions = 0 );
 
     /**
      * Destructor

@@ -19,7 +19,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-
 #include "kaction.h"
 
 #include <ktoolbar.h>
@@ -100,103 +99,312 @@ int KAction::getToolButtonID()
     return toolbutton_no--;
 }
 
-class KActionPrivate
+class KAction::KActionPrivate
 {
 public:
   KActionPrivate()
   {
+    m_kaccel    = 0;
+    m_bIconSet  = false;
+    m_enabled   = true;
+    m_accel     = 0;
+    m_component = 0;
   }
   ~KActionPrivate()
   {
   }
   QString m_iconName;
+  KAccel *m_kaccel;
+
+  QObject* m_component;
+
+  QString m_text;
+  QString m_whatsThis;
+  QString m_groupText;
+  QPixmap m_pixmap;
+  QIconSet m_iconSet;
+  bool m_bIconSet;
+  QString m_group;
+  int m_accel;
+  QString m_toolTip;
+  QString m_shortText;
+
+  struct Container
+  {
+    Container() { m_container = 0; m_representative = 0; m_id = 0; }
+    Container( const Container& s ) { m_container = s.m_container;
+                                      m_id = s.m_id; m_representative = s.m_representative; }
+    QWidget* m_container;
+    int m_id;
+    QWidget* m_representative;
+  };
+
+  QValueList<Container> m_containers;
+  bool m_enabled;
 };
 
-KAction::KAction( const QString& text, int accel, QObject* parent, const char* name )
- : QAction( text, accel, parent, name ), kaccel(0)
+KAction::KAction( const QString& text, int accel, QObject* parent,
+                  const char* name )
+ : QObject( parent, name )
 {
     d = new KActionPrivate;
+
+    setAccel( accel );
+    setText( text );
+
+    if ( parent && parent->inherits("KActionCollection") )
+        ((KActionCollection*)parent)->insert( this );
 }
 
-KAction::KAction( const QString& text, int accel,
-	           const QObject* receiver, const char* slot, QObject* parent, const char* name )
- : QAction( text, accel, receiver, slot, parent, name ), kaccel(0)
+KAction::KAction( const QString& text, int accel, const QObject* receiver,
+                  const char* slot, QObject* parent, const char* name )
+ : QObject( parent, name )
 {
     d = new KActionPrivate;
+
+    setAccel( accel );
+    setText( text );
+
+    if ( parent && parent->inherits("KActionCollection") )
+        ((KActionCollection*)parent)->insert( this );
+
+    connect( this, SIGNAL( activated() ), receiver, slot );
 }
 
 KAction::KAction( const QString& text, const QIconSet& pix, int accel,
-                    QObject* parent, const char* name )
- : QAction( text, pix, accel, parent, name ), kaccel(0)
+                  QObject* parent, const char* name )
+ : QObject( parent, name )
 {
     d = new KActionPrivate;
+
+    setAccel( accel );
+    setText( text );
+    setIconSet( pix );
+
+    if ( parent && parent->inherits("KActionCollection") )
+        ((KActionCollection*)parent)->insert( this );
 }
 
 KAction::KAction( const QString& text, const QString& pix, int accel,
-                    QObject* parent, const char* name )
-: QAction( text/*, BarIcon(pix, KIconLoader::Small)*/, accel, parent, name ), kaccel(0)
+                  QObject* parent, const char* name )
+: QObject( parent, name )
 {
-  d = new KActionPrivate;
-  d->m_iconName = pix;
-  
-  if ( parent && parent->inherits( "KActionCollection" ) )
-    setIconSet( BarIcon( pix, KIconLoader::Small, static_cast<KActionCollection *>( parent )->instance() ) );
-  else
-    setIconSet( BarIcon( pix, KIconLoader::Small ) );
+    d = new KActionPrivate;
+
+    setText( text );
+    setAccel( accel );
+    setIcon( pix );
+
+    if ( parent && parent->inherits("KActionCollection") )
+        ((KActionCollection*)parent)->insert( this );
 }
 
 KAction::KAction( const QString& text, const QIconSet& pix, int accel,
-	            const QObject* receiver, const char* slot, QObject* parent, const char* name )
- : QAction( text, pix, accel, receiver, slot, parent, name ), kaccel(0)
+                  const QObject* receiver, const char* slot, QObject* parent,
+                  const char* name )
+ : QObject( parent, name )
 {
-  d = new KActionPrivate;
+    d = new KActionPrivate;
+
+    setAccel( accel );
+    setText( text );
+    setIconSet( pix );
+
+    if ( parent && parent->inherits("KActionCollection") )
+        ((KActionCollection*)parent)->insert( this );
+
+    connect( this, SIGNAL( activated() ), receiver, slot );
 }
 
 KAction::KAction( const QString& text, const QString& pix, int accel,
-	            const QObject* receiver, const char* slot, QObject* parent, const char* name )
-
-
-: QAction( text/*, BarIcon(pix, KIconLoader::Small)*/, accel, receiver, slot, parent, name ), kaccel(0)
+                  const QObject* receiver, const char* slot, QObject* parent,
+                  const char* name )
+  : QObject( parent, name )
 {
-  d = new KActionPrivate;
-  d->m_iconName = pix;
-  
-  if ( parent && parent->inherits( "KActionCollection" ) )
-    setIconSet( BarIcon( pix, KIconLoader::Small, static_cast<KActionCollection *>( parent )->instance() ) );
-  else
-    setIconSet( BarIcon( pix, KIconLoader::Small ) );
+    d = new KActionPrivate;
+
+    setAccel( accel );
+    setText( text );
+    setIcon( pix );
+
+    if ( parent && parent->inherits("KActionCollection") )
+        ((KActionCollection*)parent)->insert( this );
+
+    connect( this, SIGNAL( activated() ), receiver, slot );
 }
 
 KAction::KAction( QObject* parent, const char* name )
- : QAction( parent, name ), kaccel(0)
+ : QObject( parent, name )
 {
-  d = new KActionPrivate;
+    d = new KActionPrivate;
 }
 
 KAction::~KAction()
 {
-    delete d;
+    if ( parent() && parent()->inherits("KActionCollection") )
+        ((KActionCollection*)parent())->take( this );
+
+    delete d; d = 0;
+}
+
+bool KAction::isPlugged() const
+{
+	  if (d->m_kaccel)
+      return true;
+    else
+      return ( containerCount() > 0 );
+}
+
+QObject* KAction::component()
+{
+    return d->m_component;
+}
+
+void KAction::setComponent( QObject* obj )
+{
+    d->m_component = obj;
+}
+
+
+void KAction::update()
+{
+    // By default do nothing interesting
+}
+
+void KAction::setAccel( int a )
+{
+  d->m_accel = a;
+
+  int len = containerCount();
+  for( int i = 0; i < len; ++i )
+    setAccel( i, a );
+}
+
+void KAction::setAccel( int i, int a )
+{
+  if (d->m_kaccel)
+    d->m_kaccel->updateItem(name(), a);
+  QWidget* w = container( i );
+  if ( w->inherits( "QPopupMenu" ) )
+    ((QPopupMenu*)w)->setAccel( a, menuId( i ) );
+  else if ( w->inherits( "QMenuBar" ) )
+    ((QMenuBar*)w)->setAccel( a, menuId( i ) );
+}
+
+int KAction::accel() const
+{
+  return d->m_accel;
+}
+
+void KAction::setGroup( const QString& grp )
+{
+  d->m_group = grp;
+
+  int len = containerCount();
+  for( int i = 0; i < len; ++i )
+    setGroup( i, grp );
+}
+
+void KAction::setGroup( int, const QString& )
+{
+  // DO SOMETHING
+}
+
+QString KAction::group() const
+{
+  return d->m_group;
+}
+
+bool KAction::isEnabled() const
+{
+  return d->m_enabled;
+}
+
+void KAction::setToolTip( const QString& tt )
+{
+  d->m_toolTip = tt;
+
+  int len = containerCount();
+  for( int i = 0; i < len; ++i )
+    setToolTip( i, tt );
+}
+
+void KAction::setToolTip( int, const QString& )
+{
+  // DO SOMETHING!
+}
+
+QString KAction::toolTip() const
+{
+  return d->m_toolTip;
+}
+
+void KAction::setShortText( const QString& st )
+{
+  d->m_shortText = st;
+
+  int len = containerCount();
+  for( int i = 0; i < len; ++i )
+    setShortText( i, st );
+}
+
+void KAction::setShortText( int, const QString& )
+{
+  // do something
+}
+
+QString KAction::shortText() const
+{
+  return d->m_shortText;
 }
 
 int KAction::plug( QWidget *w, int index )
 {
-  if ( w->inherits( "KToolBar" ) )
+  if ( w->inherits("QPopupMenu") )
+  {
+    QPopupMenu* menu = (QPopupMenu*)w;
+    int id;
+    if ( !d->m_pixmap.isNull() )
+    {
+      id = menu->insertItem( pixmap(), this, SLOT( slotActivated() ),
+                            accel(), -1, index );
+    }
+    else
+    {
+      if ( d->m_bIconSet )
+        id = menu->insertItem( iconSet(), plainText(), this,
+                               SLOT( slotActivated() ), accel(),
+                               -1, index );
+      else
+        id = menu->insertItem( plainText(), this, SLOT( slotActivated() ),
+                               accel(), -1, index );
+    }
+
+    menu->setItemEnabled( id, isEnabled() );
+    menu->setWhatsThis( id, whatsThis() );
+
+    addContainer( menu, id );
+    connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+
+    return d->m_containers.count() - 1;
+  }
+  else if ( w->inherits( "KToolBar" ) )
   {
     KToolBar *bar = (KToolBar *)w;
 
     int id_ = getToolButtonID();
-    if ( d->m_iconName == QString::null )
+    if ( (d->m_iconName == QString::null) && d->m_bIconSet )
     {
-      bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
-		       isEnabled(), plainText(), index );
+      bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
+                         SLOT( slotActivated() ),
+                         isEnabled(), plainText(), index );
     }
     else
     {
-      bar->insertButton( d->m_iconName, id_, SIGNAL( clicked() ), this,
+      bar->insertButton( iconName(), id_, SIGNAL( clicked() ), this,
                          SLOT( slotActivated() ), isEnabled(), plainText(),
                          index );
     }
-
 
     addContainer( bar, id_ );
 
@@ -205,12 +413,22 @@ int KAction::plug( QWidget *w, int index )
     return containerCount() - 1;
   }
 
-  return QAction::plug( w, index );
+  return -1;
 }
 
 void KAction::unplug( QWidget *w )
 {
-  if ( w->inherits( "KToolBar" ) )
+  if ( w->inherits("QPopupMenu") )
+  {
+    QPopupMenu* menu = (QPopupMenu*)w;
+    int i = findContainer( menu );
+    if ( i != -1 )
+    {
+      menu->removeItem( menuId( i ) );
+      removeContainer( i );
+    }
+  }
+  else if ( w->inherits( "KToolBar" ) )
   {
     KToolBar *bar = (KToolBar *)w;
 
@@ -224,61 +442,98 @@ void KAction::unplug( QWidget *w )
 
     return;
   }
-  QAction::unplug( w );
 }
 
 void KAction::plugAccel(KAccel *kacc, bool configurable)
 {
-    if (kaccel) unplugAccel();
-	kaccel = kacc;
-	kaccel->insertItem(plainText(), name(), accel(), configurable);
-	kaccel->connectItem(name(), this, SLOT(slotActivated()));
-	connect(kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()));
-	connect(kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
+  if (d->m_kaccel)
+    unplugAccel();
+  d->m_kaccel = kacc;
+  d->m_kaccel->insertItem(plainText(), name(), accel(), configurable);
+  d->m_kaccel->connectItem(name(), this, SLOT(slotActivated()));
+  connect(d->m_kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()));
+  connect(d->m_kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
 }
 
 void KAction::unplugAccel()
 {
-	if ( kaccel==0 ) return;
-	kaccel->removeItem(name());
-	kaccel->disconnect(this);
-	kaccel = 0;
+	if ( d->m_kaccel==0 )
+    return;
+	d->m_kaccel->removeItem(name());
+	d->m_kaccel->disconnect(this);
+	d->m_kaccel = 0;
 }
 
 void KAction::setEnabled(bool enable)
 {
-	if (kaccel) kaccel->setItemEnabled(name(), enable);
-	QAction::setEnabled(enable);
+  if (d->m_kaccel)
+    d->m_kaccel->setItemEnabled(name(), enable);
+
+  if ( enable == d->m_enabled )
+    return;
+
+  d->m_enabled = enable;
+
+  int len = containerCount();
+  for( int i = 0; i < len; ++i )
+    setEnabled( i, enable );
+
+  emit enabled( d->m_enabled );
 }
 
-void KAction::setEnabled( int i, bool enable )
+void KAction::setEnabled( int i, bool e )
 {
     QWidget *w = container( i );
 
-    if ( w->inherits( "KToolBar" ) )
-      ((KToolBar *)w)->setItemEnabled( menuId( i ), enable );
-
-    QAction::setEnabled( i, enable );
+    if ( w->inherits("QPopupMenu") )
+        ((QPopupMenu*)w)->setItemEnabled( menuId( i ), e );
+    else if ( w->inherits("QMenuBar") )
+        ((QMenuBar*)w)->setItemEnabled( menuId( i ), e );
+    else if ( w->inherits( "KToolBar" ) )
+      ((KToolBar *)w)->setItemEnabled( menuId( i ), e );
 }
 
 void KAction::setText( const QString& text )
 {
-	if (kaccel) kaccel->setDescription(name(), text);
-	QAction::setText( text );
+  if (d->m_kaccel)
+    d->m_kaccel->setDescription(name(), text);
+
+  d->m_text = text;
+
+  int len = containerCount();
+  for( int i = 0; i < len; ++i )
+    setText( i, text );
 }
 
 void KAction::setText( int i, const QString &text )
 {
-   QWidget *w = container( i );
+  QWidget *w = container( i );
 
-   if ( w->inherits( "KToolBar" ) )
-   {
-     QWidget *button = ((KToolBar *)w)->getWidget( menuId( i ) );
-     if ( button->inherits( "KToolBarButton" ) )
-       ((KToolBarButton *)button)->setText( text );
-   }
+  if ( w->inherits( "QPopupMenu" ) )
+    ((QPopupMenu*)w)->changeItem( menuId( i ), text );
+  else if ( w->inherits( "QMenuBar" ) )
+    ((QMenuBar*)w)->changeItem( menuId( i ), text );	
+  else if ( w->inherits( "KToolBar" ) )
+  {
+    QWidget *button = ((KToolBar *)w)->getWidget( menuId( i ) );
+    if ( button->inherits( "KToolBarButton" ) )
+      ((KToolBarButton *)button)->setText( text );
+  }
+}
 
-   QAction::setText( i, text );
+QString KAction::text() const
+{
+  return d->m_text;
+}
+
+QString KAction::plainText() const
+{
+  QString stripped( d->m_text );
+  int pos;
+  while( ( pos = stripped.find( '&' ) ) != -1 )
+    stripped.replace( pos, 1, QString::null );
+
+  return stripped;
 }
 
 void KAction::setIcon( const QString &icon )
@@ -313,256 +568,342 @@ QString KAction::iconName() const
   return d->m_iconName;
 }
 
-void KAction::setIconSet( const QIconSet &iconSet )
+void KAction::setIconSet( const QIconSet &iconset )
 {
-  QAction::setIconSet( iconSet );
+  d->m_iconSet  = iconset;
+  d->m_bIconSet = true;
+
+  int len = containerCount();
+  for( int i = 0; i < len; ++i )
+    setIconSet( i, iconset );
 }
 
-void KAction::setIconSet( int id, const QIconSet& iconSet )
+void KAction::setIconSet( int id, const QIconSet& iconset )
 {
-    QWidget *w = container( id );
+  QWidget *w = container( id );
 
-    if ( w->inherits( "KToolBar" ) )
-      ((KToolBar *)w)->setButtonPixmap( menuId( id ), iconSet.pixmap() );
-
-	QAction::setIconSet( id, iconSet );
+  if ( w->inherits( "QPopupMenu" ) )
+    ((QPopupMenu*)w)->changeItem( menuId( id ), iconset, d->m_text );
+  else if ( w->inherits( "QMenuBar" ) )
+    ((QMenuBar*)w)->changeItem( menuId( id ), iconset, d->m_text );
+  else if ( w->inherits( "KToolBar" ) )
+    ((KToolBar *)w)->setButtonPixmap( menuId( id ), iconset.pixmap() );
 }
 
-void KAction::setAccel(int a)
+QIconSet KAction::iconSet() const
 {
-	if (kaccel) kaccel->updateItem(name(), a);
-	QAction::setAccel(a);
+  return d->m_iconSet;
+}
+
+bool KAction::hasIconSet() const
+{
+  return d->m_bIconSet;
+}
+
+void KAction::setWhatsThis( const QString& text )
+{
+  d->m_whatsThis = text;
+
+  int len = containerCount();
+  for( int i = 0; i < len; ++i )
+    setWhatsThis( i, text );
+}
+
+void KAction::setWhatsThis( int i, const QString& text )
+{
+  QPopupMenu* pm = popupMenu( i );
+  if ( pm )
+    pm->setWhatsThis( menuId( i ), text );
+}
+
+QString KAction::whatsThis() const
+{
+  return d->m_whatsThis;
+}
+
+QPixmap KAction::pixmap() const
+{
+  return d->m_pixmap;
+}
+
+QWidget* KAction::container( int index )
+{
+  return d->m_containers[ index ].m_container;
+}
+
+KToolBar* KAction::toolBar( int index )
+{
+  QWidget* w = d->m_containers[ index ].m_container;
+  if ( !w || !w->inherits( "KToolBar" ) )
+    return 0;
+
+  return (KToolBar*)w;
+}
+
+QPopupMenu* KAction::popupMenu( int index )
+{
+  QWidget* w = d->m_containers[ index ].m_container;
+  if ( !w || !w->inherits( "QPopupMenu" ) )
+    return 0;
+
+  return (QPopupMenu*)w;
+}
+
+QWidget* KAction::representative( int index )
+{
+  return d->m_containers[ index ].m_representative;
+}
+
+int KAction::menuId( int index )
+{
+  return d->m_containers[ index ].m_id;
+}
+
+int KAction::containerCount() const
+{
+  return d->m_containers.count();
+}
+
+void KAction::addContainer( QWidget* c, int id )
+{
+  KActionPrivate::Container p;
+  p.m_container = c;
+  p.m_id = id;
+  d->m_containers.append( p );
+}
+
+void KAction::addContainer( QWidget* c, QWidget* w )
+{
+  KActionPrivate::Container p;
+  p.m_container = c;
+  p.m_representative = w;
+  d->m_containers.append( p );
+}
+
+void KAction::slotActivated()
+{
+  emit activated();
 }
 
 void KAction::slotDestroyed()
 {
-	if (sender()==kaccel) kaccel = 0;
-	QAction::slotDestroyed();
+	if ( sender() == d->m_kaccel )
+    d->m_kaccel = 0;
+
+  const QObject* o = sender();
+
+  int i;
+  do
+  {
+    i = findContainer( (QWidget*)o );
+    if ( i != -1 )
+      removeContainer( i );
+  } while ( i != -1 );
+}
+
+int KAction::findContainer( QWidget* widget )
+{
+  int pos = 0;
+  QValueList<KActionPrivate::Container>::Iterator it = d->m_containers.begin();
+  while( it != d->m_containers.end() )
+  {
+    if ( (*it).m_representative == widget || (*it).m_container == widget )
+      return pos;
+    ++it;
+    ++pos;
+  }
+
+  return -1;
+}
+
+void KAction::removeContainer( int index )
+{
+  int i = 0;
+  QValueList<KActionPrivate::Container>::Iterator it = d->m_containers.begin();
+  while( it != d->m_containers.end() )
+  {
+    if ( i == index )
+    {
+      d->m_containers.remove( it );
+      return;
+    }
+    ++it;
+    ++i;
+  }
 }
 
 void KAction::slotKeycodeChanged()
 {
-	QAction::setAccel(kaccel->currentKey(name()));
+  setAccel(d->m_kaccel->currentKey(name()));
 }
 
-bool KAction::isPlugged() const
+class KToggleAction::KToggleActionPrivate
 {
-	if (kaccel) return TRUE;
-	return QAction::isPlugged();
-}
+public:
+  KToggleActionPrivate()
+  {
+    m_locked  = false;
+    m_checked = false;
+  }
 
+  bool m_locked;
+  bool m_checked;
+  QString m_exclusiveGroup;
+};
 
-KToggleAction::KToggleAction( const QString& text, int accel, QObject* parent, const char* name )
-    : QToggleAction( text, accel, parent, name )
+KToggleAction::KToggleAction( const QString& text, int accel, QObject* parent,
+                              const char* name )
+    : KAction( text, accel, parent, name )
 {
-    locked = FALSE;
-    checked = FALSE;
-    locked2 = FALSE;
+  d = new KToggleActionPrivate;
 }
 
 KToggleAction::KToggleAction( const QString& text, int accel,
-	       const QObject* receiver, const char* slot, QObject* parent, const char* name )
-    : QToggleAction( text, accel, receiver, slot, parent, name )
+                              const QObject* receiver, const char* slot,
+                              QObject* parent, const char* name )
+  : KAction( text, accel, receiver, slot, parent, name )
 {
-    locked = FALSE;
-    checked = FALSE;
-    locked2 = FALSE;
+  d = new KToggleActionPrivate;
 }
 
-KToggleAction::KToggleAction( const QString& text, const QIconSet& pix, int accel,
-	       QObject* parent, const char* name )
-    : QToggleAction( text, pix, accel, parent, name )
+KToggleAction::KToggleAction( const QString& text, const QIconSet& pix,
+                              int accel, QObject* parent, const char* name )
+  : KAction( text, pix, accel, parent, name )
 {
-    locked = FALSE;
-    checked = FALSE;
-    locked2 = FALSE;
+  d = new KToggleActionPrivate;
 }
 
-KToggleAction::KToggleAction( const QString& text, const QString& pix, int accel,
-	       QObject* parent, const char* name )
- : QToggleAction( text/*, BarIcon(pix, KIconLoader::Small)*/, accel, parent, name )
+KToggleAction::KToggleAction( const QString& text, const QString& pix,
+                              int accel, QObject* parent, const char* name )
+ : KAction( text, pix, accel, parent, name )
 {
-    locked = FALSE;
-    checked = FALSE;
-    locked2 = FALSE;
-    
-    if ( parent && parent->inherits( "KActionCollection" ) )
-      setIconSet( BarIcon( pix, KIconLoader::Small, static_cast<KActionCollection *>( parent )->instance() ) );
-    else
-      setIconSet( BarIcon( pix, KIconLoader::Small ) );
+  d = new KToggleActionPrivate;
 }
 
-KToggleAction::KToggleAction( const QString& text, const QIconSet& pix, int accel,
-			      const QObject* receiver, const char* slot, QObject* parent, const char* name )
-    : QToggleAction( text, pix, accel, receiver, slot, parent, name )
+KToggleAction::KToggleAction( const QString& text, const QIconSet& pix,
+                              int accel, const QObject* receiver,
+                              const char* slot, QObject* parent,
+                              const char* name )
+  : KAction( text, pix, accel, receiver, slot, parent, name )
 {
-    locked = FALSE;
-    checked = FALSE;
-    locked2 = FALSE;
+  d = new KToggleActionPrivate;
 }
 
-KToggleAction::KToggleAction( const QString& text, const QString& pix, int accel,
-			      const QObject* receiver, const char* slot, QObject* parent, const char* name )
- : QToggleAction( text/*, BarIcon(pix, KIconLoader::Small)*/, accel, receiver, slot, parent, name )
+KToggleAction::KToggleAction( const QString& text, const QString& pix,
+                              int accel, const QObject* receiver,
+                              const char* slot, QObject* parent,
+                              const char* name )
+  : KAction( text, pix, accel, receiver, slot, parent, name )
 {
-    locked = FALSE;
-    checked = FALSE;
-    locked2 = FALSE;
-    
-    if ( parent && parent->inherits( "KActionCollection" ) )
-      setIconSet( BarIcon( pix, KIconLoader::Small, static_cast<KActionCollection *>( parent )->instance() ) );
-    else
-      setIconSet( BarIcon( pix, KIconLoader::Small ) );
+  d = new KToggleActionPrivate;
 }
 
 KToggleAction::KToggleAction( QObject* parent, const char* name )
-    : QToggleAction( parent, name )
+    : KAction( parent, name )
 {
-    locked = FALSE;
-    checked = FALSE;
-    locked2 = FALSE;
+  d = new KToggleActionPrivate;
 }
 
 int KToggleAction::plug( QWidget* widget, int index )
 {
-    if ( !widget->inherits("QPopupMenu") && !widget->inherits("QActionWidget" ) &&
-         !widget->inherits("KToolBar") ) {
-        qDebug("Can not plug KToggleAction in %s", widget->className() );
-        return -1;	
-    }
-
-    int _index = -1;
-    int id_ = -1;
-    if ( widget->inherits( "KToolBar" ) ) {
-        KToolBar *bar = (KToolBar *)widget;
-
-        id_ = KAction::getToolButtonID();
-        bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
-                           isEnabled(), plainText(), index );
-
-        addContainer( bar, id_ );
-
-        connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-
-        _index =  containerCount() - 1;
-    } else
-        _index = QToggleAction::plug( widget, index );
-
-    if ( _index == -1 )
-        return _index;
-
-    if ( widget->inherits("QPopupMenu") ) {
-        int id = menuId( _index );
-
-        popupMenu( _index )->setItemChecked( id, isChecked() );
-        popupMenu( _index )->setFont(KGlobal::menuFont());
-    }
-    else if ( widget->inherits("QActionWidget" ) )
-    {
-    }
-    else if ( widget->inherits("KToolBar") )
-    {
-        KToolBar *bar = (KToolBar*)container( _index );
-        bar->setToggle( menuId( _index ), TRUE );
-        bar->setButton( menuId( _index ), isChecked() );
-    }
-
-    return _index;
-}
-
-void KToggleAction::unplug( QWidget *w )
-{
-  if ( w->inherits( "KToolBar" ) )
+  if ( !widget->inherits("QPopupMenu") && !widget->inherits("KToolBar") )
   {
-    KToolBar *bar = (KToolBar *)w;
-
-    int idx = findContainer( bar );
-
-    if ( idx != -1 )
-    {
-      bar->removeItem( menuId( idx ) );
-      removeContainer( idx );
-    }
-
-    return;
+    qDebug("Can not plug KToggleAction in %s", widget->className() );
+    return -1;	
   }
 
-  QToggleAction::unplug( w );
+  int _index = KAction::plug( widget, index );
+  if ( _index == -1 )
+    return _index;
+
+  if ( widget->inherits("QPopupMenu") )
+  {
+    int id = menuId( _index );
+
+    popupMenu( _index )->setItemChecked( id, d->m_checked );
+    popupMenu( _index )->setFont(KGlobal::menuFont());
+  } else if ( widget->inherits( "KToolBar" ) ) {
+    KToolBar *bar = (KToolBar *)widget;
+
+    bar->setToggle( menuId( _index ), TRUE );
+    bar->setButton( menuId( _index ), isChecked() );
+  }
+
+  return _index;
 }
 
 void KToggleAction::setChecked( bool c )
 {
-    if ( c == checked )
-	return;
+  if ( c == d->m_checked )
+    return;
 
-    int len = containerCount();
+  int len = containerCount();
 
-    for( int i = 0; i < len; ++i )
-      setChecked( i, c );
+  for( int i = 0; i < len; ++i )
+    setChecked( i, c );
 
-    if ( c && parent() && !exclusiveGroup().isEmpty() ) {
-	const QObjectList *list = parent()->children();
-	if ( list ) {
-	    QObjectListIt it( *list );
-	    for( ; it.current(); ++it ) {
-		if ( it.current()->inherits( "KToggleAction" ) && it.current() != this &&
-		     ((KToggleAction*)it.current())->exclusiveGroup() == exclusiveGroup() ) {
-		    ((KToggleAction*)it.current())->setChecked( FALSE );
-		}
-	    }
-	}
+  if ( c && parent() && !exclusiveGroup().isEmpty() ) {
+    const QObjectList *list = parent()->children();
+    if ( list ) {
+      QObjectListIt it( *list );
+      for( ; it.current(); ++it ) {
+        if ( it.current()->inherits( "KToggleAction" ) && it.current() != this &&
+            ((KToggleAction*)it.current())->exclusiveGroup() == exclusiveGroup() ) {
+          ((KToggleAction*)it.current())->setChecked( FALSE );
+        }
+      }
     }
+  }
 
-    checked = c;
+  d->m_checked = c;
 
-    locked = TRUE;
-    emit activated();
-    locked = FALSE;
-    emit toggled( isChecked() );
+  d->m_locked = false;
+  emit activated();
+  d->m_locked = false;
+  emit toggled( isChecked() );
 }
 
 void KToggleAction::setChecked( int id, bool checked )
 {
   QWidget *w = container( id );
 
-  if ( w->inherits( "KToolBar" ) )
+  if ( w->inherits( "QPopupMenu" ) )
+    ((QPopupMenu*)w)->setItemChecked( menuId( id ), checked );
+  else if ( w->inherits( "QMenuBar" ) )
+    ((QMenuBar*)w)->setItemChecked( menuId( id ), checked );
+  else if ( w->inherits( "KToolBar" ) )
   {
     QWidget* r = ( (KToolBar*)w )->getButton( menuId( id ) );
     if ( r->inherits( "KToolBarButton" ) )
       ( (KToolBar*)w )->setButton( menuId( id ), checked );
   }
-
-  QToggleAction::setChecked( id, checked );
-}
-
-void KToggleAction::setText( int i, const QString &text )
-{
-   QWidget *w = container( i );
-
-   if ( w->inherits( "KToolBar" ) )
-   {
-     QWidget *button = ((KToolBar *)w)->getWidget( menuId( i ) );
-     if ( button->inherits( "KToolBarButton" ) )
-       ((KToolBarButton *)button)->setText( text );
-   }
-
-  QToggleAction::setText( i, text );
 }
 
 void KToggleAction::slotActivated()
 {
-    if ( locked )
-	return;
+  if ( d->m_locked )
+    return;
 
-    locked = TRUE;
-    setChecked( !isChecked() );
-    locked = FALSE;
+  d->m_locked = true;
+  setChecked( !isChecked() );
+  d->m_locked = false;
 }
 
 bool KToggleAction::isChecked() const
 {
-    return checked;
+  return d->m_checked;
 }
+
+void KToggleAction::setExclusiveGroup( const QString& name )
+{
+  d->m_exclusiveGroup = name;
+}
+
+QString KToggleAction::exclusiveGroup() const
+{
+  return d->m_exclusiveGroup;
+}
+
 
 KRadioAction::KRadioAction( const QString& text, int accel, QObject* parent, const char* name )
 : KToggleAction( text, accel, parent, name )
@@ -612,85 +953,184 @@ void KRadioAction::slotActivated()
   KToggleAction::slotActivated();
 }
 
-KSelectAction::KSelectAction( const QString& text, int accel,
-			      QObject* parent, const char* name )
-    : QSelectAction( text, accel, parent, name )
+class KSelectAction::KSelectActionPrivate
 {
+public:
+  KSelectActionPrivate()
+  {
     m_lock = false;
+    m_edit = false;
+    m_menu = 0;
+    m_current = -1;
+  }
+  bool m_lock;
+  bool m_edit;
+  QPopupMenu *m_menu;
+  int m_current;
+  QStringList m_list;
+};
+
+KSelectAction::KSelectAction( const QString& text, int accel, QObject* parent,
+                              const char* name )
+  : KAction( text, accel, parent, name )
+{
+  d = new KSelectActionPrivate;
 }
 
 KSelectAction::KSelectAction( const QString& text, int accel,
-			      const QObject* receiver, const char* slot, QObject* parent,
-			      const char* name )
-    : QSelectAction( text, accel, parent, name )
+                              const QObject* receiver, const char* slot,
+                              QObject* parent, const char* name )
+  : KAction( text, accel, parent, name )
 {
-    m_lock = false;
-    connect( this, SIGNAL( activate() ), receiver, slot );
+  d = new KSelectActionPrivate;
 }
 
-KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int accel,
-			      QObject* parent, const char* name )
-    : QSelectAction( text, pix, accel, parent, name )
+KSelectAction::KSelectAction( const QString& text, const QIconSet& pix,
+                              int accel, QObject* parent, const char* name )
+  : KAction( text, pix, accel, parent, name )
 {
-    m_lock = false;
+  d = new KSelectActionPrivate;
 }
 
-KSelectAction::KSelectAction( const QString& text, const QString& pix, int accel,
-			      QObject* parent, const char* name )
- : QSelectAction( text/*, BarIcon(pix, KIconLoader::Small)*/, accel, parent, name )
+KSelectAction::KSelectAction( const QString& text, const QString& pix,
+                              int accel, QObject* parent, const char* name )
+  : KAction( text, pix, accel, parent, name )
 {
-    m_lock = false;
-    if ( parent && parent->inherits( "KActionCollection" ) )
-      setIconSet( BarIcon( pix, KIconLoader::Small, static_cast<KActionCollection *>( parent )->instance() ) );
-    else
-      setIconSet( BarIcon( pix, KIconLoader::Small ) );
+  d = new KSelectActionPrivate;
 }
 
-KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int accel,
-			      const QObject* receiver, const char* slot, QObject* parent,
-			      const char* name )
-    : QSelectAction( text, pix, accel, receiver, slot, parent, name )
+KSelectAction::KSelectAction( const QString& text, const QIconSet& pix,
+                              int accel, const QObject* receiver,
+                              const char* slot, QObject* parent,
+                              const char* name )
+  : KAction( text, pix, accel, receiver, slot, parent, name )
 {
-    connect( this, SIGNAL( activate() ), receiver, slot );
-    m_lock = false;
+  d = new KSelectActionPrivate;
 }
 
-KSelectAction::KSelectAction( const QString& text, const QString& pix, int accel,
-			      const QObject* receiver, const char* slot, QObject* parent,
-			      const char* name )
- : QSelectAction( text/*, BarIcon(pix, KIconLoader::Small)*/, accel, receiver, slot, parent, name )
+KSelectAction::KSelectAction( const QString& text, const QString& pix,
+                              int accel, const QObject* receiver,
+                              const char* slot, QObject* parent,
+                              const char* name )
+  : KAction( text, pix, accel, receiver, slot, parent, name )
 {
-    connect( this, SIGNAL( activate() ), receiver, slot );
-    m_lock = false;
-    
-    if ( parent && parent->inherits( "KActionCollection" ) )
-      setIconSet( BarIcon( pix, KIconLoader::Small, static_cast<KActionCollection *>( parent )->instance() ) );
-    else
-      setIconSet( BarIcon( pix, KIconLoader::Small ) );
+  d = new KSelectActionPrivate;
 }
 
 KSelectAction::KSelectAction( QObject* parent, const char* name )
-    : QSelectAction( parent, name )
+  : KAction( parent, name )
 {
-    m_lock = false;
+  d = new KSelectActionPrivate;
+}
+
+KSelectAction::~KSelectAction()
+{
+  delete d; d = 0;
 }
 
 void KSelectAction::setCurrentItem( int id )
 {
-    QSelectAction::setCurrentItem( id );
-	
-    // ?????????? (Simon)	
-    emit activate();
+  if ( id >= (int)d->m_list.count() )
+    return;
+
+  if ( d->m_menu )
+  {
+    if ( d->m_current >= 0 )
+      d->m_menu->setItemChecked( d->m_current, FALSE );
+    if ( id >= 0 )
+      d->m_menu->setItemChecked( id, TRUE );
+  }
+
+  d->m_current = id;
+
+  int len = containerCount();
+
+  for( int i = 0; i < len; ++i )
+    setCurrentItem( i, id );
+
+  emit KAction::activated();
+  emit activated( currentItem() );
+  emit activated( currentText() );
+}
+
+QPopupMenu* KSelectAction::popupMenu()
+{
+  if ( !d->m_menu )
+  {
+    d->m_menu = new QPopupMenu;
+    QStringList::ConstIterator it = d->m_list.begin();
+    int id = 0;
+    for( ; it != d->m_list.end(); ++it ) {
+      if (!((*it).isEmpty())) {
+        d->m_menu->insertItem( *it, this, SLOT( slotActivated( int ) ), 0, id++ );
+      } else {
+        d->m_menu->insertSeparator();
+      }
+    }
+  }
+
+  return d->m_menu;
+}
+
+void KSelectAction::changeItem( int index, const QString& text )
+{
+  if ( index < 0 || index >= (int)d->m_list.count() )
+  {
+    qDebug("KSelectAction::changeItem Index out of scope");
+    return;
+  }
+
+  d->m_list[ index ] = text;
+
+  if ( d->m_menu )
+    d->m_menu->changeItem( index, text );
+
+  int len = containerCount();
+  for( int i = 0; i < len; ++i )
+    changeItem( i, index, text );
+}
+
+void KSelectAction::changeItem( int, int, const QString& )
+{
+    //QWidget* w = container( i );
+    // HANDLE KToolBar??
 }
 
 void KSelectAction::setItems( const QStringList &lst )
 {
-    QSelectAction::setItems( lst);
+  d->m_list = lst;
+  d->m_current = -1;
+
+  if ( d->m_menu )
+  {
+    d->m_menu->clear();
+    QStringList::ConstIterator it = d->m_list.begin();
+    int id = 0;
+    for( ; it != d->m_list.end(); ++it )
+      d->m_menu->insertItem( *it, this, SLOT( slotActivated( int ) ), 0, id++ );
+  }
+
+  int len = containerCount();
+  for( int i = 0; i < len; ++i )
+    setItems( i, lst );
 }
 
-void KSelectAction::clear()
+QStringList KSelectAction::items()
 {
-    QSelectAction::clear();
+  return d->m_list;
+}
+
+QString KSelectAction::currentText()
+{
+  if ( currentItem() < 0 )
+    return QString::null;
+
+  return d->m_list[ currentItem() ];
+}
+
+int KSelectAction::currentItem()
+{
+  return d->m_current;
 }
 
 void KSelectAction::setCurrentItem( int id, int index )
@@ -703,8 +1143,6 @@ void KSelectAction::setCurrentItem( int id, int index )
       b->setCurrentItem( index );
     }
   }
-
-  QSelectAction::setCurrentItem( id, index );
 }
 
 void KSelectAction::setItems( int id, const QStringList& lst )
@@ -720,66 +1158,69 @@ void KSelectAction::setItems( int id, const QStringList& lst )
         b->insertItem( *it );
       }
    }
-
-  QSelectAction::setItems( id, lst );
 }
 
 int KSelectAction::plug( QWidget *widget, int index )
 {
-    if ( widget->inherits("QPopupMenu") )
-    {
-	// Create the PopupMenu and store it in m_menu
-	(void)popupMenu();
+  if ( widget->inherits("QPopupMenu") )
+  {
+    // Create the PopupMenu and store it in m_menu
+    (void)popupMenu();
     popupMenu()->setFont(KGlobal::menuFont());
-	
-	QPopupMenu* menu = (QPopupMenu*)widget;
-	int id;
-	if ( !pixmap().isNull() )
-        {
-	    id = menu->insertItem( pixmap(), popupMenu(), -1, index );
-	}
-	else
-        {
-	    if ( hasIconSet() )
-		id = menu->insertItem( iconSet(), text(), popupMenu(), -1, index );
-	    else
-		id = menu->insertItem( text(), popupMenu(), -1, index );
-	}
 
-	menu->setItemEnabled( id, isEnabled() );
-	menu->setWhatsThis( id, whatsThis() );
-
-	addContainer( menu, id );
-	connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-	
-	return containerCount() - 1;
-    }
-    else if ( widget->inherits("QActionWidget" ) )
+    QPopupMenu* menu = (QPopupMenu*)widget;
+    int id;
+    if ( !pixmap().isNull() )
     {
-	connect( widget, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );	
-	addContainer( widget, (int)0 );
-	
-	return containerCount() - 1;
+      id = menu->insertItem( pixmap(), d->m_menu, -1, index );
     }
-    else if ( widget->inherits("KToolBar") )
+    else
     {
-	KToolBar* bar = (KToolBar*)widget;
-	int id_ = KAction::getToolButtonID();
-	bar->insertCombo( items(), id_, isEditable(), SIGNAL( activated( const QString & ) ),
-			  this, SLOT( slotActivated( const QString & ) ), true, QString::null, 70, index );
-	QComboBox *cb = bar->getCombo( id_ );
-	if ( cb ) {
-	    cb->setMinimumWidth( cb->sizeHint().width() );
-	}
-	addContainer( bar, id_ );
-
-	connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-	
-	return containerCount() - 1;
+      if ( hasIconSet() )
+        id = menu->insertItem( iconSet(), text(), d->m_menu, -1, index );
+      else
+        id = menu->insertItem( text(), d->m_menu, -1, index );
     }
 
-    qDebug("Can not plug QAction in %s", widget->className() );
-    return -1;
+    menu->setItemEnabled( id, isEnabled() );
+    menu->setWhatsThis( id, whatsThis() );
+
+    addContainer( menu, id );
+    connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+
+    return containerCount() - 1;
+  }
+  else if ( widget->inherits("KToolBar") )
+  {
+    KToolBar* bar = (KToolBar*)widget;
+    int id_ = KAction::getToolButtonID();
+    bar->insertCombo( items(), id_, isEditable(),
+                      SIGNAL( activated( const QString & ) ), this,
+                      SLOT( slotActivated( const QString & ) ), true,
+                      QString::null, 70, index );
+    QComboBox *cb = bar->getCombo( id_ );
+    if ( cb )
+      cb->setMinimumWidth( cb->sizeHint().width() );
+
+    addContainer( bar, id_ );
+
+    connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+
+    return containerCount() - 1;
+  }
+
+  qDebug("Can not plug KAction in %s", widget->className() );
+  return -1;
+}
+
+void KSelectAction::clear()
+{
+  if ( d->m_menu )
+    d->m_menu->clear();
+
+  int len = containerCount();
+  for( int i = 0; i < len; ++i )
+    clear( i );
 }
 
 void KSelectAction::clear( int id )
@@ -792,114 +1233,163 @@ void KSelectAction::clear( int id )
       b->clear();
     }
   }
+}
 
-  QSelectAction::clear( id );
+void KSelectAction::slotActivated( int id )
+{
+  if ( d->m_current == id )
+    return;
+
+  if ( d->m_lock )
+    return;
+
+  d->m_lock = TRUE;
+
+  setCurrentItem( id );
+
+  d->m_lock = FALSE;
 }
 
 void KSelectAction::slotActivated( const QString &text )
 {
-  if ( m_lock )
+  if ( d->m_lock )
     return;
 
-  m_lock = true;
+  d->m_lock = true;
   if ( isEditable() )
   {
     QStringList lst = items();
     lst.append( text );
-    QSelectAction::setItems( lst );
+    setItems( lst );
   }
 
   setCurrentItem( items().findIndex( text ) );
-  m_lock = false;
+  d->m_lock = false;
 }
 
-KListAction::KListAction( const QString& text, int accel, QObject* parent,
-                            const char* name )
-    : KSelectAction( text, accel, parent, name )
+void KSelectAction::setEditable( bool edit )
 {
+  d->m_edit = edit;
+}
+
+bool KSelectAction::isEditable() const
+{
+  return d->m_edit;
+}
+
+class KListAction::KListActionPrivate
+{
+public:
+  KListActionPrivate()
+  {
     m_current = 0;
+  }
+  int m_current;
+};
+
+KListAction::KListAction( const QString& text, int accel, QObject* parent,
+                          const char* name )
+  : KSelectAction( text, accel, parent, name )
+{
+  d = new KListActionPrivate;
 }
 
 KListAction::KListAction( const QString& text, int accel,
                           const QObject* receiver, const char* slot,
                           QObject* parent, const char* name )
-    : KSelectAction( text, accel, parent, name )
+  : KSelectAction( text, accel, parent, name )
 {
-    connect( this, SIGNAL(activated(int)), receiver, slot );
-    m_current = 0;
+  d = new KListActionPrivate;
+  connect( this, SIGNAL(activated(int)), receiver, slot );
 }
 
 KListAction::KListAction( const QString& text, const QIconSet& pix,
-                            int accel, QObject* parent, const char* name )
-    : KSelectAction( text, pix, accel, parent, name )
+                          int accel, QObject* parent, const char* name )
+  : KSelectAction( text, pix, accel, parent, name )
 {
-    m_current = 0;
+  d = new KListActionPrivate;
 }
 
 KListAction::KListAction( const QString& text, const QString& pix,
                             int accel, QObject* parent, const char* name )
- : KSelectAction( text, pix, accel, parent, name )
+  : KSelectAction( text, pix, accel, parent, name )
 {
-    m_current = 0;
+  d = new KListActionPrivate;
 }
 
 KListAction::KListAction( const QString& text, const QIconSet& pix,
                           int accel, const QObject* receiver,
                           const char* slot, QObject* parent,
                           const char* name )
-    : KSelectAction( text, pix, accel, receiver, slot, parent, name )
+  : KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
-    connect( this, SIGNAL(activated(int)), receiver, slot );
-    m_current = 0;
+  d = new KListActionPrivate;
+  connect( this, SIGNAL(activated(int)), receiver, slot );
 }
 
 KListAction::KListAction( const QString& text, const QString& pix,
-                            int accel, const QObject* receiver,
-                            const char* slot, QObject* parent,
-			                const char* name )
-: KSelectAction( text, pix, accel, receiver, slot, parent, name )
+                          int accel, const QObject* receiver,
+                          const char* slot, QObject* parent,
+                          const char* name )
+  : KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
-    connect( this, SIGNAL(activated(int)), receiver, slot );
-    m_current = 0;
+  d = new KListActionPrivate;
+  connect( this, SIGNAL(activated(int)), receiver, slot );
 }
 
 KListAction::KListAction( QObject* parent, const char* name )
-    : KSelectAction( parent, name )
+  : KSelectAction( parent, name )
 {
-    m_current = 0;
+  d = new KListActionPrivate;
+}
+
+KListAction::~KListAction()
+{
+  delete d; d = 0;
 }
 
 void KListAction::setCurrentItem( int index )
 {
-    m_current = index;
+  d->m_current = index;
 
-    emit QAction::activated();
-    emit activated( currentItem() );
-    emit activated( currentText() );
+  emit KAction::activated();
+  emit activated( currentItem() );
+  emit activated( currentText() );
 }
 
 QString KListAction::currentText()
 {
-    if ( currentItem() < 0 )
-        return QString::null;
+  if ( currentItem() < 0 )
+      return QString::null;
 
-    return items()[ currentItem() ];
+  return items()[ currentItem() ];
 }
 
 int KListAction::currentItem()
 {
-    return m_current;
+  return d->m_current;
 }
 
+class KRecentFilesAction::KRecentFilesActionPrivate
+{
+public:
+  KRecentFilesActionPrivate()
+  {
+    m_maxItems = 0;
+  }
+  unsigned int m_maxItems;
+};
 
 KRecentFilesAction::KRecentFilesAction( const QString& text, int accel,
                                         QObject* parent, const char* name,
                                         unsigned int maxItems )
-  : KListAction( text, accel, parent, name),
-    m_maxItems( maxItems )
+  : KListAction( text, accel, parent, name)
 {
-    connect( this, SIGNAL( activated( const QString& ) ),
-             this, SLOT( itemSelected( const QString& ) ) );
+  d = new KRecentFilesActionPrivate;
+  d->m_maxItems = maxItems;
+
+  connect( this, SIGNAL( activated( const QString& ) ),
+           this, SLOT( itemSelected( const QString& ) ) );
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text, int accel,
@@ -907,36 +1397,42 @@ KRecentFilesAction::KRecentFilesAction( const QString& text, int accel,
                                         const char* slot,
                                         QObject* parent, const char* name,
                                         unsigned int maxItems )
-  : KListAction( text, accel, parent, name),
-    m_maxItems( maxItems )
+  : KListAction( text, accel, parent, name)
 {
-    connect( this, SIGNAL( activated( const QString& ) ),
-             this, SLOT( itemSelected( const QString& ) ) );
+  d = new KRecentFilesActionPrivate;
+  d->m_maxItems = maxItems;
 
-    connect( this,     SIGNAL(urlSelected(const KURL&)),
-             receiver, slot );
+  connect( this, SIGNAL( activated( const QString& ) ),
+           this, SLOT( itemSelected( const QString& ) ) );
+
+  connect( this,     SIGNAL(urlSelected(const KURL&)),
+           receiver, slot );
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const QIconSet& pix, int accel,
                                         QObject* parent, const char* name,
                                         unsigned int maxItems )
-  : KListAction( text, pix, accel, parent, name),
-    m_maxItems( maxItems )
+  : KListAction( text, pix, accel, parent, name)
 {
-    connect( this, SIGNAL( activated( const QString& ) ),
-             this, SLOT( itemSelected( const QString& ) ) );
+  d = new KRecentFilesActionPrivate;
+  d->m_maxItems = maxItems;
+
+  connect( this, SIGNAL( activated( const QString& ) ),
+           this, SLOT( itemSelected( const QString& ) ) );
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const QString& pix, int accel,
                                         QObject* parent, const char* name,
                                         unsigned int maxItems )
-: KListAction( text, pix, accel, parent, name),
-    m_maxItems( maxItems )
+  : KListAction( text, pix, accel, parent, name)
 {
-    connect( this, SIGNAL( activated( const QString& ) ),
-             this, SLOT( itemSelected( const QString& ) ) );
+  d = new KRecentFilesActionPrivate;
+  d->m_maxItems = maxItems;
+
+  connect( this, SIGNAL( activated( const QString& ) ),
+           this, SLOT( itemSelected( const QString& ) ) );
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
@@ -945,14 +1441,16 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const char* slot,
                                         QObject* parent, const char* name,
                                         unsigned int maxItems )
-  : KListAction( text, pix, accel, parent, name),
-    m_maxItems( maxItems )
+  : KListAction( text, pix, accel, parent, name)
 {
-    connect( this, SIGNAL( activated( const QString& ) ),
-             this, SLOT( itemSelected( const QString& ) ) );
+  d = new KRecentFilesActionPrivate;
+  d->m_maxItems = maxItems;
 
-    connect( this,     SIGNAL(urlSelected(const KURL&)),
-             receiver, slot );
+  connect( this, SIGNAL( activated( const QString& ) ),
+           this, SLOT( itemSelected( const QString& ) ) );
+
+  connect( this,     SIGNAL(urlSelected(const KURL&)),
+           receiver, slot );
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString& text,
@@ -961,32 +1459,37 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const char* slot,
                                         QObject* parent, const char* name,
                                         unsigned int maxItems )
-: KListAction( text, pix, accel, parent, name),
-    m_maxItems( maxItems )
+  : KListAction( text, pix, accel, parent, name)
 {
-    connect( this, SIGNAL( activated( const QString& ) ),
-             this, SLOT( itemSelected( const QString& ) ) );
+  d = new KRecentFilesActionPrivate;
+  d->m_maxItems = maxItems;
 
-    connect( this,     SIGNAL(urlSelected(const KURL&)),
-             receiver, slot );
+  connect( this, SIGNAL( activated( const QString& ) ),
+           this, SLOT( itemSelected( const QString& ) ) );
+
+  connect( this,     SIGNAL(urlSelected(const KURL&)),
+           receiver, slot );
 }
 
 KRecentFilesAction::KRecentFilesAction( QObject* parent, const char* name,
                                         unsigned int maxItems )
-  : KListAction( parent, name ),
-    m_maxItems( maxItems )
+  : KListAction( parent, name )
 {
-    connect( this, SIGNAL( activated( const QString& ) ),
-             this, SLOT( itemSelected( const QString& ) ) );
+  d = new KRecentFilesActionPrivate;
+  d->m_maxItems = maxItems;
+
+  connect( this, SIGNAL( activated( const QString& ) ),
+           this, SLOT( itemSelected( const QString& ) ) );
 }
 
 KRecentFilesAction::~KRecentFilesAction()
 {
+  delete d; d = 0;
 }
 
 unsigned int KRecentFilesAction::maxItems()
 {
-    return m_maxItems;
+    return d->m_maxItems;
 }
 
 void KRecentFilesAction::setMaxItems( unsigned int maxItems )
@@ -995,7 +1498,7 @@ void KRecentFilesAction::setMaxItems( unsigned int maxItems )
     unsigned int oldCount = lst.count();
 
     // set new maxItems
-    m_maxItems = maxItems;
+    d->m_maxItems = maxItems;
 
     // remove all items that are too much
     while( lst.count() > maxItems )
@@ -1018,7 +1521,7 @@ void KRecentFilesAction::addURL( const KURL& url )
     lst.remove( file );
 
     // remove las item if already maxitems in list
-    if( lst.count() == m_maxItems )
+    if( lst.count() == d->m_maxItems )
     {
         // remove last item
         lst.remove( lst.last() );
@@ -1059,7 +1562,7 @@ void KRecentFilesAction::loadEntries( KConfig* config )
     config->setGroup( "RecentFiles" );
 
     // read file list
-    for( unsigned int i = 1 ; i <= m_maxItems ; i++ )
+    for( unsigned int i = 1 ; i <= d->m_maxItems ; i++ )
     {
         key = QString( "File%1" ).arg( i );
         value = config->readEntry( key, QString::null );
@@ -1101,238 +1604,341 @@ void KRecentFilesAction::itemSelected( const QString& text )
     emit urlSelected( KURL( text ) );
 }
 
-KFontAction::KFontAction( const QString& text, int accel, QObject* parent, const char* name )
-    : KSelectAction( text, accel, parent, name )
+class KFontAction::KFontActionPrivate
 {
-    get_fonts( fonts );
-    QSelectAction::setItems( fonts );
-    setEditable( TRUE );
+public:
+  KFontActionPrivate()
+  {
+  }
+  QStringList m_fonts;
+};
+
+KFontAction::KFontAction( const QString& text, int accel, QObject* parent,
+                          const char* name )
+  : KSelectAction( text, accel, parent, name )
+{
+  get_fonts( d->m_fonts );
+  KSelectAction::setItems( d->m_fonts );
+  setEditable( TRUE );
 }
 
 KFontAction::KFontAction( const QString& text, int accel,
-			  const QObject* receiver, const char* slot, QObject* parent, const char* name )
-    : KSelectAction( text, accel, receiver, slot, parent, name )
+                          const QObject* receiver, const char* slot,
+                          QObject* parent, const char* name )
+  : KSelectAction( text, accel, receiver, slot, parent, name )
 {
-    get_fonts( fonts );
-    QSelectAction::setItems( fonts );
-    setEditable( TRUE );
+  get_fonts( d->m_fonts );
+  KSelectAction::setItems( d->m_fonts );
+  setEditable( TRUE );
 }
 
 KFontAction::KFontAction( const QString& text, const QIconSet& pix, int accel,
-	       QObject* parent, const char* name )
-    : KSelectAction( text, pix, accel, parent, name )
+                          QObject* parent, const char* name )
+  : KSelectAction( text, pix, accel, parent, name )
 {
-    get_fonts( fonts );
-    QSelectAction::setItems( fonts );
-    setEditable( TRUE );
+  get_fonts( d->m_fonts );
+  KSelectAction::setItems( d->m_fonts );
+  setEditable( TRUE );
 }
 
 KFontAction::KFontAction( const QString& text, const QString& pix, int accel,
-	       QObject* parent, const char* name )
-: KSelectAction( text, pix, accel, parent, name )
+                          QObject* parent, const char* name )
+  : KSelectAction( text, pix, accel, parent, name )
 {
-    get_fonts( fonts );
-    QSelectAction::setItems( fonts );
-    setEditable( TRUE );
+  get_fonts( d->m_fonts );
+  KSelectAction::setItems( d->m_fonts );
+  setEditable( TRUE );
 }
 
 KFontAction::KFontAction( const QString& text, const QIconSet& pix, int accel,
-			  const QObject* receiver, const char* slot, QObject* parent, const char* name )
-    : KSelectAction( text, pix, accel, receiver, slot, parent, name )
+                          const QObject* receiver, const char* slot,
+                          QObject* parent, const char* name )
+  : KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
-    get_fonts( fonts );
-    QSelectAction::setItems( fonts );
-    setEditable( TRUE );
+  get_fonts( d->m_fonts );
+  KSelectAction::setItems( d->m_fonts );
+  setEditable( TRUE );
 }
 
 KFontAction::KFontAction( const QString& text, const QString& pix, int accel,
-			  const QObject* receiver, const char* slot, QObject* parent, const char* name )
-: KSelectAction( text, pix, accel, receiver, slot, parent, name )
+                          const QObject* receiver, const char* slot,
+                          QObject* parent, const char* name )
+  : KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
-    get_fonts( fonts );
-    QSelectAction::setItems( fonts );
-    setEditable( TRUE );
+  get_fonts( d->m_fonts );
+  KSelectAction::setItems( d->m_fonts );
+  setEditable( TRUE );
 }
 
 
 KFontAction::KFontAction( QObject* parent, const char* name )
-    : KSelectAction( parent, name )
+  : KSelectAction( parent, name )
 {
-    get_fonts( fonts );
-    QSelectAction::setItems( fonts );
-    setEditable( TRUE );
+  get_fonts( d->m_fonts );
+  KSelectAction::setItems( d->m_fonts );
+  setEditable( TRUE );
 }
 
 void KFontAction::setFont( const QString &family )
 {
-    int i = fonts.findIndex( family.lower() );
-    if ( i != -1 )
-	setCurrentItem( i );
+  int i = d->m_fonts.findIndex( family.lower() );
+  if ( i != -1 )
+    setCurrentItem( i );
 }
 
 int KFontAction::plug( QWidget *w, int index )
 {
-    int container = KSelectAction::plug( w, index );
+  int container = KSelectAction::plug( w, index );
 
-    if ( container != -1 && w->inherits( "KToolBar" ) )
-	((KToolBar *)w)->getCombo( menuId( container ) )->setAutoCompletion( TRUE );
+  if ( container != -1 && w->inherits( "KToolBar" ) )
+    ((KToolBar *)w)->getCombo( menuId( container ) )->setAutoCompletion( TRUE );
 
-    return container;
+  return container;
+}
+
+class KFontSizeAction::KFontSizeActionPrivate
+{
+public:
+  KFontSizeActionPrivate()
+  {
+    m_lock = false;
+  }
+  bool m_lock;
+};
+
+KFontSizeAction::KFontSizeAction( const QString& text, int accel,
+                                  QObject* parent, const char* name )
+  : KSelectAction( text, accel, parent, name )
+{
+  init();
 }
 
 KFontSizeAction::KFontSizeAction( const QString& text, int accel,
-				  QObject* parent, const char* name )
-    : KSelectAction( text, accel, parent, name )
+                                  const QObject* receiver, const char* slot,
+                                  QObject* parent, const char* name )
+  : KSelectAction( text, accel, receiver, slot, parent, name )
 {
-    init();
+  init();
 }
 
-KFontSizeAction::KFontSizeAction( const QString& text, int accel,
-				  const QObject* receiver, const char* slot, QObject* parent,
-				  const char* name )
-    : KSelectAction( text, accel, receiver, slot, parent, name )
+KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix,
+                                  int accel, QObject* parent, const char* name )
+  : KSelectAction( text, pix, accel, parent, name )
 {
-    init();
+  init();
 }
 
-KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix, int accel,
-				  QObject* parent, const char* name )
-    : KSelectAction( text, pix, accel, parent, name )
+KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix,
+                                  int accel, QObject* parent, const char* name )
+  : KSelectAction( text, pix, accel, parent, name )
 {
-    init();
+  init();
 }
 
-KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix, int accel,
-				  QObject* parent, const char* name )
-: KSelectAction( text, pix, accel, parent, name )
-{
-    init();
-}
-
-KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix, int accel,
-				  const QObject* receiver, const char* slot, QObject* parent,
-				  const char* name )
+KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix,
+                                  int accel, const QObject* receiver,
+                                  const char* slot, QObject* parent,
+                                  const char* name )
     : KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
-    init();
+  init();
 }
 
-KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix, int accel,
-				  const QObject* receiver, const char* slot, QObject* parent,
-				  const char* name )
-: KSelectAction( text, pix, accel, receiver, slot, parent, name )
+KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix,
+                                  int accel, const QObject* receiver,
+                                  const char* slot, QObject* parent,
+                                  const char* name )
+  : KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
-    init();
+  init();
 }
 
 KFontSizeAction::KFontSizeAction( QObject* parent, const char* name )
-    : KSelectAction( parent, name )
+  : KSelectAction( parent, name )
 {
-    init();
+  init();
+}
+
+KFontSizeAction::~KFontSizeAction()
+{
+  delete d; d = 0;
 }
 
 void KFontSizeAction::init()
 {
-    m_lock = FALSE;
+  d = new KFontSizeActionPrivate;
 
-    setEditable( TRUE );
-    QStringList lst;
-    for ( unsigned int i = 0; i < 100; ++i )
-	lst.append( QString().setNum( i + 1 ) );
+  setEditable( TRUE );
+  QStringList lst;
+  for ( unsigned int i = 0; i < 100; ++i )
+    lst.append( QString().setNum( i + 1 ) );
 
-    QSelectAction::setItems( lst );
+  setItems( lst );
 }
 
 void KFontSizeAction::setFontSize( int size )
 {
-    if ( size == fontSize() )
-	return;
+  if ( size == fontSize() )
+    return;
 
-    if ( size < 1 || size > 128 )
-    {
-	qDebug( "KFontSizeAction: Size %i is out of range", size );
-	return;
-    }
+  if ( size < 1 || size > 128 )
+  {
+    qDebug( "KFontSizeAction: Size %i is out of range", size );
+    return;
+  }
 
-    int index = items().findIndex( QString::number( size ) );
-    if ( index == -1 )
-    {
-	QStringList lst = items();
-	lst.append( QString::number( size ) );
-	qHeapSort( lst );
-	QSelectAction::setItems( lst );
-	index = lst.findIndex( QString::number( size ) );
-	setCurrentItem( index );
-    }
-    else
-    {
-	// Avoid dupes in combo boxes ...
-	//setItems( items() );
-	setCurrentItem( index );
-    }
+  int index = items().findIndex( QString::number( size ) );
+  if ( index == -1 )
+  {
+    QStringList lst = items();
+    lst.append( QString::number( size ) );
+    qHeapSort( lst );
+    KSelectAction::setItems( lst );
+    index = lst.findIndex( QString::number( size ) );
+    setCurrentItem( index );
+  }
+  else
+    setCurrentItem( index );
 
-    emit QAction::activated();
-    emit activated( index );
-    emit activated( QString::number( size ) );
-    emit fontSizeChanged( size );
+  emit KAction::activated();
+  emit activated( index );
+  emit activated( QString::number( size ) );
+  emit fontSizeChanged( size );
 }
 
 int KFontSizeAction::fontSize()
 {
-    return currentText().toInt();
+  return currentText().toInt();
 }
 
 void KFontSizeAction::slotActivated( int index )
 {
-    QSelectAction::slotActivated( index );
+  KSelectAction::slotActivated( index );
 
-    emit fontSizeChanged( items()[ index ].toInt() );
+  emit fontSizeChanged( items()[ index ].toInt() );
 }
 
 void KFontSizeAction::slotActivated( const QString& size )
 {
-    if ( m_lock )
-	return;
+  if ( d->m_lock )
+    return;
 
-    if ( size.toInt() < 1 || size.toInt() > 128 )
-    {
-	qDebug( "KFontSizeAction: Size %s is out of range", size.latin1() );
-	return;
-    }
+  if ( size.toInt() < 1 || size.toInt() > 128 )
+  {
+    qDebug( "KFontSizeAction: Size %s is out of range", size.latin1() );
+    return;
+  }
 
-    m_lock = TRUE;
-    setFontSize( size.toInt() );
-    m_lock = FALSE;
+  d->m_lock = TRUE;
+  setFontSize( size.toInt() );
+  d->m_lock = FALSE;
 }
+
+class KActionMenu::KActionMenuPrivate
+{
+public:
+  KActionMenuPrivate()
+  {
+    m_popup = new QPopupMenu;
+    m_popup->setFont(KGlobal::menuFont());
+  }
+  ~KActionMenuPrivate()
+  {
+    delete m_popup; m_popup = 0;
+  }
+  QPopupMenu *m_popup;
+};
 
 KActionMenu::KActionMenu( QObject* parent, const char* name )
- : QActionMenu( parent, name )
+  : KAction( parent, name )
 {
-    popupMenu()->setFont(KGlobal::menuFont());
+  d = new KActionMenuPrivate;
 }
 
-KActionMenu::KActionMenu( const QString& text, QObject* parent, const char* name )
- : QActionMenu( text, parent, name )
+KActionMenu::KActionMenu( const QString& text, QObject* parent,
+                          const char* name )
+  : KAction( text, 0, parent, name )
 {
-    popupMenu()->setFont(KGlobal::menuFont());
+  d = new KActionMenuPrivate;
 }
 
-KActionMenu::KActionMenu( const QString& text, const QIconSet& icon, QObject* parent, const char* name )
- : QActionMenu( text, icon, parent, name )
+KActionMenu::KActionMenu( const QString& text, const QIconSet& icon,
+                          QObject* parent, const char* name )
+  : KAction( text, icon, 0, parent, name )
 {
-    popupMenu()->setFont(KGlobal::menuFont());
+  d = new KActionMenuPrivate;
 }
+
+KActionMenu::~KActionMenu()
+{
+  delete d; d = 0;
+}
+
+void KActionMenu::popup( const QPoint& global )
+{
+  popupMenu()->popup( global );
+}
+
+QPopupMenu* KActionMenu::popupMenu()
+{
+  return d->m_popup;
+}
+
+void KActionMenu::insert( KAction* cmd, int index )
+{
+  if ( cmd )
+    cmd->plug( d->m_popup, index );
+}
+
+void KActionMenu::remove( KAction* cmd )
+{
+  if ( cmd )
+    cmd->unplug( d->m_popup );
+}
+
 
 int KActionMenu::plug( QWidget* widget, int index )
 {
+  if ( widget->inherits("QMenuBar") )
+  {
+    QMenuBar* bar = (QMenuBar*)widget;
+    int id;
+    id = bar->insertItem( text(), d->m_popup, -1, index );
 
-  if ( widget->inherits( "KToolBar" ) )
+    addContainer( bar, id );
+    connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+
+    return containerCount() - 1;	
+  }
+  else if ( widget->inherits("QPopupMenu") )
+  {
+    QPopupMenu* menu = (QPopupMenu*)widget;
+    int id;
+    if ( !pixmap().isNull() )
+      id = menu->insertItem( pixmap(), d->m_popup, -1, index );	
+    else
+    {
+      if ( hasIconSet() )
+        id = menu->insertItem( iconSet(), text(), d->m_popup, -1, index );
+      else
+        id = menu->insertItem( text(), d->m_popup, -1, index );
+    }
+
+    menu->setItemEnabled( id, isEnabled() );
+
+    addContainer( menu, id );
+    connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+
+    return containerCount() - 1;	
+  }
+  else if ( widget->inherits( "KToolBar" ) )
   {
     KToolBar *bar = (KToolBar *)widget;
 
     int id_ = KAction::getToolButtonID();
-    bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
-		       isEnabled(), plainText(), index );
+    bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
+                       SLOT( slotActivated() ), isEnabled(), plainText(),
+                       index );
 
     addContainer( bar, id_ );
 
@@ -1356,11 +1962,21 @@ int KActionMenu::plug( QWidget* widget, int index )
     return containerCount() - 1;
   }
 
-  return QActionMenu::plug( widget, index );
+  return -1;
 }
 
 void KActionMenu::unplug( QWidget* widget )
 {
+  if ( widget->inherits("QMenuBar") )
+  {
+    QMenuBar* bar = (QMenuBar*)widget;
+    int i = findContainer( bar );
+    if ( i != -1 )
+    {
+      bar->removeItem( menuId( i ) );
+      removeContainer( i );
+    }
+  }
   if ( widget->inherits( "KToolBar" ) )
   {
     KToolBar *bar = (KToolBar *)widget;
@@ -1387,8 +2003,8 @@ void KActionMenu::unplug( QWidget* widget )
 
     return;
   }
-
-  QActionMenu::unplug( widget );
+  else
+    KAction::unplug( widget );
 }
 
 void KActionMenu::setEnabled( int id, bool b )
@@ -1398,7 +2014,7 @@ void KActionMenu::setEnabled( int id, bool b )
   if ( w->inherits( "KToolBar" ) )
     ((KToolBar *)w)->setItemEnabled( menuId( id ), b );
 
-  QActionMenu::setEnabled( id, b );
+  KAction::setEnabled( id, b );
 }
 
 void KActionMenu::setText( int id, const QString& text )
@@ -1412,7 +2028,7 @@ void KActionMenu::setText( int id, const QString& text )
      ((KToolBarButton *)button)->setText( text );
   }
 
-  QActionMenu::setText( id, text );
+  KAction::setText( id, text );
 }
 
 
@@ -1423,17 +2039,32 @@ void KActionMenu::setIconSet( int id, const QIconSet& iconSet )
   if ( w->inherits( "KToolBar" ) )
     ((KToolBar *)w)->setButtonPixmap( menuId( id ), iconSet.pixmap() );
 
-  QActionMenu::setIconSet( id, iconSet );
+  KAction::setIconSet( id, iconSet );
 }
 
 KActionSeparator::KActionSeparator( QObject *parent, const char *name )
-: QActionSeparator( parent, name )
+  : KAction( parent, name )
+{
+}
+
+KActionSeparator::~KActionSeparator()
 {
 }
 
 int KActionSeparator::plug( QWidget *widget, int index )
 {
-  if ( widget->inherits( "KMenuBar" ) )
+  if ( widget->inherits("QPopupMenu") )
+  {
+    QPopupMenu* menu = (QPopupMenu*)widget;
+
+    int id = menu->insertSeparator( index );
+
+    addContainer( menu, id );
+    connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+
+    return containerCount() - 1;
+  }
+  else if ( widget->inherits( "KMenuBar" ) )
   {
     KMenuBar *menuBar = (KMenuBar *)widget;
 
@@ -1458,12 +2089,22 @@ int KActionSeparator::plug( QWidget *widget, int index )
     return containerCount() - 1;
   }
 
-  return QActionSeparator::plug( widget, index );
+  return -1;
 }
 
 void KActionSeparator::unplug( QWidget *widget )
 {
-  if ( widget->inherits( "KMenuBar" ) )
+  if ( widget->inherits("QPopupMenu") )
+  {
+    QPopupMenu* menu = (QPopupMenu*)widget;
+    int i = findContainer( menu );
+    if ( i != -1 )
+    {
+      menu->removeItem( menuId( i ) );
+      removeContainer( i );
+    }
+  }
+  else if ( widget->inherits( "KMenuBar" ) )
   {
     KMenuBar *menuBar = (KMenuBar *)widget;
 
@@ -1490,11 +2131,10 @@ void KActionSeparator::unplug( QWidget *widget )
     return;
   }
 
-  QActionSeparator::unplug( widget );
   return;
 }
 
-class KActionCollectionPrivate
+class KActionCollection::KActionCollectionPrivate
 {
 public:
   KActionCollectionPrivate()
@@ -1504,34 +2144,154 @@ public:
   {
   }
   KInstance *m_instance;
+  QList<KAction> m_actions;
 };
 
-KActionCollection::KActionCollection( QObject *parent, const char *name, KInstance *instance )
-: QActionCollection( parent, name )
+KActionCollection::KActionCollection( QObject *parent, const char *name,
+                                      KInstance *instance )
+  : QObject( parent, name )
 {
   d = new KActionCollectionPrivate;
   setInstance( instance );
 }
 
 KActionCollection::KActionCollection( const KActionCollection &copy )
-: QActionCollection( copy )
 {
   d = new KActionCollectionPrivate; 
+  d->m_actions = copy.d->m_actions;
   setInstance( copy.instance() );
 }
 
 KActionCollection::~KActionCollection()
 {
-  delete d; 
+  delete d; d = 0;
 } 
+
+void KActionCollection::childEvent( QChildEvent* ev )
+{
+  if ( ev->inserted() && ev->child()->inherits( "KAction" ) )
+    insert( (KAction*)ev->child() );
+  else if ( ev->removed() )
+    // We can not emit a removed signal here since the
+    // actions destructor did already run :-(
+    d->m_actions.remove( (KAction*)ev->child() );
+}
+
+void KActionCollection::insert( KAction* action )
+{
+  uint len = d->m_actions.count();
+  for( uint i = 0; i < len; ++i )
+  {
+    KAction* a = d->m_actions.at( i );
+    if ( action == a )
+      return;
+  }
+
+  d->m_actions.append( action );
+  emit inserted( action );
+}
+
+void KActionCollection::remove( KAction* action )
+{
+  uint len = d->m_actions.count();
+  for( uint i = 0; i < len; ++i )
+  {
+    KAction* a = d->m_actions.at( i );
+    if ( action == a )
+    {
+      d->m_actions.remove( i );
+      emit removed( action );
+      delete action;
+      return;
+    }
+  }
+}
+
+KAction* KActionCollection::take( KAction* action )
+{
+  uint len = d->m_actions.count();
+  for( uint i = 0; i < len; ++i )
+  {
+    KAction* a = d->m_actions.at( i );
+    if ( action == a )
+    {
+      d->m_actions.remove( a );
+      emit removed( action );
+      return a;
+    }
+  }
+
+  return 0;
+}
+
+KAction* KActionCollection::action( const char* name, const char* classname,
+                                    QObject* component )
+{
+  QListIterator<KAction> it( d->m_actions );
+  for( ; it.current(); ++it )
+  {
+    if ( ( !name || strcmp( it.current()->name(), name ) == 0 ) &&
+        ( !classname || strcmp( it.current()->className(), classname ) == 0 ) &&
+        ( !component || component == it.current()->component() ) )
+      return it.current();
+  }
+  return 0;
+}
+
+KAction* KActionCollection::action( int index )
+{
+  return d->m_actions.at( index );
+}
+
+uint KActionCollection::count() const
+{
+  return d->m_actions.count();
+}
+
+QStringList KActionCollection::groups() const
+{
+  QStringList lst;
+
+  QListIterator<KAction> it( d->m_actions );
+  for( ; it.current(); ++it )
+    if ( !it.current()->group().isEmpty() && !lst.contains( it.current()->group() ) )
+      lst.append( it.current()->group() );
+
+  return lst;
+}
+
+QValueList<KAction*> KActionCollection::actions( const QString& group ) const
+{
+  QValueList<KAction*> lst;
+
+  QListIterator<KAction> it( d->m_actions );
+  for( ; it.current(); ++it )
+    if ( it.current()->group() == group )
+      lst.append( it.current() );
+    else if ( it.current()->group().isEmpty() && group.isEmpty() )
+      lst.append( it.current() );
+
+  return lst;
+}
+
+QValueList<KAction*> KActionCollection::actions() const
+{
+  QValueList<KAction*> lst;
+
+  QListIterator<KAction> it( d->m_actions );
+  for( ; it.current(); ++it )
+    lst.append( it.current() );
+
+  return lst;
+}
 
 KActionCollection KActionCollection::operator+(const KActionCollection &c ) const
 {
   KActionCollection ret( *this );
 
-  QValueList<QAction *> actions = c.actions();
-  QValueList<QAction *>::ConstIterator it = actions.begin();
-  QValueList<QAction *>::ConstIterator end = actions.end();
+  QValueList<KAction *> actions = c.actions();
+  QValueList<KAction *>::ConstIterator it = actions.begin();
+  QValueList<KAction *>::ConstIterator end = actions.end();
   for (; it != end; ++it )
     ret.insert( *it );
 
@@ -1540,15 +2300,18 @@ KActionCollection KActionCollection::operator+(const KActionCollection &c ) cons
 
 KActionCollection &KActionCollection::operator=( const KActionCollection &c )
 {
-  QActionCollection::operator=( c );  
+  d->m_actions = c.d->m_actions;
   setInstance( c.instance() );
   return *this;
 } 
 
 KActionCollection &KActionCollection::operator+=( const KActionCollection &c )
 {
- QActionCollection::operator+=( c );
- return *this;
+  QListIterator<KAction> it(c.d->m_actions);
+  for ( ; it.current(); ++it )
+    insert( it.current() );
+
+  return *this;
 } 
 
 void KActionCollection::setInstance( KInstance *instance )

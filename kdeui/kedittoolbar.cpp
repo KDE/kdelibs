@@ -173,7 +173,7 @@ public:
   }
 
 
-  QActionCollection *m_collection;
+  KActionCollection *m_collection;
   KInstance         *m_instance;
 
   XmlData     m_currentXmlData;
@@ -191,7 +191,7 @@ public:
   XmlDataList m_xmlFiles;
 };
 
-KEditToolbar::KEditToolbar(QActionCollection *collection, const QString& file,
+KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
                            bool global)
     : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Cancel, Cancel),
       m_widget(new KEditToolbarWidget(collection, file, global, this))
@@ -203,7 +203,7 @@ KEditToolbar::KEditToolbar(QActionCollection *collection, const QString& file,
     enableButtonOK(false);
 }
 
-KEditToolbar::KEditToolbar(QActionCollection *collection,
+KEditToolbar::KEditToolbar(KActionCollection *collection,
                            const QString& shellxml,
                            const QString& partxml)
     : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Cancel, Cancel),
@@ -228,7 +228,7 @@ void KEditToolbar::slotOk()
     accept();
 }
 
-KEditToolbarWidget::KEditToolbarWidget(QActionCollection *collection,
+KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
                                        const QString& file,
                                        bool global, QWidget *parent)
   : QWidget(parent),
@@ -270,7 +270,7 @@ KEditToolbarWidget::KEditToolbarWidget(QActionCollection *collection,
   loadToolbarCombo();
 }
 
-KEditToolbarWidget::KEditToolbarWidget(QActionCollection *collection,
+KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
                                        const QString& shellxml,
                                        const QString& partxml,
                                        QWidget *parent)
@@ -673,7 +673,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     // iterate through all of our actions
     for (unsigned int i = 0;  i < d->m_collection->count(); i++)
     {
-      QAction *action = d->m_collection->action(i);
+      KAction *action = d->m_collection->action(i);
 
       // do we have a match?
       if (it.attribute( attrName ) == action->name())
@@ -693,7 +693,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   // go through the rest of the collection
   for (int i = d->m_collection->count() - 1; i > -1; --i)
   {
-    QAction *action = d->m_collection->action(i);
+    KAction *action = d->m_collection->action(i);
 
     // skip our active ones
     if (active_list.contains(action->name()))
@@ -715,7 +715,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   act->setText(1, "-----");
 }
 
-QActionCollection *KEditToolbarWidget::actionCollection() const
+KActionCollection *KEditToolbarWidget::actionCollection() const
 {
   return d->m_collection;
 }

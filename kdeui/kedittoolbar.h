@@ -22,7 +22,7 @@
 #include <kxmlguiclient.h>
 #include <kdialogbase.h>
 
-class QActionCollection;
+class KActionCollection;
 class QComboBox;
 class QPushButton;
 class KListView;;
@@ -66,7 +66,7 @@ class KEditToolbarWidgetPrivate;
  * An example would be:
  *
  * <pre>
- * QActionCollection collection;
+ * KActionCollection collection;
  * collection = *actionCollection() + *m_part->actionCollection();
  * KEditToolbar dlg(&collection, xmlFile(), m_part->xmlFile());
  * if (dlg.exec())
@@ -107,7 +107,7 @@ public:
    * @param global If true, then the global resource file will also
    *               be parsed
    */
-  KEditToolbar(QActionCollection *collection,
+  KEditToolbar(KActionCollection *collection,
                const QString& xmlfile = QString::null, bool global = true);
 
   /**
@@ -130,7 +130,7 @@ public:
    * @param xmlfile The shell XML resource file
    * @param partxml The active part's XML resource file
    */
-  KEditToolbar(QActionCollection *collection, const QString& shellxml,
+  KEditToolbar(KActionCollection *collection, const QString& shellxml,
                const QString& partxml);
 
 protected slots:
@@ -197,7 +197,7 @@ public:
    *               be parsed
    * @param parent This widget's parent
    */
-  KEditToolbarWidget(QActionCollection *collection,
+  KEditToolbarWidget(KActionCollection *collection,
                      const QString& file = QString::null,
                      bool global = true, QWidget *parent = 0L);
 
@@ -224,7 +224,7 @@ public:
    * @param partxml The active part's XML resource file
    * @param parent This widget's parent
    */
-  KEditToolbarWidget(QActionCollection *collection, const QString& shellxml,
+  KEditToolbarWidget(KActionCollection *collection, const QString& shellxml,
                      const QString& partxml, QWidget *parent = 0L);
 
   /**
@@ -242,7 +242,7 @@ public:
    *
    * @return Your application's collection of actions
    */
-  virtual QActionCollection *actionCollection() const;
+  virtual KActionCollection *actionCollection() const;
 
   /**
    * Save any changes the user made.  The file will be in the user's

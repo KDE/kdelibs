@@ -21,7 +21,6 @@
 class KRecentFilesAction;
 class KToggleAction;
 class KAction;
-class QAction;
 class QObject;
 
 class KStdActionPrivate;
@@ -163,7 +162,7 @@ public:
      * Retrieve the action corresponding to the
      * @ref KStdAction::StdAction enum.
      */
-    static QAction *action(StdAction act_enum, const QObject *recvr = 0,
+    static KAction *action(StdAction act_enum, const QObject *recvr = 0,
                            const char *slot = 0, QObject *parent = 0,
                            const char *name = 0L );
 

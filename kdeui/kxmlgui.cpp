@@ -37,7 +37,7 @@
 struct KXMLGUIContainerClient
 {
   KXMLGUIClient *m_client;
-  QList<QAction> m_actions;
+  QList<KAction> m_actions;
   bool m_mergedClient;
   QValueList<int> m_separators;
   QString m_groupName; //is empty if no group client
@@ -198,7 +198,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
       if ( e.tagName().lower() != tagAction )
         continue;
       
-      QAction *action = m_client->action( e );
+      KAction *action = m_client->action( e );
       if ( !action )
         continue;
       
@@ -213,7 +213,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 	if ( attr.name() == attrName )
 	  continue;
 	
-	// NOW THIS IS A REALLY UGLY HACK! I WISH IT WOULD NOT BE NECESSARY..... if we just could add properties to QAction and
+	// NOW THIS IS A REALLY UGLY HACK! I WISH IT WOULD NOT BE NECESSARY..... if we just could add properties to KAction and
 	// would know what's up with libqk :-(
 	// (Simon)
 	if ( attr.name().lower() == "icon" )
@@ -387,7 +387,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 
       if ( tag == tagAction )
       {
-        QAction *action = m_client->action( e );
+        KAction *action = m_client->action( e );
 
 	if ( !action )
 	  continue;
@@ -499,7 +499,7 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
 	for (; sepIt != sepEnd; ++sepIt )
 	  node->builder->removeSeparator( node->container, *sepIt );
 
-        QListIterator<QAction> actionIt( clientIt.current()->m_actions );
+        QListIterator<KAction> actionIt( clientIt.current()->m_actions );
         for (; actionIt.current(); ++actionIt )
         {
           kdDebug(1002) << "unplugging " << actionIt.current()->name() << " from " << node->container->name() << endl;
