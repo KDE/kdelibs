@@ -305,6 +305,35 @@ public:
    void CRYPTO_free(void *x);
 
 
+   /*
+    *   BIO_new_fp - nastiness called BIO - used to create BIO* from FILE*
+    */
+   BIO *BIO_new_fp(FILE *stream, int close_flag);
+
+
+   /*
+    *   BIO_free - nastiness called BIO - used to destroy BIO*
+    */
+   int BIO_free(BIO *a);
+
+
+   /*
+    *   PEM_write_bio_X509 - write a PEM encoded cert to a BIO*
+    */
+   int PEM_write_bio_X509(BIO *bp, X509 *x);
+
+
+   /*
+    *   X509_asn1_meth - used for netscape output
+    */
+   ASN1_METHOD *X509_asn1_meth();
+
+
+   /*
+    *   ASN1_i2d_fp - used for netscape output
+    */
+   int ASN1_i2d_fp(FILE *out, unsigned char *x);
+
 
 
 #endif

@@ -27,10 +27,13 @@
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
 #include <openssl/pem.h>
+#include <openssl/bio.h>
 #include <openssl/rand.h>
+#include <openssl/asn1.h>
 #undef crypt
 #endif
 
+#include <stdio.h>
 #include "kopenssl.h"
 
 #ifdef HAVE_SSL
@@ -79,6 +82,14 @@ static int (*K_X509_LOOKUP_ctrl)(X509_LOOKUP *, int, const char *, long, char **
 static void (*K_X509_STORE_CTX_init)(X509_STORE_CTX *, X509_STORE *, X509 *, STACK_OF(X509) *) = NULL;
 static void (*K_CRYPTO_free)       (void *) = NULL;
 static X509* (*K_X509_dup)         (X509 *) = NULL;
+static BIO* (*K_BIO_new_fp)   (FILE *, int) = NULL;
+static int  (*K_BIO_free)           (BIO *) = NULL;
+static int (*K_PEM_ASN1_write_bio) (int (*)(),const char *,BIO *,char *,
+                                   const EVP_CIPHER *,unsigned char *,int ,
+                                            pem_password_cb *, void *) = NULL;
+static ASN1_METHOD* (*K_X509_asn1_meth) (void) = NULL;
+static int (*K_ASN1_i2d_fp)(int (*)(),FILE *,unsigned char *) = NULL;
+static int (*K_i2d_ASN1_HEADER)(ASN1_HEADER *, unsigned char **) = NULL;
 };
 #endif
 
@@ -161,6 +172,13 @@ KConfig *cfg;
       K_X509_LOOKUP_ctrl = (int (*)(X509_LOOKUP *, int, const char *, long, char **)) _cryptoLib->symbol("X509_LOOKUP_ctrl");
       K_X509_STORE_CTX_init = (void (*)(X509_STORE_CTX *, X509_STORE *, X509 *, STACK_OF(X509) *)) _cryptoLib->symbol("X509_STORE_CTX_init");
       K_X509_dup = (X509* (*)(X509*)) _cryptoLib->symbol("X509_dup");
+      K_BIO_new_fp = (BIO* (*)(FILE*, int)) _cryptoLib->symbol("BIO_new_fp");
+      K_BIO_free = (int (*)(BIO*)) _cryptoLib->symbol("BIO_free");
+      K_PEM_ASN1_write_bio = (int (*)(int (*)(), const char *,BIO*, char*, const EVP_CIPHER *, unsigned char *, int, pem_password_cb *, void *)) _cryptoLib->symbol("PEM_ASN1_write_bio");
+      K_X509_asn1_meth = (ASN1_METHOD* (*)(void)) _cryptoLib->symbol("X509_asn1_meth");
+      K_ASN1_i2d_fp = (int (*)(int (*)(), FILE*, unsigned char *)) _cryptoLib->symbol("ASN1_i2d_fp");
+      K_i2d_ASN1_HEADER = (int (*)(ASN1_HEADER *, unsigned char **)) _cryptoLib->symbol("i2d_ASN1_HEADER");
+
 #endif
    }
 
@@ -508,6 +526,35 @@ X509 *KOpenSSLProxy::X509_dup(X509 *x509) {
 }
 
 
+BIO *KOpenSSLProxy::BIO_new_fp(FILE *stream, int close_flag) {
+   if (K_BIO_new_fp) return (K_BIO_new_fp)(stream, close_flag);
+   return NULL;
+}
+
+
+int KOpenSSLProxy::BIO_free(BIO *a) {
+   if (K_BIO_free) return (K_BIO_free)(a);
+   return -1;
+}
+
+
+int KOpenSSLProxy::PEM_write_bio_X509(BIO *bp, X509 *x) {
+   if (K_PEM_ASN1_write_bio) return (K_PEM_ASN1_write_bio) ((int (*)())K_i2d_X509, PEM_STRING_X509, bp, (char *)x, NULL, NULL, 0, NULL, NULL);
+   else return -1;
+}
+
+
+ASN1_METHOD *KOpenSSLProxy::X509_asn1_meth(void) {
+   if (K_X509_asn1_meth) return (K_X509_asn1_meth)();
+   else return NULL;
+}
+
+
+int KOpenSSLProxy::ASN1_i2d_fp(FILE *out,unsigned char *x) {
+   if (K_ASN1_i2d_fp && K_i2d_ASN1_HEADER) 
+        return (K_ASN1_i2d_fp)((int (*)())K_i2d_ASN1_HEADER, out, x);
+   else return -1;
+}
 
 
 #endif

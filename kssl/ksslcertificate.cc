@@ -31,6 +31,7 @@
 #include <kmdcodec.h>
 #include <klocale.h>
 #include <qdatetime.h>
+#include <ktempfile.h>
 
 #include <sys/types.h>
 
@@ -488,7 +489,7 @@ QByteArray qba;
       d->kossl->i2d_X509(getCert(), (unsigned char **)&p);
  
       // encode it into a QString
-      qba.setRawData(cert, certlen);
+      qba.duplicate(cert, certlen);
       delete[] cert;
 #endif
 return qba;
@@ -498,46 +499,51 @@ return qba;
 
 QByteArray KSSLCertificate::toPem() {
 QByteArray qba;
-#ifdef xxHAVE_SSL
-      // Look at the hell that OpenSSL has created for us:
-      int fds[2];
-      int rc = pipe(fds);
-      if (rc < 0) return qba;
-      FILE *fp = fdopen(fds[1], w);
+QString thecert = toString();
+const char *header = "-----BEGIN CERTIFICATE-----\n";
+const char *footer = "\n-----END CERTIFICATE-----\n";
 
-      if (!fp) {
-         close(fds[0]);
-         close(fds[1]);
-      }
-      
-      // i=PEM_write_bio_X509(out,x);
-      int i = PEM_ASN1_write(, PEM_STRING_X509, fp, x, NULL, NULL, 0, NULL, NULL);
- 
-      // copy the stream into the QByteArray
+   // We just do base64 on the ASN1
+   //  64 character lines  (unpadded)
+   for (unsigned int i = 0; i < (thecert.length()-1)/64; i++) {
+      thecert.insert(64*(i+1)+i, '\n');
+   }
+   thecert.prepend(header);
+   thecert.append(footer);
 
-      fclose(fp);
-      close(fds[0]);
-
-#endif
+   qba.duplicate(thecert.local8Bit(), thecert.length());
 return qba;
 }
 
 
+#define NETSCAPE_CERT_HDR     "certificate"
 
+// what a piece of crap this is
 QByteArray KSSLCertificate::toNetscape() {
 QByteArray qba;
 #ifdef HAVE_SSL
-      //        ASN1_HEADER ah;
-      //        ASN1_OCTET_STRING os;
+      ASN1_HEADER ah;
+      ASN1_OCTET_STRING os;
+      KTempFile ktf;
  
-      //        os.data=(unsigned char *)NETSCAPE_CERT_HDR;
-      //        os.length=strlen(NETSCAPE_CERT_HDR);
-      //        ah.header= &os;
-      //        ah.data=(char *)x;
-      //        ah.meth=X509_asn1_meth();
+      os.data=(unsigned char *)NETSCAPE_CERT_HDR;
+      os.length=strlen(NETSCAPE_CERT_HDR);
+      ah.header= &os;
+      ah.data=(char *)getCert();
+      ah.meth=d->kossl->X509_asn1_meth();
  
-      //        /* no macro for this one yet */
-      //        i=ASN1_i2d_bio(i2d_ASN1_HEADER,out,(unsigned char *)&ah);
+      d->kossl->ASN1_i2d_fp(ktf.fstream(),(unsigned char *)&ah);
+
+      ktf.close();
+      QFile qf(ktf.name());
+      qf.open(IO_ReadOnly);
+      char *buf = new char[qf.size()];
+      qf.readBlock(buf, qf.size());
+      qba.duplicate(buf, qf.size());
+      qf.close();
+      delete[] buf;
+
+      ktf.unlink();
 
 #endif
 return qba;
