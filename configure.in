@@ -143,6 +143,9 @@ AC_SUBST(PARTS_INCLUDES)
 LIB_KOM='$(top_builddir)/corba/kom/libkom.la'
 AC_SUBST(LIB_KOM)
 
+LIB_KDEUTIL='$(top_builddir)/kdeutils/libkdeutil.la'
+AC_SUBST(LIB_KDEUTIL)
+
 idldir="\$(includedir)/idl"
 AC_SUBST(idldir)
 

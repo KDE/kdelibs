@@ -32,7 +32,8 @@ $(BUILDDIR)/build-stamp:
 	CFLAGS="-O2 -Wall -Wno-uninitialized -g -pipe" \
 	CXXFLAGS="-O2 -Wall -Wno-uninitialized -g -pipe" \
 	../configure --prefix=/opt/kde2pre --enable-debug \
-	--disable-rpath --with-qt-dir=/usr/lib/qt2beta
+	--disable-rpath --with-qt-dir=/usr/lib/qt2beta \
+	--with-micodir=/usr --with-pythondir=/usr
 #	--includedir=\$$(prefix)/include/kde \
 #	--libdir=/usr/X11R6/lib  
 	
@@ -46,6 +47,9 @@ debian-clean:
 
 clean: debian-clean
 	-rm -rf $(BUILDDIR)
+	if test -d CVS; then \
+	  make -f admin/Makefile.common cvs-clean ;\
+	fi
 	dh_clean 
 
 binary-indep:	build
