@@ -8,6 +8,7 @@
 #include "ltdl.h"
 
 class KInstance;
+class QTimer;
 
 /**
  * If you develop a library that is to be loaded dynamically at runtime, then
@@ -56,7 +57,7 @@ public:
      * Create a new factory.
      */
     KLibFactory( QObject* parent = 0, const char* name = 0 );
-    ~KLibFactory();
+    virtual ~KLibFactory();
 
     QObject* create( ClassType type, QObject* parent = 0, const char* name = 0 );
     /**
@@ -68,6 +69,10 @@ public:
      * specific features.
      */
     virtual QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject" ) = 0;
+
+signals:
+    void objectCreated( QObject *obj );
+
 };
 
 /**
@@ -77,8 +82,9 @@ public:
  *
  * @author Torben Weis <weis@kde.org>
  */
-class KLibrary
+class KLibrary : public QObject
 {
+    Q_OBJECT
 public:
     KLibrary( const QString& libname, const QString& filename, lt_dlhandle handel );
     ~KLibrary();
@@ -101,12 +107,19 @@ public:
      * function that you usually dont want to use.
      */
     void* symbol( const char* name );
+
+private slots:
+    void slotObjectCreated( QObject *obj );
+    void slotObjectDestroyed();
+    void slotTimeout();
     
 private:
     QString m_libname;
     QString m_filename;
     KLibFactory* m_factory;
     lt_dlhandle m_handle;
+    QList<QObject> m_objs;
+    QTimer *m_timer;
 };
 
 /**
@@ -155,6 +168,8 @@ public:
      */
     virtual KLibrary* library( const char* libname );
   
+    virtual void unloadLibrary( const char *libname );
+  
     /**
      * @return a pointer to the loader. If no loader exists until now
      *         then one is created.
@@ -163,7 +178,7 @@ public:
 
 protected:
     KLibLoader( QObject* parent = 0, const char* name = 0 );
-    
+
 private:
     QAsciiDict<KLibrary> m_libs;
 

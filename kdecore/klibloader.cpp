@@ -2,6 +2,8 @@
 #include "kglobal.h"
 #include "kstddirs.h"
 
+#include <qtimer.h>
+
 KLibFactory::KLibFactory( QObject* parent, const char* name )
     : QObject( parent, name )
 {
@@ -35,10 +37,14 @@ KLibrary::KLibrary( const QString& libname, const QString& filename, lt_dlhandle
     m_filename = filename;
     m_handle = handle;
     m_factory = 0;
+    m_timer = 0;
 }
 
 KLibrary::~KLibrary()
 {
+    if ( m_factory )
+      delete m_factory;
+      
     lt_dlclose( m_handle );
 }
 
@@ -74,6 +80,9 @@ KLibFactory* KLibrary::factory()
 	return 0;
     }
 
+    connect( m_factory, SIGNAL( objectCreated( QObject * ) ),
+             this, SLOT( slotObjectCreated( QObject * ) ) );
+
     return m_factory;
 }
 
@@ -87,6 +96,47 @@ void* KLibrary::symbol( const char* symname )
     }
 
     return sym;
+}
+
+void KLibrary::slotObjectCreated( QObject *obj )
+{
+  if ( !obj )
+    return;
+    
+  if ( m_timer && m_timer->isActive() )
+    m_timer->stop();
+    
+  connect( obj, SIGNAL( destroyed() ),
+           this, SLOT( slotObjectDestroyed() ) );
+
+  m_objs.append( obj );
+}
+
+void KLibrary::slotObjectDestroyed()
+{
+  m_objs.removeRef( sender() );
+  
+  if ( m_objs.count() == 0 )
+  {
+    qDebug( "shutdown timer started!" );
+    
+    if ( !m_timer )
+    {
+      m_timer = new QTimer( this, "klibrary_shutdown_timer" );
+      connect( m_timer, SIGNAL( timeout() ),
+               this, SLOT( slotTimeout() ) );
+    }      
+    
+    m_timer->start( 1000*60, true );
+  }
+}
+
+void KLibrary::slotTimeout()
+{
+  if ( m_objs.count() != 0 )
+    return;
+    
+  KLibLoader::self()->unloadLibrary( m_libname );
 }
 
 // -------------------------------------------------
@@ -138,6 +188,19 @@ KLibrary* KLibLoader::library( const char* name )
     m_libs.insert( name, lib );
     
     return lib;
+}
+
+void KLibLoader::unloadLibrary( const char *libname )
+{
+  KLibrary *lib = m_libs[ libname ];
+  
+  if ( !lib )
+    return;
+    
+  qDebug( "closing library %s", libname );
+  
+  m_libs.remove( libname );
+  delete lib;
 }
 
 KLibFactory* KLibLoader::factory( const char* name )
