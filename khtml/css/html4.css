@@ -80,7 +80,6 @@ address {
 blockquote {
 	display: block;
         margin: 1__qem 40px 1em 40px;
-        -khtml-flow-mode: -khtml-around-floats
 }
 
 Q        {
@@ -309,7 +308,6 @@ DD {
 DL {
 	display: block;
         margin: 1__qem 0 1em 0;
-        -khtml-flow-mode: -khtml-around-floats
 }
 
 DT {
@@ -369,7 +367,7 @@ LEGEND {
 FIELDSET {
 	display: block;
         padding: 0.75em 0.625em;
-	margin: 1.0em auto;
+	margin: 1.0em 0;
         border: 2px groove ThreeDFace;
         -khtml-flow-mode: -khtml-around-floats
 }

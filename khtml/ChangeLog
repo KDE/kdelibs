@@ -1,3 +1,13 @@
+2005-02-07  Germain Garand  <germain@ebooksfrance.org>
+
+        * css/html4.css: the -around-floats flow mode can only be applied to elements defining a
+        new block formatting context (see CSS2.1 - 9.5). 
+        Blockquote and DL don't by any stretch of the mind, so clear this property for those.
+        Also, don't center fieldset.
+
+        * rendering/render_block.cpp (layoutBlock): make flowAroundFloats encompass their own floats 
+        (#85984).
+
 2005-02-02  Leo Savernik  <l.savernik@aon.at>
 
 	* dom/dom_doc.{cpp,h}: Added Document::addStyleSheet/removeStyleSheet
