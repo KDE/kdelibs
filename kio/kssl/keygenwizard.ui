@@ -37,7 +37,7 @@
             </property>
             <property stdset="1">
                 <name>text</name>
-                <string>You have indicated that you wish to obtain or purchase a secure certificate.  This wizard is intended to guide you through the procedure.  You may cancel at any time, and this will abort the transaction.</string>
+                <string>You have indicated that you wish to obtain or purchase a secure certificate. This wizard is intended to guide you through the procedure. You may cancel at any time, and this will abort the transaction.</string>
             </property>
             <property stdset="1">
                 <name>textFormat</name>
