@@ -175,12 +175,11 @@ KDEStyle::~KDEStyle()
 {
 }
 
-void KDEStyle::polish(QPalette &)
+void KDEStyle::polish(QPalette &pal)
 {
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     config->setGroup("KDEStyle");
-    QPalette pal = QApplication::palette();
     
     QColor tmpColor(0, 0, 192);
     if(config->hasKey("RadioOnColor")){
@@ -210,7 +209,6 @@ void KDEStyle::polish(QPalette &)
         pal.setInactive(iGrp);
         pal.setDisabled(dGrp);
     }
-    
     config->setGroup(oldGrp);
 }
 
