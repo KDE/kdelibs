@@ -132,10 +132,12 @@ KConfig *cfg;
             << "";
 
 // FIXME: #define here for the various OS types to optimize
-   libnamess << "libssl.so"
+   libnamess << "libssl.so.0"
+             << "libssl.so"
              << "libssl.sl";
 
-   libnamesc << "libcrypto.so"
+   libnamesc << "libcrypto.so.0"
+             << "libcrypto.so"
              << "libcrypto.sl";
 
    for (QStringList::Iterator it = libpaths.begin();
