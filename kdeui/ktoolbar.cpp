@@ -1252,7 +1252,16 @@ void KToolBar::childEvent( QChildEvent *e )
             removeWidgetInternal( w );
         }
         if ( isVisibleTo( 0 ) )
+        {
             layoutTimer->start( 50, TRUE );
+            QBoxLayout *l = boxLayout();
+
+            // clear the old layout so that we don't get unnecassery layout
+            // changes till we have rebuild the thing
+            QLayoutIterator it = l->iterator();
+            while ( it.current() )
+               it.deleteCurrent();
+        }
     }
     QToolBar::childEvent( e );
 }
