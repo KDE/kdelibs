@@ -157,3 +157,9 @@ int gethostname (char *Name, int Namelen);
 #define HAVE_BOOLEAN
 #endif
 
+#ifndef HAVE_RANDOM
+#define HAVE_RANDOM
+long int random(void); // defined in fakes.cpp
+void srandom(unsigned int seed);
+#endif 
+
