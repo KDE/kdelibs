@@ -42,7 +42,7 @@ struct KStdActionInfo
 	const char* psIconName;
 };
 
-KStdActionInfo g_rgActionInfo[] =
+const KStdActionInfo g_rgActionInfo[] =
 {
 	{ New,           KStdAccel::New, "file_new", I18N_NOOP("&New"), 0, "filenew" },
 	{ Open,          KStdAccel::Open, "file_open", I18N_NOOP("&Open..."), 0, "fileopen" },
@@ -112,7 +112,7 @@ KStdActionInfo g_rgActionInfo[] =
 	{ ActionNone, KStdAccel::AccelNone, 0, 0, 0, 0 }
 };
 
-static KStdActionInfo* infoPtr( StdAction id )
+static const KStdActionInfo* infoPtr( StdAction id )
 {
 	for( uint i = 0; g_rgActionInfo[i].id != ActionNone; i++ ) {
 		if( g_rgActionInfo[i].id == id )
@@ -125,7 +125,7 @@ KAction* create( StdAction id, KActionCollection* parent,
 	const QObject *recvr, const char *slot, const char *name )
 {
 	kdDebug(125) << "KStdAction::create( " << id << ", " << parent << ", " << name << " )" << endl; // ellis
-	KStdActionInfo* pInfo = infoPtr( id );
+	const KStdActionInfo* pInfo = infoPtr( id );
 	if( pInfo ) {
 		QString sLabel;
 		switch( id ) {
