@@ -209,9 +209,21 @@ public:
    * This tag will get expanded to a list of actions.  In the example
    * above ( a file manager with a dynamic file menu ), you would call
    * \code
-   * plugActionList( "xxx_file_actionlist", some_actions );
+   * QPtrList<KAction> file_actions;
+   * for( ... )
+   *   if( ... )
+   *     file_actions.append( cool_action );
+   * unplugActionList( "xxx_file_actionlist" );
+   * plugActionList( "xxx_file_actionlist", file_actions );
    * \endcode
    * every time a file is selected, unselected or ...
+   *
+   * \note You should not call createGUI() after calling this
+   *       function.  In fact, that would remove the newly added
+   *       actionlists again...
+   * \note Forgetting to call unplugActionList() before
+   *       plugActionList() would leave the previous actions in the
+   *       menu too..
    */
   void plugActionList( const QString &name, const QPtrList<KAction> &actionList );
 
