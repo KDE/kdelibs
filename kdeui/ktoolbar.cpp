@@ -92,6 +92,8 @@ public:
 
     m_approxItemSize = 0;
     m_enableContext  = true;
+
+    m_xmlFile        = QString::null;
   }
   ~KToolBarPrivate()
   {
@@ -116,6 +118,8 @@ public:
 
   int m_approxItemSize;
   bool m_enableContext;
+
+  QString m_xmlFile;
 };
 
 // this should be adjustable (in faar future... )
@@ -250,6 +254,7 @@ void KToolBar::slotReadConfig()
   static QString attrTrans     = QString::fromLatin1("TransparentMoving");
   static QString attrIconStyle = QString::fromLatin1("KDEIconStyle");
   static QString attrSize      = QString::fromLatin1("IconSize");
+  static QString attrPosition  = QString::fromLatin1("Position");
 
   // we actually do this in two steps.  first, we read in the global
   // styles [Toolbar style].  then, if the toolbar is NOT
@@ -258,6 +263,7 @@ void KToolBar::slotReadConfig()
   int transparent;
   IconText icontext;
   int iconsize;
+  QString position;
 
   // this is the first iteration
   QString grpToolbar(QString::fromLatin1("Toolbar style"));
@@ -279,6 +285,8 @@ void KToolBar::slotReadConfig()
   // the [Toolbar style] section but in the [Icons] section.
   iconsize = 0;
 
+  position = config->readEntry(attrPosition, "Top");
+
   // okay, that's done.  now we look for a toolbar specific entry
   grpToolbar = name() + QString::fromLatin1(" Toolbar style");
   if (config->hasGroup(grpToolbar))
@@ -294,6 +302,9 @@ void KToolBar::slotReadConfig()
 
     // now get the size: FIXME: Sizes are not yet saved. 
     // iconsize = config->readNumEntry(attrSize, iconsize);
+
+    // finally, get the position
+    position = config->readEntry(attrPosition, position);
   }
 
   // revert back to the old group
@@ -328,6 +339,22 @@ void KToolBar::slotReadConfig()
     d->m_transparent = transparent;
     doUpdate = false;
   }
+
+  // ...and now the position stuff
+  BarPosition pos(Top);
+  if ( position == "Top" )
+    pos = Top;
+  else if ( position == "Bottom" )
+    pos = Bottom;
+  else if ( position == "Left" )
+    pos = Left;
+  else if ( position == "Right" )
+    pos = Right;
+  else if ( position == "Floating" )
+    pos = Floating;
+  else if ( position == "Flat" )
+    pos = Flat;
+  setBarPos( pos );
 
   if (doUpdate)
     emit modechange(); // tell buttons what happened
@@ -1674,8 +1701,8 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
     {
       for( const char *p=list->first(); p; p = list->next() )
       {
-	int w = fontMetrics().width(p);
-	size = QMAX( size, w );
+        int w = fontMetrics().width(p);
+        size = QMAX( size, w );
       }
     }
     size += fontMetrics().maxWidth() * 3;
@@ -2550,4 +2577,87 @@ bool KToolBar::highlight() const
   return d->m_highlight;
 }
 
+void KToolBar::saveState()
+{
+  // get all of the stuff to save
+  QString position;
+  switch (d->m_position)
+  {
+  case KToolBar::Flat:
+    position = "Flat";
+    break;
+  case KToolBar::Bottom:
+    position = "Bottom";
+    break;
+  case KToolBar::Left:
+    position = "Left";
+    break;
+  case KToolBar::Right:
+    position = "Right";
+    break;
+  case KToolBar::Floating:
+    position = "Floating";
+    break;
+  case KToolBar::Top:
+  default:
+    position = "Top";
+    break;
+  }
+
+  QString icontext;
+  switch (d->m_iconText)
+  {
+  case KToolBar::IconTextRight:
+    icontext = "IconTextRight";
+    break;
+  case KToolBar::IconTextBottom:
+    icontext = "IconTextBottom";
+    break;
+  case KToolBar::TextOnly:
+    icontext = "TextOnly";
+    break;
+  case KToolBar::IconOnly:
+  default:
+    icontext = "IconOnly";
+    break;
+  }
+
+  // first, try to save to the xml file
+  if ( d->m_xmlFile != QString::null )
+  {
+  #if 0  // commented out until it works
+    QString xml(KXMLGUIFactory::readConfigFile(d->m_xmlFile)); 
+    QDomDocument doc;
+    doc.setContent( xml );
+
+    KXMLGUIFactory::saveConfigFile(doc, d->m_xmlFile);
+  #endif
+    return;
+  }
+
+  // if that didn't work, we save to the config file
+  QString grpToolbarStyle;
+  if (!strcmp(name(), "unnamed") || !strcmp(name(), "mainToolBar"))
+    grpToolbarStyle = "Toolbar style";
+  else
+    grpToolbarStyle = QString(name()) + " Toolbar style";
+
+  KConfig *config = KGlobal::config();
+  KConfigGroupSaver saver(config, grpToolbarStyle);
+
+  config->writeEntry("Position", position);
+  config->writeEntry("IconText", icontext);
+
+  config->sync();
+}
+
+void KToolBar::setXMLFile(const QString& xmlfile)
+{
+  d->m_xmlFile = xmlfile;
+}
+
+QString KToolBar::xmlFile() const
+{
+  return d->m_xmlFile;
+}
 #include "ktoolbar.moc"

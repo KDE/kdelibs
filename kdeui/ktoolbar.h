@@ -860,6 +860,30 @@ public:
    */
   int count();
 
+  /**
+   * Instruct the toolbar to save it's current state to either the app
+   * config file or to the XML-GUI resource file (whichever has
+   * precedence).
+   */
+  void saveState();
+
+  /**
+   * Tell the toolbar what XML-GUI resource file it should use to save
+   * it's state.  The state of the toolbar (position, size, etc) is
+   * saved in KConfig files if the application does not use XML-GUI..
+   * but if the app does, then it's saved the XML file.  This function
+   * allows this to happen.
+   *
+   * @param xmlfile The XML-GUI resource file to write to
+   */
+  void setXMLFile(const QString& xmlfile);
+
+  /**
+   * @return The name of the XML-GUI resource file this toolbar is
+   *         using or QString::null if it's not using one
+   */
+  QString xmlFile() const;
+
 signals:
     /**
      * Emitted when button @p id is clicked.
