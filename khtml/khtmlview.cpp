@@ -530,7 +530,6 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	mev.innerNode.handle()->setPressed(false);
 
     khtml::MouseReleaseEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
-    // ### event.setURLHandlingEnabled( mev.urlHandling );
     event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
     QApplication::sendEvent( m_part, &event );
 }
