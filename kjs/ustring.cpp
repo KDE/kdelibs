@@ -125,44 +125,24 @@ UString UString::null;
 static char *statBuffer = 0L;
 
 UChar::UChar(const UCharReference &c)
-#if QT_VERSION < 300
-    : hi(c.high()), lo(c.low())
-#else
     : uc( c.unicode() )
-#endif
 {
 }
 
 UChar UChar::toLower() const
 {
-#if QT_VERSION < 300
-  if (islower(lo) && hi == 0)
-#else
   if (islower(uc))
-#endif
     return *this;
 
-#if QT_VERSION < 300
-  return UChar(0, tolower(lo));
-#else
   return UChar(tolower(uc));
-#endif
 }
 
 UChar UChar::toUpper() const
 {
-#if QT_VERSION < 300
-  if (isupper(lo) && hi == 0)
-#else
   if (isupper(uc))
-#endif
     return *this;
 
-#if QT_VERSION < 300
-  return UChar(0, toupper(lo));
-#else
   return UChar(toupper(uc));
-#endif
 }
 
 UCharReference& UCharReference::operator=(UChar c)
@@ -312,11 +292,7 @@ UString &UString::operator=(const char *c)
   int l = c ? strlen(c) : 0;
   UChar *d = new UChar[l];
   for (int i = 0; i < l; i++)
-#if QT_VERSION < 300
-    d[i].lo = c[i];
-#else
     d[i].uc = c[i];
-#endif
   rep = Rep::create(d, l);
 
   return *this;
@@ -340,11 +316,7 @@ bool UString::is8Bit() const
 {
   const UChar *u = data();
   for(int i = 0; i < size(); i++, u++)
-#if QT_VERSION < 300
-    if (u->hi)
-#else
     if (u->uc > 0xFF)
-#endif
       return false;
 
   return true;
@@ -519,11 +491,7 @@ void UString::release()
 
 bool KJS::operator==(const UChar &c1, const UChar &c2)
 {
-#if QT_VERSION < 300
-  return ((c1.lo == c2.lo) & (c1.hi == c2.hi));
-#else
   return (c1.uc == c2.uc);
-#endif
 }
 
 bool KJS::operator==(const UString& s1, const UString& s2)
@@ -545,11 +513,7 @@ bool KJS::operator==(const UString& s1, const char *s2)
 
   const UChar *u = s1.data();
   while (*s2) {
-#if QT_VERSION < 300
-    if (u->lo != *s2 || u->hi != 0)
-#else
     if (u->uc != *s2 )
-#endif
       return false;
     s2++;
     u++;

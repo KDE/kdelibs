@@ -28,17 +28,6 @@
 #include <config.h>
 #endif
 
-// temporary, remove me!
-#include <qglobal.h>
-
-#if QT_VERSION < 300
-#if defined(__GNUC__)
-#define KJS_PACKED __attribute__((__packed__))
-#else
-#define KJS_PACKED
-#endif
-#endif
-
 /**
  * @internal
  */
@@ -81,27 +70,15 @@ namespace KJS {
     /**
      * @return The higher byte of the character.
      */
-#if QT_VERSION < 300
-    unsigned char high() const { return hi; }
-#else
     unsigned char high() const { return uc >> 8; }
-#endif
     /**
      * @return The lower byte of the character.
      */
-#if QT_VERSION < 300
-    unsigned char low() const { return lo; }
-#else
     unsigned char low() const { return uc & 0xFF; }
-#endif
     /**
      * @return the 16 bit Unicode value of the character
      */
-#if QT_VERSION < 300
-    unsigned short unicode() const { return hi << 8 | lo; }
-#else
     unsigned short unicode() const { return uc; }
-#endif
   public:
     /**
      * @return The character converted to lower case.
@@ -122,24 +99,12 @@ namespace KJS {
     friend bool operator==(const UString& s1, const char *s2);
     friend bool operator<(const UString& s1, const UString& s2);
 
-#if QT_VERSION < 300
-    unsigned char hi;
-    unsigned char lo;
-  } KJS_PACKED;
-#else
     ushort uc;
   };
-#endif
 
-#if QT_VERSION < 300
-  inline UChar::UChar() : hi(0), lo(0) { }
-  inline UChar::UChar(unsigned char h , unsigned char l) : hi(h), lo(l) { }
-  inline UChar::UChar(unsigned short u) : hi(u >> 8), lo(u & 0x00ff) { }
-#else
   inline UChar::UChar() : uc(0) { }
   inline UChar::UChar(unsigned char h , unsigned char l) : uc(h << 8 | l) { }
   inline UChar::UChar(unsigned short u) : uc(u) { }
-#endif
 
   /**
    * @short Dynamic reference to a string character.
@@ -174,19 +139,11 @@ namespace KJS {
     /**
      * @return Lower byte.
      */
-#if QT_VERSION < 300
-    unsigned char& low() const { return ref().lo; }
-#else
     unsigned char low() const { return ref().uc & 0xFF; }
-#endif
     /**
      * @return Higher byte.
      */
-#if QT_VERSION < 300
-    unsigned char& high() const { return ref().hi; }
-#else
     unsigned char high() const { return ref().uc >> 8; }
-#endif
     /**
      * @return Character converted to lower case.
      */

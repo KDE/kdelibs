@@ -25,8 +25,6 @@
 #ifndef _INTERNAL_H_
 #define _INTERNAL_H_
 
-#include <stdint.h>
-
 #include "ustring.h"
 #include "value.h"
 #include "object.h"
