@@ -2,7 +2,7 @@ Source: #PACKAGE#
 Section: unknown
 Priority: optional
 Maintainer: #USERNAME# <#EMAIL#>
-Build-Depends: debhelper (>> 3.0.0), kdelibs-dev (>= 4:2.2.1-0), gcc-3.0 [alpha], g++-3.0 [alpha]
+Build-Depends: debhelper (>> 3.0.0), kdelibs-dev (>= 4:2.2.1-0)
 Standards-Version: #POLICY#
 
 Package: #PACKAGE#
