@@ -48,7 +48,7 @@ KLibrary::~KLibrary()
 {
     if ( m_timer && m_timer->isActive() )
       m_timer->stop();
- 
+
     if ( m_factory )
       delete m_factory;
 
@@ -87,8 +87,10 @@ KLibFactory* KLibrary::factory()
 	return 0;
     }
 
-    connect( m_factory, SIGNAL( objectCreated( QObject * ) ),
-             this, SLOT( slotObjectCreated( QObject * ) ) );
+    // disable unloading of shared library for beta2. re-enable when michael matz
+    // comitted his am_edit-qmetaobject-magic stuff :-) (Simon)
+    //    connect( m_factory, SIGNAL( objectCreated( QObject * ) ),
+    //             this, SLOT( slotObjectCreated( QObject * ) ) );
 
     return m_factory;
 }
@@ -161,10 +163,10 @@ void KLibLoader::cleanUp()
 {
   if ( !s_self )
     return;
-  
+
   delete s_self;
   s_self = 0;
-} 
+}
 
 KLibLoader::KLibLoader( QObject* parent, const char* name )
     : QObject( parent, name )
