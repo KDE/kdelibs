@@ -66,8 +66,6 @@ char *k_bindtextdomain (const char *__domainname,
  
 #define SYSTEM_MESSAGES "kde"
 
-#ifdef ENABLE_NLS
-
 static char *_categories[]={"LC_MESSAGES","LC_CTYPE","LC_COLLATE",
                             "LC_TIME","LC_NUMERIC","LC_MONETARY",0};
 
@@ -138,6 +136,8 @@ void KLocale::splitLocale(const QString& aStr,
 	}    
     }  
 }
+
+#ifdef ENABLE_NLS
 
 KLocale::KLocale( const char *catalogue )
 {
