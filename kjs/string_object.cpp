@@ -114,7 +114,7 @@ ReferenceList StringInstanceImp::propList(ExecState *exec, bool recursive)
 // ------------------------------ StringPrototypeImp ---------------------------
 const ClassInfo StringPrototypeImp::info = {"String", &StringInstanceImp::info, &stringTable, 0};
 /* Source for string_object.lut.h
-@begin stringTable 26
+@begin stringTable 28
   toString		StringProtoFuncImp::ToString	DontEnum|Function	0
   valueOf		StringProtoFuncImp::ValueOf	DontEnum|Function	0
   charAt		StringProtoFuncImp::CharAt	DontEnum|Function	1

@@ -391,7 +391,7 @@ unsigned ArrayInstanceImp::pushUndefinedObjectsToEnd(ExecState *exec)
 const ClassInfo ArrayPrototypeImp::info = {"Array", &ArrayInstanceImp::info, &arrayTable, 0};
 
 /* Source for array_object.lut.h
-@begin arrayTable 13
+@begin arrayTable 17
   toString       ArrayProtoFuncImp::ToString       DontEnum|Function 0
   toLocaleString ArrayProtoFuncImp::ToLocaleString DontEnum|Function 0
   concat         ArrayProtoFuncImp::Concat         DontEnum|Function 0

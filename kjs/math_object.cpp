@@ -44,7 +44,7 @@ using namespace KJS;
 const ClassInfo MathObjectImp::info = { "Math", 0, &mathTable, 0 };
 
 /* Source for math_object.lut.h
-@begin mathTable 21
+@begin mathTable 31
   E             MathObjectImp::Euler    DontEnum|DontDelete|ReadOnly
   LN2           MathObjectImp::Ln2      DontEnum|DontDelete|ReadOnly
   LN10          MathObjectImp::Ln10     DontEnum|DontDelete|ReadOnly
