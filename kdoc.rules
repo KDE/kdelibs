@@ -44,12 +44,12 @@ kom_LIBS = -lkdecore -lqt
 kpartsui_FILES = *.h
 #kpartsui_FILES = *.idl *.h
 kpartsui_PATH = corba/partsui
-kpartsui_LIBS = -lkom -lkdecore -lqt
+kpartsui_LIBS = -lkom -lkdeui -lkdecore -lqt
 
 kparts_FILES = *.h
 #kparts_FILES = *.idl *.h
 kparts_PATH = corba/parts
-kparts_LIBS = -lkom -lkdecore -lqt
+kparts_LIBS = -lkom -lkdeui -lkdecore -lqt
 
 kded_FILES = *.h
 #kded_FILES = *.idl *.h
