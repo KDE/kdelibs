@@ -92,6 +92,7 @@ public:
     m_bParsing = false;
     m_manager = 0L;
     m_settings = new khtml::Settings();
+    m_bClearing = false;
   }
   ~KHTMLPartPrivate()
   {
@@ -133,6 +134,8 @@ public:
   KAction *m_paSaveFrame;
 
   KParts::PartManager *m_manager;
+
+  bool m_bClearing;
 };
 
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name )
@@ -338,6 +341,7 @@ bool KHTMLPart::javaEnabled() const
 
 void KHTMLPart::clear()
 {
+  d->m_bClearing = true; 
   if ( d->m_doc )
   {
     d->m_doc->detach();
@@ -373,6 +377,7 @@ void KHTMLPart::clear()
   d->m_baseTarget = QString::null;
   d->m_delayRedirect = 0;
   d->m_redirectURL = KURL();
+  d->m_bClearing = false;
 }
 
 bool KHTMLPart::openFile()
@@ -896,7 +901,7 @@ void KHTMLPart::updateActions()
 
   // ### frames
 
-  if ( d->m_doc && d->m_doc->body() )
+  if ( d->m_doc && d->m_doc->body() && !d->m_bClearing )
     bgURL = d->m_doc->body()->getAttribute( ATTR_BACKGROUND ).string();
 
   d->m_paSaveBackground->setEnabled( !bgURL.isEmpty() );
@@ -1093,6 +1098,7 @@ void KHTMLPart::popupMenu( const QString &url )
 
 void KHTMLPart::slotChildStarted( KIO::Job *job )
 {
+  kdDebug() << "slotChildStarted" << endl; 
   khtml::ChildFrame *child = frame( sender() );
 
   assert( child );
@@ -1100,7 +1106,10 @@ void KHTMLPart::slotChildStarted( KIO::Job *job )
   child->m_bCompleted = false;
 
   if ( d->m_bComplete )
+  {
+    kdDebug() << "forwarding started signal!" << endl;
     emit started( job );
+  }
 }
 
 void KHTMLPart::slotChildCompleted()
@@ -1226,7 +1235,7 @@ void KHTMLPart::saveState( QDataStream &stream )
 {
   stream << m_url << (Q_INT32)d->m_widget->contentsX() << (Q_INT32)d->m_widget->contentsY();
   
-  stream << (Q_INT32)d->m_frames.count();
+  stream << (Q_UINT32)d->m_frames.count();
 
   QStringList frameNameLst, frameServiceTypeLst;
   KURL::List frameURLLst;
@@ -1268,6 +1277,9 @@ void KHTMLPart::restoreState( QDataStream &stream )
          >> frameStateBuffers;
   
   d->m_bComplete = false;
+  
+  kdDebug() << "m_url " << debugString( m_url.url() ) << " <-> " << debugString( u.url() ) << endl;
+  kdDebug() << "m_frames.count() " << d->m_frames.count() << " <-> " << frameCount << endl;
   
   if ( u == m_url && frameCount >= 1 && frameCount == d->m_frames.count() )
   {
