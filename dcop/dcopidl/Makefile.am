@@ -23,3 +23,5 @@ parser:
 	cd $(srcdir) && flex -B -8 -oscanner.cc scanner.ll  ;\
 	bison -t -d -v -o yacc.cc yacc.yy
 
+check-local:
+	./dcopidl $(srcdir)/dcopidl_test.h > dcopidl_output.kidl
