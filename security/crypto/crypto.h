@@ -31,6 +31,7 @@
 #include <qcheckbox.h>
 #include <qvbuttongroup.h>
 #include <qlistbox.h>
+#include <qlineedit.h>
 
 class KCryptoConfig : public KCModule
 {
@@ -55,15 +56,19 @@ public slots:
       
 private:
   QTabWidget *tabs;
-  QWidget *tabSSL, *tabYourSSLCert, *tabOtherSSLCert, *tabSSLCA;
+  QWidget *tabSSL, *tabYourSSLCert, *tabOtherSSLCert, *tabSSLCA, *tabSSLCOpts;
   QCheckBox *mUseTLS, *mUseSSLv2, *mUseSSLv3;
   QCheckBox *mWarnOnEnter, *mWarnOnLeave, *mWarnOnUnencrypted, *mWarnOnMixed;
   QListBox *SSLv2Box, *SSLv3Box, *yourSSLBox, *otherSSLBox, *caSSLBox;
+  QCheckBox *mWarnSelfSigned, *mWarnExpired, *mWarnRevoked;
+  QPushButton *macAdd, *macRemove, *macClear;
+  QListBox *macBox;
   QPushButton *otherSSLImport, *otherSSLView, *otherSSLRemove, *otherSSLVerify;
   QPushButton *caSSLImport, *caSSLView, *caSSLRemove, *caSSLVerify;
   QPushButton *yourSSLImport, *yourSSLView, *yourSSLRemove, *yourSSLExport,
               *yourSSLDefault, *yourSSLVerify;
   QRadioButton *yourSSLUseDefault, *yourSSLList, *yourSSLDont;
+  QLineEdit *macCert;
 
   
 };

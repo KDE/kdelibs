@@ -300,6 +300,53 @@ QString whatstr;
   grid->addMultiCellWidget(nossllabel, 1, 1, 0, 1);
 #endif
 
+  ///////////////////////////////////////////////////////////////////////////
+  // FIFTH TAB
+  ///////////////////////////////////////////////////////////////////////////
+  tabSSLCOpts = new QFrame(this);
+
+#ifdef HAVE_SSL
+  grid = new QGridLayout(tabSSLCOpts, 9, 4, KDialog::marginHint(), KDialog::spacingHint());
+  mWarnSelfSigned = new QCheckBox(i18n("Warn on &self signed certificates or unknown CA's"), tabSSLCOpts);
+  connect(mWarnSelfSigned, SIGNAL(clicked()), SLOT(configChanged()));
+  mWarnExpired = new QCheckBox(i18n("Warn on &expired certificates"), tabSSLCOpts);
+  connect(mWarnExpired, SIGNAL(clicked()), SLOT(configChanged()));
+  mWarnRevoked = new QCheckBox(i18n("Warn on re&voked certificates"), tabSSLCOpts);
+  connect(mWarnRevoked, SIGNAL(clicked()), SLOT(configChanged()));
+  grid->addMultiCellWidget(mWarnSelfSigned, 0, 0, 0, 3);
+  grid->addMultiCellWidget(mWarnExpired, 1, 1, 0, 3);
+  grid->addMultiCellWidget(mWarnRevoked, 2, 2, 0, 3);
+  
+  macCert = new QLineEdit(tabSSLCOpts);
+  grid->addMultiCellWidget(macCert, 4, 4, 0, 2);
+  
+  macBox = new QListBox(tabSSLCOpts);
+  whatstr = i18n("This list box shows which sites you have decided to accept"
+                " a certificate from even though the certificate might fail"
+                " the validation procedure.");
+  QWhatsThis::add(macBox, whatstr);
+  caSSLBox->setSelectionMode(QListBox::Single);
+  caSSLBox->setColumnMode(QListBox::FixedNumber);
+  grid->addMultiCellWidget(macBox, 5, 8, 0, 2);
+
+  macAdd = new QPushButton(i18n("&Add"), tabSSLCOpts);
+  //connect(macAdd, SIGNAL(), SLOT());
+  grid->addWidget(macAdd, 4, 3);
+
+  macRemove = new QPushButton(i18n("&Remove"), tabSSLCOpts);
+  //connect(macRemove, SIGNAL(), SLOT());
+  grid->addWidget(macRemove, 5, 3);
+
+  macClear = new QPushButton(i18n("&Clear"), tabSSLCOpts);
+  //connect(macAdd, SIGNAL(), SLOT());
+  grid->addWidget(macClear, 6, 3);
+
+#else
+  nossllabel = new QLabel(i18n("These options are not configurable"
+                               " because this module was not linked"
+                               " with OpenSSL."), tabSSLCOpts);
+  grid->addMultiCellWidget(nossllabel, 1, 1, 0, 1);
+#endif
 
   ///////////////////////////////////////////////////////////////////////////
   // Add the tabs and startup
@@ -308,6 +355,7 @@ QString whatstr;
   tabs->addTab(tabYourSSLCert, i18n("Your SSL Certificates"));
   tabs->addTab(tabOtherSSLCert, i18n("Other SSL Certificates"));
   tabs->addTab(tabSSLCA, i18n("SSL C.A.s"));
+  tabs->addTab(tabSSLCOpts, i18n("Validation Options"));
 
   tabs->resize(tabs->sizeHint());
   load();
@@ -341,6 +389,11 @@ void KCryptoConfig::load()
   mWarnOnLeave->setChecked(config->readBoolEntry("OnLeave", true));
   mWarnOnUnencrypted->setChecked(config->readBoolEntry("OnUnencrypted", false));
   mWarnOnMixed->setChecked(config->readBoolEntry("OnMixed", true));
+
+  config->setGroup("Validation");
+  mWarnSelfSigned->setChecked(config->readBoolEntry("WarnSelfSigned", true));
+  mWarnExpired->setChecked(config->readBoolEntry("WarnExpired", true));
+  mWarnRevoked->setChecked(config->readBoolEntry("WarnRevoked", true));
 
 #ifdef HAVE_SSL
   config->setGroup("SSLv2");
@@ -390,6 +443,11 @@ void KCryptoConfig::save()
   config->writeEntry("OnUnencrypted", mWarnOnUnencrypted->isChecked());
   config->writeEntry("OnMixed", mWarnOnMixed->isChecked());
   
+  config->setGroup("Validation");
+  config->writeEntry("WarnSelfSigned", mWarnSelfSigned->isChecked());
+  config->writeEntry("WarnExpired", mWarnExpired->isChecked());
+  config->writeEntry("WarnRevoked", mWarnRevoked->isChecked());
+
 #ifdef HAVE_SSL
   int ciphercount = 0;
   config->setGroup("SSLv2");
@@ -444,6 +502,9 @@ void KCryptoConfig::defaults()
   mWarnOnLeave->setChecked(true);
   mWarnOnUnencrypted->setChecked(false);
   mWarnOnMixed->setChecked(true);
+  mWarnSelfSigned->setChecked(true);
+  mWarnExpired->setChecked(true);
+  mWarnRevoked->setChecked(true);
 
 #ifdef HAVE_SSL
     // This is very complicated on purpose.  We don't want to make
