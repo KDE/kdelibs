@@ -33,13 +33,6 @@
 #define DEFAULT_MAX_CACHE_SIZE          5120          //  5 MB
 #define DEFAULT_MAX_CACHE_AGE           60*60*24*14   // 14 DAYS
 
-// MAXIMUM VALUE ALLOWED WHEN CONFIGURING
-// REMOTE AND PROXY SERVERS CONNECTION AND
-// RESPONSE TIMEOUTS.
-#define MAX_RESPONSE_TIMEOUT            360           //  6 MIN
-#define MAX_CONNECT_TIMEOUT             360           //  6 MIN
-#define MAX_PROXY_CONNECT_TIMEOUT       120           //  2 MIN
-
 // DEFAULT TIMEOUT VALUE FOR REMOTE AND PROXY CONNECTION
 // AND RESPONSE WAIT PERIOD.  NOTE: CHANGING THESE VALUES
 // ALSO CHANGES THE DEFAULT ESTABLISHED INITIALLY.
@@ -108,7 +101,7 @@ int KProtocolManager::connectTimeout()
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
   int mrct = cfg->readNumEntry( "ConnectTimeout", DEFAULT_CONNECT_TIMEOUT );
-  if( mrct < MIN_TIMEOUT_VALUE || mrct > MAX_CONNECT_TIMEOUT )
+  if( mrct < MIN_TIMEOUT_VALUE )
     mrct = DEFAULT_CONNECT_TIMEOUT;
   return mrct;
 }
@@ -118,7 +111,7 @@ int KProtocolManager::proxyConnectTimeout()
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
   int mpct = cfg->readNumEntry( "ProxyConnectTimeout", DEFAULT_PROXY_CONNECT_TIMEOUT );
-  if( mpct < MIN_TIMEOUT_VALUE || mpct > MAX_PROXY_CONNECT_TIMEOUT )
+  if( mpct < MIN_TIMEOUT_VALUE )
     mpct = DEFAULT_PROXY_CONNECT_TIMEOUT;
   return mpct;
 }
@@ -128,14 +121,9 @@ int KProtocolManager::responseTimeout()
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
   int mrrt = cfg->readNumEntry( "ResponseTimeout", DEFAULT_RESPONSE_TIMEOUT );
-  if( mrrt < MIN_TIMEOUT_VALUE || mrrt > MAX_PROXY_CONNECT_TIMEOUT )
+  if( mrrt < MIN_TIMEOUT_VALUE )
     mrrt = DEFAULT_RESPONSE_TIMEOUT;
   return mrrt;
-}
-
-int KProtocolManager::maximumConnectTimeout()
-{
-  return MAX_CONNECT_TIMEOUT;
 }
 
 int KProtocolManager::defaultConnectTimeout()
@@ -143,19 +131,9 @@ int KProtocolManager::defaultConnectTimeout()
   return DEFAULT_CONNECT_TIMEOUT;
 }
 
-int KProtocolManager::maximumProxyConnectTimeout()
-{
-  return MAX_PROXY_CONNECT_TIMEOUT;
-}
-
 int KProtocolManager::defaultProxyConnectTimeout()
 {
   return DEFAULT_PROXY_CONNECT_TIMEOUT;
-}
-
-int KProtocolManager::maximumResponseTimeout()
-{
-  return MAX_RESPONSE_TIMEOUT;
 }
 
 int KProtocolManager::defaultResponseTimeout()

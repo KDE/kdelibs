@@ -91,15 +91,6 @@ public:
   static int responseTimeout();
 
   /**
-   * Returns (in seconds) the maximum timeout value that
-   * can be set for connecting to remote machines.
-   *
-   * This method returns the value defined by
-   * MAX_PROXY _CONNECT_TIMEOUT in the source file.
-   */
-  static int maximumConnectTimeout();
-
-  /**
    * Returns (in seconds) the set default timeout
    * value for connecting to remote machines.
    *
@@ -109,15 +100,6 @@ public:
   static int defaultConnectTimeout();
 
   /**
-   * Returns (in seconds) the maximum timeout value
-   * that can be set for connecting to proxy machines.
-   *
-   * This method returns the value defined by
-   * MAX_PROXY_CONNECT_TIMEOUT in the source file.
-   */
-  static int maximumProxyConnectTimeout();
-
-  /**
    * Returns (in seconds) the set default timeout value
    * for connecting to a proxy machine.
    *
@@ -125,14 +107,6 @@ public:
    * DEFAULT_PROXY_CONNECT_TIMEOUT in the source file.
    */
   static int defaultProxyConnectTimeout();
-  /**
-   * Returns (in seconds) the set default timeout value
-   * for connecting to a proxy machine.
-   *
-   * This method returns the value defined by
-   * MAX_RESPONSE_TIMEOUT in the source file.
-   */
-  static int maximumResponseTimeout();
 
   /**
    * Returns (in seconds) the set default timeout value
