@@ -182,7 +182,7 @@ public:
    * @param signal - The signal (with "SIGNAL()" wrapper) that should be called.
    */ 
   inline void addWidgetChangedSignal( const QString &widgetName,
-		  const char *signal ){
+		  const QCString &signal){
     changedMap.insert( widgetName, signal );
   }
 
@@ -223,7 +223,7 @@ protected:
   /**
    * Map of the classes and the signals that they emit when changed. 
    */
-  QMap<QString, const char *> changedMap;
+  QMap<QString, QCString> changedMap;
 
   /**
    * Recursive function that finds all known children.
