@@ -1957,7 +1957,7 @@ QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ 
     QColor button = config->readColorEntry( "buttonBackground", &kde31Button );
     QColor buttonText = config->readColorEntry( "buttonForeground", &foreground );
     QColor highlight = config->readColorEntry( "selectBackground", &kde31Beige );
-    QColor highlightedText = config->readColorEntry( "selectForeground", &black );
+    QColor highlightedText = config->readColorEntry( "selectForeground", &white );
     QColor base = config->readColorEntry( "windowBackground", &white );
     QColor baseText = config->readColorEntry( "windowForeground", &black );
     QColor link = config->readColorEntry( "linkColor", &kde31Link );
