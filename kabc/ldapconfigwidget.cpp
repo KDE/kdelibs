@@ -372,7 +372,7 @@ LDAPUrl LdapConfigWidget::url() const
     _url.setExtension( "x-sasl", "" );
     _url.setExtension( "x-mech", mMech->currentText() );
     if ( mBindDN && !mBindDN->text().isEmpty() )
-      _url.setExtension( "basename", mBindDN->text() );
+      _url.setExtension( "bindname", mBindDN->text() );
     if ( mRealm && !mRealm->text().isEmpty() )
       _url.setExtension( "x-realm", mRealm->text() );
   }

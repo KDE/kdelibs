@@ -32,7 +32,7 @@
 #include <kstringhandler.h>
 
 #include <stdlib.h>
-#include <netaccess.h>
+#include <kio/netaccess.h>
 #include <kabc/ldif.h>
 #include <kabc/ldapurl.h>
 
@@ -345,7 +345,7 @@ void ResourceLDAPKIO::init()
     d->mLDAPUrl.setExtension( "x-timelimit", QString::number( d->mTimeLimit ) );
   if ( d->mSASL ) {
     d->mLDAPUrl.setExtension( "x-sasl", "" );
-    if ( !d->mBindDN.isEmpty() ) d->mLDAPUrl.setExtension( "basename", d->mBindDN );
+    if ( !d->mBindDN.isEmpty() ) d->mLDAPUrl.setExtension( "bindname", d->mBindDN );
     if ( !d->mMech.isEmpty() ) d->mLDAPUrl.setExtension( "x-mech", d->mMech );
     if ( !d->mRealm.isEmpty() ) d->mLDAPUrl.setExtension( "x-realm", d->mRealm );
   }
