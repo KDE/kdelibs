@@ -6,7 +6,7 @@ lib_LTLIBRARIES = libmcop.la
 #
 # Programs to compile, Manpages to install and Versions
 #
-INCLUDES = $(all_includes)
+INCLUDES = -I$(top_srcdir)/libltdl $(all_includes)
 libmcop_la_SOURCES = buffer.cc connection.cc core.cc dispatcher.cc \
      iomanager.cc object.cc socketconnection.cc tcpconnection.cc \
 	 unixconnection.cc tcpserver.cc unixserver.cc objectmanager.cc \
