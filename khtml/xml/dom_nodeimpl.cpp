@@ -601,11 +601,14 @@ void NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
 
 
     int exceptioncode = 0;
-
-//    int clientX, clientY;
-//    viewportToContents(_mouse->x(), _mouse->y(), clientX, clientY);
-    int clientX = _mouse->x(); // ### adjust to be relative to view
-    int clientY = _mouse->y(); // ### adjust to be relative to view
+    int pageX = _mouse->x();
+    int pageY = _mouse->y();
+    int clientX = pageX;
+    int clientY = pageY;
+    if ( getDocument()->view() ) {
+        assert( 0 );
+        getDocument()->view()->viewportToContents( clientX, clientY, pageX, pageY );
+    }
 
     int screenX = _mouse->globalX();
     int screenY = _mouse->globalY();
@@ -630,7 +633,7 @@ void NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
     bool metaKey = false; // ### qt support?
 
     EventImpl *evt = new MouseEventImpl(evtId,true,cancelable,getDocument()->defaultView(),
-                   detail,screenX,screenY,clientX,clientY,ctrlKey,altKey,shiftKey,metaKey,
+                   detail,screenX,screenY,clientX,clientY,pageX,pageY,ctrlKey,altKey,shiftKey,metaKey,
                    button,0);
     evt->ref();
     dispatchEvent(evt,exceptioncode,true);
@@ -881,16 +884,16 @@ void NodeImpl::closeRenderer()
         m_rendererNeedsClose = true;
 }
 
- void NodeImpl::attach()
- {
+void NodeImpl::attach()
+{
     assert(!attached());
-	assert(!m_render || (m_render->style() && m_render->parent()));
+    assert(!m_render || (m_render->style() && m_render->parent()));
     if (m_render && m_rendererNeedsClose) {
         m_render->close();
         m_rendererNeedsClose = false;
     }
     m_attached = true;
- }
+}
 
 void NodeImpl::detach()
 {

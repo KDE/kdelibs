@@ -421,14 +421,10 @@ Value DOMUIEvent::getValueProperty(ExecState *exec, int token) const
     return Number(static_cast<DOM::UIEvent>(event).layerY());
   case PageX:
     // NS-compatibility
-    if (event.handle() && event.handle()->isMouseEvent()) // defined for mouse events only
-      return Number(static_cast<DOM::MouseEvent>(event).clientX());
-    return Number(0);
+    return Number(static_cast<DOM::UIEvent>(event).pageX());
   case PageY:
     // NS-compatibility
-    if (event.handle() && event.handle()->isMouseEvent()) // defined for mouse events only
-      return Number(static_cast<DOM::MouseEvent>(event).clientY());
-    return Number(0);
+    return Number(static_cast<DOM::UIEvent>(event).pageY());
   case Which:
     // NS-compatibility
     return Number(static_cast<DOM::UIEvent>(event).which());

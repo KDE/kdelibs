@@ -784,7 +784,8 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseMove );
-    m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
+    // Do not modify :hover/:active state while mouse is pressed.
+    m_part->xmlDocImpl()->prepareMouseEvent( _mouse->state() & Qt::MouseButtonMask /*readonly ?*/, xm, ym, &mev );
 
 //     kdDebug(6000) << "mouse move: " << _mouse->pos()
 // 		  << " button " << _mouse->button()
@@ -1941,13 +1942,11 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 	d->underMouse->ref();
 
     int exceptioncode = 0;
-    int mx, my;
-    viewportToContents(_mouse->x(), _mouse->y(), mx, my);
-    // clientX and clientY are in viewport coordinates
-    // At least the JS code wants event.[xy]/event.client[XY] to be in viewport coords.
-    // [that's not the same as _mouse->[xy](), since we use the clipper]
-    int clientX = mx - contentsX();
-    int clientY = my - contentsY();
+    int pageX = 0;
+    int pageY = 0;
+    viewportToContents(_mouse->x(), _mouse->y(), pageX, pageY);
+    int clientX = pageX - contentsX();
+    int clientY = pageY - contentsY();
     int screenX = _mouse->globalX();
     int screenY = _mouse->globalY();
     int button = -1;
@@ -1970,7 +1969,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
     bool metaKey = (_mouse->state() & MetaButton);
 
     // mouseout/mouseover
-    if (setUnder && (d->prevMouseX != mx || d->prevMouseY != my)) {
+    if (setUnder && (d->prevMouseX != pageX || d->prevMouseY != pageY)) {
 
         // ### this code sucks. we should save the oldUnder instead of calculating
         // it again. calculating is expensive! (Dirk)
@@ -1987,7 +1986,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 		oldUnder->ref();
 		MouseEventImpl *me = new MouseEventImpl(EventImpl::MOUSEOUT_EVENT,
 							true,true,m_part->xmlDocImpl()->defaultView(),
-							0,screenX,screenY,clientX,clientY,
+							0,screenX,screenY,clientX,clientY,pageX, pageY,
 							ctrlKey,altKey,shiftKey,metaKey,
 							button,targetNode);
 		me->ref();
@@ -1999,7 +1998,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 	    if (targetNode) {
 		MouseEventImpl *me = new MouseEventImpl(EventImpl::MOUSEOVER_EVENT,
 							true,true,m_part->xmlDocImpl()->defaultView(),
-							0,screenX,screenY,clientX,clientY,
+							0,screenX,screenY,clientX,clientY,pageX, pageY,
 							ctrlKey,altKey,shiftKey,metaKey,
 							button,oldUnder);
 
@@ -2021,7 +2020,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
                           _mouse->type() == QEvent::MouseButtonDblClick );
         MouseEventImpl *me = new MouseEventImpl(static_cast<EventImpl::EventId>(eventId),
 						true,cancelable,m_part->xmlDocImpl()->defaultView(),
-						detail,screenX,screenY,clientX,clientY,
+						detail,screenX,screenY,clientX,clientY,pageX, pageY,
 						ctrlKey,altKey,shiftKey,metaKey,
 						button,0, _mouse, dblclick );
         me->ref();
@@ -2252,7 +2251,6 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         QRect obR = updateRegion.boundingRect();
         QRegion newRegion = updateRegion.unite(rects[i]);
         if (2*newRegion.boundingRect().height() > 3*obR.height() )
-        //if ( !obR.intersects( rects[i] ) )
         {
             repaintContents( obR );
             updateRegion = rects[i];

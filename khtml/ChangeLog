@@ -1,5 +1,10 @@
 2004-02-10  Dirk Mueller  <mueller@kde.org>
 
+	* implement support for pageX/pageY. fix layerX/layerY, which was horrible broken
+	due to its (wrong) assumption that clientX is the same as pageX (#74718), (#70290).
+	
+	* dom/dom2_events.cpp (pageX/Y): add bindings.
+
 	* html/htmlparser.cpp (insertNode): argh. regression fix (http://www.cygwin.com) (#74329).
 
 2004-02-09  David Faure  <faure@kde.org>
