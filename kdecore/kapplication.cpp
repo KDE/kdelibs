@@ -1850,7 +1850,7 @@ void KApplication::installKDEPropertyMap()
     kdeMap->insert( "KComboBox", "currentItem" );
     kdeMap->insert( "KDatePicker", "getDate" );
     kdeMap->insert( "KEditListBox", "currentItem" );
-    kdeMap->insert( "KFontCombo", "currentFont" );
+    kdeMap->insert( "KFontCombo", "family" );
     kdeMap->insert( "KHistoryCombo", "currentItem" );
     kdeMap->insert( "KListBox", "currentItem" );
     kdeMap->insert( "KLineEdit", "text" );
