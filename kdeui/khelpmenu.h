@@ -32,12 +32,12 @@ class KAboutDialog;
 
 
 /**
- * This class provides the standard KDE help menu with the default "about" 
+ * This class provides the standard KDE help menu with the default "about"
  * dialog boxes and help entry. This class is used in @ref KTMainWindow so
- * normally you don't need to use this class yourself. However, if you 
- * need the help menu or any of its dialog boxes in your code that is 
+ * normally you don't need to use this class yourself. However, if you
+ * need the help menu or any of its dialog boxes in your code that is
  * not subclassed from @ref KTMainWindow you should use this class.
- * 
+ *
  * The usage is simple:
  *
  * mHelpMenu = new KHelpMenu( this, <someText> );
@@ -49,13 +49,13 @@ class KAboutDialog;
  * connect( this, SIGNAL(someSignal()), mHelpMenu,SLOT(mHelpMenu->aboutKDE()));
  *
  * IMPORTANT:
- * The first time you use mHelpMenu->menu(), a QPopupMenu object is 
- * allocated. Only one object is created by the class so if you call 
- * mHelpMenu->menu() twice or more, the same pointer is returned. The class 
- * will destroy the popupmenu in the destructor so do not delete this 
+ * The first time you use mHelpMenu->menu(), a QPopupMenu object is
+ * allocated. Only one object is created by the class so if you call
+ * mHelpMenu->menu() twice or more, the same pointer is returned. The class
+ * will destroy the popupmenu in the destructor so do not delete this
  * pointer yourself.
- * 
- * The KHelpMenu object will be deleted when its parent is destroyed but you 
+ *
+ * The KHelpMenu object will be deleted when its parent is destroyed but you
  * can delete it yourself if you want. The code below will always work.
  *
  * MyClass::~MyClass( void )
@@ -66,11 +66,11 @@ class KAboutDialog;
  *
  * Using your own "about application" dialog box:
  *
- * The standard "about application" dialog box is quite simple. If you 
- * need a dialog box with more functionality you must design that one 
- * yourself. When you want to display the dialog you can connect it to 
+ * The standard "about application" dialog box is quite simple. If you
+ * need a dialog box with more functionality you must design that one
+ * yourself. When you want to display the dialog you can connect it to
  * the help menu. Here are the steps you must follow:
- * 
+ *
  * 1. Make a help menu object with no text argument. If the text is missing
  *    the default dialog box will not be displayed:
  *    mHelpMenu = new KHelpMenu( this );
@@ -91,14 +91,14 @@ class KAboutDialog;
 class KHelpMenu : public QObject
 {
   Q_OBJECT
-  
+
   public:
     /**
      * Constructor.
-     * 
+     *
      * @param parent The parent of the dialog boxes. The boxes are modeless
      *        and will be centered with respect to the parent.
-     * @param aboutAppText User definable string that is used in the 
+     * @param aboutAppText User definable string that is used in the
      *        application specific dialog box. Note: The help menu will
      *        not open this dialog box if you don't define a string.
      */
@@ -112,8 +112,8 @@ class KHelpMenu : public QObject
     ~KHelpMenu( void );
 
     /**
-     * Returns a popup menu you can use in the menu bar or where you 
-     * need it. 
+     * Returns a popup menu you can use in the menu bar or where you
+     * need it.
      *
      * Note: This method will only create one instance of the menu. If
      * you call this method twice or more the same pointer is returned
@@ -122,12 +122,17 @@ class KHelpMenu : public QObject
 
   public slots:
     /**
-     * Opens the help page for the application. The application name is 
+     * Opens the help page for the application. The application name is
      * used as a key to determine what to display and the system will attempt
      * to open <appName>/index.html.
      */
     void appHelpActivated( void );
-  
+
+    /**
+     * Activates What's This help for the application.
+     */
+    void contextHelpActivated( void );
+
     /**
      * Opens an application specific dialog box. The dialog box will display
      * the string that was defined in the constructor.

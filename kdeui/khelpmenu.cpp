@@ -23,6 +23,8 @@
 #include <qmessagebox.h>
 #include <qpopupmenu.h>
 #include <qwidget.h>
+#include <qwhatsthis.h>
+#include <qtoolbutton.h>
 
 #include <kaboutdialog.h>
 #include <kapp.h>
@@ -55,13 +57,21 @@ QPopupMenu* KHelpMenu::menu( void )
     if( mMenu == 0 ) { return(0); }
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
-    int id = mMenu->insertItem( i18n( "&Contents" ), 1 );
+    int id = mMenu->insertItem( i18n( "&Contents" ) );
+    mMenu->connectItem( id, this, SLOT( appHelpActivated() ) );
+    mMenu->setAccel( Key_F1, id );
     mMenu->connectItem( id, this, SLOT( appHelpActivated() ) );
     mMenu->setAccel( Key_F1, id );
 
+    QToolButton* wtb = QWhatsThis::whatsThisButton(0);
+    id = mMenu->insertItem( wtb->iconSet(),i18n( "What's &This" ) );
+    mMenu->connectItem( id, this, SLOT( contextHelpActivated() ) );
+    delete wtb;
+    mMenu->setAccel( SHIFT + Key_F1, id );
+
     mMenu->insertSeparator();
 
-    id = mMenu->insertItem( i18n( "&About" ) + " " + kapp->name() + "...", 2 );
+    id = mMenu->insertItem( kapp->miniIcon(), i18n( "&About" ) + " " + kapp->name() + "..." );
     if( mAboutAppText.isNull() == false )
     {
       mMenu->connectItem( id, this, SLOT( aboutApp() ) );
@@ -85,7 +95,7 @@ void KHelpMenu::appHelpActivated( void )
 void KHelpMenu::aboutApp( void )
 {
   //
-  // 1999-16-11-Espen Sand: I will improve (*) this later + some other stuff 
+  // 1999-16-11-Espen Sand: I will improve (*) this later + some other stuff
   // after the freeze have been removed. (mid December)
   // (*) Make the dialog destroy itself on close as propsed by M Ettrich.
   //
@@ -169,6 +179,10 @@ void KHelpMenu::menuDestroyed( void )
 }
 
 
+void KHelpMenu::contextHelpActivated( void )
+{
+    QWhatsThis::enterWhatsThisMode();
+}
 
 
 #include "khelpmenu.moc"
