@@ -49,7 +49,6 @@
 #include <kglobal.h>
 #include <ctype.h>
 #include <assert.h>
-
 #include <kdebug.h>
 
 #include "kjs.h"
@@ -799,18 +798,21 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             {
                 if( curchar == '>' )
                     tag = SearchEnd; // we reached the end
-                else if(curchar == '\'' || curchar == '"')
+                else if(pending != NonePending && (curchar == '\'' || curchar == '"'))
                 {
                     // something went wrong, lets assume it
                     // is a value because only there we handle quotes
                     tag = SearchValue;
                     discard = NoneDiscard;
                     pending = NonePending;
+                    *dest++ = 0;
+                    attrName = QString::null;
                 }
                 else
                 {
                     tag = AttributeName;
                     discard = NoneDiscard;
+                    pending = NonePending;
                 }
                 break;
             }
@@ -854,10 +856,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             }
             case SearchEqual:
             {
-                if(isSeparator(curchar))
-                    // eat it
-                    ++src;
-                else if( curchar == '=' )
+                if( curchar == '=' )
                 {
 #ifdef TOKEN_DEBUG
                     kdDebug(6036) << "found equal" << endl;
@@ -878,7 +877,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     dest = buffer;
                     tag = SearchAttribute;
                     discard = AllDiscard;
-                    pending = NonePending;
                 }
                 break;
             }
@@ -913,15 +911,18 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     // end of attribute
                     Attribute a;
                     a.id = *buffer;
-                    if(a.id==0) a.setName( attrName );
-                    while(dest > buffer+1 &&
-                          (*(dest-1) == ' ' || *(dest-1) == '\t' || *(dest-1) == '\n' || *(dest-1) == '\r'))
-                        dest--; // remove trailing whitespaces
-                    a.setValue(buffer+1, dest-buffer-1);
+                    if(a.id || !attrName.isNull())
+                    {
+                        if(!a.id) a.setName( attrName );
+                        while(dest > buffer+1 &&
+                              (*(dest-1) == ' ' || *(dest-1) == '\t' || *(dest-1) == '\n' || *(dest-1) == '\r'))
+                            dest--; // remove trailing whitespaces
+                        a.setValue(buffer+1, dest-buffer-1);
 #ifdef TOKEN_DEBUG
-                    kdDebug(6036) << "adding value: *" << QConstString(buffer+1, dest-buffer-1).string() << "*" << endl;
+                        kdDebug(6036) << "adding value: *" << QConstString(buffer+1, dest-buffer-1).string() << "*" << endl;
 #endif
-                    currToken->attrs.add(a);
+                        currToken->attrs.add(a);
+                    }
 
                     dest = buffer;
                     tag = SearchAttribute;
@@ -952,7 +953,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     // no quotes. Every space means end of value
                     Attribute a;
                     a.id = *buffer;
-                    if(a.id==0) a.setName( attrName );
+                    if(!a.id) a.setName( attrName );
                     a.setValue(buffer+1, dest-buffer-1);
 #ifdef TOKEN_DEBUG
                     kdDebug(6036) << "adding value: *" << QConstString(buffer+1, dest-buffer-1).string() << "*" << endl;
