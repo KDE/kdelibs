@@ -15,6 +15,7 @@
 
 #ifdef DO_MD5
 #include <md5.h>
+#include "extern_md5.h"
 #endif
 
 #include "http.h"
@@ -31,120 +32,14 @@ bool open_PassDlg( const char *_head, string& _user, string& _pass );
 void sig_handler( int );
 void sig_handler2( int );
 extern "C" {
+#ifdef DO_MD5
+  extern char *encode64_digest(char *);
+#endif
+  char *base64_encode_line( const char *s );
   char *create_basic_auth (const char *header, const char *user, const char *passwd);
   char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *_realm, 
 			    const char *_nonce, const char *_domain, const char *_opaque);
 };
-
-
-#ifdef DO_MD5
-
-void CvtHex(
-    IN HASH Bin,
-    OUT HASHHEX Hex
-    )
-{
-    unsigned short i;
-    unsigned char j;
-
-    for (i = 0; i < HASHLEN; i++) {
-        j = (Bin[i] >> 4) & 0xf;
-        if (j <= 9)
-            Hex[i*2] = (j + '0');
-         else
-            Hex[i*2] = (j + 'a' - 10);
-        j = Bin[i] & 0xf;
-        if (j <= 9)
-            Hex[i*2+1] = (j + '0');
-         else
-            Hex[i*2+1] = (j + 'a' - 10);
-    };
-    Hex[HASHHEXLEN] = '\0';
-};
-
-/* calculate H(A1) as per spec */
-void DigestCalcHA1(
-    IN char * pszAlg,
-    IN char * pszUserName,
-    IN char * pszRealm,
-    IN char * pszPassword,
-    IN char * pszNonce,
-    IN char * pszCNonce,
-    OUT HASHHEX SessionKey
-    )
-{
-      MD5_CTX Md5Ctx;
-      HASH HA1;
-
-      MD5Init(&Md5Ctx);
-      MD5Update(&Md5Ctx, pszUserName, strlen(pszUserName));
-      MD5Update(&Md5Ctx, ":", 1);
-      MD5Update(&Md5Ctx, pszRealm, strlen(pszRealm));
-      MD5Update(&Md5Ctx, ":", 1);
-      MD5Update(&Md5Ctx, pszPassword, strlen(pszPassword));
-      MD5Final(HA1, &Md5Ctx);
-      if (strcmp(pszAlg, "md5-sess") == 0) {
-            MD5Init(&Md5Ctx);
-            MD5Update(&Md5Ctx, HA1, HASHLEN);
-            MD5Update(&Md5Ctx, ":", 1);
-            MD5Update(&Md5Ctx, pszNonce, strlen(pszNonce));
-            MD5Update(&Md5Ctx, ":", 1);
-            MD5Update(&Md5Ctx, pszCNonce, strlen(pszCNonce));
-            MD5Final(HA1, &Md5Ctx);
-      };
-      CvtHex(HA1, SessionKey);
-};
-
-/* calculate request-digest/response-digest as per HTTP Digest spec */
-void DigestCalcResponse(
-    IN HASHHEX HA1,           /* H(A1) */
-    IN char * pszNonce,       /* nonce from server */
-    IN char * pszNonceCount,  /* 8 hex digits */
-    IN char * pszCNonce,      /* client nonce */
-    IN char * pszQop,         /* qop-value: "", "auth", "auth-int" */
-    IN char * pszMethod,      /* method from the request */
-    IN char * pszDigestUri,   /* requested URL */
-    IN HASHHEX HEntity,       /* H(entity body) if qop="auth-int" */
-    OUT HASHHEX Response      /* request-digest or response-digest */
-    )
-{
-      MD5_CTX Md5Ctx;
-      HASH HA2;
-      HASH RespHash;
-       HASHHEX HA2Hex;
-
-      // calculate H(A2)
-      MD5Init(&Md5Ctx);
-      MD5Update(&Md5Ctx, pszMethod, strlen(pszMethod));
-      MD5Update(&Md5Ctx, ":", 1);
-      MD5Update(&Md5Ctx, pszDigestUri, strlen(pszDigestUri));
-      if (strcmp(pszQop, "auth-int") == 0) {
-            MD5Update(&Md5Ctx, ":", 1);
-            MD5Update(&Md5Ctx, HEntity, HASHHEXLEN);
-      };
-      MD5Final(HA2, &Md5Ctx);
-       CvtHex(HA2, HA2Hex);
-
-      // calculate response
-      MD5Init(&Md5Ctx);
-      MD5Update(&Md5Ctx, HA1, HASHHEXLEN);
-      MD5Update(&Md5Ctx, ":", 1);
-      MD5Update(&Md5Ctx, pszNonce, strlen(pszNonce));
-      MD5Update(&Md5Ctx, ":", 1);
-      if (*pszQop) {
-          MD5Update(&Md5Ctx, pszNonceCount, strlen(pszNonceCount));
-          MD5Update(&Md5Ctx, ":", 1);
-          MD5Update(&Md5Ctx, pszCNonce, strlen(pszCNonce));
-          MD5Update(&Md5Ctx, ":", 1);
-          MD5Update(&Md5Ctx, pszQop, strlen(pszQop));
-          MD5Update(&Md5Ctx, ":", 1);
-      };
-      MD5Update(&Md5Ctx, HA2Hex, HASHHEXLEN);
-      MD5Final(RespHash, &Md5Ctx);
-      CvtHex(RespHash, Response);
-};
-
-#endif
 
 int main( int argc, char **argv )
 {
@@ -365,7 +260,6 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
   m_iSize = 0;
 
   m_bCanResume = true; // most of http servers support resuming ?
-
   
   HTTP = HTTP_Unknown;
 }
@@ -578,11 +472,9 @@ debug( "kio_http : Header: %s", buffer );
     {
       HTTP = HTTP_10;
       // Unauthorized access
-      if ( strncmp( buffer + 9, "401", 3 ) == 0 )
+      if ( strncmp( buffer + 9, "401", 3 ) == 0 ) {
 	unauthorized = true;
-      //Jacek: server error codes added (5xx)
-      else if ( buffer[9] == '4' ||  buffer[9] == '5' )
-      {
+      } else if ( buffer[9] == '4' ||  buffer[9] == '5' ) {
 	// Tell that we will only get an error page here.
 	errorPage();
       }
@@ -592,10 +484,7 @@ debug( "kio_http : Header: %s", buffer );
       // Unauthorized access
       if ( strncasecmp( buffer + 9, "401", 3 ) == 0  || strncasecmp(buffer+9, "407",3)==0) {
 	unauthorized = true;
-      }
-      //Jacek: server error codes added (5xx)
-      else if ( buffer[9] == '4' ||  buffer[9] == '5' )
-      {
+      } else if ( buffer[9] == '4' ||  buffer[9] == '5' ) {
 	// Tell that we will only get an error page here.
 	errorPage();
       }
@@ -603,109 +492,31 @@ debug( "kio_http : Header: %s", buffer );
     // In fact we should do redirection only if we got redirection code
     else if ( strncmp( buffer, "Location:", 9 ) == 0 ) {
       http_close();
-      fflush(stderr);
       K2URL u( _url, buffer + 10 );
-      string url = u.url();
-      redirection( url.c_str() );
+      redirection( u.url().c_str() );
       return http_open( u, _post_data, _post_data_size, _reload, _offset );
     } else if ( strncmp( buffer, "WWW-Authenticate:", 17 ) == 0 ) {
-      const char *p = buffer + 17;
-      while( *p == ' ' ) p++;
-      if ( strncmp( p, "Basic", 5 ) == 0 ) {
-	Authentication = AUTH_Basic;
-	p += 5;
-      } else if (strncmp (p, "Digest", 6) ==0 ) {
-	p += 6;
-	Authentication = AUTH_Digest;
-      } else {
-	fprintf(stderr, "Invalid Authorization type requested\n");
-	fprintf(stderr, "buffer: %s\n", buffer);
-	fflush(stderr);
-	abort();
-      }
-      while (*p) {
-	while( *p == ' ' )
-	  p++;
-	int i = 0;
-	if ( strncmp( p, "realm=\"", 7 ) == 0 ) {
-	  p += 7;
-	  while( p[i] != '"' ) i++;
-	  realm.assign( p, i );
-	  fprintf(stderr,"REALM is: %s\n", realm.c_str());
-	} else if (strncmp(p, "opaque=\"", 8)==0) {
-	  p+= 8;
-	  while( p[i] != '"' ) i++;
-	  opaque.assign(p, i);
-	} else if (strncmp(p, "nonce=\"", 7)==0) {
-	  p += 7;
-	  while( p[i] != '"' ) i++;
-	  nonce.assign( p, i );
-	} else if (strncmp(p, "domain=\"", 8)==0) {
-	  p += 8;
-	  while( p[i] != '"' ) i++;
-	  domain.assign( p, i );
-	} else if (strncmp(p, "algorith=\"", 10) == 0) {
-	  p += 10;
-	  while (p[i] != '"' ) i++;
-	  algorith.assign(p, i);
-	} else if (strncmp(p, "algorithm=\"", 11)==0) {
-	  p += 11;
-	  while (p[i] != '"' ) i++;
-	  algorith.assign(p, i);
-	}
-	p+=i;
-	p++;
-      }
-      if (Authentication == AUTH_Digest) {
-	fprintf(stderr, "domain: %s\n", domain.c_str());
-      }
-      
+      configAuth(buffer + 17);  
     } else if (HTTP == HTTP_11) {
       if ( strncasecmp( buffer, "Transfer-Encoding: ", 19) == 0) {
 	// If multiple encodings have been applied to an entity, the transfer-
 	// codings MUST be listed in the order in which they were applied.
-	QString tEncoding = buffer+19;
-	if (tEncoding.lower() == "chunked") {
-	  m_qTransferEncodings.push("chunked");
-	  // Anyone know of a better way to handle unknown sizes possibly/ideally with unsigned ints?
-	  m_iSize = 0;
-	} else if (tEncoding.lower() == "gzip") {
-	  m_qTransferEncodings.push("gzip");
-	  m_iSize = 0;
-	} else if (tEncoding.lower() == "identity") {
-	  continue;  // Identy is the same as no encoding.. AFAIK
-	} else {
-	  fprintf(stderr, "Unknown encoding, or multiple encodings encountered.  Please write code.\n");
-	  fflush(stderr);
-	  abort();
-	}
+	addEncoding(buffer+19, &m_qTransferEncodings);
       } else if (strncasecmp(buffer, "Content-Encoding: ", 18) == 0) {
-	QString tEncoding = buffer+18;
-	if (tEncoding.lower() == "chunked") {
-	  m_qContentEncodings.push("chunked");
-	  // Anyone know of a better way to handle unknown sizes possibly/ideally with unsigned ints?
-	  m_iSize = 0;
-	} else if (tEncoding.lower() == "gzip") {
-	  m_qContentEncodings.push("gzip");
-	  m_iSize = 0;
-	} else if (tEncoding.lower() == "identity") {
-	  continue;  // Identy is the same as no encoding.. AFAIK
-	} else {
-	  fprintf(stderr, "Unknown encoding, or multiple encodings encountered.  Please write code.\n");
-	  fflush(stderr);
-	  abort();
-	}
+	addEncoding(buffer+18, &m_qContentEncodings);
+      } else if (strncasecmp(buffer, "Content-MD5: ", 13)==0) {
+	m_sContentMD5 = strdup(buffer+13);
+	fprintf(stderr, "Have a content header\n");
       }
     }
   }
-  if ( unauthorized )
-  {
+  if (unauthorized) {
     http_close();
     string user = _url.user();
     string pass = _url.pass();
-    if ( realm.empty() )
+    if (realm.empty())
       realm = _url.host();
-    if ( !open_PassDlg( realm.c_str(), user, pass ) )
+    if ( !open_PassDlg(realm.c_str(), user, pass) )
     {
       string url = _url.url();
       error( ERR_ACCESS_DENIED, url.c_str() );
@@ -722,6 +533,78 @@ debug( "kio_http : Header: %s", buffer );
   return true;
 }
 
+
+void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
+{
+  if (encoding.lower() == "chunked") {
+    encs->push("chunked");
+    // Anyone know of a better way to handle unknown sizes possibly/ideally with unsigned ints?
+    m_iSize = 0;
+  } else if (encoding.lower() == "gzip") {
+    encs->push("gzip");
+    m_iSize = 0;
+  } else if (encoding.lower() == "identity") {
+    return;  // Identy is the same as no encoding.. AFAIK
+  } else {
+    fprintf(stderr, "Unknown encoding, or multiple encodings encountered.  Please write code.\n");
+    fflush(stderr);
+    abort();
+  }
+}
+
+
+void HTTPProtocol::configAuth(const char *p)
+{
+  while( *p == ' ' ) p++;
+  if ( strncmp( p, "Basic", 5 ) == 0 ) {
+    Authentication = AUTH_Basic;
+    p += 5;
+  } else if (strncmp (p, "Digest", 6) ==0 ) {
+    p += 6;
+    Authentication = AUTH_Digest;
+  } else {
+    fprintf(stderr, "Invalid Authorization type requested\n");
+    fprintf(stderr, "buffer: %s\n", p);
+    fflush(stderr);
+    abort();
+  }
+  while (*p) {
+    while( *p == ' ' )
+      p++;
+    int i = 0;
+    if ( strncmp( p, "realm=\"", 7 ) == 0 ) {
+      p += 7;
+      while( p[i] != '"' ) i++;
+      realm.assign( p, i );
+      fprintf(stderr,"REALM is: %s\n", realm.c_str());
+    } else if (strncmp(p, "opaque=\"", 8)==0) {
+      p+= 8;
+      while( p[i] != '"' ) i++;
+      opaque.assign(p, i);
+    } else if (strncmp(p, "nonce=\"", 7)==0) {
+      p += 7;
+      while( p[i] != '"' ) i++;
+      nonce.assign( p, i );
+    } else if (strncmp(p, "domain=\"", 8)==0) {
+      p += 8;
+      while( p[i] != '"' ) i++;
+      domain.assign( p, i );
+    } else if (strncmp(p, "algorith=\"", 10) == 0) {
+      p += 10;
+      while (p[i] != '"' ) i++;
+      algorith.assign(p, i);
+    } else if (strncmp(p, "algorithm=\"", 11)==0) {
+      p += 11;
+      while (p[i] != '"' ) i++;
+      algorith.assign(p, i);
+    }
+    p+=i;
+    p++;
+  }
+  if (Authentication == AUTH_Digest) {
+    fprintf(stderr, "domain: %s\n", domain.c_str());
+  }
+}
 
 void HTTPProtocol::http_close()
 {
@@ -812,13 +695,23 @@ void HTTPProtocol::slotGet( const char *_url )
   time_t t_last = t_start;
   
   char buffer[ 2048 ];
-  long nbytes=0;
-  long sz =0;
+  long nbytes=0, sz=0;
+
+#ifdef DO_MD5
+  char buf[18], *enc_digest;
+  MD5_CTX context;
+  MD5Init(&context);
+#endif
 
   while (!feof(m_fsocket)) {
     nbytes = fread(buffer, 1, 2048, m_fsocket);
     if (nbytes > 0) {
-      if (m_qTransferEncodings.isEmpty()) {
+      if (m_qTransferEncodings.isEmpty() && m_qContentEncodings.isEmpty()) {
+#ifdef DO_MD5
+	if (m_sContentMD5.c_str()) {
+	  MD5Update(&context, buffer, nbytes);
+	}
+#endif
 	data(buffer, nbytes);
 	sz+=nbytes;
       } else {
@@ -838,6 +731,7 @@ void HTTPProtocol::slotGet( const char *_url )
   http_close();
 
 
+
   if (!big_buffer.isNull()) {
     const char *enc;
     while (!m_qTransferEncodings.isEmpty()) {
@@ -850,6 +744,14 @@ void HTTPProtocol::slotGet( const char *_url )
 	decodeChunked();
       }
     }
+    // The MD5 digest is computed based on the content of the entity-body,
+    // including any content-coding that has been applied, but not including
+    // any transfer-encoding applied to the message-body. If the message is
+    // received with a transfer-encoding, that encoding MUST be removed
+    // prior to checking the Content-MD5 value against the received entity.
+#ifdef DO_MD5
+    MD5Update(&context, big_buffer.data(), big_buffer.size());
+#endif
     while (!m_qContentEncodings.isEmpty()) {
       enc = m_qContentEncodings.pop();
       if (!enc)
@@ -862,6 +764,16 @@ void HTTPProtocol::slotGet( const char *_url )
     }
     sz = sendData();
   }
+
+#ifdef DO_MD5
+  MD5Final(buf, &context); // Wrap everything up
+  enc_digest = encode64_digest(buf);
+  if (strncmp(encode64_digest(buf), m_sContentMD5.c_str(), m_sContentMD5.length())) {
+    fprintf(stderr, "MD5 Checksums don't match.. oops?!\n");
+    fflush(stderr);
+  }
+  free(enc_digest);
+#endif
 
   t_last = time(0L);
   if (t_last - t_start)
