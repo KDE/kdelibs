@@ -184,30 +184,25 @@ static HTMLColors *htmlColors = 0L;
 
 static KStaticDeleter<HTMLColors> hcsd;
 
-void khtml::setNamedColor(QColor &color, EColorType& colorType, const QString &_name, bool strictParsing)
+QRgb khtml::parseColor(QString name, bool strictParsing)
 {
     if( !htmlColors )
         htmlColors = hcsd.setObject( new HTMLColors );
 
-    colorType = CTSOLID;
-
     int pos;
-    QString name = _name;
     // remove white spaces for those broken websites out there :-(
     while ( ( pos = name.find( ' ' ) ) != -1 )  name.remove( pos, 1 );
 
     int len = name.length();
 
-    if (!len || (strictParsing && len < 3)) {
-        color = QColor();
-        return;
-    }
+    if (!len || (strictParsing && len < 3))
+        return invalidColor;
 
-    if(len == 11 && name.find("transparent", 0, false) == 0) {
-        color = QColor();
-        colorType = CTTRANS; // transparent
-        return;
-    }
+    if(len == 11 && name.find("transparent", 0, false) == 0)
+        return transparentColor;
+
+    if(len == 10 && name == "-konq-text")
+        return defaultTextColor;
 
     // also recognize "color=ffffff"
     if (len == 6)
@@ -215,30 +210,22 @@ void khtml::setNamedColor(QColor &color, EColorType& colorType, const QString &_
         bool ok;
         int val = name.toInt(&ok, 16);
         if(ok)
-        {
-            color.setRgb((0xff << 24) | val);
-            return;
-        }
+            return (0xff << 24) | val;
+
         // recognize #12345 (duplicate the last character)
         if(!strictParsing && name[0] == '#') {
             bool ok;
             int val = name.right(5).toInt(&ok, 16);
-            if(ok) {
-                color.setRgb((0xff << 24) | (val * 16 + ( val&0xf )));
-                return;
-            }
+            if(ok)
+                return (0xff << 24) | (val * 16 + ( val&0xf ));
         }
-        if ( !name[0].isLetter() ) {
-	    color = QColor();
-	    return;
-	}
+        if ( !name[0].isLetter() )
+            return invalidColor;
     }
 
     // #fffffff as found on msdn.microsoft.com
     if ( name[0] == '#' && len > 7)
-    {
         name = name.left(7);
-    }
 
     if ( len > 4 && name[0].lower() == 'r' && name[1].lower() == 'g' &&
          name[2].lower() == 'b' && name[3] == '(' &&
@@ -248,46 +235,47 @@ void khtml::setNamedColor(QColor &color, EColorType& colorType, const QString &_
         DOMString rgb = name.mid(4, name.length()-5);
         int count;
         khtml::Length* l = rgb.implementation()->toLengthArray(count);
-        if (count != 3) {
-            // transparent in case of an invalid color.
-            color = QColor();
-            colorType = CTTRANS;
+        if (count != 3)
+            return transparentColor;
+
+        int c[3];
+        for (int i = 0; i < 3; ++i) {
+            c[i] = l[i].width(255);
+            if (c[i] < 0) c[i] = 0;
+            if (c[i] > 255) c[i] = 255;
         }
-        else {
-            int c[3];
-            for (int i = 0; i < 3; ++i) {
-                c[i] = l[i].width(255);
-                if (c[i] < 0) c[i] = 0;
-                if (c[i] > 255) c[i] = 255;
-            }
-            color.setRgb(c[0], c[1], c[2]);
-        }
+
+        QRgb col = qRgb(c[0], c[1], c[2]);
         delete [] l;
+        return col;
     }
-    else
-    {
-        QColor tc = htmlColors->map[name];
-        if ( !tc.isValid() )
-            tc = htmlColors->map[name.lower()];
 
-        if (tc.isValid())
-            color = tc;
-        else {
-            color.setNamedColor(name);
-            if ( !color.isValid() )  color.setNamedColor( name.lower() );
-            if(!strictParsing && !color.isValid()) {
-                bool hasalpha = false;
-                for(unsigned int i = 0; i < name.length(); i++)
-                    if(name[i].isLetterOrNumber()) {
-                        hasalpha = true;
-                        break;
-                    }
+    QColor tc = htmlColors->map[name];
+    if ( !tc.isValid() )
+        tc = htmlColors->map[name.lower()];
 
-                if(!hasalpha)
-                  color = Qt::black;
+    if (tc.isValid())
+        return tc.rgb();
+
+    tc.setNamedColor(name);
+    if (tc.isValid()) return tc.rgb();
+
+    tc.setNamedColor(name.lower());
+    if (tc.isValid()) return tc.rgb();
+
+    if(!strictParsing) {
+        bool hasalpha = false;
+        for(unsigned int i = 0; i < name.length(); i++)
+            if(name[i].isLetterOrNumber()) {
+                hasalpha = true;
+                break;
             }
-        }
+
+        if(!hasalpha)
+            return qRgb(0, 0, 0);
     }
+
+    return invalidColor;
 }
 
 QPainter *khtml::printpainter = 0;

@@ -30,11 +30,12 @@ class QPainter;
 
 namespace khtml
 {
-    enum EColorType {
-        CTSOLID, CTDEFAULT, CTTRANS
-    };
+    const QRgb transparentColor = 0x00000000;
+    const QRgb invalidColor     = 0x00000001;
+    const QRgb invertedColor    = 0x00000002;
+    const QRgb defaultTextColor = 0x00000003;
 
-    void setNamedColor(QColor &color, EColorType& colorType,  const QString &name, bool strictParsing);
+    QRgb parseColor(QString name, bool strictParsing);
 
     extern QPainter *printpainter;
     void setPrintPainter( QPainter *printer );
