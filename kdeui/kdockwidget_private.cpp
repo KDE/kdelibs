@@ -24,10 +24,12 @@
 #include <qcursor.h>
 #include <kdebug.h>
 #include <qtimer.h>
+#include <qapplication.h>
 
 KDockSplitter::KDockSplitter(QWidget *parent, const char *name, Orientation orient, int pos, bool highResolution)
 : QWidget(parent, name)
 {
+  m_dontRecalc=false;
   divider = 0L;
   child0 = 0L;
   child1 = 0L;
@@ -67,7 +69,6 @@ void KDockSplitter::activate(QWidget *c0, QWidget *c1)
   initialised= true;
 
   updateName();
-
   divider->show();
   resizeEvent(0);
   if (fixedWidth0!=-1) restoreFromForcedFixedSize((KDockWidget*)child0);
@@ -111,20 +112,24 @@ void KDockSplitter::setForcedFixedWidth(KDockWidget *dw,int w)
 	int factor = (mHighResolution)? 10000:100;
 	if (dw==child0)
 	{
+		if (fixedWidth0==-1) savedXPos=xpos;
+		if (w==fixedWidth0) return;
                 fixedWidth0=w;
-//		setupMinMaxSize();
-                savedXPos=xpos;
 		setSeparatorPos(w*factor/width(),true);
+
+//		setupMinMaxSize();
 //		kdDebug()<<"Set forced fixed width for widget 0 :"<<w<<endl;
 	}
         else
 	{
+		if (fixedWidth1==-1) savedXPos=xpos;
+		if (w==fixedWidth1) return;
                 fixedWidth1=w;
-                savedXPos=xpos;
 		setSeparatorPos((width()-w)*factor/width(),true);
 //		kdDebug()<<"Set forced fixed width for widget 1 :"<<w<<endl;
 //		kdDebug()<<"Width() :"<<width()<<endl;
 	}
+	setupMinMaxSize();
 }
 
 void KDockSplitter::setForcedFixedHeight(KDockWidget *dw,int h)
@@ -132,19 +137,22 @@ void KDockSplitter::setForcedFixedHeight(KDockWidget *dw,int h)
 	int factor = (mHighResolution)? 10000:100;
 	if (dw==child0)
 	{
+		if (fixedHeight0==-1) savedXPos=xpos;
+		if (h==fixedHeight0) return;
                 fixedHeight0=h;
 //		setupMinMaxSize();
-		savedXPos=xpos;
 		setSeparatorPos(h*factor/height(),true);
 //		kdDebug()<<"Set forced fixed width for widget 0 :"<<h<<endl;
 	}
         else
 	{
+		if (fixedHeight1==-1) savedXPos=xpos;
+		if (h==fixedHeight1) return;
                 fixedHeight1=h;
-		savedXPos=xpos;
 		setSeparatorPos((height()-h)*factor/height(),true);
 //		kdDebug()<<"Set forced fixed height for widget 1 :"<<h<<endl;
 	}
+	setupMinMaxSize();
 }
 
 void KDockSplitter::restoreFromForcedFixedSize(KDockWidget *dw)
@@ -188,6 +196,7 @@ void KDockSplitter::setupMinMaxSize()
     maxx = (maxx < 32000) ? maxx : 32000;
     miny = (miny > 2) ? miny : 2;
     maxy = (maxy < 32000) ? maxy : 32000;
+
   }
   setMinimumSize(minx, miny);
   setMaximumSize(maxx, maxy);
@@ -275,7 +284,8 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
     KDockWidget *c0=(KDockWidget*)child0;
     KDockWidget *c1=(KDockWidget*)child1;
     bool stdHandling=false;
-    if ((fixedWidth0==-1) && (fixedWidth1==-1)) {
+    if ( ( (m_orientation==Vertical) &&((fixedWidth0==-1) && (fixedWidth1==-1)) ) ||
+    	( (m_orientation==Horizontal)  &&((fixedHeight0==-1) && (fixedHeight1==-1)) ) ) {
 	    if ((c0->getWidget()) && (dc=dynamic_cast<KDockContainer*>(c0->getWidget()))
 		 && (dc->m_overlapMode)) {
 			int position= qRound((m_orientation == Vertical ? width() : height()) * xpos/factor);

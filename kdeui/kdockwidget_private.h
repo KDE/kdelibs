@@ -97,7 +97,6 @@ protected slots:
 
 private:
   void setupMinMaxSize();
-
   QWidget *child0, *child1;
   Orientation m_orientation;
   bool initialised;
@@ -106,6 +105,7 @@ private:
   bool mOpaqueResize, mKeepSize, mHighResolution;
   int fixedWidth0,fixedWidth1;
   int fixedHeight0,fixedHeight1;
+  bool m_dontRecalc;
 };
 
 /**

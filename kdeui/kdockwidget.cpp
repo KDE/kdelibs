@@ -2907,6 +2907,9 @@ KDockWidget* KDockManager::findWidgetParentDock( QWidget* w ) const
 
 void KDockManager::drawDragRectangle()
 {
+#ifdef BORDERLESS_WINDOWS
+	return
+#endif	
   if (d->oldDragRect == d->dragRect)
     return;
 
@@ -2919,7 +2922,7 @@ void KDockManager::drawDragRectangle()
   for (i = 0; i <= 1; i++) {
     if (oldAndNewDragRect[i].isEmpty())
       continue;
-
+	
     KDockWidget* pDockWdgAtRect = (KDockWidget*) QApplication::widgetAt( oldAndNewDragRect[i].topLeft(), true );
     if (!pDockWdgAtRect)
       continue;
@@ -3139,6 +3142,12 @@ void KDockContainer::deactivateOverlapMode() {
 bool KDockContainer::isOverlapMode() {
 	return m_overlapMode;
 }
+
+
+bool KDockContainer::dockDragEnter(KDockWidget* dockWidget, QMouseEvent *event) { return false;}
+bool KDockContainer::dockDragMove(KDockWidget* dockWidget, QMouseEvent *event) { return false;}
+bool KDockContainer::dockDragLeave(KDockWidget* dockWidget, QMouseEvent *event) { return false;}
+
 
 KDockWidget *KDockContainer::parentDockWidget(){return 0;}
 

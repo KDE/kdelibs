@@ -57,6 +57,9 @@ public:
   virtual void setToolTip (KDockWidget *, QString &);
   virtual void  setPixmap(KDockWidget*,const QPixmap&);
   QStringList containedWidgets() const;
+  virtual bool dockDragEnter(KDockWidget* dockWidget, QMouseEvent *event);
+  virtual bool dockDragMove(KDockWidget* dockWidget, QMouseEvent *event);
+  virtual bool dockDragLeave(KDockWidget* dockWidget, QMouseEvent *event);
 protected:
   friend class KDockManager;
   friend class KDockSplitter;
