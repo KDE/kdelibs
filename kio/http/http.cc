@@ -1010,7 +1010,7 @@ bool HTTPProtocol::http_open()
                   << " HOST= " << m_state.hostname << endl
                   << " PORT= " << m_state.port << endl
                   << " USER= " << m_state.user << endl
-                  << " PASSWORD= " << m_state.passwd << endl
+                  << " PASSWORD= [protected]" << endl
                   << " REALM= " << m_strRealm << endl
                   << " EXTRA= " << m_strAuthorization  << endl;
   }
@@ -1065,7 +1065,7 @@ bool HTTPProtocol::http_open()
                       << " HOST= " << m_proxyURL.host() << endl
                       << " PORT= " << m_proxyURL.port() << endl
                       << " USER= " << m_proxyURL.user() << endl
-                      << " PASSWORD= " << m_proxyURL.pass() << endl
+                      << " PASSWORD= [protected]" << endl
                       << " REALM= " << m_strProxyRealm << endl
                       << " EXTRA= " << m_strProxyAuthorization  << endl;
     }
@@ -1284,23 +1284,25 @@ bool HTTPProtocol::readHeader()
       // Content-Encoding specified which would then contain
       // the true mime-type for the requested URI i.e. the content
       // type is only applicable to the actual message-body!!
-      m_strMimeType = QString::fromLatin1(trimLead(buffer + 13)).lower();
-      kdDebug(7103) << "Content-type: " << m_strMimeType << endl;
-
-      // This header can be something like "text/html; charset foo-blah"
-      int semicolonPos = m_strMimeType.find( ';' );
-      if ( semicolonPos != -1 )
+      QString tmp = QString::fromLatin1(trimLead(buffer + 13)).lower();
+      if ( !tmp.isEmpty() )
       {
-        int equalPos = m_strMimeType.find( '=' );
-        if ( equalPos != -1 )
+        m_strMimeType = tmp;
+        kdDebug(7103) << "Content-type: " << m_strMimeType << endl;
+        // This header can be something like "text/html; charset foo-blah"
+        int semicolonPos = m_strMimeType.find( ';' );
+        if ( semicolonPos != -1 )
         {
-          m_strCharset = m_strMimeType.mid( equalPos+1 );
-          kdDebug(7103) << "Found charset : " << m_strCharset << endl;
+          int equalPos = m_strMimeType.find( '=' );
+          if ( equalPos != -1 )
+          {
+            m_strCharset = m_strMimeType.mid( equalPos+1 );
+            kdDebug(7103) << "Found charset : " << m_strCharset << endl;
+          }
+          m_strMimeType = m_strMimeType.left( semicolonPos );
         }
-        m_strMimeType = m_strMimeType.left( semicolonPos );
       }
     }
-
     //
     else if (strncasecmp(buffer, "Date:", 5) == 0) {
       dateHeader = KRFCDate::parseDate(trimLead(buffer+5));
@@ -2629,10 +2631,7 @@ bool HTTPProtocol::readBody( )
       if ( !decode )
       {
         if (useMD5)
-        {
-          Q_UINT8* data = reinterpret_cast<Q_UINT8*>( m_bufReceive.copy().data() );
-          context.update( data, bytesReceived );
-        }
+          context.update( QCString( m_bufReceive.data() ) );
 
         // yep, let the world know that we have some data
         array.setRawData( m_bufReceive.data(), bytesReceived );
@@ -2687,10 +2686,7 @@ bool HTTPProtocol::readBody( )
     // received with a transfer-encoding, that encoding MUST be removed
     // prior to checking the Content-MD5 value against the received entity.
     if ( useMD5 )
-    {
-        Q_UINT8* data = reinterpret_cast<Q_UINT8*>( big_buffer.copy().data() );
-        context.update( data, big_buffer.size() );
-    }
+        context.update( QCString( big_buffer.data() ) );
 
     // now decode all of the content encodings
     // -- Why ?? We are not
@@ -2716,7 +2712,9 @@ bool HTTPProtocol::readBody( )
   if ( useMD5 )
   {
     context.finalize();
-    QString enc_digest = KBase64::encodeString(reinterpret_cast<char*>(context.rawDigest()));
+    HASH digest;
+    context.rawDigest(digest);
+    QString enc_digest = KCodecs::base64Encode(QString::fromLatin1(digest,16));
     // TODO: We need to notify the user if content MD5 check does
     if ( m_sContentMD5 == enc_digest )
       kdDebug(7103) << "MD5 checksum present, and hey it matched what "
@@ -3585,7 +3583,7 @@ QString HTTPProtocol::createBasicAuth( bool isForProxy )
   if ( !user.isEmpty() && !passwd.isEmpty() )
   {
     auth += ": Basic ";
-    auth += KBase64::encodeString( user + ":" + passwd );
+    auth += KCodecs::base64Encode( (user + ":" + passwd) );
   }
   return auth;
 }
