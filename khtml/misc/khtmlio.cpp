@@ -28,7 +28,7 @@
 #include "khtmlio.h"
 #include "khtml.h"
 
-#include <kio_job.h>
+#include <kio/job.h>
 
 #undef CACHE_DEBUG
 #define CACHE_DEBUG

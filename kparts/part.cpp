@@ -13,7 +13,7 @@
 #include <kinstance.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <kio_job.h>
+#include <kio/job.h>
 #include <kstddirs.h>
 
 #include <stdio.h>

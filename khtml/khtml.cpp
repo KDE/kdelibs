@@ -29,7 +29,7 @@
 #include <kapp.h>
 #include <kmimetype.h>
 
-#include <kio_job.h>
+#include <kio/job.h>
 
 #include <assert.h>
 
