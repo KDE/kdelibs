@@ -698,7 +698,9 @@ void KDirOperator::cdUp()
 
 void KDirOperator::home()
 {
-    setURL(QDir::homeDirPath(), true);
+    KURL u;
+    u.setPath( QDir::homeDirPath() );
+    setURL(u, true);
 }
 
 void KDirOperator::clearFilter()
