@@ -21,6 +21,8 @@
 #include "kmprinter.h"
 #include "printcapentry.h"
 
+#include <klocale.h>
+
 LprHandler::LprHandler(const QString& name)
 : m_name(name)
 {
@@ -36,11 +38,19 @@ KMPrinter* LprHandler::createPrinter(PrintcapEntry *entry)
 	KMPrinter	*prt = new KMPrinter;
 	prt->setPrinterName(entry->name);
 	prt->setName(entry->name);
-	prt->setType(KMPrinter::Printer|KMPrinter::Invalid);
+	prt->setType(KMPrinter::Printer);
 	return prt;
 }
 
-bool LprHandler::completePrinter(KMPrinter*, PrintcapEntry*, bool)
+bool LprHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool)
 {
-	return false;
+    prt->setDescription(i18n("Unknown (unrecognized entry)"));
+    QString val = entry->field("lp");
+    if (!val.isEmpty() && val != "/dev/null")
+        prt->setLocation(i18n("Local printer on %1").arg(val));
+    else if (!(val = entry->field("rm")).isEmpty())
+        prt->setLocation(i18n("Remote queue (%1) on %2").arg(entry->field("rp")).arg(val));
+    else
+        prt->setLocation(i18n("Unknown (unrecognized entry)"));
+	return true;
 }

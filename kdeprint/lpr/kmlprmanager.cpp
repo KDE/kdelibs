@@ -30,8 +30,9 @@ KMLprManager::KMLprManager(QObject *parent, const char *name)
 : KMManager(parent,name)
 {
 	m_handlers.setAutoDelete(true);
+    m_handlerlist.setAutoDelete(false);
 	m_entries.setAutoDelete(true);
-	
+
 	initHandlers();
 }
 
@@ -54,13 +55,13 @@ void KMLprManager::listPrinters()
 			reader.setPrintcapFile(&f);
 			while ((entry = reader.nextEntry()) != NULL)
 			{
-				QDictIterator<LprHandler>	it(m_handlers);
+				QPtrListIterator<LprHandler>	it(m_handlerlist);
 				for (; it.current(); ++it)
 					if (it.current()->validate(entry))
 					{
 						KMPrinter	*prt = it.current()->createPrinter(entry);
 						prt->setState(KMPrinter::Idle);
-						prt->setOption("kde-lpr-handler", it.currentKey());
+						prt->setOption("kde-lpr-handler", it.current()->name());
 						addPrinter(prt);
 						break;
 					}
@@ -75,15 +76,21 @@ void KMLprManager::listPrinters()
 		discardAllPrinters(false);
 }
 
+void KMLprManager::insertHandler(LprHandler *handler)
+{
+    m_handlers.insert(handler->name(), handler);
+    m_handlerlist.append(handler);
+}
+
 void KMLprManager::initHandlers()
 {
-	LprHandler	*handler;
-	
 	m_handlers.clear();
-	handler = new LprHandler("invalid");
-	m_handlers.insert(handler->name(), handler);
-	handler = new MaticHandler;
-	m_handlers.insert(handler->name(), handler);
+    m_handlerlist.clear();
+
+    insertHandler(new MaticHandler);
+
+    // default handler
+    insertHandler(new LprHandler("default"));
 }
 
 LprHandler* KMLprManager::findHandler(KMPrinter *prt)
@@ -92,8 +99,8 @@ LprHandler* KMLprManager::findHandler(KMPrinter *prt)
 	LprHandler	*handler(0);
 	if (handlerstr.isEmpty() || (handler = m_handlers.find(handlerstr)) == NULL)
 	{
-		setErrorMsg(i18n("Internal error."));
-		return NULL;
+        setErrorMsg(i18n("Internal error."));
+        return NULL;
 	}
 	return handler;
 }

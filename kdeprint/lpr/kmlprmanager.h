@@ -23,6 +23,7 @@
 #include "kmmanager.h"
 
 #include <qdict.h>
+#include <qptrlist.h>
 #include <qdatetime.h>
 #include <kurl.h>
 
@@ -40,11 +41,13 @@ public:
 protected:
 	void listPrinters();
 	void initHandlers();
+    void insertHandler(LprHandler*);
 	PrintcapEntry* findEntry(KMPrinter*);
 	LprHandler* findHandler(KMPrinter*);
 
 private:
 	QDict<LprHandler>	m_handlers;
+    QPtrList<LprHandler>    m_handlerlist;
 	QDict<PrintcapEntry>	m_entries;
 	QDateTime		m_updtime;
 };
