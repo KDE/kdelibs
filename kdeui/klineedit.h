@@ -86,7 +86,7 @@ class KURL;
  * list. Hence, if the @p EchoMode is not QLineEdit::Normal, the completion
  * mode is automatically disabled.
  *
- * @sect Useage
+ * @sect Usage
  *
  * To enable the basic completion feature :
  *
