@@ -312,9 +312,12 @@ void HTMLElementImpl::getAnchorPosition(int &xPos, int &yPos)
 	kdDebug(6000) << "HTMLElementImpl::getAnchorPosition: no rendering object.\n";
 	return;
     }
-    if (m_render->containingBlock())
-	m_render->containingBlock()->absolutePosition( xPos, yPos );
-    else
+    m_render->absolutePosition( xPos, yPos );
+    if ( !isInline() ) 
+	return;
+//     if (m_render->containingBlock())
+// 	m_render->containingBlock()->absolutePosition( xPos, yPos );
+//     else
 	m_render->absolutePosition(xPos, yPos);
 
     RenderObject *o = m_render;

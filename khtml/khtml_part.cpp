@@ -1621,15 +1621,13 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   NodeImpl *n = anchors->namedItem(name);
   anchors->deref();
 
-  if(!n)
-  {
-    n = d->m_doc->getElementById(name);
+  if(!n) {
+      kdDebug() << "KHTMLPart::gotoAnchor no node found" << endl; 
+      return false;
   }
 
-  if(!n) return false;
-
   int x = 0, y = 0;
-  HTMLAnchorElementImpl *a = static_cast<HTMLAnchorElementImpl *>(n);
+  HTMLElementImpl *a = static_cast<HTMLElementImpl *>(n);
   a->getAnchorPosition(x, y);
   d->m_view->setContentsPos(x-50, y-50);
   return true;
