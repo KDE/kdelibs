@@ -62,6 +62,7 @@
  -->
 <!ENTITY % kde.book.meta.info "INCLUDE">
 <![ %kde.book.meta.info; [
+<!ENTITY % book.element "IGNORE">
 <!ENTITY % bookinfo.element "IGNORE">
 <!-- end of kde.book.meta.info -->]]>
 

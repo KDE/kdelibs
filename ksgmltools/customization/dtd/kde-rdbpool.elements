@@ -132,6 +132,7 @@ zh      Chinese
      me know.  It's easy to add them on again.  -->
 <!ENTITY % effectivity.attrib "">
 
+<!ENTITY % kde.compulsory.datereleaseinfo "INCLUDE">
 <![ %kde.compulsory.datereleaseinfo; [
 <!-- Unchanged -->
 <!ENTITY % local.person.ident.mix "">
