@@ -65,6 +65,28 @@ identity
 }
 "test";QString::fromLatin1("test")
 
+// 2.3 unsigned long int
+unsigned long int
+getObject23
+( int x, int y)
+{
+	return x + y;
+}
+2 3;2,3
+
+
+
+// 2.4 unsigned long int
+unsigned long int
+getObject24
+( unsigned long int x, int y)
+{
+	return x + y;
+}
+5 7;5,7
+
+
+
 #virtual QString identity( QCString );
 #
 #// 4. simple template argument:

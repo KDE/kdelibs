@@ -37,7 +37,7 @@ void Driver::test()
 	}
 
 	++count;
-	QTimer::singleShot( 1000, this, SLOT( test() ) );
+	QTimer::singleShot( 100, this, SLOT( test() ) );
 }
 
 #include "driver.moc"
