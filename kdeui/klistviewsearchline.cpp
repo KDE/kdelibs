@@ -21,6 +21,8 @@
 #include <klistview.h>
 #include <kapplication.h>
 #include <kiconloader.h>
+#include <ktoolbar.h>
+#include <ktoolbarbutton.h>
 #include <kdebug.h>
 #include <klocale.h>
 
@@ -28,6 +30,8 @@
 #include <qpopupmenu.h>
 #include <qlabel.h>
 #include <qtoolbutton.h>
+#include <qtoolbar.h>
+#include <qobjectlist.h>
 
 #define KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID 2004
 
@@ -360,9 +364,10 @@ bool KListViewSearchLine::checkItemParentsVisible(QListViewItem *item)
 class KListViewSearchLineWidget::KListViewSearchLineWidgetPrivate
 {
 public:
-    KListViewSearchLineWidgetPrivate() : listView(0), searchLine(0) {}
+    KListViewSearchLineWidgetPrivate() : listView(0), searchLine(0), clearButton(0) {}
     KListView *listView;
     KListViewSearchLine *searchLine;
+    QToolButton *clearButton;
 };
 
 KListViewSearchLineWidget::KListViewSearchLineWidget(KListView *listView,
@@ -392,12 +397,15 @@ KListViewSearchLine *KListViewSearchLineWidget::createSearchLine(KListView *list
 
 void KListViewSearchLineWidget::createWidgets()
 {
-    QIconSet icon = SmallIconSet(KApplication::reverseLayout() ? "clear_left"
-                                                               : "locationbar_erase");
+    positionInToolBar();
 
-    QToolButton *clearSearchButton = new QToolButton(this);
-    clearSearchButton->setIconSet(icon);
-    clearSearchButton->show();
+    if(!d->clearButton) {
+        d->clearButton = new QToolButton(this);
+        QIconSet icon = SmallIconSet(KApplication::reverseLayout() ? "clear_left" : "locationbar_erase");
+        d->clearButton->setIconSet(icon);
+    }
+
+    d->clearButton->show();
 
     QLabel *label = new QLabel(i18n("S&earch:"), this, "kde toolbar widget");
 
@@ -407,12 +415,42 @@ void KListViewSearchLineWidget::createWidgets()
     label->setBuddy(d->searchLine);
     label->show();
 
-    connect(clearSearchButton, SIGNAL(clicked()), d->searchLine, SLOT(clear()));
+    connect(d->clearButton, SIGNAL(clicked()), d->searchLine, SLOT(clear()));
 }
 
 KListViewSearchLine *KListViewSearchLineWidget::searchLine() const
 {
     return d->searchLine;
+}
+
+void KListViewSearchLineWidget::positionInToolBar()
+{
+    KToolBar *toolBar = dynamic_cast<KToolBar *>(parent());
+
+    if(toolBar) {
+
+        // Here we have The Big Ugly.  Figure out how many widgets are in the
+        // and do a hack-ish iteration over them to find this widget so that we
+        // can insert the clear button before it.
+
+        int widgetCount = toolBar->count();
+
+        for(int index = 0; index < widgetCount; index++) {
+            int id = toolBar->idAt(index);
+            if(toolBar->getWidget(id) == this) {
+                toolBar->setItemAutoSized(id);
+                if(!d->clearButton) {
+                    QString icon = KApplication::reverseLayout() ? "clear_left" : "locationbar_erase";
+                    d->clearButton = new KToolBarButton(icon, 2005, toolBar);
+                }
+                toolBar->insertWidget(2005, d->clearButton->width(), d->clearButton, index);
+                break;
+            }
+        }
+    }
+
+    if(d->searchLine)
+        d->searchLine->show();
 }
 
 #include "klistviewsearchline.moc"

@@ -24,6 +24,7 @@
 
 class KListView;
 class QListViewItem;
+class QToolButton;
 
 /**
  * This class makes it easy to add a search line for filtering the items in a
@@ -243,6 +244,9 @@ protected slots:
      * subclasses.
      */
     virtual void createWidgets();
+
+private slots:
+    void positionInToolBar();
 
 private:
     class KListViewSearchLineWidgetPrivate;
