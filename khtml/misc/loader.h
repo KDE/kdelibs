@@ -231,6 +231,7 @@ namespace khtml
 	void load();
 
         bool isTransparent() { return isFullyTransparent; }
+        bool isErrorImage() { return errorOccured; }
 
     protected:
 	void clear();

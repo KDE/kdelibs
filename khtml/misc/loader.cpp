@@ -432,12 +432,15 @@ void CachedImage::deref( CachedObjectClient *c )
 
 const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 {
+    if (bg)
+        return *bg;
+
     const QPixmap &r = pixmap();
 
     if (r.isNull()) return r;
 
-    if (bg)
-        return *bg;
+    // no error indication for background images
+    if(errorOccured) return *Cache::nullPixmap;
 
     if ((r.width() < BGMINWIDTH) || (r.height() < BGMINHEIGHT) || newc != bgColor)
     {
