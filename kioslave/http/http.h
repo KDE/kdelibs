@@ -43,6 +43,8 @@
 #define DEFAULT_HTTP_PORT	80
 #define DEFAULT_HTTPS_PORT	443
 
+class HTTPIOJob;
+
 typedef struct
 {
 	KURL  url;
@@ -66,10 +68,11 @@ public:
   virtual void slotGetSize( const char *_url );
   virtual void slotPut( const char *_url, int _mode, bool _overwrite,
 		                bool _resume, int _len );
+  virtual void slotCopy( QStringList& _source, const char *_dest );
   virtual void slotCopy( const char *_source, const char *_dest );
   
   virtual void slotData(void *_p, int _len);
-  virtual void slotDataEnd();
+  virtual void slotDataEnd( HTTPIOJob *job = 0 );
 
   virtual bool error( int _err, const char *_txt );
 
@@ -121,7 +124,7 @@ protected:
   void initSSL();
 #endif
 
-  size_t sendData();
+  size_t sendData( HTTPIOJob *job = 0 );
 
   bool http_open( KURL &_url, int _post_data_len, bool _reload, unsigned long _offset = 0 );
   void http_close();
@@ -147,7 +150,6 @@ protected:
   const char *getUserAgentString();
 
 protected: // Members
-  bool m_bHaveHeader;
   bool m_bEOF;
   int m_cmd, m_sock, m_iSize;
   FILE* m_fsocket;

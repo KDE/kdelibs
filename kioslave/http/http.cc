@@ -310,8 +310,6 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
   ProxyAuthentication = AUTH_None;
 
   m_HTTPrev = HTTP_Unknown;
-
-  m_bHaveHeader = false;
 }
 
 #ifdef DO_SSL
@@ -425,11 +423,6 @@ bool HTTPProtocol::eof()
  * 1) Open up the socket and port
  * 2) Format our request/header
  * 3) Send the header to the remote server
- * 4a) If this is a GET request, then immediately go to slotData() to
- *     receive our response
- * 4b) If this is a POST request, then send the 'ready()' signal to
- *     signal our client that we are ready to receive the data that we
- *     need to send to the server.
  */
 bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
                              unsigned long _offset )
@@ -443,7 +436,6 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   // Let's also clear out some things, so bogus values aren't used.
   m_sContentMD5 = "";
   m_HTTPrev = HTTP_Unknown;
-  m_bHaveHeader = false;
 
   // try to ensure that the port is something reasonable
   unsigned short int port = _url.port();
@@ -459,7 +451,7 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
 #endif
       if ( (_url.protocol()=="http") || (_url.protocol() == "httpf") ) {
         struct servent *sent = getservbyname("http", "tcp");
-	if (sent) {
+if (sent) {
 	  port = ntohs(sent->s_port);
 	} else
 	  port = DEFAULT_HTTP_PORT;
@@ -629,20 +621,6 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
     error( ERR_CONNECTION_BROKEN, _url.host() );
     return false;
   }
-	
-  // okay.. now things get tricky.  if we are in a GET method, then we are
-  // done sending things.  what we want to do now is just go to a method
-  // that will get us the response from the remote server.  however, if we
-  // are in a POST method, then we (and the server) will be expecting more
-  // data.  the client is responsible for sending this data to us with the
-  // KIOJob::data(..) command.  we are responsible for letting the client
-  // know that we are ready to receive the data, though
-  // in any event, we didn't receive the header yet...
-  m_bHaveHeader = false;
-  if (_post_data_size > 0)
-    ready();
-  else
-    slotDataEnd();
 
   return true;
 }
@@ -652,9 +630,6 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
  * not read in the body of the return message.  It will also not transmit
  * the header to our client as the client doesn't need to know the gory
  * details of HTTP headers.
- *
- * This function will likely be called from slotData() if the header has
- * not already been read in.
  */
 bool HTTPProtocol::readHeader()
 {
@@ -741,7 +716,10 @@ bool HTTPProtocol::readHeader()
       KURL u(m_state.url, trimLead(buffer + 9));
       redirection(u.url());
 
-      return http_open(u, m_state.postDataSize, m_state.reload, m_state.offset);
+      if ( !http_open(u, m_state.postDataSize, m_state.reload, m_state.offset) )
+	return false;
+
+      return readHeader();
     }
     
     // check for direct authentication
@@ -807,13 +785,16 @@ bool HTTPProtocol::readHeader()
     KURL u(m_state.url);
     u.setUser(user);
     u.setPass(pass);
-    return http_open(u, m_state.postDataSize, m_state.reload, m_state.offset);
+
+    if ( !http_open(u, m_state.postDataSize, m_state.reload, m_state.offset) )
+      return false;
+
+    return readHeader();
   }
   
   // FINALLY, let the world know what kind of data we are getting
   // and that we do indeed have a header
   mimeType(m_strMimeType);
-  m_bHaveHeader = true;
 
   return true;
 }
@@ -826,10 +807,12 @@ void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
   } else if (encoding.lower() == "chunked") {
     encs->push("chunked");
     // Anyone know of a better way to handle unknown sizes possibly/ideally with unsigned ints?
-    m_iSize = 0;
+    if ( m_cmd != CMD_COPY )
+      m_iSize = 0;
   } else if ((encoding.lower() == "x-gzip") || (encoding.lower() == "gzip") || (encoding.lower() == "x-deflate") || (encoding.lower() == "deflate")) {
     encs->push(strdup(encoding.lower()));
-    m_iSize = 0;
+    if ( m_cmd != CMD_COPY )
+      m_iSize = 0;
   } else {
     fprintf(stderr, "Unknown encoding encountered.  Please write code.\n");
     fflush(stderr);
@@ -930,10 +913,18 @@ void HTTPProtocol::slotGetSize(const char *_url)
   m_cmd = CMD_GET_SIZE;
   
   m_bIgnoreErrors = false;  
-  if (!http_open(usrc, 0, false)) {
-    m_cmd = CMD_NONE;
-    return;
+  if (http_open(usrc, 0, false)) {
+
+    if (readHeader())
+      totalSize( m_iSize );
+
+    http_close();
+    
+    finished();
   }
+
+  m_cmd = CMD_NONE;
+  return;
 }
 
 
@@ -966,8 +957,10 @@ const char *HTTPProtocol::getUserAgentString ()
  * 
  * 1) Make sure that this URL is valid
  * 2) Let the world know that we are doing a Get
- * 3) Start the process going with an http_open() -- everything else is
- *    done automagically.
+ * 3) Start the process going with an http_open()
+ * 4) Read the header
+ * 5) Call slotDataEnd to get the data
+ * 6) Close the connection
  */
 void HTTPProtocol::slotGet( const char *_url )
 {
@@ -990,10 +983,15 @@ void HTTPProtocol::slotGet( const char *_url )
   m_cmd = CMD_GET;
   
   m_bIgnoreErrors = false;  
-  if (!http_open(usrc, 0, false)) {
-    m_cmd = CMD_NONE;
-    return;
+  if (http_open(usrc, 0, false)) {
+    if ( readHeader() )
+      slotDataEnd();
+
+    http_close();
+    finished();
   }
+
+  m_cmd = CMD_NONE;
 }
 
 /**
@@ -1004,13 +1002,14 @@ void HTTPProtocol::slotGet( const char *_url )
  * here later.. but that's not the case now. This is called in response
  * to the client sending a KIOJob::put(...)
  *
- * The basic procedure is *very* simple now with a lot of the actual work
- * being done elsewhere:
- * 
  * 1) Make sure that this URL is valid
  * 2) Let the world know that we are doing a Put
- * 3) Start the process going with an http_open() -- everything else is
- *    done automagically.
+ * 3) Start the process going with an http_open()
+ * 4a)If we have something to post then call ready immediately to get
+      the response
+ * 4b)Otherwise we read the header
+ * 5) Call slotDataEnd to get the content data
+ * 6) Close the connection
  */
 void HTTPProtocol::slotPut(const char *_url, int /*_mode*/, 
 			   bool /*_overwrite*/,
@@ -1037,10 +1036,17 @@ void HTTPProtocol::slotPut(const char *_url, int /*_mode*/,
   m_cmd = CMD_PUT;
 
   m_bIgnoreErrors = false;  
-  if (!http_open(usrc, _len, false)) {
-    m_cmd = CMD_NONE;
-    return;
+  if (http_open(usrc, _len, false)) {
+    
+    if ( _len > 0 )
+      ready();
+    else if ( readHeader() )
+      slotDataEnd();
+
+    http_close();
+    finished();
   }
+  m_cmd = CMD_NONE;
 }
 
 void HTTPProtocol::decodeChunked()
@@ -1149,11 +1155,13 @@ void HTTPProtocol::decodeGzip()
 #endif
 }
 
-size_t HTTPProtocol::sendData()
+size_t HTTPProtocol::sendData( HTTPIOJob *job )
 {
   // This was rendered necesary b/c
   // the IPC stuff can't handle
   // chunks much larger than 2048.
+
+  IOProtocol *ioJob = job ? job:this;
 
   size_t sent=0;
   size_t bufferSize = 2048;
@@ -1161,40 +1169,34 @@ size_t HTTPProtocol::sendData()
   processedSize(sz);
   totalSize(sz);
   while (sent+bufferSize < sz) {
-    data(big_buffer.data()+sent, bufferSize);
+    ioJob->data(big_buffer.data()+sent, bufferSize);
     sent+=bufferSize;
   }
   if (sent < sz)
-    data(big_buffer.data()+sent, (sz-sent));
-  dataEnd();;
+    ioJob->data(big_buffer.data()+sent, (sz-sent));
+
+  ioJob->dataEnd();
   m_cmd = CMD_NONE;
   return sz;
 }
 
-/* THIS FUNCTION IS LIKELY BROKEN RIGHT NOW */
 void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 {
-  IOProtocol::slotCopy(_source, _dest);
+  QStringList lst;
+  lst.append( _source );
+  
+  slotCopy( lst, _dest);
+}
 
-  fprintf(stderr,"Slot copy called with: :%s:%s:\n", _source, _dest);
+void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
+{
+  //  IOProtocol::slotCopy(_source, _dest);
+
   fflush(stderr);
 
   KURL udest( _dest );
   if ( udest.isMalformed() ) {
     error( ERR_MALFORMED_URL, _dest );
-    m_cmd = CMD_NONE;
-    return;
-  }
-
-  KURL usrc( _source );
-  if ( usrc.isMalformed() ) {
-    error( ERR_MALFORMED_URL, _source );
-    m_cmd = CMD_NONE;
-    return;
-  }
-
-  if (!isValidProtocol(&usrc)) {
-    error( ERR_INTERNAL, "kio_http got non http/https/httpf protocol as source in copy command" );
     m_cmd = CMD_NONE;
     return;
   }
@@ -1221,11 +1223,8 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
     return;
   }
       
-  m_cmd = CMD_GET;
+  m_cmd = CMD_COPY;
 
-  list<string> files;
-  files.push_back( _source );
-  
   Slave slave( exec );
   if ( slave.pid() == -1 ) {
     error( ERR_CANNOT_LAUNCH_PROCESS, exec );
@@ -1250,32 +1249,39 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 
   int processed_files = 0;
   totalDirs( 0 );
-  totalFiles( files.size() );
+  totalFiles( _source.count() );
 
   m_bIgnoreJobErrors = true;
   
-  list<string>::iterator fit = files.begin();
-  for( ; fit != files.end(); fit++ ) { 
+  QStringList::Iterator fit = _source.begin();
+  for( ; fit != _source.end(); fit++ ) { 
     bool overwrite = false;
     bool skip_copying = false;
     bool resume = false;
     unsigned long offset = 0;
 
-    KURL u1( fit->c_str() );
+    KURL u1( *fit );
     if ( u1.isMalformed() ) {
-      error( ERR_MALFORMED_URL, _source );
+      error( ERR_MALFORMED_URL, *fit );
       m_cmd = CMD_NONE;
       return;
     }
       
+    if (!isValidProtocol(&u1)) {
+      error( ERR_INTERNAL, "kio_http got non http/https/httpf protocol as source in copy command" );
+      m_cmd = CMD_NONE;
+      return;
+    }
 
     KURL ud( udest );
 
-    QString filename = u1.filename();
-    if ( filename.isEmpty() ) {
-      filename = "index.html";
-      ud.addPath( filename );
+    if ( u1.filename().isEmpty() )
+      ud.addPath( "index.html" );
+
+    if ( ud.filename(false).isEmpty() ) {
+      ud.addPath( u1.filename() );
     }
+
     QString d = ud.url();
     
     // Repeat until we got no error
@@ -1295,14 +1301,14 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	  return;
 	} */
 	
-	string tmp = "Could not read\n";
-	tmp += fit->c_str();
+	QString tmp = "Could not read\n";
+	tmp += *fit;
 
-	list<string>::iterator tmpit = fit;
+	QStringList::Iterator tmpit = fit;
 	tmpit++;
-	if( tmpit == files.end() ) {
+	if( tmpit == _source.end() ) {
 	  qDebug( "slotCopy 12");
-	  open_CriticalDlg( "Error", tmp.c_str(), "Cancel" );
+	  open_CriticalDlg( "Error", tmp.latin1(), "Cancel" );
 	  qDebug( "slotCopy 13");
 	  http_close();
 	  clearError();
@@ -1312,7 +1318,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	}
 	
 	qDebug( "slotCopy 2");
-	if ( !open_CriticalDlg( "Error", tmp.c_str(), "Continue", "Cancel" ) ) {
+	if ( !open_CriticalDlg( "Error", tmp.latin1(), "Continue", "Cancel" ) ) {
 	  http_close();
 	  clearError();
 	  error( ERR_USER_CANCELED, "" );
@@ -1327,208 +1333,162 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
       else
 	m_bIgnoreErrors = false;
 
-      qDebug( "slotCopy 3");
-      // This is a hack, since total size should be the size of all files together
-      // while we transmit only the size of the current file here.
-      totalSize( m_iSize + offset);
+      if ( readHeader() )
+	{
+	  qDebug( "slotCopy 3");
+	  // This is a hack, since total size should be the size of all files together
+	  // while we transmit only the size of the current file here.
+	  //	  totalSize( m_iSize + offset);
 
-      canResume( m_bCanResume ); // this will emit sigCanResume( m_bCanResume )
+	  canResume( m_bCanResume ); // this will emit sigCanResume( m_bCanResume )
 
-      copyingFile( fit->c_str(), d );
+	  copyingFile( *fit, d );
     
-      job.put( d, -1, overwrite_all || overwrite,
-	       resume_all || resume, m_iSize + offset );
+	  job.put( d, -1, overwrite_all || overwrite,
+		   resume_all || resume, m_iSize + offset );
 
-      while( !job.isReady() && !job.hasFinished() )
-	job.dispatch();
+	  while( !job.isReady() && !job.hasFinished() )
+	    job.dispatch();
 
-      // Did we have an error ?
-      if ( job.hasError() ) {
-	int currentError = job.errorId();
-
-	qDebug( "kio_http : ################# COULD NOT PUT %d",currentError);
-	if ( /* m_bGUI && */ currentError == ERR_WRITE_ACCESS_DENIED ) {
-	  // Should we skip automatically ?
-	  if ( auto_skip ) {
-	    job.clearError();
-	    skip_copying = true;
-	    continue;
-	  }
-	  QString tmp2 = ud.url();
-	  SkipDlg_Result r;
-	  r = open_SkipDlg( tmp2, ( files.size() > 1 ) );
-	  if ( r == S_CANCEL ) {
-	    http_close();
-	    error( ERR_USER_CANCELED, "" );
-	    m_cmd = CMD_NONE;
-	    return;
-	  } else if ( r == S_SKIP ) {
-	    // Clear the error => The current command is not repeated => skipped
-	    job.clearError();
-	    skip_copying = true;
-	    continue;
-	  } else if ( r == S_AUTO_SKIP ) {
-	    // Clear the error => The current command is not repeated => skipped
-	    job.clearError();
-	    skip_copying = true;
-	    continue;
-	  } else
-	    assert( 0 );
-	}
-	// Can we prompt the user and ask for a solution ?
-	else if ( /* m_bGUI && */ currentError == ERR_DOES_ALREADY_EXIST ||
-		  currentError == ERR_DOES_ALREADY_EXIST_FULL ) {    
-	  // Should we skip automatically ?
-	  if ( auto_skip ) {
-	    job.clearError();
-	    continue;
-	  }
-
-	  RenameDlg_Result r;
-	  QString n;
-
-	  if ( KProtocolManager::self().autoResume() && m_bCanResume &&
-	       currentError != ERR_DOES_ALREADY_EXIST_FULL ) {
-	    r = R_RESUME_ALL;
-	  }
-	  else {
-	    RenameDlg_Mode m;
-
-	    // ask for resume only if transfer can be resumed and if it is not
-	    // already fully downloaded
-	    if ( files.size() > 1 ) {
-	      if ( m_bCanResume && currentError != ERR_DOES_ALREADY_EXIST_FULL )
-		m = (RenameDlg_Mode)(M_MULTI | M_SKIP | M_OVERWRITE | M_RESUME);
-	      else
-		m = (RenameDlg_Mode)(M_MULTI | M_SKIP | M_OVERWRITE);
-	    } else {
-	      if ( m_bCanResume && currentError != ERR_DOES_ALREADY_EXIST_FULL )
-		m = (RenameDlg_Mode)( M_SINGLE | M_OVERWRITE | M_RESUME);
-	      else
-		m = (RenameDlg_Mode)( M_SINGLE | M_OVERWRITE);
+	  // Did we have an error ?
+	  if ( job.hasError() ) {
+	    int currentError = job.errorId();
+	    
+	    qDebug( "kio_http : ################# COULD NOT PUT %d",currentError);
+	    if ( /* m_bGUI && */ currentError == ERR_WRITE_ACCESS_DENIED ) {
+	      // Should we skip automatically ?
+	      if ( auto_skip ) {
+		job.clearError();
+		skip_copying = true;
+		continue;
+	      }
+	      QString tmp2 = ud.url();
+	      SkipDlg_Result r;
+	      r = open_SkipDlg( tmp2, ( _source.count() > 1 ) );
+	      if ( r == S_CANCEL ) {
+		http_close();
+		error( ERR_USER_CANCELED, "" );
+		m_cmd = CMD_NONE;
+		return;
+	      } else if ( r == S_SKIP ) {
+		// Clear the error => The current command is not repeated => skipped
+		job.clearError();
+		skip_copying = true;
+		continue;
+	      } else if ( r == S_AUTO_SKIP ) {
+		// Clear the error => The current command is not repeated => skipped
+		job.clearError();
+		skip_copying = true;
+		continue;
+	      } else
+		assert( 0 );
 	    }
-
-	    QString tmp2 = ud.url();
-	    r = open_RenameDlg( fit->c_str(), tmp2, m, n );
+	    // Can we prompt the user and ask for a solution ?
+	    else if ( /* m_bGUI && */ currentError == ERR_DOES_ALREADY_EXIST ||
+		      currentError == ERR_DOES_ALREADY_EXIST_FULL ) {    
+	      // Should we skip automatically ?
+	      if ( auto_skip ) {
+		job.clearError();
+		continue;
+	      }
+	      
+	      RenameDlg_Result r;
+	      QString n;
+	      
+	      if ( KProtocolManager::self().autoResume() && m_bCanResume &&
+		   currentError != ERR_DOES_ALREADY_EXIST_FULL ) {
+		r = R_RESUME_ALL;
+	      }
+	      else {
+		RenameDlg_Mode m;
+		
+		// ask for resume only if transfer can be resumed and if it is not
+		// already fully downloaded
+		if ( _source.count() > 1 ) {
+		  if ( m_bCanResume && currentError != ERR_DOES_ALREADY_EXIST_FULL )
+		    m = (RenameDlg_Mode)(M_MULTI | M_SKIP | M_OVERWRITE | M_RESUME);
+		  else
+		    m = (RenameDlg_Mode)(M_MULTI | M_SKIP | M_OVERWRITE);
+		} else {
+		  if ( m_bCanResume && currentError != ERR_DOES_ALREADY_EXIST_FULL )
+		    m = (RenameDlg_Mode)( M_SINGLE | M_OVERWRITE | M_RESUME);
+		  else
+		    m = (RenameDlg_Mode)( M_SINGLE | M_OVERWRITE);
+		}
+		
+		QString tmp2 = ud.url();
+		r = open_RenameDlg( *fit, tmp2, m, n );
+	      }
+	      if ( r == R_CANCEL ) {
+		http_close();
+		error( ERR_USER_CANCELED, "" );
+		m_cmd = CMD_NONE;
+		return;
+	      } else if ( r == R_RENAME ) {
+		KURL u( n );
+		// The Dialog should have checked this.
+		if ( u.isMalformed() )
+		  assert( "The URL is malformed, something fucked up, you should never see this!" );
+		// Change the destination name of the current file
+		// 	    l = lst;
+		// 	    l.getLast()->addPath( filename.c_str() );
+		
+		// 	    list<KURL>::iterator it = l.begin();
+		// 	    for( ; it != l.end(); it++ )
+		// 	      d += it->url();
+		
+		d = u.path();
+		// Dont clear error => we will repeat the current command
+	      } else if ( r == R_SKIP ) {
+		// Clear the error => The current command is not repeated => skipped
+		job.clearError();
+	      } else if ( r == R_AUTO_SKIP ) {
+		// Clear the error => The current command is not repeated => skipped
+		job.clearError();
+		auto_skip = true;
+	      } else if ( r == R_OVERWRITE ) {
+		overwrite = true;
+		// Dont clear error => we will repeat the current command
+	      } else if ( r == R_OVERWRITE_ALL ) {
+		overwrite_all = true;
+		// Dont clear error => we will repeat the current command
+	      } else if ( r == R_RESUME ) {
+		resume = true;
+		offset = getOffset( ud.url() );
+		// Dont clear error => we will repeat the current command
+	      } else if ( r == R_RESUME_ALL ) {
+		resume_all = true;
+		offset = getOffset( ud.url() );
+		// Dont clear error => we will repeat the current command
+	      } else
+		assert( "Unhandled command!" );
+	    }
+	    // No need to ask the user, so raise an error and finish
+	    else {    
+	      http_close();
+	      error( currentError, job.errorText() );
+	      m_cmd = CMD_NONE;
+	      return;
+	    }
 	  }
-	  if ( r == R_CANCEL ) {
-	    http_close();
-	    error( ERR_USER_CANCELED, "" );
-	    m_cmd = CMD_NONE;
-	    return;
-	  } else if ( r == R_RENAME ) {
-	    KURL u( n );
-	    // The Dialog should have checked this.
-	    if ( u.isMalformed() )
-	      assert( "The URL is malformed, something fucked up, you should never see this!" );
-	    // Change the destination name of the current file
-// 	    l = lst;
-// 	    l.getLast()->addPath( filename.c_str() );
-    
-// 	    list<KURL>::iterator it = l.begin();
-// 	    for( ; it != l.end(); it++ )
-// 	      d += it->url();
-
-	    d = u.path();
-	    // Dont clear error => we will repeat the current command
-	  } else if ( r == R_SKIP ) {
-	    // Clear the error => The current command is not repeated => skipped
-	    job.clearError();
-	  } else if ( r == R_AUTO_SKIP ) {
-	    // Clear the error => The current command is not repeated => skipped
-	    job.clearError();
-	    auto_skip = true;
-	  } else if ( r == R_OVERWRITE ) {
-	    overwrite = true;
-	    // Dont clear error => we will repeat the current command
-	  } else if ( r == R_OVERWRITE_ALL ) {
-	    overwrite_all = true;
-	    // Dont clear error => we will repeat the current command
-	  } else if ( r == R_RESUME ) {
-	    resume = true;
-	    offset = getOffset( ud.url() );
-	    // Dont clear error => we will repeat the current command
-	  } else if ( r == R_RESUME_ALL ) {
-	    resume_all = true;
-	    offset = getOffset( ud.url() );
-	    // Dont clear error => we will repeat the current command
-	  } else
-	    assert( "Unhandled command!" );
 	}
-	// No need to ask the user, so raise an error and finish
-	else {    
-	  http_close();
-	  error( currentError, job.errorText() );
-	  m_cmd = CMD_NONE;
-	  return;
-	}
-      }
     }
     while( job.hasError() );
-
+    
     if ( skip_copying )
       continue;
-
-    if ( offset > 0 ) {
-      // set offset
-      processed_size += offset;
-      qDebug( "kio_http : Offset = %ld", offset );
-    }
-
-    /**
-     * Now we can really copy the stuff
-     */
-    char buffer[ 2048 ];
-    int read_size = 0;
-    while( !feof( m_fsocket ) ) {
-      setup_alarm( KProtocolManager::self().readTimeout() ); // start timeout
-      long n = fread( buffer, 1, 2048, m_fsocket );
-
-      // !!! slow down loop for local testing
-//       for ( int tmpi = 0; tmpi < 800000; tmpi++ ) ;
-
-      if ( n == -1 && !sigbreak ) {
-	http_close();
-	error( ERR_CONNECTION_BROKEN, usrc.host() );
-	m_cmd = CMD_NONE;
-	return;
-      }
-   
-      if ( n > 0 ) {
-	job.data( buffer, n );
-
-	processed_size += n;
-	read_size += n;
-	time_t t = time( 0L );
-	if ( t - t_last >= 1 ) {
-	  processedSize( processed_size );
-	  speed( read_size / ( t - t_start ) );
-	  t_last = t;
-	}
-      }
-    }
-
+    
+    slotDataEnd( &job );
+    
     job.dataEnd();
-  
     http_close();
-
+    
     while( !job.hasFinished() )
       job.dispatch();
-
-    time_t t = time( 0L );
-    
-    processedSize( processed_size );
-    if ( t - t_start >= 1 ) {
-      speed( read_size / ( t - t_start ) );
-      t_last = t;
-    }
-    processedFiles( ++processed_files );
+    //	  finished();
   }
-  
-  qDebug( "kio_http : Copied files %s", _dest );
 
   finished();
-
   m_cmd = CMD_NONE;
 }
 
@@ -1568,32 +1528,20 @@ void HTTPProtocol::slotData(void *_p, int _len)
  * (meaning that the client is done sending data) or by 'http_open()'
  * (if we are in the process of a Get request).
  */
-void HTTPProtocol::slotDataEnd()
+void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 {
-	// make sure that we already have our header.  get it if we don't
-	if (!m_bHaveHeader) {
-		// we won't show an error if we can't read in the header since
-		// it was probably flagged earlier
-		if (!readHeader())
-			return;
-	}
+        IOProtocol *ioJob = job ? job:this;
 
-	// don't bother getting the entire data if we just want the
-	// size of the data
-	if (m_cmd == CMD_GET_SIZE) {
-  		totalSize( m_iSize );
-		http_close();
+	// Check if we need to decode the data.
+	// If we are in copy mode the use only transfer decoding.
+	bool decode = !m_qTransferEncodings.isEmpty() ||
+	              ( !m_qContentEncodings.isEmpty() &&
+                        m_cmd != CMD_COPY );
 
-		finished();
+	bool useMD5 = !m_sContentMD5.isEmpty();
 
-		m_cmd = CMD_NONE;
-
-		return;
-	}
-debug("BAH");
 	// we are getting the following URL
 	gettingFile(m_state.url.url());
-debug("BAH$");
 
 	totalSize( m_iSize );
 	// get the starting time.  this is used later to compute the transfer
@@ -1627,13 +1575,13 @@ debug("BAH$");
 			continue;
 
 		// check on the encoding.  can we get away with it as is?
-		if (m_qTransferEncodings.isEmpty() && m_qContentEncodings.isEmpty()) {
+		if ( !decode ) {
 #if DO_MD5
-			if (!m_sContentMD5.isEmpty())
+			if (useMD5)
 				MD5Update(&context, (const unsigned char*)buffer, nbytes);
 #endif
 			// yep, let the world know that we have some data
-			data(buffer, nbytes);
+			ioJob->data(buffer, nbytes);
 			sz += nbytes;
 			processedSize( sz );
 			time_t t = time( 0L );
@@ -1651,10 +1599,6 @@ debug("BAH$");
 			memcpy(big_buffer.data() + old_len, buffer, nbytes);
 		}
 	}
-
-	// okay.. we're all done receiving data from the server.  close this
-	// connection
-	http_close();
 
 	// if we have something in big_buffer, then we know that we have
 	// encoded data.  of course, we need to do something about this
@@ -1694,7 +1638,7 @@ debug("BAH$");
 				decodeChunked();
 			}
 		}
-		sz = sendData();
+		sz = sendData(job);
 	}
 
 	// this block is all final MD5 stuff
@@ -1702,7 +1646,7 @@ debug("BAH$");
 	char buf[18], *enc_digest;
 	MD5Final((unsigned char*)buf, &context); // Wrap everything up
 	enc_digest = base64_encode_string(buf, 18);
-	if (!m_sContentMD5.isEmpty()) {
+	if ( useMD5 ) {
 		int f;
 		if ((f = m_sContentMD5.find("=")) <= 0)
 			f = m_sContentMD5.length();
@@ -1726,8 +1670,6 @@ debug("BAH$");
 	  speed(sz / (t_last - t_start));
 	else;
 	  speed(0);
-
-	finished();
 
 	m_cmd = CMD_NONE;
 }
@@ -1768,7 +1710,6 @@ void HTTPIOJob::slotError( int _errid, const char *_txt )
   
   m_pHTTP->jobError( _errid, _txt );
 }
-
 
 /*************************************
  *
