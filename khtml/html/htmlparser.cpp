@@ -693,6 +693,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 handled = true;
                 break;
             default:
+                if ( haveFrameSet ) break;
                 e = new HTMLBodyElementImpl(document);
                 startBody();
                 insertNode(e);
@@ -706,6 +707,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 return false;
             else {
                 // This means the body starts here...
+                if ( haveFrameSet ) break;
                 popBlock(ID_HEAD);
                 e = new HTMLBodyElementImpl(document);
                 startBody();
@@ -888,7 +890,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
 }
 
 
-NodeImpl *KHTMLParser::getElement(Token *t)
+NodeImpl *KHTMLParser::getElement(Token* t)
 {
     NodeImpl *n = 0;
 

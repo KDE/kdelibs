@@ -30,8 +30,8 @@
 #define HTMLPARSER_H
 
 // 0 all
-// 1 all but renderer->close()
-// 2 all without renderer->attach && renderer->close()
+// 1 domtree + rendertree + styleForElement, no layouting
+// 2 domtree only
 #define SPEED_DEBUG 0
 
 #ifdef SPEED_DEBUG
