@@ -70,7 +70,8 @@ public:
 
     ~KLineEditPrivate()
     {
-        delete completionBox;
+// causes a weird crash in KWord at least, so let Qt delete it for us.
+//        delete completionBox;
     }
 
     static bool initialized;
