@@ -357,7 +357,7 @@ void KBookmarkMenu::fillBookmarkMenu()
 
   if ( m_bIsRoot )
   {
-    if ( m_bAddBookmark && !isAdvanced() )
+    if ( m_bAddBookmark )
       addAddBookmark();
 
     addEditBookmarks();
@@ -598,7 +598,7 @@ void KBookmarkMenuNSImporter::endFolder()
 
 BookmarkEditDialog::BookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr,
                                        QWidget * parent, const char * name, const QString& caption)
-  : KDialogBase(parent, name, true, caption, User1|Ok|Cancel, Ok, false, KGuiItem("New Folder..."))
+  : KDialogBase(parent, name, true, caption, User1|Ok|Cancel, Ok, false, KGuiItem(i18n("New Folder...")))
 {
   m_mgr = mgr;
 
