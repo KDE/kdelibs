@@ -26,6 +26,7 @@
 
 #include "html_elementimpl.h"
 #include "xml/dom_stringimpl.h"
+#include "java/kjavaapplet.h"
 #include <kparts/browserextension.h>
 #include <qstringlist.h>
 
