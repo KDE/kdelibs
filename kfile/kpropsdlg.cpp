@@ -612,6 +612,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     KIconButton *iconButton = new KIconButton( d->m_frame );
     iconButton->setFixedSize(50, 50);
+    iconButton->setStrictIconSize(false);
     iconButton->setIconType(KIcon::Desktop, KIcon::Application);
     // This works for everything except Device icons on unmounted devices
     // So we have to really open .desktop files

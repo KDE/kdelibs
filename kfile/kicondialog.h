@@ -89,6 +89,14 @@ public:
     ~KIconDialog();
 
     /**
+     * Sets a strict icon size policy for allowed icons. When true,
+     * only icons of the specified group's size in selectIcon are shown.
+     * When false, icons not available at the desired group's size will
+     * also be selectable.
+     */
+    void setStrictIconSize(bool b);
+
+    /**
      * Pops up the dialog an lets the user select an icon.
      *
      * @param group The icon group this icon is intended for. Providing the
@@ -145,7 +153,17 @@ public:
 
     ~KIconButton();
 
-    /** Set the icon group and context. */
+    /**
+     * Set a strict icon size policy for allowed icons. When true,
+     * only icons of the specified group's size in setIconType are allowed,
+     * and only icons of that size will be shown in the icon dialog.
+     */
+    void setStrictIconSize(bool b);
+
+    /** 
+     * Set the icon group and context. Use KIcon::NoGroup if you want to
+     * allow icons for any group in the given context.
+     */
     void setIconType(int group, int context, bool user=false);
 
     /** Set the button's initial icon. */

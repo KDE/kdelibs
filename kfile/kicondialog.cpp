@@ -15,6 +15,7 @@
 #include <qlayout.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qsortedlist.h>
 #include <qimage.h>
 #include <qpixmap.h>
 #include <qlabel.h>
@@ -42,6 +43,33 @@ class KIconCanvas::KIconCanvasPrivate
     KIconCanvasPrivate() { m_bLoading = false; }
     ~KIconCanvasPrivate() {}
     bool m_bLoading;
+};
+
+/**
+ * Helper class for sorting icon paths by icon name
+ */
+class IconPath : public QString
+{
+protected:
+ QString m_iconName;
+
+public:
+ IconPath(const QString &ip) : QString (ip)
+ {
+   int n = findRev('/');
+   m_iconName = (n==-1) ? static_cast<QString>(*this) : mid(n+1);
+ }
+
+
+ IconPath() : QString ()
+ { }
+
+ bool operator== (const IconPath &ip)
+ { return m_iconName == ip.m_iconName; }
+
+ bool operator< (const IconPath &ip)
+ { return m_iconName < ip.m_iconName; } 
+
 };
 
 /*
@@ -134,6 +162,13 @@ void KIconCanvas::slotCurrentChanged(QIconViewItem *item)
     emit nameChanged((item != 0L) ? item->text() : QString::null);
 }
 
+class KIconDialog::KIconDialogPrivate
+{
+  public:
+    KIconDialogPrivate() { m_bStrictIconSize = true; }
+    ~KIconDialogPrivate() {}
+    bool m_bStrictIconSize;
+};
 
 /*
  * KIconDialog: Dialog for selecting icons. Both system and user
@@ -143,6 +178,7 @@ void KIconCanvas::slotCurrentChanged(QIconViewItem *item)
 KIconDialog::KIconDialog(QWidget *parent, const char *name)
     : KDialogBase(parent, name, true, i18n("Select Icon"), Help|Ok|Cancel, Ok)
 {
+    d = new KIconDialogPrivate;
     mpLoader = KGlobal::iconLoader();
     init();
 }
@@ -151,6 +187,7 @@ KIconDialog::KIconDialog(KIconLoader *loader, QWidget *parent,
 	const char *name)
     : KDialogBase(parent, name, true, i18n("Select Icon"), Help|Ok|Cancel, Ok)
 {
+    d = new KIconDialogPrivate;
     mpLoader = loader;
     init();
 }
@@ -207,15 +244,39 @@ void KIconDialog::init()
 
 KIconDialog::~KIconDialog()
 {
+    delete d;
 }
 
 void KIconDialog::showIcons()
 {
     mpCanvas->clear();
+    QStringList filelist;
     if (mType == 0)
-	mpCanvas->loadFiles(mpLoader->queryIcons(mGroup, mContext));
+	if (d->m_bStrictIconSize)
+	  filelist=mpLoader->queryIcons(mGroup, mContext);
+        else 
+	  filelist=mpLoader->queryIconsByContext(mGroup, mContext);
     else
-	mpCanvas->loadFiles(mFileList);
+	filelist=mFileList;
+
+    QSortedList <IconPath>iconlist;
+    iconlist.setAutoDelete(true);
+    QStringList::Iterator it;
+    for( it = filelist.begin(); it != filelist.end(); ++it )
+       iconlist.append(new IconPath(*it));
+
+    iconlist.sort();
+    filelist.clear();
+
+    for ( IconPath *ip=iconlist.first(); ip != 0; ip=iconlist.next() )
+       filelist.append(*ip);
+
+    mpCanvas->loadFiles(filelist);
+}
+
+void KIconDialog::setStrictIconSize(bool b)
+{
+    d->m_bStrictIconSize=b;
 }
 
 QString KIconDialog::selectIcon(int group, int context, bool user)
@@ -302,6 +363,14 @@ void KIconDialog::slotFinished()
     mpProgress->hide();
 }
 
+class KIconButton::KIconButtonPrivate
+{
+  public:
+    KIconButtonPrivate() { m_bStrictIconSize = true; }
+    ~KIconButtonPrivate() {}
+    bool m_bStrictIconSize;
+};
+
 
 /*
  * KIconButton: A "choose icon" pushbutton.
@@ -310,6 +379,7 @@ void KIconDialog::slotFinished()
 KIconButton::KIconButton(QWidget *parent, const char *name)
     : QPushButton(parent, name)
 {
+    d = new KIconButtonPrivate;
     // arbitrary
     mGroup = KIcon::Desktop; 
     mContext = KIcon::Application;
@@ -323,6 +393,7 @@ KIconButton::KIconButton(KIconLoader *loader,
 	QWidget *parent, const char *name)
     : QPushButton(parent, name)
 {
+    d = new KIconButtonPrivate;
     mGroup = KIcon::Desktop; 
     mContext = KIcon::Application;
 
@@ -334,6 +405,12 @@ KIconButton::KIconButton(KIconLoader *loader,
 KIconButton::~KIconButton()
 {
     delete mpDialog;
+    delete d;
+}
+
+void KIconButton::setStrictIconSize(bool b)
+{
+    d->m_bStrictIconSize=b;
 }
 
 void KIconButton::setIconType(int group, int context, bool user)
@@ -359,6 +436,7 @@ void KIconButton::slotChangeIcon()
 {
     if (!mpDialog)
       mpDialog = new KIconDialog(mpLoader, this);
+    mpDialog->setStrictIconSize(d->m_bStrictIconSize);
     QString name = mpDialog->selectIcon(mGroup, mContext, mbUser);
     if (name.isNull())
 	return;
