@@ -120,6 +120,8 @@ DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidge
   kdDebug() << "DistributionListEditor()" << endl;
 
   QBoxLayout *topLayout = new QVBoxLayout( this );
+  topLayout->setMargin( KDialog::marginHint() );
+  topLayout->setSpacing( KDialog::spacingHint() );
 
   QBoxLayout *nameLayout = new QHBoxLayout( topLayout) ;
 

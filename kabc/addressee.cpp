@@ -357,6 +357,23 @@ QString Addressee::realName() const
   return n;
 }
 
+QString Addressee::fullEmail( const QString &email ) const
+{
+  QString e;
+  if ( email.isNull() ) {
+    e = preferredEmail();
+  } else {
+    e = email;
+  }
+  if ( e.isEmpty() ) return QString::null;
+  
+  QString text;
+  if ( !realName().isEmpty() ) text = realName() + " ";
+  text.append( "<" + e + ">" );
+
+  return text;
+}
+
 void Addressee::insertEmail( const QString &email, bool preferred )
 {
   detach();
@@ -456,40 +473,48 @@ void Addressee::dump() const
 {
   kdDebug(5700) << "Addressee {" << endl;
 
-  kdDebug() << "  Uid: '" << uid() << "'" << endl;
-  kdDebug() << "  Name: '" << name() << "'" << endl;
-  kdDebug() << "  FormattedName: '" << formattedName() << "'" << endl;
-  kdDebug() << "  FamilyName: '" << familyName() << "'" << endl;
-  kdDebug() << "  GivenName: '" << givenName() << "'" << endl;
-  kdDebug() << "  AdditionalName: '" << additionalName() << "'" << endl;
-  kdDebug() << "  Prefix: '" << prefix() << "'" << endl;
-  kdDebug() << "  Suffix: '" << suffix() << "'" << endl;
-  kdDebug() << "  NickName: '" << nickName() << "'" << endl;
-  kdDebug() << "  Birthday: '" << birthday().toString() << "'" << endl;
-  kdDebug() << "  Mailer: '" << mailer() << "'" << endl;
-  kdDebug() << "  TimeZone: '" << timeZone().asString() << "'" << endl;
-  kdDebug() << "  Geo: '" << geo().asString() << "'" << endl;
-  kdDebug() << "  Title: '" << title() << "'" << endl;
-  kdDebug() << "  Role: '" << role() << "'" << endl;
-  kdDebug() << "  Organization: '" << organization() << "'" << endl;
-  kdDebug() << "  Note: '" << note() << "'" << endl;
-  kdDebug() << "  ProductId: '" << productId() << "'" << endl;
-  kdDebug() << "  Revision: '" << revision().toString() << "'" << endl;
-  kdDebug() << "  SortString: '" << sortString() << "'" << endl;
-  kdDebug() << "  Url: '" << url().url() << "'" << endl;
+  kdDebug(5700) << "  Uid: '" << uid() << "'" << endl;
+  kdDebug(5700) << "  Name: '" << name() << "'" << endl;
+  kdDebug(5700) << "  FormattedName: '" << formattedName() << "'" << endl;
+  kdDebug(5700) << "  FamilyName: '" << familyName() << "'" << endl;
+  kdDebug(5700) << "  GivenName: '" << givenName() << "'" << endl;
+  kdDebug(5700) << "  AdditionalName: '" << additionalName() << "'" << endl;
+  kdDebug(5700) << "  Prefix: '" << prefix() << "'" << endl;
+  kdDebug(5700) << "  Suffix: '" << suffix() << "'" << endl;
+  kdDebug(5700) << "  NickName: '" << nickName() << "'" << endl;
+  kdDebug(5700) << "  Birthday: '" << birthday().toString() << "'" << endl;
+  kdDebug(5700) << "  Mailer: '" << mailer() << "'" << endl;
+  kdDebug(5700) << "  TimeZone: '" << timeZone().asString() << "'" << endl;
+  kdDebug(5700) << "  Geo: '" << geo().asString() << "'" << endl;
+  kdDebug(5700) << "  Title: '" << title() << "'" << endl;
+  kdDebug(5700) << "  Role: '" << role() << "'" << endl;
+  kdDebug(5700) << "  Organization: '" << organization() << "'" << endl;
+  kdDebug(5700) << "  Note: '" << note() << "'" << endl;
+  kdDebug(5700) << "  ProductId: '" << productId() << "'" << endl;
+  kdDebug(5700) << "  Revision: '" << revision().toString() << "'" << endl;
+  kdDebug(5700) << "  SortString: '" << sortString() << "'" << endl;
+  kdDebug(5700) << "  Url: '" << url().url() << "'" << endl;
   
+  kdDebug(5700) << "  Emails {" << endl;
+  QStringList e = emails();
+  QStringList::ConstIterator it;
+  for( it = e.begin(); it != e.end(); ++it ) {
+    kdDebug(5700) << "    " << (*it) << endl;
+  }
+  kdDebug(5700) << "  }" << endl;
+
   kdDebug(5700) << "  PhoneNumbers {" << endl;
   PhoneNumber::List p = phoneNumbers();
-  PhoneNumber::List::ConstIterator it;
-  for( it = p.begin(); it != p.end(); ++it ) {
-    kdDebug(5700) << "    Type: " << int((*it).type()) << " Number: " << (*it).number() << endl;
+  PhoneNumber::List::ConstIterator it2;
+  for( it2 = p.begin(); it2 != p.end(); ++it2 ) {
+    kdDebug(5700) << "    Type: " << int((*it2).type()) << " Number: " << (*it2).number() << endl;
   }
   kdDebug(5700) << "  }" << endl;
 
   Address::List a = addresses();
-  Address::List::ConstIterator it2;
-  for( it2 = a.begin(); it2 != a.end(); ++it2 ) {
-    (*it2).dump();
+  Address::List::ConstIterator it3;
+  for( it3 = a.begin(); it3 != a.end(); ++it3 ) {
+    (*it3).dump();
   }
 
   kdDebug(5700) << "}" << endl;

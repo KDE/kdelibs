@@ -72,30 +72,48 @@ class AddresseeDialog : public KDialogBase {
 
       @param parent parent widget
     */
-    AddresseeDialog( QWidget *parent );
+    AddresseeDialog( QWidget *parent, bool multiple=false );
     virtual ~AddresseeDialog();
 
     /**
+      Select a single address book entry.
+    
       Open addressee select dialog and return the entry selected by the user.
-      If the user doesn't selectan entry or presses cancel, the returned
+      If the user doesn't select an entry or presses cancel, the returned
       addressee is empty.
     */
     static Addressee getAddressee( QWidget *parent );
 
+    /**
+      Select multiple adress book entries.
+      
+      Open addressee select dialog and return the entries selected by the user.
+      If the user doesn't select an entry or presses cancel, the returned
+      addressee list is empty.
+    */
+    static Addressee::List getAddressees( QWidget *parent );
+
   private slots:
     void selectItem( const QString & );
     void updateEdit( QListViewItem *item );
+    void addSelected( QListViewItem *item );
+    void removeSelected();
 
   private:
     void loadAddressBook();
     void addCompletionItem( const QString &str, QListViewItem *item );
 
+    bool mMultiple;
+
     KListView *mAddresseeList;
     KLineEdit *mAddresseeEdit;
+
+    KListView *mSelectedList;
 
     AddressBook *mAddressBook;
 
     QDict<QListViewItem> mItemDict;
+    QDict<QListViewItem> mSelectedDict;
 };
 
 }

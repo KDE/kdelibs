@@ -80,16 +80,11 @@ QStringList DistributionList::emails() const
   Entry::List::ConstIterator it;
   for( it = mEntries.begin(); it != mEntries.end(); ++it ) {
     Addressee a = (*it).addressee;
-    QString email = (*it).email;
+    QString email = a.fullEmail();
 
-    if ( email.isEmpty() ) email = a.preferredEmail();
-    if ( email.isEmpty() ) continue;
-
-    QString text;
-    if ( !a.realName().isEmpty() ) text = a.realName() + " ";
-    text.append( "<" + email + ">" );
-  
-    emails.append( text );
+    if ( !email.isEmpty() ) {
+      emails.append( email );
+    }
   }
   
   return emails;

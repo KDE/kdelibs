@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
+#include <assert.h>
 
 #include <qfile.h>
 #include <qtextstream.h>
@@ -25,7 +26,7 @@ int main(int argc, char * argv[])
 	QTextStream t(&f);
 	
 	while (!t.eof())
-		str += t.readLine() + '\n';
+		str += t.readLine().utf8() + '\n';
 	
 	using namespace VCARD; 
 
@@ -70,7 +71,7 @@ int main(int argc, char * argv[])
 				(DateValue *)
 				v.contentLine(EntityRevision)->value();
 			
-			ASSERT(d != 0);
+			assert(d != 0);
 			
 			cerr << "Revision date: " << endl;
 			cerr << "Day   : " << d->day()		<< endl;
@@ -98,7 +99,7 @@ int main(int argc, char * argv[])
 			URIValue * urlVal =
 				(URIValue *)v.contentLine(EntityURL)->value();
 
-			ASSERT(urlVal != 0);
+			assert(urlVal != 0);
 			
 			cerr << "URL scheme == " <<
 				urlVal->scheme() << endl;

@@ -19,6 +19,8 @@
 */
 
 #include <qlayout.h>
+#include <qpushbutton.h>
+#include <qgroupbox.h>
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -30,29 +32,55 @@
 
 using namespace KABC;
 
-AddresseeDialog::AddresseeDialog( QWidget *parent ) :
+AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
   KDialogBase( KDialogBase::Plain, i18n("Select Addressee"),
-               Ok|Cancel, Ok, parent )
+               Ok|Cancel, Ok, parent ), mMultiple( multiple )
 {
   QWidget *topWidget = plainPage();
-  QBoxLayout *topLayout = new QVBoxLayout( topWidget );
+
+  QBoxLayout *topLayout = new QHBoxLayout( topWidget );
+  QBoxLayout *listLayout = new QVBoxLayout;
+  topLayout->addLayout( listLayout );
 
   mAddresseeList = new KListView( topWidget );
   mAddresseeList->addColumn( i18n("Name") );
   mAddresseeList->addColumn( i18n("Email") );
   mAddresseeList->setAllColumnsShowFocus( true );
-  topLayout->addWidget( mAddresseeList );
+  listLayout->addWidget( mAddresseeList );
   connect( mAddresseeList, SIGNAL( doubleClicked( QListViewItem * ) ),
            SLOT( slotOk() ) );
   connect( mAddresseeList, SIGNAL( selectionChanged( QListViewItem * ) ),
            SLOT( updateEdit( QListViewItem * ) ) );
-
+  
   mAddresseeEdit = new KLineEdit( topWidget );
   mAddresseeEdit->setCompletionMode( KGlobalSettings::CompletionAuto );
   connect( mAddresseeEdit->completionObject(), SIGNAL( match( const QString & ) ),
            SLOT( selectItem( const QString & ) ) );
   mAddresseeEdit->setFocus();
-  topLayout->addWidget( mAddresseeEdit );
+  listLayout->addWidget( mAddresseeEdit );
+
+  if ( mMultiple ) {
+    QBoxLayout *selectedLayout = new QVBoxLayout;
+    topLayout->addLayout( selectedLayout );
+    topLayout->setSpacing( spacingHint() );
+//    selectedLayout->addSpacing( spacingHint() );
+
+    QGroupBox *selectedGroup = new QGroupBox( 1, Horizontal, i18n("Selected: "), 
+                                              topWidget );
+    selectedLayout->addWidget( selectedGroup );    
+    
+    mSelectedList = new KListView( selectedGroup );
+    mSelectedList->addColumn( i18n("Name") );
+    mSelectedList->addColumn( i18n("Email") );
+    connect( mSelectedList, SIGNAL( doubleClicked( QListViewItem * ) ),
+             SLOT( removeSelected() ) );
+
+    QPushButton *unselectButton = new QPushButton( i18n("Unselect"), selectedGroup );
+    connect ( unselectButton, SIGNAL( clicked() ), SLOT( removeSelected() ) );
+
+    connect( mAddresseeList, SIGNAL( selectionChanged( QListViewItem * ) ),
+             SLOT( addSelected( QListViewItem * ) ) );
+  }
 
   mAddressBook = StdAddressBook::self();
 
@@ -102,6 +130,30 @@ void AddresseeDialog::updateEdit( QListViewItem *item )
   mAddresseeEdit->setSelection( 0, item->text( 0 ).length() );
 }
 
+void AddresseeDialog::addSelected( QListViewItem *item )
+{
+  AddresseeItem *addrItem = dynamic_cast<AddresseeItem *>( item );
+  if ( !addrItem ) return;
+  
+  Addressee a = addrItem->addressee();
+  
+  QListViewItem *selectedItem = mSelectedDict.find( a.uid() );
+  if ( !selectedItem ) {
+    selectedItem = new AddresseeItem( mSelectedList, a );
+    mSelectedDict.insert( a.uid(), selectedItem );
+  }
+}
+
+void AddresseeDialog::removeSelected()
+{
+  QListViewItem *item = mSelectedList->selectedItem();
+  AddresseeItem *addrItem = dynamic_cast<AddresseeItem *>( item );
+  if ( !addrItem ) return;
+
+  mSelectedDict.remove( addrItem->addressee().uid() );
+  delete addrItem; 
+}
+
 Addressee AddresseeDialog::getAddressee( QWidget *parent )
 {
   AddresseeDialog *dlg = new AddresseeDialog( parent );
@@ -114,4 +166,24 @@ Addressee AddresseeDialog::getAddressee( QWidget *parent )
   }
 
   return Addressee();
+}
+
+Addressee::List AddresseeDialog::getAddressees( QWidget *parent )
+{
+  AddresseeDialog *dlg = new AddresseeDialog( parent, true );
+  int result = dlg->exec();
+  if ( result == QDialog::Accepted ) {
+    Addressee::List al;
+
+    QListViewItem *item = dlg->mSelectedList->firstChild();
+    while( item ) {
+      AddresseeItem *aItem = dynamic_cast<AddresseeItem *>( item );
+      if ( aItem ) al.append( aItem->addressee() );
+      item = item->nextSibling();
+    }
+    
+    return al;
+  }
+
+  return Addressee::List();
 }

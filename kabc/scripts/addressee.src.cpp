@@ -85,6 +85,23 @@ QString Addressee::realName() const
   return n;
 }
 
+QString Addressee::fullEmail( const QString &email ) const
+{
+  QString e;
+  if ( email.isNull() ) {
+    e = preferredEmail();
+  } else {
+    e = email;
+  }
+  if ( e.isEmpty() ) return QString::null;
+  
+  QString text;
+  if ( !realName().isEmpty() ) text = realName() + " ";
+  text.append( "<" + e + ">" );
+
+  return text;
+}
+
 void Addressee::insertEmail( const QString &email, bool preferred )
 {
   detach();
@@ -186,18 +203,26 @@ void Addressee::dump() const
 
   --DEBUG--
   
+  kdDebug(5700) << "  Emails {" << endl;
+  QStringList e = emails();
+  QStringList::ConstIterator it;
+  for( it = e.begin(); it != e.end(); ++it ) {
+    kdDebug(5700) << "    " << (*it) << endl;
+  }
+  kdDebug(5700) << "  }" << endl;
+
   kdDebug(5700) << "  PhoneNumbers {" << endl;
   PhoneNumber::List p = phoneNumbers();
-  PhoneNumber::List::ConstIterator it;
-  for( it = p.begin(); it != p.end(); ++it ) {
-    kdDebug(5700) << "    Type: " << int((*it).type()) << " Number: " << (*it).number() << endl;
+  PhoneNumber::List::ConstIterator it2;
+  for( it2 = p.begin(); it2 != p.end(); ++it2 ) {
+    kdDebug(5700) << "    Type: " << int((*it2).type()) << " Number: " << (*it2).number() << endl;
   }
   kdDebug(5700) << "  }" << endl;
 
   Address::List a = addresses();
-  Address::List::ConstIterator it2;
-  for( it2 = a.begin(); it2 != a.end(); ++it2 ) {
-    (*it2).dump();
+  Address::List::ConstIterator it3;
+  for( it3 = a.begin(); it3 != a.end(); ++it3 ) {
+    (*it3).dump();
   }
 
   kdDebug(5700) << "}" << endl;

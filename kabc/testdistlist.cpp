@@ -40,7 +40,7 @@ int main(int argc,char **argv)
       kdDebug() << "No list with name '" << name << "'" << endl;
       return 1;
     } else {
-      kdDebug() << list->emails().join(", ") << endl;
+      kdDebug() << "RESULT: " << list->emails().join(", ") << endl;
       return 0; 
     }
   }

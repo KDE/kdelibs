@@ -290,6 +290,14 @@ class Addressee
     QString realName() const;
     
     /**
+      Return email address including real name.
+      
+      @param email Email address to be used to construct the full email string.
+                   If this is QString::null the preferred email address is used.
+    */
+    QString fullEmail( const QString &email=QString::null ) const;
+    
+    /**
       Insert an email address. If the email address already exists in this
       addressee it is not duplicated.
       
