@@ -102,7 +102,7 @@ public:
      * visualize that the item under the cursor
      * has been pressed (true) or released(false)
      */
-    void toggleActLink(bool);
+    //void toggleActLink(bool);
 
     /**
      * Set a margin in x direction.
