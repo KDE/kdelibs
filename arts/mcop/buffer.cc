@@ -123,7 +123,8 @@ void Buffer::write(const vector<mcopbyte>& raw)
 void Buffer::read(vector<mcopbyte>& raw, long l)
 {
 	if(remaining() >= l) {
-		raw.insert(raw.end(), contents[rpos], contents[rpos+l]);
+		raw.clear();
+		raw.insert(raw.end(), contents.begin()+rpos, contents.begin()+rpos+l);
 		rpos += l;
 	} else {
 		_readError = true;
