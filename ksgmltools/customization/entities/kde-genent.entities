@@ -217,8 +217,8 @@
 <!ENTITY kwmpager	"<application>kwmpager</application>">
 <!ENTITY kwrite	"<application>KWrite</application>">
 <!ENTITY kwuftpd	"<application>kwuftpd</application>">
-<!ENTITY Linux	'<trademark class="registered">Linux</trademark>">
-<!ENTITY LinuxPPC	"<trademark>LinuxPPC</trademark>'>
+<!ENTITY Linux	'<trademark class="registered">Linux</trademark>'>
+<!ENTITY LinuxPPC	"<trademark>LinuxPPC</trademark>">
 <!ENTITY lskat	"<application>Lskat</application>">
 <!ENTITY LZW	"<acronym>LZW</acronym>">
 <!ENTITY Mac	'<trademark class="registered">Mac</trademark>'>
