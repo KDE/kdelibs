@@ -36,6 +36,7 @@ class KTextEdit::KTextEditPrivate
 public:
     KTextEditPrivate()
         : customPalette( false ),
+          checkSpellingEnabled( false ),
           highlighter( 0 ),
           spell( 0 )
     {}
@@ -45,6 +46,7 @@ public:
     }
 
     bool customPalette;
+    bool checkSpellingEnabled;
     KDictSpellingHighlighter *highlighter;
     KSpell *spell;
 };
@@ -187,14 +189,15 @@ void KTextEdit::setPalette( const QPalette& palette )
 
 void KTextEdit::setCheckSpellingEnabled( bool check )
 {
-    if ( ( check && d->highlighter ) || ( !check && !d->highlighter ) )
+    if ( check == d->checkSpellingEnabled )
         return;
 
     // From the above statment we know know that if we're turning checking
     // on that we need to create a new highlighter and if we're turning it
     // off we should remove the old one.
 
-    if ( check )
+    d->checkSpellingEnabled = check;
+    if ( hasFocus() )
         d->highlighter = new KDictSpellingHighlighter( this );
     else {
         delete d->highlighter;
@@ -202,9 +205,17 @@ void KTextEdit::setCheckSpellingEnabled( bool check )
     }
 }
 
+void KTextEdit::focusInEvent( QFocusEvent *e )
+{
+    if ( d->checkSpellingEnabled && !d->highlighter )
+        d->highlighter = new KDictSpellingHighlighter( this );
+    
+    QTextEdit::focusInEvent( e );
+}
+
 bool KTextEdit::checkSpellingEnabled() const
 {
-    return bool( d->highlighter );
+    return d->checkSpellingEnabled;
 }
 
 void KTextEdit::setReadOnly(bool readOnly)

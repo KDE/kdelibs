@@ -40,14 +40,14 @@ class KSpell;
 class KTextEdit : public QTextEdit
 {
     Q_OBJECT
-    
+
 public:
     /**
      * Constructs a KTextEdit object. See @ref QTextEdit::QTextEdit
      * for details.
      */
     KTextEdit( const QString& text,
-               const QString& context = QString::null, 
+               const QString& context = QString::null,
                QWidget * parent = 0, const char *name = 0 );
     /**
      * Constructs a KTextEdit object. See @ref QTextEdit::QTextEdit
@@ -59,7 +59,7 @@ public:
      * Destroys the KTextEdit object.
      */
     ~KTextEdit();
-    
+
     /**
      * Reimplemented to set a proper "deactivated" background color.
      */
@@ -104,6 +104,12 @@ protected:
     virtual void keyPressEvent( QKeyEvent * );
 
     /**
+     * Reimplemented to instantiate a KDictSpellingHighlighter, if 
+     * spellchecking is enabled.
+     */
+    virtual void focusInEvent( QFocusEvent * );
+    
+    /**
      * Reimplemented to allow fast-wheelscrolling with Ctrl-Wheel
      * or zoom.
      */
@@ -124,7 +130,7 @@ protected:
     /**
      * Reimplemented from QTextEdit to add spelling related items
      * when appropriate.
-     */ 
+     */
     virtual QPopupMenu *createPopupMenu( const QPoint &pos );
     // FIXME: use using once we dump gcc 2.x support
     virtual QPopupMenu *createPopupMenu();
