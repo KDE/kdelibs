@@ -2225,7 +2225,7 @@ protected:
   friend class LinearDocument;
 };
 
-static InlineBox *LineIterator::currentBox;
+InlineBox *LineIterator::currentBox;
 
 /**
  * Represents the whole document in terms of lines.
