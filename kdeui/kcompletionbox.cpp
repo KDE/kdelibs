@@ -242,6 +242,7 @@ void KCompletionBox::down()
         d->down_workaround = false;
         setCurrentItem( 0 );
         setSelected( 0, true );
+        slotActivated( item( 0 ));
     }
     
     else if ( i < (int) count() - 1 )
