@@ -329,7 +329,7 @@ public:
   void enableJScript(bool e) { return setJScriptEnabled(e); }
   void enableJava(bool e) { return setJavaEnabled(e); }
   void enablePlugins(bool e) { return setPluginsEnabled(e); }
-  void autoloadImages(bool e) { return setAutloadImages(e); }
+  void autoloadImages(bool e) { return setAutoloadImages(e); }
   void enableMetaRefresh(bool e) { return setMetaRefreshEnabled(e); }
   
   KURL baseURL() const;
