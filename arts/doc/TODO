@@ -1,6 +1,5 @@
 ## MCOP Core Infrastructure
 
-- threading support (libmcop-mt)                                        *KDE2.2*
 - offer sampleprecise timing
 - resource management (i.e. locate resources like "samples" or "structures"
   in a similar uniform way KDE does with KStandardDirs)
@@ -52,10 +51,6 @@
 
 ## GUI Support
 
-- make a generic gui factory, make noatun and artscontrol use           *KDE2.2*
-  it for effect guis (mostly done)
-- make it easier to use them as qt widgets (i.e. no extra window)       *KDE2.2*
-  (mostly done)
 - port visual objects (beginnings are in kdemultimedia/arts/gui)
 - hbox, vbox
 - gui generation
@@ -76,7 +71,6 @@
 
 ## artsbuilder (and runtime)
 
-- should be able to put designed structures as modules in structures again
 - allow to give additional parameters (like names for sample files to play)
   through .arts-map files
 - more examples (instruments, songs and such)
@@ -135,7 +129,6 @@
 
 ## Interoperability (GNOME/C)
 
-- glib mainloop integration                                             *KDE2.2*
 - write a gartscontrol (in C) as native Gnome/Gtk app
 - further work on CSL
 - C language binding, based on glib

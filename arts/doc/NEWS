@@ -1,0 +1,17 @@
+aRts-0.5.3:
+- structures designed by artsbuilder can be used modules in structures again
+  (and elsewhere), via generic Arts::Loader's
+
+aRts-0.5.2:
+- threading support (libmcop-mt)
+- glib-2.0 mainloop integration (libgmcop)
+- KArtsWidget makes it easy to use Arts::Widget implementations in conjunction
+  with qt widgets (i.e. no extra window), this also removes the annoying extra
+  window in artscontrol
+- generic gui factory used by noatun and artscontrol to create effect guis
+
+================================================================================
+This file starts in the middle of nowhere, because it hasn't always been
+here. But please update this if you do bigger changes (fixing a spelling
+error in a comment probably doesn't count, doing one of the TODO items
+most certainly does).
