@@ -110,14 +110,13 @@ public:
 
     void initEvent(const DOMString &eventTypeArg, bool canBubbleArg, bool cancelableArg);
 
-    virtual bool isUIEvent() { return false; }
-    virtual bool isMouseEvent() { return false; }
-    virtual bool isTextEvent() { return false; }
-    virtual bool isMutationEvent() { return false; }
-    virtual DOMString eventModuleName() { return ""; }
+    virtual bool isUIEvent() const;
+    virtual bool isMouseEvent() const;
+    virtual bool isMutationEvent() const;
+    virtual bool isTextEvent() const;
 
-    virtual bool propagationStopped() { return m_propagationStopped; }
-    virtual bool defaultPrevented() { return m_defaultPrevented; }
+    bool propagationStopped() const { return m_propagationStopped; }
+    bool defaultPrevented() const { return m_defaultPrevented; }
 
     static EventId typeToId(DOMString type);
     static DOMString idToType(EventId id);
@@ -163,8 +162,8 @@ public:
 		     bool cancelableArg,
 		     const AbstractView &viewArg,
 		     long detailArg);
-    virtual bool isUIEvent() { return true; }
-    virtual DOMString eventModuleName() { return "UIEvents"; }
+    virtual bool isUIEvent() const;
+
 protected:
     AbstractViewImpl *m_view;
     long m_detail;
@@ -228,8 +227,7 @@ public:
 			bool metaKeyArg,
 			unsigned short buttonArg,
 			const Node &relatedTargetArg);
-    virtual bool isMouseEvent() { return true; }
-    virtual DOMString eventModuleName() { return "MouseEvents"; }
+    virtual bool isMouseEvent() const;
 
     QMouseEvent *qEvent() const { return m_qevent; }
 protected:
@@ -345,8 +343,7 @@ public:
     bool             numPad() const { return m_numPad; }
     DOMString        outputString() const { return m_outputString; }
 
-  virtual DOMString eventModuleName() { return "TextEvents"; }
-  virtual bool isTextEvent() { return true; }
+  virtual bool isTextEvent() const;
 
  QKeyEvent *qKeyEvent;
 
@@ -387,8 +384,7 @@ public:
 			   const DOMString &newValueArg,
 			   const DOMString &attrNameArg,
 			   unsigned short attrChangeArg);
-    virtual bool isMutationEvent() { return true; }
-    virtual DOMString eventModuleName() { return "MutationEvents"; }
+    virtual bool isMutationEvent() const;
 protected:
     NodeImpl *m_relatedNode;
     DOMStringImpl *m_prevValue;

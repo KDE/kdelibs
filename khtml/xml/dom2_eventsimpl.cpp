@@ -258,6 +258,26 @@ DOMString EventImpl::idToType(EventImpl::EventId id)
     }
 }
 
+bool EventImpl::isUIEvent() const
+{
+    return false;
+}
+
+bool EventImpl::isMouseEvent() const
+{
+    return false;
+}
+
+bool EventImpl::isMutationEvent() const
+{
+    return false;
+}
+
+bool EventImpl::isTextEvent() const
+{
+    return false;
+}
+
 // -----------------------------------------------------------------------------
 
 UIEventImpl::UIEventImpl(EventId _id, bool canBubbleArg, bool cancelableArg,
@@ -291,6 +311,11 @@ void UIEventImpl::initUIEvent(const DOMString &typeArg,
     if (m_view)
 	m_view->ref();
     m_detail = detailArg;
+}
+
+bool UIEventImpl::isUIEvent() const
+{
+    return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -429,6 +454,11 @@ void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
     // ### make this on-demand. its soo sloooow
     computeLayerPos();
     m_qevent = 0;
+}
+
+bool MouseEventImpl::isMouseEvent() const
+{
+    return true;
 }
 
 //---------------------------------------------------------------------------------------------
@@ -685,6 +715,11 @@ void TextEventImpl::initModifier(unsigned long modifierArg,
       m_modifier &= (modifierArg ^ 0xFFFFFFFF);
 }
 
+bool TextEventImpl::isTextEvent() const
+{
+    return true;
+}
+
 // -----------------------------------------------------------------------------
 
 MutationEventImpl::MutationEventImpl()
@@ -768,3 +803,7 @@ void MutationEventImpl::initMutationEvent(const DOMString &typeArg,
     m_attrChange = attrChangeArg;
 }
 
+bool MutationEventImpl::isMutationEvent() const
+{
+    return true;
+}

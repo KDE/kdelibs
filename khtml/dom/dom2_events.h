@@ -252,15 +252,6 @@ public:
     EventImpl *handle() const;
     bool isNull() const;
 
-    /**
-     * @internal
-     * not part of the DOM
-     *
-     * Returns the module name of the event - this is the same as passed to
-     * Document::createEvent() (e.g. UIEvents)
-     */
-    DOMString eventModuleName();
-
 protected:
     Event(EventImpl *i);
     EventImpl *impl;
