@@ -321,7 +321,7 @@ signals:
    * This signal is emitted when the Properties Dialog is closed (for
    * example, with OK or Cancel buttons)
    */
-  void propertiesClosed()
+  void propertiesClosed();
 
   /**
    * This signal is emitted when the properties changes are applied (for
