@@ -262,6 +262,7 @@ KHTMLPageCache::saveData(long id, QDataStream *str)
   assert(entry);
 
   int fd = entry->m_file->handle();
+  lseek(fd, 0, SEEK_SET);
 
   char buf[8192];
 
