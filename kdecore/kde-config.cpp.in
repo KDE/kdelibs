@@ -18,6 +18,7 @@ static KCmdLineOptions options[] =
     { "expandvars", I18N_NOOP("expand ${prefix} and ${exec_prefix} in output"), 0 },
     { "prefix",	   I18N_NOOP("Compiled in prefix for KDE libraries"), 0 },
     { "exec-prefix", I18N_NOOP("Compiled in exec_prefix for KDE libraries"), 0 },
+    { "libsuffix", I18N_NOOP("Compiled in library path suffix"), 0 },
     { "localprefix", I18N_NOOP("Prefix in $HOME used to write files"), 0},
     { "version",   I18N_NOOP("Compiled in version string for KDE libraries"), 0 },
     { "types",     I18N_NOOP("Available KDE resource types"), 0 },
@@ -136,6 +137,14 @@ int main(int argc, char **argv)
     if (args->isSet("exec-prefix"))
     {
         printResult(expandvars("@exec_prefix@"));
+        return 0;
+    }
+
+    if (args->isSet("libsuffix"))
+    {
+        QString tmp(KDELIBSUFF);
+        tmp.remove('"');
+        printResult(expandvars(tmp.local8Bit()));
         return 0;
     }
 
