@@ -62,6 +62,12 @@
 <authorinitials>EB</authorinitials>
 <revremark>Installation and usage instructions fixed. Some more sections reordered.</revremark>
 </revision>
+<revision>
+<revnumber>0.7</revnumber>
+<date>May 23, 2000</date>
+<authorinitials>EB</authorinitials>
+<revremark>Removed remarks about revision history. Adapted in prevision of DocBook 4.0.</revremark>
+</revision>
 </revhistory>
 
 <abstract>
@@ -865,19 +871,21 @@ The above example would look something like this when converted to HTML:
 Below is a list of tags related to graphical objects:
 <simplelist>
 <member>ScreenInfo - Information about how a ScreenShot was produced</member>
-<member>ScreenShot - Representation  of what the user sees or might see on a computer
+<member>ScreenShot - Representation of what the user sees or might see on a computer
 screen</member>
-<member>Graphic - Graphical data, or a pointer to an external entity containing such
-data, to be rendered as an object, not in-line</member>
-<member>InlineGraphic - Graphical data, or a pointer to an external entity containing
-such data, to be rendered in-line</member>
+<member>MediaObject - A picture, a sound, a text, that can be encoded in
+several different formats at the same time, not rendered in-line</member>
+<member>InlineMediaObject - A picture, a sound, a text, that can be encoded in
+several different formats at the same time, to be rendered in-line</member>
+<member>ImageData - One of the formats encoding the image, such as EPS
+when printing and PNG when displaying online</member>
 </simplelist>
 </para>
 <para>
 Documentation for graphical applications demands screenshots, pictures of icons
 and buttons, and other graphical elements. DocBook has tags to
 support screenshots, graphics, and inline graphics.  The examples below
-contain the same picture as a screenshot and as an inline graphic. </para>
+contain the same picture as a screenshot and as an inline graphic.</para>
 <important><para>Please do not use
 GIF files in KDE documentation because the compression algorithm used in
 the GIF format has problematic patent issues. The preferred format is now
@@ -888,21 +896,31 @@ PNG.</para></important>
 <screen>
 <![ CDATA [
 <para>
-Here are a bunch of rectangles:
-<inlinegraphic fileref="rectangles.png"
-format="png" align="center"></inlinegraphic>
+Here are a bunch of rectangles
+<inlinemediaobject>
+<imageobject> <imagedata fileref="rectangles.eps" format="eps"> </imageobject>
+<imageobject> <imagedata fileref="rectangles.png" format="png"> </imageobject>
+<textobject> <phrase>A bunch of rectangles</phrase> </textobject>
+</inlinemediaobject>
 </para>  ]]>
 </screen>
 </example>
 </para>
 <para>
-The <markup>&lt;InlineGraphic&gt;</markup> tag is a graphic to be displayed
-alongside text. The FileRef attribute contains the name of the graphic file,
-the Format attribute contains the type of the graphic file, and the optional
-Align attribute changes the alignment of the graphic. The example will
-look something like this when converted to HTML:</para>
+The <markup>&lt;InlineMediaObject&gt;</markup> tag is displayed alongside text.
+The FileRef attribute of the <markup>&lt;ImageData&gt;</markup> tag contains
+the name of the graphic file, the Format attribute contains the type of the
+graphic file, and the optional Align attribute changes the alignment of the
+graphic. The example will look something like this when converted to HTML:
+</para>
 <para>
-Here are a bunch of rectangles: <inlinegraphic fileref="rectangles.png" format="png" align="center"></inlinegraphic> </para>
+Here are a bunch of rectangles
+<inlinemediaobject>
+<imageobject> <imagedata fileref="rectangles.eps" format="eps"> </imageobject>
+<imageobject> <imagedata fileref="rectangles.png" format="png"> </imageobject>
+<textobject> <phrase>A bunch of rectangles</phrase> </textobject>
+</inlinemediaobject>
+</para>
 <para>
 <example>
 <title>A Screenshot</title>
@@ -910,7 +928,14 @@ Here are a bunch of rectangles: <inlinegraphic fileref="rectangles.png" format="
 <![ CDATA [
 <screenshot>
 <screeninfo>Colored Rectangles</screeninfo>
-<graphic fileref="rectangles.png" format="png"></graphic>
+<mediaobject>
+<imageobject> <imagedata fileref="rectangles.eps" format="eps"> </imageobject>
+<imageobject> <imagedata fileref="rectangles.png" format="png"> </imageobject>
+<textobject> <phrase>A bunch of rectangles</phrase> </textobject>
+<caption>
+<para>Here are a bunch of rectangles</para>
+</caption>
+</mediaobject>
 </screenshot> ]]>
 </screen>
 </example>
@@ -918,12 +943,19 @@ Here are a bunch of rectangles: <inlinegraphic fileref="rectangles.png" format="
 <para>
 The <markup>&lt;ScreenShot&gt;</markup> tag designates a screenshot with the
 <markup>&lt;ScreenInfo&gt;</markup> tag providing a textual description of the
-screen shot. The heart of the ScreenShot is the Graphic tag which points to a
-graphic file as explained in the first example. A screen shot looks something
-like this when converted to HTML:
+screen shot. The heart of the screenshot is the <markup>&lt;MediaObject&gt;</markup>
+tag which points to a graphic file as explained in the first example. A screen
+shot looks something like this when converted to HTML:
 <screenshot>
 <screeninfo>Colored Rectangles</screeninfo>
-<graphic fileref="rectangles.png" format="png"></graphic>
+<mediaobject>
+<imageobject> <imagedata fileref="rectangles.eps" format="eps"> </imageobject>
+<imageobject> <imagedata fileref="rectangles.png" format="png"> </imageobject>
+<textobject> <phrase>A bunch of rectangles</phrase> </textobject>
+<caption>
+<para>Here are a bunch of rectangles</para>
+</caption>
+</mediaobject>
 </screenshot>
 </para>
 </sect1>
@@ -1367,7 +1399,7 @@ Applications.</para>
 <guimenu>File</guimenu>
 <guimenuitem>Quit</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Quits <application>Kapp</application></action></para></listitem>
+<listitem><para><action>Quits</action> <application>Kapp</application></para></listitem>
 </varlistentry>
 </variablelist>
 </para>

@@ -1,2 +1,2 @@
 
-SUBDIRS = HTML images
+SUBDIRS = images
