@@ -28,6 +28,7 @@ class QString;
 class QDataStream;
 namespace DNSSD
 {
+class ServiceBasePrivate;
 
 /**
 This class is used to carry information about service. It can be remote, local, 
@@ -105,6 +106,10 @@ protected:
 
 	friend KDNSSD_EXPORT QDataStream & operator<< (QDataStream & s, const ServiceBase & a);
 	friend KDNSSD_EXPORT QDataStream & operator>> (QDataStream & s, ServiceBase & a);
+
+	virtual void virtual_hook(int, void*);
+private:
+	ServiceBasePrivate* d;
 
 };
 
