@@ -565,6 +565,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
     if (group == KIcon::User)
     {
 	key = "$kicou_";
+        key += QString::number(size); key += '_';
 	key += name;
 	bool inCache = QPixmapCache::find(key, pix);
 	if (inCache && (path_store == 0L))
@@ -589,7 +590,11 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	    *path_store = path;
 	if (inCache)
 	    return pix;
-	pix.load(path);
+	QImage img(path);
+	if (size != 0)
+	    img=img.smoothScale(size,size);
+
+	pix.convertFromImage(img);
 	QPixmapCache::insert(key, pix);
 	return pix;
     }
