@@ -52,7 +52,7 @@
 <!ENTITY traducteurRobertJacolin      '<othercredit role="translator"><firstname>Robert</firstname><surname>Jacolin</surname><affiliation><address><email>rjacolin@ifrance.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurRobertJacolin      '<othercredit role="reviewer"><firstname>Robert</firstname><surname>Jacolin</surname><affiliation><address><email>rjacolin@ifrance.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<!ENTITY traducteurEquipeKDE         '<othercredit role="translator"><firstname>L équipe française &kde;</firstname><surname></surname><affiliation><address><email>doc@kde-france.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY traducteurEquipeKDE         '<othercredit role="translator"><firstname>L&quot;équipe française &kde;</firstname><surname></surname><affiliation><address><email>doc@kde-france.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 
 <!ENTITY traducteurGoneriLeBouder     '<othercredit role="translator"><firstname>Gonéri</firstname><surname>Le Bouder </surname><affiliation><address><email>goneri@gnuart.org</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurGoneriLeBouder     '<othercredit role="reviewer"><firstname>Gonéri</firstname><surname>Le Bouder </surname><affiliation><address><email>goneri@gnuart.org</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
@@ -93,7 +93,7 @@
 <!ENTITY NilsSergioFernandez 'Nils Sergio Fernandez Rønningen <email>nilsfernandez@yahoo.fr</email>'>
 <!ENTITY LudovicGrossard   'Ludovic Grossard <email>grossard@kde.org</email>'>
 <!ENTITY RobertJacolin     'Robert Jacolin <email>rjacolin@ifrance.com</email>'>
-<!ENTITY EquipeKDE         'l'équipe française &kde;<email>doc@kde-france.org</email>'>
+<!ENTITY EquipeKDE         'l&quot;équipe française &kde;<email>doc@kde-france.org</email>'>
 <!ENTITY GoneriLeBouder    'Gonéri Le Bouder <email>goneri@gnuart.org</email>'>
 <!ENTITY ChristopheLefevre 'Christophe Lefevre <email>clefebvre@netcourrier.com</email>'>
 <!ENTITY AnneMarieMahfouf  'Anne-Marie Mahfouf <email>a-m.mahfouf@lineone.net</email>'>
