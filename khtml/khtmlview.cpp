@@ -69,8 +69,10 @@ public:
         currentNode = 0;
         originalNode= 0;
         tabIndex=0;
-
+	vmode=QScrollView::AlwaysOn;
+	hmode=QScrollView::Auto;
     }
+    
     NodeImpl *underMouse;
 
     NodeImpl *currentNode;
@@ -79,6 +81,8 @@ public:
     bool linkPressed;
     bool useSlowRepaints;
     short tabIndex;
+    QScrollView::ScrollBarMode vmode;
+    QScrollView::ScrollBarMode hmode;
 };
 
 
@@ -155,8 +159,8 @@ void KHTMLView::clear()
     resizeContents(visibleWidth(), visibleHeight());
     viewport()->erase();
 
-    setVScrollBarMode(AlwaysOn);
-    setHScrollBarMode(Auto);
+    setVScrollBarMode(d->vmode);
+    setHScrollBarMode(d->hmode);
 
     if(d->useSlowRepaints) {
         delete paintBuffer;
@@ -166,6 +170,10 @@ void KHTMLView::clear()
 
     delete d;
     d = new KHTMLViewPrivate();
+
+    d->vmode = vScrollBarMode();
+    d->hmode = hScrollBarMode();
+
     emit cleared();
 }
 
@@ -246,6 +254,14 @@ void KHTMLView::layout(bool)
             root->layout();
             return;
         }
+	else // d->vmode and d->hmode are caching the user-defined 
+	     // scrollbarmode when displaying a frame. the values are
+             // reverted when the widget gets cleared.
+	{
+	    d->vmode=vScrollBarMode();
+	    d->hmode=hScrollBarMode();
+	}
+	
 
 
         _height = visibleHeight();
@@ -482,6 +498,7 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
     switch(_ke->key())
     {
     case Key_Enter:
+    case Key_Return:
         toggleActLink(true);
         return;
       break;
@@ -596,7 +613,7 @@ bool KHTMLView::gotoNextLink()
                 //        kdDebug(6000)<<"wrapped around document border.\n";
                 if (d->tabIndex==-1)
                     d->tabIndex++;
-                else if (m_part->docImpl()->findHighestTabIndex()<d->tabIndex)
+                else if (d->tabIndex>m_part->docImpl()->findHighestTabIndex())
                     return false;
             }
         }
