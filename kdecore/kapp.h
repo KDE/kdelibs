@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 195
-#define KDE_VERSION_STRING "1.94 >= 20000911"
+#define KDE_VERSION_STRING "post 1.94 > 20000911"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 9
 #define KDE_VERSION_RELEASE 5
@@ -785,6 +785,16 @@ private:
 #endif
 
 // $Log$
+// Revision 1.188  2000/09/11 12:42:49  elter
+// -#define KDE_VERSION 194
+// -#define KDE_VERSION_STRING "1.93 Beta >= 20000813"
+// +#define KDE_VERSION 195
+// +#define KDE_VERSION_STRING "1.94 >= 20000911"
+//  #define KDE_VERSION_MAJOR 1
+//  #define KDE_VERSION_MINOR 9
+// -#define KDE_VERSION_RELEASE 4
+// +#define KDE_VERSION_RELEASE 5
+//
 // Revision 1.187  2000/09/10 04:15:41  waba
 // * Support for "Select All" and "Kill from start of line" in QLineEdit.
 // * Support for "Select All" in QMultiLineEdit.
