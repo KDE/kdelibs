@@ -54,9 +54,17 @@ void DistributionList::insertEntry( const Addressee &a, const QString &email )
 
   QValueList<Entry>::Iterator it;
   for( it = mEntries.begin(); it != mEntries.end(); ++it ) {
-    if ( (*it).addressee.uid() == a.uid() && (*it).email == email ) {
-      *it = e;
-      return;
+    if ( (*it).addressee.uid() == a.uid() ) {
+      /**
+        We have to check if both email addresses contains no data,
+        a simple 'email1 == email2' wont work here
+       */
+      if ( ( (*it).email.isNull() && email.isEmpty() ) ||
+           ( (*it).email.isEmpty() && email.isNull() ) ||
+           ( (*it).email == email ) ) {
+        *it = e;
+        return;
+      }
     }
   }
   mEntries.append( e );
