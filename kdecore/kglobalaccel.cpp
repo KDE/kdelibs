@@ -546,6 +546,7 @@ uint keyToXMod( uint keyCode )
 uint keyToXSym( uint keyCode )
 {
 	char *toks[4], *next_tok;
+        char sKey[100];
 	int nb_toks = 0;
 
 	uint keysym = 0;
@@ -553,9 +554,8 @@ uint keyToXSym( uint keyCode )
 	
 	if ( s.isEmpty() ) return keysym;
 
-	char *buffer = strdup( s.ascii() );
-	next_tok = strtok( buffer, "+" );
-	delete [] buffer;
+        qstrncpy(sKey, s.ascii(), sizeof(sKey));
+	next_tok = strtok( sKey, "+" );
 
 	if ( next_tok == 0L ) return 0;
 	
