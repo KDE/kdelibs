@@ -38,6 +38,7 @@
 #include <kconfig.h>
 #include <kiconloader.h>
 #include <kglobal.h>
+#include <kglobalsettings.h>
 #include <kseparator.h>
 #include <kurllabel.h>
 #include <kdebug.h>
@@ -656,7 +657,7 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
     }
   }
 
-  setButtonStyle( ActionStyle0 );
+  setButtonStyle( KGlobalSettings::buttonLayout() );
 }
 
 

@@ -32,6 +32,7 @@
 #define KDE_DEFAULT_WHEEL_ZOOM false
 #define KDE_DEFAULT_ICON_ON_PUSHBUTTON false
 #define KDE_DEFAULT_OPAQUE_RESIZE true
+#define KDE_DEFAULT_BUTTON_LAYOUT 0
 
 class KURL;
 
@@ -477,6 +478,15 @@ class KGlobalSettings
      * @since 3.2
      */
     static bool opaqueResize();
+
+    /**
+     * The layout scheme to use for dialog buttons
+     * 
+     * @return Returns the number of the scheme to use.
+     * @see KDialogBase::setButtonStyle
+     * @since 3.3
+     */
+    static int buttonLayout();
 
 private:
     /**

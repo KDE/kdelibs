@@ -686,3 +686,11 @@ bool KGlobalSettings::opaqueResize()
     return c->readBoolEntry("OpaqueResize",
         KDE_DEFAULT_OPAQUE_RESIZE);
 }
+
+int KGlobalSettings::buttonLayout()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, "KDE" );
+    return c->readNumEntry("ButtonLayout",
+        KDE_DEFAULT_BUTTON_LAYOUT);
+}
