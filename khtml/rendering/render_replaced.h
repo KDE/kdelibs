@@ -55,7 +55,7 @@ public:
     void setIntrinsicWidth(int w) {  m_intrinsicWidth = w; }
     void setIntrinsicHeight(int h) { m_intrinsicHeight = h; }
 
-    virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int);
+    virtual void position(InlineBox*, int, int, bool, int);
 
     /** returns the lowest possible value the caret offset may have to
      * still point to a valid position.

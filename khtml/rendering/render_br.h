@@ -42,7 +42,7 @@ public:
     virtual void paint( QPainter *, int, int, int, int, int, int, PaintAction) {}
     virtual void paintObject( QPainter *, int, int, int, int, int, int, PaintAction) {}
 
-    virtual void position(int, int, int, int, int, bool, bool, int) {}
+    virtual void position(InlineBox*, int, int, bool, int) {}
     virtual unsigned int width(unsigned int, unsigned int, const Font *) const { return 0; }
     virtual unsigned int width( unsigned int, unsigned int, bool) const { return 0; }
     virtual short width() const { return RenderText::width(); }

@@ -91,9 +91,6 @@ namespace khtml {
     class InlineBox;
     class InlineFlowBox;
 
-    // caret navigation
-    static RenderFlow *generateDummyBlock(RenderArena *, RenderObject *);
-
 /**
  * Base Class for all rendering tree objects.
  */
@@ -591,8 +588,6 @@ private:
     friend class RenderListItem;
     friend class RenderContainer;
     friend class RenderRoot;
-
-    friend RenderFlow *generateDummyBlock(RenderArena *, RenderObject *);
 };
 
 

@@ -1353,7 +1353,7 @@ void RenderObject::removeLeftoverAnonymousBoxes()
 {
 }
 
-InlineBox* RenderObject::createInlineBox(bool makePlaceHolderBox)
+InlineBox* RenderObject::createInlineBox(bool /*makePlaceHolderBox*/)
 {
     return new (renderArena()) InlineBox(this);
 }

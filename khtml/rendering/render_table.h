@@ -204,7 +204,7 @@ public:
     virtual bool isTableSection() const { return true; }
 
     virtual short lineHeight(bool) const { return 0; }
-    virtual void position(int, int, int, int, int, bool, bool, int) {}
+    virtual void position(InlineBox*, int, int, bool, int) {}
 
 #ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
@@ -279,7 +279,7 @@ public:
     virtual RenderObject* removeChildNode(RenderObject* child);
 
     virtual short lineHeight( bool ) const { return 0; }
-    virtual void position(int, int, int, int, int, bool, bool, int) {}
+    virtual void position(InlineBox*, int, int, bool, int) {}
 
     virtual void layout();
 
@@ -394,7 +394,7 @@ public:
     virtual bool isTableCol() const { return true; }
 
     virtual short lineHeight( bool ) const { return 0; }
-    virtual void position(int, int, int, int, int, bool, bool, int) {}
+    virtual void position(InlineBox*, int, int, bool, int) {}
     virtual void layout() {}
 
     virtual void updateFromElement();

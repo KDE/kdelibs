@@ -241,8 +241,6 @@ FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, 
 
 int InlineTextBox::offsetForPoint(int _x, int &ax) const
 {
-  const RenderText *t = renderText();
-
   // Do binary search for finding out offset, saves some time for long
   // runs.
   int start = 0;
@@ -259,7 +257,7 @@ int InlineTextBox::offsetForPoint(int _x, int &ax) const
     if (ax > _x) end = offset;
     else if (ax < _x) start = offset;
     else break;
-  }/*wend*/
+  }
   return m_start + offset;
 }
 

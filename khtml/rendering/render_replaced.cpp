@@ -108,10 +108,10 @@ short RenderReplaced::baselinePosition( bool ) const
     return height()+marginTop()+marginBottom();
 }
 
-void RenderReplaced::position(int x, int y, int, int, int, bool, bool, int)
+void RenderReplaced::position(InlineBox* box, int /*from*/, int /*len*/, bool /*reverse*/, int)
 {
-    m_x = x + marginLeft();
-    m_y = y + marginTop();
+    m_x = box->xPos() + marginLeft();
+    m_y = box->yPos() + marginTop();
 }
 
 // -----------------------------------------------------------------------------
