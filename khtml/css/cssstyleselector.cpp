@@ -95,8 +95,8 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
 
     buildLists();
 
-    kdDebug() << "number of style sheets in document " << authorStyleSheets.count() << endl;
-     kdDebug() << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl;
+    kdDebug( 6080 ) << "number of style sheets in document " << authorStyleSheets.count() << endl;
+     kdDebug( 6080 ) << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl;
 //     if ( userStyle )
 //     kdDebug() << "CSSStyleSelector: user style has " << userStyle->count() << " elements"<< endl;
 
@@ -659,7 +659,7 @@ void CSSStyleSelector::buildLists()
 #if 0
     // and now the same for the selector map
     for ( unsigned int sel = 0; sel < selectors_size; ++sel ) {
-        qDebug( "trying for sel: %d", sel );
+        kdDebug( 6080 ) << "trying for sel: " << sel << endl;
         int len = 0;
         int offset = 0;
         bool matches = false;
@@ -672,7 +672,7 @@ void CSSStyleSelector::buildLists()
 
             if ( matches != ( selectorCache[i].state == Unknown ) ) {
                 if ( matches ) {
-                    qDebug( "new: offs: %d,  len: %d", offset, len );
+                    kdDebug( 6080 ) << "new: offs: " << offset << " len: " << len << endl;
                     matches = false;
                 }
                 else {
