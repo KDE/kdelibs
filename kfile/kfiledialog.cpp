@@ -1488,6 +1488,11 @@ void KFileDialog::setMode( KFile::Mode m )
     ops->setMode(m);
 }
 
+void KFileDialog::setMode( unsigned int m )
+{
+    ops->setMode(static_cast<KFile::Mode>( m ));
+}
+
 KFile::Mode KFileDialog::mode() const
 {
     return ops->mode();

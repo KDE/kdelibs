@@ -502,6 +502,11 @@ public:
     virtual void show();
 
     /**
+     * @deprecated use @ref setMode( unsigned int ) instead
+     */
+    void setMode( KFile::Mode m );
+
+    /**
      * Set the mode of the dialog.
      *
      * The mode is defined as (in kfile.h):
@@ -520,10 +525,8 @@ public:
      *                                              KFile::LocalOnly );
      * setMode( mode );
      * </pre>
-     * You need an explicit cast, which looks a little ugly, but is unavoidable
-     * without using (even uglier) #defines.
      */
-    void setMode( KFile::Mode m );
+    void setMode( unsigned int m );
 
     /**
      * Retrieve the mode of the filedialog.
