@@ -46,16 +46,26 @@ Object_skel *ObjectManager::create(string name)
 
 	/* second try: look if there is a suitable extension we could load */
 
-	string mcopclassName;
+	// TODO: modularize language loading here
+	//    => use trader instead of handmade access to the .mcopclass file
 
-	// for now don't care about namespaces when looking up .mcopclass files
-	string::iterator nameit;
-	for(nameit = name.begin(); nameit != name.end(); nameit++)
+	string mcopclassName;
+	string::iterator nameit = name.begin();
+	while(nameit != name.end())
 	{
-		if(*nameit == ':')
-			mcopclassName = "";
-		else
-			mcopclassName += *nameit;
+		if(*nameit == ':')	// map the :: of namespaces to subdirectories
+		{
+			nameit++;
+			if(nameit != name.end() && *nameit == ':')
+			{
+				nameit++;
+				mcopclassName += '/';
+			}
+		}
+		else				// copy all other stuff
+		{
+			mcopclassName += *nameit++;
+		}
 	}
 	mcopclassName += ".mcopclass";
 

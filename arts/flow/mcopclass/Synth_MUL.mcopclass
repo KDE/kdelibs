@@ -1,0 +1,2 @@
+Buildable=true
+Interface=Arts::Synth_MUL,Arts::SynthModule,Arts::Object

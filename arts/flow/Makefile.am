@@ -1,4 +1,5 @@
 
+SUBDIRS = mcopclass
 INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop
 LDFLAGS  = $(top_builddir)/arts/mcop/libmcop.la
 MCOPIDL = $(top_builddir)/arts/mcopidl/mcopidl
@@ -33,4 +34,3 @@ DISTCLEANFILES = artsflow.cc artsflow.h
 artsflow.cc: artsflow.h
 artsflow.h: $(top_srcdir)/arts/flow/artsflow.idl $(MCOPIDL)
 	$(MCOPIDL) $(top_srcdir)/arts/flow/artsflow.idl
-

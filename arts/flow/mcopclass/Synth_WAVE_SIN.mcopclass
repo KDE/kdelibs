@@ -1,0 +1,2 @@
+Buildable=true
+Interface=Arts::Synth_WAVE_SIN,Arts::SynthModule,Arts::Object

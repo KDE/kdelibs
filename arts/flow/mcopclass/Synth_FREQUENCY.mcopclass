@@ -1,0 +1,2 @@
+Buildable=true
+Interface=Arts::Synth_FREQUENCY,Arts::SynthModule,Arts::Object
