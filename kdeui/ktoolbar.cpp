@@ -113,6 +113,21 @@ public:
     QMainWindow::ToolBarDock oldPos;
     
     KXMLGUIClient *m_xmlguiClient;
+
+    bool modified;
+    
+    struct ToolBarInfo
+    {
+	ToolBarInfo() {}
+	ToolBarInfo( QMainWindow::ToolBarDock d,
+		     int i, bool n, int o ) : index( i ), offset( o ), newline( n ), dock( d ) {
+	}
+	int index, offset;
+	bool newline;
+	QMainWindow::ToolBarDock dock;
+    };
+
+    ToolBarInfo toolBarInfo;
 };
 
 KToolBarSeparator::KToolBarSeparator(Orientation o , bool l, QToolBar *parent,
@@ -1036,97 +1051,18 @@ int KToolBar::count()
 
 void KToolBar::saveState()
 {
-    QString position, index, offset, newLine;
-    // get all of the stuff to save
-    switch ( barPos() ) {
-    case KToolBar::Flat:
-	position = "Flat";
-	break;
-    case KToolBar::Bottom:
-	position = "Bottom";
-	break;
-    case KToolBar::Left:
-	position = "Left";
-	break;
-    case KToolBar::Right:
-	position = "Right";
-	break;
-    case KToolBar::Floating:
-	position = "Floating";
-	break;
-    case KToolBar::Top:
-    default:
-	position = "Top";
-	break;
-    }
-    if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) ) {
-	QMainWindow::ToolBarDock dock;
-	int index_;
-	bool nl;
-	int offset_;
-	( (const QMainWindow*)parentWidget() )->getLocation( (QToolBar*)this, dock, index_, nl, offset_ );
-	index = QString::number( index_ );
-	offset = QString::number( offset_ );
-	newLine = nl ? "TRUE" : "FALSE";
-    }
-
-    QString icontext;
-    switch (d->m_iconText) {
-    case KToolBar::IconTextRight:
-	icontext = "IconTextRight";
-	break;
-    case KToolBar::IconTextBottom:
-	icontext = "IconTextBottom";
-	break;
-    case KToolBar::TextOnly:
-	icontext = "TextOnly";
-	break;
-    case KToolBar::IconOnly:
-    default:
-	icontext = "IconOnly";
-	break;
-    }
+    QString position, icontext, index, offset, newLine;
+    getAttributes( position, icontext, index, offset, newLine );
 
     // first, try to save to the xml file
     //  if ( d->m_xmlFile != QString::null )
     if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() ) {
 	QDomElement elem = d->m_xmlguiClient->domDocument().documentElement().toElement();
-
-	// go down one level to get to the right tags
-	elem = elem.firstChild().toElement();
-
-	// get a name we can use for this toolbar
 	QString barname(!strcmp(name(), "unnamed") ? "mainToolBar" : name());
-
-	// now try to find our toolbar
-	bool modified = false;
-	QDomElement current;
-	for( ; !elem.isNull(); elem = elem.nextSibling().toElement() ) {
-	    current = elem;
-
-	    if ( current.tagName().lower() != "toolbar" )
-		continue;
-
-	    QString curname(current.attribute( "name" ));
-
-	    if ( curname == barname ) {
-		current.setAttribute( "noMerge", "1" );
-		current.setAttribute( "position", position );
-		current.setAttribute( "iconText", icontext );
-		if ( !index.isEmpty() )
-		    current.setAttribute( "index", index );
-		if ( !offset.isEmpty() )
-		    current.setAttribute( "offset", offset );
-		if ( !newLine.isEmpty() )
-		    current.setAttribute( "newline", newLine );
-		modified = true;
-		
-		break;
-	    }
-	}
+	QDomElement current = saveState( elem );
 
 	// if we didn't make changes, then just return
-	if ( !modified )
+	if ( !d->modified )
 	    return;
 
 	// now we load in the (non-merged) local file
@@ -1673,8 +1609,173 @@ void KToolBar::toolBarPosChanged( QToolBar *tb )
 	return;
     if ( d->oldPos == QMainWindow::Minimized )
 	rebuildLayout();
-    d->oldPos = (BarPosition)barPos();
+    d->oldPos = (QMainWindow::ToolBarDock)barPos();
 }
 
+void KToolBar::loadState( const QDomElement &element )
+{
+    if ( !parentWidget() || !parentWidget()->inherits( "KTMainWindow") )
+	return;
+    KTMainWindow *mw = (KTMainWindow*)parentWidget();
+
+    QCString text = element.namedItem( "text" ).toElement().text().utf8();
+    if ( text.isEmpty() )
+	text = element.namedItem( "Text" ).toElement().text().utf8();
+
+    if ( !text.isEmpty() )
+	setText( i18n( text ) );
+
+    mw->addToolBar( this );
+    QCString attrFullWidth = element.attribute( "fullWidth" ).lower().latin1();
+    QCString attrPosition = element.attribute( "position" ).lower().latin1();
+    QCString attrIconText = element.attribute( "iconText" ).lower().latin1();
+    QString attrIconSize = element.attribute( "iconSize" ).lower();
+    QString attrIndex = element.attribute( "index" ).lower();
+    QString attrOffset = element.attribute( "offset" ).lower();
+    QString attrNewLine = element.attribute( "newline" ).lower();
+
+    if ( !attrFullWidth.isEmpty() && attrFullWidth == "true" )
+	setFullSize( TRUE );
+    else
+	setFullSize( FALSE );
+
+    QMainWindow::ToolBarDock dock;
+    int index = 0, offset = -1;
+    bool nl = FALSE;
+
+    if ( !attrPosition.isEmpty() ) {
+	if ( attrPosition == "top" )
+	    dock = QMainWindow::Top;
+	else if ( attrPosition == "left" )
+	    dock = QMainWindow::Left;
+	else if ( attrPosition == "right" )
+	    dock = QMainWindow::Right;
+	else if ( attrPosition == "bottom" )
+	    dock = QMainWindow::Bottom;
+	else if ( attrPosition == "floating" )
+	    dock = QMainWindow::TornOff;
+	else if ( attrPosition == "flat" )
+	    dock = QMainWindow::Minimized;
+    }
+
+    if ( !attrIndex.isEmpty() )
+	index = attrIndex.toInt();
+    if ( !attrOffset.isEmpty() )
+	offset = attrOffset.toInt();
+    if ( !attrNewLine.isEmpty() )
+	nl = attrNewLine == "true" ? TRUE : FALSE;
+
+    d->toolBarInfo = KToolBarPrivate::ToolBarInfo( dock, index, nl, offset );
+    setBarPos( (KToolBar::BarPosition)dock );
+
+    if ( !attrIconText.isEmpty() ) {
+	if ( attrIconText == "icontextright" )
+	    setIconText( KToolBar::IconTextRight );
+	else if ( attrIconText == "textonly" )
+	    setIconText( KToolBar::TextOnly );
+	else if ( attrIconText == "icontextbottom" )
+	    setIconText( KToolBar::IconTextBottom );
+	else if ( attrIconText == "icononly" )
+	    setIconText( KToolBar::IconOnly );
+    }
+
+    if ( !attrIconSize.isEmpty() )
+	setIconSize( attrIconSize.toInt() );
+
+    show();
+}
+
+void KToolBar::getAttributes( QString &position, QString &icontext, QString &index, QString &offset, QString &newLine )
+{
+    // get all of the stuff to save
+    switch ( barPos() ) {
+    case KToolBar::Flat:
+	position = "Flat";
+	break;
+    case KToolBar::Bottom:
+	position = "Bottom";
+	break;
+    case KToolBar::Left:
+	position = "Left";
+	break;
+    case KToolBar::Right:
+	position = "Right";
+	break;
+    case KToolBar::Floating:
+	position = "Floating";
+	break;
+    case KToolBar::Top:
+    default:
+	position = "Top";
+	break;
+    }
+    if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) ) {
+	QMainWindow::ToolBarDock dock;
+	int index_;
+	bool nl;
+	int offset_;
+	( (const QMainWindow*)parentWidget() )->getLocation( (QToolBar*)this, dock, index_, nl, offset_ );
+	index = QString::number( index_ );
+	offset = QString::number( offset_ );
+	newLine = nl ? "TRUE" : "FALSE";
+    }
+
+    switch (d->m_iconText) {
+    case KToolBar::IconTextRight:
+	icontext = "IconTextRight";
+	break;
+    case KToolBar::IconTextBottom:
+	icontext = "IconTextBottom";
+	break;
+    case KToolBar::TextOnly:
+	icontext = "TextOnly";
+	break;
+    case KToolBar::IconOnly:
+    default:
+	icontext = "IconOnly";
+	break;
+    }
+}
+
+QDomElement KToolBar::saveState( QDomElement &elem )
+{
+    QString position, icontext, index, offset, newLine;
+    getAttributes( position, icontext, index, offset, newLine );
+
+    // go down one level to get to the right tags
+    elem = elem.firstChild().toElement();
+
+    // get a name we can use for this toolbar
+    QString barname(!strcmp(name(), "unnamed") ? "mainToolBar" : name());
+
+    // now try to find our toolbar
+    d->modified = false;
+    QDomElement current;
+    for( ; !elem.isNull(); elem = elem.nextSibling().toElement() ) {
+	current = elem;
+	
+	if ( current.tagName().lower() != "toolbar" )
+	    continue;
+
+	QString curname(current.attribute( "name" ));
+
+	if ( curname == barname ) {
+	    current.setAttribute( "noMerge", "1" );
+	    current.setAttribute( "position", position );
+	    current.setAttribute( "iconText", icontext );
+	    if ( !index.isEmpty() )
+		current.setAttribute( "index", index );
+	    if ( !offset.isEmpty() )
+		current.setAttribute( "offset", offset );
+	    if ( !newLine.isEmpty() )
+		current.setAttribute( "newline", newLine );
+	    d->modified = true;
+	    break;
+	}
+    }
+    
+    return current;
+}
+ 
 #include "ktoolbar.moc"
 

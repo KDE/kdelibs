@@ -32,6 +32,7 @@
 #include <qguardedptr.h>
 #include <qframe.h>
 
+class QDomElement;
 class QSize;
 class QPixmap;
 class QPopupMenu;
@@ -858,6 +859,9 @@ public:
 
     void updateRects( bool = FALSE ) {}
 
+    void loadState( const QDomElement &e );
+    QDomElement saveState( QDomElement &e );
+    
 signals:
     /**
      * Emitted when button @p id is clicked.
@@ -960,11 +964,12 @@ private slots:
     void slotIconChanged(int);
     void slotRepaint();
     void toolBarPosChanged( QToolBar *tb );
-    
+
 private:
     void init();
     void doConnections( KToolBarButton *button );
     void insertWidgetInternal( QWidget *w, int &index, int id );
+    void getAttributes( QString &position, QString &icontext, QString &index, QString &offset, QString &newLine );
 
     QMap<QWidget*, int > widget2id;
     QMap<int, QWidget* > id2widget;
