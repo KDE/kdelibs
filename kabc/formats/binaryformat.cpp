@@ -57,7 +57,7 @@ bool BinaryFormat::load( Addressee &addressee, QFile *file )
   return true;
 }
 
-bool BinaryFormat::loadAll( AddressBook *addressBook, Resource *resource, QFile *file )
+bool BinaryFormat::loadAll( AddressBook*, Resource *resource, QFile *file )
 {
   kdDebug(5700) << "BinaryFormat::loadAll()" << endl;
 
@@ -74,7 +74,8 @@ bool BinaryFormat::loadAll( AddressBook *addressBook, Resource *resource, QFile 
     Addressee addressee;
     loadAddressee( addressee, stream );
     addressee.setResource( resource );
-    addressBook->insertAddressee( addressee );
+    addressee.setChanged( false );
+    resource->insertAddressee( addressee );
   }
 
   return true;
@@ -93,7 +94,7 @@ void BinaryFormat::save( const Addressee &addressee, QFile *file )
   saveAddressee( addressee, stream );
 }
 
-void BinaryFormat::saveAll( AddressBook *ab, Resource *resource, QFile *file )
+void BinaryFormat::saveAll( AddressBook*, Resource *resource, QFile *file )
 {
   kdDebug(5700) << "BinaryFormat::saveAll()" << endl;
 
@@ -104,13 +105,11 @@ void BinaryFormat::saveAll( AddressBook *ab, Resource *resource, QFile *file )
   // set dummy number of entries
   stream << counter;
 
-  AddressBook::Iterator it;
-  for ( it = ab->begin(); it != ab->end(); ++it ) {
-    if ( (*it).resource() == resource ) {
-      saveAddressee( (*it), stream );
-      counter++;
-      (*it).setChanged( false );
-    }
+  Resource::Iterator it;
+  for ( it = resource->begin(); it != resource->end(); ++it ) {
+    saveAddressee( (*it), stream );
+    counter++;
+    (*it).setChanged( false );
   }
 
   // set real number of entries

@@ -4,8 +4,10 @@ SUBDIRS = scripts vcard vcardparser . formats plugins
 KDE_OPTIONS = nofinal
 
 # Make sure $(all_includes) remains last!
-INCLUDES = -I$(top_builddir)/kabc -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated \
-  -I$(top_srcdir)/kabc -I$(top_srcdir)/kab -I$(srcdir)/vcardparser $(all_includes)
+INCLUDES = -I$(top_builddir)/kabc -I$(top_srcdir)/kabc -I$(top_srcdir)/kab \
+           -I$(srcdir)/vcardparser/ -I$(srcdir)/vcard/include \
+           -I$(srcdir)/vcard/include/generated \
+           -I$(srcdir)/vcardparser $(all_includes)
 
 
 addressee.h addressee.cpp field.cpp: \
@@ -18,11 +20,11 @@ addressee.h addressee.cpp field.cpp: \
 CLEANFILES = addressee.h addressee.cpp field.cpp
 COMPILE_FIRST = addressee.h
 
-lib_LTLIBRARIES   = libkabc.la
+lib_LTLIBRARIES = libkabc.la
 libkabc_la_COMPILE_FIRST = addressee.h
-libkabc_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2
-libkabc_la_LIBADD  = vcard/libvcard.la vcardparser/libvcards.la $(LIB_KIO) \
-  ../kresources/libkresources.la
+libkabc_la_LDFLAGS = $(KDE_RPATH) $(all_libraries) -version-info 3:0:2 -no-undefined
+libkabc_la_LIBADD = vcard/libvcard.la vcardparser/libvcards.la $(LIB_KIO) \
+                    $(top_builddir)/kresources/libkresources.la
 
 libkabc_la_SOURCES = \
   address.cpp addressbook.cpp addressee.cpp addresseedialog.cpp agent.cpp \
@@ -31,9 +33,9 @@ libkabc_la_SOURCES = \
   phonenumber.cpp picture.cpp plugin.cpp resource.cpp \
   resourceselectdialog.cpp secrecy.cpp sound.cpp stdaddressbook.cpp \
   timezone.cpp vcard21parser.cpp vcardconverter.cpp vcardformat.cpp \
-  vcardformatimpl.cpp vcardformatplugin.cpp ldifconverter.cpp \
-  addresslineedit.cpp ldapclient.cpp addresseelist.cpp vcardtool.cpp \
-  addresseehelper.cpp addresseehelper.skel
+  vcardformatimpl.cpp vcardformatplugin.cpp ldifconverter.cpp addresslineedit.cpp \
+  ldapclient.cpp addresseelist.cpp vcardtool.cpp addresseehelper.cpp \
+  addresseehelper.skel
 
 
 kabcincludedir = $(includedir)/kabc
@@ -85,11 +87,11 @@ testaddresslineedit_LDADD = libkabc.la
 testaddresslineedit_SOURCES = testaddresslineedit.cpp
 
 bigread_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-bigread_LDADD = libkabc.la # FIXME! plugins/file/kabc_file.la
+bigread_LDADD = libkabc.la $(top_builddir)/kabc/plugins/file/libkabc_file.la
 bigread_SOURCES = bigread.cpp
 
 bigwrite_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-bigwrite_LDADD = libkabc.la # FIXME! plugins/file/kabc_file.la
+bigwrite_LDADD = libkabc.la $(top_builddir)/kabc/plugins/file/libkabc_file.la
 bigwrite_SOURCES = bigwrite.cpp
 
 testdb_LDFLAGS = $(all_libraries) $(KDE_RPATH)
@@ -111,4 +113,3 @@ mapdir = $(kde_datadir)/kabc
 EXTRA_DIST = $(map_DATA)
 
 include ../admin/Doxyfile.am
-

@@ -128,6 +128,11 @@ Ticket *ResourceLDAP::requestSaveTicket()
   return createTicket( this );
 }
 
+void ResourceLDAP::releaseSaveTicket( Ticket *ticket )
+{
+  delete ticket;
+}
+
 bool ResourceLDAP::doOpen()
 {
   if ( mLdap )
@@ -274,7 +279,12 @@ bool ResourceLDAP::load()
   return true;
 }
 
-bool ResourceLDAP::save( Ticket * )
+bool ResourceLDAP::loadAsynchronous()
+{
+  return load();
+}
+
+bool ResourceLDAP::save( Ticket* )
 {
   AddressBook::Iterator it;
   for ( it = addressBook()->begin(); it != addressBook()->end(); ++it ) {
@@ -332,15 +342,22 @@ void ResourceLDAP::removeAddressee( const Addressee &addr )
   ldap_search_s( mLdap, mDn.local8Bit(), LDAP_SCOPE_SUBTREE, filter.local8Bit(),
       0, 0, &res );
 
+  bool ok = true;
   for ( msg = ldap_first_entry( mLdap, res ); msg; msg = ldap_next_entry( mLdap, msg ) ) {
     char *dn = ldap_get_dn( mLdap, msg );
     kdDebug(5700) << "found " << dn << endl;
-    if ( ldap_delete_s( mLdap, dn ) != LDAP_SUCCESS )
+    if ( ldap_delete_s( mLdap, dn ) != LDAP_SUCCESS ) {
       addressBook()->error( i18n( "Unable to delete '%1' on server '%2'" ).arg( dn ).arg( mHost ) );
+      ok = false;
+    }
+
     ldap_memfree( dn );
   }
 
   ldap_msgfree( res );
+
+  if ( ok )
+    mAddressees.remove( addr );
 }
 
 void ResourceLDAP::setUser( const QString &user )

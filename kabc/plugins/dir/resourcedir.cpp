@@ -108,8 +108,6 @@ Ticket *ResourceDir::requestSaveTicket()
 {
   kdDebug(5700) << "ResourceDir::requestSaveTicket()" << endl;
 
-  if ( !addressBook() ) return 0;
-
   if ( !lock( mPath ) ) {
     kdDebug(5700) << "ResourceDir::requestSaveTicket(): Unable to lock path '"
                   << mPath << "'" << endl;
@@ -118,6 +116,11 @@ Ticket *ResourceDir::requestSaveTicket()
   return createTicket( this );
 }
 
+void ResourceDir::releaseSaveTicket( Ticket *ticket )
+{
+  delete ticket;
+  unlock( mPath );
+}
 
 bool ResourceDir::doOpen()
 {
@@ -173,15 +176,20 @@ bool ResourceDir::load()
   return ok;
 }
 
-bool ResourceDir::save( Ticket *ticket )
+bool ResourceDir::loadAsynchronous()
+{
+  return load();
+}
+
+bool ResourceDir::save( Ticket* )
 {
   kdDebug(5700) << "ResourceDir::save(): '" << mPath << "'" << endl;
 
-  AddressBook::Iterator it;
+  Addressee::List::Iterator it;
   bool ok = true;
 
-  for ( it = addressBook()->begin(); it != addressBook()->end(); ++it ) {
-    if ( (*it).resource() != this || !(*it).changed() )
+  for ( it = mAddressees.begin(); it != mAddressees.end(); ++it ) {
+    if ( !(*it).changed() )
       continue;
 
     QFile file( mPath + "/" + (*it).uid() );
@@ -197,9 +205,6 @@ bool ResourceDir::save( Ticket *ticket )
 
     file.close();
   }
-
-  delete ticket;
-  unlock( mPath );
 
   return ok;
 }
@@ -293,7 +298,8 @@ void ResourceDir::pathChanged()
 
 void ResourceDir::removeAddressee( const Addressee& addr )
 {
-    QFile::remove( mPath + "/" + addr.uid() );
+  QFile::remove( mPath + "/" + addr.uid() );
+  mAddressees.remove( addr );
 }
 
 void ResourceDir::cleanUp()

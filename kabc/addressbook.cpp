@@ -39,8 +39,6 @@ using namespace KABC;
 
 struct AddressBook::AddressBookData
 {
-  Addressee::List mAddressees;
-  Addressee::List mRemovedAddressees;
   Field::List mAllFields;
   ErrorHandler *mErrorHandler;
   KConfig *mConfig;
@@ -49,12 +47,16 @@ struct AddressBook::AddressBookData
 
 struct AddressBook::Iterator::IteratorData
 {
-  Addressee::List::Iterator mIt;
+  Resource::Iterator mIt;
+  QValueList<Resource*> mResources;
+  int mCurrRes;
 };
 
 struct AddressBook::ConstIterator::ConstIteratorData
 {
-  Addressee::List::ConstIterator mIt;
+  Resource::ConstIterator mIt;
+  QValueList<Resource*> mResources;
+  int mCurrRes;
 };
 
 AddressBook::Iterator::Iterator()
@@ -66,6 +68,8 @@ AddressBook::Iterator::Iterator( const AddressBook::Iterator &i )
 {
   d = new IteratorData;
   d->mIt = i.d->mIt;
+  d->mResources = i.d->mResources;
+  d->mCurrRes = i.d->mCurrRes;
 }
 
 AddressBook::Iterator &AddressBook::Iterator::operator=( const AddressBook::Iterator &i )
@@ -74,6 +78,8 @@ AddressBook::Iterator &AddressBook::Iterator::operator=( const AddressBook::Iter
   delete d; // delete the old data the Iterator was completely constructed before
   d = new IteratorData;
   d->mIt = i.d->mIt;
+  d->mResources = i.d->mResources;
+  d->mCurrRes = i.d->mCurrRes;
   return *this;
 }
 
@@ -99,25 +105,63 @@ Addressee *AddressBook::Iterator::operator->()
 
 AddressBook::Iterator &AddressBook::Iterator::operator++()
 {
-  (d->mIt)++;
+start:
+  bool jumped = false;
+  while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() ) { // at end of addressee list of resource
+    if ( (uint)d->mCurrRes == d->mResources.count() - 1 ) {
+      return *this;
+    }
+
+    d->mCurrRes++; // jump to next resource
+
+    jumped = true;
+    d->mIt = (d->mResources[ d->mCurrRes ])->begin();
+  }
+
+  if ( !jumped )
+    (d->mIt)++;
+
+  if ( d->mIt == (d->mResources[ d->mCurrRes ])->end() )
+    goto start;
+
   return *this;
 }
 
-AddressBook::Iterator &AddressBook::Iterator::operator++(int)
+AddressBook::Iterator &AddressBook::Iterator::operator++( int )
 {
-  (d->mIt)++;
+start:
+  bool jumped = false;
+  while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() ) { // at end of addressee list of resource
+    if ( (uint)d->mCurrRes == d->mResources.count() - 1 ) {
+      return *this;
+    }
+
+    d->mCurrRes++; // jump to next resource
+
+    jumped = true;
+    d->mIt = (d->mResources[ d->mCurrRes ])->begin();
+  }
+
+  if ( !jumped )
+    (d->mIt)++;
+
+  if ( d->mIt == (d->mResources[ d->mCurrRes ])->end() )
+    goto start;
+
   return *this;
 }
 
 AddressBook::Iterator &AddressBook::Iterator::operator--()
 {
   (d->mIt)--;
+
   return *this;
 }
 
-AddressBook::Iterator &AddressBook::Iterator::operator--(int)
+AddressBook::Iterator &AddressBook::Iterator::operator--( int )
 {
   (d->mIt)--;
+
   return *this;
 }
 
@@ -141,12 +185,16 @@ AddressBook::ConstIterator::ConstIterator( const AddressBook::ConstIterator &i )
 {
   d = new ConstIteratorData;
   d->mIt = i.d->mIt;
+  d->mResources = i.d->mResources;
+  d->mCurrRes = i.d->mCurrRes;
 }
 
 AddressBook::ConstIterator::ConstIterator( const AddressBook::Iterator &i )
 {
   d = new ConstIteratorData;
   d->mIt = i.d->mIt;
+  d->mResources = i.d->mResources;
+  d->mCurrRes = i.d->mCurrRes;
 }
 
 AddressBook::ConstIterator &AddressBook::ConstIterator::operator=( const AddressBook::ConstIterator &i )
@@ -155,6 +203,8 @@ AddressBook::ConstIterator &AddressBook::ConstIterator::operator=( const Address
   delete d; // delete the old data because the Iterator was really constructed before
   d = new ConstIteratorData;
   d->mIt = i.d->mIt;
+  d->mResources = i.d->mResources;
+  d->mCurrRes = i.d->mCurrRes;
   return *this;
 }
 
@@ -175,13 +225,49 @@ const Addressee* AddressBook::ConstIterator::operator->() const
 
 AddressBook::ConstIterator &AddressBook::ConstIterator::operator++()
 {
-  (d->mIt)++;
+start:
+  bool jumped = false;
+  while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() ) { // at end of addressee list of resource
+    if ( (uint)d->mCurrRes == d->mResources.count() - 1 ) {
+      return *this;
+    }
+
+    d->mCurrRes++; // jump to next resource
+
+    jumped = true;
+    d->mIt = (d->mResources[ d->mCurrRes ])->begin();
+  }
+
+  if ( !jumped )
+    (d->mIt)++;
+
+  if ( d->mIt == (d->mResources[ d->mCurrRes ])->end() )
+    goto start;
+
   return *this;
 }
 
 AddressBook::ConstIterator &AddressBook::ConstIterator::operator++(int)
 {
-  (d->mIt)++;
+start:
+  bool jumped = false;
+  while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() ) { // at end of addressee list of resource
+    if ( (uint)d->mCurrRes == d->mResources.count() - 1 ) {
+      return *this;
+    }
+
+    d->mCurrRes++; // jump to next resource
+
+    jumped = true;
+    d->mIt = (d->mResources[ d->mCurrRes ])->begin();
+  }
+
+  if ( !jumped )
+    (d->mIt)++;
+
+  if ( d->mIt == (d->mResources[ d->mCurrRes ])->end() )
+    goto start;
+
   return *this;
 }
 
@@ -249,10 +335,24 @@ bool AddressBook::load()
     }
   }
 
-  // mark all addressees as unchanged
-  Addressee::List::Iterator addrIt;
-  for ( addrIt = d->mAddressees.begin(); addrIt != d->mAddressees.end(); ++addrIt )
-    (*addrIt).setChanged( false );
+  return ok;
+}
+
+bool AddressBook::loadAsynchronous()
+{
+  kdDebug(5700) << "AddressBook::loadAsynchronous()" << endl;
+
+  clear();
+
+  KRES::Manager<Resource>::ActiveIterator it;
+  bool ok = true;
+  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
+    (*it)->setAddressBook( this );
+    if ( !(*it)->loadAsynchronous() ) {
+      error( i18n("Unable to load resource '%1'").arg( (*it)->resourceName() ) );
+      ok = false;
+    }
+  }
 
   return ok;
 }
@@ -271,35 +371,105 @@ bool AddressBook::save( Ticket *ticket )
 
 AddressBook::Iterator AddressBook::begin()
 {
+  QValueList<Resource*> list;
+  KRES::Manager<Resource>::ActiveIterator resIt;
+  for ( resIt = d->mManager->activeBegin(); resIt != d->mManager->activeEnd(); ++resIt )
+    list.append( *resIt );
+
+  if ( list.count() == 0 )
+    return end();
+
   Iterator it = Iterator();
-  it.d->mIt = d->mAddressees.begin();
+  it.d->mResources = list;
+  it.d->mCurrRes = 0;
+  it.d->mIt = (it.d->mResources[ it.d->mCurrRes ])->begin();
+
+  while ( it.d->mIt == (it.d->mResources[ it.d->mCurrRes ])->end() ) {
+    if ( (uint)it.d->mCurrRes == it.d->mResources.count() - 1 )
+      return end();
+
+    it.d->mCurrRes++;
+
+    it.d->mIt = (it.d->mResources[ it.d->mCurrRes ])->begin();
+  }
+
   return it;
 }
 
 AddressBook::ConstIterator AddressBook::begin() const
 {
-  ConstIterator it = ConstIterator();
-  it.d->mIt = d->mAddressees.begin();
+  QValueList<Resource*> list;
+  KRES::Manager<Resource>::ActiveIterator resIt;
+  for ( resIt = d->mManager->activeBegin(); resIt != d->mManager->activeEnd(); ++resIt ) 
+    list.append( *resIt );
+
+  if ( list.count() == 0 )
+    return end();
+
+  Iterator it = Iterator();
+  it.d->mResources = list;
+  it.d->mCurrRes = 0;
+  it.d->mIt = (it.d->mResources[ it.d->mCurrRes ])->begin();
+
+  while ( it.d->mIt == (it.d->mResources[ it.d->mCurrRes ])->end() ) {
+    if ( (uint)it.d->mCurrRes == it.d->mResources.count() - 1 )
+      return end();
+
+    it.d->mCurrRes++;
+
+    it.d->mIt = (it.d->mResources[ it.d->mCurrRes ])->begin();
+  }
+
   return it;
 }
 
 AddressBook::Iterator AddressBook::end()
 {
+  Resource *res = 0;
+  KRES::Manager<Resource>::ActiveIterator resIt;
+  for ( resIt = d->mManager->activeBegin(); resIt != d->mManager->activeEnd(); ++resIt ) 
+    res = (*resIt);
+
   Iterator it = Iterator();
-  it.d->mIt = d->mAddressees.end();
+  if ( !res ) { // no resource available
+    it.d->mResources = QValueList<Resource*>();
+    it.d->mCurrRes = -1;
+    it.d->mIt = Resource::Iterator();
+  } else {
+    it.d->mResources = QValueList<Resource*>();
+    it.d->mCurrRes = -1;
+    it.d->mIt = res->end();
+  }
+
   return it;
 }
 
 AddressBook::ConstIterator AddressBook::end() const
 {
-  ConstIterator it = ConstIterator();
-  it.d->mIt = d->mAddressees.end();
+  Resource *res = 0;
+  KRES::Manager<Resource>::ActiveIterator resIt;
+  for ( resIt = d->mManager->activeBegin(); resIt != d->mManager->activeEnd(); ++resIt ) 
+    res = (*resIt);
+
+  Iterator it = Iterator();
+  if ( !res ) { // no resource available
+    it.d->mResources = QValueList<Resource*>();
+    it.d->mCurrRes = -1;
+    it.d->mIt = Resource::Iterator();
+  } else {
+    it.d->mResources = QValueList<Resource*>();
+    it.d->mCurrRes = -1;
+    it.d->mIt = res->end();
+  }
+
   return it;
 }
 
 void AddressBook::clear()
 {
-  d->mAddressees.clear();
+  KRES::Manager<Resource>::ActiveIterator it;
+  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) 
+    (*it)->clear();
 }
 
 Ticket *AddressBook::requestSaveTicket( Resource *resource )
@@ -324,8 +494,12 @@ Ticket *AddressBook::requestSaveTicket( Resource *resource )
 
 void AddressBook::insertAddressee( const Addressee &a )
 {
-  Addressee::List::Iterator it;
-  for ( it = d->mAddressees.begin(); it != d->mAddressees.end(); ++it ) {
+  Resource *resource = a.resource();
+  if ( resource == 0 )
+    resource = standardResource();
+
+  Resource::Iterator it;
+  for ( it = resource->begin(); it != resource->end(); ++it ) {
     if ( a.uid() == (*it).uid() ) {
       bool changed = false;
       Addressee addr = a;
@@ -333,8 +507,7 @@ void AddressBook::insertAddressee( const Addressee &a )
         changed = true;
 
       (*it) = a;
-      if ( (*it).resource() == 0 )
-        (*it).setResource( standardResource() );
+      (*it).setResource( resource );
 
       if ( changed ) {
         (*it).setRevision( QDateTime::currentDateTime() );
@@ -344,29 +517,23 @@ void AddressBook::insertAddressee( const Addressee &a )
       return;
     }
   }
-  d->mAddressees.append( a );
-  Addressee& addr = d->mAddressees.last();
-  if ( addr.resource() == 0 )
-    addr.setResource( standardResource() );
 
+  Addressee addr( a );
+  addr.setResource( resource );
   addr.setChanged( true );
+  resource->insertAddressee( addr );
 }
 
 void AddressBook::removeAddressee( const Addressee &a )
 {
-  Iterator it;
-  for ( it = begin(); it != end(); ++it ) {
-    if ( a.uid() == (*it).uid() ) {
-      removeAddressee( it );
-      return;
-    }
-  }
+  if ( a.resource() )
+    a.resource()->removeAddressee( a );
 }
 
 void AddressBook::removeAddressee( const Iterator &it )
 {
-  d->mRemovedAddressees.append( (*it) );
-  d->mAddressees.remove( it.d->mIt );
+  if ( (*it).resource() )
+    (*it).resource()->removeAddressee( *it );
 }
 
 AddressBook::Iterator AddressBook::find( const Addressee &a )
@@ -377,6 +544,7 @@ AddressBook::Iterator AddressBook::find( const Addressee &a )
       return it;
     }
   }
+
   return end();
 }
 
@@ -388,12 +556,19 @@ Addressee AddressBook::findByUid( const QString &uid )
       return *it;
     }
   }
+
   return Addressee();
 }
 
 Addressee::List AddressBook::allAddressees()
 {
-  return d->mAddressees;
+  Addressee::List list;
+
+  Iterator it;
+  for ( it = begin(); it != end(); ++it )
+    list.append( *it );
+
+  return list;
 }
 
 Addressee::List AddressBook::findByName( const QString &name )
@@ -508,14 +683,14 @@ QDataStream &KABC::operator<<( QDataStream &s, const AddressBook &ab )
 {
   if (!ab.d) return s;
 
-  return s << ab.d->mAddressees;
+  return s;// << ab.d->mAddressees;
 }
 
 QDataStream &KABC::operator>>( QDataStream &s, AddressBook &ab )
 {
   if (!ab.d) return s;
 
-  s >> ab.d->mAddressees;
+//  s >> ab.d->mAddressees;
 
   return s;
 }
@@ -576,14 +751,7 @@ void AddressBook::error( const QString& msg )
 
 void AddressBook::deleteRemovedAddressees()
 {
-  Addressee::List::Iterator it;
-  for ( it = d->mRemovedAddressees.begin(); it != d->mRemovedAddressees.end(); ++it ) {
-    Resource *resource = (*it).resource();
-    if ( resource && !resource->readOnly() && resource->isOpen() )
-      resource->removeAddressee( *it );
-  }
-
-  d->mRemovedAddressees.clear();
+  // no any longer needed
 }
 
 void AddressBook::setStandardResource( Resource *resource )

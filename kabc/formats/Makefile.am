@@ -1,14 +1,15 @@
 INCLUDES = -I$(top_srcdir)/kabc -I$(top_builddir)/kabc $(all_includes)
 
-# these are the headers for your project
-noinst_HEADERS   = binaryformat.h
-
 kde_module_LTLIBRARIES = kabcformat_binary.la
 
 kabcformat_binary_la_SOURCES = binaryformat.cpp
-kabcformat_binary_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
-kabcformat_binary_la_LIBADD  = ../libkabc.la
-kabcformat_binary_la_COMPILE_FIRST = ../addressee.h
+kabcformat_binary_la_LDFLAGS =  -module $(KDE_PLUGIN) $(KDE_RPATH) $(all_libraries) \
+                                -no-undefined
+kabcformat_binary_la_LIBADD  = $(top_builddir)/kabc/libkabc.la
+kabcformat_binary_la_COMPILE_FIRST = $(top_srcdir)/kabc/addressee.h
+
+# these are the headers for your project
+noinst_HEADERS = binaryformat.h
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
@@ -16,6 +17,6 @@ METASOURCES = AUTO
 messages: rc.cpp
 	$(XGETTEXT) *.cpp -o $(podir)/kabcformat_binary.pot
 
-linkdir		= $(kde_datadir)/kabc/formats
-link_DATA	= binary.desktop
-EXTRA_DIST	= $(link_DATA)
+linkdir = $(kde_datadir)/kabc/formats
+link_DATA = binary.desktop
+EXTRA_DIST = $(link_DATA)

@@ -82,11 +82,15 @@ public:
    */
   virtual Ticket *requestSaveTicket();
 
+  virtual void releaseSaveTicket( Ticket* );
+
   /**
    * Loads all addressees from file to the address book.
    * Returns true if all addressees could be loaded otherwise false.
    */
   virtual bool load();
+
+  virtual bool loadAsynchronous();
 
   /**
    * Saves all addresses from address book to file.

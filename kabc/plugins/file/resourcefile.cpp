@@ -111,6 +111,11 @@ Ticket *ResourceFile::requestSaveTicket()
   return createTicket( this );
 }
 
+void ResourceFile::releaseSaveTicket( Ticket *ticket )
+{
+  delete ticket;
+  unlock( mFileName );
+}
 
 bool ResourceFile::doOpen()
 {
@@ -156,7 +161,12 @@ bool ResourceFile::load()
   return mFormat->loadAll( addressBook(), this, &file );
 }
 
-bool ResourceFile::save( Ticket *ticket )
+bool ResourceFile::loadAsynchronous()
+{
+  return load();
+}
+
+bool ResourceFile::save( Ticket* )
 {
   kdDebug(5700) << "ResourceFile::save()" << endl;
 
@@ -175,9 +185,6 @@ bool ResourceFile::save( Ticket *ticket )
 
   if ( !ok )
     addressBook()->error( i18n( "Unable to save file '%1'." ).arg( mFileName ) );
-
-  delete ticket;
-  unlock( mFileName );
 
   return ok;
 }
@@ -261,11 +268,9 @@ QString ResourceFile::format() const
 
 void ResourceFile::fileChanged()
 {
-  // There is a small theoretical chance that KDirWatch calls us before
-  // we are fully constructed
-  if (!addressBook())
+  if ( !addressBook() )
     return;
-  load();
+
   addressBook()->emitAddressBookChanged();
 }
 
@@ -274,6 +279,8 @@ void ResourceFile::removeAddressee( const Addressee &addr )
   QFile::remove( QFile::encodeName( locateLocal( "data", "kabc/photos/" ) + addr.uid() ) );
   QFile::remove( QFile::encodeName( locateLocal( "data", "kabc/logos/" ) + addr.uid() ) );
   QFile::remove( QFile::encodeName( locateLocal( "data", "kabc/sounds/" ) + addr.uid() ) );
+
+  mAddressees.remove( addr );
 }
 
 void ResourceFile::cleanUp()

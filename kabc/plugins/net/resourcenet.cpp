@@ -97,6 +97,10 @@ Ticket *ResourceNet::requestSaveTicket()
   return createTicket( this );
 }
 
+void ResourceNet::releaseSaveTicket( Ticket *ticket )
+{
+  delete ticket;
+}
 
 bool ResourceNet::doOpen()
 {
@@ -126,6 +130,11 @@ bool ResourceNet::load()
   }
 
   return mFormat->loadAll( addressBook(), this, &file );
+}
+
+bool ResourceNet::loadAsynchronous()
+{
+  return load();
 }
 
 bool ResourceNet::save( Ticket *ticket )

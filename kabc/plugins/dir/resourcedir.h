@@ -52,8 +52,10 @@ class ResourceDir : public Resource
     virtual void doClose();
   
     virtual Ticket *requestSaveTicket();
+    virtual void releaseSaveTicket( Ticket* );
 
     virtual bool load();
+    virtual bool loadAsynchronous();
     virtual bool save( Ticket * );
 
     /**

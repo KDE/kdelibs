@@ -24,13 +24,217 @@
 
 using namespace KABC;
 
+Ticket::Ticket( Resource *resource )
+  : mResource( resource )
+{
+}
+
+Ticket::~Ticket()
+{
+/* FIXME: avoid cycle deletion
+  if ( mResource )
+    mResource->releaseSaveTicket( this );
+*/
+}
+
+Resource *Ticket::resource()
+{
+  return mResource;
+}
+
+struct Resource::Iterator::IteratorData
+{
+  Addressee::List::Iterator mIt;
+};
+
+struct Resource::ConstIterator::ConstIteratorData
+{
+  Addressee::List::ConstIterator mIt;
+};
+
+Resource::Iterator::Iterator()
+{
+  d = new IteratorData;
+}
+
+Resource::Iterator::Iterator( const Resource::Iterator &i )
+{
+  d = new IteratorData;
+  d->mIt = i.d->mIt;
+}
+
+Resource::Iterator &Resource::Iterator::operator=( const Resource::Iterator &i )
+{
+  if ( this == &i )
+    return *this;
+  delete d;
+
+  d = new IteratorData;
+  d->mIt = i.d->mIt;
+  return *this;
+}
+
+Resource::Iterator::~Iterator()
+{
+  delete d;
+}
+
+const Addressee &Resource::Iterator::operator*() const
+{
+  return *(d->mIt);
+}
+
+Addressee &Resource::Iterator::operator*()
+{
+  return *(d->mIt);
+}
+
+Resource::Iterator &Resource::Iterator::operator++()
+{
+  (d->mIt)++;
+  return *this;
+}
+
+Resource::Iterator &Resource::Iterator::operator++( int )
+{
+  (d->mIt)++;
+  return *this;
+}
+
+Resource::Iterator &Resource::Iterator::operator--()
+{
+  (d->mIt)--;
+  return *this;
+}
+
+Resource::Iterator &Resource::Iterator::operator--( int )
+{
+  (d->mIt)--;
+  return *this;
+}
+
+bool Resource::Iterator::operator==( const Iterator &it )
+{
+  return ( d->mIt == it.d->mIt );
+}
+
+bool Resource::Iterator::operator!=( const Iterator &it )
+{
+  return ( d->mIt != it.d->mIt );
+}
+
+Resource::ConstIterator::ConstIterator()
+{
+  d = new ConstIteratorData;
+}
+
+Resource::ConstIterator::ConstIterator( const Resource::ConstIterator &i )
+{
+  d = new ConstIteratorData;
+  d->mIt = i.d->mIt;
+}
+
+Resource::ConstIterator::ConstIterator( const Resource::Iterator &i )
+{
+  d = new ConstIteratorData;
+  d->mIt = i.d->mIt;
+}
+
+Resource::ConstIterator &Resource::ConstIterator::operator=( const Resource::ConstIterator &i )
+{
+  if ( this  == &i )
+    return *this;
+  delete d;
+
+  d = new ConstIteratorData;
+  d->mIt = i.d->mIt;
+  return *this;
+}
+
+Resource::ConstIterator::~ConstIterator()
+{
+  delete d;
+}
+
+const Addressee &Resource::ConstIterator::operator*() const
+{
+  return *(d->mIt);
+}
+
+Resource::ConstIterator &Resource::ConstIterator::operator++()
+{
+  (d->mIt)++;
+  return *this;
+}
+
+Resource::ConstIterator &Resource::ConstIterator::operator++( int )
+{
+  (d->mIt)++;
+  return *this;
+}
+
+Resource::ConstIterator &Resource::ConstIterator::operator--()
+{
+  (d->mIt)--;
+  return *this;
+}
+
+Resource::ConstIterator &Resource::ConstIterator::operator--( int )
+{
+  (d->mIt)--;
+  return *this;
+}
+
+bool Resource::ConstIterator::operator==( const ConstIterator &it )
+{
+  return ( d->mIt == it.d->mIt );
+}
+
+bool Resource::ConstIterator::operator!=( const ConstIterator &it )
+{
+  return ( d->mIt != it.d->mIt );
+}
+
+
 Resource::Resource( const KConfig *config )
-    : KRES::Resource( config ), mAddressBook( 0 )
+  : KRES::Resource( config ), mAddressBook( 0 )
 {
 }
 
 Resource::~Resource()
 {
+}
+
+Resource::Iterator Resource::begin()
+{
+  Iterator it;
+  it.d->mIt = mAddressees.begin();
+
+  return it;
+}
+
+Resource::ConstIterator Resource::begin() const
+{
+  ConstIterator it;
+  it.d->mIt = mAddressees.constBegin();
+
+  return it;
+}
+
+Resource::Iterator Resource::end()
+{
+  Iterator it;
+  it.d->mIt = mAddressees.end();
+
+  return it;
+}
+
+Resource::ConstIterator Resource::end() const
+{
+  ConstIterator it;
+  it.d->mIt = mAddressees.constEnd();
+
+  return it;
 }
 
 void Resource::writeConfig( KConfig *config )
@@ -48,41 +252,29 @@ AddressBook *Resource::addressBook()
   return mAddressBook;
 }
 
-bool Resource::doOpen()
-{
-  return true;
-}
-
-void Resource::doClose()
-{
-}
-
-Ticket *Resource::requestSaveTicket()
-{
-  return 0;
-}
-
-bool Resource::load()
-{
-  return true;
-}
-
-bool Resource::save( Ticket * )
-{
-  return false;
-}
-
 Ticket *Resource::createTicket( Resource *resource )
 {
   return new Ticket( resource );
 }
 
-void Resource::removeAddressee( const Addressee& )
+void Resource::insertAddressee( const Addressee &addr )
 {
-  // do nothing
+  mAddressees.append( addr );
+}
+
+void Resource::removeAddressee( const Addressee &addr )
+{
+  mAddressees.remove( addr );
 }
 
 void Resource::cleanUp()
 {
   // do nothing
 }
+
+void Resource::clear()
+{
+  mAddressees.clear();
+}
+
+#include "resource.moc"

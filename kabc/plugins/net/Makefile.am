@@ -5,7 +5,7 @@ noinst_HEADERS = resourcenetconfig.h
 
 lib_LTLIBRARIES = libkabc_net.la
 libkabc_net_la_SOURCES = resourcenet.cpp resourcenetconfig.cpp
-libkabc_net_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2
+libkabc_net_la_LDFLAGS = $(KDE_RPATH) $(all_libraries) -version-info 1:0:0 -no-undefined
 libkabc_net_la_LIBADD	= $(top_builddir)/kabc/libkabc.la $(LIB_KIO)
 libkabc_net_la_COMPILE_FIRST = $(top_builddir)/kabc/addressee.h
 

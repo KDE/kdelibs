@@ -55,7 +55,7 @@ bool VCardFormatPlugin::load( Addressee &addressee, QFile *file )
   return false;
 }
 
-bool VCardFormatPlugin::loadAll( AddressBook *addressBook, Resource *resource, QFile *file )
+bool VCardFormatPlugin::loadAll( AddressBook*, Resource *resource, QFile *file )
 {
   QString data;
 
@@ -68,11 +68,11 @@ bool VCardFormatPlugin::loadAll( AddressBook *addressBook, Resource *resource, Q
   Addressee::List l = tool.parseVCards( data );
 
   Addressee::List::iterator itr;
-
   for ( itr = l.begin(); itr != l.end(); ++itr) {
     Addressee addressee = *itr;
     addressee.setResource( resource );
-    addressBook->insertAddressee( addressee );
+    addressee.setChanged( false );
+    resource->insertAddressee( addressee );
   }
 
   return true;
@@ -91,17 +91,15 @@ void VCardFormatPlugin::save( const Addressee &addressee, QFile *file )
   t << tool.createVCards( vcardlist );
 }
 
-void VCardFormatPlugin::saveAll( AddressBook *ab, Resource *resource, QFile *file )
+void VCardFormatPlugin::saveAll( AddressBook*, Resource *resource, QFile *file )
 {
   VCardTool tool;
   Addressee::List vcardlist;
 
-  AddressBook::Iterator it;
-  for ( it = ab->begin(); it != ab->end(); ++it ) {
-    if ( (*it).resource() == resource ) {
-      (*it).setChanged( false );
-      vcardlist.append( *it );
-    }
+  Resource::Iterator it;
+  for ( it = resource->begin(); it != resource->end(); ++it ) {
+    (*it).setChanged( false );
+    vcardlist.append( *it );
   }
 
   QTextStream t( file );
