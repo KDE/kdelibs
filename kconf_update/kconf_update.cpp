@@ -106,6 +106,7 @@ protected:
 KonfUpdate::KonfUpdate()
  : m_textStream(0), m_file(0)
 {
+   bool updateAll = false;
    oldConfig1 = 0;
    oldConfig2 = 0;
    newConfig = 0;
@@ -143,6 +144,7 @@ KonfUpdate::KonfUpdate()
       if (config->readBoolEntry("autoUpdateDisabled", false))
          return;
       updateFiles = findUpdateFiles(true);
+      updateAll = true;
    }
 
    for(QStringList::ConstIterator it = updateFiles.begin();
@@ -154,7 +156,7 @@ KonfUpdate::KonfUpdate()
    }
 
    config->setGroup(QString::null);
-   if (!config->readBoolEntry("updateInfoAdded", false))
+   if (updateAll && !config->readBoolEntry("updateInfoAdded", false))
    {
        config->writeEntry("updateInfoAdded", true);
        updateFiles = findUpdateFiles(false);
