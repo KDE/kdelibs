@@ -276,14 +276,14 @@ void KUniqueApplication::newInstanceNoFork()
 }
 
 bool KUniqueApplication::process(const QCString &fun, const QByteArray &data,
-				 QCString &, QByteArray &)
+				 QCString &replyType, QByteArray &replyData)
 {
   if (fun == "newInstance()")
   {
     delayRequest(fun, data);
     return true;
   } else
-    return false;
+    return DCOPObject::process(fun, data, replyType, replyData);
 }
 
 void
