@@ -65,7 +65,7 @@ public:
   };
 
   typedef QMap<QString,Entry> EntryMap;
-  
+
   QTimer *timer;
   EntryMap m_mapDirs;
 
@@ -211,7 +211,7 @@ static void dnotify_handler(int, siginfo_t *si, void *)
 
   if(!e || e->dn_fd != si->si_fd) {
     qDebug("fatal error in KDirWatch");
-  } else 
+  } else
     e->dn_dirty = true;
 
   char c;
@@ -311,16 +311,16 @@ void KDirWatch::addDir( const QString& _path, void *_entry )
     if (e->m_status == Normal)
     {
        int fd = open(QFile::encodeName(path).data(), O_RDONLY);
-       if(!fd ||
+       if(fd < 0 ||
             fcntl(fd, F_SETSIG, SIGRTMIN) < 0 ||
-            fcntl(fd, F_NOTIFY, DN_DELETE|DN_CREATE|DN_RENAME|DN_MULTISHOT) < 0) 
+            fcntl(fd, F_NOTIFY, DN_DELETE|DN_CREATE|DN_RENAME|DN_MULTISHOT) < 0)
        {
-          if(fd) {
+          if(fd >= 0) {
              d->supports_dnotify = false;
              ::close(fd);
           }
        }
-       else 
+       else
        {
           fd_Entry->replace(fd, e);
           e->dn_fd = fd;
