@@ -487,22 +487,15 @@ void KApplication::parseCommandLine( int& argc, char** argv )
         aIconPixmap = QPixmap(argv[i+1]);
       else
         aIconPixmap = KGlobal::iconLoader()->loadApplicationIcon( argv[i+1] );
-      if (aMiniIconPixmap.isNull()){
-		if (argv[i+1][0] == '/')
-		  aMiniIconPixmap = aIconPixmap;
-		else
-		  aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( argv[i+1] );
-      }
+      if (aMiniIconPixmap.isNull())
+	aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( argv[i+1] );
       aDummyString2 += parameter_strings[icon-1];
       aDummyString2 += " ";
       aDummyString2 += argv[i+1];
       aDummyString2 += " ";
       break;
     case miniicon:
-      if (argv[i+1][0] == '/')
-        aMiniIconPixmap = QPixmap(argv[i+1]);
-      else
-        aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( argv[i+1] );
+      aMiniIconPixmap = KGlobal::iconLoader()->loadApplicationMiniIcon( argv[i+1] );
       aDummyString2 += parameter_strings[miniicon-1];
       aDummyString2 += " ";
       aDummyString2 += argv[i+1];
