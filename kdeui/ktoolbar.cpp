@@ -1153,7 +1153,7 @@ void KToolBar::mouseReleaseEvent ( QMouseEvent *m)
       ((d->m_isHorizontal && m->x()<9) || (!d->m_isHorizontal && m->y()<9)) ) {
     setFlat (d->m_position != Flat);
   }
-  
+
   // if we made it here, then our state has changed
   d->m_stateChanged = true;
   saveState();
@@ -2838,7 +2838,7 @@ void KToolBar::saveState()
     {
       current = elem;
 
-      if ( current.tagName() != "ToolBar" )
+      if ( current.tagName().lower() != "toolbar" )
         continue;
 
       QString curname(current.attribute( "name" ));
@@ -2869,7 +2869,7 @@ void KToolBar::saveState()
     elem = elem.firstChild().toElement();
     for( ; !elem.isNull(); elem = elem.nextSibling().toElement() )
     {
-      if ( elem.tagName() != "ToolBar" )
+      if ( elem.tagName().lower() != "toolbar" )
         continue;
 
       QString curname(elem.attribute( "name" ));
