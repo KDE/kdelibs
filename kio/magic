@@ -206,6 +206,17 @@
 # PKZIP
 0		string			PK\003\004		application/x-zip
 
+# Zoo archiver
+20	lelong		0xfdc4a7dc	application/x-zoo
+>4	byte		>48		application/x-zoo
+>>6	byte		>47		application/x-zoo
+>>>7	byte		>47		application/x-zoo
+>32	byte		>0		application/x-zoo
+>>33	byte		x		application/x-zoo
+>42	lelong		0xfdc4a7dc	application/x-zoo
+>>70	byte		>0		application/x-zoo
+>>>71	byte		x		application/x-zoo
+
 # According to gzip.h, this is the correct byte order for packed data.
 0	string		\037\036	application/octet-stream
 #
@@ -280,6 +291,9 @@
 2	string	-lh5-	application/x-lha	lh5
 # Shell archives
 10	string	#\ This\ is\ a\ shell\ archive	application/octet-stream	x-shell
+
+# RAR archiver (Greg Roelofs, newt@uchicago.edu)
+0	string		Rar!		application/x-rar
 
 #------------------------------------------------------------------------------
 # frame:  file(1) magic for FrameMaker files
