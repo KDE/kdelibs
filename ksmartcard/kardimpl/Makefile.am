@@ -16,7 +16,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES= -I$(srcdir)/.. -I$(srcdir)/../kardlib -I$(top_srcdir) $(all_includes)
+INCLUDES= -I$(srcdir)/.. -I$(srcdir)/../kardlib -I$(top_srcdir) $(PCSC_INCLUDES) $(all_includes) 
 
 
 lib_LTLIBRARIES = libkscard_gsm.la libkscard_gemsafe.la
