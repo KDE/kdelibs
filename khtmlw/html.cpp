@@ -1346,33 +1346,43 @@ void KHTMLWidget::stopParser()
 
 void KHTMLWidget::timerEvent( QTimerEvent * )
 {
+    debugM("Timer event\n");
     static const char *end[] = { "</body>", 0 }; 
 
     if ( !painter )
 	return;
 
+    debugM("Killing timer\n");
     killTimer( timerId );
     timerId = 0;
 
+    debugM("Has more tokens?\n");
     if ( !ht->hasMoreTokens() && writing )
 	return;
 
+    debugM("Storing font info\n");
     const QFont &oldFont = painter->font();
 
+    debugM("Setting font\n");
     painter->setFont( *font_stack.top() );
 
+    debugM("Getting height\n");
     int lastHeight = docHeight();
 
     parseCount = granularity;
+    debugM("Parsing body height\n");
     if ( parseBody( clue, end, TRUE ) )
 	stopParser();
 
+    debugM("Calculating size\n");
     clue->calcSize();
     clue->setPos( 0, clue->getAscent() );
     calcAbsolutePos();
 
+    debugM("Restoring font\n");
     painter->setFont( oldFont );
 
+    debugM("Synchronizing painter's background\n");
     // FE: synchronize painter's backgroundColor
     painter->setBackgroundColor( backgroundColor() );
 
@@ -1381,11 +1391,14 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
     if ( lastHeight - y_offset < height() * 2 && docHeight() - y_offset > 0 )
 	scheduleUpdate( false );
 
+    debugM("document changed\n");
     emit documentChanged();
 
+    debugM("Parsin is over?\n");
     // Parsing is over ?
     if ( !parsing )
     {
+        debugM("Yes\n");
 	// Is y_offset too big ?
 	if ( docHeight() - y_offset < height() )
 	{
@@ -1434,9 +1447,12 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 	}
 	if ( ( s = framesetList.getFirst() ) )
 	    s->setGeometry( 0, 0, width(), height() );
+	bDrawBackground = true;
     }
-    else
+    else{
+        debugM("No\n");
 	timerId = startTimer( TIMER_INTERVAL );
+    }	
 }
 
 void KHTMLWidget::calcSize()
@@ -1525,61 +1541,87 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		}
 		
     	        if (charsetConverter){
+		   debugM("Using charset converter...");
 		   QList<KCharsetConversionResult> rl=
 		           charsetConverter->multipleConvert(str);
+		   debugM("OK\n");
 		   KCharsetConversionResult *r;
 		   for(r=rl.first();r;r=rl.next()){ 
+		        debugM("Getting result string...");
 		      	char *str1=r->copy();
+		        debugM("Got: %s",str1);
+			debugM("Getting current font...");
 		        HTMLFont f=*currentFont();
-			debugM("%s(%s)\n",str1,r->charset());
+			debugM("OK\n");
+			debugM("Setting charset to %s...",(const char *)r->charset());
 			f.setCharset(r->charset());
+			debugM("OK\n");
+			debugM("Getting preloaded font...");
 	                const HTMLFont *fp = pFontManager->getFont( f );
+			debugM("OK\n");
 		       
+			debugM("Adding string to flow...");
 		   	if ( url || target )
 		       		flow->append( new HTMLLinkText( str1, fp,
 					painter, url, target,TRUE ) );
 		   	else
 		       		flow->append( new HTMLText( str1, fp,
 				        painter,TRUE ) );
+			debugM("OK\n");
 		  }		
 		}
 		else{
 		  bool autoDelete;
+		  debugM("Getting current font...");
 	          const HTMLFont *fp = currentFont();
+		  debugM("OK\n");
 		  if (*str=='&'){ // we don't need converter for this
-		     char *buffer=new char(strlen(str)+2); // buffer will never
+		     debugM("Amperstand found!\n");
+		     debugM("Allocating buffer of length: %i...",strlen(str)+2);
+		     char *buffer=new char[strlen(str)+2]; // buffer will never
 		                                           // have to be longer
+		     debugM("OK: %p\n",buffer);
 		     int l;
 		     const char *str1;
+		     debugM("Getting charset object...");
 		     KCharsets *charsets=KApplication::getKApplication()
 		                                           ->getCharsets();
-		     debugM("Token: %s\n",str);
+		     debugM("got: %p\n",charsets);
+		     debugM("converting sequence: '%s'...",str);
 		     const KCharsetConversionResult &r=charsets->convertTag(str,l);
+		     debugM("OK - length: %i\n",l);
 		     str1=r;					 
-	             debugM("Converted to: %s (length: %i)\n",str1,l);
 		     if (str1 && l){
+		       debugM("sequence OK\n");
 		       HTMLFont f=*fp;
 		       if (r.charset().ok()){
-		         debugM("Needed charset: %s\n",r.charset().name());
+		         debugM("charset OK\n");
+			 debugM("Setting charset to: %s...",(const char *)r.charset());
 		         f.setCharset(r.charset());
-			 debugM("Set font: %s\n",charsets->name(QFont(f)));
+		         debugM("OK\n");
+			 debugM("Getting preloaded font...");
 	                 fp = pFontManager->getFont( f );
-			 debugM("Got font: %s\n",charsets->name(QFont(f)));
-		       }  
+		         debugM("OK\n");
+		       } 
+		       debugM("Copying result ('%s') to buffer %p...",str1,buffer);
 		       strcpy(buffer,str1);
+		       debugM("OK\n");
+		       debugM("Adding rest ('%s') to buffer...",str+l);
 		       strcat(buffer,str+l);
+		       debugM("OK\n");
 		       str=buffer;
-	               debugM("Result:%s\n",str);
 		       autoDelete=TRUE;
 		     }  
 		  }
 		  else autoDelete=FALSE;
 		
+		  debugM("Adding string to flow...");
 		  if ( url || target )
 		      flow->append( new HTMLLinkText( str, fp, painter,
 		  	 url, target,autoDelete ) );
 		  else
 		      flow->append( new HTMLText( str, fp, painter,autoDelete ) );
+	  	  debugM("OK\n");
 		}      
 	    }
 	}
@@ -3025,6 +3067,8 @@ void KHTMLWidget::parseO( HTMLClueV *_clue, const char *str )
     }
     else if ( strncmp( str, "/option", 7 ) == 0 )
     {
+	if ( inOption )
+		formSelect->setText( formText );
 	inOption = false;
     }
 }

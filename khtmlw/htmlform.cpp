@@ -143,7 +143,7 @@ void HTMLSelect::addOption( const char *v, bool sel )
 			lb->setCurrentItem( _defSelected );
 		}
 		width = lb->maxItemWidth();
-		widget->resize( width, widget->height() );
+		widget->resize( width+20, widget->height() );
 	}
 	else
 	{
@@ -180,11 +180,7 @@ void HTMLSelect::setText( const char *text )
 {
 	int item;
 	QString t = text;
-	char *ptr = t.data() + t.length() - 1;
-
-	// remove trailing spaces
-	while ( ptr > t.data() && *ptr == ' ' )
-		*ptr-- = '\0';
+	t = t.stripWhiteSpace();
 
 	if ( _size > 1 )
 	{

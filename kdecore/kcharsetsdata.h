@@ -74,6 +74,8 @@ friend class KCharsets;
    const KCharsetEntry * output;
    bool isOK;
 
+   KCharsetConversionResult *tempResult;
+
    void setInputSettings();
    void setOutputSettings();
    bool getToUnicodeTable();
@@ -95,6 +97,9 @@ public:
                          ,int flags);
    ~KCharsetConverterData();
    void convert(const char *str,KCharsetConversionResult &r);
+   void convert(const char *str){
+     convert(str,*tempResult);
+   }
    void convert(const char *str,QList<KCharsetConversionResult> &r);
    const KCharsetConversionResult & convert(unsigned code);
    const KCharsetConversionResult & convertTag(const char *tag,int &len);
@@ -126,6 +131,7 @@ class KCharsetsData{
   void scanDirectory(const char *path);
   void createDictFromi18n(KCharsetEntry *e);
   KCharsetEntry * varCharsetEntry(const char *name);
+  KCharsetConversionResult *tempResult;
 public:
   static const KCharTags tags[];
   KCharsetsData();
@@ -148,7 +154,15 @@ public:
   bool isDisplayable(const KCharsetEntry * charset);
   unsigned decodeAmp(const char *seq,int &len);
   void convert(unsigned code,KCharsetConversionResult & r);
+  KCharsetConversionResult & convert(unsigned code){
+     convert(code,*tempResult);
+     return *tempResult;
+  }
   void convertTag(const char *tag,KCharsetConversionResult & r,int &l);
+  KCharsetConversionResult & convertTag(const char *tag,int &l){
+    convertTag(tag,*tempResult,l);
+    return *tempResult;
+  }
   const QIntDict<KDispCharEntry> * getDisplayableDict();
 };
 

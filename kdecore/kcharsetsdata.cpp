@@ -32,6 +32,7 @@ KCharsetConverterData::KCharsetConverterData(const KCharsetEntry * inputCharset
                        ,const KCharsetEntry * outputCharset,int flags){
 
   kchdebug("Creating converter...");
+  tempResult=new KCharsetConversionResult();
   inAmps=( (flags&KCharsetConverter::INPUT_AMP_SEQUENCES)!=0 );
   outAmps=( (flags&KCharsetConverter::OUTPUT_AMP_SEQUENCES)!=0 );
   if ( kcharsetsData == 0 ) fatal("KCharsets not initialized!");
@@ -43,6 +44,7 @@ KCharsetConverterData::KCharsetConverterData(const KCharsetEntry * inputCharset
                                              ,int flags){
 
   kchdebug("Creating converter...");
+  tempResult=new KCharsetConversionResult();
   inAmps=( (flags&KCharsetConverter::INPUT_AMP_SEQUENCES)!=0 );
   outAmps=( (flags&KCharsetConverter::OUTPUT_AMP_SEQUENCES)!=0 );
   if ( kcharsetsData == 0 ) fatal("KCharsets not initialized!");
@@ -52,6 +54,7 @@ KCharsetConverterData::KCharsetConverterData(const KCharsetEntry * inputCharset
 
 KCharsetConverterData::~KCharsetConverterData(){
 
+  if (tempResult) delete tempResult;
   if (convFromUniDict) delete convFromUniDict;
 }
 
@@ -422,7 +425,6 @@ const char * KCharsetConverterData::convert(const char * str
 const KCharsetConversionResult & KCharsetConverterData::convert(unsigned code){
 unsigned chr;
 const unsigned *ptr;
-static KCharsetConversionResult convResult;
 
    kchdebug("KCCS:convert(code) ");
 
@@ -434,19 +436,19 @@ static KCharsetConversionResult convResult;
    else chr=0;
    
    if (chr==0){
-     kcharsetsData->convert(code,convResult);
-     if (!convResult.cText.isEmpty()) return convResult;
+     kcharsetsData->convert(code,*tempResult);
+     if (!tempResult->cText.isEmpty()) return *tempResult;
    }  
 
    if (chr==0)
       if (outAmps){
-	if (code) convResult.cText+="&#"+QString().setNum(code)+';';
-	else convResult.cText+="?";
+	if (code) tempResult->cText+="&#"+QString().setNum(code)+';';
+	else tempResult->cText+="?";
       }  
-      else convResult.cText+="?";
-   else convResult.cText=chr;
+      else tempResult->cText+="?";
+   else tempResult->cText=chr;
    
-   return convResult;
+   return *tempResult;
 }
 
 const KCharsetConversionResult & KCharsetConverterData::convertTag(
@@ -492,6 +494,7 @@ const char * KCharsetConverterData::outputCharset()const{
 KCharsetsData::KCharsetsData(){
 
   displayableCharsDict=0;
+  tempResult=new KCharsetConversionResult;
 
   QString fileName=KApplication::kdedir().copy();
   fileName+="/share/config/charsets";
@@ -499,6 +502,25 @@ KCharsetsData::KCharsetsData(){
   config->setGroup("general");
   const char * i18dir=config->readEntry("i18ndir");
   if (i18dir) scanDirectory(i18dir);
+  kchdebug("Creating alias dictionary...\n");
+  KEntryIterator *it=config->entryIterator("aliases");
+  if ( it )
+  {
+      while( it->current() ){
+	const char*alias=it->currentKey();
+	kchdebug(" %s -> ",alias);
+	const char*name=it->current()->aValue;
+	kchdebug(" %s:",name);
+	KCharsetEntry *ce=varCharsetEntry(name);
+	if (ce){
+	    aliases.insert(alias,ce);
+	    kchdebug("ok\n");
+	}
+	else kchdebug("not found\n");
+	++(*it);
+      }  
+  }
+  kchdebug("done!\n");
 }
 
 void KCharsetsData::scanDirectory(const char *path){
@@ -578,6 +600,7 @@ void KCharsetsData::createDictFromi18n(KCharsetEntry *e){
   
 KCharsetsData::~KCharsetsData(){
 
+  if (tempResult) delete tempResult;
   QDictIterator<KCharsetEntry> it(i18nCharsets);
   KCharsetEntry *e;
   while( (e=it.current()) ){
@@ -591,13 +614,19 @@ KCharsetsData::~KCharsetsData(){
 
 KCharsetEntry * KCharsetsData::varCharsetEntry(const char *name){
 
-  config->setGroup("aliases");
-  const char *alias=config->readEntry(name);
-  if (alias) name=alias;
-  for(int i=0;charsets[i].name;i++)
-    if ( stricmp(name,charsets[i].name) == 0 ) return charsets+i;
+  for(int i=0;charsets[i].name;i++){
+    kchdebug("%i) Testing %p (%s)...\n",i,charsets+i,charsets[i].name);
+    if ( stricmp(name,charsets[i].name) == 0 ){
+      kchdebug("Found!\n");
+      return charsets+i;
+    }  
+  }  
+  kchdebug("Searching in i18nCharsets...\n");
   KCharsetEntry *e=i18nCharsets[name];
-  if (!e) e=aliases[name];
+  if (!e){
+     kchdebug("Searchin in aliases...\n");
+     e=aliases[name];
+  }   
   return e;
 }
 
@@ -737,6 +766,7 @@ bool KCharsetsData::isDisplayable(const KCharsetEntry *charset){
   }  
   QFont f;
   f.setCharSet(qcharset);
+  f.setFamily("courier");
   QFontInfo fi(f);
   kchdebug("fi.charset()=%i\n",fi.charSet());
   if (qcharset!=QFont::AnyCharSet && fi.charSet()!=qcharset) return FALSE;
@@ -749,20 +779,26 @@ unsigned chr;
    kchdebug("KCD:convert(code) %4X -> ",code);
    chr=0;
 
+   kchdebug("Clearing result (was: %s)...\n",(const char *)convResult.cText);
    convResult.cText="";
-   convResult.cCharset=0;
+   kchdebug("Clearing charset...\n");
+   convResult.cCharset=charsetEntry("us-ascii");
    if (code>127){
+     kchdebug("Hi code, dictonary needed, getting...\n");
      const QIntDict<KDispCharEntry> *dict=getDisplayableDict();
-
+     kchdebug("Dictonary: %p\n",dict);
      KDispCharEntry *ptr=(*dict)[code];
+     kchdebug("Entry: %p\n",ptr);
      if (ptr){
        chr=ptr->code;
+       kchdebug("Setting charset to %s...\n",ptr->charset->name);
        convResult.cCharset=ptr->charset; 
+       kchdebug("Setting text to code %2X...\n",chr);
        convResult.cText+=(unsigned char)chr;
-     }  
+     }
    }
    else{
-     convResult.cCharset=charsetEntry("us-ascii");
+     kchdebug("Setting text to code %2X...\n",code);
      convResult.cText+=(unsigned char)code;
    }   
    kchdebug("%s\n",(const char *)convResult);
@@ -771,12 +807,10 @@ unsigned chr;
 unsigned KCharsetsData::decodeAmp(const char *seq,int &len){
 int i;
 
-  kchdebug("Sequence: '%s'\n",seq);
+  kchdebug("Sequence: '%0.20s'\n",seq);
 
   if (*seq=='&') { seq++; len=1; }
   else len=0;
-  
-//  kchdebug("Sequence: '%s'\n",(const char *)QString(seq,(len>0)?len:20));
   
   if (*seq=='#'){
      char *endptr;
@@ -805,7 +839,7 @@ void KCharsetsData::convertTag(const char *tag
                             ,KCharsetConversionResult &convResult
 			    ,int &l){
   
- convert(decodeAmp(tag,l),convResult);
+  convert(decodeAmp(tag,l),convResult);
 }
 
 const QIntDict<KDispCharEntry> * KCharsetsData::getDisplayableDict(){
@@ -823,7 +857,7 @@ const QIntDict<KDispCharEntry> * KCharsetsData::getDisplayableDict(){
              KDispCharEntry *e=new KDispCharEntry;
 	     e->charset=charsets+i;
              e->code=j;
-	    displayableCharsDict->insert(unicode,e);
+	     displayableCharsDict->insert(unicode,e);
 	  }  
        }
     }    

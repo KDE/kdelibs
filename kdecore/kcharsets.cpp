@@ -473,25 +473,18 @@ QFont & KCharsetConversionResult::setQFont(QFont &font)const{
 
 
 const KCharsetConversionResult & KCharsets::convert(unsigned ch){
-static KCharsetConversionResult convResult;
   
-  data->convert(ch,convResult);
-  return convResult;
+  return data->convert(ch);
 }
 
 const KCharsetConversionResult & KCharsets::convertTag(const char *tag){
-static KCharsetConversionResult convResult;
 
   int tmp;
-  data->convertTag(tag,convResult,tmp);
-  return convResult;
+  return data->convertTag(tag,tmp);
 }
  
 const KCharsetConversionResult & KCharsets::convertTag(const char *tag
 							,int &l){
-static KCharsetConversionResult convResult;
-
-  data->convertTag(tag,convResult,l);
-  return convResult;
+  return data->convertTag(tag,l);
 }
  

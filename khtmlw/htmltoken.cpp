@@ -34,6 +34,9 @@
 #include <string.h>
 #include <strings.h>
 
+#include <kcharsets.h>
+#include <kapp.h>
+
 // Include Java Script
 #include <jsexec.h>
 
@@ -120,6 +123,8 @@ void HTMLTokenizer::write( const char *str )
     // If this pointer is not null, one has to free the memory before leaving
     // this function.
     char *srcPtr = 0L;
+
+    KCharsets *charsets=KApplication::getKApplication()->getCharsets();
     
     if ( str == 0L )
 	return;
@@ -245,7 +250,7 @@ void HTMLTokenizer::write( const char *str )
 	    else
 		scriptCode[ scriptCodeSize++ ] = *src++;
 	}
-	else if ( *src == '&' )
+	else if ( *src == '&' ) 
 	{
 	    if ( pre )
 		pre_pos++;	    
@@ -259,8 +264,8 @@ void HTMLTokenizer::write( const char *str )
 		{
 		    char *endptr;
 		    int z = (int) strtol( src+2, &endptr, 10 );
-		    // parse only ascii characters
-		    if (z<128){
+		    // parse only ascii characters unless in quotes
+		    if (z<128 || tquote){
 		        debugM("Adding character: '%c'\n",z);
 			*dest++ = z;
 		    }
@@ -285,21 +290,45 @@ void HTMLTokenizer::write( const char *str )
 		// Special character ?
 		else if ( isalpha( *(src + 1) ) )
 		{
-		     *dest=0;
-		     // add currend token
-		     appendToken(buffer,dest-buffer);
-		     dest=buffer;
+		     if (!tag){
+		       // add currend token
+		       debugM("Not quoted amp-seq: %0.20s\n",src);
+		       *dest=0;
+		       debugM("Adding current token: %s\n",buffer);
+		       appendToken(buffer,dest-buffer);
+		       dest=buffer;
 		    
-		     const char *endptr=src+1;
-		     while(*endptr && isalpha(*endptr)) endptr++;
-		     if (*endptr==';') endptr++;
-		     // add token with the amp-sequence for further conversion
-		     memcpy(buffer,src,endptr-src);
-		     buffer[endptr-src]=0;
-		     debugM("Adding token: '%s'\n",buffer);
-		     appendToken(buffer,endptr-src);
-		     src=endptr;
-		     *dest=0;
+		       const char *endptr=src+1;
+		       while(*endptr && isalpha(*endptr)) endptr++;
+		       if (*endptr==';') endptr++;
+		       // add token with the amp-sequence for further conversion
+		       memcpy(buffer,src,endptr-src);
+		       buffer[endptr-src]=0;
+		       debugM("Adding token: '%s'\n",buffer);
+		       appendToken(buffer,endptr-src);
+		       src=endptr;
+		       *dest=0;
+		     }
+		     else{
+		       // There is no need for font switching 
+		       // when we are in tag quotes, so amp-sequences can be 
+		       // translated here. I hope noone uses non iso-8859-1
+		       // characters here.
+		       int len=0;
+		       debugM("Quted amp-seq: %0.20s\n",src);
+		       const QString res=charsets->convertTag(src,len).copy();
+		       debugM("Converted to: %s, len: %i\n",(const char *)res,len);
+		       if ( len > 0 )
+		       {
+			   memcpy(dest,(const char *)res,res.length());
+			   dest+=res.length();
+			   src+=len;
+		       }
+		       else
+		       {
+			   *dest++ = *src++;
+		       }
+		     }  
 		}
 		else
 		    *dest++ = *src++;
@@ -307,7 +336,7 @@ void HTMLTokenizer::write( const char *str )
 	    else
 		*dest++ = *src++;
 	}
-	else if ( *src == '<' )
+	else if ( *src == '<' && !tquote )
 	{
 	    src++;
 	    if ( strncmp( src, "!-", 2 ) == 0 )

@@ -248,7 +248,7 @@ class HTMLText : public HTMLObject
 public:
     HTMLText( const char*, const HTMLFont *, QPainter * ,bool _autoDelete=FALSE);
     HTMLText( const HTMLFont *, QPainter * );
-    virtual ~HTMLText() { if (autoDelete) delete text; }
+    virtual ~HTMLText() { if (autoDelete) delete [] text; }
 
     virtual bool selectText( QPainter *_painter, int _x1, int _y1,
 	int _x2, int _y2, int _tx, int _ty );
