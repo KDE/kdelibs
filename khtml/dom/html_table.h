@@ -500,7 +500,7 @@ public:
     HTMLCollection rows() const;
 
     /**
-     * Returns a collection of the defined table bodies.
+     * Returns a collection of the table bodies (including implicit ones).
      *
      */
     HTMLCollection tBodies() const;
@@ -677,10 +677,18 @@ public:
     void deleteCaption (  );
 
     /**
-     * Insert a new empty row in the table. Note. A table row cannot
-     * be empty according to HTML 4.0 Recommendation.
+     * Insert a new empty row in the table.
+     * The new row is inserted immediately before and in the same section
+     * as the current indexth row in the table. If index is -1 or equal
+     * to the number of rows, the new row is appended. In addition, when
+     * the table is empty the row is inserted into a TBODY which is created
+     * and inserted into the table.
+     *  Note. A table row cannot
+     *  be empty according to HTML 4.0 Recommendation.
      *
      * @param index The row number where to insert a new row.
+     * The index starts from 0 and is relative to the logical order
+     * (not document order) of all the rows contained inside the table.
      *
      * @return The newly created row.
      *
@@ -691,6 +699,9 @@ public:
      * Delete a table row.
      *
      * @param index The index of the row to be deleted.
+     * This index starts from 0 and is relative to the logical order
+     * (not document order) of all the rows contained inside the table.
+     * If the index is -1 the last row in the table is deleted.
      *
      * @return
      *
@@ -732,6 +743,11 @@ public:
 
     /**
      * The index of this row, relative to the entire table.
+     * This is in logical order and not in document order.
+     * The rowIndex does take into account sections
+     * (THEAD, TFOOT or TBODY) within the table,
+     * placing THEAD rows first in the index, followed by
+     * TBODY rows, followed by TFOOT rows.
      */
     long rowIndex() const;
 
@@ -842,6 +858,8 @@ public:
 
     /**
      * Insert an empty <code> TD </code> cell into this row.
+     * If index is -1 or equal to the number of cells, the new
+     * cell is appended.
      *
      * @param index The place to insert the cell.
      *
@@ -853,7 +871,8 @@ public:
     /**
      * Delete a cell from the current row.
      *
-     * @param index The index of the cell to delete.
+     * @param index The index of the cell to delete, starting from 0.
+     * If the index is -1 the last cell in the row is deleted.
      *
      * @return
      *
@@ -951,6 +970,9 @@ public:
 
     /**
      * Insert a row into this section.
+     * The new row is inserted immediately before the current indexth
+     * row in this section. If index is -1 or equal to the number of rows
+     * in this sectino, the new row is appended.
      *
      * @param index The row number where to insert a new row.
      *
@@ -962,9 +984,9 @@ public:
     /**
      * Delete a row from this section.
      *
-     * @param index The index of the row to be deleted.
-     *
-     * @return
+     * @param index The index of the row to be deleted,
+     * or -1 to delete the last row. This index starts from 0 and is relative only
+     * to the rows contained inside this section, not all the rows in the table.
      *
      */
     void deleteRow ( long index );
