@@ -87,6 +87,7 @@ static const ushort tag_list_1[] = {
     ID_PRE,
     ID_DL,
     ID_DIV,
+    ID_LAYER,
     ID_CENTER,
     ID_NOSCRIPT,
     ID_NOFRAMES,
@@ -165,6 +166,7 @@ static const ushort tag_list_3[] = {
     ID_PRE,
     ID_DL,
     ID_DIV,
+    ID_LAYER,
     ID_CENTER,
     ID_NOSCRIPT,
     ID_NOFRAMES,
@@ -197,6 +199,7 @@ static const ushort tag_list_4[] = {
     ID_PRE,
     ID_DL,
     ID_DIV,
+    ID_LAYER,
     ID_CENTER,
     ID_NOSCRIPT,
     ID_NOFRAMES,
@@ -385,6 +388,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_LI:
     case ID_DT:
     case ID_DIV:
+    case ID_LAYER:
     case ID_CENTER:
     case ID_BLOCKQUOTE:
     case ID_INS:

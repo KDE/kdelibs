@@ -60,6 +60,7 @@ ins, ID_INS
 isindex, ID_ISINDEX
 kbd, ID_KBD
 label, ID_LABEL
+layer, ID_LAYER
 legend, ID_LEGEND
 li, ID_LI
 link, ID_LINK
@@ -70,6 +71,7 @@ meta, ID_META
 noembed, ID_NOEMBED
 noframes, ID_NOFRAMES
 noscript, ID_NOSCRIPT
+nolayer, ID_NOLAYER
 object, ID_OBJECT
 ol, ID_OL
 optgroup, ID_OPTGROUP

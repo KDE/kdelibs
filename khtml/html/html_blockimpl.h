@@ -156,5 +156,24 @@ public:
 
 };
 
+// -------------------------------------------------------------------------
+
+class HTMLLayerElementImpl : public HTMLDivElementImpl
+{
+public:   
+    HTMLLayerElementImpl( DocumentImpl *doc );
+    ~HTMLLayerElementImpl();
+    
+    virtual const DOMString nodeName() const;
+    virtual ushort id() const;
+    
+    virtual tagStatus startTag() const { return LAYERStartTag; }
+    virtual tagStatus endTag() const { return LAYEREndTag; }
+
+    virtual void parseAttribute(AttrImpl *);
+    
+    bool fixed;
+};
+
 }; //namespace
 #endif

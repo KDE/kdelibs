@@ -50,6 +50,7 @@ ins
 isindex
 kbd
 label
+layer
 legend
 li
 link
@@ -59,6 +60,7 @@ menu
 meta
 noembed
 noframes
+nolayer
 noscript
 object
 ol
