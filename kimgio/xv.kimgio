@@ -7,4 +7,5 @@ Read=true
 Write=true
 Suffices=
 Mimetype=
-Library=kimg_xv.la
+Library=kimg_xview.la
+
