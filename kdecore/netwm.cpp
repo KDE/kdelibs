@@ -142,6 +142,7 @@ static void refdec_nwi(NETWinInfoPrivate *p) {
 #endif
 
 	if (p->name) delete [] p->name;
+	if (p->visible_name) delete [] p->visible_name;
 
 	int i;
 	for (i = 0; i < p->icons.size(); i++)
@@ -307,7 +308,7 @@ static void readIcon(NETWinInfoPrivate *p) {
 #ifdef    NETWMDEBUG
     fprintf(stderr, "NET: readIcon got %d icons\n", p->icons.size());
 #endif
-
+    delete [] buffer;
 }
 
 
