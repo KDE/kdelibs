@@ -350,6 +350,26 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
     layout(true);
 }
 
+void KIntNumInput::setMinValue(int min)
+{
+    setRange(min, m_spin->maxValue(), m_spin->lineStep(), m_slider);
+}
+
+int KIntNumInput::minValue() const
+{
+    return m_spin->minValue();
+}
+
+void KIntNumInput::setMaxValue(int max)
+{
+    setRange(m_spin->minValue(), max, m_spin->lineStep(), m_slider);
+}
+
+int KIntNumInput::maxValue() const
+{
+    return m_spin->maxValue();
+}
+
 
 // -----------------------------------------------------------------------------
 
@@ -803,6 +823,26 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
     resetEditBox();
     layout(true);
     if ( prevVal!=m_value ) emit valueChanged(m_value);
+}
+
+void KDoubleNumInput::setMinValue(double min)
+{
+    setRange(min, m_upper, m_step, m_slider);
+}
+
+double KDoubleNumInput::minValue() const
+{
+    return m_lower;
+}
+
+void KDoubleNumInput::setMaxValue(double max)
+{
+    setRange(m_lower, max, m_step, m_slider);
+}
+
+double KDoubleNumInput::maxValue() const
+{
+    return m_upper;
 }
 
 

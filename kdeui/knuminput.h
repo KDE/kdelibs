@@ -166,6 +166,8 @@ class KIntNumInput : public KNumInput
 {
     Q_OBJECT
     Q_PROPERTY( int value READ value WRITE setValue )
+    Q_PROPERTY( int minValue READ minValue WRITE setMinValue )
+    Q_PROPERTY( int maxValue READ maxValue WRITE setMaxValue )
     Q_PROPERTY( QString suffix READ suffix WRITE setSuffix )
     Q_PROPERTY( QString prefix READ prefix WRITE setPrefix )
     Q_PROPERTY( QString specialValueText READ specialValueText WRITE setSpecialValueText )
@@ -235,12 +237,29 @@ public:
      * @see #setSpecialValueText()
      */
     QString specialValueText() const;
+
     /**
-     * @param lower  lower bound on range
-     * @param upper  upper bound on range
-     * @param step   step size for the QSlider
+     * @param min  minimum value
+     * @param max  maximum value
+     * @param step step size for the QSlider
      */
-    void setRange(int lower, int upper, int step=1, bool slider=true);
+    void setRange(int min, int max, int step=1, bool slider=true);
+    /**
+     * Sets the minimum value.
+     */
+    void setMinValue(int min);
+    /**
+     * @return the minimum value.
+     */
+    int minValue() const;
+    /**
+     * Sets the maximum value.
+     */
+    void setMaxValue(int max);
+    /**
+     * @return the maximum value.
+     */
+    int maxValue() const;
 
     /**
      * Sets the special value text. If set, the SpinBox will display
@@ -358,6 +377,8 @@ class KDoubleNumInput : public KNumInput
 {
     Q_OBJECT
     Q_PROPERTY( double value READ value WRITE setValue )
+    Q_PROPERTY( double minValue READ minValue WRITE setMinValue )
+    Q_PROPERTY( double maxValue READ maxValue WRITE setMaxValue )
     Q_PROPERTY( QString suffix READ suffix WRITE setSuffix )
     Q_PROPERTY( QString prefix READ prefix WRITE setPrefix )
     Q_PROPERTY( QString specialValueText READ specialValueText WRITE setSpecialValueText )
@@ -420,11 +441,27 @@ public:
     QString specialValueText() const { return m_specialvalue; }
 
      /**
-     * @param lower  lower bound on range
-     * @param upper  upper bound on range
-     * @param step   step size for the QSlider
+     * @param min  minimum value
+     * @param max  maximum value
+     * @param step step size for the QSlider
      */
-    void setRange(double lower, double upper, double step=1, bool slider=true);
+    void setRange(double min, double max, double step=1, bool slider=true);
+    /**
+     * Sets the minimum value.
+     */
+    void setMinValue(double min);
+    /**
+     * @return the minimum value.
+     */
+    double minValue() const;
+    /**
+     * Sets the maximum value.
+     */
+    void setMaxValue(double max);
+    /**
+     * @return the maximum value.
+     */
+    double maxValue() const;
 
     /**
      * Specifies the number of digits to use.
