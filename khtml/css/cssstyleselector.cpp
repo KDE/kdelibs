@@ -384,7 +384,11 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
         // Pseudo elements. We need to check first child here. No dynamic pseudo
         // elements for the moment
 	if(sel->value == ":first-child") {
-	    if(e->parentNode()->firstChild() == e)
+	    // first-child matches the first child that is an element!
+	    DOM::NodeImpl *n = e->parentNode()->firstChild();
+	    while( n && !n->isElementNode() )
+		n = n->nextSibling();
+	    if(n == e)
 		return true;
 	} else if(sel->value == ":link") {
 	    if ( pseudoState == PseudoUnknown )

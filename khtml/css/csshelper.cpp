@@ -46,13 +46,7 @@ int khtml::computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, Me
     {
         if(type == CSSPrimitiveValue::CSS_EMS)
         {
-#if 0
-            QFontMetrics fm(style->font());
-            factor = fm.height();
-#else
-            QFontInfo fi(style->font());
-            factor = fi.pointSize();
-#endif
+            factor = style->font().pixelSize();
 
             //kdDebug( 6080 ) << "EM = " << factor << endl;
         }
