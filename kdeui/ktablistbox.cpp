@@ -119,7 +119,7 @@ void KTabListBoxColumn::setType(KTabListBox::ColumnType lbt)
 void KTabListBoxColumn::paintCell(QPainter* paint, int row, 
 				  const QString& string, bool marked)
 {
-  const QFontMetrics* fm = &paint->fontMetrics();
+  QFontMetrics fm = paint->fontMetrics();
   QPixmap* pix = NULL;
   int beg, end, x;
 
@@ -143,7 +143,7 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
     /*else output as string*/
 
   case KTabListBox::TextColumn:
-    paint->drawText(1, fm->ascent() +(fm->leading()), 
+    paint->drawText(1, fm.ascent() +(fm.leading()), 
 		    (const char*)string); 
     break;
 
@@ -172,7 +172,7 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
       else break;
     }
 
-    paint->drawText(x+1, fm->ascent() +(fm->leading()), 
+    paint->drawText(x+1, fm.ascent() +(fm.leading()), 
 		    (const char*)string.mid(beg+1, string.length()-beg+1)); 
     break;
   }
