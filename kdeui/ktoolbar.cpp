@@ -857,7 +857,7 @@ void KToolBar::setIconText(IconText icontext, bool update)
         return;
 
     if (doUpdate)
-        emit modechange(); // tell buttons what happened
+        doModeChange(); // tell buttons what happened
 
     // ugly hack to force a QMainWindow::triggerLayout( true )
     QMainWindow *mw = mainWindow();
@@ -894,7 +894,7 @@ void KToolBar::setIconSize(int size, bool update)
         return;
 
     if (doUpdate)
-        emit modechange(); // tell buttons what happened
+        doModeChange(); // tell buttons what happened
 
     // ugly hack to force a QMainWindow::triggerLayout( true )
     if ( mainWindow() ) {
@@ -1190,6 +1190,14 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
     }
 }
 
+void KToolBar::doModeChange()
+{
+    for(QWidget *w=d->idleButtons.first(); w; w=d->idleButtons.next())
+       w->blockSignals(false);
+    d->idleButtons.clear();
+
+    emit modechange();
+}
 
 void KToolBar::rebuildLayout()
 {
@@ -1424,7 +1432,8 @@ void KToolBar::slotIconChanged(int group)
     if ((group == KIcon::MainToolbar) != !::qstrcmp(name(), "mainToolBar"))
         return;
 
-    emit modechange();
+    doModeChange();
+
     if (isVisible())
         updateGeometry();
 }
@@ -1597,7 +1606,8 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
     }
 
     if (doUpdate)
-        emit modechange(); // tell buttons what happened
+        doModeChange(); // tell buttons what happened
+
     if (isVisible ())
         updateGeometry();
 }

@@ -1098,6 +1098,7 @@ private:
     void getAttributes( QString &position, QString &icontext, int &index );
     int dockWindowIndex();
     KPopupMenu *contextMenu();
+    void doModeChange();
 
     QMap<QWidget*, int > widget2id;
     typedef QMap<int, QWidget* > Id2WidgetMap;
