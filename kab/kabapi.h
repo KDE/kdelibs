@@ -33,7 +33,7 @@
 
 class QPushButton;
 class QFrame;
-class QListBox;
+class KListBox;
 
 /** The class KabAPI provides a public interface to access the 
   * users address database created using kab. The complete 
@@ -181,7 +181,7 @@ protected:
   /** This is our backend to the users address database. */
   AddressBook* book;
   /** This displays the overview over the addresses in the dialog. */
-  QListBox* listbox;
+  KListBox* listbox;
   /** The index of the selected entry. This value is only valid after the
    *  KabAPI dialog has been executed and accepted by the user.
    */

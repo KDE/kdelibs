@@ -27,7 +27,7 @@
  */
 
 #include "kabapi.h"
-#include <qlistbox.h>
+#include <klistbox.h>
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <kdebug.h>
@@ -46,7 +46,7 @@ using namespace std;
 KabAPI::KabAPI(QWidget* parent, const char* name)
   : KDialogBase(parent, name),
     book(0),
-    listbox(new QListBox(this)),
+    listbox(new KListBox(this)),
     selection(-1)
 {
   CHECK_PTR(listbox);
