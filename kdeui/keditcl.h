@@ -134,6 +134,7 @@ protected slots:
     void slotUser1( void );
     void slotUser2( void );
     void slotUser3( void );
+    void textSearchChanged ( const QString & );
 
 private:
     QCheckBox 	*sensitive;

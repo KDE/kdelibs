@@ -800,6 +800,9 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
   d->replaceCombo->setMinimumWidth(fontMetrics().maxWidth()*20);
   topLayout->addWidget(d->replaceCombo);
 
+  connect(d->searchCombo, SIGNAL(textChanged ( const QString & )),
+          this,SLOT(textSearchChanged ( const QString & )));
+
   QButtonGroup *group = new QButtonGroup( i18n("Options"), page );
   topLayout->addWidget( group );
 
@@ -821,6 +824,13 @@ KEdReplace::~KEdReplace()
     delete d;
 }
 
+void KEdReplace::textSearchChanged ( const QString &text )
+{
+    bool state=text.isEmpty();
+    enableButton( KDialogBase::User1, !state );
+    enableButton( KDialogBase::User2, !state );
+    enableButton( KDialogBase::User3, !state );
+}
 
 void KEdReplace::slotCancel( void )
 {
@@ -837,17 +847,22 @@ void KEdReplace::slotClose( void )
 
 void KEdReplace::slotUser1( void )
 {
-  d->replaceCombo->addToHistory( d->replaceCombo->currentText() );
-  emit replaceAll();
+    if( !d->searchCombo->currentText().isEmpty() )
+    {
+        d->replaceCombo->addToHistory( d->replaceCombo->currentText() );
+        emit replaceAll();
+    }
 }
 
 
 void KEdReplace::slotUser2( void )
 {
-  d->replaceCombo->addToHistory( d->replaceCombo->currentText() );
-  emit replace();
+    if( !d->searchCombo->currentText().isEmpty() )
+    {
+        d->replaceCombo->addToHistory( d->replaceCombo->currentText() );
+        emit replace();
+    }
 }
-
 
 void KEdReplace::slotUser3( void )
 {
