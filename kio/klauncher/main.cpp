@@ -38,6 +38,9 @@ start_launcher(int socket)
                        "v0.1");
    KLauncher::addCmdLineOptions();
 
+   // WABA: Make sure not to enable session management.
+   putenv("SESSION_MANAGER=");
+
    KLauncher launcher(socket);
 
 #ifdef __USE_GNU 
