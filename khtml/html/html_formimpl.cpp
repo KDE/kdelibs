@@ -474,8 +474,7 @@ void HTMLFormElementImpl::submit(  )
             else if (it.current()->id() == ID_TEXTAREA)
                 haveTextarea = true;
 
-        QString name = getAttribute(ATTR_NAME).string().stripWhiteSpace();
-        if (havePassword && !haveTextarea && !name.isEmpty())  {
+        if (havePassword && !haveTextarea)  {
             // ### ask the user if he wants to cache the form data, per domain etc
 
             KWallet::Wallet* w = view->part()->wallet();
@@ -1425,8 +1424,13 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
         }
 
         if (evt->id() == EventImpl::DOMACTIVATE_EVENT
-            && m_type == RADIO)  {
+            && m_type == RADIO) {
             setChecked(true);
+        }
+
+        if (evt->id() == EventImpl::DOMACTIVATE_EVENT
+            && m_type == CHECKBOX) {
+            setChecked(!checked());
         }
 
         // DOMActivate events cause the input to be "activated" - in the case of image and submit inputs, this means
