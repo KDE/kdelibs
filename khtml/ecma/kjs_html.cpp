@@ -174,7 +174,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     case Referrer:
       return getString(doc.referrer());
     case Domain:
-      return getString(doc.domain());
+      return String(doc.domain());
     case URL:
       return getString(doc.URL());
     case Body:
@@ -961,14 +961,14 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 
 class JavaMember : public ObjectImp {
 public:
-    JavaMember(DOM::HTMLElement elm, UString n, JType t, int id = 0) 
+    JavaMember(DOM::HTMLElement elm, UString n, JType t, int id = 0)
         : element (elm), name(n), jtype(t), jid(id) {}
-    ~JavaMember() { 
+    ~JavaMember() {
         DOM::HTMLAppletElementImpl * elm = static_cast<DOM::HTMLAppletElementImpl*>(element.handle());
         if (elm)
             elm->derefObject(jid);
     }
-    static Value getValue(const DOM::HTMLElement elm, const QString & name, 
+    static Value getValue(const DOM::HTMLElement elm, const QString & name,
                           const JType jtype, const QString & value, int id=0)
     {
         switch(jtype) {
@@ -1014,8 +1014,8 @@ public:
         if (elm)
             elm->putMember(newname, value.toString(exec).qstring());
     }
-    virtual bool implementsCall() const { 
-        return jtype == JFunction; 
+    virtual bool implementsCall() const {
+        return jtype == JFunction;
     }
     virtual Value call(ExecState * exec, Object &, const List &args) {
         DOM::HTMLAppletElementImpl * elm = static_cast<DOM::HTMLAppletElementImpl*>(element.handle());
@@ -1031,12 +1031,12 @@ public:
         if (elm && elm->callMember(newname, qargs, rettype, retvalue))
             return getValue(element, name.qstring(), rettype, retvalue, jid);
         return Undefined();
-    } 
-    virtual bool toBoolean(ExecState *) const { return true; }
-    virtual Value toPrimitive(ExecState *exec, Type) const { 
-        return String(toString(exec)); 
     }
-    virtual UString toString(ExecState *) const { 
+    virtual bool toBoolean(ExecState *) const { return true; }
+    virtual Value toPrimitive(ExecState *exec, Type) const {
+        return String(toString(exec));
+    }
+    virtual UString toString(ExecState *) const {
         return UString(jtype == JFunction ? "[Function]" : "[Object]");
     }
 private:
@@ -1212,7 +1212,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case FormAction:          return getString(form.action());
     case FormEncType:         return getString(form.enctype());
     case FormMethod:          return getString(form.method());
-    case FormTarget:          return getString(form.target());
+    case FormTarget:          return String(form.target());
     }
   }
   break;
@@ -1513,7 +1513,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case ImageHspace:          return Number(image.hspace());
     case ImageIsMap:           return Boolean(image.isMap());
     case ImageLongDesc:        return getString(image.longDesc());
-    case ImageSrc:             return getString(image.src());
+    case ImageSrc:             return String(image.src());
     case ImageUseMap:          return getString(image.useMap());
     case ImageVspace:          return Number(image.vspace());
     case ImageWidth:           return Number(image.width());
@@ -2019,7 +2019,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, cons
     }
     case ID_APPLET: {
       DOM::HTMLAppletElementImpl * elm = static_cast<DOM::HTMLAppletElementImpl*>(element.handle());
-      if (elm && elm->putMember(propertyName.qstring(), 
+      if (elm && elm->putMember(propertyName.qstring(),
                                 value.toString(exec).qstring()))
           return;
       break;
