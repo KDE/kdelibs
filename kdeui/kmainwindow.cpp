@@ -156,13 +156,22 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
 
     if ( !ksm )
         ksm = ksmd.setObject(new KMWSessionManaged());
-    memberList->append( this );
     if ( !name ) {
         // set a unique object name. Required by session management.
         QCString s;
-        s.setNum( memberList->count() );
-        setName( kapp->instanceName() + "-mainwindow#" + s );
+        int unusedNumber= 0;
+        KMainWindow *existingWin;
+        do {
+            s.setNum( ++unusedNumber );
+            s= kapp->instanceName() + "-mainwindow#" + s;
+            for ( existingWin= memberList->first(); existingWin!=0; 
+                  existingWin= memberList->next() )
+                if ( existingWin->name() == s )
+                    break;
+        } while ( existingWin!=0 );
+        setName( s );
     }
+    memberList->append( this );
 
     d = new KMainWindowPrivate;
     d->showHelpMenu = true;
@@ -486,7 +495,14 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
     QString s;
     s.setNum(number);
     s.prepend(QString::fromLatin1("WindowProperties"));
-    saveMainWindowSettings(config, s); // Menubar, statusbar and Toolbar settings.
+    config->setGroup(s);
+
+    // store objectName, className, Width and Height  for later restoring
+    // (Only useful for session management)
+    config->writeEntry(QString::fromLatin1("ObjectName"), name());
+    config->writeEntry(QString::fromLatin1("ClassName"), className());
+
+    saveMainWindowSettings(config); // Menubar, statusbar and Toolbar settings.
 
     s.setNum(number);
     config->setGroup(s);
@@ -502,15 +518,7 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
     QStrList entryList;
 
     if (!configGroup.isEmpty())
-    {
        config->setGroup(configGroup);
-
-       // store objectName, className, Width and Height  for later restoring
-       // (Only useful for session management, so it pollutes a bit normal groups)
-       // Maybe this should be done in savePropertiesInternal.
-       config->writeEntry(QString::fromLatin1("ObjectName"), name());
-       config->writeEntry(QString::fromLatin1("ClassName"), className());
-    }
 
     // Called by session management - or if we want to save the window size anyway
     if ( d->autoSaveWindowSize )
@@ -566,7 +574,13 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
     s.setNum(number);
     s.prepend(QString::fromLatin1("WindowProperties"));
 
-    applyMainWindowSettings(config, s); // Menubar, statusbar and toolbar settings.
+    config->setGroup(s);
+
+    // restore the object name (window role)
+    if ( config->hasKey(QString::fromLatin1("ObjectName" )) )
+        setName( config->readEntry(QString::fromLatin1("ObjectName")).latin1()); // latin1 is right here
+
+    applyMainWindowSettings(config); // Menubar, statusbar and toolbar settings.
 
     s.setNum(number);
     config->setGroup(s);
@@ -583,10 +597,6 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
 
     if (!configGroup.isEmpty())
        config->setGroup(configGroup);
-
-    // restore the object name (window role)
-    if ( config->hasKey(QString::fromLatin1("ObjectName" )) )
-        setName( config->readEntry(QString::fromLatin1("ObjectName")).latin1()); // latin1 is right here
 
     restoreWindowSize(config);
 
@@ -790,9 +800,9 @@ KToolBar *KMainWindow::toolBar( const char * name )
     bool honor_mode = (name == "mainToolBar");
 
     if ( builderClient() )
-	return new KToolBar(this, name, honor_mode); // XMLGUI constructor
+        return new KToolBar(this, name, honor_mode); // XMLGUI constructor
     else
-	return new KToolBar(this, Top, false, name, honor_mode ); // non-XMLGUI
+        return new KToolBar(this, Top, false, name, honor_mode ); // non-XMLGUI
 }
 
 QListIterator<KToolBar> KMainWindow::toolBarIterator()
