@@ -208,8 +208,6 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
                                    "network_local" );
     }
 
-//     d->urlBar->setFixedWidth( d->urlBar->sizeHint().width() );
-
     d->completionLock = false;
     d->myStatusLine = 0;
 
@@ -417,7 +415,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     // need to set the current url of the urlbar manually (not via urlEntered()
     // here, because the initial url of KDirOperator might be the same as the
     // one that will be set later (and then urlEntered() won't be emitted).
-    // ### REMOVE THIS when KDirOperator's initial URL (in the c'tor is gone).
+    // ### REMOVE THIS when KDirOperator's initial URL (in the c'tor) is gone.
     if ( d->urlBar )
         d->urlBar->setCurrentItem( d->url );
     setSelection(d->url.url()); // ### move that into show() as well?
