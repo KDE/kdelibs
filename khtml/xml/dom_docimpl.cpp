@@ -1656,7 +1656,7 @@ typedef const char* (*NameLookupFunction)(unsigned short id);
 typedef int (*IdLookupFunction)(const char *tagStr, int len);
 
 NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI, DOMStringImpl *_prefix,
-                                  DOMStringImpl *_name, bool readonly, bool /*lookupHTML*/, int *pExceptioncode)
+                                  DOMStringImpl *_name, bool readonly, bool lookupHTML, int *pExceptioncode)
 {
     /*kdDebug() << "DocumentImpl::getId( type: " << _type << ", uri: " << DOMString(_nsURI).string()
               << ", prefix: " << DOMString(_prefix).string() << ", name: " << DOMString(_name).string()
@@ -1691,12 +1691,12 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     NodeImpl::Id id = 0;
     QConstString n(_name->s, _name->l);
     bool cs = true; // case sensitive
-    if (_type != NodeImpl::NamespaceId) {
+    if (lookupHTML && _type != NodeImpl::NamespaceId) {
         // Each document maintains a mapping of tag name -> id for every tag name encountered
         // in the document.
         cs = (htmlMode() == XHtml);
         // First see if it's a HTML element name
-        if (!_nsURI || !strcasecmp(_nsURI, XHTML_NAMESPACE)) {
+        if ((!_nsURI && isHTMLDocument()) || !strcasecmp(_nsURI, XHTML_NAMESPACE)) {
             // we're in HTML namespace if we know the tag.
             // xhtml is lower case - case sensitive, easy to implement
             if ( cs && (id = lookup(n.string().ascii(), _name->l)) )
