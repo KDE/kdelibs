@@ -136,10 +136,13 @@ struct ObjectReference {
 
 /**
  * The definition of a parameter of a method
+ *
+ * hints is reserved for future extensions, such as default, min and maxvalues
  */
 struct ParamDef {
 	string type;
 	string name;
+	sequence<string> hints;
 };
 
 /**
@@ -157,6 +160,8 @@ enum MethodType {
 
 /**
  * The definition of a method.
+ *
+ * hints is reserved for future extensions, such as default, min and maxvalues
  */
 struct MethodDef {
 	string     name;
@@ -164,6 +169,7 @@ struct MethodDef {
 	MethodType flags;
 
 	sequence<ParamDef> signature;
+	sequence<string>   hints;
 };
 
 /**
@@ -189,11 +195,14 @@ enum AttributeType {
 
 /**
  * The definition of an attribute and/or stream
+ *
+ * hints is reserved for future extensions, such as default, min and maxvalues
  */
 struct AttributeDef {
 	string  name;
 	string  type;
 	AttributeType flags;
+	sequence<string>   hints;
 };
 
 /**
@@ -211,6 +220,8 @@ struct AttributeDef {
  *               connection is made in the corresponding direction.
  *               It cannot be just an attribute flag because of the syntax
  *               on a separate line.
+ *
+ * hints is reserved for future extensions, such as default, min and maxvalues
  */
 
 struct InterfaceDef {
@@ -221,25 +232,32 @@ struct InterfaceDef {
 	sequence<AttributeDef> attributes;
 	
 	sequence<string> defaultPorts;
+	sequence<string> hints;
 };
 
 // Type definitions (struct's and such)
 
 /**
  * One component of a struct
+ *
+ * hints is reserved for future extensions, such as default, min and maxvalues
  */
 struct TypeComponent {
 	string type;
 	string name;
+	sequence<string> hints;
 };
 
 /**
  * The definition of a struct
+ *
+ * hints is reserved for future extensions, such as default, min and maxvalues
  */
 struct TypeDef {
 	string name;
 
 	sequence<TypeComponent> contents;
+	sequence<string> hints;
 };
 
 /**
@@ -253,6 +271,8 @@ struct EnumComponent {
 
 /**
  * The definition of an enum
+ *
+ * hints is reserved for future extensions, such as default, min and maxvalues
  */
 struct EnumDef {
 	/**
@@ -263,10 +283,13 @@ struct EnumDef {
 	string name;	
 
 	sequence<EnumComponent> contents;
+	sequence<string> hints;
 };
 
 /**
  * The contents of an idl file
+ *
+ * hints is reserved for future extensions, such as default, min and maxvalues
  */
 struct ModuleDef {
 	string moduleName;
@@ -274,6 +297,7 @@ struct ModuleDef {
 	sequence<EnumDef> enums;
 	sequence<TypeDef> types;
 	sequence<InterfaceDef> interfaces;
+	sequence<string> hints;
 };
 
 /**
@@ -515,49 +539,101 @@ interface TraderQuery {
 	sequence<TraderOffer> query();
 };
 
-// this is used for generation of the Object_stub stuff
-// (use mcopidl -e Arts::Object to avoid code generation for this interface)
+/**
+ * Arts::Object is the base object that every interface implicitely inherits
+ *
+ * it is also the source for generation of the Object_stub stuff
+ * (use mcopidl -e Arts::Object to avoid code generation for this interface)
+ */
 interface Object {
-	// access to the flow system this object is running in
+	/**
+	 * access to the flow system this object is running in
+	 */
 	readonly attribute FlowSystem _flowSystem;
 
-	// returns the ID for methodinvocations to this specific method
-	// methodID = 0  =>  _lookupMethod (always)
+	/**  <interface description>
+	 * returns the ID for methodinvocations to this specific method
+	 * methodID = 0  =>  _lookupMethod (always)
+	 */
 	long _lookupMethod(MethodDef methodDef);
 
-	// returns the name of the interface
-	// methodID = 1  =>  _interfaceName (always)
+	/**  <interface description>
+	 * returns the name of the interface
+	 * methodID = 1  =>  _interfaceName (always)
+	 */
 	string _interfaceName();
 
-	// returns the interface description to a given interface
-	// methodID = 2  =>  _queryInterface (always)
+	/**  <interface description>
+	 * returns the interface description to a given interface
+	 * methodID = 2  =>  _queryInterface (always)
+	 */
 	InterfaceDef _queryInterface(string name);
 
-	// returns the type description to a given type
-	// methodID = 3  =>  _queryType (always)
+	/**  <interface description>
+	 * returns the type description to a given type
+	 * methodID = 3  =>  _queryType (always)
+	 */
 	TypeDef _queryType(string name);
 
-	// returns the enum description to a given enum
-	// methodID = 4  =>  _queryEnum (always)
+	/**  <interface description>
+	 * returns the enum description to a given enum
+	 * methodID = 4  =>  _queryEnum (always)
+	 */
 	EnumDef _queryEnum(string name);
 
-	// stringifies the object to one string
+	/**
+	 * stringifies the object to one string
+	 */
 	string _toString();
 	
-	// Run-time type compatibility check
+	/**  <interface description>
+	 * Run-time type compatibility check
+	 */
 	boolean _isCompatibleWith(string interfacename);
 
-	// prepares object for remote transmission (so that it will not be freed
-	// soon, since the remote receiver expects it to be there after receiving
-	// it)
+	/**  <reference counting>
+	 * prepares object for remote transmission (so that it will not be freed
+	 * soon, since the remote receiver expects it to be there after receiving
+	 * it)
+	 */
 	void _copyRemote();
 
-	// declares that the object is used remotely now (do that only after
-	// _copyRemote)
+	/**  <reference counting>
+	 * declares that the object is used remotely now (do that only after
+	 * _copyRemote)
+	 */
 	void _useRemote();
 
-	// declares that the object is no longer used remotely
+	/**  <reference counting>
+	 * declares that the object is no longer used remotely
+	 */
 	void _releaseRemote();
+
+	/**  <aggregation>
+	 * add a child object - this makes this object hold a strong reference to
+	 * the child object (i.e. the child object will stay alive at least as
+	 * long as the object does)
+	 *
+	 * if there is already a child with the same name, a postfix will be added
+	 * automatically (i.e. if you add an object named "view" twice, the first
+	 * will be called view, the second view1).
+	 */
+	string _addChild(object child, string name);
+
+	/**  <aggregation>
+	 * removes a child object 
+	 */
+	boolean _removeChild(string name);
+
+	/**  <aggregation>
+	 * gets a child object
+	 */
+	object _getChild(string name);
+
+	/**  <aggregation>
+	 * lists all children
+	 */
+	sequence<string> _queryChildren();
 };
 
 };

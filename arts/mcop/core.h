@@ -125,12 +125,13 @@ public:
 class ParamDef : public Arts::Type {
 public:
 	ParamDef();
-	ParamDef(const std::string& type, const std::string& name);
+	ParamDef(const std::string& type, const std::string& name, const std::vector<std::string>& hints);
 	ParamDef(Arts::Buffer& stream);
 	ParamDef(const ParamDef& copyType);
 	ParamDef& operator=(const ParamDef& assignType);
 	std::string type;
 	std::string name;
+	std::vector<std::string> hints;
 
 // marshalling functions
 	void readType(Arts::Buffer& stream);
@@ -140,7 +141,7 @@ public:
 class MethodDef : public Arts::Type {
 public:
 	MethodDef();
-	MethodDef(const std::string& name, const std::string& type, Arts::MethodType flags, const std::vector<Arts::ParamDef>& signature);
+	MethodDef(const std::string& name, const std::string& type, Arts::MethodType flags, const std::vector<Arts::ParamDef>& signature, const std::vector<std::string>& hints);
 	MethodDef(Arts::Buffer& stream);
 	MethodDef(const MethodDef& copyType);
 	MethodDef& operator=(const MethodDef& assignType);
@@ -148,6 +149,7 @@ public:
 	std::string type;
 	Arts::MethodType flags;
 	std::vector<Arts::ParamDef> signature;
+	std::vector<std::string> hints;
 
 // marshalling functions
 	void readType(Arts::Buffer& stream);
@@ -157,13 +159,14 @@ public:
 class AttributeDef : public Arts::Type {
 public:
 	AttributeDef();
-	AttributeDef(const std::string& name, const std::string& type, Arts::AttributeType flags);
+	AttributeDef(const std::string& name, const std::string& type, Arts::AttributeType flags, const std::vector<std::string>& hints);
 	AttributeDef(Arts::Buffer& stream);
 	AttributeDef(const AttributeDef& copyType);
 	AttributeDef& operator=(const AttributeDef& assignType);
 	std::string name;
 	std::string type;
 	Arts::AttributeType flags;
+	std::vector<std::string> hints;
 
 // marshalling functions
 	void readType(Arts::Buffer& stream);
@@ -173,7 +176,7 @@ public:
 class InterfaceDef : public Arts::Type {
 public:
 	InterfaceDef();
-	InterfaceDef(const std::string& name, const std::vector<std::string>& inheritedInterfaces, const std::vector<Arts::MethodDef>& methods, const std::vector<Arts::AttributeDef>& attributes, const std::vector<std::string>& defaultPorts);
+	InterfaceDef(const std::string& name, const std::vector<std::string>& inheritedInterfaces, const std::vector<Arts::MethodDef>& methods, const std::vector<Arts::AttributeDef>& attributes, const std::vector<std::string>& defaultPorts, const std::vector<std::string>& hints);
 	InterfaceDef(Arts::Buffer& stream);
 	InterfaceDef(const InterfaceDef& copyType);
 	InterfaceDef& operator=(const InterfaceDef& assignType);
@@ -182,6 +185,7 @@ public:
 	std::vector<Arts::MethodDef> methods;
 	std::vector<Arts::AttributeDef> attributes;
 	std::vector<std::string> defaultPorts;
+	std::vector<std::string> hints;
 
 // marshalling functions
 	void readType(Arts::Buffer& stream);
@@ -191,12 +195,13 @@ public:
 class TypeComponent : public Arts::Type {
 public:
 	TypeComponent();
-	TypeComponent(const std::string& type, const std::string& name);
+	TypeComponent(const std::string& type, const std::string& name, const std::vector<std::string>& hints);
 	TypeComponent(Arts::Buffer& stream);
 	TypeComponent(const TypeComponent& copyType);
 	TypeComponent& operator=(const TypeComponent& assignType);
 	std::string type;
 	std::string name;
+	std::vector<std::string> hints;
 
 // marshalling functions
 	void readType(Arts::Buffer& stream);
@@ -206,12 +211,13 @@ public:
 class TypeDef : public Arts::Type {
 public:
 	TypeDef();
-	TypeDef(const std::string& name, const std::vector<Arts::TypeComponent>& contents);
+	TypeDef(const std::string& name, const std::vector<Arts::TypeComponent>& contents, const std::vector<std::string>& hints);
 	TypeDef(Arts::Buffer& stream);
 	TypeDef(const TypeDef& copyType);
 	TypeDef& operator=(const TypeDef& assignType);
 	std::string name;
 	std::vector<Arts::TypeComponent> contents;
+	std::vector<std::string> hints;
 
 // marshalling functions
 	void readType(Arts::Buffer& stream);
@@ -236,12 +242,13 @@ public:
 class EnumDef : public Arts::Type {
 public:
 	EnumDef();
-	EnumDef(const std::string& name, const std::vector<Arts::EnumComponent>& contents);
+	EnumDef(const std::string& name, const std::vector<Arts::EnumComponent>& contents, const std::vector<std::string>& hints);
 	EnumDef(Arts::Buffer& stream);
 	EnumDef(const EnumDef& copyType);
 	EnumDef& operator=(const EnumDef& assignType);
 	std::string name;
 	std::vector<Arts::EnumComponent> contents;
+	std::vector<std::string> hints;
 
 // marshalling functions
 	void readType(Arts::Buffer& stream);
@@ -251,7 +258,7 @@ public:
 class ModuleDef : public Arts::Type {
 public:
 	ModuleDef();
-	ModuleDef(const std::string& moduleName, const std::vector<Arts::EnumDef>& enums, const std::vector<Arts::TypeDef>& types, const std::vector<Arts::InterfaceDef>& interfaces);
+	ModuleDef(const std::string& moduleName, const std::vector<Arts::EnumDef>& enums, const std::vector<Arts::TypeDef>& types, const std::vector<Arts::InterfaceDef>& interfaces, const std::vector<std::string>& hints);
 	ModuleDef(Arts::Buffer& stream);
 	ModuleDef(const ModuleDef& copyType);
 	ModuleDef& operator=(const ModuleDef& assignType);
@@ -259,6 +266,7 @@ public:
 	std::vector<Arts::EnumDef> enums;
 	std::vector<Arts::TypeDef> types;
 	std::vector<Arts::InterfaceDef> interfaces;
+	std::vector<std::string> hints;
 
 // marshalling functions
 	void readType(Arts::Buffer& stream);

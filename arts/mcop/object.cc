@@ -24,6 +24,7 @@
 #include "dispatcher.h"
 #include "flowsystem.h"
 #include "weakreference.h"
+#include "namedstore.h"
 #include <stdio.h>
 #include <iostream.h>
 
@@ -33,6 +34,7 @@ using namespace Arts;
 class Arts::ObjectInternalData {
 public:
 	list<WeakReferenceBase *> weakReferences;
+	NamedStore<Arts::Object> children;
 };
 
 struct Object_base::ObjectStreamInfo {
@@ -450,6 +452,31 @@ EnumDef Object_skel::_queryEnum(const string& name)
 	return Dispatcher::the()->interfaceRepo().queryEnum(name);
 }
 
+// Aggregation
+std::string Object_skel::_addChild(Arts::Object child, const std::string& name) 
+{
+	return _internalData->children.put(name,child);
+}
+
+bool Object_skel::_removeChild(const std::string& name)
+{
+	return _internalData->children.remove(name);
+}
+
+Arts::Object Object_skel::_getChild(const std::string& name)
+{
+	Arts::Object result;
+	if(_internalData->children.get(name,result)) 
+		return result;
+	else
+		return Arts::Object::null();
+}
+
+std::vector<std::string> *Object_skel::_queryChildren()
+{
+	return _internalData->children.contents();
+}
+
 void Object_skel::_addMethod(DispatchFunction disp, void *obj,
                                                const MethodDef& md)
 {
@@ -625,8 +652,44 @@ static void _dispatch_Arts_Object_09(void *object, Arts::Buffer *, Arts::Buffer 
 	((Arts::Object_skel *)object)->_releaseRemote();
 }
 
+// _addChild
+static void _dispatch_Arts_Object_10(void *object, Arts::Buffer *request, Arts::Buffer *result)
+{
+	Arts::Object_base* _temp_child;
+	readObject(*request,_temp_child);
+	Arts::Object child = Arts::Object::_from_base(_temp_child);
+	std::string name;
+	request->readString(name);
+	result->writeString(((Arts::Object_skel *)object)->_addChild(child,name));
+}
+
+// _removeChild
+static void _dispatch_Arts_Object_11(void *object, Arts::Buffer *request, Arts::Buffer *result)
+{
+	std::string name;
+	request->readString(name);
+	result->writeBool(((Arts::Object_skel *)object)->_removeChild(name));
+}
+
+// _getChild
+static void _dispatch_Arts_Object_12(void *object, Arts::Buffer *request, Arts::Buffer *result)
+{
+	std::string name;
+	request->readString(name);
+	Arts::Object returnCode = ((Arts::Object_skel *)object)->_getChild(name);
+	writeObject(*result,returnCode._base());
+}
+
+// _queryChildren
+static void _dispatch_Arts_Object_13(void *object, Arts::Buffer *, Arts::Buffer *result)
+{
+	std::vector<std::string> *_returnCode = ((Arts::Object_skel *)object)->_queryChildren();
+	result->writeStringSeq(*_returnCode);
+	delete _returnCode;
+}
+
 // _get__flowSystem
-static void _dispatch_Arts_Object_10(void *object, Arts::Buffer *, Arts::Buffer *result)
+static void _dispatch_Arts_Object_14(void *object, Arts::Buffer *, Arts::Buffer *result)
 {
 	Arts::FlowSystem returnCode = ((Arts::Object_skel *)object)->_flowSystem();
 	writeObject(*result,returnCode._base());
@@ -638,21 +701,31 @@ void Arts::Object_skel::_buildMethodTable()
 	m.fromString(
         "MethodTable:0000000e5f6c6f6f6b75704d6574686f6400000000056c6f6e6700"
         "000000020000000100000010417274733a3a4d6574686f64446566000000000a6d"
-        "6574686f64446566000000000f5f696e746572666163654e616d65000000000773"
-        "7472696e67000000000200000000000000105f7175657279496e74657266616365"
-        "0000000013417274733a3a496e7465726661636544656600000000020000000100"
-        "000007737472696e6700000000056e616d65000000000b5f717565727954797065"
-        "000000000e417274733a3a54797065446566000000000200000001000000077374"
-        "72696e6700000000056e616d65000000000b5f7175657279456e756d000000000e"
-        "417274733a3a456e756d44656600000000020000000100000007737472696e6700"
-        "000000056e616d65000000000a5f746f537472696e670000000007737472696e67"
-        "000000000200000000000000125f6973436f6d70617469626c6557697468000000"
-        "0008626f6f6c65616e00000000020000000100000007737472696e67000000000e"
-        "696e746572666163656e616d65000000000c5f636f707952656d6f746500000000"
-        "05766f69640000000002000000000000000b5f75736552656d6f74650000000005"
-        "766f69640000000002000000000000000f5f72656c6561736552656d6f74650000"
-        "000005766f6964000000000200000000000000115f6765745f5f666c6f77537973"
-        "74656d0000000011417274733a3a466c6f7753797374656d000000000200000000",
+        "6574686f644465660000000000000000000000000f5f696e746572666163654e61"
+        "6d650000000007737472696e6700000000020000000000000000000000105f7175"
+        "657279496e746572666163650000000013417274733a3a496e7465726661636544"
+        "656600000000020000000100000007737472696e6700000000056e616d65000000"
+        "0000000000000000000b5f717565727954797065000000000e417274733a3a5479"
+        "706544656600000000020000000100000007737472696e6700000000056e616d65"
+        "0000000000000000000000000b5f7175657279456e756d000000000e417274733a"
+        "3a456e756d44656600000000020000000100000007737472696e6700000000056e"
+        "616d650000000000000000000000000a5f746f537472696e670000000007737472"
+        "696e6700000000020000000000000000000000125f6973436f6d70617469626c65"
+        "576974680000000008626f6f6c65616e0000000002000000010000000773747269"
+        "6e67000000000e696e746572666163656e616d650000000000000000000000000c"
+        "5f636f707952656d6f74650000000005766f696400000000020000000000000000"
+        "0000000b5f75736552656d6f74650000000005766f696400000000020000000000"
+        "0000000000000f5f72656c6561736552656d6f74650000000005766f6964000000"
+        "000200000000000000000000000a5f6164644368696c640000000007737472696e"
+        "67000000000200000002000000076f626a65637400000000066368696c64000000"
+        "000000000007737472696e6700000000056e616d65000000000000000000000000"
+        "0d5f72656d6f76654368696c640000000008626f6f6c65616e0000000002000000"
+        "0100000007737472696e6700000000056e616d650000000000000000000000000a"
+        "5f6765744368696c6400000000076f626a65637400000000020000000100000007"
+        "737472696e6700000000056e616d650000000000000000000000000f5f71756572"
+        "794368696c6472656e00000000082a737472696e67000000000200000000000000"
+        "00000000115f6765745f5f666c6f7753797374656d0000000011417274733a3a46"
+        "6c6f7753797374656d00000000020000000000000000",
 		"MethodTable"
 	);
 	_addMethod(_dispatch_Arts_Object_00,this,Arts::MethodDef(m));
@@ -666,6 +739,10 @@ void Arts::Object_skel::_buildMethodTable()
 	_addMethod(_dispatch_Arts_Object_08,this,Arts::MethodDef(m));
 	_addMethod(_dispatch_Arts_Object_09,this,Arts::MethodDef(m));
 	_addMethod(_dispatch_Arts_Object_10,this,Arts::MethodDef(m));
+	_addMethod(_dispatch_Arts_Object_11,this,Arts::MethodDef(m));
+	_addMethod(_dispatch_Arts_Object_12,this,Arts::MethodDef(m));
+	_addMethod(_dispatch_Arts_Object_13,this,Arts::MethodDef(m));
+	_addMethod(_dispatch_Arts_Object_14,this,Arts::MethodDef(m));
 }
 
 /*
@@ -888,19 +965,18 @@ long Object_stub::_lookupMethodFast(const char *method)
 
 // other (normal) methods without fixed location
 
-string Object_stub::_toString()
+std::string Arts::Object_stub::_toString()
 {
-	long methodID = _lookupMethodFast("method:0000000a5f746f537472696e670000000007737472696e67000000000200000000");
+	long methodID = _lookupMethodFast("method:0000000a5f746f537472696e670000000007737472696e6700000000020000000000000000");
 	long requestID;
-	Buffer *request, *result;
-	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	// methodID = 7  =>  _toString
+	Arts::Buffer *request, *result;
+	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID,_connection);
-	if(!result) return ""; // error
-	string returnCode;
+	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return""; // error occured
+	std::string returnCode;
 	result->readString(returnCode);
 	delete result;
 	return returnCode;
@@ -908,7 +984,7 @@ string Object_stub::_toString()
 
 bool Arts::Object_stub::_isCompatibleWith(const std::string& interfacename)
 {
-	long methodID = _lookupMethodFast("method:000000125f6973436f6d70617469626c65576974680000000008626f6f6c65616e00000000020000000100000007737472696e67000000000e696e746572666163656e616d6500");
+	long methodID = _lookupMethodFast("method:000000125f6973436f6d70617469626c65576974680000000008626f6f6c65616e00000000020000000100000007737472696e67000000000e696e746572666163656e616d65000000000000000000");
 	long requestID;
 	Arts::Buffer *request, *result;
 	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
@@ -923,63 +999,131 @@ bool Arts::Object_stub::_isCompatibleWith(const std::string& interfacename)
 	return returnCode;
 }
 
-void Object_stub::_copyRemote()
+void Arts::Object_stub::_copyRemote()
 {
-	long methodID = _lookupMethodFast("method:0000000c5f636f707952656d6f74650000000005766f6964000000000200000000");
+	long methodID = _lookupMethodFast("method:0000000c5f636f707952656d6f74650000000005766f696400000000020000000000000000");
 	long requestID;
-	Buffer *request, *result;
-	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	// methodID = 8  =>  _copyRemote
+	Arts::Buffer *request, *result;
+	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
 	if(result) delete result;
 }
 
-void Object_stub::_useRemote()
+void Arts::Object_stub::_useRemote()
 {
-	long methodID = _lookupMethodFast("method:0000000b5f75736552656d6f74650000000005766f6964000000000200000000");
+	long methodID = _lookupMethodFast("method:0000000b5f75736552656d6f74650000000005766f696400000000020000000000000000");
 	long requestID;
-	Buffer *request, *result;
-	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	// methodID = 9  =>  _useRemote
+	Arts::Buffer *request, *result;
+	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
 	if(result) delete result;
 }
 
-void Object_stub::_releaseRemote()
+void Arts::Object_stub::_releaseRemote()
 {
-	long methodID = _lookupMethodFast("method:0000000f5f72656c6561736552656d6f74650000000005766f6964000000000200000000");
+	long methodID = _lookupMethodFast("method:0000000f5f72656c6561736552656d6f74650000000005766f696400000000020000000000000000");
 	long requestID;
-	Buffer *request, *result;
-	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
-	// methodID = 10  =>  _releaseRemote
+	Arts::Buffer *request, *result;
+	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
 	if(result) delete result;
 }
 
-FlowSystem Object_stub::_flowSystem()
+std::string Arts::Object_stub::_addChild(Arts::Object child, const std::string& name)
 {
-	long methodID = _lookupMethodFast("method:000000115f6765745f5f666c6f7753797374656d0000000011417274733a3a466c6f7753797374656d000000000200000000");
+	long methodID = _lookupMethodFast("method:0000000a5f6164644368696c640000000007737472696e67000000000200000002000000076f626a65637400000000066368696c64000000000000000007737472696e6700000000056e616d65000000000000000000");
 	long requestID;
-	Buffer *request, *result;
-	request = Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	Arts::Buffer *request, *result;
+	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	writeObject(*request,child._base());
+	request->writeString(name);
 	request->patchLength();
 	_connection->qSendBuffer(request);
 
-	result = Dispatcher::the()->waitForResult(requestID,_connection);
-	if(!result) return FlowSystem::null(); // error occured
-	FlowSystem_base* returnCode;
+	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return""; // error occured
+	std::string returnCode;
+	result->readString(returnCode);
+	delete result;
+	return returnCode;
+}
+
+bool Arts::Object_stub::_removeChild(const std::string& name)
+{
+	long methodID = _lookupMethodFast("method:0000000d5f72656d6f76654368696c640000000008626f6f6c65616e00000000020000000100000007737472696e6700000000056e616d65000000000000000000");
+	long requestID;
+	Arts::Buffer *request, *result;
+	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	request->writeString(name);
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return false; // error occured
+	bool returnCode = result->readBool();
+	delete result;
+	return returnCode;
+}
+
+Arts::Object Arts::Object_stub::_getChild(const std::string& name)
+{
+	long methodID = _lookupMethodFast("method:0000000a5f6765744368696c6400000000076f626a65637400000000020000000100000007737472696e6700000000056e616d65000000000000000000");
+	long requestID;
+	Arts::Buffer *request, *result;
+	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	request->writeString(name);
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
+	if (!result) return Arts::Object::null();
+	Arts::Object_base* returnCode;
 	readObject(*result,returnCode);
 	delete result;
-	return FlowSystem::_from_base(returnCode);
+	return Arts::Object::_from_base(returnCode);
+}
+
+std::vector<std::string> * Arts::Object_stub::_queryChildren()
+{
+	long methodID = _lookupMethodFast("method:0000000f5f71756572794368696c6472656e00000000082a737472696e6700000000020000000000000000");
+	long requestID;
+	Arts::Buffer *request, *result;
+	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
+	std::vector<std::string> *_returnCode = new std::vector<std::string>;
+	if(!result) return _returnCode; // error occured
+	result->readStringSeq(*_returnCode);
+	delete result;
+	return _returnCode;
+}
+
+Arts::FlowSystem Arts::Object_stub::_flowSystem()
+{
+	long methodID = _lookupMethodFast("method:000000115f6765745f5f666c6f7753797374656d0000000011417274733a3a466c6f7753797374656d00000000020000000000000000");
+	long requestID;
+	Arts::Buffer *request, *result;
+	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,methodID);
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Arts::Dispatcher::the()->waitForResult(requestID,_connection);
+	if (!result) return Arts::FlowSystem::null();
+	Arts::FlowSystem_base* returnCode;
+	readObject(*result,returnCode);
+	delete result;
+	return Arts::FlowSystem::_from_base(returnCode);
 }
 
 /*

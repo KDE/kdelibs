@@ -44,6 +44,7 @@ class FlowSystem;
 class MethodDef;
 class ObjectReference;
 class WeakReferenceBase;
+class Object;
 
 class Object_base : public NotificationClient {
 private:
@@ -155,6 +156,12 @@ public:
 	// Run-time type compatibility check
 	virtual bool _isCompatibleWith(const std::string& interfacename) = 0;
 
+	// Aggregation
+	virtual std::string _addChild(Arts::Object child, const std::string& name) = 0;
+	virtual bool _removeChild(const std::string& name) = 0;
+	virtual Arts::Object _getChild(const std::string& name) = 0;
+	virtual std::vector<std::string> * _queryChildren() = 0;
+
 	/*
 	 * when this is true, a fatal communication error has occured (of course
 	 * only possible for remote objects) - maybe your returncode is invalid,
@@ -257,6 +264,12 @@ public:
 	
 	// Run-time type compatibility check
 	bool _isCompatibleWith(const std::string& interfacename);
+
+	// Aggregation
+	std::string _addChild(Arts::Object child, const std::string& name);
+	bool _removeChild(const std::string& name);
+	Arts::Object _getChild(const std::string& name);
+	std::vector<std::string> * _queryChildren();
 };
 
 class Object_stub : virtual public Object_base {
@@ -311,6 +324,12 @@ public:
 	
 	// Run-time type compatibility check
 	bool _isCompatibleWith(const std::string& interfacename);
+
+	// Aggregation
+	std::string _addChild(Arts::Object child, const std::string& name);
+	bool _removeChild(const std::string& name);
+	Arts::Object _getChild(const std::string& name);
+	std::vector<std::string> * _queryChildren();
 
 	/*
 	 * communication error? this is true when your connection to the remote

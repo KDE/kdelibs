@@ -2051,7 +2051,11 @@ void doInterfacesSource(FILE *source)
 					md.name = "_set_"+ad.name;
 					md.type = "void";
 					md.flags = methodTwoway;
-					md.signature.push_back(ParamDef(ad.type,"newValue"));
+
+					ParamDef pd;
+					pd.type = ad.type;
+					pd.name = "newValue";
+					md.signature.push_back(pd);
 
 					createStubCode(source,d.name.c_str(),ad.name.c_str(),md);
 				}
@@ -2126,7 +2130,12 @@ void doInterfacesSource(FILE *source)
 					md.name = "_set_"+ad.name;
 					md.type = "void";
 					md.flags = methodTwoway;
-					md.signature.push_back(ParamDef(ad.type,"newValue"));
+
+					ParamDef pd;
+					pd.type = ad.type;
+					pd.name = "newValue";
+
+					md.signature.push_back(pd);
 
 					md.writeType(methodTable);
 					createDispatchFunction(source,mcount++,d,md,ad.name);

@@ -46,6 +46,10 @@ void yyerror( const char *s )
 	//   theParser->parse_error( idl_lexFile, s, idl_line_no );
 }
 
+static struct ParserGlobals {
+	vector<string> noHints;
+} *g;
+
 %}
 
 %union
@@ -132,7 +136,7 @@ structdef:
 	  T_SEMICOLON
 	  {
         char *qualified = ModuleHelper::qualify($2);
-		addStructTodo(TypeDef(qualified,*$5));
+		addStructTodo(TypeDef(qualified,*$5,g->noHints));
 		free(qualified);
 	    free($2);
 	  }
@@ -146,7 +150,7 @@ enumdef:
 	  T_SEMICOLON
 	  {
 	    char *qualified = ModuleHelper::qualify($2);
-	  	addEnumTodo(EnumDef(qualified,*$5));
+	  	addEnumTodo(EnumDef(qualified,*$5,g->noHints));
 		free(qualified);
 		free($2);
 		delete $5;
@@ -256,7 +260,7 @@ attributedef:
 		$$ = new vector<AttributeDef>;
 		for(i=$4->begin();i != $4->end();i++)
 		{
-	  	  $$->push_back(AttributeDef((*i),$3,(AttributeType)($1 + 16)));
+	  	  $$->push_back(AttributeDef((*i),$3,(AttributeType)($1 + 16),g->noHints));
 		  free(*i);
 		}
 		delete $4;
@@ -285,7 +289,7 @@ streamdef: maybedefault direction type T_STREAM identifierlist T_SEMICOLON
 		$$ = new vector<AttributeDef>;
 		for(i=$5->begin();i != $5->end();i++)
 		{
-	  	  $$->push_back(AttributeDef((*i),$3,(AttributeType)(($2|$1) + 8)));
+	  	  $$->push_back(AttributeDef((*i),$3,(AttributeType)(($2|$1) + 8),g->noHints));
 		  free(*i);
 		}
 		delete $5;
@@ -312,7 +316,7 @@ methoddef:
 	  maybeoneway type T_IDENTIFIER
 	  	T_LEFT_PARANTHESIS paramdefs T_RIGHT_PARANTHESIS T_SEMICOLON
 	  {
-	  	$$ = new MethodDef($3,$2,(MethodType)$1,*$5);
+	  	$$ = new MethodDef($3,$2,(MethodType)$1,*$5,g->noHints);
 		free($3);
 		free($2);
 	  }
@@ -348,7 +352,7 @@ paramdefs1:
 // one parameter (ex:  "long a")
 paramdef: type T_IDENTIFIER
 	  {
-	  	$$ = new ParamDef(string($1),string($2));
+	  	$$ = new ParamDef(string($1),string($2),g->noHints);
 		free($1);
 		free($2);
 	  };
@@ -390,7 +394,7 @@ structbody: epsilon {
 		{
 		  char *identifier = *i;
 
-		  $$->insert($$->begin(),TypeComponent($1,identifier));
+		  $$->insert($$->begin(),TypeComponent($1,identifier,g->noHints));
 		  free(identifier);
 		}
 		delete $2;
@@ -440,6 +444,8 @@ epsilon: /* empty */ ;
 
 void mcopidlParse( const char *_code )
 {
+	g = new ParserGlobals;
     mcopidlInitFlex( _code );
     yyparse();
+	delete g;
 }

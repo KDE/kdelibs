@@ -84,7 +84,9 @@ DynamicRequest& DynamicRequest::param(const AnyConstRef& ref)
 {
 	if(d->paramCount == d->method.signature.size())
 	{
-		d->method.signature.push_back(ParamDef(ref.type(),""));
+		ParamDef pd;
+		pd.type = ref.type();
+		d->method.signature.push_back(pd);
 	}
 	else
 	{

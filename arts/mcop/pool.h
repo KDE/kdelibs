@@ -20,8 +20,8 @@
 
     */
 
-#ifndef POOL_H
-#define POOL_H
+#ifndef ARTS_POOL_H
+#define ARTS_POOL_H
 
 /**
  * A pool object of the type T keeps a pool of T* pointers, that are numbered.
