@@ -116,6 +116,7 @@ struct KStylePrivate
 	bool  highcolor                : 1;
 	bool  useFilledFrameWorkaround : 1;
 	bool  etchDisabledText         : 1;
+	bool  scrollablePopupmenus     : 1;
 	bool  menuAltKeyNavigation     : 1;
 	bool  menuDropShadow           : 1;
 	int   popupMenuDelay;
@@ -172,6 +173,7 @@ KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
 	d->popupMenuDelay       = settings.readNumEntry ("/KStyle/Settings/PopupMenuDelay", 256);
 	d->etchDisabledText     = settings.readBoolEntry("/KStyle/Settings/EtchDisabledText", true);
 	d->menuAltKeyNavigation = settings.readBoolEntry("/KStyle/Settings/MenuAltKeyNavigation", true);
+	d->scrollablePopupmenus = settings.readBoolEntry("/KStyle/Settings/ScrollablePopupMenus", false);
 	d->menuDropShadow       = settings.readBoolEntry("/KStyle/Settings/MenuDropShadow", false);
 	d->menuHandler = NULL;
 
@@ -1677,6 +1679,9 @@ int KStyle::styleHint( StyleHint sh, const QWidget* w,
 	{
 		case SH_EtchDisabledText:
 			return d->etchDisabledText ? 1 : 0;
+
+		case SH_PopupMenu_Scrollable:
+			return d->scrollablePopupmenus ? 1 : 0;
 
 		case SH_MenuBar_AltKeyNavigation:
 			return d->menuAltKeyNavigation ? 1 : 0;
