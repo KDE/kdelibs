@@ -787,63 +787,59 @@ void DocumentImpl::setDocumentChanged(bool b)
 void DocumentImpl::recalcStyle( StyleChange change )
 {
 //     qDebug("recalcStyle(%p)", this);
+//     QTime qt;
+//     qt.start();
     if ( change == Force ) {
-	RenderStyle *oldStyle = m_style;
-	if ( oldStyle ) oldStyle->ref();
+        RenderStyle *oldStyle = m_style;
+        if ( oldStyle ) oldStyle->ref();
 
-	//QTime qt;
-	//qt.start();
-	if( !m_render ) return;
-	setStyle(new RenderStyle());
-	m_style->setDisplay(BLOCK);
-	m_style->setVisuallyOrdered( visuallyOrdered );
+        if( !m_render ) return;
+        setStyle(new RenderStyle());
+        m_style->setDisplay(BLOCK);
+        m_style->setVisuallyOrdered( visuallyOrdered );
 	// ### make the font stuff _really_ work!!!!
 
-	QFont f = KGlobalSettings::generalFont();
-	if (m_view)
-	{
-	    const KHTMLSettings *settings = m_view->part()->settings();
-	    f.setFamily(settings->stdFontName());
+        QFont f = KGlobalSettings::generalFont();
+        if (m_view) {
+            const KHTMLSettings *settings = m_view->part()->settings();
+            f.setFamily(settings->stdFontName());
 
-	    QValueList<int> fs = settings->fontSizes();
-	    float dpiY = 72.; // fallback
-	    if ( !khtml::printpainter )
-		dpiY = paintDeviceMetrics()->logicalDpiY();
-	    if ( !khtml::printpainter && dpiY < 96 )
-		dpiY = 96.;
-	    float size = fs[3] * dpiY / 72.;
-	    if(size < settings->minFontSize())
-		size = settings->minFontSize();
+            QValueList<int> fs = settings->fontSizes();
+            float dpiY = 72.; // fallback
+            if ( !khtml::printpainter )
+                dpiY = paintDeviceMetrics()->logicalDpiY();
+            if ( !khtml::printpainter && dpiY < 96 )
+                dpiY = 96.;
+            float size = fs[3] * dpiY / 72.;
+            if(size < settings->minFontSize())
+                size = settings->minFontSize();
 
-	    khtml::setFontSize( f, int(size),  settings, paintDeviceMetrics() );
-#if QT_VERSION < 300
-	    KGlobal::charsets()->setQFont(f, settings->charset());
-#endif
-	}
+            khtml::setFontSize( f, int(size),  settings, paintDeviceMetrics() );
+        }
 
-	//kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
-	m_style->setFont(f);
+        //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
+        m_style->setFont(f);
 
-	if ( parseMode() != Strict )
-	    m_style->setHtmlHacks(true); // enable html specific rendering tricks
-	StyleChange ch = diff( m_style, oldStyle );
-	if(m_render && ch != NoChange)
-	    m_render->setStyle(m_style);
-	if ( change != Force )
-	    change = ch;
+        if ( parseMode() != Strict )
+            m_style->setHtmlHacks(true); // enable html specific rendering tricks
+        StyleChange ch = diff( m_style, oldStyle );
+        if(m_render && ch != NoChange)
+            m_render->setStyle(m_style);
+        if ( change != Force )
+            change = ch;
     }
 
     NodeImpl *n;
     for (n = _first; n; n = n->nextSibling())
-	if ( change>= Inherit || n->hasChangedChild() || n->changed() )
-	    n->recalcStyle( change );
+        if ( change>= Inherit || n->hasChangedChild() || n->changed() )
+            n->recalcStyle( change );
     //kdDebug( 6020 ) << "TIME: recalcStyle() dt=" << qt.elapsed() << endl;
 
     // ### should be done by the rendering tree itself,
     // this way is rather crude and CPU intensive
     if ( changed() ) {
-	renderer()->updateSize();
-	renderer()->repaint();
+        renderer()->updateSize();
+        renderer()->repaint();
     }
 
     setChanged( false );
@@ -878,13 +874,10 @@ void DocumentImpl::updateDocumentsRendering()
     }
 }
 
-void DocumentImpl::attach(KHTMLView *w)
+void DocumentImpl::attach()
 {
-    m_view = w;
-    if ( m_view ) {
-        m_docLoader->m_part = w->part();
+    if ( m_view )
         setPaintDevice( m_view );
-    }
 
 #if 0 // Nonsense! (Dirk)
     // Create a style selector based on all of the stylesheets in the document
@@ -892,7 +885,7 @@ void DocumentImpl::attach(KHTMLView *w)
 #endif
 
     // Create the rendering tree
-    m_render = new RenderRoot(w);
+    m_render = new RenderRoot(m_view);
     recalcStyle( Force );
 
     NodeBaseImpl::attach();

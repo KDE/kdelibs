@@ -1416,7 +1416,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     d->m_doc = DOMImplementationImpl::instance()->createHTMLDocument( d->m_view );
 
   d->m_doc->ref();
-  d->m_doc->attach( d->m_view );
+  d->m_doc->attach( );
   d->m_doc->setURL( m_url.url() );
   // We prefer m_baseURL over m_url because m_url changes when we are
   // about to load a new page.
