@@ -250,7 +250,7 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
       result = i18n( "Could not create socket for accessing %1" ).arg( errorText );
       break;
     case  KIO::ERR_COULD_NOT_CONNECT:
-      result = i18n( "Could not connect to host %1" ).arg( errorText );
+      result = i18n( "Could not connect to host %1" ).arg( errorText.isEmpty() ? QString::fromLatin1("localhost") : errorText );
       break;
     case  KIO::ERR_CONNECTION_BROKEN:
       result = i18n( "Connection to host %1 is broken" ).arg( errorText );
