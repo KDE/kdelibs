@@ -77,7 +77,7 @@ int main( int argc, char *argv[] )
          switch(test)
          {
 case 1:
-  i = KMessageBox::questionYesNo(0, "Do you have a printer? thisisaverylongdkldhklghklghklashgkllasghkdlsghkldfghklsabla bla bbla bla.");
+  i = KMessageBox::questionYesNo(0, "Do you have a printer? thisisaverylongdkldhklghklghklashgkllasghkdlsghkldfghklsabla bla bbla bla. It also has <a href=http://www.kde.org>this URL</a>.");
   break;
 
 case 2:
