@@ -911,8 +911,8 @@ void HTMLInputElementImpl::calcMinMaxWidth()
     layout();
 
     if(w)
-	minWidth = w->width();
-    else if (_type == HIDDEN)
+	minWidth = width;
+    else if (_type == HIDDEN || _type == FILE)
 	minWidth = 0;
     else
 	printf("InputElement: no Widget!!!\n");
@@ -1103,28 +1103,15 @@ void HTMLSelectElementImpl::attach(KHTMLWidget *_view)
 {
     view = _view;
 
-    QSize size;
-
     if ( _size > 1 || _multiple )
     {
 	w = new QListBox( view->viewport() );
-	size.setWidth( 150 );
-	size.setHeight( 20 * _size );
-	ascent = 25;
-	descent = size.height() - ascent;
 	((QListBox *)w)->setMultiSelection( _multiple );
     }
     else
     {
 	w = new QComboBox( FALSE, view->viewport() );
-	size.setWidth( 150 );
-	size.setHeight( 25 );
-	descent = 5;
-	ascent = size.height() - descent;
     }
-
-    width = size.width();
-    w->resize(size);
 
     if(w && _disabled) w->setEnabled(false);
 }
@@ -1180,6 +1167,28 @@ void HTMLSelectElementImpl::layout( bool )
 	    }
 	}
     }
+
+    w->resize(w->sizeHint());
+#if 0
+
+    if ( _size > 1 || _multiple )
+    {
+	size.setWidth( 150 );
+	size.setHeight( 20 * _size );
+	ascent = 25;
+	descent = size.height() - ascent;
+    }
+    else
+    {
+	size.setWidth( 150 );
+	size.setHeight( 25 );
+	descent = 5;
+	ascent = size.height() - descent;
+    }
+#endif
+    descent = 5;
+    ascent = w->height() - descent;
+    width = w->width();
 
     setLayouted();
     setBlocking(false);
