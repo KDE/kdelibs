@@ -514,7 +514,7 @@ int main(int argc, char *argv[])
   KURL theKow = "http://www.google.de/search?q=frerich&hlx=xx&hl=de&empty=&lr=lang+de&test=%2B%20%3A%25";
   check("queryItem (first item)", theKow.queryItem("q"), "frerich");
   check("queryItem (middle item)", theKow.queryItem("hl"), "de");
-  // ##### check("queryItem (last item)", theKow.queryItem("lr"), "lang de"); // '+' should be decoded into space, right?
+  check("queryItem (last item)", theKow.queryItem("lr"), "lang de");
   check("queryItem (invalid item)", theKow.queryItem("InterstellarCounselor"), QString::null);
   check("queryItem (empty item)", theKow.queryItem("empty"), "");
   check("queryItem (item with encoded chars)", theKow.queryItem("test"), "+ :%");
