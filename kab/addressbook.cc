@@ -15,7 +15,6 @@
    $Id$	 
 */
 
-#warning Remove ifndef KAB_BIC in kdelibs/kab/addressbook.h and .cpp next Friday
 #include "addressbook.h"
 #include "qconfigDB.h"
 
@@ -544,11 +543,7 @@ AddressBook::ErrorCode AddressBook::getState()
   // ###########################################################################
 }
 
-#ifndef KAB_BIC
-AddressBook::ErrorCode AddressBook::load(QString filename)
-#else
 AddressBook::ErrorCode AddressBook::load(const QString& filename)
-#endif
 {
   // ----- Remark: Close the file if it could not be loaded!
   // ###########################################################################
@@ -1719,11 +1714,7 @@ AddressBook::loadConfigFile()
 }
 
 AddressBook::ErrorCode
-#ifndef KAB_BIC
-AddressBook::makeVCardFromEntry(const Entry&, QString)
-#else
 AddressBook::makeVCardFromEntry(const Entry&, const QString&)
-#endif
 {
   // ###########################################################################
   return NotImplemented;

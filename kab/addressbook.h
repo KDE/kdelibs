@@ -422,11 +422,7 @@ public:
   ErrorCode getState();
   /** Load the file with the given path. An empty file name reloads the 
    *  currently opened file. */
-#ifndef KAB_BIC
-  ErrorCode load(QString filename=QString::null);
-#else
   ErrorCode load(const QString& filename=QString::null);
-#endif
   /** Save the file to the given path and file name.  An empty file name saves 
    *  to the file where the database has been read from.
    *  If force is true, the method will switch to r/w mode for saving and
@@ -519,11 +515,7 @@ public:
   /** This method parses a vCard and creates an Entry object from it. */
   ErrorCode makeEntryFromVCard(const QString& card, Entry&);
   /** This method creates a vCard string from an entry. */
-#ifndef KAB_BIC
-  ErrorCode makeVCardFromEntry(const Entry& entry, QString card);
-#else
   ErrorCode makeVCardFromEntry(const Entry& entry, const QString& card);
-#endif
   /** Returns the complete path to the user standard file. An empty path
    *  indicates an error, but this should not happen. It is NOT ensured
    *  that the file exists. */
