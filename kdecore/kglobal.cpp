@@ -102,17 +102,19 @@ QFont KGlobal::generalFont()
 	
 QFont KGlobal::fixedFont()
 {
-    if(_fixedFont) return *_fixedFont;
+    if(_fixedFont) {
+        return *_fixedFont;
+    }
 
     KConfig *c = KGlobal::config();
     c->setGroup( "General" );
     _fixedFont = new QFont(c->readFontEntry("fixedFont"));
-    if( *_fixedFont == QFont::defaultFont() )
-    {
-      *_fixedFont = QFont("fixed", 12, QFont::Normal);
-      _fixedFont->setStyleHint(QFont::Courier);
-      _fixedFont->setFixedPitch(true);
-      charsets()->setQFont(*_fixedFont, charsets()->charsetForLocale());
+    
+    if(!QFontInfo(*_fixedFont).fixedPitch() ) {
+        *_fixedFont = QFont("fixed",
+                            _fixedFont->pointSize(), QFont::Normal);
+        _fixedFont->setStyleHint(QFont::Courier);
+        _fixedFont->setFixedPitch(true);
     }
     return *_fixedFont;
 }
