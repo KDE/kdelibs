@@ -283,7 +283,7 @@ bool KSpellConfig::interpret (QString &fname, QString &lname,
       fname.remove (fname.length()-4,4);
 
 
-  kdebug(KDEBUG_INFO, 750, "KSpellConfig::interpert [%s]", (const char *)fname);
+  kdebug(KDEBUG_INFO, 750, "KSpellConfig::interpret [%s]", (const char *)fname);
 
   //These are mostly the ispell-langpack defaults
   if (fname=="english")
@@ -593,7 +593,6 @@ void KSpellConfig::operator= (const KSpellConfig &ksc)
 {
   //We want to copy the data members, but not the
   //pointers to the child widgets
-  kdebug (KDEBUG_INFO, 750, "op=");
   setNoRootAffix (ksc.noRootAffix());
   setRunTogether (ksc.runTogether());
   setDictionary (ksc.dictionary());

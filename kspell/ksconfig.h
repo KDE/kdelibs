@@ -33,8 +33,6 @@ enum Encoding {
  *  (in which case, the application should save the settings for use
  *  next time it is run).
  *
- *  KSpellConfig's favorite size (when used as a widget) is 
- *   (width, height) = (490x317)
  *
  *  @author David Sweet dsweet@wheatcomputers.com
  *  @short Configuration dialog for KSpell
@@ -44,9 +42,7 @@ enum Encoding {
 
 class KSpellConfig : public QWidget
 {
-
-  Q_OBJECT;
-  enum { sizehint_x=490, sizehint_y=317 };
+ Q_OBJECT
 
 public:
   
@@ -75,6 +71,8 @@ public:
   void setNoRootAffix (bool);
   void setRunTogether(bool);
   void setDictionary (const char *);
+  void setDictionary (const QString qs)
+    { setDictionary ((const char *)qs); }
   void setDictFromList (bool dfl);
   //  void setPersonalDict (const char *);
   void setEncoding (int enctype);
@@ -96,13 +94,6 @@ public:
    *  you have (or the user has) chosen to become the global, default settings.
    */
   bool writeGlobalSettings (void);
-
-  /**
-   * Tells you what a good size is for the ksconfig widget.
-   */
-  /*  QSize sizeHint(void) const 
-    {return QSize (sizehint_x, sizehint_y);}
-   */
 
 
 protected:

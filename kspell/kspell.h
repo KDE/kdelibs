@@ -275,6 +275,7 @@ protected slots:
 		   
   void slotStopCancel (int);
   void ispellExit (KProcess *);
+  void ispellErrors (KProcess *, char *, int);
 
 signals:
   void dialog3 ();
@@ -301,7 +302,7 @@ protected:
   unsigned int lastpos, totalpos, lastline, posinline, lastlastline;
   unsigned int offset, progres, curprog;
 
-  int parseOneResponse (QString _buffer, QString word, QStrList *sugg);
+  int parseOneResponse (const QString &_buffer, QString &word, QStrList *sugg);
   QString funnyWord (QString word);
   void dialog (QString word, QStrList *sugg, const char* _slot);
   inline QString replacement (void)

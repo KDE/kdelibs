@@ -18,17 +18,17 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
   //Dlgedit
 #define QLineEdit KLined
 
-	QLineEdit* tmpQLineEdit;
-	tmpQLineEdit = new QLineEdit( this, "LineEdit_1" );
-	tmpQLineEdit->setGeometry( 110, 50, 190, 30 );
-	tmpQLineEdit->setText( "" );
-	tmpQLineEdit->setMaxLength( 32767 );
-	tmpQLineEdit->setEchoMode( QLineEdit::Normal );
-	tmpQLineEdit->setFrame( TRUE );
+	KLined* tmpKLined;
+	tmpKLined = new KLined( this, "LineEdit_1" );
+	tmpKLined->setGeometry( 110, 50, 190, 30 );
+	tmpKLined->setText( "" );
+	tmpKLined->setMaxLength( 32767 );
+	tmpKLined->setEchoMode( KLined::Normal );
+	tmpKLined->setFrame( TRUE );
 	//
-	children->append (tmpQLineEdit);
-	layout->addWidget (tmpQLineEdit,1,1);
-	tmpQLineEdit->setMinimumWidth (tmpQLineEdit->sizeHint().width());
+	children->append (tmpKLined);
+	layout->addWidget (tmpKLined,1,1);
+	tmpKLined->setMinimumWidth (tmpKLined->sizeHint().width());
 	
 	
 	QPushButton *tmpQPushButtonRA = 
@@ -157,7 +157,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 	//
 	children->append (tmpQLabel);
 	layout->addWidget (tmpQLabel, 0, 1);
-	//	tmpQLabel->setMinimumSize (tmpQLabel->sizeHint());
+	tmpQLabel->setMinimumSize (tmpQLabel->sizeHint());
 		
 
 	tmpQPushButton = new QPushButton( this, "PushButton_8" );
@@ -178,7 +178,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 	//	tmpQPushButton->setMinimumSize (butSH);
 
 	resize(478, 222);
-#undef QLineEdit
+#undef KLined
        
    //end Dlgedit
 
@@ -198,13 +198,13 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 	wordlabel=tmpQLabel;
 	qpbrep=tmpQPushButtonR;
 	qpbrepa=tmpQPushButtonRA;
-	editbox=tmpQLineEdit;
+	editbox=tmpKLined;
 	listbox=tmpQListBox;
 
 	
 
-	connect (editbox,SIGNAL (textChanged (const char *)),
-		  this, SLOT (textChanged (const char *)));
+	connect (editbox,SIGNAL (textChanged (const QString &)),
+		  this, SLOT (textChanged (const QString &)));
 	connect (editbox,SIGNAL (returnPressed ()),
 		  this, SLOT (replace ()));
 	
@@ -224,7 +224,7 @@ KSpellDlg::KSpellDlg (QWidget *, const char *name,
 
 void KSpellDlg::init (const QString& _word, QStrList *_sugg)
 {
-  //  printf ("init %s\n",_word);
+  printf ("init %s\n", (const char *)_word);
   sugg=_sugg;
   word=_word;
   listbox->clear();
@@ -272,7 +272,7 @@ void KSpellDlg::standby (void)
   qpbrepa->setEnabled (FALSE);
 }
 
-void KSpellDlg::textChanged (const char *)
+void KSpellDlg::textChanged (const QString &)
 {
   qpbrep->setEnabled (TRUE);
   qpbrepa->setEnabled (TRUE);

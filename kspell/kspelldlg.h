@@ -6,12 +6,11 @@
 #include <qpushbutton.h>
 #include <qbutton.h>
 #include <qlabel.h>
-#include <qlineedit.h>
 #include <qlistbox.h>
 #include <qlayout.h>
 
-
 #include <klined.h>
+
 
 //Possible result codes
 enum KS_RESULT {
@@ -71,7 +70,7 @@ protected slots:
   void stop();
   void help();
 
-  void textChanged (const char *);
+  void textChanged (const QString &);
 
   void selected (int i);
   void highlighted (int i);

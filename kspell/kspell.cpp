@@ -152,16 +152,31 @@ KSpell::startIspell(void)
 
   // -a : pipe mode
   // -S : sort suggestions by probable correctness
-  connect(proc, SIGNAL(processExited(KProcess *)),
-	  this, SLOT (ispellExit (KProcess *)));
-
-  OUTPUT(KSpell2);
+  if (trystart==0) //don't connect these multiple times
+    {
+      connect (proc, SIGNAL (  receivedStderr (KProcess *, char *, int)), 
+	       this, SLOT (ispellErrors (KProcess *, char *, int)));
+      
+      
+      connect(proc, SIGNAL(processExited(KProcess *)),
+	      this, SLOT (ispellExit (KProcess *)));
+      
+      OUTPUT(KSpell2);
+    }
 
   if (proc->start ()==FALSE)
     {
       emit ready(this);
     }
 
+}
+
+void
+KSpell::ispellErrors (KProcess *, char *buffer, int buflen)
+{
+  buffer [buflen-1] = '\0';
+  kdebug (KDEBUG_INFO, 750, "ispellErrors [%s]\n",
+	  buffer);
 }
 
 void KSpell::KSpell2 (KProcIO *)
@@ -321,7 +336,7 @@ bool KSpell::checkWord (QString buffer, bool _usedialog)
 
 void KSpell::checkWord2 (KProcIO *)
 {
-  char word [TEMPsz];
+  QString word;
 
 
   proc->fgets (temp, TEMPsz, TRUE); //get ispell's response
@@ -346,7 +361,7 @@ void KSpell::checkWord3 (void)
 {
   disconnect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
 
-  emit corrected (cwword.data(), replacement(), 0L);
+  emit corrected (cwword, replacement(), 0L);
 }
 
 QString KSpell::funnyWord (QString word)
@@ -386,7 +401,7 @@ QString KSpell::funnyWord (QString word)
 }
 	
   
-int KSpell::parseOneResponse (QString buffer, QString word, QStrList *sugg)
+int KSpell::parseOneResponse (const QString &buffer, QString &word, QStrList *sugg)
   // buffer is checked, word and sugg are filled in
   // returns
   //   GOOD    if word is fine
@@ -397,7 +412,7 @@ int KSpell::parseOneResponse (QString buffer, QString word, QStrList *sugg)
   QString temp;
   int e;
 
-  word [0]='\0';
+  word = "";
   posinline=0;
 
   sugg->clear();
@@ -439,7 +454,7 @@ int KSpell::parseOneResponse (QString buffer, QString word, QStrList *sugg)
 
       ///// Replace-list stuff ////
       replacelist.first();
-      while ((e=replacelist.findNext (word))!=-1 && e%2!=0)
+      while ((e=replacelist.findNext ((const char *)word))!=-1 && e%2!=0)
 	replacelist.next();
 
       if (e!=-1)
@@ -535,7 +550,7 @@ void KSpell::checkList3 ()
   disconnect (this, SIGNAL (ez()), this, SLOT (checkList3()));
 
 
-  char word [TEMPsz];
+  QString word;
 
     do
       {
@@ -554,7 +569,7 @@ void KSpell::checkList3 ()
 
 		if (e==REPLACE)
 		  {
-		    emit corrected (orig.data(), replacement(), lastpos);
+		    emit corrected (orig, replacement(), lastpos);
 		    //  newbuffer.replace (lastpos,orig.length(),word);
 		  }
 		else 
@@ -587,7 +602,7 @@ void KSpell::checkList4 ()
     case KS_REPLACEALL:
       kdebug(KDEBUG_INFO, 750, "cklist4: lastpos==(%d)", lastpos);
       wordlist->remove (lastpos-1);
-      wordlist->insert (lastpos-1, replacement());
+      wordlist->insert (lastpos-1, (const char *)replacement());
       wordlist->next();
       break;
     case KS_CANCEL:
@@ -648,7 +663,7 @@ bool KSpell::check (QString _buffer)
 void KSpell::check2 (KProcIO *)
 {
   int e, tempe;
-  char word [TEMPsz];
+  QString word;
 
   do
     {
@@ -670,14 +685,16 @@ void KSpell::check2 (KProcIO *)
 	      if (e==REPLACE)
 		{
 		  dlgreplacement=word;
-		  emit corrected (orig.data(), replacement(), lastpos);
-		  offset+=strlen(replacement())-orig.length();
+		  emit corrected (orig, replacement(), lastpos);
+		  offset+=replacement().length()-orig.length();
 		  newbuffer.replace (lastpos,orig.length(),word);
 		}
-	      else 
+	      else  //MISTAKE
 		{
 		  cwword=word;
-		  //		  NOOUTPUT (check2);
+		  kdebug(KDEBUG_INFO, 750, "(Before dialog) word=[%s] cwword =[%s]\n",
+			 (const char *)word, (const char *)cwword);
+
 		  dialog (word, &sugg, SLOT (check3()));
 		  return;
 		}
@@ -732,15 +749,16 @@ void KSpell::check3 ()
 {
   disconnect (this, SIGNAL (dialog3()), this, SLOT (check3()));
 
-  kdebug(KDEBUG_INFO, 750, "check3 %s %s %d", cwword.data(), replacement().data(), dlgresult);
+  kdebug(KDEBUG_INFO, 750, "check3 [%s] [%s] %d", (const char *)cwword, 
+	 (const char *)replacement(), dlgresult);
 
   //others should have been processed by dialog() already
   switch (dlgresult)
     {
     case KS_REPLACE:
     case KS_REPLACEALL:
-      offset+=strlen(replacement())-orig.length();
-      newbuffer.replace (lastpos,cwword.length(),replacement());
+      offset+=replacement().length()-orig.length();
+      newbuffer.replace (lastpos, cwword.length(), replacement());
       break;
     case KS_CANCEL:
       ksdlg->hide();
@@ -814,11 +832,11 @@ void KSpell::dialog2 (int result)
       break;
     case KS_REPLACEALL:
       replacelist.append (dlgorigword);
-      replacelist.append (replacement());
+      replacelist.append ((const char *)replacement());
       break;
     }
 
-  emit corrected (dlgorigword.data(), replacement (), lastpos);
+  emit corrected (dlgorigword, replacement(), lastpos);
   connect (this, SIGNAL (dialog3()), this, dialog3slot.data());
   emit dialog3();
 }
