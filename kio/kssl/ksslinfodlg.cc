@@ -376,7 +376,7 @@ void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
     _frame = new QFrame(this);
     QGridLayout *grid = new QGridLayout(_frame, 1, 2, KDialog::marginHint(), KDialog::spacingHint());
     grid->setAutoAdd(true);
-    QLabel *label;
+    QLabel *label = 0L;
     if (!(tmp = cert.getValue("O")).isEmpty()) {
         label = new QLabel(i18n("Organization:"), _frame);
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -417,7 +417,7 @@ void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
             new QLabel(tmp, _frame);
         }
     }
-    if (label) {
+    if (label && viewport()) {
         viewport()->setBackgroundMode(label->backgroundMode());
     }
     addChild(_frame);
