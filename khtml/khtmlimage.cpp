@@ -34,7 +34,7 @@
 #include <kmimetype.h>
 #include <klocale.h>
 
-K_EXPORT_COMPONENT_FACTORY( khtmlimagepart, KHTMLImageFactory )
+K_EXPORT_COMPONENT_FACTORY( khtmlimagefactory /*NOT the part name, see Makefile.am*/, KHTMLImageFactory )
 
 KInstance *KHTMLImageFactory::s_instance = 0;
 

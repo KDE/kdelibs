@@ -56,19 +56,25 @@ libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	$(LIB_KPARTS) \
 	$(top_builddir)/kdeprint/libkdeprint.la  \
 	$(top_builddir)/kutils/libkutils.la \
-        $(top_builddir)/kwallet/client/libkwalletclient.la
+	$(top_builddir)/kwallet/client/libkwalletclient.la
 
+# init_libkhtml is in libkhtml.so; init_libkhtmlpart needs to be in the part
 dummy.cpp: $(srcdir)/Makefile.am
 	echo 'extern "C" void* init_libkhtml();' > $@
 	echo 'extern "C" void* init_libkhtmlpart() { return init_libkhtml(); } ' >> $@
 
-khtmlimagepart_la_SOURCES = dummy.cpp
-khtmlimagepart_la_LDFLAGS = -no-undefined -module $(KDE_PLUGIN) $(all_libraries)
-khtmlimagepart_la_LIBADD = libkhtml.la 
-
 libkhtmlpart_la_SOURCES = dummy.cpp
 libkhtmlpart_la_LDFLAGS = -no-undefined -module $(KDE_PLUGIN) $(all_libraries)
 libkhtmlpart_la_LIBADD = libkhtml.la
+
+# init_khtmlimagefactory is in libkhtml.so; init_khtmlimagepart needs to be in the part
+imgdummy.cpp: $(srcdir)/Makefile.am
+	echo 'extern "C" void* init_khtmlimagefactory();' > $@
+	echo 'extern "C" void* init_khtmlimagepart() { return init_khtmlimagefactory(); } ' >> $@
+
+khtmlimagepart_la_SOURCES = imgdummy.cpp
+khtmlimagepart_la_LDFLAGS = -no-undefined -module $(KDE_PLUGIN) $(all_libraries)
+khtmlimagepart_la_LIBADD = libkhtml.la 
 
 INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop -I$(srcdir)/misc \
