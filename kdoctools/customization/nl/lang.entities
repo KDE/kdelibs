@@ -9,7 +9,7 @@
 <!-- The following entities should only use &kappname; in their 
      text                                                          -->
 
-<!-- Licence links; see ksgmltools/TODO -->
+<!-- Licence links -->
 <!ENTITY underGPL           PUBLIC "-//KDE//DOCUMENT GPL Licence Declaration//NL"
   "entities/underGPL.docbook"                       ><!-- level: para -->
 <!ENTITY underFDL           PUBLIC "-//KDE//DOCUMENT FDL Licence Declaration//NL"
