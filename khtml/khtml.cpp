@@ -1259,6 +1259,7 @@ void KHTMLWidget::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
 	// when we finish our drag, we need to undo our mouse press
 	pressed = false;
+    m_strSelectedURL = "";
 	return;
     }
 
@@ -1426,7 +1427,7 @@ void KHTMLWidget::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     if ( clue == 0 )
 	return;
 #endif
-    if ( m_strSelectedURL.isNull() )
+    if ( m_strSelectedURL.isEmpty() )
 	return;
 
     if ( _mouse->button() != RightButton )
