@@ -110,6 +110,7 @@ void KIconLoaderCanvas::slotLoadDir()
 	    item->setRenameEnabled( FALSE );
 	    item->setDragEnabled( FALSE );
 	    item->setDropEnabled( FALSE );
+	    item->setSelectable( FALSE );
 	}
 	QApplication::restoreOverrideCursor();
 	emit finished();
@@ -117,7 +118,7 @@ void KIconLoaderCanvas::slotLoadDir()
 }
 
 
-void KIconLoaderCanvas::slotCurrentChanged( QIconViewItem *item ) 
+void KIconLoaderCanvas::slotCurrentChanged( QIconViewItem *item )
 {
   emit nameChanged( (item != 0 ? item->text() : QString::null) );
 }
@@ -165,7 +166,7 @@ KIconLoaderDialog::KIconLoaderDialog ( QWidget *parent, const char *name )
   init();
 }
 
-KIconLoaderDialog::KIconLoaderDialog ( KIconLoader *loader, QWidget *parent, 
+KIconLoaderDialog::KIconLoaderDialog ( KIconLoader *loader, QWidget *parent,
 				       const char *name )
   : KDialogBase( parent, name, TRUE, i18n("Select Icon"), Help|Ok|Cancel, Ok )
 {
@@ -178,14 +179,14 @@ void KIconLoaderDialog::init( void )
   QWidget *page = new QWidget( this );
   setMainWidget( page );
   setInitialSizeStep( QSize(0,100) );
-  
+
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
   QHBoxLayout *hbox = new QHBoxLayout();
   topLayout->addLayout(hbox);
 
   cb_dirs = new QComboBox(FALSE, page);
   hbox->addWidget( cb_dirs, 10 );
-  
+
   i_filter = new KLineEdit(page);
   l_filter = new QLabel( i_filter, i18n("&Filter:"), page );
   hbox->addWidget( l_filter );
@@ -201,7 +202,7 @@ void KIconLoaderDialog::init( void )
   connect( canvas, SIGNAL(doubleClicked()), this, SLOT(accept()) );
   connect( canvas, SIGNAL(interrupted()), this, SLOT(needReload()) );
   connect( i_filter, SIGNAL(returnPressed()), this, SLOT(filterChanged()) );
-  connect( cb_dirs, SIGNAL(activated(const QString&)), this, 
+  connect( cb_dirs, SIGNAL(activated(const QString&)), this,
 	   SLOT(dirChanged(const QString&)) );
   changeDirs(KGlobal::dirs()->resourceDirs("toolbar"));
   connect( canvas, SIGNAL( startLoading( int ) ),
@@ -224,7 +225,7 @@ void KIconLoaderDialog::needReload()
   i_filter->setText("");
 }
 
-void KIconLoaderDialog::initProgressBar( int steps ) 
+void KIconLoaderDialog::initProgressBar( int steps )
 {
   //
   // 1999-10-17 Espen Sand
@@ -245,12 +246,12 @@ void KIconLoaderDialog::initProgressBar( int steps )
   }
 }
 
-void KIconLoaderDialog::progress( int p ) 
+void KIconLoaderDialog::progress( int p )
 {
   progressBar->setProgress( p );
 }
 
-void KIconLoaderDialog::hideProgressBar( void ) 
+void KIconLoaderDialog::hideProgressBar( void )
 {
   //
   // 1999-10-17 Espen Sand
@@ -266,10 +267,10 @@ void KIconLoaderDialog::hideProgressBar( void )
   }
 }
 
-void KIconLoaderDialog::changeDirs( const QStringList &l ) 
-{ 
-  cb_dirs->clear(); 
-  cb_dirs->insertStringList(l); 
+void KIconLoaderDialog::changeDirs( const QStringList &l )
+{
+  cb_dirs->clear();
+  cb_dirs->insertStringList(l);
 }
 
 int KIconLoaderDialog::exec(QString filter)
@@ -318,7 +319,7 @@ QPixmap KIconLoaderDialog::selectIcon( QString &name, const QString &filter)
 //---------------  KICONLOADERBUTTON   ---------------------------------
 //----------------------------------------------------------------------
 //
-KIconLoaderButton::KIconLoaderButton( QWidget *_parent ) 
+KIconLoaderButton::KIconLoaderButton( QWidget *_parent )
   : QPushButton( _parent )
 {
   iconStr = "";
@@ -328,8 +329,8 @@ KIconLoaderButton::KIconLoaderButton( QWidget *_parent )
   loaderDialog = new KIconLoaderDialog( this );
 }
 
-KIconLoaderButton::KIconLoaderButton( KIconLoader *_icon_loader, 
-				      QWidget *_parent ) 
+KIconLoaderButton::KIconLoaderButton( KIconLoader *_icon_loader,
+				      QWidget *_parent )
   : QPushButton( _parent )
 {
   iconStr = "";
