@@ -1000,15 +1000,15 @@ void B3Style::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                             QBrush *)
 {
     if(active){
-        qDrawShadePanel(p, x, y, w, h, g, true, 1,
+        qDrawShadePanel(p, x, y+2, w, h, g, true, 1,
                         &g.brush(QColorGroup::Midlight));
-        QApplication::style().drawItem(p, x, y, w, h,
+        QApplication::style().drawItem(p, x, y+2, w, h,
                                        AlignCenter|ShowPrefix|DontClip|SingleLine,
                                        g, mi->isEnabled(), mi->pixmap(), mi->text(),
                                        -1, &g.text());
     }
     else
-        QApplication::style().drawItem(p, x, y, w, h,
+        QApplication::style().drawItem(p, x, y+2, w, h,
                                        AlignCenter|ShowPrefix|DontClip|SingleLine,
                                        g, mi->isEnabled(), mi->pixmap(), mi->text(),
                                        -1, &g.text() );
