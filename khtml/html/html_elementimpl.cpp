@@ -164,9 +164,12 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value)
     // strip attribute garbage..
     DOMStringImpl* v = value.implementation();
     if ( v ) {
-        unsigned int l = v->l;
-        for ( ; l && !v->s[l-1].isDigit(); l-- )
-            ;
+        unsigned int l = 0;
+        for ( ;l < v->l; l++ ) {
+            char cc = v->s[l].latin1();
+            if ( cc > '9' || ( cc < '0' && cc != '*' && cc != '%' && cc != '.') )
+                break;
+        }
         if ( l != v->l ) {
             m_styleDecls->setLengthProperty( id, DOMString( v->s, l ), false, true );
             return;
