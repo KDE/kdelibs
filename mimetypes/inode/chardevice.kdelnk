@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Character Device
+Comment[ca]=Dispositiu de caràcter
 Comment[cs]=Znakové zaøízení
 Comment[da]=Tegnenhed
 Comment[de]=Zeichen-Orientiertes Gerät

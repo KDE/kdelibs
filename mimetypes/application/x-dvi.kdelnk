@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=TeX Device Independent file
+Comment[ca]=Fitxer DVI (Device Independent) TeX
 Comment[cs]=TeX DVI soubor
 Comment[da]=TeX DVI-fil
 Comment[de]=TeX DVI Datei

@@ -5,6 +5,7 @@ MimeType=application/x-java
 Icon=binary.xpm
 Patterns=*.class;
 Comment=Java Class
+Comment[ca]=Classe Java
 Comment[cs]=Java tøída
 Comment[da]=Javaklasse
 Comment[de]=Java Klasse

@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Pipe
+Comment[ca]=Tub (pipe)
 Comment[cs]=FIFO roura
 Comment[es]=Tubería
 Comment[fi]=Putki

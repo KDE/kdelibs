@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Locked Directory
+Comment[ca]=Directori bloquejat
 Comment[cs]=Uzamknutý adresáø
 Comment[da]=Låst folder
 Comment[de]=Gesperrter Ordner

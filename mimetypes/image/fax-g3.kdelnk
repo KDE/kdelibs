@@ -5,6 +5,7 @@ MimeType=image/fax-g3
 Icon=image.xpm
 Patterns=*.g3;*.G3;
 Comment=CCITT g3 fax
+Comment[ca]=Fax CCITT g3
 Comment[de]=CCITT G3-Fax
 Comment[fi]=CCITT g3 faksi
 Comment[fr]=Fax CCITT groupe 3

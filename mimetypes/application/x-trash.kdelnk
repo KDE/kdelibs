@@ -5,6 +5,7 @@ MimeType=application/x-trash
 Icon=trash.xpm
 Patterns=*~;*%;*.bak;*.old;*.sik;
 Comment=Trash file
+Comment[ca]=Fitxer de la paperera
 Comment[cs]=Zálo¾ní soubor
 Comment[da]=Affaldsfil
 Comment[de]=zu löschende Datei

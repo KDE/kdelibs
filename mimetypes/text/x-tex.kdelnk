@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=TeX file
+Comment[ca]=Fitxer TeX
 Comment[cs]=Dokument sázecího systému TeX
 Comment[da]=TeX-fil
 Comment[de]=TeX Dokument

@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 MimeType=application/x-gzip
 Comment=Gzip file
+Comment[ca]=Fitxer gzip
 Comment[cs]=Soubor komprimovaný gzipem
 Comment[da]=Gzip-fil
 Comment[de]=GZip Datei

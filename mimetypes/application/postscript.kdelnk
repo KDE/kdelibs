@@ -6,6 +6,7 @@ Icon=postscript.xpm
 Patterns=*.ps;*.PS;*.eps;*.EPS;
 DefaultApp=kghostview
 Comment=PostScript Document
+Comment[ca]=Document PostScript
 Comment[cs]=Postskriptový dokument
 Comment[da]=Postscript dokument
 Comment[de]=Postscript Dokument

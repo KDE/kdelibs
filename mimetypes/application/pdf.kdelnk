@@ -6,6 +6,7 @@ Icon=pdf.xpm
 Patterns=*.pdf;*.PDF;
 DefaultApp=acroread
 Comment=Pdf Document
+Comment[ca]=Document pdf
 Comment[cs]=PDF dokument
 Comment[da]=Pdf dokument
 Comment[de]=PDF Dokument

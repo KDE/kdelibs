@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=HTML Page
+Comment[ca]=Pàgina HTML
 Comment[cs]=HTML dokument
 Comment[da]=HTML-side
 Comment[es]=Página HTML

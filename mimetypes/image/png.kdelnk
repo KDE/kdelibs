@@ -5,6 +5,7 @@ MimeType=image/png
 Icon=image.xpm
 Patterns=*.png;*.PNG;
 Comment=PNG images
+Comment[ca]=Imatges png
 Comment[cs]=Obrázek ve formátu PNG
 Comment[da]=PNG-billeder
 Comment[de]=PNG Bild

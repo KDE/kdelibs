@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=shell script
+Comment[ca]=Guió shell
 Comment[cs]=Shellový skript
 Comment[da]=Skaldskript
 Comment[de]=Shellskript

@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Tcl file
+Comment[ca]=Fitxer Tcl
 Comment[cs]=Program v jazyce TCL
 Comment[da]=Tcl-fil
 Comment[de]=TcL Programm

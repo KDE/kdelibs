@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 MimeType=audio/x-mp3
 Comment=MPEG Sound file
+Comment[ca]=Fitxer de so MPEG
 Comment[cs]=Zvukový soubor koprimovaný v MPEG Layer3
 Comment[da]=MPEG lydfil
 Comment[de]=MPEG komprimierte Musik Datei

@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=KDE config file
+Comment[ca]=Fitxer de configuració KDE
 Comment[cs]=Konfiguraèní soubor KDE
 Comment[da]=KDE indstillingsfil
 Comment[de]=KDE Konfigurationsdatei
