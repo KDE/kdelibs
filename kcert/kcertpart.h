@@ -30,29 +30,38 @@ class KSSLCertBox;
 class QFrame;
 class QLabel;
 class KCertPartPrivate;
+class QComboBox;
+class QButton;
+class KSSLPKCS12;
+class KSSLCertificate;
 
 
 class KCertPart : public KParts::ReadWritePart {
 Q_OBJECT
 public:
   KCertPart(QWidget *parent = 0L, const char *name = 0L);
-  virtual ~KCertPart() {}
+  virtual ~KCertPart();
 
   virtual void setReadWrite(bool rw);
 
 
 protected slots:
-
+  void slotChain(int c);
 
 protected:
 
   virtual bool openFile();
   virtual bool saveFile();
 
+  void displayCert(KSSLCertificate *c);
+
   QFrame *_frame;
   QLabel *_filenameLabel, *_validPeriod, *_serialNum, *_certState;
   KSSLCertBox *_subject, *_issuer;
   KInstance *_instance;
+  QComboBox *_chain;
+  QButton *_import, *_save, *_done;
+  KSSLPKCS12 *_p12;
 
 private:
   KCertPartPrivate *d;
