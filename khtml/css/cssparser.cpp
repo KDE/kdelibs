@@ -402,6 +402,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                 if (!closebracket)
                 {
                     kdWarning()<<"error in css: closing bracket not found!"<<endl;
+		    delete cs;
                     return 0;
                 }
                 QString attr;
