@@ -675,6 +675,12 @@ public:
    PKCS7 *PKCS7_dup(PKCS7 *p7);
 
    /*
+    *  Verify a PKCS7 signature.
+    */
+   int PKCS7_verify(PKCS7 *p7, STACK_OF(X509) *certs, X509_STORE *store,
+                                              BIO *indata, BIO *out, int flags);
+
+   /*
     * Load a CA list file.
     */
    STACK_OF(X509_NAME) *SSL_load_client_CA_file(const char *file);

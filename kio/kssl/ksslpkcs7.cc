@@ -174,7 +174,9 @@ return KSSLCertificate::NoSSL;
 
 
 KSSLCertificate::KSSLValidation KSSLPKCS7::revalidate() {
-   return _cert->revalidate();
+   if (_cert)
+      return _cert->revalidate();
+   return KSSLCertificate::Unknown;
 }
 
 
@@ -184,7 +186,9 @@ return (validate() == KSSLCertificate::Ok);
 
 
 QString KSSLPKCS7::name() {
-   return _cert->getSubject();
+   if (_cert)
+      return _cert->getSubject();
+   return QString();
 }
 
  

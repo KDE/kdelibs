@@ -156,6 +156,8 @@ static RSA *(*K_RSA_generate_key)(int, unsigned long, void (*)(int,int,void *), 
 static int (*K_i2d_X509_REQ_fp)(FILE*, X509_REQ*) = NULL;
 static void (*K_ERR_clear_error)() = NULL;
 static void (*K_ERR_print_errors_fp)(FILE*) = NULL;
+static int (*K_PKCS7_verify)(PKCS7*,STACK_OF(X509)*,X509_STORE*,BIO*,BIO*,int) = NULL;
+
 #endif
 };
 
@@ -394,6 +396,7 @@ KConfig *cfg;
       K_d2i_PKCS7 = (PKCS7* (*)(PKCS7**,unsigned char**,long)) _cryptoLib->symbol("d2i_PKCS7");
       K_d2i_PKCS7_fp = (PKCS7 *(*)(FILE *,PKCS7**)) _cryptoLib->symbol("d2i_PKCS7_fp");
       K_PKCS7_dup = (PKCS7* (*)(PKCS7*)) _cryptoLib->symbol("PKCS7_dup");
+      K_PKCS7_verify = (int (*)(PKCS7*,STACK_OF(X509)*,X509_STORE*,BIO*,BIO*,int)) _cryptoLib->symbol("PKCS7_verify");
       K_PEM_X509_INFO_read = (STACK_OF(X509_INFO) *(*)(FILE*, STACK_OF(X509_INFO)*, pem_password_cb*, void *)) _cryptoLib->symbol("PEM_X509_INFO_read");
       K_ASN1_d2i_fp = (char *(*)(char *(*)(),char *(*)(),FILE*,unsigned char**)) _cryptoLib->symbol("ASN1_d2i_fp");
       K_X509_new = (X509 *(*)()) _cryptoLib->symbol("X509_new");
@@ -1130,6 +1133,12 @@ PKCS7 *KOpenSSLProxy::d2i_PKCS7_fp(FILE *fp,PKCS7 **p7) {
 PKCS7 *KOpenSSLProxy::PKCS7_dup(PKCS7 *p7) {
    if (K_PKCS7_dup) return (K_PKCS7_dup)(p7);
    else return NULL;
+}
+
+
+int KOpenSSLProxy::PKCS7_verify(PKCS7* p, STACK_OF(X509)* st, X509_STORE* s, BIO* in, BIO *out, int flags) {
+   if (K_PKCS7_verify) return (K_PKCS7_verify)(p,st,s,in,out,flags);
+   else return -1;
 }
 
 
