@@ -28,7 +28,7 @@
 
 using namespace KParts;
 
-template class QList<Part>;
+template class QPtrList<Part>;
 
 namespace KParts {
 
@@ -51,7 +51,7 @@ public:
   Part * m_activePart;
   QWidget *m_activeWidget;
 
-  QList<Part> m_parts;
+  QPtrList<Part> m_parts;
 
   PartManager::SelectionPolicy m_policy;
 
@@ -60,7 +60,7 @@ public:
 
   bool m_bAllowNestedParts;
 
-  QList<QWidget> m_managedTopLevelWidgets;
+  QPtrList<QWidget> m_managedTopLevelWidgets;
 
   bool m_bIgnoreScrollBars;
 };
@@ -93,7 +93,7 @@ PartManager::PartManager( QWidget *topLevel, QObject *parent, const char *name )
 
 PartManager::~PartManager()
 {
-  QListIterator<QWidget> it( d->m_managedTopLevelWidgets );
+  QPtrListIterator<QWidget> it( d->m_managedTopLevelWidgets );
   for (; it.current(); ++it )
     disconnect( it.current(), SIGNAL( destroyed() ),
                 this, SLOT( slotManagedTopLevelWidgetDestroyed() ) );
@@ -146,7 +146,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 
   QWidget *w = static_cast<QWidget *>( obj );
 
-  if ( ( w->testWFlags( WStyle_Dialog ) && w->isModal() ) ||
+  if ( ( w->testWFlags( WType_Dialog ) && w->isModal() ) ||
        w->testWFlags( WType_Popup ) || w->testWFlags( WStyle_Tool ) )
     return false;
 
@@ -216,7 +216,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 
     w = w->parentWidget();
 
-    if ( w && ( ( w->testWFlags( WStyle_Dialog ) && w->isModal() ) ||
+    if ( w && ( ( w->testWFlags( WType_Dialog ) && w->isModal() ) ||
                 w->testWFlags( WType_Popup ) || w->testWFlags( WStyle_Tool ) ) )
     {
       //kdDebug(1000) << QString("No part made active although %1/%2 got event - loop aborted").arg(obj->name()).arg(obj->className()) << endl;
@@ -231,7 +231,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 
 Part * PartManager::findPartFromWidget( QWidget * widget, const QPoint &pos )
 {
-  QListIterator<Part> it ( d->m_parts );
+  QPtrListIterator<Part> it ( d->m_parts );
   for ( ; it.current() ; ++it )
   {
     Part *part = it.current()->hitTest( widget, pos );
@@ -243,7 +243,7 @@ Part * PartManager::findPartFromWidget( QWidget * widget, const QPoint &pos )
 
 Part * PartManager::findPartFromWidget( QWidget * widget )
 {
-  QListIterator<Part> it ( d->m_parts );
+  QPtrListIterator<Part> it ( d->m_parts );
   for ( ; it.current() ; ++it )
   {
     if ( widget == it.current()->widget() )
@@ -468,7 +468,7 @@ void PartManager::slotWidgetDestroyed()
                          //part will delete itself anyway (which ends up in a slotObjectDestroyed() call
 }
 
-const QList<Part> *PartManager::parts() const
+const QPtrList<Part> *PartManager::parts() const
 {
   return &d->m_parts;
 }

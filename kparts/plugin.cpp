@@ -169,9 +169,9 @@ Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
     return dynamic_cast<Plugin *>( obj );
 }
 
-QList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
+QPtrList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
 {
-  QList<KParts::Plugin> objects;
+  QPtrList<KParts::Plugin> objects;
 
   if (!parent )
     return objects;

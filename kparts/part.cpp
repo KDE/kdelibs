@@ -43,7 +43,7 @@
 #include <assert.h>
 #include <kdebug.h>
 
-template class QList<KXMLGUIClient>;
+template class QPtrList<KXMLGUIClient>;
 
 using namespace KParts;
 

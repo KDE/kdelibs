@@ -184,7 +184,7 @@ public:
   /**
    * Retrieve the list of parts being managed by the partmanager.
    */
-  const QList<Part> *parts() const;
+  const QPtrList<Part> *parts() const;
 
   /**
    * Adds the @p topLevel widget to the list of managed toplevel widgets.

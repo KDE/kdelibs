@@ -89,7 +89,7 @@ public:
      * QObject to retrieve the list of child objects inheritting @ref
      * KParts::Plugin .
      **/
-    static QList<Plugin> pluginObjects( QObject *parent );
+    static QPtrList<Plugin> pluginObjects( QObject *parent );
 
 protected:
     /**

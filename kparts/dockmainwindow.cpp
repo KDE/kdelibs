@@ -73,7 +73,7 @@ void DockMainWindow::createGUI( Part * part )
 
   setUpdatesEnabled( false );
 
-  QList<Plugin> plugins;
+  QPtrList<Plugin> plugins;
 
   if ( d->m_activePart )
   {
@@ -115,7 +115,7 @@ void DockMainWindow::createGUI( Part * part )
     QApplication::sendEvent( part, &ev );
 
     plugins = Plugin::pluginObjects( part );
-    QListIterator<Plugin> pIt( plugins );
+    QPtrListIterator<Plugin> pIt( plugins );
 
     for (; pIt.current(); ++pIt )
       factory->addClient( pIt.current() );
@@ -153,8 +153,8 @@ void DockMainWindow::createShellGUI( bool create )
 
         guiFactory()->addClient( this );
 
-        QList<Plugin> plugins = Plugin::pluginObjects( this );
-        QListIterator<Plugin> pIt( plugins );
+        QPtrList<Plugin> plugins = Plugin::pluginObjects( this );
+        QPtrListIterator<Plugin> pIt( plugins );
         for (; pIt.current(); ++pIt )
             guiFactory()->addClient( pIt.current() );
     }
@@ -163,7 +163,7 @@ void DockMainWindow::createShellGUI( bool create )
         GUIActivateEvent ev( false );
         QApplication::sendEvent( this, &ev );
 
-        QList<Plugin> plugins = Plugin::pluginObjects( this );
+        QPtrList<Plugin> plugins = Plugin::pluginObjects( this );
         Plugin *plugin = plugins.last();
         for (; plugin; plugin = plugins.prev() )
             guiFactory()->removeClient( plugin );
