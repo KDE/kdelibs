@@ -274,6 +274,9 @@ bool KURL::isRelativeURL(const QString &_url)
         // Make another expection for man:(3)
         if ((i == 4) && (_url.left(4).lower() == "man:"))
            return false;
+        // Make another expection for javascript:blah
+        if ((i == 11) && (_url.left(11).lower() == "javascript:"))
+           return false;
         return true; // "xxx:" or "xxx::yyy"
      }
 
