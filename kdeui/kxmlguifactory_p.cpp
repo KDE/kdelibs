@@ -504,6 +504,11 @@ BuildHelper::BuildHelper( BuildState &state, ContainerNode *node )
         containerTags += parentNode->builderContainerTags;
     }
 
+    if ( m_state.clientBuilder ) {
+        customTags = m_state.clientBuilderCustomTags + customTags;
+        containerTags = m_state.clientBuilderContainerTags + containerTags;
+    }
+
     m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
     parentNode->calcMergingIndex( QString::null, m_state.currentClientMergingIt, 
                                   m_state, /*ignoreDefaultMergingIndex*/ false );
