@@ -178,7 +178,7 @@ RenderObject *RenderObject::containingBlock() const
         if(!isRoot()) {
             //assert ( false );
             kdDebug( 6040 ) << this << ": " << renderName() << "(RenderObject): No containingBlock!" << endl;
-            RenderObject* p = this;
+            const RenderObject* p = this;
             while (p->parent()) p = p->parent();
             p->printTree();
             assert(0);
