@@ -412,9 +412,20 @@ void KNotifyWidget::updateWidgets( ListViewItem *item )
 
     // other settings
     m_messageBox->setChecked(event.presentation & (KNotifyClient::Messagebox | KNotifyClient::PassivePopup));
+    enable = (event.dontShow & KNotifyClient::Messagebox) == 0;
+    m_messageBox->setEnabled( enable );
+
     m_passivePopup->setChecked(event.presentation & KNotifyClient::PassivePopup);
+    enable = (event.dontShow & KNotifyClient::PassivePopup) == 0;
+    m_passivePopup->setEnabled( enable );
+
     m_stderr->setChecked( event.presentation & KNotifyClient::Stderr );
+    enable = (event.dontShow & KNotifyClient::Stderr) == 0;
+    m_stderr->setEnabled( enable );
+
     m_taskbar->setChecked(event.presentation & KNotifyClient::Taskbar);
+    enable = (event.dontShow & KNotifyClient::Taskbar) == 0;
+    m_taskbar->setEnabled( enable );
 
     updatePixmaps( item );
 
@@ -995,6 +1006,7 @@ void Application::reloadEvents( bool revertToDefaults )
             e = new Event( this );
             e->name = kc->readEntry( name );
             e->description = kc->readEntry( comment );
+            e->dontShow = kc->readNumEntry("nopresentation", 0 );
             e->configGroup = *it;
 
             if ( e->name.isEmpty() || e->description.isEmpty() )
@@ -1007,8 +1019,8 @@ void Application::reloadEvents( bool revertToDefaults )
                 QString default_logfile = kc->readPathEntry("default_logfile");
                 QString default_soundfile = kc->readPathEntry("default_sound");
                 QString default_commandline = kc->readPathEntry("default_commandline");
+
                 config->setGroup(*it);
-                e->dontShow = config->readNumEntry("nopresentation", 0 );
 
                 if ( revertToDefaults )
                 {
