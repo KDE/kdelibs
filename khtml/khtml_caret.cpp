@@ -443,6 +443,13 @@ void /*KDE_NO_EXPORT*/ mapDOMPosToRenderPos(NodeImpl *node, long offset,
 	  r = child->renderer();
 	}
       }/*end if*/
+      
+      // BRs cause troubles. Returns the previous render object instead,
+      // giving it the attributes outside, outside end.
+      if (r && r->isBR()) {
+        r = r->objectAbove();
+        outsideEnd = true;
+      }/*end if*/
 
     } else {
       // Element has no children, treat offset to be inside the node.
