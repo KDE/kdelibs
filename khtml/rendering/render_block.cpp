@@ -612,12 +612,6 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
     // margins in our container.
     bool quirkContainer = isTableCell() || isBody();
 
-    // Sometimes an element will be shoved down away from a previous sibling, e.g., when
-    // clearing to pass beyond a float.  In this case, you don't need to collapse.  This
-    // boolean is updated with each iteration through our child list to reflect whether
-    // that particular child should be collapsed with its previous sibling (or with the top
-    // of the block).
-    bool shouldCollapseChild = true;
 
     // This flag tracks whether the child should collapse with the top margins of the block.
     // It can remain set through multiple iterations as long as we keep encountering
@@ -652,6 +646,13 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 
     while( child != 0 )
     {
+        // Sometimes an element will be shoved down away from a previous sibling, e.g., when
+        // clearing to pass beyond a float.  In this case, you don't need to collapse.  This
+        // boolean is updated with each iteration through our child list to reflect whether
+        // that particular child should be collapsed with its previous sibling (or with the top
+        // of the block).
+        bool shouldCollapseChild = true;
+
         if (legend == child) {
             child = child->nextSibling();
             continue; // Skip the legend, since it has already been positioned up in the fieldset's border.
