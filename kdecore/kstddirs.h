@@ -366,7 +366,8 @@ public:
 	 *             Makes it easier for you to create subdirectories.
 	 *   You can't pass filenames here, you _have_ to pass
 	 *       directory names only and add possible filename in
-	 *       that directory yourself.
+	 *       that directory yourself. A directory name always has a
+         *       trailing slash ('/').
 	 * @param create If set, saveLocation() will create the directories
 	 *        needed (including those given by @p suffix).
 	 *
@@ -403,12 +404,12 @@ public:
         QString kfsstnd_prefixes();
 
 	/**
-	 * @returns the toplevel directory in which KStandardDirs 
+	 * @returns the toplevel directory in which KStandardDirs
 	 * will store things. Most likely $HOME/.kde
 	 *
 	 * Don't use this function if you can use locateLocal
 	 */
-	QString localkdedir() const; 
+	QString localkdedir() const;
 
  private:
 
