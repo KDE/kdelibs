@@ -31,6 +31,9 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include "x11globalcomm.h"
+#include <iostream>
+
+using namespace std;
 
 class X11GlobalComm_impl : virtual public X11GlobalComm_skel {
 protected:

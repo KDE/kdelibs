@@ -26,6 +26,7 @@
 #include "startupmanager.h"
 #include "extensionloader.h"
 #include <iostream>
+#include <cassert>
 
 using namespace std;
 
