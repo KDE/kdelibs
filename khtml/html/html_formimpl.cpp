@@ -442,13 +442,23 @@ void HTMLFormElementImpl::walletOpened(KWallet::Wallet *w) {
     if (w->readMap(key, map))
         return; // failed, abort
 
+    HTMLInputElementImpl *last = 0L;
     for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
         if (it.current()->id() == ID_INPUT) {
             HTMLInputElementImpl* const current = static_cast<HTMLInputElementImpl*>(it.current());
             if (current->inputType() == HTMLInputElementImpl::PASSWORD ||
                     current->inputType() == HTMLInputElementImpl::TEXT &&
-                    map.contains(current->name().string()))
+                    map.contains(current->name().string())) {
                 current->setValue(map[current->name().string()]);
+                last = current;
+            }
+        }
+    }
+
+    if (last) {
+        RenderWidget *r = static_cast<RenderWidget*>(last->renderer());
+        if (r && r->widget()) {
+            r->widget()->setFocus();
         }
     }
 }
