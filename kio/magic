@@ -484,6 +484,9 @@
 # Gimp's XCF
 0	string	gimp\ xcf	image/x-xcf-gimp
 
+# X11 cursor files
+0	string	Xcur	image/x-xcursor
+
 #------------------------------------------------------------------------------
 # lisp:  file(1) magic for lisp programs
 #
