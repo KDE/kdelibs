@@ -897,6 +897,7 @@ bool HTTPProtocol::http_open()
   if( !agent.isEmpty() )
   {
     header += "User-Agent: " + agent;
+/*
     header+="; Supports MD5-Digest";
 #ifdef DO_GZIP
     header+="; Supports gzip encoding";
@@ -904,6 +905,7 @@ bool HTTPProtocol::http_open()
 #ifdef HAVE_SSL
     header+="; Supports SSL/HTTPS";
 #endif
+*/
     header += "\r\n";
   }
 
