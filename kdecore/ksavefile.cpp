@@ -103,6 +103,11 @@ KSaveFile::close()
 {
    if (mTempFile.name().isEmpty())
       return false; // Save was aborted already
+   if (!mTempFile.sync())
+   {
+      abort();
+      return false;
+   }
    if (mTempFile.close())
    {
       QDir dir;

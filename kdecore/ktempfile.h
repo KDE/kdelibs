@@ -162,6 +162,17 @@ public:
    void unlink();   
 
    /**
+    * Flushes file to disk (fsync).
+    *
+    * If you want to be as sure as possible that the file data has
+    * actually been physically stored on disk you need to call sync().
+    * 
+    * See status() for details about errors.
+    * @return true if successful, or false if an error has occurred.
+    **/
+   bool sync();
+
+   /**
     * Closes the file.
     * 
     * See status() for details about errors.
