@@ -163,7 +163,9 @@ public:
     m_bJavaOverride = false;
     m_bPluginsForce = false;
     m_bPluginsOverride = false;
-
+    
+    m_metaRefreshEnabled = true;
+    
     m_bFirstData = true;
 
     // inherit security settings from parent
@@ -217,6 +219,7 @@ public:
   bool m_bJavaForce :1;
   bool m_bJavaOverride :1;
   bool m_bPluginsForce :1;
+  bool m_metaRefreshEnabled :1;
   bool m_bPluginsOverride :1;
   int m_frameNameId;
   KJavaAppletContext *m_javaContext;
@@ -700,6 +703,16 @@ bool KHTMLPart::jScriptEnabled() const
   if ( d->m_bJScriptOverride )
       return d->m_bJScriptForce;
   return d->m_bJScriptEnabled;
+}
+
+void KHTMLPart::enableMetaRefresh( bool enable )
+{
+  d->m_metaRefreshEnabled = enable;
+}
+
+bool KHTMLPart::metaRefreshEnabled() const
+{
+  return d->m_metaRefreshEnabled;
 }
 
 KJSProxy *KHTMLPart::jScript()

@@ -234,7 +234,7 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
 {
     m_style = document->styleSelector()->styleForElement(this);
     //   kdDebug( 6030 ) << "meta::attach() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
-    if(strcasecmp(_equiv, "refresh") == 0 && !_content.isNull())
+    if(strcasecmp(_equiv, "refresh") == 0 && !_content.isNull() && v->part()->metaRefreshEnabled())
     {
         // get delay and url
         QString str = _content.string();

@@ -209,6 +209,16 @@ public:
   bool jScriptEnabled() const;
 
   /**
+   * Enable/disable the automatic forwarding by <meta http-equiv="refresh" ....>
+   */
+  void enableMetaRefresh( bool enable );
+
+  /**
+   * Returns @p true if automtaic forwarding is enabled.
+   */
+  bool metaRefreshEnabled() const;
+
+  /**
    * Execute the specified snippet of JavaScript code.
    *
    * Returns @p true if JavaScript was enabled, no error occured
