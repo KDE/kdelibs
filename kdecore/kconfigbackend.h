@@ -51,17 +51,15 @@ public:
    * @param _config Specifies the configuration object which values
    *        will be passed to as they are read, or from where values
    *        to be written to will be obtained from.
-   * @param _globalFileName The name of the file in which "global" config
-   *        data is stored.  This is usually the apps system-wide
-   *        config file.
-   * @param _localFileName The name of the file in which "local" config
-   *        data is stored.  This is ually the user-specific config file
-   *        for the application.
-   * @param _useKderc If true, the user's system-wide kderc file will be
-   *        imported into the config object.  If false, only the filenames
-   *        specified will be dealt with.
+   * @param _fileName The name of the file in which config
+   *        data is stored.  All registered configuration directories
+   *        will be looked in in order of decreasing relevance.
+   * @param _useKDEGlobals If true, the user's system-wide kdeglobals file 
+   *        will be imported into the config object.  If false, only 
+   *        the filename specified will be dealt with.
    */
-  KConfigBackEnd(KConfigBase *_config, const QString &_fileName, bool _useKderc);
+  KConfigBackEnd(KConfigBase *_config, const QString &_fileName, 
+		 bool _useKDEGlobals);
   
   /**
    * Destructor.
@@ -92,21 +90,22 @@ public:
    * probably reparse your config info after doing this.
    */
   void changeFileName(const QString &_fileName, 
-		      bool _useKderc) 
-      { fileName = _fileName; useKderc = _useKderc; }
+		      bool _useKDEGlobals) 
+      { fileName = _fileName; useKDEGlobals = _useKDEGlobals; }
 
   /**
    * Retrieve the state of the app-config object.
    *
    * @see KConfig::getConfigState
    */
-  virtual KConfigBase::ConfigState getConfigState() const { return KConfigBase::NoAccess; }
+  virtual KConfigBase::ConfigState getConfigState() const
+    { return KConfigBase::NoAccess; }
 
 protected:
   KConfigBase *pConfig;
 
   QString fileName;
-  bool useKderc;
+  bool useKDEGlobals;
 };
 
 /**
@@ -121,23 +120,21 @@ class KConfigINIBackEnd : public KConfigBackEnd
 
 public:
   /**
-   * construct a configuration backend.
+   * Construct a configuration back end.
    *
    * @param _config Specifies the configuration object which values
    *        will be passed to as they are read, or from where values
    *        to be written to will be obtained from.
-   * @param _globalFileName The name of the file in which "global" config
-   *        data is stored.  This is usually the apps system-wide
-   *        config file.
-   * @param _localFileName The anem of the file in which "local" config
-   *        data is stored.  This is ually the user-specific config file
-   *        for the application.
-   * @param _useKderc If true, the user's system-wide kderc file will be
-   *        imported into the config object.  If false, only the filenames
-   *        specified will be dealt with.
+   * @param _fileName The name of the file in which config
+   *        data is stored.  All registered configuration directories
+   *        will be looked in in order of decreasing relevance.
+   * @param _useKDEGlobals If true, the user's system-wide kdeglobals file 
+   *        will be imported into the config object.  If false, only 
+   *        the filename specified will be dealt with.
    */
-  KConfigINIBackEnd(KConfigBase *_config, const QString &_fileName, bool _useKderc = true)
-    : KConfigBackEnd(_config, _fileName, _useKderc) {}
+  KConfigINIBackEnd(KConfigBase *_config, const QString &_fileName,
+		    bool _useKDEGlobals = true)
+    : KConfigBackEnd(_config, _fileName, _useKDEGlobals) {}
   
   /**
    * Destructor.

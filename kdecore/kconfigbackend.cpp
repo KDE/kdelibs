@@ -93,8 +93,10 @@ static QString stringToPrintable(const QString& s){
   return result;
 }
 
-KConfigBackEnd::KConfigBackEnd(KConfigBase *_config, const QString &_fileName, bool _useKderc)
-  : pConfig(_config), fileName(_fileName), useKderc(_useKderc)
+KConfigBackEnd::KConfigBackEnd(KConfigBase *_config, 
+			       const QString &_fileName, 
+			       bool _useKDEGlobals)
+  : pConfig(_config), fileName(_fileName), useKDEGlobals(_useKDEGlobals)
 {}
 
 bool KConfigINIBackEnd::parseConfigFiles()
@@ -102,7 +104,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
     // Parse all desired files from the least to the most specific.
     
     // Parse the general config files
-    if (useKderc) {
+    if (useKDEGlobals) {
 
 	QStringList kdercs = KGlobal::dirs()->
 	    findAllResources("config", "kdeglobals");
@@ -149,7 +151,8 @@ KConfigBase::ConfigState KConfigINIBackEnd::getConfigState() const
     if (fileName.isEmpty())
 	return KConfigBase::NoAccess;
 
-    QString aLocalFileName = KGlobal::dirs()->getSaveLocation("config") + fileName;
+    QString aLocalFileName = KGlobal::dirs()->getSaveLocation("config") + 
+      fileName;
     // Can we allow the write? We can, if the program
     // doesn't run SUID. But if it runs SUID, we must
     // check if the user would be allowed to write if
@@ -171,7 +174,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
     return;
 
   QString aCurrentLine;
-  QString aCurrentGroup;
+  QString aCurrentGroup("<default>");
 
   // reset the stream's device
   rFile.at(0);
@@ -210,7 +213,9 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
     QString val = printableToString(aCurrentLine.right(aCurrentLine.length() - nEqualsPos - 1)).stripWhiteSpace();
 
     KEntryKey aEntryKey = { aCurrentGroup, key };
-    KEntry aEntry = { val, true, false, bGlobal };
+    KEntry aEntry;
+    aEntry.aValue = val;
+    aEntry.bGlobal = bGlobal;
 
     if (pWriteBackMap) {
       // don't insert into the config object but into the temporary
@@ -245,6 +250,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
     } else {
        aLocalFileName = KGlobal::dirs()->getSaveLocation("config") + fileName;
     }
+
     // Can we allow the write? We can, if the program
     // doesn't run SUID. But if it runs SUID, we must
     // check if the user would be allowed to write if
@@ -261,12 +267,13 @@ void KConfigINIBackEnd::sync(bool bMerge)
     }
   }
 
-  // only write out entries to the kderc file if there are any
+  // only write out entries to the kdeglobals file if there are any
   // entries marked global (indicated by bEntriesLeft) and
-  // the useKderc flag is set.
-  if (bEntriesLeft && useKderc) {
+  // the useKDEGlobals flag is set.
+  if (bEntriesLeft && useKDEGlobals) {
 
-    QString aFileName = KGlobal::dirs()->getSaveLocation("config") + "kdeglobals";
+    QString aFileName = KGlobal::dirs()->getSaveLocation("config") + 
+      "kdeglobals";
     QFile aConfigFile( aFileName );
     
     // can we allow the write? (see above)
@@ -319,9 +326,8 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
 	  if (aTempMap.contains(entryKey))
 	    aTempMap.replace(entryKey, currentEntry);
 	  else {
+	    // add special group key and then the entry
 	    KEntryKey groupKey = { entryKey.group, QString() };
-	
-	    // add special group key
 	    if (!aTempMap.contains(groupKey))
 	      aTempMap.insert(groupKey, KEntry());
 

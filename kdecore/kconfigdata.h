@@ -12,6 +12,8 @@
  */
 struct KEntry
 {
+  KEntry() 
+    : aValue(QString::null), bDirty(false), bNLS(false), bGlobal(false) {}
   QString aValue;
   bool    bDirty;  // must the entry be written back to disk?
   bool    bNLS;    // entry should be written with locale tag

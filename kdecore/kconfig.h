@@ -36,7 +36,7 @@ class QTimer;
 *
 * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
 * @version $Id$
-* @see KApplication::getConfig KConfigBase KSimpleConfig
+* @see KGlobal::config KConfigBase KSimpleConfig
 * @short KDE Configuration Management  class
 */
 class KConfig : public KConfigBase
@@ -47,15 +47,15 @@ public:
   /** 
    * Construct a KConfig object. 
    *
-   * @param pGlobalFileName A file to parse in addition to the
-   *        system-wide file(s).
-   * @param pLocalFileName An additional (usually user-specific)
-   *        file to parse; has priority over pGlobalFileName.
+   * @param fileName A file to parse in addition to the
+   *        system-wide file(s).  If it is not provided, only global
+   *        kde configuration data will be read (depending on the value of
+   *        bUseKDEGlobals).
    * @param bReadOnly Set the config object's read-only status.
-   * @param bUseKderc Toggle reading the global KDE configuration file.
+   * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
    */
   KConfig( const QString& fileName = QString::null,
-	   bool bReadOnly = false, bool bUseKderc = true);
+	   bool bReadOnly = false, bool bUseKDEGlobals = true);
 
   /** 
    * Destructor. 

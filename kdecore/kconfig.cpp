@@ -57,23 +57,23 @@ KConfig::KConfig( const QString& fileName,
   // set the object's back end pointer to this new backend
   backEnd = aBackEnd;
 
-  // add the "default group" marker to the map
-  KEntryKey groupKey = { "<default>", QString() };
-  aEntryMap.insert(groupKey, KEntry());
   // need to set this before we actually parse so as to avoid
   // infinite looping when parseConfigFiles calls things like
   // hasGroup, putData, etc. which would then try to load
   // the cache if it isCached was false.
   isCached = true;
-  parseConfigFiles();
 
-  // we let KStandardDirs add custom user config files. It will
-  // do this only once. So only the first call ever to this constructor
-  // will anything else than return here
-  // We have to do it here as configuration files may appear after
-  // customized directories have been added. Since this makes only
-  // sense for config directories, addCustomized returns true only
-  // if new config directories appeared
+  // read initial information off disk
+  reparseConfiguration();
+
+  // we let KStandardDirs add custom user config files. It will do
+  // this only once. So only the first call ever to this constructor
+  // will anything else than return here We have to reparse here as
+  // configuration files may appear after customized directories have
+  // been added. and the info they contain needs to be inserted into the
+  // config object.
+  // Since this makes only sense for config directories, addCustomized
+  // returns true only if new config directories appeared.
   if (KGlobal::dirs()->addCustomized(this))
     reparseConfiguration();
 
@@ -158,6 +158,7 @@ QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
   //  cacheCheck();
 
   aIt = aEntryMap.find(groupKey);
+  ++aIt; // advance past special group entry marker
   for (; aIt.key().group == pGroup && aIt != aEntryMap.end(); ++aIt)
     tmpMap.insert(aIt.key().key, (*aIt).aValue);
 
@@ -275,4 +276,3 @@ void KConfig::flushCache()
 }
 
 #include "kconfig.moc"
-
