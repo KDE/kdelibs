@@ -99,6 +99,8 @@ public:
   QTimer     *m_delayTimer;
   QPopupMenu *m_popup;
 
+  QPoint m_mousePressPos;
+
   KInstance  *m_instance;
 };
 
@@ -413,18 +415,40 @@ void KToolBarButton::enterEvent(QEvent *)
 
 bool KToolBarButton::eventFilter(QObject *o, QEvent *ev)
 {
-  // From Kai-Uwe Sattler <kus@iti.CS.Uni-Magdeburg.De>
-  if ((KToolBarButton *)o == this && ev->type() == QEvent::MouseButtonDblClick)
+  if ((KToolBarButton *)o == this)
   {
-    emit doubleClicked(d->m_id);
-    return true;
-  }
-
-  if ((KToolBarButton *) o == this)
+    // From Kai-Uwe Sattler <kus@iti.CS.Uni-Magdeburg.De>
+    if (ev->type() == QEvent::MouseButtonDblClick)
+    {
+      emit doubleClicked(d->m_id);
+      return true;
+    }
+        
     if ((ev->type() == QEvent::MouseButtonPress ||
          ev->type() == QEvent::MouseButtonRelease ||
          ev->type() == QEvent::MouseButtonDblClick) && d->m_isRadio && isOn())
       return true;
+
+    // Popup the menu when the left mousebutton is pressed and the mouse
+    // is moved by a small distance.
+    if (d->m_isPopup)
+    {
+      if (ev->type() == QEvent::MouseButtonPress)
+      {
+        QMouseEvent* mev = static_cast<QMouseEvent*>(ev);
+        d->m_mousePressPos = mev->pos();
+      }
+    
+      if (ev->type() == QEvent::MouseMove)
+      {
+        QMouseEvent* mev = static_cast<QMouseEvent*>(ev);
+        if (d->m_delayTimer && d->m_delayTimer->isActive() 
+         && (mev->pos() - d->m_mousePressPos).manhattanLength() 
+              > KGlobalSettings::dndEventDelay())
+          slotDelayTimeout();
+      }
+    }
+  }
 
   if ((QPopupMenu *) o != d->m_popup)
     return false; // just in case
