@@ -104,69 +104,87 @@ QPixmap KIconLoader::reloadIcon ( const QString& name )
 }
 
 QPixmap KIconLoader::loadApplicationIcon ( const QString& name, 
-					   Size size, QString* path_store, 
-					   bool canReturnNull )
+                                           Size size, QString* path_store, 
+                                           bool canReturnNull )
 {
     if (name.at(0) == '/')
-	return loadInternal(name);
-    
-    QString path;
-    switch (size) {
-    case Small:
-	path = "small/";
-	break;
-    case Medium:
-	path = "medium/";
-	break;
-    case Large:
-	path = "large/";
-	break;
-    }
+        return loadInternal(name);
     
     QPixmap pix;
+    QString icon_path;
+    QString path;
+    // we prefer the correct size.. but we'll slum with a smaller size
+    // if necessary
+    Size current_size = size;
+    while (current_size >= Small)
+    {
+        switch (current_size) {
+        case Small:
+            path = "small/";
+            break;
+        case Medium:
+            path = "medium/";
+            current_size = Small;
+            break;
+        case Large:
+            path = "large/";
+            current_size = Medium;
+            break;
+        default:
+            path = "medium/";
+            current_size = Small;
+            break;
+        }
+        
+        // if noone wants to know the path, we can just lookup the pixmap 
+        if (!path_store) {
+            if (QPixmapCache::find( path + name, pix)) {
+                return pix;
+            }
+        }
+        
+        QString icon;
+        if (!name.contains('/'))
+            icon = "apps/" + name;
+        else
+            icon = name;
+        
+        if (icon.right(4) == ".xpm") {
+            icon.truncate(icon.length() - 4);
+            warning("stripping .xpm from icon %s", name.ascii());
+        }
+
+        if (icon.right(4) == ".png") {
+            icon.truncate(icon.length() - 4);
+            warning("stripping .png from icon %s", name.ascii());
+        }
+       
+        icon_path = locate("icon", path + "hicolor/" + icon + ".png", library );
+        if (!icon_path.isEmpty())
+            goto loading;
+        
+        icon_path = locate("icon", path + "hicolor/" + icon + ".xpm", library );
+        if (!icon_path.isEmpty()) 
+            goto loading;
+        
+        icon_path = locate("icon", path + "locolor/" + icon + ".png", library );
+        if (!icon_path.isEmpty()) 
+            goto loading;
+        
+        icon_path = locate("icon", path + "locolor/" + icon + ".xpm", library );
+        if (!icon_path.isEmpty())
+            goto loading;
     
-    // if noone wants to know the path, we can just lookup the pixmap 
-    if (!path_store) {
-	if (QPixmapCache::find( path + name, pix)) {
-	    return pix;
-	}
     }
-    
-    QString icon;
-    if (!name.contains('/'))
-	icon = "apps/" + name;
-    else
-	icon = name;
-    
-    if (icon.right(4) == ".xpm") {
-	icon.truncate(icon.length() - 4);
-	warning("stripping .xpm from icon %s", name.ascii());
-    }
-    
-    QString icon_path = locate("icon", path + "hicolor/" + icon + ".png", library );
-    if (!icon_path.isEmpty())
-	goto loading;
-    
-    icon_path = locate("icon", path + "hicolor/" + icon + ".xpm", library );
-    if (!icon_path.isEmpty()) 
-	goto loading;
-    
-    icon_path = locate("icon", path + "locolor/" + icon + ".png", library );
-    if (!icon_path.isEmpty()) 
-	goto loading;
-    
-    icon_path = locate("icon", path + "locolor/" + icon + ".xpm", library );
-    if (!icon_path.isEmpty())
-	goto loading;
-    
+
     return canReturnNull ? QPixmap() : loadInternal("unknown");
 
  loading:
     pix = loadInternal(icon_path);
     if (path_store)
-	*path_store = icon_path;
+        *path_store = icon_path;
     else {
-	QPixmapCache::insert(path + name, pix);
+        QPixmapCache::insert(path + name, pix);
     }
     return pix;
 }
