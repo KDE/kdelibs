@@ -14,10 +14,15 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-python.desktop x-python-bytecode.desktop \
 	x-bzip.desktop x-bzip2.desktop mspowerpoint.desktop \
 	msexcel.desktop smil.desktop x-rar.desktop x-zoo.desktop \
-	x-tzo.desktop x-lzop.desktop x-applix.desktop \
+	x-tzo.desktop x-lzop.desktop \
+	x-applixword.desktop x-applixspread.desktop x-applixgraphics.desktop \
 	x-truetype-font.desktop msexcel2.desktop \
 	x-shockwave-flash.desktop
 
 datadir = $(kde_mimedir)/application
+
+install-data-local: uninstall.desktop
+	$(mkinstalldirs) $(datadir)
+	$(INSTALL_DATA) $(srcdir)/uninstall.desktop $(datadir)/x-applix.desktop
 
 EXTRA_DIST = $(data_DATA)
