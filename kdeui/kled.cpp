@@ -21,6 +21,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2000/04/09 16:08:33  habenich
+ * fixed nasty bug #70 disappearing led
+ * reenabled flat and raised led painting
+ *
  * Revision 1.10  1999/12/25 17:12:18  mirko
  * Modified Look "round" to "raised", as the others are flat and
  * sunken. All enums start with uppercase letters now to fit the overall
@@ -68,6 +72,19 @@
 #include <kpixmapeffect.h>
 #include "kled.h"
 
+
+
+class KLed::KLedPrivate 
+{
+  friend KLed; 
+
+  int dark_factor;
+  QColor offcolor;
+};
+
+
+
+
 KLed::KLed(const QColor& col, QWidget *parent, const char *name)
   : QWidget( parent, name),
     led_state(On),
@@ -76,6 +93,9 @@ KLed::KLed(const QColor& col, QWidget *parent, const char *name)
 {
   setColor(col);
   //setShape(Circular);
+  d = new KLed::KLedPrivate;
+  d->dark_factor = 300;
+  d->offcolor = col.dark(300);
 }
 
 KLed::KLed(const QColor& col, KLed::State state, 
@@ -87,6 +107,15 @@ KLed::KLed(const QColor& col, KLed::State state,
 {
   //setShape(shape);
   setColor(col);
+  d = new KLed::KLedPrivate;
+  d->dark_factor = 300;
+  d->offcolor = col.dark(300);
+}
+
+
+KLed::~KLed()
+{
+  delete d;
 }
 
 void
@@ -174,7 +203,7 @@ KLed::paintflat() // paint a ROUND FLAT led lamp
   w-=2; h-=2;
 
   // draw the flat led grounding
-  c = (led_state==On) ? led_color : led_color.dark();
+  c = (led_state==On) ? led_color : d->offcolor;
   p.setPen(c);
   p.setBrush(c);
   p.drawPie(1,1,w,h,0,5760);
@@ -223,7 +252,7 @@ KLed::paintround() // paint a ROUND RAISED led lamp
   w-=2; h-=2;
   //x++; y++;
   // draw the flat led grounding
-  c = ( led_state ) ? led_color : led_color.dark();
+  c = ( led_state ) ? led_color : d->offcolor;
 
   p.setPen(c);
   p.setBrush(c);
@@ -342,7 +371,7 @@ KLed::paintsunken() // paint a ROUND SUNKEN led lamp
   p.drawArc(ring3, (-45+ARC_WHITE_RING3)*16, -2*ARC_WHITE_RING3*16);
 
   // draw the flat led grounding
-  c= (led_state==On) ? led_color : led_color.dark();
+  c= (led_state==On) ? led_color : d->offcolor;
   p.setPen(c);
   p.setBrush(c);
   p.drawPie(x,y,w,h,0,5760);
@@ -379,7 +408,7 @@ KLed::paintrect()
 {
   QPainter painter(this);
   QBrush lightBrush(led_color);
-  QBrush darkBrush(led_color.dark(300));
+  QBrush darkBrush(d->offcolor);
   QPen pen(led_color.dark(300));
   int w=width();
   int h=height();
@@ -410,7 +439,7 @@ KLed::paintrectframe(bool raised)
 {
   QPainter painter(this);
   QBrush lightBrush(led_color);
-  QBrush darkBrush(led_color.dark(300));
+  QBrush darkBrush(d->offcolor);
   int w=width();
   int h=height();
   QColor black=Qt::black;
@@ -486,11 +515,27 @@ KLed::setShape(KLed::Shape s)
 void
 KLed::setColor(const QColor& col)
 { 
-  if(led_color!=col) 
-    {
-      led_color = col;
-      update(); 
-    }
+  if(led_color!=col) {
+    led_color = col;
+    d->offcolor = col.dark(d->dark_factor);
+    update(); 
+  }
+}
+
+void
+KLed::setDarkFactor(int darkfactor)
+{
+  if (d->dark_factor != darkfactor) {
+    d->dark_factor = darkfactor;
+    d->offcolor = led_color.dark(darkfactor);
+    update();
+  }
+}
+
+int 
+KLed::getDarkFactor() const
+{
+  return d->dark_factor;
 }
 
 void

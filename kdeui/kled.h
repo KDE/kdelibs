@@ -40,9 +40,9 @@ class QColor;
 */
 class KLed : public QWidget
 {
-  Q_OBJECT
+Q_OBJECT
 
-    public:
+public:
 
   /**
    * Status of the light is on/off.
@@ -53,8 +53,8 @@ class KLed : public QWidget
   
   /** 
    * Shades of the lamp.
-   * NoOfShapes gives the total number of shapes
-   * @short shade
+   * NoOfShapes gives the total number of shapes.
+   * @short LED shape
    */ 
   enum Shape { NoShape, Rectangular, Circular, NoOfShapes=Circular };
   
@@ -109,6 +109,13 @@ class KLed : public QWidget
   KLed(const QColor& col, KLed::State st, KLed::Look look, KLed::Shape shape, 
        QWidget *parent=0, const char *name=0);
 
+
+  /**
+   * Destructor
+   * @short Destructor
+   */
+  ~KLed();
+
   /**
    * Hand back the current state of the widget (on/off).
    *
@@ -131,7 +138,15 @@ class KLed : public QWidget
    * @see Look
    * @short Returns LED look.
    */
-   Look look() const;
+  Look look() const;
+
+  /**
+   * hands back the factor to darken the LED.
+   *
+   * @see setDarkFactor()
+   * @short Returns dark factor
+   */
+  int getDarkFactor() const;
 
   /**
    * Sets the state of the widget to On or Off.
@@ -171,6 +186,38 @@ class KLed : public QWidget
   void setColor(const QColor& color);
 
   /**
+   * Set the factor to darken the LED in OFF state.
+   * Same as @ref QColor::dark().
+   * "darkfactor should be greater than 100, else the LED gets lighter
+   * in OFF state.
+   * Defaults to 300.
+   *
+   * @see QColor
+   *
+   * @param darkfactor sets the factor to darken the LED.
+   * @short sets the factor to darken the LED.
+   */
+  void setDarkFactor(int darkfactor);
+
+  /**
+   * Set the color of the widget.
+   * The Color is shown with the KLed::On state.
+   * darkcolor is explicidly used for the off state of the LED.
+   * Normally you don't have to use this method, the setColor(const QColor& color) is sufficient for the task.
+   *
+   * The widget calls the update() method, so it will
+   * be updated when entering the main event loop.
+   *
+   * @see Color setColor()
+   *
+   * @param color New color of the LED used for on state.
+   * @param darkcolor Dark color of the LED used for off state.
+   * @short Sets the light and dark LED color.
+   *
+  void setColor(const QColor& color, const QColor& darkcolor);
+  */
+
+  /**
    * Set the look of the widget.
    *
    * The look may be flat, round or sunken.
@@ -184,14 +231,14 @@ class KLed : public QWidget
    */
   void setLook( Look look );
 
-  public slots:
-
-    /**
-     * Toggle the state of the led from Off to On or vice versa.
-     *
-     * The widget repaints itself immediately.
-     */
-    void toggle();
+public slots:
+    
+  /**
+   * Toggle the state of the led from Off to On or vice versa.
+   *
+   * The widget repaints itself immediately.
+   */
+  void toggle();
 
   /**
    * Sets the state of the widget to On.
@@ -209,7 +256,7 @@ class KLed : public QWidget
    */
   void off();
 
- protected:
+protected:
   void paintEvent( QPaintEvent * );
   
   void paintflat();
@@ -219,12 +266,14 @@ class KLed : public QWidget
   // paints the LED lamp with a frame, either raised (true) or sunken(false)
   void paintrectframe(bool raised);
 
+// will get private in kdelibs 2.1xx
+// private :
   State led_state;
   QColor led_color;
   Look  led_look;
   Shape led_shape;
 
- private:
+private:
   class KLedPrivate;
   KLedPrivate *d;
 };
