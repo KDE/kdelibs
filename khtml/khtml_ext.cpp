@@ -545,16 +545,18 @@ void KHTMLPopupGUIClient::slotSaveImageAs()
 
 void KHTMLPopupGUIClient::slotCopyLinkLocation()
 {
+  KURL safeURL(d->m_url);
+  safeURL.setPass(QString::null);
 #ifndef QT_NO_MIMECLIPBOARD
   // Set it in both the mouse selection and in the clipboard
   KURL::List lst;
-  lst.append( d->m_url );
+  lst.append( safeURL );
   QApplication::clipboard()->setSelectionMode(true);
   QApplication::clipboard()->setData( new KURLDrag( lst ) );
   QApplication::clipboard()->setSelectionMode(false);
   QApplication::clipboard()->setData( new KURLDrag( lst ) );
 #else
-  QApplication::clipboard()->setText( d->m_url.url() ); //FIXME(E): Handle multiple entries
+  QApplication::clipboard()->setText( safeURL.url() ); //FIXME(E): Handle multiple entries
 #endif
 }
 
@@ -565,16 +567,18 @@ void KHTMLPopupGUIClient::slotStopAnimations()
 
 void KHTMLPopupGUIClient::slotCopyImageLocation()
 {
+  KURL safeURL(d->m_imageURL);
+  safeURL.setPass(QString::null);
 #ifndef QT_NO_MIMECLIPBOARD
   // Set it in both the mouse selection and in the clipboard
   KURL::List lst;
-  lst.append( d->m_imageURL);
+  lst.append( safeURL );
   QApplication::clipboard()->setSelectionMode(true);
   QApplication::clipboard()->setData( new KURLDrag( lst ) );
   QApplication::clipboard()->setSelectionMode(false);
   QApplication::clipboard()->setData( new KURLDrag( lst ) );
 #else
-  QApplication::clipboard()->setText(d->m_imageURL.url()); //FIXME(E): Handle multiple entries
+  QApplication::clipboard()->setText( safeURL.url() ); //FIXME(E): Handle multiple entries
 #endif
 }
 

@@ -5980,6 +5980,8 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       pix = KMimeType::pixmapForURL(u, 0, KIcon::Desktop, KIcon::SizeMedium);
     }
 
+    u.setPass(QString::null);
+
     KURLDrag* urlDrag = new KURLDrag( u, img ? 0 : d->m_view->viewport() );
     if ( !d->m_referrer.isEmpty() )
       urlDrag->metaData()["referrer"] = d->m_referrer;
@@ -5998,7 +6000,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
     stopAutoScroll();
     if(drag)
-        drag->drag();
+      drag->drag();
 
     // when we finish our drag, we need to undo our mouse press
     d->m_bMousePressed = false;
@@ -6732,7 +6734,7 @@ void KHTMLPart::walletOpened(KWallet::Wallet *wallet) {
   d->m_wallet = wallet;
   d->m_bWalletOpened = true;
   connect(d->m_wallet, SIGNAL(walletClosed()), SLOT(slotWalletClosed()));
-  
+
   if (!d->m_statusBarWalletLabel) {
     d->m_statusBarWalletLabel = new KURLLabel(d->m_statusBarExtension->statusBar());
     d->m_statusBarWalletLabel->setFixedHeight(instance()->iconLoader()->currentSize(KIcon::Small));
