@@ -2737,6 +2737,17 @@ class KToolBarMenuAction::KToolBarMenuActionPrivate
 
 };
 
+class KToolBarMenuAction::NullItem: public QCustomMenuItem
+{
+public:
+	NullItem():QCustomMenuItem(){;}
+	virtual ~NullItem(){;}
+	virtual QSize sizeHint(){return QSize(0,0);}
+	virtual	void paint ( QPainter * p, const QColorGroup & cg, bool act, bool enabled, int x, int y, int w, int h ) {
+		return;
+	}
+};
+
 KToolBarMenuAction::KToolBarMenuAction( KMainWindow* parent,
                  const char* name):KAction(parent->actionCollection(),name)
 {
@@ -2843,7 +2854,8 @@ int KToolBarMenuAction::plug( QWidget* widget, int index )
 	}
 	else 
 	{
-		id=menu->insertItem(text(),-1,index);
+		id=menu->insertItem(new KToolBarMenuAction::NullItem(),-1,index);
+//		id=menu->insertItem(text(),-1,index);
 		menu->setItemEnabled(id,false);
 	}
 

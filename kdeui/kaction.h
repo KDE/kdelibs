@@ -1503,6 +1503,9 @@ public:
     void removeToolbar(KToolBar *bar);
     void clear();
     virtual int plug( QWidget* widget, int index =-1);
+
+    class NullItem;
+
 private:
     class KToolBarMenuActionPrivate;
     KToolBarMenuActionPrivate *d;
