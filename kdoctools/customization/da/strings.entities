@@ -13,14 +13,14 @@
 <!ENTITY FDLInvariantSections "uden invariante afsnit">
 <![%FDLFCT;[
 <!ENTITY FDLFCTTitles "LISTE"><!-- keep capitals -->
-<!ENTITY FDLFrontCoverText "hvor forsidetekster er &FDLFCTTitles;">
+<!ENTITY FDLFrontCoverText "hvor tekster før omslaget er &FDLFCTTitles;">
  ]]>
-<!ENTITY FDLFrontCoverText "uden forsidetekster">
+<!ENTITY FDLFrontCoverText "uden tekster før omslaget">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "LISTE AF TITLER"><!-- keep capitals -->
-<!ENTITY FDLBackCoverText "hvor bagsidetekster er &FDLBCTTitles;">
+<!ENTITY FDLBackCoverText "hvor tekster efter omslaget er &FDLBCTTitles;">
  ]]>
-<!ENTITY FDLBackCoverText "uden bagsidetekster">
+<!ENTITY FDLBackCoverText "uden tekster efter omslaget">
 <!ENTITY kde.modespec '
  <modespec id="kdems-help">help:</modespec>
  <modespec id="kdems-man">man:</modespec>'>
