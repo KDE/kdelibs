@@ -2,8 +2,8 @@
 static char*wheel[]={
 "22 22 6 1",
 "d c #808080",
-"b c #a0a0a0",
-"c c #c3c3c3",
+"b c #a0a0a4",
+"c c #c0c0c0",
 "# c #000000",
 ". c None",
 "a c #ffffff",
