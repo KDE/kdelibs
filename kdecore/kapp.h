@@ -310,6 +310,12 @@ public:
   static QCString launcher();
 
   /**
+   * Get the full path of the LD_PRELOAD library which sets the
+   * _NET_WM_PID property. (used for app start notification)
+   */
+  static QString libmapnotify();
+
+  /**
    * The way a service gets started depends on the 'X-DCOP-ServiceType'
    * entry in the desktop file of the service:
    *
@@ -744,6 +750,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.172  2000/06/29 07:51:07  coolo
+// the after wednesday version
+//
 // Revision 1.171  2000/06/25 17:09:26  pfeiffer
 // #define KDE_VERSION 193
 // due to all the doc-updates you have to recompile everything anyway

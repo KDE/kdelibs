@@ -1301,6 +1301,52 @@ KApplication::launcher()
    return name;
 }
 
+QString
+KApplication::libmapnotify()
+{
+  static QString libkmapnotify("(none)");
+
+  if (libkmapnotify != "(none)")
+    return libkmapnotify;
+
+  // Look for the libkmapnotify by searching through the .la file
+  QString lib = "";
+  QString la_file = locate("lib", "libkmapnotify.la");
+  if (!la_file.isEmpty())
+    {
+      QFile la(la_file);
+      if (la.open(IO_ReadOnly))
+	{
+	  QTextStream is(&la);
+	
+	  QString line;
+	  while (!is.atEnd())
+	    {
+	      line = is.readLine();
+	      if (line.left(15) == "library_names='")
+		{
+		  lib = line.mid(15);
+		  int pos = lib.find(" ");
+		  if (pos > 0)
+		    lib = lib.left(pos);
+		}
+	    }
+
+	  la.close();
+	}
+
+      // look up the path
+      if (!lib.isEmpty())
+	lib = locate("lib", lib);
+    }
+  kdDebug(101) << "Found libkmapnotify at: " << lib << endl;
+
+  if (!lib.isEmpty())
+    libkmapnotify = lib;
+
+  return lib;
+}
+
 static int
 startServiceInternal( const QCString &function,
                       const QString& _name, const QStringList &URLs,
