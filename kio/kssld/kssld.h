@@ -44,20 +44,20 @@ public:
   virtual ~KSSLD();
 
 k_dcop:
-  void cacheAddCertificate(KSSLCertificate& cert, 
+  void cacheAddCertificate(KSSLCertificate cert, 
 		           KSSLCertificateCache::KSSLCertificatePolicy policy,
 		           bool permanent = true);
   KSSLCertificateCache::KSSLCertificatePolicy cacheGetPolicyByCN(QString cn);
 
-  KSSLCertificateCache::KSSLCertificatePolicy cacheGetPolicyByCertificate(KSSLCertificate& cert);
+  KSSLCertificateCache::KSSLCertificatePolicy cacheGetPolicyByCertificate(KSSLCertificate cert);
 
   bool cacheSeenCN(QString cn);
-  bool cacheSeenCertificate(KSSLCertificate& cert);
+  bool cacheSeenCertificate(KSSLCertificate cert);
 
   bool cacheRemoveByCN(QString cn);
-  bool cacheRemoveByCertificate(KSSLCertificate& cert);
+  bool cacheRemoveByCertificate(KSSLCertificate cert);
 	       
-  bool cacheIsPermanent(KSSLCertificate& cert);
+  bool cacheIsPermanent(KSSLCertificate cert);
 
 private:
 

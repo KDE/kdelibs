@@ -165,7 +165,7 @@ void KSSLD::cacheLoadDefaultPolicies() {
 }
 
 
-void KSSLD::cacheAddCertificate(KSSLCertificate& cert, 
+void KSSLD::cacheAddCertificate(KSSLCertificate cert, 
          KSSLCertificateCache::KSSLCertificatePolicy policy, bool permanent) {
   KSSLCNode *node;
 
@@ -216,7 +216,7 @@ KSSLCertificateCache::KSSLCertificatePolicy KSSLD::cacheGetPolicyByCN(QString cn
 }
 
 
-KSSLCertificateCache::KSSLCertificatePolicy KSSLD::cacheGetPolicyByCertificate(KSSLCertificate& cert) {
+KSSLCertificateCache::KSSLCertificatePolicy KSSLD::cacheGetPolicyByCertificate(KSSLCertificate cert) {
   KSSLCNode *node;
 
   for (node = certList.first(); node; node = certList.next()) {
@@ -256,7 +256,7 @@ bool KSSLD::cacheSeenCN(QString cn) {
 }
 
 
-bool KSSLD::cacheSeenCertificate(KSSLCertificate& cert) {
+bool KSSLD::cacheSeenCertificate(KSSLCertificate cert) {
   KSSLCNode *node;
 
   for (node = certList.first(); node; node = certList.next()) {
@@ -276,7 +276,7 @@ bool KSSLD::cacheSeenCertificate(KSSLCertificate& cert) {
 }
 
 
-bool KSSLD::cacheIsPermanent(KSSLCertificate& cert) {
+bool KSSLD::cacheIsPermanent(KSSLCertificate cert) {
   KSSLCNode *node;
 
   for (node = certList.first(); node; node = certList.next()) {
@@ -313,7 +313,7 @@ bool KSSLD::cacheRemoveByCN(QString cn) {
 }
 
 
-bool KSSLD::cacheRemoveByCertificate(KSSLCertificate& cert) {
+bool KSSLD::cacheRemoveByCertificate(KSSLCertificate cert) {
   KSSLCNode *node;
 
   for (node = certList.first(); node; node = certList.next()) {

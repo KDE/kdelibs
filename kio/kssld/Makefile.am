@@ -18,11 +18,11 @@
 
 INCLUDES= -I$(srcdir)/.. -I$(top_srcdir) $(all_includes)
 
-lib_LTLIBRARIES = kssld.la
+lib_LTLIBRARIES = libkded_kssld.la
 
-kssld_la_LDFLAGS = $(all_libraries) -module -avoid-version
-kssld_la_LIBADD = $(LIB_KSYCOCA)
-kssld_la_SOURCES = kssld.cpp
+libkded_kssld_la_LDFLAGS = $(all_libraries) -module -avoid-version
+libkded_kssld_la_LIBADD = $(LIB_KSYCOCA)
+libkded_kssld_la_SOURCES = kssld.cpp kssld.skel
 
 METASOURCES = AUTO
 

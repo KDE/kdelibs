@@ -1,6 +1,7 @@
 [Desktop Entry]
-Type=ServiceType
-X-KDE-ServiceType=kssld
-Comment=KSSL Daemon Module
-[PropertyDef::X-KDE-Factory]
-Type=QString
+Type=Service
+X-KDE-ModuleType=Library
+X-KDE-Library=kssld
+X-KDE-FactoryName=kssld
+Name=KSSL Daemon Module
+Comment=KSSL Daemon Module for KDED
