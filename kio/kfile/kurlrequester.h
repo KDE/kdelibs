@@ -77,8 +77,6 @@ public:
      * edit-widget. The edit-widget can be either a KComboBox or a KLineEdit
      * (or inherited thereof). Note: for geometry management reasons, the
      * edit-widget is reparented to have the KURLRequester as parent.
-     * @param modal specifies whether the filedialog should be opened as modal
-     * or not.
      */
     KURLRequester( QWidget *editWidget, QWidget *parent, const char *name=0 );
     /**
