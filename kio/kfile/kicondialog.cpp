@@ -222,19 +222,20 @@ void KIconDialog::init()
     QWidget *main = new QWidget( this );
     setMainWidget(main);
 
-    QVBoxLayout *top = new QVBoxLayout(main, marginHint(), spacingHint());
+    QVBoxLayout *top = new QVBoxLayout(main);
+    top->setSpacing( spacingHint() );
 
-    QButtonGroup *bgroup = new QButtonGroup(i18n("Icon source"), main);
+    QButtonGroup *bgroup = new QButtonGroup(i18n("Icon Source"), main);
     top->addWidget(bgroup);
     connect(bgroup, SIGNAL(clicked(int)), SLOT(slotButtonClicked(int)));
     QGridLayout *grid = new QGridLayout(bgroup, 3, 2, marginHint(), spacingHint());
     grid->addRowSpacing(0, 15);
-    mpRb1 = new QRadioButton(i18n("System icons:"), bgroup);
+    mpRb1 = new QRadioButton(i18n("&System icons:"), bgroup);
     grid->addWidget(mpRb1, 1, 0);
     mpCombo = new QComboBox(bgroup);
     connect(mpCombo, SIGNAL(activated(int)), SLOT(slotContext(int)));
     grid->addWidget(mpCombo, 1, 1);
-    mpRb2 = new QRadioButton(i18n("Other icons:"), bgroup);
+    mpRb2 = new QRadioButton(i18n("O&ther icons:"), bgroup);
     grid->addWidget(mpRb2, 2, 0);
     mpBrowseBut = new QPushButton(i18n("&Browse..."), bgroup);
     grid->addWidget(mpBrowseBut, 2, 1);
