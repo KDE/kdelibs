@@ -42,6 +42,8 @@
 #include <kmenubar.h>
 #include <kstatusbar.h>
 #include <kwin.h>
+#include <kedittoolbar.h>
+#include <kmainwindow.h>
 
 #include <klocale.h>
 #include <kstandarddirs.h>
@@ -419,6 +421,45 @@ KXMLGUIFactory *KMainWindow::guiFactory()
     if ( !factory_ )
         factory_ = new KXMLGUIFactory( this, this, "guifactory" );
     return factory_;
+}
+
+int KMainWindow::configureToolbars()
+{
+    saveMainWindowSettings(KGlobal::config());
+    KEditToolbar dlg(guiFactory(), this, "KEditToolbar");
+    connect(&dlg, SIGNAL(newToolbarConfig()), SLOT(saveNewToolbarConfig()));
+    dlg.exec();
+}
+
+void KMainWindow::saveNewToolbarConfig()
+{
+    createGUI();
+    applyMainWindowSettings( KGlobal::config() );
+}
+
+void KMainWindow::setupGUI( int options ) {
+    if( options & Keys ){
+        KStdAction::keyBindings(guiFactory(),
+                    SLOT(configureShortcuts()), actionCollection());
+    }
+    
+    if( (options & StatusBar) && internalStatusBar() ){
+        createStandardStatusBarAction();
+    }
+
+    if( options & ToolBar ){
+        setStandardToolBarMenuEnabled( true );
+        KStdAction::configureToolbars(this,
+                      SLOT(configureToolbars() ), actionCollection());
+    }
+
+    if( options & Save ){
+        setAutoSaveSettings();
+    }
+
+    if( options & Create ){
+        createGUI();
+    }
 }
 
 void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )

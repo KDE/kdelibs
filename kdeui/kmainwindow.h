@@ -514,6 +514,54 @@ public:
      */
     void createStandardStatusBarAction();
 
+    /**
+     * @see createStandardWindow()
+     */
+    enum StandardWindowOptions
+    {
+        /**
+	 * adds action to show/hide the toolbar(s) and adds
+         * action to configure the toolbar(s).
+         * @see setStandardToolBarMenuEnabled
+         */
+	ToolBar = 1,
+
+	/**
+	 * adds action to show the key configure action.
+	 */
+	Keys = 2,
+
+	/**
+	 * adds action to show/hide the statusbar if the
+         * statusbar exists.  @see createStandardStatusBarAction
+	 */
+	StatusBar = 4,
+        
+	/**
+	 * auto-saves the toolbar/menubar/statusbar settings and
+         * window size using the default name.  @see setAutoSaveSettings
+	 */
+	Save = 8,
+	
+	/**
+	 * calls createGUI() once all of the other options have been
+         * taken care of.  @see createGUI
+         */
+	Create = 16,
+    };
+    
+    /**
+     * Configures the current windows and its actions in the typical KDE
+     * fashion.  The options are all enabled by default but can be turned
+     * off if desired through the params or if the prereqs don't exists.
+     *
+     * Typically this function replaces createGUI().
+     *
+     * @see StandardWindowOptions
+     *
+     * @since 3.3
+     */
+    void setupGUI( int options = ToolBar | Keys | StatusBar | Save | Create );
 
     /**
      * Returns a pointer to the mainwindows action responsible for the toolbars menu
@@ -561,6 +609,20 @@ public:
     QSize sizeForCentralWidgetSize(QSize size) KDE_DEPRECATED;
 
 public slots:
+    /**
+     * Show a standard configure toolbar dialog.
+     *
+     * This slot can be connected dirrectly to the action to configure shortcuts.
+     * This is very simple to do that by adding a single line
+     * \code
+     * KStdAction::configureToolbars( guiFactory(), SLOT( configureToolbars() ),
+     *                                actionCollection() );
+     * \endcode
+     *
+     * @since 3.3
+     */
+   int configureToolbars();
+
     /**
      * Makes a KDE compliant caption.
      *
@@ -810,8 +872,13 @@ protected:
     void parseGeometry(bool parsewidth);
 
 protected slots:
-
    /**
+    * Stores the new toolbar
+    * @see configureToolbars()
+    */
+   void saveNewToolbarConfig();
+
+    /**
     * This slot does nothing.
     *
     * It must be reimplemented if you want
