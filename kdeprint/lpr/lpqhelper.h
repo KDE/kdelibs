@@ -17,42 +17,46 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KMLRMANAGER_H
-#define KMLRMANAGER_H
+#ifndef LPQHELPER_H
+#define LPQHELPER_H
 
-#include "kmmanager.h"
-
+#include <qobject.h>
 #include <qdict.h>
 #include <qptrlist.h>
-#include <qdatetime.h>
-#include <kurl.h>
+#include <qstringlist.h>
+#include <qvaluelist.h>
 
-class LprHandler;
-class PrintcapEntry;
-class LpcHelper;
+class KProcess;
+struct JobInfo;
+struct LpqInfo;
+class KMJob;
 
-class KMLprManager : public KMManager
+class LpqHelper : public QObject
 {
+	Q_OBJECT
 public:
-	KMLprManager(QObject *parent = 0, const char *name = 0);
+	LpqHelper(QObject *parent = 0, const char *name = 0);
+	~LpqHelper();
 
-	bool completePrinter(KMPrinter*);
-	bool completePrinterShort(KMPrinter*);
+	void listJobs(QPtrList<KMJob>& jobs, const QString& prname);
+
+protected slots:
+	void slotExited(KProcess*);
+	void slotReceivedOutput(KProcess*, char*, int);
+	void processNext();
+	void slotTimeout();
 
 protected:
-	void listPrinters();
-	void initHandlers();
-	void insertHandler(LprHandler*);
-	PrintcapEntry* findEntry(KMPrinter*);
-	LprHandler* findHandler(KMPrinter*);
-	void checkPrinterState(KMPrinter*);
+	JobInfo* splitLine(const QString&, const QValueList<int>&);
+	void parseOutput(const QString& buf, const QString& prname);
+	void updateNow(const QString&);
 
 private:
-	QDict<LprHandler>	m_handlers;
-	QPtrList<LprHandler>    m_handlerlist;
-	QDict<PrintcapEntry>	m_entries;
-	QDateTime		m_updtime;
-	LpcHelper		*m_lpchelper;
+	KProcess	*m_proc;
+	QDict<LpqInfo>	m_lpq;
+	QStringList	m_updatelist;
+	QString		m_exepath;
+	QString		m_buffer;
 };
 
 #endif

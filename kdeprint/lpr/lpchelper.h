@@ -17,42 +17,38 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KMLRMANAGER_H
-#define KMLRMANAGER_H
+#ifndef LPCHELPER_H
+#define LPCHELPER_H
 
-#include "kmmanager.h"
+#include <qobject.h>
+#include <qmap.h>
+#include "kmprinter.h"
 
-#include <qdict.h>
-#include <qptrlist.h>
-#include <qdatetime.h>
-#include <kurl.h>
+class KProcess;
 
-class LprHandler;
-class PrintcapEntry;
-class LpcHelper;
-
-class KMLprManager : public KMManager
+class LpcHelper : public QObject
 {
+	Q_OBJECT
 public:
-	KMLprManager(QObject *parent = 0, const char *name = 0);
+	LpcHelper(QObject *parent = 0, const char *name = 0);
+	~LpcHelper();
 
-	bool completePrinter(KMPrinter*);
-	bool completePrinterShort(KMPrinter*);
+	KMPrinter::PrinterState state(const QString&) const;
+	KMPrinter::PrinterState state(KMPrinter*) const;
+
+protected slots:
+	void slotReceivedOutput(KProcess*, char*, int);
+	void slotExited(KProcess*);
+	void slotTimeout();
 
 protected:
-	void listPrinters();
-	void initHandlers();
-	void insertHandler(LprHandler*);
-	PrintcapEntry* findEntry(KMPrinter*);
-	LprHandler* findHandler(KMPrinter*);
-	void checkPrinterState(KMPrinter*);
+	void parseStatusOutput(const QString&);
 
 private:
-	QDict<LprHandler>	m_handlers;
-	QPtrList<LprHandler>    m_handlerlist;
-	QDict<PrintcapEntry>	m_entries;
-	QDateTime		m_updtime;
-	LpcHelper		*m_lpchelper;
+	KProcess	*m_proc;
+	QMap<QString, KMPrinter::PrinterState>	m_state;
+	QString	m_exepath;
+	QString	m_buffer;
 };
 
 #endif

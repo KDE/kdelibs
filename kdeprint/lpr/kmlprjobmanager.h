@@ -17,42 +17,23 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KMLRMANAGER_H
-#define KMLRMANAGER_H
+#ifndef KMLPRJOBMANAGER_H
+#define KMLPRJOBMANAGER_H
 
-#include "kmmanager.h"
+#include "kmjobmanager.h"
 
-#include <qdict.h>
-#include <qptrlist.h>
-#include <qdatetime.h>
-#include <kurl.h>
+class LpqHelper;
 
-class LprHandler;
-class PrintcapEntry;
-class LpcHelper;
-
-class KMLprManager : public KMManager
+class KMLprJobManager : public KMJobManager
 {
 public:
-	KMLprManager(QObject *parent = 0, const char *name = 0);
-
-	bool completePrinter(KMPrinter*);
-	bool completePrinterShort(KMPrinter*);
+	KMLprJobManager(QObject *parent = 0, const char *name = 0);
 
 protected:
-	void listPrinters();
-	void initHandlers();
-	void insertHandler(LprHandler*);
-	PrintcapEntry* findEntry(KMPrinter*);
-	LprHandler* findHandler(KMPrinter*);
-	void checkPrinterState(KMPrinter*);
+	bool listJobs(const QString&, JobType);
 
 private:
-	QDict<LprHandler>	m_handlers;
-	QPtrList<LprHandler>    m_handlerlist;
-	QDict<PrintcapEntry>	m_entries;
-	QDateTime		m_updtime;
-	LpcHelper		*m_lpchelper;
+	LpqHelper	*m_lpqhelper;
 };
 
 #endif

@@ -20,18 +20,21 @@
 #include "kmlprmanager.h"
 #include "printcapreader.h"
 #include "printcapentry.h"
+#include "lpchelper.h"
 #include "matichandler.h"
 
 #include <qfileinfo.h>
-#include <qfile.h>
+#include <qlist.h>
 #include <klocale.h>
 
 KMLprManager::KMLprManager(QObject *parent, const char *name)
 : KMManager(parent,name)
 {
 	m_handlers.setAutoDelete(true);
-    m_handlerlist.setAutoDelete(false);
+	m_handlerlist.setAutoDelete(false);
 	m_entries.setAutoDelete(true);
+	
+	m_lpchelper = new LpcHelper(this);
 
 	initHandlers();
 }
@@ -60,7 +63,7 @@ void KMLprManager::listPrinters()
 					if (it.current()->validate(entry))
 					{
 						KMPrinter	*prt = it.current()->createPrinter(entry);
-						prt->setState(KMPrinter::Idle);
+						checkPrinterState(prt);
 						prt->setOption("kde-lpr-handler", it.current()->name());
 						addPrinter(prt);
 						break;
@@ -73,7 +76,12 @@ void KMLprManager::listPrinters()
 		m_updtime = fi.lastModified();
 	}
 	else
+	{
 		discardAllPrinters(false);
+		QPtrListIterator<KMPrinter>	it(m_printers);
+		for (; it.current(); ++it)
+			checkPrinterState(it.current());
+	}
 }
 
 void KMLprManager::insertHandler(LprHandler *handler)
@@ -85,12 +93,12 @@ void KMLprManager::insertHandler(LprHandler *handler)
 void KMLprManager::initHandlers()
 {
 	m_handlers.clear();
-    m_handlerlist.clear();
+	m_handlerlist.clear();
 
-    insertHandler(new MaticHandler);
+	insertHandler(new MaticHandler);
 
-    // default handler
-    insertHandler(new LprHandler("default"));
+	// default handler
+	insertHandler(new LprHandler("default"));
 }
 
 LprHandler* KMLprManager::findHandler(KMPrinter *prt)
@@ -99,8 +107,8 @@ LprHandler* KMLprManager::findHandler(KMPrinter *prt)
 	LprHandler	*handler(0);
 	if (handlerstr.isEmpty() || (handler = m_handlers.find(handlerstr)) == NULL)
 	{
-        setErrorMsg(i18n("Internal error."));
-        return NULL;
+		setErrorMsg(i18n("Internal error."));
+		return NULL;
 	}
 	return handler;
 }
@@ -134,4 +142,12 @@ bool KMLprManager::completePrinterShort(KMPrinter *prt)
 		return false;
 
 	return handler->completePrinter(prt, entry, true);
+}
+
+void KMLprManager::checkPrinterState(KMPrinter *prt)
+{
+	if (m_lpchelper)
+		prt->setState(m_lpchelper->state(prt));
+	else
+		prt->setState(KMPrinter::Idle);
 }

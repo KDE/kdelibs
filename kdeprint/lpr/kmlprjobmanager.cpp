@@ -17,42 +17,25 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KMLRMANAGER_H
-#define KMLRMANAGER_H
+#include "kmlprjobmanager.h"
+#include "lpqhelper.h"
+#include "kmjob.h"
 
-#include "kmmanager.h"
-
-#include <qdict.h>
 #include <qptrlist.h>
-#include <qdatetime.h>
-#include <kurl.h>
 
-class LprHandler;
-class PrintcapEntry;
-class LpcHelper;
-
-class KMLprManager : public KMManager
+KMLprJobManager::KMLprJobManager(QObject *parent, const char *name)
+: KMJobManager(parent, name)
 {
-public:
-	KMLprManager(QObject *parent = 0, const char *name = 0);
+	m_lpqhelper = new LpqHelper(this, "LpqHelper");
+}
 
-	bool completePrinter(KMPrinter*);
-	bool completePrinterShort(KMPrinter*);
-
-protected:
-	void listPrinters();
-	void initHandlers();
-	void insertHandler(LprHandler*);
-	PrintcapEntry* findEntry(KMPrinter*);
-	LprHandler* findHandler(KMPrinter*);
-	void checkPrinterState(KMPrinter*);
-
-private:
-	QDict<LprHandler>	m_handlers;
-	QPtrList<LprHandler>    m_handlerlist;
-	QDict<PrintcapEntry>	m_entries;
-	QDateTime		m_updtime;
-	LpcHelper		*m_lpchelper;
-};
-
-#endif
+bool KMLprJobManager::listJobs(const QString& prname, JobType)
+{
+	QPtrList<KMJob>	jobList;
+	jobList.setAutoDelete(false);
+	m_lpqhelper->listJobs(jobList, prname);
+	QPtrListIterator<KMJob>	it(jobList);
+	for (; it.current(); ++it)
+		addJob(it.current());
+	return false;
+}

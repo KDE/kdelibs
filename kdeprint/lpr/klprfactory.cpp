@@ -20,6 +20,7 @@
 #include "klprfactory.h"
 #include "kmlprmanager.h"
 #include "kmlpruimanager.h"
+#include "kmlprjobmanager.h"
 //#include "klprprinterimpl.h"
 
 extern "C"
@@ -45,6 +46,8 @@ QObject* KLprFactory::createObject(QObject *parent, const char *name, const char
 		return new KMLprManager(parent,name);
 	else if (strcmp(classname, "KMUiManager") == 0)
 		return new KMLprUiManager(parent, name);
+	else if (strcmp(classname, "KMJobManager") == 0)
+		return new KMLprJobManager(parent, name);
 	//else if (strcmp(classname,"KPrinterImpl") == 0)
 	//	return new KLpdUnixPrinterImpl(parent,name);
 	else
