@@ -176,6 +176,9 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
 
     card.addLine( VCardLine( "N", name.join( ";" ) ) );
 
+    // NAME
+    card.addLine( VCardLine( "NAME", (*addrIt).name() ) );
+
     // NICKNAME
     if ( version == VCard::v3_0 )
       card.addLine( VCardLine( "NICKNAME", (*addrIt).nickName() ) );
@@ -413,6 +416,10 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
           if ( nameParts.count() > 4 )
             addr.setSuffix( nameParts[ 4 ] );
         }
+
+        // NAME
+        if ( identifier == "name" )
+          addr.setName( (*lineIt).value().asString() );
 
         // NICKNAME
         if ( identifier == "nickname" )
