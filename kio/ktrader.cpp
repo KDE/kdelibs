@@ -59,7 +59,7 @@ private:
 
   /**
    * The bigger this number is, the better is this service with
-   * respect to the querys preferences expression.
+   * respect to the queries preferences expression.
    */
   double m_traderPreference;
 
