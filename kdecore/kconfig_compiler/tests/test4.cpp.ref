@@ -18,6 +18,8 @@ Test4 *Test4::self()
   return mSelf;
 }
 
+const char* const Test4::EnumButton::enumToString[] = { "right", "mid", "left" };
+
 Test4::Test4(  )
   : KConfigSkeleton( QString::fromLatin1( "test4rc" ) )
 {
@@ -25,15 +27,15 @@ Test4::Test4(  )
   setCurrentGroup( QString::fromLatin1( "Foo" ) );
 
 QColor defaultColor[4] = { Qt::red, Qt::blue, Qt::green, Qt::black };
-  KConfigSkeleton::ItemColor  *itemColor;
-  itemColor = new KConfigSkeleton::ItemColor( currentGroup(), QString::fromLatin1( "color #0" ), mColor[0], defaultColor[0] );
-  addItem( itemColor, QString::fromLatin1( "Color0" ) );
-  itemColor = new KConfigSkeleton::ItemColor( currentGroup(), QString::fromLatin1( "color #1" ), mColor[1], defaultColor[1] );
-  addItem( itemColor, QString::fromLatin1( "Color1" ) );
-  itemColor = new KConfigSkeleton::ItemColor( currentGroup(), QString::fromLatin1( "color #2" ), mColor[2], defaultColor[2] );
-  addItem( itemColor, QString::fromLatin1( "Color2" ) );
-  itemColor = new KConfigSkeleton::ItemColor( currentGroup(), QString::fromLatin1( "color #3" ), mColor[3], defaultColor[3] );
-  addItem( itemColor, QString::fromLatin1( "Color3" ) );
+  KConfigSkeleton::ItemColor  *itemColor[4];
+  itemColor[0] = new KConfigSkeleton::ItemColor( currentGroup(), QString::fromLatin1( "color #0" ), mColor[0], defaultColor[0] );
+  addItem( itemColor[0], QString::fromLatin1( "Color0" ) );
+  itemColor[1] = new KConfigSkeleton::ItemColor( currentGroup(), QString::fromLatin1( "color #1" ), mColor[1], defaultColor[1] );
+  addItem( itemColor[1], QString::fromLatin1( "Color1" ) );
+  itemColor[2] = new KConfigSkeleton::ItemColor( currentGroup(), QString::fromLatin1( "color #2" ), mColor[2], defaultColor[2] );
+  addItem( itemColor[2], QString::fromLatin1( "Color2" ) );
+  itemColor[3] = new KConfigSkeleton::ItemColor( currentGroup(), QString::fromLatin1( "color #3" ), mColor[3], defaultColor[3] );
+  addItem( itemColor[3], QString::fromLatin1( "Color3" ) );
   QValueList<KConfigSkeleton::ItemEnum::Choice> valuesMouseAction;
   {
     KConfigSkeleton::ItemEnum::Choice choice;
@@ -55,13 +57,13 @@ QColor defaultColor[4] = { Qt::red, Qt::blue, Qt::green, Qt::black };
     choice.name = QString::fromLatin1( "PumpNDump" );
     valuesMouseAction.append( choice );
   }
-  KConfigSkeleton::ItemEnum  *itemMouseAction;
-  itemMouseAction = new KConfigSkeleton::ItemEnum( currentGroup(), QString::fromLatin1( "right_mouse_action" ), mMouseAction[0], valuesMouseAction, EnumMouseAction::Decrypt );
-  addItem( itemMouseAction, QString::fromLatin1( "MouseActionright" ) );
-  itemMouseAction = new KConfigSkeleton::ItemEnum( currentGroup(), QString::fromLatin1( "mid_mouse_action" ), mMouseAction[1], valuesMouseAction, EnumMouseAction::Encrypt );
-  addItem( itemMouseAction, QString::fromLatin1( "MouseActionmid" ) );
-  itemMouseAction = new KConfigSkeleton::ItemEnum( currentGroup(), QString::fromLatin1( "left_mouse_action" ), mMouseAction[2], valuesMouseAction, EnumMouseAction::PumpNDump );
-  addItem( itemMouseAction, QString::fromLatin1( "MouseActionleft" ) );
+  KConfigSkeleton::ItemEnum  *itemMouseAction[3];
+  itemMouseAction[0] = new KConfigSkeleton::ItemEnum( currentGroup(), QString::fromLatin1( "right_mouse_action" ), mMouseAction[0], valuesMouseAction, EnumMouseAction::Decrypt );
+  addItem( itemMouseAction[0], QString::fromLatin1( "MouseActionright" ) );
+  itemMouseAction[1] = new KConfigSkeleton::ItemEnum( currentGroup(), QString::fromLatin1( "mid_mouse_action" ), mMouseAction[1], valuesMouseAction, EnumMouseAction::Encrypt );
+  addItem( itemMouseAction[1], QString::fromLatin1( "MouseActionmid" ) );
+  itemMouseAction[2] = new KConfigSkeleton::ItemEnum( currentGroup(), QString::fromLatin1( "left_mouse_action" ), mMouseAction[2], valuesMouseAction, EnumMouseAction::PumpNDump );
+  addItem( itemMouseAction[2], QString::fromLatin1( "MouseActionleft" ) );
   KConfigSkeleton::ItemString  *itemFooBar;
   itemFooBar = new KConfigSkeleton::ItemString( currentGroup(), QString::fromLatin1( "foo bar" ), mFooBar );
   addItem( itemFooBar, QString::fromLatin1( "FooBar" ) );

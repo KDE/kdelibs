@@ -17,6 +17,7 @@ class Test4 : public KConfigSkeleton
     {
       public:
       enum { right, mid, left, COUNT };
+      static const char* const enumToString[];
     };
 
     static Test4 *self();
@@ -28,7 +29,7 @@ class Test4 : public KConfigSkeleton
     static
     void setColor( int i, const QColor & v )
     {
-      if (!self()->isImmutable( QString::fromLatin1( "Color" ) ))
+      if (!self()->isImmutable( QString::fromLatin1( "Color%1" ).arg( i ) ))
         self()->mColor[i] = v;
     }
 
@@ -47,7 +48,7 @@ class Test4 : public KConfigSkeleton
     static
     void setMouseAction( int i, int v )
     {
-      if (!self()->isImmutable( QString::fromLatin1( "MouseAction" ) ))
+      if (!self()->isImmutable( QString::fromLatin1( "MouseAction%1" ).arg( QString::fromLatin1( EnumButton::enumToString[i] ) ) ))
         self()->mMouseAction[i] = v;
     }
 

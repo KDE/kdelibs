@@ -37,6 +37,8 @@
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 
+#include <iostream>
+
 static const KCmdLineOptions options[] =
 {
   { "d", 0, 0 },
@@ -136,7 +138,13 @@ class CfgEntry
 // whatsthis
       kdDebug() << "  code: " << mCode << endl;
 //      kdDebug() << "  values: " << mValues.join(":") << endl;
-      kdDebug() << "  paramvalues: " << mParamValues.join(":") << endl;
+      
+      if (!param().isEmpty())
+      {
+        kdDebug() << "  param name: "<< mParamName << endl;
+        kdDebug() << "  param type: "<< mParamType << endl;
+        kdDebug() << "  paramvalues: " << mParamValues.join(":") << endl;
+      }
       kdDebug() << "  default: " << mDefaultValue << endl;
       kdDebug() << "  hidden: " << mHidden << endl;
       kdDebug() << "  min: " << mMin << endl;
@@ -612,7 +620,9 @@ static QString itemDeclaration(const CfgEntry *e)
      return QString::null;
 
   return "  KConfigSkeleton::Item"+itemType( e->type() ) +
-         "  *item" + e->name() + ";\n";
+         "  *item" + e->name() + 
+         ( (!e->param().isEmpty())?(QString("[%1]").arg(e->paramMax()+1)):"") + 
+         ";\n";
 }
 
 static QString itemVar(const CfgEntry *e)
@@ -630,7 +640,11 @@ QString newItem( const QString &type, const QString &name, const QString &key,
   QString t = "new KConfigSkeleton::Item" + itemType( type ) +
               "( currentGroup(), " + key + ", " + varName( name ) + param;
   if ( type == "Enum" ) t += ", values" + name;
-  if ( !defaultValue.isEmpty() ) t += ", " + defaultValue;
+  if ( !defaultValue.isEmpty() ) {
+    t += ", ";
+    if ( type == "String" ) t += "QString::fromLatin1( " + defaultValue + " )";
+    else t+= defaultValue;
+  }
   t += " );";
 
   return t;
@@ -679,16 +693,26 @@ QString paramString(const QString &group, const QStringList &parameters)
   return "QString::fromLatin1( \""+paramString+"\" )"+arguments;
 }
 
-QString userTextsFunctions( CfgEntry *e )
+/* int i is the value of the parameter */
+QString userTextsFunctions( CfgEntry *e, QString itemVarStr=QString::null, QString i=QString::null )
 {
   QString txt;
+  if (itemVarStr.isNull()) itemVarStr=itemVar(e);
   if ( !e->label().isEmpty() ) {
-    txt += "  " + itemVar(e) + "->setLabel( i18n(\"" +
-           e->label() + "\") );\n";
+    txt += "  " + itemVarStr + "->setLabel( i18n(\"";
+    if ( !e->param().isEmpty() )
+      txt += e->label().replace("$("+e->param()+")", i);
+    else 
+      txt+= e->label();
+    txt+= "\") );\n";
   }
   if ( !e->whatsThis().isEmpty() ) {
-    txt += "  " + itemVar(e) + "->setWhatsThis( i18n(\"" +
-           e->whatsThis() + "\") );\n";
+    txt += "  " + itemVarStr + "->setWhatsThis( i18n(\"";
+    if ( !e->param().isEmpty() )
+      txt += e->whatsThis().replace("$("+e->param()+")", i);
+    else 
+      txt+= e->whatsThis();
+    txt+="\") );\n";
   }
   return txt;
 }
@@ -696,10 +720,12 @@ QString userTextsFunctions( CfgEntry *e )
 int main( int argc, char **argv )
 {
   KAboutData aboutData( "kconfig_compiler", I18N_NOOP("KDE .kcfg compiler"), "0.3",
-  	I18N_NOOP("KConfig Compiler") , KAboutData::License_LGPL );
+    I18N_NOOP("KConfig Compiler") , KAboutData::License_LGPL );
   aboutData.addAuthor( "Cornelius Schumacher", 0, "schumacher@kde.org" );
   aboutData.addAuthor( "Waldo Bastian", 0, "bastian@kde.org" );
   aboutData.addAuthor( "Zack Rusin", 0, "zack@kde.org" );
+  aboutData.addCredit( "Reinhold Kainhofer", "Fix for parametrized entries", 
+      "reinhold@kainhofer.com", "http://reinhold.kainhofer.com" );
 
   KCmdLineArgs::init( argc, argv, &aboutData );
   KCmdLineArgs::addCmdLineOptions( options );
@@ -857,6 +883,7 @@ int main( int argc, char **argv )
 
   QString headerFileName = baseName + ".h";
   QString implementationFileName = baseName + ".cpp";
+  QString cppPreamble = ""; // code to be inserted at the beginnin of the cpp file, e.g. initialization of static values
 
   QFile header( baseDir + headerFileName );
   if ( !header.open( IO_WriteOnly ) ) {
@@ -903,7 +930,7 @@ int main( int argc, char **argv )
         values.append( (*itChoice).name );
       }
       if ( globalEnums ) {
-        h << "    enum { " << values.join( ", " ) << " };" << endl;
+        h << "    enum { " << values.join( ", " ) << ", COUNT };" << endl;
       } else {
         h << "    class " << enumName(e->name()) << endl;
         h << "    {" << endl;
@@ -914,11 +941,21 @@ int main( int argc, char **argv )
     }
     QStringList values = e->paramValues();
     if ( !values.isEmpty() ) {
-      h << "    class " << enumName(e->param()) << endl;
-      h << "    {" << endl;
-      h << "      public:" << endl;
-      h << "      enum { " << values.join( ", " ) << ", COUNT };" << endl;
-      h << "    };" << endl;
+      if ( globalEnums ) {
+        h << "    enum { " << values.join( ", " ) << ", COUNT };" << endl;
+        h << "    static const char* const " << enumName(e->param()) << "ToString[];" << endl;
+        cppPreamble += "const char* const " + className + "::" + enumName(e->param()) + "ToString[] = " +
+            "{ \"" + values.join( "\", \"" ) + "\" };\n";
+      } else {
+        h << "    class " << enumName(e->param()) << endl;
+        h << "    {" << endl;
+        h << "      public:" << endl;
+        h << "      enum { " << values.join( ", " ) << ", COUNT };" << endl;
+        h << "      static const char* const enumToString[];" << endl;
+        h << "    };" << endl;
+        cppPreamble += "const char* const " + className + "::" + enumName(e->param()) + "::enumToString[] = " +
+            "{ \"" + values.join( "\", \"" ) + "\" };\n";
+      }
     }
   }
 
@@ -968,7 +1005,23 @@ int main( int argc, char **argv )
         h << cppType(e->paramType()) << " i, ";
       h << param( t ) << " v )" << endl;
       h << "    {" << endl;
-      h << "      if (!" << This << "isImmutable( QString::fromLatin1( \"" << n << "\" ) ))" << endl;
+      h << "      if (!" << This << "isImmutable( QString::fromLatin1( \"";
+      if (!e->param().isEmpty()) {
+        h << e->paramName().replace("$("+e->param()+")", "%1") << "\" ).arg( ";
+        if ( e->paramType() == "Enum" ) {
+				  h << "QString::fromLatin1( ";
+          if (globalEnums) 
+            h << enumName(e->name()) << "ToString[i]";
+          else 
+            h << enumName(e->param()) << "::enumToString[i]";
+          h << " )";
+        } else {
+          h << "i";
+        }
+        h << " )";
+      } else
+        h << n << "\" )";
+      h << " ))" << endl;
       h << "        " << This << varName(n);
       if (!e->param().isEmpty())
         h << "[i]";
@@ -988,8 +1041,7 @@ int main( int argc, char **argv )
     h << ")" << Const << endl;
     h << "    {" << endl;
     h << "      return " << This << varName(n);
-    if (!e->param().isEmpty())
-      h << "[i]";
+    if (!e->param().isEmpty()) h << "[i]";
     h << ";" << endl;
     h << "    }" << endl;
 
@@ -1001,9 +1053,15 @@ int main( int argc, char **argv )
         << endl;
       h << "    */" << endl;
       h << "    Item" << itemType( e->type() ) << " *"
-        << getFunction( n ) << "Item()" << endl;
+        << getFunction( n ) << "Item(";
+      if (!e->param().isEmpty()) {
+        h << " " << cppType(e->paramType()) << " i ";
+      }
+      h << ")" << endl;
       h << "    {" << endl;
-      h << "      return " << itemVar(e) << ";" << endl;
+      h << "      return " << itemVar(e);
+      if (!e->param().isEmpty()) h << "[i]";
+      h << ";" << endl;
       h << "    }" << endl;
     }
 
@@ -1057,7 +1115,9 @@ int main( int argc, char **argv )
   h << endl << "  private:" << endl;
   if ( itemAccessors ) {
     for( e = entries.first(); e; e = entries.next() ) {
-      h << "    Item" << itemType( e->type() ) << " *" << itemVar( e ) << ";" << endl;
+      h << "    Item" << itemType( e->type() ) << " *" << itemVar( e );
+      if (!e->param().isEmpty() ) h << QString("[%1]").arg( e->paramMax()+1 ) << "]";
+      h << ";" << endl;
     }
   }
 
@@ -1071,7 +1131,7 @@ int main( int argc, char **argv )
 
   if ( !nameSpace.isEmpty() ) h << "}" << endl << endl;
 
-  h << "#endif" << endl << endl;
+  h << "#endif" << endl;
 
 
   header.close();
@@ -1119,6 +1179,9 @@ int main( int argc, char **argv )
     cpp << "  return mSelf;" << endl;
     cpp << "}" << endl << endl;
   }
+  
+  if ( !cppPreamble.isEmpty() )
+    cpp << cppPreamble << endl;
 
   // Constructor
   cpp << className << "::" << className << "( ";
@@ -1208,12 +1271,12 @@ int main( int argc, char **argv )
     }
     else
     {
-// TODO: itemAccessors don't work with parameterized entries
-// TODO: itemVar(e) should be an array in that case
       // Indexed
       for(int i = 0; i <= e->paramMax(); i++)
       {
         QString defaultStr;
+        QString itemVarStr(itemVar(e)+QString("[%1]").arg(i));
+        
         if ( !e->paramDefaultValue(i).isEmpty() )
           defaultStr = e->paramDefaultValue(i);
         else if ( !e->defaultValue().isEmpty() )
@@ -1221,15 +1284,23 @@ int main( int argc, char **argv )
         else
           defaultStr = defaultValue( e->type() );
 
-        cpp << "  " << itemVar(e) << " = "
+        cpp << "  " << itemVarStr << " = "
             << newItem( e->type(), e->name(), paramString(key, e, i), defaultStr, QString("[%1]").arg(i) )
             << endl;
 
         if ( setUserTexts )
-          cpp << userTextsFunctions( e );
+          cpp << userTextsFunctions( e, itemVarStr, e->paramName() );
 
-        cpp << "  addItem( " << itemVar( e ) << ", QString::fromLatin1( \""
-            << paramString(e->paramName(), e, i) << "\" ) );" << endl;
+        // Make mutators for enum parameters work by adding them with $(..) replaced by the 
+				// param name. The check for isImmutable in the set* functions doesn't have the param 
+				// name available, just the corresponding enum value (int), so we need to store the 
+				// param names in a separate static list!.
+        cpp << "  addItem( " << itemVarStr << ", QString::fromLatin1( \"";
+        if ( e->paramType()=="Enum" )
+          cpp << e->paramName().replace( "$("+e->param()+")", "%1").arg(e->paramValues()[i] );
+        else
+          cpp << e->paramName().replace( "$("+e->param()+")", "%1").arg(i);
+        cpp << "\" ) );" << endl;
       }
     }
   }
