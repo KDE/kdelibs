@@ -77,8 +77,8 @@ libkdeui_la_SOURCES = \
 		kcolorbutton.cpp ksystemtray.cpp \
 		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp \
 		kled.cpp kwizard.cpp \
-		kkeydialog.cpp kkeybutton.cpp kruler.cpp kcursor.cpp \
-		klineeditdlg.cpp  \
+		kshortcutdialog.cpp kkeybutton.cpp kkeydialog.cpp \
+		kruler.cpp kcursor.cpp klineeditdlg.cpp  \
 		kcharselect.cpp kcolordrag.cpp  \
 		knumvalidator.cpp kdialog.cpp kdialogbase.cpp \
 		kjanuswidget.cpp kaboutdialog.cpp \
@@ -101,7 +101,7 @@ libkdeui_la_SOURCES = \
 
 noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
-		kdepackages.h kdeui-doc.h 
+		kdepackages.h kdeui-doc.h kshortcutdialog.h
 
 scripts_SCRIPTS = preparetips
 scriptsdir = $(kde_bindir)
