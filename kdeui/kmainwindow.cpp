@@ -32,6 +32,7 @@
 #include <khelpmenu.h>
 #include <kmenubar.h>
 #include <kstatusbar.h>
+#include <qlayout.h>
 
 #include <klocale.h>
 #include <kstddirs.h>
@@ -133,6 +134,7 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
 
 KMainWindow::~KMainWindow()
 {
+    delete layout();
     delete d;
     memberList->remove( this );
 }

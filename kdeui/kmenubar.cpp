@@ -77,14 +77,16 @@ void KMenuBar::setTopLevelMenu(bool top_level)
         return;
   d->topLevel = top_level;
   if ( isTopLevelMenu() ) {
-      bool wasVisible = isVisibleTo( parentWidget() );
+      bool wasVisible = isVisible();
       d->frameStyle = frameStyle();
       removeEventFilter( topLevelWidget() );
       reparent( parentWidget(), WType_TopLevel | WStyle_Dialog | WStyle_NoBorderEx, QPoint(0,0), false  );
+      hide(); // worakround for a qt < 2.2.2  bug
       KWin::setType( winId(), NET::Menu );
       KWin::setOnAllDesktops( winId(), true );
       KWin::setState( winId(), NET::StaysOnTop );
       setFrameStyle( StyledPanel | Raised );
+      installEventFilter( parentWidget()->topLevelWidget() );
       if ( wasVisible )
           show();
   } else {
@@ -178,16 +180,24 @@ void KMenuBar::leaveEvent(QEvent *ev)
 bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 {
 
-    if ( d->topLevel && parentWidget() && obj == parentWidget()->topLevelWidget()  ) {
-        if ( ev->type() == QEvent::Show  && testWState( WState_ForceHide ) )
-            show();
-        else if ( ev->type() == QEvent::WindowActivate )
-            raise();
+    if ( d->topLevel ) {
+	if ( ev->type() == QEvent::Resize )
+	    return FALSE; // hinder QMenubar to adjust its size
+	
+	if ( parentWidget() && obj == parentWidget()->topLevelWidget()  ) {
+	    
+	    if ( ev->type() == QEvent::Accel || ev->type() == QEvent::AccelAvailable ) {
+		if ( QApplication::sendEvent( topLevelWidget(), ev ) ) 
+		    return TRUE;
+	    }		   
+	    
+	    if ( ev->type() == QEvent::Show && isHidden() )
+		show();
+	    else if ( ev->type() == QEvent::WindowActivate )
+		raise();
+	}
     }
-    if ( d->topLevel && ev->type() == QEvent::Resize )
-        return FALSE; // hinder QMenubar to adjust its size
-
-  return QMenuBar::eventFilter( obj, ev );
+    return QMenuBar::eventFilter( obj, ev );
 }
 
 void KMenuBar::showEvent( QShowEvent* )
@@ -196,16 +206,6 @@ void KMenuBar::showEvent( QShowEvent* )
         QRect area = QApplication::desktop()->geometry();
         setGeometry(area.left(), -frameWidth()-2, area.width(), heightForWidth( area.width() ) );
         KWin::setStrut( winId(), 0, 0, height() - frameWidth() - 2, 0 );
-        if ( parentWidget() ) {
-            QObjectList   *accelerators = queryList( "QAccel" );
-            QObjectListIt it( *accelerators );
-            for ( ; it.current(); ++it ) {
-                QObject *obj = it.current();
-                parentWidget()->topLevelWidget()->removeEventFilter(obj);
-                parentWidget()->topLevelWidget()->installEventFilter(obj);
-            }
-            delete accelerators;
-        }
     }
 }
 
