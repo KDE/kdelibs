@@ -203,10 +203,6 @@
 		</Include>
 	</Menu>
 	<Menu>
-		<Name>Settings</Name>
-		<Directory>kde-settings.directory</Directory>
-	</Menu>
-	<Menu>
 		<Name>Settingsmenu</Name>
 		<Directory>kde-settingsmenu.directory</Directory>
 		<Include>
@@ -260,5 +256,18 @@
 			</Include>
 		</Menu>
 	</Menu>
+	<Menu>
+		<Name>Settings</Name>
+		<Directory>kde-settings.directory</Directory>
+                <MergeFile>kde-settings.menu</MergeFile>
+	</Menu>
+	<Menu>
+		<Name>Information</Name>
+		<Directory>kde-information.directory</Directory>
+                <MergeFile>kde-information.menu</MergeFile>
+	</Menu>
+        <Move>
+           <Old>Settings/Information</Old><New>Information</New>
+        </Move>
 	<DefaultMergeDirs/>
 </Menu>
