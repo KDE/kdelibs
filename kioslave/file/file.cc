@@ -296,7 +296,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
         KDE_struct_stat buff_part;
         part_exists = (KDE_stat( _dest_part.data(), &buff_part ) != -1);
 
-        if (part_exists && !_resume && buff_part.st_size > 0)
+        if (part_exists && !_resume && buff_part.st_size > 0 && S_ISREG(buff_part.st_mode))
         {
             kdDebug(7101) << "FileProtocol::put : calling canResume with "
                           << KIO::number(buff_part.st_size) << endl;
