@@ -65,6 +65,9 @@ KTopLevelWidget::KTopLevelWidget( const char *name )
     
     // enter the widget in the list of all KTWs
     memberList->append( this );
+
+    // finally set the caption
+    setCaption(kapp->getCaption());
 }
 
 KTopLevelWidget::~KTopLevelWidget()
