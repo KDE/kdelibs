@@ -1077,7 +1077,7 @@ void KRecentFilesAction::addURL( const KURL& url )
 {
     if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
        return;
-    QString     file = url.prettyURL( 0, KURL::StripFileProtocol );
+    QString     file = url.pathOrURL();
     QStringList lst = items();
 
     // remove file if already in list
@@ -1098,7 +1098,7 @@ void KRecentFilesAction::addURL( const KURL& url )
 void KRecentFilesAction::removeURL( const KURL& url )
 {
     QStringList lst = items();
-    QString     file = url.prettyURL( 0, KURL::StripFileProtocol );
+    QString     file = url.pathOrURL();
 
     // remove url
     if( lst.count() > 0 )
