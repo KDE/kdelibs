@@ -180,6 +180,7 @@
 <!ENTITY korganizer	"<application>Korganizer</application>">
 <!ENTITY korn	"<application>KOrn</application>">
 <!ENTITY kpackage	"<application>KPackage</application>">
+<!ENTITY kpager "<application>KPager</application>">
 <!ENTITY kpanel	"<application>kpanel</application>">
 <!ENTITY kpat	"<application>KPat</application>">
 <!ENTITY kpilot	"<application>kpilot</application>">
