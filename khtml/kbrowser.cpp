@@ -32,10 +32,13 @@
 #include <kmessagebox.h>
 #include <klocale.h>
 
+QList<KBrowser> *KBrowser::lstViews = 0L;
+
 KBrowser::KBrowser( QWidget *parent, const char *name, KBrowser *_parent_browser )
-    : KHTMLView( parent, name, 0, _parent_browser )
+    : KHTMLWidget( parent, name)
 {
   m_pParentBrowser     = _parent_browser;
+  m_strFrameName       = name;
   
   m_bStartedRubberBand = false;
   m_pRubberBandPainter = 0L;
@@ -47,30 +50,40 @@ KBrowser::KBrowser( QWidget *parent, const char *name, KBrowser *_parent_browser
   m_bReload            = false;
   m_bEnableImages      = true;
   m_bEnableSmartAnchorHandling = true;
+  
+    if ( lstViews == 0L )
+	lstViews = new QList<KBrowser>;
+    lstViews->setAutoDelete( FALSE );
+    lstViews->append( this );
+
   // m_lstPendingURLRequests.setAutoDelete( true );
   m_lstURLRequestJobs.setAutoDelete( true );
   
   // Used for drawing the rubber band
-  connect( getKHTMLWidget(), SIGNAL( scrollVert( int ) ),
+  connect( this, SIGNAL( scrollVert( int ) ),
 	   SLOT( slotUpdateSelect(int) ) );
 
   // We need to know which files the HTML widget wants to get from us
-  connect( this, SIGNAL( imageRequest( QString ) ), this, SLOT( slotURLRequest( QString ) ) );
-  connect( this, SIGNAL( cancelImageRequest( QString ) ),
-	   this, SLOT( slotCancelURLRequest( QString ) ) );
-  connect( this, SIGNAL( documentDone( KHTMLView* ) ), this, SLOT( slotDocumentFinished( KHTMLView* ) ) );
+  connect( this, SIGNAL( fileRequest( QString ) ), 
+	   SLOT( slotURLRequest( QString ) ) );
+  connect( this, SIGNAL( cancelFileRequest( QString ) ),
+	   SLOT( slotCancelURLRequest( QString ) ) );
+  connect( this, SIGNAL( documentDone( KHTMLWidget* ) ), this, SLOT( slotDocumentFinished( KHTMLWidget* ) ) );
+  connect( this, SIGNAL( URLSelected( QString, int, QString ) ), 
+	   SLOT( slotURLSelected( QString, int, QString )) );
   
   m_lstChildren.setAutoDelete( true );
 
-  getKHTMLWidget()->setFocusPolicy( QWidget::StrongFocus );
+  setFocusPolicy( QWidget::StrongFocus );
 }
 
 KBrowser::~KBrowser()
 {
   slotStop();
+  lstViews->removeRef( this );
 }
 
-KHTMLView* KBrowser::newView( QWidget *_parent, const char *_name, int )
+KHTMLWidget* KBrowser::newView( QWidget *_parent, const char *_name, int )
 {
   KBrowser *v = createFrame( _parent, _name );
   
@@ -79,6 +92,56 @@ KHTMLView* KBrowser::newView( QWidget *_parent, const char *_name, int )
   emit frameInserted( v );
   
   return v;
+}
+
+KBrowser* KBrowser::topView()
+{
+  KBrowser *v = this;
+  
+  while( v->getParentView() )
+    v = v->getParentView();
+  
+  return v;
+}
+
+KBrowser* KBrowser::findView( QString _name )
+{
+    KBrowser *v;
+ 
+    if ( _name == "_top" )
+    {
+	v = this;
+
+	while ( v->getParentView() )
+	    v = v->getParentView();
+	
+	return v;
+    }
+    else if ( _name == "_self"  )
+    {
+	return this;
+    }
+    else if ( _name == "_parent" )
+    {
+	if ( getParentView() )
+	    return getParentView();
+    }
+    else if ( _name == "_blank" )
+    {
+	return 0;
+    }
+
+    for ( v = lstViews->first(); v != 0; v = lstViews->next() )
+    {
+	if ( v->getFrameName() )
+	{
+	    // debugT("Comparing '%s' '%s'\n", _name, v->getFrameName() );
+	    if ( v->getFrameName() == _name  )
+		return v;
+	}
+    }
+    
+    return 0;
 }
 
 KBrowser* KBrowser::createFrame( QWidget *_parent, const char *_name )
@@ -90,7 +153,7 @@ void KBrowser::begin( QString _url, int _x_offset, int _y_offset )
 {
   // Delete all frames in this view
   m_lstChildren.clear();
-  KHTMLView::begin( _url, _x_offset, _y_offset );
+  KHTMLWidget::begin( _url, _x_offset, _y_offset );
 }
 
 void KBrowser::slotStop()
@@ -107,14 +170,6 @@ void KBrowser::slotStop()
   }
   
   m_bComplete = true;  
-
-  if ( m_jobId )
-  {
-    KIOJob *job = KIOJob::find( m_jobId );
-    if ( job )
-      job->kill();
-  }
-  
   m_jobId = 0;
 
   cancelAllRequests();
@@ -160,7 +215,7 @@ void KBrowser::openURL( QString _url, bool _reload, int _xoffset, int _yoffset, 
   // Check URL
   if ( KURL::split( _url ).isEmpty() )
   {
-    emit error( ERR_MALFORMED_URL, _url );
+    emit error( KIO::ERR_MALFORMED_URL, _url );
     return;
   }
 
@@ -252,7 +307,6 @@ void KBrowser::slotData( int /*_id*/, const char *_p, int _len )
 
     m_bParsing = true;
     begin( baseurl, m_iNextXOffset, m_iNextYOffset );
-    parse();
   }
 
   write( _p );
@@ -260,7 +314,7 @@ void KBrowser::slotData( int /*_id*/, const char *_p, int _len )
 
 void KBrowser::slotError( int /*_id*/, int _err, const char *_text )
 {
-  if ( _err == ERR_WARNING )
+  if ( _err == KIO::ERR_WARNING )
     return; //let's ignore warnings for now
     
   kdebug(0,1202,"+++++++++++++ ERROR %d, %s ", _err, _text);
@@ -345,7 +399,7 @@ void KBrowser::slotURLSelected( QString _url, int _button, QString _target )
   {
     if ( strcmp( _target, "_parent" ) == 0 )
     {
-      KHTMLView *v = getParentView();
+      KBrowser *v = getParentView();
       if ( !v )
 	v = this;
       v->openURL( url );
@@ -372,7 +426,7 @@ void KBrowser::slotURLSelected( QString _url, int _button, QString _target )
       return;
     }
     
-    KHTMLView *v = ((KBrowser*)topView())->findChildView( _target );
+    KBrowser *v = topView()->findChildView( _target );
     if ( !v )
       v = findView( _target );
     if ( v )
@@ -398,7 +452,7 @@ void KBrowser::slotURLSelected( QString _url, int _button, QString _target )
     KURL u1( url );
     if ( u1.isMalformed() )
     {
-      kioErrorDialog( ERR_MALFORMED_URL, url );
+      kioErrorDialog( KIO::ERR_MALFORMED_URL, url );
       return;
     }
 
@@ -424,7 +478,7 @@ void KBrowser::slotFormSubmitted( QString _method, QString _url, const char *_da
   KURL u( _url );
   if ( u.isMalformed() )
   {
-    emit error( ERR_MALFORMED_URL, url );
+    emit error( KIO::ERR_MALFORMED_URL, url );
     return;
   }
   
@@ -551,9 +605,9 @@ bool KBrowser::mouseMoveHook( QMouseEvent *_mouse )
 	
     assert( !m_pRubberBandPainter );
     
-    if ( !getKHTMLWidget()->isAutoScrollingY() && m_bRubberBandVisible )
+    if ( !isAutoScrollingY() && m_bRubberBandVisible )
     {
-      m_pRubberBandPainter->begin( getKHTMLWidget() );
+      m_pRubberBandPainter->begin( this );
       m_pRubberBandPainter->setRasterOp (NotROP);
       m_pRubberBandPainter->drawRect(rectX1, rectY1-yOffset(), rectX2-rectX1, rectY2-rectY1);
       m_pRubberBandPainter->end();
@@ -576,21 +630,21 @@ bool KBrowser::mouseMoveHook( QMouseEvent *_mouse )
     }    
     
     QRect rect( x1, y1, x - x1 + 1, y - y1 + 1 );
-    select( 0L, rect );
+    select( rect );
 	
     rectX2 = _mouse->pos().x();
     rectY2 = _mouse->pos().y() + yOffset();
 	
     if (_mouse->pos().y() > height() )
-      getKHTMLWidget()->autoScrollY( AUTOSCROLL_DELAY, AUTOSCROLL_STEP );
+      autoScrollY( AUTOSCROLL_DELAY, AUTOSCROLL_STEP );
     else if ( _mouse->pos().y() < 0 )
-      getKHTMLWidget()->autoScrollY( AUTOSCROLL_DELAY, -AUTOSCROLL_STEP );
+      autoScrollY( AUTOSCROLL_DELAY, -AUTOSCROLL_STEP );
     else
-      getKHTMLWidget()->stopAutoScrollY();
+      stopAutoScrollY();
 
-    if ( !getKHTMLWidget()->isAutoScrollingY() )
+    if ( !isAutoScrollingY() )
     {
-      m_pRubberBandPainter->begin( getKHTMLWidget() );
+      m_pRubberBandPainter->begin( this );
       m_pRubberBandPainter->setRasterOp (NotROP);
       m_pRubberBandPainter->drawRect(rectX1, rectY1-yOffset(), rectX2-rectX1, rectY2-rectY1);
       m_pRubberBandPainter->end();
@@ -607,7 +661,7 @@ bool KBrowser::mouseReleaseHook( QMouseEvent *_mouse )
 {
   // make sure autoScroll is off
   if ( _mouse->button() == LeftButton && m_bStartedRubberBand )
-    getKHTMLWidget()->stopAutoScrollY();
+      stopAutoScrollY();
 
   if ( !m_strSelectedURL.isEmpty() && _mouse->button() == LeftButton &&
 	 ( _mouse->state() & ControlButton ) == ControlButton )
@@ -654,7 +708,7 @@ bool KBrowser::mouseReleaseHook( QMouseEvent *_mouse )
 	 select them, but remove rectangle first. */
       if ( m_bRubberBandVisible )
       {
-	m_pRubberBandPainter->begin( view );
+	m_pRubberBandPainter->begin( viewport() );
 	m_pRubberBandPainter->setRasterOp (NotROP);
 	m_pRubberBandPainter->drawRect (rectX1, rectY1-yOffset(), rectX2-rectX1, rectY2-rectY1);
 	m_pRubberBandPainter->end();
@@ -674,7 +728,7 @@ bool KBrowser::mouseReleaseHook( QMouseEvent *_mouse )
       }
 	    
       QRect rect( rectX1, rectY1, rectX2 - rectX1 + 1, rectY2 - rectY1 + 1 );
-      select( 0L, rect );
+      select( rect );
     }
 	
     m_bStartedRubberBand = false;
@@ -720,7 +774,7 @@ void KBrowser::slotUpdateSelect( int )
     }    
     
     QRect rect( x1, y1, x - x1 + 1, y - y1 + 1 );
-    select( 0L, rect );
+    select( rect );
 }
 
 /*
@@ -736,7 +790,7 @@ bool KBrowser::URLVisited( const char *_url )
 
 void KBrowser::setDefaultTextColors( const QColor& _textc, const QColor& _linkc, const QColor& _vlinkc )
 {
-  getKHTMLWidget()->setDefaultTextColors( _textc, _linkc, _vlinkc );
+  setDefaultTextColors( _textc, _linkc, _vlinkc );
 
   Child *c;
   for ( c = m_lstChildren.first(); c != 0L; c = m_lstChildren.next() )
@@ -745,7 +799,7 @@ void KBrowser::setDefaultTextColors( const QColor& _textc, const QColor& _linkc,
 
 void KBrowser::setDefaultBGColor( const QColor& bgcolor )
 {
-  getKHTMLWidget()->setDefaultBGColor( bgcolor );
+  setDefaultBGColor( bgcolor );
 
   Child *c;
   for ( c = m_lstChildren.first(); c != 0L; c = m_lstChildren.next() )
@@ -801,7 +855,7 @@ void KBrowser::childCompleted( KBrowser *_browser )
   kdebug(0,1202,"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 }
 
-void KBrowser::slotDocumentFinished( KHTMLView* _view )
+void KBrowser::slotDocumentFinished( KHTMLWidget* _view )
 {
   if ( _view != this )
     return;

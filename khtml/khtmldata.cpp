@@ -32,6 +32,8 @@
 #include <config.h>
 #endif
 
+HTMLSettings* pSettings = 0;
+
 // most of these sizes are standard X font sizes, so all of our fonts
 // display nicely.
 
@@ -78,7 +80,7 @@ void HTMLSettings::getFontSizes(int *oldFontSizes, int *oldFixedFontSizes)
     }
 }                                    
 
-void HTMLSettings::resetFontSizes()
+void HTMLSettings::resetFontSizes(void)
 {
     memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
     memcpy( fixedFontSizes, defaultFontSizes, sizeof(fixedFontSizes) );

@@ -17,40 +17,70 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-#AM_CXXFLAGS += -DTABLE_DEBUG
 
-# for profiling. 
+#AM_CXXFLAGS += -DTABLE_DEBUG
+AM_CXXFLAGS += -DDEBUG_LAYOUT
+#AM_CXXFLAGS += -DDEBUG_EVENTS
+#AM_CXXFLAGS += -DTOKEN_DEBUG
+#AM_CXXFLAGS += -DPARSER_DEBUG
+#AM_CXXFLAGS += -DCACHE_DEBUG
+#AM_CXXFLAGS += -DDEBUG=1
+
+# for profiling.
 # command line for line by line profiling (into seperate files):
 # gprof -l -y
-# AM_CXXFLAGS += -pg
+#AM_CXXFLAGS += -pg
+
+SUBDIRS = java kjs
 
 lib_LTLIBRARIES = libkhtml.la
-libkhtml_la_SOURCES = kbrowser.cpp khtmlcache.cpp khtmlparser.cpp \
-	khtmljscript.cpp khtml.cpp khtmlobj.cpp khtmlfont.cpp \
-	khtmlform.cpp khtmltoken.cpp khtmlstring.cpp \
-	khtmlframe.cpp khtmlview.cpp khtmlclue.cpp debug.cpp \
-	khtmldata.cpp khtmltable.cpp khtmliter.cpp \
-	khtmlsavedpage.cpp khtmlstyle.cpp khtmlembed.cpp khtmldecoder.cpp 
+libkhtml_la_SOURCES = dtd.cpp\
+	khtmltoken.cpp khtmltokenizer.cpp khtmlparser.cpp\
+	khtmlsavedpage.cpp khtmldecoder.cpp khtml.cpp khtmlio.cpp\
+	khtmldata.cpp khtmltext.cpp \
+	khtmlstyle.cpp khtmlfont.cpp khtmlembed.cpp\
+	dom_doc.cpp dom_docimpl.cpp dom_element.cpp dom_elementimpl.cpp \
+	dom_misc.cpp dom_node.cpp dom_nodeimpl.cpp \
+	dom_string.cpp dom_stringimpl.cpp dom_text.cpp dom_textimpl.cpp \
+	dom_xml.cpp \
+	html_base.cpp html_baseimpl.cpp html_block.cpp html_blockimpl.cpp \
+	html_document.cpp html_documentimpl.cpp html_element.cpp \
+	html_elementimpl.cpp html_form.cpp html_formimpl.cpp \
+	html_head.cpp html_headimpl.cpp html_image.cpp \
+	html_imageimpl.cpp html_inline.cpp html_inlineimpl.cpp html_list.cpp \
+	html_listimpl.cpp html_misc.cpp html_miscimpl.cpp html_table.cpp \
+	html_tableimpl.cpp html_object.cpp html_objectimpl.cpp\
+	kbrowser.cpp
 
+libkhtml_la_METASOURCES = khtml.moc khtmlio.moc khtmlembed.moc \
+	kbrowser.moc html_formimpl.moc
 
-libkhtml_la_METASOURCES = khtml.moc khtmlcache.moc khtmlembed.moc \
-	khtmlform.moc khtmlframe.moc khtmlview.moc kbrowser.moc
+include_HEADERS = khtml.h khtmlsavedpage.h khtmlembed.h khtmlio.h \
+	kbrowser.h \
+	dom_core.h dom_doc.h dom_element.h dom_exception.h \
+	dom_misc.h dom_node.h dom_string.h dom_text.h \
+	dom_xml.h \
+	html_base.h html_block.h html_document.h html_element.h \
+	html_form.h html_head.h html_image.h \
+	html_inline.h html_list.h html_misc.h html_table.h html_object.h
 
-include_HEADERS = khtml.h khtmlview.h khtmlsavedpage.h khtmlembed.h khtmlcache.h \
-	kbrowser.h
-noinst_HEADERS = khtmlchain.h khtmlparser.h khtmljscript.h \
-	khtmlobj.h khtmlfont.h khtmlform.h khtmltoken.h khtmlframe.h \
-	khtmlclue.h khtmldata.h khtmltable.h khtmliter.h khtmlstyle.h \
-	khtmldecoder.cpp khtmlstring.h
+noinst_HEADERS = khtmlparser.h khtmlfont.h khtmltoken.h \
+	khtmldata.h khtmlstyle.h khtmldecoder.cpp khtmlstring.h \
+	dom_docimpl.h dom_elementimpl.h dom_nodeimpl.h dom_stringimpl.h \
+	dom_textimpl.h html_baseimpl.h \
+	html_blockimpl.h html_documentimpl.h html_elementimpl.h \
+	html_formimpl.h html_headimpl.h html_imageimpl.h \
+	html_inlineimpl.h html_listimpl.h html_miscimpl.h html_tableimpl.h \
+	html_objectimpl.h
 
 libkhtml_la_LDFLAGS = -version-info 3:0
-libkhtml_la_LIBADD = ../jscript/libjscript.la ../kimgio/libkimgio.la ../kio/libkio.la
+libkhtml_la_LIBADD = ./kjs/libkjs.la ../kimgio/libkimgio.la ../kio/libkio.la
 
-data_DATA = khtml_dnd.xpm
+data_DATA = khtml_dnd.png
 datadir = $(kde_datadir)/khtml/pics
 
-INCLUDES = -I$(top_srcdir)/jscript -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
-	$(all_includes)
+INCLUDES = -I$(top_srcdir)/khtml/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
+	-I$(top_srcdir)/khtml/java $(all_includes)
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 
@@ -68,7 +98,12 @@ EXTRA_DIST = $(khtmltags_DIST) makeprop maketags test $(data_DATA) \
 
 parser:
 	cd $(srcdir) && \
-	perl makeattrs && \
-	bash maketags && \
-	bash makeprop 
+	perl scripts/makeattrs && \
+	bash scripts/maketags && \
+	bash scripts/makeprop
 
+## test program
+bin_PROGRAMS 	= testkhtml
+testkhtml_SOURCES = testkhtml.cpp $(libkhtml_la_SOURCES)
+testkhtml_LDADD = $(LIB_KDEUI) -L../kimgio -lkimgio -L../kio -lkio \
+	-Ljava -lkjava -Lkjs -lkjs $(LIB_DMALLOC)

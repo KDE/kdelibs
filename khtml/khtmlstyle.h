@@ -38,7 +38,9 @@
 
 // khtmlparser.h
 class KHTMLParser;
-
+namespace DOM {
+    class NodeImpl;
+};
 //
 // Internal Classes
 //
@@ -51,36 +53,43 @@ class CSSStyleText;
 class CSSStyleBox;
 class CSSStyleList;
 
+const HTMLFont *getFont(CSSStyle *currentStyle);
+void setNamedColor(QColor &color, const QString name);
+
 typedef void (KHTMLParser::*blockFunc)(HTMLStackElem *stackElem);
 
 class HTMLStackElem
 {
 public:
-	HTMLStackElem(		int _id, 
-	 					int _level, 
-	 					CSSStyle * _style,
-	 				   	blockFunc _exitFunc, 
-	 				   	int _miscData1,
-	 				   	HTMLStackElem * _next
-	 				  ) 
-	 				  :	id(_id), 
-	 				   	level(_level),
-	 				   	style(_style),
-	 				   	exitFunc(_exitFunc), 
-	 				   	miscData1(_miscData1), 
-	 				   	next(_next) 
-                 { }
+    HTMLStackElem( int _id, 
+		   int _level, 
+		   CSSStyle * _style,
+		   DOM::NodeImpl *_node,
+		   blockFunc _exitFunc, 
+		   int _miscData1,
+		   HTMLStackElem * _next
+	) 
+	:	
+	id(_id), 
+	level(_level),
+	style(_style),
+	node(_node),
+	exitFunc(_exitFunc), 
+	miscData1(_miscData1), 
+	next(_next) 
+	{ }
 
     int       id;
     int       level;
 
     CSSStyle *style;
-   	 
+    DOM::NodeImpl *node;
+
     blockFunc exitFunc;
    
     int       miscData1;
 
-	HTMLStackElem *next;
+    HTMLStackElem *next;
 };
 
 class CSSStyleFont
@@ -179,7 +188,7 @@ public:
     CSSStyleSheet(const HTMLSettings *);
     ~CSSStyleSheet();
 
-    void test();
+    void test(void);
     /*
      * newStyle
      *

@@ -32,8 +32,8 @@
 #include <qstring.h>
 #include <qstrlist.h>
 #include <qobject.h>
-#include <kio_interface.h>
-#include <khtmlview.h>
+
+#include <khtml.h>
 
 class QPainter;
 class KBrowser;
@@ -65,7 +65,7 @@ protected:
 /**
  * If you derive from KBrowser you must overload the method @ref #createFrame
  */
-class KBrowser : public KHTMLView, public KIO
+class KBrowser : public KHTMLWidget
 {
   Q_OBJECT
 
@@ -92,10 +92,50 @@ public:
   
   void enableImages( bool enable ) { m_bEnableImages = enable; }
   bool imagesEnabled() const { return m_bEnableImages; }
-  
+
   void enableSmartAnchorHandling( bool enable ) { m_bEnableSmartAnchorHandling = enable; }
   bool smartAnchorHandling() const { return m_bEnableSmartAnchorHandling; }
-  
+
+    /**
+     * @return the parent KBrowser of this one or 0L is this is the top level
+     * browser.
+     *
+     */
+    KBrowser* getParentView() { return m_pParentBrowser; }
+
+    /**
+     * Never returns 0L.
+     */
+    KBrowser* topView();
+ 
+    /**
+     * Searches for a KBrowser with a specific name as mentioned in the
+     * constructor.
+     * 
+     * @see #setName
+     * @see #name
+     */
+    KBrowser* findView( QString _name );
+
+    /**
+     * Changes the name of the widget.
+     * This name is used in the &lt;a href=.. target=... &gt; tag.
+     *
+     * @see #findView
+     * @see #name
+     */
+    virtual void setFrameName( QString _name ) { m_strFrameName = _name; }
+
+    /**
+     * @return the name of this window.
+     *
+     * @see #setName
+     * @see #name
+     * @see #findView
+     */
+    virtual QString getFrameName() { return m_strFrameName; }
+
+
 public slots:
   virtual void slotStop();
   virtual void slotReload();
@@ -110,12 +150,12 @@ signals:
   /**
    * Emitted if a link is pressed which has an invalid target, or the target <tt>_blank</tt>.
    */
-  void newWindow( const QString &_url );
+  void newWindow( QString _url );
 
-  void started( const QString &_url );
+  void started( const char *_url );
   void completed();
   void canceled();
-  void mousePressed( const QString &_url, const QPoint& _point, int _button);
+  void mousePressed( const char* _url, const QPoint& _point, int _button);
 
   void frameInserted( KBrowser *frame );
   void urlClicked( QString url );
@@ -137,15 +177,15 @@ protected slots:
   virtual void slotUpdateSelect( int );
 
   /**
-   * Overloads a method in @ref KHTMLView
+   * Overloads a method in @ref KHTMLWidget
    */
   virtual void slotURLRequest( QString _url );
   /**
-   * Overloads a method in @ref KHTMLView
+   * Overloads a method in @ref KHTMLWidget
    */
   virtual void slotCancelURLRequest( QString _url );
 
-  virtual void slotDocumentFinished( KHTMLView* _view );
+  virtual void slotDocumentFinished( KHTMLWidget* _view );
   
 protected:
   virtual void servePendingURLRequests();
@@ -162,11 +202,11 @@ protected:
   /**
    * For internal use only
    *
-   * Overrides @ref KHTMLView::newView. It just creates a new instance
+   * Creates a new instance
    * of KBrowser. These instances are used as frames.
    * Do NOT overload this function. Please overload @ref #createFrame.
    */
-  virtual KHTMLView* newView( QWidget *_parent, const char *_name, int _flags );
+  virtual KHTMLWidget* newView( QWidget *_parent, const char *_name, int _flags );
 
   /**
    * We want to clear our list of child frames here.
@@ -184,19 +224,19 @@ protected:
   /**
    * This function is hooked into the event processing of the @ref KHTMLWidget.
    *
-   * @see KHTMLView::mouseMoveHook
+   * @see KHTMLWidget::mouseMoveHook
    */
   virtual bool mouseMoveHook( QMouseEvent *_ev );
   /**
    * This function is hooked into the event processing of the @ref KHTMLWidget.
    *
-   * @see KHTMLView::mouseReleasedHook
+   * @see KHTMLWidget::mouseReleasedHook
    */
   virtual bool mouseReleaseHook( QMouseEvent *_ev );
   /**
    * This function is hooked into the event processing of the @ref KHTMLWidget.
    *
-   * @see KHTMLView::mousePressedHook
+   * @see KHTMLWidget::mousePressedHook
    */
   virtual bool mousePressedHook( QString _url, QString _target, QMouseEvent *_ev,
 				 bool _isselected);
@@ -223,6 +263,11 @@ protected:
    */
   QList<Child> m_lstChildren;
   
+    /*
+     * List of all open browsers.
+     */
+    static QList<KBrowser> *lstViews;
+
   /**
    * Left corner of a rectangular selection.
    */
@@ -324,7 +369,9 @@ protected:
    * see also: @ref enableImages and @ref imagesEnabled
    */
   bool m_bEnableImages;
-  
+
+    QString m_strFrameName;
+    
   /**
    * This flag indicates whether KBrowser should handle anchor-links
    * internally (meaning it calls gotoAnchor() directly), or whether it

@@ -44,11 +44,6 @@ protected:
     QTextCodec *codec;
     QCString enc;
 
-    // this might deviate from the textCodec, to account for local changes
-    // in the encoding one can get from the charset attribute of
-    // html tags. Currently still unsupported!
-    QTextCodec *currentCodec;
-
     QCString buffer;
 
     bool body;

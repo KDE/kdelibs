@@ -1,47 +1,185 @@
-Here's what's still missing (roughly in order of importance):
+Here's what's still missing (without order):
 
-* Add a select(...) function to HTMLTextSlave so that "select all"
-  works.
+Paragraphs:
+	* BiDi
+	* clean up the calcParagraph code
 
-* check the remaining ascii() calls
+Parser:
+	* handle adding of elements better
 
-* move the attribute parsing into the objects
+StyleSheets:
+	* provide a cache for sheets
+	* make them really CSS2 compliant
 
-* simplify the KHTMLWidget/KHTMLView api, perhaps add a widget, which
-  is almost a browser (move some stuff from konqueror here...)
+DOM:
+	* lots of functions in the Impl classes
 
-* use KURL instead of QString url everywhere for URL's. This
-  would avoid quite some QString<-->KURL conversions
-  WABA: But for the time being, a QString is much cheaper to
-        store than a KURL, especially since we use HTMLStrings
-        for this. The only extra time spend is in the KURL.url()
-        call which isn't too much of an overhead. Most of the
-        time we don't convert a QString to a KURL a second time,
-        because most URLs on a page aren't used.
-        (You usually only click on one link/URL)
+misc:
+	* mouse handling
+	  --> partly done (clicking works), selection/DND still missing
+	* selection
+	* make all destructors in the DOM virtual 
 
-* many functions using QString now could be changed to use references,
-  to avoid copying of the string
+Frames:
+	* frameset should be a QSplitter
 
-* move the parsing of table tags into the main parser
+JScript:
+	* completely
 
-* get rid of the blockingTokens in the tokenizer
+Java:
+	* completely
 
-* incremental table layout
+Attributes:
+	* some attributes (%coreattrs, %events, and a few others)
+	should be implemented in HTML(Inline/Block)Element and not in
+	the classes themselves.
+	  --> partly done
 
-* make the object tree reflect the real document structure.
-  Needed for dynamic html
+Rendering:
+	* rendering is quite slow at the moment, because of missing 
+	  checks on the bounding rectangle --> mostly done...
+	* remove the currentStyle from the elements
 
-* perhaps split up htmlobj.* into several files
+Memory usage:
+       * high at the moment. IMO the biggest reason is the immense
+         usage by the style sheet objects
+	 Still thinking about a better solution. Perhaps one
+	 stylesheet object would do, and the element get their
+	 information from there (something like document->styleSheet()->XXX()).
+       
+Elements:
+most are still missing. Here comes a list.
 
-* charset support (--> kcharsets)
+a	        mostly done
+abbr
+acronym
+address		done
+applet
+area
+b		done
+base
+basefont
+bdo
+big		done
+blockquote	done (attrs missing)
+body		partly
+br		done
+button
+caption		mostly
+center		done
+cite		done
+code		done
+col
+colgroup
+dd
+del
+dfn
+dir		see ul
+div		should work
+dl
+dt
+em		done
+fieldset
+font
+form		partly done
+frame		mostly done
+frameset	mostly done
+h1		done
+h2		done
+h3		done
+h4		done
+h5		done
+h6		done
+head		done
+hr		done
+html		done
+i		done
+iframe
+img		mostly (maps missing)
+input		partly done
+ins
+isindex
+kbd		done
+label
+legend
+li		done
+link
+listing
+map
+menu		see ul
+meta
+noframes
+noscript
+object
+ol		see ul
+optgroup	partly
+option		partly
+p		done
+param
+plain
+pre		done
+q
+s		done
+samp		done
+script	
+select		partly
+small		done
+span
+strike		done
+strong		done
+style
+sub
+sup
+table		mostly
+tbody		partly
+td		done
+textarea	mostly done
+tfoot		partly
+th		done
+thead		partly
+title
+tr		done
+tt		done
+u		done
+ul		done
+var		done
 
-* some html-4 elements are still not supported
 
-* add (use) more attributes
+Status of test pages (only layout at the moment, the other stuff is
+still missing...):
 
-* BiDi support
-
-* jscript
-
-* java
+URL1.html		ok
+URL2.html		ok
+align.html              ok (crashes because some non-alignment related
+                               list stuff, though:)
+align2.html             ok
+anchor1.html		ok
+anchor2.html		ok
+badpages.html		ok
+color.html
+forms.html
+image.gif
+image_map.html
+layout.html
+listing.html		mostly ok
+nbsp.html
+notitle.html
+parser1.html		ok
+parser2.html		ok
+parser3.html		ok
+parser4.html		ok
+parser_ext1.html	mostly, italic doen't work for me
+recursive_frames.html
+recursive_frames2.html
+supsub.html
+table1.html		ok
+table2.html		ok
+table3.html		ok
+table4.html		ok
+table5.html		ok
+table6.html		ok
+tag_br.html		mostly
+tag_hr.html		positioning a bit wrong
+textarea.html
+title.html
+unicode.html		ok

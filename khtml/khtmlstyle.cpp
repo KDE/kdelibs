@@ -34,9 +34,8 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-#include "khtmltoken.h"
+#include "khtmltokenizer.h"
 #include "khtmlstyle.h"
-#include "khtmlobj.h"
 
 //
 // Classes for internal use only
@@ -78,9 +77,9 @@ public:
 class CSSSelector
 {
 public:
-    CSSSelector();
-    ~CSSSelector();
-    void print();
+    CSSSelector(void);
+    ~CSSSelector(void);
+    void print(void);
     int          tag;
     QString      id;
     QString      klass;
@@ -88,12 +87,12 @@ public:
     CSSPropList *propList;
 };
 
-CSSSelector::CSSSelector()
+CSSSelector::CSSSelector(void)
 : tag(-1), tagHistory(0), propList(0)
 {
 }
 
-CSSSelector::~CSSSelector()
+CSSSelector::~CSSSelector(void)
 {
     if (tagHistory)
     {
@@ -101,7 +100,7 @@ CSSSelector::~CSSSelector()
     }
 }
 
-void CSSSelector::print()
+void CSSSelector::print(void)
 {
     printf("[Selector: tag = %d, id = \"%s\", class = \"%s\"\n",
     	tag, id.data(), klass.data());
@@ -561,7 +560,7 @@ CSSStyleSheet::parseSheet(const char *src, int len)
 }
 
 void
-CSSStyleSheet::test()
+CSSStyleSheet::test(void)
 {
     char buf[40000];
 
@@ -578,4 +577,55 @@ CSSStyleSheet::test()
     close(fd);
 
     parseSheet(buf, len);
+}
+
+// ------------------------------------------------------------------------
+const HTMLFont *getFont(CSSStyle *currentStyle)
+{
+
+    int fontsize = currentStyle->font.size;
+    if ( fontsize < 0 )
+	fontsize = 0;
+    else if ( fontsize >= MAXFONTSIZES )
+	fontsize = MAXFONTSIZES - 1;
+    
+    currentStyle->font.size = fontsize;
+
+    HTMLFont f( currentStyle->font.family, 
+                fontsize, 
+                currentStyle->font.fixed ? pSettings->fixedFontSizes : pSettings->fontSizes,
+                currentStyle->font.weight / 10, 
+                (currentStyle->font.style != CSSStyleFont::stNormal), 
+                pSettings->charset );
+    f.setTextColor( currentStyle->font.color );
+    f.setUnderline( currentStyle->font.decoration == CSSStyleFont::decUnderline );
+    f.setStrikeOut( currentStyle->font.decoration == CSSStyleFont::decLineThrough );
+    if (currentStyle->text.valign == CSSStyleText::valOffset)
+    {
+       f.setVOffset( currentStyle->text.valignOffset );
+    }
+
+    const HTMLFont *fp = pFontManager->getFont( f );
+
+    currentStyle->font.fp = fp;
+
+    return fp;
+}
+
+
+void setNamedColor(QColor &color, const QString name)
+{
+    bool ok;
+    // also recognize "color=ffffff"
+    if (name[0] != QChar('#') && name.length() == 6 &&
+        name.toInt(&ok, 16) )
+    {
+        QString col("#");
+        col += name;
+        color.setNamedColor(col);
+    }
+    else
+    {
+        color.setNamedColor(name);
+    }   
 }

@@ -27,7 +27,6 @@ div
 dl
 dt
 em
-embed
 fieldset
 font
 form
@@ -52,12 +51,11 @@ kbd
 label
 legend
 li
-listing
 link
+listing
 map
 menu
 meta
-nobr
 noframes
 noscript
 object

@@ -1,4 +1,4 @@
-/* 
+/*
     This file is part of the KDE libraries
 
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
@@ -30,67 +30,42 @@
 
 #define KHTMLW_VERSION  2000		// 00.20.00
 
-#include <qpainter.h>
-#include <qstringlist.h>
+//#include <qpainter.h>
+//#include <qstringlist.h>
 #include <qpixmap.h>
-#include <qstack.h>
-#include <qfont.h>
+//#include <qstack.h>
+//#include <qfont.h>
 #include <qtimer.h>
-#include <qlist.h>
+//#include <qlist.h>
 #include <qdict.h>
 #include <qstring.h>
-#include <qbuffer.h>
-#include <qwidget.h>
+#include <qscrollview.h>
 
 #include "kurl.h"
+#include "khtmlio.h"
 
 class KHTMLCache;
-class HTMLObject;
-class HTMLClue;
-class HTMLChain;
-class HTMLIterator;
-class HTMLMap;
-class HTMLTokenizer;
 class HTMLSettings;
-class HTMLForm;
-class HTMLFrameSet;
-class HTMLAllocator;
 class HTMLFileRequester;
-class HTMLBackground;
+class KHTMLDecoder;
 
-class JSEnvironment;
-class JSWindowObject;
-
-class KHTMLView;
 class KHTMLWidget;
-class KHTMLParser;
-class KHTMLEmbededWidget;
 
-struct HTMLPendingFile
-{
-public:
-  HTMLPendingFile();
-  HTMLPendingFile( const QString _url, HTMLFileRequester *_obj );
-
-  QBuffer m_buffer;
-  QString m_strURL;
-  QList<HTMLFileRequester> m_lstClients;
+// DOM stuff
+#include <html_document.h>
+namespace DOM {
+class HTMLFrameElement;
+class HTMLDocumentImpl;
 };
-
-struct HTMLPageInfo
-{
-public:
-  QStringList imageURLs;
-  QStringList hrefURLs;
-};
+using namespace DOM;
 
 class SavedPage;
 
 /**
- * @short Basic HTML Widget.  Does not handle scrollbars or frames.
+ * @short Basic HTML Widget.  Does not handle frames.
  *
  * This widget is good for use in your custom application which does not
- * necessarily want to handle frames, or want custom control of scrollbars.
+ * necessarily want to handle frames.
  * To add content to the widget you should do the follwing:
  * <PRE>
  * view->begin( "file:/tmp/test.html" );
@@ -107,10 +82,11 @@ class SavedPage;
  * Note: All HTML is parsed in the background using Qt timers, so you will not
  * see any content displayed until the event loop is running.
  */
-class KHTMLWidget : public QWidget
+class KHTMLWidget : public QScrollView
 {
+    friend class HTMLDocumentImpl;
+
     Q_OBJECT
-        friend KHTMLParser;
 public:
     /**
      * Create a new HTML widget.  The widget is empty by default.
@@ -123,12 +99,8 @@ public:
      *              in the &lt; href=... target=... &gt; tag. If this argument
      *              is 0L then a unique default name is chosen.
      *
-     * Note: pixdir should not be used - it is provided only for backward
-     * compatability and has no effect.
      */
-    // ###### FIXME: remove 3rd argument
-    KHTMLWidget( QWidget *parent = 0L, const char *name = 0L,
-		const char *pixdir = 0L );
+    KHTMLWidget( QWidget *parent = 0L, const char *name = 0L);
     virtual ~KHTMLWidget();
 
     /**
@@ -154,24 +126,26 @@ public:
      * Writes another part of the HTML code to the widget. You may call
      * this function many times in sequence. But remember: The less calls
      * the faster the widget is.
+     *
+     * The html code is send through a decoder, which decodes the stream to
+     * unicode.
+     *
+     * Attention: Don't mix calls to write( const char *) with calls
+     * to write( const QString & ). The result might not be what you want.
      */
     void write( const char * );
+
+    /**
+     * Writes another part of the HTML code to the widget. You may call
+     * this function many times in sequence. But remember: The less calls
+     * the faster the widget is.
+     */
+    void write( const QString & );
 
     /**
      * Call this after your last call to @ref #write.
      */
     void end();
-
-    /**
-     * Begin parsing any HTML that has been written using the @ref #write
-     * method.
-     *
-     * You may call this function immediately after calling @ref #begin. 
-     * In this case the HTML will be passed and displayed whenever the
-     * event loop is active.  This allows background parsing and display
-     * of the HTML as it arrives.
-     */
-    void parse();
 
     /**
      * Stop parsing the HTML immediately.
@@ -194,6 +168,7 @@ public:
      * are redrawn if they changed their selection mode.
      */
     virtual void selectByURL( QPainter *_painter, QString _url, bool _select );
+
     /**
      * Selects/Unselects all objects with an associated URL.
      * This is usually used to disable
@@ -204,14 +179,14 @@ public:
 
     /**
      * Selects all objects with an associated URL in this rectangle and
-     * deselects all objects outside the rectangle. 
+     * deselects all objects outside the rectangle.
      *
      * @param _rect is a rectangle in display coordinates. This means
      *              that the point (0,0) is the upper/left most point of
      *              the widget but must not be this one for the HTML page.
      *              This happens if the widget is being scrolled.
      */
-    virtual void select( QPainter * _painter, QRect &_rect );
+    virtual void select( QRect &_rect );
 
     /**
      * Select all objects with a URL matching the regular expression.
@@ -244,7 +219,7 @@ public:
     /**
      * Get all text.
      *
-     * @param _str is the QString which will contain all text.  
+     * @param _str is the QString which will contain all text.
      * The text is appended to any text currently in _str.
      */
     virtual void getAllText( QString &_str );
@@ -256,7 +231,7 @@ public:
      * @return true if there is text selected.
      */
     bool isTextSelected() const
-	{	return bIsTextSelected; } 
+	{	return bIsTextSelected; }
 
     /**
      * Initiate a text search.
@@ -297,31 +272,30 @@ public:
     /**
      * @return the url of this document
      */
+//###
     KURL &getDocumentURL()
-		{	return actualURL; }
+	{ return actualURL; }
 
     /**
      * @return the base URL of this document
      */
+// ###
     KURL &getBaseURL()
-		{	return baseURL; }
+	{ return baseURL; }
 
     /**
+     * @obsolete use contentsX() instead
      * @return the horizontal position the view has been scrolled to.
      */
-    int xOffset() const { return x_offset; }
+// ###
+    int xOffset() const { return contentsX();}
 
     /**
+     * @obsolete use contentsY() instead
      * @return the vertical position the view has been scrolled to.
      */
-    int yOffset() const { return y_offset; }
-
-    /**
-     * Find the default anchor. If the anchor is found, the widget
-     * scrolls to the closest position. Returns TRUE if the anchor has
-     * been found. 
-     */ 
-    bool gotoAnchor();
+// ###
+    int yOffset() const { return contentsY(); }
 
     /**
      * Find the anchor named '_name'. If the anchor is found, the widget
@@ -332,16 +306,20 @@ public:
     bool gotoAnchor( QString _name );
 
     /**
-     * Jumps to position _x_offset, _y_offset.
-     * Returns TRUE if the position was available
+     * Replaced.
+     * use the appropriate QSrollView methods:
+     * virtual void setContentsPos ( int x, int y )
+     * void ensureVisible ( int x, int y )
+     * void center ( int x, int y )
+     *
+     * bool gotoXY( int _x_offset, int _y_offset );
      */
-    bool gotoXY( int _x_offset, int _y_offset );
 
     /**
      * Causes the widget contents to scroll automatically.  Call
      * @ref #stopAutoScrollY to stop.  Stops automatically when the
      * top or bottom of the document is reached.
-     * 
+     *
      * @param _delay Time in milliseconds to wait before scrolling the
      * document again.
      * @param _dy The amount to scroll the document when _delay elapses.
@@ -357,98 +335,27 @@ public:
      * Returns if the widget is currently auto scrolling.
      */
     bool isAutoScrollingY()
-	 	{	return autoScrollYTimer.isActive(); }
-
-    /**
-     * If this widget belongs to a @ref HTMLView, then this function
-     * is used to tell the widget about its owner.
-     *
-     * @see #htmlView     
-     * @see #getView
-     */
-    void setView( KHTMLView *_view ) { htmlView = _view; }
-
-    /**
-     * @return the @ref KHTMLView this widget belongs to.
-     *
-     * @see #setView
-     */
-    KHTMLView* getView() { return htmlView; }
+	{ return autoScrollYTimer.isActive(); }
 
     /**
      * @return TRUE if the currently displayed document is a frame set.
      */
-    bool isFrameSet() { return bIsFrameSet; }
+    bool isFrameSet();
 
-    /**
-     * Tells this widget that it displays a frameset.
-     * For internal use only.
-     */
-    void setIsFrameSet( bool _b );
+    void setIsFrame(bool b) { _isFrame = b; }
+    bool isFrame() { return _isFrame; }
 
+    bool selected() { return _isSelected; }
+    void setSelected(KHTMLWidget *w = 0);
+    
     /**
      * @return a pointer to the currently selected frame ( @ref KHTMLView ) if
      * we are displaying a frameset, otherwise 0L. If this widget is the
      * selected one then @ref htmlView is returned. Otherwise all
      * @ref HTMLFrameSet instances are asked.
      */
-    KHTMLView* getSelectedFrame();
-  
-    /**
-     * @return TRUE if the currently displayed document is a frame.
-     */
-    bool isFrame() { return bIsFrame; }
+    KHTMLWidget* getSelectedFrame();
 
-    /**
-     * Tell the widget wether it is a frame or not.
-     * For internal use only.
-     *
-     * @see #isFrame
-     */
-    void setIsFrame( bool _frame);
-
-    /**
-     * Sets the margin width in pixels. This function is used to implement the
-     * <tt>&lt;frame marginwidth=... &gt;</tt> tag.
-     * It is called from @ref KHTMLView and is for INTERNAL USE ONLY.
-     *
-     * @see #leftBorder
-     * @see #rightBorder
-     * @see KHTMLView::setMarginWidth
-     */
-    void setMarginWidth( int _w ) { leftBorder = _w; rightBorder = _w + 4; }
-
-    /**
-     * Sets the margin height in pixels. This function is used
-     * to implement the
-     * <tt>&lt;frame marginheight=... &gt;</tt> tag.
-     * It is called from @ref KHTMLView and is for INTERNAL USE ONLY.
-     *
-     * @see #topBorder
-     * @see #bottomBorder
-     * @see KHTMLView::setMarginHeight
-     */
-    void setMarginHeight( int _h ) { topBorder = _h; bottomBorder = _h; }
-  
-    /**
-     * @return if the user selected this widget.
-     *
-     * @see #bIsSelected
-     * @see #setSelected
-     */
-    bool isSelected()
-    {
-      return bIsSelected;
-    }
-  
-    /**
-     * Switches the 'selected state' of this widget. This results in the
-     * drawing or deleting of the black border around the widget.
-     *
-     * @see #isSelected
-     */
-    void setSelected( bool _active );
-  
     /**
      * Sets point sizes to be associated with the HTML-sizes used in
      * <FONT size=Html-Font-Size>
@@ -509,7 +416,7 @@ public:
      * Sets the cursor to use when the cursor is on a link.
      */
     void setURLCursor( const QCursor &c )
-	{	linkCursor = c; }
+	{ linkCursor = c; }
 
     /**
      * Returns the cursor which is used when the cursor is on a link.
@@ -526,16 +433,6 @@ public:
 	{   granularity = g; }
 
 
-    /** 
-     * if an href is encountered it is registered here for 
-     * informational purposes.
-     */
-    void addHref( QString _url );
-
-    /** if an HTMLObject needs an image, it calls this function.
-     */
-    void requestImage( HTMLObject *obj, QString _url );
-
     /*
      * If a HTMLObject object needs a file from the web, it
      * calls this function.
@@ -543,7 +440,7 @@ public:
      * as the file is loaded (via the data function)
      */
     // ########## implement update
-    void requestFile( HTMLFileRequester *_obj, QString _url, 
+    void requestFile( HTMLFileRequester *_obj, QString _url,
 		      bool update = false );
 
     /*
@@ -557,83 +454,37 @@ public:
      */
     void cancelAllRequests();
 
-    /*
-     * This function is used to repaint images that have been loaded from the
-     * web.
-     */
-    void paintSingleObject( HTMLObject *_obj );
+    void setBGColor(const QColor &c)
+	{ viewport()->setBackgroundColor(c); }
 
     /*
-     * Internal function to paint a single object with a known chain.
+     * Set background
      */
-    void paint( HTMLChain *_chain, int x, int y, int w, int h );
-
-    /*
-     * Schedule a paint event.  This is used internally to force a paint
-     * event when, for example, an image has been loaded and the document
-     * has been layed out again.
-     */
-    void scheduleUpdate();
-
-    /**
-     * Internal use - calculates the absolute position of the objects.
-     */
-    void calcAbsolutePos();
-
-    /*
-     * Set background 
-     */
-    void setBackground( HTMLBackground *_background); 
+    //void setBackground( HTMLBackground *_background);
 
     /**
      * Returns the URL of the background image or NULL if no background
      * is available.
      */
-    QString getBackground();
+    //QString getBackground();
 
-    /*
-     * Set background color
-     */
-    void setBGColor( const QColor &_bgColor); 
-
-    /**
-     * @return a pointer to the @ref JSEnvironment instance used by this widget.
-     *         Every call to this function will result in the same pointer.
-     *
-     * @see #jsEnvironment
-     */
-    JSEnvironment* getJSEnvironment();
-
-    /**
-     * A convenience function to access the @ref JSWindowObject of this html
-     * widget.
-     *
-     * @see #getJSEvironment
-     */
-    JSWindowObject* getJSWindowObject();
-
-    /*
-     * return the image map matching mapurl
-     */
-    HTMLMap *getMap( QString mapurl );
-
-                  
     /**
      * @return a list of all frames.
      *
      * @see #frameList
      */
-    QList<KHTMLWidget>* getFrameList() { return &frameList; }
-    
+// ######
+    //QList<KHTMLWidget>* getFrameList() { return &frameList; }
+
     /**
-     * Set document charset. 
+     * Set document charset.
      *
      * Any <META ...> setting charsets overrides this setting
      * as long as override isn't true.
      * @return TRUE if successfull
      */
     // ##### FIXME: remove override
-    bool setCharset(QString name, bool override = false); 
+    bool setCharset(QString name, bool override = false);
 
     // Another option to feed image data into the HTML Widget
     void data( QString _url, const char *_data, int _len, bool _eof );
@@ -643,11 +494,32 @@ public:
      * This does only work, if the page has a valid URL, pages
      * filled with the write() method are not saveable
      */
-    SavedPage *saveYourself(SavedPage *p = 0);
+    //SavedPage *saveYourself(SavedPage *p = 0);
     /**
      * restore a page previously saved with @ref saveYourself()
      */
-    void restore(SavedPage *);
+    //void restore(SavedPage *);
+
+    /** @internal
+     *  forces the repaint of a single element
+     */
+    void paintElement( NodeImpl *e, bool recursive=false );
+
+    /**
+     * For internal use only
+     *
+     * This is called, when the document has frames.
+     * The default implementation does nothing. Use KBrowser, if you want
+     * to have frames.
+     */
+    virtual KHTMLWidget* newView( QWidget *, const char *, int ) { return 0; }
+
+
+    /**
+     * hook to get the Document. Used eg by jscript to manipulate the document.
+     */
+    HTMLDocument htmlDocument() const { return document; }
+
 
 signals:
     /**
@@ -676,15 +548,6 @@ signals:
      * the user selects an &lt;a href="#anchor"&gt;.
      */
     void scrollHorz( int _x );
-
-    // ####### FIXME: remove one of the two
-    /**
-     * Signals that a URL has been selected using a single click.
-     *
-     * @param _url is the URL clicked on.
-     * @param _button is the mouse button clicked.
-     */
-    void URLSelected( QString _url, int _button );
 
     /**
      * Signals that a URL has been selected using a single click.
@@ -740,8 +603,8 @@ signals:
      *
      * @see #documentStarted
      */
-    void documentDone();
-    
+    void documentDone( KHTMLWidget * );
+
     /// Emitted if the user pressed the right mouse button
     /**
      * If the user pressed the right mouse button over a URL than _url
@@ -759,7 +622,7 @@ signals:
      * @param _ev the @ref QMouseEvent.
      */
     void mousePressed( QString _url, QString _target, QMouseEvent *_ev );
-  
+
     // The widget requests to load a file
     /**
      * KHTMLWidget can only load files from your local disk. If it
@@ -772,24 +635,26 @@ signals:
      * @param _url is the URL of the image that needs to be loaded.
      */
     void fileRequest( QString _url );
-    
+
     // Cancels a file that has been requested.
     void cancelFileRequest( QString _url );
 
     // signal when user has submitted a form
-    void formSubmitted( QString _method, QString _url, 
+    void formSubmitted( QString _method, QString _url,
 			const char *_data, QString _target );
 
     // signal that the HTML Widget has changed size
     void resized( const QSize &size );
 
     /**
-     * signal is emitted, when an URL redirect 
+     * signal is emitted, when an URL redirect
      * (<meta http-equiv="refresh" ...>) tag is encountered
      * delay is the delay in seconds; 0 means immediate redirect,
      */
     void redirect(int delay, QString url);
-      
+
+    virtual void executeScript( const QString &script );
+
 public slots:
     /**
      * Scrolls the document to _y.
@@ -812,15 +677,9 @@ public slots:
      * @param _filename is the name of the file that has been stored on
      * the local filesystem.
      */
-    void slotFileLoaded( QString _url, QString _filename );
-  
+     void slotFileLoaded( QString _url, QString _filename );
+
 protected slots:
-    /*
-     * INTERNAL
-     *
-     * Called when the widget needs an update.
-     */
-    void slotUpdate();
 
     /*
      * INTERNAL
@@ -837,14 +696,21 @@ protected slots:
      */
     void slotUpdateSelectText( int newy );
 
+public slots:
     /*
      * INTERNAL
      *
      * Called when the user submitted a form.
      */
-    void slotFormSubmitted( QString _method, QString _url, 
-			    const char *_data, QString _target );
+    void slotFormSubmitted( QString _method, QString _url,
+    			    const char *_data, QString _target );
 
+    /**
+     * @internal
+     */
+    void slotExecuteScript( const QString &script )
+	{ emit executeScript( script ); }
+protected:
     /*
      * INTERNAL
      *
@@ -852,29 +718,44 @@ protected slots:
      * one of the frames. In this case we have to unselect the
      * currently selected frame if there is one.
      */
-    void slotFrameSelected( KHTMLView *_view );
-  
+    //void slotFrameSelected( KHTMLView *_view );
+
 protected:
 
-    KHTMLParser *parser;
-    
-    virtual void mousePressEvent( QMouseEvent * );
+    /**
+     * The current document displayed in this widget
+     */
+    HTMLDocumentImpl *document;
+
+    /**
+     * decoder used to decode the input stream
+     */
+    KHTMLDecoder *decoder;
+
+    // overrides QScrollview method
+    virtual void drawContents ( QPainter * p, int clipx,
+				int clipy, int clipw, int cliph );
+public:
+    virtual void layout();
+protected:
+
+    virtual void viewportMousePressEvent( QMouseEvent * );
 
     /**
      * This function emits the 'doubleClick' signal when the user
      * double clicks a &lt;a href=...&gt; tag.
      */
-    virtual void mouseDoubleClickEvent( QMouseEvent * );
+    virtual void viewportMouseDoubleClickEvent( QMouseEvent * );
 
     /**
      * This function is called when the user moves the mouse.
      */
-    virtual void mouseMoveEvent(QMouseEvent *);
+    virtual void viewportMouseMoveEvent(QMouseEvent *);
 
     /**
      * this function is called when the user releases a mouse button.
      */
-    virtual void mouseReleaseEvent(QMouseEvent *);
+    virtual void viewportMouseReleaseEvent(QMouseEvent *);
 
     /**
      * Called when a URL is encountered.  Overload this method to indicate
@@ -884,51 +765,45 @@ protected:
      * returned the URL will be rendered in the vlink color.  If false
      * is returned the URL will be rendered in the link color.
      */
-    virtual bool URLVisited( QString _url );
+    //virtual bool URLVisited( QString _url );
 
-    virtual void paintEvent( QPaintEvent * );
+    //virtual void paintEvent( QPaintEvent * );
 
     virtual void resizeEvent( QResizeEvent * );
 
-    virtual void keyPressEvent( QKeyEvent * );
+    //virtual void keyPressEvent( QKeyEvent * );
 
-    virtual void timerEvent( QTimerEvent * );
+    //virtual void timerEvent( QTimerEvent * );
 
     // we don't want global palette changes affecting us
     virtual void setPalette( const QPalette & ) {}
 
-    // reimplemented to prevent flicker
-    virtual void focusInEvent( QFocusEvent * ) { }
-    virtual void focusOutEvent( QFocusEvent * ) { }
-
     // flush key presses from the event queue
-    void flushKeys();
-
-    /*
-     * position form elements (widgets) on the page
-     */
-    void positionFormElements();
+    //void flushKeys();
 
     /*
      * functions used internally for saving and restoring html pages
      */
-    void buildFrameSet(SavedPage *p, QString *s);
-    void buildFrameTree(SavedPage *p, HTMLFrameSet *f);
+    //void buildFrameSet(SavedPage *p, QString *s);
+    //void buildFrameTree(SavedPage *p, HTMLFrameSet *f);
+
+    // the width the document is layouted to...
+    int _width;
 
     /*
      * funciton used internally for getAllText
      */
-    void getFrameSetText( QString &_str, HTMLFrameSet *f);
+    //void getFrameSetText( QString &_str, HTMLFrameSet *f);
 
     /*
      * This is the URL that the cursor is currently over
      */
     QString overURL;
-    
+
     /*
      * Reference (anchor) to jump to once it becomes available
      */
-    QString reference;
+    //QString reference;
 
     /*
      * This painter is created at need, for example to draw
@@ -937,20 +812,9 @@ protected:
     QPainter *painter;
 
     /*
-     * This is the pointer to the tree of HTMLObjects.
-     */
-    HTMLClue *clue;
-
-    /*
      * The background of the page is handled seperately.
      */
-    HTMLBackground *background;
-
-    /*
-     * This is the scroll offset. The upper left corner is (0,0).
-     */
-    int x_offset;
-    int y_offset;
+    //HTMLBackground *background;
 
     /*
      * The amount to auto scroll by.
@@ -970,29 +834,15 @@ protected:
     /*
      * Timer used to schedule paint events
      */
-    QTimer updateTimer;
+    //QTimer updateTimer;
 
-    /*
-     * This object contains the complete text. This text is referenced
-     * by HTMLText objects for example. So you may not delete
-     * 'ht' until you have delete the complete tree 'clue' is
-     * pointing to.
-     */
-    HTMLTokenizer *ht;
-
-    /*
-     * This object allocates all our HTMLObjects.
-     * We free these objects in one go when the HTML page gets discarded.
-     *
-     */
-    HTMLAllocator *allocator;
-	
     /*
      * Used for drag and drop.
      */
     bool pressed;
     int press_x;
     int press_y;
+
     /*
      * When the user presses the mouse over an URL, this URL is stored
      * here. We might need it if the user just started a drag.
@@ -1041,7 +891,7 @@ protected:
     /*
      * This sets the baseURL given a URL. It strips of any filename.
      */
-    void setBaseURL( QString _url);
+    //void setBaseURL( QString _url);
 
     /*
      * A color context for the current page so that we can free the colors
@@ -1052,13 +902,16 @@ protected:
     /*
      * Timer to parse html in background
      */
-    int timerId;
+    //int timerId;
 
     /*
      * begin() has been called, but not end()
      */
     bool writing;
 
+    bool _isFrame;
+    bool _isSelected;
+    
     /*
      * Number of tokens parsed in the current time-slice
      */
@@ -1078,61 +931,13 @@ protected:
     /*
      * Current settings for page
      */
-    HTMLSettings *settings; 
-	 
-    // List of forms in the page
-    QList<HTMLForm> formList;
-
-    /*
-     * Adds a new form to the formList
-     */
-    void addForm( HTMLForm *_form );  
-
-    // List of Image maps in the page
-    QList<HTMLMap> mapList;
-
-    /*
-     * Add an image map
-     */
-    void addMap( QString mapUrl);
-
-    /*
-     * Get last image map
-     */
-    HTMLMap * lastMap();
-    
+    HTMLSettings *settings;
+	
     /*
      * Sets new title
      * (Called by parser only)
      */
     void setNewTitle( QString _title);
-
-    /*
-     * Adds a new frame set
-     */
-    void addFrameSet( HTMLFrameSet *_frameSet );  
-    
-    /*
-     * Show a frame set
-     */
-    void showFrameSet( HTMLFrameSet *_frameSet );  
-
-    /*
-     * The toplevel frame set if we have frames otherwise 0L.
-     */
-    HTMLFrameSet *frameSet;
-
-    /*
-     * List of all framesets we are currently showing.
-     */
-    QList<HTMLFrameSet> framesetList;  
-
-    /*
-     * List of all frames appearing in this window. They are stored in
-     * source order. JavaScript uses this list to implement its
-     * frames array.
-     */
-    QList<KHTMLWidget> frameList;    
 
     /**
      * List of all embeded widgets.
@@ -1140,108 +945,28 @@ protected:
      * @see #addEmbededFrame
      *
      */
-    QList<KHTMLEmbededWidget> embededFrameList;
-
-    /**
-     * Adds a new frame
-     */
-    void addFrame( HTMLFrameSet *_frameSet, QString _name, 
-		   bool _scrolling, bool _resize, 
-		   int _frameborder, int _marginwidth, int _marginheight,
-		   QString _src);  
+    //QList<KHTMLEmbededWidget> embededFrameList;
 
     /**
      * Adds a new embeded frame.
      */
-    void addEmbededFrame( HTMLFrameSet *_frameSet, KHTMLEmbededWidget* _embed );
-  
-    /**
-     * @return TRUE if the current document is a framed document.
-     */
-    bool bIsFrameSet;
-
-    /**
-     * @return TRUE if the widget is a frame of a frameset.
-     */
-    bool bIsFrame;
+    //void addEmbededFrame( HTMLFrameSet *_frameSet, KHTMLEmbededWidget* _embed );
 
     /**
      * Is TRUE if we parsed the complete frame set.
      */
-    bool bFramesComplete;
-
-    /**
-     * If the owner of this widget is a @ref HTMLView then this is a
-     * pointert to the owner, otherwise 0L.
-     */
-    KHTMLView *htmlView;
+    //bool bFramesComplete;
 
     /**
      * This is a pointer to the selectede frame. This means that the frame
      * gets a black inner border.
      */
-    KHTMLView *selectedFrame;
-
-    /**
-     * Flag that indicates wether the user selected this widget. This is only of
-     * interest if the widget is a frame in a frameset. Try Netscape to see
-     * what I mean.
-     *
-     * @see #selectedFrame
-     */
-    bool bIsSelected;
-
-    /**
-     * Holds the amount of pixel for the left border. This variable is used
-     * to implement the
-     * <tt>&lt;frame marginwidth=... &gt;</tt> tag.
-     *
-     * @see #rightBorder
-     * @see #setMarginWidth
-     */
-    int leftBorder;
-
-    /**
-     * Holds the amount of pixel for the right border. This variable is used
-     * to implement the
-     * <tt>&lt;frame marginwidth=... &gt;</tt> tag.
-     *
-     * @see #leftBorder
-     * @see #setMarginWidth
-     */
-    int rightBorder;
-
-    /**
-     * Holds the amount of pixel for the top border. This variable is used
-     * to implement the
-     * <tt>&lt;frame marginheight=... &gt;</tt> tag.
-     *
-     * @see #bottomBorder
-     * @see #setMarginHeight
-     */
-    int topBorder;
-
-    /**
-     * Holds the amount of pixel for the bottom border. This variable is used
-     * to implement the
-     * <tt>&lt;frame marginheight=... &gt;</tt> tag.
-     *
-     * @see #setMarginHeight
-     * @see #topBorder
-     */
-    int bottomBorder;
-
-    /**
-     * This pointer is per default 0L. An instance of @ref JSEnvironment is
-     * created if someone calls @ref #getJSEnvironment. This instance is used
-     * to run java script.
-     */
-    JSEnvironment *jsEnvironment;      
+    //HTMLFrameElement *selectedFrame;
 
     /**
      * Iterator used to find text within the document
      */
-    HTMLIterator *textFindIter;
+    //HTMLIterator *textFindIter;
 
     /**
      * Keeps a list of all pending file.
@@ -1252,23 +977,23 @@ protected:
      * caches images.
      */
     KHTMLCache *cache;
-    
+
     /**
      * info about current page: used images
      */
-    QStringList usedImageURLs;
+    //QStringList usedImageURLs;
 
     /**
      * info about current page: href's
      */
-    QStringList usedHrefURLs;
+    //QStringList usedHrefURLs;
 
 public:
     /**
      * Get info about the current page
      * Caller should delete the returned pageinfo structure.
      */
-    HTMLPageInfo *getPageInfo();
+    //HTMLPageInfo *getPageInfo();
 
     /**
      * Loads an image into the cache and makes it persistant
@@ -1276,10 +1001,10 @@ public:
     static void preloadImage( QString _filename );
 
     /** returns the imageCache object */
-    KHTMLCache *imageCache() { return cache; }
+    //KHTMLCache *imageCache() { return cache; }
     /** set the size of the image cache */
     static void setCacheSize( int size );
-    
+
     static int cacheSize();
 };
 

@@ -47,7 +47,7 @@ public:
 
     void setFontSizes(const int *newFontSizes, const int *newFixedFontSizes);
     void getFontSizes(int *newFontSizes, int *newFixedFontSizes);
-    void resetFontSizes();
+    void resetFontSizes(void);
 
     int     fontSizes[MAXFONTSIZES];
     int     fixedFontSizes[MAXFONTSIZES];
@@ -67,6 +67,8 @@ public:
 
     static const int fontBaseSize;
 };
+
+extern HTMLSettings* pSettings;
 
 #endif
 

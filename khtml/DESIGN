@@ -14,7 +14,7 @@ Stage 3.: The HTML-Layout
 The Tokenizer
 =============
 
-The tokenizer is located in khtmltoken.cpp. The tokenizer uses the contents
+The tokenizer is located in khtmltokenizer.cpp. The tokenizer uses the contents
 of a HTML-file as input and breaks this contents up in a linked list of 
 tokens. The tokenizer recognizes HTML-entities and HTML-tags. Text between
 begin- and end-tags is handled distinctly for several tags. The distinctions
@@ -40,220 +40,93 @@ The HTML-Parser
 ===============
 
 The HTML-parser interprets the stream of tokens provided by the tokenizer
-and constructs a structure of renderable elements. Two types of renderable
-elements can be distinguished: HTML-objects and HTML-clues.
+and constructs a tree of elements representing the document according
+to the Document Object Model (DOM, see http://www.w3.org). For HTML,
+one can distiguish between 3 kinds of basic Objects the document is
+build up from:
 
-* HTML-objects
+* Text
 
-A HTML-object is a object which can be drawn on the screen. Examples of it
-are text, links, images and lines.
+Text is a basic class holding some text of the page.
 
-* HTML-clues
+* HTMLBlockElement
 
-A HTML-clue is a container which can contain HTML-objects and/or other
-HTML-clues. A HTML-clue determines how the elements which it contains are
-positioned with respect to each other.
+Elements representing a block in the document (like <hr>, <table>,
+<blockquote>, <li>, ...). These elements can contain inline elements
+(the ones forming paragraphs) and other block elements. Block elements
+have the ability to render themselves and the inline elements, which
+they contain.
 
-Example I:
-The HTMLClueFlow positions its elements in a 'flow' like the text in a book: 
-It starts from the left and moves to the right. When it hits the
-right-margin it moves down and continues from the left-margin.  
+* HTMLInlineElement
+
+Inline elements are all elements, which are rendered as part of a
+paragraph (eg. <b>, <img>, <tt>, ...) Inline elements do render
+themselves, but are rendered by the surrounding block element. Inline
+elements can't contain any block elements.
+
+The root of all elements is the HTMLDocument.
 
 The HTML-Layout
 ===============
 
-When the complete structure of HTML-clues and HTML-objects is build. The
-HTML-layout starts: each HTML-object is positioned. The positioning depends
+When the complete structure of Elements and Text is build, the
+HTML-layout starts: each HTMLElement is positioned. The positioning depends
 on the available screen-width.
+
+### This might change still
 
 The positioning starts with the calculation of the minimum screen-width
 required to display the complete HTML page. The calcMinSize method in
 HTML-clues and HTML-objects is used for this. The minimum size is calculated
 recursively through all HTML-clues.
 
-When the minimum size is known it compared against the actuaal available
+When the minimum size is known it compared against the actual available
 screen-size. If the minimum size is less than the available
 screen-size the available screen size will be used as the maximum screen
 size. If the minimum size is greater than the available size the minimum
-size is used as the maximum screen size. In taht case, if configured, a 
+size is used as the maximum screen size. In that case, if configured, a 
 horizontal scrollbar will be added to be able to scroll.
 
 -----------------------------------------------------------------------------
 Advanced Topics
 -----------------------------------------------------------------------------
 
-The HTMLText objects
-====================
+DOM
+===
 
-There are several text-related objects:
+khtml does now use DOM Level1 (see http://www.w3.org for details) for holding
+documents. Although the dom implementation isn't finished yet, it's already
+quite useable. The DOM is implemented as classes with automatic memory 
+management. We have internal classes (the *Impl classes) holding the data
+of the DOM, but the programmer uses "pointer" classes to these internal ones.
+The implementations hold a reference count of how many "pointer"/API instances
+are pointing to them. Once the reference count drops to 0, the implementation
+gets deleted.
 
-   HTMLHSpace: A horizontal space
-   HTMLVSpace: A vertical space, e.g. linefeed
-   HTMLText: A non-breakable text object
-   HTMLTextMaster: A breakable text-object
-   HTMLLinkText: A non-breakable hyperlinked text object
-   HTMLLinkTextMaster: A breakable hyperlinked text object
- 
-   Use:
-      HTMLHSpace is equivalent to HTMLText(" ", ...) but slightly smaller
-                 in memory usage
-      HTMLVSpace is used for a forced line-break (e.g. linefeed)
-      HTMLText is used for text which shouldn't be broken.
-      HTMLTextMaster is used for text which may be broken on spaces,
-                 it should only be used inside HTMLClueFlow.
-                 For text without spaces HTMLTextMaster is equivalent
-                 to HTMLText. In such cases HTMLText is more efficient.
-      HTMLLinkText is like HTMLText but can be hyperlinked.
-      HTMLLinkTextMaster is like HTMLTextMaster but can be hyperlinked.
-  
-   Rationale:
-      Basically all functionality is provided by HTMLVSpace and HTMLText.
-      The additional functionality of HTMLLLinkText is not put in HTMLText
-      to keep the memory usage of the frequently used HTMLText object low.
-      Since often single spaces are used in HTML, they got their own, even
-      smaller object.
-      Another often encountered pattern is a paragraph of text. The
-      HTMLTextMaster is designed for this purpose. It splits the paragraph
-      in lines during layout and allocates a HTMLTextSlave object for each
-      line. The actual text itself is maintained by the HTMLTextMaster
-      object making efficient memory usage possible.
+The dom_* files implement the core DOM, the html_* files the html DOM.
+As I focused on html, all classes in the core DOM used only for XML are not
+implemented.
 
+HTMLLine
+========
 
-The HTMLTextMaster/HTMLTextSlave objects
-========================================
+Every BlockElements goes through it's children during layout. Once it
+encounters an inline element, it starts a paragraph. All inline elements
+(and it's children) are scanned until it encounters the next BlockElement. 
+Text and inline elements are put together, and a line breaking algoritm 
+decides, when to start a new line.
 
-Text sequences rendered with the same font-settings are kept in one single 
-string as much as possible. If such a string contains normal (breaking) 
-spaces, this string is converted into a HTMLTextMaster object. If such a 
-string contains non-breaking spaces it is converted into a HTMLText object.
-The non-breaking spaces are passed as normal spaces to the HTMLText object, 
-since the HTMLText object does never break up any text, the spaces act as 
-non-breaking spaces.
+HTMLBodyElement
+===============
 
-If a string contains both breaking and non-breaking spaces the string is 
-split up across a HTMLText, HTMLSpace and HTMLTextMaster object. The reason
-for this is that we can't pass non-breaking spaces to the HTMLTextMaster
-object due to problems with fonts. Not all fonts print the character
-0xA0. A workaround in Qt is announced. Until that workaround is mainstream,
-we can't use non-breaking spaces in our HTMLTextMaster object.
+Each frame in a HTMLDocument has a body, represented by the
+HTMLBodyElement. This element holds a pointer to a HTMLScrollview, into
+which the contents of the body is rendered.
 
-The actual line-breaking is done in the HTMLTextSlave::fitLine() method. This 
-method is called from HTMLClueFlow::calcSize().
-The parent of the HTMLTextSlave should be the HTMLClueFlow object. 
-
-In HTMLClue is also a call to fitLine(). This call has its arguments setup to 
-instruct the HTMLTextSlave not to do any breaking at all. HTMLClue is used
-for the contents of <pre>..</pre> tags. It is rather strange if HTMLClue 
-contains any HTMLTextSlave objects though. Text within <pre>..</pre> tags 
-should all end up as HTMLText objects.
-
-The line breaking is pretty tricky. This is how it is done without any 
-HTMLTextMaster objects (e.g. without fitLine functionality)
-
-The HTMLTextMaster object contains the text string. During lay-out the 
-HTMLTextMaster spawns off a HTMLTextSlave which prints (a part of) the 
-text string. All layout issues are further handled by HTMLTextSlave.
-
-Basic Text lay-out
+HTMLPaintedElement
 ==================
 
-Basically the line-breaking is done by
-HTMLClueFlow::calcSize(). It lays out the text line by line. It collects 
-"run"'s of objects. A "run" is a sequence of objects with no white-space 
-inbetween them. If a run is complete it is checked whether the width of the 
-run fits the current line. If it fits another run is made until no more run 
-can be added: the line is full. The last run which didn't fit anymore on 
-the line is rejected.
+This is the base class for all renderable HTML ELements. These are basically
+all block level elements. Block level elements take care of rendering their
+inline contents.
 
-If we have line consisting og a set of run's which fit the current width 
-of the HTMLClueFlow we have to check whether the total available space at 
-the point where we are expecting the text is indeed enough for our line.
-
-This seems redundant but although the width of the Clue is big enough to 
-hold the line it can be that a floating images is right beneath us and that 
-we therefor have not enough space for the height of the line. If this is the 
-case we ask for a new position (further down in the Clue) which provides 
-enough height for our line. Since this position may have a different width, we 
-throw away our line and start making a new line given the new width.
-
-This isn't very efficient but it shouldn't occur too often.
-
-
-Text layout using fitLine().
-============================
-
-The text-layout algorithm mentioned above assumes that all objects (making 
-up the runs) have a fixed width wich can't be changed. The HTMLTextSlave
-objects however, can break themselve up in multiple HTMLTextSlave objects.
-
-The fitLine() call is a hint to the HTMLTextSlave object to break itself up
-if necassery. After it has done so (or if it chooses not to do so) the 
-HTMLTextSlave is further treated by the text-layout algorithm as a normal 
-fixed size object. 
-
-For efficiency the fitLine() function returns some information to the 
-text-layout algorithm. If HTMLTextSlave has broken itself up it makes no 
-sense to try to add more objects to that line. The next object will be the 
-remaining part of the HTMLTextSlave, if it would have fitted, the original 
-HTMLTextSlave would had splitted in the first place. So if HTMLPartialFit 
-is returned, this is a hint to the layout-algorithm that with thi HTMLTextSlave 
-the line is full and that it doesn't need to try to add more objects to that 
-line.
- 
-Another possibily is that the HTMLTextSlave sees no way to break itself so 
-that it fits the available space. In that case it does no further attempt
-and returns HTMLNoFit to the layout algorithm. This is an indication that the
-run the HTMLTextSlave is part of, will not fit the available space and that it
-is useless to try any further.
-
-An exception to this rule is the case where this run is the first run of the 
-line. In that case the HTMLTextSlave should make itself as small as possible. 
-The resulting run will then not fit within the width of the current line. 
-However, another position for the text is searched where the line does fit. 
-
-If such a position is not found the widest available position is choosen. 
-In this case the text will overflow the Clue borders. This should only be 
-possible to happen if the width of the Clue didn't take (for some reason 
-or the other) the minimumWidth of its contents into account.
-
-
-----------------------------------------------------------------------------
-Memory Management
-----------------------------------------------------------------------------
-
-Basically all strings used in a page are allocated through the tokenizer. 
-Strings passed to HTMLObjects are used as provided, no copy is
-made. The caller should ensure that the passed strings remain allocated during
-the lifetime of the HTMLObject. The simplest way to do that is to allocate the
-string through the tokenizer. All strings allocated this way are deleted when
-a new page is being loaded.
-
-By deleting the HTMLObjects before deleting the tokenizer, we ensure that the
-strings will not be used after they have been deleted.
-
-
-----------------------------------------------------------------------------
-Clue nesting
-----------------------------------------------------------------------------
-
-The following parent-child relations can exist:
-
-   Parent      |   Child
----------------+----------------
-  HTMLClueV    |  HTMLClueH
-     ,,        |  HTMLClueFlow
-               |
-  HTMLClueH    |  HTMLClueV
-               |
- HTMLClueFlow  |  HTMLClueAligned
-     ,,        |  (objects)
-               |
-HTMLClueAligned|  (objects)
-               |
-
-
-All but HTMLClueH's last children should have a fixed width, 
-it's last child may have any kind of width.
-
-
-  

@@ -57,6 +57,7 @@ height, ATTR_HEIGHT
 href, ATTR_HREF
 hreflang, ATTR_HREFLANG
 hspace, ATTR_HSPACE
+html, ATTR_HTML
 http-equiv, ATTR_HTTP_EQUIV
 id, ATTR_ID
 ismap, ATTR_ISMAP

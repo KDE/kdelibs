@@ -36,7 +36,6 @@ KHTMLDecoder::KHTMLDecoder()
     codec = QTextCodec::codecForName("ISO 8859-1");
 printf("INIT HTML Codec name= %s\n", codec->name());
     enc = 0;
-    currentCodec = 0;
     body = false;
     beginning = true;
 }
