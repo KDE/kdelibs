@@ -127,7 +127,8 @@ void ServiceBrowser::removeDomain(const QString& domain)
 	d->resolvers.remove(domain);
 	for ( QValueList<RemoteService::Ptr>::Iterator it = d->m_services.begin(); 
 		     it!=d->m_services.end(); ++it)
-		if ((*it)->domain() == domain) {
+		// use section to skip possible trailing dot
+		if ((*it)->domain().section('.',0) == domain.section('.',0)) {
 		emit serviceRemoved(*it);
 			it = d->m_services.remove(it);
 		}

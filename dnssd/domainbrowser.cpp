@@ -91,7 +91,7 @@ void DomainBrowser::gotNewDomain(DNSSD::RemoteService::Ptr srv)
 	d->m_domains.append(domain);
 	emit domainAdded(domain);
 	if (d->m_recursive && !d->resolvers[domain]) {
-		Query* b = new Query("_browse._dns-sd._udp",domain);
+		Query* b = new Query("b._dns-sd._udp",domain);
 		connect(b,SIGNAL(serviceAdded(DNSSD::RemoteService::Ptr)),this,
 			SLOT(gotNewDomain(DNSSD::RemoteService::Ptr)));
 		connect(b,SIGNAL(serviceRemoved(DNSSD::RemoteService::Ptr )),this,
