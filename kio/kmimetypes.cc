@@ -1,15 +1,20 @@
+// $Id$
+
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <assert.h>
+#include <dirent.h>
+#include <errno.h>
+#include <stddef.h>
+#include <unistd.h>
+
 #include "kio_job.h"
 #include "kmimetypes.h"
 #include "kmimemagic.h"
 #include "kservices.h"
 #include "krun.h"
 #include "kautomount.h"
-#include <unistd.h>
-#include <sys/types.h>
-#include <stddef.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <errno.h>
 
 #include <qstring.h>
 #include <qmessagebox.h>

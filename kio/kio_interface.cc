@@ -484,20 +484,20 @@ bool ConnectionSignals::listEntry( UDSEntry& _entry )
 {
   int size = 0;
   char *p = m_pConnection->buffer();
-  sprintf( p, "%8x_", _entry.size() );
+  sprintf( p, "%8x_", _entry.count() );
   size += 9;
-  UDSEntry::iterator it = _entry.begin();
+  UDSEntry::Iterator it = _entry.begin();
   for( ; it != _entry.end(); it++ ) {
     // char *x = p + size;
 
-    sprintf( p + size, "%8x_", (int)it->m_uds );
+    sprintf( p + size, "%8x_", (int)((*it).m_uds));
     size += 9;
-    if ( it->m_uds & UDS_LONG ) {
-      sprintf( p + size, "%8x_", (int)it->m_long );
+    if ( (*it).m_uds & UDS_LONG ) {
+      sprintf( p + size, "%8x_", (int)((*it).m_long) );
       size += 9;
-    } else if ( it->m_uds & UDS_STRING )  {
-      strcpy( p + size, it->m_str.ascii() );
-      size += it->m_str.length();
+    } else if ( (*it).m_uds & UDS_STRING )  {
+      strcpy( p + size, (*it).m_str.ascii() );
+      size += (*it).m_str.length();
       p[ size++ ] = 0;
     }
     else
@@ -730,7 +730,7 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
 	  else
 	    assert( 0 );
 
-	  entry.push_back( atom );
+	  entry.append( atom );
 	}
 	slotListEntry( entry );
       }

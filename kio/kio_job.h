@@ -1,13 +1,12 @@
 #ifndef __kio_job_h__
 #define __kio_job_h__
 
-#include <map>
-                     
 #include "kio_base.h"
 
 #include <kurl.h>
 
 #include <qobject.h>
+#include <qmap.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qdatetime.h>
@@ -456,7 +455,7 @@ protected:
   int m_id;
   static int s_id;
 
-  static map<int,KIOJob*>* s_mapJobs;
+  static QMap<int,KIOJob*>* s_mapJobs;
   static KIOListProgressDlg* m_pListProgressDlg;
 };
 
@@ -493,7 +492,7 @@ protected:
     QString m_pass;
   };
   
-  multimap<QString,Entry> m_mapSlaves;
+  QMap<QString,Entry> m_mapSlaves;
 
   static KIOSlavePool* s_pSelf;
 };

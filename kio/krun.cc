@@ -1,3 +1,9 @@
+// $Id$
+
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "kio_job.h"
 #include "krun.h"
@@ -15,11 +21,6 @@
 #include <klocale.h>
 #include <kprotocolmanager.h>
 #include <kstddirs.h>
-#include <kdebug.h>
-
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
 
 KFileManager * KFileManager::pFileManager = 0L;
 KServiceProvider * KServiceProvider::pServiceProvider = 0L;

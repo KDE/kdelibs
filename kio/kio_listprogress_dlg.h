@@ -64,7 +64,7 @@ protected:
 
   bool b_dockWindow;
 
-  map<int,KIOJob*>* jobmap;
+  QMap<int,KIOJob*>* jobmap;
 
   void readSettings();
   void writeSettings();

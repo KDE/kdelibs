@@ -3,8 +3,7 @@
 
 #include "kio_connection.h"
 
-#include <vector>
-
+#include <qvaluelist.h>
 #include <qstringlist.h>
 
 #define CMD_NONE 0
@@ -137,7 +136,7 @@ struct UDSAtom
   unsigned long m_uds;
 };
 
-typedef vector<UDSAtom> UDSEntry;
+typedef QValueList<UDSAtom> UDSEntry;
 
 /******************
  *

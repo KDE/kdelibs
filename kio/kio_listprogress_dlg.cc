@@ -205,9 +205,9 @@ void KIOListProgressDlg::slotUpdate()
   myTabListBox->setAutoUpdate( false );
 
   // fill the list with kiojobs
-  map<int,KIOJob*>::iterator it = jobmap->begin();
+  QMap<int,KIOJob*>::Iterator it = jobmap->begin();
   for( ; it != jobmap->end(); ++it ) {
-    job = it->second;
+    job = *it;
 
     if ( job->m_iGUImode == KIOJob::LIST && job->m_cmd != CMD_NONE ) {
       QString statusString, tmp;

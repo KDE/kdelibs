@@ -33,7 +33,7 @@
 #endif      
 
 int KIOJob::s_id = 1;
-map<int,KIOJob*>* KIOJob::s_mapJobs = 0L;
+QMap<int,KIOJob*>* KIOJob::s_mapJobs = 0L;
 KIOListProgressDlg* KIOJob::m_pListProgressDlg = 0L;
 
 KIOJob::KIOJob(const char *name) : QObject(0, name), IOJob( 0L )
@@ -86,7 +86,7 @@ KIOJob::~KIOJob()
 void KIOJob::initStatic()
 {
   if ( !s_mapJobs )
-    s_mapJobs = new map<int,KIOJob*>;
+    s_mapJobs = new QMap<int,KIOJob*>;
 
   // This doesn't seem necessary, since it's built in showListGUI() (David)
   // if ( !m_pListProgressDlg )
@@ -94,13 +94,13 @@ void KIOJob::initStatic()
 }
 
 
-KIOJob* KIOJob::find( int _id )
+KIOJob *KIOJob::find( int _id )
 {
-  map<int,KIOJob*>::iterator it = s_mapJobs->find( _id );
+  QMap<int,KIOJob*>::Iterator it = s_mapJobs->find( _id );
   if ( it == s_mapJobs->end() )
     return 0L;
-  
-  return it->second;
+
+  return (*it);
 }
 
 
@@ -120,10 +120,9 @@ void KIOJob::kill( bool quiet )
 void KIOJob::clean()
 {
   assert( s_mapJobs );
-  if ( m_id )
-  {    
+  if ( m_id ) {
     assert( s_mapJobs->find( m_id ) != s_mapJobs->end() );
-    s_mapJobs->erase( m_id );
+    s_mapJobs->remove( m_id );
     m_id = 0;
   }
   
@@ -650,7 +649,7 @@ void KIOJob::slotFinished()
   // object => nobody can delete it. We delete this object at the end
   // of this function anyway.
   assert( s_mapJobs );
-  s_mapJobs->erase( m_id );
+  s_mapJobs->remove( m_id );
 
   // Put the slave back to the pool
   if ( m_pSlave )
@@ -697,7 +696,7 @@ void KIOJob::slotError( int _errid, const char *_txt )
   // object => nobody can delete it. We delete this object at the end
   // of this function anyway.
   assert( s_mapJobs );
-  s_mapJobs->erase( m_id );
+  s_mapJobs->remove( m_id );
 
   emit sigError( m_id, _errid, _txt );
   m_id = 0;
@@ -1113,12 +1112,12 @@ KIOSlavePool* KIOSlavePool::s_pSelf = 0L;
 
 Slave* KIOSlavePool::slave( const char *_protocol )
 {
-  multimap<QString,Entry>::iterator it = m_mapSlaves.find( _protocol );
+  QMap<QString,Entry>::Iterator it = m_mapSlaves.find( _protocol );
   if ( it == m_mapSlaves.end() )
     return 0L;
 
-  Slave* s = it->second.m_pSlave;
-  m_mapSlaves.erase( it );
+  Slave *s = (*it).m_pSlave;
+  m_mapSlaves.remove( it );
 
   return s;
 }
@@ -1127,11 +1126,11 @@ Slave* KIOSlavePool::slave( const char *_protocol )
 Slave* KIOSlavePool::slave( const char *_protocol, const char *_host,
 			    const char *_user, const char *_pass)
 {
-  multimap<QString,Entry>::iterator it = m_mapSlaves.begin();
+  QMap<QString,Entry>::Iterator it = m_mapSlaves.begin();
 
   for( ; it != m_mapSlaves.end(); ++it ) {    
-    if ( it->first == _protocol && it->second.m_host == _host &&
-	 it->second.m_user == _user && it->second.m_pass == _pass ){
+    if ( it.key() == _protocol && (*it).m_host == _host &&
+	 (*it).m_user == _user && (*it).m_pass == _pass ){
 	kdebug( KDEBUG_INFO, 7007, "found matching slave - total match" );
 	break;
     }
@@ -1148,8 +1147,8 @@ Slave* KIOSlavePool::slave( const char *_protocol, const char *_host,
     kdebug( KDEBUG_INFO, 7007, "found matching slave - protocol" );
   }
 
-  Slave* s = it->second.m_pSlave;
-  m_mapSlaves.erase( it );
+  Slave *s = (*it).m_pSlave;
+  m_mapSlaves.remove( it );
 
   return s;
 }
@@ -1158,7 +1157,7 @@ Slave* KIOSlavePool::slave( const char *_protocol, const char *_host,
 void KIOSlavePool::addSlave( Slave *_slave, const char *_protocol, const char *_host,
 			     const char *_user, const char *_pass )
 {
-  if ( m_mapSlaves.size() == 6 )
+  if ( m_mapSlaves.count() == 6 )
     eraseOldest();
   
   Entry e;
@@ -1167,23 +1166,23 @@ void KIOSlavePool::addSlave( Slave *_slave, const char *_protocol, const char *_
   e.m_host = _host;
   e.m_user = _user;
   e.m_pass = _pass;
-  m_mapSlaves.insert( multimap<QString,Entry>::value_type( _protocol, e ) );
+  m_mapSlaves.insert(_protocol, e );
 }
 
 
 void KIOSlavePool::eraseOldest()
 {
-  assert( m_mapSlaves.size() >= 1 );
+  assert( m_mapSlaves.count() >= 1 );
   
-  multimap<QString,Entry>::iterator oldie = m_mapSlaves.begin();
+  QMap<QString,Entry>::Iterator oldie = m_mapSlaves.begin();
 
-  multimap<QString,Entry>::iterator it = oldie;
+  QMap<QString,Entry>::Iterator it = oldie;
   it++;
   for( ; it != m_mapSlaves.end(); it++ )
-    if ( oldie->second.m_time > it->second.m_time )
+    if ( (*oldie).m_time > (*it).m_time )
       oldie = it;
   
-  m_mapSlaves.erase( oldie );
+  m_mapSlaves.remove( oldie );
 }
 
     
