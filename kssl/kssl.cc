@@ -82,6 +82,7 @@ KSSL::~KSSL() {
 
 int KSSL::seedWithEGD() {
 int rc = 0;
+  #ifdef HAVE_SSL
   if (m_cfg->useEGD() && !m_cfg->getEGDPath().isEmpty()) {
     rc = RAND_egd(m_cfg->getEGDPath().latin1());
     if (rc < 0) 
@@ -90,6 +91,7 @@ int rc = 0;
       kdDebug() << "KSSL: PRNG was seeded with " << rc 
                 << " bytes from the EGD." << endl;
   }
+  #endif
   return rc;
 }
 
