@@ -251,7 +251,11 @@ protected:
    QTimer*                 m_pDragEndTimer;
 
    bool                    m_bSwitching;
-
+   
+   KDockWidget*		   m_leftContainer;
+   KDockWidget*		   m_rightContainer;
+   KDockWidget*		   m_topContainer;
+   KDockWidget*		   m_bottomContainer;
 // methods
 public:
    /**
@@ -487,6 +491,7 @@ public slots:
    */
    virtual void switchToToplevelMode();
    virtual void finishToplevelMode();
+   void setupToolViewsForIDEALMode();
    /**
    * Docks all view windows (Windows-like)
    */
@@ -595,6 +600,12 @@ protected:
    */
    void blockClearingOfWindowMenu( bool bBlocked) { m_bClearingOfWindowMenuBlocked = bBlocked; };
 
+   void findToolViewsDockedToMain(QPtrList<KDockWidget>* list,KDockWidget::DockPosition dprtmw);
+   void dockToolViewsIntoContainers(QPtrList<KDockWidget>& widgetsToReparent,KDockWidget *container);
+   QStringList prepareIdealToTabs(KDockWidget* container);
+   void idealToolViewsToStandardTabs(QStringList widgetNames,KDockWidget::DockPosition pos);
+
+
 protected slots: // Protected slots
    /**
    * Sets the focus to this MDI view, raises it, activates its taskbar button and updates
@@ -650,6 +661,8 @@ signals:
    * Signals that a child view has been detached (undocked to desktop)
    */
    void childViewIsDetachedNow(QWidget*);
+   
+   void collapseOverlapContainers();
 };
 
 #endif //_KMDIMAINFRM_H_
