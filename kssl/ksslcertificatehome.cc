@@ -35,12 +35,19 @@ return list;
 
 
 void KSSLCertificateHome::setDefaultCertificate(QString name, QString host) {
+KSimpleConfig cfg("ksslauthmap", false);
 
+   cfg.setGroup(host);
+   cfg.writeEntry("certificate", name);
+   cfg.writeEntry("send", true);
+   cfg.writeEntry("prompt", false);
+   cfg.sync();
 }
 
 
 void KSSLCertificateHome::setDefaultCertificate(KSSLPKCS12 *cert, QString host) {
-
+   if (cert)
+      KSSLCertificateHome::setDefaultCertificate(cert->name(), host);
 }
 
 
@@ -78,23 +85,66 @@ KSimpleConfig cfg("ksslcertificates", false);
 }
 
 
-KSSLPKCS12* KSSLCertificateHome::getCertificateByHost(QString host, QString password) {
-   return KSSLCertificateHome::getCertificateByName(KSSLCertificateHome::getDefaultCertificateName(host), password);
+KSSLPKCS12* KSSLCertificateHome::getCertificateByName(QString name) {
+KSimpleConfig cfg("ksslcertificates", false);
+  if (!cfg.hasGroup(name)) return NULL;
+
+  cfg.setGroup(name);
+
+  return KSSLPKCS12::fromString(cfg.readEntry("PKCS12Base64", ""), cfg.readEntry("Password", ""));
 }
 
 
-QString KSSLCertificateHome::getDefaultCertificateName(QString host) {
-
+KSSLPKCS12* KSSLCertificateHome::getCertificateByHost(QString host, QString password, bool *send, bool *prompt) {
+   return KSSLCertificateHome::getCertificateByName(KSSLCertificateHome::getDefaultCertificateName(host, send, prompt), password);
 }
 
 
-QString KSSLCertificateHome::getDefaultCertificateName() {
+QString KSSLCertificateHome::getDefaultCertificateName(QString host, bool *send, bool *prompt) {
+KSimpleConfig cfg("ksslauthmap", false);
 
+   cfg.setGroup(host);
+   if (send) *send = cfg.readBoolEntry("send", false);
+   if (prompt) *prompt = cfg.readBoolEntry("prompt", false);
+   if (!cfg.readBoolEntry("send", false)) return QString("");
+
+return cfg.readEntry("certificate", "");
 }
 
 
-KSSLPKCS12* KSSLCertificateHome::getDefaultCertificate(QString password) {
+QString KSSLCertificateHome::getDefaultCertificateName(bool *send, bool *prompt) {
+KSimpleConfig cfg("ksslauthmap", false);
 
+   cfg.setGroup("<default>");
+   if (send) *send = cfg.readBoolEntry("send", false);
+   if (prompt) *prompt = cfg.readBoolEntry("prompt", false);
+return cfg.readEntry("defaultCertificate", "");
+}
+
+
+KSSLPKCS12* KSSLCertificateHome::getDefaultCertificate(QString password, bool *send, bool *prompt) {
+QString name = KSSLCertificateHome::getDefaultCertificateName(send, prompt);
+KSimpleConfig cfg("ksslcertificates", false);
+
+   if (name.isEmpty()) return NULL;
+
+   cfg.setGroup(name);
+   return KSSLPKCS12::fromString(cfg.readEntry("PKCS12Base64", ""), password);
+}
+
+
+
+KSSLPKCS12* KSSLCertificateHome::getDefaultCertificate(bool *send, bool *prompt) {
+QString name = KSSLCertificateHome::getDefaultCertificateName();
+KSimpleConfig cfg("ksslcertificates", false);
+
+   if (name.isEmpty()) return NULL;
+
+   cfg.setGroup(name);
+   if (send) *send = cfg.readBoolEntry("send", false);
+   if (prompt) *prompt = cfg.readBoolEntry("prompt", false);
+   return KSSLPKCS12::fromString(cfg.readEntry("PKCS12Base64", ""), 
+                                 cfg.readEntry("Password", ""));
 }
 
 

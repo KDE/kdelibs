@@ -34,14 +34,16 @@ class KSSLCertificateHome {
 public:
 
   /*
-   *  These methods dynamically allocate an object for you.  Be sure to
+   *  These methods might dynamically allocate an object for you.  Be sure to
    *  delete them when you are done.
    */
-  static KSSLPKCS12* getCertificateByHost(QString host, QString password);
+  static KSSLPKCS12* getCertificateByHost(QString host, QString password, bool* send = NULL, bool *prompt = NULL);
   static KSSLPKCS12* getCertificateByName(QString name, QString password);
-  static QString getDefaultCertificateName(QString host);
-  static QString getDefaultCertificateName();
-  static KSSLPKCS12* getDefaultCertificate(QString password);
+  static KSSLPKCS12* getCertificateByName(QString name);
+  static QString getDefaultCertificateName(QString host, bool *send = NULL, bool *prompt = NULL);
+  static QString getDefaultCertificateName(bool *send = NULL, bool *prompt = NULL);
+  static KSSLPKCS12* getDefaultCertificate(QString password, bool *send = NULL, bool *prompt = NULL);
+  static KSSLPKCS12* getDefaultCertificate(bool *send = NULL, bool *prompt = NULL);
 
 
   /*

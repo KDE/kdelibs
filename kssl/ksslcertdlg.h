@@ -38,7 +38,7 @@ public:
   KSSLCertDlg(QWidget *parent = 0, const char *name = 0, bool modal = false);
   virtual ~KSSLCertDlg();
 
-  void setup(QStringList certs, bool saveChecked = false, bool sendChecked = false);
+  void setup(QStringList certs, bool saveChecked = true, bool sendChecked = true);
 
   QString getChoice();
 

@@ -65,7 +65,7 @@ KSSLCertDlg::KSSLCertDlg(QWidget *parent, const char *name, bool modal)
 
    grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, this), 6, 6, 0, 5);
 
-   _ok = new QPushButton(i18n("&Ok"), this);
+   _ok = new QPushButton(i18n("&Continue"), this);
    grid->addWidget(_ok, 7, 5);
    connect(_ok, SIGNAL(clicked()), SLOT(accept()));
 
