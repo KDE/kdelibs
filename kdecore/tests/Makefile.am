@@ -27,7 +27,7 @@ check_PROGRAMS = kconfigtest klocaletest kprocesstest ksimpleconfigtest \
 	kstddirstest kurltest kuniqueapptest ktempfiletest krandomsequencetest \
 	kdebugtest ksocktest kstringhandlertest kcmdlineargstest kapptest \
 	kmemtest kidlservertest kidlclienttest dcopkonqtest kipctest \
-	cplusplustest kiconloadertest kresolvertest
+	cplusplustest kiconloadertest kresolvertest kmdcodectest
 
 noinst_HEADERS = kconfigtest.h klocaletest.h kprocesstest.h KIDLTest.h kipctest.h
 
