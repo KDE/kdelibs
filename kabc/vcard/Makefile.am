@@ -5,7 +5,7 @@ INCLUDES = \
 
 lib_LTLIBRARIES = libvcard.la
 
-libvcard_la_SOURCES = vCard.cpp
+libvcard_la_SOURCES = vCard-all.cpp
 
 check_PROGRAMS = testwrite testread
 
