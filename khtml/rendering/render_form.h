@@ -127,16 +127,6 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class CheckBoxWidget : public QCheckBox
-{
-public:
-    CheckBoxWidget(QWidget *parent);
-protected:
-    virtual bool event(QEvent *e);
-};
-
-// -------------------------------------------------------------------------
-
 class RenderCheckBox : public RenderButton
 {
     Q_OBJECT
@@ -157,16 +147,6 @@ public slots:
 
 // -------------------------------------------------------------------------
 
-class RadioButtonWidget : public QRadioButton
-{
-public:
-    RadioButtonWidget(QWidget *parent);
-protected:
-    virtual bool event(QEvent *e);
-};
-
-// -------------------------------------------------------------------------
-
 class RenderRadioButton : public RenderButton
 {
 public:
@@ -180,16 +160,6 @@ public:
     virtual bool handleEvent(const DOM::EventImpl&) { return false; }
 
     QRadioButton *widget() const { return static_cast<QRadioButton*>(m_widget); }
-};
-
-// -------------------------------------------------------------------------
-
-class FormButtonWidget : public QPushButton
-{
-public:
-    FormButtonWidget(QWidget *parent);
-protected:
-    virtual bool event(QEvent *e);
 };
 
 // -------------------------------------------------------------------------
@@ -330,16 +300,6 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class FileButtonWidget : public KURLRequester
-{
-public:
-    FileButtonWidget(QWidget *parent, const char *name);
- protected:
-    virtual bool event(QEvent *);
-};
-
-// -------------------------------------------------------------------------
-
 class RenderFileButton : public RenderFormElement
 {
     Q_OBJECT
@@ -402,16 +362,6 @@ protected:
     virtual bool event(QEvent *);
     virtual bool eventFilter(QObject *dest, QEvent *e);
 };
-
-class ListBoxWidget : public KListBox
-{
-public:
-    ListBoxWidget(QWidget *parent, bool multiple);
-
-protected:
-    virtual bool event(QEvent *);
-};
-
 
 // -------------------------------------------------------------------------
 

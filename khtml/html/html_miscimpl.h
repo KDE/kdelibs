@@ -113,8 +113,8 @@ public:
     // base must inherit HTMLGenericFormElementImpl or this won't work
     HTMLFormCollectionImpl(NodeImpl* _base)
         : HTMLCollectionImpl(_base, 0)
-    {};
-    ~HTMLFormCollectionImpl() { };
+    {}
+    ~HTMLFormCollectionImpl() { }
 
     virtual NodeImpl *firstItem() const;
     virtual NodeImpl *nextItem() const;

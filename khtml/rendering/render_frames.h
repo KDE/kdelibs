@@ -102,8 +102,6 @@ public:
 
     virtual void setWidget( QWidget *widget );
 
-    virtual bool eventFilter(QObject *o, QEvent *e);
-
     /**
      * Called by KHTMLPart to notify the frame object that loading the
      * part was not successfuly. (called either asyncroniously after a

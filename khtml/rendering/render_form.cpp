@@ -114,35 +114,11 @@ short RenderButton::baselinePosition( bool f ) const
 
 // -------------------------------------------------------------------------------
 
-CheckBoxWidget::CheckBoxWidget(QWidget *parent)
-    : QCheckBox(parent, "__khtml")
-{
-}
-
-bool CheckBoxWidget::event(QEvent *e)
-{
-    bool retval = QCheckBox::event(e);
-    switch(e->type())
-    {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-	return true;
-    default:
-	return retval;
-    }
-}
-
-// -------------------------------------------------------------------------------
-
 
 RenderCheckBox::RenderCheckBox(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QCheckBox* b = new CheckBoxWidget(view()->viewport());
+    QCheckBox* b = new QCheckBox(view()->viewport(), "__khtml");
     b->setAutoMask(true);
     b->setMouseTracking(true);
     setQWidget(b);
@@ -177,34 +153,10 @@ void RenderCheckBox::slotStateChanged(int state)
 
 // -------------------------------------------------------------------------------
 
-RadioButtonWidget::RadioButtonWidget(QWidget *parent)
-    : QRadioButton(parent, "__khtml")
-{
-}
-
-bool RadioButtonWidget::event(QEvent *e)
-{
-    bool retval = QRadioButton::event(e);
-    switch(e->type())
-    {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-	return true;
-    default:
-	return retval;
-    }
-}
-
-// -------------------------------------------------------------------------------
-
 RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QRadioButton* b = new RadioButtonWidget(view()->viewport());
+    QRadioButton* b = new QRadioButton(view()->viewport(), "__khtml");
     b->setMouseTracking(true);
     setQWidget(b);
 }
@@ -231,35 +183,11 @@ void RenderRadioButton::calcMinMaxWidth()
 
 // -------------------------------------------------------------------------------
 
-FormButtonWidget::FormButtonWidget(QWidget *parent)
-    : QPushButton(parent, "__khtml")
-{
-}
-
-bool FormButtonWidget::event(QEvent *e)
-{
-    bool retval = QPushButton::event(e);
-    switch(e->type())
-    {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-	return true;
-    default:
-	return retval;
-    }
-}
-
-// -------------------------------------------------------------------------------
-
 
 RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QPushButton* p = new FormButtonWidget(view()->viewport());
+    QPushButton* p = new QPushButton(view()->viewport(), "__khtml");
     setQWidget(p);
     p->setAutoMask(true);
     p->setMouseTracking(true);
@@ -463,6 +391,9 @@ void LineEditWidget::extendedMenuActivated( int id)
 
 bool LineEditWidget::event( QEvent *e )
 {
+    if (KLineEdit::event(e))
+	return true;
+
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
         QKeyEvent* ke = (QKeyEvent*) e;
         if ( ke->state() & ControlButton ) {
@@ -479,21 +410,7 @@ bool LineEditWidget::event( QEvent *e )
             }
         }
     }
-
-    bool retval = KLineEdit::event(e);
-
-    switch(e->type())
-    {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-	return true;
-    default:
-	return retval;
-    }
+    return false;
 }
 
 void LineEditWidget::mouseMoveEvent(QMouseEvent *e)
@@ -787,34 +704,10 @@ void RenderFieldset::setStyle(RenderStyle* _style)
 
 // -------------------------------------------------------------------------
 
-FileButtonWidget::FileButtonWidget(QWidget *w, const char *name)
-    : KURLRequester(w, name)
-{
-}
-
-bool FileButtonWidget::event(QEvent *e)
-{
-    bool retval = KURLRequester::event(e);
-    switch(e->type())
-    {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-	return true;
-    default:
-	return retval;
-    }
-}
-
-// -------------------------------------------------------------------------
-
 RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     : RenderFormElement(element)
 {
-    KURLRequester* w = new FileButtonWidget( view()->viewport(), "__khtml" );
+    KURLRequester* w = new KURLRequester( view()->viewport(), "__khtml" );
 
     connect(w->lineEdit(), SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(w->lineEdit(), SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
@@ -915,11 +808,8 @@ ComboBoxWidget::ComboBoxWidget(QWidget *parent)
 
 bool ComboBoxWidget::event(QEvent *e)
 {
-    bool retval = KComboBox::event(e);
-
-    if (retval)
+    if (KComboBox::event(e))
 	return true;
-
     if (e->type()==QEvent::KeyPress)
     {
 	QKeyEvent *ke = static_cast<QKeyEvent *>(e);
@@ -931,22 +821,10 @@ bool ComboBoxWidget::event(QEvent *e)
 	    ke->accept();
 	    return true;
 	default:
-	    break;
+	    return false;
 	}
     }
-
-    switch(e->type())
-    {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-	return true;
-    default:
-	return retval;
-    }
+    return false;
 }
 
 bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
@@ -972,32 +850,6 @@ bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
 	}
     }
     return KComboBox::eventFilter(dest, e);
-}
-
-// -------------------------------------------------------------------------
-
-ListBoxWidget::ListBoxWidget(QWidget *parent, bool multiple)
-    : KListBox(parent, "blah")
-{
-    setMouseTracking(true);
-    setSelectionMode(multiple ? QListBox::Extended : QListBox::Single);
-}
-
-bool ListBoxWidget::event(QEvent *e)
-{
-    bool retval = KListBox::event(e);
-    switch(e->type())
-    {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-	return true;
-    default:
-	return retval;
-    }
 }
 
 // -------------------------------------------------------------------------
@@ -1291,11 +1143,14 @@ void RenderSelect::setOptionsChanged(bool _optionsChanged)
 
 KListBox* RenderSelect::createListBox()
 {
-    KListBox *lb = new ListBoxWidget(view()->viewport(), m_multiple);
+    KListBox *lb = new KListBox(view()->viewport());
+    lb->setSelectionMode(m_multiple ? QListBox::Extended : QListBox::Single);
+    // ### looks broken
+    //lb->setAutoMask(true);
     connect( lb, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
-
-    // ### is this necessary and wanted?
+//     connect( lb, SIGNAL( clicked( QListBoxItem * ) ), this, SLOT( slotClicked() ) );
     m_ignoreSelectEvents = false;
+    lb->setMouseTracking(true);
 
     return lb;
 }
@@ -1656,36 +1511,22 @@ void TextAreaWidget::slotReplace()
 bool TextAreaWidget::event( QEvent *e )
 {
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
-	QKeyEvent* ke = (QKeyEvent*) e;
-	if ( ke->state() & ControlButton ) {
-	    switch ( ke->key() ) {
-	    case Key_Left:
-	    case Key_Right:
-	    case Key_Up:
-	    case Key_Down:
-	    case Key_Home:
-	    case Key_End:
-		ke->accept();
-	    default:
-		break;
-	    }
-	}
+        QKeyEvent* ke = (QKeyEvent*) e;
+        if ( ke->state() & ControlButton ) {
+            switch ( ke->key() ) {
+                case Key_Left:
+                case Key_Right:
+                case Key_Up:
+                case Key_Down:
+                case Key_Home:
+                case Key_End:
+                    ke->accept();
+                default:
+                break;
+            }
+        }
     }
-    
-    bool retval = KTextEdit::event( e );
-
-    switch(e->type())
-    {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-	return true;
-    default:
-	return retval;
-    }
+    return KTextEdit::event( e );
 }
 
 // -------------------------------------------------------------------------

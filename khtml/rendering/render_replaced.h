@@ -123,13 +123,16 @@ protected:
     void setQWidget(QWidget *widget);
     void resizeWidget( int w, int h );
 
-    void sendEventToWidget(QEvent *e);
-
     QWidget *m_widget;
     KHTMLView* m_view;
 
     bool m_resizePending;
-    bool m_ignoreEvents;
+
+public:
+    class EventPropagator : public QWidget {
+    public:
+        void sendEvent(QEvent *e);
+    };
 };
 
 extern bool allowWidgetPaintEvents;
