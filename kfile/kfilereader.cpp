@@ -474,6 +474,8 @@ static bool probably_slow_mounted(const char *filename)
     char		realname[MAXPATHLEN];
     int		        length, max;
 
+    memset(realname, 0, MAXPATHLEN);
+
     /* If the path contains symlinks, get the real name */
     if (realpath(filename, realname) == NULL) {
 	if (strlen(filename) >= sizeof(realname))
