@@ -543,8 +543,27 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 		emit attachFailed(QString::fromLatin1( "Could not read network connection list.\n" )+fName);
 		return false;
 	    }
-	    QTextStream t(&f);
-	    dcopSrv = t.readLine();
+            int size = QMIN( 1024, f.size() ); // protection against a huge file
+            QCString contents( size+1 );
+            if ( f.readBlock( contents.data(), size ) != size )
+            {
+               qDebug("Error reading from %s, didn't read the expected %d bytes", fName.latin1(), size);
+               // Should we abort ?
+            }
+            contents[size] = '\0';
+            int pos = contents.find('\n');
+            if ( pos == -1 ) // Shouldn't happen
+            {
+                qDebug("Only one line in dcopserver file !: %s", contents.data());
+                dcopSrv = QString::fromLatin1(contents);
+            }
+            else
+            {
+                dcopSrv = QString::fromLatin1(contents.left( pos ));
+#ifndef NDEBUG
+                qDebug("dcopserver address: %s", dcopSrv.latin1());
+#endif
+            }
 	}
 	d->serverAddr = qstrdup( const_cast<char *>(dcopSrv.latin1()) );
         bClearServerAddr = true;
@@ -553,6 +572,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
     if ((d->iceConn = IceOpenConnection(const_cast<char*>(d->serverAddr),
 					static_cast<IcePointer>(this), False, d->majorOpcode,
 					sizeof(errBuf), errBuf)) == 0L) {
+        qDebug("DCOPClient::attachInternal. Attach failed %s", errBuf ? errBuf : "");
         if (bClearServerAddr) {
            delete [] d->serverAddr;
            d->serverAddr = 0;
