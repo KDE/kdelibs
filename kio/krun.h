@@ -177,17 +177,17 @@ protected:
 };
 
 
-/*
+/**
  * This class handles the openFileManagerWindow call
- * The default implementation is to launch kfclient,
+ * The default implementation is to launch kfmclient,
  * but this behaviour has to be overriden by kfmclient (obviously !)
  * and by konqueror (which can open a window by itself)
  */ 
 class KFileManager
 {
 public:
-  KFileManager() { pFileManager = this; } ;
-  virtual ~KFileManager() {} ;
+  KFileManager() { pFileManager = this; }
+  virtual ~KFileManager() {}
 
   /**
    * Opens a file manager window for _url
@@ -195,6 +195,9 @@ public:
    */
   virtual bool openFileManagerWindow( const char *_url );
   
+  /**
+   * Call this to get the (only) instance of KFileManager
+   */
   static KFileManager * getFileManager() { 
     if (!pFileManager)
       pFileManager = new KFileManager;
