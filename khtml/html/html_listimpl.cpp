@@ -35,7 +35,7 @@ using namespace DOM;
 #include "rendering/render_list.h"
 #include "misc/htmlhashes.h"
 
-#include <stdio.h>
+#include <kdebug.h>
 
 using namespace khtml;
 

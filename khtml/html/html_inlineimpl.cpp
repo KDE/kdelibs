@@ -28,7 +28,7 @@
 #include <qstack.h>
 #include <qregexp.h>
 
-#include <stdio.h>
+#include <kdebug.h>
 
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -93,7 +93,7 @@ bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTy
 
     if(m_render->isInline() && m_render->parent()->isAnonymousBox())
     {
-	//printf("parent is anonymous!\n");
+	//kdDebug(300) << "parent is anonymous!" << endl;
 	// we need to add the offset of the anonymous box
 	_tx += m_render->parent()->xPos();
 	_ty += m_render->parent()->yPos();
@@ -109,12 +109,12 @@ bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTy
 	}
 	child = child->nextSibling();
     }
-    //printf("Anchor::mouseEvent inside=%d\n", inside);
+    //kdDebug(300) << "Anchor::mouseEvent inside=" << inside << endl;
 
     if(inside)
     {
 	// set the url
-	if(_url != 0) printf("Error in Anchor::mouseEvent, nested url's!\n");
+	if(_url != 0) kdDebug(300) << "Error in Anchor::mouseEvent, nested url's!" << endl;
 	if(target && href)
 	{
 	    DOMString s = DOMString("target://") + DOMString(target) + DOMString("/#") + DOMString(href);
@@ -236,7 +236,7 @@ void HTMLBRElementImpl::parseAttribute(Attribute *attr)
 
 void HTMLBRElementImpl::attach(KHTMLView *)
 {
-    printf("HTMLBRElementImpl::attach\n");
+    kdDebug(300) << "HTMLBRElementImpl::attach" << endl;
     m_style = document->styleSelector()->styleForElement(this);
     khtml::RenderObject *r = _parent->renderer();
     if(r)
@@ -401,7 +401,7 @@ void HTMLIFrameElementImpl::attach(KHTMLView *w)
     QString tmp;
     tmp.sprintf("0x%p", this);
     name = DOMString(tmp) + url;
-    printf("creating frame name: %s\n",name.string().ascii());
+    kdDebug(300) << "creating frame name: " << name.string() << endl;
   }
 
   w->part()->requestFrame( renderFrame, url.string(), name.string() );

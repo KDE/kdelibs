@@ -39,7 +39,7 @@
 #include "css_stylesheetimpl.h"
 #include "css/cssproperties.h"
 
-#include <stdio.h>
+#include <kdebug.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -62,7 +62,7 @@ HTMLElementImpl::HTMLElementImpl(DocumentImpl *doc) : ElementImpl(doc)
 HTMLElementImpl::~HTMLElementImpl()
 {
     delete m_styleDecls;
-    //printf("Element destructor: this=%s\n", nodeName().string().ascii());
+    //kdDebug(300) << "Element destructor: this=" << nodeName().string() << endl;
 }
 
 bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
@@ -70,7 +70,7 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
                                   NodeImpl *&innerNode, long &offset)
 {
 #ifdef EVENT_DEBUG
-    printf("%s::mouseEvent\n", nodeName().string().ascii());
+    kdDebug(300) << nodeName().string() << "::mouseEvent" << endl;
 #endif
     bool inside = false;
 
@@ -78,7 +78,7 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 
     if(m_render->parent() && m_render->parent()->isAnonymousBox())
     {
-	//printf("parent is anonymous!\n");
+	//kdDebug(300) << "parent is anonymous!" << endl;
 	// we need to add the offset of the anonymous box
 	_tx += m_render->parent()->xPos();
 	_ty += m_render->parent()->yPos();
@@ -95,7 +95,7 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 	    (_x < _tx ) || (_x > _tx + m_render->width() ) )
         {
             inside = false;
-	    //printf("not inside the block element!\n");
+	    //kdDebug(300) << "not inside the block element!" << endl;
         }
 
 
@@ -113,7 +113,7 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
     }
 
 #ifdef EVENT_DEBUG
-    if(inside) printf("    --> inside\n");
+    if(inside) kdDebug(300) << "    --> inside" << endl;
 #endif
     // dynamic HTML...
     if(inside || mouseInside()) mouseEventHandler(button, type, inside);
@@ -158,7 +158,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
     DOMString script = getAttribute(id);
     if(script.length())
     {
-	printf("emit executeScript( %s )\n", script.string().ascii());
+	kdDebug(300) << "emit executeScript( " << script.string() << " )" << endl;
 	view->part()->executeScript( script.string() );
     }
 
@@ -168,7 +168,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	if(script.length())
 	{
 	    view->part()->executeScript( script.string() );
-	    printf("emit executeScript( %s )\n", script.string().ascii());
+	    kdDebug(300) << "emit executeScript( " << script.string() << " )" << endl;
 	}
     }
 
@@ -182,7 +182,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	if(script.length())
 	{
 	    view->part()->executeScript( script.string() );
-	    printf("emit executeScript( %s )\n", script.string().ascii());
+	    kdDebug(300) << "emit executeScript( " << script.string() << " )" << endl;
 	}
     }
     setMouseInside(inside);

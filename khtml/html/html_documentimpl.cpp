@@ -34,7 +34,7 @@
 #include "dom_exception.h"
 #include "html_headimpl.h"
 
-#include <stdio.h>
+#include <kdebug.h>
 #include <kurl.h>
 #include <kglobal.h>
 
@@ -53,7 +53,7 @@ template class QStack<DOM::NodeImpl>;
 
 HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
 {
-    printf("HTMLDocumentImpl constructor this = %p\n",this);
+    kdDebug(300) << "HTMLDocumentImpl constructor this = " << this << endl;
     parser = 0;
     tokenizer = 0;
 
@@ -67,7 +67,7 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
 HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
     : DocumentImpl(v)
 {
-    printf("HTMLDocumentImpl constructor2 this = %p\n",this);
+    kdDebug(300) << "HTMLDocumentImpl constructor2 this = " << this << endl;
     parser = 0;
     tokenizer = 0;
 
@@ -82,7 +82,7 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
 {
-    printf("HTMLDocumentImpl destructor this = %p\n",this);
+    kdDebug(300) << "HTMLDocumentImpl destructor this = " << this << endl;
 }
 
 DOMString HTMLDocumentImpl::referrer() const
@@ -120,7 +120,7 @@ HTMLElementImpl *HTMLDocumentImpl::body()
 
 void HTMLDocumentImpl::open(  )
 {
-    //printf("HTMLDocumentImpl::open()\n");
+    //kdDebug(300) << "HTMLDocumentImpl::open()" << endl;
     clear();
     parser = new KHTMLParser(m_view, this);
     tokenizer = new HTMLTokenizer(parser, m_view);
@@ -264,19 +264,19 @@ void HTMLDocumentImpl::clear()
 NodeImpl *HTMLDocumentImpl::addChild(NodeImpl *newChild)
 {
 #ifdef DEBUG_LAYOUT
-    printf("Document::addChild( %s )\n", newChild->nodeName().string().ascii());
+    kdDebug(300) << "Document::addChild( " << newChild->nodeName().string() << " )" << endl;
 #endif
 
     // short check for consistency with DTD
     if(newChild->id() != ID_HTML)
     {
-	printf("AddChild failed! id=#document, child->id=%d\n", newChild->id());
+	kdDebug(300) << "AddChild failed! id=#document, child->id=" << newChild->id() << endl;
 	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
     }
 
     if(_first)
     {
-	printf("AddChild failed! id=#document, child->id=%d. Already have a HTML element!\n", newChild->id());
+	kdDebug(300) << "AddChild failed! id=#document, child->id=" << newChild->id() << ". Already have a HTML element!" << endl;
 	throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
     }
 
@@ -335,15 +335,15 @@ void HTMLDocumentImpl::setVisuallyOrdered()
 
 void HTMLDocumentImpl::createSelector()
 {
-    //printf("document::createSelector\n");
+    //kdDebug(300) << "document::createSelector" << endl;
     if(!headLoaded()) return;
-    //printf("document::createSelector2\n");
+    //kdDebug(300) << "document::createSelector2" << endl;
 
     if(m_styleSelector) delete m_styleSelector;
     m_styleSelector = new CSSStyleSelector(this);
 
     if(!parser) return;
-    //printf("document::createSelector3\n");
+    //kdDebug(300) << "document::createSelector3" << endl;
     parser->processQueue();
     // parsing is finished if the tokenizer is already deleted
     if(!tokenizer)
@@ -355,7 +355,7 @@ void HTMLDocumentImpl::createSelector()
 
 bool HTMLDocumentImpl::headLoaded()
 {
-    printf("checking for headLoaded()\n");
+    kdDebug(300) << "checking for headLoaded()" << endl;
     if(parser && !parser->parsingBody()) return false;
     //if(m_loadingSheet) return false;
 
@@ -371,37 +371,37 @@ bool HTMLDocumentImpl::headLoaded()
     test = head->firstChild();
     while(test)
     {
-	//printf("searching link\n");
+	//kdDebug(300) << "searching link" << endl;
 
 	if(test->id() == ID_LINK)
 	{
-	    printf("found link\n");
+	    kdDebug(300) << "found link" << endl;
 	    HTMLLinkElementImpl *link = static_cast<HTMLLinkElementImpl *>(test);
 	    if(link->isLoading())
 	    {
-		printf("--> not loaded\n");
+		kdDebug(300) << "--> not loaded" << endl;
 		return false;
 	    }
 	}
 	else if(test->id() == ID_STYLE)
 	{
-	    printf("found style\n");
+	    kdDebug(300) << "found style" << endl;
 	    HTMLStyleElementImpl *style = static_cast<HTMLStyleElementImpl *>(test);
 	    if(style->isLoading()) // can still load because of @import rules
 	    {
-		printf("--> not loaded\n");
+		kdDebug(300) << "--> not loaded" << endl;
 		return false;
 	    }
 	}
 	test = test->nextSibling();
     }
-    printf("head loaded\n");
+    kdDebug(300) << "head loaded" << endl;
     return true;
 }
 
 void HTMLDocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
 {
-    printf("HTMLDocument::setStyleSheet()\n");
+    kdDebug(300) << "HTMLDocument::setStyleSheet()" << endl;
     m_sheet = new CSSStyleSheetImpl(this, url);
     m_sheet->ref();
     m_sheet->parseString(sheet);

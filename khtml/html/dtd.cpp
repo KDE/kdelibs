@@ -25,7 +25,7 @@
 
 using namespace DOM;
 
-#include <stdio.h>
+#include <kdebug.h>
 
 static const ushort tag_list_0[] = {
     ID_TEXT,
@@ -313,7 +313,7 @@ bool check_array(ushort child, const ushort *tagList)
 
 bool DOM::checkChild(ushort tagID, ushort childID)
 {
-    //printf("checkChild: %d/%d\n", tagID, childID);
+    //kdDebug(300) << "checkChild: " << tagID << "/" << childID << endl;
 
     switch(tagID)
     {
@@ -497,7 +497,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
 	    return false;
 	}
     default:
-	printf("unhandled tag in dtd.cpp:checkChild(): tagID=%d!\n",tagID);
+	kdDebug(300) << "unhandled tag in dtd.cpp:checkChild(): tagID=" << tagID << "!" << endl;
 	return false;
     }
 }

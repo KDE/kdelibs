@@ -52,7 +52,7 @@
 
 #include "rendering/render_object.h"
 
-#include <stdio.h>
+#include <kdebug.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -232,7 +232,7 @@ public:
 KHTMLParser::KHTMLParser( KHTMLView *_parent,
 			  HTMLDocumentImpl *doc)
 {
-    printf("parser constructor\n");
+    kdDebug(300) << "parser constructor" << endl;
 
     HTMLWidget    = _parent;
     document      = doc;
@@ -280,7 +280,7 @@ void KHTMLParser::parseToken(Token *t)
 
     if (t->id > 2*ID_CLOSE_TAG)
     {
-      printf("Unknown tag!! tagID = %d\n", t->id);
+      kdDebug(300) << "Unknown tag!! tagID = " << t->id << endl;
       return;
     }
     if(discard_until)
@@ -292,7 +292,7 @@ void KHTMLParser::parseToken(Token *t)
 
     if(inBody && !headLoaded && !document->headLoaded())
     {
-	printf("enqueunig %d\n", t->id);
+	kdDebug(300) << "enqueunig " << t->id << endl;
 	tokenQueue.enqueue(t);
 	return;
     }
@@ -314,7 +314,7 @@ void KHTMLParser::processQueue()
 void KHTMLParser::processOneToken(Token *t)
 {
 #ifdef PARSER_DEBUG
-    printf("\n\n==> parser: processing token %d current = %d\n", t->id, current->id());
+    kdDebug(300) << "\n\n==> parser: processing token " << t->id << " current = " << current->id() << endl;
 #endif
 
     if(t->id > ID_CLOSE_TAG)
@@ -328,7 +328,7 @@ void KHTMLParser::processOneToken(Token *t)
     {
 	if(t->text.length() == 1 && t->text[0] == QChar(' '))
 	{
-	    //printf("discarding space!\n");
+	    //kdDebug(300) << "discarding space!" << endl;
 	    return;
 	}
     }
@@ -360,7 +360,7 @@ void KHTMLParser::processOneToken(Token *t)
     catch(DOMException)
     {
 	// we couldn't insert the node...
-	printf("insertNode failed current=%d, new=%d!\n", current->id(), n->id());
+	kdDebug(300) << "insertNode failed current=" << current->id() << ", new=" << n->id() << "!" << endl;
 	delete n;
     }
 
@@ -380,10 +380,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 #endif
 	NodeImpl *newNode = current->addChild(n);
 #ifdef PARSER_DEBUG
-	printf("added %s to %s, new current=%s\n",
-	       n->nodeName().string().ascii(),
-	       tmp->nodeName().string().ascii(),
-	       newNode->nodeName().string().ascii());
+	kdDebug(300) << "added " << n->nodeName().string() << " to " << tmp->nodeName().string() << ", new current=" << newNode->nodeName().string() << endl;
 #endif
 	// don't push elements without end tag on the stack
 	if(tagPriority[id] != 0)
@@ -406,9 +403,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
     catch(DOMException exception)
     {
 #ifdef PARSER_DEBUG
-	printf("\nADDING NODE FAILED!!!!\ncurrent = %s, new = %s\n\n",
-	       current->nodeName().string().ascii(),
-	       n->nodeName().string().ascii());
+	kdDebug(300) << "\nADDING NODE FAILED!!!!\ncurrent = " << current->nodeName().string() << ", new = " << n->nodeName().string() << "\n" << endl;
 #endif
 	// error handling...
 	HTMLElementImpl *e;
@@ -464,7 +459,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	case ID_MAP:
 	case ID_FORM:
 	{
-	    printf("--> badly placed element!!!\n");
+	    kdDebug(300) << "--> badly placed element!!!" << endl;
 	    NodeImpl *node = current;
 	    // in case the form is opened inside the table (<table><form ...><tr> or similar)
 	    // we need to move it outside the table.
@@ -480,7 +475,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    if(node->id() == ID_TABLE)
 	    {
 		NodeImpl *parent = node->parentNode();
-		printf("trying to add form to %d\n", parent->id());
+		kdDebug(300) << "trying to add form to " << parent->id() << endl;
 		try
 		{
 		    parent->insertBefore(n, node);
@@ -495,7 +490,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		}
 		catch(DOMException e)
 		{
-		    printf("adding form before of table failed!!!!\n");
+		    kdDebug(300) << "adding form before of table failed!!!!" << endl;
 		    throw e;
 		}
 		return;
@@ -694,7 +689,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	// if we couldn't handle the error, just rethrow the exception...
 	if(ignore)
 	{
-	    //printf("Exception handler failed in HTMLPArser::insertNode()\n");
+	    //kdDebug(300) << "Exception handler failed in HTMLPArser::insertNode()" << endl;
 	    throw exception;
 	}
 	
@@ -999,7 +994,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	break;
 
     default:
-	printf("Unknown tag %d!\n", t->id);
+	kdDebug(300) << "Unknown tag " << t->id << "!" << endl;
     }
     return n;
 }
@@ -1037,17 +1032,17 @@ void KHTMLParser::processCloseTag(Token *t)
     }
 
 #ifdef PARSER_DEBUG
-    printf("added the following childs to %s\n", current->nodeName().string().ascii());
+    kdDebug(300) << "added the following childs to " << current->nodeName().string() << endl;
     NodeImpl *child = current->firstChild();
     while(child != 0)
     {
-	printf("    %s\n", child->nodeName().string().ascii());
+	kdDebug(300) << "    " << child->nodeName().string() << endl;
 	child = child->nextSibling();
     }
 #endif
     popBlock(t->id-ID_CLOSE_TAG);
 #ifdef PARSER_DEBUG
-    printf("closeTag --> current = %s\n", current->nodeName().string().ascii());
+    kdDebug(300) << "closeTag --> current = " << current->nodeName().string() << endl;
 #endif
 }
 
@@ -1104,7 +1099,7 @@ void KHTMLParser::popOneBlock()
 #ifndef PARSER_DEBUG
     if(!Elem) return;
 #else
-    printf("popping block: %d\n", Elem->id);
+    kdDebug(300) << "popping block: " << Elem->id << endl;
 #endif
 
     if(Elem->node != current)

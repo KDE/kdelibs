@@ -38,7 +38,7 @@
 
 #include "rendering/render_form.h"
 
-#include <stdio.h>
+#include <kdebug.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -70,7 +70,7 @@ long HTMLFormElementImpl::length() const
 
 void HTMLFormElementImpl::submit(  )
 {
-    printf("submit pressed!\n");
+    kdDebug(300) << "submit pressed!" << endl;
     if(!view) return;
 
     QString formData;
@@ -79,7 +79,7 @@ void HTMLFormElementImpl::submit(  )
     RenderFormElement *current = formElements.first();
     while(current)
     {
-	printf("getting data from %p\n", current);
+	kdDebug(300) << "getting data from " << current << endl;
 
         if(current->type() == RenderFormElement::HiddenButton || current->isEnabled()) {
             QString enc = current->encoding();
@@ -95,7 +95,7 @@ void HTMLFormElementImpl::submit(  )
 	current = formElements.next();
     }
 
-    printf("formdata = %s\npost = %d\n", formData.ascii(), post);
+    kdDebug(300) << "formdata = " << formData << "\npost = " << post << endl;
     if(post)
     {
         view->part()->submitForm( "post", url.string(), formData.latin1(),
@@ -108,7 +108,7 @@ void HTMLFormElementImpl::submit(  )
 
 void HTMLFormElementImpl::reset(  )
 {
-    printf("reset pressed!\n");
+    kdDebug(300) << "reset pressed!" << endl;
 
     RenderFormElement *current = formElements.first();
     while(current)
@@ -258,7 +258,7 @@ HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
 	    return static_cast<HTMLFormElementImpl *>(p);
 	p = p->parentNode();
     }
-    printf("couldn't find form!\n");
+    kdDebug(300) << "couldn't find form!" << endl;
     return 0;
 }
 
@@ -446,24 +446,24 @@ DOMString HTMLInputElementImpl::type() const
 
 void HTMLInputElementImpl::blur(  )
 {
-    printf("HTMLInputElementImpl::blur(  )\n");
+    kdDebug(300) << "HTMLInputElementImpl::blur(  )" << endl;
 
 }
 
 void HTMLInputElementImpl::focus(  )
 {
-    printf(" HTMLInputElementImpl::focus(  )\n");
+    kdDebug(300) << " HTMLInputElementImpl::focus(  )" << endl;
 
 }
 
 void HTMLInputElementImpl::select(  )
 {
-    printf(" HTMLInputElementImpl::select(  )");
+    kdDebug(300) << " HTMLInputElementImpl::select(  )" << endl;
 }
 
 void HTMLInputElementImpl::click(  )
 {
-    printf(" HTMLInputElementImpl::click(  )");
+    kdDebug(300) << " HTMLInputElementImpl::click(  )" << endl;
 }
 
 void HTMLInputElementImpl::parseAttribute(Attribute *attr)
@@ -601,8 +601,7 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 	
     	    m_render = f;
 	    m_render->ref();
-            printf("adding %s as child of %s\n", m_render->renderName(),
-                   r->renderName());
+            kdDebug(300) << "adding " << m_render->renderName() << " as child of " << r->renderName() << endl;
 
 	    r->addChild(m_render);
 	}
@@ -700,7 +699,7 @@ DOMString HTMLSelectElementImpl::type() const
 
 long HTMLSelectElementImpl::selectedIndex() const
 {
-    printf(" HTMLSelectElementImpl::selectedIndex()\n");
+    kdDebug(300) << " HTMLSelectElementImpl::selectedIndex()" << endl;
 
     // ###
     return 0;

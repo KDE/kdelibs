@@ -43,7 +43,7 @@
 #include <kcharsets.h>
 #include <kglobal.h>
 
-#include <stdio.h>
+#include <kdebug.h>
 
 #include "kjs.h"
 
@@ -197,7 +197,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
     // which is either </script> or </style>,
     // otherwise print out every received character
 
-  //printf("HTMLTokenizer::parseListing()\n");
+  //kdDebug(300) << "HTMLTokenizer::parseListing()" << endl;
 
     while ( src.length() )
     {
@@ -225,7 +225,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 	        /* Parse scriptCode containing <script> info */
 		// ### use KHTMLView::executeScript...
 	    	KJSProxy *jscript = view->part()->jScript();
-		//printf("scriptcode is: %s\n", QString(scriptCode, scriptCodeSize).ascii());
+		//kdDebug(300) << "scriptcode is: " << QString(scriptCode, scriptCodeSize) << endl;
 	  	if(jscript) jscript->evaluate(scriptCode, scriptCodeSize);
 	    }
 	    else if (style)
@@ -422,7 +422,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, bool start)
 	    QConstString cStr(entityBuffer, entityPos);
 	    QChar res = charsets->fromEntity(cStr.string());
 	
-	    //printf("ENTITY %d, %c\n",res.unicode(), res.latin1());
+	    //kdDebug(300) << "ENTITY " << res.unicode() << ", " << res << endl;
 	
 	    if (tag && src[0] != ';' ) {
 		// Don't translate entities in tags with a missing ';'
@@ -456,7 +456,7 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, bool start)
 		if (src[0] == ';')
 		    ++src;
 	    } else {
-		printf("unknown entity!\n");
+		kdDebug(300) << "unknown entity!" << endl;
 
 		checkBuffer(10);
 		// ignore the sequence, add it to the buffer as plaintext
@@ -529,7 +529,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 	    {
 		if( tquote )
 		{
-		    printf("bad HTML in parseTag: TagName\n");
+		    kdDebug(300) << "bad HTML in parseTag: TagName" << endl;
 		    searchCount = 0;
 		    ++src;
 		    break;
@@ -542,7 +542,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 			if (searchCount == 4)
 			{
 #ifdef TOKEN_DEBUG
-			    printf("Found comment\n");
+			    kdDebug(300) << "Found comment" << endl;
 #endif
 			    // Found '<!--' sequence
 			    comment = true;
@@ -596,14 +596,14 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		    QConstString tmp(ptr, len);
 		    uint tagID = khtml::getTagID(tmp.string().ascii(), len);
 		    if (!tagID) {
-			printf("Unknown tag: \"%s\"\n", tmp.string().ascii());
+			kdDebug(300) << "Unknown tag: \"" << tmp.string() << "\"" << endl;
 			dest = buffer;
 			tag = SearchEnd; // ignore the tag
 		    }
 		    else
 		    {
 #ifdef TOKEN_DEBUG
-			printf("found tag id=%d\n", tagID);
+			kdDebug(300) << "found tag id=" << tagID << endl;
 #endif
 			if (beginTag)
 			    currToken->id = tagID;
@@ -620,7 +620,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 	    {
 		if( tquote )
 		{
-		    printf("broken HTML in parseTag: SearchAttribute \n");
+		    kdDebug(300) << "broken HTML in parseTag: SearchAttribute " << endl;
 		    tquote=NoQuote;
 		    ++src;
 		    break;
@@ -666,15 +666,13 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		    dest = buffer;
 		    if (!a) {
 			// unknown attribute, ignore
-			printf("Unknown attribute: \"%s\"\n",
-			       tmp.string().ascii());
+			kdDebug(300) << "Unknown attribute: \"" << tmp.string() << "\"" << endl;
                         *dest++ = 0x0; /* ignore */
 		    }
 		    else
 		    {
 #ifdef TOKEN_DEBUG
-			printf("Known attribute: \"%s\"\n",
-			       tmp.string().ascii());
+			kdDebug(300) << "Known attribute: \"" << tmp.string() << "\"" << endl;
 #endif
 			*dest++ = a;
 		    }		
@@ -687,7 +685,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 	    {
 		if( tquote )
 		{
-		      printf("bad HTML in parseTag: SearchEqual\n");
+		      kdDebug(300) << "bad HTML in parseTag: SearchEqual" << endl;
 		      // this is moslty due to a missing '"' somewhere before..
 		      // so let's start searching for a new tag
 		      tquote = NoQuote;
@@ -788,7 +786,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		{
 		  // additional quote. discard it, and define as end of
 		  // attribute
-		    printf("bad HTML in parseTag: Value\n");
+		    kdDebug(300) << "bad HTML in parseTag: Value" << endl;
 		    ++src;
 		    tquote = NoQuote;
 		}
@@ -845,7 +843,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		}
 		uint tagID = currToken->id;
 #ifdef TOKEN_DEBUG
-		printf("appending Tag: %d\n", tagID);
+		kdDebug(300) << "appending Tag: " << tagID << endl;
 #endif
 		bool beginTag = (tagID < ID_CLOSE_TAG);
 		if(beginTag)
@@ -894,7 +892,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 			scriptCodeSize = 0;
 			scriptCodeMaxSize = 1024;
 			parseScript(src);
-			printf("end of script\n");
+			kdDebug(300) << "end of script" << endl;
 		    }
 		}
 		else if ( tagID == ID_STYLE )
@@ -931,7 +929,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 	    }
 	    default:
 	    {
-		printf("error in parseTag! %d\n", __LINE__);
+		kdDebug(300) << "error in parseTag! " << __LINE__ << endl;
 		return;
 	    }
 	
@@ -983,7 +981,7 @@ void HTMLTokenizer::addPending()
 	    break;
 	
 	default:
-	    printf("Assertion failed: pending = %d\n", (int) pending);
+	    kdDebug(300) << "Assertion failed: pending = " << (int) pending << endl;
 	    break;
 	}
     }
@@ -1012,7 +1010,7 @@ void HTMLTokenizer::write( const QString &str )
     // we have to make this function reentrant. This is needed, because some
     // script code could call document.write(), which would add something here.
 #ifdef TOKEN_DEBUG
-    printf("Tokenizer::write(\"%s\")\n", str.ascii());
+    kdDebug(300) << "Tokenizer::write(\"" << str << "\")" << endl;
 #endif
 
     if ( str.isEmpty() || buffer == 0L )
@@ -1227,7 +1225,7 @@ void HTMLTokenizer::processToken()
     if ( dest > buffer )
     {
 	if(currToken->id)
-	    printf("Error in processToken!!!\n");
+	    kdDebug(300) << "Error in processToken!!!" << endl;
 /*
 	if(!pre && dest - buffer == 1 && *buffer == ' ')
 	{
@@ -1240,7 +1238,7 @@ void HTMLTokenizer::processToken()
     }
     else if(!currToken->id)
     {
-//      printf("Empty token!\n");
+//      kdDebug(300) << "Empty token!" << endl;
 	return;
     }
     dest = buffer;
@@ -1249,32 +1247,31 @@ void HTMLTokenizer::processToken()
     QString name = getTagName(currToken->id).string();
     QString text = currToken->text.string();
 
-    printf("Token --> %s   id = %d\n", name.ascii(), currToken->id);
+    kdDebug(300) << "Token --> " << name << "   id = " << currToken->id << endl;
     if(currToken->text != 0)
-	printf("text: \"%s\"\n", text.ascii());
+	kdDebug(300) << "text: \"" << text << "\"" << endl;
 #else
 #ifdef TOKEN_DEBUG
     QString name = getTagName(currToken->id).string();
     QString text = currToken->text.string();
 
-    printf("Token --> %s   id = %d\n", name.ascii(), currToken->id);
+    kdDebug(300) << "Token --> " << name << "   id = " << currToken->id << endl;
     if(currToken->text != 0)
-	printf("text: \"%s\"\n", text.ascii());
+	kdDebug(300) << "text: \"" << text << "\"" << endl;
     int l = currToken->attrs.length();
     if(l>0)
     {
 	int i = 0;
-	printf("Attributes: %d\n", l);
+	kdDebug(300) << "Attributes: " << l << endl;
 	while(i<l)
 	{
 	    name = currToken->attrs.name(i).string();
 	    text = currToken->attrs.value(i).string();
-	    printf("    %d %s=%s\n",currToken->attrs.id(i),name.ascii(),
-		   text.ascii());
+	    kdDebug(300) << "    " << currToken->attrs.id(i) << " " << name << "=" << text << endl;
 	    i++;
 	}
     }
-    printf("\n");
+    kdDebug(300) << endl;
 #endif
 #endif
     // pass the token over to the parser, the parser deletes the token

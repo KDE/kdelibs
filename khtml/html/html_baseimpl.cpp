@@ -38,7 +38,7 @@
 #include "misc/htmlhashes.h"
 
 #include <kurl.h>
-#include <stdio.h>
+#include <kdebug.h>
 
 using namespace DOM;
 
@@ -98,7 +98,7 @@ void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
 	break;
     case ATTR_LINK:
     {
-	printf("ATTR_LINK\n");
+	kdDebug(300) << "ATTR_LINK" << endl;
 	if(!m_style) m_style = new CSSStyleSheetImpl(this);
 	QString aStr = "a[href] { color: " + attr->value().string() + "; }";
 	m_style->parseString(aStr);
@@ -144,7 +144,7 @@ ushort HTMLFrameElementImpl::id() const
 
 void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
 {
-    printf("parsing attribute %d=%s\n", attr->id, attr->value().string().ascii());
+    kdDebug(300) << "parsing attribute " << attr->id << "=" << attr->value().string() << endl;
 
     switch(attr->id)
     {
@@ -200,7 +200,7 @@ void HTMLFrameElementImpl::attach(KHTMLView *w)
       QString tmp;
       tmp.sprintf("0x%p", this);
       name = DOMString(tmp) + url;
-      printf("creating frame name: %s\n",name.string().ascii());
+      kdDebug(300) << "creating frame name: " << name.string() << endl;
     }
 
     w->part()->requestFrame( renderFrame, url.string(), name.string() );
@@ -208,7 +208,7 @@ void HTMLFrameElementImpl::attach(KHTMLView *w)
     NodeBaseImpl::attach( w );
     return;
 #if 0
-    printf("Frame::attach\n");
+    kdDebug(300) << "Frame::attach" << endl;
     m_style = document->styleSelector()->styleForElement(this);
 
     // needed for restoring frames
@@ -223,7 +223,7 @@ void HTMLFrameElementImpl::attach(KHTMLView *w)
 	    QString tmp;
 	    tmp.sprintf("0x%p", this);
 	    name = DOMString(tmp) + url;
-	    printf("creating frame name: %s\n",name.string().ascii());
+	    kdDebug(300) << "creating frame name: " << name.string() << endl;
 	}
 	view = w->getFrame(name.string());
 	if(view)
@@ -244,8 +244,8 @@ void HTMLFrameElementImpl::attach(KHTMLView *w)
     int x,y;
     getAbsolutePosition(x, y);
 #ifdef DEBUG_LAYOUT
-    printf("adding frame at %d/%d\n", x, y);
-    printf("frame size %d/%d\n", width, descent);
+    kdDebug(300) << "adding frame at " << x << "/" << y << endl;
+    kdDebug(300) << "frame size " << width << "/" << descent << endl;
 #endif
     w->addChild(view, x, y);
     view->resize(width, descent);
@@ -258,7 +258,7 @@ void HTMLFrameElementImpl::attach(KHTMLView *w)
     if(marginHeight != -1) view->setMarginHeight(marginHeight);
 
     view->show();
-    printf("adding frame\n");
+    kdDebug(300) << "adding frame" << endl;
 #endif
 }
 
@@ -397,7 +397,7 @@ void HTMLFrameSetElementImpl::attach(KHTMLView *w)
 NodeImpl *HTMLFrameSetElementImpl::addChild(NodeImpl *child)
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(FrameSet)::addChild( %s )\n", nodeName().string().ascii(), child->nodeName().string().ascii());
+    kdDebug(300) << nodeName().string() << "(FrameSet)::addChild( " << child->nodeName().string() << " )" << endl;
 #endif
 
     return NodeBaseImpl::addChild(child);
@@ -409,7 +409,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 {
     _x-=_tx;
     _y-=_ty;
-    printf("mouseEvent\n");
+    kdDebug(300) << "mouseEvent" << endl;
 
     NodeImpl *child = _first;
     while(child)
@@ -419,13 +419,13 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 	child = child->nextSibling();
     }
 
-    qDebug( "children done.." );
+    kdDebug(300) << "children done.." << endl;
 
     if(noresize) return true;
 
     if ( !m_render || !m_render->layouted() )
     {
-      qDebug( "ugh, not layouted or not attached?!" );
+      kdDebug(300) << "ugh, not layouted or not attached?!" << endl;
       return true;
     }
 
@@ -433,7 +433,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 
     /*
     {
-      printf("mouseEvent:check\n");
+      kdDebug(300) << "mouseEvent:check" << endl;
 	
 	hSplit = -1;
 	vSplit = -1;
@@ -446,7 +446,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 	    if(_x >= pos && _x <= pos+m_border)
 	    {
 		if(vSplitVar && vSplitVar[c-1] == true) vSplit = c-1;
-		printf("vsplit!\n");
+		kdDebug(300) << "vsplit!" << endl;
 		break;
 	    }
 	    pos += m_colWidth[c] + m_border;
@@ -457,13 +457,13 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 	    if( _y >= pos && _y <= pos+m_border)
 	    {
 		if(hSplitVar && hSplitVar[r-1] == true) hSplit = r-1;
-		printf("hsplitvar = %p\n", hSplitVar);
-		printf("hsplit!\n");
+		kdDebug(300) << "hsplitvar = " << hSplitVar << endl;
+		kdDebug(300) << "hsplit!" << endl;
 		break;
 	    }
 	    pos += m_rowHeight[r] + m_border;
 	}
-	printf("%d/%d\n", hSplit, vSplit);
+	kdDebug(300) << hSplit << "/" << vSplit << endl;
 
 	QCursor cursor;
 	if(hSplit != -1 && vSplit != -1)
@@ -499,19 +499,19 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 
 	if(hSplit)
 	{
-	    printf("split xpos=%d\n", _x);
+	    kdDebug(300) << "split xpos=" << _x << endl;
 	    int delta = vSplitPos - _x;
 	    m_colWidth[vSplit] -= delta;
 	    m_colWidth[vSplit+1] += delta;
 	}	
 	if(vSplit)
 	{
-	    printf("split ypos=%d\n", _y);
+	    kdDebug(300) << "split ypos=" << _y << endl;
 	    int delta = hSplitPos - _y;
 	    m_rowHeight[hSplit] -= delta;
 	    m_rowHeight[hSplit+1] += delta;
 	}
-	qDebug( "starting relayout!" );
+	kdDebug(300) << "starting relayout!" << endl;
 	m_render->layout( true );
     }
     */
