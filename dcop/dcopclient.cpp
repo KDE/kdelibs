@@ -175,7 +175,6 @@ bool DCOPClient::attach()
 
 bool DCOPClient::attachInternal( bool registerAsAnonymous )
 {
-    qDebug("attach");
     char errBuf[1024];
 
     if ( isAttached() )
