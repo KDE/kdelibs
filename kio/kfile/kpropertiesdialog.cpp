@@ -181,6 +181,8 @@ KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
   : KDialogBase (KDialogBase::Tabbed,
+                 // TODO: replace <never used> with "Properties for 1 item". It's very confusing how it has to be translated otherwise
+                 // (empty translation before the "\n" is not allowed by msgfmt...)
 		 _items.count()>1 ? i18n( "<never used>","Properties for %n Selected Items",_items.count()) :
 		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_items.first()->url().fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
