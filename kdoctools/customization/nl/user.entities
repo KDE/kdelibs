@@ -19,7 +19,7 @@
 <!ENTITY Bram.Schoenmakers    '<othercredit role="translator"><firstname>Bram</firstname><surname>Schoenmakers</surname><affiliation><address><email>bram_s@softhome.net</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Tijmen.Baarda '<othercredit role="translator"><firstname>Tijmen</firstname><surname>Baarda</surname><affiliation><address><email>tijmenbaarda@tijgerweb.net</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Jo.Vermeulen '<othercredit role="translator"><firstname>Jo</firstname><surname>Vermeulen</surname><affiliation><address><email>jo@lumumba.luc.ac.be</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
-<!ENTITY Frank.Mulder '<othercredit role="translator"><firstname>Frank</firstname><surname>Mulder</surname><affiliation><address><email>frankmulder2003@yahoo.com</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Frank.Mulder '<othercredit role="translator"><firstname>Frank</firstname><surname>Mulder</surname><affiliation><address><email>frank@kde.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Jaap.Woldringh '<othercredit role="translator"><firstname>Jaap</firstname><surname>Woldringh</surname><affiliation><address><email>jjh.woldringh@planet.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY kde.nl.groep "<email>i18n@kde.nl</email>">
 
@@ -88,4 +88,5 @@
 <!ENTITY kcontrolcenter "<application>KDE Configuratiecentrum</application>">
 <!ENTITY kcc     "<application>KDE Configuratiecentrum</application>">
 <!ENTITY khc     "<application>KDE Helpcentrum</application>">
+<!ENTITY kic     "<application>KDE Informatiecentrum</application>">
 
