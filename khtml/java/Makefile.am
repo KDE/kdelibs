@@ -14,7 +14,9 @@ METASOURCES = AUTO
 libkjava_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined
 libkjava_la_LIBADD = $(LIB_KPARTS)
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/khtml $(all_includes) 
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/khtml \
+	-I$(top_srcdir)/kio/kssl -I$(top_builddir)/kio/kssl \
+	$(all_includes) 
 
 kjavadata_DATA = kjava.jar kjava.policy
 kjavadatadir = $(kde_datadir)/kjava/
