@@ -35,7 +35,6 @@ class KShortcut;
  * @ref KAccelShortcutList and @ref KStdAccel::ShortcutList. It gives
  * you an unified interface for accessing the accelerator lists
  * of @ref KAccel (using @KAccelShortcutList), 
- * @ref KAccelActions (using @KAccelShortcutList), 
  * @ref KGlobalAccel (using @KAccelShortcutList), and 
  * @ref KStdAccel (using @ref KStdAccel::ShortcutList).
  *
@@ -185,8 +184,8 @@ class KAccelActions;
 class KGlobalAccel;
 
 /**
- * @ref KShortcutList implementation to access @ref KAccel, @ref KGlobalAccel 
- * and @ref KAccelActions lists.
+ * @ref KShortcutList implementation to access @ref KAccel and 
+ * @ref KGlobalAccel lists.
  */
 class KAccelShortcutList : public KShortcutList
 {
@@ -205,6 +204,7 @@ class KAccelShortcutList : public KShortcutList
 	KAccelShortcutList( KGlobalAccel* accel );
 
         /**
+	 * @internal
 	 * Creates a new @ref KShortcutList that accesses the given 
 	 * @ref KAccelActions collection.
 	 * @param accel the actions to access
