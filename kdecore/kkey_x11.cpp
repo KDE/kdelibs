@@ -54,6 +54,8 @@ static int calcModExplicit( int keyModX );
 static void calcKeySym( KKeySequence& key );
 static int calcKeyQt( int keySymX, int keyModX );
 
+static int getSymQtEquiv( int keySymX );
+static int getSymXEquiv( int keySymQt );
 static void Initialize();
 static void readModifierMapping();
 static void readKeyMappingSub( uchar keyCodeX, uint keySymX, uint keyModX );
@@ -67,6 +69,85 @@ static void readKeyMapping();
 #define BREAK_CODE	114
 
 const int _XMAX = 4;
+
+struct TransKey {
+	uint keySymQt;
+	uint keySymX;
+};
+
+// These are the X equivalents to the Qt keycodes 0x1000 - 0x1026
+static const TransKey g_rgQtToSymX[] =
+{
+	{ Qt::Key_Escape,     XK_Escape },
+	{ Qt::Key_Tab,        XK_Tab },
+	{ Qt::Key_Backtab,    XK_ISO_Left_Tab },
+	{ Qt::Key_Backspace,  XK_BackSpace },
+	{ Qt::Key_Return,     XK_Return },
+	{ Qt::Key_Enter,      XK_KP_Enter },
+	{ Qt::Key_Insert,     XK_Insert },
+	{ Qt::Key_Delete,     XK_Delete },
+	{ Qt::Key_Pause,      XK_Pause },
+	{ Qt::Key_Print,      XK_Print },
+	{ Qt::Key_SysReq,     XK_Sys_Req },
+	{ Qt::Key_Home,       XK_Home },
+	{ Qt::Key_End,        XK_End },
+	{ Qt::Key_Left,       XK_Left },
+	{ Qt::Key_Up,         XK_Up },
+	{ Qt::Key_Right,      XK_Right },
+	{ Qt::Key_Down,       XK_Down },
+	{ Qt::Key_Prior,      XK_Prior },
+	{ Qt::Key_Next,       XK_Next },
+	//{ Qt::Key_Shift,      0 },
+	//{ Qt::Key_Control,    0 },
+	//{ Qt::Key_Meta,       0 },
+	//{ Qt::Key_Alt,        0 },
+	{ Qt::Key_CapsLock,   XK_Caps_Lock },
+	{ Qt::Key_NumLock,    XK_Num_Lock },
+	{ Qt::Key_ScrollLock, XK_Scroll_Lock },
+	{ Qt::Key_F1,         XK_F1 },
+	{ Qt::Key_F2,         XK_F2 },
+	{ Qt::Key_F3,         XK_F3 },
+	{ Qt::Key_F4,         XK_F4 },
+	{ Qt::Key_F5,         XK_F5 },
+	{ Qt::Key_F6,         XK_F6 },
+	{ Qt::Key_F7,         XK_F7 },
+	{ Qt::Key_F8,         XK_F8 },
+	{ Qt::Key_F9,         XK_F9 },
+	{ Qt::Key_F10,        XK_F10 },
+	{ Qt::Key_F11,        XK_F11 },
+	{ Qt::Key_F12,        XK_F12 },
+	{ Qt::Key_F13,        XK_F13 },
+	{ Qt::Key_F14,        XK_F14 },
+	{ Qt::Key_F15,        XK_F15 },
+	{ Qt::Key_F16,        XK_F16 },
+	{ Qt::Key_F17,        XK_F17 },
+	{ Qt::Key_F18,        XK_F18 },
+	{ Qt::Key_F19,        XK_F19 },
+	{ Qt::Key_F20,        XK_F20 },
+	{ Qt::Key_F21,        XK_F21 },
+	{ Qt::Key_F22,        XK_F22 },
+	{ Qt::Key_F23,        XK_F23 },
+	{ Qt::Key_F24,        XK_F24 },
+	{ Qt::Key_F25,        XK_F25 },
+	{ Qt::Key_F26,        XK_F26 },
+	{ Qt::Key_F27,        XK_F27 },
+	{ Qt::Key_F28,        XK_F28 },
+	{ Qt::Key_F29,        XK_F29 },
+	{ Qt::Key_F30,        XK_F30 },
+	{ Qt::Key_F31,        XK_F31 },
+	{ Qt::Key_F32,        XK_F32 },
+	{ Qt::Key_F33,        XK_F33 },
+	{ Qt::Key_F34,        XK_F34 },
+	{ Qt::Key_F35,        XK_F35 },
+	{ Qt::Key_Super_L,    XK_Super_L },
+	{ Qt::Key_Super_R,    XK_Super_R },
+	{ Qt::Key_Menu,       XK_Menu },
+	{ Qt::Key_Hyper_L,    XK_Hyper_L },
+	{ Qt::Key_Hyper_R,    XK_Hyper_R },
+	{ Qt::Key_Help,       XK_Help }
+	//{ Qt::Key_Direction_L, XK_Direction_L,
+	//{ Qt::Key_Direction_R, XK_Direction_R
+};
 
 struct KKeySymX
 {
@@ -253,9 +334,21 @@ KKeySequences KKeySequence::stringToKeys( QString sKey )
 		//  it on our keyboard (such as 'agrave' on an EN layout).
 		else {
 			key.m_keySymExplicit = XStringToKeysym( sKeySym.latin1() );
-			key.m_keyCombQtExplicit = ::calcKeyQt( key.m_keySymExplicit, key.m_keyModExplicit );
-			if( key.m_keySymExplicit )
+			if( !key.m_keySymExplicit )
+				key.m_keySymExplicit = XStringToKeysym( (sKeySym[0].upper() + sKeySym.mid(1)).latin1() );
+			if( !key.m_keySymExplicit ) {
+				for( int i = 0; i < NB_KEYS; i++ ) {
+					if( qstricmp( KKEYS[i].name, sKeySym.latin1() ) == 0 ) {
+						key.m_keySymExplicit = KKEYS[i].code;
+						break;
+					}
+				}
+			}
+
+			if( key.m_keySymExplicit ) {
+				key.m_keyCombQtExplicit = ::calcKeyQt( key.m_keySymExplicit, key.m_keyModExplicit );
 				rgKeys.push_back( key );
+			}
 		}
 	}
 
@@ -386,18 +479,9 @@ static int calcKeyQt( int keySymX, int keyModExplicit )
 		else
 			keyCombQt = keySymX;
 	} else {
-		if( g_mapSymToInfo.contains( keySymX ) ) {
-			const QString& sName = g_mapSymToInfo[keySymX].sName;
-			for( int i = 0; i < NB_KEYS; i++ ) {
-				if( qstricmp( sName.latin1(), KKEYS[i].name ) == 0 ) {
-					keyCombQt = KKEYS[i].code;
-					break;
-				}
-			}
-			if( !keyCombQt )
-				kdWarning(125) << "Unable to find Qt equivalent of X's '" << sName << "'" << endl;
-		} else
-			kdWarning(125) << "g_mapSymToInfo does not contain keySym 0x" << QString::number(keySymX, 16) << endl;
+		keyCombQt = getSymQtEquiv( keySymX );
+		if( !keyCombQt )
+			kdWarning(125) << "No Qt equivalent for X's '" << XKeysymToString(keySymX) << "'" << endl;
 	}
 
 	if( keyCombQt ) {
@@ -445,11 +529,6 @@ struct ModKeyXQt
 	uint		keyModMaskX;
 };
 
-struct TransKey {
-	uint keySymQt;
-	uint	keySymX;
-};
-
 static ModKeyXQt g_aModKeys[] =
 {
 	{ "Shift",	Qt::SHIFT,	ShiftMask },
@@ -463,15 +542,27 @@ static ModKeyXQt g_aModKeys[] =
 	{ 0, 0, 0 }
 };
 
-static const TransKey g_aTransKeySyms[] = {
-	{ Qt::Key_Backspace,	XK_BackSpace },
-	{ Qt::Key_Backtab,	XK_ISO_Left_Tab },
-	{ Qt::Key_Enter,	XK_KP_Enter },
-	{ Qt::Key_SysReq,	XK_Sys_Req },
-	{ Qt::Key_CapsLock,	XK_Caps_Lock },
-	{ Qt::Key_NumLock,	XK_Num_Lock },
-	{ Qt::Key_ScrollLock,	XK_Scroll_Lock }
-};
+static int getSymQtEquiv( int keySymX )
+{
+	if( keySymX < 0x1000 )
+		return keySymX;
+
+	for( uint i = 0; i < sizeof(g_rgQtToSymX)/sizeof(TransKey); i++ )
+		if( g_rgQtToSymX[i].keySymX == (uint) keySymX )
+			return g_rgQtToSymX[i].keySymQt;
+	return 0;
+}
+
+static int getSymXEquiv( int keySymQt )
+{
+	if( keySymQt < 0x1000 )
+		return keySymQt;
+
+	for( uint i = 0; i < sizeof(g_rgQtToSymX)/sizeof(TransKey); i++ )
+		if( g_rgQtToSymX[i].keySymQt == (uint) keySymQt )
+			return g_rgQtToSymX[i].keySymX;
+	return 0;
+}
 
 static void Initialize()
 {
@@ -515,8 +606,21 @@ static void readModifierMapping()
 
 static void readKeyMappingSub( uchar keyCodeX, uint keySymX, uint keyModX )
 {
-	QString sName = XKeysymToString( keySymX );
 	bool bInsert = true;
+
+	QString sName;
+	for( uint i = 0; i < sizeof(g_rgQtToSymX)/sizeof(TransKey); i++ ) {
+		if( g_rgQtToSymX[i].keySymX == (uint) keySymX ) {
+			int keyQt = g_rgQtToSymX[i].keySymQt;
+			for( i = 0; i < NB_KEYS; i++ ) {
+				if( KKEYS[i].code == keyQt )
+					sName = KKEYS[i].name;
+			}
+			break;
+		}
+	}
+	if( sName.isEmpty() )
+		sName = XKeysymToString( keySymX );
 
 	// If this is a unicode character,
 	if( keySymX < 0x3000 ) {
@@ -655,9 +759,15 @@ void KKeyX11::keyEventXToKeyX( const XEvent *pEvent, uchar *pKeyCodeX, uint *pKe
 
 uint KKeyX11::keyEventXToKeyQt( const XEvent *pEvent )
 {
+	kdDebug(125) << "KKeyX11::keyEventXToKeyQt()" << endl;
 	uint keySymX, keyModX;
 	keyEventXToKeyX( pEvent, 0, &keySymX, &keyModX );
-	return keySymXToKeyQt( keySymX, keyModX );
+	int keyQt = keySymXToKeyQt( keySymX, keyModX );
+	kdDebug(125) << "\tkeySymX = " << QString::number(keySymX,16)
+		<< " keyModX = " << QString::number(keyModX,16)
+		<< " keyQt = " << QString::number(keyQt,16)
+		<< " SymString = " << XKeysymToString(keySymX) << endl;
+	return keyQt;
 }
 
 int KKeyX11::keySymXIndex( uint keySym )
@@ -724,14 +834,8 @@ uint KKeyX11::keySymXToKeyQt( uint keySymX, uint keyModX )
 		}
 	}
 
-	if( !keyCombQt ) {
-		for( uint i = 0; i < sizeof(g_aTransKeySyms)/sizeof(TransKey); i++ ) {
-			if( keySymX == g_aTransKeySyms[i].keySymX ) {
-				keyCombQt = g_aTransKeySyms[i].keySymQt;
-				break;
-			}
-		}
-	}
+	if( !keyCombQt ) 
+		keyCombQt = getSymQtEquiv( keySymX );
 
 	if( !keyCombQt ) {
 		if( keySymX == XK_Sys_Req )
@@ -795,15 +899,8 @@ void KKeyX11::keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeyS
 				keySymX = XStringToKeysym( psKeySym );
 		}
 
-		if( keySymX == 0 ) {
-			for( uint i = 0; i < sizeof(g_aTransKeySyms)/sizeof(TransKey); i++ )
-			{
-				if( keySymQt == g_aTransKeySyms[i].keySymQt ) {
-					keySymX = g_aTransKeySyms[i].keySymX;
-					break;
-				}
-			}
-		}
+		if( keySymX == 0 )
+			keySymX = getSymXEquiv( keySymQt );
 	}
 
 	if( keySymX != 0 ) {
