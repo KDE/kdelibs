@@ -99,7 +99,7 @@ public:
 		  KDialogBase::DialogType dialogType = KDialogBase::IconList,
 		  KConfig *kconfig=NULL, 
 		  KDialogBase::ButtonCode dialogButtons = 
-		    KDialogBase::Default | KDialogBase::Ok | KDialogBase::Apply | KDialogBase::Cancel | KDialogBase::Help,
+		    (KDialogBase::ButtonCode) (KDialogBase::Default | KDialogBase::Ok | KDialogBase::Apply | KDialogBase::Cancel | KDialogBase::Help),
 		  bool modal=false );
   /**
    * Deconstructor, removes name from the list of open dialogs.
