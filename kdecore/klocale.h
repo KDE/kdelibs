@@ -974,7 +974,7 @@ private:
    * @deprecated
    * @return True
    */
-  bool setCharset(const QString & charset) { return true; }
+  bool setCharset(const QString & charset) { Q_UNUSED(charset); return true; }
 
   /**
    * @deprecated
