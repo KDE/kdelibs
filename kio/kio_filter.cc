@@ -26,7 +26,7 @@
 
 #include <kdebug.h>
 
-Filter::Filter( const char *_cmd , char **arguments)
+Filter::Filter( const char *_cmd , const char **arguments)
 {
   unsigned int i=0;
   // Indicate an error;
@@ -61,7 +61,7 @@ Filter::Filter( const char *_cmd , char **arguments)
     }
     char *cmd = strdup( _cmd );
     argv[0] = cmd;
-    execv( argv[0], argv );
+    execvp( argv[0], argv );
     fprintf( stderr, "Filter Slave: exec failed for %s ...!\n", _cmd );
     _exit( 0 );
   }

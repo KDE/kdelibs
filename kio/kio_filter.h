@@ -8,7 +8,7 @@ public:
   // If arguments is given it needs to be null terminated (well
   // the last element of the array needs to be null, otherwise
   // odd things WILL happen.
-  Filter( const char *_cmd, char **arguments=0 );
+  Filter( const char *_cmd, const char **arguments=0 );
   virtual ~Filter();
  
   int pid() { return m_pid; }
