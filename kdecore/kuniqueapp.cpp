@@ -63,7 +63,7 @@ bool KUniqueApplication::process(const QCString &fun, const QByteArray &data,
     return false;
 }
 
-void KUniqueApplication::newInstance(QValueList<QCString> params)
+void KUniqueApplication::newInstance(QValueList<QCString> /*params*/)
 {
   return; // do nothing in default implementation
 }
