@@ -132,11 +132,22 @@ bool DriverItem::updateConflict()
 		}
 		else
 		{
-			if ( isSelected() )
-				updateText();
 			m_conflict = (m_item->conflict());
 		}
 	}
 	repaint();
 	return m_conflict;
+}
+
+void DriverItem::updateTextRecursive()
+{
+	if ( m_item->isOption() )
+		updateText();
+
+	DriverItem *item = static_cast<DriverItem*>( firstChild() );
+	while ( item )
+	{
+		item->updateTextRecursive();
+		item = static_cast<DriverItem*>( item->nextSibling() );
+	}
 }

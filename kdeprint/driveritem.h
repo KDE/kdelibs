@@ -33,6 +33,7 @@ public:
 	DriverItem(QListViewItem *parent, QListViewItem *after, DrBase *item);
 
 	void updateText();
+	void updateTextRecursive();
 	DrBase* drItem() const 	{ return m_item; }
 	bool hasConflict()	{ return m_conflict; }
 	bool updateConflict();

@@ -84,6 +84,7 @@ void DriverView::setOptions(const QMap<QString,QString>& opts)
 	if (m_driver)
 	{
 		m_driver->setOptions(opts);
+		static_cast<DriverItem*>( m_view->firstChild() )->updateTextRecursive();
 		slotChanged();
 		m_optview->slotItemSelected(m_view->currentItem());
 	}
