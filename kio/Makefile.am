@@ -32,7 +32,7 @@ libkio_la_SOURCES = userpaths.cc kio_connection.cc kio_base.cc kio_rename_dlg.cc
 	kservices.cc kmimetypes.cc kio_cache.cc kio_netaccess.cc \
 	kpixmapcache.cc kuserprofile.cc kio_error.cc kregfactories.cc \
 	kio_job.cc kregistry.cc kio_paste.cc kio_openwith.cc \
-	kservicetype.cc
+	kservicetype.cc ktar.cc
 
 libkio_la_METASOURCES = kautomount.moc kdirwatch.moc kio_cache.moc \
 	kio_job.moc kio_openwith.moc kio_pass_dlg.moc \
@@ -48,7 +48,7 @@ include_HEADERS = kio_connection.h kio_base.h kio_rename_dlg.h \
 	kio_cache.h kio_netaccess.h kpixmapcache.h kuserprofile.h \
 	kio_error.h kregfactories.h kio_job.h kregistry.h \
 	kio_paste.h kio_openwith.h userpaths.h \
-	kservicetype.h ktypecode.h
+	kservicetype.h ktar.h ktypecode.h 
 
 magic_DATA = magic
 magicdir = $(kde_mimedir)
