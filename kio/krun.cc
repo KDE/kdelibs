@@ -400,10 +400,14 @@ void KRun::slotTimeout()
     return;
   }
   
-  if ( m_bFault )
-    emit error();
-  if ( m_bFinished )
-    emit finished();
+  if ( m_bFault ){
+      emit error();
+      emit errorRef(this);
+  }
+  if ( m_bFinished ){
+      emit finished();
+      emit finishedRef(this);
+  }
 
   if ( m_bScanFile )
   {
@@ -532,10 +536,14 @@ void KRun::foundMimeType( const char *_type )
     return;
   }
 
-  if (KRun::runURL( m_strURL, _type ))
-    emit finished(); // tell owner that we finished (David)
-  else
-    emit error();
+  if (KRun::runURL( m_strURL, _type )){
+      emit finished(); // tell owner that we finished (David)
+      emit finishedRef(this);
+  }
+  else{
+      emit error();
+      emit errorRef(this);
+  }
 
   if ( m_bAutoDelete )
   {
