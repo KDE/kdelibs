@@ -3,14 +3,15 @@ as it was before on CORBA.
 
 1. KDE2.0
 
-- check if we need any more private d pointers
-- tune Buffer again
+<everything should really be done now>
+
+2. KDE2.1 (or earlier?)
 
 => optimization, not necessary but pretty
 - merge quick float -> integer conversion
 - get rid of additional Synth_MULTI_ADD pair in soundserver
 
-2. To get everything up again
+- change text in the kcmarts module regarding latency, it's plain confusing
 
 - ensure DynamicCast(<some null object>) == Object::null()
 - support multiple artsd instances on one computer (like multiple displays),
