@@ -100,7 +100,7 @@ QBitmap xBmp;
 QIntDict<GradientSet> gDict;
 
 static const int itemFrame       = 1;
-static const int itemHMargin     = 3;
+static const int itemHMargin     = 6;
 static const int itemVMargin     = 0;
 static const int arrowHMargin    = 6;
 static const int rightBorder     = 12;
@@ -362,6 +362,11 @@ void KeramikStyle::unPolish(QWidget* widget)
 	}
 
 	KStyle::unPolish(widget);
+}
+
+void KeramikStyle::polish( QPalette& palette )
+{
+//	Keramik::PixmapLoader::the().setColor( red);//palette.color( QPalette::Normal, QColorGroup::Button ) );
 }
 
 // This function draws primitive elements as well as their masks.
@@ -643,10 +648,16 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		}
 
 
+		case PE_PanelPopup:
+			p->setPen( cg.shadow() );
+			p->setBrush( cg.background().light() );
+			p->drawRect( r );
+			p->fillRect( visualRect( QRect( x + 1, y + 1, 23, h - 2 ), r ), cg.mid() );
+			break;
+
 			// GENERAL PANELS
 			// -------------------------------------------------------------------
 		case PE_Panel:
-		case PE_PanelPopup:
 		case PE_WindowFrame:
 		{
 			bool sunken  = flags & Style_Sunken;
@@ -1013,12 +1024,13 @@ void KeramikStyle::drawControl( ControlElement element,
 			const QTabBar* tabBar = static_cast< const QTabBar* >( widget );
 
 			QString name;
-			if ( tabBar->shape() == QTabBar::RoundedAbove ||
-			     tabBar->shape() == QTabBar::TriangularAbove ) name = "tab-top-";
-			else name = "tab-bottom-";
+			bool bottom = tabBar->shape() == QTabBar::RoundedBelow ||
+			              tabBar->shape() == QTabBar::TriangularBelow;
+			if ( bottom ) name = "tab-bottom-";
+			else name = "tab-top-";
 
 			if ( flags & Style_Selected )
-				Keramik::RectTilePainter( name + "active", 3, 2 ).draw( p, x, y, w, h+1 );
+				Keramik::RectTilePainter( name + "active", 3, 3 ).draw( p, x, y, w, h+1 );
 			else
 			{
 				Keramik::TabPainter::Mode mode;
@@ -1026,7 +1038,10 @@ void KeramikStyle::drawControl( ControlElement element,
 				if ( index == 0 ) mode = Keramik::TabPainter::First;
 				else if ( index == tabBar->count() - 1 ) mode = Keramik::TabPainter::Last;
 				else mode = Keramik::TabPainter::Middle;
-				Keramik::TabPainter( name + "inactive", mode ).draw( p, x, y + 4, w, h - 4 );
+				if ( bottom )
+					Keramik::TabPainter( name + "inactive", mode, bottom ).draw( p, x, y, w, h - 4 );
+				else
+					Keramik::TabPainter( name + "inactive", mode, bottom ).draw( p, x, y + 4, w, h - 4 );
 			}
 
 			break;
@@ -1061,14 +1076,17 @@ void KeramikStyle::drawControl( ControlElement element,
 		// POPUPMENU ITEM
 		// -------------------------------------------------------------------
 		case CE_PopupMenuItem: {
-			const QPopupMenu *popupmenu = (const QPopupMenu *) widget;
+			const QPopupMenu *popupmenu = static_cast< const QPopupMenu * >( widget );
+			QRect bar = visualRect( QRect( x + 1, y, 23, h ), r ),
+			      main = visualRect( QRect( x + 24, y, w - 24, h ), r );
 
 			QMenuItem *mi = opt.menuItem();
-			if ( !mi ) {
+			if ( !mi )
+			{
 				// Don't leave blank holes if we set NoBackground for the QPopupMenu.
 				// This only happens when the popupMenu spans more than one column.
-				if (! (widget->erasePixmap() && !widget->erasePixmap()->isNull()) )
-					p->fillRect(r, cg.brush(QColorGroup::Button) );
+				if (! ( widget->erasePixmap() && !widget->erasePixmap()->isNull() ) )
+					p->fillRect( main, cg.brush( QColorGroup::Button ) );
 				break;
 			}
 
@@ -1079,36 +1097,36 @@ void KeramikStyle::drawControl( ControlElement element,
 			bool active     = flags & Style_Active;
 			bool etchtext   = styleHint( SH_EtchDisabledText );
 			bool reverse    = QApplication::reverseLayout();
-			int x, y, w, h;
-			r.rect( &x, &y, &w, &h );
 
 			if ( checkable )
 				checkcol = QMAX( checkcol, 20 );
 
-			// Are we a menu item separator?
-			if ( mi->isSeparator() ) {
-				p->setPen( cg.dark() );
-				p->drawLine( x, y, x+w, y );
-				p->setPen( cg.light() );
-				p->drawLine( x, y+1, x+w, y+1 );
-				break;
-			}
-
 			// Draw the menu item background
 			if ( active )
-				qDrawShadePanel( p, x, y, w, h, cg, true, 1,
+				qDrawShadePanel( p, main.x(), main.y(), main.width(), main.height(), cg, true, 1,
 				                 &cg.brush(QColorGroup::Midlight) );
 			// Draw the transparency pixmap
 			else if ( widget->erasePixmap() && !widget->erasePixmap()->isNull() )
-				p->drawPixmap( x, y, *widget->erasePixmap(), x, y, w, h );
+				p->drawPixmap( main.topLeft(), *widget->erasePixmap(), main );
 			// Draw a solid background
 			else
-				p->fillRect( r, cg.button() );
+				p->fillRect( main, cg.background().light() );
+			// Are we a menu item separator?
 
+			if ( mi->isSeparator() )
+			{
+				p->setPen( cg.shadow() );
+				p->drawLine( main.x() + 1, main.y(), main.width() - 1, main.y() );
+				break;
+			}
+
+			p->fillRect( bar, cg.mid() );
+
+			QRect cr = visualRect( QRect( x + 2, y + 2, checkcol - 1, h - 4 ), r );
 			// Do we have an icon?
-			if ( mi->iconSet() ) {
+			if ( mi->iconSet() )
+			{
 				QIconSet::Mode mode;
-				QRect cr = visualRect( QRect(x, y, checkcol, h), r );
 				
 				// Select the correct icon from the iconset
 				if ( active )
@@ -1118,7 +1136,7 @@ void KeramikStyle::drawControl( ControlElement element,
 
 				// Do we have an icon and are checked at the same time?
 				// Then draw a "pressed" background behind the icon
-				if ( checkable && !active && mi->isChecked() )
+				if ( checkable && /*!active &&*/ mi->isChecked() )
 					qDrawShadePanel( p, cr.x(), cr.y(), cr.width(), cr.height(),
 									 cg, true, 1, &cg.brush(QColorGroup::Midlight) );
 				// Draw the icon
@@ -1129,21 +1147,19 @@ void KeramikStyle::drawControl( ControlElement element,
 			}
 
 			// Are we checked? (This time without an icon)
-			else if ( checkable && mi->isChecked() ) {
-				int cx = reverse ? x+w - checkcol : x;
-
+			else if ( checkable && mi->isChecked() )
+			{
 				// We only have to draw the background if the menu item is inactive -
 				// if it's active the "pressed" background is already drawn
-				if ( ! active )
-					qDrawShadePanel( p, cx, y, checkcol, h, cg, true, 1,
+			//	if ( ! active )
+					qDrawShadePanel( p, cr.x(), cr.y(), cr.width(), cr.height(), cg, true, 1,
 					                 &cg.brush(QColorGroup::Midlight) );
 
 				// Draw the checkmark
 				SFlags cflags = Style_Default;
 				cflags |= active ? Style_Enabled : Style_On;
 
-				drawPrimitive( PE_CheckMark, p, QRect( cx + itemFrame, y + itemFrame,
-								checkcol - itemFrame*2, h - itemFrame*2), cg, cflags );
+				drawPrimitive( PE_CheckMark, p, cr, cg, cflags );
 			}
 
 			// Time to draw the menu item label...

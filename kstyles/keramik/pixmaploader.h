@@ -37,11 +37,15 @@ namespace Keramik
 		QPixmap pixmap( const QString& name );
 		QPixmap scale( const QString& name, int width, int height );
 
+		void setColor( const QColor& color );
+
 		static PixmapLoader& the() { return s_instance; }
 
 	private:
+		void colorize( QImage &img );
 
 		QDict< QImage > m_cache;
+		QColor m_color;
 
 		static PixmapLoader s_instance;
 	};
@@ -142,8 +146,8 @@ namespace Keramik
 	{
 	public:
 		enum Mode { First, Middle, Last };
-		TabPainter( const QString& name, Mode mode )
-			: RectTilePainter( name ), m_mode( mode ) {};
+		TabPainter( const QString& name, Mode mode, bool bottom )
+			: RectTilePainter( name ), m_mode( mode ), m_bottom( bottom ) {};
 		virtual ~TabPainter() {};
 
 	protected:
@@ -153,6 +157,7 @@ namespace Keramik
 
 	private:
 		Mode m_mode;
+		bool m_bottom;
 	};
 
 	class ScrollBarPainter : public TilePainter

@@ -40,6 +40,34 @@ PixmapLoader::PixmapLoader()
 	m_cache.setAutoDelete( true );
 }
 
+void PixmapLoader::setColor( const QColor& color )
+{
+	if ( color == m_color ) return;
+	m_color = color;
+	m_cache.clear();
+	QPixmapCache::clear();
+}
+
+void PixmapLoader::colorize( QImage &img )
+{
+	if ( img.isNull() || !m_color.isValid() ) return;
+	int newh, news, newv;
+	m_color.hsv( &newh, &news, &newv );
+
+	for ( register unsigned int y = 0; y < img.height(); ++y )
+	{
+		Q_UINT32* data = reinterpret_cast< Q_UINT32* >( img.scanLine( y ) );
+		for ( register unsigned int x = 0; x < img.width(); ++x )
+		{
+			QColor c( *data );
+			int h, s, v;
+			c.hsv( &h, &s, &v );
+			c.setHsv( ( h - 216 + newh ) % 360, QMIN( s * news / 14, 255 ), QMIN( v * newv / 90, 255 ) );
+			*data++ = ( c.rgb() & RGB_MASK ) | ( *data & ~RGB_MASK );
+		}
+	}
+}
+
 QPixmap PixmapLoader::pixmap( const QString& name )
 {
 	QPixmap result;
@@ -48,7 +76,8 @@ QPixmap PixmapLoader::pixmap( const QString& name )
 
 	QImage* img = m_cache[ name ];
 	if ( !img ) {
-		img = new QImage( qembed_findImage( name ) );
+		img = new QImage( qembed_findImage( name ).copy() );
+		colorize( *img );
 		m_cache.insert( name, img );
 	}
 	result.convertFromImage( *img );
@@ -150,7 +179,9 @@ QString TabPainter::tileName( unsigned int column, unsigned int row ) const
 {
 	Mode check = QApplication::reverseLayout() ? Last : First;
 	if ( column == 0 && m_mode != check ) return "separator";
-		return RectTilePainter::tileName( column, row );
+	if ( m_bottom )
+		return RectTilePainter::tileName( column, row + 1 );
+	return RectTilePainter::tileName( column, row );
 }
 
 ScrollBarPainter::ScrollBarPainter( const QString& type, int count, bool horizontal )
