@@ -462,6 +462,9 @@ bool modToModQt( uint mod, int& modQt )
 
 bool modToModX( uint mod, uint& modX )
 {
+	if( !g_bInitializedMods )
+		initializeMods();
+	
 	modX = 0;
 	for( int i = 0; i < KKey::MOD_FLAG_COUNT; i++ ) {
 		if( mod & g_rgModInfo[i].mod ) {
@@ -477,6 +480,9 @@ bool modToModX( uint mod, uint& modX )
 
 bool modXToModQt( uint modX, int& modQt )
 {
+	if( !g_bInitializedMods )
+		initializeMods();
+	
 	modQt = 0;
 	for( int i = 0; i < KKey::MOD_FLAG_COUNT; i++ ) {
 		if( modX & g_rgModInfo[i].modX ) {
@@ -492,6 +498,9 @@ bool modXToModQt( uint modX, int& modQt )
 
 bool modXToMod( uint modX, uint& mod )
 {
+	if( !g_bInitializedMods )
+		initializeMods();
+	
 	mod = 0;
 	for( int i = 0; i < KKey::MOD_FLAG_COUNT; i++ ) {
 		if( modX & g_rgModInfo[i].modX )
