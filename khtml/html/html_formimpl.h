@@ -66,8 +66,6 @@ public:
     virtual tagStatus endTag() const { return FORMEndTag; }
 
     long length() const;
-    bool prepareSubmit();
-    void prepareReset();
 
     QByteArray formData( );
 
@@ -76,6 +74,8 @@ public:
 
     DOMString boundary() const { return m_boundary; }
     void setBoundary( const DOMString & );
+
+    bool autoComplete() const { return m_autocomplete; }
 
     virtual void parseAttribute(AttrImpl *attr);
 
@@ -96,7 +96,7 @@ public:
     virtual QString state() { return QString::null; }
     virtual void restoreState(const QString &) { };
 
-    void submit (  );
+    bool submit();
     void reset();
 
     static void i18nData();
@@ -112,8 +112,11 @@ public:
     DOMString m_acceptcharset;
     QString m_encCharset;
     KHTMLView *view;
-    bool m_post;
-    bool m_multipart;
+    bool m_post : 1;
+    bool m_multipart : 1;
+    bool m_autocomplete : 1;
+    bool m_insubmit : 1;
+    bool m_inreset : 1;
 };
 
 // -------------------------------------------------------------------------
@@ -264,6 +267,8 @@ public:
 
     virtual bool isEnumeratable() const { return inputType() != IMAGE; }
 
+    bool autoComplete() const { return m_autocomplete; }
+
     bool checked() const { return m_checked; }
     void setChecked(bool);
     long maxLength() const { return m_maxLen; }
@@ -314,6 +319,7 @@ protected:
     bool m_haveType : 1;
     bool m_firstAttach :1;
     bool m_activeSubmit : 1;
+    bool m_autocomplete : 1;
 
 private:
     void init();

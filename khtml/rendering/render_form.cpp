@@ -468,12 +468,14 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
 
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
         edit->setEchoMode( QLineEdit::Password );
-    QStringList completions =
-        static_cast<KHTMLView *>(view)->formCompletionItems(element->name().string());
-    if (completions.count())
-    {
-        edit->completionObject()->setItems(completions);
-        edit->setContextMenuEnabled(true);
+
+    if ( element->autoComplete() ) {
+        QStringList completions =
+            static_cast<KHTMLView *>(view)->formCompletionItems(element->name().string());
+        if (completions.count()) {
+            edit->completionObject()->setItems(completions);
+            edit->setContextMenuEnabled(true);
+        }
     }
 
     setQWidget(edit, false);
@@ -488,7 +490,7 @@ void RenderLineEdit::slotReturnPressed()
 
     HTMLFormElementImpl* fe = m_element->form();
     if ( fe )
-        fe->prepareSubmit();
+        fe->submit();
 }
 
 void RenderLineEdit::layout()
@@ -633,7 +635,7 @@ void RenderFileButton::layout( )
 void RenderFileButton::slotReturnPressed()
 {
     if (m_element->form())
-        m_element->form()->prepareSubmit();
+        m_element->form()->submit();
 }
 
 void RenderFileButton::slotTextChanged(const QString &string)

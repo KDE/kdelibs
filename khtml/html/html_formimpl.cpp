@@ -23,8 +23,8 @@
  * $Id$
  */
 
+#undef FORMS_DEBUG
 //#define FORMS_DEBUG
-//#under FORMS_DEBUG
 
 #include "html_formimpl.h"
 
@@ -64,6 +64,9 @@ HTMLFormElementImpl::HTMLFormElementImpl(DocumentPtr *doc)
 {
     m_post = false;
     m_multipart = false;
+    m_autocomplete = true;
+    m_insubmit = false;
+    m_inreset = false;
     m_enctype = "application/x-www-form-urlencoded";
     m_boundary = "----------0xKhTmLbOuNdArY";
     m_acceptcharset = "UNKNOWN";
@@ -309,22 +312,15 @@ void HTMLFormElementImpl::setBoundary( const DOMString& bound )
     m_boundary = bound;
 }
 
-bool HTMLFormElementImpl::prepareSubmit()
+bool HTMLFormElementImpl::submit(  )
 {
-    if ( !view ) return false;
+    if(m_insubmit || !view || !view->part() || view->part()->onlyLocalReferences())
+        return m_insubmit;
 
-    if (!dispatchHTMLEvent(EventImpl::SUBMIT_EVENT,true,true)) {
-        return false; // don't submit if preventDefault() called
-    }
+    m_insubmit = true;
 
-    submit();
-    return true;
-}
-
-void HTMLFormElementImpl::submit(  )
-{
-    if(!view) return;
-    if ( view->part()->onlyLocalReferences() ) return;
+    if (!dispatchHTMLEvent(EventImpl::SUBMIT_EVENT,true,true))
+        return ( m_insubmit = false );
 
 #ifdef FORMS_DEBUG
     kdDebug( 6030 ) << "submit pressed!" << endl;
@@ -333,7 +329,8 @@ void HTMLFormElementImpl::submit(  )
     for(HTMLGenericFormElementImpl *current = formElements.first(); current; current = formElements.next())
     {
         if (current->id() == ID_INPUT &&
-            static_cast<HTMLInputElementImpl *>(current)->inputType() == HTMLInputElementImpl::TEXT)
+            static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::TEXT &&
+            static_cast<HTMLInputElementImpl*>(current)->autoComplete() )
         {
             HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl *>(current);
             view->addFormCompletionItem(input->name().string(), input->value().string());
@@ -355,21 +352,27 @@ void HTMLFormElementImpl::submit(  )
                                   m_target.string() );
     }
 
-}
-
-void HTMLFormElementImpl::prepareReset()
-{
-#ifdef FORMS_DEBUG
-    kdDebug( 6030 ) << "reset pressed!" << endl;
-#endif
-
-    dispatchHTMLEvent(EventImpl::RESET_EVENT,true,false);
-
-    reset();
+    // if we passed this point once there is no way back.
+    // hence, m_insubmit _must_ _not_ be reset to false here!
+    return m_insubmit;
 }
 
 void HTMLFormElementImpl::reset(  )
 {
+    if(m_inreset || !view || !view->part()) return;
+
+    m_inreset = true;
+
+#ifdef FORMS_DEBUG
+    kdDebug( 6030 ) << "reset pressed!" << endl;
+#endif
+
+    // ### DOM2 labels this event as not cancelable, however
+    // common browsers( sick! ) allow it be cancelled.
+    if ( !dispatchHTMLEvent(EventImpl::RESET_EVENT,true, true) ) {
+        m_inreset = false;
+        return;
+    }
 
     HTMLGenericFormElementImpl *current = formElements.first();
     while(current)
@@ -379,6 +382,8 @@ void HTMLFormElementImpl::reset(  )
     }
     if (ownerDocument()->isHTMLDocument())
         static_cast<HTMLDocumentImpl*>(ownerDocument())->updateRendering();
+
+    m_inreset = false;
 }
 
 void HTMLFormElementImpl::parseAttribute(AttrImpl *attr)
@@ -405,6 +410,9 @@ void HTMLFormElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_ACCEPT:
         // ignore this one for the moment...
+        break;
+    case ATTR_AUTOCOMPLETE:
+        m_autocomplete = strcasecmp( attr->value(), "off" );
         break;
     case ATTR_ONSUBMIT:
         removeHTMLEventListener(EventImpl::SUBMIT_EVENT);
@@ -672,10 +680,10 @@ void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
 
         if(m_form && m_type == SUBMIT) {
             m_activeSubmit = true;
-            m_form->prepareSubmit();
+            m_form->submit();
             m_activeSubmit = false; // in case we were canceled
         }
-        if(m_form && m_type == RESET) m_form->prepareReset();
+        if(m_form && m_type == RESET) m_form->reset();
     }
 }
 
@@ -735,6 +743,8 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl
     : HTMLGenericFormElementImpl(doc, f)
 {
     init();
+
+    m_autocomplete = f->autoComplete();
 }
 
 void HTMLInputElementImpl::init()
@@ -749,6 +759,8 @@ void HTMLInputElementImpl::init()
     m_haveType = false;
     m_firstAttach = true;
     m_activeSubmit = false;
+    m_autocomplete = true;
+
     xPos = 0;
     yPos = 0;
 
@@ -853,6 +865,9 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
     // ### also check that input defaults to something - text perhaps?
     switch(attr->attrId)
     {
+    case ATTR_AUTOCOMPLETE:
+        m_autocomplete = strcasecmp( attr->value(), "off" );
+        break;
     case ATTR_TYPE: {
             typeEnum newType;
 
@@ -995,9 +1010,6 @@ void HTMLInputElementImpl::attach()
         if (m_render)
         {
             m_render->setStyle(m_style);
-#ifdef FORMS_DEBUG
-            kdDebug( 6030 ) << "adding " << m_render->renderName() << " as child of " << r->renderName() << endl;
-#endif
             QString state = ownerDocument()->registerElement(this);
             if ( !state.isEmpty())
             {
@@ -1239,12 +1251,12 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 
         m_clicked = true;
         if(m_type == RESET)
-            m_form->prepareReset();
+            m_form->reset();
         else {
             if ( ownerDocument() )
                 ownerDocument()->setFocusNode( this );
             m_activeSubmit = true;
-            bool ret = m_form->prepareSubmit();
+            bool ret = m_form->submit();
             m_activeSubmit = false; // in case we were canceled
             if (!ret) {
                 xPos = 0;
