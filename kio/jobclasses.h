@@ -876,6 +876,7 @@ namespace KIO {
         Q_OBJECT
     public:
         ChmodJob( const KFileItemList & lstItems,  int permissions, int mask,
+                  int newOwner, int newGroup,
                   bool recursive, bool showProgressInfo );
 
     protected:
@@ -891,6 +892,8 @@ namespace KIO {
         enum { STATE_LISTING, STATE_CHMODING } state;
         int m_permissions;
         int m_mask;
+        int m_newOwner;
+        int m_newGroup;
         bool m_recursive;
         KFileItemList m_lstItems;
         QValueList<ChmodInfo> m_infos;

@@ -62,22 +62,27 @@ namespace KIO {
     SimpleJob * chmod( const KURL& url, int permissions );
 
     /**
-     * Change permissions a several files or directories,
+     * Change permissions/ownership on several files or directories,
      * optionnally recursively.
      * This version of chmod uses a KFileItemList so that it directly knows
      * what to do with the items. TODO: a version that takes a KURL::List,
      * and a general job that stats each url and returns a KFileItemList.
+     *
+     * Note that change of ownership is only supported for local files.
      *
      * @param lstItems The file items representing several files or directories.
      * @param permissions the permissions we want to set
      * @param mask the bits we are allowed to change
      * For instance, if mask is 0077, we don't change
      * the "user" bits, only "group" and "others".
+     * @param newOwner If non-empty, the new owner for the files
+     * @param newGroup If non-empty, the new group for the files
      * @param recursive whether to open directories recursively
      *
      * @return The job handling the operation.
      */
     ChmodJob * chmod( const KFileItemList& lstItems, int permissions, int mask,
+                      QString newOwner, QString newGroup,
                       bool recursive, bool showProgressInfo = true );
 
     /**

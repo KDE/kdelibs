@@ -33,7 +33,10 @@
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
-
+extern "C" {
+#include <pwd.h>
+#include <grp.h>
+}
 #include <qtimer.h>
 #include <qfile.h>
 
@@ -2879,9 +2882,11 @@ DeleteJob *KIO::del( const KURL::List& src, bool shred, bool showProgressInfo )
 /////////////////////
 
 ChmodJob::ChmodJob( const KFileItemList& lstItems, int permissions, int mask,
+                    int newOwner, int newGroup,
                     bool recursive, bool showProgressInfo )
     : KIO::Job( showProgressInfo ), state( STATE_LISTING ),
       m_permissions( permissions ), m_mask( mask ),
+      m_newOwner( newOwner ), m_newGroup( newGroup ),
       m_recursive( recursive ), m_lstItems( lstItems )
 {
     QTimer::singleShot( 0, this, SLOT(processList()) );
@@ -2976,7 +2981,25 @@ void ChmodJob::chmodNextFile()
     {
         ChmodInfo info = m_infos.first();
         m_infos.remove( m_infos.begin() );
-        kdDebug(7007) << "ChmodJob::chmodNextFile chmod'ing " << info.url.prettyURL() << " to " << QString::number(info.permissions,8) << endl;
+        // First update group / owner (if local file)
+        // (permissions have to set after, in case of suid and sgid)
+        if ( info.url.isLocalFile() && ( m_newOwner != -1 || m_newGroup != -1 ) )
+        {
+            QString path = info.url.path();
+            if ( chown( QFile::encodeName(path), m_newOwner, m_newGroup ) != 0 )
+            {
+                int answer = KMessageBox::warningContinueCancel( 0, i18n( "<qt>Could not modify the ownership of file <b>%1</b>.You have insufficient access to the file to perform the change.</qt>" ).arg(path), QString::null, i18n("Continue") );
+                if (answer == KMessageBox::Cancel)
+                {
+                    m_error = ERR_USER_CANCELED;
+                    emitResult();
+                    return;
+                }
+            }
+        }
+
+        kdDebug(7007) << "ChmodJob::chmodNextFile chmod'ing " << info.url.prettyURL()
+                      << " to " << QString::number(info.permissions,8) << endl;
         KIO::SimpleJob * job = KIO::chmod( info.url, info.permissions );
         addSubjob(job);
     }
@@ -3008,9 +3031,28 @@ void ChmodJob::slotResult( KIO::Job * job )
 }
 
 ChmodJob *KIO::chmod( const KFileItemList& lstItems, int permissions, int mask,
+                      QString owner, QString group,
                       bool recursive, bool showProgressInfo )
 {
-    return new ChmodJob( lstItems, permissions, mask, recursive, showProgressInfo );
+    uid_t newOwnerID = (uid_t)-1; // chown(2) : -1 means no change
+    if ( !owner.isEmpty() )
+    {
+        struct passwd* pw = getpwnam(QFile::encodeName(owner));
+        if ( pw == 0L )
+            kdError(250) << " ERROR: No user " << owner << endl;
+        else
+            newOwnerID = pw->pw_uid;
+    }
+    gid_t newGroupID = (gid_t)-1; // chown(2) : -1 means no change
+    if ( !group.isEmpty() )
+    {
+        struct group* g = getgrnam(QFile::encodeName(group));
+        if ( g == 0L )
+            kdError(250) << " ERROR: No group " << group << endl;
+        else
+            newGroupID = g->gr_gid;
+    }
+    return new ChmodJob( lstItems, permissions, mask, newOwnerID, newGroupID, recursive, showProgressInfo );
 }
 
 #include "jobclasses.moc"
