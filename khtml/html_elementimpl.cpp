@@ -21,8 +21,8 @@
  * $Id$
  */
 // -------------------------------------------------------------------------
-#define DEBUG
-#define DEBUG_LAYOUT
+//#define DEBUG
+//#define DEBUG_LAYOUT
 #undef PAR_DEBUG
 
 #include "dom_string.h"

@@ -25,7 +25,7 @@
 // KDE HTML Widget -- HTML Parser
 // $Id$
 
-#define PARSER_DEBUG
+//#define PARSER_DEBUG
 
 #ifdef GrayScale
 #undef GrayScale

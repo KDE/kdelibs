@@ -21,7 +21,7 @@
  * $Id$
  */
 // -------------------------------------------------------------------------
-#define DEBUG
+//#define DEBUG
 
 #include <qpainter.h>
 #include <qpalette.h>

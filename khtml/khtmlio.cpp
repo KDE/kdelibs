@@ -32,8 +32,8 @@
 #include <kio_cache.h>
 #include <kio_error.h>
 
-//#undef CACHE_DEBUG
-#define CACHE_DEBUG
+#undef CACHE_DEBUG
+//#define CACHE_DEBUG
 
 #include <qpixmap.h>
 #include <qmovie.h>

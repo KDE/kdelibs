@@ -28,7 +28,7 @@
 // ### FIXME: get rid of setStyle calls...
 // ### cellpadding and spacing should be converted to Length
 #undef TABLE_DEBUG
-#define DEBUG_LAYOUT
+//#define DEBUG_LAYOUT
 
 #include <qlist.h>
 #include <qbrush.h>
