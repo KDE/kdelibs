@@ -180,6 +180,14 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
        rt.setWidth(pref_width);
        int used_width = rt.widthUsed();
        pref_height = rt.height();
+       if (3*pref_height > 2*d.height())
+       {
+          // Very high dialog.. make it wider
+          pref_width = d.width() / 2;
+          rt.setWidth(pref_width);
+          used_width = rt.widthUsed();
+          pref_height = rt.height();
+       }
        if (used_width <= pref_width)
        {
           while(true)
