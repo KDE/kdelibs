@@ -455,6 +455,12 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 	else
 	  toggleActLink(true);
         break;
+    case Key_Home:
+        setContentsPos( 0, 0 );
+        break;
+    case Key_End:
+        setContentsPos( 0, contentsHeight() - height() );
+        break;
     default:
 	QScrollView::keyPressEvent( _ke );
     }
