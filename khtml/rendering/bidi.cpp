@@ -194,7 +194,7 @@ void RenderFlow::appendRun(QList<BidiRun> &runs, const BidiIterator &sor, const 
 	start = 0;
 	obj = next(obj);
     }
-    if( obj ) {
+    if( obj && !obj->isHidden()) {
 	//kdDebug(6041) << "appendRun: "<< start << "/" << eor.pos <<endl;
 	runs.append( new BidiRun(start, eor.pos, obj, context, dir) );
     }
@@ -221,6 +221,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     BidiIterator current = start;
     BidiIterator last = current;
     while(current < end) {
+
 	QChar::Direction dirCurrent;
 	if(current.atEnd()) {
 	    BidiContext *c = context;
@@ -611,8 +612,8 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 #ifdef BIDI_DEBUG
     kdDebug(6041) << "reached end of paragraph current=" << current.pos << ", eor=" << eor.pos << endl;
 #endif
-    eor = last;
-    if(!(last < sor))
+    eor = current;
+    if(!(current < sor))
        appendRun(runs, sor, eor, context, dir);
 
     BidiContext *endEmbed = context;
@@ -800,6 +801,7 @@ void RenderFlow::layoutInlineChildren()
 	    end = findNextLineBreak(start);
 	    startEmbed = bidiReorderLine(status, start, end, startEmbed);
 	    newLine();
+	    ++end;
 	}
     }
     m_height += toAdd;
@@ -813,40 +815,46 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
     //kdDebug(6041) << "findnextLineBreak" << endl;
     BidiIterator lBreak = start;
     BidiIterator current = start;
+    BidiIterator last = start;
 
     int width = lineWidth(m_height);
+    //kdDebug(6041) << "line width " << width << endl;
     int w = 0;
     int tmpW = 0;
     while( w + tmpW < width ) {
 	RenderObject *o = current.obj;
 	if(!o) {
 	    lBreak = current;
-	    //kdDebug(6041) << "sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
+	    //kdDebug(6041) << "reached end sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
 	    return current;
 	}
 	if( o->isSpecial() ) {
 	    // add to special objects...
 	    // ### check if it fits in the current line. If yes, add it directly. If no, add it delayed
 	    specialHandler(o);
+	    width = lineWidth(m_height);
+	    //kdDebug(6041) << "inserted special object, line width now " << width << endl;
 	} else if( current.direction() == QChar::DirWS ) {
 	    lBreak = current;
 	    w += tmpW;
-	    tmpW = 0;
+	    tmpW = static_cast<RenderText *>(o)->width(current.pos, 1);
 	} else if( current.current() == QChar('\n') ) {
-	    //kdDebug(6041) << "sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
+	    //kdDebug(6041) << "\\n sol: " << start.obj << " " << start.pos << "   end: " << current.obj << " " << current.pos << "   width=" << w << endl;
 	    return current;
-	}
-	if( o->isText() )
+	} else if( o->isText() )
 	    tmpW += static_cast<RenderText *>(o)->width(current.pos, 1);
 	else {
 	    tmpW += o->width();
-	    if( w + tmpW > width )
-		return current;
+	    if( w + tmpW > width && current != start ) {
+		//kdDebug(6041) << "forced break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
+	    	return last;
+	    }
 	}
+	last = current;
 	++current;
     }
     if(w == 0)
-	lBreak = current;
+	lBreak = last;
     //kdDebug(6041) << "sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
 
 
