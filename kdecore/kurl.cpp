@@ -129,97 +129,110 @@ KURL::KURL( KURL & _base_url, const char * _rel_url )
 KURL::KURL( const char* _url)
 {
   parse( _url );
+#if 0
+  printf("pr=%s ho=%s pa=%s re=%s di=%s us=%s pa=%s po=%d M=%d\n",
+	 protocol_part.data(), host_part.data(), path_part.data(),
+	 ref_part.data(), dir_part.data(),
+	 user_part.data(), passwd_part.data(), port_number, malformed);
+#endif
 }
 
 void KURL::parse( const char * _url )
 {
-  QString url(_url);
-  url.detach();
-  malformed = FALSE;
+    QString url(_url);
+    url.detach();
+    malformed = FALSE;
 
-  if ( _url[0] == '/' ) {
-      // encodeURL(url);
-      url.insert( 0, "file:");
-  };
-  
-  // We need a : somewhere to determine the protocol
-  int pos = url.find( ":" );
-  if ( pos == -1 )
+    if ( _url[0] == '/' )
     {
-	  malformed = TRUE;
-	  return;
-    }
-  protocol_part = url.left( pos );
-
-  if ( protocol_part == "info" || protocol_part == "mailto" || protocol_part == "man" )
-    {
-	  path_part = url.mid( pos + 1, url.length() );
-	  detach();
-	  return;
+	// Create a real URL with protocol
+	// encodeURL(url);
+	url.insert( 0, "file:");
     }
     
-  if ( (int)url.length() < pos + 2 )
+    // We need a : somewhere to determine the protocol
+    int pos = url.find( ":" );
+    if ( pos == -1 )
     {
-	  malformed = TRUE;
-	  return;
+	malformed = TRUE;
+	return;
+    }
+    protocol_part = url.left( pos );
+
+    if ( protocol_part == "info" || protocol_part == "mailto" || protocol_part == "man" )
+    {
+	path_part = url.mid( pos + 1, url.length() );
+	detach();
+	return;
+    }
+    
+    // Is there something behind "protocol:" ?
+    // The minimal valid URL is "file:/"
+    if ( (int)url.length() < pos + 2 )
+    {
+	malformed = TRUE;
+	return;
     }
 
-  if ( strncmp( url.data() + pos, ":/", 2 ) != 0 )
-	{
-	  malformed = TRUE;
-	  return;
-	}
-  pos += 2;
-  int pos2;
-  // Is it a local file or what
-  if( url.data()[pos] == '/')
-  {
-    pos2 = url.find( '/', pos + 1);
-    if ( pos2 == -1 )
+    if ( strncmp( url.data() + pos, ":/", 2 ) != 0 )
     {
-      host_part = url.mid( pos + 1, url.length() );
-      pos2 = url.length();
+	malformed = TRUE;
+	return;
+    }
+
+    pos += 2;
+    int pos2;
+    // Do we have a host part ?
+    if ( url.data()[pos] == '/' )
+    {
+	// Find end of host string
+	pos2 = url.find( '/', pos + 1);
+	// We dont have a path ?
+	if ( pos2 == -1 )
+	{
+	    host_part = url.mid( pos + 1, url.length() );
+	    pos2 = url.length();
+	}
+	else
+	    host_part = url.mid( pos + 1, (( pos2 == -1)?url.length():pos2) - pos - 1);      
     }
     else
-      host_part = url.mid( pos + 1, (( pos2 == -1)?url.length():pos2) - pos - 1);      
-  }
-  else
-  {
+    {
 	host_part = "";
 	// Go back to the '/'
 	pos2 = pos - 1;
-  }
+    }
 
-  if ( host_part.length() > 0 )
-  {    
-    int j = host_part.find( "@" );
-    if ( j != -1 )
-    {	
-      int i = host_part.find( ":" );
-      if ( i != -1 && i < j )
-      {
-	user_part = host_part.left( i );
-	passwd_part = host_part.mid( i + 1, j - i - 1 );
-	host_part = host_part.mid( j + 1, host_part.length() );
-      }
-      else
-      {
-	user_part = host_part.left( j );
-	passwd_part = "";
-	host_part = host_part.mid( j + 1, host_part.length() );
-      }
+    if ( host_part.length() > 0 )
+    {    
+	int j = host_part.find( "@" );
+	if ( j != -1 )
+	{	
+	    int i = host_part.find( ":" );
+	    if ( i != -1 && i < j )
+	    {
+		user_part = host_part.left( i );
+		passwd_part = host_part.mid( i + 1, j - i - 1 );
+		host_part = host_part.mid( j + 1, host_part.length() );
+	    }
+	    else
+	    {
+		user_part = host_part.left( j );
+		passwd_part = "";
+		host_part = host_part.mid( j + 1, host_part.length() );
+	    }
+	}
+	else
+	{
+	    passwd_part = "";
+	    user_part = "";
+	}
     }
     else
     {
-      passwd_part = "";
-      user_part = "";
+	passwd_part = "";
+	user_part = "";
     }
-  }
-  else
-  {
-    passwd_part = "";
-    user_part = "";
-  }
   
   // find a possible port number
   int p = host_part.find(":");
@@ -406,8 +419,11 @@ KURL::url() const
     }    
     url += host_part;
     
-    if ( port_number != 0 ) 
-	url.sprintf("%s:%d",url.data(),port_number);
+    if ( port_number != 0 )
+    {
+        QString tmp(url.data());
+	url.sprintf("%s:%d",tmp.data(),port_number);
+    }
   }
   else
     url += ":";
@@ -572,7 +588,7 @@ QString KURL::childURL()
     
 QString KURL::nestedURL()
 {
-    QString s = childURL().data();
+    QString s = childURL();
     if ( s.isEmpty() )
 	return url();
     return s;

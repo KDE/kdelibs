@@ -224,12 +224,17 @@ bool KSocket::connect( const char *_host, unsigned short int _port )
 
   sock = ::socket(PF_INET,SOCK_STREAM,0);
   if (sock < 0)
-  if ( readNotifier )
+	return false;
+  
+  if ( !init_sockaddr( _host, _port) )
+    printf("SOCKET Destructor %x\n",this);
+	  ::close( sock );
 	  sock = -1;
-  if ( writeNotifier )
+    printf("SOCKET Destructor %p\n",this);
+	printf("Deleteing Socket notifier '%x'\n",readNotifier);
 	  return false;
 	}
-  ::close( sock ); 
+	printf("Deleteing Socket notifier '%p'\n",readNotifier);
   
   if ( 0 > ::connect( sock, (struct sockaddr*)(&server_name), 
 					  sizeof( server_name ) ) )
