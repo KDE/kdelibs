@@ -133,7 +133,7 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
     switch (id) {
 	case Print: {
 	    UString str = args[0].toString(exec);
-            if ( str.qstring().lower().find( "failed" ) >= 0 )
+            if ( str.qstring().lower().find( "failed!" ) >= 0 )
                 m_regTest->saw_failure = true;
 	    fprintf(stderr, "%s\n",str.ascii());
 	    break;
@@ -612,6 +612,7 @@ void RegressionTest::testStaticFile(const QString & filename)
 
 void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename, bool report_result )
 {
+qDebug("eval %s", filename.latin1());
     QString fullSourceName = filename;
     QFile sourceFile(fullSourceName);
 
