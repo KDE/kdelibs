@@ -876,12 +876,41 @@ static const IcePaVersionRec DCOPServerVersions[] = {
     { DCOPVersionMajor, DCOPVersionMinor,  DCOPProcessMessage }
 };
 
-static Status DCOPServerProtocolSetupProc ( IceConn /*iceConn*/,
+static const IcePoVersionRec DUMMYVersions[] = {
+    { DCOPVersionMajor, DCOPVersionMinor, 0 }
+};
+
+typedef struct DCOPServerConnStruct *DCOPServerConn;
+
+struct DCOPServerConnStruct
+{
+    /*
+     * We use ICE to esablish a connection with the client.
+   */
+
+    IceConn		iceConn;
+
+
+    /*
+   * Major and minor versions of the XSMP.
+   */
+
+    int			proto_major_version;
+    int			proto_minor_version;
+
+
+    QCString clientId;
+};
+
+
+static Status DCOPServerProtocolSetupProc ( IceConn iceConn,
 					    int majorVersion, int minorVersion,
 					    char* vendor, char* release,
 					    IcePointer *clientDataRet,
 					    char **/*failureReasonRet*/)
 {
+    DCOPServerConn serverConn;
+
     /*
      * vendor/release are undefined for ProtocolSetup in DCOP
      */
@@ -891,9 +920,22 @@ static Status DCOPServerProtocolSetupProc ( IceConn /*iceConn*/,
     if (release)
 	free (release);
 
-    *clientDataRet = 0;
 
-    return (majorVersion == DCOPVersionMajor && minorVersion == DCOPVersionMinor);
+    /*
+     * Allocate new DCOPServerConn.
+     */
+
+    serverConn = new DCOPServerConnStruct;
+
+    serverConn->iceConn = iceConn;
+    serverConn->proto_major_version = majorVersion;
+    serverConn->proto_minor_version = minorVersion;
+    //serverConn->clientId already initialized
+
+    *clientDataRet = static_cast<IcePointer>(serverConn);
+
+
+    return 1;
 }
 
 static int pipeOfDeath[2];
@@ -916,6 +958,17 @@ DCOPServer::DCOPServer(bool _suicide)
     suicide = _suicide;
 
     dcopSignals = new DCOPSignals;
+
+    extern int _kde_IceLastMajorOpcode; // from libICE
+    if (_kde_IceLastMajorOpcode < 1 )
+        IceRegisterForProtocolSetup(const_cast<char *>("DUMMY"),
+				    const_cast<char *>("DUMMY"),
+				    const_cast<char *>("DUMMY"),
+				    1, const_cast<IcePoVersionRec *>(DUMMYVersions),
+				    DCOPAuthCount, const_cast<char **>(DCOPAuthNames),
+				    DCOPClientAuthProcs, 0);
+    if (_kde_IceLastMajorOpcode < 1 )
+	qWarning("DCOPServer Error: incorrect major opcode!");
 
     the_server = this;
     if (( majorOpcode = IceRegisterForProtocolReply (const_cast<char *>("DCOP"),
