@@ -777,7 +777,7 @@ KLauncher::removeArg( QValueList<QCString> &args, const QCString &target)
 pid_t
 KLauncher::requestSlave(const QString &protocol,
                         const QString &host,
-                        const QString &app_socket, QString &)
+                        const QString &app_socket, QString &error)
 {
     IdleSlave *slave;
     for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
@@ -808,14 +808,14 @@ KLauncher::requestSlave(const QString &protocol,
        return slave->pid();
     }
 
-    // TODO perhaps deal with our own cache (protocol->exec, filled on demand),
-    // to save memory compared to KProtocolManager which stores everything in memory...
-    // Problem is that the protocol name is in the file (protocol= field), so we
-    // do need to parse them all...
-    QCString name = KProtocolInfo::exec( protocol ).latin1(); // ex: "kio_ftp"
-    if ( name.isEmpty() ) {
-        name = "kio_"; name += protocol.latin1(); // fallback
+    QString _name = KProtocolInfo::exec(protocol);
+    if (_name.isEmpty())
+    {
+	error = i18n("Unkown protocol '%1'.\n").arg(protocol);
+        return 0;       
     }
+
+    QCString name = _name.latin1(); // ex: "kio_ftp"
     QCString arg1 = protocol.latin1();
     QCString arg2 = QFile::encodeName(mPoolSocketName);
     QCString arg3 = QFile::encodeName(app_socket);
