@@ -327,7 +327,7 @@ QPixmap PixmapLoader::scale( int name, int width, int height, const QColor& colo
 		return QPixmap();
 	}
 
-	result = new QPixmap ( img->scale( width ? width : img->width(), height ? height: img->height() ) );
+	result = new QPixmap ( img->smoothScale( width ? width : img->width(), height ? height: img->height() ) );
 
 	KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
 	toAdd->m_pixmap = result;

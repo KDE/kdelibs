@@ -580,7 +580,14 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			// FOCUS RECT
 			// -------------------------------------------------------------------
 		case PE_FocusRect:
-			p->drawWinFocusRect( r );
+			//Qt may pass the background color to use for the focus indicator
+			//here. This particularly happens within the iconview.
+			//If that happens, pass it on to drawWinFocusRect() so it can
+			//honor it
+			if ( opt.isDefault() )
+				p->drawWinFocusRect( r );
+			else 
+				p->drawWinFocusRect( r, opt.color() );
 			break;
 
 			// HEADER SECTION
