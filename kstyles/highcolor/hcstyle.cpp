@@ -1849,26 +1849,25 @@ void HCStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
     int textPos = pxWidth;
     QRect br(buttonRect(x, y, w, h));
 
+    if (sunken)
+        p->translate(1,1);
+
     if ( pixmap && !pixmap->isNull() ) {
         int dx = ( pxWidth - pixmap->width() ) / 2;
         int dy = ( h - pixmap->height() ) / 2;
-        if (sunken) {
-            dx++;
-            dy++;
-        }
-        p->drawPixmap( br.x()+dx, dy, *pixmap );        
+        p->drawPixmap( br.x()+dx, dy, *pixmap );
     }
 
-    QString s2 = text;
+    QString s = text;
     static QString modStr =
            QString::fromUtf8("[") + i18n("modified") + QString::fromUtf8("]");
 
-    int modStrPos = s2.find(modStr);
+    int modStrPos = s.find(modStr);
 
     if (-1 != modStrPos) {
 
       // +1 because we include a space after the closing brace.
-      s2.remove(modStrPos, modStr.length()+1);
+      s.remove(modStrPos, modStr.length()+1);
 
       QPixmap modPixmap = SmallIcon("modified");
 
@@ -1880,20 +1879,23 @@ void HCStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
       textPos += pxWidth;
     }
 
-    p->setPen(sunken ? g.light() : g.buttonText());
+    if (!s.isEmpty()){
+        if (p->fontMetrics().width(s) > br.width() - textPos) {
 
-    if (!s2.isEmpty()){
-        if (p->fontMetrics().width(s2) > br.width()-textPos){
-            while (s2.length()>0 &&
-                   p->fontMetrics().width(s2) > br.width() - textPos
-                   - p->fontMetrics().width("...")) {
-                s2.truncate( s2.length() - 1 );
-            }
-            s2.append("...");
+            int maxLen = br.width() - textPos - p->fontMetrics().width("...");
+
+            while ((!s.isEmpty()) && (p->fontMetrics().width(s) > maxLen))
+                s.truncate(s.length() - 1);
+
+            s.append("...");
         }
-        p->drawText(br.x()+ textPos, 0, w-textPos, h,
-                    AlignLeft|AlignVCenter, s2);
+
+        p->setPen(sunken ? g.light() : g.buttonText());
+        
+        p->drawText(br.x()+ textPos, -1, w-textPos, h,
+                    AlignLeft|AlignVCenter, s);
     }
+
 }
 
 
