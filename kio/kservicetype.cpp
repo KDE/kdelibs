@@ -198,7 +198,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
     return KServiceFactory::self()->offers( serv->offset() );
   else
   {
-    kDebugWarning( 7009, QString("KServiceType::offers : servicetype %1 not found").arg( _servicetype ));
+    kdWarning(7009) << QString("KServiceType::offers : servicetype %1 not found").arg( _servicetype ) << endl;
     KService::List l;
     return l;
   }
