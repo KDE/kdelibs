@@ -32,7 +32,7 @@
 #include <sys/mount.h>
 #endif      
 
-int KIOJob::s_id = 1;
+int KIOJob::s_id = 0;
 QMap<int,KIOJob*>* KIOJob::s_mapJobs = 0L;
 KIOListProgressDlg* KIOJob::m_pListProgressDlg = 0L;
 
