@@ -341,6 +341,7 @@ void KBuildSycoca::save()
    // Write KDEDIRS
    (*m_str) << KGlobal::dirs()->kfsstnd_prefixes();
    (*m_str) << newTimestamp;
+   (*m_str) << KGlobal::locale()->language();
 
    // Write factory data....
    for(KSycocaFactory *factory = m_lstFactories->first();
@@ -425,7 +426,10 @@ int main(int argc, char **argv)
    {
      QString current_kfsstnd = KGlobal::dirs()->kfsstnd_prefixes();
      QString ksycoca_kfsstnd = KSycoca::self()->kfsstnd_prefixes();
-     if (current_kfsstnd != ksycoca_kfsstnd)
+     QString current_language = KGlobal::locale()->language();
+     QString ksycoca_language = KSycoca::self()->language();
+     if ((current_kfsstnd != ksycoca_kfsstnd) ||
+         (current_language != ksycoca_language))
      {
         incremental = false;
         delete KSycoca::self();
