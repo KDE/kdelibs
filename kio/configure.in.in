@@ -64,6 +64,9 @@ AC_TRY_COMPILE(
 
 ],kde_cv_have_dnotify=yes)
 
+dnl temporarily disabled till I fixed it (Dirk)
+kde_cv_have_dnotify=no
+
 AC_LANG_RESTORE
 ])
 
