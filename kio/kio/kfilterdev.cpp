@@ -89,7 +89,7 @@ QIODevice * KFilterDev::deviceForFile( const QString & fileName, const QString &
     }
 }
 
-QIODevice * KFilterDev::deviceForFile( QIODevice* inDevice, const QString & mimetype)
+QIODevice * KFilterDev::device( QIODevice* inDevice, const QString & mimetype)
 {
    if (inDevice==0)
       return 0;

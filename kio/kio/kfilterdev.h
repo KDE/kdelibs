@@ -119,7 +119,7 @@ public:
      *
      * The returned QIODevice has to be deleted after using.
      */
-    static QIODevice * deviceForFile( QIODevice* inDevice, const QString & mimetype);
+    static QIODevice * device( QIODevice* inDevice, const QString & mimetype);
 
 private:
     KFilterBase *filter;
