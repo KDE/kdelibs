@@ -509,6 +509,13 @@ bool KProtocolManager::persistentConnections()
   return cfg->readBoolEntry( "PersistentConnections", true );
 }
 
+bool KProtocolManager::persistentProxyConnection()
+{
+  KConfig *cfg = config();
+  cfg->setGroup( QString::null );
+  return cfg->readBoolEntry( "PersistentProxyConnection", true );
+}
+
 QString KProtocolManager::proxyConfigScript()
 {
   KConfig *cfg = config();

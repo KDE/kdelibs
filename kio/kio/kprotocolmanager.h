@@ -306,12 +306,18 @@ public:
    * @ return the minimum keep size for aborted downloads in bytes.
    */
   static int minimumKeepSize();
+  
+  
+  /*============================ NETWORK CONNECTIONS ==========================*/
+  /**
+   * Returns true if connections should be persistent
+   */
+  static bool persistentProxyConnection(); 
 
   /**
    * Returns true if connections should be persistent
    */
   static bool persistentConnections();
-
 
 /*=============================== OTHERS ====================================*/
 
