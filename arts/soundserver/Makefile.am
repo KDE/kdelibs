@@ -26,7 +26,7 @@ libkmedia2_idl_la_LDFLAGS = -no-undefined
 
 bin_PROGRAMS = artsd artsplay
 
-artsd_LDADD = libsoundserver_idl.la $(FLOWLIBS) $(LIBAUDIOFILE)
+artsd_LDADD = libsoundserver_idl.la $(FLOWLIBS)
 artsd_SOURCES = simplesoundserver_impl.cc artsd.cc wavplayobject_impl.cc
 
 artsplay_LDADD = libsoundserver_idl.la
