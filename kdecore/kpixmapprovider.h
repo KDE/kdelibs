@@ -21,6 +21,8 @@
 #ifndef KPIXMAPPROVIDER_H
 #define KPIXMAPPROVIDER_H
 
+#include <qpixmap.h>
+
 /**
  * A tiny abstract class with just one method:
  * @ref pixmapFor()
@@ -35,6 +37,7 @@
 class KPixmapProvider
 {
 public:
+    virtual ~KPixmapProvider();
     /**
      * You may subclass this and return a pixmap of size @p size for @p text.
      */
