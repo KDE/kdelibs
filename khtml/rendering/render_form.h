@@ -99,6 +99,8 @@ public:
 
     virtual void calcMinMaxWidth();
 
+    virtual bool isInline() const { return true; }
+
 protected:
     QString encodeString( QString e );
     QString decodeString( QString e );
@@ -121,7 +123,6 @@ public:
                  HTMLFormElementImpl *form);
 
     virtual const char *renderName() const { return "RenderButton"; }
-    virtual bool isInline() const { return true; }
 
     virtual void layout(bool);
 };	
@@ -269,14 +270,12 @@ public:
     virtual Type type() { return LineEdit; }
     virtual QString encoding();
 
-    virtual bool isInline() const { return true; }
-
     virtual void layout(bool);
 
     virtual void reset();
 
     virtual void setValue(const DOMString &value);
-    
+
     virtual const char *renderName() const { return "RenderLineEdit"; }
 
 protected:
@@ -353,7 +352,6 @@ public:
 
     virtual QString encoding();
 
-    virtual bool isInline() const { return true; }
     virtual Type type() { return File; }
 
     virtual void reset();
@@ -399,7 +397,6 @@ public:
     virtual void layout( bool deep = false );
     virtual void close( );
 
-    virtual bool isInline() const { return true; }
     virtual Type type() { return Select; }
 
     virtual void reset();
@@ -424,7 +421,6 @@ public:
     virtual void layout( bool deep = false );
     virtual void close ( );
 
-    virtual bool isInline() const { return true; }
     virtual Type type() { return MultiLineEdit; }
 
     virtual void reset();
