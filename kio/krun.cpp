@@ -766,8 +766,12 @@ KProcessRunner::slotProcessExited(KProcess * p)
     // Often we get 127 because the binary doesn't exist.
     // We can't just rely on that, but it's a good hint.
     if ( KStandardDirs::findExe( binName ).isEmpty() )
+    {
+      kapp->ref();
       KMessageBox::sorry( 0L, i18n("Couldn't launch %1").arg( binName ) );
-    // TODO after 2.0: turn this into "Couldn't file the program named %1" or so.
+      // TODO after 2.0: turn this into "Couldn't file the program named %1" or so.
+      kapp->deref();
+    }
   }
 
   QByteArray params;
