@@ -491,10 +491,8 @@ void KRun::slotStatResult( KIO::Job * job )
     m_bFault = true;
     m_bFinished = true;
 
-    if ( m_bAutoDelete )
-      delete this;
-    else
-      m_timer.start( 0, true );
+    // will emit the error and autodelete this
+    m_timer.start( 0, true );
 
   } else {
 
