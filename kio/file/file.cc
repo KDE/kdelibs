@@ -31,7 +31,7 @@
 #include <kprotocolmanager.h>
 #include <kinstance.h>
 #include <qfile.h>
-
+#include <kdebug2.h>
 #include "file.h"
 
 using namespace KIO;
@@ -155,7 +155,7 @@ void FileProtocol::get( const QString& path, const QString& /*query*/, bool /* r
 
 void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bool _resume )
 {
-    kDebugInfo( 7101, "Put %s", debugString(dest_orig) );
+    kdDebug( 7101 ) << "Put " << dest_orig << endl;
     QString dest_part( dest_orig );
     dest_part += ".part";
 
@@ -466,14 +466,12 @@ void FileProtocol::rename( const QString &src, const QString &dest,
 
 void FileProtocol::del( const QString& path, bool isfile)
 {
-    kDebugInfo( 7101, "Deleting %s(%s)", debugString(path), isfile?"file":"directory");
-
     /*****
      * Delete files
      *****/
 
     if (isfile) {
-	kDebugInfo( 7101, "Deleting file %s", debugString(path) );
+	kdDebug( 7101 ) <<  "Deleting file "<< path << endl;
 	
 	// TODO deletingFile( source );
 	
@@ -488,21 +486,21 @@ void FileProtocol::del( const QString& path, bool isfile)
 	}
     } else {
 	
-	/*****
-	 * Delete empty directory
-	 *****/
+      /*****
+       * Delete empty directory
+       *****/
 	
-	kDebugInfo( 7101, "Deleting directory %s", debugString(path) );
+      kdDebug( 7101 ) << "Deleting directory " << debugString(path) << endl;
 
-	// TODO deletingFile( source );
-	
-	if ( rmdir( path ) == -1 ) {
-            if ((errno == EACCES) || (errno == EPERM))
-               error( KIO::ERR_ACCESS_DENIED, path);
-            else
-               error( KIO::ERR_COULD_NOT_RMDIR, path );
-	    return;
+      if ( ::rmdir( path ) == -1 ) {
+	if ((errno == EACCES) || (errno == EPERM))
+	  error( KIO::ERR_ACCESS_DENIED, path);
+	else {
+	  kdDebug( 7101 ) << "could not rmdir " << perror << endl;
+	  error( KIO::ERR_COULD_NOT_RMDIR, path );
+	  return;
 	}
+      }
     }
 
     finished();
@@ -701,6 +699,8 @@ void FileProtocol::listDir( const QString& path )
     totalFiles( entryNames.count() );
 
     // set the current dir
+    char path_buffer[PATH_MAX];
+    getcwd(path_buffer, PATH_MAX - 1);
     chdir( path );
 
     UDSEntry entry;
@@ -715,6 +715,8 @@ void FileProtocol::listDir( const QString& path )
     listEntry( entry, true ); // ready
 
     kDebugInfo(7101, "============= COMPLETED LIST ============" );
+
+    chdir(path_buffer);
 
     finished();
 
