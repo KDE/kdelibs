@@ -22,39 +22,51 @@ errors.
 // * kdelibs/khtmlw
 
 khtmlw has been replaced with khtml.
-- Includes of html.h and htmlview.h should be replaced with
-  khtml.h and khtmlview.h.
-- It may also be necessary to include khtmlsavedpage.h, khtmlembed.h or
-  khtmlcache.h.
-- KHTMLWidget::setDefaultFontBase() has been replaced by setFontSizes().
-  See khtml.h for more information. Examples of its use can be found in
-  kdehelp, konqueror, kmail.
+- KHTMLView has vaished. Just use KHTMLWidget, which does scrollbar
+  managing for free.
+- A lot of the API has changed. If you just want to open a file/URL,
+  you just need to do:
+	KHTMLWidget *w = new KHTMLWidget();
+	w->openURL(myURL);
 - khtml uses Qstring's instead of char *'s now. This means, that most
   of the api has changed. In all functions:
-     const char * -> QString 
+     const char * -> QString
      QStrList -> QStringList
-  The only exception for the moment is KHTMLWidget::write(), but
-  a QString version will be added soon.
-- Don't forget to change the link-flags! (-lkhtml instead of -lkhtmlw)
+  The only exception for the moment is KHTMLWidget::write(), which does
+  also exist in a const char * version.
+- you won't need the getKHTMLWiget function anymore. Just replace
+	getKHTMLWidget->xxx() with xxx()
+- xxx(QString) -> xxx(const QString &)
+- consistent naming. All getXyz() functions are renamed to xyz()
+- replaced/changed functions:
+	KHTMLWidget::setDefaultFontBase() -> setFontSizes().
+	x/yOffset()                       -> contentsX/Y()
+	getSelectedText(QString &)        -> QString selectedText()
+	findTextEnd() has vanished. just remove the call from your code
+	gotoXY(x, y)                      -> setContentsPos( x, y)
+	docWidth()			  -> contentsWidth()
+	docHeight()			  -> contentsHeight()
+	...
+- Don't forget to change the link-flags! (-lkhtml -lkjava instead of -lkhtmlw)
 
 
 //////////////////////////////////////////////////////////////////////
 // * KIntegerLine, KIntLineEdit
 
-  KIntegerLine and KIntLineEdit  has been replaced by KIntNumInput. 
-  The new header file is called knuminput.h. 
+  KIntegerLine and KIntLineEdit  has been replaced by KIntNumInput.
+  The new header file is called knuminput.h.
 
   The new KIntNumInput can have an optional slider attached, ensures
   that the entered value is in a given range (use MAX_INT or similiar
   if you don't care about the range) and can maintain a descriptive
-  label and also a unit for the edited value. 
+  label and also a unit for the edited value.
 
   The API is almost the same and it simplifies exisiting code a bit,
-  so give it a try. If you need more functionality, please contact 
-  me (Dirk A. Mueller <dmuell@gmx.net>). 
+  so give it a try. If you need more functionality, please contact
+  me (Dirk A. Mueller <dmuell@gmx.net>).
 
   The additional class KDoubleNumInput gives you the same look&feel,
-  but allows to edit floating point numbers. 
+  but allows to edit floating point numbers.
 
 //////////////////////////////////////////////////////////////////////
 // * KLocale
@@ -91,7 +103,7 @@ khtmlw has been replaced with khtml.
 
   generalFont() and fixedFont() are deprecated and will be removed soon.
   Please use KGlobal::generalFont() and KGlobal::fixedFont() instead.
- 
+
   appName() is deprecated. Please use QApplication::name() instead.
 
   The methods tempSaveName() and checkRecoverFile() return QString
@@ -125,14 +137,14 @@ are necessary to convert your old KDND-based stuff to Qt DND.
 - Qt includes a Drag and Drop tutorial.  We suggest you read that
   now if you are confused.
 - QMultiLineEdit has already a DnD interface that accepts text/*
-  If you want to add support for other mimetypes, you need to 
+  If you want to add support for other mimetypes, you need to
   re-implement all DnD-methods (also dragMoveEvent()) and pass
-  QTextDrag's to the parent methods. 
+  QTextDrag's to the parent methods.
 - QTextDrag also accepts text/uri-list, which means that you
   always need to check for QUriDrag first if you want to get
-  both working. 
+  both working.
 - The mimetype for Uri's is now text/uri-list. If you've used
-  the proprietary Qt 1.x url/url, you need to adjust that.  
+  the proprietary Qt 1.x url/url, you need to adjust that.
 
 //////////////////////////////////////////////////////////////////////
 // * KConfigBase, KConfig, KSimpleConfig
@@ -164,7 +176,7 @@ are necessary to convert your old KDND-based stuff to Qt DND.
 // * libkfm has disappeared
 
   Lots of other functionalities have been taken out of kfm, some being
-  now in libkio, some in libkonq. 
+  now in libkio, some in libkonq.
   Replacement table :
    KFM::download         -> KIONetAccess::download (kdelibs/kio/kio_netaccess.h)
    KFM::removeTempFile   -> KIONetAccess::removeTempFile
@@ -191,7 +203,7 @@ must have created a KApplication object before the methods can be used.
 	#include<kconfig.h>     // Needed to use KConfig
 	#include<klocale.h>     // Needed to use KLocale
 	#include<kiconloader.h> //
- 
+
 	...
         	KConfig *appcfg = KGlobal::config();
 	        QString mystr	 = i18n( "This is a string" );
@@ -205,7 +217,7 @@ must have created a KApplication object before the methods can be used.
 KIconLoader in 1.1 used to mix icons for applications and for toolbars.
 This has changed, so you may notice that your application doesn't find
 the right icons. loadIcon (used by BarIcon) returns only toolbar icons.
-If you need icons for applications, use loadApplicationIcon or 
+If you need icons for applications, use loadApplicationIcon or
 loadApplicationMiniIcon. loadMiniIcon has been removed as it did the
 same as loadApplicationMiniIcon.
 The other big change you may notice, is that ICON and Icon have been
@@ -232,7 +244,7 @@ mainViewGeometry() instead.
 // * KStartParams
 
 KStartParams is a new class for easy command-line argument parsing.
-It's included in kdecore and defined in kstartparams.h. See 
+It's included in kdecore and defined in kstartparams.h. See
 html-documentation for further informations about using.
 
 ////////////////////////////////////////////////////////////////////////
@@ -310,13 +322,13 @@ Use QListView, QListViewItem instead. API is almost the same, you only
 need to add a Column (QListView::addColum) before QListView is useable.
 
 QListView has no addChild(), insertItem() and removeItem() calls. Inserting
-a root item is done by constructing a QListViewItem with the QListView 
+a root item is done by constructing a QListViewItem with the QListView
 passed as the parent widget. adding a child item is done by constructing
 a QListViewItem with the parent item as paremeter. removeItem() should
 be replaced by delete <pointer to item>.
 
 The root items are not shown in a tree fashion by default. to get this,
-use QListView::setDecorativeRoot(true). 
+use QListView::setDecorativeRoot(true).
 
 Expanding and collapsing can by done by using QListViewItem::setOpen(bool).
 
@@ -332,20 +344,20 @@ when porting:
 - KMsgBox had return codes starting with 1 for the first button, 2 for
   the second, and so on.  QMessageBox is 0-based, and thus the first
   button will have a return code of 0.
-- Do not use QMessageBox::message.  It is deprecated.  Use 
+- Do not use QMessageBox::message.  It is deprecated.  Use
   QMessageBox::information for bits of information, QMessageBox::warning when
   something has failed but the program will continue to work fine, and
   as a last resort, use QMessageBox::critical when very bad errors have
   occurred.
 - You cannot rely on QMessageBox to i18n text for the buttons.  Therefore,
-  a simple information text box with an OK button should be coded as 
+  a simple information text box with an OK button should be coded as
   follows:
 
   QMessageBox::information(this, i18n("Information"),
 	 	i18n("This is the text that will appear"
 		     " in the message box."), i18n("&OK"));
 - Please note too that it's recommended to use kapp->getCaption as second
-  argument 
+  argument
 
 NEW: you should now also use KMessageBox as a replacement for KMsgBox
 directly.  It is a thin wrapper on top of QMessageBox that provides
@@ -369,9 +381,9 @@ to some new functionality.
 ////////////////////////////////////////////////////////////////////////
 // * KPixmap::gradientFill
 
-Use 
+Use
 
-KPixmapEffect::gradient(KPixmap&, QColor, QColor, enum KPixmapEffect::GradientType, int) 
+KPixmapEffect::gradient(KPixmap&, QColor, QColor, enum KPixmapEffect::GradientType, int)
 
 instead. Hence:
 
@@ -381,7 +393,7 @@ becomes, for direction == true :
 
 KPixmapEffect::gradient(pix, ca, cb, KPixmapEffect::VerticalGradient, ncols)
 
-There are now: 
+There are now:
 
 KPixmapEffect:: [Vertical,
                  Horizontal,
@@ -390,12 +402,12 @@ KPixmapEffect:: [Vertical,
                  Rectangle,
                  Pyramid,
                  PipeCross,
-                 Elliptic] 
+                 Elliptic]
 
 Gradients. See kdelibs/kdetest/kgradienttest && kunbalancedgradienttest for
-information on how they actually look. 
+information on how they actually look.
 
-The code in KPixmap::gradientFill() is replaced with warnings. It isn't 
+The code in KPixmap::gradientFill() is replaced with warnings. It isn't
 possible to make this old method call the new functionalities in kdeui because
 we can't link-compile kdecore to kdeui.
 
@@ -404,7 +416,7 @@ we can't link-compile kdecore to kdeui.
 
 This widget has been replaced by the almighty QListView. Everything said
 about KTreeList could be repeated here. The good thing is, that you now
-can combine TreeView's and normal Tablists without problems. 
+can combine TreeView's and normal Tablists without problems.
 
 ////////////////////////////////////////////////////////////////////////
 // * KToolBarButton & KRadioGroup
@@ -436,8 +448,8 @@ then mail me (rich@kde.org).
 // * kstring.h / KString
 
 The KString class is obsolete and has, actually, no more been defined in
-kstring.h anymore, the header file only existed for compatability. 
-The file has been removed completly, use QString instead, it provides 
+kstring.h anymore, the header file only existed for compatability.
+The file has been removed completly, use QString instead, it provides
 anything that is needed. (mirko@kde.org)
 
 ////////////////////////////////////////////////////////////////////////
@@ -445,38 +457,38 @@ anything that is needed. (mirko@kde.org)
 
 KTMainWindow replaces this class completly. In most cases, it should be
 enough to simply replace the declaration of your former KTopWidget to be
-a KTMainWindow, as it is source compatible. ktopwidget.h does no more 
+a KTMainWindow, as it is source compatible. ktopwidget.h does no more
 exist in KDE 2. (mirko@kde.org)
 
 ////////////////////////////////////////////////////////////////////////
 // * kbutton.h / KButton
 
-Since Qt 2.0, the class QToolButton provides the functionality of 
-buttons that raise when the mouse is moved over it, so there is no 
-reason to have a class providing the same in the KDE libs. All 
+Since Qt 2.0, the class QToolButton provides the functionality of
+buttons that raise when the mouse is moved over it, so there is no
+reason to have a class providing the same in the KDE libs. All
 occurences of KButton in the KDE CVS have been replaced by QToolButtons,
-but for applications not in the CVS it has to be done by the respective 
+but for applications not in the CVS it has to be done by the respective
 developer. (mirko@kde.org)
 
 ////////////////////////////////////////////////////////////////////////
 // * kcolorgroup.h / KColorGroup
 
 KColorGroup was at first not used in sources in the KDE CVS,  second its
-flibkdecore_la_METASOURCESunctionality is provided by Qt. It has been 
+flibkdecore_la_METASOURCESunctionality is provided by Qt. It has been
 removed. (mirko@kde.org)
 
 ////////////////////////////////////////////////////////////////////////
 // * kcharsets.h / KCharsets
 
 This functionality is removed from the KDE core and used from Qt, so it
-has been removed. Use QStrings (unicode) for this 
+has been removed. Use QStrings (unicode) for this
 purposes. (mirko@kde.org)
 
 ////////////////////////////////////////////////////////////////////////
 // * Methods for getting the value of a member object named
 //   getXy*() are renamed to xy*()
 
-If your code does not compile and complains about missing member 
+If your code does not compile and complains about missing member
 functions, you should check for methods that started with get...().
 This methods have been renamed to xy*().
 
@@ -484,7 +496,7 @@ This methods have been renamed to xy*().
 // * kled.h, kledlamp.h / KLed, KLedLamp
 
 There where two different classes for showing an LED lamp. Both are
-merged to the KLed class, but THE USER INTERFACE IS DIFFERENT, as both 
+merged to the KLed class, but THE USER INTERFACE IS DIFFERENT, as both
 where more or less broken.
 Please adjust your code to it.
 
