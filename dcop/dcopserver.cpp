@@ -1009,7 +1009,7 @@ DCOPServer::DCOPServer(bool _only_local, bool _suicide)
 	    }
 	    char *idlist = IceComposeNetworkIdList(numTransports, listenObjs);
 	    if (idlist != 0) {
-	        fprintf(f, idlist);
+	        fprintf(f, "%s", idlist);
 		free(idlist);
 	    }
 	    fprintf(f, "\n%i\n", getpid());
