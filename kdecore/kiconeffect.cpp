@@ -142,12 +142,6 @@ bool KIconEffect::hasEffect(int group, int state) const
 QString KIconEffect::fingerprint(int group, int state) const
 {
     if ( group >= KIcon::LastGroup ) return "";
-    // I don't know why, but for a year now this line has been causing segfaults
-    // They often look like this:
-    // #6  0x40e006f6 in QString::QString(QString const&) ()
-    //   from /opt/qt-copy/lib/libqt-mt.so.3
-    // #7  0x406f9e87 in KIconEffect::fingerprint(int, int) const (this=0x82da7fc, group=-1073749796, state=0) at kiconeffect.cpp:133
-    // #8  0x40708c2e in KIconLoader::loadIcon(QString const&, KIcon::Group, int, int, QString*, bool) const (this=0x82d0f58, _name=@0x8418d84, group=Small, size=137257888, state=0, path_store=0x0, canReturnNull=false)
     QString cached = d->mKey[group][state];
     if (cached.isEmpty())
     {

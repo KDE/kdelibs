@@ -132,7 +132,6 @@ KInstance::KInstance( KInstance* src )
 KInstance::~KInstance()
 {
     DEBUG_CHECK_ALIVE
-    DEBUG_REMOVE
 
     if (d->ownAboutdata)
         delete _aboutData;
@@ -153,6 +152,7 @@ KInstance::~KInstance()
         KGlobal::_instance = 0;
     if (KGlobal::activeInstance() == this)
         KGlobal::setActiveInstance(0);
+    DEBUG_REMOVE
 }
 
 

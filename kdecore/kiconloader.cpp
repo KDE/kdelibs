@@ -136,10 +136,45 @@ struct KIconLoaderPrivate
     bool delayedLoading :1;
 };
 
+#define KICONLOADER_CHECKS
+#ifdef KICONLOADER_CHECKS
+// Keep a list of recently created and destroyed KIconLoader instances in order
+// to detect bugs like #68528.
+struct KIconLoaderDebug
+    {
+    KIconLoaderDebug( KIconLoader* l, const QString& a )
+        : loader( l ), appname( a ), valid( true )
+        {}
+    KIconLoaderDebug() {}; // this QValueList feature annoys me
+    KIconLoader* loader;
+    QString appname;
+    bool valid;
+    QString delete_bt;
+    };
+
+static QValueList< KIconLoaderDebug > *kiconloaders;
+#endif
+
 /*** KIconLoader: the icon loader ***/
 
 KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs)
 {
+#ifdef KICONLOADER_CHECKS
+    if( kiconloaders == NULL )
+        kiconloaders = new QValueList< KIconLoaderDebug>();
+    // check for the (very unlikely case) that new KIconLoader gets allocated
+    // at exactly same address like some previous one
+    for( QValueList< KIconLoaderDebug >::Iterator it = kiconloaders->begin();
+         it != kiconloaders->end();
+         )
+        {
+        if( (*it).loader == this )
+            it = kiconloaders->remove( it );
+        else
+            ++it;
+        }
+    kiconloaders->append( KIconLoaderDebug( this, _appname ));
+#endif
     init( _appname, _dirs );
 }
 
@@ -240,6 +275,19 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 
 KIconLoader::~KIconLoader()
 {
+#ifdef KICONLOADER_CHECKS
+    for( QValueList< KIconLoaderDebug >::Iterator it = kiconloaders->begin();
+         it != kiconloaders->end();
+         ++it )
+        {
+        if( (*it).loader == this )
+            {
+            (*it).valid = false;
+            (*it).delete_bt = kdBacktrace();
+            break;
+            }
+        }
+#endif    
     /* antlarr: There's no need to delete d->mpThemeRoot as it's already
        deleted when the elements of d->links are deleted */
     d->mpThemeRoot=0;
@@ -1167,6 +1215,48 @@ KIconFactory::KIconFactory( const QString& iconName_P, KIcon::Group group_P,
 
 QPixmap* KIconFactory::createPixmap( const QIconSet&, QIconSet::Size, QIconSet::Mode mode_P, QIconSet::State )
     {
+#ifdef KICONLOADER_CHECKS
+    bool found = false;
+    for( QValueList< KIconLoaderDebug >::Iterator it = kiconloaders->begin();
+         it != kiconloaders->end();
+         ++it )
+        {
+        if( (*it).loader == loader )
+            {
+            found = true;
+            if( !(*it).valid )
+                {
+#ifdef NDEBUG
+                loader = KGlobal::iconLoader();
+                iconName = "no_way_man_you_will_get_broken_icon";
+#else
+                kdWarning() << "Using already destroyed KIconLoader for loading an icon!" << endl;
+                kdWarning() << "Appname:" << (*it).appname << ", icon:" << iconName << endl;
+                kdWarning() << "Deleted at:" << endl;
+                kdWarning() << (*it).delete_bt << endl;
+                kdWarning() << "Current:" << endl;
+                kdWarning() << kdBacktrace() << endl;
+                abort();
+                return NULL;
+#endif
+                }
+            break;
+            }
+        }
+    if( !found )
+        {
+#ifdef NDEBUG
+        loader = KGlobal::iconLoader();
+        iconName = "no_way_man_you_will_get_broken_icon";
+#else
+        kdWarning() << "Using unknown KIconLoader for loading an icon!" << endl;
+        kdWarning() << "Icon:" << iconName << endl;
+        kdWarning() << kdBacktrace() << endl;
+        abort();
+        return NULL;
+#endif
+        }
+#endif    
     // QIconSet::Mode to KIcon::State conversion
     static const KIcon::States tbl[] = { KIcon::DefaultState, KIcon::DisabledState, KIcon::ActiveState };
     int state = KIcon::DefaultState;
