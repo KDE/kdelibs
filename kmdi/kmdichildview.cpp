@@ -39,6 +39,7 @@
 #include "kmdichildfrm.h"
 #include "kmdidefines.h"
 #include <kdebug.h>
+#include <klocale.h>
 #include <qiconset.h>
 
 //============ KMdiChildView ============//
@@ -60,7 +61,7 @@ KMdiChildView::KMdiChildView( const QString& caption, QWidget* parentWidget, con
       m_szCaption = caption;
    }
    else {
-      m_szCaption = QString(tr("Unnamed"));
+      m_szCaption = QString(i18n("Unnamed"));
    }
    m_sTabCaption = m_szCaption;
 
@@ -87,7 +88,7 @@ KMdiChildView::KMdiChildView( QWidget* parentWidget, const char* name, WFlags f)
   ,m_bFocusInEventIsPending(false)
 {
    setGeometry( 0, 0, 0, 0);  // reset
-   m_szCaption = QString(tr("Unnamed"));
+   m_szCaption = QString(i18n("Unnamed"));
    m_sTabCaption = m_szCaption;
 
    setFocusPolicy(ClickFocus);

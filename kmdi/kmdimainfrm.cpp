@@ -40,7 +40,7 @@
 #include <kdebug.h>
 #include <kdeversion.h>
 #include <qtabwidget.h>
-
+#include <klocale.h>
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <kipc.h> // schroder remove this in x11 too, not needed any more...
 #endif
@@ -859,7 +859,7 @@ QPopupMenu * KMdiMainFrm::windowPopup(KMdiChildView * pWnd,bool bIncludeTaskbarP
 {
    m_pWindowPopup->clear();
    if(bIncludeTaskbarPopup){
-      m_pWindowPopup->insertItem(tr("Window"),taskBarPopup(pWnd,false));
+      m_pWindowPopup->insertItem(i18n("Window"),taskBarPopup(pWnd,false));
       m_pWindowPopup->insertSeparator();
    }
    return m_pWindowPopup;
@@ -871,18 +871,18 @@ QPopupMenu * KMdiMainFrm::taskBarPopup(KMdiChildView *pWnd,bool /*bIncludeWindow
    //returns the g_pTaskBarPopup filled according to the KMdiChildView state
    m_pTaskBarPopup->clear();
    if(pWnd->isAttached()){
-      m_pTaskBarPopup->insertItem(tr("Undock"),pWnd,SLOT(detach()));
+      m_pTaskBarPopup->insertItem(i18n("Undock"),pWnd,SLOT(detach()));
       m_pTaskBarPopup->insertSeparator();
       if(pWnd->isMinimized() || pWnd->isMaximized())
-         m_pTaskBarPopup->insertItem(tr("Restore"),pWnd,SLOT(restore()));
-      if(!pWnd->isMaximized())m_pTaskBarPopup->insertItem(tr("Maximize"),pWnd,SLOT(maximize()));
-      if(!pWnd->isMinimized())m_pTaskBarPopup->insertItem(tr("Minimize"),pWnd,SLOT(minimize()));
-   } else m_pTaskBarPopup->insertItem(tr("Dock"),pWnd,SLOT(attach()));
+         m_pTaskBarPopup->insertItem(i18n("Restore"),pWnd,SLOT(restore()));
+      if(!pWnd->isMaximized())m_pTaskBarPopup->insertItem(i18n("Maximize"),pWnd,SLOT(maximize()));
+      if(!pWnd->isMinimized())m_pTaskBarPopup->insertItem(i18n("Minimize"),pWnd,SLOT(minimize()));
+   } else m_pTaskBarPopup->insertItem(i18n("Dock"),pWnd,SLOT(attach()));
    m_pTaskBarPopup->insertSeparator();
-   m_pTaskBarPopup->insertItem(tr("Close"),pWnd,SLOT(close()));
+   m_pTaskBarPopup->insertItem(i18n("Close"),pWnd,SLOT(close()));
    // the window has a view...get the window popup
    m_pTaskBarPopup->insertSeparator();
-   m_pTaskBarPopup->insertItem(tr("Operations"),windowPopup(pWnd,false));  //alvoid recursion
+   m_pTaskBarPopup->insertItem(i18n("Operations"),windowPopup(pWnd,false));  //alvoid recursion
    return m_pTaskBarPopup;
 }
 
@@ -2200,25 +2200,25 @@ void KMdiMainFrm::fillWindowMenu()
    if (!m_bClearingOfWindowMenuBlocked) {
       m_pWindowMenu->clear();
    }
-   int closeId = m_pWindowMenu->insertItem(tr("&Close"), this, SLOT(closeActiveView()));
-   int closeAllId = m_pWindowMenu->insertItem(tr("Close &All"), this, SLOT(closeAllViews()));
+   int closeId = m_pWindowMenu->insertItem(i18n("&Close"), this, SLOT(closeActiveView()));
+   int closeAllId = m_pWindowMenu->insertItem(i18n("Close &All"), this, SLOT(closeAllViews()));
    if (bNoViewOpened) {
       m_pWindowMenu->setItemEnabled(closeId, false);
       m_pWindowMenu->setItemEnabled(closeAllId, false);
    }
    if (!bTabPageMode) {
-      int iconifyId = m_pWindowMenu->insertItem(tr("&Minimize All"), this, SLOT(iconifyAllViews()));
+      int iconifyId = m_pWindowMenu->insertItem(i18n("&Minimize All"), this, SLOT(iconifyAllViews()));
       if (bNoViewOpened) {
          m_pWindowMenu->setItemEnabled(iconifyId, false);
       }
    }
    m_pWindowMenu->insertSeparator();
-   m_pWindowMenu->insertItem(tr("&MDI Mode..."), m_pMdiModeMenu);
+   m_pWindowMenu->insertItem(i18n("&MDI Mode..."), m_pMdiModeMenu);
    m_pMdiModeMenu->clear();
-   m_pMdiModeMenu->insertItem(tr("&Toplevel Mode"), this, SLOT(switchToToplevelMode()));
-   m_pMdiModeMenu->insertItem(tr("C&hildframe Mode"), this, SLOT(switchToChildframeMode()));
-   m_pMdiModeMenu->insertItem(tr("Ta&b Page Mode"), this, SLOT(switchToTabPageMode()));
-   m_pMdiModeMenu->insertItem(tr("I&DEAl Mode"), this, SLOT(switchToIDEAlMode()));
+   m_pMdiModeMenu->insertItem(i18n("&Toplevel Mode"), this, SLOT(switchToToplevelMode()));
+   m_pMdiModeMenu->insertItem(i18n("C&hildframe Mode"), this, SLOT(switchToChildframeMode()));
+   m_pMdiModeMenu->insertItem(i18n("Ta&b Page Mode"), this, SLOT(switchToTabPageMode()));
+   m_pMdiModeMenu->insertItem(i18n("I&DEAl Mode"), this, SLOT(switchToIDEAlMode()));
    switch (m_mdiMode) {
    case KMdi::ToplevelMode:
       m_pMdiModeMenu->setItemChecked(m_pMdiModeMenu->idAt(0), true);
@@ -2237,20 +2237,20 @@ void KMdiMainFrm::fillWindowMenu()
    }
    m_pWindowMenu->insertSeparator();
    if (!bTabPageMode) {
-      int placMenuId = m_pWindowMenu->insertItem(tr("&Tile..."), m_pPlacingMenu);
+      int placMenuId = m_pWindowMenu->insertItem(i18n("&Tile..."), m_pPlacingMenu);
       m_pPlacingMenu->clear();
-      m_pPlacingMenu->insertItem(tr("Ca&scade Windows"), m_pMdi,SLOT(cascadeWindows()));
-      m_pPlacingMenu->insertItem(tr("Cascade &Maximized"), m_pMdi,SLOT(cascadeMaximized()));
-      m_pPlacingMenu->insertItem(tr("Expand &Vertically"), m_pMdi,SLOT(expandVertical()));
-      m_pPlacingMenu->insertItem(tr("Expand &Horizontally"), m_pMdi,SLOT(expandHorizontal()));
-      m_pPlacingMenu->insertItem(tr("Tile &Non-overlapped"), m_pMdi,SLOT(tileAnodine()));
-      m_pPlacingMenu->insertItem(tr("Tile Overla&pped"), m_pMdi,SLOT(tilePragma()));
-      m_pPlacingMenu->insertItem(tr("Tile V&ertically"), m_pMdi,SLOT(tileVertically()));
+      m_pPlacingMenu->insertItem(i18n("Ca&scade Windows"), m_pMdi,SLOT(cascadeWindows()));
+      m_pPlacingMenu->insertItem(i18n("Cascade &Maximized"), m_pMdi,SLOT(cascadeMaximized()));
+      m_pPlacingMenu->insertItem(i18n("Expand &Vertically"), m_pMdi,SLOT(expandVertical()));
+      m_pPlacingMenu->insertItem(i18n("Expand &Horizontally"), m_pMdi,SLOT(expandHorizontal()));
+      m_pPlacingMenu->insertItem(i18n("Tile &Non-overlapped"), m_pMdi,SLOT(tileAnodine()));
+      m_pPlacingMenu->insertItem(i18n("Tile Overla&pped"), m_pMdi,SLOT(tilePragma()));
+      m_pPlacingMenu->insertItem(i18n("Tile V&ertically"), m_pMdi,SLOT(tileVertically()));
       if (m_mdiMode == KMdi::ToplevelMode) {
          m_pWindowMenu->setItemEnabled(placMenuId, false);
       }
       m_pWindowMenu->insertSeparator();
-      int dockUndockId = m_pWindowMenu->insertItem(tr("&Dock/Undock..."), m_pDockMenu);
+      int dockUndockId = m_pWindowMenu->insertItem(i18n("&Dock/Undock..."), m_pDockMenu);
          m_pDockMenu->clear();
       m_pWindowMenu->insertSeparator();
       if (bNoViewOpened) {

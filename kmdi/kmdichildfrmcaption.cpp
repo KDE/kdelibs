@@ -38,7 +38,7 @@
 #include "kmdichildfrm.h"
 #include "kmdichildarea.h"
 #include "kmdimainfrm.h"
-
+#include <klocale.h>
 #include <iostream>
 //////////////////////////////////////////////////////////////////////////////
 // Class   : KMdiChildFrmCaption
@@ -52,7 +52,7 @@
 KMdiChildFrmCaption::KMdiChildFrmCaption(KMdiChildFrm *parent)
 :QWidget(parent, "kmdi_childfrmcaption")
 {
-   m_szCaption    = tr("Unnamed");
+   m_szCaption    = i18n("Unnamed");
    m_bActive      = false;
    m_pParent      = parent;
    setBackgroundMode(NoBackground);
