@@ -301,6 +301,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 		// -------------------------------------------------------------------
 		case PE_ButtonCommand: {
 			bool sunken = on || down;
+			bool flat = !(flags & (Style_Raised | Style_Sunken));
 			int  x, y, w, h;
 			r.rect(&x, &y, &w, &h);
 			int x2 = x+w-1;
@@ -309,27 +310,27 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			if ( sunken )
 				kDrawBeButton( p, x, y, w, h, cg, true,
 						&cg.brush(QColorGroup::Mid) );
-			
-			else if ( flags & Style_MouseOver ) {
+
+			else if ( flags & Style_MouseOver && !flat ) {
 				QBrush brush(cg.button().light(110));
 				kDrawBeButton( p, x, y, w, h, cg, false, &brush );
 			}
 
 			// "Flat" button
-			else if (!(flags & (Style_Raised | Style_Sunken)))
-			    {
-				//p->fillRect(r, cg.button());
-				renderGradient(p, QRect(x, y, w-1, h-1),
-								cg.button(), false);
+			else if ( flat ) {
+				if ( flags & Style_MouseOver )
+					p->fillRect(r, cg.button().light(110));
+				else
+					renderGradient(p, QRect(x, y, w-1, h-1),
+									cg.button(), false);
+
 				p->setPen(cg.button().light(75));
-				
 				p->drawLine(x, y, x2, y);
 				p->drawLine(x, y, x, y2);
 				p->drawLine(x, y2, x2, y2);
 				p->drawLine(x2, y, x2, y2);
-				
 			}	   
-			
+
 			else if( highcolor )
 			{
 				int x2 = x+w-1;
@@ -1210,7 +1211,7 @@ void HighColorStyle::drawControl( ControlElement element,
 #if (QT_VERSION-0 >= 0x030100)
 		// MENUBAR BACKGROUND
 		// -------------------------------------------------------------------
-		case CE_MenuBarEmptyArea: // will be CE_MenuBarEmptyArea in Qt3.1b2
+		case CE_MenuBarEmptyArea:
 		{
 			renderGradient(p, r, cg.button(), false);
 			break;
