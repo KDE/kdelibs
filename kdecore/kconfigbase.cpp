@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.37  1999/01/18 10:56:16  kulow
+// .moc files are back in kdelibs. Built fine here using automake 1.3
+//
 // Revision 1.36  1999/01/15 09:30:34  kulow
 // it's official - kdelibs builds with srcdir != builddir. For this I
 // automocifized it, the generated rules are easier to maintain than
@@ -941,7 +944,7 @@ const char* KConfigBase::writeEntry( const char* pKey, double nValue,
 {
   QString aValue;
 
-  aValue.setNum( nValue );
+  aValue.setNum( nValue, 'g', 15 );
 
   return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
 }

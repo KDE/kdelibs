@@ -1,3 +1,8 @@
+1999-03-03  Jochen Küpper  <jochen@uni-duesseldorf.de>
+
+	* kconfigbase.cpp (writeEntry): Write double values to good precision.
+	This sould be the log of the machine epsilon, I put in 15 for its ease.
+
 1998-12-07  Alex Zepeda  <garbanzo@hooked.net>
 
 	* kdebug.cpp: fix warnings.  Thanks gis.
