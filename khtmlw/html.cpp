@@ -680,7 +680,11 @@ void KHTMLWidget::resizeEvent( QResizeEvent* _re )
 	    clue->setPos( 0, clue->getAscent() );
 	}
 
-	positionFormElements();
+	if ( formList.count() > 0 )
+	{
+	    clue->calcAbsolutePos( 0, 0 );
+	    positionFormElements();
+	}
 
 	emit resized( _re->size() );
 }
@@ -1646,14 +1650,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
     }
     else if ( strncasecmp( str, "/a", 2 ) == 0 )
     {
-	if ( url )
-	{
-	    popColor();
-	    popFont();
-	}
-	vspace_inserted = FALSE;
-	url = 0;
-	target = 0;
+	closeAnchor();
     }
     else if ( strncasecmp( str, "address", 7) == 0 )
     {
@@ -1693,27 +1690,15 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
     }
     else if ( strncasecmp(str, "blockquote", 10 ) == 0 )
     {
-	static const char *end[] = { "</blockquote>", 0 };  
-	HTMLClueH *c = new HTMLClueH( 0, 0, _clue->getMaxWidth() );
-	c->setVAlign( HTMLClue::Top );
+	indent += INDENT_SIZE;
 
-	// fixed width spacer
-	HTMLClueV *vc = new HTMLClueV( 0, 0, INDENT_SIZE, 0 );
-	c->append( vc );
-
-	vc = new HTMLClueV( 0, 0, c->getMaxWidth()-INDENT_SIZE*2 );
-	c->append( vc );
-	flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth() );
-	flow->setHAlign( divAlign );
-	vc->append( flow );
-
-	str = parseBody( vc, end, 0 );
-
-	_clue->append( c );
-
-	vc = new HTMLClueV( 0, 0, INDENT_SIZE, 0 );	// fixed width spacer
-	c->append( vc );
-
+	flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+	flow->setIndent( indent );
+	_clue->append( flow );
+    }
+    else if ( strncasecmp(str, "blockquote", 10 ) == 0 )
+    {
+	indent -= INDENT_SIZE;
 	flow = 0;
     }
     else if ( strncasecmp( str, "body", 4 ) == 0 )
@@ -2752,6 +2737,7 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 	}
 	else if ( strncasecmp( str, "p", 1 ) == 0 )
 	{
+		closeAnchor();
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
 		HTMLClue::HAlign align = divAlign;
 
@@ -3424,132 +3410,138 @@ const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 
 const char *KHTMLWidget::parseInput( const char *attr )
 {
-	enum Type { CheckBox, Hidden, Radio, Reset, Submit, Text, Image, Button };
-	const char *p;
-	HTMLInput *element = 0;
-	Type type = Text;
-	QString name = "";
-	QString value = "";
-	bool checked = false;
-	int size = 20;
-	QList<JSEventHandler> *handlers = 0L;      
+    enum InputType { CheckBox, Hidden, Radio, Reset, Submit, Text, Image,
+	    Button, Undefined };
+    const char *p;
+    HTMLInput *element = 0;
+    InputType type = Undefined;
+    QString name = "";
+    QString value = "";
+    bool checked = false;
+    int size = 20;
+    QList<JSEventHandler> *handlers = 0L;
 
-	QString s = attr;
-	StringTokenizer st( s, " >" );
-	while ( st.hasMoreTokens() )
+    QString s = attr;
+    StringTokenizer st( s, " >" );
+    while ( st.hasMoreTokens() )
+    {
+	const char* token = st.nextToken();
+	if ( strncasecmp( token, "type=", 5 ) == 0 )
 	{
-		const char* token = st.nextToken();
-		if ( strncasecmp( token, "type=", 5 ) == 0 )
-		{
-			p = token + 5;
-			if ( *p == '"' ) p++;
-			if ( strncasecmp( p, "checkbox", 8 ) == 0 )
-			    type = CheckBox;
-			else if ( strncasecmp( p, "hidden", 6 ) == 0 )
-			    type = Hidden;
-			else if ( strncasecmp( p, "radio", 5 ) == 0 )
-			    type = Radio;
-			else if ( strncasecmp( p, "reset", 5 ) == 0 )
-			    type = Reset;
-			else if ( strncasecmp( p, "submit", 5 ) == 0 )
-			    type = Submit;
-			else if ( strncasecmp( p, "button", 6 ) == 0 )
-			    type = Button;      
-			else if ( strncasecmp( p, "text", 5 ) == 0 )
-			    type = Text;
-		}
-		else if ( strncasecmp( token, "name=", 5 ) == 0 )
-		{
-			p = token + 5;
-			if ( *p == '"' ) p++;
-			name = p;
-			if ( name[ name.length() - 1 ] == '"' )
-				name.truncate( name.length() - 1 );
-		}
-		else if ( strncasecmp( token, "value=", 6 ) == 0 )
-		{
-			p = token + 6;
-			if ( *p == '"' ) p++;
-			value = p;
-			if ( value[ value.length() - 1 ] == '"' )
-				value.truncate( value.length() - 1 );
-		}
-		else if ( strncasecmp( token, "size=", 5 ) == 0 )
-		{
-			size = atoi( token + 5 );
-		}
-		else if ( strncasecmp( token, "checked", 7 ) == 0 )
-		{
-			checked = true;
-		}
-		else if ( strncasecmp( token, "onClick=", 8 ) == 0 )
-		{
-		    QString code;
-		    p = token + 8;
-		    if ( *p == '"' ) p++;
-		    code = p;
-		    if ( code[ code.length() - 1 ] == '"' )
-			code.truncate( value.length() - 1 );
-		    if ( handlers == 0L )
-		    {
-			handlers = new QList<JSEventHandler>;
-			handlers->setAutoDelete( TRUE );
-		    }
-		    handlers->append( new JSEventHandler( getJSEnvironment(), "onClick", code ) );
-		}     
+	    p = token + 5;
+	    if ( *p == '"' ) p++;
+	    if ( strncasecmp( p, "checkbox", 8 ) == 0 )
+		type = CheckBox;
+	    else if ( strncasecmp( p, "hidden", 6 ) == 0 )
+		type = Hidden;
+	    else if ( strncasecmp( p, "radio", 5 ) == 0 )
+		type = Radio;
+	    else if ( strncasecmp( p, "reset", 5 ) == 0 )
+		type = Reset;
+	    else if ( strncasecmp( p, "submit", 5 ) == 0 )
+		type = Submit;
+	    else if ( strncasecmp( p, "button", 6 ) == 0 )
+		type = Button;      
+	    else if ( strncasecmp( p, "text", 5 ) == 0 )
+		type = Text;
+	    else if ( strncasecmp( p, "Image", 5 ) == 0 )
+		type = Image;
 	}
-
-	switch ( type )
+	else if ( strncasecmp( token, "name=", 5 ) == 0 )
 	{
-		case CheckBox:
-			element = new HTMLCheckBox( this, name, value, checked );
-			break;
-
-		case Hidden:
-			element = new HTMLHidden( name, value );
-			break;
-
-		case Radio:
-			element = new HTMLRadio( this, name, value, checked );
-			connect( element, SIGNAL(radioSelected(const char *, const char *)),
-				form, SLOT(slotRadioSelected(const char *, const char *)));
-			connect( form, SIGNAL( radioSelected(const char*, const char *) ),
-				element, SLOT(slotRadioSelected(const char *, const char *)));
-			break;
-
-		case Reset:
-			element = new HTMLReset( this, value );
-			connect( element, SIGNAL( resetForm() ),
-				form, SLOT( slotReset() ) );
-			break;
-
-		case Submit:
-			element = new HTMLSubmit( this, value );
-			connect( element, SIGNAL( submitForm() ),
-				form, SLOT( slotSubmit() ) );
-			break;
-
-                case Button:
-                        element = new HTMLButton( this, name, value, handlers );
-                        break;
-   
-		case Text:
-			element = new HTMLTextInput( this, name, value, size );
-			connect( element, SIGNAL( submitForm() ),
-				form, SLOT( slotSubmit() ) );
-			break;
-
-		case Image:
-			break;
+	    p = token + 5;
+	    if ( *p == '"' ) p++;
+	    name = p;
+	    if ( name[ name.length() - 1 ] == '"' )
+		name.truncate( name.length() - 1 );
 	}
-
-	if ( element )
+	else if ( strncasecmp( token, "value=", 6 ) == 0 )
 	{
-		form->addElement( element );
-		flow->append( element );
+	    p = token + 6;
+	    if ( *p == '"' ) p++;
+	    value = p;
+	    if ( value[ value.length() - 1 ] == '"' )
+		value.truncate( value.length() - 1 );
 	}
+	else if ( strncasecmp( token, "size=", 5 ) == 0 )
+	{
+	    size = atoi( token + 5 );
+	}
+	else if ( strncasecmp( token, "checked", 7 ) == 0 )
+	{
+	    checked = true;
+	}
+	else if ( strncasecmp( token, "onClick=", 8 ) == 0 )
+	{
+	    QString code;
+	    p = token + 8;
+	    if ( *p == '"' ) p++;
+	    code = p;
+	    if ( code[ code.length() - 1 ] == '"' )
+		code.truncate( value.length() - 1 );
+	    if ( handlers == 0L )
+	    {
+		handlers = new QList<JSEventHandler>;
+		handlers->setAutoDelete( TRUE );
+	    }
+	    handlers->append( new JSEventHandler( getJSEnvironment(), "onClick", code ) );
+	}     
+    }
 
-	return 0;
+    switch ( type )
+    {
+	case CheckBox:
+	    element = new HTMLCheckBox( this, name, value, checked );
+	    break;
+
+	case Hidden:
+	    element = new HTMLHidden( name, value );
+	    break;
+
+	case Radio:
+	    element = new HTMLRadio( this, name, value, checked );
+	    connect( element, SIGNAL(radioSelected(const char *, const char *)),
+		form, SLOT(slotRadioSelected(const char *, const char *)));
+	    connect( form, SIGNAL( radioSelected(const char*, const char *) ),
+		element, SLOT(slotRadioSelected(const char *, const char *)));
+	    break;
+
+	case Reset:
+	    element = new HTMLReset( this, value );
+	    connect( element, SIGNAL( resetForm() ),
+		    form, SLOT( slotReset() ) );
+	    break;
+
+	case Submit:
+	    element = new HTMLSubmit( this, value );
+	    connect( element, SIGNAL( submitForm() ),
+		    form, SLOT( slotSubmit() ) );
+	    break;
+
+	case Button:
+	    element = new HTMLButton( this, name, value, handlers );
+	    break;
+
+	case Text:
+	    element = new HTMLTextInput( this, name, value, size );
+	    connect( element, SIGNAL( submitForm() ),
+		    form, SLOT( slotSubmit() ) );
+	    break;
+
+	case Image:
+	    break;
+
+	case Undefined:
+	    break;
+    }
+
+    if ( element )
+    {
+	form->addElement( element );
+	flow->append( element );
+    }
+
+    return 0;
 }
 
 void KHTMLWidget::slotScrollVert( int _val )
@@ -3580,9 +3572,12 @@ void KHTMLWidget::slotScrollVert( int _val )
 	    diff = height();
 	y_offset = _val;
 	// update region without clearing background
+/*
 	QPaintEvent *e = new QPaintEvent( QRect( 0, height() - diff,
 	    width(), diff ) );
 	QApplication::postEvent( this, e );
+*/
+	repaint( 0, height() - diff, width(), diff, false );
     }
     else
     {
@@ -3591,8 +3586,11 @@ void KHTMLWidget::slotScrollVert( int _val )
 	    diff = height();
 	y_offset = _val;
 	// update region without clearing background
+/*
 	QPaintEvent *e = new QPaintEvent( QRect(0, 0, width(), diff) );
 	QApplication::postEvent( this, e );
+*/
+	repaint( 0, 0, width(), diff, false );
     }
 }
 

@@ -67,7 +67,7 @@ KTopLevelWidget::~KTopLevelWidget()
     delete menubars;
     delete toolbars;
     */
-    KDEBUG (KDEBUG_INFO, 151, "KTopLevelWidget destructor: finished");
+//    KDEBUG (KDEBUG_INFO, 151, "KTopLevelWidget destructor: finished");
 
 	// remove this widget from the member list
 	memberList->remove( this );
@@ -81,7 +81,7 @@ KTopLevelWidget::~KTopLevelWidget()
 		// if there is no mainWidget left: bad luck
 		else
 		  {
-			KDEBUG( KDEBUG_FATAL, 151, "No main widget left" );
+//			KDEBUG( KDEBUG_FATAL, 151, "No main widget left" );
 			kapp->setMainWidget( NULL );
 
 			// but since it is the last one, it can at least deallocate

@@ -1,7 +1,16 @@
 KHTMLW CHANGES
 ==============
 
-Last Change: 27 September 1997 - Martin Jones.
+Last Change: 5 October 1997 - Martin Jones.
+
+Version 0.10.1 - Martin
+-----------------------
+
+Changed <blockquote> so that it does not block and doesn't crash if a
+</blockquote> is not supplied.
+Improvements for forms.
+More ampseq's from Norman Markgraf.
+Fix scrolling with sb arrows.
 
 Version 0.10.0 - Martin
 -----------------------

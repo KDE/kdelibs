@@ -44,8 +44,7 @@ protected:
 class BlockingToken
 {
 public:
-    enum Token { Table, UnorderedList, OrderedList, Menu, Dir, Glossary,
-		 FrameSet, Script, Cell, BlockQuote };
+    enum Token { Table, FrameSet, Script, Cell };
 
     BlockingToken( Token t, int p )
 	    {	ttype = t; pos = p; }

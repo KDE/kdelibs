@@ -87,7 +87,7 @@ HTMLSelect::HTMLSelect( QWidget *parent, const char *n, int s, bool )
 	if ( _size > 1 )
 	{
 		widget = new QListBox( parent );
-		size.setWidth( 100 );
+		size.setWidth( 150 );
 		size.setHeight( 20 * _size );
 		ascent = 25;
 		descent = size.height() - ascent;
@@ -95,7 +95,7 @@ HTMLSelect::HTMLSelect( QWidget *parent, const char *n, int s, bool )
 	else
 	{
 		widget = new QComboBox( FALSE, parent );
-		size.setWidth( 100 );
+		size.setWidth( 150 );
 		size.setHeight( 25 );
 		descent = 3;
 		ascent = size.height() - descent;
@@ -120,6 +120,8 @@ void HTMLSelect::addOption( const char *v, bool sel )
 			_defSelected = lb->count() - 1;
 			lb->setCurrentItem( _defSelected );
 		}
+		width = lb->maxItemWidth();
+		widget->resize( width, widget->height() );
 	}
 	else
 	{
@@ -130,6 +132,10 @@ void HTMLSelect::addOption( const char *v, bool sel )
 			_defSelected = cb->count() - 1;
 			cb->setCurrentItem( _defSelected );
 		}
+		QSize size = widget->sizeHint();
+		widget->resize( size );
+		ascent = size.height() - descent;
+		width = size.width();
 	}
 
 	if ( v )

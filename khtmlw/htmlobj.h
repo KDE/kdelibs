@@ -2,6 +2,8 @@
 //
 // KDE HTML Widget
 //
+// Copyright (c) Torben Weis and Martin Jones 1997
+//
 
 #ifndef HTMLOBJ_H
 #define HTMLOBJ_H
@@ -45,98 +47,124 @@ public:
     enum VAlign { Top, Bottom, VCenter, VNone };
     enum HAlign { Left, HCenter, Right, HNone };
 
-    /************************************************************
+    /*
      * This function should cause the HTMLObject to calculate its
      * width and height.
      */
     virtual void calcSize( HTMLClue * = NULL ) { }
-    /************************************************************
+    
+    /*
      * This function forces a size calculation for objects which
      * calculate their size at construction.  This is useful if
      * the metrics of the painter change, e.g. if the html is to
      * be printed on a printer instead of the display.
      */
     virtual void recalcBaseSize( QPainter * ) { }
-    /************************************************************
+
+    /*
      * This function calculates the minimum width that the object
      * can be set to. (added for table support)
      */
     virtual int  calcMinWidth() { return width; }
-    /************************************************************
+
+    /*
      * This function calculates the width that the object would like
      * to be. (added for table support)
      */
     virtual int  calcPreferredWidth() { return width; }
+
     virtual void setMaxAscent( int ) { }
     virtual void setMaxWidth( int _w ) { max_width = _w; }
     virtual int  findPageBreak( int _y );
-    /************************************************************
+
+    /*
      * Print the object but only if it fits in the rectangle given
      * by _x,_y,_width,_ascender. (_x|_y) is the lower left corner relative
      * to the parent of this object ( usually HTMLClue ).
      */
     virtual bool print( QPainter *, int, int, int, int, int, int, bool )
 	{ return false; }
+
     virtual void print( QPainter *, HTMLObject *, int, int, int, int, int, int )
 	{}
-    /************************************************************
+    /*
      * Print the object.
      */
     virtual void print( QPainter *, int, int ) { }
+
     virtual HTMLObject* checkPoint( int, int );
-    virtual void selectByURL( QPainter *, const char *, bool, int _tx, int _ty );
+    virtual void selectByURL(QPainter *, const char *, bool, int _tx, int _ty);
     virtual void select( QPainter *, bool, int _tx, int _ty );
-    /**
+
+    /*
      * Selects the object if it is inside the rectangle and deselects it
      * otherwise.
      */
     virtual void select( QPainter *, QRect &_rect, int _tx, int _ty );
-    /// Select all objects matching the regular expression.
-    virtual void select( QPainter *_painter, QRegExp& _pattern, bool _select, int _tx, int _ty );
+
+    // Select all objects matching the regular expression.
+    virtual void select( QPainter *_painter, QRegExp& _pattern, bool _select,
+	int _tx, int _ty );
+
     virtual void select( bool _s ) { setSelected( _s ); }
+
     // select text.  returns whether any text was selected.
     virtual bool selectText( QPainter *_painter, int _x1, int _y1,
 	int _x2, int _y2, int _tx, int _ty );
+
     virtual void getSelected( QStrList & );
     virtual void getSelectedText( QString & ) {}
 
-    /************************************************************
+    /*
      * Some objects may need to know their absolute position on the page.
      * This is only used by form elements so far.
      */
     virtual void calcAbsolutePos( int, int ) { }
-    
+
     virtual void reset() { setPrinted( false ); }
 
-    /*
-     * These functions are overloaded by objects that need to have a remote
+    /********************************
+     * These two functions are overloaded by objects that need to have a remote
      * file downloaded, e.g. HTMLImage.
+     *
+     * fileLoaded is called when the requested file has arrived.
      */
     virtual void fileLoaded( const char * /* _filename */ ) { }
+ 
+    /*
+     * returns the url of the file that has been requested.
+     */
     virtual const char *requestedFile() { return 0; }
 
     enum ObjectType { Object, Clue };
-    /************************************************************
+
+    /*
      * sometimes a clue would like to know if an object is a 
      * clue or a basic object.
      */
     virtual ObjectType getObjectType() const
 	    {	return Object; }
 
-    /************************************************************
+    /*
      * Get X-Position of this object relative to its parent
      */
     int getXPos() const { return x; }
-    /************************************************************
+
+    /*
      * Get Y-Position of this object relative to its parent
      */
     int getYPos() const { return y; }
+
     int getWidth() const { return width; }
     int getHeight() const { return ascent+descent; }
     int getAscent() const { return ascent; }
     int getDescent() const { return descent; }
     int getMaxWidth() const { return max_width; }
     int getPercent() const { return percent; }
+
+    /*
+     * return the URL associated with this object if available, else 0.
+     */
     virtual const char* getURL() const { return 0; }
     virtual const char* getTarget() const { return 0; }
 
@@ -164,7 +192,7 @@ public:
     void setAligned( bool a ) { a ? flags|=Aligned : flags&=~Aligned; }
     void setPrinted( bool p ) { p ? flags|=Printed : flags&=~Printed; }
     
-    /************************************************************
+    /*
      * Searches in all children ( and tests itself ) for an HTMLAnchor object
      * with the name '_name'. Returns 0L if the anchor could not be found.
      * '_point' is modified so that it holds the position of the anchor relative
@@ -173,6 +201,10 @@ public:
     virtual HTMLAnchor* findAnchor( const char */*_name*/, QPoint */*_point*/ )
 			{ return 0L; }
 
+    /*
+     * All objects can be an element in a list and maintain a pointer to
+     * the next object.
+     */
     void setNext( HTMLObject *n ) { nextObj = n; }
     HTMLObject *next() const { return nextObj; }
 
@@ -222,7 +254,10 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
-
+//
+// This object is text which also has an associated link.  This data is
+// not maintained in HTMLText to conserve memory.
+//
 class HTMLLinkText : public HTMLText
 {
 public:
@@ -250,11 +285,12 @@ public:
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth() { return calcMinWidth(); }
     virtual void setMaxWidth( int );
-    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width,
+	int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
 
 protected:
-	bool shade;
+    bool shade;
 };
 
 //-----------------------------------------------------------------------------
@@ -265,7 +301,8 @@ public:
     HTMLBullet( int _height, int _level, const QColor &col );
     virtual ~HTMLBullet() { }
 
-    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width,
+	int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
 
 protected:
@@ -307,7 +344,7 @@ class HTMLCachedImage
 {
 public:
     HTMLCachedImage( const char * );
-	virtual ~HTMLCachedImage() { }
+    virtual ~HTMLCachedImage() { }
 
     QPixmap* getPixmap() { return pixmap; }
     const char *getFileName() { return filename.data(); }
@@ -331,7 +368,8 @@ public:
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
     virtual void setMaxWidth( int );
-    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width,
+	int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
 
     static void cacheImage( const char * );
@@ -356,19 +394,19 @@ protected slots:
 
 protected:
 
-    /// Calculates the size of the loaded image.
-    /**
-      This function is usually called from the constructor or from
-      'imageLoaded'.
-      */
+    /*
+     * Calculates the size of the loaded image.
+     * This function is usually called from the constructor or from
+     * 'imageLoaded'.
+     */
     void init();
     
-    /// Pointer to the image
-    /**
-      If this pointer is 0L, that means that the picture could not be loaded
-      for some strange reason or that the image is waiting to be downloaded from
-      the internet for example.
-      */
+    /*
+     * Pointer to the image
+     * If this pointer is 0L, that means that the picture could not be loaded
+     * for some strange reason or that the image is waiting to be downloaded
+     * from the internet for example.
+     */
     QPixmap *pixmap;
 
 #ifdef USE_QMOVIE
@@ -377,50 +415,53 @@ protected:
     void *movie;
 #endif
 
-    // The URL of this image.
-    /**
-      This variable is only used if we have to wait for the image.
-      Otherwise this string will be empty.
-      */
+    /*
+     * The URL of this image.
+     * This variable is only used if we have to wait for the image.
+     * Otherwise this string will be empty.
+     */
     QString imageURL;
     
     KHTMLWidget *htmlWidget;
     
     static QList<HTMLCachedImage>* pCache;
 
-    /// Flag telling wether this image was found in the cache
-    /**
-      If this flag is set, you may not delete the pixmap since the pixmap
-      belongs to the HTMLCachedImage.
-      */
+    /*
+     * Flag telling wether this image was found in the cache
+     * If this flag is set, you may not delete the pixmap since the pixmap
+     * belongs to the HTMLCachedImage.
+     */
     bool cached;
 
-    /// If we knew the size of the image from the <img width=...> tag then this flag is TRUE.
-    /**
-      We need this flag if the image has to be loaded from the web. In this
-	  case we may have to reparse the HTML code if we did not know the size
-	  during the first parsing.
-      */
+    /*
+     * If we knew the size of the image from the <img width=...> tag then this
+     * flag is TRUE.
+     * We need this flag if the image has to be loaded from the web. In this
+     * case we may have to reparse the HTML code if we did not know the size
+     * during the first parsing.
+     */
     bool predefinedWidth;
 
-    /// If we knew the size of the image from the <img height=...> tag then this flag is TRUE.
-    /**
-      We need this flag if the image has to be loaded from the web. In this
-	  case we may have to reparse the HTML code if we did not know the size
-	  during the first parsing.
-      */
+    /*
+     * If we knew the size of the image from the <img height=...> tag then
+     * this flag is TRUE.
+     * We need this flag if the image has to be loaded from the web. In this
+     * case we may have to reparse the HTML code if we did not know the size
+     * during the first parsing.
+     */
     bool predefinedHeight;
 
-    /// Tells the function 'imageLoaded' wether it runs synchronized with the constructor
-    /**
-      If an image has to be loaded from the net, it may happen that the image
-	  is cached.  This means the the function 'imageLoaded' is called before
-	  the control returns to the constructor, since the constructor requested
-	  the image and this caused in turn 'imageLoaded' to be called. In this
-	  case the images arrived just in time and no repaint or recalculate
-	  action must take place. If 'imageLoaded' works synchron with
-      the constructor then this flag is set to TRUE.
-      */
+    /*
+     * Tells the function 'imageLoaded' wether it runs synchronized with the
+     * constructor
+     * If an image has to be loaded from the net, it may happen that the image
+     * is cached.  This means the the function 'imageLoaded' is called before
+     * the control returns to the constructor, since the constructor requested
+     * the image and this caused in turn 'imageLoaded' to be called. In this
+     * case the images arrived just in time and no repaint or recalculate
+     * action must take place. If 'imageLoaded' works synchron with
+     * the constructor then this flag is set to TRUE.
+     */
     bool synchron;
 
     // border width
@@ -439,26 +480,26 @@ protected:
 class HTMLArea
 {
 public:
-	HTMLArea( const QPointArray &_points, const char *_url,
-		const char *_target = 0 );
-	HTMLArea( const QRect &_rect, const char *_url, const char *_target = 0 );
-	HTMLArea( int _x, int _y, int _r, const char *_url,
-		const char *_target = 0 );
+    HTMLArea( const QPointArray &_points, const char *_url,
+	    const char *_target = 0 );
+    HTMLArea( const QRect &_rect, const char *_url, const char *_target = 0 );
+    HTMLArea( int _x, int _y, int _r, const char *_url,
+	    const char *_target = 0 );
 
-	enum Shape { Poly, Rect, Circle };
+    enum Shape { Poly, Rect, Circle };
 
-	bool contains( const QPoint &_point ) const
-		{	return region.contains( _point ); }
+    bool contains( const QPoint &_point ) const
+	    {	return region.contains( _point ); }
 
-	const QString &getURL() const
-		{	return url; }
-	const char *getTarget() const
-		{	return target; }
+    const QString &getURL() const
+	    {	return url; }
+    const char *getTarget() const
+	    {	return target; }
 
 protected:
-	QRegion region;
-	QString url;
-	QString target;
+    QRegion region;
+    QString url;
+    QString target;
 };
 
 //----------------------------------------------------------------------------
@@ -472,24 +513,24 @@ protected:
 class HTMLMap : public HTMLObject
 {
 public:
-	HTMLMap( KHTMLWidget *w, const char *_url );
-	virtual ~HTMLMap() { }
+    HTMLMap( KHTMLWidget *w, const char *_url );
+    virtual ~HTMLMap() { }
 
-	virtual void fileLoaded( const char *_filename );
-	virtual const char *requestedFile()
-		{	return mapurl; }
+    virtual void fileLoaded( const char *_filename );
+    virtual const char *requestedFile()
+	    {	return mapurl; }
 
-	void addArea( HTMLArea *_area )
-		{	areas.append( _area ); }
-	const HTMLArea *containsPoint( int, int );
+    void addArea( HTMLArea *_area )
+	    {	areas.append( _area ); }
+    const HTMLArea *containsPoint( int, int );
 
-	const char *mapURL() const
-		{	return mapurl; }
+    const char *mapURL() const
+	    {	return mapurl; }
 
 protected:
-	QList<HTMLArea> areas;
-	KHTMLWidget *htmlWidget;
-	QString mapurl;
+    QList<HTMLArea> areas;
+    KHTMLWidget *htmlWidget;
+    QString mapurl;
 };
 
 //----------------------------------------------------------------------------
@@ -497,40 +538,40 @@ protected:
 class HTMLImageMap : public HTMLImage
 {
 public:
-	HTMLImageMap( KHTMLWidget *widget, const char*, char *_url,
-		char *_target, int _max_width, int _width = -1,
-		int _height = -1, int _percent = 0, int brd = 0 );
-	virtual ~HTMLImageMap() {}
+    HTMLImageMap( KHTMLWidget *widget, const char*, char *_url,
+	    char *_target, int _max_width, int _width = -1,
+	    int _height = -1, int _percent = 0, int brd = 0 );
+    virtual ~HTMLImageMap() {}
 
-	virtual HTMLObject* checkPoint( int, int );
+    virtual HTMLObject* checkPoint( int, int );
 
-	void setMapURL( const char *_url )
-		{	mapurl = _url; }
-	const QString& mapURL() const
-		{	return mapurl; }
+    void setMapURL( const char *_url )
+	    {	mapurl = _url; }
+    const QString& mapURL() const
+	    {	return mapurl; }
 
-	enum Type { ClientSide, ServerSide };
+    enum Type { ClientSide, ServerSide };
 
-	void setMapType( Type t )
-		{	type = t; }
-	bool mapType() const
-		{	return type; }
+    void setMapType( Type t )
+	    {	type = t; }
+    bool mapType() const
+	    {	return type; }
 
 protected:
-	/*
-	 * The URL set by <a href=...><img ... ISMAP></a> for server side maps
-	 */
-	QString serverurl;
+    /*
+     * The URL set by <a href=...><img ... ISMAP></a> for server side maps
+     */
+    QString serverurl;
 
-	/*
-	 * The URL set by <img ... USEMAP=mapurl> for client side maps
-	 */
-	QString mapurl;
+    /*
+     * The URL set by <img ... USEMAP=mapurl> for client side maps
+     */
+    QString mapurl;
 
-	/*
-	 * ClientSide or ServerSide
-	 */
-	Type type;
+    /*
+     * ClientSide or ServerSide
+     */
+    Type type;
 };
 
 //----------------------------------------------------------------------------

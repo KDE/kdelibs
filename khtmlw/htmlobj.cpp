@@ -1,5 +1,8 @@
+//-----------------------------------------------------------------------------
 //
 // KDE HTML Widget
+//
+// Copyright (c) Torben Weis and Martin Jones 1997
 //
 
 #include <kurl.h>
@@ -215,7 +218,7 @@ HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
     text = " ";
     font = _font;
     ascent = _painter->fontMetrics().ascent();
-    descent = _painter->fontMetrics().descent();
+    descent = _painter->fontMetrics().descent() + 1;
     width = _painter->fontMetrics().width( (const char*)text );
     setSeparator( true );
     selStart = 0;
@@ -337,7 +340,7 @@ void HTMLText::recalcBaseSize( QPainter *_painter )
     const QFont &oldFont = _painter->font();
     _painter->setFont( *font );
     ascent = _painter->fontMetrics().ascent();
-    descent = _painter->fontMetrics().descent();
+    descent = _painter->fontMetrics().descent() + 1;
     width = _painter->fontMetrics().width( (const char*)text );
     _painter->setFont( oldFont );
 }
@@ -592,8 +595,8 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 	int _max_width, int _width, int _height, int _percent, int bdr )
     : QObject(), HTMLObject()
 {
-	if ( pCache == NULL )
-		pCache = new QList<HTMLCachedImage>;
+    if ( pCache == NULL )
+	pCache = new QList<HTMLCachedImage>;
 
     pixmap = 0L;
     movie = 0;
@@ -747,7 +750,7 @@ int HTMLImage::calcMinWidth()
 
 int HTMLImage::calcPreferredWidth()
 {
-	return width;
+    return width;
 }
 
 void HTMLImage::setMaxWidth( int _max_width )

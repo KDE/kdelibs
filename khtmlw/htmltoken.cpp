@@ -28,26 +28,6 @@ const char *BlockingToken::token()
 		return "</table";
 		break;
 
-	case UnorderedList:
-		return "</ul";
-		break;
-
-	case OrderedList:
-		return "</ol";
-		break;
-
-	case Menu:
-		return "</menu";
-		break;
-
-	case Dir:
-		return "</dir";
-		break;
-
-	case Glossary:
-		return "</dl";
-		break;
-
 	case FrameSet:
 		return "</frameset";
 		break;
@@ -59,9 +39,6 @@ const char *BlockingToken::token()
 	case Cell:
 		return "</cell";
 		break;
-
-	case BlockQuote:
-		return "</blockquote";
     }
 
     return "";
@@ -339,38 +316,6 @@ void HTMLTokenizer::write( const char *str )
 	    else if ( strncasecmp( buffer+1, "<table", 6 ) == 0 )
 	    {
 		blocking.append( new BlockingToken( BlockingToken::Table,
-				tokenList.at() ) );
-	    }
-/*
-	    else if ( strncasecmp( buffer+1, "<ul", 3 ) == 0 )
-	    {
-		blocking.append( new BlockingToken(BlockingToken::UnorderedList,
-				tokenList.at() ) );
-	    }
-	    else if ( strncasecmp( buffer+1, "<ol", 3 ) == 0 )
-	    {
-		blocking.append( new BlockingToken( BlockingToken::OrderedList,
-				tokenList.at() ) );
-	    }
-	    else if ( strncasecmp( buffer+1, "<menu", 5 ) == 0 )
-	    {
-		blocking.append( new BlockingToken( BlockingToken::Menu,
-				tokenList.at() ) );
-	    }
-	    else if ( strncasecmp( buffer+1, "<dir", 4 ) == 0 )
-	    {
-		blocking.append( new BlockingToken( BlockingToken::Dir,
-				tokenList.at() ) );
-	    }
-	    else if ( strncasecmp( buffer+1, "<dl", 3 ) == 0 )
-	    {
-		blocking.append( new BlockingToken( BlockingToken::Glossary,
-				tokenList.at() ) );
-	    }
-*/
-	    else if ( strncasecmp( buffer+1, "<blockquote", 11 ) == 0 )
-	    {
-		blocking.append( new BlockingToken( BlockingToken::BlockQuote,
 				tokenList.at() ) );
 	    }
 	    else if ( !blocking.isEmpty() && 

@@ -719,6 +719,19 @@ protected:
     virtual void focusInEvent( QFocusEvent * ) { }
     virtual void focusOutEvent( QFocusEvent * ) { }
 
+    // do </a> if necessary
+    void closeAnchor()
+    {
+	if ( url )
+	{
+	    popColor();
+	    popFont();
+	    vspace_inserted = FALSE;
+	}
+	url = 0;
+	target = 0;
+    }
+
     /*
      * This function is called after &lt;body&gt; usually. You can
      * call it for every rectangular area: For example a tables cell
