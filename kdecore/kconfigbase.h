@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.21  1999/04/18 09:15:09  kulow
+// taking out config.h from Header files. I don't know if I haven't noticed
+// before, but this is even very dangerous
+//
 // Revision 1.20  1999/04/10 23:19:08  torben
 // Torben: Added QStringList since it supports unicode. Unfortunately
 // KConfig does not do that right now ...
@@ -103,6 +107,7 @@
 #include <qfont.h>
 #include <qstrlist.h>
 #include <qstringlist.h>
+#include <qproperty.h>
 
 // KDE includes
 #include <kconfigdata.h>
@@ -256,6 +261,14 @@ public:
 		     const QString& pDefault = QString::null ) const;
 
   /**
+   * Read the value of an entry specified by rKey in the current group.
+   * The value is treated to be of the given type.
+   *
+   * @return an empty property on error.
+   */
+  QProperty readPropertyEntry( const QString& rKey, QProperty::Type ) const;
+  
+  /**
    * Read a list of strings.
    *
    * @deprecated
@@ -272,12 +285,10 @@ public:
    * Read a list of strings.
    *
    * @param pKey The key to search for
-   * @param list In this object, the read list will be returned.
    * @param sep  The list separator (default ",")
-   * @return The number of entries in the list.
+   * @return The list.
    */
-  int readListEntry( const QString& pKey, QStringList &list,
-		     char sep = ',' ) const;
+  QStringList readListEntry( const QString& pKey, char sep = ',' ) const;
 
   /**
    * Read a numerical value.
@@ -451,25 +462,68 @@ public:
 		      bool bNLS = false );
 
   /**
+   * writeEntry() overriden to accept a property.
+   *
+   * Note: Unlike the other writeEntry() functions, the old value is
+   * _not_ returned here!
+   *
+   * @param rKey The key to write
+   * @param rValue The property to write
+   * @param bPersistent	If bPersistent is false, the entry's dirty flag
+   *			will not be set and thus the entry will not be
+   *			written to disk at deletion time.
+   * @param bGlobal If bGlobal is true, the pair is not saved to the
+   *                application specific config file, but to the global ~/.kderc
+   * @param bNLS If bNLS is true, the locale tag is added to the key
+   *             when writing it back.
+   *
+   * @see #writeEntry
+   */
+  void writeEntry( const QString& rKey, const QProperty& rValue,
+		    bool bPersistent = true, bool bGlobal = false,
+		    bool bNLS = false );
+  
+  /**
    * writeEntry() overriden to accept a list of strings.
    *
    * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
-   * @param pKey		The key to write
-   * @param list		The list to write
-   * @param sep		The list separator
+   * @param rKey The key to write
+   * @param rValue The list to write
    * @param bPersistent	If bPersistent is false, the entry's dirty flag
    *			will not be set and thus the entry will not be
    *			written to disk at deletion time.
-   * @param bGlobal	If bGlobal is true, the pair is not saved to the
-   *  application specific config file, but to the global ~/.kderc
-   * @param bNLS	If bNLS is true, the locale tag is added to the key
-   *  when writing it back.
+   * @param bGlobal If bGlobal is true, the pair is not saved to the
+   *                application specific config file, but to the global ~/.kderc
+   * @param bNLS If bNLS is true, the locale tag is added to the key
+   *             when writing it back.
    *
    * @see #writeEntry
    */
-  void writeEntry ( const QString& pKey, QStrList &list, char sep = ',',
+  void writeEntry ( const QString& pKey, const QStrList &rValue, char sep = ',',
+		    bool bPersistent = true, bool bGlobal = false,
+		    bool bNLS = false );
+
+  /**
+   * writeEntry() overriden to accept a list of strings.
+   *
+   * Note: Unlike the other writeEntry() functions, the old value is
+   * _not_ returned here!
+   *
+   * @param rKey The key to write
+   * @param rValue The list to write
+   * @param bPersistent	If bPersistent is false, the entry's dirty flag
+   *			will not be set and thus the entry will not be
+   *			written to disk at deletion time.
+   * @param bGlobal If bGlobal is true, the pair is not saved to the
+   *                application specific config file, but to the global ~/.kderc
+   * @param bNLS If bNLS is true, the locale tag is added to the key
+   *             when writing it back.
+   *
+   * @see #writeEntry
+   */
+  void writeEntry ( const QString& pKey, const QStringList &rValue, char sep = ',',
 		    bool bPersistent = true, bool bGlobal = false,
 		    bool bNLS = false );
   
