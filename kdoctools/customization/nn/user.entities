@@ -6,3 +6,33 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
+<!-- ROLES OF TRANSLATORS -->
+
+<!ENTITY omsetjarGauteHvoslefKvalnes       '<othercredit role="translator"><firstname>Gaute</firstname><surname>Hvoslef Kvalnes</surname><affiliation><address><email>gaute@verdsveven.com</email></address></affiliation><contrib>Omsetjing til nynorsk</contrib></othercredit>'>
+<!ENTITY sprakvaskGauteHvoslefKvalnes      '<othercredit role="reviewer"><firstname>Gaute</firstname><surname>Hvoslef Kvalnes</surname><affiliation><address><email>gaute@verdsveven.com</email></address></affiliation><contrib>Språkvask av nynorskomsetjinga</contrib></othercredit>'>
+
+<!ENTITY omsetjarLarsNestasMathisen        '<othercredit role="translator"><firstname>Lars</firstname><surname>Nestås Mathisen</surname><affiliation><address><email>orvarodd@start.no</email></address></affiliation><contrib>Omsetjing til nynorsk</contrib></othercredit>'>
+<!ENTITY sprakvaskLarsNestasMathisen       '<othercredit role="reviewer"><firstname>Lars</firstname><surname>Nestås Mathisen</surname><affiliation><address><email>orvarodd@start.no</email></address></affiliation><contrib>Språkvask av nynorskomsetjinga</contrib></othercredit>'>
+
+<!-- CREDITS FOR TRANSLATORS -->
+
+<!ENTITY GauteHvoslefKvalnes      'Gaute Hvoslef Kvalnes <email>gaute@verdsveven.com</email>'>
+<!ENTITY LarsNestasMathisen       'Lars Nestås Mathisen <email>orvarodd@start.no</email>'>
+
+<!-- OTHER USER ENTITIES -->
+
+<!ENTITY Alt	"<keycap>Alt</keycap>">
+<!ENTITY Backspace	"<keycap>Backspace</keycap>">
+<!ENTITY cdrom	'<hardware>CD-ROM-stasjon</hardware>'>
+<!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
+<!ENTITY dpi	'<acronym>ppt</acronym>'>
+<!ENTITY Enter	"<keycap>Enter</keycap>">
+<!ENTITY Esc	"<keycap>Esc</keycap>">
+<!ENTITY FAQ	'<acronym>FAQ</acronym>'>
+<!ENTITY infocenter	"<application>Infosenter</application>">
+<!ENTITY kcontrolcenter	"<application>&kde; Kontrollsenter</application>">
+<!ENTITY LMB    "<mousebutton>venstre</mousebutton> museknapp">
+<!ENTITY MMB    "<mousebutton>midtre</mousebutton> museknapp">
+<!ENTITY RMB    "<mousebutton>høgre</mousebutton> museknapp">
+<!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY Tab	"<keycap>Tab</keycap>">
