@@ -1,7 +1,7 @@
 KDE HTML Widget
 ---------------
 
-This is the alpha version 0.5.4
+This is the alpha version 0.6
 
 Developers
 ----------
@@ -252,6 +252,29 @@ Version 0.5.4 - Martin
  Accept bgcolor="XXXXXX" when it should be bgcolor="#XXXXXX"
  Implement align and valign in <tr>
 
+
+Version 0.6 - Martin
+
+ Moved tokenizers to htmltoken.[h|cpp]
+ Many changes to support progressive loading of the page. You can now do
+  something like:
+     begin();
+	 parse();    // doing this here will make the widget parse and display as
+	             // more html is added using write() (provided control is
+				 // released to the event loop).
+	 write();
+	   :
+	   :
+	 write();
+	 end();
+ Added support for <li> without <ul></ul> because Netscape supports it.
+ Change HTMLImage::pCache and pFontManager to be dynamically constructed
+  so that khtmlw can be created as a shared lib on brain dead systems.
+ Applied patches from Christian Czezatke to make more robust when poor
+  (illegal) HTML is processed.
+ General cleanups.
+ Suppress space at the start of a paragraph (HTMLClueFlow)
+
 Last change
-1.5.97 Martin Jones
+16.5.97 Martin Jones
 

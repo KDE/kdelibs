@@ -17,6 +17,7 @@
 #include <qimage.h>
 #include <qdrawutl.h>
 
+// This will be constructed once and NEVER deleted.
 QList<HTMLCachedImage>* HTMLImage::pCache = NULL;
 int HTMLObject::objCount = 0;
 
@@ -301,42 +302,39 @@ HTMLCachedImage::HTMLCachedImage( const char *_filename )
 
 QPixmap* HTMLImage::findImage( const char *_filename )
 {
-  // Since this method is static, it is possible that pCache has not
-  // yet been initialized. Better be careful.
-  if( !pCache )
+	// Since this method is static, it is possible that pCache has not
+	// yet been initialized. Better be careful.
+	if( !pCache )
 	{
-	  pCache = new QList<HTMLCachedImage>;
-	  pCache->setAutoDelete( true );
+		pCache = new QList<HTMLCachedImage>;
+		return 0l;
 	}
 
-  HTMLCachedImage *img;
-  for ( img = pCache->first(); img != 0L; img = pCache->next() )
+    HTMLCachedImage *img;
+    for ( img = pCache->first(); img != 0L; img = pCache->next() )
     {
-	  if ( strcmp( _filename, img->getFileName() ) == 0 )
+	if ( strcmp( _filename, img->getFileName() ) == 0 )
 	    return img->getPixmap();
     }
-  
-  return 0L;
+    
+    return 0L;
 }
 
 void HTMLImage::cacheImage( const char *_filename )
 {
-  // Since this method is static, it is possible that pCache has not
-  // yet been initialized. Better be careful.
-  if( !pCache )
-	{
-	  pCache = new QList<HTMLCachedImage>;
-	  pCache->setAutoDelete( true );
-	}
+	// Since this method is static, it is possible that pCache has not
+	// yet been initialized. Better be careful.
+	if( !pCache )
+		pCache = new QList<HTMLCachedImage>;
 
-  pCache->append( new HTMLCachedImage( _filename ) );
+	pCache->append( new HTMLCachedImage( _filename ) );
 }
 
 HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename, const char* _url, int _max_width,
 		      int _width, int _height, int _percent )
 {
-	pCache = new QList<HTMLCachedImage>;
-	pCache->setAutoDelete( true );
+	if ( pCache == NULL )
+		pCache = new QList<HTMLCachedImage>;
 
     pixmap = 0L;
 
@@ -513,12 +511,6 @@ HTMLImage::~HTMLImage()
 {
     if ( pixmap && !cached )
 	delete pixmap;
-
-	if( pCache != NULL )
-	  {
-		delete pCache;
-		pCache = NULL;
-	  }
 }
 
 //-----------------------------------------------------------------------------
@@ -755,6 +747,8 @@ void HTMLTable::calcSize( HTMLClue * )
 		{
 			cell = cells[r][c];
 
+			if (NULL == cell)
+			        continue; 
 			if ( c < totalCols - 1 && cell == cells[r][c+1] )
 				continue;
 			if ( r < row - 1 && cell == cells[r+1][c] )
@@ -780,6 +774,8 @@ void HTMLTable::calcSize( HTMLClue * )
 		for ( c = 0; c < totalCols; c++ )
 		{
 			cell = cells[r][c];
+			if (NULL == cell)
+			       continue;
 
 			if ( c < totalCols - 1 && cell == cells[r][c+1] )
 				continue;
@@ -829,7 +825,11 @@ void HTMLTable::calcColumnWidths()
 				continue;
 			if ( r < row - 1 && cells[r+1][c] == cell )
 				continue;
-/*
+
+			if (NULL == cell)
+			        continue; 
+
+			/*
 			// calculate minimum pos
 			if ( cell->isFixedWidth() )
 			{
@@ -940,6 +940,8 @@ void HTMLTable::calcRowHeights()
 		{
 			HTMLTableCell *cell = cells[r][c];
 
+			if (cell == NULL) 
+			        continue;
 			if ( c < totalCols - 1 && cell == cells[r][c+1] )
 				continue;
 			if ( r < row - 1 && cells[r+1][c] == cell )
@@ -1094,7 +1096,8 @@ void HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _heig
 		for ( c = 0; c < totalCols; c++ )
 		{
 			HTMLTableCell *cell = cells[r][c];
-
+			if (NULL == cell)
+			        continue;
 			if ( c < totalCols - 1 && cell == cells[r][c+1] )
 				continue;
 			if ( r < row - 1 && cells[r+1][c] == cell )
@@ -1117,6 +1120,8 @@ void HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _heig
 			{
 				HTMLTableCell *cell = cells[r][c];
 
+				if (NULL == cell)
+				        continue;
 				if ( c < totalCols - 1 && cell == cells[r][c+1] )
 					continue;
 				if ( r < row - 1 && cells[r+1][c] == cell )
@@ -1731,7 +1736,8 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 				parent->appendLeftAligned( c );
 			else
 				parent->appendRightAligned( c );
-			if ( it.current() == list.getFirst() )
+//			if ( it.current() == list.getFirst() )
+			if ( w == lmargin )
 			{
 				if ( c->getHAlign() == Left )
 					c->setPos( lmargin,
@@ -1739,6 +1745,8 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 				else
 					c->setPos( rmargin - c->getWidth(),
 						ascent + c->getAscent() );
+				while ( it.current() != line.current() )
+					++line;
 				++line;
 				lmargin = parent->getLeftMargin( this, 1 );
 				rmargin = parent->getRightMargin( this, 1 );
@@ -1814,9 +1822,13 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 
 			obj->setXPos( w );
 
-			w += obj->getWidth();
-			if ( w > width)
-				width = w;
+			// skip a space at the start of a line
+			if ( w != lmargin || !obj->isSeparator() )
+			{
+				w += obj->getWidth();
+				if ( w > width)
+					width = w;
+			}
 		}
 		// Object does not fit in the line but is smaller than max_width or
 		// it is a newline
@@ -2011,272 +2023,4 @@ void HTMLClueAligned::calcSize( HTMLClue * )
 }
 
 //-----------------------------------------------------------------------------
-
-HTMLTokenizer::HTMLTokenizer( const char *str )
-{
-    int c;
-
-	const char *src = str;
-
-    for ( c = 0; *src != '\0'; c++, src++ )
-    {
-	if ( *src == '<' || *src == '>' || *src == ' ' || *src == '\n' )
-	    c += 3;
-	else if ( *src == '\t' )
-	    c += TAB_SIZE;
-    }
-    
-    buffer = new char[ c  + 1 ];
-	char *dest = buffer;
-
-    src = str;
-    bool tag = false;
-    // To avoid multiple spaces.
-    bool space = false;
-    bool pre = false;
-    // If we have <pre> and get a '\t' we need to know
-    // in which row we are in order to calculate the next
-    // tabulators position.
-    int pre_pos = 0;
-
-    while ( *src != 0 )
-    {
-	if ( *src == '&' )
-	{
-	    if ( pre )
-		pre_pos ++;	    
-	    space = false;
-
-	    // Is the string long enough?
-	    if ( *(src+1) != '\0' && *(src+2) != '\0' )
-	    {
-		// Special character by number?
-		if ( *(src + 1) == '#' )
-		{
-		    char *endptr;
-		    int z = (int) strtol( src+2, &endptr, 10 );
-		    *dest++ = z;
-			src = endptr;
-		    // Skip a trailing ';' ?
-		    if ( *src == ';' )
-				src++;
-		}
-		// Special character ?
-		else if ( isalpha( *(src + 1) ) )
-		{
-		    int tmpcnt;
-		    
-		    for ( tmpcnt = 0; tmpcnt < NUM_AMPSEQ; tmpcnt++ ) 
-			{
-				if ( strncmp( AmpSequences[ tmpcnt ].tag, src+1,
-					 strlen( AmpSequences[ tmpcnt ].tag ) ) == 0 )
-				{
-					*dest++ = AmpSequences[ tmpcnt ].value;
-					src += strlen( AmpSequences[ tmpcnt ].tag ) + 1;
-					if ( *src == ';' )
-						src++;
-					break;
-				}
-			}
-
-			if ( tmpcnt == NUM_AMPSEQ )
-			*dest++ = *src++;
-		}
-		else
-		    *dest++ = *src++;
-	    }
-	    else
-		*dest++ = *src++;
-	}
-	else if ( *src == '<' )
-	{
-	    if ( strncasecmp( src, "<pre>", 5 ) == 0 )
-	    {
-		pre_pos = 0;
-		pre = TRUE;
-	    }
-	    else if ( strncasecmp( src, "</pre>", 6 ) == 0 )
-		pre = false;
-		else if ( strncasecmp( src, "<!--", 4 ) == 0 )
-		{
-			src += 4;
-
-			while ( *src )
-			{
-				if ( strncasecmp( src, "-->", 3 ) == 0 )
-				{
-					src += 3;
-					break;
-				}
-				src++;
-			}
-			continue;
-		}
-
-	    space = false;
-
-	    if ( dest > buffer )
-		*dest++ = 0;
-	    *dest++ = TAG_ESCAPE;
-	    *dest++ = '<';
-	    tag = true;
-	    src++;
-	}
-	else if ( *src == '>' )
-	{
-	    space = false;
-
-	    *dest++ = '>';
-	    *dest++ = 0;
-	    tag = false;
-	    src++;
-	}
-	else if ( !tag && pre && ( *src == ' ' || *src == '\t' || *src == '\n' || *src == 13 ) )
-	{
-	    // For every line break in <pre> insert a the tag '\n'.
-	    if ( *src == '\n' )
-	    {
-		*dest++ = 0;
-		*dest++ = TAG_ESCAPE;
-		*dest++ = '\n';
-		*dest++ = 0;
-		pre_pos = 0; 
-	    }
-	    else if ( *src == '\t' )
-	    {
-		int p = TAB_SIZE - ( pre_pos % TAB_SIZE );
-		for ( int x = 0; x < p; x++ )
-		    *dest++ = ' ';
-	    }
-	    else if ( *src == ' ' )
-	    {
-		pre_pos ++;
-		*dest++ = ' ';
-		space = TRUE;
-	    }
-	    src++;
-	}
-	else if ( !tag && ( *src == ' ' || *src == '\t' || *src == '\n' || *src == 13 ) )
-	{
-	    if ( !space )
-	    {
-// MRJ - taking line this out nearly halves mem usage and makes almost no
-// difference to output
-//		*dest++ = 0;
-		*dest++ = ' ';
-		*dest++ = 0;
-	    }
-	    src++;
-	    space = TRUE;
-	}
-	else
-	{
-	    space = false;
-	    if ( pre )
-		pre_pos++;
-	    
-	    *dest++ = *src++;
-	}
-    }
-
-    end = dest;
-    *end = 0;
-
-    pos = buffer;
-}
-
-const char* HTMLTokenizer::nextToken()
-{
-    if ( pos == NULL )
-	return 0L;
-
-    char *ret = pos;
-    pos += strlen( ret ) + 1;
-    if ( pos >= end )
-	pos = NULL;
-
-    return ret;
-}
-
-bool HTMLTokenizer::hasMoreTokens()
-{
-    if ( pos == NULL )
-	return false;
-    return true;
-}
-
-HTMLTokenizer::~HTMLTokenizer()
-{
-    if ( buffer != 0L )
-		delete [] buffer;
-}
-
-//-----------------------------------------------------------------------------
-
-StringTokenizer::StringTokenizer( const QString &_str, const char *_separators )
-{
-    QString str = _str.simplifyWhiteSpace();
-    int c;
-
-    const char *separators = _separators;
-    const char *src = str.data();
-
-    for ( c = 0; *src != '\0'; c++, src++ )
-    {
-	const char *s = separators;
-	while( *s != 0 )
-	{
-	    if ( *src == *s )
-		c++;
-	    s++;
-	}
-    }
-    
-    buffer = new char[ c + 1 ];
-
-    src = str.data();
-	end = buffer;
-    bool quoted = false;
-    
-    for ( ; *src != '\0'; src++ )
-    {
-	char *x = strchr( separators, *src );
-	if ( *src == '\"' )
-	    quoted = !quoted;
-	else if ( x != 0L && !quoted )
-	    *end++ = 0;
-	else
-	    *end++ = *src;
-    }
-
-    *end = 0;
-
-    pos = buffer;
-}
-
-const char* StringTokenizer::nextToken()
-{
-    if ( pos == NULL )
-	return 0L;
-
-    char *ret = pos;
-    pos += strlen( ret ) + 1;
-    if ( pos >= end )
-	pos = NULL;
-
-    return ret;
-}
-
-bool StringTokenizer::hasMoreTokens()
-{
-    if ( pos == NULL )
-	return false;
-    return true;
-}
-
-StringTokenizer::~StringTokenizer()
-{
-    if ( buffer != 0L )
-	delete [] buffer;
-}
 

@@ -20,19 +20,11 @@
 class HTMLClueV;
 class HTMLImage;
 class HTMLClue;
-class HTMLTokenizer;
 class HTMLClueFlow;
 class HTMLClueAligned;
 class KHTMLWidget;
 
 #include "htmlfont.h"
-
-// Every tag as deliverd by HTMLTokenizer starts with TAG_ESCAPE. This way
-// you can devide between tags and words.
-#define TAG_ESCAPE 13
-
-// The count of spaces used for each tab.
-#define TAB_SIZE 8
 
 // The border around an aligned object
 #define ALIGN_BORDER 2
@@ -589,40 +581,6 @@ protected:
       the constructor then this flag is set to TRUE.
       */
     bool synchron;
-};
-
-//-----------------------------------------------------------------------------
-
-class StringTokenizer
-{
-public:
-    StringTokenizer( const QString &, const char * );
-    ~StringTokenizer();
-
-    const char* nextToken();
-    bool hasMoreTokens();
-
-protected:
-    char *pos;
-    char *end;
-    char *buffer;
-};
-
-//-----------------------------------------------------------------------------
-
-class HTMLTokenizer
-{
-public:
-    HTMLTokenizer( const char * );
-    ~HTMLTokenizer();
-
-    const char* nextToken();
-    bool hasMoreTokens();
-
-protected:
-    char *pos;
-    char *end;
-    char *buffer;
 };
 
 #endif // HTMLOBJ

@@ -1,7 +1,7 @@
 Begin
 Title:          khtmlw
-Version:        0.5.4
-Entered-date:   2/5/97
+Version:        0.6.0
+Entered-date:   16/5/97
 Description:    HTML widget for the KDE project
 Keywords:       HTML KDE Qt X11
 Author:         Torben Weis <weis@kde.org>

@@ -15,6 +15,7 @@ class KHTMLWidget;
 #include "drag.h"
 #include "htmlobj.h"
 #include "htmlform.h"
+#include "htmltoken.h"
 
 // Borders between widgets frame and displayed text
 #define LEFT_BORDER 10
@@ -40,7 +41,7 @@ public:
 	virtual void setPalette( const QPalette & ) {}
 
     /*********************************************************
-     * Start writing HTML code using the write functions.
+     * Start writing HTML code using the write function.
      * '_url' is the URL we are going to display. The value is
      * stored in actualURL. You can tell the widget to use the given
      * offsets. It must not use them. It is just a hint. Use this
@@ -49,10 +50,6 @@ public:
      * go back to start of the document.
      */
     void begin( const char *_url = 0L, int _x_offset = 0, int _y_offset = 0 );
-    /*********************************************************
-     * Adds the string to the HTML code.
-     */
-    void write( QString & );
     /*********************************************************
      * Adds the string to the HTML code.
      */
@@ -396,21 +393,6 @@ protected:
 	void positionFormElements();
 
     /*********************************************************
-     * The HTML code.
-     */
-    char *text;
-    /*********************************************************
-     * Between begin() and end() we store the last position in
-     * 'text' in this variable.
-     */
-    int text_pos;
-    /*********************************************************
-     * This is the maximum size of 'text'. If text_pos >= text_size
-     * we have to resize 'text'.
-     */
-    int text_size;
-
-    /*********************************************************
      * The <title>...</title>.
      */
     QString title;
@@ -548,6 +530,11 @@ protected:
 	QTimer timer;
 
 	/*********************************************************
+	 * begin() has been called, but not end()
+	 */
+	bool writing;
+
+	/*********************************************************
 	 * Is the widget currently parsing
 	 */
 	bool parsing;
@@ -610,11 +597,16 @@ protected:
       */
     bool bPaintAfterParsing;
 
+	bool bAutoUpdate;
+
     /// The URL of the not loaded!! background image
     /**
       If we are waiting for a background image then this is its URL.
       */
     QString bgPixmapURL;
+
+	/// true if the current text is destined for <title>
+	bool inTitle;
 
 	/// List of forms in the page
 	QList<HTMLForm> formList;
