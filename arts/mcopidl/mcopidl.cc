@@ -1175,6 +1175,17 @@ vector<string> allParentsUnique(const InterfaceDef& iface)
 	return result;
 }
 
+InterfaceDef findInterface(const string& iface)
+{
+	list<InterfaceDef>::iterator i;
+	for(i=interfaces.begin();i != interfaces.end(); i++)
+	{
+		const InterfaceDef& d = *i;
+		if(d.name == iface) return d;
+	}
+	return InterfaceDef();
+}
+
 InterfaceDef mergeAllParents(const InterfaceDef& iface)
 {
 	InterfaceDef result = iface;
@@ -1214,6 +1225,7 @@ InterfaceDef mergeAllParents(const InterfaceDef& iface)
 struct ForwardCode {
 	bool constructor;
 	string fullifacename, result, mname, params, callparams;
+	string baseclass;
 };
 
 void doInterfacesHeader(FILE *header)
@@ -1562,71 +1574,75 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\tinline %s_base* _base() {return _cache?_cache:_method_call();}\n",iname.c_str());
 		fprintf(header,"\n");
 
-		InterfaceDef allMerged = mergeAllParents(d);
+		vector<string> all = parents;
+		vector<string>::iterator i;
+		all.push_back(d.name);
+		// InterfaceDef allMerged = mergeAllParents(d);
 
-		/* attributes */
-		for(ai = allMerged.attributes.begin();ai != allMerged.attributes.end();ai++)
+		for(i=all.begin();i != all.end();i++)
 		{
-			AttributeDef& ad = *ai;
-			ForwardCode fc;
-			fc.fullifacename = fullifacename;
-			fc.constructor = false;
-			fc.mname = ad.name;
+			InterfaceDef id = findInterface(*i);
+			string baseclass = NamespaceHelper::nameOf(id.name+"_base");
 
-			if(ad.flags & attributeAttribute)
+			/* attributes */
+			for(ai = id.attributes.begin();ai != id.attributes.end();ai++)
 			{
-				if(ad.flags & streamOut)  /* readable from outside */
+				AttributeDef& ad = *ai;
+				ForwardCode fc;
+				fc.fullifacename = fullifacename;
+				fc.constructor = false;
+				fc.mname = ad.name;
+				fc.baseclass = baseclass;
+
+				if(ad.flags & attributeAttribute)
 				{
-					fc.params = "";
-					fc.callparams = "";
-					fc.result = createTypeCode(ad.type,"",MODEL_RESULT);
-					fprintf(header,"\tinline %s %s();\n",
-						fc.result.c_str(), fc.mname.c_str());
-					forwardCode.push_back(fc);
-					/*
-					fprintf(header,"\tinline %s %s() {return _cache?_cache->%s():_method_call()->%s();}\n",
-						rc.c_str(), ad.name.c_str(), ad.name.c_str(), ad.name.c_str());
-					*/
-				}
-				if(ad.flags & streamIn)  /* writeable from outside */
-				{
-					fc.params = createTypeCode(ad.type,"_newValue",MODEL_ARG);
-					fc.callparams = "_newValue";
-					fc.result="void";
-					fprintf(header,"\tinline void %s(%s);\n",
-						fc.mname.c_str(), fc.params.c_str());
-					forwardCode.push_back(fc);
-					/*
-					fprintf(header,"\tinline void %s(%s) {_cache?_cache->%s(newValue):_method_call()->%s(newValue);}\n",
-						ad.name.c_str(), pc.c_str(), ad.name.c_str(), ad.name.c_str());
-					*/
+					if(ad.flags & streamOut)  /* readable from outside */
+					{
+						fc.params = "";
+						fc.callparams = "";
+						fc.result = createTypeCode(ad.type,"",MODEL_RESULT);
+						fprintf(header,"\tinline %s %s();\n",
+							fc.result.c_str(), fc.mname.c_str());
+						forwardCode.push_back(fc);
+					}
+					if(ad.flags & streamIn)  /* writeable from outside */
+					{
+						fc.params =
+							createTypeCode(ad.type,"_newValue",MODEL_ARG);
+						fc.callparams = "_newValue";
+						fc.result="void";
+						fprintf(header,"\tinline void %s(%s);\n",
+							fc.mname.c_str(), fc.params.c_str());
+						forwardCode.push_back(fc);
+					}
 				}
 			}
-		}
 
-		/* methods */
-		for(mi = allMerged.methods.begin(); mi != allMerged.methods.end(); mi++)
-		{
-			MethodDef& md = *mi;
-			ForwardCode fc;
-			fc.fullifacename = fullifacename;
-			fc.result = createReturnCode(md);
-			fc.params = createParamList(md);
-			fc.callparams = createCallParamList(md);
-			fc.constructor = (md.name == "constructor");
+			/* methods */
+			for(mi = id.methods.begin(); mi != id.methods.end(); mi++)
+			{
+				MethodDef& md = *mi;
+				ForwardCode fc;
+				fc.fullifacename = fullifacename;
+				fc.result = createReturnCode(md);
+				fc.params = createParamList(md);
+				fc.callparams = createCallParamList(md);
+				fc.constructor = (md.name == "constructor");
+				fc.baseclass = baseclass;
 
-			// map constructor methods to the real things
-			if (md.name == "constructor") {
-				fc.mname = iname;
-				fprintf(header,"\tinline %s(%s);\n",
+				// map constructor methods to the real things
+				if (md.name == "constructor") {
+					fc.mname = iname;
+					fprintf(header,"\tinline %s(%s);\n",
 											iname.c_str(),fc.params.c_str());
-			} else {
-				fc.mname = md.name;
-				fprintf(header,"\tinline %s %s(%s);\n",fc.result.c_str(),
+				} else {
+					fc.mname = md.name;
+					fprintf(header,"\tinline %s %s(%s);\n",fc.result.c_str(),
 											md.name.c_str(),fc.params.c_str());
-			}
+				}
 
-			forwardCode.push_back(fc);
+				forwardCode.push_back(fc);
+			}
 		}
 		fprintf(header,"};\n\n");
 	}
@@ -1649,8 +1665,8 @@ void doInterfacesHeader(FILE *header)
 			fprintf(header,"\t\t: Arts::Object(%s_base::_create())\n",
 				fi->mname.c_str());
 			fprintf(header,"{\n");
-			fprintf(header,"\t_method_call()->constructor(%s);\n",
-								fi->callparams.c_str());
+			fprintf(header,"\tstatic_cast<%s*>(_method_call())->constructor(%s);\n",
+								fi->baseclass.c_str(),fi->callparams.c_str());
 			fprintf(header,"}\n\n");
 		}
 		else
@@ -1659,10 +1675,12 @@ void doInterfacesHeader(FILE *header)
 							fi->result.c_str(), fi->fullifacename.c_str(),
 							fi->mname.c_str(), fi->params.c_str());
 			fprintf(header,"{\n");
-			fprintf(header,"\t%s _cache?_cache->%s(%s):"
-									"_method_call()->%s(%s);\n",
+			fprintf(header,"\t%s _cache?static_cast<%s*>(_cache)->%s(%s):"
+								"static_cast<%s*>(_method_call())->%s(%s);\n",
 							fi->result=="void"?"":"return",
+							fi->baseclass.c_str(),
 							fi->mname.c_str(),fi->callparams.c_str(),
+							fi->baseclass.c_str(),
 							fi->mname.c_str(),fi->callparams.c_str());
 
 			fprintf(header,"}\n\n");
