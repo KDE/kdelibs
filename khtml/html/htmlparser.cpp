@@ -506,6 +506,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
 #endif
                     return false;
                 }
+		if ( id == ID_FORM ) {
                 parent->removeChild(node, exceptioncode);
                 if ( exceptioncode ) {
                     kdDebug( 6035 ) << "trying to reorder tree failed!!!" << endl;
@@ -513,9 +514,10 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 }
                 n->appendChild(node, exceptioncode);
                 if ( exceptioncode ) {
-                    kdDebug( 6035 ) << "this shouldn't happen!!!" << endl;
+                    kdDebug( 6035 ) << "this shouldn't happen!!!" << exceptioncode << endl;
                     return false;
                 }
+		}
 		if(tagPriority[id] != 0 && id != ID_FORM && id != ID_INPUT ) {
 		    pushBlock(id, tagPriority[id]);
 		    current = n;
