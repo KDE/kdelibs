@@ -381,6 +381,7 @@ bool Ftp::ftpLogin()
   if ( !m_user.isEmpty() )
   {
     AuthInfo info;
+    info.multipleUserCaching = true;
     QCString tempbuf;
     int failedAuth = 0;
 
