@@ -74,7 +74,7 @@ void KIODaemon::connectSlave(const QString& ticket, const QString& path)
     }
 
     if (!theone) {
-	kDebugInfo(7019, "there is no such slave pending for %s", ticket.ascii());
+	kDebugInfo(7016, "there is no such slave pending for %s", ticket.ascii());
 	return;
     }
 
@@ -122,7 +122,7 @@ QString KIODaemon::createSlave(const QString& protocol)
 	lt_dlhandle handle = lt_dlopen( protocol_library );
 
 	if ( !handle ) {
-	    kDebugInfo(7019, "trying to load support for %s failed with %s", protocol.ascii(), lt_dlerror() );
+	    kDebugInfo(7016, "trying to load support for %s failed with %s", protocol.ascii(), lt_dlerror() );
 	    ::write(fd[1], errors + ERR_LOADING, 1);
 	    exit(0);
 	}
@@ -141,7 +141,7 @@ QString KIODaemon::createSlave(const QString& protocol)
 	SlaveBase *serv = func();
 	
 	if( !serv ) {
-	    kDebugInfo(7019, "KLibrary: The library does not offer a KDE compatible factory");
+	    kDebugInfo(7016, "KLibrary: The library does not offer a KDE compatible factory");
 	    exit(1); // that was it
 	}
 
