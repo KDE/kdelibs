@@ -1428,6 +1428,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 		part->settings()->windowFocusPolicy(part->url().host());
     if(policy == KHTMLSettings::KJSWindowFocusAllow && widget) {
       widget->topLevelWidget()->raise();
+      KWin::deIconifyWindow( widget->topLevelWidget()->winId() );
       widget->setActiveWindow();
       emit part->browserExtension()->requestFocus(part);
     }
