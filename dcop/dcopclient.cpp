@@ -134,6 +134,31 @@ struct ReplyStruct
     Q_INT32 replyId;
 };
 
+QCString dcopServerFile()
+{
+   QCString fName = ::getenv("HOME");
+   if (fName.isEmpty())
+   {
+      fprintf(stderr, "Aborting. $HOME is not set.\n");
+      exit(1);
+   }
+   QCString disp = getenv("DISPLAY");
+   if (disp.isEmpty())
+   {
+      fprintf(stderr, "Aborting. $DISPLAY is not set.\n");
+      exit(1);
+   }
+   fName += "/.DCOPserver_";
+   char hostName[256];
+   if (gethostname(hostName, 255))
+      fName += "localhost";
+   else
+      fName += hostName;
+   fName += "_"+disp;
+   return fName;
+}
+
+
 const char* DCOPClientPrivate::serverAddr = 0;
 
 // SM DUMMY
@@ -483,13 +508,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 	QString dcopSrv;
 	dcopSrv = ::getenv("DCOPSERVER");
 	if (dcopSrv.isEmpty()) {
-	    QString fName = ::getenv("HOME");
-	    fName += "/.DCOPserver_";
-	    char hostName[256];
-	    if (gethostname(hostName, 255))
-		    fName += "localhost";
-	    else
-		    fName += hostName;
+	    QString fName = dcopServerFile();
 	    QFile f(fName);
 	    if (!f.open(IO_ReadOnly)) {
 		emit attachFailed("Could not read network connection list.");

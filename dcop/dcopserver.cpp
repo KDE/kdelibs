@@ -80,6 +80,29 @@ static void registerXSM()
 	}
 }
 
+QCString dcopServerFile()
+{
+   QCString fName = ::getenv("HOME");
+   if (fName.isEmpty())
+   {
+      fprintf(stderr, "Aborting. $HOME is not set.\n");
+      exit(1);
+   }
+   QCString disp = getenv("DISPLAY");
+   if (disp.isEmpty())
+   {
+      fprintf(stderr, "Aborting. $DISPLAY is not set.\n");
+      exit(1);
+   }
+   fName += "/.DCOPserver_";
+   char hostName[256];
+   if (gethostname(hostName, 255))
+      fName += "localhost";
+   else
+      fName += hostName;
+   fName += "_"+disp;
+   return fName;
+}
 
 
 DCOPServer* the_server = 0;
@@ -680,13 +703,7 @@ DCOPServer::DCOPServer(bool _only_local)
 	    exit (1);
 	} else {
 	    // publish available transports.
-	    QCString fName = ::getenv("HOME");
-	    fName += "/.DCOPserver_";
-	    char hostName[256];
-	    if (gethostname(hostName, 255))
-		fName += "localhost";
-	    else
-		fName += hostName;
+	    QCString fName = dcopServerFile();
 	    FILE *f;
 	    f = ::fopen(fName.data(), "w+");
 	    char *idlist = IceComposeNetworkIdList(numTransports, listenObjs);
@@ -727,15 +744,9 @@ DCOPServer::~DCOPServer()
     QCString fName;
     fName = ::getenv("DCOPSERVER");
     if (fName.isNull()) {
-	fName = ::getenv("HOME");
-	fName += "/.DCOPserver_";
-	char hostName[256];
-	if (gethostname(hostName, 255))
-	    fName += "localhost";
-	else
-	    fName += hostName;
-	unlink(fName.data());
+	fName = dcopServerFile();
     }
+    unlink(fName.data());
 
     FreeAuthenticationData(numTransports, authDataEntries);
     delete dcopSignals;
@@ -1073,13 +1084,7 @@ int main( int argc, char* argv[] )
     }
 
     // check if we are already running
-    QCString fName = ::getenv("HOME");
-    fName += "/.DCOPserver_";
-    char hostName[256];
-    if (gethostname(hostName, 255))
-        fName += "localhost";
-    else
-        fName += hostName;
+    QCString fName = dcopServerFile();
     if (::access(fName.data(), R_OK) == 0) {
 	QFile f(fName);
 	f.open(IO_ReadOnly);
