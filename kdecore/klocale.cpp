@@ -258,7 +258,7 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
   langs = langlist.join(QString::fromLatin1(":"));
 
   setEncodingLang(lang);
-  kdDebug() << "KLocale::initLanguage setEncodingLang " << lang << endl;
+  //kdDebug() << "KLocale::initLanguage setEncodingLang " << lang << endl;
 
   insertCatalogue( catalogue );
   insertCatalogue( QString::fromLatin1(SYSTEM_MESSAGES) );
@@ -273,7 +273,7 @@ void KLocale::initFormat(KConfig *config)
 {
   if (!config)
     return;
-  kdDebug() << "KLocale::initFormat" << endl;
+  //kdDebug() << "KLocale::initFormat" << endl;
 
   // make sure the config files are read using the correct locale
   KLocale *lsave = KGlobal::_locale;
@@ -295,10 +295,9 @@ void KLocale::initFormat(KConfig *config)
   _thousandsSeparator = config->readEntry(QString::fromLatin1("ThousandsSeparator"));
   if (_thousandsSeparator.isNull())
     _thousandsSeparator = entry.readEntry(QString::fromLatin1("ThousandsSeparator"), QString::fromLatin1(","));
-  kdDebug() << "_thousandsSeparator=" << _thousandsSeparator << endl;
   _thousandsSeparator.replace( QRegExp(QString::fromLatin1("$0")),
 				       "" );
-  kdDebug() << "_thousandsSeparator after replace=" << _thousandsSeparator << endl;
+  //kdDebug() << "_thousandsSeparator=" << _thousandsSeparator << endl;
 
   _positiveSign = config->readEntry(QString::fromLatin1("PositiveSign"));
   if (_positiveSign.isNull())
