@@ -63,6 +63,9 @@ KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
     } else
         d->_instance = new KInstance("kcmunnamed");
     KGlobal::setActiveInstance(this->instance());
+
+    d->managers.setAutoDelete( true );
+
 }
 
 KCModule::KCModule(KInstance *instance, QWidget *parent, const QStringList & )
@@ -84,7 +87,6 @@ void KCModule::init()
 KConfigDialogManager* KCModule::addConfig( KConfigSkeleton *config, QWidget* widget )
 {
     KConfigDialogManager* manager = new KConfigDialogManager( widget, config, name() );
-    connect( manager, SIGNAL( settingsChanged() ), SLOT( changed() ));
     connect( manager, SIGNAL( widgetModified() ), SLOT( changed() ));
     d->managers.append( manager );
     return manager;
@@ -110,6 +112,7 @@ void KCModule::save()
     KConfigDialogManager* manager;
     for( manager = d->managers.first(); manager; manager = d->managers.next() )
         manager->updateSettings();
+    emit( changed( false ));
 }
 
 void KCModule::defaults()

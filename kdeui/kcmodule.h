@@ -133,10 +133,11 @@ public:
    *
    * save is called when the user clicks "Apply" or "Ok".
    *
-   * If you use KConfigXT saving is taken care off automatically and 
+   * If you use KConfigXT, saving is taken care off automatically and 
    * you do not need to load manually. However, if you for some reason reimplement it and
    * also are using KConfigXT, you must call this function, otherwise the saving of KConfigXT 
-   * options will not work.
+   * options will not work. Call it at the very end of your reimplementation, to avoid
+   * changed() signals getting emitted when you modify widgets.
    */
   virtual void save();
 
@@ -148,7 +149,8 @@ public:
    *
    * If you use KConfigXT, you do not have to reimplement this function since
    * the fetching and settings of default values is done automatically. However, if you 
-   * reimplement and also are using KConfigXT, remember to call the base function.
+   * reimplement and also are using KConfigXT, remember to call the base function at the 
+   * very end of your reimplementation.
    */
   virtual void defaults();
 
