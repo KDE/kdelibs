@@ -682,7 +682,7 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QCString & pa
                 }
 
 		atom.m_uds = KIO::UDS_LINK_DEST;
-		atom.m_str = buffer2;
+		atom.m_str = QString::fromLocal8Bit( buffer2 );
 		entry.append( atom );
 
 		// A link poiting to nowhere ?
