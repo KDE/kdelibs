@@ -2428,10 +2428,14 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 
 				case SC_ComboBoxListBoxPopup:
 				{
+					//Note that the widget here == the combo, not the completion
+					//box, so we don't get any recursion
+					int suggestedWidth = widget->sizeHint().width(); 
 					QRect def = opt.rect();
-					if ( widget->inherits( "KCompletionBox" ) )
-						def.addCoords( -4, 4, 10, 8 );
-					else def.addCoords( 4, -4, -6, 4 );
+					def.addCoords( 4, -4, -6, 4 );
+					
+					if ((def.width() - suggestedWidth < -12) && (def.width() < 80))
+						def.setWidth(QMIN(80, suggestedWidth - 10));
 
 					return def;
 				}
