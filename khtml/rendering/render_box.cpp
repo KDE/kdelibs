@@ -599,8 +599,6 @@ short RenderBox::calcReplacedWidth() const
     case Percent:
     {
         const int cw = containingBlockWidth();
-        qDebug("calcReplacedWidth: %d", cw);
-
         if (cw > 0)
             return w.minWidth(cw);
     }
