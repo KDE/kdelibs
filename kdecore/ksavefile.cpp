@@ -56,16 +56,14 @@ KSaveFile::KSaveFile(const QString &filename, int mode)
 
       // if we're overwriting an existing file, ensure temp file's
       // permissions are the same as existing file so the existing
-      // file's permissions are preserved (and hope the existing file's
-      // permissions aren't changed between now and when we rename
-      // the temporary file)
-      QCString nme = QFile::encodeName(filename);
+      // file's permissions are preserved
       struct stat stat_buf;
-      if (lstat(nme, &stat_buf)==0)
+      if ((stat(QFile::encodeName(filename), &stat_buf)==0) 
+          && (stat_buf.st_uid == getuid())
+          && (stat_buf.st_gid == getgid()))
       {
-         chmod(QFile::encodeName(mTempFile.name()), stat_buf.st_mode );
+         fchmod(mTempFile.handle() , stat_buf.st_mode);
       }
-
    }
    return;
 }
