@@ -2,6 +2,7 @@
    Copyright (c) 1997 Christian Esken (esken@kde.org)
                  2000 Charles Samuels (charles@kde.org)
                  2000 Stefan Schimanski (1Stein@gmx.de)
+                 2000 Matthias Ettrich (ettrich@kde.org)
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -43,6 +44,13 @@
 #include <qiomanager.h>
 #include <iostream.h>
 #include <qtextstream.h>
+
+class KNotifyPrivate
+{
+public:
+    KConfig* globalEvents;
+    QMap<QString, KConfig*> events;
+};
 
 /*
  * This is global because it needs to be initialized *before* the KNotify
@@ -102,6 +110,7 @@ int main(int argc, char **argv)
 
     // start notify service
     KNotify notify;
+    app.dcopClient()->setDefaultObject( "Notify" );
     return app.exec();
 }
 
@@ -109,8 +118,24 @@ int main(int argc, char **argv)
 KNotify::KNotify()
     : QObject(), DCOPObject("Notify")
 {
+    d = new KNotifyPrivate;
+    d->globalEvents = new KConfig(locate("config", "eventsrc"), true, false);
 }
 
+KNotify::~KNotify()
+{
+    reconfigure();
+    delete d->globalEvents;
+    delete d;
+}
+
+void KNotify::reconfigure()
+{
+    d->globalEvents->reparseConfiguration();
+    for ( QMapIterator<QString,KConfig*> it = d->events.begin(); it != d->events.end(); ++it )
+	delete it.data();
+    d->events.clear();
+}
 
 void KNotify::notify(const QString &event, const QString &fromApp,
                      const QString &text, QString sound, QString file,
@@ -124,11 +149,17 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
         // get config file
         KConfig *eventsFile;
-        if ( isGlobal(event) )
-            eventsFile = new KConfig( locate("config", "eventsrc"), true, false );
-        else
-            eventsFile = new KConfig( locate("data", fromApp+"/eventsrc"), true, false );
-
+        if (isGlobal(event))
+            eventsFile =  d->globalEvents;
+        else {
+            if ( d->events.contains( fromApp ) ) {
+        	eventsFile = d->events[fromApp];
+            } else {
+        	eventsFile=new KConfig(locate("data", fromApp+"/eventsrc"),true,false);
+        	d->events.insert( fromApp, eventsFile );
+            }
+        }
+	
         eventsFile->setGroup( event );
 
         // get event presentation
@@ -149,8 +180,6 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
         // get default event level
         level = eventsFile->readNumEntry( "level", 0 );
-
-        delete eventsFile;
     }
 
     // emit event
@@ -251,7 +280,5 @@ bool KNotify::notifyByStderr(const QString &text)
 
 bool KNotify::isGlobal(const QString &eventname)
 {
-    // it's global if there is a config group with the event's name
-    KConfig config( locate("config", "eventsrc"), true, false );
-    return config.hasGroup( eventname );
+    return d->globalEvents->hasGroup( eventname );
 }
