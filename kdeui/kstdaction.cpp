@@ -104,10 +104,10 @@ const KStdActionInfo g_rgActionInfo[] =
 	{ ConfigureToolbars, KStdAccel::AccelNone, "options_configure_toolbars", I18N_NOOP("Configure Tool&bars..."), 0, "style" },
 
 	{ Help,          KStdAccel::Help, "help", 0, 0, "help" },
-	{ HelpContents,  KStdAccel::AccelNone, "help_contents", I18N_NOOP(""), 0, "contents" },
+	{ HelpContents,  KStdAccel::AccelNone, "help_contents", I18N_NOOP("%1 &Handbook"), 0, "contents" },
 	{ WhatsThis,     KStdAccel::WhatsThis, "help_whats_this", I18N_NOOP("What's &This?"), 0, "contexthelp" },
 	{ ReportBug,     KStdAccel::AccelNone, "help_report_bug", I18N_NOOP("&Report Bug..."), 0, 0 },
-	{ AboutApp,      KStdAccel::AccelNone, "help_about_app", 0, 0, 0 },
+	{ AboutApp,      KStdAccel::AccelNone, "help_about_app", I18N_NOOP("&About %1"), 0, 0 },
 	{ AboutKDE,      KStdAccel::AccelNone, "help_about_kde", I18N_NOOP("About &KDE"), 0, "go" },
 	{ ActionNone, KStdAccel::AccelNone, 0, 0, 0, 0 }
 };
@@ -121,426 +121,203 @@ static const KStdActionInfo* infoPtr( StdAction id )
 	return 0;
 }
 
-KAction* create( StdAction id, KActionCollection* parent,
-	const QObject *recvr, const char *slot, const char *name )
+KAction* create( StdAction id, const char *name, const QObject *recvr, const char *slot, KActionCollection* parent )
 {
 	kdDebug(125) << "KStdAction::create( " << id << ", " << parent << ", " << name << " )" << endl; // ellis
+	KAction* pAction = 0;
 	const KStdActionInfo* pInfo = infoPtr( id );
 	if( pInfo ) {
 		QString sLabel;
 		switch( id ) {
-			case Back: sLabel = i18n("go back", "&Back"); break;
-			case Forward: sLabel = i18n("go forward", "&Forward"); break;
-			case Home: sLabel = i18n("beginning (of line)", "&Home"); break;
-			case Help: sLabel = i18n("show help", "&Help"); break;
-			case HelpContents:
-				{
-				const KAboutData *aboutData = KGlobal::instance()->aboutData();
-				QString appName = (aboutData) ? aboutData->programName() : QString::fromLatin1(kapp->name());
-				sLabel = i18n("%1 &Handbook").arg(appName);
-				}
-				break;
-			case AboutApp:
-				{
-				const KAboutData *aboutData = KGlobal::instance()->aboutData();
-				QString appName = (aboutData) ? aboutData->programName() : QString::fromLatin1(kapp->name());
-				sLabel = i18n("&About %1").arg(appName);
-				}
-				break;
-			default: sLabel = i18n(pInfo->psLabel);
+		 case Back: sLabel = i18n("go back", "&Back"); break;
+		 case Forward: sLabel = i18n("go forward", "&Forward"); break;
+		 case Home: sLabel = i18n("beginning (of line)", "&Home"); break;
+		 case Help: sLabel = i18n("show help", "&Help"); break;
+		 case Preferences:
+		 case HelpContents:
+		 case AboutApp:
+			{
+			const KAboutData *aboutData = KGlobal::instance()->aboutData();
+			QString appName = (aboutData) ? aboutData->programName() : QString::fromLatin1(kapp->name());
+			sLabel = i18n(pInfo->psLabel).arg(appName);
+			}
+			break;
+		 default: sLabel = i18n(pInfo->psLabel);
 		}
 
-		return new KAction( sLabel, pInfo->psIconName,
-			KStdAccel::shortcut(pInfo->idAccel),
-			recvr, slot,
-			parent, (name) ? name : pInfo->psName );
+		KShortcut cut = KStdAccel::shortcut(pInfo->idAccel);
+		switch( id ) {
+		 case OpenRecent:
+			pAction = new KRecentFilesAction( sLabel, cut,
+					recvr, slot,
+					parent, (name) ? name : pInfo->psName );
+			break;
+		 case ShowMenubar:
+		 case ShowToolbar:
+		 case ShowStatusbar:
+			KToggleAction *ret;
+			ret = new KToggleAction( sLabel, pInfo->psIconName, cut,
+					recvr, slot,
+					parent, (name) ? name : pInfo->psName );
+			ret->setChecked( true );
+			pAction = ret;
+			break;
+		 default:
+			pAction = new KAction( sLabel, pInfo->psIconName, cut,
+					recvr, slot,
+					parent, (name) ? name : pInfo->psName );
+			break;
+		}
 	}
-	return 0;
+	return pAction;
 }
 
-KAction *action(StdAction act_enum, const QObject *recvr,
-                            const char *slot, QObject *parent, const char *name )
+const char* name( StdAction id )
 {
-    KAction *act;
-    switch (act_enum)
-    {
-    case New:
-        act = openNew(recvr, slot, parent, name);
-        break;
-    case Open:
-        act = open(recvr, slot, parent, name);
-        break;
-    case OpenRecent:
-        act = openRecent(recvr, slot, parent, name);
-        break;
-    case Save:
-        act = save(recvr, slot, parent, name);
-        break;
-    case SaveAs:
-        act = saveAs(recvr, slot, parent, name);
-        break;
-    case Revert:
-        act = revert(recvr, slot, parent, name);
-        break;
-    case Close:
-        act = close(recvr, slot, parent, name);
-        break;
-    case Print:
-        act = print(recvr, slot, parent, name);
-        break;
-    case PrintPreview:
-        act = printPreview(recvr, slot, parent, name);
-        break;
-    case Mail:
-        act = mail(recvr, slot, parent, name);
-        break;
-    case Quit:
-        act = quit(recvr, slot, parent, name);
-        break;
-
-    case Undo:
-        act = undo(recvr, slot, parent, name);
-        break;
-    case Redo:
-        act = redo(recvr, slot, parent, name);
-        break;
-    case Cut:
-        act = cut(recvr, slot, parent, name);
-        break;
-    case Copy:
-        act = copy(recvr, slot, parent, name);
-        break;
-    case Paste:
-        act = paste(recvr, slot, parent, name);
-        break;
-    case SelectAll:
-        act = selectAll(recvr, slot, parent, name);
-        break;
-    case Deselect:
-        act = deselect(recvr, slot, parent, name);
-        break;
-    case Find:
-        act = find(recvr, slot, parent, name);
-        break;
-    case FindNext:
-        act = findNext(recvr, slot, parent, name);
-        break;
-    case FindPrev:
-        act = findPrev(recvr, slot, parent, name);
-        break;
-    case Replace:
-        act = replace(recvr, slot, parent, name);
-        break;
-
-    case ActualSize:
-        act = actualSize(recvr, slot, parent, name);
-        break;
-    case FitToPage:
-        act = fitToPage(recvr, slot, parent, name);
-        break;
-    case FitToWidth:
-        act = fitToWidth(recvr, slot, parent, name);
-        break;
-    case FitToHeight:
-        act = fitToHeight(recvr, slot, parent, name);
-        break;
-    case ZoomIn:
-        act = zoomIn(recvr, slot, parent, name);
-        break;
-    case ZoomOut:
-        act = zoomOut(recvr, slot, parent, name);
-        break;
-    case Zoom:
-        act = zoom(recvr, slot, parent, name);
-        break;
-    case Redisplay:
-        act = redisplay(recvr, slot, parent, name);
-        break;
-
-    case Up:
-        act = up(recvr, slot, parent, name);
-        break;
-    case Back:
-        act = back(recvr, slot, parent, name);
-        break;
-    case Forward:
-        act = forward(recvr, slot, parent, name);
-        break;
-    case Home:
-        act = home(recvr, slot, parent, name);
-        break;
-    case Prior:
-        act = prior(recvr, slot, parent, name);
-        break;
-    case Next:
-        act = next(recvr, slot, parent, name);
-        break;
-    case Goto:
-        act = goTo(recvr, slot, parent, name);
-        break;
-    case GotoPage:
-        act = gotoPage(recvr, slot, parent, name);
-        break;
-    case GotoLine:
-        act = gotoLine(recvr, slot, parent, name);
-        break;
-    case FirstPage:
-        act = firstPage(recvr, slot, parent, name);
-        break;
-    case LastPage:
-        act = lastPage(recvr, slot, parent, name);
-        break;
-
-    case AddBookmark:
-        act = addBookmark(recvr, slot, parent, name);
-        break;
-    case EditBookmarks:
-        act = editBookmarks(recvr, slot, parent, name);
-        break;
-
-    case Spelling:
-        act = spelling(recvr, slot, parent, name);
-        break;
-
-    case ShowMenubar:
-        act = showMenubar(recvr, slot, parent, name);
-        break;
-    case ShowToolbar:
-        act = showToolbar(recvr, slot, parent, name);
-        break;
-    case ShowStatusbar:
-        act = showStatusbar(recvr, slot, parent, name);
-        break;
-    case SaveOptions:
-        act = saveOptions(recvr, slot, parent, name);
-        break;
-    case KeyBindings:
-        act = keyBindings(recvr, slot, parent, name);
-        break;
-    case Preferences:
-        act = preferences(recvr, slot, parent, name);
-        break;
-    case ConfigureToolbars:
-        act = configureToolbars(recvr, slot, parent, name);
-        break;
-
-    case Help:
-        act = help(recvr, slot, parent, name);
-        break;
-    case HelpContents:
-        act = helpContents(recvr, slot, parent, name);
-        break;
-    case WhatsThis:
-        act = whatsThis(recvr, slot, parent, name);
-        break;
-    case ReportBug:
-        act = reportBug(recvr, slot, parent, name);
-        break;
-    case AboutApp:
-        act = aboutApp(recvr, slot, parent, name);
-        break;
-    case AboutKDE:
-        act = aboutKDE(recvr, slot, parent, name);
-        break;
-
-    default:
-        act = 0;
-    }
-
-    return act;
+	const KStdActionInfo* pInfo = infoPtr( id );
+	return (pInfo) ? pInfo->psName : 0;
 }
 
-const char* stdName(StdAction act_enum)
+KAction *openNew( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( New, name, recvr, slot, parent ); }
+KAction *open( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Open, name, recvr, slot, parent ); }
+KRecentFilesAction *openRecent( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return (KRecentFilesAction*) create( OpenRecent, name, recvr, slot, parent ); }
+KAction *save( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Save, name, recvr, slot, parent ); }
+KAction *saveAs( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( SaveAs, name, recvr, slot, parent ); }
+KAction *revert( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Revert, name, recvr, slot, parent ); }
+KAction *print( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Print, name, recvr, slot, parent ); }
+KAction *printPreview( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( PrintPreview, name, recvr, slot, parent ); }
+KAction *close( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Close, name, recvr, slot, parent ); }
+KAction *mail( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Mail, name, recvr, slot, parent ); }
+KAction *quit( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Quit, name, recvr, slot, parent ); }
+KAction *undo( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Undo, name, recvr, slot, parent ); }
+KAction *redo( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Redo, name, recvr, slot, parent ); }
+KAction *cut( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Cut, name, recvr, slot, parent ); }
+KAction *copy( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Copy, name, recvr, slot, parent ); }
+KAction *paste( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Paste, name, recvr, slot, parent ); }
+KAction *selectAll( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( SelectAll, name, recvr, slot, parent ); }
+KAction *deselect( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Deselect, name, recvr, slot, parent ); }
+KAction *find( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Find, name, recvr, slot, parent ); }
+KAction *findNext( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( FindNext, name, recvr, slot, parent ); }
+KAction *findPrev( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( FindPrev, name, recvr, slot, parent ); }
+KAction *replace( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Replace, name, recvr, slot, parent ); }
+KAction *actualSize( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( ActualSize, name, recvr, slot, parent ); }
+KAction *fitToPage( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( FitToPage, name, recvr, slot, parent ); }
+KAction *fitToWidth( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( FitToWidth, name, recvr, slot, parent ); }
+KAction *fitToHeight( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( FitToHeight, name, recvr, slot, parent ); }
+KAction *zoomIn( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( ZoomIn, name, recvr, slot, parent ); }
+KAction *zoomOut( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( ZoomOut, name, recvr, slot, parent ); }
+KAction *zoom( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Zoom, name, recvr, slot, parent ); }
+KAction *redisplay( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Redisplay, name, recvr, slot, parent ); }
+KAction *up( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Up, name, recvr, slot, parent ); }
+KAction *back( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Back, name, recvr, slot, parent ); }
+KAction *forward( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Forward, name, recvr, slot, parent ); }
+KAction *home( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Home, name, recvr, slot, parent ); }
+KAction *prior( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Prior, name, recvr, slot, parent ); }
+KAction *next( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Next, name, recvr, slot, parent ); }
+KAction *goTo( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Goto, name, recvr, slot, parent ); }
+KAction *gotoPage( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( GotoPage, name, recvr, slot, parent ); }
+KAction *gotoLine( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( GotoLine, name, recvr, slot, parent ); }
+KAction *firstPage( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( FirstPage, name, recvr, slot, parent ); }
+KAction *lastPage( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( LastPage, name, recvr, slot, parent ); }
+KAction *addBookmark( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( AddBookmark, name, recvr, slot, parent ); }
+KAction *editBookmarks( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( EditBookmarks, name, recvr, slot, parent ); }
+KAction *spelling( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Spelling, name, recvr, slot, parent ); }
+
+KToggleAction *showMenubar( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 {
-    const char *ret;
-    switch (act_enum)
-    {
-    case New:
-        ret = "file_new";
-        break;
-    case Open:
-        ret = "file_open";
-        break;
-    case OpenRecent:
-        ret = "file_open_recent";
-        break;
-    case Save:
-        ret = "file_save";
-        break;
-    case SaveAs:
-        ret = "file_save_as";
-        break;
-    case Revert:
-        ret = "file_revert";
-        break;
-    case Close:
-        ret = "file_close";
-        break;
-    case Print:
-        ret = "file_print";
-        break;
-    case PrintPreview:
-        ret = "file_print_preview";
-        break;
-    case Mail:
-        ret = "file_mail";
-        break;
-    case Quit:
-        ret = "file_quit";
-        break;
-
-    case Undo:
-        ret = "edit_undo";
-        break;
-    case Redo:
-        ret = "edit_redo";
-        break;
-    case Cut:
-        ret = "edit_cut";
-        break;
-    case Copy:
-        ret = "edit_copy";
-        break;
-    case Paste:
-        ret = "edit_paste";
-        break;
-    case SelectAll:
-        ret = "edit_select_all";
-        break;
-    case Deselect:
-        ret = "edit_deselect";
-        break;
-    case Find:
-        ret = "edit_find";
-        break;
-    case FindNext:
-        ret = "edit_find_next";
-        break;
-    case FindPrev:
-        ret = "edit_find_last";
-        break;
-    case Replace:
-        ret = "edit_replace";
-        break;
-
-    case ActualSize:
-        ret = "view_actual_size";
-        break;
-    case FitToPage:
-        ret = "view_fit_to_page";
-        break;
-    case FitToWidth:
-        ret = "view_fit_to_width";
-        break;
-    case FitToHeight:
-        ret = "view_fit_to_height";
-        break;
-    case ZoomIn:
-        ret = "view_zoom_in";
-        break;
-    case ZoomOut:
-        ret = "view_zoom_out";
-        break;
-    case Zoom:
-        ret = "view_zoom";
-        break;
-    case Redisplay:
-        ret = "view_redisplay";
-        break;
-
-    case Up:
-        ret = "go_up";
-        break;
-    case Back:
-        ret = "go_back";
-        break;
-    case Forward:
-        ret = "go_forward";
-        break;
-    case Home:
-        ret = "go_home";
-        break;
-    case Prior:
-        ret = "go_previous";
-        break;
-    case Next:
-        ret = "go_next";
-        break;
-    case Goto:
-        ret = "go_goto";
-        break;
-    case GotoPage:
-        ret = "go_goto_page";
-        break;
-    case GotoLine:
-        ret = "go_goto_line";
-        break;
-    case FirstPage:
-        ret = "go_first";
-        break;
-    case LastPage:
-        ret = "go_last";
-        break;
-
-    case AddBookmark:
-        ret = "bookmark_add";
-        break;
-    case EditBookmarks:
-        ret = "bookmark_edit";
-        break;
-
-    case Spelling:
-        ret = "tools_spelling";
-        break;
-
-    case ShowMenubar:
-        ret = "options_show_menubar";
-        break;
-    case ShowToolbar:
-        ret = "options_show_toolbar";
-        break;
-    case ShowStatusbar:
-        ret = "options_show_statusbar";
-        break;
-    case SaveOptions:
-        ret = "options_save_options";
-        break;
-    case KeyBindings:
-        ret = "options_configure_keybinding";
-        break;
-    case Preferences:
-        ret = "options_configure";
-        break;
-    case ConfigureToolbars:
-        ret = "options_configure_toolbars";
-        break;
-
-    case Help:
-        ret = "help";
-        break;
-    case HelpContents:
-        ret = "help_contents";
-        break;
-    case WhatsThis:
-        ret = "help_whats_this";
-        break;
-    case ReportBug:
-        ret = "help_report_bug";
-        break;
-    case AboutApp:
-        ret = "help_about_app";
-        break;
-    case AboutKDE:
-        ret = "help_about_kde";
-        break;
-
-    default:
-        ret = "";
-    }
-
+    KToggleAction *ret;
+    ret = new KToggleAction(i18n("Show &Menubar"), "showmenu", KStdAccel::shortcut(KStdAccel::ShowMenubar), recvr, slot,
+                            parent, name ? name : stdName(ShowMenubar));
+    ret->setChecked(true);
     return ret;
 }
 
+KToggleAction *showToolbar( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+{
+    KToggleAction *ret;
+    ret = new KToggleAction(i18n("Show &Toolbar"), 0, recvr, slot, parent,
+                            name ? name : stdName(ShowToolbar));
+    ret->setChecked(true);
+    return ret;
+
+}
+
+KToggleAction *showStatusbar( const QObject *recvr, const char *slot,
+                                         KActionCollection* parent, const char *name )
+{
+    KToggleAction *ret;
+    ret = new KToggleAction(i18n("Show St&atusbar"), 0, recvr, slot, parent,
+                            name ? name : stdName(ShowStatusbar));
+    ret->setChecked(true);
+    return ret;
+}
+
+KAction *saveOptions( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( SaveOptions, name, recvr, slot, parent ); }
+KAction *keyBindings( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( KeyBindings, name, recvr, slot, parent ); }
+KAction *preferences( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Preferences, name, recvr, slot, parent ); }
+KAction *configureToolbars( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( ConfigureToolbars, name, recvr, slot, parent ); }
+KAction *help( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( Help, name, recvr, slot, parent ); }
+KAction *helpContents( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( HelpContents, name, recvr, slot, parent ); }
+KAction *whatsThis( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( WhatsThis, name, recvr, slot, parent ); }
+KAction *reportBug( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( ReportBug, name, recvr, slot, parent ); }
+KAction *aboutApp( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( AboutApp, name, recvr, slot, parent ); }
+KAction *aboutKDE( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
+	{ return create( AboutKDE, name, recvr, slot, parent ); }
+
+#if 0
 KAction *openNew(const QObject *recvr, const char *slot,
                              QObject *parent, const char *name )
 {
@@ -996,4 +773,5 @@ KAction *aboutKDE(const QObject *recvr, const char *slot,
                        parent, name ? name : stdName(AboutKDE));
 }
 
+#endif
 };
