@@ -267,7 +267,9 @@ private:
     // if the directory is to big, we must divide it
     DIR *myOpendir; 
     uint readFiles;
-    bool readable, myMatchDirs;
+    bool readable;
+    boo;
+    bool myMatchDirs;
 };
 
 #endif // KDIR_H

@@ -22,11 +22,19 @@ public:
   const char* newName() { return m_pLineEdit->text().ascii(); }
 
 protected:
-  QPushButton *b0, *b1, *b2, *b3, *b4, *b5, *b6, *b7;
+  QPushButton *b0;
+  QPushButton *b1;
+  QPushButton *b2;
+  QPushButton *b3;
+  QPushButton *b4;
+  QPushButton *b5;
+  QPushButton *b6;
+  QPushButton *b7;
   QLineEdit* m_pLineEdit;
   QVBoxLayout* m_pLayout;
   
-  QString src, dest;
+  QString src;
+  QString dest;
     
   bool modal;
 

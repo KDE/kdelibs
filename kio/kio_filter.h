@@ -24,8 +24,10 @@ private:
   
   int m_pid;
 
-  int recv_in, recv_out;
-  int send_in, send_out;
+  int recv_in;
+  int recv_out;
+  int send_in;
+  int send_out;
 };
 
 #endif

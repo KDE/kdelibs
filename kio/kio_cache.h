@@ -179,9 +179,15 @@ public:
     bool storeData();
 
 private:
-    QDateTime expires, created, lastAccess, lastModified;
+    QDateTime expires;
+    QDateTime created;
+    QDateTime lastAccess;
+    QDateTime lastModified;
     QBuffer data;
-    QString docURL, localName, docMimeType, redirectionURL;
+    QString docURL;
+    QString localName;
+    QString docMimeType;
+    QString redirectionURL;
 };
 
 

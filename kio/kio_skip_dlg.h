@@ -19,7 +19,9 @@ public:
   ~KIOSkipDlg();
     
 protected:
-  QPushButton *b0, *b1, *b2;
+  QPushButton *b0;
+  QPushButton *b1;
+  QPushButton *b2;
     
   bool modal;
   

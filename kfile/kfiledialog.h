@@ -391,11 +391,17 @@ private:
     QVBoxLayout *boxLayout;
     QGridLayout *lafBox;
     QHBoxLayout *btngroup;
-protected:
-    QPushButton *bOk, *bCancel, *bHelp;
 
-    QLabel *locationLabel, *filterLabel;
+protected:
+
+    QPushButton *bOk;
+    QPushButton *bCancel;
+    QPushButton *bHelp;
+    QLabel *locationLabel;
+    QLabel *filterLabel;
+
 private:
+
     QString filterString;
 };
 

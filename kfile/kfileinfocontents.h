@@ -352,7 +352,9 @@ private:
     /**
      * counters 
      **/
-    uint filesNumber, dirsNumber;
+    uint filesNumber;
+    uint dirsNumber;
+
     /**
      * @internal
      * class to distribute the signals

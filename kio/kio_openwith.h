@@ -123,7 +123,9 @@ public:
   short parseKdelnkDir( QDir d, KTreeList *tree, KAppTreeListItem *item = 0 ) { return parseDesktopDir(d,tree,item); }
   
   KTreeList *tree;
-  KAppTreeListItem *it, *it2, *dummy;
+  KAppTreeListItem *it;
+  KAppTreeListItem *it2;
+  KAppTreeListItem *dummy;
   
 protected:
   virtual void resizeEvent( QResizeEvent *_ev );

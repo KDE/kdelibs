@@ -61,7 +61,8 @@ protected:
     void setNumCols(int i);
 
     int rowsVisible;
-    int curCol, curRow;
+    int curCol;
+    int curRow;
     int *cellWidths;
     QList<QPixmap> pixmaps;
     // this flag is used for speed up, when autoUpdate is false
