@@ -416,7 +416,10 @@ void RenderBox::position(int x, int y, int, int, int, bool, bool, int)
 
 void RenderBox::repaint()
 {
-    //kdDebug( 6040 ) << "repaint!" << endl;
+    if ( isInline() && !isReplaced() )
+	parent()->repaint();
+
+    // kdDebug( 6040 ) << this << " repaint! inline=" << isInline() << endl;
     int ow = style() ? style()->outlineWidth() : 0;
     repaintRectangle(-ow, -ow, overflowWidth()+ow*2, overflowHeight()+ow*2);
 }
@@ -433,8 +436,7 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, bool f)
         relativePositionOffset(x,y);
 
     if (style()->position()==FIXED) f=true;
-
-    // kdDebug( 6040 ) << "RenderBox(" << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
+    // kdDebug( 6040 ) << "RenderBox(" <<this << ", " << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     RenderObject *o = container();
     if( o ) o->repaintRectangle(x, y, w, h, f);
 }

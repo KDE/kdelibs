@@ -393,8 +393,10 @@ void RenderFlow::layout()
         m_overflowHeight = m_height;
         m_overflowWidth = m_width;
     }
-    else
+    else {
         m_overflowWidth = kMax(m_overflowWidth, m_width);
+        m_overflowHeight = kMax(m_overflowHeight, m_height);
+    }
 
     //kdDebug() << renderName() << " layout width=" << m_width << " height=" << m_height << endl;
 
