@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1999 Carsten Pfeiffer <pfeiffer@kde.org>
+    Copyright (C) 1999,2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -22,19 +22,15 @@
 #include <kdebug.h>
 #include "kcompletion.h"
 
-template class QList<KCompFork>;
-
 
 KCompletion::KCompletion()
 {
     myCompletionMode = KGlobal::completionMode();
     myTreeRoot = new KCompTreeNode;
-    myForkList.setAutoDelete( true );
     mySorting    = true; // don't sort the items by default (FIXME, -> false)
-    myBackwards  = false;
     myBeep       = true;
     myIgnoreCase = false;
-    myItemIndex  = 0;
+    myRotationIndex = 0;
 }
 
 KCompletion::~KCompletion()
@@ -45,7 +41,8 @@ KCompletion::~KCompletion()
 
 void KCompletion::setItems( const QStringList& items )
 {
-    myForkList.clear();
+    myMatches.clear();
+    myRotationIndex = 0;
     myLastString = QString::null;
 
     QStringList::ConstIterator it;
@@ -57,7 +54,7 @@ void KCompletion::setItems( const QStringList& items )
 QStringList KCompletion::items() const
 {
     QStringList list;
-    extractStringsFromNode( myTreeRoot, QString::null, &list, true );
+    extractStringsFromNode( myTreeRoot, QString::null, &list );
 
     return list;
 }
@@ -65,7 +62,8 @@ QStringList KCompletion::items() const
 
 void KCompletion::addItem( const QString& item )
 {
-    myForkList.clear();
+    myMatches.clear();
+    myRotationIndex = 0;
     myLastString = QString::null;
 
     addItemInternal( item );
@@ -88,7 +86,8 @@ void KCompletion::addItemInternal( const QString& item )
 
 void KCompletion::removeItem( const QString& item )
 {
-    myForkList.clear();
+    myMatches.clear();
+    myRotationIndex = 0;
     myLastString = QString::null;
 
     myTreeRoot->remove( item );
@@ -97,7 +96,8 @@ void KCompletion::removeItem( const QString& item )
 
 void KCompletion::clear()
 {
-    myForkList.clear();
+    myMatches.clear();
+    myRotationIndex = 0;
     myLastString = QString::null;
 
     delete myTreeRoot;
@@ -112,9 +112,10 @@ QString KCompletion::makeCompletion( const QString& string )
 
     kDebugInfo(250, "KCompletion: completing: %s", debugString( string ));
 
-    if ( string.isEmpty() ) // reset for rotation
-	myForkList.clear();
-
+    myMatches.clear();
+    myRotationIndex = 0;
+    myHasMultipleMatches = false;
+    
     // in Shell-completion-mode, emit all matches when we get the same
     // complete-string twice
     if ( myCompletionMode == KGlobal::CompletionShell &&
@@ -124,7 +125,7 @@ QString KCompletion::makeCompletion( const QString& string )
     }
 
     QString completion = findCompletion( string );
-    if ( !myForkList.isEmpty() )
+    if ( myHasMultipleMatches )
         emit multipleMatches();
 
     myLastString = string;
@@ -145,7 +146,6 @@ QString KCompletion::makeCompletion( const QString& string )
 void KCompletion::setCompletionMode( KGlobal::Completion mode )
 {
     myCompletionMode = mode;
-    myForkList.clear(); // we would get in trouble otherwise
 }
 
 
@@ -157,62 +157,21 @@ void KCompletion::setCompletionMode( KGlobal::Completion mode )
 QString KCompletion::nextMatch()
 {
     QString completion;
-
-    if ( myForkList.count() == 0 ) {
-        kDebugInfo(250, "KCompletion::nextMatch(): no forks available");
-	completion = findCompletion( myLastString );
+    if ( myMatches.isEmpty() ) {
+	myMatches = findAllCompletions( myLastString );
+	completion = myMatches.first();
 	emit match( completion );
 	return completion;
     }
 
-    KCompFork *fork = myForkList.current();
-    if ( !fork )
-        fork = myForkList.last();
-
-    if ( fork->string.find( QString::fromLatin1("kfiledialog" )) == 0 )
-      kDebugInfo(250, "  fork: %s, index: %i (children: %i)", fork->string.ascii(), fork->index, fork->node->childrenCount());
-    fork->index++;
-
-    // if no further child of this fork -> jump to previous fork(s)
-    while ( fork->index >= (fork->node->childrenCount()) ) {
-        fork->index = fork->node->childrenCount();
-        KCompFork *fork2 = myForkList.prev();
-	if ( fork2 ) {
-	    fork = fork2;
-	    fork->index++;
-    if ( fork->string.find( QString::fromLatin1("kfiledialog" )) == 0 )
-	    kDebugInfo(250, "             ++ (fork: %s), %i",fork->string.ascii(), fork->index);
-	}
-	
-	else { // no previous fork available -> rotation
-    if ( fork->string.find( QString::fromLatin1("kfiledialog")) == 0 )
-kDebugInfo(250, "   -> fork: %s, index: %i (children: %i)", fork->string.ascii(), fork->index, fork->node->childrenCount());
-	    completion = findCompletion( myLastString );
-	    emit match( completion );
-	    return completion;
-	}
-    }
-
-    int index = fork->index;
-    const KCompTreeNode *node = fork->node;
-    ASSERT( node != 0L && node->childrenCount() > index );
-    node = node->childAt( index );
-
-    completion = fork->string;
-
-    while ( !node->isNull() ) {
-        completion += *node;
-
-	if ( node->childrenCount() > 1 )
-	    (void) myForkList.append( completion, node, 0 );
-	
-	node = node->firstChild();
-    }
-
-    if ( fork->string.find( QString::fromLatin1("kfiledialog")) == 0 )
-    kDebugInfo(250, " -> completed: %s", completion.ascii());
-    myItemIndex++;
-
+    myRotationIndex++;
+    if ( myRotationIndex == myMatches.count() -1 )
+	doBeep(); // indicate last matching item -> rotating
+    
+    else if ( myRotationIndex == myMatches.count() )
+	myRotationIndex = 0;
+    
+    completion = myMatches[ myRotationIndex ];
     emit match( completion );
     return completion;
 }
@@ -222,72 +181,22 @@ kDebugInfo(250, "   -> fork: %s, index: %i (children: %i)", fork->string.ascii()
 QString KCompletion::previousMatch()
 {
     QString completion;
-
-    if ( myForkList.count() == 0 || myItemIndex == 0 ) {
-      kDebugInfo(250, "     myItemIndex: %i", myItemIndex);
-        myBackwards = true;
-        kDebugInfo(250, "KCompletion::previousMatch(): no forks available");
-	completion = findCompletion( myLastString );
-	myBackwards = false;
-
+    if ( myMatches.isEmpty() ) {
+	myMatches = findAllCompletions( myLastString );
+	completion = myMatches.last();
 	emit match( completion );
 	return completion;
     }
 
-    KCompFork *fork = myForkList.current();
-    if ( !fork )
-        fork = myForkList.first();
+    if ( myRotationIndex == 1 )
+	doBeep(); // indicate first item -> rotating
+    
+    else if ( myRotationIndex == 0 )
+	myRotationIndex = myMatches.count();
 
-    if ( fork->string.find( QString::fromLatin1("kfiledialog")) == 0 )
-kDebugInfo(250, "  fork: %s, index: %i (children: %i)", fork->string.ascii(), fork->index, fork->node->childrenCount());
-    fork->index--;
-
-    // if we have traveled all children, go to the previous fork(s)
-    while ( fork->index < 0 ) {
-        fork->index = -1;
-        KCompFork *fork2 = myForkList.prev();
-	if ( fork2 ) {
-	    fork = fork2;
-	    fork->index--;
-    if ( fork->string.find( QString::fromLatin1("kfiledialog")) == 0 )
-	    kDebugInfo(250, "             -- (fork: %s, %i)",fork->string.ascii(),
-		  fork->index);
-	}
-
-	else { // no further fork available -> rotation
-	    myBackwards = true;
-	    completion = findCompletion( myLastString );
-	    myBackwards = false;
-	    emit match( completion );
-	    return completion;
-	}
-    }
-
-    //    completion = findCompletion( fork );
-    if ( fork->string.find( QString::fromLatin1("kfiledialog")) == 0 )
-kDebugInfo(250, "  fork: %s, index: %i (children: %i)", fork->string.ascii(), fork->index, fork->node->childrenCount());
-
-    int index = fork->index;
-    const KCompTreeNode *node = fork->node;
-    ASSERT( node != 0L && node->childrenCount() > index );
-    node = node->childAt( index );
-
-    completion = fork->string;
-
-    while ( !node->isNull() ) {
-        completion += *node;
-
-	if ( node->childrenCount() > 1 ) {
-	    int index = node->childrenCount() -1;
-	    myForkList.append( completion, node, index );
-	}
-
-	node = node->lastChild();
-    }
-
-    kDebugInfo(250, " -> completed: %s", completion.ascii());
-    myItemIndex--;
-
+    myRotationIndex--;
+    
+    completion = myMatches[ myRotationIndex ];
     emit match( completion );
     return completion;
 }
@@ -298,10 +207,8 @@ kDebugInfo(250, "  fork: %s, index: %i (children: %i)", fork->string.ascii(), fo
 QString KCompletion::findCompletion( const QString& string )
 {
     QChar ch;
-    myForkList.clear();
     QString completion;
     const KCompTreeNode *node = myTreeRoot;
-    myItemIndex = myBackwards ? -1 : 0;
 
     // start at the tree-root and try to find the search-string
     for( uint i = 0; i < string.length(); i++ ) {
@@ -313,7 +220,7 @@ QString KCompletion::findCompletion( const QString& string )
 	else
 	    return QString::null; // no completion
     }
-	
+    
     // Now we have the last node of the to be completed string.
     // Follow it as long as it has exactly one child (= longest possible
     // completion)
@@ -324,56 +231,23 @@ QString KCompletion::findCompletion( const QString& string )
 	    completion += *node;
     }
 
-    // multiple matches -> create a KCompFork and find the first complete match
-    // in auto-completion mode
+    // if multiple matches and auto-completion mode
+    // -> find the first complete match
     if ( node && node->childrenCount() > 1 ) {
-        int index = myBackwards ? node->childrenCount()-1 : -1;
-	if ( myCompletionMode != KGlobal::CompletionShell && !myBackwards )
-	    index = 0;
-        myForkList.append( completion, node, index );
+	myHasMultipleMatches = true;
 	
 	if ( myCompletionMode == KGlobal::CompletionAuto ||
-	     myCompletionMode == KGlobal::CompletionMan || myBackwards )
-	    completion = findCompletion( myForkList.last() );
-	else
-	    doBeep(); // partial match -> beep
-    }
+	     myCompletionMode == KGlobal::CompletionMan ) {
 
-    return completion;
-}
-
-
-// finds the first full completion of a given KCompFork, respecting indices for
-// previous and next usage.
-// also respects the myBackwards-flag for rotation, and returns the first
-// available completion in reverse order
-QString KCompletion::findCompletion( KCompFork *fork )
-{
-    ASSERT( fork != 0L );
-
-    int index = fork->index;
-    const KCompTreeNode *node = fork->node;
-    ASSERT( node != 0L && node->childrenCount() > index );
-
-    if ( myBackwards )
-        node = node->lastChild();
-    else
-        node = node->childAt( index );
-
-    QString completion = fork->string;
-
-    while ( !node->isNull() ) {
-        completion += *node;
-
-	if ( node->childrenCount() > 1 ) {
-	    int index = myBackwards ? node->childrenCount() -1 : 0;
-	    myForkList.append( completion, node, index );
+	    myRotationIndex = 1;
+	    while ( (node = node->firstChild()) ) {
+		if ( !node->isNull() )
+		    completion += *node;
+	    }
 	}
 
-	if ( myBackwards )
-	    node = node->lastChild();
 	else
-	    node = node->firstChild();
+	    doBeep(); // partial match -> beep
     }
 
     return completion;
@@ -384,6 +258,7 @@ const QStringList& KCompletion::findAllCompletions( const QString& string )
 {
     kDebugInfo(250, "*** finding all completions for %s", string.ascii() );
     myMatches.clear();
+    myRotationIndex = 0;
 
     if ( string.isEmpty() )
         return myMatches;
@@ -422,6 +297,7 @@ const QStringList& KCompletion::findAllCompletions( const QString& string )
     else {
         // node has more than one child
         // -> recursively find all remaining completions
+	myHasMultipleMatches = true;
         extractStringsFromNode( node, completion, &myMatches );
     }
 
@@ -431,8 +307,7 @@ const QStringList& KCompletion::findAllCompletions( const QString& string )
 
 void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
 					  const QString& beginning,
-					  QStringList *matches,
-					  bool /*getAllItems*/ ) const
+					  QStringList *matches ) const
 {
     if ( !node || !matches )
         return;

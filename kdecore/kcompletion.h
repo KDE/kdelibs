@@ -79,20 +79,20 @@ class KCompletionPrivate;
  * A short example:
  * <pre>
  * KCompletion completion;
-   completion.setSorted( true );
+ * completion.setSorted( true );
  * completion.addItem( "pfeiffer@kde.org" );
  * completion.addItem( "coolo@kde.org" );
  * completion.addItem( "carpdjih@sp.zrz.tu-berlin.de" );
  * completion.addItem( "carp@cs.tu-berlin.de" );
  *
  * debug( completion.makeCompletion( "ca" ).local8Bit() );
- * // In shell-completion-mode, this will be "carp"; in auto-completion-
- * // mode it will return "carp@cs.tu-berlin.de", as that is alphabetically
- * // smaller.
- * // If setSorted was set to false (default), "carpdjih@sp.zrz.tu-berlin.de"
- * // would be completed in auto-completion-mode, as that was inserted before
- * // "carp@cs.tu-berlin.de".
  * </pre>
+ * In shell-completion-mode, this will be "carp"; in auto-completion-
+ * mode it will return "carp@cs.tu-berlin.de", as that is alphabetically
+ * smaller.
+ * If setSorted was set to false (default), "carpdjih@sp.zrz.tu-berlin.de"
+ * would be completed in auto-completion-mode, as that was inserted before
+ * "carp@cs.tu-berlin.de".
  *
  * You can dynamically update the completable items by removing and adding them
  * whenever you want.
@@ -116,274 +116,274 @@ class KCompletionPrivate;
  */
 class KCompletion : public QObject
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  /**
-   * Constructor, nothing special here :)
-   */
-  KCompletion();
+    /**
+     * Constructor, nothing special here :)
+     */
+    KCompletion();
 
-  // FIXME: copy constructor, assignment constructor...
+    // FIXME: copy constructor, assignment constructor...
 
-  /**
-   * Destructor, nothing special here, either.
-   */
-  virtual ~KCompletion();
+    /**
+     * Destructor, nothing special here, either.
+     */
+    virtual ~KCompletion();
 
-  /**
-   * Attempts to find an item in the list of available completions,
-   * that begins with string. Will either return the first (if more than one
-   * match) matching item or QString::null, if no match was found. In the
-   * latter case, a beep will be issued, depending on @ref isBeepEnabled().
-   * If a match was found, it will also be emitted via the signal @ref match().
-   *
-   * If this is called twice or more often with the same string while no items
-   * were added or removed in the meantime, all available completions will be
-   * emitted via the signal @ref matches().
-   * This happens only in shell-completion-mode.
-   *
-   * @returns 	the matching item, or QString::null if there is no matching
-   * item.
-   * @see #slotMakeCompletion
-   */
-  virtual QString makeCompletion( const QString& string );
+    /**
+     * Attempts to find an item in the list of available completions,
+     * that begins with string. Will either return the first (if more than one
+     * match) matching item or QString::null, if no match was found. In the
+     * latter case, a beep will be issued, depending on @ref isBeepEnabled().
+     * If a match was found, it will also be emitted via the signal @ref match().
+     *
+     * If this is called twice or more often with the same string while no items
+     * were added or removed in the meantime, all available completions will be
+     * emitted via the signal @ref matches().
+     * This happens only in shell-completion-mode.
+     *
+     * @returns 	the matching item, or QString::null if there is no matching
+     * item.
+     * @see #slotMakeCompletion
+     */
+    virtual QString makeCompletion( const QString& string );
 
-  /**
-   * @returns the next item from the matching-items-list
-   * When reaching the beginning, the list is rotated, so it will return
-   * the last match. When there is no match, QString::null is returned and
-   * a beep will be issued, depending on @ref isBeepEnabled().
-   * @see #slotPreviousMatch
-   */
-  QString previousMatch();
+    /**
+     * @returns the next item from the matching-items-list
+     * When reaching the beginning, the list is rotated, so it will return
+     * the last match. When there is no match, QString::null is returned and
+     * a beep will be issued, depending on @ref isBeepEnabled().
+     * @see #slotPreviousMatch
+     */
+    QString previousMatch();
 
-  /**
-   * @returns the previous item from the matching-items-list
-   * When reaching the last item, the list is rotated, so it will return
-   * the first match. When there is no match, QString::null is returned and
-   * a beep will be issued, depending on @ref isBeepEnabled().
-   * @see #slotNextMatch
-   */
-  QString nextMatch();
+    /**
+     * @returns the previous item from the matching-items-list
+     * When reaching the last item, the list is rotated, so it will return
+     * the first match. When there is no match, QString::null is returned and
+     * a beep will be issued, depending on @ref isBeepEnabled().
+     * @see #slotNextMatch
+     */
+    QString nextMatch();
 
-  /**
-   * @returns the last match. Might be useful if you need to check whether
-   * a completion is different from the last one.
-   * QString::null is returned when there is no last match.
-   */
-  const QString& lastMatch() const { return myLastMatch; } // FIXME
-
-
-  /**
-   * @returns a list of all items inserted into KCompletion. This is useful
-   * if you need to save the state of a KCompletion object and restore it
-   * later.
-   * @see #setItems
-   */
-  QStringList items() const;
+    /**
+     * @returns the last match. Might be useful if you need to check whether
+     * a completion is different from the last one.
+     * QString::null is returned when there is no last match.
+     */
+    const QString& lastMatch() const { return myLastMatch; } // FIXME
 
 
-  /**
-   * Sets the completion mode to Auto/Manual (@ref KCompletion documentation),
-   * Shell or None.
-   * If you don't set the mode explicitly, the global default value
-   * KGlobal::completionMode() is used. @ref KGlobal::CompletionNone disables
-   * completion.
-   * @see #completionMode
-   * @see #KGlobal::completionMode
-   */
-  void setCompletionMode( KGlobal::Completion mode );
+    /**
+     * @returns a list of all items inserted into KCompletion. This is useful
+     * if you need to save the state of a KCompletion object and restore it
+     * later.
+     * @see #setItems
+     */
+    QStringList items() const;
 
-  /**
-   * @returns the current completion mode.
-   * May be different from @ref KGlobal::completionMode(), if you explicitly
-   * called @ref setCompletionMode().
-   * @see #setCompletionMode
-   */
-  KGlobal::Completion completionMode() const { return myCompletionMode; }
 
-  /**
-   * Setting this to true makes us go into sorted mode (doh).
-   * Completion will then always return the alphabetically first match.
-   * If set to false, the order is the same as the items were inserted.
-   * Note: this only affects new inserted items, already existing items will
-   * stay in the current order. So you probably want to call setSorted( true )
-   * before inserting items, when you want everything sorted.
-   * Default is false, not sorted.
-   * @see #isSorted
-   */
-  void setSorted( bool enable ) { mySorting = enable; }
+    /**
+     * Sets the completion mode to Auto/Manual (@ref KCompletion documentation),
+     * Shell or None.
+     * If you don't set the mode explicitly, the global default value
+     * KGlobal::completionMode() is used. @ref KGlobal::CompletionNone disables
+     * completion.
+     * @see #completionMode
+     * @see #KGlobal::completionMode
+     */
+    void setCompletionMode( KGlobal::Completion mode );
 
-  /**
-   * Setting this to true makes KCompletion behave case insensitively.
-   * E.g. makeCompletion( "CA" ); might return "carp@cs.tu-berlin.de".
-   * Default is false (case sensitive).
-   * @see #ignoreCase
-   */
+    /**
+     * @returns the current completion mode.
+     * May be different from @ref KGlobal::completionMode(), if you explicitly
+     * called @ref setCompletionMode().
+     * @see #setCompletionMode
+     */
+    KGlobal::Completion completionMode() const { return myCompletionMode; }
+
+    /**
+     * Setting this to true makes us go into sorted mode (doh).
+     * Completion will then always return the alphabetically first match.
+     * If set to false, the order is the same as the items were inserted.
+     * Note: this only affects new inserted items, already existing items will
+     * stay in the current order. So you probably want to call setSorted( true )
+     * before inserting items, when you want everything sorted.
+     * Default is false, not sorted.
+     * @see #isSorted
+     */
+    void setSorted( bool enable ) { mySorting = enable; }
+
+    /**
+     * Setting this to true makes KCompletion behave case insensitively.
+     * E.g. makeCompletion( "CA" ); might return "carp@cs.tu-berlin.de".
+     * Default is false (case sensitive).
+     * @see #ignoreCase
+     */
     //  void setIgnoreCase( bool ignoreCase ) { myIgnoreCase = ignoreCase; }
 
-  /**
-   * @returns whether KCompletion acts case insensitively or not.
-   * Default is false (case sensitive).
-   * @see #setIgnoreCase
-   */
+    /**
+     * @returns whether KCompletion acts case insensitively or not.
+     * Default is false (case sensitive).
+     * @see #setIgnoreCase
+     */
     //  bool ignoreCase() const { return myIgnoreCase; }
 
-  /**
-   * @returns true if the completion-items are alphabetically sorted and false
-   * if the order of insertion is used.
-   * @see #setSorted
-   */
-  bool isSorted() const { return mySorting; }
+    /**
+     * @returns true if the completion-items are alphabetically sorted and false
+     * if the order of insertion is used.
+     * @see #setSorted
+     */
+    bool isSorted() const { return mySorting; }
 
-  /**
-   * @returns a list of all matching items. Might take some time, when you
-   * have LOTS of items.
-   */
-  QStringList allMatches() { return findAllCompletions( myLastString ); }
+    /**
+     * @returns a list of all matching items. Might take some time, when you
+     * have LOTS of items.
+     */
+    QStringList allMatches() { return findAllCompletions( myLastString ); }
 
-  /**
-   * Enables playing a sound when
-   * @li @ref makeCompletion() can't find a match
-   * @li there is a partial completion
-   *
-   * Sounds are only played in shell-completion mode. Default is enabled
-   * @see #disableSounds
-   * @see #isSoundEnabled
-   */
-  void enableSounds() { myBeep = true; }
+    /**
+     * Enables playing a sound when
+     * @li @ref makeCompletion() can't find a match
+     * @li there is a partial completion
+     *
+     * Sounds are only played in shell-completion mode. Default is enabled
+     * @see #disableSounds
+     * @see #isSoundEnabled
+     */
+    void enableSounds() { myBeep = true; }
 
-  /**
-   * Disables playing a sound when
-   * @li @ref makeCompletion() can't find a match
-   * @li there is a partial completion
-   *
-   * Sounds are only played in shell-completion mode. Default is enabled
-   * @see #enableSounds
-   * @see #isSoundEnabled
-   */
-  void disableSounds() { myBeep = false; }
+    /**
+     * Disables playing a sound when
+     * @li @ref makeCompletion() can't find a match
+     * @li there is a partial completion
+     *
+     * Sounds are only played in shell-completion mode. Default is enabled
+     * @see #enableSounds
+     * @see #isSoundEnabled
+     */
+    void disableSounds() { myBeep = false; }
 
-  /**
-   * Tells you whether KCompletion will issue beeps (@ref KApplication::beep())
-   * Beeps only in manual-completion mode
-   * Default is enabled
-   * @see #enableSounds
-   * @see #disableSounds
-   */
-  bool isSoundsEnabled() const { return myBeep; }
+    /**
+     * Tells you whether KCompletion will issue beeps (@ref KApplication::beep())
+     * Beeps only in manual-completion mode
+     * Default is enabled
+     * @see #enableSounds
+     * @see #disableSounds
+     */
+    bool isSoundsEnabled() const { return myBeep; }
 
 
 public slots:
-  /**
-   * Attempts to complete "string" and emits the completion via @ref match().
-   * Same as @ref makeCompletion() (just as a slot).
-   * @see #makeCompletion
-   */
-  void slotMakeCompletion( const QString& string ) {
-      (void) makeCompletion( string );
-  }
+    /**
+     * Attempts to complete "string" and emits the completion via @ref match().
+     * Same as @ref makeCompletion() (just as a slot).
+     * @see #makeCompletion
+     */
+    void slotMakeCompletion( const QString& string ) {
+	(void) makeCompletion( string );
+    }
 
-  /**
-   * Searches the previous matching item and emits it via @ref match()
-   * Same as @ref previousMatch() (just as a slot).
-   * @see #previousMatch
-   */
-  void slotPreviousMatch() {
-      (void) previousMatch();
-  }
+    /**
+     * Searches the previous matching item and emits it via @ref match()
+     * Same as @ref previousMatch() (just as a slot).
+     * @see #previousMatch
+     */
+    void slotPreviousMatch() {
+	(void) previousMatch();
+    }
 
-  /**
-   * Searches the next matching item and emits it via @ref match()
-   * Same as @ref nextMatch() (just as a slot).
-   * @see #nextMatch
-   */
-  void slotNextMatch() {
-      (void) nextMatch();
-  }
+    /**
+     * Searches the next matching item and emits it via @ref match()
+     * Same as @ref nextMatch() (just as a slot).
+     * @see #nextMatch
+     */
+    void slotNextMatch() {
+	(void) nextMatch();
+    }
 
-  /**
-   * @returns true when more than one match is found
-   * @see #multipleMatches
-   */
-  bool hasMultipleMatches() const { return !myForkList.isEmpty(); }
+    /**
+     * @returns true when more than one match is found
+     * @see #multipleMatches
+     */
+    bool hasMultipleMatches() const { return myHasMultipleMatches; }
 
-  /**
-   * Sets the list of items available for completion. Removes all previous
-   * items.
-   * @see #items
-   */
-  void setItems( const QStringList& );
+    /**
+     * Sets the list of items available for completion. Removes all previous
+     * items.
+     * @see #items
+     */
+    void setItems( const QStringList& );
 
-  /**
-   * Adds an item to the list of available completions.
-   * Resets the current item-state (@ref previousMatch() and @ref nextMatch()
-   * won't work anymore).
-   */
-  void addItem( const QString& );
+    /**
+     * Adds an item to the list of available completions.
+     * Resets the current item-state (@ref previousMatch() and @ref nextMatch()
+     * won't work anymore).
+     */
+    void addItem( const QString& );
 
-  /**
-   * Removes an item from the list of available completions.
-   * Resets the current item-state (@ref previousMatch() and @ref nextMatch()
-   * won't work anymore).
-   */
-  void removeItem( const QString& );
+    /**
+     * Removes an item from the list of available completions.
+     * Resets the current item-state (@ref previousMatch() and @ref nextMatch()
+     * won't work anymore).
+     */
+    void removeItem( const QString& );
 
-  /**
-   * Clears the list of inserted items.
-   */
-  void clear();
+    /**
+     * Clears the list of inserted items.
+     */
+    void clear();
 
 
 signals:
-  /**
-   * The matching item. Will be emitted by @ref makeCompletion(),
-   * @ref previousMatch() or @ref nextMatch(). May be QString::null if there is
-   * no matching item.
-   */
-  void match( const QString& );
+    /**
+     * The matching item. Will be emitted by @ref makeCompletion(),
+     * @ref previousMatch() or @ref nextMatch(). May be QString::null if there is
+     * no matching item.
+     */
+    void match( const QString& );
 
-  /**
-   * All matching items. Will be emitted by @ref makeCompletion() in shell-
-   * completion-mode, when the same string is passed to makeCompletion twice
-   * or more often.
-   */
-  void matches( const QStringList& );
+    /**
+     * All matching items. Will be emitted by @ref makeCompletion() in shell-
+     * completion-mode, when the same string is passed to makeCompletion twice
+     * or more often.
+     */
+    void matches( const QStringList& );
 
-  /**
-   * This signal is emitted, when calling @ref makeCompletion() and more than
-   * one matching item is found.
-   * @see #hasMultipleMatches
-   */
-  void multipleMatches();
+    /**
+     * This signal is emitted, when calling @ref makeCompletion() and more than
+     * one matching item is found.
+     * @see #hasMultipleMatches
+     */
+    void multipleMatches();
 
 private:
-  void 			addItemInternal( const QString& );
-  QString 		findCompletion( const QString& string );
-  QString 		findCompletion( KCompFork * );
-  const QStringList& 	findAllCompletions( const QString& );
-  void 			extractStringsFromNode( const KCompTreeNode *,
+    void 		addItemInternal( const QString& );
+    QString 		findCompletion( const QString& string );
+    const QStringList& 	findAllCompletions( const QString& );
+    void 		extractStringsFromNode( const KCompTreeNode *,
 						const QString& beginning,
-						QStringList *matches,
-						bool getAllItems = false ) const;
+						QStringList *matches ) const;
 
-  void 			doBeep();
+    void 		doBeep();
 
-  QStringList           myMatches;
-  KGlobal::Completion   myCompletionMode;
+    QStringList         myMatches;
+    KGlobal::Completion myCompletionMode;
 
-  QString               myLastString;
-  QString 		myLastMatch;
-  KCompTreeNode *       myTreeRoot;
-  KCompForkList         myForkList;
-  bool                  mySorting;
-  bool                  myBeep;
-  bool 			myBackwards;
-  bool 			myIgnoreCase;
-  int 			myItemIndex; // FIXME
+    QString             myLastString;
+    QString 		myLastMatch;
+    KCompTreeNode *     myTreeRoot;
+    QStringList 	myRotations;
+    bool                mySorting;
+    bool                myBeep;
+    bool 		myBackwards;
+    bool 		myIgnoreCase;
+    bool 		myHasMultipleMatches;
+    int 		myItemIndex; // FIXME
+    uint 		myRotationIndex;
 
-  KCompletionPrivate *d;
+    KCompletionPrivate *d;
 };
 
 

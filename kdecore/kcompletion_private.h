@@ -79,17 +79,17 @@ public:
 
     inline int		childrenCount() const { return myChildren.count(); }
 
-    inline const KCompTreeChildren * children() const { 
+    inline const KCompTreeChildren * children() const {
 	return &myChildren;
     }
-    inline const KCompTreeNode * childAt(int index) const { 
+    inline const KCompTreeNode * childAt(int index) const {
 	return myChildren[index];
     }
-    inline const KCompTreeNode * firstChild() const { 
-	return myChildren.first(); 
+    inline const KCompTreeNode * firstChild() const {
+	return myChildren.first();
     }
-    inline const KCompTreeNode * lastChild()  const { 
-	return myChildren.last(); 
+    inline const KCompTreeNode * lastChild()  const {
+	return myChildren.last();
     }
 
 
@@ -106,64 +106,5 @@ private:
     }
 
 };
-
-
-
-/**
- * A KCompFork stores one node in the tree, an index describing the current
- * index of its children-list and a string representing the string from the
- * root of the tree to (and including) that node.
-
- * @short A fork in the KCompletionTree
- * @internal
- */
-
-struct KCompFork {
-  QString		string;
-  KCompTreeNode *	node;
-  int 			index;
-};
-typedef QList<KCompFork> KCompForkBaseList;
-typedef QListIterator<KCompFork> KCompForkListIterator;
-
-/**
- * Implements a list of KCompFork-items to make KCompletion::previousMatch()
- * and  nextMatch() possible.
- *
- * @internal
- */
-class KCompForkList : public KCompForkBaseList
-{
-public:
-  KCompForkList() : KCompForkBaseList() {}
-  ~KCompForkList() {}
-
-  KCompFork * append( QString string, const KCompTreeNode *node, int index ) {
-      ASSERT( node != 0L );
-      KCompFork *fork = find( node );
-      if ( !fork ) {
-	  fork = new KCompFork;
-	  fork->string = string;
-	  fork->node = const_cast<KCompTreeNode*>( node );
-	  fork->index = index;
-      }
-
-      kDebugInfo(250, "*** Appending fork: %s", debugString(fork->string));
-      KCompForkBaseList::append( fork );
-      return fork;
-  }
-
-  KCompFork * find( const KCompTreeNode *node ) {
-      KCompForkListIterator it( *this );
-      for ( ; it.current(); ++it ) {
-	  if ( node == it.current()->node )
-	      return it.current();
-      }
-      return 0L;
-  }
-
-};
-
-
 
 #endif // KCOMPLETION_PRIVATE_H
