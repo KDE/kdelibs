@@ -126,7 +126,6 @@ namespace KJS {
   class StatementNode : public Node {
   public:
     StatementNode();
-    ~StatementNode();
     void setLoc(int line0, int line1, int sourceId);
     int firstLine() const { return l0; }
     int lastLine() const { return l1; }
@@ -228,7 +227,6 @@ namespace KJS {
     GroupNode(Node *g) : group(g) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~GroupNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -240,7 +238,6 @@ namespace KJS {
     ElisionNode(ElisionNode *e) : elision(e) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~ElisionNode();
     virtual Value value(ExecState *exec) const;
     virtual double toNumber(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
@@ -255,7 +252,6 @@ namespace KJS {
       : list(l), elision(e), node(n) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~ElementNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -273,7 +269,6 @@ namespace KJS {
       : element(ele), elision(eli), opt(true) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~ArrayNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -287,7 +282,6 @@ namespace KJS {
     ObjectLiteralNode(Node *l) : list(l) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~ObjectLiteralNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -300,7 +294,6 @@ namespace KJS {
       : name(n), assign(a), list(l) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~PropertyValueNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -323,7 +316,6 @@ namespace KJS {
     AccessorNode1(Node *e1, Node *e2) : expr1(e1), expr2(e2) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~AccessorNode1();
     Reference2 evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -336,7 +328,6 @@ namespace KJS {
     AccessorNode2(Node *e, const UString *s) : expr(e), ident(*s) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~AccessorNode2();
     Reference2 evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -350,7 +341,6 @@ namespace KJS {
     ArgumentListNode(ArgumentListNode *l, Node *e);
     virtual void ref();
     virtual bool deref();
-    virtual ~ArgumentListNode();
     virtual Value value(ExecState *exec) const;
     List evaluateList(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
@@ -364,7 +354,6 @@ namespace KJS {
     ArgumentsNode(ArgumentListNode *l);
     virtual void ref();
     virtual bool deref();
-    virtual ~ArgumentsNode();
     virtual Value value(ExecState *exec) const;
     List evaluateList(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
@@ -378,7 +367,6 @@ namespace KJS {
     NewExprNode(Node *e, ArgumentsNode *a) : expr(e), args(a) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~NewExprNode();
     Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -391,7 +379,6 @@ namespace KJS {
     FunctionCallNode(Node *e, ArgumentsNode *a) : expr(e), args(a) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~FunctionCallNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -404,7 +391,6 @@ namespace KJS {
     PostfixNode(Node *e, Operator o) : expr(e), oper(o) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~PostfixNode();
     Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -417,7 +403,6 @@ namespace KJS {
     DeleteNode(Node *e) : expr(e) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~DeleteNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -429,7 +414,6 @@ namespace KJS {
     VoidNode(Node *e) : expr(e) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~VoidNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -441,7 +425,6 @@ namespace KJS {
     TypeOfNode(Node *e) : expr(e) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~TypeOfNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -453,7 +436,6 @@ namespace KJS {
     PrefixNode(Operator o, Node *e) : oper(o), expr(e) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~PrefixNode();
     Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -466,7 +448,6 @@ namespace KJS {
     UnaryPlusNode(Node *e) : expr(e) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~UnaryPlusNode();
     virtual Value value(ExecState *exec) const;
     virtual double toNumber(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
@@ -479,7 +460,6 @@ namespace KJS {
     NegateNode(Node *e) : expr(e) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~NegateNode();
     virtual Value value(ExecState *exec) const;
     virtual double toNumber(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
@@ -492,7 +472,6 @@ namespace KJS {
     BitwiseNotNode(Node *e) : expr(e) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~BitwiseNotNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -504,7 +483,6 @@ namespace KJS {
     LogicalNotNode(Node *e) : expr(e) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~LogicalNotNode();
     virtual Value value(ExecState *exec) const;
     virtual bool toBoolean(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
@@ -517,7 +495,6 @@ namespace KJS {
     MultNode(Node *t1, Node *t2, char op) : term1(t1), term2(t2), oper(op) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~MultNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -533,7 +510,6 @@ namespace KJS {
 
     virtual void ref();
     virtual bool deref();
-    virtual ~AddNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -559,7 +535,6 @@ namespace KJS {
       : term1(t1), term2(t2), oper(o) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~ShiftNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -573,7 +548,6 @@ namespace KJS {
       expr1(e1), expr2(e2), oper(o) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~RelationalNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -587,7 +561,6 @@ namespace KJS {
       : expr1(e1), expr2(e2), oper(o) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~EqualNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -601,7 +574,6 @@ namespace KJS {
       expr1(e1), expr2(e2), oper(o) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~BitOperNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -618,7 +590,6 @@ namespace KJS {
       expr1(e1), expr2(e2), oper(o) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~BinaryLogicalNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -635,7 +606,6 @@ namespace KJS {
       logical(l), expr1(e1), expr2(e2) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~ConditionalNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -647,7 +617,6 @@ namespace KJS {
     AssignNode(Node *l, Operator o, Node *e) : left(l), oper(o), expr(e) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~AssignNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -661,7 +630,6 @@ namespace KJS {
     CommaNode(Node *e1, Node *e2) : expr1(e1), expr2(e2) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~CommaNode();
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -674,7 +642,6 @@ namespace KJS {
     StatListNode(StatListNode *l, StatementNode *s) : statement(s), list(l) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~StatListNode();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
@@ -688,7 +655,6 @@ namespace KJS {
     AssignExprNode(Node *e) : expr(e) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~AssignExprNode();
     Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -700,7 +666,6 @@ namespace KJS {
     VarDeclNode(const UString *id, AssignExprNode *in);
     virtual void ref();
     virtual bool deref();
-    virtual ~VarDeclNode();
     Value value(ExecState *exec) const;
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
@@ -715,7 +680,6 @@ namespace KJS {
     VarDeclListNode(Node *l, VarDeclNode *v) : list(l), var(v) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~VarDeclListNode();
     Value value(ExecState *exec) const;
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
@@ -729,7 +693,6 @@ namespace KJS {
     VarStatementNode(VarDeclListNode *l) : list(l) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~VarStatementNode();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
@@ -742,7 +705,6 @@ namespace KJS {
     BlockNode(SourceElementsNode *s) : source(s) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~BlockNode();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
@@ -762,7 +724,6 @@ namespace KJS {
     ExprStatementNode(Node *e) : expr(e) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~ExprStatementNode();
     virtual Completion execute(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -775,7 +736,6 @@ namespace KJS {
       : expr(e), statement1(s1), statement2(s2) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~IfNode();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
@@ -789,7 +749,6 @@ namespace KJS {
     DoWhileNode(StatementNode *s, Node *e) : statement(s), expr(e) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~DoWhileNode();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
@@ -803,7 +762,6 @@ namespace KJS {
     WhileNode(Node *e, StatementNode *s) : expr(e), statement(s) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~WhileNode();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
@@ -818,7 +776,6 @@ namespace KJS {
       expr1(e1), expr2(e2), expr3(e3), statement(s) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~ForNode();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
@@ -833,7 +790,6 @@ namespace KJS {
     ForInNode(const UString *i, AssignExprNode *in, Node *e, StatementNode *s);
     virtual void ref();
     virtual bool deref();
-    virtual ~ForInNode();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
@@ -870,7 +826,6 @@ namespace KJS {
     ReturnNode(Node *v) : value(v) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~ReturnNode();
     virtual Completion execute(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -882,7 +837,6 @@ namespace KJS {
     WithNode(Node *e, StatementNode *s) : expr(e), statement(s) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~WithNode();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
@@ -896,7 +850,6 @@ namespace KJS {
     CaseClauseNode(Node *e, StatListNode *l) : expr(e), list(l) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~CaseClauseNode();
     Value value(ExecState *exec) const;
     Completion evalStatements(ExecState *exec) const;
     virtual void processVarDecls(ExecState *exec);
@@ -911,7 +864,6 @@ namespace KJS {
     ClauseListNode(CaseClauseNode *c) : cl(c), nx(0L) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~ClauseListNode();
     ClauseListNode* append(CaseClauseNode *c);
     Value value(ExecState *exec) const;
     CaseClauseNode *clause() const { return cl; }
@@ -929,7 +881,6 @@ namespace KJS {
       : list1(l1), def(d), list2(l2) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~CaseBlockNode();
     Value value(ExecState *exec) const;
     Completion evalBlock(ExecState *exec, const Value& input) const;
     virtual void processVarDecls(ExecState *exec);
@@ -945,7 +896,6 @@ namespace KJS {
     SwitchNode(Node *e, CaseBlockNode *b) : expr(e), block(b) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~SwitchNode();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
@@ -959,7 +909,6 @@ namespace KJS {
     LabelNode(const UString *l, StatementNode *s) : label(*l), statement(s) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~LabelNode();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
@@ -973,7 +922,6 @@ namespace KJS {
     ThrowNode(Node *e) : expr(e) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~ThrowNode();
     virtual Completion execute(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -985,7 +933,6 @@ namespace KJS {
     CatchNode(const UString *i, StatementNode *b) : ident(*i), block(b) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~CatchNode();
     virtual Completion execute(ExecState *exec);
     Completion execute(ExecState *exec, const Value &arg);
     virtual void processVarDecls(ExecState *exec);
@@ -1000,7 +947,6 @@ namespace KJS {
     FinallyNode(StatementNode *b) : block(b) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~FinallyNode();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
@@ -1014,7 +960,6 @@ namespace KJS {
       : block(b), _catch((CatchNode*)c), _final((FinallyNode*)f) {}
     virtual void ref();
     virtual bool deref();
-    virtual ~TryNode();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
@@ -1030,7 +975,6 @@ namespace KJS {
     ParameterNode *append(const UString *i);
     virtual void ref();
     virtual bool deref();
-    virtual ~ParameterNode();
     Value value(ExecState *exec) const;
     UString ident() const { return id; }
     ParameterNode *nextParam() const { return next; }
@@ -1046,7 +990,6 @@ namespace KJS {
     FunctionBodyNode(SourceElementsNode *s);
     virtual void ref();
     virtual bool deref();
-    virtual ~FunctionBodyNode();
     Completion execute(ExecState *exec);
     virtual void processFuncDecl(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
@@ -1061,7 +1004,6 @@ namespace KJS {
       : ident(*i), param(p), body(b) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~FuncDeclNode();
     Completion execute(ExecState */*exec*/)
       { /* empty */ return Completion(); }
     void processFuncDecl(ExecState *exec);
@@ -1078,7 +1020,6 @@ namespace KJS {
 	: param(p), body(b) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~FuncExprNode();
     Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -1092,7 +1033,6 @@ namespace KJS {
     SourceElementNode(FuncDeclNode *f) : statement(0L), function(f) { }
     virtual void ref();
     virtual bool deref();
-    virtual ~SourceElementNode();
     Completion execute(ExecState *exec);
     virtual void processFuncDecl(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
@@ -1110,7 +1050,6 @@ namespace KJS {
       { elements = s1; element = s2; }
     virtual void ref();
     virtual bool deref();
-    virtual ~SourceElementsNode();
     Completion execute(ExecState *exec);
     virtual void processFuncDecl(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
@@ -1123,7 +1062,6 @@ namespace KJS {
   class ProgramNode : public FunctionBodyNode {
   public:
     ProgramNode(SourceElementsNode *s);
-    ~ProgramNode();
   private:
     // Disallow copy
     ProgramNode(const ProgramNode &other);

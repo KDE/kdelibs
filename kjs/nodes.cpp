@@ -161,10 +161,6 @@ StatementNode::StatementNode() : l0(-1), l1(-1), sid(-1), breakPoint(false)
 {
 }
 
-StatementNode::~StatementNode()
-{
-}
-
 void StatementNode::setLoc(int line0, int line1, int sourceId)
 {
     l0 = line0;
@@ -356,10 +352,6 @@ Value ResolveNode::value(ExecState *exec) const
 
 // ----------------------------- GroupNode ------------------------------------
 
-GroupNode::~GroupNode()
-{
-}
-
 void GroupNode::ref()
 {
   Node::ref();
@@ -381,10 +373,6 @@ Value GroupNode::value(ExecState *exec) const
 }
 
 // ----------------------------- ElisionNode ----------------------------------
-
-ElisionNode::~ElisionNode()
-{
-}
 
 void ElisionNode::ref()
 {
@@ -416,10 +404,6 @@ double ElisionNode::toNumber(ExecState *exec) const
 }
 
 // ----------------------------- ElementNode ----------------------------------
-
-ElementNode::~ElementNode()
-{
-}
 
 void ElementNode::ref()
 {
@@ -471,10 +455,6 @@ Value ElementNode::value(ExecState *exec) const
 
 // ----------------------------- ArrayNode ------------------------------------
 
-ArrayNode::~ArrayNode()
-{
-}
-
 void ArrayNode::ref()
 {
   Node::ref();
@@ -519,10 +499,6 @@ Value ArrayNode::value(ExecState *exec) const
 
 // ----------------------------- ObjectLiteralNode ----------------------------
 
-ObjectLiteralNode::~ObjectLiteralNode()
-{
-}
-
 void ObjectLiteralNode::ref()
 {
   Node::ref();
@@ -547,10 +523,6 @@ Value ObjectLiteralNode::value(ExecState *exec) const
 }
 
 // ----------------------------- PropertyValueNode ----------------------------
-
-PropertyValueNode::~PropertyValueNode()
-{
-}
 
 void PropertyValueNode::ref()
 {
@@ -609,10 +581,6 @@ Value PropertyNode::value(ExecState */*exec*/) const
 
 // ----------------------------- AccessorNode1 --------------------------------
 
-AccessorNode1::~AccessorNode1()
-{
-}
-
 void AccessorNode1::ref()
 {
   Node::ref();
@@ -645,10 +613,6 @@ Reference2 AccessorNode1::evaluate(ExecState *exec) const
 
 // ----------------------------- AccessorNode2 --------------------------------
 
-AccessorNode2::~AccessorNode2()
-{
-}
-
 void AccessorNode2::ref()
 {
   Node::ref();
@@ -680,10 +644,6 @@ ArgumentListNode::ArgumentListNode(Node *e) : list(0L), expr(e)
 
 ArgumentListNode::ArgumentListNode(ArgumentListNode *l, Node *e)
   : list(l), expr(e)
-{
-}
-
-ArgumentListNode::~ArgumentListNode()
 {
 }
 
@@ -734,10 +694,6 @@ ArgumentsNode::ArgumentsNode(ArgumentListNode *l) : list(l)
 {
 }
 
-ArgumentsNode::~ArgumentsNode()
-{
-}
-
 void ArgumentsNode::ref()
 {
   Node::ref();
@@ -770,10 +726,6 @@ List ArgumentsNode::evaluateList(ExecState *exec) const
 // ----------------------------- NewExprNode ----------------------------------
 
 // ECMA 11.2.2
-
-NewExprNode::~NewExprNode()
-{
-}
 
 void NewExprNode::ref()
 {
@@ -819,10 +771,6 @@ Value NewExprNode::value(ExecState *exec) const
 }
 
 // ----------------------------- FunctionCallNode -----------------------------
-
-FunctionCallNode::~FunctionCallNode()
-{
-}
 
 void FunctionCallNode::ref()
 {
@@ -899,10 +847,6 @@ Value FunctionCallNode::value(ExecState *exec) const
 
 // ----------------------------- PostfixNode ----------------------------------
 
-PostfixNode::~PostfixNode()
-{
-}
-
 void PostfixNode::ref()
 {
   Node::ref();
@@ -933,10 +877,6 @@ Value PostfixNode::value(ExecState *exec) const
 }
 
 // ----------------------------- DeleteNode -----------------------------------
-
-DeleteNode::~DeleteNode()
-{
-}
 
 void DeleteNode::ref()
 {
@@ -977,10 +917,6 @@ Value DeleteNode::value(ExecState *exec) const
 
 // ----------------------------- VoidNode -------------------------------------
 
-VoidNode::~VoidNode()
-{
-}
-
 void VoidNode::ref()
 {
   Node::ref();
@@ -1005,10 +941,6 @@ Value VoidNode::value(ExecState *exec) const
 }
 
 // ----------------------------- TypeOfNode -----------------------------------
-
-TypeOfNode::~TypeOfNode()
-{
-}
 
 void TypeOfNode::ref()
 {
@@ -1065,10 +997,6 @@ Value TypeOfNode::value(ExecState *exec) const
 
 // ----------------------------- PrefixNode -----------------------------------
 
-PrefixNode::~PrefixNode()
-{
-}
-
 void PrefixNode::ref()
 {
   Node::ref();
@@ -1101,10 +1029,6 @@ Value PrefixNode::value(ExecState *exec) const
 
 // ----------------------------- UnaryPlusNode --------------------------------
 
-UnaryPlusNode::~UnaryPlusNode()
-{
-}
-
 void UnaryPlusNode::ref()
 {
   Node::ref();
@@ -1135,10 +1059,6 @@ Value UnaryPlusNode::value(ExecState *exec) const
 }
 
 // ----------------------------- NegateNode -----------------------------------
-
-NegateNode::~NegateNode()
-{
-}
 
 void NegateNode::ref()
 {
@@ -1171,10 +1091,6 @@ Value NegateNode::value(ExecState *exec) const
 
 // ----------------------------- BitwiseNotNode -------------------------------
 
-BitwiseNotNode::~BitwiseNotNode()
-{
-}
-
 void BitwiseNotNode::ref()
 {
   Node::ref();
@@ -1200,10 +1116,6 @@ Value BitwiseNotNode::value(ExecState *exec) const
 }
 
 // ----------------------------- LogicalNotNode -------------------------------
-
-LogicalNotNode::~LogicalNotNode()
-{
-}
 
 void LogicalNotNode::ref()
 {
@@ -1235,10 +1147,6 @@ Value LogicalNotNode::value(ExecState *exec) const
 }
 
 // ----------------------------- MultNode -------------------------------------
-
-MultNode::~MultNode()
-{
-}
 
 void MultNode::ref()
 {
@@ -1294,10 +1202,6 @@ Node* AddNode::create(Node *t1, Node *t2, char op)
 
   // fall back to generic node
   return new AddNode(t1, t2, op);
-}
-
-AddNode::~AddNode()
-{
 }
 
 void AddNode::ref()
@@ -1356,10 +1260,6 @@ Value AppendStringNode::value(ExecState *exec) const
 
 // ----------------------------- ShiftNode ------------------------------------
 
-ShiftNode::~ShiftNode()
-{
-}
-
 void ShiftNode::ref()
 {
   Node::ref();
@@ -1408,10 +1308,6 @@ Value ShiftNode::value(ExecState *exec) const
 }
 
 // ----------------------------- RelationalNode -------------------------------
-
-RelationalNode::~RelationalNode()
-{
-}
 
 void RelationalNode::ref()
 {
@@ -1482,10 +1378,6 @@ Value RelationalNode::value(ExecState *exec) const
 
 // ----------------------------- EqualNode ------------------------------------
 
-EqualNode::~EqualNode()
-{
-}
-
 void EqualNode::ref()
 {
   Node::ref();
@@ -1527,10 +1419,6 @@ Value EqualNode::value(ExecState *exec) const
 
 // ----------------------------- BitOperNode ----------------------------------
 
-BitOperNode::~BitOperNode()
-{
-}
-
 void BitOperNode::ref()
 {
   Node::ref();
@@ -1571,10 +1459,6 @@ Value BitOperNode::value(ExecState *exec) const
 
 // ----------------------------- BinaryLogicalNode ----------------------------
 
-BinaryLogicalNode::~BinaryLogicalNode()
-{
-}
-
 void BinaryLogicalNode::ref()
 {
   Node::ref();
@@ -1609,10 +1493,6 @@ Value BinaryLogicalNode::value(ExecState *exec) const
 }
 
 // ----------------------------- ConditionalNode ------------------------------
-
-ConditionalNode::~ConditionalNode()
-{
-}
 
 void ConditionalNode::ref()
 {
@@ -1653,10 +1533,6 @@ Value ConditionalNode::value(ExecState *exec) const
 }
 
 // ----------------------------- AssignNode -----------------------------------
-
-AssignNode::~AssignNode()
-{
-}
 
 void AssignNode::ref()
 {
@@ -1746,10 +1622,6 @@ Value AssignNode::value(ExecState *exec) const
 
 // ----------------------------- CommaNode ------------------------------------
 
-CommaNode::~CommaNode()
-{
-}
-
 void CommaNode::ref()
 {
   Node::ref();
@@ -1780,10 +1652,6 @@ Value CommaNode::value(ExecState *exec) const
 }
 
 // ----------------------------- StatListNode ---------------------------------
-
-StatListNode::~StatListNode()
-{
-}
 
 void StatListNode::ref()
 {
@@ -1846,10 +1714,6 @@ void StatListNode::processVarDecls(ExecState *exec)
 
 // ----------------------------- AssignExprNode -------------------------------
 
-AssignExprNode::~AssignExprNode()
-{
-}
-
 void AssignExprNode::ref()
 {
   Node::ref();
@@ -1874,10 +1738,6 @@ Value AssignExprNode::value(ExecState *exec) const
 
 VarDeclNode::VarDeclNode(const UString *id, AssignExprNode *in)
     : ident(*id), init(in)
-{
-}
-
-VarDeclNode::~VarDeclNode()
 {
 }
 
@@ -1930,10 +1790,6 @@ void VarDeclNode::processVarDecls(ExecState *exec)
 
 // ----------------------------- VarDeclListNode ------------------------------
 
-VarDeclListNode::~VarDeclListNode()
-{
-}
-
 void VarDeclListNode::ref()
 {
   Node::ref();
@@ -1976,10 +1832,6 @@ void VarDeclListNode::processVarDecls(ExecState *exec)
 
 // ----------------------------- VarStatementNode -----------------------------
 
-VarStatementNode::~VarStatementNode()
-{
-}
-
 void VarStatementNode::ref()
 {
   Node::ref();
@@ -2011,10 +1863,6 @@ void VarStatementNode::processVarDecls(ExecState *exec)
 }
 
 // ----------------------------- BlockNode ------------------------------------
-
-BlockNode::~BlockNode()
-{
-}
 
 void BlockNode::ref()
 {
@@ -2057,10 +1905,6 @@ Completion EmptyStatementNode::execute(ExecState */*exec*/)
 
 // ----------------------------- ExprStatementNode ----------------------------
 
-ExprStatementNode::~ExprStatementNode()
-{
-}
-
 void ExprStatementNode::ref()
 {
   Node::ref();
@@ -2087,10 +1931,6 @@ Completion ExprStatementNode::execute(ExecState *exec)
 }
 
 // ----------------------------- IfNode ---------------------------------------
-
-IfNode::~IfNode()
-{
-}
 
 void IfNode::ref()
 {
@@ -2144,10 +1984,6 @@ void IfNode::processVarDecls(ExecState *exec)
 
 // ----------------------------- DoWhileNode ----------------------------------
 
-DoWhileNode::~DoWhileNode()
-{
-}
-
 void DoWhileNode::ref()
 {
   Node::ref();
@@ -2199,10 +2035,6 @@ void DoWhileNode::processVarDecls(ExecState *exec)
 }
 
 // ----------------------------- WhileNode ------------------------------------
-
-WhileNode::~WhileNode()
-{
-}
 
 void WhileNode::ref()
 {
@@ -2259,10 +2091,6 @@ void WhileNode::processVarDecls(ExecState *exec)
 }
 
 // ----------------------------- ForNode --------------------------------------
-
-ForNode::~ForNode()
-{
-}
 
 void ForNode::ref()
 {
@@ -2346,10 +2174,6 @@ ForInNode::ForInNode(const UString *i, AssignExprNode *in, Node *e, StatementNod
   // for( var foo = bar in baz )
   varDecl = new VarDeclNode(&ident, init);
   lexpr = new ResolveNode(&ident);
-}
-
-ForInNode::~ForInNode()
-{
 }
 
 void ForInNode::ref()
@@ -2466,10 +2290,6 @@ Completion BreakNode::execute(ExecState *exec)
 
 // ----------------------------- ReturnNode -----------------------------------
 
-ReturnNode::~ReturnNode()
-{
-}
-
 void ReturnNode::ref()
 {
   Node::ref();
@@ -2499,10 +2319,6 @@ Completion ReturnNode::execute(ExecState *exec)
 }
 
 // ----------------------------- WithNode -------------------------------------
-
-WithNode::~WithNode()
-{
-}
 
 void WithNode::ref()
 {
@@ -2544,10 +2360,6 @@ void WithNode::processVarDecls(ExecState *exec)
 }
 
 // ----------------------------- CaseClauseNode -------------------------------
-
-CaseClauseNode::~CaseClauseNode()
-{
-}
 
 void CaseClauseNode::ref()
 {
@@ -2592,10 +2404,6 @@ void CaseClauseNode::processVarDecls(ExecState *exec)
 }
 
 // ----------------------------- ClauseListNode -------------------------------
-
-ClauseListNode::~ClauseListNode()
-{
-}
 
 void ClauseListNode::ref()
 {
@@ -2642,10 +2450,6 @@ void ClauseListNode::processVarDecls(ExecState *exec)
 }
 
 // ----------------------------- CaseBlockNode --------------------------------
-
-CaseBlockNode::~CaseBlockNode()
-{
-}
 
 void CaseBlockNode::ref()
 {
@@ -2750,10 +2554,6 @@ void CaseBlockNode::processVarDecls(ExecState *exec)
 
 // ----------------------------- SwitchNode -----------------------------------
 
-SwitchNode::~SwitchNode()
-{
-}
-
 void SwitchNode::ref()
 {
   Node::ref();
@@ -2794,10 +2594,6 @@ void SwitchNode::processVarDecls(ExecState *exec)
 
 // ----------------------------- LabelNode ------------------------------------
 
-LabelNode::~LabelNode()
-{
-}
-
 void LabelNode::ref()
 {
   Node::ref();
@@ -2837,10 +2633,6 @@ void LabelNode::processVarDecls(ExecState *exec)
 
 // ----------------------------- ThrowNode ------------------------------------
 
-ThrowNode::~ThrowNode()
-{
-}
-
 void ThrowNode::ref()
 {
   Node::ref();
@@ -2870,10 +2662,6 @@ Completion ThrowNode::execute(ExecState *exec)
 }
 
 // ----------------------------- CatchNode ------------------------------------
-
-CatchNode::~CatchNode()
-{
-}
 
 void CatchNode::ref()
 {
@@ -2919,10 +2707,6 @@ void CatchNode::processVarDecls(ExecState *exec)
 
 // ----------------------------- FinallyNode ----------------------------------
 
-FinallyNode::~FinallyNode()
-{
-}
-
 void FinallyNode::ref()
 {
   Node::ref();
@@ -2949,10 +2733,6 @@ void FinallyNode::processVarDecls(ExecState *exec)
 }
 
 // ----------------------------- TryNode --------------------------------------
-
-TryNode::~TryNode()
-{
-}
 
 void TryNode::ref()
 {
@@ -3014,10 +2794,6 @@ void TryNode::processVarDecls(ExecState *exec)
 
 // ----------------------------- ParameterNode --------------------------------
 
-ParameterNode::~ParameterNode()
-{
-}
-
 void ParameterNode::ref()
 {
   Node::ref();
@@ -3057,11 +2833,6 @@ FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
 {
   setLoc(-1, -1, -1);
   //fprintf(stderr,"FunctionBodyNode::FunctionBodyNode %p\n",this);
-}
-
-FunctionBodyNode::~FunctionBodyNode()
-{
-  //fprintf(stderr,"FunctionBodyNode::~FunctionBodyNode %p\n",this);
 }
 
 void FunctionBodyNode::ref()
@@ -3105,10 +2876,6 @@ void FunctionBodyNode::processVarDecls(ExecState *exec)
 }
 
 // ----------------------------- FuncDeclNode ---------------------------------
-
-FuncDeclNode::~FuncDeclNode()
-{
-}
 
 void FuncDeclNode::ref()
 {
@@ -3165,10 +2932,6 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
 
 // ----------------------------- FuncExprNode ---------------------------------
 
-FuncExprNode::~FuncExprNode()
-{
-}
-
 void FuncExprNode::ref()
 {
   Node::ref();
@@ -3207,10 +2970,6 @@ Value FuncExprNode::value(ExecState *exec) const
 }
 
 // ----------------------------- SourceElementNode ----------------------------
-
-SourceElementNode::~SourceElementNode()
-{
-}
 
 void SourceElementNode::ref()
 {
@@ -3253,10 +3012,6 @@ void SourceElementNode::processVarDecls(ExecState *exec)
 }
 
 // ----------------------------- SourceElementsNode ---------------------------
-
-SourceElementsNode::~SourceElementsNode()
-{
-}
 
 void SourceElementsNode::ref()
 {
@@ -3319,8 +3074,4 @@ void SourceElementsNode::processVarDecls(ExecState *exec)
 
 ProgramNode::ProgramNode(SourceElementsNode *s): FunctionBodyNode(s) {
     //fprintf(stderr,"ProgramNode::ProgramNode %p\n",this);
-}
-
-ProgramNode::~ProgramNode() {
-    //fprintf(stderr,"ProgramNode::~ProgramNode %p\n",this);
 }
