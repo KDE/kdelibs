@@ -19,6 +19,10 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// added a macro i18n. klocale->translate is much to long and I should have done
+// this way earlier ;)
+// I would like to add this macro to klocale.h, but I'm afraid, this will make
+// the translation of several office packages harder :)
 //
 // Revision 1.39  1997/12/28 21:32:15  kulow
 // last time I forgot two functions kde_mimedir() and kde_confdir()
@@ -192,7 +196,7 @@ class KApplication : public QApplication
 * @ important data.
 */
   const QString& appName() const { return aAppName; }
-* @ Session management will apply to the main widget.
+  
 /** 
 * Enable session management
 *
