@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=application/x-mimearchive
+Icon=message
+Patterns=*.mhtml;*.MHTML;*.mht;*.MHT
+Comment=Mime Encapsulated Web Archive
+
+[Property::X-KDE-LocalProtocol]
+Type=QString
+Value=mhtml
