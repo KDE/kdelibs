@@ -51,6 +51,7 @@
 #include <kglobalsettings.h>
 #include <kipc.h>
 #include <kcrash.h>
+#include <kdatastream.h>
 
 #include <kstyle.h>
 #include <qplatinumstyle.h>
