@@ -343,7 +343,7 @@ public:
   /**
    * Insert a @ref KComboBox with text.
    *
-   *  The rest is the same as above.
+   * The rest is the same as above.
    * @see setItemAutoSized()
    *
    * @see KComboBox
@@ -404,9 +404,7 @@ public:
    * exists.
    *
    * @see insertAnimatedWidget
-   *
    * @param id The id for the widget you want to get a pointer to
-   *
    * @return A pointer to the current animated widget or 0L
    */
     KAnimWidget *animatedWidget( int id );
@@ -515,8 +513,8 @@ public:
     void setButton (int id, bool flag);
 
   /**
-   * @return @p true if button is on, @p false if button is off or if the
-   * button is not a toggle button.
+   * Returns @p true iff button it's on and its a toggle button, 
+   * @return @p true iff button it's on and its a toggle button, 
    * @see setToggle()
    */
     bool isButtonOn (int id) const;
@@ -529,6 +527,7 @@ public:
     void setLinedText (int id, const QString& text);
 
   /**
+   * Returns the line editor text.
    * @return the line editor text.
    */
     QString getLinedText (int id) const;
@@ -568,6 +567,7 @@ public:
     void clearCombo (int id);
 
   /**
+   * Returns text of item @p index from combobox @p id.
    * @return text of item @p index from combobox @p id.
    *
    * @p index = -1 refers to current item.
@@ -576,6 +576,7 @@ public:
     QString getComboItem (int id, int index=-1) const;
 
     /**
+   * Returns a pointer to the combobox.
    * @return a pointer to the combobox.
    *
    * Example:
@@ -588,6 +589,7 @@ public:
     KComboBox * getCombo(int id);
 
     /**
+   * Returns a pointer to KToolBarLined.
    * @return a pointer to KToolBarLined.
    *
    * Example:
@@ -601,7 +603,7 @@ public:
     KLineEdit * getLined (int id);
 
     /**
-   * @return a pointer to KToolBarButton.
+   * Returns a pointer to KToolBarButton.
    *
    * Example:
    * <pre>
@@ -623,6 +625,7 @@ public:
     void alignItemRight (int id, bool right = true);
 
     /**
+   * Returns a pointer to an inserted widget.
    * @return a pointer to an inserted widget.
    *
    * Wrong ids are not tested.
@@ -681,13 +684,14 @@ public:
     void showItem (int id);
 
     /**
+   * Returns the index of the given item.
    * @return the index of the given item.
    * @since 3.2
    */
     int itemIndex (int id); // ### KDE4: make this const!
 
     /**
-   * @return the id of the item at the given index.
+   * Returns the id of the item at the given index.
    * @since 3.2
    */
     int idAt(int index); // ### KDE4: make this const!
@@ -707,6 +711,7 @@ public:
     void setFullSize(bool flag = true);
 
     /**
+   * Returns the full-size mode enabled flag.
    * @return @p true iff the full-size mode is enabled.
    */
     bool fullSize() const;
@@ -724,6 +729,7 @@ public:
     void setBarPos (BarPosition bpos);
 
     /**
+   * Returns the toolbar position.
    * @return position of toolbar.
    */
     BarPosition barPos() const;
@@ -745,9 +751,10 @@ public:
     void setMaxHeight (int h);  // Set max height for vertical toolbars
 
   /**
+   * Returns the value set with @ref setMaxHeight().
    * @deprecated
    * Use maximumHeight() instead.
-   * @return the value that was set with @ref setMaxHeight().
+   * @return the value set with @ref setMaxHeight().
    */
     int maxHeight();
 
@@ -759,9 +766,10 @@ public:
     void setMaxWidth (int dw);
 
   /**
+   * Returns the value set with @ref setMaxWidth().
    * @deprecated
    * Use maximumWidth() instead.
-   * @return the value that was set with @ref setMaxWidth().
+   * @return the value set with @ref setMaxWidth().
    */
     int maxWidth();
 
@@ -802,7 +810,8 @@ public:
     void setIconText(IconText it, bool update);
 
   /**
-   * @return The current text style for buttons.
+   * Returns the current text style for buttons.
+   * @return the current text style for buttons.
    */
     IconText iconText() const;
 
@@ -830,7 +839,8 @@ public:
     void setIconSize(int size, bool update);
 
   /**
-   * @return The current icon size for buttons.
+   * Returns the current icon size for buttons.
+   * @return the current icon size for buttons.
    */
     int iconSize() const;
 
@@ -842,6 +852,7 @@ public:
     void setEnableContextMenu(bool enable = true);
 
   /**
+   * Returns the context menu enabled flag
    * @return true iff the context menu is disabled
    */
     bool contextMenuEnabled() const;
@@ -859,7 +870,8 @@ public:
     void setFlat (bool flag);
 
   /**
-   * @return the number of items in the toolbar
+   * Returns the total number of items in the toolbar
+   * @return the total number of items in the toolbar
    */
     int count() const;
 
@@ -902,6 +914,7 @@ public:
     void setText( const QString & txt );
 
   /**
+   * Returns the toolbar's text.
    * @return the toolbar's text.
    */
     QString text() const;
@@ -1021,16 +1034,19 @@ signals:
 
 public:
     /**
+     * Returns the global setting for "Highlight buttons under mouse"
      * @return global setting for "Highlight buttons under mouse"
      */
     static bool highlightSetting();
 
     /**
+     * Returns the global setting for "Toolbars transparent when moving"
      * @return global setting for "Toolbars transparent when moving"
      */
     static bool transparentSetting();
 
     /**
+     * Returns the global setting for "Icon Text"
      * @return global setting for "Icon Text"
      */
     static IconText iconTextSetting();
