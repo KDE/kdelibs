@@ -75,7 +75,9 @@ void KProgress::initialize()
 	bar_text_color = colorGroup().highlightedText();
 	text_color = colorGroup().text();
 	setBackgroundMode( PaletteBase );
-	setFont(QFont(QString::fromLatin1("helvetica"), 12, QFont::Bold));
+	QFont f(QString::fromLatin1("helvetica"), 12, QFont::Bold);
+	f.setPixelSize(12);
+	setFont(f);
         text_enabled = TRUE;
         if(kapp->kstyle()){
             QBrush b;
