@@ -556,11 +556,6 @@
 
 100300       kproperty
 
-101000       amarok (Common)
-101001       amarok (Player)
-101002       amarok (Playlist)
-101003       amarok (Browser)
-
 # rosegarden
 
 200000       rosegarden
