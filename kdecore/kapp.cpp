@@ -813,7 +813,7 @@ void KApplication::disableSessionManagement() {
 
 bool KApplication::requestShutDown()
 {
-    requestShutDown( false );
+    return requestShutDown( false );
 }
 
 bool KApplication::requestShutDown( bool bFast )
