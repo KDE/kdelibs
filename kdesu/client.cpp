@@ -27,6 +27,7 @@
 
 #include <qglobal.h>
 #include <qcstring.h>
+#include <qfile.h>
 
 #include <kdebug.h>
 #include <kstddirs.h>
@@ -251,7 +252,7 @@ bool KDEsuClient::isServerSGID()
     }
 
     struct stat sbuf;
-    if (stat(daemon.latin1(), &sbuf) < 0) 
+    if (stat(QFile::encodeName(daemon), &sbuf) < 0) 
     {
 	kdWarning(900) << k_lineinfo << "stat(): " << perror << "\n";
 	return false;
