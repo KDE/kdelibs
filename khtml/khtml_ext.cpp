@@ -23,6 +23,7 @@ KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const c
 : KParts::BrowserExtension( parent, name )
 {
   m_part = parent;
+  setURLDropHandlingEnabled( true );
 }
 
 int KHTMLPartBrowserExtension::xOffset()

@@ -59,55 +59,6 @@ QList<KHTMLView> *KHTMLView::lstViews = 0L;
 using namespace DOM;
 using namespace khtml;
 
-class KHTMLViewDropHandler : public QObject
-{
- public:
-    KHTMLViewDropHandler( KHTMLView *parent, const char *name );
-
-    virtual bool eventFilter( QObject *obj, QEvent *ev );
-
- private:
-    KHTMLView *m_view;
-};
-
-KHTMLViewDropHandler::KHTMLViewDropHandler( KHTMLView *parent, const char *name )
-    : QObject( parent, name )
-{
-    m_view = parent;
-    m_view->installEventFilter( this );
-}
-
-bool KHTMLViewDropHandler::eventFilter( QObject *obj, QEvent *ev )
-{
-    if ( obj != m_view )
-        return false;
-
-    if ( ev->type() == QEvent::DragEnter )
-    {
-        QDragEnterEvent *e = static_cast<QDragEnterEvent *>( ev );
-
-        if( QUriDrag::canDecode( e ) )
-        {
-            KURL::List lstDragURLs;
-            bool ok = KURLDrag::decode( e, lstDragURLs );
-
-            if ( ok &&
-                 !lstDragURLs.first().url().contains( "javascript:", false ) &&
-                 e->source() != m_view->viewport() )
-                e->acceptAction();
-        }
-    }
-    else if ( ev->type() == QEvent::Drop )
-    {
-        KURL::List lstDragURLs;
-        bool ok = KURLDrag::decode( static_cast<QDropEvent *>( ev ), lstDragURLs );
-        if ( ok )
-            emit m_view->part()->browserExtension()->openURLRequest( lstDragURLs.first() );
-    }
-
-    return false;
-}
-
 class KHTMLViewPrivate {
 public:
     KHTMLViewPrivate()
@@ -167,15 +118,6 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     init();
 
     viewport()->show();
-
-    // Daniel Naber's patch to allow dropping URLs onto Konqueror.
-    // Implemented as separate-object-installs-event-filter solution
-    // as reimplementing the virtual dnd methods of QWidget might
-    // arise problems regarding binary compatibility (it doesn't break
-    // BC as is but already existing reimplementations would call the
-    // wrong base implementation (leaving out the new one) .
-    // ### FIXME KDE 3.0 :-)
-    (void)new KHTMLViewDropHandler( this, "htmlviewdrophandler" );
 }
 
 KHTMLView::~KHTMLView()
