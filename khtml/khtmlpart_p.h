@@ -283,6 +283,8 @@ public:
 
   int m_zoomFactor;
 
+  QStringList m_pluginPageQuestionAsked;
+
   int m_findPos;
   DOM::NodeImpl *m_findNode;
 
