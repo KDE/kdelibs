@@ -21,6 +21,7 @@
 
 #include <dom_string.h>
 #include <kmessagebox.h>
+#include <klocale.h>
 
 #include <operations.h>
 #include "kjs_window.h"
@@ -58,7 +59,8 @@ KJSO *WindowFunc::execute(KJSContext *context)
     result = new KJSUndefined();
     break;
   case Confirm:
-    i = KMessageBox::questionYesNo((QWidget*)widget, str, "JavaScript");
+    i = KMessageBox::warningYesNo((QWidget*)widget, str, "JavaScript",
+				  i18n("OK"), i18n("Cancel"));
     result = new KJSBoolean((i == KMessageBox::Yes));
     break;
   }

@@ -28,4 +28,4 @@ noinst_HEADERS = kjs_html.h kjs_dom.h kjs_window.h
 # HTML module
 kjs_html_la_SOURCES = kjs_html.cpp kjs_dom.cpp kjs_window.cpp
 kjs_html_la_LDFLAGS = -module -avoid-version
-kjs_html_la_LIBADD = ../kjs/libkjs.la ../libkhtml.la
+kjs_html_la_LIBADD = ../kjs/libkjs.la
