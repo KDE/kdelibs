@@ -6,17 +6,20 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
-<!-- Please adapt to Czech! This is a hack to make some docs compile.-->
-
-<!ENTITY OS             	"operating system">                                <!-- English: &OS; -->
-<!-- You can (should) adapt the names of the entities themselves.
-     Don't forget to change the docs accordingly.
-     Example in French:
-  ENTITY SE             	"système d'exploitation"
-     => English &OS; gets translated to &SE; in French
- -->
-
-<!ENTITY kcontrolcenter 	"<application>&kde; Control Center</application>">
 <!ENTITY Alt	"<keycap>Alt</keycap>">
+<!ENTITY Backspace	"<keycap>Backspace</keycap>">
+<!ENTITY cdrom	'<hardware>CD-ROM mechanika</hardware>'>
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
+<!ENTITY dpi	'<acronym>dpi</acronym>'>
+<!ENTITY eg     "<abbrev>např.</abbrev>">
+<!ENTITY Esc	"<keycap>Esc</keycap>">
+<!ENTITY etc    "<abbrev>atd.</abbrev>">
+<!ENTITY FAQ	'<acronym>FAQ</acronym>'>
+<!ENTITY ie     "<abbrev>tj.</abbrev>">
+<!ENTITY infocenter	"<application>Informační centrum</application>">
+<!ENTITY kcontrolcenter	"<application>Ovládací centrum KDE</application>">
+<!ENTITY LMB    "<mousebutton>levé</mousebutton> tlačítko myši">
+<!ENTITY MMB    "<mousebutton>prostřední</mousebutton> tlačítko myši">
+<!ENTITY OS	"operační systém">
+<!ENTITY RMB    "<mousebutton>pravé</mousebutton> tlačítko myši">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
