@@ -2676,6 +2676,10 @@ double KSVGIconPainter::toPixel(const QString &s, bool hmode)
 			else
 				ret *= d->drawHeight;
 		}
+		else if(check.compare("em") == 0)
+		{
+			ret = value * 10.0; // TODO make this depend on actual font size
+		}
 	}
 	else
 		ret = value;

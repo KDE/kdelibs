@@ -46,59 +46,9 @@ public:
 	{
 	}
 
-	double dpi()
-	{
-	    return 90.0; // TODO: make modal?
-	}
-
 	double toPixel(const QString &s, bool hmode)
 	{
-		if(s.isEmpty())
-			return 0.0;
-
-		QString check = s;
-
-		double ret = 0.0;
-
-		bool ok = false;
-
-		double value = check.toDouble(&ok);
-
-		if(!ok)
-		{
-			QRegExp reg("[0-9 .-]");
-			check.replace(reg, "");
-
-			if(check.compare("px") == 0)
-				ret = value;
-			else if(check.compare("cm") == 0)
-				ret = (value / 2.54) * dpi();
-			else if(check.compare("pc") == 0)
-				ret = (value / 6.0) * dpi();
-			else if(check.compare("mm") == 0)
-				ret = (value / 25.4) * dpi();
-			else if(check.compare("in") == 0)
-				ret = value * dpi();
-			else if(check.compare("pt") == 0)
-				ret = (value / 72.0) * dpi();
-			else if(check.compare("%") == 0)
-			{
-				ret = value / 100.0;
-
-				if(hmode)
-					ret *= 500;
-				else
-					ret *= 500;
-			}
-			else if(check.compare("em") == 0)
-			{
-				ret = (value / 72.0) * dpi() * 12.0; // TODO make this depend on actual font size
-			}
-		}
-		else
-			ret = value;
-
-		return ret;
+		return m_engine->painter()->toPixel(s, hmode);
 	}
 
 	ArtGradientStop *parseGradientStops(QDomElement element, int &offsets)
