@@ -1833,6 +1833,9 @@ void TransparencyHandler::createShadowWindows(const QPopupMenu* p)
 	se.w2 = new QWidget(0, 0, WStyle_Customize | WType_Popup | WX11BypassWM );
 	se.w1->setGeometry(shadow1);
 	se.w2->setGeometry(shadow2);
+	XSelectInput(qt_xdisplay(), se.w1->winId(), StructureNotifyMask );
+	XSelectInput(qt_xdisplay(), se.w2->winId(), StructureNotifyMask );
+
 	// Insert a new ShadowMap entry
 	shadowMap[p] = se;
 
@@ -1868,6 +1871,7 @@ void TransparencyHandler::removeShadowWindows(const QPopupMenu* p)
 		ShadowElements se = it.data();
 		XUnmapWindow(qt_xdisplay(), se.w1->winId());	// hide
 		XUnmapWindow(qt_xdisplay(), se.w2->winId());
+		XFlush(qt_xdisplay());							// try to hide faster
 		delete se.w1;
 		delete se.w2;
 		shadowMap.erase(it);
