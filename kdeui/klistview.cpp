@@ -460,13 +460,15 @@ bool KListView::isExecuteArea( int x )
     for ( int index = 0; index < pos; index++ )
       offset += columnWidth( header()->mapToSection( index ) );
 
+    x += contentsX(); // in case of a horizontal scrollbar
     return ( x > offset && x < ( offset + width ) );
   }
 }
 
 void KListView::slotOnItem( QListViewItem *item )
 {
-  if ( item && isExecuteArea( QCursor::pos().x() ) && (d->autoSelectDelay > -1) && d->bUseSingle ) {
+  QPoint vp = viewport()->mapFromGlobal( QCursor::pos() );
+  if ( item && isExecuteArea( vp.x() ) && (d->autoSelectDelay > -1) && d->bUseSingle ) {
     d->autoSelect.start( d->autoSelectDelay, true );
     d->pCurrentItem = item;
   }
