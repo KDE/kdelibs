@@ -1498,6 +1498,8 @@ QString KIO::findDeviceMountPoint( const QString& filename )
       // There may be symbolic links into the /etc/mnttab
       // So we have to find the real device name here as well!
       QCString device_name = FSNAME(me);
+      if (device_name.isEmpty() || (device_name[0] != '/'))
+         continue;
 
       //kdDebug( 7007 ) << "device_name=" << device_name << endl;
 
@@ -1569,6 +1571,49 @@ static void check_mount_point(const char *mounttype,
 static QString get_mount_info(const QString& filename, 
     MountState& isautofs, MountState& isslow, MountState& ismanual)
 {
+    static bool gotRoot = false;
+    static dev_t rootDevice;
+
+    struct cachedDevice_t
+    {
+       dev_t device;
+       QString mountPoint;
+       MountState isautofs;
+       MountState isslow;
+       MountState ismanual;
+    };
+    static struct cachedDevice_t *cachedDevice = 0;   
+    
+    if (!gotRoot)
+    {
+       struct stat stat_buf;
+       stat("/", &stat_buf);
+       gotRoot = true;
+       rootDevice = stat_buf.st_dev;
+    }
+
+    bool gotDevice = false;    
+    struct stat stat_buf;
+    if (stat(QFile::encodeName(filename), &stat_buf) == 0)
+    {
+       gotDevice = true;
+       if (stat_buf.st_dev == rootDevice)
+       {
+          static const QString &root = KGlobal::staticQString("/");
+          isautofs = Wrong;
+          isslow = Wrong;
+          ismanual = Wrong;
+          return root;
+       }
+       if (cachedDevice && (stat_buf.st_dev == cachedDevice->device))
+       {
+          isautofs = cachedDevice->isautofs;
+          isslow = cachedDevice->isslow;
+          ismanual = cachedDevice->ismanual;
+          return cachedDevice->mountPoint;
+       }
+    }
+
     char realname[MAXPATHLEN];
 
     memset(realname, 0, MAXPATHLEN);
@@ -1765,6 +1810,18 @@ static QString get_mount_info(const QString& filename,
 
     if (isautofs == Right && isslow == Unseen)
         isslow = Right;
+        
+    if (gotDevice)
+    {
+       if (!cachedDevice)
+          cachedDevice = new cachedDevice_t;
+       
+       cachedDevice->device = stat_buf.st_dev;
+       cachedDevice->mountPoint = mountPoint;
+       cachedDevice->isautofs = isautofs;
+       cachedDevice->isslow = isslow;
+       cachedDevice->ismanual = isslow;
+    }
 
     return mountPoint;
 }

@@ -60,14 +60,58 @@ int main(int argc, char **argv) {
       url = args->url(0);
     else
       url = "file:" + QDir::currentDirPath();
-    args->clear();
 
     kdDebug() << url.url() << " is probably " << (KIO::probably_slow_mounted(url.path()) ? "slow" : "normal") << " mounted\n";
     QString mp = KIO::findDeviceMountPoint(url.path());
     if (mp.isEmpty()) {
-        kdDebug() << "no mount point for " << url.url() << " found\n";
+        kdDebug() << "no mount point for device " << url.url() << " found\n";
     } else
-        kdDebug() << mp << " is the mount point for " << url.url() << endl;
+        kdDebug() << mp << " is the mount point for device " << url.url() << endl;
+
+    mp = KIO::findPathMountPoint(url.path());
+    if (mp.isEmpty()) {
+        kdDebug() << "no mount point for path " << url.url() << " found\n";
+    } else
+        kdDebug() << mp << " is the mount point for path " << url.url() << endl;
+    // SpeedTest test( url );
+    // app.exec();
+
+    mp = KIO::findPathMountPoint(url.path());
+    if (mp.isEmpty()) {
+        kdDebug() << "no mount point for path " << url.url() << " found\n";
+    } else
+        kdDebug() << mp << " is the mount point for path " << url.url() << endl;
+    // SpeedTest test( url );
+    // app.exec();
+
+    url.setPath(QDir::homeDirPath());
+
+    mp = KIO::findPathMountPoint(url.path());
+    if (mp.isEmpty()) {
+        kdDebug() << "no mount point for path " << url.url() << " found\n";
+    } else
+        kdDebug() << mp << " is the mount point for path " << url.url() << endl;
+    // SpeedTest test( url );
+    // app.exec();
+
+    mp = KIO::findPathMountPoint(url.path());
+    if (mp.isEmpty()) {
+        kdDebug() << "no mount point for path " << url.url() << " found\n";
+    } else
+        kdDebug() << mp << " is the mount point for path " << url.url() << endl;
+    // SpeedTest test( url );
+    // app.exec();
+
+    if ( args->count() == 1 )
+      url = args->url(0);
+    else
+      url = "file:" + QDir::currentDirPath();
+
+    mp = KIO::findPathMountPoint(url.path());
+    if (mp.isEmpty()) {
+        kdDebug() << "no mount point for path " << url.url() << " found\n";
+    } else
+        kdDebug() << mp << " is the mount point for path " << url.url() << endl;
     // SpeedTest test( url );
     // app.exec();
 
