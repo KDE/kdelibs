@@ -39,6 +39,14 @@ public:
 	 * will be created when necessary.
 	 */
 	static std::string createFilePath(std::string name);
+
+	/**
+	 * Returns the fully qualified hostname, such as "www.kde.org" (of course
+	 * this may fail due to misconfiguration).
+	 *
+	 * The result is "localhost" if nothing at all can be found out.
+	 */
+	static string getFullHostname();
 };
 
 #endif /* MCOPUTILS_H */

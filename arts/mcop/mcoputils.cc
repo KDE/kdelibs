@@ -58,3 +58,35 @@ string MCOPUtils::createFilePath(string name)
 	}
 	return tmpdir+"/"+name;
 }
+
+/*
+ * try to figure out full hostname - this is important as every client which
+ * tries to connect objects located here will need to be able to resolve that 
+ * correctly
+ */
+string MCOPUtils::getFullHostname()
+{
+	char buffer[1024];
+	string result;
+
+	if(gethostname(buffer,1024) == 0)
+		result = buffer; 
+	else
+		return "localhost";
+
+	if(getdomainname(buffer,1024) == 0)
+	{
+		/*
+		 * I don't know why, but on my linux machine, the domainname
+		 * always ends up being (none), which is certainly no valid
+		 * domainname
+		 */
+		if(strcmp(buffer,"(none)") != 0)
+		{
+			result += ".";
+			result += buffer; 
+		}
+	}
+
+	return result;
+}

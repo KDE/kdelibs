@@ -39,6 +39,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include "mcoputils.h"
 
 using namespace std;
 
@@ -122,15 +123,10 @@ bool TCPServer::initSocket()
 
 string TCPServer::url()
 {
-	char xurl[200];
-	char hostname[256];
+	char xport[200];
+	sprintf(xport,"%d",thePort);
 
-	if(gethostname(hostname,255) == 0)
-		sprintf(xurl,"tcp:%s:%d",hostname,thePort);
-	else
-		sprintf(xurl,"tcp:localhost:%d",thePort);
-
-	return xurl;
+	return "tcp:"+MCOPUtils::getFullHostname()+":"+xport;
 }
 
 void TCPServer::notifyIO(int fd, int types)

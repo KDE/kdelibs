@@ -43,7 +43,7 @@ using namespace std;
 
 Dispatcher *Dispatcher::_instance = 0;
 
-Dispatcher::Dispatcher(IOManager *ioManager)
+Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 {
 	assert(!_instance);
 	_instance = this;
@@ -76,21 +76,29 @@ Dispatcher::Dispatcher(IOManager *ioManager)
 
 	notificationManager = new NotificationManager;
 
-	unixServer = new UnixServer(this,serverID);
-	if(!unixServer->running())
+	if(startServer & startUnixServer)
 	{
-		delete unixServer;
-		fprintf(stderr,"MCOP Warning: couldn't start UnixServer\n");
-		unixServer = 0;
+		unixServer = new UnixServer(this,serverID);
+		if(!unixServer->running())
+		{
+			delete unixServer;
+			fprintf(stderr,"MCOP Warning: couldn't start UnixServer\n");
+			unixServer = 0;
+		}
 	}
+	else unixServer = 0;
 
-	tcpServer = new TCPServer(this);
-	if(!tcpServer->running())
+	if(startServer & startTCPServer)
 	{
-		delete tcpServer;
-		fprintf(stderr,"MCOP Warning: couldn't start TCPServer\n");
-		tcpServer = 0;
+		tcpServer = new TCPServer(this);
+		if(!tcpServer->running())
+		{
+			delete tcpServer;
+			fprintf(stderr,"MCOP Warning: couldn't start TCPServer\n");
+			tcpServer = 0;
+		}
 	}
+	else tcpServer = 0;
 
 	_interfaceRepo = new InterfaceRepo_impl();
 	_flowSystem = 0;
@@ -443,27 +451,11 @@ void Dispatcher::removeObject(long objectID)
 
 void Dispatcher::generateServerID()
 {
-	char buffer[1024];
+	char buffer[4096];
+	const char *hostname = MCOPUtils::getFullHostname().c_str();
 
-	if(gethostname(buffer,1024) == 0)
-	{
-		serverID = buffer; 
-	}
-	else
-	{
-		serverID = "unknownhost";
-	}
-	serverID += ".";
-	if(getdomainname(buffer,1024) == 0)
-	{
-		serverID += buffer; 
-	}
-	else
-	{
-		serverID += "nowhere.org";
-	}
-	sprintf(buffer,"-%04x-%08lx",getpid(),time(0));
-	serverID += buffer;
+	sprintf(buffer,"%s-%04x-%08lx",hostname,getpid(),time(0));
+	serverID = buffer;
 }
 
 string Dispatcher::objectToString(long objectID)

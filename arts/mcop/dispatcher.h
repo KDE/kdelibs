@@ -76,7 +76,13 @@ protected:
 	Connection *_activeConnection;		// internal use only (for refcounting)
 
 public:
-	Dispatcher(IOManager *ioManager = 0);
+	enum StartServer {
+		noServer = 0,
+		startUnixServer = 1,
+		startTCPServer = 2
+	};
+
+	Dispatcher(IOManager *ioManager = 0, StartServer startServer = noServer);
 	~Dispatcher();
 
 	static Dispatcher *the();

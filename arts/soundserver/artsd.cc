@@ -49,17 +49,23 @@ static void exitUsage(const char *progname)
 {
 	fprintf(stderr,"usage: %s [ options ]\n",progname);
 	fprintf(stderr,"-r <samplingrate>   set samplingrate to use\n");
+	fprintf(stderr,"-n                  enable network transparency\n");
 	exit(1);	
 }
+
+static Dispatcher::StartServer	cfgServers		= Dispatcher::startUnixServer;
+static int  					cfgSamplingRate	= 0;
 
 static void handleArgs(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:")) > 0)
+	while((optch = getopt(argc,argv,"r:n")) > 0)
 	{
 		switch(optch)
 		{
-			case 'r': AudioSubSystem::the()->samplingRate(atoi(optarg));
+			case 'r': cfgSamplingRate = atoi(optarg);
+				break;
+			case 'n': cfgServers |= Dispatcher::startTCPServer;
 				break;
 			default: 
 					exitUsage(argc?argv[0]:"artsd");
@@ -70,11 +76,15 @@ static void handleArgs(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-	Dispatcher dispatcher;
-
-	initSignals();
 	handleArgs(argc, argv);
 
+	Dispatcher dispatcher(0,cfgServers);
+	initSignals();
+
+	/* apply configuration */
+	if(cfgSamplingRate) AudioSubSystem::the()->samplingRate(cfgSamplingRate);
+
+	/* start sound server implementation */
 	SimpleSoundServer_var server = new SimpleSoundServer_impl;
 
 	bool result = ObjectManager::the()
