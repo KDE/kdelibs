@@ -122,7 +122,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     KSimpleConfig cfg(mDir + "index.desktop");
     cfg.setGroup("KDE Icon Theme");
     mName = cfg.readEntry("Name");
-    mDesc = cfg.readEntry("Description");
+    mDesc = cfg.readEntry("Comment");
     mDepth = cfg.readNumEntry("DisplayDepth", 32);
     mInherits = cfg.readListEntry("Inherits");
     d->example = cfg.readEntry("Example");
