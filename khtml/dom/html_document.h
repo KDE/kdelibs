@@ -40,6 +40,7 @@ class KHTMLPart;
 namespace DOM {
 
 class HTMLDocumentImpl;
+class DOMImplementation;
 class HTMLCollection;
 class NodeList;
 class Element;
@@ -73,6 +74,7 @@ class HTMLDocument : public Document
 {
     friend class ::KHTMLView;
     friend class ::KHTMLPart;
+    friend class DOMImplementation;
 public:
     HTMLDocument();
     /**

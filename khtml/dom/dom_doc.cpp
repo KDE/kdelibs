@@ -27,6 +27,8 @@
 #include "dom/dom2_events.h"
 #include "dom/dom2_views.h"
 #include "dom/dom2_traversal.h"
+#include "dom/html_document.h"
+#include "html/html_documentimpl.h"
 
 #include "xml/dom_docimpl.h"
 #include "xml/dom_elementimpl.h"
@@ -99,6 +101,20 @@ Document DOMImplementation::createDocument ( const DOMString &namespaceURI,
     DocumentImpl *r = impl->createDocument(namespaceURI, qualifiedName, doctype, exceptioncode );
     if ( exceptioncode )
         throw DOMException( exceptioncode );
+    return r;
+}
+
+HTMLDocument DOMImplementation::createHTMLDocument( const DOMString& title )
+{
+    if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    HTMLDocumentImpl* r = impl->createHTMLDocument( 0 /* ### create a view otherwise it doesn't work */);
+
+    r->open();
+
+    r->write(QString::fromLatin1("<HTML><HEAD><TITLE>") + title.string() +
+             QString::fromLatin1("</TITLE></HEAD>"));
+
     return r;
 }
 
