@@ -2435,7 +2435,7 @@ bool KHTMLView::placeCaret(InlineBox *hintBox)
 
   NodeImpl *caretNode = m_part->d->caretNode().handle();
   // ### why is it sometimes null?
-  if (!caretNode) return false;
+  if (!caretNode || !caretNode->renderer()) return false;
   ensureNodeHasFocus(caretNode);
   if (m_part->isCaretMode() || m_part->isEditable()
      || caretNode->renderer()->style()->userInput() == UI_ENABLED) {
