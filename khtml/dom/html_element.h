@@ -192,6 +192,12 @@ public:
      */
     HTMLCollection children() const;
 
+    /**
+     * Retrieves a collection of all nodes that descend from this node.
+     * IE-specific extension.
+     */
+    HTMLCollection all() const;
+
     /*
      * @internal
      */

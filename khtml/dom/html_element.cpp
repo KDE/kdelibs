@@ -167,6 +167,12 @@ HTMLCollection HTMLElement::children() const
     return HTMLCollection(impl, HTMLCollectionImpl::NODE_CHILDREN);
 }
 
+HTMLCollection HTMLElement::all() const
+{
+    if(!impl) return HTMLCollection();
+    return HTMLCollection(impl, HTMLCollectionImpl::DOC_ALL /*it's called "doc" but it works from any node */);
+}
+
 void HTMLElement::assignOther( const Node &other, int elementId )
 {
     if (other.elementId() != static_cast<Q_UINT32>(elementId)) {
@@ -174,5 +180,5 @@ void HTMLElement::assignOther( const Node &other, int elementId )
 	impl = 0;
     } else {
 	Node::operator = (other);
-    }   
+    }
 }
