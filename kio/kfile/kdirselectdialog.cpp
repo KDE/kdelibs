@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2001 Carsten Pfeiffer <pfeiffer@kde.org>
+    Copyright (C) 2001,2002 Carsten Pfeiffer <pfeiffer@kde.org>
     Copyright (C) 2001 Michael Jarrett <michaelj@corel.com>
 
     This library is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <kfiledialog.h>
+#include <kfilespeedbar.h>
 #include <kglobalsettings.h>
 #include <kiconloader.h>
 #include <klocale.h>
@@ -47,11 +48,12 @@ public:
         urlCombo = 0L;
         branch = 0L;
     }
-    
+
+    KFileSpeedBar *speedBar;
     KHistoryCombo *urlCombo;
+    KFileTreeBranch *branch;
     QString recentDirClass;
     KURL startURL;
-    KFileTreeBranch *branch;
     QValueStack<KURL> dirsToList;
 };
 
@@ -65,7 +67,13 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     d->branch = 0L;
 
     QFrame *page = makeMainWidget();
-    m_mainLayout = new QVBoxLayout(page, 0, spacingHint());
+    QHBoxLayout *hlay = new QHBoxLayout( page, 0, spacingHint() );
+    m_mainLayout = new QVBoxLayout();
+    d->speedBar = new KFileSpeedBar( page, "speedbar" );
+    connect( d->speedBar, SIGNAL( activated( const KURL& )),
+             SLOT( setCurrentURL( const KURL& )) );
+    hlay->addWidget( d->speedBar, 0 );
+    hlay->addLayout( m_mainLayout, 1 );
 
     // Create dir list
     m_treeView = new KFileTreeView( page );
@@ -80,8 +88,9 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     comp->setMode( KURLCompletion::DirCompletion );
     d->urlCombo->setCompletionObject( comp, true );
     d->urlCombo->setAutoDeleteCompletionObject( true );
+    d->urlCombo->setDuplicatesEnabled( false );
 
-
+    
     d->startURL = KFileDialog::getStartURL( startDir, d->recentDirClass );
     if ( localOnly && !d->startURL.isLocalFile() )
         d->startURL = KURL::fromPathOrURL( KGlobalSettings::documentPath() );
@@ -95,8 +104,8 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
 
     readConfig( KGlobal::config(), "DirSelect Dialog" );
 
-    m_mainLayout->addWidget(m_treeView, 1);
-    m_mainLayout->addWidget(d->urlCombo, 0);
+    m_mainLayout->addWidget( m_treeView, 1 );
+    m_mainLayout->addWidget( d->urlCombo, 0 );
 
     connect( m_treeView, SIGNAL( currentChanged( QListViewItem * )),
              SLOT( slotCurrentChanged() ));
@@ -106,8 +115,6 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     connect( d->urlCombo, SIGNAL( returnPressed( const QString& )),
              SLOT( slotURLActivated( const QString& )));
 
-    setMinimumSize( 300, 400 );
-    
     setCurrentURL( d->startURL );
 }
 
@@ -121,7 +128,7 @@ void KDirSelectDialog::setCurrentURL( const KURL& url )
 {
     if ( !url.isValid() )
         return;
-    
+
     KURL root = url;
     root.setPath( "/" );
 
@@ -133,7 +140,7 @@ void KDirSelectDialog::setCurrentURL( const KURL& url )
 
         d->branch = createBranch( root );
     }
-    
+
     d->branch->disconnect( SIGNAL( populateFinished( KFileTreeViewItem * )),
                            this, SLOT( slotNextDirToList( KFileTreeViewItem *)));
     connect( d->branch, SIGNAL( populateFinished( KFileTreeViewItem * )),
@@ -206,6 +213,9 @@ void KDirSelectDialog::readConfig( KConfig *config, const QString& group )
 
     KConfigGroup conf( config, group );
     d->urlCombo->setHistoryItems( conf.readListEntry( "History Items" ));
+    
+    QSize defaultSize( 400, 450 );
+    resize( conf.readSizeEntry( "DirSelectDialog Size", &defaultSize ));
 }
 
 void KDirSelectDialog::saveConfig( KConfig *config, const QString& group )
@@ -213,6 +223,7 @@ void KDirSelectDialog::saveConfig( KConfig *config, const QString& group )
     KConfigGroup conf( config, group );
     conf.writeEntry( "History Items", d->urlCombo->historyItems(), ',',
                      true, true);
+    conf.writeEntry( "DirSelectDialog Size", size(), true, true );
     config->sync();
 }
 
@@ -265,7 +276,7 @@ void KDirSelectDialog::slotURLActivated( const QString& text )
 
     KURL url = KURL::fromPathOrURL( text );
     d->urlCombo->addToHistory( url.prettyURL() );
-    
+
     if ( localOnly() && !url.isLocalFile() )
         return; // ### messagebox
 
@@ -282,7 +293,7 @@ KFileTreeBranch * KDirSelectDialog::createBranch( const KURL& url )
     KFileTreeBranch *branch = view()->addBranch( url, title );
     branch->setChildRecurse( false );
     view()->setDirOnlyMode( branch, true );
-    
+
     return branch;
 }
 

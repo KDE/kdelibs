@@ -54,8 +54,6 @@ public:
      */
     ~KDirSelectDialog();
 
-    void setCurrentURL( const KURL& url );
-
     /**
      * Returns the currently-selected URL, or a blank URL if none is selected.
      * @return The currently-selected URL, if one was selected.
@@ -82,6 +80,9 @@ public:
      * @return The path for the root node
      */
     QString startDir() const { return m_startDir; }
+
+public slots:
+    void setCurrentURL( const KURL& url );
 
 protected:
     virtual void accept();
