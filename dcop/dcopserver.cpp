@@ -220,8 +220,10 @@ Status SetAuthentication_local (int count, IceListenObj *listenObjs)
 		sock++;
 	    }
 	}
+#ifndef NDEBUG
 	qDebug("DCOPServer: SetAProc_loc: conn %d, prot=%s, file=%s",
 		(unsigned)i, prot, sock);
+#endif
 	if (sock && !strcmp(prot, "local")) {
 	    chmod(sock, 0700);
 	}
@@ -829,7 +831,9 @@ void DCOPServer::removeConnection( void* data )
     }
 
     if ( !conn->appId.isNull() ) {
+#ifndef NDEBUG
 	qDebug("DCOP:  unregister '%s'", conn->appId.data() );
+#endif
 	appIds.remove( conn->appId );
 
 	QPtrDictIterator<DCOPConnection> it( clients );
@@ -886,10 +890,12 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 		    appIds.remove( conn->appId );
 		}
 
+#ifndef NDEBUG
 		if ( conn->appId.isNull() )
 		    qDebug("DCOP: register '%s'", app2.data() );
 		else
 		    qDebug("DCOP:  '%s' now known as '%s'", conn->appId.data(), app2.data() );
+#endif
 
 		conn->appId = app2;
 		if ( appIds.find( app2 ) != 0 ) {
