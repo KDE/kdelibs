@@ -470,11 +470,13 @@ QStringList LdapSearch::makeSearchData()
     else {
         kdDebug(5700) << "<" << name << "><" << mail << ">" << endl;
       ret.append( QString( "%1 <%2>" ).arg( name ).arg( mail ) );
+#if 0
       // this sucks
       if ( givenname.upper().startsWith( search_text_upper ) )
         ret.append( QString( "$$%1$%2 <%3>" ).arg( givenname ).arg( name ).arg( mail ) );
       if ( sn.upper().startsWith( search_text_upper ) )
         ret.append( QString( "$$%1$%2 <%3>" ).arg( sn ).arg( name ).arg( mail ) );
+#endif
     }
   }
 
