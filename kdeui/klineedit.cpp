@@ -129,7 +129,7 @@ void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
         type == KCompletionBase::NextCompletionMatch ) )
     {
        QString input = (type == KCompletionBase::PrevCompletionMatch) ? comp->previousMatch() : comp->nextMatch();
-       // Skip rotation if previous/next match is null or the same tex
+       // Skip rotation if previous/next match is null or the same text
        if ( input.isNull() || input == displayText() )
             return;
        setCompletedText( input, hasSelectedText() );
@@ -140,7 +140,7 @@ void KLineEdit::makeCompletion( const QString& text )
 {
     KCompletion *comp = compObj();
     if ( !comp )
-       return;  // No completion object...
+        return;  // No completion object...
 
     QString match = comp->makeCompletion( text );
     KGlobalSettings::Completion mode = completionMode();
@@ -170,14 +170,14 @@ void KLineEdit::makeCompletion( const QString& text )
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
     if ( KStdAccel::isEqual( e, KStdAccel::deleteWordBack()) ) {
-       deleteWordBack();  // to be replaced with QT3 function
-       e->accept();
-       return;
+        deleteWordBack();  // to be replaced with QT3 function
+        e->accept();
+        return;
     }
     else if ( KStdAccel::isEqual( e, KStdAccel::deleteWordForward()) ) {
-       deleteWordForward(); // to be replaced with QT3 function
-       e->accept();
-       return;
+        deleteWordForward(); // to be replaced with QT3 function
+        e->accept();
+        return;
     }
 
     // Filter key-events if EchoMode is normal &
@@ -306,15 +306,11 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
 QPopupMenu *KLineEdit::createPopupMenu()
 {
-    qDebug( "KLineEdit::createPopupMenu!" );
-
     // Return if popup menu is not enabled !!
     if ( !m_bEnableMenu )
         return 0;
 
     QPopupMenu *popup = QLineEdit::createPopupMenu();
-
-    qDebug( "before completion" );
 
     // completion object is present.
     if ( compObj() )
