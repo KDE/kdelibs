@@ -25,7 +25,7 @@
 #ifndef KRESTRICTEDLINE_H
 #define KRESTRICTEDLINE_H
 
-#include <klined.h>
+#include <klineedit.h>
 
 /** 
  * Restricted Editline: Only selected Characters are valid input. 

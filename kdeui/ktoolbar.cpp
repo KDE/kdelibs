@@ -32,7 +32,7 @@
 #endif
 
 #include "ktoolbar.h"
-#include "klined.h"
+#include "klineedit.h"
 #include "kseparator.h"
 #include <ktmainwindow.h>
 #include <klocale.h>

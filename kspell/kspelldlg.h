@@ -9,7 +9,7 @@
 #include <qlayout.h>
 
 #include <klistbox.h>
-#include <klined.h>
+#include <klineedit.h>
 #include <kprogress.h>
 
 //Possible result codes

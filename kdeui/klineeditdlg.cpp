@@ -11,8 +11,8 @@
 #include <kbuttonbox.h>
 #include <klocale.h>
 #include <kapp.h>
+#include <klineedit.h>
 
-#include "klined.h"
 #include "klineeditdlg.h"
 
 
@@ -20,6 +20,10 @@
 ****************************************************************************
 *
 * $Log$
+* Revision 1.11  2000/03/24 18:25:19  wgreven
+* Removed the file selection stuff. That functionality is now provided by
+* kurlrequestdlg.
+*
 * Revision 1.10  2000/02/20 22:18:53  mueller
 * added a convenience static ::getText function
 *

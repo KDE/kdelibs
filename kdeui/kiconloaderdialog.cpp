@@ -36,7 +36,7 @@
 #include "kiconloaderdialog.h"
 
 #include <kpixmap.h>
-#include <klined.h>
+#include <klineedit.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kstddirs.h>
