@@ -253,7 +253,6 @@ void KFileIconView::keyPressEvent( QKeyEvent *e )
 void KFileIconView::setSelected( const KFileItem *info, bool enable )
 {
     KFileIconViewItem *item = viewItem( info );
-
     if ( item )
         KIconView::setSelected( item, enable, true );
 }
@@ -505,7 +504,7 @@ void KFileIconView::slotLargeRows()
     setWordWrapIconText( true );
     setGridX( KGlobal::iconLoader()->currentSize( KIcon::Desktop ) + 50 );
     setIconSize( KIcon::SizeMedium );
-    
+
     arrangeItemsInGrid();
 }
 
@@ -638,6 +637,7 @@ void KFileIconView::setSorting( QDir::SortSpec spec )
                                                 spec ));
     }
 
+    KIconView::setSorting( true, !isReversed() );
     sort( !isReversed() );
 }
 
