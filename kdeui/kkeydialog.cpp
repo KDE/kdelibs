@@ -19,32 +19,21 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <qkeycode.h>
 #include <qlayout.h>
 #include <qpainter.h>
-#include <qapplication.h>
 #include <qdrawutil.h>
 #include <qradiobutton.h>
 
 
 #include <qlabel.h>
-#include <qcheckbox.h>
-#include <qlineedit.h>
 #include <qbuttongroup.h>
-#include <qpopupmenu.h>
-#include <qgroupbox.h>
 #include <qwhatsthis.h>
 #include <klistview.h>
 
-#include <kckey.h>
 #include <kconfig.h>
-#include <kglobal.h>
-#include <kglobalsettings.h>
 #include <kglobalaccel.h>
-#include <klocale.h>
 #include <kmessagebox.h>
 #include <kxmlgui.h>
-#include <qdom.h>
 #include <kdebug.h>
 #include "kkeydialog.h"
 
