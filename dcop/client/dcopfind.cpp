@@ -36,7 +36,7 @@ static DCOPClient* dcop = 0;
 static bool bAppIdOnly = 0;
 static bool bLaunchApp = 0;
 
-bool findObject( const char* app, const char* obj, const char* func, int argc, char** args )
+bool findObject( const char* app, const char* obj, const char* func, QCStringList args )
 {
     QString f = func; // Qt is better with unicode strings, so use one.
     int left = f.find( '(' );
@@ -118,7 +118,7 @@ bool findObject( const char* app, const char* obj, const char* func, int argc, c
 	f = fc;
     }
 
-    if ( (int) types.count() != argc ) {
+    if ( types.count() != args.count() ) {
 	qWarning( "arguments do not match" );
 	exit(1);
     }
@@ -128,9 +128,9 @@ bool findObject( const char* app, const char* obj, const char* func, int argc, c
 
     int i = 0;
     for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
-        marshall(arg, argc, args, i, *it);
+        marshall(arg, args, i, *it);
     }
-    if ( (int) i != argc ) {
+    if ( (uint) i != args.count() ) {
 	qWarning( "arguments do not match" );
 	exit(1);
     }
@@ -199,13 +199,13 @@ int main( int argc, char** argv )
 {
     int argi = 1;
 
-    while ((argi < argc) && (argv[argi][0] == '-')) 
+    while ((argi < argc) && (argv[argi][0] == '-'))
     {
        switch ( argv[argi][1] ) {
-       case 'l': 
+       case 'l':
             bLaunchApp = true;
             break;
-       case 'a': 
+       case 'a':
             bAppIdOnly = true;
             break;
        default:
@@ -214,9 +214,8 @@ int main( int argc, char** argv )
        argi++;
     }
 
-    if (argc <= argi) 
+    if (argc <= argi)
        usage();
-
 
     DCOPClient client;
     client.attach();
@@ -249,7 +248,7 @@ int main( int argc, char** argv )
     }
     if (argc > argi)
        function = argv[argi++];
-        
+
     if (argc > argi)
     {
        args = &argv[argi];
@@ -260,7 +259,10 @@ int main( int argc, char** argv )
        argc = 0;
     }
 
-    bool ok = findObject( app, objid, function, argc, args );
+    QCStringList params;
+    for( int i = 0; i < argc; i++ )
+        params.append( args[ i ] );
+    bool ok = findObject( app, objid, function, params );
     if (ok)
        return 0;
     if (bLaunchApp)
@@ -268,7 +270,7 @@ int main( int argc, char** argv )
        ok = launchApp(app);
        if (!ok)
           return 2;
-       ok = findObject( app, objid, function, argc, args );   
+       ok = findObject( app, objid, function, params );
     }
 
     return 1;

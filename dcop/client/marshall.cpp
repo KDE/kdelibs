@@ -250,110 +250,114 @@ QCString demarshal( QDataStream &stream, const QString &type )
 
 }
 
-void  marshall(QDataStream &arg, int argc, char **argv, int &i, QString type)
+void marshall( QDataStream &arg, QCStringList args, uint i, QString type )
 {
-	if (type == "QStringList")
-           type = "QValueList<QString>";
-	if (type == "QCStringList")
-           type = "QValueList<QCString>";
-	if (i >= argc)
-	{
-	    qWarning("Not enough arguments.");
-            exit(1);
-        }       
-        QString s = QString::fromLocal8Bit(argv[i]);
- 
-	if ( type == "int" )
-	    arg << s.toInt();
-	else if ( type == "uint" )
-	    arg << s.toUInt();
-	else if ( type == "unsigned" )
-	    arg << s.toUInt();
-	else if ( type == "unsigned int" )
-	    arg << s.toUInt();
-	else if ( type == "long" )
-	    arg << s.toLong();
-	else if ( type == "long int" )
-	    arg << s.toLong();
-	else if ( type == "unsigned long" )
-	    arg << s.toULong();
-	else if ( type == "unsigned long int" )
-	    arg << s.toULong();
-	else if ( type == "float" )
-	    arg << s.toFloat();
-	else if ( type == "double" )
-	    arg << s.toDouble();
-	else if ( type == "bool" )
-	    arg << mkBool( s );
-	else if ( type == "QString" )
-	    arg << s;
-	else if ( type == "QCString" )
-	    arg << QCString( argv[i] );
-	else if ( type == "QColor" )
-	    arg << mkColor( s );
-	else if ( type == "QPoint" )
-	    arg << mkPoint( s );
-	else if ( type == "QSize" )
-	    arg << mkSize( s );
-	else if ( type == "QRect" )
-	    arg << mkRect( s );
-	else if ( type == "KURL" )
-	    arg << KURL( s );
-	else if ( type == "QVariant" ) {
-	    if ( s == "true" || s == "false" )
-		arg << QVariant( mkBool( s ), 42 );
-	    else if ( s.left( 4 ) == "int(" )
-		arg << QVariant( s.mid(4, s.length()-5).toInt() );
-	    else if ( s.left( 7 ) == "QPoint(" )
-		arg << QVariant( mkPoint( s.mid(7, s.length()-8) ) );
-	    else if ( s.left( 6 ) == "QSize(" )
-		arg << QVariant( mkSize( s.mid(6, s.length()-7) ) );
-	    else if ( s.left( 6 ) == "QRect(" )
-		arg << QVariant( mkRect( s.mid(6, s.length()-7) ) );
-	    else if ( s.left( 7 ) == "QColor(" )
-		arg << QVariant( mkColor( s.mid(7, s.length()-8) ) );
-	    else
-		arg << QVariant( s );
-	} else if ( type.startsWith("QValueList<")) {
-            type = type.mid(11, type.length() - 12);
-            QStringList list;
-	    QString delim = s;
-            if (delim == "[")
-               delim = "]";
-            if (delim == "(")
-               delim = ")";
-            i++;
-	    QByteArray dummy_data;
-            QDataStream dummy_arg(dummy_data, IO_WriteOnly);
+    if (type == "QStringList")
+       type = "QValueList<QString>";
+    if (type == "QCStringList")
+       type = "QValueList<QCString>";
+    if( i > args.count() )
+    {
+	qWarning("Not enough arguments.");
+	exit(1);
+    }       
+    QString s = QString::fromLocal8Bit( args[ i ] );
 
-            int j = i;
-            int count = 0;
-            // Parse list to get the count
-            while (true) {
-		if (j >= argc)
-		{
-		    qWarning("List end-delimiter '%s' not found.", delim.latin1());
-		    exit(1);
-		}
-                if (argv[j] == delim) break;
-                marshall(dummy_arg, argc, argv, j, type);
-                count++;
-            }
-            arg << (Q_UINT32) count;
-            // Parse the list for real
-            while (true) {
-		if (i >= argc)
-		{
-		    qWarning("List end-delimiter '%s' not found.", delim.latin1());
-		    exit(1);
-		}
-                if (argv[i] == delim) break;
-                marshall(arg, argc, argv, i, type);
-            }
-	} else {
-	    qWarning( "cannot handle datatype '%s'", type.latin1() );
-	    exit(1);
-	}
+    if ( type == "int" )
+	arg << s.toInt();
+    else if ( type == "uint" )
+	arg << s.toUInt();
+    else if ( type == "unsigned" )
+	arg << s.toUInt();
+    else if ( type == "unsigned int" )
+	arg << s.toUInt();
+    else if ( type == "long" )
+	arg << s.toLong();
+    else if ( type == "long int" )
+	arg << s.toLong();
+    else if ( type == "unsigned long" )
+	arg << s.toULong();
+    else if ( type == "unsigned long int" )
+	arg << s.toULong();
+    else if ( type == "float" )
+	arg << s.toFloat();
+    else if ( type == "double" )
+	arg << s.toDouble();
+    else if ( type == "bool" )
+	arg << mkBool( s );
+    else if ( type == "QString" )
+	arg << s;
+    else if ( type == "QCString" )
+	arg << QCString( args[ i ] );
+    else if ( type == "QColor" )
+	arg << mkColor( s );
+    else if ( type == "QPoint" )
+	arg << mkPoint( s );
+    else if ( type == "QSize" )
+	arg << mkSize( s );
+    else if ( type == "QRect" )
+	arg << mkRect( s );
+    else if ( type == "KURL" )
+	arg << KURL( s );
+    else if ( type == "QVariant" ) {
+	if ( s == "true" || s == "false" )
+	    arg << QVariant( mkBool( s ), 42 );
+	else if ( s.left( 4 ) == "int(" )
+	    arg << QVariant( s.mid(4, s.length()-5).toInt() );
+	else if ( s.left( 7 ) == "QPoint(" )
+	    arg << QVariant( mkPoint( s.mid(7, s.length()-8) ) );
+	else if ( s.left( 6 ) == "QSize(" )
+	    arg << QVariant( mkSize( s.mid(6, s.length()-7) ) );
+	else if ( s.left( 6 ) == "QRect(" )
+	    arg << QVariant( mkRect( s.mid(6, s.length()-7) ) );
+	else if ( s.left( 7 ) == "QColor(" )
+	    arg << QVariant( mkColor( s.mid(7, s.length()-8) ) );
+	else
+	    arg << QVariant( s );
+    } else if ( type.startsWith("QValueList<")) {
+	type = type.mid(11, type.length() - 12);
+	QStringList list;
+	QString delim = s;
+	if (delim == "[")
+	   delim = "]";
+	if (delim == "(")
+	   delim = ")";
 	i++;
+	QByteArray dummy_data;
+	QDataStream dummy_arg(dummy_data, IO_WriteOnly);
+
+	uint j = i;
+	uint count = 0;
+	// Parse list to get the count
+	while (true) {
+	    if( j > args.count() )
+	    {
+		qWarning("List end-delimiter '%s' not found.", delim.latin1());
+		exit(1);
+	    }
+	    if( QString::fromLocal8Bit( args[ j ] ) == delim )
+		break;
+	    marshall( dummy_arg, args, j, type );
+	    count++;
+	}
+	arg << (Q_UINT32) count;
+	// Parse the list for real
+	while (true) {
+	    if( i > args.count() )
+	    {
+		qWarning("List end-delimiter '%s' not found.", delim.latin1());
+		exit(1);
+	    }
+	    if( QString::fromLocal8Bit( args[ i ] ) == delim )
+		break;
+	    marshall( arg, args, i, type );
+	}
+    } else {
+	qWarning( "cannot handle datatype '%s'", type.latin1() );
+	exit(1);
+    }
+    i++;
 }
+
+// vim: set noet ts=8 sts=4 sw=4:
 
