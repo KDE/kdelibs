@@ -623,6 +623,9 @@ public:
    */
   void setDockWindowTransient (QWidget *parent, bool transientEnabled);
 
+  void setForcedFixedWidth(int);
+  void restoreFromForcedFixedSize();
+  int forcedFixedWidth();
 public slots:
   /**
    * Docks a dockwidget back to the dockwidget that was the neighbor

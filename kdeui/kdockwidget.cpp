@@ -777,6 +777,27 @@ QWidget *KDockWidget::parentDockContainer() const
 }
 
 
+void KDockWidget::setForcedFixedWidth(int w)
+{
+	d->forcedWidth=w;
+	if (parent()->inherits("KDockSplitter"))
+		static_cast<KDockSplitter*>(parent()->qt_cast("KDockSplitter"))->setForcedFixedWidth(this,w);
+}
+
+int KDockWidget::forcedFixedWidth()
+{
+	return d->forcedWidth;
+}
+
+void KDockWidget::restoreFromForcedFixedSize()
+{
+	d->forcedWidth=-1;
+	if (parent()->inherits("KDockSplitter"))
+		static_cast<KDockSplitter*>(parent()->qt_cast("KDockSplitter"))->restoreFromForcedFixedSize(this);	
+}
+
+
+
 void KDockWidget::undock()
 {
   kdDebug()<<"KDockWidget::undock()"<<endl;

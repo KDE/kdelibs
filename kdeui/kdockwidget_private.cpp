@@ -27,6 +27,8 @@ KDockSplitter::KDockSplitter(QWidget *parent, const char *name, Orientation orie
   divider = 0L;
   child0 = 0L;
   child1 = 0L;
+  fixedWidth0=-1;
+  fixedWidth1=-1;
   orientation = orient;
   mOpaqueResize = false;
   mKeepSize = false;
@@ -62,6 +64,19 @@ void KDockSplitter::activate(QWidget *c0, QWidget *c1)
   divider->show();
   resizeEvent(0);
 }
+
+void KDockSplitter::setForcedFixedWidth(KDockWidget *dw,int width)
+{
+;
+}
+
+
+void KDockSplitter::restoreFromForcedFixedSize(KDockWidget *dw)
+{
+;
+}
+
+
 
 void KDockSplitter::setupMinMaxSize()
 {
@@ -345,6 +360,8 @@ KDockWidgetPrivate::KDockWidgetPrivate()
   ,blockHasUndockedSignal(false)
   ,pendingDtor(false)
   ,container(0)
+  ,forcedWidth(-1)
+  ,forcedHeight(-1)
 {
 #ifndef NO_KDE2
   windowType = NET::Normal;

@@ -70,6 +70,10 @@ public:
   void setHighResolution(bool b=true);
   bool highResolution() const;
 
+  void setForcedFixedWidth(KDockWidget *dw,int width);
+  void restoreFromForcedFixedSize(KDockWidget *dw);
+
+
 protected:
   int checkValue( int ) const;
   virtual void resizeEvent(QResizeEvent *);
@@ -83,6 +87,7 @@ private:
   QFrame* divider;
   int xpos;
   bool mOpaqueResize, mKeepSize, mHighResolution;
+  int fixedWidth0,fixedWidth1;
 };
 
 /**
@@ -129,6 +134,8 @@ public:
   bool pendingFocusInEvent;
   bool blockHasUndockedSignal;
   bool pendingDtor;
+  int forcedWidth;
+  int forcedHeight;
 
 #ifndef NO_KDE2
   NET::WindowType windowType;
