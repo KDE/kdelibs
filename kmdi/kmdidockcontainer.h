@@ -18,8 +18,8 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef _KATE_DOCK_CONTAINER_
-#define _KATE_DOCK_CONTAINER_
+#ifndef _KMDI_DOCK_CONTAINER_
+#define _KMDI_DOCK_CONTAINER_
 
 #include <qwidget.h>
 #include <qstringlist.h>
@@ -34,44 +34,52 @@ class KDockButton_Private;
 
 class KMdiDockContainer: public QWidget, public KMdiDockContainerBase
 {
-        Q_OBJECT
-public:
-        KMdiDockContainer(QWidget *parent, QWidget *win, int position);
-        virtual ~KMdiDockContainer();
-        KMdiDockWidget *parentDockWidget();
-        virtual void insertWidget (KDockWidget *w, QPixmap, const QString &, int &);
-        virtual void setToolTip (KDockWidget *, QString &);
-	virtual void setPixmap(KDockWidget*,const QPixmap&);
-	virtual void undockWidget(KDockWidget*);
-	virtual void removeWidget(KDockWidget*);
-        void hideIfNeeded();
-#ifndef NO_KDE2
-	virtual void save(KConfig *);
-	virtual void load(KConfig *);
-#endif
+  Q_OBJECT
 
-public slots:
-	void init();
-        void collapseOverlapped();
-private:
-  	QWidget *m_mainWin;
-	QWidgetStack *m_ws;
-	KMultiTabBar *m_tb;
-	int mTabCnt;
-	int oldtab;
-  	int m_position;
-	QMap<KMdiDockWidget*,int> m_map;
-	QMap<int,KMdiDockWidget*> m_revMap;
-	QMap<KMdiDockWidget*,KDockButton_Private*> m_overlapButtons;
-	QStringList itemNames;
-	int m_inserted;
-	int m_delayedRaise;
-	bool m_vertical;
-        bool m_block;
-protected slots:
-	void tabClicked(int);
-	void delayedRaise();
-	void changeOverlapMode();
+  public:
+    KMdiDockContainer(QWidget *parent, QWidget *win, int position);
+    virtual ~KMdiDockContainer();
+
+    KMdiDockWidget *parentDockWidget();
+
+    virtual void insertWidget (KDockWidget *w, QPixmap, const QString &, int &);
+    virtual void setToolTip (KDockWidget *, QString &);
+    virtual void setPixmap(KDockWidget*,const QPixmap&);
+    virtual void undockWidget(KDockWidget*);
+    virtual void removeWidget(KDockWidget*);
+
+    void hideIfNeeded();
+
+    virtual void save(KConfig *);
+    virtual void load(KConfig *);
+
+
+  public slots:
+    void init();
+    void collapseOverlapped();
+
+  protected slots:
+    void tabClicked(int);
+    void delayedRaise();
+    void changeOverlapMode();
+
+  private:
+    QWidget *m_mainWin;
+    QWidgetStack *m_ws;
+    KMultiTabBar *m_tb;
+    int mTabCnt;
+    int oldtab;
+    int m_position;
+    QMap<KMdiDockWidget*,int> m_map;
+    QMap<int,KMdiDockWidget*> m_revMap;
+    QMap<KMdiDockWidget*,KDockButton_Private*> m_overlapButtons;
+    QStringList itemNames;
+    int m_inserted;
+    int m_delayedRaise;
+    bool m_vertical;
+    bool m_block;
 };
 
 #endif
+
+// kate: space-indent on; indent-width 2; replace-tabs on;
