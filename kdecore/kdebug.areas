@@ -48,6 +48,8 @@
 6020	khtml (xml)
 6030	khtml (html)
 6031	khtml (frames & objects)
+6035	khtml (parser)
+6036	khtml (tokenizer)
 6040	khtml (render)
 6041	khtml (bidi)
 6045	khtml (rendering tree)
