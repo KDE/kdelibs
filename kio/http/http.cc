@@ -1954,6 +1954,9 @@ void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
   // Identity is the same as no encoding
   if (encoding == "identity") {
     return;
+  } else if (encoding == "8bit") {
+    // Strange encoding returned by http://linac.ikp.physik.tu-darmstadt.de
+    return;
   } else if (encoding == "chunked") {
     m_bChunked = true;
     // Anyone know of a better way to handle unknown sizes possibly/ideally with unsigned ints?
