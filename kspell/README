@@ -6,13 +6,6 @@ See kspell.h and http://www.chaos.umd.edu/~dsweet/KDE/KSpell for
 documentation.
 
 
-Language Packs
---------------
-You may also be interested in the ISpell Language-Pack. It contains ISpell
-dictionaries for German, Spanish, and Brazilian Portuguese.  It is available
-for download at http://www.chaos.umd.edu/~dsweet/KDE/KSpell.
-
-
 Settings
 --------
 A configuration dialog/widget is also provided.  This class (KSpellConfig) acts
