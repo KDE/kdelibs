@@ -453,11 +453,15 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         case ID_BODY:
             if(inBody && document->body()) {
                 // we have another <BODY> element.... apply attributes to existing one
-                NamedNodeMapImpl *map = n->attributes();
+                // make sure we don't overwrite already existing attributes
+                // some sites use <body bgcolor=rightcolor>...<body bgcolor=wrongcolor>
+                NamedAttrMapImpl *map = static_cast<NamedAttrMapImpl*>(n->attributes());
+                NamedAttrMapImpl *bodymap = static_cast<NamedAttrMapImpl*>(document->body()->attributes());
                 unsigned long attrNo;
                 int exceptioncode;
                 for (attrNo = 0; attrNo < map->length(); attrNo++)
-                    document->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false)), exceptioncode);
+                    if(!bodymap->getNamedItem(static_cast<AttrImpl*>(map->item(attrNo))->name()))
+                        document->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false)), exceptioncode);
                 document->body()->applyChanges();
             } else if ( current->isDocumentNode() )
                 break;
@@ -526,8 +530,8 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             }
             break;
         }
-            case ID_DD:
-            case ID_DT:
+        case ID_DD:
+        case ID_DT:
             e = new HTMLDListElementImpl(document);
             insertNode(e);
             insertNode(n);
@@ -553,8 +557,8 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 return false;
             default:
                 break;
-            }
-            break;
+           }
+           break;
         default:
             break;
         }
@@ -668,7 +672,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             switch(id)
             {
             case ID_COMMENT:
-                case ID_FONT:
+            case ID_FONT:
             case ID_COL:
             case ID_COLGROUP:
             case ID_P:
@@ -743,6 +747,8 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         case ID_COLGROUP:
             popBlock(ID_COLGROUP);
             handled = true;
+            break;
+        case ID_FONT:
             break;
         default:
             if(current->isDocumentNode())
