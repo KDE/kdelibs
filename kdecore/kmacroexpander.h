@@ -197,14 +197,7 @@ public:
     KWordMacroExpander( QChar c = '%' ) : KMacroExpanderBase( c ) {}
 
 protected:
-    /**
-     * \reimp
-     */
     virtual int expandPlainMacro( const QString &str, uint pos, QStringList &ret );
-
-    /**
-     * \reimp
-     */
     virtual int expandEscapedMacro( const QString &str, uint pos, QStringList &ret );
 
     /**
@@ -237,14 +230,7 @@ public:
     KCharMacroExpander( QChar c = '%' ) : KMacroExpanderBase( c ) {}
 
 protected:
-    /**
-     * \reimp
-     */
     virtual int expandPlainMacro( const QString &str, uint pos, QStringList &ret );
-
-    /**
-     * \reimp
-     */
     virtual int expandEscapedMacro( const QString &str, uint pos, QStringList &ret );
 
     /**
