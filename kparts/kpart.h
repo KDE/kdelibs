@@ -46,8 +46,8 @@ public:
 
   virtual void init();
 
-  virtual void openURL( const QString &url ) = 0;
-  virtual QString url() = 0;
+  virtual bool openURL( const QString &url ) = 0;
+  virtual QString url() const = 0;
 
 };
 
@@ -60,8 +60,8 @@ public:
 
   virtual bool isModified() const = 0;
   virtual void setModified( bool modified = true ) = 0;
-  
-  virtual void save( const QString &url ) = 0;
+
+  virtual bool save( const QString &url ) = 0;
 };
 
 #endif
