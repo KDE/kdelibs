@@ -77,8 +77,13 @@ public:
   /*
    * Creates a new module.
    */
-  KCModule(QWidget *parent=0, const char *name=0)
-	: QWidget(parent, name), _btn(Help|Default|Apply) {}
+  KCModule(QWidget *parent=0, const char *name=0);
+
+  /*
+   * Destroys the module.
+   */
+  ~KCModule();
+
   /**
    * Load the configuration data into the module.
    *
@@ -167,6 +172,32 @@ public:
    */
   int buttons() const { return _btn; };
 
+  /**
+   * Get the RootOnly message for this module.
+   *
+   * When the module must be run as root, or acts differently
+   * for root and a normal user, it is sometimes useful to 
+   * customize the message that appears at the top of the module
+   * when used as a normal user. This function returns this
+   * customized message. If none has been set, a default message
+   * will be used.
+   *
+   * @see KCModule::setRootOnlyMsg
+   */
+  QString rootOnlyMsg() const;
+
+  /**
+   * Tell if KControl should show a RootOnly message when run as
+   * a normal user.
+   *
+   * In some cases, the module don't want a RootOnly message to
+   * appear (for example if it has already one). This function
+   * tells KControl if a RootOnly message should be shown
+   *
+   * @see KCModule::setUseRootOnlyMsg
+   */
+  bool useRootOnlyMsg() const;
+
 
 signals:
 
@@ -205,6 +236,27 @@ protected:
    * @see KCModule::buttons
    */
   void setButtons(int btn) { _btn = btn; };
+
+  /**
+   * Sets the RootOnly message.
+   *
+   * This message will be shown at the top of the module of the
+   * corresponding desktop file contains the line X-KDE-RootOnly=true.
+   * If no message is set, a default one will be used.
+   *
+   * @see KCModule::rootOnlyMessage
+   */
+  void setRootOnlyMsg(const QString& msg);
+
+  /**
+   * Change wether or not the RootOnly message should be shown.
+   *
+   * Following the value of @p on, the RootOnly message will be
+   * shown or not.
+   *
+   * @see KCModule::useRootOnlyMsg
+   */
+  void setUseRootOnlyMsg(bool on);
 
 private:
 

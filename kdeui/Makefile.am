@@ -92,7 +92,7 @@ libkdeui_la_SOURCES = \
 		kanimwidget.cpp krootpixmap.cpp kaboutkde.cpp \
 		kaboutapplication.cpp kpanelapplet.cpp kdcopactionproxy.cpp \
 		kcolorcombo.cpp kpushbutton.cpp kpanelextension.cpp \
-		kcompletionbox.cpp ksqueezedtextlabel.cpp \
+		kcompletionbox.cpp ksqueezedtextlabel.cpp kcmodule.cpp \
 		kcommand.cpp kwindowlistmenu.cpp kfontcombo.cpp ktip.cpp \
 		kdatewidget.cpp karrowbutton.cpp kmainwindowiface.cpp kmainwindowiface.skel
 
