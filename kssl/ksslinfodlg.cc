@@ -137,7 +137,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
                         const QString& ip, const QString& url,
                         const QString& cipher, const QString& cipherdesc,
                         const QString& sslversion, int usedbits, int bits,
-                        KSSLCertificate::KSSLValidation certState) {
+                        KSSLCertificate::KSSLValidation /*certState*/) {
 // Needed to put the GUI stuff here to get the layouting right
 
     d->_cert = cert;

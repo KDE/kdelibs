@@ -806,6 +806,11 @@ return d->_extensions;
 }
 
 
+bool KSSLCertificate::isSigner() {
+return false;
+}
+
+
 QDataStream& operator<<(QDataStream& s, const KSSLCertificate& r) {
 QStringList qsl;
 QPtrList<KSSLCertificate> cl = const_cast<KSSLCertificate&>(r).chain().getChain();

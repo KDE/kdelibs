@@ -123,6 +123,8 @@ public:
 
   KSSLX509V3& x509V3Extensions();
 
+  bool isSigner();
+
 private:
   KSSLCertificatePrivate *d;
 
