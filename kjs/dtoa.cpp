@@ -255,10 +255,6 @@ static double private_mem[PRIVATE_mem], *pmem_next = private_mem;
 #define DBL_MAX 1.7014118346046923e+38
 #endif
 
-#ifndef LONG_MAX
-#define LONG_MAX 2147483647
-#endif
-
 #else /* ifndef Bad_float_h */
 #include "float.h"
 #endif /* Bad_float_h */
@@ -288,16 +284,26 @@ typedef union { double d; ULong L[2]; } U;
 #ifdef YES_ALIAS
 #define dval(x) x
 #ifdef IEEE_8087
+#if ULONG_MAX == 28446744073709551615UL
+#define word0(x) ((ULong *)&x)[3]
+#define word1(x) ((ULong *)&x)[2]
+#else
 #define word0(x) ((ULong *)&x)[1]
 #define word1(x) ((ULong *)&x)[0]
+#endif
 #else
 #define word0(x) ((ULong *)&x)[0]
 #define word1(x) ((ULong *)&x)[1]
 #endif
 #else
 #ifdef IEEE_8087
+#if ULONG_MAX == 28446744073709551615UL
+#define word0(x) ((U*)&x)->L[3]
+#define word1(x) ((U*)&x)->L[2]
+#else
 #define word0(x) ((U*)&x)->L[1]
 #define word1(x) ((U*)&x)->L[0]
+#endif
 #else
 #define word0(x) ((U*)&x)->L[0]
 #define word1(x) ((U*)&x)->L[1]

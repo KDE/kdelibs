@@ -34,12 +34,12 @@ namespace KJS {
 
     class SimpleNumber {
     public:
-	enum { tag = 1, shift = 2, mask = (1 << shift) - 1, sign = 1L << (sizeof(long) * 8 - 1 ), max = (1L << ((sizeof(long) * 8 - 1) - shift)) - 1, min = -max - 1 };
+	enum { tag = 1, shift = 2, mask = (1 << shift) - 1, sign = 1L << (sizeof(long) * 8 - 1 ), max = (1L << ((sizeof(long) * 8 - 1) - shift)) - 1, min = -max - 1, imax = (1L << ((sizeof(int) * 8 - 1) - shift)) - 1, imin = -imax - 1, };
 
 	static inline bool is(const ValueImp *imp) { return ((long)imp & mask) == tag; }
 	static inline long value(const ValueImp *imp) { return ((long)imp >> shift) | (((long)imp & sign) ? ~max : 0); }
 
-	static inline bool fits(int i) { return i <= max && i >= min; }
+	static inline bool fits(int i) { return i <= imax && i >= imin; }
 	static inline bool fits(unsigned i) { return i <= (unsigned)max; }
 	static inline bool fits(long i) { return i <= max && i >= min; }
 	static inline bool fits(unsigned long i) { return i <= (unsigned)max; }
