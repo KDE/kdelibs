@@ -27,8 +27,10 @@
 
 #include <config.h>
 
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 #include <errno.h>
 #include <fcntl.h>
@@ -262,6 +264,38 @@ KProcessController::~KProcessController()
 
   delete notifier;
   theKProcessController = 0;
+}
+
+bool
+KProcessController::waitForProcessExit(int timeout)
+{
+  do 
+  {
+    struct timeval tv;
+    tv.tv_sec = timeout;
+    tv.tv_usec = 0;
+    fd_set fds;
+    FD_ZERO(&fds);
+    FD_SET(fd[0], &fds);
+    int result = select(fd[0]+1, &fds, 0, 0, &tv);
+    if (result == 0)
+    {
+       return false;
+    }
+    else if (result < 0)
+    {
+       int error = errno;
+       if ((error == ECHILD) || (error == EINTR))
+         continue;
+       return false;
+    }
+    else 
+    {
+       slotDoHousekeeping(fd[0]);
+       break;
+    }
+  } while (true);
+  return true;
 }
 
 #include "kprocctrl.moc"
