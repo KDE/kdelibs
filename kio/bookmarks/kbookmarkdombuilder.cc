@@ -26,7 +26,7 @@ KBookmarkDomBuilder::KBookmarkDomBuilder(
    const KBookmarkGroup &bkGroup, KBookmarkManager *manager
 ) {
    m_manager = manager;
-   m_stack.push(&bkGroup);
+   m_stack.push(bkGroup);
 }
 
 KBookmarkDomBuilder::~KBookmarkDomBuilder() {
