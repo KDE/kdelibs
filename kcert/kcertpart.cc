@@ -246,7 +246,7 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
  _ca_filenameLabel = new QLabel("", _x509Frame);
  grid->addWidget(_ca_filenameLabel, 6, 1);
  grid->addWidget(new QLabel(i18n("File Format:"), _x509Frame), 6, 3);
- grid->addWidget(new QLabel("PEM Encoded X.509", _x509Frame), 6, 4);
+ grid->addWidget(new QLabel("PEM or DER Encoded X.509", _x509Frame), 6, 4);
 
 
  //
@@ -442,16 +442,42 @@ QCString pass;
 //       x-509-ca-cert loading
 /////////////////////////////////////////////////////////////////////////////
 } else if (whatType == "application/x-x509-ca-cert") {
- QFile qf(m_file);
  FILE *fp; 
- if (!qf.open(IO_ReadOnly)) {
+ 
+ // Check if it is PEM or not
+ QFile qf(m_file);
+ qf.open(IO_ReadOnly);
+ QByteArray theFile = qf.readAll();
+ qf.close();
+
+ const char *signature = "-----BEGIN CERTIFICATE-----";
+ theFile[qf.size()-1] = 0;
+ bool isPEM = (QCString(theFile.data()).find(signature) >= 0);
+
+ fp = fopen(m_file.local8Bit(), "r");
+ if (!fp) {
     KMessageBox::sorry(_frame, i18n("This file cannot be opened."), i18n("Certificate Import"));
     return false;
  }
 
- fp = fdopen(qf.handle(), "r");
- if (!fp) {
-    KMessageBox::sorry(_frame, i18n("This file cannot be opened."), i18n("Certificate Import"));
+ kdDebug() << "Reading in a file in "
+	   << (isPEM ? "PEM" : "DER")
+	   << " format." << endl;
+
+ if (!isPEM) {
+    X509 *dx = KOSSL::self()->X509_d2i_fp(fp, NULL);
+
+    if (dx) {
+   	KSSLCertificate *xc = KSSLCertificate::fromX509(dx);
+	if (xc) {
+		if (xc->x509V3Extensions().certTypeCA())
+			new KX509Item(_parentCA, xc);
+		else delete xc;     // dunno what to do with it?
+		fclose(fp);
+		return true;
+	}
+	KOSSL::self()->X509_free(dx);
+    } 
     return false;
  }
 
@@ -461,7 +487,8 @@ QCString pass;
  STACK_OF(X509_INFO) *sx5i = KOSSL::self()->PEM_X509_INFO_read(fp, NULL, KSSLPemCallback, NULL);
 
  if (!sx5i) {
-    KMessageBox::sorry(_frame, i18n("This file cannot be opened."), i18n("Certificate Import"));
+    KMessageBox::sorry(_frame, i18n("222This file cannot be opened."), i18n("Certificate Import"));
+    fclose(fp);
     return false;
  }
 
@@ -486,6 +513,7 @@ QCString pass;
 #undef sk_num
 #undef sk_value
 
+ fclose(fp);
  return true;
 /////////////////////////////////////////////////////////////////////////////
 //       Dunno how to load this
