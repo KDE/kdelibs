@@ -31,12 +31,27 @@ int main(int argc, char *argv[])
   time_t b;
   
   // From http://www.w3.org/TR/NOTE-datetime
-  a = KRFCDate::parseDateISO8601("1994-11-05T13:15:30Z");
-  b = KRFCDate::parseDateISO8601("1994-11-05T08:15:30-05:00");
+  b = KRFCDate::parseDateISO8601("1994-11-05T13:15:30Z");
+  a = KRFCDate::parseDateISO8601("1994-11-05T08:15:30-05:00");
   check( "1994-11-05T08:15:30-05:00", a, b);
 
-  b = KRFCDate::parseDateISO8601("1994-11-05T18:15:30+05:00");
+  a = KRFCDate::parseDateISO8601("1994-11-05T18:15:30+05:00");
   check( "1994-11-05T18:15:30+05:00", a, b);
+
+  a = KRFCDate::parseDate("Thu Nov 5 1994 18:15:30 GMT+0500");
+  check( "Thu Nov 5 1994 18:15:30 GMT+0500", a, b);
+
+  a = KRFCDate::parseDate("Thu Nov 5 1994 18:15:30 GMT+05:00");
+  check( "Thu Nov 5 1994 18:15:30 GMT+05:00", a, b);
+
+  a = KRFCDate::parseDate("Wednesday, 05-Nov-94 13:15:30 GMT");
+  check( "Wednesday, 05-Nov-94 13:15:30 GMT", a, b);
+
+  a = KRFCDate::parseDate("Wed, 05-Nov-1994 13:15:30 GMT");
+  check( "Wed, 05-Nov-1994 13:15:30 GMT", a, b);
+
+  a = KRFCDate::parseDate("Wed, 05-November-1994 13:15:30 GMT");
+  check( "Wed, 05-November-1994 13:15:30 GMT", a, b);
 
   printf("\nTest OK !\n");
 }
