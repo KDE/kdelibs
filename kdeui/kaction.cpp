@@ -1177,6 +1177,8 @@ QPopupMenu* KSelectAction::popupMenu()
         d->m_menu->insertSeparator();
       }
     }
+    if ( d->m_current >= 0 )
+      d->m_menu->setItemChecked( d->m_current, true );
   }
 
   return d->m_menu;
