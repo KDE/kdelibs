@@ -9,13 +9,6 @@
 	<KDELegacyDirs/>
 
 	<Menu>
-		<Name>Preferences</Name>
-		<Directory>kde-preferences.directory</Directory>
-		<Include>
-			<Category>Settings</Category>
-		</Include>
-	</Menu>
-	<Menu>
 		<Name>Development</Name>
 		<Directory>kde-development.directory</Directory>
 		<Include>
@@ -208,6 +201,10 @@
 		<Include>
 			<Category>Office</Category>
 		</Include>
+	</Menu>
+	<Menu>
+		<Name>Settings</Name>
+		<Directory>kde-settings.directory</Directory>
 	</Menu>
 	<Menu>
 		<Name>Settingsmenu</Name>
