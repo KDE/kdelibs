@@ -3194,7 +3194,8 @@ void HTTPProtocol::reparseConfiguration()
   if ( KProtocolManager::useProxy() )
   {
     // Use the appropriate proxy depending on the protocol
-    m_proxyURL = KURL( KProtocolManager::proxyFor( mProtocol ) );
+    m_proxyURL = KURL( KProtocolManager::proxyFor( m_protocol ) );
+    kdDebug() << "m_proxyURL=" << KProtocolManager::proxyFor( m_protocol ) << endl;
     if (!m_proxyURL.isMalformed() )
     {
         // Set "use proxy" to true if we got a non empty proxy URL
