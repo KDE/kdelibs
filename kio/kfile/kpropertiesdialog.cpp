@@ -623,6 +623,12 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   QString protocol = properties->kurl().protocol();
   QString mimeComment = item->mimeComment();
   KIO::filesize_t totalSize = item->size();
+  QString magicMimeComment;
+  if ( isLocal ) {
+      KMimeType::Ptr magicMimeType = KMimeType::findByFileContent( properties->kurl().path() );
+      if ( magicMimeType->name() != KMimeType::defaultMimeType() )
+          magicMimeComment = magicMimeType->comment();
+  }
 
   // Those things only apply to 'single file' mode
   QString filename = QString::null;
@@ -708,8 +714,14 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         directory = QString::null;
       if ( url.protocol() != protocol )
         protocol = QString::null;
-      if ( (*it)->mimeComment() != mimeComment )
+      if ( !mimeComment.isNull() && (*it)->mimeComment() != mimeComment )
         mimeComment = QString::null;
+      if ( isLocal && !magicMimeComment.isNull() ) {
+          KMimeType::Ptr magicMimeType = KMimeType::findByFileContent( url.path() );
+          if ( magicMimeType->comment() != magicMimeComment )
+              magicMimeComment = QString::null;
+      }
+
       if ( isLocal && url.path() == QString::fromLatin1("/") )
         hasRoot = true;
       if ( (*it)->isDir() && !(*it)->isLink() )
@@ -793,6 +805,15 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     grid->addWidget(l, curRow, 0);
 
     l = new QLabel(mimeComment, d->m_frame );
+    grid->addWidget(l, curRow++, 2);
+  }
+
+  if ( !magicMimeComment.isEmpty() && magicMimeComment != mimeComment )
+  {
+    l = new QLabel(i18n("Contents:"), d->m_frame );
+    grid->addWidget(l, curRow, 0);
+
+    l = new QLabel(magicMimeComment, d->m_frame );
     grid->addWidget(l, curRow++, 2);
   }
 
