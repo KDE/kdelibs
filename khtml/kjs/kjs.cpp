@@ -73,8 +73,10 @@ KJScript::~KJScript()
   }
 #endif
 
+#if 0
   if (ltdlInit)
     lt_dlexit();
+#endif
 }
 
 bool KJScript::evaluate(const char *code)
@@ -116,6 +118,7 @@ bool KJScript::evaluate(const KJS::UnicodeChar *code, unsigned int length)
 
 bool KJScript::useModule(const char *module, void *arg)
 {
+#if 0
   if (!module) {
     fprintf(stderr, "KJScript::useModule(): module == NULL\n");
     return false;
@@ -169,8 +172,6 @@ bool KJScript::useModule(const char *module, void *arg)
     fprintf(stderr, "initialization of module %s failed\n", name.ascii());
     return false;
   }
-
+#endif
   return true;
 }
-
-

@@ -17,12 +17,9 @@
 #    Boston, MA 02111-1307, USA.
 
 YACC = bison
-INCLUDES = -I$(top_srcdir)/libltdl \
- -I$(top_srcdir)/khtml -I$(top_srcdir)/khtml/misc -I$(top_srcdir)/khtml/css \
- -I$(top_srcdir)/khtml/dom -I$(top_srcdir)/khtml/xml -I$(top_srcdir)/khtml/html \
- $(all_includes)
+INCLUDES = -I$(top_srcdir)/libltdl $(all_includes)
 
-lib_LTLIBRARIES = kjs_html.la libkjs.la
+lib_LTLIBRARIES = libkjs.la
 
 libkjs_la_SOURCES =  kjs.cpp grammar.cpp lexer.cpp nodes.cpp object.cpp \
 	operations.cpp property.cpp kjsstring.cpp math_object.cpp \
@@ -32,10 +29,10 @@ include_HEADERS = kjs.h
 
 noinst_HEADERS = global.h object.h nodes.h operations.h lexer.h \
 	kjsstring.h grammar.h object_object.h function_object.h \
-	bool_object.h math_object.h html_object.h array_object.h
+	bool_object.h math_object.h array_object.h
 
 libkjs_la_LDFLAGS = -version-info 1:0
-libkjs_la_LIBADD = $(top_builddir)/libltdl/libltdlc.la -lm
+libkjs_la_LIBADD = -lm
 
 parser: $(srcdir)/grammar.y
 	cd $(srcdir); \
@@ -45,13 +42,8 @@ parser: $(srcdir)/grammar.y
 	else mv grammar.tab.h grammar.h; fi \
 	else :; fi
 
-# HTML module
-kjs_html_la_SOURCES = html_object.cpp
-kjs_html_la_LDFLAGS = -module $(QT_LDFLAGS) -avoid-version
-kjs_html_la_LIBADD = $(LIB_KDECORE)
-
 ## test program
 check_PROGRAMS = testkjs
 testkjs_SOURCES = testkjs.cpp $(libkjs_la_SOURCES)
-testkjs_LDADD = $(top_builddir)/libltdl/libltdlc.la -lm
+testkjs_LDADD =
 

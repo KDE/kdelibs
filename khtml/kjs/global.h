@@ -123,6 +123,4 @@ namespace KJS {
   extern const double D32;
 };
 
-#include <iostream.h>
-#define Debug(s) { cerr << s << endl; }
 #endif

@@ -21,7 +21,6 @@
 #ifndef _KJS_H_
 #define _KJS_H_
 
-class KHTMLWidget;
 class KJScriptLock;
 
 namespace KJS {
@@ -101,6 +100,28 @@ private:
   static bool ltdlInit;
 };
 
-typedef int (*initFunction)(void*);
+// callback functions for KJSProxy
+class QChar;
+typedef bool (KJSEvalFunc)(KJScript *script, const QChar *, unsigned int);
+typedef void (KJSClearFunc)(KJScript *script);
+extern "C" {
+  KJSEvalFunc kjs_eval;
+  KJSClearFunc kjs_clear;
+}
+
+// hack: a proxy for applications that dlopen our lib.
+class KJSProxy {
+public:
+  KJSProxy(KJScript *s, KJSEvalFunc e, KJSClearFunc c)
+    : script(s), eval(e), clr(c) {};
+  ~KJSProxy() { (*clr)(script); }
+  bool evaluate(const QChar *c, unsigned int l) {
+    return (*eval)(script, c, l);
+  }
+private:
+  KJScript *script;
+  KJSEvalFunc *eval;
+  KJSClearFunc *clr;
+};
 
 #endif

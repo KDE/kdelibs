@@ -22,9 +22,10 @@
 #define _OPERATIONS_H_
 
 #include "global.h"
-#include "object.h"
 
 namespace KJS {
+
+class KJSO;
 
 KJSO *toPrimitive(KJSO *obj, Type preferred = Undefined);
 KJSO *toBoolean(KJSO *obj);
