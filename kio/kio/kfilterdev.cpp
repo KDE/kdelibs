@@ -276,7 +276,7 @@ Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
             //kdDebug(7005) << "KFilterDev::readBlock got END. dataReceived=" << dataReceived << endl;
             break; // Finished.
         }
-        if (readEverything && filter->inBufferEmpty() )
+        if (readEverything && filter->inBufferEmpty() && filter->outBufferAvailable() != 0 )
         {
             // We decoded everything there was to decode. So -> done.
             //kdDebug(7005) << "Seems we're done. dataReceived=" << dataReceived << endl;
