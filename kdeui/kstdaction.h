@@ -1,10 +1,9 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 1999 Kurt Granroth <granroth@kde.org>
+   Copyright (C) 1999,2000 Kurt Granroth <granroth@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
+   License version 2 as published by the Free Software Foundation.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -58,6 +57,9 @@ public:
 
         // Bookmarks Menu
         AddBookmark, EditBookmarks,
+
+        // Tools Menu
+        Spelling,
 
         // Options Menu
         ShowMenubar, ShowToolbar, ShowStatusbar, KeyBindings, Preferences,
@@ -315,6 +317,13 @@ public:
      */
     static KAction *editBookmarks(const QObject *recvr = 0, const char *slot = 0,
                                   QObject *parent = 0, const char *name = 0L );
+
+    /**
+     * Popup the spell checker
+     */
+    static KAction *spelling(const QObject *recvr = 0, const char *slot = 0,
+                                  QObject *parent = 0, const char *name = 0L );
+
 
     /**
      * Show/Hide the menubar.
