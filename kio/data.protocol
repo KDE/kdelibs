@@ -9,3 +9,5 @@ Description=A kioslave for data URIs (rfc2397)
 Description[de]=Ein Protokoll für data URIs (rfc2397)
 DocPath=kioslave/data.html
 URIMode=rawuri
+defaultMimetype=application/octet-stream
+determineMimetypeFromExtension=false
