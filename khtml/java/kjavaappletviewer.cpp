@@ -257,7 +257,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
 }
 
 KJavaAppletViewer::~KJavaAppletViewer () {
-    delete m_view;
+    m_view = (KJavaAppletViewerWidget*) 0;
     serverMaintainer->releaseContext (parent(), baseurl);
     delete m_browserextension;
 }
