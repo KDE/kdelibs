@@ -226,7 +226,8 @@ void HTMLElementImpl::setAvailableWidth(int w)
     while(child != 0)
     {
     	if (child->getMinWidth() > availableWidth)
-	    printf("ERROR: %d too narrow availableWidth\n",id());
+	    printf("ERROR: %d too narrow availableWidth=%d minWidth=%d\n",
+	    id(), availableWidth, child->getMinWidth());
 	child->setAvailableWidth(availableWidth);
 	child = child->nextSibling();
     }
