@@ -113,6 +113,9 @@ protected:
      */
     DOMString imageURL;
 
+    // text to display as long as the image isn't available
+    DOMString alt; 
+    
     bool bComplete;
     VAlign valign;
 

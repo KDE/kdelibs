@@ -159,6 +159,9 @@ void HTMLImageElementImpl::parseAttribute(Attribute *attr)
     case ATTR_ISMAP:
 	ismap = true;
 	break;
+    case ATTR_ALT:
+	alt = attr->value();
+	break;	
     default:
 	HTMLPositionedElementImpl::parseAttribute(attr);
     }
@@ -175,7 +178,7 @@ void  HTMLImageElementImpl::setPixmap( QPixmap *p )
     calcMinMaxWidth();
     setLayouted(false);
     if(_parent) _parent->updateSize();	
-    
+
     static_cast<HTMLDocumentImpl *>(document)->print(this);
 }
 
@@ -216,13 +219,18 @@ void HTMLImageElementImpl::printObject(QPainter *p, int, int _y,
 
     if ( pixmap == 0 || pixmap->isNull() )
     {
-	if ( predefinedWidth.type == Undefined &&
-	     predefinedHeight.type == Undefined )
+	QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
+			      Qt::black, Qt::white );
+	qDrawShadePanel( p, _tx, _ty - getHeight(), width, getHeight(),
+			 colorGrp, true, 1 );
+	if(!alt.isEmpty())
 	{
-	    QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
-		    Qt::black, Qt::white );
-	    qDrawShadePanel( p, _tx, _ty - getHeight(), width, getHeight(),
-		    colorGrp, true, 1 );
+	    QString text = alt.string();
+	    p->setFont(*getFont());
+	    p->setPen( getFont()->textColor() );
+	    p->drawText(_tx+5, _ty - getHeight()+5, width-10, getHeight()-10,
+			Qt::WordBreak, text );
+	    
 	}
     }
     else
