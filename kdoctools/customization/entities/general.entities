@@ -175,12 +175,12 @@
 <!ENTITY kbounce	"<application>KBounce</application>">
 <!ENTITY kbugbuster	"<application>kbugbuster</application>">
 <!ENTITY kcalc  "<application>KCalc</application>">
-<!ENTITY kcharselect	"<application>kcharselect</application>">
+<!ENTITY kcharselect	"<application>KCharSelect</application>">
 <!ENTITY kchart "<application>KChart</application>">
 <!ENTITY kchat	"<application>KChat</application>">
 <!ENTITY kcontrol "<application>KControl</application>">
-<!ENTITY kcron	"<application>Kcron</application>">
-<!ENTITY kdat	"<application>Kdat</application>">
+<!ENTITY kcron	"<application>KCron</application>">
+<!ENTITY kdat	"<application>KDat</application>">
 <!ENTITY kde	"<acronym>KDE</acronym>">
 <!ENTITY kdebugdialog	"<application>KDebugDialog</application>">
 <!ENTITY kde-http	'<ulink url="http://www.kde.org/">http://www.kde.org/</ulink>'>
@@ -189,15 +189,15 @@
 <!ENTITY kdesktop	"<application>KDesktop</application>">
 <!ENTITY kdessh	"<application>kdessh</application>">
 <!ENTITY kdesu  "<application>KDE su</application>">
-<!ENTITY kdf	"<application>kdf</application>">
+<!ENTITY kdf	"<application>KDiskFree</application>">
 <!ENTITY kdict  "<application>KDict</application>">
 <!ENTITY kdm	"<application>kdm</application>">
-<!ENTITY kdvi	"<application>kdvi</application>">
+<!ENTITY kdvi	"<application>KDVI</application>">
 <!ENTITY kenolaba 	"<application>Kenolaba</application>">
 <!ENTITY kedit	"<application>KEdit</application>">
 <!ENTITY keduca "<application>KEduca</application>">
 <!ENTITY keystone	"<application>Keystone</application>">
-<!ENTITY kfax	"<application>kfax</application>">
+<!ENTITY kfax	"<application>KFax</application>">
 <!ENTITY kfaxview "<application>Kfaxview</application>">
 <!ENTITY kfind	"<application>KFind</application>">
 <!ENTITY kfloppy	"<application>Kfloppy</application>">
@@ -206,8 +206,8 @@
 <!ENTITY kfract	"<application>KFract</application>">
 <!ENTITY khangman "<application>KHangMan</application>">
 <!ENTITY kgeo	"<application>KGeo</application>">
-<!ENTITY kghostview	"<application>Kghostview</application>">
-<!ENTITY khelpcenter	"<application>KHelpcenter</application>">
+<!ENTITY kghostview	"<application>KGhostView</application>">
+<!ENTITY khelpcenter	"<application>KHelpCenter</application>">
 <!ENTITY khexedit	"<application>KHexEdit</application>">
 <!ENTITY kicker	"<application>Kicker</application>">
 <!ENTITY kiconedit "<application>KIconEdit</application>">
@@ -217,7 +217,7 @@
 <!ENTITY kivio	"<application>Kivio</application>">
 <!ENTITY kjots	"<application>KJots</application>">
 <!ENTITY kjumpingcube	"<application>KJumpingCube</application>">
-<!ENTITY klaptopdaemon	"<application>klaptopdaemon</application>">
+<!ENTITY klaptopdaemon	"<application>KLaptop</application>">
 <!ENTITY klatin		"<application>KLatin</application>">
 <!ENTITY klettres	"<application>KLettres</application>">
 <!ENTITY klines "<application>Kolor Lines</application>">
@@ -255,7 +255,7 @@
 <!ENTITY kpackage	"<application>KPackage</application>">
 <!ENTITY kpager "<application>KPager</application>">
 <!ENTITY kpaint "<application>KPaint</application>">
-<!ENTITY kpanel	"<application>kpanel</application>">
+<!ENTITY kpanel	"<application>KPanel</application>">
 <!ENTITY kpat	"<application>KPatience</application>">
 <!ENTITY kpercentage	"<application>KPercentage</application>">
 <!ENTITY kpilot	"<application>KPilot</application>">
@@ -264,7 +264,7 @@
 <!ENTITY kpresenter "<application>KPresenter</application>">
 <!ENTITY kpoker	"<application>KPoker</application>">
 <!ENTITY kpovmodeler "<application>KPovModeler</application>">
-<!ENTITY kppp	"<application>kppp</application>">
+<!ENTITY kppp	"<application>KPPP</application>">
 <!ENTITY kpresenter "<application>KPresenter</application>">
 <!ENTITY kreatecd	"<application>KreateCD</application>">
 <!ENTITY kregexpeditor	"<application>KRegExpEditor</application>">
@@ -272,7 +272,7 @@
 <!ENTITY krita	"<application>Krita</application>">
 <!ENTITY kruler	"<application>KRuler</application>">
 <!ENTITY ksame	"<application>KSame</application>">
-<!ENTITY kscd	"<application>Kscd</application>">
+<!ENTITY kscd	"<application>KsCD</application>">
 <!ENTITY kscore "<application>KScore</application>">
 <!ENTITY kscreensaver	"<application>KScreensaver</application>">
 <!ENTITY ksgmltools	"<application>ksgmltools</application>">
@@ -291,23 +291,23 @@
 <!ENTITY kstart	"<application>kstart</application>">
 <!ENTITY ksysctrl	"<application>KSysctrl</application>">
 <!ENTITY ksysguard	"<application>KSysguard</application>">
-<!ENTITY ksysv	"<application>ksysv</application>">
+<!ENTITY ksysv	"<application>KSysV</application>">
 <!ENTITY ktalk  "<application>KTalk</application>">
 <!ENTITY ktalkd	"<application>KTalkd</application>">
 <!ENTITY kteatime "<application>KTeaTime</application>">
 <!ENTITY kthesaurus "<application>KThesaurus</application>">
 <!ENTITY ktimemon "<application>KTimemon</application>">
 <!ENTITY ktimer	"<application>KTimer</application>">
-<!ENTITY ktip	"<application>Ktip</application>">
+<!ENTITY ktip	"<application>KTip</application>">
 <!ENTITY ktouch "<application>KTouch</application>">
 <!ENTITY ktron	"<application>KTron</application>">
 <!ENTITY ktuberling	"<application>KTuberling</application>">
 <!ENTITY kugar "<application>Kugar</application>">
 <!ENTITY kuickshow "<application>KuickShow</application>">
-<!ENTITY kuser	"<application>Kuser</application>">
+<!ENTITY kuser	"<application>KUser</application>">
 <!ENTITY kview	"<application>KView</application>">
 <!ENTITY kviewshell "<application>KViewshell</application>">
-<!ENTITY kvoctrain	"<application>kvoctrain</application>">
+<!ENTITY kvoctrain	"<application>KVocTrain</application>">
 <!ENTITY kworldclock	"<application>KWorldClock</application>">
 <!ENTITY kword "<application>KWord</application>">
 <!ENTITY kwin	"<application>KWin</application>">
