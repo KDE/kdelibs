@@ -83,16 +83,39 @@ KEdit::insertText(QTextStream *stream)
    int saveline = line;
    int savecol = col;
    QString textLine;
-   // WABA/Bernd: Reading/inserting it in line by line kills performance
-   // with large files because this will take O(n^2) time.
-   textLine = stream->read(); // Read all!
-   // We might want to read it in slightly smaller chunks since
-   // now worst case memory consumption seems to be 4x file size.
-   // 2x for ASCII --> UNICODE, 1 copy in "textLine", 1 copy in the
-   // widget itself.
-   // If we can read it in, let's say, blocks of 64Kb, we only need
-   // 64Kb + 2x file size. 2x for ASCII --> UNICODE, 64 Kb in textline,
-   // 1 copy in widget itself.
+
+   // MS: Patch by Martin Schenk <martin@schenk.com>
+   // MS: disable UNDO, or QMultiLineEdit remembers every textLine !!!
+   // memory usage is:
+   //   textLine: 2*size rounded up to nearest power of 2 (520Kb -> 1024Kb)
+   //   widget:   about (2*size + 60bytes*lines)
+   // -> without disabling undo, it often needs almost 8*size
+   bool oldUndo = isUndoEnabled();
+   setUndoEnabled( FALSE );
+
+   // MS: read everything at once if file <= 1MB, 
+   // else read in 5000-line chunks to keep memory usage acceptable.
+   QIODevice *dev=stream->device();
+   if (dev && dev->size()>(1024*1024)) {
+      while(1) {
+        int i;
+        textLine="";
+        for (i=0; i<5000; i++) {
+                QString line=stream->readLine();
+                if (line.isNull()) break;  // EOF
+                textLine+=line+'\n';
+        }
+        insertAt(textLine, line, col);
+        line+=i; col=0;
+        if (i!=5000) break;
+      }
+   }
+   else {
+        textLine = stream->read(); // Read all !
+        insertAt( textLine, line, col);
+   }
+   setUndoEnabled(oldUndo);
+
    insertAt( textLine, line, col);
    setCursorPosition(saveline, savecol);
    setAutoUpdate(true);
