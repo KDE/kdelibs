@@ -3745,7 +3745,8 @@ QStringList KHTMLPart::frameNames() const
   ConstFrameIt it = d->m_frames.begin();
   ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
-    res += (*it).m_name;
+    if (!(*it).m_bPreloaded)
+      res += (*it).m_name;
 
   return res;
 }
@@ -3757,7 +3758,8 @@ QPtrList<KParts::ReadOnlyPart> KHTMLPart::frames() const
   ConstFrameIt it = d->m_frames.begin();
   ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
-     res.append( (*it).m_part );
+    if (!(*it).m_bPreloaded)
+      res.append( (*it).m_part );
 
   return res;
 }
