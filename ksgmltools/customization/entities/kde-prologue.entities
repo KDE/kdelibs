@@ -269,7 +269,7 @@
 
 <!ENTITY % Traditional-Chinese "IGNORE">
 <![%Traditional-Chinese;[
-<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Traditional-Chinese Documentation V1.0//ZHTW">
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Traditional Chinese Documentation V1.0//ZHTW">
 %kde.l10n.ents;
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
