@@ -27,7 +27,7 @@
 
 using namespace KJS;
 
-KJSO Navigator::tryGet(const UString &p) const
+KJSO Navigator::get(const UString &p) const
 {
   if (p == "appCodeName")
     return String("Mozilla");

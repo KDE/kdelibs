@@ -56,6 +56,8 @@ KJSO Window::tryGet(const UString &p) const
     return Function(new WindowFunc(this, WindowFunc::Open));
   else if (p == "setTimeout")
     return Function(new WindowFunc(this, WindowFunc::SetTimeout));
+  else if (p == "clearTimeout")
+    return Function(new WindowFunc(this, WindowFunc::ClearTimeout));
 
   return Undefined();
 }
@@ -73,12 +75,18 @@ void Window::tryPut(const UString &p, const KJSO &v)
   }
 }
 
-void Window::installTimeout(const UString &handler, int t)
+int Window::installTimeout(const UString &handler, int t)
 {
   if (!winq)
     winq = new WindowQObject(this);
 
-  winq->installTimeout(handler, t);
+  return winq->installTimeout(handler, t);
+}
+
+void Window::clearTimeout(int timerId)
+{
+  if (winq)
+    winq->clearTimeout(timerId);
 }
 
 Completion WindowFunc::tryExecute(const List &args)
@@ -125,9 +133,15 @@ Completion WindowFunc::tryExecute(const List &args)
     result = Undefined();
     if (args.size() == 2 && v.isA(StringType)) {
       int i = args[1].toInt32();
-      (const_cast<Window*>(window))->installTimeout(s.value(), i);
-      break;
-    }
+      int r = (const_cast<Window*>(window))->installTimeout(s.value(), i);
+      result = Number(r);
+    } else
+      result = Undefined();
+    break;
+  case ClearTimeout:
+    result = Undefined();
+    (const_cast<Window*>(window))->clearTimeout(v.toInt32());
+    break;
   }
   return Completion(Normal, result);
 }
@@ -147,14 +161,26 @@ WindowQObject::~WindowQObject()
   delete timer;
 }
 
-void WindowQObject::installTimeout(const UString &handler, int t)
+int WindowQObject::installTimeout(const UString &handler, int t)
 {
+  /* TODO: multiple timers */
   if (!timer) {
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), SLOT(timeout()));
   }
   timeoutHandler = handler;
   timer->start(t, true);
+
+  return 0;
+}
+
+void WindowQObject::clearTimeout(int /* timerId */)
+{
+  /* TODO: delete on id basis */
+  if (timer) {
+    timer->stop();
+    timeoutHandler = "";
+  }
 }
 
 void WindowQObject::timeout()

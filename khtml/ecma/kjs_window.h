@@ -43,7 +43,8 @@ namespace KJS {
     ~Window();
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
-    void installTimeout(const UString &handler, int t);
+    int installTimeout(const UString &handler, int t);
+    void clearTimeout(int timerId);
   private:
     KHTMLView *widget;
     WindowQObject *winq;
@@ -53,7 +54,7 @@ namespace KJS {
   public:
     WindowFunc(const Window *w, int i) : window(w), id(i) { };
     Completion tryExecute(const List &);
-    enum { Alert, Confirm, Prompt, Open, SetTimeout };
+    enum { Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout };
     static void setStatusBarText(KHTMLPart *, const QString &);
   private:
     const Window *window;
@@ -65,7 +66,8 @@ namespace KJS {
   public:
     WindowQObject(Window *w);
     ~WindowQObject();
-    void installTimeout(const UString &handler, int t);
+    int installTimeout(const UString &handler, int t);
+    void clearTimeout(int timerId);
   public slots:
     void timeout();
   private:
