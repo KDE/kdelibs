@@ -70,17 +70,20 @@ public:
     HTMLStackElem( int _id,
                    int _level,
                    DOM::NodeImpl *_node,
+		   bool _inline,
                    HTMLStackElem * _next
         )
         :
         id(_id),
         level(_level),
+	m_inline(_inline),
         node(_node),
         next(_next)
         { }
 
     int       id;
     int       level;
+    bool m_inline;
     NodeImpl *node;
     HTMLStackElem *next;
 };
@@ -257,6 +260,10 @@ void KHTMLParser::parseToken(Token *t)
         t->flat = false;
     }
 
+    // the tokenizer needs the feedback for space discarding
+    if ( tagPriority[t->id] == 0 )
+	t->flat = true;
+
     if ( !insertNode(n, t->flat) ) {
         // we couldn't insert the node...
 #ifdef PARSER_DEBUG
@@ -294,11 +301,8 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 #ifdef PARSER_DEBUG
         kdDebug( 6035 ) << "added " << n->nodeName().string() << " to " << tmp->nodeName().string() << ", new current=" << newNode->nodeName().string() << endl;
 #endif
-        // don't push elements without end tag on the stack
-        if(tagPriority[id] != 0 && !flat)
-        {
-            pushBlock(id, tagPriority[id]);
-            current = newNode;
+	// don't push elements without end tag on the stack
+        if(tagPriority[id] != 0 && !flat) {
 #if SPEED_DEBUG < 2
             if(!n->attached() && HTMLWidget ) {
                 n->attach();
@@ -306,10 +310,10 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                     n->renderer()->setBlockBidi();
             }
 #endif
-            //_inline = current->isInline();
-            if(current->isInline()) m_inline = true;
-        }
-        else {
+	    if(n->isInline()) m_inline = true;
+            pushBlock(id, tagPriority[id]);
+            current = newNode;
+        } else {
 #if SPEED_DEBUG < 2
             if(!n->attached() && HTMLWidget)
                 n->attach();
@@ -321,7 +325,9 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             if(n->renderer())
                 n->renderer()->close();
 #endif
+	    if(n->isInline()) m_inline = true;
         }
+
 
 #if SPEED_DEBUG < 1
         if(tagPriority[id] == 0 && n->renderer())
@@ -335,6 +341,12 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
         // error handling...
         HTMLElementImpl *e;
         bool handled = false;
+
+	// never create anonymous objects just to hold a space.
+	if ( id == ID_TEXT &&
+	     static_cast<TextImpl *>(n)->string()->l == 1 &&
+	     static_cast<TextImpl *>(n)->string()->s[0] == " " )
+	    return false;
 
         // switch according to the element to insert
         switch(id)
@@ -1104,7 +1116,7 @@ void KHTMLParser::processCloseTag(Token *t)
 
 void KHTMLParser::pushBlock(int _id, int _level)
 {
-    HTMLStackElem *Elem = new HTMLStackElem(_id, _level, current, blockStack);
+    HTMLStackElem *Elem = new HTMLStackElem(_id, _level, current, m_inline, blockStack);
 
     blockStack = Elem;
     addForbidden(_id, forbiddenTag);
@@ -1180,11 +1192,10 @@ void KHTMLParser::popOneBlock()
     blockStack = Elem->next;
     // we only set inline to false, if the element we close is a block level element.
     // This helps getting cases as <p><b>bla</b> <b>bla</b> right.
-    if(!current->isInline())
-        m_inline = false;
     if (current->id() == ID_PRE)
         --inPre;
 
+    m_inline = Elem->m_inline;
     current = Elem->node;
 
     delete Elem;

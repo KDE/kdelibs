@@ -1334,7 +1334,7 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
                 else if ( !parser->selectMode() &&
                           ( !parser->noSpaces() || dest > buffer )) {
                     addPending();
-                    discard = AllDiscard;
+		    discard = AllDiscard;
                 }
                 // just forget it
                 else
@@ -1559,6 +1559,9 @@ void HTMLTokenizer::processToken()
 #endif
     // pass the token over to the parser, the parser DOES NOT delete the token
     parser->parseToken(&currToken);
+
+    if ( currToken.flat && currToken.id != ID_TEXT && !parser->noSpaces() )
+	discard = NoneDiscard;
 
     currToken.reset();
     if (jsProxy)
