@@ -58,8 +58,7 @@ public:
 		Sound=1,
 		Messagebox=2,
 		Logwindow=4,
-		Logfile=8,
-		Stderr=16
+		Stderr=8
 	};
 	
 public:
@@ -77,7 +76,7 @@ public:
 	*/
 	KNotifyClient(const QString &message, const QString &text=0,
 	             Presentation present=Default,
-	             const QString &file=0,
+	             const QString &sound=0, const QString &file=0,
 	             DCOPClient* client=0);
 
 	virtual ~KNotifyClient();
@@ -104,11 +103,11 @@ public: //static methods
 	/**
 	 * Will fire an event that's not registered.
 	 * @param text The error message text, if applicable
-	 * @param present The error message level, one again, defaulting to "Default"
+	 * @param present The error message level, defaulting to "Default"
 	 * @param file The sound file to play if selected with present
 	 */
 	static bool userEvent(const QString &text=0, Presentation present=Default,
-	                      const QString &file=0);
+	                      const QString &sound=0, const QString &file=0);
 	
 	/**
 	 * Gets the presentation associated with a certain event name
@@ -153,6 +152,7 @@ private:
 		QString message;
 		QString text;
 		Presentation present;
+		QString sound;
 		QString file;
 		DCOPClient *client;
 	} *levent;

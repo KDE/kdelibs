@@ -24,7 +24,7 @@
 
 
 KNotifyClient::KNotifyClient(const QString &message, const QString &text,
-                             Presentation present, const QString &file,
+                             Presentation present, const QString &sound, const QString &file,
                              DCOPClient* client)
 {
 	if (!client) client=KApplication::kApplication()->dcopClient();
@@ -32,6 +32,7 @@ KNotifyClient::KNotifyClient(const QString &message, const QString &text,
 	levent->message=message;
 	levent->text=text;
 	levent->present=present;
+	levent->sound=sound;
 	levent->file=file;
 	levent->client=client;
 }
@@ -51,9 +52,9 @@ bool KNotifyClient::send()
 
 	QByteArray data;
 	QDataStream ds(data, IO_WriteOnly);
-	ds << levent->message << KApplication::kApplication()->argv()[0] << levent->text << levent->file << (int)levent->present;
+	ds << levent->message << KApplication::kApplication()->argv()[0] << levent->text << levent->sound << levent->file << (int)levent->present;
 
-	return client->send("knotify", "Notify", "notify(QString,QString,QString,QString,Presentation)", data);
+	return client->send("knotify", "Notify", "notify(QString,QString,QString,QString,QString,Presentation)", data);
 }
 
 bool KNotifyClient::event(const QString &message, const QString &text)
@@ -63,9 +64,9 @@ bool KNotifyClient::event(const QString &message, const QString &text)
 }
 
 bool KNotifyClient::userEvent(const QString &text, Presentation present,
-                              const QString &file)
+                              const QString &sound, const QString &file)
 {
-	KNotifyClient c(0, text, present, file);
+	KNotifyClient c(0, text, present, sound, file);
 	return c.send();
 }
 
@@ -95,8 +96,6 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, Presentation pre
 	(void)present;
 	return "";
 }
-
-
 
 #include "knotifyclient.moc"
 
