@@ -46,8 +46,6 @@ public:
     virtual void setChecked( bool );
     bool isChecked() const;
 
-    void uncheckGroup();
-
 protected slots:
     void slotActivated();
 
@@ -82,9 +80,9 @@ protected slots:
 
 signals:
     void activate();
-    
+
 private:
-    bool m_lock;    
+    bool m_lock;
 };
 
 class KFontAction : public KSelectAction

@@ -271,7 +271,7 @@ void KToggleAction::setChecked( bool c )
 {
     if ( c == checked )
 	return;
-    
+
     checked = c;
 
     int len = containerCount();
@@ -290,19 +290,19 @@ void KToggleAction::setChecked( bool c )
 	    ((QActionWidget*)w)->updateAction( this );	
     }
 
-    // Uncheck all the other toggle actions in the same group
-    if ( parent() && !exclusiveGroup().isEmpty() && checked )
-    {
-	const QObjectList *list = parent()->children();
-	if ( list )
-	{
-	    QObjectListIt it( *list );
-	    for( ; it.current(); ++it )
-	    {
-		if ( it.current()->inherits( "QToggleAction" ) &&
-		     ((QToggleAction*)it.current())->exclusiveGroup() == exclusiveGroup() &&
-		     it.current() != this )
-		    ((QToggleAction*)it.current())->setChecked( FALSE );
+    if ( !signalsBlocked() ) {
+	if ( parent() && !exclusiveGroup().isEmpty() ) {
+	    const QObjectList *list = parent()->children();
+	    if ( list ) {
+		QObjectListIt it( *list );
+		for( ; it.current(); ++it ) {
+		    if ( it.current()->inherits( "KToggleAction" ) &&
+			 ((KToggleAction*)it.current())->exclusiveGroup() == exclusiveGroup() ) {
+			((KToggleAction*)it.current())->blockSignals( TRUE );
+			((KToggleAction*)it.current())->setChecked( FALSE );
+			((KToggleAction*)it.current())->blockSignals( FALSE );
+		    }
+		}
 	    }
 	}
     }
@@ -317,23 +317,6 @@ void KToggleAction::slotActivated()
 	return;
 
     locked = TRUE;
-    if ( parent() && !exclusiveGroup().isEmpty() )
-    {
-	const QObjectList *list = parent()->children();
-	if ( list )
-	{
-	    QObjectListIt it( *list );
-	    for( ; it.current(); ++it )
-	    {
-		if ( it.current()->inherits( "KToggleAction" ) && it.current() != this &&
-		     ((KToggleAction*)it.current())->exclusiveGroup() == exclusiveGroup() ) {
- 		    ((KToggleAction*)it.current())->blockSignals( TRUE );
-		    ((KToggleAction*)it.current())->setChecked( FALSE );
- 		    ((KToggleAction*)it.current())->blockSignals( FALSE );
-		}
-	    }
-	}
-    }
     setChecked( !isChecked() );
     locked = FALSE;
 }
@@ -341,28 +324,6 @@ void KToggleAction::slotActivated()
 bool KToggleAction::isChecked() const
 {
     return checked;
-}
-
-// ############ Reggie: uuuuuuugly hack!!! Will remove it soon.
-void KToggleAction::uncheckGroup()
-{
-    if ( parent() && !exclusiveGroup().isEmpty() )
-    {
-	const QObjectList *list = parent()->children();
-	if ( list )
-	{
-	    QObjectListIt it( *list );
-	    for( ; it.current(); ++it )
-	    {
-		if ( it.current()->inherits( "KToggleAction" ) &&
-		     ((KToggleAction*)it.current())->exclusiveGroup() == exclusiveGroup() ) {
- 		    ((KToggleAction*)it.current())->blockSignals( TRUE );
-		    ((KToggleAction*)it.current())->setChecked( FALSE );
- 		    ((KToggleAction*)it.current())->blockSignals( FALSE );
-		}
-	    }
-	}
-    }
 }
 
 KSelectAction::KSelectAction( const QString& text, int accel,
@@ -530,7 +491,7 @@ void KSelectAction::slotActivated( const QString &text )
 {
   if ( m_lock )
     return;
-    
+
   m_lock = true;
   if ( isEditable() )
   {
