@@ -79,8 +79,11 @@ public:
     DOMString innerText() const;
     bool setInnerHTML( const DOMString &html );
     bool setInnerText( const DOMString &text );
-    
+
 protected:
+    // strips away anything after [0-9.%*]
+    DOMString stripAttributeGarbage( const DOMString &value );
+
     DOM::CSSStyleDeclarationImpl *m_styleDecls;
 };
 
