@@ -201,6 +201,7 @@ public:
         repaintbooth = 0;
 #endif
         scrollBarMoved = false;
+        contentsMoving = false;
         ignoreWheelEvents = false;
 	borderX = 30;
 	borderY = 30;
@@ -305,6 +306,7 @@ public:
     bool lastTabbingDirection:1;
     PseudoFocusNodes pseudoFocusNode:2;
     bool scrollBarMoved:1;
+    bool contentsMoving:1;
 
     QScrollView::ScrollBarMode vmode;
     QScrollView::ScrollBarMode hmode;
@@ -1555,7 +1557,7 @@ void KHTMLView::doAutoScroll()
 class HackWidget : public QWidget
 {
  public:
-    inline void setNoErase() { setWFlags(getWFlags()|WRepaintNoErase|WPaintUnclipped); }
+    inline void setNoErase() { setWFlags(getWFlags()|WRepaintNoErase); }
 };
 
 bool KHTMLView::eventFilter(QObject *o, QEvent *e)
@@ -1644,7 +1646,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    }
 		    viewportToContents( x, y, x, y );
 		    QPaintEvent *pe = static_cast<QPaintEvent *>(e);
-		    bool sv = ::qt_cast<QScrollView *>(c);
+		    bool sv = !d->contentsMoving && ::qt_cast<QScrollView *>(c);
 		    
 		    // QScrollView needs fast repaints
 		    if ( sv && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() &&
@@ -2673,8 +2675,12 @@ void KHTMLView::focusOutEvent( QFocusEvent *e )
 
 void KHTMLView::slotScrollBarMoved()
 {
-    if (!d->scrollingSelf)
+    if (!d->scrollingSelf) {
         d->scrollBarMoved = true;
+        d->contentsMoving = true;
+        // ensure quick reset of contentsMoving flag
+        scheduleRepaint(0, 0, 0, 0);
+    }
 }
 
 void KHTMLView::timerEvent ( QTimerEvent *e )
@@ -2731,6 +2737,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     }
 #endif
 
+    d->contentsMoving = false;
     if( m_part->xmlDocImpl() ) {
 	DOM::DocumentImpl *document = m_part->xmlDocImpl();
 	khtml::RenderCanvas* root = static_cast<khtml::RenderCanvas *>(document->renderer());
