@@ -268,7 +268,6 @@ private:
     DIR *myOpendir; 
     uint readFiles;
     bool readable;
-    boo;
     bool myMatchDirs;
 };
 
