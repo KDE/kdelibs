@@ -49,7 +49,7 @@ public:
     ~KFileViewPrivate()
     {
         if( actions ) {
-            // actions->clear();
+            actions->clear(); // so that the removed() signal is emitted!
             delete actions;
         }
     }
