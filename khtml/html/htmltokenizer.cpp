@@ -245,10 +245,6 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 		if (!scriptSrc.isEmpty()) {
 		    // forget what we just got; load from src url instead
 		    cachedScript = parser->doc()->docLoader()->requestScript(scriptSrc, parser->doc()->baseURL());
-		    loadingExtScript = true;
-		    pendingSrc = QString(src.current(), src.length());
-		    _src = "";
-		    src = DOMStringIt();
 		}
 		else {
 #ifdef TOKEN_DEBUG
@@ -282,8 +278,15 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 	    else
 		currToken->id = ID_LISTING + ID_CLOSE_TAG;
 	    processToken();
-	    if (cachedScript)
+	    if (cachedScript) {
 		cachedScript->ref(this);
+	        if (cachedScript) { // will be 0 if script was already loaded and ref() executed it
+		    loadingExtScript = true;
+		    pendingSrc = QString(src.current(), src.length());
+		    _src = "";
+		    src = DOMStringIt();
+		}
+            }
             else if (doScriptExec) {
 		executingScript = true;
 		view->part()->executeScript(QString(scriptCode, scriptCodeSize));
@@ -1404,7 +1407,7 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 	view->part()->executeScript(scriptSource.string());
 	executingScript = false;
 	
-        // 'script' is true when we are called synchronously from 
+        // 'script' is true when we are called synchronously from
         // parseScript(). In that case parseScript() will take care
         // of 'scriptOutput'.
         if (!script)
