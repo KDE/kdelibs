@@ -979,7 +979,6 @@ protected:
    * This method is used internally to determine which edit slots are implemented
    * by the widget that has the focus, and to invoke those slots if available.
    *
-   * @param slotName is the name of the slot being called, for example "cut()"
    * @param slot is the slot as returned using the SLOT() macro, for example SLOT( cut() )
    *
    * This method can be used in KApplication subclasses to implement application wide
@@ -988,7 +987,7 @@ protected:
    * <pre>
    * void MyApplication::deselect()
    * {
-   *   invokeEditSlot( "deselect()", SLOT( deselect() ) );
+   *   invokeEditSlot( SLOT( deselect() ) );
    * }
    * </pre>
    * 
@@ -1007,7 +1006,7 @@ protected:
    *
    * @since 3.2
    */
-  void invokeEditSlot( const char *slotName, const char *slot );
+  void invokeEditSlot( const char *slot );
 
 private slots:
   void dcopFailure(const QString &);
@@ -1200,12 +1199,6 @@ signals:
       this state.
    */
   void shutDown();
-
-  /**
-   * Used internally by invokeEditSlot().
-   * @internal
-   */
-  void editSignal();
 
 private:
   void propagateSettings(SettingsCategory category);

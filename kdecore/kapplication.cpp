@@ -1550,22 +1550,19 @@ bool KApplication::x11EventFilter( XEvent *_event )
 }
 #endif
 
-void KApplication::invokeEditSlot( const char *slotName, const char *slot )
+void KApplication::invokeEditSlot( const char *slot )
 {
   QObject *object = focusWidget();
-
-  if( !object || !slotName || !slot )
+  if( !object )
     return;
 
   QMetaObject *meta = object->metaObject();
-  QStrList l = meta->slotNames(true);
 
-  if( l.find( slotName ) == -1 )
+  int idx = meta->findSlot( slot + 1, true );
+  if( idx < 0 )
     return;
 
-  connect( this, SIGNAL( editSignal() ), object, slot );
-  emit editSignal();
-  disconnect( this, SIGNAL( editSignal() ), object, slot );
+  object->qt_invoke( idx, 0 );
 }
 
 void KApplication::addKipcEventMask(int id)
@@ -2035,27 +2032,27 @@ void KApplication::invokeBrowser( const QString &url )
 
 void KApplication::cut()
 {
-  invokeEditSlot( "cut()", SLOT( cut() ) );
+  invokeEditSlot( SLOT( cut() ) );
 }
 
 void KApplication::copy()
 {
-  invokeEditSlot( "copy()", SLOT( copy() ) );
+  invokeEditSlot( SLOT( copy() ) );
 }
 
 void KApplication::paste()
 {
-  invokeEditSlot( "paste()", SLOT( paste() ) );
+  invokeEditSlot( SLOT( paste() ) );
 }
 
 void KApplication::clear()
 {
-  invokeEditSlot( "clear()", SLOT( clear() ) );
+  invokeEditSlot( SLOT( clear() ) );
 }
 
 void KApplication::selectAll()
 {
-  invokeEditSlot( "selectAll()", SLOT( selectAll() ) );
+  invokeEditSlot( SLOT( selectAll() ) );
 }
 
 QCString
