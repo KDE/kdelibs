@@ -558,11 +558,6 @@ public:
     void disconnectSlave();
 
     /**
-     * @obsolete as of 3.1. Use @ref openPassDlg instead.
-     */
-    bool pingCacheDaemon() const;
-
-    /**
      * Prompt the user for Authorization info (login & password).
      *
      * Use this function to request authorization information from
@@ -652,14 +647,22 @@ public:
     bool cacheAuthentication( const AuthInfo& info );
 
     /**
+     * @obsolete as of 3.1.
+     * TODO: Remove before KDE 4.0
+     */
+    bool pingCacheDaemon() const;
+
+    /**
+     * @obsolete as of 3.1. Use @ref openPassDlg instead.
+     * TODO: Remove before KDE 4.0
      * Creates a basic key to be used to cache the password.
-     *
      * @param url   the url from which the key is supposed to be generated
      */
     QString createAuthCacheKey( const KURL& url );
 
     /**
-     * @obsolete as of 3.1
+     * @obsolete as of 3.1. Use @ref openPassDlg instead.
+     * TODO: Remove before KDE 4.0
      *
      * Cache authentication information is now stored automatically
      * by openPassDlg.
@@ -667,20 +670,24 @@ public:
     void sendAuthenticationKey( const QCString& gKey, const QCString& key, bool keep );
 
     /**
-     * @obsolete as of 3.1
+     * @obsolete as of 3.1. Use @ref openPassDlg instead.
+     * TODO: Remove before KDE 4.0
      *
-     * Cache authentication information is now stored automatically
-     * by openPassDlg.
+     * Cached authentication information is now session based and
+     * removed automatically when a given session ends, i.e. the
+     * application is closed.
      */
     void delCachedAuthentication( const QString& key );
 
     /**
-     * @obsolete as of 3.1. See @ref openPassDlg instead.
+     * @obsolete as of 3.1. Use @ref openPassDlg instead.
+     * TODO: Remove before KDE 4.0
      */
     void setMultipleAuthCaching( bool ) {};
 
     /**
-     * @obsolete as of 3.1. See @ref openPassDlg instead.
+     * @obsolete as of 3.1. Use @ref openPassDlg instead.
+     * TODO: Remove before KDE 4.0
      */
     bool multipleAuthCaching() const { return false; }
 
@@ -753,14 +760,14 @@ public:
      @since 3.1
      */
     bool wasKilled() const;
+
     /** Internally used.
      * @internal
      * @since 3.1
      */
     void setKillFlag();
-private:
-    bool storeAuthInfo( const QCString&, const QCString&, const AuthInfo& );
 
+private:
     UDSEntryList pendingListEntries;
     uint listEntryCurrentSize;
     long listEntry_sec, listEntry_usec;
@@ -769,8 +776,10 @@ private:
     QString mAppSocket;
     bool mConnectedToApp;
     static long s_seqNr;
+
 protected:
     virtual void virtual_hook( int id, void* data );
+
 private:
     SlaveBasePrivate *d;
 };

@@ -1121,13 +1121,6 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     return true;
 }
 
-bool SlaveBase::storeAuthInfo( const QCString&, const QCString&,
-                               const AuthInfo& )
-{
-    // Obsolete
-    return false;
-}
-
 bool SlaveBase::cacheAuthentication( const AuthInfo& info )
 {
     QByteArray params;
