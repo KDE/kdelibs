@@ -2725,19 +2725,19 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
 
     if (!strictParsing) {
 	// allow ; between rules (not part of spec)
-	while (curP && (curP->isSpace() || *curP == ';'))
+	while (curP && curP != endP && (curP->isSpace() || *curP == ';'))
 	    curP++;
     }
 
     startP = curP;
     CSSRuleImpl *rule = 0;
 
-    if(!curP) return 0;
+    if(!curP || curP >= endP ) return 0;
 #ifdef CSS_DEBUG
     kdDebug( 6080 ) << "parse rule: current = " << curP->latin1() << endl;
 #endif
 
-    if (*curP == '@' && curP != endP && ( (curP+1)->isLetter() || (curP+1)->unicode() > 0xa0 )  )
+    if (*curP == '@' && curP < endP && ( (curP+1)->isLetter() || (curP+1)->unicode() > 0xa0 )  )
     {
         rule = parseAtRule(curP, endP);
     }
