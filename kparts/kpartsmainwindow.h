@@ -14,6 +14,7 @@
 class QPopupMenu;
 class QString;
 class KStatusBar;
+class KPartsMainWindowPrivate;
 
 /**
  * @short a KPart-aware main window, whose user interface is described in XML
@@ -38,14 +39,19 @@ class KPartsMainWindow : public KTMainWindow, public KXMLGUIBuilder, public KXML
   // Add your actions to this collection
   QActionCollection *actionCollection() { return &m_actionCollection; }
 
+  // Hack! ;-) (just needed it for testing the addServant/removeServant stuff :) (Simon)
+  KXMLGUIFactory *guiFactory() const;
+
   // ---
 
   // KXMLGUIServant interface (internal)
   virtual QAction *action( const QDomElement &element );
-  virtual QDomDocument document() { QDomDocument doc; doc.setContent( m_xml ); return doc; }
+  virtual QDomDocument document();
 
   // KXMLGUIBuilder interface (internal)
-  virtual QWidget *createContainer( QObject *parent, const QDomElement &element );
+  virtual QObject *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer );
+
+  virtual QByteArray removeContainer( QObject *container, QWidget *parent );
 
 protected slots:
 
@@ -59,14 +65,14 @@ protected slots:
   virtual void createGUI( KPart * part );
 
 protected:
-  virtual void clearGUI();
+//should be obsolete (Simon)
+//  virtual void clearGUI();
 
 private:
-  QString m_xml;
-  KStatusBar *m_statusBar;
-  QList<KToolBar> m_toolBars;
   QActionCollection m_actionCollection;
-  QGuardedPtr<KPart> m_activePart;
+  KXMLGUIFactory *m_factory;
+
+  KPartsMainWindowPrivate *d;
 };
 
 #endif

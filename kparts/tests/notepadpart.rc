@@ -1,6 +1,11 @@
 <!DOCTYPE kpartgui>
 <kpartgui>
 <MenuBar>
+ <Menu name="File">
+  <Menu name="NodepadSubMenu"><text>Nodepad Stuff</text>
+    <Action name="searchreplace"/>
+  </Menu>
+ </Menu>
  <Menu name="Edit"><text>Edit</text>
   <Action name="searchreplace"/>
  </Menu>

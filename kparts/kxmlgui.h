@@ -1,3 +1,21 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1999 Simon Hausmann <hausmann@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
 
 #ifndef __kxmlgui_h__
 #define __kxmlgui_h__
@@ -5,8 +23,11 @@
 #include <qobject.h>
 #include <qaction.h>
 #include <qdom.h>
+#include <qmap.h>
+#include <qguardedptr.h>
 
 class KPart;
+class KXMLGUIFactoryPrivate;
 
 /**
  * This file contains all the "kernel" of KParts.
@@ -26,12 +47,16 @@ class KXMLGUIBuilder
   /**
    * Create a container (menubar/menu/toolbar/statusbar/...) from an
    * element in the XML file
-   * @param parent the parent for the widget (why not a widget ?)
+   * @param parent the parent for the widget
    * @return 0L if you handled the element yourself (like for Separators for
    * example)
    */
-  virtual QWidget *createContainer( QObject *parent, const QDomElement &element) = 0;
+  virtual QObject *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer ) = 0;
+
+  virtual QByteArray removeContainer( QObject *container, QWidget *parent ) = 0;
 };
+
+class KXMLGUIServantPrivate;
 
 /**
  * Abstract interface for serving actions and xml to the GUI factory
@@ -39,11 +64,18 @@ class KXMLGUIBuilder
 class KXMLGUIServant
 {
  public:
+  KXMLGUIServant();
+  virtual ~KXMLGUIServant();
 
   virtual QAction *action( const QDomElement &element ) = 0;
 
   virtual QDomDocument document() = 0;
 
+  virtual void storeContainerStateBuffer( const QString &key, const QByteArray &data );
+  virtual QByteArray takeContainerStateBuffer( const QString &key );
+
+ private:
+  KXMLGUIServantPrivate *d;
 };
 
 /**
@@ -59,45 +91,30 @@ class KNullGUIServant : public KXMLGUIServant
   virtual QDomDocument document() { return QDomDocument(); }
 };
 
-/**
- * In order to make the GUI-merging very flexible, it is a bit "abstract".
- * Let's try to explain a bit the servants/factory/builder concept :
- *
- * The usual case for GUI merging is merging actions for a "shell" (main
- * window) with actions for a "part" (embedded component)
- * In this case we have :
- *  shell servant + part servant => factory (who merges) => builder (who creates)
- *
- * "servants" are objects that serve actions to the factory, upon request
- * the "factory" is responsible for the actual merging
- * the "builder" is the class that creates the elements
- *
- * Servants and Buidler are interfaces, so that the factory can be 'plugged'
- * to a lot of different inputs and outputs.
- */
+class KXMLGUIContainerNode;
+
 class KXMLGUIFactory
 {
  public:
-
-  static void mergeXML( QDomElement base, QDomElement additive );
+  KXMLGUIFactory( KXMLGUIBuilder *builder );
+  ~KXMLGUIFactory();
 
   static QString readConfigFile( const QString &filename );
 
-  static void createGUI( KXMLGUIServant *shell, KXMLGUIServant *part, KXMLGUIBuilder *builder );
+  void addServant( KXMLGUIServant *servant );
+
+  void removeServant( KXMLGUIServant *servant );
 
  private:
-  KXMLGUIFactory( KXMLGUIServant *shellServant, KXMLGUIServant *partServant, KXMLGUIBuilder *builder );
+  void buildRecursive( const QDomElement &element, KXMLGUIContainerNode *parentNode );
+  bool removeRecursive( KXMLGUIContainerNode *node );
 
-  void buildRecursive( const QDomElement &shellElement,
-                       const QDomElement &partElement,
-                       QObject *parent = 0L );
+  static KXMLGUIContainerNode *findContainer( KXMLGUIContainerNode *node, const QDomElement &element, const QList<QObject> &excludeList );
 
-  static QDomElement findMatchingElement( const QDomElement &shellElement, const QDomElement &partElement );
-
-  KXMLGUIServant *m_shellServant;
-  KXMLGUIServant *m_partServant;
+  KXMLGUIServant *m_servant;
   KXMLGUIBuilder *m_builder;
 
+  KXMLGUIFactoryPrivate *d;
 };
 
 #endif

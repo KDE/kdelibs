@@ -14,6 +14,7 @@ class KInstance;
 class QWidget;
 class QAction;
 class QActionCollection;
+class KPartPrivate;
 
 class KPart : public QObject
 {
@@ -26,6 +27,8 @@ public:
     QActionCollection* actionCollection();
 
     virtual KPlugin* plugin( const char* libname );
+
+    virtual QAction *action( const QDomElement &element );
 
     /**
      * Embed this part into a host widget.
@@ -41,9 +44,15 @@ public:
 
     virtual KInstance *instance() = 0;
 
-    virtual QStringList pluginActionDocuments();
+    virtual void updatePlugins();
 
-    virtual QDomDocument mergedActionDOM();
+    virtual QStringList plugins();
+
+    virtual QValueList<QDomDocument> pluginDocuments();
+
+    virtual const QList<KXMLGUIServant> *pluginServants();
+
+    virtual KXMLGUIServant *servant();
 
     // Only called by KPartManager - should be protected and using friend ?
     void setManager( KPartManager * manager ) { m_manager = manager; }
@@ -51,6 +60,8 @@ public:
      * @return the part manager handling this part
      */
     KPartManager * manager() { return m_manager; }
+
+    QDomDocument document() const;
 
 protected:
     /**
@@ -65,6 +76,9 @@ protected:
      */
     virtual void setXMLFile( const QString & file );
 
+    //TODO: return bool, to make it possible for the part to check whether its xml is invalid (Simon)
+    virtual void setXML( const QString &document );
+
 private slots:
     void slotWidgetDestroyed();
 
@@ -75,9 +89,9 @@ private:
      */
     QString m_config;
     QActionCollection m_collection;
-    bool m_bPluginActionsMerged;
-    QDomDocument m_mergedDOM;
     KPartManager * m_manager;
+
+    KPartPrivate *d;
 };
 
 /**
@@ -189,7 +203,7 @@ class KPartGUIServant : public QObject, public KXMLGUIServant
 {
   Q_OBJECT
  public:
-  KPartGUIServant( KPart *part );
+  KPartGUIServant( KPart *part, const QDomDocument &document );
 
   virtual QAction *action( const QDomElement &element );
 
@@ -197,6 +211,7 @@ class KPartGUIServant : public QObject, public KXMLGUIServant
 
  private:
   KPart *m_part;
+  QDomDocument m_doc;
 };
 
 #endif

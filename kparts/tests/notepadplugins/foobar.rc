@@ -8,4 +8,5 @@
   <Action name="searchreplace"/>
  </Menu>
 </MenuBar>
+<ToolBar name="gah"/>
 </kpartplugin>

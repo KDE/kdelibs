@@ -49,6 +49,7 @@ bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
       // But it means we'll emit the event for each intermediate parent ? (David)
       // Perhaps we should store the new part and emit at the end ?
 
+      // I think we should return here (Simon)
     }
 
     w = w->parentWidget();
@@ -93,6 +94,7 @@ void KPartManager::addPart( KPart *part )
   }
 
   part->widget()->show();
+  emit partAdded( part );
 }
 
 void KPartManager::removePart( KPart *part )
@@ -113,6 +115,8 @@ void KPartManager::removePart( KPart *part )
     m_activePart = 0;
     emit activePartChanged( 0 );
   }
+  
+  emit partRemoved( part );
 }
 
 void KPartManager::slotObjectDestroyed()

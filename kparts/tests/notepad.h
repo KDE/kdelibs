@@ -24,6 +24,9 @@ public:
 protected:
   virtual bool openFile();
 
+protected slots:
+  void slotSearchReplace();
+
 protected:
   QMultiLineEdit * m_edit;
   bool m_bModified;

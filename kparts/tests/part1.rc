@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui>
-<kpartgui>
+<kpartgui name="Part">
 <MenuBar>
  <Menu name="File">
   <Action name="p1_blah"/>

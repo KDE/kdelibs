@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui>
-<kpartgui>
+<kpartgui name="Shell">
 <MenuBar>
   <Menu name="File"><text>File</text>
    <Action name="open_local_file"/>
@@ -8,11 +8,11 @@
    <Action name="edit_file"/>
    <Action name="close_editor"/>
    <Separator/>
-   <Part/>
+   <Merge/>
    <Separator/>
    <Action name="shell_quit"/>
   </Menu>
-  <Part/>
+  <Merge/>
   <Menu name="Blah"><text>BlahFoo</text>
    <Action name="shell_yami"/>
    <Menu name="nonsense"><text>Dummdidumm</text>

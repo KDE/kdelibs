@@ -48,7 +48,11 @@ public:
   virtual void setWindowCaption( const QString & caption )
   { ((QWidget *)parent())->setCaption( caption ); }
 
+  const QList<KPart> *parts() const { return &m_parts; }
+
 signals:
+  void partAdded( KPart *part );
+  void partRemoved( KPart *part );
   void activePartChanged( KPart *newPart );
 
 protected slots:

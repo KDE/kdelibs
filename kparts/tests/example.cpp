@@ -79,6 +79,9 @@ void Shell::slotFileOpenRemote()
 
 void Shell::embedEditor()
 {
+  if ( m_manager->activePart() == m_part2 )
+    createGUI( 0L );
+  
   // replace part2 with the editor part
   delete m_part2;
   m_part2 = 0L;

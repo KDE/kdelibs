@@ -16,11 +16,35 @@
 #include <unistd.h>
 #include <assert.h>
 
+class KPartPrivate
+{
+public:
+  KPartPrivate()
+  {
+    m_bPluginsDirty = true;
+    m_bDocDirty = true;
+    m_pluginServants.setAutoDelete( true );
+    m_servant = 0L;
+  }
+  ~KPartPrivate()
+  {
+    if ( m_servant )
+      delete m_servant;
+  }
+
+  bool m_bPluginsDirty;
+  bool m_bDocDirty;
+  QValueList<QDomDocument> m_plugins;
+  QList<KXMLGUIServant> m_pluginServants;
+  QDomDocument m_doc;
+  KXMLGUIServant *m_servant;
+};
+
 KPart::KPart( const char* name )
     : QObject( 0L, name ), m_collection( this )
 {
+  d = new KPartPrivate;
   m_widget = 0;
-  m_bPluginActionsMerged = false;
 }
 
 KPart::~KPart()
@@ -33,6 +57,8 @@ KPart::~KPart()
     qDebug(QString("***** deleting widget '%1'").arg(m_widget->name()));
     delete (QWidget *)m_widget;
   }
+
+  delete d;
 }
 
 void KPart::embed( QWidget * parentWidget )
@@ -40,7 +66,12 @@ void KPart::embed( QWidget * parentWidget )
   m_widget->reparent( parentWidget, 0, QPoint( 0, 0 ), true );
 }
 
-QStringList KPart::pluginActionDocuments()
+void KPart::updatePlugins()
+{
+  d->m_bPluginsDirty = true;
+}
+
+QStringList KPart::plugins()
 {
   if ( !instance() )
     return QStringList();
@@ -49,52 +80,70 @@ QStringList KPart::pluginActionDocuments()
   return instance()->dirs()->findAllResources( "appdata", "*", true, false );
 }
 
-QDomDocument KPart::mergedActionDOM()
+QValueList<QDomDocument> KPart::pluginDocuments()
 {
-  if ( m_bPluginActionsMerged )
-    return m_mergedDOM;
-
- QStringList pluginDocuments = pluginActionDocuments();
- if ( pluginDocuments.count() == 0 && instance() )
+  if ( d->m_bPluginsDirty )
   {
-    qDebug( "no plugins found for %s", instance()->instanceName().data() );
-    if( m_config.isNull() )
-      qDebug(QString("ERROR : empty configuration for part %1").arg(name()));
-    m_mergedDOM.setContent( m_config );
-    m_bPluginActionsMerged = true;
-    return m_mergedDOM;
-  }
+    d->m_plugins.clear();
 
-  QStringList::ConstIterator pluginIt = pluginDocuments.begin();
-  QStringList::ConstIterator pluginEnd = pluginDocuments.end();
-
-  QDomDocument pluginDoc;
-
-  for (; pluginIt !=  pluginEnd; ++pluginIt )
-  {
-    QString xml = KXMLGUIFactory::readConfigFile( *pluginIt );
-
-    if ( pluginDoc.documentElement().isNull() )
-      pluginDoc.setContent( xml );
-    else
+    QStringList pluginDocs = plugins();
+    QStringList::ConstIterator pIt = pluginDocs.begin();
+    QStringList::ConstIterator pEnd = pluginDocs.end();
+    for (; pIt != pEnd; ++pIt )
     {
-      QDomDocument tempDoc;
-      tempDoc.setContent( xml );
-      QDomElement docElement = tempDoc.documentElement();
-      if ( !docElement.isNull() )
-        KXMLGUIFactory::mergeXML( pluginDoc.documentElement(), docElement );
+      QString xml = KXMLGUIFactory::readConfigFile( *pIt );
+      if ( !xml.isEmpty() )
+      {
+        QDomDocument doc;
+        doc.setContent( xml );
+        if ( !doc.documentElement().isNull() )
+          d->m_plugins.append( doc );
+      }
     }
+
   }
 
-  if( m_config.isNull() )
-    qDebug(QString("ERROR : empty configuration for part %1").arg(name()));
-  m_mergedDOM.setContent( m_config );
+  return d->m_plugins;
+}
 
-  KXMLGUIFactory::mergeXML( m_mergedDOM.documentElement(), pluginDoc.documentElement() );
+const QList<KXMLGUIServant> *KPart::pluginServants()
+{
+  if ( d->m_bPluginsDirty )
+  {
+    d->m_pluginServants.clear();
 
-  m_bPluginActionsMerged = true;
+    QValueList<QDomDocument> pluginDocs = pluginDocuments();
+    QValueList<QDomDocument>::ConstIterator pIt = pluginDocs.begin();
+    QValueList<QDomDocument>::ConstIterator pEnd = pluginDocs.end();
+    for (; pIt != pEnd; ++pIt )
+    {
+      KPartGUIServant *pluginServant = new KPartGUIServant( this, *pIt );
+      d->m_pluginServants.append( pluginServant );
+    }
 
-  return m_mergedDOM;
+    d->m_bPluginsDirty = false;
+  }
+
+  return &d->m_pluginServants;
+}
+
+QDomDocument KPart::document() const
+{
+  return d->m_doc;
+}
+
+KXMLGUIServant *KPart::servant()
+{
+  if ( d->m_bDocDirty )
+  {
+    if ( d->m_servant )
+      delete d->m_servant;
+
+    d->m_servant = new KPartGUIServant( this, document() );
+    d->m_bDocDirty = false;
+  }
+
+  return d->m_servant;
 }
 
 void KPart::setWidget( QWidget *widget )
@@ -107,8 +156,14 @@ void KPart::setWidget( QWidget *widget )
 
 void KPart::setXMLFile( const QString & file )
 {
-    m_config = KXMLGUIFactory::readConfigFile( file );
-    //qDebug(QString("KPart::setXMLFile %1 :\n%2").arg(file).arg(m_config));
+  QString xml = KXMLGUIFactory::readConfigFile( file );
+  setXML( xml );
+}
+
+void KPart::setXML( const QString &document )
+{
+  d->m_doc.setContent( document );
+  d->m_bDocDirty = true;
 }
 
 QAction* KPart::action( const char* name )
@@ -149,6 +204,24 @@ KPlugin* KPart::plugin( const char* libname )
     }
 
     return (KPlugin*)obj;
+}
+
+QAction *KPart::action( const QDomElement &element )
+{
+  QString pluginAttr = element.attribute( "plugin" );
+  QString name = element.attribute( "name" );
+
+  if ( !pluginAttr.isEmpty() )
+  {
+    KPlugin *thePlugin = plugin( pluginAttr );
+
+    if ( !thePlugin )
+      return 0;
+
+    return thePlugin->action( name );
+  }
+
+  return action( name.ascii() );
 }
 
 void KPart::slotWidgetDestroyed()
@@ -275,33 +348,21 @@ void KReadWritePart::slotUploadError( int, int, const char * text )
 
 //////////////////////////////////////////////////
 
-KPartGUIServant::KPartGUIServant( KPart *part )
+KPartGUIServant::KPartGUIServant( KPart *part, const QDomDocument &document )
   : QObject( part )
 {
   m_part = part;
+  m_doc = document;
 }
 
 QAction *KPartGUIServant::action( const QDomElement &element )
 {
-  QString pluginAttr = element.attribute( "plugin" );
-  QString name = element.attribute( "name" );
-
-  if ( !pluginAttr.isEmpty() )
-  {
-    KPlugin *plugin = m_part->plugin( pluginAttr );
-
-    if ( !plugin )
-      return 0;
-
-    return plugin->action( name );
-  }
-
-  return m_part->action( name );
+  return m_part->action( element );
 }
 
 QDomDocument KPartGUIServant::document()
 {
-  return m_part->mergedActionDOM();
+  return m_doc;
 }
 
 #include "kpart.moc"

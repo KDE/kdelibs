@@ -1,6 +1,8 @@
 
 #include "notepad.h"
 #include <kpartmanager.h>
+#include <kpartsmainwindow.h>
+#include <kxmlgui.h>
 
 #include <qsplitter.h>
 #include <qfile.h>
@@ -27,7 +29,7 @@ NotepadPart::NotepadPart( QWidget * parentWidget )
   m_edit->setFocus();
   setWidget( m_edit );
   setXMLFile( "notepadpart.rc" );
-  (void)new KAction( i18n( "Search and replace" ), 0, actionCollection(), "searchreplace" );
+  (void)new KAction( i18n( "Search and replace" ), 0, this, SLOT( slotSearchReplace() ), actionCollection(), "searchreplace" );
   // TODO connect m_edit->changed to setModified()
 }
 
@@ -74,6 +76,21 @@ bool NotepadPart::save()
   } else
     return false;
   return saveToURL();
+}
+
+void NotepadPart::slotSearchReplace()
+{
+  QObject *hack = manager()->parent();
+  if ( !hack->inherits( "KPartsMainWindow" ) )
+    return;
+
+  KPartsMainWindow *mainWin = (KPartsMainWindow *)hack;
+
+  KXMLGUIFactory *factory = mainWin->guiFactory();
+
+  QListIterator<KXMLGUIServant> it( *pluginServants() );
+  for (; it.current(); ++it )
+    factory->removeServant( it.current() );
 }
 
 #include "notepad.moc"
