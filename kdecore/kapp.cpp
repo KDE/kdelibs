@@ -675,7 +675,7 @@ void KApplication::parseCommandLine( )
 
     if (args->isSet("caption"))
     {
-       aCaption = args->getOption("caption");
+       aCaption = QString::fromLocal8Bit(args->getOption("caption"));
     }
 
     if (args->isSet("miniicon"))
