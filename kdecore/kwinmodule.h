@@ -294,7 +294,7 @@ signals:
      * @param id the id of the window
      * @param properties the properties that were modified
      */
-    void windowChanged(WId id, unsigned int properties) KDE_DEPRECATED;
+    void windowChanged(WId id, unsigned int properties);
 
     /**
      * The window changed somehow.
