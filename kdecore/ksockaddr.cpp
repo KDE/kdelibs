@@ -79,29 +79,25 @@
  * Class KSocketAddress
  */
 
-KSocketAddress::KSocketAddress()
+KSocketAddress::KSocketAddress(const sockaddr* sa, ksocklen_t size)
+{
+    if ( !sa )
+        init();
+    else {
+        data = (sockaddr*)malloc(size);
+        if (data == NULL)
+            return;
+        memcpy(data, sa, size);
+        datasize = size;
+        owndata = true;
+    }
+}
+
+void KSocketAddress::init()
 {
   data = NULL;
   datasize = 0;
   owndata = false;
-}
-
-KSocketAddress::KSocketAddress(const sockaddr* sa, ksocklen_t size)
-{
-  if (sa != NULL)
-    {
-      data = (sockaddr*)malloc(size);
-      if (data == NULL)
-	return;
-      memcpy(data, sa, size);
-      datasize = size;
-      owndata = true;
-    }
-  else
-    {
-      datasize = 0;
-      owndata = false;
-    }
 }
 
 KSocketAddress::~KSocketAddress()
@@ -111,8 +107,8 @@ KSocketAddress::~KSocketAddress()
 }
 
 QString KSocketAddress::pretty() const
-{ 
-  return i18n("<unknown socket>"); 
+{
+  return i18n("<unknown socket>");
 }
 
 int KSocketAddress::family() const
@@ -144,7 +140,7 @@ KSocketAddress* KSocketAddress::newAddress(const struct sockaddr* sa, ksocklen_t
       if (size >= sizeof(sockaddr_in))
 	return new KInetSocketAddress((const sockaddr_in*)sa, size);
       return NULL;
-	
+
 #ifdef AF_INET6
     case AF_INET6:
       if (size >= sizeof(sockaddr_in6))
@@ -228,7 +224,7 @@ public:
 
   Private() :
     sockfamily(AF_UNSPEC)
-  { 
+  {
     sin.sin_family = AF_INET;
     sin.sin_port = 0;
 #ifdef HAVE_SOCKADDR_SA_LEN
@@ -246,12 +242,12 @@ public:
 # endif
 #endif
   }
-    
+
 };
 
 KInetSocketAddress::KInetSocketAddress() :
   d(new Private)
-{ 
+{
 }
 
 KInetSocketAddress::KInetSocketAddress(const KInetSocketAddress &other) :
@@ -262,14 +258,14 @@ KInetSocketAddress::KInetSocketAddress(const KInetSocketAddress &other) :
 
 KInetSocketAddress::KInetSocketAddress(const sockaddr_in* sin, ksocklen_t len) :
   d(new Private)
-{ 
-  setAddress(sin, len); 
+{
+  setAddress(sin, len);
 }
 
 KInetSocketAddress::KInetSocketAddress(const sockaddr_in6* sin6, ksocklen_t len) :
   d(new Private)
 {
-  setAddress(sin6, len); 
+  setAddress(sin6, len);
 }
 
 KInetSocketAddress::KInetSocketAddress(const in_addr& addr, unsigned short port) :
@@ -360,8 +356,8 @@ bool KInetSocketAddress::setAddress(const in6_addr& addr, unsigned short port)
 }
 
 bool KInetSocketAddress::setAddress(const QString& addr, unsigned short port, int family)
-{ 
-  return setHost(addr, family) && setPort(port); 
+{
+  return setHost(addr, family) && setPort(port);
 }
 
 bool KInetSocketAddress::setHost(const in_addr& addr)
@@ -446,7 +442,7 @@ bool KInetSocketAddress::setPort(unsigned short port)
 
 bool KInetSocketAddress::setFamily(int _family)
 {
-  if (_family != AF_INET 
+  if (_family != AF_INET
 #ifdef AF_INET6
       && _family != AF_INET6
 #endif
@@ -540,7 +536,7 @@ in6_addr KInetSocketAddress::hostV6() const
 
 QString KInetSocketAddress::pretty() const
 {
-  if (d->sockfamily != AF_INET 
+  if (d->sockfamily != AF_INET
 #ifdef AF_INET6
       && d->sockfamily != AF_INET6
 #endif
@@ -646,6 +642,7 @@ void KInetSocketAddress::fromV4()
 
   // data == KSocketAddress::data
   data = (sockaddr*)&d->sin;
+  datasize = sizeof( sockaddr_in );
 }
 
 void KInetSocketAddress::fromV6()
@@ -664,6 +661,7 @@ void KInetSocketAddress::fromV6()
     }
 
   data = (sockaddr*)&d->sin6;
+  datasize = sizeof( sockaddr_in6 );
 #endif
 }
 
@@ -706,7 +704,7 @@ KUnixSocketAddress::KUnixSocketAddress(const sockaddr_un* _sun, ksocklen_t size)
 KUnixSocketAddress::KUnixSocketAddress(QCString pathname) :
   d(new Private)
 {
-  setAddress(pathname); 
+  setAddress(pathname);
 }
 
 KUnixSocketAddress::~KUnixSocketAddress()

@@ -51,7 +51,7 @@ protected:
   /**
    * Creates an empty class
    */
-  KSocketAddress();
+  KSocketAddress() { init(); }
 
   /**
    * Creates with given data
@@ -145,6 +145,7 @@ protected:
   bool		owndata;
 
 private:
+  void init();
   /* No copy constructor */
   KSocketAddress(KSocketAddress&);
   KSocketAddress& operator=(KSocketAddress&);
