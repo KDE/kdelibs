@@ -148,7 +148,7 @@ public:
    KStaticDeleterList() { };
 };
 
-void 
+void
 KGlobal::registerStaticDeleter(KStaticDeleterBase *obj)
 {
    if (!_staticDeleters)
@@ -157,7 +157,7 @@ KGlobal::registerStaticDeleter(KStaticDeleterBase *obj)
       _staticDeleters->append(obj);
 }
 
-void 
+void
 KGlobal::unregisterStaticDeleter(KStaticDeleterBase *obj)
 {
    if (_staticDeleters)

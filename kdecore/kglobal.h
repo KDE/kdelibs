@@ -125,6 +125,12 @@ public:
  * KDE environment.
  */
 
+
+class KStaticDeleterBase {
+public:
+    virtual void destructObject() = 0;
+};
+
 /**
  * little helper class to clean up static objects that are
  * held as pointer.
@@ -136,23 +142,26 @@ public:
  *   if (!_self) { _self = sd.setObject(new MyClass()); }
  * }
  */
-class KStaticDeleterBase {
-public:
-    virtual void destructObject() = 0;
-};
-
 template<class type> class KStaticDeleter : public KStaticDeleterBase {
 public:
     KStaticDeleter() { deleteit = 0; }
-    type *setObject( type *obj) { 
-        deleteit = obj; 
-        KGlobal::registerStaticDeleter(this);
+    /**
+     * sets the object to delete and registers the object to be
+     * deleted to KGlobal. if the given object is 0, the former
+     * registration is unregistred
+     **/
+    type *setObject( type *obj) {
+        deleteit = obj;
+	if (obj)
+            KGlobal::registerStaticDeleter(this);
+	else
+	    KGlobal::unregisterStaticDeleter(this);
         return obj;
     }
-    virtual void destructObject() { 
-    	delete deleteit; deleteit = 0; 
+    virtual void destructObject() {
+    	delete deleteit; deleteit = 0;
     }
-    virtual ~KStaticDeleter() { 
+    virtual ~KStaticDeleter() {
     	KGlobal::unregisterStaticDeleter(this);
     	delete deleteit; deleteit = 0;
     }

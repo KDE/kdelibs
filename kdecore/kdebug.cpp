@@ -68,10 +68,12 @@ public:
 static QList<KDebugEntry> *KDebugCache;
 #define MAX_CACHE 20
 
+static KStaticDeleter<QList<KDebugEntry>> kdd;
+
 static QString getDescrFromNum(unsigned short _num)
 {
   if (!KDebugCache)
-      KDebugCache = new QList<KDebugEntry>;
+      KDebugCache = kdd.setObject(new QList<KDebugEntry>);
 
   for ( KDebugEntry *ent = KDebugCache->first();
 		  ent != 0; ent = KDebugCache->next()) {
@@ -135,19 +137,21 @@ enum DebugLevels {
     KDEBUG_FATAL=   3
 };
 
+static KConfig *debug_Config = 0;
+static KStaticDeleter<KConfig> pcd;
+
 static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const char *data)
 {
-  static KConfig * pConfig = 0L;
-  if ( !pConfig && KGlobal::_instance )
+  if ( !debug_Config && KGlobal::_instance )
   {
-      pConfig = new KConfig( "kdebugrc", false );
-      pConfig->setGroup("0");
+      debug_Config = pcd.setObject(new KConfig( "kdebugrc", false ));
+      debug_Config->setGroup("0");
   }
 
   static QString aAreaName;
   static int oldarea = 0;
-  if (pConfig && oldarea != nArea) {
-    pConfig->setGroup( QString::number(static_cast<int>(nArea)) );
+  if (debug_Config && oldarea != nArea) {
+    debug_Config->setGroup( QString::number(static_cast<int>(nArea)) );
     oldarea = nArea;
     if ( nArea > 0)
       aAreaName = getDescrFromNum(nArea);
@@ -190,7 +194,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
 	break;
       }
 
-    nOutput = pConfig ? pConfig->readNumEntry(key, 2) : 2;
+    nOutput = debug_Config ? debug_Config->readNumEntry(key, 2) : 2;
   }
 
 
@@ -217,7 +221,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
                         aKey = "ErrorFilename";
                         break;
                 }
-                QString aOutputFileName = pConfig->readEntry(aKey, "kdebug.dbg");
+                QString aOutputFileName = debug_Config->readEntry(aKey, "kdebug.dbg");
 
                 char buf[4096] = "";
 		int nSize;
@@ -262,13 +266,13 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
         }
 
   // check if we should abort
-  if( ( nLevel == KDEBUG_FATAL ) && pConfig &&
-          ( pConfig->readNumEntry( "AbortFatal", 1 ) ) )
+  if( ( nLevel == KDEBUG_FATAL ) && debug_Config &&
+          ( debug_Config->readNumEntry( "AbortFatal", 1 ) ) )
         abort();
 
 #ifdef NDEBUG
-  delete pConfig;
-  pConfig = 0;
+  delete debug_Config;
+  debug_Config = pcd.setObject(0);
 #endif
 }
 
