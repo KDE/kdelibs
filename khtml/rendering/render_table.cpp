@@ -746,13 +746,13 @@ void RenderTable::calcSingleColMinMax(int c, ColInfo* col)
 		if (colType[o] == col->type && colValue[o] > 0)
 		    cval = kMax(0, (cval - colValue[o]));
 		else
-		    tmax += colMaxWidth[o];
+		    tmax += kMax(1, colMaxWidth[o]);
 	    }
 
 	    for (int o=c; o < c+span; ++o) {
 		if (colType[o] != col->type || colValue[o] == 0) {
 		    int n=tdis;
-		    tdis += (cval * colMaxWidth[o]);
+		    tdis += (cval * kMax(1, colMaxWidth[o]));
 		    if (colType[o] == col->type) {
 			colValue[o] = (tdis/tmax - n/tmax);
 		    }
