@@ -67,14 +67,26 @@ public:
   /** Undo last operation. Default: Ctrl-z */
   static uint undo();
 
-  /** Redo. Default: Ctrl-y */
+  /** Redo. Default: Shift-Ctrl-z */
   static uint redo();
 
   /** Find, search. Default: Ctrl-f */
   static uint find();
 
+  /** Find/search next. Default: F3 */
+  static uint findNext();
+
+  /** Find/search previous. Default: Shift-F3 */
+  static uint findPrev();
+
   /** Find and replace matches. Default: Ctrl-r */
   static uint replace();
+
+  /** Zoom in. Default: Ctrl-Plus */
+  static uint zoomIn();
+
+  /** Zoom out. Default: Ctrl-Minus */
+  static uint zoomOut();
 
   /** Toggle insert/overwrite (with visual feedback, e.g. in the statusbar). Default: Insert */
   static uint insert();

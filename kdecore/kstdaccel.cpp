@@ -90,7 +90,7 @@ uint KStdAccel::undo()
 
 uint KStdAccel::redo()
 {
-  return readKey(KAccel::Redo, Qt::CTRL+Qt::Key_Y);
+  return readKey(KAccel::Redo, Qt::SHIFT+Qt::CTRL+Qt::Key_Z);
 }
 
 uint KStdAccel::find()
@@ -98,10 +98,33 @@ uint KStdAccel::find()
   return readKey(KAccel::Find, Qt::CTRL+Qt::Key_F);
 }
 
+uint KStdAccel::findNext()
+{
+  return readKey(KAccel::FindNext, Qt::Key_F3);
+}
+
+uint KStdAccel::findPrev()
+{
+  return readKey(KAccel::FindPrev, Qt::SHIFT+Qt::Key_F3);
+}
+
 uint KStdAccel::replace()
 {
   return readKey(KAccel::Replace, Qt::CTRL+Qt::Key_R);
 }
+
+
+uint KStdAccel::zoomIn()
+{
+  return readKey(KAccel::ZoomIn, Qt::CTRL+Qt::Key_Plus);
+}
+
+
+uint KStdAccel::zoomOut()
+{
+  return readKey(KAccel::ZoomOut, Qt::CTRL+Qt::Key_Minus);
+}
+
 
 uint KStdAccel::insert()
 {
