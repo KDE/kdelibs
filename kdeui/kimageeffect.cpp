@@ -30,8 +30,10 @@ QImage KImageEffect::gradient(const QSize &size, const QColor &ca,
 
     QImage image(size, 32);
 
-    if (size.width() == 0 || size.height() == 0)
+    if (size.width() == 0 || size.height() == 0) {
+      kdWarning() << "Invalid image" << endl;
       return image;
+    }
 
     register int x, y;
 
@@ -314,8 +316,10 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
 
     QImage image(size, 32);
 
-    if (size.width() == 0 || size.height() == 0)
+    if (size.width() == 0 || size.height() == 0) {
+      kdWarning() << "Invalid image" << endl;
       return image;
+    }
 
     register int x, y;
     unsigned int *scanline;
@@ -531,8 +535,10 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
 
 QImage& KImageEffect::intensity(QImage &image, float percent)
 {
-    if (image.width() == 0 || image.height() == 0)
+    if (image.width() == 0 || image.height() == 0) {
+      kdWarning() << "Invalid image" << endl;
       return image;
+    }
 
     int i, tmp, r, g, b;
     int segColors = image.depth() > 8 ? 256 : image.numColors();
@@ -593,8 +599,10 @@ QImage& KImageEffect::intensity(QImage &image, float percent)
 QImage& KImageEffect::channelIntensity(QImage &image, float percent,
                                        RGBComponent channel)
 {
-    if (image.width() == 0 || image.height() == 0)
+    if (image.width() == 0 || image.height() == 0) {
+      kdWarning() << "Invalid image" << endl;
       return image;
+    }
 
     int i, tmp, c;
     int segColors = image.depth() > 8 ? 256 : image.numColors();
@@ -682,8 +690,10 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 	ModulationType type, int factor, RGBComponent channel)
 {
     if (image.width() == 0 || image.height() == 0 ||
-        modImage.width() == 0 || modImage.height() == 0)
+        modImage.width() == 0 || modImage.height() == 0) {
+      kdWarning() << "Invalid image" << endl;
       return image;
+    }
 
     int r, g, b, h, s, v, a;
     QColor clr;
@@ -806,8 +816,10 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                             const QColor &bgnd, GradientType eff,
                             bool anti_dir)
 {
-    if (image.width() == 0 || image.height() == 0)
+    if (image.width() == 0 || image.height() == 0) {
+      kdWarning() << "Invalid image" << endl;
       return image;
+    }
 
     int r_bgnd = bgnd.red(), g_bgnd = bgnd.green(), b_bgnd = bgnd.blue();
     int r, g, b;
@@ -990,7 +1002,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
         }
     }
 
-    else kdDebug() << "not implemented" << endl;
+    else kdWarning() << "not implemented" << endl;
 
     return image;
 }
@@ -1018,10 +1030,12 @@ QImage& KImageEffect::blend(QImage &image1, QImage &image2,
 QImage& KImageEffect::blend(QImage &image1, QImage &image2,
 			    QImage &blendImage, RGBComponent channel)
 {
-  if (image1.width() == 0 || image1.height() == 0 ||
-      image2.width() == 0 || image2.height() == 0 ||
-      blendImage.width() == 0 || blendImage.height() == 0)
-    return image1;
+    if (image1.width() == 0 || image1.height() == 0 ||
+        image2.width() == 0 || image2.height() == 0 ||
+        blendImage.width() == 0 || blendImage.height() == 0) {
+      kdWarning() << "Invalid image" << endl;
+      return image1;
+    }
 
     int r, g, b;
     int ind1, ind2, ind3;
@@ -1116,8 +1130,10 @@ unsigned int KImageEffect::uHash(unsigned int c)
 
 QImage& KImageEffect::hash(QImage &image, Lighting lite, unsigned int spacing)
 {
-    if (image.width() == 0 || image.height() == 0)
+    if (image.width() == 0 || image.height() == 0) {
+      kdWarning() << "Invalid image" << endl;
       return image;
+    }
 
     register int x, y;
     unsigned int *data =  (unsigned int *)image.bits();
