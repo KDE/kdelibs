@@ -1745,6 +1745,8 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
                      ++i )
                     updateSupportedProperties( atoms[ i ] );
             }
+	    if ( data_ret )
+		XFree(data_ret);
         }
     }
 
