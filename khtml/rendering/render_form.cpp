@@ -1201,6 +1201,7 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     : KTextEdit(parent), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
 {
     setCheckSpellingEnabled( true );
+    setTabChangesFocus( true );
 
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
         setWordWrap(QTextEdit::WidgetWidth);
