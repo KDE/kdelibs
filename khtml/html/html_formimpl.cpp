@@ -24,7 +24,7 @@
  */
 
 //#define FORMS_DEBUG
-#under FORMS_DEBUG
+//#under FORMS_DEBUG
 
 #include "html_formimpl.h"
 
