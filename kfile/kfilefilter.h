@@ -70,11 +70,8 @@ private slots:
     void slotFilterChanged();
 
 private:
-    KFileFilterPrivate * d() const;
-
-    static QPtrDict<KFileFilterPrivate> *s_Hack;
-
-    // ### private pointer!!!
+    class KFileFilterPrivate;
+    KFileFilterPrivate *d;
 };
 
 #endif
