@@ -589,7 +589,7 @@ QString KFileItem::getToolTipText(int maxcount)
            
              "</nobr>"
             "</b>"
-           "</center>
+           "</center>"
           "</th>"
          "</tr>";
 
