@@ -1881,7 +1881,7 @@ RenderBlock::clearFloats()
     RenderBlock * flow = static_cast<RenderBlock *>(prev);
     if(!flow->m_floatingObjects) return;
     if(flow->floatBottom() > offset)
-        addOverHangingFloats( flow, xoffset, offset );
+        addOverHangingFloats( flow, xoffset, offset, false );
 }
 
 void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset, bool child )
@@ -1914,36 +1914,35 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
             // don't insert it twice!
             QPtrListIterator<FloatingObject> it(*m_floatingObjects);
             while ( (f = it.current()) ) {
-                if (f->node == r->node) break;
+                if (f->node == r->node) return;
                 ++it;
             }
-            if ( !f ) {
-                FloatingObject *floatingObj = new FloatingObject(r->type);
-                floatingObj->startY = r->startY - offset;
-                floatingObj->endY = r->endY - offset;
-                floatingObj->left = r->left - xoff;
-                // Applying the child's margin makes no sense in the case where the child was passed in.
-                // since his own margin was added already through the subtraction of the |xoff| variable
-                // above.  |xoff| will equal -flow->marginLeft() in this case, so it's already been taken
-                // into account.  Only apply this code if |child| is false, since otherwise the left margin
-                // will get applied twice. -dwh
-                if (!child && flow != parent())
-                    floatingObj->left += flow->marginLeft();
-                if ( !child ) {
-                    floatingObj->left -= marginLeft();
-                    floatingObj->noPaint = true;
-                }
-                else
-                    // Only paint if |flow| isn't.
-                    floatingObj->noPaint = !r->noPaint;
 
-                floatingObj->width = r->width;
-                floatingObj->node = r->node;
-                m_floatingObjects->append(floatingObj);
-#ifdef DEBUG_LAYOUT
-                kdDebug( 6040 ) << "addOverHangingFloats x/y= (" << floatingObj->left << "/" << floatingObj->startY << "-" << floatingObj->width << "/" << floatingObj->endY - floatingObj->startY << ")" << endl;
-#endif
+            FloatingObject *floatingObj = new FloatingObject(r->type);
+            floatingObj->startY = r->startY - offset;
+            floatingObj->endY = r->endY - offset;
+            floatingObj->left = r->left - xoff;
+            // Applying the child's margin makes no sense in the case where the child was passed in.
+            // since his own margin was added already through the subtraction of the |xoff| variable
+            // above.  |xoff| will equal -flow->marginLeft() in this case, so it's already been taken
+            // into account.  Only apply this code if |child| is false, since otherwise the left margin
+            // will get applied twice. -dwh
+            if (!child && flow != parent())
+                floatingObj->left += flow->marginLeft();
+            if ( !child ) {
+                floatingObj->left -= marginLeft();
+                floatingObj->noPaint = true;
             }
+            else
+                // Only paint if |flow| isn't.
+                floatingObj->noPaint = !r->noPaint;
+
+            floatingObj->width = r->width;
+            floatingObj->node = r->node;
+            m_floatingObjects->append(floatingObj);
+#ifdef DEBUG_LAYOUT
+            kdDebug( 6040 ) << "addOverHangingFloats x/y= (" << floatingObj->left << "/" << floatingObj->startY << "-" << floatingObj->width << "/" << floatingObj->endY - floatingObj->startY << ")" << endl;
+#endif
         }
     }
 }

@@ -118,7 +118,7 @@ public:
 
     void insertFloatingObject(RenderObject *o);
     void removeFloatingObject(RenderObject *o);
-
+ 
     // called from lineWidth, to position the floats added in the last line.
     void positionNewFloats();
     void clearFloats();
@@ -129,7 +129,7 @@ public:
     virtual bool containsFloat(RenderObject* o) const;
 
     virtual bool hasOverhangingFloats() const { return floatBottom() > m_height; }
-    void addOverHangingFloats( RenderBlock *block, int xoffset, int yoffset, bool child = false );
+    void addOverHangingFloats( RenderBlock *block, int xoffset, int yoffset, bool child );
 
     int nearestFloatBottom(int height) const;
     int floatBottom() const;
