@@ -28,6 +28,8 @@
 #include <ksycoca.h>
 #include <ksycocatype.h>
 #include <ksycocaentry.h>
+#include <kservicegroup.h>
+
 #include "vfolder_menu.h"
 
 class QDataStream;
@@ -94,6 +96,8 @@ protected:
     * @return true if building (i.e. if a KBuildSycoca);
     */
    virtual bool isBuilding() { return true; }
+
+   void createMenuAttribute( KServiceGroup::Ptr entry );
 
    QStringList m_allResourceDirs;
    QString m_trackId;

@@ -100,7 +100,7 @@ void crashHandler(int)
 static QString sycocaPath()
 {
   QString path;
-  
+
   if (bGlobalDatabase)
   {
      path = KGlobal::dirs()->saveLocation("services")+"ksycoca";
@@ -148,7 +148,7 @@ void KBuildSycoca::processGnomeVfs()
    QString app;
 
    char line[1024*64];
- 
+
    FILE *f = fopen(QFile::encodeName(file), "r");
    while (!feof(f))
    {
@@ -222,7 +222,7 @@ KSycocaEntry *KBuildSycoca::createEntry(const QString &file, bool addToFactory)
          g_changed = true;
          kdDebug(7021) << "modified: " << file << endl;
       }
-      else 
+      else
       {
          g_changed = true;
          kdDebug(7021) << "new: " << file << endl;
@@ -363,7 +363,7 @@ bool KBuildSycoca::build()
   }
 
   bool result = !uptodate || !g_ctimeDict->isEmpty();
-  
+
   if (result || bMenuTest)
   {
      g_resource = "apps";
@@ -383,9 +383,12 @@ bool KBuildSycoca::build()
      KServiceGroup *entry = g_bsgf->addNew("/", kdeMenu->directoryFile, 0, false);
      entry->setLayoutInfo(kdeMenu->layoutList);
      createMenu(QString::null, QString::null, kdeMenu);
-     
+
+     KServiceGroup::Ptr g(entry);
+     createMenuAttribute( g );
+
      (void) existingResourceDirs();
-     *g_allResourceDirs += g_vfolder->allDirectories(); 
+     *g_allResourceDirs += g_vfolder->allDirectories();
 
      disconnect(g_vfolder, SIGNAL(newService(const QString &, KService **)),
              this, SLOT(slotCreateEntry(const QString &, KService **)));
@@ -398,9 +401,23 @@ bool KBuildSycoca::build()
      if (bMenuTest)
         return false;
   }
-  
+
   return result;
 }
+
+void KBuildSycoca::createMenuAttribute( KServiceGroup::Ptr entry )
+{
+    KServiceGroup::List list = entry->entries(true, true);
+    KServiceGroup::List::ConstIterator it = list.begin();
+    for (; it != list.end(); ++it) {
+        KSycocaEntry * e = *it;
+        if (e->isType(KST_KServiceGroup)) {
+            KServiceGroup::Ptr g(static_cast<KServiceGroup *>(e));
+            createMenuAttribute( g );
+        }
+    }
+}
+
 
 void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMenu *menu)
 {
@@ -623,7 +640,7 @@ bool KBuildSycoca::checkDirTimestamps( const QString& dirname, const QDateTime& 
    const QFileInfoList *list = dir.entryInfoList( QDir::DefaultFilter, QDir::Unsorted );
    if (!list)
       return true;
-      
+
    for( QFileInfoListIterator it( *list );
         it.current() != NULL;
         ++it )
@@ -659,7 +676,7 @@ bool KBuildSycoca::checkTimestamps( Q_UINT32 timestamp, const QStringList &dirs 
             return false;
    }
    kdDebug( 7021 ) << "timestamps check ok" << endl;
-   return true;                                             
+   return true;
 }
 
 QStringList KBuildSycoca::existingResourceDirs()
@@ -682,9 +699,9 @@ QStringList KBuildSycoca::existingResourceDirs()
       *dirs += KGlobal::dirs()->resourceDirs( res.latin1());
       resources.remove( res ); // remove this 'res' and all its duplicates
    }
-   
+
    *g_allResourceDirs = *dirs;
-   
+
    for( QStringList::Iterator it = dirs->begin();
         it != dirs->end(); )
    {
@@ -791,7 +808,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
        break; // Go
      }
      fprintf(stderr, "Waiting for already running %s to finish.\n", appName);
-       
+
      dcopClient->setNotifications( true );
      while (dcopClient->isApplicationRegistered(appName))
      {
@@ -814,7 +831,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
      QString ksycoca_language = KSycoca::self()->language();
      Q_UINT32 current_update_sig = KGlobal::dirs()->calcResourceHash("services", "update_ksycoca", true);
      Q_UINT32 ksycoca_update_sig = KSycoca::self()->updateSignature();
-     
+
      if ((current_update_sig != ksycoca_update_sig) ||
          (current_language != ksycoca_language) ||
          (KSycoca::self()->timeStamp() == 0))
@@ -824,7 +841,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
         delete KSycoca::self();
      }
    }
-   
+
    g_changeList = new QStringList;
 
    bool checkstamps = incremental && args->isSet("checkstamps") && checkfiles;

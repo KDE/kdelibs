@@ -150,7 +150,34 @@ public:
   bool noDisplay() const;
 
   /**
-   * Returns a list of untranslated generic names that should be 
+   * Return true if we want to display empty menu entry
+   * @return true to show this service group as menu entry is empty, false to hide it
+   * @since 3.4
+   */
+  bool showEmptyMenu() const;
+
+  void setShowEmptyMenu( bool b);
+
+  /**
+   * @return true to show an inline header into menu
+   * @since 3.4
+   */
+  bool showInlineHeader() const;
+  void setShowInlineHeader(bool _b);
+
+
+  bool inlineAlias() const;
+  void setInlineAlias(bool _b);
+
+  bool allowInline() const;
+  void setAllowInline(bool _b);
+
+  int inlineValue() const;
+  void setInlineValue(int _val);
+
+
+  /**
+   * Returns a list of untranslated generic names that should be
    * be supressed when showing this group.
    * E.g. The group "Games/Arcade" might want to suppress the generic name
    * "Arcade Game" since it's redundant in this particular context.
@@ -191,7 +218,7 @@ public:
    * @return the list of entries
    * @since 3.2
    */
-  List entries(bool sorted, bool excludeNoDisplay, bool allowSeparators, bool sortByGenericName=false);  
+  List entries(bool sorted, bool excludeNoDisplay, bool allowSeparators, bool sortByGenericName=false);
   virtual List entries(bool sorted, bool excludeNoDisplay);
 
   /**
@@ -250,6 +277,8 @@ public:
    */
   static Ptr childGroup(const QString &parent);
 
+    void parseAttribute( const QString &item ,  bool &showEmptyMenu, bool &showInline, bool &showInlineHeader, bool & showInlineAlias ,int &inlineValue );
+
 protected:
   /**
    * @internal
@@ -286,7 +315,7 @@ public:
   KServiceSeparator();
 
   bool isValid() const { return true; }
-  
+
   // Dummy
   virtual QString name() const { return "separator"; }
   // Dummy
