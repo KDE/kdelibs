@@ -24,6 +24,7 @@
 
 #include "kprocess.h"
 #include "kprocctrl.h"
+#include "kpty.h"
 
 #include <config.h>
 
@@ -68,143 +69,12 @@
 #include <pwd.h>
 #include <grp.h>
 
-#ifdef HAVE_LIBUTIL_H
-        #include <libutil.h>
-        #define USE_LOGIN
-#elif defined(HAVE_UTIL_H)
-        #include <util.h>
-        #define USE_LOGIN
-#endif
-
-#ifdef USE_LOGIN
-        #include <utmp.h>
-#endif
-
-#ifdef HAVE_TERMIOS_H
-/* for HP-UX (some versions) the extern C is needed, and for other
-   platforms it doesn't hurt */
-extern "C" {
-#include <termios.h>
-}
-#endif
-
-#if !defined(__osf__)
-#ifdef HAVE_TERMIO_H
-/* needed at least on AIX */
-#include <termio.h>
-#endif
-#endif
-
-#if defined (_HPUX_SOURCE)
-#define _TERMIOS_INCLUDED
-#include <bsdtty.h>
-#endif
-
-#if defined(HAVE_PTY_H)
-#include <pty.h>
-#endif
-
 #include <qfile.h>
 #include <qsocketnotifier.h>
 #include <qapplication.h>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
-
-#define TTY_GROUP "tty"
-
-///////////////////////
-// private functions //
-///////////////////////
-
-#ifndef KDE_USE_FINAL
-class KProcess_Utmp : public KProcess
-{
-public:
-   int commSetupDoneC()
-   {
-     dup2(cmdFd, 0);
-     dup2(cmdFd, 1);
-     dup2(cmdFd, 3);
-     return 1;
-   }
-   int cmdFd;
-};
-#endif
-
-#define PTY_FILENO 3
-#define BASE_CHOWN "konsole_grantpty"
-
-static int kprocess_chownpty(int fd, bool grant)
-// param fd: the fd of a master pty.
-// param grant: true to grant, false to revoke
-// returns 1 on success 0 on fail
-{
-  pid_t pid = fork();
-  if (pid < 0)
-    return 0;
-
-  if (pid == 0)
-  {
-    /* We pass the master pseudo terminal as file descriptor PTY_FILENO. */
-    if (fd != PTY_FILENO && dup2(fd, PTY_FILENO) < 0) exit(1);
-    QString path = locate("exe", BASE_CHOWN);
-    execle(path.ascii(), BASE_CHOWN, grant?"--grant":"--revoke", (void *)0, 
-      NULL);
-    exit(1); // should not be reached
-  }
-
-  if (pid > 0) {
-    int w;
-
-retry:
-    int rc = waitpid(pid, &w, 0);
-    if ((rc == -1) && (errno == EINTR))
-      goto retry;
-
-    return (rc != -1 && WIFEXITED(w) && WEXITSTATUS(w) == 0);
-  }
-
-  return 0; //dummy.
-}
-
-static void kprocess_updateTTYSettings(int fd, bool bXonXoff)
-{
-    // without the '::' some version of HP-UX thinks, this declares
-    // the struct in this class, in this method, and fails to find 
-    // the correct t[gc]etattr 
-    static struct ::termios ttmode;
-
-#if defined (__FreeBSD__) || defined (__NetBSD__) || defined (__OpenBSD__) || defined (__bsdi__) || defined(__APPLE__)
-    ioctl(fd,TIOCGETA,(char *)&ttmode);
-#else
-# if defined (_HPUX_SOURCE) || defined(__Lynx__)
-    tcgetattr(fd, &ttmode);
-# else
-    ioctl(fd,TCGETS,(char *)&ttmode);
-# endif
-#endif
-
-#undef CTRL
-#define CTRL(c) ((c) - '@')
-    if (!bXonXoff)
-      ttmode.c_iflag &= ~(IXOFF | IXON);
-    else
-      ttmode.c_iflag |= (IXOFF | IXON);
-    ttmode.c_cc[VINTR] = CTRL('C');
-    ttmode.c_cc[VQUIT] = CTRL('\\');
-    ttmode.c_cc[VERASE] = 0177;
-
-#if defined (__FreeBSD__) || defined (__NetBSD__) || defined (__OpenBSD__) || defined (__bsdi__) || defined(__APPLE__)
-    ioctl(fd,TIOCSETA,(char *)&ttmode);
-#else
-# ifdef _HPUX_SOURCE
-    tcsetattr(fd, TCSANOW, &ttmode);
-# else
-    ioctl(fd,TCSETS,(char *)&ttmode);
-# endif
-#endif
-}
 
 
 //////////////////
@@ -214,30 +84,23 @@ static void kprocess_updateTTYSettings(int fd, bool bXonXoff)
 class KProcessPrivate {
 public:
    KProcessPrivate() : 
-     useShell(false), usePty(false), addUtmp(false), ptyXonXoff(false),
-     ptyNeedGrantPty(false),
-     ptyMasterFd(-1), ptySlaveFd(-1)
-   { 
-     memset(&ptySize, 0, sizeof(ptySize));
-     ptySize.ws_row = 25;
-     ptySize.ws_col = 80;
+     usePty(KProcess::NoCommunication),
+     addUtmp(false), useShell(false),
+     pty(0)
+   {
    }
 
-   bool useShell : 1;
-   bool usePty : 1;
+   KProcess::Communication usePty;
    bool addUtmp : 1;
-   bool ptyXonXoff : 1;
-   bool ptyNeedGrantPty : 1;
-   int ptyMasterFd;
-   int ptySlaveFd;
-   struct winsize ptySize;
+   bool useShell : 1;
+
    KUnixProcess *proc;  // could replace "runs" and "pid" in kde4
-   
+   KPty *pty;
+   const char *user;
+
    QMap<QString,QString> env;
    QString wd;
    QCString shell;
-   QCString ptySlaveName;
-   QCString ptyMasterName;
    QCString executable;
 };
 
@@ -338,6 +201,7 @@ KProcess::~KProcess()
   kill(SIGKILL);
   detach();
 
+  delete d->pty;
   delete d;
 
   KProcessController::deref();
@@ -644,12 +508,11 @@ void KProcess::resume()
 
 bool KProcess::closeStdin()
 {
-  if (communication & Stdin) {
+  if (communication & ~d->usePty & Stdin) {
     communication = (Communication) (communication & ~Stdin);
     delete innot;
     innot = 0;
-    if (!d->usePty)
-      close(in[1]);
+    close(in[1]);
     in[1] = -1;
     return true;
   } else
@@ -658,12 +521,11 @@ bool KProcess::closeStdin()
 
 bool KProcess::closeStdout()
 {
-  if (communication & Stdout) {
+  if (communication & ~d->usePty & Stdout) {
     communication = (Communication) (communication & ~Stdout);
     delete outnot;
     outnot = 0;
-    if (!d->usePty)
-      close(out[0]);
+    close(out[0]);
     out[0] = -1;
     return true;
   } else
@@ -672,7 +534,7 @@ bool KProcess::closeStdout()
 
 bool KProcess::closeStderr()
 {
-  if (communication & Stderr) {
+  if (communication & ~d->usePty & Stderr) {
     communication = (Communication) (communication & ~Stderr);
     delete errnot;
     errnot = 0;
@@ -720,46 +582,22 @@ void KProcess::setUseShell(bool useShell, const char *shell)
   d->shell = (shell && *shell) ? shell : "/bin/sh";
 }
 
-void KProcess::setUsePty(bool usePty, bool addUtmp)
+void KProcess::setUsePty(Communication usePty, bool addUtmp)
 {
   d->usePty = usePty;
   d->addUtmp = addUtmp;
-}
-  
-void KProcess::setPtySize(int lines, int columns)
-{
-  d->ptySize.ws_row = (unsigned short)lines;
-  d->ptySize.ws_col = (unsigned short)columns;
-  if(d->ptyMasterFd < 0) return;
-  ioctl(d->ptyMasterFd, TIOCSWINSZ,(char *)&(d->ptySize));
-   
-}
-  
-void KProcess::setPtyXonXoff(bool useXonXoff)
-{
-  d->ptyXonXoff = useXonXoff;
-  if(d->ptyMasterFd < 0) return;
-  kprocess_updateTTYSettings(d->ptyMasterFd, d->ptyXonXoff);
+  if (usePty) {
+    if (!d->pty)
+      d->pty = new KPty;
+  } else {
+    delete d->pty;
+    d->pty = 0;
+  }
 }
 
-const char *KProcess::ptyMasterName()
+KPty *KProcess::pty()
 {
-    return d->ptyMasterName.data();
-}
-
-const char *KProcess::ptySlaveName()
-{
-    return d->ptySlaveName.data();
-}
-
-int KProcess::ptyMasterFd()
-{
-    return d->ptyMasterFd;
-}
-
-int KProcess::ptySlaveFd()
-{
-    return d->ptySlaveFd;
+  return d->pty;
 }
 
 QString KProcess::quote(const QString &arg)
@@ -828,332 +666,118 @@ int KProcess::childError(int fdno)
   return len;
 }
 
-void KProcess::openMasterPty()
-{
-  d->ptyNeedGrantPty = true;
-
-  // Find a master pty that we can open ////////////////////////////////
-
-  // Because not all the pty animals are created equal, they want to
-  // be opened by several different methods.
-
-  // We try, as we know them, one by one.
-#if defined(HAVE_OPENPTY)
-  if (d->ptyMasterFd < 0) 
-  {
-    int master_fd, slave_fd;
-    if (openpty(&master_fd, &slave_fd, NULL, NULL, NULL) == 0)
-    {
-      d->ptyMasterFd = master_fd;
-      d->ptySlaveFd = slave_fd;
-#ifdef HAVE_PTSNAME
-      d->ptyMasterName = ptsname(master_fd);
-#else
-      // Just a guess, maybe ttyname with return nothing.
-      d->ptyMasterName = ttyname(master_fd);
-#endif
-      d->ptySlaveName = ttyname(slave_fd);
-
-      d->ptyNeedGrantPty = false;
-
-      /* Get the group ID of the special `tty' group.  */
-      struct group* p = getgrnam(TTY_GROUP);    /* posix */
-      gid_t gid = p ? p->gr_gid : getgid ();    /* posix */
-
-      if (fchown(slave_fd, (uid_t) -1, gid) < 0)
-      {
-         int e = errno;
-         d->ptyNeedGrantPty = true;
-         kdWarning(175) << "Cannot chown " << d->ptySlaveName << endl;
-         kdWarning(175) << "Reason " << strerror(e) << endl;
-      }
-      else if (fchmod(slave_fd, S_IRUSR|S_IWUSR|S_IWGRP) < 0)
-      {
-         int e = errno;
-         d->ptyNeedGrantPty = true;
-         kdWarning(175) << "Cannot chmod " << d->ptySlaveName << endl;
-         kdWarning(175) << "Reason " << strerror(e) << endl;
-      }
-    }
-  }
-#endif
-
-//#if defined(__sgi__) || defined(__osf__) || defined(__svr4__)
-#if defined(HAVE_GRANTPT) && defined(HAVE_PTSNAME)
-  if (d->ptyMasterFd < 0)
-  {
-#ifdef _AIX
-    d->ptyMasterFd = open("/dev/ptc",O_RDWR);
-#else
-    d->ptyMasterFd = open("/dev/ptmx",O_RDWR);
-#endif
-    if (d->ptyMasterFd >= 0)
-    {
-      char *ptsn = ptsname(d->ptyMasterFd);
-      if (ptsn) {
-          d->ptySlaveName = ptsname(d->ptyMasterFd);
-          grantpt(d->ptyMasterFd);
-          d->ptyNeedGrantPty = false;
-      } else {
-      	  perror("ptsname");
-	  close(d->ptyMasterFd);
-	  d->ptyMasterFd = -1;
-      }
-    }
-  }
-#endif
-
-#if defined(_SCO_DS) || defined(__USLC__) // SCO OSr5 and UnixWare, might be obsolete
-  if (d->ptyMasterFd < 0)
-  { 
-    for (int idx = 0; idx < 256; idx++)
-    { 
-      d->ptyMasterName.sprintf("/dev/ptyp%d", idx);
-      d->ptySlaveName.sprintf("/dev/ttyp%d", idx);
-      if (access(d->ptySlaveName, F_OK) < 0) 
-      { 
-        idx = 256; 
-        break; 
-      }
-     
-      d->ptyMasterFd = open( d->ptyMasterName, O_RDWR);
-      
-      if (d->ptyMasterFd >= 0)
-      {
-        if (access (d->ptySlaveName, R_OK|W_OK) == 0) 
-          break; // Success!!
-        close(d->ptyMasterFd); 
-        d->ptyMasterFd = -1;
-      }
-    }
-  }
-#endif
-
-  if (d->ptyMasterFd < 0) // Linux device names, FIXME: Trouble on other systems?
-  { 
-    for (const char* s3 = "pqrstuvwxyzabcdefghijklmno"; *s3 != 0; s3++)
-    { 
-      for (const char* s4 = "0123456789abcdefghijklmnopqrstuvwxyz"; *s4 != 0; s4++)
-      { 
-        d->ptyMasterName.sprintf("/dev/pty%c%c", *s3, *s4);
-        d->ptySlaveName.sprintf("/dev/tty%c%c", *s3, *s4);
-           
-        d->ptyMasterFd = open(d->ptyMasterName, O_RDWR);
-        if (d->ptyMasterFd >= 0)
-        {
-          if (geteuid() == 0 || access(d->ptySlaveName,R_OK|W_OK) == 0)
-            break; // Success !!
-          close(d->ptyMasterFd);
-          d->ptyMasterFd = -1;
-        }
-      }
-      if (d->ptyMasterFd >= 0) 
-        break; // Success, break out of loop
-    }
-  }
-
-  if (d->ptyMasterFd < 0)
-  {
-    kdWarning(175) << "Can't open a pseudo teletype" << endl;
-    return;
-  }
-
-  if (d->ptyNeedGrantPty && !kprocess_chownpty(d->ptyMasterFd, true))
-  {
-    kdWarning(175) << "chownpty failed for device " << d->ptyMasterName << 
-                   "::" << d->ptySlaveName << endl;
-    kdWarning(175) << "This means the communication can be eavesdropped." << endl;
-  }
-
-  fcntl(d->ptyMasterFd,F_SETFL,O_NDELAY);
-
-}
-
-void KProcess::openSlavePty()
-{
-  if (d->ptyMasterFd < 0) // no master pty could be opened
-  {
-    fprintf(stdout,"opening master pty failed.\n");
-    exit(1);
-  }
-
-#ifdef HAVE_UNLOCKPT
-  unlockpt(d->ptyMasterFd);
-#endif
-
-  // open and set all standard files to slave tty
-  if (d->ptySlaveFd < 0) // Not yet opened?
-    d->ptySlaveFd = open(d->ptySlaveName, O_RDWR);
-
-  if (d->ptySlaveFd < 0) // the slave pty could not be opened
-  {
-    fprintf(stdout,"opening slave pty failed.\n");
-    exit(1);
-  }
-
-#if (defined(__svr4__) || defined(__sgi__))
-  // Solaris
-  ioctl(d->ptySlaveFd, I_PUSH, "ptem");
-  ioctl(d->ptySlaveFd, I_PUSH, "ldterm");
-#endif
-
-  // Stamp utmp/wtmp if we have and want them
-#ifdef HAVE_UTEMPTER
-  if (d->addUtmp)
-  {
-     KProcess_Utmp utmp;
-     utmp.cmdFd = d->ptyMasterFd;
-     utmp << "/usr/sbin/utempter" << "-a" << d->ptySlaveName << "";
-     utmp.start(KProcess::Block);
-  }
-#endif
-#ifdef USE_LOGIN
-  char *str_ptr;
-  struct utmp l_struct;
-  memset(&l_struct, 0, sizeof(struct utmp));
-
-  if (! (str_ptr=getlogin()) ) {
-    if ( ! (str_ptr=getenv("LOGNAME"))) {
-      abort();
-    }
-  }
-  strlcpy(l_struct.ut_name, str_ptr, UT_NAMESIZE);
-
-  if (gethostname(l_struct.ut_host, UT_HOSTSIZE) == -1) {
-     if (errno != ENOMEM)
-        abort();
-     l_struct.ut_host[UT_HOSTSIZE]=0;
-  }
-
-  str_ptr = ttyname(d->ptySlaveFd);
-  if (!str_ptr)
-     str_ptr = "unknown";
-  if (strncmp(str_ptr, "/dev/", 5) == 0)
-     str_ptr += 5;
-  strlcpy(l_struct.ut_line, str_ptr, UT_LINESIZE);
-  time(&l_struct.ut_time);
-
-  login(&l_struct);
-#endif
-}
-
 
 int KProcess::setupCommunication(Communication comm)
 {
   // PTY stuff //
   if (d->usePty)
   {
-    openMasterPty();
-    if (d->ptyMasterFd < 0)
+    // cannot communicate on both stderr and stdout if they are both on the pty
+    if (!(~(comm & d->usePty) & (Stdout | Stderr))) {
+       kdWarning(175) << "Invalid usePty/communication combination" << endl;
+       return 0;
+    }
+    if (!d->pty->open())
        return 0;
 
-    if (comm & Stdin)
-    {
-      in[0] = -1;
-      in[1] = d->ptyMasterFd;
-    }
-    if (comm & Stdout)
-    {
-      out[0] = d->ptyMasterFd;
-      out[1] = -1; // Dummy
-    }
-    communication = (Communication) (comm & ~Stderr);
-    return 1;
+    int rcomm = comm & d->usePty;
+    int mfd = d->pty->masterFd();
+    if (rcomm & Stdin)
+      in[1] = mfd;
+    if (rcomm & Stdout)
+      out[0] = mfd;
+    if (rcomm & Stderr)
+      err[0] = mfd;
+
+    // we do this here, as after tty setup we won't get valid data
+    d->user = getlogin();
+    if (!d->user)
+      d->user = getenv("LOGNAME");
   }
 
   communication = comm;
 
-  if ((comm & Stdin) && (socketpair(AF_UNIX, SOCK_STREAM, 0, in) < 0))
-     comm = (Communication) (comm & ~Stdin);
-
-  if ((comm & Stdout) && (socketpair(AF_UNIX, SOCK_STREAM, 0, out) < 0))
-     comm = (Communication) (comm & ~Stdout);
-
-  if ((comm & Stderr) && (socketpair(AF_UNIX, SOCK_STREAM, 0, err) < 0))
-     comm = (Communication) (comm & ~Stderr);
-  
-  if (communication != comm)
-  {
-     if (comm & Stdin)
-     {
-        close(in[0]);
-        close(in[1]);        
-     }
-     if (comm & Stdout)
-     {
-        close(out[0]);
-        close(out[1]);        
-     }
-     if (comm & Stderr)
-     {
-        close(err[0]);
-        close(err[1]);        
-     }
-     communication = NoCommunication;
-     return 0; // Error
+  comm = (Communication) (comm & ~d->usePty);
+  if (comm & Stdin) {
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, in))
+      goto fail0;
+    fcntl(in[0], F_SETFD, FD_CLOEXEC);
+    fcntl(in[1], F_SETFD, FD_CLOEXEC);
   }
-
+  if (comm & Stdout) {
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, out))
+      goto fail1;
+    fcntl(out[0], F_SETFD, FD_CLOEXEC);
+    fcntl(out[1], F_SETFD, FD_CLOEXEC);
+  }
+  if (comm & Stderr) {
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, err))
+      goto fail2;
+    fcntl(err[0], F_SETFD, FD_CLOEXEC);
+    fcntl(err[1], F_SETFD, FD_CLOEXEC);
+  }
   return 1; // Ok
+ fail2:
+  if (comm & Stdout)
+  {
+    close(out[0]);
+    close(out[1]);
+    out[0] = out[1] = -1;
+  }
+ fail1:
+  if (comm & Stdin)
+  {
+    close(in[0]);
+    close(in[1]);
+    in[0] = in[1] = -1;
+  }
+ fail0:
+  communication = NoCommunication;
+  return 0; // Error
 }
 
 
 
 int KProcess::commSetupDoneP()
 {
-  int ok = 1;
-  // PTY stuff //
-  if (d->usePty)
-  {
-    if (d->ptySlaveFd >= 0)
-    {
-       close(d->ptySlaveFd);
-       d->ptySlaveFd = -1;
-    }
+  int rcomm = communication & ~d->usePty;
+  if (rcomm & Stdin)
+    close(in[0]);
+  if (rcomm & Stdout)
+    close(out[1]);
+  if (rcomm & Stderr)
+    close(err[1]);
+  in[0] = out[1] = err[1] = -1;
+
+  // Don't create socket notifiers if no interactive comm is to be expected
+  if (run_mode != NotifyOnExit)
+    return 1;
+
+  if (communication & Stdin) {
+    innot =  new QSocketNotifier(in[1], QSocketNotifier::Write, this);
+    Q_CHECK_PTR(innot);
+    innot->setEnabled(false); // will be enabled when data has to be sent
+    QObject::connect(innot, SIGNAL(activated(int)),
+                     this, SLOT(slotSendData(int)));
   }
 
-  if (communication != NoCommunication) {
-        if (!d->usePty)
-        {
-          if (communication & Stdin)
-            close(in[0]);
-          if (communication & Stdout)
-            close(out[1]);
-          if (communication & Stderr)
-            close(err[1]);
-        }
-
-        // Don't create socket notifiers and set the sockets non-blocking if
-        // blocking is requested.
-        if (run_mode == Block) return ok;
-
-        if (communication & Stdin) {
-//        ok &= (-1 != fcntl(in[1], F_SETFL, O_NONBLOCK));
-          innot =  new QSocketNotifier(in[1], QSocketNotifier::Write, this);
-          Q_CHECK_PTR(innot);
-          innot->setEnabled(false); // will be enabled when data has to be sent
-          QObject::connect(innot, SIGNAL(activated(int)),
-                                           this, SLOT(slotSendData(int)));
-        }
-
-        if (communication & Stdout) {
-//        ok &= (-1 != fcntl(out[0], F_SETFL, O_NONBLOCK));
-          outnot = new QSocketNotifier(out[0], QSocketNotifier::Read, this);
-          Q_CHECK_PTR(outnot);
-          QObject::connect(outnot, SIGNAL(activated(int)),
-                                           this, SLOT(slotChildOutput(int)));
-          if (communication & NoRead)
-              suspend();
-        }
-
-        if (communication & Stderr) {
-//        ok &= (-1 != fcntl(err[0], F_SETFL, O_NONBLOCK));
-          errnot = new QSocketNotifier(err[0], QSocketNotifier::Read, this );
-          Q_CHECK_PTR(errnot);
-          QObject::connect(errnot, SIGNAL(activated(int)),
-                                           this, SLOT(slotChildError(int)));
-        }
+  if (communication & Stdout) {
+    outnot = new QSocketNotifier(out[0], QSocketNotifier::Read, this);
+    Q_CHECK_PTR(outnot);
+    QObject::connect(outnot, SIGNAL(activated(int)),
+                     this, SLOT(slotChildOutput(int)));
+    if (communication & NoRead)
+        suspend();
   }
-  return ok;
+
+  if (communication & Stderr) {
+    errnot = new QSocketNotifier(err[0], QSocketNotifier::Read, this );
+    Q_CHECK_PTR(errnot);
+    QObject::connect(errnot, SIGNAL(activated(int)),
+                     this, SLOT(slotChildError(int)));
+  }
+
+  return 1;
 }
 
 
@@ -1161,74 +785,41 @@ int KProcess::commSetupDoneP()
 int KProcess::commSetupDoneC()
 {
   int ok = 1;
-  // PTY stuff //
-  if (d->usePty)
-  {
-    openSlavePty();
-    dup2(d->ptySlaveFd, STDIN_FILENO);
-    dup2(d->ptySlaveFd, STDOUT_FILENO);
-    dup2(d->ptySlaveFd, STDERR_FILENO);
 
-    // Setup job control //////////////////////////////////
-
-    // This is pretty obscure stuff which makes the session
-    // to be the controlling terminal of a process group.
-    setsid();
-
-#if defined(TIOCSCTTY)
-    ioctl(0, TIOCSCTTY, 0);
-#endif
-
-    // The following sequence is necessary for event propagation
-    // Omitting this is not noticeable with all clients (bash,vi). 
-    // Because bash heals this, use '-e' to test it.
-    int pgrp = getpid();                 
-#ifdef _AIX
-    tcsetpgrp (0, pgrp);
-#else
-    ioctl(0, TIOCSPGRP, (char *)&pgrp);
-#endif
-    setpgid(0,0);
-    close(open(d->ptySlaveName, O_WRONLY, 0));
-    setpgid(0,0);
-    // End event propagation //
-
-    kprocess_updateTTYSettings(STDIN_FILENO, d->ptyXonXoff);
-
-    // set screen size
-    ioctl(0,TIOCSWINSZ,(char *)&(d->ptySize));  
+  if (d->usePty & Stdin) {
+    if (dup2(d->pty->slaveFd(), STDIN_FILENO) < 0) ok = 0;
+  } else if (communication & Stdin) {
+    if (dup2(in[0], STDIN_FILENO) < 0) ok = 0;
+  } else {
+    int null_fd = open( "/dev/null", O_RDONLY );
+    if (dup2( null_fd, STDIN_FILENO ) < 0) ok = 0;
+    close( null_fd );
   }
-  // End of PTY stuff //
-  else
-  {
-    struct linger so;
-    memset(&so, 0, sizeof(so));
-
-    if (communication & Stdin)
-      close(in[1]);
-    if (communication & Stdout)
-      close(out[0]);
-    if (communication & Stderr)
-      close(err[0]);
-
-    if (communication & Stdin)
-      ok &= dup2(in[0],  STDIN_FILENO) != -1;
-    else {
-      int null_fd = open( "/dev/null", O_RDONLY );
-      ok &= dup2( null_fd, STDIN_FILENO ) != -1;
-      close( null_fd );
-    }
-    if (communication & Stdout) {
-      ok &= dup2(out[1], STDOUT_FILENO) != -1;
-      ok &= !setsockopt(out[1], SOL_SOCKET, SO_LINGER, (char*)&so, sizeof(so));
-    }
-    if (communication & Stderr) {
-      ok &= dup2(err[1], STDERR_FILENO) != -1;
-      ok &= !setsockopt(err[1], SOL_SOCKET, SO_LINGER, reinterpret_cast<char *>(&so), sizeof(so));
-    }
+  struct linger so;
+  memset(&so, 0, sizeof(so));
+  if (d->usePty & Stdout) {
+    if (dup2(d->pty->slaveFd(), STDOUT_FILENO) < 0) ok = 0;
+  } else if (communication & Stdout) {
+    if (dup2(out[1], STDOUT_FILENO) < 0 ||
+        setsockopt(out[1], SOL_SOCKET, SO_LINGER, (char *)&so, sizeof(so)))
+      ok = 0;
+  }
+  if (d->usePty & Stderr) {
+    if (dup2(d->pty->slaveFd(), STDERR_FILENO) < 0) ok = 0;
+  } else if (communication & Stderr) {
+    if (dup2(err[1], STDERR_FILENO) < 0 ||
+        setsockopt(err[1], SOL_SOCKET, SO_LINGER, (char *)&so, sizeof(so)))
+      ok = 0;
   }
 
   // don't even think about closing all open fds here or anywhere else
+
+  // PTY stuff //
+  if (d->usePty) {
+    d->pty->setCTty();
+    if (d->addUtmp)
+      d->pty->login(d->user, getenv("DISPLAY"));
+  }
 
   return ok;
 }
@@ -1237,125 +828,73 @@ int KProcess::commSetupDoneC()
 
 void KProcess::commClose()
 {
-  // PTY stuff //
-  if (d->usePty)
-  {
-#ifdef HAVE_UTEMPTER
-     if (d->addUtmp)
-     {
-        KProcess_Utmp utmp;
-        utmp.cmdFd = d->ptyMasterFd;
-        utmp << "/usr/sbin/utempter" << "-d" << d->ptySlaveName;
-        utmp.start(KProcess::Block);
-     }
-#elif defined(USE_LOGIN)
-     char *tty_name=ttyname(0);
-     if (tty_name)
-     {
-  	if (strncmp(tty_name, "/dev/", 5) == 0)
-	    tty_name += 5;
-        logout(tty_name);
-     }
-#endif
-     if (d->ptyNeedGrantPty) 
-        kprocess_chownpty(d->ptyMasterFd, false);
-     close(d->ptyMasterFd);
-     d->ptyMasterFd = -1;
-  }
-  // End of PTY stuff //
+  delete innot;
+  delete outnot;
+  delete errnot;
+  innot = outnot = errnot = 0;
 
-  if (NoCommunication != communication) {
-        bool b_in = (communication & Stdin);
-        bool b_out = (communication & Stdout);
-        bool b_err = (communication & Stderr);
-        if (b_in)
-                delete innot;
+    // If both channels are being read we need to make sure that one socket
+    // buffer doesn't fill up whilst we are waiting for data on the other
+    // (causing a deadlock). Hence we need to use select.
 
-        if (b_out || b_err) {
-          // If both channels are being read we need to make sure that one socket buffer
-          // doesn't fill up whilst we are waiting for data on the other (causing a deadlock).
-          // Hence we need to use select.
+    bool b_out = communication & Stdout;
+    bool b_err = communication & Stderr;
 
-          // Once one or other of the channels has reached EOF (or given an error) go back
-          // to the usual mechanism.
+    while (b_out || b_err) {
+      fd_set rfds;
+      FD_ZERO(&rfds);
+      struct timeval timeout, *p_timeout;
 
-          int fds_ready = 1;
-          fd_set rfds;
+      int max_fd = 0;
+      if (b_out) {
+        FD_SET(out[0], &rfds);
+        max_fd = out[0];
+      }
+      if (b_err) {
+        FD_SET(err[0], &rfds);
+        if (err[0] > max_fd)
+          max_fd = err[0];
+      }
+      if (runs) {
+        // If the process is still running we block until we
+        // receive data or the process exits.
+        p_timeout = 0; // no timeout
+      } else {
+        // If the process has already exited, we only check
+        // the available data, we don't wait for more.
+        timeout.tv_sec = timeout.tv_usec = 0; // timeout immediately
+        p_timeout = &timeout;
+      }
 
-          int max_fd = 0;
-          if (b_out) {
-            fcntl(out[0], F_SETFL, O_NONBLOCK);
-            if (out[0] > max_fd)
-              max_fd = out[0];
-            delete outnot;
-            outnot = 0;
-          }
-          if (b_err) {
-            fcntl(err[0], F_SETFL, O_NONBLOCK);
-            if (err[0] > max_fd)
-              max_fd = err[0];
-            delete errnot;
-            errnot = 0;
-          }
+      int fds_ready = select(max_fd+1, &rfds, 0, 0, p_timeout);
+      if (fds_ready < 0) {
+        if (errno == EINTR)
+          continue;
+        break;
+      } else if (!fds_ready)
+        break;
 
+      if (b_out && FD_ISSET(out[0], &rfds) && childOutput(out[0]) <= 0)
+        b_out = false;
 
-          while (b_out || b_err) {
-            // * If the process is still running we block until we
-            // receive data. (p_timeout = 0, no timeout)
-            // * If the process has already exited, we only check
-            // the available data, we don't wait for more.
-            // (p_timeout = &timeout, timeout immediately)
-            struct timeval timeout;
-            timeout.tv_sec = 0;
-            timeout.tv_usec = 0;
-            struct timeval *p_timeout = runs ? 0 : &timeout;
+      if (b_err && FD_ISSET(err[0], &rfds) && childError(err[0]) <= 0)
+        b_err = false;
+    }
 
-            FD_ZERO(&rfds);
-            if (b_out)
-              FD_SET(out[0], &rfds);
+  int rcomm = communication & ~d->usePty;
+  if (rcomm & Stdin)
+    close(in[1]);
+  if (rcomm & Stdout)
+    close(out[0]);
+  if (rcomm & Stderr)
+    close(err[0]);
+  in[1] = out[0] = err[0] = -1;
+  communication = NoCommunication;
 
-            if (b_err)
-              FD_SET(err[0], &rfds);
-
-            fds_ready = select(max_fd+1, &rfds, 0, 0, p_timeout);
-            if (fds_ready <= 0) break;
-
-            if (b_out && FD_ISSET(out[0], &rfds)) {
-              int ret = 1;
-              while (ret > 0) ret = childOutput(out[0]);
-              if ((ret == -1 && errno != EAGAIN) || ret == 0)
-                 b_out = false;
-            }
-
-            if (b_err && FD_ISSET(err[0], &rfds)) {
-              int ret = 1;
-              while (ret > 0) ret = childError(err[0]);
-              if ((ret == -1 && errno != EAGAIN) || ret == 0)
-                 b_err = false;
-            }
-          }
-        }
-
-        if (d->usePty)
-        {
-          close(d->ptyMasterFd);
-          communication = (Communication) (communication & ~(Stdin|Stdout));
-        }
-        else
-        {
-          if (communication & Stdin) {
-            communication = (Communication) (communication & ~Stdin);
-            close(in[1]);
-          }
-          if (communication & Stdout) {
-            communication = (Communication) (communication & ~Stdout);
-            close(out[0]);
-          }
-          if (communication & Stderr) {
-            communication = (Communication) (communication & ~Stderr);
-            close(err[0]);
-          }
-        }
+  if (d->usePty) {
+    if (d->addUtmp)
+      d->pty->logout();
+    d->pty->close();
   }
 }
 

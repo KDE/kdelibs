@@ -30,6 +30,7 @@
 
 class QSocketNotifier;
 class KProcessPrivate;
+class KPty;
 
 /**
  * Child process invocation, monitoring and control.
@@ -151,11 +152,6 @@ public:
    * If @p NoRead is specified in conjunction with @p Stdout,
    * no data is actually read from @p Stdout but only
    * the signal @ref childOutput(int fd) is emitted.
-   *
-   * When using @ref setUsePty() to enable PTY support the value
-   * for Stderr has no effect. Use Stdout and the signal
-   * @ref receivedStdout() instead to get the output. It is not
-   * possible to distinguish stdout from stderr in this case.
    */
   enum Communication { NoCommunication = 0, Stdin = 1, Stdout = 2, Stderr = 4,
 					   AllOutput = 6, All = 7,
@@ -260,13 +256,16 @@ public:
    *  Starts the process.
    *  For a detailed description of the
    *  various run modes and communication semantics, have a look at the
-   *  general description of the KProcess class.
+   *  general description of the KProcess class. Note that if you use
+   *  @ref setUsePty( Stdout | Stderr, <bool> ), you cannot use Stdout | Stderr
+   *  here - instead, use Stdout only to receive the mixed output.
    *
    *  The following problems could cause this function to
    *    return false:
    *
    *  @li The process is already running.
    *  @li The command line argument list is empty.
+   *  @li The the @p comm parameter is incompatible with the selected pty usage.
    *  @li The starting of the process failed (could not fork).
    *  @li The executable was not found.
    *
@@ -378,6 +377,7 @@ public:
   /**
    * This causes the stdin file descriptor of the child process to be
    * closed indicating an "EOF" to the child.
+   * Note that this function does not work if stdin is a pty.
    *
    * @return false if no communication to the process' stdin
    *  had been specified in the call to @ref start().
@@ -387,6 +387,7 @@ public:
   /**
    * This causes the stdout file descriptor of the child process to be
    * closed.
+   * Note that this function does not work if stdout is a pty.
    *
    * @return false if no communication to the process' stdout
    *  had been specified in the call to @ref start().
@@ -396,6 +397,7 @@ public:
   /**
    * This causes the stderr file descriptor of the child process to be
    * closed.
+   * Note that this function does not work if stderr is a pty.
    *
    * @return false if no communication to the process' stderr
    *  had been specified in the call to @ref start().
@@ -411,10 +413,10 @@ public:
   /**
    * Controls whether the started process should drop any
    * setuid/setgid privileges or whether it should keep them.
-   * Note that this function is mostly a dummy, as KDE libraries
+   * Note that this function is mostly a dummy, as the KDE libraries
    * currently refuse to run with setuid/setgid privileges.
    *
-   * The default is false : drop privileges
+   * The default is false: drop privileges
    * @param true to keep the privileges
    */
   void setRunPrivileged(bool keepPrivileges);
@@ -483,65 +485,26 @@ public:
   /**
    * Specify whether to create a pty (pseudo-terminal) for running the
    * command.
-   *
-   * @param usePty true if a pty should be created
-   * @param addUtmp true if a utmp entry should be created for the pty
-   *
    * This function should be called before starting the process.
    *
-   * Note that the PTY uses only single data channel for communication,
-   * so it is no longer possible to distinguish stdout and stderr
-   * anymore. Instead, all stderr output is received in
-   * @ref receivedStdout() when the Communication parameter is set to
-   * contain Stdout (and not Stderr!)
-   */
-  void setUsePty(bool usePty, bool addUtmp);
-
-  /**
-   * Set or change the logical (screen) size of the pty.
-   * The default is 25 rows by 80 lines.
+   * @param comm for which stdio handles to use a pty. Note that it is not
+   *  allowed to specify Stdout and Stderr at the same time both here and to
+   *  @ref start (there is only one pty, so they cannot be distinguished).
+   * @param addUtmp true if a utmp entry should be created for the pty
    *
-   * @param lines the number of rows
-   * @param columns the number of columns
    */
-  void setPtySize(int lines, int columns);
+  void setUsePty(Communication comm, bool addUtmp);
 
-  /**
-   * Set whether the pty should honour Xon/Xoff flow control.
-   *
-   * Xon/Xoff flow control is off by default.
-   *
-   * @param useXonXoff true if Xon/Xoff flow control should be used.
+  /*
+   * Obtains the pty object used by this process. The return value is
+   * valid only after @ref setUsePty was used to associate at least one
+   * standard I/O stream to a pty. The pty is open only while the process
+   * is running.
+   * @return a pointer to the pty object
    */
-  void setPtyXonXoff(bool useXonXoff);
-
-  /**
-   * @return the name of the master pty device used for this process.
-   *
-   * This function should only be called after starting the process.
-   */
-  const char *ptyMasterName();
-
-  /**
-   * @return the name of the slave pty device used for this process.
-   *
-   * This function should only be called after starting the process.
-   */
-  const char *ptySlaveName();
-
-  /**
-   * @return the file descriptor of the master pty
-   */
-  int ptyMasterFd();
-
-
-  /**
-   * @return the file descriptor of the slave pty
-   */
-  int ptySlaveFd();
+  KPty *pty();
 
 signals:
-
   /**
    * Emitted after the process has terminated when
    * the process was run in the @p NotifyOnExit  (==default option to
@@ -563,7 +526,7 @@ signals:
    * @param buflen The number of bytes that are available.
    *
    * You should copy the information contained in @p buffer to your private
-   * data structures before returning from this slot.
+   * data structures before returning from the slot.
    * Example:
    *     QString myBuf = QString::fromLatin1(buffer, buflen);
    **/
@@ -575,7 +538,7 @@ signals:
    *
    * To actually get this signal, the Stdout communication link
    * has to be turned on in @ref start() and the
-   * NoRead flag should have been passed.
+   * NoRead flag must have been passed.
    *
    * You will need to explicitly call resume() after your call to start()
    * to begin processing data from the child process' stdout.  This is
@@ -584,7 +547,7 @@ signals:
    *
    * The data still has to be read from file descriptor @p fd.
    * @param fd the file descriptor that provides the data
-   * @param len the number of bytes that have been read from fd must be written here
+   * @param len the number of bytes that have been read from @p fd must be written here
    **/
   void receivedStdout(int fd, int &len);
 
@@ -597,16 +560,11 @@ signals:
    * has to be turned on in @ref start().
    *
    * You should copy the information contained in @p buffer to your private
-   * data structures before returning from this slot.
+   * data structures before returning from the slot.
    *
    * @param proc a pointer to the process that has received the data
    * @param buffer The data received.
    * @param buflen The number of bytes that are available.
-   *
-   * Note that this signal is never emitted when @ref setUsePty() is set
-   * to use a PTY for communication. Instead, the output will arrive in
-   * @ref receivedStdout() when the Communication link contains Stdout
-   * (and not Stderr).
    */
   void receivedStderr(KProcess *proc, char *buffer, int buflen);
 
@@ -641,7 +599,7 @@ protected slots:
    * available, this function must disable the QSocketNotifier "innot".
    * @param dummy ignore this argument
    */
-  void slotSendData(int dummy);
+  void slotSendData(int dummy);	// KDE 4: remove dummy
 
 protected:
 
@@ -711,13 +669,13 @@ protected:
    * This function is called from "KProcess::start" right before a "fork" takes
    * place. According to
    * the "comm" parameter this function has to initialize the "in", "out" and
-   * "err" data member of KProcess.
+   * "err" data members of KProcess.
    *
    * This function should return 1 if setting the needed communication channels
    * was successful.
    *
    * The default implementation is to create UNIX STREAM sockets for the communication,
-   * but you could overload this function and establish a TCP/IP communication for
+   * but you could reimplement this function to establish a TCP/IP communication for
    * network communication, for example.
    */
   virtual int setupCommunication(Communication comm);
@@ -737,38 +695,19 @@ protected:
 
   /**
    * Called right after a (successful) fork, but before an "exec" on the child
-   * process' side. It usually just closes the unused communication ends of
-   * "in", "out" and "err" (like the writing end of the "in" communication
-   * channel.
+   * process' side. It usually duplicates the "in", "out" and "err" file
+   * handles to the respective standard I/O handles.
    */
   virtual int commSetupDoneC();
 
 
   /**
-   * Immediately called after a process has exited. This function normally
-   * calls commClose to close all open communication channels to this
-   * process and emits the "processExited" signal (if the process was
-   * not running in the "DontCare" mode).
+   * Immediately called after a successfully started process in NotifyOnExit
+   * or Block mode has exited. This function normally calls @ref commClose()
+   * and emits the @ref processExited() signal.
+   * @param state the exit code of the process as returned by waitpid()
    */
-  virtual void processHasExited(int state);
-
-  /**
-   * Create a master pty.
-   *
-   * This function is called automatically when you use pty's.
-   * @see setUsePty
-   */
-  void openMasterPty();
-
-  /**
-   * Create a slave pty
-   *
-   * @return file descriptor of opened slave pty
-   *
-   * This function is called automatically when you use pty's.
-   * @see setUsePty
-   */
-  void openSlavePty();
+  virtual void processHasExited(int state); // KDE4: make non-virtual. call another hook function
 
   /**
    * Should clean up the communication links to the child after it has
@@ -804,15 +743,15 @@ protected:
   Communication communication;
 
   /**
-   * Called by "slotChildOutput" this function copies data arriving from the
-   * child process' stdout to the respective buffer and emits the signal
-   * "@ref receivedStderr".
+   * Called by "@ref slotChildOutput" this function copies data arriving from
+   * the child process' stdout to the respective buffer and emits the signal
+   * "@ref receivedStdout".
    */
   int childOutput(int fdno);
 
   /**
-   * Called by "slotChildOutput" this function copies data arriving from the
-   * child process' stdout to the respective buffer and emits the signal
+   * Called by "@ref slotChildError" this function copies data arriving from
+   * the child process' stderr to the respective buffer and emits the signal
    * "@ref receivedStderr"
    */
   int childError(int fdno);
@@ -849,7 +788,7 @@ class KShellProcessPrivate;
 *
 *   @short A class derived from @ref KProcess to start child
 *   	processes through a shell.
-*   @author Christian Czezakte <e9025461@student.tuwien.ac.at>
+*   @author Christian Czezatke <e9025461@student.tuwien.ac.at>
 *   @version $Id$
 */
 class KShellProcess: public KProcess
