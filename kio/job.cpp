@@ -54,6 +54,7 @@ extern "C" {
 #include "kio/job.h"
 #include "scheduler.h"
 #include "kmimemagic.h"
+#include "kprotocolinfo.h"
 
 #include "kio/observer.h"
 
@@ -982,8 +983,22 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
     }
     else
     {
-       m_copyJob = 0;
-       startDataPump();
+       if (!m_move &&
+           (src.isLocalFile() && KProtocolInfo::canCopyFromFile(dest.protocol())) 
+          )
+       {
+          startCopyJob(dest);
+       }
+       else if (!m_move &&
+           (dest.isLocalFile() && KProtocolInfo::canCopyToFile(src.protocol())) 
+          )
+       {
+          startCopyJob(src);
+       }
+       else
+       {
+          startDataPump();
+       }
     }
 }
 
@@ -999,9 +1014,14 @@ void FileCopyJob::setSourceSize( off_t size )
 
 void FileCopyJob::startCopyJob()
 {
+    startCopyJob(m_src);
+}
+
+void FileCopyJob::startCopyJob(const KURL &slave_url)
+{
     kdDebug(7007) << "FileCopyJob::startCopyJob()" << endl;
     KIO_ARGS << m_src << m_dest << m_permissions << (Q_INT8) m_overwrite;
-    m_copyJob = new SimpleJob(m_src, CMD_COPY, packedArgs, false);
+    m_copyJob = new SimpleJob(slave_url, CMD_COPY, packedArgs, false);
     addSubjob( m_copyJob );
     connectSubjob( m_copyJob );
 }

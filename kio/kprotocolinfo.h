@@ -100,6 +100,8 @@ public:
   static bool supportsDeleting( const QString& protocol );
   static bool supportsLinking( const QString& protocol );
   static bool supportsMoving( const QString& protocol );
+  static bool canCopyFromFile( const QString& protocol );
+  static bool canCopyToFile( const QString& protocol );
 
   /**
    * @returns the name of the icon, associated with the specified protocol
@@ -137,6 +139,8 @@ protected:
   QString m_defaultMimetype;
   bool m_determineMimetypeFromExtension;
   QString m_icon;
+  bool m_canCopyFromFile;
+  bool m_canCopyToFile;
 };
 
 #endif

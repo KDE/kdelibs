@@ -619,6 +619,7 @@ namespace KIO {
 
     protected:
         void startCopyJob();
+        void startCopyJob(const KURL &slave_url);
         void startDataPump();
         void connectSubjob( SimpleJob * job );
 

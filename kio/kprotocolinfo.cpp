@@ -50,6 +50,8 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   m_supportsDeleting = config.readBoolEntry( "deleting", false );
   m_supportsLinking = config.readBoolEntry( "linking", false );
   m_supportsMoving = config.readBoolEntry( "moving", false );
+  m_canCopyFromFile = config.readBoolEntry( "copyFromFile", false );
+  m_canCopyToFile = config.readBoolEntry( "copyToFile", false );
   m_listing = config.readListEntry( "listing" );
   m_supportsListing = ( m_listing.count() > 0 );
   m_defaultMimetype = config.readEntry( "defaultMimetype" );
@@ -91,7 +93,8 @@ KProtocolInfo::load( QDataStream& _str)
           i_supportsListing, i_supportsReading,
           i_supportsWriting, i_supportsMakeDir,
           i_supportsDeleting, i_supportsLinking,
-          i_supportsMoving, i_determineMimetypeFromExtension;
+          i_supportsMoving, i_determineMimetypeFromExtension,
+          i_canCopyFromFile, i_canCopyToFile;
    _str >> m_name >> m_exec >> m_listing >> m_defaultMimetype
         >> i_determineMimetypeFromExtension 
         >> m_icon
@@ -100,7 +103,8 @@ KProtocolInfo::load( QDataStream& _str)
         >> i_supportsListing >> i_supportsReading
         >> i_supportsWriting >> i_supportsMakeDir
         >> i_supportsDeleting >> i_supportsLinking
-        >> i_supportsMoving;
+        >> i_supportsMoving 
+        >> i_canCopyFromFile >> i_canCopyToFile;
    m_inputType = (Type) i_inputType;
    m_outputType = (Type) i_outputType;
    m_isSourceProtocol = (i_isSourceProtocol != 0);
@@ -112,6 +116,8 @@ KProtocolInfo::load( QDataStream& _str)
    m_supportsDeleting = (i_supportsDeleting != 0);
    m_supportsLinking = (i_supportsLinking != 0);
    m_supportsMoving = (i_supportsMoving != 0);
+   m_canCopyFromFile = (i_canCopyFromFile != 0);
+   m_canCopyToFile = (i_canCopyToFile != 0);
    m_determineMimetypeFromExtension = (i_determineMimetypeFromExtension != 0);
 }
 
@@ -125,7 +131,8 @@ KProtocolInfo::save( QDataStream& _str)
           i_supportsListing, i_supportsReading,
           i_supportsWriting, i_supportsMakeDir,
           i_supportsDeleting, i_supportsLinking,
-          i_supportsMoving, i_determineMimetypeFromExtension;
+          i_supportsMoving, i_determineMimetypeFromExtension,
+          i_canCopyFromFile, i_canCopyToFile;
 
    i_inputType = (Q_INT32) m_inputType;
    i_outputType = (Q_INT32) m_outputType;
@@ -138,6 +145,8 @@ KProtocolInfo::save( QDataStream& _str)
    i_supportsDeleting = m_supportsDeleting ? 1 : 0;
    i_supportsLinking = m_supportsLinking ? 1 : 0;
    i_supportsMoving = m_supportsMoving ? 1 : 0;
+   i_canCopyFromFile = m_canCopyFromFile ? 1 : 0;
+   i_canCopyToFile = m_canCopyToFile ? 1 : 0;
    i_determineMimetypeFromExtension = m_determineMimetypeFromExtension ? 1 : 0;
 
 
@@ -149,7 +158,8 @@ KProtocolInfo::save( QDataStream& _str)
         << i_supportsListing << i_supportsReading
         << i_supportsWriting << i_supportsMakeDir
         << i_supportsDeleting << i_supportsLinking
-        << i_supportsMoving;
+        << i_supportsMoving
+        << i_canCopyFromFile << i_canCopyToFile;
 }
 
 
@@ -298,6 +308,31 @@ bool KProtocolInfo::supportsMoving( const QString& _protocol )
   }
 
   return prot->m_supportsMoving;
+}
+
+bool KProtocolInfo::canCopyFromFile( const QString& _protocol )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    return false;
+  }
+
+  return prot->m_canCopyFromFile;
+}
+
+
+bool KProtocolInfo::canCopyToFile( const QString& _protocol )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
+  if ( !prot )
+  {
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    return false;
+  }
+
+  return prot->m_canCopyToFile;
 }
 
 QString KProtocolInfo::icon( const QString& _protocol )
