@@ -367,7 +367,7 @@ void KHistoryCombo::addContextMenuItems( QPopupMenu* menu )
     if ( menu )
     {
         menu->insertSeparator();
-        menu->insertItem( i18n("Empty contents"), this, SLOT( slotClear()));
+        menu->insertItem( i18n("Empty Contents"), this, SLOT( slotClear()));
     }
 }
 
