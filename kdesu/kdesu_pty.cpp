@@ -87,27 +87,31 @@ PTY::~PTY()
 
 int PTY::getpt()
 {
-#ifdef HAVE_OPENPTY
-    char name[10];
-    int master_fd, slave_fd;
-    if (openpty(&master_fd, &slave_fd, name, 0, 0) != -1) {
-      ttyname=name;
-      name[5]='p';
-      ptyname=name;
-      ptyfd=master_fd;
-      return master_fd;
-    }
-#endif
 
 #if defined(HAVE_GETPT) && defined(HAVE_PTSNAME)
 
+    // 1: UNIX98: preferred way
     ptyfd = ::getpt();
     ttyname = ::ptsname(ptyfd);
     return ptyfd;
 
+#elif defined(HAVE_OPENPTY)
+
+    // 2: BSD interface
+    int master_fd, slave_fd;
+    if (openpty(&master_fd, &slave_fd, 0L, 0L, 0L) != -1) 
+    {
+	ptyname = ::ttyname(master_fd);
+	ttyname = ::ttyname(slave_fd);
+	close(slave_fd); // We don't need this yet
+	ptyfd = master_fd;
+	return ptyfd;
+    }
+
 #else
 
-    // Try /dev/ptmx first. (Linux w/ Unix98 PTYs, Solaris)
+    // 3: Open terminal device directly
+    // 3.1: Try /dev/ptmx first. (Linux w/ Unix98 PTYs, Solaris)
 
     ptyfd = open("/dev/ptmx", O_RDWR);
     if (ptyfd >= 0)
@@ -127,7 +131,7 @@ int PTY::getpt()
 	close(ptyfd);
     }
 
-    // Try /dev/pty[p-e][0-f] (Linux w/o UNIX98 PTY's)
+    // 3.2: Try /dev/pty[p-e][0-f] (Linux w/o UNIX98 PTY's)
 
     for (const char *c1 = "pqrstuvwxyzabcde"; *c1 != '\0'; c1++)
     {
@@ -144,7 +148,7 @@ int PTY::getpt()
     }
 linux_out:
 	
-    // Try /dev/pty%d (SCO, Unixware)
+    // 3.3: Try /dev/pty%d (SCO, Unixware)
 
     for (int i=0; i<256; i++)
     {
@@ -163,7 +167,7 @@ linux_out:
     kdDebug(900) << k_lineinfo << "Unknown system or all methods failed.\n";
     return -1;
 
-#endif // HAVE_GETPT
+#endif // HAVE_GETPT && HAVE_PTSNAME
 
 }
 
@@ -179,8 +183,8 @@ int PTY::grantpt()
 
 #else
 
-    // konsole_grantpty doesn't do this
-    if (ptyname == "/dev/ptmx")
+    // konsole_grantpty only does /dev/pty??
+    if (ptyname.left(8) != "/dev/pty")
 	return 0;
 
     // Use konsole_grantpty:
