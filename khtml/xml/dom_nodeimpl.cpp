@@ -1628,8 +1628,7 @@ unsigned long NodeListImpl::recursiveLength(NodeImpl *start) const
 
     for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling()) {
         if ( n->nodeType() == Node::ELEMENT_NODE ) {
-            // ### rename to elementMatches()
-            if (nodeMatches(n))
+            if (elementMatches(n))
                 len++;
             len+= recursiveLength(n);
         }
@@ -1642,7 +1641,7 @@ NodeImpl *NodeListImpl::recursiveItem ( NodeImpl *start, unsigned long &offset )
 {
     for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling()) {
         if ( n->nodeType() == Node::ELEMENT_NODE ) {
-            if (nodeMatches(n))
+            if (elementMatches(n))
                 if (!offset--)
                     return n;
 
@@ -1690,7 +1689,7 @@ NodeImpl *ChildNodeListImpl::item ( unsigned long index ) const
     return n;
 }
 
-bool ChildNodeListImpl::nodeMatches( NodeImpl* /*testNode*/ ) const
+bool ChildNodeListImpl::elementMatches( NodeImpl* /*testNode*/ ) const
 {
     return true;
 }
@@ -1733,7 +1732,7 @@ NodeImpl *TagNodeListImpl::item ( unsigned long index ) const
     return recursiveItem( m_refNode, index );
 }
 
-bool TagNodeListImpl::nodeMatches( NodeImpl *testNode ) const
+bool TagNodeListImpl::elementMatches( NodeImpl *testNode ) const
 {
     if (m_namespaceAware)
 	return (m_matchAllNamespaces || testNode->namespaceURI() == m_namespaceURI) &&
@@ -1764,7 +1763,7 @@ NodeImpl *NameNodeListImpl::item ( unsigned long index ) const
     return recursiveItem( refNode, index );
 }
 
-bool NameNodeListImpl::nodeMatches( NodeImpl *testNode ) const
+bool NameNodeListImpl::elementMatches( NodeImpl *testNode ) const
 {
     return static_cast<ElementImpl *>(testNode)->getAttribute(ATTR_NAME) == nodeName;
 }
@@ -1774,9 +1773,9 @@ NamedTagNodeListImpl::NamedTagNodeListImpl( NodeImpl *n, NodeImpl::Id tagId, con
 {
 }
 
-bool NamedTagNodeListImpl::nodeMatches( NodeImpl *testNode ) const
+bool NamedTagNodeListImpl::elementMatches( NodeImpl *testNode ) const
 {
-    return TagNodeListImpl::nodeMatches( testNode )
+    return TagNodeListImpl::elementMatches( testNode )
         && static_cast<ElementImpl *>(testNode)->getAttribute(ATTR_NAME) == nodeName;
 }
 

@@ -449,7 +449,7 @@ protected:
     // helper functions for searching all ElementImpls in a tree
     unsigned long recursiveLength(NodeImpl *start) const;
     NodeImpl *recursiveItem ( NodeImpl *start, unsigned long &offset ) const;
-    virtual bool nodeMatches( NodeImpl *testNode ) const = 0;
+    virtual bool elementMatches( NodeImpl *testNode ) const = 0;
 };
 
 class ChildNodeListImpl : public NodeListImpl
@@ -464,7 +464,7 @@ public:
     virtual NodeImpl *item ( unsigned long index ) const;
 
 protected:
-    virtual bool nodeMatches( NodeImpl *testNode ) const;
+    virtual bool elementMatches( NodeImpl *testNode ) const;
 
     NodeImpl *refNode;
 };
@@ -488,7 +488,7 @@ public:
     // Other methods (not part of DOM)
 
 protected:
-    virtual bool nodeMatches( NodeImpl *testNode ) const;
+    virtual bool elementMatches( NodeImpl *testNode ) const;
 
     NodeImpl *m_refNode;
     NodeImpl::Id m_id;
@@ -518,7 +518,7 @@ public:
     // Other methods (not part of DOM)
 
 protected:
-    virtual bool nodeMatches( NodeImpl *testNode ) const;
+    virtual bool elementMatches( NodeImpl *testNode ) const;
 
     NodeImpl *refNode;
     DOMString nodeName;
@@ -533,7 +533,7 @@ class NamedTagNodeListImpl : public TagNodeListImpl
 public:
     NamedTagNodeListImpl( NodeImpl *n, NodeImpl::Id tagId, const DOMString& name );
 protected:
-    virtual bool nodeMatches( NodeImpl *testNode ) const;
+    virtual bool elementMatches( NodeImpl *testNode ) const;
     DOMString nodeName;
 };
 
