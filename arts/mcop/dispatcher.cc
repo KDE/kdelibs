@@ -267,15 +267,33 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	 */
 	char *cookie = md5_auth_mkcookie();
 	globalComm().put("secret-cookie",cookie);
-	memset(cookie,0,strlen(cookie));	// try to keep memory clean
-	free(cookie);
 
 	/*
 	 * Then get the secret cookie from globalComm. As we've just set one,
 	 * and as it is never removed, this always works.
 	 */
 	string secretCookie = globalComm().get("secret-cookie");
-	md5_auth_set_cookie(secretCookie.c_str());
+	if(!md5_auth_set_cookie(secretCookie.c_str()))
+	{
+		/*
+		 * Handle the case where the cookie obtained from GlobalComm is not
+		 * a valid cookie (i.e. too short) - this should practically never
+		 * happen. In this case, we will remove the cookie and overwrite it
+		 * with our previously generated cookie.
+		 */
+		arts_warning("bad md5 secret-cookie obtained from %s - replacing it",
+				globalComm()._interfaceName().c_str());
+
+		globalComm().erase("secret-cookie");
+		globalComm().put("secret-cookie",cookie);
+
+		if(!md5_auth_set_cookie(cookie))
+			arts_fatal("error initializing md5 secret cookie "
+					   "(generated cookie invalid)");
+	}
+	memset(cookie,0,strlen(cookie));	// try to keep memory clean
+	free(cookie);
+
 	string::iterator i;	// try to keep memory clean from secret cookie
 	for(i=secretCookie.begin();i != secretCookie.end();i++) *i = 'y';
 
