@@ -94,6 +94,8 @@ static const SymName g_rgSymNames[] = {
 	{ XK_Caps_Lock,    I18N_NOOP("CapsLock") },
 	{ XK_Num_Lock,     I18N_NOOP("NumLock") },
 	{ XK_Scroll_Lock,  I18N_NOOP("ScrollLock") },
+	{ XK_Prior,        I18N_NOOP("PageUp") },
+	{ XK_Next,         I18N_NOOP("PageDown") },
 	{ 0, 0 }
 };
 
