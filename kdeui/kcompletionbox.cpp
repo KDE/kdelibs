@@ -319,7 +319,18 @@ public:
     void reuse( const QString &text ) { setText( text ); }
 };
 
+
 void KCompletionBox::insertItems( const QStringList& items, int index )
+{
+    bool block = signalsBlocked();
+    blockSignals( true );
+    insertStringList( items, index );
+    clearSelection();
+    blockSignals( block );
+    d->down_workaround = true;
+}
+
+void KCompletionBox::setItems( const QStringList& items )
 {
     bool block = signalsBlocked();
     blockSignals( true );
@@ -327,21 +338,23 @@ void KCompletionBox::insertItems( const QStringList& items, int index )
 
     QListBoxItem* item = firstItem();
     if ( !item ) {
-	insertStringList( items, index );
-    } else {
-	for ( QStringList::ConstIterator it = items.begin(); it != items.end(); it++) {
-	    if ( item ) {
-		((KCompletionBoxItem*)item)->reuse( *it );
-		item = item->next();
-	    } else {
-		insertItem( new QListBoxText( *it ) );
-	    }
-	}
-	QListBoxItem* tmp = item;
-	while ( (item = tmp ) ) {
-	    tmp = item->next();
-	    delete item;
-	}
+        insertStringList( items );
+    }
+    else {
+        for ( QStringList::ConstIterator it = items.begin(); it != items.end(); it++) {
+            if ( item ) {
+                ((KCompletionBoxItem*)item)->reuse( *it );
+                item = item->next();
+            }
+            else {
+                insertItem( new QListBoxText( *it ) );
+            }
+        }
+        QListBoxItem* tmp = item;
+        while ( (item = tmp ) ) {
+            tmp = item->next();
+            delete item;
+        }
     }
 
     clearSelection();

@@ -79,6 +79,11 @@ public slots:
     void insertItems( const QStringList& items, int index = -1 );
 
     /**
+     * Clears the box and inserts @p items.
+     */
+    void setItems( const QStringList& items );
+
+    /**
      * Adjusts the size of the box to fit the width of the parent given in the
      * constructor and pops it up at the most appropriate place, relative to
      * the parent.
@@ -204,6 +209,7 @@ private slots:
 
 protected:
     virtual void virtual_hook( int id, void* data );
+    
 private:
     class KCompletionBoxPrivate;
     KCompletionBoxPrivate* d;
