@@ -18,44 +18,15 @@
 */
 /*
  * $Id$
- *
- * $Log$
- * Revision 1.4  2001/10/15 18:04:25  gehrmab
- * The preferred location for constructing C++ objects is in the constructor ;-)
- *
- * Revision 1.3  2001/08/26 20:14:19  lunakl
- * Ok, watch closely :
- * const is your friend !
- *
- * static int blah[] = { 1, 2, .... }
- * should be
- * static const int blah[] = { 1, 2, ... }
- *
- * static const char* txt[] = { "blah", "foo", ... }
- * should be
- * static const char* const txt[] = { "blah", "foo", ... }
- *
- * And just in case you wonder about those const_cast< const char** >, that's
- * because QPixmap( const char** xpm ) and QImage( const char** xpm ) got it
- * wrong too. Everybody guessing correctly where the const is missing wins
- * a free cvs update.
- *
- * Revision 1.2  2000/02/12 12:46:41  espen
- * Added a black frame around the drag pixmap. Looks better.
- *
- * Revision 1.1  1999/05/06 02:46:13  steffen
- * Drag&drop for colors. Qt drag&drop is really easy to use. We should have stuff like this all over KDE.
- *
- *
- */
+*/
 
-#include <qpainter.h> 
+#include <qpainter.h>
 #include "kcolordrag.h"
 
 static const char * const color_mime_string = "application/x-color";
 
-KColorDrag::KColorDrag( const QColor &color, QWidget *dragsource, 
-			const char *name) 
+KColorDrag::KColorDrag( const QColor &color, QWidget *dragsource,
+			const char *name)
      : QStoredDrag( color_mime_string, dragsource, name)
 {
      setColor( color);

@@ -19,55 +19,6 @@
 
 /*************************************************************************
  * $Id$
- *
- * $Log$
- * Revision 1.17  2002/08/21 03:08:05  orlovich
- *
- * Cleanup:
- * 1. Don't read uninitialized variables all over the place
- * 2. Make tiny mark distance setting actually matter.
- * 3. Remove dead code that did nothing other than read uninitialized variables and write out
- * somoe other ones noone actually used -- mark 3 methods with no effect as deprecated.
- *
- * Revision 1.16  2002/03/04 00:51:51  lunakl
- * Keep BC changes (the patch is almost 100KiB of boring stuff
- * ... anybody willing to review? ;) ).
- *
- * Revision 1.15  2000/11/29 11:52:59  mlaurent
- * Fix draw marker when kruler is horizontal
- *
- * Revision 1.14  2000/09/12 17:48:02  mueller
- * avoid compiler warning
- *
- * Revision 1.13  2000/06/05 21:31:45  gehrmab
- * QFrame's 4th argument is no more
- *
- * Revision 1.12  2000/06/03 23:09:02  gehrmab
- * Completely redesigned KRuler's API
- *
- * Revision 1.11  2000/04/15 16:16:56  habenich
- * fixed bug with disappearing vertical text
- * enabled offset drawing of begin and end marks
- * implemented fixed ruler width when resizing widget
- * implemented on/off switch for ruler pointer
- * ruler label moves with beginning of ruler
- *
- * Revision 1.10  2000/01/17 19:07:59  bieker
- * Made it more QT_NO_CAST_ASCII and QT_NO_ASCII_CAST safe (this is not 100 %
- * yet).
- *
- * Revision 1.9  1999/05/10 12:59:04  kulow
- * applied 90% of Hans's patch and tried to fix other stuff. Some classes
- * (KAccel is a good example - libkab is even worse) mix string types so
- * dramacticly, that I bet 70% of the runtime is spent in string conversion ;(
- *
- * Revision 1.8  1999/03/01 23:35:08  kulow
- * CVS_SILENT ported to Qt 2.0
- *
- * Revision 1.7  1999/02/19 08:52:45  habenich
- * ID und LOG tags included
- *
- *
  *************************************************************************/
 
 #include "kruler.h"

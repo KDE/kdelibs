@@ -18,31 +18,7 @@
 */
 /*
  * $Id$
- *
- * $Log$
- * Revision 1.12  2001/09/22 19:53:58  mueller
- * fixes for QT_NO_COMPAT
- *
- * Revision 1.11  2000/06/15 06:35:12  kalle
- * Replaced #include "qtheader.h" with #include <qtheader.h> as it is supposed to be
- *
- * Revision 1.10  1999/10/10 08:18:57  bero
- * Code cleanup ((void) stuff)
- *
- * Revision 1.9  1999/06/16 07:47:46  kulow
- * fixing some misc warnings
- * in trader.cc I had to change getFirst() -> first(). Don't know why
- *
- * Revision 1.8  1999/05/08 12:47:59  ssk
- * Various documentation changes.
- *
- * Revision 1.7  1999/04/19 18:28:17  cschlaeg
- * sizeHint() added; showTab() now also selects the tab; paintEvent updated to
- * match Qt 2.0 style frame
- *
- * Revision 1.6  1999/03/01 23:35:19  kulow
- * CVS_SILENT ported to Qt 2.0
- */
+*/
 
 #ifndef KTABCTL_H
 #define KTABCTL_H
@@ -51,7 +27,7 @@
 #include <qtabbar.h>
 #include <qmemarray.h>
 
-/** 
+/**
  * Tabbed dialog with extended features.
  * KTabCtl is very similar to QTabDialog, with the following differences:
  * 

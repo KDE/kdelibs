@@ -17,54 +17,6 @@
  *  Boston, MA 02111-1307, USA.
  */
 
-/*
-****************************************************************************
-*
-* $Log$
-* Revision 1.12  2002/05/26 11:50:10  pfeiffer
-* a QTextEdit derived class that offers
-* - deleting of words via standard KDE shortcuts
-* - zooming or fast scrolling via Ctrl-Wheelscroll
-* - cursor autohiding
-*
-* KTextBrowser: use KGlobalSettings for zoom/scroll
-*
-* Revision 1.11  2002/03/04 00:51:51  lunakl
-* Keep BC changes (the patch is almost 100KiB of boring stuff
-* ... anybody willing to review? ;) ).
-*
-* Revision 1.10  2001/11/24 01:19:04  pfeiffer
-* make the wheelmouse work the same way as in KDE2, i.e. Ctrl-Wheel
-* scrolls faster, instead of zooming. Do we need to make this configurable?
-* I for one find myself scrolling much more often than zooming.
-*
-* Revision 1.9  2001/10/10 17:40:39  mueller
-* CVS_SILENT: fixincludes
-*
-* Revision 1.8  2000/06/01 09:36:12  gehrmab
-* We like orthogonal APIs
-*
-* Revision 1.7  2000/05/26 04:20:33  granroth
-* Use the KCursor::handCursor instead of the Qt hand cursor with
-* KTextBrowser.  This is for consistency.
-*
-* There is a little bit of flicker when it switches to the hand, though.
-* That's because it first switches to the Qt version in the
-* QTextBrowser code and I use that in the KTextBrowser version to know
-* when to switch to the hand.  I couldn't figure out any other way to do
-* this without completely reimplementing all of the enter events -- what
-* a pain.
-*
-* Revision 1.6  2000/01/03 18:48:57  espen
-* The widget will ignore a key sequence
-* containing F1. Since this widget is used
-* in dialogs (eg KDialogBase), F1 and Shift+F1
-* can be used to start the help operation.
-*
-*
-****************************************************************************
-*/
-
 
 #include <kapplication.h>
 #include <kglobalsettings.h>
