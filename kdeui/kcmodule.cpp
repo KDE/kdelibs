@@ -3,23 +3,23 @@
    This file is part of the KDE libraries
 
    Copyright (c) 1999 Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 
-*/  
+*/
 
 
 #include <qframe.h>
@@ -46,8 +46,8 @@ void setVisible(QPushButton *btn, bool vis)
   else
     btn->hide();
 }
-  
-KCDialog::KCDialog(KCModule *client, QString &docpath, QWidget *parent, const char *name, bool modal, WFlags f)
+
+KCDialog::KCDialog(KCModule *client, const QString &docpath, QWidget *parent, const char *name, bool modal, WFlags f)
   : QDialog(parent, name, modal, f), _client(client), _docpath(docpath)
 {
   client->reparent(this,0,QPoint(0,0),true);
@@ -71,11 +71,11 @@ KCDialog::KCDialog(KCModule *client, QString &docpath, QWidget *parent, const ch
   setVisible(_cancel, b & KCModule::Cancel);
   setVisible(_apply, b & KCModule::Apply);
   setVisible(_ok, b & KCModule::Ok);
-  
+
   // disable initial buttons
   _reset->setEnabled(false);
   _apply->setEnabled(false);
-  
+
   connect(_help, SIGNAL(clicked()), this, SLOT(helpClicked()));
   connect(_default, SIGNAL(clicked()), this, SLOT(defaultClicked()));
   connect(_reset, SIGNAL(clicked()), this, SLOT(resetClicked()));
@@ -85,17 +85,17 @@ KCDialog::KCDialog(KCModule *client, QString &docpath, QWidget *parent, const ch
 
   QGridLayout *top = new QGridLayout(this, 4, 6, 5);
   top->addMultiCellWidget(client, 0, 0, 0, 6);
-  top->addMultiCellWidget(_sep, 1, 1, 0, 6);  
+  top->addMultiCellWidget(_sep, 1, 1, 0, 6);
   top->addWidget(_help, 2, 0);
   top->addWidget(_default, 2, 1);
   top->addWidget(_reset, 2, 2);
   top->addWidget(_apply, 2, 4);
   top->addWidget(_ok, 2, 5);
   top->addWidget(_cancel, 2, 6);
-  
+
   top->setRowStretch(0, 1);
   top->setColStretch(3, 1);
-  
+
   top->activate();
 }
 

@@ -3,23 +3,23 @@
    This file is part of the KDE libraries
 
    Copyright (c) 1999 Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 
-*/  
+*/
 
 
 #ifndef __KCMODULE_H__
@@ -36,13 +36,13 @@ class QFrame;
 /**
  * The base class for control center modules.
  *
- * In KDE 2.0, control center modules are realized as shared 
+ * In KDE 2.0, control center modules are realized as shared
  * libraries that are loaded into the control center at
  * runtime.
  *
  * The module in principle is a simple widget displaying the
  * item to be changed. The module has a very small interface.
- * 
+ *
  * All the necessary glue logic and the GUI bells and whistles
  * are provided by the control center and must not concern
  * the module author.
@@ -70,7 +70,7 @@ public:
 
   /**
    * An enumeration type for the buttons used by this module.
-   * 
+   *
    * @see KCModule::buttons
    */
   enum Button {Help=1, Default=2, Reset=4, Cancel=8, Apply=16, Ok=32};
@@ -82,7 +82,7 @@ public:
 
   /**
    * Load the configuration data into the module.
-   * 
+   *
    * The load method sets the user interface elements of the
    * module to reflect the current settings stored in the
    * configuration files.
@@ -108,7 +108,7 @@ public:
   /**
    * Set the configuration to sensible default values.
    *
-   * This method is called when the user clicks the "Default" 
+   * This method is called when the user clicks the "Default"
    * button. It should set the display to usefull values.
    */
   virtual void defaults() {};
@@ -143,7 +143,7 @@ protected:
    * Set the buttons to display.
    *
    * The control center displays 6 buttons:
-   * 
+   *
    * Help, Default, Reset, Cancel, Apply, Ok
    *
    * Not all of these make sense for all modules, so you
@@ -153,7 +153,7 @@ protected:
    * @see KCModule::buttons
    */
   void setButtons(int btn) { _btn = btn; };
-  
+
 
 signals:
 
@@ -171,7 +171,7 @@ signals:
 private:
 
   int _btn;
- 
+
 };
 
 
@@ -181,7 +181,7 @@ class KCDialog : public QDialog
 
 public:
 
-  KCDialog(KCModule *client, QString &docpath=QString::null, QWidget *parent=0, const char *name=0, bool modal=false, WFlags f=0);
+  KCDialog(KCModule *client, const QString &docpath=QString::null, QWidget *parent=0, const char *name=0, bool modal=false, WFlags f=0);
 
 
 protected slots:
@@ -196,7 +196,7 @@ protected slots:
 
 
 private:
-  
+
   KCModule    *_client;
   QPushButton *_help;
   QPushButton *_default;
