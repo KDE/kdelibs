@@ -16,6 +16,7 @@
 
 #include <ksimpleconfig.h>
 #include <kapp.h>
+#include <kdebug.h>
 #include <klocale.h>
 QList<KService>* KService::s_lstServices = 0L;
 
@@ -159,12 +160,15 @@ void KService::save( QDataStream& s ) const
 
 bool KService::hasServiceType( const QString& _servicetype ) const
 {
-  debug("Testing %s", m_strName.ascii());
+  if (!m_bValid) return false; // safety test
+
+  kdebug(KDEBUG_INFO, 7012, "Testing %s", m_strName.ascii());
   
   QStringList::ConstIterator it = m_lstServiceTypes.begin();
   for( ; it != m_lstServiceTypes.end(); ++it )
-    debug("    has %s", it->ascii() );
+    kdebug(KDEBUG_INFO, 7012, "    has %s", it->ascii() );
   
+  // TODO : what about "all", "allfiles" and "alldirs" ?
   return ( m_lstServiceTypes.find( _servicetype ) != m_lstServiceTypes.end() );
 }
 
