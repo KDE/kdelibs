@@ -224,6 +224,10 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     if ( reset || config->hasKey( "EnableJavaScript" ) )
       m_bEnableJavaScript = config->readBoolEntry( "EnableJavaScript", false );
 
+        // The global setting for Plugins (there's no local setting yet)
+    if ( reset || config->hasKey( "EnablePlugins" ) )
+      m_bEnablePlugins = config->readBoolEntry( "EnablePlugins", false );
+
     // The domain-specific settings.
     bool check_old_java = true;
 	if( reset || config->hasKey( "JavaDomainSettings" ) ){
@@ -349,8 +353,8 @@ bool KHTMLSettings::isJavaScriptEnabled( const QString& hostname )
 
 bool KHTMLSettings::isPluginsEnabled( const QString& hostname )
 {
-  // FIXME: After 2.1 this new feature can be implemented (malte)
-  return true;
+  // FIXME: hostname is ignored (dnaber, 2001-01-03)
+  return m_bEnablePlugins;
 }
 
 bool KHTMLSettings::isCSSEnabled( const QString& /*hostname*/ )

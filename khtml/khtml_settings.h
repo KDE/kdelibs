@@ -145,6 +145,7 @@ private:
     bool m_bAutoLoadImages;
     bool m_bEnableJava;
     bool m_bEnableJavaScript;
+    bool m_bEnablePlugins;
     bool m_bEnableCSS;
     QMap<QString,KJavaScriptAdvice> javaDomainPolicy;
     QMap<QString,KJavaScriptAdvice> javaScriptDomainPolicy;
