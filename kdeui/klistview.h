@@ -21,6 +21,8 @@
 #include <qcursor.h>
 #include <qlistview.h>
 
+
+class QDragObject;
 /**
  * This Widget extends the functionality of QListView to honor the system
  * wide settings for Single Click/Double Click mode, Auto Selection and
@@ -40,56 +42,60 @@ class KListView : public QListView
 
 public:
     KListView( QWidget *parent = 0, const char *name = 0 );
+    ~KListView();
 
   /**
-   * This function determines whether the given coordinates are within the 
+   * This function determines whether the given coordinates are within the
    * execute area. The execute area is the part of an QListViewItem where mouse
    * clicks or double clicks respectively generate a executed() signal.
-   * Depending on @ref QListView::allColumnsShowFocus() this is either the 
+   * Depending on @ref QListView::allColumnsShowFocus() this is either the
    * whole item or only the first column.
-   * @return true if point is inside execute area of an item, false in all 
+   * @return true if point is inside execute area of an item, false in all
    * other cases including the case that it is over the viewport.
    */
   virtual bool isExecuteArea( const QPoint& point );
 
+
+  QListViewItem *lastItem() const;
+
 signals:
 
   /**
-   * This signal is emitted whenever the user executes an listview item. 
-   * That means depending on the KDE wide Single Click/Double Click 
+   * This signal is emitted whenever the user executes an listview item.
+   * That means depending on the KDE wide Single Click/Double Click
    * setting the user clicked or double clicked on that item.
-   * @param item is the pointer to the executed listview item. 
+   * @param item is the pointer to the executed listview item.
    *
-   * Note that you may not delete any @ref QListViewItem objects in slots 
+   * Note that you may not delete any @ref QListViewItem objects in slots
    * connected to this signal.
    */
   void executed( QListViewItem *item );
 
   /**
-   * This signal is emitted whenever the user executes an listview item. 
-   * That means depending on the KDE wide Single Click/Double Click 
+   * This signal is emitted whenever the user executes an listview item.
+   * That means depending on the KDE wide Single Click/Double Click
    * setting the user clicked or double clicked on that item.
-   * @param item is the pointer to the executed listview item. 
+   * @param item is the pointer to the executed listview item.
    * @param pos is the position where the user has clicked
-   * @param c is the column into which the user clicked. 
+   * @param c is the column into which the user clicked.
    *
-   * Note that you may not delete any @ref QListViewItem objects in slots 
+   * Note that you may not delete any @ref QListViewItem objects in slots
    * connected to this signal.
    */
   void executed( QListViewItem *item, const QPoint &pos, int c );
 
   /**
-   * This signal gets emitted whenever the user double clicks into the 
-   * listview. 
-   * @param item is the pointer to the clicked listview item. 
-   * @param pos is the position where the user has clicked, and 
-   * @param c the column into which the user clicked. 
+   * This signal gets emitted whenever the user double clicks into the
+   * listview.
+   * @param item is the pointer to the clicked listview item.
+   * @param pos is the position where the user has clicked, and
+   * @param c the column into which the user clicked.
    *
    * Note that you may not delete any @ref QListViewItem objects in slots
-   * connected to this signal.  
+   * connected to this signal.
    *
    * This signal is more or less here for the sake of completeness.
-   * You should normally not need to use this. In most cases it´s better 
+   * You should normally not need to use this. In most cases it´s better
    * to use @ref #executed instead.
    */
   void doubleClicked( QListViewItem *item, const QPoint &pos, int c );
@@ -113,7 +119,27 @@ protected:
   virtual void contentsMousePressEvent( QMouseEvent *e );
   virtual void contentsMouseMoveEvent( QMouseEvent *e );
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent *e );
- 
+
+  /**
+   * Override this method.  event is as you'd expect
+   * after is the item to drop this after
+   **/
+  virtual void dropEvent(QDropEvent *event, QListView *parent, QListViewItem *after);
+
+  virtual void dragEnterEvent(QDragEnterEvent *event);
+  virtual void dropEvent(QDropEvent* event);
+  /**
+   * Draw a line when you drag it somewhere nice.
+   **/
+  virtual void dragMoveEvent(QDragMoveEvent *event);
+  virtual void viewportPaintEvent(QPaintEvent *event);
+  virtual void dragLeaveEvent(QDragLeaveEvent *event);
+	
+  virtual void contentsMouseReleaseEvent(QMouseEvent*);
+
+  virtual QDragObject *dragObject(const QMouseEvent* e) const;
+	
+
   QCursor oldCursor;
   bool m_bUseSingle;
   bool m_bChangeCursorOverItem;
@@ -126,6 +152,22 @@ protected:
 
 private slots:
   void slotMouseButtonClicked( int btn, QListViewItem *item, const QPoint &pos, int c );
+
+
+private:
+  /**
+   * Repaint the rect where I was drawing the drop line.
+   **/
+  void cleanRect();
+  /**
+   * Where is the nearest QListViewItem that I'm going to drop after?
+   **/
+  QListViewItem* findDrop(const QPoint &p);
+  void startDrag(const QMouseEvent* e);
+
+  QRect *invalidateRect;
+  QPoint *pressPos;
+
 
 private:
   class KListViewPrivate;
