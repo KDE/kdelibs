@@ -52,8 +52,9 @@ public:
 	void setStrokeColor(const QString &stroke);
 	void setFillColor(const QString &fill);
 	void setFillRule(const QString &fillRule);
-	void setFillOpacity(double fillOpacity, bool justset = false);
-	void setStrokeOpacity(double strokeOpacity, bool justset = false);
+	void setOpacity(const QString &opacity);
+	void setFillOpacity(const QString &fillOpacity);
+	void setStrokeOpacity(const QString &strokeOpacity);
 	void setStrokeDashOffset(const QString &dashOffset);
 	void setStrokeDashArray(const QString &dashes);
 	
@@ -69,6 +70,9 @@ public:
 	void drawImage(double x, double y, QImage &image);
 
 	QColor parseColor(const QString &param);
+	Q_UINT32 toArtColor(QColor color);
+	Q_UINT32 parseOpacity(QString data);
+	
 	double toPixel(const QString &s, bool hmode);
 	double dpi();
 	

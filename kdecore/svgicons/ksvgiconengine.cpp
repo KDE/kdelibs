@@ -172,43 +172,11 @@ public:
 			// Parse color using KSVGIconPainter (which uses Qt)
 			// Supports all svg-needed color formats
 			QColor qStopColor = m_engine->painter()->parseColor(parseColor);
-			
+
 			// Convert in a libart suitable form
-			QString tempName = qStopColor.name();
-			const char *str = tempName.latin1();
-
-			int opacity = 0xff;
-			int stopColor = 0;
-				
-			for(int i = 1; str[i]; i++)
-			{
-				int hexval;
-				if(str[i] >= '0' && str[i] <= '9')
-					hexval = str[i] - '0';
-				else if (str[i] >= 'A' && str[i] <= 'F')
-					hexval = str[i] - 'A' + 10;
-				else if (str[i] >= 'a' && str[i] <= 'f')
-					hexval = str[i] - 'a' + 10;
-				else
-					break;
-				
-				stopColor = (stopColor << 4) + hexval;
-			}
-			
-			if(!parseOpacity.isEmpty())
-			{
-				double temp;
+			Q_UINT32 stopColor = m_engine->painter()->toArtColor(qStopColor);
 		
-				if(parseOpacity.contains("%"))
-				{
-					QString tempString = parseOpacity.left(parseOpacity.length() - 1);
-					temp = double(255 * tempString.toDouble()) / 100.0;
-				}
-				else
-					temp = parseOpacity.toDouble();
-
-				opacity = (int) floor(temp * 255 + 0.5);
-			}
+			int opacity = m_engine->painter()->parseOpacity(parseOpacity);
 
 			Q_UINT32 rgba = (stopColor << 8) | opacity;
 			Q_UINT32 r, g, b, a;				
@@ -515,7 +483,7 @@ public:
 			m_engine->painter()->setStrokeDashOffset(value);
 		else if(command == "stroke-dasharray")
 			m_engine->painter()->setStrokeDashArray(value);
-		else if(command == "stroke")
+			else if(command == "stroke")
 			m_engine->painter()->setStrokeColor(value);
 		else if(command == "fill")
 			m_engine->painter()->setFillColor(value);
@@ -523,24 +491,15 @@ public:
 			m_engine->painter()->setFillRule(value);
 		else if(command == "fill-opacity" || command == "stroke-opacity" || command == "opacity")
 		{
-			double opacity;
-			
-			if(value.contains("%"))
-			{
-				QString temp = value.left(value.length() - 1);
-				opacity = double(255 * temp.toDouble()) / 100.0;
-			}
-			else
-				opacity = value.toDouble();
-	
 			if(command == "fill-opacity")
-				m_engine->painter()->setFillOpacity(opacity);
-			else if(command == "stroke-opacity")
-				m_engine->painter()->setStrokeOpacity(opacity);
+				m_engine->painter()->setFillOpacity(value);
+			else if(command == "stroke-value")
+				m_engine->painter()->setStrokeOpacity(value);
 			else
 			{
-				m_engine->painter()->setFillOpacity(opacity);
-				m_engine->painter()->setStrokeOpacity(opacity);
+				m_engine->painter()->setOpacity(value);
+				m_engine->painter()->setFillOpacity(value);
+				m_engine->painter()->setStrokeOpacity(value);
 			}
 		}
 	}

@@ -18,13 +18,14 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qvaluevector.h>
 #include <qstringlist.h>
 #include <qwmatrix.h>
 #include <qregexp.h>
 #include <qimage.h>
+#include <qdict.h>
 #include <qmap.h>
 #include <qdom.h>
-#include <qvaluevector.h>
 
 #include <math.h>
 
@@ -66,7 +67,7 @@ public:
 
 		m_useFillGradient = false;
 		m_useStrokeGradient = false;
-		
+
 		m_worldMatrix = new QWMatrix();
 		
 		// Create new image with alpha support
@@ -78,8 +79,9 @@ public:
 		m_dashOffset = 0;
 		m_dashes = "";
 
-		m_fillOpacity = 255.0;
-		m_strokeOpacity = 255.0;
+		m_opacity = 0xff;
+		m_fillOpacity = 0xff;
+		m_strokeOpacity = 0xff;
 		
 		m_fillRule = "nonzero";
 		
@@ -87,10 +89,12 @@ public:
 		m_height = height;
 		
 		m_rowstride = m_width * 4;
-	
+
 		// Make internal libart rendering buffer transparent
 		m_buffer = art_new(art_u8, m_rowstride * m_height);
 		memset(m_buffer, 0, m_rowstride * m_height);
+
+		m_tempBuffer = 0;
 	}
 
 	~KSVGIconPainterHelper()
@@ -120,7 +124,82 @@ public:
 			vec.resize(index + 1);
 	}
 
-	void drawSVP(ArtSVP *svp, art_u32 color)
+	void createBuffer()
+	{
+		m_tempBuffer = art_new(art_u8, m_rowstride * m_height);
+		memset(m_tempBuffer, 0, m_rowstride * m_height);
+
+		// Swap buffers, so we work with the new one internally...
+		art_u8 *temp = m_buffer;
+		m_buffer = m_tempBuffer;
+		m_tempBuffer = temp;
+	}
+
+	void mixBuffer(int opacity)
+	{
+		art_u8 *srcPixel = m_buffer;
+		art_u8 *dstPixel = m_tempBuffer;
+
+		for(int y = 0; y < m_height; y++)
+		{
+			for(int x = 0; x < m_width; x++)
+			{
+				art_u8 r, g, b, a;
+
+				a = srcPixel[4 * x + 3];
+
+				if(a)
+				{
+					r = srcPixel[4 * x];
+					g = srcPixel[4 * x + 1];
+					b = srcPixel[4 * x + 2];
+
+					int temp = a * opacity + 0x80;
+					a = (temp + (temp >> 8)) >> 8;
+					art_rgba_run_alpha(dstPixel + 4 * x, r, g, b, a, 1);
+				}
+			}
+
+			srcPixel += m_rowstride;
+			dstPixel += m_rowstride;
+		}
+
+		// Re-swap again...
+		art_u8 *temp = m_buffer;
+		m_buffer = m_tempBuffer;
+		m_tempBuffer = temp;		
+		
+		art_free(m_tempBuffer);
+		m_tempBuffer = 0;
+	}
+
+	Q_UINT32 toArtColor(QColor color)
+	{
+		// Convert in a libart suitable form
+		QString tempName = color.name();
+		const char *str = tempName.latin1();
+
+		int result = 0;
+
+		for(int i = 1; str[i]; i++)
+		{
+			int hexval;
+			if(str[i] >= '0' && str[i] <= '9')
+				hexval = str[i] - '0';
+			else if (str[i] >= 'A' && str[i] <= 'F')
+				hexval = str[i] - 'A' + 10;
+			else if (str[i] >= 'a' && str[i] <= 'f')
+				hexval = str[i] - 'a' + 10;
+			else
+				break;
+
+			result = (result << 4) + hexval;
+		}
+
+		return result;
+	}
+	
+	void drawSVP(ArtSVP *svp, Q_UINT32 rgb, int opacity)
 	{
 		if(!svp)
 			return;
@@ -128,16 +207,14 @@ public:
 		ArtRender *render = art_render_new(0, 0, m_width, m_height, m_buffer, m_rowstride, 3, 8, ART_ALPHA_SEPARATE, 0);
 		art_render_svp(render, svp);
 		
-		int opacity = (color & 0xFF);
 		art_render_mask_solid(render, (opacity << 8) + opacity + (opacity >> 7));
 
-		ArtPixMaxDepth acolor[3];
-
-		acolor[0] = ART_PIX_MAX_FROM_8((color >> 24) & 0xff);
-		acolor[1] = ART_PIX_MAX_FROM_8((color >> 16) & 0xff);
-		acolor[2] = ART_PIX_MAX_FROM_8((color >> 8) & 0xff);
-		art_render_image_solid(render, acolor);
-
+		ArtPixMaxDepth color[3];
+		color[0] = ART_PIX_MAX_FROM_8(rgb >> 16);
+		color[1] = ART_PIX_MAX_FROM_8((rgb >> 8) & 0xff);
+		color[2] = ART_PIX_MAX_FROM_8(rgb & 0xff);
+		
+		art_render_image_solid(render, color);
 		art_render_invoke(render);
 	}
 
@@ -159,7 +236,7 @@ public:
 
 		ArtSVP *fillSVP = 0, *strokeSVP = 0;
 
-		art_u32 fillColor = 0, strokeColor = 0;
+		Q_UINT32 fillColor = 0, strokeColor = 0;
 
 		// Filling
 		{
@@ -174,7 +251,7 @@ public:
 				}
 			}
 
-			fillColor = (qRed(m_fillColor.rgb()) << 24) | (qGreen(m_fillColor.rgb()) << 16) | (qBlue(m_fillColor.rgb()) << 8) | (qAlpha(m_fillColor.rgb()));
+			fillColor = toArtColor(m_fillColor);
 
 			ArtSvpWriter *swr;
 			ArtSVP *temp;
@@ -205,7 +282,7 @@ public:
 		// Stroking
 		if(m_useStroke || m_useStrokeGradient)
 		{
-			strokeColor = (qRed(m_strokeColor.rgb()) << 24) | (qGreen(m_strokeColor.rgb()) << 16) | (qBlue(m_strokeColor.rgb()) << 8) | (qAlpha(m_strokeColor.rgb()));
+			strokeColor = toArtColor(m_strokeColor);
 
 			double ratio = sqrt(pow(affine[0], 2) + pow(affine[3], 2)) / sqrt(2.0);
 			double strokeWidth = m_strokeWidth * ratio;
@@ -255,17 +332,51 @@ public:
 			strokeSVP = svp;
 		}
 
+		// Apply opacity
+		int fillOpacity = static_cast<int>(m_fillOpacity);
+		int strokeOpacity = static_cast<int>(m_strokeOpacity);
+		int opacity = static_cast<int>(m_opacity);
+		
+		// Needed hack, to support both transparent
+		// paths and transparent gradients
+		if(fillOpacity == strokeOpacity && fillOpacity == opacity && !m_useFillGradient && !m_useStrokeGradient)
+			opacity = 255;
+
+		if(fillOpacity != 255)
+		{
+			int temp = fillOpacity * opacity + 0x80;
+			fillOpacity = (temp + (temp >> 8)) >> 8;
+		}
+		
+		if(strokeOpacity != 255)
+		{
+			int temp = strokeOpacity * opacity + 0x80;
+			strokeOpacity = (temp + (temp >> 8)) >> 8;
+		}
+		
+		// Create temporary buffer if necessary
+		bool tempDone = false;
+		if(m_opacity != 0xff)
+		{
+			tempDone = true;
+			createBuffer();
+		}
+
 		// Apply Gradients on fill/stroke
 		if(m_useFillGradient)
 			applyGradient(fillSVP, true);
 		else if(m_useFill)
-			drawSVP(fillSVP, fillColor);
+			drawSVP(fillSVP, fillColor, fillOpacity);
 
 		if(m_useStrokeGradient)
 			applyGradient(strokeSVP, false);
 		else if(m_useStroke)
-			drawSVP(strokeSVP, strokeColor);
+			drawSVP(strokeSVP, strokeColor, strokeOpacity);
 
+		// Mix in temporary buffer, if possible
+		if(tempDone)
+			mixBuffer(opacity);
+	
 		if(m_clipSVP)
 		{
 			art_svp_free(m_clipSVP);
@@ -279,8 +390,9 @@ public:
 			art_svp_free(strokeSVP);
 
 		// Reset opacity values
-		m_fillOpacity = 255;
-		m_strokeOpacity = 255;
+		m_opacity = 255.0;
+		m_fillOpacity = 255.0;
+		m_strokeOpacity = 255.0;
 		
 		art_free(vec);
 	}
@@ -306,7 +418,7 @@ public:
 			if(element.hasAttribute("x2"))
 				x2 = m_painter->toPixel(element.attribute("x2"), true);
 			else
-				x2 = m_width;
+				x2 = 100;
 
 			if(element.hasAttribute("y2"))
 				y2 = m_painter->toPixel(element.attribute("y2"), false);
@@ -350,17 +462,17 @@ public:
 			if(element.hasAttribute("cx"))
 				cx = m_painter->toPixel(element.attribute("cx"), true);
 			else
-				cx = 0.5;
+				cx = 50;
 
 			if(element.hasAttribute("cy"))
 				cy = m_painter->toPixel(element.attribute("cy"), false);
 			else
-				cy = 0.5;
+				cy = 50;
 
 			if(element.hasAttribute("r"))
 				r = m_painter->toPixel(element.attribute("r"), true);
 			else
-				r = 0.5;
+				r = 50;
 
 			if(element.hasAttribute("fx"))
 				fx = m_painter->toPixel(element.attribute("fx"), false);
@@ -424,7 +536,36 @@ public:
 			}
 			else
 			{
+				ArtGradientLinear *linear = m_linearGradientMap[element.attribute("xlink:href").mid(1)];
+				QDomElement newElement = m_linearGradientElementMap[linear];
+
+				// Saved 'old' attributes
+				QDict<QString> refattrs;
+				refattrs.setAutoDelete(true);
+
+				for(unsigned int i = 0; i < newElement.attributes().length(); ++i)
+					refattrs.insert(newElement.attributes().item(i).nodeName(), new QString(newElement.attributes().item(i).nodeValue()));
+
+				// Copy attributes
+				if(!newElement.isNull())
+				{
+					QDomNamedNodeMap attr = element.attributes();
+
+					for(unsigned int i = 0; i < attr.length(); i++)
+					{
+						QString name = attr.item(i).nodeName();
+						if(name != "xlink:href" && name != "id")
+							newElement.setAttribute(name, attr.item(i).nodeValue());
+					}
+				}
+				
 				applyGradient(svp, element.attribute("xlink:href").mid(1));
+
+				// Restore attributes
+				QDictIterator<QString> itr(refattrs);
+				for(; itr.current(); ++itr)
+					newElement.setAttribute(itr.currentKey(), *(itr.current()));
+				
 				return;
 			}
 		}
@@ -441,7 +582,36 @@ public:
 			}
 			else
 			{
+				ArtGradientRadial *radial = m_radialGradientMap[element.attribute("xlink:href").mid(1)];
+				QDomElement newElement = m_radialGradientElementMap[radial];
+
+				// Saved 'old' attributes
+				QDict<QString> refattrs;
+				refattrs.setAutoDelete(true);
+
+				for(unsigned int i = 0; i < newElement.attributes().length(); ++i)
+					refattrs.insert(newElement.attributes().item(i).nodeName(), new QString(newElement.attributes().item(i).nodeValue()));
+
+				// Copy attributes
+				if(!newElement.isNull())
+				{
+					QDomNamedNodeMap attr = element.attributes();
+
+					for(unsigned int i = 0; i < attr.length(); i++)
+					{
+						QString name = attr.item(i).nodeName();
+						if(name != "xlink:href" && name != "id")
+							newElement.setAttribute(name, attr.item(i).nodeValue());
+					}
+				}
+				
 				applyGradient(svp, element.attribute("xlink:href").mid(1));
+
+				// Restore attributes
+				QDictIterator<QString> itr(refattrs);
+				for(; itr.current(); ++itr)
+					newElement.setAttribute(itr.currentKey(), *(itr.current()));
+
 				return;
 			}
 		}
@@ -477,24 +647,6 @@ public:
 
 			  line += m_rowstride;
 		  }
-	}
-
-	QColor applyOpacity(QColor original, bool fill)
-	{
-		double opacity = fill ? m_fillOpacity : m_strokeOpacity;
-		
-		if(opacity != 255.0)
-		{		
-			// Spec : clamping
-			if(opacity < 0)
-				return QColor(qRgba(original.red(), original.green(), original.blue(), 0));
-			else if(opacity > 255)
-				return QColor(qRgba(original.red(), original.green(), original.blue(), 255));
-			else
-				return QColor(qRgba(original.red(), original.green(), original.blue(), (int) opacity));
-		}
-		
-		return original;
 	}
 
 	void calculateArc(bool relative, QMemArray<ArtBpath> &vec, int &index, double &curx, double &cury, double angle, double x, double y, double r1, double r2, bool largeArcFlag, bool sweepFlag)
@@ -945,22 +1097,24 @@ private:
 	QString m_fillRule;
 	QString m_joinStyle;
 	QString m_capStyle;
+	
 	int m_strokeMiterLimit;
+	
 	QString m_dashes;
 	unsigned short m_dashOffset;
 
 	QColor m_fillColor;
 	QColor m_strokeColor;
 	
-	GC m_gc;
-	
 	art_u8 *m_buffer;
+	art_u8 *m_tempBuffer;
 	
 	int m_width;
 	int m_height;
 
 	int m_rowstride;
 
+	double m_opacity;
 	double m_fillOpacity;
 	double m_strokeOpacity;
 	
@@ -1075,7 +1229,7 @@ void KSVGIconPainter::setStrokeColor(const QString &stroke)
 	}
 	else
 	{
-		d->helper->m_strokeColor = d->helper->applyOpacity(parseColor(stroke), false);
+		d->helper->m_strokeColor = parseColor(stroke);
 
 		d->helper->m_useStrokeGradient = false;
 		d->helper->m_strokeGradientReference = QString::null;
@@ -1103,7 +1257,7 @@ void KSVGIconPainter::setFillColor(const QString &fill)
 	}
 	else
 	{
-		d->helper->m_fillColor = d->helper->applyOpacity(parseColor(fill), true);
+		d->helper->m_fillColor = parseColor(fill);
 
 		d->helper->m_useFillGradient = false;
 		d->helper->m_fillGradientReference = QString::null;
@@ -1120,24 +1274,41 @@ void KSVGIconPainter::setFillRule(const QString &fillRule)
 	d->helper->m_fillRule = fillRule;
 }
 
-void KSVGIconPainter::setFillOpacity(double fillOpacity, bool justset)
+Q_UINT32 KSVGIconPainter::parseOpacity(QString data)
 {
-	if(!justset)
-		d->helper->m_fillOpacity = int(((double(d->helper->m_fillOpacity) / 255.0) * fillOpacity) * 255);
-	else
-		d->helper->m_fillOpacity = justset;
-	
-	d->helper->m_fillColor = d->helper->applyOpacity(d->helper->m_fillColor, true);
+	int opacity = 255;
+
+	if(!data.isEmpty())
+	{
+		double temp;
+
+		if(data.contains("%"))
+		{
+			QString tempString = data.left(data.length() - 1);
+			temp = double(255 * tempString.toDouble()) / 100.0;
+		}
+		else
+			temp = data.toDouble();
+
+		opacity = (int) floor(temp * 255 + 0.5);
+	}
+
+	return opacity;
 }
 
-void KSVGIconPainter::setStrokeOpacity(double strokeOpacity, bool justset)
+void KSVGIconPainter::setFillOpacity(const QString &fillOpacity)
 {
-	if(!justset)
-		d->helper->m_strokeOpacity = int(((double(d->helper->m_strokeOpacity) / 255.0) * strokeOpacity) * 255);
-	else
-		d->helper->m_strokeOpacity = strokeOpacity;
-	
-	d->helper->m_strokeColor = d->helper->applyOpacity(d->helper->m_strokeColor, false);
+	d->helper->m_fillOpacity = parseOpacity(fillOpacity);
+}
+
+void KSVGIconPainter::setStrokeOpacity(const QString &strokeOpacity)
+{
+	d->helper->m_strokeOpacity = parseOpacity(strokeOpacity);
+}
+
+void KSVGIconPainter::setOpacity(const QString &opacity)
+{
+	d->helper->m_opacity = parseOpacity(opacity);
 }
 
 void KSVGIconPainter::setUseFill(bool fill)
@@ -2530,6 +2701,11 @@ QDomElement KSVGIconPainter::radialGradientElement(ArtGradientRadial *radial)
 void KSVGIconPainter::addRadialGradientElement(ArtGradientRadial *gradient, QDomElement element)
 {
 	d->helper->m_radialGradientElementMap.insert(gradient, element);
+}
+
+Q_UINT32 KSVGIconPainter::toArtColor(QColor color)
+{
+	return d->helper->toArtColor(color);
 }
 
 QWMatrix KSVGIconPainter::parseTransform(const QString &transform)
