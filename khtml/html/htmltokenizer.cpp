@@ -920,6 +920,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 #endif
             while(src.length()) {
                 curchar = src[0];
+                checkBuffer();
 
                 if(curchar <= '\'') {
                     // ### attributes like '&{blaa....};' are supposed to be treated as jscript.
@@ -1572,6 +1573,7 @@ void HTMLTokenizer::enlargeBuffer(int len)
 {
     int newsize = kMax(size*2, size+len);
     int oldoffs = (dest - buffer);
+//    qDebug("size: %d, newsize: %d, len: %d, oldoffs: %d", size, newsize, len, oldoffs);
 
     buffer = (QChar*)realloc(buffer, newsize*sizeof(QChar));
     dest = buffer + oldoffs;
