@@ -1186,10 +1186,10 @@ HTMLFormElement HTMLIsIndexElement::form() const
 DOMString HTMLIsIndexElement::prompt() const
 {
     if(!impl) return DOMString();
-    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_PROMPT);
+    return static_cast<HTMLIsIndexElementImpl*>(impl)->prompt();
 }
 
 void HTMLIsIndexElement::setPrompt( const DOMString &value )
 {
-    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_PROMPT, value);
+    if(impl) static_cast<HTMLIsIndexElementImpl*>(impl)->setPrompt(value);
 }
