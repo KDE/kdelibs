@@ -19,7 +19,9 @@
 #include "dom/html_document.h"
 #include "dom/dom_exception.h"
 #include <stdio.h>
-#include <khtml_factory.h>
+#define protected public
+#include "khtml_factory.h"
+#undef protected
 #include <css/cssstyleselector.h>
 #include <html/html_imageimpl.h>
 #include <rendering/render_style.h>
@@ -43,7 +45,7 @@ int main(int argc, char *argv[])
 	::exit( 1 );
     }
 
-    KHTMLFactory *fac = new KHTMLFactory();
+    KHTMLFactory *fac = new KHTMLFactory(true);
 
     KMainWindow *toplevel = new KMainWindow();
     KHTMLPart *doc = new KHTMLPart( toplevel, 0, toplevel, 0, KHTMLPart::BrowserViewGUI );
@@ -102,15 +104,7 @@ int main(int argc, char *argv[])
 
 
     int ret = a.exec();
-    
-    //delete doc;
-    //delete dtv;
-
-    khtml::Cache::clear();
-    khtml::CSSStyleSelector::clear();
-    khtml::RenderStyle::cleanup();
-
-    delete fac;
+    fac->deref();
     return ret;
 }
 

@@ -18,7 +18,6 @@
 #include "khtml_part.h"
 #include "domtreeview.moc"
 #include "xml/dom_nodeimpl.h"
-#include "rendering/render_object.h"
 
 DOMTreeView::DOMTreeView(QWidget *parent, KHTMLPart *currentpart, const char * name) : KListView(parent, name)
 {
@@ -62,21 +61,17 @@ void DOMTreeView::recursive(const DOM::Node &pNode, const DOM::Node &node)
     QListViewItem *cur_item;
     if(pNode.ownerDocument() != document)
     {
-	khtml::RenderObject *r = node.handle() ? node.handle()->renderer() : 0;
-	QString renderer = r ? r->information() : QString::null;
 	QString val = node.nodeValue().string();
 	if ( val.length() > 20 )
 	    val.truncate( 20 );
-	cur_item = new QListViewItem(static_cast<QListView *>(this), node.nodeName().string(), val, renderer );
+	cur_item = new QListViewItem(static_cast<QListView *>(this), node.nodeName().string(), val );
 	document = pNode.ownerDocument();
     }
     else {
-	khtml::RenderObject *r = node.handle() ? node.handle()->renderer() : 0;
-	QString renderer = r ? r->information() : QString::null;
 	QString val = node.nodeValue().string();
 	if ( val.length() > 20 )
 	    val.truncate( 20 );
-	cur_item = new QListViewItem(m_itemdict[pNode.handle()], node.nodeName().string(), val, renderer);
+	cur_item = new QListViewItem(m_itemdict[pNode.handle()], node.nodeName().string(), val);
     }
     
     if(node.handle())
