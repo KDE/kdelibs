@@ -127,6 +127,9 @@ void KCombiView::setSorting( QDir::SortSpec sort )
     if ( !right )
         kdFatal() << "You need to call setRight( someview ) before!" << endl;
     right->setSorting( sort );
+    // don't call KFileView::setSorting()! It would resort all items, what
+    // we don't want (the child-views do this themselves)
+    mySorting = right->sorting();
 }
 
 void KCombiView::sortReversed()
