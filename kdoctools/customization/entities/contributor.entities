@@ -318,6 +318,8 @@
 <!ENTITY Seth.Rothberg.mail '<email>sethmr@bellatlantic.org</email>'>
 <!ENTITY David.Rugge '<personname><firstname>David</firstname><surname>Rugge</surname></personname>'>
 <!ENTITY David.Rugge.mail '<email>davidrugge@mediaone.net</email>'>
+<!ENTITY Andriy.Rysin '<personname><firstname>Andriy</firstname><surname>Rysin</surname></personname>'>
+<!ENTITY Andriy.Rysin.mail '<email>rysin@kde.org</email>'>
 <!ENTITY Teemu.Rytilahti '<personname><firstname>Teemu</firstname><surname>Rytilahti</surname></personname>'>
 <!ENTITY Teemu.Rytilahti.mail '<email>teemu.rytilahti@d5k.net</email>'>
 

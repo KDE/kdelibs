@@ -309,6 +309,7 @@
 <!ENTITY k4wins	"<application>K Four Wins</application>">
 <!ENTITY kwrite	"<application>KWrite</application>">
 <!ENTITY kwuftpd	"<application>kwuftpd</application>">
+<!ENTITY kxkb	"<application>Kxkb</application>">
 <!ENTITY LaserJet	'<trademark class="registered">LaserJet</trademark>'>
 <!ENTITY lisa	"<application>Lisa</application>">
 <!ENTITY Linux	'<trademark class="registered">Linux</trademark>'>
