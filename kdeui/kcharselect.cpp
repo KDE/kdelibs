@@ -207,7 +207,8 @@ void KCharSelectTable::keyPressEvent( QKeyEvent *e )
     case Key_Prior:
 	emit tableUp();
 	break;
-    case Key_Space: case Key_Enter: case Key_Return: {
+    case Key_Space:
+    case Key_Enter: case Key_Return: {
 	QPoint oldPos = vPos;
 
 	vPos = focusPos;
@@ -331,7 +332,10 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
     connect( tableSpinBox, SIGNAL( valueChanged( int ) ), this, SLOT( tableChanged( int ) ) );
 
     charTable = new KCharSelectTable( this, name, _font.isEmpty() ? QVBox::font().family() : _font, _chr, _tableNum );
-    QSize sz( charTable->contentsWidth(), charTable->contentsHeight() );
+    // This offset will go away -- the real goal is to make it resizable
+    //      printf("Frame width %d\n", frameWidth() );
+    QSize sz( charTable->contentsWidth()  +  4 ,
+              charTable->contentsHeight() +  4 );
     charTable->resize( sz );
     charTable->setMaximumSize( sz );
     charTable->setMinimumSize( sz );
@@ -398,8 +402,8 @@ void KCharSelect::fillFontCombo()
 	fontDataBase = new QFontDatabase();
 	qAddPostRoutine( cleanupFontDatabase );
     }
-    fontCombo->insertStringList( fontDataBase->families() );
     fontList=fontDataBase->families();
+    fontCombo->insertStringList( fontList );
 }
 
 //==================================================================
