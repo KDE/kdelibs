@@ -242,10 +242,10 @@ class KGradientSelector : public KSelector
 {
   Q_OBJECT
 
-  Q_PROPERTY( QColor firstColor READ firstColor WRITE setFirstColor DESIGNABLE true )
-  Q_PROPERTY( QColor secondColor READ secondColor WRITE setSecondColor DESIGNABLE true )
-  Q_PROPERTY( QString firstText READ firstText WRITE setFirstText DESIGNABLE true )
-  Q_PROPERTY( QString secondText READ secondText WRITE setSecondText DESIGNABLE true )
+  Q_PROPERTY( QColor firstColor READ firstColor WRITE setFirstColor )
+  Q_PROPERTY( QColor secondColor READ secondColor WRITE setSecondColor )
+  Q_PROPERTY( QString firstText READ firstText WRITE setFirstText )
+  Q_PROPERTY( QString secondText READ secondText WRITE setSecondText )
 
 public:
   /**
@@ -266,25 +266,25 @@ public:
    * Sets the two colors which span the gradient.
    */
   void setColors( const QColor &col1, const QColor &col2 )
-  {	color1 = col1; color2 = col2; }
+  {	color1 = col1; color2 = col2; update();}
   void setText( const QString &t1, const QString &t2 )
-  {	text1 = t1; text2 = t2; }
+  {	text1 = t1; text2 = t2; update(); }
 
   /**
    * Set each color on its own.
    */
   void setFirstColor( const QColor &col )
-  { color1 = col; } 
+  { color1 = col; update(); } 
   void setSecondColor( const QColor &col )
-  { color2 = col; }
+  { color2 = col; update(); }
 
   /**
    * Set each description on its own
    */
   void setFirstText( const QString &t )
-  { text1 = t; }
+  { text1 = t; update(); }
   void setSecondText( const QString &t )
-  { text2 = t; }
+  { text2 = t; update(); }
 
   const QColor firstColor() const
   { return color1; }
@@ -301,6 +301,12 @@ protected:
    * @reimplemented
    */
   virtual void drawContents( QPainter * );
+
+  /**
+   * @reimplemented
+   */
+  virtual QSize minimumSize() const
+  { return sizeHint(); }
 
 private:
   void init();
