@@ -548,9 +548,12 @@ void KResolverManager::doNotifying(RequestData *p)
 	    {
 	      p->obj->errorcode = r.errorCode();
 	      p->obj->syserror = r.systemError();
+	      p->obj->status = r.count() > 0 ? 
+		KResolver::Success : KResolver::Failed;
 	    }
 	  else
 	    {
+	      p->obj->status = KResolver::Canceled;
 	      p->obj->errorcode = KResolver::Canceled;
 	      p->obj->syserror = 0;
 	    }
