@@ -666,6 +666,7 @@ KPrinter::PageSize pageNameToPageSize(const QString& name)
 	else if (name == "B7" || name == "B7ISO") return KPrinter::B7;
 	else if (name == "B8" || name == "B8ISO") return KPrinter::B8;
 	else if (name == "B9" || name == "B9ISO") return KPrinter::B9;
+	else if (name == "B10" || name == "B10ISO") return KPrinter::B10;
 	else if (name == "C5" || name == "C5E" || name == "EnvC5") return KPrinter::C5E;
 	else if (name == "DL" || name == "DLE" || name == "EnvDL") return KPrinter::DLE;
 	else if (name == "Comm10" || name == "COM10" || name == "Env10") return KPrinter::Comm10E;
@@ -702,6 +703,7 @@ const char* pageSizeToPageName(KPrinter::PageSize s)
 		case KPrinter::B7: return "B7";
 		case KPrinter::B8: return "B8";
 		case KPrinter::B9: return "B9";
+		case KPrinter::B10: return "B10";
 		case KPrinter::C5E: return "C5";
 		case KPrinter::DLE: return "DL";
 		case KPrinter::Comm10E: return "Comm10";
