@@ -315,8 +315,6 @@ public:
     bool designMode() const;
 
     // internal
-    NodeImpl *findElement( Id id );
-
     bool prepareMouseEvent( bool readonly, int x, int y, MouseEvent *ev );
 
     virtual bool childAllowed( NodeImpl *newChild );

@@ -1243,42 +1243,6 @@ void DocumentImpl::determineParseMode( const QString &/*str*/ )
     kdDebug(6020) << " using strict parseMode" << endl;
 }
 
-// Please see if there`s a possibility to merge that code
-// with the next function and getElementByID().
-NodeImpl *DocumentImpl::findElement( Id id )
-{
-    QPtrStack<NodeImpl> nodeStack;
-    NodeImpl *current = _first;
-
-    while(1)
-    {
-        if(!current)
-        {
-            if(nodeStack.isEmpty()) break;
-            current = nodeStack.pop();
-            current = current->nextSibling();
-        }
-        else
-        {
-            if(current->id() == id)
-                return current;
-
-            NodeImpl *child = current->firstChild();
-            if(child)
-            {
-                nodeStack.push(current);
-                current = child;
-            }
-            else
-            {
-                current = current->nextSibling();
-            }
-        }
-    }
-
-    return 0;
-}
-
 NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 {
     unsigned short fromTabIndex;
