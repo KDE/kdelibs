@@ -2,7 +2,7 @@
  * $Id$
  * 
  * KStyle
- * Copyright (C) 2001 Karol Szwed <gallium@kde.org>
+ * Copyright (C) 2001, 2002 Karol Szwed <gallium@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -33,14 +33,43 @@ class TransparencyHandler;
 class KPixmap;
 
 
+/** 
+ * Simplifies and extends the QStyle API to make style coding easier.
+ *  
+ * The KStyle class provides a simple internal menu transparency engine
+ * which attempts to use XRender for accelerated blending where requested,
+ * or falls back to a fast internal software tinting routine.
+ * It also simplifies more complex portions of the QStyle API, such as
+ * the PopupMenuItems, ScrollBars and Sliders by providing extra "primitive
+ * elements" which are simple to implement by the style writer.
+ *
+ * @author Karol Szwed (gallium@kde.org)
+ * @see QStyle::QStyle
+ * @see QCommonStyle::QCommonStyle
+ * @version $Id$
+ */
 class KStyle: public QCommonStyle
 {
 	Q_OBJECT
 
 	public:
-		/** TODO: DOCUMENTATION
-		 */
 
+		/**
+		 * KStyle Flags:
+		 * 
+		 * @li Default - Default style setting, where menu transparency
+		 * and the FilledFrameWorkaround are disabled.
+		 * 
+		 * @li AllowMenuTransparency - Enable this flag to use KStyle's 
+		 * internal menu transparency engine.
+		 * 
+		 * @li FilledFrameWorkaround - Enable this flag to facilitate 
+		 * proper repaints of QMenuBars and QToolBars when the style chooses 
+		 * to paint the interior of a QFrame. The style primitives in question 
+		 * are PE_PanelMenuBar and PE_PanelDockWindow. The HighColor style uses
+		 * this workaround to enable painting of gradients in menubars and 
+		 * toolbars.
+		 */
 		typedef uint KStyleFlags;
 		enum KStyleOption {
 			Default 			  =		0x00000000,		// All options disabled.
@@ -48,42 +77,125 @@ class KStyle: public QCommonStyle
 			FilledFrameWorkaround = 	0x00000002
 		};
 
+		/**
+		 * KStyle ScrollBarType:
+		 *
+		 * Allows the style writer to easily select what type of scrollbar
+		 * should be used without having to duplicate large amounts of source
+		 * code by implementing the complex control CC_ScrollBar.
+		 *
+		 * @li WindowsStyleScrollBar - Two button scrollbar with the previous
+		 * button at the top/left, and the next button at the bottom/right.
+		 *
+		 * @li PlatinumStyleSrollBar - Two button scrollbar with both the 
+		 * previous and next buttons at the bottom/right.
+		 *
+		 * @li ThreeButtonScrollBar - KDE style three button scrollbar with
+		 * two previous buttons, and one next button. The next button is always
+		 * at the bottom/right, whilst the two previous buttons are on either 
+		 * end of the scrollbar.
+		 */
 		enum KStyleScrollBarType {
-			WindowsStyleScrollBar  = 	0x00000000,		// Default
+			WindowsStyleScrollBar  = 	0x00000000,
 			PlatinumStyleScrollBar = 	0x00000001,
 			ThreeButtonScrollBar   = 	0x00000002
 		};
 
+		/** 
+		 * Constructs a KStyle object.
+		 *
+		 * Select the appropriate KStyle flags and scrollbar type
+		 * for your style. The user's style preferences selected in KControl
+		 * are read by using QSettings and are automatically applied to the style.
+		 * As a fallback, KStyle paints progressbars and tabbars. It inherits from
+		 * QCommonStyle for speed, so don't expect much to be implemented. 
+		 *
+		 * It is advisable to use a currently implemented style such as the HighColor
+		 * style as a foundation for any new KStyle, so the limited number of
+		 * drawing fallbacks should not prove problematic.
+		 *
+		 * @see KStyle::KStyleFlags
+		 * @see KStyle::KStyleScrollBarType
+		 * @author Karol Szwed (gallium@kde.org)
+		 */
 		KStyle( KStyleFlags flags = KStyle::Default, 
 				KStyleScrollBarType sbtype = KStyle::WindowsStyleScrollBar );
+
+		/** 
+		 * Destructs the KStyle object.
+		 */
 		~KStyle();
 
 		// ---------------------------------------------------------------------------
 
-		/** TODO: DOCUMENTATION
+		/**
+		 * This virtual function defines the pixmap used to blend between the popup
+		 * menu and the background to create different menu transparency effects.
+		 * For example, you can fill the pixmap "pix" with a gradient based on the
+		 * popup's colorGroup, a texture, or some other fancy painting routine.
+		 * KStyle will then internally blend this pixmap with a snapshot of the
+		 * background behind the popupMenu to create the illusion of transparency.
+		 * 
+		 * This virtual is never called if no XRender support is available,
+		 * or if Qt's XRender support is currently not enabled. A simple internal
+		 * tinting routine is used in these cases instead.
 		 */
-
-		// This is the pixmap used to blend between the popup menu and the background
-		// to create different menu transparency effects which are accelerated
-		// by XRender. This virtual is never called if no XRender support is available,
-		// or if Qt's Xrender support is currently not enabled.
 		virtual void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup& cg );
 
-
-		// KStyle primitive elements - expect more to come soon
+		/**
+		 * KStyle Primitive Elements:
+		 *
+		 * The KStyle class extends the Qt's Style API by providing certain 
+		 * simplifications for parts of QStyle. To do this, the KStylePrimitive
+		 * elements were defined, which are very similar to Qt's PrimitiveElement.
+		 * 
+		 * The first three Handle primitives simplify and extend PE_DockWindowHandle, 
+		 * so do not reimplement PE_DockWindowHandle if you want the KStyle handle 
+		 * simplifications to be operable. Similarly do not reimplement CC_Slider,
+		 * SC_SliderGroove and SC_SliderHandle when using the KStyle slider
+		 * primitives. KStyle automatically double-buffers slider painting
+		 * when they are drawn via these KStyle primitives to avoid flicker.
+		 *
+		 * @li KPE_DockWindowHandle - This primitive is already implemented in KStyle,
+		 * and paints a bevelled rect with the DockWindow caption text. Re-implement
+		 * this primitive to perform other more fancy effects when drawing the dock window
+		 * handle.
+		 *
+		 * @li KPE_ToolBarHandle - This primitive must be reimplemented. It currently
+		 * only paints a filled rectangle as default behaviour. This primitive is used
+		 * to render QToolBar handles.
+		 *
+		 * @li KPE_GeneralHandle - This primitive must be reimplemented. It is used
+		 * to render general handles that are not part of a QToolBar or QDockWindow, such
+		 * as the applet handles used in Kicker. The default implementation paints a filled
+		 * rect of arbitrary color.
+		 *
+		 * @li KPE_SliderGroove - This primitive must be reimplemented. It is used to 
+		 * paint the slider groove. The default implementation paints a filled rect of
+		 * arbitrary color.
+		 *
+		 * @li KPE_SliderHandle - This primitive must be reimplemented. It is used to
+		 * paint the slider handle. The default implementation paints a filled rect of
+		 * arbitrary color.
+		 */
 		enum KStylePrimitive {
-			// These simplify and extend PE_DockWindowHandle
 			KPE_DockWindowHandle,
 			KPE_ToolBarHandle,
-			KPE_GeneralHandle,	// Usually the kicker handle
+			KPE_GeneralHandle,
 
-			// This makes creating sliders simple by breaking up CC_Slider
-			// The slider is automatically double-buffered as well for no flicker.
 			KPE_SliderGroove,
 			KPE_SliderHandle
 		};
 
-		// Simplifies the QStyle API somewhat by breaking up the controls further
+		/**
+		 * This function is identical to Qt's QStyle::drawPrimitive(), except that 
+		 * it adds one further parameter, 'widget', that can be used to determine 
+		 * the widget state of the KStylePrimitive in question.
+		 *
+		 * @see KStyle::KStylePrimitive
+		 * @see QStyle::drawPrimitive
+		 * @see QStyle::drawComplexControl
+		 */
 		virtual void drawKStylePrimitive( KStylePrimitive kpe,
 					QPainter* p,
 					const QWidget* widget,
@@ -164,7 +276,7 @@ class KStyle: public QCommonStyle
 		bool  menuAltKeyNavigation     : 1;
 		int   popupMenuDelay;
 		float menuOpacity;
-		
+
 		KStyleScrollBarType  scrollbarType;
 		TransparencyHandler* menuHandler;
 		QStyle* winstyle;		// ### REMOVE
