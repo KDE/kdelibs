@@ -58,7 +58,6 @@ class KAccelEventHandler : public QWidget
 		return g_pSelf;
 	}
 
-	static bool active() { return g_bActive; }
 	static void accelActivated( bool b ) { g_bAccelActivated = b; }
 
  private:
@@ -69,12 +68,10 @@ class KAccelEventHandler : public QWidget
 #	endif
 
 	static KAccelEventHandler* g_pSelf;
-	static bool g_bActive;
 	static bool g_bAccelActivated;
 };
 
 KAccelEventHandler* KAccelEventHandler::g_pSelf = 0;
-bool KAccelEventHandler::g_bActive = false;
 bool KAccelEventHandler::g_bAccelActivated = false;
 
 KAccelEventHandler::KAccelEventHandler()
@@ -110,10 +107,8 @@ bool KAccelEventHandler::x11Event( XEvent* pEvent )
 		QKeyEvent ke( QEvent::AccelOverride, keyCodeQt, 0,  state );
 		ke.ignore();
 
-		g_bActive = true;
 		g_bAccelActivated = false;
 		kapp->sendEvent( kapp->focusWidget(), &ke );
-		g_bActive = false;
 
 		// If the Override event was accepted from a non-KAccel widget,
 		//  then kill the next AccelOverride in KApplication::notify.
@@ -306,7 +301,7 @@ void KAccelPrivate::slotMenuActivated( int iAction )
 
 bool KAccelPrivate::eventFilter( QObject* /*pWatched*/, QEvent* pEvent )
 {
-	if( KAccelEventHandler::active() && pEvent->type() == QEvent::AccelOverride && m_bEnabled ) {
+	if( pEvent->type() == QEvent::AccelOverride && m_bEnabled ) {
 		QKeyEvent* pKeyEvent = (QKeyEvent*) pEvent;
 		KKey key( pKeyEvent );
 		kdDebug(125) << "KAccelPrivate::eventFilter( AccelOverride ): this = " << this << ", key = " << key.toStringInternal() << endl;
