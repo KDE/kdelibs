@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.47  1998/11/21 20:28:39  ettrich
+// yet another small fix
+//
 // Revision 1.46  1998/11/21 20:25:41  ettrich
 // small fix
 //
@@ -201,6 +204,9 @@ void KMenuBar::ContextCallback( int )
 	break;
    }
 
+static bool standalone_menubar = FALSE;
+
+
   handle->repaint (false);
 }
   context->insertItem( klocale->translate("Top"),  CONTEXT_TOP );
@@ -222,7 +228,9 @@ void KMenuBar::ContextCallback( int )
       KConfigGroupSaver saver(config, "Menubar");
       if (config->readEntry("position") == "TopOfScreen") {
 	  int verticalOffset = config->readNumEntry("verticalOffset", 0);
+	  standalone_menubar = TRUE;
 	  setMenuBarPos(Floating);
+	  standalone_menubar = FALSE;
 	  QRect r =  KWM::getWindowRegion(KWM::currentDesktop());
 	  setGeometry(r.x(),r.y()-3+verticalOffset, r.width()-6, heightForWidth(r.width()));
       }
@@ -561,8 +569,10 @@ void KMenuBar::enableMoving(bool flag)
         recreate(0, 0,
                  p, FALSE);
  	XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
-	KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::standaloneMenuBar);
-	//KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::noFocus);
+	if (standalone_menubar)
+	    KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::standaloneMenuBar);
+	else
+	    KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::noFocus);
 	KWM::moveToDesktop(winId(), KWM::desktop(Parent->winId()));
 	setCaption(""); // this triggers a qt bug
 	if (title){
