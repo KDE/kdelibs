@@ -92,6 +92,7 @@ public:
 
   ~KListViewPrivate ()
   {
+    delete editor;
   }
 
   bool bUseSingle;
@@ -573,6 +574,11 @@ void KListView::movableDropEvent (QListViewItem* parent, QListViewItem* afterme)
   {
     iNext=i->itemBelow();
     if (!i->isSelected())
+      continue;
+
+    // don't drop an item after itself, or else
+    // it moves to the top of the list
+    if (i==afterme)
       continue;
 
     i->setSelected(false);

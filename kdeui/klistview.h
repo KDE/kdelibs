@@ -145,10 +145,7 @@ public:
   QListViewItem* lastChild () const;
 
   /**
-   * For future expansions.
-   *
-   * Do not use.
-   * @deprecated
+   * @returns if it is legal to move items in the list view
    */
   bool itemsMovable() const;
 
@@ -394,10 +391,9 @@ public slots:
   void setRenameable (int column, bool yesno=true);
 
   /**
-   * For future expansions.
+   * Set whether items in the list view can be moved.
    *
-   * Do not use.
-   * @deprecated
+   * @see itemsMovable()
    */
   virtual void setItemsMovable(bool b);
 
@@ -443,7 +439,6 @@ public slots:
    *
    * Do not use.
    * @deprecated
-   * Highlight a parent if I drop into its children
    */
   virtual void setDropHighlighter(bool b);
 
@@ -636,8 +631,6 @@ protected:
    * using a non-default DragMode
    */
   virtual void startDrag();
- // TODO: change to bool
-
 
   /**
    * Reimplemented for internal reasons.
