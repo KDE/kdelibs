@@ -32,6 +32,7 @@
 #include <qvbuttongroup.h>
 #include <qlistbox.h>
 #include <qlineedit.h>
+#include <qvaluelist.h>
 
 class KCryptoConfig : public KCModule
 {
@@ -70,6 +71,9 @@ private:
   QRadioButton *yourSSLUseDefault, *yourSSLList, *yourSSLDont;
   QLineEdit *macCert;
 
+  // The new Ciphers data
+  QValueList<QString> v2ciphers, v3ciphers;
+  QValueList<int> v2bits, v3bits;
   
 };
 
