@@ -168,8 +168,17 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   if ( reset || config->hasKey( "ChangeCursor" ) )
     m_bChangeCursor = config->readBoolEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
 
-  if ( reset || config->hasKey( "UnderlineLinks" ) )
-    m_underlineLink = config->readBoolEntry( "UnderlineLinks", true /*DEFAULT_UNDERLINELINKS*/ );
+  if ( reset || config->hasKey( "HoverLinks" ) )
+  {
+    m_hoverLink = config->readBoolEntry( "HoverLinks", true );
+    m_underlineLink = false;
+  }
+
+  if ( m_hoverLink == false )
+  {
+    if ( config->hasKey( "UnderlineLinks" ) )
+      m_underlineLink = config->readBoolEntry( "UnderlineLinks", true );
+  }
 
   // Colors
   if ( reset || config->hasGroup( "General" ) )
@@ -414,7 +423,7 @@ QString KHTMLSettings::settingsToCSS() const
 	str += "\ncursor: pointer;";
     str += "\n}\n";
 
-    if(!m_underlineLink) // needs own key
+    if(m_hoverLink)
         str += "a:hover { text-decoration: underline; }\n";
 
     return str;

@@ -63,6 +63,7 @@ public:
     // Behaviour settings
     bool changeCursor() { return m_bChangeCursor; }
     bool underlineLink() { return m_underlineLink; }
+    bool hoverLink() { return m_hoverLink; }
 
     // Font settings
     QString stdFontName() const;
@@ -125,6 +126,7 @@ private:
 private:
     bool m_bChangeCursor;
     bool m_underlineLink;
+    bool m_hoverLink;
 
     int m_fontSize;
     QValueList<int>     m_fontSizes;
