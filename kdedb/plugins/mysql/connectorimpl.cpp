@@ -429,14 +429,8 @@ ConnectorImpl::createTable(const KDB::Table &tab)
         first = false;
 
         KDB::Field *field = itf.current();
-        sql += QString("%1\t%2\t").arg(field->name()).arg(KToN(field->type()));
-
-        if (field->size() > 0)
-            sql += QString("(%1) ").arg(field->size());
-
-        if (!field->acceptNull()) {
-            sql += "NOT NULL";
-        }
+        sql += fieldDef(field);
+        
         sql += "\n";
         ++itf;
     }
@@ -491,58 +485,67 @@ ConnectorImpl::rollback()
 {
     DBENGINE->pushError(new KDB::UnsupportedCapability(this, "Transactions not supported by DBMS"));
 }
-/*
-  TINYINT
-  SMALLINT
-  MEDIUMINT
-  INT
-  INTEGER
-  BIGINT
-  FLOAT
-  DOUBLE
-  REAL
-  DECIMAL
-  NUMERIC
-  DATE
-  DATETIME
-  TIMESTAMP
-  TIME
-  YEAR
-  CHAR
-  VARCHAR
-  TINYBLOB
-  TINYTEXT
-  BLOB
-  TEXT
-  MEDIUMBLOB
-  MEDIUMTEXT
-  LONGBLOB
-  LONGTEXT
-  ENUM
-  SET
 
 
+bool 
+ConnectorImpl::appendField(const QString &table, KDB::Field *field)
+{
+    QString sql = QString("alter table %1 add ").arg(table);
+    
+    sql += QString("%1\t%2\t").arg(field->name()).arg(KToN(field->type()));
+    
+    if (field->size() > 0)
+        sql += QString("(%1) ").arg(field->size());
+
+    execute(sql);
+    if (DBENGINE->error())
+        return false;
+
+    return true;
+}
+
+bool 
+ConnectorImpl::removeField(const QString &table, const QString &field)
+{
+    execute(QString("alter table %1 drop field %2").arg(table).arg(field));
+    if (DBENGINE->error())
+        return false;
+
+    return true;
+}
+
+bool 
+ConnectorImpl::changeField(const QString &table, KDB::Field *field)
+{
+    QString sql = QString("alter table %1 modify ").arg(table);
+    
+    sql += fieldDef(field);
+    
+    execute(sql);
+    if (DBENGINE->error())
+        return false;
+    
+    return true;
+}
 
 
+QString
+ConnectorImpl::fieldDef(KDB::Field *field)
+{
+    QString def = QString("%1\t%2").arg(field->name()).arg(KToN(field->type()));
 
-  FIELD_TYPE_TINY
-  FIELD_TYPE_SHORT
-  FIELD_TYPE_LONG
-  FIELD_TYPE_INT24
-  FIELD_TYPE_LONGLONG
-  FIELD_TYPE_DECIMAL
-  FIELD_TYPE_FLOAT
-  FIELD_TYPE_DOUBLE
-  FIELD_TYPE_TIMESTAMP
-  FIELD_TYPE_DATE
-  FIELD_TYPE_TIME
-  FIELD_TYPE_DATETIME
-  FIELD_TYPE_YEAR
-  FIELD_TYPE_STRING
-  FIELD_TYPE_BLOB
-  FIELD_TYPE_SET
-  FIELD_TYPE_ENUM
-  FIELD_TYPE_NULL
-  FIELD_TYPE_CHAR
+    if (field->size() > 0)
+        def += QString("(%1").arg(field->size());
 
-*/
+    if (field->precision() > 0)
+        def += QString(",%1) ").arg(field->size());
+
+    if (field->size() > 0)
+        def += ") ";
+    
+    if (!field->acceptNull()) {
+        def += " NOT NULL ";
+    }
+
+    return def;
+}

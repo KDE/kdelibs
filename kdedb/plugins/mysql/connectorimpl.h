@@ -76,6 +76,10 @@ public:
     bool createTable(const KDB::Table &tab) ;
     bool dropTable(const QString & name) ;
 
+    bool appendField(const QString &table, KDB::Field *f);
+    bool removeField(const QString &table, const QString &field);
+    bool changeField(const QString &table, KDB::Field *f);
+
     bool setCurrentDatabase(const QString &name);
 
     KDB::Handler *query(const QString &SQL) ;
@@ -86,6 +90,8 @@ public:
 
 protected:
 
+    QString fieldDef(KDB::Field *f);
+    
     MYSQL * connection();
     KDB::RowList resultQuery(const QString &sql);
 
