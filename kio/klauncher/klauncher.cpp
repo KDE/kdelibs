@@ -811,7 +811,7 @@ KLauncher::requestSlave(const QString &protocol,
     QString _name = KProtocolInfo::exec(protocol);
     if (_name.isEmpty())
     {
-	error = i18n("Unkown protocol '%1'.\n").arg(protocol);
+	error = i18n("Unknown protocol '%1'.\n").arg(protocol);
         return 0;       
     }
 
