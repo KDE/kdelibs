@@ -222,7 +222,7 @@ protected:
     void setupMenu();
     void prepareCompletionObjects();
 
- private:
+private:
     /**
      * Contains all URLs you can reach with the back button.
      */
@@ -355,6 +355,13 @@ signals:
     void updateInformation(int files, int dirs);
     void completion(const QString&);
     void finishedLoading();
+    
+    /**
+     * Emitted whenever the current fileview is changed, either by an explicit
+     * call to @ref setView() or by the user selecting a different view thru the
+     * GUI.
+     */
+    void viewChanged( KFileView * newView );
 
     void fileHighlighted(const KFileViewItem*);
     void dirActivated(const KFileViewItem*);

@@ -732,9 +732,12 @@ void KDirOperator::setMode(KFile::Mode m)
 
 void KDirOperator::setView(KFileView *view)
 {
+    KFileView *oldView = fileView;
     setFocusProxy(view->widget());
     view->setSorting( mySorting );
     connectView(view);
+    if ( view != oldView )
+	emit viewChanged( view );
 }
 
 void KDirOperator::setFileReader( KFileReader *reader )
