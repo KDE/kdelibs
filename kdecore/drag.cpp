@@ -2,6 +2,10 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.2  1997/05/05 09:25:38  ssk
+ * Taj: Attempt to fix the include-order problem. Please test this. My
+ *      configure program is still not working, so i can't test this myself.
+ *
  * Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
  * Source imported
  *
@@ -139,12 +143,13 @@ void KDNDWidget::startDrag( KDNDIcon *_icon, char *_data, int _size, int _type, 
   dndOffsetX = _dx;
   
   dndIcon->raise();
-  XGrabPointer(kapp->getDisplay(),root,False,
+/*
+  XGrabPointer(kapp->getDisplay(),winId(),False,
   dndLastWindow = (Window)0;
   
   Window root = DefaultRootWindow( kapp->getDisplay() );
   XChangeProperty( kapp->getDisplay(), root, kapp->getDndSelectionAtom(), 
-
+				   XA_STRING, 8,
 				   PropModeReplace, (const unsigned char*)dndData, dndSize);
     
 /* I commented this out, like mentioned by Paul Kendal (coolo)
@@ -224,7 +229,7 @@ int myErrorHandler(Display *d, XErrorEvent *e)
   
   
   Window root;
-  XUngrabPointer(kapp->getDisplay(),CurrentTime);
+//  XUngrabPointer(kapp->getDisplay(),CurrentTime);
   Window win = findRootWindow( p );
   /*  if ( dndLastWindow != 0 )
     {
