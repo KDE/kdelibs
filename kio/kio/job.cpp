@@ -2892,8 +2892,10 @@ void CopyJob::copyNextFile()
                            f.close();
                            KSimpleConfig config( path );
                            config.setDesktopGroup();
-                           config.writePathEntry( QString::fromLatin1("URL"), (*it).uSource.url() );
-                           config.writeEntry( QString::fromLatin1("Name"), (*it).uSource.url() );
+                           KURL url = (*it).uSource;
+                           url.setPass( "" );
+                           config.writePathEntry( QString::fromLatin1("URL"), url.url() );
+                           config.writeEntry( QString::fromLatin1("Name"), url.url() );
                            config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link") );
                            QString protocol = (*it).uSource.protocol();
                            if ( protocol == QString::fromLatin1("ftp") )
