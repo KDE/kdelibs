@@ -87,13 +87,16 @@ int	majorOpcode;
 
     _IceSavedReplyWait	*savedReplyWait = iceConn->saved_reply_waits;
 
-    while (savedReplyWait && !savedReplyWait->reply_ready &&
-	savedReplyWait->reply_wait->major_opcode_of_request != majorOpcode)
+    while (savedReplyWait)
     {
+        if (!savedReplyWait->reply_ready &&
+            (savedReplyWait->reply_wait->major_opcode_of_request == majorOpcode))
+           return savedReplyWait->reply_wait;
+        
 	savedReplyWait = savedReplyWait->next;
     }
 
-    return (savedReplyWait ? savedReplyWait->reply_wait : NULL);
+    return NULL;
 }
 
 
