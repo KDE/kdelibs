@@ -34,37 +34,6 @@
 #include "kbookmarkdrag.h"
 #include "kbookmarkmenu_p.h"
 
-#include <qptrdict.h>
-
-template<class Instance, class PrivateData>
-class Private {
-public:
-    static PrivateData* d( const Instance* instance )
-    {
-        if ( !d_ptr ) {
-            d_ptr = new QPtrDict<PrivateData>;
-            qAddPostRoutine( cleanup_d_ptr );
-        }
-        PrivateData* ret = d_ptr->find( (void*) instance );
-        if ( ! ret ) {
-            ret = new PrivateData;
-            d_ptr->replace( (void*) instance, ret );
-        }
-        return ret;
-    }
-    static void delete_d( const Instance* instance )
-    {
-        if ( d_ptr )
-            d_ptr->remove( (void*) instance );
-    }
-private:
-    static void cleanup_d_ptr()
-    {
-        delete d_ptr;
-    }
-    static QPtrDict<PrivateData>* d_ptr;
-};
-
 #ifndef enable_final_users_suck
 #define enable_final_users_suck
 
@@ -84,11 +53,13 @@ static bool isAdvanced()
 
 #endif
 
-class KBookmarkBarPrivate : public Private<KBookmarkBar, KBookmarkBarPrivate> {
+#include "dptrtemplate.h"
+
+class KBookmarkBarPrivate : public dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate> {
 public:
     QPtrList<KAction> m_actions;
 };
-QPtrDict<KBookmarkBarPrivate>* Private<KBookmarkBar, KBookmarkBarPrivate>::d_ptr = 0;
+QPtrDict<KBookmarkBarPrivate>* dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate>::d_ptr = 0;
 
 #define dptr() KBookmarkBarPrivate::d(this)
 
