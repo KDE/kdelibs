@@ -26,6 +26,7 @@
 #include <qdragobject.h>
 #include <qtextstream.h>
 #include <kurl.h>
+#include <kurldrag.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <klineeditdlg.h>
@@ -44,24 +45,19 @@ bool KIO::isClipboardEmpty()
 
 KIO::Job *KIO::pasteClipboard( const KURL& dest_url, bool move )
 {
-  if ( KURL::split(dest_url).isEmpty() ) {
+  if ( !dest_url.isValid() ) {
     KMessageBox::error( 0L, i18n( "Malformed URL\n%1" ).arg( dest_url.url() ) );
     return 0;
   }
 
   QMimeSource *data = QApplication::clipboard()->data();
 
-  QStrList uris;
-  // don't use ::decodeToUnicodeUris, which decodes the urls, but ::decode
-  if ( QUriDrag::canDecode( data ) && QUriDrag::decode( data, uris ) ) {
-    if ( uris.count() == 0 ) {
+  KURL::List urls;
+  if ( QUriDrag::canDecode( data ) && KURLDrag::decode( data, urls ) ) {
+    if ( urls.count() == 0 ) {
       KMessageBox::error( 0L, i18n("The clipboard is empty"));
       return 0;
     }
-
-    KURL::List urls;
-    for (QStrListIterator it(uris); *it; ++it)
-      urls.append(KURL(*it)); // *it is encoded already (David)
 
     KIO::Job *res = 0;
     if ( move )
@@ -103,7 +99,7 @@ void KIO::pasteData( const KURL& u, const QByteArray& _data )
       KMessageBox::error( 0L, i18n("You did not enter a filename"));
       return;
     }
-	
+
     KURL myurl(u);
     myurl.addPath( l.text() );
 
