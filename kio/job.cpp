@@ -1482,12 +1482,9 @@ void DeleteJob::deleteNextFile()
         {
             // KShred your KTie
             KIO_ARGS << int(3) << (*it).path();
-            kDebugError("Trying to shred");
-
             SimpleJob *job = KIO::special(KURL("file:/"), packedArgs);
             files.remove(it);
             addSubjob(job);
-        
         } else 
         {
             // Normal deletion
@@ -1574,7 +1571,6 @@ void DeleteJob::slotResult( Job *job )
                 {
                     // KShred your KTie
                     KIO_ARGS << int(3) << url.path();
-                    kDebugError("Trying to shred");
                     SimpleJob *job = KIO::special(KURL("file:/"), packedArgs);
                     addSubjob(job);
                 }
