@@ -56,6 +56,8 @@ class KProcIO : public KProcess
 public:
   KProcIO ( QTextCodec *codec = 0 );
   
+  ~KProcIO();
+  
   /**
    *  Starts the process.
    *
@@ -79,18 +81,28 @@ public:
   bool start (RunMode  runmode = NotifyOnExit, bool includeStderr = false);
 
   /**
-   * The buffer is zero terminated.
-   * A deep copy is made of the buffer, so you don't
-   * need to bother with that.  A newline ( '\n' ) is appended 
-   * unless you specify FALSE as the second parameter.
-   * FALSE is returned on an error, or else TRUE is.
+   * Writes text to stdin of the process.
+   * @param line Text to write.
+   * @param AppendNewLine if true, a newline '\n' is appended.
    **/
-  virtual bool writeStdin(const QString &line, bool AppendNewLine=TRUE);
+  bool writeStdin(const QString &line, bool AppendNewLine=TRUE);
+  bool writeStdin(const QCString &line, bool appendnewline);
+
+  /**
+   * Writes data to stdin of the process.
+   * @param data Data to write.
+   **/
+  bool writeStdin(const QByteArray &data);
 
   //I like fputs better -- it's the same as writeStdin
   //inline
   bool fputs (const QString &line, bool AppendNewLine=TRUE)
     { return writeStdin(line, AppendNewLine); }
+
+  /**
+   * closes stdin after all data has been send.
+   */ 
+  void closeWhenDone();
 
   /**
    * reads a line of text (up to and including '\n')
@@ -113,7 +125,7 @@ public:
    *
    * @return the number of characters read, or -1 if no data is available.
    **/
-  virtual int readln (QString &line, bool autoAck=true, bool *partial=0);
+  int readln (QString &line, bool autoAck=true, bool *partial=0);
 
   int fgets (QString &line, bool autoAck=false)
     { return readln (line, autoAck); }
@@ -121,7 +133,7 @@ public:
   /**
    * Reset the class.  Doesn't kill the process.
    **/
-   virtual void resetAll ();
+  void resetAll ();
 
   /**
    * Call this after you have finished processing a readReady()
@@ -132,7 +144,7 @@ public:
    * data.  If this doesn't matter, then call ackRead() right away in
    * your readReady()-processing slot.
    **/
-  virtual void ackRead ();
+  void ackRead ();
 
   /**
    *  Turns readReady() signals on and off.
@@ -145,7 +157,7 @@ signals:
   void readReady(KProcIO *);
 
 protected:
-  QStrList qlist;
+  QPtrList<QByteArray> outbuffer;
   QCString recvbuffer;
   QTextCodec *codec;
   int rbi;

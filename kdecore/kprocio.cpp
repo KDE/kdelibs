@@ -34,6 +34,7 @@ KProcIO::KProcIO ( QTextCodec *_codec)
 {
   rbi=0;
   readsignalon=writeready=TRUE;
+  outbuffer.setAutoDelete(true);
 
   if (!codec)
   {
@@ -45,11 +46,15 @@ KProcIO::KProcIO ( QTextCodec *_codec)
   }
 }
 
+KProcIO::~KProcIO()
+{
+}
+
 void
 KProcIO::resetAll ()
 {
   if (isRunning())
-    kill();
+     kill();
 
   clearArguments();
   rbi=0;
@@ -64,7 +69,7 @@ KProcIO::resetAll ()
   disconnect (this, SIGNAL (wroteStdin(KProcess *)),
 	   this, SLOT (sent (KProcess *)));
 
-  qlist.clear();
+  outbuffer.clear();
 
 }
 
@@ -82,61 +87,96 @@ bool KProcIO::start (RunMode runmode, bool includeStderr)
   connect (this, SIGNAL (wroteStdin(KProcess *)),
 	   this, SLOT (sent (KProcess *)));
            
-  qlist.setAutoDelete (TRUE);
-
   return KProcess::start (runmode, KProcess::All);
 }
 
 bool KProcIO::writeStdin (const QString &line, bool appendnewline)
 {
-
-  QCString qs(codec->fromUnicode(line));
-
-  if (appendnewline)
-    qs+='\n';
-
-  qlist.append (qs.data());
-
-  //kdDebug(750) << "KPIO::write [" << buffer << "],[" << qlist.current() << "]" << endl;
-
-  if (writeready)
-    {
-      kdDebug(750) << "really writing" << endl;
-
-      writeready=FALSE;
-      return KProcess::writeStdin (qlist.current(),
-				   strlen (qlist.current()));
-    }
-  kdDebug(750) << "NOT really writing" << endl;
-  return TRUE;
+  return writeStdin(codec->fromUnicode(line), appendnewline);
 }
 
-void KProcIO::sent (KProcess *)
+bool KProcIO::writeStdin (const QCString &line, bool appendnewline)
 {
-  if (qlist.first()) kdDebug(750) << "KP::sent [" << qlist.first() << "]" << endl;
+  QCString *qs = new QCString(line);
+  
+  if (appendnewline)
+  {
+     *qs += '\n';
+  }
+    
+  int l = qs->length();
+  if (!l)
+     return true;
 
-  qlist.removeFirst();
+  QByteArray *b = (QByteArray *) qs;
+  b->truncate(l); // Strip trailing null
+  
+  outbuffer.append(b);
 
-  if (qlist.count()==0)
-    {
-      kdDebug(750) << "Empty" << endl;
+  if (writeready)
+  {
+     writeready=FALSE;
+     return KProcess::writeStdin( b->data(), b->size() );
+  }
+  return true;
+}
 
-      writeready=TRUE;
-    }
+bool KProcIO::writeStdin(const QByteArray &data)
+{
+  if (!data.size())
+     return true;
+  QByteArray *b = new QByteArray(data);
+  outbuffer.append(b);
+  
+  if (writeready)
+  {
+     writeready=FALSE;
+     return KProcess::writeStdin( b->data(), b->size() );
+  }
+  return true;
+}
+
+void KProcIO::closeWhenDone()
+{
+  if (writeready)
+  {
+     closeStdin();
+     return;
+  }
+  outbuffer.append(0);
+  
+  return;
+}
+
+void KProcIO::sent(KProcess *)
+{
+  outbuffer.removeFirst();
+
+  if (outbuffer.count()==0)
+  {
+     kdDebug(750) << "Empty" << endl;
+     writeready=TRUE;
+  }
   else
-    {
-      kdDebug(750) << "Sending [" << qlist.first() << "]" << endl;
-      KProcess::writeStdin (qlist.first(), strlen (qlist.first()));
-    }
+  {
+     QByteArray *b = outbuffer.first();
+     if (!b)
+     {
+        kdDebug(750) << "Closing" << endl;
+        closeStdin();
+     }
+     else
+     {
+        kdDebug(750) << "Sending [" << b->size() << "]" << endl;
+        KProcess::writeStdin(b->data(), b->size());
+     }
+  }
 
 }
 
 void KProcIO::received (KProcess *, char *buffer, int buflen)
 {
-  int i;
-
-  for (i=0;i<buflen;i++)
-    recvbuffer+=buffer [i];
+  recvbuffer += QCString(buffer, buflen+1);
 
   controlledEmission();
 }
@@ -145,20 +185,21 @@ void KProcIO::ackRead ()
 {
   readsignalon=TRUE;
   if (needreadsignal || recvbuffer.length()!=0)
-    controlledEmission();
+     controlledEmission();
 }
 
 void KProcIO::controlledEmission ()
 {
   if (readsignalon)
-    {
-      needreadsignal=FALSE;
-      readsignalon=FALSE; //will stay off until read is acknowledged
-      emit readReady (this);
-    }
+  {
+     needreadsignal=FALSE;
+     readsignalon=FALSE; //will stay off until read is acknowledged
+     emit readReady (this);
+  }
   else
+  {
     needreadsignal=TRUE;
-  
+  }
 }
 
 void KProcIO::enableReadSignals (bool enable)
@@ -166,7 +207,7 @@ void KProcIO::enableReadSignals (bool enable)
   readsignalon=enable;
 
   if (enable && needreadsignal)
-	emit readReady (this);
+     emit readReady (this);
 }
 
 int KProcIO::readln (QString &line, bool autoAck, bool *partial)
@@ -174,39 +215,39 @@ int KProcIO::readln (QString &line, bool autoAck, bool *partial)
   int len;
 
   if (autoAck)
-    readsignalon=TRUE;
+     readsignalon=TRUE;
 
   //need to reduce the size of recvbuffer at some point...
 
   len=recvbuffer.find ('\n',rbi)-rbi;
 
-  kdDebug(750) << "KPIO::readln\n" << endl;
+  kdDebug(750) << "KPIO::readln" << endl;
 
   //in case there's no '\n' at the end of the buffer
   if ((len<0) && 
       ((unsigned int)rbi<recvbuffer.length()))
-    {
-      recvbuffer=recvbuffer.mid (rbi,recvbuffer.length()-rbi);
-      rbi=0;
-      if (partial)
-      {
-         len = recvbuffer.length();
-         line = recvbuffer;
-         recvbuffer = "";
-         *partial = true;
-         return len;
-      }
-      return -1;
-    }
+  {
+     recvbuffer=recvbuffer.mid (rbi,recvbuffer.length()-rbi);
+     rbi=0;
+     if (partial)
+     {
+        len = recvbuffer.length();
+        line = recvbuffer;
+        recvbuffer = "";
+        *partial = true;
+        return len;
+     }
+     return -1;
+  }
 
   if (len>=0)
-    {
-      line = codec->toUnicode(recvbuffer.mid(rbi,len), len);
-      rbi += len+1;
-      if (partial)
-         *partial = false;
-      return len;
-    }
+  {
+     line = codec->toUnicode(recvbuffer.mid(rbi,len), len);
+     rbi += len+1;
+     if (partial)
+        *partial = false;
+     return len;
+  }
 
   recvbuffer="";
   rbi=0;
