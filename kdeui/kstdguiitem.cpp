@@ -34,6 +34,7 @@ KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
   case SaveAs   : return saveAs();
   case Apply    : return apply();
   case Clear    : return clear();
+  case Help     : return help();
   default       : return KGuiItem();
   };
 }
@@ -50,7 +51,7 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
   case DontSave : return QString::fromLatin1("dontSave");
   case SaveAs   : return QString::fromLatin1("saveAs");
   case Apply    : return QString::fromLatin1("apply");
-  case Clear    : return QString::fromLatin1("clear");
+  case Help     : return QString::fromLatin1("help");
   default       : return QString::null;
   };
 }
@@ -118,5 +119,11 @@ KGuiItem KStdGuiItem::clear()
                    i18n( "Clear the input in the edit field" ) );
 }
 
-/* vim: set ts=2 sts=2 sw=2 et: */
+KGuiItem KStdGuiItem::help()
+{
+  return KGuiItem( i18n( "&Help" ), "help",
+                   i18n( "Show help" ) );
+}
+
+// vim: set ts=2 sts=2 sw=2 et:
 

@@ -28,7 +28,7 @@ class KStdGuiItem
  public:
   enum StdItem {
     Ok=1, Cancel, Yes, No, Discard, Save, DontSave, SaveAs,
-    Apply, Clear
+    Apply, Clear, Help
   };
   static KGuiItem guiItem ( StdItem ui_enum );
   static QString  stdItem ( StdItem ui_enum );
@@ -38,6 +38,7 @@ class KStdGuiItem
   static KGuiItem no();
   static KGuiItem discard();
   static KGuiItem save();
+  static KGuiItem help();
   static KGuiItem dontSave();
   static KGuiItem saveAs();
   static KGuiItem apply();
