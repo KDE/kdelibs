@@ -775,6 +775,8 @@ void KHTMLPart::setJScriptEnabled( bool enable )
 
 bool KHTMLPart::jScriptEnabled() const
 {
+  if(onlyLocalReferences()) return false;
+
   if ( d->m_bJScriptOverride )
       return d->m_bJScriptForce;
   return d->m_bJScriptEnabled;
@@ -1051,6 +1053,8 @@ void KHTMLPart::setJavaEnabled( bool enable )
 
 bool KHTMLPart::javaEnabled() const
 {
+  if (onlyLocalReferences()) return false;
+
 #ifndef Q_WS_QWS
   if( d->m_bJavaOverride )
       return d->m_bJavaForce;
@@ -1078,6 +1082,8 @@ void KHTMLPart::setPluginsEnabled( bool enable )
 
 bool KHTMLPart::pluginsEnabled() const
 {
+  if (onlyLocalReferences()) return false;
+
   if ( d->m_bPluginsOverride )
       return d->m_bPluginsForce;
   return d->m_bPluginsEnabled;
@@ -1150,6 +1156,7 @@ void KHTMLPart::clear()
 {
   if ( d->m_bCleared )
     return;
+
   d->m_bCleared = true;
 
   d->m_bClearing = true;
@@ -5748,16 +5755,13 @@ void KHTMLPart::selectAll()
 
 bool KHTMLPart::checkLinkSecurity(const KURL &linkURL,const QString &message, const QString &button)
 {
-  // Security check on the link.
-  // KURL u( url ); Wrong!! Relative URL could be mis-interpreted!!! (DA)
-  QString linkProto = linkURL.protocol().lower();
-  QString proto = m_url.protocol().lower();
+  bool linkAllowed = true;
 
-  if ( !linkProto.isEmpty() && !proto.isEmpty() &&
-       ( linkProto == "cgi" || linkProto == "file" ) &&
-       proto != "file" && proto != "cgi" && proto != "man" && proto != "about")
-  {
-      khtml::Tokenizer *tokenizer = d->m_doc->tokenizer();
+  if ( d->m_doc )
+    linkAllowed = kapp && kapp->authorizeURLAction("redirect", url(), linkURL);
+
+  if ( !linkAllowed ) {
+    khtml::Tokenizer *tokenizer = d->m_doc->tokenizer();
     if (tokenizer)
       tokenizer->setOnHold(true);
 

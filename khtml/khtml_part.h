@@ -415,14 +415,24 @@ public:
   /**
    * Security option.
    *
-   * Specify whether only local references ( stylesheets, images, scripts, subdocuments )
-   * should be loaded. ( default false - everything is loaded, if the more specific
-   * options allow )
+   * Specify whether only file:/ or data:/ urls are allowed to be loaded without
+   * user confirmation by KHTML.
+   * ( for example referenced by stylesheets, images, scripts, subdocuments, embedded elements ).
+   *
+   * This option is mainly intended for enabling the "mail reader mode", where you load untrusted
+   * content with a file:/ url.
+   *
+   * Please note that enabling this option currently automatically disables Javascript, 
+   * Java and Plugins support. This might change in the future if the security model
+   * is becoming more sophisticated, so don't rely on this behaviour.
+   *
+   * ( default false - everything is loaded unless forbidden by KApplication::authorizeURLAction).
    */
   void setOnlyLocalReferences( bool enable );
 
   /**
-   * Returns whether references should be loaded ( default false )
+   * Returns whether only file:/ or data:/ references are allowed 
+   * to be loaded ( default false ). @see setOnlyLocalReferences.
    **/
   bool onlyLocalReferences() const;
 
