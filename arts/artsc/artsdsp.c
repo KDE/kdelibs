@@ -78,6 +78,14 @@ typedef unsigned long int ioctl_request_t;
 #endif
 
 /*
+ * memory mapping emulation
+ */
+static int mmapemu = 0;
+static count_info mmapemu_ocount;
+static char *mmapemu_obuffer = 0;
+static int mmapemu_osize;
+
+/*
  * original C library functions
  */
 typedef int (*orig_open_ptr)(const char *pathname, int flags, ...);
@@ -110,12 +118,16 @@ static int artsdsp_init = 0;
 
 static void artsdsp_doinit()
 {
-	const char *verbose;
+	const char *env;
 	artsdsp_init = 1;
 
 	/* debugging? */
-	verbose = getenv("ARTSDSP_VERBOSE");
-	artsdsp_debug = verbose && !strcmp(verbose,"1");
+	env = getenv("ARTSDSP_VERBOSE");
+	artsdsp_debug = env && !strcmp(env,"1");
+
+	/* mmap emulation? */
+	env = getenv("ARTSDSP_MMAP");
+	mmapemu = env && !strcmp(env,"1");
 
 	/* resolve original symbols */
 	orig_open = (orig_open_ptr)dlsym(RTLD_NEXT,"open");
@@ -137,6 +149,21 @@ static void artsdspdebug(const char *fmt,...)
 		(void) vfprintf(stderr, fmt, ap);
 		va_end(ap);
 	}
+}
+
+static void mmapemu_flush()
+{
+  int space = arts_stream_get(stream, ARTS_P_BUFFER_SPACE);
+  artsdspdebug("space = %d\n",space);
+  while(space >= 4096)
+  {
+    arts_write(stream,&mmapemu_obuffer[mmapemu_ocount.ptr],4096);
+    space -= 4096;
+    mmapemu_ocount.ptr += 4096;
+    mmapemu_ocount.ptr %= mmapemu_osize;
+    mmapemu_ocount.blocks++;
+    mmapemu_ocount.bytes += 4096;
+  }
 }
 
 int open (const char *pathname, int flags, ...)
@@ -241,7 +268,10 @@ int ioctl (int fd, ioctl_request_t request, ...)
 
 #ifdef SNDCTL_DSP_GETBLKSIZE
         case SNDCTL_DSP_GETBLKSIZE:			/* _SIOWR('P', 4, int) */
-          *arg = stream?arts_stream_get(stream,ARTS_P_PACKET_SIZE):16384;
+		  if(mmapemu)
+			*arg = 4096;
+		  else
+			*arg = stream?arts_stream_get(stream,ARTS_P_PACKET_SIZE):16384;
           break;
 #endif
 
@@ -293,13 +323,23 @@ int ioctl (int fd, ioctl_request_t request, ...)
         case SNDCTL_DSP_GETOSPACE:          /* _SIOR ('P',12, audio_buf_info) */
         case SNDCTL_DSP_GETISPACE:          /* _SIOR ('P',13, audio_buf_info) */
           audiop = argp;
-          audiop->fragstotal =
-            stream?arts_stream_get(stream, ARTS_P_PACKET_COUNT):10;
-          audiop->fragsize =
-            stream?arts_stream_get(stream, ARTS_P_PACKET_SIZE):16384;
-          audiop->bytes =
-            stream?arts_stream_get(stream, ARTS_P_BUFFER_SPACE):16384;
-          audiop->fragments = audiop->bytes / audiop->fragsize;
+		  if(mmapemu)
+		  {
+			audiop->fragstotal = 16;
+			audiop->fragsize = 4096;
+			audiop->bytes = 0;              /* FIXME: is this right? */
+			audiop->fragments = 0;
+		  }
+		  else
+		  {
+            audiop->fragstotal =
+              stream?arts_stream_get(stream, ARTS_P_PACKET_COUNT):10;
+            audiop->fragsize =
+              stream?arts_stream_get(stream, ARTS_P_PACKET_SIZE):16384;
+            audiop->bytes =
+              stream?arts_stream_get(stream, ARTS_P_BUFFER_SPACE):16384;
+            audiop->fragments = audiop->bytes / audiop->fragsize;
+		  }
           break;
 #endif
 
@@ -311,7 +351,10 @@ int ioctl (int fd, ioctl_request_t request, ...)
 
 #ifdef SNDCTL_DSP_GETCAPS
         case SNDCTL_DSP_GETCAPS:			/* _SIOR ('P',15, int) */
-          *arg = 0;
+		  if(mmapemu)
+			*arg = DSP_CAP_MMAP | DSP_CAP_TRIGGER | DSP_CAP_REALTIME;
+		  else
+            *arg = 0;
           break;
 #endif
 
@@ -335,7 +378,16 @@ int ioctl (int fd, ioctl_request_t request, ...)
 
 #ifdef SNDCTL_DSP_GETOPTR
         case SNDCTL_DSP_GETOPTR:			/* _SIOR ('P',18, count_info) */
-		  artsdspdebug("aRts: SNDCTL_DSP_GETOPTR unsupported\n");
+		  if(mmapemu)
+		  {
+			mmapemu_flush();
+            *((count_info *)arg) = mmapemu_ocount;
+            mmapemu_ocount.blocks = 0;     
+		  }
+		  else
+		  {
+			artsdspdebug("aRts: SNDCTL_DSP_GETOPTR unsupported\n");
+		  }
 		  break;
 #endif
 
@@ -380,6 +432,15 @@ int ioctl (int fd, ioctl_request_t request, ...)
 
           artsdspdebug ("aRts: creating stream...\n");
           stream = arts_play_stream(speed,bits,channels,name?name:"artsdsp");
+
+		  if(mmapemu)
+		  {
+		    arts_stream_set(stream,ARTS_P_PACKET_SETTINGS,0x0002000c);
+		    mmapemu_ocount.ptr=mmapemu_ocount.blocks=mmapemu_ocount.bytes=0;
+			artsdspdebug("aRts: total latency = %dms, buffer latency = %dms\n",
+			  arts_stream_get(stream,ARTS_P_TOTAL_LATENCY),
+              arts_stream_get(stream, ARTS_P_BUFFER_TIME));
+		  }
         }
 
       return 0;
@@ -402,6 +463,11 @@ int close(int fd)
         arts_close_stream(stream);
         stream = 0;
       }
+	  if(mmapemu && mmapemu_obuffer)
+	  {
+		free(mmapemu_obuffer);
+		mmapemu_obuffer = 0;
+	  }
 
       arts_free();
 
@@ -437,10 +503,18 @@ caddr_t mmap(void  *start,  size_t length, int prot, int flags,
     return orig_mmap(start,length,prot,flags,fd,offset);
   else
   {
-    artsdspdebug ("aRts: /dev/dsp mmap (unsupported)...\n");
-    artsdspdebug ("start = %x, length = %d, prot = %d, flags = %d\n",
-                   start, length, prot, flags);
-    artsdspdebug ("fd = %d, offset = %d\n",fd,offset);
+    artsdspdebug ("aRts: mmap - start = %x, length = %d, prot = %d\n",
+                                                          start, length, prot);
+    artsdspdebug ("      flags = %d, fd = %d, offset = %d\n",flags, fd,offset);
+
+	if(mmapemu)
+	{
+      mmapemu_osize = length;
+      mmapemu_obuffer = malloc(length);
+	  mmapemu_ocount.ptr = mmapemu_ocount.blocks = mmapemu_ocount.bytes = 0;
+      return mmapemu_obuffer;
+	}
+	else artsdspdebug ("aRts: /dev/dsp mmap (unsupported, try -m option)...\n");
   }
   return (caddr_t)-1;
 }
@@ -449,7 +523,14 @@ int munmap(void *start, size_t length)
 {
   CHECK_INIT();
 
-  return orig_munmap(start,length);
+  if(start != mmapemu_obuffer || mmapemu_obuffer == 0)
+    return orig_munmap(start,length);
+  else
+  {
+	artsdspdebug ("aRts: /dev/dsp munmap...\n");
+	mmapemu_obuffer = 0;
+	free(start);
+  }
 }
 
 #endif

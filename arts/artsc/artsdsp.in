@@ -14,11 +14,12 @@ while test $# -gt 0; do
 	-h|--help)
 	    echo "artsdsp - attempt to reroute audio device to artsd"
 	    echo " "
-	    echo "artsdsp [options] player arguments"
+	    echo "artsdsp [options] application arguments"
 	    echo " "
 	    echo "options:"
 	    echo "-h, --help                show brief help"
 	    echo "-n, --name=NAME           use name to identify player to artsd"
+	    echo "-m, --mmap                emulate memory mapping (i.e. for quake)"
 	    echo "-v, --verbose             show parameters"
 	    exit 0
 	    ;;
@@ -43,6 +44,11 @@ while test $# -gt 0; do
 
 	-v|--verbose)
 	    verbose=1
+	    shift
+	    ;;
+
+	-m|--mmap)
+	    export ARTSDSP_MMAP=1
 	    shift
 	    ;;
 
