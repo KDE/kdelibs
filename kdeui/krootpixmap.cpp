@@ -67,6 +67,7 @@ void KRootPixmap::init()
 
     d->toplevel = m_pWidget->topLevelWidget();
     d->toplevel->installEventFilter(this);
+    m_pWidget->installEventFilter(this);
 }
 
 KRootPixmap::~KRootPixmap()
