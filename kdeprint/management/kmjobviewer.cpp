@@ -38,10 +38,11 @@
 #include <kapp.h>
 #include <kcursor.h>
 
+#define	m_manager	KMFactory::self()->jobManager()
+
 KMJobViewer::KMJobViewer(QWidget *parent, const char *name)
 : KMainWindow(parent,name)
 {
-	m_manager = 0;
 	m_view = 0;
 	m_pop = 0;
 	m_jobs.setAutoDelete(false);
@@ -69,33 +70,27 @@ void KMJobViewer::setPrinter(KMPrinter *p)
 
 void KMJobViewer::setPrinter(const QString& prname)
 {
-	if (m_manager)
-	{
-		m_manager->clearFilter();
-		QValueList<KAction*>	acts = actionCollection()->actions("printer_group");
-		for (QValueList<KAction*>::ConstIterator it=acts.begin(); it!=acts.end(); ++it)
-			((KToggleAction*)(*it))->setChecked(false);
-		addPrinter(prname);
-	}
+	m_manager->clearFilter();
+	QValueList<KAction*>	acts = actionCollection()->actions("printer_group");
+	for (QValueList<KAction*>::ConstIterator it=acts.begin(); it!=acts.end(); ++it)
+		((KToggleAction*)(*it))->setChecked(false);
+	addPrinter(prname);
 }
 
 void KMJobViewer::addPrinter(const QString& prname)
 {
-	if (m_manager)
+	if (!prname.isEmpty())
 	{
-		if (!prname.isEmpty())
-		{
-			m_manager->addPrinter(prname);
-			KToggleAction	*act_ = (KToggleAction*)(actionCollection()->action(("printer_"+prname).utf8()));
-			if (act_) act_->setChecked(true);
-		}
-		slotRefresh();
+		m_manager->addPrinter(prname);
+		KToggleAction	*act_ = (KToggleAction*)(actionCollection()->action(("printer_"+prname).utf8()));
+		if (act_) act_->setChecked(true);
 	}
+	slotRefresh();
 }
 
 void KMJobViewer::refresh()
 {
-	if (m_manager) m_jobs = m_manager->jobList();
+	m_jobs = m_manager->jobList();
 	if (m_jobs.count() == 0 && !isVisible() && !parentWidget())
 		kapp->quit();
 	else
@@ -128,8 +123,6 @@ void KMJobViewer::init()
 		connect(m_view,SIGNAL(onViewport()),SLOT(slotOnViewport()));
 		setCentralWidget(m_view);
 	}
-
-	m_manager = KMFactory::self()->jobManager();
 
 	initActions();
 }
@@ -222,7 +215,7 @@ void KMJobViewer::initPrinterActions()
 		KToggleAction	*nact = new KToggleAction(it.current()->printerName(),0,actionCollection(),("printer_"+it.current()->printerName()).utf8());
 		nact->setGroup("printer_group");
 		connect(nact,SIGNAL(toggled(bool)),this,SLOT(slotPrinterToggled(bool)));
-		if (m_manager && m_manager->filter().contains(it.current()->printerName()) > 0)
+		if (m_manager->filter().contains(it.current()->printerName()) > 0)
 			nact->setChecked(true);
 		fact->insert(nact);
 	}
@@ -266,7 +259,6 @@ JobItem* KMJobViewer::findItem(int ID)
 
 void KMJobViewer::slotSelectionChanged()
 {
-	if (!m_manager) return;
 	int	acts = m_manager->actions();
 	int	state(-1);
 	int	thread(0);
@@ -306,18 +298,15 @@ void KMJobViewer::jobSelection(QList<KMJob>& l)
 
 void KMJobViewer::send(int cmd, const QString& name, const QString& arg)
 {
-	if (m_manager)
-	{
-		KMTimer::blockTimer();
+	KMTimer::blockTimer();
 
-		QList<KMJob>	l;
-		jobSelection(l);
-		if (!m_manager->sendCommand(l,cmd,arg))
-			KMessageBox::error(this,i18n("Unable to perform action \"%1\" on selected jobs !").arg(name));
-		refresh();
+	QList<KMJob>	l;
+	jobSelection(l);
+	if (!m_manager->sendCommand(l,cmd,arg))
+		KMessageBox::error(this,i18n("Unable to perform action \"%1\" on selected jobs !").arg(name));
+	refresh();
 
-		KMTimer::releaseTimer();
-	}
+	KMTimer::releaseTimer();
 }
 
 void KMJobViewer::slotHold()
@@ -367,12 +356,11 @@ void KMJobViewer::slotPrinterToggled(bool toggle)
 {
 	QString	name = sender()->name();
 	name.replace(0,8,"");
-	if (m_manager)
-	{
-		if (toggle) m_manager->addPrinter(name);
-		else m_manager->removePrinter(name);
-		refresh();
-	}
+	if (toggle)
+		m_manager->addPrinter(name);
+	else
+		m_manager->removePrinter(name);
+	refresh();
 }
 
 void KMJobViewer::selectAll()
@@ -389,9 +377,10 @@ void KMJobViewer::slotAllPrinters()
 		((KToggleAction*)(*it))->setChecked(all_);
 		QString	actname = (*it)->name();
 		actname.replace(0,8,"");
-		if (m_manager)
-			if (all_) m_manager->addPrinter(actname);
-			else m_manager->removePrinter(actname);
+		if (all_)
+			m_manager->addPrinter(actname);
+		else
+			m_manager->removePrinter(actname);
 	}
 	refresh();
 }

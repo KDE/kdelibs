@@ -36,10 +36,7 @@ KMPropertyPage::KMPropertyPage(QWidget *parent, const char *name)
 {
 	m_widgets.setAutoDelete(false);
 
-	addPropPage(new KMPropGeneral(this, "General"));
-
-	// add specific pages
-	KMFactory::self()->uiManager()->setupPropertyPages(this);
+	initialize();
 }
 
 KMPropertyPage::~KMPropertyPage()
@@ -73,4 +70,21 @@ void KMPropertyPage::slotEnable(bool on)
 	else
 		disablePage(w);
 }
+
+void KMPropertyPage::initialize()
+{
+	// add General page
+	addPropPage(new KMPropGeneral(this, "General"));
+	// add plugin specific pages
+	KMFactory::self()->uiManager()->setupPropertyPages(this);
+}
+
+void KMPropertyPage::reload()
+{
+	clearPages();
+	m_widgets.clear();
+	initialize();
+	setPrinter(0);
+}
+
 #include "kmpropertypage.moc"

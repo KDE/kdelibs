@@ -30,3 +30,5 @@ Comment[sr]=LPR (standardni BSD sistem za štampanje)
 Comment[sv]=LPR (Standardskrivarsystem för BSD)
 Comment[tr]=LPR (Standart BSD yazdırma sistemi)
 Comment[uk]=LPR (типова система друку BSD)
+DetectUris=service:/printer,config:/printcap
+DetectPrecedence=5

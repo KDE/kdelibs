@@ -11,3 +11,5 @@ Comment[no_NY]=CUPS ('Common Unix Print System', utskriftssystem)
 Comment[pl]=CUPS (Wspólny System Drukowania dla Uniksa)
 Comment[sl]=CUPS (skupni tiskalniški sistem za Unix)
 Comment[tr]=CUPS (Common Unix Print System - Genel Unix Yazdırma Sistemi)
+DetectUris=service:/ipp,config:/cups/cupsd.conf
+DetectPrecedence=10

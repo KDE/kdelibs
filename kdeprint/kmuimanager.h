@@ -68,13 +68,8 @@ public:
 
 	// print dialog
 	void addPrintDialogPage(KPrintDialogPage *page)		{ m_printdialogpages.append(page); }
-	void addPrintDialogStandardPage(int p)			{ m_printdialogstd |= p; }
-	void removePrintDialogStandardPage(int p)		{ m_printdialogstd = (m_printdialogstd & ~p); }
-	void setPageSelection(KPrinter::PageSelectionType t)	{ m_pageselection = t; }
-	int pageSelection() const 				{ return m_pageselection; }
-	void setApplicationType(KPrinter::ApplicationType t);
-	int applicationType() const 				{ return m_applicationtype; }
 	int copyFlags(KPrinter *pr = 0);
+	int dialogFlags();
 	void setupPrintDialog(KPrintDialog*);
 
 	// printer property dialog
@@ -84,10 +79,7 @@ public:
 protected:
 	int			m_printdialogflags;
 	int 			m_copyflags;
-	int 			m_printdialogstd;
 	QList<KPrintDialogPage>	m_printdialogpages;
-	KPrinter::PageSelectionType	m_pageselection;
-	KPrinter::ApplicationType	m_applicationtype;
 };
 
 #endif

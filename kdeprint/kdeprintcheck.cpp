@@ -28,6 +28,9 @@
  *	- file:/path/to/file
  *	- dir:/path/to/dir	->	simply check the existence of the
  *					a file or directory
+ *	- service:/serv 	->	try to connect to a port on the
+ *					specified host (usually localhost)
+ *					"serv" can be a port value or service name
  *
  * TO BE IMPLEMENTED:
  *	- run:/<execname>	->	check for a running executable
@@ -36,6 +39,7 @@
 #include "kdeprintcheck.h"
 
 #include <kstddirs.h>
+#include <kextsock.h>
 
 static char* config_stddirs[] = {
 	"/etc/",
@@ -71,6 +75,8 @@ bool KdeprintChecker::checkURL(const KURL& url)
 		return checkExec(url);
 	else if (prot == "file" || prot == "dir")
 		return KStandardDirs::exists(url.url());
+	else if (prot == "service")
+		return checkService(url);
 	return false;
 }
 
@@ -105,4 +111,17 @@ bool KdeprintChecker::checkExec(const KURL& url)
 {
 	QString	execname(url.path().mid(1));
 	return !(KStandardDirs::findExe(execname).isEmpty());
+}
+
+bool KdeprintChecker::checkService(const KURL& url)
+{
+	QString	serv(url.path().mid(1));
+	KExtendedSocket	sock;
+
+	bool	ok;
+	int	port = serv.toInt(&ok);
+
+	if (ok) sock.setAddress("localhost", port);
+	else sock.setAddress("localhost", serv);
+	return (sock.connect() == 0);
 }

@@ -23,6 +23,7 @@
 #define KMMAINVIEW_H
 
 #include <qwidget.h>
+#include <kdeprint/kpreloadobject.h>
 
 class KMManager;
 class KMPrinterView;
@@ -34,8 +35,9 @@ class QTimer;
 class QSplitter;
 class KToolBar;
 class KAction;
+class PluginComboBox;
 
-class KMMainView : public QWidget
+class KMMainView : public QWidget, KPReloadObject
 {
 	Q_OBJECT
 public:
@@ -73,6 +75,7 @@ protected slots:
 	void slotRightButtonClicked(KMPrinter*, const QPoint&);
 	void slotChangeDirection(int);
 	void slotToggleToolBar(bool);
+	void slotPluginChange();
 
 protected:
 	void initActions();
@@ -80,18 +83,19 @@ protected:
 	void restoreSettings();
 	void saveSettings();
 	void loadParameters();
+	void reload();
 
 private:
 	KMPrinterView	*m_printerview;
 	KMPages		*m_printerpages;
 	QTimer		*m_timer;
-	KMManager	*m_manager;
 	QPopupMenu	*m_pop;
 	KActionCollection	*m_actions;
 	KMPrinter	*m_current;
 	QSplitter	*m_splitter;
 	KToolBar	*m_toolbar;
 	uint 		m_timerdelay;
+	PluginComboBox	*m_plugin;
 };
 
 #endif

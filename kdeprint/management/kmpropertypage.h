@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -24,13 +24,14 @@
 
 #include "cjanuswidget.h"
 #include "kmprinterpage.h"
+#include <kdeprint/kpreloadobject.h>
 
 #include <qlist.h>
 
 class KMPropWidget;
 class KMPrinter;
 
-class KMPropertyPage : public CJanusWidget, public KMPrinterPage
+class KMPropertyPage : public CJanusWidget, public KMPrinterPage, public KPReloadObject
 {
 	Q_OBJECT
 public:
@@ -42,6 +43,10 @@ public:
 
 protected slots:
 	void slotEnable(bool);
+	void initialize();
+
+protected:
+	void reload();
 
 private:
 	QList<KMPropWidget>	m_widgets;

@@ -33,9 +33,12 @@
 #include "kmvirtualmanager.h"
 #include "kmconfigdialog.h"
 #include "kmspecialprinterdlg.h"
+#include "plugincombobox.h"
 
 #include <qtimer.h>
 #include <qsplitter.h>
+#include <qcombobox.h>
+#include <qlabel.h>
 #include <qlayout.h>
 #include <qpopupmenu.h>
 #include <kmessagebox.h>
@@ -44,6 +47,29 @@
 #include <kconfig.h>
 #include <ktoolbar.h>
 
+#define	m_manager	KMFactory::self()->manager()
+
+extern "C"
+{
+	int add_printer_wizard(QWidget *parent)
+	{
+		KMWizard	dlg(parent);
+		int		flag(0);
+		if (dlg.exec())
+		{
+			flag = 1;
+			// check if the printer already exists, and ask confirmation if needed.
+			if (KMFactory::self()->manager()->findPrinter(dlg.printer()->name()) != 0)
+				if (KMessageBox::warningYesNo(parent,i18n("<nobr>The printer <b>%1</b> already exists. Continuing will<br>overwrite existing printer. Do you want to continue ?</nobr>").arg(dlg.printer()->name())) == KMessageBox::No)
+					flag = 0;
+			// try to add printer only if flag is true.
+			if (flag && !KMFactory::self()->manager()->createPrinter(dlg.printer()))
+				flag = -1;
+		}
+		return flag;
+	}
+};
+
 KMMainView::KMMainView(QWidget *parent, const char *name)
 : QWidget(parent, name)
 {
@@ -51,18 +77,25 @@ KMMainView::KMMainView(QWidget *parent, const char *name)
 	m_current = 0;
 
 	// create widgets
-	m_manager = KMFactory::self()->manager();
 	m_splitter = new QSplitter(Qt::Vertical,this, "Splitter");
 	m_printerview = new KMPrinterView(m_splitter,"PrinterView");
 	m_printerpages = new KMPages(m_splitter,"PrinterPages");
 	m_timer = new QTimer(this);
 	m_pop = new QPopupMenu(this);
 	m_toolbar = new KToolBar(this, "ToolBar");
+	m_plugin = new PluginComboBox(this, "Plugin");
+	QLabel	*l1 = new QLabel(i18n("Print system currently used:"), this);
+	l1->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 
 	// layout
 	QVBoxLayout	*m_layout = new QVBoxLayout(this, 0, 0);
-	m_layout->addWidget(m_toolbar);
-	m_layout->addWidget(m_splitter);
+	m_layout->addWidget(m_toolbar, 0);
+	m_layout->addWidget(m_splitter, 1);
+	QHBoxLayout	*lay0 = new QHBoxLayout(0, 0, 10);
+	m_layout->addSpacing(5);
+	m_layout->addLayout(lay0, 0);
+	lay0->addWidget(l1, 1);
+	lay0->addWidget(m_plugin, 0);
 
 	// connections
 	connect(m_timer,SIGNAL(timeout()),SLOT(slotTimer()));
@@ -70,6 +103,7 @@ KMMainView::KMMainView(QWidget *parent, const char *name)
 	connect(m_printerview,SIGNAL(rightButtonClicked(KMPrinter*,const QPoint&)),SLOT(slotRightButtonClicked(KMPrinter*,const QPoint&)));
 	connect(m_pop,SIGNAL(aboutToShow()),SLOT(slotShowMenu()));
 	connect(m_pop,SIGNAL(aboutToHide()),SLOT(slotHideMenu()));
+	connect(m_plugin, SIGNAL(aboutToChange()), SLOT(slotPluginChange()));
 
 	// actions
 	m_actions = new KActionCollection(this);
@@ -142,7 +176,6 @@ void KMMainView::initActions()
 	new KAction(i18n("Test printer"),"fileprint",0,this,SLOT(slotTest()),m_actions,"printer_test");
 	new KAction(i18n("Configure manager"),"configure",0,this,SLOT(slotManagerConfigure()),m_actions,"manager_configure");
 	new KAction(i18n("Refresh view"),"reload",0,this,SLOT(slotTimer()),m_actions,"view_refresh");
-	m_actions->action("printer_add")->setEnabled((m_manager->printerOperationMask() & KMManager::PrinterCreation) && m_manager->hasManagement());
 
 	KSelectAction	*dact = new KSelectAction(i18n("Orientation"),0,m_actions,"orientation_change");
 	dact->setItems(QStringList::split(',',i18n("Vertical,Horizontal"),false));
@@ -151,9 +184,6 @@ void KMMainView::initActions()
 
 	new KAction(i18n("Restart server"),"gear",0,this,SLOT(slotServerRestart()),m_actions,"server_restart");
 	new KAction(i18n("Configure server"),"configure",0,this,SLOT(slotServerConfigure()),m_actions,"server_configure");
-	int 	mask = m_manager->serverOperationMask();
-	m_actions->action("server_restart")->setEnabled((mask & KMManager::ServerRestarting));
-	m_actions->action("server_configure")->setEnabled((mask & KMManager::ServerConfigure));
 
 	KToggleAction	*tact = new KToggleAction(i18n("View Toolbar"),0,m_actions,"view_toolbar");
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotToggleToolBar(bool)));
@@ -221,6 +251,11 @@ void KMMainView::slotPrinterSelected(KMPrinter *p)
 		m_actions->action("printer_test")->setEnabled((sp && (mask & KMManager::PrinterTesting) && p && !p->isClass(true)));
 		m_actions->action("printer_enable")->setEnabled((sp && (mask & KMManager::PrinterEnabling) && p && p->state() == KMPrinter::Stopped));
 		m_actions->action("printer_disable")->setEnabled((sp && (mask & KMManager::PrinterEnabling) && p && p->state() != KMPrinter::Stopped));
+
+		m_actions->action("printer_add")->setEnabled((mask & KMManager::PrinterCreation));
+		mask = m_manager->serverOperationMask();
+		m_actions->action("server_restart")->setEnabled((mask & KMManager::ServerRestarting));
+		m_actions->action("server_configure")->setEnabled((mask & KMManager::ServerConfigure));
 	//}
 }
 
@@ -383,20 +418,12 @@ void KMMainView::slotConfigure()
 void KMMainView::slotAdd()
 {
 	KMTimer::blockTimer();
-	KMWizard	dlg(this);
-	bool		flag(false);
-	if (dlg.exec())
-	{
-		flag = true;
-		// check if the printer already exists, and ask confirmation if needed.
-		if (m_manager->findPrinter(dlg.printer()->name()) != 0)
-			if (KMessageBox::warningYesNo(this,i18n("<nobr>The printer <b>%1</b> already exists. Continuing will<br>overwrite existing printer. Do you want to continue ?</nobr>").arg(dlg.printer()->name())) == KMessageBox::No)
-				flag = false;
-		// try to add printer only if flag is true.
-		if (flag && !m_manager->createPrinter(dlg.printer()))
-			showErrorMsg(i18n("Unable to create printer."));
-	}
-	KMTimer::releaseTimer(flag);
+
+	int	result(0);
+	if ((result=add_printer_wizard(this)) == -1)
+		showErrorMsg(i18n("Unable to create printer."));
+
+	KMTimer::releaseTimer((result == 1));
 }
 
 void KMMainView::slotHardDefault()
@@ -527,6 +554,16 @@ void KMMainView::enableToolbar(bool on)
 KAction* KMMainView::action(const char *name)
 {
 	return m_actions->action(name);
+}
+
+void KMMainView::slotPluginChange()
+{
+	m_printerview->setPrinterList(0);
+}
+
+void KMMainView::reload()
+{
+	slotTimer();
 }
 
 #include "kmmainview.moc"

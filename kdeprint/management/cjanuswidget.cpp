@@ -129,7 +129,7 @@ void CJanusWidget::CListBox::computeWidth()
 CJanusWidget::CJanusWidget(QWidget *parent, const char *name)
 : QWidget(parent,name)
 {
-	m_pages.setAutoDelete(false);
+	m_pages.setAutoDelete(true);
 
 	m_stack = new QWidgetStack(this);
 	m_header = new QLabel(this);
@@ -213,7 +213,7 @@ void CJanusWidget::slotSelected(QListBoxItem *item)
 	if (page)
 	{
 		m_stack->raiseWidget(page->m_widget);
-		m_header->setText(QString::fromLatin1("<b>%1</b>").arg(page->m_header));
+		m_header->setText(page->m_header);
 	}
 	else
 	{
@@ -251,4 +251,16 @@ QListBoxItem* CJanusWidget::findPrevItem(CPage *p)
 			return m_pages.current()->m_item;
 	return 0;
 }
+
+void CJanusWidget::clearPages()
+{
+	QListIterator<CPage>	it(m_pages);
+	for (;it.current(); ++it)
+	{
+		delete it.current()->m_widget;
+		delete it.current()->m_item;
+	}
+	m_pages.clear();
+}
+
 #include "cjanuswidget.moc"

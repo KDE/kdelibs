@@ -35,6 +35,7 @@ private:
 	static bool checkURL(const KURL&);
 	static bool checkConfig(const KURL&);
 	static bool checkExec(const KURL&);
+	static bool checkService(const KURL&);
 };
 
 #endif

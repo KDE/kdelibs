@@ -40,6 +40,7 @@ public:
 	void addPage(QWidget *w, const QString& text, const QString& header, const QPixmap& pix);
 	void enablePage(QWidget *w);
 	void disablePage(QWidget *w);
+	void clearPages();
 
 protected slots:
 	void slotSelected(QListBoxItem*);

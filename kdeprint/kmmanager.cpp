@@ -33,6 +33,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kapp.h>
+#include <klibloader.h>
 #include <unistd.h>
 
 KMManager::KMManager(QObject *parent, const char *name)
@@ -45,6 +46,8 @@ KMManager::KMManager(QObject *parent, const char *name)
 
 	m_specialmgr = new KMSpecialManager(this);
 	CHECK_PTR(m_specialmgr);
+	m_virtualmgr = new KMVirtualManager(this);
+	CHECK_PTR(m_virtualmgr);
 }
 
 KMManager::~KMManager()
@@ -162,12 +165,12 @@ QList<KMPrinter>* KMManager::printerList(bool reload)
 		// make sure virtual printers will be reloaded if we don't have
 		// any printer (for example if settings are wrong)
 		if (m_printers.count() == 0)
-			KMFactory::self()->virtualManager()->reset();
+			m_virtualmgr->reset();
 
 		// List real printers (in subclasses)
 		listPrinters();
                 // list virtual printers (and undiscard virtual printers if necessary)
-                KMFactory::self()->virtualManager()->refresh();
+		m_virtualmgr->refresh();
 		m_specialmgr->refresh();
 
 		// remove discarded printers
@@ -372,4 +375,20 @@ QStringList KMManager::detectLocalPrinters()
 	for (int i=0; i<3; i++)
 		list << QString::fromLatin1("parallel:/dev/lp%1").arg(i) << i18n("Parallel Port #%1").arg(i+1) << QString::null;
 	return list;
+}
+
+int KMManager::addPrinterWizard(QWidget *parent)
+{
+	KLibrary	*lib = KLibLoader::self()->library("libkdeprint_management");
+	if (!lib)
+		setErrorMsg(i18n("Unable to load KDE print management library:<br>%1").arg(KLibLoader::self()->lastErrorMessage()));
+	else
+	{
+		int (*func)(QWidget*) = (int(*)(QWidget*))lib->symbol("add_printer_wizard");
+		if (!func)
+			setErrorMsg(i18n("Unable to find wizard object in management library."));
+		else
+			return func(parent);
+	}
+	return (-1);
 }

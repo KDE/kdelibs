@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -32,7 +32,7 @@ class KMManager;
 class KMVirtualManager : public QObject
 {
 public:
-	KMVirtualManager(QObject *parent = 0, const char *name = 0);
+	KMVirtualManager(KMManager *parent = 0, const char *name = 0);
 	~KMVirtualManager();
 
         void refresh();
@@ -58,8 +58,8 @@ protected:
 	void checkPrinter(KMPrinter*);
 
 private:
+	KMManager		*m_manager;
 	QDateTime		m_checktime;
-        KMManager               *m_manager;
         QString                 m_defaultprinter;
 };
 

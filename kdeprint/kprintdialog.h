@@ -24,6 +24,7 @@
 
 #include <kdialog.h>
 #include <qlist.h>
+#include <kdeprint/kpreloadobject.h>
 
 class KPrinter;
 class KPrintDialogPage;
@@ -32,8 +33,10 @@ class QComboBox;
 class QCheckBox;
 class QPushButton;
 class QLineEdit;
+class QVBox;
+class PluginComboBox;
 
-class KPrintDialog : public KDialog
+class KPrintDialog : public KDialog, public KPReloadObject
 {
 	Q_OBJECT
 public:
@@ -54,19 +57,23 @@ protected slots:
 	void slotSetDefault();
 	void slotOptions();
 	virtual void done(int);
+	void slotWizard();
 
 protected:
 	bool checkOutputFile();
 	void enableSpecial(bool on);
 	void enableOutputFile(bool on);
 	void setOutputFileExtension(const QString&);
+	void reload();
 
 protected:
 	QLabel	*m_type, *m_state, *m_comment, *m_location, *m_cmdlabel, *m_filelabel;
-	QPushButton	*m_properties, *m_default, *m_options, *m_filebrowse, *m_ok;
+	QPushButton	*m_properties, *m_default, *m_options, *m_filebrowse, *m_ok, *m_wizard;
 	QCheckBox	*m_preview;
 	QLineEdit	*m_file, *m_cmd;
 	QComboBox	*m_printers;
+	QVBox		*m_dummy;
+	PluginComboBox	*m_plugin;
 
 	QList<KPrintDialogPage>	m_pages;
 	KPrinter		*m_printer;

@@ -178,7 +178,7 @@ void KMIconView::slotRightButtonClicked(QIconViewItem *item, const QPoint& p)
 void KMIconView::slotSelectionChanged()
 {
 	KMIconViewItem	*item = (KMIconViewItem*)currentItem();
-	emit printerSelected((item ? item->printer() : NULL));
+	emit printerSelected((item && !item->isDiscarded() ? item->printer() : NULL));
 }
 
 void KMIconView::setPrinter(KMPrinter *p)

@@ -39,10 +39,9 @@ QString instanceName(const QString& prname, const QString& instname)
 	return str;
 }
 
-KMVirtualManager::KMVirtualManager(QObject *parent, const char *name)
-: QObject(parent,name)
+KMVirtualManager::KMVirtualManager(KMManager *parent, const char *name)
+: QObject(parent,name), m_manager(parent)
 {
-        m_manager = KMFactory::self()->manager();
 }
 
 KMVirtualManager::~KMVirtualManager()
@@ -177,7 +176,7 @@ void KMVirtualManager::refresh()
 
 void KMVirtualManager::checkPrinter(KMPrinter *p)
 {
-	KMPrinter	*realprinter = KMFactory::self()->manager()->findPrinter(p->printerName());
+	KMPrinter	*realprinter = m_manager->findPrinter(p->printerName());
 	if (!realprinter || realprinter->isDiscarded())
 	{
 		p->setType(KMPrinter::Invalid);
@@ -228,7 +227,7 @@ void KMVirtualManager::loadFile(const QString& filename)
 			words = QStringList::split(' ',line,false);
 			if (words.count() < 2) continue;
 			pair = QStringList::split('/',words[1],false);
-			realprinter = KMFactory::self()->manager()->findPrinter(pair[0]);
+			realprinter = m_manager->findPrinter(pair[0]);
 			if (realprinter && !realprinter->isDiscarded())
 			{ // keep only instances corresponding to an existing and
 			  // non discarded printer.

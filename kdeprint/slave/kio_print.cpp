@@ -192,7 +192,6 @@ void KIO_Print::get(const KURL& url)
 		PRINT_DEBUG << "opening print management part" << endl;
 
 		mimeType("print/manager");
-		infoMessage(i18n("Current Print System: %1").arg(KMFactory::self()->printSystem()));
 		finished();
 		return;
 	}

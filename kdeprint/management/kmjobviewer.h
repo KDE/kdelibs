@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -75,7 +75,6 @@ protected:
 	void loadPrinters();
 
 private:
-	KMJobManager		*m_manager;
 	QListView		*m_view;
 	QList<KMJob>		m_jobs;
 	QList<JobItem>		m_items;

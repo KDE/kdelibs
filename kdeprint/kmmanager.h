@@ -36,6 +36,7 @@ class KMManager : public QObject
 {
 friend class KMVirtualManager;
 friend class KMSpecialManager;
+friend class KMFactory;
 
 public:
 	enum PrinterOperations {
@@ -79,6 +80,7 @@ public:
 	bool completePrinter(const QString& name);
 	bool setDefaultPrinter(const QString& name);
 	int printerOperationMask() const 	{ return m_printeroperationmask; }
+	int addPrinterWizard(QWidget *parent = 0);
 
 	// special printer management functions
 	bool createSpecialPrinter(KMPrinter *p);
@@ -135,6 +137,7 @@ protected:
 	int			m_printeroperationmask;
 	int 			m_serveroperationmask;
 	KMSpecialManager	*m_specialmgr;
+	KMVirtualManager	*m_virtualmgr;
 };
 
 #endif

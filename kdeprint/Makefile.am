@@ -18,7 +18,7 @@ libkdeprint_la_SOURCES = kmfactory.cpp kmjob.cpp kmjobmanager.cpp kmmanager.cpp 
 		         kprintpreview.cpp kmfiltermanager.cpp kprintdialog.cpp kprinter.cpp kprinterimpl.cpp kprintdialogpage.cpp \
 			 kpcopiespage.cpp kpdriverpage.cpp kprinterpropertydialog.cpp kpgeneralpage.cpp kpqtpage.cpp \
 			 kmthreadjob.cpp kpipeprocess.cpp kprintfilter.cpp kpfilterpage.cpp \
-			 kmspecialmanager.cpp kdeprintcheck.cpp
+			 kmspecialmanager.cpp kdeprintcheck.cpp plugincombobox.cpp kpreloadobject.cpp
 libkdeprint_la_LDFLAGS = $(all_libraries) -version-info 0:1 -no-undefined
 libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIBZ)
 libkdeprint_la_METASOURCES = AUTO
@@ -28,11 +28,11 @@ noinst_HEADERS = kmdbentry.h kmfactory.h kmjob.h kmjobmanager.h kmmanager.h kmob
 		 driverview.h matic.h kprintpreview.h kprinterimpl.h kprintdialog.h \
 		 kpcopiespage.h kpdriverpage.h kprinterpropertydialog.h kpgeneralpage.h \
 		 kpqtpage.h kprintprocess.h kmthreadjob.h kpipeprocess.h kdeprintd.h kprintfilter.h \
-		 kmfiltermanager.h kpfilterpage.h kmspecialmanager.h kdeprintcheck.h
+		 kmfiltermanager.h kpfilterpage.h kmspecialmanager.h kdeprintcheck.h plugincombobox.h
 
 include_HEADERS = kprinter.h
 
-kdeprint_HEADERS = kprintdialogpage.h
+kdeprint_HEADERS = kprintdialogpage.h kpreloadobject.h
 kdeprintdir = $(includedir)/kdeprint
 
 EXTRA_DIST = maticparser.yy maticscanner.ll kprintpreviewui.rc

@@ -200,7 +200,7 @@ void KMListView::setPrinterList(QList<KMPrinter> *list)
 void KMListView::slotSelectionChanged()
 {
 	KMListViewItem	*item = (KMListViewItem*)currentItem();
-	emit printerSelected((item ? item->printer() : NULL));
+	emit printerSelected((item && !item->isDiscarded() ? item->printer() : NULL));
 }
 
 void KMListView::setPrinter(KMPrinter *p)

@@ -46,6 +46,7 @@ static void cleanFileList(const QStringList& files)
 KDEPrintd::KDEPrintd(const QCString& obj)
 : KDEDModule(obj)
 {
+	kdDebug() << "kdeprintd: construcing KDEPrintd" << endl;
 	m_processpool.setAutoDelete(true);
 	m_tempfiles.setAutoDelete(true);
 }

@@ -38,6 +38,8 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kprocess.h>
+#include <klibloader.h>
+#include <kmessagebox.h>
 
 void dumpOptions(const QMap<QString,QString>& opts);
 void reportError(KPrinter*);
@@ -126,11 +128,8 @@ bool KPrinter::setup(QWidget *parent)
 {
 	if (m_impl)
 	{
-		if (KPrintDialog::printerSetup(this, parent))
-		{
-			return true;
-		}
-		return false;
+		bool	state = KPrintDialog::printerSetup(this, parent);
+		return state;
 	}
 	qWarning("No implementation defined !!!");
 	return false;
@@ -138,12 +137,12 @@ bool KPrinter::setup(QWidget *parent)
 
 void KPrinter::addStandardPage(int p)
 {
-	KMFactory::self()->uiManager()->addPrintDialogStandardPage(p);
+	KMFactory::self()->settings()->standardDialogPages |= p;
 }
 
 void KPrinter::removeStandardPage(int p)
 {
-	KMFactory::self()->uiManager()->removePrintDialogStandardPage(p);
+	KMFactory::self()->settings()->standardDialogPages &= (~p);
 }
 
 void KPrinter::addDialogPage(KPrintDialogPage *page)
@@ -153,22 +152,22 @@ void KPrinter::addDialogPage(KPrintDialogPage *page)
 
 void KPrinter::setPageSelection(PageSelectionType t)
 {
-	KMFactory::self()->uiManager()->setPageSelection(t);
+	KMFactory::self()->settings()->pageSelection = t;
 }
 
 KPrinter::PageSelectionType KPrinter::pageSelection()
 {
-	return (PageSelectionType)KMFactory::self()->uiManager()->pageSelection();
+	return (PageSelectionType)KMFactory::self()->settings()->pageSelection;
 }
 
 void KPrinter::setApplicationType(ApplicationType t)
 {
-	KMFactory::self()->uiManager()->setApplicationType(t);
+	KMFactory::self()->settings()->application = t;
 }
 
 KPrinter::ApplicationType KPrinter::applicationType()
 {
-	return (ApplicationType)KMFactory::self()->uiManager()->applicationType();
+	return (ApplicationType)KMFactory::self()->settings()->application;
 }
 
 bool KPrinter::cmd(int c, QPainter *painter, QPDevCmdParam *p)
@@ -407,12 +406,14 @@ int KPrinter::metric(int m) const
 
 void KPrinter::setOrientation(Orientation o)
 {
+	KMFactory::self()->settings()->orientation = o;
 	setOption("kde-orientation",(o == Landscape ? "Landscape" : "Portrait"));
 	if (m_impl) m_impl->broadcastOption("kde-orientation",(o == Landscape ? "Landscape" : "Portrait"));
 }
 
 void KPrinter::setPageSize(PageSize s)
 {
+	KMFactory::self()->settings()->pageSize = s;
 	setOption("kde-pagesize",QString::number((int)s));
 	if (m_impl) m_impl->broadcastOption("kde-pagesize",option("kde-pagesize"));
 }
@@ -442,6 +443,16 @@ void KPrinter::initOptions(const QMap<QString,QString>& opts)
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
 		if (it.key().left(4) != "kde-")
 			m_impl->broadcastOption(it.key(),it.data());
+}
+
+void KPrinter::reload()
+{
+	m_impl = KMFactory::self()->printerImplementation();
+	int	global = KMFactory::self()->settings()->orientation;
+	if (global != -1) setOrientation((KPrinter::Orientation)global);
+	global = KMFactory::self()->settings()->pageSize;
+	if (global != -1) setPageSize((KPrinter::PageSize)global);
+	//initOptions(m_options);
 }
 
 //**************************************************************************************

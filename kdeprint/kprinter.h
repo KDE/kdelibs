@@ -29,6 +29,8 @@
 #include <qstringlist.h>
 #include <qvaluelist.h>
 
+#include <kdeprint/kpreloadobject.h>
+
 //**************************************************************************************
 // KPrinterWrapper class
 //**************************************************************************************
@@ -103,7 +105,7 @@ class KPrintDialogPage;
  * @author Michael Goffioul
  * @see QPrinter, KPrintDialogPage
  */
-class KPrinter : public QPaintDevice
+class KPrinter : public QPaintDevice, public KPReloadObject
 {
 friend class KPrinterWrapper;
 friend class KPrinterImpl;
@@ -524,6 +526,13 @@ public:
 	 * @see StandardPageType
 	 */
 	static void removeStandardPage(int p);
+	/**
+	 * Start the add printer wizard. This utility function allows any application for
+	 * adding a printer using the KDEPrint powerful wizard.
+	 * @param parent the parent widget for the wizard
+	 * @returns 1: success, 0: cancel, -1: error
+	 */
+	//static int addPrinterWizard(QWidget *parent = 0);
 
 	/**
 	 * The KPrinter object stores all its settings in an internal @ref QMap structure on @ref
@@ -617,6 +626,7 @@ protected:
 	void saveSettings();
 	void preparePrinting();
 	void finishPrinting();
+	void reload();
 
 protected:
 	KPrinterImpl		*m_impl;

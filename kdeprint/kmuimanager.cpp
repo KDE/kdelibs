@@ -39,9 +39,6 @@ KMUiManager::KMUiManager(QObject *parent, const char *name)
 {
 	m_printdialogflags = (KMUiManager::PrintDialogAll & ~KMUiManager::Options);
 	m_printdialogpages.setAutoDelete(false);
-	m_printdialogstd = KPrinter::CopiesPage;
-	m_applicationtype = KPrinter::Dialog;
-	m_pageselection = KPrinter::SystemSide;
 	m_copyflags = 0;
 }
 
@@ -61,15 +58,10 @@ void KMUiManager::setupConfigDialog(KMConfigDialog*)
 {
 }
 
-void KMUiManager::setApplicationType(KPrinter::ApplicationType t)
-{
-	m_applicationtype = t;
-}
-
 int KMUiManager::copyFlags(KPrinter *pr)
 {
 	int	fl(0);
-	if (m_pageselection == KPrinter::ApplicationSide)
+	if (KMFactory::self()->settings()->pageSelection == KPrinter::ApplicationSide)
 	{
 		if (pr)
 		{
@@ -84,21 +76,22 @@ int KMUiManager::copyFlags(KPrinter *pr)
 	return fl;
 }
 
+int KMUiManager::dialogFlags()
+{
+	int	f = m_printdialogflags;
+	if (KMFactory::self()->settings()->application == KPrinter::StandAlone)
+		f &= ~(KMUiManager::Preview);
+	return f;
+}
+
 void KMUiManager::setupPrintDialog(KPrintDialog *dlg)
 {
 	// dialog flags
-	int	f = m_printdialogflags;
-	if (applicationType() == KPrinter::StandAlone)
-		f &= ~(KMUiManager::Preview);
-	dlg->setFlags(f);
+	dlg->setFlags(dialogFlags());
 
 	// dialog pages
-	if (m_printdialogstd & KPrinter::CopiesPage)
-	{
-		KPCopiesPage	*cp = new KPCopiesPage(0,"CopiesPage");
-		cp->setFlags(copyFlags(dlg->printer()));
-		m_printdialogpages.insert(0,cp);
-	}
+	if (KMFactory::self()->settings()->standardDialogPages & KPrinter::CopiesPage)
+		m_printdialogpages.insert(0,new KPCopiesPage(dlg->printer(), 0, "CopiesPage"));
 	dlg->setDialogPages(&m_printdialogpages);
 }
 
@@ -133,6 +126,6 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 
 void KMUiManager::setupPrinterPropertyDialog(KPrinterPropertyDialog *dlg)
 {
-	if (applicationType() == KPrinter::Dialog)
+	if (KMFactory::self()->settings()->application == KPrinter::Dialog)
 		dlg->addPage(new KPQtPage(dlg,"QtPage"));
 }

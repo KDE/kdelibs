@@ -57,9 +57,9 @@ KMPrinterView::~KMPrinterView()
 void KMPrinterView::setPrinterList(QList<KMPrinter> *list)
 {
 	m_printers = list;
-	if (m_type != KMPrinterView::Tree)
+	if (m_type != KMPrinterView::Tree || list == 0)
 		m_iconview->setPrinterList(m_printers);
-	else
+	if (m_type == KMPrinterView::Tree || list == 0)
 		m_listview->setPrinterList(m_printers);
 }
 

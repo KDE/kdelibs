@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -23,6 +23,7 @@
 #define KPCOPIESPAGE_H
 
 #include "kprintdialogpage.h"
+#include <kdeprint/kpreloadobject.h>
 
 class QRadioButton;
 class QLineEdit;
@@ -30,15 +31,16 @@ class QComboBox;
 class QCheckBox;
 class QSpinBox;
 class QLabel;
+class KPrinter;
 
-class KPCopiesPage : public KPrintDialogPage
+class KPCopiesPage : public KPrintDialogPage, public KPReloadObject
 {
 	Q_OBJECT
 public:
-	KPCopiesPage(QWidget *parent = 0, const char *name = 0);
+	KPCopiesPage(KPrinter *prt = 0, QWidget *parent = 0, const char *name = 0);
 	~KPCopiesPage();
 
-	void setFlags(int f);
+	void setFlags(int f, KPrinter *prt = 0);
 
 	void setOptions(const QMap<QString,QString>& opts);
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
@@ -48,12 +50,18 @@ protected slots:
 	void slotCollateClicked();
 
 protected:
+	void initialize();
+	void reload();
+
+protected:
 	QRadioButton	*m_all, *m_current, *m_range;
 	QLineEdit	*m_rangeedit;
 	QComboBox	*m_pageset;
 	QCheckBox	*m_collate, *m_order;
 	QSpinBox	*m_copies;
 	QLabel		*m_collatepix;
+
+	KPrinter	*m_printer;
 };
 
 #endif
