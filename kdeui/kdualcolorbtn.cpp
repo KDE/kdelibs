@@ -8,7 +8,7 @@
 #include "kcolordrag.h"
 #include "dcolorarrow.xbm"
 #include "dcolorreset.xpm"
-#include <kglobal.h>
+#include <kglobalsettings.h>
 #include <qpainter.h>
 #include <qdrawutil.h>
 
@@ -188,7 +188,7 @@ void KDualColorButton::mousePressEvent(QMouseEvent *ev)
 void KDualColorButton::mouseMoveEvent(QMouseEvent *ev)
 {
     if(!miniCtlFlag){
-        int delay = KGlobal::dndEventDelay();
+        int delay = KGlobalSettings::dndEventDelay();
         if(ev->x() >= mPos.x()+delay || ev->x() <= mPos.x()-delay ||
            ev->y() >= mPos.y()+delay || ev->y() <= mPos.y()-delay) {
             KColorDrag *d = KColorDrag::makeDrag( curColor == Foreground ?

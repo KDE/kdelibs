@@ -46,6 +46,7 @@
 #include <kapp.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include <kglobalsettings.h>
 #include <kiconloader.h>
 #include <klistbox.h>
 #include <klocale.h>
@@ -325,7 +326,7 @@ void KColorCells::mouseMoveEvent( QMouseEvent *e )
     if( !(e->state() && LeftButton)) return;
 
     if(inMouse) {
-        int delay = KGlobal::dndEventDelay();
+        int delay = KGlobalSettings::dndEventDelay();
         if(e->x() > mPos.x()+delay || e->x() < mPos.x()-delay ||
            e->y() > mPos.y()+delay || e->y() < mPos.y()-delay){
             // Drag color object

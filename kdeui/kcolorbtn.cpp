@@ -24,7 +24,7 @@
 
 #include <qpainter.h>
 #include <qdrawutil.h>
-#include <kglobal.h>
+#include <kglobalsettings.h>
 #include "kcolordlg.h"
 #include "kcolorbtn.h"
 #include "kcolordrag.h"
@@ -90,7 +90,7 @@ void KColorButton::mousePressEvent( QMouseEvent *e)
 
 void KColorButton::mouseMoveEvent( QMouseEvent *e)
 {
-  int delay = KGlobal::dndEventDelay();
+  int delay = KGlobalSettings::dndEventDelay();
 
   if(e->x() >= mPos.x()+delay || e->x() <= mPos.x()-delay ||
      e->y() >= mPos.y()+delay || e->y() <= mPos.y()-delay) {

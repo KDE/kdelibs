@@ -95,7 +95,7 @@ void KComboBox::init()
 
 void KComboBox::setAutoCompletion( bool autocomplete )
 {
-    m_iCompletionMode = autocomplete ? KGlobal::CompletionAuto : KGlobal::completionMode();
+    m_iCompletionMode = autocomplete ? KGlobalSettings::CompletionAuto : KGlobalSettings::completionMode();
 }
 
 void KComboBox::setCompletionObject( KCompletion* compObj, bool hsig )
@@ -166,14 +166,14 @@ void KComboBox::aboutToShowSubMenu( int itemID )
     {
         m_pSubMenu->clear();
         int id = m_pSubMenu->insertItem( i18n("None"), this, SLOT(modeNone()) );
-        m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionNone );
+        m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobalSettings::CompletionNone );
         id = m_pSubMenu->insertItem( i18n("Manual"), this, SLOT(modeShell()) );
-        m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionShell );
+        m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobalSettings::CompletionShell );
         id = m_pSubMenu->insertItem( i18n("Automatic"), this, SLOT(modeAuto()) );
-        m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionAuto );
+        m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobalSettings::CompletionAuto );
         id = m_pSubMenu->insertItem( i18n("Semi-Automatic"), this, SLOT(modeManual()) );
-        m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobal::CompletionMan );
-        if( m_iCompletionMode != KGlobal::completionMode() )
+        m_pSubMenu->setItemChecked( id, m_iCompletionMode == KGlobalSettings::CompletionMan );
+        if( m_iCompletionMode != KGlobalSettings::completionMode() )
         {
             m_pSubMenu->insertSeparator();
             m_pSubMenu->insertItem( i18n("Default"), this, SLOT(modeDefault()) );
@@ -184,7 +184,7 @@ void KComboBox::aboutToShowSubMenu( int itemID )
 void KComboBox::entryChanged( const QString& text )
 {
     if( m_bEmitSignals &&
-        m_iCompletionMode == KGlobal::CompletionAuto )
+        m_iCompletionMode == KGlobalSettings::CompletionAuto )
     {
         int pos = cursorPosition();
         int len = text.length();
@@ -206,7 +206,7 @@ void KComboBox::makeCompletion( const QString& text )
         if( match.isNull() || match == text )
             return;
 
-        if ( m_iCompletionMode == KGlobal::CompletionShell )
+        if ( m_iCompletionMode == KGlobalSettings::CompletionShell )
         {
             m_pEdit->setText( match );
             // TODO : deal with partial matches (multiple possible completions)
@@ -245,7 +245,7 @@ void KComboBox::rotateText( const QString& input )
     if( m_pEdit != 0 && m_pCompObj != 0 &&
         m_pCompObj->hasMultipleMatches() )
     {
-        if( m_iCompletionMode == KGlobal::CompletionShell )
+        if( m_iCompletionMode == KGlobalSettings::CompletionShell )
         {
             m_pEdit->setText( input );
         }
@@ -339,8 +339,8 @@ bool KComboBox::eventFilter( QObject *o, QEvent *ev )
                 // Emit completion if the completion mode is NOT
                 // CompletionAuto and if the mode is CompletionShell,
                 // the cursor is at the end of the string.
-                if( m_iCompletionMode == KGlobal::CompletionMan ||
-                    (m_iCompletionMode == KGlobal::CompletionShell &&
+                if( m_iCompletionMode == KGlobalSettings::CompletionMan ||
+                    (m_iCompletionMode == KGlobalSettings::CompletionShell &&
                     m_pEdit->cursorPosition() == (int) m_pEdit->text().length() ))
                 {
                     emit completion( m_pEdit->text() );
@@ -363,7 +363,7 @@ bool KComboBox::eventFilter( QObject *o, QEvent *ev )
             }
             // Always update the position holder if the user
             // pressed the END key in auto completion mode.
-            if( m_iCompletionMode == KGlobal::CompletionAuto )
+            if( m_iCompletionMode == KGlobalSettings::CompletionAuto )
             {
                 int pos = cursorPosition();
                 int len = m_pEdit->text().length();

@@ -1,11 +1,11 @@
 #include "klistview.h"
-#include <kglobal.h>
+#include <kglobalsettings.h>
 #include <kcursor.h>
 
 KListView::KListView( QWidget *parent, const char *name )
     : QListView( parent, name )
 {
-    useDouble = !KGlobal::useDoubleClicks();
+    useDouble = KGlobalSettings::singleClick();
     oldCursor = viewport()->cursor();
     connect( this, SIGNAL( onViewport() ),
 	     this, SLOT( slotOnViewport() ) );
@@ -16,13 +16,13 @@ KListView::KListView( QWidget *parent, const char *name )
 
 void KListView::checkClickMode()
 {
-    if ( KGlobal::useDoubleClicks() == useDouble )
+    if ( !KGlobalSettings::singleClick() == useDouble )
 	return;
 
     if ( !useDouble )
 	disconnect( this, SIGNAL( clicked( QListViewItem * ) ),
 			this, SIGNAL( doubleClicked( QListViewItem * ) ) );
-    useDouble = KGlobal::useDoubleClicks();
+    useDouble = !KGlobalSettings::singleClick();
     if ( !useDouble )
 	connect( this, SIGNAL( clicked( QListViewItem * ) ),
 		 this, SIGNAL( doubleClicked( QListViewItem * ) ) );

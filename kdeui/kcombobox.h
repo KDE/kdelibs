@@ -193,7 +193,7 @@ public:
     *
     * @return true when completion mode is automatic.
     */
-    bool autoCompletion() const { return m_iCompletionMode == KGlobal::CompletionAuto; }
+    bool autoCompletion() const { return m_iCompletionMode == KGlobalSettings::CompletionAuto; }
 
     /**
     * Re-implemented from @ref KCompletionBase.
@@ -281,7 +281,7 @@ signals:
     * argument is the current text being edited.
     *
     * Note that this signal is NOT available if this widget is non-editable
-    * or the completion mode is set to KGlobal::CompletionNone.
+    * or the completion mode is set to KGlobalSettings::CompletionNone.
     */
     void completion( const QString& );
 
@@ -289,7 +289,7 @@ signals:
     * This signal is emitted when the rotate up key is pressed.
     *
     * Note that this signal is NOT available if this widget is non-editable
-    * or the completion mode is set to KGlobal::CompletionNone.
+    * or the completion mode is set to KGlobalSettings::CompletionNone.
     */
     void rotateUp();
 
@@ -297,7 +297,7 @@ signals:
     * This signal is emitted when the rotate down key is pressed.
     *
     * Note that this signal is NOT available if this widget is non-editable
-    * or the completion mode is set to KGlobal::CompletionNone.
+    * or the completion mode is set to KGlobalSettings::CompletionNone.
     */
     void rotateDown();
 
@@ -351,30 +351,30 @@ public slots:
 protected slots:
 
     /**
-    * Sets the comepltion mode to KGlobal::CompletionNone.
+    * Sets the comepltion mode to KGlobalSettings::CompletionNone.
     */
-    virtual void modeNone() { setCompletionMode( KGlobal::CompletionNone ); }
+    virtual void modeNone() { setCompletionMode( KGlobalSettings::CompletionNone ); }
 
     /**
-    * Sets the comepltion mode to KGlobal::CompletionManual
+    * Sets the comepltion mode to KGlobalSettings::CompletionManual
     */
-    virtual void modeManual() { setCompletionMode( KGlobal::CompletionMan );  }
+    virtual void modeManual() { setCompletionMode( KGlobalSettings::CompletionMan );  }
 
     /**
-    * Sets the comepltion mode to KGlobal::CompletionAuto
+    * Sets the comepltion mode to KGlobalSettings::CompletionAuto
     */
-    virtual void modeAuto() { setCompletionMode( KGlobal::CompletionAuto ); }
+    virtual void modeAuto() { setCompletionMode( KGlobalSettings::CompletionAuto ); }
 
     /**
-    * Sets the comepltion mode to KGlobal::CompletionShell
+    * Sets the comepltion mode to KGlobalSettings::CompletionShell
     */
-    virtual void modeShell() { setCompletionMode( KGlobal::CompletionShell );}
+    virtual void modeShell() { setCompletionMode( KGlobalSettings::CompletionShell );}
 
     /**
     * Sets the comepltion mode to the global default setting
-    * defined by @ref KGlobal::completionMode().
+    * defined by @ref KGlobalSettings::completionMode().
     */
-    virtual void modeDefault() { setCompletionMode( KGlobal::completionMode() ); }
+    virtual void modeDefault() { setCompletionMode( KGlobalSettings::completionMode() ); }
 
     /**
     * Deals with text changing in the line edit in

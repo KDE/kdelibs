@@ -191,7 +191,7 @@ public:
     *
     * See @ref KCompletionBase::setCompletionMode
     */
-    virtual void setCompletionMode( KGlobal::Completion mode );
+    virtual void setCompletionMode( KGlobalSettings::Completion mode );
 
    /**
     * Enables/disables the popup (context) menu.
@@ -325,30 +325,30 @@ protected slots:
     virtual void slotPaste()      { paste(); }
 
     /**
-    * Sets the comepltion mode to KGlobal::CompletionNone
+    * Sets the comepltion mode to KGlobalSettings::CompletionNone
     */
-    virtual void modeNone()   { setCompletionMode( KGlobal::CompletionNone ); }
+    virtual void modeNone()   { setCompletionMode( KGlobalSettings::CompletionNone ); }
 
     /**
-    * Sets the comepltion mode to KGlobal::CompletionManual
+    * Sets the comepltion mode to KGlobalSettings::CompletionManual
     */
-    virtual void modeManual() { setCompletionMode( KGlobal::CompletionMan );  }
+    virtual void modeManual() { setCompletionMode( KGlobalSettings::CompletionMan );  }
 
     /**
-    * Sets the comepltion mode to KGlobal::CompletionAuto
+    * Sets the comepltion mode to KGlobalSettings::CompletionAuto
     */
-    virtual void modeAuto()   { setCompletionMode( KGlobal::CompletionAuto ); }
+    virtual void modeAuto()   { setCompletionMode( KGlobalSettings::CompletionAuto ); }
 
     /**
-    * Sets the comepltion mode to KGlobal::CompletionShell
+    * Sets the comepltion mode to KGlobalSettings::CompletionShell
     */
-    virtual void modeShell()  { setCompletionMode( KGlobal::CompletionShell );}
+    virtual void modeShell()  { setCompletionMode( KGlobalSettings::CompletionShell );}
 
     /**
     * Sets the comepltion mode to the global default setting
-    * defined by @ref KGlobal::completionMode().
+    * defined by @ref KGlobalSettings::completionMode().
     */
-    virtual void modeDefault()  { setCompletionMode( KGlobal::completionMode() ); }
+    virtual void modeDefault()  { setCompletionMode( KGlobalSettings::completionMode() ); }
 
     /**
     * Populates the context menu before it is displayed.

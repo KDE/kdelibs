@@ -1,56 +1,146 @@
+#include <qtimer.h>
+
 #include "kiconview.h"
-#include <kglobal.h>
+#include <kglobalsettings.h>
 #include <kcursor.h>
+
+#include <X11/Xlib.h>
 
 KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
     : QIconView( parent, name, f )
 {
-    // set it to the wrong value so that checkClickMode does something
-    useDouble = !KGlobal::useDoubleClicks();
+    kdDebug() << "KIconView: KIconView()" << endl;
+    checkSettings();
     oldCursor = viewport()->cursor();
-    changeCursorSet = false;
+    m_bChangeCursorOverItem = true;
     connect( this, SIGNAL( onViewport() ),
 	     this, SLOT( slotOnViewport() ) );
     connect( this, SIGNAL( onItem( QIconViewItem * ) ),
-	     this, SLOT( slotOnItem( QIconViewItem * ) ) );
-    checkClickMode();
+             this, SLOT( slotOnItem( QIconViewItem * ) ) );
+    checkSettings();
+
+    connect( this, SIGNAL( executed( QIconViewItem * ) ),
+	     this, SLOT( slotTestExecute( QIconViewItem * ) ) );
+
+    m_pCurrentItem = 0L;
+
+    m_pAutoSelect = new QTimer( this );
+    connect( m_pAutoSelect, SIGNAL( timeout() ),
+    	     this, SLOT( slotAutoSelect() ) );
 }
 
-void KIconView::checkClickMode()
+void KIconView::checkSettings()
 {
-    if ( KGlobal::useDoubleClicks() == useDouble )
-	return;
+    m_bUseSingle = KGlobalSettings::singleClick();
+    m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
+    m_autoSelectDelay = KGlobalSettings::autoSelectDelay();
 
-    if ( !useDouble )
-	disconnect( this, SIGNAL( clicked( QIconViewItem * ) ),
-			this, SIGNAL( doubleClicked( QIconViewItem * ) ) );
-    useDouble = KGlobal::useDoubleClicks();
-    if ( !useDouble )
-	connect( this, SIGNAL( clicked( QIconViewItem * ) ),
-		 this, SIGNAL( doubleClicked( QIconViewItem * ) ) );
-    else
+    if( !m_bUseSingle || !m_bChangeCursorOverItem )
 	viewport()->setCursor( oldCursor );
-    if (!changeCursorSet)
-        changeCursorOverItem = !useDouble; // default : change cursor in single-click mode
-}
-
-void KIconView::setChangeCursor( bool c )
-{
-    changeCursorSet = true;
-    changeCursorOverItem = c;
 }
 
 void KIconView::slotOnItem( QIconViewItem *item )
 {
-    checkClickMode();
-    if ( item && changeCursorOverItem )
+    debug("KIconView: slotOnItem");
+    checkSettings();
+    if ( item && m_bChangeCursorOverItem && m_bUseSingle )
         viewport()->setCursor( KCursor().handCursor() );
-    // TODO : Auto-select
+
+    if ( item && m_autoSelectDelay ) {
+      debug("KIconView: timer start");
+      m_pAutoSelect->start( m_autoSelectDelay, true ); 
+      m_pCurrentItem = item;
+    }
 }
 
 void KIconView::slotOnViewport()
 {
-    checkClickMode();
-    if ( changeCursorOverItem )
+    debug("KIconView: slotOnViewport");
+    checkSettings();
+    if ( m_bChangeCursorOverItem )
         viewport()->setCursor( oldCursor );
+
+    m_pAutoSelect->stop();
+    m_pCurrentItem = 0L;
+}
+
+void KIconView::slotAutoSelect()
+{
+  debug("KIconView: slotAutoSelect");
+
+  Window root;
+  Window child;
+  int root_x, root_y, win_x, win_y;
+  uint keybstate;
+  XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
+		 &root_x, &root_y, &win_x, &win_y, &keybstate );
+
+  if( m_pCurrentItem ) {
+    //Shift pressed?
+    if( (keybstate & ShiftMask) ) {
+      kdDebug() << "SHIFT Modifier" << endl;
+      //No Ctrl? Then clear before!
+      if( !(keybstate & ControlMask) ) { 
+	kdDebug() << "NO CTRL Modifier" << endl;
+	clearSelection();
+      }
+      else
+	kdDebug() << "CTRL Modifier" << endl;
+
+      //Temporary implementaion of the selection until QIconView supports it
+      bool select = !m_pCurrentItem->isSelected();
+      bool block = signalsBlocked();
+      blockSignals( true );
+      viewport()->setUpdatesEnabled( FALSE );
+
+      //Calculate the smallest rectangle that contains the current Item 
+      //and the one that got the autoselect event
+      QRect r;
+      QRect redraw;
+      if ( currentItem() )
+	r = QRect( QMIN( currentItem()->x(), m_pCurrentItem->x() ),
+		   QMIN( currentItem()->y(), m_pCurrentItem->y() ),
+		   0, 0 );
+      else
+	r = QRect( 0, 0, 0, 0 );
+      if ( currentItem()->x() < m_pCurrentItem->x() )
+	r.setWidth( m_pCurrentItem->x() - currentItem()->x() + m_pCurrentItem->width() );
+      else
+	r.setWidth( currentItem()->x() - m_pCurrentItem->x() + currentItem()->width() );
+      if ( currentItem()->y() < m_pCurrentItem->y() )
+	r.setHeight( m_pCurrentItem->y() - currentItem()->y() + m_pCurrentItem->height() );
+      else
+	r.setHeight( currentItem()->y() - m_pCurrentItem->y() + currentItem()->height() );
+      r = r.normalize();
+
+      //Check for each item wether it is within the rectangle. 
+      //If yes, select it
+      for( QIconViewItem* i = firstItem(); i; i = i->nextItem() ) {
+	if( i->intersects( r ) ) {
+	  redraw = redraw.unite( i->rect() );
+	  setSelected( i, select, true );
+	}
+      }
+
+      blockSignals( block );
+      viewport()->setUpdatesEnabled( true );
+      repaintContents( redraw, false );
+      emit selectionChanged();
+      //setSelected( m_pCurrentItem, true, (keybstate & ControlMask), (keybstate & ShiftMask) );
+    }
+    else if( (keybstate & ControlMask) ) {
+      kdDebug() << "NO SHIFT Modifier" << endl;
+      kdDebug() << "CTRL Modifier" << endl;
+      setSelected( m_pCurrentItem, !m_pCurrentItem->isSelected(), true );
+    }
+    else {
+      kdDebug() << "NO SHIFT Modifier" << endl;
+      kdDebug() << "NO CTRL Modifier" << endl;
+      setSelected( m_pCurrentItem, true );
+    }
+  }
+  else
+    kdDebug() << "That´s not supposed to happen!!!!" << endl;
+
+  setCurrentItem( m_pCurrentItem );
 }

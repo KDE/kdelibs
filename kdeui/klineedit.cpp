@@ -124,12 +124,12 @@ void KLineEdit::showModeChanger()
     }
 }
 
-void KLineEdit::setCompletionMode( KGlobal::Completion mode )
+void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
 {
     // If the widgets echo mode is not Normal, no completion
     // feature will be enabled even if one is requested.
     if ( echoMode() != QLineEdit::Normal )
-        mode = KGlobal::CompletionNone; // override the request.
+        mode = KGlobalSettings::CompletionNone; // override the request.
 
     KCompletionBase::setCompletionMode( mode );
 }
@@ -140,14 +140,14 @@ void KLineEdit::aboutToShowSubMenu( int itemID )
     {
         m_pSubMenu->clear();
         int id = m_pSubMenu->insertItem( i18n("None"), this, SLOT( modeNone()) );
-        m_pSubMenu->setItemChecked(id, m_iCompletionMode == KGlobal::CompletionNone );
+        m_pSubMenu->setItemChecked(id, m_iCompletionMode == KGlobalSettings::CompletionNone );
         id = m_pSubMenu->insertItem( i18n("Manual"), this, SLOT( modeShell()) );
-        m_pSubMenu->setItemChecked(id, m_iCompletionMode == KGlobal::CompletionShell );
+        m_pSubMenu->setItemChecked(id, m_iCompletionMode == KGlobalSettings::CompletionShell );
         id = m_pSubMenu->insertItem( i18n("Automatic"), this, SLOT( modeAuto()) );
-        m_pSubMenu->setItemChecked(id, m_iCompletionMode == KGlobal::CompletionAuto );
+        m_pSubMenu->setItemChecked(id, m_iCompletionMode == KGlobalSettings::CompletionAuto );
         id = m_pSubMenu->insertItem( i18n("Semi-Automatic"), this, SLOT( modeManual()) );
-        m_pSubMenu->setItemChecked(id, m_iCompletionMode == KGlobal::CompletionMan );
-        if( m_iCompletionMode != KGlobal::completionMode() )
+        m_pSubMenu->setItemChecked(id, m_iCompletionMode == KGlobalSettings::CompletionMan );
+        if( m_iCompletionMode != KGlobalSettings::completionMode() )
         {
             m_pSubMenu->insertSeparator();
             m_pSubMenu->insertItem( i18n("Default"), this, SLOT( modeDefault()) );
@@ -190,7 +190,7 @@ void KLineEdit::rotateText( const QString& input )
 
     if( m_pCompObj != 0 && m_pCompObj->hasMultipleMatches() )
     {
-        if( m_iCompletionMode == KGlobal::CompletionShell )
+        if( m_iCompletionMode == KGlobalSettings::CompletionShell )
         {
             setText( input );
         }
@@ -242,7 +242,7 @@ void KLineEdit::iterateDownInList()
 
 void KLineEdit::entryChanged( const QString& text )
 {
-    if( m_iCompletionMode == KGlobal::CompletionAuto &&
+    if( m_iCompletionMode == KGlobalSettings::CompletionAuto &&
         echoMode() == QLineEdit::Normal && m_bEmitSignals )
     {
         int pos = cursorPosition();
@@ -265,7 +265,7 @@ void KLineEdit::makeCompletion( const QString& text )
         if( match.length() == 0 || match == text )
             return;
 
-        if ( m_iCompletionMode == KGlobal::CompletionShell )
+        if ( m_iCompletionMode == KGlobalSettings::CompletionShell )
         {
             setText( match );
         }
@@ -311,8 +311,8 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
         int len = text().length();
         int key = ( m_iCompletionKey == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion)	: m_iCompletionKey;
         if( KStdAccel::isEqual( ev, key ) && m_bEmitSignals &&
-            ( m_iCompletionMode == KGlobal::CompletionMan ||
-            (m_iCompletionMode == KGlobal::CompletionShell &&
+            ( m_iCompletionMode == KGlobalSettings::CompletionMan ||
+            (m_iCompletionMode == KGlobalSettings::CompletionShell &&
             len != 0 && len == cursorPosition()) ) )
         {
             // Emit completion if the completion mode is NOT
@@ -343,7 +343,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
     QLineEdit::keyPressEvent ( ev );
     // Always update the position variable in auto completion
     // mode whenu user moes the cursor to EOL using the END key.
-    if( m_iCompletionMode == KGlobal::CompletionAuto )
+    if( m_iCompletionMode == KGlobalSettings::CompletionAuto )
     {
         int pos = cursorPosition();
         int len = text().length();
