@@ -64,7 +64,7 @@ bool KCupsPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 void KCupsPrinterImpl::preparePrinting(KPrinter *printer)
 {
 	// process orientation
-	QString	o = printer->option("orientation-requested");
+	QString	o = (printer->options().contains("orientation-requested") ? printer->option("orientation-requested") : QString::null);
 	printer->setOption("kde-orientation",(o == "4" || o == "5" ? "Landscape" : "Portrait"));
 	// if it's a Qt application, then convert orientation as it will be handled by Qt directly
 	if (printer->applicationType() == KPrinter::Dialog)

@@ -23,8 +23,8 @@
 #include <kprintdialogpage.h>
 
 class QComboBox;
+class QTimeEdit;
 class QLineEdit;
-class QButtonGroup;
 
 class KPSchedulePage : public KPrintDialogPage
 {
@@ -39,12 +39,11 @@ public:
 
 protected slots:
 	void slotTimeChanged();
-	void slotHourChanged();
 
 private:
 	QComboBox	*m_time;
-	QLineEdit	*m_hh, *m_mm, *m_ss;
-	QButtonGroup	*m_group;
+	QTimeEdit	*m_tedit;
+	QLineEdit	*m_billing, *m_pagelabel;
 	int	m_gmtdiff;
 };
 

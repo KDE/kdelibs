@@ -22,38 +22,19 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qcombobox.h>
-#include <qlineedit.h>
-#include <qbuttongroup.h>
-#include <qradiobutton.h>
+#include <qregexp.h>
+#include <qdatetimeedit.h>
 #include <qdatetime.h>
-#include <qvalidator.h>
+#include <qlineedit.h>
 #include <klocale.h>
+#include <kseparator.h>
 
 #include <time.h>
-
-int fixHour(int h)
-{
-	if (h > 23)
-		return h % 24;
-	else if (h < 0)
-		return fixHour(h+24);
-	else
-		return h;
-}
-
-QString num2str(int n)
-{
-	QString	s;
-	s.setNum(n);
-	if (s.length() == 1)
-		s.prepend("0");
-	return s;
-}
 
 KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 : KPrintDialogPage(parent, name)
 {
-	setTitle(i18n("Schedule"));
+	setTitle(i18n("Advanced Options"));
 	setOnlyRealPrinters(true);
 
 	// compute difference in hours between GMT and local time
@@ -72,67 +53,40 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 	m_time->insertItem(i18n("Weekend"));
 	m_time->insertItem(i18n("Second shift (after close of business)"));
 	m_time->insertItem(i18n("Third shift (after midnight)"));
-	int	w = fontMetrics().width("00") + 10;
-	m_hh = new QLineEdit(this);
-	m_hh->setMaxLength(2);
-	m_hh->setValidator(new QIntValidator(0, 23, m_hh));
-	m_hh->setMaximumWidth(w);
-	m_hh->setAlignment(Qt::AlignCenter);
-	m_mm = new QLineEdit(this);
-	m_mm->setMaxLength(2);
-	m_mm->setValidator(new QIntValidator(0, 59, m_mm));
-	m_mm->setMaximumWidth(w);
-	m_mm->setAlignment(Qt::AlignCenter);
-	m_ss = new QLineEdit(this);
-	m_ss->setMaxLength(2);
-	m_ss->setValidator(new QIntValidator(0, 59, m_ss));
-	m_ss->setMaximumWidth(w);
-	m_ss->setAlignment(Qt::AlignCenter);
-	m_group = new QButtonGroup(this);
-	m_group->hide();
-
-	QStringList	l = QStringList::split(":", QTime::currentTime().toString(), false);
-	m_hh->setText(l[0]);
-	m_mm->setText(l[1]);
-	m_ss->setText("00");
+	m_time->insertItem(i18n("Specified time"));
+	m_tedit = new QTimeEdit(this);
+	m_tedit->setAutoAdvance(true);
+	m_tedit->setTime(QTime::currentTime());
+	m_tedit->setEnabled(false);
+	m_billing = new QLineEdit(this);
+	m_pagelabel = new QLineEdit(this);
 
 	QLabel	*lab = new QLabel(i18n("&Send print job to printer:"), this);
 	lab->setBuddy(m_time);
-	QLabel	*labc1 = new QLabel(":", this);
-	QLabel	*labc2 = new QLabel(":", this);
+	QLabel	*lab1 = new QLabel(i18n("&Billing information:"), this);
+	lab1->setBuddy(m_billing);
+	QLabel	*lab2 = new QLabel(i18n("T&op/Bottom page label:"), this);
+	lab2->setBuddy(m_pagelabel);
 
-	QRadioButton	*r1 = new QRadioButton(QString::null, this);
-	QRadioButton	*r2 = new QRadioButton(i18n("&at:"), this);
+	KSeparator	*sep0 = new KSeparator(this);
+	sep0->setFixedHeight(20);
 
-	m_group->insert(r1, 0);
-	m_group->insert(r2, 1);
-	m_group->setButton(0);
-
-	QVBoxLayout	*l0 = new QVBoxLayout(this, 10, 10);
+	QVBoxLayout	*l0 = new QVBoxLayout(this, 10, 5);
 	l0->addWidget(lab);
-	QHBoxLayout	*l1 = new QHBoxLayout(0, 0, 10), *l2 = new QHBoxLayout(0, 0, 10), *l3 = new QHBoxLayout(0, 0, 3);
+	QHBoxLayout	*l1 = new QHBoxLayout(0, 0, 10);
 	l0->addLayout(l1);
-	l1->addSpacing(10);
-	l1->addWidget(r1);
 	l1->addWidget(m_time);
-	l1->addStretch(1);
+	l1->addWidget(m_tedit);
+	l0->addWidget(sep0);
+	QGridLayout	*l2 = new QGridLayout(0, 2, 2, 0, 10);
 	l0->addLayout(l2);
-	l2->addSpacing(10);
-	l2->addWidget(r2);
-	l2->addLayout(l3);
-	l3->addWidget(m_hh);
-	l3->addWidget(labc1);
-	l3->addWidget(m_mm);
-	l3->addWidget(labc2);
-	l3->addWidget(m_ss);
-	l2->addStretch(1);
+	l2->addWidget(lab1, 0, 0);
+	l2->addWidget(lab2, 1, 0);
+	l2->addWidget(m_billing, 0, 1);
+	l2->addWidget(m_pagelabel, 1, 1);
 	l0->addStretch(1);
 
 	connect(m_time, SIGNAL(activated(int)), SLOT(slotTimeChanged()));
-	connect(m_hh, SIGNAL(textChanged(const QString&)), SLOT(slotHourChanged()));
-	connect(m_mm, SIGNAL(textChanged(const QString&)), SLOT(slotHourChanged()));
-	connect(m_ss, SIGNAL(textChanged(const QString&)), SLOT(slotHourChanged()));
-	connect(r2, SIGNAL(clicked()), m_hh, SLOT(setFocus()));
 }
 
 KPSchedulePage::~KPSchedulePage()
@@ -141,13 +95,10 @@ KPSchedulePage::~KPSchedulePage()
 
 bool KPSchedulePage::isValid(QString& msg)
 {
-	if (m_group->id(m_group->selected()) == 1)
+	if (m_time->currentItem() == 8 && !m_tedit->time().isValid())
 	{
-		if (!QTime::isValid(m_hh->text().toInt(), m_mm->text().toInt(), m_ss->text().toInt()))
-		{
-			msg = i18n("The time specified is not valid.");
-			return false;
-		}
+		msg = i18n("The time specified is not valid.");
+		return false;
 	}
 	return true;
 }
@@ -157,8 +108,7 @@ void KPSchedulePage::setOptions(const QMap<QString,QString>& opts)
 	QString	t = opts["job-hold-until"];
 	if (!t.isEmpty())
 	{
-		int	ID(0);
-		int	item(0);
+		int	item(-1);
 
 		if (t == "no-hold") item = 0;
 		else if (t == "indefinite") item = 1;
@@ -170,59 +120,58 @@ void KPSchedulePage::setOptions(const QMap<QString,QString>& opts)
 		else if (t == "third-shift") item = 7;
 		else
 		{
-			QStringList	l = QStringList::split(":", t, false);
-			while (l.count() < 3)
-				l.append("00");
-			m_hh->setText(num2str(fixHour(l[0].toInt()-m_gmtdiff)));
-			m_mm->setText(num2str(l[1].toInt()));
-			m_ss->setText(num2str(l[2].toInt()));
-			ID = 1;
+			QTime	qt = QTime::fromString(t);
+			m_tedit->setTime(qt.addSecs(-3600 * m_gmtdiff));
+			item = 8;
 		}
 
-		if (ID == 0)
+		if (item != -1)
+		{
 			m_time->setCurrentItem(item);
-
-		m_group->setButton(ID);
+			slotTimeChanged();
+		}
 	}
+	QRegExp	re("^\"|\"$");
+	t = opts["job-billing"].stripWhiteSpace();
+	t.replace(re, "");
+	m_billing->setText(t);
+	t = opts["page-label"].stripWhiteSpace();
+	t.replace(re, "");
+	m_pagelabel->setText(t);
 }
 
 void KPSchedulePage::getOptions(QMap<QString,QString>& opts, bool incldef)
 {
-	int	ID = m_group->id(m_group->selected());
-	if (incldef || ID == 1 || m_time->currentItem() != 0)
+	if (incldef || m_time->currentItem() != 0)
 	{
 		QString	t;
-		if (ID == 0)
+		switch (m_time->currentItem())
 		{
-			switch (m_time->currentItem())
-			{
-				case 0: t = "no-hold"; break;
-				case 1: t = "indefinite"; break;
-				case 2: t = "day-time"; break;
-				case 3: t = "evening"; break;
-				case 4: t = "night"; break;
-				case 5: t = "weekend"; break;
-				case 6: t = "second-shift"; break;
-				case 7: t = "third-shift"; break;
-			}
-		}
-		else
-		{
-			int	hh = fixHour(m_hh->text().toInt() + m_gmtdiff);
-			t = QString::number(hh) + ":" + m_mm->text() + ":" + m_ss->text();
+			case 0: t = "no-hold"; break;
+			case 1: t = "indefinite"; break;
+			case 2: t = "day-time"; break;
+			case 3: t = "evening"; break;
+			case 4: t = "night"; break;
+			case 5: t = "weekend"; break;
+			case 6: t = "second-shift"; break;
+			case 7: t = "third-shift"; break;
+			case 8:
+				t = m_tedit->time().addSecs(3600 * m_gmtdiff).toString();
+				break;
 		}
 		opts["job-hold-until"] = t;
 	}
+	if (incldef || !m_billing->text().isEmpty())
+		opts["job-billing"] = "\"" + m_billing->text() + "\"";
+	if (incldef || !m_pagelabel->text().isEmpty())
+		opts["page-label"] = "\"" + m_pagelabel->text() + "\"";
 }
 
 void KPSchedulePage::slotTimeChanged()
 {
-	m_group->setButton(0);
-}
-
-void KPSchedulePage::slotHourChanged()
-{
-	m_group->setButton(1);
+	m_tedit->setEnabled(m_time->currentItem() == 8);
+	if (m_time->currentItem() == 8)
+		m_tedit->setFocus();
 }
 
 #include "kpschedulepage.moc"
