@@ -27,7 +27,11 @@ using namespace KJS;
 RegExp::RegExp(const UString &p, int f)
  : pattern(p), flags(f)
 {
+#ifdef REG_EXTENDED    
   regcomp(&preg, p.ascii(), REG_EXTENDED);
+#else
+  regcomp(&preg, p.ascii(), 0);  
+#endif  
   /* TODO use flags, check for errors */
 }
 
