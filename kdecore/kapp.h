@@ -24,7 +24,7 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION_STRING "1.91 Beta >= 20000614"
+#define KDE_VERSION_STRING "1.91 Beta >= 20000621"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 9
 #define KDE_VERSION_RELEASE 3
@@ -733,6 +733,10 @@ public:
 #endif
 
 // $Log$
+// Revision 1.166  2000/06/21 17:33:57  putzer
+//
+// - cleaned up some more cruft
+//
 // Revision 1.165  2000/06/21 11:05:13  putzer
 //
 // - moved KApplication::mimeSourceFactory to KInstance
