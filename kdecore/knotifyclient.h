@@ -178,7 +178,8 @@ namespace KNotifyClient
 	 * Will fire an event that's not registered.
 	 * @param text The error message text, if applicable
 	 * @param present The error message level, defaulting to "Default"
-	 * @param file The sound file to play if selected with present
+	 * @param sound The sound file to play if selected with @p present
+     * @param file The log file to play if selected with @p present
 	 */
 	bool userEvent(const QString &text=QString::null, int present=Default, int level=Default,
 	                      const QString &sound=QString::null, const QString &file=QString::null);
