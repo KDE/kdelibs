@@ -74,7 +74,7 @@ fi
 KDOCTOOLS_CHECK_BZIP2
 
 if test -n "$HELP_SUBDIR"; then  
-  MEINPROC='KDELIBS_UNINSTALLED=yes $(top_builddir)/kdoctools/meinproc'
+  MEINPROC='$(top_builddir)/kdoctools/meinproc --srcdir=$(top_srcdir)/kdoctools'
   MEINPROC_DEP='$(top_builddir)/kdoctools/meinproc'
   KDE_XSL_STYLESHEET='$(top_srcdir)/kdoctools/customization/kde-chunk.xsl'
 else

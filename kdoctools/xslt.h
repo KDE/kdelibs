@@ -13,6 +13,7 @@ QCString fromUnicode( const QString &data );
 void replaceCharsetHeader( QString &output );
 
 extern bool warnings_exist;
+extern QString *SRCDIR;
 
 /**
  * Compares two files and returns true if @param newer exists and is newer than

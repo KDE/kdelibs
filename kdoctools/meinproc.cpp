@@ -76,6 +76,7 @@ static KCmdLineOptions options[] =
     { "htdig", I18N_NOOP( "create a ht://dig compatible index" ), 0 },
     { "check", I18N_NOOP( "check the document for validity" ), 0 },
     { "cache <file>", I18N_NOOP( "create a cache file for the document" ), 0},
+    { "srcdir <dir>", I18N_NOOP( "set the srcdir, for kdelibs" ), 0},
     { "+xml", I18N_NOOP("The file to transform"), 0},
     { 0, 0, 0 } // End of options.
 };
@@ -99,6 +100,8 @@ int main(int argc, char **argv) {
     KGlobal::locale();
 
     fillInstance(ins);
+
+    SRCDIR=new QString;
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     if ( args->count() != 1 ) {
@@ -126,6 +129,10 @@ int main(int argc, char **argv) {
         return ( 2 );
     }
 
+    if ( args->isSet( "srcdir" ) ) {
+        *SRCDIR = args->getOption("srcdir") ;
+	kdError() << "Set srcdir " << SRCDIR << endl;
+    }
     if ( args->isSet( "check" ) ) {
         char pwd_buffer[250];
         QFileInfo file( QFile::decodeName(args->arg( 0 )) );

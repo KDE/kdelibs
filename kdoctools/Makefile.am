@@ -1,7 +1,6 @@
 
 INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kioslave -I$(top_srcdir)/kioslave/bzip2 $(all_includes) $(LIBXML_CFLAGS) $(LIBXSLT_CFLAGS)
 AM_LDFLAGS = $(KDE_RPATH) $(LIBXML_RPATH) $(LIBXSLT_RPATH) $(all_libraries)
-AM_CPPFLAGS = -DSRCDIR="\"$(shell (cd $(top_srcdir)/kdoctools && pwd))\"" 
 
 noinst_LTLIBRARIES = libkbzipfilter_dummy.la
 
@@ -27,7 +26,7 @@ kdelnkdir = $(kde_servicesdir)
 
 bin_PROGRAMS = meinproc xml2man
 meinproc_LDADD = xslt_pure.o libkbzipfilter_dummy.la $(LIBXSLT_LIBS) $(LIBXML_LIBS) 
-meinproc_SOURCES = meinproc.cpp 
+meinproc_SOURCES = meinproc.cpp
 
 xml2man_LDADD = xslt_pure.o $(LIBXSLT_LIBS) $(LIBXML_LIBS) libkbzipfilter_dummy.la
 xml2man_SOURCES = xml2man.cpp 
