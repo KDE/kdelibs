@@ -1,5 +1,5 @@
 
-SUBDIRS = common kdebug kspell ksgmltools
+SUBDIRS = common kspell ksgmltools
 
 install-data-local:
 	-rm -f $(DESTDIR)$(kde_htmldir)/default
