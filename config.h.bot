@@ -62,6 +62,7 @@ void srandom(unsigned int seed);
 
 #ifndef HAVE_SETEUID
 #define HAVE_SETEUID
+#define HAVE_SETEUID_FAKE
 #ifdef __cplusplus
 extern "C"
 #endif
