@@ -44,6 +44,10 @@
 		<Directory>kde-science.directory</Directory>
 		<Include>
 			<And>
+				<Category>Math</Category>
+				<Not><Category>Education</Category></Not>
+			</And>
+			<And>
 				<Category>Science</Category>
 				<Not><Category>Education</Category></Not>
 			</And>
