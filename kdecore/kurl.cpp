@@ -27,6 +27,22 @@
 
 #include <qdir.h>
 
+
+static bool
+isRelativeURL(const QString &_url)
+{
+  // A relative URL has no ':' at least not before the first '/'.
+  int colonPos = _url.find(':');
+  if (colonPos == -1)
+      return true; // No ':' found, this is a relative URL
+
+  int slashPos = _url.find('/');
+  if ((slashPos != -1) && (colonPos > slashPos))
+      return true; // We have a ':' but it comes after a '/' so it is a relative URL
+
+  return false; // It's not a relative URL.
+}
+
 // Reference: RFC 1738 Uniform Resource Locators
 
 KURL::KURL()
@@ -70,7 +86,7 @@ KURL::KURL( const KURL& _u, const QString& _rel_url )
     decode( tmp );
     setHTMLRef( tmp );
   }
-  else if ( _rel_url.find( ":/" ) >= 0 )
+  else if ( !isRelativeURL(_rel_url))
   {
     *this = _rel_url;
   }
@@ -140,6 +156,7 @@ void KURL::parse( const QString& _url )
     }
   else if ( buf[pos] == ':' )
     {
+      m_strProtocol = QString( orig, pos );
       pos++;
       goto Node11;
     }
@@ -447,7 +464,7 @@ void KURL::setEncodedPathAndQuery( const QString& _txt )
   else
   {
     m_strPath = _txt.left( pos );
-    m_strQuery_encoded = _txt.right(_txt.length() - pos);
+    m_strQuery_encoded = _txt.right(_txt.length() - pos - 1);
   }
 
   decode( m_strPath );
