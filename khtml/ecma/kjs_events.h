@@ -42,8 +42,13 @@ namespace KJS {
     void hackUnsetThisObj() { m_hackThisObj = Object(0L); }
     virtual void handleEvent(DOM::Event &evt);
     virtual DOM::DOMString eventListenerType();
+    // Return the KJS function object executed when this event is emitted
     Object listenerObj() const { return listener; }
+    // Faster version of listenerObj()
     ObjectImp *listenerObjImp() const { return static_cast<ObjectImp *>(listener.imp()); }
+    // for Window::clear()
+    void clear() { listener = Object(); }
+
   protected:
     Object listener;
     bool html;

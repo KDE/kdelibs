@@ -1016,9 +1016,14 @@ void Window::clear( ExecState *exec )
   winq = 0L;
   // Get rid of everything, those user vars could hold references to DOM nodes
   deleteAllProperties( exec );
-  // Really delete those properties, so that the DOM nodes get deref'ed
-  while(KJS::Interpreter::collect())
-      ;
+
+  // Break the dependency between the listeners and their object
+  QPtrListIterator<JSEventListener> it(jsEventListeners);
+  for (; it.current(); ++it)
+    it.current()->clear();
+  // Forget about the listeners (the DOM::NodeImpls will delete them)
+  jsEventListeners.clear();
+
   if (!m_part.isNull()) {
     KJSProxy* proxy = KJSProxy::proxy( m_part );
     if (proxy) // i.e. JS not disabled
