@@ -700,6 +700,30 @@ const HTMLFont *getFont(CSSStyle *currentStyle)
     return fp;
 }
 
+#include "qmap.h"
+
+struct HTMLColors {
+    QMap<QString,QColor> map;
+    HTMLColors()
+    {
+	map["black"] = "#000000";
+	map["green"] = "#008000";
+	map["silver"] = "#c0c0c0";
+	map["lime"] = "#00ff00";
+	map["gray"] = "#808080";
+	map["olive"] = "#808000";
+	map["white"] = "#ffffff";
+	map["yellow"] = "#ffff00";
+	map["maroon"] = "#800000";
+	map["navy"] = "#000080";
+	map["red"] = "#ff0000";
+	map["blue"] = "#0000ff";
+	map["purple"] = "#800080";
+	map["teal"] = "#008080";
+	map["fuchsia"] = "#ff00ff";
+	map["aqua"] = "#00ffff";
+    };
+} htmlColors;
 
 void setNamedColor(QColor &color, const QString name)
 {
@@ -714,6 +738,10 @@ void setNamedColor(QColor &color, const QString name)
     }
     else
     {
-        color.setNamedColor(name);
+    	const QColor& tc = htmlColors.map[name];
+	if (tc.isValid())
+    	    color = tc;	
+	else
+	    color.setNamedColor(name);
     }
 }
