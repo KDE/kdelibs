@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
       QByteArray params;
       QDataStream stream(params, IO_WriteOnly);
       stream << domain;
-      kapp->dcopClient()->call( "kded", "kcookiejar", "deleteCookiesFromDomain", params, replyType, replyData);
+      kapp->dcopClient()->call( "kded", "kcookiejar", "deleteCookiesFromDomain(QString)", params, replyType, replyData);
    }
    if (args->isSet("shutdown"))
    {
