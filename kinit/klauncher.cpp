@@ -456,6 +456,7 @@ KLauncher::slotKDEInitData(int)
    // to read, otherwise this would block
       fd_set in;
       timeval tm = { 0, 0 };
+      FD_ZERO ( &in );
       FD_SET( kdeinitSocket, &in );
       select( kdeinitSocket + 1, &in, 0, 0, &tm );
       if( !FD_ISSET( kdeinitSocket, &in ))
