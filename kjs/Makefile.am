@@ -43,7 +43,7 @@ noinst_HEADERS = internal.h collector.h nodes.h lexer.h lexer.lut.h \
 		 grammar.h regexp.cpp function_object.h string_object.h \
 		 bool_object.h number_object.h date_object.h array_object.h \
 		 math_object.h object_object.h regexp_object.h error_object.h \
-		 debugger.h array_instance.h context.h dtoa.h
+		 debugger.h array_instance.h context.h dtoa.h regexp.h
 
 if include_VERSION_SCRIPT
 VSCRIPT = -Wl,--version-script=$(srcdir)/libkjs.map

@@ -53,7 +53,7 @@ namespace KJS {
     RegExpImp(RegExpPrototypeImp *regexpProto);
     ~RegExpImp();
     void setRegExp(RegExp *r) { reg = r; }
-    RegExp* regExp() const { return reg; }
+    RegExp* regExp() { return reg; }
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
