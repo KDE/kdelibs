@@ -1,0 +1,4 @@
+[KDE Print Filter Entry]
+Name=pdfwrite
+Require=gs
+Comment=PDF writer (needs GhostScript)
