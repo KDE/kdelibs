@@ -31,11 +31,47 @@
 
 class QMenuData;
 
+/**
+ This class allows translators (and application developers) to check for accelerator
+ conflicts in menu and widgets. Put the following in your kdeglobals (or the config
+ file for the application you're testing):
+
+ <pre>
+ [Development]
+ CheckAccelerators=F12
+ AutoCheckAccelerators=false
+ AlwaysShowCheckAccelerators=false
+ </pre>
+
+ The checking can be either manual or automatic. To perform manual check, press
+ the keyboard shortcut set to 'CheckAccelerators' (here F12). If automatic checking
+ is enabled by setting 'AutoCheckAccelerators' to true, check will be performed every
+ time the GUI changes. It's possible that in certain cases the check will be
+ done also when no visible changes in the GUI happen or the check won't be done
+ even if the GUI changed (in the latter case, use manual check ). Automatic
+ checks can be anytime disabled by the checkbox in the dialog presenting
+ the results of the check. If you set 'AlwaysShowCheckAccelerators' to true,
+ the dialog will be shown even if the automatic check didn't find any conflicts,
+ and all submenus will be shown, even those without conflicts.
+
+ The dialog first lists the name of the window, then all results for all menus
+ (if the window has a menubar) and then result for all controls in the active
+ window (if there are any checkboxes etc.). For every submenu and all controls
+ there are shown all conflicts grouped by accelerator, and a list of all used
+ accelerators.
+*/
 class KCheckAccelerators : public QObject
 {
     Q_OBJECT
     public:
+    /**
+     * Creates a KCheckAccelerators instance for the given object.
+     * @param parent the parent to check
+     */
         KCheckAccelerators( QObject* parent );
+    /**
+     * Re-implemented to filter the parent's events.
+     */
         bool eventFilter( QObject * , QEvent * e);
     private:
         void checkAccelerators( bool automatic );
