@@ -102,18 +102,18 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
   KButtonBox *bBox = new KButtonBox(this);
   layout->addMultiCellWidget(bBox, 3, 3, 0, 2);
 
-  QPushButton *ok = bBox->addButton(i18n("&OK"));
+  QPushButton *ok = bBox->addButton(KStdGuiItem::ok());
   ok->setDefault(true);
   connect( ok, SIGNAL(clicked()), SLOT(accept()));
 
   bBox->addStretch(1);
 
-  QPushButton *clear = bBox->addButton(i18n("C&lear"));
+  QPushButton *clear = bBox->addButton(KStdGuiItem::clear());
   connect( clear, SIGNAL(clicked()), SLOT(slotClear()));
 
   bBox->addStretch(1);
 
-  QPushButton *cancel = bBox->addButton(i18n("&Cancel"));
+  QPushButton *cancel = bBox->addButton(KStdGuiItem::cancel());
   connect( cancel, SIGNAL(clicked()), SLOT(reject()));
 
   bBox->layout();

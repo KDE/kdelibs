@@ -421,7 +421,7 @@ void KBugReport::slotCancel()
   {
     int rc = KMessageBox::warningYesNo( this,
              i18n( "Close and discard\nedited message?" ),
-             i18n( "Close Message" ), i18n( "&Discard" ), i18n("&Continue") );
+             i18n( "Close Message" ), KStdGuiItem::discard(), KStdGuiItem::cont() );
     if( rc == KMessageBox::No )
       return;
   }

@@ -204,7 +204,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
   d->m_paViewInfo = new KAction( i18n( "View Document Information" ), CTRL+Key_I, this, SLOT( slotViewPageInfo() ), actionCollection(), "viewPageInfo" );
   d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), 0, this, SLOT( slotSaveBackground() ), actionCollection(), "saveBackground" );
-  d->m_paSaveDocument = new KAction( i18n( "&Save As..." ), CTRL+Key_S, this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );
+  d->m_paSaveDocument = KStdAction::saveAs( this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );
   if ( parentPart() )
       d->m_paSaveDocument->setShortcut( KShortcut() ); // avoid clashes
   d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );

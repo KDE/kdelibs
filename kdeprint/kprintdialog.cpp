@@ -319,7 +319,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	QWhatsThis::add(d->m_extbtn, whatsThisExpandCollapse);
 	d->m_persistent = new QCheckBox(i18n("&Keep this dialog open after printing"), this);
         QWhatsThis::add( d->m_persistent, whatsThisKeepDialogOpenCheckbox);
-	QPushButton	*m_help = new KPushButton(KGuiItem(i18n("&Help"), "help"), this);
+	QPushButton	*m_help = new KPushButton(KStdGuiItem::help(), this);
         QWhatsThis::add( m_help, whatsThisHelpButton);
 
 	QWidget::setTabOrder( d->m_printers, d->m_filter );

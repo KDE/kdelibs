@@ -90,9 +90,9 @@ MyDialogBase::MyDialogBase(QWidget *parent, const char *name)
         KSeparator* sep2 = new KSeparator( KSeparator::HLine, this);
         sep2->setFixedHeight(15);
 
-        QPushButton     *ok_ = new QPushButton(i18n("OK"), this);
-        QPushButton     *cancel_ = new QPushButton(i18n("Cancel"), this);
-        QPushButton     *apply_ = new QPushButton(i18n("Apply"), this);
+        QPushButton     *ok_ = new KPushButton(KStdGuiItem::ok(), this);
+        QPushButton     *cancel_ = new KPushButton(KStdGuiItem::cancel(), this);
+        QPushButton     *apply_ = new KPushButton(KStdGuiItem::apply(), this);
         QPushButton     *help_ = new QPushButton(i18n("Short Help"), this);
         connect(ok_, SIGNAL(clicked()), SLOT(slotOk()));
         connect(cancel_, SIGNAL(clicked()), SLOT(slotCancel()));
