@@ -495,9 +495,11 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
 		int tagID = khtml::getTagID(tag.lower().ascii(), tag.length());
 		if (tagID != 0) {
 		    cs->tag = tagID;
-		} else {
+		} else if (!(tag.isEmpty())) {
                     const DOMString s = tag;
                     cs->tag = doc->elementId(s.implementation());
+		} else {
+		    kdWarning() << "Error in CSS" << endl;
 		}
 	    }
         }
@@ -2617,6 +2619,10 @@ QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
       if ( firstChar && *ch == '/' ) {
 	comment = false;
 	firstChar = false;
+      } else if ((*ch == '-') && ((ch+2) < last) /* SGML Comment */
+		 && (*(ch+1) == '-') && (*(ch+2) == '>')) {
+	ch = ch+2; // skip '->'
+	comment = false;
       } else {
 	firstChar = ( *ch == '*' );
       }
@@ -2636,7 +2642,10 @@ QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
 	}
 	firstChar = false;
       } else if ( *ch == '/' ) {
-	firstChar = true; // Slash added only if next is not '*'
+	firstChar = true; // Slash added only if next is not '*' 
+      } else if ((*ch == '<') && ((ch+3) < last) /* SGML Comment */
+		 && (*(ch+1) == '!') && (*(ch+2) == '-') && (*(ch+3) == '-')) {
+	comment = true;
       } else if ( *ch == ',' || *ch == ';') {
 	processed += *ch;
 	processed += QChar(' '); // Adding a space after these tokens
