@@ -46,7 +46,8 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	x-kde-wallet.desktop x-cue.desktop x-ica.desktop x-iso.desktop x-ace.desktop \
 	x-afm.desktop x-arc.desktop vnd.rn-realmedia.desktop x-dbase.desktop \
 	vnd.sun.xml.calc.template.desktop vnd.sun.xml.writer.template.desktop \
-	vnd.sun.xml.impress.template.desktop vnd.sun.xml.draw.template.desktop
+	vnd.sun.xml.impress.template.desktop vnd.sun.xml.draw.template.desktop \
+	vnd.stardivision.chart.desktop
 
 mimetypeapplicationdatadir = $(kde_mimedir)/application
 
