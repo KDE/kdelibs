@@ -18,8 +18,12 @@
 */
 #include <config.h>
 #include <qclipboard.h>
+#include <qfile.h>
+#include <qtimer.h>
+#include <qobjectdict.h>
 #include <qwidgetlist.h>
 #include <qwidget.h>
+
 #include "kapplication.h"
 #include "klibloader.h"
 #include "kstandarddirs.h"
@@ -34,8 +38,6 @@
 
 template class QAsciiDict<KLibrary>;
 
-#include <qtimer.h>
-#include <qobjectdict.h>
 #include <stdlib.h> //getenv
 
 
@@ -187,6 +189,11 @@ void* KLibrary::symbol( const char* symname ) const
     }
 
     return sym;
+}
+
+void KLibrary::unload() const
+{
+   KLibLoader::self()->unloadLibrary(QFile::encodeName(name()));
 }
 
 void KLibrary::slotObjectCreated( QObject *obj )

@@ -80,6 +80,11 @@ public:
      */
     void* symbol( const char* name ) const;
 
+    /**
+     * Unloads the library.
+     */
+    void unload() const;
+
 private slots:
     void slotObjectCreated( QObject *obj );
     void slotObjectDestroyed();
