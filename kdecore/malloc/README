@@ -18,6 +18,12 @@ this malloc is used, the system libc one is used otherwise.
  - gcc (for __inline__ , nothing else should depend on gcc)
 
 
+ If you have any problem with this malloc, try first using --enable-fast-malloc=debug and
+recompiling libkdecore, or use valgrind. This malloc seems to be more vulnerable to heap
+corruption, such as deleting a block twice, so faulty code may run without problems
+with standard malloc shipped with your libc, but it will crash with this malloc. In case
+you think there's any problem with this malloc, please mail me.
+
 changes (against malloc-2.7.0):
 
 #define USE_MALLOC_LOCK
@@ -25,6 +31,7 @@ changes (against malloc-2.7.0):
 #define USE_MEMCPY 0
 #define MMAP_CLEARS 1
 made all functions INLINE
+added #ifdef KDE_MALLOC_DEBUG -> #define DEBUG
 reordered all functions in order to avoid 'warning: `XYZ' declared inline after being called'
     especially moved the public_* ones at the end of the file
 commented out #including malloc.h

@@ -7,25 +7,31 @@ dnl gcc3.0 needs -finline-limit=100000 (large num)
 
 kde_fast_malloc=
 AC_ARG_ENABLE(fast-malloc,
-    [  --enable-fast-malloc    Use own malloc implementation (experimental) : yes,no,full (disabled by default)],
+    [  --enable-fast-malloc    Use own malloc implementation : yes,no,full,debug],
     [
     if test "$enableval" = "full"; then
         kde_fast_malloc=full
     elif test "$enableval" = "yes"; then
         kde_fast_malloc=yes
+    elif test "$enableval" = "debug"; then
+        kde_fast_malloc=debug
     else
         kde_fast_malloc=no
     fi
     ],
     [
-    kde_fast_malloc=no
+    kde_fast_malloc=notgiven
     ])
 
 dnl gcc needed for __inline__
 if test "$kde_fast_malloc" != "no"; then
     if test "$GCC" != "yes"; then
-        AC_MSG_ERROR([Fast malloc needs GCC.])
-        kde_fast_malloc=no
+        if test "$kde_fast_malloc" = "notgiven"; then
+            kde_fast_malloc=no
+        else
+            AC_MSG_ERROR([Fast malloc needs GCC.])
+            kde_fast_malloc=no
+        fi
     fi
 fi
 
@@ -36,19 +42,28 @@ dnl platforms for which there's a spinlock implementation
             AC_DEFINE(KDE_MALLOC_X86, 1, [The platform is x86])
             ;;
         *)
-            AC_MSG_ERROR([Fast malloc is not supported on this platform (missing spinlock implementation).])
+            if test "$kde_fast_malloc" = "notgiven"; then
+                kde_fast_malloc=no
+            else
+                AC_MSG_ERROR([Fast malloc is not supported on this platform (missing spinlock implementation).])
+            fi
             ;;
     esac
 dnl warn on untested platforms
     case $target_os in
         linux*) ;;
+        freebsd*) ;;
         *)
-            AC_MSG_WARN([Fast malloc is not tested on this platform. The build may fail or the executables may crash.])
+            if test "$kde_fast_malloc" = "notgiven"; then
+                kde_fast_malloc=no
+            else
+                AC_MSG_WARN([Fast malloc is not tested on this platform. The build may fail or the executables may crash.])
+            fi
             ;;
     esac
 fi
 
-if test "$kde_fast_malloc" = "yes"; then
+if test "$kde_fast_malloc" = "yes" -o "$kde_fast_malloc" = "notgiven" -o "$kde_fast_malloc" = "debug"; then
 dnl $KDE_MALLOC needs glibc (__libc_malloc etc.)
     AC_CACHE_CHECK([if the libc is glibc],kde_cv_libc_glibc,
         [AC_TRY_COMPILE(
@@ -64,7 +79,33 @@ dnl $KDE_MALLOC needs glibc (__libc_malloc etc.)
     if test "$kde_cv_libc_glibc" = "yes"; then
         AC_DEFINE(KDE_MALLOC_GLIBC, 1, [The libc used is glibc])
     else
-        AC_MSG_ERROR([This libc is not supported for fast malloc. Either use --enable-fast-malloc=full, or don't use it at all.])
+        if test "$kde_fast_malloc" = "notgiven"; then
+            kde_fast_malloc=notgiven_full
+        elif test "$enableval" = "debug"; then
+            AC_MSG_WARN([This libc is not supported for fast malloc. Runtime disabling won't work.])
+            kde_fast_malloc=debug_full
+        else
+            AC_MSG_ERROR([This libc is not supported for fast malloc. Either use --enable-fast-malloc=full, or don't use it at all.])
+        fi
+    fi
+fi
+
+dnl disabled for now in the KDE_3_0_BRANCH
+
+dnl enable by default where possible
+dnl on FreeBSD (no glibc), the default is =full, as =yes doesn't work there,
+dnl   unless --enable-debug is used, in which case it's =no
+dnl on Linux (glibc), the default is =yes
+if test "$kde_fast_malloc" = "notgiven"; then
+dnl    kde_fast_malloc=yes
+    kde_fast_malloc=no
+fi
+if test "$kde_fast_malloc" = "notgiven_full"; then
+    if test "$kde_use_debug_code" = "no"; then
+dnl        kde_fast_malloc=full
+        kde_fast_malloc=no
+    else
+        kde_fast_malloc=no
     fi
 fi
 
@@ -72,14 +113,25 @@ AC_MSG_CHECKING(whether to enable fast malloc)
 if test "$kde_fast_malloc" = "yes"; then
     AC_MSG_RESULT(yes)
 elif test "$kde_fast_malloc" = "full"; then
-    AC_DEFINE(KDE_MALLOC_FULL, 1, [Make alloc as fast as possible])
     AC_MSG_RESULT([yes(full)])
+elif test "$kde_fast_malloc" = "debug"; then
+    AC_MSG_RESULT([yes(debug)])
+elif test "$kde_fast_malloc" = "debug_full"; then
+    AC_MSG_RESULT([yes(full+debug)])
 else
     AC_MSG_RESULT(no)
 fi
 
 if test "$kde_fast_malloc" != "no"; then
     AC_DEFINE(KDE_MALLOC, 1, [Use own malloc implementation])
+fi
+
+if test "$kde_fast_malloc" = "debug" -o "$kde_fast_malloc" = "debug_full"; then
+    AC_DEFINE(KDE_MALLOC_DEBUG, 1, [Enable debugging in fast malloc])
+fi
+
+if test "$kde_fast_malloc" = "full" -o "$kde_fast_malloc" = "debug_full"; then
+    AC_DEFINE(KDE_MALLOC_FULL, 1, [Make alloc as fast as possible])
 fi
 
 dnl -finline-limit=<large num> is needed for gcc3 in order to inline large functions
