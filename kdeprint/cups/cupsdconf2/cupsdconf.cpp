@@ -423,6 +423,10 @@ bool CupsdConf::saveToFile(const QString& filename)
 
 		t << endl << comments_["browseshortnames"] << endl;
 		if (browsing_) t << "BrowseShortNames " << (useshortnames_ ? "Yes" : "No") << endl;
+		
+		t << endl << "# Unknown" << endl;
+		for (QValueList< QPair<QString,QString> >::ConstIterator it=unknown_.begin(); it!=unknown_.end(); ++it)
+			t << (*it).first << " " << (*it).second << endl;
 
 		return true;
 	}
@@ -577,7 +581,11 @@ bool CupsdConf::parseOption(const QString& line)
 	else if (keyword == "tempdir") tmpfiles_ = value;
 	else if (keyword == "timeout") clienttimeout_ = value.toInt();
 	else if (keyword == "user") user_ = value;
-	else return false;
+	else
+	{
+		// unrecognized option
+		unknown_ << QPair<QString,QString>(keyword, value);
+	}
 	return true;
 }
 

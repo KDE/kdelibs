@@ -166,6 +166,16 @@ bool CupsdDialog::setConfigFile(const QString& filename)
 		KMessageBox::error(this, i18n("Error while loading configuration file !"), i18n("CUPS configuration error"));
 		return false;
 	}
+	if (conf_->unknown_.count() > 0)
+	{
+		// there were some unknown options, warn the user
+		QString	msg;
+		for (QValueList< QPair<QString,QString> >::ConstIterator it=conf_->unknown_.begin(); it!=conf_->unknown_.end(); ++it)
+			msg += ((*it).first + " = " + (*it).second + "<br>");
+		msg.prepend("<p>" + i18n("Some options were not recognized by this configuration tool. "
+		                          "They will be left untouched and you won't be able to change them.") + "</p>");
+		KMessageBox::sorry(this, msg, i18n("Unrecognized options"));
+	}
 	bool	ok(true);
 	QString	msg;
 	for (pagelist_.first();pagelist_.current() && ok;pagelist_.next())
@@ -267,6 +277,8 @@ void CupsdDialog::slotApply()
 		CupsdConf	newconf_;
 		for (pagelist_.first();pagelist_.current() && ok;pagelist_.next())
 			ok = pagelist_.current()->saveConfig(&newconf_, msg);
+		// copy unknown options
+		newconf_.unknown_ = conf_->unknown_;
 		if (!ok)
 		{
 			; // do nothing

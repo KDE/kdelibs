@@ -24,6 +24,7 @@
 #include <qstringlist.h>
 #include <qptrlist.h>
 #include <qtextstream.h>
+#include <qpair.h>
 
 #include "cupsdcomment.h"
 
@@ -134,6 +135,9 @@ struct CupsdConf
 	
 	// cupsd.conf file comments
 	CupsdComment	comments_;
+	
+	// unrecognized options
+	QValueList< QPair<QString,QString> >	unknown_;
 };
 
 struct CupsLocation
