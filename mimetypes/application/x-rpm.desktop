@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=MimeType
 MimeType=application/x-rpm
 Icon=rpm
+Patterns=*.rpm;
 Comment=RPM package file
 Comment[af]=rpm paket lêer
 Comment[ar]=حزمة برمجية (RPM)
