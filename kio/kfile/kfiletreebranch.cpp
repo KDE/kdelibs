@@ -166,7 +166,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
         /* Now try to find out if there are children for dirs in the treeview */
         /* This stats a directory on the local file system and checks the */
         /* hardlink entry in the stat-buf. This works only for local directories. */
-        if( dirOnlyMode() && m_recurseChildren && currItem->isLocalFile( ) && currItem->isDir() )
+        if( dirOnlyMode() && !m_recurseChildren && currItem->isLocalFile( ) && currItem->isDir() )
         {
             KURL url = currItem->url();
             QString filename = url.directory( false, true ) + url.fileName();
