@@ -211,7 +211,8 @@ void KFileIconView::updateView( const KFileViewItem *i )
     if ( !i )
 	return;
     KFileIconViewItem *item = (KFileIconViewItem*)i->viewItem( this );
-    item ->setPixmap( item->fileInfo()->pixmap( myIconSize ) );
+    if ( item && item->fileInfo() )
+      item ->setPixmap( item->fileInfo()->pixmap( myIconSize ) );
 }
 
 #include "kfileiconview.moc"
