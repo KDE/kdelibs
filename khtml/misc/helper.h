@@ -27,7 +27,7 @@
 
 namespace khtml
 {
-    void setNamedColor(QColor &color, const QString name);
+    void setNamedColor(QColor &color, const QString &name);
 };
 
 #endif

@@ -740,10 +740,11 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
 	    spaces--;
 	}
 	w->width += add;
-	if(!m_visualOrdering)
+// Qt reverses if charSet() == 8859-6/8	
+//	if(!m_visualOrdering)
 	    w->object->position(xPos, w->yOffset, w->from, w->len, w->width, w->level%2);
-	else
-	    w->object->position(xPos, w->yOffset, w->from, w->len, w->width, false);
+//	else
+//	    w->object->position(xPos, w->yOffset, w->from, w->len, w->width, false);
 	xPos += w->width;
     }
 

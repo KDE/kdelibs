@@ -399,6 +399,7 @@ void RenderText::calcMinMaxWidth()
 	}
 	else
 	{
+	    printf("c = %x\n", c.unicode());
 	    int w = fm->width(c);
 	    currMinWidth += w;
 	    currMaxWidth += w;
@@ -476,7 +477,15 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 
     QChar *ch;
     bool deleteChar = false;
-    if(reverse)
+    // Qt still uses the old BiDi code with 8859-6/8...
+    if((reverse && (( !m_style->visuallyOrdered() &&
+		      font().charSet() != QFont::ISO_8859_8 &&
+		      font().charSet() != QFont::ISO_8859_6)
+		    ||
+		    ( m_style->visuallyOrdered() &&
+		      ( font().charSet() == QFont::ISO_8859_8 ||
+			font().charSet() == QFont::ISO_8859_6))
+	)))
     {
 	deleteChar = true;
 	// reverse String
