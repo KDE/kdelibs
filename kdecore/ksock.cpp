@@ -381,35 +381,53 @@ KSocket::~KSocket()
   }
 }
 
+class KServerSocketPrivate 
+{
+public:
+   bool bind;
+   QCString path;
+   unsigned short int port;
+};
+
 
 KServerSocket::KServerSocket( const char *_path ) :
   notifier( 0L ), sock( -1 )
 {
   domain = PF_UNIX;
+  d = new KServerSocketPrivate();
+  d->bind = true;
 
-  if ( !init ( _path ) )
-  {
-      kdFatal() << "Error constructing PF_UNIX domain server socket\n";
-      return;
-  }
+  init ( _path );
+}
 
-  notifier = new QSocketNotifier( sock, QSocketNotifier::Read );
-  connect( notifier, SIGNAL( activated(int) ), this, SLOT( slotAccept(int) ) );
+KServerSocket::KServerSocket( const char *_path, bool _bind ) :
+  notifier( 0L ), sock( -1 )
+{
+  domain = PF_UNIX;
+  d = new KServerSocketPrivate();
+  d->bind = _bind;
+
+  init ( _path );
 }
 
 KServerSocket::KServerSocket( unsigned short int _port ) :
   notifier( 0L ), sock( -1 )
 {
   domain = PF_INET;
+  d = new KServerSocketPrivate();
+  d->bind = true;
 
-  if ( !init ( _port ) )
-  {
-    // fatal("Error constructing\n");
-    return;
-  }
+  init ( _port );
+}
 
-  notifier = new QSocketNotifier( sock, QSocketNotifier::Read );
-  connect( notifier, SIGNAL( activated(int) ), this, SLOT( slotAccept(int) ) );
+KServerSocket::KServerSocket( unsigned short int _port, bool _bind ) :
+  notifier( 0L ), sock( -1 ), d(0)
+{
+  domain = PF_INET;
+  d = new KServerSocketPrivate();
+  d->bind = _bind;
+
+  init ( _port );
 }
 
 bool KServerSocket::init( const char *_path )
@@ -432,37 +450,12 @@ bool KServerSocket::init( const char *_path )
   }
 
   unlink(_path );
-
-  struct sockaddr_un name;
-  name.sun_family = AF_UNIX;
-  strcpy( name.sun_path, _path );
-
-  if ( bind( sock, (struct sockaddr*) &name,sizeof( name ) ) < 0 )
-  {
-    kdWarning() << "Could not bind to socket\n";
-    ::close( sock );
-    sock = -1;
-    return false;
-  }
-
-  if ( chmod( _path, 0600) < 0 )
-  {
-    kdWarning() << "Could not setup permissions for server socket\n";
-    ::close( sock );
-    sock = -1;
-    return false;
-  }
-
-  if ( listen( sock, SOMAXCONN ) < 0 )
-  {
-    kdWarning() << "Error listening on socket\n";
-    ::close( sock );
-    sock = -1;
-    return false;
-  }
-
+  d->path = _path;
+  if (d->bind)
+    return bindAndListen();
   return true;
 }
+
 
 bool KServerSocket::init( unsigned short int _port )
 {
@@ -480,12 +473,43 @@ bool KServerSocket::init( unsigned short int _port )
     return false;
   }
 
-  if (domain == AF_INET) {
+  d->port = _port;
+
+  if (d->bind)
+    return bindAndListen();
+  return true;
+}  
+
+bool KServerSocket::bindAndListen()
+{
+  if (domain == PF_UNIX)
+  {
+    struct sockaddr_un name;
+    name.sun_family = AF_UNIX;
+    strcpy( name.sun_path, d->path.data() );
+
+    if ( bind( sock, (struct sockaddr*) &name,sizeof( name ) ) < 0 )
+    {
+      kdWarning() << "Could not bind to socket\n";
+      ::close( sock );
+      sock = -1;
+      return false;
+    }
+
+    if ( chmod( d->path.data(), 0600) < 0 )
+    {
+      kdWarning() << "Could not setup permissions for server socket\n";
+      ::close( sock );
+      sock = -1;
+      return false;
+    }
+  }
+  else if (domain == AF_INET) {
 
     sockaddr_in name;
 
     name.sin_family = domain;
-    name.sin_port = htons( _port );
+    name.sin_port = htons( d->port );
     name.sin_addr.s_addr = htonl(INADDR_ANY);
 
     if ( bind( sock, (struct sockaddr*) &name,sizeof( name ) ) < 0 ) {
@@ -501,7 +525,7 @@ bool KServerSocket::init( unsigned short int _port )
 
     name.sin6_family = domain;
     name.sin6_flowinfo = 0;
-    name.sin6_port = htons(_port);
+    name.sin6_port = htons(d->port);
     memcpy(&name.sin6_addr, &in6addr_any, sizeof(in6addr_any));
 
     if ( bind( sock, (struct sockaddr*) &name,sizeof( name ) ) < 0 ) {
@@ -521,8 +545,11 @@ bool KServerSocket::init( unsigned short int _port )
 	  return false;
     }
 
+  notifier = new QSocketNotifier( sock, QSocketNotifier::Read );
+  connect( notifier, SIGNAL( activated(int) ), this, SLOT( slotAccept(int) ) );
   return true;
 }
+
 
 unsigned short int KServerSocket::port()
 {

@@ -104,6 +104,7 @@ public:
     
     /** 
      * Returns a file descriptor for this socket.
+     * Returns -1 when an error occured.
      */
     int socket() const { return sock; }
     
@@ -231,11 +232,28 @@ public:
     /**
      * Constructor.
      * @param _port	the port number to monitor for incoming connections.
+     * @param _bind     if false you need to call @ref bindAndListen yourself.
+     *                  This gives you the opportunity to set options on the
+     *                  socket.
+     */
+    KServerSocket( unsigned short int _port, bool _bind );
+    /**
+     * @deprecated
+     * Same as above with _bind true.
      */
     KServerSocket( unsigned short int _port );
 
     /**
      * Creates a UNIX domain server socket.
+     * @param _path     path used for the socket.
+     * @param _bind     if false you need to call @ref bindAndListen yourself.
+     *                  This gives you the opportunity to set options on the
+     *                  socket.
+     */
+    KServerSocket( const char *_path, bool _bind );
+    /**
+     * @deprecated
+     * Same as above with _bind true.
      */
     KServerSocket( const char *_path );
   
@@ -243,9 +261,19 @@ public:
      * Destructor. Closes the socket if it was not already closed.
      */
     virtual ~KServerSocket();
+
+    /**
+     * Bind the socket and start listening. This should only be called
+     * once when the constructor was called with _bind false.
+     * @return true on success. false on error.
+     * On error the socket will be closed.
+     */
+    bool bindAndListen();
     
     /** 
-     * Get the file descriptor assoziated with the socket.
+     * Get the file descriptor associated with the socket.
+     * Returns -1 when an error occured during construction or
+     * @ref bindAndListen
      */
     int socket() const { return sock; }
 
