@@ -25,6 +25,7 @@
 #include <qptrlist.h>
 
 class QDragObject;
+class KConfig;
 /**
  * This Widget extends the functionality of QListView to honor the system
  * wide settings for Single Click/Double Click mode, AutoSelection and
@@ -251,6 +252,27 @@ public:
    * @return the alternate background color
    */
   const QColor &alternateBackground() const;
+
+  /**
+   * Saves the list view's layout (column widtsh, column order, sort column)
+   * to a KConfig group
+   *
+   * @param config the @ref KConfig object to write to
+   * @param group the config group to use
+   */
+  void saveLayout(KConfig *config, const QString &group) const;
+  /**
+   * Reads the list view's layout from a KConfig group as stored with
+   * @ref saveLayout
+   *
+   * @param config the @ref KConfig object to read from
+   * @param group the config group to use
+   */
+  void restoreLayout(KConfig *config, const QString &group);
+  /**
+   * Reimplemented to remember the current sort column and order
+   */
+  virtual void setSorting(int column, bool ascending = true);
 
 signals:
 

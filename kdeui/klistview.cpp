@@ -28,6 +28,7 @@
 #include <qpainter.h>
 
 #include <kglobalsettings.h>
+#include <kconfig.h>
 #include <kcursor.h>
 #include <kapp.h>
 #include <kipc.h>
@@ -91,6 +92,8 @@ public:
       pressedOnSelected (false),
       wasShiftEvent (false),
       fullWidth (false),
+      sortAscending(true),
+      sortColumn(0),
       selectionDirection(0),
       tooltipColumn (0),
       selectionMode (Single),
@@ -135,6 +138,9 @@ public:
   bool pressedOnSelected:1;
   bool wasShiftEvent:1;
   bool fullWidth:1;
+  bool sortAscending:1;
+
+  int sortColumn;
 
   //+1 means downwards (y increases, -1 means upwards, 0 means not selected), aleXXX
   int selectionDirection;
@@ -1693,6 +1699,43 @@ void KListView::setAlternateBackground(const QColor &c)
 {
   d->alternateBackground = c;
   repaint();
+}
+
+void KListView::saveLayout(KConfig *config, const QString &group) const
+{
+  KConfigGroupSaver saver(config, group);
+  QStringList widths, order;
+  for (int i = 0; i < columns(); ++i)
+  {
+    widths << QString::number(columnWidth(i));
+    order << QString::number(header()->mapToIndex(i));
+  }
+  config->writeEntry("ColumnWidths", widths);
+  config->writeEntry("ColumnOrder", order);
+  config->writeEntry("SortColumn", d->sortColumn);
+  config->writeEntry("SortAscending", d->sortAscending);
+}
+
+void KListView::restoreLayout(KConfig *config, const QString &group)
+{
+  KConfigGroupSaver saver(config, group);
+  QStringList cols = config->readListEntry("ColumnWidths");
+  int i = 0;
+  for (QStringList::ConstIterator it = cols.begin(); it != cols.end(); ++it)
+    setColumnWidth(i++, (*it).toInt());
+
+  cols = config->readListEntry("ColumnOrder");
+  i = 0;
+  for (QStringList::ConstIterator it = cols.begin(); it != cols.end(); ++it)
+    header()->moveSection(i++, (*it).toInt());
+  setSorting(config->readNumEntry("SortColumn"), config->readBoolEntry("SortAscending", true));
+}
+
+void KListView::setSorting(int column, bool ascending)
+{
+  d->sortColumn = column;
+  d->sortAscending = ascending;
+  QListView::setSorting(column, ascending);
 }
 
 struct KListViewItem::KListViewItemPrivate
