@@ -82,7 +82,7 @@ void KURL::decodeURL( QString& _url ) {
 	};
     new_url [ new_length ] = 0;
     _url = new_url;
-    delete new_url;
+    delete [] new_url;
 };
 
 void
