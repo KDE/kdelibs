@@ -113,7 +113,7 @@ private:
 
 namespace KJS {
 class ScriptInterpreter;
-};
+}
 
 /**
  * @internal

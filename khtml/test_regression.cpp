@@ -475,7 +475,7 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir,
     m_errors = 0;
 
     curr = this;
-};
+}
 
 #include <qobjectlist.h>
 
