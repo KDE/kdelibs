@@ -84,6 +84,7 @@ public:
      * @param aboutData A pointer to a KAboutData object. @ref KAboutData::appName()
      *                  will be used to find the KNotify events (in the eventsrc file).
      * @see exec for the return values.
+     * @return The value of QDialog::exec()
      */
     static int configure( QWidget *parent = 0, const char *name = 0,
                           const KAboutData *aboutData = KGlobal::instance()->aboutData() );
