@@ -392,8 +392,32 @@ void KFileDialog::slotOk()
     kdDebug(kfile_area) << "slotOK\n";
 
     if ( (mode() & KFile::Directory) != KFile::Directory )
-        if ( locationEdit->currentText().stripWhiteSpace().isEmpty() )
-            return;
+        if ( locationEdit->currentText().stripWhiteSpace().isEmpty() ) {
+	    const KFileViewItemList *items = ops->selectedItems();
+	    if ( !items || items->isEmpty() )
+	        return;
+	
+	    // weird case: the location edit is empty, but there are highlighted files
+	    else {
+
+		bool multi = (mode() & KFile::Files) != 0;
+	        KFileViewItemListIterator it( *items );
+		QString endQuote = QString::fromLatin1("\" ");
+		QString name, files;
+		while ( it.current() ) {
+		    name = (*it)->name();
+		    if ( multi ) {
+		        name.prepend( '"' );
+			name.append( endQuote );
+		    }
+		
+		    files.append( name );
+		    ++it;
+		}
+		locationEdit->setEditText( files );
+		return;
+	    }
+	}
 
     KURL selectedURL;
 
@@ -437,16 +461,17 @@ void KFileDialog::slotOk()
     if ( (mode() & KFile::Directory) == KFile::Directory ) {
         kdDebug(kfile_area) << "Directory\n";
         if ( d->url.isLocalFile() ) {
-            if ( QFileInfo(d->url.path()).isDir() ) { // FIXME QFileInfo == local!
+	    QFileInfo info( d->url.path() );
+            if ( info.isDir() ) {
                 locationEdit->insertItem( d->url.path(+1), 1 );
                 accept();
             }
-            else {// FIXME: !exists() -> create dir
-                if ( (mode() & KFile::File) != KFile::File ) {
-                    KMessageBox::error(d->mainWidget,
-                                       i18n("You have to select a directory!"),
-				       i18n("Not a directory") );
-                }
+	
+            else if ( !info.exists() && (mode() & KFile::File) != KFile::File ) {
+	        // directory doesn't exist, create and enter it
+	        if ( ops->mkdir( d->url.url(), true ))
+		    return;
+
 		else {
 		    locationEdit->insertItem( d->url.prettyURL(+1), 1 );
 		    accept();
@@ -454,7 +479,7 @@ void KFileDialog::slotOk()
 	    }
 	}
 
-	else { // remote directory, should we allow that?
+	else { // FIXME: remote directory, should we allow that?
 	
 	}
 	
