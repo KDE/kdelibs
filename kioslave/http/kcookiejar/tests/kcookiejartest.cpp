@@ -101,6 +101,17 @@ static void clearCookies()
    jar->eatAllCookies();
 }
 
+static void saveCookies()
+{
+   QString file = locateLocal("config", "kcookiejar-testcookies");
+   QFile::remove(file);
+   jar->saveCookies(file);
+   delete jar;
+   jar = new KCookieJar();
+   clearConfig();
+   jar->loadCookies(file);
+}
+
 static void processCookie(QCString &line)
 {
    QString policy;
@@ -202,6 +213,8 @@ static void processLine(QCString line)
       processClear(line);
    else if (command == "CONFIG")
       processConfig(line);
+   else if (command == "SAVE")
+      saveCookies();
    else
       FAIL(QString("Unknown command '%1'").arg(command));
 qWarning("COMMAND: %s OK", command.data());
