@@ -21,7 +21,7 @@
     Send comments and bug fixes to Antonio Larrosa <larrosa@kde.org>
 
 ***************************************************************************/
-char GUS_voice_names[256][9] =
+const char GUS_voice_names[256][9] =
 {
 	/*   0 */	"acpiano", 
 	/*   1 */	"britepno",
