@@ -158,7 +158,7 @@ bool KAccelPrivate::setEnabled( const QString& sAction, bool bEnable )
 
 	pAction->setEnabled( bEnable );
 
-	QMap<int, KAccelAction*>::iterator it = m_mapIDToAction.begin();
+	QMap<int, KAccelAction*>::const_iterator it = m_mapIDToAction.begin();
 	for( ; it != m_mapIDToAction.end(); ++it ) {
 		if( *it == pAction )
 			((QAccel*)m_pAccel)->setItemEnabled( it.key(), bEnable );
