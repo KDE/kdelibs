@@ -21,7 +21,7 @@ Package: kdeprint
 Architecture: any
 Section: libs
 Replaces: kdelibs3 (<< 4:2.2-alpha1-1)
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, kdebase-libs
 Conflicts: kdelibs3 (<< 4:2.2-alpha1-1)
 Description: KDE print system based on CUPS
  This package contains the KDE printer bits which use CUPS. This
