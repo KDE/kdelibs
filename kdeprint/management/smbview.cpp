@@ -182,13 +182,16 @@ void SmbView::processShares()
 		line = lines[index++].stripWhiteSpace();
 		if (line.isEmpty())
 			break;
-		QStringList	words = QStringList::split(' ',line,false);
-		if (words[1] == "Printer")
+		QString	typestr(line.mid(15, 10).stripWhiteSpace());
+		//QStringList	words = QStringList::split(' ',line,false);
+		//if (words[1] == "Printer")
+		if (typestr == "Printer")
 		{
-			QString	comm;
-			for (uint i=2; i<words.count(); i++)
-				comm += (words[i]+" ");
-			QListViewItem	*item = new QListViewItem(m_current,words[0],comm);
+			QString	comm(line.mid(25).stripWhiteSpace()), sharen(line.mid(0, 15).stripWhiteSpace());
+			//for (uint i=2; i<words.count(); i++)
+			//	comm += (words[i]+" ");
+			//QListViewItem	*item = new QListViewItem(m_current,words[0],comm);
+			QListViewItem	*item = new QListViewItem(m_current,sharen,comm);
 			item->setPixmap(0,SmallIcon("kdeprint_printer"));
 		}
 	}
