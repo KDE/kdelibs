@@ -1066,7 +1066,7 @@ string AddressBook::currentEntry()
 bool AddressBook::getEntries
 (list<AddressBook::Entry>& entries)
 {
-  ID(bool GUARD=true);
+  ID(bool GUARD=false);
   REQUIRE(entries.empty());
   LG(GUARD, "AddressBook::getEntries: called.\n");
   // ########################################################  

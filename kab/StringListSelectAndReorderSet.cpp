@@ -42,6 +42,10 @@ StringListSelectAndReorderSet::StringListSelectAndReorderSet
   buttonDown->setPixmap(down);
   labelPossible->setText(i18n("Possible values:"));
   labelSelected->setText(i18n("Selected values:"));
+  // ----- setup the dialog:
+  connect(lbSelected, SIGNAL(highlighted(int)), 
+	  SLOT(enableButtons(int)));
+  enableButtons(0);
   // ########################################################
 }
 
@@ -112,6 +116,7 @@ bool StringListSelectAndReorderSet::setValues
       possible.push_back(i++);
     }
   assert(values.size()==possible.size());
+  enableButtons(0);
   return true;
   // ########################################################
 }
@@ -134,6 +139,7 @@ bool StringListSelectAndReorderSet::setValues
       possible.push_back(index);
     }
   assert(values.count()==possible.size()); 
+  enableButtons(0);
   return false; 
   // ########################################################
 }
@@ -248,6 +254,7 @@ bool StringListSelectAndReorderSet::select(int index)
 	  return false;
 	}
     }
+  enableButtons(0);
   // ########################################################
 }
 
@@ -265,6 +272,7 @@ bool StringListSelectAndReorderSet::select
 	  error=true;
 	}
     }
+  enableButtons(0);
   return !error;
   // ########################################################
 }
@@ -282,6 +290,7 @@ bool StringListSelectAndReorderSet::select
 	  error=true;
 	}
     }
+  enableButtons(0);
   return !error;
   // ########################################################
 }
@@ -300,6 +309,7 @@ bool StringListSelectAndReorderSet::select
 	  error=true;
 	}
     }
+  enableButtons(0);
   return !error;
   // ########################################################
 }
@@ -328,6 +338,7 @@ bool StringListSelectAndReorderSet::selectItem(int index)
   // -----
   assert(lbPossible->count()==possible.size());
   assert(lbSelected->count()==selected.size());
+  enableButtons(0);
   return true;
   // ########################################################
 }
@@ -356,6 +367,7 @@ bool StringListSelectAndReorderSet::unselectItem(int index)
   // -----
   assert(lbPossible->count()==possible.size());
   assert(lbSelected->count()==selected.size());
+  enableButtons(0);
   return true;
   // ########################################################
 }
@@ -447,6 +459,7 @@ void StringListSelectAndReorderSet::up()
   selected.insert(pos, temp);
   // ----- keep the same current item:
   lbSelected->setCurrentItem(index-1);
+  enableButtons(0);
   // ########################################################
 }
 
@@ -487,6 +500,39 @@ void StringListSelectAndReorderSet::down()
   selected.insert(pos, temp);
   // ----- keep the same current item:
   lbSelected->setCurrentItem(index+1);
+  enableButtons(0);
+  // ########################################################
+}
+
+void StringListSelectAndReorderSet::enableButtons(int) 
+{ 
+  // ########################################################
+  if(lbPossible->count()==0)
+    {
+      buttonSelect->setEnabled(false);
+    } else {
+      buttonSelect->setEnabled(true);
+    }
+  if(lbSelected->count()==0)
+    {
+      buttonUnselect->setEnabled(false);
+    } else {
+      buttonUnselect->setEnabled(true);
+    }
+  if(lbSelected->currentItem()==0 
+     || lbSelected->count()<2)
+    {
+      buttonUp->setEnabled(false);
+    } else {
+      buttonUp->setEnabled(true);
+    }
+  if((unsigned)lbSelected->currentItem()
+     ==lbSelected->count()-1 || lbSelected->count()<2)
+    {
+      buttonDown->setEnabled(false);
+    } else {
+      buttonDown->setEnabled(true);
+    }
   // ########################################################
 }
 

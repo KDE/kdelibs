@@ -307,6 +307,7 @@ string KeyValueMap::makeComplexString(const string& orig)
      "      into a complex string.\n", orig.c_str());
   string temp;
   unsigned int count;
+  // -----
   temp+='"';
   for(count=0; count<orig.size(); count++)
     {

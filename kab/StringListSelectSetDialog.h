@@ -16,10 +16,10 @@
 #ifndef StringListSelectSetDialog_included
 #define StringListSelectSetDialog_included
 
-#include "StringListSelectSetDialogData.h"
 #include "stl_headers.h"
 #include <qstring.h>
 #include <qstrlist.h> 
+#include "StringListSelectSetDialogData.h"
 
 class StringListSelectSetDialog : public StringListSelectSetDialogData
 {

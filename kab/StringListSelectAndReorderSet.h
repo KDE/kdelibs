@@ -52,6 +52,9 @@ public:
   bool select(const QList<int>& indizes);
   // the sizehint
   QSize sizeHint() const;
+protected slots:
+   // enable or disable buttons
+  void enableButtons(int);
 protected:
   // events:
   void resizeEvent(QResizeEvent*); 
@@ -70,8 +73,6 @@ protected:
   void down();
   void selectPressed();
   void unselectPressed();
-  // enable or disable buttons
-  void enableButtons() {}
 };
 
 // class name abbreviated...

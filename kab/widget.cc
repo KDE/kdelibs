@@ -356,15 +356,13 @@ AddressWidget::~AddressWidget()
       keys->get("SaveOnExit", setting);
       if(setting)
 	{
-	  save();
-	  /*
-	    if(!AddressBook::save())
+	  // save();
+	  if(!AddressBook::save())
 	    {
-	    cerr << "AddressWidget destructor: Cannot "
-	    << "save database, all changes are lost." 
-	    << endl;
+	      cerr << "AddressWidget destructor: Cannot "
+		   << "save database, all changes are lost." 
+		   << endl;
 	    }
-	  */
 	}
     }
   LG(GUARD, "AddressWidget destructor: clearing database.\n");
@@ -1492,10 +1490,10 @@ bool AddressWidget::print
   QPaintDeviceMetrics metrics(&printer);
   const QFont PrintFont("Helvetica", 8);
   const int 
-    LeftMargin=18, /* 72, */ // points == 1 inch
-    RightMargin=18,
-    TopMargin=18 /* 72 */,
-    BottomMargin=18,
+    LeftMargin=72, // points == 1 inch
+    RightMargin=72,
+    TopMargin=72,
+    BottomMargin=72,
     PageWidth=metrics.width()-LeftMargin-RightMargin,
     PageHeight=metrics.height()-TopMargin-BottomMargin,
     Spacing=2; // points 
@@ -1599,7 +1597,7 @@ bool AddressWidget::print
       // ----- find sum of field widths
       temp=0;
       for(count=0; (unsigned)count<fields.size(); count++)
-	{ // save: comment field width is zero
+	{ // safe: comment field width is zero
 	  temp+=fieldWidth[count];
 	}
       CHECK(temp>0); // field widths contain spacings
@@ -1882,184 +1880,7 @@ bool AddressWidget::emailAddress
   // ########################################################  
 }
 
-void AddressWidget::exportHTML()
-{
-  ID(bool GUARD=true);
-  LG(GUARD, "AddressWidget::exportHTML: called.\n");
-  // ########################################################
-  const string background=card->getBackground();;
-  const string title=i18n("KDE addressbook overview");
-  string header=
-    (string)"<html>\n<head>\n"
-    +(string)"<title>"+(string)title+(string)"</title>\n"
-    +(string)"</head>\n"
-    +(string)"<body background=\""+background+(string)"\">\n"
-    +(string)"<h1>"+title+(string)"</h1>";
-  string footer="</body>\n</html>";
-  string logo;
-  string kdelabel;
-  string alignment="center";
-  string body;
-  string home;
-  string file;
-  string temp;
-  QString dummy; // string objects crash on 0 pointers
-  list<int> indizes;
-  list<int>::iterator ipos;
-  list<string> fields; // the fields in the table
-  list<string>::iterator fieldPos;
-  StringListSAndRSetDialog pDialog(this);
-  Section* entries;
-  Section::StringSectionMap::iterator pos;
-  KeyValueMap* keys;
-  int i;
-  // ----- preparation:
-  if(noOfEntries()==0)
-    {
-      emit(setStatus(i18n("No entries.")));
-      qApp->beep();
-      return;
-    }
-  entries=entrySection();
-  CHECK(entries!=0);
-  // ----- create the table:
-  body+=(string)"<"+alignment+(string)">"
-    +(string)"<table border>\n";
-  //       select what fields to add to the table:
-  fields.erase(fields.begin(), fields.end());
-  for(i=0; i<NoOfFields; i++)
-    {
-      if(!nameOfField(Fields[i], temp))
-	{
-	  CHECK(false);
-	}
-      fields.push_back(temp.c_str());
-    }
-  pDialog.selector()->setValues(fields);
-  pDialog.setCaption(i18n("Select table columns"));
-  if(pDialog.exec())
-    {
-      if(!pDialog.selector()->getSelection(indizes))
-	{
-	  emit(setStatus(i18n("Nothing to export.")));
-	  qApp->beep();
-	  return;
-	}	
-      fields.erase(fields.begin(), fields.end());
-      CHECK(fields.size()==0);
-      for(ipos=indizes.begin(); ipos!=indizes.end(); ipos++)
-	{
-	  CHECK(*ipos<NoOfFields);
-	  fields.push_back(Fields[*ipos]);
-	}
-    } else {
-      emit(setStatus(i18n("Rejected.")));
-      qApp->beep();
-      return;
-    }
-  //       create table headers:
-  body+="<tr>\n";
-  for(fieldPos=fields.begin(); 
-      fieldPos!=fields.end();
-      fieldPos++)
-    {
-      if(!nameOfField(*fieldPos, temp))
-	{
-	  L("AddressWidget::exportHTML: "
-	    "could not get name for field %s.\n",
-	    (*fieldPos).c_str());
-	  temp="(unknown field name)";
-	}
-      body+=(string)"<th>"+temp+"\n";
-    }
-  body+="</tr>\n";
-  //       create table, linewise:
-  for(pos=entries->sectionsBegin(); 
-      pos!=entries->sectionsEnd(); 
-      pos++)
-    {
-      body+="<tr>\n";
-      keys=(*pos).second->getKeys();
-      CHECK(keys!=0);
-      for(fieldPos=fields.begin(); 
-	  fieldPos!=fields.end();
-	  fieldPos++)
-	{
-	  if(*fieldPos=="birthday")
-	    {
-	      Entry dummy;
-	      makeEntryFromSection(*(*pos).second, dummy);
-	      CHECK(makeEntryFromSection(*(*pos).second, dummy));
-	      if(dummy.birthday.isValid())
-		{
-		  temp=dummy.birthday.toString();
-		} else {
-		  temp="";
-		}
-	      //       insert a non-breaking space - mozilla 
-	      //       displays this better (hint from Thomas 
-	      //       Stinner <thomas@roedgen.pop-siegen.de>
-	      if(temp.empty()) temp="&nbsp;";
-	      body+=(string)"<td>"+temp+"\n";
-	      break;
-	    }
-	  if(!keys->get(*fieldPos, temp))
-	    {
-	      L("AddressWidget::exportHTML: "
-		"could not get data for key %s.\n",
-		(*fieldPos).c_str());
-	      temp="";
-	    }
-	  if(temp.empty()) temp="&nbsp;";
-	  body+=(string)"<td>"+temp+"\n";
-	}
-      body+="</tr>\n";
-    }
-  body+="</table>\n"
-    +(string)"</"+alignment+(string)">";
-  // ----- get a filename:
-  if(!getHomeDirectory(home))
-    {
-      QMessageBox::information
-	(this, i18n("Sorry"),
-	 i18n("Could not find the users home directory."));
-      emit(setStatus(i18n("Error"))); 
-      qApp->beep();
-      return;
-    }
-  dummy=KFileDialog::getOpenFileName
-    (home.c_str(), "*html", this);
-  if(!dummy.isEmpty())
-    {
-      file=dummy;
-      LG(GUARD, "AddressWidget::exportHTML: "
-	 "filename is %s.\n", file.c_str());
-    } else {
-      emit(setStatus(i18n("Cancelled.")));
-      qApp->beep();
-      return;
-    }
-  // ----- create HTML file:
-  ofstream stream(file.c_str());
-  if(!stream.good())
-    {
-      QMessageBox::information
-	(this, i18n("Error"),
-	 i18n("Could not open the file to create the HTML "
-	      "table."));
-    }
-  LG(GUARD, "AddressWidget::exportHTML: writing the file.\n");
-  //        htmlizeString is n.i., but may already be called:
-  if(htmlizeString(header, temp)) header=temp;
-  if(htmlizeString(body, temp)) body=temp;
-  if(htmlizeString(footer, temp)) footer=temp;
-  stream << header << endl 
-	 << body << endl 
-	 << footer << endl;
-  LG(GUARD, "AddressWidget::exportHTML: done.\n");
-  // ########################################################
-}
- 
+
 void AddressWidget::exportPlain()
 {
   ID(bool GUARD=true);

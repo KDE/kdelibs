@@ -57,7 +57,7 @@ Read the file COMPILE_PROBLEMS_FAQ.
 #undef red
 #undef black
 
-/* This is declared to resolve incompatabilities found 
+/* This is declared to resolve incompatibilities found 
  * between the HP STL delivered with gnu C++ <2.8 and the
  * SGI STL delivered with later versions and with egcs.
  */
