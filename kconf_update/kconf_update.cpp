@@ -106,20 +106,6 @@ KonfUpdate::KonfUpdate()
 
    QStringList updateFiles;
    KCmdLineArgs *args=KCmdLineArgs::parsedArgs();
-   if (!config->readBoolEntry("updateInfoAdded", false))
-   {
-       config->writeEntry("updateInfoAdded", true);
-       updateFiles = findUpdateFiles(false);
-
-       for(QStringList::ConstIterator it = updateFiles.begin();
-           it != updateFiles.end();
-           ++it)
-       {
-           QString file = *it;
-           checkFile(file);
-       }
-       updateFiles.clear();
-   }
 
    m_bUseConfigInfo = false;
    if (args->isSet("check"))
@@ -133,7 +119,6 @@ KonfUpdate::KonfUpdate()
       }
       updateFiles.append(file);
    }
-   
    else if (args->count())
    {
       for(int i = 0; i < args->count(); i++)
@@ -155,6 +140,21 @@ KonfUpdate::KonfUpdate()
    {
       QString file = *it;
       updateFile(file);
+   }
+
+   if (!config->readBoolEntry("updateInfoAdded", false))
+   {
+       config->writeEntry("updateInfoAdded", true);
+       updateFiles = findUpdateFiles(false);
+
+       for(QStringList::ConstIterator it = updateFiles.begin();
+           it != updateFiles.end();
+           ++it)
+       {
+           QString file = *it;
+           checkFile(file);
+       }
+       updateFiles.clear();
    }
 }
 
