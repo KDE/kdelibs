@@ -19,3 +19,8 @@ usr/lib/libkab.so
 usr/lib/libkjava.so
 usr/lib/libkhtml.so
 usr/lib/libkspell.so
+usr/bin/meinproc
+usr/bin/dcopidl
+usr/bin/dcopidl2cpp
+usr/bin/kde-config
+usr/bin/kdb2html
