@@ -62,7 +62,7 @@ void win32_mapSo2Dll( char *path )
 //    fprintf(stderr,"'%s' )\n", path );
 }
 
-#define MAX_PATH 0x0ff
+#define MAX_PATH 0x1ff
 static char win32_mapDir_KDEDIR[MAX_PATH] = "";
 
 // paths name mappings
@@ -71,9 +71,12 @@ void win32_mapDir( char **dir )
 {
     static const char* WIN32_LIBDIR_FROM = "/opt/kde3/lib/kde3";
     static const char* WIN32_LIBDIR_TO = "c:/kde/lib/kde3";
+    char *e;
 //TODO........
-    if (!win32_mapDir_KDEDIR) {
-      strncpy( win32_mapDir_KDEDIR, getenv("KDEDIR"), MAX_PATH );
+    if (!*win32_mapDir_KDEDIR) {
+      e = getenv("KDEDIR");
+      if (e)
+        strncpy( win32_mapDir_KDEDIR, e, MAX_PATH );
     }
     assert(dir && *dir && win32_mapDir_KDEDIR && *win32_mapDir_KDEDIR);
     // /opt/kde3/lib/kde3 -> <letter>:/kde/lib/kde3
