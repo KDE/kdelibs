@@ -30,8 +30,8 @@
 
 KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
                                  KStatusBar *parent, const char *name) :
-  QLabel( parent, name) 
-{   
+  QLabel( parent, name)
+{
   id = _id;
 
   // Commented out - not needed? (sven)
@@ -45,15 +45,15 @@ KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
   setText( text );
 
   // umm... Mosfet? Can you help here?
-  
+
   // Warning: QStatusBar draws shaded rectangle around every item - which
   // IMHO is stupid.
   // So NoFrame|PLain is the best you get. the problem is that only in case of
   // StyledPanel|Something you get QFrame to call QStyle::drawPanel().
-  
+
   setLineWidth  (0);
   setFrameStyle (QFrame::NoFrame);
-  
+
   setAlignment( AlignHCenter | AlignVCenter );
 
   connect (this, SIGNAL(itemPressed(int)), parent, SLOT(slotPressed(int)));
@@ -93,7 +93,7 @@ KStatusBar::KStatusBar( QWidget *parent, const char *name )
   // fixes strange warnings in KSysV
   // because resizeEvent is somehow called with a too small
   // width()
-  resize (QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+  //resize (QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 }
 
 KStatusBar::~KStatusBar ()
