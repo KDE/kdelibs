@@ -56,6 +56,7 @@ public:
   {
   public:
       List() { }
+      List(const KURL &);
       List(const QStringList &);
       QStringList toStringList() const;
   };
@@ -212,14 +213,14 @@ public:
    * Calls @ref QDir::cleanDirPath but saves the trailing slash if any.
    */
   void cleanPath();
-   
+
   /**
    * Same as above except it takes a flag that allows you
    * to ignore the clean up of the multiple directory separators.
-   * 
-   * Some servers seem not to like the removal of extra '/' 
+   *
+   * Some servers seem not to like the removal of extra '/'
    * eventhough it is against the specification in RFC 2396.
-   */   
+   */
   void cleanPath(bool cleanDirSeparator);
 
   /**
