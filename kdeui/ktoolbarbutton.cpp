@@ -252,6 +252,11 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
           //myPopup->setActiveItem(0 /*myPopup->idAt(1)*/); // set first active
           return true;  // ignore release
         }
+        else
+        {
+            if( toggleButton ) // make the button normal otherwise you get an ugly side effect :-)
+                beToggle( false );
+        }
       }
       break;
 
@@ -570,14 +575,14 @@ void KToolBarButton::showMenu()
     p.setY(p.y() - myPopup->height());
   else
     p.setY(p.y()+height());
+  if( toggleButton )
+    beToggle( true ); // Turns the button into a ToggleButton ...
   myPopup->popup(p);
 }
 
 void KToolBarButton::slotDelayTimeout()
 {
   delayTimer->stop();
-  if( toggleButton )
-    beToggle( true );
   showMenu ();
 }
 
