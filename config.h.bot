@@ -81,11 +81,11 @@ extern "C"
 int vsnprintf(char *str, size_t n, char const *fmt, va_list ap);
 #endif
 
-#if !defined(HAVE_FUNC_SETENV)
+#if !defined(HAVE_SETENV)
 int setenv(const char *name, const char *value, int overwrite);
 #endif
 
-#if !defined(HAVE_FUNC_UNSETENV)
+#if !defined(HAVE_UNSETENV)
 int unsetenv(const char *name);
 #endif
 
