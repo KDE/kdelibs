@@ -1,5 +1,6 @@
 #include <qcheckbox.h>
 #include <qlayout.h>
+#include <qdragobject.h>
 
 #include "tab.h"
 
@@ -27,6 +28,7 @@ Test::Test( QWidget* parent, const char *name )
   connect( mWidget, SIGNAL( tabbarContextMenu( const QPoint & )), this, SLOT(tabbarContextMenu( const QPoint & )));
   connect( mWidget, SIGNAL( mouseDoubleClick( QWidget * )), this, SLOT(mouseDoubleClick( QWidget * )));
   connect( mWidget, SIGNAL( mouseMiddleClick( QWidget * )), this, SLOT(mouseMiddleClick( QWidget * )));
+  connect( mWidget, SIGNAL( receivedDropEvent( QDropEvent * )), this, SLOT(receivedDropEvent( QDropEvent * )));
 
   QWidget * grid = new QWidget(this);
   QGridLayout * gridlayout = new QGridLayout( grid, 4, 2 );
@@ -83,6 +85,14 @@ void Test::currentChanged(QWidget* w)
 void Test::addTab()
 {
   mList.append( mWidget->addChangeableTab( QString("Tab %1").arg(mList.size()+1) ) );
+}
+
+void Test::receivedDropEvent( QDropEvent *e )
+{
+  QString dropText;
+  if (QTextDrag::decode(e, dropText)) {
+    mList.append( mWidget->addChangeableTab( dropText ) );
+  }
 }
 
 void Test::removeCurrentTab()

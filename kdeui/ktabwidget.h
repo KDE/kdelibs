@@ -33,16 +33,21 @@ public:
     KTabWidget( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
 
 protected slots:
-    virtual void mousePressEvent(QMouseEvent *e);
+    virtual void mousePressEvent( QMouseEvent * );
+    virtual void dragMoveEvent( QDragMoveEvent * );
+    virtual void dropEvent( QDropEvent * );
 
 signals:
-    void contextMenu( QWidget *, const QPoint & );
     void tabbarContextMenu( const QPoint & );
+    void receivedDropEvent( QDropEvent * );
 
+    void contextMenu( QWidget *, const QPoint & );
     void mouseDoubleClick( QWidget * );
     void mouseMiddleClick( QWidget * );
 
 private:
+    bool isEmptyTabbarSpace( const QPoint & );
+
     KTabBar *m_pTabBar;
 
     KTabWidgetPrivate *d;

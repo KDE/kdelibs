@@ -24,30 +24,57 @@ KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
 {
   m_pTabBar = new KTabBar(this, "tabbar");
   setTabBar(m_pTabBar);
+  setAcceptDrops(TRUE);
 
   connect(m_pTabBar, SIGNAL(contextMenu( QWidget *, const QPoint & )), this, SIGNAL(contextMenu( QWidget *, const QPoint & )));
   connect(m_pTabBar, SIGNAL(mouseDoubleClick( QWidget * )), this, SIGNAL(mouseDoubleClick( QWidget * )));
   connect(m_pTabBar, SIGNAL(mouseMiddleClick( QWidget * )), this, SIGNAL(mouseMiddleClick( QWidget * )));
 }
 
-void KTabWidget::mousePressEvent(QMouseEvent *e)
+void KTabWidget::dragMoveEvent( QDragMoveEvent *e )
 {
-  if(e->button() == RightButton) {
-    QPoint point = e->pos();
-    QSize size( m_pTabBar->sizeHint() );
-    if ( ( tabPosition()==Top && point.y()< size.height() ) || ( tabPosition()==Bottom && point.y()>(height()-size.height() ) ) ) {
-      if ( isLeftButton() )
-        point.setX( point.x()-size.height() );
-      if ( tabPosition()==Bottom )
-        point.setY( point.y()-( height()-size.height() ) );
-      QTab *tab = m_pTabBar->selectTab( point);
-      if( tab== 0L ) {
-         emit( tabbarContextMenu( mapToGlobal( e->pos() ) ) );
-         return;
-      }
+  if ( isEmptyTabbarSpace( e->pos() ) ) {
+    e->accept(true);  // How to make it conditional?
+    return;
+  }
+  e->accept(false);
+  QTabWidget::dragMoveEvent( e );
+}
+
+void KTabWidget::dropEvent( QDropEvent *e )
+{
+  if ( isEmptyTabbarSpace( e->pos() ) ) {
+    emit ( receivedDropEvent( e ) );
+    return;
+  }
+  QTabWidget::dropEvent( e );
+}
+
+void KTabWidget::mousePressEvent( QMouseEvent *e )
+{
+  if ( e->button() == RightButton ) {
+    if ( isEmptyTabbarSpace( e->pos() ) ) {
+      emit( tabbarContextMenu( mapToGlobal( e->pos() ) ) );
+      return;
     }
   }
-  QTabWidget::mousePressEvent(e);
+  QTabWidget::mousePressEvent( e );
+}
+
+bool KTabWidget::isEmptyTabbarSpace( const QPoint &p )
+{
+  QPoint point(p);
+  QSize size( m_pTabBar->sizeHint() );
+  if ( ( tabPosition()==Top && point.y()< size.height() ) || ( tabPosition()==Bottom && point.y()>(height()-size.height() ) ) ) {
+    if ( isLeftButton() )
+      point.setX( point.x()-size.height() );
+    if ( tabPosition()==Bottom )
+      point.setY( point.y()-( height()-size.height() ) );
+    QTab *tab = m_pTabBar->selectTab( point);
+    if( tab== 0L )
+      return true;
+  }
+  return false;
 }
 
 #include "ktabwidget.moc"
