@@ -833,7 +833,7 @@ bool KHTMLPart::autoloadImages() const
   return true;
 }
 
-void KHTMLPart::clear( bool clearJS )
+void KHTMLPart::clear()
 {
     kdDebug( 6090 ) << "KHTMLPart::clear() this = " << this << endl;
   if ( d->m_bCleared )
@@ -877,7 +877,7 @@ void KHTMLPart::clear( bool clearJS )
   }
 
   // Moving past doc so that onUnload works.
-  if ( d->m_jscript && clearJS )
+  if ( d->m_jscript )
     d->m_jscript->clear();
 
   if ( d->m_view )
@@ -1241,13 +1241,11 @@ void KHTMLPart::slotFinished( KIO::Job * job )
 
 void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 {
-  // Don't destroy JS interpreter if it was created by window.open
-  clear( !d->m_newJSInterpreterExists );
+  clear();
   d->m_bCleared = false;
   d->m_cacheId = 0;
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
-  d->m_newJSInterpreterExists = false;
 
   // ### the setFontSizes in restore currently doesn't seem to work,
   // so let's also reset the font base here, so that the font buttons start
@@ -3218,7 +3216,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
   d->m_view->setMarginWidth( mWidth );
   d->m_view->setMarginHeight( mHeight );
-  
+
   // restore link cursor position
   // nth node is active. value is set in checkCompleted()
   stream >> d->m_focusNodeNumber;
@@ -4263,11 +4261,6 @@ bool KHTMLPart::openedByJS()
 void KHTMLPart::setOpenedByJS(bool _openedByJS)
 {
     d->m_openedByJS = _openedByJS;
-    if ( _openedByJS ) {
-      if ( d->m_jscript )
-        d->m_jscript->clear();
-      d->m_newJSInterpreterExists = true;
-    }
 }
 
 void KHTMLPart::preloadStyleSheet(const QString &url, const QString &stylesheet)
