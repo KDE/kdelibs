@@ -99,7 +99,7 @@ protected:
   KIO::Job* m_pJob;
 
   /**
-   * This variable controls wether the dialog should be deleted or only cleaned when
+   * This variable controls whether the dialog should be deleted or only cleaned when
    * the KIO::Job is finished ( or canceled ).
    *
    * If your dialog is embedded widget and not a separate window, you should set this
