@@ -328,7 +328,7 @@ public:
   /**
     Print resource information as debug output.
   */
-  void dump() const;
+  virtual void dump() const;
 
 protected:
   /**
