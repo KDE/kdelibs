@@ -152,6 +152,10 @@ public:
 
   /**
    * Arbitrarily move @p item to @p parent, positioned immediately after item @p after.
+   *
+   * @see QListViewItem::moveItem()
+   *
+   * @deprecated 
    */
   void moveItem(QListViewItem *item, QListViewItem *parent, QListViewItem *after);
 

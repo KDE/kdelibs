@@ -33,10 +33,6 @@
 #include <kipc.h>
 #include <kdebug.h>
 
-#define private public
-#include <qlistview.h>
-#undef private
-
 #include "klistview.h"
 #include "klistviewlineedit.h"
 
@@ -1191,6 +1187,16 @@ void KListView::moveItem(QListViewItem *item, QListViewItem *parent, QListViewIt
       i = i->parent();
     }
 
+  if (after)
+  {
+      item->moveItem(after);
+      return;
+  }
+
+  // NOTE: This code shouldn't ever be reached if this method is used proprely,
+  // QListVIew::moveItem() handles the same cases.  However, to avoid changing the (albeit
+  // undocumented behavior) it's being left in for the moment.
+
   // Basically reimplementing the QListViewItem(QListViewItem*, QListViewItem*) constructor
   // in here, without ever deleting the item.
   if (item->parent())
@@ -1202,9 +1208,6 @@ void KListView::moveItem(QListViewItem *item, QListViewItem *parent, QListViewIt
         parent->insertItem(item);
   else
         insertItem(item);
-
-  if (after)
-        item->moveToJustAfter(after);
 }
 
 void KListView::contentsDragEnterEvent(QDragEnterEvent *event)
