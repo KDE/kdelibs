@@ -20,6 +20,11 @@
 #include <config.h>
 #endif
 
+
+#ifdef KSSL_HAVE_SSL
+#include <openssl/opensslv.h>
+#endif
+
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kstaticdeleter.h>
@@ -276,11 +281,11 @@ KConfig *cfg;
 	     << "libssl.dylib"
 	     << "libssl.0.9.dylib"
              #else
+             #ifdef SHLIB_VERSION_NUMBER
+             << "libssl.so." SHLIB_VERSION_NUMBER 
+             #endif
              << "libssl.so"
 	     << "libssl.so.0"
-	     << "libssl.so.0.9.6"
-	     << "libssl.so.0.9.6b"
-	     << "libssl.so.0.9.6c"
              #endif
 	     ;
 
@@ -293,11 +298,11 @@ KConfig *cfg;
 	     << "libcrypto.dylib"
 	     << "libcrypto.0.9.dylib"
 	     #else
+             #ifdef SHLIB_VERSION_NUMBER
+             << "libcrypto.so." SHLIB_VERSION_NUMBER 
+             #endif
              << "libcrypto.so"
 	     << "libcrypto.so.0"
-	     << "libcrypto.so.0.9.6c"
-	     << "libcrypto.so.0.9.6b"
-	     << "libcrypto.so.0.9.6"
              #endif
 	     ;
 
