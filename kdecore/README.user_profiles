@@ -1,0 +1,58 @@
+Users can be associated with Profile(s)
+=======================================
+
+A user can be associated with one or more profiles. A profile indicates a 
+configuration set that applies to a group of users. Each profile has a name
+to identify it. If a user is associated with more than one profile then the
+order of the two profiles is important. Settings associated with one profile
+could override the settings in the other profile, depending on the order.
+
+
+The Profile determines the directory prefixes
+=============================================
+
+The global KDE configuration file (e.g. kdeglobals or /etc/kderc) can
+contain config-groups that are associated with a certain user profile. 
+Such a config-group is treated similar as the [Directories] config-group.
+
+The name of a such config-group is [Directories-<ProfileName>]
+
+
+A fool-proof way to set the Profile
+===================================
+
+KDE checks if the file /var/run/kde-user-profile/<UID> is present. If present,
+it reads from this file the ordered list of profiles that apply to the current
+user. The file should contain one profile-name per line and the file is utf-8
+encoded. If the file is not present a single profile named "default" is assumed.
+An empty file means an empty list of profiles.
+
+
+Integration with KIOSK Admin Tool
+=================================
+
+The KIOSK Admin Tool will use /etc/kderc as source for all its profile
+information. For this it will use the following keys in the
+[Directories-<ProfileName>] config-group:
+
+	# Short text describing this profile
+	ProfileDescription=
+
+	# Files will be installed as this user
+	ProfileInstallUser=
+
+The KIOSK Admin Tool will use the first directory from the prefixes= entry
+as default installation directory for this profile.
+
+
+Default setting as example
+==========================
+
+The following snipped could be added to /etc/kderc to define a "default" profile:
+
+[Directories-default]
+ProfileDescription=Default profile
+ProfileDescription[de]=Defaultprofiel
+ProfileInstallUser=root
+prefixes=/var/run/kde-profile/default
+
