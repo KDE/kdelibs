@@ -90,8 +90,8 @@ using namespace KIO;
 
 #define MAX_IPC_SIZE (1024*8)
 
-// Default expire time in seconds: 2 days
-#define DEFAULT_EXPIRE (60*60*24*2)
+// Default expire time in seconds: 30 min.
+#define DEFAULT_EXPIRE (30*60)
 
 // Timeout for connections to remote sites in seconds
 #define REMOTE_CONNECT_TIMEOUT 20
