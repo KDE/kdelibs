@@ -85,7 +85,7 @@ HTMLDocumentImpl::~HTMLDocumentImpl()
 DOMString HTMLDocumentImpl::referrer() const
 {
     if ( view() )
-        return view()->part()->referrer();
+        return view()->part()->pageReferrer();
     return DOMString();
 }
 

@@ -4171,7 +4171,27 @@ QString KHTMLPart::jsDefaultStatusBarText() const
 
 QString KHTMLPart::referrer() const
 {
-   return d->m_pageReferrer;
+   return d->m_referrer;
+}
+
+QString KHTMLPart::pageReferrer() const
+{
+   KURL referrerURL = d->m_pageReferrer;
+   if (referrerURL.isValid())
+   {
+      QString protocol = referrerURL.protocol();
+
+      if ((protocol == "http") ||
+         ((protocol == "https") && (m_url.protocol() == "https")))
+      {
+          referrerURL.setRef(QString::null);
+          referrerURL.setUser(QString::null);
+          referrerURL.setPass(QString::null);
+          return referrerURL.url();
+      }
+   }
+   
+   return QString::null;
 }
 
 QString KHTMLPart::lastModified() const
