@@ -323,6 +323,21 @@ class KApplication : public QApplication
 *
 * This is the value of the KDEDIR
 * environment variable if it is set in the process' environment,
+* the compile time default of, if this was not present, either,
+* /usr/local/kde. 
+*/
+  ConfigState getConfigState() const { return eConfigState; }
+
+  /**
+	* Returns the directory where toolbar icons are stored
+	* @return the name of the directory
+	*/
+  /**
+	* Returns the directory where wallpapers are stored
+  static const QString& kde_partsdir();
+
+
+  /**
 	* Returns the directory where config files are stored
 	* @return the name of the directory
 	*/

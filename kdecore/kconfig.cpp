@@ -44,6 +44,7 @@
 // KConfig searches in $KDEDIR/share/config/kderc
 //
 // Revision 1.5  1997/10/21 20:44:43  kulow
+// removed all NULLs and replaced it with 0L or "".
 // There are some left in mediatool, but this is not C++
 //
 // Revision 1.4  1997/10/16 11:35:25  kulow

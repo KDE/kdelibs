@@ -1186,6 +1186,18 @@ void KApplication::kdisplaySetFont()
 void KApplication::resizeAll()
     kdedir = "/usr/local/kde";
   // send a resize event to all windows so that they can resize children
+	  it.current()->resize( it.current()->size() );
+	return kdedir;
+  if (dir.isNull()) 
+	dir = KDE_DATADIR;
+  return dir;
+}
+
+const QString& KApplication::kde_localedir()
+{
+  static QString dir;
+  if (dir.isNull()) 
+	dir = KDE_LOCALE;
   return dir;
 }
 
