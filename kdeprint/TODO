@@ -5,10 +5,6 @@ BUGS
 	FontPath /usr/...
 	FontPath /opt/...
 
-- Completion of LPR plugin:
-	print options
-	don't use the "lpr" options from driver as other options
-
 
 WISHES
 ------
@@ -34,9 +30,6 @@ WISHES
   itself using kdesu).
 
 - extension of the print ioslave to view jobs (print:/jobs)
-
-- move the execution of kjobviewer to kdeprintd, and start it only
-  if the print process has terminated successfully
 
 - CUPS: you can tag any job when printing with an option like 
   "-o job-billing=#123abc" and the "#123abc" gets into 

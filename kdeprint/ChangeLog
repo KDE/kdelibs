@@ -357,3 +357,16 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * general: discard the toolbar use in the "Instances" page to avoid the
     problem with non-docked vertical toolbars. Use plain QPushButton
     instead, but this has some drawing problems in HighColor style.
+
+11/02/2002 Michael Goffioul <goffioul@imec.be>
+  * LPR: added support for LPRngTool+IFHP (not complete yet though)
+  * general: various fixes for crashes, inconsistencies, ...
+
+12/02/2002 Michael Goffioul <goffioul@imec.be>
+  * kdeprintfax: added %email to possible command tags. The e-mail address
+    is retrieved from standard settings in KControl module. The tag can
+    also be used in the "Name" field of the options dialog
+  * LPR: completion of the LPRngTool handler + implementation of dynamic
+    driver directories (to be done: should also be configurable in the
+    options dialog)
+  * general: Fixed bug -> XML commands couild not be saved
