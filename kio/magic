@@ -74,6 +74,10 @@
 # Musepack files
 0	string		MP+		audio/x-musepack
 
+# C64 PSID sound files
+0	string		SID		audio/prs.sid
+
+
 #------------------------------------------------------------------------------
 # riff:  file(1) magic for RIFF format
 # See
