@@ -69,7 +69,8 @@ class KLibraryPrivate;
  * All objects created by the factory must be derived from @ref QObject, since @ref QObject
  * offers type safe casting.
  *
- * KLibFactory is an abstract class. You have to overload the @ref create() method.
+ * KLibFactory is an abstract class. Reimplement the @ref
+ * createObject() method to give it functionality.
  *
  * @author Torben Weis <weis@kde.org>
  */
@@ -84,7 +85,7 @@ public:
     virtual ~KLibFactory();
 
     /**
-     * Create a new object. The returned object has to be derived from
+     * Creates a new object. The returned object has to be derived from
      * the requested classname.
      *
      * It is valid behavior to create different kinds of objects
@@ -93,19 +94,43 @@ public:
      * if asked for a "QWidget", it could create a wrapper widget,
      * that encapsulates the Koffice specific features.
      *
-     * When derived classes implement this method, they should emit the signal
-     * @ref objectCreated to tell the factory about their newly created object.
-     * This is very important for reference counting, and allows unloading
-     * the library automatically once all its objects have been destroyed.
+     * Never reimplement this function. Instead, reimplement @ref
+     * createObject().
+     *
+     * create() automatically emits a signal @ref objectCreated to tell
+     * the library about its newly created object.  This is very
+     * important for reference counting, and allows unloading the
+     * library automatically once all its objects have been destroyed.
+     *
+     * This function is virtual for compatibility reasons only.
      */
 
-    virtual QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() ) = 0;
+    virtual QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() );
 
 signals:
     /**
-     * Emit this in @ref create
+     * Emitted in @ref create
      */
     void objectCreated( QObject *obj );
+    
+    
+protected:
+    
+    /**
+     * Creates a new object. The returned object has to be derived from
+     * the requested classname.
+     *
+     * It is valid behavior to create different kinds of objects
+     * depending on the requested @p classname. For example a koffice
+     * library may usually return a pointer to @ref KoDocument.  But
+     * if asked for a "QWidget", it could create a wrapper widget,
+     * that encapsulates the Koffice specific features.
+     *
+     * This function is called by @ref create()
+     */
+    virtual QObject* createObject( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() );
+    
+    
 private:
     KLibFactoryPrivate *d;
 };

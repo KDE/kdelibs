@@ -33,6 +33,7 @@ template class QAsciiDict<KLibrary>;
 #include <qtimer.h>
 #include <qobjectdict.h>
 
+
 class KLibFactoryPrivate {
 public:
 };
@@ -48,6 +49,21 @@ KLibFactory::~KLibFactory()
     kdDebug(150) << "Deleting KLibFactory " << this << endl;
     delete d;
 }
+
+QObject* KLibFactory::create( QObject* parent, const char* name, const char* classname, const QStringList &args )
+{
+    QObject* obj = createObject( parent, name, classname, args );
+    if ( obj )
+	emit objectCreated( obj );
+    return obj;
+}
+
+
+QObject* KLibFactory::createObject( QObject*, const char*, const char*, const QStringList &)
+{
+    return 0;
+}
+
 
 // Matz: implement all that cruft in KDE > 2.0
 typedef QValueList<lt_dlhandle> LTList;
@@ -187,17 +203,17 @@ KLibrary::~KLibrary()
 
     // Well.. let's do something more subtle... convert the clipboard context
     // to text. That should be safe as it only uses objects defined by Qt.
-    
+
     QWidgetList *widgetlist = QApplication::topLevelWidgets();
     QWidget *co = widgetlist->first();
     while (co) {
 	if (qstrcmp(co->name(), "internal clipboard owner") == 0) {
 	    if (XGetSelectionOwner(co->x11Display(), XA_PRIMARY) == co->winId())
 		kapp->clipboard()->setText(kapp->clipboard()->text());
-	    
+	
 	    break;
 	}
-       
+
 	co = widgetlist->next();
     }
 
@@ -269,6 +285,9 @@ void KLibrary::slotObjectCreated( QObject *obj )
 
   if ( m_timer && m_timer->isActive() )
     m_timer->stop();
+  
+  if ( m_objs.containsRef( obj ) )
+      return; // we know this object already
 
   connect( obj, SIGNAL( destroyed() ),
            this, SLOT( slotObjectDestroyed() ) );
@@ -395,7 +414,7 @@ KLibrary* KLibLoader::library( const char *name )
     m_libs.insert( name, lib );
 
     add_loaded( handle );
-    
+
     if (lt_dlsym(handle, "__kde_do_not_unload") != 0) {
         /* matz: bad hack: clear loaded stack, as we can't dlclose() any
            libraries loaded before this one.  */
