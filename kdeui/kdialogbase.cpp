@@ -329,7 +329,7 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   }
   if( mButton.mask & Apply )
   {
-    QPushButton *pb = mButton.append( Apply, i18n("&Append") );
+    QPushButton *pb = mButton.append( Apply, i18n("&Apply") );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotApply()) );
     connect( pb, SIGNAL(clicked()), this, SLOT(applyPressed()) );
   }
