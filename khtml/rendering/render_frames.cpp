@@ -829,8 +829,8 @@ void RenderPartObject::slotPartLoadingErrorNotify()
     }
 
     // didn't work, render alternative content.
-    if ( element() && element()->id() == ID_OBJECT )
-        static_cast<HTMLObjectElementImpl*>( element() )->renderAlternative();
+ //   if ( element() && element()->id() == ID_OBJECT )
+   //     static_cast<HTMLObjectElementImpl*>( element() )->renderAlternative();
 }
 
 void RenderPartObject::layout( )
