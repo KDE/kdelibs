@@ -82,7 +82,7 @@ class KServerSocketPrivate;
  * @version $Id$
  * @short A TCP/IP client socket.
  */
-class KSocket : public QObject
+class KDE_DEPRECATED KSocket : public QObject
 {
     Q_OBJECT
 public:

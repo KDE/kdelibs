@@ -18,6 +18,8 @@
 #ifndef __kregexp_h__
 #define __kregexp_h__
 
+#include "kdemacros.h"
+
 class KRegExpPrivate;
 
 /**
@@ -56,7 +58,7 @@ class KRegExpPrivate;
  * @author Torben Weis <weis@kde.org>
  * @version $Id$
  */
-class KRegExp
+class KDE_DEPRECATED KRegExp
 {
 public:
 
