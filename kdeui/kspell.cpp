@@ -1149,7 +1149,7 @@ void KSpell::dialog( const QString & word, QStringList & sugg, const char *_slot
   dialog3slot = _slot;
   dialogwillprocess = true;
   connect( ksdlg, SIGNAL(command(int)), this, SLOT(dialog2(int)) );
-  QString tmpBuf = origbuffer;
+  QString tmpBuf = newbuffer;
   kdDebug(750)<<" position = "<<lastpos<<endl;
 
   // extract a context string, replace all characters which might confuse
@@ -1157,7 +1157,7 @@ void KSpell::dialog( const QString & word, QStringList & sugg, const char *_slot
   QString marker( "_MARKER_" );
   tmpBuf.replace( lastpos, word.length(), marker );
   QString context = tmpBuf.mid(QMAX(lastpos-18,0), 2*18+marker.length());
-  context.remove( '\n' );
+  context.replace( '\n',QString::fromLatin1(" "));
   context.replace( '<', QString::fromLatin1("&lt;") );
   context.replace( '>', QString::fromLatin1("&gt;") );
   context.replace( marker, QString::fromLatin1("<b>%1</b>").arg( word ) );
