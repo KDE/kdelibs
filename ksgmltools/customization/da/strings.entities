@@ -8,9 +8,9 @@
      The default values of the parameter entities is IGNORE. -->
 <![%FDLIS;[
 <!ENTITY FDLISTitles "LISTNING AF TITLER"><!-- keep capitals -->
-<!ENTITY FDLInvariantSections "De Invariante Sektioner er &FDLISTitles;">
+<!ENTITY FDLInvariantSections "De invariante sektioner er &FDLISTitles;">
  ]]>
-<!ENTITY FDLInvariantSections "uden Invariante Sektioner">
+<!ENTITY FDLInvariantSections "uden invariante sektioner">
 <![%FDLFCT;[
 <!ENTITY FDLFCTTitles "LIST"><!-- keep capitals -->
 <!ENTITY FDLFrontCoverText "Forsidetekster er &FDLFCTTitles;">

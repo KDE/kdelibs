@@ -9,3 +9,4 @@
 <!ENTITY LMB    "<mousebutton>left</mousebutton> mouse button" -- please translate both entity name and content -->
 <!ENTITY MMB    "<mousebutton>middle</mousebutton> mouse button" -- please translate both entity name and content -->
 <!ENTITY RMB    "<mousebutton>right</mousebutton> mouse button" -- please translate both entity name and content -->
+<!ENTITY eg     "<abbrev>f. eks,</abbrev>" -- eg -->                               
