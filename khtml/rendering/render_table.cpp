@@ -1740,14 +1740,8 @@ void RenderTableCell::calcMinMaxWidth()
 
     RenderFlow::calcMinMaxWidth();
 
-    if(nWrap) {
-        if(style()->width().type!=Fixed)
-            m_minWidth = m_maxWidth;
-        else {
-            m_minWidth = QMAX( m_maxWidth, style()->width().value );
-            m_maxWidth = QMAX( m_maxWidth, m_minWidth );
-        }
-    }
+    if(nWrap && style()->width().type!=Fixed)
+        m_minWidth = m_maxWidth;
 
     if (m_minWidth!=oldMin || m_maxWidth!=oldMax)
         m_table->addColInfo(this);
