@@ -427,6 +427,8 @@ public slots:
         (void) nextMatch();
     }
 
+    // FIXME ###: KDE4: unify the nomenclature.  We have insertItems, addItem,
+    //            setItems...
     /**
      * Inserts @p items into the list of possible completions.
      * Does the same as setItems(), but does not call clear() before.
