@@ -24,9 +24,11 @@
 #include <qptrlist.h>
 #include <qstringlist.h>
 #include <qptrdict.h>
+#include <qguardedptr.h>
 
 class KPrintProcess;
 class KProcess;
+class StatusWindow;
 
 class KDEPrintd : public KDEDModule
 {
@@ -40,6 +42,7 @@ public:
 k_dcop:
 	int print(const QString& cmd, const QStringList& files, bool remove);
 	QString openPassDlg(const QString& user);
+	ASYNC statusMessage(const QString& msg);
 
 protected slots:
 	void slotProcessExited(KProcess*);
@@ -52,6 +55,7 @@ protected:
 private:
 	QPtrList<KPrintProcess>	m_processpool;
 	QPtrDict<QStringList>	m_tempfiles;
+	QGuardedPtr<StatusWindow>	m_statuswindow;
 };
 
 #endif

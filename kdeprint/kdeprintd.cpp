@@ -27,6 +27,9 @@
 #include <kdebug.h>
 #include <dcopclient.h>
 #include <kio/passdlg.h>
+#include <qlabel.h>
+#include <kpushbutton.h>
+#include <qlayout.h>
 
 #include <unistd.h>
 
@@ -42,6 +45,46 @@ static void cleanFileList(const QStringList& files)
 {
 	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 		QFile::remove(*it);
+}
+
+class StatusWindow : public QWidget
+{
+public:
+	StatusWindow();
+	void setMessage(const QString&);
+
+private:
+	QLabel		*m_label;
+	QPushButton	*m_button;
+};
+
+StatusWindow::StatusWindow()
+: QWidget(NULL, "StatusWindow", WType_TopLevel|WStyle_DialogBorder|WStyle_StaysOnTop|WDestructiveClose)
+{
+	setCaption(i18n("Printing status"));
+	m_label = new QLabel(this);
+	m_label->setAlignment(AlignCenter);
+	m_button = new KPushButton(KStdGuiItem::close(), this);
+	QGridLayout	*l0 = new QGridLayout(this, 2, 2, 10, 10);
+	l0->setRowStretch(0, 1);
+	l0->setColStretch(0, 1);
+	l0->addMultiCellWidget(m_label, 0, 0, 0, 1);
+	l0->addWidget(m_button, 1, 1);
+	connect(m_button, SIGNAL(clicked()), SLOT(close()));
+	resize(200, 50);
+}
+
+void StatusWindow::setMessage(const QString& msg)
+{
+	QSize	oldSz = size();
+	m_label->setText(msg);
+	QSize	sz = m_label->sizeHint();
+	sz += QSize(layout()->margin()*2, layout()->margin()*2+layout()->spacing()+m_button->sizeHint().height());
+	// dialog will never be smaller
+	sz = sz.expandedTo(oldSz);
+	resize(sz);
+	setFixedSize(sz);
+	layout()->activate();
 }
 
 //*****************************************************************************************************
@@ -146,6 +189,22 @@ bool KDEPrintd::checkFiles(QString& cmd, const QStringList& files)
 				return false;
 		}
 	return true;
+}
+
+void KDEPrintd::statusMessage(const QString& msg)
+{
+	if (!m_statuswindow && !msg.isEmpty())
+	{
+		m_statuswindow = new StatusWindow;
+		m_statuswindow->show();
+	}
+	if (m_statuswindow)
+	{
+		if (!msg.isEmpty())
+			m_statuswindow->setMessage(msg);
+		else
+			m_statuswindow->close();
+	}
 }
 
 #include "kdeprintd.moc"

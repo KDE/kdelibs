@@ -31,6 +31,8 @@
 #include "kprintfilter.h"
 #include "driver.h"
 
+#include "kdeprintd_stub.h"
+
 #include <qfile.h>
 #include <qregexp.h>
 #include <qinputdialog.h>
@@ -177,8 +179,27 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 	return result;
 }
 
+void KPrinterImpl::statusMessage(const QString& msg)
+{
+	kdDebug() << "kdeprint: status message: " << msg << endl;
+
+	DCOPClient	*dclient = kapp->dcopClient();
+	if (!dclient || (!dclient->isAttached() && !dclient->attach()))
+	{
+		return;
+	}
+
+	QByteArray data, replyData;
+	QCString replyType;
+	QDataStream arg( data, IO_WriteOnly );
+	arg << msg;
+	dclient->call( "kded", "kdeprintd", "statusMessage(QString)", data, replyType, replyData );
+}
+
 bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QStringList& files, bool flag)
 {
+	statusMessage(i18n("Sending print data to printer: %1").arg(printer->printerName()));
+
 	QString	command(cmd), filestr;
 	QStringList	printfiles;
 	if (command.find("%in") == -1) command.append(" %in");
@@ -362,6 +383,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 		cmd.replace(rout,quote(tmpfile));
 		cmd.replace(rpsl,ps.lower());
 		cmd.replace(rpsu,ps);
+		statusMessage(i18n("Filtering print data"));
 		int status = system(cmd.latin1());
 		if (status < 0 || WEXITSTATUS(status) == 127)
 		{

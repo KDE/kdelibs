@@ -109,6 +109,7 @@ public:
 	QSize			m_pagesize;
 	QString			m_errormsg;
 	bool			m_ready;
+	int		m_pagenumber;
 };
 
 //**************************************************************************************
@@ -234,7 +235,12 @@ bool KPrinter::cmd(int c, QPainter *painter, QPDevCmdParam *p)
 {
 	bool value(true);
 	if (c == QPaintDevice::PdcBegin)
+	{
+		d->m_impl->statusMessage(i18n("Initialization..."));
+		d->m_pagenumber = 1;
 		preparePrinting();
+		d->m_impl->statusMessage(i18n("Generating print data: page %1").arg(d->m_pagenumber));
+	}
 	value = d->m_wrapper->cmd(c,painter,p);
 	if (c == QPaintDevice::PdcEnd)
 	{
@@ -358,6 +364,8 @@ dumpOptions(d->m_options);
 void KPrinter::finishPrinting()
 {
 	d->m_ready = false;
+	// close the status window
+	d->m_impl->statusMessage(QString::null);
 }
 
 QValueList<int> KPrinter::pageList() const
@@ -797,7 +805,11 @@ void KPrinter::setSearchName(const QString& s)
 { d->m_searchname = s; }
 
 bool KPrinter::newPage()
-{ return d->m_wrapper->newPage(); }
+{
+	d->m_pagenumber++;
+	d->m_impl->statusMessage(i18n("Generating print data: page %1").arg(d->m_pagenumber));
+	return d->m_wrapper->newPage();
+}
 
 QString KPrinter::outputFileName() const
 { return option("kde-outputfilename"); }
