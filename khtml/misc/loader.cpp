@@ -653,7 +653,7 @@ void CachedImage::movieStatus(int status)
             if (im.colorTable()[i] != qRgb(0xff, 0xff, 0xff) &&
                 im.colorTable()[i] != qRgb(0x00, 0x00, 0x00))
                 monochrome = false;
-        if(im.width() < 5 && im.height() < 5 && im.hasAlphaBuffer()) // only evaluate for small images
+        if( (im.width() < 5 || im.height() < 5) && im.hasAlphaBuffer()) // only evaluate for small images
         {
             QImage am = im.createAlphaMask();
             if(am.depth() == 1)

@@ -588,10 +588,13 @@ short RenderBox::calcReplacedWidth(bool* ieHack) const
     {
         Length h = style()->height();
         int ih = intrinsicHeight();
-        if ( ih > 0 && ( h.isPercent() || h.isFixed() ) )
+        if ( ih > 1 && ( h.isPercent() || h.isFixed() ) )
             width = ( ( h.isPercent() ? calcReplacedHeight() : h.value )*intrinsicWidth() ) / ih;
         else
             width = intrinsicWidth();
+	// some protection against getting uge pixmaps
+	if ( width > 2048 )
+	    width = 2048;
         break;
     }
     case Percent:
@@ -624,10 +627,13 @@ int RenderBox::calcReplacedHeight() const
     {
         Length w = style()->width();
         int iw = intrinsicWidth();
-        if( iw > 0 && ( w.isFixed() || w.isPercent() ))
+        if( iw > 1 && ( w.isFixed() || w.isPercent() ))
             height = (( w.isPercent() ? calcReplacedWidth() : w.value ) * intrinsicHeight()) / iw;
         else
             height = intrinsicHeight();
+	// some protection against getting huge pixmaps
+	if ( height > 2048 )
+	    height = 2048;
     }
     break;
     case Percent:
