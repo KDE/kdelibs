@@ -47,13 +47,17 @@ public:
 KDEsuClient::KDEsuClient()
 {
     sockfd = -1;
-    char *dpy = getenv("DISPLAY");
-    if (dpy == 0L)
+    QCString display(getenv("DISPLAY"));
+    if (display.isEmpty())
     {
-	kdWarning(900) << k_lineinfo << "$DISPLAY is not set\n";
-	return;
+        kdWarning(900) << k_lineinfo << "$DISPLAY is not set\n";
+        return;
     }
-    sock = QFile::encodeName(locateLocal("socket", QString("kdesud_%1").arg(dpy)));
+
+    // strip the screen number from the display
+    display.replace(QRegExp("\\.[0-9]+$"), "");
+
+    sock = QFile::encodeName(locateLocal("socket", QString("kdesud_%1").arg(display)));
     d = new KDEsuClientPrivate;
     connect();
 }
