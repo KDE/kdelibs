@@ -227,8 +227,8 @@ void HTMLTokenizer::parseListing( HTMLStringIt &src)
         // 10 characers.
         if ( scriptCodeSize + 10 > scriptCodeMaxSize )
         {
-            QChar *newbuf = new QChar [ scriptCodeSize + 1024 ];
-	    memcpy( newbuf, scriptCode, scriptCodeSize );
+            QChar *newbuf = new QChar [ scriptCodeMaxSize + 1024 ];
+	    memcpy( newbuf, scriptCode, scriptCodeSize*sizeof(QChar) );
 	    delete [] scriptCode;
 	    scriptCode = newbuf;
 	    scriptCodeMaxSize += 1024;
@@ -244,6 +244,7 @@ void HTMLTokenizer::parseListing( HTMLStringIt &src)
 	        /* Parse scriptCode containing <script> info */
 		// ### use KHTMLWidget::executeScript...
 	        KJSWorld *jscript = view->jScript();
+		printf("scriptcode is: %s\n", QString(scriptCode, scriptCodeSize).ascii());
 		if(jscript) jscript->evaluate((KJS::UnicodeChar*)scriptCode, scriptCodeSize);
 	    }
 	    else if (style)
@@ -615,7 +616,7 @@ void HTMLTokenizer::parseTag(HTMLStringIt &src)
 		    }
 		    // limited xhtml support. Accept empty xml tags like <br/>
 		    if(*(dest-1) == '/' && len > 1) len--;
-		    
+		
 		    QConstString tmp(ptr, len);
 		    const struct tags *tagPtr = findTag(tmp.string().ascii(), len);
 		    if (!tagPtr) {
