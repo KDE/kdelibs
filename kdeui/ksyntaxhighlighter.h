@@ -121,7 +121,7 @@ public:
      * 
      * @see setActive()
      */
-    bool isActive();
+    bool isActive() const;
 
 signals:
     void activeChanged(const QString &);

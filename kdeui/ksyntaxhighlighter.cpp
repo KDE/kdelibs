@@ -398,7 +398,7 @@ void KDictSpellingHighlighter::setActive( bool active )
         emit activeChanged( i18n("As-you-type spell checking disabled.") );
 }
 
-bool KDictSpellingHighlighter::isActive()
+bool KDictSpellingHighlighter::isActive() const
 {
     return d->active;
 }
