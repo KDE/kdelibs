@@ -287,7 +287,12 @@ void KIntNumInput::init(int val, int _base)
 {
     d = new KIntNumInputPrivate( val );
     m_spin = new KIntSpinBox(INT_MIN, INT_MAX, 1, val, _base, this, "KIntNumInput::KIntSpinBox");
-    m_spin->setValidator(new KIntValidator(this, _base, "KNumInput::KIntValidtr"));
+    // the KIntValidator is broken beyond believe for
+    // spinboxes which have suffix or prefix texts, so
+    // better don't use it unless absolutely necessary
+    if (_base != 10)
+        m_spin->setValidator(new KIntValidator(this, _base, "KNumInput::KIntValidtr"));
+
     connect(m_spin, SIGNAL(valueChanged(int)), SLOT(spinValueChanged(int)));
     connect(this, SIGNAL(valueChanged(int)),
 	    SLOT(slotEmitRelativeValueChanged(int)));
