@@ -1006,13 +1006,17 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
         {
             // can't submit file on GET
             if(!multipart)
-                break;
+                return false;
 
             QString local;
 
             // if no filename at all is entered, return successful, however empty
-            if(m_filename.isEmpty())
+            // null would be more logical but netscape posts an empty file. argh.
+            if(m_filename.isEmpty()) {
+                QCString dummy("");
+                encoding += dummy; // isEmpty
                 return true;
+            }
 
             if ( KIO::NetAccess::download(KURL(m_filename.string()), local) )
             {
