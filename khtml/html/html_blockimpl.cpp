@@ -149,7 +149,7 @@ void HTMLHRElementImpl::attach(KHTMLView *w)
     {
 	RenderHR *renderHr = new RenderHR();
 	renderHr->setStyle(m_style);
-	renderHr->setSize(size);
+	renderHr->setRulerWidth(size);
 	renderHr->setShade(shade);
 	m_render = renderHr;
 	if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);

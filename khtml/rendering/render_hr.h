@@ -53,7 +53,7 @@ public:
     virtual void layout();
 
     void setShade(bool shd) { shade = shd; }
-    void setSize(short sz) { size = sz; }
+    void setRulerWidth(short sz) { size = sz; }
     
     virtual short intrinsicWidth() const;
     virtual int intrinsicHeight() const;    
