@@ -62,10 +62,11 @@ dnl differs, later.
 AC_DEFUN(AC_CHECK_IOCTL_TYPE,
 [
   AC_MSG_CHECKING([ioctl type])
-  AC_LANG_SAVE
-  AC_LANG_C
   AC_CACHE_VAL(ac_cv_ioctl_type,
   [
+    AC_LANG_SAVE
+    AC_LANG_C
+
     AC_TRY_COMPILE(
     [
       #include <sys/ioctl.h>
@@ -90,9 +91,10 @@ AC_DEFUN(AC_CHECK_IOCTL_TYPE,
     [
     ],
 	ac_cv_ioctl_type=3)
+     AC_LANG_RESTORE
   ])
   AC_MSG_RESULT($ac_cv_ioctl_type)
-  AC_LANG_RESTORE
+  
 
 if test $ac_cv_ioctl_type = 1; then
   AC_DEFINE(HAVE_IOCTL_INT_INT_DOTS,1,
