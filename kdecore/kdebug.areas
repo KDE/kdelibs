@@ -16,7 +16,9 @@
 1903	kfind (KfindTabDialog::createQuery)
 2000	kfind (kdebase)
 4300	kdvi (kdegraphics)
+
 5001    caitoo
+
 7001    kiolib (KDirWatch)
 7002    kiolib (KIOCache)
 7005    kiolib (Filter)
@@ -27,6 +29,14 @@
 7010    kiolib (KRun)
 7011    kiolib (KRegistry)
 7012    kiolib (KService*)
+7013    kiolib (KPing)
+7014    kiolib (KFind)
+
+# 710x  are for kioslaves
+7101    kio_file
+7102    kio_ftp
+7103    kio_http
+
 8000    corba
 8001    parts (corba)
 8002    partsui (corba)
