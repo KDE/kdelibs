@@ -126,12 +126,21 @@ public:
    *
    * Use only when you know the full command line. Otherwise use the other
    * static methods, or @ref KRun's constructor.
-   * @param cmd the full command line to run, see @ref run()
-   * @param execName Dhe name of the executable (usually the first 'word' of the command).
-   * @param iconName The name of the (mini) icon to show in kicker.
+   * @param cmd the full command (unquoted) line to run, see @ref run()
+   */
+  static pid_t runCommand( QString cmd );
+  
+  /**
+   * @deprecated
    */
   static pid_t runCommand( const QString& cmd, const QString & execName, const QString & iconName );
 
+  /**
+   * Quotes a string for the shell
+   */
+  static void shellQuote( QString &_str );
+
+  
 signals:
   void finished();
   void error();
@@ -220,11 +229,6 @@ protected:
    * Extracts binary name from Exec command line
    */
   static QString binaryName( const QString & execLine );
-
-  /**
-   * Quotes a string for the shell
-   */
-  static void shellQuote( QString &_str );
 };
 
 /**

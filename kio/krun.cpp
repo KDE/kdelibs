@@ -304,6 +304,14 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
   return retval;
 }
 
+
+pid_t KRun::runCommand( QString cmd )
+{
+  shellQuote( cmd );
+  return KRun::run( cmd );
+}
+
+// deprecated
 pid_t KRun::runCommand( const QString& cmd, const QString &/*execName*/, const QString &/*iconName*/ )
 {
   return KRun::run( cmd );
