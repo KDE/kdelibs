@@ -250,6 +250,17 @@ bool DCOPClient::process(const QString &fun, const QByteArray &data,
   return false;
 }
 
+
+bool DCOPClient::isApplicationAttached( const QString& remApp)
+{
+  
+}
+
+QStringList DCOPClient::attachedApplications()
+{
+}
+
+
 bool DCOPClient::receive(const QString &app, const QString &objId, 
 			 const QString &fun, const QByteArray &data,
 			 QByteArray &replyData)

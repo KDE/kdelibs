@@ -122,7 +122,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
 	pMsg->length += datalen;
 	IceWriteData( target->ice_conn, datalen, (char *) ba.data());
 	IceFlush( target->ice_conn );
-      } else if ( app == "DCOPserver" ) {
+      } else if ( app == "DCOPServer" ) {
 	QString obj, fun;
 	QByteArray data;
 	ds >> obj >> fun >> data;
@@ -419,16 +419,26 @@ bool DCOPServer::receive(const QString &app, const QString &obj,
 			 const QString &fun, const QByteArray& data,
 			 QByteArray &replyData)
 {
-  if ( fun == "clientList" ) {
+  if ( fun == "attachedApplications" ) {
     QDataStream reply( replyData, IO_WriteOnly );
-    QStringList clients;
+    QStringList applications;
     QDictIterator<DCOPConnection> it( appIds );
     while ( it.current() ) {
-      clients << it.currentKey();
+      applications << it.currentKey();
       ++it;
     }
-    reply << clients;
+    reply << applications;
     return TRUE;
+  } else if ( fun == "isApplicationAttached" ) {
+    QDataStream args( data, IO_ReadOnly );
+    if (!args.atEnd()) {
+      QString s;
+      args >> s;
+      QDataStream reply( replyData, IO_WriteOnly );
+      bool b = ( appIds.find( s ) != 0 );
+      reply << b;
+      return TRUE;
+    }
   }
 
   return FALSE;

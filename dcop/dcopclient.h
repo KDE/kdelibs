@@ -90,6 +90,17 @@ class DCOPClient : public QObject
 		       QByteArray &replyData);
 
   /**
+   * Check whether @param remApp is attached to the DCOPServer.
+   * @return true if the remote application is attached, otherwise false.
+   */
+  bool isApplicationAttached( const QString& remApp);
+
+  /**
+   * Return the list of all currently attached applications.
+   */
+  QStringList attachedApplications();
+
+  /**
    * receive a piece of data from the server.
    * @param app the application the data was intended for.  Should be
    *        equal to our appId that we passed when the DCOPClient was
@@ -99,15 +110,9 @@ class DCOPClient : public QObject
    * @param data the arguments for the function.
    * @internal
    */
-  virtual bool receive(const QString &app, const QString &obj, 
-		       const QString &fun, const QByteArray& data,
-		       QByteArray &replyData);
-
-  /**
-   * ping a remote application to see if it is running.
-   * @return true if the remote application is running, otherwise false.
-   */
-  bool ping(QString remApp);
+  bool receive(const QString &app, const QString &obj, 
+	       const QString &fun, const QByteArray& data,
+	       QByteArray &replyData);
 
  public slots:
 
