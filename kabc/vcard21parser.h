@@ -130,6 +130,32 @@
 #define VC_ERR_INVALID_NAME        5
 #define VC_ERR_MISSING_MANDATORY   6
 
+enum { Home = 1, Work = 2, Msg = 4, Pref = 8, Voice = 16, Fax = 32,
+           Cell = 64, Video = 128, Bbs = 256, Modem = 512, Car = 1024,
+           Isdn = 2048, Pcs = 4096, Pager = 8192 };
+
+
+namespace KABC {
+
+class AddressBook;
+
+class VCard21Parser {
+  public:
+    VCard21Parser();
+    virtual ~VCard21Parser();
+
+    void readFromString(KABC::AddressBook *, const QString &);
+    //QString writeToString (KABC::AddressBook *); //not implemented yet
+    KABC::Addressee readFromString( const QString &data);
+    static KABC::Address readAddressFromQStringList (const QStringList &data, const int type);
+
+
+};
+
+
+}
+
+
 class VCardLine {
 friend class VCard21ParserImpl;
  protected:
@@ -160,30 +186,7 @@ friend class VCardLine;
 
 };
 
-enum { Home = 1, Work = 2, Msg = 4, Pref = 8, Voice = 16, Fax = 32,
-           Cell = 64, Video = 128, Bbs = 256, Modem = 512, Car = 1024,
-           Isdn = 2048, Pcs = 4096, Pager = 8192 };
 
-
-namespace KABC {
-
-class AddressBook;
-
-class VCard21Parser {
-  public:
-    VCard21Parser();
-    virtual ~VCard21Parser();
-
-    void readFromString(KABC::AddressBook *, const QString &);
-    //QString writeToString (KABC::AddressBook *); //not implemented yet
-    KABC::Addressee readFromString( const QString &data);
-    static KABC::Address readAddressFromQStringList (const QStringList &data, const int type);
-
-
-};
-
-
-}
 
 
 #endif
