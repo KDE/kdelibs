@@ -1,0 +1,88 @@
+<?xml version="1.0" ?>
+<!DOCTYPE refentry PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.1//EN" "dtd/kdex.dtd" [
+<!ENTITY % English "INCLUDE">
+]>
+
+<refentry lang="&language;">
+<refentryinfo>
+<title>KDE User's Manual</title>
+<author>&Lauri.Watts; &Lauri.Watts.mail;</author>
+<date>2004-02-02</date>
+<productname>K Desktop Environment</productname>
+</refentryinfo>
+
+<refmeta>
+<refentrytitle>kdeoptions</refentrytitle>
+<manvolnum>7</manvolnum>
+</refmeta>
+
+<refnamediv>
+<refname>KDE options</refname>
+<refpurpose>Common commandline options for all applications based on the KDE libraries</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command><replaceable>KDE application</replaceable></command>
+<arg choice="opt">KDE Generic Options</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+
+<refsect1>
+<title>Options</title>
+
+<para>The following options apply to all &kde; applications:</para>
+
+
+<para>The following options apply to all &kde; applications:</para>
+<variablelist>
+<varlistentry>
+<term><option>--caption</option> <parameter>caption</parameter></term>
+<listitem><para>Use <parameter>caption</parameter> as name in the
+titlebar.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><option>--icon</option> <parameter>icon</parameter></term>
+<listitem><para>Use <parameter>icon</parameter> as the application icon.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><option>--miniicon</option> <parameter>icon</parameter></term>
+<listitem><para>Use <parameter>icon</parameter> as the icon in the titlebar</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><option>--dcopserver</option> <parameter>server</parameter></term>
+<listitem><para>Use the <acronym>DCOP</acronym> Server specified by <parameter>server</parameter>.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><option>--nocrashhandler</option></term>
+<listitem><para>Disable the crash handler, to get core dumps.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><option>--waitforwm</option></term>
+<listitem><para>Waits for a WM_NET compatible windowmanager.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><option>--style</option> <parameter>style</parameter></term>
+<listitem><para>Sets the appliction &GUI; style.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><option>--geometry</option> <parameter>geometry</parameter></term>
+<listitem><para>Sets the client geometry of the main widget.</para></listitem>
+</varlistentry>
+</variablelist>
+
+</refsect1>
+
+<refsect1>
+<title>See Also</title>
+<para>qtoptions.7</para>
+
+</refsect1>
+
+<refsect1>
+<title>Authors</title>
+<para>Man page written by &Lauri.Watts; &Lauri.Watts.mail;</para>
+</refsect1>
+
+</refentry>

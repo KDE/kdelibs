@@ -1,0 +1,223 @@
+<?xml version="1.0" ?>
+<!DOCTYPE refentry PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.1//EN" "dtd/kdex.dtd" [
+<!ENTITY % English "INCLUDE">
+]>
+
+<refentry lang="&language;">
+<refentryinfo>
+<title>KDE User's Manual</title>
+<author>&Lauri.Watts; &Lauri.Watts.mail;</author>
+<date>2004-02-02</date>
+<productname>K Desktop Environment</productname>
+</refentryinfo>
+
+<refmeta>
+<refentrytitle>qtoptions</refentrytitle>
+<manvolnum>7</manvolnum>
+</refmeta>
+
+<refnamediv>
+<refname>Qt options</refname>
+<refpurpose>Common commandline options for all applications based on the Qt toolkit</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command><replaceable>Qt application</replaceable></command>
+<arg choice="opt">Qt Generic Options</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+
+<refsect1>
+<title>Options</title>
+
+<para>The following options apply to all &Qt; applications:</para>
+
+<variablelist> <!-- all this could be entitiesan entity -->
+<varlistentry>
+<term>
+<option>--display</option> <parameter>displayname</parameter>
+</term>
+<listitem>
+<para>Use the X-server display
+<parameter>displayname</parameter>.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--session</option> <parameter>sessionId</parameter>
+</term>
+<listitem>
+<para>Restore the application for the given
+<parameter>sessionId</parameter>.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--cmap</option>
+</term>
+<listitem>
+<para>Causes the application to install a private color map on an
+8-bit display.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--ncols</option> <parameter>count</parameter>
+</term>
+<listitem>
+<para>Limits the number of colors allocated in the color cube on an
+8-bit display, if the application is using the
+<methodname>QApplication::ManyColor</methodname> color
+specification.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--nograb</option>
+</term>
+<listitem>
+<para>Tells &Qt; to never grab the mouse or the keyboard.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--dograb</option>
+</term>
+<listitem>
+<para>Running under a debugger can cause an implicit
+<option>--nograb</option>, use <option>--dograb</option> to
+override.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--sync</option>
+</term>
+<listitem>
+<para>Switches to synchronous mode for debugging.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--fn</option>,<option>--font</option>
+<parameter>fontname</parameter>
+</term>
+<listitem>
+<para>Defines the application font.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--bg</option>,<option>--background</option>
+<parameter>color</parameter>
+</term>
+<listitem>
+<para>Sets the default background color and an application palette
+(light and dark shades are calculated).</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--fg</option>,<option>--foreground</option>
+<parameter>color</parameter>
+</term>
+<listitem>
+<para>Sets the default foreground color</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--btn</option>,<option>--button</option>
+<parameter>color</parameter>
+</term>
+<listitem>
+<para>Sets the default button color.</para>
+</listitem>
+</varlistentry>
+
+
+<varlistentry>
+<term>
+<option>--name</option> <parameter>name</parameter>
+</term>
+<listitem>
+<para>Sets the application name.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--title</option> <parameter>title</parameter>
+</term>
+<listitem>
+<para>Sets the application title (caption).</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--visual</option> <parameter>TrueColor</parameter>
+</term>
+<listitem>
+<para>Forces the application to use a <parameter>TrueColor</parameter>
+visual on an 8-bit display.</para>
+</listitem>
+</varlistentry>
+
+
+<varlistentry>
+<term>
+<option>--inputstyle</option> <parameter>inputstyle</parameter>
+</term>
+<listitem>
+<para>Sets XIM (X Input Method) input style.  Possible values are
+<parameter>onthespot</parameter>, <parameter>overthespot</parameter>,
+<parameter>offthespot</parameter> and
+<parameter>root</parameter>.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--im</option> <parameter>XIM server</parameter>
+</term>
+<listitem>
+<para>Set XIM server.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>
+<option>--noxim</option>
+</term>
+<listitem>
+<para>Disable XIM</para>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+
+<refsect1>
+<title>See Also</title>
+<para>kde-options.7</para>
+
+</refsect1>
+
+<refsect1>
+<title>Authors</title>
+<para>Man page written by &Lauri.Watts; &Lauri.Watts.mail;</para>
+</refsect1>
+
+</refentry>

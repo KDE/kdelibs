@@ -1,0 +1,161 @@
+<?xml version="1.0" ?>
+<!DOCTYPE refentry PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.1//EN" "dtd/kdex.dtd" [
+<!ENTITY kdeoptions SYSTEM "kdeoptions.docbook">
+<!ENTITY qtoptions SYSTEM "qtoptions.docbook">
+<!ENTITY % English "INCLUDE">
+]>
+
+<refentry lang="&language;">
+<refentryinfo>
+<author><personname><firstname>Chris</firstname><surname>Cheney</surname></personname>
+<email>ccheney@debian.org</email></author>
+<date>March 7, 2003</date>
+</refentryinfo>
+
+<refmeta>
+<refentrytitle><command>dcop</command></refentrytitle>
+<manvolnum>1</manvolnum>
+</refmeta>
+
+<refnamediv>
+<refname><command>dcop</command></refname>
+<refpurpose>Console &DCOP; client</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>dcop</command>
+<group><option>--pipe</option></group>
+<group><option>--user</option> <replaceable> user</replaceable></group>
+<group><option>--all-users</option></group>
+<group><option>--session</option> <replaceable> session</replaceable></group>
+<group><option>--all-sessions</option></group>
+<group><option>--list-sessions</option></group>
+<group><option>--no-user-time</option></group>
+<group>
+  <arg><replaceable>application</replaceable></arg>
+  <group>
+    <arg><replaceable>object</replaceable></arg>
+	<group>
+           <arg choice="opt"><replaceable>function</replaceable></arg> 
+<group><arg choice="opt" rep="repeat"><replaceable>arguments</replaceable></arg></group>
+</group>
+</group>
+</group>
+</cmdsynopsis>
+
+</refsynopsisdiv>
+
+<refsect1>
+<title>Description</title>
+<para>Console &DCOP; client</para>
+
+<para><!-- Write some stuff here --></para>
+
+</refsect1>
+
+<refsect1>
+<title>Options</title>
+
+<variablelist>
+<varlistentry>
+<term><option>--pipe</option></term>
+<listitem>
+<para>Call &DCOP; for each line read from stdin.</para>
+<para>This is roughly equivalent to calling <userinput>while read line
+; do dcop $line ; done</userinput> but because no new
+<command>dcop</command> instance has to be started for each line this
+is generally much faster, especially for the slower GNU dynamic
+linkers.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>--user</option> <replaceable>user</replaceable></term>
+<listitem>
+<para>Connect to the given user's &DCOP; server. This option will
+ignore the values of the environment vars $<envar>DCOPSERVER</envar>
+and  $<envar>ICEAUTHORITY</envar>, even if they are set.</para>
+<para>If the user has more than one open session, you must also use
+one of the <option>--list-sessions</option>,
+<option>--session</option> or <option>--all-sessions</option>
+command-line options.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>--all-users</option></term>
+<listitem>
+<para>Send the same &DCOP; call to all users with a running &DCOP;
+server.  Only failed calls to existing &DCOP; servers will generate an
+error message.  If no &DCOP; server is available at all, no error will
+be generated.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>--session</option>
+<replaceable>session</replaceable></term>
+<listitem><para>Send to the given &kde; session.  This option can only
+be used in combination with the <option>--user</option> option.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>--all-sessions</option></term>
+<listitem>
+<para>Send to all sessions found. Only works with the
+<option>--user</option> and <option>--all-users</option>
+options.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>--list-sessions</option></term>
+<listitem>
+<para>List all active &kde; sessions for a user or all users.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><option>--no-user-time</option></term>
+<listitem>
+<para>Don't update the user activity timestamp in the called application (for usage in scripts running in the background).</para>
+</listitem></varlistentry>
+</variablelist>
+</refsect1>
+
+<refsect1>
+<title>Environment</title>
+
+<variablelist>
+<varlistentry>
+<term><envar>DCOPSERVER</envar></term>
+<listitem>
+<para><!-- What does this tell dcop? --></para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><envar>ICEAUTHORITY</envar></term>
+<listitem><para><!-- What does this tell dcop? --></para>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect1>
+
+<!--
+<refsect1>
+<title>Examples</title>
+
+<para>Write some examples</para>
+
+</refsect1>
+-->
+<refsect1>
+<title>See Also</title>
+
+<para>dcopclient(1) dcopref(1) dcopfind(1) kdcop(1)</para>
+
+<para>Inside &kde;, you can enter <userinput>help:/kdcop</userinput>
+in &konqueror; to see the User Manual for
+<application>kdcop</application> graphical dcop tool.</para>
+
+<!--
+<para> Info on where to find proper dcop docs </para>
+-->
+</refsect1>
+</refentry>
