@@ -72,6 +72,11 @@ struct KSycocaPrivate {
     QStringList allResourceDirs;
 };
 
+int KSycoca::version()
+{
+   return KSYCOCA_VERSION;
+}
+
 // Read-only constructor
 KSycoca::KSycoca()
   : DCOPObject("ksycoca"), m_lstFactories(0), m_str(0), bNoDatabase(false),
