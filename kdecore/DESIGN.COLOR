@@ -29,10 +29,6 @@ setting. The KApplication class takes care that the configured
 settings are passed on to Qt. Application developers can just use the
 values provided by QColorGroup.
 
-[TODO: Unfortunately the naming of color use between Qt, Control
-Center and config file is not consistent and messed up. See the
-following paragraph which reflects the current state]
-
 There are three major color categories:
 
 General
@@ -47,8 +43,8 @@ Description...: General background color
 Example use...: Background of dialogs
 
 QColorGroup...: ColorRole::Foreground, foreground()
-KDE config key: windowForeground
-Control Center: i18n("Window text")
+KDE config key: foreground
+Control Center: i18n("Text")
 Description...: General foreground color
 Example use...: Text in dialogs
 
@@ -64,8 +60,8 @@ Description...: Background color for text areas.
 Example use...: Background in a word-processor.
 
 QColorGroup...: ColorRole::Text, text()
-KDE config key: N.A. defaults to windowForeground
-Control Center: N.A.
+KDE config key: windowForeground
+Control Center: i18n("Window text")
 Description...: Text color for text areas.
 Example use...: Text in a word-processor.
 
