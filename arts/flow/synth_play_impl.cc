@@ -62,6 +62,7 @@ protected:
 	bool restartIOHandling;	// I/O handlers removed upon reaching 4: restart
 
 	int audiofd;
+	bool audioOpen;
 
 	typedef unsigned char uchar;
 
@@ -82,6 +83,7 @@ public:
 		maxsamples = 0;
 		outblock = 0;
 		retryOpen = false;
+		audioOpen = false;
 		inProgress = false;
 
 		haveSubSys = as->attachProducer(this);
@@ -91,8 +93,8 @@ public:
 			return;
 		}
 
-		audiofd = as->open();
-		if(audiofd < 0)
+		audioOpen = as->open(audiofd);
+		if(!audioOpen)
 		{
 			if(Dispatcher::the()->flowSystem()->suspended())
 			{
@@ -111,9 +113,9 @@ public:
 	void notifyTime() {
 		assert(retryOpen);
 
-		audiofd = as->open();
+		audioOpen = as->open(audiofd);
 
-		if(audiofd >= 0)
+		if(audioOpen)
 		{
 			streamStart();
 			arts_info("/dev/dsp ok");

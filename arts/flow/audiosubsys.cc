@@ -245,22 +245,22 @@ bool AudioSubSystem::fullDuplex()
 
 bool AudioSubSystem::check()
 {
-	if(open() < 0)
-		return false;
+	int fd;
+	bool ok = open(fd);
 
-	close();
-	return true;
+	if(ok) close();
+	return ok;
 }
 
-int AudioSubSystem::open()
+bool AudioSubSystem::open(int& fd)
 {
 	assert(!_running);
 
 	if(!d->audioIO)
 	{
 		_error = "unable to select '" + d->audioIOName + "' style audio I/O";
-		audio_fd = -1;
-		return audio_fd;
+		fd = -1;
+		return false;
 	}
 
 	int encoding = 16;
@@ -277,14 +277,30 @@ int AudioSubSystem::open()
 		assert(fragment_buffer == 0);
 		fragment_buffer = new char[_fragmentSize];
 
-		audio_fd = d->audioIO->getParam(AudioIO::selectFD);
+		fd = d->audioIO->getParam(AudioIO::selectFD);
+		return true;
 	}
 	else
 	{
 		_error = d->audioIO->getParamStr(AudioIO::lastError);
-		audio_fd = -1;
+		fd = -1;
+		return false;
 	}
-	return audio_fd;
+}
+
+int AudioSubSystem::open()
+{
+	int fd = -1;
+
+	if(!open(fd)) return -1;
+
+	if(fd < 0) {
+		_error = "using obsolete AudioSubSystem::open() interface doesn't work "
+				 "with " + d->audioIOName + " driver";
+		close();
+		return -1;
+	}
+	return fd;
 }
 
 void AudioSubSystem::close()

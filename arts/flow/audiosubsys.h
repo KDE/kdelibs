@@ -147,7 +147,7 @@ public:
 
 	bool check();
 
-	int open();
+	int open();								/* obsolete: see bool open(); */
 	const char *error();
 
 	/*
@@ -159,7 +159,15 @@ public:
 	 * reading, ioWrite if fd is ready for writing, ioExcept if something
 	 * special happend or any combination of these using bitwise or.
 	 */
+
 	void handleIO(int type);
+
+	/*
+	 * the old open function didn't cover cases where the audio driver will
+	 * not be able to provide a file decriptor - it is left for compatibility
+	 * reasons, you should use the bool variant instead
+	 */
+	bool open(int& fd);
 
 	void read(void *buffer, int size);
 	void write(void *buffer, int size);
