@@ -1146,34 +1146,27 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     
     stopParser();
     
-    reference = "";
+    reference = 0;
     
     if ( _url != 0L )
     {
       actualURL = _url;
-      KURL u( actualURL );
-      reference = u.reference();
-      u.setReference( "" );
+      baseURL = _url;
+      reference = baseURL.reference();
+      baseURL.setReference( 0 );
+      baseURL.setSearchPart( 0 );
 
-      QString p = u.path();
-      if ( p.length() == 0 )
+      QString p = baseURL.httpPath();
+
+      if ( p.length() > 0 )
       {
-	QString base( u.url() );
-	base += "/";
-	baseURL = base;
+	int pos = p.findRev( '/' );
+	if ( pos >= 0 )
+	    p.truncate( pos );
       }
-      else if ( p.right(1) == "/" )
-      {
-	baseURL = u.url();
-      }
-      else
-      {
-	QString base( u.url() );
-	int pos = base.findRev( '/' );
-	if ( pos > 0 )
-		base.truncate( pos );
-	baseURL = base;
-      }
+      p += "/";
+      
+      baseURL.setPath( p );
     }
 
     baseTarget = "";
@@ -1489,7 +1482,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
     {
     	if (gotoAnchor())
     	{
-    	    reference = "";
+    	    reference = 0;
     	}
     }
 
@@ -2608,6 +2601,11 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 			if ( strncasecmp( token, "action=", 7 ) == 0 )
 			{
 				action = token + 7;
+				if ( action.find(':') == -1 )
+				{// relative URL
+				    KURL u2( baseURL, action );
+				    action = u2.url();
+				}
 			}
 			else if ( strncasecmp( token, "method=", 7 ) == 0 )
 			{
@@ -4358,7 +4356,7 @@ bool KHTMLWidget::gotoAnchor( const char *_name )
     
     if (gotoAnchor())
     {
-       reference = "";
+       reference = 0;
        return TRUE;
     }
     return FALSE;
