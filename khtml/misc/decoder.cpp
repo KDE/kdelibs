@@ -23,8 +23,8 @@
 // KDE HTML Widget -- decoder for input stream
 // $Id$
 
-#define DECODE_DEBUG
-//#undef DECODE_DEBUG
+//#define DECODE_DEBUG
+#undef DECODE_DEBUG
 
 #include "decoder.h"
 using namespace khtml;
