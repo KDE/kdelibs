@@ -32,6 +32,7 @@
 class KCompTreeNode;
 class KCompletionPrivate;
 class KCompletionBasePrivate;
+class KCompletionMatchesWrapper;
 class QPopupMenu;
 
 /**
@@ -236,7 +237,7 @@ public:
      * @see #completionMode
      * @see #KGlobalSettings::completionMode
      */
-    void setCompletionMode( KGlobalSettings::Completion mode );
+    virtual void setCompletionMode( KGlobalSettings::Completion mode );
 
     /**
      * @returns the current completion mode.
@@ -267,7 +268,7 @@ public:
      * Default is insertion order
      * @see #order
      */
-    void setOrder( CompOrder order ) { myOrder = order; }
+    virtual void setOrder( CompOrder order );
 
     /**
      * @returns the current completion order.
@@ -281,11 +282,7 @@ public:
      * Default is false (case sensitive).
      * @see #ignoreCase
      */
-    void setIgnoreCase( bool ignoreCase ) {
-        myIgnoreCase = ignoreCase;
-        myMatches.clear();
-        myRotationIndex = 0;
-    }
+    virtual void setIgnoreCase( bool ignoreCase );
 
     /**
      * @returns whether KCompletion acts case insensitively or not.
@@ -319,7 +316,7 @@ public:
      *
      * @see #isSoundsEnabled
      */
-    void setEnableSounds( bool enable ) { myBeep = enable; }
+    virtual void setEnableSounds( bool enable ) { myBeep = enable; }
 
     /**
      * Tells you whether KCompletion will play sounds on certain occasions.
@@ -397,7 +394,7 @@ public slots:
      *
      * @see #items
      */
-    void setItems( const QStringList& );
+    virtual void setItems( const QStringList& );
 
     /**
      * Adds an item to the list of available completions.
@@ -427,7 +424,7 @@ public slots:
     /**
      * Removes all inserted items.
      */
-    void clear();
+    virtual void clear();
 
 
 signals:
@@ -481,20 +478,22 @@ protected:
 private:
     void 		addWeightedItem( const QString& );
     QString 		findCompletion( const QString& string );
-    const QStringList& 	findAllCompletions( const QString& );
-    void                extractStringsFromNodeCI( const KCompTreeNode *,
-                                                  const QString& beginning,
-                                                  const QString& restString,
-                                                  QStringList *matches );
-    void 		extractStringsFromNode( const KCompTreeNode *,
-						const QString& beginning,
-						QStringList *matches,
-						bool addWeight = false ) const;
+    void        	findAllCompletions( const QString&,
+                                            KCompletionMatchesWrapper *matches,
+                                            bool& hasMultipleMatches ) const;
+
+    void extractStringsFromNode( const KCompTreeNode *,
+                                 const QString& beginning,
+                                 KCompletionMatchesWrapper *matches,
+                                 bool addWeight = false ) const;
+    void extractStringsFromNodeCI( const KCompTreeNode *,
+                                   const QString& beginning,
+                                   const QString& restString,
+                                   KCompletionMatchesWrapper *matches) const;
 
     enum 		BeepMode { NoMatch, PartialMatch, Rotation };
     void 		doBeep( BeepMode ) const;
 
-    QStringList         myMatches;
     KGlobalSettings::Completion myCompletionMode;
 
     CompOrder 		myOrder;
@@ -640,8 +639,8 @@ public:
      *
      * @return true if the completion object
      */
-    bool isCompletionObjectAutoDeleted() const { 
-        return m_delegate ? m_delegate->isCompletionObjectAutoDeleted() : m_bAutoDelCompObj; 
+    bool isCompletionObjectAutoDeleted() const {
+        return m_delegate ? m_delegate->isCompletionObjectAutoDeleted() : m_bAutoDelCompObj;
     }
 
     /**
@@ -680,11 +679,11 @@ public:
      *
      * @param enable if false, disables the emittion of completion & rotation signals.
      */
-    void setEnableSignals( bool enable ) { 
+    void setEnableSignals( bool enable ) {
         if ( m_delegate )
             m_delegate->setEnableSignals( enable );
         else
-            m_bEmitSignals = enable; 
+            m_bEmitSignals = enable;
     }
 
     /**
@@ -781,8 +780,8 @@ public:
      * @return the key-binding used for the feature given by @p item.
      * @see #setKeyBinding
      */
-    int getKeyBinding( KeyBindingType item ) const { 
-        return m_delegate ? m_delegate->getKeyBinding( item ) : m_keyMap[ item ]; 
+    int getKeyBinding( KeyBindingType item ) const {
+        return m_delegate ? m_delegate->getKeyBinding( item ) : m_keyMap[ item ];
     }
 
     /**
@@ -847,7 +846,7 @@ protected:
 
     void setDelegate( KCompletionBase *delegate );
     KCompletionBase *delegate() const { return m_delegate; }
-    
+
 private:
     // This method simply sets the autodelete boolean for
     // the completion object, the emit signals and handle

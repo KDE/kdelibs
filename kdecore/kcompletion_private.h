@@ -22,6 +22,7 @@
 #define KCOMPLETION_PRIVATE_H
 
 #include <qstring.h>
+#include <ksortablevaluelist.h>
 
 class KCompTreeNode;
 typedef QValueList<KCompTreeNode *> KCompTreeChildren;
@@ -103,5 +104,90 @@ private:
     KCompTreeChildren	myChildren;
 
 };
+
+
+// some more helper stuff
+typedef KSortableValueList<QString> KCompletionMatches;
+
+class KCompletionMatchesWrapper
+{
+public:
+    KCompletionMatchesWrapper( bool sort = false )
+        : sortedList( sort ? new KCompletionMatches : 0L ),
+          dirty( false )
+    {}
+    ~KCompletionMatchesWrapper() {
+        delete sortedList;
+    }
+
+    void setSorting( bool sort ) {
+        if ( sort && !sortedList )
+            sortedList = new KCompletionMatches;
+        else if ( !sort ) {
+            delete sortedList;
+            sortedList = 0L;
+        }
+        stringList.clear();
+        dirty = false;
+    }
+
+    bool sorting() const {
+        return sortedList != 0L;
+    }
+
+    void append( int i, const QString string ) {
+        if ( sortedList )
+            sortedList->insert( i, string );
+        else
+            stringList.append( string );
+        dirty = true;
+    }
+
+    void clear() {
+        if ( sortedList )
+            sortedList->clear();
+        stringList.clear();
+        dirty = false;
+    }
+
+    uint count() const {
+        if ( sortedList )
+            return sortedList->count();
+        return stringList.count();
+    }
+
+    bool isEmpty() const {
+        return count() == 0;
+    }
+
+    QString first() const {
+        return list().first();
+    }
+
+    QString last() const {
+        return list().last();
+    }
+
+    QStringList list() const {
+        if ( sortedList && dirty ) {
+            sortedList->sort();
+            dirty = false;
+
+            stringList.clear();
+
+            // high weight == sorted last -> reverse the sorting here
+            QValueListConstIterator<KSortableItem<QString> > it;
+            for ( it = sortedList->begin(); it != sortedList->end(); ++it )
+                stringList.prepend( (*it).value() );
+        }
+
+        return stringList;
+    }
+
+    mutable QStringList stringList;
+    KCompletionMatches *sortedList;
+    mutable bool dirty;
+};
+
 
 #endif // KCOMPLETION_PRIVATE_H
