@@ -131,7 +131,11 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
  _parentP12->setExpandable(true);
  _sideList->setOpen(_parentP12, true);
 
- _baseGrid->addMultiCellWidget(_sideList, 0, 14, 0, 1);
+ _baseGrid->addMultiCellWidget(_sideList, 0, 13, 0, 1);
+
+ _importAll = new QPushButton(i18n("Import &All"), _frame);
+ _baseGrid->addMultiCellWidget(_importAll, 14, 14, 0, 1);
+ connect(_importAll, SIGNAL(clicked()), SLOT(slotImportAll()));
 
 
 
@@ -397,9 +401,10 @@ bool KCertPart::openFile() {
 #else
 
 
-  QString whatType; // = d->browserExtension->urlArgs().serviceType;
+  QString whatType = d->browserExtension->urlArgs().serviceType;
                     //whatType = KMimeType::findByURL(m_url,0,true)->name();
-  whatType = KServiceTypeFactory::self()->findFromPattern(m_file)->name();
+  if (whatType == "" || whatType == QString::null)
+     whatType = KServiceTypeFactory::self()->findFromPattern(m_file)->name();
 
   /*
   QString blah = "file: " + m_file
@@ -409,6 +414,7 @@ bool KCertPart::openFile() {
 	       + "\nmimeType: " + KMimeType::findByURL(m_url)->name();
   KMessageBox::information(_frame, blah, "ssl");
   */
+  
 
   emit completed();
 
@@ -441,18 +447,23 @@ QCString pass;
 /////////////////////////////////////////////////////////////////////////////
 //       x-509-ca-cert loading
 /////////////////////////////////////////////////////////////////////////////
-} else if (whatType == "application/x-x509-ca-cert") {
+} else if (whatType == "application/x-x509-ca-cert" ||
+	   whatType == "application/binary-certificate") {
  FILE *fp; 
+ bool isPEM = false;
  
- // Check if it is PEM or not
- QFile qf(m_file);
- qf.open(IO_ReadOnly);
- QByteArray theFile = qf.readAll();
- qf.close();
+ /////////////  UGLY HACK TO GET AROUND OPENSSL PROBLEMS ///////////
+ if (whatType == "application/x-x509-ca-cert") {
+    // Check if it is PEM or not
+    QFile qf(m_file);
+    qf.open(IO_ReadOnly);
+    QByteArray theFile = qf.readAll();
+    qf.close();
 
- const char *signature = "-----BEGIN CERTIFICATE-----";
- theFile[qf.size()-1] = 0;
- bool isPEM = (QCString(theFile.data()).find(signature) >= 0);
+    const char *signature = "-----BEGIN CERTIFICATE-----";
+    theFile[qf.size()-1] = 0;
+    isPEM = (QCString(theFile.data()).find(signature) >= 0);
+ }
 
  fp = fopen(m_file.local8Bit(), "r");
  if (!fp) {
@@ -460,9 +471,11 @@ QCString pass;
     return false;
  }
 
+ /*
  kdDebug() << "Reading in a file in "
 	   << (isPEM ? "PEM" : "DER")
 	   << " format." << endl;
+ */
 
  if (!isPEM) {
     X509 *dx = KOSSL::self()->X509_d2i_fp(fp, NULL);
@@ -662,10 +675,18 @@ if (_p12) {
   cfg.sync();
   KMessageBox::information(_frame, i18n("Certificate has been successfully imported into KDE.\nYou can manage your certificate settings from the KDE Control Center."), i18n("Certificate Import"));
 } else if (_ca) {
+  KConfig cfg("ksslcalist", true, false);
+  if (cfg.hasGroup(_ca->getSubject())) {
+     int rc = KMessageBox::warningYesNo(_frame, i18n("A certificate with that name already exists.  Are you sure that you wish to replace it?"), i18n("Certificate Import"));
+     if (rc == KMessageBox::No) {
+        return;
+     }
+  } 
   _signers->addCA(_ca->toString(),
 		  _ca->x509V3Extensions().certTypeSSLCA(),
 		  _ca->x509V3Extensions().certTypeEmailCA(),
 		  _ca->x509V3Extensions().certTypeCodeCA());
+  KMessageBox::information(_frame, i18n("Certificate has been successfully imported into KDE.\nYou can manage your certificate settings from the KDE Control Center."), i18n("Certificate Import"));
 }
 }
 
@@ -696,16 +717,16 @@ void KCertPart::slotSelectionChanged(QListViewItem *x) {
         _pkcsFrame->hide();
 	_x509Frame->show();
 	_ca = dynamic_cast<KX509Item*>(x)->cert;
-	_import->setEnabled(isReadWrite());
-	_save->setEnabled(isReadWrite());
+	_import->setEnabled(true);
+	_save->setEnabled(true);
 	displayCACert(_ca);
   } else if (x && x->parent() == _parentP12) {
         _blankFrame->hide();
         _x509Frame->hide();
 	_pkcsFrame->show();
 	_p12 = dynamic_cast<KPKCS12Item*>(x)->cert;
-	_import->setEnabled(isReadWrite());
-	_save->setEnabled(isReadWrite());
+	_import->setEnabled(true);
+	_save->setEnabled(true);
 	displayPKCS12();
   } else {
         _pkcsFrame->hide();
@@ -714,6 +735,11 @@ void KCertPart::slotSelectionChanged(QListViewItem *x) {
         _import->setEnabled(false);
         _save->setEnabled(false);
   }
+}
+
+
+void KCertPart::slotImportAll() {
+
 }
 
 

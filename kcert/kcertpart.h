@@ -79,6 +79,7 @@ protected slots:
   void slotDone();
   void slotLaunch();
   void slotSelectionChanged(QListViewItem *x);
+  void slotImportAll();
 
 protected:
 
@@ -110,7 +111,7 @@ protected:
 
   // The rest
   KInstance *_instance;
-  QButton *_import, *_save, *_done, *_launch;
+  QButton *_import, *_save, *_done, *_launch, *_importAll;
   // Store the pointer to the current item
   KSSLPKCS12 *_p12;
   KSSLCertificate *_ca;
