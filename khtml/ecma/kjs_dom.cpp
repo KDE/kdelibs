@@ -184,8 +184,9 @@ KJSO DOMNodeList::tryGet(const UString &p) const
     result = Undefined();
 
   // array index ?
-  long unsigned int idx;
-  if (sscanf(p.cstring().c_str(), "%lu", &idx) == 1)
+  bool ok;
+  long unsigned int idx = p.toULong(&ok);
+  if (ok)
     result = getDOMNode(list.item(idx));
 
   return result;
@@ -538,8 +539,9 @@ KJSO DOMNamedNodeMap::tryGet(const UString &p) const
     result = Undefined();
 
   // array index ?
-  long unsigned int idx;
-  if (sscanf(p.cstring().c_str(), "%lu", &idx) == 1)
+  bool ok;
+  long unsigned int idx = p.toULong();
+  if (ok)
     result = getDOMNode(map.item(idx));
 
   return result;
