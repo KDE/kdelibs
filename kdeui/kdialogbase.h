@@ -1368,7 +1368,8 @@ class KDialogBase : public KDialog
     void updateGeometry();
 
     /**
-     * Deletes the dialog.
+     * Deletes the dialog immediately. If you want to delete the dialog
+     * delayed use delayedDestruct() or QObject::deleteLater().
      */
     void slotDelayedDestruct();
 
