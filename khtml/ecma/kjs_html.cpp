@@ -167,7 +167,7 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
     return getDOMNode(doc.body());
   else if (p == "location")
 #ifdef __GNUC__
-    #warning "HACK HACK HACK HACK" // ###
+      //    #warning "HACK HACK HACK HACK" // ###
 #endif
     return new Location( static_cast<DOM::DocumentImpl *>( doc.handle() )->view()->part() );
   else if (p == "images")
