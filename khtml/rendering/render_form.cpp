@@ -421,7 +421,7 @@ QString RenderPushButton::defaultLabel() {
 
 bool LineEditWidget::event( QEvent *e )
 {
-        if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
+    if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
         QKeyEvent* ke = (QKeyEvent*) e;
         if ( ke->state() & ControlButton ) {
             switch ( ke->key() ) {
@@ -464,6 +464,13 @@ void LineEditWidget::keyReleaseEvent(QKeyEvent* e)
     emit onKeyUp();
 }
 
+void LineEditWidget::create( WId id, bool initializeWindow, 
+                             bool destroyOldWindow )
+{
+    KLineEdit::create( id, initializeWindow, destroyOldWindow );
+    setMouseTracking( true ); // we need that for cursor-autohiding
+}
+
 // -----------------------------------------------------------------------------
 
 RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
@@ -494,7 +501,7 @@ void RenderLineEdit::slotReturnPressed()
     KCompletionBox *box = (static_cast<KLineEdit*>(m_widget))->completionBox(false);
     if ( box && box->isVisible() )
 	return;
-    
+
     if (m_element->form())
         m_element->form()->prepareSubmit();
 }
@@ -1149,6 +1156,12 @@ bool TextAreaWidget::event( QEvent *e )
     return QMultiLineEdit::event( e );
 }
 
+void TextAreaWidget::create( WId id, bool initializeWindow, 
+                             bool destroyOldWindow )
+{
+    QMultiLineEdit::create( id, initializeWindow, destroyOldWindow );
+    setMouseTracking( true ); // we need that for cursor-autohiding
+}
 
 // -------------------------------------------------------------------------
 
