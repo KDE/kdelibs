@@ -185,7 +185,7 @@ namespace KJS {
 
   private:
     ComplType comp;
-    Value val;
+    ValueImp * val;
     UString tar;
   };
 

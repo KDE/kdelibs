@@ -202,24 +202,24 @@ NumberImp::NumberImp(double v)
 {
 }
 
-Value NumberImp::toPrimitive(ExecState */*exec*/, Type) const
+Value NumberImp::toPrimitive(ExecState *, Type) const
 {
   return (ValueImp*)this;
 }
 
-Boolean NumberImp::toBoolean(ExecState */*exec*/) const
+Boolean NumberImp::toBoolean(ExecState *) const
 {
   bool b = !((val == 0) /* || (iVal() == N0) */ || isNaN(val));
 
   return Boolean(b);
 }
 
-Number NumberImp::toNumber(ExecState */*exec*/) const
+Number NumberImp::toNumber(ExecState *) const
 {
   return Number(val);
 }
 
-String NumberImp::toString(ExecState */*exec*/) const
+String NumberImp::toString(ExecState *) const
 {
   return String(UString::from(val));
 }
@@ -360,7 +360,7 @@ void LabelStack::clear()
 // ------------------------------ CompletionImp --------------------------------
 
 CompletionImp::CompletionImp(ComplType c, const Value& v, const UString& t)
-  : comp(c), val(v), tar(t)
+  : comp(c), val(v.imp()), tar(t)
 {
 }
 
@@ -372,9 +372,8 @@ void CompletionImp::mark()
 {
   ValueImp::mark();
 
-  ValueImp *v = val.imp();
-  if (v && !v->marked())
-    v->mark();
+  if (val && !val->marked())
+    val->mark();
 }
 
 Value CompletionImp::toPrimitive(ExecState */*exec*/, Type /*preferredType*/) const

@@ -210,7 +210,6 @@ bool Collector::collect()
       // Can delete if refcount==0, created==true, gcAllowed==true, and marked==false
       // Make sure to update the test if you add more bits to _flags.
       if (imp &&
-          //imp->type() != ListType && // ### temp - don't GC lists
           !imp->refcount && imp->_flags == (ValueImp::VI_GCALLOWED | ValueImp::VI_CREATED)) {
         // emulate destructing part of 'operator delete()'
         //fprintf( stderr, "Collector::deleting ValueImp %p (%s)\n", (void*)imp, typeid(*imp).name());
@@ -245,6 +244,13 @@ bool Collector::collect()
     }
     block = next;
   }
+#if 0
+  // This is useful to track down memory leaks
+  static int s_count = 0;
+  fprintf(stderr, "Collector done (was run %d)\n",s_count);
+  if (s_count++ % 50 == 2)
+    finalCheck();
+#endif
   return deleted;
 }
 
