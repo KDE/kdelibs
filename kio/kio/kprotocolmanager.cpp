@@ -81,7 +81,7 @@ void KProtocolManager::reparseConfiguration()
 {
   delete d;
   d = 0;
-  
+
   // Force the slave config to re-read its config...
   KIO::SlaveConfig::self()->reset ();
 }
@@ -326,7 +326,10 @@ static bool revmatch(const char *host, const char *nplist)
 
 QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
 {
-  if (d && d->url == url)
+  if (!d)
+    d = new KProtocolManagerPrivate;
+
+  if (d->url == url)
   {
      proxy = d->proxy;
      return d->protocol;
@@ -376,6 +379,7 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
         }
      }
   }
+
   d->url = url;
   d->proxy = proxy = QString::null;
   d->protocol = url.protocol();
