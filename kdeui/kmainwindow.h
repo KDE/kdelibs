@@ -536,6 +536,11 @@ protected:
     void savePropertiesInternal( KConfig*, int );
     bool readPropertiesInternal( KConfig*, int );
 
+    /**
+     * For inherited classes
+     */
+    bool settingsDirty() const;
+
 protected slots:
 
    /**
