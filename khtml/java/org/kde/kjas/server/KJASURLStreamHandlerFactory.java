@@ -350,7 +350,8 @@ final class KIOHttpConnection extends KIOConnection
         super(u);
     }
     protected boolean haveError() {
-        return responseCode != 404 && (responseCode < 0 || responseCode >= 400);
+        return super.haveError() ||
+            responseCode != 404 && (responseCode < 0 || responseCode >= 400);
     }
     protected synchronized boolean setData(int code, byte [] d) {
         switch (code) {
