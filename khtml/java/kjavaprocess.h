@@ -16,7 +16,6 @@ class KJavaProcessPrivate;
  * JVMs, and in future will also ensure that QtAWT is used instead of the system
  * default toolkit.
  *
- * @version $Id$
  * @author Richard J. Moore, rich@kde.org
  */
 class KJavaProcess : public QObject
@@ -124,34 +123,3 @@ private:
 };
 
 #endif // KJAVAPROCESS_H
-
-/**
- * $Log$
- * Revision 1.7  2000/11/15 19:52:46  wynnw
- * This update:
- *  * modifies the KJAS protocol- documented in KJAS_GRAMMAR.txt
- *  * adds the option to start the default security manager
- *     this allows the KJAS code to run with all permissions,
- *     but restricts applets
- *
- * Revision 1.6  2000/06/06 22:53:36  gehrmab
- * Beauty and wellness for the API documentation
- *
- * Revision 1.5  2000/06/03 19:38:45  coolo
- * ok, I'm giving up. If someone has tons of time, he should fix all the code
- * that is using Qapp::style()
- *
- * Revision 1.4  1999/12/14 19:56:59  rich
- * Many fixes, see changelog
- *
- * Revision 1.3  1999/11/12 01:22:34  rich
- * Now trys adding a / to the code base if the class loader could not find the applet class file. Fixed applet start/stop
- *
- * Revision 1.2  1999/10/09 18:10:53  rich
- * Const QString fixes
- *
- * Revision 1.1.1.1  1999/07/22 17:28:07  rich
- * This is a current snapshot of my work on adding Java support
- * to KDE. Applets now work!
- *
- */

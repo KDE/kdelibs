@@ -61,27 +61,3 @@ private:
 };
 
 #endif // KJAVAAPPLETCONTEXT_H
-
-/**
- *
- * $Log$
- * Revision 1.5  2000/09/27 11:46:32  sschiman
- * * I've added implementations for the showDocument and showStatus calls to kjas
- * for java applets that want to change the location of a frame. This should fix
- * java menus. (okayed by Lars and mhk)
- *
- * Revision 1.4  2000/06/06 22:53:36  gehrmab
- * Beauty and wellness for the API documentation
- *
- * Revision 1.3  2000/03/21 03:44:43  rogozin
- *
- * New Java support has been merged.
- *
- * Revision 1.2  1999/12/14 19:56:59  rich
- * Many fixes, see changelog
- *
- * Revision 1.1.1.1  1999/07/22 17:28:07  rich
- * This is a current snapshot of my work on adding Java support
- * to KDE. Applets now work!
- *
- */
