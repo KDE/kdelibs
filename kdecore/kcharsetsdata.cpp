@@ -658,7 +658,7 @@ const KCharsetEntry * KCharsetsData::charsetEntry(int index){
     if ( i==index ) return charsets+i;
     
   QDictIterator<KCharsetEntry> it(i18nCharsets);
-  KCharsetEntry *e;
+  KCharsetEntry *e = 0L;
   while( (e=it.current()) ){
     if (i==index) return e;
     ++i;
