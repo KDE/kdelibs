@@ -647,3 +647,9 @@ unsigned int RenderText::width( int from, int len) const
     return w;
 }
 
+void RenderText::repaint()
+{
+    RenderObject *cb = containingBlock();
+    if(cb != this)
+        cb->repaint();
+}

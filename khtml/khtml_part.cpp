@@ -2454,7 +2454,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
                 next = n.nextSibling();
             }
             n = next;
-            //viewport()->repaint(false);
+            //d->m_view->viewport()->repaint(false);
         }
 
         if ( !d->m_selectionStart.isNull() && !d->m_selectionEnd.isNull() )

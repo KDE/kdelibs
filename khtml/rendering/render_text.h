@@ -41,18 +41,18 @@ class TextSlave
 {
 public:
     TextSlave(int _x, int _y, QChar *text, int _len,
-	      int height, int baseline, int width, bool _deleteText = false)
-	{
-	    x = _x;
-	    y = _y;
-	    m_text = text;
-	    len = _len;
-	    n = 0;
-	    m_height = height;
-	    m_baseline = baseline;
-	    m_width = width;
-	    deleteText = _deleteText;
-	}
+              int height, int baseline, int width, bool _deleteText = false)
+        {
+            x = _x;
+            y = _y;
+            m_text = text;
+            len = _len;
+            n = 0;
+            m_height = height;
+            m_baseline = baseline;
+            m_width = width;
+            deleteText = _deleteText;
+        }
     ~TextSlave() { if(deleteText) delete [] m_text; }
 
     void print( QPainter *p, int _tx, int _ty);
@@ -98,9 +98,9 @@ public:
     virtual bool isRendered() const { return true; }
 
     virtual void print( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
+                        int tx, int ty);
     virtual void printObject( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
+                        int tx, int ty);
 
     void deleteSlaves();
 
@@ -146,8 +146,9 @@ public:
     virtual void absolutePosition(int &/*xPos*/, int &/*yPos*/);
 
     virtual short marginLeft() const { return m_style->marginLeft().minWidth(0); }
-    virtual short marginRight() const { return m_style->marginRight().minWidth(0); }    
+    virtual short marginRight() const { return m_style->marginRight().minWidth(0); }
 
+    virtual void repaint();
 protected:
     short m_minWidth;
     short m_maxWidth;
