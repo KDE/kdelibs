@@ -41,7 +41,7 @@ class DOMStringImpl;
 class DOMString
 {
     friend class CharacterDataImpl;
-    friend bool DOM::operator==( const DOMString &a, const char *b );
+    friend bool operator==( const DOMString &a, const char *b );
 public:
     /** default constructor. Gives an empty DOMString */
     DOMString();
