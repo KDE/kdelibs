@@ -20,6 +20,7 @@
 #include "kfilterbase.h"
 #include <kdebug.h>
 #include <stdio.h> // for EOF
+#include <stdlib.h>
 #include <assert.h>
 
 class KFilterDev::KFilterDevPrivate
@@ -87,6 +88,7 @@ uint KFilterDev::size() const
     // But readAll, which is not virtual, needs the size.........
 
     kdWarning() << "KFilterDev::size - can't be implemented !!!!!!!! Returning -1 " << endl;
+    //abort();
     return (uint)-1;
 }
 
@@ -165,7 +167,10 @@ int KFilterDev::readBlock( char *data, uint maxlen )
             d->bNeedHeader = false;
         }
 
-        d->result = filter->uncompress();
+        if ( filter->inBufferEmpty() )
+            d->result = KFilterBase::END;
+        else
+            d->result = filter->uncompress();
 
         if (d->result == KFilterBase::ERROR)
         {
