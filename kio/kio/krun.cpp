@@ -55,6 +55,12 @@
 #include <qwidget.h>
 #include <qguardedptr.h>
 
+#ifdef Q_WS_X11
+#include <X11/Xlib.h>
+#include <fixx11h.h>
+extern Time qt_x_user_time;
+#endif
+
 class KRun::KRunPrivate
 {
 public:
@@ -523,6 +529,9 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
       data.setName( execName.isEmpty() ? service->name() : execName );
       data.setDescription( i18n( "Launching %1" ).arg( data.name()));
       data.setIcon( iconName.isEmpty() ? service->icon() : iconName );
+#ifdef Q_WS_X11
+      data.setTimestamp( qt_x_user_time );
+#endif
       if( !wmclass.isEmpty())
           data.setWMClass( wmclass );
       data.setDesktop( KWin::currentDesktop());

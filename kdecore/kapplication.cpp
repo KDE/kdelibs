@@ -482,6 +482,8 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     if( event->type() == QEvent::Show && receiver->isWidgetType())
     {
 	QWidget* w = static_cast< QWidget* >( receiver );
+        if( w->isTopLevel() && !startupId().isEmpty()) // TODO better done using window group leader?
+            KStartupInfo::setWindowStartupId( w->winId(), startupId());
 	if( w->isTopLevel() && qt_x_user_time != CurrentTime ) // CurrentTime means no input event yet
             XChangeProperty( qt_xdisplay(), w->winId(), kde_net_wm_user_time, XA_CARDINAL,
                 32, PropModeReplace, (unsigned char*)&qt_x_user_time, 1 );
