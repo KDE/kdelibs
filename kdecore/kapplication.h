@@ -954,7 +954,13 @@ public:
    * @since 3.1
    */
   static QPalette createApplicationPalette();
-	  
+
+  /**
+   * @internal
+   * Raw access for use by KDM.
+   */
+  static QPalette createApplicationPalette( KConfig *config, int contrast );
+
 signals:
   /**
    * Emitted when KApplication has changed its palette due to a KControl request.

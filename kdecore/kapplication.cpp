@@ -1590,14 +1590,15 @@ QString KApplication::makeStdCaption( const QString &userCaption,
   return s;
 }
 
-
 QPalette KApplication::createApplicationPalette()
 {
-    int contrast_ = KGlobalSettings::contrast();
-
-    KConfigBase* config = KGlobal::config();
+    KConfig *config = KGlobal::config();
     KConfigGroupSaver saver( config, "General" );
+    return createApplicationPalette( config, KGlobalSettings::contrast() );
+}
 
+QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ )
+{
     QColor kde2Gray(220, 220, 220);
     QColor kde2Blue;
     if (QPixmap::defaultDepth() > 8)
