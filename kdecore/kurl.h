@@ -210,6 +210,15 @@ public:
    * Calls @ref QDir::cleanDirPath but saves the trailing slash if any.
    */
   void cleanPath();
+   
+  /**
+   * Same as above except it takes a flag that allows you
+   * to ignore the clean up of the multiple directory separators.
+   * 
+   * Some servers seem not to like the removal of extra '/' 
+   * eventhough it is against the specification in RFC 2396.
+   */   
+  void cleanPath(bool cleanDirSeparator);
 
   /**
    * This is useful for HTTP. It looks first for '?' and decodes then.

@@ -46,8 +46,7 @@ static QTextCodec * codecForHint( int encoding_hint /* not 0 ! */ )
     return ok ? textCodec : 0L;
 }
 
-static
-QString encode( const QString& segment, bool encode_slash, int encoding_hint )
+static QString encode( const QString& segment, bool encode_slash, int encoding_hint )
 {
   char encode_extra = encode_slash ? '/' : 0;
   QCString local;
@@ -167,7 +166,6 @@ static QString lazy_encode( const QString& segment )
   return result;
 }
 
-
 static QString decode( const QString& segment, bool *keepEncoded=0, int encoding_hint=0 )
 {
   bool isUnicode = false; // This detects utf-16, not utf-8
@@ -247,6 +245,56 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
      *keepEncoded = bKeepEncoded;
   delete [] new_segment;
   delete [] new_usegment;
+  return result;
+}
+
+static QString cleanpath(const QString &path, bool cleanDirSeparator=true)
+{
+  if (path.isEmpty()) return QString::null;
+  // Did we have a trailing '/'
+  int len = path.length();
+  bool slash = false;
+  if ( len > 0 && path.right(1)[0] == '/' )
+    slash = true;
+
+  // The following code cleans up directory path much like
+  // QDir::cleanDirPath() except it can be made to ignore multiple
+  // directory separators by setting the flag to false.  That fixes
+  // bug# 15044, mail.altavista.com and other similar brain-dead server
+  // implementations that do not follow what has been specified in
+  // RFC 2396!! (dA)
+  QString result;
+  int cdUp, orig_pos, pos;
+  
+  cdUp = 0;
+  pos = orig_pos = len;
+  while ( pos && (pos = path.findRev('/',--pos)) != -1 )
+  {
+    len = orig_pos - pos - 1;
+    if ( len == 2 && path[pos+1] == '.' && path[pos+2] == '.' )
+      cdUp++;
+    else
+    {
+      // Ignore any occurances of '.' This includes entries
+      // that simply do not make sense like /..../
+      if ( (len!=0 || !cleanDirSeparator) && (len != 1 || path[pos+1] != '.') )
+      {	    
+        if ( !cdUp )
+          result = path.mid(pos, len+1) + result;
+        else
+          cdUp--;
+      }
+    }
+    orig_pos = pos;
+  }
+    
+  if ( result.isEmpty() )
+    result = "/";
+  
+  // Restore the trailing '/'
+  len = result.length();
+  if ( len > 0 && result.right(1)[0] != '/' && slash )
+    result += "/";
   return result;
 }
 
@@ -441,7 +489,7 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
     }
     KURL tmp( url() + rUrl, encoding_hint);
     *this = tmp;
-    cleanPath();
+    cleanPath(false);
   }
   else
   {
@@ -837,10 +885,10 @@ bool KURL::isParentOf( const KURL& _u ) const
     if ( path().isEmpty() || _u.path().isEmpty() )
         return false; // can't work with implicit paths
 
-    QString p1( QDir::cleanDirPath( path() ) );
+    QString p1( cleanpath( path() ) );
     if ( p1[p1.length()-1] != '/' )
         p1 += '/';
-    QString p2( QDir::cleanDirPath( _u.path() ) );
+    QString p2( cleanpath( _u.path() ) );
     if ( p2[p2.length()-1] != '/' )
         p2 += '/';
 
@@ -885,29 +933,16 @@ void KURL::setFileName( const QString& _txt )
   cleanPath();
 }
 
-static QString cleanpath(const QString &path)
+void KURL::cleanPath()
 {
-  if (path.isEmpty()) return QString::null;
-  // Did we have a trailing '/'
-  int len = path.length();
-  bool slash = false;
-  if ( len > 0 && path.right(1)[0] == '/' )
-    slash = true;
-
-  QString result = QDir::cleanDirPath( path );
-
-  // Restore the trailing '/'
-  len = result.length();
-  if ( len > 0 && result.right(1)[0] != '/' && slash )
-    result += "/";
-  return result;
+   cleanPath( true );
 }
 
-void KURL::cleanPath() // taken from the old KURL
+void KURL::cleanPath( bool cleanDirSeparator ) // taken from the old KURL
 {
-  m_strPath = cleanpath(m_strPath);
+  m_strPath = cleanpath(m_strPath, cleanDirSeparator);
   // WABA: Is this safe when "/../" is encoded with %?
-  m_strPath_encoded = cleanpath(m_strPath_encoded);
+  m_strPath_encoded = cleanpath(m_strPath_encoded, cleanDirSeparator);
 }
 
 static QString trailingSlash( int _trailing, const QString &path )
@@ -1291,7 +1326,7 @@ bool KURL::cd( const QString& _dir )
   // append '/' if necessary
   QString p = path(1);
   p += _dir;
-  p = QDir::cleanDirPath( p );
+  p = cleanpath( p );
   setPath( p );
 
   setHTMLRef( QString::null );
