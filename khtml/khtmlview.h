@@ -194,7 +194,6 @@ protected:
     void keyReleaseEvent ( QKeyEvent *_ke );
     void contentsContextMenuEvent ( QContextMenuEvent *_ce );
     void doAutoScroll();
-
     void timerEvent ( QTimerEvent * );
 
 protected slots:
@@ -206,7 +205,8 @@ private slots:
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     void findTimeout();
 #endif // KHTML_NO_TYPE_AHEAD_FIND
-
+    void accessKeysTimeout();
+    
 private:
 
     void scheduleRelayout(khtml::RenderObject* clippedObj=0);

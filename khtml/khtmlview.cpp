@@ -99,6 +99,7 @@ using namespace DOM;
 using namespace khtml;
 class KHTMLToolTip;
 
+
 #ifndef QT_NO_TOOLTIP
 
 class KHTMLToolTip : public QToolTip
@@ -109,7 +110,7 @@ public:
         m_view = view;
         m_viewprivate = vp;
     };
-
+    
 protected:
     virtual void maybeTip(const QPoint &);
 
@@ -216,6 +217,8 @@ public:
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
         typeAheadActivated = false;
 #endif // KHTML_NO_TYPE_AHEAD_FIND
+	accessKeysActivated = false;
+	accessKeysPreActivate = false;
     }
     void newScrollTimer(QWidget *view, int tid)
     {
@@ -328,6 +331,9 @@ public:
     bool findLinksOnly;
     bool typeAheadActivated;
 #endif // KHTML_NO_TYPE_AHEAD_FIND
+    bool accessKeysActivated;
+    bool accessKeysPreActivate;
+    QTimer accessKeysTimer;
 };
 
 #ifndef QT_NO_TOOLTIP
@@ -381,6 +387,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 #ifndef KHTML_NO_TYPE_AHEAD_FIND
     connect(&d->timer, SIGNAL(timeout()), this, SLOT(findTimeout()));
 #endif // KHTML_NO_TYPE_AHEAD_FIND
+    connect(&d->accessKeysTimer, SIGNAL(timeout()), this, SLOT(accessKeysTimeout()));
 
     init();
 
@@ -1055,6 +1062,10 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     }
 #endif // KHTML_NO_CARET
 
+    // If CTRL was hit, be prepared for access keys
+    if (_ke->key() == Key_Control)
+	    d->accessKeysPreActivate=true;
+
     // accesskey handling needs to be done before dispatching, otherwise e.g. lineedits
     // may eat the event
     if( handleAccessKey( _ke )) {
@@ -1137,7 +1148,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 		return;
 	}
 #endif // KHTML_NO_TYPE_AHEAD_FIND
-
+	
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
     if (_ke->state() & Qt::ShiftButton)
       switch(_ke->key())
@@ -1349,6 +1360,21 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
         _ke->accept();
         return;
     }
+    
+    if (d->accessKeysPreActivate && _ke->key() != Key_Control) d->accessKeysPreActivate=false;
+    if (_ke->key() == Key_Control &&  d->accessKeysPreActivate && _ke->state() == Qt::ControlButton)
+	{
+	    QString accessMsg=i18n("Access Keys activated");    
+	    #if 0 // added i18n string in case the feature makes it in KDE 3.3
+	    accessMsg+=i18n(" -- press Ctrl to display all available access keys");
+	    #endif
+	    m_part->setStatusBarText(accessMsg,KHTMLPart::BarHoverText);
+	    d->accessKeysActivated = true;
+	    d->accessKeysPreActivate = false;
+	    d->accessKeysTimer.start(5000, true);
+	}
+	else if (d->accessKeysActivated) accessKeysTimeout();
+	
     QScrollView::keyReleaseEvent(_ke);
 }
 
@@ -1442,6 +1468,7 @@ class HackWidget : public QWidget
 bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 {
     if ( e->type() == QEvent::AccelOverride ) {
+    d->accessKeysPreActivate=false;
 	QKeyEvent* ke = (QKeyEvent*) e;
 //kdDebug(6200) << "QEvent::AccelOverride" << endl;
 	if (m_part->isEditable() || m_part->isCaretMode()
@@ -1802,12 +1829,20 @@ bool KHTMLView::focusNextPrevNode(bool next)
     }
 }
 
+
+void KHTMLView::accessKeysTimeout()
+{
+d->accessKeysActivated=false;
+d->accessKeysPreActivate = false;
+m_part->setStatusBarText(QString::null, KHTMLPart::BarHoverText);
+emit hideAccessKeys();
+}
+
 // Handling of the HTML accesskey attribute.
 bool KHTMLView::handleAccessKey( const QKeyEvent* ev )
 {
-    const int mods = Qt::AltButton | Qt::ControlButton;
-    if( ( ev->state() & mods ) != mods )
-        return false;
+if (!d->accessKeysActivated) return false;
+
 // Qt interprets the keyevent also with the modifiers, and ev->text() matches that,
 // but this code must act as if the modifiers weren't pressed
     QChar c;
@@ -1823,6 +1858,7 @@ bool KHTMLView::handleAccessKey( const QKeyEvent* ev )
     }
     if( c.isNull())
         return false;
+    accessKeysTimeout();
     return focusNodeWithAccessKey( c );
 }
 
