@@ -54,6 +54,8 @@ class KSpell::KSpellPrivate
 {
 public:
     bool endOfResponse;
+    bool m_bIgnoreUpperWords;
+    bool m_bIgnoreTitleCase;
 };
 
 
@@ -85,6 +87,9 @@ KSpell::KSpell (QWidget *_parent, QString _caption,
 		bool _progressbar, bool _modal)
 {
   d=new KSpellPrivate;
+
+  d->m_bIgnoreUpperWords=false;
+  d->m_bIgnoreTitleCase=false;
 
   autoDelete = false;
   modaldlg = _modal;
@@ -569,6 +574,16 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList 
       word = qs.mid (2,qs.find (' ',3)-2);
       //check() needs this
       orig=word;
+
+      if(d->m_bIgnoreTitleCase && word==word.upper())
+          return IGNORE;
+
+      if(d->m_bIgnoreUpperWords && word[0]==word[0].upper())
+      {
+          QString text=word[0]+word.right(word.length()-1).lower();
+          if(text==word)
+              return IGNORE;
+      }
 
       /////// Ignore-list stuff //////////
       //We don't take advantage of ispell's ignore function because
@@ -1155,8 +1170,15 @@ void KSpell::moveDlg (int x, int y)
   ksdlg->move (pt2.x(),pt2.y());
 }
 
+void KSpell::setIgnoreUpperWords(bool _ignore)
+{
+    d->m_bIgnoreUpperWords=_ignore;
+}
 
-
+void KSpell::setIgnoreTitleCase(bool _ignore)
+{
+    d->m_bIgnoreTitleCase=_ignore;
+}
 // --------------------------------------------------
 // Stuff for modal (blocking) spell checking
 //
