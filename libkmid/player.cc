@@ -33,6 +33,11 @@
 //#define PLAYERDEBUG
 //#define PLAYERDEBUG2
 
+#define T2MS(ticks) (((double)ticks)*(double)60000L)/((double)tempoToMetronomeTempo(tempo)*(double)info->ticksPerCuarterNote)
+
+#define MS2T(ms) (((ms)*(double)tempoToMetronomeTempo(tempo)*(double)info->ticksPerCuarterNote)/((double)60000L))
+
+
 player::player(DeviceManager *midi_,PlayerController *pctl)
 {
     midi=midi_;
@@ -83,21 +88,145 @@ int player::loadSong(char *filename)
 #endif
     info=new midifileinfo;
     int ok;
-    printf("a\n");
     tracks=readMidiFile(filename,info,ok);
-    printf("b\n");
     if (ok<0) return ok;
     if (tracks==NULL) return -4;
 
-    printf("c\n");
     parseInfoData(info,tracks,ctl->ratioTempo);
-    printf("d\n");
 
-    if (parseSong) parseSpecialEvents();
-    printf("e\n");
+    if (parseSong)
+    {
+        parseSpecialEvents();
+        generateBeats();
+    };
+        
     songLoaded=1;
     return 0;
 };
+
+void player::insertBeat(SpecialEvent *ev,ulong ms,int num,int den)
+{
+    SpecialEvent *beat=new SpecialEvent;
+    beat->next=ev->next;
+    ev->next=beat;
+    beat->id=1;
+    beat->type=7;
+    beat->absmilliseconds=ms;
+    beat->num=num;
+    beat->den=den;
+};
+
+
+void player::generateBeats(void)
+{
+#ifdef PLAYERDEBUG
+    printf("player::Generating Beats...\n");
+#endif
+
+    if (spev==NULL) return;
+    SpecialEvent *ev=spev;
+    SpecialEvent *nextev=ev->next;
+    ulong tempo=(ulong)(500000 * ctl->ratioTempo);
+    int i=1;
+    int num=4;
+    int den=4;
+//    ulong beatstep=((double)tempo*4/(den*1000));
+//    ulong beatstep=T2MS(info->ticksPerCuarterNote*(4/den));
+    double ticksleft=(((double)info->ticksPerCuarterNote*4)/den);
+
+    double beatstep=T2MS(ticksleft);
+    double nextbeatms=0;
+    double lastbeatms=0;
+    double measurems=0;
+    
+    while (nextev!=NULL)
+    {
+        switch (ev->type)
+        {
+        case (0): // End of list
+        case (1): // Text
+        case (2): // Lyrics
+            {
+            };break;
+        case (3): // Change Tempo
+            {
+                lastbeatms=ev->absmilliseconds;
+                ticksleft=MS2T(nextbeatms-lastbeatms);
+                tempo=ev->tempo;
+                nextbeatms=lastbeatms+T2MS(ticksleft);
+//                printf("Change at %lu to %d\n",ev->absmilliseconds,ev->tempo);
+                //                beatstep=((double)tempo*4/(den*1000));
+                beatstep=T2MS((((double)info->ticksPerCuarterNote*4)/den));
+            };break;
+        case (6): // Change number of beats per measure
+            {
+                num=ev->num;
+                i=1;
+                den=ev->den;
+//                printf("Change at %lu to %d/%d\n",ev->absmilliseconds,num,den);
+                //                beatstep=((double)tempo*4/(den*1000));
+//                beatstep=T2MS(info->ticksPerCuarterNote*(4/den));
+                beatstep=T2MS((((double)info->ticksPerCuarterNote*4)/den));
+                nextbeatms=ev->absmilliseconds;
+            };break;
+        };
+        if (nextev->absmilliseconds>nextbeatms)
+        {
+            //            printf("Adding %d,%d\n",num,tot);
+//            printf("beat at %g , %d/%d\n",nextbeatms,i,num);
+            if (i==1) measurems=nextbeatms;
+            insertBeat(ev,nextbeatms,i++,num);
+            if (i>num) i=1;
+            lastbeatms=nextbeatms;
+            nextbeatms+=beatstep;
+//            nextbeatms=measurems+beatstep*i;
+            
+            ticksleft=(((double)info->ticksPerCuarterNote*4)/den);
+            
+        };
+
+        ev=ev->next;
+        nextev=ev->next;
+    }
+
+    /* ev==NULL doesn't indicate the end of the song, so continue generating beats */
+    
+    if (ev!=NULL)
+    {
+        if (ev->type==0)
+        {
+            ev=spev;
+            /* Looking if ev->next is NULL is not needed because
+             we are sure that a ev->type == 0 exists */
+            while (ev->next->type!=0) ev=ev->next;
+        };
+        while (nextbeatms<info->millisecsTotal)
+        {
+//            printf("beat2 at %g , %d/%d\n",nextbeatms,i,num);
+            if (i==1) measurems=nextbeatms;
+            insertBeat(ev,nextbeatms,i++,num);
+            if (i>num) i=1;
+            nextbeatms+=beatstep;
+            ev=ev->next;
+        };
+    };
+    
+    /* Regenerate IDs */
+
+    ev=spev;
+    i=1;
+    while (ev!=NULL)
+    {
+        ev->id=i++;
+        ev=ev->next;
+    };
+    
+    
+#ifdef PLAYERDEBUG
+    printf("player::Beats Generated\n");
+#endif
+
+}
 
 void player::removeSpecialEvents(void)
 {
@@ -202,7 +331,9 @@ void player::parseSpecialEvents(void)
                             pspev->absmilliseconds=(ulong)minTime;
                             pspev->type=ev->d1;
                             pspev->id=spev_id++;
+#ifdef PLAYERDEBUG
                             printf("ev->length %d\n",ev->length);
+#endif
                             strncpy(pspev->text,(char *)ev->data,
 				(ev->length>1024)? (1023) : (ev->length) );
                             pspev->text[(ev->length>1024)? (1023):(ev->length)]=0;
@@ -219,18 +350,32 @@ void player::parseSpecialEvents(void)
                         {
 		            if (pspev!=NULL)
                             {
-                            pspev->absmilliseconds=(ulong)minTime;
-                            pspev->type=3;
-                            pspev->id=spev_id++;
-                            tempo=(ulong)(((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2])) * ctl->ratioTempo);
-                            pspev->tempo=tempo;
-                            if (firsttempo==0) firsttempo=tempo;
-                            for (j=0;j<info->ntracks;j++)
-                            {
-                                tracks[j]->changeTempo(tempo);
+                                pspev->absmilliseconds=(ulong)minTime;
+                                pspev->type=3;
+                                pspev->id=spev_id++;
+                                tempo=(ulong)(((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2])) * ctl->ratioTempo);
+                                pspev->tempo=tempo;
+                                if (firsttempo==0) firsttempo=tempo;
+                                for (j=0;j<info->ntracks;j++)
+                                {
+                                    tracks[j]->changeTempo(tempo);
+                                };
+                                pspev->next=new SpecialEvent;
+                                pspev=pspev->next;
                             };
-                            pspev->next=new SpecialEvent;
-                            pspev=pspev->next;
+                        };
+                        break;
+                    case (ME_TIME_SIGNATURE) :
+                        {
+                            if (pspev!=NULL)
+                            {
+                                pspev->absmilliseconds=(ulong)minTime;
+                                pspev->type=6;
+                                pspev->id=spev_id++;
+                                pspev->num=ev->d2;
+                                pspev->den=ev->d3;
+                                pspev->next=new SpecialEvent;
+                                pspev=pspev->next;
                             };
                         };
                         break;
@@ -352,8 +497,7 @@ void player::play(int calloutput,void output(void))
     midi->initDev();
     //    parsePatchesUsed(tracks,info,ctl->gm);
     midi->setPatchesToUse(info->patchesUsed);
-    
-    
+
     int trk;
     int minTrk;
     double minTime=0;
@@ -382,6 +526,8 @@ void player::play(int calloutput,void output(void))
     int j;
     int halt=0;
     ctl->tempo=tempo;
+    ctl->num=4;
+    ctl->den=4;
     int playing;
     ctl->paused=0;
     if ((ctl->message!=0)&&(ctl->message & PLAYER_SETPOS))
@@ -542,6 +688,12 @@ void player::play(int calloutput,void output(void))
                                  tracks[j]->changeTempo(tempo);
                              }; 
                          };
+                         if (ev->d1==ME_TIME_SIGNATURE)
+                            {
+				ctl->num=ev->d2;
+				ctl->den=ev->d3;
+                                ctl->SPEVplayed++;
+                            };
                      };
                      break;
                  };
@@ -675,6 +827,12 @@ void player::SetPos(ulong gotomsec,midiStat *midistat)
                             tracks[j]->changeTempo(tempo);
                         };	
                     };
+                    if (ev->d1==ME_TIME_SIGNATURE)
+                    {
+			ctl->num=ev->d2;
+			ctl->den=ev->d3;
+                        ctl->SPEVplayed++;
+                    };
                 };
                 break;
             };
@@ -708,7 +866,12 @@ void player::changeTempoRatio(double ratio)
     {
         ctl->ratioTempo=ratio;
         parseInfoData(info,tracks,ctl->ratioTempo);
-        if (parseSong) parseSpecialEvents();
+        if (parseSong)
+        {
+            parseSpecialEvents();
+            generateBeats();
+
+        };
     }
     else
     {

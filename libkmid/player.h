@@ -36,10 +36,17 @@ struct SpecialEvent
     ulong   diffmilliseconds; //delta milliseconds from previous sp ev
     ulong   absmilliseconds; // milliseconds from beginning of song
     int     ticks; // ticks from begining of song
-    int     type;// 1 Text, 2 Lyrics, 3 Change Tempo
-             //     0 Nothing, end of linked list
+    int     type;
+    //     0 Nothing, end of linked list
+    //     1 Text
+    //     3 Change Tempo
+    //     5 Lyrics
+    //     6 Change number of beats per measure
+    //     7 Beat
     char    text[1024];
-    int	    tempo;
+    ulong   tempo;
+    int     num;
+    int     den;
     struct  SpecialEvent *next;
 };
 
@@ -52,6 +59,8 @@ struct PlayerController
     volatile ulong      beginmillisec;
     
     volatile int	tempo;
+    volatile int	num;
+    volatile int	den;
     
     volatile int	SPEVprocessed;
     volatile int	SPEVplayed;
@@ -108,10 +117,11 @@ class player
     
     void removeSpecialEvents(void);
     void parseSpecialEvents(void);
+    void insertBeat(SpecialEvent *ev,ulong ms,int num,int den);
+    void generateBeats(void);
     
 public:
-    
-    
+
     player(DeviceManager *midi_,PlayerController *pctl);
     ~player();
     
@@ -134,6 +144,7 @@ public:
     
     void changeTempoRatio(double ratio);
     
+
     /*
      void pause(int i);
      void stop(void);
