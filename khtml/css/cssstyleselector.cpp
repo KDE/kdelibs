@@ -1747,7 +1747,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 size = bestSize;
         }
 	//qDebug(" -->>> using %f point font", size);
-        f.setPointSize(QMAX(size, minFontSize));
+        f.setPointSize(QMAX(int(size), minFontSize));
         //KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
         style->setFont(f);
         return;
@@ -1797,9 +1797,9 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         else if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
                 lineHeight = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
         else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-            lineHeight = Length(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
+            lineHeight = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)), Percent);
         else if(type == CSSPrimitiveValue::CSS_NUMBER)
-            lineHeight = Length(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER)*100, Percent);
+            lineHeight = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER)*100), Percent);
         else
             return;
         style->setLineHeight(lineHeight);
