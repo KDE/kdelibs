@@ -16,6 +16,9 @@ I'll provide some examples of how to extend this library for various needs at
 a later point in time. Feel free to contact me via mail if you have any
 questions on how to provide scripting capabilites for your application.
 
+A debugger is being worked on. To compile it, add -DKJS_DEBUGGER to the CXXFLAGS
+section in the Makefile.am of kdelibs/kjs and kdelibs/khtml/ecma.
+
 Bug reports, patches or feedback of any kind is very welcome.
 
 Harri Porten <porten@kde.org>
