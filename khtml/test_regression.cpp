@@ -784,6 +784,7 @@ bool RegressionTest::checkOutput(const QString &againstFilename)
         return true;
 
     QString data = getPartOutput( againstFilename.endsWith( "-dom" ) ? DOMTree : RenderTree );
+    data.remove( char( 13 ) );
 
     bool result = true;
 
