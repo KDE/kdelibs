@@ -90,7 +90,7 @@ void KDatePicker::init( const QDate &dt )
   fontsize = 10;
  
   d->selectWeek = new QToolButton( this );
-  d->selectWeek->setFlat(true);
+  d->selectWeek->setAutoRaise(true);
 
   QToolTip::add(yearForward, i18n("Next year"));
   QToolTip::add(yearBackward, i18n("Previous year"));
