@@ -303,6 +303,8 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			bool sunken = on || down;
 			int  x, y, w, h;
 			r.rect(&x, &y, &w, &h);
+			int x2 = x+w-1;
+			int y2 = y+h-1;
 
 			if ( sunken )
 				kDrawBeButton( p, x, y, w, h, cg, true,
@@ -315,7 +317,18 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 
 			// "Flat" button
 			else if (!(flags & (Style_Raised | Style_Sunken)))
-				p->fillRect(r, cg.button());
+			    {
+				//p->fillRect(r, cg.button());
+				renderGradient(p, QRect(x, y, w-1, h-1),
+								cg.button(), false);
+				p->setPen(cg.button().light(75));
+				
+				p->drawLine(x, y, x2, y);
+				p->drawLine(x, y, x, y2);
+				p->drawLine(x, y2, x2, y2);
+				p->drawLine(x2, y, x2, y2);
+				
+			}	   
 			
 			else if( highcolor )
 			{
