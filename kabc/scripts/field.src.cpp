@@ -244,8 +244,7 @@ Field::List Field::allFields()
 Field::List Field::defaultFields()
 {
   if ( mDefaultFields.isEmpty() ) {
-    createDefaultField( FieldImpl::GivenName );
-    createDefaultField( FieldImpl::FamilyName );
+    createDefaultField( FieldImpl::FormattedName );
     createDefaultField( FieldImpl::Email );
   }
 
