@@ -101,9 +101,13 @@ boolean is marshalled as a byte, containing 0 if false or 1 if true, so
 
         0x01
 
-float   is marshalled after the four byte IEEE representation (please,
-        if you got a pointer describing that format, tell me), so the
-        value 2.15 would be marshalled as
+float   is marshalled after the four byte IEEE754 representation - detailed
+        docs how IEEE works are here:
+
+		 * http://twister.ou.edu/workshop.docs/common-tools/numerical_comp_guide/ncg_math.doc.html 
+		 * http://java.sun.com/docs/books/vmspec/2nd-edition/html/Overview.doc.html
+
+        so the value 2.15 would be marshalled as
 
         0x9a 0x99 0x09 0x40
 
