@@ -119,7 +119,7 @@ void do_try_include(const char *s)
 	QString	str(s);
 	str.replace(QRegExp("\""),"");
 	glob_t	gl;
-	if (glob(str.latin1(),GLOB_TILDE,NULL,&gl) == 0)
+	if (glob(str.latin1(),0,NULL,&gl) == 0)
 	{
 		for (uint i=0;i<gl.gl_pathc;i++)
 		{
