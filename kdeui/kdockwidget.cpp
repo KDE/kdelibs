@@ -416,6 +416,14 @@ bool KDockWidget::event( QEvent *event )
 {
   switch ( event->type() )
   {
+    #undef FocusIn
+    case QEvent::FocusIn:
+      if (widget && !d->pendingFocusInEvent) {
+         d->pendingFocusInEvent = true;
+         widget->setFocus();
+      }
+      d->pendingFocusInEvent = false;
+      break;
     case QEvent::ChildRemoved:
       if ( widget == ((QChildEvent*)event)->child() ) widget = 0L;
       break;

@@ -41,6 +41,7 @@
 #include <qpoint.h>
 #include <qlist.h>
 #include <qframe.h>
+#include <qdom.h>
 
 #ifndef NO_KDE2
 #include <kmainwindow.h>
@@ -569,7 +570,7 @@ protected:
    * @li it is not able to dock to another dockwidget
    */
   void updateHeader();
-
+  
 signals:
   /**
    * Emits that another dockwidget is docking to this.
