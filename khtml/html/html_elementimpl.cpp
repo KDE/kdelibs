@@ -172,7 +172,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	if(script.length())
 	{
 	    //kdDebug( 6030 ) << "(click) emit executeScript( " << script.string() << " )" << endl;
-	    view->part()->executeScript( script.string() );
+	    view->part()->executeScript( Node( this ), script.string() );
 	}
     }
 
@@ -187,7 +187,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	{
 	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
 	    if( id == ATTR_ONMOUSEOVER )
-		view->part()->scheduleScript( script.string() );
+		view->part()->scheduleScript( Node( this ), script.string() );
 	    else
 		view->part()->executeScript( script.string() );
 	}
