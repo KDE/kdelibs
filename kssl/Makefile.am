@@ -1,4 +1,4 @@
-INCLUDES=$(all_includes) 
+INCLUDES=$(all_includes) $(SSL_INCLUDES)
 
 lib_LTLIBRARIES = libkssl.la
 KSSLVERSION=	2.0.0
