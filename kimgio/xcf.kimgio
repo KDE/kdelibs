@@ -2,6 +2,7 @@
 Type=XCF
 Header=^gimp xcf
 Name=GIMP Image
+Name[sv]=GIMP-bild
 Read=true
 Write=false
 Suffices=xcf,XCF
