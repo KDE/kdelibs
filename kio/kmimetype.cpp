@@ -26,6 +26,7 @@
 #include <errno.h>
 #include <stddef.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include <kio/global.h>
 #include "kmimetype.h"
@@ -525,7 +526,6 @@ bool KDEDesktopMimeType::run( const KURL& u, bool _is_local )
 
 bool KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cfg )
 {
-  QString point = cfg.readEntry( "MountPoint" );
   QString dev = cfg.readEntry( "Dev" );
 
   if ( dev.isEmpty() )
@@ -547,9 +547,9 @@ bool KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cfg
   else
   {
     bool ro = cfg.readBoolEntry( "ReadOnly", false );
-		
-    KURL u( _url );
-    (void) new KAutoMount( ro, 0L, dev.ascii(), 0L, u.path() );
+    QString fstype = cfg.readEntry( "FSType" );
+    QString point = cfg.readEntry( "MountPoint" );
+    (void) new KAutoMount( ro, fstype, dev, point, _url.path() );
   }
 
   return true;
@@ -598,11 +598,15 @@ bool KDEDesktopMimeType::runLink( const KURL& _url, const KSimpleConfig &cfg )
   return true;
 }
 
-bool KDEDesktopMimeType::runMimeType( const KURL& , const KSimpleConfig & )
+bool KDEDesktopMimeType::runMimeType( const KURL& url , const KSimpleConfig & )
 {
-  // HACK: TODO
-  // How ? (David) Showing up the properties dialog ? That's in libkonq !
-  return false;
+  QCString cmd = "kfmclient openProperties \"";
+  cmd += url.path().local8Bit();
+  cmd += "\"";
+  system(cmd.data());
+  // Can't do that, it's in libkfile...
+  // (void) new PropertiesDialog( url.path() );
+  return true;
 }
 
 QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( const KURL& _url )
@@ -750,8 +754,9 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
       }
 
       bool ro = cfg.readBoolEntry( "ReadOnly", false );
-
-      (void)new KAutoMount( ro, 0L, dev.ascii(), 0L, u.path(), false );
+      QString fstype = cfg.readEntry( "FSType" );
+      QString point = cfg.readEntry( "MountPoint" );
+      (void)new KAutoMount( ro, fstype, dev, point, u.path(), false );
     }
     else if ( _service.m_type == ST_UNMOUNT )
     {
