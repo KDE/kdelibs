@@ -59,7 +59,7 @@ first line of main and then start the program:
 (gdb) break main
 Breakpoint 1 at 0x804855c
 (gdb) run
-Starting program: /ext/kde2.0/bin/kedit myfile.txt
+Starting program: /opt/kde/bin/kedit myfile.txt
 Breakpoint 1 at 0x4002cf18: file kedit.cpp, line 1595.
  
 Breakpoint 1, main (argc=2, argv=0xbffff814) at kedit.cpp:1595
@@ -133,9 +133,9 @@ Type "show copying" to see the conditions.
 There is absolutely no warranty for GDB.  Type "show warranty" for details.
 This GDB was configured as "i686-pc-linux-gnu"...
 /home1/bastian/21570: No such file or directory.
-Attaching to program: /ext/kde2.0/bin/kedit, Pid 21570
-Reading symbols from /ext/kde2.0/lib/kedit.so.0...done.
-Loaded symbols for /ext/kde2.0/lib/kedit.so.0
+Attaching to program: /opt/kde/bin/kedit, Pid 21570
+Reading symbols from /opt/kde/lib/kedit.so.0...done.
+Loaded symbols for /opt/kde/lib/kedit.so.0
 ....
 Reading symbols from /lib/ld-linux.so.2...done.
 Loaded symbols for /lib/ld-linux.so.2
