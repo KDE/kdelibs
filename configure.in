@@ -152,7 +152,7 @@ AC_SUBST(LIB_DCOP)
 
 AC_LANG_C
 kde_save_cc=$CC
-AC_LIBLTDL
+AC_LIB_LTDL
 CC=$kde_save_cc
 
 AC_ARG_ENABLE(tutorials, [  --enable-tutorials      compile the tutorials too], [
