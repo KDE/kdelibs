@@ -590,9 +590,8 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
             charEntity = false;
             return;
         }
-        if( (entityPos && *entityBuffer == '#' && (cc >= '0' && cc <= '9')) || // numeric entity
-            (entityPos && *entityBuffer != '#' && (cc >= 'a' && cc <= 'z')) || // alpha entity
-            (!entityPos && ((cc >= 'a' && cc <= 'z') || (cc >= '0' && cc <= '9') || cc == '#')))  // first character
+        if( (entityPos && *entityBuffer == '#' && ((cc >= '0' && cc <= '9') || cc == 'x')) || // numeric entity
+            ((cc >= 'a' && cc <= 'z') || (cc >= '0' && cc <= '9') || cc == '#')) // other entity
         {
             entityBuffer[entityPos] = src[0];
             entityPos++;
