@@ -1059,6 +1059,9 @@ void RenderFlow::calcMinMaxWidth()
 
     m_minWidth += toAdd;
     m_maxWidth += toAdd;
+
+    // ### compare with min/max width set in style sheet...
+
 }
 
 void RenderFlow::close()

@@ -46,6 +46,7 @@ public:
 
     virtual void layout(bool deep);
     virtual void calcWidth();
+    virtual void calcMinMaxWidth();
     virtual void absolutePosition(int &xPos, int&yPos);
     virtual void updateSize();
     virtual void updateHeight();

@@ -45,14 +45,14 @@ RenderRoot::RenderRoot(KHTMLView *view)
     setParsing();
 }
 
-RenderRoot::~RenderRoot() 
+RenderRoot::~RenderRoot()
 {
     kdDebug( 6090 ) << "renderRoot desctructor called" << endl;
 }
 
 void RenderRoot::calcWidth()
 {
-    
+
     // the width gets set by KHTMLView::print when printing to a printer.
     if(printingMode) return;
 
@@ -61,15 +61,24 @@ void RenderRoot::calcWidth()
     if(m_maxWidth != m_minWidth) m_maxWidth = m_minWidth;
 }
 
+void RenderRoot::calcMinMaxWidth()
+{
+    RenderFlow::calcMinMaxWidth();
+    
+    // set minWidth to width of viewport
+    if(m_minWidth < m_view->frameWidth())
+	m_minWidth = m_view->frameWidth();
+}
 
 void RenderRoot::layout(bool deep)
 {
+    calcMinMaxWidth();
     if (deep)
     	RenderFlow::layout(true);
 	
     if (m_height < m_view->visibleHeight())
     	m_height=m_view->visibleHeight();
-    
+
     if (firstChild())
     {
     	int h;
@@ -81,9 +90,9 @@ void RenderRoot::layout(bool deep)
     	    h = firstChild()->firstChild()->lowestPosition();
     	    if (h>m_height)
 	    	m_height=h;
-    	}	    
+    	}	
     }
-
+    calcWidth();
 }
 
 QScrollView *RenderRoot::view()
@@ -264,7 +273,7 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
 	if (firstChild()->firstChild() && !ci)
     	    ci = firstChild()->firstChild()->style()->backgroundImage();
     }
-    
+
     if (!ci && !c.isValid())
     {
     	if (firstChild())
@@ -272,10 +281,10 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
 	if (firstChild()->firstChild() && !c.isValid())
     	    c = firstChild()->firstChild()->style()->backgroundColor();
     }
-    
+
     QPixmap px;
     if (ci)
-    	px = ci->pixmap();    
+    	px = ci->pixmap();
 
     int w = m_view->visibleWidth();
     int h = m_view->visibleHeight();	
