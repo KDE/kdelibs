@@ -2644,7 +2644,7 @@ bool HTTPProtocol::readBody( )
       // If a broken server does not send the mime-type,
       // we try to id from the content before dealing
       // with the content itself.
-      if ( m_strMimeType.isEmpty() )
+      if ( m_strMimeType.isEmpty() && !( m_responseCode >= 300 && m_responseCode <=399) )
       {
         kdDebug(7113) << "Attempting to determine mime-type from content..." << endl;
         totRxBytes += bytesReceived;
