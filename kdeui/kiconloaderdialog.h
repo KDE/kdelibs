@@ -100,7 +100,6 @@ class KIconLoaderDialog : public QDialog
 {
   Q_OBJECT
 public:
-  /// Constructor
   /**
      The KIconLoaderDialog is a modal dialog; i.e. it has its own eventloop
      and the normal program will stop after a call to selectIcon() until
@@ -122,11 +121,14 @@ public:
   */
   KIconLoaderDialog ( KIconLoader *loader, QWidget *parent=0, const char *name=0  );
 
-  /// Destructor
+  /**
+    Destructor
+   */
   ~KIconLoaderDialog ();
 
-  /// Select an icon from a modal choose dialog
   /**
+         Select an icon from a modal choose dialog.
+
 	 This function pops up a modal dialog and lets you select an icon by its
 	 picture not name. The function returns a QPixmap object and the icons 
 	 name in 'name'
@@ -139,7 +141,7 @@ public:
     QPixmap selectIcon( QString &name, const QString &filter);
 
     /**
-     * sets the directories to choose from. By default this are
+     * sets the directories to choose from. By default these are
      * all directories that keep toolbar icons
      */
     void changeDirs( const QStringList &l ) { cb_dirs->clear(); cb_dirs->insertStringList(l); }
