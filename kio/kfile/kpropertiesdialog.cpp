@@ -475,10 +475,11 @@ void KPropertiesDialog::updateUrl( const KURL& _newUrl )
   m_items.first()->setURL( _newUrl );
   assert(!m_singleUrl.isEmpty());
   // If we have an Exec page, set it dirty, so that a full file is saved locally
+  // Same for a URL page (because of the Name= hack)
   for ( QPtrListIterator<KPropsDlgPlugin> it(m_pageList); it.current(); ++it )
-   if ( it.current()->isA("KExecPropsPlugin") )
+   if ( it.current()->isA("KExecPropsPlugin") || it.current()->isA("KURLPropsPlugin") )
    {
-     kdDebug(250) << "Setting exec page dirty" << endl;
+     //kdDebug(250) << "Setting page dirty" << endl;
      it.current()->setDirty();
      break;
    }
@@ -1944,6 +1945,18 @@ void KURLPropsPlugin::applyChanges()
   config.setDesktopGroup();
   config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link"));
   config.writeEntry( QString::fromLatin1("URL"), URLEdit->url() );
+  // Users can't create a Link .desktop file with a Name field,
+  // but distributions can. Update the Name field in that case.
+  if ( config.hasKey("Name") )
+  {
+    // ### duplicated from KApplicationPropsPlugin
+    QString nameStr = properties->kurl().fileName();
+    if ( nameStr.right(8) == QString::fromLatin1(".desktop") )
+      nameStr.truncate( nameStr.length() - 8 );
+    if ( nameStr.right(7) == QString::fromLatin1(".kdelnk") )
+      nameStr.truncate( nameStr.length() - 7 );
+    config.writeEntry( QString::fromLatin1("Name"), nameStr );
+  }
 }
 
 /* ----------------------------------------------------
@@ -2150,8 +2163,10 @@ void KApplicationPropsPlugin::applyChanges()
   KSimpleConfig config( path );
   config.setDesktopGroup();
   config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Application"));
-  config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text(), true, false, true );
-  config.writeEntry( QString::fromLatin1("GenericName"), genNameEdit->text(), true, false, true );
+  config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text() );
+  config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text(), true, false, true ); // for compat
+  config.writeEntry( QString::fromLatin1("GenericName"), genNameEdit->text() );
+  config.writeEntry( QString::fromLatin1("GenericName"), genNameEdit->text(), true, false, true ); // for compat
 
   QStringList selectedTypes;
   for ( uint i = 0; i < extensionsList->count(); i++ )
@@ -2170,6 +2185,7 @@ void KApplicationPropsPlugin::applyChanges()
     if ( nameStr.right(7) == QString::fromLatin1(".kdelnk") )
       nameStr.truncate( nameStr.length() - 7 );
   }
+  config.writeEntry( QString::fromLatin1("Name"), nameStr );
   config.writeEntry( QString::fromLatin1("Name"), nameStr, true, false, true );
 
   config.sync();
@@ -2365,7 +2381,8 @@ void KBindingPropsPlugin::applyChanges()
   config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("MimeType") );
 
   config.writeEntry( QString::fromLatin1("Patterns"),  patternEdit->text() );
-  config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text(), true, false, true );
+  config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text() );
+  config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text(), true, false, true ); // for compat
   config.writeEntry( QString::fromLatin1("MimeType"), mimeEdit->text() );
   if ( cbAutoEmbed->state() == QButton::NoChange )
       config.deleteEntry( QString::fromLatin1("X-KDE-AutoEmbed"), false );
