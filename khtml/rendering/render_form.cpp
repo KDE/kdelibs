@@ -112,6 +112,7 @@ void RenderFormElement::slotSelected()
 
 void RenderFormElement::slotClicked()
 {
+    m_element->mouseEventHandler(0, DOM::NodeImpl::MouseClick, true);
 }
 
 // -------------------------------------------------------------------------
@@ -173,6 +174,7 @@ RenderCheckBox::RenderCheckBox(QScrollView *view,
     connect(b,SIGNAL(focused()),this,SLOT(slotFocused()));
     connect(b,SIGNAL(blurred()),this,SLOT(slotBlurred()));
     connect(b,SIGNAL(stateChanged(int)),this,SLOT(slotStateChanged(int)));
+    connect(b,SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
 
 void RenderCheckBox::layout()
@@ -185,7 +187,6 @@ void RenderCheckBox::slotStateChanged(int state)
 {
     m_element->setAttribute(ATTR_CHECKED,state == 2 ? "" : 0);
 }
-
 
 // -------------------------------------------------------------------------------
 
@@ -228,7 +229,11 @@ void RenderRadioButton::setChecked(bool checked)
 
 void RenderRadioButton::slotClicked()
 {
+    // emit mouseClick event etc
+    RenderButton::slotClicked();
+
     m_element->setAttribute(ATTR_CHECKED,"");
+
     if (m_element->ownerDocument()->isHTMLDocument())
         static_cast<HTMLDocumentImpl*>(m_element->ownerDocument())->updateRendering();
 }
@@ -275,7 +280,8 @@ RenderSubmitButton::~RenderSubmitButton()
 void RenderSubmitButton::slotClicked()
 {
     m_clicked = true;
-    static_cast<HTMLInputElementImpl*>(m_element)->mouseEventHandler( 0, DOM::NodeImpl::MouseClick, true );
+    RenderButton::slotClicked();
+
     // ### if the above line calls some javascript which deletes us we will probably crash here
     if (m_element->form())
         m_element->form()->submit();
@@ -321,7 +327,7 @@ RenderResetButton::~RenderResetButton()
 
 void RenderResetButton::slotClicked()
 {
-    static_cast<HTMLInputElementImpl*>(m_element)->mouseEventHandler( 0, DOM::NodeImpl::MouseClick, true );
+    RenderSubmitButton::slotClicked();
     if (m_element->form())
         m_element->form()->reset();
 }
@@ -344,7 +350,8 @@ RenderPushButton::~RenderPushButton()
 
 void RenderPushButton::slotClicked()
 {
-    static_cast<HTMLInputElementImpl*>(m_element)->mouseEventHandler( 0, DOM::NodeImpl::MouseClick, true );
+    // DON't call RenderSubmitButton::slotClicked here!
+    RenderButton::slotClicked();
 }
 
 
