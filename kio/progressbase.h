@@ -8,7 +8,7 @@
 #include <qwidget.h>
 
 class KURL;
-class KIO::Job;
+namespace KIO { class Job; }
 
 
 /**
