@@ -1372,7 +1372,7 @@ void RenderTable::layout()
 
     if(tCaption && tCaption->style()->captionSide()==CAPBOTTOM)
     {
-        tCaption->setPos(m_height, tCaption->marginLeft());
+        tCaption->setPos(tCaption->marginLeft(), m_height);
         tCaption->layout();
         m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }
