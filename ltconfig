@@ -33,7 +33,7 @@ progname=`echo "$0" | sed 's%^.*/%%'`
 # Constants:
 PROGRAM=ltconfig
 PACKAGE=libtool
-VERSION=0.9g
+VERSION=0.9h
 ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.c 1>&5'
 rm="rm -f"
 
@@ -434,6 +434,7 @@ else
   solaris2*)
     pic_flag='-KPIC'
     link_static_flag='-Bstatic'
+    wl='-Wl,'
     ;;
 
   sunos4*)
