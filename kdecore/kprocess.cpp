@@ -46,6 +46,8 @@
 #include <config.h>
 #endif
 
+#include <qfile.h>
+
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -58,12 +60,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#ifdef HAVE_VFORK_H
-#include <vfork.h>
-#endif
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
+#ifdef HAVE_INITGROUPS
+#warning WABA: Including grp.h
+#  include <grp.h>
+#endif
+#include <pwd.h>
 
 #include <qapplication.h>
 
@@ -73,9 +77,8 @@
 
 
 KProcess::KProcess()
+	: arguments( true ) // Make deep copies
 {
-  arguments.setAutoDelete(true);
-
   if (0 == KProcessController::theKProcessController) {
 	KProcessController::theKProcessController= new KProcessController();
 	CHECK_PTR(KProcessController::theKProcessController);
@@ -90,10 +93,22 @@ KProcess::KProcess()
   input_data = 0;
   input_sent = 0;
   input_total = 0;
+  keepPrivs = false;
 
   KProcessController::theKProcessController->processList->append(this);
 }
 
+void 
+KProcess::setRunPrivileged(bool keepPrivileges)
+{
+   keepPrivs = keepPrivileges;
+}
+
+bool 
+KProcess::runPrivileged()
+{
+   return keepPrivs;
+}
 
 
 KProcess::~KProcess()
@@ -113,50 +128,29 @@ KProcess::~KProcess()
   // TODO: restore SIGCHLD and SIGPIPE handler if this is the last KProcess
 }
 
-
-
 bool KProcess::setExecutable(const QString& proc)
 {
-  char *hlp;
-
-
   if (runs) return false;
 
+  if (proc.isEmpty())  return false;
+
   arguments.removeFirst();
-  if (0 != proc) {
-    hlp = qstrdup(proc.ascii());
-    CHECK_PTR(hlp);
-    arguments.insert(0,hlp);
-  }
+  arguments.insert(0, proc.ascii());
 
   return true;
 }
 
 
-
-
-
-
 KProcess &KProcess::operator<<(const QString& arg)
 {
-  char *new_arg= qstrdup(arg.ascii());
-
-  CHECK_PTR(new_arg);
-  arguments.append(new_arg);
+  arguments.append(arg.ascii());
   return *this;
 }
 
-
-
 void KProcess::clearArguments()
 {
-  if (0 != arguments.first()) {
-    while (arguments.remove())
-      ;
-  }
+  arguments.clear();
 }
-
-
 
 bool KProcess::start(RunMode runmode, Communication comm)
 {
@@ -183,9 +177,22 @@ bool KProcess::start(RunMode runmode, Communication comm)
   runs = true;
 
   QApplication::flushX();
-  pid = vfork();
+
+  // WABA: Note that we use fork() and not vfork() because
+  // vfork() has unclear semantics and is not standardized.
+  pid = fork();
 
   if (0 == pid) {
+        if (!runPrivileged())
+        {
+           setgid(getgid());
+#if defined( HAVE_INITGROUPS)
+           struct passwd *pw = getpwuid(getuid());
+           initgroups(pw->pw_name, pw->pw_gid);
+#endif
+           setuid(getuid());
+	   
+        }
 	// The child process
 	if(!commSetupDoneC())
 	  debug("Could not finish comm setup in child!");
@@ -630,15 +637,11 @@ void KProcess::commClose()
 KShellProcess::KShellProcess(const char *shellname):
   KProcess()
 {
-  if (0 != shellname)
-    shell = qstrdup(shellname);
-  else
-    shell = 0;
+  shell = shellname;
 }
 
 
 KShellProcess::~KShellProcess() {
-  delete [] shell;
 }
 
 bool KShellProcess::start(RunMode runmode, Communication comm)
@@ -656,31 +659,19 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
   run_mode = runmode;
   status = 0;
 
-  if (0 == shell)
+  if (shell.isEmpty())
     shell = searchShell();
-  if (0 == shell) {
+  if (shell.isEmpty()) {
     debug("Could not find a valid shell\n");
     return false;
   }
 
-  // CC: Changed the way the parameter was built up
-  // CC: Arglist for KShellProcess is now always:
-  // CC: <shell> -c <command>
-
-  arglist[0] = shell;
-  arglist[1] = "-c";
+  //TODO: Add proper quoting of arguments!
 
   for (i=0; i < n; i++) {
-    cmd += arguments.at(i);
-    cmd += " "; // CC: to separate the arguments
+      cmd += arguments.at(i);
+      cmd += " "; // CC: to separate the arguments
   }
-
-//   // execution in background
-//   cmd.stripWhiteSpace();
-//   if (cmd[cmd.length()-1] != '&')
-//       cmd += '&';
-  arglist[2] = qstrdup(cmd.ascii());
-  arglist[3] = 0;
 
   if (!setupCommunication(comm))
     debug("Could not setup Communication!");
@@ -688,10 +679,31 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
   runs = true;
 
   QApplication::flushX();	
-  pid = vfork();
+
+  // WABA: Note that we use fork() and not vfork() because
+  // vfork() has unclear semantics and is not standardized.
+  pid = fork();
 
   if (0 == pid) {
+        if (!runPrivileged())
+        {
+           setgid(getgid());
+#if defined( HAVE_INITGROUPS)
+           struct passwd *pw = getpwuid(getuid());
+           initgroups(pw->pw_name, pw->pw_gid);
+#endif
+           setuid(getuid());
+	   
+        }
 	// The child process
+        // CC: Changed the way the parameter was built up
+        // CC: Arglist for KShellProcess is now always:
+        // CC: <shell> -c <command>
+
+        arglist[0] = shell.data();
+        arglist[1] = "-c";
+        arglist[2] = cmd.ascii();
+        arglist[3] = 0;
 
 	if(!commSetupDoneC())
 	  debug("Could not finish comm setup in child!");
@@ -738,50 +750,29 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	  emit processExited(this);
 	}
   }
-  //  free(arglist);
   return true;
 }
 
-
-
-char *KShellProcess::searchShell()
+QCString KShellProcess::searchShell()
 {
-  char *hlp = 0;
-  char *copy = 0;
-
-
-  // CC: now get the name of the shell we have to use
-  hlp = getenv("SHELL");
-  if (isExecutable(hlp)) {
-    copy = qstrdup(hlp);
-    CHECK_PTR(copy);
+  QCString tmpShell = QCString(getenv("SHELL")).stripWhiteSpace();
+  if (!isExecutable(tmpShell)) 
+  {
+     tmpShell = "/bin/sh";
   }
 
-  if (0 == copy) {
-    // CC: hmm, invalid $SHELL in environment -- maybe there are whitespaces to be stripped?
-    QString stmp = QString(shell);
-    QString shell_stripped = stmp.stripWhiteSpace();
-    if (isExecutable(shell_stripped.ascii())) {
-      copy = qstrdup(shell_stripped.ascii());
-      CHECK_PTR(copy);
-    }
-  }
-  return copy;
+  return tmpShell;
 }
 
-
-
-
-bool KShellProcess::isExecutable(const char *fname)
+bool KShellProcess::isExecutable(const QCString &filename)
 {
   struct stat fileinfo;
 
-  if ((0 == fname) || (strlen(fname) == 0)) return false;
-  // CC: filename is invalid
+  if (filename.isEmpty()) return false;
 
   // CC: we've got a valid filename, now let's see whether we can execute that file
 
-  if (-1 == stat(fname, &fileinfo)) return false;
+  if (-1 == stat(filename.data(), &fileinfo)) return false;
   // CC: return false if the file does not exist
 
   // CC: anyway, we cannot execute directories, block/character devices, fifos or sockets
@@ -798,10 +789,11 @@ bool KShellProcess::isExecutable(const char *fname)
   }
 
   // CC: now check for permission to execute the file
-  if (access(fname, X_OK) != 0) return false;
+  if (access(filename.data(), X_OK) != 0) return false;
 
   // CC: we've passed all the tests...
   return true;
 }
+
 #include "kprocess.moc"
 

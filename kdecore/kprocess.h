@@ -343,9 +343,23 @@ public:
 
   /**
    * Lets you see what your arguments are for debugging.
-  */
+   */
 
   const QStrList * args() { return &arguments; }
+
+  /**
+   * Controls whether the started process should drop any
+   * setuid/segid privileges or whether it should keep them
+   *
+   * The default is @p false : drop privileges
+   */
+  void setRunPrivileged(bool keepPrivileges);
+ 
+  /**
+   * Returns whether the started process will drop any
+   * setuid/segid privileges or whether it will keep them
+   */
+  bool runPrivileged();
 
 signals: 
 
@@ -463,7 +477,6 @@ protected:
       member function since it will probably be made private in
       later versions of KProcess.
   */
-
   pid_t pid;
 
   /** The process' exit status as returned by "waitpid". You should not 
@@ -474,6 +487,10 @@ protected:
   */
   int status;
 
+
+  /** See setRunPrivileged()
+  */
+  bool keepPrivs;
 
   /*
 	Functions for setting up the sockets for communication.
@@ -613,13 +630,13 @@ class KShellProcessPrivate;
 * KShellProcess tries really hard to find a valid executable shell. Here
 * is the algorithm used for finding an executable shell:
 
-*    @li Try to use executable pointed to by the "SHELL" environment
-*    variable
-
 *    @li Try the executable pointed to by the "SHELL" environment
 *    variable with whitespaces stripped off
 
-*    @li "/bin/sh" as a last ressort.
+*    @li If your process runs with uid != euid or gid != egid, a shell
+*    not listed in /etc/shells will not used.
+
+*    @li If no valid shell could be found, "/bin/sh" is used as a last resort.
 
 *   @short A class derived from @ref KProcess to start child
 *   	processes through a shell.	
@@ -660,15 +677,15 @@ private:
    * Searches for a valid shell. See the general description of this
    * class for information on how the search is actually performed.
   */
-  char *searchShell();
+  QCString searchShell();
 
   /** 
    * Used by @ref searchShell in order to find out whether the shell found
    * is actually executable at all.
   */
-  bool isExecutable(const char *fname);
+  bool isExecutable(const QCString &filename);
 
-  const char *shell;
+  QCString shell;
 
   // Disallow assignment and copy-construction
   KShellProcess( const KShellProcess& );
