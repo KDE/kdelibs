@@ -166,6 +166,7 @@ protected slots:
     void slotSpellReady( KSpell *spell );
     void slotAutoDetection();
     void slotLocalSpellConfigChanged();
+    void slotKSpellNotResponding();
 
 private:
     class KDictSpellingHighlighterPrivate;
