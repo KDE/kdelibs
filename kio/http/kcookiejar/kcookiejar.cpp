@@ -179,8 +179,8 @@ bool KHttpCookie::match(const QString &domain, const QString &fqdn,
 
 int KHttpCookieList::compareItems( void * item1, void * item2)
 {
-    int pathLen1 = (KHttpCookie *)(item1)->path().length();
-    int pathLen2 = (KHttpCookie *)(item2)->path().length();
+    int pathLen1 = ((KHttpCookie *)item1)->path().length();
+    int pathLen2 = ((KHttpCookie *)item2)->path().length();
     if (pathLen1 > pathLen2)
         return 1;
     if (pathLen1 < pathLen2)

@@ -41,7 +41,7 @@ public:
   KCookieServer();
   ~KCookieServer();
 
-  virtual int newInstance(QValueList<QCString>);
+  virtual int newInstance();
 
   virtual bool process(const QCString &fun, const QByteArray &data,
 		       QCString& replyType, QByteArray &replyData);
@@ -62,6 +62,9 @@ protected:
   RequestList *mRequestList;
   QTimer *mTimer;
   bool mAdvicePending;
+
+ private:
+  virtual int newInstance(QValueList<QCString>) { return 0; }
 };
 
 #endif
