@@ -25,6 +25,7 @@
 
 #include <dither.h>
 #include <qimage.h>
+#include <stdlib.h>
 
 #include "kimageeffect.h"
 

@@ -30,7 +30,7 @@
 #include <qframe.h>
 #include <qlabel.h>
 #include <qstring.h>
-#include <list.h>
+#include <list>
 
 class QVBoxLayout;
 class KURLLabel;
