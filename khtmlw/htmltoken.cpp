@@ -539,6 +539,10 @@ void HTMLTokenizer::write( const char *str )
 	    {
 	       // <!-- comment -->
 	    }
+	    else if ( *src == '?')
+	    {
+	       // <? meta stuff ?>
+	    }
 	    else
 	    {
 	       // Invalid tag
