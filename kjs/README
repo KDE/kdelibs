@@ -3,9 +3,12 @@ is based on well known scripting languages such as Netscape's JavaScript and
 Microsoft's JScript.
 
 I'm currently pursuing to be compliant with Edition 3 of ECMA-262. Postscript
-and pdf versions of the standard are avaiable at:
+and pdf versions of the standard are available at:
 
 http://www.ecma.ch
+
+ftp://ftp.ecma.ch/ecma-st/Ecma-262.pdf for PDF and
+ftp://ftp.ecma.ch/ecma-st/Ecma-262.psc for postscript.
 
 About 90% of the required features should be covered by now. Note that this
 number covers the core language elements only. Features like the famous
