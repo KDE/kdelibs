@@ -52,6 +52,8 @@
 
 #include <kapplication.h>
 
+#include <kprotocolmanager.h>
+
 #include "kio/tcpslavebase.h"
 
 using namespace KIO;
@@ -127,7 +129,7 @@ void TCPSlaveBase::doConstructorStuff()
     d->dcc = 0L;
     d->pkcs = 0L;
     d->status = -1;
-    d->timeout = -1;
+    d->timeout = KProtocolManager::connectTimeout();
     d->block = false;
     d->useSSLTunneling = false;
 }
