@@ -229,7 +229,7 @@ void KLocale::initLanguage(KConfig *config, const QString& catalogue)
         ++it )
   {
     QString ln, ct, chrset;
-    splitLocale(*it, ln, ct, chrset);	
+    splitLocale(*it, ln, ct, chrset);
 
     if (!ct.isEmpty()) {
       langlist.insert(it, ln + '_' + ct);
@@ -640,51 +640,85 @@ void KLocale::setMainCatalogue(const char *catalogue)
     maincatalogue = catalogue;
 }
 
-double KLocale::readNumber(const QString &str, bool * ok) const
+double KLocale::readNumber(const QString &_str, bool * ok) const
 {
+    QString str = _str.stripWhiteSpace();
     bool neg = str.find(negativeSign()) == 0;
-    QString buf = decimalSymbol();
-    int pos = str.find(buf);
+    if (neg)
+        str.remove( 0, negativeSign().length() );
 
-    QString major = str.left(pos);
+    int pos = str.find(monetaryDecimalSymbol());
+    QString major;
     QString minior;
-    if (pos != -1) minior = str.mid(pos + buf.length());
+    if ( pos == -1 )
+        major = str;
+    else
+    {
+        major = str.left(pos);
+        minior = str.mid(pos + monetaryDecimalSymbol().length());
+    }
 
-    for (pos = major.length(); pos >= 0; pos--)
-        if (!major.at(pos).isNumber()) major.remove(pos, 1);
-
-    for (pos = minior.length(); pos >= 0; pos--)
-        if (!minior.at(pos).isNumber()) minior.remove(pos, 1);
+    // Remove thousand separators
+    while ( ( pos = major.find( monetaryThousandsSeparator() ) ) > 0 )
+        major.remove( pos, monetaryThousandsSeparator().length() );
 
     QString tot;
     if (neg) tot = '-';
     tot += major + '.' + minior;
+
     return tot.toDouble(ok);
 }
 
-double KLocale::readMoney(const QString &str, bool * ok) const
+double KLocale::readMoney(const QString &_str, bool * ok) const
 {
-    bool neg;
+    QString str = _str.stripWhiteSpace();
+    bool neg = false;
     if (negativeMonetarySignPosition() == ParensAround)
     {
         int i1 = str.find('(');
-        neg = i1 != -1 && i1 < str.find(')');
+        if (i1 != -1)
+        {
+            int i2 = str.find(')');
+            if (i2 != -1)
+            {
+                if ( (neg = (i1 < i2)) )
+                {
+                    str.remove(i1,1);
+                    str.remove(i2,1);
+                }
+            }
+        }
     }
     else
-        neg = str.find(negativeSign()) != -1;
+    {
+        int i1 = str.find(negativeSign());
+        if ( i1 != -1 )
+        {
+            neg = true;
+            str.remove(i1,negativeSign().length());
+        }
+    }
 
-    QString buf = monetaryDecimalSymbol();
-    int pos = str.find(buf);
+    str = str.stripWhiteSpace();
+    int pos = str.find(currencySymbol());
+    if ( pos == 0 || pos == (int) str.length()-1 )
+        str.remove(pos,currencySymbol().length());
 
-    QString major = str.left(pos);
+    str = str.stripWhiteSpace();
+    pos = str.find(monetaryDecimalSymbol());
+    QString major;
     QString minior;
-    if (pos != -1) minior = str.mid(pos + buf.length());
+    if (pos == -1)
+        major = str;
+    else
+    {
+        major = str.left(pos);
+        minior = str.mid(pos + monetaryDecimalSymbol().length());
+    }
 
-    for (pos = major.length(); pos >= 0; pos--)
-        if (!major.at(pos).isNumber()) major.remove(pos, 1);
-
-    for (pos = minior.length(); pos >= 0; pos--)
-        if (!minior.at(pos).isNumber()) minior.remove(pos, 1);
+    // Remove thousand separators
+    while ( ( pos = major.find( thousandsSeparator() ) ) > 0 )
+        major.remove( pos, thousandsSeparator().length() );
 
     QString tot;
     if (neg) tot = '-';
@@ -871,7 +905,7 @@ QTime KLocale::readTime(const QString &intstr, bool seconds) const
 	goto error;
 
       break;
-			
+
     case 'l':
     case 'I':
       _12h = true;
