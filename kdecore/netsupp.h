@@ -65,8 +65,10 @@ struct kde_sockaddr_in6
 {
 #ifdef HAVE_SOCKADDR_SA_LEN
   Q_UINT8		sin6_len;
+  Q_UINT8		sin6_family;
+#else  //HAVE_SOCKADDR_SA_LEN
+  Q_UINT16		sin6_family;
 #endif
-  sa_family_t		sin6_family;
   unsigned short       	sin6_port;	/* RFC says in_port_t */
   Q_UINT32		sin6_flowinfo;
   struct kde_in6_addr	sin6_addr;
