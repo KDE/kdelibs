@@ -74,7 +74,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
     QVBox *box = new QVBox( parentWidget, widgetName );
 
     m_khtml = new KHTMLPart( box, widgetName, this, "htmlimagepart" );
-    m_khtml->autoloadImages( true );
+    m_khtml->setAutoloadImages( true );
 
     setWidget( box );
 
@@ -222,6 +222,7 @@ void KHTMLImage::updateWindowCaption()
         caption = i18n( "Image - %2x%3 Pixels" ).arg( pix.width() ).arg( pix.height() );
 
     emit setWindowCaption( caption );
+    emit setStatusBarText(i18n("Done."));
 }
 
 KHTMLImageBrowserExtension::KHTMLImageBrowserExtension( KHTMLImage *parent, const char *name )
@@ -248,7 +249,7 @@ void KHTMLImageBrowserExtension::print()
 void KHTMLImageBrowserExtension::reparseConfiguration()
 {
     static_cast<KHTMLPartBrowserExtension *>( m_imgPart->doc()->browserExtension() )->reparseConfiguration();
-    m_imgPart->doc()->autoloadImages( true );
+    m_imgPart->doc()->setAutoloadImages( true );
 }
 
 using namespace KParts;
