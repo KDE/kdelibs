@@ -257,6 +257,7 @@
 <!ENTITY kpaint "<application>KPaint</application>">
 <!ENTITY kpanel	"<application>kpanel</application>">
 <!ENTITY kpat	"<application>KPatience</application>">
+<!ENTITY kpercentage	"<application>KPercentage</application>">
 <!ENTITY kpilot	"<application>KPilot</application>">
 <!ENTITY kpf	"<application>kpf</application>">
 <!ENTITY kpm	"<application>Kpm</application>">
