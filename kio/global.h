@@ -181,7 +181,6 @@ typedef QListIterator<UDSEntry> UDSEntryListIterator;
 
 inline QDataStream& operator<<(QDataStream& s, unsigned long n)
 {
-    debug("unsigned long <<");
     return (s << Q_INT32((n & 0xffff0000) >> 16) << Q_INT32(n & 0x0000ffff));
 }
 
