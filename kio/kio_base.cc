@@ -77,7 +77,7 @@ bool IOJob::get( const char *_url )
   return ConnectionSignals::get( _url );
 }
 
-bool IOJob::put( const char *_url, int _mode, bool _overwrite )
+bool IOJob::put( const char *_url, int _mode, bool _overwrite, bool _resume )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_PUT;
@@ -85,7 +85,7 @@ bool IOJob::put( const char *_url, int _mode, bool _overwrite )
   m_bIsReady = false;
   m_bError = false;
   
-  return ConnectionSignals::put( _url, _mode, _overwrite );
+  return ConnectionSignals::put( _url, _mode, _overwrite, _resume );
 }
 
 bool IOJob::mkdir( const char *_url, int _mode )

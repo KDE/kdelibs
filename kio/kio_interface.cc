@@ -44,7 +44,7 @@ bool ConnectionSignals::get( const char *_url )
   return true;
 }
 
-bool ConnectionSignals::put( const char *_url, int _mode, bool _overwrite )
+bool ConnectionSignals::put( const char *_url, int _mode, bool _overwrite, bool _resume )
 {
   assert( m_pConnection );
 
@@ -52,10 +52,11 @@ bool ConnectionSignals::put( const char *_url, int _mode, bool _overwrite )
   if ( l >= 0xFFF0 )
     return false;
   
-  sprintf( m_pConnection->buffer(), "%c%8x_", '0' + (char)_overwrite, _mode );
-  strcpy( m_pConnection->buffer() + 10, _url );
+  sprintf( m_pConnection->buffer(), "%c%c%8x_", '0' + (char)_overwrite,
+	   '0' + (char)_resume, _mode );
+  strcpy( m_pConnection->buffer() + 11, _url );
   
-  m_pConnection->send( CMD_PUT, m_pConnection->buffer(), 10 + l + 1 );
+  m_pConnection->send( CMD_PUT, m_pConnection->buffer(), 11 + l + 1 );
   return true;
 }
 
@@ -178,6 +179,18 @@ bool ConnectionSignals::finished()
   assert( m_pConnection );
 
   m_pConnection->send( MSG_FINISHED, 0L, 0 );
+  return true;
+}
+
+bool ConnectionSignals::renamed( const char *_new )
+{
+  assert( m_pConnection );
+  
+  int l = strlen( _new );
+  if ( l >= 0xFFFF )
+    return false;
+  
+  m_pConnection->send( MSG_RENAMED, _new, l + 1 );
   return true;
 }
 
@@ -484,13 +497,16 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
       break;
     case CMD_PUT:
       {
-	char *p = (char*)_p + 1;
+	char *p = (char*)_p + 2;
 	while( *p == ' ' ) p++;
 	int mode = strtol( p, 0L, 16 );
 	bool overwrite = false;
 	if ( *((char*)_p) == '1' )
 	  overwrite = true;
-	slotPut( (const char*)(_p) + 10, mode, overwrite );
+	bool resume = false;
+	if ( *((char*)(_p + 1)) == '1' )
+	  resume = true;
+	slotPut( (const char*)(_p) + 11, mode, overwrite, resume );
       }
       break;
     case CMD_GET:
@@ -527,6 +543,9 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
       break;
     case MSG_FINISHED:
       slotFinished();
+      break;
+    case MSG_RENAMED:
+      slotRenamed( ( const char*)_p );
       break;
     case MSG_ERROR:
       {	

@@ -48,6 +48,7 @@
 #define MSG_LIST_ENTRY 105
 #define MSG_IS_DIRECTORY 106 // Used by CMD_ISDIR
 #define MSG_IS_FILE 107      // Used by CMD_ISDIR
+#define MSG_RENAMED 108
 
 #define ERR_CANNOT_OPEN_FOR_READING 1
 #define ERR_CANNOT_OPEN_FOR_WRITING 2
@@ -146,7 +147,7 @@ public:
   /**
    * @param _mode may be -1. In this case no special permission mode is set.
    */
-  virtual bool put( const char *_url, int _mode, bool _overwrite );
+  virtual bool put( const char *_url, int _mode, bool _overwrite, bool _resume );
   virtual bool copy( list<string>&_source, const char *_dest );
   virtual bool move( const char *_source, const char *_dest );
   virtual bool move( list<string>& _source, const char *_dest );
@@ -173,7 +174,8 @@ public:
   virtual bool listEntry( UDSEntry& _entry );
   virtual bool isDirectory();
   virtual bool isFile();
-  
+  virtual bool renamed( const char *_new );
+
   ///////////
   // Info Signals
   ///////////
@@ -212,7 +214,8 @@ public:
   ///////////
 
   virtual void slotGet( const char *_url ) { };
-  virtual void slotPut( const char *_url, int _mode, bool _overwrite ) { };
+  virtual void slotPut( const char *_url, int _mode, bool _overwrite, bool _resume)
+    { };
   virtual void slotCopy( list<string>& _source, const char *_dest ) { };
   virtual void slotMove( const char *_source, const char *_dest ) { };
   virtual void slotMove( list<string>& _source, const char *_dest ) { };
@@ -237,6 +240,7 @@ public:
   virtual void slotListEntry( UDSEntry& _entry ) { };
   virtual void slotIsDirectory() { };
   virtual void slotIsFile() { };
+  virtual void slotRenamed( const char* _new ) { };
   
   ///////////
   // Infos

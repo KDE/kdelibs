@@ -414,7 +414,7 @@ void KIOJob::slotError( int _errid, const char *_txt )
 {
   IOJob::slotError( _errid, _txt );
   
-  // If someone tries to delete us because we emitted sigFinished
+  // If someone tries to delete us because we emitted sigError
   // he wont have look. One only stores the id of the job. And since
   // we remove the id from the map NOW, nobody gets the pointer to this
   // object => nobody can delete it. We delete this object at the end
@@ -451,6 +451,11 @@ void KIOJob::slotError( int _errid, const char *_txt )
     delete this;
     return;
   }
+}
+
+void KIOJob::slotRenamed( const char *_new )
+{
+  emit sigRenamed( m_id, _new );
 }
 
 void KIOJob::slotTotalSize( unsigned long _bytes )
