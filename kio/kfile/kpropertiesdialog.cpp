@@ -1018,7 +1018,16 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 void KFilePropsPlugin::setFileNameReadOnly( bool ro )
 {
   if ( d->m_lined )
+  {
     d->m_lined->setReadOnly( ro );
+    if (ro)
+    {
+       // Don't put the initial focus on the line edit when it is ro
+       QPushButton *button = properties->actionButton(KDialogBase::Ok);
+       if (button)
+          button->setFocus();
+    }    
+  }
 }
 
 void KFilePropsPlugin::slotEditFileType()
