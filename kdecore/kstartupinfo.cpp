@@ -707,17 +707,11 @@ bool KStartupInfo::find_wclass( QCString res_name, QCString res_class,
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 static Atom net_startup_atom = None;
-#endif
 
-QCString KStartupInfo::windowStartupId( WId w_P )
+static QCString read_startup_id_property( WId w_P )
     {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-    if( net_startup_atom == None )
-        net_startup_atom = XInternAtom( qt_xdisplay(), NET_STARTUP_WINDOW, False );
-    if( utf8_string_atom == None )
-        utf8_string_atom = XInternAtom( qt_xdisplay(), "UTF8_STRING", False );
-    unsigned char *name_ret;
     QCString ret;
+    unsigned char *name_ret;
     Atom type_ret;
     int format_ret;
     unsigned long nitems_ret = 0, after_ret = 0;
@@ -729,6 +723,27 @@ QCString KStartupInfo::windowStartupId( WId w_P )
   	    ret = reinterpret_cast< char* >( name_ret );
         if ( name_ret != NULL )
             XFree( name_ret );
+        }
+    return ret;
+    }
+
+#endif
+
+QCString KStartupInfo::windowStartupId( WId w_P )
+    {
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+    if( net_startup_atom == None )
+        net_startup_atom = XInternAtom( qt_xdisplay(), NET_STARTUP_WINDOW, False );
+    if( utf8_string_atom == None )
+        utf8_string_atom = XInternAtom( qt_xdisplay(), "UTF8_STRING", False );
+    QCString ret = read_startup_id_property( w_P );
+    if( ret.isEmpty())
+        { // retry with window group leader, as the spec says
+        XWMHints* hints = XGetWMHints( qt_xdisplay(), w_P );
+        if( hints && ( hints->flags & WindowGroupHint ) != 0 )
+            ret = read_startup_id_property( hints->window_group );
+        if( hints )
+            XFree( hints );
         }
     return ret;
 #else
