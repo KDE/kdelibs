@@ -11,7 +11,6 @@
 </term>
 <listitem><para><action>Invoca a ajuda do KDE</action>, aberta na documentação do &kappname;. (este documento).</para></listitem>
 </varlistentry>
-
 <varlistentry>
 <term><menuchoice>
 <shortcut>
@@ -21,7 +20,7 @@
 <guimenuitem>O que é Isto?</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Muda o cursor do rato para uma mistura de uma seta com um ponto de interrogação.</action>  Ao carregares nos itens do &kappname; irás abrir uma janela de ajuda (se existir alguma para o item em particular) que explica a função do item.</para></listitem>
+<listitem><para><action>Muda o cursor do rato para uma mistura de uma seta com um ponto de interrogação.</action>  Ao carregar nos itens do &kappname; irá abrir uma janela de ajuda (se existir alguma para o item em particular) que explica a função do item.</para></listitem>
 </varlistentry>
 
 
@@ -30,7 +29,7 @@
 <guimenu>Ajuda</guimenu>
 <guimenuitem>Comunicar Erro...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Abre a janela de Relato de Erros</action> onde podes
+<listitem><para><action>Abre a janela de Relato de Erros</action> onde pode
 comunicar um erro ou <quote>pedir</quote> uma funcionalidade.</para></listitem>
 </varlistentry>
 
@@ -39,7 +38,7 @@ comunicar um erro ou <quote>pedir</quote> uma funcionalidade.</para></listitem>
 <guimenu>Ajuda</guimenu>
 <guimenuitem>Acerca do &kappname;</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Isto irá mostrar a versão e as informações do autor.</action></para></listitem>
+<listitem><para><action>Mostra a versão da aplicação e as informações do autor.</action></para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -47,6 +46,6 @@ comunicar um erro ou <quote>pedir</quote> uma funcionalidade.</para></listitem>
 <guimenu>Ajuda</guimenu>
 <guimenuitem>Acerca do KDE</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Isto mostra a versão do KDE bem como outras informações básicas.</action></para></listitem>
+<listitem><para><action>Mostra a versão do KDE bem como outras informações básicas.</action></para></listitem>
 </varlistentry>
 </variablelist>
