@@ -110,10 +110,6 @@ void KJavaDownloader::slotData( KIO::Job*, const QByteArray& qb )
             d->file.resize( 0 );
         }
         d->isfirstdata = false;
-        KIO::MetaData md = d->job->metaData();
-        KIO::MetaData::ConstIterator it;
-        for( it = md.begin(); it !=  md.end(); ++it)
-            kdDebug(6100)<< "metadata " << it.key() << "=" << it.data() << endl;
     }
     if ( qb.size() )
         server->sendURLData( d->loaderID, DATA, qb );
