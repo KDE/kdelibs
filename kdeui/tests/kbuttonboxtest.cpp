@@ -21,6 +21,7 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qdialog.h>
+#include <qpushbutton.h>
 
 int main(int argc, char **argv) {
   KApplication a(argc, argv, "dummy");
