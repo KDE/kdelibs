@@ -12,6 +12,7 @@ debian/tmp/usr/bin/dcopserver_shutdown
 debian/tmp/usr/bin/dcopstart
 debian/tmp/usr/bin/imagetops
 debian/tmp/usr/bin/kab2kabc
+debian/tmp/usr/bin/kaddprinterwizard
 debian/tmp/usr/bin/kbuildsycoca
 debian/tmp/usr/bin/kconf_update
 debian/tmp/usr/bin/kcookiejar
@@ -44,9 +45,8 @@ debian/tmp/usr/bin/make_driver_db_cups
 debian/tmp/usr/bin/make_driver_db_lpr
 debian/tmp/usr/bin/preparetips
 debian/tmp/usr/bin/xml2man
-debian/tmp/usr/lib/kaddprinterwizard.la
-debian/tmp/usr/lib/kaddprinterwizard.so
+debian/tmp/usr/lib/kde3/kaddprinterwizard.la
+debian/tmp/usr/lib/kde3/kaddprinterwizard.so
 debian/tmp/usr/lib/knotify.la
 debian/tmp/usr/lib/knotify.so
-
 
