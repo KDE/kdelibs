@@ -1194,7 +1194,7 @@ void HighColorStyle::drawControl( ControlElement element,
 #if (QT_VERSION-0 >= 0x030100)
 		// MENUBAR BACKGROUND
 		// -------------------------------------------------------------------
-		case CE_MenuBarBackground:
+		case CE_MenuBarBackground: // will be CE_MenuBarEmptyArea in Qt3.1b2
 		{
 			renderGradient(p, r, cg.button(), false);
 			break;
