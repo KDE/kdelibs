@@ -164,20 +164,20 @@ protected:
 
     void init( Mode mode );
     void insertURLItem( const KURLComboItem * );
-    
+
     /**
      * Uses KMimeType::pixmapForURL() to return a proper pixmap for @p url.
      * In directory mode, a folder icon is always returned.
      */
     QPixmap getPixmap( const KURL& url ) const;
-    
+
     /**
      * Updates @p item with @p pixmap and sets the url instead of the text
      * of the KURLComboItem.
      * Also works around a Qt bug.
      */
     void updateItem( const KURLComboItem *item, int index, const QPixmap& pix);
-    
+
     QPixmap opendirPix;
     int firstItemIndex;
 
@@ -191,7 +191,6 @@ private:
 private:
     class KURLComboBoxPrivate;
     KURLComboBoxPrivate *d;
-    virtual void init() { KComboBox::init(); }
 };
 
 
