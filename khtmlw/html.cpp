@@ -1185,7 +1185,7 @@ void KHTMLWidget::selectFont( const char *_fontfamily, int _fontsize, int _weigh
 	_fontsize = MAXFONTSIZES - 1;
 
     HTMLFont f( _fontfamily, _fontsize, _weight, _italic,
-            font_stack.top()->charset());
+            settings->charset);
     f.setTextColor( *(colorStack.top()) );
     const HTMLFont *fp = pFontManager->getFont( f );
 
@@ -1252,6 +1252,7 @@ void KHTMLWidget::popFont()
     if ( font_stack.isEmpty() )
     {
 	HTMLFont f( settings->fontBaseFace, settings->fontBaseSize );
+	f.setCharset(settings->charset);
 	const HTMLFont *fp = pFontManager->getFont( f );
 	font_stack.push( fp );
     }
@@ -1327,6 +1328,7 @@ void KHTMLWidget::parse()
     
     font_stack.clear();
     HTMLFont f( settings->fontBaseFace, settings->fontBaseSize );
+    f.setCharset(settings->charset);
     f.setTextColor( settings->fontBaseColor );
     const HTMLFont *fp = pFontManager->getFont( f );
     font_stack.push( fp );
@@ -4563,19 +4565,22 @@ bool KHTMLWidget::setCharset(const char *name){
 	  charsetConverter=0;
 	}  
  	debugM("Setting charset to: %s\n",charset.name());
-        HTMLFont f( *font_stack.top());
-	debugM("Original font: face: %s qtCharset: %i\n"
-	                            ,QFont(f).family(),(int)QFont(f).charSet());
-	f.setCharset(charset);
-	debugM("Changed font: face: %s qtCharset: %i\n"
-	                            ,QFont(f).family(),(int)QFont(f).charSet());
-        const HTMLFont *fp = pFontManager->getFont( f );
-	debugM("Got font: %p\n",fp);
-	debugM("Got font: face: %s qtCharset: %i\n",QFont(*fp).family(),(int)QFont(*fp).charSet());
-        font_stack.push( fp );
-	debugM("painter: %p\n",painter);
-	debugM("Font stack top: %p\n",font_stack.top());
-        if (painter) painter->setFont( *font_stack.top() );
+	settings->charset=charset;
+        if (currentFont()!=0){	
+          HTMLFont f( *font_stack.top());
+	  debugM("Original font: face: %s qtCharset: %i\n"
+	                              ,QFont(f).family(),(int)QFont(f).charSet());
+	  f.setCharset(charset);
+	  debugM("Changed font: face: %s qtCharset: %i\n"
+	                              ,QFont(f).family(),(int)QFont(f).charSet());
+          const HTMLFont *fp = pFontManager->getFont( f );
+	  debugM("Got font: %p\n",fp);
+	  debugM("Got font: face: %s qtCharset: %i\n",QFont(*fp).family(),(int)QFont(*fp).charSet());
+          font_stack.push( fp );
+	  debugM("painter: %p\n",painter);
+	  debugM("Font stack top: %p\n",font_stack.top());
+          if (painter) painter->setFont( *font_stack.top() );
+	}
 	return TRUE;
 }
 

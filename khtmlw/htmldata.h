@@ -24,6 +24,7 @@
 #include <qcolor.h>
 #include <qcursor.h>
 #include <qstring.h>
+#include <kcharsets.h>
 
 class HTMLSettings
 {
@@ -43,6 +44,8 @@ public:
     QColor  vLinkColor;
 
     QColor  bgColor;
+
+    KCharset charset; 
 
     bool    underlineLinks;
 };

@@ -19,6 +19,7 @@
 */
 
 #include "htmldata.h"
+#include <kapp.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -37,6 +38,8 @@ HTMLSettings::HTMLSettings()
 
     bgColor       = lightGray;
 
+    charset	  = KApplication::getKApplication()->getCharsets()->defaultCh();
+
     underlineLinks = true;
 }
 
@@ -52,6 +55,8 @@ HTMLSettings::HTMLSettings( const HTMLSettings &s )
     vLinkColor    = s.vLinkColor;
 
     bgColor       = s.bgColor;
+    
+    charset       = s.charset;
 
     underlineLinks = s.underlineLinks;
 }
@@ -68,6 +73,8 @@ const HTMLSettings &HTMLSettings::operator=( const HTMLSettings &s )
     vLinkColor    = s.vLinkColor;
 
     bgColor       = s.bgColor;
+    
+    charset       = s.charset;
 
     underlineLinks = s.underlineLinks;
 

@@ -1,6 +1,12 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.12.16 - 23 Mar 1998 (Jacek)
+---------------
+
+Fixed charset support bug, which made kmail crash when external reader
+  window was to be open
+  
 Version 0.12.15 - 21 Mar 1998 (Torben)
 ---------------
 
