@@ -30,8 +30,6 @@ Shell::Shell( KPart *part1, KPart *part2 )
 
 Shell::~Shell()
 {
-  m_manager->removePart( m_part1 );
-  m_manager->removePart( m_part2 );
 }
 
 void Shell::slotActivePartChanged( KPart *newPart, KPart *oldPart )
@@ -100,7 +98,6 @@ int main( int argc, char **argv )
   
   app.exec();
   
-  delete shell;
   return 0;
 }
 
