@@ -1063,13 +1063,14 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId)
 {
    QString value(curP, endP - curP);
-   value = value.lower(); //### Is this really needed?
+   value = value.lower().stripWhiteSpace();
+   int len = value.length();
    const char *val = value.latin1();
  
    CSSValueImpl *parsedValue = 0;
 
    // We are using this so often
-   const struct css_value *cssval = findValue(val, endP - curP);
+   const struct css_value *cssval = findValue(val, len);
    if (cssval && cssval->id == CSS_VAL_INHERIT) {
         parsedValue = new CSSInheritedValueImpl(); // inherited value
    } else {
@@ -1106,7 +1107,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     case CSS_PROP_EMPTY_CELLS:          // show | hide | inherit
     case CSS_PROP_TABLE_LAYOUT:         // auto | fixed | inherit
     {
-        const struct css_value *cssval = findValue(val, value.length());
+        const struct css_value *cssval = findValue(val, len);
         if (cssval)
         {
             parsedValue = new CSSPrimitiveValueImpl(cssval->id);
@@ -1781,7 +1782,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     case CSS_PROP_BORDER_COLOR:    
     	// <color>{1,4} | transparent | inherit
     {
-        const struct css_value *cssval = findValue(val, endP - curP);
+        const struct css_value *cssval = findValue(val, len);
         if (cssval && cssval->id == CSS_VAL_TRANSPARENT)
         {
             // set border colors to invalid
