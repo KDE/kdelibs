@@ -119,6 +119,9 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   encodingcombo->insertItem ("UTF-8");
   encodingcombo->insertItem ("KOI8-R");
   encodingcombo->insertItem ("KOI8-U");
+#if QT_VERSION >= 224
+  encodingcombo->insertItem ("CP1251");
+#endif
 
   connect (encodingcombo, SIGNAL (activated(int)), this,
 	   SLOT (sChangeEncoding(int)));
@@ -273,6 +276,9 @@ KSpellConfig::interpret (QString &fname, QString &lname,
   }
   else if (fname=="francais" || fname=="french") {
     lname="fr"; hname=i18n("French");
+//  } 
+//  else if (fname=="belarusian") {  // waiting for post 2.2 to not dissapoint translators
+//    lname="be"; hname=i18n("Belarusian");
   }
   else {
     lname=""; hname=i18n("Unknown ispell dictionary", "Unknown");

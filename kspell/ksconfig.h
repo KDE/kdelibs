@@ -43,6 +43,10 @@ enum Encoding {
   KS_E_UTF8=10,
   KS_E_KOI8R=11,
   KS_E_KOI8U=12 
+#if QT_VERSION >= 224
+		,
+  KS_E_CP1251=13
+#endif
 };
 
 enum KSpellClients {
