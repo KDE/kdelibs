@@ -29,6 +29,8 @@ endif
 
 SUBDIRS = malloc network $(SVGICONS) . kconfig_compiler tests
 
+AM_LDFLAGS = $(LDFLAGS_AS_NEEDED)
+
 lib_LTLIBRARIES = libkdefakes.la libkdecore.la
 lib_LIBRARIES = libkdefakes_nonpic.a
 
