@@ -495,7 +495,7 @@ void KateCSmartIndent::processNewline (KateDocCursor &begin, bool needContinue)
 void KateCSmartIndent::processChar(QChar c)
 {
   static const QString triggers("}{)/:;#n");
-  if (triggers.find(c, true) == -1)
+  if (triggers.find(c) < 0)
     return;
 
   KateView *view = doc->activeView();
