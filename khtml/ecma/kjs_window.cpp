@@ -1892,6 +1892,8 @@ Value History::get(ExecState *exec, const UString &p) const
 
 Value History::getValueProperty(ExecState *, int token) const
 {
+  // if previous or next is implemented, make sure its not a major
+  // privacy leak (see i.e. http://security.greymagic.com/adv/gm005-op/)
   switch (token) {
   case Length:
   {
