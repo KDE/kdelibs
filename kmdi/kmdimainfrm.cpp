@@ -52,6 +52,7 @@
 #include <kmdidockcontainer.h>
 
 #include "kmditoolviewaccessor_p.h"
+#include "kmdifocuslist.h"
 
 #include <qtoolbutton.h>
 #include <qlayout.h>
@@ -112,11 +113,12 @@ KMdi::FrameDecor KMdiMainFrm::m_frameDecoration = KMdi::KDELook;
 
 class KMdiMainFrmPrivate {
 public:
-	KMdiMainFrmPrivate() {
+	KMdiMainFrmPrivate(): focusList(0) {
 		for (int i=0;i<4;i++) activeDockPriority[i]=0;
 	}
 	~KMdiMainFrmPrivate(){}
 	KMdiDockContainer* activeDockPriority[4];
+	KMdiFocusList *focusList;
 };
 
 //============ constructor ============//
@@ -2463,6 +2465,9 @@ void KMdiMainFrm::setActiveToolDock(KMdiDockContainer* td) {
 	if (td==d->activeDockPriority[0]) return;
 	if (d->activeDockPriority[0]==0) {
 		d->activeDockPriority[0]=td;
+		d->focusList=new KMdiFocusList(this);
+		if (m_pMdi)  d->focusList->addWidgetTree(m_pMdi);
+		if (m_documentTabWidget) d->focusList->addWidgetTree(m_documentTabWidget);
 		return;
 	}
 	int offset=0;
@@ -2480,8 +2485,13 @@ void KMdiMainFrm::removeFromActiveDockList(KMdiDockContainer* td) {
 			for (int i2=i;i<3;i++)
 				d->activeDockPriority[i]=d->activeDockPriority[i+1];
 			d->activeDockPriority[3]=0;
-			return;
+			break;
 		}
+	}
+	if (d->activeDockPriority[0]==0) {
+		if (d->focusList) d->focusList->restore();
+		delete d->focusList;
+		d->focusList=0;
 	}
 }
 

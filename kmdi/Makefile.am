@@ -6,7 +6,8 @@ libkmdi_la_LIBADD  = $(LIB_KPARTS) ../kutils/libkutils.la
 
 libkmdi_la_SOURCES = kmdichildarea.cpp kmdichildfrm.cpp kmdichildfrmcaption.cpp \
                      kmdichildview.cpp kmdimainfrm.cpp kmditaskbar.cpp kmdidockcontainer.cpp \
-		     kmditoolviewaccessor.cpp kmdiguiclient.cpp kmdidocumentviewtabwidget.cpp
+		     kmditoolviewaccessor.cpp kmdiguiclient.cpp kmdidocumentviewtabwidget.cpp \
+                     kmdifocuslist.cpp
 
 include_HEADERS = kmdichildarea.h kmdichildfrm.h kmdichildfrmcaption.h kmdidefines.h \
                   kmdiiterator.h kmdilistiterator.h kmdimainfrm.h kmdinulliterator.h \
