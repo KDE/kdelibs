@@ -344,13 +344,13 @@ void HTMLFormElementImpl::submitFromKeyboard()
     for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
         if (it.current()->id() == ID_BUTTON) {
             HTMLButtonElementImpl* current = static_cast<HTMLButtonElementImpl *>(it.current());
-            if (current->buttonType() == HTMLButtonElementImpl::SUBMIT) {
+            if (current->buttonType() == HTMLButtonElementImpl::SUBMIT && !current->disabled()) {
                 current->activate();
                 return;
             }
         } else if (it.current()->id() == ID_INPUT) {
             HTMLInputElementImpl* current = static_cast<HTMLInputElementImpl *>(it.current());
-            if (current->inputType() == HTMLInputElementImpl::SUBMIT) {
+            if (current->inputType() == HTMLInputElementImpl::SUBMIT && !current->disabled()) {
                 current->activate();
                 return;
             }
@@ -656,7 +656,7 @@ bool HTMLGenericFormElementImpl::isSelectable() const
 
 void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    if (evt->target()==this)
+    if (evt->target()==this && !m_disabled)
     {
         // Report focus in/out changes to the browser extension (editable widgets only)
         KHTMLView *view = getDocument()->view();
@@ -775,7 +775,7 @@ void HTMLButtonElementImpl::attach()
 
 void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    if (m_type != BUTTON && (evt->id() == EventImpl::DOMACTIVATE_EVENT))
+    if (m_type != BUTTON && (evt->id() == EventImpl::DOMACTIVATE_EVENT) && !m_disabled)
         activate();
     HTMLGenericFormElementImpl::defaultEventHandler(evt);
 }
@@ -1333,28 +1333,30 @@ void HTMLInputElementImpl::focus()
 
 void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    if (evt->isMouseEvent() &&
-        ( evt->id() == EventImpl::KHTML_CLICK_EVENT || evt->id() == EventImpl::KHTML_DBLCLICK_EVENT ) &&
-        m_type == IMAGE
-        && m_render) {
-        // record the mouse position for when we get the DOMActivate event
-        MouseEventImpl *me = static_cast<MouseEventImpl*>(evt);
-        int offsetX, offsetY;
-        m_render->absolutePosition(offsetX,offsetY);
-        xPos = me->clientX()-offsetX;
-        yPos = me->clientY()-offsetY;
+    if ( !m_disabled )
+    {
+        if (evt->isMouseEvent() &&
+            ( evt->id() == EventImpl::KHTML_CLICK_EVENT || evt->id() == EventImpl::KHTML_DBLCLICK_EVENT ) &&
+            m_type == IMAGE
+            && m_render) {
+            // record the mouse position for when we get the DOMActivate event
+            MouseEventImpl *me = static_cast<MouseEventImpl*>(evt);
+            int offsetX, offsetY;
+            m_render->absolutePosition(offsetX,offsetY);
+            xPos = me->clientX()-offsetX;
+            yPos = me->clientY()-offsetY;
 
+            me->setDefaultHandled();
+        }
 
-	me->setDefaultHandled();
-    }
-
-    // DOMActivate events cause the input to be "activated" - in the case of image and submit inputs, this means
-    // actually submitting the form. For reset inputs, the form is reset. These events are sent when the user clicks
-    // on the element, or presses enter while it is the active element. Javascript code wishing to activate the element
-    // must dispatch a DOMActivate event - a click event will not do the job.
-    if ((evt->id() == EventImpl::DOMACTIVATE_EVENT) &&
-        (m_type == IMAGE || m_type == SUBMIT || m_type == RESET)){
-        activate();
+        // DOMActivate events cause the input to be "activated" - in the case of image and submit inputs, this means
+        // actually submitting the form. For reset inputs, the form is reset. These events are sent when the user clicks
+        // on the element, or presses enter while it is the active element. Javascript code wishing to activate the element
+        // must dispatch a DOMActivate event - a click event will not do the job.
+        if ((evt->id() == EventImpl::DOMACTIVATE_EVENT) &&
+            (m_type == IMAGE || m_type == SUBMIT || m_type == RESET)){
+            activate();
+        }
     }
     HTMLGenericFormElementImpl::defaultEventHandler(evt);
 }
