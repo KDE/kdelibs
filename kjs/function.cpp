@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <errno.h>
 
 using namespace KJS;
 
@@ -431,8 +432,9 @@ Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args
   case ParseInt: {
     CString cstr = args[0].toString(exec).cstring();
     char* endptr;
+    errno = 0;
     long value = strtol(cstr.c_str(), &endptr, args[1].toInt32(exec));
-    if (endptr == cstr.c_str())
+    if (errno || endptr == cstr.c_str())
       res = Number(NaN);
     else
       res = Number(value);
