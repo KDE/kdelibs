@@ -40,6 +40,14 @@
 #include <sys/types.h>
 #include <utime.h>
 
+void KRecentDocument::add(const KURL& url)
+{
+    if ( url.isLocalFile() )
+        add( url.path(-1) );
+    else
+        add( url.url(-1), true );
+}
+
 void KRecentDocument::add(const QString &openStr, bool isUrl)
 {
     kdDebug() << "KRecentDocument::add for " << openStr << endl;

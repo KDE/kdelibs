@@ -29,6 +29,7 @@
 #define __KRECENTDOCUMENT_H
 
 #include <qstring.h>
+#include <kurl.h>
 
 /**
  * Manage the "Recent Document Menu" entries displayed by
@@ -59,6 +60,12 @@ public:
      * to @p true if @p documentStr is an URL and not a local file path.
      */
     static void add(const QString &documentStr, bool isURL = false);
+
+    /**
+     * Overloaded for convenience.
+     */
+    static void add(const KURL& url);
+
     /**
      * Clear the recent document menu of all entries.
      */

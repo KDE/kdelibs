@@ -1213,12 +1213,8 @@ KURL KFileDialog::getOpenURL(const QString& startDir, const QString& filter,
     dlg.exec();
 
     const KURL& url = dlg.selectedURL();
-    if (!url.isMalformed()) {
-        if ( url.isLocalFile() )
-            KRecentDocument::add( url.path(-1) );
-        else
-            KRecentDocument::add( url.url(-1), true );
-    }
+    if (!url.isMalformed())
+        KRecentDocument::add( url );
 
     return url;
 }
@@ -1240,12 +1236,8 @@ KURL::List KFileDialog::getOpenURLs(const QString& startDir,
     KURL u;
     for( ; it != list.end(); ++it ) {
         u = *it;
-        if ( !u.isMalformed() ) {
-            if ( u.isLocalFile() )
-                KRecentDocument::add( u.path(-1) );
-            else
-                KRecentDocument::add( u.url(-1), true );
-        }
+        if ( !u.isMalformed() )
+            KRecentDocument::add( u );
     }
 
     return list;
@@ -1430,12 +1422,8 @@ KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
     dlg.exec();
 
     KURL url = dlg.selectedURL();
-    if (!url.isMalformed()) {
-        if ( url.isLocalFile() )
-            KRecentDocument::add( url.path(-1) );
-        else
-            KRecentDocument::add( url.url(-1) );
-    }
+    if (!url.isMalformed())
+        KRecentDocument::add( url );
 
     return url;
 }
