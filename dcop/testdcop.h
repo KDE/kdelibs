@@ -51,6 +51,7 @@ public:
 	       QCString& replyType, QByteArray &replyData);
   void function(const QString &arg1, int arg2) { qDebug("function got arg: %s and %d", arg1.utf8().data(), arg2); }
 public slots:
+  void slotTimeout();
   void registered(const QCString &appName)
      { printf("REGISTER: %s\n", appName.data()); }
 

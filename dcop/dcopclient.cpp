@@ -27,6 +27,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qmetaobject.h>
 #include <qvariant.h>
 #include <qtimer.h>
+#include <qintdict.h>
+#include <qeventloop.h>
 // end of qt <-> dcop integration
 
 #include <config.h>
@@ -154,6 +156,14 @@ public:
 
     QTimer postMessageTimer;
     QPtrList<DCOPClientMessage> messages;
+
+    struct LocalTransactionResult 
+    {
+       QCString replyType;
+       QByteArray replyData;
+    };
+
+    QIntDict<LocalTransactionResult> localTransActionList;
 };
 
 class DCOPClientTransaction
@@ -391,6 +401,8 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
 
     QCString fromApp;
     ds >> fromApp;
+    if (fromApp.isEmpty())
+        return; // Reserved for local calls
 
     if (!d->accept_calls)
     {
@@ -942,10 +954,18 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
     DCOPClient *localClient = findLocalClient( remApp );
 
     if ( localClient  ) {
+        bool saveTransaction = d->transaction;
+        Q_INT32 saveTransactionId = d->transactionId;
+        QCString saveSenderId = d->senderId;
+
+        d->senderId = 0; // Local call
 	QCString replyType;
 	QByteArray replyData;
 	(void) localClient->receive(  remApp, remObjId, remFun, data, replyType, replyData );
 
+        d->transaction = saveTransaction;
+        d->transactionId = saveTransactionId;
+        d->senderId = saveSenderId;
 	// send() returns TRUE if the data could be send to the DCOPServer,
 	// regardles of receiving the data on the other application.
 	// So we assume the data is successfully send to the (virtual) server
@@ -1590,7 +1610,24 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
     DCOPClient *localClient = findLocalClient( remApp );
 
     if ( localClient ) {
+        bool saveTransaction = d->transaction;
+        Q_INT32 saveTransactionId = d->transactionId;
+        QCString saveSenderId = d->senderId;
+
+        d->senderId = 0; // Local call
 	bool b = localClient->receive(  remApp, remObjId, remFun, data, replyType, replyData );
+	
+	Q_INT32 id = localClient->transactionId();
+        if (id) {
+           // Call delayed. We have to wait till it has been processed.
+           do {
+              QApplication::eventLoop()->processEvents( QEventLoop::WaitForMore);
+           } while( !localClient->isLocalTransactionFinished(id, replyType, replyData));
+           b = true;
+        }
+        d->transaction = saveTransaction;
+        d->transactionId = saveTransactionId;
+        d->senderId = saveSenderId;
 	return b;
     }
 
@@ -1758,6 +1795,20 @@ QCString DCOPClient::defaultObject() const
     return d->defaultObject;
 }
 
+bool
+DCOPClient::isLocalTransactionFinished(Q_INT32 id, QCString &replyType, QByteArray &replyData)
+{
+    DCOPClientPrivate::LocalTransactionResult *result = d->localTransActionList.take(id);
+    if (!result)
+        return false;
+    
+    replyType = result->replyType;
+    replyData = result->replyData;
+    delete result;
+
+    return true;
+}
+
 DCOPClientTransaction *
 DCOPClient::beginTransaction()
 {
@@ -1775,6 +1826,7 @@ DCOPClient::beginTransaction()
     trans->key = d->currentKey;
 
     d->transactionList->append( trans );
+
     return trans;
 }
 
@@ -1805,6 +1857,20 @@ DCOPClient::endTransaction( DCOPClientTransaction *trans, QCString& replyType,
     if ( !d->transactionList->removeRef( trans ) ) {
 	qWarning("Transaction unknown: Not on list of pending transactions!");
 	return; // Transaction
+    }
+
+    if (trans->senderId.isEmpty()) 
+    {
+        // Local transaction
+        DCOPClientPrivate::LocalTransactionResult *result = new DCOPClientPrivate::LocalTransactionResult();
+        result->replyType = replyType;
+        result->replyData = replyData;
+        
+        d->localTransActionList.insert(trans->id, result);
+        
+        delete trans;
+
+        return;
     }
 
     DCOPMsg *pMsg;
@@ -1928,6 +1994,8 @@ const char *
 DCOPClient::postMortemSender()
 {
    if (!dcop_main_client)
+      return "";
+   if (dcop_main_client->d->senderId.isEmpty())
       return "";
    return dcop_main_client->d->senderId.data();
 }

@@ -24,6 +24,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #include <testdcop.h>
+#include <qtimer.h>
+
+DCOPClientTransaction *countDownAction = 0;
+int countDownCount = 0;
 
 bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
 			   QCString& replyType, QByteArray &replyData)
@@ -60,8 +64,37 @@ bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
     qDebug("disconnectDCOPSignal returns %s", connectResult ? "true" : "false");
     return true;
   }
+  if (fun == "countDown()") {
+qDebug("countDown() countDownAction = %p", countDownAction);
+    if (countDownAction)
+       return false;
+
+    countDownCount = 10;       
+    countDownAction = kapp->dcopClient()->beginTransaction();
+    QTimer::singleShot(1000, this, SLOT(slotTimeout()));
+    return true;
+  }
 
   return DCOPObject::process(fun, data, replyType, replyData);
+}
+
+void MyDCOPObject::slotTimeout()
+{
+  qDebug("MyDCOPObject::slotTimeout() %d", countDownCount);
+  countDownCount--;
+  if (countDownCount == 0)
+  {
+     QCString replyType = "QString";
+     QByteArray replyData;
+     QDataStream reply( replyData, IO_WriteOnly );
+     reply << QString("Hello World");
+     kapp->dcopClient()->endTransaction(countDownAction, replyType, replyData);
+     countDownAction = 0;
+  }
+  else
+  {
+     QTimer::singleShot(1000, this, SLOT(slotTimeout()));
+  }
 }
 
 QCStringList MyDCOPObject::functions()
@@ -145,6 +178,12 @@ qDebug("Sending to object1");
 
 qDebug("Calling object1");
   if (!client2->call(app.name(), "object1", "aFunction(QString,int)", data, replyType, reply))
+    qDebug("I couldn't call myself");
+  else
+      qDebug("return type was '%s'", replyType.data() ); 
+
+qDebug("Calling countDown() in object1");
+  if (!client2->call(app.name(), "object1", "countDown()", data, replyType, reply))
     qDebug("I couldn't call myself");
   else
       qDebug("return type was '%s'", replyType.data() ); 
