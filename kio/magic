@@ -75,7 +75,7 @@
 0	string		MP+		audio/x-musepack
 
 # C64 PSID sound files
-0	string		SID		audio/prs.sid
+0	string		PSID		audio/prs.sid
 
 
 #------------------------------------------------------------------------------
