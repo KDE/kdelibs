@@ -1204,7 +1204,9 @@ QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
 }
 
 #if KDE_IS_VERSION( 3, 9, 0 )
+#ifdef __GNUC__
 #warning Remove, should be in Qt
+#endif
 #endif
 void KMainWindow::setIcon( const QPixmap& p )
 {
