@@ -144,7 +144,7 @@ kdepackages:
 	sed -e "s,<product name=\"\([^\"]*\)\">,product=\"\1\"; component=\"general\",; \
 	s#<component>\([^<]*\)</component>#component=\"\1\"#"  > tmp_download2
 	(while read i; do eval $$i; echo "\"$$product/$$component\","; done) < tmp_download2 | \
-	sort -u | sed -e "s,/general\",\"," >> $(srcdir)/kdepackages.h
+	sort -u | grep -v 'valgrind/' | sed -e "s,/general\",\"," >> $(srcdir)/kdepackages.h
 	echo "0 };" >>  $(srcdir)/kdepackages.h
 	rm tmp_download2 tmp_download
 
