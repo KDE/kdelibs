@@ -95,33 +95,26 @@ static const char shlib_ext[] = LTDL_SHLIB_EXT;
 static const char sys_search_path[] = LTDL_SYSSEARCHPATH;
 #endif
 
-static const char unknown_error[] = "unknown error";
-static const char dlopen_not_supported_error[] = "dlopen support not available";
-static const char file_not_found_error[] = "file not found";
-static const char deplib_not_found_error[] = "dependency library not found";
-static const char no_symbols_error[] = "no symbols defined";
-static const char cannot_open_error[] = "can't open the module";
-static const char cannot_close_error[] = "can't close the module";
-static const char symbol_error[] = "symbol not found";
-static const char memory_error[] = "not enough memory";
-static const char invalid_handle_error[] = "invalid handle";
-static const char buffer_overflow_error[] = "internal buffer overflow";
-static const char shutdown_error[] = "library already shutdown";
+/* Extract the diagnostic strings from the error table macro in the same
+   order as the enumberated indices in ltdl.h. */
+#define LTDL_ERROR(name, diagnostic)	(diagnostic),
+static const char *ltdl_error_strings[] = {
+	ltdl_error_table
+	0
+};
+#undef LTDL_ERROR
+
+#ifdef __STDC__
+#  define LT_DLSTRERROR(name)	ltdl_error_strings[LTDL_ERROR_##name]
+#else
+#  define LT_DLSTRERROR(name)	ltdl_error_strings[LTDL_ERROR_/**/name]
+#endif
 
 static const char *last_error = 0;
 
 LTDL_GLOBAL_DATA lt_ptr_t (*lt_dlmalloc) LTDL_PARAMS((size_t size)) = (lt_ptr_t(*)LTDL_PARAMS((size_t)))malloc;
+LTDL_GLOBAL_DATA lt_ptr_t (*lt_dlrealloc) LTDL_PARAMS((lt_ptr_t ptr, size_t size)) = (lt_ptr_t(*)LTDL_PARAMS((lt_ptr_t, size_t)))realloc;
 LTDL_GLOBAL_DATA void	 (*lt_dlfree)  LTDL_PARAMS((lt_ptr_t ptr)) = (void(*)LTDL_PARAMS((lt_ptr_t)))free;
-
-typedef struct lt_dltype_t {
-	struct lt_dltype_t *next;
-	const char *sym_prefix;	/* prefix for symbols */
-	int (*mod_init) LTDL_PARAMS((void));
-	int (*mod_exit) LTDL_PARAMS((void));
-	int (*lib_open) LTDL_PARAMS((lt_dlhandle handle, const char *filename));
-	int (*lib_close) LTDL_PARAMS((lt_dlhandle handle));
-	lt_ptr_t (*find_sym) LTDL_PARAMS((lt_dlhandle handle, const char *symbol));
-} lt_dltype_t;
 
 #define LTDL_TYPE_TOP 0
 
@@ -131,7 +124,7 @@ typedef	struct lt_dlhandle_t {
 	lt_dlinfo info;
 	int	depcount;	/* number of dependencies */
 	lt_dlhandle *deplibs;	/* dependencies */
-	lt_ptr_t handle;	/* system handle */
+	lt_syshandle handle;	/* system handle */
 	lt_ptr_t system;	/* system specific data */
 	lt_ptr_t app_private;	/* application private data */
 } lt_dlhandle_t;
@@ -210,7 +203,11 @@ strrchr(str, ch)
 
 #endif
 
-#if HAVE_LIBDL
+/* The Cygwin dlopen implementation prints a spurious error message to
+   stderr if its call to LoadLibrary() fails for any reason.  We can
+   mitigate this by not using the Cygwin implementation, and falling
+   back to our own LoadLibrary() wrapper. */
+#if HAVE_LIBDL && !defined(__CYGWIN__)
 
 /* dynamic linking with dlopen/dlsym */
 
@@ -262,32 +259,30 @@ sys_dl_exit LTDL_PARAMS((void))
 	return 0;
 }
 
-static int
-sys_dl_open (handle, filename)
-	lt_dlhandle handle;
+static lt_syshandle
+sys_dl_open (filename)
 	const char *filename;
 {
-	handle->handle = dlopen(filename, LTDL_GLOBAL | LTDL_LAZY_OR_NOW);
-	if (!handle->handle) {
+	lt_ptr_t handle = dlopen(filename, LTDL_GLOBAL | LTDL_LAZY_OR_NOW);
+	if (!handle) {
 #if HAVE_DLERROR
 		last_error = dlerror();
 #else
-		last_error = cannot_open_error;
+		last_error = LT_DLSTRERROR(CANNOT_OPEN);
 #endif
-		return 1;
 	}
-	return 0;
+	return handle;
 }
 
 static int
 sys_dl_close (handle)
-	lt_dlhandle handle;
+	lt_syshandle handle;
 {
-	if (dlclose(handle->handle) != 0) {
+	if (dlclose(handle) != 0) {
 #if HAVE_DLERROR
 		last_error = dlerror();
 #else
-		last_error = cannot_close_error;
+		last_error = LT_DLSTRERROR(CANNOT_CLOSE);
 #endif
 		return 1;
 	}
@@ -296,16 +291,16 @@ sys_dl_close (handle)
 
 static lt_ptr_t
 sys_dl_sym (handle, symbol)
-	lt_dlhandle handle;
+	lt_syshandle handle;
 	const char *symbol;
 {
-	lt_ptr_t address = dlsym(handle->handle, symbol);
+	lt_ptr_t address = dlsym(handle, symbol);
 	
 	if (!address)
 #if HAVE_DLERROR
 		last_error = dlerror();
 #else
-		last_error = symbol_error;
+		last_error = LT_DLSTRERROR(SYMBOL_NOT_FOUND);
 #endif
 	return address;
 }
@@ -380,25 +375,23 @@ sys_shl_exit LTDL_PARAMS((void))
 	return 0;
 }
 
-static int
-sys_shl_open (handle, filename)
-	lt_dlhandle handle;
+static lt_syshandle
+sys_shl_open (filename)
 	const char *filename;
 {
-	handle->handle = shl_load(filename, LTDL_BIND_FLAGS, 0L);
-	if (!handle->handle) {
-		last_error = cannot_open_error;
-		return 1;
+	lt_syshandle handle = shl_load(filename, LTDL_BIND_FLAGS, 0L);
+	if (!handle) {
+		last_error = LT_DLSTRERROR(CANNOT_OPEN);
 	}
-	return 0;
+	return handle;
 }
 
 static int
 sys_shl_close (handle)
-	lt_dlhandle handle;
+	lt_syshandle handle;
 {
-	if (shl_unload((shl_t) (handle->handle)) != 0) {
-		last_error = cannot_close_error;
+	if (shl_unload((shl_t) (handle)) != 0) {
+		last_error = LT_DLSTRERROR(CANNOT_CLOSE);
 		return 1;
 	}
 	return 0;
@@ -406,16 +399,16 @@ sys_shl_close (handle)
 
 static lt_ptr_t
 sys_shl_sym (handle, symbol)
-	lt_dlhandle handle;
+	lt_syshandle handle;
 	const char *symbol;
 {
 	lt_ptr_t address;
 
-	if (handle->handle && shl_findsym((shl_t*) &(handle->handle),
+	if (handle && shl_findsym((shl_t*) &handle,
 	    symbol, TYPE_UNDEFINED, &address) == 0)
 		if (address)
 			return address;
-	last_error = symbol_error;
+	last_error = LT_DLSTRERROR(SYMBOL_NOT_FOUND);
 	return 0;
 }
 
@@ -449,45 +442,44 @@ sys_dld_exit LTDL_PARAMS((void))
 	return 0;
 }
 
-static int
-sys_dld_open (handle, filename)
-	lt_dlhandle handle;
+static lt_syshandle
+sys_dld_open (filename)
 	const char *filename;
 {
-	handle->handle = strdup(filename);
-	if (!handle->handle) {
-		last_error = memory_error;
-		return 1;
+	lt_syshandle handle = strdup(filename);
+	if (!handle) {
+		last_error = LT_DLSTRERROR(NO_MEMORY);
+		return 0;
 	}
 	if (dld_link(filename) != 0) {
-		last_error = cannot_open_error;
-		lt_dlfree(handle->handle);
-		return 1;
+		last_error = LT_DLSTRERROR(CANNOT_OPEN);
+		lt_dlfree(handle);
+		return 0;
 	}
-	return 0;
+	return handle;
 }
 
 static int
 sys_dld_close (handle)
-	lt_dlhandle handle;
+	lt_syshandle handle;
 {
-	if (dld_unlink_by_file((char*)(handle->handle), 1) != 0) {
-		last_error = cannot_close_error;
+	if (dld_unlink_by_file((char*)(handle), 1) != 0) {
+		last_error = LT_DLSTRERROR(CANNOT_CLOSE);
 		return 1;
 	}
-	lt_dlfree(handle->filename);
+	lt_dlfree(handle);
 	return 0;
 }
 
 static lt_ptr_t
 sys_dld_sym (handle, symbol)
-	lt_dlhandle handle;
+	lt_syshandle handle;
 	const char *symbol;
 {
 	lt_ptr_t address = dld_get_func(symbol);
 	
 	if (!address)
-		last_error = symbol_error;
+		last_error = LT_DLSTRERROR(SYMBOL_NOT_FOUND);
 	return address;
 }
 
@@ -522,12 +514,12 @@ sys_wll_exit LTDL_PARAMS((void))
 /* Forward declaration; required to implement handle search below. */
 static lt_dlhandle handles;
 
-static int
-sys_wll_open (handle, filename)
-	lt_dlhandle handle;
+static lt_syshandle
+sys_wll_open (filename)
 	const char *filename;
 {
 	lt_dlhandle cur;
+	lt_syshandle handle;
 	char *searchname = NULL;
 	char *ext = strrchr(filename, '.');
 
@@ -538,11 +530,15 @@ sys_wll_open (handle, filename)
 		/* Append a `.' to stop Windows from adding an
 		   implicit `.dll' extension. */
 		searchname = (char*)lt_dlmalloc(2+ strlen(filename));
+		if (!searchname) {
+			last_error = LT_DLSTRERROR(NO_MEMORY);
+			return 0;
+		}
 		strcpy(searchname, filename);
 		strcat(searchname, ".");
 	}
-    
-	handle->handle = LoadLibrary(searchname);
+
+	handle = LoadLibrary(searchname);
 	lt_dlfree(searchname);
 	
 	/* libltdl expects this function to fail if it is unable
@@ -559,25 +555,25 @@ sys_wll_open (handle, filename)
 			cur = 0;
 			break;
 		}
-		if (cur->handle == handle->handle)
+		if (cur->handle == handle)
 			break;
 		cur = cur->next;
 	}
 
-	if (cur || !handle->handle) {
-		last_error = cannot_open_error;
-		return 1;
+	if (cur || !handle) {
+		last_error = LT_DLSTRERROR(CANNOT_OPEN);
+		return 0;
 	}
 
-	return 0;
+	return handle;
 }
 
 static int
 sys_wll_close (handle)
-	lt_dlhandle handle;
+	lt_syshandle handle;
 {
-	if (FreeLibrary(handle->handle) == 0) {
-		last_error = cannot_close_error;
+	if (FreeLibrary(handle) == 0) {
+		last_error = LT_DLSTRERROR(CANNOT_CLOSE);
 		return 1;
 	}
 	return 0;
@@ -585,13 +581,13 @@ sys_wll_close (handle)
 
 static lt_ptr_t
 sys_wll_sym (handle, symbol)
-	lt_dlhandle handle;
+	lt_syshandle handle;
 	const char *symbol;
 {
-	lt_ptr_t address = GetProcAddress(handle->handle, symbol);
+	lt_ptr_t address = GetProcAddress(handle, symbol);
 	
 	if (!address)
-		last_error = symbol_error;
+		last_error = LT_DLSTRERROR(SYMBOL_NOT_FOUND);
 	return address;
 }
 
@@ -623,9 +619,8 @@ sys_bedl_exit LTDL_PARAMS((void))
 	return 0;
 }
 
-static int
-sys_bedl_open (handle, filename)
-	lt_dlhandle handle;
+static lt_syshandle
+sys_bedl_open (filename)
 	const char *filename;
 {
 	image_id image = 0;
@@ -639,19 +634,19 @@ sys_bedl_open (handle, filename)
 			image = load_add_on(info.name);
 	}
 	if (image <= 0) {
-		last_error = cannot_open_error;
-		return 1;
+		last_error = LT_DLSTRERROR(CANNOT_OPEN);
+		return 0;
 	}
-	handle->handle = (void*) image;
-	return 0;
+
+	return (lt_syshandle) image;
 }
 
 static int
 sys_bedl_close (handle)
-	lt_dlhandle handle;
+	lt_syshandle handle;
 {
-	if (unload_add_on((image_id)handle->handle) != B_OK) {
-		last_error = cannot_close_error;
+	if (unload_add_on((image_id)handle) != B_OK) {
+		last_error = LT_DLSTRERROR(CANNOT_CLOSE);
 		return 1;
 	}
 	return 0;
@@ -659,15 +654,15 @@ sys_bedl_close (handle)
 
 static lt_ptr_t
 sys_bedl_sym (handle, symbol)
-	lt_dlhandle handle;
+	lt_syshandle handle;
 	const char *symbol;
 {
 	lt_ptr_t address = 0;
-	image_id image = (image_id)handle->handle;
+	image_id image = (image_id)handle;
    
 	if (get_image_symbol(image, symbol, B_SYMBOL_TYPE_ANY,
 		&address) != B_OK) {
-		last_error = symbol_error;
+		last_error = LT_DLSTRERROR(SYMBOL_NOT_FOUND);
 		return 0;
 	}
 	return address;
@@ -739,7 +734,7 @@ presym_add_symlist (preloaded)
 
 	tmp = (lt_dlsymlists_t*) lt_dlmalloc(sizeof(lt_dlsymlists_t));
 	if (!tmp) {
-		last_error = memory_error;
+		last_error = LT_DLSTRERROR(NO_MEMORY);
 		return 1;
 	}
 	tmp->syms = preloaded;
@@ -756,16 +751,15 @@ presym_add_symlist (preloaded)
 	return 0;
 }
 
-static int
-presym_open (handle, filename)
-	lt_dlhandle handle;
+static lt_syshandle
+presym_open (filename)
 	const char *filename;
 {
 	lt_dlsymlists_t *lists = preloaded_symbols;
 
 	if (!lists) {
-		last_error = no_symbols_error;
-		return 1;
+		last_error = LT_DLSTRERROR(NO_SYMBOLS);
+		return 0;
 	}
 	if (!filename)
 		filename = "@PROGRAM@";
@@ -775,20 +769,19 @@ presym_open (handle, filename)
 		while (syms->name) {
 			if (!syms->address &&
 			    strcmp(syms->name, filename) == 0) {
-				handle->handle = (lt_ptr_t) syms;
-				return 0;
+				return (lt_syshandle) syms;
 			}
 			syms++;
 		}
 		lists = lists->next;
 	}
-	last_error = file_not_found_error;
-	return 1;
+	last_error = LT_DLSTRERROR(FILE_NOT_FOUND);
+	return 0;
 }
 
 static int
 presym_close (handle)
-	lt_dlhandle handle;
+	lt_syshandle handle;
 {
 	/* Just to silence gcc -Wall */
 	handle = 0;
@@ -797,10 +790,10 @@ presym_close (handle)
 
 static lt_ptr_t
 presym_sym (handle, symbol)
-	lt_dlhandle handle;
+	lt_syshandle handle;
 	const char *symbol;
 {
-	lt_dlsymlist *syms = (lt_dlsymlist*)(handle->handle);
+	lt_dlsymlist *syms = (lt_dlsymlist*)(handle);
 
 	syms++;
 	while (syms->address) {
@@ -808,7 +801,7 @@ presym_sym (handle, symbol)
 			return syms->address;
 		syms++;
 	}
-	last_error = symbol_error;
+	last_error = LT_DLSTRERROR(SYMBOL_NOT_FOUND);
 	return 0;
 }
 
@@ -850,11 +843,72 @@ lt_dlinit LTDL_PARAMS((void))
 		}
 	}
 	if (typecount == 0) {
-		last_error = dlopen_not_supported_error;
+		last_error = LT_DLSTRERROR(DLOPEN_NOT_SUPPORTED);
 		return 1;
 	}
 	last_error = 0;
 	initialized = 1;
+	return 0;
+}
+
+int
+lt_dladdtype (dltype)
+	lt_dltype_t *dltype;
+{
+	lt_dltype_t *type = types;
+	
+	if (dltype == 0) {	/* diagnose null parameters */
+		last_error = LT_DLSTRERROR(INVALID_TYPE);
+		return 1;
+	}
+	if (dltype->next != 0) { /* diagnose invalid contents */
+		last_error =  LT_DLSTRERROR(INVALID_TYPE);
+		return 1;
+	}
+
+#ifdef NEED_USCORE
+	if (dltype->sym_prefix == 0)
+		dltype->sym_prefix = "_";
+#else
+	if (dltype->sym_prefix && *dltype->sym_prefix == 0)
+		dltype->sym_prefix = 0;
+#endif	
+
+	if (type == 0) {
+		type = dltype;
+	} else {
+		/* This function always appends to the existing list. */
+		while (type->next)
+			type = type->next;
+		type->next = dltype;
+	}
+
+	/* If lt_dlinit() has already been called, then initialize the
+	   new type here.  */
+	if (initialized && dltype->mod_init)
+		if ((*dltype->mod_init)()) {
+			last_error = LT_DLSTRERROR(INIT_TYPE);
+			return 1;
+		}
+
+	return 0;
+}	
+
+lt_dltype_t *
+lt_dlgettypes LTDL_PARAMS((void))
+{
+	return types;
+}
+
+int
+lt_dlsettypes (dltypes)
+	lt_dltype_t *dltypes;
+{
+	if (dltypes == 0) {	/* diagnose null parameters */
+		last_error = LT_DLSTRERROR(INVALID_TYPE);
+		return 1;
+	}
+	types = dltypes;
 	return 0;
 }
 
@@ -886,7 +940,7 @@ lt_dlexit LTDL_PARAMS((void))
 	int	errors, level;
 	
 	if (!initialized) {
-		last_error = shutdown_error;
+		last_error = LT_DLSTRERROR(SHUTDOWN);
 		return 1;
 	}
 	if (initialized != 1) { /* shut down only at last call. */
@@ -944,13 +998,14 @@ tryall_dlopen (handle, filename)
 	if (filename) {
 		cur->info.filename = strdup(filename);
 		if (!cur->info.filename) {
-			last_error = memory_error;
+			last_error = LT_DLSTRERROR(NO_MEMORY);
 			return 1;
 		}
 	} else
 		cur->info.filename = 0;
 	while (type) {
-		if (type->lib_open(cur, filename) == 0)
+		cur->handle = type->lib_open(filename);
+		if (cur->handle != 0)
 			break;
 		type = type->next;
 	}
@@ -987,7 +1042,7 @@ find_module (handle, dir, libdir, dlname, old_name, installed)
 			filename = (char*)
 				lt_dlmalloc(strlen(libdir)+1+strlen(dlname)+1);
 			if (!filename) {
-				last_error = memory_error;
+				last_error = LT_DLSTRERROR(NO_MEMORY);
 				return 1;
 			}
 			sprintf (filename, "%s/%s", libdir, dlname);
@@ -1002,7 +1057,7 @@ find_module (handle, dir, libdir, dlname, old_name, installed)
 				lt_dlmalloc((dir ? strlen(dir) : 0)
 				       + strlen(objdir)	+ strlen(dlname) + 1);
 			if (!filename) {
-				last_error = memory_error;
+				last_error = LT_DLSTRERROR(NO_MEMORY);
 				return 1;
 			}
 			if (dir)
@@ -1072,12 +1127,12 @@ find_file (basename, search_path, pdir, handle)
 	char	*canonical = 0, *next = 0;
 	
 	if (!search_path || !*search_path) {
-		last_error = file_not_found_error;
+		last_error = LT_DLSTRERROR(FILE_NOT_FOUND);
 		return 0;
 	}
 	canonical = canonicalize_path (search_path);
 	if (!canonical) {
-		last_error = memory_error;
+		last_error = LT_DLSTRERROR(NO_MEMORY);
 		goto cleanup;
 	}
 	next = canonical;
@@ -1101,7 +1156,7 @@ find_file (basename, search_path, pdir, handle)
 			filenamesize = lendir + 1 + lenbase + 1;
 			filename = (char*) lt_dlmalloc(filenamesize);
 			if (!filename) {
-				last_error = memory_error;
+				last_error = LT_DLSTRERROR(NO_MEMORY);
 				goto cleanup;
 			}
 		}
@@ -1133,7 +1188,7 @@ find_file (basename, search_path, pdir, handle)
 			}
 		}
 	}
-	last_error = file_not_found_error;
+	last_error = LT_DLSTRERROR(FILE_NOT_FOUND);
 cleanup:
 	if (filename)
 		lt_dlfree(filename);
@@ -1158,7 +1213,7 @@ load_deplibs(handle, deplibs)
 		return 0;
 	save_search_path = strdup(user_search_path);
 	if (user_search_path && !save_search_path) {				
-		last_error = memory_error;
+		last_error = LT_DLSTRERROR(NO_MEMORY);
 		return 1;
 	}
 	p = deplibs;
@@ -1226,7 +1281,7 @@ load_deplibs(handle, deplibs)
 			int j;
 			for (j = 0; j < i; j++)
 				lt_dlclose(handles[j]);
-			last_error = deplib_not_found_error;
+			last_error = LT_DLSTRERROR(DEPLIB_NOT_FOUND);
 			goto cleanup_names;
 		}
 		handles[i] = handle;	
@@ -1280,7 +1335,7 @@ trim (dest, str)
 	if (len > 3 && str[0] == '\'') {
 		tmp = (char*) lt_dlmalloc(end - str);
 		if (!tmp) {
-			last_error = memory_error;
+			last_error = LT_DLSTRERROR(NO_MEMORY);
 			return 1;
 		}
 		strncpy(tmp, &str[1], (end - str) - 1);
@@ -1321,7 +1376,7 @@ lt_dlopen (filename)
 	if (!filename) {
 		handle = (lt_dlhandle) lt_dlmalloc(sizeof(lt_dlhandle_t));
 		if (!handle) {
-			last_error = memory_error;
+			last_error = LT_DLSTRERROR(NO_MEMORY);
 			return 0;
 		}
 		handle->info.ref_count = 0;
@@ -1336,7 +1391,7 @@ lt_dlopen (filename)
 	}
 	canonical = canonicalize_path (filename);
 	if (!canonical) {
-		last_error = memory_error;
+		last_error = LT_DLSTRERROR(NO_MEMORY);
 		if (handle)
 			lt_dlfree(handle);
 		return 0;
@@ -1346,7 +1401,7 @@ lt_dlopen (filename)
 		basename++;
 		dir = (char*) lt_dlmalloc(basename - canonical + 1);
 		if (!dir) {
-			last_error = memory_error;
+			last_error = LT_DLSTRERROR(NO_MEMORY);
 			handle = 0;
 			goto cleanup;
 		}
@@ -1372,7 +1427,7 @@ lt_dlopen (filename)
 		/* extract the module name from the file name */
 		name = (char*) lt_dlmalloc(ext - basename + 1);
 		if (!name) {
-			last_error = memory_error;
+			last_error = LT_DLSTRERROR(NO_MEMORY);
 			handle = 0;
 			goto cleanup;
 		}
@@ -1386,7 +1441,7 @@ lt_dlopen (filename)
 		/* now try to open the .la file */
 		file = fopen(filename, LTDL_READTEXT_MODE);
 		if (!file)
-			last_error = file_not_found_error;
+			last_error = LT_DLSTRERROR(FILE_NOT_FOUND);
 		if (!file && !dir) {
 			/* try other directories */
 			file = (FILE*) find_file(basename, 
@@ -1416,7 +1471,7 @@ lt_dlopen (filename)
 		line = (char*) lt_dlmalloc(LTDL_FILENAME_MAX);
 		if (!line) {
 			fclose(file);
-			last_error = memory_error;
+			last_error = LT_DLSTRERROR(NO_MEMORY);
 			handle = 0;
 			goto cleanup;
 		}
@@ -1470,7 +1525,7 @@ lt_dlopen (filename)
 			if (handle)
 				lt_dlfree(handle);
 			if (!error)
-				last_error = memory_error;
+				last_error = LT_DLSTRERROR(NO_MEMORY);
 			free_vars(dlname, old_name, libdir, deplibs);
 			/* handle is already set to 0 */
 			goto cleanup;
@@ -1498,7 +1553,7 @@ lt_dlopen (filename)
 		/* not a libtool module */
 		handle = (lt_dlhandle) lt_dlmalloc(sizeof(lt_dlhandle_t));
 		if (!handle) {
-			last_error = memory_error;
+			last_error = LT_DLSTRERROR(NO_MEMORY);
 			/* handle is already set to 0 */
 			goto cleanup;
 		}
@@ -1566,7 +1621,7 @@ lt_dlopenext (filename)
 		return lt_dlopen(filename);
 	len = strlen(filename);
 	if (!len) {
-		last_error = file_not_found_error;
+		last_error = LT_DLSTRERROR(FILE_NOT_FOUND);
 		return 0;
 	}
 	/* try the normal file name */
@@ -1576,7 +1631,7 @@ lt_dlopenext (filename)
 	/* try "filename.la" */
 	tmp = (char*) lt_dlmalloc(len+4);
 	if (!tmp) {
-		last_error = memory_error;
+		last_error = LT_DLSTRERROR(NO_MEMORY);
 		return 0;
 	}
 	strcpy(tmp, filename);
@@ -1593,7 +1648,7 @@ lt_dlopenext (filename)
 		lt_dlfree(tmp);
 		tmp = (char*) lt_dlmalloc(len + strlen(shlib_ext) + 1);
 		if (!tmp) {
-			last_error = memory_error;
+			last_error = LT_DLSTRERROR(NO_MEMORY);
 			return 0;
 		}
 		strcpy(tmp, filename);
@@ -1607,7 +1662,7 @@ lt_dlopenext (filename)
 		return handle;
 	}
 #endif	
-	last_error = file_not_found_error;
+	last_error = LT_DLSTRERROR(FILE_NOT_FOUND);
 	lt_dlfree(tmp);
 	return 0;
 }
@@ -1625,7 +1680,7 @@ lt_dlclose (handle)
 		cur = cur->next;
 	}
 	if (!cur) {
-		last_error = invalid_handle_error;
+		last_error = LT_DLSTRERROR(INVALID_HANDLE);
 		return 1;
 	}
 	handle->info.ref_count--;
@@ -1636,7 +1691,7 @@ lt_dlclose (handle)
 			last->next = handle->next;
 		else
 			handles = handle->next;
-		error = handle->type->lib_close(handle);
+		error = handle->type->lib_close(handle->handle);
 		error += unload_deplibs(handle);
 		if (handle->info.filename)
 			lt_dlfree(handle->info.filename);
@@ -1659,11 +1714,11 @@ lt_dlsym (handle, symbol)
 	lt_ptr_t address;
 
 	if (!handle) {
-		last_error = invalid_handle_error;
+		last_error = LT_DLSTRERROR(INVALID_HANDLE);
 		return 0;
 	}
 	if (!symbol) {
-		last_error = symbol_error;
+		last_error = LT_DLSTRERROR(SYMBOL_NOT_FOUND);
 		return 0;
 	}
 	lensym = strlen(symbol);
@@ -1676,7 +1731,7 @@ lt_dlsym (handle, symbol)
 	else
 		sym = (char*) lt_dlmalloc(lensym + LTDL_SYMBOL_OVERHEAD + 1);
 	if (!sym) {
-		last_error = buffer_overflow_error;
+		last_error = LT_DLSTRERROR(BUFFER_OVERFLOW);
 		return 0;
 	}
 	if (handle->info.name) {
@@ -1691,7 +1746,7 @@ lt_dlsym (handle, symbol)
 		strcat(sym, "_LTX_");
 		strcat(sym, symbol);
 		/* try "modulename_LTX_symbol" */
-		address = handle->type->find_sym(handle, sym);
+		address = handle->type->find_sym(handle->handle, sym);
 		if (address) {
 			if (sym != lsym)
 				lt_dlfree(sym);
@@ -1705,7 +1760,7 @@ lt_dlsym (handle, symbol)
 		strcat(sym, symbol);
 	} else
 		strcpy(sym, symbol);
-	address = handle->type->find_sym(handle, sym);
+	address = handle->type->find_sym(handle->handle, sym);
 	if (sym != lsym)
 		lt_dlfree(sym);
 	return address;
@@ -1729,7 +1784,7 @@ lt_dladdsearchdir (search_dir)
 	if (!user_search_path) {
 		user_search_path = strdup(search_dir);
 		if (!user_search_path) {
-			last_error = memory_error;
+			last_error = LT_DLSTRERROR(NO_MEMORY);
 			return 1;
 		}
 	} else {
@@ -1737,7 +1792,7 @@ lt_dladdsearchdir (search_dir)
 			lt_dlmalloc(strlen(user_search_path) + 
 				strlen(search_dir) + 2); /* ':' + '\0' == 2 */
 		if (!new_search_path) {
-			last_error = memory_error;
+			last_error = LT_DLSTRERROR(NO_MEMORY);
 			return 1;
 		}
 		sprintf (new_search_path, "%s%c%s", user_search_path,
@@ -1775,7 +1830,7 @@ lt_dlsetdata (handle, data)
 	lt_ptr_t data;
 {
 	if (!handle) {
-		last_error = invalid_handle_error;
+		last_error = LT_DLSTRERROR(INVALID_HANDLE);
 		return 1;
 	}
 	handle->app_private = data;
@@ -1787,7 +1842,7 @@ lt_dlgetdata (handle)
 	lt_dlhandle handle;
 {
 	if (!handle) {
-		last_error = invalid_handle_error;
+		last_error = LT_DLSTRERROR(INVALID_HANDLE);
 		return 0;
 	}
 	return handle->app_private;
@@ -1798,7 +1853,7 @@ lt_dlgetinfo (handle)
 	lt_dlhandle handle;
 {
 	if (!handle) {
-		last_error = invalid_handle_error;
+		last_error = LT_DLSTRERROR(INVALID_HANDLE);
 		return 0;
 	}
 	return &(handle->info);
@@ -1819,3 +1874,44 @@ lt_dlforeach (func, data)
 	return 0;
 }
 
+static const char **user_error_strings = 0;
+static int errorcode = LTDL_ERROR_MAX;
+
+int
+lt_dladderror (diagnostic)
+	const char *diagnostic;
+{
+	int index = errorcode - LTDL_ERROR_MAX;
+	
+	if (user_error_strings == 0)
+		user_error_strings = (const char **) lt_dlmalloc
+			((1+index) * sizeof(const char*));
+	else
+		user_error_strings = (const char **) lt_dlrealloc
+			(user_error_strings, (1+index) * sizeof(const char*));
+
+	if (user_error_strings == 0) {
+		last_error = LT_DLSTRERROR(NO_MEMORY);
+		return -1;
+	}
+		
+	user_error_strings[index] = diagnostic;
+	return errorcode++;
+}
+
+int
+lt_dlseterror (index)
+	int index;
+{
+	if (index >= errorcode || index < 0) {
+		last_error = LT_DLSTRERROR(INVALID_ERRORCODE);
+		return 1;
+	}
+	
+	if (index < LTDL_ERROR_MAX)
+		last_error = ltdl_error_strings[errorcode];
+	else
+		last_error = user_error_strings[errorcode - LTDL_ERROR_MAX];
+
+	return 0;
+}

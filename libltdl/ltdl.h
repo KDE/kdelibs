@@ -114,11 +114,41 @@ Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 
 #include <stdlib.h>
 
+#define ltdl_error_table						\
+	LTDL_ERROR(UNKNOWN, "unknown error")				\
+	LTDL_ERROR(DLOPEN_NOT_SUPPORTED, "dlopen support not available")\
+	LTDL_ERROR(INVALID_TYPE, "invalid dltype")			\
+	LTDL_ERROR(INIT_TYPE, "dltype initialization failed")		\
+	LTDL_ERROR(FILE_NOT_FOUND, "file not found")			\
+	LTDL_ERROR(DEPLIB_NOT_FOUND, "dependency library not found")	\
+	LTDL_ERROR(NO_SYMBOLS, "no symbols defined")			\
+	LTDL_ERROR(CANNOT_OPEN, "can't open the module")		\
+	LTDL_ERROR(CANNOT_CLOSE, "can't close the module")		\
+	LTDL_ERROR(SYMBOL_NOT_FOUND, "symbol not found")		\
+	LTDL_ERROR(NO_MEMORY, "not enough memory")			\
+	LTDL_ERROR(INVALID_HANDLE, "invalid module handle")		\
+	LTDL_ERROR(BUFFER_OVERFLOW, "internal buffer overflow")		\
+	LTDL_ERROR(INVALID_ERRORCODE, "invalid errorcode")		\
+	LTDL_ERROR(SHUTDOWN, "library already shutdown")
+
+#ifdef __STDC__ 
+#  define LTDL_ERROR(name, diagnostic)	LTDL_ERROR_##name,
+#else
+#  define LTDL_ERROR(name, diagnostic)	LTDL_ERROR_/**/name,
+#endif
+enum {
+	ltdl_error_table
+	LTDL_ERROR_MAX
+};
+#undef LTDL_ERROR
+
 #ifdef _LTDL_COMPILE_
 typedef	struct lt_dlhandle_t *lt_dlhandle;
 #else
 typedef	lt_ptr_t lt_dlhandle;
 #endif
+
+typedef lt_ptr_t lt_syshandle;
 
 typedef struct {
 	const char *name;
@@ -131,8 +161,27 @@ typedef	struct {
 	int	ref_count;	/* reference count */
 } lt_dlinfo;
 
+typedef int lt_mod_init_t LTDL_PARAMS((void));
+typedef int lt_mod_exit_t LTDL_PARAMS((void));
+typedef lt_syshandle lt_lib_open_t LTDL_PARAMS((const char *filename));
+typedef int lt_lib_close_t LTDL_PARAMS((lt_syshandle handle));
+typedef lt_ptr_t lt_find_sym_t LTDL_PARAMS((lt_syshandle handle, const char *symbol));
+
+typedef struct lt_dltype_t {
+	struct lt_dltype_t *next;
+	const char *sym_prefix;	/* prefix for symbols */
+	lt_mod_init_t *mod_init;
+	lt_mod_exit_t *mod_exit;
+	lt_lib_open_t *lib_open;
+	lt_lib_close_t *lib_close;
+	lt_find_sym_t *find_sym;
+} lt_dltype_t;
+
 __BEGIN_DECLS
 extern int lt_dlinit LTDL_PARAMS((void));
+extern int lt_dladdtype LTDL_PARAMS((lt_dltype_t *dltype));
+extern lt_dltype_t *lt_dlgettypes LTDL_PARAMS((void));
+extern int lt_dlsettypes LTDL_PARAMS((lt_dltype_t *dltypes));
 extern int lt_dlpreload LTDL_PARAMS((const lt_dlsymlist *preloaded));
 extern int lt_dlpreload_default LTDL_PARAMS((const lt_dlsymlist *preloaded));
 extern int lt_dlexit LTDL_PARAMS((void));
@@ -149,6 +198,8 @@ extern lt_ptr_t lt_dlgetdata LTDL_PARAMS((lt_dlhandle handle));
 extern const lt_dlinfo *lt_dlgetinfo LTDL_PARAMS((lt_dlhandle handle));
 extern int lt_dlforeach LTDL_PARAMS((
 		int (*func)(lt_dlhandle handle, lt_ptr_t data), lt_ptr_t data));
+extern int lt_dladderror LTDL_PARAMS((const char *diagnostic));
+extern int lt_dlseterror LTDL_PARAMS((int errorcode));
 
 #define LTDL_SET_PRELOADED_SYMBOLS() 		LTDL_STMT_START{	\
 	extern const lt_dlsymlist lt_preloaded_symbols[];		\
@@ -156,6 +207,7 @@ extern int lt_dlforeach LTDL_PARAMS((
 						}LTDL_STMT_END
 
 LTDL_SCOPE lt_ptr_t (*lt_dlmalloc)LTDL_PARAMS((size_t size));
+LTDL_SCOPE lt_ptr_t (*lt_dlrealloc)LTDL_PARAMS((lt_ptr_t ptr, size_t size));
 LTDL_SCOPE void (*lt_dlfree)LTDL_PARAMS((lt_ptr_t ptr));
 
 __END_DECLS
