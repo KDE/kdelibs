@@ -951,6 +951,8 @@ void RenderTable::calcColMinMax()
 
     if(widthType == Fixed) {
 	m_width = style()->width().value;
+	if ( m_width < m_minWidth ) 
+	    m_width = m_minWidth;
         m_minWidth = m_maxWidth = m_width;
     } else {
         if (realMaxWidth > m_maxWidth)
