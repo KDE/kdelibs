@@ -752,6 +752,17 @@ void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch(attr->id())
     {
+    case ATTR_ALIGN:
+        if (attr->val()) {
+            if ( strcasecmp(attr->value(), "middle" ) == 0 ||
+		 strcasecmp(attr->value(), "center" ) == 0 )
+                addCSSProperty( CSS_PROP_TEXT_ALIGN, "-konq-center" );
+            else
+                addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
+        }
+        else
+            removeCSSProperty(CSS_PROP_TEXT_ALIGN);
+        break;
     case ATTR_BORDER:
         // euhm? not supported by other browsers as far as I can see (Dirk)
         //addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value());
