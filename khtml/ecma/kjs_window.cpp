@@ -108,7 +108,7 @@ Completion WindowFunc::tryExecute(const List &args)
 				   args[1].toString().value().qstring());
     else
       str2 = QInputDialog::getText("Konqueror: Prompt", str);
-    result = String(UString((UChar*)str2.unicode(), str2.length()));
+    result = String(str2);
     break;
   case Open:
   {
