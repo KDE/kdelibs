@@ -924,6 +924,7 @@ void KHTMLPart::removeJSErrorExtension() {
     parentPart()->removeJSErrorExtension();
     return;
   }
+  d->m_statusBarExtension->removeStatusBarItem( d->m_statusBarJSErrorLabel );
   delete d->m_statusBarJSErrorLabel;
   d->m_statusBarJSErrorLabel = 0;
   delete d->m_jsedlg;
