@@ -1,28 +1,44 @@
 package org.kde.kjas.server;
 
+/**
+ *  KJAS server recognizes these variablers:
+ *    kjas.debug - makes server actions verbose 
+ *    kjas.showConsole - shows Java Console window
+ */
+
 public class Main {
+   public static final boolean debug;
+   static {
+       debug = System.getProperty("kjas.debug") != null; 
+   }
+    
    public static void main( String[] args )
    {
        int retries = 0;
        int LIMIT = 5;
+       
+       if(System.getProperty("kjas.showConsole") != null)
+           (new KJASConsole()).show();
+
+       if(debug)
+           System.getProperty("KJAS: Starting KJAS in debug mode");
 
        KJASAppletRunner runner = new KJASAppletRunner();
        KJASProtocolHandler handler = new KJASProtocolHandler( System.in, System.out,
 							      runner, "friend" );
        while( retries < LIMIT ) {
 	   try {
-	       System.err.println( "Entering commandLoop()" );
-	       handler.commandLoop();
+	       if(debug)
+                   System.out.println( "KJAS: Entering commandLoop()" );
+               handler.commandLoop();
 	   }
 	   catch ( Exception e ) {
-	       System.err.println( "Error: " + e );
+	       System.err.println( "KJAS: Error: " + e );
 	       e.printStackTrace();
-	       //	 System.exit(1);
 	   }
 	   catch ( Throwable t ) {
-	       System.err.println( "Serious error: " + t );
+	       System.err.println( "KJAS: Serious error: " + t );
 	       t.printStackTrace();
-	       //	 System.exit(1);
 	   }
 	   retries++;
        }

@@ -10,6 +10,10 @@ import java.awt.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.2  2000/01/27 23:41:57  rogozin
+ * All applet parameters are passed to KJAS now
+ * Next step - make use of them.
+ *
  * Revision 1.1.1.1  1999/07/22 17:28:08  rich
  * This is a current snapshot of my work on adding Java support
  * to KDE. Applets now work!
@@ -24,8 +28,8 @@ public class KJASProtocolHandler
    BufferedReader commands;
    PrintStream signals;
    KJASAppletRunner runner;
-
-   public KJASProtocolHandler( InputStream commands,
+   
+public KJASProtocolHandler( InputStream commands,
                                OutputStream signals,
                                KJASAppletRunner runner,
                                String password )
@@ -39,11 +43,15 @@ public class KJASProtocolHandler
    {
       String line = commands.readLine();
       while ( line != null ) {
-         processCommand( line );
-         line = commands.readLine();
+          if(Main.debug)
+              System.out.println("KJAS: Processing command >" + line + "<"); 
+          processCommand( line );
+          if(Main.debug)
+              System.out.println("KJAS: Processing done");
+          line = commands.readLine();
       }
    }
-
+    
    public void processCommand( String command )
       throws IllegalArgumentException
    {
