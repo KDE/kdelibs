@@ -50,6 +50,7 @@ public:
   virtual const char *renderName() const { return "RenderFrameSet"; }
 
   virtual void layout();
+    virtual void close();
 
   void positionFrames( );
 

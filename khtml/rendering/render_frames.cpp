@@ -83,6 +83,16 @@ RenderFrameSet::~RenderFrameSet()
   delete [] m_vSplitVar;
 }
 
+void RenderFrameSet::close()
+{
+    RenderBox::close();
+
+    DOMString script = m_frameset->getAttribute(ATTR_ONLOAD);
+    if (!script.isNull())
+        m_view->part()->executeScript(Node(m_frameset), script.string());
+}
+
+
 void RenderFrameSet::layout( )
 {
 
