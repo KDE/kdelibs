@@ -130,16 +130,15 @@ void Kded::dirDeleted(const QString& /*path*/)
   // We could be smarter here, and find out which factory
   // deals with that dir, and update only that...
   // But rebuilding everything is fine for me.
-  m_pTimer->start( 1200, true /* single shot */ );
+  m_pTimer->start( 2000, true /* single shot */ );
 }
 
 void Kded::update(const QString& path)
 {
-  kdDebug(7020) << QString("Kded::update( %1 ) - starting timer").arg( path ) << endl;
   // We could be smarter here, and find out which factory
   // deals with that dir, and update only that...
   // But rebuilding everything is fine for me.
-  m_pTimer->start( 1200, true /* single shot */ );
+  m_pTimer->start( 2000, true /* single shot */ );
 }
 
 bool Kded::process(const QCString &fun, const QByteArray &/*data*/,
