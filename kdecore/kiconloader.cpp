@@ -157,8 +157,8 @@ QPixmap KIconLoader::loadIcon ( const QString& name, Size size,
     // one last desparate gasp -- we try to locate our icon using the
     // defaults in 'locate'
     path = name;
-    if (path.left(8) == "toolbar/")
-        path = path.mid(8);
+    if (path.left(9) == "toolbars/")
+        path = path.mid(9);
     icon_path = iconPath(path, false);
     if (icon_path.isEmpty())
         return canReturnNull ? QPixmap() : loadInternal("unknown");
