@@ -92,7 +92,6 @@ public:
 
     virtual void parseAttribute(AttributeImpl *);
 private:
-    bool absolute;
     bool fixed;
 };
 

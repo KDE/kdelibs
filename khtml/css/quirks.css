@@ -1,4 +1,4 @@
-/* 
+/*
  * This style sheet is used by khtml to render HTML pages in quirks mode
  * (C) 2000-2003 Lars Knoll (knoll@kde.org)
  *
@@ -11,7 +11,7 @@
 img[align="left"] {
     margin-right: 3px;
 }
-    
+
 img[align="right"] {
     margin-left: 3px;
 }
@@ -24,4 +24,12 @@ TABLE {
     color: -khtml-text;
     font-size: medium;
     empty-cells: hide;
+}
+
+LAYER {
+    position: absolute;
+}
+
+ILAYER > LAYER {
+    position: relative;
 }
