@@ -124,9 +124,11 @@ public:
     SlaveInterface( Connection *connection );
     virtual ~SlaveInterface() { }
 
-    // wrong IMHO (David)
     void setConnection( Connection* connection ) { m_pConnection = connection; }
     Connection *connection() const { return m_pConnection; }
+
+    void setProgressId( int id ) { m_progressId = id; }
+    int progressId() const { return m_progressId; }
 
  signals:
     ///////////
@@ -142,6 +144,7 @@ public:
     void listEntries( const KIO::UDSEntryList& );
     void statEntry( const KIO::UDSEntry& );
     void needSubURLData();
+    void needProgressId();
 
     void canResume( bool ) ;
 
@@ -185,6 +188,7 @@ protected:
     Connection * m_pConnection;
 
 private:
+    int m_progressId;
     SlaveInterfacePrivate *d;
 };
 

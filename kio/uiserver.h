@@ -193,9 +193,12 @@ k_dcop:
    * Signal a new job
    * @param the DCOP application id of the job's parent application
    *   (@see KIO::Observer::newJob)
+   * @param showProgress whether to popup the progress for the job.
+   *   Usually true, but may be false when we use kio_uiserver for
+   *   other things, like SSL dialogs.
    * @return the job id
    */
-  int newJob( QCString appId );
+  int newJob( QCString appId, bool showProgress );
 
   ASYNC jobFinished( int id );
 
@@ -238,7 +241,7 @@ k_dcop:
   /**
    * Popup a message box
    */
-  int messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo );
+  int messageBox( int id, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo );
 
   /**
    * See renamedlg.h

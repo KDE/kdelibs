@@ -188,7 +188,7 @@ public:
      */
     bool openPassDlg( const QString& /*head*/, QString& /*user*/, QString& /*pass*/, const QString& /*key*/ = QString::null );
 
-    enum { QuestionYesNo = 1, WarningYesNo = 2, WarningContinueCancel = 3, WarningYesNoCancel = 4, Information = 5 };
+    enum { QuestionYesNo = 1, WarningYesNo = 2, WarningContinueCancel = 3, WarningYesNoCancel = 4, Information = 5, SSLMessageBox = 6 };
     /**
      * Call this to show a message box from the slave (it will in fact be handled
      * by kio_uiserver, so that the progress info dialog for the slave is hidden
@@ -490,7 +490,6 @@ protected:
 
     Connection * m_pConnection;
 
-private:
     /**
      * Internal function to transmit meta data to the application.
      */

@@ -44,6 +44,7 @@
 #include "kio/renamedlg.h"
 #include "kio/skipdlg.h"
 #include "slavebase.h" // for QuestionYesNo etc.
+#include <ksslinfodlg.h>
 
 // pointer for main instance of UIServer
 UIServer* uiserver;
@@ -390,7 +391,7 @@ UIServer::~UIServer() {
 }
 
 
-int UIServer::newJob( QCString observerAppId )
+int UIServer::newJob( QCString observerAppId, bool showProgress )
 {
   kdDebug(7024) << "UIServer::newJob observerAppId=" << observerAppId << ". "
             << "Giving id=" << s_jobId+1 << endl;
@@ -405,7 +406,9 @@ int UIServer::newJob( QCString observerAppId )
   // increment counter
   s_jobId++;
 
-  ProgressItem *item = new ProgressItem( listProgress, it.current(), observerAppId, s_jobId, !m_bShowList );
+  bool show = !m_bShowList && showProgress;
+
+  ProgressItem *item = new ProgressItem( listProgress, it.current(), observerAppId, s_jobId, show );
   connect( item, SIGNAL( jobCanceled( ProgressItem* ) ),
            SLOT( slotJobCanceled( ProgressItem* ) ) );
 
@@ -802,7 +805,7 @@ QByteArray UIServer::authorize( const QString& user, const QString& head, const 
     return packedArgs;
 }
 
-int UIServer::messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
+int UIServer::messageBox( int progressId, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
 {
     switch (type) {
         case KIO::SlaveBase::QuestionYesNo:
@@ -821,6 +824,32 @@ int UIServer::messageBox( int type, const QString &text, const QString &caption,
             KMessageBox::information( 0L, // parent ?
                                       text, caption );
             return 1; // whatever
+        case KIO::SlaveBase::SSLMessageBox:
+        {
+            QCString observerAppId = caption.utf8(); // hack, see slaveinterface.cpp
+
+            // Contact the object "KIO::Observer" in the application <appId>
+            Observer_stub observer( observerAppId, "KIO::Observer" );
+
+            KIO::MetaData meta = observer.metadata( progressId );
+            KSSLInfoDlg *kid = new KSSLInfoDlg(meta["ssl_in_use"].upper()=="TRUE", 0L /*parent?*/, 0L, true);
+            kid->setup( meta["ssl_peer_cert_subject"],
+                        meta["ssl_peer_cert_issuer"],
+                        meta["ssl_peer_ip"],
+                        text, // the URL
+                        meta["ssl_cipher"],
+                        meta["ssl_cipher_desc"],
+                        meta["ssl_cipher_version"],
+                        meta["ssl_cipher_used_bits"].toInt(),
+                        meta["ssl_cipher_bits"].toInt(),
+                        KSSLCertificate::KSSLValidation(meta["ssl_cert_state"].toInt()),
+                        meta["ssl_good_from"],
+                        meta["ssl_good_until"] );
+            kdDebug() << "Showing SSL Info dialog" << endl;
+            kid->exec();
+            kdDebug() << "SSL Info dialog closed" << endl;
+            return 1; // whatever
+        }
         default:
             kdWarning() << "UIServer::messageBox unknown type " << type << endl;
             return 0;

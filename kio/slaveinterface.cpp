@@ -17,6 +17,7 @@
 */
 
 #include "kio/slaveinterface.h"
+#include "kio/slavebase.h"
 #include "kio/connection.h"
 #include <assert.h>
 #include <kdebug.h>
@@ -24,6 +25,8 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <kio/observer.h>
+#include <kapp.h>
+#include <dcopclient.h>
 
 using namespace KIO;
 
@@ -32,6 +35,7 @@ using namespace KIO;
 SlaveInterface::SlaveInterface( Connection * connection )
 {
     m_pConnection = connection;
+    m_progressId = 0;
     signal( SIGPIPE, sigpipe_handler );
 }
 
@@ -237,13 +241,19 @@ void SlaveInterface::openPassDlg( const QString& head, const QString& user, cons
 
 }
 
-void SlaveInterface::messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
+void SlaveInterface::messageBox( int type, const QString &text, const QString &_caption, const QString &buttonYes, const QString &buttonNo )
 {
-    kdDebug(7007) << "messageBox " << type << " " << text << " - " << caption << endl;
+    kdDebug(7007) << "messageBox " << type << " " << text << " - " << _caption << endl;
     QByteArray packedArgs;
     QDataStream stream( packedArgs, IO_WriteOnly );
-    // TODO find a way to get hold of the job or its ID...
-    int result = Observer::self()->messageBox( type, text, caption, buttonYes, buttonNo );
+
+    QString caption( _caption );
+    if ( type == KIO::SlaveBase::SSLMessageBox )
+        caption = QString::fromUtf8(kapp->dcopClient()->appId()); // hack, see uiserver.cpp
+
+    emit needProgressId();
+
+    int result = Observer::self()->messageBox( m_progressId, type, text, caption, buttonYes, buttonNo );
     kdDebug(7007) << "result=" << result << endl;
     stream << result;
     m_pConnection->sendnow( CMD_MESSAGEBOXANSWER, packedArgs );

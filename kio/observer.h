@@ -23,7 +23,8 @@
 #include <dcopobject.h>
 #include <qintdict.h>
 
-#include "kio/global.h"
+#include <kio/global.h>
+
 #include "kio/job.h"
 #include "kio/skipdlg.h"
 #include "kio/renamedlg.h"
@@ -67,7 +68,7 @@ public:
    * UI Server.
    * @return the progress ID assigned by the UI Server to the Job.
    */
-  int newJob( KIO::Job * job );
+  int newJob( KIO::Job * job, bool showProgress );
 
   /**
    * Called by the job destructor, to tell the UI Server that
@@ -94,7 +95,7 @@ public:
   /**
    * Popup a message box. See @ref SlaveBase.
    */
-  int messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo);
+  int messageBox( int progressId, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo);
 
   /**
    * See renamedlg.h
@@ -124,6 +125,11 @@ k_dcop:
    * Called by the UI Server (using DCOP) if the user presses cancel
    */
   void killJob( int progressId );
+
+  /**
+   * Called by the UI Server (using DCOP) to get all the metadata of the job
+   */
+  KIO::MetaData metadata( int progressId );
 
 protected:
 

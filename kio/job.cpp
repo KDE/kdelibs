@@ -70,7 +70,7 @@ Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0),
     if ( showProgressInfo )
     {
         kdDebug(7007) << " -- with progress info -- " << endl;
-        m_progressId = Observer::self()->newJob( this );
+        m_progressId = Observer::self()->newJob( this, true );
         // Connect global progress info signals
         connect( this, SIGNAL( percent( KIO::Job*, unsigned long ) ),
                  Observer::self(), SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
@@ -289,6 +289,7 @@ SimpleJob::~SimpleJob()
 void SimpleJob::start(Slave *slave)
 {
     m_slave = slave;
+
     connect( m_slave, SIGNAL( error( int , const QString & ) ),
              SLOT( slotError( int , const QString & ) ) );
 
@@ -312,6 +313,9 @@ void SimpleJob::start(Slave *slave)
 
     connect( m_slave, SIGNAL( speed( unsigned long ) ),
              SLOT( slotSpeed( unsigned long ) ) );
+
+    connect( slave, SIGNAL( needProgressId() ),
+             SLOT( slotNeedProgressId() ) );
 
     if (!m_subUrl.isEmpty())
     {
@@ -382,6 +386,13 @@ void SimpleJob::slotInfoMessage( const QString & msg )
 void SimpleJob::slotConnected()
 {
     emit connected( this );
+}
+
+void SimpleJob::slotNeedProgressId()
+{
+    if ( !m_progressId )
+        m_progressId = Observer::self()->newJob( this, false );
+    m_slave->setProgressId( m_progressId ); 
 }
 
 void SimpleJob::slotTotalSize( unsigned long size )

@@ -350,6 +350,12 @@ namespace KIO {
          */
         virtual void slotError( int , const QString & );
 
+    protected slots:
+        /**
+         * @internal
+         */
+        void slotNeedProgressId();
+
     protected:
         Slave * m_slave;
         QByteArray m_packedArgs;

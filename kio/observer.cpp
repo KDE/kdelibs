@@ -61,11 +61,11 @@ Observer::Observer() : DCOPObject("KIO::Observer")
     m_uiserver = new UIServer_stub( "kio_uiserver", "UIServer" );
 }
 
-int Observer::newJob( KIO::Job * job )
+int Observer::newJob( KIO::Job * job, bool showProgress )
 {
     // Tell the UI Server about this new job, and give it the application id
     // at the same time
-    int progressId = m_uiserver->newJob( kapp->dcopClient()->appId() );
+    int progressId = m_uiserver->newJob( kapp->dcopClient()->appId(), showProgress );
 
     // Keep the result in a dict
     m_dctJobs.insert( progressId, job );
@@ -84,6 +84,19 @@ void Observer::killJob( int progressId )
     KIO::Job * job = m_dctJobs[ progressId ];
     assert(job);
     job->kill( false /* not quietly */ );
+}
+
+MetaData Observer::metadata( int progressId )
+{
+    KIO::Job * job = m_dctJobs[ progressId ];
+    assert(job);
+    if ( job->inherits("KIO::TransferJob") )
+        return static_cast<KIO::TransferJob *>(job)->metaData();
+    else
+    {
+        kdWarning() << "Observer::metaData(" << progressId << ") called on a job that is a " << job->className() << endl;
+        return MetaData();
+    }
 }
 
 void Observer::slotTotalSize( KIO::Job* job, unsigned long size )
@@ -216,17 +229,18 @@ bool Observer::authorize( QString& user, QString& pass ,const QString& head, con
     return false;
 }
 
-int Observer::messageBox( int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
+int Observer::messageBox( int progressId, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
 {
     QByteArray data, replyData;
     QCString replyType;
     QDataStream arg( data, IO_WriteOnly );
+    arg << progressId;
     arg << type;
     arg << text;
     arg << caption;
     arg << buttonYes;
     arg << buttonNo;
-    if ( kapp->dcopClient()->call( "kio_uiserver", "UIServer", "messageBox(int,QString,QString,QString,QString)", data, replyType, replyData, true )
+    if ( kapp->dcopClient()->call( "kio_uiserver", "UIServer", "messageBox(int,int,QString,QString,QString,QString)", data, replyType, replyData, true )
         && replyType == "int" )
     {
         int result;

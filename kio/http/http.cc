@@ -49,6 +49,7 @@
 
 #ifdef DO_SSL
 #include <kssl.h>
+#include <ksslinfodlg.h>
 #endif
 
 #ifdef DO_MD5
@@ -439,7 +440,7 @@ int HTTPProtocol::openStream() {
       kdDebug(7103) << "SSL connection failed." << endl;
       return false;
     }
-    KSSLCertificate::KSSLValidation ksv = 
+    KSSLCertificate::KSSLValidation ksv =
                                m_ssl.peerInfo().getPeerCertificate().validate();
     kdDebug(7103) << "SSL connection established." << endl;
     kdDebug(7103) << "SSL connection information follows:" << endl
@@ -459,19 +460,13 @@ int HTTPProtocol::openStream() {
     setMetaData("ssl_in_use", "TRUE");
     setMetaData("ssl_peer_cert_subject", m_ssl.peerInfo().getPeerCertificate().getSubject());
     setMetaData("ssl_peer_cert_issuer", m_ssl.peerInfo().getPeerCertificate().getIssuer());
-    // do we already have this info?
-    // FIXME setMetaData("ssl_peer_ip", );
     setMetaData("ssl_cipher", m_ssl.connectionInfo().getCipher());
     setMetaData("ssl_cipher_desc", m_ssl.connectionInfo().getCipherDescription());
     setMetaData("ssl_cipher_version", m_ssl.connectionInfo().getCipherVersion());
-    QString tci;
-    tci.sprintf("%d", m_ssl.connectionInfo().getCipherUsedBits());
-    setMetaData("ssl_cipher_used_bits", tci);
-    tci.sprintf("%d", m_ssl.connectionInfo().getCipherBits());
-    setMetaData("ssl_cipher_bits", tci);
+    setMetaData("ssl_cipher_used_bits", QString::number(m_ssl.connectionInfo().getCipherUsedBits()) );
+    setMetaData("ssl_cipher_bits", QString::number(m_ssl.connectionInfo().getCipherBits()) );
     setMetaData("ssl_peer_ip", m_ssl_ip);
-    tci.sprintf("%d", (int)ksv);
-    setMetaData("ssl_cert_state", tci);
+    setMetaData("ssl_cert_state", QString::number(ksv) );
     setMetaData("ssl_good_from", m_ssl.peerInfo().getPeerCertificate().getNotBefore());
     setMetaData("ssl_good_until", m_ssl.peerInfo().getPeerCertificate().getNotAfter());
 
@@ -781,7 +776,6 @@ bool HTTPProtocol::checkSSL()
     if ( !ssl_was_in_use && m_bUseSSL && m_ssl.settings()->warnOnEnter() )
     {
       kdDebug() << "ENTERING SSL" << endl;
-      kdDebug() << "DIALOG BOX HERE [calling kio_uiserver]" << endl;
       int result = messageBox( WarningYesNo,
                                i18n("You are about to enter secure mode."
                                     " All transmissions will be encrypted unless"
@@ -793,7 +787,9 @@ bool HTTPProtocol::checkSSL()
                                i18n("Continue") );
       if ( result == KMessageBox::Yes )
       {
-        // TODO show ssl info (how ? new dlg box ? or using kssl ?)
+         // Force sending of the metadata
+         sendMetaData();
+         messageBox( SSLMessageBox, m_request.url.prettyURL() );
       }
     }
 #else
