@@ -80,7 +80,13 @@ void Part::setWidget( QWidget *widget )
 void Part::setXMLFile( QString file )
 {
   if ( file[0] != '/' )
+  {
     file = locate( "data", QString(instance()->instanceName())+"/"+file );
+    if ( file.isEmpty() )
+    {
+      kDebugError( 1000, "File not found : %s", file.ascii() );
+    }
+  }
 
   QString xml = XMLGUIFactory::readConfigFile( file );
   setXML( xml );
