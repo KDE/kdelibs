@@ -99,8 +99,8 @@ public:
                                         const QString& src, const QString & dest,
                                         KIO::RenameDlg_Mode mode,
                                         QString& newDest,
-                                        unsigned long sizeSrc = (unsigned long) -1,
-                                        unsigned long sizeDest = (unsigned long) -1,
+                                        KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,
+                                        KIO::filesize_t sizeDest = (KIO::filesize_t) -1,
                                         time_t ctimeSrc = (time_t) -1,
                                         time_t ctimeDest = (time_t) -1,
                                         time_t mtimeSrc = (time_t) -1,
@@ -137,11 +137,11 @@ protected:
 
 public slots:
 
-  void slotTotalSize( KIO::Job*, unsigned long size );
+  void slotTotalSize( KIO::Job*, KIO::filesize_t size );
   void slotTotalFiles( KIO::Job*, unsigned long files );
   void slotTotalDirs( KIO::Job*, unsigned long dirs );
 
-  void slotProcessedSize( KIO::Job*, unsigned long size );
+  void slotProcessedSize( KIO::Job*, KIO::filesize_t size );
   void slotProcessedFiles( KIO::Job*, unsigned long files );
   void slotProcessedDirs( KIO::Job*, unsigned long dirs );
 
@@ -154,7 +154,7 @@ public slots:
   void slotDeleting( KIO::Job*, const KURL& url );
   void slotCreatingDir( KIO::Job*, const KURL& dir );
   // currently unused
-  void slotCanResume( KIO::Job*, unsigned long offset );
+  void slotCanResume( KIO::Job*, KIO::filesize_t offset );
 
 public:
   void stating( KIO::Job*, const KURL& url );

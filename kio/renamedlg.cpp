@@ -42,8 +42,8 @@ using namespace KIO;
 RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                      const QString &_src, const QString &_dest,
                      RenameDlg_Mode _mode,
-                     unsigned long sizeSrc,
-                     unsigned long sizeDest,
+                     KIO::filesize_t sizeSrc,
+                     KIO::filesize_t sizeDest,
                      time_t ctimeSrc,
                      time_t ctimeDest,
                      time_t mtimeSrc,
@@ -133,7 +133,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
       gridLayout->addMultiCellWidget( lb1, 1, 3, 0, 0 ); // takes the first column on rows 1-3
 
       int row = 1;
-      if ( sizeDest != (unsigned long)-1 )
+      if ( sizeDest != (KIO::filesize_t)-1 )
       {
           QLabel * lb = new QLabel( i18n("size %1").arg( KIO::convertSize(sizeDest) ), this );
           gridLayout->addWidget( lb, row, 1 );
@@ -167,7 +167,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 
       row = 6;
 
-      if ( sizeSrc != (unsigned long)-1 )
+      if ( sizeSrc != (KIO::filesize_t)-1 )
       {
           QLabel * lb = new QLabel( i18n("size %1").arg( KIO::convertSize(sizeSrc) ), this );
           gridLayout->addWidget( lb, row, 1 );
@@ -357,8 +357,8 @@ RenameDlg_Result KIO::open_RenameDlg( const QString & _caption,
                                       const QString & _src, const QString & _dest,
                                       RenameDlg_Mode _mode,
                                       QString& _new,
-                                      unsigned long sizeSrc,
-                                      unsigned long sizeDest,
+                                      KIO::filesize_t sizeSrc,
+                                      KIO::filesize_t sizeDest,
                                       time_t ctimeSrc,
                                       time_t ctimeDest,
                                       time_t mtimeSrc,

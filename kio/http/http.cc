@@ -246,7 +246,7 @@ void HTTPProtocol::resetSessionSettings()
   // Adjust the offset value based on the "resume" meta-data.
   QString resumeOffset = metaData("resume");
   if ( !resumeOffset.isEmpty() )
-     m_request.offset = resumeOffset.toInt();
+     m_request.offset = resumeOffset.toInt(); // TODO: Convert to 64 bit
   else
      m_request.offset = 0;
 
@@ -925,8 +925,8 @@ bool HTTPProtocol::http_open()
 
     if ( m_request.offset > 0 )
     {
-      header += QString("Range: bytes=%1-\r\n").arg(m_request.offset);
-      kdDebug(7103) << "kio_http : Range = " << m_request.offset << endl;
+      header += QString("Range: bytes=%1-\r\n").arg(KIO::number(m_request.offset));
+      kdDebug(7103) << "kio_http : Range = " << KIO::number(m_request.offset) << endl;
     }
 
     if ( m_request.cache == CC_Reload )
@@ -2334,7 +2334,7 @@ bool HTTPProtocol::readBody()
   time_t t_last = t_start;
 
   // Deal with the size of the file.
-  long sz = m_request.offset;
+  KIO::filesize_t sz = m_request.offset;
   if ( sz )
     m_iSize += sz;
 

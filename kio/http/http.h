@@ -84,7 +84,7 @@ public:
     QString query;
     HTTP_METHOD method;
     KIO::CacheControl cache;
-    unsigned long offset;
+    KIO::filesize_t offset;
     bool doProxy;
     KURL url;
     QString window;                 // Window Id this request is related to.

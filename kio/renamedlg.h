@@ -31,6 +31,8 @@
 #include <qstring.h>
 #include <sys/types.h>
 
+#include <kio/global.h>
+
 namespace KIO {
 
 enum RenameDlg_Mode { M_OVERWRITE = 1, M_OVERWRITE_ITSELF = 2, M_SKIP = 4, M_SINGLE = 8, M_MULTI = 16, M_RESUME = 32, M_NORENAME = 64 };
@@ -66,8 +68,8 @@ public:
    */
   RenameDlg( QWidget *parent, const QString & caption,
              const QString & src, const QString & dest, RenameDlg_Mode mode,
-             unsigned long sizeSrc = (unsigned long)-1,
-             unsigned long sizeDest = (unsigned long)-1,
+             KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,
+             KIO::filesize_t sizeDest = (KIO::filesize_t) -1,
              time_t ctimeSrc = (time_t) -1,
              time_t ctimeDest = (time_t) -1,
              time_t mtimeSrc = (time_t) -1,
@@ -138,8 +140,8 @@ protected slots:
 RenameDlg_Result open_RenameDlg( const QString & caption,
                                  const QString& src, const QString & dest,
                                  RenameDlg_Mode mode, QString& newDestPath,
-                                 unsigned long sizeSrc = (unsigned long) -1,
-                                 unsigned long sizeDest = (unsigned long) -1,
+                                 KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,
+                                 KIO::filesize_t sizeDest = (KIO::filesize_t) -1,
                                  time_t ctimeSrc = (time_t) -1,
                                  time_t ctimeDest = (time_t) -1,
                                  time_t mtimeSrc = (time_t) -1,

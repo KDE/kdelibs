@@ -40,11 +40,11 @@ public:
   ~DefaultProgress();
 
 public slots:
-  virtual void slotTotalSize( KIO::Job*, unsigned long bytes );
+  virtual void slotTotalSize( KIO::Job*, KIO::filesize_t bytes );
   virtual void slotTotalFiles( KIO::Job*, unsigned long files );
   virtual void slotTotalDirs( KIO::Job*, unsigned long dirs );
 
-  virtual void slotProcessedSize( KIO::Job*, unsigned long bytes );
+  virtual void slotProcessedSize( KIO::Job*, KIO::filesize_t bytes );
   virtual void slotProcessedFiles( KIO::Job*, unsigned long files );
   virtual void slotProcessedDirs( KIO::Job*, unsigned long dirs );
 
@@ -59,9 +59,7 @@ public slots:
   virtual void slotStating( KIO::Job*, const KURL& dir );
   virtual void slotMounting( KIO::Job*, const QString & dev, const QString & point );
   virtual void slotUnmounting( KIO::Job*, const QString & point );
-
-  // TODO make it virtual in progressbase
-  void slotCanResume( KIO::Job*, unsigned long );
+  virtual void slotCanResume( KIO::Job*, KIO::filesize_t );
 
 protected:
   void showTotals();
@@ -77,11 +75,11 @@ protected:
 
   KProgress* m_pProgressBar;
 
-  unsigned long m_iTotalSize;
+  KIO::filesize_t m_iTotalSize;
   unsigned long m_iTotalFiles;
   unsigned long m_iTotalDirs;
 
-  unsigned long m_iProcessedSize;
+  KIO::filesize_t m_iProcessedSize;
   unsigned long m_iProcessedDirs;
   unsigned long m_iProcessedFiles;
 

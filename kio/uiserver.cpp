@@ -109,7 +109,7 @@ ProgressItem::~ProgressItem() {
 }
 
 
-void ProgressItem::setTotalSize( unsigned long size ) {
+void ProgressItem::setTotalSize( KIO::filesize_t size ) {
   m_iTotalSize = size;
 
   // It's already in the % column...
@@ -131,7 +131,7 @@ void ProgressItem::setTotalDirs( unsigned long dirs ) {
 }
 
 
-void ProgressItem::setProcessedSize( unsigned long size ) {
+void ProgressItem::setProcessedSize( KIO::filesize_t size ) {
   m_iProcessedSize = size;
 
   setText( listProgress->lv_size, KIO::convertSize( size ) );
@@ -249,7 +249,7 @@ void ProgressItem::setUnmounting( const QString & point ) {
   defaultProgress->slotUnmounting( 0, point );
 }
 
-void ProgressItem::setCanResume( unsigned long offset ) {
+void ProgressItem::setCanResume( KIO::filesize_t offset ) {
   /*
   QString tmps;
   // set canResume
@@ -483,8 +483,11 @@ void UIServer::jobFinished( int id )
 
 
 void UIServer::totalSize( int id, unsigned long size )
+{ totalSize64(id, size); }
+
+void UIServer::totalSize64( int id, KIO::filesize_t size )
 {
-//  kdDebug(7024) << "UIServer::totalSize " << id << " " << (unsigned int) size << endl;
+//  kdDebug(7024) << "UIServer::totalSize " << id << " " << KIO::number(size) << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -513,8 +516,11 @@ void UIServer::totalDirs( int id, unsigned long dirs )
 }
 
 void UIServer::processedSize( int id, unsigned long size )
+{ processedSize64(id, size); }
+
+void UIServer::processedSize64( int id, KIO::filesize_t size )
 {
-  //kdDebug(7024) << "UIServer::processedSize " << id << " " << (unsigned int) size << endl;
+  //kdDebug(7024) << "UIServer::processedSize " << id << " " << KIO::number(size) << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -573,6 +579,9 @@ void UIServer::infoMessage( int id, const QString & msg )
 }
 
 void UIServer::canResume( int id, unsigned long offset )
+{ canResume64(id, offset); }
+
+void UIServer::canResume64( int id, KIO::filesize_t offset )
 {
   //kdDebug(7024) << "UIServer::canResume " << id << " " << offset << endl;
 
@@ -929,6 +938,21 @@ QByteArray UIServer::open_RenameDlg( int id,
                                      int mode,
                                      unsigned long sizeSrc,
                                      unsigned long sizeDest,
+                                     unsigned long ctimeSrc,
+                                     unsigned long ctimeDest,
+                                     unsigned long mtimeSrc,
+                                     unsigned long mtimeDest
+                                     )
+{ return open_RenameDlg64(id, caption, src, dest, mode, sizeSrc, sizeDest,
+                          ctimeSrc, ctimeDest, mtimeSrc, mtimeDest); }
+
+
+QByteArray UIServer::open_RenameDlg64( int id,
+                                     const QString & caption,
+                                     const QString& src, const QString & dest,
+                                     int mode,
+                                     KIO::filesize_t sizeSrc,
+                                     KIO::filesize_t sizeDest,
                                      unsigned long ctimeSrc,
                                      unsigned long ctimeDest,
                                      unsigned long mtimeSrc,

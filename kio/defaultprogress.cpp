@@ -130,7 +130,7 @@ DefaultProgress::~DefaultProgress()
   delete d;
 }
 
-void DefaultProgress::slotTotalSize( KIO::Job*, unsigned long bytes )
+void DefaultProgress::slotTotalSize( KIO::Job*, KIO::filesize_t bytes )
 {
   m_iTotalSize = bytes;
 }
@@ -196,7 +196,7 @@ void DefaultProgress::slotInfoMessage( KIO::Job*, const QString & msg )
 }
 
 
-void DefaultProgress::slotProcessedSize( KIO::Job*, unsigned long bytes ) {
+void DefaultProgress::slotProcessedSize( KIO::Job*, KIO::filesize_t bytes ) {
   m_iProcessedSize = bytes;
 
   QString tmp;
@@ -312,10 +312,10 @@ void DefaultProgress::slotUnmounting( KIO::Job*, const QString & point )
   setDestVisible( false );
 }
 
-void DefaultProgress::slotCanResume( KIO::Job*, unsigned long resume )
+void DefaultProgress::slotCanResume( KIO::Job*, KIO::filesize_t resume )
 {
   if ( resume ) {
-    resumeLabel->setText( i18n("Resuming from %1").arg(resume) );
+    resumeLabel->setText( i18n("Resuming from %1").arg(KIO::number(resume)) );
   } else {
     resumeLabel->setText( i18n("Not resumable") );
   }

@@ -110,10 +110,10 @@ MetaData Observer::metadata( int progressId )
     }
 }
 
-void Observer::slotTotalSize( KIO::Job* job, unsigned long size )
+void Observer::slotTotalSize( KIO::Job* job, KIO::filesize_t size )
 {
-  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotTotalSize " << job << " " << size << endl;
-  m_uiserver->totalSize( job->progressId(), size );
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotTotalSize " << job << " " << KIO::number(size) << endl;
+  m_uiserver->totalSize64( job->progressId(), size );
 }
 
 void Observer::slotTotalFiles( KIO::Job* job, unsigned long files )
@@ -128,10 +128,10 @@ void Observer::slotTotalDirs( KIO::Job* job, unsigned long dirs )
   m_uiserver->totalDirs( job->progressId(), dirs );
 }
 
-void Observer::slotProcessedSize( KIO::Job* job, unsigned long size )
+void Observer::slotProcessedSize( KIO::Job* job, KIO::filesize_t size )
 {
-  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotProcessedSize " << job << " " << job->progressId() << " " << size << endl;
-  m_uiserver->processedSize( job->progressId(), size );
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotProcessedSize " << job << " " << job->progressId() << " " << KIO::number(size) << endl;
+  m_uiserver->processedSize64( job->progressId(), size );
 }
 
 void Observer::slotProcessedFiles( KIO::Job* job, unsigned long files )
@@ -187,10 +187,10 @@ void Observer::slotCreatingDir( KIO::Job* job, const KURL& dir )
   m_uiserver->creatingDir( job->progressId(), dir );
 }
 
-void Observer::slotCanResume( KIO::Job* job, unsigned long offset )
+void Observer::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
 {
-  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotCanResume " << job << " " << offset << endl;
-  m_uiserver->canResume( job->progressId(), offset );
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotCanResume " << job << " " << KIO::number(offset) << endl;
+  m_uiserver->canResume64( job->progressId(), offset );
 }
 
 void Observer::stating( KIO::Job* job, const KURL& url )
@@ -285,8 +285,8 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
                                            const QString & caption,
                                            const QString& src, const QString & dest,
                                            RenameDlg_Mode mode, QString& newDest,
-                                           unsigned long sizeSrc,
-                                           unsigned long sizeDest,
+                                           KIO::filesize_t sizeSrc,
+                                           KIO::filesize_t sizeDest,
                                            time_t ctimeSrc,
                                            time_t ctimeDest,
                                            time_t mtimeSrc,
@@ -295,7 +295,7 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
 {
   kdDebug(KDEBUG_OBSERVER) << "Observer::open_RenameDlg" << endl;
   /*
-  QByteArray resultArgs = m_uiserver->open_RenameDlg( job ? job->progressId() : 0, caption, src, dest, mode,
+  QByteArray resultArgs = m_uiserver->open_RenameDlg64( job ? job->progressId() : 0, caption, src, dest, mode,
                                                       sizeSrc, sizeDest,
                                                       (unsigned long) ctimeSrc, (unsigned long) ctimeDest,
                                                       (unsigned long) mtimeSrc, (unsigned long) mtimeDest );
@@ -318,7 +318,7 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
   arg << (unsigned long) ctimeDest;
   arg << (unsigned long) mtimeSrc;
   arg << (unsigned long) mtimeDest;
-  if ( kapp->dcopClient()->call( "kio_uiserver", "UIServer", "open_RenameDlg(int,QString,QString,QString,int,unsigned long int,unsigned long int,unsigned long int,unsigned long int,unsigned long int,unsigned long int)", data, replyType, replyData, true ) &&
+  if ( kapp->dcopClient()->call( "kio_uiserver", "UIServer", "open_RenameDlg64(int,QString,QString,QString,int,KIO::filesize_t,KIO::filesize_t,unsigned long int,unsigned long int,unsigned long int,unsigned long int)", data, replyType, replyData, true ) &&
        replyType == "QByteArray" )
   {
     QDataStream stream( replyData, IO_ReadOnly );

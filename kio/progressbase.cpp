@@ -54,15 +54,15 @@ void ProgressBase::setJob( KIO::Job *job )
 void ProgressBase::setJob( KIO::CopyJob *job )
 {
   // first connect all slots
-  connect( job, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
-	   SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( totalSize( KIO::Job*, KIO::filesize_t ) ),
+	   SLOT( slotTotalSize( KIO::Job*, KIO::filesize_t ) ) );
   connect( job, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
 	   SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
   connect( job, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
 	   SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
 
-  connect( job, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
-	   SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( processedSize( KIO::Job*, KIO::filesize_t ) ),
+	   SLOT( slotProcessedSize( KIO::Job*, KIO::filesize_t ) ) );
   connect( job, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
 	   SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
   connect( job, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
@@ -94,15 +94,15 @@ void ProgressBase::setJob( KIO::CopyJob *job )
 void ProgressBase::setJob( KIO::DeleteJob *job )
 {
   // first connect all slots
-  connect( job, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
-	   SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( totalSize( KIO::Job*, KIO::filesize_t ) ),
+	   SLOT( slotTotalSize( KIO::Job*, KIO::filesize_t ) ) );
   connect( job, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
 	   SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
   connect( job, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
 	   SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
 
-  connect( job, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
-	   SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+  connect( job, SIGNAL( processedSize( KIO::Job*, KIO::filesize_t ) ),
+	   SLOT( slotProcessedSize( KIO::Job*, KIO::filesize_t ) ) );
   connect( job, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
 	   SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
   connect( job, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),

@@ -57,11 +57,11 @@ public:
   void setVisible( bool visible );
   bool isVisible() const { return m_visible; }
 
-  void setTotalSize( unsigned long bytes );
+  void setTotalSize( KIO::filesize_t bytes );
   void setTotalFiles( unsigned long files );
   void setTotalDirs( unsigned long dirs );
 
-  void setProcessedSize( unsigned long size );
+  void setProcessedSize( KIO::filesize_t size );
   void setProcessedFiles( unsigned long files );
   void setProcessedDirs( unsigned long dirs );
 
@@ -77,11 +77,11 @@ public:
   void setMounting( const QString & dev, const QString & point );
   void setUnmounting( const QString & point );
 
-  void setCanResume( unsigned long offset );
+  void setCanResume( KIO::filesize_t offset );
 
-  unsigned long totalSize() { return m_iTotalSize; }
+  KIO::filesize_t totalSize() { return m_iTotalSize; }
   unsigned long totalFiles() { return m_iTotalFiles; }
-  unsigned long processedSize() { return m_iProcessedSize; }
+  KIO::filesize_t processedSize() { return m_iProcessedSize; }
   unsigned long processedFiles() { return m_iProcessedFiles; }
   unsigned long speed() { return m_iSpeed; }
   QTime remainingTime() { return m_remainingTime; }
@@ -112,9 +112,9 @@ protected:
   KIO::DefaultProgress *defaultProgress;
 
   // we store these values for calculation of totals ( for statusbar )
-  unsigned long m_iTotalSize;
+  KIO::filesize_t m_iTotalSize;
   unsigned long m_iTotalFiles;
-  unsigned long m_iProcessedSize;
+  KIO::filesize_t m_iProcessedSize;
   unsigned long m_iProcessedFiles;
   unsigned long m_iSpeed;
   QTime m_remainingTime;
@@ -203,10 +203,12 @@ k_dcop:
   ASYNC jobFinished( int id );
 
   ASYNC totalSize( int id, unsigned long size );
+  ASYNC totalSize64( int id, KIO::filesize_t size );
   ASYNC totalFiles( int id, unsigned long files );
   ASYNC totalDirs( int id, unsigned long dirs );
 
   ASYNC processedSize( int id, unsigned long bytes );
+  ASYNC processedSize64( int id, KIO::filesize_t bytes );
   ASYNC processedFiles( int id, unsigned long files );
   ASYNC processedDirs( int id, unsigned long dirs );
 
@@ -224,6 +226,7 @@ k_dcop:
   ASYNC unmounting( int id, QString point );
 
   ASYNC canResume( int id, unsigned long offset );
+  ASYNC canResume64( int id, KIO::filesize_t offset );
 
   /**
    * Prompts the user for authorization info.
@@ -252,6 +255,21 @@ k_dcop:
   int messageBox( int id, int type, const QString &text, const QString &caption,
                   const QString &buttonYes, const QString &buttonNo );
 
+  /**
+   * See renamedlg.h
+   * @return serialized answer: (RenameDlg_Result result, QString newDest)
+   */
+  QByteArray open_RenameDlg64( int id,
+                             const QString & caption,
+                             const QString& src, const QString & dest,
+                             int /* KIO::RenameDlg_Mode */ mode,
+                             KIO::filesize_t sizeSrc,
+                             KIO::filesize_t sizeDest,
+                             unsigned long /* time_t */ ctimeSrc,
+                             unsigned long /* time_t */ ctimeDest,
+                             unsigned long /* time_t */ mtimeSrc,
+                             unsigned long /* time_t */ mtimeDest
+                             );
   /**
    * See renamedlg.h
    * @return serialized answer: (RenameDlg_Result result, QString newDest)

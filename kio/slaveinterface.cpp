@@ -129,6 +129,20 @@ SlaveInterface::~SlaveInterface()
     m_pConnection = 0; // a bit like the "wasDeleted" of QObject...
 }
 
+static KIO::filesize_t readFilesize_t(QDataStream &stream)
+{
+   KIO::filesize_t result;
+   unsigned long ul;
+   stream >> ul;
+   result = ul;
+   if (stream.atEnd())
+      return result;
+   stream >> ul;
+   result += ((KIO::filesize_t)ul) << 32;
+   return result;
+}
+
+
 bool SlaveInterface::dispatch()
 {
     assert( m_pConnection );
@@ -187,10 +201,12 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	}
 	break;
     case MSG_RESUME: // From the put job
-	stream >> ul;
-	emit canResume( ul );
+	{
+	    KIO::filesize_t offset = readFilesize_t(stream);
+	    emit canResume( offset );
+	}   
 	break;
-     case MSG_CANRESUME: // From the get job
+    case MSG_CANRESUME: // From the get job
         emit canResume(0); // the arg doesn't matter
         break;
     case MSG_ERROR:
@@ -211,13 +227,16 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
 
     case INF_TOTAL_SIZE:
-	stream >> ul;
-	emit totalSize( ul );
+	{
+	    KIO::filesize_t size = readFilesize_t(stream);
+	    emit totalSize( size );
+	}
 	break;
     case INF_PROCESSED_SIZE:
-	stream >> ul;
-
-	emit processedSize( ul );
+	{
+	    KIO::filesize_t size = readFilesize_t(stream);
+	    emit processedSize( size );
+	}
 	break;
     case INF_SPEED:
 	stream >> ul;

@@ -184,7 +184,7 @@ KShred::writeData(unsigned char *data, unsigned int size)
     unsigned int pc = (unsigned int) (bytesWritten / tbpc);
     if (pc > lastSignalled)
     {
-      emit processedSize((unsigned int) (fspc * pc));
+      emit processedSize(fspc * pc);
       lastSignalled = pc;
     }
   }

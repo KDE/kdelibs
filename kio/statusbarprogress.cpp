@@ -116,7 +116,7 @@ void StatusbarProgress::slotClean() {
 }
 
 
-void StatusbarProgress::slotTotalSize( KIO::Job*, unsigned long size ) {
+void StatusbarProgress::slotTotalSize( KIO::Job*, KIO::filesize_t size ) {
   m_iTotalSize = size;
 }
 

@@ -83,10 +83,10 @@ Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0)
                  Observer::self(), SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
         connect( this, SIGNAL( infoMessage( KIO::Job*, const QString & ) ),
                  Observer::self(), SLOT( slotInfoMessage( KIO::Job*, const QString & ) ) );
-        connect( this, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
-                 Observer::self(), SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
-        connect( this, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
-                 Observer::self(), SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+        connect( this, SIGNAL( totalSize( KIO::Job*, KIO::filesize_t ) ),
+                 Observer::self(), SLOT( slotTotalSize( KIO::Job*, KIO::filesize_t ) ) );
+        connect( this, SIGNAL( processedSize( KIO::Job*, KIO::filesize_t ) ),
+                 Observer::self(), SLOT( slotProcessedSize( KIO::Job*, KIO::filesize_t ) ) );
         connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
                  Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
     }
@@ -127,7 +127,7 @@ void Job::removeSubjob( Job *job )
         emitResult();
 }
 
-void Job::emitPercent( unsigned long processedSize, unsigned long totalSize )
+void Job::emitPercent( KIO::filesize_t processedSize, KIO::filesize_t totalSize )
 {
   // calculate percents
   unsigned long ipercent = m_percent;
@@ -361,11 +361,11 @@ void SimpleJob::start(Slave *slave)
     connect( m_slave, SIGNAL( finished() ),
              SLOT( slotFinished() ) );
 
-    connect( m_slave, SIGNAL( totalSize( unsigned long ) ),
-             SLOT( slotTotalSize( unsigned long ) ) );
+    connect( m_slave, SIGNAL( totalSize( KIO::filesize_t ) ),
+             SLOT( slotTotalSize( KIO::filesize_t ) ) );
 
-    connect( m_slave, SIGNAL( processedSize( unsigned long ) ),
-             SLOT( slotProcessedSize( unsigned long ) ) );
+    connect( m_slave, SIGNAL( processedSize( KIO::filesize_t ) ),
+             SLOT( slotProcessedSize( KIO::filesize_t ) ) );
 
     connect( m_slave, SIGNAL( speed( unsigned long ) ),
              SLOT( slotSpeed( unsigned long ) ) );
@@ -465,15 +465,15 @@ void SimpleJob::slotNeedProgressId()
     m_slave->setProgressId( m_progressId );
 }
 
-void SimpleJob::slotTotalSize( unsigned long size )
+void SimpleJob::slotTotalSize( KIO::filesize_t size )
 {
     m_totalSize = size;
     emit totalSize( this, size );
 }
 
-void SimpleJob::slotProcessedSize( unsigned long size )
+void SimpleJob::slotProcessedSize( KIO::filesize_t size )
 {
-    //kdDebug(7007) << "SimpleJob::slotProcessedSize " << size << endl;
+    //kdDebug(7007) << "SimpleJob::slotProcessedSize " << KIO::number(size) << endl;
     emit processedSize( this, size );
     if ( size > m_totalSize )
       slotTotalSize(size); // safety
@@ -803,8 +803,8 @@ void TransferJob::start(Slave *slave)
     connect( slave, SIGNAL( needSubURLData() ),
              SLOT( slotNeedSubURLData() ) );
 
-    connect( slave, SIGNAL(canResume( unsigned long ) ),
-             SLOT( slotCanResume( unsigned long ) ) );
+    connect( slave, SIGNAL(canResume( KIO::filesize_t ) ),
+             SLOT( slotCanResume( KIO::filesize_t ) ) );
 
     if (slave->suspended())
     {
@@ -848,7 +848,7 @@ void TransferJob::slotErrorPage()
     m_errorPage = true;
 }
 
-void TransferJob::slotCanResume( unsigned long offset )
+void TransferJob::slotCanResume( KIO::filesize_t offset )
 {
     emit canResume(this, offset);
 }
@@ -1161,18 +1161,18 @@ void FileCopyJob::startCopyJob(const KURL &slave_url)
 
 void FileCopyJob::connectSubjob( SimpleJob * job )
 {
-    connect( job, SIGNAL(totalSize( KIO::Job*, unsigned long )),
-             this, SLOT( slotTotalSize(KIO::Job*, unsigned long)) );
+    connect( job, SIGNAL(totalSize( KIO::Job*, KIO::filesize_t )),
+             this, SLOT( slotTotalSize(KIO::Job*, KIO::filesize_t)) );
 
-    connect( job, SIGNAL(processedSize( KIO::Job*, unsigned long )),
-             this, SLOT( slotProcessedSize(KIO::Job*, unsigned long)) );
+    connect( job, SIGNAL(processedSize( KIO::Job*, KIO::filesize_t )),
+             this, SLOT( slotProcessedSize(KIO::Job*, KIO::filesize_t)) );
 
     connect( job, SIGNAL(percent( KIO::Job*, unsigned long )),
              this, SLOT( slotPercent(KIO::Job*, unsigned long)) );
 
 }
 
-void FileCopyJob::slotProcessedSize( KIO::Job *, unsigned long size )
+void FileCopyJob::slotProcessedSize( KIO::Job *, KIO::filesize_t size )
 {
     emit processedSize( this, size );
     if ( size > m_totalSize )
@@ -1180,7 +1180,7 @@ void FileCopyJob::slotProcessedSize( KIO::Job *, unsigned long size )
     emitPercent( size, m_totalSize );
 }
 
-void FileCopyJob::slotTotalSize( KIO::Job*, unsigned long size )
+void FileCopyJob::slotTotalSize( KIO::Job*, KIO::filesize_t size )
 {
     m_totalSize = size;
     emit totalSize( this, m_totalSize );
@@ -1207,18 +1207,18 @@ void FileCopyJob::startDataPump()
 
     // The first thing the put job will tell us is whether we can
     // resume or not (this is always emitted)
-    connect( m_putJob, SIGNAL(canResume(KIO::Job *, unsigned long)),
-             SLOT( slotCanResume(KIO::Job *, unsigned long)));
+    connect( m_putJob, SIGNAL(canResume(KIO::Job *, KIO::filesize_t)),
+             SLOT( slotCanResume(KIO::Job *, KIO::filesize_t)));
     connect( m_putJob, SIGNAL(dataReq(KIO::Job *, QByteArray&)),
              SLOT( slotDataReq(KIO::Job *, QByteArray&)));
     addSubjob( m_putJob );
 }
 
-void FileCopyJob::slotCanResume( KIO::Job* job, unsigned long offset )
+void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
 {
     if ( job == m_putJob )
     {
-        kdDebug(7007) << "FileCopyJob::slotCanResume from PUT job. offset=" << offset << endl;
+        kdDebug(7007) << "FileCopyJob::slotCanResume from PUT job. offset=" << KIO::number(offset) << endl;
 
         if (offset)
         {
@@ -1248,11 +1248,11 @@ void FileCopyJob::slotCanResume( KIO::Job* job, unsigned long offset )
         m_getJob->addMetaData( "errorPage", "false" );
         if (offset)
         {
-            kdDebug(7007) << "Setting metadata for resume to " << offset << endl;
-            m_getJob->addMetaData( "resume", QString::number(offset) );
+            kdDebug(7007) << "Setting metadata for resume to " << (unsigned long) offset << endl;
+            m_getJob->addMetaData( "resume", KIO::number(offset) );
             // Might or might not get emitted
-            connect( m_getJob, SIGNAL(canResume(KIO::Job *, unsigned long)),
-                     SLOT( slotCanResume(KIO::Job *, unsigned long)));
+            connect( m_getJob, SIGNAL(canResume(KIO::Job *, KIO::filesize_t)),
+                     SLOT( slotCanResume(KIO::Job *, KIO:filesize_t)));
         }
 
         m_putJob->suspend();
@@ -1565,8 +1565,8 @@ void ListJob::start(Slave *slave)
 {
     connect( slave, SIGNAL( listEntries( const KIO::UDSEntryList& )),
              SLOT( slotListEntries( const KIO::UDSEntryList& )));
-    connect( slave, SIGNAL( totalSize( unsigned long ) ),
-             SLOT( slotTotalSize( unsigned long ) ) );
+    connect( slave, SIGNAL( totalSize( KIO::filesize_t ) ),
+             SLOT( slotTotalSize( KIO::filesize_t ) ) );
     connect( slave, SIGNAL( redirection(const KURL &) ),
              SLOT( slotRedirection(const KURL &) ) );
     SimpleJob::start(slave);
@@ -1999,7 +1999,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     // Its modification time:
     time_t destmtime = (time_t)-1;
     time_t destctime = (time_t)-1;
-    unsigned long destsize = 0;
+    KIO::filesize_t destsize = 0;
     UDSEntry entry = ((KIO::StatJob*)job)->statResult();
     KIO::UDSEntry::ConstIterator it2 = entry.begin();
     for( ; it2 != entry.end(); it2++ ) {
@@ -2244,7 +2244,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
         // Its modification time:
         time_t destmtime = (time_t)-1;
         time_t destctime = (time_t)-1;
-        unsigned long destsize = 0;
+        KIO::filesize_t destsize = 0;
         UDSEntry entry = ((KIO::StatJob*)job)->statResult();
         KIO::UDSEntry::ConstIterator it2 = entry.begin();
         for( ; it2 != entry.end(); it2++ ) {
@@ -2495,10 +2495,10 @@ void CopyJob::copyNextFile()
             m_currentDestURL=(*it).uDest;
         }
         addSubjob(newjob);
-        connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
-                 this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
-        connect( newjob, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
-                 this, SLOT( slotTotalSize( KIO::Job*, unsigned long ) ) );
+        connect( newjob, SIGNAL( processedSize( KIO::Job*, KIO::filesize_t ) ),
+                 this, SLOT( slotProcessedSize( KIO::Job*, KIO::filesize_t ) ) );
+        connect( newjob, SIGNAL( totalSize( KIO::Job*, KIO::filesize_t ) ),
+                 this, SLOT( slotTotalSize( KIO::Job*, KIO::filesize_t ) ) );
     }
     else
     {
@@ -2539,7 +2539,7 @@ void CopyJob::deleteNextDir()
     }
 }
 
-void CopyJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
+void CopyJob::slotProcessedSize( KIO::Job*, KIO::filesize_t data_size )
 {
   //kdDebug(7007) << "CopyJob::slotProcessedSize " << data_size << endl;
   m_fileProcessedSize = data_size;
@@ -2555,7 +2555,7 @@ void CopyJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
   emitPercent( m_processedSize + m_fileProcessedSize, m_totalSize );
 }
 
-void CopyJob::slotTotalSize( KIO::Job*, unsigned long size )
+void CopyJob::slotTotalSize( KIO::Job*, KIO::filesize_t size )
 {
   // Special case for copying a single file
   // This is because some protocols don't implement stat properly
@@ -2894,8 +2894,8 @@ void DeleteJob::deleteNextFile()
             Scheduler::scheduleJob(job);
             m_currentURL=(*it);
             //emit deleting( this, *it );
-            connect( job, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
-                     this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+            connect( job, SIGNAL( processedSize( KIO::Job*, KIO::filesize_t ) ),
+                     this, SLOT( slotProcessedSize( KIO::Job*, KIO::filesize_t ) ) );
         } else
         {
             // Normal deletion
@@ -2931,7 +2931,7 @@ void DeleteJob::deleteNextDir()
         startNextJob();
 }
 
-void DeleteJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
+void DeleteJob::slotProcessedSize( KIO::Job*, KIO::filesize_t data_size )
 {
    // Note: this is the same implementation as CopyJob::slotProcessedSize but
    // it's different from FileCopyJob::slotProcessedSize - which is why this
@@ -2977,7 +2977,7 @@ void DeleteJob::slotResult( Job *job )
          UDSEntry entry = ((StatJob*)job)->statResult();
          bool bDir = false;
          bool bLink = false;
-         unsigned long size = (unsigned long)-1;
+         KIO::filesize_t size = (KIO::filesize_t)-1;
          UDSEntry::ConstIterator it2 = entry.begin();
          int atomsFound(0);
          for( ; it2 != entry.end(); it2++ )
@@ -3031,7 +3031,7 @@ void DeleteJob::slotResult( Job *job )
 
             m_currentURL=url;
             //emit deleting( this, url );
-            m_totalSize = size == (unsigned long)-1 ? 0 : size;
+            m_totalSize = size == (KIO::filesize_t)-1 ? 0 : size;
             m_totalFilesDirs = 1;
             emit totalSize( this, size );
             state = STATE_DELETING_FILES;
@@ -3043,7 +3043,7 @@ void DeleteJob::slotResult( Job *job )
                newjob = KIO::special(KURL("file:/"), packedArgs, false);
                Scheduler::scheduleJob(newjob);
                addSubjob(newjob);
-               connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+               connect( newjob, SIGNAL( processedSize( KIO::Job*, KIO::filesize_t ) ),this, SLOT( slotProcessedSize( KIO::Job*, KIO::filesize_t ) ) );
             }
             else
             {
@@ -3331,7 +3331,7 @@ QString CacheInfo::cachedFileName()
    }
 
    QString host = m_url.host().lower();
-   CEF = host + CEF + ':';
+   CEF = host + CEF + '_';
 
    QString dir = KProtocolManager::cacheDir();
    if (dir[dir.length()-1] != '/')

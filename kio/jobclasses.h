@@ -213,13 +213,13 @@ namespace KIO {
          * Emitted when we know the size of this job (data size for transfers,
          * number of entries for listings).
          */
-        void totalSize( KIO::Job *, unsigned long size );
+        void totalSize( KIO::Job *, KIO::filesize_t size );
 
         /**
          * Regularly emitted to show the progress of this job
          * (current data size for transfers, entries listed).
          */
-        void processedSize( KIO::Job *, unsigned long size );
+        void processedSize( KIO::Job *, KIO::filesize_t size );
 
         /**
          * Emitted to display information about the speed of this job.
@@ -273,7 +273,7 @@ namespace KIO {
          * Emits the percent signal if bigger than m_percent,
          * after calculating it from the parameters.
          */
-        void emitPercent( unsigned long processedSize, unsigned long totalSize );
+        void emitPercent( KIO::filesize_t processedSize, KIO::filesize_t totalSize );
 
         /**
          * Utility function for inherited jobs.
@@ -385,11 +385,11 @@ namespace KIO {
         /**
          * Forward signal from the slave
          */
-        void slotTotalSize( unsigned long data_size );
+        void slotTotalSize( KIO::filesize_t data_size );
         /**
          * Forward signal from the slave
          */
-        void slotProcessedSize( unsigned long data_size );
+        void slotProcessedSize( KIO::filesize_t data_size );
         /**
          * Forward signal from the slave
          */
@@ -420,7 +420,7 @@ namespace KIO {
         KURL m_url;
         KURL m_subUrl;
         int m_command;
-        unsigned long m_totalSize;
+        KIO::filesize_t m_totalSize;
     };
 
     // Stat Job
@@ -564,7 +564,7 @@ namespace KIO {
          * and emitted by the "get" job if it supports resuming to
          * the given offset - in this case @p offset is unused)
          */
-        void canResume( KIO::Job *, unsigned long offset );
+        void canResume( KIO::Job *, KIO::filesize_t offset );
 
 
     protected slots:
@@ -576,7 +576,7 @@ namespace KIO {
         virtual void slotNeedSubURLData();
         virtual void slotSubURLData(KIO::Job*, const QByteArray &);
         void slotErrorPage();
-        void slotCanResume( unsigned long offset );
+        void slotCanResume( KIO::filesize_t offset );
 
     protected:
         bool m_suspended;
@@ -700,11 +700,11 @@ namespace KIO {
         /**
          * Forward signal from subjob
          */
-        void slotProcessedSize( KIO::Job*, unsigned long size );
+        void slotProcessedSize( KIO::Job*, KIO::filesize_t size );
         /**
          * Forward signal from subjob
          */
-        void slotTotalSize( KIO::Job*, unsigned long size );
+        void slotTotalSize( KIO::Job*, KIO::filesize_t size );
         /**
          * Forward signal from subjob
          */
@@ -712,7 +712,7 @@ namespace KIO {
         /**
          * Forward signal from subjob
          */
-        void slotCanResume( KIO::Job*, unsigned long offset );
+        void slotCanResume( KIO::Job*, KIO::filesize_t offset );
 
     protected:
         void startCopyJob();
@@ -735,7 +735,7 @@ namespace KIO {
         TransferJob *m_putJob;
         class FileCopyJobPrivate;
         FileCopyJobPrivate *d;
-        unsigned long m_totalSize;
+        KIO::filesize_t m_totalSize;
     };
 
     class ListJob : public SimpleJob {
@@ -872,11 +872,11 @@ namespace KIO {
         /**
          * Forward signal from subjob
          */
-        void slotProcessedSize( KIO::Job*, unsigned long data_size );
+        void slotProcessedSize( KIO::Job*, KIO::filesize_t data_size );
         /**
          * Forward signal from subjob
          */
-        void slotTotalSize( KIO::Job*, unsigned long size );
+        void slotTotalSize( KIO::Job*, KIO::filesize_t size );
 
         void slotReport();
     private:
@@ -886,9 +886,9 @@ namespace KIO {
         enum { STATE_STATING, STATE_RENAMING, STATE_LISTING, STATE_CREATING_DIRS,
                STATE_CONFLICT_CREATING_DIRS, STATE_COPYING_FILES, STATE_CONFLICT_COPYING_FILES,
                STATE_DELETING_DIRS } state;
-        unsigned long m_totalSize;
-        unsigned long m_processedSize;
-        unsigned long m_fileProcessedSize;
+        KIO::filesize_t m_totalSize;
+        KIO::filesize_t m_processedSize;
+        KIO::filesize_t m_fileProcessedSize;
         int m_processedFiles;
         int m_processedDirs;
         QValueList<CopyInfo> files;
@@ -945,15 +945,15 @@ namespace KIO {
         /**
          * Forward signal from subjob
          */
-        void slotProcessedSize( KIO::Job*, unsigned long data_size );
+        void slotProcessedSize( KIO::Job*, KIO::filesize_t data_size );
         void slotReport();
 
     private:
        enum { STATE_STATING, STATE_LISTING,
        STATE_DELETING_FILES, STATE_DELETING_DIRS } state;
-        unsigned long m_totalSize;
-        unsigned long m_processedSize;
-        unsigned long m_fileProcessedSize;
+        KIO::filesize_t m_totalSize;
+        KIO::filesize_t m_processedSize;
+        KIO::filesize_t m_fileProcessedSize;
         int m_processedFiles;
         int m_processedDirs;
         int m_totalFilesDirs;

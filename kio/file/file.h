@@ -52,7 +52,7 @@ public:
   void mount( bool _ro, const char *_fstype, const QString& dev, const QString& point );
 
 protected slots:
-  void slotProcessedSize( unsigned long _bytes );
+  void slotProcessedSize( KIO::filesize_t _bytes );
   void slotInfoMessage( const QString & msg );
 
 protected:

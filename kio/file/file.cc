@@ -250,7 +250,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
         bool part_exists = ( KDE_stat( _dest_part.data(), &buff_part ) != -1 );
         if ( part_exists && !_resume && buff_part.st_size > 0 )
         {
-            kdDebug() << "FileProtocol::put : calling canResume with " << (unsigned long)buff_part.st_size << endl;
+            kdDebug() << "FileProtocol::put : calling canResume with " << KIO::number(buff_part.st_size) << endl;
              // Maybe we can use this partial file for resuming
              // Tell about the size we have, and the app will tell us
              // if it's ok to resume or not.
@@ -975,8 +975,8 @@ void FileProtocol::special( const QByteArray &data)
       QString filename;
       stream >> filename;
       KShred shred( filename );
-      connect( &shred, SIGNAL( processedSize( unsigned long ) ),
-               this, SLOT( slotProcessedSize( unsigned long ) ) );
+      connect( &shred, SIGNAL( processedSize( KIO::filesize_t ) ),
+               this, SLOT( slotProcessedSize( KIO::filesize_t ) ) );
       connect( &shred, SIGNAL( infoMessage( const QString & ) ),
                this, SLOT( slotInfoMessage( const QString & ) ) );
       if (!shred.shred())
@@ -991,7 +991,7 @@ void FileProtocol::special( const QByteArray &data)
 }
 
 // Connected to KShred
-void FileProtocol::slotProcessedSize( unsigned long bytes )
+void FileProtocol::slotProcessedSize( KIO::filesize_t bytes )
 {
   kdDebug(7101) << "FileProtocol::slotProcessedSize (" << (unsigned int) bytes << ")" << endl;
   processedSize( bytes );

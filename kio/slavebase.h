@@ -131,7 +131,7 @@ public:
      * In this case, the boolean returns whether we can indeed resume or not
      * (we can't if the protocol doing the get() doesn't support setting an offset)
      */
-    bool canResume( unsigned long offset );
+    bool canResume( KIO::filesize_t offset );
 
     /*
      * Call this at the beginning of get(), if the "resume" metadata was set
@@ -148,13 +148,13 @@ public:
      * of the file
      * Call in @ref listDir too, when you know the total number of items.
      */
-    void totalSize( unsigned long _bytes );
+    void totalSize( KIO::filesize_t _bytes );
     /**
      * Call this during @ref get and @ref copy, once in a while,
      * to give some info about the current state.
      * Don't emit it in @ref listDir, @ref listEntries speaks for itself.
      */
-    void processedSize( unsigned long _bytes );
+    void processedSize( KIO::filesize_t _bytes );
     /**
      * Call this in @ref get and @ref copy, to give the current transfer
      * speed. Usually worked out as processed_size / ( t - t_start )

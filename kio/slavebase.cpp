@@ -58,6 +58,7 @@ template class QPtrList<QValueList<UDSAtom> >;
 typedef QValueList<QCString> AuthKeysList;
 typedef QMap<QString,QCString> AuthKeysMap;
 #define KIO_DATA QByteArray data; QDataStream stream( data, IO_WriteOnly ); stream
+#define KIO_FILESIZE_T(x) (unsigned long)(x & 0xffffffff) << (unsigned long)(x >> 32)
 
 namespace KIO {
 
@@ -350,15 +351,15 @@ void SlaveBase::canResume()
     m_pConnection->send( MSG_CANRESUME );
 }
 
-void SlaveBase::totalSize( unsigned long _bytes )
+void SlaveBase::totalSize( KIO::filesize_t _bytes )
 {
-    KIO_DATA << _bytes;
+    KIO_DATA << KIO_FILESIZE_T(_bytes);
     m_pConnection->send( INF_TOTAL_SIZE, data );
 }
 
-void SlaveBase::processedSize( unsigned long _bytes )
+void SlaveBase::processedSize( KIO::filesize_t _bytes )
 {
-    KIO_DATA << _bytes;
+    KIO_DATA << KIO_FILESIZE_T(_bytes);
     m_pConnection->send( INF_PROCESSED_SIZE, data );
 }
 
@@ -662,11 +663,11 @@ int SlaveBase::messageBox( MessageBoxType type, const QString &text, const QStri
         return 0; // communication failure
 }
 
-bool SlaveBase::canResume( unsigned long offset )
+bool SlaveBase::canResume( KIO::filesize_t offset )
 {
-    kdDebug(7019) << "SlaveBase::canResume offset=" << offset << endl;
+    kdDebug(7019) << "SlaveBase::canResume offset=" << KIO::number(offset) << endl;
     d->needSendCanResume = false;
-    KIO_DATA << offset;
+    KIO_DATA << KIO_FILESIZE_T(offset);
     m_pConnection->send( MSG_RESUME, data );
     if ( offset )
     {

@@ -158,14 +158,14 @@ signals:
     void needSubURLData();
     void needProgressId();
 
-    void canResume( unsigned long ) ;
+    void canResume( KIO::filesize_t ) ;
 
     ///////////
     // Info sent by the slave
     //////////
     void metaData( const KIO::MetaData & );
-    void totalSize( unsigned long ) ;
-    void processedSize( unsigned long ) ;
+    void totalSize( KIO::filesize_t ) ;
+    void processedSize( KIO::filesize_t ) ;
     void redirection( const KURL& ) ;
 
     void speed( unsigned long ) ;

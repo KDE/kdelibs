@@ -38,6 +38,8 @@
 #include <qfile.h>
 #include <qobject.h>
 
+#include <kio/global.h>
+
 /**
  * Erase a file in a way that makes recovery impossible -- well, no guarentee
  * of that, but at least as difficult as reasonably possible.
@@ -116,7 +118,7 @@ class KShred : public QObject {
          * Shows progress of the shredding.
 	 * @param bytes the number of bytes written to the file
          */
-        void processedSize(unsigned long bytes);
+        void processedSize(KIO::filesize_t bytes);
 
         /**
          * Shows a message in the progress dialog
@@ -143,7 +145,7 @@ class KShred : public QObject {
 	/**
 	 * @internal for the size of the file
 	 */
-        unsigned long fileSize;
+        KIO::filesize_t fileSize;
 
 	/**
 	 * @internal for keeping track of progress

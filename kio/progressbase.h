@@ -110,11 +110,11 @@ public slots:
   virtual void slotClean();
 
   // progress slots
-  virtual void slotTotalSize( KIO::Job*, unsigned long ) {}
+  virtual void slotTotalSize( KIO::Job*, KIO::filesize_t ) {}
   virtual void slotTotalFiles( KIO::Job*, unsigned long ) {}
   virtual void slotTotalDirs( KIO::Job*, unsigned long ) {}
 
-  virtual void slotProcessedSize( KIO::Job*, unsigned long ) {}
+  virtual void slotProcessedSize( KIO::Job*, KIO::filesize_t ) {}
   virtual void slotProcessedFiles( KIO::Job*, unsigned long ) {}
   virtual void slotProcessedDirs( KIO::Job*, unsigned long ) {}
 
@@ -126,7 +126,7 @@ public slots:
   virtual void slotDeleting( KIO::Job*, const KURL& ) {}
   virtual void slotCreatingDir( KIO::Job*, const KURL& ) {}
 
-  virtual void slotCanResume( KIO::Job*, unsigned long ) {}
+  virtual void slotCanResume( KIO::Job*, KIO::filesize_t ) {}
 
 signals:
   void stopped();

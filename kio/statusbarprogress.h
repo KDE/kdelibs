@@ -72,7 +72,7 @@ public:
 
 public slots:
   virtual void slotClean();
-  virtual void slotTotalSize( KIO::Job*, unsigned long size );
+  virtual void slotTotalSize( KIO::Job*, KIO::filesize_t size );
   virtual void slotPercent( KIO::Job*, unsigned long percent );
   virtual void slotSpeed( KIO::Job*, unsigned long bytes_per_second );
 
@@ -81,7 +81,7 @@ protected:
   QLabel* m_pLabel;
   QPushButton* m_pButton;
 
-  unsigned long m_iTotalSize;
+  KIO::filesize_t m_iTotalSize;
 
   enum Mode { None, Label, Progress };
 
