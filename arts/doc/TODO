@@ -23,7 +23,6 @@
 - support channels != 2
 - expand capabilities of shell utils (making them eventually as powerful as
   artscontrol, or better ;)
-- artsdsp should offer version information when invoked with -v
 
 ## KMedia2
 

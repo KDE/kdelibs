@@ -2,6 +2,9 @@
 # artsdsp - wrapper script to allow *some* binary only programs to use artsd
 # based on the esddsp script
 
+# keep this in sync with artsversion.h
+version="0.5.1"
+
 # default values for script variables
 verbose=0
 set_name=0
@@ -21,6 +24,7 @@ while test $# -gt 0; do
 	    echo "-n, --name=NAME           use name to identify player to artsd"
 	    echo "-m, --mmap                emulate memory mapping (i.e. for quake)"
 	    echo "-v, --verbose             show parameters"
+	    echo "-V, --version             show version"
 	    exit 0
 	    ;;
 
@@ -47,6 +51,11 @@ while test $# -gt 0; do
 	    shift
 	    ;;
 
+	-V|--version)
+	    echo "artsdsp $version"
+	    exit
+	    ;;
+
 	-m|--mmap)
 	    export ARTSDSP_MMAP=1
 	    shift
@@ -63,6 +72,7 @@ done
 if test "$verbose" = 1; then
     ARTSDSP_VERBOSE=1
     export ARTSDSP_VERBOSE
+    echo "artsdsp:       $version"
     echo "name:          $ARTSDSP_NAME"
     echo "command line:  $@"
 fi
