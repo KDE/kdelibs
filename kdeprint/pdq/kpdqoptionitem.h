@@ -1,5 +1,5 @@
 #ifndef KPDQOPTIONSITEM_H
-#define KPDQOPTIONITEM_H
+#define KPDQOPTIONSITEM_H
 
 #include "kpdqbaseitem.h"
 
