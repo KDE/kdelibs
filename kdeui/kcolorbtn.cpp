@@ -30,11 +30,8 @@
 #include "kcolordrag.h"
 
 KColorButton::KColorButton( QWidget *parent, const char *name )
-  : QPushButton( parent, name ), dragFlag(false)
+  : QPushButton( parent, name )
 {
-  // 2000-07-16 (espen). The dragFlag is no longer used. 
-  // I delay the removal from the header to after 2.0
-
   setAcceptDrops( true);
   
   // 2000-10-15 (putzer): fixes broken keyboard usage
@@ -43,7 +40,7 @@ KColorButton::KColorButton( QWidget *parent, const char *name )
 
 KColorButton::KColorButton( const QColor &c, QWidget *parent,
 			    const char *name )
-  : QPushButton( parent, name ), col(c), dragFlag(false)
+  : QPushButton( parent, name ), col(c)
 {
   setAcceptDrops( true);
 
@@ -77,11 +74,13 @@ void KColorButton::drawButtonLabel( QPainter *painter )
   if ( isDown() ) {
     qDrawPlainRect( painter, l+b+1, t+b+1, w-b*2, h-b*2, lnCol, 1, 0 );
     b++;
-    painter->fillRect( l+b+1, t+b+1, w-b*2, h-b*2, fillCol );
+    if ( fillCol.isValid() )
+      painter->fillRect( l+b+1, t+b+1, w-b*2, h-b*2, fillCol );
   } else {
     qDrawPlainRect( painter, l+b, t+b, w-b*2, h-b*2, lnCol, 1, 0 );
     b++;
-    painter->fillRect( l+b, t+b, w-b*2, h-b*2, fillCol );
+    if ( fillCol.isValid() )
+      painter->fillRect( l+b, t+b, w-b*2, h-b*2, fillCol );
   }
 }
 
