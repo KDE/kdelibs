@@ -1693,7 +1693,6 @@ bool KHTMLView::focusNextPrevNode(bool next)
 		    d->tabMovePending = false;
 		    d->lastTabbingDirection = next;
 		    d->pseudoFocusNode = KHTMLViewPrivate::PFNone;
-		    kdDebug(6000) << "found visible link" << endl;
 		    m_part->xmlDocImpl()->setFocusNode(toFocus);
 		    Node guard(toFocus);
 		    if (!toFocus->hasOneRef() )
@@ -1731,7 +1730,7 @@ bool KHTMLView::focusNextPrevNode(bool next)
 
     if (d->tabMovePending && next != d->lastTabbingDirection)
     {
-	kdDebug ( 6000 ) << " tab move pending and tabbing direction changed!\n";
+	//kdDebug ( 6000 ) << " tab move pending and tabbing direction changed!\n";
 	newFocusNode = oldFocusNode;
     }
     else if (next)
@@ -1775,7 +1774,7 @@ bool KHTMLView::focusNextPrevNode(bool next)
 
     if (targetVisible)
     {
-	kdDebug ( 6000 ) << " target reached.\n";
+	//kdDebug ( 6000 ) << " target reached.\n";
 	d->tabMovePending = false;
 
 	m_part->xmlDocImpl()->setFocusNode(newFocusNode);
