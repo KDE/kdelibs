@@ -131,7 +131,7 @@ Package: kdelibs-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs2g-dev, kdelibs3 (<< 4:2.2-alpha1-2), kdelibs3-dev
-Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 2:2.3.0-3), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev, libsasl-dev
+Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 2:2.3.0-3), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev
 Recommends: kdelibs3-cups (= ${Source-Version})
 Conflicts: kdelibs2g-dev, kdelibs3 (<< 4:2.2-alpha1-2), kdelibs3-dev
 Suggests: kdelibs3-doc, kdoc, libasound1-dev, automake, autoconf, libtool
