@@ -87,6 +87,11 @@ public:
      */
     void setIconSet( const QIconSet &iconSet );
 
+    /**
+    * Sets the text of the button
+    */
+    void setText( const QString &text );
+
 protected:
     /**
      * Reimplement this and return the QDragObject that should be used
@@ -124,7 +129,6 @@ private:
     void init( const KGuiItem &item );
 
     void readSettings();
-    bool needIcons();
     static bool s_useIcons;
 
 protected:

@@ -42,7 +42,7 @@ KPushButton::KPushButton( QWidget *parent, const char *name )
 }
 
 KPushButton::KPushButton( const QString &text, QWidget *parent,
-				  const char *name)
+                          const char *name)
     : QPushButton( parent, name ),
       m_dragEnabled( false )
 {
@@ -50,7 +50,7 @@ KPushButton::KPushButton( const QString &text, QWidget *parent,
 }
 
 KPushButton::KPushButton( const QIconSet &icon, const QString &text,
-				  QWidget *parent, const char *name )
+                          QWidget *parent, const char *name )
     : QPushButton( text, parent, name ),
       m_dragEnabled( false )
 {
@@ -78,7 +78,10 @@ void KPushButton::init( const KGuiItem &item )
 {
     d = new KPushButtonPrivate;
     d->item = item;
-    setText( item.text() );
+
+    // ca;l QPushButton's implementation since we don't need to 
+    // set the GUI items text or check the state of the icon set
+    QPushButton::setText( d->item.text() );
 
     static bool initialized = false;
     if ( !initialized ) {
@@ -86,8 +89,7 @@ void KPushButton::init( const KGuiItem &item )
         initialized = true;
     }
 
-    if ( needIcons() )
-        setIconSet( d->item.iconSet() );
+    setIconSet( d->item.iconSet() );
 
     setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
 
@@ -99,11 +101,6 @@ void KPushButton::init( const KGuiItem &item )
     }
 }
 
-bool KPushButton::needIcons()
-{
-    return ( s_useIcons || text().isEmpty() ) && d->item.hasIconSet();
-}
-
 void KPushButton::readSettings()
 {
     s_useIcons = KGlobalSettings::showIconsOnPushButtons();
@@ -112,13 +109,30 @@ void KPushButton::readSettings()
 void KPushButton::setGuiItem( const KGuiItem& item )
 {
     d->item = item;
-    setText( item.text() );
+
+    // ca;l QPushButton's implementation since we don't need to 
+    // set the GUI items text or check the state of the icon set
+    QPushButton::setText( d->item.text() );
     setIconSet( d->item.iconSet() );
+}
+
+void KPushButton::setText( const QString &text )
+{
+    QPushButton::setText(text);
+
+    // we need to re-evaluate the icon set when the text
+    // is removed, or when it is supplied
+    if (text.isEmpty() != d->item.text().isEmpty())
+        setIconSet(d->item.iconSet());
+
+    d->item.setText(text);
 }
 
 void KPushButton::setIconSet( const QIconSet &iconSet )
 {
-    if ( needIcons() )
+    d->item.setIconSet(iconSet);
+
+    if ( s_useIcons || text().isEmpty() )
         QPushButton::setIconSet( iconSet );
     else
         QPushButton::setIconSet( QIconSet() );
@@ -144,17 +158,18 @@ void KPushButton::mousePressEvent( QMouseEvent *e )
 
 void KPushButton::mouseMoveEvent( QMouseEvent *e )
 {
-    if ( !m_dragEnabled ) {
-	QPushButton::mouseMoveEvent( e );
-	return;
+    if ( !m_dragEnabled )
+    {
+        QPushButton::mouseMoveEvent( e );
+        return;
     }
 
     if ( (e->state() & LeftButton) &&
-	 (e->pos() - startPos).manhattanLength() >
-	 KGlobalSettings::dndEventDelay() ) {
-
-	startDrag();
-	setDown( false );
+         (e->pos() - startPos).manhattanLength() >
+         KGlobalSettings::dndEventDelay() )
+    {
+        startDrag();
+        setDown( false );
     }
 }
 
