@@ -639,7 +639,7 @@ bool KHTMLPart::openURL( const KURL &url )
   // be smart and instead of reloading the whole document we just jump to the
   // request html anchor
   if ( d->m_frames.count() == 0 &&
-       urlcmp( url.url(), m_url.url(), true, true ) && 
+       urlcmp( url.url(), m_url.url(), true, true ) &&
        url.hasRef() && !args.doPost() && !args.reload )
   {
     kdDebug( 6050 ) << "KHTMLPart::openURL now m_url = " << url.url() << endl;
@@ -3844,7 +3844,10 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       if( !d->m_strSelectedURL.isEmpty() ) {
           KURL u( d->m_doc->completeURL( splitUrlTarget(d->m_strSelectedURL)) );
 #if KDE_VERSION >= 290
-          drag = KURLDrag::newDrag( u, d->m_view->viewport() );
+          KURLDrag* urlDrag = KURLDrag::newDrag( u, d->m_view->viewport() );
+          if ( !d->m_referrer.isEmpty() )
+            urlDrag->metaData()["referrer"] = d->m_referrer;
+          drag = urlDrag;
 #else
 	  KURL::List uris;
 	  uris.append(u);
@@ -3858,7 +3861,10 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
             KMultipleDrag *mdrag = new KMultipleDrag( d->m_view->viewport() );
             mdrag->addDragObject( new QImageDrag( i->currentImage(), 0L ) );
             KURL u( d->m_doc->completeURL( splitUrlTarget( i->imageURL().string() ) ) );
-            mdrag->addDragObject( KURLDrag::newDrag( u, 0L ) );
+            KURLDrag* urlDrag = KURLDrag::newDrag( u, 0L );
+            if ( !d->m_referrer.isEmpty() )
+              urlDrag->metaData()["referrer"] = d->m_referrer;
+            mdrag->addDragObject( urlDrag );
             drag = mdrag;
 #else
 	    drag = new QImageDrag( i->currentImage(), d->m_view->viewport() );
