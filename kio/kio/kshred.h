@@ -1,30 +1,24 @@
 /*--------------------------------------------------------------------------*
- | KShred.h  Copyright (c) 2000 MieTerra LLC. All rights reserved.          |
- |                                                                          |
- |     The installation, use, copying, compilation, modification and        |
- | distribution of this work is subject to the 'Artistic License'.          |
- | You should have received a copy of that License Agreement along with     |
- | this file; if not, you can obtain a copy at                              |
- | http://www.mieterra.com/legal/MieTerra_Artistic.html.                    |
- | THIS PACKAGE IS PROVIDED TO YOU "AS IS", WITHOUT ANY WARRANTY            |
- | OR GUARANTEE OF ANY KIND. THE AUTHORS AND DISTRIBUTORS OF THE            |
- | PACKAGE OR ANY PART THEREOF SPECIFICALLY DISCLAIM ALL                    |
- | WARRANTIES OF ANY KIND, EITHER EXPRESSED OR IMPLIED (EITHER IN           |
- | FACT OR BY LAW), INCLUDING, BUT NOT LIMITED TO, THE IMPLIED              |
- | WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR               |
- | PURPOSE, ANY WARRANTY THAT THE PACKAGE OR ANY PART THEREOF               |
- | IS FREE OF DEFECTS AND THE WARRANTIES OF TITLE AND NONINFRINGEMENT       |
- | OF THIRD PARTY RIGHTS. THE ENTIRE RISK AS TO THE QUALITY AND             |
- | PERFORMANCE OF THE PACKAGE OR ANY PART THEREOF IS WITH THE LICENSEE.     |
- | SHOULD ANY PART OF THE PACKAGE PROVE DEFECTIVE, YOU ASSUME THE           |
- | COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION. THIS              |
- | DISCLAIMER OF WARRANTY CONSTITUTES AN ESSENTIAL PART OF THIS             |
- | LICENSE.                                                                 |
- | Terms used but not defined in this paragraph have the meanings           |
- | assigned thereto in the License Agreement referred to above.             |
- |                                                                          |
- |  Credits:  Andreas F. Pour <bugs@mieterra.com>                           |
- *--------------------------------------------------------------------------*/
+ KShred.h  Copyright (c) 2000 MieTerra LLC.
+ Credits:  Andreas F. Pour <bugs@mieterra.com> 
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
 #ifndef kshred_h
 #define kshred_h
