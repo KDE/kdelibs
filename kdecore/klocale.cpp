@@ -69,6 +69,7 @@ public:
   QString calendarType;
   KCalendarSystem * calendar;
   QString first_language;
+  bool utf8FileEncoding;
 };
 
 static KLocale *this_klocale = 0;
@@ -1804,7 +1805,8 @@ void KLocale::initFileNameEncoding(KConfig *)
 {
   // If the following environment variable is set, assume all filenames
   // are in UTF-8 regardless of the current C locale.
-  if (getenv("KDE_UTF8_FILENAMES") != 0)
+  d->utf8FileEncoding = getenv("KDE_UTF8_FILENAMES") != 0;
+  if (d->utf8FileEncoding)
   {
     QFile::setEncodingFunction(KLocale::encodeFileNameUTF8);
     QFile::setDecodingFunction(KLocale::decodeFileNameUTF8);
@@ -2004,6 +2006,13 @@ const char * KLocale::encoding() const
 
 int KLocale::encodingMib() const
 {
+  return codecForEncoding()->mibEnum();
+}
+
+int KLocale::fileEncodingMib() const
+{
+  if (d->utf8FileEncoding)
+     return 106;
   return codecForEncoding()->mibEnum();
 }
 

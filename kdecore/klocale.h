@@ -696,6 +696,16 @@ public:
   QTextCodec * codecForEncoding() const;
 
   /**
+   * Returns the file encoding.
+   *
+   * @return The Mib of the file encoding
+   *
+   * @see QFile::encodeName
+   * @see QFile::decodeName
+   */
+  int fileEncodingMib() const;
+
+  /**
    * Changes the current date format.
    *
    * The format of the date is a string which contains variables that will
