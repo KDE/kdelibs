@@ -23,6 +23,15 @@
 
 // $Id$
 // $Log$
+// Revision 1.139  1999/12/19 00:17:32  shausman
+// - KToolBar, KAction: const fixes (QObject *receiver -> const QObject
+//   *receiver )
+// - KStdAction:
+//   - const fixes
+//   - make KStdAction::action() return QAction * instead of KAction *
+//   - make KStdAction::openRecent() return KSelectAction *
+//   - make KStdAction::show*Bar() return KToggleAction *
+//
 // Revision 1.138  1999/12/18 22:00:16  granroth
 // Added convience method: 'clear()'  Basically, it just iterates through
 // all of it's children and removes them in turn.
@@ -133,7 +142,11 @@ enum {
     CONTEXT_TOP = 2,
     CONTEXT_BOTTOM = 3,
     CONTEXT_FLOAT = 4,
-    CONTEXT_FLAT = 5
+    CONTEXT_FLAT = 5,
+    CONTEXT_ICONS = 6,
+    CONTEXT_TEXT = 7,
+    CONTEXT_TEXTRIGHT = 8,
+    CONTEXT_TEXTUNDER = 9
 };
 
 // this should be adjustable (in faar future... )
@@ -141,11 +154,12 @@ enum {
 
 /****************************** Tolbar **************************************/
 
-KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size)
+KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size, bool _honor_mode)
   : QFrame( parent, name )
 {
   items = new KToolBarItemList();
   item_size = _item_size;
+  honor_mode = _honor_mode;
   fixed_size =  (item_size > 0);
   if (!fixed_size)
   item_size = 26;
@@ -176,17 +190,29 @@ void KToolBar::ContextCallback( int )
       break;
     case CONTEXT_FLOAT:
       if (position == Floating)
-	setBarPos (lastPosition);
+        setBarPos (lastPosition);
       else
-	{
-	  setBarPos( Floating );
-	  move(QCursor::pos());
-	  show();
-	}
+      {
+        setBarPos( Floating );
+        move(QCursor::pos());
+        show();
+      }
       break;
     case CONTEXT_FLAT:
-        setFlat (position != Flat);
-	break;
+      setFlat (position != Flat);
+      break;
+    case CONTEXT_ICONS:
+      setIconText( 0 );
+      break;
+    case CONTEXT_TEXTRIGHT:
+      setIconText( 1 );
+      break;
+    case CONTEXT_TEXT:
+      setIconText( 2 );
+      break;
+    case CONTEXT_TEXTUNDER:
+      setIconText( 3 );
+      break;
     }
 
   mouseEntered=false;
@@ -202,6 +228,14 @@ void KToolBar::init()
   context->insertItem( i18n("Bottom"), CONTEXT_BOTTOM );
   context->insertItem( i18n("Floating"), CONTEXT_FLOAT );
   context->insertItem( i18n("Flat"), CONTEXT_FLAT );
+
+  QPopupMenu *mode = new QPopupMenu( context, "mode" );
+  mode->insertItem( i18n("Icons only"), CONTEXT_ICONS );
+  mode->insertItem( i18n("Text only"), CONTEXT_TEXT );
+  mode->insertItem( i18n("Text aside icons"), CONTEXT_TEXTRIGHT );
+  mode->insertItem( i18n("Text under icons"), CONTEXT_TEXTUNDER );
+
+  context->insertItem( i18n("Mode"), mode );
 //   connect( context, SIGNAL( activated( int ) ), this,
 // 	   SLOT( ContextCallback( int ) ) );
 
@@ -234,7 +268,11 @@ void KToolBar::slotReadConfig()
   KConfig *config = KGlobal::config();
   QString group = config->group();
   config->setGroup("Toolbar style");
-  int icontext=config->readNumEntry("IconText", 0);
+  int icontext;
+  if (honor_mode)
+    icontext=config->readNumEntry("IconText", 0);
+  else
+    icontext=0;
   int tsize=config->readNumEntry("Size", 26);
   int _highlight =config->readNumEntry("Highlighting", 1);
   int _transparent = config->readBoolEntry("TransparentMoving", true);
@@ -1931,6 +1969,10 @@ void KToolBar::setIconText(int icontext)
 
     if (icontext != icon_text)
     {
+        if (icontext == 3)
+            item_size = (item_size < 40) ? 40 : item_size;
+        else
+            item_size = 26;
         icon_text=icontext;
         doUpdate=true;
     }

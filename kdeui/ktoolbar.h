@@ -22,6 +22,15 @@
 
 // $Id$
 // $Log$
+// Revision 1.69  1999/12/19 00:17:33  shausman
+// - KToolBar, KAction: const fixes (QObject *receiver -> const QObject
+//   *receiver )
+// - KStdAction:
+//   - const fixes
+//   - make KStdAction::action() return QAction * instead of KAction *
+//   - make KStdAction::openRecent() return KSelectAction *
+//   - make KStdAction::show*Bar() return KToggleAction *
+//
 // Revision 1.68  1999/12/18 22:00:17  granroth
 // Added convience method: 'clear()'  Basically, it just iterates through
 // all of it's children and removes them in turn.
@@ -215,7 +224,7 @@ public:
    * @ref #setIconText .
    * Setting size in constructor is not recommended.
    */
-  KToolBar(QWidget *parent=0L, const char *name=0L, int _item_size = -1);
+  KToolBar(QWidget *parent=0L, const char *name=0L, int _item_size = -1, bool _honor_mode=false);
 
   /**
    * Destructor. If toolbar is floating it will cleanup itself.
@@ -892,6 +901,7 @@ private:
    QSize szh;      // Size for sizeHint
    bool fixed_size; // do not change the toolbar size
    bool transparent; // type of moving
+   bool honor_mode; // honor the icon_text variable
   };
 
 #endif
