@@ -471,21 +471,6 @@ void HTMLFrameSetElementImpl::defaultEventHandler(EventImpl *evt)
     HTMLElementImpl::defaultEventHandler(evt);
 }
 
-khtml::FindSelectionResult HTMLFrameSetElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty,
-                                                                DOM::Node & node, int & offset )
-{
-    _x-=_tx;
-    _y-=_ty;
-    NodeImpl *child = _first;
-    while(child)
-    {
-        if(child->id() == ID_FRAMESET)
-            return child->findSelectionNode( _x, _y, _tx, _ty, node, offset ); // to be checked
-        child = child->nextSibling();
-    }
-    return SelectionPointAfter;
-}
-
 void HTMLFrameSetElementImpl::detach()
 {
     if(attached())

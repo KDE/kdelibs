@@ -31,6 +31,7 @@
 
 #include "misc/khtmllayout.h"
 #include "misc/loader_client.h"
+#include "misc/helper.h"
 #include "rendering/render_style.h"
 
 class QPainter;
@@ -296,6 +297,8 @@ public:
         bool m_active;
     };
 
+    virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
+                                                     DOM::NodeImpl*&, int & offset );
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
 
     // set the style of the object.

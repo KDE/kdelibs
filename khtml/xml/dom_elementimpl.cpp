@@ -386,61 +386,6 @@ void ElementImpl::recalcStyle( StyleChange change )
     setHasChangedChild( false );
 }
 
-khtml::FindSelectionResult ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node & node, int & offset )
-{
-    //kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " _x=" << _x << " _y=" << _y
-    //           << " _tx=" << _tx << " _ty=" << _ty << endl;
-
-    // ######### Duplicated code from mouseEvent
-    // TODO put the code above (getting _tx,_ty) in a common place and call it from here
-
-    if (!m_render) return SelectionPointAfter;
-
-    if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating() )
-    {
-        m_render->absolutePosition(_tx, _ty);
-    }
-
-    int off=0, lastOffset=0;
-    DOM::Node nod;
-    DOM::Node lastNode;
-    NodeImpl *child = firstChild();
-    while(child != 0)
-    {
-        khtml::FindSelectionResult pos = child->findSelectionNode(_x, _y, _tx, _ty, nod, off);
-        //kdDebug(6030) << this << " child->findSelectionNode returned " << pos << endl;
-        if ( pos == SelectionPointInside ) // perfect match
-        {
-            node = nod;
-            offset = off;
-            //kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " match offset=" << offset << endl;
-            return SelectionPointInside;
-        } else if ( pos == SelectionPointBefore )
-        {
-            //x,y is before this element -> stop here
-            if ( !lastNode.isNull() ) {
-                node = lastNode;
-                offset = lastOffset;
-                //kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " before this child -> returning offset=" << offset << endl;
-                return SelectionPointInside;
-            } else {
-                //kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " before us -> returning -2" << endl;
-                return SelectionPointBefore;
-            }
-        }
-        // SelectionPointAfter -> keep going
-        if ( !nod.isNull() )
-        {
-            lastNode = nod;
-            lastOffset = off;
-        }
-        child = child->nextSibling();
-    }
-    node = lastNode;
-    offset = lastOffset;
-    return SelectionPointAfter;
-}
-
 bool ElementImpl::isSelectable() const
 {
     return false;

@@ -288,8 +288,6 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
     RenderObject* o = s;
     while (o && o!=e)
     {
-        if (o->selectionState()!=SelectionInside)
-            o->repaint();
         o->setSelectionState(SelectionInside);
 //      kdDebug( 6040 ) << "setting selected " << o << ", " << o->isText() << endl;
         RenderObject* no;
@@ -307,8 +305,7 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
     s->setSelectionState(SelectionStart);
     e->setSelectionState(SelectionEnd);
     if(s == e) s->setSelectionState(SelectionBoth);
-    e->repaint();
-
+    repaint();
 }
 
 

@@ -3885,32 +3885,20 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 #ifndef KHTML_NO_SELECTION
     if ( _mouse->button() == LeftButton )
     {
-      if ( !innerNode.isNull() )
-      {
-          int offset;
-          DOM::Node node;
-          int absX, absY;
-          absX = absY = 0;
-          if (innerNode.handle()->renderer())
-            innerNode.handle()->renderer()->absolutePosition(absX, absY);
+      if ( !innerNode.isNull()  && innerNode.handle()->renderer()) {
+          int offset = 0;
+          DOM::NodeImpl* node = 0;
+          innerNode.handle()->renderer()->checkSelectionPoint( event->x(), event->y(),
+                                                               event->absX()-innerNode.handle()->renderer()->xPos(),
+                                                               event->absY()-innerNode.handle()->renderer()->yPos(), node, offset);
 
-          innerNode.handle()->findSelectionNode( event->x(), event->y(),
-                                                 absX, absY, node, offset);
-
-        if ( node.isNull() || !node.handle() )
-        {
-            //kdDebug( 6000 ) << "Hmm, findSelectionNode returned no node" << endl;
-            d->m_selectionStart = innerNode;
-            d->m_startOffset = 0; //?
-        } else {
-            d->m_selectionStart = node;
-            d->m_startOffset = offset;
-        }
-        //kdDebug(6005) << "KHTMLPart::khtmlMousePressEvent selectionStart=" << d->m_selectionStart.handle()->renderer()
-        //              << " offset=" << d->m_startOffset << endl;
-        d->m_selectionEnd = d->m_selectionStart;
-        d->m_endOffset = d->m_startOffset;
-        d->m_doc->clearSelection();
+          d->m_selectionStart = node;
+          d->m_startOffset = offset;
+//           kdDebug(6005) << "KHTMLPart::khtmlMousePressEvent selectionStart=" << d->m_selectionStart.handle()->renderer()
+//                         << " offset=" << d->m_startOffset << endl;
+          d->m_selectionEnd = d->m_selectionStart;
+          d->m_endOffset = d->m_startOffset;
+          d->m_doc->clearSelection();
       }
       else
       {
@@ -3955,7 +3943,6 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
           if ( !d->m_referrer.isEmpty() )
             urlDrag->metaData()["referrer"] = d->m_referrer;
           drag = urlDrag;
-//          p = KMimeType::pixmapForURL(u, 0, KIcon::SizeMedium);
           p = KMimeType::pixmapForURL(u, 0, KIcon::Desktop, KIcon::SizeMedium);
       } else {
           HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
@@ -4042,33 +4029,21 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
   else {
 #ifndef KHTML_NO_SELECTION
     // selection stuff
-    if( d->m_bMousePressed && !innerNode.isNull() && ( _mouse->state() == LeftButton )) {
+    if( d->m_bMousePressed && innerNode.handle() && innerNode.handle()->renderer() &&
+        ( _mouse->state() == LeftButton )) {
       int offset;
-      DOM::Node node;
       //kdDebug(6000) << "KHTMLPart::khtmlMouseMoveEvent x=" << event->x() << " y=" << event->y()
       //              << " nodeAbsX=" << event->nodeAbsX() << " nodeAbsY=" << event->nodeAbsY()
       //              << endl;
-      int absX, absY;
-      absX = absY = 0;
-      if (innerNode.handle()->renderer())
-        innerNode.handle()->renderer()->absolutePosition(absX, absY);
-      innerNode.handle()->findSelectionNode( event->x(), event->y(),
-                                             absX, absY, node, offset);
-      // When this stuff is finished, this should never happen.
-      // But currently....
-      if ( node.isNull() || !node.handle() )
-      {
-        //kdWarning( 6000 ) << "findSelectionNode returned no node" << endl;
-        d->m_selectionEnd = innerNode;
-        d->m_endOffset = 0; //?
-      }
-      else
-      {
-        d->m_selectionEnd = node;
-        d->m_endOffset = offset;
-      }
-      //kdDebug( 6000 ) << "setting end of selection to " << d->m_selectionEnd.handle()->renderer() << "/"
-      //                << d->m_endOffset << endl;
+      DOM::NodeImpl* node=0;
+      innerNode.handle()->renderer()->checkSelectionPoint( event->x(), event->y(),
+                                                          event->absX()-innerNode.handle()->renderer()->xPos(),
+                                                           event->absY()-innerNode.handle()->renderer()->yPos(), node, offset);
+       d->m_selectionEnd = node;
+       d->m_endOffset = offset;
+//        if (d->m_selectionEnd.handle() && d->m_selectionEnd.handle()->renderer())
+//          kdDebug( 6000 ) << "setting end of selection to " << d->m_selectionEnd.handle()->renderer() << "/"
+//                          << d->m_endOffset << endl;
 
       // we have to get to know if end is before start or not...
       DOM::Node n = d->m_selectionStart;

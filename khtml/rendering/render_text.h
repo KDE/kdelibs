@@ -27,7 +27,6 @@
 #include "dom/dom_string.h"
 #include "xml/dom_stringimpl.h"
 #include "rendering/render_object.h"
-#include "misc/helper.h"
 
 #include <qptrvector.h>
 #include <assert.h>
@@ -139,7 +138,8 @@ public:
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
 
     // Return before, after (offset set to max), or inside the text, at @p offset
-    virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty, int & offset );
+    virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
+                                                     DOM::NodeImpl*& node, int & offset );
 
     unsigned int length() const { return str->l; }
     QChar *text() const { return str->s; }

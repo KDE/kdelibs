@@ -113,8 +113,6 @@ public:
     virtual bool isTextNode() const { return true; }
     virtual Id id() const;
     virtual void attach();
-    virtual khtml::FindSelectionResult findSelectionNode( int _x, int _y, int _tx, int _ty,
-                                                   DOM::Node & node, int & offset );
     virtual void recalcStyle( StyleChange = NoChange );
     virtual bool childTypeAllowed( unsigned short type );
 

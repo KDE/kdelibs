@@ -366,17 +366,6 @@ void TextImpl::attach()
     CharacterDataImpl::attach();
 }
 
-khtml::FindSelectionResult TextImpl::findSelectionNode( int _x, int _y, int _tx, int _ty,
-                                                 DOM::Node & node, int & offset )
-{
-    //kdDebug(6030) << "TextImpl::findSelectionNode " << this << " _x=" << _x << " _y=" << _y
-    //           << " _tx=" << _tx << " _ty=" << _ty << endl;
-    if(!m_render) return SelectionPointBefore;
-
-    node = this;
-    return static_cast<RenderText *>(m_render)->checkSelectionPoint(_x, _y, _tx, _ty, offset);
-}
-
 NodeImpl::Id TextImpl::id() const
 {
     return ID_TEXT;

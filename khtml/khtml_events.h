@@ -37,6 +37,9 @@ public:
   QMouseEvent *qmouseEvent() const { return m_qmouseEvent; }
   int x() const { return m_x; }
   int y() const { return m_y; }
+  int absX() const { return m_nodeAbsX; }
+  int absY() const { return m_nodeAbsY; }
+
   DOM::DOMString url() const { return m_url; }
   DOM::Node innerNode() const { return m_innerNode; }
 

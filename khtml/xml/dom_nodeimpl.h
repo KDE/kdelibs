@@ -163,10 +163,6 @@ public:
         Node innerNode;
     };
 
-    virtual khtml::FindSelectionResult findSelectionNode( int /*_x*/, int /*_y*/, int /*_tx*/, int /*_ty*/,
-                                                   DOM::Node & /*node*/, int & /*offset*/ )
-                                                   { return khtml::SelectionPointBefore; }
-
     // for LINK and STYLE
     virtual void sheetLoaded() {}
 

@@ -365,10 +365,10 @@ bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
     return inside;
 }
 
-FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int _ty, int &offset)
+FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int &offset)
 {
-    //kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
-    //              << " _tx=" << _tx << " _ty=" << _ty << endl;
+//     kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
+//                   << " _tx=" << _tx << " _ty=" << _ty << endl;
     for(unsigned int si = 0; si < m_lines.count(); si++)
     {
         TextSlave* s = m_lines[si];
@@ -384,6 +384,7 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
             // ### only for visuallyOrdered !
             offset += s->m_text - str->s; // add the offset from the previous lines
             //kdDebug(6040) << "RenderText::checkSelectionPoint inside -> " << offset << endl;
+            node = element();
             return SelectionPointInside;
         } else if ( result == SelectionPointBefore )
         {
@@ -393,11 +394,13 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
                 // ### only for visuallyOrdered !
                 offset = s->m_text - str->s - 1;
                 //kdDebug(6040) << "RenderText::checkSelectionPoint before -> " << offset << endl;
+                node = element();
                 return SelectionPointInside;
             } else
             {
                 offset = 0;
-                //kdDebug(6040) << "RenderText::checkSelectionPoint before us -> returning Before" << endl;
+                //kdDebug(6040) << "RenderText::checkSelectionPoint " << this << "before us -> returning Before" << endl;
+                node = element();
                 return SelectionPointBefore;
             }
         }
@@ -405,6 +408,8 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
 
     // set offset to max
     offset = str->l;
+    //qDebug("setting node to %p", element());
+    node = element();
     return SelectionPointAfter;
 }
 
@@ -443,6 +448,8 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
 
 bool RenderText::absolutePosition(int &xPos, int &yPos, bool)
 {
+    return RenderObject::absolutePosition(xPos, yPos, false);
+
     if(parent() && parent()->absolutePosition(xPos, yPos, false)) {
         xPos -= paddingLeft() + borderLeft();
         yPos -= borderTop() + paddingTop();

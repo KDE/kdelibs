@@ -785,6 +785,44 @@ void RenderObject::detach()
     delete this;
 }
 
+FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int & offset )
+{
+    int lastOffset=0;
+    int off = offset;
+    DOM::NodeImpl* nod = node;
+    DOM::NodeImpl* lastNode = 0;
+    for (RenderObject *child = firstChild(); child; child=child->nextSibling()) {
+        khtml::FindSelectionResult pos = child->checkSelectionPoint(_x, _y, _tx+xPos(), _ty+yPos(), nod, off);
+        //kdDebug(6030) << this << " child->findSelectionNode returned " << pos << endl;
+        switch(pos) {
+        case SelectionPointInside:
+            node = nod;
+            offset = off;
+            return SelectionPointInside;
+        case SelectionPointBefore:
+            //x,y is before this element -> stop here
+            if ( lastNode) {
+                node = lastNode;
+                offset = lastOffset;
+//                 kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " before this child "
+//                               << node << "-> returning offset=" << offset << endl;
+                return SelectionPointInside;
+            } else {
+//                 kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " before us -> returning -2" << endl;
+                return SelectionPointBefore;
+            }
+            break;
+        case SelectionPointAfter:
+//             kdDebug(6030) << "ElementImpl::findSelectionNode: selection after: " << nod << " offset: " << off << endl;
+            lastNode = nod;
+            lastOffset = off;
+        }
+    }
+    node = lastNode;
+    offset = lastOffset;
+    return SelectionPointAfter;
+}
+
 bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 {
     int tx = _tx + xPos();
@@ -792,8 +830,8 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
     if (isRelPositioned())
         static_cast<RenderBox*>(this)->relativePositionOffset(tx, ty);
 
-    bool inside = style()->visibility() != HIDDEN && ((_y >= ty) && (_y < ty + height()) &&
-                  (_x >= tx) && (_x < tx + width()));
+    bool inside = (style()->visibility() != HIDDEN && ((_y >= ty) && (_y < ty + height()) &&
+                  (_x >= tx) && (_x < tx + width()))) || isBody();
     bool inner = !info.innerNode();
 
     // ### table should have its own, more performant method

@@ -45,12 +45,13 @@ khtml::MouseEvent::~MouseEvent()
 long khtml::MouseEvent::offset() const
 {
     int offset = 0;
-    DOM::Node tempNode = 0;
+    DOM::NodeImpl* tempNode = 0;
     int absX, absY;
     absX = absY = 0;
-    if (innerNode().handle()->renderer())
+    if (innerNode().handle()->renderer()) {
         innerNode().handle()->renderer()->absolutePosition(absX, absY);
-    innerNode().handle()->findSelectionNode( x(), y(), absX, absY, tempNode, offset );
+        innerNode().handle()->renderer()->checkSelectionPoint( x(), y(), absX, absY, tempNode, offset );
+    }
     return offset;
 }
 

@@ -127,9 +127,6 @@ public:
 
     virtual void defaultEventHandler(EventImpl *evt);
 
-    virtual khtml::FindSelectionResult findSelectionNode( int _x, int _y, int _tx, int _ty,
-                                                   DOM::Node & node, int & offset );
-
     bool frameBorder() { return frameborder; }
     bool noResize() { return noresize; }
 
