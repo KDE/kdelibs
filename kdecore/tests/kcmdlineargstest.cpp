@@ -36,6 +36,12 @@ main(int argc, char *argv[])
       // Do stuff
       printf("Option 'test' is set.\n");
    }   
+
+   if (args->isSet("baud"))
+   {
+      // Do stuff
+      printf("Option 'baud' is set.\n");
+   }   
    
    // Read the value of an option. 
    QCString baudrate = args->getOption("baud"); // 9600 is the default value.
