@@ -242,6 +242,7 @@ int KSSL::connect(int sock) {
 
   if (!d->lastInitTLS)
     d->kossl->SSL_set_options(d->m_ssl, SSL_OP_NO_TLSv1);
+  d->kossl->SSL_set_options(d->m_ssl, SSL_OP_ALL);
 
   rc = d->kossl->SSL_set_fd(d->m_ssl, sock);
   if (rc == 0) return rc;
