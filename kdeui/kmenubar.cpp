@@ -39,6 +39,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.33  1998/09/07 13:46:58  ettrich
+// Matthias: removed some debug output...
+//
 // Revision 1.32  1998/09/07 13:45:19  ettrich
 // Matthias: removed old qt-1.2 compatibility hack
 //
@@ -389,7 +392,6 @@ void KMenuBar::leaveEvent (QEvent *e){
 void KMenuBar::enableMoving(bool flag)
 {
   moving = flag;
-    printf("setMenuBarPos %d\n", mpos);
     if (position == FloatingSystem && standalone_menubar == true) {
 	return; // Ignore positioning of Mac menubar
      if (mpos == Floating)
