@@ -64,6 +64,7 @@ void KAutoConfigDialog::addPage(QWidget *page,
         Header = itemName;
       QVBox *frame = kdialogbase->addVBoxPage(itemName, Header, SmallIcon(pixmapName, 32));
       frame->setSpacing( 0 );
+      frame->setMargin( 0 );
       page->reparent(((QWidget*)frame), 0, QPoint());
     }
     break;
