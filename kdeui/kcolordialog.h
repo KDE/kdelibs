@@ -477,9 +477,9 @@ class KColorDialog : public KDialogBase
      **/
     void readSettings();
 
-    void setRgbEdit( void );
-    void setHsvEdit( void );
-    void setHtmlEdit( void );
+    void setRgbEdit( const KColor &col );
+    void setHsvEdit( const KColor &col );
+    void setHtmlEdit( const KColor &col );
     void _setColor( const KColor &col, const QString &name=QString::null );
     void showColor( const KColor &color, const QString &name );
 

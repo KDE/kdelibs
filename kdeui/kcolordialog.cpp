@@ -1332,9 +1332,9 @@ void KColorDialog::showColor( const KColor &color, const QString &name )
 
   d->patch->setColor( color );
 
-  setRgbEdit();
-  setHsvEdit();
-  setHtmlEdit();
+  setRgbEdit( color );
+  setHsvEdit( color );
+  setHtmlEdit( color );
 
   int h, s, v;
   color.hsv( &h, &s, &v );
@@ -1417,22 +1417,22 @@ KColorDialog::keyPressEvent( QKeyEvent *e )
   KDialogBase::keyPressEvent( e );
 }
 
-void KColorDialog::setRgbEdit( void )
+void KColorDialog::setRgbEdit( const KColor &col )
 {
   if (d->bEditRgb) return;
   int r, g, b;
-  d->selColor.rgb( &r, &g, &b );
+  col.rgb( &r, &g, &b );
 
   d->redit->setValue( r );
   d->gedit->setValue( g );
   d->bedit->setValue( b );
 }
 
-void KColorDialog::setHtmlEdit( void )
+void KColorDialog::setHtmlEdit( const KColor &col )
 {
   if (d->bEditHtml) return;
   int r, g, b;
-  d->selColor.rgb( &r, &g, &b );
+  col.rgb( &r, &g, &b );
   QString num;
 
   num.sprintf("#%02X%02X%02X", r,g,b);
@@ -1440,11 +1440,11 @@ void KColorDialog::setHtmlEdit( void )
 }
 
 
-void KColorDialog::setHsvEdit( void )
+void KColorDialog::setHsvEdit( const KColor &col )
 {
   if (d->bEditHsv) return;
   int h, s, v;
-  d->selColor.hsv( &h, &s, &v );
+  col.hsv( &h, &s, &v );
 
   d->hedit->setValue( h );
   d->sedit->setValue( s );
