@@ -21,6 +21,16 @@
     Boston, MA 02111-1307, USA.
 */
 
+// somehow msg_handler is undeclared when QT_NO_COMPAT is defined
+#ifdef QT_NO_COMPAT
+#undef QT_NO_COMPAT
+#include <qglobal.h>
+#define QT_NO_COMPAT
+#else
+#include <qglobal.h>
+#endif
+
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -93,7 +103,9 @@
 enum Buttons { HOTLIST_BUTTON,
                PATH_COMBO, CONFIGURE_BUTTON };
 
-const int idStart = 1;
+static void silenceQToolBar(QtMsgType, const char *)
+{
+}
 
 template class QPtrList<KIO::StatJob>;
 
@@ -182,7 +194,9 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     d->completionLock = false;
     d->myStatusLine = 0;
 
+    msg_handler oldHandler = qInstallMsgHandler( silenceQToolBar ); 
     toolbar= new KToolBar( d->mainWidget, "KFileDialog::toolbar", true);
+    qInstallMsgHandler( oldHandler );
 
     KURLComboBox *combo = new KURLComboBox( KURLComboBox::Directories, true,
                                             toolbar, "path combo" );
