@@ -3006,24 +3006,10 @@ void KHTMLPart::popupMenu( const QString &url )
   if ( !url.isEmpty() )
     popupURL = completedURL;
 
-  /*
-  mode_t mode = 0;
-  if ( !u.isLocalFile() )
-  {
-    QString cURL = u.url( 1 );
-    int i = cURL.length();
-    // A url ending with '/' is always a directory
-    if ( i >= 1 && cURL[ i - 1 ] == '/' )
-      mode = S_IFDIR;
-  }
-  */
-  mode_t mode = S_IFDIR; // treat all html documents as "DIR" in order to have the back/fwd/reload
-                         // buttons in the popupmenu
-
   KXMLGUIClient *client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, popupURL );
 
   emit d->m_extension->popupMenu( client, QCursor::pos(), completedURL,
-                                  QString::fromLatin1( "text/html" ), mode );
+                                  QString::fromLatin1( "text/html" ), S_IFREG /*always a file*/ );
 
   delete client;
 
