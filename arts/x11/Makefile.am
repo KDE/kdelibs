@@ -13,6 +13,7 @@ x11globalcomm.h: $(srcdir)/x11globalcomm.idl $(MCOPIDL)
 	$(MCOPIDL) -t $(INCLUDES) $(srcdir)/x11globalcomm.idl
 
 x11globalcomm.cc: x11globalcomm.h
+x11globalcomm_impl.cc: x11globalcomm.h
 x11globalcomm.mcoptype: x11globalcomm.h
 x11globalcomm.mcopclass: x11globalcomm.h
 
