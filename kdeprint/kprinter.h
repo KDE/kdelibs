@@ -205,6 +205,7 @@ public:
 	 * the same application run, if @p restore is true. Setting @p restore to false may
 	 * be useful if you want an independant/clean KPrinter object.
 	 * @param restore if true, options will be restored/saved between successive KPrinter objects
+	 * @param m the mode to establish the KPrinter in (see QPrinter::PrinterMode)
 	 */
 	KPrinter(bool restore = true, QPrinter::PrinterMode m = QPrinter::ScreenResolution );
 	/**
@@ -563,14 +564,14 @@ public:
 	 * @param _page the page to add
 	 * @see KPrintDialogPage::setOptions()
 	 */
-	static void addDialogPage(KPrintDialogPage*);
+	static void addDialogPage(KPrintDialogPage* _page);
 	/**
 	 * Sets the page selection mode of the application. If needed, call this method somewhere at
 	 * the beginning of your code. The default value is @p SystemSide.
 	 * @param _mode the mode for the application
 	 * @see pageSelection()
 	 */
-	static void setPageSelection(PageSelectionType);
+	static void setPageSelection(PageSelectionType _mode);
 	/**
 	 * Returns the page selection mode of the current application.
 	 * @returns the page selection mode
@@ -682,7 +683,7 @@ public:
 	QString searchName() const;
 	/**
 	 * Sets the search name of the KPrinter object. For internal use.
-	 * @param the unique printer search name
+	 * @param n the unique printer search name
 	 * @see searchName()
 	 */
 	void setSearchName(const QString& n);
