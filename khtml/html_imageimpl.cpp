@@ -200,37 +200,30 @@ void HTMLImageElementImpl::print(QPainter *p, int _x, int _y,
 void HTMLImageElementImpl::printObject(QPainter *p, int, int _y,
 				       int, int _h, int _tx, int _ty)
 {
-    //printf("%s(Image)::printObject()\n", nodeName().string().ascii());
+//    printf("%s(Image)::printObject()\n", nodeName().string().ascii());
 
     if((_ty - ascent > _y + _h) || (_ty + descent < _y)) return;
 
     QRect rect( 0, 0, width - border*2, getHeight() - border*2 );
 
-#if 0
-    if ( pixmap )
-    {
-	if ( predefinedWidth )
-	    rect.setWidth( pixmap->width() );
-
-	if ( predefinedHeight )
-	    rect.setHeight( pixmap->height() );
-    }
-#endif
-
     if ( pixmap == 0 || pixmap->isNull() )
     {
 	QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
 			      Qt::black, Qt::white );
-	qDrawShadePanel( p, _tx, _ty - getHeight(), width, getHeight(),
+	qDrawShadePanel( p, _tx+border, _ty - ascent+border, width, getHeight(),
 			 colorGrp, true, 1 );
 	if(!alt.isEmpty())
 	{
-	    QString text = alt.string();
+	    QString text = alt.string();  	    
 	    p->setFont(*getFont());
 	    p->setPen( getFont()->textColor() );
-	    p->drawText(_tx+5, _ty - getHeight()+5, width-10, getHeight()-10,
-			Qt::WordBreak, text );
-	    
+	    int ax = _tx+border+5;
+	    int ay = _ty - ascent+border+5;
+	    int ah = getHeight()-border-10;
+	    int aw = width-border-10;
+	    QFontMetrics fm(*getFont()); 
+	    if (aw>15 && ah>fm.height())
+    	    	p->drawText(ax, ay, aw, ah , Qt::WordBreak, text );
 	}
     }
     else
@@ -245,7 +238,6 @@ void HTMLImageElementImpl::printObject(QPainter *p, int, int _y,
 	    painter.fillRect( 0, 0, pm.width(), pm.height(), b );
 	}
 #endif
-
 	if ( (width - border*2 != pixmap->width() ||
 	    getHeight() - border != pixmap->height() ) &&
 	    pixmap->width() != 0 && pixmap->height() != 0 )
@@ -268,7 +260,7 @@ void HTMLImageElementImpl::printObject(QPainter *p, int, int _y,
 	    p->drawPixmap( QPoint( _tx + border,
 				   _ty - ascent + border), *pixmap, rect );
     }
-
+    
     if ( border )
     {
 	QPen pen( QColor("000000"));

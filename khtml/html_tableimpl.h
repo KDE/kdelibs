@@ -149,11 +149,14 @@ public:
     virtual void updateSize();
 
     virtual VAlign vAlign() { return valign; }
+    
+    int getBaseline(int row) {return rowBaselines[row];}
 
     void attach(KHTMLWidget *);
     void detach();
     virtual void setPixmap( QPixmap * );
     virtual void pixmapChanged( QPixmap * );
+       
 
 protected:
     /*
@@ -199,13 +202,8 @@ protected:
 	int 	percentage;
     };
 
-
-    // this function is used in case <col> or <colgroup> elements are defined
-    // table layout can be done incrementally in this case
-    void calcColWidth();
     // This function calculates the actual widths of the columns
-    // for tables which can't be rendered incrementally
-    void calcColWidthII(void);
+    void calcColWidth();
 
     // calculates the height of each row
     void calcRowHeights();
@@ -468,8 +466,6 @@ public:
 	    return HTMLBlockElementImpl::mouseEvent(_x, _y, button, t,
 						    _tx, _ty, url);
 	}
-
-    virtual void calcVerticalAlignment(int baseline);
 
     virtual void layout(bool deep = false);
 

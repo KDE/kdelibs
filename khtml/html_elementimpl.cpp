@@ -597,6 +597,9 @@ void HTMLBlockElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
 void HTMLBlockElementImpl::printObject(QPainter *p, int _x, int _y,
 				       int _w, int _h, int _tx, int _ty)
 {
+#ifdef DEBUG_LAYOUT
+    printf("%s(BlockElement)::printObject()\n", nodeName().string().ascii());
+#endif
     // check if we need to do anything at all...
     if((_ty - ascent > _y + _h) || (_ty + descent < _y)) return;
     if(!layouted()) return;
@@ -855,9 +858,6 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 #ifdef PAR_DEBUG
     printf("calcParagraph\n");
 #endif
-
-
-    assert(width>0);
 
     QStack<NodeImpl> nodeStack;
 

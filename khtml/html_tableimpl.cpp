@@ -27,9 +27,9 @@
 
 // ### FIXME: get rid of setStyle calls...
 // ### cellpadding and spacing should be converted to Length
-// #define TABLE_DEBUG
-// #define DEBUG_LAYOUT
-// #define DEBUG_DRAW_BORDER
+//#define TABLE_DEBUG
+//#define DEBUG_LAYOUT
+//#define DEBUG_DRAW_BORDER
 
 #include <qlist.h>
 #include <qstack.h>
@@ -437,6 +437,9 @@ void HTMLTableElementImpl::startRow()
 	row++;
     col = 0;
     if(row > totalRows) totalRows = row;
+
+    calcMinMaxWidth();    
+    setAvailableWidth();
 }
 
 void HTMLTableElementImpl::addCell( HTMLTableCellElementImpl *cell )
@@ -444,6 +447,9 @@ void HTMLTableElementImpl::addCell( HTMLTableCellElementImpl *cell )
     while ( col < totalCols && cells[row][col] != 0L )
 	col++;
     setCells( row, col, cell );
+    
+    setMinMaxKnown(false);
+    setLayouted(false);
 
     col++;
 }
@@ -641,7 +647,8 @@ void HTMLTableElementImpl::addColInfo(int _startCol, int _colSpan,
 	}
     }
 	
-	
+    setMinMaxKnown(false);
+    
 #ifdef TABLE_DEBUG
     printf("  end: min=%d max=%d act=%d\n", colMinWidth[_startCol],
 	   colMaxWidth[_startCol], actColWidth[_startCol]);
@@ -700,7 +707,7 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
 	bool out=false;
 	while (tt<=type && !out && tmin)
 	{
-	    tmin-=distributeMinWidth(tmin,type,tt,col,span);
+	    tmin = distributeMinWidth(tmin,type,tt,col,span);
     	    switch (type)
 	    {
     	    case Variable: tt=Relative; break;	
@@ -827,11 +834,14 @@ void HTMLTableElementImpl::calcColMinMax()
 // Calculate min and max width for the table.
 
 
-#ifdef TABLE_DEBUG
-    printf("HTMLTableElementImpl::calcColMinMax()\n");
-#endif
+//#ifdef TABLE_DEBUG
+    printf("HTMLTableElementImpl::calcColMinMax(), %d\n", minMaxKnown());
+//#endif
 
     // PHASE 1, prepare
+    
+//    if(minMaxKnown())
+//    	return;
 
     colMinWidth.fill(0);
     colMaxWidth.fill(0);		
@@ -854,6 +864,8 @@ void HTMLTableElementImpl::calcColMinMax()
 #ifdef TABLE_DEBUG
     	    printf(" s=%d c=%d min=%d value=%d\n",s,c,col->min,col->value);
 #endif	    
+
+    	    col->update();
 	    calcSingleColMinMax(c, col);
 
 	}	
@@ -988,14 +1000,16 @@ void HTMLTableElementImpl::calcColMinMax()
     	for(int i = 0; i < totalCols; i++)
 	    maxWidth += colMaxWidth[i] + spacing;
     }
+    
+    setMinMaxKnown(true);
 
 }
 
-void HTMLTableElementImpl::calcColWidthII(void)
+void HTMLTableElementImpl::calcColWidth(void)
 {
 
 #ifdef TABLE_DEBUG
-    printf("START calcColWidthII() this = %p\n", this);
+    printf("START calcColWidth() this = %p\n", this);
     printf("---- %d ----\n", totalColInfos);
     printf("maxColSpan = %d\n", maxColSpan);
     printf("availableWidth = %d\n", availableWidth);
@@ -1005,7 +1019,8 @@ void HTMLTableElementImpl::calcColWidthII(void)
     	return;
 
     /*
-     * Calculate min and max width for every column
+     * Calculate min and max width for every column,
+     * and the width of the table
      */
 
     calcColMinMax();
@@ -1073,46 +1088,32 @@ void HTMLTableElementImpl::calcColWidthII(void)
     }
 #endif
 
-
-
-    /*
-     * Distribute the free width among the columns, so that
-     * they reach their max width.
-     * Order: fixed->percent->relative->variable
-     */
-
     int tooAdd = width - actWidth;      // what we can add
 
 #ifdef TABLE_DEBUG
-    printf("tooAdd %d = %d - %d\n",tooAdd,width, actWidth);
+    printf("tooAdd = width - actwidth: %d = %d - %d\n",
+    	tooAdd, width, actWidth);
 #endif
-
-    int olddis=0;
-    int c=0;
-
-    int distrib = MIN(maxFixed - minFixed, tooAdd);
-    tooAdd-=distributeWidth(distrib,Fixed,numFixed);
-    distrib = MIN(maxPercent - minPercent, tooAdd);
-    tooAdd-=distributeWidth(distrib,Percent,numPercent);
-
-    distrib = MIN(maxRel - minRel, tooAdd);
-    tooAdd-=distributeWidth(distrib,Relative,numRel);
-
-    distrib = MIN(maxVar - minVar, tooAdd);
-    tooAdd-=distributeWidth(distrib,Variable,numVar);
-
-
 
     /*
-     * Some width still left?
-     */
-#ifdef TABLE_DEBUG
-    printf("DISTRIBUTING rest, %d pixels\n", distrib);
-#endif
+     * tooAddute the free width among the columns so that
+     * they reach their max width.
+     * Order: fixed->percent->relative->variable
+     */    
 
-    tooAdd-= distributeRest(tooAdd,Variable,maxVar);
-    tooAdd-= distributeRest(tooAdd,Relative,maxRel);
-    tooAdd-= distributeRest(tooAdd,Percent,maxPercent);
+    tooAdd = distributeWidth(tooAdd,Fixed,numFixed);
+    tooAdd = distributeWidth(tooAdd,Percent,numPercent);
+    tooAdd = distributeWidth(tooAdd,Relative,numRel);
+    tooAdd = distributeWidth(tooAdd,Variable,numVar);
+
+    /*
+     * Some width still left? 
+     * Reverse order, variable->relative->percent
+     */
+
+    tooAdd = distributeRest(tooAdd,Variable,maxVar);
+    tooAdd = distributeRest(tooAdd,Relative,maxRel);
+    tooAdd = distributeRest(tooAdd,Percent,maxPercent);
 
 #ifdef TABLE_DEBUG
     printf("final tooAdd %d\n",tooAdd);
@@ -1150,7 +1151,7 @@ int HTMLTableElementImpl::distributeWidth(int distrib, LengthType type, int type
     int tdis = distrib;
 //    printf("DISTRIBUTING %d pixels to type %d cols\n", distrib, type);
 
-    while(tdis)
+    while(tdis>0)
     {
 	if (colType[c]==type)
 	{
@@ -1169,21 +1170,23 @@ int HTMLTableElementImpl::distributeWidth(int distrib, LengthType type, int type
 	    olddis=tdis;
 	}
     }
-    return distrib-tdis;
+    return tdis;
 }
 
 
 int HTMLTableElementImpl::distributeRest(int distrib, LengthType type, int divider )
 {
     if (!divider)
-    	return -1;
+    	return distrib;
+
+//    printf("DISTRIBUTING rest, %d pixels to type %d cols\n", distrib, type);
 
     int olddis=0;
     int c=0;
 
     int tdis = distrib;
 
-    while(tdis)
+    while(tdis>0)
     {
 	if (colType[c]==type)
 	{
@@ -1202,7 +1205,7 @@ int HTMLTableElementImpl::distributeRest(int distrib, LengthType type, int divid
 	    olddis=tdis;
 	}
     }
-    return distrib-tdis;
+    return tdis;
 }
 
 int HTMLTableElementImpl::distributeMinWidth(int distrib, LengthType distType,
@@ -1213,7 +1216,7 @@ int HTMLTableElementImpl::distributeMinWidth(int distrib, LengthType distType,
 
     int tdis = distrib;
 
-    while(tdis)
+    while(tdis>0)
     {
 	if (colType[c]==toType)
 	{
@@ -1231,7 +1234,7 @@ int HTMLTableElementImpl::distributeMinWidth(int distrib, LengthType distType,
 	    olddis=tdis;
 	}
     }
-    return distrib-tdis;
+    return tdis;
 }
 
 
@@ -1303,27 +1306,10 @@ void HTMLTableElementImpl::calcRowHeights()
 
 	if ( rowHeights[r+1] < rowHeights[r] )
 	    rowHeights[r+1] = rowHeights[r];
-	
-	// if rowheight changed, recalculate valigns later
-	if (oldheight != rowHeights[r+1] - rowHeights[r])
-	{
-	    for ( c = 0; c < totalCols; c++ )
-	    {
-		if ( ( cell = cells[r][c] ) == 0 )
-		    continue;
-		if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		    continue;
-		if ( r < totalRows - 1 && cells[r+1][c] == cell )
-    		    continue;
-		
-		if (cell->vAlign()!=Top)
-		    cell->setLayouted(false);
-	    }
-	}
-
     }
 }
 
+//#include "qdatetime.h"
 
 void HTMLTableElementImpl::layout(bool deep)
 {
@@ -1337,8 +1323,13 @@ void HTMLTableElementImpl::layout(bool deep)
     printf("%s(Table)::layout(%d) width=%d, layouted=%d\n", nodeName().string().ascii(), deep, width, layouted());
 #endif
 
+//    QTime qt;
+//    qt.start();
+
     if(blocking())
-	calcColWidthII();
+	calcColWidth();
+
+//    printf("TIME calcColWidth() dt=%d\n",qt.elapsed());
 
     if(tCaption)
     {
@@ -1381,6 +1372,8 @@ void HTMLTableElementImpl::layout(bool deep)
 	    }
 	END_FOR_EACH
     }
+    
+//    printf("TIME cell layout() dt=%d\n",qt.elapsed());
 
     // We have the cell sizes now, so calculate the vertical positions
     calcRowHeights();
@@ -1418,8 +1411,6 @@ void HTMLTableElementImpl::layout(bool deep)
 	    cell->setPos( columnPos[indx] + padding,
 			  rowHeights[rindx] );
 	    cell->setRowHeight(cellHeight);
-	    cell->calcVerticalAlignment(rowBaselines[r]);
-
 	}
     }
 #endif
@@ -1427,6 +1418,8 @@ void HTMLTableElementImpl::layout(bool deep)
     if(frame & Below) descent += border;
 
     setLayouted();
+    
+//    printf("TIME layout() end dt=%d\n",qt.elapsed());    
 
 }
 
@@ -1436,12 +1429,14 @@ void HTMLTableElementImpl::setAvailableWidth(int w)
     printf("%s(Table, this=0x%p)::setAvailableWidth(%d)\n", nodeName().string().ascii(), this, w);
 #endif
 
-    if (w != availableWidth)
-    	setLayouted(false);
+    if (w == availableWidth)
+    	return;
+
+    setLayouted(false);	
 
     if(w != -1) availableWidth = w;
 
-    calcColWidthII();
+    calcColWidth();
 	
     int indx;
     FOR_EACH_CELL( r, c, cell)
@@ -1457,6 +1452,8 @@ void HTMLTableElementImpl::setAvailableWidth(int w)
 	    cell->setAvailableWidth( w );
 	}
     END_FOR_EACH
+    
+    setMinMaxKnown(false);
 }
 
 void HTMLTableElementImpl::print( QPainter *p, int _x, int _y,
@@ -1628,22 +1625,6 @@ void HTMLTableElementImpl::calcMinMaxWidth()
 #endif
 
     calcColMinMax();
-
-/*    minWidth = border + border + spacing;
-    maxWidth = border + border + spacing;
-
-    for(int i = 0; i < (int)totalCols; i++)
-    {
-	maxWidth += colMaxWidth[i] + spacing;
-	minWidth += colMinWidth[i] + spacing;
-    }*/
-    //printf("table: calcminmaxwidth %d, %d\n",minWidth,maxWidth);
-
-    if(!availableWidth || minMaxKnown()) return;
-
-//    if(availableWidth && minWidth > availableWidth)
-//	if(_parent) _parent->updateSize();
-
 }
 
 void HTMLTableElementImpl::close()
@@ -1661,14 +1642,6 @@ void HTMLTableElementImpl::close()
 
 void HTMLTableElementImpl::updateSize()
 {
-    /*calcMinMaxWidth();
-    if (incremental)
-    	calcColWidth();
-    else
-    	calcColWidthII();
-    setLayouted(false);
-    if(_parent) _parent->updateSize();*/
-
     HTMLPositionedElementImpl::updateSize();
 }
 
@@ -2048,16 +2021,18 @@ void HTMLTableCellElementImpl::calcMinMaxWidth()
 #endif
 
     if(minMaxKnown()) return;
-
+    
+    int oldMin = minWidth;
+    int oldMax = maxWidth;
+    
     HTMLBlockElementImpl::calcMinMaxWidth();
     minWidth+=table->cellPadding()*2;
     maxWidth+=table->cellPadding()*2;
 
     if(nWrap && predefinedWidth.type!=Fixed) minWidth = maxWidth;
-    table->addColInfo(this);
-//    printf("cell: calcminmaxwidth %d, %d\n",minWidth,maxWidth);
-//    if(availableWidth && minWidth > availableWidth)
-//	if(_parent) _parent->updateSize();
+    
+    if (minWidth!=oldMin || maxWidth!=oldMax)
+        table->addColInfo(this);
 
 }
 
@@ -2077,8 +2052,36 @@ void HTMLTableCellElementImpl::print(QPainter *p, int _x, int _y,
     // check if we need to do anything at all...
     if((_ty - ascent > _y + _h) || (_ty + rowHeight < _y)) return;
     if((_tx > _x + _w) || (_tx + width < _x)) return;
-
+    
+    // background etc
     printObject(p, _x, _y, _w, _h, _tx, _ty);
+    
+            
+    // vertical alignment
+    int hh = rowHeight-table->cellPadding()*2;
+    
+    int vdelta=0;
+    VAlign va = vAlign();
+    switch (va)
+    {
+    case Baseline: 
+    	if (firstChild()) 
+    	    vdelta = table->getBaseline(row()) - firstChild()->getYPos();
+	break;
+    case VNone:
+    case VCenter:
+    	vdelta=(hh-descent)/2;
+	break;
+    case Bottom:
+    	vdelta=(hh-descent);
+	break;
+    case Top:
+    	break;
+    }
+ 
+    _ty += vdelta;   
+    
+    // print children 
 
     NodeImpl *child = firstChild();
     while(child != 0)
@@ -2128,101 +2131,9 @@ void HTMLTableCellElementImpl::printObject(QPainter *p, int, int,
 
 }
 
-void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline)
-{
-    // reposition everything within the cell according to valign.
-    // called after the cell has been layouted and rowheight is known.
-    // probably non-optimal...  -AKo
-
-    if (layouted())
-    	return;
-
-//    printf("HTMLTableCellElementImpl::calcVerticalAlignment()\n");
-
-    int hh = rowHeight-table->cellPadding()*2;
-
-//    printf("hh=%d, d=%d\n",hh,descent+ascent);
-
-    NodeImpl *current = firstChild();
-
-    if (!current || valign==Top)
-    {
-    	setLayouted();
-    	return;
-    }
-    int vdelta=0;
-
-    VAlign va = vAlign();
-    switch (va)
-    {
-    case Baseline:
-    	vdelta = baseline - current->getYPos();
-	break;
-    case VNone:
-    case VCenter:
-    	vdelta=(hh-descent)/2-(current->getYPos()-current->getAscent());
-	break;
-    case Bottom:
-    	vdelta=(hh-descent)-(current->getYPos()-current->getAscent());
-	break;
-    }
-
-    if (!vdelta)
-    {
-    	setLayouted();
-	return;
-    }
-
-    QStack<NodeImpl> nodeStack;
-
-    while(1)
-    {
-	if(!current)
-	{
-	    if(nodeStack.isEmpty()) break;
-	    current = nodeStack.pop();
-	    current = current->nextSibling();
-	    continue;
-	}	
-	if (current->isTextNode())
-    	{
-	    TextSlave* sl = static_cast<TextImpl*>(current)->first;
-	    while (sl)
-	    {
-	    	sl->y+=vdelta;
-	    	sl=sl->next();
-	    }
-	}
-	else
-	    current->setYPos(current->getYPos()+vdelta);
-	
-	if (!current->isInline())
-	{
-	    current = current->nextSibling();
-	    continue;
-	}
-	
-	NodeImpl *child = current->firstChild();	
-	if(child)
-	{	
-	    nodeStack.push(current);
-	    current = child;
-	}
-	else
-	{
-	    current = current->nextSibling();
-	}
-    }
-
-    setLayouted();
-
-}
-
 void HTMLTableCellElementImpl::layout(bool deep)
 {
-    bool lay = layouted();
     HTMLBlockElementImpl::layout(deep);
-    setLayouted(lay);
 }
 
 
