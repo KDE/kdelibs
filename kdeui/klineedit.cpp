@@ -241,12 +241,14 @@ void KLineEdit::rotateText( const QString& input )
 
 void KLineEdit::slotRotateUp()
 {
-    rotateText( comp->previousMatch() );
+    if( comp != 0 )
+        rotateText( comp->previousMatch() );
 }
 
 void KLineEdit::slotRotateDown()
 {
-    rotateText( comp->nextMatch() );
+    if( comp != 0 )
+        rotateText( comp->nextMatch() );
 }
 
 void KLineEdit::slotTextChanged( const QString& text )
