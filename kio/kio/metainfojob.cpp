@@ -104,7 +104,7 @@ void MetaInfoJob::determineNextFile()
     // does the file item already have the needed info? Then shortcut
     if (d->currentItem->current()->metaInfo(false).isValid())
     {
-        kdDebug(7007) << "Is already valid *************************\n";
+//        kdDebug(7007) << "Is already valid *************************\n";
         emit gotMetaInfo(d->currentItem->current());
         determineNextFile();
         return;
@@ -147,7 +147,7 @@ void MetaInfoJob::slotMetaInfo(KIO::Job* , const QByteArray &data)
     s >> info;
     
     // every file should get a valid (but maybe empty) item
-    Q_ASSERT(info.isValid());
+    if (!info.isValid()) kdDebug(7007) << info.path() << " is not valid\n";
           
     d->currentItem->current()->setMetaInfo(info);
     emit gotMetaInfo(d->currentItem->current());

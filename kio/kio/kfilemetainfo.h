@@ -31,13 +31,23 @@ class QValidator;
 class KFilePlugin;
 class KFileMetaInfoGroup;
 
+/**
+ *  This class provides information about the capabilities that a
+ *  @ref KFilePlugin for a given mimetype has. It includes a list of metainfo
+ *  groups and items together with their type, a prefix, suffix and some other
+ *  information about how to use, display or edit the items.
+ *
+ **/
 class KFileMimeTypeInfo
 {
+    // the plugin needs to be a friend because it puts the data into the object,
+    // and it should be the only one allowed to do this.
     friend class KFilePlugin;
     friend class KFileMetaInfoProvider;
 
 public:
     KFileMimeTypeInfo() {}
+
     /**
      * This enum is used to specify some attributes that an item can have,
      * which fit neither in the @ref Hint nor in the @ref Unit enum.
@@ -50,6 +60,13 @@ public:
      *                    item (e.g. play time of an mp3 file)
      * @li @p Averaged    Similar to Cummulative, but the average should be
      *                    calculated instead of the sum
+     * @li @p MultiLine   This attribute says that a string item is likely to
+     *                    be more than one line long, so for editing, a widget
+     *                    capable for multline text should be used
+     * @li @p SqueezeText If the text for this item is very long, it should be
+     *                    squeezed to the size of the widget where it's
+     *                    displayed
+     *
      **/
     enum Attributes
     {
@@ -72,12 +89,11 @@ public:
      * @li @p Description Some information about the document
      * @li @p Width       A width in pixels
      * @li @p Height      A height in pixels
+     * @li @p Size        A size in pixels (witdh and height)
      * @li @p Bitrate     For media files
      * @li @p Length      The length of the file, also for media files
      * @li @p Hidden      The item is usually not shown to the user
      * @li @p Thumbnail   The item is a thumbnail of the file
-     * @li @p MultiLine   Tells that a textual string will be edited in a
-     *                    multi-line edit, rather than a simple lineedit.
      **/
     enum Hint {
         NoHint      = 0,
@@ -110,6 +126,7 @@ public:
      * @li @p Bytes           Some data/file size in bytes
      * @li @p FramesPerSecond A frame rate
      * @li @p DotsPerInch     Resolution in DPI
+     * @li @p BitsPerPixel    A bit depth
      **/
     enum Unit {
         NoUnit          = 0,
@@ -128,6 +145,7 @@ public:
 
     class ItemInfo;
 
+    // ### document
     class GroupInfo
     {
 
@@ -173,7 +191,7 @@ public:
         }
 
        /**
-        *  A group object can contains sevaral item objects (of which you can
+        *  A group object can contain sevaral item objects (of which you can
         *  get the names with @ref supportedKeys() . With this method, you can
         *  get one of those item objects. See @ref ItemInfo
         *
@@ -217,8 +235,9 @@ public:
         GroupInfo( const QString& name, const QString& translatedName);
 
         /** @Internal */
-        KFileMimeTypeInfo::ItemInfo* addItemInfo( const QString& key, const QString& translatedKey,
-                          QVariant::Type type);
+        KFileMimeTypeInfo::ItemInfo* addItemInfo( const QString& key,
+                                                  const QString& translatedKey,
+                                                  QVariant::Type type);
 
         /** @Internal */
         void addVariableInfo( QVariant::Type type, uint attr );
@@ -232,13 +251,14 @@ public:
 
     };
 
+    // ### document
     class ItemInfo
     {
     friend class KFilePlugin;
     friend class GroupInfo;
     public:
         /** @Internal */
-        ItemInfo() {}
+        ItemInfo() {}     // ### should be private?
 
         /**
          *
@@ -291,6 +311,7 @@ public:
          */
         bool isVariableItem() const
         {
+            // every valid item is supposed to have a non-null key
             return key().isNull();
         }
 
@@ -304,16 +325,28 @@ public:
             return m_translatedKey;
         }
 
+        /**
+         * Return the attributes of the item. See 
+         * @ref KFileMimeTypInfo::Attributes
+         */
         uint attributes() const
         {
             return m_attr;
         }
 
+        /**
+         * Return the hints for the item. See
+         * @ref KFileMimeTypInfo::Hint
+         */
         uint hint() const
         {
             return m_hint;
         }
 
+        /**
+         * Return the unit of the item. See
+         * @ref KFileMimeTypInfo::Unit
+         */
         uint unit() const
         {
             return m_unit;
@@ -327,8 +360,7 @@ public:
               m_type(type),
               m_attr(0), m_unit(NoUnit), m_hint(NoHint),
               m_prefix(QString::null), m_suffix(QString::null)
-        {
-        }
+        {}
 
         QString           m_key;
         QString           m_translatedKey;
@@ -340,6 +372,7 @@ public:
         QString           m_suffix;
     };
 
+    // ### could it be made private?
     ~KFileMimeTypeInfo();
 
     /**
@@ -349,33 +382,69 @@ public:
     QValidator * createValidator(const QString& group, const QString& key,
                                  QObject *parent = 0, const char *name = 0) const;
 
-
+    /**
+     * Returns the list of all groups that the plugin for this mimetype
+     * supports.
+     *
+     * @return the list of groups
+     */
     QStringList supportedGroups() const;
 
+    /**
+     * Same as the above function, but returns the strings to display to the
+     * user.
+     *
+     * @return the list of groups
+     */
     QStringList translatedGroups() const;
 
+    /**
+     * This is the same as @ref supportedGroups , but it returns the list of
+     * groups in the preferred order that's specified in the .desktop file.
+     *
+     * @return the list of groups
+     */
+     // ### is this correct?
     QStringList preferredGroups() const
     {
         return m_preferredGroups;
     }
 
+    /**
+     * Returns the mimetype to which this info belongs.
+     */
     QString mimeType()  const {return m_mimeType;}
 
+    /**
+     * Get the group info for a specific group.
+     * 
+     * @return a pointer to the info. Don't delete this object!
+     */
     const GroupInfo * groupInfo( const QString& group ) const;
-    // or rather QValueList<GroupInfo>& groupInfo()?
-
-    // Seem both ok. Let's take the first (or just both)
 
     // always returning stringlists which the user has to iterate and use them
     // to look up the real items sounds strange to me. I think we should add
     // our own iterators some time (somewhere in the future ;)
 
+    /**
+     * Return a list of all supported keys without looking for a specific
+     * group
+     * 
+     * @return the list of keys
+     */
     QStringList supportedKeys() const;
+
+    /**
+     * Return a list of all supported keys in preference order
+     * 
+     * @return the list of keys
+     */
     QStringList preferredKeys() const
     {
         return m_preferredKeys;
     }
 
+    // ### shouldn't this be private?
     GroupInfo * addGroupInfo( const QString& name,
                               const QString& translatedName);
 
@@ -385,8 +454,9 @@ public:
     //        bool            m_supportsVariableKeys : 1;
     QDict<ItemInfo> m_itemDict;
 
-
+// ### this should be made private instead
 protected:
+    /** @Internal */
     KFileMimeTypeInfo( const QString& mimeType );
 
     QDict<GroupInfo> m_groups;

@@ -1147,9 +1147,8 @@ KFileMetaInfoItem KFileMetaInfoGroup::item(uint hint) const
     QMapIterator<QString, KFileMetaInfoItem> it;
 
     for (it = d->items.begin(); it!=d->items.end(); ++it)
-    {
-        if (it.data().hint() & hint) return it.data();
-    }
+        if (it.data().hint() == hint)
+            return it.data();
 
     return KFileMetaInfoItem();
 }
