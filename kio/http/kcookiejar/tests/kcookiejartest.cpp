@@ -112,15 +112,31 @@ int main(int argc, char *argv[])
    // Domain should be corrected to "w.x.y.foobar.com"
    arg1 = "http://f22.w.x.y.foobar.com/config/login?8al4htk9mn3l9";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
-   arg2 = ("Set-Cookie: set_by_7=\"f22.w.x.y.foobar.com\"; path=\"/\"; domain=\".foobar.com\"\n"
-           "Set-Cookie: set_by_8=\"f22.w.x.y.foobar.com\"; path=\"/\"; domain=\".foobar.com\"");
+   arg2 = ("Set-Cookie: set_by_6=\"f22.w.x.y.foobar.com\"; path=\"/\"; domain=\".foobar.com\"\n"
+           "Set-Cookie: set_by_7=\"f22.w.x.y.foobar.com\"; path=\"/\"; domain=\".foobar.com\"");
    addCookies(arg1, arg2);
 
    // Domain should be corrected to ".y.foobar.co.uk"
    arg1 = "http://x.y.foobar.co.uk/";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
-   arg2 = "Set-Cookie: set_by_A=\"x.y.foobar.co.uk\"; Path=\"/\"; Domain=\".foobar.co.uk\"";
+   arg2 = "Set-Cookie: set_by_8=\"x.y.foobar.co.uk\"; Path=\"/\"; Domain=\".foobar.co.uk\"";
    addCookies(arg1, arg2);
+
+   // Testing a missing "." in the specified domain name. This
+   // should result in the cookie being set for ".foo.com".
+   arg1 = "http://y.foo.com/index.html";
+   printf("Requesting to set cookie for %s\n", arg1.latin1());
+   arg2 = "Set-Cookie: set_by_9=\"y.foo.com\" Domain=\"foo.com\"";
+   addCookies(arg1, arg2);
+
+   // A little twist in the previous test. Increased the domain level
+   // by one to see if the same test would pass...  This should result
+   // in a cookie being set for ".y.foo.com".
+   arg1 = "http://x.y.foo.com/index.html";
+   printf("Requesting to set cookie for %s\n", arg1.latin1());
+   arg2 = "Set-Cookie: set_by_A=\"x.y.foo.com\" Domain=\"foo.com\"";
+   addCookies(arg1, arg2);
+
 
    // A miscevious test.  This should appear in ".foobar.com".  In
    // the old code it appeared in "foobar.com" and caused problems
@@ -128,98 +144,118 @@ int main(int argc, char *argv[])
    // Real world examples: linuxtoday.com, slashdot.org, linux.com...
    arg1 = "http://foobar.com/acme/index.html";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
-   arg2 = "Set-Cookie: set_by_6=\"foobar.com\"";
+   arg2 = "Set-Cookie: set_by_B=\"foobar.com\"";
    addCookies(arg1, arg2);
+
 
    /* Anything below here should simply be flat-out rejected by the cookiejar!!
       The user should not even see these at all! */
    arg1 = "http://www.foobar.co.uk/";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
-   arg2 = "Set-Cookie: set_by_9=\"www.foobar2.com\"; Path=\"/\"; Domain=\".foorbar.com\"";
+   arg2 = "Set-Cookie: set_by_C=\"www.foobar.co.uk\"; Path=\"/\"; Domain=\".foorbar.com\"";
    addCookies(arg1, arg2);
 
    arg1 = "http://www.foo-foobar.com/";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
-   arg2 = "Set-Cookie: set_by_B=\"www.foo-foobar.com\"; Path=\"/\"; Domain=\".com\"";
+   arg2 = "Set-Cookie: set_by_D=\"www.foo-foobar.com\"; Path=\"/\"; Domain=\".com\"";
    addCookies(arg1, arg2);
 
    arg1 = "http://www.foobar.com/";
    printf("Requesting to set cookie for %s\n", arg1.latin1());
-   arg2 = "Set-Cookie: set_by_B=\"www.foo-foobar.com\"; Path=\"/\"; Domain=\".foobar.co.uk\"";
+   arg2 = "Set-Cookie: set_by_E=\"www.foobar.com\"; Path=\"/\"; Domain=\".foobar.co.uk\"";
    addCookies(arg1, arg2);
 
 /* ****************************************************************************************************************** */
 
-   // Should FAIL. Return <NULL>
+   // Should PASS.
    arg1 = "http://www.foo.com/";
-   printf("===== Looking up cookies for %s =====\n", arg1.latin1());
+   printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
-   printf("Result: %s\n", result.latin1() ? result.latin1() : "<NULL>");
+   printf("EXPECTED: %s\n", "Cookie: set_by_9=y.foo.com" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
-   // Should PASS. Returning "Cookie: set_by_0=www.foo.com"
+   // Should PASS.
    arg1 = "http://www.foo.com/acme";
-   printf("===== Looking up cookies for %s =====\n", arg1.latin1());
+   printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
-   printf("Result: %s\n", result.latin1() ? result.latin1() : "<NULL>");
+   printf("EXPECTED: %s\n", "Cookie: set_by_9=y.foo.com set_by_0=www.foo.com" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
-   // Should PASS. Returning "Cookie: set_by_1=www.foobar.com"
+   // Should PASS.
+   arg1 = "http://x.y.foo.com/";
+   printf("Looking up cookies for %s \n", arg1.latin1());
+   result = findCookies(arg1);
+   printf("EXPECTED: %s\n", "Cookie set_by_A=x.y.foo.com set_by_9=y.foo.com" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
+
+   // Should PASS.
    arg1 = "http://www.foobar.com/";
-   printf("===== Looking up cookies for %s =====\n", arg1.latin1());
+   printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
-   printf("Result: %s\n", result.latin1() ? result.latin1() : "<NULL>");
+   printf("EXPECTED: %s\n", "Cookie: set_by_1=www.foobar.com" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
-   // Should PASS. Returning "Cookie: set_by_2=www.foobar2.com"
+   // Should PASS.
    arg1 = "http://www.foobar2.com/acme";
-   printf("===== Looking up cookies for %s =====\n", arg1.latin1());
+   printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
-   printf("Result: %s\n", result.latin1() ? result.latin1() : "<NULL>");
+   printf("EXPECTED: %s\n", "Cookie: set_by_2=www.foobar2.com" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
-   // Should PASS. Returning "Cookie: set_by_1=www.foobar.com; set_by_6=foobar.com; set_by_3=y.foobar.com"
+   // Should PASS.
    arg1 = "http://y.foobar.com/acme/index.html";
-   printf("===== Looking up cookies for %s =====\n", arg1.latin1());
+   printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
-   printf("Result: %s\n", result.latin1() ? result.latin1() : "<NULL>");
+   printf("EXPECTED: %s\n", "Cookie: set_by_1=www.foobar.com; set_by_B=foobar.com; set_by_3=y.foobar.com" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
-   // Should PASS. Returning "Cookie: set_by_4=x.y.foobar.com; set_by_1=www.foobar.com; set_by_6=foobar.com; set_by_3=y.foobar.com"
+   // Should PASS.
    arg1 = "http://x.y.foobar.com/acme/index.html";
-   printf("===== Looking up cookies for %s =====\n", arg1.latin1());
+   printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
-   printf("Result: %s\n", result.latin1() ? result.latin1() : "<NULL>");
+   printf("EXPECTED: %s\n", "Cookie: set_by_4=x.y.foobar.com; set_by_1=www.foobar.com; set_by_B=foobar.com; set_by_3=y.foobar.com" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
-   // Should PASS. Returning "Cookie: set_by_5=w.x.y.foobar.com; set_by_4=x.y.foobar.com; set_by_1=www.foobar.com; set_by_6=foobar.com; set_by_3=y.foobar.com"
+   // Should PASS.
    arg1 = "http://w.x.y.foobar.com/acme/index.html";
-   printf("===== Looking up cookies for %s =====\n", arg1.latin1());
+   printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
-   printf("Result: %s\n", result.latin1() ? result.latin1() : "<NULL>");
+   printf("EXPECTED: %s\n", "Cookie: set_by_5=w.x.y.foobar.com; set_by_4=x.y.foobar.com; set_by_1=www.foobar.com; set_by_B=foobar.com; set_by_3=y.foobar.com" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
-   // Should PASS. Returning "Cookie: set_by=f22.w.x.y.foobar.com; set_by=f22.w.x.y.foobar.com; set_by_1=www.foobar.com"
+   // Should PASS.
    arg1 = "http://f22.w.x.y.foobar.com/config/login?7645kd30948jdha";
-   printf("===== Looking up cookies for %s =====\n", arg1.latin1());
+   printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
-   printf("Result: %s\n", result.latin1() ? result.latin1() : "<NULL>");
+   printf("EXPECTED: %s\n", "Cookie: set_by_6=f22.w.x.y.foobar.com; set_by_7=f22.w.x.y.foobar.com; set_by_1=www.foobar.com" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
-   // Should FAIL. Return <NULL>
+   // Should FAIL.
    arg1 = "http://foobar.co.uk/acme/index.html";
-   printf("===== Looking up cookies for %s =====\n", arg1.latin1());
+   printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
-   printf("Result: %s\n", result.latin1() ? result.latin1() : "<NULL>");
+   printf("EXPECTED: %s\n", "<NULL>" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
-   // Should FAIL. Return <NULL>
+   // Should FAIL.
    arg1 = "http://www.foobar.co.uk/";
-   printf("===== Looking up cookies for %s =====\n", arg1.latin1());
+   printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
-   printf("Result: %s\n", result.latin1() ? result.latin1() : "<NULL>");
+   printf("EXPECTED: %s\n", "<NULL>" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
-   // Should FAIL. Return <NULL>
+   // Should FAIL.
    arg1 = "http://www.foo-foobar.com/";
-   printf("===== Looking up cookies for %s =====\n", arg1.latin1());
+   printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
-   printf("Result: %s\n", result.latin1() ? result.latin1() : "<NULL>");
+   printf("EXPECTED: %s\n", "<NULL>" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
-   // Should FAIL. Return <NULL>. Important spoofing test to see if we pass...
+   // Should FAIL. Spoofing test!!
    arg1 = "http://www.peacefire.org%2fsecurity%2fiecookies%2fshowcookie.html%3F.foobar.com";
-   printf("===== Looking up cookies for %s =====\n", arg1.latin1());
+   printf("Looking up cookies for %s \n", arg1.latin1());
    result = findCookies(arg1);
-   printf("Result: %s\n", result.latin1() ? result.latin1() : "<NULL>");
+   printf("EXPECTED: %s\n", "<NULL>" );
+   printf("RESULT: %s\n\n", result.latin1() ? result.latin1() : "<NULL>");
 
 }
