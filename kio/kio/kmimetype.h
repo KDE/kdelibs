@@ -394,6 +394,7 @@ public:
    * Always application/octet-stream.
    * This can be used to check the result of mimeType(name).
    * @return the "application/octet-stream" mimetype pointer.
+   * @since 3.2
    */
   static KMimeType::Ptr defaultMimeTypePtr();
 
@@ -411,6 +412,7 @@ public:
    * the base type. The opposite is true though.
    *
    * @return the parent mime type, or QString::null if not set
+   * @since 3.2
    */
   QString parentMimeType() const;
 
@@ -418,6 +420,7 @@ public:
    * Do not use name()=="somename" anymore, to check for a given mimetype.
    * For mimetype inheritance to work, use is("somename") instead.
    * Warning, do not use inherits(), that's the servicetype inheritance concept!
+   * @since 3.2
    */
   bool is( const QString& mimeTypeName ) const;
 
