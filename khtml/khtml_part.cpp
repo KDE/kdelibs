@@ -627,7 +627,7 @@ bool KHTMLPart::closeURL()
 
 DOM::HTMLDocument KHTMLPart::htmlDocument() const
 {
-  if (d->m_doc->isHTMLDocument())
+  if (d->m_doc && d->m_doc->isHTMLDocument())
     return static_cast<HTMLDocumentImpl*>(d->m_doc);
   else
     return static_cast<HTMLDocumentImpl*>(0);
