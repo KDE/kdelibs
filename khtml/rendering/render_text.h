@@ -62,7 +62,6 @@ public:
     void printDecoration( QPainter *p, int _tx, int _ty, int decoration);
     void printBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, bool begin, bool end);
     void printSelection(QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
-    void printActivation( QPainter *, int, int );
 
     bool checkPoint(int _x, int _y, int _tx, int _ty);
 

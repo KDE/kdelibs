@@ -160,12 +160,6 @@ void TextSlave::printBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
 #endif
 }
 
-void TextSlave::printActivation( QPainter *p, int _tx, int _ty)
-{
-    p->drawRect(_tx+m_x-2,_ty+m_y, m_width+3, m_height+2);
-    p->drawRect(_tx+m_x-3,_ty+m_y+1, m_width+5, m_height);
-}
-
 bool TextSlave::checkPoint(int _x, int _y, int _tx, int _ty)
 {
     if((_ty + m_y > _y) || (_ty + m_y + m_height < _y) ||
