@@ -762,6 +762,10 @@ void KKey::simplify()
 		m_sym = KKeyNative(*this).sym();
 	}
 
+	// If this is a letter, don't remove any modifiers.
+	if( m_sym < 0x3000 && QChar(m_sym).isLetter() )
+		return;
+
 	// Remove modifers from modifier list which are implicit in the symbol.
 	// Ex. Shift+Plus => Plus (en)
 	m_mod &= ~KKeyServer::Sym(m_sym).getModsRequired();
