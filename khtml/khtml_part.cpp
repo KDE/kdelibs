@@ -2311,6 +2311,7 @@ void KHTMLPart::findTextNext()
   KFind::Result res = KFind::NoMatch;
   khtml::RenderObject* obj = d->m_findNode ? d->m_findNode->renderer() : 0;
   khtml::RenderObject* end = d->m_findNodeEnd ? d->m_findNodeEnd->renderer() : 0;
+  khtml::RenderTextArea *tmpTextArea=0L;
   //kdDebug(6050) << k_funcinfo << "obj=" << obj << " end=" << end << endl;
   while( res == KFind::NoMatch )
   {
@@ -2333,24 +2334,28 @@ void KHTMLPart::findTextNext()
       {
         // Grab text from render object
         QString s;
-        bool renderAreaText = (obj->parent()->renderName()=="RenderTextArea");
-        bool renderLineText = (obj->parent()->renderName()=="RenderLineEdit");
+        bool renderAreaText = (QCString(obj->parent()->renderName())== "RenderTextArea");
+        bool renderLineText = (QCString(obj->renderName())== "RenderLineEdit");
         if ( renderAreaText )
         {
           khtml::RenderTextArea *parent= static_cast<khtml::RenderTextArea *>(obj->parent());
           s = parent->text();
           s = s.replace(0xa0, ' ');
+          tmpTextArea = parent;
         }
         else if ( renderLineText )
         {
-          khtml::RenderLineEdit *parentLine= static_cast<khtml::RenderLineEdit *>(obj->parent());
+          khtml::RenderLineEdit *parentLine= static_cast<khtml::RenderLineEdit *>(obj);
           s = parentLine->widget()->text();
           s = s.replace(0xa0, ' ');
         }
         else if ( obj->isText() )
         {
-          s = static_cast<khtml::RenderText *>(obj)->data().string();
-          s = s.replace(0xa0, ' ');
+          if ( obj->parent()!=tmpTextArea )
+          {
+            s = static_cast<khtml::RenderText *>(obj)->data().string();
+            s = s.replace(0xa0, ' ');
+          }
         }
         else if ( obj->isBR() )
           s = '\n';
@@ -2450,17 +2455,17 @@ void KHTMLPart::slotHighlight( const QString &text, int index, int length )
   if ( obj )
   {
     int x = 0, y = 0;
-    renderAreaText = (obj->parent()->renderName()=="RenderTextArea");
-    renderLineText = (obj->parent()->renderName()=="RenderLineEdit");
-    kdDebug()<<" obj->parent()->renderName() :"<<obj->parent()->renderName()<<endl;
+    renderAreaText = (QCString(obj->parent()->renderName())== "RenderTextArea");
+    renderLineText = (QCString(obj->renderName())== "RenderLineEdit");
+
 
     if( renderAreaText )
       parent= static_cast<khtml::RenderTextArea *>(obj->parent());
     if ( renderLineText )
-      parentLine= static_cast<khtml::RenderLineEdit *>(obj->parent());
-
-    if (static_cast<khtml::RenderText *>(node->renderer())
-      ->posOfChar(d->m_startOffset, x, y))
+      parentLine= static_cast<khtml::RenderLineEdit *>(obj);
+    if ( !renderLineText )
+      if (static_cast<khtml::RenderText *>(node->renderer())
+          ->posOfChar(d->m_startOffset, x, y))
         d->m_view->setContentsPos(x-50, y-50);
   }
   // Now look for end node
