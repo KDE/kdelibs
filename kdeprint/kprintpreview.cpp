@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -28,10 +28,12 @@
 #include <kstddirs.h>
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <kdebug.h>
 
 KPrintPreview::KPrintPreview(QWidget *parent)
 : KParts::MainWindow(parent,"KPrintPreview",WType_Modal|WType_TopLevel|WStyle_Dialog)
 {
+	kdDebug() << "kdeprint: creating preview dialog" << endl;
 	setXMLFile(locate("config","ui/kprintpreviewui.rc"));
 	setHelpMenuEnabled(false);
 
@@ -42,7 +44,8 @@ KPrintPreview::KPrintPreview(QWidget *parent)
 	status_ = false;
 
 	// ask the trader for service handling postscript
-	KTrader::OfferList	offers = KTrader::self()->query("application/postscript","'KParts/ReadOnlyPart' in ServiceTypes");
+	kdDebug() << "kdeprint: querying trader for 'application/postscript' service" << endl;
+	KTrader::OfferList	offers = KTrader::self()->query(QString::fromLatin1("application/postscript"),QString::fromLatin1("'KParts/ReadOnlyPart' in ServiceTypes"));
 	for (KTrader::OfferList::ConstIterator it = offers.begin(); it != offers.end(); ++it)
 	{
 		KService::Ptr	service = *it;
