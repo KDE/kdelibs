@@ -25,7 +25,7 @@ MarginWidget::MarginWidget(KNumInput *below, double value, QWidget *parent, cons
 : KDoubleNumInput(below, value, parent, name)
 {
 	m_mode = Pixels;
-	setFormat("%.0f");
+	setPrecision(0);
 	m_dpi = 72.0;
 	setMode(m_mode);
 	setRange(0, 999, 1, false);
@@ -82,12 +82,12 @@ void MarginWidget::setMode(int m)
 		double v = toValue(p, m);
 		if (m == Pixels)
 		{
-			setFormat("%.0f");
+			setPrecision(0);
 			setRange(0.0, 999.0, 1.0, false);
 		}
 		else
 		{
-			setFormat("%.3f");
+			setPrecision(3);
 			setRange(0.0, 999.0, 0.01, false);
 		}
 		setValue(v);
