@@ -32,7 +32,7 @@ Description: KDE print system (CUPS support)
 
 Package: kdelibs4-common
 Architecture: all
-Sections: libs
+Section: libs
 Replaces: kdelibs3, kdelibs4, kdelibs3
 Depends: kdelibs
 Provides: kdelibs-common

@@ -112,7 +112,7 @@ install: build
 	dh_installdirs -a
 	make -C libkmid/ DESTDIR=$(alsa-tmp)/ install
 	make -C arts/ DESTDIR=$(alsa-tmp)/ install
-	make -C kdeprint/cups DESTDIR=`pwd`/debian/kdelibs4/ install
+	make -C kdeprint/cups DESTDIR=`pwd`/debian/build-tmp/ install
 
 binary-arch:  build install
 	dh_testdir
@@ -149,7 +149,7 @@ binary-arch:  build install
 	dh_movefiles -pkdelibs4-cups --sourcedir=debian/build-tmp
 	dh_movefiles -plibarts1-alsa --sourcedir=debian/alsa-tmp
 	dh_movefiles -plibkmid0-alsa --sourcedir=debian/alsa-tmp
-	dh_movefiles -pkdelibs4-common --sourcecdir=debian/build-tmp
+	dh_movefiles -pkdelibs4-common --sourcedir=debian/build-tmp
 	dh_movefiles -pkdelibs4 --sourcedir=debian/build-tmp
 	dh_installchangelogs -a 
 	dh_strip -a

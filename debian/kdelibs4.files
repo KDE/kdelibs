@@ -131,4 +131,3 @@ usr/bin/kdeinit_shutdown
 usr/bin/lnusertemp
 usr/bin/kwrapper
 etc/kde3/*
-etc/pam.d/kde3
