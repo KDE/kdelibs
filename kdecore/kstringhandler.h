@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Ian Zepp (icszepp@islc.net)
+   Copyright (C) 2000 Rik Hemsley (rikkus) <rik@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -182,5 +183,59 @@ public:
      * Patterns with two asterisks like "*.*pk" are not supported.
      */
     static bool matchFilename( const QString& filename, const QString& pattern );
+      
+    /**
+     * Split a QString into a QStringList in a similar fashion to the static
+     * QStringList function in Qt, except you can specify a maximum number
+     * of tokens. If max is specified (!= 0) then only that number of tokens
+     * will be extracted. The final item in the returned QStringList will
+     * be the remainder of the string.
+     *
+     * Example:
+     * perlSplit("__", "some__string__for__you__here", 3)
+     * QStringList contains: "some", "string", "for", "you__here"
+     *
+     * @return A QStringList containing tokens extracted from s.
+     * @parem sep is the string to use to delimit s.
+     * @parem max is the maximum number of extractions to perform, or 0.
+     */
+    static QStringList perlSplit
+      (const QString & sep, const QString & s, uint max = 0);
+
+    /**
+     * Split a QString into a QStringList in a similar fashion to the static
+     * QStringList function in Qt, except you can specify a maximum number
+     * of tokens. If max is specified (!= 0) then only that number of tokens
+     * will be extracted. The final item in the returned QStringList will
+     * be the remainder of the string.
+     *
+     * Example:
+     * perlSplit(' ', "kparts reaches the parts other parts can't", 2)
+     * QStringList contains: "kparts", "reaches", "the pats other parts can't"
+     *
+     * @return A QStringList containing tokens extracted from s.
+     * @parem sep is the character to use to delimit s.
+     * @parem max is the maximum number of extractions to perform, or 0.
+     */
+    static QStringList perlSplit
+      (const QChar & sep, const QString & s, uint max = 0);
+
+    /**
+     * Split a QString into a QStringList in a similar fashion to the static
+     * QStringList function in Qt, except you can specify a maximum number
+     * of tokens. If max is specified (!= 0) then only that number of tokens
+     * will be extracted. The final item in the returned QStringList will
+     * be the remainder of the string.
+     *
+     * Example:
+     * perlSplit(QRegExp("[! ]", "Split me up ! I'm bored ! OK ?", 2)
+     * QStringList contains: "Split", "me", "up ! I'm bored, OK ?"
+     *
+     * @return A QStringList containing tokens extracted from s.
+     * @parem sep is the regular expression to use to delimit s.
+     * @parem max is the maximum number of extractions to perform, or 0.
+     */
+    static QStringList perlSplit
+      (const QRegExp & sep, const QString & s, uint max = 0);
 };
 #endif

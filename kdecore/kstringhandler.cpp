@@ -426,3 +426,84 @@ bool KStringHandler::matchFilename( const QString& _filename, const QString& _pa
   // Patterns like "Makefile"
   return ( filename == pattern );
 }
+
+  QStringList
+perlSplit(const QString & sep, const QString & s, uint max)
+{
+  bool ignoreMax = 0 == max;
+
+  QStringList l;
+
+  int searchStart = 0;
+
+  int tokenStart = s.find(sep, searchStart);
+
+  while (-1 != tokenStart && (ignoreMax || l.count() < max))
+  {
+    if (!s.mid(searchStart, tokenStart - searchStart).isEmpty())
+      l << s.mid(searchStart, tokenStart - searchStart);
+
+    searchStart = tokenStart + sep.length();
+    tokenStart = s.find(sep, searchStart);
+  }
+
+  if (!s.mid(searchStart, s.length() - searchStart).isEmpty())
+    l << s.mid(searchStart, s.length() - searchStart);
+
+  return l;
+}
+
+  QStringList 
+perlSplit(const QChar & sep, const QString & s, uint max)
+{
+  bool ignoreMax = 0 == max;
+
+  QStringList l;
+
+  int searchStart = 0;
+
+  int tokenStart = s.find(sep, searchStart);
+
+  while (-1 != tokenStart && (ignoreMax || l.count() < max))
+  {
+    if (!s.mid(searchStart, tokenStart - searchStart).isEmpty())
+      l << s.mid(searchStart, tokenStart - searchStart);
+
+    searchStart = tokenStart + 1;
+    tokenStart = s.find(sep, searchStart);
+  }
+
+  if (!s.mid(searchStart, s.length() - searchStart).isEmpty())
+    l << s.mid(searchStart, s.length() - searchStart);
+
+  return l;
+}
+
+  QStringList
+perlSplit(const QRegExp & sep, const QString & s, uint max)
+{
+  bool ignoreMax = 0 == max;
+
+  QStringList l;
+
+  int len = 0;
+
+  int searchStart = 0;
+
+  int tokenStart = sep.match(s, searchStart, &len);
+
+  while (-1 != tokenStart && (ignoreMax || l.count() < max))
+  {
+    if (!s.mid(searchStart, tokenStart - searchStart).isEmpty())
+      l << s.mid(searchStart, tokenStart - searchStart);
+
+    searchStart = tokenStart + len;
+    tokenStart = sep.match(s, searchStart, &len);
+  }
+
+  if (!s.mid(searchStart, s.length() - searchStart).isEmpty())
+    l << s.mid(searchStart, s.length() - searchStart);
+
+  return l;
+}
+
