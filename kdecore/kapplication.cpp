@@ -1719,7 +1719,7 @@ void KApplication::invokeMailer(const QString &address, const QString &subject)
    KURL mailtoURL;
    mailtoURL.setProtocol("mailto");
    mailtoURL.setPath(address);
-   mailtoURL.setQuery("?subject=" + subject);
+   mailtoURL.setQuery("?subject=" + KURL::encode_string(subject));
    invokeMailer(mailtoURL);
 }
 
