@@ -4,4 +4,5 @@ Type=MimeType
 MimeType=application/x-font-type1
 Icon=font_type1
 Patterns=*.pfa;*.PFA;*.pfb;*.PFB
-Comment=Postscript Type1 Font
+Comment=PostScript Type1 Font
+Comment[sv]=Postscript Typ 1 teckensnitt
