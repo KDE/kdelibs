@@ -26,7 +26,7 @@ static char *widgetEntries[] = {"HorizScrollGroove", "VertScrollGroove",
 "Slider", "SliderGroove", "IndicatorOn", "IndicatorOff", "Background",
 "PushButton", "ExIndicatorOn", "ExIndicatorOff", "ComboBox", "ScrollBarSlider",
 "Bevel", "ToolButton", "ScrollBarButton", "BarHandle", "ToolBar",
-"ScrollBarDeco", "ComboDeco"};
+"ScrollBarDeco", "ComboDeco", "Splitter"};
 
 void KThemeBase::readConfig(Qt::GUIStyle style)
 {
@@ -199,6 +199,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
     btnXShift = config->readNumEntry("ButtonXShift", 0);
     btnYShift = config->readNumEntry("ButtonYShift", 0);
     sliderLen = config->readNumEntry("SliderLength", 30);
+    splitterWidth = config->readNumEntry("SplitterHandle", 10);
     cacheSize = config->readNumEntry("CacheSize", 1024);
     
 #ifdef KSTYLE_DEBUG
@@ -378,6 +379,9 @@ void KThemeBase::writeConfig(KConfigBase &inConfig, KConfigBase &outConfig)
                          inConfig.readNumEntry("ButtonYShift", 0), true, true);
     outConfig.writeEntry("SliderLength",
                          inConfig.readNumEntry("SliderLength", 10), true,
+                         true);
+    outConfig.writeEntry("SplitterHandle",
+                         inConfig.readNumEntry("SplitterHandle", 10), true,
                          true);
     outConfig.writeEntry("Name",
                          inConfig.readEntry("Name", " "), true, true);

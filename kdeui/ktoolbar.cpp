@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.109  1999/05/06 04:54:06  warwick
+// myqstring = 0  becomes  myqstring = QString::null, or just remove the
+// line if it's already going to be null (default QString constructor).
 //
 // Revision 1.108  1999/04/30 20:43:00  mosfet
 // Added QSplitter and cleaned up some
@@ -492,11 +495,26 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
       break;
   }
   return false;
+}
+
+
+
+void KToolBarButton::drawButton( QPainter *_painter )
+{
+  if(kapp->kstyle()){
+    KStyle::KToolButtonType iconType;
+    switch(icontext){
+    case 0:
+        iconType = KStyle::Icon;
+        break;
+    case 1:
+        iconType = KStyle::IconTextRight;
+        break;
+    case 2:
         iconType = KStyle::Text;
         break;
-      raised, isEnabled(), myPopup != NULL, icontext, btext, pixmap(),
+    case 3:
     default:
-
         iconType = KStyle::IconTextBottom;
         break;
     }

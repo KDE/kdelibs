@@ -101,7 +101,7 @@ public:
     virtual void drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                                     const QColorGroup &g, bool sunken=false,
                                     bool raised = true, bool enabled = true,
-                                    bool popup = false, int icontext = 0,
+                                    bool popup = false, KToolButtonType type = Icon,
                                     const QString btext=QString::null,
                                     const QPixmap *icon=NULL,
                                     QFont *font=NULL);             
@@ -242,6 +242,12 @@ public:
                            QColorGroup g, bool sunken, bool rounded,
                            int hWidth, int bWidth, ShadeStyle style);
     virtual void drawPushButtonLabel(QPushButton *btn, QPainter *p);
+    /**
+     * Returns the width of the splitter as specified in the config file.
+     */
+    virtual int splitterWidth() const;
+    virtual void drawSplitter( QPainter *p, int x, int y, int w, int h,
+                               const QColorGroup &g, Orientation);
 protected:
     QPalette oldPalette;
 };

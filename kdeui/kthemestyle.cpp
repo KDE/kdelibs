@@ -161,11 +161,11 @@ void KThemeStyle::drawBevelButton(QPainter *p, int x, int y, int w, int h,
 void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                                      const QColorGroup &g, bool sunken,
                                      bool raised, bool enabled, bool popup,
-                                     int icontext, const QString btext,
+                                     KToolButtonType type, const QString btext,
                                      const QPixmap *pixmap, QFont *font){
     drawBaseButton(p, x, y, w, h, g, sunken, false, ToolButton);
     int dx, dy;
-    if (icontext == 0){ // icon only
+    if (type == Icon){ // icon only
         if (pixmap){
             dx = ( w - pixmap->width() ) / 2;
             dy = ( h - pixmap->height() ) / 2;
@@ -177,7 +177,7 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
             p->drawPixmap( x+dx, y+dy, *pixmap );
         }
     }
-    else if (icontext == 1){ // icon and text (if any)
+    else if (type == IconTextRight){ // icon and text (if any)
         if (pixmap){
             dx = 1;
             dy = ( h - pixmap->height() ) / 2;
@@ -207,7 +207,7 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
             p->drawText(x+dx, y+dy, w-dx, h, tf, btext);
         }
     }
-    else if (icontext == 2){ // only text, even if there is a icon
+    else if (type == Text){ // only text, even if there is a icon
         if (!btext.isNull()){
             int tf = AlignVCenter|AlignLeft;
             if (!enabled)
@@ -225,7 +225,7 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
             p->drawText(x+dx, y+dy, w-dx, h, tf, btext);
         }
     }
-    else if (icontext == 3){
+    else if (type == IconTextBottom){
         if (pixmap){
             dx = (w - pixmap->width()) / 2;
             dy = 1;
@@ -793,6 +793,18 @@ void KThemeStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
                  btn->isEnabled(), btn->pixmap(), btn->text(), -1,
                  &cg->buttonText());
     }
+}
+
+int KThemeStyle::splitterWidth() const
+{
+    return(splitWidth());
+}
+
+void KThemeStyle::drawSplitter( QPainter *p, int x, int y, int w, int h,
+                                const QColorGroup &g, Orientation)
+{
+    warning("Splitter size: %d, %d", w, h);
+    drawBaseButton(p, x, y, w, h, g, false, false, Splitter);
 }
         
 #include "kthemestyle.moc"

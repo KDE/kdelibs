@@ -27,7 +27,7 @@
 #include <qintcache.h>
 #include <qstring.h>
 
-#define WIDGETS 19
+#define WIDGETS 20
 
 /**
  * A very simple pixmap cache for theme plugins. KPixmapCache is not used
@@ -180,7 +180,7 @@ public:
     enum WidgetType{HScrollGroove=0, VScrollGroove, Slider, SliderGroove,
     IndicatorOn, IndicatorOff, Background, PushButton, ExIndicatorOn,
     ExIndicatorOff, ComboBox, ScrollBarSlider, Bevel, ToolButton,
-    ScrollButton, BarHandle, ToolBar, ScrollDeco, ComboDeco};
+    ScrollButton, BarHandle, ToolBar, ScrollDeco, ComboDeco, Splitter};
     /**
      * The scaling type specified by the KConfig file.
      *
@@ -248,6 +248,10 @@ public:
      * The frame width.
      */
     int frameWidth() const;
+    /**
+     * The splitter width
+     */
+    int splitWidth() const;
     /**
      * The button text X shift.
      */
@@ -355,7 +359,7 @@ private:
     SButton sbPlacement;
     ArrowStyle arrowStyle;
     ShadeStyle shading;
-    int defaultFrame, btnXShift, btnYShift, sliderLen;
+    int defaultFrame, btnXShift, btnYShift, sliderLen, splitterWidth;
     bool smallGroove, roundedButton, roundedCombo, roundedSlider;
     KThemeCache *cache;
     KConfig *config;
@@ -502,6 +506,11 @@ inline int KThemeBase::frameWidth() const
 inline int KThemeBase::buttonXShift() const
 {
     return(btnXShift);
+}
+
+inline int KThemeBase::splitWidth() const
+{
+    return(splitterWidth);
 }
 
 inline int KThemeBase::buttonYShift() const
