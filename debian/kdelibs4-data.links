@@ -1,3 +1,2 @@
 etc/kde3/system.kdeglobals	etc/kderc
-etc/kde3			usr/share/kde3/config
-usr/share/kde3/html/en/common	usr/share/kde3/html/en/kspell/common
+etc/kde3			usr/share/config

@@ -1,4 +1,4 @@
-kdelibs (4:3.0.0-1) unstable; urgency=low
+kdelibs (4:3.0.1-0) unstable; urgency=low
 
   * New upstream.
   * rebuilt debian dir.
