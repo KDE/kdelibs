@@ -4,7 +4,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMNodeIteratorTableEntries[] = {
+static const struct HashEntry DOMNodeIteratorTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { "filter", DOMNodeIterator::Filter, DontDelete|ReadOnly, 0, 0 },
    { "root", DOMNodeIterator::Root, DontDelete|ReadOnly, 0, 0 },
@@ -13,7 +13,7 @@ const struct HashEntry DOMNodeIteratorTableEntries[] = {
    { "expandEntityReferences", DOMNodeIterator::ExpandEntityReferences, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable DOMNodeIteratorTable = { 2, 6, DOMNodeIteratorTableEntries, 5 };
+static const struct HashTable DOMNodeIteratorTable = { 2, 6, DOMNodeIteratorTableEntries, 5 };
 
 }; // namespace
 
@@ -21,14 +21,14 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMNodeIteratorProtoTableEntries[] = {
+static const struct HashEntry DOMNodeIteratorProtoTableEntries[] = {
    { "nextNode", DOMNodeIterator::NextNode, DontDelete|Function, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "previousNode", DOMNodeIterator::PreviousNode, DontDelete|Function, 0, &DOMNodeIteratorProtoTableEntries[3] },
    { "detach", DOMNodeIterator::Detach, DontDelete|Function, 0, 0 }
 };
 
-const struct HashTable DOMNodeIteratorProtoTable = { 2, 4, DOMNodeIteratorProtoTableEntries, 3 };
+static const struct HashTable DOMNodeIteratorProtoTable = { 2, 4, DOMNodeIteratorProtoTableEntries, 3 };
 
 }; // namespace
 
@@ -36,7 +36,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry NodeFilterConstructorTableEntries[] = {
+static const struct HashEntry NodeFilterConstructorTableEntries[] = {
    { "SHOW_PROCESSING_INSTRUCTION", DOM::NodeFilter::SHOW_PROCESSING_INSTRUCTION, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
@@ -62,7 +62,7 @@ const struct HashEntry NodeFilterConstructorTableEntries[] = {
    { "SHOW_NOTATION", DOM::NodeFilter::SHOW_NOTATION, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable NodeFilterConstructorTable = { 2, 23, NodeFilterConstructorTableEntries, 17 };
+static const struct HashTable NodeFilterConstructorTable = { 2, 23, NodeFilterConstructorTableEntries, 17 };
 
 }; // namespace
 
@@ -70,11 +70,11 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMNodeFilterProtoTableEntries[] = {
+static const struct HashEntry DOMNodeFilterProtoTableEntries[] = {
    { "acceptNode", DOMNodeFilter::AcceptNode, DontDelete|Function, 0, 0 }
 };
 
-const struct HashTable DOMNodeFilterProtoTable = { 2, 1, DOMNodeFilterProtoTableEntries, 1 };
+static const struct HashTable DOMNodeFilterProtoTable = { 2, 1, DOMNodeFilterProtoTableEntries, 1 };
 
 }; // namespace
 
@@ -82,7 +82,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMTreeWalkerTableEntries[] = {
+static const struct HashEntry DOMTreeWalkerTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { "filter", DOMTreeWalker::Filter, DontDelete|ReadOnly, 0, &DOMTreeWalkerTableEntries[6] },
    { "root", DOMTreeWalker::Root, DontDelete|ReadOnly, 0, 0 },
@@ -92,7 +92,7 @@ const struct HashEntry DOMTreeWalkerTableEntries[] = {
    { "currentNode", DOMTreeWalker::CurrentNode, DontDelete, 0, 0 }
 };
 
-const struct HashTable DOMTreeWalkerTable = { 2, 7, DOMTreeWalkerTableEntries, 5 };
+static const struct HashTable DOMTreeWalkerTable = { 2, 7, DOMTreeWalkerTableEntries, 5 };
 
 }; // namespace
 
@@ -100,7 +100,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMTreeWalkerProtoTableEntries[] = {
+static const struct HashEntry DOMTreeWalkerProtoTableEntries[] = {
    { "firstChild", DOMTreeWalker::FirstChild, DontDelete|Function, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "previousSibling", DOMTreeWalker::PreviousSibling, DontDelete|Function, 0, &DOMTreeWalkerProtoTableEntries[8] },
@@ -113,6 +113,6 @@ const struct HashEntry DOMTreeWalkerProtoTableEntries[] = {
    { "nextNode", DOMTreeWalker::NextNode, DontDelete|Function, 0, 0 }
 };
 
-const struct HashTable DOMTreeWalkerProtoTable = { 2, 10, DOMTreeWalkerProtoTableEntries, 7 };
+static const struct HashTable DOMTreeWalkerProtoTable = { 2, 10, DOMTreeWalkerProtoTableEntries, 7 };
 
 }; // namespace

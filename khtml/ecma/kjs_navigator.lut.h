@@ -4,7 +4,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry NavigatorTableEntries[] = {
+static const struct HashEntry NavigatorTableEntries[] = {
    { "language", Navigator::Language, DontDelete|ReadOnly, 0, &NavigatorTableEntries[13] },
    { "javaEnabled", Navigator::JavaEnabled, DontDelete|Function, 0, 0 },
    { "appName", Navigator::AppName, DontDelete|ReadOnly, 0, 0 },
@@ -24,6 +24,6 @@ const struct HashEntry NavigatorTableEntries[] = {
    { "cookieEnabled", Navigator::CookieEnabled, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable NavigatorTable = { 2, 17, NavigatorTableEntries, 11 };
+static const struct HashTable NavigatorTable = { 2, 17, NavigatorTableEntries, 11 };
 
 }; // namespace

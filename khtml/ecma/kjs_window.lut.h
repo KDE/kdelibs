@@ -4,7 +4,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry ScreenTableEntries[] = {
+static const struct HashEntry ScreenTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { "colorDepth", Screen::ColorDepth, DontEnum|ReadOnly, 0, &ScreenTableEntries[9] },
    { 0, 0, 0, 0, 0 },
@@ -17,7 +17,7 @@ const struct HashEntry ScreenTableEntries[] = {
    { "availWidth", Screen::AvailWidth, DontEnum|ReadOnly, 0, 0 }
 };
 
-const struct HashTable ScreenTable = { 2, 10, ScreenTableEntries, 7 };
+static const struct HashTable ScreenTable = { 2, 10, ScreenTableEntries, 7 };
 
 }; // namespace
 
@@ -25,7 +25,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry WindowTableEntries[] = {
+static const struct HashEntry WindowTableEntries[] = {
    { "onmouseout", Window::Onmouseout, DontDelete, 0, 0 },
    { "onerror", Window::Onerror, DontDelete, 0, &WindowTableEntries[107] },
    { 0, 0, 0, 0, 0 },
@@ -137,7 +137,7 @@ const struct HashEntry WindowTableEntries[] = {
    { "onunload", Window::Onunload, DontDelete, 0, 0 }
 };
 
-const struct HashTable WindowTable = { 2, 109, WindowTableEntries, 86 };
+static const struct HashTable WindowTable = { 2, 109, WindowTableEntries, 86 };
 
 }; // namespace
 
@@ -145,7 +145,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry LocationTableEntries[] = {
+static const struct HashEntry LocationTableEntries[] = {
    { "toString", Location::ToString, DontDelete|Function, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "hash", Location::Hash, DontDelete, 0, &LocationTableEntries[11] },
@@ -164,7 +164,7 @@ const struct HashEntry LocationTableEntries[] = {
    { "replace", Location::Replace, DontDelete|Function, 1, 0 }
 };
 
-const struct HashTable LocationTable = { 2, 16, LocationTableEntries, 11 };
+static const struct HashTable LocationTable = { 2, 16, LocationTableEntries, 11 };
 
 }; // namespace
 
@@ -172,7 +172,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry HistoryTableEntries[] = {
+static const struct HashEntry HistoryTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { "back", History::Back, DontDelete|Function, 0, &HistoryTableEntries[4] },
    { "length", History::Length, DontDelete|ReadOnly, 0, &HistoryTableEntries[5] },
@@ -181,6 +181,6 @@ const struct HashEntry HistoryTableEntries[] = {
    { "go", History::Go, DontDelete|Function, 1, 0 }
 };
 
-const struct HashTable HistoryTable = { 2, 6, HistoryTableEntries, 4 };
+static const struct HashTable HistoryTable = { 2, 6, HistoryTableEntries, 4 };
 
 }; // namespace

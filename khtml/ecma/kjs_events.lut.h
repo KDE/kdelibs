@@ -4,7 +4,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry EventConstructorTableEntries[] = {
+static const struct HashEntry EventConstructorTableEntries[] = {
    { "CAPTURING_PHASE", DOM::Event::CAPTURING_PHASE, DontDelete|ReadOnly, 0, &EventConstructorTableEntries[3] },
    { "BUBBLING_PHASE", DOM::Event::BUBBLING_PHASE, DontDelete|ReadOnly, 0, &EventConstructorTableEntries[6] },
    { "MOUSEOUT", 8, DontDelete|ReadOnly, 0, &EventConstructorTableEntries[7] },
@@ -26,7 +26,7 @@ const struct HashEntry EventConstructorTableEntries[] = {
    { "CHANGE", 32768, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable EventConstructorTable = { 2, 19, EventConstructorTableEntries, 3 };
+static const struct HashTable EventConstructorTable = { 2, 19, EventConstructorTableEntries, 3 };
 
 }; // namespace
 
@@ -34,7 +34,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMEventTableEntries[] = {
+static const struct HashEntry DOMEventTableEntries[] = {
    { "currentTarget", DOMEvent::CurrentTarget, DontDelete|ReadOnly, 0, &DOMEventTableEntries[7] },
    { 0, 0, 0, 0, 0 },
    { "type", DOMEvent::Type, DontDelete|ReadOnly, 0, 0 },
@@ -49,7 +49,7 @@ const struct HashEntry DOMEventTableEntries[] = {
    { "cancelBubble", DOMEvent::CancelBubble, DontDelete, 0, 0 }
 };
 
-const struct HashTable DOMEventTable = { 2, 12, DOMEventTableEntries, 7 };
+static const struct HashTable DOMEventTable = { 2, 12, DOMEventTableEntries, 7 };
 
 }; // namespace
 
@@ -57,7 +57,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMEventProtoTableEntries[] = {
+static const struct HashEntry DOMEventProtoTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "stopPropagation", DOMEvent::StopPropagation, DontDelete|Function, 0, &DOMEventProtoTableEntries[3] },
@@ -65,7 +65,7 @@ const struct HashEntry DOMEventProtoTableEntries[] = {
    { "initEvent", DOMEvent::InitEvent, DontDelete|Function, 3, 0 }
 };
 
-const struct HashTable DOMEventProtoTable = { 2, 5, DOMEventProtoTableEntries, 3 };
+static const struct HashTable DOMEventProtoTable = { 2, 5, DOMEventProtoTableEntries, 3 };
 
 }; // namespace
 
@@ -73,11 +73,11 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry EventExceptionConstructorTableEntries[] = {
+static const struct HashEntry EventExceptionConstructorTableEntries[] = {
    { "UNSPECIFIED_EVENT_TYPE_ERR", DOM::EventException::UNSPECIFIED_EVENT_TYPE_ERR, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable EventExceptionConstructorTable = { 2, 1, EventExceptionConstructorTableEntries, 1 };
+static const struct HashTable EventExceptionConstructorTable = { 2, 1, EventExceptionConstructorTableEntries, 1 };
 
 }; // namespace
 
@@ -85,7 +85,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMUIEventTableEntries[] = {
+static const struct HashEntry DOMUIEventTableEntries[] = {
    { "layerY", DOMUIEvent::LayerY, DontDelete|ReadOnly, 0, 0 },
    { "keyCode", DOMUIEvent::KeyCode, DontDelete|ReadOnly, 0, 0 },
    { "view", DOMUIEvent::View, DontDelete|ReadOnly, 0, 0 },
@@ -97,7 +97,7 @@ const struct HashEntry DOMUIEventTableEntries[] = {
    { "which", DOMUIEvent::Which, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable DOMUIEventTable = { 2, 9, DOMUIEventTableEntries, 7 };
+static const struct HashTable DOMUIEventTable = { 2, 9, DOMUIEventTableEntries, 7 };
 
 }; // namespace
 
@@ -105,11 +105,11 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMUIEventProtoTableEntries[] = {
+static const struct HashEntry DOMUIEventProtoTableEntries[] = {
    { "initUIEvent", DOMUIEvent::InitUIEvent, DontDelete|Function, 5, 0 }
 };
 
-const struct HashTable DOMUIEventProtoTable = { 2, 1, DOMUIEventProtoTableEntries, 1 };
+static const struct HashTable DOMUIEventProtoTable = { 2, 1, DOMUIEventProtoTableEntries, 1 };
 
 }; // namespace
 
@@ -117,7 +117,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMMouseEventTableEntries[] = {
+static const struct HashEntry DOMMouseEventTableEntries[] = {
    { "altKey", DOMMouseEvent::AltKey, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[2] },
    { "clientX", DOMMouseEvent::ClientX, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[7] },
    { "button", DOMMouseEvent::Button, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[3] },
@@ -136,7 +136,7 @@ const struct HashEntry DOMMouseEventTableEntries[] = {
    { "y", DOMMouseEvent::Y, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable DOMMouseEventTable = { 2, 16, DOMMouseEventTableEntries, 2 };
+static const struct HashTable DOMMouseEventTable = { 2, 16, DOMMouseEventTableEntries, 2 };
 
 }; // namespace
 
@@ -144,11 +144,11 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMMouseEventProtoTableEntries[] = {
+static const struct HashEntry DOMMouseEventProtoTableEntries[] = {
    { "initMouseEvent", DOMMouseEvent::InitMouseEvent, DontDelete|Function, 15, 0 }
 };
 
-const struct HashTable DOMMouseEventProtoTable = { 2, 1, DOMMouseEventProtoTableEntries, 1 };
+static const struct HashTable DOMMouseEventProtoTable = { 2, 1, DOMMouseEventProtoTableEntries, 1 };
 
 }; // namespace
 
@@ -156,7 +156,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMTextEventTableEntries[] = {
+static const struct HashEntry DOMTextEventTableEntries[] = {
    { "keyVal", DOMTextEvent::Key, DontDelete|ReadOnly, 0, &DOMTextEventTableEntries[2] },
    { "virtKeyVal", DOMTextEvent::VirtKey, DontDelete|ReadOnly, 0, &DOMTextEventTableEntries[3] },
    { "outputString", DOMTextEvent::OutputString, DontDelete|ReadOnly, 0, 0 },
@@ -164,7 +164,7 @@ const struct HashEntry DOMTextEventTableEntries[] = {
    { "numPad", DOMTextEvent::NumPad, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable DOMTextEventTable = { 2, 5, DOMTextEventTableEntries, 2 };
+static const struct HashTable DOMTextEventTable = { 2, 5, DOMTextEventTableEntries, 2 };
 
 }; // namespace
 
@@ -172,11 +172,11 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMTextEventProtoTableEntries[] = {
+static const struct HashEntry DOMTextEventProtoTableEntries[] = {
    { "initTextEvent", DOMTextEvent::InitTextEvent, DontDelete|Function, 10, 0 }
 };
 
-const struct HashTable DOMTextEventProtoTable = { 2, 1, DOMTextEventProtoTableEntries, 1 };
+static const struct HashTable DOMTextEventProtoTable = { 2, 1, DOMTextEventProtoTableEntries, 1 };
 
 }; // namespace
 
@@ -184,14 +184,14 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry MutationEventConstructorTableEntries[] = {
+static const struct HashEntry MutationEventConstructorTableEntries[] = {
    { "ADDITION", DOM::MutationEvent::ADDITION, DontDelete|ReadOnly, 0, &MutationEventConstructorTableEntries[3] },
    { "MODIFICATION", DOM::MutationEvent::MODIFICATION, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "REMOVAL", DOM::MutationEvent::REMOVAL, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable MutationEventConstructorTable = { 2, 4, MutationEventConstructorTableEntries, 3 };
+static const struct HashTable MutationEventConstructorTable = { 2, 4, MutationEventConstructorTableEntries, 3 };
 
 }; // namespace
 
@@ -199,7 +199,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMMutationEventTableEntries[] = {
+static const struct HashEntry DOMMutationEventTableEntries[] = {
    { "attrChange", DOMMutationEvent::AttrChange, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "relatedNode", DOMMutationEvent::RelatedNode, DontDelete|ReadOnly, 0, 0 },
@@ -208,7 +208,7 @@ const struct HashEntry DOMMutationEventTableEntries[] = {
    { "newValue", DOMMutationEvent::NewValue, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable DOMMutationEventTable = { 2, 6, DOMMutationEventTableEntries, 5 };
+static const struct HashTable DOMMutationEventTable = { 2, 6, DOMMutationEventTableEntries, 5 };
 
 }; // namespace
 
@@ -216,10 +216,10 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMMutationEventProtoTableEntries[] = {
+static const struct HashEntry DOMMutationEventProtoTableEntries[] = {
    { "initMutationEvent", DOMMutationEvent::InitMutationEvent, DontDelete|Function, 8, 0 }
 };
 
-const struct HashTable DOMMutationEventProtoTable = { 2, 1, DOMMutationEventProtoTableEntries, 1 };
+static const struct HashTable DOMMutationEventProtoTable = { 2, 1, DOMMutationEventProtoTableEntries, 1 };
 
 }; // namespace

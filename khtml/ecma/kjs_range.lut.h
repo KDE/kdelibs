@@ -4,7 +4,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMRangeTableEntries[] = {
+static const struct HashEntry DOMRangeTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "endOffset", DOMRange::EndOffset, DontDelete|ReadOnly, 0, 0 },
@@ -15,7 +15,7 @@ const struct HashEntry DOMRangeTableEntries[] = {
    { "commonAncestorContainer", DOMRange::CommonAncestorContainer, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable DOMRangeTable = { 2, 8, DOMRangeTableEntries, 7 };
+static const struct HashTable DOMRangeTable = { 2, 8, DOMRangeTableEntries, 7 };
 
 }; // namespace
 
@@ -23,7 +23,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry DOMRangeProtoTableEntries[] = {
+static const struct HashEntry DOMRangeProtoTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { "collapse", DOMRange::Collapse, DontDelete|Function, 1, 0 },
    { "cloneRange", DOMRange::CloneRange, DontDelete|Function, 0, 0 },
@@ -49,7 +49,7 @@ const struct HashEntry DOMRangeProtoTableEntries[] = {
    { "toString", DOMRange::ToString, DontDelete|Function, 0, 0 }
 };
 
-const struct HashTable DOMRangeProtoTable = { 2, 23, DOMRangeProtoTableEntries, 17 };
+static const struct HashTable DOMRangeProtoTable = { 2, 23, DOMRangeProtoTableEntries, 17 };
 
 }; // namespace
 
@@ -57,7 +57,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry RangeConstructorTableEntries[] = {
+static const struct HashEntry RangeConstructorTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { "START_TO_END", DOM::Range::START_TO_END, DontDelete|ReadOnly, 0, &RangeConstructorTableEntries[5] },
    { 0, 0, 0, 0, 0 },
@@ -66,6 +66,6 @@ const struct HashEntry RangeConstructorTableEntries[] = {
    { "END_TO_START", DOM::Range::END_TO_START, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable RangeConstructorTable = { 2, 6, RangeConstructorTableEntries, 5 };
+static const struct HashTable RangeConstructorTable = { 2, 6, RangeConstructorTableEntries, 5 };
 
 }; // namespace
