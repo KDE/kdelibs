@@ -244,12 +244,12 @@ void KIconLoaderCanvas::cancelLoad()
 
 void KIconLoaderDialog::init()
 {
-  setCaption(klocale->translate("Select Icon"));
+  setCaption(i18n("Select Icon"));
   //---
   i_filter = new QLineEdit(this);
   i_filter->setGeometry(310, 8, 150, 24);
   //---
-  l_filter = new QLabel( klocale->translate("Filter:"), this );
+  l_filter = new QLabel( i18n("Filter:"), this );
   l_filter->setGeometry( 310 - 50, 8, 40, 24 );
   //---
   canvas = new KIconLoaderCanvas(this);
@@ -261,8 +261,8 @@ void KIconLoaderDialog::init()
   cb_dirs = new QComboBox(FALSE, this);
   cb_dirs->setGeometry(10, 8, 230, 24);
   //---
-  ok = new QPushButton( klocale->translate("OK"), this );
-  cancel = new QPushButton( klocale->translate("Cancel"), this );
+  ok = new QPushButton( i18n("OK"), this );
+  cancel = new QPushButton( i18n("Cancel"), this );
   ok->setGeometry(65, 200, 80, 30);
   cancel->setGeometry(325, 200, 80, 30);
   connect( ok, SIGNAL(clicked()), this, SLOT(accept()) );

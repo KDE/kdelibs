@@ -100,11 +100,11 @@ again:
     
       int query = QMessageBox::information(
 					   this,
-					   klocale->translate("Find"), 
-					   klocale->translate("End of document reached.\n"\
+					   i18n("Find"), 
+					   i18n("End of document reached.\n"\
 							      "Continue from the beginning?"), 
-					   klocale->translate("Yes"),
-					   klocale->translate("No"),
+					   i18n("Yes"),
+					   i18n("No"),
 					   "",
 					   0,1);
       if (query == 0){
@@ -117,11 +117,11 @@ again:
       
       int query = QMessageBox::information(
 					   this,
-					   klocale->translate("Find"), 
-					   klocale->translate("Beginning of document reached.\n"\
+					   i18n("Find"), 
+					   i18n("Beginning of document reached.\n"\
 							      "Continue from the end?"), 
-					   klocale->translate("Yes"),
-					   klocale->translate("No"),
+					   i18n("Yes"),
+					   i18n("No"),
 					   "",
 					   0,1);
       if (query == 0){
@@ -357,11 +357,11 @@ again:
     
     int query = QMessageBox::information(
 				   this,
-				   klocale->translate("Find"), 
-				   klocale->translate("End of document reached.\n"\
+				   i18n("Find"), 
+				   i18n("End of document reached.\n"\
 						      "Continue from the beginning?"), 
-				   klocale->translate("Yes"),
-				   klocale->translate("No"),
+				   i18n("Yes"),
+				   i18n("No"),
 				   "",
 				   0,1);
     if (query == 0){
@@ -374,11 +374,11 @@ again:
     
     int query = QMessageBox::information(
 				   this,
-				   klocale->translate("Find"), 
-				   klocale->translate("Beginning of document reached.\n"\
+				   i18n("Find"), 
+				   i18n("Beginning of document reached.\n"\
 						      "Continue from the end?"), 
-				   klocale->translate("Yes"),
-				   klocale->translate("No"),
+				   i18n("Yes"),
+				   i18n("No"),
 				   "",
 				   0,1);
     if (query == 0){
@@ -420,11 +420,11 @@ void KEdit::replace_search_slot(){
 
 	int query = QMessageBox::information(
 			 this,
-			 klocale->translate("Replace"), 
-			 klocale->translate("Beginning of document reached.\n"\
+			 i18n("Replace"), 
+			 i18n("Beginning of document reached.\n"\
 					    "Continue from the end?"), 
-			 klocale->translate("Yes"),
-			 klocale->translate("No"),
+			 i18n("Yes"),
+			 i18n("No"),
 			 "",
 			 0,1);
 
@@ -450,11 +450,11 @@ again:
     
       int query = QMessageBox::information(
 				     this,
-				     klocale->translate("Replace"), 
-				     klocale->translate("End of document reached.\n"\
+				     i18n("Replace"), 
+				     i18n("End of document reached.\n"\
 							"Continue from the beginning?"), 
-				     klocale->translate("Yes"),
-				     klocale->translate("No"),
+				     i18n("Yes"),
+				     i18n("No"),
 				     "",
 				     0,1);
       if (query == 0){
@@ -467,11 +467,11 @@ again:
       
       int query = QMessageBox::information(
 					   this,
-					   klocale->translate("Replace"), 
-					   klocale->translate("Beginning of document reached.\n"\
+					   i18n("Replace"), 
+					   i18n("Beginning of document reached.\n"\
 							      "Continue from the end?"), 
-					   klocale->translate("Yes"),
-					   klocale->translate("No"),
+					   i18n("Yes"),
+					   i18n("No"),
 					   "",
 					   0,1);
       if (query == 0){
@@ -673,19 +673,19 @@ KEdSrch::KEdSrch(QWidget *parent, const char *name)
     : QDialog(parent, name,FALSE){
 
     this->setFocusPolicy(QWidget::StrongFocus);
-    frame1 = new QGroupBox(klocale->translate("Find"), this, "frame1");
+    frame1 = new QGroupBox(i18n("Find"), this, "frame1");
 
     value = new QLineEdit( this, "value");
     value->setFocus();
     connect(value, SIGNAL(returnPressed()), this, SLOT(ok_slot()));
 
-    sensitive = new QCheckBox(klocale->translate("Case Sensitive"), this, "case");
-    direction = new QCheckBox(klocale->translate("Find Backwards"), this, "direction");
+    sensitive = new QCheckBox(i18n("Case Sensitive"), this, "case");
+    direction = new QCheckBox(i18n("Find Backwards"), this, "direction");
 
-    ok = new QPushButton(klocale->translate("Find"), this, "find");
+    ok = new QPushButton(i18n("Find"), this, "find");
     connect(ok, SIGNAL(clicked()), this, SLOT(ok_slot()));
 
-    cancel = new QPushButton(klocale->translate("Done"), this, "cancel");
+    cancel = new QPushButton(i18n("Done"), this, "cancel");
     connect(cancel, SIGNAL(clicked()), this, SLOT(done_slot()));
     //    connect(cancel, SIGNAL(clicked()), this, SLOT(reject()));
 
@@ -765,7 +765,7 @@ KEdReplace::KEdReplace(QWidget *parent, const char *name)
 
     this->setFocusPolicy(QWidget::StrongFocus);
 
-    frame1 = new QGroupBox(klocale->translate("Find:"), this, "frame1");
+    frame1 = new QGroupBox(i18n("Find:"), this, "frame1");
 
     value = new QLineEdit( this, "value");
     value->setFocus();
@@ -775,24 +775,24 @@ KEdReplace::KEdReplace(QWidget *parent, const char *name)
     connect(replace_value, SIGNAL(returnPressed()), this, SLOT(ok_slot()));
 
     label = new QLabel(this,"Rlabel");
-    label->setText(klocale->translate("Replace with:"));
+    label->setText(i18n("Replace with:"));
 
-    sensitive = new QCheckBox(klocale->translate("Case Sensitive"), this, "case");
+    sensitive = new QCheckBox(i18n("Case Sensitive"), this, "case");
     sensitive->setChecked(TRUE);
 
-    direction = new QCheckBox(klocale->translate("Find Backwards")
+    direction = new QCheckBox(i18n("Find Backwards")
 			      , this, "direction");
     
-    ok = new QPushButton(klocale->translate("Find"), this, "find");
+    ok = new QPushButton(i18n("Find"), this, "find");
     connect(ok, SIGNAL(clicked()), this, SLOT(ok_slot()));
 
-    replace = new QPushButton(klocale->translate("Replace"), this, "rep");
+    replace = new QPushButton(i18n("Replace"), this, "rep");
     connect(replace, SIGNAL(clicked()), this, SLOT(replace_slot()));
 
-    replace_all = new QPushButton(klocale->translate("Replace All"), this, "repall");
+    replace_all = new QPushButton(i18n("Replace All"), this, "repall");
     connect(replace_all, SIGNAL(clicked()), this, SLOT(replace_all_slot()));
 
-    cancel = new QPushButton(klocale->translate("Done"), this, "cancel");
+    cancel = new QPushButton(i18n("Done"), this, "cancel");
     connect(cancel, SIGNAL(clicked()), this, SLOT(done_slot()));
 
     setFixedSize(330, 180);
@@ -886,13 +886,13 @@ void KEdReplace::resizeEvent(QResizeEvent *){
 KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name)
 	: QDialog( parent, name, TRUE )
 {
-	frame = new QGroupBox( klocale->translate("Goto Line"), this );
+	frame = new QGroupBox( i18n("Goto Line"), this );
 	lineNum = new KIntLineEdit( this );
 	this->setFocusPolicy( QWidget::StrongFocus );
 	connect(lineNum, SIGNAL(returnPressed()), this, SLOT(accept()));
 
-	ok = new QPushButton(klocale->translate("Go"), this );
-	cancel = new QPushButton(klocale->translate("Cancel"), this ); 
+	ok = new QPushButton(i18n("Go"), this );
+	cancel = new QPushButton(i18n("Cancel"), this ); 
 
 	connect(cancel, SIGNAL(clicked()), this, SLOT(reject()));
 	connect(ok, SIGNAL(clicked()), this, SLOT(accept()));

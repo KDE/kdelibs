@@ -23,6 +23,9 @@
     Boston, MA 02111-1307, USA.
   
     $Log$
+    Revision 1.30  1999/03/01 23:34:41  kulow
+    CVS_SILENT ported to Qt 2.0
+
     Revision 1.29.2.2  1999/02/14 02:39:51  granroth
     Qt 2.0 changes. Mostly changed 'const char*' to QString where needed in
     Qt SIGNALs and SLOTs
@@ -181,12 +184,12 @@ KFontDialog::KFontDialog( QWidget *parent, const QString& name,
 {
   QPushButton *button;
   
-  setCaption( klocale->translate("Select Font") );
+  setCaption( i18n("Select Font") );
   
   layout = new QVBoxLayout(this, 10);
   
-  box1 = new QGroupBox(klocale->translate("Requested Font"), this);
-  box2 = new QGroupBox(klocale->translate("Actual Font"), this);
+  box1 = new QGroupBox(i18n("Requested Font"), this);
+  box2 = new QGroupBox(i18n("Actual Font"), this);
   
   box1layout = new QGridLayout(box1, 5, 7, 7);
   box1layout->addColSpacing(0, 3);
@@ -206,24 +209,24 @@ KFontDialog::KFontDialog( QWidget *parent, const QString& name,
   box2layout->setColStretch(3, 2);
   
   family_label = new QLabel(box1,"family");
-  family_label->setText( klocale->translate("Family:") );
+  family_label->setText( i18n("Family:") );
   MINSIZE(family_label);
   box1layout->addWidget(family_label, 1, 1);
   
   actual_family_label = new QLabel(box2,"afamily");
-  actual_family_label->setText(klocale->translate("Family:"));
+  actual_family_label->setText(i18n("Family:"));
   MINSIZE(actual_family_label);
   actual_family_label_data = new QLabel(box2,"afamilyd");
   box2layout->addWidget(actual_family_label, 2, 1);
   box2layout->addWidget(actual_family_label_data, 2, 2);
   
   charset_label = new QLabel(box1,"charset");
-  charset_label->setText(klocale->translate("Charset:"));
+  charset_label->setText(i18n("Charset:"));
   MINSIZE(charset_label);
   box1layout->addWidget(charset_label, 3, 1);
   
   actual_charset_label = new QLabel(box2,"acharset");
-  actual_charset_label->setText(klocale->translate("Charset:"));
+  actual_charset_label->setText(i18n("Charset:"));
   MINSIZE(actual_charset_label);
   
   actual_charset_label_data = new QLabel(box2,"acharsetd");
@@ -231,36 +234,36 @@ KFontDialog::KFontDialog( QWidget *parent, const QString& name,
   box2layout->addWidget(actual_charset_label_data, 1, 2);
   
   size_label = new QLabel(box1,"size");
-  size_label->setText(klocale->translate("Size:"));
+  size_label->setText(i18n("Size:"));
   MINSIZE(size_label);
   box1layout->addWidget(size_label, 1, 4);
   
   actual_size_label = new QLabel(box2,"asize");
-  actual_size_label->setText(klocale->translate("Size:"));
+  actual_size_label->setText(i18n("Size:"));
   MINSIZE(actual_size_label);
   actual_size_label_data = new QLabel(box2,"asized");
   box2layout->addWidget(actual_size_label, 3, 1);
   box2layout->addWidget(actual_size_label_data, 3, 2);
   
   weight_label = new QLabel(box1,"weight");
-  weight_label->setText(klocale->translate("Weight:"));
+  weight_label->setText(i18n("Weight:"));
   MINSIZE(weight_label);
   box1layout->addWidget(weight_label, 2, 1);
   
   actual_weight_label = new QLabel(box2,"aweight");
-  actual_weight_label->setText(klocale->translate("Weight:"));
+  actual_weight_label->setText(i18n("Weight:"));
   MINSIZE(actual_weight_label);
   actual_weight_label_data = new QLabel(box2,"aweightd");
   box2layout->addWidget(actual_weight_label, 4, 1);
   box2layout->addWidget(actual_weight_label_data, 4, 2);
   
   style_label = new QLabel(box1,"style");
-  style_label->setText(klocale->translate("Style:"));
+  style_label->setText(i18n("Style:"));
   MINSIZE(style_label);
   box1layout->addWidget(style_label, 2, 4);
   
   actual_style_label = new QLabel(box2,"astyle");
-  actual_style_label->setText(klocale->translate("Style:"));
+  actual_style_label->setText(i18n("Style:"));
   MINSIZE(actual_style_label);
   actual_style_label_data = new QLabel(box2,"astyled");
   box2layout->addWidget(actual_style_label, 5, 1);
@@ -288,7 +291,7 @@ KFontDialog::KFontDialog( QWidget *parent, const QString& name,
   }
   MINSIZE(family_combo);
   
-  size_combo = new QComboBox( true, box1, klocale->translate("Size") );
+  size_combo = new QComboBox( true, box1, i18n("Size") );
   box1layout->addWidget(size_combo, 1, 5);
   
   size_combo->insertItem( "4" );
@@ -326,11 +329,11 @@ KFontDialog::KFontDialog( QWidget *parent, const QString& name,
   MINSIZE(size_combo);
   
   
-  weight_combo = new QComboBox( TRUE, box1, klocale->translate("Weight") );
+  weight_combo = new QComboBox( TRUE, box1, i18n("Weight") );
   box1layout->addWidget(weight_combo, 2, 2);
   
-  weight_combo->insertItem( klocale->translate("normal") );
-  weight_combo->insertItem( klocale->translate("bold") );
+  weight_combo->insertItem( i18n("normal") );
+  weight_combo->insertItem( i18n("bold") );
   
   weight_combo->setInsertionPolicy(QComboBox::NoInsertion);
   connect( weight_combo, SIGNAL(activated(const QString&)),
@@ -340,11 +343,11 @@ KFontDialog::KFontDialog( QWidget *parent, const QString& name,
   MINSIZE(weight_combo);
   
   
-  style_combo = new QComboBox( TRUE, box1, klocale->translate("Style") );
+  style_combo = new QComboBox( TRUE, box1, i18n("Style") );
   box1layout->addWidget(style_combo, 2, 5);
   
-  style_combo->insertItem( klocale->translate("roman") );
-  style_combo->insertItem( klocale->translate("italic") );
+  style_combo->insertItem( i18n("roman") );
+  style_combo->insertItem( i18n("italic") );
   
   style_combo->setInsertionPolicy(QComboBox::NoInsertion);
   connect( style_combo, SIGNAL(activated(const QString&)),
@@ -352,7 +355,7 @@ KFontDialog::KFontDialog( QWidget *parent, const QString& name,
   MINSIZE(style_combo);
   
   
-  charset_combo = new QComboBox( TRUE, box1, klocale->translate("Charset") );
+  charset_combo = new QComboBox( TRUE, box1, i18n("Charset") );
   box1layout->addWidget(charset_combo, 3, 2);
   
   charset_combo->setInsertionPolicy(QComboBox::NoInsertion);
@@ -371,7 +374,7 @@ KFontDialog::KFontDialog( QWidget *parent, const QString& name,
   //  example_edit->setBackgroundColor(white);
   //  example_edit->setFrameStyle( QFrame::WinPanel | QFrame::Sunken );
   //  example_edit->setLineWidth( 1 );
-  example_edit->setText(klocale->translate("Dolor Ipse"));
+  example_edit->setText(i18n("Dolor Ipse"));
   //  example_edit->setAutoResize(true);
   
   connect(this,SIGNAL(fontSelected( const QFont&  )),
@@ -404,10 +407,10 @@ KFontDialog::KFontDialog( QWidget *parent, const QString& name,
   KButtonBox *bbox = new KButtonBox(this);
   
   bbox->addStretch(1);
-  button = bbox->addButton(klocale->translate("OK"));
+  button = bbox->addButton(i18n("OK"));
   connect( button, SIGNAL( clicked() ), 
 	  SLOT( accept() ) );
-  button = bbox->addButton(klocale->translate("Cancel"));
+  button = bbox->addButton(i18n("Cancel"));
   connect( button, SIGNAL( clicked() ), 
 	  SLOT( reject() ) );
   bbox->layout();
@@ -488,9 +491,9 @@ void KFontDialog::weight_chosen_slot(const QString& weight){
 
   QString weight_string = weight;
 
-  if ( weight_string == QString(klocale->translate("normal")))
+  if ( weight_string == QString(i18n("normal")))
     selFont.setBold(false);
-  if ( weight_string == QString(klocale->translate("bold")))
+  if ( weight_string == QString(i18n("bold")))
        selFont.setBold(true);
   // display_example();
   emit fontSelected(selFont);
@@ -501,9 +504,9 @@ void KFontDialog::style_chosen_slot(const QString& style){
 
   QString style_string = style;
 
-  if ( style_string == QString(klocale->translate("roman")))
+  if ( style_string == QString(i18n("roman")))
     selFont.setItalic(false);
-  if ( style_string == QString(klocale->translate("italic")))
+  if ( style_string == QString(i18n("italic")))
     selFont.setItalic(true);
   //  display_example();
   emit fontSelected(selFont);
@@ -523,14 +526,14 @@ void KFontDialog::display_example(const QFont& font){
   actual_size_label_data->setText(string);
 
   if (info.bold())
-    actual_weight_label_data->setText(klocale->translate("Bold"));
+    actual_weight_label_data->setText(i18n("Bold"));
   else
-    actual_weight_label_data->setText(klocale->translate("Normal"));
+    actual_weight_label_data->setText(i18n("Normal"));
  
   if (info.italic())
-    actual_style_label_data->setText(klocale->translate("italic"));
+    actual_style_label_data->setText(i18n("italic"));
   else
-    actual_style_label_data->setText(klocale->translate("roman"));
+    actual_style_label_data->setText(i18n("roman"));
   
   KCharsets *charsets=KApplication::getKApplication()->getCharsets();
   const char * charset=charsets->name(selFont);

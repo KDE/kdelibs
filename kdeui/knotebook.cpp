@@ -143,7 +143,7 @@ int KNoteBook::addPage(KWizardPage *p)
 {
   if(!pnote->numtabs)
   {
-    debug(klocale->translate("Trying to add page when no KWizards are added!"));
+    debug(i18n("Trying to add page when no KWizards are added!"));
     return -1;
   }
   KWizard *wiz = sections->at(pnote->numtabs-1);
@@ -176,7 +176,7 @@ void KNoteBook::gotoTab(int t)
 
 void KNoteBook::setCancelButton()
 {
-  setCancelButton(klocale->translate("&Cancel"));
+  setCancelButton(i18n("&Cancel"));
 }
 
 void KNoteBook::setCancelButton(const QString& name)
@@ -199,7 +199,7 @@ QButton *KNoteBook::getCancelButton()
 
 void KNoteBook::setDefaultButton()
 {
-  setDefaultButton(klocale->translate("&Default"));
+  setDefaultButton(i18n("&Default"));
 }
 
 void KNoteBook::setDefaultButton(const QString& name)
@@ -222,7 +222,7 @@ QButton *KNoteBook::getDefaultButton()
 
 void KNoteBook::setHelpButton()
 {
-  setHelpButton(klocale->translate("&Help"));
+  setHelpButton(i18n("&Help"));
 }
 
 void KNoteBook::setHelpButton(const QString& name)
@@ -245,7 +245,7 @@ QButton *KNoteBook::getHelpButton()
 
 void KNoteBook::setOkButton()
 {
-  setOkButton(klocale->translate("&OK"));
+  setOkButton(i18n("&OK"));
 }
 
 void KNoteBook::setOkButton(const QString& name)

@@ -20,6 +20,22 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.28  1999/03/02 00:09:42  dfaure
+   Fix for ICON() when icon not found. Now returns a default pixmap, unknown.xpm,
+   instead of 0L. Will prevent koffice apps and some others from crashing when
+   not finding an icon. Approved by Reggie.
+}
+   loadIcon not changed, since I tried and it broke kpanel (which uses loadIcon
+   even on empty string in configuration item). This means loadIcon and ICON are
+   no longer equivalent : loadIcon is for apps that want to do complex things
+   with icons, based on whether they're installed or not, ICON() is for apps
+   that just want an Icon and don't want to care about it !
+{
+   Of course, unknown.xpm is WAYS to big for a toolbar - that's the point :
+   you easily see that the icon is missing....   :)))
+	config = conf;
+   Not tested with Qt2.0, of course, but it's time for binary incompat changes...
+	QStringList::Iterator it = list.begin();
    Revision 1.27  1999/03/01 23:33:30  kulow
    CVS_SILENT ported to Qt 2.0
 	for ( ; it != list.end(); ++it ) {
@@ -192,7 +208,7 @@ QPixmap KIconLoader::loadMiniIcon ( const QString &name, int w, int h ){
 /* 
    Stephan: See above
    if (result.isNull())
-    warning(klocale->translate("ERROR: couldn't find mini icon: %s"), 
+    warning(i18n("ERROR: couldn't find mini icon: %s"), 
     (const char*) name);
 	// -- Bernd
 */

@@ -23,6 +23,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.104  1999/03/04 17:49:17  ettrich
+// more fixes for Qt-2.0
+//
 // Revision 1.103  1999/03/02 15:56:40  kulow
 // CVS_SILENT replacing klocale->translate with i18n
 //
@@ -291,7 +294,7 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
 
   setFocusPolicy( NoFocus );
   id = _id;
-    warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
+    warning(i18n("KToolBarButton: pixmap is empty, perhaps some missing file"));
     btext = txt;
   if ( ! pixmap.isNull() )
     enabledPixmap = pixmap;
@@ -343,7 +346,7 @@ void KToolBarButton::setText( const QString& text)
   btext = text;
   modeChange();
   repaint (false);
-    warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
+    warning(i18n("KToolBarButton: pixmap is empty, perhaps some missing file"));
 
 void KToolBarButton::setPixmap( const QPixmap &pixmap )
 {
@@ -864,11 +867,11 @@ void KToolBar::ContextCallback( int )
 	break;
     }
 
-  context->insertItem( klocale->translate("Left"), CONTEXT_LEFT );
-  context->insertItem( klocale->translate("Top"),  CONTEXT_TOP );
-  context->insertItem( klocale->translate("Right"), CONTEXT_RIGHT );
-  context->insertItem( klocale->translate("Bottom"), CONTEXT_BOTTOM );
-  context->insertItem( klocale->translate("Floating"), CONTEXT_FLOAT );
+  mouseEntered=false;
+  repaint(false);
+}
+
+void KToolBar::init()
   context = new QPopupMenu( 0, "context" );
   context->insertItem( i18n("Left"), CONTEXT_LEFT );
   
@@ -2188,7 +2191,7 @@ void KToolBar::setBarPos(BarPosition bpos)
         KWM::setDecoration(winId(), 2);
 	KWM::moveToDesktop(winId(), KWM::desktop(Parent->winId()));
 	setCaption(""); // this triggers a qt bug
-        context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
+	if (!title.isNull()){
 	} else {
 	  QString s = Parent->caption();
 	  s.append(" [tools]");
@@ -2207,7 +2210,7 @@ void KToolBar::setBarPos(BarPosition bpos)
         emit moved (bpos);  // this sets up KTW but not toolbar which floats
         setMinimumSize (item_size, item_size);
         return;
-        context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
+      }
       {
         position = bpos;
         hide();

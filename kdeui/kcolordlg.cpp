@@ -282,7 +282,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	QString st;
 	if(kapp->appName().length() > 0)
 	  st = kapp->appName() + ": ";
-	st =  klocale->translate("Select Color");
+	st =  i18n("Select Color");
 	setCaption( st.data() );
 	
 	// create a toplevel layout
@@ -294,7 +294,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	tl_layout->addLayout(l_left, 0, 0);
 	
 	// system colors
-	label = new QLabel( klocale->translate("System Colors"), this );
+	label = new QLabel( i18n("System Colors"), this );
 	label->setFixedSize(label->sizeHint());
 	l_left->addWidget(label, 0, AlignLeft);
 	sysColorCells = new KColorCells( this, 3, 6 );
@@ -325,7 +325,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	l_left->addStretch(1);
 	
 	// add custom colors
-	label = new QLabel( klocale->translate("Custom Colors"), this );
+	label = new QLabel( i18n("Custom Colors"), this );
 	label->setFixedSize(label->sizeHint());
 	l_left->addWidget(label, 0, AlignLeft);
 	custColorCells = new KColorCells( this, 3, 6 );
@@ -338,7 +338,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	l_left->addStretch(1);
 	
 	// add buttom for adding colors
-	button = new QPushButton( klocale->translate("Add to Custom Colors"),
+	button = new QPushButton( i18n("Add to Custom Colors"),
 				  this );
 	button->setMinimumSize(button->sizeHint());
 	l_left->addWidget(button, 0);
@@ -460,14 +460,14 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	
 	// the standard buttons
 	KButtonBox *bbox = new KButtonBox(this);
-        button  = bbox->addButton(klocale->translate("Help"));
+        button  = bbox->addButton(i18n("Help"));
           connect( button, SIGNAL(clicked()),
 		                   SLOT(getHelp()));                              
         bbox->addStretch(1);
-        button = bbox->addButton(klocale->translate("OK"));
+        button = bbox->addButton(i18n("OK"));
 	connect( button, SIGNAL( clicked() ), 
 		 SLOT( slotOkPressed() ) );
-	button = bbox->addButton(klocale->translate("Cancel"));
+	button = bbox->addButton(i18n("Cancel"));
 
 	connect( button, SIGNAL( clicked() ), 
 		 SLOT( reject() ) );
@@ -786,7 +786,7 @@ void KColorCombo::slotActivated( int index )
 			painter.fillRect( rect, brush );
 			painter.setPen( pen );
 			painter.drawText( 2, 18, 
-					  klocale->translate("Custom...") );
+					  i18n("Custom...") );
 			painter.end();
 
 			changeItem( pixmap, 0 );
@@ -838,7 +838,7 @@ void KColorCombo::addColors()
 	QBrush brush( customColor );
 	painter.fillRect( rect, brush );
 	painter.setPen( pen );
-	painter.drawText( 2, 18, klocale->translate("Custom...") );
+	painter.drawText( 2, 18, i18n("Custom...") );
 	painter.end();
 
 	insertItem( pixmap );

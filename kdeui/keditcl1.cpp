@@ -136,9 +136,9 @@ int KEdit::loadFile(QString name, int mode){
     if(!info.exists()){
       QMessageBox::warning(
 		  this,
-		  klocale->translate("Sorry"),
-		  klocale->translate("The specified File does not exist"),
-		  klocale->translate("OK"),
+		  i18n("Sorry"),
+		  i18n("The specified File does not exist"),
+		  i18n("OK"),
 		  "",
 		  "",
 		  0,0
@@ -150,9 +150,9 @@ int KEdit::loadFile(QString name, int mode){
     if(info.isDir()){
       QMessageBox::warning(
 		   this,
-		   klocale->translate("Sorry:"),
-		   klocale->translate("You have specificated a directory"),
-		   klocale->translate("OK"),
+		   i18n("Sorry:"),
+		   i18n("You have specificated a directory"),
+		   i18n("OK"),
 		  "",
 		  "",
 		  0,0
@@ -165,9 +165,9 @@ int KEdit::loadFile(QString name, int mode){
    if(!info.isReadable()){
       QMessageBox::warning(
 		  this,
-		  klocale->translate("Sorry"),
-                  klocale->translate("You do not have read permission to this file."),
-                  klocale->translate("OK"),
+		  i18n("Sorry"),
+                  i18n("You do not have read permission to this file."),
+                  i18n("OK"),
 		  "",
 		  "",
 		  0,0
@@ -186,9 +186,9 @@ int KEdit::loadFile(QString name, int mode){
 
 	  QMessageBox::warning(
 		  this,
-		  klocale->translate("Sorry"),
-                  klocale->translate("You do not have read permission to this file."),
-                  klocale->translate("OK"),
+		  i18n("Sorry"),
+                  i18n("You do not have read permission to this file."),
+                  i18n("OK"),
 		  "",
 		  "",
 		  0,0
@@ -199,9 +199,9 @@ int KEdit::loadFile(QString name, int mode){
         default:
             QMessageBox::warning(
 		  this,
-		  klocale->translate("Sorry"),				
-		  klocale->translate("An Error occured while trying to open this Document"),
-                  klocale->translate("OK"),
+		  i18n("Sorry"),				
+		  i18n("An Error occured while trying to open this Document"),
+                  i18n("OK"),
 		  "",
 		  "",
 		  0,0
@@ -369,7 +369,7 @@ int KEdit::insertFile(){
     QFileDialog *box;
     QString file_to_insert;
 
-    box = getFileDialog(klocale->translate("Select Document to Insert"));
+    box = getFileDialog(i18n("Select Document to Insert"));
 
     box->show();
 
@@ -403,12 +403,12 @@ int KEdit::openFile(int mode)
     if( isModified() ) {
       switch( QMessageBox::warning(
 			 this,
-			 klocale->translate("Warning:"), 	
-			 klocale->translate("The current Document has been modified.\n"\
+			 i18n("Warning:"), 	
+			 i18n("The current Document has been modified.\n"\
 					    "Would you like to save it?"),
-			 klocale->translate("Yes"),
-			 klocale->translate("No"),
-			 klocale->translate("Cancel"),
+			 i18n("Yes"),
+			 i18n("No"),
+			 i18n("Cancel"),
                                   0, 2
 			 )
 	      )
@@ -424,11 +424,11 @@ int KEdit::openFile(int mode)
 
 	  switch(QMessageBox::warning(
 			   this,
-			   klocale->translate("Sorry:"),
-			   klocale->translate("Could not save the document.\n"\
+			   i18n("Sorry:"),
+			   i18n("Could not save the document.\n"\
                                               "Open a new document anyways?"),
-			   klocale->translate("Yes"),
-                           klocale->translate("No"),
+			   i18n("Yes"),
+                           i18n("No"),
 			       "",
 			       0,1
 			   )
@@ -456,7 +456,7 @@ int KEdit::openFile(int mode)
 	}
     }
 
-    box = getFileDialog(klocale->translate("Select Document to Open"));
+    box = getFileDialog(i18n("Select Document to Open"));
 
     box->show();
 
@@ -485,12 +485,12 @@ int KEdit::newFile(){
     if( isModified() ) {
       switch( QMessageBox::warning(
 			 this,
-			 klocale->translate("Warning:"), 	
-			 klocale->translate("The current Document has been modified.\n"\
+			 i18n("Warning:"), 	
+			 i18n("The current Document has been modified.\n"\
 					    "Would you like to save it?"),
-			 klocale->translate("Yes"),
-			 klocale->translate("No"),
-			 klocale->translate("Cancel"),
+			 i18n("Yes"),
+			 i18n("No"),
+			 i18n("Cancel"),
                                   0, 2 )
 	      )
 	{
@@ -505,11 +505,11 @@ int KEdit::newFile(){
 	  if (result != KEDIT_OK){
 
 	    switch(QMessageBox::warning(this,
-			   klocale->translate("Sorry:"),
-			   klocale->translate("Could not save the document.\n"\
+			   i18n("Sorry:"),
+			   i18n("Could not save the document.\n"\
                                               "Create a new document anyways?"),
-			   klocale->translate("Yes"),
-                           klocale->translate("No"),
+			   i18n("Yes"),
+                           i18n("No"),
 			       "",
 			       0,1
 				      )){
@@ -541,7 +541,7 @@ int KEdit::newFile(){
 
     setFocus();
 
-    filename = klocale->translate("Untitled");
+    filename = i18n("Untitled");
 
     computePosition();
     emit(fileChanged());
@@ -1557,9 +1557,9 @@ int KEdit::saveFile(){
       rename(backup_filename.data(),filename.data());
       QMessageBox::warning(
 			   this,
-			   klocale->translate("Sorry"),
-			   klocale->translate("Could not save the document\n"),
-			   klocale->translate("OK"),
+			   i18n("Sorry"),
+			   i18n("Could not save the document\n"),
+			   i18n("OK"),
 			   "",
 			   "",
 			   0,0
@@ -1624,7 +1624,7 @@ int KEdit::saveAs(){
   QString tmpfilename;
   int result;
 
-  box = getFileDialog(klocale->translate("Save Document As"));
+  box = getFileDialog(i18n("Save Document As"));
 
   QPoint point = this->mapToGlobal (QPoint (0,0));
 
@@ -1652,11 +1652,11 @@ try_again:
 
     switch( QMessageBox::warning(
 			   this,
-			   klocale->translate("Warning:"), 	
-			   klocale->translate("A Document with this Name exists already\n"\
+			   i18n("Warning:"), 	
+			   i18n("A Document with this Name exists already\n"\
 						     "Do you want to overwrite it ?"),
-                           klocale->translate("Yes"),
-			   klocale->translate("No"),
+                           i18n("Yes"),
+			   i18n("No"),
 				  "",
                                   1, 1 )
 	    ){
@@ -1709,10 +1709,10 @@ int KEdit::doSave()
 
       QMessageBox::warning(
 			   this,
-			   klocale->translate("Sorry:"),
-			   klocale->translate("You do not have write permission "\
+			   i18n("Sorry:"),
+			   i18n("You do not have write permission "\
 					      "to this file.\n"),
-			   klocale->translate("OK"),
+			   i18n("OK"),
 			   "",
 			   "",
 			   0,0

@@ -7,7 +7,7 @@
 KPopupMenu::KPopupMenu(QWidget *parent, const char *name)
     : QPopupMenu(parent, name)
 {
-    initialize(klocale->translate("Untitled"));
+    initialize(i18n("Untitled"));
 }
 
 KPopupMenu::KPopupMenu(const QString& title, QWidget *parent, const char *name)

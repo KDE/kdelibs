@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.65  1999/03/02 15:56:36  kulow
+// CVS_SILENT replacing klocale->translate with i18n
+//
 // Revision 1.64  1999/03/01 23:34:51  kulow
 // CVS_SILENT ported to Qt 2.0
 //
@@ -284,9 +287,9 @@ void KMenuBar::ContextCallback( int )
 
   handle->repaint (false);
 }
-  context->insertItem( klocale->translate("Top"),  CONTEXT_TOP );
-  context->insertItem( klocale->translate("Bottom"), CONTEXT_BOTTOM );
-  context->insertItem( klocale->translate("Floating"), CONTEXT_FLOAT );
+
+void KMenuBar::init()
+{
   context->insertItem( i18n("Top"),  CONTEXT_TOP );
   context->insertItem( i18n("Bottom"), CONTEXT_BOTTOM );
   context->insertItem( i18n("Floating"), CONTEXT_FLOAT );
@@ -435,7 +438,7 @@ void KMenuBar::paintEvent(QPaintEvent *)
 
 void KMenuBar::closeEvent (QCloseEvent *e)
 {
-     context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
+  if (position == Floating)
    {
      position = lastPosition;
      recreate (Parent, oldWFlags, QPoint (oldX, oldY), TRUE);
@@ -729,7 +732,7 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
 		  if (style() == MotifStyle)
 		      menu->setFrameStyle(Panel | Raised);
 		  else
-	  context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
+		      menu->setFrameStyle(WinPanel | Raised) ;
 	  else
 	      menu->setFrameStyle( NoFrame) ;
 	  context->changeItem (i18n("UnFloat"), CONTEXT_FLOAT);
@@ -777,7 +780,7 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
      else if (position == Floating || position == FloatingSystem) // was floating
       {
         position = mpos;
-        context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
+        hide();
 	menu->setFrameStyle(oldMenuFrameStyle);
         recreate(Parent, oldWFlags, QPoint(oldX, oldY), TRUE);
         context->changeItem (i18n("Float"), CONTEXT_FLOAT);

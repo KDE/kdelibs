@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.124  1999/03/01 23:33:10  kulow
+// CVS_SILENT ported to Qt 2.0
+//
 // Revision 1.123  1999/02/08 12:23:30  konold
 //
 // Martin K.: Corrected buglist.kde.org --> http://bugs.kde.org
@@ -615,25 +618,25 @@ QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/,
 {
   QPopupMenu* pMenu = new QPopupMenu();
 
-  int id = pMenu->insertItem( klocale->translate( "&Contents" ) );
+  int id = pMenu->insertItem( i18n( "&Contents" ) );
   pMenu->connectItem( id, this, SLOT( appHelpActivated() ) );
   pMenu->setAccel( Key_F1, id );
 
   pMenu->insertSeparator();
 
-  id = pMenu->insertItem( QString(klocale->translate( "&About" )) + " " + aAppName + "...");
+  id = pMenu->insertItem( QString(i18n( "&About" )) + " " + aAppName + "...");
   if( aboutAppText )
 	{
 	  pMenu->connectItem( id, this, SLOT( aboutApp() ) );
 	  aAppAboutString = aboutAppText;
 	}
 
-  id = pMenu->insertItem( klocale->translate( "About &KDE..." ) );
+  id = pMenu->insertItem( i18n( "About &KDE..." ) );
   pMenu->connectItem( id, this, SLOT( aboutKDE() ) );
   /*
 	if( bAboutQtMenu )
 	{
-	id = pMenu->insertItem( klocale->translate( "About Qt" ) );
+	id = pMenu->insertItem( i18n( "About Qt" ) );
 	pMenu->connectItem( id, this, SLOT( aboutQt() ) );
 	}
   */
@@ -649,8 +652,8 @@ void KApplication::appHelpActivated()
 
 void KApplication::aboutKDE()
 {
-  QMessageBox::about( 0L, klocale->translate( "About KDE" ),
-					  klocale->translate(
+  QMessageBox::about( 0L, i18n( "About KDE" ),
+					  i18n(
 "\nThe KDE Desktop Environment was written by the KDE Team,\n"
 "a world-wide network of software engineers committed to\n"
 "free software development.\n\n"

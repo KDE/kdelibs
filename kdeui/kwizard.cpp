@@ -520,7 +520,7 @@ int KWizard::addPage(KWizardPage *p)
 
   //debug("enabled buttons");
   QString strpagina;
-  strpagina.sprintf(klocale->translate("Page %d of %d"), pwiz->current+1, pwiz->numpages);
+  strpagina.sprintf(i18n("Page %d of %d"), pwiz->current+1, pwiz->numpages);
   if(pwiz->numpages > 1)
     pwiz->pagina->setText(strpagina.data());
   else
@@ -667,7 +667,7 @@ void KWizard::gotoPage(int p)
   pwiz->current = p;
 
   QString strpagina;
-  strpagina.sprintf(klocale->translate("Page %d of %d"), pwiz->current+1, pwiz->numpages);
+  strpagina.sprintf(i18n("Page %d of %d"), pwiz->current+1, pwiz->numpages);
   if(pwiz->numpages > 1)
     pwiz->pagina->setText(strpagina.data());
   else
