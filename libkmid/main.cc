@@ -263,6 +263,7 @@ int main(int argc, char **argv)
     pctl.message=0;
     pctl.gm=gm;
     pctl.error=0;
+    pctl.ratioTempo=1.0;
     pctl.volumepercentage=vol_percentage;
     for (int i=0;i<16;i++)
     {
