@@ -434,12 +434,20 @@ private:
  * if you do not want the class to be abstract.
  *
  * @short An abstract class for using KCompletion in widgets
- * @author Dawit Alemayehu <adawit@earthlink.net>
+ * @author Dawit Alemayehu <adawit@kde.org>
  */
 class KCompletionBase
 {
 
 public:
+
+	/**
+	 * Constants used to determine the direction of
+	 * the rotation ( Up/Down ). Widgets should use
+	 * this constant as needed to indicate the direction
+	 * of rotation.
+	 */
+	enum RotationEvent { UpKeyEvent, DownKeyEvent };
 
     /**
     * Default constructor.
