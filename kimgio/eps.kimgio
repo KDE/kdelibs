@@ -2,6 +2,7 @@
 Type=EPS
 Header=^\%!PS-Adobe
 Name=Encapsulated Postscript Images
+Name[af]=GEëNKAPSULEERDE POSTSCRIPT BEELDE
 Name[az]=Gömülmüş Postscript əkslər (EPS)
 Name[bs]=Enkapsulirana PostScript slika
 Name[ca]=Imatge PostScript encapsulat
@@ -34,7 +35,7 @@ Name[pl]=Obraz EPS
 Name[pt_BR]=Imagens Encapsulated Postscript
 Name[pt]=Imagens em PostScript Encapsulado
 Name[ru]=Изображения "встраиваемого" Postscript (.eps)
-Name[sk]=Zapuzdrený Postskriptový dokument (EPS)
+Name[sk]=Zapúzdrený Postskriptový dokument (EPS)
 Name[sl]=Slike v enkapsuliranem PostScriptu
 Name[sr]=Encapsulated PostScript slike
 Name[sv]=Inkapslade Postscript-bilder

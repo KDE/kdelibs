@@ -2,9 +2,10 @@
 Type=PNM
 Header=
 Name=PNM-Pictures
+Name[af]=PNM-PRENTE
 Name[az]=PNM-Rəsmləri
 Name[bg]=PNM Картинки
-Name[br]=Skeudennoù PNM
+Name[br]=SkeudennoÃ¹ PNM
 Name[bs]=PNM-slike
 Name[ca]=Dibuixos PNM
 Name[cs]=Obrázky ve formátu PNM

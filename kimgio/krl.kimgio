@@ -2,9 +2,10 @@
 Type=KRL
 Header=DUMMYKRLREGEXP
 Name=KRL-Images
+Name[af]=KRL-BEELDE
 Name[az]=KRL-Rəsmləri
 Name[bg]=KRL Картинки
-Name[br]=Skeudennoù KRL
+Name[br]=SkeudennoÃ¹ KRL
 Name[bs]=KRL-slike
 Name[ca]=Imatges KRL
 Name[cs]=Obrázky ve formátu KRL

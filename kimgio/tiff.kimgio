@@ -2,9 +2,10 @@
 Type=TIFF
 Header=[MI][MI]
 Name=TIFF-Pictures
+Name[af]=TIFF-PRENTE
 Name[az]=TIFF-Rəsmləri
 Name[bg]=TIFF Картинки
-Name[br]=Skeudennoù TIFF
+Name[br]=SkeudennoÃ¹ TIFF
 Name[bs]=TIFF-slike
 Name[ca]=Dibuixos TIFF
 Name[cs]=Obrázky ve formátu TIFF

@@ -2,9 +2,10 @@
 Type=G3
 Header=II
 Name=g3 fax files
+Name[af]=G3 FAKS LêERS
 Name[az]=g3 faks faylları
 Name[bg]=Факс файл g3
-Name[br]=Restroù pelleiler g3
+Name[br]=RestroÃ¹ pelleiler g3
 Name[bs]=g3 fax datoteke
 Name[ca]=Fitxers fax g3
 Name[cs]=Faxové soubory ve formátu g3
