@@ -103,9 +103,9 @@ void Arts::Debug::info(const char *fmt, ...)
     	va_list ap;
     	va_start(ap, fmt);
 		fprintf(stderr,"%s ", arts_debug_prefix);
-    	(void) vfprintf(stdout, fmt, ap);
-		fprintf(stdout,"\n");
-		fflush(stdout);
+    	(void) vfprintf(stderr, fmt, ap);
+		fprintf(stderr,"\n");
+		fflush(stderr);
     	va_end(ap);
 	}
 }
@@ -116,9 +116,9 @@ void Arts::Debug::debug(const char *fmt, ...)
 	{
     	va_list ap;
     	va_start(ap, fmt);
-    	(void) vfprintf(stdout, fmt, ap);
-		fprintf(stdout,"\n");
-		fflush(stdout);
+    	(void) vfprintf(stderr, fmt, ap);
+		fprintf(stderr,"\n");
+		fflush(stderr);
     	va_end(ap);
 	}
 }
