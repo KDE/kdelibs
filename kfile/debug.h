@@ -1,3 +1,4 @@
+// #define COOLOS 1
 
 #if defined(COOLOS)
 #define debugC debug

@@ -182,6 +182,12 @@ public:
       */
     void setDir(const char *name) { setDir(name, true); }
 
+    /**
+     * Sets the filename to preselect. 
+     * It takes absolute and relative file names
+     */
+    void setSelection(const char *name);
+
 signals:
     /**
       * Emitted when the user selects a file.
@@ -226,7 +232,9 @@ protected:
 
     // the last selected filename
     QString filename_;
-    
+    // the name of the filename set by setSelection
+    QString selection;
+
     // represents the check box. Initialized by "ShowHidden"
     bool showHidden;
 

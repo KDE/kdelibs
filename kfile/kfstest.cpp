@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 	break;
     case Normal: {
       KFileDialog dlg(QDir::homeDirPath(), 0, 0, 0, true);
-      // dlg.setSelection("../hello");
+      dlg.setSelection("../hello");
       dlg.exec();
       name1 = dlg.selectedFile();
     }

@@ -486,7 +486,7 @@ QString KFileBaseDialog::dirPath()
 
 void KFileBaseDialog::setDir(const char *_pathstr, bool clearforward)
 {
-    debug("setDir %ld", time(0));
+    debugC("setDir %s %ld", _pathstr, time(0));
     filename_ = 0;
     QString pathstr = _pathstr;
     
@@ -653,6 +653,9 @@ void KFileBaseDialog::pathChanged()
 	locationEdit->clear();
 	locationEdit->insertStrList(visitedDirs);
 	locationEdit->setCurrentItem(visitedDirs->at());
+
+	if (!selection.isNull())
+	    locationEdit->setText(url + selection);
 
 	insertNewFiles(il);
     }
@@ -1079,6 +1082,41 @@ KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
 	else
 	    return new KFileSimpleView(useSingleClick, dir->sorting(), parent, "_simple");
     
+}
+
+void KFileBaseDialog::setSelection(const char *name)
+{
+    KURL u(name);
+    if (u.isMalformed()) // perhaps we have a relative path!
+	u = dir->url() + name;
+    if (u.isMalformed()) { // if it still is
+	warning("%s is not a correct argument for setSelection!", name);
+	return;
+    }
+
+    if (!u.isLocalFile()) { // no way to detect, if we have a directory!?
+	filename_ = u.url();
+	return;
+    }
+    
+    KFileInfo i(u.path());
+    if (i.isDir())
+	setDir(u.path(), true);
+    else {
+	QString filename = u.path(); 
+	int sep = filename.findRev('/');
+	if (sep >= 0) { // there is a / in it
+	    setDir(filename.left(sep), true);
+	    filename = filename.mid(sep+1, filename.length() - sep);
+	    debugC("filename %s", filename.data());
+	    selection = filename;
+	}
+	if (acceptUrls)
+	    filename_ = dir->url() + filename;
+	else
+	    filename_ = dir->path() + filename;
+	locationEdit->setText(filename_);
+    }
 }
 
 void KFileBaseDialog::completion() // SLOT

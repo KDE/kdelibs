@@ -269,7 +269,7 @@ int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
     if (reversed)
       bigger = !bigger;
 
-    debugC("compare %s against %s: %s", fi1->fileName(), fi2->fileName(), bigger ? "bigger" : "smaller");
+    // debugC("compare %s against %s: %s", fi1->fileName(), fi2->fileName(), bigger ? "bigger" : "smaller");
     
     return (bigger ? 1 : -1);
 }
@@ -297,7 +297,7 @@ int KFileInfoContents::findPosition(const KFileInfo *i, int left)
     if (pos == -1)
 	pos = sorted_length;
 
-    debugC("findPosition %s %d", i->fileName(), pos);
+    // debugC("findPosition %s %d", i->fileName(), pos);
     return pos;
 }
 
@@ -314,7 +314,7 @@ bool KFileInfoContents::addItemInternal(const KFileInfo *i)
 	else
 	    pos = sorted_length;
     }
-    debugC("insertItem %s %d %d", i->fileName(), pos, sorted_length);
+    // debugC("insertItem %s %d %d", i->fileName(), pos, sorted_length);
 
     insertSortedItem(i, pos); 
     return insertItem(i, pos);

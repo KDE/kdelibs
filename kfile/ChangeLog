@@ -1,3 +1,7 @@
+1998-05-19  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.h: added setSelection
+
 1998-05-18  Stephan Kulow  <coolo@kde.org>
 
 	* kfiledialog.cpp: bugfixes

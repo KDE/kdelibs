@@ -46,7 +46,7 @@ KFileSimpleView::KFileSimpleView(bool s, QDir::SortSpec sorting,
     setTableFlags(Tbl_autoHScrollBar |
 		  Tbl_smoothHScrolling);
     curCol = curRow = 0;
-    QTableView::setNumCols(1);
+    QTableView::setNumCols(0);
     QTableView::setNumRows(1);
     
     setBackgroundMode( PaletteBase );
@@ -131,6 +131,7 @@ void KFileSimpleView::clearView()
 void KFileSimpleView::paintCell( QPainter *p, int row, int col)
 {
     uint index = col * rowsVisible + row;
+
     int w = cellWidth( col );                   // width of cell in pixels
     int h = cellHeight( row );                  // height of cell in pixels
     int x2 = w - 1;
@@ -263,7 +264,7 @@ int KFileSimpleView::cellWidth ( int col )
 	}
 	cellWidths[col] = width + file_pixmap->width() + 9; 
     }
-    debugC("cellWidth %d %d", col, cellWidths[col]);
+  // debugC("cellWidth %d %d", col, cellWidths[col]);
     return cellWidths[col];
 }
 
