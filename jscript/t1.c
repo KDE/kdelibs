@@ -50,10 +50,12 @@
 
 #include "bison2cpp.h"
 
+void yyerror(char *s);
+int yylex();
 void initFlex( const char *_code );
 
 
-#line 9 "t1.y"
+#line 11 "t1.y"
 typedef union
 {
      int vali;
@@ -169,18 +171,18 @@ static const short yyrhs[] = {    -1,
 
 #if YYDEBUG != 0
 static const short yyrline[] = { 0,
-    91,    92,    95,    96,    97,   100,   101,   104,   105,   108,
-   111,   112,   113,   116,   117,   118,   119,   120,   121,   122,
-   123,   124,   125,   126,   127,   128,   131,   132,   135,   138,
-   141,   144,   145,   148,   149,   152,   153,   156,   157,   160,
-   161,   164,   165,   166,   167,   168,   169,   170,   171,   172,
-   173,   176,   177,   180,   181,   184,   185,   188,   189,   192,
-   193,   196,   197,   200,   201,   202,   205,   206,   207,   208,
-   209,   212,   213,   214,   217,   218,   219,   222,   223,   224,
-   227,   228,   229,   230,   231,   232,   233,   234,   237,   238,
-   241,   242,   243,   246,   247,   248,   251,   252,   255,   256,
-   259,   260,   263,   264,   265,   266,   267,   268,   269,   270,
-   271
+    93,    94,    97,    98,    99,   102,   103,   106,   107,   110,
+   113,   114,   115,   118,   119,   120,   121,   122,   123,   124,
+   125,   126,   127,   128,   129,   130,   133,   134,   137,   140,
+   143,   146,   147,   150,   151,   154,   155,   158,   159,   162,
+   163,   166,   167,   168,   169,   170,   171,   172,   173,   174,
+   175,   178,   179,   182,   183,   186,   187,   190,   191,   194,
+   195,   198,   199,   202,   203,   204,   207,   208,   209,   210,
+   211,   214,   215,   216,   219,   220,   221,   224,   225,   226,
+   229,   230,   231,   232,   233,   234,   235,   236,   239,   240,
+   243,   244,   245,   248,   249,   250,   253,   254,   257,   258,
+   261,   262,   265,   266,   267,   268,   269,   270,   271,   272,
+   273
 };
 #endif
 
@@ -364,7 +366,7 @@ static const short yycheck[] = {     1,
     -1,    -1,    -1,    -1,    -1,    58
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/share/bison.simple"
+#line 3 "/opt/local/GNU/share/bison.simple"
 
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Free Software Foundation, Inc.
@@ -513,13 +515,9 @@ int yydebug;			/*  nonzero means print parse trace	*/
 #define YYMAXDEPTH 10000
 #endif
 
-#ifndef YYPARSE_RETURN_TYPE
-#define YYPARSE_RETURN_TYPE int
-#endif
-
 /* Prevent warning if -Wstrict-prototypes.  */
 #ifdef __GNUC__
-YYPARSE_RETURN_TYPE yyparse (void);
+int yyparse (void);
 #endif
 
 #if __GNUC__ > 1		/* GNU C and GNU C++ define this.  */
@@ -561,7 +559,7 @@ __yy_memcpy (char *to, char *from, int count)
 #endif
 #endif
 
-#line 196 "/usr/share/bison.simple"
+#line 196 "/opt/local/GNU/share/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -582,7 +580,7 @@ __yy_memcpy (char *to, char *from, int count)
 #define YYPARSE_PARAM_DECL
 #endif /* not YYPARSE_PARAM */
 
-YYPARSE_RETURN_TYPE
+int
 yyparse(YYPARSE_PARAM_ARG)
      YYPARSE_PARAM_DECL
 {
@@ -866,444 +864,444 @@ yyreduce:
   switch (yyn) {
 
 case 2:
-#line 92 "t1.y"
+#line 94 "t1.y"
 { printf("!!!!! Adding code !!!!!\n"); jsAppendCode( yyvsp[0].ptr ); ;
     break;}
 case 3:
-#line 95 "t1.y"
+#line 97 "t1.y"
 { printf("Function: '%s'\n",yyvsp[-4].name ); yyval.ptr = newJSFunction( yyvsp[-4].name, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 4:
-#line 96 "t1.y"
+#line 98 "t1.y"
 { printf("Statement\n"); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 5:
-#line 97 "t1.y"
+#line 99 "t1.y"
 { yyerrok; yyval.ptr = 0L; ;
     break;}
 case 6:
-#line 100 "t1.y"
+#line 102 "t1.y"
 { yyval.ptr = 0L; ;
     break;}
 case 7:
-#line 101 "t1.y"
+#line 103 "t1.y"
 { yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 8:
-#line 104 "t1.y"
+#line 106 "t1.y"
 { printf("param '%s'\n", yyvsp[0].name); yyval.ptr = newJSParameter( yyvsp[0].name, 0L ); ;
     break;}
 case 9:
-#line 105 "t1.y"
+#line 107 "t1.y"
 { printf("param '%s\n", yyvsp[-2].name); yyval.ptr = newJSParameter( yyvsp[-2].name, yyvsp[0].ptr ); ;
     break;}
 case 10:
-#line 108 "t1.y"
+#line 110 "t1.y"
 { yyval.ptr = yyvsp[-1].ptr; ;
     break;}
 case 11:
-#line 111 "t1.y"
+#line 113 "t1.y"
 { yyval.ptr = 0L; ;
     break;}
 case 12:
-#line 112 "t1.y"
-{ printf(""); yyval.ptr = newJSStatement( yyvsp[-1].ptr, yyvsp[0].ptr ); ;
+#line 114 "t1.y"
+{ printf(" "); yyval.ptr = newJSStatement( yyvsp[-1].ptr, yyvsp[0].ptr ); ;
     break;}
 case 13:
-#line 113 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 115 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 14:
-#line 116 "t1.y"
-{ printf(""); yyval.ptr = 0L; ;
+#line 118 "t1.y"
+{ printf(" "); yyval.ptr = 0L; ;
     break;}
 case 15:
-#line 117 "t1.y"
+#line 119 "t1.y"
 { printf("Simple IF\n"); yyval.ptr = 0L; ;
     break;}
 case 16:
-#line 118 "t1.y"
+#line 120 "t1.y"
 { printf("Complex IF\n"); yyval.ptr = 0L; ;
     break;}
 case 17:
-#line 119 "t1.y"
-{ printf(""); yyval.ptr = 0L; ;
+#line 121 "t1.y"
+{ printf(" "); yyval.ptr = 0L; ;
     break;}
 case 18:
-#line 120 "t1.y"
-{ printf(""); yyval.ptr = 0L; ;
+#line 122 "t1.y"
+{ printf(" "); yyval.ptr = 0L; ;
     break;}
 case 19:
-#line 121 "t1.y"
-{ printf(""); yyval.ptr = 0L; ;
+#line 123 "t1.y"
+{ printf(" "); yyval.ptr = 0L; ;
     break;}
 case 20:
-#line 122 "t1.y"
-{ printf(""); yyval.ptr = 0L; ;
+#line 124 "t1.y"
+{ printf(" "); yyval.ptr = 0L; ;
     break;}
 case 21:
-#line 123 "t1.y"
-{ printf(""); yyval.ptr = 0L; ;
+#line 125 "t1.y"
+{ printf(" "); yyval.ptr = 0L; ;
     break;}
 case 22:
-#line 124 "t1.y"
-{ printf(""); yyval.ptr = 0L; ;
+#line 126 "t1.y"
+{ printf(" "); yyval.ptr = 0L; ;
     break;}
 case 23:
-#line 125 "t1.y"
-{ printf(""); yyval.ptr = 0L; ;
+#line 127 "t1.y"
+{ printf(" "); yyval.ptr = 0L; ;
     break;}
 case 24:
-#line 126 "t1.y"
-{ printf(""); yyval.ptr = 0L; ;
+#line 128 "t1.y"
+{ printf(" "); yyval.ptr = 0L; ;
     break;}
 case 25:
-#line 127 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 129 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 26:
-#line 128 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[-1].ptr; ;
+#line 130 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[-1].ptr; ;
     break;}
 case 28:
-#line 132 "t1.y"
-{ printf(""); ;
+#line 134 "t1.y"
+{ printf(" "); ;
     break;}
 case 29:
-#line 135 "t1.y"
+#line 137 "t1.y"
 { printf("Condition\n"); ;
     break;}
 case 30:
-#line 138 "t1.y"
-{ printf(""); ;
+#line 140 "t1.y"
+{ printf(" "); ;
     break;}
 case 31:
-#line 141 "t1.y"
-{ printf(""); ;
+#line 143 "t1.y"
+{ printf(" "); ;
     break;}
 case 32:
-#line 144 "t1.y"
-{ printf(""); yyval.ptr = 0L; ;
+#line 146 "t1.y"
+{ printf(" "); yyval.ptr = 0L; ;
     break;}
 case 33:
-#line 145 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 147 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 34:
-#line 148 "t1.y"
-{ printf(""); ;
+#line 150 "t1.y"
+{ printf(" "); ;
     break;}
 case 35:
-#line 149 "t1.y"
-{ printf(""); ;
+#line 151 "t1.y"
+{ printf(" "); ;
     break;}
 case 36:
-#line 152 "t1.y"
+#line 154 "t1.y"
 { printf("Var: '%s'\n", yyvsp[0].name); ;
     break;}
 case 37:
-#line 153 "t1.y"
+#line 155 "t1.y"
 { printf("Var with Assignment: '%s'\n", yyvsp[-2].name); ;
     break;}
 case 38:
-#line 156 "t1.y"
+#line 158 "t1.y"
 { yyval.ptr = 0L; ;
     break;}
 case 39:
-#line 157 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 159 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 40:
-#line 160 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 162 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 41:
-#line 161 "t1.y"
-{ printf(""); ;
+#line 163 "t1.y"
+{ printf(" "); ;
     break;}
 case 42:
-#line 164 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 166 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 43:
-#line 165 "t1.y"
+#line 167 "t1.y"
 { printf("Assignment ( = )\n"); yyval.ptr = newJSAssignment( OP_ASSIGN, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 44:
-#line 166 "t1.y"
+#line 168 "t1.y"
 { printf("Assignment ( *= )\n"); ;
     break;}
 case 45:
-#line 167 "t1.y"
+#line 169 "t1.y"
 { printf("Assignment ( /= )\n"); ;
     break;}
 case 46:
-#line 168 "t1.y"
+#line 170 "t1.y"
 { printf("Assignment ( += )\n"); ;
     break;}
 case 47:
-#line 169 "t1.y"
+#line 171 "t1.y"
 { printf("Assignment ( -= )\n"); ;
     break;}
 case 48:
-#line 170 "t1.y"
+#line 172 "t1.y"
 { printf("Assignment ( ^= )\n"); ;
     break;}
 case 49:
-#line 171 "t1.y"
-{ printf("Assignment ( %= )\n"); ;
+#line 173 "t1.y"
+{ printf("Assignment ( %%= )\n"); ;
     break;}
 case 50:
-#line 172 "t1.y"
+#line 174 "t1.y"
 { printf("Assignment ( &= )\n"); ;
     break;}
 case 51:
-#line 173 "t1.y"
+#line 175 "t1.y"
 { printf("Assignment ( |= )\n"); ;
     break;}
 case 52:
-#line 176 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 178 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 53:
-#line 177 "t1.y"
-{ printf(""); ;
+#line 179 "t1.y"
+{ printf(" "); ;
     break;}
 case 54:
-#line 180 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 182 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 55:
-#line 181 "t1.y"
-{ printf(""); yyval.ptr = newJSBinaryOperator( OP_OR, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
+#line 183 "t1.y"
+{ printf(" "); yyval.ptr = newJSBinaryOperator( OP_OR, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 56:
-#line 184 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 186 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 57:
-#line 185 "t1.y"
-{ printf(""); yyval.ptr = newJSBinaryOperator( OP_AND, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
+#line 187 "t1.y"
+{ printf(" "); yyval.ptr = newJSBinaryOperator( OP_AND, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 58:
-#line 188 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 190 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 59:
-#line 189 "t1.y"
-{ printf(""); yyval.ptr = newJSBinaryOperator( OP_BOR, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
+#line 191 "t1.y"
+{ printf(" "); yyval.ptr = newJSBinaryOperator( OP_BOR, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 60:
-#line 192 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 194 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 61:
-#line 193 "t1.y"
-{ printf(""); yyval.ptr = newJSBinaryOperator( OP_BXOR, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
+#line 195 "t1.y"
+{ printf(" "); yyval.ptr = newJSBinaryOperator( OP_BXOR, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 62:
-#line 196 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 198 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 63:
-#line 197 "t1.y"
-{ printf(""); yyval.ptr = newJSBinaryOperator( OP_BAND, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
+#line 199 "t1.y"
+{ printf(" "); yyval.ptr = newJSBinaryOperator( OP_BAND, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 64:
-#line 200 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 202 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 65:
-#line 201 "t1.y"
-{ printf(""); yyval.ptr = newJSBinaryOperator( OP_EQ, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
+#line 203 "t1.y"
+{ printf(" "); yyval.ptr = newJSBinaryOperator( OP_EQ, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 66:
-#line 202 "t1.y"
-{ printf(""); yyval.ptr = newJSBinaryOperator( OP_NEQ, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
+#line 204 "t1.y"
+{ printf(" "); yyval.ptr = newJSBinaryOperator( OP_NEQ, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 67:
-#line 205 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 207 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 68:
-#line 206 "t1.y"
-{ printf(""); yyval.ptr = newJSBinaryOperator( OP_LT, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
+#line 208 "t1.y"
+{ printf(" "); yyval.ptr = newJSBinaryOperator( OP_LT, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 69:
-#line 207 "t1.y"
-{ printf(""); yyval.ptr = newJSBinaryOperator( OP_GT, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
+#line 209 "t1.y"
+{ printf(" "); yyval.ptr = newJSBinaryOperator( OP_GT, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 70:
-#line 208 "t1.y"
-{ printf(""); yyval.ptr = newJSBinaryOperator( OP_LEQ, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
+#line 210 "t1.y"
+{ printf(" "); yyval.ptr = newJSBinaryOperator( OP_LEQ, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 71:
-#line 209 "t1.y"
-{ printf(""); yyval.ptr = newJSBinaryOperator( OP_GEQ, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
+#line 211 "t1.y"
+{ printf(" "); yyval.ptr = newJSBinaryOperator( OP_GEQ, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 72:
-#line 212 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 214 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 73:
-#line 213 "t1.y"
-{ printf(""); yyval.ptr = newJSBinaryOperator( OP_SL, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
+#line 215 "t1.y"
+{ printf(" "); yyval.ptr = newJSBinaryOperator( OP_SL, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 74:
-#line 214 "t1.y"
-{ printf(""); yyval.ptr = newJSBinaryOperator( OP_SR, yyvsp[-2].ptr, yyvsp[0].ptr );;
+#line 216 "t1.y"
+{ printf(" "); yyval.ptr = newJSBinaryOperator( OP_SR, yyvsp[-2].ptr, yyvsp[0].ptr );;
     break;}
 case 75:
-#line 217 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 219 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 76:
-#line 218 "t1.y"
+#line 220 "t1.y"
 { printf("Add ( + )\n"); yyval.ptr = newJSBinaryOperator( OP_ADD, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 77:
-#line 219 "t1.y"
+#line 221 "t1.y"
 { printf("Sub ( - )\n"); yyval.ptr = newJSBinaryOperator( OP_SUB, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 78:
-#line 222 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 224 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 79:
-#line 223 "t1.y"
+#line 225 "t1.y"
 { printf("Mul ( * )\n"); yyval.ptr = newJSBinaryOperator( OP_MUL, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 80:
-#line 224 "t1.y"
+#line 226 "t1.y"
 { printf("Div ( / )\n"); yyval.ptr = newJSBinaryOperator( OP_DIV, yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 81:
-#line 227 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 229 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 82:
-#line 228 "t1.y"
+#line 230 "t1.y"
 { printf("Unary Minus\n"); ;
     break;}
 case 83:
-#line 229 "t1.y"
+#line 231 "t1.y"
 { printf("++ Prefix\n"); ;
     break;}
 case 84:
-#line 230 "t1.y"
+#line 232 "t1.y"
 { printf("-- Prefix\n"); ;
     break;}
 case 85:
-#line 231 "t1.y"
+#line 233 "t1.y"
 { printf("Postfix ++\n"); ;
     break;}
 case 86:
-#line 232 "t1.y"
+#line 234 "t1.y"
 { printf("Postfix --\n"); ;
     break;}
 case 87:
-#line 233 "t1.y"
+#line 235 "t1.y"
 { printf("new\n"); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 88:
-#line 234 "t1.y"
+#line 236 "t1.y"
 { printf("delete\n"); ;
     break;}
 case 89:
-#line 237 "t1.y"
-{ printf(""); yyval.ptr = 0L; ;
+#line 239 "t1.y"
+{ printf(" "); yyval.ptr = 0L; ;
     break;}
 case 90:
-#line 238 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 240 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 91:
-#line 241 "t1.y"
-{ printf(""); yyval.ptr = newJSConstructorCall( newJSIdentifier( yyvsp[0].name ) , 0L ); ;
+#line 243 "t1.y"
+{ printf(" "); yyval.ptr = newJSConstructorCall( newJSIdentifier( yyvsp[0].name ) , 0L ); ;
     break;}
 case 92:
-#line 242 "t1.y"
-{ printf(""); yyval.ptr = newJSConstructorCall( newJSIdentifier( yyvsp[-3].name ), yyvsp[-1].ptr ); ;
+#line 244 "t1.y"
+{ printf(" "); yyval.ptr = newJSConstructorCall( newJSIdentifier( yyvsp[-3].name ), yyvsp[-1].ptr ); ;
     break;}
 case 93:
-#line 243 "t1.y"
-{ printf(""); yyval.ptr = 0L; ;
+#line 245 "t1.y"
+{ printf(" "); yyval.ptr = 0L; ;
     break;}
 case 94:
-#line 246 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 248 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 95:
-#line 247 "t1.y"
+#line 249 "t1.y"
 { printf("[ ]\n"); yyval.ptr = newJSArrayAccess( yyvsp[-3].ptr, yyvsp[-1].ptr ); ;
     break;}
 case 96:
-#line 248 "t1.y"
+#line 250 "t1.y"
 { printf("Function Call\n"); yyval.ptr = newJSFunctionCall( yyvsp[-3].ptr, yyvsp[-1].ptr ); ;
     break;}
 case 97:
-#line 251 "t1.y"
-{ printf(""); yyval.ptr = yyvsp[0].ptr; ;
+#line 253 "t1.y"
+{ printf(" "); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 98:
-#line 252 "t1.y"
+#line 254 "t1.y"
 { printf("Member ( '%s' )\n", yyvsp[0].name ); yyval.ptr = newJSMember( yyvsp[-2].ptr, yyvsp[0].name ); ;
     break;}
 case 99:
-#line 255 "t1.y"
+#line 257 "t1.y"
 { yyval.ptr = 0L; ;
     break;}
 case 100:
-#line 256 "t1.y"
+#line 258 "t1.y"
 { printf("ArgumentList\n"); yyval.ptr = yyvsp[0].ptr; ;
     break;}
 case 101:
-#line 259 "t1.y"
+#line 261 "t1.y"
 { printf("Argument\n"); yyval.ptr = newJSArgument( yyvsp[0].ptr, 0L ); ;
     break;}
 case 102:
-#line 260 "t1.y"
+#line 262 "t1.y"
 { printf("Argument (cont)\n"); yyval.ptr = newJSArgument( yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 103:
-#line 263 "t1.y"
+#line 265 "t1.y"
 { printf("Paranthesis\n"); yyval.ptr = yyvsp[-1].ptr; ;
     break;}
 case 104:
-#line 264 "t1.y"
+#line 266 "t1.y"
 { printf("ID '%s'\n",yyvsp[0].name); yyval.ptr = newJSIdentifier( yyvsp[0].name ); ;
     break;}
 case 105:
-#line 265 "t1.y"
+#line 267 "t1.y"
 { printf("NUM\n"); yyval.ptr = newJSInteger( yyvsp[0].vali ); ;
     break;}
 case 106:
-#line 266 "t1.y"
-{ printf(""); yyval.ptr = newJSFloat( yyvsp[0].vald ); ;
+#line 268 "t1.y"
+{ printf(" "); yyval.ptr = newJSFloat( yyvsp[0].vald ); ;
     break;}
 case 107:
-#line 267 "t1.y"
-{ printf(""); yyval.ptr = newJSString( yyvsp[0].name ); ;
+#line 269 "t1.y"
+{ printf(" "); yyval.ptr = newJSString( yyvsp[0].name ); ;
     break;}
 case 108:
-#line 268 "t1.y"
-{ printf(""); yyval.ptr = newJSBool( 0 ); ;
+#line 270 "t1.y"
+{ printf(" "); yyval.ptr = newJSBool( 0 ); ;
     break;}
 case 109:
-#line 269 "t1.y"
-{ printf(""); yyval.ptr = newJSBool( 1 ); ;
+#line 271 "t1.y"
+{ printf(" "); yyval.ptr = newJSBool( 1 ); ;
     break;}
 case 110:
-#line 270 "t1.y"
-{ printf(""); yyval.ptr = newJSNull(); ;
+#line 272 "t1.y"
+{ printf(" "); yyval.ptr = newJSNull(); ;
     break;}
 case 111:
-#line 271 "t1.y"
-{ printf(""); yyval.ptr = newJSThis(); ;
+#line 273 "t1.y"
+{ printf(" "); yyval.ptr = newJSThis(); ;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 498 "/usr/share/bison.simple"
+#line 498 "/opt/local/GNU/share/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1499,10 +1497,10 @@ yyerrhandle:
   yystate = yyn;
   goto yynewstate;
 }
-#line 276 "t1.y"
+#line 278 "t1.y"
 
 
-yyerror ( char *s )  /* Called by yyparse on error */
+void yyerror ( char *s )  /* Called by yyparse on error */
 {
     printf ("ERROR: %s\n", s);
 }
