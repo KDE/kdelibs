@@ -58,6 +58,8 @@
 #include "kcolordlg.h"
 #include "kcolordrag.h"
 #include "kstaticdeleter.h"
+#include <config.h>
+
 
 #define HSV_X 305
 #define RGB_X 385
