@@ -196,7 +196,7 @@ void HTMLLinkElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
 {
-    kdDebug( 6030 ) << "HTMLLinkElement::setStyleSheet()" << endl;
+//    kdDebug( 6030 ) << "HTMLLinkElement::setStyleSheet()" << endl;
     if( m_sheet ) return;
     m_sheet = new CSSStyleSheetImpl(this, url);
     m_sheet->ref();
@@ -208,7 +208,7 @@ void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DO
 
 bool HTMLLinkElementImpl::isLoading()
 {
-    kdDebug( 6030 ) << "link: checking if loading!" << endl;
+//    kdDebug( 6030 ) << "link: checking if loading!" << endl;
     if(m_loading) return true;
     if(!m_sheet) return false;
     //if(!m_sheet->isCSSStyleSheet()) return false;
@@ -259,7 +259,7 @@ void HTMLMetaElementImpl::parseAttribute(AttrImpl *attr)
 void HTMLMetaElementImpl::attach(KHTMLView *v)
 {
     m_style = document->styleSelector()->styleForElement(this);
-    kdDebug( 6030 ) << "meta::attach() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
+    //   kdDebug( 6030 ) << "meta::attach() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
     if(strcasecmp(_equiv, "refresh") == 0 && !_content.isNull())
     {
         // get delay and url
@@ -268,12 +268,12 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
         if (pos == -1) // There can be no url (David)
         {
             int delay = str.toInt();
-            kdDebug( 6030 ) << "delay = " << delay << endl;
-            kdDebug( 6030 ) << "====> scheduling redirect to " << v->part()->url().url() << endl;
+//             kdDebug( 6030 ) << "delay = " << delay << endl;
+//             kdDebug( 6030 ) << "====> scheduling redirect to " << v->part()->url().url() << endl;
             v->part()->scheduleRedirection(delay, v->part()->url().url());
         } else {
             int delay = str.left(pos).toInt();
-            kdDebug( 6030 ) << "delay = " << delay << ", separator at " << pos << endl;
+//            kdDebug( 6030 ) << "delay = " << delay << ", separator at " << pos << endl;
             pos++;
             while(pos < (int)str.length() && str[pos].isSpace()) pos++;
             if(pos < (int)str.length()) str = str.mid(pos);

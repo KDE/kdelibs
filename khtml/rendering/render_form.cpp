@@ -293,6 +293,7 @@ void RenderSubmitButton::layout()
 {
     QString value = static_cast<HTMLInputElementImpl*>(m_element)->value().isEmpty() ?
         defaultLabel() : static_cast<HTMLInputElementImpl*>(m_element)->value().string();
+    value = value.visual();
     static_cast<PushButtonWidget*>(m_widget)->setText(value.stripWhiteSpace());
     static_cast<PushButtonWidget*>(m_widget)->setFont(m_style->font());
 
@@ -451,7 +452,7 @@ void RenderLineEdit::layout()
 	s = QSize( w + 4, h + 4 ).expandedTo( QApplication::globalStrut() );
 
     edit->blockSignals(true);
-    edit->setText(static_cast<HTMLInputElementImpl*>(m_element)->value().string());
+    edit->setText(static_cast<HTMLInputElementImpl*>(m_element)->value().string().visual());
     edit->blockSignals(false);
 
     // ### what if maxlength goes back to 0? can we unset maxlength in the widget?
@@ -763,14 +764,14 @@ void RenderSelect::layout( )
                 text = "";
 
             if(m_listBox) {
-                QListBoxText *item = new QListBoxText(QString(text.implementation()->s, text.implementation()->l));
+                QListBoxText *item = new QListBoxText(QString(text.implementation()->s, text.implementation()->l).visual());
                 static_cast<KListBox*>(m_widget)
                     ->insertItem(item, listIndex);
                 item->setSelectable(false);
             }
             else
                 static_cast<QComboBox*>(m_widget)
-                    ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
+                    ->insertItem(QString(text.implementation()->s, text.implementation()->l).visual(), listIndex);
         }
         else if (listItems[listIndex]->id() == ID_OPTION) {
             DOMString text = static_cast<HTMLOptionElementImpl*>(listItems[listIndex])->text();
@@ -781,10 +782,10 @@ void RenderSelect::layout( )
 
             if(m_listBox)
                 static_cast<KListBox*>(m_widget)
-                    ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
+                    ->insertItem(QString(text.implementation()->s, text.implementation()->l).visual(), listIndex);
             else
                 static_cast<QComboBox*>(m_widget)
-                    ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
+                    ->insertItem(QString(text.implementation()->s, text.implementation()->l).visual(), listIndex);
         }
         else
             assert(false);
@@ -1100,7 +1101,7 @@ void RenderTextArea::layout( )
 
     w->setReadOnly(m_element->readOnly());
     w->blockSignals(true);
-    w->setText(static_cast<HTMLTextAreaElementImpl*>(m_element)->value().string());
+    w->setText(static_cast<HTMLTextAreaElementImpl*>(m_element)->value().string().visual());
     w->blockSignals(false);
 
     QFontMetrics m = w->fontMetrics();
