@@ -1583,8 +1583,7 @@ void ScheduledAction::execute(Window *window)
           exec->clearException();
 
         // Update our document's rendering following the execution of the timeout callback.
-        DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl*>(window->m_part->document().handle());
-        doc->updateRendering();
+        window->m_part->document().updateRendering();
       }
     }
   }
