@@ -46,6 +46,12 @@
 
 using namespace KNS;
 
+struct DownloadDialog::Private
+{
+    QString m_providerlist;
+    QWidget *m_page;
+};
+
 class NumSortListViewItem : public KListViewItem
 {
   public:
@@ -107,9 +113,10 @@ DownloadDialog::DownloadDialog(QWidget *, const QString& caption)
 void DownloadDialog::init(Engine *engine)
 {
   resize(700, 400);
+  d = new Private();
 
   m_engine = engine;
-  m_page = NULL;
+  d->m_page = NULL;
 
   connect(this, SIGNAL(aboutToShowPage(QWidget*)), SLOT(slotPage(QWidget*)));
 
@@ -122,11 +129,12 @@ void DownloadDialog::init(Engine *engine)
 
 DownloadDialog::~DownloadDialog()
 {
+    delete d;
 }
 
 void DownloadDialog::load()
 {
-  m_loader->load(m_filter, m_providerlist);
+  m_loader->load(m_filter, d->m_providerlist);
 }
 
 void DownloadDialog::load(QString providerList)
@@ -467,7 +475,7 @@ void DownloadDialog::install(Entry *e)
 
  
   QPushButton *in;
-  in = *(m_buttons[m_page]->at(0));
+  in = *(m_buttons[d->m_page]->at(0));
   if(in) in->setEnabled(false);
 }
 
@@ -528,8 +536,8 @@ void DownloadDialog::slotSelected()
     else enabled = true;
 
     QPushButton *de, *in;
-    in = *(m_buttons[m_page]->at(0));
-    de = *(m_buttons[m_page]->at(1));
+    in = *(m_buttons[d->m_page]->at(0));
+    de = *(m_buttons[d->m_page]->at(1));
     if(in) in->setEnabled(enabled);
     if(de) de->setEnabled(true);
   }
@@ -560,7 +568,7 @@ void DownloadDialog::slotPage(QWidget *w)
 
   if(m_map.find(w) == m_map.end()) return;
 
-  m_page = w;
+  d->m_page = w;
 
   lv_r = *(m_map[w]->at(0));
   lv_d = *(m_map[w]->at(1));
@@ -601,7 +609,7 @@ void DownloadDialog::setType(QString type)
 
 void DownloadDialog::setProviderList(const QString& providerList)
 {
-  m_providerlist = providerList;
+  d->m_providerlist = providerList;
 }
 
 void DownloadDialog::slotOk()
