@@ -181,6 +181,7 @@ KToolBar::KToolBar( QWidget *parent, const char *name, bool b )
 
 void KToolBar::init()
 {
+    setGeometry( -10, -10, 0, 0 );
     d = new KToolBarPrivate;
     layoutTimer = new QTimer( this );
     connect( layoutTimer, SIGNAL( timeout() ),
