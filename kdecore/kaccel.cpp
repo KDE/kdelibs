@@ -185,6 +185,7 @@ bool KAccel::insertItem( const QString& descr, const QString& action, int keyCod
     entry.descr = descr;
     entry.menuId = id;
     entry.menu = qmenu;
+    entry.bEnabled = true;
 
     aKeyMap[action] = entry;
 
@@ -289,7 +290,7 @@ void KAccel::readSettings(KConfig* config)
 	
             (*it).aCurrentKeyCode = (*it).aConfigKeyCode;
             if ( (*it).aAccelId && (*it).aCurrentKeyCode ) {
-				kdDebug(125) << "insert " << (*it).descr << endl;
+                kdDebug(125) << "insert " << (*it).descr << " " << (*it).bEnabled << endl;
                 QAccel::disconnectItem( (*it).aAccelId, (*it).receiver,
                                         (*it).member );
                 QAccel::removeItem( (*it).aAccelId );
@@ -321,6 +322,7 @@ void KAccel::removeItem( const QString& action )
 
 void KAccel::setEnabled( bool activate )
 {
+    kdDebug(125) << "setEnabled " << activate << endl;
     for (KKeyEntryMap::ConstIterator it = aKeyMap.begin();
          it != aKeyMap.end(); ++it)
         setItemEnabled( it.key(), activate );
@@ -363,6 +365,7 @@ bool KAccel::setKeyDict( const KKeyEntryMap& nKeyDict )
             (*it).aCurrentKeyCode = (*it).aConfigKeyCode;
 
             if ( (*it).aAccelId && (*it).aCurrentKeyCode ) {
+                kdDebug(125) << "insert " << (*it).descr << " " << (*it).bEnabled << endl;
                 QAccel::insertItem( (*it).aCurrentKeyCode, (*it).aAccelId );
                 QAccel::setItemEnabled( (*it).aAccelId, (*it).bEnabled );
                 QAccel::connectItem( (*it).aAccelId, (*it).receiver,
