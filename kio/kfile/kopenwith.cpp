@@ -412,7 +412,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   topLayout->addWidget(terminal);
 
   nocloseonexit = new QCheckBox( i18n("Do not &close when command exits"), this );
-  nocloseonexit->setChecked( true );
+  nocloseonexit->setChecked( false );
   nocloseonexit->setDisabled( true );
 
   // check to see if we use konsole if not disable the nocloseonexit
@@ -493,6 +493,8 @@ void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
     {
         // ### indicate that default value was restored
         terminal->setChecked(m_pService->terminal());
+        QString terminalOptions = m_pService->terminalOptions();
+        nocloseonexit->setChecked( (terminalOptions.contains( "--noclose" ) > 0) );
         m_terminaldirty = false; // slotTerminalToggled changed it
     }
 }
@@ -512,9 +514,7 @@ void KOpenWithDlg::slotTerminalToggled(bool)
 {
     // ### indicate that default value was overridden
     m_terminaldirty = true;
-    if( terminal->isChecked() ) {
-      nocloseonexit->setDisabled( false );
-    }
+    nocloseonexit->setDisabled( ! terminal->isChecked() );
 }
 
 // ----------------------------------------------------------------------
