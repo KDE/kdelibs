@@ -35,7 +35,8 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kpopuptest kprogresstest krulertest kseparatortest \
 	kstatusbartest ktabctltest \
 	kunbalancedgrdtest kwindowtest kwizardtest \
-	itemcontainertest kpanelmenutest kedittest kalphaicontest
+	itemcontainertest kpanelmenutest kedittest kalphaicontest \
+	kxmlguitest
 
 noinst_HEADERS = \
 		ktabctltest.h kwindowtest.h kstatusbartest.h \
@@ -91,3 +92,5 @@ kdockwidgetdemo_SOURCES = kdockwidgetdemo.cpp
 kdocktabctltest_SOURCES = kdocktabctltest.cpp
 kdockwidgettest_SOURCES = kdockwidgettest.cpp
 kalphaicontest_SOURCES = kalphaicontest.cpp
+kxmlguitest_SOURCES = kxmlguitest.cpp
+

@@ -1,0 +1,12 @@
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
+<kpartgui name="khtmlpart" version="7">
+<ToolBar name="mainToolBar"><text>Main Toolbar</text>
+ <Action name="printFrame" />
+ <Action name="find" /> 
+ <Action name="incFontSizes" />
+ <Action name="decFontSizes" />
+ <ActionList name="loadImages" />
+ <Separator />
+ <Action name="security" />
+</ToolBar>
+</kpartgui>
