@@ -102,6 +102,11 @@ To delete <oldgroup> use "# DELETEGROUP".
 
 <interpreter> can be something like "perl".
 
+ScriptsArguments=<arguments>
+
+If specified, the arguments will be passed to <script>.
+IMPORTANT: It has to be specified before Script=.
+
 Group=<oldgroup>,<newgroup>
 Group=<oldgroup>
 

@@ -67,6 +67,7 @@ public:
    void gotAllGroups();
    void gotOptions(const QString &_options);
    void gotScript(const QString &_script);
+   void gotScriptArguments(const QString &_arguments);
    void resetOptions();
 
    void copyGroup(KConfigBase *cfg1, const QString &grp1, 
@@ -92,6 +93,7 @@ protected:
    bool m_bCopy;
    bool m_bOverwrite;
    bool m_bUseConfigInfo;
+   QString m_arguments;
 };
 
 KonfUpdate::KonfUpdate()
@@ -257,6 +259,7 @@ void KonfUpdate::checkGotFile(const QString &_file, const QString &id)
  * RemoveKey=ldkey
  * AllKeys
  * Keys= [Options](AllKeys|(Key|RemoveKey)*)
+ * ScriptArguments=arguments
  * Script=scriptfile[,interpreter]
  *
  * Sequence:
@@ -303,6 +306,8 @@ bool KonfUpdate::updateFile(const QString &filename)
          gotScript(line.mid(7));
          resetOptions();
       }
+      else if (line.startsWith("ScriptArguments="))
+         gotScriptArguments(line.mid(16));
       else if (line.startsWith("Key="))
       {
          gotKey(line.mid(4));
@@ -626,6 +631,11 @@ void KonfUpdate::copyGroup(KConfigBase *cfg1, const QString &grp1,
    }
 }
 
+void KonfUpdate::gotScriptArguments(const QString &_arguments)
+{
+   m_arguments = _arguments;
+}
+
 void KonfUpdate::gotScript(const QString &_script)
 {
    QString script, interpreter;
@@ -652,6 +662,8 @@ void KonfUpdate::gotScript(const QString &_script)
       return;
    } 
    qDebug("Running script '%s'", script.latin1());
+   if( !m_arguments.isNull())
+      qDebug("With arguments: %s", m_arguments.latin1());
 
    QString path = locate("data","kconf_update/"+script);
    if (path.isEmpty())
@@ -696,6 +708,11 @@ void KonfUpdate::gotScript(const QString &_script)
    else
       cmd = interpreter + " " + path;
 
+   if( !m_arguments.isNull())
+   {
+      cmd += ' ';
+      cmd += m_arguments;
+   }
    int result = system(QFile::encodeName(QString("%1 < %2 > %3").arg(cmd).arg(tmp1.name()).arg(tmp2.name())));
    if (result)
    {
@@ -791,6 +808,7 @@ void KonfUpdate::resetOptions()
 {
    m_bCopy = false;
    m_bOverwrite = false;
+   m_arguments = QString::null;
 }
 
 
