@@ -462,14 +462,14 @@ public:
 				   QWidget *parent= 0, const char *name= 0);
 
     /**
-     * This function is similar to getOpenFilename() but allows the
+     * This function is similar to getOpenFileName() but allows the
      * user to select a local file or a remote file.
      */
     static QString getOpenFileURL(const char *url= 0, const char *filter= 0,
 				  QWidget *parent= 0, const char *name= 0);
     
     /**
-     * This function is similar to getOpenFilename() but allows the
+     * This function is similar to getSaveFileName() but allows the
      * user to select a local file or a remote file.
      */
     static QString getSaveFileURL(const char *url= 0, const char *filter= 0,
