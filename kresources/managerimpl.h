@@ -60,12 +60,14 @@ class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
     void sync();
 
     void add( Resource *resource, bool useDCOP = true );
-    void remove( const Resource *resource, bool useDCOP = true );
+    void remove( Resource *resource, bool useDCOP = true );
 
     Resource *standardResource();
-    void setStandardResource( const Resource *resource );
+    void setStandardResource( Resource *resource );
 
     void setActive( Resource *resource, bool active );
+
+    Resource::List *resourceList();
 
     QPtrList<Resource> resources();
     // Get only active or passive resources
@@ -79,7 +81,7 @@ class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
     }
 
   public slots:
-    void resourceChanged( const Resource *resource );
+    void resourceChanged( Resource *resource );
 
   private:
     // dcop calls
@@ -90,15 +92,15 @@ class ResourceManagerImpl : public QObject, virtual public ResourceManagerIface
   private:
     void load();
     void save();
-    Resource *loadResource( const QString& identifier, bool checkActive, bool active=false );
-    void saveResource( const Resource *item, bool checkActive );
-    void removeResource( const Resource *item );
-    Resource *getResource( const Resource *resource );
+    Resource *loadResource( const QString& identifier, bool checkActive );
+    void saveResource( Resource *resource, bool checkActive );
+    void removeResource( Resource *resource );
+    Resource *getResource( Resource *resource );
     Resource *getResource( const QString& identifier );
 
-    const Resource *mStandard;
+    Resource *mStandard;
     QString mFamily;
-    QPtrList<Resource> mResources;
+    Resource::List mResources;
     ManagerImplListener *mListener;
     bool mChanged;
     ResourceFactory *mFactory;

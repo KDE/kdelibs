@@ -23,7 +23,10 @@
 #define KRESOURCES_RESOURCE_H
 
 #include <qmutex.h>
+#include <qvaluelist.h>
+
 class KConfig;
+
 namespace KRES {
 
 /**
@@ -222,6 +225,8 @@ link_DATA= resourceexample.desktop
 class Resource
 {
 public:
+  typedef QValueList<Resource *> List;
+
   /**
    * Constructor. Construct resource from config.
    * @param config Configuration to read persistence information from.

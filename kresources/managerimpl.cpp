@@ -43,8 +43,6 @@ ResourceManagerImpl::ResourceManagerImpl( const QString& family ) :
   mFactory = 0;
   mChanged = false;
 
-  mResources.setAutoDelete( true );
-
   load();
 
   // Register with DCOP
@@ -71,6 +69,11 @@ ResourceManagerImpl::~ResourceManagerImpl()
 {
   kdDebug(5650) << "ResourceManagerImpl::~ResourceManagerImpl()" << endl;
 
+  Resource::List::ConstIterator it;
+  for ( it = mResources.begin(); it != mResources.end(); ++it ) {
+    delete *it;
+  }
+  
   delete mConfig;
 }
 
@@ -98,7 +101,7 @@ void ResourceManagerImpl::add( Resource *resource, bool useDCOP )
   if ( useDCOP ) signalResourceAdded( resource->identifier() );
 }
 
-void ResourceManagerImpl::remove( const Resource *resource, bool useDCOP )
+void ResourceManagerImpl::remove( Resource *resource, bool useDCOP )
 {
   if ( mStandard == resource ) mStandard = 0;
   removeResource( resource );
@@ -119,17 +122,17 @@ void ResourceManagerImpl::setActive( Resource *resource, bool active )
   }
 }
 
-Resource* ResourceManagerImpl::standardResource() 
+Resource *ResourceManagerImpl::standardResource() 
 {
   return mStandard;
 }
 
-void ResourceManagerImpl::setStandardResource( const Resource *resource ) 
+void ResourceManagerImpl::setStandardResource( Resource *resource ) 
 {
   mStandard = resource;
 }
 
-void ResourceManagerImpl::resourceChanged( const Resource *resource )
+void ResourceManagerImpl::resourceChanged( Resource *resource )
 {
   mChanged = true;
 
@@ -214,20 +217,25 @@ QStringList ResourceManagerImpl::resourceNames()
 {
   QStringList result;
 
-  Resource *item;
-  for ( item = mResources.first(); item; item = mResources.next() ) {
-    result.append( item->resourceName() );
+  Resource::List::ConstIterator it;
+  for ( it = mResources.begin(); it != mResources.end(); ++it ) {
+    result.append( (*it)->resourceName() );
   }
   return result;
+}
+
+Resource::List *ResourceManagerImpl::resourceList()
+{
+  return &mResources;
 }
 
 QPtrList<Resource> ResourceManagerImpl::resources()
 {
   QPtrList<Resource> result;
 
-  Resource *item;
-  for ( item = mResources.first(); item; item = mResources.next() ) {
-    result.append( item );
+  Resource::List::ConstIterator it;
+  for ( it = mResources.begin(); it != mResources.end(); ++it ) {
+    result.append( *it );
   }
   return result;
 }
@@ -236,10 +244,10 @@ QPtrList<Resource> ResourceManagerImpl::resources( bool active )
 {
   QPtrList<Resource> result;
 
-  Resource *item;
-  for ( item = mResources.first(); item; item = mResources.next() ) {
-    if ( item->isActive() == active ) {
-      result.append( item );
+  Resource::List::ConstIterator it;
+  for ( it = mResources.begin(); it != mResources.end(); ++it ) {
+    if ( (*it)->isActive() == active ) {
+      result.append( *it );
     }
   }
   return result;
@@ -272,7 +280,6 @@ void ResourceManagerImpl::load()
   mConfig->setGroup( "General" );
 
   QStringList keys = mConfig->readListEntry( "ResourceKeys" );
-  uint numActiveKeys = keys.count();
   keys += mConfig->readListEntry( "PassiveResourceKeys" );
 
   QString standardKey = mConfig->readEntry( "Standard" );
@@ -280,7 +287,7 @@ void ResourceManagerImpl::load()
   uint counter = 0;
 //  bool haveStandardResource = false;
   for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
-    loadResource( *it, false, ( counter < numActiveKeys ) );
+    loadResource( *it, false );
     counter++;
   }
 
@@ -288,7 +295,8 @@ void ResourceManagerImpl::load()
 }
 
 
-Resource* ResourceManagerImpl::loadResource( const QString& identifier, bool checkActive, bool active )
+Resource* ResourceManagerImpl::loadResource( const QString& identifier,
+                                             bool checkActive )
 {
   if ( !mConfig ) mConfig = new KConfig( mFamily );
   mConfig->setGroup( "Resource_" + identifier );
@@ -327,12 +335,12 @@ void ResourceManagerImpl::save()
   QStringList passiveKeys;
 
   // First write all keys, collect active and passive keys on the way
-  Resource *item;
-  for ( item = mResources.first(); item; item = mResources.next() ) {
-    saveResource( item, false );
+  Resource::List::Iterator it;
+  for ( it = mResources.begin(); it != mResources.end(); ++it ) {
+    saveResource( *it, false );
 
-    QString key = item->identifier();
-    if( item->isActive() )
+    QString key = (*it)->identifier();
+    if( (*it)->isActive() )
       activeKeys.append( key );
     else
       passiveKeys.append( key );
@@ -354,7 +362,7 @@ void ResourceManagerImpl::save()
   kdDebug(5650) << "ResourceManagerImpl::save() finished" << endl;
 }
 
-void ResourceManagerImpl::saveResource( const Resource *resource, bool checkActive )
+void ResourceManagerImpl::saveResource( Resource *resource, bool checkActive )
 {
   QString key = resource->identifier();
 
@@ -387,7 +395,7 @@ void ResourceManagerImpl::saveResource( const Resource *resource, bool checkActi
   mConfig->sync();
 }
 
-void ResourceManagerImpl::removeResource( const Resource *resource )
+void ResourceManagerImpl::removeResource( Resource *resource )
 {
   QString key = resource->identifier();
 
@@ -415,10 +423,10 @@ void ResourceManagerImpl::removeResource( const Resource *resource )
 
 Resource* ResourceManagerImpl::getResource( const QString& identifier )
 {
-  Resource *item;
-  for ( item = mResources.first(); item; item = mResources.next() ) {
-    if ( item->identifier() == identifier )
-      return item;
+  Resource::List::ConstIterator it;
+  for ( it = mResources.begin(); it != mResources.end(); ++it ) {
+    if ( (*it)->identifier() == identifier )
+      return *it;
   }
   return 0;
 }

@@ -131,29 +131,16 @@ void ResourcesConfigPage::load()
     kdDebug() << "ERROR: cannot create ResourceManager<Resource>( mFamily )" << endl;
 
   mListView->clear();
-  QPtrList<Resource> activeResources = mManager->resources( true );
-  QPtrList<Resource> passiveResources = mManager->resources( false );
 
-  if ( activeResources.isEmpty() && passiveResources.isEmpty() ) {
-    defaults();
-    activeResources = mManager->resources( true );
-    passiveResources = mManager->resources( false );
-  }
+  if ( mManager->isEmpty() ) defaults();
 
   Resource *standardResource = mManager->standardResource();
 
-  Resource *resource;
-  for ( resource = activeResources.first(); resource; resource = activeResources.next() ) {
-    ConfigViewItem *item = new ConfigViewItem( mListView, resource );
-    item->setOn( true );
-    if ( resource == standardResource )
-      item->setStandard( true );
-  }
-
-  for ( resource = passiveResources.first(); resource; resource = passiveResources.next() ) {
-    ConfigViewItem *item = new ConfigViewItem( mListView, resource );
-    item->setOn( false );
-    if ( resource == standardResource )
+  ResourceManager<Resource>::Iterator it;
+  for( it = mManager->begin(); it != mManager->end(); ++it ) {
+    ConfigViewItem *item = new ConfigViewItem( mListView, *it );
+    item->setOn( (*it)->isActive() );
+    if ( *it == standardResource )
       item->setStandard( true );
   }
 

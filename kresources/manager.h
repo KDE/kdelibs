@@ -1,7 +1,9 @@
 /*
     This file is part of libkresources.
+
     Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
     Copyright (c) 2002 Jan-Pascal van Best <janpascal@vanbest.org>
+    Copyright (c) 2003 Cornelius Schumacher <schumacher@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -36,9 +38,9 @@ template<class T>
 class ManagerListener
 {
   public:
-    virtual void resourceAdded( T* resource ) = 0;
-    virtual void resourceModified( T* resource ) = 0;
-    virtual void resourceDeleted( T* resource ) = 0;
+    virtual void resourceAdded( T *resource ) = 0;
+    virtual void resourceModified( T *resource ) = 0;
+    virtual void resourceDeleted( T *resource ) = 0;
 };
 
 // TODO:
@@ -54,6 +56,41 @@ template<class T>
 class ResourceManager : private ManagerImplListener
 {
   public:
+    class Iterator
+    {
+        friend ResourceManager;
+      public:
+        Iterator() {};
+        Iterator( const Iterator &it ) { mIt = it.mIt; }
+
+        T *operator*() { return static_cast<T *>( *mIt ); }
+        Iterator &operator++() { mIt++; return *this; }
+        Iterator &operator++(int) { mIt++; return *this; }
+        Iterator &operator--() { mIt--; return *this; }
+        Iterator &operator--(int) { mIt--; return *this; }
+        bool operator==( const Iterator &it ) { return mIt == it.mIt; }
+        bool operator!=( const Iterator &it ) { return mIt != it.mIt; }
+
+      private:       
+        Resource::List::Iterator mIt;
+    };
+
+    Iterator begin()
+    {
+      Iterator it;
+      it.mIt = mManager->resourceList()->begin();
+      return it;
+    }
+  
+    Iterator end()
+    {
+      Iterator it;
+      it.mIt = mManager->resourceList()->end();
+      return it;
+    }
+
+    bool isEmpty() { return begin() == end(); }
+  
     ResourceManager( const QString& family )
     {
       mFactory = ResourceFactory::self( family );
@@ -68,6 +105,7 @@ class ResourceManager : private ManagerImplListener
     { 
       mManager->setListener( 0 );
       delete mListeners;
+      delete mManager;
     }
 
     void sync()
@@ -75,12 +113,12 @@ class ResourceManager : private ManagerImplListener
       mManager->sync();
     }
 
-    void add( Resource* resource )
+    void add( Resource *resource )
     {
       if ( resource ) mManager->add( resource );
     }
 
-    void remove( const Resource* resource )
+    void remove( Resource *resource )
     {
       if ( resource ) mManager->remove( resource );
     }
@@ -90,48 +128,14 @@ class ResourceManager : private ManagerImplListener
       return static_cast<T *>( mManager->standardResource() );
     }
 
-    void setStandardResource( const T* resource )
+    void setStandardResource( T *resource )
     {
-      const Resource* res = static_cast<const Resource *>( resource );
-      if ( res ) mManager->setStandardResource( res );
+      if ( resource ) mManager->setStandardResource( resource );
     }
 
-    void setActive( Resource* resource, bool active )
+    void setActive( Resource *resource, bool active )
     {
       if ( resource ) mManager->setActive( resource, active );
-    }
-
-    // it's very dangerous to return a temporary QPtrList object, and it's very
-    // expensive, as copying a QPtrList is very slow. It's dangerous because
-    // people tend to write QPtrListIterator<T> it( foo->blahList() ); and while
-    // it compiles when returning a QPtrList by value it gives a rather
-    // unpleasant effect at run-time.
-    QPtrList<T> resources()
-    { 
-      QPtrList<Resource> list = mManager->resources();
-      QPtrList<T> result;
-      Resource* res;
-      for ( res = list.first(); res; res = list.next() ) {
-        T* resource = dynamic_cast<T *>( res );
-        if ( resource ) result.append( resource );
-      }
-      return result;
-      // This only gives a warning, but it's too ugly.
-  //    return *reinterpret_cast<QPtrList<T> *>( &mManager->resources() );
-    }
-
-    // Get only active or passive resources
-    QPtrList<T> resources( bool active )
-    { 
-      QPtrList<Resource> list = mManager->resources( active );
-      QPtrList<T> result;
-      Resource* res;
-      for ( res = list.first(); res; res = list.next() ) {
-        T* resource = dynamic_cast<T *>( res );
-        if ( resource ) result.append( resource );
-      }
-      return result;
-  //    return static_cast<QPtrList<T> > ( mManager->resources( active ) );
     }
 
     /**
@@ -172,23 +176,22 @@ class ResourceManager : private ManagerImplListener
       return mFactory->resourceTypeNames();
     }
 
-    void resourceChanged( const T* resource )
+    void resourceChanged( T *resource )
     { 
-      const Resource* res = static_cast<const Resource *>( resource );
-      mManager->resourceChanged( res ); 
+      mManager->resourceChanged( resource ); 
     }
 
-    void addListener( ManagerListener<T> * listener )
+    void addListener( ManagerListener<T> *listener )
     {
       mListeners->append( listener );
     }
 
-    void removeListener( ManagerListener<T> * listener )
+    void removeListener( ManagerListener<T> *listener )
     {
       mListeners->remove( listener );
     }
 
-    virtual void resourceAdded( Resource* res )
+    virtual void resourceAdded( Resource *res )
     {
       kdDebug(5650) << "ResourceManager::resourceAdded " << res->resourceName() << endl;
       T* resource = dynamic_cast<T *>( res );
@@ -197,7 +200,7 @@ class ResourceManager : private ManagerImplListener
         listener->resourceAdded( resource );
     }
 
-    virtual void resourceModified( Resource* res )
+    virtual void resourceModified( Resource *res )
     {
       kdDebug(5650) << "ResourceManager::resourceModified " << res->resourceName() << endl;
       T* resource = dynamic_cast<T *>( res );
@@ -206,7 +209,7 @@ class ResourceManager : private ManagerImplListener
         listener->resourceModified( resource );
     }
     
-    virtual void resourceDeleted( Resource* res )
+    virtual void resourceDeleted( Resource *res )
     {
       kdDebug(5650) << "ResourceManager::resourceDeleted " << res->resourceName() << endl;
       T* resource = dynamic_cast<T *>( res );
@@ -218,8 +221,8 @@ class ResourceManager : private ManagerImplListener
     }
 
   private:
-    ResourceManagerImpl* mManager;
-    ResourceFactory* mFactory;
+    ResourceManagerImpl *mManager;
+    ResourceFactory *mFactory;
     QPtrList<ManagerListener<T> > *mListeners;
 };
 

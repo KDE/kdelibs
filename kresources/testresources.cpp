@@ -29,10 +29,8 @@ int main( int argc, char **argv )
   TestResource *resource2 = new TestResource;  
   manager.add( resource2 );
 
-  QPtrList<TestResource> resources = manager.resources();
-  
-  TestResource *r;
-  for( r = resources.first(); r; r = resources.next() ) {
-    r->dump();
-  }  
+  ResourceManager<TestResource>::Iterator it;
+  for( it = manager.begin(); it != manager.end(); ++it ) {
+    (*it)->dump();
+  }
 }
