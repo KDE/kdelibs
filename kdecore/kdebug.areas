@@ -448,8 +448,7 @@
 26005	KSVG - Canvas
 
 # KDOM KXInclude
-26500  KXInclude - DOMXIncluder
-26501  KXInclude - XIncludeContext
+26500  KDOM XInclude
 
 # KDOM OASIS XML Catalogs
 26600  KDOM Catalog
