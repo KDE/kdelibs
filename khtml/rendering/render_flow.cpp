@@ -593,61 +593,6 @@ void RenderFlow::positionNewFloats()
         f->endY = f->startY + _height;
 
 
-	// the code below looks wrong. the parent only needs to know about the
-	// float in case it is overhanging. Lars
-#if 0
-        // Copy float to the containing block
-        // In case of anonymous box, copy to containing block _and_ it's containing block,
-        // so the creation of anonymous box does not prevent elements dom parent
-        // of getting the float.
-        //
-        // The whole thing is a hack to support html behaviour, where certain block
-        // elements (tables, lists) flow around floats as if they were inlines.
-        // Khtml float layouting is modeled after css2, and implementing this has
-        // been somewhat messy
-        //
-        if( childrenInline() && !style()->flowAroundFloats())
-        {
-            RenderObject* obj = this;
-
-            for (int n = 0 ; n < (isAnonymousBox()?2:1); n++ )
-            {
-                obj = obj->containingBlock();
-                if (obj && obj->isFlow() && !obj->isTable())
-                {
-                    RenderFlow* par = static_cast<RenderFlow*>(obj);
-
-                    if (par->isFloating())
-                        break;
-                    else
-                    {
-                        if(!par->specialObjects) {
-                            par->specialObjects = new QSortedList<SpecialObject>;
-                            par->specialObjects->setAutoDelete(true);
-                        }
-
-                        QListIterator<SpecialObject> it(*par->specialObjects);
-                        SpecialObject* tt;
-                        while ( (tt = it.current()) ) {
-                            if (tt->node == o) break;
-                            ++it;
-                        }
-                        if (!tt || tt->node==o)
-                        {
-                            SpecialObject* so = new SpecialObject(*f);
-                            so->count = specialObjects->count();
-                            so->startY += m_y;
-                            so->endY += m_y;
-                            par->specialObjects->append(so);
-                        }
-                    }
-                }
-                if(isAnonymousBox() && obj->style()->flowAroundFloats())
-                    break;
-            }
-        }
-#endif
-
 //      kdDebug( 6040 ) << "specialObject y= (" << f->startY << "-" << f->endY << ")" << endl;
 
         f = specialObjects->next();
@@ -1213,46 +1158,43 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     kdDebug( 6040 ) << "current height = " << m_height << endl;
 #endif
 
-
     RenderStyle* pseudoStyle=0;
     if ( ( !firstChild() || firstChild() == beforeChild )
 	&& ( pseudoStyle=style()->getPseudoStyle(RenderStyle::FIRST_LETTER) ) )
     {
 
-        RenderText* newTextChild=0;
-        if (newChild->isText())
-        {
-            newTextChild = static_cast<RenderText*>(newChild);
-        }
+        if (newChild->isText()) {
+	    RenderText* newTextChild = static_cast<RenderText*>(newChild);
 
-        kdDebug( 6040 ) << "first letter" << endl;
+	    //kdDebug( 6040 ) << "first letter" << endl;
 
-        if (newTextChild)
-        {
-            kdDebug( 6040 ) << "letter=" << endl;
-
-            RenderFlow* firstLetter = new RenderFlow();
+	    RenderFlow* firstLetter = new RenderFlow();
 	    pseudoStyle->setDisplay( INLINE );
-            firstLetter->setStyle(pseudoStyle);
+	    firstLetter->setStyle(pseudoStyle);
 
-            addChild(firstLetter);
+	    addChild(firstLetter);
 
-            DOMStringImpl* oldText = newTextChild->string();
+	    DOMStringImpl* oldText = newTextChild->string();
 
-            if(oldText->l > 1) {
-                newTextChild->setText(oldText->substring(1,oldText->l-1));
+	    if(oldText->l >= 1) {
+		unsigned int length = 1;
+		while ( length < oldText->l && 
+			( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ) )
+		    length++;
+		length++;
+		//kdDebug( 6040 ) << "letter= '" << DOMString(oldText->substring(0,length)).string() << "'" << endl;
+		newTextChild->setText(oldText->substring(length,oldText->l-length));
 
-                RenderText* letter = new RenderText(oldText->substring(0,1));
-                RenderStyle* newStyle = new RenderStyle();
-                newStyle->inheritFrom(pseudoStyle);
-                letter->setStyle(newStyle);
-                firstLetter->addChild(letter);
-            }
-            firstLetter->close();
-        }
+		RenderText* letter = new RenderText(oldText->substring(0,length));
+		RenderStyle* newStyle = new RenderStyle();
+		newStyle->inheritFrom(pseudoStyle);
+		letter->setStyle(newStyle);
+		firstLetter->addChild(letter);
+	    }
+	    firstLetter->close();
 
+	}
     }
-
     bool nonInlineInChild = false;
 
     if (beforeChild && beforeChild->parent() != this) {

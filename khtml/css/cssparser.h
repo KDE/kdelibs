@@ -80,7 +80,7 @@ public:
     Relation relation 	: 2;
     Match 	 match 	: 3;
     bool	nonCSSHint : 1;
-    int 	pseudoId : 2;
+    unsigned int 	pseudoId : 2;
     int          attr;
     int          tag;
     DOM::DOMString value;

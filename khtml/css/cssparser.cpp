@@ -935,7 +935,7 @@ public:
 	}
 	matched = true;
       } else if ( m_yyTok == TOK_STRING ) {
-	kdDebug( 6080 ) << "[" << m_yyStr << "]" << endl;
+	  //kdDebug( 6080 ) << "[" << m_yyStr << "]" << endl;
 	const struct css_value *cssval = findValue(m_yyStr.latin1(), m_yyStr.length());
 	if (!cssval || !(cssval->id >= CSS_VAL_SERIF && cssval->id <= CSS_VAL_MONOSPACE)) {
 	  *ffamily = m_yyStr;
