@@ -1118,6 +1118,9 @@ void KHTMLPart::clear()
 
   d->m_totalImageCount = 0;
   d->m_loadedImages = 0;
+
+  if ( !d->m_haveEncoding )
+    d->m_encoding = QString::null;
 }
 
 bool KHTMLPart::openFile()
