@@ -74,7 +74,7 @@ void kDebugFatal( const char* fmt, ... );
 void kDebugFatal( unsigned short area, const char* fmt, ... );
 
 #ifdef NDEBUG
-inline void kDebug_null( unsigned short area, const char* fmt, ... ) { return; }
+inline void kDebug_null( unsigned short , const char* , ... ) { return; }
 #define kDebugInfo kDebug_null
 // All the others remained defined, even with NDEBUG
 #endif

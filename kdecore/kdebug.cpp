@@ -131,7 +131,7 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea,
   if ( KGlobal::_instance )
   {
       pConfig = new KConfig( "kdebugrc", false );
-      pConfig->setGroup( QString::number(nArea) );
+      pConfig->setGroup( QString::number(static_cast<int>(nArea)) );
   }
 
   /* Determine output */
