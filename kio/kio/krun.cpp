@@ -1014,6 +1014,8 @@ void KRun::abort()
     return;
   m_bFault = true;
   m_bFinished = true;
+  m_bInit = false;
+  m_bScanFile = false;
 
   // will emit the error and autodelete this
   m_timer.start( 0, true );
