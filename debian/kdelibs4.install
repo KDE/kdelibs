@@ -19,6 +19,10 @@ debian/tmp/usr/lib/kde3/kded_kpasswdserver.la
 debian/tmp/usr/lib/kde3/kded_kpasswdserver.so
 debian/tmp/usr/lib/kde3/kded_kssld.la
 debian/tmp/usr/lib/kde3/kded_kssld.so
+debian/tmp/usr/lib/kde3/kded_proxyscout.la
+debian/tmp/usr/lib/kde3/kded_proxyscout.so
+debian/tmp/usr/lib/kde3/kded_proxyscout.so.0
+debian/tmp/usr/lib/kde3/kded_proxyscout.so.0.0.0
 debian/tmp/usr/lib/kde3/kdeprint_cups.la
 debian/tmp/usr/lib/kde3/kdeprint_cups.so
 debian/tmp/usr/lib/kde3/kdeprint_ext.la
@@ -71,8 +75,6 @@ debian/tmp/usr/lib/kde3/libkcertpart.la
 debian/tmp/usr/lib/kde3/libkcertpart.so
 debian/tmp/usr/lib/kde3/libkmultipart.la
 debian/tmp/usr/lib/kde3/libkmultipart.so
-debian/tmp/usr/lib/kde3/libkpac.la
-debian/tmp/usr/lib/kde3/libkpac.so
 debian/tmp/usr/lib/kde3/plugins/designer/kdewidgets.la
 debian/tmp/usr/lib/kde3/plugins/designer/kdewidgets.so
 debian/tmp/usr/lib/kde3/plugins/styles/highcolor.la

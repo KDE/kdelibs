@@ -24,6 +24,7 @@ debian/tmp/usr/bin/kdeinit_wrapper
 debian/tmp/usr/bin/kdesu_stub
 debian/tmp/usr/bin/kdontchangethehostname
 debian/tmp/usr/bin/kfile
+debian/tmp/usr/bin/kgrantpty
 debian/tmp/usr/bin/kimage_concat
 debian/tmp/usr/bin/kinstalltheme
 debian/tmp/usr/bin/kio_http_cache_cleaner
