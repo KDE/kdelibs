@@ -1282,6 +1282,9 @@ void KURL::setEncodedPath( const QString& _txt, int encoding_hint )
   // Throw away encoding for local files, makes file-operations faster.
   if (m_strProtocol == fileProt)
      m_strPath_encoded = QString::null;
+
+  if ( m_iUriMode == Auto )
+    m_iUriMode = URL;
 }
 
 
@@ -1910,6 +1913,8 @@ void KURL::setPath( const QString & path )
   }
   m_strPath = path;
   m_strPath_encoded = QString::null;
+  if ( m_iUriMode == Auto )
+    m_iUriMode = URL;
 }
 
 void KURL::setDirectory( const QString &dir)
