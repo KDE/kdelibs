@@ -73,7 +73,7 @@ public:
    * be executed.
    * @param length number of characters.
    */
-  bool evaluate(const KJS::Object &thisV,
+  bool evaluate(const KJS::KJSO &thisV,
 		const QChar *code, unsigned int length);
   /**
    * Added for convenience in case you have the code in available in
