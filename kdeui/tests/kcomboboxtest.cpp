@@ -1,3 +1,4 @@
+#include "kcomboboxtest.h"
 #include <qlayout.h>
 #include <qpixmap.h>
 #include <qpushbutton.h>
@@ -81,3 +82,4 @@ int main ( int argc, char **argv)
 w->setIcon( *(new QPixmap("/opt/kde2/share/icons/hicolor/16x16/apps/samba.png" )));
     return a.exec();
 }
+#include "kcomboboxtest.moc"

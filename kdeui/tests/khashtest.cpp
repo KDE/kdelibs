@@ -5,10 +5,11 @@
 #include <qpainter.h>
 #include <qdatetime.h>
 #include <qstring.h>
+#include <qimage.h>
 
 int cols = 3, rows = 3; // how many
 
-void KHashWidget::paintEvent(QPaintEvent */*ev*/)
+void KHashWidget::paintEvent(QPaintEvent * /*ev*/)
 {
     QTime time;
     int it, ft;

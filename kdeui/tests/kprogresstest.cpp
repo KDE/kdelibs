@@ -23,7 +23,7 @@ private:
 void MyWidget::timerEvent(QTimerEvent *)
 {
   static enum { fwd, back } direction = fwd;
-  static KProgress::BarStyle style = KProgress::Solid;
+  //static KProgress::BarStyle style = KProgress::Solid;
   if (direction == fwd) 
 	{
 	  if (Progress->value() == Progress->maxValue())
@@ -33,11 +33,11 @@ void MyWidget::timerEvent(QTimerEvent *)
 	} 
   else 
 	{
-	  if (Progress->value() == Progress->minValue()) 
+	  if (Progress->value() == 0 /*Progress->minValue()*/) 
 		{
 				direction = fwd;
-				style = (style == KProgress::Solid)? KProgress::Blocked : KProgress::Solid;
-				Progress->setBarStyle(style);
+				//style = (style == KProgress::Solid)? KProgress::Blocked : KProgress::Solid;
+				//Progress->setBarStyle(style);
 		} 
 	  else
 		Progress->advance(-1);

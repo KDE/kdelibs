@@ -24,8 +24,8 @@ LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kcolortest kcolordlgtest kcomboboxtest kcompletiontest \
-	kcontainertest kdatepicktest kdialogbasetest \
-	kdockwidgetdemo kdocktabctltest kdockwidgettest \
+	kdatepicktest kdialogbasetest \
+	kdockwidgetdemo kdockwidgettest \
 	kdualcolortest keditlistboxtest kfontdialogtest \
 	kgradienttest khashtest kdesattest\
 	kledtest klineedittest klineeditdlgtest \
@@ -37,21 +37,11 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	itemcontainertest kpanelmenutest kedittest \
 	kxmlguitest kaccelgentest ksystemtraytest
 
-noinst_HEADERS = \
-		ktabctltest.h kwindowtest.h kstatusbartest.h \
-		kledtest.h kcontainertest.h \
-		krulertest.h kgradienttest.h \
-		kcolortest.h kunbalancedgrdtest.h kblendtest.h \
-		kdualcolortest.h khashtest.h knuminputtest.h \
-		kdockwidgetdemo.h kdocktabctltest.h kdockwidgettest.h \
-		itemcontainertest.h kpanelmenutest.h \
-		kcompletiontest.h klineedittest.h
-
 METASOURCES = AUTO
 
 LDADD = ../libkdeui.la
 
-kaboutdialogtest_SOURCES = drawdemo.cpp
+kaboutdialogtest_SOURCES = kaboutdialogtest.cpp
 kblendtest_SOURCES = kblendtest.cpp
 kdesattest_SOURCES = kdesattest.cpp
 kbuttonboxtest_SOURCES = kbuttonboxtest.cpp
@@ -60,7 +50,6 @@ kcolordlgtest_SOURCES = kcolordlgtest.cpp
 kcolortest_SOURCES = kcolortest.cpp
 kcomboboxtest_SOURCES = kcomboboxtest.cpp
 kcompletiontest_SOURCES = kcompletiontest.cpp
-kcontainertest_SOURCES = kcontainertest.cpp
 kdatepicktest_SOURCES = kdatepicktest.cpp
 kdialogbasetest_SOURCES = kdialogbasetest.cpp
 kdualcolortest_SOURCES = kdualcolortest.cpp
@@ -87,7 +76,6 @@ kwizardtest_SOURCES = kwizardtest.cpp
 itemcontainertest_SOURCES = itemcontainertest.cpp
 kpanelmenutest_SOURCES = kpanelmenutest.cpp
 kdockwidgetdemo_SOURCES = kdockwidgetdemo.cpp
-kdocktabctltest_SOURCES = kdocktabctltest.cpp
 kdockwidgettest_SOURCES = kdockwidgettest.cpp
 kxmlguitest_SOURCES = kxmlguitest.cpp
 kaccelgentest_SOURCES = kaccelgentest.cpp

@@ -171,7 +171,7 @@ void TopLevel::slotSwitchMode( int id )
     m_pListBox->setSelectionMode( KListBox::Extended );
     break;
   default:
-    ASSERT(0);
+    Q_ASSERT(0);
   }
 }
 
