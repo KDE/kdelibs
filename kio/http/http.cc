@@ -90,6 +90,9 @@ using namespace KIO;
 
 #define MAX_IPC_SIZE (1024*8)
 
+// Default expire time in seconds: 2 days
+#define DEFAULT_EXPIRE (60*60*24*2)
+
 // Timeout for connections to remote sites in seconds
 #define REMOTE_CONNECT_TIMEOUT 20
 
@@ -1215,6 +1218,7 @@ bool HTTPProtocol::readHeader()
   bool cont = false;
   bool noRedirect = false; // No automatic redirection
   bool cacheValidated = false; // Revalidation was successfull
+  bool mayCache = true;
 
   if (!waitForHeader(m_sock, RESPONSE_TIMEOUT))
   {
@@ -1289,10 +1293,12 @@ bool HTTPProtocol::readHeader()
          if (strncasecmp(cacheControl.latin1(), "no-cache", 8) == 0)
          {
             m_bCachedWrite = false; // Don't put in cache
+            mayCache = false;
          }
          else if (strncasecmp(cacheControl.latin1(), "no-store", 8) == 0)
          {
             m_bCachedWrite = false; // Don't put in cache
+            mayCache = false;
          }
          else if (strncasecmp(cacheControl.latin1(), "max-age=", 8) == 0)
          {
@@ -1363,7 +1369,10 @@ bool HTTPProtocol::readHeader()
     else if (strncasecmp(buffer, "Pragma:", 7) == 0) {
       QCString pragma = QCString(trimLead(buffer+7)).lower();
       if (pragma == "no-cache")
+      {
          m_bCachedWrite = false; // Don't put in cache
+         mayCache = false;
+      }
     }
     // We got the header
     else if (strncasecmp(buffer, "HTTP/", 5) == 0) {
@@ -1390,6 +1399,7 @@ bool HTTPProtocol::readHeader()
       if ((code == 401) || (code == 407)) {
         unauthorized = true;
         m_bCachedWrite = false; // Don't put in cache
+        mayCache = false;
       }
       // server side errors
       else if ((code >= 500) && (code <= 599)) {
@@ -1399,6 +1409,7 @@ bool HTTPProtocol::readHeader()
            errorPage();
         }
         m_bCachedWrite = false; // Don't put in cache
+        mayCache = false;
       }
       // client errors
       else if ((code >= 400) && (code <= 499)) {
@@ -1411,6 +1422,7 @@ bool HTTPProtocol::readHeader()
         // Tell that we will only get an error page here.
         errorPage();
         m_bCachedWrite = false; // Don't put in cache
+        mayCache = false;
       }
       else if (code == 100)
       {
@@ -1431,6 +1443,7 @@ bool HTTPProtocol::readHeader()
         {
            errorPage();
            m_bCachedWrite = false; // Don't put in cache
+           mayCache = false;
            noRedirect = true;
         }
       }
@@ -1442,6 +1455,7 @@ bool HTTPProtocol::readHeader()
         {
            m_request.method = HTTP_GET; // Force a GET!
            m_bCachedWrite = false; // Don't put in cache
+           mayCache = false;
         }
       }
     }
@@ -1522,7 +1536,7 @@ bool HTTPProtocol::readHeader()
   while(len && (gets(buffer, sizeof(buffer)-1)));
 
   // Fixup expire date for clock drift.
-  if (expireDate <= dateHeader)
+  if (expireDate && (expireDate <= dateHeader))
      expireDate = 1; // Already expired.
 
   // Convert max-age into expireDate (overriding previous set expireDate)
@@ -1536,6 +1550,9 @@ bool HTTPProtocol::readHeader()
         maxAge = 0;
      expireDate = time(0) + maxAge;
   }
+  
+  if (!expireDate)
+     expireDate = time(0) + DEFAULT_EXPIRE;
 
   // DONE receiving the header!
   if (!cookieStr.isEmpty())
@@ -1613,6 +1630,7 @@ bool HTTPProtocol::readHeader()
 
     redirection(u.url());
     m_bCachedWrite = false; // Turn off caching on re-direction (DA)
+    mayCache = false;
   }
   // WABA: Correct for tgz files with a gzip-encoding.
   // They really shouldn't put gzip in the Content-Encoding field!
@@ -1694,6 +1712,9 @@ bool HTTPProtocol::readHeader()
 
   if (!m_lastModified.isEmpty())
      setMetaData("modified", m_lastModified);
+
+  if (!mayCache)
+     setMetaData("no-cache", "true");
 
   // Do we want to cache this request?
   if (m_bCachedWrite)
