@@ -1,6 +1,6 @@
 SUBDIRS = vcard . formats plugins
 
-INCLUDES = -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated \
+INCLUDES = -I$(top_builddir)/kabc -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated \
   -I$(top_srcdir)/kabc -I$(top_srcdir)/kab $(all_includes)
 
 addressee.h addressee.cpp field.cpp: $(srcdir)/scripts/makeaddressee \
