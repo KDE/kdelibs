@@ -420,7 +420,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   if (id == SetYear || id == SetMilliSeconds || id == SetSeconds ||
       id == SetMinutes || id == SetHours || id == SetDate ||
       id == SetMonth || id == SetFullYear ) {
-    result = makeTime(t, ms, utc);
+    result = Number(makeTime(t, ms, utc));
     thisObj.setInternalValue(result);
   }
 
@@ -463,7 +463,7 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
 #ifdef KJS_VERBOSE
   fprintf(stderr,"DateObjectImp::construct - %d args\n", numArgs);
 #endif
-  Value value;
+  double value;
 
   if (numArgs == 0) { // new Date() ECMA 15.9.3.3
 #if HAVE_SYS_TIMEB_H
@@ -480,14 +480,14 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
     gettimeofday(&tv, 0L);
     double utc = floor((double)tv.tv_sec * 1000.0 + (double)tv.tv_usec / 1000.0);
 #endif
-    value = Number(utc);
+    value = utc;
   } else if (numArgs == 1) {
     UString s = args[0].toString(exec);
     double d = s.toDouble();
     if (isNaN(d))
       value = parseDate(s);
     else
-      value = Number(d);
+      value = d;
   } else {
     struct tm t;
     memset(&t, 0, sizeof(t));
@@ -506,7 +506,7 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
 
   Object proto = exec->interpreter()->builtinDatePrototype();
   Object ret(new DateInstanceImp(proto.imp()));
-  ret.setInternalValue(timeClip(value));
+  ret.setInternalValue(Number(timeClip(value)));
   return ret;
 }
 
@@ -547,7 +547,7 @@ bool DateObjectFuncImp::implementsCall() const
 Value DateObjectFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
 {
   if (id == Parse) {
-    return parseDate(args[0].toString(exec));
+    return Number(parseDate(args[0].toString(exec)));
   } else { // UTC
     struct tm t;
     memset(&t, 0, sizeof(t));
@@ -561,14 +561,14 @@ Value DateObjectFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &
     t.tm_min = (n >= 5) ? args[4].toInt32(exec) : 0;
     t.tm_sec = (n >= 6) ? args[5].toInt32(exec) : 0;
     int ms = (n >= 7) ? args[6].toInt32(exec) : 0;
-    return makeTime(&t, ms, true);
+    return Number(makeTime(&t, ms, true));
   }
 }
 
 // -----------------------------------------------------------------------------
 
 
-Value KJS::parseDate(const UString &u)
+double KJS::parseDate(const UString &u)
 {
 #ifdef KJS_VERBOSE
   fprintf(stderr,"KJS::parseDate %s\n",u.ascii());
@@ -591,7 +591,7 @@ Value KJS::parseDate(const UString &u)
   }
 #endif
 
-  return Number(seconds == -1 ? NaN : seconds * 1000.0);
+  return seconds == -1 ? NaN : seconds * 1000.0;
 }
 
 ///// Awful duplication from krfcdate.cpp - we don't link to kdecore
@@ -633,7 +633,7 @@ static const struct {
     { { 0, 0, 0, 0 }, 0 }
 };
 
-Number KJS::makeTime(struct tm *t, int ms, bool utc)
+double KJS::makeTime(struct tm *t, int ms, bool utc)
 {
     int utcOffset;
     if (utc) {
@@ -666,7 +666,7 @@ Number KJS::makeTime(struct tm *t, int ms, bool utc)
       t->tm_year = 100;
     }
 
-    return Number((mktime(t) + utcOffset) * 1000.0 + ms + yearOffset);
+    return (mktime(t) + utcOffset) * 1000.0 + ms + yearOffset;
 }
 
 double KJS::KRFCDate_parseDate(const UString &_date)
@@ -976,9 +976,10 @@ double KJS::KRFCDate_parseDate(const UString &_date)
 }
 
 
-Value KJS::timeClip(const Value &t)
+double KJS::timeClip(double t)
 {
-  /* TODO */
+  if (isInf(t) || fabs(t) > 8.64E15)
+    return NaN;
   return t;
 }
 
