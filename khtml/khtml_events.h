@@ -46,9 +46,9 @@ public:
   int nodeAbsY() const;
   void setNodePos( int x, int y);
 
-  // obsolete. don't use it. don't ask. 
+  // obsolete. don't use it. its a no-op. 
   bool isURLHandlingEnabled() const; // ### remove KDE 3.0
-  // obsolete. don't use it. don't ask
+  // obsolete. don't use it. its a no-op.
   void setURLHandlingEnabled( bool enable ); // ### remove KDE 3.0
 
   // return the offset of innerNode
