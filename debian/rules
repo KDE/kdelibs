@@ -80,15 +80,14 @@ binary-arch:  build
 
 	perl -w admin/debianrules kdelibs2g
 	if test -f /usr/bin/qt2kdoc; then \
-	mkdir -p debian/tmp/usr/share/kdoc/index ; \
-	mkdir -p debian/tmp/usr/doc/kdelibs-doc/html ; \
+	mkdir -p debian/tmp/usr/doc/kdelibs-doc/html/kdoc-reference ; \
 	qt2kdoc --url=/usr/doc/qt1g-doc/html \
-	--outdir=`pwd`/debian/tmp/usr/share/kdoc/index \
+	--outdir=`pwd`/debian/tmp/usr/doc/kdelibs-doc/html/kdoc-reference \
 	--compress \
 	/usr/doc/qt1g-doc/html ; \
-	makekdedoc --libdir=`pwd`/debian/tmp/usr/share/kdoc/index \
+	makekdedoc --libdir=`pwd`/debian/tmp/usr/doc/kdelibs-doc/html/kdoc-reference \
 	--outputdir=`pwd`/debian/tmp/usr/doc/kdelibs-doc/html ; \
-	dh_movefiles -pkdelibs-doc usr/share/kdoc usr/doc/kdelibs-doc ; \
+	dh_movefiles -pkdelibs-doc usr/doc/kdelibs-doc ; \
 	fi
 	dh_movefiles 
 	dh_installdocs 

@@ -1,3 +1,10 @@
+kdelibs (4:1.1.2-20000202-1) stable; urgency=low
+
+  * kdelibs-doc package: Install index files into
+    /usr/doc/kdelibs-doc/html/kdoc-reference
+
+ -- Bernd Gehrmann <bernd@physik.hu-berlin.de>  Wed,  2 Feb 2000 22:23:30 +0100
+
 kdelibs (4:1.1.2-19990906-1.0) unstable; urgency=low
 
   * New upstream version
