@@ -1202,8 +1202,11 @@ bool TextAreaWidget::event( QEvent *e )
 QPopupMenu *TextAreaWidget::createPopupMenu( const QPoint &pos )
 {
     QPopupMenu *m = KTextEdit::createPopupMenu( pos );
-    m->insertSeparator();
-    m->insertItem( SmallIcon( "spellcheck" ), i18n( "Check Spelling" ), this, SLOT( slotCheckSpelling() ) );
+    if( !text().isEmpty())
+    {
+        m->insertSeparator();
+        m->insertItem( SmallIcon( "spellcheck" ), i18n( "Check Spelling" ), this, SLOT( slotCheckSpelling() ) );
+    }
     return m;
 }
 
