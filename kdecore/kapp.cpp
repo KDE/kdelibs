@@ -1179,82 +1179,88 @@ QString KApplication::kdedir()
    this can be added later */
 QString KApplication::kde_htmldir()
 {
-  static QString dir;
-  if (dir.isNull()) {
-      dir = KDE_HTMLDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6))  
-         dir = kdedir() + dir.right(dir.length() - 6);
-  }
-  return dir;
+    warning("kde_htmldir() is obsolete. Try to use KStandardDirs instead");
+    static QString dir;
+    if (dir.isNull()) {
+	dir = KDE_HTMLDIR;
+	if (!strncmp(dir.data(), "KDEDIR", 6))  
+	    dir = kdedir() + dir.right(dir.length() - 6);
+    }
+    return dir;
 }
 
 QString KApplication::kde_appsdir()
 {
-  static QString dir;
-  if (dir.isNull()) {
-      dir = KDE_APPSDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6))
-         dir = kdedir() + dir.right(dir.length() - 6);
-  }
-  return dir;
+    warning("kde_appsdir() is obsolete. Try to use KStandardDirs instead");
+    static QString dir;
+    if (dir.isNull()) {
+	dir = KDE_APPSDIR;
+	if (!strncmp(dir.data(), "KDEDIR", 6))
+	    dir = kdedir() + dir.right(dir.length() - 6);
+    }
+    return dir;
 }
                                         
 
 QString KApplication::kde_datadir()
 {
-  static QString dir;
-  if (dir.isNull()) {
-      dir = KDE_DATADIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6))
-	  dir = kdedir() + dir.right(dir.length() - 6);
-  }
-  return dir;
+    warning("kde_datadir() is obsolete. Try to use KStandardDirs instead");
+    static QString dir;
+    if (dir.isNull()) {
+	dir = KDE_DATADIR;
+	if (!strncmp(dir.data(), "KDEDIR", 6))
+	    dir = kdedir() + dir.right(dir.length() - 6);
+    }
+    return dir;
 }
 
 QString KApplication::kde_toolbardir()
 {
-  static QString dir;
-  if (dir.isNull()) {
-      dir = KDE_TOOLBARDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6))
-	  dir = kdedir() + dir.right(dir.length() - 6);
-  }
-  return dir;
+    warning("kde_toolbardir() is obsolete. Try to use KStandardDirs instead");
+    static QString dir;
+    if (dir.isNull()) {
+	dir = KDE_TOOLBARDIR;
+	if (!strncmp(dir.data(), "KDEDIR", 6))
+	    dir = kdedir() + dir.right(dir.length() - 6);
+    }
+    return dir;
 }
 
 QString KApplication::kde_bindir()
 {
-  static QString dir;
-  if (dir.isNull()) {
-      dir = KDE_BINDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6))
-	  dir = kdedir() + dir.right(dir.length() - 6);
-  }
-  return dir;
+    warning("kde_bindir() is obsolete. Try to use KStandardDirs instead");
+    static QString dir;
+    if (dir.isNull()) {
+	dir = KDE_BINDIR;
+	if (!strncmp(dir.data(), "KDEDIR", 6))
+	    dir = kdedir() + dir.right(dir.length() - 6);
+    }
+    return dir;
 }
 
 QString KApplication::kde_configdir()
 {
-  static QString dir;
-  if (dir.isNull()) {
-      dir = KDE_CONFIGDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6))
-	  dir = kdedir() + dir.right(dir.length() - 6);
-  }
-  return dir;
+    warning("kde_confdir() is obsolete. Try to use KStandardDirs instead");
+    static QString dir;
+    if (dir.isNull()) {
+	dir = KDE_CONFIGDIR;
+	if (!strncmp(dir.data(), "KDEDIR", 6))
+	    dir = kdedir() + dir.right(dir.length() - 6);
+    }
+    return dir;
 }
 
 QString KApplication::kde_mimedir()
 {
-  static QString dir;
-  if (dir.isNull()) {
-      dir = KDE_MIMEDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6))
-	  dir = kdedir() + dir.right(dir.length() - 6);
-  }
-  return dir;
+    warning("kde_mimedir() is obsolete. Try to use KStandardDirs instead");
+    static QString dir;
+    if (dir.isNull()) {
+	dir = KDE_MIMEDIR;
+	if (!strncmp(dir.data(), "KDEDIR", 6))
+	    dir = kdedir() + dir.right(dir.length() - 6);
+    }
+    return dir;
 }
-
 
 QString KApplication::localkdedir()
 {
