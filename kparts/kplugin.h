@@ -24,7 +24,7 @@ namespace KParts
  * "data" (KDEDIR/share/apps usually)+"/instancename/kpartplugins/"
  * where instancename is the name of the part's instance.
  */
-class Plugin : public QObject
+class Plugin : public QObject, XMLGUIServant
 {
     Q_OBJECT
 public:

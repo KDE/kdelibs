@@ -136,7 +136,7 @@ QValueList<XMLGUIServant *> Plugin::pluginServants( QObject *parent )
   QObjectListIt it( *plugins );
   while( it.current() )
   {
-    servants.append( (XMLGUIServant *)it.current() );
+    servants.append( (XMLGUIServant *)((Plugin *)it.current()) );
     ++it;
   }
 
