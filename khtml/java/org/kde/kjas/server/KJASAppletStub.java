@@ -55,6 +55,12 @@ public class KJASAppletStub extends Frame
         windowName = _windowName;
         loader     = _loader;
 
+        // fix the applet name
+        int idx = appletName.indexOf(".class");
+        if (idx > 0) {
+            appletName = appletName.substring(0, idx);
+        }
+            
         appletClass = null;
         me = this;
     }
@@ -66,33 +72,6 @@ public class KJASAppletStub extends Frame
         panel = new KJASAppletPanel( appletSize );
         add( "Center", panel );
         pack();
-        synchronized( loader ) {
-            try {
-                appletClass = loader.loadClass( className );
-            } catch (Exception e) {
-                Main.kjas_err("Class could not be loaded " + className, e);
-            }
-        }
-        if( appletClass == null ) {
-            panel.add( "Center", new Label( "Applet Failed", Label.CENTER ) );
-            return;
-        }
-        
-        try {
-            app = (Applet) appletClass.newInstance();
-            app.setStub( me );
-        }
-        catch( InstantiationException e ) {
-            Main.kjas_err( "Could not instantiate applet", e );
-            panel.add( "Center", new Label( "Applet Failed", Label.CENTER ) );
-            return;
-        }
-        catch( IllegalAccessException e ) {
-            Main.kjas_err( "Could not instantiate applet", e );
-            panel.add( "Center", new Label( "Applet Failed", Label.CENTER ) );
-            return;
-        }
-        
         runThread = new Thread
         (
         new Runnable() {
@@ -102,30 +81,48 @@ public class KJASAppletStub extends Frame
                 //real bug fixes
                 
                 active = true;
+                synchronized( loader ) {
+                    try {
+                        appletClass = loader.loadClass( className );
+                    } catch (Exception e) {
+                        Main.kjas_err("Class could not be loaded " + className, e);
+                    }
+                }
+                if( appletClass == null ) {
+                    panel.add( "Center", new Label( "Applet Failed", Label.CENTER ) );
+                    return;
+                }
+                
+                try {
+                    app = (Applet) appletClass.newInstance();
+                    app.setStub( me );
+                }
+                catch( InstantiationException e ) {
+                    Main.kjas_err( "Could not instantiate applet", e );
+                    panel.add( "Center", new Label( "Applet Failed", Label.CENTER ) );
+                    return;
+                }
+                catch( IllegalAccessException e ) {
+                    Main.kjas_err( "Could not instantiate applet", e );
+                    panel.add( "Center", new Label( "Applet Failed", Label.CENTER ) );
+                    return;
+                }
+        
                 //app.setVisible( false );
                 // with the preceding line, IllegalArgumentExceptions occur
                 // with certain applets (eg. Animator applet from 1.4 demos)
                 // so, don't do this!
-                
-                panel.add( "Center", app );
-                panel.validate();
-                context.showStatus("Initializing Applet ...");
-                Main.debug("Initializing Applet................");
-                
-                initApplet();
-                //context.showStatus("Applet \"" + appletName + "\" initialized.");
-                show();
-                app.setVisible( true );
-                Thread.yield();
-                
-                // panel.validate();
-                panel.doLayout();
-                app.resize( appletSize );
-                context.showStatus("Starting Applet \"" + appletName + "\" ...");
+                remove(panel);
+                add( "Center", app );
+                invalidate();
+                setVisible(true);
+                context.showStatus("Initializing Applet: " + appletName + " ...");
+                // Main.info("Initializing Applet................");
+                app.init();
+                setVisible(true);
+                context.showStatus("Starting Applet: " + appletName + " ...");
                 // Main.info("Starting Applet................");
                 app.start();  //We're already in a thread, so don't create a new one
-                panel.validate();
-                app.setVisible( true );
             }
         }
         , "KJAS-Applet-" + appletID + "(" + appletName + ")");
@@ -157,10 +154,12 @@ public class KJASAppletStub extends Frame
         if( app != null )
             app.stop();
 
-         if( runThread != null && runThread.isAlive() )
+        if( runThread != null && runThread.isAlive() )
             Main.debug( "runThread is active when stub is dying" );
-
-        loader.setInactive();
+        
+        if (loader != null) {
+            loader.setInactive();
+        }
         active = false;
         dispose();
     }

@@ -15,8 +15,11 @@ public class KJASSecurityManager extends SecurityManager
      * applet cannot connect to any other but the host, where it comes from.
      * Anything else seems to be handled automagically
      */
-    public void checkPermission(Permission perm) throws SecurityException, NullPointerException
+    public void disabled___checkPermission(Permission perm) throws SecurityException, NullPointerException
     {
+        // does not seem to work as expected, Problems with proxy - and it seems that the default
+        // implementation already does all that well, what I wanted to do here.
+        // It is likely that this method will hence disappear soon again.
         Object context = getSecurityContext();
         Thread thread = Thread.currentThread();
         if (perm instanceof SocketPermission) {
@@ -61,7 +64,7 @@ public class KJASSecurityManager extends SecurityManager
                     }
                 } else {
                     Main.info("Host mismatch: " + perm + " != " + codebase.getHost());
-		}
+                }
             } catch (ClassCastException e) {
                 Main.debug("*   ClassLoader is not a KJASAppletClassLoader");
             }

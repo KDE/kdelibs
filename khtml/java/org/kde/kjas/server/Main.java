@@ -17,7 +17,7 @@ public class Main
     //for sending messages back
     public  static final PrintStream         protocol_stdout;
     public  static final KJASProtocolHandler protocol;
-    public  static final KJASConsole         console;
+    public  static final Console             console;
     private static final boolean             show_console;
     public  static final boolean             Debug;
     public  static final boolean             log;
@@ -63,7 +63,7 @@ public class Main
         }
 
         protocol_stdout = System.out;
-        console         = new KJASConsole();
+        console         = new KJASSwingConsole();
         protocol        = new KJASProtocolHandler( System.in, protocol_stdout );
         Main.debug( "JVM version = " + System.getProperty( "java.version" ) );
         String version = System.getProperty("java.version").substring( 0, 3 );

@@ -126,8 +126,12 @@ public class KJASAppletClassLoader
         archive_count   = 0;
         active          = true;
         appletContext   = null;
-
         dbgID = "CL(" + codeBaseURL.toString() + "): ";
+    }
+    
+    protected void addURL(URL url) {
+        Main.debug(this + " add URL: " + url);
+        super.addURL(url);
     }
     
     public void setAppletContext(KJASAppletContext context) {
@@ -146,29 +150,44 @@ public class KJASAppletClassLoader
 
     public void paramsDone() {
         // simply builds up the search path
-        // first search in already loaded archives
+        // put the archives first because they are 
+        // cached.
         if( !archives_loaded ) {
             for( int i = 0; i < archives.size(); ++i ) {
                 String jar = (String)archives.elementAt( i );
                 try {
-                    URL httpURL = new URL(codeBaseURL, jar);
-                    String jarUrlString = "jar:" + httpURL.toString() + "!/";
-                    try {
-                        addURL(new URL(jarUrlString));
-                        Main.debug("added URL " + jarUrlString + " to KJASAppletClassLoader");
-                    } catch (MalformedURLException e) {
-                        Main.kjas_err("Could not construct jar URL: " + jarUrlString, e);
-                    }
+                    URL jarURL = new URL(codeBaseURL, jar);
+                    addURL(jarURL);
+                    Main.debug("added archive URL \"" + jarURL + "\" to KJASAppletClassLoader");
                  } catch (MalformedURLException e) {
-                    Main.kjas_err("Could not construct http URL for: " + codeBaseURL + " + " + jar, e);
+                    Main.kjas_err("Could not construct URL for jar file: " + codeBaseURL + " + " + jar, e);
                  }
             }
             archives_loaded = true;
         }
         else archives_loaded = true;
-        // finally add code base url
+        // finally add code base url and docbase url
         addURL(codeBaseURL);
-   }
+        
+        // but first the docBaseURL has to be fixed.
+        // strip file part from end otherwise this
+        // will be interpreted as an archive
+        // (should this perhaps be done generally ??)       
+        String dbs = docBaseURL.toString();
+        int idx = dbs.lastIndexOf("/");
+        if (idx > 0) {
+            dbs = dbs.substring(0, idx+1);
+        }
+        URL docDirURL = null; 
+        try {
+            docDirURL = new URL(dbs);
+        } catch (MalformedURLException e) {
+            Main.debug("Could not make a new URL from docBaseURL=" + docBaseURL);
+        }
+        if (docDirURL != null && !codeBaseURL.equals(docDirURL)) {
+            addURL(docDirURL);
+        }
+    }
 
     void addArchiveName( String jarname )
     {
@@ -206,7 +225,14 @@ public class KJASAppletClassLoader
         } catch (ClassNotFoundException e )
         {
             if (appletContext != null) {
-                appletContext.showStatus("Loading: " + name);
+                String displayName = name;
+                // we lie a bit and do not display the inner
+                // classes because their names are ugly
+                int idx = name.indexOf('$');
+                if (idx > 0) {
+                    displayName = name.substring(0, idx);
+                }
+                appletContext.showStatus("Loading: " + displayName + " Java Class ...");
             }
             //check the loaded classes 
             rval = findLoadedClass( name );
@@ -228,7 +254,7 @@ public class KJASAppletClassLoader
             fixed_name = name.substring( 0, name.lastIndexOf( ".class" ) );
         }
         Class cl = super.loadClass(fixed_name);
-        Main.debug(this.getClass().getName() + " returns class " + cl.getName());
+        Main.debug(dbgID + " returns class " + cl.getName());
         return cl;
     }
 
@@ -259,7 +285,12 @@ public class KJASAppletClassLoader
    
     protected PermissionCollection getPermissions(CodeSource cs) {
         Main.debug(dbgID + " getPermissions(" + cs + ")");
-        return super.getPermissions(cs);
+        PermissionCollection permissions = super.getPermissions(cs);
+        Enumeration enum = permissions.elements();
+        while (enum.hasMoreElements()) {
+            Main.debug(this + " Permission: " + enum.nextElement());
+        }
+        return permissions;
     }
     
 }
