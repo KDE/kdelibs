@@ -1,13 +1,17 @@
-To counter some problems with the current dcop command line utility I would 
-like to propose two new commands and a bit of change in functionality. I 
-would like to hear some feedback on this, especially from people who are 
-actually using the dcop command line tools to automate tasks.
+Overview of dcop command line utilities
 
-All of the DCOP functionality is there already, its just not very well 
-accesible from the command line.
+dcop [<app-id> [<object-id> [<function> [args]]]]
 
-Proposed new commands:
+Make a dcop call to the specified function.
+If no function is specified, a list of available functions is listed.
+If no object is specified, a list of available objects is listed.
+If no app-id is specified, a list of available application-ids is listed.
 
+****
+* As of KDE 3.0: You will NO LONGER be able to use "dcop konqueror" to 
+* communicate with e.g. "konqueror-4783". You will have to use "dcop 
+* konqueror-4783" for that (or the DCOPRef notation, see below)
+****
 
 dcopstart <app>
 
@@ -71,7 +75,4 @@ Extracts the appid from dcopref.
 
 Extracts the object from dcopref.
 
-As of KDE 3.0: You will NO LONGER be able to use "dcop konqueror" to 
-communicate with e.g. "konqueror-4783". You will have to use "dcop 
-konqueror-4783" for that (or the DCOPRef notation)
 
