@@ -53,6 +53,7 @@ typedef QDictIterator<KEntryDictEntry> KEntryIterator;
 * @author Matthias Kalle Dalheimer (kalle@kde.org)
 */
 class KConfigBaseData
+{
 friend class KConfig;
 friend class KConfigBase;
 friend class KSimpleConfig;
@@ -74,6 +75,7 @@ private:
 public:
   KConfigBaseData();
   KConfigBaseData( const char* pGlobalAppFile, const char* pLocalAppFile );
+  
   KGroupIterator* groupIterator( void );
 };
 
@@ -86,6 +88,7 @@ inline KConfigBaseData::KConfigBaseData() :
   bLocaleInitialized = false;
   bReadOnly = false;
 }
+  
 inline KConfigBaseData::KConfigBaseData( const char* pGlobalAppFile,
 										 const char* pLocalAppFile ) :
     aGroupDict( 37, false )

@@ -69,16 +69,46 @@ KSimpleConfig::KSimpleConfig( const char* pFile )
 		{
 		  QFile file( pFile );
 		  file.open( IO_WriteOnly );
+		  file.close();
+		}
 
 	  // we use the global app config file to save the filename 
-  sync();
+	  data()->aGlobalAppFile = pFile;
+	}
+  
+  parseConfigFiles();
+}
+
+
+KSimpleConfig::KSimpleConfig( const char* pFile, bool bReadOnly )
+{
+  if( pFile )
+	{
+	  if( !bReadOnly )
+		{
+		  // the file should exist in any case if the object is not read-only
+		  QFileInfo info( pFile );
+		  if( !info.exists() )
+			{
+			  QFile file( pFile );
+			  file.open( IO_WriteOnly );
+			  file.close();
+			}
+		}
+
+	  // we use the global app config file to save the filename 
+	  data()->aGlobalAppFile = pFile;
+	}
 
   data()->bReadOnly = bReadOnly;
 
   parseConfigFiles();
 }
 
-  aFile.open( IO_ReadWrite );
+
+KSimpleConfig::~KSimpleConfig()
+{
+  if( !data()->bReadOnly )
 	sync();
 }
 
@@ -154,6 +184,9 @@ bool KSimpleConfig::deleteGroup( const char* pGroup, bool bDeep )
 		  // too
 		  data()->aGroupDict.remove( pGroup );
 		  return true;
+		}
+	}
+  else
 	// no such group
 	return false;
 }
@@ -216,6 +249,9 @@ bool KSimpleConfig::writeConfigFile( QFile& rFile, bool )
 			}
 		}
 	  ++aWriteIt;
+	}
+  
+  // clean up
   delete pStream;
   rFile.close();
 

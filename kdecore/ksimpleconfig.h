@@ -66,18 +66,34 @@ class KSimpleConfig : public KConfigBase
   Q_OBJECT 
 
   // copy-construction and assignment are not allowed
-	* Construct a KConfig object. 
+  KSimpleConfig( const KSimpleConfig& );
   KSimpleConfig& operator= ( const KSimpleConfig& rConfig );
-	* @param A file to parse in addition to the normally parsed files.
+
 protected:
   /** Open all appropriate configuration files and pass them on to
 	* parseOneConfigFile()
+	*/
+  virtual void parseConfigFiles();
+
+public:
+  /** 
+	* Construct a read-write KSimpleConfig object. 
+	*
+	* @param pfile The file used for saving the config data.
+	*/
   KSimpleConfig( const char* pFile );
 
   /**
 	* Construct a KSimpleConfig object and make it either read-write
 	* or read-only.  
 	*
+	* @param pFile The file uses for saving the config data.
+	*        bReadOnly Whether the object should be read-only.
+	*/
+  KSimpleConfig( const char* pFile, bool bReadOnly );
+
+  /** 
+	* Destructor. 
 	*
 	* Writes back any dirty configuration entries.
 	*/
