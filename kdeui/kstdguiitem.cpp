@@ -20,6 +20,7 @@
 
 #include <kguiitem.h>
 #include <klocale.h>
+#include <kapplication.h>
 
 KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
 {
@@ -35,6 +36,10 @@ KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
   case Apply    : return apply();
   case Clear    : return clear();
   case Help     : return help();
+  case Close    : return close();
+  case Defaults : return defaults();
+  case Back     : return back();
+  case Forward  : return forward();
   default       : return KGuiItem();
   };
 }
@@ -52,6 +57,10 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
   case SaveAs   : return QString::fromLatin1("saveAs");
   case Apply    : return QString::fromLatin1("apply");
   case Help     : return QString::fromLatin1("help");
+  case Close    : return QString::fromLatin1("close");
+  case Defaults : return QString::fromLatin1("defaults");
+  case Back     : return QString::fromLatin1("back");
+  case Forward  : return QString::fromLatin1("forward");
   default       : return QString::null;
   };
 }
@@ -123,6 +132,32 @@ KGuiItem KStdGuiItem::help()
 {
   return KGuiItem( i18n( "&Help" ), "help",
                    i18n( "Show help" ) );
+}
+
+KGuiItem KStdGuiItem::close()
+{
+  return KGuiItem( i18n( "&Close" ), "fileclose",
+                   i18n( "Close the current window or document" ) );
+}
+
+KGuiItem KStdGuiItem::defaults()
+{
+  return KGuiItem( i18n( "&Defaults" ), "defaults",
+                   i18n( "Reset all items to their default values" ) );
+}
+
+KGuiItem KStdGuiItem::back( bool useBidi )
+{
+  QString icon = useBidi && kapp->reverseLayout() ? "forward" : "back";
+  return KGuiItem( i18n( "&Back" ), icon,
+                   i18n( "Go back one step" ) );
+}
+
+KGuiItem KStdGuiItem::forward( bool useBidi )
+{
+  QString icon = useBidi && kapp->reverseLayout() ? "back" : "forward";
+  return KGuiItem( i18n( "&Forward" ), icon,
+                   i18n( "Go forward one step" ) );
 }
 
 // vim: set ts=2 sts=2 sw=2 et:

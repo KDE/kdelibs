@@ -28,7 +28,7 @@ class KStdGuiItem
  public:
   enum StdItem {
     Ok=1, Cancel, Yes, No, Discard, Save, DontSave, SaveAs,
-    Apply, Clear, Help
+    Apply, Clear, Help, Defaults, Close, Back, Forward
   };
   static KGuiItem guiItem ( StdItem ui_enum );
   static QString  stdItem ( StdItem ui_enum );
@@ -43,6 +43,27 @@ class KStdGuiItem
   static KGuiItem saveAs();
   static KGuiItem apply();
   static KGuiItem clear();
+  static KGuiItem defaults();
+  static KGuiItem close();
+
+  /**
+   * Return a GUI item for a 'back' action, like Konqueror's back button.
+   * This GUI item by default honours the user's setting for BiDi, so the
+   * icon for right-to-left languages (Hebrew and Arab) has the arrow
+   * pointing in the opposite direction.
+   * If you want the arrow to force in the Western 'back' direction (i.e.
+   * to the left), set the boolean useBiDi to false.
+   */
+  static KGuiItem back( bool useBidi = true );
+  /**
+   * Return a GUI item for a 'forward' action, like Konqueror's forward button.
+   * This GUI item by default honours the user's setting for BiDi, so the
+   * icon for right-to-left languages (Hebrew and Arab) has the arrow
+   * pointing in the opposite direction.
+   * If you want the arrow to force in the Western 'forward' direction (i.e.
+   * to the right), set the boolean useBiDi to false.
+   */
+  static KGuiItem forward( bool useBidi = true );
 
 };
 
