@@ -25,6 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define __kpanelextension_h__
 
 class KConfig;
+class KPanelExtensionPrivate;
 
 #include <qframe.h>
 
@@ -225,10 +226,11 @@ protected:
     virtual void positionChange( Position /* position */) {}
 
 private:
-    Type         _type;
-    Position     _pos;
-    KConfig*     _config;
-    int          _actions;
+    Type         		_type;
+    Position     		_pos;
+    KConfig*     		_config;
+    int          		_actions;
+    KPanelExtensionPrivate     *d;
 };
 
 #endif
