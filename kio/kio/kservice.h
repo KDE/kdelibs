@@ -66,13 +66,13 @@ public:
    *
    * @param _fullpath Full path to the config file.
    */
-  KService( const QString & _fullpath );
+  explicit KService( const QString & _fullpath );
 
   /**
    * Construct a service and take all information from a desktop file.
    * @param config the desktop file to read
    */
-  KService( KDesktopFile *config );
+  KService( KDesktopFile *config ); // KDE-4.0: make explicit
 
   /**
    * @internal
@@ -407,6 +407,8 @@ protected:
   QVariant property( const QString& _name, QVariant::Type t ) const;
 
 private:
+  KService( const KService& ); // forbidden
+
   QString m_strType;
   QString m_strName;
   QString m_strExec;
