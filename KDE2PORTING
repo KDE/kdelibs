@@ -617,3 +617,17 @@ widget just hide() the widget stack.
 If you need some "inspiration" on how that could be done, please have a look
 at koffice/lib/kofficecore/koFilterManager.cc (PreviewStack).
 Werner Trobin <wtrobin@carinthia.com>
+
+//////////////////////////////////////////////////////////////////////
+// * Image effects
+
+The kFSDither class is now gone.  It's functionality was moved to
+KImageEffect::dither().  Whereas before, you would done:
+
+  kFSDither dither(palette, ncols);
+  image = dither.dither(image);
+
+Now do:
+  KImageEffect::dither(image, palette, ncols);
+
+Kurt Granroth <granroth@kde.org>
