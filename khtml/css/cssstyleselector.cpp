@@ -1851,8 +1851,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 		    return;
 	    }
 	}
-        if (style->setFontDef( fontDef ))
-	fontDirty = true;
+        fontDirty |= style->setFontDef( fontDef );
         break;
     }
 
@@ -1873,8 +1872,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    else
 		return;
 	}
-	if (style->setFontDef( fontDef ))
-	    fontDirty = true;
+	fontDirty |= style->setFontDef( fontDef );
 	break;
     }
 
@@ -1917,8 +1915,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 		// ### fix parsing of 100-900 values in parser, apply them here
 	    }
 	}
-        if (style->setFontDef( fontDef ))
-	    fontDirty = true;
+        fontDirty |= style->setFontDef( fontDef );
         break;
     }
 
@@ -2772,8 +2769,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         //kdDebug( 6080 ) << "computed raw font size: " << size << endl;
 
 	fontDef.size = size;
-        if (style->setFontDef( fontDef ))
-	fontDirty = true;
+        fontDirty |= style->setFontDef( fontDef );
         return;
     }
 
@@ -2981,10 +2977,8 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    }
 	    if ( !face.isEmpty() ) {
 		fontDef.family = face;
-		if (style->setFontDef( fontDef )) {
-		    fontDirty = true;
-                    return;
-                }
+		fontDirty |= style->setFontDef( fontDef );
+                return;
 	    }
 	}
         break;
@@ -3163,8 +3157,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 		return;
             FontDef fontDef = parentStyle->htmlFont().fontDef;
 	    style->setLineHeight( parentStyle->lineHeight() );
-	    if (style->setFontDef( fontDef ))
-		fontDirty = true;
+	    fontDirty |= style->setFontDef( fontDef );
 	} else if ( value->isFontValue() ) {
 	    FontValueImpl *font = static_cast<FontValueImpl *>(value);
 	    if ( !font->style || !font->variant || !font->weight ||
