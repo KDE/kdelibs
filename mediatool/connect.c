@@ -375,7 +375,7 @@ void GetShmAdrByRef(int shm_talkid, char **shm_adr)
   struct shmid_ds InfoBuf;  /* shmctl() wants one */
 
   *shm_adr = shmat ( shm_talkid , NULL, 0 );
-  if ( (int)(*shm_adr) == -1 )
+  if ( (*shm_adr) == (char*)-1 )
     {
       LogError("Could not attach shm.\n");
       	*shm_adr=NULL;
