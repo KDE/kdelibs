@@ -20,7 +20,9 @@
 //the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
 //It has its own menu entry and reacts on simple LMP clicks.
 #include <qmenubar.h> 
- 
+#ifndef _KMENUBAR_H
+#define _KMENUBAR_H
+
 class _menuBar : public QMenuBar
  {
    Q_OBJECT
@@ -118,6 +120,8 @@ class KMenuBar : public QFrame
 
    void setFlat (bool);
 
+ protected slots:
+   void ContextCallback(int index);
    
    void slotHighlighted (int id);
    void slotHotSpot (int i);
@@ -137,6 +141,8 @@ private:
    const char *title;
    int oldX;
    int oldY;
+   int oldWFlags;
+   
    menuPosition position;
    menuPosition lastPosition;
    menuPosition movePosition;
@@ -162,7 +168,7 @@ signals:
     void activated(int id);
 
 private:
-
+   QFrame *handle;
    KToolBoxManager *mgr;
    bool highlight;
    bool transparent;

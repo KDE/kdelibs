@@ -29,6 +29,7 @@
 #include <klocale.h>
 #include <kapp.h>
 #include <kwm.h>
+#include <ktoolboxmgr.h>
 
 #define CONTEXT_TOP 1
 #define CONTEXT_BOTTOM 2
@@ -181,6 +182,16 @@ KMenuBar::~KMenuBar()
     delete context;
 }
 
+{
+  QApplication::sendEvent(menu, e);
+  //later -sven
+}
+
+void KMenuBar::slotHotSpot (int)
+{
+  //later -sven
+        movePosition=Floating;
+        break;
     }
   }
 }
