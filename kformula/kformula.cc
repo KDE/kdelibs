@@ -25,6 +25,8 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <qregexp.h>
+#include <kglobal.h>
+#include <kstddirs.h>
 
 //initialize the static members:
 QString *KFormula::SPECIAL = NULL;
@@ -102,6 +104,7 @@ void KFormula::initStrings(void)
   *EVAL += (QChar(PAREN));
   *EVAL += (QChar(ABS));
   *EVAL += (QChar(SQRT));
+
 }
 
 

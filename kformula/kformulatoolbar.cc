@@ -1,47 +1,35 @@
 #include "kformulatoolbar.h"
-//All the formula pics borrowed from the original koffice/kformula--thanks to whoever drew them.
-#include "pics/mini-bra.xpm"
-#include "pics/mini-frac.xpm"
-#include "pics/mini-integral.xpm"
-#include "pics/mini-root.xpm"
-#include "pics/matrix.xpm"
-#include "pics/index0.xpm"
-#include "pics/index1.xpm"
-#include "pics/index2.xpm"
-#include "pics/index3.xpm"
-#include "pics/brackets.xpm"
-#include "pics/abs.xpm"
-#include "../toolbar/editcut.xpm"
-#include "../toolbar/editcopy.xpm"
-#include "../toolbar/editpaste.xpm"
-#include "../toolbar/undo.xpm"
-#include "../toolbar/redo.xpm"
+#include <kiconloader.h>
+#include <kglobal.h>
+#include <kstddirs.h>
 
 KFormulaToolBar::KFormulaToolBar(QWidget *parent, const char *name, int _item_size)
   : KToolBar(parent, name, _item_size)
 {
-  insertButton(QPixmap((const char **)editcut), CUT_CHAR, true, "Cut");
-  insertButton(QPixmap((const char **)editcopy), COPY_CHAR, true, "Copy");
-  insertButton(QPixmap((const char **)editpaste), PASTE_CHAR, true, "Paste");
+  // doesn't matter if we do this twice - KStandardDirs ignores doubled additions
+  KGlobal::dirs()->addResourceType("toolbar", KStandardDirs::kde_default("data") + "kformula/pics/");
+  insertButton(ICON("editcut"), CUT_CHAR, true, "Cut");
+  insertButton(ICON("editcopy"), COPY_CHAR, true, "Copy");
+  insertButton(ICON("editpaste"), PASTE_CHAR, true, "Paste");
 
   insertSeparator();
 
-  insertButton(QPixmap((const char **)undo), UNDO_CHAR, true, "Undo");
-  insertButton(QPixmap((const char **)redo), REDO_CHAR, true, "Redo");
+  insertButton(ICON("undo"), UNDO_CHAR, true, "Undo");
+  insertButton(ICON("redo"), REDO_CHAR, true, "Redo");
 
   insertSeparator();
 
-  insertButton(QPixmap((const char **)index2), POWER, true, "Power");
-  insertButton(QPixmap((const char **)index3), SUB, true, "Subscript");
-  insertButton(QPixmap((const char **)mini_bra_xpm), PAREN, true, "Parentheses");
-  insertButton(QPixmap((const char **)abs_xpm), ABS, true, "Absolute value");
-  insertButton(QPixmap((const char **)brackets_xpm), BRACKET, true, "Brackets");
-  insertButton(QPixmap((const char **)mini_frac_xpm), DIVIDE, true, "Fraction");
-  insertButton(QPixmap((const char **)mini_root_xpm), SQRT, true, "Root");
-  insertButton(QPixmap((const char **)mini_integral_xpm), INTEGRAL, true, "Integral");
-  insertButton(QPixmap((const char **)matrix), MATRIX, true, "Matrix");
-  insertButton(QPixmap((const char **)index0), LSUP, true, "Left superscript");
-  insertButton(QPixmap((const char **)index1), LSUB, true, "Left subscript");
+  insertButton(ICON("index2"), POWER, true, "Power");
+  insertButton(ICON("index3"), SUB, true, "Subscript");
+  insertButton(ICON("bra"), PAREN, true, "Parentheses");
+  insertButton(ICON("abs"), ABS, true, "Absolute value");
+  insertButton(ICON("brackets"), BRACKET, true, "Brackets");
+  insertButton(ICON("frac"), DIVIDE, true, "Fraction");
+  insertButton(ICON("root"), SQRT, true, "Root");
+  insertButton(ICON("integral"), INTEGRAL, true, "Integral");
+  insertButton(ICON("matrix"), MATRIX, true, "Matrix");
+  insertButton(ICON("index0"), LSUP, true, "Left superscript");
+  insertButton(ICON("index1"), LSUB, true, "Left subscript");
 }
 
 

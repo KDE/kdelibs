@@ -1,6 +1,8 @@
 
 INCLUDES= $(all_includes)
 
+SUBDIRS = pics
+
 ####### 
 # you can add here more. This one gets installed 
 lib_LTLIBRARIES = libkformula.la
