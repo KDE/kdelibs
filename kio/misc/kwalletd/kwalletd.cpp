@@ -65,10 +65,11 @@ class KWalletTransaction {
 			client = 0L;
 		}
 
-		enum Type { Unknown, Open, ChangePassword };
+		enum Type { Unknown, Open, ChangePassword, OpenFail };
 		DCOPClient *client;
 		DCOPClientTransaction *transaction;
 		Type tType;
+		QCString returnObject;
 		QCString appid;
 		uint wId;
 		QString wallet;
@@ -130,6 +131,10 @@ void KWalletD::processTransactions() {
 			res = doTransactionOpen(xact->appid, xact->wallet, xact->wId);
 			replyType = "int";
 			break;
+		case KWalletTransaction::OpenFail:
+			res = -1;
+			replyType = "int";
+			break;
 		case KWalletTransaction::ChangePassword:
 			doTransactionChangePassword(xact->appid, xact->wallet, xact->wId);
 			// fall through - no return
@@ -153,9 +158,9 @@ void KWalletD::processTransactions() {
 void KWalletD::openAsynchronous(const QString& wallet, const QCString& returnObject, uint wId) {
 	DCOPClient *dc = callingDcopClient();
 	if (!dc) return;
-	
-	int rc = open(wallet, wId);
 	QCString appid = dc->senderId();
+
+	int rc = open(wallet, wId);
 	DCOPRef(appid, returnObject).send("walletOpenResult", rc);
 }
 
@@ -199,16 +204,13 @@ int KWalletD::open(const QString& wallet, uint wId) {
 	_transactions.remove(xact);
 
 	if (rc < 0) {
-		// Kill off multiple requests from the same client on a failure
-		for (KWalletTransaction *x = _transactions.first(); x; /**/) {
-			if (appid == x->appid && x->tType == KWalletTransaction::Open && x->wallet == wallet && x->wId == wId) {
-				KWalletTransaction *tmp = x;
-				x = _transactions.next();
-				_transactions.removeRef(tmp);
-			}
+		// multiple requests from the same client should not produce multiple password dialogs on a failure
+		for (KWalletTransaction *x = _transactions.first(); x; x = _transactions.next()) {
+			if (appid == x->appid && x->tType == KWalletTransaction::Open && x->wallet == wallet && x->wId == wId)
+				x->tType = KWalletTransaction::OpenFail;
 		}
 	}
-
+	
 	processTransactions();
 
 	return rc;
