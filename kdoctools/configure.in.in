@@ -40,7 +40,7 @@ if test -n "$HELP_SUBDIR"; then
 
   if test -n "$XSLT_CONFIG"; then
      vers=`$XSLT_CONFIG --version 2>/dev/null | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-     if test -n "$vers" && test "$vers" -ge 1000006; then
+     if test -n "$vers" && test "$vers" -ge 1000007; then
        LIBXSLT_LIBS="`$XSLT_CONFIG --libs`"
        LIBXSLT_RPATH=
        for args in $LIBXSLT_LIBS; do
