@@ -113,17 +113,14 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
   m_requestQueue.setAutoDelete(true);
   
   m_bBusy = false;
-  m_bUseCache = true;
   m_bFirstRequest = false;
   
-  m_fcache = 0;
   m_iSize = -1;
   m_maxCacheAge = 0;
   m_maxCacheSize = 0;
   m_lineBufUnget = 0;
   
   m_protocol = protocol;    
-  m_HTTPrev = HTTP_Unknown;
 
   m_maxCacheAge = DEFAULT_MAX_CACHE_AGE;
   m_maxCacheSize = DEFAULT_MAX_CACHE_SIZE / 2;
@@ -169,19 +166,24 @@ void HTTPProtocol::resetConnectionSettings()
 {
   m_bEOF = false;
   m_bError = false;
-  m_bChunked = false;
-
-  m_iSize = -1;
   m_lineCount = 0;
   m_iWWWAuthCount = 0;
   m_lineCountUnget = 0;
   m_iProxyAuthCount = 0;
 
+}
+
+void HTTPProtocol::resetResponseSettings()
+{
+  m_bRedirect = false;
+  m_bChunked = false;
+  m_iSize = -1;
+
+  m_responseHeader.clear();
   m_qContentEncodings.clear();
   m_qTransferEncodings.clear();
   m_sContentMD5 = QString::null;
   m_strMimeType = QString::null;
-  m_bErrorPage = config()->readBoolEntry("errorPage", true);
 }
 
 void HTTPProtocol::resetSessionSettings()
@@ -207,8 +209,9 @@ void HTTPProtocol::resetSessionSettings()
   kdDebug(7113) << "(" << m_pid << ") Enable Persistent Proxy Connection: "
                 << m_bPersistentProxyConnection << endl;  
   
-  m_bUseCookiejar = config()->readBoolEntry("Cookies");
-  m_bUseCache = config()->readBoolEntry("UseCache", true);
+  m_request.bUseCookiejar = config()->readBoolEntry("Cookies");
+  m_request.bUseCache = config()->readBoolEntry("UseCache", true);
+  m_request.bErrorPage = config()->readBoolEntry("errorPage", true);
   m_strCacheDir = config()->readEntry("CacheDir");
   m_maxCacheAge = config()->readNumEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
   m_request.window = config()->readEntry("window-id");
@@ -262,7 +265,7 @@ void HTTPProtocol::resetSessionSettings()
   // Deal with cache cleaning.
   // TODO: Find a smarter way to deal with cleaning the
   // cache ?
-  if ( m_bUseCache )
+  if ( m_request.bUseCache )
     cleanCache();
 
   // Deal with HTTP tunneling
@@ -302,7 +305,6 @@ void HTTPProtocol::resetSessionSettings()
   // the persistent link has been terminated by the remote end.  
   m_bKeepAlive = true;
   m_keepAliveTimeout = 0;
-  m_bCanResume = false;
   m_bUnauthorized = false;  
   
   // A single request can require multiple exchanges with the remote
@@ -390,6 +392,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
     if (!httpOpen())
       return false;
 
+    resetResponseSettings();
     if (!readHeader())
     {
       if ( m_bError )
@@ -424,7 +427,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
         }
         else
         {
-          if ( !m_bErrorPage )
+          if ( !m_request.bErrorPage )
           {
             kdDebug(7113) << "(" << m_pid << ") Sending an error message!" << endl;
             error( ERR_UNKNOWN_PROXY_HOST, m_proxyURL.host() );
@@ -1844,35 +1847,35 @@ bool HTTPProtocol::httpOpen()
     return false;
   }
 
-  m_fcache = 0;
-  m_bCachedRead = false;
-  m_bCachedWrite = false;
-  m_bMustRevalidate = false;
-  m_expireDate = 0;
-  m_creationDate = 0;
+  m_request.fcache = 0;
+  m_request.bCachedRead = false;
+  m_request.bCachedWrite = false;
+  m_request.bMustRevalidate = false;
+  m_request.expireDate = 0;
+  m_request.creationDate = 0;
 
-  if (m_bUseCache)
+  if (m_request.bUseCache)
   {
-     m_fcache = checkCacheEntry( );
+     m_request.fcache = checkCacheEntry( );
 
-     if (m_request.cache == CC_Reload && m_fcache)
+     if (m_request.cache == CC_Reload && m_request.fcache)
      {
-        if (m_fcache)
-          fclose(m_fcache);
-        m_fcache = 0;
+        if (m_request.fcache)
+          fclose(m_request.fcache);
+        m_request.fcache = 0;
      }
 
-     m_bCachedWrite = true;
+     m_request.bCachedWrite = true;
 
-     if (m_fcache && !m_bMustRevalidate)
+     if (m_request.fcache && !m_request.bMustRevalidate)
      {
         // Cache entry is OK.
-        m_bCachedRead = true; // Cache hit.
+        m_request.bCachedRead = true; // Cache hit.
         return true;
      }
-     else if (!m_fcache)
+     else if (!m_request.fcache)
      {
-        m_bMustRevalidate = false; // Cache miss
+        m_request.bMustRevalidate = false; // Cache miss
      }
      else
      {
@@ -1907,23 +1910,23 @@ bool HTTPProtocol::httpOpen()
   case HTTP_PUT:
       header = "PUT ";
       moreData = !isSSLTunnelEnabled();
-      m_bCachedWrite = false; // Do not put any result in the cache
+      m_request.bCachedWrite = false; // Do not put any result in the cache
       break;
   case HTTP_POST:
       header = "POST ";
       moreData = !isSSLTunnelEnabled();
-      m_bCachedWrite = false; // Do not put any result in the cache
+      m_request.bCachedWrite = false; // Do not put any result in the cache
       break;
   case HTTP_HEAD:
       header = "HEAD ";
       break;
   case HTTP_DELETE:
       header = "DELETE ";
-      m_bCachedWrite = false; // Do not put any result in the cache
+      m_request.bCachedWrite = false; // Do not put any result in the cache
       break;
   case HTTP_OPTIONS:
       header = "OPTIONS ";
-      m_bCachedWrite = false; // Do not put any result in the cache
+      m_request.bCachedWrite = false; // Do not put any result in the cache
       break;
   case DAV_PROPFIND:
       header = "PROPFIND ";
@@ -1940,16 +1943,16 @@ bool HTTPProtocol::httpOpen()
           davHeader += QString("%1").arg( m_request.davData.depth );
       }
       davHeader += "\r\n";
-      m_bCachedWrite = false; // Do not put any result in the cache
+      m_request.bCachedWrite = false; // Do not put any result in the cache
       break;
   case DAV_PROPPATCH:
       header = "PROPPATCH ";
       davData = true;
-      m_bCachedWrite = false; // Do not put any result in the cache
+      m_request.bCachedWrite = false; // Do not put any result in the cache
       break;
   case DAV_MKCOL:
       header = "MKCOL ";
-      m_bCachedWrite = false; // Do not put any result in the cache
+      m_request.bCachedWrite = false; // Do not put any result in the cache
       break;
   case DAV_COPY:
   case DAV_MOVE:
@@ -1960,7 +1963,7 @@ bool HTTPProtocol::httpOpen()
       davHeader += "\r\nDepth: infinity\r\nOverwrite: ";
       davHeader += m_request.davData.overwrite ? "T" : "F";
       davHeader += "\r\n";
-      m_bCachedWrite = false; // Do not put any result in the cache
+      m_request.bCachedWrite = false; // Do not put any result in the cache
       break;
   case DAV_LOCK:
       header = "LOCK ";
@@ -1975,18 +1978,18 @@ bool HTTPProtocol::httpOpen()
           davHeader += "Seconds-" + timeout;
       }
       davHeader += "\r\n";
-      m_bCachedWrite = false; // Do not put any result in the cache
+      m_request.bCachedWrite = false; // Do not put any result in the cache
       davData = true;
       break;
   case DAV_UNLOCK:
       header = "UNLOCK ";
       davHeader = "Lock-token: " + metaData("davLockToken") + "\r\n";
-      m_bCachedWrite = false; // Do not put any result in the cache
+      m_request.bCachedWrite = false; // Do not put any result in the cache
       break;
   case DAV_SEARCH:
       header = "SEARCH ";
       davData = true;
-      m_bCachedWrite = false;
+      m_request.bCachedWrite = false;
       break;
   }
 
@@ -2083,13 +2086,13 @@ bool HTTPProtocol::httpOpen()
       header += "Cache-control: no-cache\r\n"; /* for HTTP >=1.1 caches */
     }
 
-    if (m_bMustRevalidate)
+    if (m_request.bMustRevalidate)
     {
       /* conditional get */
-      if (!m_etag.isEmpty())
-        header += "If-None-Match: "+m_etag+"\r\n";
-      if (!m_lastModified.isEmpty())
-        header += "If-Modified-Since: "+m_lastModified+"\r\n";
+      if (!m_request.etag.isEmpty())
+        header += "If-None-Match: "+m_request.etag+"\r\n";
+      if (!m_request.lastModified.isEmpty())
+        header += "If-Modified-Since: "+m_request.lastModified+"\r\n";
     }
 
     header += "Accept: ";
@@ -2134,17 +2137,17 @@ bool HTTPProtocol::httpOpen()
     QString cookieMode = metaData("cookies").lower();
     if (cookieMode == "none")
     {
-      m_cookieMode = CookiesNone;
+      m_request.cookieMode = HTTPRequest::CookiesNone;
     }
     else if (cookieMode == "manual")
     {
-      m_cookieMode = CookiesManual;
+      m_request.cookieMode = HTTPRequest::CookiesManual;
       cookieStr = metaData("setcookies");
     }
     else
     {
-      m_cookieMode = CookiesAuto;
-      if (m_bUseCookiejar)
+      m_request.cookieMode = HTTPRequest::CookiesAuto;
+      if (m_request.bUseCookiejar)
         cookieStr = findCookies( m_request.url.url());
     }
 
@@ -2288,6 +2291,7 @@ void HTTPProtocol::forwardHttpResponseHeader()
     setMetaData("HTTP-Headers", m_responseHeader.join("\n"));
     sendMetaData();
   }
+  m_responseHeader.clear();
 }
 
 /**
@@ -2300,15 +2304,13 @@ bool HTTPProtocol::readHeader()
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader" << endl;
   
-  m_bRedirect = false;
-  m_responseHeader.clear();
   // Check
-  if (m_bCachedRead)
+  if (m_request.bCachedRead)
   {
      m_responseHeader << "HTTP-CACHE";
      // Read header from cache...
      char buffer[4097];
-     if (!fgets(buffer, 4096, m_fcache) )
+     if (!fgets(buffer, 4096, m_request.fcache) )
      {
         // Error, delete cache entry
         kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader: "
@@ -2322,7 +2324,7 @@ bool HTTPProtocol::readHeader()
 
      m_strMimeType = QString::fromUtf8( buffer).stripWhiteSpace();
 
-     if (!fgets(buffer, 4096, m_fcache) )
+     if (!fgets(buffer, 4096, m_request.fcache) )
      {
         // Error, delete cache entry
         kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader: "
@@ -2331,14 +2333,14 @@ bool HTTPProtocol::readHeader()
         return false;
      }
 
-     m_strCharset = QString::fromUtf8( buffer).stripWhiteSpace().lower();
-     setMetaData("charset", m_strCharset);
-     if (!m_lastModified.isEmpty())
-         setMetaData("modified", m_lastModified);
+     m_request.strCharset = QString::fromUtf8( buffer).stripWhiteSpace().lower();
+     setMetaData("charset", m_request.strCharset);
+     if (!m_request.lastModified.isEmpty())
+         setMetaData("modified", m_request.lastModified);
      QString tmp;
-     tmp.setNum(m_expireDate);
+     tmp.setNum(m_request.expireDate);
      setMetaData("expire-date", tmp);
-     tmp.setNum(m_creationDate);
+     tmp.setNum(m_request.creationDate);
      setMetaData("cache-creation-date", tmp);
      mimeType(m_strMimeType);
      forwardHttpResponseHeader();
@@ -2361,9 +2363,9 @@ bool HTTPProtocol::readHeader()
   bool canUpgrade = false;        // The server offered an upgrade
 
 
-  m_etag = QString::null;
-  m_lastModified = QString::null;
-  m_strCharset = QString::null;
+  m_request.etag = QString::null;
+  m_request.lastModified = QString::null;
+  m_request.strCharset = QString::null;
 
   time_t dateHeader = 0;
   time_t expireDate = 0; // 0 = no info, 1 = already expired, > 1 = actual date
@@ -2377,6 +2379,7 @@ bool HTTPProtocol::readHeader()
   bool cacheValidated = false; // Revalidation was successfull
   bool mayCache = true;
   bool hasCacheDirective = false;
+  bool bCanResume = false;
 
   if (m_iSock == -1)
   {
@@ -2423,6 +2426,7 @@ bool HTTPProtocol::readHeader()
   kdDebug(7103) << "(" << m_pid << ") ============ Received Response:"<< endl;
 
   bool noHeader = true;
+  HTTP_REV httpRev = HTTP_Unknown;
 
   do
   {
@@ -2460,7 +2464,7 @@ bool HTTPProtocol::readHeader()
     {
       if (strncmp((buf + 5), "1.0",3) == 0)
       {
-        m_HTTPrev = HTTP_10;
+        httpRev = HTTP_10;
         // For 1.0 servers, the server itself has to explicitly
         // tell us whether it supports persistent connection or
         // not.  By default, we assume it does not, but we do
@@ -2469,9 +2473,13 @@ bool HTTPProtocol::readHeader()
         m_bKeepAlive = false;
       }
       else if (strncmp((buf + 5), "1.1",3) == 0)
-        m_HTTPrev = HTTP_11;
-        else
-        m_HTTPrev = HTTP_Unknown;
+      {
+        httpRev = HTTP_11;
+      }
+      else
+      {
+        httpRev = HTTP_Unknown;
+      }
 
       if (m_responseCode)
         m_prevResponseCode = m_responseCode;
@@ -2481,10 +2489,13 @@ bool HTTPProtocol::readHeader()
       // server side errors
       if (m_responseCode >= 500 && m_responseCode <= 599)
       {
-        if (m_request.method == HTTP_HEAD); // Ignore error
+        if (m_request.method == HTTP_HEAD)
+        {
+           ; // Ignore error
+        }
         else
         {
-           if (m_bErrorPage)
+           if (m_request.bErrorPage)
               errorPage();
            else
            {
@@ -2492,7 +2503,7 @@ bool HTTPProtocol::readHeader()
               return false;
            }
         }
-        m_bCachedWrite = false; // Don't put in cache
+        m_request.bCachedWrite = false; // Don't put in cache
         mayCache = false;
       }
       // Unauthorized access
@@ -2505,7 +2516,7 @@ bool HTTPProtocol::readHeader()
           saveAuthorization();
 
         m_bUnauthorized = true;
-        m_bCachedWrite = false; // Don't put in cache
+        m_request.bCachedWrite = false; // Don't put in cache
         mayCache = false;
       }
       // Upgrade Required
@@ -2517,20 +2528,20 @@ bool HTTPProtocol::readHeader()
       else if (m_responseCode >= 400 && m_responseCode <= 499)
       {
         // Tell that we will only get an error page here.
-        if (m_bErrorPage)
+        if (m_request.bErrorPage)
           errorPage();
         else
         {
           error(ERR_DOES_NOT_EXIST, m_request.url.url());
           return false;
         }
-        m_bCachedWrite = false; // Don't put in cache
+        m_request.bCachedWrite = false; // Don't put in cache
         mayCache = false;
       }
       else if (m_responseCode == 307)
       {
         // 307 Temporary Redirect
-        m_bCachedWrite = false; // Don't put in cache
+        m_request.bCachedWrite = false; // Don't put in cache
         mayCache = false;
       }
       else if (m_responseCode == 304)
@@ -2563,7 +2574,7 @@ bool HTTPProtocol::readHeader()
            // 2616 sections 10.3.[2/3/4/8]
            m_request.method = HTTP_GET; // Force a GET
         }
-        m_bCachedWrite = false; // Don't put in cache
+        m_request.bCachedWrite = false; // Don't put in cache
         mayCache = false;
       }
       else if ( m_responseCode == 207 ) // Multi-status (for WebDav)
@@ -2583,7 +2594,7 @@ bool HTTPProtocol::readHeader()
       else if ( m_responseCode == 206 )
       {
         if ( m_request.offset )
-          m_bCanResume = true;
+          bCanResume = true;
       }
       else if (m_responseCode == 102) // Processing (for WebDAV)
       {
@@ -2605,7 +2616,7 @@ bool HTTPProtocol::readHeader()
     // are we allowd to resume?  this will tell us
     else if (strncasecmp(buf, "Accept-Ranges:", 14) == 0) {
       if (strncasecmp(trimLead(buf + 14), "none", 4) == 0)
-            m_bCanResume = false;
+            bCanResume = false;
     }
     // Keep Alive
     else if (strncasecmp(buf, "Keep-Alive:", 11) == 0) {
@@ -2634,12 +2645,12 @@ bool HTTPProtocol::readHeader()
          QString cacheControl = (*it).stripWhiteSpace();
          if (strncasecmp(cacheControl.latin1(), "no-cache", 8) == 0)
          {
-            m_bCachedWrite = false; // Don't put in cache
+            m_request.bCachedWrite = false; // Don't put in cache
             mayCache = false;
          }
          else if (strncasecmp(cacheControl.latin1(), "no-store", 8) == 0)
          {
-            m_bCachedWrite = false; // Don't put in cache
+            m_request.bCachedWrite = false; // Don't put in cache
             mayCache = false;
          }
          else if (strncasecmp(cacheControl.latin1(), "max-age=", 8) == 0)
@@ -2685,7 +2696,7 @@ bool HTTPProtocol::readHeader()
                          << mediaValue << endl;
 
           if ( mediaAttribute.lower() == "charset")
-            m_strCharset = mediaValue;
+            m_request.strCharset = mediaValue;
         }
       }
     }
@@ -2697,7 +2708,7 @@ bool HTTPProtocol::readHeader()
 
     // Cache management
     else if (strncasecmp(buf, "ETag:", 5) == 0) {
-      m_etag = trimLead(buf+5);
+      m_request.etag = trimLead(buf+5);
     }
 
     // Cache management
@@ -2709,7 +2720,7 @@ bool HTTPProtocol::readHeader()
 
     // Cache management
     else if (strncasecmp(buf, "Last-Modified:", 14) == 0) {
-      m_lastModified = (QString::fromLatin1(trimLead(buf+14))).stripWhiteSpace();
+      m_request.lastModified = (QString::fromLatin1(trimLead(buf+14))).stripWhiteSpace();
     }
 
     // whoops.. we received a warning
@@ -2724,7 +2735,7 @@ bool HTTPProtocol::readHeader()
       QCString pragma = QCString(trimLead(buf+7)).stripWhiteSpace().lower();
       if (pragma == "no-cache")
       {
-         m_bCachedWrite = false; // Don't put in cache
+         m_request.bCachedWrite = false; // Don't put in cache
          mayCache = false;
       }
       hasCacheDirective = true;
@@ -2902,7 +2913,7 @@ bool HTTPProtocol::readHeader()
     }
 
     // continue only if we know that we're HTTP/1.1
-    else if (m_HTTPrev == HTTP_11) {
+    else if (httpRev == HTTP_11) {
       // let them tell us if we should stay alive or not
       if (strncasecmp(buf, "Connection:", 11) == 0) 
       {
@@ -2975,7 +2986,7 @@ bool HTTPProtocol::readHeader()
            }
         }
      } else if (*opt == "HTTP/1.1") {
-        m_HTTPrev = HTTP_11;
+        httpRev = HTTP_11;
      } else {
         // unknown
         if (upgradeRequired) {
@@ -3012,8 +3023,8 @@ bool HTTPProtocol::readHeader()
   if (!expireDate)
   {
     time_t lastModifiedDate = 0;
-    if (!m_lastModified.isEmpty())
-       lastModifiedDate = KRFCDate::parseDate(m_lastModified);
+    if (!m_request.lastModified.isEmpty())
+       lastModifiedDate = KRFCDate::parseDate(m_request.lastModified);
        
     if (lastModifiedDate)
     {
@@ -3032,14 +3043,14 @@ bool HTTPProtocol::readHeader()
   // DONE receiving the header!
   if (!cookieStr.isEmpty())
   {
-    if ((m_cookieMode == CookiesAuto) && m_bUseCookiejar)
+    if ((m_request.cookieMode == HTTPRequest::CookiesAuto) && m_request.bUseCookiejar)
     {
       // Give cookies to the cookiejar.
       if (config()->readBoolEntry("cross-domain"))
          cookieStr = "Cross-Domain\n" + cookieStr;
       addCookies( m_request.url.url(), cookieStr );
     }
-    else if (m_cookieMode == CookiesManual)
+    else if (m_request.cookieMode == HTTPRequest::CookiesManual)
     {
       // Pass cookie to application
       setMetaData("setcookies", cookieStr);
@@ -3051,21 +3062,21 @@ bool HTTPProtocol::readHeader()
   if (!m_bChunked && m_iSize == -1)
     m_bKeepAlive = false;
 
-  if (m_bMustRevalidate)
+  if (m_request.bMustRevalidate)
   {
-    m_bMustRevalidate = false; // Reset just in case.
+    m_request.bMustRevalidate = false; // Reset just in case.
     if (cacheValidated)
     {
       // Yippie, we can use the cached version.
       // Update the cache with new "Expire" headers.
-      fclose(m_fcache);
-      m_fcache = 0;
+      fclose(m_request.fcache);
+      m_request.fcache = 0;
       updateExpireDate( expireDate, true );
-      m_fcache = checkCacheEntry( ); // Re-read cache entry
+      m_request.fcache = checkCacheEntry( ); // Re-read cache entry
 
-      if (m_fcache)
+      if (m_request.fcache)
       {
-          m_bCachedRead = true;
+          m_request.bCachedRead = true;
           return readHeader(); // Read header again, but now from cache.
        }
        else
@@ -3076,8 +3087,8 @@ bool HTTPProtocol::readHeader()
      else
      {
        // Validation failed. Close cache.
-       fclose(m_fcache);
-       m_fcache = 0;
+       fclose(m_request.fcache);
+       m_request.fcache = 0;
      }
   }
 
@@ -3140,26 +3151,26 @@ bool HTTPProtocol::readHeader()
                   << endl;
                   
     redirection(u.url());
-    m_bCachedWrite = false; // Turn off caching on re-direction (DA)
+    m_request.bCachedWrite = false; // Turn off caching on re-direction (DA)
     mayCache = false;
   }
 
   // Inform the job that we can indeed resume...
-  if ( m_bCanResume && m_request.offset )
+  if ( bCanResume && m_request.offset )
     canResume();
 
   // Do not cache pages originating from password
   // protected sites.
   if ( !hasCacheDirective && Authentication != AUTH_None )
   {
-    m_bCachedWrite = false;
+    m_request.bCachedWrite = false;
     mayCache = false;
   }
 
   // Do not cache any text from SSL sites.
   if (m_bIsSSL && m_strMimeType.startsWith("text/"))
   {
-    m_bCachedWrite = false;
+    m_request.bCachedWrite = false;
     mayCache = false;
   }
 
@@ -3273,8 +3284,8 @@ bool HTTPProtocol::readHeader()
     setMetaData("content-disposition", disposition);
   }
 
-  if (!m_lastModified.isEmpty())
-    setMetaData("modified", m_lastModified);
+  if (!m_request.lastModified.isEmpty())
+    setMetaData("modified", m_request.lastModified);
 
   if (!mayCache)
   {
@@ -3303,23 +3314,23 @@ bool HTTPProtocol::readHeader()
      return true;
 
   // Do we want to cache this request?
-  if (m_bUseCache)
+  if (m_request.bUseCache)
   {
-     ::unlink( QFile::encodeName(m_state.cef));
-     if ( m_bCachedWrite && !m_strMimeType.isEmpty() )
+     ::unlink( QFile::encodeName(m_request.cef));
+     if ( m_request.bCachedWrite && !m_strMimeType.isEmpty() )
      {
         // Check...
         createCacheEntry(m_strMimeType, expireDate); // Create a cache entry
-        if (!m_fcache)
-           m_bCachedWrite = false; // Error creating cache entry.
-        m_expireDate = expireDate;
+        if (!m_request.fcache)
+           m_request.bCachedWrite = false; // Error creating cache entry.
+        m_request.expireDate = expireDate;
         m_maxCacheSize = config()->readNumEntry("MaxCacheSize", DEFAULT_MAX_CACHE_AGE) / 2;
      }
   }
 
-  if (m_bCachedWrite && !m_strMimeType.isEmpty())
+  if (m_request.bCachedWrite && !m_strMimeType.isEmpty())
     kdDebug(7113) << "(" << m_pid << ") Cache, adding \"" << m_request.url.url() << "\"" << endl;
-  else if (m_bCachedWrite && m_strMimeType.isEmpty())
+  else if (m_request.bCachedWrite && m_strMimeType.isEmpty())
     kdDebug(7113) << "(" << m_pid << ") Cache, pending \"" << m_request.url.url() << "\"" << endl;
   else
     kdDebug(7113) << "(" << m_pid << ") Cache, not adding \"" << m_request.url.url() << "\"" << endl;
@@ -3433,13 +3444,13 @@ void HTTPProtocol::httpClose( bool keepAlive )
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose" << endl;
 
-  if (m_fcache)
+  if (m_request.fcache)
   {
-     fclose(m_fcache);
-     m_fcache = 0;
-     if (m_bCachedWrite)
+     fclose(m_request.fcache);
+     m_request.fcache = 0;
+     if (m_request.bCachedWrite)
      {
-        QString filename = m_state.cef + ".new";
+        QString filename = m_request.cef + ".new";
         ::unlink( QFile::encodeName(filename) );
      }
   }
@@ -3687,7 +3698,7 @@ void HTTPProtocol::slotData(const QByteArray &d)
    if ( !m_dataInternal )
    {
       data( d );
-      if (m_bCachedWrite && m_fcache)
+      if (m_request.bCachedWrite && m_request.fcache)
          writeCacheEntry(d.data(), d.size());
    }
    else
@@ -3743,17 +3754,17 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   else
     infoMessage( i18n( "Retrieving from %1..." ).arg( m_request.hostname ) );
 
-  if (m_bCachedRead)
+  if (m_request.bCachedRead)
   {
     kdDebug(7113) << "HTTPProtocol::readBody: read data from cache!" << endl;
-    m_bCachedWrite = false;
+    m_request.bCachedWrite = false;
     
     char buffer[ MAX_IPC_SIZE ];
 
     // Jippie! It's already in the cache :-)
-    while (!feof(m_fcache) && !ferror(m_fcache))
+    while (!feof(m_request.fcache) && !ferror(m_request.fcache))
     {
-      int nbytes = fread( buffer, 1, MAX_IPC_SIZE, m_fcache);
+      int nbytes = fread( buffer, 1, MAX_IPC_SIZE, m_request.fcache);
 
       if (nbytes > 0)
       {
@@ -3910,11 +3921,11 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
                           <<  m_strMimeType << endl;
           }
 
-          if ( m_bCachedWrite )
+          if ( m_request.bCachedWrite )
           {
-            createCacheEntry( m_strMimeType, m_expireDate );
-            if (!m_fcache)
-              m_bCachedWrite = false;
+            createCacheEntry( m_strMimeType, m_request.expireDate );
+            if (!m_request.fcache)
+              m_request.bCachedWrite = false;
           }
 
           if ( cpMimeBuffer )
@@ -3963,7 +3974,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   // Close cache entry
   if (m_iBytesLeft == 0)
   {
-     if (m_bCachedWrite && m_fcache)
+     if (m_request.bCachedWrite && m_request.fcache)
         closeCacheEntry();
   }
 
@@ -4059,12 +4070,12 @@ void HTTPProtocol::cacheUpdate( const KURL& url, bool no_cache, time_t expireDat
 
   if (no_cache)
   {
-     m_fcache = checkCacheEntry( );
-     if (m_fcache)
+     m_request.fcache = checkCacheEntry( );
+     if (m_request.fcache)
      {
-       fclose(m_fcache);
-       m_fcache = 0;
-       ::unlink( QFile::encodeName(m_state.cef) );
+       fclose(m_request.fcache);
+       m_request.fcache = 0;
+       ::unlink( QFile::encodeName(m_request.cef) );
      }
   }
   else
@@ -4125,7 +4136,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
 
    CEF = dir + "/" + CEF;
 
-   m_state.cef = CEF;
+   m_request.cef = CEF;
 
    const char *mode = (readWrite ? "r+" : "r");
 
@@ -4165,16 +4176,16 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
    if (ok)
    {
       date = (time_t) strtoul(buffer, 0, 10);
-      m_creationDate = date;
+      m_request.creationDate = date;
       if (m_maxCacheAge && (difftime(currentDate, date) > m_maxCacheAge))
       {
-         m_bMustRevalidate = true;
-         m_expireDate = currentDate;
+         m_request.bMustRevalidate = true;
+         m_request.expireDate = currentDate;
       }
    }
 
    // Expiration Date
-   m_cacheExpireDateOffset = ftell(fs);
+   m_request.cacheExpireDateOffset = ftell(fs);
    if (ok && (!fgets(buffer, 400, fs)))
       ok = false;
    if (ok)
@@ -4184,13 +4195,13 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
          date = (time_t) strtoul(buffer, 0, 10);
          // After the expire date we need to revalidate.
          if (!date || difftime(currentDate, date) >= 0)
-            m_bMustRevalidate = true;
-         m_expireDate = date;
+            m_request.bMustRevalidate = true;
+         m_request.expireDate = date;
       }
       else if (m_request.cache == CC_Refresh)
       {
-         m_bMustRevalidate = true;
-         m_expireDate = currentDate;
+         m_request.bMustRevalidate = true;
+         m_request.expireDate = currentDate;
       }
    }
 
@@ -4199,7 +4210,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
       ok = false;
    if (ok)
    {
-      m_etag = QString(buffer).stripWhiteSpace();
+      m_request.etag = QString(buffer).stripWhiteSpace();
    }
 
    // Last-Modified
@@ -4207,7 +4218,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
       ok = false;
    if (ok)
    {
-      m_lastModified = QString(buffer).stripWhiteSpace();
+      m_request.lastModified = QString(buffer).stripWhiteSpace();
    }
 
    if (ok)
@@ -4268,7 +4279,7 @@ void HTTPProtocol::updateExpireDate(time_t expireDate, bool updateCreationDate)
             date.setNum( creationDate + expireDate );
         }
         date = date.leftJustify(16);
-        if (!ok || fseek(fs, m_cacheExpireDateOffset, SEEK_SET))
+        if (!ok || fseek(fs, m_request.cacheExpireDateOffset, SEEK_SET))
             return;
         fputs(date.latin1(), fs);      // Expire date
         fseek(fs, 0, SEEK_END);
@@ -4278,7 +4289,7 @@ void HTTPProtocol::updateExpireDate(time_t expireDate, bool updateCreationDate)
 
 void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
 {
-   QString dir = m_state.cef;
+   QString dir = m_request.cef;
    int p = dir.findRev('/');
    if (p == -1) return; // Error.
    dir.truncate(p);
@@ -4286,48 +4297,48 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
    // Create file
    (void) ::mkdir( QFile::encodeName(dir), 0700 );
 
-   QString filename = m_state.cef + ".new";  // Create a new cache entryexpireDate
+   QString filename = m_request.cef + ".new";  // Create a new cache entryexpireDate
 
 //   kdDebug( 7103 ) <<  "creating new cache entry: " << filename << endl;
 
-   m_fcache = fopen( QFile::encodeName(filename), "w");
-   if (!m_fcache)
+   m_request.fcache = fopen( QFile::encodeName(filename), "w");
+   if (!m_request.fcache)
    {
       kdWarning(7113) << "(" << m_pid << ")createCacheEntry: opening " << filename << " failed." << endl;
       return; // Error.
    }
 
-   fputs(CACHE_REVISION, m_fcache);    // Revision
+   fputs(CACHE_REVISION, m_request.fcache);    // Revision
 
-   fputs(m_request.url.url().latin1(), m_fcache);  // Url
-   fputc('\n', m_fcache);
+   fputs(m_request.url.url().latin1(), m_request.fcache);  // Url
+   fputc('\n', m_request.fcache);
 
    QString date;
-   m_creationDate = time(0);
-   date.setNum( m_creationDate );
+   m_request.creationDate = time(0);
+   date.setNum( m_request.creationDate );
    date = date.leftJustify(16);
-   fputs(date.latin1(), m_fcache);      // Creation date
-   fputc('\n', m_fcache);
+   fputs(date.latin1(), m_request.fcache);      // Creation date
+   fputc('\n', m_request.fcache);
 
    date.setNum( expireDate );
    date = date.leftJustify(16);
-   fputs(date.latin1(), m_fcache);      // Expire date
-   fputc('\n', m_fcache);
+   fputs(date.latin1(), m_request.fcache);      // Expire date
+   fputc('\n', m_request.fcache);
 
-   if (!m_etag.isEmpty())
-      fputs(m_etag.latin1(), m_fcache);    //ETag
-   fputc('\n', m_fcache);
+   if (!m_request.etag.isEmpty())
+      fputs(m_request.etag.latin1(), m_request.fcache);    //ETag
+   fputc('\n', m_request.fcache);
 
-   if (!m_lastModified.isEmpty())
-      fputs(m_lastModified.latin1(), m_fcache);    // Last modified
-   fputc('\n', m_fcache);
+   if (!m_request.lastModified.isEmpty())
+      fputs(m_request.lastModified.latin1(), m_request.fcache);    // Last modified
+   fputc('\n', m_request.fcache);
 
-   fputs(mimetype.latin1(), m_fcache);  // Mimetype
-   fputc('\n', m_fcache);
+   fputs(mimetype.latin1(), m_request.fcache);  // Mimetype
+   fputc('\n', m_request.fcache);
 
-   if (!m_strCharset.isEmpty())
-      fputs(m_strCharset.latin1(), m_fcache);    // Charset
-   fputc('\n', m_fcache);
+   if (!m_request.strCharset.isEmpty())
+      fputs(m_request.strCharset.latin1(), m_request.fcache);    // Charset
+   fputc('\n', m_request.fcache);
 
    return;
 }
@@ -4337,23 +4348,23 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
 
 void HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
 {
-   if (fwrite( buffer, nbytes, 1, m_fcache) != 1)
+   if (fwrite( buffer, nbytes, 1, m_request.fcache) != 1)
    {
       kdWarning(7113) << "(" << m_pid << ") writeCacheEntry: writing " << nbytes << " bytes failed." << endl;
-      fclose(m_fcache);
-      m_fcache = 0;
-      QString filename = m_state.cef + ".new";
+      fclose(m_request.fcache);
+      m_request.fcache = 0;
+      QString filename = m_request.cef + ".new";
       ::unlink( QFile::encodeName(filename) );
       return;
    }
-   long file_pos = ftell( m_fcache ) / 1024;
+   long file_pos = ftell( m_request.fcache ) / 1024;
    if ( file_pos > m_maxCacheSize )
    {
       kdDebug(7113) << "writeCacheEntry: File size reaches " << file_pos 
                     << "Kb, exceeds cache limits." << endl;
-      fclose(m_fcache);
-      m_fcache = 0;
-      QString filename = m_state.cef + ".new";
+      fclose(m_request.fcache);
+      m_request.fcache = 0;
+      QString filename = m_request.cef + ".new";
       ::unlink( QFile::encodeName(filename) );
       return;
    }
@@ -4361,16 +4372,16 @@ void HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
 
 void HTTPProtocol::closeCacheEntry()
 {
-   QString filename = m_state.cef + ".new";
-   int result = fclose( m_fcache);
-   m_fcache = 0;
+   QString filename = m_request.cef + ".new";
+   int result = fclose( m_request.fcache);
+   m_request.fcache = 0;
    if (result == 0)
    {
-      if (::rename( QFile::encodeName(filename), QFile::encodeName(m_state.cef)) == 0)
+      if (::rename( QFile::encodeName(filename), QFile::encodeName(m_request.cef)) == 0)
          return; // Success
 
       kdWarning(7113) << "(" << m_pid << ") closeCacheEntry: error renaming "
-                      << "cache entry. (" << filename << " -> " << m_state.cef 
+                      << "cache entry. (" << filename << " -> " << m_request.cef 
                       << ")" << endl;
    }
    
@@ -4727,7 +4738,7 @@ bool HTTPProtocol::getAuthorization()
     return true;
   }
 
-  if (m_bErrorPage)
+  if (m_request.bErrorPage)
      errorPage();
   else
      error( ERR_USER_CANCELED, QString::null );

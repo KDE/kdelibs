@@ -74,7 +74,6 @@ public:
     QString user;
     QString passwd;
     bool  doProxy;
-    QString cef; // Cache Entry File belonging to this URL.
   } HTTPState;
 
   /** DAV-specific request elements for the current connection **/
@@ -108,6 +107,28 @@ public:
     QString userAgent;
     QString id;
     DAVRequest davData;
+
+    // Cache related
+    QString cef; // Cache Entry File belonging to this URL.
+    bool bUseCache; // Whether the cache is active
+    bool bCachedRead; // Whether the file is to be read from m_fcache.
+    bool bCachedWrite; // Whether the file is to be written to m_fcache.
+    FILE* fcache; // File stream of a cache entry
+    QString etag; // ETag header.
+    QString lastModified; // Last modified.
+    bool bMustRevalidate; // Cache entry is expired.
+    long cacheExpireDateOffset; // Position in the cache entry where the
+                                  // 16 byte expire date is stored.
+    time_t expireDate; // Date when the cache entry will expire
+    time_t creationDate; // Date when the cache entry was created
+    QString strCharset; // Charset
+
+    // Indicates whether an error-page or error-msg should is preferred.
+    bool bErrorPage;
+
+    // Cookie flags
+    bool bUseCookiejar;
+    enum { CookiesAuto, CookiesManual, CookiesNone } cookieMode;
   } HTTPRequest;
 
   typedef struct
@@ -332,6 +353,11 @@ protected:
    * Resets any per session settings.
    */
   void resetSessionSettings();
+
+  /**
+   * Resets settings related to parsing a response.
+   */
+  void resetResponseSettings();
   
   /**
    * Resets any per connection settings.  These are different from
@@ -387,11 +413,15 @@ protected:
   HTTPRequest m_request;
   QPtrList<HTTPRequest> m_requestQueue;
 
-  HTTP_REV m_HTTPrev;
-
   bool m_bBusy; // Busy handling request queue.
   bool m_bEOF;
 
+//--- Settings related to a single response only
+  QStringList m_responseHeader; // All headers
+  bool m_bRedirect; // Indicates current request is a redirection
+
+  // Processing related
+  bool m_bChunked; // Chunked tranfer encoding
   int m_iSize; // Expected size of message
   long m_iBytesLeft; // # of bytes left to receive in this message.
   QByteArray m_bufReceive; // Receive buffer
@@ -402,8 +432,13 @@ protected:
   char *m_lineBufUnget;
   char *m_linePtrUnget;
   size_t m_lineCountUnget;
+
+  // Language/Encoding related
+  QStringList m_qTransferEncodings;
+  QStringList m_qContentEncodings;
+  QString m_sContentMD5;
+  QString m_strMimeType;
   
-  QStringList m_responseHeader;
 
 //--- WebDAV
   // Data structure to hold data which will be passed to an internal func.
@@ -420,29 +455,13 @@ protected:
   QByteArray m_bufPOST;
 
   // Cache related
-  bool m_bUseCache; // Whether the cache is active
-  bool m_bCachedRead; // Whether the file is to be read from m_fcache.
-  bool m_bCachedWrite; // Whether the file is to be written to m_fcache.
   int m_maxCacheAge; // Maximum age of a cache entry.
   long m_maxCacheSize; // Maximum cache size in Kb.
-  FILE* m_fcache; // File stream of a cache entry
   QString m_strCacheDir; // Location of the cache.
-  QString m_etag; // ETag header.
-  QString m_lastModified; // Last modified.
-  bool m_bMustRevalidate; // Cache entry is expired.
-  long m_cacheExpireDateOffset; // Position in the cache entry where the
-                                // 16 byte expire date is stored.
-  time_t m_expireDate;	// Date when the cache entry will expire
-  time_t m_creationDate; // Date when the cache entry was created
 
-  // Language/Encoding
-  QStringList m_qTransferEncodings;
-  QStringList m_qContentEncodings;
-  QString m_sContentMD5;
-  QString m_strMimeType;
-  QString m_strCharset;
 
-  // Proxy related members
+
+//--- Proxy related members
   bool m_bUseProxy;
   bool m_bNeedTunnel; // Whether we need to make a SSL tunnel
   bool m_bIsTunneled; // Whether we have an active SSL tunnel 
@@ -450,6 +469,7 @@ protected:
   KURL m_proxyURL;
   QString m_strProxyRealm;
 
+  // Operation mode
   QCString m_protocol;
 
   // Authentication
@@ -472,24 +492,9 @@ protected:
   // Persistent proxy connections
   bool m_bPersistentProxyConnection;
 
-  // Resumable connections
-  bool m_bCanResume;
-
-  // Chunked tranfer encoding
-  bool m_bChunked;
-
-  // Cookie flags
-  bool m_bUseCookiejar;
-  enum { CookiesAuto, CookiesManual, CookiesNone } m_cookieMode;
 
   // Indicates whether there was some connection error.
   bool m_bError;
-
-  // Indicates current request is a redirection
-  bool m_bRedirect;
-
-  // Indicates whether an error-page or error-msg should is preferred.
-  bool m_bErrorPage;
 
   DCOPClient *m_dcopClient;
 
