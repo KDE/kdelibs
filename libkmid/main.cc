@@ -155,6 +155,7 @@ int main(int argc, char **argv)
     int gm=1;
     int interactive=0; 
     int justtext=0;
+    int info=0;
     char *map_path=NULL;
     char *inputfile=NULL;
     FILE *inputfh=NULL;
@@ -176,12 +177,13 @@ int main(int argc, char **argv)
         {"interactive",0,NULL,'i'},
         {"quiet",0,NULL,'q'},
         {"text",0,NULL,'t'},
+        {"info",0,NULL,'n'},
         {"help",0,NULL,'h'},
         { 0, 0, 0, 0}
     };
-    c=getopt_long( argc, argv, "d:lm:v:f:3iqth" , long_options, &option_index);
+    c=getopt_long( argc, argv, "d:lm:v:f:3iqtnh" , long_options, &option_index);
 #else
-    c=getopt( argc, argv, "d:lm:v:f:3iqth");
+    c=getopt( argc, argv, "d:lm:v:f:3iqtnh");
 #endif
     
     long l;
@@ -217,6 +219,7 @@ int main(int argc, char **argv)
         case 'l' :  list_dev=1;break;
         case '3' :  gm=0;break;
         case 'i' :  interactive=1;break;
+        case 'n' :  info=1;break;
         case 'q' :  quiet=1;break;
         case 't' :  justtext=1;break;
         case 0 :
@@ -228,9 +231,9 @@ int main(int argc, char **argv)
             break;
         }
 #ifdef linux
-        c=getopt_long( argc, argv, "d:lm:v:f:3iqth" , long_options, &option_index);
+        c=getopt_long( argc, argv, "d:lm:v:f:3iqtnh" , long_options, &option_index);
 #else
-        c=getopt( argc, argv, "d:lm:v:f:3iqth");
+        c=getopt( argc, argv, "d:lm:v:f:3iqtnh");
 #endif
     }
     
@@ -267,6 +270,7 @@ int main(int argc, char **argv)
                "  -i, --interactive\t\tAsk for each file if it must be played\n"
                "  -q, --quiet\t\tBe quiet\n"
                "  -t, --text\t\tJust display the lyrics\n"
+               "  -n, --info\t\tShows the information about the song\n"
                "  -h, --help \t\tDisplay this help and exit\n");
         printf("\nPlease report bugs to Antonio Larrosa (antlarr@arrakis.es)\n");
         exit(0);
@@ -283,7 +287,7 @@ int main(int argc, char **argv)
     if (list_dev)
     {
         printf("Available devices :\n");
-        for (int i=0;i<devman->numberOfMidiPorts()+devman->numberOfSynthDevices();i++)
+        for (int i=0;i<devman->midiPorts()+devman->synthDevices();i++)
         {
             if (strcmp(devman->type(i),"")!=0)
                 printf("%d) %s - %s\n",i,devman->name(i),devman->type(i));
@@ -363,6 +367,9 @@ int main(int argc, char **argv)
 		  player->play(1,consoleOutput);
 		else
 		  displayLyrics(player);
+	    if (info)
+	    cout << "Total time : " << player->getInfo()->millisecsTotal << endl
+		 << "Number of Tracks : " << player->getInfo()->ntracks << endl;
             if (!quiet) cout << endl;
         }
         ok=songlist->next();

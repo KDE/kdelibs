@@ -1,6 +1,4 @@
-/**************************************************************************
-
-    midistat.h	- class midiStat, change it internally and then send it. 
+/*  midistat.h	- class midiStat, change it internally and then send it. 
     Copyright (C) 1997,98  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify

@@ -1,7 +1,5 @@
-/**************************************************************************
-
-    player.h  - class MidiPlayer. Plays a set of tracks
-    Copyright (C) 1997,98,99  Antonio Larrosa Jimenez
+/*  player.h  - class MidiPlayer. Plays a set of tracks
+    Copyright (C) 1997,98,99,2000  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -30,6 +28,11 @@
 #include "track.h"
 #include "notearray.h"
 
+/**
+ * This struct identifies text, lyrics and change tempo events 
+ *
+ * It includes 
+ */
 struct SpecialEvent
 {
     int	    id;

@@ -1,6 +1,4 @@
-/**************************************************************************
-
-    gusout.h   - class gusOut which implements support for Gravis
+/*  gusout.h   - class gusOut which implements support for Gravis
          Ultrasound cards through a /dev/sequencer device
     Copyright (C) 1998  Antonio Larrosa Jimenez
 
@@ -45,11 +43,8 @@ friend class DeviceManager;
 
 
     void getPatchesLoadingOrder(int *patchesused,int *patchesordered);
-    int loadPatch  (int pgm);// Returns : 0 if OK, -1 if error
-
     char *patchName(int pgm);
-    int patch(int p); //Returns p if the patch p has been loaded or another
-			// patch (already loaded) if p hasn't been loaded 
+
 public:
     GUSOut(int d=0,int total =12);
     ~GUSOut();
@@ -69,6 +64,9 @@ public:
     virtual void sysex		( uchar *data,ulong size);
 
     void setPatchesToUse(int *patchesused);
+    int loadPatch  (int pgm);// Returns : 0 if OK, -1 if error
+    int patch(int p); //Returns p if the patch p has been loaded or another
+			// patch (already loaded) if p hasn't been loaded 
 
 private:
 static const char *GUS_patches_directory;

@@ -390,9 +390,9 @@ void MidiOut::tmrContinue(void)
 
 #endif
 
-char *MidiOut::getMidiMapFilename(void)
+char *MidiOut::midiMapFilename(void)
 {
-  return (map!=NULL) ? map->getFilename() : (char *)"";
+  return (map!=NULL) ? map->filename() : (char *)"";
 }
 
 const char * MidiOut::deviceName(void) const

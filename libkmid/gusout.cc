@@ -208,7 +208,7 @@ void GUSOut::initDev (void)
     {
         chnmute[chn]=0;
         chnPatchChange(chn,0);
-        chnPressure(chn,127);
+//        chnPressure(chn,127);
         chnPitchBender(chn, 0x00, 0x40);
         chnController(chn, CTL_MAIN_VOLUME,127);
         chnController(chn, CTL_EXT_EFF_DEPTH, 0);
@@ -303,11 +303,12 @@ void GUSOut::chnPatchChange (uchar chn, uchar patch)
 
 void GUSOut::chnPressure (uchar chn, uchar vel)
 {
-    int i;
+/*    int i;
     vm->initSearch();
     while ((i=vm->Search(chn))!=-1)
         SEQ_CHN_PRESSURE(device, i , vel);
     chnpressure[chn]=vel;
+*/
 }
 
 void GUSOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
@@ -538,7 +539,7 @@ void GUSOut::setPatchesToUse(int *patchesused)
     {
         if (patchesused[k]!=-1) printf("%d,",patchesused[k]);
     }
-    printf("\n Patches used, smartly sorted :\n");
+    printf("\n Patches used, sorted :\n");
     for (k=0;k<256;k++)
     {
         if (patchesordered[k]!=-1) printf("%d,",patchesordered[k]);
@@ -586,7 +587,6 @@ void GUSOut::getPatchesLoadingOrder(int *patchesused,int *patchesordered)
     /* SORT */ // Decreasing order (first most used patch, then less used patch)
     qsort(&tempmelody[0],128,sizeof(instr_gm),compare_decreasing);
     qsort(&tempdrums[0],128,sizeof(instr_gm),compare_decreasing);
-    printf("sorted\n");
     
     /* Once they are sorted, the result is put on patchesordered in the following
      way : If tempmelody is : M0 M1 M2 M3 ... M127 and tempdrums is :

@@ -1,6 +1,4 @@
-/**************************************************************************
-
-    midimapper.h  - The midi mapper object
+/*  midimapper.h  - The midi mapper object
     Copyright (C) 1997  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
@@ -52,7 +50,7 @@ private:
 	Keymap *keymaps; // Real linked list of keymaps used around the program
 
 
-	char *	filename; 
+	char *_filename; 
 	   // Stores the name of the file from which the map was loaded
 
 	int mapExpressionToVolumeEvents; 
@@ -98,7 +96,7 @@ public:
 	void  pitchBender(uchar chn,uchar &lsb,uchar &msb);
         void  controller(uchar chn,uchar &ctl,uchar &v);
 
-	char *getFilename(void);
+	char *filename(void);
 
 };
 

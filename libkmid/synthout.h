@@ -1,9 +1,7 @@
-/**************************************************************************
-
-    synthout.h	- class synthOut which handles the /dev/sequencer device
+/*  synthout.h	- class synthOut which handles the /dev/sequencer device
 			for synths (as AWE32)
-    Copyright (C) 1997,98  Antonio Larrosa Jimenez
-			P.J.Leonard
+    Copyright (C) 1997,98  Antonio Larrosa Jimenez and P.J.Leonard
+		  1999,2000 Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

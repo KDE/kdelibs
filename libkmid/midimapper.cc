@@ -31,7 +31,7 @@ MidiMapper::MidiMapper(const char *name)
 {
     _ok=1;
     keymaps=NULL;
-    filename=NULL;
+    _filename=NULL;
     mapPitchBender=0;
     mapExpressionToVolumeEvents=0;
     if ((name==NULL)||(name[0]==0))
@@ -51,7 +51,7 @@ MidiMapper::MidiMapper(const char *name)
 
 MidiMapper::~MidiMapper()
 {
-    if (filename!=NULL) delete filename;
+    if (_filename!=NULL) delete _filename;
     deallocateMaps();
 }
 
@@ -143,9 +143,9 @@ void MidiMapper::loadFile(const char *name)
     if ( fh == NULL ) { _ok = -1; return; };
     char s[101];
     s[0] = 0;
-    if ( filename != NULL ) delete filename;
-    filename = new char[ strlen(name)+1 ];
-    strcpy(filename,name);
+    if ( _filename != NULL ) delete _filename;
+    _filename = new char[ strlen(name)+1 ];
+    strcpy(_filename,name);
 #ifdef MIDIMAPPERDEBUG
     printf("Loading mapper ...\n");
 #endif
@@ -408,9 +408,9 @@ void MidiMapper::readChannelmap(FILE *fh)
     
 }
 
-char *MidiMapper::getFilename(void)
+char *MidiMapper::filename(void)
 {
-    return (filename!=NULL)? filename : (char *)"";
+    return (_filename!=NULL)? _filename : (char *)"";
 }
 
 uchar MidiMapper::key(uchar chn,uchar pgm, uchar note)

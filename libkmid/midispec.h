@@ -1,6 +1,4 @@
-/**************************************************************************
-
-    midispec.h  - Some definitions to make the code more readable 
+/*  midispec.h  - Some definitions to make the code more readable 
     Copyright (C) 1997,98  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify

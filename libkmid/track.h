@@ -1,7 +1,5 @@
-/**************************************************************************
-
-    track.h  - class track, which has a midi file track and its events
-    Copyright (C) 1997,98  Antonio Larrosa Jimenez
+/*  track.h  - class track, which has a midi file track and its events
+    Copyright (C) 1997,98,99,2000  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

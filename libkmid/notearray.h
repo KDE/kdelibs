@@ -1,6 +1,4 @@
-/**************************************************************************
-
-    notearray.h  - NoteArray class, which holds an array of notes
+/*  notearray.h  - NoteArray class, which holds an array of notes
     Copyright (C) 1998  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify

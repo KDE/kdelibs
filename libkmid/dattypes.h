@@ -1,6 +1,4 @@
-/**************************************************************************
-
-    dattypes.h  - Some useful definitions and functions 
+/*  dattypes.h  - Some useful definitions and functions 
     Copyright (C) 1997,98  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
@@ -31,8 +29,17 @@
 #undef ushort
 #undef ulong
 
+/**
+ * Unsigned char
+ */
 typedef unsigned char uchar;
+/**
+ * Unsigned short
+ */
 typedef unsigned short ushort;
+/**
+ * Unsigned long
+ */
 typedef unsigned long ulong;
 
 ushort readShort(FILE *fh);

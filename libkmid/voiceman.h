@@ -1,7 +1,5 @@
-/**************************************************************************
-
-    voiceman.h - The voiceManager class handles a set of voices for synths
-    Copyright (C) 1997,98  Antonio Larrosa Jimenez
+/*  voiceman.h - The voiceManager class handles a set of voices for synths
+    Copyright (C) 1997,98,99,2000  Antonio Larrosa Jimenez
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

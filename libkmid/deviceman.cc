@@ -328,7 +328,7 @@ void DeviceManager::chnController  ( uchar chn, uchar ctl , uchar v )
     MidiOut *midi=chntodev(chn);
     midi->chnController(chn,ctl,v);
 }
-void DeviceManager::sysex          ( uchar *data,ulong size)
+void DeviceManager::sysEx          ( uchar *data,ulong size)
 {
     for (int i=0;i<n_midi;i++)
         device[i]->sysex(data,size);
@@ -412,7 +412,7 @@ void DeviceManager::tmrContinue(void)
 #endif
 }
 
-void DeviceManager::sync(int i)
+void DeviceManager::sync(bool f)
 {
 #ifdef HANDLETIMEINDEVICES
     device[default_dev]->sync(i);
@@ -420,12 +420,11 @@ void DeviceManager::sync(int i)
 #ifdef DEVICEMANDEBUG
     printf("Sync %d\n",i);
 #endif
-    if (i==1) 
+    if (f) 
     {    
         seqbuf_clean();
         /* If you have any problem, try removing the next 2 lines, 
-         I though they would be useful here, but I don't know
-         what they exactly do :-) */
+         I though they would be useful here but the may have side effects */
         ioctl(seqfd,SNDCTL_SEQ_RESET);
         ioctl(seqfd,SNDCTL_SEQ_PANIC);
     }
@@ -516,7 +515,7 @@ const char *DeviceManager::type(int i)
     return "";
 }
 
-int DeviceManager::getDefaultDevice(void)
+int DeviceManager::defaultDevice(void)
 {
     return default_dev;
 }
@@ -528,11 +527,11 @@ void DeviceManager::setDefaultDevice(int i)
     for (int i=0;i<16;i++) chn2dev[i]=default_dev;
 }
 
-char *DeviceManager::getMidiMapFilename(void)
+char *DeviceManager::midiMapFilename(void)
 {
     if (device==NULL) return (char *)"";
     return (device[default_dev]!=NULL) ? 
-        device[default_dev]->getMidiMapFilename() : (char *)"";
+        device[default_dev]->midiMapFilename() : (char *)"";
 }
 
 void DeviceManager::setMidiMap(MidiMapper *map)
@@ -549,9 +548,9 @@ int DeviceManager::setPatchesToUse(int *patchesused)
 {
     if (checkInit()<0) return -1;
     
-    if ((device[getDefaultDevice()]->deviceType())==KMID_GUS)
+    if ((device[defaultDevice()]->deviceType())==KMID_GUS)
     {
-        GUSOut *gus=(GUSOut *)device[getDefaultDevice()];
+        GUSOut *gus=(GUSOut *)device[defaultDevice()];
         gus->setPatchesToUse(patchesused);
     }
     return 0;
