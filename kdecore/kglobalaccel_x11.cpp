@@ -35,8 +35,8 @@
 #include <kdebug.h>
 #include <kkeynative.h>
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kxerrorhandler.h> 
+#ifdef Q_WS_X11
+#include <kxerrorhandler.h>
 #endif
 
 #include <X11/X.h>
@@ -138,7 +138,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 	if( !keyCodeX )
 		return false;
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
         KXErrorHandler handler( XGrabErrorHandler );
 #endif
 	// We'll have to grab 8 key modifier combinations in order to cover all
@@ -168,7 +168,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 
         bool failed = false;
         if( bGrab ) {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
         	failed = handler.error( true ); // sync now
 #endif
         	// If grab failed, then ungrab any grabs that could possibly succeed
@@ -187,7 +187,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 		codemod.mod = keyModX;
 		if( key.mod() & KKeyServer::MODE_SWITCH )
 			codemod.mod |= KKeyServer::MODE_SWITCH;
-		
+
 		if( bGrab )
 			m_rgCodeModToAction.insert( codemod, pAction );
 		else

@@ -38,7 +38,7 @@
 #include <kstandarddirs.h>
 #include <kaboutdata.h>
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
 #include <kwin.h> 
 #include <kstartupinfo.h> 
 #endif
@@ -47,7 +47,7 @@
 #include "kdebug.h"
 #include "kuniqueapplication.h"
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
 #include <netwm.h> 
 #include <X11/Xlib.h> 
 #define DISPLAY "DISPLAY"
@@ -184,8 +184,7 @@ KUniqueApplication::start()
            ::write(fd[1], &result, 1);
            ::close(fd[1]);
 #if 0
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11
+#ifdef Q_WS_X11
            // say we're up and running ( probably no new window will appear )
            KStartupInfoId id;
            if( kapp != NULL ) // KApplication constructor unsets the env. variable
@@ -210,8 +209,7 @@ KUniqueApplication::start()
      }
 
      {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11
+#ifdef Q_WS_X11
          KStartupInfoId id;
          if( kapp != NULL ) // KApplication constructor unsets the env. variable
              id.initId( kapp->startupId());
@@ -274,7 +272,7 @@ KUniqueApplication::start()
      }
 
      QCString new_asn_id;
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
      KStartupInfoId id;
      if( kapp != NULL ) // KApplication constructor unsets the env. variable
          id.initId( kapp->startupId());
@@ -379,7 +377,7 @@ void KUniqueApplication::newInstanceNoFork()
   s_handleAutoStarted = false;
   newInstance();
   d->firstInstance = false;
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
   // KDE4 remove
   // A hack to make startup notification stop for apps which override newInstance()
   // and reuse an already existing window there, but use KWin::activateWindow()
@@ -445,7 +443,7 @@ KUniqueApplication::processDelayed()
        s_handleAutoStarted = false;
        int exitCode = newInstance();
        d->firstInstance = false;
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
        if( s_handleAutoStarted )
            KStartupInfo::handleAutoAppStartedSending(); // KDE4 remove?
 #endif
@@ -470,11 +468,10 @@ int KUniqueApplication::newInstance()
   if (!d->firstInstance)
   {
     
-//#ifndef Q_WS_QWS // FIXME(E): Implement for Qt/Embedded
     if ( mainWidget() )
     {
       mainWidget()->show();
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
     // This is the line that handles window activation if necessary,
     // and what's important, it does it properly. If you reimplement newInstance(),
     // and don't call the inherited one, use this.

@@ -20,7 +20,7 @@
 #include <qwidget.h>
 
 #include "config.h"
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY // not needed anyway :-)
+#ifdef Q_WS_X11 // not needed anyway :-)
 
 #include "krootprop.h"
 #include "kglobal.h"
@@ -29,8 +29,8 @@
 #include "kapplication.h"
 #include <qtextstream.h>
 
-#include <X11/Xlib.h> 
-#include <X11/Xatom.h> 
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
 
 KRootProp::KRootProp(const QString& rProp )
 {
@@ -49,7 +49,7 @@ void KRootProp::sync()
 {
   if ( !dirty )
       return;
-  
+
   QString propString;
   if ( !propDict.isEmpty() )
   {
@@ -79,10 +79,10 @@ void KRootProp::setProp( const QString& rProp )
   unsigned long bytes_after;
   long offset;
   char *buf;
-	
+
   // If a property has already been opened write
   // the dictionary back to the root window
-	
+
   if( atom )
     sync();
 
@@ -91,7 +91,7 @@ void KRootProp::setProp( const QString& rProp )
     return;
 
   atom = XInternAtom( qt_xdisplay(), rProp.utf8(), False);
-		
+
   QString s;
   offset = 0; bytes_after = 1;
   while (bytes_after != 0)
@@ -104,15 +104,15 @@ void KRootProp::setProp( const QString& rProp )
     if (buf)
       XFree(buf);
   }
-			
+
   // Parse through the property string stripping out key value pairs
   // and putting them in the dictionary
-		
+
   QString keypair;
   int i=0;
   QString key;
   QString value;
-		
+
   while(s.length() >0 )
   {
     // parse the string for first key-value pair separator '\n'
@@ -120,16 +120,16 @@ void KRootProp::setProp( const QString& rProp )
     i = s.find("\n");
     if(i == -1)
       i = s.length();
-		
+
     // extract the key-values pair and remove from string
-			
+
     keypair = s.left(i);
     s.remove(0,i+1);
-			
+
     // split key and value and add to dictionary
-			
+
     keypair.simplifyWhiteSpace();
-			
+
     i = keypair.find( "=" );
     if( i != -1 )
     {
@@ -220,7 +220,7 @@ QColor KRootProp::readColorEntry( const QString& rKey,
     aRetColor.setNamedColor( aValue );
     return aRetColor;
   }
-		
+
   // Parse "red,green,blue"
   // find first comma
   int nIndex1 = aValue.find( ',' );
@@ -287,7 +287,7 @@ QString KRootProp::removeEntry(const QString& rKey)
     } else
 	return QString::null;
 }
-  
+
 QStringList KRootProp::listEntries() const
 {
     QMap<QString,QString>::ConstIterator it;
@@ -295,7 +295,7 @@ QStringList KRootProp::listEntries() const
 
     for (it=propDict.begin(); it!=propDict.end(); it++)
 	list += it.key();
-	
+
     return list;
 }
 #endif

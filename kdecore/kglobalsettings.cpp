@@ -27,9 +27,7 @@
 #include <ksimpleconfig.h>
 #include <kapplication.h>
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <kipc.h>
-#endif
 
 #ifdef Q_WS_WIN
 #include <windows.h>
@@ -51,11 +49,8 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #include <stdlib.h>
 #include <kprotocolinfo.h>
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11
-//#include <X11/X.h>
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
-//#include <X11/Xutil.h>
 #endif
 
 QString* KGlobalSettings::s_desktopPath = 0;
@@ -503,10 +498,8 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
       s_documentPath->append('/');
 
     // Make sure this app gets the notifications about those paths
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if (kapp)
         kapp->addKipcEventMask(KIPC::SettingsChanged);
-#endif
 }
 
 void KGlobalSettings::initColors()
@@ -566,7 +559,7 @@ KGlobalSettings::KMouseSettings & KGlobalSettings::mouseSettings()
             s.handed = KMouseSettings::LeftHanded;
         else
         {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
             // get settings from X server
             // This is a simplified version of the code in input/mouse.cpp
             // Keep in sync !

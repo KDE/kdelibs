@@ -29,11 +29,7 @@
 
 #include <qwindowdefs.h>
 
-#ifdef Q_WS_WIN //TMP
-#define K_WS_QTONLY
-#endif
-
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
 #include <X11/X.h> 
 #include <X11/Xlib.h> 
 #include <kxerrorhandler.h> 
@@ -42,7 +38,7 @@
 #include <kipc.h>
 
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
 static long getSimpleProperty(Window w, Atom a)
 {
     Atom real_type;
@@ -62,7 +58,7 @@ static long getSimpleProperty(Window w, Atom a)
 
 void KIPC::sendMessage(Message msg, WId w, int data)
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
     static Atom a = 0;
     if (a == 0)
 	a = XInternAtom(qt_xdisplay(), "KIPC_COMM_ATOM", False);
@@ -91,7 +87,7 @@ void KIPC::sendMessage(Message msg, WId w, int data)
 
 void KIPC::sendMessageAll(Message msg, int data)
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined Q_WS_X11
     unsigned int i, nrootwins;
     Window dw1, dw2, *rootwins = 0;
     Display *dpy = qt_xdisplay();

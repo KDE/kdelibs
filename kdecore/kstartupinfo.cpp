@@ -33,7 +33,7 @@ DEALINGS IN THE SOFTWARE.
 #include <qwidget.h>
 
 #include "config.h"
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
 //#ifdef Q_WS_X11 // FIXME(E): Re-implement in a less X11 specific way
 #include <qglobal.h>
 #ifdef HAVE_CONFIG_H
@@ -51,15 +51,15 @@ DEALINGS IN THE SOFTWARE.
 #include <sys/time.h>
 #include <stdlib.h>
 #include <qtimer.h>
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <netwm.h> 
+#ifdef Q_WS_X11
+#include <netwm.h>
 #endif
 #include <kdebug.h>
 #include <kapplication.h>
 #include <signal.h>
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kwinmodule.h> 
-#include <kxmessages.h> 
+#ifdef Q_WS_X11
+#include <kwinmodule.h>
+#include <kxmessages.h>
 #include <kwin.h>
 #endif
 
@@ -97,7 +97,7 @@ struct KStartupInfoPrivate
         QMap< KStartupInfoId, KStartupInfo::Data > silent_startups;
         // contains ASN's that had change: but no new: yet
         QMap< KStartupInfoId, KStartupInfo::Data > uninited_startups;
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
         KWinModule* wm_module;
         KXMessages msgs;
 #endif
@@ -105,7 +105,7 @@ struct KStartupInfoPrivate
 	int flags;
 	KStartupInfoPrivate( int flags_P )
     	    :
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
 	    msgs( NET_STARTUP_MSG, NULL, false ),
 #endif
 	      flags( flags_P ) {}
@@ -134,7 +134,7 @@ void KStartupInfo::init( int flags_P )
         return;
 
     d = new KStartupInfoPrivate( flags_P );
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     if( !( d->flags & DisableKWinModule ))
         {
         d->wm_module = new KWinModule( this );
@@ -509,7 +509,7 @@ void KStartupInfo::appStarted( const QCString& startup_id )
         KStartupInfo::sendFinish( id );
     else if( getenv( "DISPLAY" ) != NULL ) // don't rely on qt_xdisplay()
         {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
         Display* disp = XOpenDisplay( NULL );
         if( disp != NULL )
             {
@@ -613,7 +613,7 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
             }
         return find_id( id, id_O, data_O ) ? Match : NoMatch;
         }
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     NETWinInfo info( qt_xdisplay(),  w_P, qt_xrootwin(),
         NET::WMWindowType | NET::WMPid | NET::WMState );
     pid_t pid = info.pid();
@@ -730,7 +730,7 @@ bool KStartupInfo::find_wclass( QCString res_name, QCString res_class,
     return false;
     }
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
 static Atom net_startup_atom = None;
 
 static QCString read_startup_id_property( WId w_P )
@@ -756,7 +756,7 @@ static QCString read_startup_id_property( WId w_P )
 
 QCString KStartupInfo::windowStartupId( WId w_P )
     {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     if( net_startup_atom == None )
         net_startup_atom = XInternAtom( qt_xdisplay(), NET_STARTUP_WINDOW, False );
     if( utf8_string_atom == None )
@@ -778,7 +778,7 @@ QCString KStartupInfo::windowStartupId( WId w_P )
 
 void KStartupInfo::setWindowStartupId( WId w_P, const QCString& id_P )
     {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     if( id_P.isNull())
         return;
     if( net_startup_atom == None )
@@ -792,7 +792,7 @@ void KStartupInfo::setWindowStartupId( WId w_P, const QCString& id_P )
 
 QCString KStartupInfo::get_window_hostname( WId w_P )
     {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     XTextProperty tp;
     char** hh;
     int cnt;
@@ -930,7 +930,7 @@ QCString KStartupInfo::createNewStartupId()
     hostname[ 0 ] = '\0';
     if (!gethostname( hostname, 255 ))
 	hostname[sizeof(hostname)-1] = '\0';
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
     extern Time qt_x_user_time;
 #else
     long qt_x_user_time = 0;
@@ -994,7 +994,7 @@ void KStartupInfoId::initId( const QCString& id_P )
         }
     d->id = KStartupInfo::createNewStartupId();
     }
-    
+
 bool KStartupInfoId::setupStartupEnv() const
     {
     if( id().isEmpty())

@@ -47,8 +47,8 @@
 #include <kapplication.h>
 #include <dcopclient.h>
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h> 
+#if defined Q_WS_X11
+#include <X11/Xlib.h>
 #endif
 
 KCrash::HandlerType KCrash::_emergencySaveFunction = 0;
@@ -163,14 +163,16 @@ KCrash::defaultCrashHandler (int sig)
           // argument 0 has to be drkonqi
           argv[i++] = qstrdup("drkonqi");
 
+#if defined Q_WS_X11
           // start up on the correct display
           argv[i++] = qstrdup("-display");
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
           if ( qt_xdisplay() )
             argv[i++] = XDisplayString(qt_xdisplay());
           else
             argv[i++] = getenv("DISPLAY");
 #elif defined(Q_WS_QWS)
+          // start up on the correct display
+          argv[i++] = qstrdup("-display");
           argv[i++] = getenv("QWS_DISPLAY");
 #endif
 

@@ -35,45 +35,6 @@
 #include <kdebug.h>
 #include <kkeynative.h>
 
-/*
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kxerrorhandler.h> 
-#endif
-
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/keysym.h>
-#include <fixx11h.h>
-
-extern "C" {
-  static int XGrabErrorHandler( Display *, XErrorEvent *e ) {
-	if ( e->error_code != BadAccess ) {
-	    kdWarning() << "grabKey: got X error " << e->type << " instead of BadAccess\n";
-	}
-	return 1;
-  }
-}
-
-// g_keyModMaskXAccel
-//	mask of modifiers which can be used in shortcuts
-//	(meta, alt, ctrl, shift)
-// g_keyModMaskXOnOrOff
-//	mask of modifiers where we don't care whether they are on or off
-//	(caps lock, num lock, scroll lock)
-static uint g_keyModMaskXAccel = 0;
-static uint g_keyModMaskXOnOrOff = 0;
-
-static void calculateGrabMasks()
-{
-	g_keyModMaskXAccel = KKeyServer::accelModMaskX();
-	g_keyModMaskXOnOrOff =
-			KKeyServer::modXLock() |
-			KKeyServer::modXNumLock() |
-			KKeyServer::modXScrollLock();
-	//kdDebug() << "g_keyModMaskXAccel = " << g_keyModMaskXAccel
-	//	<< "g_keyModMaskXOnOrOff = " << g_keyModMaskXOnOrOff << endl;
-}
-*/
 //----------------------------------------------------
 
 KGlobalAccelPrivate::KGlobalAccelPrivate()
@@ -131,18 +92,12 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 	    keyCodeX = 111;
 	}
 
-#ifndef __osf__
-// this crashes under Tru64 so .....
 	kdDebug(125) << QString( "grabKey( key: '%1', bGrab: %2 ): keyCodeX: %3 keyModX: %4\n" )
 		.arg( key.key().toStringInternal() ).arg( bGrab )
 		.arg( keyCodeX, 0, 16 ).arg( keyModX, 0, 16 );
-#endif
 	if( !keyCodeX )
 		return false;
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-        KXErrorHandler handler( XGrabErrorHandler );
-#endif
 	// We'll have to grab 8 key modifier combinations in order to cover all
 	//  combinations of CapsLock, NumLock, ScrollLock.
 	// Does anyone with more X-savvy know how to set a mask on qt_xrootwin so that
@@ -170,7 +125,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 
         bool failed = false;
         if( bGrab ) {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#ifdef Q_WS_X11
         	failed = handler.error( true ); // sync now
 #endif
         	// If grab failed, then ungrab any grabs that could possibly succeed
@@ -189,7 +144,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 		codemod.mod = keyModX;
 		if( key.mod() & KKeyServer::MODE_SWITCH )
 			codemod.mod |= KKeyServer::MODE_SWITCH;
-		
+
 		if( bGrab )
 			m_rgCodeModToAction.insert( codemod, pAction );
 		else
