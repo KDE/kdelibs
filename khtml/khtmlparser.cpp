@@ -2666,10 +2666,12 @@ void KHTMLParser::parseTagTable(void)
     				    ID_TR + ID_CLOSE_TAG,
     				    ID_TH, ID_TD, ID_TR,
     				    ID_TABLE + ID_CLOSE_TAG, 
+    				    ID_BODY + ID_CLOSE_TAG, 
     				    0 };
     static const char endcap[] = { ID_CAPTION + ID_CLOSE_TAG,
     				   ID_TABLE + ID_CLOSE_TAG,
     				   ID_TR, ID_TD, ID_TH,
+   				   ID_BODY + ID_CLOSE_TAG, 
     				   0 };    
     static const char endall[] = { ID_CAPTION + ID_CLOSE_TAG,
     				   ID_TABLE + ID_CLOSE_TAG,
@@ -2677,6 +2679,7 @@ void KHTMLParser::parseTagTable(void)
     				   ID_TD + ID_CLOSE_TAG,
     				   ID_TR + ID_CLOSE_TAG,
     				   ID_TR, ID_TD, ID_TH,
+   				   ID_BODY + ID_CLOSE_TAG, 
     				   0 };    
 
     const char* str = 0;
