@@ -30,8 +30,8 @@
  *   set to the same value. This can be also enabled in Klipper.
  * - ClipboardSetSelection - whenever the Clipboard changes, Selection is set
  *   to the same value. This setting is only for die-hard fans of the old broken
- *   KDE1/2 behavior, which can potentionally leads to unexpected problems,
- *   and this setting therefore can be enabled only in the configuration dialog.
+ *   KDE1/2 behavior, which can potentionally lead to unexpected problems,
+ *   and this setting therefore can be enabled only in the configuration file.
  *
  *  Whenever reporting any bug only remotely related to clipboard, first make
  *  sure you can reproduce it when both these two options are turned off,
