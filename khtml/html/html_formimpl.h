@@ -30,6 +30,7 @@
 
 #include <qlist.h>
 #include <qvaluelist.h>
+#include <qarray.h>
 
 class KHTMLView;
 
@@ -47,6 +48,7 @@ namespace DOM {
 class HTMLFormElement;
 class DOMString;
 class HTMLGenericFormElementImpl;
+class HTMLOptionElementImpl;
 
 class HTMLFormElementImpl : public HTMLElementImpl
 {
@@ -371,10 +373,19 @@ public:
     virtual void attach(KHTMLView *w);
     virtual bool encoding(khtml::encodingList&);
 
+    // get the actual listbox index of the optionIndexth option
+    int optionToListIndex(int optionIndex) const;
+    // reverse of optionToListIndex - get optionIndex from listboxIndex
+    int listToOptionIndex(int listIndex) const;
+    void recalcListItems();
+    QArray<HTMLGenericFormElementImpl*> listItems() { return m_listItems; }
+    virtual void reset();
+    void notifyOptionSelected(HTMLOptionElementImpl *selectedOption, bool selected);
+
 protected:
     int m_size;
     bool m_multiple;
-    int m_selectedIndex;
+    QArray<HTMLGenericFormElementImpl*> m_listItems;
 };
 
 
@@ -416,14 +427,18 @@ public:
     virtual tagStatus startTag() { return OPTIONStartTag; }
     virtual tagStatus endTag() { return OPTIONEndTag; }
 
-    DOMString text() const;
+    DOMString text();
 
     long index() const;
     void setIndex( long );
     virtual void parseAttribute(AttrImpl *attr);
     DOMString value() { return m_value; }
 
-    bool selected() const;
+    bool selected() const { return m_selected; }
+    void setSelected(bool _selected);
+
+    HTMLSelectElementImpl *getSelect();
+
 
 protected:
     bool m_selected;

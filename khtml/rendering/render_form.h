@@ -42,7 +42,6 @@ class QScrollView;
 class QLineEdit;
 class QListboxItem;
 
-#include <qintdict.h>
 #include <qmultilineedit.h>
 #include <qlineedit.h>
 #include <qcheckbox.h>
@@ -418,18 +417,15 @@ public:
     virtual void layout();
     virtual void close( );
 
-    virtual void reset();
-    bool encoding(khtml::encodingList& encoding);
-
     virtual QString state();
     virtual void restoreState(const QString &);
 
     void setOptionsChanged(bool _optionsChanged);
 
-    // get the actual listbox index of the optionIndexth option
-    int optionToListIndex(int optionIndex);
-    // reverse of optionToListIndex - get optionIndex from listboxIndex
-    int listToOptionIndex(int listIndex);
+    bool selectionChanged() { return m_selectionChanged; }
+    void setSelectionChanged(bool _selectionChanged) { m_selectionChanged = _selectionChanged; }
+
+    void updateSelection();
 
 protected:
     ListBoxWidget *createListBox();
@@ -437,10 +433,9 @@ protected:
 
     unsigned  m_size;
     bool m_multiple;
-    QIntDict<HTMLOptionElementImpl> listOptions;
     bool m_listBox;
-    bool m_optionsChanged;
-    int m_selectedIndex; // cached value from element
+    bool m_selectionChanged;
+    bool m_ignoreSelectEvents;
 
 protected slots:
     void slotActivated(int index);

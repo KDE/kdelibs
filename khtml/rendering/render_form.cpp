@@ -42,6 +42,7 @@
 
 #include "rendering/render_form.h"
 #include "rendering/render_style.h"
+#include <assert.h>
 
 using namespace khtml;
 
@@ -547,8 +548,7 @@ RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
         setQWidget(w);
         connect(w,SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
     }
-    m_optionsChanged = true; // options will be inserted on first layout
-    m_selectedIndex = element->selectedIndex();
+    m_ignoreSelectEvents = false;
 }
 
 void RenderSelect::layout( )
@@ -558,7 +558,7 @@ void RenderSelect::layout( )
     // first selected one)
 
     HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_element);
-    bool forceSelectionRecalc = false;
+    m_ignoreSelectEvents = true;
 
     // change widget type
 
@@ -573,110 +573,83 @@ void RenderSelect::layout( )
     if (oldMultiple != m_multiple || oldSize != m_size) {
 	if (m_listBox != oldListbox) {
 	    // type of select has changed
-	
-	    if(oldListbox)
-		disconnect(static_cast<KListBox*>(m_widget),SIGNAL(highlighted(int)),this,SLOT(slotActivated(int)));
-	    else
-		disconnect(static_cast<QComboBox*>(m_widget),SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
 	    delete m_widget;
+
+	    if(oldListbox)
+		disconnect(m_widget,SIGNAL(highlighted(int)),this,SLOT(slotActivated(int)));
+	    else
+		disconnect(m_widget,SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
 
 	    if(m_listBox) {
 		ListBoxWidget *w = createListBox();
 		w->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
 		setQWidget(w);
-		connect(w,SIGNAL(highlighted(int)),this,SLOT(slotActivated(int)));
+		connect(m_widget,SIGNAL(highlighted(int)),this,SLOT(slotActivated(int)));
 	    }
 	    else {
-		ComboBoxWidget *w = createComboBox();
+		setQWidget(createComboBox());
 		m_size = 1;
-		setQWidget(w);
-		connect(w,SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
+		connect(m_widget,SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
 	    }
 	}
 
 	if (m_listBox && oldMultiple != m_multiple) {
 	    static_cast<KListBox*>(m_widget)->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
 	}
+	m_selectionChanged = true;
     }
 
-    if (m_optionsChanged) {
-	forceSelectionRecalc = true;
-	// insert all given <option>'s
+    HTMLSelectElementImpl *select = static_cast<HTMLSelectElementImpl*>(m_element);
 
-	NodeImpl* current = f->firstChild();
-	int i = 0;
-	bool inOptGroup = false;
+    // update contents listbox/combobox based on options in m_element
+    // ### check if we actually need to do this
+    QArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
+    int listIndex;
 
-	listOptions.clear();
-	if(m_listBox)
-	    static_cast<KListBox*>(m_widget)->clear();
+    if(m_listBox)
+	static_cast<KListBox*>(m_widget)->clear();
+    else
+	static_cast<QComboBox*>(m_widget)->clear();
+
+    for (listIndex = 0; listIndex < int(listItems.size()); listIndex++) {
+	if (listItems[listIndex]->id() == ID_OPTGROUP) {
+	    DOMString text = listItems[listIndex]->getAttribute(ATTR_LABEL);
+	    if (text.isNull())
+		text = "";
+
+	    if(m_listBox) {
+		QListBoxText *item = new QListBoxText(QString(text.implementation()->s, text.implementation()->l));
+		static_cast<KListBox*>(m_widget)
+		    ->insertItem(item, listIndex);
+		item->setSelectable(false);
+	    }
+	    else
+		static_cast<QComboBox*>(m_widget)
+		    ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
+	}
+	else if (listItems[listIndex]->id() == ID_OPTION) {
+	    DOMString text = static_cast<HTMLOptionElementImpl*>(listItems[listIndex])->text();
+	    if (text.isNull())
+		text = "";
+	    if (listItems[listIndex]->parentNode()->id() == ID_OPTGROUP)
+		text = DOMString("    ")+text;
+
+	    if(m_listBox)
+		static_cast<KListBox*>(m_widget)
+		    ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
+	    else
+		static_cast<QComboBox*>(m_widget)
+		    ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
+	}
 	else
-	    static_cast<QComboBox*>(m_widget)->clear();
-
-	while(current) {
-	    if (!inOptGroup && current->id() == ID_OPTGROUP && current->firstChild()) {
-		if (m_listBox) {
-		    // put the optgroup label in the list - ### make this work for combo boxes
-		    DOMString text = static_cast<HTMLElementImpl*>(current)->getAttribute(ATTR_LABEL);
-		    if (text.isNull())
-			text = "";	
-		    QListBoxText *optGroupItem = new QListBoxText(QString(text.implementation()->s, text.implementation()->l));
-
-		    static_cast<KListBox*>(m_widget)->insertItem(optGroupItem, i);
-		    optGroupItem->setSelectable(false);
-		    i++;
-		}
-	
-		current = current->firstChild();
-		inOptGroup = true;
-	    }
-	    if (current->id() == ID_OPTION) {
-		DOMString text = static_cast<HTMLElementImpl*>(current)->getAttribute(ATTR_LABEL);
-		if (text.isNull() && current->firstChild() && current->firstChild()->id() == ID_TEXT)
-		    text = static_cast<TextImpl *>(current->firstChild())->string();
-		if (text.isNull())
-		    text = "";
-		if (inOptGroup)
-		    text = DOMString("    ")+text;
-
-		if(m_listBox)
-		    static_cast<KListBox*>(m_widget)
-			->insertItem(QString(text.implementation()->s, text.implementation()->l), i);
-		else
-		    static_cast<QComboBox*>(m_widget)
-			->insertItem(QString(text.implementation()->s, text.implementation()->l), i);
-		listOptions.insert(i,static_cast<HTMLOptionElementImpl*>(current));
-	    }
-	    NodeImpl *parent = current->parentNode();
-	    current = current->nextSibling();
-	    i++;
-	    if (!current) {
-		if (inOptGroup) {
-		    current = parent->nextSibling();
-		    inOptGroup = false;
-		}
-	    }
-	}
-	m_optionsChanged = false;
+	    assert(false);
+	m_selectionChanged = true;
     }
 
-    if (m_selectedIndex != static_cast<HTMLSelectElementImpl*>(m_element)->selectedIndex() ||
-	forceSelectionRecalc) {
-	m_selectedIndex = static_cast<HTMLSelectElementImpl*>(m_element)->selectedIndex();
-	// selectedIndex changed since last update
-	if (m_listBox) {
-	    // if multi-select, we select only the new selected index
-	    int listIndex;
-	    KListBox *listBox = static_cast<KListBox*>(m_widget);
-	    for (listIndex = 0; listIndex < int(listBox->count()); listIndex++)
-		listBox->setSelected(listIndex,0);
-	    listBox->setSelected(optionToListIndex(m_selectedIndex),true);
-	}
-	else {
-	    int listIndex = optionToListIndex(m_selectedIndex);
-	    static_cast<QComboBox*>(m_widget)->setCurrentItem(listIndex >= 0 ? listIndex : 0);
-	}
-    }
+    // update selection
+    if (m_selectionChanged)
+	updateSelection();
+    m_selectionChanged = false;
 
     if (m_listBox) {
         // check if multiple and size was not given or invalid
@@ -689,9 +662,11 @@ void RenderSelect::layout( )
     }
     else {
         // and now disable the widget in case there is no <option> given
+	// ### do the same if there is only optgroups
         QComboBox* w = static_cast<QComboBox*>(m_widget);
         if(!w->count())
             w->setEnabled(false);
+	// ### select the first option (unless another specified), in case the first item is an optgroup
     }
 
 //    reset();
@@ -726,6 +701,9 @@ void RenderSelect::layout( )
 
     RenderFormElement::layout();
     setLayouted();
+
+    m_ignoreSelectEvents = false;
+
 }
 
 void RenderSelect::close()
@@ -739,92 +717,10 @@ void RenderSelect::close()
         restoreState( state );
     }
     setLayouted(false);
+    static_cast<HTMLSelectElementImpl*>(m_element)->recalcListItems();
 
     RenderFormElement::close();
 }
-
-
-void RenderSelect::reset()
-{
-    // ### move this to HTMLSelectElementImpl
-    HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_element);
-
-    NodeImpl* current = f->firstChild();
-    int i = 0;
-
-    while(current) {
-        if(current->id() == ID_OPTION &&
-           current->firstChild() && current->firstChild()->id() == ID_TEXT) {
-
-            HTMLOptionElementImpl* p = static_cast<HTMLOptionElementImpl*>(current);
-
-            if (m_listBox) {
-                // we only honor the first option that is selected
-                // in case there is more than one selected
-                static_cast<KListBox*>(m_widget)
-                    ->setSelected(i, p->selected());
-		static_cast<HTMLSelectElementImpl*>(m_element)->setSelectedIndex(i);
-	    }
-            else if(p->selected()) {
-                static_cast<QComboBox*>(m_widget)->setCurrentItem(i);
-		static_cast<HTMLSelectElementImpl*>(m_element)->setSelectedIndex(i);
-                break;
-            }
-        }
-        current = current->nextSibling();
-        i++;
-    }
-}
-
-bool RenderSelect::encoding(khtml::encodingList& encoding)
-{
-    bool successful = false;
-
-    if (m_listBox) {
-        KListBox* w = static_cast<KListBox*>(m_widget);
-        uint i;
-        for (i = 0; i < w->count(); i++)
-        {
-	    HTMLOptionElementImpl* p = listOptions[i];
-            if (w->isSelected(i) && p)
-            {
-                if(p->value().isNull())
-                {
-                    if(w->item(i))
-                    {
-                        encoding += w->item(i)->text().local8Bit();
-                        successful = true;
-                    }
-                }
-                else
-                {
-                    encoding += p->value().string().local8Bit();
-                    successful = true;
-                }
-            }
-        }
-    }
-    else
-    {
-        QComboBox* w = static_cast<QComboBox*>(m_widget);
-	HTMLOptionElementImpl* p = listOptions[w->currentItem()];
-	if (p) {
-	    if(p->value().isNull())
-            {
-		encoding += w->currentText().local8Bit();
-                successful = true;
-            }
-	    else
-            {
-		encoding += p->value().string().local8Bit();
-                successful = true;
-            }
-	}
-    }
-
-    return successful;
-}
-
 
 QString RenderSelect::state()
 {
@@ -914,44 +810,40 @@ void RenderSelect::restoreState(const QString &state)
 
 void RenderSelect::slotActivated(int index)
 {
-    static_cast<HTMLSelectElementImpl*>(m_element)->setSelectedIndex(listToOptionIndex(index));
-    static_cast<HTMLSelectElementImpl*>(m_element)->onChange();
-}
+    if (m_ignoreSelectEvents)
+	return;
 
-int RenderSelect::optionToListIndex(int optionIndex)
-{
-    if (optionIndex < 0 || optionIndex >= int(listOptions.count()))
-	return -1;
-	
-    int listIndex = 0;
-    int optionIndex2 = 0;
-    for (;
-	 optionIndex2 < int(listOptions.count()) && optionIndex2 <= optionIndex;
-	 listIndex++) { // not a typo!
-	if (listOptions[listIndex])
-	    optionIndex2++;
+    m_ignoreSelectEvents = true;
+
+    QArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
+    if (index < 0 || index >= int(listItems.size()))
+	return;
+
+    if (listItems[index]->id() == ID_OPTION) {
+	if (m_listBox)
+	    static_cast<HTMLOptionElementImpl*>(listItems[index])->setSelected(static_cast<KListBox*>(m_widget)->isSelected(index));
+	else
+	    static_cast<HTMLOptionElementImpl*>(listItems[index])->setSelected(true);
     }
-    listIndex--;
-    return listIndex;
+    else {
+	// nope, sorry, can't select this
+	if (m_listBox)
+	    static_cast<KListBox*>(m_widget)->setCurrentItem(-1);
+	else {
+	    // ###
+        }
+    }
+
+    m_ignoreSelectEvents = false;
+
+    static_cast<HTMLSelectElementImpl*>(m_element)->onChange();
+
 }
-
-int RenderSelect::listToOptionIndex(int listIndex)
-{
-    if (!listOptions[listIndex])
-	return -1;
-
-    int optionIndex = 0; // actual index of option not counting OPTGROUP entries that may be in list
-    int i;
-    for (i = 0; i < listIndex; i++)
-	if (listOptions[i])
-	    optionIndex++;
-    return optionIndex;
-}
-
 
 void RenderSelect::setOptionsChanged(bool _optionsChanged)
 {
-    m_optionsChanged = _optionsChanged;
+    // ###
+//    m_optionsChanged = _optionsChanged;
 }
 
 ListBoxWidget *RenderSelect::createListBox()
@@ -969,6 +861,28 @@ ComboBoxWidget *RenderSelect::createComboBox()
     connect(cb,SIGNAL(blurred()),this,SLOT(slotBlurred()));
     return cb;
 }
+
+void RenderSelect::updateSelection()
+{
+    QArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
+    int i;
+    if (m_listBox) {
+	// if multi-select, we select only the new selected index
+	KListBox *listBox = static_cast<KListBox*>(m_widget);
+	for (i = 0; i < int(listItems.size()); i++)
+	    listBox->setSelected(i,listItems[i]->id() == ID_OPTION &&
+				static_cast<HTMLOptionElementImpl*>(listItems[i])->selected());
+    }
+    else {
+	for (i = 0; i < int(listItems.size()); i++)
+	    if (listItems[i]->id() == ID_OPTION && static_cast<HTMLOptionElementImpl*>(listItems[i])->selected()) {
+		static_cast<QComboBox*>(m_widget)->setCurrentItem(i);
+		return;
+	    }
+	static_cast<QComboBox*>(m_widget)->setCurrentItem(0); // ### wrong if item 0 is an optgroup
+    }
+}
+
 
 // -------------------------------------------------------------------------
 
