@@ -59,6 +59,7 @@ static const QChar commentEnd [] = { '-','-','>' };
 static const QChar scriptEnd [] = { '<','/','s','c','r','i','p','t','>' };
 static const QChar styleEnd [] = { '<','/','s','t','y','l','e','>' };
 static const QChar listingEnd [] = { '<','/','l','i','s','t','i','n','g','>' };
+static const QChar textareaEnd [] = { '<','/','t','e','x','t','a','r','e','a','>' };
 
 // ----------------------------------------------------------------------------
 
@@ -959,6 +960,16 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		else if ( tagID == ID_TEXTAREA )
 		{
 		    textarea = beginTag;
+		    if(beginTag) {
+			// ### parse entities in textareas!!!!
+			listing = true;
+			searchCount = 0;		
+			searchFor = textareaEnd;		
+			scriptCode = new QChar[ 1024 ];
+			scriptCodeSize = 0;
+			scriptCodeMaxSize = 1024;
+			parseListing(src);
+		    }
 		}
 		else if ( tagID == ID_SCRIPT )
 		{
