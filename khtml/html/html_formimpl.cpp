@@ -999,7 +999,7 @@ void HTMLInputElementImpl::init()
     case IMAGE:
         break;
     };
-    m_value = getAttribute(ATTR_VALUE);
+    if (m_type != FILE) m_value = getAttribute(ATTR_VALUE);
     if ((uint) m_type <= ISINDEX && !m_value.isEmpty()) {
         QString value = m_value.string();
         // remove newline stuff..
@@ -1229,14 +1229,10 @@ DOMString HTMLInputElementImpl::value() const
 
 void HTMLInputElementImpl::setValue(DOMString val)
 {
-    switch (m_type) {
-    case FILE:
-        // sorry, can't change this!
-        break;
-    default:
-        m_value = (val.isNull() ? DOMString("") : val);
-        setChanged();
-    }
+    if (m_type == FILE) return;
+
+    m_value = (val.isNull() ? DOMString("") : val);
+    setChanged();
 }
 
 void HTMLInputElementImpl::blur()
