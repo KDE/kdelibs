@@ -256,11 +256,11 @@ void marshall( QDataStream &arg, QCStringList args, uint &i, QString type )
        type = "QValueList<QString>";
     if (type == "QCStringList")
        type = "QValueList<QCString>";
-    if( i > args.count() )
+    if( i >= args.count() )
     {
 	qWarning("Not enough arguments.");
 	exit(1);
-    }       
+    }
     QString s = QString::fromLocal8Bit( args[ i ] );
 
     if ( type == "int" )
