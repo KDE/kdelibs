@@ -33,5 +33,7 @@ Comment[pt_BR]=Estilo predefinido SGI
 Comment[ro]=Stil SGI, intern
 Comment[sl]=Vgrajeni slog SGI
 Comment[sv]=Inbyggd SGI-stil
+Comment[uk]=Встроєний стиль SGI
+Comment[zh_CN.GB2312]=内建的 SGI 风格
 [KDE]
 widgetStyle=Qt SGI
