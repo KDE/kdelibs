@@ -1629,7 +1629,7 @@ void KRecentFilesAction::setMaxItems( uint maxItems )
 
 void KRecentFilesAction::addURL( const KURL& url )
 {
-    QString     file = url.url();
+    QString     file = url.prettyURL();
     QStringList lst = items();
 
     // remove file if already in list
@@ -1650,7 +1650,7 @@ void KRecentFilesAction::addURL( const KURL& url )
 void KRecentFilesAction::removeURL( const KURL& url )
 {
     QStringList lst = items();
-    QString     file = url.url();
+    QString     file = url.prettyURL();
 
     // remove url
     if( lst.count() > 0 )
