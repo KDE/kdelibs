@@ -82,7 +82,7 @@ void RenderListItem::setStyle(RenderStyle *style)
 	RenderStyle *newStyle = new RenderStyle(style);
 	m_marker = new RenderListMarker();
 	m_marker->setStyle(newStyle);
-	addChild(m_marker);    
+	addChild(m_marker);
     } else {
 	RenderStyle *newStyle = new RenderStyle(style);
 	m_marker->setStyle(newStyle);
@@ -118,6 +118,7 @@ void RenderListItem::calcListValue()
 void RenderListItem::layout( bool deep )
 {
     calcListValue();
+    m_marker->layout(true);
     RenderFlow::layout(deep);
 }
 
