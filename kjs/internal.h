@@ -255,6 +255,7 @@ namespace KJS {
     void mark();
 
     ExecState *globalExec() { return globExec; }
+    bool checkSyntax(const UString &code,int *errLine, UString *errMsg);
     bool checkSyntax(const UString &code);
     Completion evaluate(const UString &code, const Value &thisV);
     Debugger *debugger() const { return dbg; }

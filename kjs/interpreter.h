@@ -224,6 +224,16 @@ namespace KJS {
      * Parses the supplied ECMAScript code and checks for syntax errors.
      *
      * @param code The code to check
+     * @param errLine Returns the line the error was on (if there was one).
+     * @param errMsg Returns the error message (if there was one).
+     * @return true if there were no syntax errors in the code, otherwise false
+     */
+    bool checkSyntax(const UString &code, int *errLine, UString *errMsg);
+
+    /**
+     * Parses the supplied ECMAScript code and checks for syntax errors.
+     *
+     * @param code The code to check
      * @return true if there were no syntax errors in the code, otherwise false
      */
     bool checkSyntax(const UString &code);

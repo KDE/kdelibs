@@ -775,6 +775,17 @@ void InterpreterImp::mark()
     _context->mark();
 }
 
+bool InterpreterImp::checkSyntax(const UString &code, int *errLine, UString *errMsg)
+{
+  // Parser::parse() returns 0 in a syntax error occurs, so we just check for that
+  SourceCode *source;
+  FunctionBodyNode *progNode = Parser::parse(code.data(),code.size(),&source,errLine,errMsg);
+  source->deref();
+  bool ok = (progNode != 0);
+  delete progNode;
+  return ok;
+}
+
 bool InterpreterImp::checkSyntax(const UString &code)
 {
   // Parser::parse() returns 0 in a syntax error occurs, so we just check for that

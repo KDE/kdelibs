@@ -151,6 +151,11 @@ ExecState *Interpreter::globalExec()
   return rep->globalExec();
 }
 
+bool Interpreter::checkSyntax(const UString &code, int *errLine, UString *errMsg)
+{
+  return rep->checkSyntax(code,errLine,errMsg);
+}
+
 bool Interpreter::checkSyntax(const UString &code)
 {
   return rep->checkSyntax(code);
