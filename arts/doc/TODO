@@ -3,7 +3,6 @@
 - offer sampleprecise timing
 - resource management (i.e. locate resources like "samples" or "structures"
   in a similar uniform way KDE does with KStandardDirs)
-- dynamic implementation of classes/attributes
 - check why adding thousand non-running objects degrades scheduling
   performance quite a lot
 - recursive scheduling again (with loops & cycles)
@@ -44,9 +43,7 @@
 
 ## KMedia2
 
-- seekable playobjects
 - x11 embedding
-- streaming of data from kioslaves into PlayObjects
 
 ## C API / artsdsp
 
@@ -113,6 +110,7 @@
 	another memory block
   * try to minimize the amount of copies of data, possibly even using something
     like sharedmem to share data between the sending and receiving buffer
+  * hardcode frequently used calls in the Arts::Object interface
 
 ## Documentation / Web
 

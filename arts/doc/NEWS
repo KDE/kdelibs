@@ -1,3 +1,13 @@
+aRts-0.6.0:
+- new interfaces (Arts::InputStream, Arts::StreamPlayObject) for decoding
+  streams of data with PlayObjects (rather than just files)
+- new Arts::PitchablePlayObject for changing playing speed/pitch
+- support for streaming of data from kioslaves into PlayObjects
+- dynamic implementation of classes/attributes (Arts::DynamicSkeleton)
+
+(some of the items that are listed in aRts-0.6.0 have been done somewhere
+ between 0.4 and 0.6 and only now found its way into this)
+
 aRts-0.5.4:
 - fix random segfaults on solaris
 
@@ -7,7 +17,7 @@ aRts-0.5.3:
   (and elsewhere), via generic Arts::Loader's
 
 aRts-0.5.2:
-- threading support (libmcop-mt)
+- threading support (libmcop_mt)
 - glib-2.0 mainloop integration (libgmcop)
 - KArtsWidget makes it easy to use Arts::Widget implementations in conjunction
   with qt widgets (i.e. no extra window), this also removes the annoying extra
