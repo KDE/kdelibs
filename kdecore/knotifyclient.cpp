@@ -20,6 +20,8 @@
 
 #include <qdatastream.h>
 
+#include <kstddirs.h>
+#include <kconfig.h>
 #include <dcopclient.h>
 
 
@@ -73,29 +75,64 @@ bool KNotifyClient::userEvent(const QString &text, int present,
 
 int KNotifyClient::getPresentation(const QString &eventname)
 {
-	(void)eventname;
-	return None;
+	int present;
+	if (eventname.isEmpty()) return Default;
+	
+	KConfig eventsfile(locate("data", QString(KApplication::kApplication()->name())+"/eventsrc"));
+	eventsfile.setGroup(eventname);
+	
+	present=eventsfile.readNumEntry("presentation", -1);
+	
+	return present;
 }
 
 QString KNotifyClient::getFile(const QString &eventname, int present)
 {
-	(void)eventname;
-	(void)present;
-	return "";
+	if (eventname.isEmpty()) return 0;
 
+	KConfig eventsfile(locate("data", QString(KApplication::kApplication()->name())+"/eventsrc"));
+	eventsfile.setGroup(eventname);
+
+	switch (present)
+	{
+	case (Sound):
+		return eventsfile.readEntry("sound", 0);
+	case (Logfile):
+		return eventsfile.readEntry("logfile", 0);
+	}
+		
+	return 0;
 }
 
 int KNotifyClient::getDefaultPresentation(const QString &eventname)
 {
-	(void)eventname;
-	return None;
+	int present;
+	if (eventname.isEmpty()) return Default;
+		
+	KConfig eventsfile(locate("data", QString(KApplication::kApplication()->name())+"/eventsrc"));
+	eventsfile.setGroup(eventname);
+	
+	present=eventsfile.readNumEntry("default_presentation", -1);
+	
+	return present;
 }
 
 QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 {
-	(void)eventname;
-	(void)present;
-	return "";
+	if (eventname.isEmpty()) return 0;
+
+	KConfig eventsfile(locate("data", QString(KApplication::kApplication()->name())+"/eventsrc"));
+	eventsfile.setGroup(eventname);
+
+	switch (present)
+	{
+	case (Sound):
+		return eventsfile.readEntry("default_sound", 0);
+	case (Logfile):
+		return eventsfile.readEntry("default_logfile", 0);
+	}
+		
+	return 0;
 }
 
 #include "knotifyclient.moc"
