@@ -1,4 +1,5 @@
 #include <kcmdlineargs.h>
+#include <klocale.h>
 #include <kapp.h>
 
 #include <stdio.h>

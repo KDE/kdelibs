@@ -81,13 +81,14 @@ void Test::createFields()
   string+=buffer;
   string+="Localized number: ";
   // localization of number representation is off by default
-  KGlobal::locale()->enableNumericLocale(true);
+  // [not anymore - David]
+  //KGlobal::locale()->enableNumericLocale(true);
   sprintf(buffer,"%6.4f\n",3.141592);
   string+=buffer;
   // remeber of disabling numeric localization after use
   // in no case localized number may be written to config file
   // or other machine parsed code
-  KGlobal::locale()->enableNumericLocale(false);
+  //KGlobal::locale()->enableNumericLocale(false);
   // This will not work
   // but you can copy other *.mo file
   string+="Some localized strings:\n";
