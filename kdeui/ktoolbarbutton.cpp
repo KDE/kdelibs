@@ -71,7 +71,6 @@ public:
   ~KToolBarButtonPrivate()
   {
     delete m_delayTimer; m_delayTimer = 0;
-    delete m_popup; m_popup = 0;
   }
 
   void setText(QString _txt)
