@@ -31,7 +31,7 @@
 
 namespace khtml {
     class CachedCSSStyleSheet;
-};
+}
 
 namespace DOM {
 

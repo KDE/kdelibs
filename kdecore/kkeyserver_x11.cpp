@@ -855,7 +855,7 @@ void Variations::init( const KKey& key, bool bQt )
 	}
 }
 
-}; // end of namespace KKeyServer block
+} // end of namespace KKeyServer block
 #undef KeyPress
 
 // FIXME: This needs to be moved to kshortcut.cpp, and create a 

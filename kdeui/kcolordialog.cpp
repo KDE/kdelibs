@@ -101,21 +101,21 @@ KColor::KColor()
 : QColor()
 {
   r = 0; g = 0; b = 0; h = 0; s = 0; v = 0;
-};
+}
 
 KColor::KColor( const KColor &col)
 : QColor( col )
 {
   h = col.h; s = col.s; v = col.v;
   r = col.r; g = col.g; b = col.b;
-};
+}
 
 KColor::KColor( const QColor &col)
 : QColor( col )
 {
   QColor::rgb(&r, &g, &b);
   QColor::hsv(&h, &s, &v);
-};
+}
 
 bool KColor::operator==(const KColor& col) const
 {
@@ -137,7 +137,7 @@ KColor::setHsv(int _h, int _s, int _v)
   h = _h; s = _s; v = _v;
   QColor::setHsv(h, s, v);
   QColor::rgb(&r, &g, &b);
-};
+}
 
 void
 KColor::setRgb(int _r, int _g, int _b)

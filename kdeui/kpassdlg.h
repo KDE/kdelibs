@@ -39,7 +39,6 @@ class KPasswordEdit
     : public QLineEdit
 {
     Q_OBJECT
-    Q_PROPERTY( QString password READ password WRITE setText )
 
 public:
     enum EchoModes { OneStar, ThreeStars, NoEcho };

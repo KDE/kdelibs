@@ -238,7 +238,7 @@ namespace KJS {
   private: \
     int id; \
   }; \
-  };
+  }
 
 } // namespace
 

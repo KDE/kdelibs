@@ -40,7 +40,7 @@
 namespace KParts
 {
     class Part;
-};
+}
 
 namespace KDEPrivate
 {

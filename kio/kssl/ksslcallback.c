@@ -73,7 +73,7 @@ static int X509Callback(int ok, X509_STORE_CTX *ctx) {
  
   return(ok);
 }
-};
+}
 
 #endif
 #endif

@@ -104,6 +104,6 @@ class ViewPlugin;
 ConfigInterfaceExtension *configInterfaceExtension (Document *doc);
 ConfigInterfaceExtension *configInterfaceExtension (Plugin *plugin);
 
-};
+}
 
 #endif

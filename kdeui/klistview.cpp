@@ -1393,7 +1393,7 @@ void KListView::deactivateAutomaticSelection()
 bool KListView::automaticSelection() const
 {
    return d->selectedBySimpleMove;
-};
+}
 
 void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
 {
@@ -1409,7 +1409,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
           selectAll(FALSE);
        d->selectionDirection=0;
        d->wasShiftEvent = (e_state == ShiftButton);
-    };
+    }
 
     //d->wasShiftEvent = (e_state == ShiftButton);
 
@@ -1793,7 +1793,7 @@ QListViewItem* KListView::itemAtIndex(int index)
       j++;
    };
    return 0;
-};
+}
 
 
 void KListView::emitContextMenu (KListView*, QListViewItem* i)

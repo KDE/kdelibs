@@ -47,7 +47,7 @@ namespace KTextEditor
 	private:
 		UndoInterface *m_parent;
 	};
-};
+}
 #endif
 
 

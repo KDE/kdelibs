@@ -336,7 +336,7 @@ namespace KJS {
     ContextImp *context;
     Value exception;
   };
-};
+}
 
 ExecState::~ExecState()
 {

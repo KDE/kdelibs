@@ -164,7 +164,7 @@ static void (*K_ERR_print_errors_fp)(FILE*) = NULL;
 static int (*K_PKCS7_verify)(PKCS7*,STACK_OF(X509)*,X509_STORE*,BIO*,BIO*,int) = NULL;
 
 #endif
-};
+}
 
 
 bool KOpenSSLProxy::hasLibSSL() const {
