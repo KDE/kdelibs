@@ -21,6 +21,7 @@
 #include "object.h"
 #include "internal.h"
 
+#include <typeinfo>
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
@@ -116,7 +117,7 @@ void* Collector::allocate(size_t s)
 
   if (block->filled >= block->size) {
 #ifdef KJS_DEBUG_MEM
-    printf("allocating new block of size %d\n", block->size);
+    fprintf(stderr,"allocating new block of size %d\n", block->size);
 #endif
     CollectorBlock *tmp = new CollectorBlock(BlockSize);
     block->next = tmp;
@@ -142,10 +143,17 @@ void* Collector::allocate(size_t s)
 /**
  * Mark-sweep garbage collection.
  */
-void Collector::collect()
+bool Collector::collect()
 {
+  if (KJScriptImp::running) {
+#ifndef NDEBUG
+    fprintf(stderr,"Warning: running garbage collection while other interpreter runs.\n");
+    //fprintf(stderr,"Refusing garbage collection while other interpreter runs.\n");
+    //return;
+#endif
+  }
 #ifdef KJS_DEBUG_MEM
-  printf("collecting %d objects total\n", Imp::count);
+  fprintf(stderr,"collecting %d objects total\n", Imp::count);
   collecting = true;
 #endif
 
@@ -153,7 +161,7 @@ void Collector::collect()
   CollectorBlock *block = root;
   while (block) {
 #ifdef KJS_DEBUG_MEM
-    printf("cleaning block filled %d out of %d\n", block->filled, block->size);
+    fprintf(stderr,"cleaning block filled %d out of %d\n", block->filled, block->size);
 #endif
     Imp **r = (Imp**)block->mem;
     assert(r);
@@ -186,12 +194,14 @@ void Collector::collect()
   }
 
   // SWEEP: delete everything with a zero refcount (garbage)
+  bool deletedSomething = false;
   block = root;
   while (block) {
     Imp **r = (Imp**)block->mem;
     int del = 0;
     for (int i = 0; i < block->size; i++, r++) {
       if (*r && ((*r)->refcount == 0) && !(*r)->gc_marked && (*r)->gc_allowed) {
+        //fprintf( stderr, "Collector: freeing Imp %p\n", (*r));
 	// emulate destructing part of 'operator delete()'
 	(*r)->~Imp();
 	free(*r);
@@ -202,9 +212,11 @@ void Collector::collect()
     filled -= del;
     block->filled -= del;
     block = block->next;
+    if (del)
+        deletedSomething = true;
   }
 
-  // delete the emtpy containers
+  // delete the empty containers
   block = root;
   while (block) {
     CollectorBlock *next = block->next;
@@ -226,4 +238,21 @@ void Collector::collect()
 #ifdef KJS_DEBUG_MEM
   collecting = false;
 #endif
+  return deletedSomething;
+}
+
+void Collector::finalCheck()
+{
+  CollectorBlock *block = root;
+  while (block) {
+    Imp **r = (Imp**)block->mem;
+    int del = 0;
+    for (int i = 0; i < block->size; i++, r++) {
+      if (*r) {
+        fprintf( stderr, "Collector::finalCheck() still having Imp %p (%s)\n", (*r),
+                 typeid( **r ).name() );
+      }
+    }
+    block = block->next;
+  }
 }

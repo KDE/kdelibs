@@ -27,6 +27,9 @@
 #include "object.h"
 #include "types.h"
 #include "debugger.h"
+#ifndef NDEBUG
+#include <list>
+#endif
 
 namespace KJS {
 
@@ -79,14 +82,21 @@ namespace KJS {
     virtual void ref() { refcount++; }
     virtual bool deref() { return (!--refcount); }
 
+#ifndef NDEBUG
+    static void finalCheck();
+#endif
   protected:
     KJSO throwError(ErrorType e, const char *msg);
     int line;
   private:
     unsigned int refcount;
+#ifndef NDEBUG
     // Global counter of nodes, for debugging purposes (to check that
     // they have all been deleted at the very end)
-    static int nodeCount;
+    static int s_nodeCount;
+    // List of the remaining nodes, for debugging purposes. Don't remove!
+    static list<Node *> s_nodes;
+#endif
     // disallow assignment
     Node& operator=(const Node&);
     Node(const Node &other);
@@ -959,6 +969,7 @@ namespace KJS {
     FuncDeclNode *function;
   };
 
+  // A linked list of source element nodes
   class SourceElementsNode : public StatementNode {
   public:
     SourceElementsNode(SourceElementNode *s1) { element = s1; elements = 0L; }
@@ -971,8 +982,8 @@ namespace KJS {
     virtual void processFuncDecl(KJScriptImp *script, Context *context);
     virtual void processVarDecls(KJScriptImp *script, Context *context);
   private:
-    SourceElementNode *element;
-    SourceElementsNode *elements;
+    SourceElementNode *element; // 'this' element
+    SourceElementsNode *elements; // pointer to next
   };
 
   class ProgramNode : public FunctionBodyNode {

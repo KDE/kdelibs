@@ -305,6 +305,9 @@ namespace KJS {
     Context *stepFromContext;
   };
 
+  /**
+   * Implementation of the KJScript class - one instance per interpreter.
+   */
   class KJScriptImp {
     friend class ::KJScript;
     friend class Lexer;

@@ -24,6 +24,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <math.h>
+#include <typeinfo>
 
 #include "kjs.h"
 #include "ustring.h"
@@ -39,6 +40,9 @@ using namespace KJS;
 #define KJS_BREAKPOINT if (!hitStatement(script,context)) return Completion(Normal);
 #define KJS_ABORTPOINT if (abortStatement(script,context)) return Completion(Normal);
 
+int Node::s_nodeCount = 0;
+list<Node *> Node::s_nodes;
+
 // ------------------------------ Node -----------------------------------------
 
 Node::Node()
@@ -47,11 +51,31 @@ Node::Node()
   //  line = Lexer::curr()->lineNo();
   line = 0; // ### FIXME
   refcount = 0;
+#ifndef NDEBUG
+  s_nodeCount++;
+  s_nodes.push_back( this );
+#endif
 }
 
 Node::~Node()
 {
+#ifndef NDEBUG
+  s_nodeCount--;
+  s_nodes.remove( this );
+#endif
 }
+
+#ifndef NDEBUG
+void Node::finalCheck()
+{
+  fprintf( stderr, "Node::finalCheck(): global node count: %d\n", s_nodeCount );
+  fprintf( stderr, "Node::finalCheck(): list count       : %d\n", s_nodes.size() );
+  list<Node *>::iterator it = s_nodes.begin();
+  for ( uint i = 0; it != s_nodes.end() ; ++it, ++i )
+    fprintf( stderr, "[%d] Still having node %p (%s)\n", i, *it, typeid( **it ).name() );
+  //assert( s_nodeCount == 0 );
+}
+#endif
 
 KJSO Node::throwError(ErrorType e, const char *msg)
 {
@@ -2734,10 +2758,12 @@ FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
   : source(s)
 {
   setLoc(-1, -1, -1);
+  //fprintf(stderr,"FunctionBodyNode::FunctionBodyNode %p\n",this);
 }
 
 FunctionBodyNode::~FunctionBodyNode()
 {
+  //fprintf(stderr,"FunctionBodyNode::~FunctionBodyNode %p\n",this);
 }
 
 void FunctionBodyNode::ref()
@@ -2745,12 +2771,14 @@ void FunctionBodyNode::ref()
   Node::ref();
   if ( source )
     source->ref();
+  //fprintf( stderr, "FunctionBodyNode::ref() %p. Refcount now %d\n", (void*)this, refcount);
 }
 
 bool FunctionBodyNode::deref()
 {
   if ( source && source->deref() )
     delete source;
+  //fprintf( stderr, "FunctionBodyNode::deref() %p. Refcount now %d\n", (void*)this, refcount-1);
   return Node::deref();
 }
 

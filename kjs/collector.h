@@ -65,12 +65,15 @@ namespace KJS {
     /**
      * Run the garbage collection. This involves calling the delete operator
      * on each object and freeing the used memory.
-     * In the current implemenation this will basically free all registered
-     * object regardless whether they are still references by others or not.
-     * 
+     * @return true if any object was deleted
      */
-    static void collect();
+    static bool collect();
     static int size() { return filled; }
+
+    /**
+     * Upon terminating the last interpreter, check that we have no objects left
+     */
+    static void finalCheck();
 
 #ifdef KJS_DEBUG_MEM
     /**

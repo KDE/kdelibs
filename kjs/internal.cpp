@@ -23,6 +23,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <typeinfo>
 
 #include "kjs.h"
 #include "object.h"
@@ -704,6 +705,17 @@ void KJScriptImp::globalClear()
   BooleanImp::staticTrue = 0L;
   BooleanImp::staticFalse->deref();
   BooleanImp::staticFalse = 0L;
+
+  while ( Collector::collect() )
+    ; // keep collecting until we have nothing to collect anymore
+
+  // We should have nothing left
+#ifndef NDEBUG
+  // Currently commented out since the commented out proto->deref() in ~Imp
+  // leads to quite a few problems.
+  //Node::finalCheck();
+  //Collector::finalCheck();
+#endif
 }
 
 void KJScriptImp::mark()
@@ -772,8 +784,11 @@ void KJScriptImp::clear()
     retVal = 0L;
 
     delete con; con = 0L;
+    glob = KJSO(); // Forget about global object so that the collector can destroy it
 
-    Collector::collect();
+    //fprintf( stderr, "KJScriptImp::clear() - calling garbage collector\n");
+    while ( Collector::collect() )
+        ; // keep collecting until we have nothing to collect anymore
 
     // remove from global chain (see init())
     next->prev = prev;
