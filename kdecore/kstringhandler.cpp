@@ -22,7 +22,6 @@
 #include "config.h"
 
 #include "kstringhandler.h"
-#include <qfile.h>
 
 QString KStringHandler::word( const QString &text , uint pos )
 {
@@ -400,31 +399,37 @@ QString KStringHandler::rsqueeze( const QString & str, uint maxlen )
 
 ///// File name patterns (like *.txt)
 
-bool KStringHandler::matchFilename( const QString& _filename, const QString& _pattern  )
+bool KStringHandler::matchFilename( const QString& filename, const QString& pattern  )
 {
-  int len = _filename.length();
-  QCString pattern = QFile::encodeName( _pattern );
-  int pattern_len = pattern.length();
-  if (!pattern_len)
-     return false;
+   int len = filename.length();
+   int pattern_len = pattern.length();
 
-  QCString filename = QFile::encodeName( _filename );
+   if (!pattern_len)
+      return false;
 
-  // Patterns like "Makefile*"
-  if ( pattern[ pattern_len - 1 ] == '*' && len + 1 >= pattern_len )
-     if ( strncasecmp( filename.data(), pattern.data(), pattern_len - 1 ) == 0 )
-	return true;
+   // Patterns like "Makefile*"
+   if ( pattern[ pattern_len - 1 ] == '*' && len + 1 >= pattern_len ) {
+      const QChar *c1 = pattern.unicode();
+      const QChar *c2 = filename.unicode();
+      int cnt = 1;
+      while ( cnt < pattern_len && *c1++ == *c2++ )
+         ++cnt;
+      return cnt == pattern_len;
+   }
 
-  // Patterns like "*~", "*.extension"
-  if ( pattern[ 0 ] == '*' && len + 1 >= pattern_len )
-  {
-     if ( strncasecmp( filename.data() + len - pattern_len + 1, pattern.data() + 1, pattern_len - 1 ) == 0 )
-	return true;
-     // TODO : Patterns like "*.*pk"
+   // Patterns like "*~", "*.extension"
+   if ( pattern[ 0 ] == '*' && len + 1 >= pattern_len )
+   {
+     const QChar *c1 = pattern.unicode() + pattern_len - 1;
+     const QChar *c2 = filename.unicode() + len - 1;
+     int cnt = 1;
+     while ( cnt < pattern_len && *c1-- == *c2-- )
+        ++cnt;
+     return cnt == pattern_len;
   }
 
-  // Patterns like "Makefile"
-  return ( filename == pattern );
+   // Patterns like "Makefile"
+   return ( filename == pattern );
 }
 
   QStringList
