@@ -696,13 +696,25 @@ void RenderPartObject::updateWidget()
      {
         url = o->url;
         serviceType = o->serviceType;
-        if(serviceType.isEmpty() || serviceType.isNull()) {
-           if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) 
+    	if(serviceType.isEmpty() || serviceType.isNull()) {
+	   if(!o->classId.isEmpty())
+	       serviceType = "application/x-activex-handler";
+	   // We have a clsid, means this is activex (Niko)
+	
+           if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000")))
+	   {
+	       // It is ActiveX, but the nsplugin system handling
+	       // should also work, that's why we don't override the
+	       // serviceType with application/x-activex-handler
+	       // but let the KTrader in khtmlpart::createPart() detect
+	       // the user's preference: launch with activex viewer or
+	       // with nspluginviewer (Niko) 
 	       serviceType = "application/x-shockwave-flash";
-           else if(o->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA"))) 
+           }
+	   else if(o->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA"))) 
 	       serviceType = "audio/x-pn-realaudio-plugin";
 
-           // add more plugins here
+           // TODO: add more plugins here
         }
 
         if((url.isEmpty() || url.isNull())) {
@@ -750,8 +762,10 @@ void RenderPartObject::updateWidget()
 
         KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
 
-        params.append( QString::fromLatin1("NSPLUGINEMBED=\"YES\"") );
-        params.append( QString::fromLatin1("NSPLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
+        params.append( QString::fromLatin1("PLUGINEMBED=\"YES\"") );
+        params.append( QString::fromLatin1("PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
+	params.append( QString::fromLatin1("CLASSID=\"%1\"").arg( o->classId ) ); 
+	params.append( QString::fromLatin1("CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) ); 
 
         part->requestObject( this, url, serviceType, params );
      } else
@@ -769,8 +783,8 @@ void RenderPartObject::updateWidget()
 
         KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
 
-        embed->param.append( QString::fromLatin1("NSPLUGINEMBED=\"YES\"") );
-        embed->param.append( QString::fromLatin1("NSPLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
+        embed->param.append( QString::fromLatin1("PLUGINEMBED=\"YES\"") );
+        embed->param.append( QString::fromLatin1("PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
 
         part->requestObject( this, url, serviceType, embed->param );
      }
@@ -789,8 +803,8 @@ void RenderPartObject::updateWidget()
 
      KHTMLPart *part = static_cast<KHTMLView *>(m_view)->part();
 
-     o->param.append( QString::fromLatin1("NSPLUGINEMBED=\"YES\"") );
-     o->param.append( QString::fromLatin1("NSPLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
+     o->param.append( QString::fromLatin1("PLUGINEMBED=\"YES\"") );
+     o->param.append( QString::fromLatin1("PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
 
      part->requestObject( this, url, serviceType, o->param );
 
