@@ -24,10 +24,10 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION 200
-#define KDE_VERSION_STRING "2.0 >= 20001117"
+#define KDE_VERSION 210
+#define KDE_VERSION_STRING "2.0.9 >= 20001128"
 #define KDE_VERSION_MAJOR 2
-#define KDE_VERSION_MINOR 0
+#define KDE_VERSION_MINOR 1
 #define KDE_VERSION_RELEASE 0
 
 class KConfig;
@@ -788,6 +788,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.196  2000/11/17 12:22:26  faure
+// If I touch kstddirs.h, I might as well update the date in kapp.h,
+// for dating bug reports better.
+//
 // Revision 1.195  2000/11/14 23:29:59  faure
 // Added a new KIPC msg and a new signal out of kapp, toolbarAppearanceChanged,
 // so that pressing apply after changing the widget style doesn't look
