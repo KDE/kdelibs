@@ -54,6 +54,7 @@
 #include <kapp.h>
 #define XK_XKB_KEYS
 #define XK_MISCELLANY
+#include <X11/X.h> // For #define KeyPress
 #include <X11/Xlib.h>	// For x11Event()
 #include <X11/keysymdef.h> // For XK_...
 const int XKeyPress = KeyPress;
