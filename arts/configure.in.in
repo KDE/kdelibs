@@ -266,12 +266,12 @@ dnl that depend on KDE should not be built.
 AC_MSG_CHECKING(if building standalone aRts snapshot without KDE)
 if test "$DCOPIDL" = ""; then
 	AC_MSG_RESULT(yes)
-	ARTS_BUILD_MESSAGE=""
+	ARTS_BUILD_KDE=""
 else
 	AC_MSG_RESULT(no)
-	ARTS_BUILD_MESSAGE="message"
+	ARTS_BUILD_KDE="x11 qtmcop knotify message"
 fi
-AC_SUBST(ARTS_BUILD_MESSAGE)
+AC_SUBST(ARTS_BUILD_KDE)
 
 dnl Don't remove !
 dnl AC_OUTPUT(arts/artsc/artsdsp)
