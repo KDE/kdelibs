@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-08-04 12:40+0200\n"
+"POT-Creation-Date: 2002-03-21 12:39+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -562,446 +562,478 @@ msgstr ""
 msgid "&Update"
 msgstr ""
 
-#: common_texts.cpp:161
-msgid "Layout"
-msgstr ""
-
-#: common_texts.cpp:162
+#: common_texts.cpp:163
 msgid "Highscore"
 msgstr ""
 
-#: common_texts.cpp:163
+#: common_texts.cpp:164
 msgid "&New View"
 msgstr ""
 
-#: common_texts.cpp:164
+#: common_texts.cpp:165
 msgid "&Insert"
 msgstr ""
 
-#: common_texts.cpp:167
+#: common_texts.cpp:168
 msgid "&Next"
 msgstr ""
 
-#: common_texts.cpp:168
+#: common_texts.cpp:169
 msgid "&Previous"
 msgstr ""
 
-#: common_texts.cpp:169
+#: common_texts.cpp:170
 msgid "Replace"
 msgstr ""
 
-#: common_texts.cpp:170
+#: common_texts.cpp:171
 msgid "&Replace..."
 msgstr ""
 
-#: common_texts.cpp:171
+#: common_texts.cpp:172
 msgid "Insert"
 msgstr ""
 
-#: common_texts.cpp:172
+#: common_texts.cpp:173
 msgid "Default"
 msgstr ""
 
-#: common_texts.cpp:173
+#: common_texts.cpp:174
 msgid "&Defaults"
 msgstr ""
 
-#: common_texts.cpp:174
+#: common_texts.cpp:175
 msgid "&Contents"
 msgstr ""
 
-#: common_texts.cpp:175
+#: common_texts.cpp:176
 msgid "&About..."
 msgstr ""
 
-#: common_texts.cpp:176
+#: common_texts.cpp:177
 msgid "Open Recent"
 msgstr ""
 
-#: common_texts.cpp:177
+#: common_texts.cpp:178
 msgid "Open &Recent"
 msgstr ""
 
-#: common_texts.cpp:178
+#: common_texts.cpp:179
 msgid "&Find..."
 msgstr ""
 
-#: common_texts.cpp:179
+#: common_texts.cpp:180
 msgid "Find &Next"
 msgstr ""
 
-#: common_texts.cpp:180
+#: common_texts.cpp:181
 msgid "&Bookmarks"
 msgstr ""
 
-#: common_texts.cpp:181
+#: common_texts.cpp:182
 msgid "&Add Bookmark"
 msgstr ""
 
-#: common_texts.cpp:182
+#: common_texts.cpp:183
 msgid "&Edit Bookmarks..."
 msgstr ""
 
-#: common_texts.cpp:183
+#: common_texts.cpp:184
 msgid "&Tools"
 msgstr ""
 
-#: common_texts.cpp:184
+#: common_texts.cpp:185
 msgid "&Spelling..."
 msgstr ""
 
-#: common_texts.cpp:185
+#: common_texts.cpp:186
 msgid "Show &Menubar"
 msgstr ""
 
-#: common_texts.cpp:186
+#: common_texts.cpp:187
 msgid "Show &Toolbar"
 msgstr ""
 
-#: common_texts.cpp:187
+#: common_texts.cpp:188
 msgid "Show &Statusbar"
 msgstr ""
 
-#: common_texts.cpp:188
+#: common_texts.cpp:189
 msgid "Configure &Key Bindings..."
 msgstr ""
 
-#: common_texts.cpp:189
+#: common_texts.cpp:190
 msgid "&Preferences..."
 msgstr ""
 
-#: common_texts.cpp:190
+#: common_texts.cpp:191
 msgid "&Settings"
 msgstr ""
 
-#: common_texts.cpp:191
-msgid "Do not show this message again"
-msgstr ""
-
 #: common_texts.cpp:192
-msgid ""
-"_: QAccel\n"
-"Escape"
+msgid "Do not show this message again"
 msgstr ""
 
 #: common_texts.cpp:193
 msgid ""
 "_: QAccel\n"
-"Tab"
+"Escape"
 msgstr ""
 
 #: common_texts.cpp:194
 msgid ""
 "_: QAccel\n"
-"Backtab"
+"Tab"
 msgstr ""
 
 #: common_texts.cpp:195
 msgid ""
 "_: QAccel\n"
-"Backspace"
+"Backtab"
 msgstr ""
 
 #: common_texts.cpp:196
 msgid ""
 "_: QAccel\n"
-"Return"
+"Backspace"
 msgstr ""
 
 #: common_texts.cpp:197
 msgid ""
 "_: QAccel\n"
-"Enter"
+"Return"
 msgstr ""
 
 #: common_texts.cpp:198
 msgid ""
 "_: QAccel\n"
-"Insert"
+"Enter"
 msgstr ""
 
 #: common_texts.cpp:199
 msgid ""
 "_: QAccel\n"
-"Delete"
+"Insert"
 msgstr ""
 
 #: common_texts.cpp:200
 msgid ""
 "_: QAccel\n"
-"Pause"
+"Delete"
 msgstr ""
 
 #: common_texts.cpp:201
 msgid ""
 "_: QAccel\n"
-"Print"
+"Pause"
 msgstr ""
 
 #: common_texts.cpp:202
 msgid ""
 "_: QAccel\n"
-"SysReq"
+"Print"
 msgstr ""
 
 #: common_texts.cpp:203
 msgid ""
 "_: QAccel\n"
-"Home"
+"SysReq"
 msgstr ""
 
 #: common_texts.cpp:204
 msgid ""
 "_: QAccel\n"
-"End"
+"Home"
 msgstr ""
 
 #: common_texts.cpp:205
 msgid ""
 "_: QAccel\n"
-"Left"
+"End"
 msgstr ""
 
 #: common_texts.cpp:206
 msgid ""
 "_: QAccel\n"
-"Up"
+"Left"
 msgstr ""
 
 #: common_texts.cpp:207
 msgid ""
 "_: QAccel\n"
-"Right"
+"Up"
 msgstr ""
 
 #: common_texts.cpp:208
 msgid ""
 "_: QAccel\n"
-"Down"
+"Right"
 msgstr ""
 
 #: common_texts.cpp:209
 msgid ""
 "_: QAccel\n"
-"Prior"
+"Down"
 msgstr ""
 
 #: common_texts.cpp:210
 msgid ""
 "_: QAccel\n"
-"Next"
+"Prior"
 msgstr ""
 
 #: common_texts.cpp:211
 msgid ""
 "_: QAccel\n"
-"Shift"
+"Next"
 msgstr ""
 
 #: common_texts.cpp:212
 msgid ""
 "_: QAccel\n"
-"Control"
+"Shift"
 msgstr ""
 
 #: common_texts.cpp:213
 msgid ""
 "_: QAccel\n"
-"Meta"
+"Control"
 msgstr ""
 
 #: common_texts.cpp:214
 msgid ""
 "_: QAccel\n"
-"Alt"
+"Meta"
 msgstr ""
 
 #: common_texts.cpp:215
 msgid ""
 "_: QAccel\n"
-"CapsLock"
+"Alt"
 msgstr ""
 
 #: common_texts.cpp:216
 msgid ""
 "_: QAccel\n"
-"NumLock"
+"CapsLock"
 msgstr ""
 
 #: common_texts.cpp:217
 msgid ""
 "_: QAccel\n"
-"ScrollLock"
+"NumLock"
 msgstr ""
 
 #: common_texts.cpp:218
 msgid ""
 "_: QAccel\n"
-"Space"
+"ScrollLock"
 msgstr ""
 
 #: common_texts.cpp:219
 msgid ""
 "_: QAccel\n"
-"ParenLeft"
+"Space"
 msgstr ""
 
 #: common_texts.cpp:220
 msgid ""
 "_: QAccel\n"
-"ParenRight"
+"ParenLeft"
 msgstr ""
 
 #: common_texts.cpp:221
 msgid ""
 "_: QAccel\n"
-"Asterisk"
+"ParenRight"
 msgstr ""
 
 #: common_texts.cpp:222
 msgid ""
 "_: QAccel\n"
-"Plus"
+"Asterisk"
 msgstr ""
 
 #: common_texts.cpp:223
 msgid ""
 "_: QAccel\n"
-"Comma"
+"Plus"
 msgstr ""
 
 #: common_texts.cpp:224
 msgid ""
 "_: QAccel\n"
-"Minus"
+"Comma"
 msgstr ""
 
 #: common_texts.cpp:225
 msgid ""
 "_: QAccel\n"
-"Period"
+"Minus"
 msgstr ""
 
 #: common_texts.cpp:226
 msgid ""
 "_: QAccel\n"
-"Slash"
+"Period"
 msgstr ""
 
 #: common_texts.cpp:227
 msgid ""
 "_: QAccel\n"
-"Colon"
+"Slash"
 msgstr ""
 
 #: common_texts.cpp:228
 msgid ""
 "_: QAccel\n"
-"Semicolon"
+"Colon"
 msgstr ""
 
 #: common_texts.cpp:229
 msgid ""
 "_: QAccel\n"
-"Less"
+"Semicolon"
 msgstr ""
 
 #: common_texts.cpp:230
 msgid ""
 "_: QAccel\n"
-"Equal"
+"Less"
 msgstr ""
 
 #: common_texts.cpp:231
 msgid ""
 "_: QAccel\n"
-"Greater"
+"Equal"
 msgstr ""
 
 #: common_texts.cpp:232
 msgid ""
 "_: QAccel\n"
-"Question"
+"Greater"
 msgstr ""
 
 #: common_texts.cpp:233
 msgid ""
 "_: QAccel\n"
-"BracketLeft"
+"Question"
 msgstr ""
 
 #: common_texts.cpp:234
 msgid ""
 "_: QAccel\n"
-"Backslash"
+"BracketLeft"
 msgstr ""
 
 #: common_texts.cpp:235
 msgid ""
 "_: QAccel\n"
-"BracketRight"
+"Backslash"
 msgstr ""
 
 #: common_texts.cpp:236
 msgid ""
 "_: QAccel\n"
-"AsciiCircum"
+"BracketRight"
 msgstr ""
 
 #: common_texts.cpp:237
 msgid ""
 "_: QAccel\n"
-"Underscore"
+"AsciiCircum"
 msgstr ""
 
 #: common_texts.cpp:238
 msgid ""
 "_: QAccel\n"
-"QuoteLeft"
+"Underscore"
 msgstr ""
 
 #: common_texts.cpp:239
 msgid ""
 "_: QAccel\n"
-"BraceLeft"
+"QuoteLeft"
 msgstr ""
 
 #: common_texts.cpp:240
 msgid ""
 "_: QAccel\n"
-"BraceRight"
+"BraceLeft"
 msgstr ""
 
 #: common_texts.cpp:241
 msgid ""
 "_: QAccel\n"
-"AsciiTilde"
+"BraceRight"
 msgstr ""
 
 #: common_texts.cpp:242
 msgid ""
 "_: QAccel\n"
-"PgUp"
+"AsciiTilde"
 msgstr ""
 
 #: common_texts.cpp:243
 msgid ""
 "_: QAccel\n"
-"PgDown"
+"PgUp"
 msgstr ""
 
 #: common_texts.cpp:244
 msgid ""
 "_: QAccel\n"
-"Apostrophe"
+"PgDown"
 msgstr ""
 
 #: common_texts.cpp:245
 msgid ""
 "_: QAccel\n"
-"Ampersand"
+"Apostrophe"
 msgstr ""
 
 #: common_texts.cpp:246
+msgid ""
+"_: QAccel\n"
+"Ampersand"
+msgstr ""
+
+#: common_texts.cpp:247
+msgid ""
+"_: QAccel\n"
+"Exclam"
+msgstr ""
+
+#: common_texts.cpp:248
+msgid ""
+"_: QAccel\n"
+"Dollar"
+msgstr ""
+
+#: common_texts.cpp:249
+msgid ""
+"_: QAccel\n"
+"Percent"
+msgstr ""
+
+#: common_texts.cpp:250
+msgid ""
+"_: QAccel\n"
+"Menu"
+msgstr ""
+
+#: common_texts.cpp:251
+msgid ""
+"_: QAccel\n"
+"Help"
+msgstr ""
+
+#: common_texts.cpp:252
+msgid ""
+"_: QAccel\n"
+"NumberSign"
+msgstr ""
+
+#: common_texts.cpp:253
 msgid "Main Toolbar"
 msgstr ""
