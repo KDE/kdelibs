@@ -1247,6 +1247,32 @@ void Ftp::stat( const KURL &url)
   }
   else
   {
+    // --- New implementation:
+    // Don't list the parent dir. Too slow, might not show it, etc.
+    // Just return that it's a dir.
+    UDSEntry entry;
+    UDSAtom atom;
+ 
+    atom.m_uds = KIO::UDS_NAME;
+    atom.m_str = filename;
+    entry.append( atom );
+ 
+    atom.m_uds = KIO::UDS_FILE_TYPE;
+    atom.m_long = S_IFDIR;
+    entry.append( atom );
+ 
+    atom.m_uds = KIO::UDS_ACCESS;
+    atom.m_long = S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+    entry.append( atom );
+
+    // No clue about size, ownership, group, etc.
+
+    statEntry(entry);
+    finished();
+    return;
+
+    // --- Old implementation:
+#if 0
     // It's a dir, remember that
     // Reason: it could be a symlink to a dir, in which case ftpReadDir
     // in the parent dir will have no idea about that. But we know better.
@@ -1255,6 +1281,7 @@ void Ftp::stat( const KURL &url)
     if ( search[0] == '.' )
        listarg = "-a";
     parentDir = "..";
+#endif
   }
 
   // Now cwd the parent dir, to prepare for listing
