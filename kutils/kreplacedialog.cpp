@@ -31,7 +31,8 @@
  * up, otherwise QComboBox will deliver an aweful big sizeHint
  * for long replacement texts.
  */
-struct KReplaceDialog::KReplaceDialogPrivate {
+class KReplaceDialog::KReplaceDialogPrivate {
+public:
     QStringList replaceStrings;
 };
 
