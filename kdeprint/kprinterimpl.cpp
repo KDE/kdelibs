@@ -209,7 +209,7 @@ bool KPrinterImpl::filterFiles(KPrinter *printer, QStringList& files, bool flag)
 			return false;
 		}
 	}
-qDebug("command: %s",filtercmd.latin1());
+	kdDebug() << "kdeprint: filter command: " << filtercmd << endl;
 
 	QRegExp	rin("%in"), rout("%out");
 	for (QStringList::Iterator it=files.begin(); it!=files.end(); ++it)

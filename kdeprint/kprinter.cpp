@@ -364,10 +364,11 @@ int KPrinter::numCopies() const
 
 QSize KPrinter::margins() const
 {
-	if (m_margins.isValid())
+	/*if (m_margins.isValid())
 		if (orientation() == KPrinter::Landscape) return QSize(m_margins.height(),m_margins.width());
 		else return m_margins;
-	else return m_wrapper->margins();
+	else return m_wrapper->margins();*/
+	return m_wrapper->margins();
 }
 
 int KPrinter::metric(int m) const
