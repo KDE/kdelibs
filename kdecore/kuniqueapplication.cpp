@@ -321,7 +321,7 @@ void KUniqueApplication::newInstanceNoFork()
   if (dcopClient()->isSuspended())
   {
     // Try again later.
-    QTimer::singleShot( 100, this, SLOT(newInstanceNoFork()) );
+    QTimer::singleShot( 200, this, SLOT(newInstanceNoFork()) );
     return;
   }
   
@@ -357,6 +357,12 @@ KUniqueApplication::delayRequest(const QCString &fun, const QByteArray &data)
 void
 KUniqueApplication::processDelayed()
 {
+  if (dcopClient()->isSuspended())
+  {
+    // Try again later.
+    QTimer::singleShot( 200, this, SLOT(processDelayed()));
+    return;
+  }
   d->processingRequest = true;
   while( !d->requestList.isEmpty() )
   {
