@@ -286,7 +286,7 @@ public:
     static QPixmap unknown();
 
     /**
-     * Checks whether the user wants to use blend the icons with the background
+     * Checks whether the user wants to blend the icons with the background
      *  using the alpha channel information for a given group.
      * @param group the group to check
      * @return true if alpha blending is desired
