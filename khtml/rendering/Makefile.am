@@ -42,6 +42,7 @@ noinst_HEADERS = render_style.h render_object.h render_box.h \
 	render_br.h render_applet.h render_hr.h
 
 INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio -I$(top_srcdir)/dcop \
+ -I$(top_srcdir)/kfile \
  -I$(top_srcdir)/khtml/java  -I$(top_srcdir)/khtml -I$(top_srcdir)/khtml/misc \
  -I$(top_srcdir)/khtml/css \
  -I$(top_srcdir)/khtml/dom -I$(top_srcdir)/khtml/xml -I$(top_srcdir)/khtml/html \

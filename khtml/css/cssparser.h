@@ -79,6 +79,7 @@ namespace DOM {
 
 	void setParent(StyleBaseImpl *parent);
 
+	QString preprocess(const QString &str);
 	const QChar *parseSpace(const QChar *curP, const QChar *endP);
 	const QChar *parseToChar(const QChar *curP, const QChar *endP,
 				 QChar c, bool chkws, bool endAtBlock = false);

@@ -221,10 +221,14 @@ void CSSStyleSheetImpl::deleteRule( unsigned long index )
 
 bool CSSStyleSheetImpl::parseString(const DOMString &string)
 {
-    const QChar *curP = string.unicode();
-    const QChar *endP = string.unicode()+string.length();
+    QString preprocessed = preprocess(string.string());
+    
+    kdDebug( 6080 ) << "parsing sheet, len=" << string.length() << ", sheet is " << string.string() << endl;
 
-    //kdDebug( 6080 ) << "parsing sheet, len=" << string.length() << ", sheet is " << string.string() << endl;
+    const QChar *curP = preprocessed.unicode();
+    const QChar *endP = preprocessed.unicode()+string.length();
+
+    kdDebug( 6080 ) << "preprocessed sheet, len=" << preprocessed.length() << ", sheet is " << preprocessed << endl;
 
     // remove leading spaces
     while (curP && (curP < endP))

@@ -113,7 +113,7 @@ DOMString StyleBaseImpl::baseUrl()
 
 bool isspace(const QChar &c)
 {
-     return (c == ' ' || c == '\t' || c == '\n' || c == '\f' || c == '\r');
+     return (c == ' ' || c == '\t' || c == '\n' || c == '\f' || c == '\r' || c == QChar(0xa0));
 }
 
 const QChar *
@@ -177,38 +177,31 @@ StyleBaseImpl::parseToChar(const QChar *curP, const QChar *endP, QChar c, bool c
             esc = false;
         else if (*curP == '\\')
             esc = true;
-        else if (dq && (*curP == '"'))
-            dq = false;
-        else if (sq && (*curP == '\''))
-            sq = false;
-        else if (*curP == '"')
-            dq = true;
-        else if (*curP == '\'')
-            sq = true;
-        else if (*curP == c)
-            return(curP);
-        else if (chkws && isspace(*curP))
-            return(curP);
-        else if (*curP == '{')
-        {
-	    if(endAtBlock)
-		return curP;
-            curP = parseToChar(curP + 1, endP, '}', false);
-            if (!curP)
-                return(0);
-        }
-        else if (*curP == '(')
-        {
-            curP = parseToChar(curP + 1, endP, ')', false);
-            if (!curP)
-                return(0);
-        }
-        else if (*curP == '[')
-        {
-            curP = parseToChar(curP + 1, endP, ']', false);
-            if (!curP)
-                return(0);
-        }
+        else if (!sq && (*curP == '"'))
+            dq = !dq;
+        else if (!dq && (*curP == '\''))
+            sq = !sq;
+	else if (!sq && !dq && *curP == c)
+	    return(curP);
+	else if (!sq && !dq && chkws && isspace(*curP))
+	    return(curP);
+	else if(!sq && !dq ) {
+	    if (*curP == '{') {
+		if(endAtBlock)
+		    return curP;
+		curP = parseToChar(curP + 1, endP, '}', false);
+		if (!curP)
+		    return(0);
+	    } else if (*curP == '(') {
+		curP = parseToChar(curP + 1, endP, ')', false);
+		if (!curP)
+		    return(0);
+	    } else if (*curP == '[') {
+		curP = parseToChar(curP + 1, endP, ']', false);
+		if (!curP)
+		    return(0);
+	    } 
+	}
         curP++;
     }
 
@@ -551,7 +544,7 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CS
         return;
 
     QString propName( curP, colon - curP );
-//    kdDebug( 6080 ) << "Property-name = \"" << propName.data() << "\"" << endl;
+    kdDebug( 6080 ) << "Property-name = \"" << propName << "\"" << endl;
 
     // May have only reached white space before
     if (*colon != ':')
@@ -589,13 +582,13 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CS
     }
 
 
-    //    QString propVal( curP , endP - curP );
-    //kdDebug( 6080 ) << "Property-value = \"" << propVal.data() << "\"" << endl;
+    QString propVal( curP , endP - curP );
+    kdDebug( 6080 ) << "Property-value = \"" << propVal.data() << "\"" << endl;
 
     const struct props *propPtr = findProp(propName.lower().ascii(), propName.length());
     if (!propPtr)
     {
-         kdDebug( 6080 ) << "Unknown property" << endl;
+	kdDebug( 6080 ) << "Unknown property" << propName << endl;
          return;
     }
 
@@ -615,6 +608,9 @@ QList<CSSProperty> *StyleBaseImpl::parseProperties(const QChar *curP, const QCha
         curP = parseToChar(curP, endP, ';', false);
         if (!curP)
             curP = endP;
+
+	QString propVal( startP , curP - startP );
+	kdDebug( 6080 ) << "Property = \"" << propVal.data() << "\"" << endl;
 
         parseProperty(startP, curP, propList);
         curP++;
@@ -1403,7 +1399,7 @@ StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
 
     startP = curP;
     curP = parseToChar(startP, endP, '}', false);
-    //kdDebug( 6080 ) << "rules are \'" << QString(startP, curP-startP) << "\'" << endl;
+    kdDebug( 6080 ) << "rules are \'" << QString(startP, curP-startP) << "\'" << endl;
     if (!curP)
     {
         delete slist;
@@ -1449,6 +1445,55 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
 
     if(curP) curP++;
     return rule;
+}
+
+// remove comments, replace character escapes and simplify spacing
+QString StyleBaseImpl::preprocess(const QString &str)
+{
+    QString processed;
+
+    bool sq = false;
+    bool dq = false;
+    bool comment = false;
+    bool escape = false;
+    bool firstChar = false;
+    
+    const QChar *ch = str.unicode();
+    const QChar *last = str.unicode()+str.length();
+    while(ch <= last) {
+	if ( !comment && !sq && *ch == '"' ) {
+	    dq = !dq;
+	    processed += *ch;
+	} else if ( !comment && !dq && *ch == '\'' ) {
+	    dq = !dq;
+	    processed += *ch;
+	} else if ( comment ) {
+	    if ( firstChar && *ch == '/' ) {
+		comment = false;
+		firstChar = false;
+	    } else if ( *ch == '*' )
+		firstChar = true;
+	    else
+		firstChar = false;
+	} else if ( !sq && !dq ) {
+	    // check for comment
+	    if ( firstChar ) {
+		if ( *ch == '*' ) {
+		    comment = true;
+		} else { 
+		    processed += '/';
+		    processed += *ch;
+		}
+		firstChar = false;
+	    } else if ( *ch == '/' )
+		firstChar = true;
+	    else
+		processed += *ch;
+	}
+	++ch;      
+    }
+
+    return processed;
 }
 
 // ------------------------------------------------------------------------------
