@@ -958,13 +958,14 @@ void KRun::slotTimeout()
     return;
   }
 
-  if ( m_bFault ){
+  if ( m_bFault ) {
       emit error();
   }
-  if ( m_bFinished ){
+  if ( m_bFinished ) {
       emit finished();
   }
-
+  else
+  {
   if ( m_bScanFile )
   {
     m_bScanFile = false;
@@ -976,6 +977,7 @@ void KRun::slotTimeout()
     m_bIsDirectory = false;
     foundMimeType( "inode/directory" );
     return;
+  }
   }
 
   if ( m_bAutoDelete )
@@ -1017,7 +1019,11 @@ void KRun::slotStatResult( KIO::Job * job )
                 m_bIsDirectory = true; // it's a dir
             else
                 m_bScanFile = true; // it's a file
-            break;
+        }
+        else if ( (*it).m_uds == KIO::UDS_MIME_TYPE ) // mimetype already known? (e.g. print:/manager)
+        {
+            foundMimeType( (*it).m_str );
+            m_bFinished = true;
         }
     }
     // We should have found something
