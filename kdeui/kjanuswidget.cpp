@@ -73,22 +73,16 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
   if( mFace == TreeList || mFace == IconList )
   {
     mPageList = new QList<QWidget>;
-    if( mPageList == 0 ) { return; }
-
     mTitleList = new QStringList();
-    if( mTitleList == 0 ) { return; }
 
     QFrame *page;
     if( mFace == TreeList )
     {
       QSplitter *splitter = new QSplitter( this );
-      if( splitter == 0 ) { return; }
       topLayout->addWidget( splitter, 10 );
       mTreeListResizeMode = QSplitter::KeepSize;
 
       mTreeList = new KListView( splitter );
-      if( mTreeList == 0 ) { return; }
-
       mTreeList->addColumn( QString::fromLatin1("") );
       mTreeList->header()->hide();
       mTreeList->setRootIsDecorated(true);
@@ -101,13 +95,11 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
       // all available space at bottom.
       //
       QFrame *p = new QFrame( splitter );
-      if( p == 0 ) { return; }
 
       QHBoxLayout *hbox = new QHBoxLayout( p, 0, 0 );
       hbox->addSpacing( KDialog::spacingHint() );
 
       page = new QFrame( p );
-      if( page == 0 ) { return; }
       hbox->addWidget( page, 10 );
     }
     else
@@ -133,7 +125,6 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     //
 
     QVBoxLayout *vbox = new QVBoxLayout( page, 0, KDialog::spacingHint() );
-    if( vbox == 0 ) { return; }
 
     mTitleLabel = new QLabel( QString::fromLatin1("Empty page"), page );
     vbox->addWidget( mTitleLabel );
@@ -147,30 +138,25 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     vbox->addWidget( mTitleSep );
 
     mPageStack = new QWidgetStack( page );
-    if( mPageStack == 0 ) { return; }
     vbox->addWidget( mPageStack, 10 );
   }
   else if( mFace == Tabbed )
   {
     mPageList = new QList<QWidget>;
-    if( mPageList == 0 ) { return; }
 
     mTabControl = new QTabWidget( this );
-    if( mTabControl == 0 ) { return; }
     mTabControl->setMargin (KDialog::marginHint());  
     topLayout->addWidget( mTabControl, 10 );
   }
   else if( mFace == Swallow )
   {
     mSwallowPage = new QWidget( this );
-    if( mSwallowPage == 0 ) { return; }
     topLayout->addWidget( mSwallowPage, 10 );
   }
   else
   {
     mFace = Plain;
     mPlainPage = new QFrame( this );
-    if( mPlainPage == 0 ) { return; }
     topLayout->addWidget( mPlainPage, 10 );
   }
 
@@ -480,7 +466,6 @@ bool KJanusWidget::setSwallowedWidget( QWidget *widget )
     delete mSwallowPage->layout();
   }
   QGridLayout *gbox = new QGridLayout( mSwallowPage, 1, 1, 0 );
-  if( gbox == 0 ) { return( false ); }
 
   //
   // Hide old children
