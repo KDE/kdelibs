@@ -91,12 +91,15 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 			present=eventsfile.readNumEntry("presentation", -1);
 		if (present==-1)
 			present=eventsfile.readNumEntry("default_presentation", 0);
+		
 		sound=eventsfile.readEntry("sound", 0);
 		if (sound.isNull())
 			sound=eventsfile.readEntry("default_sound", "");
+			
 		file=eventsfile.readEntry("logfile", 0);
 		if (file.isNull())
 			file=eventsfile.readEntry("default_logfile", "");
+		
 	}
 	
 	eventRunning=true;
