@@ -43,6 +43,8 @@ QFont *KGlobalSettings::_generalFont = 0;
 QFont *KGlobalSettings::_fixedFont = 0;
 QFont *KGlobalSettings::_toolBarFont = 0;
 QFont *KGlobalSettings::_menuFont = 0;
+QFont *KGlobalSettings::_windowTitleFont = 0;
+QFont *KGlobalSettings::_taskbarFont = 0;
 QColor *KGlobalSettings::kde2Blue = 0;
 QColor *KGlobalSettings::kde2Gray = 0;
 QColor *KGlobalSettings::kde2LightGray = 0;
@@ -255,9 +257,10 @@ QFont KGlobalSettings::generalFont()
     if (_generalFont)
         return *_generalFont;
 
-    _generalFont = new QFont("helvetica", 12, QFont::SansSerif);
+    _generalFont = new QFont("helvetica", 12);
     _generalFont->setPixelSize(12);
-
+    _generalFont->setStyleHint(QFont::SansSerif);
+	
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
     *_generalFont = c->readFontEntry("font", _generalFont);
@@ -272,8 +275,9 @@ QFont KGlobalSettings::fixedFont()
     if (_fixedFont)
         return *_fixedFont;
 
-    _fixedFont = new QFont("courier", 12, QFont::TypeWriter);
+    _fixedFont = new QFont("courier", 12);
     _fixedFont->setPixelSize(12);
+    _fixedFont->setStyleHint(QFont::TypeWriter);
 
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
@@ -291,8 +295,9 @@ QFont KGlobalSettings::toolBarFont()
     if(_toolBarFont)
         return *_toolBarFont;
 
-    _toolBarFont = new QFont("helvetica", 10, QFont::SansSerif);
+    _toolBarFont = new QFont("helvetica", 10);
     _toolBarFont->setPixelSize(10);
+    _toolBarFont->setStyleHint(QFont::SansSerif);
 
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
@@ -308,8 +313,9 @@ QFont KGlobalSettings::menuFont()
     if(_menuFont)
         return *_menuFont;
 
-    _menuFont = new QFont("helvetica", 12, QFont::SansSerif);
+    _menuFont = new QFont("helvetica", 12);
     _menuFont->setPixelSize(12);
+    _menuFont->setStyleHint(QFont::SansSerif);
 
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
@@ -318,6 +324,42 @@ QFont KGlobalSettings::menuFont()
         KGlobal::charsets()->setQFont(*_menuFont, KGlobal::locale()->charset());
 
     return *_menuFont;
+}
+
+QFont KGlobalSettings::windowTitleFont()
+{
+    if(_windowTitleFont)
+        return *_windowTitleFont;
+
+    _windowTitleFont = new QFont("helvetica", 12, QFont::Bold);
+    _windowTitleFont->setPixelSize(12);
+    _windowTitleFont->setStyleHint(QFont::SansSerif);
+
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("WM") );
+    *_windowTitleFont = c->readFontEntry("activeFont", _windowTitleFont); // inconsistency
+    if ( c->readEntry("windowTitleFontCharset","default") == "default" )
+        KGlobal::charsets()->setQFont(*_windowTitleFont, KGlobal::locale()->charset());
+
+    return *_windowTitleFont;
+}
+
+QFont KGlobalSettings::taskbarFont()
+{
+    if(_taskbarFont)
+        return *_taskbarFont;
+
+    _taskbarFont = new QFont("helvetica", 11);
+    _taskbarFont->setPixelSize(11);
+    _taskbarFont->setStyleHint(QFont::SansSerif);
+
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
+    *_taskbarFont = c->readFontEntry("taskbarFont", _taskbarFont);
+    if ( c->readEntry("taskbarFontCharset","default") == "default" )
+        KGlobal::charsets()->setQFont(*_taskbarFont, KGlobal::locale()->charset());
+
+    return *_taskbarFont;
 }
 
 void KGlobalSettings::initStatic() // should be called initPaths(). Don't put anything else here.
@@ -405,7 +447,11 @@ void KGlobalSettings::rereadFontSettings()
     delete _menuFont;
     _menuFont = 0L;
     delete _toolBarFont;
-    _toolBarFont = 0L;
+    _toolBarFont = 0L;  
+    delete _windowTitleFont;
+    _windowTitleFont = 0L;  
+    delete _taskbarFont;
+    _taskbarFont = 0L;
 }
 
 void KGlobalSettings::rereadPathSettings()

@@ -229,6 +229,8 @@ class KGlobalSettings
     static QFont fixedFont();
     static QFont toolBarFont();
     static QFont menuFont();
+    static QFont windowTitleFont();
+    static QFont taskbarFont();
 
 private:
     /**
@@ -260,7 +262,9 @@ private:
     static QFont *_generalFont;
     static QFont *_fixedFont;
     static QFont *_toolBarFont;
-    static QFont *_menuFont;
+    static QFont *_menuFont; 
+    static QFont *_windowTitleFont;
+    static QFont *_taskbarFont;
     static QColor * kde2Gray;
     static QColor * kde2Blue;
     static QColor * kde2LightGray;
