@@ -119,9 +119,6 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   if ( reset || config->hasKey( "DefaultEncoding" ) )
     m_encoding = config->readEntry( "DefaultEncoding", "iso8859-1" );
 
-  if ( reset || config->hasKey( "BgColor" ) )
-    m_bgColor = config->readColorEntry( "BgColor", &HTML_DEFAULT_BG_COLOR );
-
   if ( reset || config->hasKey( "TextColor" ) )
     m_textColor = config->readColorEntry( "TextColor", &HTML_DEFAULT_TXT_COLOR );
 

@@ -38,7 +38,7 @@ public:
    * @internal Constructor
    */
   KHTMLSettings();
-    
+
   void init();
 
   /** Called by constructor and reparseConfiguration */
@@ -76,7 +76,6 @@ public:
     const QString &encoding() const { return m_encoding; }
 
   // Color settings
-  const QColor& bgColor() { return m_bgColor; }
   const QColor& textColor() { return m_textColor; }
   const QColor& linkColor() { return m_linkColor; }
   const QColor& vLinkColor() { return m_vLinkColor; }
@@ -106,7 +105,6 @@ private:
     bool enforceCharset;
     QString m_encoding;
 
-  QColor m_bgColor;
   QColor m_textColor;
   QColor m_linkColor;
   QColor m_vLinkColor;
