@@ -146,8 +146,15 @@ KDirOperator::KDirOperator(const KURL& _url,
 KDirOperator::~KDirOperator()
 {
     resetCursor();
+    if ( m_fileView )
+    {
+        if ( d->config )
+            m_fileView->writeConfig( d->config, d->configGroup );
+        
     delete m_fileView;
     m_fileView = 0L;
+    }
+    
     delete myPreview;
     delete dir;
     delete d;
