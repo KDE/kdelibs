@@ -40,7 +40,7 @@
 class MetaPropsScrollView : public QScrollView
 {
 public:
-    MetaPropsScrollView(QWidget* parent = 0, const char* name = 0) 
+    MetaPropsScrollView(QWidget* parent = 0, const char* name = 0)
         : QScrollView(parent, name)
     {
       setFrameStyle(QFrame::NoFrame);
@@ -48,17 +48,17 @@ public:
       m_frame->setFrameStyle(QFrame::NoFrame);
       addChild(m_frame, 0, 0);
     };
-  
+
     QFrame* frame() {return m_frame;};
 
-protected:  
+protected:
     virtual void viewportResizeEvent(QResizeEvent* ev)
-    { 
+    {
       QScrollView::viewportResizeEvent(ev);
       m_frame->resize( kMax(m_frame->sizeHint().width(), ev->size().width()),
                        kMax(m_frame->sizeHint().height(), ev->size().height()));
     };
-  
+
 private:
       QFrame* m_frame;
 };
@@ -80,12 +80,12 @@ KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
   : KPropsDlgPlugin(props)
 {
     d = new KFileMetaPropsPluginPrivate;
-  
+
     KFileItem * fileitem = properties->item();
     kdDebug(250) << "KFileMetaPropsPlugin constructor" << endl;
 
     d->m_info  = fileitem->metaInfo();
-    if (!d->m_info.isValid()) 
+    if (!d->m_info.isValid())
     {
         d->m_info = KFileMetaInfo(properties->kurl().path(-1));
         fileitem->setMetaInfo(d->m_info);
@@ -98,9 +98,9 @@ KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
         // in some cases, like the album of a list of mp3s
         return;
     }
-  
+
     createLayout();
-  
+
     setDirty(true);
 }
 
@@ -119,36 +119,37 @@ void KFileMetaPropsPlugin::createLayout()
     QFrame* topframe = properties->dialog()->addPage(i18n("&Meta Info"));
     topframe->setFrameStyle(QFrame::NoFrame);
     QVBoxLayout* tmp = new QVBoxLayout(topframe);
-  
+
     // create a scroll view in the page
     MetaPropsScrollView* view = new MetaPropsScrollView(topframe);
 
     tmp->addWidget(view);
-  
+
     d->m_frame = view->frame();
-    
+
     QGridLayout *toplayout = new QGridLayout(d->m_frame);
     toplayout->setSpacing(KDialog::spacingHint());
-    
+
     // now get a list of groups
+    KFileMetaInfoProvider* prov = KFileMetaInfoProvider::self();
     QStringList groupList = d->m_info.preferredGroups();
 
     int count = 0;
     for (QStringList::Iterator git=groupList.begin(); git!=groupList.end(); ++git)
     {
         kdDebug(7033) << *git << endl;
-        
+
         // add the group heading
         QLabel* groupLabel = new QLabel(QString("<b><u>" + QStyleSheet::escape(*git)) + "</b></u>", d->m_frame);
         toplayout->addMultiCellWidget( groupLabel, count, count, 0, 1);
         count++;
-        
+
         QStringList itemList=d->m_info.group(*git).preferredKeys();
-        
+
         // first create all widgets and add them to the lists
         QPtrList<KFileMetaInfoWidget> readWidgets;
         QPtrList<KFileMetaInfoWidget> editWidgets;
-    
+
         for (QStringList::Iterator iit = itemList.begin(); iit!=itemList.end(); ++iit)
         {
             KFileMetaInfoItem item = d->m_info[*git][*iit];
@@ -157,11 +158,10 @@ void KFileMetaPropsPlugin::createLayout()
             KFileMetaInfoWidget* w = 0L;
             QString valClass;
             bool editable = file_info.isWritable() && item.isEditable();
-        
-            KFileMetaInfoProvider* prov = KFileMetaInfoProvider::self();
+
             const KFileMimeTypeInfo* mtinfo = prov->mimeTypeInfo(d->m_info.mimeType());
             if (!mtinfo) kdDebug(7034) << "no mimetype info there\n";
-        
+
             QValidator* val = mtinfo->createValidator(*git, *iit);
             if (!val) kdDebug(7033) << "didn't get a validator for " << *git << "/" << *iit << endl;
             w = new KFileMetaInfoWidget(item, val, d->m_frame);
@@ -177,7 +177,7 @@ void KFileMetaPropsPlugin::createLayout()
             else
                 readWidgets.append( w );
         }
-    
+
         // then first add the editable items to the layout
         for (QPtrListIterator<KFileMetaInfoWidget> wit(editWidgets); *wit; ++wit)
         {
@@ -196,15 +196,15 @@ void KFileMetaPropsPlugin::createLayout()
             count++;
         }
     }
-        
-               
+
+
     // the add key (disabled until fully implemented)
 /*    d->m_add = new QPushButton(i18n("&Add"), topframe);
     d->m_add->setSizePolicy(QSizePolicy(QSizePolicy::Fixed,
                                         QSizePolicy::Fixed));
     connect(d->m_add, SIGNAL(clicked()), this, SLOT(slotAdd()));
-    tmp->addWidget(d->m_add); 
-  
+    tmp->addWidget(d->m_add);
+
     // if nothing can be added, deactivate it
     if ( !d->m_info.supportsVariableKeys() )
     {
@@ -229,11 +229,11 @@ void KFileMetaPropsPlugin::createLayout()
 /*void KFileMetaPropsPlugin::slotAdd()
 {
     // add a lineedit for the name
-  
-  
-  
+
+
+
     // insert the item in the list
-  
+
 }*/
 
 KFileMetaPropsPlugin::~KFileMetaPropsPlugin()
@@ -254,7 +254,7 @@ void KFileMetaPropsPlugin::applyChanges()
 {
   kdDebug(250) << "applying changes" << endl;
   // insert the fields that changed into the info object
-  
+
   QPtrListIterator<KFileMetaInfoWidget> it( d->m_editWidgets );
   KFileMetaInfoWidget* w;
   for (; (w = it.current()); ++it) w->apply();
