@@ -297,10 +297,12 @@ KGzipFilter::Result KGzipFilter::uncompress()
 #endif
         int result = inflate(&d->zStream, Z_SYNC_FLUSH);
 #ifdef DEBUG_GZIP
-        //if ( result != Z_OK && result != Z_STREAM_END )
-            kdDebug(7005) << " -> inflate returned " << result << endl;
+        kdDebug(7005) << " -> inflate returned " << result << endl;
         kdDebug(7005) << "Now avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable() << endl;
         kdDebug(7005) << "    next_in=" << d->zStream.next_in << endl;
+#else
+        if ( result != Z_OK && result != Z_STREAM_END )
+            kdDebug(7005) << "Warning: inflate() returned " << result << endl;
 #endif
         return ( result == Z_OK ? OK : ( result == Z_STREAM_END ? END : ERROR ) );
     } else
@@ -318,10 +320,8 @@ KGzipFilter::Result KGzipFilter::compress( bool finish )
     kdDebug(7005) << "  calling deflate with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable() << endl;
 #endif
     int result = deflate(&d->zStream, finish ? Z_FINISH : Z_NO_FLUSH);
-#ifdef DEBUG_GZIP
     if ( result != Z_OK && result != Z_STREAM_END )
         kdDebug(7005) << "  deflate returned " << result << endl;
-#endif
     if ( m_headerWritten )
     {
         //kdDebug(7005) << "Computing CRC for the next " << len - d->zStream.avail_in << " bytes" << endl;
