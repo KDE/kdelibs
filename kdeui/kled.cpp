@@ -21,6 +21,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.17  2000/09/12 19:15:53  pfeiffer
+ * Stefan Hellwig in cooperation with Joerg Habenicht:
+ * Draw nicer LEDs, especially sunken ones.
+ *
  * Revision 1.16  2000/08/24 12:44:48  porten
  * "friend class" patches from Thomas Kunert <kunert@physik.tu-dresden.de>
  *
@@ -544,7 +548,7 @@ KLed::setState( State state )
 void
 KLed::toggleState()
 {
-  led_state = (State)!led_state;
+  led_state = (led_state == On) ? Off : On;
   // setColor(led_color);
   update();
 }
