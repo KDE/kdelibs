@@ -111,7 +111,8 @@ struct KIconGroup
  */
 struct KIconLoaderPrivate
 {
-    QStringList mThemeList, mThemesInTree;
+    QStringList mThemeList;
+    QStringList mThemesInTree;
     KIconGroup *mpGroups;
     KIconThemeNode *mpThemeRoot;
     KStandardDirs *mpDirs;
@@ -128,22 +129,12 @@ KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs)
     else
       d->mpDirs = KGlobal::dirs();
 
-    // get a list of available theme dirs in /icons
-    d->mThemeList = KIconTheme::list();
-    if (!d->mThemeList.contains("hicolor") || !d->mThemeList.contains("locolor"))
-    {
-	// If someone removed locolor/hicolor without replacing them, better
-	// jump out of the program and let him fix that
-	kdFatal(264) << "Error: standard icon themes: \"locolor\" and "
-		     << "hicolor not found!\n"; // passing two lines won't work
-	return;
-    }
-
     // get the default theme or the one written to config, e.g. "hicolor"
     // the default varies depending on the color depth
     d->mpThemeRoot = new KIconThemeNode(new KIconTheme(KIconTheme::current()));
 
     // Add global themes to the theme tree.
+    d->mThemeList = KIconTheme::list();
     addIconTheme(d->mpThemeRoot);
 
     // this are the (absolute) dirs we're going to look at when we get an unthemed icon
@@ -253,10 +244,19 @@ void KIconLoader::addIconTheme(KIconThemeNode *node)
 {
     QStringList lst = node->theme->inherits();
     QStringList::ConstIterator it;
-    static QStringList mThemeList = KIconTheme::list();
+
+    if (!d->mThemeList.contains("hicolor") || !d->mThemeList.contains("locolor"))
+    {
+        // If someone removed locolor/hicolor without replacing them, better
+        // jump out of the program and let him fix that
+        kdFatal(264) << "Error: standard icon themes: \"locolor\" and "
+                     << "hicolor not found!\n"; // passing two lines won't work
+        return;
+    }
+
     for (it=lst.begin(); it!=lst.end(); it++)
     {
-      if (!mThemeList.contains(*it) || d->mThemesInTree.contains(*it))
+      if (!d->mThemeList.contains(*it) || d->mThemesInTree.contains(*it))
 	    continue;
         KIconThemeNode *n = new KIconThemeNode(new KIconTheme(*it));
 	d->mThemesInTree.append(*it);
