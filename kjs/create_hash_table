@@ -146,7 +146,7 @@ sub output() {
   print "\n#include \"lookup.h\"\n" if ($includelookup);
   print "\nusing namespace KJS;\n"; # because of DontDelete etc.
   print "\nnamespace KJS {\n";
-  print "\nconst struct HashEntry ".$nameEntries."[] = {\n";
+  print "\nstatic const struct HashEntry ".$nameEntries."[] = {\n";
   my $i = 0;
   #print STDERR "writing out table with ".($#table+1)." entries\n";
   foreach $entry (@table) {
@@ -170,7 +170,7 @@ sub output() {
     $i++;
   }
   print "};\n";
-  print "\nconst struct HashTable $name = ";
+  print "\nstatic const struct HashTable $name = ";
   print "\{ 2, $size, ".$nameEntries.", $hashsize \};\n\n";
   print "}; // namespace\n";
 }

@@ -6,7 +6,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry dateTableEntries[] = {
+static const struct HashEntry dateTableEntries[] = {
    { "setMilliseconds", DateProtoFuncImp::SetMilliSeconds, DontEnum|Function, 1, 0 },
    { "setYear", DateProtoFuncImp::SetYear, DontEnum|Function, 1, 0 },
    { "toLocaleDateString", DateProtoFuncImp::ToLocaleDateString, DontEnum|Function, 0, &dateTableEntries[64] },
@@ -80,6 +80,6 @@ const struct HashEntry dateTableEntries[] = {
    { "toGMTString", DateProtoFuncImp::ToGMTString, DontEnum|Function, 0, 0 }
 };
 
-const struct HashTable dateTable = { 2, 71, dateTableEntries, 61 };
+static const struct HashTable dateTable = { 2, 71, dateTableEntries, 61 };
 
 }; // namespace

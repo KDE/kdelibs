@@ -6,7 +6,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry arrayTableEntries[] = {
+static const struct HashEntry arrayTableEntries[] = {
    { "toString", ArrayProtoFuncImp::ToString, DontEnum|Function, 0, 0 },
    { "sort", ArrayProtoFuncImp::Sort, DontEnum|Function, 1, 0 },
    { "unshift", ArrayProtoFuncImp::UnShift, DontEnum|Function, 1, 0 },
@@ -25,6 +25,6 @@ const struct HashEntry arrayTableEntries[] = {
    { "splice", ArrayProtoFuncImp::Splice, DontEnum|Function, 2, 0 }
 };
 
-const struct HashTable arrayTable = { 2, 16, arrayTableEntries, 13 };
+static const struct HashTable arrayTable = { 2, 16, arrayTableEntries, 13 };
 
 }; // namespace

@@ -6,7 +6,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry mathTableEntries[] = {
+static const struct HashEntry mathTableEntries[] = {
    { "atan", MathObjectImp::ATan, DontEnum|Function, 1, &mathTableEntries[25] },
    { 0, 0, 0, 0, 0 },
    { "SQRT2", MathObjectImp::Sqrt2, DontEnum|DontDelete|ReadOnly, 0, &mathTableEntries[23] },
@@ -42,6 +42,6 @@ const struct HashEntry mathTableEntries[] = {
    { "tan", MathObjectImp::Tan, DontEnum|Function, 1, 0 }
 };
 
-const struct HashTable mathTable = { 2, 33, mathTableEntries, 21 };
+static const struct HashTable mathTable = { 2, 33, mathTableEntries, 21 };
 
 }; // namespace

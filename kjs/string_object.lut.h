@@ -6,7 +6,7 @@ using namespace KJS;
 
 namespace KJS {
 
-const struct HashEntry stringTableEntries[] = {
+static const struct HashEntry stringTableEntries[] = {
    { "toString", StringProtoFuncImp::ToString, DontEnum|Function, 0, 0 },
    { "bold", StringProtoFuncImp::Bold, DontEnum|Function, 0, 0 },
    { 0, 0, 0, 0, 0 },
@@ -45,6 +45,6 @@ const struct HashEntry stringTableEntries[] = {
    { "fontcolor", StringProtoFuncImp::Fontcolor, DontEnum|Function, 1, 0 }
 };
 
-const struct HashTable stringTable = { 2, 36, stringTableEntries, 26 };
+static const struct HashTable stringTable = { 2, 36, stringTableEntries, 26 };
 
 }; // namespace
