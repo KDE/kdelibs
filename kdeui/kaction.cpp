@@ -506,6 +506,7 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
   d->m_kaccel = kacc;
   d->m_kaccel->insertItem(d->m_plainText, name(), d->m_accel, configurable);
   d->m_kaccel->connectItem(name(), this, SLOT(slotActivated()));
+  d->m_kaccel->setItemEnabled( name(), isEnabled() );
   connect(d->m_kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()));
   connect(d->m_kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
 }
@@ -770,7 +771,7 @@ void KAction::activate()
 
 void KAction::slotActivated()
 {
-  emit activated();
+      emit activated();
 }
 
 void KAction::slotDestroyed()
