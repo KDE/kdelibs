@@ -99,9 +99,9 @@ void KDEPrintd::slotProcessExited(KProcess *proc)
 		m_processpool.take();
 		QString		msg;
 		if (!pproc->normalExit())
-			msg = i18n("Abnormal process termination (<b>%1</b>).").arg(pproc->args()->first());
+			msg = i18n("Abnormal process termination (<b>%1</b>).").arg(pproc->args().first());
 		else if (pproc->exitStatus() != 0)
-			msg = i18n("<b>%1</b>: execution failed with message:<p>%2</p>").arg(pproc->args()->first()).arg(pproc->errorMessage());
+			msg = i18n("<b>%1</b>: execution failed with message:<p>%2</p>").arg(pproc->args().first()).arg(pproc->errorMessage());
 		cleanTempFile(pproc);
 
 		delete pproc;
