@@ -198,6 +198,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 
     _tipText = new KTextBrowser(topLeft);
     
+    _tipText->setWrapPolicy( QTextEdit::AtWordOrDocumentBoundary );
     _tipText->mimeSourceFactory()->addFilePath(
 	KGlobal::dirs()->findResourceDir("data", "kdewizard/pics")+"kdewizard/pics/");
     _tipText->setFrameStyle(QFrame::NoFrame | QFrame::Plain);
