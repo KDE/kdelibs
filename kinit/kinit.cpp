@@ -191,7 +191,8 @@ static pid_t launch(int argc, const char *_name, const char *args)
         d.handle = lt_dlopen( lib.data() );
      if (!d.handle )
      {
-        fprintf(stderr, "Could not dlopen library %s: %s\n", lib.data(), lt_dlerror());
+        const char * ltdlError = lt_dlerror();
+        fprintf(stderr, "Could not dlopen library %s: %s\n", lib.data(), ltdlError != 0 ? ltdlError : "(null)" );
         d.result = 2; // Try execing
         write(d.fd[1], &d.result, 1);
 
@@ -213,7 +214,8 @@ static pid_t launch(int argc, const char *_name, const char *args)
            d.sym = lt_dlsym( d.handle, "main");
            if (!d.sym )
            {
-              fprintf(stderr, "Could not find main: %s\n", lt_dlerror());
+              const char * ltdlError = lt_dlerror();
+              fprintf(stderr, "Could not find main: %s\n", ltdlError != 0 ? ltdlError : "(null)" );
               d.result = 1; // Error
               write(d.fd[1], &d.result, 1);
               close(d.fd[1]);
@@ -234,7 +236,8 @@ static pid_t launch(int argc, const char *_name, const char *args)
         d.sym = lt_dlsym( d.handle, "start_launcher");
         if (!d.sym )
         {
-           fprintf(stderr, "Could not find start_launcher: %s\n", lt_dlerror());
+           const char * ltdlError = lt_dlerror();
+           fprintf(stderr, "Could not find start_launcher: %s\n", ltdlError != 0 ? ltdlError : "(null)" );
            d.result = 1; // Error
            write(d.fd[1], &d.result, 1);
            close(d.fd[1]);
@@ -760,7 +763,8 @@ static void kdeinit_library_path()
    setenv("LD_LIBRARY_PATH", ld_library_path.data(), 1);
    if (lt_dlinit())
    {
-      fprintf(stderr, "can't initialize dynamic loading: %s\n", lt_dlerror());
+      const char * ltdlError = lt_dlerror();
+      fprintf(stderr, "can't initialize dynamic loading: %s\n", ltdlError != 0 ? ltdlError : "(null)" );
    }
 
    char *display = getenv("DISPLAY");
