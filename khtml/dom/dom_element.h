@@ -203,6 +203,7 @@ class Element : public Node
 {
     friend class Document;
     friend class HTMLDocument;
+    friend class AttrImpl;
 
 public:
     Element();
