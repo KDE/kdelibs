@@ -201,6 +201,7 @@ public:
         : noMatches(false)
         , shortcuts(false)
         , autoExec(false)
+        , lastHitIndex(-1)
     {}
 
     QString m_lastTitle;
