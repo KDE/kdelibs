@@ -159,6 +159,9 @@ KPixmapIO::~KPixmapIO()
 {
     destroyXImage();
     destroyShmSegment();
+#ifdef HAVE_MITSHM
+    delete d->shminfo;
+#endif
     delete d;
 }
 
