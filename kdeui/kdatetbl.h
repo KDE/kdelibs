@@ -25,6 +25,33 @@
 #include <qlineedit.h>
 #include <qdatetime.h>
 
+/** Week selection widget.
+* @internal
+* @version $Id$
+* @author Stephan Binner
+*/
+class KDateInternalWeekSelector : public QLineEdit
+{
+  Q_OBJECT
+protected:
+  QIntValidator *val;
+  int result;
+public slots:
+  void weekEnteredSlot();
+signals:
+  void closeMe(int);
+public:
+  KDateInternalWeekSelector(int fontsize,
+			    QWidget* parent=0,
+			    const char* name=0);
+  int getWeek();
+  void setWeek(int week);
+
+private:
+  class KDateInternalWeekPrivate;
+  KDateInternalWeekPrivate *d;
+};
+
 /**
 * A table containing month names. It is used to pick a month directly.
 * @internal

@@ -156,6 +156,7 @@ protected slots:
   void monthBackwardClicked();
   void yearForwardClicked();
   void yearBackwardClicked();
+  void selectWeekClicked();
   void selectMonthClicked();
   void selectYearClicked();
   void lineEnterPressed();
@@ -193,6 +194,8 @@ protected:
 private:
   class KDatePickerPrivate;
   KDatePickerPrivate *d;
+  // calculate ISO 8601 week number
+  int weekOfYear(QDate);
 };
 
 #endif //  KDATEPICKER_H

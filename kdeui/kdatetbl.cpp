@@ -401,6 +401,54 @@ KDateTable::sizeHint() const
     }
 }
 
+KDateInternalWeekSelector::KDateInternalWeekSelector
+(int fontsize, QWidget* parent, const char* name)
+  : QLineEdit(parent, name),
+    val(new QIntValidator(this)),
+    result(0)
+{
+  QFont font;
+  // -----
+  font=KGlobalSettings::generalFont();
+  font.setPointSize(fontsize);
+  setFont(font);
+  setFrameStyle(QFrame::NoFrame);
+  val->setRange(1, 53);
+  setValidator(val);
+  connect(this, SIGNAL(returnPressed()), SLOT(weekEnteredSlot()));
+}
+
+void
+KDateInternalWeekSelector::weekEnteredSlot()
+{
+  bool ok;
+  int week;
+  // ----- check if this is a valid week:
+  week=text().toInt(&ok);
+  if(!ok)
+    {
+      KNotifyClient::beep();
+      return;
+    }
+  result=week;
+  emit(closeMe(1));
+}
+
+int
+KDateInternalWeekSelector::getWeek()
+{
+  return result;
+}
+
+void
+KDateInternalWeekSelector::setWeek(int week)
+{
+  QString temp;
+  // -----
+  temp.setNum(week);
+  setText(temp);
+}
+
 KDateInternalMonthPicker::KDateInternalMonthPicker
 (int fontsize, QWidget* parent, const char* name)
   : QGridView(parent, name),
