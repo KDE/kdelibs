@@ -204,18 +204,22 @@ namespace KJS {
   public:
     DOMNotation(ExecState *exec, DOM::Notation n) : DOMNode(exec, n) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    Value getValue(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    enum { PublicId, SystemId };
   };
 
   class DOMEntity : public DOMNode {
   public:
     DOMEntity(ExecState *exec, DOM::Entity e) : DOMNode(exec, e) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    Value getValue(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    enum { PublicId, SystemId, NotationName };
   };
 
   // Constructor for Node - constructor stuff not implemented yet
@@ -223,9 +227,14 @@ namespace KJS {
   public:
     NodeConstructor(ExecState *) : DOMObject() { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    Value getValue(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    enum { ELEMENT_NODE, ATTRIBUTE_NODE, TEXT_NODE, CDATA_SECTION_NODE,
+           ENTITY_REFERENCE_NODE, ENTITY_NODE, PROCESSING_INSTRUCTION_NODE,
+           COMMENT_NODE, DOCUMENT_NODE, DOCUMENT_TYPE_NODE,
+           DOCUMENT_FRAGMENT_NODE, NOTATION_NODE };
   };
 
   // Constructor for DOMException - constructor stuff not implemented yet
@@ -233,9 +242,15 @@ namespace KJS {
   public:
     DOMExceptionConstructor(ExecState *) : DOMObject() { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    Value getValue(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    enum { INDEX_SIZE_ERR, DOMSTRING_SIZE_ERR, HIERARCHY_REQUEST_ERR,
+           WRONG_DOCUMENT_ERR, INVALID_CHARACTER_ERR, NO_DATA_ALLOWED_ERR,
+           NO_MODIFICATION_ALLOWED_ERR, NOT_FOUND_ERR, NOT_SUPPORTED_ERR,
+           INUSE_ATTRIBUTE_ERR, INVALID_STATE_ERR, SYNTAX_ERR,
+           INVALID_MODIFICATION_ERR, NAMESPACE_ERR, INVALID_ACCESS_ERR };
   };
 
   Value getDOMNode(ExecState *exec, DOM::Node n);

@@ -244,9 +244,84 @@ const struct HashEntry DOMProcessingInstructionTableEntries[] = {
    { "sheet", DOMProcessingInstruction::Sheet, DontDelete|ReadOnly, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "target", DOMProcessingInstruction::Target, DontDelete|ReadOnly, 0, &DOMProcessingInstructionTableEntries[3] },
-   { "data", DOMProcessingInstruction::Data, DontDelete|ReadOnly, 0, 0 }
+   { "data", DOMProcessingInstruction::Data, DontDelete, 0, 0 }
 };
 
 const struct HashTable DOMProcessingInstructionTable = { 2, 4, DOMProcessingInstructionTableEntries, 3 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMNotationTableEntries[] = {
+   { "publicId", DOMNotation::PublicId, DontDelete|ReadOnly, 0, &DOMNotationTableEntries[2] },
+   { 0, 0, 0, 0, 0 },
+   { "systemId", DOMNotation::SystemId, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMNotationTable = { 2, 3, DOMNotationTableEntries, 2 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMEntityTableEntries[] = {
+   { "publicId", DOMEntity::PublicId, DontDelete|ReadOnly, 0, &DOMEntityTableEntries[2] },
+   { "notationName", DOMEntity::NotationName, DontDelete|ReadOnly, 0, 0 },
+   { "systemId", DOMEntity::SystemId, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMEntityTable = { 2, 3, DOMEntityTableEntries, 2 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry NodeConstructorTableEntries[] = {
+   { 0, 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "CDATA_SECTION_NODE", NodeConstructor::CDATA_SECTION_NODE, DontDelete|ReadOnly, 0, 0 },
+   { "ATTRIBUTE_NODE", NodeConstructor::ATTRIBUTE_NODE, DontDelete|ReadOnly, 0, &NodeConstructorTableEntries[12] },
+   { "DOCUMENT_FRAGMENT_NODE", NodeConstructor::DOCUMENT_FRAGMENT_NODE, DontDelete|ReadOnly, 0, 0 },
+   { "DOCUMENT_TYPE_NODE", NodeConstructor::DOCUMENT_TYPE_NODE, DontDelete|ReadOnly, 0, 0 },
+   { "DOCUMENT_NODE", NodeConstructor::DOCUMENT_NODE, DontDelete|ReadOnly, 0, 0 },
+   { "COMMENT_NODE", NodeConstructor::COMMENT_NODE, DontDelete|ReadOnly, 0, 0 },
+   { "ENTITY_NODE", NodeConstructor::ENTITY_NODE, DontDelete|ReadOnly, 0, &NodeConstructorTableEntries[13] },
+   { "ELEMENT_NODE", NodeConstructor::ELEMENT_NODE, DontDelete|ReadOnly, 0, 0 },
+   { "TEXT_NODE", NodeConstructor::TEXT_NODE, DontDelete|ReadOnly, 0, &NodeConstructorTableEntries[11] },
+   { "ENTITY_REFERENCE_NODE", NodeConstructor::ENTITY_REFERENCE_NODE, DontDelete|ReadOnly, 0, 0 },
+   { "PROCESSING_INSTRUCTION_NODE", NodeConstructor::PROCESSING_INSTRUCTION_NODE, DontDelete|ReadOnly, 0, 0 },
+   { "NOTATION_NODE", NodeConstructor::NOTATION_NODE, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable NodeConstructorTable = { 2, 14, NodeConstructorTableEntries, 11 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMExceptionConstructorTableEntries[] = {
+   { 0, 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "WRONG_DOCUMENT_ERR", DOMExceptionConstructor::WRONG_DOCUMENT_ERR, DontDelete|ReadOnly, 0, 0 },
+   { "INUSE_ATTRIBUTE_ERR", DOMExceptionConstructor::INUSE_ATTRIBUTE_ERR, DontDelete|ReadOnly, 0, 0 },
+   { "INDEX_SIZE_ERR", DOMExceptionConstructor::INDEX_SIZE_ERR, DontDelete|ReadOnly, 0, 0 },
+   { "INVALID_CHARACTER_ERR", DOMExceptionConstructor::INVALID_CHARACTER_ERR, DontDelete|ReadOnly, 0, &DOMExceptionConstructorTableEntries[17] },
+   { "NAMESPACE_ERR", DOMExceptionConstructor::NAMESPACE_ERR, DontDelete|ReadOnly, 0, 0 },
+   { "NO_DATA_ALLOWED_ERR", DOMExceptionConstructor::NO_DATA_ALLOWED_ERR, DontDelete|ReadOnly, 0, &DOMExceptionConstructorTableEntries[16] },
+   { "DOMSTRING_SIZE_ERR", DOMExceptionConstructor::DOMSTRING_SIZE_ERR, DontDelete|ReadOnly, 0, 0 },
+   { "NOT_FOUND_ERR", DOMExceptionConstructor::NOT_FOUND_ERR, DontDelete|ReadOnly, 0, &DOMExceptionConstructorTableEntries[15] },
+   { 0, 0, 0, 0, 0 },
+   { "NO_MODIFICATION_ALLOWED_ERR", DOMExceptionConstructor::NO_MODIFICATION_ALLOWED_ERR, DontDelete|ReadOnly, 0, &DOMExceptionConstructorTableEntries[18] },
+   { "HIERARCHY_REQUEST_ERR", DOMExceptionConstructor::HIERARCHY_REQUEST_ERR, DontDelete|ReadOnly, 0, 0 },
+   { "INVALID_MODIFICATION_ERR", DOMExceptionConstructor::INVALID_MODIFICATION_ERR, DontDelete|ReadOnly, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "NOT_SUPPORTED_ERR", DOMExceptionConstructor::NOT_SUPPORTED_ERR, DontDelete|ReadOnly, 0, 0 },
+   { "INVALID_STATE_ERR", DOMExceptionConstructor::INVALID_STATE_ERR, DontDelete|ReadOnly, 0, 0 },
+   { "SYNTAX_ERR", DOMExceptionConstructor::SYNTAX_ERR, DontDelete|ReadOnly, 0, 0 },
+   { "INVALID_ACCESS_ERR", DOMExceptionConstructor::INVALID_ACCESS_ERR, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMExceptionConstructorTable = { 2, 19, DOMExceptionConstructorTableEntries, 15 };
 
 }; // namespace

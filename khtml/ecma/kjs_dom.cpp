@@ -48,7 +48,7 @@ QPtrDict<DOMNodeList> nodeLists;
 QPtrDict<DOMDOMImplementation> domImplementations;
 
 // -------------------------------------------------------------------------
-/*
+/* Source for DOMNodeProtoTable. Use "make hashtables" to regenerate.
 @begin DOMNodeProtoTable 11
   insertBefore	DOMNode::InsertBefore	DontDelete|Function 2
   replaceChild	DOMNode::ReplaceChild	DontDelete|Function 2
@@ -92,7 +92,7 @@ Boolean DOMNode::toBoolean(ExecState *) const
     return Boolean(!node.isNull());
 }
 
-/*
+/* Source for DOMNodeTable. Use "make hashtables" to regenerate.
 @begin DOMNodeTable 53
   nodeName	DOMNode::NodeName	DontDelete|ReadOnly
   nodeValue	DOMNode::NodeValue	DontDelete
@@ -547,7 +547,7 @@ Value DOMNodeListFunc::tryCall(ExecState *exec, Object &thisObj, const List &arg
 
 const ClassInfo DOMAttr::info = { "Attr", &DOMNode::info, &DOMAttrTable, 0 };
 
-/*
+/* Source for DOMAttrTable. Use "make hashtables" to regenerate.
 @begin DOMAttrTable 5
   name		DOMAttr::Name		DontDelete|ReadOnly
   specified	DOMAttr::Specified	DontDelete|ReadOnly
@@ -601,7 +601,7 @@ void DOMAttr::putValue(ExecState *exec, int token, const Value& value, int /*att
 
 // -------------------------------------------------------------------------
 
-/*
+/* Source for DOMDocumentProtoTable. Use "make hashtables" to regenerate.
 @begin DOMDocumentProtoTable 23
   createElement   DOMDocument::CreateElement                   DontDelete|Function 1
   createDocumentFragment DOMDocument::CreateDocumentFragment   DontDelete|Function 1
@@ -632,7 +632,7 @@ IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMDocumentProto, DOMDocumentProtoFunc, DOMNodeP
 
 const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTable, 0 };
 
-/*
+/* Source for DOMDocumentTable. Use "make hashtables" to regenerate.
 @begin DOMDocumentTable 3
   doctype         DOMDocument::DocType                         DontDelete|ReadOnly
   implementation  DOMDocument::Implementation                  DontDelete|ReadOnly
@@ -768,7 +768,7 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
 
 // -------------------------------------------------------------------------
 
-/*
+/* Source for DOMElementProtoTable. Use "make hashtables" to regenerate.
 @begin DOMElementProtoTable 11
   getAttribute		DOMElement::GetAttribute	DontDelete|Function 1
   setAttribute		DOMElement::SetAttribute	DontDelete|Function 2
@@ -796,7 +796,7 @@ IMPLEMENT_PROTOFUNC(DOMElementProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMElementProto,DOMElementProtoFunc,DOMNodeProto)
 
 const ClassInfo DOMElement::info = { "Element", &DOMNode::info, &DOMElementTable, 0 };
-/*
+/* Source for DOMElementTable. Use "make hashtables" to regenerate.
 @begin DOMElementTable 3
   tagName	DOMElement::TagName                         DontDelete|ReadOnly
   style		DOMElement::Style                           DontDelete|ReadOnly
@@ -890,7 +890,7 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
 
 // -------------------------------------------------------------------------
 
-/*
+/* Source for DOMDOMImplementationProtoTable. Use "make hashtables" to regenerate.
 @begin DOMDOMImplementationProtoTable 3
   hasFeature		DOMDOMImplementation::HasFeature		DontDelete|Function 2
   createCSSStyleSheet	DOMDOMImplementation::CreateCSSStyleSheet	DontDelete|Function 2
@@ -938,7 +938,7 @@ Value DOMDOMImplementationProtoFunc::tryCall(ExecState *exec, Object &thisObj, c
 
 const ClassInfo DOMDocumentType::info = { "DocumentType", &DOMNode::info, &DOMDocumentTypeTable, 0 };
 
-/*
+/* Source for DOMDocumentTypeTable. Use "make hashtables" to regenerate.
 @begin DOMDocumentTypeTable 3
   name			DOMDocumentType::Name		DontDelete|ReadOnly
   entities		DOMDocumentType::Entities	DontDelete|ReadOnly
@@ -981,7 +981,7 @@ Value DOMDocumentType::getValue(ExecState *exec, int token) const
 
 // -------------------------------------------------------------------------
 
-/*
+/* Source for DOMNamedNodeMapProtoTable. Use "make hashtables" to regenerate.
 @begin DOMNamedNodeMapProtoTable 5
   getNamedItem		DOMNamedNodeMap::GetNamedItem		DontDelete|Function 1
   setNamedItem		DOMNamedNodeMap::SetNamedItem		DontDelete|Function 1
@@ -1062,7 +1062,7 @@ Value DOMNamedNodeMapProtoFunc::tryCall(ExecState *exec, Object &thisObj, const 
 
 const ClassInfo DOMProcessingInstruction::info = { "ProcessingInstruction", &DOMNode::info, &DOMProcessingInstructionTable, 0 };
 
-/*
+/* Source for DOMProcessingInstructionTable. Use "make hashtables" to regenerate.
 @begin DOMProcessingInstructionTable 3
   target	DOMProcessingInstruction::Target	DontDelete|ReadOnly
   data		DOMProcessingInstruction::Data		DontDelete
@@ -1071,10 +1071,10 @@ const ClassInfo DOMProcessingInstruction::info = { "ProcessingInstruction", &DOM
 */
 Value DOMProcessingInstruction::tryGet(ExecState *exec, const UString &propertyName) const
 {
-  DOMObjectLookupGetValue<DOMProcessingInstruction, DOMNode>(exec, propertyName, &DOMProcessingInstructionTable, this);
+  return DOMObjectLookupGetValue<DOMProcessingInstruction, DOMNode>(exec, propertyName, &DOMProcessingInstructionTable, this);
 }
 
-Value DOMProcessingInstruction::getValue(ExecState *exec, int token) const
+Value DOMProcessingInstruction::getValue(ExecState *, int token) const
 {
   switch (token) {
   case Target:
@@ -1100,32 +1100,61 @@ void DOMProcessingInstruction::tryPut(ExecState *exec, const UString &propertyNa
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMNotation::info = { "Notation", &DOMNode::info, 0, 0 };
+const ClassInfo DOMNotation::info = { "Notation", &DOMNode::info, &DOMNotationTable, 0 };
 
-Value DOMNotation::tryGet(ExecState *exec, const UString &p) const
+/* Source for DOMNotationTable. Use "make hashtables" to regenerate.
+@begin DOMNotationTable 2
+  publicId		DOMNotation::PublicId	DontDelete|ReadOnly
+  systemId		DOMNotation::SystemId	DontDelete|ReadOnly
+@end
+*/
+Value DOMNotation::tryGet(ExecState *exec, const UString &propertyName) const
 {
-  if (p == "publicId")
+  return DOMObjectLookupGetValue<DOMNotation, DOMNode>(exec, propertyName, &DOMNotationTable, this);
+}
+
+Value DOMNotation::getValue(ExecState *, int token) const
+{
+  switch (token) {
+  case PublicId:
     return getString(static_cast<DOM::Notation>(node).publicId());
-  else if (p == "systemId")
+  case SystemId:
     return getString(static_cast<DOM::Notation>(node).systemId());
-  else
-    return DOMNode::tryGet(exec, p);
+  default:
+    kdWarning() << "DOMNotation::getValue unhandled token " << token << endl;
+    return Value();
+  }
 }
 
 // -------------------------------------------------------------------------
 
 const ClassInfo DOMEntity::info = { "Entity", &DOMNode::info, 0, 0 };
 
-Value DOMEntity::tryGet(ExecState *exec, const UString &p) const
+/* Source for DOMEntityTable. Use "make hashtables" to regenerate.
+@begin DOMEntityTable 2
+  publicId		DOMEntity::PublicId		DontDelete|ReadOnly
+  systemId		DOMEntity::SystemId		DontDelete|ReadOnly
+  notationName		DOMEntity::NotationName	DontDelete|ReadOnly
+@end
+*/
+Value DOMEntity::tryGet(ExecState *exec, const UString &propertyName) const
 {
-  if (p == "publicId")
+  return DOMObjectLookupGetValue<DOMEntity, DOMNode>(exec, propertyName, &DOMEntityTable, this);
+}
+
+Value DOMEntity::getValue(ExecState *, int token) const
+{
+  switch (token) {
+  case PublicId:
     return getString(static_cast<DOM::Entity>(node).publicId());
-  else if (p == "systemId")
+  case SystemId:
     return getString(static_cast<DOM::Entity>(node).systemId());
-  else if (p == "notationName")
+  case NotationName:
     return getString(static_cast<DOM::Entity>(node).notationName());
-  else
-    return DOMNode::tryGet(exec, p);
+  default:
+    kdWarning() << "DOMEntity::getValue unhandled token " << token << endl;
+    return Value();
+  }
 }
 
 // -------------------------------------------------------------------------
@@ -1231,36 +1260,59 @@ Value KJS::getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementation i)
 
 // -------------------------------------------------------------------------
 
-const ClassInfo NodeConstructor::info = { "NodeConstructor", 0, 0, 0 };
-
-Value NodeConstructor::tryGet(ExecState *exec, const UString &p) const
+const ClassInfo NodeConstructor::info = { "NodeConstructor", 0, &NodeConstructorTable, 0 };
+/* Source for NodeConstructorTable. Use "make hashtables" to regenerate.
+@begin NodeConstructorTable 11
+  ELEMENT_NODE		NodeConstructor::ELEMENT_NODE		DontDelete|ReadOnly
+  ATTRIBUTE_NODE	NodeConstructor::ATTRIBUTE_NODE		DontDelete|ReadOnly
+  TEXT_NODE		NodeConstructor::TEXT_NODE		DontDelete|ReadOnly
+  CDATA_SECTION_NODE	NodeConstructor::CDATA_SECTION_NODE	DontDelete|ReadOnly
+  ENTITY_REFERENCE_NODE	NodeConstructor::ENTITY_REFERENCE_NODE	DontDelete|ReadOnly
+  ENTITY_NODE		NodeConstructor::ENTITY_NODE		DontDelete|ReadOnly
+  PROCESSING_INSTRUCTION_NODE NodeConstructor::PROCESSING_INSTRUCTION_NODE DontDelete|ReadOnly
+  COMMENT_NODE		NodeConstructor::COMMENT_NODE		DontDelete|ReadOnly
+  DOCUMENT_NODE		NodeConstructor::DOCUMENT_NODE		DontDelete|ReadOnly
+  DOCUMENT_TYPE_NODE	NodeConstructor::DOCUMENT_TYPE_NODE	DontDelete|ReadOnly
+  DOCUMENT_FRAGMENT_NODE NodeConstructor::DOCUMENT_FRAGMENT_NODE	DontDelete|ReadOnly
+  NOTATION_NODE		NodeConstructor::NOTATION_NODE		DontDelete|ReadOnly
+@end
+*/
+Value NodeConstructor::tryGet(ExecState *exec, const UString &propertyName) const
 {
-  if (p == "ELEMENT_NODE")
-    return Number((unsigned int)DOM::Node::ELEMENT_NODE);
-  if (p == "ATTRIBUTE_NODE")
-    return Number((unsigned int)DOM::Node::ATTRIBUTE_NODE);
-  if (p == "TEXT_NODE")
-    return Number((unsigned int)DOM::Node::TEXT_NODE);
-  if (p == "CDATA_SECTION_NODE")
-    return Number((unsigned int)DOM::Node::CDATA_SECTION_NODE);
-  if (p == "ENTITY_REFERENCE_NODE")
-    return Number((unsigned int)DOM::Node::ENTITY_REFERENCE_NODE);
-  if (p == "ENTITY_NODE")
-    return Number((unsigned int)DOM::Node::ENTITY_NODE);
-  if (p == "PROCESSING_INSTRUCTION_NODE")
-    return Number((unsigned int)DOM::Node::PROCESSING_INSTRUCTION_NODE);
-  if (p == "COMMENT_NODE")
-    return Number((unsigned int)DOM::Node::COMMENT_NODE);
-  if (p == "DOCUMENT_NODE")
-    return Number((unsigned int)DOM::Node::DOCUMENT_NODE);
-  if (p == "DOCUMENT_TYPE_NODE")
-    return Number((unsigned int)DOM::Node::DOCUMENT_TYPE_NODE);
-  if (p == "DOCUMENT_FRAGMENT_NODE")
-    return Number((unsigned int)DOM::Node::DOCUMENT_FRAGMENT_NODE);
-  if (p == "NOTATION_NODE")
-    return Number((unsigned int)DOM::Node::NOTATION_NODE);
+  return DOMObjectLookupGetValue<NodeConstructor, DOMObject>(exec, propertyName, &NodeConstructorTable, this);
+}
 
-  return DOMObject::tryGet(exec, p);
+Value NodeConstructor::getValue(ExecState *, int token) const
+{
+  switch (token) {
+  case ELEMENT_NODE:
+    return Number((unsigned int)DOM::Node::ELEMENT_NODE);
+  case ATTRIBUTE_NODE:
+    return Number((unsigned int)DOM::Node::ATTRIBUTE_NODE);
+  case TEXT_NODE:
+    return Number((unsigned int)DOM::Node::TEXT_NODE);
+  case CDATA_SECTION_NODE:
+    return Number((unsigned int)DOM::Node::CDATA_SECTION_NODE);
+  case ENTITY_REFERENCE_NODE:
+    return Number((unsigned int)DOM::Node::ENTITY_REFERENCE_NODE);
+  case ENTITY_NODE:
+    return Number((unsigned int)DOM::Node::ENTITY_NODE);
+  case PROCESSING_INSTRUCTION_NODE:
+    return Number((unsigned int)DOM::Node::PROCESSING_INSTRUCTION_NODE);
+  case COMMENT_NODE:
+    return Number((unsigned int)DOM::Node::COMMENT_NODE);
+  case DOCUMENT_NODE:
+    return Number((unsigned int)DOM::Node::DOCUMENT_NODE);
+  case DOCUMENT_TYPE_NODE:
+    return Number((unsigned int)DOM::Node::DOCUMENT_TYPE_NODE);
+  case DOCUMENT_FRAGMENT_NODE:
+    return Number((unsigned int)DOM::Node::DOCUMENT_FRAGMENT_NODE);
+  case NOTATION_NODE:
+    return Number((unsigned int)DOM::Node::NOTATION_NODE);
+  default:
+    kdWarning() << "NodeConstructor::getValue unhandled token " << token << endl;
+    return Value();
+  }
 }
 
 Object KJS::getNodeConstructor(ExecState *exec)
@@ -1272,40 +1324,68 @@ Object KJS::getNodeConstructor(ExecState *exec)
 
 const ClassInfo DOMExceptionConstructor::info = { "DOMExceptionConstructor", 0, 0, 0 };
 
-Value DOMExceptionConstructor::tryGet(ExecState *exec, const UString &p) const
-{
-  if (p == "INDEX_SIZE_ERR")
-    return Number((unsigned int)DOM::DOMException::INDEX_SIZE_ERR);
-  if (p == "DOMSTRING_SIZE_ERR")
-    return Number((unsigned int)DOM::DOMException::DOMSTRING_SIZE_ERR);
-  if (p == "HIERARCHY_REQUEST_ERR")
-    return Number((unsigned int)DOM::DOMException::HIERARCHY_REQUEST_ERR);
-  if (p == "WRONG_DOCUMENT_ERR")
-    return Number((unsigned int)DOM::DOMException::WRONG_DOCUMENT_ERR);
-  if (p == "INVALID_CHARACTER_ERR")
-    return Number((unsigned int)DOM::DOMException::INVALID_CHARACTER_ERR);
-  if (p == "NO_DATA_ALLOWED_ERR")
-    return Number((unsigned int)DOM::DOMException::NO_DATA_ALLOWED_ERR);
-  if (p == "NO_MODIFICATION_ALLOWED_ERR")
-    return Number((unsigned int)DOM::DOMException::NO_MODIFICATION_ALLOWED_ERR);
-  if (p == "NOT_FOUND_ERR")
-    return Number((unsigned int)DOM::DOMException::NOT_FOUND_ERR);
-  if (p == "NOT_SUPPORTED_ERR")
-    return Number((unsigned int)DOM::DOMException::NOT_SUPPORTED_ERR);
-  if (p == "INUSE_ATTRIBUTE_ERR")
-    return Number((unsigned int)DOM::DOMException::INUSE_ATTRIBUTE_ERR);
-  if (p == "INVALID_STATE_ERR")
-    return Number((unsigned int)DOM::DOMException::INVALID_STATE_ERR);
-  if (p == "SYNTAX_ERR")
-    return Number((unsigned int)DOM::DOMException::SYNTAX_ERR);
-  if (p == "INVALID_MODIFICATION_ERR")
-    return Number((unsigned int)DOM::DOMException::INVALID_MODIFICATION_ERR);
-  if (p == "NAMESPACE_ERR")
-    return Number((unsigned int)DOM::DOMException::NAMESPACE_ERR);
-  if (p == "INVALID_ACCESS_ERR")
-    return Number((unsigned int)DOM::DOMException::INVALID_ACCESS_ERR);
+/* Source for DOMExceptionConstructorTable. Use "make hashtables" to regenerate.
+@begin DOMExceptionConstructorTable 15
+  INDEX_SIZE_ERR		DOMExceptionConstructor::INDEX_SIZE_ERR		DontDelete|ReadOnly
+  DOMSTRING_SIZE_ERR		DOMExceptionConstructor::DOMSTRING_SIZE_ERR	DontDelete|ReadOnly
+  HIERARCHY_REQUEST_ERR		DOMExceptionConstructor::HIERARCHY_REQUEST_ERR	DontDelete|ReadOnly
+  WRONG_DOCUMENT_ERR		DOMExceptionConstructor::WRONG_DOCUMENT_ERR	DontDelete|ReadOnly
+  INVALID_CHARACTER_ERR		DOMExceptionConstructor::INVALID_CHARACTER_ERR	DontDelete|ReadOnly
+  NO_DATA_ALLOWED_ERR		DOMExceptionConstructor::NO_DATA_ALLOWED_ERR	DontDelete|ReadOnly
+  NO_MODIFICATION_ALLOWED_ERR	DOMExceptionConstructor::NO_MODIFICATION_ALLOWED_ERR	DontDelete|ReadOnly
+  NOT_FOUND_ERR			DOMExceptionConstructor::NOT_FOUND_ERR		DontDelete|ReadOnly
+  NOT_SUPPORTED_ERR		DOMExceptionConstructor::NOT_SUPPORTED_ERR	DontDelete|ReadOnly
+  INUSE_ATTRIBUTE_ERR		DOMExceptionConstructor::INUSE_ATTRIBUTE_ERR	DontDelete|ReadOnly
+  INVALID_STATE_ERR		DOMExceptionConstructor::INVALID_STATE_ERR	DontDelete|ReadOnly
+  SYNTAX_ERR			DOMExceptionConstructor::SYNTAX_ERR		DontDelete|ReadOnly
+  INVALID_MODIFICATION_ERR	DOMExceptionConstructor::INVALID_MODIFICATION_ERR	DontDelete|ReadOnly
+  NAMESPACE_ERR			DOMExceptionConstructor::NAMESPACE_ERR		DontDelete|ReadOnly
+  INVALID_ACCESS_ERR		DOMExceptionConstructor::INVALID_ACCESS_ERR	DontDelete|ReadOnly
+@end
+*/
 
-  return DOMObject::tryGet(exec, p);
+Value DOMExceptionConstructor::tryGet(ExecState *exec, const UString &propertyName) const
+{
+  return DOMObjectLookupGetValue<DOMExceptionConstructor, DOMObject>(exec, propertyName, &DOMExceptionConstructorTable, this);
+}
+
+Value DOMExceptionConstructor::getValue(ExecState *, int token) const
+{
+  switch (token) {
+  case INDEX_SIZE_ERR:
+    return Number((unsigned int)DOM::DOMException::INDEX_SIZE_ERR);
+  case DOMSTRING_SIZE_ERR:
+    return Number((unsigned int)DOM::DOMException::DOMSTRING_SIZE_ERR);
+  case HIERARCHY_REQUEST_ERR:
+    return Number((unsigned int)DOM::DOMException::HIERARCHY_REQUEST_ERR);
+  case WRONG_DOCUMENT_ERR:
+    return Number((unsigned int)DOM::DOMException::WRONG_DOCUMENT_ERR);
+  case INVALID_CHARACTER_ERR:
+    return Number((unsigned int)DOM::DOMException::INVALID_CHARACTER_ERR);
+  case NO_DATA_ALLOWED_ERR:
+    return Number((unsigned int)DOM::DOMException::NO_DATA_ALLOWED_ERR);
+  case NO_MODIFICATION_ALLOWED_ERR:
+    return Number((unsigned int)DOM::DOMException::NO_MODIFICATION_ALLOWED_ERR);
+  case NOT_FOUND_ERR:
+    return Number((unsigned int)DOM::DOMException::NOT_FOUND_ERR);
+  case NOT_SUPPORTED_ERR:
+    return Number((unsigned int)DOM::DOMException::NOT_SUPPORTED_ERR);
+  case INUSE_ATTRIBUTE_ERR:
+    return Number((unsigned int)DOM::DOMException::INUSE_ATTRIBUTE_ERR);
+  case INVALID_STATE_ERR:
+    return Number((unsigned int)DOM::DOMException::INVALID_STATE_ERR);
+  case SYNTAX_ERR:
+    return Number((unsigned int)DOM::DOMException::SYNTAX_ERR);
+  case INVALID_MODIFICATION_ERR:
+    return Number((unsigned int)DOM::DOMException::INVALID_MODIFICATION_ERR);
+  case NAMESPACE_ERR:
+    return Number((unsigned int)DOM::DOMException::NAMESPACE_ERR);
+  case INVALID_ACCESS_ERR:
+    return Number((unsigned int)DOM::DOMException::INVALID_ACCESS_ERR);
+  default:
+    kdWarning() << "DOMExceptionConstructor::getValue unhandled token " << token << endl;
+    return Value();
+  }
 }
 
 Object KJS::getDOMExceptionConstructor(ExecState *exec)

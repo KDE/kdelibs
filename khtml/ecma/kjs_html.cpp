@@ -38,6 +38,7 @@
 #include "kjs_html.h"
 #include "kjs_window.h"
 #include "kjs_events.h"
+#include "kjs_html.lut.h"
 
 #include <htmltags.h>
 #include <kdebug.h>
@@ -46,27 +47,35 @@ using namespace KJS;
 
 QPtrDict<KJS::HTMLCollection> htmlCollections;
 
+KJS::HTMLDocFunction::HTMLDocFunction(ExecState *exec, DOM::HTMLDocument d, int i, int len)
+  : DOMFunction(), doc(d), id(i)
+{
+  Value protect(this);
+  put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum);
+}
+
 Value KJS::HTMLDocFunction::tryGet(ExecState *exec, const UString &p) const
 {
+  // Support for document.images.length, .item, etc.
   DOM::HTMLCollection coll;
 
   switch (id) {
-  case Images:
+  case HTMLDocument::Images:
     coll = doc.images();
     break;
-  case Applets:
+  case HTMLDocument::Applets:
     coll = doc.applets();
     break;
-  case Links:
+  case HTMLDocument::Links:
     coll = doc.links();
     break;
-  case Forms:
+  case HTMLDocument::Forms:
     coll = doc.forms();
     break;
-  case Anchors:
+  case HTMLDocument::Anchors:
     coll = doc.anchors();
     break;
-  case All:  // IE specific, not part of the DOM
+  case HTMLDocument::All:  // IE specific, not part of the DOM
     coll = doc.all();
     break;
   default:
@@ -88,60 +97,60 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &, const List &args)
   Value v = args[0];
 
   switch (id) {
-  case Images:
+  case HTMLDocument::Images:
     coll = doc.images();
     break;
-  case Applets:
+  case HTMLDocument::Applets:
     coll = doc.applets();
     break;
-  case Links:
+  case HTMLDocument::Links:
     coll = doc.links();
     break;
-  case Forms:
+  case HTMLDocument::Forms:
     coll = doc.forms();
     break;
-  case Anchors:
+  case HTMLDocument::Anchors:
     coll = doc.anchors();
     break;
-  case All:
+  case HTMLDocument::All:
     coll = doc.all();
     break;
-  case Open:
+  case HTMLDocument::Open:
     // this is just a dummy function,  has no purpose anymore
     //doc.open();
     result = Undefined();
     break;
-  case Close:
+  case HTMLDocument::Close:
     // this is just a dummy function,  has no purpose
     // see khtmltests/ecma/tokenizer-script-recursion.html
     // doc.close();
     result = Undefined();
     break;
-  case Write:
-  case WriteLn: {
+  case HTMLDocument::Write:
+  case HTMLDocument::WriteLn: {
     // DOM only specifies single string argument, but NS & IE allow multiple
     UString str = v.toString(exec).value();
     for (int i = 1; i < args.size(); i++)
       str += args[i].toString(exec).value();
-    if (id == WriteLn)
+    if (id == HTMLDocument::WriteLn)
       str += "\n";
     doc.write(str.string());
     result = Undefined();
     break;
   }
-  case GetElementById:
+  case HTMLDocument::GetElementById:
     s = v.toString(exec);
     result = getDOMNode(exec,doc.getElementById(s.value().string()));
     break;
-  case GetElementsByName:
+  case HTMLDocument::GetElementsByName:
     s = v.toString(exec);
     result = getDOMNodeList(exec,doc.getElementsByName(s.value().string()));
     break;
   }
 
   // retrieve element from collection. Either by name or indexed.
-  if (id == Images || id == Applets || id == Links ||
-      id == Forms || id == Anchors || id == All) {
+  if (id == HTMLDocument::Images || id == HTMLDocument::Applets || id == HTMLDocument::Links ||
+      id == HTMLDocument::Forms || id == HTMLDocument::Anchors || id == HTMLDocument::All) {
     bool ok;
     UString s = args[0].toString(exec).value();
     unsigned int u = s.toULong(&ok);
@@ -155,31 +164,61 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &, const List &args)
   return result;
 }
 
-const ClassInfo KJS::HTMLDocument::info = { "HTMLDocument",
-					   &DOMDocument::info, 0, 0 };
-
+const ClassInfo KJS::HTMLDocument::info =
+  { "HTMLDocument", &DOMDocument::info, &HTMLDocumentTable, 0 };
+/* Source for HTMLDocumentTable. Use "make hashtables" to regenerate.
+@begin HTMLDocumentTable 31
+  title			HTMLDocument::Title		DontDelete
+  referrer		HTMLDocument::Referrer		DontDelete|ReadOnly
+  domain		HTMLDocument::Domain		DontDelete|ReadOnly
+  URL			HTMLDocument::URL		DontDelete|ReadOnly
+  body			HTMLDocument::Body		DontDelete
+  location		HTMLDocument::Location		DontDelete
+  cookie		HTMLDocument::Cookie		DontDelete
+  images		HTMLDocument::Images		DontDelete|ReadOnly|Function 0
+  applets		HTMLDocument::Applets		DontDelete|ReadOnly|Function 0
+  links			HTMLDocument::Links		DontDelete|ReadOnly|Function 0
+  forms			HTMLDocument::Forms		DontDelete|ReadOnly|Function 0
+  anchors		HTMLDocument::Anchors		DontDelete|ReadOnly|Function 0
+  all			HTMLDocument::All		DontDelete|ReadOnly|Function 0
+  open			HTMLDocument::Open		DontDelete|ReadOnly|Function 0
+  close			HTMLDocument::Close		DontDelete|ReadOnly|Function 0
+  write			HTMLDocument::Write		DontDelete|ReadOnly|Function 1
+  writeln		HTMLDocument::WriteLn		DontDelete|ReadOnly|Function 1
+  getElementById	HTMLDocument::GetElementById	DontDelete|ReadOnly|Function 1
+  getElementsByName	HTMLDocument::GetElementsByName	DontDelete|ReadOnly|Function 1
+  bgColor		HTMLDocument::BgColor		DontDelete|ReadOnly
+  fgColor		HTMLDocument::FgColor		DontDelete|ReadOnly
+  alinkColor		HTMLDocument::AlinkColor	DontDelete|ReadOnly
+  linkColor		HTMLDocument::LinkColor		DontDelete|ReadOnly
+  vlinkColor		HTMLDocument::VlinkColor	DontDelete|ReadOnly
+  lastModified		HTMLDocument::LastModified	DontDelete|ReadOnly
+  height		HTMLDocument::Height		DontDelete|ReadOnly
+  width			HTMLDocument::Width		DontDelete|ReadOnly
+#potentially obsolete array properties
+# layers
+# plugins
+# tags
+#potentially obsolete properties
+# embeds
+# ids
+@end
+*/
 bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &p, bool recursive) const
 {
 #ifdef KJS_VERBOSE
   kdDebug() << "KJS::HTMLDocument::hasProperty " << p.qstring() << endl;
 #endif
-  if (p == "title" || p == "referrer" || p == "domain" || p == "URL" ||
-      p == "body" || p == "location" || p == "images" || p == "applets" ||
-      p == "links" || p == "forms" || p == "anchors" || p == "all" ||
-      p == "cookie" || p == "open" || p == "close" || p == "write" ||
-      p == "writeln" || p == "getElementById" || p == "getElementsByName" ||
-      p == "lastModified" )
-    return true;
   if (!static_cast<DOM::HTMLDocument>(node).all().
       namedItem(p.string()).isNull())
     return true;
   return recursive && DOMDocument::hasProperty(exec, p, true);
 }
 
-Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &p) const
+Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "KJS::HTMLDocument::tryGet " << p.qstring() << endl;
+  kdDebug() << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << endl;
 #endif
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
   DOM::HTMLBodyElement body = doc.body();
@@ -189,85 +228,77 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &p) const
 
   // image and form elements with the name p will be looked up first
   DOM::HTMLCollection coll = doc.all();
-  DOM::HTMLElement element = coll.namedItem(p.string());
+  DOM::HTMLElement element = coll.namedItem(propertyName.string());
   if (!element.isNull() &&
       (element.elementId() == ID_IMG || element.elementId() == ID_FORM))
     return getDOMNode(exec,element);
 
-  if (p == "title")
-    return getString(doc.title());
-  else if (p == "referrer")
-    return String(doc.referrer());
-  else if (p == "domain")
+  const HashEntry* entry = Lookup::findEntry(&HTMLDocumentTable, propertyName);
+  if (entry) {
+    switch (entry->value) {
+    case Title:
+      return getString(doc.title());
+    case Referrer:
+      return String(doc.referrer());
+    case Domain:
     return String(doc.domain());
-  else if (p == "URL")
-    return getString(doc.URL());
-  else if (p == "body")
-    return getDOMNode(exec,doc.body());
-  else if (p == "location")
-    return Window::retrieveWindow(part)->location();
-  else if (p == "images")
-    return new HTMLDocFunction(doc, HTMLDocFunction::Images);
-  else if (p == "applets")
-    return new HTMLDocFunction(doc, HTMLDocFunction::Applets);
-  else if (p == "links")
-    return new HTMLDocFunction(doc, HTMLDocFunction::Links);
-  else if (p == "forms")
-    return new HTMLDocFunction(doc, HTMLDocFunction::Forms);
-  else if (p == "anchors")
-    return new HTMLDocFunction(doc, HTMLDocFunction::Anchors);
-  else if (p == "all")
-    return new HTMLDocFunction(doc, HTMLDocFunction::All);
-// potentially obsolete array properties
-//  else if (p == "layers")
-//    return Undefined();
-//  else if (p == "plugins")
-//    return Undefined();
-//  else if (p == "tags")
-//    return Undefined();
-  else if (p == "cookie")
-    return String(doc.cookie());
-  else if (DOMDocument::hasProperty(exec, p, true))	// expands override functions
-    return DOMDocument::tryGet(exec, p);
-  else if (p == "open")
-    return new HTMLDocFunction(doc, HTMLDocFunction::Open);
-  else if (p == "close")
-    return new HTMLDocFunction(doc, HTMLDocFunction::Close);
-  else if (p == "write")
-    return new HTMLDocFunction(doc, HTMLDocFunction::Write);
-  else if (p == "writeln")
-    return new HTMLDocFunction(doc, HTMLDocFunction::WriteLn);
-  else if (p == "getElementById")
-    return new HTMLDocFunction(doc, HTMLDocFunction::GetElementById);
-  else if (p == "getElementsByName")
-    return new HTMLDocFunction(doc, HTMLDocFunction::GetElementsByName);
-  else if (p == "bgColor")
-    return String(body.bgColor());
-  else if (p == "fgColor")
-    return String(body.text());
-  else if (p == "alinkColor")
-    return String(body.aLink());
-  else if (p == "linkColor")
-    return String(body.link());
-  else if (p == "vlinkColor")
-    return String(body.vLink());
-// potentially obsolete properties
-//  else if (p == "embeds")
-//    return Undefined();
-//  else if (p == "ids")
-//    return Undefined();
-  else if (p == "lastModified")
-    return String(doc.lastModified());
-  else if (p == "height")
-    return Number(part->view() ? part->view()->visibleWidth() : 0);
-  else if (p == "width")
-    return Number(part->view() ? part->view()->visibleWidth() : 0);
-  else {
-    kdDebug() << "KJS::HTMLDocument::tryGet " << p.qstring() << " not found, returning element" << endl;
-    if(!element.isNull())
-      return getDOMNode(exec,element);
-    return Undefined();
+    case URL:
+      return getString(doc.URL());
+    case Body:
+      return getDOMNode(exec,doc.body());
+    case Location:
+      return Window::retrieveWindow(part)->location();
+    case Cookie:
+      return String(doc.cookie());
+    case Images:
+    case Applets:
+    case Links:
+    case Forms:
+    case Anchors:
+    case All:
+    case Open:
+    case Close:
+    case Write:
+    case WriteLn:
+    case GetElementById:
+    case GetElementsByName:
+      //return lookupOrCreateFunction<HTMLDocFunction,HTMLDocument>( exec, propertyName, this, entry );
+      // Modified copy of lookupOrCreateFunction because the ctor needs 'doc'
+      ValueImp * cachedVal = ObjectImp::getDirect(propertyName);
+      if (cachedVal && cachedVal->type() == ObjectType)
+        return cachedVal;
+      Value val = new HTMLDocFunction(exec, doc, entry->value, entry->params);
+      const_cast<HTMLDocument *>(this)->ObjectImp::put(exec, propertyName, val, entry->attr);
+      return val;
+    }
   }
+  // I'm told order is very important, so let's keep the original order at all cost ;)
+  if (DOMDocument::hasProperty(exec, propertyName, true))	// expands override functions
+    return DOMDocument::tryGet(exec, propertyName);
+  if (entry) {
+    switch (entry->value) {
+    case BgColor:
+      return String(body.bgColor());
+    case FgColor:
+      return String(body.text());
+    case AlinkColor:
+      return String(body.aLink());
+    case LinkColor:
+      return String(body.link());
+    case VlinkColor:
+      return String(body.vLink());
+    case LastModified:
+      return String(doc.lastModified());
+    case Height:
+      return Number(part->view() ? part->view()->visibleWidth() : 0);
+    case Width:
+      return Number(part->view() ? part->view()->visibleWidth() : 0);
+    }
+  }
+  //kdDebug() << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << " not found, returning element" << endl;
+  if(!element.isNull())
+    return getDOMNode(exec,element);
+  return Undefined();
 }
 
 void KJS::HTMLDocument::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
@@ -275,35 +306,32 @@ void KJS::HTMLDocument::tryPut(ExecState *exec, const UString &propertyName, con
 #ifdef KJS_VERBOSE
   kdDebug() << "KJS::HTMLDocument::tryPut " << propertyName.qstring() << endl;
 #endif
+  DOMObjectLookupPut<HTMLDocument, DOMDocument>( exec, propertyName, value, attr, &HTMLDocumentTable, this );
+}
+
+void KJS::HTMLDocument::putValue(ExecState *exec, int token, const Value& value, int /*attr*/)
+{
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
 
-  if (propertyName == "title")
+  switch (token) {
+  case Title:
     doc.setTitle(value.toString(exec).value().string());
-  else if (propertyName == "body")
+    break;
+  case Body:
     doc.setBody((new DOMNode(exec, KJS::toNode(value)))->toNode());
-  else if (propertyName == "cookie")
+    break;
+  case Cookie:
     doc.setCookie(value.toString(exec).value().string());
-  else if (propertyName == "location") {
+    break;
+  case Location: {
     KHTMLPart *part = static_cast<DOM::DocumentImpl *>( doc.handle() )->view()->part();
     QString str = value.toString(exec).value().qstring();
     part->scheduleRedirection(0, str);
+    break;
   }
-  else if (propertyName == "onclick")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_CLICK_EVENT,Window::retrieveActive(exec)->getJSEventListener(value,true));
-  else if (propertyName == "ondblclick")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_DBLCLICK_EVENT,Window::retrieveActive(exec)->getJSEventListener(value,true));
-  else if (propertyName == "onkeydown")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYDOWN_EVENT,Window::retrieveActive(exec)->getJSEventListener(value,true));
-  else if (propertyName == "onkeypress")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYPRESS_EVENT,Window::retrieveActive(exec)->getJSEventListener(value,true));
-  else if (propertyName == "onkeyup")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYUP_EVENT,Window::retrieveActive(exec)->getJSEventListener(value,true));
-  else if (propertyName == "onmousedown")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::MOUSEDOWN_EVENT,Window::retrieveActive(exec)->getJSEventListener(value,true));
-  else if (propertyName == "onmouseup")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::MOUSEUP_EVENT,Window::retrieveActive(exec)->getJSEventListener(value,true));
-  else
-    DOMDocument::tryPut(exec,propertyName,value,attr);
+  default:
+    kdWarning() << "HTMLDocument::putValue unhandled token " << token << endl;
+  }
 }
 
 // -------------------------------------------------------------------------

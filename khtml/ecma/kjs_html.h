@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999 Harri Porten (porten@kde.org)
@@ -36,12 +37,9 @@ namespace KJS {
 
   class HTMLDocFunction : public DOMFunction {
   public:
-    HTMLDocFunction(DOM::HTMLDocument d, int i)
-        : DOMFunction(), doc(d), id(i) { };
+    HTMLDocFunction(ExecState *exec, DOM::HTMLDocument d, int i, int len);
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-    enum { Images, Applets, Links, Forms, Anchors, All, Open, Close,
-	   Write, WriteLn, GetElementById, GetElementsByName };
   private:
     DOM::HTMLDocument doc;
     int id;
@@ -52,9 +50,14 @@ namespace KJS {
     HTMLDocument(ExecState *exec, DOM::HTMLDocument d) : DOMDocument(exec, d) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    void putValue(ExecState *exec, int token, const Value& value, int /*attr*/);
     virtual bool hasProperty(ExecState *exec, const UString &propertyName, bool recursive = true) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    enum { Title, Referrer, Domain, URL, Body, Location, Cookie,
+           Images, Applets, Links, Forms, Anchors, All, Open, Close,
+           Write, WriteLn, GetElementById, GetElementsByName,
+           BgColor, FgColor, AlinkColor, LinkColor, VlinkColor, LastModified, Height, Width };
   };
 
   class HTMLElement : public DOMElement {
@@ -101,8 +104,8 @@ namespace KJS {
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
   private:
-      DOM::Element dummyElement();
-      DOM::HTMLSelectElement element;
+    DOM::Element dummyElement();
+    DOM::HTMLSelectElement element;
   };
 
   class HTMLCollectionFunc : public DOMFunction {
