@@ -9,8 +9,8 @@
 <!ENTITY erik.kjaer.pedersen.role '<othercredit role="translator"><firstname>Erik Kjær</firstname><surname>Pedersen</surname><affiliation><address><email>erik@binghamton.edu</email></address></affiliation><contrib>Oversætter</contrib></othercredit>'> 
 <!ENTITY erik.kjaer.pedersen.credit '<para>Dansk oversættelse Erik Kjær Pedersen <email>erik@binghamton.edu</email></para>'>
 
-<!ENTITY rune.laursen.role '<othercredit role="translator"><firstname>Rune</firstname><surname>Laursen</surname><affiliation><address><email>runerl@skjoldhoej.dk</email></address></affiliation><contrib>Oversætter</contrib></othercredit>'> 
-<!ENTITY rune.laursen.credit '<para>Dansk oversættelse Rune Laursen <email>runerl@skjoeldhoej.dk</email></para>'>
+<!ENTITY rune.laursen.role '<othercredit role="translator"><firstname>Rune Rønde</firstname><surname>Laursen</surname><affiliation><address><email>runerl@skjoldhoej.dk</email></address></affiliation><contrib>Oversætter</contrib></othercredit>'> 
+<!ENTITY rune.laursen.credit '<para>Dansk oversættelse Rune Rønde Laursen <email>runerl@skjoeldhoej.dk</email></para>'>
 
 <!ENTITY lars.schunk.role '<othercredit role="translator"><firstname>Lars</firstname><surname>Schunk</surname><affiliation><address><email>lars@schunk.dk</email></address></affiliation><contrib>Oversætter</contrib></othercredit>'> 
 <!ENTITY lars.schunk.credit '<para>Dansk oversættelse Lars Schunk <email>lars@schunk.dk</email></para>'>
