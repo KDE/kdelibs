@@ -98,7 +98,7 @@ public:
                     QCloseEvent e;
                     QApplication::sendEvent( last, &e );
                     cancelled = !e.isAccepted();
-                    if ( !cancelled && it.current()->testWState( Qt::WDestructiveClose ) )
+                    if ( !cancelled && it.current()->testWFlags( Qt::WDestructiveClose ) )
                       delete it.current();
                 }
             }
