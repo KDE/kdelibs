@@ -40,6 +40,9 @@
 MaticHandler::MaticHandler(KMManager *mgr)
 : LprHandler("foomatic", mgr)
 {
+	QString	PATH = getenv("PATH");
+	PATH.append(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
+	m_exematicpath = KStandardDirs::findExe("lpdomatic", PATH);
 }
 
 bool MaticHandler::validate(PrintcapEntry *entry)
@@ -218,6 +221,51 @@ KURL MaticHandler::parsePostpipe(const QString& s)
 	return url;
 }
 
+QString MaticHandler::createPostpipe(const KURL& url)
+{
+	QString	prot = url.protocol();
+	QString	str;
+	if (prot == "socket")
+	{
+		str += ("| " + KStandardDirs::findExe("nc"));
+		str += (" " + url.host());
+		if (url.port() != 0)
+			str += (" " + QString::number(url.port()));
+	}
+	else if (prot == "lpd")
+	{
+		str += ("| " + KStandardDirs::findExe("rlpr") + " -q -h");
+		QString	h = url.host(), p = url.path().mid(1);
+		str += (" -P " + p + "\\@" + h);
+	}
+	else if (prot == "smb")
+	{
+		QStringList	p = QStringList::split('/', url.path(), false);
+		str += ("| (\\n echo \\\"print -\\\"\\n cat \\n) | " + KStandardDirs::findExe("smbclient"));
+		QString	work, server, printer;
+		if (p.count() > 1)
+		{
+			work = url.host();
+			server = p[0];
+			printer = p[1];
+		}
+		else
+		{
+			server = url.host();
+			printer = p[0];
+		}
+		str += (" \\\"//" + server + "/" + printer + "\\\"");
+		if (!url.pass().isEmpty())
+			str += (" " + url.pass());
+		if (!url.user().isEmpty())
+			str += (" -U " + url.user());
+		if (!work.isEmpty())
+			str += (" -W " + work);
+		str += " -N -P";
+	}
+	return str;
+}
+
 DrMain* MaticHandler::loadDriver(KMPrinter*, PrintcapEntry *entry)
 {
 	QString	filename = maticFile(entry);
@@ -284,16 +332,20 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 	QFile	inFile(driver->get("template"));
 	QString	outFile = maticFile(entry);
 	bool	result(false);
+	QString	postpipe = createPostpipe(prt->device());
 
 	if (inFile.open(IO_ReadOnly) && tmpFile.open(IO_WriteOnly))
 	{
 		QTextStream	tin(&inFile), tout(&tmpFile);
 		QString	line, optname;
 		int	p(-1), q(-1);
+		tout << "$postpipe = \"" << postpipe << "\";" << endl;
 		while (!tin.atEnd())
 		{
 			line = tin.readLine();
-			if ((p = line.find("'name'")) != -1)
+			if (line.stripWhiteSpace().startsWith("$postpipe"))
+				continue;
+			else if ((p = line.find("'name'")) != -1)
 			{
 				p = line.find('\'', p+6)+1;
 				q = line.find('\'', p);
@@ -324,4 +376,28 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 		                            "to perform that operation."));
 	QFile::remove(tmpFile.name());
 	return result;
+}
+
+PrintcapEntry* MaticHandler::createEntry(KMPrinter *prt)
+{
+	QString	prot = prt->device().protocol();
+	if (prot != "lpd" && prot != "smb" && prot != "socket" && prot != "parallel")
+	{
+		manager()->setErrorMsg(i18n("Unsupported backend."));
+		return NULL;
+	}
+	if (m_exematicpath.isEmpty())
+	{
+		manager()->setErrorMsg(i18n("Unable to find executable lpdomatic. "
+		                            "Check that Foomatic is correctly installed "
+		                            "and that lpdomatic is installed in a standard "
+		                            "location."));
+		return NULL;
+	}
+	PrintcapEntry	*entry = new PrintcapEntry;
+	entry->addField("lf", Field::String, "/var/log/lp-errs");
+	entry->addField("lp", Field::String, (prot != "parallel" ? "/dev/null" : prt->device().path()));
+	entry->addField("if", Field::String, m_exematicpath);
+	entry->addField("af", Field::String, "/etc/foomatic/lpd/"+prt->printerName()+".lom");
+	return entry;
 }

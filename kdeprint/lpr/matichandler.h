@@ -37,11 +37,16 @@ public:
 	DrMain* loadDriver(KMPrinter*, PrintcapEntry*);
 	DrMain* loadDbDriver(const QString&);
 	bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*);
+	PrintcapEntry* createEntry(KMPrinter*);
 
 private:
 	MaticBlock* loadMaticData(const QString&);
 	DrMain* loadMaticDriver(const QString&);
 	KURL parsePostpipe(const QString&);
+	QString createPostpipe(const KURL&);
+
+private:
+	QString	m_exematicpath;
 };
 
 #endif

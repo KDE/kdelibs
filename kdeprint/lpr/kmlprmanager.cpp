@@ -29,6 +29,7 @@
 #include <qlist.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
+#include <kdebug.h>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -257,26 +258,36 @@ bool KMLprManager::savePrintcapFile()
 bool KMLprManager::createPrinter(KMPrinter *prt)
 {
 	// remove existing printcap entry
-	m_entries.remove(prt->printerName());
+	PrintcapEntry	*oldEntry = m_entries.take(prt->printerName());
 
 	// look for the handler and re-create entry
-	LprHandler	*handler = findHandler(prt);
+	LprHandler	*handler(0);
+	// To look for the handler, either we base ourselves
+	// on the driver (1: new printer, 2: modifying driver)
+	// or we use the handler of the existing printer
+	// (modifying something else, handler stays the same)
+	if (prt->driver())
+		handler = m_handlers.find(prt->driver()->get("handler"));
+	else if (oldEntry)
+		handler = findHandler(prt);
+	else
+		handler = m_handlers.find("default");
 	if (!handler)
 	{
-		// this may happen if it's a new printer. In that case,
-		// the "kde-lpr-handler" option is empty. However the
-		// handler may be retrieve from the driver if there's
-		// one, or simply fall back to the default handler.
-		if (prt->driver())
-			handler = m_handlers.find(prt->driver()->get("handler"));
-		else
-			handler = m_handlers.find("default");
-		if (!handler)
-		{
-			setErrorMsg(i18n("Internal error: no handler defined."));
-			return false;
-		}
+		setErrorMsg(i18n("Internal error: no handler defined."));
+		return false;
 	}
+	prt->setOption("kde-lpr-handler", handler->name());
+
+	// we reload the driver if the printer object doesn't have one
+	// and there's an old entry (sometimes needed to keep the backend
+	// like in Foomatic)
+	if (!prt->driver() && oldEntry)
+		prt->setDriver(loadPrinterDriver(prt, true));
+
+	// now we can safely remove the old entry
+	delete oldEntry;
+
 	QString	sd = LprSettings::self()->baseSpoolDir();
 	if (sd.isEmpty())
 	{
@@ -306,7 +317,9 @@ bool KMLprManager::createPrinter(KMPrinter *prt)
 	if (result)
 	{
 		if (prt->driver())
+		{
 			result = savePrinterDriver(prt, prt->driver());
+		}
 	}
 	return result;
 }
