@@ -29,7 +29,6 @@
 #include "khtml.h"
 
 #include <kio_job.h>
-#include <kio_cache.h>
 #include <kio_error.h>
 
 #undef CACHE_DEBUG
@@ -75,7 +74,8 @@ HTMLURLRequestJob::HTMLURLRequestJob( KHTMLWidget* _browser, HTMLURLRequest *r, 
   m_pBrowser = _browser;
   m_req = r;
 
-  KIOCachedJob* job = new KIOCachedJob;
+  // WABA: Caching moved to kio_http. 
+  KIOJob* job = new KIOJob; 
   job->setGUImode( KIOJob::NONE );
 
   kdebug(0,1202,"BROWSER JOB %s", m_req->m_strURL.ascii());
@@ -85,7 +85,9 @@ HTMLURLRequestJob::HTMLURLRequestJob( KHTMLWidget* _browser, HTMLURLRequest *r, 
   connect( job, SIGNAL( sigError( int, int, const char* ) ), this, SLOT( slotError( int, int, const char* ) ) );
 
   m_jobId = job->id();
-  job->get( m_req->m_strURL, _reload );
+//  job->get( m_req->m_strURL, _reload );
+#warning WABA: Reload support is missing from KIOJob!
+  job->get( m_req->m_strURL );
 }
 
 HTMLURLRequestJob::~HTMLURLRequestJob()
