@@ -267,7 +267,7 @@ bool Sym::initQt( int keyQt )
 	}
 
 	m_sym = 0;
-	if( symQt != 1020 && symQt != 1021 && symQt != 1023 )
+	if( symQt != 0x1020 && symQt != 0x1021 && symQt != 0x1023 )
 		kdWarning(125) << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key." << endl;
 	return false;
 }
@@ -465,11 +465,12 @@ bool modToModX( uint mod, uint& modX )
 {
 	if( !g_bInitializedMods )
 		initializeMods();
-	
+
 	modX = 0;
 	for( int i = 0; i < KKey::MOD_FLAG_COUNT; i++ ) {
 		if( mod & g_rgModInfo[i].mod ) {
 			if( !g_rgModInfo[i].modX ) {
+				kdDebug(125) << "Invalid modifier flag." << endl;
 				modX = 0;
 				return false;
 			}
