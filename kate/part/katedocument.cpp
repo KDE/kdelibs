@@ -3241,6 +3241,11 @@ void KateDocument::newLine( KateTextCursor& c, KateViewInternal *v )
   if (m_indenter->canProcessNewLine ())
   {
     int pos = textLine->firstChar();
+
+    // length should do the job better
+    if (pos < 0)
+      pos = textLine->length();
+
     if (c.col() < pos)
       c.setCol(pos); // place cursor on first char if before
 
