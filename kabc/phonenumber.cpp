@@ -130,6 +130,9 @@ QString PhoneNumber::label( int type )
 
 QString PhoneNumber::typeLabel( int type )
 {
+  if ( type & Pref )
+    return i18n( "Preferred phone", "Preferred" );
+
   switch ( type ) {
     case Home:
       return i18n("Home phone", "Home");

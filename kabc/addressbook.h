@@ -167,7 +167,7 @@ class AddressBook : public QObject
     bool save( Ticket *ticket );
 
     /**
-      Saves all addressees of one resource asynchronously. //FIXME
+      Saves all addressees of one resource asynchronously.
 
       @param ticket The ticket returned by requestSaveTicket().
       @return Whether the synchronous part of saving was successfully.
@@ -244,7 +244,6 @@ class AddressBook : public QObject
               empty addressee.
      */
     Addressee findByUid( const QString &uid );
-
 
     /**
       Returns a list of all addressees in the address book.

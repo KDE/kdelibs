@@ -280,6 +280,9 @@ Address::TypeList Address::typeList()
 
 QString Address::typeLabel( int type )
 {
+  if ( type & Pref )
+    return i18n( "Preferred address", "Preferred" );
+
   switch ( type ) {
     case Dom:
       return i18n("Domestic");
