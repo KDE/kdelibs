@@ -706,12 +706,13 @@ void KonfUpdate::gotOptions(const QString &_options)
 void KonfUpdate::copyGroup(KConfigBase *cfg1, const QString &grp1, 
                            KConfigBase *cfg2, const QString &grp2)
 {
+   cfg1->setGroup(grp1);
    cfg2->setGroup(grp2);
    QMap<QString, QString> list = cfg1->entryMap(grp1);
    for(QMap<QString, QString>::Iterator it = list.begin();
        it != list.end(); ++it)
    {
-      cfg2->writeEntry(it.key(), it.data());
+      cfg2->writeEntry(it.key(), cfg1->readEntry(it.key()));
    }
 }
 
