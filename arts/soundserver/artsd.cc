@@ -203,3 +203,9 @@ int main(int argc, char **argv)
 	dispatcher.run();
 	return 0;
 }
+
+#ifdef __SUNPRO_CC
+/* See simplesoundserver_impl.cc for the reason this is here.  */
+#include "simplesoundserver_impl.h"
+REGISTER_IMPLEMENTATION(SimpleSoundServer_impl);
+#endif

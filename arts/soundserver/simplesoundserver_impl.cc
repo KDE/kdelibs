@@ -326,4 +326,12 @@ PlayObject SimpleSoundServer_impl::createPlayObject(const string& filename)
 	return PlayObject::null();
 }
 
+#ifndef __SUNPRO_CC
+/* SunPRO CC has problems finding the SimpleSoundServer_impl constructor
+   implementation from a template instantiation file, if this is here,
+   although I verified that the requested and provided symbols do indeed match,
+   and the latter is global.  Wonderfully this problem goes away, if we don't
+   register the implementation here, but in another file.  I bet this is
+   because of the static var that is created by the macro.  */
 REGISTER_IMPLEMENTATION(SimpleSoundServer_impl);
+#endif
