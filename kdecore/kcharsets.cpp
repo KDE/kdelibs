@@ -277,16 +277,15 @@ QList<QFont::CharSet> KCharsets::availableCharsets(QString family)
     QList<QFont::CharSet> chList;
     KFontStruct *fs;
 
-    for(fs = lst.first(); fs != 0; fs = lst.next() )
-    {
-	if(!chList.contains(&(fs->charset)))
-	{
-	    QFont::CharSet *c = new QFont::CharSet;
-	    *c = fs->charset;
-	    chList.append(c);
+    for(fs = lst.first(); fs != 0; fs = lst.next() ) {
+	  if(!chList.contains(&(fs->charset))) {
+		QFont::CharSet *c = new QFont::CharSet;
+		*c = fs->charset;
+		chList.append(c);
+	  }
 	}
+	
 	return chList;
-    }
 }
 
 QStringList KCharsets::availableCharsetNames(QString family)
