@@ -7,4 +7,5 @@
  -->
 
 <!ENTITY LMB "<mousebutton>left</mousebutton> mouse button">
+<!ENTITY MMB "<mousebutton>middle</mousebutton> mouse button">
 <!ENTITY RMB "<mousebutton>right</mousebutton> mouse button">
