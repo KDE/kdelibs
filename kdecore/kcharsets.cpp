@@ -57,7 +57,7 @@ static const char *charsetsStr[CHARSETS_COUNT]={
     "set-zh",
     "set-zh-tw",
     "utf-8",
-    "utf-16"
+    "utf-16",
     "Any"
 };
 static const char *xNames[CHARSETS_COUNT]={
@@ -83,8 +83,8 @@ static const char *xNames[CHARSETS_COUNT]={
     "unknown",
     "unknown",
     "unknown",
-    "utf8"
-    "utf16"
+    "utf8",
+    "utf16",
     ""  // this will always return true...
 };
 
