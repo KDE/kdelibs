@@ -426,9 +426,29 @@ return true;
 
 
 
-QStringList KSSLD::caListCAs() {
-QStringList x;
+bool KSSLD::caAdd(QString certificate, bool ssl, bool email, bool code) {
+KSSLCertificate *x = KSSLCertificate::fromString(certificate.local8Bit());
+
+	if (!x) return false;
+
 KConfig cfg("ksslcalist", false, false);
+
+	cfg.setGroup(x->getSubject());
+	cfg.writeEntry("x509", certificate);
+	cfg.writeEntry("site", ssl);
+	cfg.writeEntry("email", email);
+	cfg.writeEntry("code", code);
+
+	cfg.sync();
+	delete x;
+
+return true;
+}
+
+
+QStringList KSSLD::caList() {
+QStringList x;
+KConfig cfg("ksslcalist", true, false);
 
 	x = cfg.groupList();
 	x.remove("<default>");
@@ -438,7 +458,7 @@ return x;
 
 
 bool KSSLD::caUseForSSL(QString subject) {
-KConfig cfg("ksslcalist", false, false);
+KConfig cfg("ksslcalist", true, false);
 
 	if (!cfg.hasGroup(subject))
 		return false;
@@ -450,7 +470,7 @@ return cfg.readBoolEntry("site", false);
 
 
 bool KSSLD::caUseForEmail(QString subject) {
-KConfig cfg("ksslcalist", false, false);
+KConfig cfg("ksslcalist", true, false);
 
 	if (!cfg.hasGroup(subject))
 		return false;
@@ -462,7 +482,7 @@ return cfg.readBoolEntry("email", false);
 
 
 bool KSSLD::caUseForCode(QString subject) {
-KConfig cfg("ksslcalist", false, false);
+KConfig cfg("ksslcalist", true, false);
 
 	if (!cfg.hasGroup(subject))
 		return false;
@@ -478,6 +498,8 @@ KConfig cfg("ksslcalist", false, false);
 		return false;
 
 	cfg.deleteGroup(subject);
+	cfg.sync();
+
 return true;
 }
 

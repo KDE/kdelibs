@@ -78,13 +78,15 @@ k_dcop:
   /* Certificate Authorities */
   bool caRegenerate();
 
-  QStringList caListCAs();
+  QStringList caList();
 
   bool caUseForSSL(QString subject);
 
   bool caUseForEmail(QString subject);
   
   bool caUseForCode(QString subject);
+
+  bool caAdd(QString certificate, bool ssl, bool email, bool code);
 
   bool caRemove(QString subject);
 
