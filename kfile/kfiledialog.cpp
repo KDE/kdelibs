@@ -41,6 +41,7 @@
 #include <kapp.h>
 #include <klocale.h>
 #include <kio_job.h>
+#include <kconfig.h>
 
 enum Buttons { BACK_BUTTON= 1000, FORWARD_BUTTON, PARENT_BUTTON,
 	       HOME_BUTTON, RELOAD_BUTTON, HOTLIST_BUTTON,

@@ -33,6 +33,7 @@
 #include <kckey.h>
 
 #include "kkeydialog.h"
+#include <kconfig.h>
 
 /*****************************************************************************/
 /* KSplitListItem                                                            */

@@ -35,6 +35,7 @@
 #include <qdir.h>
 
 #include <kapp.h>
+#include <kconfig.h>
 
 #ifdef Unsorted // the "I hate X.h" modus
 #undef Unsorted

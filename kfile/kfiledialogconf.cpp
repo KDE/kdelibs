@@ -28,6 +28,7 @@
 #include "config-kfile.h"
 #include <kapp.h>
 #include <klocale.h>
+#include <kconfig.h>
 enum Buttons { B_STATUSLINE=10, B_FILTER, B_SINGLECLICK, B_HIDDEN, 
 	       B_LISTLABELS, B_SHORTVIEW, B_DETAILVIEW, B_MIX, B_KEEPDIR };
 
