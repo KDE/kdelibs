@@ -168,10 +168,10 @@ inline BytesEditInterface *bytesEditInterface( T *t )
   * Usage:
   *
   * \code
-  * #include <khexeditor/byteseditinterface.h>
-  * #include <khexeditor/hexcolumninterface.h>
-  * #include <khexeditor/textcolumninterface.h>
-  * #include <khexeditor/clipboardinterface.h>
+  * #include <khexedit/byteseditinterface.h>
+  * #include <khexedit/hexcolumninterface.h>
+  * #include <khexedit/textcolumninterface.h>
+  * #include <khexedit/clipboardinterface.h>
   * ...
   *
   * QWidget *BytesEditWidget = KHE::createBytesEditWidget( this, "BytesEditWidget" );

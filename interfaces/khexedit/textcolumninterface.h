@@ -49,17 +49,20 @@ class TextColumnInterface
   public: // set methods
     /** sets whether "unprintable" chars (value<32) should be displayed in the text column
       * with their corresponding character.
+      * Default is @c false.
       * @param SU
       * @see showUnprintable()
       */
     virtual void setShowUnprintable( bool SU = true ) = 0;
     /** sets the substitute character for "unprintable" chars
+      * Default is '.'.
       * @param SC new character
       * @see substituteChar()
       */
     virtual void setSubstituteChar( QChar SC ) = 0;
     /** sets the encoding of the text column. Default is KHE::LocalEncoding.
-      * If the encoding is not available the format will not be changed. 
+      * If the encoding is not available the format will not be changed.
+      * Default is LocalEncoding.
       * @param C the new encoding
       * @see encoding()
       */
