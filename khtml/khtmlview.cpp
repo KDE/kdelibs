@@ -461,7 +461,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 	KURL u( m_part->completeURL( m_strSelectedURL) );
 	uris.append(u.url().ascii());
 	QDragObject *d = new QUriDrag(uris, this);
-	QPixmap p = KMimeType::pixmapForURL(u, 0, KIconLoader::Medium);
+	QPixmap p = KMimeType::pixmapForURL(u, 0, KIcon::SizeMedium);
 	if(p.isNull()) kdDebug( 6000 ) << "null pixmap" << endl;
 	d->setPixmap(p);
 	d->drag();
