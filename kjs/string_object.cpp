@@ -240,6 +240,10 @@ Completion StringProtoFunc::execute(const List &args)
         result = Number(pos);
         break;
       }
+      if (mstr.isNull()) {
+	result = Null();
+	break;
+      }
       /* TODO return an array, with the matches, etc. */
       result = String(mstr);
     } else
