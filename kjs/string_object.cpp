@@ -278,11 +278,15 @@ Completion StringProtoFunc::execute(const List &args)
     if(!a0.isA(UndefinedType))
     {
         u2 = a0.toString().value();
-        /* TODO: regexps with backtracking, special cases */
-        while (i!=d && (pos = u.find(u2, p0)) >= 0) {
+        if ( !u2.isEmpty() )
+        {
+          /* TODO: regexps with backtracking, special cases */
+          while (i!=d && (pos = u.find(u2, p0)) >= 0) {
+            fprintf(stderr,"in while i=%d pos=%d\n",i, pos);
             result.put(UString::from(i), String(u.substr(p0, pos-p0)));
             p0 = pos + u2.size();
             i++;
+          }
         }
     }
     if (i!=d && (p0 < len || i==0 /*don't ever return an empty array*/))
