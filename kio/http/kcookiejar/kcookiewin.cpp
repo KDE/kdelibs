@@ -40,7 +40,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qmessagebox.h>
 
-#include <X11/Xlib.h> // for XSetTransientForHint() 
+// no need to include Xlib.h as long as we don't do that XSetTransientForHint
+// call anyway
+//#include <X11/Xlib.h> // for XSetTransientForHint() 
         
 KCookieWin::KCookieWin(QWidget *parent, KHttpCookie *_cookie, KCookieJar *cookiejar) :
     KDialogBase( i18n("Cookie Alert"), KDialogBase::Yes | KDialogBase::No,
