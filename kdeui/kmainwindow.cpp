@@ -129,7 +129,8 @@ KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
 
     d = new KMainWindowPrivate;
     d->showHelpMenu = true;
-
+    
+    setCaption( kapp->caption() );
 }
 
 KMainWindow::~KMainWindow()
