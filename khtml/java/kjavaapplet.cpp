@@ -116,16 +116,18 @@ QString &KJavaApplet::appletName()
 
 void KJavaApplet::create( )
 {
-  context->create( this );
-  d->reallyExists = true;
+    context->create( this );
+    d->reallyExists = true;
 
-  ParamMap::Iterator it;
+    ParamMap::Iterator it;
 
-  if ( params.count() != 0 ) {
-      for ( it = params.begin(); it != params.end(); ++it ) {
-	  context->setParameter( this, it.key(), it.data() );
-      }
-  }
+    if ( params.count() != 0 )
+    {
+        for ( it = params.begin(); it != params.end(); ++it )
+        {
+            context->setParameter( this, it.key(), it.data() );
+        }
+    }
 }
 
 void KJavaApplet::show( const QString &title )
