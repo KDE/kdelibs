@@ -1,3 +1,8 @@
+2003-10-19  Harri Porten  <porten@kde.org>
+
+	* html/html_documentimpl.cpp (setCookie): use latin1 encoding to
+	have a 1:1 translation of the lowest Unicode row.
+
 2003-10-19  Dirk Mueller  <dmuell@gmx.net>
 
 	* html/htmltokenizer.cpp (parseEntity): when entity is terminated and result
