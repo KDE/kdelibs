@@ -311,6 +311,10 @@
 #
 0	short		017437		application/octet-stream
 
+
+# ID Software's pak data archive
+0	string		PACK		application/x-pak
+
 # XXX - why *two* entries for "compacted data", one of which is
 # byte-order independent, and one of which is byte-order dependent?
 #
