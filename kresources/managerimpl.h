@@ -37,8 +37,8 @@ class ResourceFactory;
 struct ResourceItem {
   Resource* resource;
 //  QString key;
-  bool active;
-  bool standard;
+  bool active : 1;
+  bool standard : 1;
 };
 
 class ManagerImplListener
