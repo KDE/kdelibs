@@ -142,7 +142,7 @@ public:
 
     QImage renderToImage();
     bool imageEqual( const QImage &lhs, const QImage &rhs );
-    void doFailureReport( const QSize& baseSize, const QSize& outSize, const QString& baseDir,  const QString& test );
+    void doFailureReport( const QString& baseDir,  const QString& test, int failures );
 
     KHTMLPart *m_part;
     QString m_baseDir;

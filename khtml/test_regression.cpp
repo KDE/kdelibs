@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2001,2003 Peter Kelly (pmk@post.com)
  * Copyright (C) 2003,2004 Stephan Kulow (coolo@kde.org)
- * Copyright (C) 2004 Dirk Mueller ( mueller@kde.org ) 
+ * Copyright (C) 2004 Dirk Mueller ( mueller@kde.org )
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -183,8 +183,8 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
                                          "Script-generated " + filename + "-render");
             } else {
                 // compare with output file
-                m_regTest->reportResult( m_regTest->checkOutput(filename+"-dom"));
-                m_regTest->reportResult( m_regTest->checkOutput(filename+"-render"));
+                m_regTest->reportResult( m_regTest->checkOutput(filename+"-dom"), "DOM");
+                m_regTest->reportResult( m_regTest->checkOutput(filename+"-render"), "RENDER");
             }
             break;
         }
@@ -839,13 +839,28 @@ bool RegressionTest::imageEqual( const QImage &lhsi, const QImage &rhsi )
     return true;
 }
 
-void RegressionTest::doFailureReport( const QSize& baseSize, const QSize& outSize, const QString& baseDir,  const QString& test )
+void RegressionTest::doFailureReport( const QString& baseDir,  const QString& test, int failures )
 {
+    if ( failures == NoFailure ) {
+        ::unlink( QFile::encodeName( m_baseDir + "/output/" + test + "-compare.html" ) );
+        return;
+    }
+
     QFile list( baseDir + "/output/links.html" );
     list.open( IO_WriteOnly|IO_Append );
     QString link, cl;
-    link = QString( "<a href=\"%1\" target=content>%2</a><br>\n" )
-        .arg( test + "-compare.html" ).arg( m_currentTest );
+    link = QString( "<a href=\"%1\" target=\"content\" title\"%2\">" )
+           .arg( test + "-compare.html" )
+           .arg( test );
+    link += m_currentTest;
+    link += "</a> [";
+    if ( failures & DomFailure )
+        link += "D";
+    if ( failures & RenderFailure )
+        link += "R";
+    if ( failures & PaintFailure )
+        link += "P";
+    link += "]<br>\n";
     list.writeBlock( link.latin1(), link.length() );
     list.close();
 
@@ -858,8 +873,41 @@ void RegressionTest::doFailureReport( const QSize& baseSize, const QSize& outSiz
         relpath = relpath.left( relpath.length() - 1 );
     relpath = relpath.replace( "//", "/" );
 
+    QString renderDiff;
+    QString domDiff;
+
+    // are blocking reads possible with KProcess?
+    char pwd[PATH_MAX];
+    getcwd( pwd, PATH_MAX );
+    chdir( QFile::encodeName( baseDir ) );
+
+    if ( failures & RenderFailure ) {
+        renderDiff += "<pre>";
+        FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-render output/%2-render" )
+                            .arg ( test ).arg( test ).latin1(), "r" );
+        QTextIStream is( pipe );
+        for ( int line = 0; line < 100 && !is.eof(); ++line )
+            renderDiff += is.readLine() + "\n";
+        pclose( pipe );
+        renderDiff += "</pre>";
+    }
+
+    if ( failures & DomFailure ) {
+        domDiff += "<pre>";
+        FILE *pipe = popen( QString::fromLatin1( "diff -u baseline/%1-dom output/%2-dom" )
+                            .arg ( test ).arg( test ).latin1(), "r" );
+        QTextIStream is( pipe );
+        for ( int line = 0; line < 100 && !is.eof(); ++line )
+            domDiff += is.readLine() + "\n";
+        pclose( pipe );
+        domDiff += "</pre>";
+    }
+
+    chdir( pwd );
+
     compare.open( IO_WriteOnly|IO_Truncate );
-    cl = QString( "<html><head><script>\n"
+    cl = QString( "<html><head><title>%1</title>" ).arg( test );
+    cl += QString( "<script>\n"
                   "var pics = new Array();\n"
                   "pics[0]=new Image();\n"
                   "pics[0].src = '%1';\n"
@@ -868,40 +916,58 @@ void RegressionTest::doFailureReport( const QSize& baseSize, const QSize& outSiz
                   "var doflicker = 1;\n"
                   "var t = 1;\n"
                   "var lastb=0;\n"
+                  "function toggleVisible(visible) {\n"
+                  "     document.getElementById('render').style.visibility= visible == 'render' ? 'visible' : 'hidden';\n"
+                  "     document.getElementById('image').style.visibility= visible == 'image' ? 'visible' : 'hidden';\n"
+                  "     document.getElementById('dom').style.visibility= visible == 'dom' ? 'visible' : 'hidden';\n"
+                  "}\n"
                   "function show() { document.getElementById('image').src = pics[t].src; "
-                  "document.getElementById('image').style.borderColor = t && !doflicker ? 'red' : 'gray';}"
+                  "document.getElementById('image').style.borderColor = t && !doflicker ? 'red' : 'gray';\n"
+                  "toggleVisible('image');\n"
+                  "}"
                   "function runSlideShow(){\n"
-                  "   show()\n"
+                  "   document.getElementById('image').src = pics[t].src;\n"
                   "   if (doflicker)\n"
                   "       t = 1 - t;\n"
                   "   setTimeout('runSlideShow()', 200);\n"
                   "}\n"
-                  "function m(b) { document.getElementById('b'+b).className='buttondown';\n"
-                  "                var e = document.getElementById('b'+lastb);"
-                  "                 if(e) e.className='button';"
-                  "                 lastb = b;"
-                  "}"
+                  "function m(b) { if (b == lastb) return; document.getElementById('b'+b).className='buttondown';\n"
+                  "                var e = document.getElementById('b'+lastb);\n"
+                  "                 if(e) e.className='button';\n"
+                  "                 lastb = b;\n"
+                  "}\n"
+                  "function showRender() { doflicker=0;toggleVisible('render')\n"
+                  "}\n"
+                  "function showDom() { doflicker=0;toggleVisible('dom')\n"
+                  "}\n"
                   "</script>\n")
          .arg( relpath+"/baseline/"+test+"-dump.png" )
          .arg( relpath+"/output/"+test+"-dump.png" );
     cl += QString ("<style>\n"
                    ".buttondown { cursor: pointer; padding: 0px 20px; color: white; background-color: blue; border: inset blue 2px;}\n"
                    ".button { cursor: pointer; padding: 0px 20px; color: black; background-color: white; border: outset blue 2px;}\n"
-
+                   ".diff { position: absolute; left: 10px; top: 100px; visibility: hidden; border: 1px black solid; background-color: white; color: black; /* width: 800; height: 600; overflow: scroll; */ }\n"
                    "</style>\n" );
 
-    cl += QString( "<body onload=\"m(1); runSlideShow();\" text=black bgcolor=gray>"
-                   "<h1>%3</h1>\n"
-                   "<span id=b1 class=buttondown onclick=doflicker=1;show();m(1)>FLICKER</span>&nbsp;"
-                   "<span id=b2 class=button onclick=doflicker=0;t=0;show();m(2)>BASE</span>&nbsp;"
-                   "<span id=b3 class=button onclick=doflicker=0;t=1;show();m(3)>OUT</span>&nbsp;"
-                   "<a class=button href=\"%2\">HTML</a>&nbsp;"
+    cl += QString( "<body onload=\"m(1); show(); runSlideShow();\" text=black bgcolor=gray>"
+                   "<h1>%3</h1>\n" ).arg( test );
+    cl += QString ( "<span id='b1' class='buttondown' onclick=\"doflicker=1;show();m(1)\">FLICKER</span>&nbsp;\n"
+                    "<span id='b2' class='button' onclick=\"doflicker=0;t=0;show();m(2)\">BASE</span>&nbsp;\n"
+                    "<span id='b3' class='button' onclick=\"doflicker=0;t=1;show();m(3)\">OUT</span>&nbsp;\n" );
+    if ( renderDiff.length() )
+        cl += "<span id='b4' class='button' onclick='showRender();m(4)'>R-DIFF</span>&nbsp;\n";
+    if ( domDiff.length() )
+        cl += "<span id='b5' class='button' onclick='showDom();m(5);'>D-DIFF</span>&nbsp;\n";
+    cl += QString( "<a class=button href=\"%2\">HTML</a>&nbsp;"
                    "<hr>"
-                   "<img style='border: solid 5px gray' src=\"%1\" id='image'></html>" )
-         .arg( relpath+"/baseline/"+test+"-dump.png" )
-         .arg( relpath+"/tests/"+test )
-         .arg( test );
+                   "<img style='border: solid 5px gray' src=\"%1\" id='image'>" )
+          .arg( relpath+"/baseline/"+test+"-dump.png" )
+          .arg( relpath+"/tests/"+test );
 
+    cl += "<div id='render' class='diff'>" + renderDiff + "</div>";
+    cl += "<div id='dom' class='diff'>" + domDiff + "</div>";
+
+    cl += "</body></html>";
     compare.writeBlock( cl.latin1(), cl.length() );
     compare.close();
 }
@@ -963,28 +1029,35 @@ void RegressionTest::testStaticFile(const QString & filename)
     if ( m_genOutput ) {
         if ( m_known_failures & DomFailure)
             m_known_failures = AllFailure;
-        reportResult( checkOutput(filename+"-dom"), QString::null );
+        reportResult( checkOutput(filename+"-dom"), "DOM" );
         if ( m_known_failures & RenderFailure )
             m_known_failures = AllFailure;
-        reportResult( checkOutput(filename+"-render"), QString::null );
+        reportResult( checkOutput(filename+"-render"), "RENDER" );
         if ( m_known_failures & PaintFailure )
             m_known_failures = AllFailure;
         renderToImage().save(m_baseDir + "/baseline/" + filename + "-dump.png","PNG", 60);
         printf("Generated %s\n", QString( m_baseDir + "/baseline/" + filename + "-dump.png" ).latin1() );
-        reportResult( true, QString::null );
+        reportResult( true, "PAINT" );
     } else {
+        int failures = NoFailure;
+
         // compare with output file
         if ( m_known_failures & DomFailure)
             m_known_failures = AllFailure;
-        reportResult( checkOutput(filename+"-dom"), QString::null );
+        if ( !reportResult( checkOutput(filename+"-dom"), "DOM" ) )
+            failures |= DomFailure;
 
         if ( m_known_failures & RenderFailure )
             m_known_failures = AllFailure;
-        reportResult( checkOutput(filename+"-render"), QString::null );
+        if ( !reportResult( checkOutput(filename+"-render"), "RENDER" ) )
+            failures |= RenderFailure;
 
         if ( m_known_failures & PaintFailure )
             m_known_failures = AllFailure;
-        reportResult( checkPaintdump(filename), QString::null );
+        if ( !reportResult( checkPaintdump(filename), "PAINT" ) )
+            failures |= PaintFailure;
+
+        doFailureReport(m_baseDir, filename, failures );
     }
 
     m_known_failures = back_known_failures;
@@ -1071,27 +1144,21 @@ bool RegressionTest::checkPaintdump(const QString &filename)
     }
     bool result = false;
 
-    if ( ( m_known_failures & AllFailure ) || 
+    if ( ( m_known_failures & AllFailure ) ||
          ( m_known_failures & PaintFailure ) )
        return false;
- 
+
     QImage baseline;
     baseline.load( absFilename, "PNG");
     QImage output = renderToImage();
-    if ( !imageEqual( baseline, output ) ) {
+    if ( !imageEqual( baseline, output ) )
         output.save(m_baseDir + "/output/" + againstFilename, "PNG", 60);
-        doFailureReport( baseline.size(), output.size(), m_baseDir, filename );
-    }
     else {
-        ::unlink( QFile::encodeName( m_baseDir + "/output/" + filename + "-compare.html" ) );
         ::unlink( QFile::encodeName( m_baseDir + "/output/" + againstFilename ) );
         result = true;
     }
-
     return result;
 }
-
-
 
 bool RegressionTest::checkOutput(const QString &againstFilename)
 {
@@ -1172,6 +1239,7 @@ bool RegressionTest::reportResult(bool passed, const QString & description)
         if ( m_known_failures & AllFailure ) {
             printf("FAIL (known): ");
             m_failures_fail++;
+            passed = true; // we knew about
         } else {
             printf("FAIL: ");
             m_failures_work++;
@@ -1179,14 +1247,14 @@ bool RegressionTest::reportResult(bool passed, const QString & description)
     }
 
     if (!m_currentCategory.isEmpty())
-	printf("%s ",m_currentCategory.latin1());
+	printf("%s/", m_currentCategory.latin1());
 
-    printf("[%s]",m_currentTest.latin1());
+    printf("%s", m_currentTest.latin1());
 
     if (!description.isEmpty()) {
         QString desc = description;
         desc.replace( '\n', ' ' );
-	printf(" %s", desc.latin1());
+	printf(" [%s]", desc.latin1());
     }
 
     printf("\n");
