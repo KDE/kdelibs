@@ -64,4 +64,10 @@ void srandom(unsigned int seed);
 #define S_ISSOCK(mode) (1==0)
 #endif
 
+#ifndef HAVE_VSNPRINTF
+#ifdef __cplusplus
+extern "C"
+#endif
+int vsnprintf(char *str, size_t n, char const *fmt, va_list ap);
+#endif
 

@@ -1810,4 +1810,4 @@ k_textdomain (const char *domainname)
 }
 
 
-
+#undef alloca

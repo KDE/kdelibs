@@ -604,7 +604,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
         act.sa_flags = 0;
         sigaction(SIGPIPE, &act, 0L);
 
-	execvp(arglist[0], arglist);
+	execvp(arglist[0], const_cast<char *const *>(arglist));
 	_exit(-1);
 
   } else if (-1 == pid) {

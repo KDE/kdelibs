@@ -222,12 +222,8 @@ void kdebug( ushort nLevel, ushort nArea,
                 char buf[4096];
                 int nPrefix = sprintf( buf, "%s: ", aAppName.ascii() );
                 va_start( arguments, pFormat );
-#ifdef HAVE_VSNPRINTF
                 // use the more secure version if we have it
                 unsigned int nSize = vsnprintf( buf, sizeof(buf)-1, pFormat, arguments );
-#else
-                unsigned int nSize = vsprintf( buf, pFormat, arguments );
-#endif
 		nSize = QMIN(nSize, sizeof(buf)-2-nPrefix);
                 buf[nSize] = '\n';
                 buf[nSize+1] = '\0';
