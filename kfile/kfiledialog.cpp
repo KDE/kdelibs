@@ -297,6 +297,10 @@ void KFileBaseDialog::okPressed()
 	debugC("no filename");
 	filename_ = locationEdit->currentText();
     }
+    if (!finished)
+	QApplication::restoreOverrideCursor();
+    finished = false;
+
     accept();
 }
 
@@ -436,6 +440,11 @@ void KFileBaseDialog::checkPath(const char *_txt, bool takeFiles) // SLOT
 	else
 	    filename_ = u.path();
 	emit fileSelected(filename_);
+
+	if (!finished)
+	    QApplication::restoreOverrideCursor();
+	finished = false;
+
 	accept();
     }
 }
@@ -999,6 +1008,11 @@ void KFileBaseDialog::fileActivated(KFileInfo *item)
     KURL::encodeURL(tmps);
     filename_ += tmps;
     emit fileSelected(filename_);
+
+    if (!finished)
+	QApplication::restoreOverrideCursor();
+    finished = false;
+
     accept();
 }
 
@@ -1302,9 +1316,9 @@ void KDirDialog::updateStatusLine()
 }
 
 
-KFilePreviewDialog::KFilePreviewDialog( const char *dirName, 
-		const char *filter, QWidget *parent, const char *name, 
-		bool modal, bool acceptURLs )
+KFilePreviewDialog::KFilePreviewDialog(const char *dirName, const char *filter,
+                                       QWidget *parent, const char *name, 
+                                       bool modal, bool acceptURLs )
     : KFileBaseDialog(dirName, filter, parent, name, modal, acceptURLs) 
 {
     init();
