@@ -3,6 +3,5 @@ Encoding=UTF-8
 Type=MimeType
 MimeType=audio/x-speex
 Icon=sound
-Patterns=
+Patterns=*.spx;*.SPX;
 Comment=Speex Audio
-Comment[da]=Speex-Lyd

@@ -48,6 +48,6 @@ Comment[zh_TW]=Ogg 多媒體
 Comment[zu]=Onozindaba be-Ogg
 MimeType=application/ogg
 Icon=multimedia
-Patterns=
+Patterns=*.ogg;*.OGG
 # Previous name of this mimetype
 X-KDE-IsAlso=application/x-ogg
