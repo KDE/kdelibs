@@ -136,10 +136,10 @@ Simply remove any calls to it.
 
 <H4>KLocale</H4>
 <li>charset() has been removed. You might want to use encoding() instead.
-<li>setCharset(const QString &) has been removed. You might want to use
+<li>setCharset(const QString &amp;) has been removed. You might want to use
 setEncoding(int) instead.
-<li>formatMoney(const QString &) has been removed.
-<li>formatNumber(const QString &) has been removed.
+<li>formatMoney(const QString &amp;) has been removed.
+<li>formatNumber(const QString &amp;) has been removed.
 <li>languages() has been removed. Use languageList() instead.
 
 <H4>Accelerators Keys</H4>
@@ -149,9 +149,9 @@ not be available.
 <ul>
 	<li> KAccel::insertItem() and KAccel::connectItem().
 <pre>
-	- kaccel->insertItem( i18n("Scroll Up"), "Scroll Up", "Up" );
-	- kaccel->connectItem( "Scroll Up", this, SLOT(scrollUp()) );
-	+ kaccel->insert( "Scroll Up", i18n("Scroll Up"), QString::null,
+	- kaccel-gt;insertItem( i18n("Scroll Up"), "Scroll Up", "Up" );
+	- kaccel-gt;connectItem( "Scroll Up", this, SLOT(scrollUp()) );
+	+ kaccel-gt;insert( "Scroll Up", i18n("Scroll Up"), QString::null,
 		Key_Up, this, SLOT(scrollUp()) );
 </pre>
 	Note that a What's This parameter is now a part of the insert function.
@@ -163,8 +163,8 @@ not be available.
 	can replace it.  Note, however, that this would be handled automatically
 	by using KAction instead.
 <pre>
-	- kaccel->changeMenuAccel( menu, id, "file_open" );
-	+ menu->setAccel( kaccel->shortcut( "file_open" ).keyCodeQt(), id );
+	- kaccel-gt;changeMenuAccel( menu, id, "file_open" );
+	+ menu-gt;setAccel( kaccel-gt;shortcut( "file_open" ).keyCodeQt(), id );
 </pre>
 	</li>
 </ul>
@@ -226,9 +226,9 @@ Use QPopupMenu/KPopupMenu or the XML-UI method for building menus.
 	replaced if KDE_NO_COMPAT is defined.
 		<table border=1>
 			<tr><th>Old</th><th>New</th></tr>
-			<tr><td>int accel()</td><td>const KShortcut& shortcut()</td></tr>
+			<tr><td>int accel()</td><td>const KShortcut&amp; shortcut()</td></tr>
 			<tr><td>int menuId()</td><td>int itemId()</td></tr>
-			<tr><td>void setAccel(int)</td><td>void setShortcut(const KShortcut&)</td></tr>
+			<tr><td>void setAccel(int)</td><td>void setShortcut(const KShortcut&amp;)</td></tr>
 		</table></li>
 </ul>
 
@@ -287,6 +287,13 @@ for more informations on this new extension.
 <H4>KPixmapEffect</H4>
 PixmapEffect has now been moved to the new kdefx library.
 
+<H4>KProgress</H4>
+KProgress is now based on QProgressBar.
+This has led to a few API changes. In particular the constructors have been
+simplified, you simply need to pass the total number of steps instead of
+min / max / initialvalue / orientation. See documentation of both KProgress
+and QProgressBar.
+
 <H4>KRootPixmap</H4>
 The KRootPixmap class has been extended to make it more flexible, and the
 <i>checkAvailable(bool ignored)</i> method has been renamed to <i>isAvailable()</i>.
@@ -326,9 +333,9 @@ can simply call the accessor method (i.e. in updateText() call text() to get the
   <li>KTarEntry is now KArchiveEntry, KTarDirectory is now KArchiveDirectory, and KTarFile is now KArchiveFile.</li>
   <li>The classes ProgressBase, StatusbarProgress and DefaultProgress have been moved to the KIO namespace.</li>
   <li>The signal KDirLister::started(const QString &amp;url) has changed to KDirLister::started(const KURL &amp;url).<li>
-  <li>KServiceTypeProfile::preferredService( const QString & serviceType, bool needApp ) has been removed, use
+  <li>KServiceTypeProfile::preferredService( const QString &amp; serviceType, bool needApp ) has been removed, use
       KServiceTypeProfile::preferredService( ..., "Application") if needApp was true, or
-      KServiceTypeProfile::preferredService( ..., Qstring::null) if needApp was false.
+      KServiceTypeProfile::preferredService( ..., QString::null) if needApp was false.
   <li>The following functions in KProtocolManager have been replaced:
       <ul>
 <li>ftpProxy(), use proxyFor("ftp") instead.
