@@ -795,7 +795,7 @@ QDragObject *KFileIconView::dragObject()
     QPoint hotspot;
     hotspot.setX( pixmap.width() / 2 );
     hotspot.setY( pixmap.height() / 2 );
-    QDragObject* myDragObject = KURLDrag::newDrag( urls, widget() );
+    QDragObject* myDragObject = new KURLDrag( urls, widget() );
     myDragObject->setPixmap( pixmap, hotspot );
     return myDragObject;
 }
