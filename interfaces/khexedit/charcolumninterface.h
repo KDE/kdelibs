@@ -32,6 +32,20 @@ namespace KHE
 
 class TextColumnInterface
 {
+  public:
+    /** encoding used to display the symbols in the text column */
+    enum KEncoding
+    {
+      /** the coding of your shell */
+      LocalEncoding=0,
+      /** ASCII encoding, also known as Latin1 */
+      ISO8859_1Encoding=1,
+      /** don't use; not implemented: the most common EBCDIC codepage */
+      CECP1047Encoding=2,
+      /** don't use; this should enable extension without breaking binary compatibility */
+      MaxEncodingId=0xFF
+    };
+
   public: // set methods
     /** sets whether "unprintable" chars (>32) should be displayed in the text column
       * with their corresponding character.
@@ -43,6 +57,9 @@ class TextColumnInterface
       * returns true if there was a change
       */
     virtual void setSubstituteChar( QChar SC ) = 0;
+    /** sets the encoding of the text column. Default is KHE::LocalEncoding.
+      * If the encoding is not available the format will not be changed. */
+    virtual void setEncoding( KEncoding C )    = 0;
 
 
   public: // get methods
@@ -52,6 +69,8 @@ class TextColumnInterface
     virtual bool showUnprintable() const = 0;
     /** returns the actually used substitute character for "unprintable" chars, default is '.' */
     virtual QChar substituteChar() const = 0;
+    /** */
+    virtual KEncoding encoding()   const = 0;
 };
 
 
