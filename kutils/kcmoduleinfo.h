@@ -79,7 +79,7 @@ public:
   /**
    * Same as above but creates an empty KCModuleInfo.
    * You should not normally call this.
-   * @sinse 3.4
+   * @since 3.4
    */
   KCModuleInfo();
 
@@ -102,7 +102,7 @@ public:
   bool operator!=( const KCModuleInfo &rhs ) const;
 
   /**
-   * Default constructor.
+   * Default destructor.
    */
   ~KCModuleInfo();
 
