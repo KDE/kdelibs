@@ -42,6 +42,7 @@ class KActionMenu;
 class QWidgetStack;
 class KProgress;
 namespace KIO {
+  class CopyJob;
   class DeleteJob;
 }
 
