@@ -594,6 +594,7 @@ bool CupsdConf::loadAvailableResources()
 	resources_.append(new CupsResource("/admin"));
 	resources_.append(new CupsResource("/printers"));
 	resources_.append(new CupsResource("/classes"));
+	resources_.append(new CupsResource("/jobs"));
 
 	if (!http_)
 		return false;
@@ -756,7 +757,7 @@ bool CupsLocation::parseOption(const QString& line)
 		else if (e == "required") encryption_ = ENCRYPT_REQUIRED;
 		else encryption_ = ENCRYPT_IFREQUESTED;
 	}
-	else if (keyword == "satisfy") satisfy_ = (value.lower() == "any" ? SATISFY_ANY : SATISFY_ANY);
+	else if (keyword == "satisfy") satisfy_ = (value.lower() == "any" ? SATISFY_ANY : SATISFY_ALL);
 	else return false;
 	return true;
 }
@@ -782,7 +783,7 @@ void CupsResource::setPath(const QString& path)
 
 int CupsResource::typeFromText(const QString& text)
 {
-	if (text == i18n("Base", "Root") || text == i18n("All printers") || text == i18n("All classes")) return RESOURCE_GLOBAL;
+	if (text == i18n("Base", "Root") || text == i18n("All printers") || text == i18n("All classes") || text == i18n("Print jobs")) return RESOURCE_GLOBAL;
 	else if (text == i18n("Administration")) return RESOURCE_ADMIN;
 	else if (text.find(i18n("Class")) == 0) return RESOURCE_CLASS;
 	else if (text.find(i18n("Printer")) == 0) return RESOURCE_PRINTER;
@@ -792,7 +793,7 @@ int CupsResource::typeFromText(const QString& text)
 int CupsResource::typeFromPath(const QString& path)
 {
 	if (path == "/admin") return RESOURCE_ADMIN;
-	else if (path == "/printers" || path == "/classes" || path == "/") return RESOURCE_GLOBAL;
+	else if (path == "/printers" || path == "/classes" || path == "/" || path == "/jobs") return RESOURCE_GLOBAL;
 	else if (path.left(9) == "/printers") return RESOURCE_PRINTER;
 	else if (path.left(8) == "/classes") return RESOURCE_CLASS;
 	else return RESOURCE_GLOBAL;
@@ -804,6 +805,7 @@ QString CupsResource::textToPath(const QString& text)
 	if (text == i18n("Administration")) path = "/admin";
 	else if (text == i18n("All printers")) path = "/printers";
 	else if (text == i18n("All classes")) path = "/classes";
+	else if (text == i18n("Print jobs")) path = "/jobs";
 	else if (text == i18n("Base", "Root")) path = "/";
 	else if (text.find(i18n("Printer")) == 0)
 	{
@@ -825,6 +827,7 @@ QString CupsResource::pathToText(const QString& path)
 	else if (path == "/printers") text = i18n("All printers");
 	else if (path == "/classes") text = i18n("All classes");
 	else if (path == "/") text = i18n("Root");
+	else if (path == "/jobs") text = i18n("Print jobs");
 	else if (path.find("/printers/") == 0)
 	{
 		text = i18n("Printer");

@@ -41,18 +41,26 @@
 #include <kiconloader.h>
 #include <qstringlist.h>
 #include <qwhatsthis.h>
+#include <kio/passdlg.h>
 
 #include <signal.h>
+#include <cups/cups.h>
+
+static bool	dynamically_loaded = false;
+static QString	pass_string;
 
 extern "C"
 {
+#include "cups-util.h"
 	bool restartServer(QString& msg)
 	{
 		return CupsdDialog::restartServer(msg);
 	}
-	bool configureServer(const QString& configfile, QWidget *parent)
+	bool configureServer(QWidget *parent)
 	{
-		CupsdDialog::configure(configfile,parent);
+		dynamically_loaded = true;
+		CupsdDialog::configure(QString::null, parent);
+		dynamically_loaded = false;
 		return true;
 	}
 }
@@ -79,10 +87,28 @@ int getServerPid()
 	return (-1);
 }
 
+const char* getPassword(const char*)
+{
+	QString	user(cupsUser());
+	QString	pass;
+
+	if (KIO::PasswordDialog::getNameAndPassword(user, pass, NULL) == QDialog::Accepted)
+	{
+		cupsSetUser(user.latin1());
+		pass_string = pass;
+		if (pass_string.isEmpty())
+			return "";
+		else
+			return pass_string.latin1();
+	}
+	else
+		return NULL;
+}
+
 //---------------------------------------------------
 
 CupsdDialog::CupsdDialog(QWidget *parent, const char *name)
-	: KDialogBase(IconList, "", Ok|Apply|Cancel|User1, Ok, parent, name)
+	: KDialogBase(IconList, "", Ok|Cancel|User1, Ok, parent, name)
 {
 	KGlobal::iconLoader()->addAppDir("kdeprint");
 	KGlobal::locale()->insertCatalogue("cupsdconf");
@@ -174,18 +200,33 @@ bool CupsdDialog::restartServer(QString& msg)
         return (msg.isEmpty());
 }
 
-#define	DEFAULT_CONFIGFILE	"/etc/cups/cupsd.conf"
 void CupsdDialog::configure(const QString& filename, QWidget *parent)
 {
-	QString	fn = (filename.isEmpty() ? QString(DEFAULT_CONFIGFILE) : filename);
-	QFileInfo	fi(fn);
-	QString		errormsg;
-	// check existence
-	if (!fi.exists()) errormsg = i18n("File \"%1\" doesn't exist !").arg(fn);
+	QString	errormsg;
+	bool needUpload(false);
+
+	// init password dialog if needed
+	if (!dynamically_loaded)
+		cupsSetPasswordCB(getPassword);
+
+	// load config file from server
+	QString	fn(filename);
+	if (fn.isEmpty())
+	{
+		fn = cupsGetConf();
+		if (fn.isEmpty())
+			errormsg = i18n("Unable to retrieve configuration file from the CUPS server.\n")+
+				   i18n("You probably don't have the access permissions to perform this operation.");
+		else needUpload = true;
+	}
+
 	// check read state
-	else if (!fi.isReadable()) errormsg = i18n("Can't open file \"%1\" !\nCheck file permissions.").arg(fn);
-	// check write state
-	else if (!fi.isWritable()) errormsg = i18n("You are not allowed to modify file \"%1\" !\nCheck file permissions or contact system administrator.").arg(fn);
+	QFileInfo	fi(fn);
+	if (!fi.exists() || !fi.isReadable() || !fi.isWritable())
+		errormsg = i18n("Internal error: file not readable/writable!");
+	// check file size
+	if (fi.size() == 0)
+		errormsg = i18n("Internal error: empty file!");
 
 	if (!errormsg.isEmpty())
 	{
@@ -194,14 +235,29 @@ void CupsdDialog::configure(const QString& filename, QWidget *parent)
 	else
 	{
 		CupsdDialog	dlg(parent);
-		if (dlg.setConfigFile(fn))
-			dlg.exec();
+		if (dlg.setConfigFile(fn) && dlg.exec())
+		{
+			QCString	encodedFn = QFile::encodeName(fn);
+			if (!needUpload)
+				KMessageBox::information(parent,
+					i18n("The config file has not been uploaded to the\n"
+					     "CUPS server. The daemon will not be restarted."));
+			else if (!cupsPutConf(encodedFn.data()))
+			{
+				KMessageBox::error(parent,
+					i18n("Unable to upload the configuration file to CUPS server.\n")+
+					i18n("You probably don't have the access permissions to perform this operation."), i18n("CUPS configuration error"));
+			}
+		}
+
 	}
+	if (needUpload)
+		QFile::remove(fn);
 }
 
 void CupsdDialog::slotApply()
 {
-        if (conf_ && !filename_.isEmpty())
+	if (conf_ && !filename_.isEmpty())
 	{ // try to save the file
 		bool	ok(true);
 		QString	msg;
@@ -215,14 +271,13 @@ void CupsdDialog::slotApply()
 		else if (!newconf_.saveToFile(filename_))
 		{
 			msg = i18n("Unable to write configuration file %1").arg(filename_);
-                        ok = false;
+				ok = false;
 		}
-		else ok = restartServer(msg);
-                if (!ok)
-                {
+		if (!ok)
+		{
 			KMessageBox::error(this, msg, i18n("CUPS configuration error"));
-                }
-        }
+		}
+	}
 }
 
 void CupsdDialog::slotUser1()
