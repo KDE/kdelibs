@@ -151,9 +151,14 @@ class ReadOnlyPartPrivate;
 /**
  * Base class for any "viewer" part.
  *
- * This class takes care of network transparency for you.
- * You only need to implement @ref openFile(), not @ref openURL().
- * Use the signals to show feedback while the URL is being loaded.
+ * This class takes care of network transparency for you, 
+ * in the simplest way (synchronously).
+ * To use the built-in network transparency, you only need to implement 
+ * @ref openFile(), not @ref openURL().
+ * To prevent network transparency, or to implement it another way
+ * (e.g. asynchronously), override openURL().
+ *
+ * KParts Application can use the signals to show feedback while the URL is being loaded.
  */
 class ReadOnlyPart : public Part
 {
@@ -165,11 +170,18 @@ public:
   virtual void init();
 
   /**
-   * Don't reimplement this one, reimplement @ref openFile().
+   * Only reimplement openURL if you don't want synchronous network transparency
+   * Otherwise, reimplement @ref openFile() only .
    **/
   virtual bool openURL( const KURL &url );
   virtual const KURL & url() const { return m_url; }
 
+  /**
+   * Called when closing the current url (e.g. document), for instance
+   * when switching to another url (note that @ref openURL calls it
+   * automatically in this case).
+   * If the current URL is not fully loaded yet, aborts loading.
+   */
   virtual void closeURL();
 
 signals:
@@ -194,7 +206,9 @@ protected slots:
 
 protected:
   /**
-   * Reimplement this, to open @p m_file.
+   * If the part uses the standard implementation of @ref openURL,
+   * it must reimplement this, to open @p m_file.
+   * Otherwise simply define it to { return false; }
    */
   virtual bool openFile() = 0;
 
