@@ -193,7 +193,11 @@ bool KGuiItem::isEnabled() const
 
 bool KGuiItem::hasIconSet() const
 {
-    return d->m_hasIcon;
+    KConfigGroup cg ( KGlobal::config(), "KDE" );
+    if( cg.readBoolEntry( "showIcons", true ) )
+        return d->m_hasIcon;
+    else
+        return false;
 }
 
 void KGuiItem::setText( const QString &text ) {
