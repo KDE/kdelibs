@@ -548,8 +548,6 @@ void HTTPProtocol::http_openConnection()
   m_state.user = m_request.user;
   m_state.passwd = m_request.passwd;
   m_state.do_proxy = m_request.do_proxy;
-
-  connected();
 }
 
 
@@ -1371,6 +1369,8 @@ void HTTPProtocol::openConnection(const QString& host, int port, const QString& 
   m_request.user = user;
   m_request.passwd = pass;
   m_request.do_proxy = m_bUseProxy;
+
+  connected();
 }
 
 void HTTPProtocol::closeConnection( )
