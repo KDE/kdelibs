@@ -311,13 +311,16 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
                       GUIProfile prof )
 : KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
 {
+  KHTMLFactory::registerPart( this );
   setInstance( KHTMLFactory::instance() ); // doesn't work inside init() for derived classes
+                                           // Why?? :-} (Simon)
   init( new KHTMLView( this, parentWidget, widgetname ), prof );
 }
 
 KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, const char *name, GUIProfile prof )
 : KParts::ReadOnlyPart( parent, name )
 {
+  KHTMLFactory::registerPart( this );
   setInstance( KHTMLFactory::instance() );
   assert( view );
   init( view, prof );
@@ -424,6 +427,7 @@ KHTMLPart::~KHTMLPart()
 
   delete d;
   khtml::Cache::deref();
+  KHTMLFactory::deregisterPart( this );
 }
 
 bool KHTMLPart::restoreURL( const KURL &url )
@@ -452,6 +456,10 @@ bool KHTMLPart::restoreURL( const KURL &url )
 bool KHTMLPart::openURL( const KURL &url )
 {
   QString referrerUrl = m_url.url();
+
+  KURL::List *vlinks = KHTMLFactory::vLinks();
+  if ( !vlinks->contains( url ) )
+      vlinks->append( url );
 
   kdDebug( 6050 ) << "KHTMLPart::openURL " << url.url() << endl;
 
@@ -1441,6 +1449,9 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
   KURL u = completeURL( url );
   QString com;
 
+  if ( KHTMLFactory::vLinks()->contains( u ) )
+      kdDebug( 6000 ) << "Ah, " << u.prettyURL() << " has been visited some time ago" << endl;
+
   KMimeType::Ptr typ = KMimeType::findByURL( u );
 
   if ( typ )
@@ -1553,6 +1564,10 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   KURL cURL = completeURL( url );
 
   kdDebug( 6000 ) << "complete URL:" << cURL.url() << " target = " << target << endl;
+
+  KURL::List *vlinks = KHTMLFactory::vLinks();
+  if ( !vlinks->contains( cURL ) )
+      vlinks->append( cURL );
 
   if ( button == LeftButton && ( state & ShiftButton ) && !cURL.isMalformed() )
   {
@@ -2223,6 +2238,7 @@ void KHTMLPart::saveState( QDataStream &stream )
   }
 
   stream << frameNameLst << frameServiceTypeLst << frameServiceNameLst << frameURLLst << frameStateBufferLst;
+  stream << *KHTMLFactory::vLinks();
 }
 
 void KHTMLPart::restoreState( QDataStream &stream )
@@ -2235,6 +2251,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   KURL::List frameURLs;
   QValueList<QByteArray> frameStateBuffers;
   QValueList<int> fSizes;
+  KURL::List visitedLinks;
 
   stream >> u >> xOffset >> yOffset;
 
@@ -2248,9 +2265,14 @@ void KHTMLPart::restoreState( QDataStream &stream )
   stream >> frameCount >> frameNames >> frameServiceTypes >> frameServiceNames
          >> frameURLs >> frameStateBuffers;
 
+  stream >> visitedLinks;
+
+  if ( KHTMLFactory::partList()->count() == 1 ) // only us?
+      *KHTMLFactory::vLinks() = visitedLinks;
+
   d->m_bComplete = false;
 
-  kdDebug( 6050 ) << "restoreState() docState.count() = " << docState.count() << endl;
+  kdDebug( 6050 ) << "restoreStakte() docState.count() = " << docState.count() << endl;
   kdDebug( 6050 ) << "m_url " << m_url.url() << " <-> " << u.url() << endl;
   kdDebug( 6050 ) << "m_frames.count() " << d->m_frames.count() << " <-> " << frameCount << endl;
 
