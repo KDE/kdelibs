@@ -1,0 +1,3 @@
+dnl libkmid's specific checks
+
+AC_CHECK_HEADERS(linux/awe_voice.h awe_voice.h /usr/src/sys/i386/isa/sound/awe_voice.h /usr/src/sys/gnu/i386/isa/sound/awe_voice.h)  
