@@ -288,7 +288,7 @@ bool KCookieServer::cookiesPending( const QString &url )
        cookie;
        cookie = mPendingCookies->next())
   {
-       if (cookie->match( domains, path))
+       if (cookie->match( fqdn, domains, path))
           return true;
   }
   return false;

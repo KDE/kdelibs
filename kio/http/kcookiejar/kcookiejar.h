@@ -85,7 +85,7 @@ public:
     int     protocolVersion(void) { return mProtocolVersion; }
     bool    isSecure(void) { return mSecure; }
     bool    isExpired(time_t currentDate);
-    bool    match(const QStringList &domainList, const QString &path);
+    bool    match(const QString &fqdn, const QStringList &domainList, const QString &path);
 
     KHttpCookiePtr next() { return nextCookie; }
 };

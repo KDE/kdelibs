@@ -152,10 +152,16 @@ QString KHttpCookie::cookieStr(void)
 
 //
 // Returns whether this cookie should be send to this location.
-bool KHttpCookie::match(const QStringList &domains, const QString &path)
+bool KHttpCookie::match(const QString &fqdn, const QStringList &domains, const QString &path)
 {
     // Cookie domain match check
-    if (!domains.contains(mDomain))
+    if (mDomain.isEmpty())
+    {
+        // No domain set, check hostname.
+        if (fqdn != mHost)
+            return false;
+    }
+    else if (!domains.contains(mDomain))
     {
         if (mDomain[0] == '.')
             return false;
@@ -247,7 +253,7 @@ QString KCookieJar::findCookies(const QString &_url)
 
        for ( cookie=cookieList->first(); cookie != 0; cookie=cookieList->next() )
        {
-          if (!cookie->match( domains, path))
+          if (!cookie->match( fqdn, domains, path))
              continue;
 
           if( cookie->isSecure() && !secureRequest )
@@ -606,18 +612,6 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
             }
             lastCookie->mPath = dir;
             kdDebug(7104) << "No \"Path=\" entry found in Set-Cookie.  Setting path to: " << dir << endl;
-        }
-        // Need to do the same thing for the domain.  Again this is
-        // according to both RFC 2109 and Netscape's spec.  Why do it
-        // here and not in ::cookieAdvice?  Because KCookieServer invokes
-        // ::match(...) method when it has pending cookies.
-        if( lastCookie && lastCookie->mDomain.isEmpty() )
-        {
-            QString domain;
-            stripDomain( fqdn, domain );
-            if( !domain.isEmpty() )
-                lastCookie->mDomain = domain;
-            kdDebug(7104) << "No \"Domain=\" entry found in Set-Cookie.  Setting domain to: " << domain << endl;
         }
 
         if (*cookieStr == '\0')
