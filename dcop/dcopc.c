@@ -482,7 +482,7 @@ dcop_call(
 
     } while (!readyRet);
 
-    // if we were rejected by the server, we try again, otherwise we return
+    /* if we were rejected by the server, we try again, otherwise we return */
     if (replyStatus == 2 /* Rejected */)
       continue;
 
