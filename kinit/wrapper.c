@@ -197,6 +197,11 @@ int main(int argc, char **argv)
    {
       argv++;
       argc--;
+      if (argc < 1)
+      {
+         fprintf(stderr, "usage: kdeinit_wrapper <application> [<args>]\n");
+         exit(255);
+      }
       start = argv[0];
    }
    arg_count = argc;
