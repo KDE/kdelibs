@@ -210,6 +210,22 @@ void HTMLDocumentImpl::slotHistoryChanged()
     m_render->repaint();
 }
 
+HTMLMapElementImpl* HTMLDocumentImpl::getMap(const DOMString& _url)
+{
+    QString url = _url.string();
+    QString s;
+    int pos = url.find('#');
+    //kdDebug(0) << "map pos of #:" << pos << endl;
+    s = QString(_url.unicode() + pos + 1, _url.length() - pos - 1);
+
+    QMapConstIterator<QString,HTMLMapElementImpl*> it = mapMap.find(s);
+
+    if (it != mapMap.end())
+	return *it;
+    else
+	return 0;
+}
+
 //-----------------------------------------------------------------------------
 
 

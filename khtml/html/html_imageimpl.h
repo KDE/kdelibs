@@ -29,8 +29,6 @@
 
 #include <qregion.h>
 
-template<class C,class D> class QMap;
-
 namespace DOM {
 
 class DOMString;
@@ -135,16 +133,9 @@ public:
 
     bool mapMouseEvent(int x_, int y_, int width_, int height_,
                        MouseEvent *ev );
-
-    static HTMLMapElementImpl* getMap(const DOMString& url_);
-
-    static void clear();
 private:
 
     QString name;
-    // ### FIxme: this doesn't work, if we have multiple views at the same time.
-    // the map has to be somehow attached to the document.
-    static QMap<QString,HTMLMapElementImpl*> *mapMap;
 };
 
 

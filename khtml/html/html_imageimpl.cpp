@@ -38,7 +38,6 @@
 #include <qpoint.h>
 #include <qregion.h>
 #include <qstack.h>
-#include <qmap.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -92,7 +91,10 @@ bool HTMLImageElementImpl::mouseEvent( int _x, int _y,
 
         //cout << "usemap: " << usemap.string() << endl;
         HTMLMapElementImpl* map;
-    	if ( (map = HTMLMapElementImpl::getMap(usemap))!=0)
+        DocumentImpl* doc = ownerDocument();
+
+        if(doc && doc->isHTMLDocument() &&
+           (map = static_cast<HTMLDocumentImpl*>(doc)->getMap(usemap)))
 	{
 	    //kdDebug( 6030 ) << "have map" << endl;
             return map->mapMouseEvent(_x-renderer()->xPos()-_tx,
@@ -223,22 +225,15 @@ bool HTMLImageElementImpl::isServerMap() const
 
 // -------------------------------------------------------------------------
 
-QMap<QString,HTMLMapElementImpl*> *HTMLMapElementImpl::mapMap = 0;
-
-void HTMLMapElementImpl::clear()
+HTMLMapElementImpl::HTMLMapElementImpl(DocumentImpl *doc)
+    : HTMLElementImpl(doc)
 {
-    delete mapMap;
-    mapMap = 0;
-}
-
-HTMLMapElementImpl::HTMLMapElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
-{
-    if(!mapMap) mapMap = new QMap<QString, HTMLMapElementImpl *>();
 }
 
 HTMLMapElementImpl::~HTMLMapElementImpl()
 {
-    HTMLMapElementImpl::mapMap->remove(name);
+    if(ownerDocument()->isHTMLDocument())
+        static_cast<HTMLDocumentImpl*>(ownerDocument())->mapMap.remove(name);
 }
 
 const DOMString HTMLMapElementImpl::nodeName() const
@@ -293,24 +288,6 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
     return inside;
 }
 
-HTMLMapElementImpl*
-HTMLMapElementImpl::getMap(const DOMString& _url)
-{
-    // ### should we allow maps from other urls too???
-    QString url = _url.string();
-    QString s;
-    int pos = url.find('#');
-    //kdDebug(0) << "map pos of #:" << pos << endl;
-    s = QString(_url.unicode() + pos + 1, _url.length() - pos - 1);
-
-    if (mapMap && mapMap->contains(s))
-	return (*mapMap)[s];
-    else
-	return 0;
-}
-
-
-
 void HTMLMapElementImpl::parseAttribute(AttrImpl *attr)
 {
     switch (attr->attrId)
@@ -322,7 +299,8 @@ void HTMLMapElementImpl::parseAttribute(AttrImpl *attr)
 	    name = QString(s.unicode()+1, s.length()-1);
 	else
 	    name = s.string();
-	(*mapMap)[name] = this;
+        if(ownerDocument()->isHTMLDocument())
+            static_cast<HTMLDocumentImpl*>(ownerDocument())->mapMap[name] = this;
 	break;
     }
     default:

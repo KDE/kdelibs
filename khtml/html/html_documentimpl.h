@@ -28,7 +28,9 @@
 #include "dom_docimpl.h"
 #include "misc/loader_client.h"
 
+#include <qmap.h>
 class KHTMLView;
+class QString;
 
 namespace DOM {
 
@@ -41,6 +43,7 @@ namespace DOM {
     class DOMString;
     class StyleSheetListImpl;
     class CSSStyleSheetImpl;
+    class HTMLMapElementImpl;
 
 class HTMLDocumentImpl : public DocumentImpl, public khtml::CachedObjectClient
 {
@@ -73,6 +76,8 @@ public:
     virtual ElementImpl *createElement ( const DOMString &tagName );
     virtual QList<StyleSheetImpl> authorStyleSheets();
 
+    HTMLMapElementImpl* getMap(const DOMString& url_);
+
 signals:
     void finishedParsing();
 
@@ -82,6 +87,9 @@ public slots:
 protected:
     HTMLElementImpl *bodyElement;
     HTMLElementImpl *htmlElement;
+    friend class HTMLMapElementImpl;
+    friend class HTMLImageElementImpl;
+    QMap<QString,HTMLMapElementImpl*> mapMap;
 
     QString onloadScript;
     QString onUnloadScript;

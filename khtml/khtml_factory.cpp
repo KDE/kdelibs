@@ -97,7 +97,6 @@ KHTMLFactory::~KHTMLFactory()
         kdDebug() << "KHTMLFactory::~KHTMLFactory" << endl;
         // clean up static data
         khtml::CSSStyleSelector::clear();
-        DOM::HTMLMapElementImpl::clear();
         khtml::RenderStyle::cleanup();
         khtml::Cache::clear();
     }
