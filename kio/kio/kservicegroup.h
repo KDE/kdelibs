@@ -155,23 +155,29 @@ public:
    * @since 3.4
    */
   bool showEmptyMenu() const;
-
   void setShowEmptyMenu( bool b);
 
   /**
    * @return true to show an inline header into menu
-   * @since 3.4
+   * @since 3.5
    */
   bool showInlineHeader() const;
   void setShowInlineHeader(bool _b);
 
-
+  /**
+   * @since 3.5
+   */
   bool inlineAlias() const;
   void setInlineAlias(bool _b);
-
+  /**
+   * @since 3.5
+   */
   bool allowInline() const;
   void setAllowInline(bool _b);
 
+  /**
+   * @since 3.5
+   */
   int inlineValue() const;
   void setInlineValue(int _val);
 
@@ -277,6 +283,9 @@ public:
    */
   static Ptr childGroup(const QString &parent);
 
+  /**
+   * @since 3.5
+   */
     void parseAttribute( const QString &item ,  bool &showEmptyMenu, bool &showInline, bool &showInlineHeader, bool & showInlineAlias ,int &inlineValue );
 
 protected:
