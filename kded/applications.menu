@@ -276,6 +276,7 @@
 		<Layout>
 			<Merge type="menus"/>
 			<Filename>kde-koshell.desktop</Filename>
+			<Filename>kde-Kontact.desktop</Filename>
 			<Separator/>
 			<Filename>kde-kword.desktop</Filename>
 			<Filename>kde-kspread.desktop</Filename>
