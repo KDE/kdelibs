@@ -41,7 +41,7 @@ class KWinModulePrivate : public QWidget, public NETRootInfo
 public:
     KWinModulePrivate(int _what)
 	: QWidget(0,0), NETRootInfo( qt_xdisplay(),
-				     ( _what >= KWinModule::INFO_WORKAREA ? 
+				     ( _what >= KWinModule::INFO_WINDOWS ? 
 				       (ClientList | ClientListStacking) : 0
 				     ) |
 				     NumberOfDesktops |
@@ -112,8 +112,6 @@ void KWinModule::init(int what)
 {
     if (what >= INFO_WINDOWS)
        what = INFO_WINDOWS;
-    else if (what >= INFO_WORKAREA)
-       what = INFO_WORKAREA;
     else
        what = INFO_DESKTOP;
 
@@ -240,7 +238,7 @@ void KWinModulePrivate::updateStackingOrder()
 
 void KWinModulePrivate::addClient(Window w)
 {
-    if ( (what >= KWinModule::INFO_WORKAREA) && !QWidget::find( w ) )
+    if ( (what >= KWinModule::INFO_WINDOWS) && !QWidget::find( w ) )
 	XSelectInput( qt_xdisplay(), w, PropertyChangeMask | StructureNotifyMask );
     bool emit_strutChanged = false;
     if( strutSignalConnected && modules.count() > 0 ) {

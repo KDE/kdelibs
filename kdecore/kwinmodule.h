@@ -55,8 +55,7 @@ class KWinModule : public QObject
 public:
 
     enum { INFO_DESKTOP=1,
-           INFO_WORKAREA=2,
-           INFO_WINDOWS=4,
+           INFO_WINDOWS=2,
            INFO_ALL=32767 };
     /**
      * Creates a KWinModule object and connects to the window
@@ -68,19 +67,22 @@ public:
      *                  desktopName, 
      *                  currentDesktopChanged, 
      *                  numberOfDesktopsChanged, 
-     *                  desktopNameChanged
-     *   INFO_WORKAREA: workArea,
-     *                  workAreaChanged,
-     *                  strutChanged
+     *                  desktopNameChanged,
+     *                  activeWindow,
+     *                  activeWindowChanged,
+     *                  workArea(int desktop),
+     *                  workAreaChanged
+     *
      *   INFO_WINDOWS:  windows,
-     *                  stackingOrder,
-     *                  systemTrayWindows,
      *                  windowAdded,
      *                  windowRemoved,
+     *                  stackingOrder,
+     *                  systemTrayWindows,
      *                  systemTrayWindowAdded,
      *                  systemTrayWindowRemoved,
-     *                  activeWindowChanged,
-     *                  windowChanged
+     *                  windowChanged,
+     *                  strutChanged,
+     *                  workArea(const QValueList<WId> &excludes, int desktop)
      **/
     KWinModule( QObject* parent, int what );
     /**
