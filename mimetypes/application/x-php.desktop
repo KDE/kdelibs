@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=PHP Script
+Icon=source_php
+Type=MimeType
+MimeType=application/x-php
+Patterns=*.php;*.PHP;*.php3;*.PHP3;*.phps;*.PHPS
+
+[Property::X-KDE-text]
+Type=bool
+Value=true
