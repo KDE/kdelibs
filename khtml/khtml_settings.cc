@@ -136,8 +136,6 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   if ( reset || config->hasKey( "MinimumFontSize" ) )
   {
     m_minFontSize = config->readNumEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
-    if(m_minFontSize < 6)
-        m_minFontSize = 6;
   }
 
     if( reset ) {
@@ -163,20 +161,20 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     }
 
   if ( reset || config->hasKey( "DefaultEncoding" ) )
-    {
-        m_defaultCharset = KGlobal::charsets()->nameToID(config->readEntry( "DefaultEncoding", "iso-8859-1") );
-        internalSetCharset( m_defaultCharset );
-    };
+  {
+      m_defaultCharset = KGlobal::charsets()->nameToID(config->readEntry( "DefaultEncoding", "iso-8859-1") );
+      internalSetCharset( m_defaultCharset );
+  };
 
   if ( reset || config->hasKey( "EnforceDefaultCharset" ) )
-    enforceCharset = config->readBoolEntry( "EnforceDefaultCharset", false );
+      enforceCharset = config->readBoolEntry( "EnforceDefaultCharset", false );
 
   if ( reset || config->hasKey( "DefaultEncoding" ) )
-    m_encoding = config->readEntry( "DefaultEncoding", "iso8859-1" );
+      m_encoding = config->readEntry( "DefaultEncoding", "iso8859-1" );
 
   // Behaviour
   if ( reset || config->hasKey( "ChangeCursor" ) )
-    m_bChangeCursor = config->readBoolEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
+      m_bChangeCursor = config->readBoolEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
 
   if ( reset || config->hasKey( "HoverLinks" ) )
   {
@@ -186,8 +184,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
   if ( m_hoverLink == false )
   {
-    if ( config->hasKey( "UnderlineLinks" ) )
-      m_underlineLink = config->readBoolEntry( "UnderlineLinks", true );
+      if ( config->hasKey( "UnderlineLinks" ) )
+          m_underlineLink = config->readBoolEntry( "UnderlineLinks", true );
   }
 
   // Colors
@@ -397,7 +395,7 @@ void KHTMLSettings::resetFontSizes()
 	sizeAdjust = 0;
     if ( sizeAdjust > 9 )
 	sizeAdjust = 9;
-    kdDebug() << "KHTMLSettings::resetFontSizes adjustment is " << sizeAdjust << endl; 
+    kdDebug() << "KHTMLSettings::resetFontSizes adjustment is " << sizeAdjust << endl;
     for ( int i = 0; i < MAXFONTSIZES; i++ )
 	m_fontSizes << defaultFontSizes[ i  + sizeAdjust ];
 }
@@ -442,7 +440,7 @@ QString KHTMLSettings::settingsToCSS() const
     str += "\n}\n";
 
     if(m_hoverLink)
-        str += "a:link:hover { text-decoration: underline; }\n";
+        str += "a:link:hover, a:visited:hover { text-decoration: underline; }\n";
 
     return str;
 }
@@ -535,7 +533,7 @@ void KHTMLSettings::internalSetCharset( QFont::CharSet c )
 
 void KHTMLSettings::setScript( QFont::CharSet c )
 {
-    kdDebug() << "KHTMLSettings::setScript to " << c << endl; 
+    kdDebug() << "KHTMLSettings::setScript to " << c << endl;
     m_script = c;
 }
 
