@@ -70,23 +70,18 @@ KEdit::insertText(QTextStream *stream)
    getCursorPosition(&line, &col);
    int saveline = line;
    int savecol = col;
-   bool firstLine = true;
    QString textLine; 
-   while (!stream->atEnd())
-   { 
-      textLine = stream->readLine(); 
-      if (firstLine)
-      {
-         textLine += '\n';
-         insertAt(textLine, line, col);
-         firstLine = false;
-      }
-      else 
-      {
-         insertLine( textLine, line);
-      }
-      line++;
-   }
+   // WABA/Bernd: Reading/inserting it in line by line kills performance 
+   // with large files because this will take O(n^2) time.
+   textLine = stream->read(); // Read all!
+   // We might want to read it in slightly smaller chunks since
+   // now worst case memory consumption seems to be 4x file size.
+   // 2x for ASCII --> UNICODE, 1 copy in "textLine", 1 copy in the
+   // widget itself.
+   // If we can read it in, let's say, blocks of 64Kb, we only need
+   // 64Kb + 2x file size. 2x for ASCII --> UNICODE, 64 Kb in textline,
+   // 1 copy in widget itself.
+   insertAt( textLine, line, col);
    setCursorPosition(saveline, savecol);
    setAutoUpdate(true);
 
