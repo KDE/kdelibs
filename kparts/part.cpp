@@ -330,7 +330,9 @@ bool ReadOnlyPart::closeURL()
 
 void ReadOnlyPart::slotJobFinished( KIO::Job * job )
 {
+  kdDebug(1000) << "ReadOnlyPart::slotJobFinished" << endl;
   assert( job == d->m_job );
+  d->m_job = 0;
   if (job->error())
     emit canceled( job->errorString() );
   else
@@ -338,7 +340,6 @@ void ReadOnlyPart::slotJobFinished( KIO::Job * job )
     openFile();
     emit completed();
   }
-  d->m_job = 0;
 }
 
 void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
