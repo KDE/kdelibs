@@ -1876,8 +1876,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_FONT_FAMILY:
         // list of strings and ids
     {
-//	QTime qt;
-//	qt.start();
+// 	QTime qt;
+// 	qt.start();
         if(!value->isValueList()) return;
         CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
         int len = list->length();
@@ -1885,7 +1885,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	QString available = s->availableFamilies();
 	QFont f = style->font();
 	QString family;
-	//kdDebug(0) << "searching for font... available:" << available << endl;
+//	kdDebug(0) << "searching for font... available:" << available << endl;
         for(int i = 0; i < len; i++)
         {
             CSSValueImpl *item = list->item(i);
@@ -1894,7 +1894,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             if(!val->primitiveType() == CSSPrimitiveValue::CSS_STRING) return;
             DOMStringImpl *str = val->getStringValue();
             QString face = QConstString(str->s, str->l).string().lower();
-            //kdDebug(0) << "searching for face '" << face << "'" << endl;
+//            kdDebug(0) << "searching for face '" << face << "'" << endl;
             if(face == "serif")
                 face = s->serifFontName();
             else if(face == "sans-serif")
@@ -1909,7 +1909,13 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    int pos;
 	    if( (pos = available.find( face )) == -1 ) {
 		QString str = face;
-		str.truncate( face.find( ' ' ) );
+                int p = face.find(' ');
+                // Arial Blk --> Arial
+                // MS Sans Serif --> Sans Serif
+                if(p > 0 && str.length() - p > p)
+                    str = str.mid( p+1 );
+                else
+                    str.truncate( p );
 		pos = available.find( str );
 	    }
 
@@ -1925,9 +1931,9 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 		style->setFont(f);
 		break;
 	    }
-            //kdDebug( 6080 ) << "no match for font family " << face << ", got " << fi.family() << endl;
+//            kdDebug( 6080 ) << "no match for font family " << face << ", got " << f.family() << endl;
         }
-	//kdDebug() << "khtml::setFont: time=" << qt.elapsed() << endl;
+//	kdDebug() << "khtml::setFont: time=" << qt.elapsed() << endl;
         break;
     }
     case CSS_PROP_QUOTES:
