@@ -20,6 +20,8 @@
 
 #include <qlabel.h>
 
+#include <kio/global.h>
+
 #include <kprogress.h>
 #include <ksqueezedtextlabel.h>
 
