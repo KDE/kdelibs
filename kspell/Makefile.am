@@ -22,7 +22,7 @@
 INCLUDES= -I$(top_srcdir)/dcop $(all_includes)
 
 lib_LTLIBRARIES  = libkspell.la
-libkspell_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 5:0:1 -no-undefined
+libkspell_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 6:0:2 -no-undefined
 libkspell_la_LIBADD = ../kdeui/libkdeui.la
 
 include_HEADERS = kspell.h ksconfig.h kspelldlg.h
