@@ -27,10 +27,11 @@
 290        kdeui (KPixmapIO)
 291        kdeui (KAboutDialog)
 292        kdeui (KComboBox)
-293	       kdeui (KLineEdit)
-294				 kdeui (KEdit)
-295	   kdeui (KMenuBar)
+293        kdeui (KLineEdit)
+294        kdeui (KEdit)
+295        kdeui (KMenuBar)
 296        kdeui (KPopupMenu)
+500        kdeprint
 750        kspell (kdelibs)
 800        kabapi (kdelibs)
 900        kdesu (kdelibs)
@@ -195,7 +196,7 @@
 7114        kio_nntp
 7115        kio_thumbnail
 7116        kio_imap
-7117	    kio_audiocd
+7117        kio_audiocd
 7118        kio_bzip2
 7119        kio_help
 7120        kio_sftp
