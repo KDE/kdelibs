@@ -54,7 +54,7 @@ sub toolTip
     my($str) = $comment_;
     $str =~ s/\"/\\\"/g;
     $str =~ s/^\#[\s]*/i18n\(\"/;
-    $str =~ s/\n\#[\s]*/\"\n\"/g;
-    $str =~ s/\n$/\"\n\)\;\n\n/;
+    $str =~ s/\n\#[\s]*/\\n\"\n\"/g;
+    $str =~ s/\n$/\\n\"\n\)\;\n\n/;
     return $str;
 }

@@ -35,7 +35,7 @@ QString Comment::comment()
 QString Comment::toolTip()
 {
         QString str = comment_;
-        str.replace(QRegExp("^#[\\s]*"), "").replace(QRegExp("\n#"), "\n");
+        str.replace(QRegExp("^#[\\s]*"), "").replace(QRegExp("\n#[\\s]*"), "\n");
         return i18n(str.utf8());
 }
 
