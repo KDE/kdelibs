@@ -365,6 +365,8 @@ static const unsigned koi8_r_tbl[]={
 	0x043f,0x044f,0x0440,0x0441,0x0442,0x0443,0x0436,0x0432,
 	0x044c,0x044b,0x0437,0x0448,0x044d,0x0449,0x0447,0x044a,
 	0x042e,0x0410,0x0411,0x0426,0x0414,0x0415,0x0424,0x0413,
+	0x0425,0x0418,0x0419,0x041a,0x041b,0x041c,0x041d,0x041e,
+	0x041f,0x042f,0x0420,0x0421,0x0422,0x0423,0x0416,0x0412,
 	0x042c,0x042b,0x0417,0x0428,0x042d,0x0429,0x0427,0x0000};
 
 static const unsigned null_tbl[]={0};
@@ -376,10 +378,10 @@ KCharsetEntry KCharsetsData::charsets[]={
     	{ "iso-8859-3",QFont::ISO_8859_3,iso_8859_3_tbl,TRUE},
     	{ "iso-8859-4",QFont::ISO_8859_4,iso_8859_4_tbl,TRUE},
     	{ "iso-8859-5",QFont::ISO_8859_5,iso_8859_5_tbl,TRUE},
-       	{ "utf7",QFont::AnyCharSet,{0},TRUE},
-       	{ "utf8",QFont::AnyCharSet,{0},TRUE},
-       	{ "unicode",QFont::AnyCharSet,{0},FALSE},
-       	{0,QFont::AnyCharSet,{0},FALSE}};
+    	{ "iso-8859-6",QFont::ISO_8859_6,iso_8859_6_tbl,TRUE},
+    	{ "iso-8859-7",QFont::ISO_8859_7,iso_8859_7_tbl,TRUE},
+    	{ "iso-8859-9",QFont::ISO_8859_9,iso_8859_9_tbl,TRUE},
+    	{ "koi8-r",QFont::AnyCharSet,koi8_r_tbl,TRUE},
        	{ "utf7",QFont::AnyCharSet,null_tbl,TRUE},
        	{ "utf8",QFont::AnyCharSet,null_tbl,TRUE},
        	{ "unicode",QFont::AnyCharSet,null_tbl,FALSE},

@@ -224,7 +224,12 @@ void KCharsetConverterData::convert(const QString &str
   int i;
   int tmp;
   unsigned *ptr=0;
-  for(i=0;inBits?str[i]:(str[i]&&str[i+1]);inBits?i++:i+=2){
+  unsigned index=0;
+  unsigned index2=0;
+  unsigned chr=0;
+  
+  for(i=0;inBits?str[i]:(str[i]&&str[i+1]);){
+    if (inBits)
       i++;
     else
       i+=2;
@@ -418,7 +423,8 @@ void KCharsetsData::createDictFromi18n(KCharsetEntry *e){
   
 KCharsetsData::~KCharsetsData(){
 
-    if (e->name) delete e->name;
+  QDictIterator<KCharsetEntry> it(i18nCharsets);
+  KCharsetEntry *e;
   while( (e=it.current()) ){
     if (e->toUnicodeDict) delete e->toUnicodeDict;
 // delete static members ... It is a new vision of C++ :-)
