@@ -118,9 +118,9 @@ class SlaveInterfacePrivate;
  };
 
 /**
- * There are two classes that specifies the protocol between application (job)
- * and kioslave. SlaveInterface is the class to use on the application end,
- * SlaveBase is the one to use on the slave end.
+ * There are two classes that specifies the protocol between application 
+ * (@ref KIO::Job) and kioslave. SlaveInterface is the class to use on the application 
+ * end, SlaveBase is the one to use on the slave end.
  *
  * A call to foo() results in a call to slotFoo() on the other end.
  */
@@ -241,8 +241,8 @@ protected:
     * in a return value of @p false, if the UIServer could not
     * be started for whatever reason.
      *
-     * @param       See @ref AuthInfo.
-     * @return      @p TRUE if user clicks on "OK", @p FALSE otherwsie.
+     * @param       info See @ref AuthInfo.
+     * @return      TRUE if user clicks on "OK", FALSE otherwsie.
      */
     void openPassDlg( KIO::AuthInfo& info );
 

@@ -33,8 +33,8 @@
 
 /**
  * A KFileItem is a generic class to handle a file, local or remote.
- * In particular, it makes it easier to handle the result of KIO::listDir.
- * (UDSEntry isn't very friendly to use)
+ * In particular, it makes it easier to handle the result of KIO::listDir
+ * (UDSEntry isn't very friendly to use).
  * It includes many file attributes such as mimetype, icon, text, mode, link...
  */
 class KFileItem
@@ -107,104 +107,122 @@ public:
 
   /**
    * Returns the url of the file.
+   * @return the url of the file
    */
   const KURL & url() const { return m_url; }
 
   /**
    * Sets the item's URL. Do not call unless you know what you are doing!
    * (used for example when an item got renamed).
+   * @param url the item's URL
    */
   void setURL( const KURL &url );
 
   /**
    * Returns the permissions of the file (stat.st_mode containing only permissions).
+   * @return the permissions of the file
    */
   mode_t permissions() const { return m_permissions; }
 
   /**
    * Returns the access permissions for the file as a string.
+   * @return the access persmission as string
    */
   QString permissionsString() const;
 
   /**
    * Returns the file type (stat.st_mode containing only S_IFDIR, S_IFLNK, ...).
+   * @return the file type
    */
   mode_t mode() const { return m_fileMode; }
 
   /**
    * Returns the owner of the file.
+   * @return the file's owner
    */
   QString user() const;
 
   /**
    * Returns the group of the file.
+   * @return the file's group
    */
   QString group() const;
 
   /**
    * Returns true if this item represents a link in the UNIX sense of
    * a link.
+   * @return true if the file is a link
    */
   bool isLink() const { return m_bLink; }
 
   /**
    * Returns true if this item represents a directory.
+   * @return true if the item is a directory
    */
   bool isDir() const;
 
   /**
    * Returns true if this item represents a file (and not a a directory)
+   * @return true if the item is a file
    */
   bool isFile() const { return !isDir(); }
 
   /**
-   * @returns true if the file can be read - more precisely,
-   * returns false if we know for sure it can't. In some cases
+   * Checks whether the file is readable. In some cases
    * (remote files), we may return true even though it can't be read.
+   * @return true if the file can be read - more precisely,
+   *         false if we know for sure it can't
    */
   bool isReadable() const;
 
   /**
-   * Returns the link destination if isLink() == true.
+   * Returns the link destination if @ref isLink() == true.
+   * @return the link destination. QString::null if the item is not a link
    */
   QString linkDest() const;
 
   /**
    * Returns the size of the file, if known.
+   * @return the file size, or 0 if not known
    */
   KIO::filesize_t size() const;
 
   /**
+   * Requests the modification, access or creation time, depending on @p which.
    * @param which UDS_MODIFICATION_TIME, UDS_ACCESS_TIME or even UDS_CREATION_TIME
    * @return the time asked for, (time_t)0 if not available
-   * @see timeString
+   * @see timeString()
    */
   time_t time( unsigned int which ) const;
 
   /**
+   * Requests the modification, access or creation time as a string, depending 
+   * on @p which.
    * @param which UDS_MODIFICATION_TIME, UDS_ACCESS_TIME or even UDS_CREATION_TIME
    * @returns a formatted string of the requested time.
-   *
    * @see #time
    */
   QString timeString( unsigned int which = KIO::UDS_MODIFICATION_TIME ) const;
 
   /**
    * Returns true if the file is a local file.
+   * @return true if the file is local, false otherwise
    */
   bool isLocalFile() const { return m_bIsLocalURL; }
 
   /**
    * Returns the text of the file item.
    * It's not exactly the filename since some decoding happens ('%2F'->'/').
+   * @return the text of the file item
    */
   const QString& text() const { return m_strText; }
 
   /**
-   * @returns the name of the file item (without a path)
-   * Similar to @ref text(), but unencoded, i.e. the original name
-   * If @p lowerCase is true, the name will be returned in lower case,
+   * Return the name of the file item (without a path).
+   * Similar to @ref text(), but unencoded, i.e. the original name.
+   * @param lowerCase if true, the name will be returned in lower case,
    * which is useful to speed up sorting by name, case insensitively.
+   * @return the file's name
    */
   const QString& name( bool lowerCase = false ) const {
       if ( !lowerCase )
@@ -217,20 +235,24 @@ public:
 
   /**
    * Returns the mimetype of the file item.
-   * If determineMimeTypeOnDemand was used, this will determine the mimetype first.
-   * Equivalent to determineMimeType()->name()
+   * If @p _determineMimeTypeOnDemand was used in the constructor, this will determine 
+   * the mimetype first. Equivalent to determineMimeType()->name()
+   * @return the mime type of the file
    */
   QString mimetype() const;
 
   /**
    * Returns the mimetype of the file item.
-   * If determineMimeTypeOnDemand was used, this will determine the mimetype first.
+   * If _determineMimeTypeOnDemand was used in the constructor, this will determine 
+   * the mimetype first.
+   * @return the mime type
    */
   KMimeType::Ptr determineMimeType();
 
   /**
    * Returns the currently known mimetype of the file item.
    * This will not try to determine the mimetype if unknown.
+   * @return the known mime type
    */
   KMimeType::Ptr mimeTypePtr() const { return m_pMimeType; }
 
@@ -238,12 +260,14 @@ public:
   /**
    * Returns the descriptive comment for this mime type, or
    * the mime type itself if none is present.
+   * @return the mime type description, or the mime type itself
    */
   QString mimeComment();
 
   /**
    * Returns the full path name to the icon that represents
    * this mime type.
+   * @return iconName the name of the file's icon
    */
   QString iconName();
 
@@ -259,22 +283,26 @@ public:
 
   /**
    * Returns the overlays (bitfield of KIcon::*Overlay flags) that are used
-   * for this item's pixmap.
+   * for this item's pixmap. Overlays are used to show for example, whether 
+   * a file can be modified.
+   * @return the overlays of the pixmap
    */
   int overlays() const;
 
   /**
    * Returns the string to be displayed in the statusbar,
    * e.g. when the mouse is over this item
+   * @return the status bar information
    */
   QString getStatusBarInfo();
 
   /**
-   * @param maxcount the maximum number of entries shown
-   *
-   * @return the string to be displayed in the tool tip when the mouse
+   * Returns the string to be displayed in the tool tip when the mouse
    * is over this item. This may load a plugin to determine additional
-   * information specific to the mimetype of the file
+   * information specific to the mimetype of the file.
+   *
+   * @param maxcount the maximum number of entries shown
+   * @return the tool tip string
    */
   QString getToolTipText(int maxcount = 6);
 
@@ -282,6 +310,7 @@ public:
    * Returns true if files can be dropped over this item.
    * Contrary to popular belief, not only dirs will return true :)
    * Executables, .desktop files, will do so as well.
+   * @return true if you can drop files over the item
    */
   bool acceptsDrops( );
 
@@ -294,16 +323,30 @@ public:
   /**
    * Returns the UDS entry. Used by the tree view to access all details
    * by position.
+   * @return the UDS entry
    */
   const KIO::UDSEntry & entry() const { return m_entry; }
 
-  // Used when updating a directory - marked == seen when refreshing
+  /**
+   * Used when updating a directory. marked == seen when refreshing.
+   * @return true if the file item is marked
+   */
   bool isMarked() const { return m_bMarked; }
+  /**
+   * Marks the item.
+   * @see isMarked()
+   */
   void mark() { m_bMarked = true; }
+  /**
+   * Unmarks the item.
+   * @see isMarked()
+   */
   void unmark() { m_bMarked = false; }
 
   /**
-   * Somewhat like a comparison operator, but more explicit
+   * Somewhat like a comparison operator, but more explicit.
+   * @param item the item to compare
+   * @return true if all values are equal
    */
   bool cmp( const KFileItem & item );
 
@@ -335,38 +378,47 @@ public:
    * Note: you have to remove and destroy the data you associated yourself
    * when you don't need it anymore!
    *
+   * @param key the key of the extra data
+   * @param value the value of the extra data
    * @see #extraData
    * @see #removeExtraData
    */
   virtual void setExtraData( const void *key, void *value );
 
   /**
-   * @returns the extra data associated to an item with @p key via
-   * @ref setExtraData.
-   * Returns 0L if nothing was associated with @p key.
-   *
+   * Retrieves the extra data with the given @p key.
+   * @param key the key of the extra data
+   * @return the extra data associated to an item with @p key via
+   *         @ref setExtraData. 0L if nothing was associated with @p key.
    * @see #extraData
    */
   virtual const void * extraData( const void *key ) const;
 
   /**
-   * The non-const version of the previous @p extraData() method.
+   * Retrieves the extra data with the given @p key.
+   * @param key the key of the extra data
+   * @return the extra data associated to an item with @p key via
+   *         @ref setExtraData. 0L if nothing was associated with @p key.
+   * @see #extraData
    */
   virtual void * extraData( const void *key );
 
   /**
    * Removes the extra data associated with an item via @p key.
+   * @param key the key of the extra data to remove
    */
   virtual void removeExtraData( const void *key );
 
   /**
    * Sets the metainfo of this item to @p info.
+   * @param info the new meta info
    */
   void setMetaInfo( const KFileMetaInfo & info );
 
   /**
-   * Returns the metainfo of this item. If @p autoget is true, it will
-   * automatically be created
+   * Returns the metainfo of this item.
+   * @param autoget if true, the metainfo will automatically be created
+   * @param what ignored
    */
   const KFileMetaInfo & metaInfo(bool autoget = true,
                                  int what = KFileMetaInfo::Fastest) const;
@@ -377,6 +429,7 @@ public:
    * what you do!
    *
    * I.e. KDirLister uses it to update existing items from a fresh item.
+   * @param item the item to copy
    */
   void assign( const KFileItem & item );
 

@@ -44,16 +44,18 @@ namespace KIO {
      *
      * There are 3 possible ways for a job to get a slave:
      *
-     * 1) Direct.
+     * <h3>1. Direct</h3>
      * This is the default. When you create a job the
      * KIO::Scheduler will be notified and will find either an existing
      * slave that is idle or it will create a new slave for the job.
      *
      * Example:
+     * <pre>
      *    TransferJob *job = KIO::get(KURL("http://www.kde.org"));
+     * </pre>
      *
      *
-     * 2) Scheduled
+     * <h3>2. Scheduled</h3>
      * If you create a lot of jobs, you might want not want to have a
      * slave for each job. If you schedule a job, a maximum number
      * of slaves will be created. When more jobs arrive, they will be
@@ -66,7 +68,7 @@ namespace KIO {
      *    KIO::Scheduler::scheduleJob(job);
      * </pre>
      *
-     * 3) Connection Oriented
+     * <h3>3. Connection Oriented</h3>
      * For some operations it is important that multiple jobs use
      * the same connection. This can only be ensured if all these jobs
      * use the same slave.
@@ -94,6 +96,8 @@ namespace KIO {
      *
      *    KIO::Scheduler::disconnectSlave(slave);
      * </pre>
+     * @see KIO::Slave
+     * @see KIO::Job
      **/
 
     class Scheduler : public QObject, virtual public DCOPObject {
@@ -112,6 +116,7 @@ namespace KIO {
          * Register @p job with the scheduler. 
          * The default is to create a new slave for the job if no slave
          * is available. This can be changed by calling @ref scheduleJob.
+	 * @param job the job to register
          */
         static void doJob(SimpleJob *job)
         { self()->_doJob(job); }
@@ -120,18 +125,22 @@ namespace KIO {
          * Calling ths function makes that @p job gets scheduled for later
          * execution, if multiple jobs are registered it might wait for
          * other jobs to finish.
+	 * @param job the job to schedule
          */
         static void scheduleJob(SimpleJob *job)
         { self()->_scheduleJob(job); }
 
         /**
          * Stop the execution of a job.
+	 * @param job the job to cancel
          */
         static void cancelJob(SimpleJob *job)
         { self()->_cancelJob(job); }
 
         /**
          * Called when a job is done.
+	 * @param job the finished job
+	 * @param slave the slave that executed the @p job
          */
         static void jobFinished(KIO::SimpleJob *job, KIO::Slave *slave)
         { self()->_jobFinished(job, slave); }
@@ -144,6 +153,8 @@ namespace KIO {
          * Based on the mimetype, the program can give control to another
          * component in the same process which can then resume the job
          * by simply asking for the same URL again.
+	 * @param job the job that should be stopped
+	 * @param url the URL that is handled by the @p url
          */
         static void putSlaveOnHold(KIO::SimpleJob *job, const KURL &url)
         { self()->_putSlaveOnHold(job, url); }
@@ -171,14 +182,15 @@ namespace KIO {
          * @param config Configuration data for the slave.
          *
          * @return A pointer to a connected slave or 0 if an error occured.
-         * @see assignJobToSlave
-         * @see disconnectSlave
+         * @see assignJobToSlave()
+         * @see disconnectSlave()
          */
         static KIO::Slave *getConnectedSlave(const KURL &url, const KIO::MetaData &config = MetaData() )
         { return self()->_getConnectedSlave(url, config); }
 
         /*
          * Uses @p slave to do @p job.
+         * This function should be called immediately after creating a Job.
          *
          * @param slave The slave to use. The slave must have been obtained
          *              with a call to @ref getConnectedSlave and must not
@@ -187,12 +199,10 @@ namespace KIO {
          *
          * @return true is successfull, false otherwise.
          *
-         * This function should be called immediately after creating a Job.
-         *
-         * @see getConnectedSlave
-         * @see disconnectSlave
-         * @see slaveConnected
-         * @see slaveError
+         * @see getConnectedSlave()
+         * @see disconnectSlave()
+         * @see slaveConnected()
+         * @see slaveError()
          */
         static bool assignJobToSlave(KIO::Slave *slave, KIO::SimpleJob *job)
         { return self()->_assignJobToSlave(slave, job); }
@@ -204,7 +214,7 @@ namespace KIO {
          *              obtained with a call to @ref getConnectedSlave
          *              and must not be assigned to any job.
          *
-         * @return true is successfull, false otherwise.
+         * @return true is successful, false otherwise.
          *
          * @see getConnectedSlave
          * @see assignJobToSlave
@@ -213,9 +223,13 @@ namespace KIO {
         { return self()->_disconnectSlave(slave); }
 
         /**
+         * Send the slave that was put on hold back to KLauncher. This
+         * allows another process to take over the slave and resume the job
+         * the that was started.
          * Register the mainwindow @p wid with the KIO subsystem
          * Do not call this, it is called automatically from
-         * @ref void KIO::Job::setWindow(QWidget *window)
+         * @ref void KIO::Job::setWindow(QWidget*).
+	 * @param wid the window to register
 	 * @since 3.1
          */
         static void registerWindow(QWidget *wid)
@@ -224,10 +238,9 @@ namespace KIO {
         /**
          * Function to connect signals emitted by the scheduler.
          *
-         * @see slaveConnected
-         * @see slaveError
+         * @see slaveConnected()
+         * @see slaveError()
          */
-
         static bool connect( const char *signal, const QObject *receiver,
                              const char *member)
         { return QObject::connect(self(), signal, receiver, member); }
@@ -247,6 +260,7 @@ namespace KIO {
         /**
          * When true, the next job will check whether KLauncher has a slave 
          * on hold that is suitable for the job.
+	 * @param b true when KLauncher has a job on hold
          */
         static void checkSlaveOnHold(bool b) { self()->_checkSlaveOnHold(b); }
 

@@ -115,7 +115,7 @@ public:
      *
      * @param data the uri filter data to be copied.
      */
-    KURIFilterData( const KURIFilterData& /*data*/);
+    KURIFilterData( const KURIFilterData& data);
 
     /**
      * Destructor.
@@ -160,6 +160,7 @@ public:
      *
      * This method always returns KURIFilterData::UNKNOWN
      * if the given URL was not filtered.
+     * @return the type of the URI
      */
     URITypes uriType() const { return m_iType; }
     
@@ -201,15 +202,19 @@ public:
      * @param abs_path  the abolute path to the local resource.
      * @return true if absolute path is successfully set. Otherwise, false.
      */
-    bool setAbsolutePath( const QString& /* abs_path */ );
+    bool setAbsolutePath( const QString& abs_path );
 
     /**
      * Returns the absolute path if one has already been set.
+     * @return the absolute path, or QString::null
+     * @see hasAbsolutePath()
      */
     QString absolutePath() const;
 
     /**
-     * Returns true if the supplied data has an absolute path.
+     * Checks whether the supplied data had an absolute path.
+     * @return true if the supplied data has an absolute path
+     * @see absolutePath()   
      */
     bool hasAbsolutePath() const;
 
@@ -222,8 +227,9 @@ public:
     QString argsAndOptions() const;
 
     /**
-     * Returns true if the current data is a local resource with
+     * Checks whether the current data is a local resource with
      * command line options and arguments.
+     * @return true if the current data has command line options and arguments
      */
     bool hasArgsAndOptions() const;
 
@@ -235,7 +241,8 @@ public:
      * string by default and when no associated icon
      * is found.
      *
-     * @return the name of the icon associated with the resource
+     * @return the name of the icon associated with the resource,
+     *         or QString::null if not found
      */    
     QString iconName();
     
@@ -263,6 +270,7 @@ protected:
 
     /**
      * Initializes the KURIFilterData on construction.
+     * @param url the URL to initialize the object with
      */
     void init( const KURL& url = QString::null );
 
@@ -303,8 +311,8 @@ public:
      * Constructs a filter plugin with a given name and
      * priority.
      *
-     * @param parent the parent object.
-     * @param name the name of the plugin.
+     * @param parent the parent object, or 0 for no parent
+     * @param name the name of the plugin, or 0 for no name
      * @param pri the priority of the plugin.
      */
     KURIFilterPlugin( QObject *parent = 0, const char *name = 0, double pri = 1.0 );
@@ -340,14 +348,14 @@ public:
      * It is the responsability of the caller to delete the module
      * once it is not needed anymore.
      *
-     * @return A configuration module, @p null if the filter isn't configurable.
+     * @return A configuration module, 0 if the filter isn't configurable.
      */
     virtual KCModule *configModule( QWidget*, const char* ) const { return 0; }
 
     /**
      * Returns the name of the configuration module for the filter.
      *
-     * @return the name of a configuration module or @p null if none.
+     * @return the name of a configuration module or QString::null if none.
      */
     virtual QString configName() const { return name(); }
 
@@ -389,6 +397,9 @@ private:
 };
 
 
+/**
+ * A list of filter plugins.
+ */
 class KURIFilterPluginList : public QPtrList<KURIFilterPlugin>
 {
 public:
@@ -476,6 +487,7 @@ public:
 
     /**
      * Return a static instance of KURIFilter.
+     * @return the KURIFilter
      */
     static KURIFilter* self();
 
@@ -563,11 +575,10 @@ public:
     QPtrListIterator<KURIFilterPlugin> pluginsIterator() const;
 
     /**
-     * Return a list of the names of all loaded plugins
-     *
-     * @since 3.1
+     * Return a list of the names of all loaded plugins.
      *
      * @return a QStringList of plugin names
+     * @since 3.1
      */
     QStringList pluginNames() const;
 

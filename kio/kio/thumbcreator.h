@@ -71,9 +71,9 @@ class QImage;
  * You can supply a comma-separated list of mimetypes to the MimeTypes entry,
  * naming all mimetypes your ThumbCreator supports. You can also use simple
  * wildcards, like 
- */
- //              text/* or image/*.
-/*
+ * <pre>
+ *              text/* or image/*.
+ * </pre>
  *
  * If your plugin is rather inexpensive (e.g. like the text preview ThumbCreator),
  * you can set CacheThumbnail=false to prevent your thumbnails from being cached
@@ -84,8 +84,13 @@ class QImage;
 class ThumbCreator
 {
 public:
+  /**
+   * The flags of this plugin.
+   * @see flags()
+   */
     enum Flags { None = 0, DrawFrame = 1, BlendIcon = 2 };
     virtual ~ThumbCreator() {}
+
     /**
      * Creates a thumbnail
      * Note that the width and height parameters should not be used
@@ -102,6 +107,7 @@ public:
      * @return true if preview generation succeeded
      */
     virtual bool create(const QString &path, int width, int height, QImage &img) = 0;
+
     /**
      * The flags of this plugin:
      * @li None nothing special

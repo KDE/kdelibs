@@ -20,7 +20,7 @@
 #ifndef __parse_h__
 #define __parse_h__
 
-/**
+/*
  * Functions definition for yacc
  */
 void KTraderParse_setParseTree( void *_ptr1 );

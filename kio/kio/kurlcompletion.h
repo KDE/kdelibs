@@ -59,7 +59,7 @@ public:
 	KURLCompletion();
 	/**
 	 * This overloaded constructor allows you to set the Mode to ExeCompletion
-	 * or FileCompletion without using @ref setMode. Default is FileCompletion
+	 * or FileCompletion without using @ref setMode. Default is FileCompletion.
 	 */
 	KURLCompletion(Mode);
 	/**
@@ -75,51 +75,61 @@ public:
 	 * The completion is done asyncronously if KIO is used.
 	 *
 	 * Returns the first match for user, environment, and local dir completion
-	 * and QString::null for asyncronous completion (KIO).
+	 * and QString::null for asynchronous completion (KIO).
+	 *
+	 * @param text the text to complete
+	 * @return the first match, or QString::null if not found
 	 */
-	virtual QString makeCompletion(const QString&);
+	virtual QString makeCompletion(const QString &text);
 
 	/**
-	 * Sets the current directory (used as base for completion)
+	 * Sets the current directory (used as base for completion).
 	 * Default = $HOME.
+	 * @param dir the current directory
 	 */
 	virtual void setDir(const QString &dir);
 	
 	/**
 	 * Returns the current directory.
+	 * @return the current directory
 	 */
 	virtual QString dir() const;
 
 	/**
-	 * Returns true if asyncronous completion is in progress.
+	 * Check whether asynchronous completion is in progress.
+	 * @return true if asynchronous completion is in progress
 	 */
 	virtual bool isRunning() const;
 
 	/**
-	 * Stops asyncronous completion.
+	 * Stops asynchronous completion.
 	 */
 	virtual void stop();
 
 	/**
-	 * Returns the completion mode: exe or file completion (default FileCompletion)
+	 * Returns the completion mode: exe or file completion (default FileCompletion).
+	 * @return the completion mode
 	 */
 	virtual Mode mode() const;
 
 	/**
 	 * Changes the completion mode: exe or file completion
+	 * @param mode the new completion mode
 	 */
 	virtual void setMode( Mode mode );
 
 	/**
-	 * Returns whether environment variables are completed and
+	 * Checks whether environment variables are completed and
 	 * whether they are replaced internally while finding completions.
 	 * Default is enabled.
+	 * @return true if environment vvariables will be replaced
 	 */
 	virtual bool replaceEnv() const;
 	
 	/**
 	 * Enables/disables completion and replacement (internally) of
 	 * environment variables in URLs. Default is enabled.
+	 * @param replace true to replace environment variables
 	 */
 	virtual void setReplaceEnv( bool replace );
 
@@ -127,6 +137,7 @@ public:
 	 * Returns whether ~username is completed and whether ~username
 	 * is replaced internally with the user's home directory while
 	 * finding completions. Default is enabled.
+	 * @return true to replace tilde with the home directory
 	 */
 	virtual bool replaceHome() const;
 	
@@ -134,6 +145,7 @@ public:
 	 * Enables/disables completion of ~username and replacement
 	 * (internally) of ~username with the user's home directory.
 	 * Default is enabled.
+	 * @param replace true to replace tilde with the home directory
 	 */
 	virtual void setReplaceHome( bool replace );
 
@@ -142,6 +154,8 @@ public:
 	 * current settings and returns the filtered url. Only works with
 	 * local files, i.e. returns back the original string for non-local
 	 * urls.
+	 * @param text the text to process
+	 * @return the result of the operation
 	 */
 	QString replacedPath( const QString& text );
 

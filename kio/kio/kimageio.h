@@ -104,6 +104,8 @@ public:
    * or @ref KFileDialog::getSaveFileName(), for example.
    *
    * @param mode Tells whether to retrieve modes that can be read or written.
+   * @return a space-separated list of file globs that describe the
+   * supported formats 
    */
   static QString pattern(Mode mode = Reading);
 

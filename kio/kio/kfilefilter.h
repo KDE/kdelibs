@@ -31,43 +31,130 @@
 class QRegExp;
 class KFileItem;
 
+/**
+ * A KFileFilter is a simple base class for file filters. Just
+ * reimplement @ref passesFilter().
+ * @short Base class for file filters.
+ */
 class KFileFilter
 {
 public:
+    /**
+     * Checks the given @p item.
+     * @param item the item to filter
+     * @return true if the @p item passes the filter, false otherwise
+     */
     virtual bool passesFilter( const KFileItem *item ) const = 0;
 protected:
     virtual void virtual_hook( int id, void* data );
 };
 
-
+/**
+ * A simple file filter that can filter hidden dot files, by name, 
+ * by mime type and by mode.
+ * @short A simple file filter.
+ */
 class KSimpleFileFilter : public KFileFilter
 {
 public:
+    /**
+     * Creates a new filter. By default, it filters only hidden dot files
+     * and "." and "..".
+     */
     KSimpleFileFilter();
     virtual ~KSimpleFileFilter();
 
+    /**
+     * Enable or disable filtering hidden dot files.
+     * This option is enabled by default.
+     * @param filter true to enable filtering dot files, false to 
+     *        disable
+     * @see filterDotFiles
+     */
     virtual void setFilterDotFiles( bool filter );
+    /**
+     * Checks whether filtering dot files is enabled.
+     * This option is enabled by default.
+     * @return true if filtering is enabled, false otherwise
+     * @see setFilterDotFiles
+     */
     bool filterDotFiles() const { return m_filterDotFiles; }
 
     /**
-     * "." and "..", default is true.
+     * Filters "." and "..", default is true.
+     * @param filter true to enable, false otherwise
      */
     virtual void setFilterSpecials( bool filter );
+    /**
+     * Checks whether it filters "." and "..", default is true.
+     * @return true if enabled, false otherwise
+     */
     bool filterSpecials() const { return m_filterSpecials; }
 
     // ### KDE4 make virtual and bool caseSensitive = false
-    /// @since 3.1
+    /**
+     * Sets a list of regular expressions to filter by name.
+     * The file will only pass if its name matches one of the regular
+     * expressions.
+     * @param nameFilters a list of regular expressions, seperated by
+     *                    the character @p separator
+     * @param caseSensitive if true, matches case sensitive. False 
+     *                      otherwise
+     * @param separator the separator in the @p nameFilter
+     * @since 3.1
+     */
     void setNameFilters( const QString& nameFilters, bool caseSensitive,
                          const QChar& separator = ' ' );
+    /**
+     * Sets a list of regular expressions to filter by name.
+     * The file will only pass if its name matches one of the regular
+     * expressions.
+     * @param nameFilters a list of regular expressions, seperated by
+     *                    space (' ')
+     */
     virtual void setNameFilters( const QString& nameFilters );
+
+    /**
+     * @internal 
+     * not implemented?
+     */
     QString nameFilters() const;
 
+    /**
+     * Sets a list of mime filters. A file can only pass if its
+     * mime type is contained in this list.
+     * @param mimeFilters the list of mime types
+     * @see setMimeFilter
+     */
     virtual void setMimeFilters( const QStringList& mimeFilters );
+    /**
+     * Returns the list of mime types.
+     * @return the list of mime types
+     * @see mimeFilter
+     */
     QStringList mimeFilters() const { return m_mimeFilters; }
 
+    /**
+     * Sets the mode filter. If the @p mode is 0, the filter is
+     * disabled. 
+     * When enabled, a file will only pass if the files mode
+     * ANDed with @p mode is not zero.
+     * @param mode the new mode. 0 to disable
+     * @see modeFilter
+     */
     virtual void setModeFilter( mode_t mode );
+    /**
+     * Returns the mode filter, as set by @ref setModeFilter().
+     * @return the mode filter, 0 if disabled
+     * @see setModeFilter
+     */
     mode_t modeFilter() const { return m_modeFilter; }
 
+    /**
+     * Checks the given @p item.
+     * @param item the item to filter
+     * @return true if the @p item passes the filter, false otherwise
+     */
     virtual bool passesFilter( const KFileItem *item ) const;
 
 protected:

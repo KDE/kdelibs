@@ -71,11 +71,13 @@ public:
 
    /**
     * Use this method to check if the object was modified.
+    * @return true if the object has been modified
     */
    bool isModified() const { return modified; }
 
    /**
     * Use this method to indicate that this object has been modified.
+    * @param flag true to mark the object as modified, false to clear
     */
    void setModified( bool flag ) { modified = flag; }
 
@@ -242,9 +244,9 @@ public:
    * Specifies the mode to be used when searching for a
    * matching automatic login info for a given site :
    *
-   * exactOnly        search entries with exact host name matches.
-   * defaultOnly      search entries that are specified as "default".
-   * presetOnly       search entries that are specified as "preset".
+   * @li exactOnly        search entries with exact host name matches.
+   * @li defaultOnly      search entries that are specified as "default".
+   * @li presetOnly       search entries that are specified as "preset".
    *
    * @see lookup
    */
@@ -256,7 +258,8 @@ public:
   };
 
   /**
-   *
+   * Contains auto login information.
+   * @see lookup()
    */
   struct AutoLogin
   {
@@ -268,18 +271,26 @@ public:
   };
 
   /**
-   *
+   * A reference to the instance of the class.
+   * @return the class
    */
   static NetRC* self();
 
   /**
+   * Looks up the @p login information for the given @p url.
    *
+   * @param url the url whose login information will be checked
+   * @param login the login information will be writte here
+   * @param userealnetrc if true, use $HOME/.netrc fle
+   * @param type the type of the login. If null, the @p url's protocol
+   *        will be taken
+   * @param mode the @ref LookUpMode flags (ORed) for the query
    */
-  bool lookup( const KURL&, AutoLogin&, bool userealnetrc = false,
+  bool lookup( const KURL& url, AutoLogin& login, bool userealnetrc = false,
                QString type = QString::null,
                int mode = (exactOnly|defaultOnly) );
   /**
-   *
+   * Reloads the auto login information.
    */
   void reload() { isDirty = true; }
 

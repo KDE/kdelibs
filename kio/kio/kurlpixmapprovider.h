@@ -25,7 +25,7 @@
 #include <kmimetype.h>
 
 /**
- * Implementation of @ref KPixmapProvider
+ * Implementation of @ref KPixmapProvider.
  *
  * Uses @ref KMimeType::pixmapForURL() to resolve icons.
  *
@@ -43,8 +43,12 @@ class KURLPixmapProvider : public KPixmapProvider
 {
 public:
     /**
-     * Returns a pixmap for @p url with size @p size
-     * Uses @ref KMimeType::pixmapForURL()
+     * Returns a pixmap for @p url with size @p size.
+     * Uses @ref KMimeType::pixmapForURL().
+     * @param url the URL to fetch a pixmap for
+     * @param size the size of the pixmap in pixels, or 0 for default.
+     * @return the resulting pixmap
+     * @see KIcon::StdSizes
      */
     virtual QPixmap pixmapFor( const QString& url, int size = 0 );
 protected:

@@ -26,7 +26,7 @@ class KFilterBase;
 
 /**
  * A class for reading and writing compressed data onto a device
- * (e.g. file, but other usages are possible, like a buffer or a socket)
+ * (e.g. file, but other usages are possible, like a buffer or a socket).
  *
  * To simply read/write compressed files, see @ref deviceForFile.
  *
@@ -36,7 +36,8 @@ class KFilterDev : public QIODevice
 {
 public:
     /**
-     * Constructs a KFilterDev for a given filter (e.g. gzip, bzip2 etc.)
+     * Constructs a KFilterDev for a given filter (e.g. gzip, bzip2 etc.).
+     * @param filter the KFilterBase to use
      * @param autoDeleteFilterbase when true this object will become the
      * owner of @p filter.
      */
@@ -53,6 +54,7 @@ public:
     /**
      * For writing gzip compressed files only:
      * set the name of the original file, to be used in the gzip header.
+     * @param fileName the name of the original file
      */
     void setOrigFileName( const QCString & fileName );
 
@@ -109,6 +111,16 @@ public:
      * deviceForFile is doing, to better control what's happening.
      *
      * The returned QIODevice has to be deleted after using.
+     *
+     * @param fileName the name of the file to filter
+     * @param mimetype the mime type of the file to filter, or QString::null if unknown
+     * @param forceFilter if true, the function will always return a QIODevice. If no
+     *                    filter is available it will return a simple @ref QFile. 
+     *                    This can be useful if the file is usable without a filter.
+     *                    If false, the function returns 0 if no filter is available
+     * @return if a filter has been found, the @ref QIODevice for the filter. If the
+     *         filter does not exist, the return value depends on @p forceFilter.
+     *         The returned QIODevice has to be deleted after using
      */
     static QIODevice * deviceForFile( const QString & fileName, const QString & mimetype = QString::null,
                                       bool forceFilter = false );
@@ -127,6 +139,9 @@ public:
      *
      * The returned QIODevice has to be deleted after using.
      * @param inDevice input device, becomes owned by this device! Automatically deleted!
+     * @param mimetype the mime type for the filter
+     * @return a QIODevice that filters the original stream. Must be deleted after 
+     *         using
      */
     static QIODevice * device( QIODevice* inDevice, const QString & mimetype);
     // BIC: merge with device() method below, using default value for autoDeleteInDevice
@@ -145,6 +160,10 @@ public:
      *
      * The returned QIODevice has to be deleted after using.
      * @param inDevice input device. Won't be deleted if @p autoDeleteInDevice = false
+     * @param mimetype the mime type for the filter
+     * @param autoDeleteInDevice if true, @p inDevice will be deleted automatically
+     * @return a QIODevice that filters the original stream. Must be deleted after 
+     *         using
      * @since 3.1
      */
     static QIODevice * device( QIODevice* inDevice, const QString & mimetype, bool autoDeleteInDevice );

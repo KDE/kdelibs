@@ -29,6 +29,8 @@
 #include <karchive.h>
 
 /**
+ * KAr is a class for reading archives in ar format. Writing
+ * is not supported.
  * @short A class for reading ar archives.
  * @author Laurence Anderson <l.d.anderson@warwick.ac.uk>
  * @since 3.1
@@ -46,6 +48,7 @@ public:
     /**
      * Creates an instance that operates on the given device.
      * The device can be compressed (KFilterDev) or not (QFile, etc.).
+     * @param dev the device to read from
      */
     KAr( QIODevice * dev );
 
@@ -56,16 +59,27 @@ public:
     virtual ~KAr();
 
     /**
-     * The name of the ar file, as passed to the constructor
-     * Null if you used the QIODevice constructor.
+     * The name of the ar file, as passed to the constructor.
+     * @return the filename. Null if you used the QIODevice constructor
      */
     QString fileName() { return m_filename; }
 
     /*
-     * Writing not supported by this class
+     * Writing not supported by this class, will always fail.
+     * @return always false
      */
     virtual bool prepareWriting( const QString&, const QString&, const QString&, uint ) { return false; }
+
+    /*
+     * Writing not supported by this class, will always fail.
+     * @return always false
+     */
     virtual bool doneWriting( uint ) { return false; }
+
+    /*
+     * Writing not supported by this class, will always fail.
+     * @return always false
+     */
     virtual bool writeDir( const QString&, const QString&, const QString& )  { return false; }
 
 protected:

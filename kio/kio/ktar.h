@@ -29,6 +29,8 @@
 #include <karchive.h>
 
 /**
+ * KTar allows you to read and write tar archives, including those 
+ * that are compressed using gzip or bzip2.
  * @short A class for reading/writing (optionnally compressed) tar archives.
  * @author Torben Weis <weis@kde.org>, David Faure <faure@kde.org>
  */
@@ -36,7 +38,7 @@ class KTar : public KArchive
 {
 public:
     /**
-     * Creates an instance that operates on the given filename.
+     * Creates an instance that operates on the given filename
      * using the compression filter associated to given mimetype.
      *
      * @param filename is a local path (e.g. "/home/weis/myfile.tgz")
@@ -51,6 +53,8 @@ public:
      * The device can be compressed (KFilterDev) or not (QFile, etc.).
      * WARNING: don't assume that giving a QFile here will decompress the file,
      * in case it's compressed!
+     * @param dev the device to read from. If the source is compressed, the
+     *            @ref QIODevice must take care of decompression
      */
     KTar( QIODevice * dev );
 
@@ -63,6 +67,7 @@ public:
     /**
      * The name of the tar file, as passed to the constructor
      * Null if you used the QIODevice constructor.
+     * @return the name of the file, or QString::null if unknown
      */
     QString fileName() { return m_filename; }
 
@@ -70,6 +75,7 @@ public:
      * Special function for setting the "original file name" in the gzip header,
      * when writing a tar.gz file. It appears when using in the "file" command,
      * for instance. Should only be called if the underlying device is a KFilterDev!
+     * @param fileName the original file name
      */
     void setOrigFileName( const QCString & fileName );
 
@@ -82,7 +88,7 @@ protected:
      * Opens the archive for reading.
      * Parses the directory listing of the archive
      * and creates the KArchiveDirectory/KArchiveFile entries.
-     *
+     * @param mode the mode of the file
      */
     virtual bool openArchive( int mode );
     virtual bool closeArchive();

@@ -38,13 +38,17 @@ namespace KIO {
 };
 
 /**
- * Observer for @ref KIO::Job progress information
+ * Observer for @ref KIO::Job progress information.
+ *
  * This class, of which there is always only one instance,
  * "observes" what jobs do and forwards this information
  * to the progress-info server.
  *
  * It is a DCOP object so that the UI server can call the
  * kill method when the user presses Cancel.
+ *
+ * Usually jobs are automatically registered by the
+ * @ref KIO::Scheduler, so you do not have to care about that.
  *
  * @short Observer for @ref KIO::Job progress information
  * @author David Faure <faure@kde.org>
@@ -57,7 +61,8 @@ class Observer : public QObject, public DCOPObject {
 public:
 
   /**
-   * @return the unique observer object
+   * Returns the unique observer object.
+   * @return the observer object
    */
   static Observer * self() {
       if (!s_pObserver) s_pObserver = new Observer;
@@ -67,13 +72,16 @@ public:
   /**
    * Called by the job constructor, to signal its presence to the
    * UI Server.
+   * @param job the new job
+   * @param showProgress true to show progress, false otherwise
    * @return the progress ID assigned by the UI Server to the Job.
    */
   int newJob( KIO::Job * job, bool showProgress );
 
   /**
    * Called by the job destructor, to tell the UI Server that
-   * the job ended
+   * the job ended.
+   * @param progressId the progress ID of the job, as returned by @ref newJob()
    */
   void jobFinished( int progressId );
 
@@ -83,17 +91,29 @@ public:
   bool openPassDlg( const QString& prompt, QString& user, QString& pass,
                     bool readOnly );
 
+  /**
+   * Opens a password dialog.
+   * @param info the authentication information
+   * @return true if successful ("ok" clicked), false otherwise
+   */
   bool openPassDlg( KIO::AuthInfo& info );
 
   /**
    * Popup a message box. See @ref KIO::SlaveBase.
    * This doesn't use DCOP anymore, it shows the dialog in the application's process.
    * Otherwise, other apps would block when trying to communicate with UIServer.
+   * @param progressId the progress ID of the job, as returned by @ref newJob()
+   * @param type the type of the message box
+   * @param text the text to show
+   * @param caption the window caption
+   * @param buttonYes the text of the "Yes" button
+   * @param buttonNo the text of the "No button
    */
   static int messageBox( int progressId, int type, const QString &text, const QString &caption,
                          const QString &buttonYes, const QString &buttonNo );
 
   /**
+   * @internal
    * See renamedlg.h
    */
   KIO::RenameDlg_Result open_RenameDlg( KIO::Job * job,
@@ -110,6 +130,7 @@ public:
                                         );
 
   /**
+   * @internal
    * See skipdlg.h
    */
   KIO::SkipDlg_Result open_SkipDlg( KIO::Job * job,
@@ -118,12 +139,14 @@ public:
 
 k_dcop:
   /**
-   * Called by the UI Server (using DCOP) if the user presses cancel
+   * Called by the UI Server (using DCOP) if the user presses cancel.
+   * @param progressId the progress ID of the job, as returned by @ref newJob()
    */
   void killJob( int progressId );
 
   /**
    * Called by the UI Server (using DCOP) to get all the metadata of the job
+   * @param progressId the progress IDof the job, as returned by @ref newJob()
    */
   KIO::MetaData metadata( int progressId );
 

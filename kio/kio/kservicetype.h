@@ -38,7 +38,9 @@
  * A service type is the generic notion for a mimetype, a type of service
  * instead of a type of file.
  * For instance, KOfficeFilter is a service type.
- * It is associated to services according to the user profile (kuserprofile.h)
+ * It is associated to services according to the user profile (kuserprofile.h).
+ * Service types are stored as desktop files in $KDEHOME/share/servicetypes.
+ * @see KService
  */
 class KServiceType : public KSycocaEntry
 {
@@ -51,18 +53,25 @@ public:
 
   /**
    * Constructor.  You may pass in arguments to create a servicetype with
-   * specific properties
+   * specific properties.
+   * @param _fullpath the path of the service type's desktop file
+   * @param _name the name of the service type
+   * @param _icon the icon name of the service type (can be null)
+   * @param _comment a comment (can be null)
    */
   KServiceType( const QString & _fullpath, const QString& _name,
                 const QString& _icon, const QString& _comment);
+
   /**
    * Construct a service type and take all informations from a config file.
-   * @param _fullpath set to "" if calling from a inherited constructor.
+   * @param _fullpath path of the desktop file, set to "" if calling from 
+   *                  a inherited constructor.
    */
   KServiceType( const QString & _fullpath );
 
   /**
    * Construct a service type and take all informations from a deskop file.
+   * @para config the configuration file
    */
   KServiceType( KDesktopFile *config);
 
@@ -75,88 +84,128 @@ public:
   virtual ~KServiceType();
 
   /**
-   * @return the icon associated with this service type. Some
+   * Returns the icon associated with this service type. Some
    *         derived classes offer special functions which take for
    *         example an URL and returns a special icon for this
    *         URL. An example is @ref KMimeType, @ref KFolderType and
    *         others.
+   * @param the name of the icon, can be QString::null.
    */
   QString icon() const { return m_strIcon; }
 
   /**
-   * @return the descriptive comment associated, if any.
+   * Returns the descriptive comment associated, if any.
+   * @return the comment, or QString::null
    */
   QString comment() const { return m_strComment; }
 
   /**
-   * @return the name of this service type.
+   * Returns the name of this service type.
+   * @return the name of the service type
    */
   QString name() const { return m_strName; }
 
   /**
-   * @return the relative path to the desktop entry file responsible for
+   * Returns the relative path to the desktop entry file responsible for
    *         this servicetype.
    * For instance inode/directory.desktop, or kpart.desktop
+   * @return the path of the desktop file
    */
   QString desktopEntryPath() const { return entryPath(); }
 
   /**
+   * Checks whether this service type inherits another one.
    * @return true if this service type inherits another one
+   * @see parentServiceType()
    */
   bool isDerived() const { return m_bDerived; }
 
   /**
    * If this service type inherits from another service type,
-   * return the name of the parent. Otherwise QString::null.
+   * return the name of the parent.
+   * @return the parent service type, or QString:: null if not set
+   * @see isDerived()
    */
   QString parentServiceType() const;
 
   /**
+   * Checks whether this service type is or inhertis from @p servTypeName.
    * @return true if this servicetype is or inherits from @p servTypeName
    * @since 3.1
    */
   bool inherits( const QString& servTypeName ) const;
 
+  /**
+   * Returns the requested property. Some often used properties
+   * have convenience access functions like @ref name(),
+   * @ref comment() etc.
+   * 
+   * @param _name the name of the property
+   * @return the property, or invalid if not found
+   */
   virtual QVariant property( const QString& _name ) const;
+
+  /**
+   * Returns the list of all properties of this service type.
+   * @return the list of properties
+   */
   virtual QStringList propertyNames() const;
 
+  /**
+   * Checks whether the service type is valid.
+   * @return true if the service is valid (e.g. name is not empty)
+   */
   bool isValid() const { return m_bValid; }
 
+  /**
+   * Returns the type of the property with the given @p _name.
+   * 
+   * @param _name the name of the property
+   * @return the property type, or null if not found
+   */
   virtual QVariant::Type propertyDef( const QString& _name ) const;
+
   virtual QStringList propertyDefNames() const;
   virtual const QMap<QString,QVariant::Type>& propertyDefs() const { return m_mapPropDefs; }
 
   /**
+   * @internal
    * Save ourselves to the data stream.
    */
   virtual void save( QDataStream& );
 
   /**
+   * @internal
    * Load ourselves from the data stream.
    */
   virtual void load( QDataStream& );
 
   /**
-   * @return a pointer to the servicetype '_name' or 0L if the
+   * Returns a pointer to the servicetype '_name' or 0L if the
    *         service type is unknown.
    * VERY IMPORTANT : don't store the result in a KServiceType * !
+   * @param _name the name of the service type to search
+   * @return the pointer to the service type, or 0
    */
   static Ptr serviceType( const QString& _name );
 
   /**
-   * @return all services supporting the given servicetype name
+   * Returns all services supporting the given servicetype name.
    * This doesn't take care of the user profile.
    * In fact it is used by KServiceTypeProfile,
    * which is used by KTrader, and that's the one you should use.
+   * @param _servicetype the name of the service type to search
+   * @return the list of all services of the given type
    */
   static KService::List offers( const QString& _servicetype );
 
   /**
-   * @return a list of all the supported servicetypes. Useful for
+   * Returns a list of all the supported servicetypes. Useful for
    *         showing the list of available servicetypes in a listbox,
    *         for example.
    * More memory consuming than the ones above, don't use unless
    * really necessary.
+   * @return the list of all services
    */
   static List allServiceTypes();
 

@@ -73,33 +73,59 @@ class ProgressBase : public QWidget {
 
 public:
 
+  /**
+   * Creates a new progress dialog.
+   * @param parent the parent of this dialog window, or 0
+   */
   ProgressBase( QWidget *parent );
   ~ProgressBase() {}
 
-  // assign job to this progress dialog
+  /**
+   * Assign a KIO::Job to this progress dialog.
+   * @param job the job to assign
+   */
   void setJob( KIO::Job *job );
+  /**
+   * Assign a KIO::Job to this progress dialog.
+   * @param job the job to assign
+   */
   void setJob( KIO::CopyJob *job );
+  /**
+   * Assign a KIO::Job to this progress dialog.
+   * @param job the job to assign
+   */
   void setJob( KIO::DeleteJob *job );
 
   // should we stop the job when the dialog is closed ?
   void setStopOnClose( bool stopOnClose ) { m_bStopOnClose = stopOnClose; }
   bool stopOnClose() const { return m_bStopOnClose; }
 
+  // should we delete the dialog or just clean it when the job is finished ?
   /**
    * This controls whether the dialog should be deleted or only cleaned when
-   * the KIO::Job is finished (or canceled).
+   * the @ref KIO::Job is finished (or canceled).
    *
    * If your dialog is an embedded widget and not a separate window, you should
    * setOnlyClean(true) in the constructor of your custom dialog.
    *
-   * If true - Dialog will only call method @ref slotClean.
-   * If false - Dialog will be deleted.
+   * @param onlyClean If true the dialog will only call method @ref slotClean.
+   * If false the dialog will be deleted.
+   * @see onlyClean()
    */
-  // should we delete the dialog or just clean it when the job is finished ?
   void setOnlyClean( bool onlyClean ) { m_bOnlyClean = onlyClean; }
+
+  /**
+   * Checks whether the dialog should be deleted or cleaned.
+   * @return true if the dialog only calls @ref slotClean, false if it will be
+   *         deleted
+   * @see setOnlyClean()
+   */
   bool onlyClean() const { return m_bOnlyClean; }
 
-  /// @since 3.1
+  /**
+   * Call when the operation finished.
+   * @since 3.1
+   */
   void finished();
 
 public slots:
@@ -115,25 +141,108 @@ public slots:
   virtual void slotClean();
 
   // progress slots
-  virtual void slotTotalSize( KIO::Job*, KIO::filesize_t ) {}
-  virtual void slotTotalFiles( KIO::Job*, unsigned long ) {}
-  virtual void slotTotalDirs( KIO::Job*, unsigned long ) {}
+  /**
+   * Called to set the total size.
+   * @param job the KIO::Job
+   * @param bytes the total size in bytes
+   */
+  virtual void slotTotalSize( KIO::Job* job, KIO::filesize_t bytes ) { 
+    Q_UNUSED(job);Q_UNUSED(bytes)}
+  /**
+   * Called to set the total number of files.
+   * @param job the KIO::Job
+   * @param files the number of files
+   */
+  virtual void slotTotalFiles( KIO::Job* job, unsigned long files ) {
+    Q_UNUSED(job);Q_UNUSED(files)}
+  /**
+   * Called to set the total number of directories.
+   * @param job the KIO::Job
+   * @param dirs the number of directories
+   */
+  virtual void slotTotalDirs( KIO::Job* job, unsigned long dirs ) {
+    Q_UNUSED(job);Q_UNUSED(dirs)}
 
-  virtual void slotProcessedSize( KIO::Job*, KIO::filesize_t ) {}
-  virtual void slotProcessedFiles( KIO::Job*, unsigned long ) {}
-  virtual void slotProcessedDirs( KIO::Job*, unsigned long ) {}
+  /**
+   * Called to set the processed size.
+   * @param job the KIO::Job
+   * @param bytes the processed size in bytes
+   */
+  virtual void slotProcessedSize( KIO::Job* job, KIO::filesize_t bytes ) {
+    Q_UNUSED(job);Q_UNUSED(size)}
+  /**
+   * Called to set the number of processed files.
+   * @param job the KIO::Job
+   * @param files the number of files
+   */
+  virtual void slotProcessedFiles( KIO::Job* job, unsigned long files ) {
+    Q_UNUSED(job);Q_UNUSED(files)}
+  /**
+   * Called to set the number of processed directories.
+   * @param job the KIO::Job
+   * @param dirs the number of directories
+   */
+  virtual void slotProcessedDirs( KIO::Job* job, unsigned long dirs ) {
+    Q_UNUSED(job);Q_UNUSED(dirs)}
 
-  virtual void slotSpeed( KIO::Job*, unsigned long ) {}
-  virtual void slotPercent( KIO::Job*, unsigned long ) {}
+  /**
+   * Called to set the speed. 
+   * @param job the KIO::Job
+   * @param speed the speed in bytes/second
+   */
+  virtual void slotSpeed( KIO::Job* job, unsigned long speed ) {
+    Q_UNUSED(job);Q_UNUSED(speed)}
+  /**
+   * Called to set the percentage.
+   * @param job the KIO::Job
+   * @param percent the percentage
+   */
+  virtual void slotPercent( KIO::Job* job, unsigned long percent ) {
+    Q_UNUSED(job);Q_UNUSED(percent)}
 
-  virtual void slotCopying( KIO::Job*, const KURL&, const KURL& ) {}
-  virtual void slotMoving( KIO::Job*, const KURL&, const KURL& ) {}
-  virtual void slotDeleting( KIO::Job*, const KURL& ) {}
-  virtual void slotCreatingDir( KIO::Job*, const KURL& ) {}
+  /**
+   * Called when the job is copying.
+   * @param job the KIO::Job
+   * @param src the source of the operation
+   * @param dest the destination of the operation
+   */
+  virtual void slotCopying( KIO::Job* job, const KURL& src, const KURL& dest ) {
+    Q_UNUSED(job);Q_UNUSED(src);Q_UNUSED(dest)}
+  /**
+   * Called when the job is moving.
+   * @param job the KIO::Job
+   * @param src the source of the operation
+   * @param dest the destination of the operation
+   */
+  virtual void slotMoving( KIO::Job* job, const KURL& src, const KURL& dest ) {
+    Q_UNUSED(job);Q_UNUSED(src);Q_UNUSED(dest)}
+  /**
+   * Called when the job is deleting.
+   * @param job the KIO::Job
+   * @param url the URL to delete
+   */
+  virtual void slotDeleting( KIO::Job* job, const KURL& url) {
+    Q_UNUSED(job);Q_UNUSED(url)}
+  /**
+   * Called when the job is creating a directory.
+   * @param job the KIO::Job
+   * @param dir the URL of the directory to create
+   */
+  virtual void slotCreatingDir( KIO::Job* job, const KURL& dir ) {
+    Q_UNUSED(job);Q_UNUSED(dir)}
 
-  virtual void slotCanResume( KIO::Job*, KIO::filesize_t ) {}
+  /**
+   * Called when the job is resuming..
+   * @param job the KIO::Job
+   * @param from the position to resume from in bytes
+   */
+  virtual void slotCanResume( KIO::Job* job, KIO::filesize_t from) {
+    Q_UNUSED(job);Q_UNUSED(from)}
 
 signals:
+  /**
+   * Called when the operation stopped.
+   */
   void stopped();
 
 protected slots:

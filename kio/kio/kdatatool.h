@@ -37,11 +37,12 @@ class KInstance;
 
 /**
  * This is a convenience class for @ref KService. You can use it if you have
- * a KService describing a KDataTool. In this case the KDataToolInfo class
+ * a KService describing a @ref KDataTool. In this case the KDataToolInfo class
  * is more convenient to work with.
  *
  * Especially useful is the method @ref #createTool which creates the datatool
  * described by the service.
+ * @see KDataTool
  */
 class KDataToolInfo
 {
@@ -52,6 +53,8 @@ public:
     KDataToolInfo();
     /**
      * Create a valid KDataToolInfo.
+     * @param service the corresponding service
+     * @param instance the instance to use
      */
     KDataToolInfo( const KService::Ptr& service, KInstance* instance );
     /**
@@ -64,78 +67,99 @@ public:
     KDataToolInfo& operator= ( const KDataToolInfo& info );
 
     /**
+     * Returns the data type that the DataTool can accept.
      * @return the C++ data type that this DataTool accepts.
      *         For example "QString" or "QImage" or something more
      *         complicated.
      */
     QString dataType() const;
     /**
+     * Returns a list of mime type that will be accepted by the DataTool.
+     * The mimetypes are only used if the @ref #dataType can be used to store
+     * different mimetypes. For example in a "QString" you could save "text/plain"
+     * or "text/html" or "text/xml".
+     *
      * @return the mime types accepted by this DataTool. For example
      *         "image/gif" or "text/plain". In some cases the dataType
      *         determines the accepted type of data perfectly. In this cases
      *         this list may be empty.
-     *
-     * The mimetypes are only used if the @ref #dataType can be used to store
-     * different mimetypes. For example in a "QString" you could save "text/plain"
-     * or "text/html" or "text/xml".
      */
     QStringList mimeTypes() const;
 
     /**
+     * Checks whether the DataTool is read-only.
      * @return TRUE if the DataTool does not modify the data passed to it by @ref KDataTool::run.
      */
     bool isReadOnly() const;
 
     /**
+     * Returns the icon of this data tool.
      * @return a large pixmap for the DataTool.
      * @deprecated, use iconName()
      */
     QPixmap icon() const;
     /**
+     * Returns the mini icon of this data tool.
      * @return a mini pixmap for the DataTool.
      * @deprecated, use iconName()
      */
     QPixmap miniIcon() const;
     /**
+     * Returns the icon name for this DataTool.
      * @return the name of the icon for the DataTool
      */
     QString iconName() const;
     /**
-     * @return a list if strings that you can put in a QPopupMenu item, for example to
-     *         offer the DataTools services to the user. The returned value
-     *         is usually something like "Spell checking", "Shrink Image", "Rotate Image"
-     *         or something like that.
-     *
+     * Returns a list of strings that you can put in a QPopupMenu item, for example to
+     * offer the DataTools services to the user. The returned value
+     * is usually something like "Spell checking", "Shrink Image", "Rotate Image"
+     * or something like that.     
      * This list comes from the Comment field of the tool's desktop file
      * (so that it can be translated).
      *
      * Each of the strings returned corresponds to a string in the list returned by
      * @ref #commands.
+     *
+     * @return a list of strings that you can put in a QPopupMenu item
      */
     QStringList userCommands() const;
     /**
-     * @return the list of commands the DataTool can execute. The application
+     * Returns the list of commands the DataTool can execute. The application
      * passes the command to the @ref KDataTool::run method.
      *
      * This list comes from the Commands field of the tool's desktop file.
      *
      * Each of the strings returned corresponds to a string in the list returned by
      * @ref #userCommands.
+     * @return the list of commands the DataTool can execute, suitable for 
+     *         the @ref KDataTool::run method.
      */
     QStringList commands() const;
 
     /**
      * Creates the data tool described by this KDataToolInfo.
+     * @param parent the parent of the QObject (or 0 for parent-less KDataTools)
+     * @param name the name of the QObject, can be 0
      * @return a pointer to the created data tool or 0 on error.
      */
     KDataTool* createTool( QObject* parent = 0, const char* name = 0 ) const;
 
+    /**
+     * The KDataToolInfo's service that is represented by this class.
+     * @return the service
+     */
     KService::Ptr service() const;
+
+    /**
+     * The instance of the service.
+     * @return the instance
+     */
     KInstance* instance() const { return m_instance; }
 
     /**
      * A DataToolInfo may be invalid if the @ref KService passed to its constructor does
      * not feature the service type "KDataTool".
+     * @return true if valid, false otherwise
      */
     bool isValid() const;
 
@@ -145,6 +169,7 @@ public:
      * @param mimetype the mimetype of the data (e.g. text/plain)
      * @param instance the application (or the part)'s instance (to check if a tool is excluded from this part,
      * and also used if the tool wants to read its configuration in the app's config file).
+     * @return the list of results
      */
     static QValueList<KDataToolInfo> query( const QString& datatype, const QString& mimetype, KInstance * instance );
 
@@ -159,9 +184,9 @@ private:
 /**
  * This class helps applications implement support for KDataTool.
  * The steps to follow are simple:
- * 1) query for the available tools using KDataToolInfo::query
- * 2) pass the result to KDataToolAction::dataToolActionList (with a slot)
- * 3) plug the resulting actions, either using KXMLGUIClient::plugActionList, or by hand.
+ * @li query for the available tools using KDataToolInfo::query
+ * @li pass the result to KDataToolAction::dataToolActionList (with a slot)
+ * @li plug the resulting actions, either using KXMLGUIClient::plugActionList, or by hand.
  *
  * The slot defined for step 2 is called when the action is activated, and
  * that's where the tool should be created and run.
@@ -170,6 +195,15 @@ class KDataToolAction : public KAction
 {
     Q_OBJECT
 public:
+    /**
+     * Constructs a new KDataToolAction.
+     *
+     * @param text The text that will be displayed.
+     * @param info the corresponding @ref KDataToolInfo
+     * @param command the command of the action
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
+     */
     KDataToolAction( const QString & text, const KDataToolInfo & info, const QString & command, QObject * parent = 0, const char * name = 0);
 
     /**
@@ -177,10 +211,19 @@ public:
      * The slot must have a signature corresponding to the @ref #toolActivated signal.
      *
      * Note that it's the caller's responsibility to delete the actions when they're not needed anymore.
+     * @param tools the list of data tool descriptions
+     * @param receiver the receiver for @ref toolActivated() signals
+     * @param slot the slot that will receive the @ref toolActivated() signals
+     * @return the KActions
      */
     static QPtrList<KAction> dataToolActionList( const QValueList<KDataToolInfo> & tools, const QObject *receiver, const char* slot );
 
 signals:
+    /**
+     * Emitted when a tool has been activated.
+     * @param info a description of the activated tools
+     * @param command the command for the tool
+     */
     void toolActivated( const KDataToolInfo & info, const QString & command );
 
 protected:
@@ -214,6 +257,8 @@ public:
     /**
      * Constructor
      * The data-tool is only created when a menu-item, that relates to it, is activated.
+     * @param parent the parent of the QObject (or 0 for parent-less KDataTools)
+     * @param name the name of the QObject, can be 0
      */
     KDataTool( QObject* parent = 0, const char* name = 0 );
 
@@ -223,8 +268,9 @@ public:
     void setInstance( KInstance* instance ) { m_instance = instance; }
 
     /**
-     * @return the instance of the part that created this tool.
+     * Returns the instance of the part that created this tool.
      * Usually used if the tool wants to read its configuration in the app's config file.
+     * @return the instance of the part that created this tool.
      */
     KInstance* instance() const;
 
@@ -239,6 +285,7 @@ public:
      * @param datatype defines the type of @p data.
      * @param mimetype defines the mimetype of the data (for instance datatype may be
      *                 QString, but the mimetype can be text/plain, text/html etc.)
+     * @return true if successful, false otherwise
      */
     virtual bool run( const QString& command, void* data, const QString& datatype, const QString& mimetype) = 0;
 

@@ -48,8 +48,10 @@ public:
 	  * The list of settings that I thought of when I wrote this 
 	  * class.  Any extra settings thought of later can be accessed 
 	  * easily with getExtendedSetting and setExtendedSetting.
-	  * @see getExtendedSetting.
-	  * @see setExtendedSetting.
+	  * @see getSetting()
+	  * @see setSetting()
+	  * @see getExtendedSetting()
+	  * @see setExtendedSetting()
 	  **/
 	enum Setting {
 		ClientProgram,
@@ -93,47 +95,70 @@ public:
 
 	/**
 	  * List of profiles available.
+	  * @return the list of profiles
 	  **/
 	QStringList profiles() const;
 
 	/**
+	 * Returns the name of the current profile.
 	  * @returns what profile we're currently using
 	  **/
 	QString currentProfileName() const;
 
 	/**
 	  * Change the current profile.
+	  * @param s the name of the new profile
 	  **/
-	void setProfile (const QString &);
+	void setProfile (const QString &s);
 
 	/**
-	  * @returns the name of the one that's currently default QString::null if none
-	  **/
+	 * Returns the name of the default profile.
+	 * @returns the name of the one that's currently default QString::null if none
+	 **/
 	QString defaultProfileName() const;
 
 	/**
-	  * New default..
+	  * Sets a new default.
+	  * @param def the new default
 	  **/
-	void setDefault(const QString &);
+	void setDefault(const QString &def);
 
 	/**
-	  * Get a "basic" setting, one that I've already thought of..
+	  * Get one of the predefined "basic" settings.
+	  * @param s the setting to get
+	  * @return the value of the setting, or QString::null if not 
+	  *         set
 	  **/
 	QString getSetting(KEMailSettings::Setting s);
+
+	/**
+	  * Set one of the predefined "basic" settings.
+	  * @param s the setting to set
+	  * @param v the new value of the setting, or QString::null to 
+	  *         unset
+	  **/
 	void setSetting(KEMailSettings::Setting s, const QString &v);
 
 	/**
-	  * Use this when trying to get at currently unimplemented settings
-	  * such as POP3 authentication methods, or mail specific TLS settings
-	  * or something I haven't already thought of.
-	  **/
+	 * Get a extended setting.
+	 * Use this when trying to get at currently unimplemented settings
+	 * such as POP3 authentication methods, or mail specific TLS settings
+	 * or something I haven't already thought of.
+	 * @param e the extensions of the setting
+	 * @param s the key name
+	 * @return the value of the setting	 
+	 **/
 	QString getExtendedSetting(KEMailSettings::Extension e, const QString &s );
 
 	/**
-	  * Use this when trying to get at currently unimplemented settings
-	  * such as POP3 authentication methods, or mail specific TLS settings
-	  * or something I haven't already thought of.
-	  **/
+	 * Set a extended setting.
+	 * Use this when trying to get at currently unimplemented settings
+	 * such as POP3 authentication methods, or mail specific TLS settings
+	 * or something I haven't already thought of.
+	 * @param e the extended setting
+	 * @param s the key name
+	 * @param v the value of the setting
+	 **/
 	void setExtendedSetting(KEMailSettings::Extension e, const QString &s, const QString &v );
 
 private:

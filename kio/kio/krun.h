@@ -40,12 +40,17 @@ namespace KIO {
  * To open files with their associated applications in KDE, use KRun.
  *
  * It can execute any desktop entry, as well as any file, using
- * the default application or another application "bound" to the file type.
+ * the default application or another application "bound" to the file type
+ * (or URL protocol).
  *
  * In that example, the mimetype of the file is not known by the application,
  * so a KRun instance must be created. It will determine the mimetype by itself.
  * If the mimetype is known, or if you even know the service (application) to
  * use for this file, use one of the static methods.
+ *
+ * By default KRun uses auto deletion. It causes the KRun instance to delete 
+ * itself when the it finished its task. If you allocate the KRun
+ * object on the stack you must disable auto deletion, otherwise it will crash.
  *
  * @short Opens files with their associated applications in KDE
  */
@@ -93,13 +98,37 @@ public:
    */
   void abort();
 
+  /**
+   * Returns true if the KRun instance has an error.
+   * @return true when an error occurred
+   * @see error()
+   */
   bool hasError() const { return m_bFault; }
+
+  /**
+   * Returns true if the KRun instance has finished.
+   * @return true if the KRun instance has finished
+   * @see finished()
+   */
   bool hasFinished() const { return m_bFinished; }
 
   /**
+   * Checks whether auto delete is activated. 
+   * Auto-deletion causes the KRun instance to delete itself
+   * when the it finished its task.
    * By default auto deletion is on.
+   * @return true if auto deletion is on, false otherwise
    */
   bool autoDelete() const { return m_bAutoDelete; }
+
+  /**
+   * Enables or disabled auto deletion.
+   * Auto deletion causes the KRun instance to delete itself
+   * when the it finished its task. If you allocate the KRun
+   * object on the stack you must disable auto deletion.
+   * By default auto deletion is on.
+   * @param b true to enable auto deletion, false to disable
+   */
   void setAutoDelete(bool b) { m_bAutoDelete = b; }
 
   /**
@@ -115,9 +144,10 @@ public:
   /**
    * Open a list of URLs with a certain service.
    *
-   * @param _service
+   * @param _service the service to run
    * @param _urls the list of URLs, can be empty (app launched
    *        without argument)
+   * @return the process id, or 0 on error
    */
   static pid_t run( const KService& _service, const KURL::List& _urls );
 
@@ -131,6 +161,7 @@ public:
    * @param _icon The icon which should be used by the application.
    * @param _obsolete1 Do not use!
    * @param _obsolete2 Do not use!
+   * @return the process id, or 0 on error
    */
   static pid_t run( const QString& _exec, const KURL::List& _urls,
 		   const QString& _name = QString::null,
@@ -144,6 +175,9 @@ public:
    * This function is used after the mime type
    * is found out. It will search for all services which can handle
    * the mime type and call @ref run() afterwards.
+   * @param _url the URL to open
+   * @param _mimetype the mime type of the resource
+   * @return the process id, or 0 on error
    */
   static pid_t runURL( const KURL& _url, const QString& _mimetype );
 
@@ -152,32 +186,40 @@ public:
    * of the application. If the program to be called doesn't exist,
    * an error box will be displayed.
    *
+   * Use only when you know the full command line. Otherwise use the other
+   * static methods, or KRun's constructor.
+   *
    * @p _cmd must be a shell command. You must not append "&"
    * to it, since the function will do that for you.
    *
    * @return PID of running command, 0 if it could not be started, 0 - (PID
    * of running command) if command was unsafe for map notification.
-   *
-   * Use only when you know the full command line. Otherwise use the other
-   * static methods, or KRun's constructor.
    */
   static pid_t runCommand( QString cmd );
 
   /**
-   * Same as the other runCommand, but it also takes the name of the
+   * Same as the other @ref runCommand(), but it also takes the name of the
    * binary, to display an error message in case it couldn't find it.
+   *
+   * @p _cmd must be a shell command. You must not append "&"
+   * to it, since the function will do that for you.
+   * @param execName the name of the executable
    * @param icon icon for app starting notification
+   * @return PID of running command, 0 if it could not be started, 0 - (PID
+   * of running command) if command was unsafe for map notification.
    */
   static pid_t runCommand( const QString& cmd, const QString & execName, const QString & icon );
 
   /**
    * Display the Open-With dialog for those URLs, and run the chosen application.
+   * @param lst the list of applications to run
    * @return false if the dialog was canceled
    */
   static bool displayOpenWithDialog( const KURL::List& lst );
 
   /**
-   * Quotes a string for the shell
+   * Quotes a string for the shell.
+   * @param _str the string to quote. The quoted string will be written here
    */
   static void shellQuote( QString &_str );
 
@@ -200,12 +242,21 @@ public:
    * extract the name of the binary being run.
    * @param execLine the full command line
    * @param removePath if true, remove a (relative or absolute) path. E.g. /usr/bin/ls becomes ls.
+   * @return the name of the binary to run
    * @since 3.1
    */
   static QString binaryName( const QString & execLine, bool removePath );
 
 signals:
+  /**
+   * Emitted when the operation finished.
+   * @see hasFinished()
+   */
   void finished();
+  /**
+   * Emitted when the operation had an error.
+   * @see hasError()
+   */
   void error();
 
 protected slots:

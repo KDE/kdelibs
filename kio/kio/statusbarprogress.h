@@ -65,9 +65,19 @@ class StatusbarProgress : public ProgressBase {
 
 public:
 
+  /**
+   * Creates a new StatusbarProgress.
+   * @param parent the parent of this widget
+   * @param button true to add an abort button. The button will be
+   *               connected to @ref ProgressBase::slotStop()
+   */
   StatusbarProgress( QWidget* parent, bool button = true );
   ~StatusbarProgress() {}
 
+  /**
+   * Sets the job to monitor.
+   * @param job the job to monitor
+   */
   void setJob( KIO::Job *job );
 
 public slots:

@@ -31,6 +31,7 @@ namespace KIO {
  *
  * KIO-Slave authors are encouraged to use @ref SlaveBase::openPassDlg
  * instead of directly instantiating this dialog.
+ * @short dialog for requesting login and password from the end user
  */
 class PasswordDialog : public KDialogBase 
 {
@@ -58,6 +59,7 @@ public:
 
     /**
      * Sets the prompt to show to the user.
+     * @param prompt        instructional text to be shown.
      */
     void setPrompt( const QString& prompt );
 
@@ -75,17 +77,20 @@ public:
 
     /**
      * Returns the password entered by the user.
+     * @return the password
      */
     QString password() const;
     
     /**
      * Returns the username entered by the user.
+     * @return the user name
      */
     QString username() const;
 
     /**
      * Determines whether supplied authorization should
      * persist even after the application has been closed.
+     * @return true to keep the password
      */
     bool keepPassword() const;
 
@@ -93,7 +98,7 @@ public:
      * Sets the username field read-only and sets the
      * focus to the password field.
      *
-     * @param readOnly
+     * @param readOnly true to set the user field to read-only
      */
     void setUserReadOnly( bool readOnly );
 
@@ -105,7 +110,8 @@ public:
     };
 
     /**
-     * Presets the password
+     * Presets the password.
+     * @param password the password to set
      * @since 3.1
      */
     void setPassword( const QString& password );

@@ -40,13 +40,15 @@ public:
 k_dcop:
   /**
    * Notify that files have been added in @p directory
-   * Note: this is ASYNC so that it can be used with a broadcast
+   * Note: this is ASYNC so that it can be used with a broadcast.
+   * @param directory the directory that contains the new files
    */
   virtual ASYNC FilesAdded( const KURL & directory ) = 0;
 
   /**
    * Notify that files have been deleted.
    * Note: this is ASYNC so that it can be used with a broadcast
+   * @param fileList the files that have been deleted
    */
   virtual ASYNC FilesRemoved( const KURL::List & fileList ) = 0;
 
@@ -54,13 +56,16 @@ k_dcop:
    * Notify that files have been changed.
    * At the moment, this is only used for new icon, but it could be
    * used for size etc. as well.
-   * Note: this is ASYNC so that it can be used with a broadcast
+   * Note: this is ASYNC so that it can be used with a broadcast.
+   * @param fileList the list of changed files
    */
   virtual ASYNC FilesChanged( const KURL::List & fileList ) = 0;
 
   /**
    * Notify that a file has been renamed.
    * Note: this is ASYNC so that it can be used with a broadcast
+   * @param src a list containing original names of the renamed files
+   * @param dst a list of original names of the renamed files
    */
   virtual ASYNC FileRenamed( const KURL &src, const KURL &dst );
 

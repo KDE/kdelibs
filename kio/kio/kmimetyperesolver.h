@@ -100,7 +100,7 @@ private:
 
 /**
  * This class implements the "delayed-mimetype-determination" feature,
- * for konqueror's directory views (and KFileDialog's :)
+ * for konqueror's directory views (and KFileDialog's :).
  *
  * It determines the mimetypes of the icons in the background, but giving
  * preferrence to the visible icons.
@@ -109,15 +109,19 @@ private:
  * and QIconViewItem, without requiring hacks such as void * or QPtrDict lookups.
  *
  * Here's what the parent must implement :
- - void mimeTypeDeterminationFinished();
- - QScrollView * scrollWidget();
- - void determineIcon( IconItem * item ), which should call
-   KFileItem::determineMimeType on the fileItem, and update the icon, etc.
+ * @li void mimeTypeDeterminationFinished();
+ * @li QScrollView * scrollWidget();
+ * @li void determineIcon( IconItem * item ), which should call
+ * @li KFileItem::determineMimeType on the fileItem, and update the icon, etc.
 */
 template<class IconItem, class Parent>
 class KMimeTypeResolver : public KMimeTypeResolverBase // if only this could be a QObject....
 {
 public:
+  /**
+   * Creates a new KMimeTypeResolver with the given parent.
+   * @param paren the parent's resolver
+   */
     KMimeTypeResolver( Parent * parent )
         : m_parent(parent),
           m_helper( new KMimeTypeResolverHelper(this, parent->scrollWidget())),
@@ -143,6 +147,7 @@ public:
     /**
      * The list of items to process. The view is free to
      * clear it, insert new items into it, remove items, etc.
+     * @return the list of items to process
      */
     QPtrList<IconItem> m_lstPendingMimeIconItems;
 

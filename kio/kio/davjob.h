@@ -49,14 +49,25 @@ namespace KIO {
      * Data is sent to the slave on request of the slave (@ref dataReq).
      * If data coming from the slave can not be handled, the
      * reading of data from the slave should be suspended.
+     * @see KIO::davPropFind()
+     * @see KIO::davPropPatch()
+     * @see KIO::davSearch()
      * @since 3.1
      */
     class DavJob : public TransferJob {
     Q_OBJECT
 
     public:
+        /**
+	 * Use @ref KIO::davPropFind(), @ref KIO::davPropPatch() and
+	 * @ref KIO::davSearch() to create a new DavJob.
+	 */
         DavJob(const KURL& url, int method,
                     const QString& request, bool showProgressInfo);
+        /**
+	 * Returns the response as a @ref QDomDocument.
+	 * @return the response document
+	 */
 	QDomDocument& response() { return m_response; }
 
     protected slots:
@@ -72,8 +83,41 @@ namespace KIO {
 	QDomDocument m_response;
    };
 
+   /**
+    * Creates a new @ref DavJob that issues a PROPFIND command. PROPFIND retrieves
+    * the properties of the resource identified by the given @p url.
+    *
+    * @param url the URL of the resource
+    * @param properties a propfind document that describes the properties that
+    *        should be retrieved
+    * @param depth the depth of the request. Can be "0", "1" or "infinity"
+    * @param showProgressInfo true to show progress information
+    * @return the new DavJob
+    */
    DavJob* davPropFind( const KURL& url, const QDomDocument& properties, QString depth, bool showProgressInfo=true );
+
+   /**
+    * Creates a new @ref DavJob that issues a PROPPATCH command. PROPPATCH sets
+    * the properties of the resource identified by the given @p url.
+    *
+    * @param url the URL of the resource
+    * @param properties a PROPPACTCH document that describes the properties that
+    *        should be modified and its new values
+    * @param showProgressInfo true to show progress information
+    * @return the new DavJob
+    */
    DavJob* davPropPatch( const KURL& url, const QDomDocument& properties, bool showProgressInfo=true );
+
+   /**
+    * Creates a new @ref DavJob that issues a SEARCH command.
+    *
+    * @param url the URL of the resource
+    * @param nsURI the URI of the search method's qualified name
+    * @param qName the local part of the search method's qualified name
+    * @param query the search string
+    * @param showProgressInfo true to show progress information
+    * @return the new DavJob
+    */
    DavJob* davSearch( const KURL &url, const QString& nsURI, const QString& qName, const QString& query, bool showProgressInfo=true ); 
 
 };

@@ -33,11 +33,15 @@ namespace KIO {
 
 enum RenameDlg_Mode { M_OVERWRITE = 1, M_OVERWRITE_ITSELF = 2, M_SKIP = 4, M_SINGLE = 8, M_MULTI = 16, M_RESUME = 32, M_NORENAME = 64 };
 
+/**
+ * The result of @ref open_RenameDlg().
+ */
 enum RenameDlg_Result { R_RESUME = 6, R_RESUME_ALL = 7, R_OVERWRITE = 4, R_OVERWRITE_ALL = 5, R_SKIP = 2, R_AUTO_SKIP = 3, R_RENAME = 1, R_CANCEL = 0 };
 
 
 /**
- * A dialog for the options to rename two files
+ * A dialog for the options to rename two files.
+ * @short A dialog for renaming files.
  * @since 3.1
  */
 class RenameDlg : public QDialog
@@ -45,23 +49,20 @@ class RenameDlg : public QDialog
   Q_OBJECT
 public:
   /**
-   * Construct a "rename" dialog
+   * Construct a "rename" dialog.
    * @param parent parent widget (often 0)
    * @param caption the caption for the dialog box
    * @param src the url to the file/dir we're trying to copy, as it's part of the text message
    * @param dest the path to destination file/dir, i.e. the one that already exists
    * @param mode parameters for the dialog (which buttons to show...),
-   * @see RenameDlg_Mode
-   *
-   * The following parameters bring optionnal information about @p src and @p dest
    * @param sizeSrc size of source file
    * @param sizeDest size of destination file
    * @param ctimeSrc creation time of source file
    * @param ctimeDest creation time of destination file
    * @param mtimeSrc modification time of source file
    * @param mtimeDest modification time of destination file
-   *
    * @param modal set to true for a modal dialog
+   * @see RenameDlg_Mode
    */
   RenameDlg( QWidget *parent, const QString & caption,
              const QString & src, const QString & dest, RenameDlg_Mode mode,
@@ -114,17 +115,15 @@ private:
    * @param src the file/dir we're trying to copy, as it's part of the text message
    * @param dest the destination file/dir, i.e. the one that already exists
    * @param mode parameters for the dialog (which buttons to show...),
-   * @see RenameDlg_Mode
+   *             see @ref RenameDlg_Mode
    * @param newDest the new destination path, valid if R_RENAME was returned.
-   *
-   * The following parameters bring optionnal information about @p src and @p dest
    * @param sizeSrc size of source file
    * @param sizeDest size of destination file
    * @param ctimeSrc creation time of source file
    * @param ctimeDest creation time of destination file
    * @param mtimeSrc modification time of source file
    * @param mtimeDest modification time of destination file
-   *
+   * @return the result
    */
 RenameDlg_Result open_RenameDlg( const QString & caption,
                                  const QString& src, const QString & dest,

@@ -28,23 +28,31 @@ class QString;
 
 /**
  * Proxy Auto Configuration.
+ * Implements WPAD to discover a proxy.
+ * @see KProtocolManager
  */
 class KPAC
 {
 public:
     virtual ~KPAC();
     /**
-     * Returns the proxy for the @p url or QString::null
-     * if the request should be done unproxied
+     * Returns the proxy for the @p url or 'DIRECT'
+     * if the request should be done unproxied.
+     * @param the URL to check
+     * @return the proxy to use (as URL), 'DIRECT'
+     *         for a unproxied request or QString::null
+     *         for failure
      */
     virtual QString proxyForURL(const KURL &url) = 0;
     /**
      * Loads the PAC-script
      * @param url URL of the script.
+     * @return true if successful, false otherwise
      */
     virtual bool init(const KURL &url) = 0;
     /**
      * Tries to discover a PAC-script and loads it.
+     * @return true if successful, false otherwise
      */
     virtual bool discover() = 0;
     /**
@@ -52,6 +60,7 @@ public:
      * alternative proxies or allows a direct connection
      * as fallback, this proxy will not be returned for
      * a while.
+     * @param proxy the proxy as URL
      */
     virtual void badProxy(const QString &proxy) = 0;
 protected:

@@ -28,6 +28,9 @@
 
 namespace KIO {
     /**
+     * MetaInfoJob is a KIO Job to retrieve meta information from files.
+     * 
+     * @short KIO Job to retrieve meta information from files.
      * @since 3.1
      */
     class MetaInfoJob : public KIO::Job
@@ -35,7 +38,7 @@ namespace KIO {
         Q_OBJECT
     public:
         /**
-         * Constructor
+         * Creates a new MetaInfoJob.
          *  @param items   A list of KFileItems to get the metainfo for
          *  @param deleteItems If true, the finished KFileItems are deleted
          */
@@ -50,15 +53,17 @@ namespace KIO {
         void removeItem( const KFileItem *item );
 
         /**
-         * @return a list of all available metainfo plugins. The list
+         * Returns a list of all available metainfo plugins. The list
          * contains the basenames of the plugins' .desktop files (no path,
          * no .desktop).
+	 * @return the list of available meta info plugins
          */
         static QStringList availablePlugins();
 
         /**
-         * @return a list of all supported MIME types. The list can
+         * Returns a list of all supported MIME types. The list can
          * contain entries like text/ * (without the space).
+	 * @return the list of MIME types that are supported
          */
         static QStringList supportedMimeTypes();
 
@@ -66,12 +71,14 @@ namespace KIO {
         /**
          * Emitted when the meta info for @p item has been successfully
          * retrieved.
+	 * @param item the KFileItem describing the fetched item
          */
         void gotMetaInfo( const KFileItem *item );
         /**
          * Emitted when metainfo for @p item could not be extracted,
          * either because a plugin for its MIME type does not
          * exist, or because something went wrong.
+	 * @param item the KFileItem of the file that failed
          */
         void failed( const KFileItem *item );
 
@@ -97,15 +104,15 @@ namespace KIO {
      * Retrieves meta information for the given items.
      *
      * @param items files to get metainfo for
-     * @param save if the data should be cached for later use
-     * @param enabledPlugins if non-zero, this points to a list containing
-     * the names of the plugins that may be used.
-     * see @ref #availablePlugins.
+     * @return the MetaInfoJob to retrieve the items
      */
     MetaInfoJob* fileMetaInfo(const KFileItemList& items);
 
     /**
-     * Same as above, but takes a URL list instead of KFileItemList
+     * Retrieves meta information for the given items.
+     *
+     * @param items files to get metainfo for
+     * @return the MetaInfoJob to retrieve the items
      */
     MetaInfoJob* fileMetaInfo(const KURL::List& items);
 };

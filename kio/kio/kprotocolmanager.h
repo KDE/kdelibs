@@ -44,12 +44,13 @@ class KPAC;
  * mean the proxy, timeout etc. settings are saved in a separate user-specific
  * config file and not in the config file of the application.
  *
- * @p Original author:
+ * Original author:
  * @author Torben Weis <weis@kde.org>
  *
- * @p Revised by:
+ * Revised by:
  * @author Waldo Bastain <bastain@kde.org>
  * @author Dawit Alemayehu <adawit@kde.org>
+ * @see KPAC
  */
 class KProtocolManager
 {
@@ -62,24 +63,20 @@ public:
   /**
    * Returns the default user-agent string.
    *
-   * This function returns the default user-agent string
-   *
+   * @return the default user-agent string
    */
   static QString defaultUserAgent();
 
   /**
    * Returns the default user-agent value.
    *
-   * This function returns the default user-agent value
-   * taking into account 'keys'
-   *
-   * Keys can be any of the folliwing:
-   * 'o'	Show OS
-   * 'v'	Show OS Version
-   * 'p'	Show platform
-   * 'm'	Show machine architecture
-   * 'l'	Show language
-   *
+   * @param keys can be any of the following:
+   * @li 'o'	Show OS
+   * @li 'v'	Show OS Version
+   * @li 'p'	Show platform
+   * @li 'm'	Show machine architecture
+   * @li 'l'	Show language
+   * @return the default user-agent value with the given @p keys
    */
   static QString defaultUserAgent(const QString &keys);
 
@@ -94,7 +91,7 @@ public:
    * @param hostname name of the host
    * @return specified userAgent string
    */
-  static QString userAgentForHost( const QString& );
+  static QString userAgentForHost( const QString &hostname );
 
 
 /*=========================== TIMEOUT CONFIG ================================*/
@@ -147,12 +144,14 @@ public:
   /**
    * Returns whether or not the user specified the
    * use of proxy server to make connections.
+   * @return true to use a proxy
    */
   static bool useProxy();
 
   /**
    * Returns whether or not the the proxy server
    * lookup should be reversed or not.
+   * @return true to use a reversed proxy
    */
   static bool useReverseProxy();
 
@@ -175,6 +174,7 @@ public:
 
   /**
    * Returns the type of proxy configuration that is used.
+   * @return the proxy type
    */
   static ProxyType proxyType();
 
@@ -193,24 +193,28 @@ public:
   /**
    * Returns the way proxy authorization should be handled.
    *
+   * @return the proxy authorization mode
    * @see ProxyAuthMode
    */
   static ProxyAuthMode proxyAuthMode();
 
   /**
    * Returns the strings for hosts that should contacted
-   * DIRECT bypassing any proxy settings.
+   * DIRECTLY, bypassing any proxy settings.
+   * @return a list of (comma-separated) hostnames or partial host
+   *         names
    */
   static QString noProxyFor();
 
   /*
    * Returns the proxy server address for a given
-   * protocol
+   * protocol.
    *
    * @param protocol the protocol whose proxy info is needed
-   * @returns the proxy server address if one is available
+   * @returns the proxy server address if one is available,
+   *          or QString::null if not available
    */
-  static QString proxyFor( const QString& /* protocol */);
+  static QString proxyFor( const QString& protocol );
 
   /**
    * Returns the Proxy server address for a given URL
@@ -222,17 +226,20 @@ public:
    *
    * @param url the URL whose proxy info is needed
    * @returns the proxy server address if one is available
+   *          or QString::null otherwise
    */
-  static QString proxyForURL( const KURL& /* url */ );
+  static QString proxyForURL( const KURL& url );
 
   /**
    * Marks this proxy as bad (down). It will not be used for the
    * next 30 minutes. (The script may supply an alternate proxy)
+   * @param proxy the proxy to mark as bad (as URL)
    */
-  static void badProxy( const QString & /* proxy */ );
+  static void badProxy( const QString & proxy );
 
   /**
-   * @return the URL of the script for automatic proxy configuration
+   * Returns the URL of the script for automatic proxy configuration.
+   * @rturn the proxy configuration script
    */
   static QString proxyConfigScript();
 
@@ -244,7 +251,7 @@ public:
    * Returns true/false to indicate whether a cache
    * should be used
    *
-   * @return
+   * @return true to use the cache, false otherwisea
    */
   static bool useCache();
 
@@ -252,7 +259,7 @@ public:
    * Returns the maximum age in seconds cached files should be
    * kept before they are deleted as necessary.
    *
-   * @return
+   * @return the maximum cache age in seconds
    */
   static int maxCacheAge();
 
@@ -264,17 +271,19 @@ public:
    * value returned is in bytes, hence a value of 5120 would mean
    * 5 Kb.
    *
-   * @return the maximum cache size to
+   * @return the maximum cache size in bytes
    */
   static int maxCacheSize(); // Maximum cache size in Kb.
 
   /**
-   * The directory which contains the cache files
+   * The directory which contains the cache files.
+   * @return the directory that contains the cache files
    */
   static QString cacheDir();
 
   /**
    * Returns the Cache control directive to be used.
+   * @return the cache control value
    */
   static KIO::CacheControl cacheControl();
 
@@ -284,12 +293,14 @@ public:
   /**
    * Returns true if partial downloads should be
    * automatically resumed.
+   * @return true to resume partial downloads
    */
   static bool autoResume();
 
   /**
    * Returns true if partial downloads should be marked
    * with a ".part" extension.
+   * @return true if partial downloads should get an ".part" extension
    */
   static bool markPartial();
 
@@ -301,20 +312,22 @@ public:
    * requirement will simply be discarded. The default size
    * is 5 KB.
    *
-   * @ return the minimum keep size for aborted downloads in bytes.
+   * @return the minimum keep size for aborted downloads in bytes
    */
   static int minimumKeepSize();
   
   
   /*============================ NETWORK CONNECTIONS ==========================*/
   /**
-   * Returns true if connections should be persistent
+   * Returns true if proxy connections should be persistent.
+   * @return true if proxy connections should be persistent
    * @since 3.1
    */
   static bool persistentProxyConnection(); 
 
   /**
    * Returns true if connections should be persistent
+   * @return true if the connections should be persistent
    */
   static bool persistentConnections();
 
@@ -333,6 +346,9 @@ public:
    * needs an HTTP ioslave.
    *
    * When a proxy is to be used, proxy contains the URL for the proxy.
+   * @param url the url to check
+   * @param proxy the URL of the proxy to use
+   * @return the slave protocol (e.g. 'http'), can be null if unknown
    */
   static QString slaveProtocol(const KURL &url, QString &proxy);
 

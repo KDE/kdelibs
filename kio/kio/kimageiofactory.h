@@ -16,6 +16,7 @@
 class KImageIOFormat;
 class KImageIOFormatList;
 
+/// @internal
 class KImageIOFormat : public KSycocaEntry
 {
   K_SYCOCATYPE( KST_KImageIOFormat, KSycocaEntry )
@@ -76,6 +77,7 @@ protected:
   virtual void virtual_hook( int id, void* data );
 };
 
+/// @internal
 class KImageIOFormatList : public KImageIOFormat::List
 {
 public:
@@ -83,6 +85,7 @@ public:
 };
 
 
+/// @internal
 class KImageIOFactory : public KSycocaFactory
 {
   friend class KImageIO;

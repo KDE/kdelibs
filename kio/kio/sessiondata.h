@@ -30,7 +30,7 @@ class SlaveConfig;
 
 
 /**
- *
+ * @internal
  */
 class SessionData : public QObject
 {

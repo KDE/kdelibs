@@ -36,7 +36,7 @@ class KFileMetaInfoGroup;
  *  @ref KFilePlugin for a given mimetype has. It includes a list of metainfo
  *  groups and items together with their type, a prefix, suffix and some other
  *  information about how to use, display or edit the items.
- *
+ * @short Represents the capabilities of a KFilePlugin for a given mimetype.
  **/
 class KFileMimeTypeInfo
 {
@@ -152,7 +152,8 @@ public:
     /**
      *  This is the class for one group of items of a @ref KFileMimeTypeInfo.
      *  It contains, among other things, the information about the group's name
-     *   and a list of supported items.
+     *  and a list of supported items.
+     * @short Information about a meta information group.
      **/
     class GroupInfo
     {
@@ -307,7 +308,8 @@ public:
         }
 
         /**
-         * @return The name of the item
+         * Returns the name of the item.
+	 * @return the name of the item
          */
         const QString& key() const
         {
@@ -315,12 +317,14 @@ public:
         }
 
         /**
-         * @return a string for the specified value, if possible. If not,
+         * Returns a string for the specified @p value, if possible. If not,
          * QString::null is returned. This can be used by programs if they want
          * to display a sum or an average of some item for a list of files.
          *
-         * if @p mangle is true, the string will already contain prefix and
-         * suffix
+	 * @param value the value to convert
+         * @param mangle if true, the string will already contain prefix and
+         *               suffix
+	 * @return the converted string, or QString::null if not possible
 	 * @since 3.1
          */
         QString string( const QVariant& value, bool mangle = true ) const;
@@ -337,9 +341,10 @@ public:
         }
 
         /**
-         * @return a translation of the key for displaying to the user. If the
+         * Returns a translation of the key for displaying to the user. If the
          * plugin provides translation to the key, it's also in the user's
          * language.
+	 * @return the translated key
          */
         const QString& translatedKey() const
         {
@@ -348,7 +353,8 @@ public:
 
         /**
          * Return the attributes of the item. See
-         * @ref KFileMimeTypeInfo::Attributes
+         * @ref KFileMimeTypeInfo::Attributes.
+	 * @return the attributes
          */
         uint attributes() const
         {
@@ -358,6 +364,7 @@ public:
         /**
          * Return the hints for the item. See
          * @ref KFileMimeTypeInfo::Hint
+	 * @return the hint
          */
         uint hint() const
         {
@@ -367,6 +374,7 @@ public:
         /**
          * Return the unit of the item. See
          * @ref KFileMimeTypeInfo::Unit
+	 * @return the unit
          */
         uint unit() const
         {
@@ -398,7 +406,13 @@ public:
 
     /**
      * Creates a validator for this item. Make sure to supply a proper
-     * parent argument or delete the validator yourself.
+     * @p parent argument or delete the validator yourself.
+     * @param group the group of the item
+     * @param key the key of the item
+     * @param parent the parent of the QObject, or 0 for a parent-less object
+     * @param name the name of the QObject, can be 0
+     * @return the validator. You are resposible for deleting it. 0 if 
+     *         creation failed
      */
     QValidator * createValidator(const QString& group, const QString& key,
                                  QObject *parent = 0, const char *name = 0) const;
@@ -432,13 +446,16 @@ public:
 
     /**
      * Returns the mimetype to which this info belongs.
+     * @retun the mimetype of this info
      */
     QString mimeType()  const {return m_mimeType;}
 
     /**
      * Get the group info for a specific group.
      *
-     * @return a pointer to the info. Don't delete this object!
+     * @param group the group whose group info should be retrieved
+     * @return a pointer to the info. 0 if it does not
+     *         exist. Don't delete this object! 
      */
     const GroupInfo * groupInfo( const QString& group ) const;
 
@@ -489,6 +506,7 @@ protected:
 /**
  * This is one item of the meta information about a file (see
  * @ref KFileMetaInfo).
+ * @short A meta information item about a file.
  */
 class KFileMetaInfoItem
 {
@@ -508,7 +526,7 @@ public:
                        const QString& key, const QVariant& value);
 
     /**
-     * Copy onstructor
+     * Copy constructor
      **/
     KFileMetaInfoItem( const KFileMetaInfoItem & item );
 
@@ -531,36 +549,42 @@ public:
     ~KFileMetaInfoItem();
 
     /**
+     * Returns the key of the item.
      * @return the key of this item
      */
     QString key() const;
 
     /**
-     * @return a translation of the key for displaying to the user. If the
+     * Returns a translation of the key for displaying to the user. If the
      * plugin provides translation to the key, it's also in the user's language
+     * @return the translated key
      */
     QString translatedKey() const;
 
     /**
+     * Returns the value of the item.
      * @return the value of the item.
      */
     const QVariant& value() const;
 
     /**
-     * @return a string containing the value, if possible. If not,
+     * Returns a string containing the value, if possible. If not,
      * QString::null is returned.
-     * if @p mangle is true, the string will already contain prefix and
+     * @param mangle if true, the string will already contain prefix and
      * suffix
+     * @return the value string, or QString::null if not possible
      */
     QString string( bool mangle = true ) const;
 
     /**
-     * changes the value of the item
+     * Changes the value of the item.
+     * @param value the new value
+     * @return true if successfull, false otherwise
      */
     bool setValue( const QVariant& value );
 
     /**
-     * convenience method. It does the same as value()->type()
+     * Convenience method. It does the same as value()->type().
      * @return the type of the item
      */
     QVariant::Type type() const;
@@ -611,26 +635,30 @@ public:
     QString suffix() const;
 
     /**
-     * @return the hint for this item. See @ref KFileMimeTypeInfo::Hint
+     * Returns the hint for this item. See @ref KFileMimeTypeInfo::Hint.
+     * @return the hint
      **/
     uint hint() const;
 
     /**
-     * @return the unit for this item. See @ref KFileMimeTypeInfo::Unit
+     * Returns the unit for this item. See @ref KFileMimeTypeInfo::Unit.
+     * @return the unit
      **/
     uint unit() const;
 
     /**
-     * @return the atttributes for this item. See
-     * @ref KFileMimeTypeInfo::Attributes
+     * Returns the atttributes for this item. See
+     * @ref KFileMimeTypeInfo::Attributes.
+     * @return the attributes
      **/
     uint attributes() const;
 
     /**
-     * @return true if the item is valid, i.e. if it contains data, false
+     * Return true if the item is valid, i.e. if it contains data, false
      * if it's invalid (created with the default constructor and not been
      * assigned anything), or if @ref KFileMetaInfoGroup::item() didn't find
-     * your requested item)
+     * your requested item).
+     * @return true if valid, false if invalid
      */
     bool isValid() const;
 
@@ -651,6 +679,7 @@ protected:
 /**
  * This is one group of meta information items about a file (see
  * @ref KFileMetaInfo).
+ * @short A group of meta information items about a file.
  */
 class KFileMetaInfoGroup
 {
@@ -670,7 +699,7 @@ public:
     KFileMetaInfoGroup( const QString& name, const KFileMimeTypeInfo* info );
 
     /**
-     * Copy onstructor
+     * Copy constructor
      **/
     KFileMetaInfoGroup( const KFileMetaInfoGroup& original );
 
@@ -694,21 +723,23 @@ public:
     ~KFileMetaInfoGroup();
 
     /**
-     * @return true if the item is valid, i.e. if it contains data, false
+     * Returns true if the item is valid, i.e. if it contains data, false
      * if it's invalid (created with the default constructor and not been
      * assigned anything), or if @ref KFileMetaInfoGroup::item() didn't find
-     * your requested item)
+     * your requested item).
+     * @return true if valid, false if invalid
      */
     bool isValid() const;
 
     /**
-     * @return false if the object contains data, true if it's empty. An
-     * empty group is a group with no items (amazing, isn't it?)
+     * Returns false if the object contains data, true if it's empty. An
+     * empty group is a group with no items (amazing, isn't it?).
+     * @return true if empty, false otherwise
      */
     bool isEmpty() const;
 
     /**
-     * operator for convenience. It does the same as @ref item(),
+     * Operator for convenience. It does the same as @ref item(),
      * but you cannot specify a group to search in
      */
     KFileMetaInfoItem operator[]( const QString& key ) const
@@ -717,18 +748,23 @@ public:
     /**
      * This method searches for the specified item.
      *
+     * @param key the key of the item to search
      * @return the specified item if found, an invalid item, if not
      **/
     KFileMetaInfoItem item( const QString& key ) const;
 
     /**
-     * @return the item with the specified hint
+     * Returns the item with the given @p hint.
+     * @param hint the hint of the item
+     * @return the item with the specified @p hint
      **/
     KFileMetaInfoItem item( uint hint ) const;
 
     /**
      * Convenience function. Returns the value of the specified key.
-     * It does the same as item(key).value()
+     * It does the same as item(key).value().
+     * @param key the key of the item to search
+     * @return the value with the given key
      */
     const QVariant value( const QString& key ) const
     {
@@ -750,22 +786,26 @@ public:
     QStringList supportedKeys() const;
 
     /**
-     * @return true if this group supports adding or removing arbitrary
+     * Returns true if this group supports adding or removing arbitrary
      * keys, false if not.
+     * @return true is variable keys are supported, false otherwise
     **/
     bool supportsVariableKeys() const;
 
     /**
-     * @return whether an item for this key exists.
+     * Checks whether an item with the given @p key exists.
+     * @return true if an item for this @p key exists.
      */
     bool contains( const QString& key ) const;
 
     /**
+     * Returns a list of all keys.
      * @return a list of all keys in the order they were inserted.
      **/
     QStringList keys() const;
 
     /**
+     * Returns a list of all keys in preference order.
      * @return a list of all keys in preference order.
      **/
     QStringList preferredKeys() const;
@@ -782,24 +822,40 @@ public:
 //    const QMemArray<QVariant::Type>& types( const QString& key ) const;
 
    /**
-    * add an item to the info. This is only possible if the specified key
+    * Add an item to the info. This is only possible if the specified @p key
     * is in the supportedKeys list and not yet defined or if
     * the group supports variable keys.
+    * @param key the key of the item
+    * @return the KFileMetaInfoItem for the given @p key
     **/
     KFileMetaInfoItem addItem( const QString& key );
 
     /**
-     * remove this item from the meta info of the file. You cannot query
+     * Remove this item from the meta info of the file. You cannot query
      * KFileMetaInfo for a removed object, but you can query for a list of
      * removed items with @ref removedItems() if you need to.
-     * If you re-add it, its value will be cleared
+     * If you re-add it, its value will be cleared.
+     * @param key the key of the removed item
+     * @return true if successful, false otherwise
      */
     bool removeItem(const QString& key);
 
+    /**
+     * Returns a list of all removed items.
+     * @return a list of all removed items
+     */
     QStringList removedItems();
 
+    /**
+     * The name of the item.
+     * @return the name of the item
+     */
     QString name() const;
 
+    /**
+     * Returns the attributes of this item.
+     * @return the attributes
+     */
     uint attributes() const;
 
 protected:
@@ -818,7 +874,6 @@ protected:
 
 
 /**
- *
  * This is the class for objects that hold meta information about a file.
  * The information is kept in form of a system of key/value pairs. See also
  * @ref KFileMetaInfoItem.
@@ -833,7 +888,7 @@ protected:
  *
  * The groups and the What enum are not yet supported, but already added to
  * the interface so that adding support doesn't break compatibility.
-
+ * @short Meta Information about a file.
  */
 class KFileMetaInfo
 {
@@ -890,7 +945,7 @@ public:
      *  @param path The file name. This must be the path to a local file.
      *  @param mimeType The name of the file's mimetype. If ommited, the
      *         mimetype is autodetected
-     *  @param what one or more of the @p What enum values. It gives some
+     *  @param what one or more of the @ref What enum values. It gives some
      *              hint to the plugin what information is desired. The plugin
      *              may still return more items.
      *
@@ -920,39 +975,85 @@ public:
      * </pre>
      *
      * This will create a shared copy of the object. The actual data
-     * is automatically deleted if all copies go out of scope
+     * is automatically deleted if all copies go out of scope.
      **/
     const KFileMetaInfo& operator= (const KFileMetaInfo& info );
 
 
     /**
-    * @return all keys groups that the file has.
-    */
+     * Returns a list of all groups.
+     * @return the keys of the groups that the file has.
+     */
     QStringList groups() const;
 
+    /**
+     * Returns a list of all supported groups.
+     * @return the supported keys of the groups that the file has.
+     */
     QStringList supportedGroups() const;
 
+    /**
+     * Returns a list of the preferred groups.
+     * @return the keys of the preferred groups that the file has.
+     */
     QStringList preferredGroups() const;
 
+    /**
+     * Returns a list of all preferred keys.
+     * @return a list of all preferred keys.
+     */
     QStringList preferredKeys() const;
 
+    /**
+     * Returns a list of supported keys.
+     * @return a list of supported keys
+     */
     QStringList supportedKeys() const;
 
    /**
-    * @return the list of groups that you can add or remove from the file.
+    * Returns the list of groups that you can add or remove from the file.
+    * @return the groups can be added or removed
     */
     QStringList editableGroups() const;
 
     // I'd like to keep those for lookup without group, at least the hint
     // version
+    /**
+     * Returns the KFileMetaInfoItem with the given @p key.
+     * @param key the key of the item
+     * @return the item. Invalid if there is no item with the given @p key.
+     */
     KFileMetaInfoItem item(const QString& key) const;
+    /**
+     * Returns the KFileMetaInfoItem with the given @p hint.
+     * @param hint the hint of the item
+     * @return the item. Invalid if there is no item with the given @p hint.
+     */
     KFileMetaInfoItem item(const KFileMetaInfoItem::Hint hint) const;
+
+    /**
+     * Saves the item with the given @p key.
+     * @param key the key of the item
+     * @param preferredGroup the preferred group, or QString::null
+     * @param createGroup true to create the group if necessary
+     * @return the saved item
+     */
     KFileMetaInfoItem saveItem( const QString& key,
                                 const QString& preferredGroup = QString::null,
                                 bool createGroup = true );
 
+    /**
+     * Returns the KFileMetaInfoGroup with the given @p key.
+     * @param key the key of the item
+     * @return the group. Invalid if there is no group with the given @p key.
+     */
     KFileMetaInfoGroup group(const QString& key) const;
 
+    /**
+     * Returns the KFileMetaInfoGroup with the given @p key.
+     * @param key the key of the item
+     * @return the group. Invalid if there is no group with the given @p key.
+     */
     KFileMetaInfoGroup operator[] (const QString& key) const
     {
         return group(key);
@@ -963,17 +1064,25 @@ public:
     * in the list of @ref editableGroups(). Note that all non-variable
     * items that belong to this group are automatically added as empty
     * item.
+    * @param name the name of the group to add
+    * @return true if successful, false if not
     */
     bool addGroup( const QString& name );
 
    /**
-    * remove the specified group. This will only succeed if it is
+    * Remove the specified group. This will only succeed if it is
     * in the list of @ref editableGroups(). Beware that this also
     * removes all the items in that group, so always ask the user
     * before removing it!
+    * @param name the name of the group to remove
+    * @return true if successful, false if not
     */
     bool removeGroup( const QString& name );
 
+    /**
+     * Returns a list of removed groups.
+     * @return a list of removed groups.
+     */
     QStringList removedGroups();
 
    /**
@@ -985,15 +1094,24 @@ public:
     bool applyChanges();
 
     /**
-     * @return whether an item for this key exists.
+     * Checks whether an item with the given @p key exists.
+     * @param key the key to check
+     * @return whether an item for this @p key exists.
      */
     bool contains( const QString& key ) const;
 
     /**
+     * Checks whether a group with the given @p key exists.
+     * @param key the key to check
      * @return whether a group with this name exists.
      */
     bool containsGroup( const QString& key ) const;
 
+    /*
+     * Returns the value with the given @p key.
+     * @param key the key to retrieve
+     * @return the value. Invalid if it does not exist
+     */
     const QVariant value( const QString& key ) const
     {
         return item(key).value();
@@ -1001,19 +1119,29 @@ public:
 
 
     /**
-     * @return true if the item is valid, i.e. if actually represents the info
-     * about a file, false if the object is uninitialized
+     * Returns true if the item is valid, i.e. if actually represents the info
+     * about a file, false if the object is uninitialized.
+     * @return true if valid, false otherwise
      */
     bool isValid() const;
 
     /**
-     * @return false if the object contains data, true if it's empty. You'll
-     *         get an empty object if no plugin for the file could be found.
+     * Returns false if the object contains data, true if it's empty. You'll
+     * get an empty object if no plugin for the file could be found.
+     * @return true if empty, false otherwise
      */
     bool isEmpty() const;
 
+    /**
+     * Returns the mime type of file.
+     * @return the file's mime type
+     */
     QString mimeType() const;
 
+    /**
+     * Returns the path of file.
+     * @return the file's path
+     */
     QString path() const;
 
     friend QDataStream& operator >>(QDataStream& s, KFileMetaInfo& );
@@ -1065,6 +1193,12 @@ class KFilePlugin : public QObject
     Q_OBJECT
 
 public:
+    /**
+     * Creates a new KFilePlugin instance.
+     * @param parent the parent of the QObject, can be 0
+     * @param name the name of the QObject, can be 0
+     * @param args currently ignored
+     */
     KFilePlugin( QObject *parent, const char *name,
                  const QStringList& args );
 
@@ -1074,6 +1208,9 @@ public:
      * Read the info from the file in this method and insert it into the
      * provided @ref KFileMetaInfo object. You can get the path to
      * the file with info.path()
+     * @param info the information will be written here
+     * @param what defines what to read, see @ref KFileMetaInfo::What
+     * @return true if successful, false if it failed
      **/
     virtual bool readInfo( KFileMetaInfo& info,
                            uint what = KFileMetaInfo::Fastest ) = 0;
@@ -1081,9 +1218,12 @@ public:
     /**
      * Similar to the above method, but for writing the info back to the file.
      * If you don't have any writable keys, don't implement this method
+     * @param info the information that will be written
+     * @return true if successful, false if it failed
      **/
-    virtual bool writeInfo( const KFileMetaInfo& /*info*/ ) const
+    virtual bool writeInfo( const KFileMetaInfo& info ) const
     {
+        Q_UNUSED(info);
         return true;
     }
 
@@ -1094,13 +1234,20 @@ public:
      *
      * If you you don't need any validation, e.g. you accept any input,
      * you can simply return 0L, or not reimplement this method at all.
+     * @param mimeType the mime type
+     * @param group the group name of the validator item
+     * @param key the key name of the validator item
+     * @param parent the QObject parent, can be 0
+     * @param name the name of the QObject, can be 0
      **/
-    virtual QValidator* createValidator( const QString& /* mimeType */,
-                                         const QString& /* group */,
-                                         const QString& /* key */,
-                                         QObject* /*parent*/,
-                                         const char* /*name*/) const
+    virtual QValidator* createValidator( const QString& mimeType,
+                                         const QString& group,
+                                         const QString& key,
+                                         QObject* parent,
+                                         const char* name) const
     {
+        Q_UNUSED(mimeType); Q_UNUSED(group);Q_UNUSED(key);
+        Q_UNUSED(parent);Q_UNUSED(name);
         return 0;
     }
 

@@ -35,19 +35,24 @@ namespace KIO {
   class Job;
 
   /**
-   * Net Transparency, formerly provided by kfmlib, but now
-   * done with @ref KIO::Job.
+   * Net Transparency. 
+   * 
+   * NetAccess allows you to do simple file operation (load, save,
+   * copy, delete..) without working with @ref KIO::Job directly.
+   * Whereas a @ref KIO::Job is asynchronous, meaning that the 
+   * developer has to connect slots for it, KIO::NetAccess provides 
+   * synchronous downloads and uploads, as well as temporary file 
+   * creation and removal. The functions appear to be blocking, 
+   * but the Qt event loop continues running while the operations 
+   * are handled. This means that the GUI will not freeze.
    *
    * This class isn't meant to be used as a class but only as a simple
-   *  namespace for static functions, though an instance of the class
-   *  is built for internal purposes.  Whereas a @ref KIO::Job is
-   *  asynchronous, meaning that the developer has to connect slots
-   *  for it, KIO::NetAccess provides synchronous downloads and
-   *  uploads, as well as temporary file creation and removal.
+   * namespace for static functions, though an instance of the class
+   * is built for internal purposes.  
    *
-   *  Port to kio done by David Faure, faure@kde.org
+   * Port to kio done by David Faure, faure@kde.org
    *
-   * @short Provides a synchronous interface to io jobs.
+   * @short Provides an easy, synchronous interface to KIO file operations.
    */
 class NetAccess : public QObject
 {
@@ -91,6 +96,7 @@ public:
      * @param target String containing the final local location of the
      *               file.  If you insert an empty string, it will
      *               return a location in a temporary spot.
+     * @return true if successful, false for failure
      */
     static bool download(const KURL& src, QString & target);
 
@@ -119,15 +125,21 @@ public:
      *
      * @param target URL containing the final location of the
      *               file.
+     * @return true if successful, false for failure
      */
     static bool upload(const QString& src, const KURL& target);
 
     /**
-     * Alternative method for copying over the network.
+     * Alternative to @ref upload for copying over the network.
      * Overwrite is false, so this will fail if @p target exists.
      *
      * This one takes two URLs and is a direct equivalent
      * of @ref KIO::file_copy (not KIO::copy!).
+     * 
+     * @param src URL Referencing the file to upload.
+     * @param target URL containing the final location of the
+     *               file.
+     * @return true if successful, false for failure
      */
     static bool copy( const KURL& src, const KURL& target );
 
@@ -137,6 +149,10 @@ public:
      *
      * This one takes two URLs and is a direct equivalent
      * of @ref KIO::copy!.
+     * @param src URL Referencing the file to upload.
+     * @param target URL containing the final location of the
+     *               file.
+     * @return true if successful, false for failure
      */
     static bool dircopy( const KURL& src, const KURL& target );
 
@@ -147,11 +163,12 @@ public:
      * (it saves creating a slot and testing for the job result).
      *
      * @param url the url we are testing
+     * @return true if the URL exists, false otherwise
      */
     static bool exists(const KURL& url);
 
     /**
-     * Overloaded version of exists
+     * Overloaded version of @ref exists().
      * A stat() can have two meanings. Either we want to read from this URL,
      * or to check if we can write to it. First case is "source", second is "dest".
      * It is necessary to know what the StatJob is for, to tune the kioslave's behaviour
@@ -160,7 +177,9 @@ public:
      *
      * @param url the url we are testing
      * @param source if true, we want to read from that URL.
-     * If false, we want to write to it.
+     *               If false, we want to write to it.
+     * @return true if the URL exists and we can do the operation specified by
+     *              @p source, false otherwise
      */
     static bool exists(const KURL& url, bool source);
 
@@ -173,6 +192,7 @@ public:
      * @param url The URL we are testing.
      * @param entry The result of the stat. Iterate over the list
      * of atoms to get hold of name, type, size, etc., or use @ref KFileItem.
+     * @return true if successful, false for failure
      */
     static bool stat(const KURL& url, KIO::UDSEntry & entry);
 
@@ -183,7 +203,7 @@ public:
      * (it saves creating a slot and testing for the job result).
      *
      * @param url The file or directory to delete.
-     * @return @p true on success, @p false on failure.
+     * @return true on success, false on failure.
      */
     static bool del( const KURL & url );
 
@@ -194,12 +214,16 @@ public:
      * (it saves creating a slot and testing for the job result).
      *
      * @param url The directory to create.
-     * @return @p true on success, @p false on failure.
+     * @return true on success, false on failure.
      */
     static bool mkdir( const KURL & url, int permissions = -1 );
 
 
     /**
+     * @internal
+     * This function is not implemented!?
+     * (only mimetypeInternal)
+     *
      * Determines the mimetype of a given URL.
      *
      * This is a convenience function for @ref KIO::mimetype.  You
@@ -216,6 +240,7 @@ public:
 
     /**
      * Returns the error string for the last job, in case it failed.
+     * @return the last error string, or QString::null
      */
     static QString lastErrorString() { return lastErrorMsg ? *lastErrorMsg : QString::null; }
 

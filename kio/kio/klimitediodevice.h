@@ -22,7 +22,7 @@
 /**
  * A readonly device that reads from an underlying device
  * from a given point to another (e.g. to give access to a single
- * file inside an archive)
+ * file inside an archive).
  * @author David Faure <david@mandrakesoft.com>
  * @since 3.1
  */
@@ -30,8 +30,11 @@ class KLimitedIODevice : public QIODevice
 {
 public:
     /**
+     * Creates a new KLimitedIODevice.
      * @param dev the underlying device, opened or not
      * This device itself auto-opens (in readonly mode), no need to open it.
+     * @param start where to start reading (position in bytes)
+     * @param length the length of the data to read (in bytes)
      */
     KLimitedIODevice( QIODevice *dev, int start, int length )
         : m_dev( dev ), m_start( start ), m_length( length )

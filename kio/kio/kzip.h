@@ -30,12 +30,9 @@
 
 class KZipFileEntry;
 /**
- * @short A class for reading/writing zip archives.
- * @author Holger Schroeder <holger-kde@holgis.net>
- *
  *   This class implements a kioslave to acces ZIP files from KDE.
- *   you can use it in IO_ReadOnly or in IO_WriteOnly mode, and it 
- *   behaves just as expected (i hope ;-) ).
+ *   You can use it in IO_ReadOnly or in IO_WriteOnly mode, and it 
+ *   behaves just as expected.
  *   It can also be used in IO_ReadWrite mode, in this case one can
  *   append files to an existing zip archive. when you append new files, which
  *   are not yet in the zip, it works as expected, they are appended at the end.
@@ -49,6 +46,8 @@ class KZipFileEntry;
  *   were looking.
  *   for more information on the zip fileformat go to 
  *   http://www.pkware.com/support/appnote.html .
+ * @short A class for reading/writing zip archives.
+ * @author Holger Schroeder <holger-kde@holgis.net>
  * @since 3.1
  */
 class KZip : public KArchive
@@ -67,6 +66,7 @@ public:
      * The device can be compressed (KFilterDev) or not (QFile, etc.).
      * WARNING: don't assume that giving a QFile here will decompress the file,
      * in case it's compressed!
+     * @param dev the device to access
      */
     KZip( QIODevice * dev );
 
@@ -79,15 +79,31 @@ public:
     /**
      * The name of the zip file, as passed to the constructor
      * Null if you used the QIODevice constructor.
+     * @return the zip's file name, or null if a QIODevice is used
      */
     QString fileName() { return m_filename; }
 
-    enum Compression { NoCompression = 0, DeflateCompression = 1 };
+    /**
+     * Describes the Zip's compression type.
+     */
+    enum Compression { NoCompression = 0,     ///< Uncompressed.
+		       DeflateCompression = 1 ///< Deflate compression method. 
+    };
+
+
     /**
      * Call this before writeFile or prepareWriting, to define whether the next
      * files to be written should be compressed or not.
+     * @param c the new compression mode
+     * @see compression()
      */
     void setCompression( Compression c );
+
+    /**
+     * The current compression mode that will be used for new files.
+     * @return the current compression mode
+     * @see setCompression()
+     */
     Compression compression() const;
 
     /**
@@ -95,15 +111,38 @@ public:
      * using this function.
      * This method takes the whole data at once.
      * @param name can include subdirs e.g. path/to/the/file
+     * @param user the user owning the file
+     * @param group the group owning the file
+     * @param size the size of the file
+     * @param data a pointer to the data
+     * @return true if successful, false otherwise
      */
     virtual bool writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data );
 
     /**
-     * Alternative method: call prepareWriting, writeData in small chunks, doneWriting
-     * @param size unused
+     * Alternative method for writing: call prepareWriting(), then feed the data 
+     * in small chunks using @ref writeData(), and call doneWriting() when done.
+     * @param name can include subdirs e.g. path/to/the/file
+     * @param user the user owning the file
+     * @param group the group owning the file
+     * @param size unused argument
+     * @return true if successful, false otherwise
      */
     virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size );
+
+    /**
+     * Write data to a file that has been created using @ref prepareWriting().
+     * @param data a pointer to the data
+     * @param size the size of the chunk
+     * @return true if successful, false otherwise
+     */
     bool writeData( const char* data, uint size );
+
+    /**
+     * Write data to a file that has been created using @ref prepareWriting().
+     * @param size the size of the file
+     * @return true if successful, false otherwise
+     */
     virtual bool doneWriting( uint size );
 
 protected:
@@ -111,9 +150,10 @@ protected:
      * Opens the archive for reading.
      * Parses the directory listing of the archive
      * and creates the KArchiveDirectory/KArchiveFile entries.
-     *
+     * @param mode the mode of the file
      */
     virtual bool openArchive( int mode );
+    /// Closes the archive
     virtual bool closeArchive();
 
     /**

@@ -35,6 +35,7 @@ namespace KIO {
 
 class ParseTreeBase;
 
+/// @internal
 struct PreferencesReturn
 {
   enum Type { PRT_DOUBLE, PRT_ERROR };
@@ -53,6 +54,7 @@ struct PreferencesReturn
 
 
 /**
+ * @internal
  * @return 0  => Does not match
  *         1  => Does match
  *         <0 => Error
@@ -61,6 +63,7 @@ int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &,
 		     const KServiceTypeProfile::OfferList& );
 
 /**
+ * @internal
  * @return 1 on success or <0 on Error
  */
 PreferencesReturn matchPreferences( const ParseTreeBase *_tree, const KService::Ptr &,

@@ -29,7 +29,7 @@ class KShellCompletionPrivate;
 
 /**
  * This class does shell-like completion of file names.
- * A string passed to makeCompletion() will be interpreted as a shell 
+ * A string passed to @ref makeCompletion() will be interpreted as a shell 
  * command line. Completion will be done on the last argument on the line. 
  * Returned matches consist of the first arguments (uncompleted) plus the 
  * completed last argument.
@@ -50,9 +50,11 @@ public:
 
 	/**
 	 * Finds completions to the given text.
-	 * The first match is returned and emitted in the signal match() 
+	 * The first match is returned and emitted in the signal match().
+	 * @param text the text to complete
+	 * @return the first match, or QString::null if not found
 	 */
-	QString makeCompletion(const QString&);
+	QString makeCompletion(const QString &text);
 
 protected:
 	// Called by KCompletion

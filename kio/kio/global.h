@@ -33,7 +33,9 @@
  */
 namespace KIO
 {
+  /// 64-bit file offset
   typedef signed long long int fileoffset_t;
+  /// 64-bit file size
   typedef unsigned long long int filesize_t;
 
   /**
@@ -73,9 +75,12 @@ namespace KIO
 
   /**
    * Helper for showing information about a set of files and directories
-   * @p items = @p files + @p dirs + number of symlinks :)
-   * @param size the sum of the size of the _files_
+   * @param items the number of items (= @p files + @p dirs + number of symlinks :)
+   * @param files the number of files
+   * @param dirs the number of dirs
+   * @param size the sum of the size of the @p files
    * @param showSize whether to show the size in the result
+   * @return the summary string
    */
   QString itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize);
 
@@ -83,11 +88,15 @@ namespace KIO
    * Encodes (from the text displayed to the real filename)
    * This translates % into %% and / into %2f
    * Used by KIO::link, for instance.
+   * @param str the file name to encode
+   * @return the encoded file name
    */
   QString encodeFileName( const QString & str );
   /**
    * Decodes (from the filename to the text displayed)
    * This translates %2[fF] into / and %% into %
+   * @param str the file name to decode
+   * @return the decoded file name
    */
   QString decodeFileName( const QString & str );
 
@@ -175,6 +184,9 @@ namespace KIO
   /*
    * Returns a translated error message for @p errorCode using the
    * additional error information provided by @p errorText.
+   * @param errorCode the error code
+   * @param errorText the additional error text
+   * @return the created error string
    */
   QString buildErrorString(int errorCode, const QString &errorText);
 
@@ -182,6 +194,11 @@ namespace KIO
    * Returns a translated html error message for @p errorCode using the
    * additional error information provided by @p errorText , @p reqUrl
    * (the request URL), and the ioslave @p method .
+   * @param errorCode the error code
+   * @param errorText the additional error text
+   * @param reqURL the request URL
+   * @param method the ioslave method
+   * @return the created error string
    */
   QString buildHTMLErrorString(int errorCode, const QString &errorText,
                                 const KURL *reqUrl = 0L, int method = -1 );
@@ -191,12 +208,16 @@ namespace KIO
    * additional error information provided by @p errorText , @p reqUrl
    * (the request URL), and the ioslave @p method .
    *
-   * Returns the following data:
-   * QString errorName - the name of the error
-   * QString techName - if not null, the more technical name of the error
-   * QString description - a description of the error
-   * QStringList causes - a list of possible causes of the error
-   * QStringList solutions - a liso of solutions for the error
+   * @param errorCode the error code
+   * @param errorText the additional error text
+   * @param reqURL the request URL
+   * @param method the ioslave method
+   * @return the following data:
+   * @li QString errorName - the name of the error
+   * @li QString techName - if not null, the more technical name of the error
+   * @li QString description - a description of the error
+   * @li QStringList causes - a list of possible causes of the error
+   * @li QStringList solutions - a liso of solutions for the error
    */
   QByteArray rawErrorDetail(int errorCode, const QString &errorText,
                                 const KURL *reqUrl = 0L, int method = -1 );
@@ -246,6 +267,11 @@ namespace KIO
     UDS_XML_PROPERTIES = 32768 | UDS_STRING
   };
 
+  /**
+   * Specifies how to use the cache.
+   * @see parseCacheControl()
+   * @see getCacheControlString()
+   */
   enum CacheControl
   {
       CC_CacheOnly, ///< Fail request if not in cache
@@ -256,8 +282,22 @@ namespace KIO
       CC_Reload     ///< Always fetch from remote site.
   };
 
+  /**
+   * Parses the string representation of the cache control option.
+   *
+   * @param cacheControl the string representation
+   * @return the cache control value
+   * @see getCacheControlString()
+   */
   KIO::CacheControl parseCacheControl(const QString &cacheControl);
 
+  /**
+   * Returns a string representation of the given cache control method.
+   *
+   * @param cacheControl the cache control method
+   * @return the string representation
+   * @see parseCacheControl()
+   */
   QString getCacheControlString(KIO::CacheControl cacheControl);
 
   /**
@@ -271,13 +311,17 @@ namespace KIO
    * Returns the mount point on which resides @p filename.
    * For instance if /home is a separate partition, findPathMountPoint("/home/user/blah")
    * will return /home
+   * @param the file name to check
+   * @return the mount point of the given @p filename
    */
   QString findPathMountPoint( const QString & filename );
 
   /**
-   * checks if the path belongs to a file system that is probably
+   * Checks if the path belongs to a file system that is probably
    * slow. It checks for NFS or for paths belonging to automounted
    * paths not yet mounted
+   * @param filename the file name to check
+   * @retur true if the filesystem is probably slow
    */
   bool probably_slow_mounted(const QString& filename);
 
@@ -301,6 +345,9 @@ public:
    * Whether 'm_str' or 'm_long' is used depends on the value of 'm_uds'.
    */
   QString m_str;
+  /**
+   * Whether 'm_str' or 'm_long' is used depends on the value of 'm_uds'.
+   */
   long long m_long;
 
   /**
@@ -317,13 +364,27 @@ typedef QValueList<UDSEntry> UDSEntryList;
 typedef QValueListIterator<UDSEntry> UDSEntryListIterator;
 typedef QValueListConstIterator<UDSEntry> UDSEntryListConstIterator;
 
+/**
+ * MetaData is a simple map of key/value strings.
+ */
 class MetaData : public QMap<QString, QString>
 {
 public:
+  /**
+   * Creates an empty meta data map.
+   */
    MetaData() : QMap<QString, QString>() { };
+  /**
+   * Copy constructor.
+   */
    MetaData(const QMap<QString, QString>&metaData) : 
      QMap<QString, QString>(metaData) { }; 
 
+   /**
+    * Adds the given meta data map to this map.
+    * @param metaData the map to add
+    * @return this map
+    */
    MetaData & operator+= ( const QMap<QString,QString> &metaData )
    {
       QMap<QString,QString>::ConstIterator it;

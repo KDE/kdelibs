@@ -29,19 +29,33 @@
 
 class KProtocolInfoPrivate;
 
+/**
+ * KProtocolInfoFactory is a factory for getting 
+ * @ref KProtocolInfo. The factory is a singleton 
+ * (only one instance can exist).
+ *
+ * @short Factory for KProtocolInfo
+ */
 class KProtocolInfoFactory : public KSycocaFactory
 { 
   K_SYCOCAFACTORY( KST_KProtocolInfoFactory )
 public:
+  /**
+   * The instance of the KProtocolInfoFactory.
+   * @return the factory instance
+   */
   static KProtocolInfoFactory* self() 
   { if ( !_self) new KProtocolInfoFactory(); return _self; }
+  /// @internal
   KProtocolInfoFactory();
   virtual ~KProtocolInfoFactory();
 
   /*
-   * Returns protocol info for @p protocol
+   * Returns protocol info for @p protocol.
    *
-   * Does not take proxy settings into account
+   * Does not take proxy settings into account.
+   * @param protocol the protocol to search for
+   * @return the pointer to the KProtocolInfo, or 0 if not found
    */
   KProtocolInfo *findProtocol(const QString &protocol);
 
@@ -51,11 +65,14 @@ public:
    * Does take proxy setings into account. If @p url is 
    * handled by a proxy, the protocol used for the proxy is
    * returned.
+   * @param url the URL to search for
+   * @return the pointer to the KProtocolInfo, or 0 if not found
    */
   KProtocolInfo *findProtocol(const KURL &url);
 
   /**
-   * @returns list of all known protocols
+   * Returns list of all known protocols.
+   * @return a list of all protocols
    */
   QStringList protocols();
 protected:

@@ -48,13 +48,13 @@
  * furthermore, they must be applications (Type=Application).  You
  * then will use @ref KRun::run() to invoke the application.  In "trader-speak",
  * this looks like so:
- * <PRE>
+ * <pre>
  * KTrader::OfferList offers = KTrader::self()->query("text/html", "Type == 'Application'");
  * KService::Ptr ptr = offers.first();
  * KURL::List lst;
  * lst.append("http://www.kde.org/index.html");
  * KRun::run(*ptr, lst);
- * </PRE>
+ * </pre>
  *
  * It should be noted that in the above example, using
  * @ref KServiceTypeProfile would be the better choice since you would
@@ -70,13 +70,13 @@
  * will need to use the @ref KLibFactory and @ref KLibLoader to
  * actually do something with our query, then.  Our code would look
  * like so:
- * <PRE>
+ * <pre>
  * KTrader::OfferList offers = KTrader::self()->query("text/html", "'KParts/ReadOnlyPart' in ServiceTypes");
  * KService::Ptr ptr = offers.first();
  * KLibFactory *factory = KLibLoader::self()->factory( ptr->library() );
  * if (factory)
  *   part = static_cast<KParts::ReadOnlyPart *>(factory->create(this, ptr->name(), "KParts::ReadOnlyPart"));
- * </PRE>
+ * </pre>
  *
  * Please note that when including property names containing arithmetic operators like - or +, then you have
  * to put brackets around the property name, in order to correctly separate arithmetic operations from
@@ -89,7 +89,7 @@
  * is less than 4.
  * Instead of the other meaning, make sure that the numeric value of "X-KDE-Blah" is less than 4.
  *
- * Please read http://developer.kde.org/documentation/library/tradersyntax.html for
+ * Please read http://developer.kde.org/documentation/library/kdeqt/tradersyntax.html for
  * a more complete description of the trader language syntax.
  *
  * @short Provides a way to query the KDE infrastructure for specific
@@ -120,28 +120,32 @@ public:
      * constraint parameter is used to limit the possible choices
      * returned based on the constraints you give it.
      *
-     * The constraint language is rather full.  The most common
-     * keywords are AND, OR, NOT, IN, and EXIST.. all used in an
+     * The @p constraint language is rather full.  The most common
+     * keywords are AND, OR, NOT, IN, and EXIST, all used in an
      * almost spoken-word form.  An example is:
-     * <PRE>
+     * <pre>
      * (Type == 'Service') and (('KParts/ReadOnlyPart' in ServiceTypes) or (exist Exec))
-     * </PRE>
+     * </pre>
      *
      * The keys used in the query (Type, ServiceType, Exec) are all
      * fields found in the .desktop files.
      *
      * @param servicetype A service type like 'text/plain', 'text/html', or 'KOfficePlugin'.
-     * @param constraint  A constraint to limit the choices returned.
-     * @param preferences Indicates a particular preference to return.
+     * @param constraint  A constraint to limit the choices returned, QString::null to 
+     *                    get all services of the given @p servicetype
+     * @param preferences Indicates a particular preference to return, QString::null to ignore.
+     *                    Uses an expression in the constraint language that must return 
+     *                    a number
      *
-     * @return A list of services that satisfy the query.
+     * @return A list of services that satisfy the query
+     * @see http://developer.kde.org/documentation/library/kdeqt/tradersyntax.html
      */
     virtual OfferList query( const QString& servicetype,
 			     const QString& constraint = QString::null,
 			     const QString& preferences = QString::null) const;
 
     /**
-     * A variant of query, that takes two service types as an input.
+     * A variant of @ref query(), that takes two service types as an input.
      * It is not exactly the same as adding the second service type
      * in the constraints of the other query call, because this one
      * takes into account user preferences for this combination of service types.
@@ -149,6 +153,17 @@ public:
      * Typically, this is used for getting the list of embeddable components
      * that can handle a given mimetype.
      * In that case, @p servicetype is the mimetype and @p genericServiceType is "KParts/ReadOnlyPart".
+     *
+     * @param servicetype A service type like 'text/plain', 'text/html', or 'KOfficePlugin'.
+     * @param genericServiceType a basic service type, like 'KParts/ReadOnlyPart'
+     * @param constraint  A constraint to limit the choices returned, QString::null to 
+     *                    get all services of the given @p servicetype
+     * @param preferences Indicates a particular preference to return, QString::null to ignore.
+     *                    Uses an expression in the constraint language that must return 
+     *                    a number
+     *
+     * @return A list of services that satisfy the query
+     * @see http://developer.kde.org/documentation/library/kdeqt/tradersyntax.html
      */
     OfferList query( const QString& servicetype, const QString& genericServiceType,
                      const QString& constraint /*= QString::null*/,
