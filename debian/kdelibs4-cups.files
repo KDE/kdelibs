@@ -1,5 +1,5 @@
-usr/lib/kde2/libkdeprint_cups.so
-usr/lib/kde2/libkdeprint_cups.la
+usr/lib/kde3/libkdeprint_cups.so
+usr/lib/kde3/libkdeprint_cups.la
 usr/lib/libcupsdconf.so
 usr/lib/libcupsdconf.la
 usr/share/apps/kdeprint/plugins/cups.print

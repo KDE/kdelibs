@@ -1,3 +1,10 @@
+kdelibs4 (3.0-0.alpha1-2) unstable; urgency=low
+  
+  * sync
+  * move modules into /usr/lib/kde3 instead of /usr/lib/kde2
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 18 Oct 2001 10:18:00 -0700
+
 kdelibs4 (3.0-0.alpha1-1) unstable; urgency=low
 
   * New upstream version
