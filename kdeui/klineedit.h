@@ -400,9 +400,21 @@ public slots:
 
     /**
      * Sets @p items into the completion-box if completionMode() is
-     * CompletionPopup. The popup will be shown immediately.
+     * CompletionPopup. The popup will be shown immediately. 
+     *
+     * @param items list of completion matches to be shown in the completion box.
      */
     void setCompletedItems( const QStringList& items );
+    
+    /**
+     * Same as the above function except it allows you to temporarily
+     * turn off text completion in CompletionPopupAuto mode.
+     *
+     * TODO: Merge with above function in KDE 4.
+     *
+     * @param autoSuggest true if you want automatic text completion (suggestion) enabled.
+     */
+    void setCompletedItems( const QStringList& items, bool autoSuggest );
 
     /**
      * Reimplemented to workaround a buggy QLineEdit::clear()

@@ -571,7 +571,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                     setCursorPosition(cPos);
                     cursorNotAtEnd=true;
                 }
-
+                
                 d->disableRestoreSelection = true;
                 QLineEdit::keyPressEvent ( e );
                 d->disableRestoreSelection = false;
@@ -1114,6 +1114,11 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
 
 void KLineEdit::setCompletedItems( const QStringList& items )
 {
+    setCompletedItems( items, true );
+}
+
+void KLineEdit::setCompletedItems( const QStringList& items, bool autoSuggest )
+{
     QString txt = text();
 
     if ( !items.isEmpty() &&
@@ -1128,7 +1133,7 @@ void KLineEdit::setCompletedItems( const QStringList& items )
         d->completionBox->setItems( items );
         d->completionBox->popup();
 
-        if ( d->autoSuggest )
+        if ( d->autoSuggest && autoSuggest )
         {
             int index = items.first().find( txt );
             QString newText = items.first().mid( index );
