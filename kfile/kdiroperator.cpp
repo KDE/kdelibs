@@ -473,6 +473,7 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
 
 void KDirOperator::rereadDir()
 {
+    dir->setURLDirty( true );
     pathChanged();
 }
 
