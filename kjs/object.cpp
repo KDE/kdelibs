@@ -325,7 +325,7 @@ KJSO KJSO::getValue() const
 /* TODO: remove in next version */
 KJSO KJSO::getValue()
 {
-    return getValue();
+    return const_cast<const KJSO*>(this)->getValue();
 }
 
 // ECMA 8.7.2
