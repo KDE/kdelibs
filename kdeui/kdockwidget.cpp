@@ -70,8 +70,8 @@ static const char*not_close_xpm[]={
  * @author Max Judin.
  * @version $Id$
 */
-KDockMainWindow::KDockMainWindow( const char *name )
-:KMainWindow( 0, name )
+KDockMainWindow::KDockMainWindow( QWidget* parent, const char *name, WFlags f)
+:KMainWindow( parent, name, f )
 {
   QString new_name = QString(name) + QString("_DockManager");
   dockManager = new KDockManager( this, new_name.latin1() );
@@ -249,8 +249,8 @@ void KDockWidgetHeader::loadConfig( KConfig* c )
   slotStayClicked();
 }
 /*************************************************************************/
-KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel)
-: QWidget( parent, name )
+KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel, WFlags f)
+: QWidget( parent, name, f )
 	,formerBrotherDockWidget(0L)
   ,currentDockPos(DockNone)
   ,formerDockPos(DockNone)
