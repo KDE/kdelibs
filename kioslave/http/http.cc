@@ -640,12 +640,18 @@ bool HTTPProtocol::readHeader()
   int len = 1;
   char buffer[1024];
   bool unauthorized = false;
+  bool cont = false;
   while(len && (gets(buffer, sizeof(buffer)))) { 
     // strip off \r and \n if we have them
     len = strlen(buffer);
+
     while(len && (buffer[len-1] == '\n' || buffer[len-1] == '\r'))
       buffer[--len] = 0;
     
+    // if there was only a newline then continue
+    if (!len)
+      continue;
+
     // are we allowd to resume?  this will tell us
     if (strncasecmp(buffer, "Accept-Ranges:", 14) == 0) {
       if (strncasecmp(trimLead(buffer + 14), "none", 4) == 0)
@@ -706,6 +712,10 @@ bool HTTPProtocol::readHeader()
       else if (buffer[9] == '4' || buffer[9] == '5') {
 	// Tell that we will only get an error page here.
 	errorPage();
+      }
+      else if (strncmp(buffer + 9, "100", 3) == 0) {
+	// We got 'Continue' - ignore it
+	cont = true;
       }
     }
 
@@ -768,8 +778,11 @@ bool HTTPProtocol::readHeader()
 
   // DONE receiving the header!
 
+  // we need to reread the header if we got a '100 Continue'
+  if ( cont )
+    return readHeader();
   // we need to try to login again if we failed earlier
-  if (unauthorized) {
+  else if (unauthorized) {
     http_close();
     QString user = m_state.url.user();
     QString pass = m_state.url.pass();
@@ -1043,12 +1056,13 @@ void HTTPProtocol::slotPut(const char *_url, int /*_mode*/,
     if ( _len > 0 )
       ready();
     else if ( readHeader() )
-      slotDataEnd();
-
-    http_close();
-    finished();
+      {
+	slotDataEnd();
+        http_close();
+        finished();
+	m_cmd = CMD_NONE;
+      }
   }
-  m_cmd = CMD_NONE;
 }
 
 void HTTPProtocol::decodeChunked()
@@ -1512,6 +1526,12 @@ void HTTPProtocol::slotData(void *_p, int _len)
 		error(ERR_CONNECTION_BROKEN, m_state.url.host());
 		return;
 	}
+
+	if ( readHeader() )
+	  slotDataEnd();
+        http_close();
+        finished();
+	m_cmd = CMD_NONE;
 }
 
 /**
