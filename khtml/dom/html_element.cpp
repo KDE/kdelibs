@@ -120,3 +120,13 @@ void HTMLElement::setClassName( const DOMString &value )
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_CLASS, value);
 }
 
+void HTMLElement::removeCSSProperty( int propid )
+{
+    if(impl) ((HTMLElementImpl *)impl)->removeCSSProperty( propid );
+}    
+
+void HTMLElement::addCSSProperty( int propId, const DOMString &value )
+{
+    if(impl) ((HTMLElementImpl *)impl)->addCSSProperty( propId, value );
+}    
+    

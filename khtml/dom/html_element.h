@@ -153,6 +153,16 @@ public:
      * see @ref className
      */
     void setClassName( const DOMString & );
+
+    /*
+     * @internal
+     */
+    void removeCSSProperty( int propid );
+    
+    /*
+     * @internal
+     */
+    void addCSSProperty( int propId, const DOMString &value );
 };
 
 }; //namespace

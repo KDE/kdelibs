@@ -20,9 +20,10 @@
 #include "kjs_css.h"
 
 #include <xml/dom_nodeimpl.h>
+#include <dom/html_element.h>
 #include <rendering/render_style.h>
 #include <kjs/types.h>
-
+#include <css/cssproperties.h>
 using namespace KJS;
 
 KJSO Style::get(const UString &p) const
@@ -47,13 +48,18 @@ KJSO Style::get(const UString &p) const
 
 void Style::put(const UString &p, const KJSO& v)
 {
-  khtml::RenderStyle *style = node.handle()->style();
+    DOM::HTMLElement el = node;
+    if ( el.isNull() )
+      return;
 
-  if (p == "left") {
-    int i = v.toInt32();
-    style->setLeft(khtml::Length(i, khtml::Fixed));
-  } else
-    return;
+    int id = 0;
+    if (p == "left") {
+	id = CSS_PROP_LEFT;
 
-  node.handle()->setStyle(style);
+    } else
+	return;
+    if ( id ) {
+	el.removeCSSProperty( id );
+	el.addCSSProperty( id, v.toString().value().string() );
+    }
 }

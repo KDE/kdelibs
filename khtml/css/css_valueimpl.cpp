@@ -104,6 +104,30 @@ DOMString CSSStyleDeclarationImpl::removeProperty( int id)
     return 0;
 }
 
+void CSSStyleDeclarationImpl::removeProp ( int id )
+{
+    if(!m_lstValues) return;
+
+    unsigned int i = 0;
+    while(i < m_lstValues->count()) {
+	if(id == m_lstValues->at(i)->m_id) {
+	    m_lstValues->remove(i);
+#if 0
+	    kdDebug() << "CSSStyleDeclarationImpl::removeProp " << id << endl;
+	    int j = 0;
+	    while(j < m_lstValues->count()) {
+		kdDebug() << m_lstValues->at(i)->m_id << endl;
+		j++;
+	    }
+#endif	    
+	    return;
+	}
+	i++;
+    }
+    return;
+}    
+
+
 DOMString CSSStyleDeclarationImpl::getPropertyPriority( const DOMString &propertyName )
 {
     int id = getPropertyID(propertyName.string().ascii(), propertyName.length());

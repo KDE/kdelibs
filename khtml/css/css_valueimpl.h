@@ -54,6 +54,7 @@ public:
     CSSValueImpl *getPropertyCSSValue ( const DOM::DOMString &propertyName );
     DOM::DOMString removeProperty ( const DOM::DOMString &propertyName );
     DOM::DOMString removeProperty ( int propertyId );
+    void removeProp ( int propId );
     DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName );
     void setProperty ( const DOM::DOMString &propertyName, const DOM::DOMString &value,
 		       const DOM::DOMString &priority );

@@ -409,7 +409,7 @@ void RenderBox::updateHeight()
         if(m_height != oldHeight) {
             if(containingBlock() != this) containingBlock()->updateHeight();
         } else {
-            repaint();
+            containingBlock()->repaint();
         }
     }
 
