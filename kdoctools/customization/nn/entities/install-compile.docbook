@@ -1,4 +1,4 @@
-<para>For å kompilera og installera &kappanme; på maskina, må du utføra 
+<para>For å kompilera og installera &kappname; på maskina, må du utføra 
 dei følgjande kommandoane i basekatalogen til &kappname;:</para>
 
 <screen><prompt>%</prompt> <userinput><command>./configure</command></userinput>
