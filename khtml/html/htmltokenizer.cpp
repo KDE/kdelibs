@@ -414,9 +414,9 @@ void HTMLTokenizer::scriptHandler()
     QString prependingSrc;
     if ( !parser->skipMode() ) {
         if (cs) {
-             //qDebug( "cachedscript extern!" );
-             //qDebug( "src: *%s*", QString( src.current(), src.length() ).latin1() );
-             //qDebug( "pending: *%s*", pendingSrc.latin1() );
+             //kdDebug( 6036 ) << "cachedscript extern!" << endl;
+             //kdDebug( 6036 ) << "src: *" << QString( src.current(), src.length() ).latin1() << "*" << endl;
+             //kdDebug( 6036 ) << "pending: *" << pendingSrc.latin1() << "*" << endl;
             pendingSrc.prepend( QString(src.current(), src.length() ) );
             setSrc(QString::null);
             scriptCodeSize = scriptCodeResync = 0;
@@ -436,7 +436,7 @@ void HTMLTokenizer::scriptHandler()
             QTime dt;
             dt.start();
             scriptExecution( exScript, QString(), scriptStartLineno );
-            qDebug("script execution time: %d", dt.elapsed());
+	    kdDebug( 6036 ) << "script execution time:" << dt.elapsed() << endl;
         }
     }
 
