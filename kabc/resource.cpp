@@ -33,8 +33,9 @@ Resource::~Resource()
 {
 }
 
-void Resource::writeConfig( KConfig* )
+void Resource::writeConfig( KConfig *config )
 {
+  KRES::Resource::writeConfig( config );
 }
 
 void Resource::setAddressBook( AddressBook *ab )

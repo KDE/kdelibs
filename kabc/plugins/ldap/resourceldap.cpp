@@ -61,6 +61,8 @@ ResourceLDAP::ResourceLDAP( const KConfig *config )
 
 void ResourceLDAP::writeConfig( KConfig *config )
 {
+  Resource::writeConfig( config );
+
   config->writeEntry( "LdapUser", mUser );
   config->writeEntry( "LdapPassword", encryptStr( mPassword ) );
   config->writeEntry( "LdapDn", mDn );

@@ -144,7 +144,10 @@ void StdAddressBook::init( bool )
   Resource *res = manager.standardResource();
   if ( !res ) {
     res = manager.createResource( "file" );
-    addResource( res );
+    if ( res )
+      addResource( res );
+    else
+      kdDebug() << "No resource available!!!" << endl;
   }
 
   setStandardResource( res );

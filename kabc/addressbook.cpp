@@ -510,7 +510,7 @@ bool AddressBook::removeResource( Resource *resource )
   if ( resource == standardResource() )
     setStandardResource( 0 );
 
-  resource->setAddressBook( 0 );
+//  resource->setAddressBook( 0 );
 
   return d->mResources.remove( resource );
 }

@@ -35,17 +35,24 @@ extern "C"
 }
 
 ResourceFile::ResourceFile( const KConfig *config )
-    : Resource( config )
+    : Resource( config ), mFormat( 0 )
 {
-  QString fileName = config->readEntry( "FileName", StdAddressBook::fileName() );
-  QString mFormatName = config->readEntry( "FileFormat", "vcard" );
+  QString fileName;
+
+  if ( config ) {
+    fileName = config->readEntry( "FileName", StdAddressBook::fileName() );
+    mFormatName = config->readEntry( "FileFormat", "vcard" );
+  } else {
+    fileName = StdAddressBook::fileName();
+    mFormatName = "vcard";
+  }
 
   FormatFactory *factory = FormatFactory::self();
-  FormatPlugin *format = factory->format( mFormatName );
+  mFormat = factory->format( mFormatName );
 
-  if ( !format ) {
+  if ( !mFormat ) {
     mFormatName = "vcard";
-    format = factory->format( mFormatName );
+    mFormat = factory->format( mFormatName );
   }
 
   connect( &mDirWatch, SIGNAL( dirty(const QString&) ), SLOT( fileChanged() ) );
@@ -63,6 +70,8 @@ ResourceFile::~ResourceFile()
 
 void ResourceFile::writeConfig( KConfig *config )
 {
+  Resource::writeConfig( config );
+
   config->writeEntry( "FileName", mFileName );
   config->writeEntry( "FileFormat", mFormatName );
 }
@@ -108,6 +117,8 @@ void ResourceFile::doClose()
 bool ResourceFile::load()
 {
   kdDebug(5700) << "ResourceFile::load(): '" << mFileName << "'" << endl;
+
+
 
   QFile file( mFileName );
   if ( !file.open( IO_ReadOnly ) ) {

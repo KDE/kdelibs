@@ -44,7 +44,7 @@ ResourceDir::ResourceDir( const KConfig *config )
     : Resource( config )
 {
   QString path = config->readEntry( "FilePath" );
-  QString mFormatName = config->readEntry( "FileFormat" );
+  mFormatName = config->readEntry( "FileFormat" );
 
   FormatFactory *factory = FormatFactory::self();
   FormatPlugin *mFormat = factory->format( mFormatName );
@@ -69,6 +69,8 @@ ResourceDir::~ResourceDir()
 
 void ResourceDir::writeConfig( KConfig *config )
 {
+  Resource::writeConfig( config );
+
   config->writeEntry( "FilePath", mPath );
   config->writeEntry( "FileFormat", mFormatName );
 }

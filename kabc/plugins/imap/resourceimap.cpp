@@ -55,9 +55,9 @@ ResourceIMAP::~ResourceIMAP()
   delete mFormat;
 }
 
-void ResourceIMAP::writeConfig( KConfig* )
+void ResourceIMAP::writeConfig( KConfig *config )
 {
-  // Will add later
+  Resource::writeConfig( config );
 }
 
 bool ResourceIMAP::doOpen()
