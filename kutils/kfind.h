@@ -281,7 +281,7 @@ private:
     QString m_pattern;
     QRegExp *m_regExp;
     KDialogBase* m_dialog;
-    mutable long m_options;
+    long m_options;
     unsigned m_matches;
 
     QString m_text; // the text set by setData
