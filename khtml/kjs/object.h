@@ -229,7 +229,7 @@ class KJSAnonymousFunction : public KJSFunction {
 public:
   KJSAnonymousFunction() { /* TODO */ }
   Type type() const { return AnonymousFunction; }
-  KJSO* execute() { /* TODO */ }
+  KJSO* execute();
   CodeType codeType() { return AnonymousCode; }
 };
 

@@ -460,6 +460,11 @@ KJSO* KJSDeclaredFunction::execute()
   return block->evaluate();
 }
 
+KJSO* KJSAnonymousFunction::execute()
+{
+ /* TODO */
+}
+
 KJSError::KJSError(ErrorCode e, Node *n)
   : errNo(e)
 {

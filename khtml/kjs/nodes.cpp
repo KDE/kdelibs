@@ -20,6 +20,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <math.h>
 
 #include <qstring.h>
 #include <qmessagebox.h>
@@ -429,7 +430,6 @@ KJSO *NegateNode::evaluate()
   Ptr n = toNumber(v);
   
   double d = -n->dVal();
-  /* TODO: handle NaN */
 
   return new KJSNumber(d);
 }
@@ -437,7 +437,11 @@ KJSO *NegateNode::evaluate()
 // ECMA 11.4.8
 KJSO *BitwiseNotNode::evaluate()
 {
-  /* TODO */
+  Ptr e = expr->evaluate();
+  Ptr v = e->getValue();
+  int i32 = toInt32(v);
+
+  return new KJSNumber(~i32);
 }
 
 // ECMA 11.4.9
@@ -450,6 +454,7 @@ KJSO *LogicalNotNode::evaluate()
   return new KJSBoolean(!b->bVal());
 }
 
+// ECMA 11.5
 KJSO *MultNode::evaluate()
 {
   Ptr t1 = term1->evaluate();
@@ -461,16 +466,16 @@ KJSO *MultNode::evaluate()
   Ptr n1 = toNumber(v1);
   Ptr n2 = toNumber(v2);
 
-  KJSNumber *result;
+  double result;
 
   if (oper == '*')
-    result = new KJSNumber(n1->dVal() * n2->dVal()); // TODO: NaN, Infinity ...
-  else // if (oper == '/')
-    result = new KJSNumber(n1->dVal() / n2->dVal()); // TODO: NaN, Infinity ...
-  //  else
-  //    result = new KJSNumber(n1->dVal() % n2->dVal()); // TODO: Double, NaN ...
+    result = n1->dVal() * n2->dVal();
+  else if (oper == '/')
+    result = n1->dVal() / n2->dVal();
+  else
+    result = fmod(n1->dVal(), n2->dVal());
 
-  return result;
+  return new KJSNumber(result);
 }
 
 // ECMA 11.7
@@ -492,7 +497,7 @@ KJSO *ShiftNode::evaluate()
     result = toInt32(v1) >> i2;
     break;
   case OpURShift:
-    result = toUInt32(v1) >> i2; /* TODO: unsigned shift */
+    result = toUInt32(v1) >> i2;
     break;
   default:
     assert(!"ShiftNode: unhandled switch case");
@@ -502,6 +507,7 @@ KJSO *ShiftNode::evaluate()
   return new KJSNumber(static_cast<double>(result));
 }
 
+// ECMA 11.6
 KJSO *AddNode::evaluate()
 {
   Ptr t1 = term1->evaluate();
