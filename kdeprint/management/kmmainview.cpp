@@ -128,7 +128,7 @@ void KMMainView::saveSettings()
 
 void KMMainView::initActions()
 {
-	KSelectAction	*vact = new KSelectAction(i18n("View..."),0,m_actions,"view_change");
+	KSelectAction	*vact = new KSelectAction(i18n("View"),0,m_actions,"view_change");
 	vact->setItems(QStringList::split(',',i18n("Icons,List,Tree"),false));
 	vact->setCurrentItem(0);
 	connect(vact,SIGNAL(activated(int)),SLOT(slotChangeView(int)));
@@ -145,7 +145,7 @@ void KMMainView::initActions()
 	new KAction(i18n("Refresh view"),"reload",0,this,SLOT(slotTimer()),m_actions,"view_refresh");
 	m_actions->action("printer_add")->setEnabled((m_manager->printerOperationMask() & KMManager::PrinterCreation));
 
-	KSelectAction	*dact = new KSelectAction(i18n("Orientation..."),0,m_actions,"orientation_change");
+	KSelectAction	*dact = new KSelectAction(i18n("Orientation"),0,m_actions,"orientation_change");
 	dact->setItems(QStringList::split(',',i18n("Vertical,Horizontal"),false));
 	dact->setCurrentItem(0);
 	connect(dact,SIGNAL(activated(int)),SLOT(slotChangeDirection(int)));
