@@ -1,16 +1,55 @@
+/* This file is part of the KDE project
+   Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.
+*/
+
 #ifndef __kservicetype_h__
 #define __kservicetype_h__
 
 #include <qstring.h>
+#include <qstringlist.h>
 #include <qlist.h>
+#include <qmap.h>
+#include <qshared.h>
+#include <qdatastream.h>
+#include <qproperty.h>
 
-class KServiceTypeFactory;
+#include <ksharedptr.h>
+#include <ksimpleconfig.h>
 
-class KServiceType
+#include "ktypecode.h"
+
+/**
+ * A service type is the generic notion for a mimetype.
+ * It is associated to services according to the user profile (kuserprofile.h)
+ * and there are factories and registry entry classes for it (kregfactories.h)
+ */
+class KServiceType : public QShared
 {
-  friend KServiceTypeFactory;
+  K_TYPECODE( TC_KServiceType );
+  
 public:
+  typedef const KSharedPtr<QProperty> PropertyPtr;
+
   KServiceType( const QString& _name, const QString& _icon, const QString& _comment );
+  KServiceType( KSimpleConfig& _cfg );
+  KServiceType( QDataStream& _str ) { initStatic(); load( _str ); }
+  KServiceType() { initStatic(); m_bValid = false; }
+  
   virtual ~KServiceType();
   
   /**
@@ -28,6 +67,18 @@ public:
    * @return the name of this service type.
    */
   virtual QString name() const { return m_strName; }
+
+  virtual PropertyPtr property( const QString& _name ) const;
+  virtual QStringList propertyNames() const;
+
+  bool isValid() const { return m_bValid; }
+
+  virtual QProperty::Type propertyDef( const QString& _name ) const;
+  virtual QStringList propertyDefNames() const;
+  virtual const QMap<QString,QProperty::Type>& propertyDefs() const { return m_mapPropDefs; }
+
+  virtual void load( QDataStream& );
+  virtual void save( QDataStream& ) const;
   
   /**
    * @return a pointer to the servicetype '_name' or 0L if the service type is unknown.
@@ -48,8 +99,15 @@ protected:
   QString m_strName;
   QString m_strIcon;
   QString m_strComment;
+  QMap<QString,QProperty> m_mapProps;
+  QMap<QString,QProperty::Type> m_mapPropDefs;
+
+  bool m_bValid;
   
   static QList<KServiceType>* s_lstServiceTypes;
 };
+
+QDataStream& operator>>( QDataStream& _str, KServiceType& s );
+QDataStream& operator<<( QDataStream& _str, const KServiceType& s );
 
 #endif

@@ -44,8 +44,6 @@ KDirWatch::KDirWatch (int _freq)
   timer = new QTimer(this);
   connect (timer, SIGNAL(timeout()), this, SLOT(slotRescan()));
 
-  m_mapDirs.setAutoDelete(true);
-
   freq = _freq;
 }
 
@@ -55,53 +53,55 @@ KDirWatch::~KDirWatch()
   delete timer;
 }
 
-void KDirWatch::addDir( const char *_path )
+void KDirWatch::addDir( const QString& _path )
 {
   QString path = _path;
+  
   if ( path.right(1) == "/" )
     path.truncate( path.length() - 1 );
 
-  Entry* e = m_mapDirs[ path ];
-  if ( e )
+  QMap<QString,Entry>::Iterator it = m_mapDirs.find( path );
+  if ( it != m_mapDirs.end() )
   {
-    e->m_clients++;
+    it->m_clients++;
     return;
   }
 
   stat( path, &statbuff );
-  e = new Entry;
-  e->m_clients = 1;
-  e->m_ctime = statbuff.st_ctime;
+  Entry e;
+  e.m_clients = 1;
+  e.m_ctime = statbuff.st_ctime;
   m_mapDirs.insert( path, e );
 
   if ( m_mapDirs.count() == 1 ) // if this was first entry (=timer was stopped)
     timer->start(freq);      // then start the timer
 }
 
-void KDirWatch::removeDir( const char *_path )
+void KDirWatch::removeDir( const QString& _path )
 {
   if ( m_mapDirs.isEmpty() )
     return;
 
   QString path = _path;
+  
   if ( path.right(1) == "/" )
     path.truncate( path.length() - 1 );
 
-  Entry* e = m_mapDirs[ path ];
-  if ( !e )
+  QMap<QString,Entry>::Iterator it = m_mapDirs.find( path );
+  if ( it == m_mapDirs.end() )
     return;
 
-  e->m_clients--;
-  if ( e->m_clients > 0 )
+  it->m_clients--;
+  if ( it->m_clients > 0 )
     return;
   
-  m_mapDirs.remove( path );
+  m_mapDirs.remove( it );
 
   if( m_mapDirs.isEmpty() )
     timer->stop(); // stop timer if list empty
 }
 
-bool KDirWatch::stopDirScan( const char *_path )
+bool KDirWatch::stopDirScan( const QString& _path )
 {
   if ( m_mapDirs.isEmpty() )
     return false;
@@ -110,17 +110,16 @@ bool KDirWatch::stopDirScan( const char *_path )
   if ( path.right(1) == "/" )
     path.truncate( path.length() - 1 );
 
-  Entry* e = m_mapDirs[ path ];
-  if ( e )
-  {
-    e->m_ctime = NO_NOTIFY;
-    return true;
-  }
+  QMap<QString,Entry>::Iterator it = m_mapDirs.find( path );
+  if ( it == m_mapDirs.end() )
+    return false;
   
-  return false;
+  it->m_ctime = NO_NOTIFY;
+  
+  return true;
 }
 
-bool KDirWatch::restartDirScan( const char *_path )
+bool KDirWatch::restartDirScan( const QString& _path )
 {
   if ( m_mapDirs.isEmpty() )
     return false;
@@ -129,12 +128,12 @@ bool KDirWatch::restartDirScan( const char *_path )
   if ( path.right(1) == "/" )
     path.truncate( path.length() - 1 );
 
-  Entry* e = m_mapDirs[ path ];
-  if ( !e )
+  QMap<QString,Entry>::Iterator it = m_mapDirs.find( path );
+  if ( it == m_mapDirs.end() )
     return false;
 
   stat( path, &statbuff );
-  e->m_ctime = statbuff.st_ctime;
+  it->m_ctime = statbuff.st_ctime;
   return true;
 }
 
@@ -157,51 +156,51 @@ void KDirWatch::resetList( bool skippedToo )
   if ( m_mapDirs.isEmpty() )
     return;
 
-  QDictIterator<Entry> it( m_mapDirs );
-  for( ; it.current() != 0L; ++it )
+  QMap<QString,Entry>::Iterator it = m_mapDirs.begin();
+  for( ; it != m_mapDirs.end(); ++it )
   {
-    if ( it.current()->m_ctime != NO_NOTIFY || skippedToo )
+    if ( it->m_ctime != NO_NOTIFY || skippedToo )
     {
-      stat( it.currentKey(), &statbuff );
-      it.current()->m_ctime = statbuff.st_ctime;
+      stat( it.key(), &statbuff );
+      it->m_ctime = statbuff.st_ctime;
     }
   }
 }
 
 void KDirWatch::slotRescan()
 {
-  QStrList del;
-  
-  QDictIterator<Entry> it( m_mapDirs );
-  for( ; it.current() != 0L; ++it )
+  QStringList del;
+
+  QMap<QString,Entry>::Iterator it = m_mapDirs.begin();
+  for( ; it != m_mapDirs.end(); ++it )
   {
-    if ( stat( it.currentKey(), &statbuff ) == -1 )
+    if ( stat( it.key(), &statbuff ) == -1 )
     {
-      kdebug( KDEBUG_INFO, 7001, "Deleting %s", it.currentKey().ascii() );
-      emit deleted( it.currentKey() );
-      del.append( it.currentKey() );
+      kdebug( KDEBUG_INFO, 7001, "Deleting %s", it.key().ascii() );
+      emit deleted( it.key() );
+      del.append( it.key() );
       continue; // iterator incremented
     }
-    if ( statbuff.st_ctime != it.current()->m_ctime &&
-	 it.current()->m_ctime != NO_NOTIFY)
+    if ( statbuff.st_ctime != it->m_ctime &&
+	 it->m_ctime != NO_NOTIFY)
     {
-      it.current()->m_ctime = statbuff.st_ctime;
-      emit dirty( it.currentKey() );
+      it->m_ctime = statbuff.st_ctime;
+      emit dirty( it.key() );
     }
   }
 
-  const char *s;
-  for( s = del.first(); s != 0L; s = del.next() )
-    m_mapDirs.remove( s );
+  QStringList::Iterator it2 = del.begin();
+  for( ; it2 != del.end(); ++it2 )
+    m_mapDirs.remove( *it2 );
 }
 
-bool KDirWatch::contains( const char *_path )
+bool KDirWatch::contains( const QString& _path ) const
 {
   QString path = _path;
   if ( path.right(1) == "/" )
     path.truncate( path.length() - 1 );
-  
-  return ( m_mapDirs[ path ] != 0L );
+ 
+  return m_mapDirs.contains( path );
 }
 
 /*******************************************************************/

@@ -1,160 +1,189 @@
 #include "kregfactories.h"
 #include "kmimetypes.h"
-#include "kservices.h"
 
 #include <qstring.h>
 #include <qmessagebox.h>
 
 #include <kapp.h>
 #include <klocale.h>
+
+#include <stdlib.h>
+
 /**************************************************
  *
- * KMimeTypeEntry
+ * Helper
  *
  **************************************************/
 
-KMimeTypeEntry::KMimeTypeEntry( KRegistry* _reg, const char *_file, KMimeType *_mime )
+QString systemArchDir()
+{
+  QString tmp( "/opt/kde" );
+  const char* env = getenv( "KDEDIR" );
+  if ( env )
+    tmp = env;
+  
+  return tmp;
+}
+
+QString systemShareDir()
+{
+  QString tmp( "/opt/kde" );
+  const char* env = getenv( "KDEDIR" );
+  if ( env )
+    tmp = env;
+  
+  tmp += "/share";
+  
+  return tmp;
+}
+
+QString userArchDir()
+{
+  return kapp->localkdedir();
+}
+
+QString userShareDir()
+{
+  return ( kapp->localkdedir() + "/share" );
+}
+
+/**************************************************
+ *
+ * KServiceTypeEntry
+ *
+ **************************************************/
+
+KServiceTypeEntry::KServiceTypeEntry( KRegistry* _reg, const QString& _file, KServiceType *_mime )
   : KRegEntry( _reg, _file )
 {
-  m_pMimeType = _mime;
+  m_pServiceType = _mime;
 }
 
-KMimeTypeEntry::~KMimeTypeEntry()
+KServiceTypeEntry::~KServiceTypeEntry()
 {
-  if ( m_pMimeType )
-    delete m_pMimeType;
 }
 
-bool KMimeTypeEntry::updateIntern()
+void KServiceTypeEntry::save( QDataStream& _str ) const
 {
-  if ( m_pMimeType )
-    delete m_pMimeType;
-  m_pMimeType = 0L;
+  _str << (Q_UINT32)m_pServiceType->typeCode();
+  _str << *m_pServiceType;
   
-  return false;
-}
-
-void KMimeTypeEntry::save( QDataStream& _str )
-{
-  KMimeTypeFactory::save( _str, m_pMimeType );
   KRegEntry::save( _str );
 }
 
 /**************************************************
  *
- * KMimeTypeFactory
+ * KServiceTypeFactory
  *
  **************************************************/
 
-KMimeTypeFactory::KMimeTypeFactory()
+KServiceTypeFactory::KServiceTypeFactory()
 {
-  m_lst.append( kapp->kde_mimedir() );
+  m_pathList.append( kapp->kde_mimedir() );
   QString tmp = kapp->localkdedir();
   tmp += "/share/mimelnk";
-  m_lst.append( tmp );
+  m_pathList.append( tmp );
 }
 
-void KMimeTypeFactory::save( QDataStream& _str, KMimeType *_mime )
+KServiceTypeFactory::KServiceTypeFactory( const QStringList& _path_list )
 {
-  _str << _mime->m_strIcon << _mime->m_strComment << _mime->m_strName
-       << _mime->m_lstPatterns;
+  m_pathList = _path_list;
 }
 
-KRegEntry* KMimeTypeFactory::create( KRegistry* _reg, const char *_file, QDataStream& _str )
+KServiceTypeFactory::KServiceTypeFactory( const QString& _system_path, const QString& _user_path )
 {
-  QString icon;
-  QString comment;
-  QString mime;
-  QStringList patterns;
-  _str >> icon >> comment >> mime >> patterns;
+  if ( !_system_path.isEmpty() )
+    m_pathList.append( systemShareDir() + _system_path );  
+  QString user = _user_path;
+  if ( !user.isEmpty() )
+    user = _system_path;
+  if ( !user.isEmpty() )
+    m_pathList.append( userShareDir() + user );
+}
 
-  KMimeType *e;
-  
-  if ( mime == "inode/directory" )
-    e = new KFolderType( mime, icon, comment, patterns );
-  else if ( mime == "application/x-kdelnk" )
-    e = new KDELnkMimeType( mime, icon, comment, patterns );
-  else if ( mime == "application/x-executable" || mime == "application/x-shellscript" )
-    e = new KExecMimeType( mime, icon, comment, patterns );
-  else
-    e = new KMimeType( mime, icon, comment, patterns );
-  
-  KMimeTypeEntry *result = new KMimeTypeEntry( _reg, _file, e );
-  result->load( _str );
+KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, QDataStream& _str )
+{
+  // Read typecode
+  Q_UINT32 u;
+  _str >> u;
 
-  return result;
+  KServiceType *e;
+  
+  switch( u )
+    {
+    case TC_KServiceType:
+      e = new KServiceType( _str );
+      break;
+    case TC_KMimeType:
+      e = new KMimeType( _str );
+      break;
+    case TC_KFolderType:
+      e = new KFolderType( _str );
+      break;
+    case TC_KDELnkMimeType:
+      e = new KDELnkMimeType( _str );
+      break;
+    case TC_KExecMimeType:
+      e = new KExecMimeType( _str );
+      break;
+    default:
+      ASSERT( 0 );
+    }
+
+  if ( !e->isValid() )
+  {
+    delete e;
+    return 0;
+  }
+  
+  KServiceTypeEntry* res = new KServiceTypeEntry( _reg, _file, e );
+  e->deref();
+  res->load( _str );
+  
+  return res;
 }
  
-KRegEntry* KMimeTypeFactory::create( KRegistry* _reg, const char *_file, KSimpleConfig &_cfg )
+KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, KSimpleConfig &_cfg )
 { 
-  KMimeType *mime = createMimeType( _file, _cfg );
-  if ( !mime )
-    return 0L;
-  
-  return new KMimeTypeEntry( _reg, _file, mime );
-}
-
-KMimeType* KMimeTypeFactory::createMimeType( const char *_file, KSimpleConfig &_cfg )
-{
-  // debug( "Parsing %s", _file );
-  
-  // Get a ';' separated list of all pattern
-  QString pats = _cfg.readEntry( "Patterns" );
-  QString icon = _cfg.readEntry( "Icon" );
-  QString comment = _cfg.readEntry( "Comment" );
+  QString service = _cfg.readEntry( "ServiceType" );
   QString mime = _cfg.readEntry( "MimeType" );
 
-  if ( mime.isEmpty() )
+  if ( mime.isEmpty() && service.isEmpty() )
   {
-    QString tmp = i18n( "The mime type config file\n%1\n"
-			"does not contain a MimeType=... entry").arg( _file );
+    QString tmp = i18n( "The service/mime type config file\n%1\n"
+			"does not contain a ServiceType=...\nor MimeType=... entry").arg( _file );
     QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "OK" ) );
-    return 0L;
+    return 0;
   }
       
-  // Is this file type already registered ?
-  // TODO
-  /* if ( KMimeType::find( mime ) )
-    continue; */
-
-  // If not then create a new type
-  if ( icon.isEmpty() )
-    icon = "unknown.xpm";
-      
-  QStringList patterns;
-  int pos2 = 0;
-  int old_pos2 = 0;
-  while ( ( pos2 = pats.find( ";", pos2 ) ) != - 1 )
-  {
-    // Read a pattern from the list
-    QString name = pats.mid( old_pos2, pos2 - old_pos2 );
-    patterns.append( name );
-    pos2++;
-    old_pos2 = pos2;
-  }
-
-  KMimeType *e;
+  KServiceType* e;
   
   if ( mime == "inode/directory" )
-    e = new KFolderType( mime, icon, comment, patterns );
+    e = new KFolderType( _cfg );
   else if ( mime == "application/x-kdelnk" )
-    e = new KDELnkMimeType( mime, icon, comment, patterns );
+    e = new KDELnkMimeType( _cfg );
   else if ( mime == "application/x-executable" || mime == "application/x-shellscript" )
-    e = new KExecMimeType( mime, icon, comment, patterns );
+    e = new KExecMimeType( _cfg );
+  else if ( !mime.isEmpty() )
+    e = new KMimeType( _cfg );
   else
-    e = new KMimeType( mime, icon, comment, patterns );
+    e = new KServiceType( _cfg );
 
-  return e;
+  if ( !e->isValid() )
+  {
+    delete e;
+    return 0;
+  }
+  
+  KServiceTypeEntry* res = new KServiceTypeEntry( _reg, _file, e );
+  e->deref();
+  
+  return res;
 }
 
-const char* KMimeTypeFactory::type()
+QStringList KServiceTypeFactory::pathList() const
 {
-  return "MimeType";
-}
-
-const QStringList& KMimeTypeFactory::pathList()
-{
-  return m_lst;
+  return m_pathList;
 }
 
 /**************************************************
@@ -163,7 +192,7 @@ const QStringList& KMimeTypeFactory::pathList()
  *
  **************************************************/
 
-KServiceEntry::KServiceEntry( KRegistry* _reg, const char *_file, KService *_service )
+KServiceEntry::KServiceEntry( KRegistry* _reg, const QString& _file, KService *_service )
   : KRegEntry( _reg, _file )
 {
   m_pService = _service;
@@ -171,22 +200,13 @@ KServiceEntry::KServiceEntry( KRegistry* _reg, const char *_file, KService *_ser
 
 KServiceEntry::~KServiceEntry()
 {
-  if ( m_pService )
-    delete m_pService;
 }
 
-bool KServiceEntry::updateIntern()
+void KServiceEntry::save( QDataStream& _str ) const
 {
-  if ( m_pService )
-    delete m_pService;
-  m_pService = 0L;
-  
-  return false;
-}
+  _str << (Q_UINT32)m_pService->typeCode();
+  _str << *m_pService;
 
-void KServiceEntry::save( QDataStream& _str )
-{
-  KServiceFactory::save( _str, m_pService );
   KRegEntry::save( _str );
 }
 
@@ -198,57 +218,69 @@ void KServiceEntry::save( QDataStream& _str )
 
 KServiceFactory::KServiceFactory()
 {
-  m_lst.append( kapp->kde_appsdir() );
+  m_pathList.append( kapp->kde_appsdir() );
   QString tmp = kapp->localkdedir();
   tmp += "/share/applnk";
-  m_lst.append( tmp );
-}
- 
-void KServiceFactory::save( QDataStream& _str, KService *_service )
-{
-  _str << _service->name() << _service->exec() << _service->icon() 
-       << _service->comment() << _service->path() << _service->terminalOptions()
-       << _service->serviceTypes() << (Q_INT8)_service->allowAsDefault() << _service->file();
+  m_pathList.append( tmp );
 }
 
-KRegEntry* KServiceFactory::create( KRegistry* _reg, const char *_file, QDataStream& _str )
+KServiceFactory::KServiceFactory( const QStringList& _path_list )
 {
-  QString name, exec, icon, comment, path, terminal, file;
-  QStringList types;
-  Q_INT8 allow;
-  _str >> name >> exec >> icon >> comment >> path >> terminal >> types >> allow >> file;
+  m_pathList = _path_list;
+}
+
+KServiceFactory::KServiceFactory( const QString& _system_path, const QString& _user_path )
+{
+  if ( !_system_path.isEmpty() )
+    m_pathList.append( systemShareDir() + _system_path );  
+  if ( !_system_path.isEmpty() )
+    m_pathList.append( systemShareDir() + _system_path );  
+  QString user = _user_path;
+  if ( !user.isEmpty() )
+    user = _system_path;
+  if ( !user.isEmpty() )
+    m_pathList.append( userShareDir() + user );
+}
+
+KRegEntry* KServiceFactory::create( KRegistry* _reg, const QString& _file, QDataStream& _str )
+{
+  Q_UINT32 u;
+  _str >> u;
   
-  KService *s = new KService( name, exec, icon, types, comment,
-			      (bool)allow, path, terminal, file );
-
+  ASSERT( u == TC_KService );
+  
+  KService *s = new KService( _str );
+  if ( !s->isValid() )
+  {
+    delete s;
+    return 0;
+  }
+  
   KServiceEntry* e = new KServiceEntry( _reg, _file, s );
+  s->deref();
+  
   e->load( _str );
   
   return e;
 }
 
-KRegEntry* KServiceFactory::create( KRegistry* _reg, const char *_file, KSimpleConfig &_cfg )
+KRegEntry* KServiceFactory::create( KRegistry* _reg, const QString& _file, KSimpleConfig &_cfg )
 {
-  KService *service = createService( _file, _cfg );
-  if ( !service )
-    return 0L;
+  KService *service = new KService( _cfg );
+  if ( !service->isValid() )
+  {
+    delete service;
+    return 0;
+  }
   
-  return new KServiceEntry( _reg, _file, service );
+  KServiceEntry* e = new KServiceEntry( _reg, _file, service );
+  service->deref();
+
+  return e;
 }
 
-KService* KServiceFactory::createService( const char *_file, KSimpleConfig &_cfg )
+QStringList KServiceFactory::pathList() const
 {
-  // debug( "Parsing %s", _file );
-  
-  return KService::parseService( _file, _cfg );
+  return m_pathList;
 }
 
-const char* KServiceFactory::type()
-{
-  return "Application";
-}
-
-const QStringList& KServiceFactory::pathList()
-{
-  return m_lst;
-}

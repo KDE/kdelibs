@@ -100,91 +100,6 @@ void KMimeType::errorMissingMimeType( const QString& _type )
   s_mapMimeTypes->insert( _type, e );
 }
 
-///////// Old method, never called ////////////
-void KMimeType::scanMimeTypes( const QString& _path )
-{   
-  initStatic();
-
-  DIR *dp;
-  struct dirent *ep;
-  dp = opendir( _path );
-  if ( dp == 0L )
-    return;
-    
-  // Loop thru all directory entries
-  while ( (ep = readdir( dp ) ) != 0L )
-  {
-    if ( strcmp( ep->d_name, "." ) != 0 && strcmp( ep->d_name, ".." ) != 0 &&
-	 strcmp( ep->d_name, "magic" ) != 0 && ep->d_name[0] != '.' )
-    {
-      QString file = _path;
-      file += "/";
-      file += ep->d_name;
-
-      struct stat buff;
-      stat( file, &buff );
-      if ( S_ISDIR( buff.st_mode ) )
-	scanMimeTypes( file.data() );
-      else if ( S_ISREG( buff.st_mode ) )
-      {
-	if ( access( file, R_OK ) == -1 )
-	  continue;
-
-	KSimpleConfig config( file, true );
-	config.setGroup( "KDE Desktop Entry" );
-		
-	// Get a ';' separated list of all pattern
-	QString pats = config.readEntry( "Patterns" );
-	QString icon = config.readEntry( "Icon" );
-	QString comment = config.readEntry( "Comment" );
-	QString mime = config.readEntry( "MimeType" );
-
-	if ( mime.isEmpty() )
-	{
-          QString tmp = i18n( "The mime type config file\n"
-			      "%1\n"
-			      "does not contain a MimeType=... entry").arg(file );
-
-	  QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "OK" ) );
-	  continue;
-	}
-      
-	// Is this file type already registered ?
-	if ( KMimeType::mimeType( mime ) )
-	  continue;
-	// If not then create a new type
-	if ( icon.isEmpty() )
-	  icon = "unknown.xpm";
-      
-	QStringList patterns;
-	int pos2 = 0;
-	int old_pos2 = 0;
-	while ( ( pos2 = pats.find( ";", pos2 ) ) != - 1 )
-        {
-	  // Read a pattern from the list
-	  QString name = pats.mid( old_pos2, pos2 - old_pos2 );
-	  patterns.append( name );
-	  pos2++;
-	  old_pos2 = pos2;
-	}
-
-	if ( mime == "inode/directory" )
-	  new KFolderType( mime.data(), icon.data(), comment.data(), patterns );
-	else if ( mime == "inode/directory-locked" )
-	  new KFolderType( mime.data(), icon.data(), comment.data(), patterns );
-	else if ( mime == "application/x-kdelnk" )
-	  new KDELnkMimeType( mime.data(), icon.data(), comment.data(), patterns );
-	else if ( mime == "application/x-executable" || mime == "application/x-shellscript" )
-	  new KExecMimeType( mime.data(), icon.data(), comment.data(), patterns );
-	else
-	  new KMimeType( mime.data(), icon.data(), comment.data(), patterns );
-      }
-    }
-  }
-
-  closedir(dp);
-}
-
 KMimeType* KMimeType::mimeType( const QString& _name )
 {
   check();
@@ -285,10 +200,73 @@ KMimeType::KMimeType( const QString& _type, const QString& _icon, const QString&
 {
   initStatic();
   
-  assert( s_mapMimeTypes );
-  
   s_mapMimeTypes->insert( _type, this );
   m_lstPatterns = _patterns;
+}
+
+KMimeType::KMimeType( KSimpleConfig& _cfg ) : KServiceType( _cfg )
+{
+  initStatic();
+ 
+  _cfg.setGroup( "KDE Desktop Entry" ); 
+  m_lstPatterns = _cfg.readListEntry( "Patterns", ';' );
+
+  if ( isValid() )
+    s_mapMimeTypes->insert( m_strName, this );
+}
+
+KMimeType::KMimeType( QDataStream& _str ) : KServiceType( _str )
+{
+  initStatic();
+  load( _str );
+}
+
+KMimeType::KMimeType() : KServiceType()
+{
+  initStatic();
+}
+
+void KMimeType::load( QDataStream& _str )
+{
+  if ( !m_strName.isEmpty() )
+    s_mapMimeTypes->remove( m_strName );
+
+  KServiceType::load( _str );
+  _str >> m_lstPatterns;
+
+  if ( !m_strName.isEmpty() )
+    s_mapMimeTypes->insert( m_strName, this );
+}
+
+void KMimeType::save( QDataStream& _str ) const
+{
+  KServiceType::save( _str );
+  _str << m_lstPatterns;
+}
+
+KServiceType::PropertyPtr KMimeType::property( const QString& _name ) const
+{
+  QProperty* p = 0;
+  
+  if ( _name == "Patterns" )
+    p = new QProperty( m_lstPatterns );
+  
+  if ( p )
+  {    
+    // We are not interested in these
+    p->deref();
+    return p;
+  }
+
+  return KServiceType::property( _name );
+}
+
+QStringList KMimeType::propertyNames() const
+{
+  QStringList res = KServiceType::propertyNames();
+  res.append( "Patterns" );
+  
+  return res;
 }
 
 KMimeType::~KMimeType()
@@ -555,14 +533,14 @@ bool KDELnkMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
 
 bool KDELnkMimeType::runApplication( const QString& _url, KSimpleConfig &cfg )
 {
-  KService* s = KService::parseService( _url, cfg, false );
-  if ( !s )
+  KService s( cfg, false );
+  if ( !s.isValid() )
     // The error message was already displayed, so we can just quit here
     return false;
   
   QStringList empty;
-  bool res = KRun::run( *s, empty );
-  delete s;
+  bool res = KRun::run( s, empty );
+
   return res;
 }
 

@@ -2,6 +2,7 @@
   This file is or will be part of KDE desktop environment
 
   Copyright 1998 Sven Radej <sven@lisa.exp.univie.ac.at>
+  Copyright 1999 Torben Weis <weis@kde.org>
 
   It is licensed under GPL version 2.
   
@@ -37,7 +38,7 @@ class KRegistry;
 class KRegEntry
 {
 public:
-  KRegEntry( KRegistry* _reg, const char* _file );
+  KRegEntry( KRegistry* _reg, const QString& _file );
   virtual ~KRegEntry() { };
   
   /**
@@ -51,7 +52,7 @@ public:
    * you should call this implementation to save all properties
    * of this base class.
    */
-  virtual void save( QDataStream& _str );
+  virtual void save( QDataStream& _str ) const;
 
   /**
    * Intern function.
@@ -70,12 +71,12 @@ public:
    *
    * Mark & Sweep.
    */
-  bool isMarked() { return m_bMarked; }
+  bool isMarked() const { return m_bMarked; }
 
   /**
    * @return the file for which this entry is responsible.
    */
-  const char* file() { return m_strFile; }
+  QString file() const { return m_strFile; }
   
   /**
    * Intern function.
@@ -84,7 +85,7 @@ public:
    *
    * @return true if @ref #m_strFile is located in the directory _path.
    */
-  bool isInDirectory( const char *_path, bool _allow_subdir = false );
+  bool isInDirectory( const QString& _path, bool _allow_subdir = false ) const;
 
   /**
    * Intern function.
@@ -92,27 +93,25 @@ public:
    * Checks whether @ref #m_strFile is modified. If it is modified,
    * then @ref #updateIntern is called.
    *
-   * @return 0L is this instance is still valid. If this instance
-   *         has to be replaced by another instance, then a pointer
-   *         to this new instance is returned.
+   * @return TRUE if the update was successful. If it returns FALSE
+   *         then the instance has to be deleted and recreated.
    */
-  KRegEntry* update();
+  bool update();
 
-  /**
-   * @return the value of the "Type" entry of the kdelnk files for which
-   *         this factory is responsible. Example return values
-   *         are "Application" or "MimeType".
-   */
-  virtual const char* type() = 0L;
+  virtual bool isDummy() const { return false; }
   
 protected:
   /**
-   * @return false if this instance is no longer valid or
-   *         true if it was possible to update this instance
-   *         successfully or true if @ref m_strFile did not change
-   *         at all.
+   * This function is called from @ref #update if @ref #m_strFile
+   * changed and the entry has to be updated.
+   *
+   * @return false if this instance is no longer valid and has
+   *         to be deleted and recreated.
+   *         Returns true if it was possible to update this instance
+   *         successfully. By default this function returns FALSE.
+   *         That works always but smart updates are perhaps faster.
    */
-  virtual bool updateIntern() = 0L;
+  virtual bool updateIntern() { return false; }
 
   /**
    * Mark & Sweep
@@ -139,26 +138,20 @@ protected:
 class KRegFactory
 {
 public:
-  virtual KRegEntry* create( KRegistry* _reg, const char *_file, KSimpleConfig &_cfg ) = 0L;
-  virtual KRegEntry* create( KRegistry* _reg, const char *_file, QDataStream& _str ) = 0L;
-  /**
-   * @return the value of the "Type" entry of the kdelnk files for which
-   *         this factory is responsible. Example return values
-   *         are "Application" or "MimeType".
-   */
-  virtual const char* type() = 0L;
+  virtual KRegEntry* create( KRegistry* _reg, const QString& _file, KSimpleConfig &_cfg ) = 0L;
+  virtual KRegEntry* create( KRegistry* _reg, const QString& _file, QDataStream& _str ) = 0L;
   /**
    * @return the path for which this factory is responsible.
    *         A MimeType factory for example would return "/opt/kde/share/mimelnk".
    *         Please note that the return value may not have a trailing '/'.
    */
-  virtual const QStringList& pathList() = 0L;
+  virtual QStringList pathList() const = 0L;
 
   /**
    * @return true if this factory is responsible for files in this
    *         directory.
    */
-  virtual bool matchFile( const char *_file );
+  virtual bool matchFile( const QString&_file ) const;
 };
 
 /**
@@ -170,9 +163,9 @@ public:
 class KRegDummy : public KRegEntry
 {
 public:
-  KRegDummy( KRegistry* _reg, const char* _file ) : KRegEntry( _reg, _file ) { }
+  KRegDummy( KRegistry* _reg, const QString& _file ) : KRegEntry( _reg, _file ) { }
 
-  const char* type() { return "Dummy"; }
+  virtual bool isDummy() const { return false; }
   
 protected:
   /**
@@ -182,14 +175,14 @@ protected:
 };
 
 /**
- * <b>KRegistry</b> is a class for keeping a database of MimeTypes and Applications
- * (kdelnks of type 'Application').<br>
+ * <b>KRegistry</b> is a class for keeping a database of ServiceTypes and Services
+ * (kdelnks files).<br>
  * Database is internal - no special files are created.
- * The database is self updating - you don't have to notify <b>KRegistry</b> if
- * you or anyone make changes to (local or global) 'applnk' or 'mimelnk
- * directories'. Updating is inteligent; only changed directories are scanned
- * and only changed items (kdelnks) are reread. This makes <b>KRegistry</b> very
- * fast.<br>
+ * The database is self updating - you don't have to notify KRegistry if
+ * you or anyone make changes to (local or global) 'applnk' or 'mimelnk'
+ * directories. Updating is intelligent; only changed directories are scanned
+ * and only changed items (kdelnks) are reread. This makes KRegistry very
+ * fast.
  *
  * The Usual way of using this class is to say:
  * <pre>
@@ -198,7 +191,7 @@ protected:
  * reg->load( ... );
  * </pre>
  *
- * @short <b>KRegistry</b> is a database of all kind of kdelnk files.
+ * @short KRegistry is a database of all kind of kdelnk files.
  * @author Sven Radej <sven@lisa.exp.univie.ac.at>
  * @author Torben Weis <weis@kde.org>
  */
@@ -219,40 +212,68 @@ public:
    */
   ~KRegistry();
 
+  /**
+   * Adds a new factory. Each factory is responsible for a certain
+   * directory and all of its child-directories and kdelnk files in
+   * them. The registry does now control the lifetime of the factory.
+   */
   void addFactory( KRegFactory *_factory );
 
   /**
+   * Writes the registry to the specified file. If no file is
+   * specified then the db file will be written to $HOME/.kde/share/config/kregistry
+   *
+   * @see #load
    */
-  bool save( const char *_dbfile );
+  bool save( const QString& _dbfile = QString::null ) const;
   /**
-   * @param _dbfile may be 0L. In this case all entries are created
+   * @param _dbfile may be empty. In this case all entries are created
    *                by scanning the filesystem.
+   *
+   * @see #save
    */
-  void load( const char *_dbfile = 0L );
+  void load( const QString& _dbfile = QString::null );
 
-  bool isModified() { return m_bModified; }
-  void clearModified() { m_bModified = false; }
+  /**
+   * After a call to @ref #load you can use this function to find out
+   * whether the loaded db file was still up to date or whether the
+   * kdelnk files had changed. In the last case the registry would have
+   * been modified after the db file had been loaded. That in turn means
+   * that this function would return TRUE in this case.
+   * Usually you will write code like this:
+   * <pre>
+   * KRegistry registry;
+   * registry.addFactory( new KServiceTypeFactory );
+   * registry.addFactory( new KServiceFactory );
+   * registry.load();
+   * if ( registry.isModified() )
+   *   registry.save();
+   * </pre>
+   */
+  bool isModified() const { return m_bModified; }
+
+  static KRegistry* self();
   
 public slots:
     
   /**
-   * Rereads specified dir (if needed). If dir = 0, rereads whole
+   * Rereads specified dir (if needed). If dir is empty, rereads whole
    * registry (= all mimelnk and applnk dirs) if they need updating.
    * Please don't pass here stupid dirs like /var/log/ or /tmp. You <i>don't</i>
    * need to call this, since it is called when needed by @ref KDirWatch
    */
- void update (const char *dir = 0);
+  void update (const QString& dir = QString::null );
 
 protected:
 
   /**
    * Checks out which factory is responsible for the given path. It then causes
-   * this factory to create a new entry. If no factory is responsible, the an
+   * this factory to create a new entry. If no factory is responsible, then an
    * instance of @ref RegDummyEntry is created.
    */
-  KRegEntry* createEntry( const char *_file );
+  KRegEntry* createEntry( const QString& _file );
 
-  KRegEntry* createEntry( QDataStream& _str, const char *_file, const char *_type );
+  KRegEntry* createEntry( QDataStream& _str, const QString& _file );
   
   /**
    * Scans _dir for new files and new subdirectories.
@@ -263,7 +284,7 @@ protected:
    *              is responsible are initialized with this function and _init
    *              set to true.
    */
-  bool readDirectory(const char *_dir, bool _init = false );
+  bool readDirectory(const QString& _dir, bool _init = false );
 
   /**
    * Internal - checks if @ref #m_lstEntries contains an entry which
@@ -272,7 +293,7 @@ protected:
    * @return the position of the entry in @ref #m_lstEntries or -1 if no such
    *         entry exists.
    */
-  int exists( const char *_file );
+  int exists( const QString& _file ) const;
 
 protected slots:
 
@@ -280,14 +301,14 @@ protected slots:
    * Internal - @ref KDirWatch saw kill of dir. And what do I do? I delete
    * all list entries that doesn't live on disk.
    */
-  void dirDeleted(const char *path);
+  void dirDeleted(const QString& path);
  
 protected:
 
   /**
    * List of all toplevel directories we have to keep track of.
    */
-  QStrList m_lstToplevelDirs;
+  QStringList m_lstToplevelDirs;
   /**
    * List of all files we have in the registry.
    */

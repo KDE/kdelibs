@@ -46,7 +46,7 @@ include_HEADERS = kio_connection.h kio_base.h kio_rename_dlg.h \
 	kio_cache.h kpixmapcache.h kuserprofile.h \
 	kio_error.h kregfactories.h kio_job.h kregistry.h \
 	kio_paste.h kio_openwith.h userpaths.h \
-	kservicetype.h
+	kservicetype.h ktypecode.h
 
 magic_DATA = magic
 magicdir = $(kde_mimedir)

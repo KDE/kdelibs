@@ -8,10 +8,14 @@
 #include <qstringlist.h>
 #include <qvaluelist.h>
 #include <qdict.h>
+#include <qmap.h>
 
 #include <kurl.h>
 #include <ksimpleconfig.h>
-#include <kservicetype.h>
+
+
+#include "ktypecode.h"
+#include "kservicetype.h"
 
 class KMimeTypeFactory;
 
@@ -31,10 +35,14 @@ class KMimeTypeFactory;
  */
 class KMimeType : public KServiceType
 {
-  friend KMimeTypeFactory;
+  K_TYPECODE( TC_KMimeType );
+
 public:
   KMimeType( const QString& _type, const QString& _icon, const QString& _comment,
 	     const QStringList& _patterns );
+  KMimeType( KSimpleConfig& _cfg );
+  KMimeType( QDataStream& _str );
+  KMimeType();
   virtual ~KMimeType();
   
   /**
@@ -65,6 +73,12 @@ public:
    */
   virtual bool matchFilename( const QString&_filename ) const;
 
+  virtual void load( QDataStream& );
+  virtual void save( QDataStream& ) const;
+
+  virtual PropertyPtr property( const QString& _name ) const;
+  virtual QStringList propertyNames() const;
+  
   /**
    * @return a pointer to the mime type '_name' or a pointer to the default
    *         mime type "application/octet-stream". 0L is NEVER returned.
@@ -111,10 +125,6 @@ protected:
    * Signal a missing mime type
    */
   static void errorMissingMimeType( const QString& _type );
-  /**
-   * Old method, not used anymore
-   */
-  static void scanMimeTypes( const QString& _path );
 
   /**
    * Check for static variables initialised. Called by constructor
@@ -140,9 +150,14 @@ protected:
 
 class KFolderType : public KMimeType
 {
+  K_TYPECODE( TC_KFolderType );
+
 public:
   KFolderType( const QString& _type, const QString& _icon, const QString& _comment,
 	       const QStringList& _patterns );
+  KFolderType( KSimpleConfig& _cfg ) : KMimeType( _cfg ) { }
+  KFolderType( QDataStream& _str ) : KMimeType( _str ) { }
+  KFolderType() : KMimeType() { }
 
   virtual QString icon( const QString& _url, bool _is_local ) const;
   virtual QString icon( const KURL& _url, bool _is_local ) const;
@@ -152,6 +167,8 @@ public:
 
 class KDELnkMimeType : public KMimeType
 {
+  K_TYPECODE( TC_KDELnkMimeType );
+
 public:
   enum ServiceType { ST_MOUNT, ST_UNMOUNT, /* ST_PROPERTIES, */ ST_USER_DEFINED };
 		     
@@ -165,6 +182,9 @@ public:
   
   KDELnkMimeType( const QString& _type, const QString& _icon, const QString& _comment,
 		  const QStringList& _patterns );
+  KDELnkMimeType( KSimpleConfig& _cfg ) : KMimeType( _cfg ) { }
+  KDELnkMimeType( QDataStream& _str ) : KMimeType( _str ) { }
+  KDELnkMimeType() : KMimeType() { }
 
   virtual QString icon( const QString& _url, bool _is_local ) const;
   virtual QString icon( const KURL& _url, bool _is_local ) const;
@@ -200,9 +220,15 @@ protected:
 
 class KExecMimeType : public KMimeType
 {
+  K_TYPECODE( TC_KExecMimeType );
+
 public:
   KExecMimeType( const QString& _type, const QString& _icon, const QString& _comment,
 		 const QStringList& _patterns );
+  KExecMimeType( KSimpleConfig& _cfg ) : KMimeType( _cfg ) { }
+  KExecMimeType( QDataStream& _str ) : KMimeType( _str ) { }
+  KExecMimeType() : KMimeType() { }
 };
 
 #endif
+

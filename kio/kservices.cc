@@ -1,4 +1,5 @@
 #include "kservices.h"
+#include "kservicetype.h"
 #include "kuserprofile.h"
 
 #include <unistd.h>
@@ -22,15 +23,6 @@ void KService::initStatic()
 {
   if ( !s_lstServices )
     s_lstServices = new QList<KService>;
-
-  /* // Read the application bindings in the local directories
-  QString path = kapp->localkdedir().data();
-  path += "/share/applnk";
-  KService::initServices( path.data() );
-  
-  // Read the application bindings in the global directories
-  path = kapp->kde_appsdir().copy();
-  KService::initServices( path.data() ); */
 }
 
 KService* KService::service( const QString& _name )
@@ -47,135 +39,14 @@ KService* KService::service( const QString& _name )
   return 0L;
 }
 
-void KService::initServices( const QString&  _path )
-{
-  initStatic();
-  
-  DIR *dp;
-  struct dirent *ep;
-  dp = opendir( _path );
-  if ( dp == 0L )
-    return;
-    
-  // Loop thru all directory entries
-  while ( ( ep = readdir( dp ) ) != 0L )
-  {
-    if ( strcmp( ep->d_name, "." ) != 0 &&
-	 strcmp( ep->d_name, ".." ) != 0 && ep->d_name[0] != '.' )
-    {    
-      QString file = _path;
-      file += "/";
-      file += ep->d_name;
-
-      struct stat buff;
-      stat( file, &buff );
-      if ( S_ISDIR( buff.st_mode ) )
-	initServices( file );
-      else if ( S_ISREG( buff.st_mode ) )
-      {
-	// Do we have read access ?
-	if ( access( file, R_OK ) == 0 )
-	{
-	  KSimpleConfig config( file, true );
-
-	  parseService( file, config );	  
-	}
-      }
-    }
-  }
-
-  (void) closedir( dp );
-}
-
-KService* KService::parseService( const QString& _file, KSimpleConfig &config,
-				  bool _put_in_list )
-{
-  initStatic();
-  
-  config.setGroup( "KDE Desktop Entry" );
-  QString exec = config.readEntry( "Exec" );
-  QString name = config.readEntry( "Name" );
-  if ( name.isEmpty() )
-  {
-    QString tmp = i18n( "The application config file\n"
-			"%1\n"
-			"does not contain a Name=... entry").arg(_file);
-    QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "OK" ) );
-    return 0L;
-  }
-  if ( exec.isEmpty() )
-  {
-    QString tmp = i18n( "The application config file\n"
-			"%1\n"
-			"does not contain an Exec=... entry").arg(_file);
-    QMessageBox::critical( 0L, i18n( "KFM Error" ), tmp, i18n( "OK" ) );
-    return 0L;
-  }
-
-  QString path = config.readEntry( "Path" );
-  QString terminal = config.readEntry( "TerminalOptions" );
-  // An icon for the binary
-  QString app_icon = config.readEntry( "Icon", "unknown.xpm" );
-	  
-  // The pattern to identify the binary
-  QString app_pattern = config.readEntry( "BinaryPattern" );
-  QString comment = config.readEntry( "Comment" );
-  // A ';' separated list of mime types
-  QString mime = config.readEntry( "MimeType" );
-  // Allow this program to be a default application for a mime type?
-  // For example gzip should never be a default for any mime type.
-  QString str_allowdefault = config.readEntry( "AllowDefault" );
-  bool allowdefault = true;
-  if ( str_allowdefault == "0" )
-    allowdefault = false;
-  
-  /*
-    // Define an icon for the program file perhaps ?
-    if ( !app_icon.isEmpty() && !app_pattern.isEmpty() )
-    {
-    KMimeType *t;
-    types->append( t = new KMimeType( name.data(), app_icon.data() ) );
-    t->setComment( comment.data() );
-    t->setApplicationPattern();
-    int pos2 = 0;
-    int old_pos2 = 0;
-    while ( ( pos2 = app_pattern.find( ";", pos2 ) ) != - 1 )
-    {
-    QString pat = app_pattern.mid( old_pos2, pos2 - old_pos2 );
-    t->addPattern( pat.data() );
-    pos2++;
-    old_pos2 = pos2;
-    }
-    } 
-    */
-	  
-  // To which mime types is the application bound ?
-  QStringList types;
-  int pos2 = 0;
-  int old_pos2 = 0;
-  while ( ( pos2 = mime.find( ";", pos2 ) ) != - 1 )
-  {
-    // 'bind' is the name of a mime type
-    QString bind = mime.mid( old_pos2, pos2 - old_pos2 );
-    types.append( bind );
-    
-    pos2++;
-    old_pos2 = pos2;
-  }
-  
-  return new KService( name, exec, app_icon, types, comment, allowdefault,
-		       path, terminal, _file, _put_in_list );
-}
-
 KService::KService( const QString& _name, const QString& _exec, const QString& _icon,
 		    const QStringList& _lstServiceTypes, const QString& _comment,
 		    bool _allow_as_default, const QString& _path,
-		    const QString& _terminal, const QString& _file,
-		    bool _put_in_list )
+		    const QString& _terminal, const QString& _file, const QString& _act_mode,
+		    const QStringList& _repo_ids, bool _put_in_list )
 {
   initStatic();
-  
-  assert( _name && _exec && _icon && s_lstServices );
+  m_bValid = true;
 
   if ( _put_in_list )
     s_lstServices->append( this );
@@ -183,29 +54,104 @@ KService::KService( const QString& _name, const QString& _exec, const QString& _
   m_strName = _name;
   m_strExec = _exec;
   m_strIcon = _icon;
-  if ( _comment )
-    m_strComment = _comment;
-  else
-    m_strComment = "";
+  m_strComment = _comment;
   m_lstServiceTypes = _lstServiceTypes;
-  if ( _path )
-    m_strPath = _path;
-  else
-    m_strPath = "";
-  if ( _terminal )
-    m_strTerminalOptions = _terminal;
-  else
-    m_strTerminalOptions = "";
-  if ( _file )
-    m_strFile = _file;
-  else
-    m_strFile = "";    
+  m_strPath = _path;
+  m_strTerminalOptions = _terminal;
+  // m_strFile = _file;
   m_bAllowAsDefault = _allow_as_default;
+  m_strActivationMode = _act_mode;
+  m_lstRepoIds = _repo_ids;
+}
+
+KService::KService( bool _put_in_list )
+{
+  initStatic();
+  m_bValid = false;
+
+  if ( _put_in_list )
+    s_lstServices->append( this );
+}
+
+KService::KService( KSimpleConfig& config, bool _put_in_list )
+{
+  initStatic();
+  m_bValid = true;
+
+  if ( _put_in_list )
+    s_lstServices->append( this );
+
+  config.setGroup( "KDE Desktop Entry" );
+  m_strExec = config.readEntry( "Exec" );
+  m_strName = config.readEntry( "Name" );
+  if ( m_strName.isEmpty() || m_strExec.isEmpty() )
+  {
+    m_bValid = false;
+    return;
+  }
+
+  m_strIcon = config.readEntry( "Icon", "unknown.xpm" );
+  m_strTerminalOptions = config.readEntry( "TerminalOptions" );  
+  m_strPath = config.readEntry( "Path" );
+  m_strComment = config.readEntry( "Comment" );
+  m_strActivationMode = config.readEntry( "ActivationMode", "UNIX" );
+  m_lstRepoIds = config.readListEntry( "RepoIds" );
+  m_lstServiceTypes = config.readListEntry( "ServiceTypes" );
+  // For compatibility with KDE 1.x
+  m_lstServiceTypes += config.readListEntry( "MimeType" );
+
+  m_bAllowAsDefault = config.readBoolEntry( "AllowDefault" );
+  
+  // Load all additional properties
+  QStringList::Iterator it = m_lstServiceTypes.begin();
+  for( ; it != m_lstServiceTypes.end(); ++it )
+  {    
+    KServiceType* s = KServiceType::serviceType( *it );
+    if ( s )
+    {
+      const QMap<QString,QProperty::Type>& pd = s->propertyDefs();
+      QMap<QString,QProperty::Type>::ConstIterator pit = pd.begin();
+      for( ; pit != pd.end(); ++pit )
+      {
+	m_mapProps.insert( pit.key(), config.readPropertyEntry( pit.key(), pit.data() ) );
+      }
+    }
+  }
+  
+}
+
+KService::KService( QDataStream& _str, bool _put_in_list )
+{
+  initStatic();
+
+  if ( _put_in_list )
+    s_lstServices->append( this );
+
+  load( _str );
 }
 
 KService::~KService()
 {
   s_lstServices->removeRef( this );
+}
+
+void KService::load( QDataStream& s )
+{
+  Q_INT8 b;
+  
+  s >> m_strName >> m_strExec >> m_strIcon >> m_strTerminalOptions >> m_strPath
+    >> m_strComment >> m_lstServiceTypes >> b >> m_mapProps >> m_strActivationMode
+    >> m_lstRepoIds;
+  m_bAllowAsDefault = b;
+  
+  m_bValid = true;
+}
+
+void KService::save( QDataStream& s ) const
+{
+  s << m_strName << m_strExec << m_strIcon << m_strTerminalOptions << m_strPath
+    << m_strComment << m_lstServiceTypes << (Q_INT8)m_bAllowAsDefault << m_mapProps
+    << m_strActivationMode << m_lstRepoIds;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const
@@ -219,3 +165,74 @@ bool KService::hasServiceType( const QString& _servicetype ) const
   return ( m_lstServiceTypes.find( _servicetype ) != m_lstServiceTypes.end() );
 }
 
+KService::PropertyPtr KService::property( const QString& _name ) const
+{
+  QProperty* p = 0;
+  
+  if ( _name == "Name" )
+    p = new QProperty( m_strName );
+  if ( _name == "Exec" )
+    p = new QProperty( m_strExec );
+  if ( _name == "Icon" )
+    p = new QProperty( m_strIcon );
+  if ( _name == "TerminalOptions" )
+    p = new QProperty( m_strTerminalOptions );
+  if ( _name == "Path" )
+    p = new QProperty( m_strPath );
+  if ( _name == "Comment" )
+    p = new QProperty( m_strComment );
+  //  if ( _name == "File" )
+  //    p = new QProperty( m_strFile );
+  if ( _name == "ServiceTypes" )
+    p = new QProperty( m_lstServiceTypes );
+  if ( _name == "AllowAsDefault" )
+    p = new QProperty( m_bAllowAsDefault );
+
+  if ( p )
+  {    
+    // We are not interestes in these
+    p->deref();
+    return p;
+  }
+  
+  QMap<QString,QProperty>::ConstIterator it = m_mapProps.find( _name );
+  if ( it == m_mapProps.end() )
+    return (QProperty*)0;
+  
+  p = (QProperty*)(&(it.data()));
+  
+  return p;
+}
+
+QStringList KService::propertyNames() const
+{
+  QStringList res;
+  
+  QMap<QString,QProperty>::ConstIterator it = m_mapProps.begin();
+  for( ; it != m_mapProps.end(); ++it )
+    res.append( it.key() );
+  
+  res.append( "Name" );
+  res.append( "Comment" );
+  res.append( "Icon" );
+  res.append( "Exec" );
+  res.append( "TerminalOptions" );
+  res.append( "Path" );
+  res.append( "File" );
+  res.append( "ServiceTypes" );
+  res.append( "AllowAsDefault" );
+
+  return res;
+}
+
+QDataStream& operator>>( QDataStream& _str, KService& s )
+{
+  s.load( _str );
+  return _str;
+}
+
+QDataStream& operator<<( QDataStream& _str, const KService& s )
+{
+  s.save( _str );
+  return _str;
+}
