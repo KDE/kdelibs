@@ -2,7 +2,6 @@
 INCLUDES = $(all_includes) -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow \
    -I$(top_builddir)/arts/flow
 MCOPINC   = -I$(srcdir) -I$(top_srcdir)/arts/flow
-LDFLAGS   = $(all_libraries) $(top_builddir)/arts/mcop/libmcop.la
 MCOPIDL   = $(top_builddir)/arts/mcopidl/mcopidl
 FLOWLIBS  = $(top_builddir)/arts/flow/libartsflow.la
 
@@ -13,13 +12,14 @@ artsinclude_HEADERS = soundserver.h soundserver.idl kmedia2.h kmedia2.idl
 
 ####### libsoundserver_idl, libkmedia2_idl (idl files as library)
 
-lib_LTLIBRARIES = libsoundserver_idl.la libkmedia2_idl.la libartsd.la
+lib_LTLIBRARIES = libsoundserver_idl.la libkmedia2_idl.la
 
 libsoundserver_idl_la_LIBADD = libkmedia2_idl.la \
                           $(top_builddir)/arts/flow/libartsflow_idl.la
 libsoundserver_idl_la_LDFLAGS = -no-undefined
 libsoundserver_idl_la_SOURCES = soundserver.cc
 libkmedia2_idl_la_SOURCES = kmedia2.cc
+libkmedia2_idl_la_LIBADD  = $(top_builddir)/arts/mcop/libmcop.la
 libkmedia2_idl_la_LDFLAGS = -no-undefined
 
 ###### "real" programs
@@ -32,20 +32,14 @@ artsd_SOURCES = simplesoundserver_impl.cc artsd.cc wavplayobject_impl.cc
 artscat_LDADD = libsoundserver_idl.la $(FLOWLIBS)
 artscat_SOURCES = artscat.cc
 
+artsplay_LDADD = libsoundserver_idl.la
+artsplay_SOURCES = artsplay.cc
+
 artswrapper_OBJS = artswrapper.o
 
 artswrapper.o: $(srcdir)/artswrapper.c
 	$(CC) -c $(DEFS) $(INCLUDES) -DEXECUTE='"$(bindir)/artsd"' \
 			$(srcdir)/artswrapper.c
-
-## create a kdeinit startable version as well
-
-libartsd_la_SOURCES = simplesoundserver_impl.cc artsd.cc wavplayobject_impl.cc
-libartsd_la_LIBADD = $(artsd_LDADD)
-libartsd_la_LDFLAGS = $(LDFLAGS) -module                    
-
-artsplay_LDADD = libsoundserver_idl.la
-artsplay_SOURCES = artsplay.cc
 
 DISTCLEANFILES = soundserver.cc soundserver.h kmedia2.h kmedia2.cc
 
