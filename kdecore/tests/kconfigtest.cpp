@@ -236,6 +236,10 @@ int main( int argc, char **argv )
   QPoint point = sc.readPointEntry( "pointEntry" );
   fprintf( stderr, "rect is (%d,%d,%d,%d)\n", rect.left(), rect.top(), rect.width(), rect.height() );
   fprintf( stderr, "point is (%d,%d)\n", point.x(), point.y() );
+
+  KConfig t("/opt/kde2/share/applnk/Utilities/.directory");
+  t.setDesktopGroup();
+  printf("%s\n", t.readEntry("Name").latin1());
   
 }
 
