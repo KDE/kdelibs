@@ -116,7 +116,7 @@ void BrowserRun::scanFile()
   if ( m_part )
   {
       QString proto = m_part->url().protocol().lower();
-      
+
       if (proto == "https" || proto == "webdavs") {
           m_args.metaData().insert("main_frame_request", "TRUE" );
           m_args.metaData().insert("ssl_was_in_use", "TRUE" );
@@ -125,12 +125,12 @@ void BrowserRun::scanFile()
           m_args.metaData().insert("ssl_activate_warnings", "TRUE" );
           m_args.metaData().insert("ssl_was_in_use", "FALSE" );
       }
-      
+
       // Set the PropagateHttpHeader meta-data if it has not already been set...
       if (!m_args.metaData().contains("PropagateHttpHeader"))
           m_args.metaData().insert("PropagateHttpHeader", "TRUE");
   }
- 
+
   KIO::TransferJob *job;
   if ( m_args.doPost() && m_strURL.protocol().startsWith("http"))
   {
@@ -356,34 +356,38 @@ void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename
     // DownloadManager <-> konqueror integration
     // find if the integration is enabled
     // the empty key  means no integration
-    KConfig cfg("konquerorrc", false, false);
-    cfg.setGroup("HTML Settings");
-    QString downloadManger = cfg.readPathEntry("DownloadManager");
-    if (!downloadManger.isEmpty())
+    // only use the downloadmanager for non-local urls
+    if ( !url.isLocalFile() )
     {
-        // then find the download manager location
-        kdDebug(1000) << "Using: "<<downloadManger <<" as Download Manager" <<endl;
-        QString cmd=KStandardDirs::findExe(downloadManger);
-        if (cmd.isEmpty())
+        KConfig cfg("konquerorrc", false, false);
+        cfg.setGroup("HTML Settings");
+        QString downloadManger = cfg.readPathEntry("DownloadManager");
+        if (!downloadManger.isEmpty())
         {
-            QString errMsg=i18n("The Download Manager (%1) could not be found in your $PATH ").arg(downloadManger);
-            QString errMsgEx= i18n("Try to reinstall it  \n\nThe integration with Konqueror will be disabled!");
-            KMessageBox::detailedSorry(0,errMsg,errMsgEx);
-            cfg.writePathEntry("DownloadManager",QString::null);
-            cfg.sync ();
-        }
-        else
-        {
-            // ### suggestedFilename not taken into account. Fix this (and
-            // the duplicated code) with shiny new KDownload class for 3.2 (pfeiffer)
-            // Until the shiny new class comes about, send the suggestedFilename
-            // along with the actual URL to download. (DA)
-            cmd += " " + KProcess::quote(url.url()) + " " + KProcess::quote(suggestedFilename);
-            kdDebug(1000) << "Calling command  " << cmd << endl;
-            // slave is already on hold (slotBrowserMimetype())
-            KIO::Scheduler::publishSlaveOnHold();
-            KRun::runCommand(cmd);
-            return;
+            // then find the download manager location
+            kdDebug(1000) << "Using: "<<downloadManger <<" as Download Manager" <<endl;
+            QString cmd=KStandardDirs::findExe(downloadManger);
+            if (cmd.isEmpty())
+            {
+                QString errMsg=i18n("The Download Manager (%1) could not be found in your $PATH ").arg(downloadManger);
+                QString errMsgEx= i18n("Try to reinstall it  \n\nThe integration with Konqueror will be disabled!");
+                KMessageBox::detailedSorry(0,errMsg,errMsgEx);
+                cfg.writePathEntry("DownloadManager",QString::null);
+                cfg.sync ();
+            }
+            else
+            {
+                // ### suggestedFilename not taken into account. Fix this (and
+                // the duplicated code) with shiny new KDownload class for 3.2 (pfeiffer)
+                // Until the shiny new class comes about, send the suggestedFilename
+                // along with the actual URL to download. (DA)
+                cmd += " " + KProcess::quote(url.url()) + " " + KProcess::quote(suggestedFilename);
+                kdDebug(1000) << "Calling command  " << cmd << endl;
+                // slave is already on hold (slotBrowserMimetype())
+                KIO::Scheduler::publishSlaveOnHold();
+                KRun::runCommand(cmd);
+                return;
+            }
         }
     }
 
