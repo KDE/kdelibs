@@ -360,3 +360,16 @@ bool KMManager::removeSpecialPrinter(KMPrinter *p)
 		return m_specialmgr->savePrinters();
 	}
 }
+
+/* format of output:
+	URI0, Desc0, Printer0, URI1, Desc1, Printer1, ...
+
+  Defaults to 3 parallel printers
+*/
+QStringList KMManager::detectLocalPrinters()
+{
+	QStringList	list;
+	for (int i=0; i<3; i++)
+		list << QString::fromLatin1("parallel:/dev/lp%1").arg(i) << i18n("Parallel Port #%1").arg(i+1) << QString::null;
+	return list;
+}

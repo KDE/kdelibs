@@ -106,6 +106,7 @@ public:
 	int serverOperationMask() const 	{ return m_serveroperationmask; }
 	virtual bool restartServer();
 	virtual bool configureServer(QWidget *parent = 0);
+	virtual QStringList detectLocalPrinters();
 
 protected:
 	// the real printer listing job is done here
