@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Type=Service
 Name=Proxy Scout
-Comment=Proxy Auto Discovery Module
+Comment=Automatic Proxy Configuration
 ServiceTypes=KDEDModule
 X-KDE-ModuleType=Library
 X-KDE-Library=proxyscout

@@ -55,7 +55,7 @@ namespace KPAC
             m_hostname.remove( 0, dot + 1 ); // remove one level
             dot = m_hostname.find( '.' );    // require TLD and SLD
             if ( dot >= 0 )
-                download( "http://wpad." + m_hostname + "/wpad.dat" );
+                download( "http://wpad." + m_hostname + "./wpad.dat" );
             else emit result( false );
         }
         else emit result( false );
