@@ -75,6 +75,11 @@ public:
   bool supportsMoving( const QString& protocol ) const;
 
   /**
+   * @return list of all known protocols
+   */
+  QString defaultMimetype( const QString& protocol ) const;
+
+  /**
    * Determining the mimetype of a URL can be done by simply looking at
    * the extension (that's the fast mode). However, when
    * the extension is unknown, a KIO::mimetype job will be necessary
@@ -111,15 +116,15 @@ public:
   static QString remoteFileProtocol();
 
   static bool useProxy();
-  
+
   /*
   * This method has been deprecated, please
   * use @ref proxyFor.
   *
   * @deprecated
-  */  
+  */
   static QString ftpProxy();
-  
+
   /*
   * This method has been deprecated, please
   * use @ref proxyFor.
@@ -127,13 +132,13 @@ public:
   * @deprecated
   */
   static QString httpProxy();
-  
+
   static QString noProxyFor();
-  
+
   /*
   * Returns the proxy server address for a given
   * protocol
-  * 
+  *
   * @param protocol the protocol whose proxy info is needed
   * @return the proxy server address if one is available
   */
@@ -209,11 +214,11 @@ public:
    *
    */
   static void setRemoteFileProtocol( const QString &remoteFileProtocol );
-  
+
   static void setUseCache( bool _mode );
-  
+
   static void setMaxCacheSize( int cache_size );
-  
+
   static void setMaxCacheAge( int cache_age );
 
   /**
@@ -223,27 +228,27 @@ public:
    *
    */
   static void setUseProxy( bool _mode );
-  
+
   /**
    * Set the proxy for FTP transfer.
    *
    * This method has been deprecated, please
    * use @ref setProxyFor.
    *
-   * @deprecated   
+   * @deprecated
    */
   static void setFtpProxy( const QString& _proxy );
 
   /**
    * Set the proxy for HTTP transfer
-   * 
+   *
    * This method has been deprecated, please
    * use @ref setProxyFor.
    *
    * @deprecated
    */
   static void setHttpProxy( const QString& _proxy );
-  
+
   /*
   * Sets the proxy for the protocol given by @p protocol.
   *
@@ -294,6 +299,7 @@ private:
     bool supportsDeleting;
     bool supportsLinking;
     bool supportsMoving;
+    QString defaultMimetype;
     QStringList mimetypesExcludedFromFastMode;
     QStringList patternsExcludedFromFastMode;
   };

@@ -72,6 +72,7 @@ void KProtocolManager::scanConfig( const QString& _dir )
     p.supportsMoving = config.readBoolEntry( "moving", false );
     p.listing = config.readListEntry( "listing" );
     p.supportsListing = ( p.listing.count() > 0 );
+    p.defaultMimetype = config.readEntry( "defaultMimetype" );
     p.mimetypesExcludedFromFastMode = config.readListEntry( "mimetypesExcludedFromFastMode" );
     p.patternsExcludedFromFastMode = config.readListEntry( "patternsExcludedFromFastMode" );
     QString tmp = config.readEntry( "input" );
@@ -245,6 +246,18 @@ bool KProtocolManager::supportsMoving( const QString& _protocol ) const
   }
 
   return it.data().supportsMoving;
+}
+
+QString KProtocolManager::defaultMimetype( const QString& _protocol ) const
+{
+  ConstIterator it = m_protocols.find( _protocol );
+  if ( it == m_protocols.end() )
+  {
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    return QString::null;
+  }
+
+  return it.data().defaultMimetype;
 }
 
 bool KProtocolManager::mimetypeFastMode( const QString& _protocol, const QString & _mimetype ) const
@@ -430,7 +443,7 @@ QString KProtocolManager::proxyFor( const QString& protocol )
   QString key = protocol.lower();
   KConfig config("kioslaverc", true, false);
   config.setGroup( "Proxy Settings" );
-  
+
   // The following check is to ensure that we can read the old settings
   // incorrectly saved without a group and in the old format.  Once
   // setProxyFor(...) is invoked these settings would be correctly
@@ -449,9 +462,9 @@ QString KProtocolManager::proxyFor( const QString& protocol )
     if( key == "http" && config.hasKey( "HttpProxy" ) )
         return config.readEntry( "HttpProxy" );
     else if( key == "ftp" && config.hasKey( "HttpProxy" ) )
-        return config.readEntry( "FtpProxy" );    
+        return config.readEntry( "FtpProxy" );
   }
-  
+
   return config.readEntry( key + "Proxy" );
 }
 
@@ -521,7 +534,7 @@ void KProtocolManager::setUseCache( bool _mode )
   config.writeEntry( "UseCache", _mode );
   config.sync();
 }
-  
+
 void KProtocolManager::setMaxCacheSize( int cache_size )
 {
   KConfig config("kioslaverc", true, false);
@@ -529,12 +542,12 @@ void KProtocolManager::setMaxCacheSize( int cache_size )
   config.writeEntry( "MaxCacheSize", cache_size );
   config.sync();
 }
-  
+
 void KProtocolManager::setMaxCacheAge( int cache_age )
 {
   KConfig config("kioslaverc", true, false);
   config.setGroup( "Cache Settings" );
-  config.writeEntry( "MaxCacheAge", cache_age );  
+  config.writeEntry( "MaxCacheAge", cache_age );
   config.sync();
 }
 
@@ -574,11 +587,11 @@ void KProtocolManager::setProxyFor( const QString& protocol, const QString& _pro
 {
   QString key = protocol.lower();
   KSimpleConfig config( "kioslaverc", false );
-  config.setGroup( "Proxy Settings" );  
+  config.setGroup( "Proxy Settings" );
   // The following check is to ensure that we properly remove the
   // the settings that were saved in an incorrect format and group.
   // This check will be unnecessary after KDE 2.x is released and
-  // can be safely removed then.  
+  // can be safely removed then.
   if( key == "http" || key == "ftp" )
   {
     {
@@ -595,7 +608,7 @@ void KProtocolManager::setProxyFor( const QString& protocol, const QString& _pro
     if( config.hasKey( "HttpProxy" ) )
         config.deleteEntry( "HttpProxy", true );
     else if( config.hasKey( "FtpProxy" ) )
-        config.deleteEntry( "FtpProxy", true );    
+        config.deleteEntry( "FtpProxy", true );
   }
   config.writeEntry( key + "Proxy", _proxy );
   config.sync();
