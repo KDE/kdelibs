@@ -578,11 +578,6 @@ QList<KXMLGUIClient> KXMLGUIFactory::clients() const
   return d->m_clients;
 }
 
-QWidget *KXMLGUIFactory::container( const QString &containerName, KXMLGUIClient *client )
-{
-  return container( containerName, client, false );
-}
-
 QWidget *KXMLGUIFactory::container( const QString &containerName, KXMLGUIClient *client, bool useTagName )
 {
   d->m_containerName = containerName;

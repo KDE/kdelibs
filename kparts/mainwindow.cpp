@@ -55,7 +55,7 @@ public:
 };
 
 MainWindow::MainWindow( const char *name, WFlags f )
-  : KTMainWindow( name, f )
+  : KMainWindow( 0L, name, f )
 {
   d = new MainWindowPrivate();
   PartBase::setPartObject( this );
@@ -128,7 +128,6 @@ void MainWindow::createGUI( Part * part )
   }
 
   setUpdatesEnabled( true );
-  updateRects();
 
   d->m_activePart = part;
 }

@@ -102,20 +102,11 @@ class KXMLGUIFactory : public QObject
    * and which is owned by the @p client. The container name is specified with a "name" attribute in the
    * XML document.
    *
-   * This method may return 0L if no container with the given name exists or is not owned by the client.
-   */
-  QWidget *container( const QString &containerName, KXMLGUIClient *client );
-
-  /**
-   * Use this method to get access to a container widget with the name specified with @p containerName
-   * and which is owned by the @p client. The container name is specified with a "name" attribute in the
-   * XML document.
-   *
    * @param useTagName Specify whether the compare the specified name with the name attribute or the tag name.
    *
    * This method may return 0L if no container with the given name exists or is not owned by the client.
    */
-  QWidget *container( const QString &containerName, KXMLGUIClient *client, bool useTagName ); // BCI: merge with useTagName = false
+  QWidget *container( const QString &containerName, KXMLGUIClient *client, bool useTagName = false );
 
   /**
    * Use this method to free all memory allocated by the KXMLGUIFactory. This deletes the internal node

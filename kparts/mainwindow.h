@@ -42,10 +42,10 @@ class MainWindowPrivate;
  * and don't forget to call @ref setXMLFile() in the inherited constructor.
  *
  * It implements all internal interfaces in the case of a
- * @ref KTMainWindow as host: the builder and servant interface (for menu
+ * @ref KMainWindow as host: the builder and servant interface (for menu
  * merging).
  */
-class MainWindow : public KTMainWindow, virtual public PartBase
+class MainWindow : public KMainWindow, virtual public PartBase
 {
   Q_OBJECT
  public:
