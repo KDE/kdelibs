@@ -456,7 +456,7 @@ bool KCertPart::openFile() {
 
   QString whatType = d->browserExtension->urlArgs().serviceType;
                     //whatType = KMimeType::findByURL(m_url,0,true)->name();
-  if (whatType == "" || whatType == QString::null)
+  if (whatType.isEmpty())
      whatType = KServiceTypeFactory::self()->findFromPattern(m_file)->name();
 
   /*
