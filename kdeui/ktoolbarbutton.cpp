@@ -301,6 +301,14 @@ void KToolBarButton::setIcon( const QString &icon, bool )
   }
 }
 
+void KToolBarButton::setIconSet( const QIconSet &iconset, bool )
+{
+    // TODO. Do the opposite. Port all this code to QIconSet.
+    setPixmap( iconset.pixmap( QIconSet::Automatic, QIconSet::Active ), false );
+    setDisabledPixmap( iconset.pixmap( QIconSet::Automatic, QIconSet::Disabled ) );
+    setDefaultPixmap( iconset.pixmap( QIconSet::Automatic, QIconSet::Normal ) );
+}
+
 // obsolete?
 void KToolBarButton::setDisabledIcon( const QString &icon )
 {

@@ -518,6 +518,16 @@ void KToolBar::setButtonIcon( int id, const QString& _icon )
     ( (KToolBarButton*)w )->setIcon( _icon );
 }
 
+void KToolBar::setButtonIconSet( int id, const QIconSet& iconset )
+{
+     Id2WidgetMap::Iterator it = id2widget.find( id );
+     if ( it == id2widget.end() )
+        return;
+    if ( !(*it) || !(*it)->inherits( "KToolBarButton" ) )
+        return;
+    ( (KToolBarButton*)(*it) )->setIconSet( iconset );
+}
+
 
 void KToolBar::setDelayedPopup (int id , QPopupMenu *_popup, bool toggle )
 {

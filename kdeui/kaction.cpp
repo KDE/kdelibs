@@ -631,12 +631,9 @@ void KAction::setIcon( const QString &icon )
     setIcon( i, icon );
 }
 
-void KAction::setIcon( int id, const QString &icon )
+void KAction::setIcon( int, const QString & )
 {
-  QWidget* w = container( id );
-
-  if ( w->inherits( "KToolBar" ) )
-    static_cast<KToolBar *>(w)->setButtonIcon( itemId( id ), icon );
+  // nothing to do anymore, see setIconSet
 }
 
 QString KAction::icon() const
@@ -663,7 +660,7 @@ void KAction::setIconSet( int id, const QIconSet& iconset )
   else if ( w->inherits( "QMenuBar" ) )
     static_cast<QMenuBar*>(w)->changeItem( itemId( id ), iconset, d->m_text );
   else if ( w->inherits( "KToolBar" ) )
-    static_cast<KToolBar *>(w)->setButtonPixmap( itemId( id ), iconset.pixmap() );
+    static_cast<KToolBar *>(w)->setButtonIconSet( itemId( id ), iconset );
 }
 
 QIconSet KAction::iconSet() const

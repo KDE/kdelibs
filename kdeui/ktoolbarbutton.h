@@ -183,6 +183,16 @@ public:
   virtual void setDisabledIcon(const QString& icon);
 
   /**
+   * Set the pixmaps for this toolbar button from a QIconSet.
+   * If you call this you don't need to call any of the other methods
+   * that set icons or pixmaps.
+   * @param iconset  The iconset to use
+   * @param on       Unused. This is for compatibility with the Qt API.
+   */
+  virtual void setIconSet( const QIconSet &iconset, bool on = false );
+
+
+  /**
    * Turn this button on or off
    *
    * @param flag true or false

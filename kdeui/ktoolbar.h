@@ -31,6 +31,7 @@
 #include <kglobal.h>
 #include <qguardedptr.h>
 #include <qframe.h>
+#include <qiconset.h>
 
 class QDomElement;
 class QSize;
@@ -439,6 +440,13 @@ public:
    * Can be used while button is visible.
    */
     void setButtonIcon( int id, const QString& _icon );
+
+    /**
+   * Set button icons from a QIconSet.
+   *
+   * Can be used while button is visible.
+   */
+    void setButtonIconSet( int id, const QIconSet& iconset );
 
     /**
    * Set delayed popup for a button.
@@ -1039,7 +1047,8 @@ private:
     KPopupMenu *contextMenu();
 
     QMap<QWidget*, int > widget2id;
-    QMap<int, QWidget* > id2widget;
+    typedef QMap<int, QWidget* > Id2WidgetMap;
+    Id2WidgetMap id2widget;
     KToolBarPrivate *d;
     KPopupMenu *context;
     QList<QWidget> widgets, inserted;
