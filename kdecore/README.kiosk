@@ -392,13 +392,13 @@ list     - This controls which directories can be browsed with KDE's file-dialog
            The first rule disables browing any directories on the local filesystem. The second rule
            then enables browsing the users home directory.
 
-open     - This controls which files can be opened by the user in applications. To only
-           allow a user to open the files in his own home directory one could use:
+open     - This controls which files can be opened by the user in applications. It also
+           affects where users can save files. To only allow a user to open the files 
+           in his own home directory one could use:
               rule_1=open,,,,file,,,false
               rule_2=open,,,,file,,$HOME,true
-           Note that with the above, users would still be able to open files from the internet.
-
-           IMPLEMENTATION NOTE: "open" is not yet fully implemented!!
+           Note that with the above, users would still be able to open files from 
+           the internet. 
 
 Some remarks:
 * empty entries match everything
