@@ -69,11 +69,6 @@ RenderBox::RenderBox(DOM::NodeImpl* node)
 
 void RenderBox::setStyle(RenderStyle *_style)
 {
-    // Make sure the root element retains its display:block type even across style
-    // changes.
-    if (isRoot() && _style->display() != NONE)
-        _style->setDisplay(BLOCK);
-
     RenderObject::setStyle(_style);
 
     // The root always paints its background/border.
@@ -90,7 +85,8 @@ void RenderBox::setStyle(RenderStyle *_style)
         setPositioned(false);
         if( !isTableCell() && _style->isFloating() )
             setFloating(true);
-        else if( _style->position() == RELATIVE )
+
+        if( _style->position() == RELATIVE )
             setRelPositioned(true);
     }
 
@@ -272,7 +268,15 @@ void RenderBox::paintBoxDecorations(QPainter *p,int _x, int _y,
     }
 }
 
-void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int h)
+void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int height)
+{
+    paintBackgroundExtended(p, c, bg, clipy, cliph, _tx, _ty, w, height,
+                            borderLeft(), borderRight());
+}
+
+void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph,
+                                        int _tx, int _ty, int w, int h,
+                                        int bleft, int bright)
 {
     if ( cliph < 0 )
 	return;
@@ -295,7 +299,7 @@ void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, i
         int sy = 0;
         int cw,ch;
         int cx,cy;
-        int vpab = borderRight() + borderLeft();
+        int vpab = bleft + bright;
         int hpab = borderTop() + borderBottom();
 
         // CSS2 chapter 14.2.1
@@ -324,7 +328,7 @@ void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, i
                 sx =  pixw ? pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw)) % pixw ) : 0;
             }
 
-            cx += borderLeft();
+            cx += bleft;
 
             if( (bgr == NO_REPEAT || bgr == REPEAT_X) && ph > pixh ) {
                 ch = pixh;
@@ -373,7 +377,7 @@ void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             }
 
             QRect fix(cx,cy,cw,ch);
-            QRect ele(_tx+borderLeft(),_ty+borderTop(),w-vpab,h-hpab);
+            QRect ele(_tx+bleft,_ty+borderTop(),w-vpab,h-hpab);
             QRect b = fix.intersect(ele);
 
             //kdDebug() <<" ele is " << ele << " b is " << b << " fix is " << fix << endl;
