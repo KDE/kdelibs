@@ -965,25 +965,31 @@ bool TCPSlaveBase::isConnectionValid()
 
 bool TCPSlaveBase::waitForResponse( int t )
 {
-    fd_set rd, wr;
-    struct timeval timeout;
+	fd_set rd, wr;
+	struct timeval timeout;
 
-    int n = t; // Timeout in seconds
-    while(n--)
-    {
-        FD_ZERO(&rd);
-        FD_ZERO(&wr);
-        FD_SET(m_iSock, &rd);
+	int n = t; // Timeout in seconds
+	while(n--)
+	{
+		FD_ZERO(&rd);
+		FD_ZERO(&wr);
+		FD_SET(m_iSock, &rd);
 
-        timeout.tv_usec = 0;
-        timeout.tv_sec = 1; // 1 second
+		timeout.tv_usec = 0;
+		timeout.tv_sec = 1; // 1 second
 
-        select(m_iSock+1, &rd, &wr, (fd_set *)0, &timeout);
+    		if ( (m_bIsSSL || d->usingTLS) && 
+		     !d->useSSLTunneling && 
+		     d->kssl )
+			if (d->kssl->pending() > 0)
+				return true;
 
-        if (FD_ISSET(m_iSock, &rd))
-            return true;
-    }
-    return false; // Timed out!
+		select(m_iSock+1, &rd, &wr, (fd_set *)0, &timeout);
+
+		if (FD_ISSET(m_iSock, &rd))
+			return true;
+	}
+	return false; // Timed out!
 }
 
 int TCPSlaveBase::connectResult()
