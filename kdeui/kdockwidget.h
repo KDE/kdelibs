@@ -886,6 +886,13 @@ friend class KDockWidget;
 friend class KDockMainWindow;
 
 public:
+    enum EnReadDockConfigMode {
+        Unknown,
+        WrapExistingWidgetsOnly,
+        RestoreAllDockwidgets
+    };
+
+public:
   /**
    * Constructs a dockmanager. Some initialization happen:
    * @li It installs an event filter for the main window,
@@ -1034,6 +1041,10 @@ public:
   void setSpecialTopDockContainer(KDockWidget* container);  
   void setSpecialRightDockContainer(KDockWidget* container);  
   void setSpecialBottomDockContainer(KDockWidget* container);  
+
+  void removeFromAutoCreateList(KDockWidget* pDockWidget);
+  void finishReadDockConfig();
+  void setReadDockConfigMode(int mode);
 
 signals:
 
