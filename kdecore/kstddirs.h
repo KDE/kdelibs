@@ -37,7 +37,7 @@ class KConfig;
 * @version $Id$
 *
 * This is one of the most central classes in kdelibs as
-* it provides a basic service: Tt knows where the files
+* it provides a basic service: It knows where the files
 * reside on the user's hard disk. And it's meant to be the
 * only one that knows -- to make the real location as
 * transparent as possible to both the user and the applications.
@@ -87,15 +87,15 @@ class KConfig;
 *
 * KStandardDirs supports the following environment variables:
 *
-* KDEDIRS: This may set an additional number of directories to 
+* KDEDIRS: This may set an additional number of directories to
 *          search for resources. The directories should be seperated
-*          by ':'. The directories are searched in the order they are 
+*          by ':'. The directories are searched in the order they are
 *          specified.
 * KDEDIR:  Used for backwards compatibility. As KDEDIRS but only a single
-*          directory may be specified. If KDEDIRS is set KDEDIR is 
+*          directory may be specified. If KDEDIRS is set KDEDIR is
 *          ignored.
 * KDEHOME: The directory where changes are saved to. This directory is
-*          used to search for resources first. If KDEHOME is not 
+*          used to search for resources first. If KDEHOME is not
 *          specified it defaults to "$HOME/.kde"
 *
 **/
@@ -313,7 +313,7 @@ public:
 	 *
 	 * @param config The object the entries are read from. This should
 	 *        contain global config files
-	 * @return @true if new config paths have been added 
+	 * @return @true if new config paths have been added
 	 * from @p config.
 	 **/
 	bool addCustomized(KConfig *config);
@@ -329,7 +329,7 @@ public:
 	 * Find a location to save files into for the given type
 	 * in the user's home directory.
 	 *
-	 * @param suffix A subdirectory name. 
+	 * @param suffix A subdirectory name.
 	 *             Makes it easier for you to create subdirectories.
 	 *   You can't pass filenames here, you _have_ to pass
 	 *       directory names only and add possible filename in
@@ -367,7 +367,7 @@ public:
         /**
          * @internal (for use by sycoca only)
          */
-        QString kfsstnd_prefixes();         
+        QString kfsstnd_prefixes();
 
  private:
 
