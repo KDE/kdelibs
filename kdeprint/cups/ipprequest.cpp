@@ -83,6 +83,8 @@ void dumpRequest(ipp_t *req, bool answer = false, const QString& s = QString::nu
 				case IPP_TAG_LANGUAGE:
 					s += attr->values[i].string.text;
 					break;
+				default:
+					break;
 			}
 			if (i != (attr->num_values-1))
 				s += ", ";
@@ -448,6 +450,8 @@ QMap<QString,QString> IppRequest::toMap(int group)
 					case IPP_TAG_CHARSET:
 					case IPP_TAG_LANGUAGE:
 						value.append(QString::fromLocal8Bit(attr->values[i].string.text)).append(",");
+						break;
+					default:
 						break;
 				}
 			}

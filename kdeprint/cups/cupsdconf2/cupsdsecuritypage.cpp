@@ -168,7 +168,7 @@ void CupsdSecurityPage::slotDefaultList()
 
 void CupsdSecurityPage::slotDeleted(int index)
 {
-	if (index >= 0 && index < locs_.count())
+	if (index >= 0 && index < (int)(locs_.count()))
 		locs_.remove(index);
 }
 

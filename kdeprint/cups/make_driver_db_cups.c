@@ -8,6 +8,8 @@
 #include <ctype.h>
 #include <zlib.h>
 
+#include "driverparse.h"
+
 void initPpd(const char *dirname)
 {
 	DIR	*dir = opendir(dirname);

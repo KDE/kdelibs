@@ -486,6 +486,8 @@ QDomElement KXmlCommand::createElement(QDomDocument& doc, DrBase *opt)
 				}
 			}
 			break;
+		default:
+			break;
 	}
 
 	return elem;
@@ -641,7 +643,7 @@ int KXmlCommandManager::insertCommand(QStringList& list, const QString& filterna
 				f2 = 0;
 			}
 		}
-		if (pos == list.count())
+		if (pos == (int)(list.count()))
 		{
 			if (list.count() == 0 || f1->acceptMimeType(mimetype))
 				list.append(filtername);
@@ -660,7 +662,7 @@ int KXmlCommandManager::insertCommand(QStringList& list, const QString& filterna
 QStringList KXmlCommandManager::autoConvert(const QString& mimesrc, const QString& mimedest)
 {
 	QStringList	chain;
-	int		score(0);
+	uint		score(0);
 
 	preload();
 

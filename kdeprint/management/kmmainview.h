@@ -37,6 +37,7 @@ class QSplitter;
 class KToolBar;
 class KAction;
 class PluginComboBox;
+class QBoxLayout;
 
 class KMMainView : public QWidget, public KPReloadObject
 {
@@ -97,12 +98,12 @@ private:
 	QPopupMenu	*m_pop;
 	KActionCollection	*m_actions;
 	KMPrinter	*m_current;
-	QSplitter	*m_splitter;
 	KToolBar	*m_toolbar;
 	PluginComboBox	*m_plugin;
 	int		m_pactionsindex;
 	QStringList	m_toollist;
 	bool		m_first;
+	QBoxLayout	*m_boxlayout;
 };
 
 #endif

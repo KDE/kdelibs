@@ -48,6 +48,7 @@ KMPrinterView::KMPrinterView(QWidget *parent, const char *name)
 	connect(m_listview,SIGNAL(printerSelected(KMPrinter*)),SLOT(slotPrinterSelected(KMPrinter*)));
 
 	setViewType(m_type);
+	setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 }
 
 KMPrinterView::~KMPrinterView()
@@ -95,4 +96,10 @@ void KMPrinterView::slotPrinterSelected(KMPrinter *p)
 {
 	m_current = p;
 }
+
+QSize KMPrinterView::minimumSizeHint() const
+{
+	return QWidgetStack::minimumSizeHint();
+}
+
 #include "kmprinterview.moc"

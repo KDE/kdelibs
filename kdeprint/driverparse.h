@@ -25,5 +25,6 @@
 void registerHandler(const char *name, void(*initf)(const char*), int(*parsef)(const char*, FILE*));
 void initFoomatic(void);
 int execute(int argc, char *argv[]);
+void addFile(const char *filename);
 
 #endif

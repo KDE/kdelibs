@@ -107,7 +107,7 @@ void KMConfigFilter::saveConfig(KConfig *conf)
 {
 	conf->setGroup("Filter");
 	QStringList	plist;
-	for (int i=0; i<m_list2->count(); i++)
+	for (uint i=0; i<m_list2->count(); i++)
 		plist << m_list2->text(i);
 	conf->writeEntry("Printers", plist);
 	conf->writeEntry("LocationRe", m_locationre->text());
@@ -115,7 +115,7 @@ void KMConfigFilter::saveConfig(KConfig *conf)
 
 void KMConfigFilter::transfer(KListBox *from, KListBox *to)
 {
-	for (int i=0; i<from->count();)
+	for (uint i=0; i<from->count();)
 	{
 		if (from->isSelected(i))
 		{
@@ -144,7 +144,7 @@ void KMConfigFilter::slotSelectionChanged()
 	if (!lb)
 		return;
 	QPushButton	*pb = (lb == m_list1 ? m_add : m_remove);
-	for (int i=0; i<lb->count(); i++)
+	for (uint i=0; i<lb->count(); i++)
 		if (lb->isSelected(i))
 		{
 			pb->setEnabled(true);

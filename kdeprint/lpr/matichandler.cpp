@@ -177,7 +177,7 @@ KURL MaticHandler::parsePostpipe(const QString& s)
 			url.setProtocol("smb");
 			QStringList	host_components = QStringList::split(QRegExp("/|\\\\\""), args[1], false);
 			QString	workgrp, user, pass;
-			for (int i=2; i<args.count(); i++)
+			for (uint i=2; i<args.count(); i++)
 			{
 				if (args[i] == "-U")
 					user = args[++i];
@@ -204,7 +204,7 @@ KURL MaticHandler::parsePostpipe(const QString& s)
 		// remote printer
 		else if (args[0].right(5) == "/rlpr")
 		{
-			int	i=1;
+			uint	i=1;
 			while (i < args.count())
 			{
 				if (args[i].left(2) != "-P")

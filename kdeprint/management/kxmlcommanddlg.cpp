@@ -403,6 +403,8 @@ void KXmlCommandAdvancedDlg::viewItem(QListViewItem *item)
 						}
 						break;
 					}
+				default:
+					break;
 			}
 
 			m_addgrp->setEnabled(isgroup);
@@ -725,7 +727,10 @@ bool KXmlCommandAdvancedDlg::editCommand(KXmlCommand *xmlcmd, QWidget *parent)
 		xmlcmd->setDriver(driver);
 
 		// remaining options will be removed in destructor
+
+		return true;
 	}
+	return false;
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -886,7 +891,7 @@ void KXmlCommandDlg::slotOk()
 		}
 		m_cmd->setRequirements(l);
 		l.clear();
-		for (int i=0; i<m_selectedmime->count(); i++)
+		for (uint i=0; i<m_selectedmime->count(); i++)
 			l << m_selectedmime->text(i);
 		m_cmd->setInputMimeTypes(l);
 	}

@@ -116,7 +116,7 @@ void EditList::insertItems(const QStringList& l)
 QStringList EditList::items()
 {
 	QStringList l;
-	for (int i=0; i<list_->count(); i++)
+	for (uint i=0; i<list_->count(); i++)
 		l << list_->text(i);
 	return l;
 }

@@ -719,10 +719,10 @@ CupsLocation::CupsLocation(const CupsLocation& loc)
   authtype_(loc.authtype_),
   authclass_(loc.authclass_),
   authname_(loc.authname_),
-  order_(loc.order_),
+  encryption_(loc.encryption_),
   satisfy_(loc.satisfy_),
-  addresses_(loc.addresses_),
-  encryption_(loc.encryption_)
+  order_(loc.order_),
+  addresses_(loc.addresses_)
 {
 }
 

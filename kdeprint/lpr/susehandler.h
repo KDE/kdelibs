@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.
@@ -19,45 +17,27 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KMPRINTERVIEW_H
-#define KMPRINTERVIEW_H
+#ifndef SUSEHANDLER_H
+#define SUSEHANDLER_H
 
-#include <qwidgetstack.h>
-#include <qptrlist.h>
+#include "lprhandler.h"
 
-class KMIconView;
-class KMListView;
-class KMPrinter;
-class QIconViewItem;
-
-class KMPrinterView : public QWidgetStack
+class SuSEHandler : public LprHandler
 {
-	Q_OBJECT
 public:
-	enum ViewType { Icons = 0, List, Tree };
+	SuSEHandler(KMManager *mgr = 0);
 
-	KMPrinterView(QWidget *parent = 0, const char *name = 0);
-	~KMPrinterView();
+	bool validate(PrintcapEntry*);
+	bool completePrinter(KMPrinter*, PrintcapEntry*, bool = true);
+	DrMain* loadDriver(KMPrinter*, PrintcapEntry*, bool = false);
+	DrMain* loadDbDriver(const QString&);
+	PrintcapEntry* createEntry(KMPrinter*);
+	bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*, bool* = 0);
+	QString printOptions(KPrinter*);
 
-	void setPrinterList(QPtrList<KMPrinter> *list);
-	void setViewType(ViewType t);
-	ViewType viewType() const 	{ return m_type; }
-
-	QSize minimumSizeHint() const;
-
-signals:
-	void printerSelected(KMPrinter*);
-	void rightButtonClicked(KMPrinter*, const QPoint&);
-
-protected slots:
-	void slotPrinterSelected(KMPrinter*);
-
-private:
-	KMIconView		*m_iconview;
-	KMListView		*m_listview;
-	ViewType		m_type;
-	QPtrList<KMPrinter>	*m_printers;
-	KMPrinter		*m_current;
+protected:
+	QString driverDirInternal();
+	QString dataDir(const QString& prname = QString::null);
 };
 
 #endif

@@ -37,7 +37,6 @@
 #include "kiconselectaction.h"
 
 #include <qtimer.h>
-#include <qsplitter.h>
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -91,9 +90,8 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	m_first = true;
 
 	// create widgets
-	m_splitter = new QSplitter(Qt::Vertical, this, "Splitter");
-	m_printerview = new KMPrinterView(m_splitter,"PrinterView");
-	m_printerpages = new KMPages(m_splitter,"PrinterPages");
+	m_printerview = new KMPrinterView(this, "PrinterView");
+	m_printerpages = new KMPages(this, "PrinterPages");
 	m_pop = new QPopupMenu(this);
 	m_toolbar = new KToolBar(this, "ToolBar");
 	m_toolbar->setMovingEnabled(false);
@@ -104,8 +102,11 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 
 	// layout
 	QVBoxLayout	*m_layout = new QVBoxLayout(this, 0, 0);
-	m_layout->addWidget(m_toolbar, 0);
-	m_layout->addWidget(m_splitter, 1);
+	m_layout->addWidget(m_toolbar);
+	m_boxlayout = new QBoxLayout(QBoxLayout::TopToBottom, 0, 0);
+	m_layout->addLayout(m_boxlayout);
+	m_boxlayout->addWidget(m_printerview);
+	m_boxlayout->addWidget(m_printerpages);
 	QHBoxLayout	*lay0 = new QHBoxLayout(0, 0, 10);
 	m_layout->addSpacing(5);
 	m_layout->addLayout(lay0, 0);
@@ -149,10 +150,7 @@ void KMMainView::restoreSettings()
 	KConfig	*conf = KMFactory::self()->printConfig();
 	conf->setGroup("General");
 	setViewType((KMPrinterView::ViewType)conf->readNumEntry("ViewType",KMPrinterView::Icons));
-	setOrientation(conf->readNumEntry("Orientation",Qt::Vertical));
-	QValueList<int>	sz = conf->readIntListEntry("Sizes");
-	while (sz.count() < 2) sz.append(100);
-	m_splitter->setSizes(sz);
+	setOrientation(conf->readNumEntry("Orientation", Qt::Vertical));
 	bool 	view = conf->readBoolEntry("ViewToolBar",true);
 	slotToggleToolBar(view);
 	((KToggleAction*)m_actions->action("view_toolbar"))->setChecked(view);
@@ -166,8 +164,7 @@ void KMMainView::saveSettings()
 	KConfig	*conf = KMFactory::self()->printConfig();
 	conf->setGroup("General");
 	conf->writeEntry("ViewType",(int)m_printerview->viewType());
-	conf->writeEntry("Orientation",(int)m_splitter->orientation());
-	conf->writeEntry("Sizes",m_splitter->sizes());
+	conf->writeEntry("Orientation",(int)orientation());
 	conf->writeEntry("ViewToolBar",((KToggleAction*)m_actions->action("view_toolbar"))->isChecked());
 	conf->writeEntry("ViewPrinterInfos",((KToggleAction*)m_actions->action("view_printerinfos"))->isChecked());
 	conf->sync();
@@ -404,7 +401,7 @@ void KMMainView::slotChangePrinterState()
 	{
 		opname = opname.mid(8);
 		KMTimer::self()->hold();
-		bool	result;
+		bool	result(false);
 		if (opname == "up")
 			result = m_manager->upPrinter(m_current, true);
 		else if (opname == "down")
@@ -524,11 +521,11 @@ void KMMainView::setOrientation(int o)
 }
 
 int KMMainView::orientation() const
-{ return m_splitter->orientation(); }
+{ return (m_boxlayout->direction() == QBoxLayout::LeftToRight ? Qt::Horizontal : Qt::Vertical);  }
 
 void KMMainView::slotChangeDirection(int d)
 {
-	m_splitter->setOrientation((d == 1 ? Qt::Horizontal : Qt::Vertical));
+	m_boxlayout->setDirection(d == 1 ? QBoxLayout::LeftToRight : QBoxLayout::TopToBottom);
 }
 
 void KMMainView::slotTest()

@@ -528,7 +528,7 @@ void KPrintDialog::reload()
 {
 	// remove printer dependent pages (usually from plugin)
 	QTabWidget	*tabs = static_cast<QTabWidget*>(d->m_dummy->child("TabWidget", "QTabWidget"));
-	for (int i=0; i<d->m_pages.count(); i++)
+	for (uint i=0; i<d->m_pages.count(); i++)
 		if (d->m_pages.at(i)->onlyRealPrinters())
 		{
 			KPrintDialogPage	*page = d->m_pages.take(i--);

@@ -114,7 +114,7 @@ bool ApsHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool shor
 				}
 			}
 			if (!prt->device().isEmpty())
-				prt->setLocation(i18n("Network Printer (%1)").arg(prt->device().protocol()));
+				prt->setLocation(i18n("Network printer (%1)").arg(prt->device().protocol()));
 		}
 		return true;
 	}
@@ -328,6 +328,8 @@ bool ApsHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMain 
 					case DrBase::String:
 						if (!value.isEmpty())
 							t << oit.current()->name() << "='" << value << "'" << endl;
+						break;
+					default:
 						break;
 				}
 			}

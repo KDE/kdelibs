@@ -196,7 +196,7 @@ void CupsAddSmb::checkActionStatus()
 
 void CupsAddSmb::nextAction()
 {
-	if (m_actionindex < m_actions.count())
+	if (m_actionindex < (int)(m_actions.count()))
 		QTimer::singleShot(1, this, SLOT(doNextAction()));
 }
 

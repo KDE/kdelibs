@@ -105,11 +105,13 @@ void ImagePosition::paintEvent(QPaintEvent*)
 	vert = position_/3;
 	switch (horiz) {
 	   case 0: x = page.left()+margin; break;
+	   default:
 	   case 1: x = (page.left()+page.right()-img.width())/2; break;
 	   case 2: x = page.right()-margin-img.width(); break;
 	}
 	switch (vert) {
 	   case 0: y = page.top()+margin; break;
+	   default:
 	   case 1: y = (page.top()+page.bottom()-img.height())/2; break;
 	   case 2: y = page.bottom()-margin-img.height(); break;
 	}

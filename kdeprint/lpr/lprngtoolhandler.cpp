@@ -101,11 +101,12 @@ bool LPRngToolHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, boo
 			prt->setOption("driverID", model);
 		}
 	//}
+	return true;
 }
 
 QMap<QString,QString> LPRngToolHandler::parseXferOptions(const QString& str)
 {
-	int	p(0), q;
+	uint	p(0), q;
 	QMap<QString,QString>	opts;
 	QString	key, val;
 

@@ -5,6 +5,9 @@
 #include <dirent.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <ctype.h>
+
+#include "driverparse.h"
 
 void simplifyModel(const char *modelname)
 {
@@ -23,7 +26,7 @@ void simplifyModel(const char *modelname)
 	}
 }
 
-int parseApsFile(char *filename, FILE *output)
+int parseApsFile(const char *filename, FILE *output)
 {
 	FILE	*apsfile;
 	char	buf[256], modelname[256];
@@ -144,7 +147,7 @@ int parseIfhpFile(const char *filename, FILE *output)
 				}
 				if (strstr(d, "Family") == NULL)
 				{
-					char	modelname[256] = {0}, *g;
+					char	modelname[256] = {0};
 
 					strncpy(modelname, d, 255);
 					simplifyModel(modelname);

@@ -462,3 +462,4 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     to parse the entire PPD file each time => much better)
   * kdeprintfax: added "-n" and "-f %email" by default for the Hylafax
     system
+  * general: various small UI improvements (suggested by Thomas)
