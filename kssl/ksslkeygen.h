@@ -24,12 +24,12 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <kdialog.h>
+#include <kwizard.h>
 
 
 class KOpenSSLProxy;
 
-class KSSLKeyGen : public KDialog {
+class KSSLKeyGen : public KWizard {
 	Q_OBJECT
  
 public:

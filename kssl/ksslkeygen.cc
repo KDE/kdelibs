@@ -28,7 +28,7 @@
 
 
 KSSLKeyGen::KSSLKeyGen(QWidget *parent, const char *name, bool modal) 
-:KDialog(parent,name,modal) {
+:KWizard(parent,name,modal) {
 #ifdef HAVE_SSL
 	kossl = KOSSL::self();
 #endif
