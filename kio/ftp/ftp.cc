@@ -101,9 +101,6 @@ Ftp::~Ftp()
 /* memccpy appeared first in BSD4.4 */
 void *mymemccpy(void *dest, const void *src, int c, size_t n)
 {
-#ifdef HAVE_MEMCCPY
-    return memccpy(dest, src, c, n);
-#else
     char *d = (char*)dest;
     const char *s = (const char*)src;
 
@@ -112,7 +109,6 @@ void *mymemccpy(void *dest, const void *src, int c, size_t n)
       return d;
 
   return NULL;
-#endif
 }
 
 /*
