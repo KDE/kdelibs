@@ -1295,19 +1295,22 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   case Window::Alert:
     if (!widget->dialogsAllowed())
       return Undefined();
-    part->xmlDocImpl()->updateRendering();
+    if ( part && part->xmlDocImpl() )
+      part->xmlDocImpl()->updateRendering();
     KMessageBox::error(widget, QStyleSheet::convertFromPlainText(str), "JavaScript");
     return Undefined();
   case Window::Confirm:
     if (!widget->dialogsAllowed())
       return Undefined();
-    part->xmlDocImpl()->updateRendering();
+    if ( part && part->xmlDocImpl() )
+      part->xmlDocImpl()->updateRendering();
     return Boolean((KMessageBox::warningYesNo(widget, QStyleSheet::convertFromPlainText(str), "JavaScript",
                                                 i18n("OK"), i18n("Cancel")) == KMessageBox::Yes));
   case Window::Prompt:
     if (!widget->dialogsAllowed())
       return Undefined();
-    part->xmlDocImpl()->updateRendering();
+    if ( part && part->xmlDocImpl() )
+      part->xmlDocImpl()->updateRendering();
     bool ok;
     if (args.size() >= 2)
       str2 = KInputDialog::getText(i18n("Prompt"),
