@@ -6,7 +6,7 @@
 #
 # $Id$
 
-kde_MODULES = dcop kdecore kdeui kio kfile kparts khtml kjs kdejava kspell kab kdedbcore kdedbui kdeprint libkmid interfaces
+kde_MODULES = dcop kdecore kdeui kio kfile kparts khtml kjs kdejava kspell kab kdeprint libkmid interfaces
 
 dcop_FILES = *.h
 dcop_LIBS = -lqt
@@ -19,14 +19,6 @@ kdeui_LIBS = -lkdecore -ldcop -lqt
 
 kab_FILES = kabapi.h
 kab_LIBS = -lkdecore -lkdeui -lqt
-
-kdedbcore_FILES = *.h
-kdedbcore_PATH = kdedb/kdbcore
-kdedbcore_LIBS = -lkdecore -lkdeui -lkio -lqt
-
-kdedbui_FILES = *.h
-kdedbui_PATH = kdedb/kdbui
-kdedbui_LIBS = -lkdecore -lkdeui -lkio -lkdedbcore -lqt
 
 kfile_FILES= *.h
 kfile_LIBS= -lkio -lkdecore -lkdeui -lqt
