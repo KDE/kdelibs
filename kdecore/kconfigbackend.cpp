@@ -448,7 +448,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
    map = ( const char* ) mmap(0, rFile.size(), PROT_READ, MAP_PRIVATE,
                                           rFile.handle(), 0);
 
-   if (map)
+   if ( map != MAP_FAILED )
    {
       s = (const char*) map;
       eof = s + rFile.size();
