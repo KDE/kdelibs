@@ -1796,7 +1796,16 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     }
 
     case CSS_PROP_EMPTY_CELLS:
+    {
+        HANDLE_INHERIT(emptyCells, EmptyCells);
+        if (!primitiveValue) break;
+        int id = primitiveValue->getIdent();
+        if (id == CSS_VAL_SHOW)
+            style->setEmptyCells(SHOW);
+        else if (id == CSS_VAL_HIDE)
+            style->setEmptyCells(HIDE);
         break;
+    }
     case CSS_PROP_FLOAT:
     {
         HANDLE_INHERIT_AND_INITIAL(floating, Floating)
@@ -2678,7 +2687,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         HANDLE_INHERIT(zIndex, ZIndex)
         else if (isInitial) {
             style->setHasAutoZIndex();
-            style->setZIndex(0);
             return;
         }
 
