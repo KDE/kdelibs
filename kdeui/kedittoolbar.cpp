@@ -220,10 +220,12 @@ public:
     bool m_accept;
 };
 
+const char *KEditToolbar::s_defaultToolbar = 0L;
+
 KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
                            bool global, QWidget* parent, const char* name)
   : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Ok, parent, name),
-    m_widget(new KEditToolbarWidget(collection, file, global, this))
+    m_widget(new KEditToolbarWidget(QString::fromLatin1(s_defaultToolbar), collection, file, global, this))
 {
     init();
 }
@@ -239,7 +241,7 @@ KEditToolbar::KEditToolbar(const QString& defaultToolbar, KActionCollection *col
 
 KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent, const char* name)
     : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Apply|Cancel, Ok, parent, name),
-      m_widget(new KEditToolbarWidget(factory, this))
+      m_widget(new KEditToolbarWidget(QString::fromLatin1(s_defaultToolbar), factory, this))
 {
     init();
 }
@@ -264,6 +266,7 @@ void KEditToolbar::init()
     enableButtonApply(false);
 
     setMinimumSize(sizeHint());
+    s_defaultToolbar = 0L;
 }
 
 KEditToolbar::~KEditToolbar()
@@ -300,6 +303,11 @@ void KEditToolbar::slotApply()
     (void)m_widget->save();
     enableButtonApply(false);
     emit newToolbarConfig();
+}
+
+void KEditToolbar::setDefaultToolbar(const char *toolbarName)
+{
+    s_defaultToolbar = toolbarName;
 }
 
 KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
@@ -641,11 +649,10 @@ void KEditToolbarWidget::loadToolbarCombo(const QString& defaultToolbar)
   static const QString &attrName = KGlobal::staticQString( "name" );
   static const QString &tagText = KGlobal::staticQString( "text" );
   static const QString &tagText2 = KGlobal::staticQString( "Text" );
-
   // just in case, we clear our combo
   m_toolbarCombo->clear();
 
-  int defaultToolbarId = 0;
+  int defaultToolbarId = -1;
   int count = 0;
   // load in all of the toolbar names into this combo box
   XmlDataList::Iterator xit = d->m_xmlFiles.begin();
@@ -679,12 +686,13 @@ void KEditToolbarWidget::loadToolbarCombo(const QString& defaultToolbar)
 
       m_toolbarCombo->setEnabled( true );
       m_toolbarCombo->insertItem( name );
-      if (name == defaultToolbar)
+      if (defaultToolbarId == -1 && (name == defaultToolbar || defaultToolbar == (*it).attribute( attrName )))
           defaultToolbarId = count;
       count++;
     }
   }
-
+  if (defaultToolbarId == -1)
+      defaultToolbarId = 0;
   // we want to the specified item selected and its actions loaded
   m_toolbarCombo->setCurrentItem(defaultToolbarId);
   slotToolbarSelected(m_toolbarCombo->currentText());

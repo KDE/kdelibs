@@ -55,9 +55,10 @@
 #include <kcombobox.h>
 #include <kpopupmenu.h>
 #include <kanimwidget.h>
+#include <kedittoolbar.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kipc.h> 
+#include <kipc.h>
 #endif
 
 #include <kwin.h>
@@ -1517,7 +1518,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
 
         iconSize = d->IconSizeDefault;
         iconText = d->IconTextDefault;
-    
+
         if ( !forceGlobal && config->hasGroup(configGroup) )
         {
             config->setGroup(configGroup);
@@ -1758,7 +1759,7 @@ void KToolBar::loadState( const QDomElement &element )
 	{
 	    //kdDebug(220) << name() << " loadState no iconText attribute in XML, using iconTextSetting=" << iconTextSetting() << endl;
             // Use global setting
-            if (d->m_honorStyle) 
+            if (d->m_honorStyle)
                 setIconText( iconTextSetting() );
             else
                 setIconText( d->IconTextDefault);
@@ -2016,6 +2017,7 @@ void KToolBar::slotContextAboutToShow()
         }
     }
   }
+  KEditToolbar::setDefaultToolbar(QObject::name());
 
   for(int i = CONTEXT_ICONS; i <= CONTEXT_TEXTUNDER; ++i)
     context->setItemChecked(i, false);

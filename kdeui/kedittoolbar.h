@@ -183,7 +183,7 @@ public:
   KEditToolbar(KXMLGUIFactory* factory, QWidget* parent = 0, const char* name = 0);
 
   //KDE 4.0: merge the two constructors
-  /* Constructor for KParts based apps, which has an extra argument
+  /** Constructor for KParts based apps, which has an extra argument
    * specifying the toolbar to be shown.
    *
    * @param defaultToolbar The toolbar with this name will appear for editing.
@@ -197,6 +197,13 @@ public:
 
   /// destructor
   ~KEditToolbar();
+
+  /** Sets the default toolbar, which will be auto-selected when the constructor without the
+  *    defaultToolbar argument is used.
+  *   @param  toolbarName  the name of the toolbar
+  *   @since 3.3
+  */
+  static void setDefaultToolbar(const char *toolbarName);
 
 protected slots:
   /**
@@ -228,7 +235,10 @@ protected:
   virtual void virtual_hook( int id, void* data );
 private:
   KEditToolbarPrivate *d;
+
+  static const char *s_defaultToolbar;
 };
+
 
 /**
  * This is a widget used to customize or configure toolbars
