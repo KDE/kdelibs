@@ -2330,6 +2330,7 @@ KActionCollection::KActionCollection( const KActionCollection &copy )
 {
   d = new KActionCollectionPrivate;
   d->m_actions = copy.d->m_actions;
+  d->m_keyDict = copy.d->m_keyDict;
   setInstance( copy.instance() );
 }
 
@@ -2380,18 +2381,7 @@ void KActionCollection::insert( KAction* action )
 
 void KActionCollection::remove( KAction* action )
 {
-  uint len = d->m_actions.count();
-  for( uint i = 0; i < len; ++i )
-  {
-    KAction* a = d->m_actions.at( i );
-    if ( action == a )
-    {
-      d->m_actions.remove( i );
-      emit removed( action );
-      delete action;
-      return;
-    }
-  }
+  delete take (action);
 }
 
 KAction* KActionCollection::take( KAction* action )
@@ -2403,6 +2393,7 @@ KAction* KActionCollection::take( KAction* action )
     if ( action == a )
     {
       d->m_actions.remove( a );
+	  d->m_keyDict.remove( a->name() );
       emit removed( action );
       return a;
     }
@@ -2508,6 +2499,7 @@ KActionCollection KActionCollection::operator+(const KActionCollection &c ) cons
 KActionCollection &KActionCollection::operator=( const KActionCollection &c )
 {
   d->m_actions = c.d->m_actions;
+  d->m_keyDict = c.d->m_keyDict;
   setInstance( c.instance() );
   return *this;
 }
