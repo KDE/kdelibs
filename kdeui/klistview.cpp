@@ -1084,6 +1084,11 @@ QListViewItem *KListView::lastItem() const
   return last;
 }
 
+KLineEdit *KListView::renameLineEdit() const
+{
+  return d->editor;
+}
+
 void KListView::startDrag()
 {
   QDragObject *drag = dragObject();

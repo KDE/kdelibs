@@ -26,6 +26,7 @@
 
 class QDragObject;
 class KConfig;
+class KLineEdit;
 /**
  * This Widget extends the functionality of QListView to honor the system
  * wide settings for Single Click/Double Click mode, AutoSelection and
@@ -158,6 +159,14 @@ public:
    * @return the last child of this listview.
    */
   QListViewItem* lastChild () const;
+
+  /**
+   * @return the lineedit used for inline renaming.
+   * Use that to setup a @ref KCompletion or @ref QValidator for the lineedit
+   *
+   * @since 3.2
+   */
+  KLineEdit* renameLineEdit() const;
 
   /**
    * @returns if it is legal to move items in the list view
