@@ -233,40 +233,61 @@ void HCStyle::polish(QPalette &pal)
 
 void HCStyle::polish(QWidget *w)
 {
-    if ( !w->isTopLevel() ) {
+    /*if ( !w->isTopLevel() ) {
         if (w->inherits("QPushButton")
             || w->inherits("QComboBox")
             //|| w->inherits("QSlider")
             || w->inherits("QRadioButton")
             || w->inherits("QCheckBox"))
             w->setAutoMask(true);
-    }
+            }*/
+    if(w->isTopLevel())
+        return;
 
-    if(QPixmap::defaultDepth() > 8){
-        if(w->inherits("KToolBar"))
-            w->installEventFilter(this);
-        if(w->inherits("KToolBarButton"))
-            w->setBackgroundMode(QWidget::NoBackground);
+    if(w->inherits("QMenu") || w->inherits("KToolBarButton")){
+        w->setBackgroundMode(QWidget::NoBackground);
+        return;
+    }
+    if(w->inherits("QLabel") || w->inherits("QButton") ||
+       w->inherits("QComboBox")){
+        if(w->parent() && !w->parent()->inherits("KToolBar") &&
+           !w->parent()->inherits("KHTMLView"))
+            w->setBackgroundOrigin(QWidget::ParentOrigin);
+        else
+            w->setAutoMask(true);
+        return;
+    }
+    if(w->inherits("KToolBar")){
+        w->installEventFilter(this);
+        w->setBackgroundMode(QWidget::NoBackground);
+        return;
     }
 }
  
 void HCStyle::unPolish(QWidget *w)
 {
-    if ( !w->isTopLevel() ) {
-        if (w->inherits("QPushButton")
-            || w->inherits("QComboBox")
-            //|| w->inherits("QSlider")
-            || w->inherits("QRadioButton")
-            || w->inherits("QCheckBox"))
+    if (w->isTopLevel())
+        return;
+
+    if(w->inherits("QMenu") || w->inherits("KToolBarButton")){
+        w->setBackgroundMode(QWidget::PaletteBackground);
+        return;
+    }
+    if(w->inherits("QLabel") || w->inherits("QButton") ||
+       w->inherits("QComboBox")){
+        if(w->parent() && !w->parent()->inherits("KToolBar") &&
+           !w->parent()->inherits("KHTMLView"))
+            w->setBackgroundOrigin(QWidget::WidgetOrigin);
+        else
             w->setAutoMask(false);
+        return;
     }
-    if(QPixmap::defaultDepth() > 8){
-        if(w->inherits("KToolBar"))
-            w->removeEventFilter(this);
-        if(w->inherits("KToolBarButton"))
-            w->setBackgroundMode(QWidget::PaletteBackground);
+    if(w->inherits("KToolBar")){
+        w->removeEventFilter(this);
+        w->setBackgroundMode(QWidget::PaletteBackground);
+        return;
     }
-}                              
+}
 
 
 bool HCStyle::eventFilter(QObject *obj, QEvent *ev)
@@ -291,12 +312,41 @@ void HCStyle::drawButton(QPainter *p, int x, int y, int w, int h,
                             const QBrush *fill)
 {
     if(vSmall){
-        kDrawBeButton(p, x, y, w, h, g, sunken, NULL);
+        int x2 = x+w-1;
+        int y2 = y+h-1;
+        p->setPen(g.dark());
+        p->drawLine(x+1, y, x2-1, y);
+        p->drawLine(x+1, y2, x2-1, y2);
+        p->drawLine(x, y+1, x, y2-1);
+        p->drawLine(x2, y+1, x2, y2-1);
+
+        if(!sunken){
+            p->setPen(g.light());
+            p->drawLine(x+2, y+2, x2-1, y+2);
+            p->drawLine(x+2, y+3, x2-2, y+3);
+            p->drawLine(x+2, y+4, x+2, y2-1);
+            p->drawLine(x+3, y+4, x+3, y2-2);
+        }
+        else{
+            p->setPen(g.mid());
+            p->drawLine(x+2, y+2, x2-1, y+2);
+            p->drawLine(x+2, y+3, x2-2, y+3);
+            p->drawLine(x+2, y+4, x+2, y2-1);
+            p->drawLine(x+3, y+4, x+3, y2-2);
+        }
+        p->setPen(sunken? g.light() : g.mid());
+        p->drawLine(x2-1, y+2, x2-1, y2-1);
+        p->drawLine(x+2, y2-1, x2-1, y2-1);
+
+        p->setPen(g.mid());
+        p->drawLine(x+1, y+1, x2-1, y+1);
+        p->drawLine(x+1, y+2, x+1, y2-1);
+        p->drawLine(x2-2, y+3, x2-2, y2-2);
+
         drawVGradient(p, g.brush(QColorGroup::Mid), x+4, y+4, w-6, h-6);
     }
     else
         kDrawBeButton(p, x, y, w, h, g, sunken, fill);
-
 }
 
 void HCStyle::drawPushButton(QPushButton *btn, QPainter *p)
@@ -304,13 +354,17 @@ void HCStyle::drawPushButton(QPushButton *btn, QPainter *p)
     QRect r = btn->rect();
     bool sunken = btn->isOn() || btn->isDown();
     QColorGroup g = btn->colorGroup();
+    
     drawButton(p, r.x(), r.y(), r.width(), r.height(), g,
                sunken, sunken ? &g.brush(QColorGroup::Mid) :
                btn->isDefault() ? &g.brush(QColorGroup::Midlight) :
                &g.brush(QColorGroup::Button));
     if(btn->isDefault()){
         p->setPen(Qt::black);
-        p->drawRect(r);
+        p->drawLine(r.x()+1, r.y(), r.right()-1, r.y());
+        p->drawLine(r.x()+1, r.bottom(), r.right()-1, r.bottom());
+        p->drawLine(r.x(), r.y()+1, r.x(), r.bottom()-1);
+        p->drawLine(r.right(), r.y()+1, r.right(), r.bottom()-1);
     }
 
 }
@@ -394,17 +448,21 @@ QRect HCStyle::buttonRect(int x, int y, int w, int h)
 
 void HCStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool sunken,
-                                 bool edit, bool, const QBrush *fill)
+                                 bool edit, bool, const QBrush *)
 {
     int x2 = x+w-1;
     int y2 = y+h-1;
+
     p->setPen(g.dark());
-    p->drawRect(x, y, w, h);
+    p->drawLine(x+1, y, x2-1, y);
+    p->drawLine(x+1, y2, x2-1, y2);
+    p->drawLine(x, y+1, x, y2-1);
+    p->drawLine(x2, y+1, x2, y2-1);
+    
     if(vSmall)
         drawVGradient(p, g.brush(QColorGroup::Mid), x+2, y+2, w-4, h-4);
     else
-        p->fillRect(x+2, y+2, w-4, h-4, fill ? *fill :
-                    g.brush(QColorGroup::Background));
+        p->fillRect(x+2, y+2, w-4, h-4, g.brush(QColorGroup::Background));
 
     p->setPen(sunken? g.light() : g.mid());
     p->drawLine(x2-1, y+2, x2-1, y2-1);
