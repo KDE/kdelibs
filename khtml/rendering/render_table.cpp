@@ -266,12 +266,6 @@ void RenderTable::setCells( unsigned int r, unsigned int c,
     unsigned int endRow = r + cell->rowSpan();
     unsigned int endCol = c + cell->colSpan();
 
-    // The first row sets the number of columns.  Do not allow subsequent
-    // rows to change the number of columns.
-//WABA: Why not? Let's give crappy HTML a chance
-//    if ( row != 0 && endCol > totalCols )
-//      endCol = totalCols;
-
     if ( endCol > totalCols )
         addColumns( endCol - totalCols );
 
@@ -783,29 +777,19 @@ void RenderTable::calcColMinMax()
 
     int availableWidth = containingBlockWidth();
 
-    int margin=0;
-
     int realMaxWidth=spacing;
 
     LengthType widthType = style()->width().type;
 
-    Length ml = style()->marginLeft();
-    Length mr = style()->marginRight();
-    if (ml.type==Fixed && mr.type==Fixed)
-    {
-        margin = mr.value + ml.value;
-    }
-    else if (ml.type == Fixed)
-        margin = ml.value;
-    else if (mr.type == Fixed)
-        margin = mr.value;
+    Length l;
+    if ( ( l = style()->marginLeft() ).isFixed() )
+        availableWidth -= QMAX( l.value, 0 );
+    if ( ( l = style()->marginRight() ).isFixed() )
+        availableWidth -= QMAX( l.value, 0 );
 
-    if (margin<0) margin=0;
-
-    availableWidth -= margin;
+    availableWidth -= QMAX( style()->borderLeftWidth(), 0 );
+    availableWidth -= QMAX( style()->borderRightWidth(), 0 );
     // PHASE 2, calculate simple minimums and maximums
-
-
     for ( unsigned int s=0;  (int)s<maxColSpan ; ++s)
     {
         ColInfoLine* spanCols = colInfos[s];
@@ -814,7 +798,6 @@ void RenderTable::calcColMinMax()
 
         for ( unsigned int c=0; c<totalCols-s; ++c)
         {
-
             ColInfo* col;
             col = spanCols->at(c);
 
@@ -905,20 +888,11 @@ void RenderTable::calcColMinMax()
 
     }
 
-
     if(widthType > Relative) // Percent or fixed table
     {
-	// Netscape ignores width values of "0" or "0%"
-	if ( style()->htmlHacks() && style()->width().value == 0 )
-	    style()->setWidth( Length() );
         m_width = style()->width().minWidth(availableWidth);
         if(m_minWidth > m_width) m_width = m_minWidth;
 	//kdDebug( 6040 ) << "1 width=" << m_width << " minWidth=" << m_minWidth << " availableWidth=" << availableWidth << " " << endl;
-      /*if (width>1000) for(int i = 0; i < totalCols; i++)
-        {
-            kdDebug( 6040 ) << "DUMP col=" << i << " type=" << colType[i] << " max=" << colMaxWidth[i] << " min=" << colMinWidth[i] << " value=" << colValue[i] << endl;
-	    }*/
-
     }
     else if (hasPercent && !hasFixed)
     {
@@ -1031,7 +1005,7 @@ void RenderTable::calcColMinMax()
     m_marginRight=0;
     m_marginLeft=0;
 
-    calcHorizontalMargins(ml,mr,cw);
+    calcHorizontalMargins(style()->marginLeft(),style()->marginRight(),cw);
 
 
 }
