@@ -36,7 +36,7 @@ while (<IN>) {
   if (/^\#|^$/) {
       # comment. do nothing
     } elsif (/^\@begin/ && !$inside) {
-      if (/^\@begin\s*(\w+)\s*(\d+)\s*$/) {
+      if (/^\@begin\s*([:_\w]+)\s*(\d+)\s*$/) {
         $inside = 1;
         $name = $1;
         $hashsize = $2;
