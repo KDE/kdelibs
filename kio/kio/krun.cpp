@@ -1280,7 +1280,7 @@ KProcessRunner::slotProcessExited(KProcess * p)
       KStartupInfo::sendFinish( id_, data );
   }
 #endif
-  delete this;
+  deleteLater();
 }
 
 void KRun::virtual_hook( int, void* )
