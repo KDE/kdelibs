@@ -122,6 +122,7 @@ Completion ConstructorImp::execute(const List &)
 Function::Function(Imp *d)
   : KJSO(d)
 {
+  assert(rep);
   static_cast<FunctionImp*>(rep)->attr = ImplicitNone;
 }
 

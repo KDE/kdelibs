@@ -220,9 +220,10 @@ KJSO NewExprNode::evaluate()
   if (!v.isObject()) {
     return throwError(TypeError, "Expression is no object.");
   }
-  Constructor constr = Constructor::dynamicCast(v);
-  if (constr.isNull())
+  if (!v.isA(ConstructorType))
     return throwError(TypeError, "Expression is no constructor.");
+
+  Constructor constr = Constructor::dynamicCast(v);
 
   List nullList;
   if (!argList)
