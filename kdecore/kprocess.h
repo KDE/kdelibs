@@ -169,7 +169,7 @@ public:
 
   /** Sets the executable and the command line argument list for this process 
       
-      For exsmple, doning a "ls -l /usr/local/bin" can be achieved by:
+      For example, doning a "ls -l /usr/local/bin" can be achieved by:
       <pre>
       KProcoess p;
       ...
