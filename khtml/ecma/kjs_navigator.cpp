@@ -139,16 +139,17 @@ IMPLEMENT_PROTOFUNC(NavigatorFunc)
 
 Value Navigator::get(ExecState *exec, const UString &propertyName) const
 {
-  return lookupGetValue<Navigator,ObjectImp>(exec,propertyName,&NavigatorTable,this);
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "Navigator::get " << propertyName.ascii() << endl;
+#endif
+  return lookupGet<NavigatorFunc,Navigator,ObjectImp>(exec,propertyName,&NavigatorTable,this);
 }
 
-Value Navigator::getValue(ExecState *exec, int token) const
+Value Navigator::getValue(ExecState *, int token) const
 {
   KURL url = m_part->url();
   QString userAgent = KProtocolManager::userAgentForHost(url.host());
   switch (token) {
-  case JavaEnabled:
-    return lookupOrCreateFunction<NavigatorFunc>(exec,"javaEnabled",this,token,0,DontDelete|Function);
   case AppCodeName:
     return String("Mozilla");
   case AppName:
