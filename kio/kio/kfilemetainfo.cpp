@@ -973,7 +973,8 @@ KFileMimeTypeInfo * KFileMetaInfoProvider::addMimeTypeInfo(
 QStringList KFileMetaInfoProvider::supportedMimeTypes() const
 {
     QStringList allMimeTypes;
-    
+    QString kfilePlugin = "KFilePlugin";
+
     KTrader::OfferList offers = KTrader::self()->query( "KFilePlugin" );
     KTrader::OfferListIterator it = offers.begin();
     for ( ; it != offers.end(); ++it )
@@ -981,10 +982,11 @@ QStringList KFileMetaInfoProvider::supportedMimeTypes() const
         QStringList mimeTypes = (*it)->serviceTypes();
         QStringList::ConstIterator it2 = mimeTypes.begin();
         for ( ; it2 != mimeTypes.end(); ++it2 )
-            if ( allMimeTypes.find( *it2 ) == allMimeTypes.end() )
+            if ( allMimeTypes.find( *it2 ) == allMimeTypes.end() && 
+                 *it2 != kfilePlugin ) // also in serviceTypes()
                 allMimeTypes.append( *it2 );
     }
-    
+
     return allMimeTypes;
 }
 
