@@ -26,6 +26,7 @@
 #include <ksharedpixmap.h>
 #include <kdebug.h>
 
+#include <stdlib.h>
 #include <X11/Xlib.h>
 
 // Make sure to include all this X-based shit before we clean up the mess.
