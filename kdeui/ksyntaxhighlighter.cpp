@@ -101,6 +101,7 @@ public:
     QString spellKey;
     int wordCount, errorCount;
     int checksRequested, checksDone;
+    int disablePercentage;
     bool completeRehighlightRequired;
     bool active, automatic, autoReady;
     bool globalConfig, spellReady;
@@ -287,6 +288,12 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
     d->checksRequested = 0;
     d->checksDone = 0;
     d->completeRehighlightRequired = false;
+
+    KConfig *config = KGlobal::config();
+    KConfigGroupSaver cs( config, "KSpell" );
+    config->reparseConfiguration();
+    d->disablePercentage = config->readNumEntry( "KSpell_AsYouTypeDisablePercentage", 42 );
+    d->disablePercentage = QMIN( d->disablePercentage, 101 );
 
     textEdit->installEventFilter( this );
     textEdit->viewport()->installEventFilter( this );
@@ -558,9 +565,11 @@ void KDictSpellingHighlighter::slotAutoDetection()
     bool savedActive = d->active;
 
     if ( d->automatic ) {
-	if ( d->active && ( d->errorCount * 3 >= d->wordCount )) // too many errors
+	// tme = Too many errors
+	bool tme = d->errorCount * 100 >= d->disablePercentage * d->wordCount;
+	if ( d->active && tme )
 	    d->active = false;
-	else if ( !d->active && ( d->errorCount * 3 < d->wordCount ))
+	else if ( !d->active && !tme )
 	    d->active = true;
     }
     if ( d->active != savedActive ) {
