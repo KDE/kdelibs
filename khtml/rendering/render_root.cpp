@@ -331,7 +331,7 @@ int RenderRoot::docHeight() const
     int h = m_view->visibleHeight();
     if(m_first) {
 	int dh = m_first->height() + m_first->marginTop() + m_first->marginBottom();
-	if( m_first->lowestPosition() > dh )
+        if( m_first->lowestPosition() > dh )
 	    dh = m_first->lowestPosition();
 	if( dh > h )
 	    h = dh;

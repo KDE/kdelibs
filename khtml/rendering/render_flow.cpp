@@ -281,7 +281,7 @@ void RenderFlow::layout()
     }
 
     layoutSpecialObjects();
-
+    
     setLayouted();
 }
 
@@ -715,7 +715,7 @@ RenderFlow::lowestPosition()
     SpecialObject* r;	
     QListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
-	if (r->endY>bottom)
+	if (r->type <= SpecialObject::FloatRight && r->endY>bottom)
 	    bottom=r->endY;
     return bottom;
 }

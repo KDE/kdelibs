@@ -807,6 +807,6 @@ void RenderBox::calcAbsoluteVertical()
     m_y = t + mt +
     	containingBlock()->paddingTop() + containingBlock()->borderTop();
 	
-//    printf("v: %d, %d, %d, %d\n",t,h,b,m_y);
+//    printf("v: h=%d, t=%d, b=%d, mt=%d, mb=%d, m_y=%d\n",h,t,b,mt,mb,m_y);
     	
 }
