@@ -31,6 +31,7 @@
 
 namespace KIO {
 
+// KDE4: get rid of M_OVERWRITE_ITSELF, trigger it internally if src==dest
 enum RenameDlg_Mode { M_OVERWRITE = 1, M_OVERWRITE_ITSELF = 2, M_SKIP = 4, M_SINGLE = 8, M_MULTI = 16, M_RESUME = 32, M_NORENAME = 64 };
 
 /**
@@ -65,7 +66,9 @@ public:
    * @see RenameDlg_Mode
    */
   RenameDlg( QWidget *parent, const QString & caption,
-             const QString & src, const QString & dest, RenameDlg_Mode mode,
+             // KDE4: make those KURLs, and use prettyURL(0, KURL::StripFileProtocol) internally.
+             const QString & src, const QString & dest,
+             RenameDlg_Mode mode,
              KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,
              KIO::filesize_t sizeDest = (KIO::filesize_t) -1,
              time_t ctimeSrc = (time_t) -1,
@@ -126,6 +129,7 @@ private:
    * @return the result
    */
 RenameDlg_Result open_RenameDlg( const QString & caption,
+                                 // KDE4: make those KURLs, and use prettyURL(0, KURL::StripFileProtocol) internally.
                                  const QString& src, const QString & dest,
                                  RenameDlg_Mode mode, QString& newDestPath,
                                  KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,
