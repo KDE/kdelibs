@@ -334,6 +334,27 @@ public:
   bool normalExit() const;
 
   /**
+   * Checks whether the process was killed by a signal.
+   *
+   * @return true if the process has already finished and has not exited
+   * "voluntarily", ie: it has been killed by a signal.
+   *
+   * @since 3.2
+   */
+  bool signalled() const;
+
+  /**
+   * Checks whether a killed process dumped core.
+   *
+   * @return true if @ref signalled() returns true and the process
+   * dumped core. Note that on systems that don't define the
+   * WCOREDUMP macro, the return value is always false.
+   *
+   * @since 3.2
+   */
+  bool coreDumped() const;
+
+  /**
    * Returns the exit status of the process.
    *
    * @return the exit status of the process. Note that this value
@@ -341,6 +362,15 @@ public:
    */
   int exitStatus() const;
 
+  /**
+   * Returns the signal the process was killed by.
+   *
+   * @return the signal number that caused the process to exit.
+   * Note that this value is not valid if @ref signalled() returns false.
+   *
+   * @since 3.2
+   */
+  int exitSignal() const;
 
   /**
    *	 Transmit data to the child process' stdin.

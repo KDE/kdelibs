@@ -575,12 +575,32 @@ bool KProcess::normalExit() const
 }
 
 
+bool KProcess::signalled() const
+{
+  return (pid_ != 0) && !runs && WIFSIGNALED(status);
+}
+
+
+bool KProcess::coreDumped() const
+{
+#ifdef WCOREDUMP
+  return signalled() && WCOREDUMP(status);
+#else
+  return false;
+#endif
+}
+
 
 int KProcess::exitStatus() const
 {
   return WEXITSTATUS(status);
 }
 
+
+int KProcess::exitSignal() const
+{
+  return WTERMSIG(status);
+}
 
 
 bool KProcess::writeStdin(const char *buffer, int buflen)
