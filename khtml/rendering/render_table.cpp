@@ -1316,15 +1316,9 @@ void RenderTableSection::dump(QTextStream *stream, QString ind) const
 }
 #endif
 
-/** Seeks the cell matching the given (row, col) pair.
- * @param section table section
- * @param row index of table row (disregarding spans)
- * @param col index of column (disregarding spans)
- * @return the cell matching the given (row, col) or 0 if out of bounds
- */
-inline RenderTableCell *seekCell(RenderTableSection *section, int row, int col)
+static RenderTableCell *seekCell(RenderTableSection *section, int row, int col)
 {
-    if (row < 0 || col < 0) return 0;
+    if (row < 0 || col < 0 || row >= section->numRows()) return 0;
     // since a cell can be -1 (indicating a colspan) we might have to search backwards to include it
     while ( col && section->cellAt( row, col ) == (RenderTableCell *)-1 )
 	col--;
@@ -1377,18 +1371,20 @@ FindSelectionResult RenderTableSection::checkSelectionPoint( int _x, int _y, int
 
 //    bool save_last = false;	// true to save last investigated cell
 
-    if (_y < _ty) return SelectionPointBefore;
+    if (!layouted() || _y < _ty) return SelectionPointBefore;
 //    else if (_y >= _ty + height()) save_last = true;
 
     // bluntly taken from paint (LS)
     // check which rows and cols are visible and only paint these
     // ### fixme: could use a binary search here
     int row_idx = (int)totalRows - 1;
-    for ( ; row_idx >= 0; row_idx-- ) {
-	if ( _ty + rowPos[row_idx] < _y )
-	    break;
+    if ( row_idx > 0 ) {
+        for ( ; row_idx >= 0; row_idx-- ) {
+            if ( _ty + rowPos[row_idx] < _y )
+                break;
+        }
+        if (row_idx < 0) row_idx = 0;
     }
-    if (row_idx < 0) row_idx = 0;
     int col_idx;
     if ( style()->direction() == LTR ) {
 	for ( col_idx = (int)totalCols - 1; col_idx >= 0; col_idx-- ) {

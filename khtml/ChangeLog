@@ -1,3 +1,9 @@
+2003-10-18  Dirk Mueller  <dmuell@gmx.net>
+
+	* rendering/render_table.cpp (seekCell): make static. check for out of bounds.
+	* rendering/render_table.cpp (RenderTableSection::checkSelectionPoint): fix
+	brain damage (#66198).
+
 2003-10-14  David Faure  <faure@kde.org>
 
 	* misc/htmltags.in, html/htmlparser.cpp, html/dtd.cpp: added very basic
