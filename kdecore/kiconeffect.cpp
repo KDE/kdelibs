@@ -45,7 +45,7 @@ void KIconEffect::init()
 {
     KConfig *config = KGlobal::config();
 
-    int i, j, effect;
+    int i, j, effect=-1;
     QStringList groups;
     groups += "Desktop";
     groups += "Toolbar";
@@ -71,13 +71,13 @@ void KIconEffect::init()
     {
 	// Default effects
 	mEffect[i][0] = NoEffect;
-	mEffect[i][1] = NoEffect;
+	mEffect[i][1] =  ((i==0)||(i==4)) ? ToGamma : NoEffect;
 	mEffect[i][2] = NoEffect;
 	mTrans[i][0] = false;
 	mTrans[i][1] = false;
 	mTrans[i][2] = true;
         mValue[i][0] = 1.0;
-        mValue[i][1] = 1.0;
+        mValue[i][1] = ((i==0)||(i==4)) ? 0.7 : 1.0;
         mValue[i][2] = 1.0;
         mColor[i][0] = QColor(144,128,248);
         mColor[i][1] = QColor(169,156,255);
@@ -99,7 +99,8 @@ void KIconEffect::init()
 		effect = NoEffect;
 	    else
 		continue;
-	    mEffect[i][j] = effect;
+	    if(effect != -1)
+                mEffect[i][j] = effect;
 	    mValue[i][j] = config->readDoubleNumEntry(*it2 + "Value");
 	    mColor[i][j] = config->readColorEntry(*it2 + "Color");
 	    mTrans[i][j] = config->readBoolEntry(*it2 + "SemiTransparent");
