@@ -384,7 +384,6 @@ void RenderText::absolutePosition(int &xPos, int &yPos, bool)
             return;
         }
     }
-
     xPos = yPos = -1;
 }
 
@@ -761,7 +760,7 @@ short RenderText::width() const
     int w = 0;
     // as TextSlaves are supposed to be sorted from up to bottom, left to right..
     if(m_lines.count())
-        w = m_lines[m_lines.count()-1]->m_x + m_lines[m_lines.count()-1]->m_width;
+        w = m_lines[m_lines.count()-1]->m_x + m_lines[m_lines.count()-1]->m_width - m_lines[0]->m_x;
 
     if(m_parent->isInline())
     {
