@@ -322,6 +322,7 @@
 <!ENTITY lskat	"<application>Lskat</application>">
 <!ENTITY LZW	"<acronym>LZW</acronym>">
 <!ENTITY Mac	'<trademark class="registered">Mac</trademark>'>
+<!ENTITY MacOS	'<trademark class="registered">Mac</trademark> <acronym>OS</acronym>'>
 <!ENTITY Mandrake	"<trademark>Mandrake</trademark>">
 <!ENTITY megami	"<application>Megami</application>">
 <!ENTITY Microsoft	'<trademark class="registered">Microsoft</trademark>'>
