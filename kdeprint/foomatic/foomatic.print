@@ -2,7 +2,6 @@
 PrintSystem=foomatic
 Comment=Foomatic (CUPS, LPRng, PDQ)
 Comment[ar]= Foomatic (CUPS, LPRng, PDQ)
-Comment[he]=Foomatic )CUPS, LPRng, PDQ(
 Comment[xx]=xx
 DetectUris=exec:/foomatic-configure,config:/foomatic/
 DetectPrecedence=0
