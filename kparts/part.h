@@ -144,9 +144,8 @@ public:
      * Note that the @ref Part is still the holder
      * of the @ref QWidget, meaning that if you delete the @ref Part,
      * then the widget gets destroyed as well, and vice-versa.
-     * This method is deprecated since creating the widget with the correct
+     * This method is not recommended since creating the widget with the correct
      * parent is simpler anyway.
-     * @deprecated
      */
     virtual void embed( QWidget * parentWidget );
 
@@ -155,7 +154,10 @@ public:
      */
     virtual QWidget *widget();
 
-    // Only called by PartManager - should be protected and using friend ?
+    /**
+     * @internal
+     * Used by the part manager.
+     */
     virtual void setManager( PartManager * manager );
 
     /**
@@ -210,21 +212,26 @@ protected:
      * or even install an event filter.
      */
     virtual void partActivateEvent( PartActivateEvent *event );
+
     /**
-     * Convenience method which is called when the Part received a @ref PartSelectEvent .
-     * Reimplement this if you don't want to reimplement @ref event and test for the event yourself
-     * or even install an event filter.
+     * Convenience method which is called when the Part received a
+     * @ref PartSelectEvent .
+     * Reimplement this if you don't want to reimplement @ref event and
+     * test for the event yourself or even install an event filter.
      */
     virtual void partSelectEvent( PartSelectEvent *event );
+
     /**
-     * Convenience method which is called when the Part received a @ref GUIActivateEvent .
-     * Reimplement this if you don't want to reimplement @ref event and test for the event yourself
-     * or even install an event filter.
+     * Convenience method which is called when the Part received a
+     * @ref GUIActivateEvent .
+     * Reimplement this if you don't want to reimplement @ref event and
+     * test for the event yourself or even install an event filter.
      */
     virtual void guiActivateEvent( GUIActivateEvent *event );
 
     /**
-     * Convenience method for @ref KXMLGUIFactory::container . Returns a container widget owned by the Part's GUI.
+     * Convenience method for @ref KXMLGUIFactory::container.
+     * @return a container widget owned by the Part's GUI.
      */
     QWidget *hostContainer( const QString &containerName );
 
@@ -308,12 +315,14 @@ signals:
    * progress information can be shown. Otherwise, job is 0.
    **/
   void started( KIO::Job * );
+
   /**
    * Emit this when you have completed loading data.
    * Hosting apps will want to know when the process of loading the data
    *  is finished, so that they can access the data when everything is loaded.
    **/
   void completed();
+
   /**
    * Emit this if loading is canceled by the user or by an error.
    **/
