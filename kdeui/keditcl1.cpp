@@ -239,11 +239,14 @@ KEdit::cleanWhiteSpace()
 void
 KEdit::saveText(QTextStream *stream)
 {
-   int line_count = numLines();
+   int line_count = numLines()-1;
+   if (line_count < 0)
+      return;
    for(int i = 0; i < line_count; i++)
    {
       (*stream) << textLine(i) << '\n';
    }
+   (*stream) << textLine(line_count);
 }
 
 void KEdit::repaintAll(){
