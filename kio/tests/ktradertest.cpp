@@ -76,6 +76,9 @@ int main( int argc, char **argv )
         case QVariant::StringList:
           outp += prop.toStringList().join(" - ");
         break;
+        case QVariant::Bool:
+          outp += prop.toBool() ? "TRUE" : "FALSE";
+          break;
         default:
           outp += prop.toString();
         break;

@@ -510,7 +510,7 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
     }
   }
 
-  // Then we use a homebuild class based on KBaseConfig to convert the QString.
+  // Then we use a homebuild class based on KConfigBase to convert the QString.
   // For some often used property types we do the conversion ourselves.
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
   if ( (it == m_mapProps.end()) || (!it.data().isValid()))
@@ -539,10 +539,7 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
            }
            if (t == QVariant::Bool)
            {
-              if (val)
-                 return QVariant(true);
-              else
-                 return QVariant(false);
+               return QVariant((bool)val, 1);
            }
            return QVariant(val);
         }
@@ -616,11 +613,11 @@ KService::Ptr KService::serviceByStorageId( const QString& _storageId )
   KService::Ptr service = KService::serviceByMenuId( _storageId );
   if (service)
      return service;
-     
+
   service = KService::serviceByDesktopPath(_storageId);
   if (service)
      return service;
-     
+
   if (_storageId.startsWith("/") && QFile::exists(_storageId))
      return new KService(_storageId);
 
@@ -737,10 +734,10 @@ QString KService::storageId() const
 
 QString KService::locateLocal()
 {
-  if (d->menuId.isEmpty() || desktopEntryPath().startsWith(".hidden") || 
+  if (d->menuId.isEmpty() || desktopEntryPath().startsWith(".hidden") ||
       (!desktopEntryPath().startsWith("/") && d->categories.isEmpty()))
      return KDesktopFile::locateLocal(desktopEntryPath());
-     
+
   return ::locateLocal("xdgdata-apps", d->menuId);
 }
 
@@ -750,7 +747,7 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
    QString base = suggestedName;
    if (!showInMenu)
      base.prepend("kde-");
-   
+
    QString result;
    for(int i = 1; true; i++)
    {
@@ -758,7 +755,7 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
          result = base + ".desktop";
       else
          result = base + QString("-%1.desktop").arg(i);
-      
+
       if (reservedMenuIds && reservedMenuIds->contains(result))
          continue;
 
@@ -766,7 +763,7 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
       KService::Ptr s = serviceByMenuId(result);
       if (s)
          continue;
-      
+
       if (showInMenu)
       {
          if (!locate("xdgdata-apps", result).isEmpty())
@@ -778,12 +775,12 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
          if (!locate("apps", ".hidden/"+file).isEmpty())
             continue;
       }
-         
+
       break;
    }
    if (menuId)
       *menuId = result;
-      
+
    if (showInMenu)
    {
        return ::locateLocal("xdgdata-apps", result);
@@ -802,23 +799,23 @@ void KService::virtual_hook( int id, void* data )
 
 void KService::rebuildKSycoca(QWidget *parent)
 {
-  KServiceProgressDialog dlg(parent, "ksycoca_progress", 
+  KServiceProgressDialog dlg(parent, "ksycoca_progress",
                       i18n("Updating System Configuration"),
                       i18n("Updating system configuration."));
 
   QByteArray data;
   DCOPClient *client = kapp->dcopClient();
 
-  int result = client->callAsync("kded", "kbuildsycoca", "recreate()", 
+  int result = client->callAsync("kded", "kbuildsycoca", "recreate()",
                data, &dlg, SLOT(slotFinished()));
-               
+
   if (result)
   {
      dlg.exec();
   }
 }
 
-KServiceProgressDialog::KServiceProgressDialog(QWidget *parent, const char *name, 
+KServiceProgressDialog::KServiceProgressDialog(QWidget *parent, const char *name,
                           const QString &caption, const QString &text)
  : KProgressDialog(parent, name, caption, text, true)
 {
