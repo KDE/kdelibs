@@ -41,8 +41,8 @@ class KIconView::KIconViewPrivate
 public:
     KIconViewPrivate() {
         mode = KIconView::Execute;
-        doAutoSelect = TRUE;
         fm = 0L;
+        doAutoSelect = true;
     }
     KIconView::Mode mode;
     bool doAutoSelect;
@@ -89,18 +89,22 @@ KIconView::Mode KIconView::mode() const
 
 void KIconView::slotOnItem( QIconViewItem *item )
 {
-    if ( item && m_bChangeCursorOverItem && m_bUseSingle )
-        viewport()->setCursor( KCursor().handCursor() );
+    if ( item ) {
+        if ( m_bUseSingle ) {
+            if ( m_bChangeCursorOverItem )
+                viewport()->setCursor( KCursor().handCursor() );
 
-    if ( item && (m_autoSelectDelay > -1) && m_bUseSingle ) {
-      m_pAutoSelect->start( m_autoSelectDelay, true );
-      m_pCurrentItem = item;
+            if ( (m_autoSelectDelay > -1) ) {
+                m_pAutoSelect->start( m_autoSelectDelay, true );
+            }
+        }
+        m_pCurrentItem = item;
     }
 }
 
 void KIconView::slotOnViewport()
 {
-    if ( m_bChangeCursorOverItem )
+    if ( m_bUseSingle && m_bChangeCursorOverItem )
         viewport()->unsetCursor();
 
     m_pAutoSelect->stop();
@@ -280,7 +284,7 @@ void KIconView::leaveEvent( QEvent *e )
 void KIconView::wheelEvent( QWheelEvent *e )
 {
   // TODO: remove me
-  QIconView::wheelEvent( e ); 
+  QIconView::wheelEvent( e );
 }
 
 void KIconView::contentsMousePressEvent( QMouseEvent *e )
@@ -346,15 +350,21 @@ QPixmap KIconView::selectedIconPixmap( QPixmap *pix, const QColor &col ) const
 
 /////////////
 
+struct KIconViewItem::KIconViewItemPrivate
+{
+};
+
 void KIconViewItem::init()
 {
     m_wordWrap = 0L;
+    d = 0L;
     calcRect();
 }
 
 KIconViewItem::~KIconViewItem()
 {
     delete m_wordWrap;
+    delete d;
 }
 
 void KIconViewItem::calcRect( const QString& text_ )
