@@ -42,6 +42,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kapplication.h>
 #include <kstyle.h>
 #include <dcopclient.h>
+#include <qtimer.h>
 
 #undef Bool
 #include "kwindowlistmenu.h"
@@ -86,6 +87,7 @@ KWindowListMenu::KWindowListMenu(QWidget *parent, const char *name)
 #endif
 
     connect(this, SIGNAL(activated(int)), SLOT(slotExec(int)));
+    connect(this, SIGNAL(aboutToShow()), SLOT(startActivateCurrentWindow()));
 }
 
 KWindowListMenu::~KWindowListMenu()
@@ -224,6 +226,28 @@ void KWindowListMenu::slotExec(int id)
     else if ( id >= 0 )
 	KWin::setActiveWindow(map[id]);
 #endif
+}
+
+// This popup is much more useful from keyboard if it has the active
+// window active by default - however, QPopupMenu tries hard to resist.
+// QPopupMenu::popup() resets the active item, and after being shown,
+// the cursor is outside of the popup, causing leave notify, which cases
+// mouse move event, which causes reseting the active item again :(
+void KWindowListMenu::startActivateCurrentWindow()
+{
+    QTimer::singleShot( 0, this, SLOT( activateCurrentWindow()));
+}
+
+void KWindowListMenu::activateCurrentWindow()
+{
+    for( unsigned int i = 0;
+         i < count();
+         ++i )
+        if( isItemChecked( idAt( i )))
+            {
+            setActiveItem( i );
+            break;
+            }
 }
 
 void KWindowListMenu::slotUnclutterWindows()
