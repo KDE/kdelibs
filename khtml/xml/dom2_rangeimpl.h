@@ -4,6 +4,7 @@
  * (C) 1999 Lars Knoll (knoll@kde.org)
  * (C) 2000 Gunnstein Lye (gunnstein@netcom.no)
  * (C) 2000 Frederik Holljen (frederik.holljen@hig.no)
+ * (C) 2001 Peter Kelly (pmk@post.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -34,48 +35,58 @@ class RangeImpl : public DomShared
 {
     friend class DocumentImpl;
 public:
-    RangeImpl();
     RangeImpl(DocumentImpl *rootContainer);
-    RangeImpl(const Document rootContainer);
-    RangeImpl(const RangeImpl &other);
-    RangeImpl(const Node sc, const long so, const Node ec, const long eo);
-
-    RangeImpl & operator = (const RangeImpl &other);
+    RangeImpl(const NodeImpl *sc, const long so, const NodeImpl *ec, const long eo);
 
     ~RangeImpl();
 
     // ### remove the get from these methods (i.e. getStartContainer() -> startContainer())
-    Node getStartContainer() const;
-    long getStartOffset() const;
-    Node getEndContainer() const;
-    long getEndOffset() const;
-    bool getCollapsed() const;
-    Node getCommonAncestorContainer();
-    void setStart ( const Node &refNode, long offset );
-    void setEnd ( const Node &refNode, long offset );
+    NodeImpl *startContainer() const;
+    long startOffset() const;
+    NodeImpl *endContainer() const;
+    long endOffset() const;
+    bool collapsed() const;
+
+    NodeImpl *commonAncestorContainer();
+    void setStart ( const NodeImpl *refNode, long offset, int &exceptioncode );
+    void setEnd ( const NodeImpl *refNode, long offset, int &exceptioncode );
     void collapse ( bool toStart );
-    short compareBoundaryPoints ( Range::CompareHow how, const Range &sourceRange );
-    short compareBoundaryPoints ( Node containerA, long offsetA, Node containerB, long offsetB );
+    short compareBoundaryPoints ( Range::CompareHow how, const RangeImpl *sourceRange, int &exceptioncode );
+    short compareBoundaryPoints ( NodeImpl *containerA, long offsetA, NodeImpl *containerB, long offsetB );
     bool boundaryPointsValid (  );
-    void deleteContents (  );
-    DocumentFragment extractContents (  );
-    DocumentFragment cloneContents (  );
-    void insertNode ( const Node &newNode );
+    void deleteContents ( int &exceptioncode );
+    DocumentFragmentImpl *extractContents ( int &exceptioncode );
+    DocumentFragmentImpl *cloneContents ( int &exceptioncode );
+    void insertNode( const NodeImpl *newNode, int &exceptioncode );
     DOMString toString (  );
     DOMString toHTML (  );
     void detach (  );
     bool isDetached() const;
-    DocumentFragment masterTraverse(bool contentExtract);
+    DocumentFragmentImpl *masterTraverse(bool contentExtract, int &exceptioncode);
+
+    void setStartAfter( const NodeImpl *refNode, int &exceptioncode );
+    void setEndBefore( const NodeImpl *refNode, int &exceptioncode );
+    void setEndAfter( const NodeImpl *refNode, int &exceptioncode );
+    void selectNode( const NodeImpl *refNode, int &exceptioncode );
+    void selectNodeContents( const NodeImpl *refNode, int &exceptioncode );
+    void surroundContents( const NodeImpl *newParent, int &exceptioncode );
+    void setStartBefore( const NodeImpl *refNode, int &exceptioncode );
 
 protected:
-    Document ownerDocument;
-    Node startContainer;
-    unsigned long startOffset;
-    Node endContainer;
-    unsigned long endOffset;
-    Node commonAncestorContainer;
-    bool collapsed;
-    bool detached;
+    DocumentImpl *m_ownerDocument;
+    NodeImpl *m_startContainer;
+    unsigned long m_startOffset;
+    NodeImpl *m_endContainer;
+    unsigned long m_endOffset;
+    NodeImpl *m_commonAncestorContainer;
+    bool m_collapsed;
+    bool m_detached;
+
+private:
+    void checkNode( const NodeImpl *n, int &exceptioncode ) const;
+    void checkNodeWOffset( const NodeImpl *n, int offset, int &exceptioncode) const;
+    void checkNodeBA( const NodeImpl *n, int &exceptioncode ) const;
+    void checkCommon(int &exceptioncode) const;
 };
 
 }; // namespace

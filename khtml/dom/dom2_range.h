@@ -4,6 +4,7 @@
  * (C) 1999 Lars Knoll (knoll@kde.org)
  * (C) 2000 Gunnstein Lye (gunnstein@netcom.no)
  * (C) 2000 Frederik Holljen (frederik.holljen@hig.no)
+ * (C) 2001 Peter Kelly (pmk@post.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -58,7 +59,9 @@ public:
      */
     enum RangeExceptionCode {
         BAD_BOUNDARYPOINTS_ERR         = 1,
-        INVALID_NODE_TYPE_ERR          = 2
+        INVALID_NODE_TYPE_ERR          = 2,
+        _EXCEPTION_OFFSET              = 2000,
+        _EXCEPTION_MAX                 = 2999
     };
     unsigned short code;
 };
@@ -463,48 +466,8 @@ protected:
     RangeImpl *impl;
     Range(RangeImpl *i);
 private:
-    void checkNode( DOM::Node n ) const;
-    void checkNodeWOffset( DOM::Node n, int offset) const;
-    void checkNodeBA( DOM::Node n ) const;
-    void checkCommon() const;
+    void throwException(int exceptioncode);
 };
-
-
-// ### not sure if this this class is really needed
-
-/**
- * DocumentRange exists in the DOM specs as a means of providing access to the createRange() method.
- * In khtml, this is method implemented in the Document class, but since DocumentRange inherits from
- * Document, you can still use createRange() here if you wish.
- *
-class DocumentRange : public Document
-{
-public:
-    DocumentRange();
-    DocumentRange(const DocumentRange &other);
-
-    DocumentRange & operator = (const DocumentRange &other);
-
-    ~DocumentRange();
-
-     **
-     * This interface can be obtained from the object implementing the
-     * <code> Document </code> interface using binding-specific
-     * casting methods.
-     *
-     * @return The initial state of the range returned from this
-     * method is such that both of its end-points are positioned at
-     * the beginning of the corresponding Document, before any
-     * content. The range returned can only be used to select content
-     * associated with this Document, or with DocumentFragments and
-     * Attrs for which this Document is the <code> ownerDocument
-     * </code> .
-     *
-     *
-//    Range createRange(  );
-};
-*/
-
 
 }; // namespace
 

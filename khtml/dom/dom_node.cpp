@@ -404,11 +404,10 @@ unsigned short Node::elementId() const
 
 unsigned long Node::index() const
 {
-    Node _tempNode = previousSibling();
-    unsigned long count=0;
-    for( count=0; !_tempNode.isNull(); count++ )
-        _tempNode = _tempNode.previousSibling();
-    return count;
+    if (!impl)
+	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return impl->index();
 }
 
 QString Node::toHTML()

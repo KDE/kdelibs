@@ -235,6 +235,8 @@ public:
 
     virtual DOMString namespaceURI() const;
 
+    unsigned long index() const;
+
 protected:
     DocumentImpl *document;
     khtml::RenderObject *m_render;
@@ -277,6 +279,7 @@ public:
 
     virtual void setPreviousSibling(NodeImpl *);
     virtual void setNextSibling(NodeImpl *);
+    unsigned long index() const;
 
 protected:
     NodeImpl *_parent;

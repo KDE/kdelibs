@@ -312,6 +312,11 @@ void NodeImpl::printTree(int indent)
         kdDebug() << ind << "</" << nodeName().string() << ">" << endl;
 }
 
+unsigned long NodeImpl::index() const
+{
+    return 0;
+}
+
 //--------------------------------------------------------------------
 
 NodeWParentImpl::NodeWParentImpl(DocumentImpl *doc) : NodeImpl(doc)
@@ -372,6 +377,14 @@ bool NodeWParentImpl::checkReadOnly() const
     return false;
 }
 
+unsigned long NodeWParentImpl::index() const
+{
+    NodeImpl *_tempNode = _previous;
+    unsigned long count=0;
+    for( count=0; _tempNode; count++ )
+        _tempNode = _tempNode->previousSibling();
+    return count;
+}
 //-------------------------------------------------------------------------
 
 NodeBaseImpl::NodeBaseImpl(DocumentImpl *doc) : NodeWParentImpl(doc)
