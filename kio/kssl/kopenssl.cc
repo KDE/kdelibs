@@ -153,6 +153,7 @@ static int (*K_X509_REQ_set_pubkey)(X509_REQ*, EVP_PKEY*) = NULL;
 static RSA *(*K_RSA_generate_key)(int, unsigned long, void (*)(int,int,void *), void *) = NULL;
 static int (*K_i2d_X509_REQ_fp)(FILE*, X509_REQ*) = NULL;
 static void (*K_ERR_clear_error)() = NULL;
+static void (*K_ERR_print_errors_fp)(FILE*) = NULL;
 #endif
 };
 
@@ -394,6 +395,7 @@ KConfig *cfg;
       K_RSA_generate_key = (RSA* (*)(int, unsigned long, void (*)(int,int,void *), void *)) _cryptoLib->symbol("RSA_generate_key");
       K_i2d_X509_REQ_fp = (int (*)(FILE *, X509_REQ *)) _cryptoLib->symbol("i2d_X509_REQ_fp");
       K_ERR_clear_error = (void (*)()) _cryptoLib->symbol("ERR_clear_error");
+      K_ERR_print_errors_fp = (void (*)(FILE*)) _cryptoLib->symbol("ERR_print_errors_fp");
 #endif
    }
 
@@ -1207,6 +1209,11 @@ int KOpenSSLProxy::i2d_X509_REQ_fp(FILE *fp, X509_REQ *x) {
 
 void KOpenSSLProxy::ERR_clear_error() {
    if (K_ERR_clear_error) (K_ERR_clear_error)();
+}
+
+
+void KOpenSSLProxy::ERR_print_errors_fp(FILE* fp) {
+   if (K_ERR_print_errors_fp) (K_ERR_print_errors_fp)(fp);
 }
 
 

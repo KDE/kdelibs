@@ -305,6 +305,7 @@ int KSSL::connect(int sock) {
   } else {
     kdDebug(7029) << "KSSL connect failed - rc = " << rc << endl;
     kdDebug(7029) << "                      ERROR = " << d->kossl->SSL_get_error(d->m_ssl, rc) << endl;
+    d->kossl->ERR_print_errors_fp(stderr);
     return -1;
   }
   return rc;

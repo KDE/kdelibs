@@ -743,6 +743,9 @@ public:
    /* clear the current error  - use this often*/
    void ERR_clear_error();
 
+   /* Print the errors to this stream */
+   void ERR_print_errors_fp(FILE *fp);
+
 
 #endif
 
