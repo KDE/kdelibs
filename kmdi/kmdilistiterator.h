@@ -47,7 +47,7 @@ public:
 	virtual void last() { m_iterator->toLast(); }
 	virtual void next() { ++( *m_iterator ); }
 	virtual void prev() { --( *m_iterator ); }
-	virtual bool isDone() const { return m_iterator->current() == NULL; }
+	virtual bool isDone() const { return m_iterator->current() == 0; }
 	virtual Item* currentItem() const { return m_iterator->current(); }
 
 	virtual ~KMdiListIterator() { delete m_iterator; }
