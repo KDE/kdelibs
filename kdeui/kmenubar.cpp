@@ -31,6 +31,7 @@
 #include <kapp.h>
 #include <kwm.h>
 #include <ktoolboxmgr.h>
+#include <kwm.h>
 
 #define CONTEXT_TOP 1
 #define CONTEXT_BOTTOM 2
@@ -38,6 +39,9 @@
 
 // $Id$
 // $Log$
+//
+// Revision 1.34  1998/09/07 18:44:29  ettrich
+// Matthias: preparation for new features
 //
 // Revision 1.33  1998/09/07 13:46:58  ettrich
 // Matthias: removed some debug output...
@@ -118,14 +122,13 @@ int KMenuBar::idAt( int index )
 int KMenuBar::heightForWidth ( int max_width ) const
 {
   return menu->heightForWidth( max_width - 9);
-     frame->setGeometry( 9, 0, width()-9, menu->heightForWidth(width()-9));
+     frame->setGeometry( 9, 0, width()-9, menu->heightForWidth(width()));
      menu->resize(frame->width(), frame->height());
-     if (height() != frame->height() ||
-         width() != frame->width()+9)
-      {
-	  resize(frame->width()+9, frame->height());
-      }
      handle->setGeometry(0,0,9,height());
+     if (height() != heightForWidth(width())) {
+	 resize(width(), heightForWidth(width()));
+	 return;
+      }
   {
     resize(width(), heightForWidth(width()));
 void KMenuBar::ContextCallback( int index )
@@ -172,6 +175,17 @@ void KMenuBar::ContextCallback( int )
   transparent = false;
 
 
+  {
+      KConfig* config = kapp->getConfig();
+      KConfigGroupSaver saver(config, "Menubar");
+      if (config->readEntry("position") == "TopOfScreen") {
+	  int verticalOffset = config->readNumEntry("verticalOffset", 0);
+	  setMenuBarPos(Floating);
+	  QRect r =  KWM::getWindowRegion(KWM::currentDesktop());
+	  setGeometry(r.x(),r.y()-3+verticalOffset, r.width()-6, heightForWidth(r.width()));
+      }
+  }
+ 
 
   resize( Parent->width(), menu->height());
   enableFloating (TRUE);

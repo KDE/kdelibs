@@ -189,9 +189,12 @@ void KTMainWindow::focusOutEvent( QFocusEvent *)
 
 void KTMainWindow::show ()
 {
+    if (kmenubar && kmenubar->menuBarPos() == KMenuBar::Floating)
+	kmenubar->show();
     QWidget::show();
     updateRects();
 }
+ 
 
 void KTMainWindow::updateRects()
 {
