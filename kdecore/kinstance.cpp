@@ -158,9 +158,9 @@ KConfig	*KInstance::config() const
                delete _config;
                _config = 0;
             }
-            
+
         }
-            
+
         if ( _config == 0 )
         {
 	    if ( !_name.isEmpty() )
@@ -185,6 +185,7 @@ KIconLoader *KInstance::iconLoader() const
 {
     if( _iconLoader == 0 ) {
 	_iconLoader = new KIconLoader( _name, dirs() );
+    _iconLoader->enableDelayedIconSetLoading( true );
     }
 
     return _iconLoader;

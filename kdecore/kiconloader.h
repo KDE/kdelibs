@@ -160,8 +160,8 @@ public:
 
     /**
      * Returns the path of an icon.
-     * @param name The name of the icon, without extension. If an absolute 
-     * path is supplied for this parameter, iconPath will return it 
+     * @param name The name of the icon, without extension. If an absolute
+     * path is supplied for this parameter, iconPath will return it
      * directly.
      * @param group_or_size If positive, search icons whose size is
      * specified by the icon group @p group_or_size. If negative, search
@@ -286,6 +286,35 @@ public:
      */
     bool alphaBlending( KIcon::Group group ) const;
 
+    /**
+     * Enables on-demand icon loading for QIconSets using @ref QIconFactory.
+     * Icons loaded via @ref loadIconSet() will be loaded as soon as they
+     * need to be displayed, not earlier.
+     *
+     * Note that enabling or disabling this only affects @ref loadIconSet()
+     * calls after this setting is changed.
+     *
+     * The default is disabled, as the iconloader object must not be 
+     * destroyed before all those iconsets are destroyed.
+     *
+     * (Some broken applications use temporary KIconLoader objects).
+     * Every @ref KInstance 's iconloader has this feature enabled.
+     *
+     * @see isDelayedIconSetLoadingEnabled()
+     * @see QIconFactory
+     * @since 3.1
+     */
+    void enableDelayedIconSetLoading( bool enable );
+
+    /**
+     * @return whether icons for QIconSets will be loaded on demand.
+     * @see enableDelayedIconSetLoading()
+     * @see QIconFactory
+     * @since 3.1
+     */
+    bool isDelayedIconSetLoadingEnabled() const;
+
+
  private:
     /**
      * @internal
@@ -340,6 +369,12 @@ public:
      */
     QString removeIconExtension(const QString &name) const;
 
+    /**
+     * Loads all the different sizes for an iconset.
+     */
+    QIconSet loadIconSetNonDelayed( const QString& name, KIcon::Group group,
+                                    int size, bool canReturnNull );
+    
     // @internal the data object
     KIconLoaderPrivate *d;
 };

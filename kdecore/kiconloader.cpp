@@ -131,7 +131,8 @@ struct KIconLoaderPrivate
     int lastIconType; // see KIcon::type
     int lastIconThreshold; // see KIcon::threshold
     QPtrList<KIconThemeNode> links;
-    bool extraDesktopIconsLoaded;
+    bool extraDesktopIconsLoaded :1;
+    bool delayedLoading :1;
 };
 
 /*** KIconLoader: the icon loader ***/
@@ -153,6 +154,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     d->imgDict.setAutoDelete( true );
     d->links.setAutoDelete(true);
     d->extraDesktopIconsLoaded=false;
+    d->delayedLoading=false;
 
     if (_dirs)
 	d->mpDirs = _dirs;
@@ -243,6 +245,16 @@ KIconLoader::~KIconLoader()
     delete d;
 }
 
+void KIconLoader::enableDelayedIconSetLoading( bool enable )
+{
+    d->delayedLoading = enable;
+}
+
+bool KIconLoader::isDelayedIconSetLoadingEnabled() const
+{
+    return d->delayedLoading;
+}
+
 void KIconLoader::addAppDir(const QString& appname)
 {
     d->mpDirs->addResourceType("appicon", KStandardDirs::kde_default("data") +
@@ -320,7 +332,7 @@ void KIconLoader::addExtraDesktopThemes()
 	      buf[r]=0;
 	      QDir dir2( buf );
 	      QString themeName=dir2.dirName();
-	      
+	
 	      if (!list.contains(themeName))
 		list.append(themeName);
 	    }	
@@ -332,7 +344,7 @@ void KIconLoader::addExtraDesktopThemes()
 	if ( d->mThemesInTree.contains(*it) )
 		continue;
 	if ( *it == QString("default.kde") ) continue;
-			    
+			
 	KIconTheme *def = new KIconTheme( *it, "" );
 	KIconThemeNode* node = new KIconThemeNode(def);
 	d->mThemesInTree.append(*it);
@@ -341,7 +353,7 @@ void KIconLoader::addExtraDesktopThemes()
     }
 
     d->extraDesktopIconsLoaded=true;
-   
+
 }
 
 QString KIconLoader::removeIconExtension(const QString &name) const
@@ -508,11 +520,11 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     if ( !d->extraDesktopIconsLoaded && !icon.isValid() &&
 	( group_or_size == KIcon::Desktop || group_or_size == KIcon::Small ||
 	    group_or_size == KIcon::Panel ) &&
-	     name != QString(KGlobal::instance()->instanceName()) ) 
-    {     
+	     name != QString(KGlobal::instance()->instanceName()) )
+    {
 	const_cast<KIconLoader *>(this)->addExtraDesktopThemes();
         icon = findMatchingIcon(name, size);
-    }    
+    }
 
     if (!icon.isValid())
     {
@@ -520,7 +532,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 	path = iconPath(name, KIcon::User, true);
 	if (!path.isEmpty() || canReturnNull)
 	    return path;
-	    
+	
 	if (canReturnNull)
 	    return QString::null;
         else
@@ -668,12 +680,12 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	    if ( !d->extraDesktopIconsLoaded && !icon.isValid() &&
 		    ( group == KIcon::Desktop || group == KIcon::Small ||
 		      group == KIcon::Panel ) &&
-		    name != QString(KGlobal::instance()->instanceName()) ) 
-	    {     
+		    name != QString(KGlobal::instance()->instanceName()) )
+	    {
 		const_cast<KIconLoader *>(this)->addExtraDesktopThemes();
 		icon = findMatchingIcon(name, size);
-	    }    
-    
+	    }
+
             if (!icon.isValid())
             {
                 // Try "User" icon too. Some apps expect this.
@@ -1076,18 +1088,41 @@ class KIconFactory
 QIconSet KIconLoader::loadIconSet( const QString& name, KIcon::Group group, int size,
     bool canReturnNull)
 {
+    if ( !d->delayedLoading )
+        return loadIconSetNonDelayed( name, group, size, canReturnNull );
+
     if(canReturnNull)
     { // we need to find out if the icon actually exists
         QPixmap pm = loadIcon( name, group, size, KIcon::DefaultState, NULL, true );
         if( pm.isNull())
             return QIconSet();
+
         QIconSet ret( pm );
         ret.installIconFactory( new KIconFactory( name, group, size, this ));
         return ret;
     }
+    
     QIconSet ret;
     ret.installIconFactory( new KIconFactory( name, group, size, this ));
     return ret;
+}
+
+QIconSet KIconLoader::loadIconSetNonDelayed( const QString& name, 
+                                             KIcon::Group group,
+                                             int size, bool canReturnNull )
+{
+    QIconSet iconset;
+    QPixmap tmp = loadIcon(name, group, size, KIcon::ActiveState, NULL, canReturnNull);
+    iconset.setPixmap( tmp, QIconSet::Small, QIconSet::Active );
+    // we don't use QIconSet's resizing anyway
+    iconset.setPixmap( tmp, QIconSet::Large, QIconSet::Active );
+    tmp = loadIcon(name, group, size, KIcon::DisabledState, NULL, canReturnNull);
+    iconset.setPixmap( tmp, QIconSet::Small, QIconSet::Disabled );
+    iconset.setPixmap( tmp, QIconSet::Large, QIconSet::Disabled );
+    tmp = loadIcon(name, group, size, KIcon::DefaultState, NULL, canReturnNull);
+    iconset.setPixmap( tmp, QIconSet::Small, QIconSet::Normal );
+    iconset.setPixmap( tmp, QIconSet::Large, QIconSet::Normal );
+    return iconset;
 }
 
 KIconFactory::KIconFactory( const QString& iconName_P, KIcon::Group group_P,
