@@ -416,7 +416,8 @@ void Kded::readDirectory( const QString& _path )
 
 static void sighandler(int /*sig*/)
 {
-    kapp->quit();
+    if (kapp)
+       kapp->quit();
 }
 
 KUpdateD::KUpdateD()
@@ -612,6 +613,7 @@ int main(int argc, char *argv[])
      kded->recreate();
 
      signal(SIGTERM, sighandler);
+     signal(SIGHUP, sighandler);
      KDEDApplication k(kded);
 
      if (bCheckUpdates)
