@@ -45,7 +45,7 @@ void KProtocolManager::scanConfig( const QString& _dir, bool _islocal )
     if ( _islocal )
       p.executable = KApplication::localkdedir() + "/" + exec;
     else
-      p.executable = locate("bin", exec);
+      p.executable = locate("exe", exec);
     p.isSourceProtocol = config.readBoolEntry( "source", TRUE );
     p.supportsReading = config.readBoolEntry( "reading", FALSE );
     p.supportsWriting = config.readBoolEntry( "writing", FALSE );
