@@ -233,6 +233,11 @@ void KURLRequester::setURL( const QString& url )
 	d->setText( url );
 }
 
+void KURLRequester::setCaption( const QString& caption )
+{
+	fileDialog()->setCaption( caption );
+	QWidget::setCaption( caption );
+}
 
 QString KURLRequester::url() const
 {

@@ -106,7 +106,7 @@ public:
      * Sets the filter for the file dialog.
      * @see KFileDialog::setFilter()
      */
-    void setFilter(const QString& filter);
+    void setFilter( const QString& filter );
 
     /**
      * @returns whether local files will be prefixed with file:/ in the
@@ -153,7 +153,13 @@ public slots:
      * Sets the url in the lineedit to @p url. Depending on the state of
      * @ref showLocalProtocol(), file:/ on local files will be shown or not.
      */
-    void setURL(const QString& url);
+    void setURL( const QString& url );
+
+    /**
+     * @reimp
+     * Sets the caption of the file dialog.
+     */
+    virtual void setCaption( const QString& caption );
 
     /**
      * Clears the lineedit/combobox.
@@ -166,7 +172,7 @@ signals:
      * Emitted when the text in the lineedit changes.
      * The parameter contains the contents of the lineedit.
      */
-    void textChanged(const QString&);
+    void textChanged( const QString& );
 
     /**
      * Emitted when return or enter was pressed in the lineedit.
