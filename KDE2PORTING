@@ -154,3 +154,10 @@ same as loadApplicationMiniIcon.
 
 KDialog is no longer defined in kwizard.h. Include kdialog.h instead.
 
+////////////////////////////////////////////////////////////////////////
+// * KTMainWidget
+
+view_* public variables do no longer exist. There is really no reason
+for an app to use this information. If you do need it anyway, use
+mainViewGeometry() instead.
+
