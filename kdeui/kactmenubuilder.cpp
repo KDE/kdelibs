@@ -27,7 +27,7 @@ int KActionMenuBuilder::insert( const QString& action, int index )
 		_menu->setWhatsThis( id, a->whatsThis() );
 	}
 	
-	if( _style & Icon ) {
+	if( (_style & Icon) ) {
 		_menu->changeItem( a->icon(), a->localDesc(), id );
 	}
 
@@ -51,7 +51,7 @@ int KActionMenuBuilder::insertPopup( const QString& text,
 }
 
 int KActionMenuBuilder::insertList( const QStringList& actions, 
-	int index )
+		int index )
 {
 	if( actions.count() == 0 ) {
 		return -1;
