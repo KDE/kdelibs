@@ -234,31 +234,28 @@ SetAuthentication (int count, IceListenObj *listenObjs,
   original_umask = umask (0077);      /* disallow non-owner access */
 
   path = getenv ("DCOP_SAVE_DIR");
-  if (!path) {
-    path = getenv ("HOME");
-    if (!path)
-      path = ".";
-  }
+  if (!path)
+    path = "/tmp";
 #ifndef HAS_MKSTEMP
-  if ((addAuthFile = unique_filename (path, ".dcop")) == NULL)
+  if ((addAuthFile = unique_filename (path, "dcop")) == NULL)
     goto bad;
 
   if (!(addfp = fopen (addAuthFile, "w")))
     goto bad;
 
-  if ((remAuthFile = unique_filename (path, ".dcop")) == NULL)
+  if ((remAuthFile = unique_filename (path, "dcop")) == NULL)
     goto bad;
 
   if (!(removefp = fopen (remAuthFile, "w")))
     goto bad;
 #else
-  if ((addAuthFile = unique_filename (path, ".dcop", &fd)) == NULL)
+  if ((addAuthFile = unique_filename (path, "dcop", &fd)) == NULL)
     goto bad;
 
   if (!(addfp = fdopen(fd, "wb")))
     goto bad;
 
-  if ((remAuthFile = unique_filename (path, ".dcop", &fd)) == NULL)
+  if ((remAuthFile = unique_filename (path, "dcop", &fd)) == NULL)
     goto bad;
 
   if (!(removefp = fdopen(fd, "wb")))
