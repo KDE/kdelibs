@@ -4,11 +4,6 @@
 #include <stdlib.h>
 #include <kdebug.h>
 
-////NOTE: for this test to run properly, you need first to
-//// cd kdebase/kioslave/gzip ; cp *desktop $KDEDIR/share/config/protocols/
-//// cd ../tar ; cp *desktop $KDEDIR/share/config/protocols/
-////
-
 bool check(QString txt, QString a, QString b)
 {
   if (a.isEmpty())
