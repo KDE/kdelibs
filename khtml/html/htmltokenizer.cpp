@@ -35,18 +35,20 @@
 #include "config.h"
 #endif
 
-#include <string.h>
-#include "htmltokenizer.h"
+//#include <string.h>
+#include "html/htmltokenizer.h"
+#include "html/html_documentimpl.h"
+#include "html/htmlparser.h"
+#include "html/dtd.h"
+
 #include "misc/loader.h"
+#include "misc/htmlhashes.h"
+
 #include "khtmlview.h"
 #include "khtml_part.h"
-#include "htmlparser.h"
-#include "html_documentimpl.h"
 #include "xml/dom_docimpl.h"
 #include "css/csshelper.h"
 #include "ecma/kjs_proxy.h"
-#include "dtd.h"
-#include "htmlhashes.h"
 #include <kcharsets.h>
 #include <kglobal.h>
 #include <ctype.h>
@@ -469,6 +471,10 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
     checkScriptBuffer(src.length());
     while ( src.length() ) {
         scriptCode[ scriptCodeSize++ ] = *src;
+#if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 1
+        qDebug("comment is now: *%s*",
+               QConstString((QChar*)src.current(), QMIN(16, src.length())).string().latin1());
+#endif
         if (src->unicode() == '>' &&
             ( ( brokenComments && !( script || style || textarea || xmp ) ) ||
               ( scriptCodeSize > 2 && scriptCode[scriptCodeSize-3] == '-' &&
@@ -1254,12 +1260,27 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
     else
         setSrc(str);
 
-    if (Entity)
-        parseEntity(src, dest);
+//     if (Entity)
+//         parseEntity(src, dest);
 
-    if ( src.length() ) {
-        if (plaintext)
-            parseText(src);
+    while ( src.length() )
+    {
+        // do we need to enlarge the buffer?
+        checkBuffer();
+
+        ushort cc = src->unicode();
+
+        if (skipLF && (cc != '\n'))
+            skipLF = false;
+
+        if (skipLF) {
+            skipLF = false;
+            ++src;
+        }
+        else if ( Entity )
+            parseEntity( src, dest );
+        else if ( plaintext )
+            parseText( src );
         else if (script)
             parseSpecial(src, false);
         else if (style)
@@ -1276,28 +1297,6 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
             parseProcessingInstruction(src);
         else if (tag)
             parseTag(src);
-    }
-
-    while ( src.length() )
-    {
-        // do we need to enlarge the buffer?
-        checkBuffer();
-
-        ushort cc = src->unicode();
-
-        if (skipLF && (cc != '\n'))
-            skipLF = false;
-
-        if (skipLF) {
-            skipLF = false;
-            ++src;
-        }
-        else if ( Entity ) {
-            parseEntity( src, dest );
-        }
-        else if ( plaintext ) {
-            parseText( src );
-        }
         else if ( startTag )
         {
             startTag = false;
