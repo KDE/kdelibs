@@ -40,7 +40,7 @@ RenderRoot::RenderRoot(KHTMLView *view)
     m_height = view->visibleHeight();
 
     setPositioned(true); // to 0,0 :)
-    printingMode = false;
+    m_printingMode = false;
 
     selectionStart = 0;
     selectionEnd = 0;
@@ -57,7 +57,7 @@ RenderRoot::~RenderRoot()
 void RenderRoot::calcWidth()
 {
     // the width gets set by KHTMLView::print when printing to a printer.
-    if(printingMode) return;
+    if(m_printingMode) return;
 
     m_width = m_view ?
                 m_view->frameWidth() + paddingLeft() + paddingRight() + borderLeft() + borderRight()
@@ -85,7 +85,7 @@ void RenderRoot::calcMinMaxWidth()
 void RenderRoot::layout()
 {
     //kdDebug(6040) << "RenderRoot::layout()" << endl;
-    if (printingMode)
+    if (m_printingMode)
        m_minWidth = m_width;
 
 #ifdef SPEED_DEBUG
@@ -110,7 +110,7 @@ void RenderRoot::layout()
     // have to do that before layoutSpecialObjects() to get fixed positioned objects at the right place
     if (m_view) m_view->resizeContents(docWidth(), docHeight());
 
-    if (!printingMode && m_view)
+    if (!m_printingMode && m_view)
     {
        m_height = m_view->visibleHeight();
        m_width = m_view->visibleWidth();
@@ -172,7 +172,7 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
     // 3. print floats and other non-flow objects.
     // we have to do that after the contents otherwise they would get obscured by background settings.
     // it is anyway undefined if regular text is above fixed objects or the other way round.
-    if (m_view) 
+    if (m_view)
     {
         _tx += m_view->contentsX();
         _ty += m_view->contentsY();
@@ -224,9 +224,9 @@ void RenderRoot::updateSize()
 
 void RenderRoot::updateHeight()
 {
-    
+
     if (!m_view) return;
-    
+
     //kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateHeight() timer=" << updateTimer.elapsed() << endl;
     //int oldMin = m_minWidth;
     setLayouted(false);
@@ -354,7 +354,7 @@ void RenderRoot::selectionStartEnd(int& spos, int& epos)
 
 QRect RenderRoot::viewRect() const
 {
-    if (printingMode)
+    if (m_printingMode)
         return QRect(0,0, m_width, m_height);
     else if (m_view)
         return QRect(m_view->contentsX(),
@@ -367,7 +367,7 @@ QRect RenderRoot::viewRect() const
 int RenderRoot::docHeight() const
 {
     int h;
-    if (printingMode || !m_view)
+    if (m_printingMode || !m_view)
         h = m_height;
     else
         h = m_view->visibleHeight();
@@ -387,7 +387,7 @@ int RenderRoot::docHeight() const
 int RenderRoot::docWidth() const
 {
     int w;
-    if (printingMode || !m_view)
+    if (m_printingMode || !m_view)
         w = m_width;
     else
         w = m_view->visibleWidth();

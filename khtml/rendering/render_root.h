@@ -65,7 +65,8 @@ public:
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
     virtual void clearSelection();
 
-    void setPrintingMode(bool print) { printingMode = print; }
+    void setPrintingMode(bool print) { m_printingMode = print; }
+    bool printingMode() const { return m_printingMode; }
 
 protected:
 
@@ -83,7 +84,7 @@ protected:
     int selectionEndPos;
 
     // used to ignore viewport width when printing to the printer
-    bool printingMode;
+    bool m_printingMode;
 };
 
 };
