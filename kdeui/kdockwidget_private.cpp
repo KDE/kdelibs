@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Max Judin <novaprint@mtu-net.ru>
+   Copyright (C) 2002,2003 Joseph Wenninger <jowenn@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -82,6 +83,20 @@ void KDockSplitter::activate(QWidget *c0, QWidget *c1)
   	setForcedFixedWidth(((KDockWidget*)child1),((KDockWidget*)child1)->forcedFixedWidth());
 	//QTimer::singleShot(100,this,SLOT(delayedResize()));
   }
+
+  if (((KDockWidget*)child0)->forcedFixedHeight()!=-1)
+  {
+        setForcedFixedHeight(((KDockWidget*)child0),((KDockWidget*)child0)->forcedFixedHeight());
+        //QTimer::singleShot(100,this,SLOT(delayedResize()));
+  }
+  else
+  if (((KDockWidget*)child1)->forcedFixedHeight()!=-1)
+  {
+        setForcedFixedHeight(((KDockWidget*)child1),((KDockWidget*)child1)->forcedFixedHeight());
+        //QTimer::singleShot(100,this,SLOT(delayedResize()));
+  }
+
+
 }
 
 /*
@@ -220,9 +235,9 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
           else
           {
 //	kdDebug()<<"!mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
-	if (ev && isVisible()) {
+	if (/*ev &&*/ isVisible()) {
 		if (m_orientation == Horizontal) {
-			if (ev->oldSize().height() != ev->size().height())
+		/*	if (ev->oldSize().height() != ev->size().height())*/
 			{
 			  if (fixedHeight0!=-1)
 				xpos=fixedHeight0*factor/height();
@@ -233,7 +248,7 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
 		}
 		else
 		{
-	        	if (ev->oldSize().width() != ev->size().width())
+/*	        	if (ev->oldSize().width() != ev->size().width()) */
 			{
 			  if (fixedWidth0!=-1)
 				xpos=fixedWidth0*factor/width();

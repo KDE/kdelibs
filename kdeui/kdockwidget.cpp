@@ -2667,7 +2667,10 @@ void KDockManager::readConfig( KConfig* c, QString group )
       obj->setToolTipString(c->readEntry( oname + ":tabToolTip" ));
     }
 
-    if (obj && obj->d->isContainer)  dynamic_cast<KDockContainer*>(obj->widget)->load(c,group);
+    if (obj && obj->d->isContainer) {
+		dynamic_cast<KDockContainer*>(obj->widget)->load(c,group);
+		removeFromAutoCreateList(obj);
+    }
     if ( obj && obj->header){
       obj->header->loadConfig( c );
     }
