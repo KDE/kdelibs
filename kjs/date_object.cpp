@@ -174,8 +174,8 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
   UString s;
   const int bufsize=100;
   char timebuffer[bufsize];
-  char *oldlocale = setlocale(LC_TIME,NULL);
-  if (!oldlocale)
+  CString oldlocale = setlocale(LC_TIME,NULL);
+  if (!oldlocale.c_str())
     oldlocale = setlocale(LC_ALL, NULL);
   Value v = thisObj.internalValue();
   double milli = v.toNumber(exec);
@@ -205,7 +205,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       t = gmtime(&tv);
       strftime(timebuffer, bufsize, "%a, %d-%b-%y %H:%M:%S %Z", t);
     }
-    setlocale(LC_TIME,oldlocale);
+    setlocale(LC_TIME,oldlocale.c_str());
     result = String(timebuffer);
     break;
   case ToLocaleString:
