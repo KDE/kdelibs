@@ -72,9 +72,10 @@ void KDialog::keyPressEvent(QKeyEvent *e)
   else
   {
       // accept the dialog when Ctrl-Return is pressed
-      if ( e->state() == ControlButton && 
-           qApp->focusWidget()  && 
-           qApp->focusWidget()->inherits( "QTextEdit" ) &&
+      if ( e->state() == ControlButton &&
+           qApp->focusWidget()  &&
+           (qApp->focusWidget()->inherits( "QTextEdit" ) ||
+            qApp->focusWidget()->inherits( "QLineEdit" )) &&
            (e->key() == Key_Return || e->key() == Key_Enter) )
       {
           e->accept();
