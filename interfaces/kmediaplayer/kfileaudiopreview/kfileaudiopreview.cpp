@@ -12,7 +12,7 @@
 #include <kmimetype.h>
 #include <kparts/componentfactory.h>
 
-#include <arts/kplayobjectfactory.h>
+#include <kplayobjectfactory.h>
 
 #include <config-kfile.h>
 

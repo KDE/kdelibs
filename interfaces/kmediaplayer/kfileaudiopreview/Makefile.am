@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/interfaces/ $(all_includes)
+INCLUDES = -I$(top_srcdir)/interfaces/ -I$(top_srcdir)/arts/kde -I$(includedir)/arts $(all_includes)
 METASOURCES = AUTO
 
 kde_module_LTLIBRARIES = kfileaudiopreview.la
