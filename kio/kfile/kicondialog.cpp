@@ -32,6 +32,7 @@
 #include <kprogress.h>
 #include <kiconview.h>
 #include <kfiledialog.h>
+#include <kimagefilepreview.h>
 
 #include "kicondialog.h"
 
@@ -441,16 +442,30 @@ void KIconDialog::slotButtonClicked(int id)
         }
         break;
     case 2:
-	file = KFileDialog::getOpenFileName(QString::null,
-		i18n("*.png *.xpm *.svg *.svgz|Icon Files (*.png *.xpm *.svg *.svgz)"), this);
-	if (!file.isEmpty())
         {
-            d->custom = file;
-	    if ( mType == 1 )
-	      d->customLocation = QFileInfo( file ).dirPath( true );
-            slotOk();
-	}
-	break;
+            // Create a file dialog to select a PNG, XPM or SVG file,
+            // with the image previewer shown.
+            // KFileDialog::getImageOpenURL doesn't allow svg.
+            KFileDialog dlg(QString::null, i18n("*.png *.xpm *.svg *.svgz|Icon Files (*.png *.xpm *.svg *.svgz)"),
+                            this, "filedialog", true);
+            dlg.setOperationMode( KFileDialog::Opening );
+            dlg.setCaption( i18n("Open") );
+            dlg.setMode( KFile::File );
+
+            KImageFilePreview *ip = new KImageFilePreview( &dlg );
+            dlg.setPreviewWidget( ip );
+            dlg.exec();
+
+            file = dlg.selectedFile();
+            if (!file.isEmpty())
+            {
+                d->custom = file;
+                if ( mType == 1 )
+                  d->customLocation = QFileInfo( file ).dirPath( true );
+                slotOk();
+            }
+        }
+        break;
     }
 }
 
