@@ -260,15 +260,15 @@ void RMB::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int
   //
   // TODO rename these, but, message freeze... umm...
 
-  if (bookmark.isGroup()) {
-    id = contextMenu->insertItem( i18n( "Add Bookmark Here" ), recv, SLOT(slotRMBActionInsert(int)) );
+//  if (bookmark.isGroup()) {
+    id = contextMenu->insertItem( SmallIcon("bookmark_add"), i18n( "Add Bookmark Here" ), recv, SLOT(slotRMBActionInsert(int)) );
     contextMenu->setItemParameter( id, val );
-  }
+/*  }
   else
   {
-    id = contextMenu->insertItem( i18n( "Add Bookmark Here" ), recv, SLOT(slotRMBActionInsert(int)) );
+    id = contextMenu->insertItem( SmallIcon("bookmark_add"), i18n( "Add Bookmark Here" ), recv, SLOT(slotRMBActionInsert(int)) );
     contextMenu->setItemParameter( id, val );
-  }
+  }*/
 }
 
 void RMB::fillContextMenu2( QPopupMenu* contextMenu, const QString & address, int val )
@@ -281,7 +281,7 @@ void RMB::fillContextMenu2( QPopupMenu* contextMenu, const QString & address, in
     id = contextMenu->insertItem( i18n( "Open Folder in Bookmark Editor" ), recv, SLOT(slotRMBActionEditAt(int)) );
     contextMenu->setItemParameter( id, val );
     contextMenu->insertSeparator();
-    id = contextMenu->insertItem( i18n( "Delete Folder" ), recv, SLOT(slotRMBActionRemove(int)) );
+    id = contextMenu->insertItem( SmallIcon("editdelete"), i18n( "Delete Folder" ), recv, SLOT(slotRMBActionRemove(int)) );
     contextMenu->setItemParameter( id, val );
     contextMenu->insertSeparator();
     id = contextMenu->insertItem( i18n( "Properties" ), recv, SLOT(slotRMBActionProperties(int)) );
@@ -292,7 +292,7 @@ void RMB::fillContextMenu2( QPopupMenu* contextMenu, const QString & address, in
     id = contextMenu->insertItem( i18n( "Copy Link Location" ), recv, SLOT(slotRMBActionCopyLocation(int)) );
     contextMenu->setItemParameter( id, val );
     contextMenu->insertSeparator();
-    id = contextMenu->insertItem( i18n( "Delete Bookmark" ), recv, SLOT(slotRMBActionRemove(int)) );
+    id = contextMenu->insertItem( SmallIcon("editdelete"), i18n( "Delete Bookmark" ), recv, SLOT(slotRMBActionRemove(int)) );
     contextMenu->setItemParameter( id, val );
     contextMenu->insertSeparator();
     id = contextMenu->insertItem( i18n( "Properties" ), recv, SLOT(slotRMBActionProperties(int)) );
