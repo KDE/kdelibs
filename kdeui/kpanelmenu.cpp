@@ -1,7 +1,7 @@
-/*
+/*****************************************************************
 
-(C) Daniel M. Duley <mosfet@kde.org>
-(C) Matthias Ettrich <ettrich@kde.org>
+Copyright (c) 1996-2000 the kicker authors. See file AUTHORS.
+          (c) Michael Goffioul <goffioul@imec.be>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,163 +20,114 @@ AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
 AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-*/
+******************************************************************/
+
+#include <kglobal.h>
+#include <kconfig.h>
+#include <qtimer.h>
 
 #include "kpanelmenu.h"
-#include <qstringlist.h>
-#include <dcopclient.h>
-#include <kapp.h>
-#include <kdebug.h>
+#include "kpanelmenu.moc"
 
-static int panelmenu_get_seq_id()
+class KPanelMenuPrivate
 {
-    static int panelmenu_seq_no = -2;
-    return panelmenu_seq_no--;
+public:
+    bool init;
+    int clearDelay;
+    QString startPath;
+    QTimer t;
+};
+
+KPanelMenu::KPanelMenu(const QString &startDir, QWidget *parent, const char *name)
+  : QPopupMenu(parent, name)
+{
+    init(startDir);
 }
 
-
-KPanelMenu::KPanelMenu(const QString &title, QObject *parent,
-                       const char *name)
-    : QObject(parent, name), DCOPObject()
+KPanelMenu::KPanelMenu(QWidget *parent, const char *name)
+  : QPopupMenu(parent, name)
 {
-    init(QString::null, title);
+    init();
 }
 
-KPanelMenu::KPanelMenu(const QPixmap &icon, const QString &title,
-                       QObject *parent, const char *name)
-: QObject(parent, name), DCOPObject()
+void KPanelMenu::init(const QString& path)
 {
+    d = new KPanelMenuPrivate;
 
-    init(icon, title);
-}
+    d->init = false;
+    d->startPath = path;
 
+    connect(this, SIGNAL(activated(int)), SLOT(slotExec(int)));
+    connect(this, SIGNAL(aboutToShow()), SLOT(slotAboutToShow()));
 
-KPanelMenu::KPanelMenu(QObject *parent, const char *name)
-  : QObject(parent, name), DCOPObject(name)
-{
-  realObjId = name;
-}
-
-
-void KPanelMenu::init(const QPixmap &icon, const QString &title)
-{
-    DCOPClient *client = kapp->dcopClient();
-    if(!client->isAttached())
-	client->attach();
-    QByteArray sendData, replyData;
-    QCString replyType;
-    {
-	QDataStream stream(sendData, IO_WriteOnly);
-	stream << icon << title;
-	if ( client->call("kicker", "kickerMenuManager", "createMenu(QPixmap,QString)", sendData, replyType, replyData ) ) {
-	  if (replyType != "QCString")
-	    kdDebug() << "error! replyType for createMenu should be QCstring in KPanelMenu::init" << endl;
-	  else {
-	    QDataStream reply( replyData, IO_ReadOnly );
-	    reply >> realObjId;
-	  }
-	}
-    }
-    {
-	QDataStream stream(sendData, IO_WriteOnly);
-	stream << QCString("activated(int)") << client->appId() << objId();
-	client->send("kicker", realObjId, "connectDCOPSignal(QCString,QCString,QCString)", sendData);
-    }
+    // setup cache timer
+    KConfig *config = KGlobal::config();
+    config->setGroup("menus");
+    d->clearDelay = config->readNumEntry("MenuCacheTime", 60000); // 1 minute
 }
 
 KPanelMenu::~KPanelMenu()
 {
-    DCOPClient *client = kapp->dcopClient();
-    QByteArray sendData;
-    QDataStream stream(sendData, IO_WriteOnly);
-    stream << realObjId;
-    client->send("kicker", "kickerMenuManager", "removeMenu", sendData );
+    delete d;
 }
 
-int KPanelMenu::insertItem(const QPixmap &icon, const QString &text, int id )
+void KPanelMenu::slotAboutToShow()
 {
-    if ( id < 0 )
-	id = panelmenu_get_seq_id();
-    DCOPClient *client = kapp->dcopClient();
-    QByteArray sendData;
-    QDataStream stream(sendData, IO_WriteOnly);
-    stream << icon << text << id;
-    client->send("kicker", realObjId, "insertItem(QPixmap,QString,int)", sendData );
-    return id;
+    // stop the cache timer
+    if(d->clearDelay)
+        d->t.stop();
+
+    // teared off ?
+    if ( isTopLevel() )
+        d->clearDelay = 0;
+
+    initialize();
 }
 
-
-KPanelMenu *KPanelMenu::insertMenu(const QPixmap &icon, const QString &text, int id )
+void KPanelMenu::slotClear()
 {
-    if ( id < 0 )
-        id = panelmenu_get_seq_id();
-    DCOPClient *client = kapp->dcopClient();
-    QByteArray sendData, replyData;
-    QCString replyType;
-    QDataStream stream(sendData, IO_WriteOnly);
-    stream << icon << text << id;
-    client->call("kicker", realObjId, "insertMenu(QPixmap,QString,int)", sendData, replyType, replyData );
-    if ( replyType != "QCString")
-      return 0;
-    QDataStream ret(replyData, IO_ReadOnly);
-    QCString subid;
-    ret >> subid;
-
-    QByteArray sendData2;
-    QDataStream stream2(sendData2, IO_WriteOnly);
-    stream2 << QCString("activated(int)") << client->appId() << subid;
-    client->send("kicker", subid, "connectDCOPSignal(QCString,QCString,QCString)", sendData2);
-
-    return new KPanelMenu(this, subid);
+    clear();
+    d->init = false;
 }
 
-
-int KPanelMenu::insertItem(const QString &text, int id )
+void KPanelMenu::hideEvent(QHideEvent *ev)
 {
-    if ( id < 0 )
-	id = panelmenu_get_seq_id();
-    DCOPClient *client = kapp->dcopClient();
-    QByteArray sendData;
-    QDataStream stream(sendData, IO_WriteOnly);
-    stream << text << id;
-    client->send("kicker", realObjId, "insertItem(QString,int)", sendData );
-    return id;
-}
-
-
-void KPanelMenu::clear()
-{
-    DCOPClient *client = kapp->dcopClient();
-    QByteArray sendData;
-    client->send("kicker", realObjId, "clear()", sendData);
-}
-
-
-bool KPanelMenu::process(const QCString &fun, const QByteArray &data,
-			 QCString &replyType, QByteArray &)
-{
-    if ( fun == "activated(int)" ) {
-	QDataStream dataStream( data, IO_ReadOnly );
-	int id;
-	dataStream >> id;
-	emit activated( id );
-	replyType = "void";
-	return TRUE;
+    // start the cache timer
+    if(d->clearDelay) {
+        disconnect(&(d->t), SIGNAL(timeout()), this, SLOT(slotClear()));
+        connect(&(d->t), SIGNAL(timeout()), this, SLOT(slotClear()));
+        d->t.start(d->clearDelay, true);
     }
-    return FALSE;
+    QPopupMenu::hideEvent(ev);
 }
 
+void KPanelMenu::disableAutoClear()
+{
+    d->clearDelay = 0;
+}
 
-#include "kpanelmenu.moc"
+const QString& KPanelMenu::path() const
+{
+    return d->startPath;
+}
 
+void KPanelMenu::setPath(const QString& p)
+{
+    d->startPath = p;
+}
 
+bool KPanelMenu::initialized() const
+{
+    return d->init;
+}
 
+void KPanelMenu::setInitialized(bool on)
+{
+    d->init = on;
+}
 
-
-
-
-
-
-
-
-
+void KPanelMenu::reinitialize()
+{
+    slotClear();
+    initialize();
+}
