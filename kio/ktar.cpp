@@ -194,7 +194,7 @@ bool KTarBase::open( int mode )
 
 KTarDirectory * KTarBase::findOrCreate( const QString & path )
 {
-  kdDebug() << "KTarBase::findOrCreate " << path << endl;
+  //kdDebug() << "KTarBase::findOrCreate " << path << endl;
   if ( path == "" || path == "/" ) // root dir => found
     return m_dir;
   // Important note : for tar files containing absolute paths
