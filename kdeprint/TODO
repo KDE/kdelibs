@@ -7,3 +7,6 @@
 
 - Implement a check mechanism for filters, plugins and special
   printers.
+
+- dynamic print plugin switching from the print dialog. This implies
+  reloading everything, but seems possible.

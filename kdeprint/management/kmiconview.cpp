@@ -28,27 +28,9 @@ KMIconViewItem::KMIconViewItem(QIconView *parent, KMPrinter *p)
 : QIconViewItem(parent)
 {
 	m_state = 0;
-	updatePrinter(p);
-	m_size = parent->itemTextPos();
+	m_mode = parent->itemTextPos();
 	m_pixmap = QString::null;
-}
-
-void KMIconViewItem::updatePixmap(int pos)
-{
-	if (m_printer)
-	{
-		int	s((pos == -1 ? iconView()->itemTextPos() : pos));
-		QString	str(m_printer->pixmap());
-		if (s != m_size || str != m_pixmap)
-		{
-			m_size = s;
-			m_pixmap = str;
-			if (m_size == QIconView::Right)
-				setPixmap(SmallIcon(m_pixmap));
-			else
-				setPixmap(DesktopIcon(m_pixmap));
-		}
-	}
+	updatePrinter(p, m_mode);
 }
 
 void KMIconViewItem::paintItem(QPainter *p, const QColorGroup& cg)
@@ -63,22 +45,37 @@ void KMIconViewItem::paintItem(QPainter *p, const QColorGroup& cg)
 	QIconViewItem::paintItem(p,cg);
 }
 
-void KMIconViewItem::updatePrinter(KMPrinter *p)
+void KMIconViewItem::updatePrinter(KMPrinter *p, int mode)
 {
-	m_printer = p;
+	// if p is NULL, just keep the previous printer settings
+	if (p) m_printer = p;
+
 	bool	update(false);
-	if (p)
+	if (m_printer)
 	{
 		int	oldstate = m_state;
-		m_state = ((p->isHardDefault() ? 0x1 : 0x0) | (p->ownSoftDefault() ? 0x2 : 0x0));
+		m_state = ((m_printer->isHardDefault() ? 0x1 : 0x0) | (m_printer->ownSoftDefault() ? 0x2 : 0x0) | (m_printer->isValid() ? 0x4 : 0x0));
 		update = (oldstate != m_state);
-		if (p->name() != text() || oldstate != m_state)
-			setText(p->name());
-		setKey(QString::fromLatin1("%1_%2").arg((p->isSpecial() ? "special" : (p->isClass(false) ? "class" : "printer"))).arg(p->name()));
+		if (m_printer->name() != text() || update)
+		{
+			setText(m_printer->name());
+		}
+		if (mode != m_mode || ((oldstate&0x4) != (m_state&0x4)) || m_printer->pixmap() != m_pixmap)
+		{
+			int	iconstate = (m_printer->isValid() ? (int)KIcon::DefaultState : (int)KIcon::LockOverlay);
+			m_pixmap = m_printer->pixmap();
+			m_mode = mode;
+			if (mode == QIconView::Bottom)
+				setPixmap(DesktopIcon(m_pixmap, 0, iconstate));
+			else
+				setPixmap(SmallIcon(m_pixmap, 0, iconstate));
+		}
+		setKey(QString::fromLatin1("%1_%2").arg((m_printer->isSpecial() ? "special" : (m_printer->isClass(false) ? "class" : "printer"))).arg(m_printer->name()));
 	}
 	else
+	{
 		setKey(QString::fromLatin1("aaa"));
-	updatePixmap();
+	}
 	if (update) repaint();
 	setDiscarded(false);
 }
@@ -140,7 +137,7 @@ void KMIconView::setPrinterList(QList<KMPrinter> *list)
 				changed = true;
 			}
 			else
-				item->updatePrinter(it.current());
+				item->updatePrinter(it.current(), itemTextPos());
 		}
 	}
 
@@ -160,14 +157,14 @@ void KMIconView::setViewMode(ViewMode m)
 {
 	m_mode = m;
 	bool	big = (m == KMIconView::Big);
-	QIconView::Arrangement	arr = (!big ? QIconView::TopToBottom : QIconView::LeftToRight);
+	int	mode = (big ? QIconView::Bottom : QIconView::Right);
 
 	QListIterator<KMIconViewItem>	it(m_items);
 	for (;it.current();++it)
-		it.current()->updatePixmap(arr);
+		it.current()->updatePrinter(0, mode);
 
-	setArrangement(arr);
-	setItemTextPos((big ? QIconView::Bottom : QIconView::Right));
+	setArrangement((big ? QIconView::LeftToRight : QIconView::TopToBottom));
+	setItemTextPos((QIconView::ItemTextPos)mode);
 	setGridX((big ? 60 : -1));
 	setWordWrapIconText(big);
 }

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -34,15 +34,14 @@ class KMIconViewItem : public QIconViewItem, public KMObject
 public:
 	KMIconViewItem(QIconView *parent, KMPrinter *p);
 	KMPrinter* printer() const	{ return m_printer; }
-	void updatePixmap(int pos = -1);
-	void updatePrinter(KMPrinter*);
+	void updatePrinter(KMPrinter *printer = 0, int mode = QIconView::Bottom);
 
 protected:
 	virtual void paintItem(QPainter*, const QColorGroup&);
 
 private:
 	KMPrinter	*m_printer;
-	int		m_size;
+	int		m_mode;
 	QString		m_pixmap;
 	char		m_state;
 };

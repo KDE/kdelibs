@@ -68,11 +68,12 @@ void KMListViewItem::updatePrinter(KMPrinter *p)
 	if (m_printer)
 	{
 		int	oldstate = m_state;
-		m_state = ((p->isHardDefault() ? 0x1 : 0x0) | (p->ownSoftDefault() ? 0x2 : 0x0));
+		int	st(m_printer->isValid() ? (int)KIcon::DefaultState : (int)KIcon::LockOverlay);
+		m_state = ((p->isHardDefault() ? 0x1 : 0x0) | (p->ownSoftDefault() ? 0x2 : 0x0) | (p->isValid() ? 0x4 : 0x0));
 		update = (oldstate != m_state);
 		if (m_printer->name() != text(0))
 			setText(0,m_printer->name());
-		setPixmap(0,SmallIcon(m_printer->pixmap()));
+		setPixmap(0,SmallIcon(m_printer->pixmap(),0,st));
 	}
 	setDiscarded(false);
 	if (update) repaint();

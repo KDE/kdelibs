@@ -26,6 +26,7 @@ class KMPrinter;
 class QLineEdit;
 class QCheckBox;
 class KIconButton;
+class KEditListBox;
 
 class KMSpecialPrinterDlg : public KDialog
 {
@@ -47,6 +48,7 @@ private:
 	QLineEdit	*m_name, *m_description, *m_location, *m_command, *m_extension;
 	QCheckBox	*m_usefile;
 	KIconButton	*m_icon;
+	KEditListBox	*m_require;
 };
 
 #endif

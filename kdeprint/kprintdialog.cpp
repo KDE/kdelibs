@@ -209,7 +209,7 @@ void KPrintDialog::initialize(KPrinter *printer)
 				sep = true;
 				m_printers->insertItem(QString::fromLatin1("--------"));
 			}
-			m_printers->insertItem(SmallIcon(it.current()->pixmap()),it.current()->name());
+			m_printers->insertItem(SmallIcon(it.current()->pixmap(),0,(it.current()->isValid() ? (int)KIcon::DefaultState : (int)KIcon::LockOverlay)),it.current()->name());
 			if ((it.current()->isSoftDefault() && defindex == -1) || it.current()->name() == printer->searchName())
 				defindex = m_printers->count()-1;
 		}
