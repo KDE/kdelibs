@@ -25,6 +25,7 @@
 #include "render_frames.h"
 #include "html_baseimpl.h"
 #include "html_objectimpl.h"
+#include "html_inlineimpl.h"
 #include "htmltags.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -453,7 +454,7 @@ RenderFrame::~RenderFrame()
 {
 }
 
-RenderPartObject::RenderPartObject( QScrollView *view, DOM::HTMLObjectElementImpl *o )
+RenderPartObject::RenderPartObject( QScrollView *view, DOM::HTMLElementImpl *o )
 : RenderPart( view )
 {
   m_obj = o;
@@ -465,21 +466,25 @@ RenderPartObject::~RenderPartObject()
 
 void RenderPartObject::close()
 {
-  QString url = m_obj->url;
+  QString url;
+  QString serviceType;
+  
   QStringList params;
 
-  if(m_obj) {
-
-      if(m_obj->serviceType.isEmpty() || m_obj->serviceType.isNull()) {
-	  if(m_obj->classId.contains("D27CDB6E-AE6D-11cf-96B8-444553540000")) {
+  if(m_obj->id() == ID_OBJECT) {
+      HTMLObjectElementImpl *o = static_cast<HTMLObjectElementImpl *>(m_obj);
+      url = o->url;
+      serviceType = o->serviceType;
+      if(serviceType.isEmpty() || serviceType.isNull()) {
+	  if(o->classId.contains("D27CDB6E-AE6D-11cf-96B8-444553540000")) {
 	      // Flash. set the mimetype
-	      m_obj->serviceType = "application/x-shockwave-flash";
+	      serviceType = "application/x-shockwave-flash";
 	  }
 	  // add more plugins here
       }	
       if((url.isEmpty() || url.isNull())) {
 	  // look for a SRC attribute in the params
-          NodeImpl *child = m_obj->firstChild();	  
+          NodeImpl *child = o->firstChild();	
 	  while ( child ) {
 	      if ( child->id() == ID_PARAM ) {
 		  HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
@@ -494,7 +499,7 @@ void RenderPartObject::close()
       }
 
       // add all <param>'s to the QStringList argument of the part
-      NodeImpl *child = m_obj->firstChild();
+      NodeImpl *child = o->firstChild();
       while ( child ) {
 	  if ( child->id() == ID_PARAM ) {
 	      HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
@@ -507,11 +512,17 @@ void RenderPartObject::close()
 	  }
 	  child = child->nextSibling();
       }
-  }
-  if ( url.isEmpty() && m_obj->serviceType.isEmpty() )
-      return; //ooops (-:
+      if ( url.isEmpty() && serviceType.isEmpty() )
+	  return; //ooops (-:
 
-  static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, m_obj->serviceType, params );
+      static_cast<KHTMLView *>(m_view)->part()->requestObject( this, url, serviceType, params );
+  } else {
+      assert(m_obj->id() == ID_IFRAME);
+      HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(o);
+      url = o->url;
+      if( url.isEmpty()) return;
+      static_cast<KHTMLView *>(m_view)->part()->requestFrame( this, url, o->name );
+  }
 
   layout();
 

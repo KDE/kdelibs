@@ -118,9 +118,8 @@ public:
     virtual void parseAttribute(Attribute *attr);
     virtual void attach(KHTMLView *w);
 
-private:
-    DOMString url;
-    DOMString name;
+    QString url;
+    QString name;
 };
 
 // -------------------------------------------------------------------------

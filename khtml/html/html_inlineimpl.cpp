@@ -362,13 +362,15 @@ ushort HTMLIFrameElementImpl::id() const
 
 void HTMLIFrameElementImpl::parseAttribute(Attribute *attr )
 {
+  DOM::DOMStringImpl *stringImpl = attr->val();
+  QString val = QConstString( stringImpl->s, stringImpl->l ).string();
   switch (  attr->id )
   {
     case ATTR_SRC:
-      url = attr->value();
+      url = val;
       break;
     case ATTR_NAME:
-      name = attr->value();
+      name = val;
       break;
     case ATTR_WIDTH:
       addCSSLength( CSS_PROP_WIDTH, attr->value(), false );
@@ -391,22 +393,21 @@ void HTMLIFrameElementImpl::attach(KHTMLView *w)
   if ( !r )
     return;
 
-  khtml::RenderPartObject *renderFrame = new khtml::RenderPartObject( w, 0 );
-  m_render = renderFrame;
-  m_render->setStyle(m_style);
-  m_render->ref();
-  r->addChild( m_render );
-
   // we need a unique name for every frame in the frameset. Hope that's unique enough.
   if(name.isEmpty())
   {
     QString tmp;
     tmp.sprintf("0x%p", this);
-    name = DOMString(tmp) + url;
-    kdDebug( 6030 ) << "creating frame name: " << name.string() << endl;
+    name = tmp + url;
+    kdDebug( 6030 ) << "creating frame name: " << name << endl;
   }
 
-  w->part()->requestFrame( renderFrame, url.string(), name.string() );
+  khtml::RenderPartObject *renderFrame = new khtml::RenderPartObject( w, this );
+  m_render = renderFrame;
+  m_render->setStyle(m_style);
+  m_render->ref();
+  r->addChild( m_render );
+
 
   NodeBaseImpl::attach( w );
 }

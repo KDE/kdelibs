@@ -33,7 +33,7 @@ namespace DOM
 {
   class HTMLFrameSetElementImpl;
   class HTMLFrameElementImpl;
-  class HTMLObjectElementImpl;
+  class HTMLElementImpl;
 };
 
 namespace khtml
@@ -114,7 +114,7 @@ private:
 class RenderPartObject : public RenderPart
 {
 public:
-  RenderPartObject( QScrollView *view, DOM::HTMLObjectElementImpl *o );
+  RenderPartObject( QScrollView *view, DOM::HTMLElementImpl *o );
   virtual ~RenderPartObject();
 
   virtual const char *renderName() const { return "RenderPartObject"; }
@@ -129,7 +129,7 @@ public:
 
   virtual void layout( bool deep = true );
 
-  DOM::HTMLObjectElementImpl *m_obj;
+  DOM::HTMLElementImpl *m_obj;
 };
 
 };
