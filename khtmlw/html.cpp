@@ -25,6 +25,14 @@
 #include <kapp.h>
 #include <kcharsets.h>
 
+#ifdef GrayScale
+#undef GrayScale
+#endif
+
+#ifdef Color
+#undef Color
+#endif
+
 #include "html.h"
 
 #include <stdio.h>
