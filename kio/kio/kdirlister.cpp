@@ -975,17 +975,33 @@ void KDirListerCache::slotResult( KIO::Job *j )
 #ifdef DEBUG_CACHE
   printDebug();
 #endif
+  
+  KDirLister *kdl;
 
   QPtrList<KDirLister> *listers = urlsCurrentlyListed.take( jobUrlStr );
   Q_ASSERT( listers );
+
+  // FIXME: this case happens when stop() was called right after a redirection
+  // and the job hasn't updated its url(). Then the job can't be killed and will
+  // continue running, finally calling slotResult() with the updated url().
+  if ( !listers )
+  {
+    kdWarning(7004) << "A job finished listing \"" << jobUrlStr 
+                    << "\", but there is no lister listing it anymore!!" << endl;
+ 
+    listers = urlsCurrentlyHeld[jobUrlStr];
+    for ( kdl = listers->first(); kdl; kdl = listers->next() )
+      kdl->jobDone( job );
+
+    // do not emit canceled() or completed() again, has been done in stop already
+    return;
+  }
 
   // move the directory to the held directories, do it before emitting
   // the signals to make sure it exists in KDirListerCache in case someone
   // calls listDir during the signal emission
   Q_ASSERT( !urlsCurrentlyHeld[jobUrlStr] );
   urlsCurrentlyHeld.insert( jobUrlStr, listers );
-
-  KDirLister *kdl;
 
   if ( job->error() )
   {
