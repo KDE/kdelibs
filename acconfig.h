@@ -95,3 +95,62 @@
 /* Define if you have an HP like STL implementation */
 #undef HAVE_HP_STL
 
+
+#ifndef HAVE_BOOL
+#define HAVE_BOOL
+typedef int bool;
+#ifdef __cplusplus
+const bool false = 0;
+const bool true = 1;
+#else
+#define false (bool)0;
+#define true (bool)1;
+#endif
+#endif
+
+/* this is needed for Solaris and others */
+#ifndef HAVE_GETDOMAINNAME
+#define HAVE_GETDOMAINNAME
+#ifdef __cplusplus
+extern "C"
+#endif
+int getdomainname (char *Name, int Namelen);
+#endif  
+
+#ifndef HAVE_GETHOSTNAME
+#define HAVE_GETHOSTNAME
+#ifdef __cplusplus  
+extern "C" 
+#endif
+int gethostname (char *Name, int Namelen);
+#endif  
+
+/*
+ * This is needed for systems with broken headers that won't work with
+ *  gcc -ansi
+ */
+#ifndef HAVE_STRDUP
+#define kstrdup qstrdup
+#else
+#define kstrdup strdup
+#endif
+
+/*
+ * This is an ugly little hack incase someone uses the inline keyword,
+ * in a straight C file with AIX's xlc.
+ */
+#ifndef __AIX32
+#ifndef __cplusplus
+#define inline __inline
+#endif
+#endif
+
+/*
+ * jpeg.h needs HAVE_BOOLEAN, when the system uses boolean in system
+ * headers and I'm too lazy to write a configure test as long as only
+ * unixware is related
+ */
+#ifdef _UNIXWARE
+#define HAVE_BOOLEAN
+#endif
+
