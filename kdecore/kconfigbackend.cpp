@@ -716,6 +716,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   if (pConfig->isReadOnly())
     return true; // pretend we wrote it
 
+  bFileImmutable = false;
   if (bMerge)
   {
     // Read entries from disk
@@ -725,6 +726,9 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
        // fill the temporary structure with entries from the file
        parseSingleConfigFile( rConfigFile, &aTempMap, bGlobal, false );
        rConfigFile.close();
+       
+       if (bFileImmutable) // File has become immutable on disk
+          return true; // pretend we wrote it
     }
 
     KEntryMap aMap = pConfig->internalEntryMap();
@@ -754,7 +758,11 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
 
       // put this entry from the config object into the
       // temporary map, possibly replacing an existing entry
-      aTempMap.replace(aIt.key(), currentEntry);
+      KEntryMapIterator aIt2 = aTempMap.find(aIt.key());
+      if (aIt2 != aTempMap.end() && (*aIt2).bImmutable)
+        continue; // Bail out if the on-disk entry is immutable
+
+      aTempMap.insert(aIt.key(), currentEntry, true);
     } // loop
   }
   else
