@@ -113,6 +113,8 @@ class KXMLGUIFactory : public QObject
    */
   QWidget *container( const QString &containerName, KXMLGUIClient *client, bool useTagName = false );
 
+  QList<QWidget> containers( const QString &tagName );
+
   /**
    * Use this method to free all memory allocated by the KXMLGUIFactory. This deletes the internal node
    * tree and therefore resets the internal state of the class. Please note that the actual GUI is
@@ -148,6 +150,8 @@ class KXMLGUIFactory : public QObject
   void adjustMergingIndices( KXMLGUIContainerNode *node, int offset, const QValueList<MergingIndex>::Iterator &it );
 
   QWidget *findRecursive( KXMLGUIContainerNode *node, bool tag );
+
+  QList<QWidget> findRecursive( KXMLGUIContainerNode *node, const QString &tagName );
 
   QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, int &id, KXMLGUIBuilder **builder );
 

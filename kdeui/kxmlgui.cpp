@@ -613,6 +613,11 @@ QWidget *KXMLGUIFactory::container( const QString &containerName, KXMLGUIClient 
   return result;
 }
 
+QList<QWidget> KXMLGUIFactory::containers( const QString &tagName )
+{
+    return findRecursive( d->m_rootNode, tagName );
+}
+
 void KXMLGUIFactory::reset()
 {
   resetInternal( d->m_rootNode );
@@ -1112,6 +1117,25 @@ QWidget *KXMLGUIFactory::findRecursive( KXMLGUIContainerNode *node, bool tag )
   }
 
   return 0L;
+}
+
+QList<QWidget> KXMLGUIFactory::findRecursive( KXMLGUIContainerNode *node, const QString &tagName )
+{
+    QList<QWidget> res;
+
+    if ( node->tagName == tagName )
+        res.append( node->container );
+
+    QListIterator<KXMLGUIContainerNode> it( node->children );
+    for (; it.current(); ++it )
+    {
+        QList<QWidget> lst = findRecursive( it.current(), tagName );
+        QListIterator<QWidget> it( lst );
+        for (; it.current(); ++it )
+            res.append( it.current() );
+    }
+
+    return res;
 }
 
 QWidget *KXMLGUIFactory::createContainer( QWidget *parent, int index, const QDomElement &element, int &id, KXMLGUIBuilder **builder )
