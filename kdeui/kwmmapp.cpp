@@ -22,6 +22,10 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.20  1999/10/09 09:48:45  kalle
+    more get killing
+    You need to cvs update your libc (joke!)
+
     Revision 1.19  1999/03/01 00:00:43  ettrich
     new windowRegionChanged() signal
 
@@ -67,7 +71,7 @@ KWMModuleApplication::KWMModuleApplication( int &argc, char *argv[])
 
 KWMModuleApplication::KWMModuleApplication(
 					   int &argc, char *argv[],
-					   const QString& rAppName
+					   const QCString& rAppName
 					   )
                       :KApplication(argc, argv, rAppName){
 
