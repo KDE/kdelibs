@@ -1047,6 +1047,7 @@ int KExtendedSocket::listen(int N)
   if (d->status < lookupDone)
     if (lookup() != 0)
       return -2;		// error!
+  if (!d->resolution) return -2;
 
   addrinfo *p;
 
@@ -1183,6 +1184,7 @@ int KExtendedSocket::connect()
   if (d->status < lookupDone)
     if (lookup() != 0)
       return -2;
+  if (!d->resolution) return -2;
 
   addrinfo *p, *q;
   timeval end, now;
