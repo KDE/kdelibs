@@ -962,6 +962,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
       if (namedItems.type() != UndefinedType)
         return namedItems;
     }
+      break;
     case ID_SELECT: {
       DOM::HTMLSelectElement select = element;
       bool ok;
@@ -969,6 +970,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
       if (ok)
         return getDOMNode(exec,select.options().item(u)); // not specified by DOM(?) but supported in netscape/IE
     }
+      break;
   case ID_FRAME:
   case ID_IFRAME: {
       DOM::DocumentImpl* doc = static_cast<DOM::HTMLFrameElementImpl *>(element.handle())->contentDocument();
