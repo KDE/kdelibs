@@ -361,7 +361,8 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
     }
 
     if ( !b )	{
-	qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", app.data(), objId.data(), fun.data() );
+	if (opcode != DCOPFind)
+	    qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", app.data(), objId.data(), fun.data() );
 	// Call failed. No data send back.
 
 	replyStream << d->appId << fromApp;
@@ -1280,7 +1281,11 @@ bool DCOPClient::find(const QCString &app, const QCString &objId,
     if (objId.isEmpty() || objId[objId.length()-1] != '*')
     {
         if (fun.isEmpty())
-            return findSuccess(app, objId, replyType, replyData);
+        {
+            if (objId.isEmpty() || DCOPObject::hasObject(objId))
+               return findSuccess(app, objId, replyType, replyData);
+            return false;	                
+        }
         // Message to application or single object...
         if (receive(app, objId, fun, data, replyType, replyData))
         {
