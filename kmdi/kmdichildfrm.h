@@ -44,6 +44,10 @@ class KMdiChildView;
 class QPopupMenu;
 class QToolButton;
 
+#ifndef Q_WS_WIN //temporary fix for QKW
+# define KMDI_EXPORT
+#endif
+
 //==============================================================================
 /**
   * @short Internal class, only used on Win32.
