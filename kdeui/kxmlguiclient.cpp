@@ -566,27 +566,36 @@ void KXMLGUIClient::unplugActionList( const QString &name )
   d->m_factory->unplugActionList( this, name );
 }
 
+struct DocStruct
+{
+    QString file;
+    QString data;
+};
+
 QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString &doc )
 {
 
-  QMap<QString,QString> allDocuments;
+  QValueList<DocStruct> allDocuments;
 
   QStringList::ConstIterator it = files.begin();
   QStringList::ConstIterator end = files.end();
   for (; it != end; ++it )
   {
     QString data = KXMLGUIFactory::readConfigFile( *it );
-    allDocuments.insert( *it, data );
+    DocStruct d;
+    d.file = *it;
+    d.data = data;
+    allDocuments.append( d );
   }
 
-  QMap<QString,QString>::ConstIterator best = allDocuments.end();
+  QValueList<DocStruct>::ConstIterator best = allDocuments.end();
   uint bestVersion = 0;
 
-  QMap<QString,QString>::ConstIterator docIt = allDocuments.begin();
-  QMap<QString,QString>::ConstIterator docEnd = allDocuments.end();
+  QValueList<DocStruct>::ConstIterator docIt = allDocuments.begin();
+  QValueList<DocStruct>::ConstIterator docEnd = allDocuments.end();
   for (; docIt != docEnd; ++docIt )
   {
-    QString versionStr = findVersionNumber( docIt.data() );
+    QString versionStr = findVersionNumber( (*docIt).data );
     if ( versionStr.isEmpty() )
       continue;
 
@@ -606,18 +615,18 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
   {
     if ( best != allDocuments.begin() )
     {
-      QString f = allDocuments.begin().key();
+      QString f = (*allDocuments.begin()).file;
       QString backup = f + QString::fromLatin1( ".backup" );
       QDir dir;
       dir.rename( f, backup );
     }
-    doc = best.data();
-    return best.key();
+    doc = (*best).data;
+    return (*best).file;
   }
   else if ( files.count() > 0 )
   {
     doc = QString::null;
-    return ( *files.begin() );
+    return *files.begin();
   }
 
   return QString::null;

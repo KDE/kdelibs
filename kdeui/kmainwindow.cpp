@@ -226,6 +226,11 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
     if ( internalMenuBar() )
         internalMenuBar()->clear();
 
+    (void)toolBarIterator(); // make sure toolbarList is most-up-to-date
+    toolbarList.setAutoDelete( true );
+    toolbarList.clear();
+    toolbarList.setAutoDelete( false );
+
     // don't build a help menu unless the user ask for it
     if (d->showHelpMenu) {
         // we always want a help menu
