@@ -46,7 +46,12 @@ public slots:
 private slots:
     // connected to a frame's browserextensions enableAction signal
     void extensionProxyActionEnabled( const char *action, bool enable );
+    void extensionProxyEditableWidgetFocused();
+    void extensionProxyEditableWidgetBlurred();
 
+signals:
+    void editableWidgetFocused();
+    void editableWidgetBlurred();
 private:
     void callExtensionProxyMethod( const char *method );
 

@@ -81,6 +81,7 @@ void KHTMLPartBrowserExtension::editableWidgetFocused( QWidget *widget )
 
         m_connectedToClipboard = true;
     }
+    editableWidgetFocused();
 }
 
 void KHTMLPartBrowserExtension::editableWidgetBlurred( QWidget *widget )
@@ -106,13 +107,20 @@ void KHTMLPartBrowserExtension::editableWidgetBlurred( QWidget *widget )
 
         m_connectedToClipboard = false;
     }
+    editableWidgetBlurred();
 }
 
 void KHTMLPartBrowserExtension::setExtensionProxy( KParts::BrowserExtension *proxy )
 {
     if ( m_extensionProxy )
+    {
         disconnect( m_extensionProxy, SIGNAL( enableAction( const char *, bool ) ),
                     this, SLOT( extensionProxyActionEnabled( const char *, bool ) ) );
+        disconnect( m_extensionProxy, SIGNAL( editableWidgetFocused() ),
+                    this, SLOT( extensionProxyEditableWidgetFocused() ) );
+        disconnect( m_extensionProxy, SIGNAL( editableWidgetBlurred() ),
+                    this, SLOT( extensionProxyEditableWidgetBlurred() ) );
+    }
 
     m_extensionProxy = proxy;
 
@@ -120,6 +128,10 @@ void KHTMLPartBrowserExtension::setExtensionProxy( KParts::BrowserExtension *pro
     {
         connect( m_extensionProxy, SIGNAL( enableAction( const char *, bool ) ),
                  this, SLOT( extensionProxyActionEnabled( const char *, bool ) ) );
+        connect( m_extensionProxy, SIGNAL( editableWidgetFocused() ),
+                    this, SLOT( extensionProxyEditableWidgetFocused() ) );
+        connect( m_extensionProxy, SIGNAL( editableWidgetBlurred() ),
+                    this, SLOT( extensionProxyeditableWidgetBlurred() ) );
 
         enableAction( "cut", m_extensionProxy->isActionEnabled( "cut" ) );
         enableAction( "copy", m_extensionProxy->isActionEnabled( "copy" ) );
@@ -236,6 +248,14 @@ void KHTMLPartBrowserExtension::updateEditActions()
 
     enableAction( "copy", hasSelection );
     enableAction( "cut", hasSelection );
+}
+
+void KHTMLPartBrowserExtension::extensionProxyEditableWidgetFocused() {
+	editableWidgetFocused();
+}
+
+void KHTMLPartBrowserExtension::extensionProxyEditableWidgetBlurred() {
+	editableWidgetBlurred();
 }
 
 void KHTMLPartBrowserExtension::extensionProxyActionEnabled( const char *action, bool enable )
