@@ -34,6 +34,7 @@
 #include "kprogress.h"
 
 #include <kapplication.h>
+#include <kwin.h>
 
 KProgress::KProgress(QWidget *parent, const char *name, WFlags f)
   : QProgressBar(parent, name, f),
@@ -155,6 +156,7 @@ KProgressDialog::KProgressDialog(QWidget* parent, const char* name,
       mShown(false),
       mMinDuration(2000)
 {
+    KWin::setIcons(winId(), kapp->icon(), kapp->miniIcon());
     mShowTimer = new QTimer(this);
     
     showButton(KDialogBase::Close, false);
