@@ -287,7 +287,7 @@ KRFCDate::parseDate(const QString &_date)
 
         if ((*dateString == '+') || (*dateString == '-')) {
            offset = strtol(dateString, &newPosStr, 10);
-           if (offset < 30)
+           if (abs(offset) < 30)
            {
               dateString = newPosStr;
               
