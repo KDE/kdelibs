@@ -51,12 +51,12 @@ public:
         previewIconSize = 60;
         job = 0L;
 
-	smallColumns = new KRadioAction( i18n("Small Columns"), 0, parent,
+	smallColumns = new KRadioAction( i18n("Small Icons"), 0, parent,
 					 SLOT( slotSmallColumns() ),
 					 parent->actionCollection(),
 					 "small columns" );
 
-	largeRows = new KRadioAction( i18n("Large Rows"), 0, parent,
+	largeRows = new KRadioAction( i18n("Large Icons"), 0, parent,
 				      SLOT( slotLargeRows() ),
 				      parent->actionCollection(),
 				      "large rows" );
