@@ -235,7 +235,7 @@ void KLocale::setEncodingLang(const QString &_lang)
     {
       char buf[256];
       f.readLine(buf, 256);
-      _codec = KGlobal::charsets()->codecForName( buf );
+      _codec = KGlobal::charsets()->codecForName( QString(buf).stripWhiteSpace() );
       f.close();
     }
   }
