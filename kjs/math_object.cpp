@@ -80,7 +80,6 @@ Completion MathFunc::execute(const List &args)
   Number n2 = v2.toNumber();
   double arg2 = n2.value();
   double result;
-  int temp;
 
   switch (id) {
   case Math::Abs:
@@ -124,8 +123,14 @@ Completion MathFunc::execute(const List &args)
     result = result / RAND_MAX;
     break;
   case Math::Round:
-    temp =  (int) (arg + 0.5);
-    result = temp;
+    if (isNaN(arg))
+      result = arg;
+    if (isInf(arg) || isInf(-arg))
+      result = arg;
+    else if (arg == -0.5)
+      result = 0;
+    else
+      result = (double)(arg >= 0.0 ? int(arg + 0.5) : int(arg - 0.5));
     break;
   case Math::Sin:
     result = ::sin(arg);
