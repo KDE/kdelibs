@@ -29,7 +29,7 @@
 #include "kpreview.h"
 #include "xview.h"
 
-#include <kdir.h>
+#include "kdir.h"
 #include <kapp.h>
 
 static void cleanUpHandlers();

@@ -261,6 +261,8 @@ void KFileBaseDialog::init()
     bCancel->setFixedHeight(bCancel->height());
     connect(bCancel, SIGNAL(clicked()), SLOT(reject()));
 
+    if (filename_ == "." || filename_.isEmpty())
+       filename_ = QDir::currentDirPath();
     // filename_ is remembered as the dirName argument for the constructor
     setSelection(filename_);
 
@@ -527,8 +529,7 @@ void KFileBaseDialog::setDir(const char *_pathstr, bool clearforward)
 	pathChanged();
     }
 
-    //toolbar->getButton(PARENT_BUTTON)->setEnabled(!dir->isRoot());
-    toolbar->setItemEnabled(PARENT_BUTTON, !dir->isRoot()); //sven
+    toolbar->setItemEnabled(PARENT_BUTTON, !dir->isRoot()); 
 }
 
 void KFileBaseDialog::rereadDir()
@@ -635,7 +636,7 @@ void KFileBaseDialog::pathChanged()
 	else
 	    url = dir->path();
 
-	if (url.right(1)[0] != '/')
+	if ((url.isEmpty()) || (url.right(1)[0] != '/'))
 	    url += "/";
 	if (visitedDirs->find(url) == -1)
 	    visitedDirs->inSort(url);
@@ -1086,6 +1087,8 @@ KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
 
 void KFileBaseDialog::setSelection(const char *name)
 {
+    debugC("setSelection %s", name);
+
     if (!name) {
 	selection = 0;
 	return;

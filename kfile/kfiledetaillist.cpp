@@ -20,7 +20,7 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include <kdir.h>
+#include "kdir.h"
 #include "kfiledetaillist.h"
 #include "qkeycode.h"
 #include <kapp.h>

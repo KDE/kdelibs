@@ -1,3 +1,7 @@
+1998-12-19  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: fixing an ugly bug when "." is used as argument
+
 Mon Dec 14 23:00:41 1998  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kfilebookmark.cpp: renamed class KBookmark to KFileBookmark to 
