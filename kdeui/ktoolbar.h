@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.59  1999/06/07 21:11:05  cschlaeg
+// more work done for layout management integration; setFullWidth(false) still does not work; will work on this tomorrow
+//
 // Revision 1.58  1999/06/06 22:48:39  pbrown
 // "warning: extra qualification `KToolBar::' on member `sizePolicy'
 // ignored" fixed.
@@ -909,6 +912,9 @@ private:
 
   int min_width;
   int min_height;
+
+  int maxWidth;
+  int maxHeight;
 
   BarPosition lastPosition; // Where was I last time I was?
   BarPosition movePos;      // Where was I moved to?

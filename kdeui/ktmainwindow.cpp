@@ -90,8 +90,8 @@ KTMainWindow::~KTMainWindow()
     if (toolbar->barPos() == KToolBar::Floating
         && !QApplication::closingDown())
     {
+	  //debug ("KTM destructor: deleted toolbar");
       delete toolbar;
-      //debug ("KTM destructor: deleted toolbar");
     }
   }
   // delete the menubar (necessary if floating)
@@ -111,11 +111,9 @@ KTMainWindow::~KTMainWindow()
     else
 	kapp->setTopWidget( 0 );
   }
-  if (layoutMgr)
-  {
-    delete layoutMgr;
-    layoutMgr =0;
-  }
+  /* I'm not sure if the layoutMgr is deleted by Qt. So I leave it out until
+   * I have some time to look at this further. */
+//  delete layoutMgr;
 
   //debug ("KTM destructor: end");
 }
@@ -139,7 +137,10 @@ void KTMainWindow::closeEvent ( QCloseEvent *e){
     {
       if (queryExit())            // Yes, Quit app?
       {
-        delete this;              // Yes, delete this...
+		  /* I'm not sure this is a wise thing to do here. It's crashing the
+		   * app so I comment it out. We have to see if this is a memory leak
+		   * or not. CS */
+//        delete this;              // Yes, delete this...
         kapp->quit();             // ...and quit aplication.
       }                           //--------------------------------
     }
@@ -224,38 +225,50 @@ void KTMainWindow::updateRects()
     layoutMgr = 0;
   }
 
-	layoutMgr = new KVTBLayout(this);
+	layoutMgr = new KTMLayout(this);
 	CHECK_PTR(layoutMgr);
 
-	/* add a top or flattened menu */
-	if (kmenubar && (kmenubar->menuBarPos() == KMenuBar::Top ||
-		 kmenubar->menuBarPos() == KMenuBar::Flat) && kmenubar->isVisible())
-	{
-		layoutMgr->addWidget(kmenubar);
-	}
-
-	/* add top and flat toolbars */
-	for (toolbars.first(); toolbars.current(); toolbars.next())
-		if ((toolbars.current()->barPos() == KToolBar::Top ||
-			 toolbars.current()->barPos() == KToolBar::Flat) &&
-			toolbars.current()->isVisible())
+	/* add menu bar */
+	if (kmenubar && kmenubar->isVisible())
+		switch (kmenubar->menuBarPos())
 		{
-			layoutMgr->addWidget(toolbars.current());
+		case KMenuBar::Top:
+			layoutMgr->addTopMenuBar(kmenubar);
+			break;
+		case KMenuBar::Flat:
+			layoutMgr->addFlatBar(kmenubar);
+			break;
+		case KMenuBar::Bottom:
+			layoutMgr->addBottomMenuBar(kmenubar);
+			break;
+		default:
+			break;
 		}
 
-	/*
-	 * Add the horizontal child layout manager that holds the vertical tool
-	 * bars and the main widget.
-	 */
-	subLayoutMgr = new KHTBLayout();
-	layoutMgr->addMainLayout(subLayoutMgr);
-
-	/* add left toolbars */
+	/* add toolbars */
 	for (toolbars.first(); toolbars.current(); toolbars.next())
-		if (toolbars.current()->barPos() == KToolBar::Left &&
-			toolbars.current()->isVisible())
+		if (toolbars.current()->isVisible())
 		{
-			subLayoutMgr->addWidget(toolbars.current());
+			switch (toolbars.current()->barPos())
+			{
+			case KToolBar::Flat:
+				layoutMgr->addFlatBar(toolbars.current());
+				break;
+			case KToolBar::Top:
+				layoutMgr->addTopToolBar(toolbars.current());
+				break;
+			case KToolBar::Bottom:
+				layoutMgr->addBottomToolBar(toolbars.current());
+				break;
+			case KToolBar::Left:
+				layoutMgr->addLeftToolBar(toolbars.current());
+				break;
+			case KToolBar::Right:
+				layoutMgr->addRightToolBar(toolbars.current());
+				break;
+			default:
+				break;
+			}
 		}
 
 	/* add the main widget */
@@ -265,32 +278,12 @@ void KTMainWindow::updateRects()
 			setMaximumWidth(kmainwidget->maximumWidth());
 		if (kmainwidget->maximumHeight() > 0)
 			setMaximumHeight(kmainwidget->maximumHeight());
-		subLayoutMgr->addMainItem(kmainwidget);
+		layoutMgr->addMainItem(kmainwidget);
 	}
-
-	/* add right toolbars */
-	for (toolbars.first(); toolbars.current(); toolbars.next())
-		if (toolbars.current()->barPos() == KToolBar::Right &&
-			toolbars.current()->isVisible())
-		{
-			subLayoutMgr->addWidget(toolbars.current());
-		}
-
-	/* add bottom toolbars */
-	for (toolbars.first(); toolbars.current(); toolbars.next())
-		if (toolbars.current()->barPos() == KToolBar::Bottom &&
-			toolbars.current()->isVisible())
-		{
-			layoutMgr->addWidget(toolbars.current());
-		}
 
 	/* add the status bar */
 	if (kstatusbar && kstatusbar->isVisible())
-		layoutMgr->addWidget(kstatusbar);
-
-	/* add a bottom menu bar */
-	if (kmenubar && kmenubar->menuBarPos() == KMenuBar::Bottom && kmenubar->isVisible())
-		layoutMgr->addWidget(kmenubar);
+		layoutMgr->addStatusBar(kstatusbar);
 
 	layoutMgr->activate();
 }

@@ -450,8 +450,7 @@ private:
      */
     bool localKill;
 
-	KVTBLayout* layoutMgr;
-	KHTBLayout* subLayoutMgr;
+	KTMLayout* layoutMgr;
 
   // Matthias
 protected:

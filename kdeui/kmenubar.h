@@ -20,6 +20,11 @@
 
 //$Id$
 //$Log$
+//Revision 1.20  1999/05/11 23:39:48  dfaure
+//Added signal moved() to KStatusBar ; emit moved() in KStatusBar::enable ;
+// connected it to updateRects in KTMainWindow.
+//Implemented KMenuBar::enable, for consistency with other *bars.
+//
 //Revision 1.19  1999/05/08 18:05:57  ssk
 //Apparently moc doesn't like inner Q_OBJECTs. Moved KChildMenu (used to be
 //_menuBar) to kmenubar.cpp
@@ -112,6 +117,11 @@ class KMenuBar : public QFrame
     * or hide, but if you do that the signal @ref #moved won't be emitted.
     */
    bool enable( BarStatus stat );
+
+   /**
+	* Reimplemented to return some useful measures.
+	*/
+   QSize sizeHint(void) const;
 
    /**
     * The rest is standard QMenuBar interface. See Qt docs for

@@ -25,6 +25,13 @@
 
 // $Id$
 // $Log$
+// Revision 1.21  1999/06/06 17:29:44  cschlaeg
+// New layout management implemented for KTMainWindow. This required
+// updates for KToolBar, KMenuBar and KStatusBar. KTMainWindow::view_*
+// public variables removed. Use mainViewGeometry() instead if you really
+// have to. Added new classes in ktmlayout to handle the new layout
+// management.
+//
 // Revision 1.20  1999/05/11 23:39:45  dfaure
 // Added signal moved() to KStatusBar ; emit moved() in KStatusBar::enable ;
 //  connected it to updateRects in KTMainWindow.
@@ -381,7 +388,7 @@ void KStatusBar::slotReleased(int _id)
   emit released(_id);
 }
 
-QSize KStatusBar::sizeHint()
+QSize KStatusBar::sizeHint() const
 {
   return QSize(width(), height());
 }

@@ -43,6 +43,13 @@
 
 // $Id$
 // $Log$
+// Revision 1.75  1999/06/06 17:29:44  cschlaeg
+// New layout management implemented for KTMainWindow. This required
+// updates for KToolBar, KMenuBar and KStatusBar. KTMainWindow::view_*
+// public variables removed. Use mainViewGeometry() instead if you really
+// have to. Added new classes in ktmlayout to handle the new layout
+// management.
+//
 // Revision 1.74  1999/05/11 23:39:47  dfaure
 // Added signal moved() to KStatusBar ; emit moved() in KStatusBar::enable ;
 //  connected it to updateRects in KTMainWindow.
@@ -477,8 +484,8 @@ void KMenuBar::closeEvent (QCloseEvent *e)
    {
      position = lastPosition;
      recreate (Parent, oldWFlags, QPoint (oldX, oldY), TRUE);
-     context->changeItem (i18n("Float"), CONTEXT_FLOAT);
      emit moved (position);
+     context->changeItem (i18n("Float"), CONTEXT_FLOAT);
      e->ignore();
      return;
    }
@@ -741,6 +748,15 @@ void KMenuBar::enableMoving(bool flag)
   moving = flag;
 }
 
+QSize 
+KMenuBar::sizeHint() const
+{
+	if (position == Flat)
+		return (QSize(30, 10));
+
+	return (size());
+}
+
 void KMenuBar::setMenuBarPos(menuPosition mpos)
 {
     if (position == FloatingSystem && standalone_menubar == true) {
@@ -762,6 +778,7 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
 	  QPoint p = mapToGlobal(QPoint(0,0));
 	  parentOffset = pos();
 	  hide();
+	  emit moved (mpos);
 	  recreate(0, 0,
 		   p, FALSE);
 	  XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
@@ -807,7 +824,6 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
 	    show();
 	}
 
-        emit moved (mpos);
 //        if (style() == MotifStyle)
 //          menu->setMouseTracking(false);
 //        else
@@ -834,12 +850,12 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
       {
         position = mpos;
         hide();
-	setFrameStyle(NoFrame);
-	menu->setFrameStyle(oldMenuFrameStyle);
+		setFrameStyle(NoFrame);
+		menu->setFrameStyle(oldMenuFrameStyle);
         recreate(Parent, oldWFlags, QPoint(oldX, oldY), TRUE);
+        emit moved (mpos);
         context->changeItem (i18n("Float"), CONTEXT_FLOAT);
         context->setItemEnabled (CONTEXT_FLAT, TRUE);
-        emit moved (mpos);
         if (style() == MotifStyle)
         {
 //          menu->setMouseTracking(false);

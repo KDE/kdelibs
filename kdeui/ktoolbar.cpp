@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.115  1999/06/07 21:11:04  cschlaeg
+// more work done for layout management integration; setFullWidth(false) still does not work; will work on this tomorrow
+//
 // Revision 1.114  1999/06/06 17:29:45  cschlaeg
 // New layout management implemented for KTMainWindow. This required
 // updates for KToolBar, KMenuBar and KStatusBar. KTMainWindow::view_*
@@ -903,6 +906,7 @@ KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size)
   fixed_size =  (item_size > 0);
   if (!fixed_size)
   item_size = 26;
+  maxWidth = maxHeight = -1;
   init();
   Parent = parent;        // our father
   mouseEntered=false;
@@ -1060,25 +1064,25 @@ KToolBar::~KToolBar()
 
   // I would never guess that (sven)
   if (!QApplication::closingDown())
-    delete context;
+	   delete context;
 
   //debug ("KToolBar destructor");
 }
 
 void KToolBar::setMaxHeight (int h)
 {
-	setMaximumHeight(h);
+	maxHeight = h;
 	updateRects(true);
 }
 
 void KToolBar::setMaxWidth (int w)
 {
-	setMaximumWidth(w);
+	maxWidth = w;
 	updateRects(true);
 }
 
 void 
-KToolBar::layoutHorizontal(int maxWidth)
+KToolBar::layoutHorizontal(int w)
 {
 	int xOffset = 4 + 9 + 3;
 	int yOffset = 1;
@@ -1109,7 +1113,7 @@ KToolBar::layoutHorizontal(int maxWidth)
 				autoSizeItem = *qli;
 			}
 
-			if (xOffset + 3 + itemWidth > maxWidth)
+			if (xOffset + 3 + itemWidth > w)
 			{
 				/* The current line is full. We need to wrap-around and start
 				 * a new line. */
@@ -1134,7 +1138,7 @@ KToolBar::layoutHorizontal(int maxWidth)
 			   debug("Right aligned toolbar item cannot be auto-sized!");
 		}
 
-	int newXOffset = maxWidth - (3 + (totalRightItemWidth + 3) % maxWidth);
+	int newXOffset = w - (3 + (totalRightItemWidth + 3) % w);
 	if (newXOffset < xOffset)
 	{
 		/* right aligned items do not fit in the current line, so we start
@@ -1143,7 +1147,7 @@ KToolBar::layoutHorizontal(int maxWidth)
 		{
 			/* The auto-sized widget extends from the last normal left-alined
 			 * item to the right edge of the widget */
-			autoSizeItem->resize(maxWidth - xOffset - 3 + MIN_AUTOSIZE,
+			autoSizeItem->resize(w - xOffset - 3 + MIN_AUTOSIZE,
 								 autoSizeItem->height());
 		}
 		yOffset += tallest + 3;
@@ -1163,7 +1167,7 @@ KToolBar::layoutHorizontal(int maxWidth)
 	for (qli.toFirst(); *qli; ++qli)
 		if ((*qli)->isRight())
 		{
-			if (xOffset + 3 + (*qli)->width() > maxWidth)
+			if (xOffset + 3 + (*qli)->width() > w)
 			{
 				xOffset = 4 + 9 + 3;
 				yOffset += tallest + 3;
@@ -1180,7 +1184,7 @@ KToolBar::layoutHorizontal(int maxWidth)
 				tallest = (*qli)->height();
 		}
 
-	toolbarWidth = maxWidth;
+	toolbarWidth = w;
 	toolbarHeight = yOffset + tallest + 1;
 	min_width = 4 + 9 + 3 + widest + 3;
 	min_height = toolbarHeight;
@@ -1260,7 +1264,7 @@ KToolBar::heightForWidth(int w) const
 }
 
 void 
-KToolBar::layoutVertical(int maxHeight)
+KToolBar::layoutVertical(int h)
 {
 	int xOffset = 3;
 	int yOffset = 3 + 9 + 4;
@@ -1272,7 +1276,7 @@ KToolBar::layoutVertical(int maxHeight)
 	QListIterator<KToolBarItem> qli(items);
 	for (; *qli; ++qli)
 	{
-		if (yOffset + (*qli)->height() + 3 > maxHeight)
+		if (yOffset + (*qli)->height() + 3 > h)
 		{
 			/* A column has been filled. We need to start a new column */
 			yOffset = 4 + 9 + 3;
@@ -1300,7 +1304,7 @@ KToolBar::layoutVertical(int maxHeight)
 			tallest = (*qli)->height();
 	}
 
-	toolbarHeight = maxHeight;
+	toolbarHeight = h;
 	toolbarWidth = min_width = xOffset + widest + 3;
 	min_height = 4 + 9 + 3 + tallest + 3;
 	updateGeometry();
@@ -1355,16 +1359,6 @@ KToolBar::widthForHeight(int h) const
 void 
 KToolBar::updateRects(bool res)
 {
-	/* If the user requested a certain maximum width we use it,
-	 * otherwise the parents width is used. */
-	int maxW = maximumWidth() == QWIDGETSIZE_MAX ?
-		Parent->width() : maximumWidth();
-
-	/* If the user requested a certain maximum height we use it,
-	 * otherwise the parents height is used. */
-	int maxH = maximumHeight() == QWIDGETSIZE_MAX ?
-		Parent->height() : maximumHeight();
-
 	switch (position)
 	{
 	case Flat:
@@ -1374,24 +1368,38 @@ KToolBar::updateRects(bool res)
 		break;
 
 	case Floating:
-		if ((items.count() == 0) || (maxW >= maxH + 10))
-			layoutHorizontal(maxW);
+		if ((items.count() == 0) || (width() >= height() + 10))
+		{
+			if (maxWidth == -1)
+				maxWidth = maximumSizeHint().width();
+			layoutHorizontal(maxWidth);
+		}
 		else
-			layoutVertical(maxH);
-
-		min_height = toolbarHeight;
-		min_width = toolbarWidth;
-		updateGeometry();
+		{
+			if (maxHeight == -1)
+				maxHeight = maximumSizeHint().height();
+			layoutVertical(maxHeight);
+		}
 		break;
 
 	case Top:
 	case Bottom:
-		layoutHorizontal(maxW);
+		/* If we are not in full size mode and the user has not
+		 * defined a maximum width then we have to define it
+		 * ourselves. */
+		if (!fullSize && maxWidth == -1)
+				maxWidth = maximumSizeHint().width();
+		layoutHorizontal(!fullSize ? maxWidth : width());
 		break;
 
 	case Left:
 	case Right:
-		layoutVertical(maxH);
+		/* If we are not in full size mode and the user has not
+		 * defined a maximum height then we have to define it
+		 * ourselves. */
+		if (!fullSize && maxHeight == -1)
+			maxHeight = maximumSizeHint().height();
+		layoutVertical(!fullSize ? maxHeight : height());
 		break;
 
 	default:
@@ -1409,10 +1417,37 @@ KToolBar::updateRects(bool res)
 QSize 
 KToolBar::sizeHint() const
 {
-	if (fullSize)
-		return (QSize(min_width, min_height));
-	else
-		return (maximumSize());
+	switch (position)
+	{
+	case Top:
+	case Bottom:
+		if (!fullSize)
+		{
+			int mw = maxWidth;
+			/* If we are not in full size mode and the user has not defined
+			 * a maximum width then we have to define it ourselves. */
+			if (mw == -1)
+				mw = maximumSizeHint().width();
+			return (QSize(mw, min_height));
+		}
+		break;
+	case Right:
+	case Left:
+		if (!fullSize)
+		{
+			int mh = maxHeight;
+			/* If we are not in full size mode and the user has not defined
+			 * a maximum height then we have to define it ourselves. */
+			if (mh == -1)
+				mh = maximumSizeHint().height();
+			return (QSize(min_width, mh));
+		}
+		break;
+	default:
+		break;
+	}
+	
+	return (QSize(min_width, min_height));
 }
 
 QSize
@@ -2562,6 +2597,7 @@ void KToolBar::setBarPos(BarPosition bpos)
 			QPoint p = mapToGlobal(QPoint(0,0));
 			parentOffset = pos();
 			hide();
+			emit moved (bpos);  // this sets up KTW but not toolbar which floats
 			recreate(0, 0, p, false);
 			XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
 			KWM::setDecoration(winId(), 2);
@@ -2578,13 +2614,7 @@ void KToolBar::setBarPos(BarPosition bpos)
 			context->setItemEnabled (CONTEXT_FLAT, FALSE);
 			setMouseTracking(true);
 			mouseEntered=false;
-			wasfullSize=fullSize;
-			if (!haveAutoSized)   //if we don't have autosized item
-				fullSize=false;  // turn off autosize of toolbar
-			else                  // but if we do..
-				resize((int) (0.7*width()), height()); // narrow us on 70%
-			emit moved (bpos);  // this sets up KTW but not toolbar which floats
-			updateRects (); // we need this to set us up
+			updateRects(true); // we need this to set us up
 			return;
 		}
 		else if (position == Floating) // was floating
@@ -2592,12 +2622,11 @@ void KToolBar::setBarPos(BarPosition bpos)
 			position = bpos;
 			hide();
 			recreate(Parent, oldWFlags, QPoint(oldX, oldY), true);
+			emit moved (bpos); // another bar::updateRects (damn) No! It's ok.
 			context->changeItem (i18n("Float"), CONTEXT_FLOAT);
 			context->setItemEnabled (CONTEXT_FLAT, TRUE);
 			setMouseTracking(true);
 			mouseEntered = false;
-			fullSize=wasfullSize;
-			emit moved (bpos); // another bar::updateRects (damn) No! It's ok.
 			updateRects ();
 			return;
 		}

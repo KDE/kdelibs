@@ -210,7 +210,7 @@ public:
   /**
    * SizeHint. For now returns height() and width().
    */
-  QSize sizeHint ();
+  QSize sizeHint () const;
   
 public slots:
 

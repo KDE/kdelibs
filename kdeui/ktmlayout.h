@@ -22,6 +22,9 @@
 #define _KHTBLayout_h_
 
 #include <qlayout.h>
+#include <qlist.h>
+
+#include <ktoolbar.h>
 
 /**
  * KHTBLayout is a specialized version of QHBoxLayout. It can be used when
@@ -35,23 +38,67 @@
  * @short Special layout managers for use with toolbar-like widgets.
  * @author Chris Schlaeger (cs@kde.org)
  */
-class KHTBLayout : public QHBoxLayout
+class KTMLayout : public QLayout
 {
 public:
-	KHTBLayout()
+	KTMLayout()
 	{
 		mainItem = 0;
 	}
-	KHTBLayout(QWidget *parent, int border = 0, int space = -1,
+	KTMLayout(QWidget *parent, int border = 0, int space = -1,
 			   const char *name = 0);
 
-	~KHTBLayout() { }
+	~KTMLayout() { }
+
+	void addTopMenuBar(QWidget* w)
+	{
+		topMenuBar = w;
+	}
+
+	void addBottomMenuBar(QWidget* w)
+	{
+		bottomMenuBar = w;
+	}
+
+	void addFlatBar(QWidget* w)
+	{
+		flatBars.append(w);
+	}
+
+	void addTopToolBar(KToolBar* w)
+	{
+		topToolBars.append(w);
+	}
+
+	void addLeftToolBar(KToolBar* w)
+	{
+		leftToolBars.append(w);
+	}
+
+	void addRightToolBar(KToolBar* w)
+	{
+		rightToolBars.append(w);
+	}
+
+	void addBottomToolBar(KToolBar* w)
+	{
+		bottomToolBars.append(w);
+	}
 
 	/**
 	 * Use this function to add the main widget. All toolbars can be added
 	 * with addItem(). There must be exactly one main widget!
 	 */
-	void addMainItem(QWidget* w, int stretch = 0, int alignment = 0);
+	void addMainItem(QWidget* w)
+	{
+		mainItem = w;
+	}
+
+	void addStatusBar(QWidget* w)
+	{
+		statusBar = w;
+	}
+
 
 	/**
 	 * This function arranges the widgets. It determines the necessary space
@@ -59,53 +106,66 @@ public:
 	 */
 	void setGeometry(const QRect& rect);
 
+	QSize sizeHint(void) const;
+	QSize minimumSize(void) const;
+	void addItem(QLayoutItem* item);
+	QLayoutIterator iterator();
+	
 private:
+	void mainLayout(const QRect& rect);
+
+	int toolBarWidth(int h, const QList<KToolBar>& tbl) const;
+	int toolBarHeight(int w, const QList<KToolBar>& tbl) const;
+	int flatBarHeight(int w) const;
+
+	void vToolBarLayout(const QRect& rect, int& currX,
+					   const QList<KToolBar>& tbl);
+	void hToolBarLayout(const QRect& rect, int& currY,
+					   const QList<KToolBar>& tbl);
+	void flatBarLayout(const QRect& rect, int& currY,
+					   const QList<QWidget>& fbl);
+
+	QList<QLayoutItem> list;
+
+	QWidget* topMenuBar;
+	QWidget* bottomMenuBar;
+
+	QList<QWidget> flatBars;
+
+	QList<KToolBar> topToolBars;
+	QList<KToolBar> leftToolBars;
+	QList<KToolBar> rightToolBars;
+	QList<KToolBar> bottomToolBars;
+
 	QWidget* mainItem;
+	QWidget* statusBar;
 } ;
 
-/**
- * KVTBLayout is a specialized version of QVBoxLayout. It can be used when
- * you want to manage vertically aligned widgets that consist of one main
- * widget and other toolbar-like widgets. The toolbar like widgets must have
- * a fixed height that can depend on their width. The main widget takes the
- * rest of the space. The toolbars must define a heightForWidth(int) function.
- * The most prominent user of this class is KTMainWidget.
- *
- * @see KTMainWindow
- * @short Special layout managers for use with toolbar-like widgets.
- * @author Chris Schlaeger (cs@kde.org)
- */
-class KVTBLayout : public QVBoxLayout
+class KTMLayoutIterator :public QGLayoutIterator
 {
 public:
-	KVTBLayout()
+	KTMLayoutIterator(QList<QLayoutItem> *l)
+		: idx(0), list(l) { }
+
+	QLayoutItem *current()
 	{
-		mainItem = 0;
+		return idx < int(list->count()) ? list->at(idx) : 0;
 	}
-	KVTBLayout(QWidget *parent, int border = 0, int space = -1,
-			   const char *name = 0);
 
-	~KVTBLayout() { }
+	QLayoutItem *next()
+	{
+		idx++;
+		return current();
+	}
 
-	/**
-	 * Use this function to add the main item. All toolbars can be added
-	 * with addItem(). There must be exactly one main widget!
-	 */
-	void addMainLayout(QLayout* w, int stretch = 0);
-	/**
-	 * Use this function to add the main widget. All toolbars can be added
-	 * with addItem(). There must be exactly one main item!
-	 */
-	void addMainItem(QWidget* w, int stretch = 0, int alignment = 0);
-
-	/**
-	 * This function arranges the widgets. It determines the necessary space
-	 * for the toolbars and assignes the remainder to the main widget.
-	 */
-	void setGeometry(const QRect& rect);
+	void removeCurrent()
+	{
+		list->remove( idx );
+	}
 
 private:
-	QWidget* mainItem;
-} ;
+	int idx;
+	QList<QLayoutItem> *list;
+};
 
 #endif
