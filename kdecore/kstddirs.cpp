@@ -619,6 +619,7 @@ QString KStandardDirs::saveLocation(const char *type,
 	    kdDebug() << "failed to create " << fullPath << endl;
 	    return local;
 	}
+        dircache.remove(type);
     }
     return fullPath;
 
