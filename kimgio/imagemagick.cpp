@@ -27,14 +27,14 @@ extern "C" {
 #undef class
 #endif
 
-#define WriteQuantum(quantum,q)  \
+#define WriteQuantum(image, quantum,q)  \
 {  \
-  if (im_image->depth <= 8) \
+  if (image->depth <= 8) \
     *q++=DownScale(quantum); \
   else \
     { \
       value=(quantum); \
-      if ((QuantumDepth-im_image->depth) > 0) \
+      if ((QuantumDepth-image->depth) > 0) \
         value*=257; \
       *q++=value >> 8; \
       *q++=value; \
@@ -48,7 +48,6 @@ void kimgio_imagemagick_read( QImageIO *io )
   ImageInfo image_info;
 
   // Initialize the image info structure and read an image.
-  qDebug("READING!!!!");
   GetImageInfo(&image_info);
   (void) strcpy(image_info.filename, io->fileName().ascii());
   im_image=ReadImage(&image_info);
@@ -73,15 +72,15 @@ void kimgio_imagemagick_read( QImageIO *io )
     for (i=0; i < (int) im_image->packets; i++) {
       for (j=0; j <= ((int) p->length); j++) {
 	// Alex: I think this is a Qt bug that's swapping the blue and green
-	WriteQuantum(p->blue,q);
-	WriteQuantum(p->green,q);
-	WriteQuantum(p->red,q);
+	WriteQuantum(im_image, p->blue,q);
+	WriteQuantum(im_image, p->green,q);
+	WriteQuantum(im_image, p->red,q);
 	if (Latin1Compare(image_info.magick,"RGBA") == 0) {
-	  WriteQuantum(im_image->matte ? p->index : MaxRGB, q);
+	  WriteQuantum(im_image, im_image->matte ? p->index : MaxRGB, q);
 	} else {
 	  // If we don't have an alpha channel, pretend it's not there
 	  // by making it completely transparent.
-	  WriteQuantum(0, q);
+	  WriteQuantum(im_image, 0, q);
 	}
 	x++;
 	if (x == (int) im_image->columns) {
