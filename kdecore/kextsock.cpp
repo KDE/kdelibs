@@ -85,6 +85,12 @@ extern "C" int res_init();
 #endif
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
+#ifdef Q_OS_FREEBSD
+#ifndef EAI_NODATA
+#define EAI_NODATA EAI_NONAME
+#endif
+#endif
+
 //
 // Internal class definitions
 //
