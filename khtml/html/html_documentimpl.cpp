@@ -274,7 +274,6 @@ static bool isTransitional(const QString &spec, int start)
        (spec.find("LATIN1", start, false ) != -1 ) ||
        (spec.find("SYMBOLS", start, false ) != -1 ) ||
        (spec.find("SPECIAL", start, false ) != -1 ) ) {
-        //kdDebug() << "isTransitional" << endl;
         return true;
     }
     return false;
@@ -375,7 +374,6 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
                         if ( tagPos != -1 ) {
                             tagPos = val.find(QRegExp("[0-9]"), tagPos );
                             int version = val.mid( tagPos, 1 ).toInt();
-                            //kdDebug() << "DocumentImpl::determineParseMode tagPos = " << tagPos << " version=" << version << endl;
                             if( version > 3 ) {
                                 hMode = Html4;
                                 publicId = isTransitional( val, tagPos ) ? Transitional : Strict;
@@ -387,29 +385,32 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
             }
         }
 
-        if( systemId == publicId )
+        if( systemId && systemId == publicId ) { // not unknown and both agree
             pMode = publicId;
+        }
         else if ( systemId == Unknown )
-            pMode = hMode == Html4 ? Compat : publicId;
-        else if ( publicId == Transitional && systemId == Strict ) {
-            pMode = hMode == Html3 ? Compat : Strict;
-        } else
+            pMode = hMode == Html3 ? Compat : publicId;
+        else if ( ( publicId == Transitional && systemId == Strict ) ||
+                  ( publicId == Strict && systemId == Transitional ) ) {
+            pMode = hMode == Html3 ? Compat : kMin( publicId, systemId );
+        } else {
             pMode = Compat;
+        }
 
         if ( hMode == XHtml )
             pMode = Strict;
     }
-//     kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
-//     kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << hMode<< endl;
-//     if( pMode == Strict )
-//         kdDebug(6020) << " using strict parseMode" << endl;
-//     else if (pMode == Compat )
-//         kdDebug(6020) << " using compatibility parseMode" << endl;
-//     else
-//         kdDebug(6020) << " using transitional parseMode" << endl;
+    // kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
+    // kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << hMode<< endl;
+    if( pMode == Strict )
+        kdDebug(6020) << " using strict parseMode" << endl;
+    else if (pMode == Compat )
+        kdDebug(6020) << " using compatibility parseMode" << endl;
+    else
+        kdDebug(6020) << " using transitional parseMode" << endl;
 
     if ( pMode != oldPMode && styleSelector() )
-	recalcStyleSelector();
+        recalcStyleSelector();
 }
 
 #include "html_documentimpl.moc"
