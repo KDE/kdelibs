@@ -253,7 +253,7 @@ public:
     int size() const { return _size; }
     DOMString type() const;
 
-    DOMString value() const { return m_value; }
+    DOMString value() const;
     void setValue(DOMString val);
 
     DOMString filename() const { return m_filename; }
