@@ -317,14 +317,16 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         // may still be on their way thru the web!
         else if ( searchCount > 0 )
         {
-            QChar cmp = src[0];
-            if (comment && searchCount == 2 && cmp.latin1() == '-') { // Watch out for '--->'
-                scriptCode[ scriptCodeSize++ ] = src[0];
+            const QChar& cmp = src[0];
+            // broken HTML workaround "--->" or "--!>"
+            if (comment && searchCount == 2 && cmp.latin1() == '-' || cmp.latin1() == '!')
+            {
+                scriptCode[ scriptCodeSize++ ] = cmp;
                 ++src;
             }
             else if ( cmp.lower() == searchFor[ searchCount ] )
             {
-                searchBuffer[ searchCount ] = src[0];
+                searchBuffer[ searchCount ] = cmp;
                 searchCount++;
                 ++src;
             }
@@ -334,7 +336,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 searchBuffer[ searchCount ] = 0;
                 QChar *p = searchBuffer;
                 while ( *p ) scriptCode[ scriptCodeSize++ ] = *p++;
-                scriptCode[ scriptCodeSize++ ] = src[0];
+                scriptCode[ scriptCodeSize++ ] = cmp;
                 ++src;
                 searchCount = 0;
             }
@@ -627,7 +629,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         searchCount = 0; // Stop looking for '<!--' sequence
                     }
                 }
-                
+
                 curchar = src[0].latin1();
                 if( ((curchar >= 'a') && (curchar <= 'z')) ||
                     ((curchar >= 'A') && (curchar <= 'Z')) ||
@@ -779,9 +781,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 }
                 else if( curchar == '=' )
                 {
-#ifdef TOKEN_DEBUG                    
+#ifdef TOKEN_DEBUG
                     kdDebug(6036) << "found equal" << endl;
-#endif                    
+#endif
                     tag = SearchValue;
                     pending = NonePending; // ignore spaces before '='
                     discard = SpaceDiscard; // discard spaces after '='
@@ -842,8 +844,8 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     a.setValue(buffer+1, dest-buffer-1);
 #ifdef TOKEN_DEBUG
                     kdDebug() << "adding value: *" << QConstString(buffer+1, dest-buffer-1).string() << "*" << endl;
-#endif                    
-                    
+#endif
+
                     currToken->attrs.add(a);
 
                     dest = buffer;
@@ -883,7 +885,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     a.setValue(buffer+1, dest-buffer-1);
 #ifdef TOKEN_DEBUG
                     kdDebug() << "adding value: *" << QConstString(buffer+1, dest-buffer-1).string() << "*" << endl;
-#endif                                     
+#endif
                     currToken->attrs.add(a);
 
                     dest = buffer;
