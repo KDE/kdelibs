@@ -314,10 +314,12 @@ public final class KJASAppletStub
             active = false;
             app.stop();
             stateChange(STOPPED);
-            // kill the windowClosing listener(s)
-            WindowListener[] wl = frame.getWindowListeners();
-            for (int i = 0; wl != null && i < wl.length; i++)
-                frame.removeWindowListener(wl[i]);
+            if (Main.java_version > 1.399) {
+                // kill the windowClosing listener(s)
+                WindowListener[] wl = frame.getWindowListeners();
+                for (int i = 0; wl != null && i < wl.length; i++)
+                    frame.removeWindowListener(wl[i]);
+            }
             frame.hide();
         }
     }
