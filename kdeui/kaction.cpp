@@ -3714,7 +3714,7 @@ bool KActionShortcutList::save() const
 	// if there was none, create one
 	if( elem.isNull() ) {
 		elem = doc.createElement( tagActionProp );
-		doc.firstChild().appendChild( elem );
+		doc.documentElement().appendChild( elem );
 	}
 
 	// now, iterate through our actions
