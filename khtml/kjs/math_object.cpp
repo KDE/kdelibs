@@ -32,7 +32,7 @@ KJSMath::KJSMath()
 {
   const int attr = DontEnum | DontDelete | ReadOnly;
 #ifdef M_E
-  put("E", zeroRef(new KJSNumber(M_E)), attr);
+  put("E", zeroRef(new KJSNumber((double)M_E)), attr);
 #else
   put("E", zeroRef(new KJSNumber(::exp(1))), attr);
 #endif
