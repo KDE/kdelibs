@@ -1017,22 +1017,17 @@ KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr ser
     if( startup_id == "0" )
         return;
     QCString wmclass;
+    bool silent = false;
     if( service->property( "StartupNotify" ).isValid())
     {
         if( !service->property( "StartupNotify" ).toBool())
-        {
-            cancel_service_startup_info( request, startup_id, envs );
-            return;
-        }
+            silent = true;
         wmclass = service->property( "StartupWMClass" ).toString().latin1();
     }
     else if( service->property( "X-KDE-StartupNotify" ).isValid())
     {
         if( !service->property( "X-KDE-StartupNotify" ).toBool())
-        {
-            cancel_service_startup_info( request, startup_id, envs );
-            return;
-        }
+            silent = true;
         wmclass = service->property( "X-KDE-WMClass" ).toString().latin1();
     }
     else // non-compliant app ( .desktop file )
@@ -1074,6 +1069,8 @@ KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr ser
     data.setDescription( i18n( "Launching %1" ).arg( service->name()));
     if( !wmclass.isEmpty())
         data.setWMClass( wmclass );
+    if( silent )
+        data.setSilent( KStartupInfoData::Yes );
     // the rest will be sent by kdeinit
     KStartupInfo::sendStartupX( dpy, id, data );
     if( mCached_dpy != dpy && mCached_dpy != NULL )

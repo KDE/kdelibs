@@ -514,25 +514,33 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
   }
   QString bin = KRun::binaryName( binName, true );
 #ifdef Q_WS_X11 // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
-  bool startup_notify = false;
+  bool startup_notify = true;
+  bool silent = false;
   QCString wmclass;
   KStartupInfoId id;
   if( service && service->property( "StartupNotify" ).isValid())
   {
-      startup_notify = service->property( "StartupNotify" ).toBool();
+      silent = !service->property( "StartupNotify" ).toBool();
       wmclass = service->property( "StartupWMClass" ).toString().latin1();
   }
   else if( service && service->property( "X-KDE-StartupNotify" ).isValid())
   {
-      startup_notify = service->property( "X-KDE-StartupNotify" ).toBool();
+      silent = !service->property( "X-KDE-StartupNotify" ).toBool();
       wmclass = service->property( "X-KDE-WMClass" ).toString().latin1();
   }
   else // non-compliant app ( .desktop file )
   {
-      if( service && service->type() == "Application" )
+      if( service )
       {
-          startup_notify = true; // doesn't have .desktop entries needed
-          wmclass = "0";         // start as non-compliant
+          if( service->type() == "Application" )
+              wmclass = "0"; // doesn't have .desktop entries needed, start as non-compliant
+      }
+      else
+      { // Create startup notification even for apps for which there shouldn't be any,
+        // just without any visual feedback. This will ensure they'll be positioned on the proper
+        // virtual desktop, and will get user timestamp from the ASN ID.
+          wmclass = "0";
+          silent = true;
       }
   }
   if( startup_notify )
@@ -542,11 +550,19 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
       KStartupInfoData data;
       data.setHostname();
       data.setBin( bin );
-      data.setName( execName.isEmpty() ? service->name() : execName );
+      if( !execName.isEmpty())
+          data.setName( execName );
+      else if( service && !service->name().isEmpty())
+          data.setName( service->name());
       data.setDescription( i18n( "Launching %1" ).arg( data.name()));
-      data.setIcon( iconName.isEmpty() ? service->icon() : iconName );
+      if( !iconName.isEmpty())
+          data.setIcon( iconName );
+      else if( service && !service->icon().isEmpty())
+          data.setIcon( service->icon());
       if( !wmclass.isEmpty())
           data.setWMClass( wmclass );
+      if( silent )
+          data.setSilent( KStartupInfoData::Yes );
       data.setDesktop( KWin::currentDesktop());
       KStartupInfo::sendStartup( id, data );
   }
