@@ -58,13 +58,13 @@ MainWindow::~MainWindow()
   QValueList<XMLGUIServant *> plugins = Plugin::pluginServants( this );
   QValueList<XMLGUIServant *>::ConstIterator pIt = plugins.fromLast();
   QValueList<XMLGUIServant *>::ConstIterator pBegin = plugins.begin();
-  
+
   for (; pIt != pBegin; --pIt )
     m_factory->removeServant( *pIt );
-  
+
   if ( pIt != plugins.end() )
     m_factory->removeServant( *pIt );
-  
+
   m_factory->removeServant( this );
 
   delete d;
@@ -124,7 +124,12 @@ QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElem
    kDebugInfo( 1001, "parent.className() : %s", parent->className() );
 
   if ( element.tagName() == "MenuBar" )
-    return menuBar();
+  {
+    KMenuBar *bar = menuBar();
+    if ( !bar->isVisible() )
+      bar->show();
+    return bar;
+  }
 
   if ( element.tagName() == "Menu" && parent )
   {
@@ -267,34 +272,34 @@ void MainWindow::createGUI( Part * part )
 
   QValueList<XMLGUIServant *> plugins;
   QValueList<XMLGUIServant *>::ConstIterator pIt, pBegin, pEnd;
-  
+
   if ( d->m_activePart )
   {
     kDebugStringArea( 1000, QString("deactivating GUI for %1").arg(d->m_activePart->name()) );
-    
+
     plugins = Plugin::pluginServants( d->m_activePart );
     pIt = plugins.fromLast();
     pBegin = plugins.begin();
-    
+
     for (; pIt != pBegin ; --pIt )
       m_factory->removeServant( *pIt );
 
     if ( pIt != plugins.end() )
       m_factory->removeServant( *pIt );
-    
+
     m_factory->removeServant( d->m_activePart );
   }
 
   if ( !d->m_bShellGUIActivated )
   {
     m_factory->addServant( this );
-    
+
     plugins = Plugin::pluginServants( this );
     pIt = plugins.begin();
     pEnd = plugins.end();
     for (; pIt != pEnd; ++pIt )
       m_factory->addServant( *pIt );
-    
+
     d->m_bShellGUIActivated = true;
   }
 
@@ -305,7 +310,7 @@ void MainWindow::createGUI( Part * part )
     plugins = Plugin::pluginServants( part );
     pIt = plugins.begin();
     pEnd = plugins.end();
-    
+
     for (; pIt != pEnd; ++pIt )
       m_factory->addServant( *pIt );
   }
