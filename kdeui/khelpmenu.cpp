@@ -178,7 +178,7 @@ void KHelpMenu::appHelpActivated( void )
 
 void KHelpMenu::aboutApplication( void )
 {
-  if( mAboutAppText.isNull() == true )
+  if( mAboutAppText.isNull() == true || mAboutAppText.isEmpty() == true )
   {
     emit showAboutApplication();
   }
