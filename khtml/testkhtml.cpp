@@ -37,6 +37,8 @@ int main(int argc, char *argv[])
 			      QColor(Qt::green));
     doc->openURL(argv[1]);
     a.setTopWidget(doc);
+    QWidget::connect(doc, SIGNAL(setTitle(const QString &)), 
+		     doc, SLOT(setCaption(const QString &)));
     doc->show();
 
     QPushButton *p = new QPushButton(0, 0);

@@ -46,6 +46,7 @@ class QPainter;
 namespace DOM {
     class HTMLDocumentImpl;
     class HTMLElementImpl;
+    class HTMLTitleElementImpl;
 };
 
 class KHTMLCache;
@@ -66,6 +67,7 @@ class KHTMLWidget : public QScrollView
     friend HTMLURLRequestJob;
     friend DOM::HTMLDocumentImpl;
     friend DOM::HTMLElementImpl;
+    friend DOM::HTMLTitleElementImpl;
 
 public:
     KHTMLWidget( QWidget *parent=0, const char *name=0 );
@@ -258,6 +260,13 @@ public:
      * @return the base URL of this document
      */
     const QString &baseUrl();
+    void setBaseUrl(const QString &base);
+
+    /**
+     * the base target of this document
+     */
+    const QString &baseTarget() { return _baseTarget; }
+    void setBaseTarget(const QString &target) { _baseTarget = target; }
 
     /**
      * Find the anchor named '_name'. If the anchor is found, the widget
@@ -727,6 +736,9 @@ private:
     bool _isSelected;
     QTimer autoScrollYTimer;
     QCursor linkCursor;
+
+    QString _baseURL;
+    QString _baseTarget;
 
     KHTMLCache *cache;
     KHTMLDecoder *decoder;

@@ -162,6 +162,9 @@ void KHTMLWidget::clear()
     }
 
     pressed = false;
+
+    _baseURL = QString::null;
+    _baseTarget = QString::null;
 }
 
 void KHTMLWidget::setFollowsLinks( bool follow )
@@ -624,53 +627,55 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
     return;
 
   QString url = completeURL( _url );
+  QString target = _target;
+  if(target.isEmpty()) target = _baseTarget;
 
   printf("urlSelected: url=%s\n", url.latin1());
 
   if(!_followLinks)
   {
-      emit urlClicked( url, _target, _button );
+      emit urlClicked( url, target, _button );
       return;
   }
 
-  if ( !_target.isNull() && !_target.isEmpty() && _button == LeftButton )
+  if ( !target.isNull() && !target.isEmpty() && _button == LeftButton )
   {
-    if ( strcmp( _target, "_parent" ) == 0 )
+    if ( strcmp( target, "_parent" ) == 0 )
     {
       KHTMLWidget *v = parentView();
       if ( !v )
 	v = this;
       v->openURL( url );
-      emit urlClicked( url, _target, _button );
+      emit urlClicked( url, target, _button );
       return;
     }
-    else if ( strcmp( _target, "_top" ) == 0 )
+    else if ( strcmp( target, "_top" ) == 0 )
     {
       kdebug(0,1202,"OPENING top %s", url.ascii());
       topView()->openURL( url );
-      emit urlClicked( url, _target, _button );
+      emit urlClicked( url, target, _button );
       kdebug(0,1202,"OPENED top");
       return;
     }
-    else if ( strcmp( _target, "_blank" ) == 0 )
+    else if ( strcmp( target, "_blank" ) == 0 )
     {
       emit newWindow( url );
       return;
     }
-    else if ( strcmp( _target, "_self" ) == 0 )
+    else if ( strcmp( target, "_self" ) == 0 )
     {
       openURL( url );
-      emit urlClicked( url, _target, _button );
+      emit urlClicked( url, target, _button );
       return;
     }
 
-    KHTMLWidget *v = topView()->findChildView( _target );
+    KHTMLWidget *v = topView()->findChildView( target );
     if ( !v )
-      v = findView( _target );
+      v = findView( target );
     if ( v )
     {
       v->openURL( url );
-      emit urlClicked( url, _target, _button );
+      emit urlClicked( url, target, _button );
       return;
     }
     else
@@ -702,6 +707,7 @@ void KHTMLWidget::slotFormSubmitted( const QString &_method, const QString &_url
 				     const char *_data, const QString &_target )
 {
     // ### add target!!!
+    // ### add baseURL and baseTarget!
 
     QString url = completeURL( _url );
 
@@ -758,10 +764,16 @@ void KHTMLWidget::setDefaultBGColor( const QColor& bgcolor )
 
 QString KHTMLWidget::completeURL( const QString &_url )
 {
-  KURL orig( m_strURL );
-
+  if(_baseURL.isEmpty())
+  {
+      KURL orig( m_strURL );
+      KURL u( orig, _url );
+      return u.url();
+  }
+  KURL orig( _baseURL );
   KURL u( orig, _url );
   return u.url();
+  
 }
 
 KHTMLWidget* KHTMLWidget::findChildView( const QString &_target )
@@ -1430,4 +1442,14 @@ HTMLSettings *KHTMLWidget::settings()
     // ### check all settings stuff in khtml.cpp for memory leaks...
     if(!_settings) _settings = new HTMLSettings(*defaultSettings);
     return _settings; 
+}
+
+const QString &KHTMLWidget::baseUrl()
+{
+  return _baseURL;
+}
+
+void KHTMLWidget::setBaseUrl(const QString &base)
+{
+  _baseURL = base;
 }

@@ -26,6 +26,8 @@
 #include "dtd.h"
 #include "html_elementimpl.h"
 
+class KHTMLWidget;
+
 namespace DOM {
 
 class DOMString;
@@ -43,6 +45,13 @@ public:
 
     virtual tagStatus startTag() { return BASEStartTag; }
     virtual tagStatus endTag() { return BASEEndTag; }
+
+    virtual void parseAttribute(Attribute *attr);
+    virtual void attach(KHTMLWidget *);
+
+protected:
+    DOMString _href;
+    DOMString _target;
 };
 
 // -------------------------------------------------------------------------
@@ -149,6 +158,7 @@ public:
 
     virtual tagStatus startTag() { return TITLEStartTag; }
     virtual tagStatus endTag() { return TITLEEndTag; }
+    virtual void close();
 };
 
 }; //namespace

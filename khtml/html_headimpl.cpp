@@ -23,12 +23,17 @@
 // -------------------------------------------------------------------------
 
 #include "dom_string.h"
+#include "dom_textimpl.h"
 #include "html_headimpl.h"
 #include "html_form.h"
+#include "html_documentimpl.h"
 using namespace DOM;
 
+#include "khtml.h"
+#include "khtmlattrs.h"
 
-HTMLBaseElementImpl::HTMLBaseElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
+HTMLBaseElementImpl::HTMLBaseElementImpl(DocumentImpl *doc)
+    : HTMLElementImpl(doc)
 {
 }
 
@@ -45,6 +50,35 @@ ushort HTMLBaseElementImpl::id() const
 {
     return ID_BASE;
 }
+
+void HTMLBaseElementImpl::parseAttribute(Attribute *attr)
+{
+    switch(attr->id)
+    {
+    case ATTR_HREF:
+      _href = attr->value();
+      break;
+    case ATTR_BACKGROUND:
+      _target = attr->value();
+      break;
+    default:
+	HTMLElementImpl::parseAttribute(attr);
+    }
+}
+
+
+void HTMLBaseElementImpl::attach(KHTMLWidget *v)
+{
+    if(_href.length())
+    {
+	v->setBaseUrl(_href.string());
+    }	
+    if(_target.length())
+    {
+	v->setBaseTarget(_target.string());
+    }
+}
+
 // -------------------------------------------------------------------------
 
 HTMLIsIndexElementImpl::HTMLIsIndexElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
@@ -175,7 +209,8 @@ void HTMLStyleElementImpl::setDisabled( bool )
 
 // -------------------------------------------------------------------------
 
-HTMLTitleElementImpl::HTMLTitleElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
+HTMLTitleElementImpl::HTMLTitleElementImpl(DocumentImpl *doc)
+    : HTMLElementImpl(doc)
 {
 }
 
@@ -193,3 +228,13 @@ ushort HTMLTitleElementImpl::id() const
     return ID_TITLE;
 }
 
+void HTMLTitleElementImpl::close()
+{
+    printf("Title:close\n");
+    if(!_first || _first->id() != ID_TEXT) return;
+    TextImpl *t = static_cast<TextImpl *>(_first);
+    QString s = t->data().string();
+
+    HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(document);
+    d->HTMLWidget()->setTitle(s);
+}

@@ -87,7 +87,7 @@ public:
     virtual void print(NodeImpl *e, bool recursive=false);
     virtual void updateSize();
 
-    const KHTMLWidget *HTMLWidget() { return view; }
+    KHTMLWidget *HTMLWidget() { return view; }
 
     virtual void attach(KHTMLWidget *w);
     virtual void detach();
