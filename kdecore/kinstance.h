@@ -45,11 +45,6 @@ class KInstance
     KLocale          *locale() const;
     KCharsets	     *charsets() const;
     
-    QFont            generalFont() const;
-    QFont            fixedFont() const;
-    
-    int              dndEventDelay() const;
-    
     QString          instanceName() const;
 
 protected:
