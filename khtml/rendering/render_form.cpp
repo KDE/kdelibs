@@ -450,8 +450,15 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
 {
     RenderFormElement::setStyle( _style );
 
-    widget()->setAlignment(style()->direction() == RTL
-                           ? Qt::AlignRight : Qt::AlignLeft);
+    if ( style()->textAlign() == LEFT )
+        widget()->setAlignment( Qt::AlignLeft );
+    else if ( style()->textAlign() == RIGHT )
+        widget()->setAlignment( Qt::AlignRight );
+    else if ( style()->textAlign() == CENTER )
+        widget()->setAlignment( Qt::AlignHCenter );
+    else
+        widget()->setAlignment(style()->direction() == RTL
+                               ? Qt::AlignRight : Qt::AlignLeft);
 }
 
 void RenderLineEdit::highLightWord( unsigned int length, unsigned int pos )
