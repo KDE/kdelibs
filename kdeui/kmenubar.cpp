@@ -115,7 +115,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
     return;
   d->topLevel = top_level;
   if ( isTopLevelMenu() ) {
-      bool wasVisible = isVisible();
+      bool wasVisible = !isHidden();
       d->frameStyle = frameStyle();
       removeEventFilter( topLevelWidget() );
       reparent( parentWidget(), WType_TopLevel | WType_Dialog | WStyle_NoBorder, QPoint(0,0), false );
@@ -128,7 +128,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
           show();
   } else {
       if ( parentWidget() ) {
-          reparent( parentWidget(), QPoint(0,0), isVisible());
+          reparent( parentWidget(), QPoint(0,0), !isHidden());
           setBackgroundMode( PaletteButton );
           installEventFilter( topLevelWidget() );
           setFrameStyle( d->frameStyle );
