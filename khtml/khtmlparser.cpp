@@ -384,12 +384,22 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    insertNode(e);
 	    return;
 	    break;
+	    
+	    // the following is a hack to move non rendered elements 
+	    // outside of tables.
+	    // needed for broken constructs like <table><form ...><tr>....
+	case ID_INPUT:
+	{
+	    ElementImpl *e = static_cast<ElementImpl *>(n);
+	    DOMString type = e->getAttribute(ATTR_TYPE);
+
+	    if ( strcasecmp( type, "hidden" ) != 0 )
+		break;
+	}
+	case ID_MAP:
 	case ID_FORM:
 	{
-	    // this is a really ugly hack to move forms outside of tables.
-	    // needed for broken constructs like <table><form ...><tr>....
-
-	    printf("--> badly placed form!!!\n");
+	    printf("--> badly placed element!!!\n");
 	    NodeImpl *node = current;
 	    // in case the form is opened inside the table (<table><form ...><tr> or similar)
 	    // we need to move it outside the table.
@@ -411,9 +421,17 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		try
 		{
 		    parent->insertBefore(n, node);
+		    if(tagPriority[id] != 0)
+		    {
+			pushBlock(id, tagPriority[id], exitFunc, exitFuncData);
+			current = n;
+		    }
+	
 		    n->attach(HTMLWidget);
 		    static_cast<HTMLElementImpl *>(n)->setStyle(newStyle);
-		    n->close();
+		    if(tagPriority[id] == 0)
+			n->close();
+
 		}
 		catch(DOMException e)
 		{
@@ -421,52 +439,6 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		    throw e;
 		}
 		return;
-	    }
-	    break;
-	}
-	case ID_INPUT:
-	{
-	    // another one for hidden inputs elements...
-
-	    printf("--> badly placed input element!!!\n");
-
-	    ElementImpl *e = static_cast<ElementImpl *>(n);
-	    DOMString type = e->getAttribute(ATTR_TYPE);
-
-	    if ( strcasecmp( type, "hidden" ) == 0 )
-	    {
-
-		NodeImpl *node = current;
-
-		if(node->id() == ID_TR)
-		    node = node->parentNode();
-		if(node->id() == ID_THEAD)
-		    node = node->parentNode();
-		if(node->id() == ID_TBODY)
-		    node = node->parentNode();
-		if(node->id() == ID_TFOOT)
-		    node = node->parentNode();
-		
-		if(node->id() == ID_TABLE)
-		{
-		    CSSStyle *newStyle = styleSheet->newStyle(currentStyle);
-		    
-		    NodeImpl *parent = node->parentNode();
-		    printf("trying to add form to %d\n", parent->id());
-		    try
-		    {
-			parent->insertBefore(n, node);
-			n->attach(HTMLWidget);
-			static_cast<HTMLElementImpl *>(n)->setStyle(newStyle);
-			n->close();
-		    }
-		    catch(DOMException e)
-		    {
-			printf("adding form before of table failed!!!!\n");
-			throw e;
-		    }
-		    return;
-		}
 	    }
 	    break;
 	}
