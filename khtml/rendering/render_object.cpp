@@ -422,22 +422,18 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
         drawBorder(p, x1, y1, x2, y2, half, s, c, textcolor, INSET, sb1, sb2);
         break;
     case INSET:
-        if(style == INSET) {
-            if(s == BSTop || s == BSLeft) {
-                c = c.dark();
-                sb2 = true;
-            }
-            else
-                sb1 = true;
-        }
+        if(s == BSTop || s == BSLeft)
+            c = c.dark();
+
         /* nobreak; */
     case OUTSET:
-        if(style == OUTSET) {
-            if(s == BSBottom || s == BSRight)
-                c = c.dark();
-            sb2 = (s == BSBottom || s == BSRight);
-            sb1 = !(s == BSBottom || s == BSRight);
-        }
+        if(style == OUTSET && (s == BSBottom || s == BSRight))
+            c = c.dark();
+
+        if(s == BSTop || s == BSLeft)
+            sb2 = true;
+        else
+            sb1 = true;
         /* nobreak; */
     case SOLID:
         // ###: make this shitty code faster (Dirk)
