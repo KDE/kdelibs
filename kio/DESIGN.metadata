@@ -38,6 +38,14 @@ charset         string          Charset of the current content as returned by a 
 content-
 disposition     string          Suggested name to Save a file as as returned by a HTTP Header Response.
 
+request-id	number		Sequence number to identify requests in a MultiGet command.
+
+UserAgent	string		HTTP User Agent to send to remote server.
+
+expire-date	number		Date on which a cache entry needs validation.
+
+cache-creation-date	number	Date on which a cache entry has been created.
+
 http-refresh    string          Passes HTTP Refresh meta-data back to the application.
 
 cookies		"auto"		Use kcookiejar to lookup and collect cookies (default)
@@ -47,6 +55,8 @@ cookies		"auto"		Use kcookiejar to lookup and collect cookies (default)
 setcookies	string		Used to send/receive HTTP cookies when "cookies" is set to "manual".
 
 errorPage	bool		Flag that indicates that an errorPage() is preferred over an error(). (default:true)
+
+no-auth		bool		Flag that indicates that no authentication attempts should be made.
 
 ssl_activate_warnings	bool	Flag that disables SSL warning dialogs if set to false.  (default: true)
 
