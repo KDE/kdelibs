@@ -857,7 +857,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
     QPaintDeviceMetrics *paintDeviceMetrics = e->ownerDocument()->paintDeviceMetrics();
 
-    kdDebug( 6080 ) << "applying property " << prop->m_id << endl;
+    //kdDebug( 6080 ) << "applying property " << prop->m_id << endl;
 
     CSSPrimitiveValueImpl *primitiveValue = 0;
     if(value->isPrimitiveValue()) primitiveValue = static_cast<CSSPrimitiveValueImpl *>(value);
