@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
-    Copyright  (C) 1997 Stephan Kulow (coolo@kde.org)
-               (C) 1997 Sven Radej (sven.radej@iname.com)
-               (C) 1997 Matthias Ettrich (ettrich@kde.org)
+    Copyright  (C) 1997, 1998 Stephan Kulow (coolo@kde.org)
+               (C) 1997, 1998 Sven Radej (sven@lisa.exp.univie.ac.at)
+               (C) 1997, 1998 Matthias Ettrich (ettrich@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,7 +17,20 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-*/
+    */
+
+/* On next binary incompatible change, someone please undefine KTW_BINCOMPAT */
+
+/**************************************************************************/
+
+//undefine this to have binary compatibility (setBorderwidth doesn't work)
+#define KTW_BINCOMPAT
+
+// undefine this to have old apps default-exit when lastwindow closed
+#define KTW_NOOLDDEFEXIT
+
+/**************************************************************************/
+
 #include <ktopwidget.h>
 #include <ktopwidget.moc>
 #include <kapp.h>
@@ -27,16 +40,26 @@
 #include <kwm.h>
 #include <qobjcoll.h>
 
+#ifdef KTW_BINCOMPAT
+#define usesNewStyle borderwidth
+#endif
+
 // a static pointer (too bad we cannot have static objects in libraries)
 QList<KTopLevelWidget>* KTopLevelWidget::memberList = 0L;
 
 KTopLevelWidget::KTopLevelWidget( const char *name )
     : QWidget( 0L, name )
 {
+
+    usesNewStyle = 1;
+
     kmenubar = 0L;
     kmainwidget = 0L;
     kstatusbar = 0L;
+
+#ifndef KTW_BINCOMPAT
     borderwidth = 0;
+#endif
 
     // set the specified icons
     KWM::setIcon(winId(), kapp->getIcon());
@@ -72,36 +95,45 @@ KTopLevelWidget::KTopLevelWidget( const char *name )
 
 KTopLevelWidget::~KTopLevelWidget()
 {
-  
-  // Another try after Matthias' changes
-  int n=0;
-  toolbars.setAutoDelete(true);
-  //  Must use iterator since deleting of toolbar will cause her
-  //  to embed itself back and  call ktopwidget's updateRects
-  //  which will count toolbars with first()/next()
-
-  QListIterator<KToolBar>  tit(toolbars);
-  while ( tit.current() )
+  if (usesNewStyle==1)
   {
-    if (tit.current())
+    int n=0;
+    // THANK YOU FOR THIS, TROLLS AND GOD BLESS YOU!!
+    if (!KApplication::closingDown())
     {
-      toolbars.removeRef(tit.current()); // wil point to next by itself
-      //delete (tit.current());
-      ++n;
-      //++tit;
+      debug ("KTW destructor: deleteing *Bars");
+
+      toolbars.setAutoDelete(true);
+      //  Must use iterator since deleting of toolbar will cause her
+      //  to embed itself back and  call ktopwidget's updateRects
+      //  which will count toolbars with first()/next()
+      //  Or, maybe not.
+      //  God knows how many events and signals are pending
+      //  and waiting for me to die and than to molest it
+      QListIterator<KToolBar>  tit(toolbars);
+      while ( tit.current() )
+      {
+        toolbars.remove(tit.current()); // will point to next by itself
+        ++n;
+        //++tit;
+      }
+      if (kmenubar)
+        delete kmenubar;
+      printf ("KTW destructor: deleted %d toolbar(s)\n", n);
+    }
+    else
+    {
+      debug ("KTW destructor: Aha! K/QApp closingDown!");
+      // Don't touch anything!!!
     }
   }
-
-  printf ("KTW destructor: deleted %d toolbar(s)\n", n);
-  n=0;
-
-  if (kmenubar)
+  else // we're used by old application
   {
-    delete kmenubar;
+    toolbars.setAutoDelete(false);
+    toolbars.clear(); // this prevents post-mortem scavengers (?)
+    debug ("KTW destructor: old style used");
   }
-
-  debug ("KTopLevelWidget destructor: finished");
-//    KDEBUG (KDEBUG_INFO, 151, "KTopLevelWidget destructor: finished");
+  
 
 	// remove this widget from the member list
 	memberList->remove( this );
@@ -117,18 +149,35 @@ KTopLevelWidget::~KTopLevelWidget()
 	  // Matthias:
 	  //        Nope, not bad luck. We should simply
 	  //        exit the application in this case.
-	  //        (But emit a signal before)
+          //        (But emit a signal before)
+          // Sven: Matthias what about kfm and like?
+          // for now I'll fix it for old apps but you
+          // found a way to fix it for new. There might
+          // be apps who want to live after lastwindow closed.
 	  
           kapp->setTopWidget( 0 );
-          debug ("KToplevelWidget destructor: postmortem: topwidget 0");
+          debug ("KTW destructor: postmortem: topwidget 0");
+#ifdef KTW_NOOLDDEFEXIT
+          if (usesNewStyle == 1) // damn!
+            kapp->quit();
+#else
           kapp->quit();
-          debug ("KToplevelWidget destructor: postmortem: quit");
+#endif
+          debug ("KTW destructor: postmortem: quit");
         }
-        debug ("KTopLevelWidget destructor: dead as a dodo");
+        debug ("KTW destructor: dead as a dodo (exiting)");
 }
 
-
+/*  The problem is with old apps who do not reimplement
+    closeEvent (karm, kwindowtest)... */
 void KTopLevelWidget::closeEvent ( QCloseEvent *e){
+  if (usesNewStyle != 1)
+  {
+    debug ("KTW closeEvent: doing it old style");
+    QWidget::closeEvent(e);
+  }
+  else
+    
   if (memberList->count() > 1 || queryExit()){
     e->accept();
     delete this;
@@ -139,8 +188,11 @@ bool KTopLevelWidget::queryExit(){
   return true;
 }
 
+
 int KTopLevelWidget::addToolBar( KToolBar *toolbar, int index )
 {
+  debug ("addToolBar() is deprecated and will be removed. Use toolBar()");
+  usesNewStyle = 0;
   if ( index == -1 )
     toolbars.append( toolbar );
   else
@@ -159,10 +211,10 @@ void KTopLevelWidget::setView( QWidget *view, bool show_frame )
 
     // Set a default frame borderwidth, for a toplevelwidget with
     // frame.
-
+#ifndef KTW_BINCOMPAT
     if(borderwidth == 0 )
       setFrameBorderWidth(0);
-
+#endif
     kmainwidgetframe->show();
   }
 
@@ -176,6 +228,8 @@ void KTopLevelWidget::setView( QWidget *view, bool show_frame )
 
 void KTopLevelWidget::setMenu( KMenuBar *menu )
 {
+  debug ("setMenu() is deprecated and will be removed. Use menuBar()");
+  usesNewStyle = 0;
   kmenubar = menu;
   connect ( kmenubar, SIGNAL( moved (menuPosition) ),
             this, SLOT( updateRects() ) );
@@ -184,6 +238,7 @@ void KTopLevelWidget::setMenu( KMenuBar *menu )
 
 void KTopLevelWidget::setStatusBar( KStatusBar *statusbar )
 {
+    debug ("setStatusBar() is deprecated and will be removed. Use statusBar()");
     kstatusbar = statusbar;
 }
 
@@ -759,9 +814,9 @@ bool KTopLevelWidget::readPropertiesInternal (KConfig* config, int number)
 }
 
 void KTopLevelWidget::setFrameBorderWidth(int size){
-
+#ifndef KTW_BINCOMPAT
   borderwidth = size;
-
+#endif
 }
 
 //Matthias

@@ -1,6 +1,9 @@
 #ifndef _KWIDGET_H
 #define _KWIDGET_H
 
+
+
+
 #include <stdlib.h>
 #include <qwidget.h>
 #include <qlist.h>
@@ -335,8 +338,9 @@ private:
      * Stores the width of the view frame
      */
     int borderwidth;
-
-
+#ifndef KTW_BINCOMPAT
+    bool usesNewStyle;
+#endif
   // Matthias
 protected:
   void savePropertiesInternal (KConfig*, int);

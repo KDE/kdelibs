@@ -505,14 +505,18 @@ KToolBar::~KToolBar()
   // Sven: I don't get it
 int KToolBar::insertLineSeparator( int index )
   if (position == Floating)
-     recreate (Parent, oldWFlags, QPoint (oldX, oldY), true);
-  
+  {
+    debug ("KToolBar destructor: about to recreate");
+    recreate (Parent, oldWFlags, QPoint (oldX, oldY), false);
+    debug ("KToolBar destructor: recreated");
+  }
   for ( KToolBarItem *b = items.first(); b!=0L; b=items.next() )
     items.remove();
   
   // MD: Get a seg. fault if following line included.
   // Sven recommeds, as a temporary measure, remove it.
   //delete context;
+  debug ("KToolBar destructor: exit");
 }
   if (position == Floating)
 void KToolBar::setMaxHeight (int h)
