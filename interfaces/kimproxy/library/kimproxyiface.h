@@ -5,7 +5,7 @@
 	
 	DCOP interface to allow us to receive DCOP signals
 
-	Copyright (c) 2004 Will Stephenson   <list@stevello.free-online.co.uk>
+	Copyright (c) 2004 Will Stephenson   <lists@stevello.free-online.co.uk>
 
     *************************************************************************
     *                                                                       *
@@ -16,6 +16,7 @@
     *                                                                       *
     *************************************************************************
 */
+
 #ifndef KIMPROXYIFACE_H
 #define KIMPROXYIFACE_H
 

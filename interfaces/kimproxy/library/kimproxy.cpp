@@ -3,7 +3,7 @@
 	
 	IM service library for KDE
 	
-	Copyright (c) 2004 Will Stephenson   <list@stevello.free-online.co.uk>
+	Copyright (c) 2004 Will Stephenson   <lists@stevello.free-online.co.uk>
 
     *************************************************************************
     *                                                                       *

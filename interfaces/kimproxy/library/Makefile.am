@@ -2,7 +2,7 @@
 INCLUDES = $(all_includes)
 
 # these are the headers for your project
-noinst_HEADERS = kimproxyiface.h imbutton.h
+noinst_HEADERS = kimproxyiface.h imbutton.h imlabel.h
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
@@ -12,6 +12,10 @@ AM_CPPFLAGS = $(all_includes)
 
 messages: rc.cpp
 	$(XGETTEXT) *.cpp -o $(podir)/kimproxy.pot
+
+# maybe in kdepim?
+kimproxyincludedir = $(includedir)
+kimproxyinclude_HEADERS = kimproxy.h kimproxyiface.h
 
 lib_LTLIBRARIES =  libkimproxy.la
 libkimproxy_la_LDFLAGS = $(all_libraries)
