@@ -67,7 +67,6 @@ HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, KHTML
   : DocumentImpl(_implementation, v)
 {
 //    kdDebug( 6090 ) << "HTMLDocumentImpl constructor this = " << this << endl;
-    bodyElement = 0;
     htmlElement = 0;
 
     m_doAutoFill = false;
@@ -310,14 +309,22 @@ void HTMLDocumentImpl::close()
         // the first(IE)/last(Moz/Konq) registered onload on a <frame> and the
         // first(IE)/last(Moz/Konq) registered onload on a <frameset>.
 
-        // The body has the listener for <frame onload>
-        b->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
-
-        b = body(); // the onload code could have changed it (e.g. document.open/write/close)
-
-        // The document has the listener for <frameset onload>
-        if (b && b->id() == ID_FRAMESET)
+        // Handle frame and iframe
+        DOM::ElementImpl* elt = ownerElement();
+        if ( elt ) {
+            // Security check [from safari]
+            // We also do a security check, since we don't want to allow the enclosing
+            // iframe to see loads of child documents in other domains.
+            DOM::HTMLDocumentImpl* parentDoc = static_cast<HTMLDocumentImpl*>(elt->getDocument());
+            if ( (parentDoc->domain().isNull() ||
+                    parentDoc->domain() == domain()) ) {
+                elt->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
+            }
+        } else {
+            // normal case (body, frameset)
+            //kdDebug() << "dispatching LOAD_EVENT on document " << getDocument() << " " << (view()?view()->part()->name():0) << endl;
             getDocument()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
+        }
 
         // don't update rendering if we're going to redirect anyway
         if ( view() && ( view()->part()->d->m_redirectURL.isNull() ||

@@ -76,7 +76,6 @@ public:
     void setAutoFill() { m_doAutoFill = true; }
 
 protected:
-    HTMLElementImpl *bodyElement;
     HTMLElementImpl *htmlElement;
     friend class HTMLMapElementImpl;
     friend class HTMLImageElementImpl;
