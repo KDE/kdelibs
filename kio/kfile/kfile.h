@@ -114,7 +114,7 @@ public:
     }
 
     static bool isPreviewInfo( const FileView& view ) {
-        return (view & PreviewInfo) == PreviewContents;
+        return (view & PreviewInfo) == PreviewInfo;
     }
 
 };
