@@ -29,7 +29,7 @@ class KService;
 #include <qtimer.h>
 #include <qstring.h>
 
-#include <ksharedptr.h>
+#include "kservices.h"
 
 /** 
  * Implements a generic runner, i.e. the 'exec' functionality of KDE
@@ -209,8 +209,8 @@ public:
   KServiceProvider() { pServiceProvider = this; }
   virtual ~KServiceProvider() {};
   
-  virtual const KSharedPtr<KService> serviceByServiceType( const char *mime_type );
-  virtual const KSharedPtr<KService> serviceByName( const QString &name );
+  virtual KService::Ptr serviceByServiceType( const char *mime_type );
+  virtual KService::Ptr serviceByName( const QString &name );
   
   static KServiceProvider * getServiceProvider() {
     if (!pServiceProvider)

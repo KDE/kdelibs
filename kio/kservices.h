@@ -52,6 +52,7 @@ class KService : public QShared
   K_TYPECODE( TC_KService )
 
 public:  
+  typedef KSharedPtr<KService> Ptr;
   typedef const KSharedPtr<QProperty> PropertyPtr;
 
   /*

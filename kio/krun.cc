@@ -19,7 +19,6 @@
 
 #include "kio_job.h"
 #include "krun.h"
-#include "kservices.h"
 #include "kuserprofile.h"
 #include "kmimetypes.h"
 #include "kmimemagic.h"
@@ -67,14 +66,14 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
   QStringList lst;
   lst.append( _url );
 
-  const KSharedPtr<KService> offer = KServiceProvider::getServiceProvider()->serviceByServiceType( _mimetype );
+  KService::Ptr offer = KServiceProvider::getServiceProvider()->serviceByServiceType( _mimetype );
   
   if ( !offer )
   {
     OpenWithDlg l( lst, i18n("Open With:"), "", (QWidget *)0L );
     if ( l.exec() )
     {
-      KSharedPtr<KService> service = l.service();
+      KService::Ptr service = l.service();
       if ( service )
         return KRun::run( *service, lst );
 	
@@ -598,7 +597,7 @@ bool KFileManager::openFileManagerWindow( const char *_url )
   return true; // assume kfmclient succeeded
 }
 
-const KSharedPtr<KService> KServiceProvider::serviceByServiceType( const char *mime_type )
+KService::Ptr KServiceProvider::serviceByServiceType( const char *mime_type )
 {
   KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers( mime_type );
 
@@ -610,10 +609,10 @@ const KSharedPtr<KService> KServiceProvider::serviceByServiceType( const char *m
 
   KService *s = (KService*)( *offers.begin() ).service();
   s->ref();
-  return KSharedPtr<KService>( s );
+  return KService::Ptr( s );
 }
 
-const KSharedPtr<KService> KServiceProvider::serviceByName( const QString &name )
+KService::Ptr KServiceProvider::serviceByName( const QString &name )
 {
   KService *s = KService::service( name );
   
@@ -621,7 +620,7 @@ const KSharedPtr<KService> KServiceProvider::serviceByName( const QString &name 
     return 0L;
     
   s->ref();
-  return KSharedPtr<KService>( s );
+  return KService::Ptr( s );
 }
 
 #include "krun.moc"

@@ -44,7 +44,7 @@ public:
      * @return the value the user entered
      */
     QString text() { return edit->text(); }
-    KSharedPtr<KService> service() { return m_pService; }
+    KService::Ptr service() { return m_pService; }
   
 public slots:
     /**
@@ -69,7 +69,7 @@ protected:
     QPushButton *clear;
     QPushButton *cancel;
     
-    KSharedPtr<KService> m_pService;
+    KService::Ptr m_pService;
 };
 
 

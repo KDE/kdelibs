@@ -43,6 +43,7 @@ class KServiceType : public QShared
   K_TYPECODE( TC_KServiceType );
   
 public:
+  typedef KSharedPtr<KServiceType> Ptr;
   typedef const KSharedPtr<QProperty> PropertyPtr;
 
   KServiceType( const QString& _name, const QString& _icon, 

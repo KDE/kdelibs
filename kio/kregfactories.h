@@ -32,9 +32,6 @@ class KService;
 class KServiceTypeFactory;
 class KServiceFactory;
 
-typedef KSharedPtr<KServiceType> KServiceTypePtr;
-typedef KSharedPtr<KService> KServicePtr;
-
 /**
  * A registry entry containing a service type
  * (e.g. a mimetype)
@@ -47,10 +44,10 @@ public:
   
   void save( QDataStream& _str ) const;
 
-  KServiceTypePtr serviceType() { return m_pServiceType; }
+  KServiceType::Ptr serviceType() { return m_pServiceType; }
 
 protected:
-  KServiceTypePtr m_pServiceType;
+  KServiceType::Ptr m_pServiceType;
   KServiceTypeFactory *m_pFactory;
 };
 
@@ -101,10 +98,10 @@ public:
 
   void save( QDataStream& _str ) const;
 
-  KServicePtr service() { return m_pService; }
+  KService::Ptr service() { return m_pService; }
   
 protected:
-  KServicePtr m_pService;
+  KService::Ptr m_pService;
   KServiceFactory *m_pFactory;
 };
 
