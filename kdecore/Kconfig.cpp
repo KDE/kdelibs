@@ -1,6 +1,9 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.4  1997/04/20 21:27:28  kalle
+ * Bug fix: writeConfigFile legt neues Datei an, wenn möglich und notwendig
+ *
  * Revision 1.3  1997/04/17 12:08:05  kalle
  * Bugfix in KConfig
  *
@@ -285,12 +288,12 @@ QString KConfig::readEntry( const QString& rKey ) const
 {
   QString aValue;
   // retrieve the current group dictionary
-  KEntryDict* pCurrentGroupDict = pData->aGroupDict[ pData->aGroup ];
+  KEntryDict* pCurrentGroupDict = pData->aGroupDict[ pData->aGroup.data() ];
   
   if( pCurrentGroupDict )
     {
       // find the value for the key in the current group
-      KEntryDictEntry* pData = (*pCurrentGroupDict)[ rKey ];
+      KEntryDictEntry* pData = (*pCurrentGroupDict)[ rKey.data() ];
       if( pData )
 		aValue = pData->aValue;
     }
@@ -415,21 +418,21 @@ QString KConfig::writeEntry( const QString& rKey, const QString& rValue,
   QString aValue;
 
   // retrieve the current group dictionary
-  KEntryDict* pCurrentGroupDict = pData->aGroupDict[ pData->aGroup ];
+  KEntryDict* pCurrentGroupDict = pData->aGroupDict[ pData->aGroup.data() ];
 
   if( !pCurrentGroupDict )
 	{
 	  // no such group -> create a new entry dictionary
 	  KEntryDict* pNewDict = new KEntryDict( 37, false );
 	  pNewDict->setAutoDelete( true );
-	  pData->aGroupDict.insert( pData->aGroup, pNewDict );
+	  pData->aGroupDict.insert( pData->aGroup.data(), pNewDict );
 	  
 	  // this is now the current group
 	  pCurrentGroupDict = pNewDict;
 	}
 
   // try to retrieve the current entry for this key
-  KEntryDictEntry* pEntryData = (*pCurrentGroupDict)[ rKey ];
+  KEntryDictEntry* pEntryData = (*pCurrentGroupDict)[ rKey.data() ];
   if( pEntryData )
 	{
 	  // there already is such a key
@@ -447,7 +450,7 @@ QString KConfig::writeEntry( const QString& rKey, const QString& rValue,
 		pEntry->bDirty = TRUE;
 
 	  // insert the new entry into group dictionary
-	  pCurrentGroupDict->insert( rKey, pEntry );
+	  pCurrentGroupDict->insert( rKey.data(), pEntry );
 	}
 
   // the KConfig object is dirty now
@@ -538,7 +541,11 @@ void KConfig::sync()
 	{
 	  // is it writable?
 	  if( pData->pAppStream->device()->isWritable() )
+		{
+		  writeConfigFile( *(QFile *)pData->pAppStream->device() );
+		  pData->pAppStream->device()->close();
 		  pData->pAppStream->device()->open( IO_ReadWrite );
+		}
 
 	  return; // we only write here, no need to go further
 	}

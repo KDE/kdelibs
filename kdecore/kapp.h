@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.2  1997/04/15 20:01:55  kalle
+// Kalles changes for 0.8
+//
 // Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
 // Source imported
 //
@@ -127,6 +130,13 @@ class KIconLoader;
   */
 /** 
 * Get the KDE base dir. 
+  /// Find a file using standard KDE search paths.
+  /** Find a file using standard KDE search paths.  Possible search paths
+    include $KDEDIR, $KDEPATH, and "[KDE Setup]:Path=" entry in a config
+	file. If file is not found, isEmpty() will return True
+	*/
+
+/** 
   //@Man: Drag 'n Drop stuff
   //@{
   /// An X11 atom used for IPC
@@ -180,6 +190,9 @@ class KIconLoader;
 	* that the mouse left the DropZone.
   //@}
 	*/
+  KDNDDropZone *lastEnteredDropZone;
+
+/**
 * The X11 display
 */
   /**
@@ -189,8 +202,29 @@ private slots:
   QFile* pConfigFile; // application-specific config file
 	* X11 atoms used for IPC
   Atom DndProtocol;
+  static QStrList searchPaths;
  void appHelpActivated();
   void aboutKDE();
+  void aboutQt();
+
+private:
+  void* pAppData; // don't touch this without Kalles permission
+  void changePalette();
+  void changeGeneral();
+  void readSettings();
+  KIconLoader* pIconLoader; // the application's own icon loader
+  KLocale* pLocale;  
+  static KCharsets* pCharsets;  // it shouldn't be static, but you would loose binary compability 
+  void* dummy2; // do not use these without asking kalle@kde.org
+  void* dummy3;
+  void* dummy4;
+  QString aAppAboutString; // The text for the about box
+  QString aDummyString2; // do not touch
+  QString aDummyString3; // do not touch
+  QString aDummyString4; // do not touch
+  bool bLocaleConstructed; // has the KLocale object already been constructed
+  bool bSessionManagement; 
+  bool bSessionManagementUserDefined;
   void kdisplayStyleChanged();
 
   /**

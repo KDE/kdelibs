@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.4  1997/04/19 23:04:51  kalle
+// writeEntry with const char*
+//
 // Revision 1.3  1997/04/19 21:39:51  kalle
 // Mentioned in the documentation that KConfig expands environment variables
 // (Thanks, Bernd!)
@@ -107,7 +110,9 @@ class KConfigData;
   from the beginning of a configuration file to the first group
   declaration belong to a special group called the default group.
   If there is a $ character in a entry, KConfig tries to expand
-  environment variable and uses its value instead of its name.
+  environment variable and uses its value instead of its name. You can
+  avoid this feature by having two consecutive $ characters in your
+  config file which get expanded to one.
   */
 class KConfig
 {

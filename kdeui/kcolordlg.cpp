@@ -593,3 +593,123 @@ void KColorDialog::setHsvEdit()
 	vedit->setText( num );
 }
 
+//----------------------------------------------------------------------------
+
+KColorCombo::KColorCombo( QWidget *parent, const char *name )
+	: QComboBox( parent, name )
+{
+	customColor.setRgb( 255, 255, 255 );
+	color.setRgb( 255, 255, 255 );
+
+	addColors();
+
+	connect( this, SIGNAL( activated(int) ), SLOT( slotActivated(int) ) );
+	connect( this, SIGNAL( highlighted(int) ), SLOT( slotHighlighted(int) ) );
+}
+
+void KColorCombo::setColor( const QColor &col )
+{
+	color = col;
+
+	addColors();
+}
+
+void KColorCombo::resizeEvent( QResizeEvent *re )
+{
+	QComboBox::resizeEvent( re );
+
+	addColors();
+}
+
+void KColorCombo::slotActivated( int index )
+{
+	if ( index == 0 )
+	{
+	    if ( KColorDialog::getColor( customColor ) == QDialog::Accepted )
+		{
+			QRect rect( 0, 0, width(), 20 );
+			QPixmap pixmap( rect.width(), rect.height() );
+			QPainter painter;
+			QPen pen;
+
+			if ( qGray( customColor.rgb() ) < 128 )
+				pen.setColor( white );
+			else
+				pen.setColor( black );
+
+			painter.begin( &pixmap );
+			QBrush brush( customColor );
+			painter.fillRect( rect, brush );
+			painter.setPen( pen );
+			painter.drawText( 2, 18, "Custom..." );
+			painter.end();
+
+			changeItem( pixmap, 0 );
+			pixmap.detach();
+		}
+
+		color = customColor;
+	}
+	else
+		color = standardPalette[ index - 1 ];
+
+	emit activated( color );
+}
+
+void KColorCombo::slotHighlighted( int index )
+{
+	if ( index == 0 )
+		color = customColor;
+	else
+		color = standardPalette[ index - 1 ];
+
+	emit highlighted( color );
+}
+
+void KColorCombo::addColors()
+{
+	QRect rect( 0, 0, width(), 20 );
+	QPixmap pixmap( rect.width(), rect.height() );
+	QPainter painter;
+	QPen pen;
+	int i;
+
+	clear();
+
+	for ( i = 0; i < STANDARD_PAL_SIZE; i++ )
+		if ( standardPalette[i] == color ) break;
+
+	if ( i == STANDARD_PAL_SIZE )
+		customColor = color;
+
+	if ( qGray( customColor.rgb() ) < 128 )
+		pen.setColor( white );
+	else
+		pen.setColor( black );
+
+	painter.begin( &pixmap );
+	QBrush brush( customColor );
+	painter.fillRect( rect, brush );
+	painter.setPen( pen );
+	painter.drawText( 2, 18, "Custom..." );
+	painter.end();
+
+	insertItem( pixmap );
+	pixmap.detach();
+	
+	for ( i = 0; i < STANDARD_PAL_SIZE; i++ )
+	{
+		painter.begin( &pixmap );
+		QBrush brush( standardPalette[i] );
+		painter.fillRect( rect, brush );
+		painter.end();
+
+		insertItem( pixmap );
+		pixmap.detach();
+
+		if ( standardPalette[i] == color )
+			setCurrentItem( i + 1 );
+	}
+}
+
+

@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.2  1997/04/15 20:01:55  kalle
+// Kalles changes for 0.8
+//
 // Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
 // Source imported
 //
@@ -56,7 +59,10 @@
 
 #include <stdlib.h> // getenv()
 // Revision 1.62  1997/10/17 15:46:22  stefan
+// compiler bug. I know - I should upgrade gcc, but for all the
+// poor folks that still have the old one ;-)
 // Matthias: registerTopWidget/unregisterTopWidget are obsolete and empty now.
+QStrList KApplication::searchPaths;
 
 // I'm not sure, why this have been removed, but I'm sure, they are
 // needed.
@@ -89,10 +95,10 @@
 
 KApplication* KApplication::KApp = 0L;
 QStrList* KApplication::pSearchPaths;
-  if( getenv( "USE_NEW_CONFIG_LOCATION" ) )
-       aConfigName += "/.kde/config/.";
-  else  
+  if( getenv( "USE_OLD_CONFIG_LOCATION" ) )
        aConfigName += "/.";
+  else  
+       aConfigName += "/.kde/config/.";
 
 KApplication::KApplication( int& argc, char** argv ) :
   QApplication( argc, argv )
@@ -136,14 +142,27 @@ void KApplication::init()
   bLocaleConstructed = false; // no work around mutual dependencies
   
   pIconLoader = 0L;
+
+  QString configPath = QDir::homeDirPath () + "/.kde";
+  // We should check if  mkdir() succeeds, but since we cannot do much anyway...
   mkdir (configPath.data(), 0755); // make it public(?)
   configPath += "/share";
+  mkdir (configPath.data(), 0755); // make it public
+
+  // try to read a global application file
+  QFile aGlobalAppConfigFile( aGlobalAppConfigName );
+  if ( getenv( "ENABLE_COLOR_FONT_SETUP" ) )
+  {
+	readSettings();
+	changePalette();
+	changeGeneral();
+  }
   KDEChangePalette = XInternAtom( display, "KDEChangePalette", False );
   KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", False );
   KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", False);
       else
         aIconPixmap = getIconLoader()->loadApplicationIcon( argv[i+1] );
-  delete kKeys; // must be done befor "delete pConfig"
+		  aMiniIconPixmap = aIconPixmap;
     case miniicon:
   delete pConfigStream;
   pConfigFile->close();
@@ -160,6 +179,24 @@ void KApplication::init()
 		QString aSessionConfigName;
 		if (argv[i+1][0] == '/')
 
+	  if ( getenv( "ENABLE_COLOR_FONT_SETUP" ) )
+	    {
+		  if ( cme->message_type == KDEChangePalette )
+			{
+			  readSettings();
+			  changePalette();
+
+			  return True;
+			}
+		  else if ( cme->message_type == KDEChangeGeneral )
+			{
+			  readSettings();
+			  changeGeneral();
+			  changePalette();
+
+			  return True;
+			}
+			{
 			      cme->window != topWidget()->winId()){
 			    KWM::setWmCommand(cme->window, "");
 			    return true;
@@ -267,6 +304,266 @@ void KApplication::init()
 	  if ( cme->message_type == DndRootProtocol )
 		{
 		  if ( rootDropEventID == (int)cme->data.l[1] )
+			return FALSE;
+				result = dz;
+			}
+	      
+  QStrListIterator it( searchPaths );
+			w = w->parentWidget();
+		}
+
+	  // KFM hack. Find not decorated windows ( root icons )
+	  if ( result == 0L )
+		for ( dz = dropZones.first(); dz != 0L; dz = dropZones.next() )
+	      {
+			QPoint p2 = dz->getWidget()->mapFromGlobal( p );
+			if ( dz->getWidget()->rect().contains( p2 ) )
+		      result = dz;
+	      }
+	  
+	  if ( result != 0L )
+		{
+	      if ( cme->message_type == DndProtocol )
+			{
+			  lastEnteredDropZone = result;
+			}
+
+	  return TRUE;
+    }
+    
+  return FALSE;
+}
+
+void KApplication::applyGUIStyle(GUIStyle newstyle) {
+  QApplication::setStyle( applicationStyle );
+    // Torben
+    // We want to search the local files with highest priority
+    QString tmp( getenv( "HOME" ) );
+    tmp += "./kde";
+    appendSearchPath( tmp );
+  // foreach toplevel ...
+  tmp += "./kde";
+    QWidget *w = wl_it.current();
+
+    // set new style
+    w->setStyle(newstyle);
+    QObjectList *ol = w->queryList("QWidget", 0, 0, TRUE);
+    QObjectListIt ol_it( *ol );
+
+    // set style to child widgets
+    while ( ol_it.current() ) {
+      QWidget *child = (QWidget *)(ol_it.current());
+      child->setStyle(newstyle);
+      ++ol_it;
+    }
+    delete ol;
+    ++wl_it;
+  }
+
+  delete wl;
+}
+
+QString KApplication::findFile( const char *file )
+{
+  // add KDEDIR environment variable path
+  const char *kdeDirEnv = getenv( "KDEDIR" );
+  if ( kdeDirEnv )
+	  appendSearchPath( kdeDirEnv );
+  QStrListIterator it( *pSearchPaths );
+
+  while ( it.current() )
+    {
+  QStrListIterator it( searchPaths );
+	  fullPath += '/';
+	  fullPath += file;
+	  if ( !access( fullPath, 0 ) )
+		return fullPath;
+	  ++it;
+    }
+
+  fullPath.resize( 0 );
+
+  searchPaths.append( path );
+}
+
+
+const char* KApplication::getCaption() const
+{
+	KConfig config;
+	
+	return aAppName;
+}
+	// This is the default light gray for KDE
+	QColor col;
+	col.setRgb(214,214,214);
+
+
+		  return;
+
+void KApplication::buildSearchPaths()
+	config.setGroup( "Color Scheme");
+	str = config.readEntry( "InactiveTitleBarColor" );
+	if ( !str.isNull() )
+		inactiveTitleColor.setNamedColor( str );
+	else
+		inactiveTitleColor = gray;
+		
+	str = config.readEntry( "InactiveTitleTextColor" );
+	if ( !str.isNull() )
+		inactiveTextColor.setNamedColor( str );
+	else
+		inactiveTextColor = col;
+		
+	str = config.readEntry( "ActiveTitleBarColor" );
+	if ( !str.isNull() )
+		activeTitleColor.setNamedColor( str );
+	else
+		activeTitleColor = black;
+		
+	str = config.readEntry( "ActiveTitleTextColor" );
+	if ( !str.isNull() )
+		activeTextColor.setNamedColor( str );
+	else
+		activeTextColor = white;
+		
+	str = config.readEntry( "TextColor" );
+	if ( !str.isNull() )
+		textColor.setNamedColor( str );
+	else
+		textColor = black;
+		
+	str = config.readEntry( "BackgroundColor" );
+	if ( !str.isNull() )
+		backgroundColor.setNamedColor( str );
+	else
+		backgroundColor = col;
+		
+	str = config.readEntry( "SelectColor" );
+	if ( !str.isNull() )
+		selectColor.setNamedColor( str );
+	else
+		selectColor = black;	
+	
+	str = config.readEntry( "SelectTextColor" );
+	if ( !str.isNull() )
+		selectTextColor.setNamedColor( str );
+	else
+		selectTextColor = white;
+		
+	str = config.readEntry( "WindowColor" );
+	if ( !str.isNull() )
+		windowColor.setNamedColor( str );
+	else
+		windowColor = white;
+		
+	str = config.readEntry( "WindowTextColor" );
+	if ( !str.isNull() )
+		windowTextColor.setNamedColor( str );
+	else
+		windowTextColor = black;
+	
+    }
+
+	str = config->readEntry( "SelectTextColor", "#FFFFFF" );
+	selectTextColor.setNamedColor( str );
+
+void KApplication::appendSearchPath( const char *path )
+	config.setGroup( "General Font" );
+	str = config.readEntry( "Family" );
+
+  // return if this path has already been added
+	str = config->readEntry( "WindowTextColor", "#000000" ); 
+	str = config.readEntry( "Point Size" );
+  pSearchPaths->append( path );
+}
+	generalFont = QFont("helvetica", 12, QFont::Normal);
+	str = config.readEntry( "Weight" );
+	config->setGroup( "General Font" );
+  // use the global config files
+	int num = config->readNumEntry( "Charset",-1 );
+	str = config.readEntry( "Italic" );
+		generalFont.setCharSet((QFont::CharSet)num);
+  QString str;
+	str = config->readEntry( "Family" );
+	if ( !str.isNull() )
+		generalFont.setFamily(str.data());
+	
+	config.setGroup( "GUI Style" );
+	str = config.readEntry( "Style" );
+		generalFont.setPointSize(atoi(str.data()));
+  inactiveTitleColor.setNamedColor( str );
+				
+		if ( !str.isNull() )
+  str = config->readEntry( "InactiveTitleTextColor", "#808080" );
+  inactiveTextColor.setNamedColor( str );
+	str = config->readEntry( "Italic" );
+		if ( !str.isNull() )
+			if ( atoi(str.data()) != 0 )
+				generalFont.setItalic(True);
+  str = config->readEntry( "ActiveTitleTextColor", "#FFFFFF" );
+void KApplication::changePalette()
+
+	config->setGroup( "GUI Style" );
+	str = config->readEntry( "Style" );
+	if ( !str.isNull() )
+
+		if( str == "Windows 95" )
+			applicationStyle=WindowsStyle;
+		else
+  selectTextColor.setNamedColor( str );
+	// WARNING : QApplication::setPalette() produces inconsistent results.
+    							backgroundColor.light(),
+    							backgroundColor.dark(), 
+	// 2) You need different palettes to apply the same color scheme to
+	//		different widgets !!
+	// 3) Motif style needs a different palette to Windows style.
+  str = config->readEntry( "Charset","iso-8859-1" );
+    							backgroundColor.light(),
+    							backgroundColor.dark(), 
+	highlightVal=100+(2*contrast+4)*16/10;
+	lowlightVal=100+(2*contrast+4)*10;
+	//	Read the font specification from config.
+	// printf("contrast = %d\n", contrast);
+    							backgroundColor.dark(lowlightVal), 
+    							backgroundColor.dark(120),
+                        	darkGray, windowColor );
+
+    	QColorGroup colgrp( textColor, backgroundColor, 
+    							backgroundColor.light(highlightVal),
+    							backgroundColor.dark(lowlightVal), 
+    							backgroundColor.dark(120),
+                        	textColor, windowColor );
+  if ( !str.isNull() )
+    	QApplication::setPalette( QPalette(colgrp,disabledgrp,colgrp), TRUE );
+	
+  str = config->readEntry( "Point Size" );
+  if ( !str.isNull() )
+    							backgroundColor.dark(), 
+    							backgroundColor.dark(120),
+                        	darkGray, windowColor );
+void KApplication::changeGeneral()
+    resizeAll();
+  // 1) You can't change select colors
+  //		different widgets !!
+	
+    emit kdisplayStyleChanged();
+    
+    QApplication::setFont( generalFont, TRUE );
+    
+    // setFont() works every time for me !
+	emit appearanceChanged();
+    QApplication::setStyle( applicationStyle );
+
+    QApplication::setFont( generalFont, TRUE );
+							 darkGray, windowColor );
+    emit kdisplayStyleChanged();
+    emit kdisplayFontChanged();
+	emit appearanceChanged();
+    // 	setStyle() works pretty well but may not change the style of combo
+    //	boxes.
+						textColor, windowColor );
+}	
+
 	emit kdisplayPaletteChanged();
 	emit appearanceChanged();
 

@@ -13,6 +13,7 @@
 #include <qrangect.h>
 #include <qlined.h>
 #include <qpixmap.h>
+#include <qcombo.h>
 #include "kselect.h"
 
 //-----------------------------------------------------------------------------
@@ -186,6 +187,33 @@ private:
   KHSSelector *palette;
   KValueSelector *valuePal;
   QColor selColor;
+};
+
+//----------------------------------------------------------------------------
+
+class KColorCombo : public QComboBox
+{
+	Q_OBJECT
+public:
+	KColorCombo( QWidget *parent, const char *name = NULL );
+
+	void setColor( const QColor &col );
+
+public slots:
+	void slotActivated( int index );
+	void slotHighlighted( int index );
+
+signals:
+	void activated( const QColor &col );
+	void highlighted( const QColor &col );
+
+protected:
+	virtual void resizeEvent( QResizeEvent *re );
+
+private:
+	void addColors();
+	QColor customColor;
+	QColor color;
 };
 
 #endif		// __KCOLORDLG_H__
