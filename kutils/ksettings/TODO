@@ -1,0 +1,6 @@
+- add 'Reset' button to KConfigureDialog that calls load() in the KCMs
+- if the dlg is hidden and show() is called, call load() on the KCMs
+- call sync() and reloadConfiguration() where needed and possible
+- KPluginSelct.. listview should only show the name and comment, the rest is
+  shown in a tooltip
+- X-KDE-Weight to tell the position of the page in the dialog

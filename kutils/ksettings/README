@@ -1,0 +1,99 @@
+How to use KConfigureDialog in your application.
+
+1. Open the dialog from your app
+--------------------------------
+
+All you need to do is instanciate KConfigureDialog and show() it. I recommend
+the following:
+
+create the 'Configure MyApp' StdAction like this:
+KStdAction::preferences( this, SLOT( showConfigDialog() ), actionCollection );
+
+and the slot looks like this:
+if( m_dlg == 0 )
+  m_dlg = new KConfigureDialog( this );
+m_dlg->show();
+
+Of course you need to have the 'KConfigureDialog * m_dlg' member var and
+initialize it to 0 in the ctor.
+
+If your application uses KParts that don't set 'X-KDE-ParentApp=<the instance
+name of your application>' then you need to use the second ctor of
+KConfigureDialog:
+m_dlg = new KConfigureDialog( QStringList::split( ';', "component1;component2" ) );
+
+The KConfigureDialog object will be destructed by the QObject mechanisms.
+
+
+2. Create pages for your dialog
+-------------------------------
+
+Every page is a KCM. This is what you need for creating a page:
+
+class MyAppConfig : public KCModule
+{
+  Q_OBJECT
+public:
+  MyAppConfig( QWidget *parent, const char *name = 0, const QStringList &args =
+      QStringList() );
+  ~MyAppConfig();
+
+  void load();
+  void save();
+  void defaults();
+}
+
+and in the cpp file:
+
+typdef KGenericFactory<MyAppConfig, QWidget> MyAppConfigFactory;
+K_EXPORT_COMPONENT_FACTORY( kcm_myappconfig, MyAppConfigFactory(
+    "kcm_myappconfig" ) );
+
+MyAppConfig::MyAppConfig( QWidget *parent, const char *, const QStringList &args )
+  : KCModule( MyAppConfigFactory::instance(), parent, args )
+{
+  // create the pages GUI
+  load();
+}
+
+// implementations for the other methods - don't forget to call setChanged( bool )
+// else the apply button will be disabled and the config of your page won't be
+// saved. For the KConfig object you can either use KGlobal::config() (I don't
+// recommend it) or KSimpleConfig( "myapprc" ).
+
+
+3. The .desktop file for the page
+---------------------------------
+
+The .desktop file holds all the information for the KCD to find the page and
+insert it at the right place (with the right icon, name and comment).
+
+An example file:
+[Desktop Entry]
+Encoding=UTF-8
+Icon=myapp
+Type=Service
+ServiceTypes=KCModule
+
+X-KDE-ModuleType=Library
+X-KDE-Library=myappconfig
+X-KDE-FactoryName=MyAppConfigFactory
+X-KDE-ParentApp=myapp
+X-KDE-ParentComponents=myapp
+
+Name=General
+Comment=General configuration of my app
+
+
+Some explanation for those keys:
+- You just keep 'Encoding', 'Type', 'ServiceTypes' and 'X-KDE-ModuleType' like
+  in the example.
+
+4. The Pluginselector
+---------------------
+
+
+5. The .desktop files of plugin config pages
+--------------------------------------------
+
+# vim: tw=80
