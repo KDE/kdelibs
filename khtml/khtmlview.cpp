@@ -997,8 +997,8 @@ void KHTMLView::print()
         m_part->xmlDocImpl()->setPaintDevice( printer );
         QString oldMediaType = mediaType();
         setMediaType( "print" );
-	//m_part->xmlDocImpl()->setPrintStyleSheet( printer->colorMode() == KPrinter::GrayScale ? 
-	m_part->xmlDocImpl()->setPrintStyleSheet( printer->option("kde-khtml-printfriendly") == "true" ? 
+	//m_part->xmlDocImpl()->setPrintStyleSheet( printer->colorMode() == KPrinter::GrayScale ?
+	m_part->xmlDocImpl()->setPrintStyleSheet( printer->option("kde-khtml-printfriendly") == "true" ?
 						  "* { background-image: none !important;"
 						  "    background-color: transparent !important;"
 						  "    color: black !important }" :
@@ -1026,6 +1026,7 @@ void KHTMLView::print()
         m_part->setFontSizes(fontSizes);
         m_part->xmlDocImpl()->updateStyleSelector();
 
+        root->setPrintImages( printer->option("kde-khtml-printimages") == "true");
         root->setLayouted( false );
         root->setMinMaxKnown( false );
         root->layout();
