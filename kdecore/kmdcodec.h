@@ -648,7 +648,7 @@ public:
    * character to form a properly terminated string.  Also
    * note that that if
    *
-   * <u>NOTE:</u> You are responsible for making a copy of
+   * NOTE: You are responsible for making a copy of
    * this string!
    *
    * @return the hex represenation of the digest or NULL if

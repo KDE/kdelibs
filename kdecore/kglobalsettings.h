@@ -140,19 +140,31 @@ class KGlobalSettings
      *
      * see @ref http://developer.kde.org/documentation/standards/kde/style/keys/completion.html
      *
-     * @return CompletionNone:  Completion should be disabled
-     *         CompletionAuto:  Automatic completion
-     *         CompletionMan:   Like automatic completion except the user initiates
-     *                          the completion using the completion key as in CompletionEOL
-     *         CompletionShell: Attempts to mimic the completion feature found in
-     *                          typical *nix shell enviornments.
-     *         CompletionPopup: automatic completion, but the matches are not
-     *                          put into the edit-widget, but into a popup box.
+     * @details
+     *         CompletionNone:
+     *         No completion is used.
+     *
+     *         CompletionAuto:
+     *         Text is automatically filled in whenever possible.
+     *
+     *         CompletionMan:
+     *         Same as automatic except shortest match is used for completion
+     *
+     *         CompletionShell:
+     *         Complete text much in the same way as a typical *nix shell would
+     *
+     *         CompletionPopup:
+     *         Lists all possible matches in a popup list-box to choose from.
      **/
 
     enum Completion { CompletionNone=1, CompletionAuto, CompletionMan,
-		      CompletionShell, CompletionPopup };
+                                CompletionShell, CompletionPopup };
 
+    /**
+     * Returns the preferred completion mode setting.
+     *
+     * @return @see Completion.  Default is @p CompletionPopup.
+     */
     static Completion completionMode();
 
     /**
