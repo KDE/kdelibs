@@ -1,4 +1,23 @@
 dnl libkmid's specific checks
+AC_MSG_CHECKING(if libkmid would compile)
+AC_CACHE_VAL(kde_libkmid_compiles,
+[
+AC_TRY_COMPILE([
+#ifndef __FreeBSD__
+#include <sys/soundcard.h>
+#else
+#include <machine/soundcard.h>
+#endif
+],
+[
+],
+  kde_libmid_compiles=yes,
+kde_libmid_compiles=no)
+])
+AC_MSG_RESULT($kde_libmid_compiles)
+if test $kde_libmid_compiles = no; then
+  DO_NOT_COMPILE="$DO_NOT_COMPILE libkmid"
+fi
 
 #AC_ARG_ENABLE(alsa, 
 #[  --enable-alsa    Turn on alsa support], 
