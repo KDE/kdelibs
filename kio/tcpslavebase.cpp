@@ -57,6 +57,7 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int default_port, const QCString &prot
 void TCPSlaveBase::doConstructorStuff()
 {
         d = new TcpSlaveBasePrivate;
+        d->kssl = NULL;
         d->ip = "";
         d->cc = NULL;
         d->usingTLS = false;
@@ -162,12 +163,12 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
               CloseDescriptor();
               return false;
            }
+           setMetaData("ssl_in_use", "TRUE");
            rc = verifyCertificate();
            if (rc != 1) {
               CloseDescriptor();
               return false;
            }
-           setMetaData("ssl_in_use", "TRUE");
         } else setMetaData("ssl_in_use", "FALSE");
 
 	// Since we want to use stdio on the socket,
@@ -179,8 +180,6 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 	}
 	m_iPort=port;
 
-        //connected();
- 
 	return true;
 }
 
