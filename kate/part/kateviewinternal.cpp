@@ -161,6 +161,9 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   // event filter
   installEventFilter(this);
 
+  // im
+  setInputMethodEnabled(true);
+
   // set cursor
   setCursor( KCursor::ibeamCursor() );
 
