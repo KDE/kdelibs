@@ -277,7 +277,9 @@ bool KPty::open()
  gotpty:
   struct stat st;
   if (stat(d->ttyName.data(), &st))
-    return false; // this just cannot happen ... *cough*
+    return false; // this just cannot happen ... *cough*  Yeah right, I just
+                  // had it happen when pty #349 was allocated.  I guess
+                  // there was some sort of leak?  I only had a few open.
   if (((st.st_uid != getuid()) ||
        (st.st_mode & (S_IRGRP|S_IXGRP|S_IROTH|S_IWOTH|S_IXOTH))) &&
       !chownpty(true))
