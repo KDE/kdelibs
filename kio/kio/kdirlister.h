@@ -131,7 +131,7 @@ public:
   /**
    * Error handling.
    */
-  bool autoErrorHandlingEnabled();
+  bool autoErrorHandlingEnabled() const;
   void setAutoErrorHandlingEnabled( bool enable, QWidget* parent );
 
   /**
