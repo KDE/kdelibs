@@ -2373,7 +2373,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
       child->m_frame->setWidget( part->widget() );
 
     if ( child->m_bFrame )
-      partManager()->addPart( part );
+      partManager()->addPart( part, false );
 //     else
 //         kdDebug(6005) << "AH! NO FRAME!!!!!" << endl;
 
