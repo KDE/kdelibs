@@ -1106,7 +1106,11 @@ void RenderTextArea::close( )
 {
     HTMLTextAreaElementImpl *f = static_cast<HTMLTextAreaElementImpl*>(m_element);
 
-    if(f->firstChild() && f->firstChild()->id() == ID_TEXT)
+    QString state = f->ownerDocument()->registerElement( f );
+    if ( !state.isEmpty() )
+        f->restoreState( state );
+
+    if(f->firstChild() && f->firstChild()->id() == ID_TEXT && state.isEmpty())
         f->setValue(static_cast<TextImpl*>(f->firstChild())->string());
 
     layout();

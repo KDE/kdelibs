@@ -1807,9 +1807,8 @@ void HTMLTextAreaElementImpl::attach(KHTMLView *_view)
             m_render->setStyle(m_style);
             r->addChild(m_render, _next ? _next->renderer() : 0);
 
-            QString state = document->registerElement(this);
-            if (!state.isEmpty())
-                restoreState( state );
+            // registerElement and restoreState calls are in RenderTextArea::close
+
         }
     }
     NodeBaseImpl::attach(_view);
