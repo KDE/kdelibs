@@ -738,6 +738,7 @@ void HTMLInputElementImpl::init()
 
 HTMLInputElementImpl::~HTMLInputElementImpl()
 {
+    ownerDocument()->removeElement(this);
 }
 
 const DOMString HTMLInputElementImpl::nodeName() const
@@ -1188,13 +1189,6 @@ void HTMLInputElementImpl::setValue(DOMString val)
     default:
         setAttribute(ATTR_VALUE,val);
     }
-}
-
-void HTMLInputElementImpl::setOwnerDocument(DocumentImpl *_document)
-{
-    if (ownerDocument())
-	ownerDocument()->removeElement(this);
-    HTMLGenericFormElementImpl::setOwnerDocument(_document);
 }
 
 void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)

@@ -63,7 +63,8 @@ NodeImpl::NodeImpl(DocumentImpl *doc)
 
 NodeImpl::~NodeImpl()
 {
-    setOwnerDocument(0);
+    if (document)
+	document->changedNodes.remove(this);
     if (m_regdListeners)
 	delete m_regdListeners;
 }
@@ -130,15 +131,6 @@ void NodeImpl::setPreviousSibling(NodeImpl *)
 void NodeImpl::setNextSibling(NodeImpl *)
 {
 }
-
-void NodeImpl::setOwnerDocument(DocumentImpl *_document)
-{
-    if (document)
-	document->changedNodes.remove(this);
-
-    document = _document;
-}
-
 
 NodeImpl *NodeImpl::insertBefore( NodeImpl *, NodeImpl *, int &exceptioncode )
 {
@@ -671,8 +663,6 @@ NodeBaseImpl::~NodeBaseImpl()
 	n->setParent(0);
 	if(n->deleteMe())
 	    delete n;
-	else
-	    n->setOwnerDocument(0);
     }
     if (m_style)
 	m_style->deref();
@@ -870,20 +860,19 @@ void NodeBaseImpl::removeChildren()
     NodeImpl *n, *next;
     for( n = _first; n != 0; n = next )
     {
-	next = n->nextSibling();
+        next = n->nextSibling();
         n->setPreviousSibling(0);
         n->setNextSibling(0);
-	n->setParent(0);
-	if (n->renderer() && n->renderer()->parent())
-	    n->renderer()->parent()->removeChild(n->renderer());
-	n->setRenderer( 0 );
-	n->setStyle( 0 );
-	if(n->deleteMe())
-	    delete n;
-	else
-	    n->setOwnerDocument(0);
+        n->setParent(0);
+        if (n->renderer() && n->renderer()->parent())
+            n->renderer()->parent()->removeChild(n->renderer());
+        n->setRenderer( 0 );
+        n->setStyle( 0 );
+        if(n->deleteMe())
+            delete n;
     }
     _first = _last = 0;
+
 }
 
 
@@ -1110,14 +1099,6 @@ void NodeBaseImpl::detach()
 	prev->detach();
     }
     NodeWParentImpl::detach();
-}
-
-void NodeBaseImpl::setOwnerDocument(DocumentImpl *_document)
-{
-    NodeImpl *n;
-    for(n = _first; n != 0; n = n->nextSibling())
-	n->setOwnerDocument(_document);
-    NodeWParentImpl::setOwnerDocument(_document);
 }
 
 void NodeBaseImpl::cloneChildNodes(NodeImpl *clone, int &exceptioncode)

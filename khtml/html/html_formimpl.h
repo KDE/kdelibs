@@ -284,7 +284,6 @@ public:
     typeEnum inputType() const { return m_type; }
     virtual void reset();
 
-    virtual void setOwnerDocument(DocumentImpl *_document);
     // used in case input type=image was clicked.
     int clickX() const { return xPos; }
     int clickY() const { return yPos; }

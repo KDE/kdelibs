@@ -34,6 +34,7 @@ namespace DOM
   class HTMLFrameSetElementImpl;
   class HTMLFrameElementImpl;
   class HTMLElementImpl;
+  class MouseEventImpl;
 };
 
 namespace khtml
@@ -57,7 +58,8 @@ public:
 
   bool resizing() const { return m_resizing; }
 
-  bool userResize( int _x, int _y, DOM::NodeImpl::MouseEventType type );
+  bool userResize( DOM::MouseEventImpl *evt );
+  bool canResize( int _x, int _y, DOM::NodeImpl::MouseEventType type );
 
   DOM::HTMLFrameSetElementImpl *frameSetImpl() const { return m_frameset; }
 

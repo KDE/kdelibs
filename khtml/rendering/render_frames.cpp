@@ -22,7 +22,7 @@
  *
  * $Id$
  */
-//#define DEBUG_LAYOUT
+#define DEBUG_LAYOUT
 
 #include "render_frames.h"
 #include "html_baseimpl.h"
@@ -428,11 +428,13 @@ void RenderFrameSet::positionFrames()
     }
 }
 
-bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType type )
+bool RenderFrameSet::userResize( MouseEventImpl *evt )
 {
   bool res = false;
+  int _x = evt->clientX();
+  int _y = evt->clientY();
 
-  if ( !m_resizing && type == DOM::NodeImpl::MouseMove || type == DOM::NodeImpl::MousePress )
+  if ( !m_resizing && evt->id() == EventImpl::MOUSEMOVE_EVENT || evt->id() == EventImpl::MOUSEDOWN_EVENT )
   {
 #ifdef DEBUG_LAYOUT
     kdDebug( 6031 ) << "mouseEvent:check" << endl;
@@ -491,7 +493,7 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
       cursor = Qt::splitVCursor;
     }
 
-    if(type == DOM::NodeImpl::MousePress)
+    if(evt->id() == EventImpl::MOUSEDOWN_EVENT)
     {
       m_resizing = true;
       KApplication::setOverrideCursor(cursor);
@@ -505,7 +507,7 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
 
   // ### need to draw a nice movin indicator for the resize.
   // ### check the resize is not going out of bounds.
-  if(m_resizing && type == DOM::NodeImpl::MouseRelease)
+  if(m_resizing && evt->id() == EventImpl::MOUSEUP_EVENT)
   {
     m_resizing = false;
     KApplication::restoreOverrideCursor();
@@ -533,6 +535,28 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
   }
 
   return res;
+}
+
+bool RenderFrameSet::canResize( int _x, int _y, DOM::NodeImpl::MouseEventType type )
+{
+   if(m_resizing || type == DOM::NodeImpl::MousePress)
+     return true;
+
+  if ( type != DOM::NodeImpl::MouseMove )
+    return false;
+
+  // check if we're over a horizontal or vertical boundary
+  int pos = m_colWidth[0];
+  for(int c = 1; c < m_frameset->totalCols(); c++)
+    if(_x >= pos && _x <= pos+m_frameset->border())
+      return true;
+
+  pos = m_rowHeight[0];
+  for(int r = 1; r < m_frameset->totalRows(); r++)
+    if( _y >= pos && _y <= pos+m_frameset->border())
+      return true;
+
+  return false;
 }
 
 /**************************************************************************************/

@@ -129,6 +129,7 @@ public:
     virtual bool prepareMouseEvent( int _x, int _y,
 				    int _tx, int _ty,
 				    MouseEvent *ev );
+    virtual void defaultEventHandler(EventImpl *evt);
 
     virtual khtml::FindSelectionResult findSelectionNode( int _x, int _y, int _tx, int _ty,
                                                    DOM::Node & node, int & offset );

@@ -490,7 +490,18 @@ bool HTMLFrameSetElementImpl::prepareMouseEvent( int _x, int _y,
     if ( (m_render->style() && m_render->style()->visiblity() == HIDDEN) )
       return true;
 
-    return static_cast<khtml::RenderFrameSet *>(m_render)->userResize( _x, _y, ev->type );
+    if (static_cast<khtml::RenderFrameSet *>(m_render)->canResize( _x, _y, ev->type )) {
+	ev->innerNode = Node(this);
+	return true;
+    }
+    else
+	return false;
+}
+
+void HTMLFrameSetElementImpl::defaultEventHandler(EventImpl *evt)
+{
+    if (evt->isMouseEvent())
+	static_cast<khtml::RenderFrameSet *>(m_render)->userResize(static_cast<MouseEventImpl*>(evt));
 }
 
 khtml::FindSelectionResult HTMLFrameSetElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty,

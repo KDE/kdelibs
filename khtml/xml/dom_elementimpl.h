@@ -145,7 +145,6 @@ public:
     virtual void attach(KHTMLView *w);
     virtual void detach();
     virtual void recalcStyle();
-    virtual void setOwnerDocument(DocumentImpl *_document);
 
     virtual bool prepareMouseEvent( int x, int y,
 				    int _tx, int _ty,

@@ -381,6 +381,7 @@ HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
     if (region.contains(QPoint(x_,y_)))
     {
     	inside = true;
+    	ev->innerNode = this;
         if(isNoref())
             ev->noHref = true;
         else {

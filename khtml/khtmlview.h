@@ -233,7 +233,8 @@ private:
     void addFormCompletionItem(const QString &name, const QString &value);
 
     void dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool cancelable,
-			    int detail,QMouseEvent *_mouse, bool setUnder);
+			    int detail,QMouseEvent *_mouse, bool setUnder,
+			    int mouseEventType);
 
     // ------------------------------------- member variables ------------------------------------
  private:

@@ -21,6 +21,7 @@
  *
  * $Id$
  */
+//#define EVENT_DEBUG
 #include "dom_elementimpl.h"
 #include "dom_exception.h"
 #include "dom_node.h"
@@ -585,18 +586,6 @@ void ElementImpl::recalcStyle()
     NodeImpl *n;
     for (n = _first; n; n = n->nextSibling())
 	n->recalcStyle();
-}
-
-void ElementImpl::setOwnerDocument(DocumentImpl *_document)
-{
-    int exceptioncode; // ### propogate
-    // also set for all our attributes
-    uint i;
-    if(namedAttrMap) {
-    for (i = 0; i < namedAttrMap->length(exceptioncode); i++)
-	namedAttrMap->item(i,exceptioncode)->setOwnerDocument(_document);
-    }
-    NodeBaseImpl::setOwnerDocument(_document);
 }
 
 bool ElementImpl::prepareMouseEvent( int _x, int _y,
