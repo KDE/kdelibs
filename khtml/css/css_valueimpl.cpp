@@ -30,7 +30,7 @@
 #include "css/cssvalues.h"
 
 #include "xml/dom_stringimpl.h"
-#include "xml/dom_nodeimpl.h"
+#include "xml/dom_docimpl.h"
 
 #include "misc/loader.h"
 
@@ -104,12 +104,27 @@ DOMString CSSStyleDeclarationImpl::removeProperty( int propertyID, bool NonCSSHi
         if (lstValuesIt.current()->m_id == propertyID && NonCSSHint == lstValuesIt.current()->nonCSSHint) {
             value = lstValuesIt.current()->value()->cssText();
             m_lstValues->removeRef(lstValuesIt.current());
-            if (m_node)
-                m_node->setChanged(true);
+            setChanged();
+
             return value;
         }
 
     return value;
+}
+
+void CSSStyleDeclarationImpl::setChanged()
+{
+    if (m_node) {
+        m_node->setChanged();
+        return;
+    }
+
+    // ### quick&dirty hack for KDE 3.0... make this MUCH better! (Dirk)
+    for (StyleBaseImpl* stylesheet = this; stylesheet; stylesheet = stylesheet->parent())
+        if (stylesheet->isCSSStyleSheet()) {
+            static_cast<CSSStyleSheetImpl*>(stylesheet)->doc()->updateStyleSelector();
+            break;
+        }
 }
 
 bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID )
@@ -139,8 +154,8 @@ void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
     if(!success)
 	kdDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property: [" << getPropertyName(id).string()
 					<< "] value: [" << value.string() << "]"<< endl;
-    if (m_node)
-	m_node->setChanged(true);
+    else
+        setChanged();
 }
 
 void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important, bool nonCSSHint)
@@ -153,9 +168,7 @@ void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important, boo
 
     CSSValueImpl * cssValue = new CSSPrimitiveValueImpl(value);
     setParsedValue(id, cssValue, important, nonCSSHint, m_lstValues);
-
-    if (m_node)
-	m_node->setChanged(true);
+    setChanged();
 }
 
 void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
@@ -176,17 +189,15 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 	m_lstValues = new QPtrList<CSSProperty>;
 	m_lstValues->setAutoDelete( true );
     }
-    while(i < props->count())
-    {
+
+    for (unsigned int i = 0; i < props->count(); ++i) {
 	//kdDebug( 6080 ) << "setting property" << endl;
 	CSSProperty *prop = props->at(i);
 	removeProperty(prop->m_id, false);
 	m_lstValues->append(prop);
-	i++;
     }
     delete props;
-    if (m_node)
-	m_node->setChanged(true);
+    setChanged();
 }
 
 void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOM::DOMString &value, bool important, bool nonCSSHint)
