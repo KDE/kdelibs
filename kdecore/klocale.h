@@ -30,7 +30,7 @@
   * to add here methods for getting the currency sign and other
   * things too.
   * 
-  * @author Stephan Kulow <coolo@kde.org>
+  * @author Stephan Kulow (coolo@kde.org)
   * @short class for supporting locale settings and national language
   */
 class KLocale {
@@ -39,9 +39,10 @@ public:
     /**
       * Create a KLocale with the given catalogue name.
       * If no catalogue is given, the application name is used.
-      * The constructor looks for the environment variable $LANG,
-      * if not set, it looks for an entry Locale/Language in the system
-      * configuration file. The format for LANG is de:fr:.., if de
+      * The constructor looks for an entry Locale/Language in the
+      * configuration file. 
+      * If nothing is set there, it looks for the environment variable
+      * $LANG. The format for LANG is de:fr:.., if de
       * (german) is your prefered language and fr (french) is your
       * second prefered language. You can add as many languages as
       * you want. If none of them can be find, the default (C) will 
@@ -63,8 +64,8 @@ public:
       * often used phrases, so we can avoid to duplicate the
       * translation of this phrases. If a phrase is not found
       * in the catalogue given to the constructor, it will search
-      * in the system catalogue. This makes it possible to over-
-      * ride some phrases for your needs.
+      * in the system catalogue. This makes it possible to override
+      * some phrases for your needs.
       * @param index the lookup text and default text, if not found
       */
     const char *translate( const char *index );
