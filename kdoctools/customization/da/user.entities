@@ -5,26 +5,6 @@
      Please keep the entities sorted on the name: it will avoid duplicate
      names (which if they occur will cost you a _lot_ of time)
  -->
-<!-- for ROLES_OF_TRANSLATORS and for CREDIT_FOR_TRANSLATORS -->
-<!ENTITY erik.kjaer.pedersen.role '<othercredit role="translator"><firstname>Erik Kjær</firstname><surname>Pedersen</surname><affiliation><address><email>erik@binghamton.edu</email></address></affiliation><contrib>Oversætter</contrib></othercredit>'> 
-<!ENTITY erik.kjaer.pedersen.credit '<para>Dansk oversættelse Erik Kjær Pedersen <email>erik@binghamton.edu</email></para>'>
-
-<!ENTITY rune.laursen.role '<othercredit role="translator"><firstname>Rune Rønde</firstname><surname>Laursen</surname><affiliation><address><email>runerl@skjoldhoej.dk</email></address></affiliation><contrib>Oversætter</contrib></othercredit>'> 
-<!ENTITY rune.laursen.credit '<para>Dansk oversættelse Rune Rønde Laursen <email>runerl@skjoeldhoej.dk</email></para>'>
-
-<!ENTITY lars.schunk.role '<othercredit role="translator"><firstname>Lars</firstname><surname>Schunk</surname><affiliation><address><email>lars@schunk.dk</email></address></affiliation><contrib>Oversætter</contrib></othercredit>'> 
-<!ENTITY lars.schunk.credit '<para>Dansk oversættelse Lars Schunk <email>lars@schunk.dk</email></para>'>
-
-<!ENTITY gunner.poulsen.role '<othercredit role="translator"><firstname>Gunner </firstname><surname>Poulsen med flere.</surname><affiliation><address><email>gp@lyngbjerggaardskolen.dk</email></address></affiliation><contrib>Oversætter</contrib></othercredit>'> 
-<!ENTITY gunner.poulsen.credit '<para>Dansk oversættelse Gunner Poulsen <email>gp@lyngbjerggaardskolen.dk</email> Silas F. Johansen med flere.</para>'>
-
-<!ENTITY frederik.dannemare.role '<othercredit role="translator"><firstname>Frederik</firstname><surname>Dannemare</surname><affiliation><address><email>frederik@dannemare.dk</email></address></affiliation><contrib>Oversætter</contrib></othercredit>'> 
-<!ENTITY frederik.dannemare.credit '<para>Dansk oversættelse Frederik Dannemare <email>frederik@dannemare.dk</email></para>'>
-
-<!ENTITY margith.lauritsen.role '<othercredit role="translator"><firstname>Margith</firstname><surname>Lauritsen</surname><affiliation><address><email>mail@margith.dk</email></address></affiliation><contrib>Oversætter</contrib></othercredit>'> 
-<!ENTITY margith.lauritsen.credit '<para>Dansk oversættelse Margith Lauritsen <email>mail@margith.dk</email></para>'>
-
-
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
 <!ENTITY cdrom  '<hardware>cd-rom</hardware>'>
