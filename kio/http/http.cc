@@ -774,7 +774,7 @@ HTTPProtocol::http_openConnection()
       // Set socket blocking.
       fcntl(m_sock, F_SETFL, ( fcntl(m_sock, F_GETFL) & ~O_NDELAY));
 
-      QString proxyconheader = QString("CONNECT %1:443 HTTP/1.0\r\n\r\n").arg(m_request.hostname);
+      QString proxyconheader = QString("CONNECT %1:%2 HTTP/1.1\r\n\r\n").arg(m_request.hostname).arg(m_request.port);
       // WARNING: ugly hack alert!  We don't want to use the SSL routines
       //          for this code so we have to disabled it temporarily.
       bool useSSLSaved = m_bUseSSL;   m_bUseSSL = false;
@@ -1767,7 +1767,7 @@ bool HTTPProtocol::readHeader()
     if( code == 401 )
     {
       // For cases where the user does http://foo@www.foo.org
-      if( !m_request.user.isEmpty() && m_iAuthFailed == 1 )
+      if( !m_request.user.isEmpty() )
         user = m_request.user;
 
       if( m_strRealm.isEmpty() )
@@ -1785,8 +1785,8 @@ bool HTTPProtocol::readHeader()
                   "Enter your Authentication information below:" );
     }
 
-    kdDebug(7103) << "(" << getpid() << ") Request URI's user: "<< m_request.url.user() << endl;
-    bool result = openPassDlg( msg, user, passwd, (!m_request.user.isEmpty() && m_iAuthFailed == 1) );
+    // kdDebug(7103) << "(" << getpid() << ") Request URI's user: "<< m_request.url.user() << endl;
+    bool result = openPassDlg( msg, user, passwd, (!m_request.url.user().isEmpty()) );
     if( result )
     {
       // Note that a single io-slave cannot be doing
