@@ -454,8 +454,11 @@ keeptrying:
     (const char *) buf += n;
     bytes_sent += n;
     if (nbytes > 0)
-      goto keeptrying;    
+      goto keeptrying;
   }
+  else
+      bytes_sent += n;
+
   return bytes_sent;
 }
 
