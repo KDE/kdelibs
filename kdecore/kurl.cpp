@@ -40,7 +40,7 @@ KURL::KURL( const QString &_url )
   reset();
   m_strProtocol = "file";
   m_iPort = -1;
-  parse( _url.data() );
+  parse( _url );
 }
 
 KURL::KURL( const KURL& _u )
@@ -423,7 +423,7 @@ void KURL::setEncodedPathAndQuery( const QString& _txt )
   else
   {
     m_strPath = _txt.left( pos );
-    m_strQuery_encoded = _txt.data() + pos + 1;
+    m_strQuery_encoded = _txt + pos + 1;
   }
 
   decode( m_strPath );

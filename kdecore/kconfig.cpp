@@ -19,6 +19,13 @@
 // $Id$
 //
 // $Log$
+// Revision 1.24  1999/05/07 15:42:31  kulow
+// making some changes to the code and partly to the API to make it
+// -DQT_NO_ASCII_CAST compatible.
+// The job is quite boring, but triggers some abuses of QString. BTW:
+// I added some TODOs to the code where I was too lazy to continue.
+// Someone should start a grep for TODO in the code on a regular base ;)
+//
 // Revision 1.23  1999/04/18 09:15:05  kulow
 // taking out config.h from Header files. I don't know if I haven't noticed
 // before, but this is even very dangerous
@@ -259,9 +266,9 @@ void KConfig::parseConfigFiles()
  	  /* Actually, we can't: CHange by Alex */
  	  if (!aConfigFile.open( IO_ReadOnly)) {
 		QString tmp = data()->aLocalAppFile.copy();
-		data()->aLocalAppFile.sprintf("%s/share/config/%s",KApplication::localkdedir().data(),tmp.data());
+		data()->aLocalAppFile = QString("%1/share/config/%2").arg(KApplication::localkdedir()).arg(tmp);
  		aConfigFile.close();
- 		aConfigFile.setName(data()->aLocalAppFile.data());
+ 		aConfigFile.setName(data()->aLocalAppFile);
  		aConfigFile.open(IO_ReadOnly);
  	  } 
 
@@ -365,7 +372,7 @@ bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
 			  QString( aWriteInnerIt.currentKey() ).right( 1 ) != "]" )
 			// not yet localized, but should be
 			*pStream << aWriteInnerIt.currentKey() << '[' 
-					 << data()->aLocaleString.data() << ']' << "=" 
+					 << data()->aLocaleString << ']' << "=" 
 					 << stringToPrintable(aWriteInnerIt.current()->aValue) << '\n';
 		  else
 			// need not be localized or already is

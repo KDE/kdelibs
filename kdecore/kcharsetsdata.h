@@ -142,20 +142,20 @@ class KCharsetsData{
   QIntDict<KDispCharEntry> *displayableCharsDict;
   const KCharsetEntry * defaultCh;
   KSimpleConfig *config;
-  void scanDirectory(const char *path);
+  void scanDirectory(const QString& path);
   void createDictFromi18n(KCharsetEntry *e);
-  KCharsetEntry * varCharsetEntry(const char *name);
+  KCharsetEntry * varCharsetEntry(const QString& name);
   KCharsetConversionResult *tempResult;
 public:
   static const KCharTags tags[];
   static const unsigned int nrOfTags;
   KCharsetsData();
   ~KCharsetsData();
-  const char *faceForCharset(const KCharsetEntry *charset);
+  const QString faceForCharset(const KCharsetEntry *charset);
   QString charsetFace(const KCharsetEntry *charset,const QString &face);
   bool charsetOfFace(const KCharsetEntry *charset,const QString &face);
   const KCharsetEntry * charsetOfFace(const QString &face);
-  const KCharsetEntry * charsetEntry(const char *name){
+  const KCharsetEntry * charsetEntry(const QString &name){
     return varCharsetEntry(name);
   }
   const KCharsetEntry * charsetEntry(int index);

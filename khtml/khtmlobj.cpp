@@ -1336,17 +1336,17 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 
     printf("********* IMAGE %s ******\n",_filename );
 
-    htmlWidget->requestImage( this, imageURL.data() );
+    htmlWidget->requestImage( this, imageURL );
 }
 
 void HTMLImage::changeImage( const char *_url )
 {
-  htmlWidget->imageCache()->free( imageURL.ascii(), this);
+  htmlWidget->imageCache()->free( imageURL, this);
   imageURL = _url;
   pixmap = 0;
 
   bComplete = false;
-  htmlWidget->requestImage( this, imageURL.data() );
+  htmlWidget->requestImage( this, imageURL );
 }
 
 void HTMLImage::setPixmap( QPixmap *p )
@@ -1585,7 +1585,7 @@ int HTMLImage::getAbsY()
 
 HTMLImage::~HTMLImage()
 {
-   htmlWidget->imageCache()->free( imageURL.ascii(), this );
+   htmlWidget->imageCache()->free( imageURL, this );
 }
 
 void
@@ -1754,7 +1754,7 @@ bool HTMLMap::fileLoaded( QIODevice& file )
 	  int x1, y1, x2, y2;
 	  sscanf( p, "%d,%d,%d,%d", &x1, &y1, &x2, &y2 );
 	  QRect rect( x1, y1, x2-x1, y2-y1 );
-	  area = new HTMLArea( rect, href.ascii(), "" );
+	  area = new HTMLArea( rect, href, "" );
 	  printf( "Area Rect %d, %d, %d, %d\n", x1, y1, x2, y2 );
 	}
       break;
@@ -1764,7 +1764,7 @@ bool HTMLMap::fileLoaded( QIODevice& file )
 	  p = st.nextToken();
 	  int xc, yc, rc;
 	  sscanf( p, "%d,%d,%d", &xc, &yc, &rc );
-	  area = new HTMLArea( xc, yc, rc, href.ascii(), "" );
+	  area = new HTMLArea( xc, yc, rc, href, "" );
 	  printf( "Area Circle %d, %d, %d\n", xc, yc, rc );
 	}
       break;
@@ -1785,7 +1785,7 @@ bool HTMLMap::fileLoaded( QIODevice& file )
 	    }
 	  printf( "\n" );
 	  if ( count > 2 )
-	    area = new HTMLArea( parray, href.ascii(), "" );
+	    area = new HTMLArea( parray, href, "" );
 	}
       break;
       }

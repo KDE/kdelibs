@@ -83,7 +83,7 @@ public:
   bool runTogether(void) const;
   const QString dictionary (void) const;
   bool dictFromList (void) const;
-  //char *personalDict (void) const;
+  //QString personalDict (void) const;
   int encoding (void) const;
   QStrList ignoreList (void) const;
 

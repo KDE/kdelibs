@@ -306,11 +306,11 @@ KHTMLCache::requestImage( HTMLObject *obj, const char * _url)
 	    
 	if ( kurl.isLocalFile() )
 	{
-	    im->load( kurl.path().ascii() );
+	    im->load( kurl.path() );
 	    actSize += im->size;
 	}
 	else 
-	    htmlWidget->requestFile( this, kurl.url().ascii() );
+	    htmlWidget->requestFile( this, kurl.url() );
 	return;
     }
 
@@ -322,7 +322,7 @@ KHTMLCache::requestImage( HTMLObject *obj, const char * _url)
 #endif
 
     im->append( obj );
-    lru->touch( kurl.url().ascii() );
+    lru->touch( kurl.url() );
 }
 
 void
@@ -387,7 +387,7 @@ KHTMLCache::free( const char * _url, HTMLObject *obj )
     {
 	htmlWidget->cancelRequestFile( _url );
 	// remove, since it was not fully loaded
-	lru->remove( kurl.url().ascii() );
+	lru->remove( kurl.url() );
 	cache->remove( kurl.url() );
 #ifdef CACHE_DEBUG
 	printf("Cache: deleted %s\n", kurl.url().data());
@@ -420,7 +420,7 @@ KHTMLCache::flush()
 	printf("Cache: removing %s\n", url.data());
 #endif
 	actSize -= im->size;
-	lru->remove( url.ascii() );
+	lru->remove( url );
 	cache->remove( url );
 	if( actSize < maxSize ) break;
     }
@@ -458,7 +458,7 @@ KHTMLCache::preload( const char * _url, Status s)
 	printf("Cache: *** new cached image %s\n", kurl.path().data());
 #endif
 	im = new KHTMLCachedImage();
-	im->load( kurl.path().ascii() );
+	im->load( kurl.path() );
 	actSize += im->size;
 	if( s != Unknown )  // specific status required
 	    im->status = s;

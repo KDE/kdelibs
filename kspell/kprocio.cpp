@@ -147,8 +147,8 @@ int KProcIO::readln (char *buffer, int max, bool autoAck)
   //in case there's no '\n' at the end of the buffer
   if (len<0 && (unsigned)rbi<recvbuffer.length())
     {
-      QString qs=recvbuffer.mid (rbi,recvbuffer.length()-rbi).data();
-      recvbuffer=qs.ascii();
+      QString qs=recvbuffer.mid (rbi,recvbuffer.length()-rbi);
+      recvbuffer=qs;
       rbi=0;
       return -1;
     }

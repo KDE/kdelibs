@@ -152,7 +152,7 @@ void KFileBaseDialog::init()
 
     bmFile += "bookmarks.html";
 
-    bookmarks->read(bmFile.ascii());
+    bookmarks->read(bmFile);
 
     toolbar->insertButton(kapp->getIconLoader()->loadIcon("flag.xpm"),
 			  HOTLIST_BUTTON, true,
@@ -759,7 +759,7 @@ void KFileBaseDialog::updateHistory(bool f, bool b)
 void KFileBaseDialog::addToBookmarks() // SLOT
 {
     debugC("Add to bookmarks called");
-    bookmarks->add(dir->url().ascii(), dir->url().ascii());
+    bookmarks->add(dir->url(), dir->url());
     bookmarks->write();
 }
 

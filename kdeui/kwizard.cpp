@@ -390,14 +390,14 @@ void KWizard::resizeEvent(QResizeEvent *)
     QString str;
     if(pwiz->current < pwiz->numpages-1)
     {
-      str = pages->at(pwiz->current+1)->title.data();
+      str = pages->at(pwiz->current+1)->title;
       str += " >>";
       pwiz->next->setText(str);
     }
     if(pwiz->current > 0)
     {
       str = "<< ";
-      str += pages->at(pwiz->current-1)->title.data();
+      str += pages->at(pwiz->current-1)->title;
       pwiz->previous->setText(str);
     }
   }

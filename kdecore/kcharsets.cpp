@@ -67,7 +67,7 @@ KCharset::KCharset(const QString s){
       fatal("KCharset constructor called when no KCharsets object created");
       return;
    }   
-   entry=data->charsetEntry(s.ascii());
+   entry=data->charsetEntry(s);
 }
 
 KCharset::KCharset(QFont::CharSet qtCharset){

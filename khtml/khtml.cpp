@@ -2597,7 +2597,7 @@ void KHTMLWidget::addFrame( HTMLFrameSet *_frameSet, const char *_name,
 
         selectedFrame = frame;
 	// Tell the new widget what it should show
-	// frame->openURL( u.url().data() );
+	// frame->openURL( u.url() );
 	frame->setCookie( u.url().data() );   
 
 	KHTMLView *top = frame->findView( "_top" );
@@ -2769,11 +2769,11 @@ KHTMLWidget::restore(SavedPage *p)
 	    printf("restoring view\n");
 	    printf("framename = %s\n",p->frameName.data());
 	    printf("url = %s\n",p->url.data());
-	    htmlView->openURL( p->url.ascii() );
+	    htmlView->openURL( p->url );
 	    htmlView->setIsFrame( p->isFrame );
 	    if( p->isFrame )
 	    {
-		htmlView->setFrameName( p->frameName.ascii() );
+		htmlView->setFrameName( p->frameName );
 		htmlView->setScrolling( p->scrolling );
 		htmlView->setAllowResize( p->allowresize );
 		htmlView->setFrameBorder( p->frameborder );
@@ -2791,7 +2791,7 @@ KHTMLWidget::restore(SavedPage *p)
     else
     {
 	// dirty hack, to get kfm to display the right url in the lineedit...
-	htmlView->openURL( ("restored:" + p->url).ascii() );
+	htmlView->openURL( "restored:" + p->url );
 
 	// we construct a html sequence, which represents the frameset to see
 	QString s = "<html><head><title>\n";
@@ -2803,12 +2803,12 @@ KHTMLWidget::restore(SavedPage *p)
 	printf("restoring frameset:\n%s\n", s.data());
 	begin();
 	parse();
-	write(s.ascii());
+	write(s);
 	end();
 	
 	actualURL = p->url;
 	reference = actualURL.ref();
-	setBaseURL( p->url.ascii());
+	setBaseURL( p->url);
     }
     
 }

@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.37  1999/05/11 20:43:32  bieker
+   * loadInternal wants a QString
+   * don't use strcmp to compare QString.
+
    Revision 1.36  1999/05/09 17:22:53  ssk
    API_CHANGE: KIconLoader::getDirList now returns QStringList.
    KIconLoader now uses QPixmapCache.
@@ -313,7 +317,7 @@ bool KIconLoader::insertDirectory( int index, const QString& dir_name )
 void KIconLoader::addPath( QString path )
 {
 
-	QDir dir(path.data());
+	QDir dir(path);
 
 	if (dir.exists()){
 		pixmap_dirs.insert( pixmap_dirs.begin(), path );

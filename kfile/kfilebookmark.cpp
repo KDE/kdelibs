@@ -38,7 +38,7 @@ KFileBookmark::KFileBookmark()
 	type = URL;
 }
 
-KFileBookmark::KFileBookmark( const char *_text, const char *_url )
+KFileBookmark::KFileBookmark( const QString& _text, const QString& _url )
 {
 	children.setAutoDelete( true );
 	text = _text;
@@ -64,7 +64,7 @@ KFileBookmarkManager::KFileBookmarkManager()
 {
 }
 
-void KFileBookmarkManager::read( const char *filename )
+void KFileBookmarkManager::read( const QString& filename )
 {
 	QFile file( filename );
 
@@ -89,7 +89,7 @@ void KFileBookmarkManager::read( const char *filename )
 	BookmarkTokenizer *ht = new BookmarkTokenizer();
 
 	ht->begin();
-	ht->write( text.ascii() );
+	ht->write( text );
 	ht->end();
 
 	const char *str;
@@ -191,7 +191,7 @@ const char *KFileBookmarkManager::parse( BookmarkTokenizer *ht, KFileBookmark *p
 							p++;
 						}
 
-						bm->setURL( text.ascii() );
+						bm->setURL( text );
 			
 						if ( *p == ' ' )
 							p++;
@@ -216,7 +216,7 @@ const char *KFileBookmarkManager::parse( BookmarkTokenizer *ht, KFileBookmark *p
 			else if ( strncasecmp( str, "</H3>", 5 ) == 0 ||
 						strncasecmp( str, "</a>", 4 ) == 0 )
 			{
-				bm->setText( text.ascii() );
+				bm->setText( text );
 			}
 		}
 		else if ( str[0] )
@@ -230,7 +230,7 @@ const char *KFileBookmarkManager::parse( BookmarkTokenizer *ht, KFileBookmark *p
 
 // write bookmarks file
 //
-void KFileBookmarkManager::write( const char *filename )
+void KFileBookmarkManager::write( const QString& filename )
 {
 	QFile file( filename );
 
@@ -311,7 +311,7 @@ KFileBookmark *KFileBookmarkManager::findBookmark( KFileBookmark *parent, int id
 	return NULL;
 }
 
-void KFileBookmarkManager::add( const char *_text, const char *_url )
+void KFileBookmarkManager::add( const QString& _text, const QString& _url )
 {
 	root.getChildren().append( new KFileBookmark( _text, _url ) );
 
@@ -376,13 +376,13 @@ bool KFileBookmarkManager::moveDown(int i)
 // rich
 void KFileBookmarkManager::reread()
 {
-  read(myFilename.ascii());
+  read(myFilename);
 }
 
 // rich
 void KFileBookmarkManager::write()
 {
-  write(myFilename.ascii());
+  write(myFilename);
 }
 
 #include "kfilebookmark.moc"

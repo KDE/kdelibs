@@ -360,14 +360,14 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
 
   f = kapp->kde_datadir().copy();
   f += "/khtmlw/pics/khtmlw_dnd.xpm";
-  dndDefaultPixmap.load(f.data());
+  dndDefaultPixmap.load(f);
 
   f = kapp->kde_toolbardir().copy();
   f += "/up.xpm";
-  upPix.load(f.data());
+  upPix.load(f);
   f = kapp->kde_toolbardir().copy();
   f += "/down.xpm";
-  downPix.load(f.data());
+  downPix.load(f);
 
   QPalette pal = palette();
   QColorGroup g1 = pal.disabled();
@@ -675,8 +675,8 @@ void KTabListBox::reorderRows()
   for(n=0;n<totRows-1;n++)
   {
       result=columnSort(
-                     itemList[itemShowList[n]]->text(c1).data(),
-                     itemList[itemShowList[n+1]]->text(c1).data() );
+                     itemList[itemShowList[n]]->text(c1),
+                     itemList[itemShowList[n+1]]->text(c1) );
       if(result==0)
       {
         if(maxVal>=2 && recursiveSort(2,n,pc,iColNum))
@@ -711,8 +711,8 @@ bool KTabListBox::recursiveSort(int level,int n,
   int result;
 
   result=pc[level]->columnSort(
-           itemList[itemShowList[n]]->text(iCol[level-1]).data(),
-           itemList[itemShowList[n+1]]->text(iCol[level-1]).data() );
+           itemList[itemShowList[n]]->text(iCol[level-1]),
+           itemList[itemShowList[n+1]]->text(iCol[level-1]) );
   if(result==0)
     if(pc[level+1] && recursiveSort(level+1,n,pc,iCol))
        return true;

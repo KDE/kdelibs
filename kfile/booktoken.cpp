@@ -74,14 +74,14 @@ void BookmarkTokenizer::begin()
     tquote = false;
 }
 
-void BookmarkTokenizer::write( const char *str )
+void BookmarkTokenizer::write( const QString& str )
 {
     KCharsets *charsets=KApplication::getKApplication()->getCharsets();
     
     if ( str == 0L )
 	return;
     
-    const char *src = str;
+    const char *src = str.ascii();
 
     while ( *src != 0 )
     {

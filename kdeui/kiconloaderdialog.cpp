@@ -356,7 +356,7 @@ QPixmap KIconLoaderDialog::selectIcon( QString &name, const QString &filter)
   if( exec(old_filter) )
   {
       if( !(pix_name = canvas->getCurrent()).isNull() )
-	  pixmap = icon_loader->loadIcon( pix_name.ascii() );
+	  pixmap = icon_loader->loadIcon( pix_name );
   }
   name = pix_name;
   return pixmap;
@@ -385,7 +385,7 @@ void KIconLoaderButton::slotChangeIcon()
     if( !pix.isNull() )
     {
 	setPixmap(pix);
-	iconStr = name.data();
+	iconStr = name;
 	emit iconChanged( iconStr );
     }
 }
@@ -395,7 +395,7 @@ void KIconLoaderButton::setIcon(const QString& _icon)
     iconStr = _icon;
 
     // A Hack, since it uses loadApplicationIcon!!!
-    setPixmap( KApplication::getKApplication()->getIconLoader()->loadApplicationIcon( iconStr.ascii() ) );
+    setPixmap( KApplication::getKApplication()->getIconLoader()->loadApplicationIcon( iconStr ) );
 }
 
 KIconLoaderButton::~KIconLoaderButton()

@@ -812,7 +812,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
         toolKey.setNum(n);
         toolKey.prepend("ToolBar");
 
-        i = config->readListEntry(toolKey.data(), entryList, ';');
+        i = config->readListEntry(toolKey, entryList, ';');
         if (i < 2)
         {
             //printf ("KTWRP: bad number of toolbar%d args\n", n);

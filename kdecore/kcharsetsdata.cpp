@@ -523,7 +523,7 @@ KCharsetsData::KCharsetsData(){
   config=new KSimpleConfig(fileName, TRUE);
   config->setGroup("general");
   QString i18dir = config->readEntry("i18ndir");
-  if (!i18dir.isNull()) scanDirectory(i18dir.ascii());
+  if (!i18dir.isNull()) scanDirectory(i18dir);
   kchdebug("Creating alias dictionary...\n");
   KEntryIterator *it=config->entryIterator("aliases");
   if ( it )
@@ -531,8 +531,8 @@ KCharsetsData::KCharsetsData(){
       while( it->current() ){
 	const char*alias=it->currentKey().ascii();
 	kchdebug(" %s -> ",alias);
-	const char*name=it->current()->aValue.ascii();
-	kchdebug(" %s:",name);
+	QString name=it->current()->aValue;
+	kchdebug(" %s:",name.ascii());
 	KCharsetEntry *ce=varCharsetEntry(name);
 	if (ce){
 	    aliases.insert(alias,ce);
@@ -547,9 +547,9 @@ KCharsetsData::KCharsetsData(){
   kchdebug("done!\n");
 }
 
-void KCharsetsData::scanDirectory(const char *path){
+void KCharsetsData::scanDirectory(const QString& path){
 
-  kchdebug("Scanning directory: %s\n",path);
+  kchdebug("Scanning directory: %s\n",path.ascii());
   QDir d(path);
   if ( ! d.exists() ) return;
   d.setFilter(QDir::Files);
@@ -563,7 +563,7 @@ void KCharsetsData::scanDirectory(const char *path){
     int comma=alias.find(',');
     if (comma) alias.remove(comma,alias.length()-comma);
     else alias="";
-    if (!charsetEntry(alias.ascii()) && !charsetEntry(name.ascii())){
+    if (!charsetEntry(alias) && !charsetEntry(name)){
       KCharsetEntry *entry=new KCharsetEntry;
       char *ptr = qstrdup(fi->fileName().ascii());
       entry->name=ptr;
@@ -636,18 +636,18 @@ KCharsetsData::~KCharsetsData(){
   delete config;
 }
 
-KCharsetEntry * KCharsetsData::varCharsetEntry(const char *name){
+KCharsetEntry * KCharsetsData::varCharsetEntry(const QString& name){
 
   for(int i=0;charsets[i].name;i++){
-    if ( stricmp(name,charsets[i].name) == 0 ){
+    if ( stricmp(name.ascii(),charsets[i].name) == 0 ){
       kchdebug("Found!\n");
       return charsets+i;
     }  
   }  
-  KCharsetEntry *e=i18nCharsets[QString(name).lower()];
+  KCharsetEntry *e=i18nCharsets[name.lower()];
   if (!e){
      kchdebug("Searchin in aliases...\n");
-     e=aliases[QString(name).lower()];
+     e=aliases[name.lower()];
   }   
   return e;
 }
@@ -705,8 +705,8 @@ bool KCharsetsData::charsetOfFace(const KCharsetEntry * charset,const QString &f
   kchdebug("Testing if face %s is of charset %s...",face.ascii(),
                                                                charset->name);
   config->setGroup("faces");
-  const char *faceStr=config->readEntry(charset->name).ascii();
-  kchdebug("%s...",faceStr);
+  QString faceStr=config->readEntry(charset->name);
+  kchdebug("%s...",faceStr.ascii());
   QRegExp rexp(faceStr,FALSE,TRUE);
   if (face.contains(rexp)){
     kchdebug("Yes, it is\n");
@@ -722,13 +722,13 @@ const KCharsetEntry* KCharsetsData::charsetOfFace(const QString &face){
   KEntryIterator * it=config->entryIterator("faces");
   if (!it) return 0;
   while( it->current() ){
-    const char * faceStr=it->current()->aValue.ascii();
-    const char * key=it->currentKey().ascii();
-    if (!faceStr || faceStr[0]==0){
+    QString faceStr=it->current()->aValue;
+    QString key=it->currentKey();
+    if (faceStr.isEmpty()){
       delete it;
       return charsetEntry(key);
     }
-    kchdebug("testing if it is %s (%s)...",it->currentKey().ascii(),faceStr);
+    kchdebug("testing if it is %s (%s)...",it->currentKey().ascii(),faceStr.ascii());
     QRegExp rexp(faceStr,FALSE,TRUE);
     kchdebug("regexp: %s face: %s\n",rexp.pattern().ascii(), face.ascii());
     if (face.contains(rexp)){
@@ -757,10 +757,10 @@ QIntDict<unsigned> *KCharsetsData::getToUnicodeDict(const KCharsetEntry *charset
   return charset->toUnicodeDict;
 }
 
-const char *KCharsetsData::faceForCharset(const KCharsetEntry *charset){
+const QString KCharsetsData::faceForCharset(const KCharsetEntry *charset){
 
   config->setGroup("faces");
-  return config->readEntry(charset->name).ascii();
+  return config->readEntry(charset->name);
 }
 
 const KCharsetEntry *KCharsetsData::conversionHint(const KCharsetEntry *charset){
@@ -991,7 +991,7 @@ QString KCharsetsData::fromX(QString name){
   if ( it )
   {
       while( it->current() ){
-        const char * key = it->currentKey().ascii();
+        QString key = it->currentKey();
         if (it->current()->aValue==name ){
           delete it;
           return key;

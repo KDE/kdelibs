@@ -517,7 +517,7 @@ HTMLButton::HTMLButton( KHTMLWidget *_parent, const char *_name, const char *v, 
     if( font )
 	w->setFont( *font );
 
-    if ( strlen( value().ascii() ) != 0 )
+    if ( !value().isEmpty() )
 	((QPushButton *)w)->setText( value() );
     else if ( strlen( _name ) != 0 )
 	((QPushButton *)w)->setText( _name );
@@ -697,7 +697,7 @@ HTMLReset::HTMLReset( QWidget *parent, const char *v, const HTMLFont *f )
 	if( font )
 	    w->setFont( *font );
 
-	if ( strlen( value().ascii() ) != 0 )
+	if ( !value().isEmpty() )
 		((QPushButton *)w)->setText( value() );
 	else
 		((QPushButton *)w)->setText( "Reset" );
@@ -730,7 +730,7 @@ HTMLSubmit::HTMLSubmit( QWidget *parent, const char *n, const char *v,
 	if( font )
 	    w->setFont( *font );
 
-	if ( strlen( value().ascii() ) != 0 )
+	if ( value().isEmpty() )
 		((QPushButton *)w)->setText( value() );
 	else
 		((QPushButton *)w)->setText( "Submit Query" );
@@ -782,7 +782,7 @@ HTMLTextInput::HTMLTextInput( QWidget *parent, const char *n, const char *v,
 	if( font )
 	    w->setFont( *font );
 
-	if ( strlen( value().ascii() ) != 0 )
+	if ( !value().isEmpty() )
 		((QLineEdit *)w)->setText( value() );
 	if ( password )
 	    ((QLineEdit *)w)->setEchoMode ( QLineEdit::Password );

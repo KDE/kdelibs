@@ -241,7 +241,7 @@ KSpell::setUpDialog (bool reallyuseprogressbar)
   //Set up the dialog box
   ksdlg=new KSpellDlg (parent, "dialog", 
 		       progressbar && reallyuseprogressbar);
-  ksdlg->setCaption (caption.data());
+  ksdlg->setCaption (caption);
   connect (ksdlg, SIGNAL (command (int)), this, 
 		SLOT (slotStopCancel (int)) );
   connect (this, SIGNAL ( progress (unsigned int) ),
@@ -500,7 +500,7 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStrList *su
 	  i=j=0;
 	  while ((unsigned int)i<qs.length())
 	    {
-	      temp = qs.mid (i,(j=qs.find (',',i))-i).data();
+	      temp = qs.mid (i,(j=qs.find (',',i))-i);
 	      sugg->append (funnyWord (temp).ascii());
 	      
 	      i=j+2;
@@ -665,7 +665,7 @@ bool KSpell::check (QString _buffer)
 
   int i;
 
-  newbuffer=origbuffer.data();
+  newbuffer=origbuffer;
 
   if (newbuffer.at(newbuffer.length()-1)!='\n')
     {

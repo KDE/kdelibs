@@ -43,7 +43,7 @@ void KRootProp::sync()
     	while ( it.current() ) {
 
 			QString *value = propDict.find( it.currentKey() );
-        	keyvalue.sprintf( "%s=%s\n", it.currentKey().ascii(), value->ascii() );
+        	keyvalue = QString( "%1=%2\n").arg(it.currentKey()).arg(*value);
 			propString += keyvalue;
         	++it;
 		}

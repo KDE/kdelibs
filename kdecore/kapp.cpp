@@ -191,7 +191,7 @@ void KApplication::init()
   QFile aConfigFile( aConfigName );
 
   // We may write to the file
-  if ( ! checkAccess(aConfigName.data(), W_OK ) )
+  if ( ! checkAccess(aConfigName, W_OK ) )
     bSuccess = false;
   else {
   // Open the application-specific config file. It will be created if
@@ -585,10 +585,10 @@ void KApplication::parseCommandLine( int& argc, char** argv )
   }
 
   if (aIconPixmap.isNull()){
-    aIconPixmap = getIconLoader()->loadApplicationIcon( (aAppName + ".xpm").ascii());
+    aIconPixmap = getIconLoader()->loadApplicationIcon( (aAppName + ".xpm"));
   }
   if (aMiniIconPixmap.isNull()){
-      aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( (aAppName + ".xpm").ascii());
+      aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( (aAppName + ".xpm"));
   }
 
 }
@@ -1002,7 +1002,7 @@ void KApplication::buildSearchPaths()
 	  delete [] workPath;
     }
 
-  appendSearchPath( kdedir().data() );
+  appendSearchPath( kdedir() );
 }
 
 void KApplication::appendSearchPath( const QString& path )
@@ -1467,7 +1467,7 @@ const QString KApplication::tempSaveName( const QString& pFilename )
 
   aFilename.replace( QRegExp( "/" ), "\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absPath() );
 
-  return qstrdup( aFilename.data() );
+  return aFilename;
 }
 
 
@@ -1499,12 +1499,12 @@ const QString KApplication::checkRecoverFile( const QString& pFilename,
   if( QFile( aFilename ).exists() )
 	{
 	  bRecover = true;
-	  return qstrdup( aFilename.data() );
+	  return aFilename;
 	}
   else
 	{
 	  bRecover = false;
-	  return qstrdup( pFilename.ascii() );
+	  return pFilename;
 	}
 }
 

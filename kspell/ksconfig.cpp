@@ -366,7 +366,7 @@ void KSpellConfig::fillInDialog (void)
 	  QString fname, lname, hname;
 
 	  //	  kdebug (KDEBUG_INFO, 750, "%s/%d %s", __FILE__, __LINE__, (const char *)thedir [i]);
-	  fname = thedir [i].ascii();
+	  fname = thedir [i];
 
 	  if (interpret (fname, lname, hname))
 	    { // This one is the KDE default language
@@ -485,9 +485,9 @@ const QString KSpellConfig::dictionary (void) const
 }
 
 /*
-char *KSpellConfig::personalDict (void) const
+const QString KSpellConfig::personalDict (void) const
 {
-  return qspdict.data();
+  return qspdict;
 }
 */
 

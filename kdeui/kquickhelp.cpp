@@ -627,7 +627,7 @@ void KQuickHelpWindow::paint(QPainter *p, int &w, int &h) {
       p->setFont(f);
 
       QRect r;
-      p->drawText(posx, posy, 1024, 1024, AlignLeft|AlignTop, t.data(), -1, &r, 0);
+      p->drawText(posx, posy, 1024, 1024, AlignLeft|AlignTop, t, -1, &r, 0);
       if(link.length() > 0) {
 	KQuickHelp_Link *l = new KQuickHelp_Link;
 	l->area = r;

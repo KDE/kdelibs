@@ -77,7 +77,7 @@ public:
     ~BookmarkTokenizer();
 
     void begin();
-    void write( const char * );
+    void write( const QString& );
     void end();
 
     char* nextToken();

@@ -36,16 +36,16 @@ public:
 	enum { URL, Folder };
 
 	KFileBookmark();
-	KFileBookmark( const char *_text, const char *_url );
+	KFileBookmark( const QString& _text, const QString& _url );
 
 	void clear();
 
-	void setText( const char *_text )	{	text = _text; }
-	void setURL( const char *_url )	{	url = _url; }
+	void setText( const QString& _text )	{	text = _text; }
+	void setURL( const QString& _url )	{	url = _url; }
 	void setType( int _type )	{	type = _type; }
 
-	const char *getText()	{	return text.ascii(); }
-	const char *getURL()	{	return url.ascii(); }
+	const QString getText()	{	return text; }
+	const QString getURL()	{	return url; }
 	int getType()	{	return type; }
 
 	QList<KFileBookmark> &getChildren() 	{ return children; }
@@ -63,13 +63,13 @@ class KFileBookmarkManager : public QObject
 public:
 	KFileBookmarkManager();
 
-	void setTitle( const char *t )
+	void setTitle( const QString& t )
 		{	title = t; }
 
-	void read( const char *filename );
-	void write( const char *filename );
+	void read( const QString& filename );
+	void write( const QString& filename );
 
-	void add( const char *_text, const char *_url );
+	void add( const QString& _text, const QString& _url );
 	// rich
 	bool remove(int);
 	bool moveUp(int);

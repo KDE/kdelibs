@@ -19,6 +19,13 @@
 // $Id$
 //
 // $Log$
+// Revision 1.17  1999/05/07 15:42:42  kulow
+// making some changes to the code and partly to the API to make it
+// -DQT_NO_ASCII_CAST compatible.
+// The job is quite boring, but triggers some abuses of QString. BTW:
+// I added some TODOs to the code where I was too lazy to continue.
+// Someone should start a grep for TODO in the code on a regular base ;)
+//
 // Revision 1.16  1999/04/18 16:24:11  denis
 // #include <qtextstream.h> to kcharsetsdata.cpp ksimpleconfig.cpp
 // #include "config.h" to kapp.cpp
@@ -154,7 +161,7 @@ void KSimpleConfig::parseConfigFiles()
 const QString KSimpleConfig::deleteEntry( const QString& pKey, bool bLocalized )
 {
   // retrieve the current group dictionary
-  KEntryDict* pCurrentGroupDict = data()->aGroupDict[ data()->aGroup.data() ];
+  KEntryDict* pCurrentGroupDict = data()->aGroupDict[ data()->aGroup ];
   
   if( pCurrentGroupDict )
     {
