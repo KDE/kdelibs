@@ -61,22 +61,9 @@ QPixmap* KPixmapCache::toolbarPixmap( const char *_pixmap )
   if ( pix )
     return pix;
 
-  QString file = kapp->localkdedir().data();
-  file += "/share/toolbar/";
-  file += _pixmap;
-  
+  QString file = locate("toolbar", _pixmap);
+
   QPixmap p1;
-  p1.load( file );
-  if ( !p1.isNull() )
-  {
-    QPixmapCache::insert( key, p1 );
-    return QPixmapCache::find( key );
-  }
-
-  file = kapp->kde_toolbardir().data();
-  file += "/";
-  file += _pixmap;
-
   p1.load( file );
   if ( !p1.isNull() )
   {
