@@ -31,3 +31,8 @@ kjs_html_la_SOURCES = kjs_html.cpp kjs_dom.cpp kjs_window.cpp \
 	kjs_navigator.cpp kjs_text.cpp
 kjs_html_la_LDFLAGS = -module -avoid-version -no-undefined
 kjs_html_la_LIBADD = $(top_builddir)/kjs/libkjs.la ../libkhtml.la
+
+# interactive test program
+check_PROGRAMS = testecma
+testecma_SOURCES = testecma.cpp $(kjs_html_la_SOURCES)
+testecma_LDADD = ../libkhtml.la $(top_builddir)/kjs/libkjs.la 
