@@ -937,11 +937,18 @@ void RenderSelect::updateFromElement()
                         ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
             }
             else if (listItems[listIndex]->id() == ID_OPTION) {
-                DOMString text = static_cast<HTMLOptionElementImpl*>(listItems[listIndex])->text();
+                HTMLOptionElementImpl* optElem = static_cast<HTMLOptionElementImpl*>(listItems[listIndex]);
+                DOMString text = optElem->text();
                 if (text.isNull())
                     text = "";
-                if (listItems[listIndex]->parentNode()->id() == ID_OPTGROUP)
+                if (optElem->parentNode()->id() == ID_OPTGROUP)
+                {
+                    // Prefer label if set
+                    DOMString label = optElem->getAttribute(ATTR_LABEL);
+                    if (!label.isEmpty())
+                        text = label;
                     text = DOMString("    ")+text;
+                }
 
                 if(m_useListBox)
                     static_cast<KListBox*>(m_widget)
