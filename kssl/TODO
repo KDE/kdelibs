@@ -16,6 +16,11 @@ This TODO happens to cover SSL in all of KDE though.
 - The ASN1 date conversion code doesn't take international issues into
   account by any means.
 
+- Fix the problem with https not working when a proxy is set
+
+- do the openssl randomization calls for non-linux/bsd systems as per bug
+  report #11888
+
 - KSSL needs to be integrated into the slave base in some
   way or another so that kio_pop3 and friends can use it.
 
