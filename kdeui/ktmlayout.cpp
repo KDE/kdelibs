@@ -61,20 +61,23 @@ KTMLayout::setGeometry(const QRect& rect)
 		int hfw = topMenuBar->heightForWidth(rect.width());
 		if (hfw == 0)
 			hfw = topMenuBar->height();
-        int rect_width = rect.width();
+		int rect_width = rect.width();
 
-        /* position the indicator widget */
-        if (indicatorWidget)
-        {
-            if (indicatorWidget->height() > hfw)
-                hfw = indicatorWidget->height();
+		/* position the indicator widget */
+		if (indicatorWidget)
+		{
+			int offset = 0;
+			if (indicatorWidget->height() > hfw)
+				hfw = indicatorWidget->height();
+			else
+				offset = (hfw - indicatorWidget->height()) / 2;
 
-            indicatorWidget->move(rect.width() - indicatorWidget->width(),
-                                  currY);
-            if (!indicatorWidget->isVisible())
-              indicatorWidget->show();
-            rect_width = rect.width() - indicatorWidget->width();
-        }
+			indicatorWidget->move(rect.width() - indicatorWidget->width(),
+								  currY + offset);
+			if (!indicatorWidget->isVisible())
+				indicatorWidget->show();
+			rect_width = rect.width() - indicatorWidget->width();
+		}
 
 		topMenuBar->setGeometry(rect.x(), currY, rect_width, hfw);
 		currY += hfw;
