@@ -37,6 +37,8 @@ KRFCDate::parseDate(const QString &_date)
      //     Wednesday, 09-Nov-99 23:12:40 GMT
      // or
      //     Sat, 01-Jan-2000 08:00:00 GMT
+     // or
+     //     Sat, 01 Jan 2000 08:00:00 GMT
      //
      // We always assume GMT, the weekday is ignored
      //
@@ -67,12 +69,13 @@ KRFCDate::parseDate(const QString &_date)
      if (!*dateString)
      	return result;  // Invalid expire date
 
-     if (*dateString++ != '-')
+     if ((*dateString != '-') && (*dateString != ' '))
      	return result;  // Invalid expire date
+     dateString++;
 
      for(int i=0; i < 3;i++)
      {
-         if (!*dateString || (*dateString == '-'))
+         if (!*dateString || (*dateString == '-') || (*dateString == ' '))
               return result;  // Invalid expire date
          monthStr[i] = tolower(*dateString++);
      }
@@ -88,15 +91,16 @@ KRFCDate::parseDate(const QString &_date)
      if ((month < 0) || (month > 11))
      	return result;  // Invalid expire date
 
-     while(*dateString && (*dateString != '-'))
+     while(*dateString && (*dateString != '-') && (*dateString != ' '))
      	dateString++;
 
      if (!*dateString)
      	return result;  // Invalid expire date
      	
      // '-99 23:12:40 GMT'
-     if (*dateString++ != '-')
+     if ((*dateString != '-') && (*dateString != ' '))
      	return result;  // Invalid expire date
+     dateString++;
 
      // '99 23:12:40 GMT'
      year = strtol(dateString, &newPosStr, 10);
