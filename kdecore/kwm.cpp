@@ -839,7 +839,7 @@ void KWM::close(Window w){
   }
   // client will not react on wm_delete_window. We have no choice
   // but destroy his connection to the XServer.
-  XDestroyWindow(qt_xdisplay(), w);
+  XKillClient(qt_xdisplay(), w);
 }
 
 void KWM::activate(Window w){
