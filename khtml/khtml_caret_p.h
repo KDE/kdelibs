@@ -279,6 +279,7 @@ public:
  * DOM to the rendered representation, it is sufficient for caret navigation
  * to provide a linear list of unnested caret boxes.
  *
+ * \code
  * Example: The document fragment <p>a <i><b>c</b> f</i> g</p> will be
  * represented by three caret box lines which each one consists of caret boxes
  * as follows:
@@ -295,6 +296,7 @@ public:
  *   CaretBox(cb=<p>, _box=InlineTextBox(" g"), _outside=true, outside_end=true)
  * CaretBoxLine 3:
  *   CaretBox(cb=<p>, _box=0, _outside=true, outside_end=true)
+ * \endcode
  */
 class CaretBoxLine {
 protected:
@@ -861,7 +863,6 @@ protected:
   /** finds out if the current line is editable.
    *
    * @param it check caret box line iterator points to
-   * @param lastit previous caret box line
    * @return @p true if line is editable
    */
   bool isEditable(LineIterator &it)
