@@ -77,3 +77,4 @@ class Test6 : public KConfigSkeleton
 };
 
 #endif
+

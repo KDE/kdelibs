@@ -119,3 +119,4 @@ class Test4 : public KConfigSkeleton
 };
 
 #endif
+

@@ -1,6 +1,6 @@
 AM_CPPFLAGS = -I$(top_srcdir)/kdecore $(all_includes) -DQT_NO_CAST_ASCII
 
-check_PROGRAMS = test1 test2 test3 test4 test5 test6 test7
+check_PROGRAMS = test1 test2 test3 test4 test5 test6 test7 test8
 
 CLEANFILES = test1.cpp test1.h \
              test2.cpp test2.h \
@@ -9,6 +9,7 @@ CLEANFILES = test1.cpp test1.h \
              test5.cpp test5.h \
              test6.cpp test6.h \
              test7.cpp test7.h \
+             test8a.cpp test8a.h test8b.cpp test8b.h \
              md5sums
 
 test1_LDFLAGS = $(all_libraries) $(KDE_RPATH)
@@ -38,6 +39,10 @@ test6_SOURCES = test6main.cpp test6.cpp
 test7_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 test7_LDADD = $(LIB_KDECORE)
 test7_SOURCES = test7main.cpp test7.cpp
+
+test8_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+test8_LDADD = $(LIB_KDECORE)
+test8_SOURCES = test8main.cpp test8a.cpp test8b.cpp
 
 test1main.o test1.o: test1.h
 # avoid running the below command in parallel
@@ -81,9 +86,18 @@ test7.cpp: test7.h
 test7.cpp test7.h: $(srcdir)/test7.kcfg ../kconfig_compiler $(srcdir)/test7.kcfgc
 	../kconfig_compiler $(srcdir)/test7.kcfg $(srcdir)/test7.kcfgc
 
+test8main.o test8a.o test8b.o: test8a.h test8b.h
+# avoid running the below command in parallel
+test8a.cpp: test8a.h
+test8a.cpp test8a.h: $(srcdir)/test8a.kcfg ../kconfig_compiler $(srcdir)/test8a.kcfgc
+	../kconfig_compiler $(srcdir)/test8a.kcfg $(srcdir)/test8a.kcfgc
+test8b.cpp: test8b.h
+test8b.cpp test8b.h: $(srcdir)/test8b.kcfg ../kconfig_compiler $(srcdir)/test8b.kcfgc
+	../kconfig_compiler $(srcdir)/test8b.kcfg $(srcdir)/test8b.kcfgc
+
 md5sums:
 	$(MD5SUM) $(srcdir)/test*.ref | sed -e "s,$(srcdir)/,,; s,\.ref$$,," > md5sums
 
-md5check: test1.cpp test2.cpp test3.cpp test4.cpp test5.cpp test6.cpp test7.cpp md5sums
-	$(MD5SUM) --check md5sums
+md5check: test1.cpp test2.cpp test3.cpp test4.cpp test5.cpp test6.cpp test7.cpp test8a.cpp test8b.cpp md5sums
+	$(MD5SUM) -c md5sums
 

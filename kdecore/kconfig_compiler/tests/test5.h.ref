@@ -111,3 +111,4 @@ class Test5 : public KConfigSkeleton
 };
 
 #endif
+

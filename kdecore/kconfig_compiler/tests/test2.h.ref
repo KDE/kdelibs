@@ -329,3 +329,4 @@ class Test2 : public MyPrefs
 };
 
 #endif
+
