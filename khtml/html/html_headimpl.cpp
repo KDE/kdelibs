@@ -43,6 +43,7 @@ using namespace khtml;
 //#include <qtextstream.h>
 
 #include <kurl.h>
+#include <kio/job.h>
 
 #include <kdebug.h>
 
@@ -280,6 +281,25 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
                 kdDebug( 6030 ) << "====> got redirect to " << str << endl;
                 v->part()->scheduleRedirection(delay, str);
             }
+        }
+    }
+    else if(strcasecmp(_equiv, "expires") == 0 && !_content.isNull())
+    {
+        QString str = _content.string().stripWhiteSpace();
+        time_t expire_date = str.toLong();
+        KURL url = v->part()->url();
+        if (url.protocol().startsWith("http"))
+        {
+           KIO::http_update_cache(url, false, expire_date);
+        }
+    }
+    else if(strcasecmp(_equiv, "pragma") == 0 && !_content.isNull())
+    {
+        QString str = _content.string().lower().stripWhiteSpace();
+        KURL url = v->part()->url();
+        if ((str == "no-cache") && url.protocol().startsWith("http"))
+        {
+           KIO::http_update_cache(url, true, 0);
         }
     }
     NodeBaseImpl::attach( v );
