@@ -426,6 +426,20 @@ void AudioSubSystem::handleIO(int type)
 
 void AudioSubSystem::read(void *buffer, int size)
 {
+	/*
+	 * try the peaceful method first: read something, and hope that there
+	 * will be something to read
+	 */
+	while(rBuffer.size() < size)
+	{
+		int s = rBuffer.size();
+		handleIO(ioRead);
+		if(s == rBuffer.size()) break;
+	}
+	/*
+	 * if this doesn't help, select until there is something to read, and
+	 * then read
+	 */
 	while(rBuffer.size() < size)
 	{
 		int rc;

@@ -162,7 +162,7 @@ bool AudioIOALSA::open()
 	}
 
 	int err;
-	if((err = snd_pcm_open(&m_pcm_handle, m_card, m_device, direction)) < 0) {
+	if((err = snd_pcm_open(&m_pcm_handle, m_card, m_device, mode)) < 0) {
 		_error = "device: ";
 		_error += _deviceName.c_str();
 		_error += " can't be opened (";
@@ -334,9 +334,36 @@ int AudioIOALSA::getParam(AudioParam p)
 
 int AudioIOALSA::read(void *buffer, int size)
 {
-	arts_assert(false);		/* unsupported */
-	arts_assert(audio_fd != 0);
-	return ::read(audio_fd,buffer,size);
+	int length = snd_pcm_read(m_pcm_handle, buffer, size);
+	if(length == -EPIPE) {
+		snd_pcm_channel_status_t status;
+		(void)memset(&status, 0, sizeof(status));
+		status.channel = SND_PCM_CHANNEL_CAPTURE;
+		if(snd_pcm_channel_status(m_pcm_handle, &status) < 0) {
+			arts_info("Capture channel status error!");
+			return -1;
+		}
+		else if(status.status == SND_PCM_STATUS_RUNNING) {
+			length = 0;
+		}
+		else if(status.status == SND_PCM_STATUS_OVERRUN) {
+			artsdebug("Overrun at position: %d" ,status.scount);
+			if(snd_pcm_channel_prepare(m_pcm_handle, SND_PCM_CHANNEL_CAPTURE)<0)
+			{
+				arts_info("Overrun: capture prepare error!");
+				return -1;
+			}
+		}
+		else {
+			arts_info("Unknown capture error!");
+			return -1;
+		}
+	}
+    else if(length < 0) {
+		arts_info("Capture error: %s", snd_strerror(length));
+		return -1;
+	}
+	return length;
 }
 
 int AudioIOALSA::write(void *buffer, int size)
