@@ -36,8 +36,8 @@
 
 #include <config.h>
 #ifdef HAVE_LIBART
-#include <../../kdecore/svgicons/ksvgiconengine.h>
-#include <../../kdecore/svgicons/ksvgiconpainter.h>
+#include <svgicons/ksvgiconengine.h>
+#include <svgicons/ksvgiconpainter.h>
 #endif
 
 #include "kicondialog.h"
