@@ -126,7 +126,7 @@ bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)
       (*it).ensureItemHidden( sb );
   }
 
-  return true;
+  return false;
 
 }
 
