@@ -140,13 +140,11 @@ QString KAccel::findKey( int key ) const
 {
 	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
 	aKeyIt.toFirst();
-#define pE aKeyIt.current()
-	while ( pE ) {
-	    if ( (unsigned int)key == pE->aCurrentKeyCode ) 
+	while ( aKeyIt.current() ) {
+	    if ( (unsigned int)key == aKeyIt.current()->aCurrentKeyCode ) 
 		return aKeyIt.currentKey();
 	    ++aKeyIt;
 	}
-#undef pE
 	return 0;	
 }
 

@@ -12,7 +12,7 @@
  */
 
 #ifndef MS_FUNCTIONS_H_INCLUDED
-#define MS_FUNCTIONS_INCLUDED
+#define MS_FUNCTIONS_H_INCLUDED
 
 #pragma interface
 

@@ -521,6 +521,7 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 	emit activated();
 	disconnect( this, SIGNAL( activated() ), pE->receiver, pE->member );
 
+#undef pE
 	return true;
 }
 
