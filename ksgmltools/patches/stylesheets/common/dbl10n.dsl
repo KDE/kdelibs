@@ -285,7 +285,10 @@
       <![%l10n-no[ (("bmno") (gentext-no-element-name giname)) ]]>
       <![%l10n-sv[ (("svse") (gentext-sv-element-name giname)) ]]>
       (else (error (string-append "L10N ERROR: gentext-element-name: "
-				  lang))))))
+				  lang
+				  " ("
+				  giname
+				  ")"))))))
 
 (define (gentext-element-name-space target)
   (let ((giname (if (string? target) (normalize target) (gi target)))
