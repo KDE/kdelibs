@@ -1178,11 +1178,11 @@ EOF
        CXXFLAGS="$CXXFLAGS -Wall"
  
        if test "$ac_use_strict_options" = "yes"; then
-	CXXFLAGS="$CXXFLAGS -W -ansi -pedantic -Wtraditional  -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wconversion  -Woverloaded-virtual -Wundef -Wbad-function-cast  -Wsynth"
+	CXXFLAGS="$CXXFLAGS -W -ansi -Wtraditional  -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Woverloaded-virtual -Wbad-function-cast  -Wsynth"
        fi
 
        if test "$kde_very_strict" = "yes"; then
-         CXXFLAGS="$CXXFLAGS -Wold-style-cast -Wshadow -Wredundant-decls"
+         CXXFLAGS="$CXXFLAGS -Wold-style-cast -Wshadow -Wredundant-decls -Wconversion"
        fi
     fi
   fi  
