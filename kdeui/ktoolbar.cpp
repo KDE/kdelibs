@@ -23,6 +23,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.102  1999/03/01 23:35:24  kulow
+// CVS_SILENT ported to Qt 2.0
+//
 // Revision 1.101  1999/02/21 20:21:20  radej
 // sven: added default to avoid warning about something not handled in a switch
 //
@@ -1162,6 +1165,9 @@ void KToolBar::updateRects( bool res )
       else if (width() <= height ()-10)
         layoutVertical ();
       else if(width() >= height ()+10)
+      
+      break;
+
     case Left:
     case Right:
       layoutVertical ();
