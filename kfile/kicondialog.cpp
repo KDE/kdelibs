@@ -66,7 +66,6 @@ KIconCanvas::~KIconCanvas()
 {
     delete mpTimer;
     delete d;
-    delete d;
 }
 
 void KIconCanvas::loadFiles(QStringList files)
