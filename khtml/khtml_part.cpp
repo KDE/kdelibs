@@ -412,12 +412,12 @@ DOM::HTMLDocumentImpl *KHTMLPart::docImpl() const
 
 void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
 {
-  kDebugInfo(300, "slotData: %d", data.size() );
+  kdDebug(300) << "slotData: " << data.size() << endl;
 
   // The first data ?
   if ( !d->m_workingURL.isEmpty() )
   {
-    kDebugInfo(300, "begin!" );
+    kdDebug(300) << "begin!" << endl;
     d->m_bParsing = true;
 
     begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
@@ -439,7 +439,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
     // TODO: what else ?
     return;
   }
-  kDebugInfo(300, "slotFinished" );
+  kdDebug(300) << "slotFinished" << endl;
 
   d->m_workingURL = KURL();
 
@@ -447,7 +447,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
 
   if ( d->m_bParsing )
   {
-    kDebugInfo( 300, "end()" );
+    kdDebug(300) << "end()" << endl;
     end(); //will emit completed()
   }
 }
