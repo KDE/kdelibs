@@ -1641,7 +1641,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
 
   l->setBuddy( swallowExecEdit );
 
-  l = new QLabel( i18n( "&Window Title:" ), tmpQGroupBox );
+  l = new QLabel( i18n( "&Window title:" ), tmpQGroupBox );
   grid->addWidget(l, 1, 0);
 
   swallowTitleEdit = new KLineEdit( tmpQGroupBox );
@@ -1664,7 +1664,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   terminalCheck->setText( i18n("&Run in terminal") );
   grid->addMultiCellWidget(terminalCheck, 0, 0, 0, 1);
 
-  terminalLabel = new QLabel( i18n( "&Terminal Options:" ), tmpQGroupBox );
+  terminalLabel = new QLabel( i18n( "&Terminal options:" ), tmpQGroupBox );
   grid->addWidget(terminalLabel, 1, 0);
 
   terminalEdit = new KLineEdit( tmpQGroupBox );
@@ -1680,6 +1680,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   mainlayout->addWidget(tmpQGroupBox);
 
   grid = new QGridLayout(tmpQGroupBox->layout(), 2, 2);
+  grid->setSpacing(KDialog::spacingHint());
   grid->setColStretch(1, 1);
 
   suidCheck = new QCheckBox(tmpQGroupBox);
