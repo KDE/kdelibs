@@ -25,7 +25,7 @@
 // KDE HTML Widget -- HTML Parser
 // $Id$
 
-//#define PARSER_DEBUG
+#define PARSER_DEBUG
 
 #include "htmlparser.h"
 
@@ -107,6 +107,7 @@ const unsigned short tagPriority[] = {
     3, // ID_DL
     2, // ID_DT
     1, // ID_EM
+    1, // ID_EMBED
     2, // ID_FIELDSET
     1, // ID_FONT
     2, // ID_FORM
@@ -136,6 +137,7 @@ const unsigned short tagPriority[] = {
     1, // ID_MAP
     3, // ID_MENU
     0, // ID_META
+    8, // ID_NOEMBED
     8, // ID_NOFRAMES
     2, // ID_NOSCRIPT
     1, // ID_OBJECT
@@ -527,6 +529,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    case ID_META:
 	    case ID_LINK:
 	    case ID_OBJECT:
+	    case ID_EMBED:
 	    case ID_TITLE:
 	    case ID_ISINDEX:
 	    case ID_BASE:
@@ -882,6 +885,9 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_APPLET:
 	n = new HTMLAppletElementImpl(document);
 	break;
+    case ID_EMBED:
+	n = new HTMLEmbedElementImpl(document);
+	break;
     case ID_OBJECT:
 	n = new HTMLObjectElementImpl(document);
 	break;
@@ -965,6 +971,9 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	break;
 
 	// these are special, and normally not rendered
+    case ID_NOEMBED:
+        discard_until = ID_NOEMBED + ID_CLOSE_TAG;
+	return 0;
     case ID_NOFRAMES:
 	discard_until = ID_NOFRAMES + ID_CLOSE_TAG;
 	return 0;

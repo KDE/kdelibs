@@ -51,6 +51,7 @@ static const ushort tag_list_0[] = {
     ID_IMG,
     ID_APPLET,
     ID_OBJECT,
+    ID_EMBED,
     ID_FONT,
     ID_BASEFONT,
     ID_BR,
@@ -119,6 +120,7 @@ static const ushort tag_list_1[] = {
     ID_IMG,
     ID_APPLET,
     ID_OBJECT,
+    ID_EMBED,
     ID_FONT,
     ID_BASEFONT,
     ID_BR,
@@ -224,6 +226,7 @@ static const ushort tag_list_4[] = {
     ID_IMG,
     ID_APPLET,
     ID_OBJECT,
+    ID_EMBED,
     ID_FONT,
     ID_BASEFONT,
     ID_BR,
@@ -247,6 +250,7 @@ static const ushort tag_list_4[] = {
 static const ushort tag_list_5[] = {
     ID_IMG,
     ID_OBJECT,
+    ID_EMBED,
     ID_APPLET,
     ID_BIG,
     ID_SMALL,
@@ -307,6 +311,7 @@ static const ushort tag_list_11[] = {
     ID_META,
     ID_LINK,
     ID_OBJECT,
+    ID_EMBED,
     ID_COMMENT,
     0
 };
@@ -412,6 +417,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
 	if( check_array(childID, tag_list_3) ) return true;
 	return (childID == ID_AREA);
     case ID_OBJECT:
+    case ID_EMBED:
     case ID_APPLET:
 	// OBJECT: _4 *
 	return check_array(childID, tag_list_4);
@@ -527,6 +533,7 @@ void DOM::addForbidden(int tagId, ushort *forbiddenTags)
     case ID_PRE:
 	forbiddenTags[ID_IMG]++;
 	forbiddenTags[ID_OBJECT]++;
+	forbiddenTags[ID_EMBED]++;
 	forbiddenTags[ID_APPLET]++;
 	// why forbid them. We can deal with them in PRE
 	//forbiddenTags[ID_BIG]++;
@@ -596,6 +603,7 @@ void DOM::removeForbidden(int tagId, ushort *forbiddenTags)
     case ID_PRE:
 	forbiddenTags[ID_IMG]--;
 	forbiddenTags[ID_OBJECT]--;
+	forbiddenTags[ID_EMBED]--;
 	forbiddenTags[ID_APPLET]--;
 	//forbiddenTags[ID_BIG]--;
 	//forbiddenTags[ID_SMALL]--;

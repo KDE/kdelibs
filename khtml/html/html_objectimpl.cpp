@@ -179,6 +179,119 @@ void HTMLAppletElementImpl::detach()
 
 // -------------------------------------------------------------------------
 
+HTMLEmbedElementImpl::HTMLEmbedElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
+{
+}
+
+HTMLEmbedElementImpl::~HTMLEmbedElementImpl()
+{
+}
+
+const DOMString HTMLEmbedElementImpl::nodeName() const
+{
+    return "EMBED";
+}
+
+ushort HTMLEmbedElementImpl::id() const
+{
+    return ID_EMBED;
+}
+
+void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
+{
+  DOM::DOMStringImpl *stringImpl = attr->val();
+  QString val = QConstString( stringImpl->s, stringImpl->l ).string();
+  
+  // export parameter
+  param.append( attr->name().string() + "=\"" + val + "\"" );
+  
+  switch ( attr->attrId )
+  {
+     case ATTR_TYPE:
+	serviceType = val;
+	break;
+     case ATTR_SRC:
+	url = val;
+	break;
+     case ATTR_WIDTH:
+	addCSSLength( CSS_PROP_WIDTH, attr->value(), false );
+	break;
+     case ATTR_HEIGHT:
+	addCSSLength( CSS_PROP_HEIGHT, attr->value(), false );
+	break;
+     case ATTR_BORDER:
+	addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value(), false);
+	break;
+     case ATTR_VSPACE:
+	addCSSLength(CSS_PROP_MARGIN_TOP, attr->value(), false);
+	addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value(), false);
+	break;
+     case ATTR_HSPACE:
+	addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value(), false);
+	addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value(), false);
+	break;
+     case ATTR_ALIGN:
+	// vertical alignment with respect to the current baseline of the text
+	// right or left means floating images
+	if ( strcasecmp( attr->value(), "left" ) == 0 )
+	{
+	   addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
+	   addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top", false);
+	}
+	else if ( strcasecmp( attr->value(), "right" ) == 0 )
+	{
+	   addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
+	   addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top", false);
+	}
+	else
+	   addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	break;
+     case ATTR_VALIGN:
+	addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	break;
+     case ATTR_PLUGINPAGE:
+	pluginPage = val;
+	break;
+     case ATTR_HIDDEN:
+	if (val.lower()=="yes" || val.lower()=="true")
+	   hidden = true;
+	else
+	   hidden = false;
+	break;
+     default:
+	HTMLElementImpl::parseAttribute( attr );
+  }
+}
+
+void HTMLEmbedElementImpl::attach(KHTMLView *w)
+{
+   khtml::RenderObject *r = _parent->renderer();
+   if ( !r )
+      return;
+
+   m_style = document->styleSelector()->styleForElement( this );
+   if ( _parent->id()!=ID_OBJECT )
+   {           
+      RenderPartObject *p = new RenderPartObject( w, this );
+      m_render = p;
+      m_render->setStyle(m_style);
+      m_render->ref();
+      r->addChild( m_render, _next ? _next->renderer() : 0 );
+   } else
+   {
+      r->setStyle(m_style);
+   }
+
+  NodeBaseImpl::attach( w );
+}
+
+void HTMLEmbedElementImpl::detach()
+{
+  NodeBaseImpl::detach();
+}
+
+// -------------------------------------------------------------------------
+
 HTMLObjectElementImpl::HTMLObjectElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
 {
 }

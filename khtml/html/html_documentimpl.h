@@ -37,7 +37,7 @@ class KHTMLView;
 
 namespace DOM {
 
-    class StyleSheetImpl;
+class StyleSheetImpl;
 class HTMLCollection;
 class NodeList;
 class Element;
@@ -121,14 +121,13 @@ public slots:
 protected:
     void clear();
 
-
     KHTMLParser *parser;
     HTMLTokenizer *tokenizer;
 
     HTMLElementImpl *bodyElement;
     HTMLElementImpl *htmlElement;
     DOMString url;
-
+    
     StyleSheetImpl *m_sheet;
     bool m_loadingSheet;
 

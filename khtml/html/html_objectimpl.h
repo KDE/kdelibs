@@ -24,6 +24,7 @@
 #ifndef HTML_OBJECTIMPL_H
 #define HTML_OBJECTIMPL_H
 
+#include <qstringlist.h>
 #include "html_elementimpl.h"
 #include "misc/khtmllayout.h"
 
@@ -65,6 +66,33 @@ protected:
 
     KHTMLView *view;
     khtml::VAlign valign;
+};
+
+// -------------------------------------------------------------------------
+
+class HTMLEmbedElementImpl : public HTMLElementImpl
+{
+public:
+    HTMLEmbedElementImpl(DocumentImpl *doc);
+
+    ~HTMLEmbedElementImpl();
+
+    virtual const DOMString nodeName() const;
+    virtual ushort id() const;
+
+    virtual tagStatus startTag() { return OBJECTStartTag; }
+    virtual tagStatus endTag() { return OBJECTEndTag; }
+
+    virtual void parseAttribute(AttrImpl *attr);
+
+    virtual void attach(KHTMLView *w);
+    virtual void detach();
+
+    QString url;
+    QString pluginPage;
+    QString serviceType;
+    bool hidden;
+    QStringList param;
 };
 
 // -------------------------------------------------------------------------
