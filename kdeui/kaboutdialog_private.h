@@ -57,45 +57,7 @@ class KImageTrackLabel : public QLabel
     virtual void mouseMoveEvent ( QMouseEvent *e );
 };
 
-class KAboutContainerPrivate;
-/**
- *  @internal
- */
-class KAboutContainer : public QFrame
-{
-  Q_OBJECT
-
-  public:
-    KAboutContainer( QWidget *parent=0, const char *name=0,
-		     int margin=0, int spacing=0,
-		     int childAlignment = AlignCenter,
-		     int innerAlignment = AlignCenter );
-
-    void addWidget( QWidget *widget );
-    void addPerson( const QString &name, const QString &email,
-		    const QString &url, const QString &task,
-		    bool showHeader = false, bool showframe = false,
-		    bool showBold = false );
-    void addTitle(  const QString &title, int alignment=AlignLeft,
-		    bool showframe = false, bool showBold = false );
-    void addImage( const QString &fileName, int alignment=AlignLeft );
-
-    virtual QSize sizeHint( void ) const;
-    virtual QSize minimumSizeHint( void ) const;
-
-  protected:
-    virtual void childEvent( QChildEvent *e );
-
-  signals:
-    void urlClick( const QString &url );
-    void mailClick( const QString &name, const QString &address );
-
-
-  private:
-    QVBoxLayout *mVbox;
-    int mAlignment;
-    KAboutContainerPrivate *d;
-};
+class KAboutContainer;
 
 class KAboutContainerBasePrivate;
 /**
