@@ -96,9 +96,9 @@ protected:
     HTMLStackElem *blockStack;
 
     void pushBlock( int _id, int _level,
-		    blockFunc _exitFunc = 0,
-		    int _miscData1 = 0);
-    					
+                    blockFunc _exitFunc = 0,
+                    int _miscData1 = 0);
+
     void popBlock( int _id );
     void popOneBlock();
     void popInlineBlocks();
@@ -122,6 +122,7 @@ protected:
     DOM::HTMLMapElementImpl *map;
 
     bool inBody;
+    bool explicitBody;
     bool haveFrameSet;
     bool _inline;
     bool end;

@@ -27,6 +27,7 @@
 #include <qregexp.h>
 #include <qstring.h>
 #include <qlist.h>
+#include <kdebug.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -41,22 +42,22 @@ DOMStringImpl::DOMStringImpl(QChar *str, uint len)
     s = str, l = len;
 }
 
-DOMStringImpl::~DOMStringImpl() 
-{ 
-    if(s) delete [] s; 
+DOMStringImpl::~DOMStringImpl()
+{
+    if(s) delete [] s;
 }
 
 void DOMStringImpl::append(DOMStringImpl *str)
 {
     if(str && str->l != 0)
     {
-	int newlen = l+str->l;
-	QChar *c = QT_ALLOC_QCHAR_VEC(newlen);
-	memcpy(c, s, l*sizeof(QChar));
-	memcpy(c+l, str->s, str->l*sizeof(QChar));
-	if(s) QT_DELETE_QCHAR_VEC(s);
-	s = c;
-	l = newlen;
+        int newlen = l+str->l;
+        QChar *c = QT_ALLOC_QCHAR_VEC(newlen);
+        memcpy(c, s, l*sizeof(QChar));
+        memcpy(c+l, str->s, str->l*sizeof(QChar));
+        if(s) QT_DELETE_QCHAR_VEC(s);
+        s = c;
+        l = newlen;
     }
 }
 
@@ -64,18 +65,18 @@ void DOMStringImpl::insert(DOMStringImpl *str, uint pos)
 {
     if(pos > l)
     {
-	append(str);
-	return;
+        append(str);
+        return;
     }
     if(str && str->l != 0)
     {
-	int newlen = l+str->l;
-	QChar *c = QT_ALLOC_QCHAR_VEC(newlen);
-	memcpy(c, s, pos*sizeof(QChar));
-	memcpy(c+pos, str->s, str->l*sizeof(QChar));
-	memcpy(c+pos+str->l, s+pos, (l-pos)*sizeof(QChar));
-	if(s) QT_DELETE_QCHAR_VEC(s);
-	s = c;
+        int newlen = l+str->l;
+        QChar *c = QT_ALLOC_QCHAR_VEC(newlen);
+        memcpy(c, s, pos*sizeof(QChar));
+        memcpy(c+pos, str->s, str->l*sizeof(QChar));
+        memcpy(c+pos+str->l, s+pos, (l-pos)*sizeof(QChar));
+        if(s) QT_DELETE_QCHAR_VEC(s);
+        s = c;
         l = newlen;
     }
 }
@@ -146,26 +147,28 @@ static Length parseLength(QChar *s, unsigned int l)
         //  42.2%, but not 42.22%
         // we ignore the non-integer part for speed/space reasons
         int i = QConstString(s, l).string().findRev('.');
-        if ( i >= 0 && i < (int)l-1 ) 
-	    l = i + 1;
+        if ( i >= 0 && i < (int)l-1 )
+            l = i + 1;
 
-	return Length(QConstString(s, l-1).string().toInt(), Percent);
+        return Length(QConstString(s, l-1).string().toInt(), Percent);
     }
 
     if ( *last == QChar('*'))
     {
-	if(l == 1)
-	    return Length(1, Relative);
-	else
-	    return Length(QConstString(s, l-1).string().toInt(), Relative);
+        if(l == 1)
+            return Length(1, Relative);
+        else
+            return Length(QConstString(s, l-1).string().toInt(), Relative);
     }
 
     // should we strip of the non-integer part here also?
     // CSS says no, all important browsers do so, including Mozilla. sigh.
     bool ok;
-    int v = QConstString(s, l).string().toInt(&ok);
-    if(ok)
-	return Length(v, Fixed);
+    // this ugly construct helps in case someone specifies a length as "100."
+    int v = (int) QConstString(s, l).string().toFloat(&ok);
+    if(ok) {
+        return Length(v, Fixed);
+    }
     if(l == 4 && QConstString(s, l).string().contains("auto", false))
         return Length(0, Variable);
 
@@ -193,9 +196,9 @@ QList<Length> *DOMStringImpl::toLengthList() const
     list->setAutoDelete(true);
     while((pos2 = str.find(',', pos)) != -1)
     {
-	Length *l = new Length(parseLength((QChar *) str.unicode()+pos, pos2-pos));
-	list->append(l);
-	pos = pos2+1;
+        Length *l = new Length(parseLength((QChar *) str.unicode()+pos, pos2-pos));
+        list->append(l);
+        pos = pos2+1;
     }
 
     Length *l = new Length(parseLength((QChar *) str.unicode()+pos, str.length()-pos));

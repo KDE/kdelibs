@@ -25,7 +25,7 @@
 // KDE HTML Widget -- HTML Parser
 // $Id$
 
-//#define PARSER_DEBUG
+#define PARSER_DEBUG
 //#define COMMENTS_IN_DOM
 
 #include "htmlparser.h"
@@ -267,6 +267,7 @@ void KHTMLParser::reset()
     memset(forbiddenTag, 0, (ID_CLOSE_TAG+1)*sizeof(ushort));
 
     inBody = false;
+    explicitBody = false;
     haveFrameSet = false;
     _inline = false;
 
@@ -416,9 +417,9 @@ void KHTMLParser::insertNode(NodeImpl *n)
                 discard_until = ID_TITLE + ID_CLOSE_TAG;
             // fall through
         case ID_HEAD:
-	    // ### alllow not having <HTML> in at all, as per HTML spec
-	    if (!current->isDocumentNode())
-		throw exception;
+            // ### alllow not having <HTML> in at all, as per HTML spec
+            if (!current->isDocumentNode() && !current->id() == ID_HTML )
+                throw exception;
             break;
         case ID_HTML:
         case ID_BASE:
@@ -428,15 +429,16 @@ void KHTMLParser::insertNode(NodeImpl *n)
             if(inBody) throw exception;
             break;
         case ID_BODY:
-            if(inBody && document->body()) {
-		// we have another <BODY> element.... apply attributes to existing one
-		NamedNodeMapImpl *map = n->attributes();
-		unsigned long attrNo;
-		for (attrNo = 0; attrNo < map->length(); attrNo++)
-		    document->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false)));
-		document->body()->applyChanges(true,false);
-		throw exception;
-	    }
+            if(inBody && document->body() && !explicitBody) {
+                // we have another <BODY> element.... apply attributes to existing one
+                NamedNodeMapImpl *map = n->attributes();
+                unsigned long attrNo;
+                for (attrNo = 0; attrNo < map->length(); attrNo++)
+                    document->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false)));
+                document->body()->applyChanges(true,false);
+                explicitBody = true;
+                throw exception;
+            }
             break;
         case ID_STYLE:
             if(inBody)
@@ -735,6 +737,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         popBlock(ID_HEAD);
         n = new HTMLBodyElementImpl(document);
         inBody = true;
+        explicitBody = true;
         break;
 
 // head elements
