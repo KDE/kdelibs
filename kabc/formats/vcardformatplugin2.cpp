@@ -8,6 +8,22 @@
 
 using namespace KABC;
 
+extern "C"
+{
+  FormatPlugin *format()
+  {
+    return new VCardFormatPlugin2();
+  }
+}
+
+VCardFormatPlugin2::VCardFormatPlugin2()
+{
+}
+
+VCardFormatPlugin2::~VCardFormatPlugin2()
+{
+}
+
 bool VCardFormatPlugin2::load( Addressee &addressee, QFile *file )
 {
   QString data;

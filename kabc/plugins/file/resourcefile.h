@@ -45,12 +45,16 @@ class ResourceFile : public QObject, public Resource
 public:
 
   /**
-   * Constructor.
-   *
-   * @param ab  The address book where the addressees should be stored.
-   * @param cfg The config object where custom resource settings are stored.
-   */
+    Constructor.
+
+    @param cfg The config object where custom resource settings are stored.
+  */
   ResourceFile( const KConfig *cfg );
+
+  /**
+    Construct file resource on file @arg fileName using format @arg formatName.
+  */
+  ResourceFile( const QString &fileName, const QString &formatName = "vcard" );
 
   /**
    * Destructor.
@@ -128,6 +132,8 @@ protected slots:
   void fileChanged();
 
 protected:
+  void init( const QString &fileName, const QString &format );
+
   bool lock( const QString &fileName );
   void unlock( const QString &fileName );
 

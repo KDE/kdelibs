@@ -37,15 +37,30 @@ extern "C"
 ResourceFile::ResourceFile( const KConfig *config )
     : Resource( config ), mFormat( 0 )
 {
-  QString fileName;
+  QString fileName, formatName;
 
   if ( config ) {
     fileName = config->readEntry( "FileName", StdAddressBook::fileName() );
-    mFormatName = config->readEntry( "FileFormat", "vcard" );
+    formatName = config->readEntry( "FileFormat", "vcard" );
   } else {
     fileName = StdAddressBook::fileName();
-    mFormatName = "vcard";
+    formatName = "vcard";
   }
+
+  init( fileName, formatName );
+
+}
+
+ResourceFile::ResourceFile( const QString &fileName,
+                            const QString &formatName )
+  : Resource( 0 )
+{
+  init( fileName, formatName );
+}
+
+void ResourceFile::init( const QString &fileName, const QString &formatName )
+{
+  mFormatName = formatName;
 
   FormatFactory *factory = FormatFactory::self();
   mFormat = factory->format( mFormatName );

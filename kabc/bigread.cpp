@@ -8,7 +8,7 @@
 
 #include "addressbook.h"
 #include "vcardformat.h"
-#include "resourcefile.h"
+#include "plugins/file/resourcefile.h"
 #if 0
 #include "resourcesql.h"
 #endif
@@ -17,14 +17,14 @@ using namespace KABC;
 
 int main(int argc,char **argv)
 {
-  KAboutData aboutData("bigtest","BigTestKabc","0.1");
+  KAboutData aboutData("bigread","BigReadKabc","0.1");
   KCmdLineArgs::init(argc,argv,&aboutData);
 
   KApplication app;
   
   AddressBook ab; 
    
-  ResourceFile r( &ab, "my.kabc" );
+  ResourceFile r( "my.kabc", "vcard2" );
   ab.addResource( &r );
 
 #if 0  
@@ -61,5 +61,5 @@ int main(int argc,char **argv)
   kdDebug() << "UTime: " << int( end.tms_utime ) - int( start.tms_utime ) << endl; 
   kdDebug() << "STime: " << int( end.tms_stime ) - int( start.tms_stime ) << endl; 
 
-  ab.dump();
+//  ab.dump();
 }
