@@ -364,9 +364,13 @@ AC_CACHE_VAL(ac_cv_lib_gif,
 LIBS="$all_libraries -lgif -lX11 $LIBSOCKET"
 AC_TRY_LINK(dnl
 [
+#ifdef __cplusplus
 extern "C" {
+#endif
 int GifLastError(void);
+#ifdef __cplusplus
 }
+#endif
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
 ],
@@ -393,10 +397,14 @@ AC_TRY_LINK(
 struct jpeg_decompress_struct;
 typedef struct jpeg_decompress_struct * j_decompress_ptr;
 typedef int size_t;
+#ifdef __cplusplus
 extern "C" {
+#endif
     void jpeg_CreateDecompress(j_decompress_ptr cinfo,
                                     int version, size_t structsize);
+#ifdef __cplusplus
 }
+#endif
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
 ],
