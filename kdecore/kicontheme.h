@@ -78,7 +78,7 @@ public:
     /**
      * The group an an icon.
      */
-    enum Group { NoGroup=-1, Desktop=0, FirstGroup=Desktop, Toolbar,
+    enum Group { NoGroup=-1, Desktop=0, FirstGroup=0, Toolbar,
         MainToolbar, Small, Panel, LastGroup, User };
 
     /**
