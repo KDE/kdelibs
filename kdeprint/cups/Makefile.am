@@ -1,5 +1,5 @@
 LIB_CUPS = @LIB_CUPS@
-LIBVERSION = @LIBVERSION@
+LIBVERSION = 1:0
 INCLUDES = -I.. $(all_includes)
 
 lib_LTLIBRARIES = libkdeprint_cups.la

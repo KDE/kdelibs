@@ -314,15 +314,15 @@ void KCupsGeneralPage::initialize()
 		// PageSize
 		pix = UserIcon("kdeprint_pagesize");
 		for (int i=0;i<DEFAULT_SIZE;i+=2)
-			size_->insertItem(pix,QString::fromLatin1(i18n(default_size[i])));
+			size_->insertItem(pix,i18n(default_size[i]));
 		// MediaType
 		pix = UserIcon("kdeprint_pagesize");
 		for (int i=0;i<DEFAULT_TYPE;i+=2)
-			type_->insertItem(pix,QString::fromLatin1(i18n(default_type[i])));
+			type_->insertItem(pix,i18n(default_type[i]));
 		// PageSize
 		pix = UserIcon("kdeprint_printer");
 		for (int i=0;i<DEFAULT_SOURCE;i+=2)
-			source_->insertItem(pix,QString::fromLatin1(i18n(default_source[i])));
+			source_->insertItem(pix,i18n(default_source[i]));
 	}
 
 	// Banners

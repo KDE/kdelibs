@@ -293,7 +293,7 @@ void KCupsDialogImpl::slotSaveRequested(KPrinterItem *pr, const OptionSet& opts)
 	QString	fname = getenv("HOME") + QString::fromLatin1("/.lpoptions");
 
 	// save the printer list
-debug("saving options to %s",fname.latin1());
+qDebug("saving options to %s",fname.latin1());
 	saveOptionsFile(fname);
 }
 

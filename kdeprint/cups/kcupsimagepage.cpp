@@ -130,7 +130,7 @@ void KCupsImagePage::setOptions(const OptionSet& opts)
 	// init "image position"
 	if (!opts["position"].isEmpty())
 	{
-		pospix_->setPosition(opts["position"]);
+		pospix_->setPosition(opts["position"].latin1());
 		int	pos = pospix_->position();
 		vertgrp_->setButton((vertpos_=pos/3));
 		horizgrp_->setButton((horizpos_=pos%3));

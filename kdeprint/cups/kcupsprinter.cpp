@@ -51,7 +51,7 @@ bool KCupsPrinter::printFiles(const QStringList& files)
 
 	optionSetToCupsOptions(qtoptions_,num_options,&options);
 	n = stringListToCharP(files,&cfiles);
-	job_ID = cupsPrintFiles(printerName().local8Bit(),n,(const char**)(cfiles),(docName().isEmpty() ? i18n("KDE Print System") : docName()),num_options,options);
+	job_ID = cupsPrintFiles(printerName().local8Bit(),n,(const char**)(cfiles),(docName().isEmpty() ? i18n("KDE Print System") : docName()).local8Bit(),num_options,options);
 	freeCharP(cfiles,n);
 
 	return (job_ID != 0);
@@ -131,8 +131,8 @@ void KCupsPrinter::translateOptions(const OptionSet& opts)
 						{
 							pagesize_ = QSize((int)(sz->width),(int)(sz->length));
 							margins_ = QSize((int)(sz->left),(int)(sz->bottom));
-debug("Page size = (%d,%d)",pagesize_.width(),pagesize_.height());
-debug("Page margins = (%d,%d)",margins_.width(),margins_.height());
+qDebug("Page size = (%d,%d)",pagesize_.width(),pagesize_.height());
+qDebug("Page margins = (%d,%d)",margins_.width(),margins_.height());
 						}
 					}
 					ppdClose(ppd);

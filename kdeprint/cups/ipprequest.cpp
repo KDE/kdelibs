@@ -7,26 +7,26 @@
 
 void dumpRequest(ipp_t *req)
 {
-	debug("------------------------------");
-	debug("state = 0x%x",req->state);
-	debug("current tag = 0x%x",req->curtag);
-	debug("request operation ID = 0x%x",req->request.op.operation_id);
-	debug("request ID = 0x%x",req->request.op.request_id);
-	debug("request version = %c%c",req->request.op.version[0],req->request.op.version[1]);
+	qDebug("------------------------------");
+	qDebug("state = 0x%x",req->state);
+	qDebug("current tag = 0x%x",req->curtag);
+	qDebug("request operation ID = 0x%x",req->request.op.operation_id);
+	qDebug("request ID = 0x%x",req->request.op.request_id);
+	qDebug("request version = %c%c",req->request.op.version[0],req->request.op.version[1]);
 	ipp_attribute_t	*attr = req->attrs;
 	while (attr)
 	{
-		debug(" ");
-		debug("attribute: %s",attr->name);
-		debug("group tag = 0x%x",attr->group_tag);
-		debug("value tag = 0x%x",attr->value_tag);
-		debug("number of values = %d",attr->num_values);
+		qDebug(" ");
+		qDebug("attribute: %s",attr->name);
+		qDebug("group tag = 0x%x",attr->group_tag);
+		qDebug("value tag = 0x%x",attr->value_tag);
+		qDebug("number of values = %d",attr->num_values);
 		if (attr->value_tag >= IPP_TAG_TEXT)
 			for (int i=0;i<attr->num_values;i++)
-				debug("value[%d] = %s",i,attr->values[i].string.text);
+				qDebug("value[%d] = %s",i,attr->values[i].string.text);
 		attr = attr->next;
 	}
-	debug("------------------------------");
+	qDebug("------------------------------");
 }
 
 //*************************************************************************************
@@ -58,7 +58,7 @@ void IppRequest::init()
 void IppRequest::addString_p(int group, int type, const QString& name, const QString& value)
 {
 	if (!name.isEmpty())
-		ippAddString(request_,(ipp_tag_t)group,(ipp_tag_t)type,name.latin1(),NULL,(value.isEmpty() ? QString::fromLatin1("") : value.local8Bit()));
+		ippAddString(request_,(ipp_tag_t)group,(ipp_tag_t)type,name.latin1(),NULL,(value.isEmpty() ? "" : value.local8Bit().data()));
 }
 
 void IppRequest::addStringList_p(int group, int type, const QString& name, const QStringList& values)

@@ -91,8 +91,8 @@ void KPPDView::getOptions(OptionSet& opts, bool incldef)
 
 void KPPDView::setOptions(const OptionSet& opts)
 {
-debug("***********************");
-debug("updating PPD widget...");
+qDebug("***********************");
+qDebug("updating PPD widget...");
 opts.dump();
 	if (rootitem_) rootitem_->setOptions(opts);
 	emit selectionChanged(currentItem());
