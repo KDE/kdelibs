@@ -255,6 +255,10 @@ public:
      * Size of the data.
      */
     int size() const; // TODO use Q_LONG in KDE-4.0
+    /**
+     * Set size of data, usually after writing the file.
+     */
+    void setSize( int s ) { m_size = s; }
 
     /**
      * @return the content of this file.

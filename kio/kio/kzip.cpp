@@ -276,7 +276,7 @@ bool KZip::closeArchive()
     //write all central dir file entries
 
     // to be written at the end of the file...
-    char buffer[ 22 ]; // first used for 8, then for 22 at the end
+    char buffer[ 22 ]; // first used for 12, then for 22 at the end
     uLong crc = crc32(0L, Z_NULL, 0);
 
     Q_LONG centraldiroffset = device()->at();
@@ -292,18 +292,24 @@ bool KZip::closeArchive()
 //	    << " encoding: "<< (*it).encoding() << endl;
 
         uLong mycrc = it.current()->crc32();
-	buffer[ 0 ] = (uchar)(mycrc % 256); //crc checksum
+	buffer[ 0 ] = (uchar)(mycrc % 256); //crc checksum, at headerStart+14
         buffer[ 1 ] = (uchar)((mycrc / 256) % 256);
 	buffer[ 2 ] = (uchar)((mycrc / (256*256)) % 256);
         buffer[ 3 ] = (uchar)((mycrc / (256*256*256))% 256);
 
         int mysize1 = it.current()->compressedSize();
-	buffer[ 4 ] = (uchar)(mysize1 % 256); //compressed file size
+	buffer[ 4 ] = (uchar)(mysize1 % 256); //compressed file size, at headerStart+18
         buffer[ 5 ] = (uchar)((mysize1 / 256) % 256);
 	buffer[ 6 ] = (uchar)((mysize1 / (256*256)) % 256);
         buffer[ 7 ] = (uchar)((mysize1 / (256*256*256))% 256);
 
-	device()->writeBlock( buffer, 8 );
+        int myusize = it.current()->size();
+	buffer[ 8 ] = (uchar)(myusize % 256); //uncompressed file size, at headerStart+22
+        buffer[ 9 ] = (uchar)((myusize / 256) % 256);
+	buffer[ 10 ] = (uchar)((myusize / (256*256)) % 256);
+        buffer[ 11 ] = (uchar)((myusize / (256*256*256))% 256);
+
+	device()->writeBlock( buffer, 12 );
     }
     device()->at( atbackup);
 
@@ -473,8 +479,7 @@ bool KZip::writeFile( const QString& name, const QString& user, const QString& g
     return true;
 }
 
-bool KZip::prepareWriting( const QString& name, const QString& user,
-						const QString& group, uint size )
+bool KZip::prepareWriting( const QString& name, const QString& user, const QString& group, uint /*size*/ )
 {
     kdDebug(7040) << "prepareWriting reached." << endl;
     if ( !isOpened() )
@@ -509,7 +514,7 @@ bool KZip::prepareWriting( const QString& name, const QString& user,
     // construct a KZipFileEntry and add it to list
     KZipFileEntry * e = new KZipFileEntry( this, fileName, 0777, time( 0 ), user, group, QString::null,
                                            name, device()->at() + 30 + name.length(), // start
-                                           size, encoding, 0 /*csize unknown yet*/ );
+                                           0 /*size unknown yet*/, encoding, 0 /*csize unknown yet*/ );
     e->setHeaderStart( device()->at() );
     kdDebug(7040) << "wrote file start: " << e->position() << " name: " << name << endl;
     parentDir->addEntry( e );
@@ -552,11 +557,10 @@ bool KZip::prepareWriting( const QString& name, const QString& user,
     buffer[ 20 ] = 'I';
     buffer[ 21 ] = 'Z';
 
-    int mysize = size;
-    buffer[ 22 ] = (uchar)(mysize % 256) ; //uncompressed file size
-    buffer[ 23 ] = (uchar)((mysize / 256) % 256);
-    buffer[ 24 ] = (uchar)((mysize / (256*256)) % 256);
-    buffer[ 25 ] = (uchar)((mysize / (256*256*256)) % 256);
+    buffer[ 22 ] = 'U'; //uncompressed file size
+    buffer[ 23 ] = 'S';
+    buffer[ 24 ] = 'I';
+    buffer[ 25 ] = 'Z';
 
     buffer[ 26 ] = (uchar)name.length(); //filename length
     buffer[ 27 ] = (uchar)((name.length() / 256) % 256);
@@ -594,7 +598,7 @@ bool KZip::prepareWriting( const QString& name, const QString& user,
     return b;
 }
 
-bool KZip::doneWriting( uint /*size*/ )
+bool KZip::doneWriting( uint size )
 {
     if ( d->m_currentFile->encoding() == 8 ) {
         // Finish
@@ -608,6 +612,7 @@ bool KZip::doneWriting( uint /*size*/ )
     kdDebug(7040) << "donewriting reached." << endl;
     kdDebug(7040) << "filename: " << d->m_currentFile->path() << endl;
     kdDebug(7040) << "getpos (at): " << device()->at() << endl;
+    d->m_currentFile->setSize(size);
     int csize = device()->at() -
         d->m_currentFile->headerStart() - 30 -
 	d->m_currentFile->path().length();
@@ -775,10 +780,10 @@ bool KZip::writeData(const char * c, unsigned int i)
     // and they didn't mention it in their docs...
     d->m_crc = crc32(d->m_crc, (const Bytef *) c , i);
 
-    int written = d->m_currentDev->writeBlock( c, i );
+    Q_LONG written = d->m_currentDev->writeBlock( c, i );
     kdDebug(7040) << "KZip::writeData wrote " << i << " bytes." << endl;
-    Q_ASSERT( written == i );
-    return written == i;
+    Q_ASSERT( written == (Q_LONG)i );
+    return written == (Q_LONG)i;
 }
 
 QByteArray KZipFileEntry::data() const

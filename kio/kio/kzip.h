@@ -76,6 +76,7 @@ public:
 
     /**
      * Alternative method: call prepareWriting, writeData in small chunks, doneWriting
+     * @param size unused
      */
     virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size );
     bool writeData( const char* data, uint size );
