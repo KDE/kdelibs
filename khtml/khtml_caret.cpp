@@ -445,7 +445,7 @@ void /*KDE_NO_EXPORT*/ mapDOMPosToRenderPos(NodeImpl *node, long offset,
 	  r = child->renderer();
 	}
       }/*end if*/
-      
+
       // BRs cause troubles. Returns the previous render object instead,
       // giving it the attributes outside, outside end.
       if (r && r->isBR()) {
@@ -1671,7 +1671,7 @@ bool EditableCaretBoxIterator::isEditable(const CaretBoxIterator &boxit, bool fr
     eff_r = node->renderer();
     Q_ASSERT(eff_r);	// this is a hard requirement
   }
-  
+
   bool result = globallyNavigable || eff_r->style()->userInput() == UI_ENABLED;
 #if DEBUG_CARETMODE > 0
   kdDebug(6200) << result << endl;
@@ -1937,11 +1937,8 @@ kdDebug(6200) << "box " << box << " b " << box->inlineBox() << " isText " << box
       }/*end if*/
     }/*end if*/
 
-#if 0
-    bool adjacent = ebit.isAdjacent();
-#endif
-
 #if DEBUG_CARETMODE > 0
+    bool adjacent = ebit.isAdjacent();
     kdDebug(6200) << "adjacent " << adjacent << " _peekNext " << _peekNext << " _peekNext->isInlineTextBox: " << (_peekNext ? _peekNext->isInlineTextBox() : false) << " !((*ebit)->isInlineTextBox): " << (*ebit ? !(*ebit)->isInlineTextBox() : true) << endl;
 #endif
 #if 0
