@@ -315,7 +315,6 @@ void RenderFlow::layoutBlockChildren()
         m_height += paddingTop();
         toAdd += paddingBottom();
     }
-    //xPos += marginLeft();
 
     if( m_style->direction() == RTL ) {
 	xPos = marginLeft() + m_width - paddingRight() - borderRight();
@@ -365,7 +364,7 @@ void RenderFlow::layoutBlockChildren()
 	} else if(m_style->direction() == LTR) {
 	    // html blocks flow around floats
 	    if (style()->htmlHacks() && child->style()->flowAroundFloats() )
-		chPos += leftOffset(m_height);
+		chPos = leftOffset(m_height) + child->marginLeft();
 	} else {
 	    chPos -= child->width() + child->marginLeft() + child->marginRight();
 	    if (style()->htmlHacks() && child->style()->flowAroundFloats() )
