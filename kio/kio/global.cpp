@@ -1085,7 +1085,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       solutions << i18n( "Contact the administrator of the server "
         "to advise them of the problem." )
         << i18n( "If you know who the authors of the server software are, "
-        "submit the bug report folder to them." );
+        "submit the bug report directly to them." );
       break;
 
     case  KIO::ERR_SERVER_TIMEOUT:
