@@ -52,8 +52,8 @@ class KLocale {
       friend class KLocaleConfigAdvanced;
 public:
     /**
-      * Create a KLocale with the given catalog name.
-      * If no catalog is given, the application name is used.
+      * Create a KLocale with the given catalogue name.
+      * If no catalogue is given, the application name is used.
       * The constructor looks for an entry Locale/Language in the
       * configuration file. 
       * If nothing is set there, it looks for the environment variable
@@ -62,9 +62,9 @@ public:
       * second prefered language. You can add as many languages as
       * you want. If none of them can be find, the default (C) will 
       * be used.
-      * @param catalog The name of the language file
+      * @param catalogue The name of the language file
       */
-    KLocale( const QString& catalog = QString::null );
+    KLocale( const QString& catalogue = QString::null );
 
     /**
       * Destructor.
@@ -78,7 +78,7 @@ public:
       * There is a KDE wide message file that contains the most
       * often used phrases, so we can avoid duplicating the
       * translation of these phrases. If a phrase is not found
-      * in the catalog given to the constructor, it will search
+      * in the catalogue given to the constructor, it will search
       * in the system catalog. This makes it possible to override
       * some phrases for your needs.
       * @param index The lookup text and default text, if not found.
@@ -302,14 +302,14 @@ public:
     QString charset() const { return chset; }
     
     /**
-     * adds anther catalog to search for translation lookup.
+     * adds anther catalogue to search for translation lookup.
      * This function is useful for extern libraries and/or code,
      * that provides it's own messages.
      * 
-     * If the catalog does not exist for the chosen language,
+     * If the catalogue does not exist for the chosen language,
      * it will be ignored and C will be used.
      **/
-    void insertCatalog(const QString& catalog);
+    void insertCatalogue(const QString& catalogue);
 
     /**
        The category argument tells the setlocale() function which attributes to
@@ -358,7 +358,7 @@ public:
      * Init the instance with the given config object. It should
      * be valid and contain the global entries.
      **/
-    void initLanguage(KConfig *config, const QString& catalog);
+    void initLanguage(KConfig *config, const QString& catalogue);
 
     /**
      * @return True if the KLocale instance is initialized already. You can't
@@ -370,7 +370,7 @@ public:
     bool inited() const { return _inited; }
 
 private:
-    QStrList *catalogs;
+    QStrList *catalogues;
     QIntDict<QString> aliases;
     bool _inited;
     QString lang;

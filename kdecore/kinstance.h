@@ -71,9 +71,9 @@ public:
     
     mutable KConfig		*_config;
     mutable KIconLoader	        *_iconLoader;
-    
-    QCString                     _name;
 
+    QCString                     _name;
+    const KAboutData            *_aboutData;
 };
 
 #endif 
