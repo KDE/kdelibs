@@ -251,6 +251,11 @@ int main(int argc, char **argv)
   qDebug("findObject: result = %s, %s, %s\n", boolResult ? "true" : "false",
 	foundApp.data(), foundObj.data());
 
+  // Find ourselves in any application.
+  boolResult = client->findObject( "testdcop", "ksycoca", "", data, foundApp, foundObj);
+  qDebug("findObject: result = %s, %s, %s\n", boolResult ? "true" : "false",
+	foundApp.data(), foundObj.data());
+
   DCOPClient *client2 = new DCOPClient();
   client2->registerAs(app.name(), false);
   qDebug("I2 registered as '%s'", client2->appId().data() );
@@ -269,6 +274,12 @@ qDebug("Calling countDown() in object1");
     qDebug("I couldn't call myself");
   else
       qDebug("return type was '%s'", replyType.data() ); 
+
+  // Find ourselves in any application.
+  boolResult = client2->findObject( "testdcop", "object1", "", data, foundApp, foundObj);
+  qDebug("findObject: result = %s, %s, %s\n", boolResult ? "true" : "false",
+	foundApp.data(), foundObj.data());
+
 
   return app.exec();
 

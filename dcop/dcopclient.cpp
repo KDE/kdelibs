@@ -1107,14 +1107,48 @@ bool DCOPClient::findObject(const QCString &remApp, const QCString &remObj,
         appList.append(app);
     }
 
-    for( QCStringList::ConstIterator it = appList.begin();
-         it != appList.end();
-         ++it)
+    // We do all the local clients in phase1 and the rest in phase2
+    for(int phase=1; phase <= 2; phase++)
     {
+      for( QCStringList::ConstIterator it = appList.begin();
+           it != appList.end();
+           ++it)
+      {
+        QCString remApp = *it;
         QCString replyType;
         QByteArray replyData;
-        if (callInternal((*it), remObj, remFun, data,
-                     replyType, replyData, useEventLoop, timeout, DCOPFind))
+        bool result;
+        DCOPClient *localClient = findLocalClient( remApp );
+
+        if ( (phase == 1) && localClient ) {
+            // In phase 1 we do all local clients
+            bool saveTransaction = d->transaction;
+            Q_INT32 saveTransactionId = d->transactionId;
+            QCString saveSenderId = d->senderId;
+
+            d->senderId = 0; // Local call
+            result = localClient->find(  remApp, remObj, remFun, data, replyType, replyData );
+
+            Q_INT32 id = localClient->transactionId();
+            if (id) {
+                // Call delayed. We have to wait till it has been processed.
+                do {
+                    QApplication::eventLoop()->processEvents( QEventLoop::WaitForMore);
+                } while( !localClient->isLocalTransactionFinished(id, replyType, replyData));
+                result = true;
+            }
+            d->transaction = saveTransaction;
+            d->transactionId = saveTransactionId;
+            d->senderId = saveSenderId;
+        }
+        else if ((phase == 2) && !localClient)
+        {
+            // In phase 2 we do the other clients
+            result = callInternal(remApp, remObj, remFun, data,
+                     replyType, replyData, useEventLoop, timeout, DCOPFind);
+        }
+
+        if (result)
         {
             if (replyType == "DCOPRef")
             {
@@ -1122,7 +1156,7 @@ bool DCOPClient::findObject(const QCString &remApp, const QCString &remObj,
                 QDataStream reply( replyData, IO_ReadOnly );
                 reply >> ref;
 
-                if (ref.app() == (*it)) // Consistency check
+                if (ref.app() == remApp) // Consistency check
                 {
                     // replyType contains objId.
                     foundApp = ref.app();
@@ -1131,6 +1165,7 @@ bool DCOPClient::findObject(const QCString &remApp, const QCString &remObj,
                 }
             }
         }
+      }
     }
     return false;
 }
