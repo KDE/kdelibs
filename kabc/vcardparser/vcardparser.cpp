@@ -76,6 +76,9 @@ VCard::List VCardParser::parseVCards( const QString& text )
               if ( pair[0].lower() == "quoted-printable" ) {
                 pair[0] = "encoding";
                 pair[1] = "quoted-printable";
+              } else if ( pair[0].lower() == "base64" ) {
+                pair[0] = "encoding";
+                pair[1] = "base64";
               } else {
                 pair.prepend( "type" );
               }
