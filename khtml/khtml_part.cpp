@@ -1308,7 +1308,10 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   args.yOffset = yOffset;
   d->m_extension->setURLArgs( args );
 
-  d->m_referrer = url.url();
+  KURL ref(url);
+  ref.setRef(QString::null);
+  d->m_referrer = ref.url();
+
   m_url = url;
   KURL baseurl;
 
@@ -1686,7 +1689,7 @@ KURL KHTMLPart::completeURL( const QString &url )
 
 void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockHistory )
 {
-    //kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
+  //kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
 
     if( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect )
     {
@@ -2385,10 +2388,16 @@ void KHTMLPart::slotClearSelection()
 
 void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPressed )
 {
+  KURL u = completeURL(url);
+
+  // special case for <a href="">
+  if ( url.isEmpty() )
+    u.setFileName( url );
+
   emit onURL( url );
 
   if ( url.isEmpty() ) {
-    setStatusBarText(completeURL(url).htmlURL(), BarHoverText);
+    setStatusBarText(u.htmlURL(), BarHoverText);
     return;
   }
 
@@ -2399,15 +2408,8 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
     return;
   }
 
-  KURL u = completeURL(url);
-
   KFileItem item(u, QString::null, KFileItem::Unknown);
   emit d->m_extension->mouseOverInfo(&item);
-
-
-  // special case for <a href="">
-  if ( url.isEmpty() )
-    u.setFileName( url );
 
   QString com;
 
