@@ -224,9 +224,10 @@ KJSO Location::get(const UString &p) const
 void Location::put(const UString &p, const KJSO &v)
 {
   QString str = v.toString().value().qstring();
-
-//   if (p == "href")
-//     part->openURL(str);
+  
+  if (p == "href")
+    part->scheduleRedirection(0, str);
+  /* TODO: remaining location properties */
 }
 
 #include "kjs_window.moc"
