@@ -29,92 +29,94 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     S = 258,
-     SGML_CD = 259,
-     INCLUDES = 260,
-     DASHMATCH = 261,
-     BEGINSWITH = 262,
-     ENDSWITH = 263,
-     CONTAINS = 264,
-     STRING = 265,
-     IDENT = 266,
-     HASH = 267,
-     IMPORT_SYM = 268,
-     PAGE_SYM = 269,
-     MEDIA_SYM = 270,
-     FONT_FACE_SYM = 271,
-     CHARSET_SYM = 272,
-     NAMESPACE_SYM = 273,
-     KHTML_RULE_SYM = 274,
-     KHTML_DECLS_SYM = 275,
-     KHTML_VALUE_SYM = 276,
-     IMPORTANT_SYM = 277,
-     QEMS = 278,
-     EMS = 279,
-     EXS = 280,
-     PXS = 281,
-     CMS = 282,
-     MMS = 283,
-     INS = 284,
-     PTS = 285,
-     PCS = 286,
-     DEGS = 287,
-     RADS = 288,
-     GRADS = 289,
-     MSECS = 290,
-     SECS = 291,
-     HERZ = 292,
-     KHERZ = 293,
-     DIMEN = 294,
-     PERCENTAGE = 295,
-     NUMBER = 296,
-     URI = 297,
-     FUNCTION = 298,
-     UNICODERANGE = 299
+     UNIMPORTANT_TOK = 258,
+     S = 259,
+     SGML_CD = 260,
+     INCLUDES = 261,
+     DASHMATCH = 262,
+     BEGINSWITH = 263,
+     ENDSWITH = 264,
+     CONTAINS = 265,
+     STRING = 266,
+     IDENT = 267,
+     HASH = 268,
+     IMPORT_SYM = 269,
+     PAGE_SYM = 270,
+     MEDIA_SYM = 271,
+     FONT_FACE_SYM = 272,
+     CHARSET_SYM = 273,
+     NAMESPACE_SYM = 274,
+     KHTML_RULE_SYM = 275,
+     KHTML_DECLS_SYM = 276,
+     KHTML_VALUE_SYM = 277,
+     IMPORTANT_SYM = 278,
+     QEMS = 279,
+     EMS = 280,
+     EXS = 281,
+     PXS = 282,
+     CMS = 283,
+     MMS = 284,
+     INS = 285,
+     PTS = 286,
+     PCS = 287,
+     DEGS = 288,
+     RADS = 289,
+     GRADS = 290,
+     MSECS = 291,
+     SECS = 292,
+     HERZ = 293,
+     KHERZ = 294,
+     DIMEN = 295,
+     PERCENTAGE = 296,
+     NUMBER = 297,
+     URI = 298,
+     FUNCTION = 299,
+     UNICODERANGE = 300
    };
 #endif
-#define S 258
-#define SGML_CD 259
-#define INCLUDES 260
-#define DASHMATCH 261
-#define BEGINSWITH 262
-#define ENDSWITH 263
-#define CONTAINS 264
-#define STRING 265
-#define IDENT 266
-#define HASH 267
-#define IMPORT_SYM 268
-#define PAGE_SYM 269
-#define MEDIA_SYM 270
-#define FONT_FACE_SYM 271
-#define CHARSET_SYM 272
-#define NAMESPACE_SYM 273
-#define KHTML_RULE_SYM 274
-#define KHTML_DECLS_SYM 275
-#define KHTML_VALUE_SYM 276
-#define IMPORTANT_SYM 277
-#define QEMS 278
-#define EMS 279
-#define EXS 280
-#define PXS 281
-#define CMS 282
-#define MMS 283
-#define INS 284
-#define PTS 285
-#define PCS 286
-#define DEGS 287
-#define RADS 288
-#define GRADS 289
-#define MSECS 290
-#define SECS 291
-#define HERZ 292
-#define KHERZ 293
-#define DIMEN 294
-#define PERCENTAGE 295
-#define NUMBER 296
-#define URI 297
-#define FUNCTION 298
-#define UNICODERANGE 299
+#define UNIMPORTANT_TOK 258
+#define S 259
+#define SGML_CD 260
+#define INCLUDES 261
+#define DASHMATCH 262
+#define BEGINSWITH 263
+#define ENDSWITH 264
+#define CONTAINS 265
+#define STRING 266
+#define IDENT 267
+#define HASH 268
+#define IMPORT_SYM 269
+#define PAGE_SYM 270
+#define MEDIA_SYM 271
+#define FONT_FACE_SYM 272
+#define CHARSET_SYM 273
+#define NAMESPACE_SYM 274
+#define KHTML_RULE_SYM 275
+#define KHTML_DECLS_SYM 276
+#define KHTML_VALUE_SYM 277
+#define IMPORTANT_SYM 278
+#define QEMS 279
+#define EMS 280
+#define EXS 281
+#define PXS 282
+#define CMS 283
+#define MMS 284
+#define INS 285
+#define PTS 286
+#define PCS 287
+#define DEGS 288
+#define RADS 289
+#define GRADS 290
+#define MSECS 291
+#define SECS 292
+#define HERZ 293
+#define KHERZ 294
+#define DIMEN 295
+#define PERCENTAGE 296
+#define NUMBER 297
+#define URI 298
+#define FUNCTION 299
+#define UNICODERANGE 300
 
 
 
