@@ -21,8 +21,8 @@
 #include <kapp.h>
 #include <kdialog.h>
 
-KDialog::mMarginSize = 6;
-KDialog::mSpacingSize = 6;
+int KDialog::mMarginSize = 6;
+int KDialog::mSpacingSize = 6;
 
 
 
