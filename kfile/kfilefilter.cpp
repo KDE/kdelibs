@@ -24,6 +24,7 @@
 KFileFilter::KFileFilter( QWidget *parent, const char *name)
     : KComboBox(true, parent, name)
 {
+    setTrapReturnKey( true );
     setInsertionPolicy(NoInsertion);
     connect( this, SIGNAL( activated( int )), this, SIGNAL( filterChanged() ));
     connect( this, SIGNAL( returnPressed() ), this, SIGNAL( filterChanged() ));

@@ -116,7 +116,7 @@ struct KFileDialogPrivate
     QLabel *filterLabel;
     KURLComboBox *pathCombo;
     QPushButton *okButton, *cancelButton;
-    
+
     QList<KIO::StatJob> statJobs;
 
     // an indicator that we're currently in a completion operation
@@ -131,8 +131,6 @@ KURL *KFileDialog::lastDirectory; // to set the start path
 KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 			 QWidget *parent, const char* name, bool modal)
     : KDialogBase( parent, name, modal, QString::null, 0 )
-    //		   KDialogBase::Ok | KDialogBase::Cancel,
-    //		   KDialogBase::Ok )
 {
     d = new KFileDialogPrivate();
     d->boxLayout = 0;
@@ -285,7 +283,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     	     d->pathCombo, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
 	
     d->filterLabel = new QLabel(i18n("&Filter:"), d->mainWidget);
-    d->locationLabel = new QLabel(locationEdit, i18n("&Location:"), 
+    d->locationLabel = new QLabel(locationEdit, i18n("&Location:"),
 				  d->mainWidget);
 
     filterWidget = new KFileFilter(d->mainWidget, "KFileDialog::filterwidget");
@@ -566,7 +564,7 @@ void KFileDialog::initGUI()
     d->lafBox->addWidget(d->locationLabel, 0, 0, AlignVCenter);
     d->lafBox->addWidget(locationEdit, 0, 1, AlignVCenter);
     d->lafBox->addWidget(d->okButton, 0, 2, AlignVCenter | AlignRight);
-    
+
     d->lafBox->addWidget(d->filterLabel, 1, 0, AlignVCenter);
     d->lafBox->addWidget(filterWidget, 1, 1, AlignVCenter);
     d->lafBox->addWidget(d->cancelButton, 1, 2, AlignVCenter);
@@ -574,7 +572,7 @@ void KFileDialog::initGUI()
     //    d->lafBox->setColStretch(0, 0);
     d->lafBox->setColStretch(1, 4);
     //    d->lafBox->setColStretch(2, 1);
-    
+
     delete d->myStatusLine;
     d->myStatusLine = 0L;
 
@@ -638,7 +636,7 @@ void KFileDialog::pathComboChanged( const QString& txt )
         d->completionHack = newText;
 	return;
     }
-    
+
     // the user is backspacing -> don't annoy him with completions
     if ( autoDirectoryFollowing && d->completionHack.find( newText ) == 0 ) {
         // but we can follow the directories, if configured so
@@ -657,7 +655,7 @@ void KFileDialog::pathComboChanged( const QString& txt )
     }
 
     // typing forward, ending with a / -> cd into the directory
-    else if ( autoDirectoryFollowing && 
+    else if ( autoDirectoryFollowing &&
 	      text.at(text.length()-1) == '/' && ops->url() != text ) {
 	d->selection = QString::null;
         setURL( text, false );
