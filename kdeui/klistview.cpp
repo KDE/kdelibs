@@ -548,11 +548,26 @@ void KListView::contentsDropEvent(QDropEvent* e)
     QListViewItem *afterme;
     QListViewItem *parent;
     findDrop(e->pos(), parent, afterme);
-
-    emit dropped(e, afterme);
-    emit dropped(this, e, afterme);
-    emit dropped(e, parent, afterme);
-    emit dropped(this, e, parent, afterme);
+    if (e->source()==viewport())
+    {
+      if (itemsMovable())
+      {
+        for (QListViewItem *i=firstChild(); i!=0; i=i->itemBelow())
+        {
+          if (!i->isSelected())
+            continue;
+          moveItem(i, parent, afterme);
+          afterme=i;
+        }
+      }
+    }
+	else
+	{
+      emit dropped(e, afterme);
+      emit dropped(this, e, afterme);
+      emit dropped(e, parent, afterme);
+      emit dropped(this, e, parent, afterme);
+    }
   }
 }
 
@@ -598,28 +613,31 @@ void KListView::cleanDropVisualizer()
 }
 
 void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after)
-{ 
-  after = itemAt (contentsToViewport(pos));
-  
-  if (after)
-	{
-      if (!(pos.x() > header()->cellPos( header()->mapToActual( 0 ) ) +
-			treeStepSize() * (after->depth() + ( rootIsDecorated() ? 1 : 0) ) + itemMargin() ||
-			pos.x() < header()->cellPos (header()->mapToActual (0))))
-		{
-		  after = 0L;
-		}
-  
-	  if (after && !below (after, pos))
-		after = after->itemAbove();
-	}
+{
+  QPoint p(pos);
+  // Move the point if the header is shown
+  if (header()->isVisible())
+    p.setY(p.y()-header()->height());
+	
+  // Get the position to put it in
+  QListViewItem *atpos(itemAt(p));
+	
+  if (!atpos) // put it at the end
+    after=lastItem();
   else
-	{
-	  after = lastItem();
-	}
-
-  if (after)
-	parent = after->parent();
+  { // get the one closer to me..
+    // That is, the space between two listviewitems
+    // Since this aims to be user-friendly :)
+    int dropY=mapFromGlobal(p).y();
+    int itemHeight=atpos->height();
+    int topY=mapFromGlobal(itemRect(atpos).topLeft()).y();
+		
+     if ((dropY-topY)<itemHeight/2)
+       after=atpos->itemAbove();	
+     else
+       after=atpos;
+  }
+  parent=0;
 }
 
 
