@@ -282,7 +282,7 @@ void KeramikStyle::polish(QWidget* widget)
  	}
 	else if (kickerMode) 
 	{
-		
+		/*
 		if (QCString(widget->className()) == ("FittsLawFrame") )
 		{
 			QFrame* f = static_cast<QFrame*>(widget);
@@ -290,7 +290,7 @@ void KeramikStyle::polish(QWidget* widget)
 			f->setLineWidth(1);
 			f->setMidLineWidth(1);
 			
-		}
+		}*/
 	} else if ( !qstrcmp( widget->name(), kdeToolbarWidget ) ) {
 		widget->setBackgroundMode( NoBackground );
 		widget->installEventFilter(this);
@@ -328,15 +328,15 @@ void KeramikStyle::unPolish(QWidget* widget)
 	} else if (widget->inherits("QToolBarExtensionWidget")) {
 		widget->removeEventFilter(this);
  	}
-	else if (kickerMode)  //CHECKME!
+	else if (kickerMode)  
 	{
-		if (QCString(widget->className()) == ("FittsLawFrame"))
+/*		if (QCString(widget->className()) == ("FittsLawFrame"))
 		{
 			QFrame* f = static_cast<QFrame*>(widget);
 			f->setFrameStyle(QFrame::Panel | QFrame::Raised);
 			f->setLineWidth(2);
 			f->setMidLineWidth(1);
-		}
+		}*/
 	} else if ( !qstrcmp( widget->name(), kdeToolbarWidget ) ) {
 		widget->setBackgroundMode( PaletteBackground );
 		widget->removeEventFilter(this);
