@@ -3,8 +3,6 @@ INCLUDES= -I$(top_srcdir)/kparts $(all_includes)
 LDFLAGS	= $(all_libraries)
 LDADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDECORE)
 
-SUBDIRS = notepadplugins
-
 check_PROGRAMS = kpartstest
 
 kpartstest_SOURCES = example.cpp notepad.cpp
@@ -17,6 +15,9 @@ testpart_DATA = kpartstest_part1.rc
 
 notepaddir = $(kde_datadir)/notepadpart
 notepad_DATA = notepadpart.rc
+
+pluginsdir = $(kde_datadir)/notepadpart/kpartplugins
+plugins_DATA = plugin_foobar.rc plugin_spellcheck.rc
 
 METASOURCES = AUTO
 
