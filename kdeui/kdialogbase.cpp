@@ -214,6 +214,11 @@ void KDialogBase::activateCore( void )
   mIsActivated = true;
   initializeGeometry();
 
+  if( mResizeMode != ResizeFixed )
+  {
+    resize( minimumSize() + mInitialSizeStep.expandedTo( QSize(0,0) ) );
+  }
+
   if( mJanus != 0 )
   {
     mJanus->showPage(0);
@@ -857,6 +862,12 @@ void KDialogBase::setResizeMode( int mode )
   mResizeMode = mode;
   initializeGeometry();
 }
+
+void KDialogBase::setInitialSizeStep( const QSize &initialSizeStep )
+{
+  mInitialSizeStep = initialSizeStep;
+}
+
 
 
 void KDialogBase::updateSize( void )

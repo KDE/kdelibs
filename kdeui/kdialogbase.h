@@ -384,6 +384,17 @@ class KDialogBase : public KDialog
     void setResizeMode( int mode );
 
     /**
+     * Sets a size that is added to the dialog minimum size the first
+     * time it is displayed. The dialog can still be resized to its minimum
+     * size. Note: The size value will be ignored if the resize mode is
+     * ResizeFixed.
+     * 
+     * @param initialSizeStep - Value added to minimum size.
+     *
+     */
+    void setInitialSizeStep( const QSize &initialSizeStep );
+
+    /**
      * Updates the size of the dialog and the resize constraints depending
      * on the current resize mode. THis method is executed from 
      * @ref setResizeMode so you should not need to use this method.
@@ -808,7 +819,8 @@ class KDialogBase : public KDialog
     static KDialogBase *mRelay;
     bool   mShowTile;
 
-    int mResizeMode;
+    int   mResizeMode;
+    QSize mInitialSizeStep;
 };
 
 
