@@ -1,3 +1,7 @@
+/* This class is property of Troll Tech. It's here temporarily
+   until it appears in Qt's CVS 
+*/
+
 #ifndef KSharedPTR_H
 #define KSharedPTR_H
 
