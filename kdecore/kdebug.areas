@@ -26,19 +26,19 @@
 
 5001    caitoo
 
-7001    kiolib (KDirWatch)
-7002    kiolib (KIOCache)
-7005    kiolib (Filter)
-7006    kiolib (ConnectionSlots::dispatch)
-7007    kiolib (KIOJob)
-7008    kiolib (ProtocolManager)
-7009    kiolib (KMimeType)
-7010    kiolib (KRun)
-7011    kiolib (KRegistry)
-7012    kiolib (KService*)
-7013    kiolib (KPing)
-7014    kiolib (KFind)
-7015    kiolib (KAutoMount)
+7001    kio (KDirWatch)
+7002    kio (KIOCache)
+7005    kio (Filter)
+7006    kio (ConnectionSlots::dispatch)
+7007    kio (KIOJob)
+7008    kio (ProtocolManager)
+7009    kio (KMimeType)
+7010    kio (KRun)
+7011    kio (KSycoca)
+7012    kio (KService*)
+7013    kio (KPing)
+7014    kio (KFind)
+7015    kio (KAutoMount)
 
 # 710x  are for kioslaves
 7101    kio_file
