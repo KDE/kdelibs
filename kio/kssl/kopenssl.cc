@@ -244,10 +244,10 @@ KConfig *cfg;
             #ifdef _AIX
             << "/opt/freeware/lib/"
 	    #endif
-            << "/lib/"
 	    << "/usr/lib/"
 	    << "/usr/ssl/lib/"
             << "/usr/local/lib/"
+            << "/lib/"
             << "/usr/local/openssl/lib/"
             << "/usr/local/ssl/lib/"
             << "/opt/openssl/lib/"
@@ -276,9 +276,9 @@ KConfig *cfg;
 	     #else
              << "libcrypto.so"
 	     << "libcrypto.so.0"
-	     << "libcrypto.so.0.9.6"
-	     << "libcrypto.so.0.9.6b"
 	     << "libcrypto.so.0.9.6c"
+	     << "libcrypto.so.0.9.6b"
+	     << "libcrypto.so.0.9.6"
              #endif
 	     ;
 
@@ -405,7 +405,8 @@ KConfig *cfg;
                                  shit != libnamess.end();
                                  ++shit) {
          QString alib = *it+*shit;
-         _sslLib = ll->globalLibrary(alib.latin1());
+	 if (!access(alib.latin1(), R_OK))
+         	_sslLib = ll->globalLibrary(alib.latin1());
          if (_sslLib) break;
       }
       if (_sslLib) break;
