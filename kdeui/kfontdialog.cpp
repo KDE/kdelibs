@@ -23,6 +23,9 @@
     Boston, MA 02111-1307, USA.
   
     $Log$
+    Revision 1.31  1999/03/02 15:56:28  kulow
+    CVS_SILENT replacing klocale->translate with i18n
+
     Revision 1.30  1999/03/01 23:34:41  kulow
     CVS_SILENT ported to Qt 2.0
 
@@ -606,9 +609,7 @@ bool KFontDialog::loadKDEInstalledFonts(){
 
   QString fontfilename;
 
-  //TODO replace by QDir::homePath();
-
-  fontfilename = KApplication::localkdedir() + "/share/config/kdefonts";
+  fontfilename = KApplication::localconfigdir() + "/kdefonts";
 
   QFile fontfile(fontfilename);
 
