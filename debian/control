@@ -6,7 +6,7 @@ Standards-Version: 2.5.0
 
 Package: kdelibs2g-dev
 Architecture: any
-Depends: kdelibs2g (= ${Source-Version}), qt1g-dev, libjpeg62-dev, xlib6g-dev
+Depends: kdelibs2g (= ${Source-Version}), gettext, qt1g-dev, libjpeg62-dev, xlib6g-dev
 Conflicts: kdelibs0-dev
 Description: KDE core libraries (development files)
  KDE core libraries.
@@ -15,6 +15,7 @@ Description: KDE core libraries (development files)
 Package: kdelibs2g
 Architecture: any
 Depends: ${shlibs:Depends}, libjpeg62
+Supplies: kdelibs
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.

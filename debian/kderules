@@ -72,7 +72,7 @@ sub docwanted {
 	/debian/ or /INSTALL/ and return 0 ;
 	/COPYING/ and return ;
 	if ( (! /CVS/ )
-	and ( /^[A-Z]*$/ or /README/ or /docs/ or /ChangeLog/ or /lsm$/ or /SWALLOW/
+	and ( /^[A-Z]*$/ or /README/ or /docs/ or /lsm$/ or /SWALLOW/
 	or /TODO/ or /kdedoc/ or /Header/ or /Documentation/ or /Tutorial/ ) )
 	{	push @docs, "$File::Find::dir/$_" ;
 	}
