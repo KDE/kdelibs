@@ -118,12 +118,13 @@ void KAccelMenu::popMsg () {
     if (keys->configurable(actions[cid])) {
       msg = i18n("Change shortcut for: ");
       msg += keys->description(actions[cid]);
+      kq->popup(msg, pos().x() + cellWidth(idx)
+		,pos().y() + yp + cellHeight(idx));
     } else {
       msg = i18n("Global Key: cannot change shortcut");
+      QMessageBox::warning(this,"Kpackage",msg);
     }
   }
-  kq->popup(msg, pos().x() + cellWidth(idx)
-	    ,pos().y() + yp + cellHeight(idx));
 }
 
 void KAccelMenu::keyPressEvent ( QKeyEvent * e)
@@ -167,7 +168,7 @@ void KAccelMenu::keyPressEvent ( QKeyEvent * e)
       }
     }
 
-    if ( /* !needQuote ||*/  quote ) {
+    if ( /* !needQuote ||*/  quote || deleteKey) {
       if (kq) {
 	kq->hide();
       }
