@@ -45,6 +45,10 @@ namespace DOM {
     class CSSProperty;
 };
 
+namespace KJS {
+    class WindowFunc;
+}
+
 namespace khtml {
     class RenderObject;
     class RenderRoot;
@@ -81,7 +85,9 @@ class KHTMLView : public QScrollView
     friend class khtml::RenderPartObject;
     friend class khtml::RenderWidget;
     friend class khtml::CSSStyleSelector;
+    friend class KJS::WindowFunc;
     friend void khtml::applyRule(DOM::CSSProperty *prop);
+   
 
 public:
     /**
@@ -142,16 +148,6 @@ public:
      */
     void layout();
 
-    /**
-     * Close all child dialogs
-     **/
-    void closeChildDialogs();
-
-    /**
-     * Between closeChildDialogs() and clear() no child dialogs may be created
-     **/
-    bool dialogsAllowed();
-
 signals:
     void cleared();
     void zoomView( int );
@@ -196,6 +192,8 @@ private:
     void scheduleRelayout();
 
     void scheduleRepaint(int x, int y, int w, int h);
+    void closeChildDialogs();
+    bool dialogsAllowed();
 
     /**
      * Paints the HTML document to a QPainter.
