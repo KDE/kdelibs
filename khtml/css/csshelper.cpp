@@ -158,7 +158,7 @@ void khtml::setFontSize( QFont &f,  int  pixelsize, const KHTMLSettings *s, QPai
         QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f));
         // lets see if we find a nice looking font, which is not too far away
         // from the requested one.
-        kdDebug(6080) << "khtml::setFontSize family = " << f.family() << " size requested=" << size << endl;
+        //kdDebug(6080) << "khtml::setFontSize family = " << f.family() << " size requested=" << size << endl;
 
         QValueList<int>::Iterator it;
         float diff = 1; // ### 100% deviation
