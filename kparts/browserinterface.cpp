@@ -3,8 +3,13 @@
 
 #include <qmetaobject.h>
 
+#include <config.h>
 #if QT_VERSION >= 300
+#ifdef HAVE_PRIVATE_QUCOMEXTRA_P_H
+#include <private/qucomextra_p.h>
+#else
 #include <qucom.h>
+#endif
 #endif
 
 using namespace KParts;
@@ -71,21 +76,41 @@ void BrowserInterface::callMethod( const char *name, const QVariant &argument )
         case QVariant::Invalid:
             break;
         case QVariant::String:
+#ifdef HAVE_PRIVATE_QUCOMEXTRA_P_H
+            static_QUType_QString.set( o + 1, argument.toString() );
+#else
 	    pQUType_QString->set( o + 1, argument.toString() );
+#endif
             break;
         case QVariant::StringList:
 	    strLst = argument.toStringList();
+#ifdef HAVE_PRIVATE_QUCOMEXTRA_P_H
+            static_QUType_ptr.set( o + 1, &strLst );
+#else
 	    pQUType_ptr->set( o + 1, &strLst );
+#endif
             break;
         case QVariant::Int:
+#ifdef HAVE_PRIVATE_QUCOMEXTRA_P_H
+            static_QUType_int.set( o + 1, argument.toInt() );
+#else
 	    pQUType_int->set( o + 1, argument.toInt() );
+#endif
             break;
         case QVariant::UInt:
 	    i = argument.toUInt();
+#ifdef HAVE_PRIVATE_QUCOMEXTRA_P_H
+	    static_QUType_ptr.set( o + 1, &i );
+#else
 	    pQUType_ptr->set( o + 1, &i );
+#endif
             break;
         case QVariant::Bool:
+#ifdef HAVE_PRIVATE_QUCOMEXTRA_P_H
+	    static_QUType_bool.set( o + 1, argument.toBool() );
+#else
 	    pQUType_bool->set( o + 1, argument.toBool() );
+#endif
             break;
         default: return;
     }
