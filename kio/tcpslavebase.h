@@ -64,7 +64,7 @@ public:
 protected:
 
     /**
-     * Deprecated due to inconsistency with KDE naming convention.
+     * @deprecated Due to inconsistency with KDE naming convention.
      */
     ssize_t Write(const void *data, ssize_t len);
 
@@ -81,7 +81,7 @@ protected:
     ssize_t write(const void *data, ssize_t len);
 
     /**
-     * Deprecated due to inconsistency with KDE naming convention.
+     * @deprecated Due to inconsistency with KDE naming convention.
      */
     ssize_t Read(void *data, ssize_t len);
 
@@ -98,7 +98,7 @@ protected:
     ssize_t read(void *data, ssize_t len);
 
     /**
-     * Deprecated due to inconsistency with KDE naming convention.
+     * @deprecated Due to inconsistency with KDE naming convention.
      */
     ssize_t ReadLine(char *data, ssize_t len);
 
@@ -108,7 +108,7 @@ protected:
     ssize_t readLine(char *data, ssize_t len);
 
     /**
-     * Deprecated due to inconsistency with KDE naming convention.
+     * @deprecated Due to inconsistency with KDE naming convention.
      */
     unsigned short int GetPort(unsigned short int);
 
@@ -122,7 +122,7 @@ protected:
     unsigned short int port(unsigned short int);
 
     /**
-     * Deprecated due to inconsistency with KDE naming convention.
+     * @deprecated Due to inconsistency with KDE naming convention.
      */
     bool ConnectToHost( const QString &host, unsigned int port,
                         bool sendError );
@@ -189,7 +189,7 @@ protected:
 
 
     /**
-     * Deprecated due to inconsistency with KDE naming convention.
+     * @deprecated Due to inconsistency with KDE naming convention.
      */
     void CloseDescriptor();
 
@@ -203,7 +203,7 @@ protected:
     void closeDescriptor();
 
     /**
-     * Deprecated due to inconsistency with KDE naming convention.
+     * @deprecated Due to inconsistency with KDE naming convention.
      */
     bool AtEOF();
 
@@ -213,7 +213,7 @@ protected:
     bool atEOF();
 
     /**
-     * Deprecated due to inconsistency with KDE naming convention.
+     * @deprecated Due to inconsistency with KDE naming convention.
      */
     bool InitializeSSL();
 
@@ -223,7 +223,7 @@ protected:
     bool initializeSSL();
 
     /**
-     * Deprecated due to inconsistency with KDE naming convention.
+     * @deprecated Due to inconsistency with KDE naming convention.
      */
     void CleanSSL();
 
