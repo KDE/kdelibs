@@ -8,11 +8,11 @@
 
 namespace KIO { class Job; }
 
-class KFMExec : public QObject
+class KIOExec : public QObject
 {
     Q_OBJECT
 public:
-    KFMExec();
+    KIOExec();
 
 public slots:
     void slotResult( KIO::Job * );

@@ -62,7 +62,7 @@ int jobCounter = 0;
 
 QPtrList<KIO::Job>* jobList = 0L;
 
-KFMExec::KFMExec()
+KIOExec::KIOExec()
 {
     jobList = new QPtrList<KIO::Job>;
     jobList->setAutoDelete( false ); // jobs autodelete themselves
@@ -75,11 +75,12 @@ KFMExec::KFMExec()
 
     expectedCounter = 0;
     command = args->arg(0);
-    kdDebug() << command << endl;
+    kdDebug() << "command=" << command << endl;
 
     for ( int i = 1; i < args->count(); i++ )
     {
         KURL url = args->url(i);
+        //kdDebug() << "url=" << url.url() << " filename=" << url.fileName() << endl;
         // A local file, not an URL ?
         // => It is not encoded and not shell escaped, too.
         if ( url.isLocalFile() )
@@ -99,19 +100,22 @@ KFMExec::KFMExec()
             else
             // We must fetch the file
             {
+                QString fileName = KIO::encodeFileName( url.fileName() );
                 // Build the destination filename, in ~/.kde/cache-*/krun/
                 // Unlike KDE-1.1, we put the filename at the end so that the extension is kept
                 // (Some programs rely on it)
                 QString tmp = KGlobal::dirs()->saveLocation( "cache", "krun/" ) +
-                              QString("%1.%2.%3").arg(getpid()).arg(jobCounter++).arg(url.fileName());
+                              QString("%1.%2.%3").arg(getpid()).arg(jobCounter++).arg(fileName);
                 fileInfo file;
                 file.path = tmp;
                 file.url = url;
                 fileList.append(file);
 
                 expectedCounter++;
-                kdDebug() << "Copying " << url.prettyURL() << " to " << tmp << endl;
-                KIO::Job *job = KIO::file_copy( url, tmp );
+                KURL dest;
+                dest.setPath( tmp );
+                kdDebug() << "Copying " << url.prettyURL() << " to " << dest << endl;
+                KIO::Job *job = KIO::file_copy( url, dest );
                 jobList->append( job );
 
                 connect( job, SIGNAL( result( KIO::Job * ) ), SLOT( slotResult( KIO::Job * ) ) );
@@ -128,7 +132,7 @@ KFMExec::KFMExec()
         slotResult( 0L );
 }
 
-void KFMExec::slotResult( KIO::Job * job )
+void KIOExec::slotResult( KIO::Job * job )
 {
     if (job && job->error())
     {
@@ -164,7 +168,7 @@ void KFMExec::slotResult( KIO::Job * job )
     jobList->clear();
 }
 
-void KFMExec::slotRunApp()
+void KIOExec::slotRunApp()
 {
     if ( fileList.isEmpty() ) {
         kdDebug() << k_funcinfo << "No files downloaded -> exiting" << endl;
@@ -264,7 +268,7 @@ int main( int argc, char **argv )
 
     KApplication app;
 
-    KFMExec exec;
+    KIOExec exec;
 
     kdDebug() << "Constructor returned..." << endl;
     return app.exec();
