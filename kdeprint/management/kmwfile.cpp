@@ -38,7 +38,7 @@ KMWFile::KMWFile(QWidget *parent, const char *name)
 	m_nextpage = KMWizard::Driver;
 
 	m_url = new KURLRequester(this);
-	m_url->fileDialog()->setMode((KFile::Mode)(KFile::File|KFile::LocalOnly));
+	m_url->setMode((KFile::Mode)(KFile::File|KFile::LocalOnly));
 	QLabel	*l1 = new QLabel(this);
 	l1->setText(i18n("<p>The printing will be redirected to a file. Enter here the path "
 			 "of the file you want to use for redirection. Use an absolute path or "
