@@ -231,7 +231,7 @@ QRect KWM::setProperties(Window w, const QString &props){
   int d1,d2,d3,d4;
   int n = 0;
   QRect result;
-  QString arg = props.data();
+  QString arg = props;
   while ((a = arg.find('+', 0)) != -1){
     if (n<13)
       data[n++]=arg.left(a).toInt();
@@ -407,7 +407,7 @@ void KWM::raiseSoundEvent(const QString &event){
   ev.xclient.format = 8;
 
   int i;
-  const QString s = event.data();
+  const QString s = event;
   for (i=0;i<19 && s[i];i++)
     ev.xclient.data.b[i]=s[i];
 
@@ -434,7 +434,7 @@ void KWM::registerSoundEvent(const QString &event){
   ev.xclient.format = 8;
 
   int i;
-  const QString s = event.data();
+  const QString s = event;
   for (i=0;i<19 && s[i];i++)
     ev.xclient.data.b[i]=s[i];
 
@@ -641,7 +641,7 @@ void KWM::sendKWMCommand(const QString &command){
   ev.xclient.format = 8;
 
   int i;
-  const QString s = command.data();
+  const QString s = command;
   for (i=0;i<19 && s[i];i++)
     ev.xclient.data.b[i]=s[i];
 
@@ -1125,7 +1125,7 @@ void KWM::doNotManage(const QString& title){
   ev.xclient.format = 8;
 
   int i;
-  const QString s = title.data();
+  const QString s = title;
   for (i=0;i<19 && s[i];i++)
     ev.xclient.data.b[i]=s[i];
 
