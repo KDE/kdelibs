@@ -14,16 +14,8 @@
 </author>
 </authorgroup>
 
-<date></date>
-<releaseinfo></releaseinfo>
-
-<keywordset>
-<keyword>KDE documentation</keyword>
-<keyword>documentation</keyword>
-<keyword>ksgml</keyword>
-<keyword>DocBook</keyword>
-<keyword>Linuxdoc</keyword>
-</keywordset>
+<date>29/05/2000</date>
+<releaseinfo>0.8</releaseinfo>
 
 <revhistory>
 <revision>
@@ -68,6 +60,12 @@
 <authorinitials>EB</authorinitials>
 <revremark>Removed remarks about revision history. Adapted in prevision of DocBook 4.0.</revremark>
 </revision>
+<revision>
+<revnumber>0.8</revnumber>
+<date>May 29, 2000</date>
+<authorinitials>EB</authorinitials>
+<revremark>Put all tags lower case. Introduced new headers, fixed other details.</revremark>
+</revision>
 </revhistory>
 
 <abstract>
@@ -76,6 +74,14 @@ This document describes how to write KDE documentation in DocBook using the KDE
 DocBook package. There is also a guide to moving from the old Linuxdoc format to
 the newer and more flexible DocBook format.</para>
 </abstract>
+
+<keywordset>
+<keyword>KDE</keyword>
+<keyword>documentation</keyword>
+<keyword>ksgmltools</keyword>
+<keyword>DocBook</keyword>
+<keyword>Linuxdoc</keyword>
+</keywordset>
 
 </bookinfo>
 
@@ -184,7 +190,9 @@ or one of its mirrors listed on <ulink url="http://www.kde.org/mirrors.html">KDE
 <para>
 To convert files from DocBook format to HTML format, use the command :</para>
 <para>
-<command>db2html <option>-d /usr/lib/sgml/stylesheets/kde.dsl</option> <replaceable>mydocs.docbook</replaceable></command>
+<command>db2html <option>-c /usr/lib/sgml/kde-0.1/kde.cat</option>
+                 <option>-d /usr/lib/sgml/kde-0.1/stylesheets/kde.dsl#html</option>
+                 <replaceable>mydocs.docbook</replaceable></command>
 </para>
 <para>
 Jade will chug away, and if your document has no errors you will get a set of HMTL files
@@ -204,6 +212,7 @@ will cause a lot more errors to occur later in the document.</para>
 <listitem><para><command>db2rtf</command> =&gt; Rich Text Format</para></listitem>
 <listitem><para><command>db2dvi</command> =&gt; TeX DVI</para></listitem>
 </itemizedlist>
+(use #print for these ones instead of #html).
 </para>
 
 </sect1>
@@ -255,17 +264,24 @@ Reference</ulink>.</para>
 <para>
 The tags covered in this section are listed below.
 <simplelist>
-<member>Book - Book</member>
-<member>Chapter - Chapter of a Book</member>
-<member>Title - Text of a heading or the title of a block-oriented element</member>
-<member>Para - Paragraph</member>
+<member>book - Book</member>
+<member>chapter - Chapter of a Book</member>
+<member>title - Text of a heading or the title of a block-oriented element</member>
+<member>para - Paragraph</member>
 </simplelist>
 <example>
 <title>An example of a minimal DocBook Book file</title>
 <screen>
 <![ CDATA [
-<!DOCTYPE Book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN">
-<book lang="en" id="kapp">
+<!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
+ <!ENTITY kapp "<application>Kapp</application>">
+ <!ENTITY % FDLNotice PUBLIC "-//KDE//ENTITIES KDE GNU FDL 1.1 Notice Entities//EN">
+ %FDLNotice;
+ <!ENTITY % addindex "IGNORE">
+ <![ %addindex; [ <!ENTITY kdedocindex SYSTEM "docindex.docbook"> ]]>]]&gt;<![CDATA [
+]>
+
+<book lang="en">
 <bookinfo>
 <title>The Kapp Handbook</title>
 </bookinfo>
@@ -280,15 +296,20 @@ The tags covered in this section are listed below.
 </para>
 <para>
 The above example shows a skeleton of all of the required structural tags. The
-first tag in any DocBook file is the DTD declaration which indicates which DTD
+first lines in any DocBook file are the DTD declaration which indicates which DTD
 to use to process this document. KDE documentation uses an extension to the
 standard DocBook 3.1 DTD which adds support for PNG graphics to the
-graphics-related DocBook tags. Next comes the content model, which is
-<markup>&lt;Book&gt;</markup> for all KDE documentation. Note the use of the Lang and ID
+graphics-related DocBook tags. Here you also find other definitions like
+<markup>&amp;kapp;</markup> which defines a shortcut for the name of the "kapp"
+application, and the inclusion of a legal notice.
+</para>
+<para>
+Next comes the content model, which is
+<markup>&lt;book&gt;</markup> for all KDE documentation. Note the use of the Lang and ID
 attributes in the Book tag. The language attribute should always be used to make
 it easy to determine what language in which the document is written.
-Human-readable (not numerical) ID attributes for <markup>&lt;Book&gt;</markup>,
-<markup>&lt;Chapter&gt;</markup>, and <markup>&lt;Sect&gt;</markup> tags are
+Human-readable (not numerical) ID attributes for <markup>&lt;book&gt;</markup>,
+<markup>&lt;chapter&gt;</markup>, and <markup>&lt;sect&gt;</markup> tags are
 required for two reasons:
 <itemizedlist>
 <listitem><para>Labelling all of the sections of your document allows you to
@@ -299,19 +320,20 @@ each time the docs are updated, which wastes space in CVS.</para></listitem>
 </itemizedlist>
 </para>
 <para>
-After the <markup>&lt;Book&gt;</markup> tag comes the meta information for the
-document which is encapsulated within the <markup>&lt;BookInfo&gt;</markup> tag.
-This information will be described in more detail in the <link linkend="metainfo">Meta Information</link> section. Then come the chapters of
-your book, which may contain one or more section tags
-(<markup>&lt;Sect1&gt;</markup> - <markup>&lt;Sect5&gt;</markup>). Chapters and
-sections must contain at least a <markup>&lt;Title&gt;</markup> and an empty
-<markup>&lt;Para&gt;</markup> tag. To make it easier to visualize how the
-sections relate to one another, refer to the documentation template. </para>
+After the <markup>&lt;book&gt;</markup> tag comes the meta information for the
+document which is encapsulated within the <markup>&lt;bookinfo&gt;</markup> tag.
+This information will be described in more detail in the
+<link linkend="metainfo">Meta Information</link> section. Then come the chapters
+of your book, which may contain one or more section tags
+(<markup>&lt;sect1&gt;</markup> - <markup>&lt;sect5&gt;</markup>). Chapters and
+sections must contain at least a <markup>&lt;title&gt;</markup> and an empty
+<markup>&lt;para&gt;</markup> tag. To make it easier to visualize how the
+sections relate to one another, refer to the documentation template.</para>
 <para>
-Content in DocBook is contained within a <markup>&lt;Para&gt;</markup>
-tag, which is very similar to the <markup>&lt;P&gt;</markup> tag in HTML and
+Content in DocBook is contained within a <markup>&lt;para&gt;</markup>
+tag, which is very similar to the <markup>&lt;p&gt;</markup> tag in HTML and
 Linuxdoc except that it must always have a closing
-<markup>&lt;/Para&gt;</markup> tag.</para>
+<markup>&lt;/para&gt;</markup> tag.</para>
 
 </sect1>
 
@@ -321,23 +343,23 @@ Linuxdoc except that it must always have a closing
 <para>
 The tags covered in this section are listed below.
 <simplelist>
-<member>BookInfo - Metainformation for a Book</member>
-<member>Title - Text of a heading or the title of a block-oriented element</member>
-<member>AuthorGroup - Wrapper for Author information</member>
-<member>Author - Author of a document </member>
-<member>AuthorInitials - Initials or other identifier for the author of a Revision or Comment</member>
-<member>FirstName - Given name</member>
-<member>OtherName - Name component that is not a Firstname, Surname, or Lineage</member>
-<member>Surname - Family name</member>
-<member>KeywordSet - Set of terms describing the content of a document</member>
-<member>Keyword - Term describing the content of a document</member>
-<member>ReleaseInfo - Information about a particular version of a document</member>
-<member>RevHistory - Revisions to a document</member>
-<member>Revision - Entry in RevHistory, describing some revision made to the text</member>
-<member>RevNumber - Number of a Revision</member>
-<member>RevRemark - Description of a Revision</member>
-<member>Abstract - Document summary</member>
-<member>Date - Date of publication or revision of a document</member>
+<member>bookinfo - Metainformation for a book</member>
+<member>title - Text of a heading or the title of a block-oriented element</member>
+<member>authorgroup - Wrapper for author information</member>
+<member>author - Author of a document </member>
+<member>authorinitials - Initials or other identifier for the author of a revision or comment</member>
+<member>firstname - Given name</member>
+<member>othername - Name component that is not a firstname, surname, or lineage</member>
+<member>surname - Family name</member>
+<member>keywordset - Set of terms describing the content of a document</member>
+<member>keyword - Term describing the content of a document</member>
+<member>releaseInfo - Information about a particular version of a document</member>
+<member>revhistory - Revisions to a document</member>
+<member>revision - Entry in revhistory, describing some revision made to the text</member>
+<member>revnumber - Number of a revision</member>
+<member>revremark - Description of a revision</member>
+<member>abstract - Document summary</member>
+<member>date - Date of publication or revision of a document</member>
 </simplelist>
 <example>
 <title>Example of DocBook Headers</title>
@@ -353,12 +375,8 @@ The tags covered in this section are listed below.
 </author>
 </authorgroup>
 
-<keywordset>
-<keyword>KDE application</keyword>
-</keywordset>
-
-<releaseinfo>1.01.00</releaseinfo>
 <date>03/04/1999</date>
+<releaseinfo>1.01.00</releaseinfo>
 
 <abstract>
 <para>
@@ -366,23 +384,29 @@ Kapp is an application specially designed to do nothing you would ever want.
 </para>
 </abstract>
 
+<keywordset>
+<keyword>KDE</keyword>
+<keyword>KApp</keyword>
+<keyword>sample application</keyword>
+</keywordset>
+
 </bookinfo>
 ]]>
 </screen>
 </example>
 </para>
 <para>
-The <markup>&lt;BookInfo&gt;</markup> tag contains all of the meta information
+The <markup>&lt;bookinfo&gt;</markup> tag contains all of the meta information
 for your document. In most cases the examples in the template should provide all
 of the tags you need to describe the content of your document. Most of the tags
 are fairly self-explanatory, but there are a few important details that need to
 be addressed:</para>
 <para>
 <itemizedlist>
-<listitem><para>You should always provide the <markup>&lt;ReleaseInfo&gt;</markup> and the <markup>&lt;Date&gt;</markup> tags.
+<listitem><para>You should always provide the <markup>&lt;releaseinfo&gt;</markup> and the <markup>&lt;date&gt;</markup> tags.
 This is <emphasis>very important</emphasis> at KDE for translation update management. Please use alwayse the same format for the date (DD/MM/YYYY) and for
 the version (major.minor.lesser).</para></listitem>
-<listitem><para><markup>&lt;ReleaseInfo&gt;</markup> and <markup>&lt;Date&gt;</markup> contain the last revision date and release version number of the
+<listitem><para><markup>&lt;releaseinfo&gt;</markup> and <markup>&lt;date&gt;</markup> contain the last revision date and release version number of the
 documentation, not of the application. Of course, nothings prevents you from using the same revision numbers for both the application and the documentation.</para></listitem>
 </itemizedlist>
 </para>
@@ -396,37 +420,37 @@ contains several more types of lists for specialized purposes.</para>
 <para>
 The tags covered in this chapter are listed below.
 <simplelist>
-<member>SimpleList - List of single words or short phrases</member>
-<member>Member - Member of a SimpleList </member>
-<member>ItemizedList - List in which each entry is marked with a bullet, dash, or other dingbat</member>
-<member>ListItem - Wrapper for the elements of items in an ItemizedList or OrderedList</member>
-<member>OrderedList - List in which each entry is marked with a sequentially incremented label</member>
-<member>VariableList - List in which each entry is composed of sets of one or more Terms with associated ListItems</member>
-<member>VarListEntry - Wrapper for Term and its associated ListItem in a VariableList</member>
-<member>Term - Hanging term attached to a ListItem within a VarListEntry in a VariableList</member>
-<member>SegmentedList - List of sets of information</member>
-<member>SegTitle - Title that pertains to one Seg in each SegListItem</member>
-<member>SegListItem - List item in a SegmentedList</member>
-<member>Seg - Component of a SegmentedList</member>
-<member>QandASet - A question-and-answer set</member>
-<member>QandAEntry - A question/answer set within a QandASet</member>
-<member>Question - A question in a QandASet</member>
-<member>Answer - An answer to a question posed in a QandASet</member>
-<member>Procedure - List of operations to be performed</member>
-<member>Step - Part of a Procedure</member>
-<member>SubSteps - Wrapper for Steps within Steps</member>
+<member>simplelist - List of single words or short phrases</member>
+<member>member - Member of a simplelist </member>
+<member>itemizedlist - List in which each entry is marked with a bullet, dash, or other dingbat</member>
+<member>listitem - Wrapper for the elements of items in an itemizedlist or orderedlist</member>
+<member>orderedlist - List in which each entry is marked with a sequentially incremented label</member>
+<member>variablelist - List in which each entry is composed of sets of one or more terms with associated listitems</member>
+<member>varlistentry - Wrapper for term and its associated listitem in a variablelist</member>
+<member>term - Hanging term attached to a listitem within a varlistentry in a variablelist</member>
+<member>segmentedlist - List of sets of information</member>
+<member>segtitle - Title that pertains to one seg in each seglistitem</member>
+<member>seglistitem - List item in a segmentedlist</member>
+<member>seg - Component of a segmentedlist</member>
+<member>qandaset - A question-and-answer set</member>
+<member>qandaentry - A question/answer set within a qandaset</member>
+<member>question - A question in a qandaset</member>
+<member>answer - An answer to a question posed in a qandaset</member>
+<member>procedure - List of operations to be performed</member>
+<member>step - Part of a procedure</member>
+<member>substeps - Wrapper for steps within steps</member>
 </simplelist>
 </para>
 <sect2>
-<title>The SimpleList</title>
+<title>The simplelist</title>
 <para>
 The easiest of all the lists to use is the SimpleList. It is designed for lists
 of short phrases (like a grocery list) and only requires two tags for building
-the list as you can see in the example below. The <markup>&lt;Member&gt;</markup> tag can
-only contain inline content, so a SimpleList cannot contain other lists.</para>
+the list as you can see in the example below. The <markup>&lt;member&gt;</markup> tag can
+only contain inline content, so a simplelist cannot contain other lists.</para>
 <para>
 <example>
-<title>Example of a SimpleList</title>
+<title>Example of a simplelist</title>
 <screen>
 <![ CDATA [
 <simplelist>
@@ -453,15 +477,15 @@ When converted to HTML, a SimpleList will look something like this:
 </sect2>
 
 <sect2>
-<title>The ItemizedList</title>
+<title>The itemizedlist</title>
 <para>
-An ItemizedList is similar to the SimpleList except that each entry contains a
+An itemizedlist is similar to the simplelist except that each entry contains a
 paragraph instead of just a short phrase, allowing you to put more
 varied content in your list. ItemizedLists can contain other
 lists.</para>
 <para>
 <example>
-<title>Example of an ItemizedList</title>
+<title>Example of an itemizedlist</title>
 <screen>
 <![ CDATA [
 <itemizedlist>
@@ -489,18 +513,18 @@ The example will look something like this when converted to HTML:
 </sect2>
 
 <sect2>
-<title>The OrderedList</title>
+<title>The orderedlist</title>
 <para>
-The OrderedList is like the ItemizedList except that each ListItem is numbered
-or lettered. The Numeration attribute specifies what kind of numbering will be
+The orderedlist is like the itemizedlist except that each listitem is numbered
+or lettered. The numeration attribute specifies what kind of numbering will be
 used and can be one of the following values: Arabic, Upperalpha, Loweralpha,
 Upperroman, Lowerroman.  There are several other attributes that control the
 appearance of an OrderedList. See the DocBook Reference for
-details. OrderedLists can contain other lists. </para>
+details. orderedlists can contain other lists. </para>
 
 <para>
 <example>
-<title>Example of an OrderedList</title>
+<title>Example of an orderedlist</title>
 <screen> <![ CDATA [
 <orderedlist numeration="arabic">
 <listitem><para>Wake up.</para></listitem>
@@ -526,16 +550,16 @@ The example will look something like this when converted to HTML:
 </sect2>
 
 <sect2>
-<title>The VariableList</title>
+<title>The variablelist</title>
 <para>
-The VariableList is similar to an HTML definition list. It is used when you have
-a list of terms and definitions. The VariableList consists of several
-tags: <markup>&lt;VarListEntry&gt;</markup>, which is used to group related
-terms together, <markup>&lt;Term&gt;</markup>, which contains the term, and
-<markup>&lt;ListItem&gt;</markup>, which contains the decription of the term.</para>
+The variablelist is similar to an HTML definition list. It is used when you have
+a list of terms and definitions. The variablelist consists of several
+tags: <markup>&lt;varlistentry&gt;</markup>, which is used to group related
+terms together, <markup>&lt;term&gt;</markup>, which contains the term, and
+<markup>&lt;listitem&gt;</markup>, which contains the decription of the term.</para>
 <para>
 <example>
-<title>Example of a VariableList</title>
+<title>Example of a variablelist</title>
 <screen> <![ CDATA [
 <variablelist>
 <varlistentry>
@@ -554,7 +578,7 @@ well in salads and in desserts.</para></listitem>
 </example>
 </para>
 <para>
-When converted to HTML, the example VariableList will look something like this:
+When converted to HTML, the example variablelist will look something like this:
 <variablelist>
 <varlistentry>
 <term>Black Beans</term>
@@ -572,14 +596,14 @@ well in salads and in desserts.</para></listitem>
 </sect2>
 
 <sect2>
-<title>The SegmentedList</title>
-<para>SegmentedLists are used to list information in distinct fields
+<title>The segmentedlist</title>
+<para>segmentedlists are used to list information in distinct fields
 like the contents of an address book. The name of each field is put inside of a
-<markup>&lt;SegTitle&gt;</markup> tag. Then, use the <markup>&lt;SegListItem&gt;</markup> tag to start and end
-each set of data. The actual data is put in the <markup>&lt;Seg&gt;</markup> tag.</para>
+<markup>&lt;segtitle&gt;</markup> tag. Then, use the <markup>&lt;seglistitem&gt;</markup> tag to start and end
+each set of data. The actual data is put in the <markup>&lt;seg&gt;</markup> tag.</para>
 <para>
 <example>
-<title>Example of a SegmentedList</title>
+<title>Example of a segmentedlist</title>
 <screen> <![ CDATA [
 <segmentedlist>
 <segtitle>Name</segtitle>
@@ -621,15 +645,16 @@ This silly example looks something like this when converted to HTML:
 </sect2>
 
 <sect2>
-<title>QandASet</title>
+<title>qandaset</title>
 <para>
-The QandASet is a specialized list designed specifically to deal with sets of
+The qandaset is a specialized list designed specifically to deal with sets of
 questions and answers, like you would see in a FAQ. Each set of questions and
-answers are contained within a <markup>&lt;QandAEntry&gt;</markup> tag. The <markup>&lt;Question&gt;</markup> and
-<markup>&lt;Answer&gt;</markup> tags contain the questions and answers respectively.</para>
+answers are contained within a <markup>&lt;qandaentry&gt;</markup> tag. The
+<markup>&lt;question&gt;</markup> and <markup>&lt;answer&gt;</markup> tags
+contain the questions and answers respectively.</para>
 <para>
 <example>
-<title>Example of a QandASet</title>
+<title>Example of a qandaset</title>
 <screen> <![ CDATA [
 <qandaset>
 <qandaentry>
@@ -653,7 +678,7 @@ answers are contained within a <markup>&lt;QandAEntry&gt;</markup> tag. The <mar
 </example>
 </para>
 <para>
-The QandASet looks something like this when converted to HTML:</para>
+The qandaset looks something like this when converted to HTML:</para>
 <qandaset>
 <qandaentry>
 <question>
@@ -677,12 +702,12 @@ The QandASet looks something like this when converted to HTML:</para>
 <sect2>
 <title>Procedures</title>
 <para>
-Procedure Lists are a specialized OrderedList used for listing step-by-step
+Procedure lists are a specialized orderedlist used for listing step-by-step
 procedures like you would find in a recipe or Linux HowTo.
 </para>
 <para>
 <example>
-<title>Example of a Procedure List (Stolen from the DocBook reference)</title>
+<title>Example of a procedure list (Stolen from the DocBook reference)</title>
 <screen> <![ CDATA [
 <procedure>
 <title>Waking Up</title>
@@ -743,21 +768,21 @@ dreaming. </para>
 <para>
 The tags covered in this section are listed below.
 <simplelist>
-<member>Table - Table in a document </member>
-<member>InformalTable - Untitled table </member>
-<member>THead - Heading row of a table</member>
-<member>TFoot - Footer row of a table</member>
-<member>TGroup - Wrapper for part of a Table that contains an array along with
+<member>table - Table in a document </member>
+<member>informaltable - Untitled table </member>
+<member>thead - Heading row of a table</member>
+<member>tfoot - Footer row of a table</member>
+<member>tgroup - Wrapper for part of a table that contains an array along with
 its formatting information </member>
-<member>TBody - Wrapper for the Rows of a Table or InformalTable</member>
-<member>Row - Row in a TBody, THead, or TFoot </member>
-<member>Entry - Cell in a table</member>
-<member>EntryTbl - Subtable appearing as a table cell</member>
+<member>tbody - Wrapper for the rows of a table or informaltable</member>
+<member>row - Row in a tbody, thead, or tfoot </member>
+<member>entry - Cell in a table</member>
+<member>entrytbl - Subtable appearing as a table cell</member>
 </simplelist></para>
 <para>
 Tables are used to organize data into a columnar format with optional titles,
-headers, and footers. DocBook tables come in two varieties: the <markup>Table</markup>, which
-requires a title, and the <markup>InformalTable</markup>, which does not have a title. All the
+headers, and footers. DocBook tables come in two varieties: the <markup>table</markup>, which
+requires a title, and the <markup>informaltable</markup>, which does not have a title. All the
 other characteristics of these two table types are the same. </para>
 <para>
 A table consists of formatting information and data entries. There are quite a
@@ -765,24 +790,24 @@ few attributes that can be adjusted to tweak the display of your data. This
 tutorial will only cover the basic formatting attributes. For more details, you
 should refer to the DocBook Reference.</para>
 <para>
-Tables begin with the <markup>&lt;Table&gt;</markup> or <markup>&lt;InformalTable&gt;</markup> tag. Next,
-define a title using the <markup>&lt;Title&gt;</markup> tag if you are using a regular table.
-Finally, we get to the <markup>&lt;TGroup&gt;</markup> tag which contains all of the header,
-footer, and row information. You can have more than one TGroup if you wish to
+Tables begin with the <markup>&lt;table&gt;</markup> or <markup>&lt;informaltable&gt;</markup> tag. Next,
+define a title using the <markup>&lt;title&gt;</markup> tag if you are using a regular table.
+Finally, we get to the <markup>&lt;tgroup&gt;</markup> tag which contains all of the header,
+footer, and row information. You can have more than one tgroup if you wish to
 change formatting options for a section of the table. The
-<markup>&lt;TGroup&gt;</markup> tag has a number of optional formatting
+<markup>&lt;tgroup&gt;</markup> tag has a number of optional formatting
 parameters, but the COLS attribute, which specifies the number of columns, is
-required. The <markup>&lt;THead&gt;</markup>, <markup>&lt;TFoot&gt;</markup>, and
-<markup>&lt;TBody&gt;</markup> contain the data in your table. Data in the THead appears
-at the top of the table, TBody appears in the middle, and TFoot appears at the
+required. The <markup>&lt;thead&gt;</markup>, <markup>&lt;tfoot&gt;</markup>, and
+<markup>&lt;tbody&gt;</markup> contain the data in your table. Data in the thead appears
+at the top of the table, tbody appears in the middle, and tfoot appears at the
 end of the table.</para> <para> Data in a table is contained in rows and
-entries, labelled with the <markup>&lt;Row&gt;</markup> and <markup>&lt;Entry&gt;</markup> tags
-respectively. Use the <markup>&lt;Row&gt;</markup> tag to begin a row, an
-<markup>&lt;Entry&gt;</markup> tag for each item of data, and a closing
-<markup>&lt;Row&gt;</markup> tag to end that row. If you want to embed a table within a
-table, you must use the <markup>&lt;EntryTbl&gt;</markup> tag</para> <para>
+entries, labelled with the <markup>&lt;row&gt;</markup> and <markup>&lt;entry&gt;</markup> tags
+respectively. Use the <markup>&lt;row&gt;</markup> tag to begin a row, an
+<markup>&lt;entry&gt;</markup> tag for each item of data, and a closing
+<markup>&lt;row&gt;</markup> tag to end that row. If you want to embed a table within a
+table, you must use the <markup>&lt;entrytbl&gt;</markup> tag</para> <para>
 <example>
-<title>Example of a Table</title>
+<title>Example of a table</title>
 <screen> <![ CDATA [
 <table>
 <title>Mouse Mileage</title>
@@ -870,14 +895,14 @@ The above example would look something like this when converted to HTML:
 <para>
 Below is a list of tags related to graphical objects:
 <simplelist>
-<member>ScreenInfo - Information about how a ScreenShot was produced</member>
-<member>ScreenShot - Representation of what the user sees or might see on a computer
+<member>screeninfo - Information about how a screenshot was produced</member>
+<member>screenshot - Representation of what the user sees or might see on a computer
 screen</member>
-<member>MediaObject - A picture, a sound, a text, that can be encoded in
+<member>mediaobject - A picture, a sound, a text, that can be encoded in
 several different formats at the same time, not rendered in-line</member>
-<member>InlineMediaObject - A picture, a sound, a text, that can be encoded in
+<member>inlinemediaobject - A picture, a sound, a text, that can be encoded in
 several different formats at the same time, to be rendered in-line</member>
-<member>ImageData - One of the formats encoding the image, such as EPS
+<member>imagedata - One of the formats encoding the image, such as EPS
 when printing and PNG when displaying online</member>
 </simplelist>
 </para>
@@ -892,7 +917,7 @@ the GIF format has problematic patent issues. The preferred format is now
 PNG.</para></important>
 <para>
 <example>
-<title>An Inline Graphic</title>
+<title>An inline media object</title>
 <screen>
 <![ CDATA [
 <para>
@@ -907,10 +932,10 @@ Here are a bunch of rectangles
 </example>
 </para>
 <para>
-The <markup>&lt;InlineMediaObject&gt;</markup> tag is displayed alongside text.
-The FileRef attribute of the <markup>&lt;ImageData&gt;</markup> tag contains
-the name of the graphic file, the Format attribute contains the type of the
-graphic file, and the optional Align attribute changes the alignment of the
+The <markup>&lt;inlinemediaobject&gt;</markup> tag is displayed alongside text.
+The fileref attribute of the <markup>&lt;imagedata&gt;</markup> tag contains
+the name of the graphic file, the format attribute contains the type of the
+graphic file, and the optional align attribute changes the alignment of the
 graphic. The example will look something like this when converted to HTML:
 </para>
 <para>
@@ -923,7 +948,7 @@ Here are a bunch of rectangles
 </para>
 <para>
 <example>
-<title>A Screenshot</title>
+<title>A screenshot</title>
 <screen>
 <![ CDATA [
 <screenshot>
@@ -941,9 +966,9 @@ Here are a bunch of rectangles
 </example>
 </para>
 <para>
-The <markup>&lt;ScreenShot&gt;</markup> tag designates a screenshot with the
-<markup>&lt;ScreenInfo&gt;</markup> tag providing a textual description of the
-screen shot. The heart of the screenshot is the <markup>&lt;MediaObject&gt;</markup>
+The <markup>&lt;screenshot&gt;</markup> tag designates a screenshot with the
+<markup>&lt;screeninfo&gt;</markup> tag providing a textual description of the
+screen shot. The heart of the screenshot is the <markup>&lt;mediaobject&gt;</markup>
 tag which points to a graphic file as explained in the first example. A screen
 shot looks something like this when converted to HTML:
 <screenshot>
@@ -963,38 +988,25 @@ shot looks something like this when converted to HTML:
 <sect1 id="links">
 <title>Links</title>
 <para>
+These are the tags covered in this section:
 <simplelist>
-<member>Anchor - Spot in text</member>
-<member>Email - Email address in an Address</member>
-<member>Link - Hypertext link</member>
-<member>ULink - A link that addresses its target by means of a URL, a Uniform
+<member>anchor - Spot in text</member>
+<member>email - Email address in an address</member>
+<member>link - Hypertext link</member>
+<member>ulink - A link that addresses its target by means of a URL, a Uniform
 Resource Locator</member>
-<!--
-<Member>Callout - Description linked to Areas in a graphic or code
-example</Member>
-<Member>CalloutList - Collection of callout descriptions</Member>
-<Member>GraphicCO - Graphic that contains a specification
-of areas within it that have associated callouts</Member>
-<Member>ProgramListingCO - Listing of a program or related information containing areas
-with associated callouts</Member>
-<Member>ScreenCO - Screen containing areas with associated callouts</Member>
-<Member>CO - Callout area specification embedded in a code example</Member>
-<Member>Area - Region defined in a graphic or code example</Member>
-<Member>AreaSet - Set of related areas in a graphic or code example</Member>
-<Member>AreaSpec - Collection of regions in a graphic or code example</Member>
--->
 </simplelist>
 </para>
 <para>
 Linking in DocBook is very similar to linking in HTML.  The
-<markup>&lt;Link&gt;</markup> tag is used to link to any element with an ID in a
+<markup>&lt;link&gt;</markup> tag is used to link to any element with an ID in a
 document, and can also be used to link to other local files as well. The
-<markup>&lt;ULink&gt;</markup> tag is used when you need to link to a
-URL. The <markup>&lt;Email&gt;</markup> tag is a specialized form of the ULink
-tag used for email addresses. <markup>&lt;Anchor&gt;</markup> is used to
+<markup>&lt;ulink&gt;</markup> tag is used when you need to link to a
+URL. The <markup>&lt;email&gt;</markup> tag is a specialized form of the ulink
+tag used for email addresses. <markup>&lt;anchor&gt;</markup> is used to
 mark a spot in the text that you want to reference later with a Link.</para>
 <para> <example>
-<title>Many kinds of Links</title>
+<title>Many kinds of links</title>
 <screen>
 <![ CDATA [
 <para id="mylink">
@@ -1009,7 +1021,7 @@ My email address is <email>konqui@kde.org</email></para>
 </example>
 </para>
 <para>
-Note that Link uses the LinkEnd attribute and ULink uses the URL attribute for
+Note that Link uses the linkend attribute and ulink uses the URL attribute for
 their link targets. The above example
 would be displayed something like this when converted to HTML: </para>
 <para id="mylink">
@@ -1030,13 +1042,14 @@ My email address is <email>konqui@kde.org</email></para>
 <para>
 These are the tags covered in this section:
 <simplelist>
-<member>LiteralLayout - Wrapper for lines set off from the main text that are not tagged as Screens, Examples, or ProgramListing, in
-     which line breaks and leading white space are to be regarded as significant
+<member>literallayout - Wrapper for lines set off from the main text that are not
+     tagged as screens, examples, or programlisting, in which line breaks and leading
+     white space are to be regarded as significant
 </member>
-<member>Example - Example of a computer program or related information</member>
-<member>InformalExample - Untitled Example</member>
-<member>ProgramListing - Listing of all or part of a program </member>
-<member>Screen - Text that a user sees or might see on a computer screen</member>
+<member>example - Example of a computer program or related information</member>
+<member>informalexample - Untitled example</member>
+<member>programlisting - Listing of all or part of a program </member>
+<member>screen - Text that a user sees or might see on a computer screen</member>
 </simplelist>
 </para>
 
@@ -1044,11 +1057,11 @@ These are the tags covered in this section:
 There are many situations where you must include examples of source code,
 commands, or GUI actions in your documentation. DocBook has many tags to support
 these needs. Whenever you want to include examples in your document, just put an
-<markup>&lt;Example&gt;</markup> or <markup>&lt;InformalExample&gt;</markup> tag
-around the example text or graphic. </para>
+<markup>&lt;example&gt;</markup> or <markup>&lt;informalexample&gt;</markup> tag
+around the example text or graphic.</para>
 <para>
 <example>
-<title>Example of an Example</title>
+<title>Example of an example</title>
 <screen>
 <![ CDATA [
 <example>
@@ -1064,12 +1077,12 @@ around the example text or graphic. </para>
 </para>
 <para>
 In this first example, we have a listing of a simple BASIC program. The
-code contained in the <markup>&lt;ProgramListing&gt;</markup> tag is displayed
+code contained in the <markup>&lt;programlisting&gt;</markup> tag is displayed
 with the spacing and line breaks intact which is very useful for code examples
 and similar situations where you must preserve the literal formatting.
 The LiteralLayout and Screen tags work in the same way, but are used to
-indicate different types of content. Screen contains output that would
-appear on the screen, while LiteralLayout is used for any other text that
+indicate different types of content. screen contains output that would
+appear on the screen, while literallayout is used for any other text that
 must be rendered with line breaks and tabs.</para>
 <para>
 The example would look something like this when converted to HTML:
@@ -1123,21 +1136,21 @@ This is what the markup example would look like when converted to HTML:
 <title>Command Line</title>
 <para> The following tags are used to label elements of a command:
 <simplelist>
-<member>Type - Classification of a value</member>
-<member>Literal - Literal string, used in-line, that is part of data in a computer</member>
-<member>UserInput - Data entered by the user</member>
-<member>Symbol - Name that is replaced by a value before processing</member>
-<member>Replaceable - Content that may be replaced in a synopsis or command line</member>
-<member>Filename - Name of a file, possibly including pathname</member>
-<member>Prompt - Character indicating the start of an input field in a computer display.</member>
-<member>ParamDef - Data type information and the name of the Parameter this information applies to</member>
-<member>Parameter - Part of an instruction to a computer</member>
-<member>Option - Option for a computer program command</member>
-<member>EnVar - Environmental variable</member>
-<member>Command - Executable program, or the entry a user makes to execute a command</member>
-<member>CmdSynopsis - Synopsis for a Command</member>
-<member>Arg - Argument in a CmdSynopsis</member>
-<member>ComputerOutput - Data presented to the user by a computer</member>
+<member>type - Classification of a value</member>
+<member>literal - Literal string, used in-line, that is part of data in a computer</member>
+<member>userinput - Data entered by the user</member>
+<member>symbol - Name that is replaced by a value before processing</member>
+<member>replaceable - Content that may be replaced in a synopsis or command line</member>
+<member>filename - Name of a file, possibly including pathname</member>
+<member>prompt - Character indicating the start of an input field in a computer display.</member>
+<member>paramdef - Data type information and the name of the Parameter this information applies to</member>
+<member>parameter - Part of an instruction to a computer</member>
+<member>option - Option for a computer program command</member>
+<member>envar - Environmental variable</member>
+<member>command - Executable program, or the entry a user makes to execute a command</member>
+<member>cmdsynopsis - Synopsis for a command</member>
+<member>arg - Argument in a cmdsynopsis</member>
+<member>computeroutput - Data presented to the user by a computer</member>
 </simplelist>
 </para>
 <para>
@@ -1146,7 +1159,7 @@ example of a command typed on the command line and a detailed description of all
 of the arguments and options to a command like you would see in a man page.
 </para>
 <para>DocBook supports both of these contexts with the
-<markup>&lt;Command&gt;</markup> and <markup>&lt;CmdSynopsis&gt;</markup> tags.
+<markup>&lt;command&gt;</markup> and <markup>&lt;cmdsynopsis&gt;</markup> tags.
 <example>
 <title>A Command and its Output</title>
 <screen>
@@ -1185,12 +1198,12 @@ files. Twiddled files will be marked with the .twid extension, so if I <command>
 <replaceable>myfile.twid</replaceable>. Errors are written to the
 file <filename>twiddle.err</filename>.
 </para>
-<para> The <markup>&lt;Prompt&gt;</markup> tag is simply used to label the
+<para> The <markup>&lt;prompt&gt;</markup> tag is simply used to label the
 prompt in a command line. Replaceable labels text that should be replaced by the
 user. In the example, <filename>myfile</filename> is just an arbitrary name for
 a file since we don't know and don't care what the name of the file is, we just
 want to show how the command is used. If a filename in a command is known, use
-the <markup>&lt;Filename&gt;</markup> tag instead.</para> <para> Marking up a
+the <markup>&lt;filename&gt;</markup> tag instead.</para> <para> Marking up a
 CmdSynopsis is a bit more difficult. Here is an example from the DocBook
 Reference:
 <example> <title>Foo Command Synopsis</title> <screen>
@@ -1257,10 +1270,10 @@ Which looks like this:
 </para>
 <para>
 A CmdSynopsis contains one Command, Groups of related Args, independent Args,
-and SynopFragments. The <markup>&lt;Arg&gt;</markup> labels arguments to the
+and SynopFragments. The <markup>&lt;arg&gt;</markup> labels arguments to the
 command. Arg has two attributes: choice and rep. Choice is used to indicate
 whether the tag is optional (the default), required (req), or to be displayed
-without any decoration (plain). The <markup>&lt;Group&gt;</markup> tag is used
+without any decoration (plain). The <markup>&lt;group&gt;</markup> tag is used
 to group together related Args. SynopFragment is the most complicated of
 the CmdSynopsis tags. It is used to provide a more detailed description
 of options for an argument. A SynopFragment consists of two parts: the
@@ -1298,23 +1311,23 @@ graphical user interface</member>
 <para>
 One could almost say that there are too many tags in DocBook for describing GUI
 elements. Most of the tags listed above can be used in a variety of contexts,
-but a few, such as <markup>&lt;KeyCap&gt;</markup>, must be used within other
+but a few, such as <markup>&lt;keycap&gt;</markup>, must be used within other
 tags.  The example and explanation below will not cover all of the tags listed
 above. This list is for your convenience since the DocBook Reference does not
 group tags by their function.</para>
 <para>
 All of the GUI tags can be used within the context of a regular paragraph. So if
 I wanted to talk about the Trash icon or the Empty Trash button, I would just
-use the <markup>&lt;GUIIcon&gt;</markup> and <markup>&lt;GUIButton&gt;</markup>
-tags like this: &lt;GUIIcon&gt;Trash&lt;/GUIIcon&gt; icon,
-&lt;GUIButton&gt;Empty Trash&lt;/GUIButton&gt; button.  Note that all GUI tags
+use the <markup>&lt;guiicon&gt;</markup> and <markup>&lt;guibutton&gt;</markup>
+tags like this: &lt;guiicon&gt;Trash&lt;/guiicon&gt; icon,
+&lt;guibutton&gt;Empty Trash&lt;/guibutton&gt; button.  Note that all GUI tags
 may also contain inline graphics.</para>
 <para>
 Below is a more complicated example of GUI tag usage from the template.</para>
 
 <para>
 <example>
-<title>GUIMenu and Shortcut example</title>
+<title>guimenu and shortcut example</title>
 <screen>
 <![ CDATA [
 <variablelist>
@@ -1346,7 +1359,7 @@ Below is a more complicated example of GUI tag usage from the template.</para>
 <guimenu>File</guimenu>
 <guimenuitem>Quit</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Quits <application>Kapp</application></action></para></listitem>
+<listitem><para><action>Quits</action> application>Kapp</application></para></listitem>
 </varlistentry>
 </variablelist>
  ]]>
@@ -1360,14 +1373,14 @@ which labels keyboard shortcuts for menuitems. Shortcut contains either a
 KeyCombo or a single KeyCap that contains the key or group of keys the use would
 press to invoke that menuitem from the keyboard. It is important to use the
 KeyCombo and KeyCap tags within the Shortcut tag because it is incorrect to use
-character data (the Ctrl-q text for example) within a Shortcut.</para>
+character data (the Ctrl-q text for example) within a shortcut.</para>
 <para>
-Other tags worth mentioning from the example are MenuChoice, Action, and
-Application. MenuChoice labels a menu choice and should contain the Shortcut (if
+Other tags worth mentioning from the example are menuchoice, action, and
+application. menuchoice labels a menu choice and should contain the shortcut (if
 any) the name of the menu in GUIMenu, and the name of the menuitem in
-GUIMenuItem. Action simply labels a phrase that describes what the menuitem (or
-other interface element) does. Application is a tag used to label the names of
-Applications.</para>
+guimenuitem. Action simply labels a phrase that describes what the menuitem (or
+other interface element) does. application is a tag used to label the names of
+applications.</para>
 <para>The example would look something like this when converted to HTML:
 <variablelist>
 <varlistentry>
@@ -1420,7 +1433,7 @@ Applications.</para>
 literally</member>
 </simplelist>
 The application tag labels the name of an application.
-The <markup>&lt;Markup&gt;</markup> tag is used to label marked up text, such as
+The <markup>&lt;markup&gt;</markup> tag is used to label marked up text, such as
 HTML or TeX tags</para>
 </sect2>
 
@@ -1428,13 +1441,13 @@ HTML or TeX tags</para>
 <title>Formatting Tags</title>
 <para>
 <simplelist>
-<member>Emphasis - Emphasized text</member>
-<member>Subscript - Subscript</member>
-<member>Superscript - Superscript</member>
+<member>emphasis - Emphasized text</member>
+<member>subscript - Subscript</member>
+<member>superscript - Superscript</member>
 </simplelist>
 These tags are fairly self-explanatory. <emphasis>This is an emaphasized
-sentence with <superscript>Superscripted</superscript> and
-<subscript>Subscripted</subscript> text.</emphasis></para>
+sentence with <superscript>superscripted</superscript> and
+<subscript>subscripted</subscript> text.</emphasis></para>
 </sect2>
 
 <sect2 id="warnings">
@@ -1442,11 +1455,11 @@ sentence with <superscript>Superscripted</superscript> and
 <para>
 The following tags are used to set off paragraphs from the rest of the text.
 <simplelist>
-<member>Caution - Admonition set off from the text</member>
-<member>Important - Admonition set off from the text</member>
-<member>Note - Message to the user, set off from the text</member>
-<member>Tip - Suggestion to the user, set off from the text</member>
-<member>Warning - Admonition set off from the text</member>
+<member>caution - Admonition set off from the text</member>
+<member>important - Admonition set off from the text</member>
+<member>note - Message to the user, set off from the text</member>
+<member>tip - Suggestion to the user, set off from the text</member>
+<member>warning - Admonition set off from the text</member>
 </simplelist>
 All of the above tags wrap around paragraphs like in this example:
 <informalexample>

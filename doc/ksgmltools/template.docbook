@@ -1,7 +1,6 @@
 <!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
- <!ENTITY kapp   "<application>Kapp</application>">
- <!ENTITY % FDLNotice PUBLIC
-          "-//KDE//ENTITIES KDE GNU FDL 1.1 Notice Entities//EN">
+ <!ENTITY kapp "<application>Kapp</application>">
+ <!ENTITY % FDLNotice PUBLIC "-//KDE//ENTITIES KDE GNU FDL 1.1 Notice Entities//EN">
  %FDLNotice;
  <!ENTITY % addindex "IGNORE">
  <![ %addindex; [ <!ENTITY kdedocindex SYSTEM "docindex.docbook"> ]]>
