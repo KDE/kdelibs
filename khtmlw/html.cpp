@@ -3901,8 +3901,6 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 	}
 	else if ( *str == 'p' && ( *(str+1) == ' ' || *(str+1) == '>' ) )
 	{
-		closeAnchor();
-		vspace_inserted = insertVSpace( _clue, vspace_inserted );
 		HTMLClue::HAlign align = divAlign;
 
 		stringTok->tokenize( str + 2, " >" );
@@ -3919,11 +3917,15 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 					align = HTMLClue::Left;
 			}
 		}
-		if ( flow == 0 && align != divAlign )
-		    newFlow(_clue);
-
-		if ( align != divAlign )
+		// html docs say one should ignore an empty <p> tag
+		if( align != divAlign )
+		{
+		    closeAnchor();
+		    vspace_inserted = insertVSpace( _clue, vspace_inserted );
+		    if ( flow == 0 )
+			newFlow(_clue);
 		    flow->setHAlign( align );
+		}
 	}
 	else if ( *str == '/' && *(str+1) == 'p' &&
 	    ( *(str+2) == ' ' || *(str+2) == '>' ) )
@@ -5065,8 +5067,8 @@ void KHTMLWidget::drawBackground( int _xval, int _yval, int _x, int _y,
     int xoff = 0;
     int yoff = 0;
 
-	if ( !bDrawBackground && !p )
-	    return;
+    if ( !bDrawBackground && !p )
+	return;
 
     // Attention... I changed the meaning of _xval a bit if QPainter != 0!
     // Hack, to keep source compatibility, since this function is not private
@@ -5084,8 +5086,13 @@ void KHTMLWidget::drawBackground( int _xval, int _yval, int _x, int _y,
 
 	if ( bgPixmap.isNull() )
 	{
+	    if( !settings->bgColor.isValid() )
+	    {
 		p->eraseRect( _x - xoff, _y - yoff, _w, _h );
 		return;
+	    }
+	    p->fillRect( _x - xoff, _y - yoff, _w, _h, settings->bgColor );
+	    return;
 	}
 
 	// if the background pixmap is transparent we must erase the bg
