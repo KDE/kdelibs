@@ -279,7 +279,6 @@ void KBugReport::slotConfigureEmail()
 
 void KBugReport::slotSetFrom()
 {
-    kdDebug() << "slotSetFrom\n";
   delete m_process;
   m_process = 0;
   m_configureEmail->setEnabled(true);
@@ -418,7 +417,12 @@ bool KBugReport::sendBugReport()
   KTempFile outputfile;
   outputfile.close();
 
-  command += QString::fromLatin1(" --subject \"%1\" --recipient \"%2\" > %3").arg(m_subject->text()).arg(recipient).arg(outputfile.name());
+  QString subject = m_subject->text();
+  subject = subject.replace(QRegExp("\""), QString::fromLatin1("\\\""));
+  command += QString::fromLatin1(" --subject \"%1\" --recipient \"%2\" > %3").
+             arg(KShellProcess::quote(subject)).
+             arg(KShellProcess::quote(recipient)).
+             arg(outputfile.name());
 
   fflush(stdin);
   fflush(stderr);
@@ -435,7 +439,9 @@ bool KBugReport::sendBugReport()
   fflush(fd);
 
   int error = pclose(fd);
-  if (error == 42) {
+  kdDebug() << "exit status1 " << error << " " << (WIFEXITED(error)) << " " <<  WEXITSTATUS(error) << endl;
+
+  if ((WIFEXITED(error)) && WEXITSTATUS(error) == 1) {
       QFile of(outputfile.name());
       if (of.open(IO_ReadOnly )) {
           QTextStream is(&of);
