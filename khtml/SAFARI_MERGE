@@ -104,4 +104,7 @@ in the khtml sourcecode.
 
 - xml_tokenizer.cpp/.h: completely skipped. unfinished work. 
 
+- dom_docimpl.cpp: micro optimisation regarding if() clause.  Checking
+  .isEmpty() checks both .isNull() and == "", and it's cheaper than string
+  compares.
 
