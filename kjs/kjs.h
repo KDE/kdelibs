@@ -30,6 +30,7 @@ namespace KJS {
   class Context;
   class Global;
   class KJSO;
+  class Object;
   class KJScriptImp;
 };
 
@@ -72,7 +73,8 @@ public:
    * be executed.
    * @param length number of characters.
    */
-  bool evaluate(const QChar *code, unsigned int length);
+  bool evaluate(const KJS::Object &thisV,
+		const QChar *code, unsigned int length);
   /**
    * Added for convenience in case you have the code in available in
    * internal representation already.

@@ -247,7 +247,7 @@ namespace KJS {
      */
     void init();
     void clear();
-    bool evaluate(const QChar *code, unsigned int length);
+    bool evaluate(const QChar *code, unsigned int length, Imp *thisV = 0);
   private:
     static KJScriptImp *curr;
     bool initialized;

@@ -55,9 +55,10 @@ bool KJScript::evaluate(const UString &code)
   return rep->evaluate((QChar*)code.data(), code.size());
 }
 
-bool KJScript::evaluate(const QChar *code, unsigned int length)
+bool KJScript::evaluate(const Object &thisV,
+			const QChar *code, unsigned int length)
 {
-  return rep->evaluate(code, length);
+  return rep->evaluate(code, length, thisV.imp());
 }
 
 void KJScript::clear()

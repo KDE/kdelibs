@@ -440,7 +440,7 @@ void KJScriptImp::clear()
   }
 }
 
-bool KJScriptImp::evaluate(const QChar *code, unsigned int length)
+bool KJScriptImp::evaluate(const QChar *code, unsigned int length, Imp *thisV)
 {
   init();
 
@@ -457,6 +457,9 @@ bool KJScriptImp::evaluate(const QChar *code, unsigned int length)
 
   Context *context = Context::current();
   context->clearError();
+
+  if (thisV)
+    Context::current()->setThisValue(thisV);
 
   KJSO res = Node::progNode()->evaluate();
 
