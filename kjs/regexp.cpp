@@ -114,6 +114,10 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
   return s.substr((*ovector)[0], (*ovector)[1] - (*ovector)[0]);
 
 #else
+  // safety initialization to be compatible with the HAVE_PCREPOSIX case
+  if (ovector)
+    *ovector = 0L;
+
   regmatch_t rmatch[10];
 
   if (i < 0)
