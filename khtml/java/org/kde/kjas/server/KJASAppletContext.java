@@ -64,6 +64,23 @@ public class KJASAppletContext implements AppletContext
         //do kludges to support mess with parameter table and
         //the applet variables
         String key = new String( "archive" ).toUpperCase();
+        if (params.containsKey(key)) {
+            if (archives == null) {
+                // There is no 'archive' attribute
+                // but a 'archive' param. fix archive list 
+                // from param value
+                archives = (String)params.get(key);
+            } else {
+                // there is already an archive attribute.
+                // just add the value of the param to the list
+                archives += "," + (String)params.get(key);
+            }
+        } else if (archives != null) {
+            // add param if it is not present
+            params.put( key, archives);
+        }
+        
+        /*
         if( archives == null )
         {
             if( params.containsKey( key ) )
@@ -74,7 +91,7 @@ public class KJASAppletContext implements AppletContext
             if( !params.containsKey( key ) )
                 params.put( key, archives );
         }
-
+        */
         key = new String( "codebase" ).toUpperCase();
         if( codeBase == null )
         {
