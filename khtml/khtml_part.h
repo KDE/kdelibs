@@ -409,6 +409,35 @@ public:
    */
   void setCaretPosition(DOM::Node node, long offset, bool extendSelection = false);
 
+  /**
+   * Enumeration for displaying the caret.
+   * @param Visible caret is displayed
+   * @param Invisible caret is not displayed
+   * @param Blink caret toggles between visible and invisible
+   * @since 3.2
+   */
+  enum CaretDisplayPolicy {
+	CaretVisible, CaretInvisible, CaretBlink
+  };
+
+  /**
+   * Returns the current caret policy when the view is not focused.
+   * @since 3.2
+   */
+  CaretDisplayPolicy caretDisplayPolicyNonFocused() const;
+
+  /**
+   * Sets the caret display policy when the view is not focused.
+   *
+   * Whenever the caret is in use, this property determines how the
+   * caret should be displayed when the document view is not focused.
+   *
+   * The default policy is CaretInvisible.
+   * @param policy new display policy
+   * @since 3.2
+   */
+  void setCaretDisplayPolicyNonFocused(CaretDisplayPolicy policy);
+
 #ifndef KDE_NO_COMPAT
   void enableJScript( bool e ) { setJScriptEnabled(e); }
   void enableJava( bool e ) { setJavaEnabled(e); }
@@ -957,6 +986,24 @@ public slots:
    * @since 3.2 (pending, do not use)
    */
   void setEditable(bool enable);
+
+  /**
+   * Sets the visibility of the caret.
+   *
+   * This methods displays or hides the caret regardless of the current
+   * caret display policy (see setCaretDisplayNonFocused), and regardless
+   * of focus.
+   *
+   * The caret will be shown/hidden only under at least one of
+   * the following conditions:
+   * @li the document is editable
+   * @li the document is in caret mode
+   * @li the document's currently focused element is editable
+   *
+   * @param show @p true to make visible, @p false to hide.
+   * @since 3.2
+   */
+  void setCaretVisible(bool show);
 
 private slots:
 

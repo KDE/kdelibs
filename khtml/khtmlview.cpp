@@ -113,6 +113,8 @@ struct CaretViewContext {
     bool visible;		// true if currently visible.
     bool displayed;		// true if caret is to be displayed at all.
     bool caretMoved;		// set to true once caret has been moved in page
+    				// how to display the caret when view is not focused
+    KHTMLPart::CaretDisplayPolicy displayNonFocused;
 
     /** For natural traversal of lines, the original x position is saved, and
      * the actual x is set to the first character whose x position is
@@ -124,7 +126,8 @@ struct CaretViewContext {
     int origX;
 
     CaretViewContext() : freqTimerId(-1), x(0), y(0), width(1), height(16),
-    	visible(true), displayed(false), caretMoved(false), origX(0)
+    	visible(true), displayed(false), caretMoved(false), origX(0),
+	displayNonFocused(KHTMLPart::CaretInvisible)
     {}
 };
 
@@ -2056,14 +2059,55 @@ void KHTMLView::dropEvent( QDropEvent *ev )
 
 void KHTMLView::focusInEvent( QFocusEvent *e )
 {
+#ifndef KHTML_NO_CARET
+    // Restart blink frequency timer if it has been killed, but only on
+    // editable nodes
+    if (d->m_caretViewContext && d->m_caretViewContext->freqTimerId == -1) {
+        NodeImpl *caretNode = m_part->xmlDocImpl()->focusNode();
+        if (m_part->isCaretMode()
+		|| m_part->isEditable()
+     		|| (caretNode && caretNode->renderer()
+			&& caretNode->renderer()->style()->userInput()
+				== UI_ENABLED)) {
+            d->m_caretViewContext->freqTimerId = startTimer(500);
+	    d->m_caretViewContext->visible = true;
+        }/*end if*/
+    }/*end if*/
     showCaret();
+#endif // KHTML_NO_CARET
     QScrollView::focusInEvent( e );
 }
 
 void KHTMLView::focusOutEvent( QFocusEvent *e )
 {
     if(m_part) m_part->stopAutoScroll();
-    hideCaret();
+
+#ifndef KHTML_NO_CARET
+    if (d->m_caretViewContext) {
+        switch (d->m_caretViewContext->displayNonFocused) {
+	case KHTMLPart::CaretInvisible:
+            hideCaret();
+	    break;
+	case KHTMLPart::CaretVisible: {
+	    killTimer(d->m_caretViewContext->freqTimerId);
+	    d->m_caretViewContext->freqTimerId = -1;
+            NodeImpl *caretNode = m_part->xmlDocImpl()->focusNode();
+	    if (!d->m_caretViewContext->visible && (m_part->isCaretMode()
+		|| m_part->isEditable()
+     		|| (caretNode && caretNode->renderer()
+			&& caretNode->renderer()->style()->userInput()
+				== UI_ENABLED))) {
+	        d->m_caretViewContext->visible = true;
+	        showCaret(true);
+	    }/*end if*/
+	    break;
+	}
+	case KHTMLPart::CaretBlink:
+	    // simply leave as is
+	    break;
+	}/*end switch*/
+    }/*end if*/
+#endif // KHTML_NO_CARET
     QScrollView::focusOutEvent( e );
 }
 
@@ -3777,12 +3821,12 @@ readchar:
 kdDebug(6200) << "_offset: " << _offset /*<< " _peekNext: " << _peekNext*/ << " char '" << (char)_char << "'" << endl;
 #endif
 
+#if DEBUG_CARETMODE > 0
   if (*ebit) {
     InlineBox *box = *ebit;
-#if DEBUG_CARETMODE > 0
     kdDebug(6200) << "echit++(1): box " << box << (box && box->isInlineTextBox() ? QString(" contains \"%1\"").arg(QConstString(static_cast<RenderText *>(box->object())->str->s+box->minOffset(), box->maxOffset() - box->minOffset()).string()) : QString::null) << " node " << (_node ? _node->nodeName().string() : QString("<nil>")) << endl;
-#endif
   }
+#endif
   return *this;
 }
 
@@ -3893,12 +3937,12 @@ kdDebug(6200) << "_offset: " << _offset << " _peekNext: " << _peekNext << endl;
       _char = -1;
   }/*end if*/
 
+#if DEBUG_CARETMODE > 0
   if (*ebit) {
     InlineBox *box = *ebit;
-#if DEBUG_CARETMODE > 0
     kdDebug(6200) << "echit--(1): box " << box << (box && box->isInlineTextBox() ? QString(" contains \"%1\"").arg(QConstString(static_cast<RenderText *>(box->object())->str->s+box->minOffset(), box->maxOffset() - box->minOffset()).string()) : QString::null) << endl;
-#endif
   }
+#endif
   return *this;
 }
 
@@ -4454,12 +4498,22 @@ void KHTMLView::caretOn()
 {
     if (d->m_caretViewContext) {
         killTimer(d->m_caretViewContext->freqTimerId);
-        d->m_caretViewContext->freqTimerId = startTimer(500);
+
+	if (hasFocus() || d->m_caretViewContext->displayNonFocused
+			== KHTMLPart::CaretBlink) {
+            d->m_caretViewContext->freqTimerId = startTimer(500);
+	} else {
+	    d->m_caretViewContext->freqTimerId = -1;
+	}/*end if*/
+
         d->m_caretViewContext->visible = true;
-        d->m_caretViewContext->displayed = true;
-	updateContents(d->m_caretViewContext->x, d->m_caretViewContext->y,
+        if ((d->m_caretViewContext->displayed = (hasFocus()
+		|| d->m_caretViewContext->displayNonFocused
+			!= KHTMLPart::CaretInvisible))) {
+	    updateContents(d->m_caretViewContext->x, d->m_caretViewContext->y,
 	    		d->m_caretViewContext->width,
 			d->m_caretViewContext->height);
+	}/*end if*/
 //        kdDebug(6200) << "caret on" << endl;
     }/*end if*/
 }
@@ -4480,14 +4534,20 @@ void KHTMLView::caretOff()
     }/*end if*/
 }
 
-void KHTMLView::showCaret()
+void KHTMLView::showCaret(bool forceRepaint)
 {
     if (d->m_caretViewContext) {
         d->m_caretViewContext->displayed = true;
         if (d->m_caretViewContext->visible) {
-	    updateContents(d->m_caretViewContext->x, d->m_caretViewContext->y,
+	    if (!forceRepaint) {
+	    	updateContents(d->m_caretViewContext->x, d->m_caretViewContext->y,
 	    		d->m_caretViewContext->width,
 			d->m_caretViewContext->height);
+            } else {
+	    	repaintContents(d->m_caretViewContext->x, d->m_caretViewContext->y,
+	    		d->m_caretViewContext->width,
+	    		d->m_caretViewContext->height);
+	    }/*end if*/
    	}/*end if*/
 //        kdDebug(6200) << "caret shown" << endl;
     }/*end if*/
@@ -4526,6 +4586,38 @@ void KHTMLView::hideCaret()
         d->m_caretViewContext->displayed = false;
 //        kdDebug(6200) << "caret hidden" << endl;
     }/*end if*/
+}
+
+int KHTMLView::caretDisplayPolicyNonFocused() const
+{
+  if (d->m_caretViewContext)
+    return d->m_caretViewContext->displayNonFocused;
+  else
+    return KHTMLPart::CaretInvisible;
+}
+
+void KHTMLView::setCaretDisplayPolicyNonFocused(int policy)
+{
+  d->caretViewContext();
+//  int old = d->m_caretViewContext->displayNonFocused;
+  d->m_caretViewContext->displayNonFocused = (KHTMLPart::CaretDisplayPolicy)policy;
+
+  // make change immediately take effect if not focused
+  if (!hasFocus()) {
+    switch (d->m_caretViewContext->displayNonFocused) {
+      case KHTMLPart::CaretInvisible:
+        hideCaret();
+	break;
+      case KHTMLPart::CaretBlink:
+	if (d->m_caretViewContext->freqTimerId != -1) break;
+	d->m_caretViewContext->freqTimerId = startTimer(500);
+	// fall through
+      case KHTMLPart::CaretVisible:
+        d->m_caretViewContext->displayed = true;
+        showCaret();
+	break;
+    }/*end switch*/
+  }/*end if*/
 }
 
 bool KHTMLView::placeCaret(InlineBox *hintBox)

@@ -2190,6 +2190,41 @@ void KHTMLPart::setCaretPosition(DOM::Node node, long offset, bool extendSelecti
 #endif // KHTML_NO_CARET
 }
 
+KHTMLPart::CaretDisplayPolicy KHTMLPart::caretDisplayPolicyNonFocused() const
+{
+#ifndef KHTML_NO_CARET
+  return (CaretDisplayPolicy)view()->caretDisplayPolicyNonFocused();
+#else // KHTML_NO_CARET
+  return CaretInvisible;
+#endif // KHTML_NO_CARET
+}
+
+void KHTMLPart::setCaretDisplayPolicyNonFocused(CaretDisplayPolicy policy)
+{
+#ifndef KHTML_NO_CARET
+  view()->setCaretDisplayPolicyNonFocused(policy);
+#endif // KHTML_NO_CARET
+}
+
+void KHTMLPart::setCaretVisible(bool show)
+{
+#ifndef KHTML_NO_CARET
+  if (show) {
+
+    NodeImpl *caretNode = xmlDocImpl()->focusNode();
+    if (isCaretMode() || isEditable()
+	|| (caretNode && caretNode->contentEditable())) {
+      view()->caretOn();
+    }/*end if*/
+
+  } else {
+
+    view()->caretOff();
+
+  }/*end if*/
+#endif // KHTML_NO_CARET
+}
+
 void KHTMLPart::findTextBegin()
 {
   d->m_findPos = -1;

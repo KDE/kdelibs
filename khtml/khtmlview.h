@@ -287,16 +287,33 @@ private:
      * caret position could not be determined otherwise.
      */
     void recalcAndStoreCaretPos(khtml::InlineBox *hintBox = 0);
-    /** displays the caret and reinitializes the blink frequency timer. */
+    /** displays the caret and reinitializes the blink frequency timer.
+     *
+     * The caret will only be displayed on screen if the view has focus, or
+     * the caret display policy allows it. The same holds true for the blink
+     * frequency timer.
+     */
     void caretOn();
-    /** hides the caret and kills the blink frequency timer. */
+    /** hides the caret and kills the blink frequency timer.
+     *
+     * These operations are executed unconditionally, regardless of the
+     * focus, and the caret display policy.
+     */
     void caretOff();
     /** makes the caret visible, but does not influence the frequency timer.
      * That means it probably won't get visible immediately.
+     *
+     * These operations are executed unconditionally, regardless of the
+     * focus, and the caret display policy.
+     * @param forceRepaint @p true to force an immediate repaint, otherwise
+     *		do a scheduled repaint
      */
-    void showCaret();
+    void showCaret(bool forceRepaint = false);
     /** makes the caret invisible, but does not influence the frequency timer.
      * The caret is immediately hidden.
+     *
+     * These operations are executed unconditionally, regardless of the
+     * focus, and the caret display policy.
      */
     void hideCaret();
 
@@ -345,7 +362,7 @@ private:
      * @param endOffset offset within the end node.
      * @return @p true when the current selection has been changed
      */
-     bool extendSelection(DOM::NodeImpl *startNode, long startOffset,
+    bool extendSelection(DOM::NodeImpl *startNode, long startOffset,
 				DOM::NodeImpl *endNode, long endOffset);
 
     /** updates the selection from the last to the current caret position.
@@ -357,8 +374,22 @@ private:
      * @param endNode ending node of selection
      * @param endOffset offset within the end node.
      */
-     void updateSelection(DOM::NodeImpl *startNode, long startOffset,
+    void updateSelection(DOM::NodeImpl *startNode, long startOffset,
 			DOM::NodeImpl *endNode, long endOffset);
+
+    /**
+     * Returns the current caret policy when the view is not focused.
+     * @return a KHTMLPart::CaretDisplay value
+     */
+    int caretDisplayPolicyNonFocused() const;
+
+    /**
+     * Sets the caret display policy when the view is not focused.
+     * @param policy new display policy as
+     *		defined by KHTMLPart::CaretDisplayPolicy
+     * @since 3.2
+     */
+    void setCaretDisplayPolicyNonFocused(int policy);
 
     // -- caret event handler
 
