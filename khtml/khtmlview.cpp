@@ -223,6 +223,7 @@ public:
         firstRelayout = true;
         dirtyLayout = false;
         layoutSchedulingEnabled = true;
+        painting = false;
         updateRegion = QRegion();
         m_dialogsAllowed = true;
 #ifndef KHTML_NO_CARET
@@ -328,14 +329,15 @@ public:
 
     int repaintTimerId;
     int scrollTimerId;
-    bool scrollSuspended;
-    bool scrollSuspendPreActivate;
     int scrollTiming;
     int scrollBy;
     ScrollDirection scrollDirection;
+    bool scrollSuspended;
+    bool scrollSuspendPreActivate;
     bool complete;
     bool firstRelayout;
     bool layoutSchedulingEnabled;
+    bool painting;
     bool possibleTripleClick;
     bool dirtyLayout;
     bool m_dialogsAllowed;
@@ -595,6 +597,12 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         return;
     }
 
+    if (d->painting) {
+        kdDebug( 6000 ) << "WARNING: drawContents reentered! " << endl;
+        return;
+    }
+    d->painting = true;
+
     QPoint pt = contentsToViewport(QPoint(ex, ey));
     QRegion cr = QRect(pt.x(), pt.y(), ew, eh);
 //     kdDebug(6000) << "clip rect: " << QRect(pt.x(), pt.y(), ew, eh) << endl;
@@ -612,8 +620,10 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 #if 0
     // this is commonly the case with framesets. we still do
     // want to paint them, otherwise the widgets don't get placed.
-    if (cr.isEmpty())
+    if (cr.isEmpty()) {
+        d->painting = false;
 	return;
+    }
 #endif
 
 #ifndef DEBUG_NO_PAINT_BUFFER
@@ -679,7 +689,8 @@ static int cnt=0;
 
     khtml::DrawContentsEvent event( p, ex, ey, ew, eh );
     QApplication::sendEvent( m_part, &event );
-
+    
+    d->painting = false;
 }
 
 void KHTMLView::setMarginWidth(int w)
@@ -1648,16 +1659,16 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    }
 		    viewportToContents( x, y, x, y );
 		    QPaintEvent *pe = static_cast<QPaintEvent *>(e);
-		    bool sv = !d->contentsMoving && ::qt_cast<QScrollView *>(c);
-
+		    bool asap = !d->contentsMoving && ::qt_cast<QScrollView *>(c);
+		    
 		    // QScrollView needs fast repaints
-		    if ( sv && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() &&
+		    if ( asap && !d->painting && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() &&
 		         !static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer())->needsLayout() ) {
 		        repaintContents(x + pe->rect().x(), y + pe->rect().y(),
 	                                        pe->rect().width(), pe->rect().height(), true);
                     } else {
  		        scheduleRepaint(x + pe->rect().x(), y + pe->rect().y(),
- 				    pe->rect().width(), pe->rect().height(), sv);
+ 				    pe->rect().width(), pe->rect().height(), asap);
                     }
 		}
 		break;
