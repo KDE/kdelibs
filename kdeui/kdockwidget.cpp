@@ -2022,17 +2022,54 @@ void KDockManager::drop()
     currentDragWidget->move( QCursor::pos() - d->dragOffset );
   }
   else {
+    // curPos is the current target DockPosition.
+    // currentDragWidget->prevSideDockPosBeforeDrag is where the dockwidget comes from.
+    // currentDragWidget->formerDockPos is the position *before* the dockwidget was in
+    // position currentDragWidget->prevSideDockPosBeforeDrag.
     int splitPos = currentDragWidget->d->splitPosInPercent;
-    // do we have to calculate 100%-splitPosInPercent?
-    if( (curPos != currentDragWidget->prevSideDockPosBeforeDrag) && (curPos != KDockWidget::DockCenter) && (curPos != KDockWidget::DockDesktop)) {
-      switch( currentDragWidget->prevSideDockPosBeforeDrag) {
-      case KDockWidget::DockLeft:   if(curPos != KDockWidget::DockTop)    splitPos = 100-splitPos; break;
-      case KDockWidget::DockRight:  if(curPos != KDockWidget::DockBottom) splitPos = 100-splitPos; break;
-      case KDockWidget::DockTop:    if(curPos != KDockWidget::DockLeft)   splitPos = 100-splitPos; break;
-      case KDockWidget::DockBottom: if(curPos != KDockWidget::DockRight)  splitPos = 100-splitPos; break;
+    KDockWidget::DockPosition previousPosition = currentDragWidget->prevSideDockPosBeforeDrag;
+
+//    kdDebug() << splitPos << endl;
+//    kdDebug() << "curPos: " << curPos << endl;
+//    kdDebug() << "formerDockPos: " << currentDragWidget->formerDockPos<< endl;
+//    kdDebug() << "prevSideDockPosBeforeDrag: " << currentDragWidget->prevSideDockPosBeforeDrag<< endl;
+
+    // Now we *need* to "invert" the procentual value, if the dockwidget moves from top/left
+    // to bottom/right or vice versa. This keeps the dockwidget's size on its new position.
+    // A special case is, when the dock position was DockNone, then we have to look for the
+    // formerDockPos to get things right.
+    if( (curPos != previousPosition)
+       && (curPos != KDockWidget::DockCenter) && (curPos != KDockWidget::DockDesktop)) {
+
+      if (previousPosition == KDockWidget::DockNone)
+        previousPosition = currentDragWidget->formerDockPos;
+
+      switch( previousPosition ) {
+      case KDockWidget::DockLeft:
+        if(curPos != KDockWidget::DockTop && curPos != KDockWidget::DockLeft)
+          splitPos = 100 - splitPos;
+        break;
+
+      case KDockWidget::DockRight:
+        if(curPos != KDockWidget::DockBottom && curPos != KDockWidget::DockRight)
+          splitPos = 100 - splitPos;
+        break;
+
+      case KDockWidget::DockTop:
+        if(curPos != KDockWidget::DockLeft && curPos != KDockWidget::DockTop )
+          splitPos = 100 - splitPos;
+        break;
+
+      case KDockWidget::DockBottom:
+        if(curPos != KDockWidget::DockRight && curPos != KDockWidget::DockBottom )
+          splitPos = 100 - splitPos;
+        break;
+
       default: break;
       }
     }
+    // set new prevSideDockPosBeforeDrag
+    currentDragWidget->prevSideDockPosBeforeDrag = curPos;
     currentDragWidget->manualDock( currentMoveWidget, curPos , splitPos, QCursor::pos() - d->dragOffset );
     currentDragWidget->makeDockVisible();
   }
