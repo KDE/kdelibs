@@ -25,9 +25,25 @@
 
 #include <kglobal.h>
 
+/**
+ * Static deleters are used to manage static resources. They can register 
+ * themselves with @KGlobal. KGlobal will call @ref destructObject() when 
+ * @ref KGlobal::deleteStaticDeleters() is called or when it the process 
+ * finishes.
+ *
+ * @see KStaticDeleter
+ * @see KGlobal::registerStaticDeleter()
+ * @see KGlobal::unregisterStaticDeleter()
+ * @see KGlobal::deleteStaticDeleters()
+ */
 class KStaticDeleterBase {
 public:
     virtual ~KStaticDeleterBase() { }
+    /**
+     * Should destruct the resources managed by this KStaticDeleterBase.
+     * Usually you also want to call it in your destructor.
+     * @see KGlobal::deleteStaticDeleters()
+     */
     virtual void destructObject();
 };
 
