@@ -72,7 +72,7 @@ KXMLGUIClient::KXMLGUIClient()
 KXMLGUIClient::KXMLGUIClient( KXMLGUIClient *parent )
 {
   d = new KXMLGUIClientPrivate;
-  d->m_parent = parent;
+  parent->insertChildClient( this );
 }
 
 KXMLGUIClient::~KXMLGUIClient()
@@ -80,19 +80,12 @@ KXMLGUIClient::~KXMLGUIClient()
   if ( d->m_parent )
     d->m_parent->removeChildClient( this );
 
-  /*QPtrListIterator<KXMLGUIClient> superIt( d->m_supers );
-  for (; superIt.current(); ++superIt )
-    superIt.current()->d->m_children.removeRef( this );
+  QPtrListIterator<KXMLGUIClient> it( d->m_children );
+  for ( ; it.current(); ++it ) {
+      assert( it.current()->d->m_parent == this );
+      it.current()->d->m_parent = 0;
+  }
 
-  QPtrListIterator<KXMLGUIClient> childIt( d->m_children );
-  for (; childIt.current(); ++childIt )
-    childIt.current()->d->m_supers.removeRef( this );
-  */
-
-  /*
-  d->m_children.setAutoDelete( true );
-  d->m_children.clear();
-  */
   delete d->m_actionCollection;
   delete d;
 }
