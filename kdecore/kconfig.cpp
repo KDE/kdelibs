@@ -42,7 +42,7 @@
 
 KConfig::KConfig( const QString& fileName,
                  bool bReadOnly, bool bUseKderc, const char *resType )
-  : KConfigBase(), flushInterval(30)
+  : KConfigBase()
 {
   // set the object's read-only status.
   setReadOnly(bReadOnly);
@@ -57,12 +57,6 @@ KConfig::KConfig( const QString& fileName,
   // set the object's back end pointer to this new backend
   backEnd = aBackEnd;
 
-  // need to set this before we actually parse so as to avoid
-  // infinite looping when parseConfigFiles calls things like
-  // hasGroup, putData, etc. which would then try to load
-  // the cache if it isCached was false.
-  isCached = true;
-
   // read initial information off disk
   reparseConfiguration();
 
@@ -76,12 +70,6 @@ KConfig::KConfig( const QString& fileName,
   // returns true only if new config directories appeared.
   if (KGlobal::dirs()->addCustomized(this))
       reparseConfiguration();
-
-  // cache flushing setup
-  //  cacheTimer = new QTimer(this, "cacheTimer");
-  //  connect(cacheTimer, SIGNAL(timeout()), SLOT(flushCache()));
-  // initial cache timeout of 30 seconds.  It will auto-adjust.
-  //  cacheTimer->start(flushInterval * 1000);
 }
 
 KConfig::~KConfig()
@@ -108,8 +96,6 @@ QStringList KConfig::groupList() const
 {
   QStringList retList;
 
-  //  cacheCheck();
-
   KEntryMapConstIterator aIt;
   for (aIt = aEntryMap.begin(); aIt != aEntryMap.end(); ++aIt)
     if (aIt.key().mKey.isEmpty())
@@ -130,20 +116,18 @@ bool KConfig::hasKey(const char *pKey) const
 
   KEntryMapConstIterator aIt;
 
-  //  cacheCheck();
-
   if (!locale().isNull()) {
     // try the localized key first
     aEntryKey.bLocal = true;
     aIt = aEntryMap.find(aEntryKey);
-    if (aIt != aEntryMap.end() && !(*aIt).mValue.isNull())
+    if (aIt != aEntryMap.end() && !(*aIt).mValue.isNull() && !(*aIt).bDeleted )
       return true;
     aEntryKey.bLocal = false;
   }
 
   // try the non-localized version
   aIt = aEntryMap.find(aEntryKey);
-  return  (aIt != aEntryMap.end() && !(*aIt).mValue.isNull());
+  return  (aIt != aEntryMap.end() && !(*aIt).mValue.isNull() && !(*aIt).bDeleted );
 }
 
 QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
@@ -153,22 +137,23 @@ QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
   KEntryMapConstIterator aIt;
   KEntry aEntry;
   KEntryKey groupKey( pGroup_utf, 0 );
-  //  cacheCheck();
 
   aIt = aEntryMap.find(groupKey);
+  if (aIt == aEntryMap.end())
+     return tmpMap;
   ++aIt; // advance past special group entry marker
   for (; aIt.key().mGroup == pGroup_utf && aIt != aEntryMap.end(); ++aIt)
-    tmpMap.insert(QString::fromUtf8(aIt.key().mKey), QString::fromUtf8((*aIt).mValue.data(), (*aIt).mValue.length()));
+  {
+    // Leave the default values out && leave deleted entries out
+    if (!aIt.key().bDefault && !(*aIt).bDeleted) 
+      tmpMap.insert(QString::fromUtf8(aIt.key().mKey), QString::fromUtf8((*aIt).mValue.data(), (*aIt).mValue.length()));
+  }
 
   return tmpMap;
 }
 
 void KConfig::reparseConfiguration()
 {
-  // do this right away to avoid infinite loops inside parseConfigFiles()
-  // if it chooses to call putData or lookupData or something which will
-  // call cacheCheck() --> reparseConfiguration() --> you get it
-  //  isCached = true;
   aEntryMap.clear();
 
   // add the "default group" marker to the map
@@ -186,8 +171,6 @@ KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
   KEntryKey aKey(pGroup_utf, 0);
   KEntryMap tmpEntryMap;
 
-  //  cacheCheck();
-
   aIt = aEntryMap.find(aKey);
   if (aIt == aEntryMap.end()) {
     // the special group key is not in the map,
@@ -197,15 +180,15 @@ KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
   }
   // we now have a pointer to the nodes we want to copy.
   for (; aIt.key().mGroup == pGroup_utf && aIt != aEntryMap.end(); ++aIt)
+  {
     tmpEntryMap.insert(aIt.key(), *aIt);
+  }
 
   return tmpEntryMap;
 }
 
 void KConfig::putData(const KEntryKey &_key, const KEntry &_data)
 {
-  //  cacheCheck();
-
   // check to see if the special group key is present,
   // and if not, put it in.
   if (!hasGroup(_key.mGroup)) {
@@ -214,60 +197,38 @@ void KConfig::putData(const KEntryKey &_key, const KEntry &_data)
   }
 
   // now either add or replace the data
-  aEntryMap[_key] = _data;
+  KEntry &entry = aEntryMap[_key];
+  if (entry.bImmutable)
+    return;
+
+  entry = _data;
+
+  if (_key.bDefault)
+  {
+     // We have added the data as default value, 
+     // add it as normal value as well.
+     KEntryKey key(_key);
+     key.bDefault = false;
+     aEntryMap[key] = _data;
+  }
 }
 
 KEntry KConfig::lookupData(const KEntryKey &_key) const
 {
-  //  cacheCheck();
-
   KEntryMapConstIterator aIt;
 
   aIt = aEntryMap.find(_key);
   if (aIt != aEntryMap.end())
-    return *aIt;
+  {
+    const KEntry &entry = *aIt;
+    if (entry.bDeleted)
+       return KEntry();
+    else 
+       return entry;
+  }
   else {
     return KEntry();
   }
-}
-
-void KConfig::cacheCheck() const
-{
-  KConfig *that = const_cast<KConfig *>(this);
-  that->lastIoOp = QTime::currentTime();
-  if (!isCached) {
-    that->reparseConfiguration();
-  }
-}
-
-void KConfig::flushCache()
-{
-  if (!isCached) {
-    // don't need to do anything
-    return;
-  }
-
-  if (isDirty()) {
-    // if the config object has dirty status, we can't flush it
-    return;
-  }
-
-  // check if time of last I/O operation occured within timeout zone
-  if (lastIoOp.addSecs(flushInterval) > QTime::currentTime()) {
-    // IO occured within the flush interval.  Increase flush interval
-    // and reset timer accordingly.
-    flushInterval += (int)(flushInterval * .66);
-  } else {
-    // no I/O within the timeout period.  Flush the cache.
-    isCached = false;
-    aEntryMap.clear();
-    KEntryKey groupKey("<default>", 0);
-    aEntryMap.insert(groupKey, KEntry());
-    // reset the interval to 30 second checks
-    flushInterval = 30;
-  }
-
-  cacheTimer->changeInterval(flushInterval * 1000);
 }
 
 bool KConfig::hasGroup(const QString &_pGroup) const

@@ -151,13 +151,34 @@ static QCString stringToPrintable(const QCString& str){
   return result;
 }
 
+void KConfigBackEnd::changeFileName(const QString &_fileName, 
+                                    const char * _resType,
+                                    bool _useKDEGlobals)
+{ 
+   fileName = _fileName; 
+   resType = _resType;
+   useKDEGlobals = _useKDEGlobals;
+   if (fileName.isEmpty())
+      mLocalFileName = QString::null;
+   else if (fileName[0] == '/') 
+      mLocalFileName = fileName;
+   else 
+      mLocalFileName = KGlobal::dirs()->saveLocation(resType) + fileName;
+
+   if (useKDEGlobals)
+      mGlobalFileName = KGlobal::dirs()->saveLocation("config") +
+	      QString::fromLatin1("kdeglobals");
+   else
+      mGlobalFileName = QString::null;
+}
+
 KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
 			       const QString &_fileName,
 			       const char * _resType,
 			       bool _useKDEGlobals)
-  : pConfig(_config), fileName(_fileName),
-    resType(_resType), useKDEGlobals(_useKDEGlobals)
+  : pConfig(_config)
 {
+   changeFileName(_fileName, _resType, _useKDEGlobals);
 }
 
 bool KConfigINIBackEnd::parseConfigFiles()
@@ -178,12 +199,12 @@ bool KConfigINIBackEnd::parseConfigFiles()
 
     QStringList::ConstIterator it;
 
-    for (it = kdercs.fromLast(); it != kdercs.end(); it--) {
+    for (it = kdercs.fromLast(); it != kdercs.end(); --it) {
 
       QFile aConfigFile( *it );
       if (!aConfigFile.open( IO_ReadOnly ))
 	   continue;
-      parseSingleConfigFile( aConfigFile, 0L, true );
+      parseSingleConfigFile( aConfigFile, 0L, true, (*it != mGlobalFileName) );
       aConfigFile.close();
     }
   }
@@ -194,12 +215,12 @@ bool KConfigINIBackEnd::parseConfigFiles()
 
     QStringList::ConstIterator it;
 
-    for (it = list.fromLast(); it != list.end(); it--) {
+    for (it = list.fromLast(); it != list.end(); --it) {
 
       QFile aConfigFile( *it );
       // we can already be sure that this file exists
       aConfigFile.open( IO_ReadOnly );
-      parseSingleConfigFile( aConfigFile, 0L, false );
+      parseSingleConfigFile( aConfigFile, 0L, false, (*it != mLocalFileName) );
       aConfigFile.close();
     }
   }
@@ -212,16 +233,14 @@ KConfigBase::ConfigState KConfigINIBackEnd::getConfigState() const
     if (fileName.isEmpty())
 	return KConfigBase::NoAccess;
 
-    QString aLocalFileName = KGlobal::dirs()->saveLocation("config") +
-      fileName;
     // Can we allow the write? We can, if the program
     // doesn't run SUID. But if it runs SUID, we must
     // check if the user would be allowed to write if
     // it wasn't SUID.
-    if (checkAccess(aLocalFileName, W_OK|R_OK))
+    if (checkAccess(mLocalFileName, W_OK|R_OK))
 	return KConfigBase::ReadWrite;
     else
-	if (checkAccess(aLocalFileName, R_OK))
+	if (checkAccess(mLocalFileName, R_OK))
 	    return KConfigBase::ReadOnly;
 
     return KConfigBase::NoAccess;
@@ -229,14 +248,15 @@ KConfigBase::ConfigState KConfigINIBackEnd::getConfigState() const
 
 void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 					      KEntryMap *pWriteBackMap,
-					      bool bGlobal)
+					      bool bGlobal, bool bDefault)
 {
    if (!rFile.isOpen()) // come back, if you have real work for us ;->
       return;
 
    //using kdDebug() here leads to an infinite loop
    //remove this for the release, aleXXX
-   //cout<<"******** parsing "<<rFile.name().latin1()<<endl;
+   qWarning("Parsing %s, global = %s default = %s",
+              rFile.name().latin1(), bGlobal ? "true" : "false", bDefault ? "true" : "false");
 
    QCString aCurrentGroup("<default>");
 
@@ -306,6 +326,8 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
          continue;
       }
 
+      bool optionImmutable = false;
+      bool optionDeleted = false;
       const char *endOfKey = 0, *locale = 0, *elocale = 0;
       for (; (s < eof) && (*s != '\n'); s++)
       {
@@ -315,14 +337,12 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
         	endOfKey = s;
             goto haveeq;
 	 }
-	 if (*s == '[') //find the locale
+	 if (*s == '[') //find the locale or options.
 	 {
-	    if (locale) {
-		fprintf(stderr, "Invalid entry (second locale!?) at %s:%d\n", rFile.name().latin1(), line);
-		goto sktoeol;
-	    }
+            const char *option;
+            const char *eoption;
 	    endOfKey = s;
-	    locale = ++s;
+	    option = ++s;
 	    for (;; s++)
 	    {
 		if ((s >= eof) || (*s == '\n') || (*s == '=')) {
@@ -332,8 +352,30 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 		if (*s == ']')
 		    break;
 	    }
-	    elocale = s;
-	 }
+	    eoption = s;
+            if (*option != '$')
+            {
+              // Locale
+              if (locale) {
+		fprintf(stderr, "Invalid entry (second locale!?) at %s:%d\n", rFile.name().latin1(), line);
+		goto sktoeol;
+              }
+              locale = option;
+              elocale = eoption;
+            }
+            else
+            {
+              // Option
+              option++;
+              if ((*option == 'i'))
+                 optionImmutable = true;
+              else if ((*option == 'd'))
+              {
+                 optionDeleted = true; 
+                 goto haveeq;
+              }
+            }
+         }
       }
       fprintf(stderr, "Invalid entry (missing '=') at %s:%d\n", rFile.name().latin1(), line);
       continue;
@@ -375,10 +417,13 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
       KEntryKey aEntryKey(aCurrentGroup, key);
       aEntryKey.bLocal = (locale != 0);
+      aEntryKey.bDefault = bDefault;
 
       KEntry aEntry;
       aEntry.mValue = val;
       aEntry.bGlobal = bGlobal;
+      aEntry.bImmutable = optionImmutable;
+      aEntry.bDeleted = optionDeleted;
       aEntry.bNLS = (locale != 0);
 
       if (pWriteBackMap) {
@@ -411,18 +456,11 @@ void KConfigINIBackEnd::sync(bool bMerge)
   // try local app-specific file first
 
   if (!fileName.isEmpty()) {
-    QString aLocalFileName;
-    if (fileName[0] == '/') {
-       aLocalFileName = fileName;
-    } else {
-       aLocalFileName = KGlobal::dirs()->saveLocation(resType) + fileName;
-    }
-
     // Create the containing dir if needed
-    if ((resType!="config") && aLocalFileName[0]=='/')
+    if ((resType!="config") && mLocalFileName[0]=='/')
     {
        KURL path;
-       path.setPath(aLocalFileName);
+       path.setPath(mLocalFileName);
        QString dir=path.directory();
        KStandardDirs::makeDir(dir);
     }
@@ -431,9 +469,9 @@ void KConfigINIBackEnd::sync(bool bMerge)
     // doesn't run SUID. But if it runs SUID, we must
     // check if the user would be allowed to write if
     // it wasn't SUID.
-    if (checkAccess(aLocalFileName, W_OK)) {
+    if (checkAccess(mLocalFileName, W_OK)) {
       // is it writable?
-      bEntriesLeft = writeConfigFile( aLocalFileName, false, bMerge );
+      bEntriesLeft = writeConfigFile( mLocalFileName, false, bMerge );
     }
   }
 
@@ -442,17 +480,105 @@ void KConfigINIBackEnd::sync(bool bMerge)
   // the useKDEGlobals flag is set.
   if (bEntriesLeft && useKDEGlobals) {
 
-    QString aFileName = KGlobal::dirs()->saveLocation("config") +
-      QString::fromLatin1("kdeglobals");
 
     // can we allow the write? (see above)
-    if (checkAccess ( aFileName, W_OK )) {
-      writeConfigFile( aFileName, true, bMerge );
+    if (checkAccess ( mGlobalFileName, W_OK )) {
+      writeConfigFile( mGlobalFileName, true, bMerge );
     }
   }
 
 }
 
+static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultGroup, bool &firstEntry, const QCString &localeString)
+{
+  // now write out all other groups.
+  QCString currentGroup;
+  for (KEntryMapConstIterator aIt = entryMap.begin(); 
+       aIt != entryMap.end(); ++aIt) 
+  {
+     const KEntryKey &key = aIt.key();
+
+     // Either proces the default group or all others
+     if ((key.mGroup != "<default>") == defaultGroup)
+        continue; // Skip
+     
+     // Skip default values and group headers.
+     if ((key.bDefault) || key.mKey.isEmpty()) 
+        continue; // Skip
+
+     const KEntry &currentEntry = *aIt;
+
+     KEntryMapConstIterator aTestIt = aIt;
+     ++aTestIt;
+     bool hasDefault = (aTestIt != entryMap.end());
+     if (hasDefault)
+     {
+        const KEntryKey &defaultKey = aTestIt.key();
+        if ((!defaultKey.bDefault) ||
+            (defaultKey.mKey != key.mKey) ||
+            (defaultKey.mGroup != key.mGroup) ||
+            (defaultKey.bLocal != key.bLocal))
+           hasDefault = false;
+     }
+ 
+
+     if (hasDefault) 
+     {
+        // Entry had a default value
+        if ((currentEntry.mValue == (*aTestIt).mValue) && 
+            (currentEntry.bDeleted == (*aTestIt).bDeleted))
+           continue; // Same as default, don't write.
+     }
+     else
+     {
+        // Entry had no default value.
+        if (currentEntry.bDeleted)
+           continue; // Don't write deleted entries if there is no default.
+     }
+
+     if (!defaultGroup && (currentGroup != key.mGroup)) {
+	if (!firstEntry)
+	    fprintf(pStream, "\n");
+	currentGroup = key.mGroup;
+	fprintf(pStream, "[%s]\n", currentGroup.data());
+     }
+
+     firstEntry = false;
+     // it is data for a group
+     if (currentEntry.bDeleted)
+     {
+        // Deleted entry
+        if ( currentEntry.bNLS )
+        {
+           // localized 
+           fprintf(pStream, "%s[%s][$d]\n",
+                   key.mKey.data(), localeString.data());
+        }
+        else
+        {
+           // not localized
+           fprintf(pStream, "%s[$d]\n",
+                   key.mKey.data());
+        }
+     }
+     else
+     {  
+        if ( currentEntry.bNLS )
+        {
+           fprintf(pStream, "%s[%s]=%s\n",
+                   key.mKey.data(), localeString.data(),
+                   stringToPrintable(currentEntry.mValue).data());
+        }
+        else
+        {
+           // not localized
+           fprintf(pStream, "%s=%s\n",
+                   key.mKey.data(),
+                   stringToPrintable(currentEntry.mValue).data());
+        }
+     }
+  } // for loop
+}
 
 bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
 					bool bMerge)
@@ -471,48 +597,38 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
     if (rConfigFile.open(IO_ReadOnly))
     {
        // fill the temporary structure with entries from the file
-       parseSingleConfigFile( rConfigFile, &aTempMap, bGlobal );
+       parseSingleConfigFile( rConfigFile, &aTempMap, bGlobal, false );
        rConfigFile.close();
     }
 
     KEntryMap aMap = pConfig->internalEntryMap();
 
     // augment this structure with the dirty entries from the config object
-    for (KEntryMapIterator aInnerIt = aMap.begin();
-          aInnerIt != aMap.end(); ++aInnerIt)
+    for (KEntryMapIterator aIt = aMap.begin();
+          aIt != aMap.end(); ++aIt)
     {
-      KEntry currentEntry = *aInnerIt;
+      const KEntry &currentEntry = *aIt;
+      if(aIt.key().bDefault)
+      {
+         aTempMap.replace(aIt.key(), currentEntry);
+         continue; 
+      }
 
       if (!currentEntry.bDirty)
          continue;
 
       // only write back entries that have the same
       // "globality" as the file
-      if (currentEntry.bGlobal == bGlobal)
-      {
-        KEntryKey entryKey = aInnerIt.key();
-
-        // put this entry from the config object into the
-        // temporary map, possibly replacing an existing entry
-        if (aTempMap.contains(entryKey))
-        {
-          aTempMap.replace(entryKey, currentEntry);
-        }
-	else
-        {
-	  // add special group key and then the entry
-	  KEntryKey groupKey(entryKey.mGroup, 0);
-	  if (!aTempMap.contains(groupKey))
-	    aTempMap.insert(groupKey, KEntry());
-
-	  aTempMap.insert(entryKey, currentEntry);
-        }
-      }
-      else
+      if (currentEntry.bGlobal != bGlobal)
       {
         // wrong "globality" - might have to be saved later
         bEntriesLeft = true;
+        continue;
       }
+      
+      // put this entry from the config object into the
+      // temporary map, possibly replacing an existing entry
+      aTempMap.replace(aIt.key(), currentEntry);
     } // loop
   }
   else
@@ -532,60 +648,13 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
 
   FILE *pStream = rConfigFile.fstream();
 
-  // write back -- start with the default group
-  KEntryMapConstIterator aWriteIt;
-  for (aWriteIt = aTempMap.begin(); aWriteIt != aTempMap.end(); ++aWriteIt) {
+  bool firstEntry = true;
 
-      if ( aWriteIt.key().mGroup == "<default>" && !aWriteIt.key().mKey.isEmpty() ) {
-	  if ( (*aWriteIt).bNLS )
-          {
-              fprintf(pStream, "%s[%s]=%s\n",
-                    aWriteIt.key().mKey.data(), localeString.data(),
-                    stringToPrintable((*aWriteIt).mValue).data());
-          }
-	  else
-          {
-              // not localized
-              fprintf(pStream, "%s=%s\n",
-                    aWriteIt.key().mKey.data(),
-                    stringToPrintable((*aWriteIt).mValue).data());
-          }
-      }
-  } // for loop
+  // Write default group
+  writeEntries(pStream, aTempMap, true, firstEntry, localeString);
 
-  // now write out all other groups.
-  QCString currentGroup;
-  for (aWriteIt = aTempMap.begin(); aWriteIt != aTempMap.end(); ++aWriteIt) {
-    // check if it's not the default group (which has already been written)
-    if (aWriteIt.key().mGroup == "<default>")
-      continue;
-
-    if ( currentGroup != aWriteIt.key().mGroup ) {
-	if (!currentGroup.isEmpty())
-	    fprintf(pStream, "\n");
-	currentGroup = aWriteIt.key().mGroup;
-	fprintf(pStream, "[%s]\n", aWriteIt.key().mGroup.data());
-    }
-
-    if (aWriteIt.key().mKey.isEmpty()) {
-      // we found a special group key, ignore it
-    } else {
-      // it is data for a group
-      if ( (*aWriteIt).bNLS )
-      {
-          fprintf(pStream, "%s[%s]=%s\n",
-                   aWriteIt.key().mKey.data(), localeString.data(),
-                   stringToPrintable((*aWriteIt).mValue).data());
-      }
-      else
-      {
-          // not localized
-          fprintf(pStream, "%s=%s\n",
-                    aWriteIt.key().mKey.data(),
-                    stringToPrintable((*aWriteIt).mValue).data());
-      }
-    }
-  } // for loop
+  // Write all other groups
+  writeEntries(pStream, aTempMap, false, firstEntry, localeString);
 
   rConfigFile.close();
 

@@ -191,34 +191,6 @@ public:
   
 private:
   /**
-   * indicates whether the internal data cache is full or empty.
-   * If it is empty, the config files on disk will need to be
-   * reopened and read before any reading can take place.
-   */
-  bool isCached;
-
-  /**
-   * timer which is periodically triggered to flush out the
-   * data cache.
-   */
-  QTimer *cacheTimer;
-
-  /**
-   * The last time a value was either read or written.  Used to
-   * determine a cache time threshold.  Because lookupData() is
-   * called for reads and writes, we only need to update the time
-   * there; we can ignore putData().
-   *
-   * @see #lookupData, #putData
-   */
-  QTime lastIoOp;
-
-  /**
-   * time between flush attempts.  We initialize this to 30 seconds.
-   */
-  int flushInterval;
-
-  /**
    * @internal
    * copy-construction and assignment are not allowed
    */
@@ -228,22 +200,6 @@ private:
    * copy-construction and assignment are not allowed
    */
   KConfig& operator= ( const KConfig& rConfig );
-
-  /**
-   * Checks whether the cache is loaded from disk, and loads it if
-   * needed.  Not actually a const function, so we need to do some
-   * internal funny business to get around constness, but needed to be
-   * const because of where it is called from (functions that really
-   * *should* remain const).
-   */
-  void cacheCheck() const;
-
-private slots:
-  /**
-   * attempts to flush the entry cache. Will set isCached
-   * variable to the appropriate value upon completion.
-   */
-  void flushCache();
 
 private:
   KConfigPrivate *d;

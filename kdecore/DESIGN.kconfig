@@ -60,10 +60,10 @@ administrator (Via e.g. $KDEDIR/share/config) or, if no such default was set,
 non-existant.
 deleteEntry() will make the entry non-existant.
 
-Entries are marked "fixed" if the key is followed by [$fixed]. This means
+Entries are marked "immutable" if the key is followed by [$i]. This means
 that a user can not override these entries.
 
-Entries can be marked as deleted if they are followed by [$deleted]. This
+Entries can be marked as deleted if they are followed by [$d]. This
 is needed if the system administrator has specified a default value but the
 entry was deleted (made 'non-existant'). In that case we can't just leave 
 the entry out since that would mean we get the default from the system 
@@ -95,3 +95,8 @@ Open Question: Would it be worthwhile to lock a user option that is equal to the
 default so that it doesn't change when the default changes?
 
 
+KDE3.0 Changes
+==============
+
+*) writeEntry now returns void instead of QString.
+*) deleteEntry functions added

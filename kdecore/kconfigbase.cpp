@@ -1,4 +1,4 @@
-;/*
+/*
    This file is part of the KDE libraries
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Copyright (c) 1997 Matthias Kalle Dalheimer <kalle@kde.org>
@@ -911,15 +911,15 @@ QDateTime KConfigBase::readDateTimeEntry( const char *pKey,
   return aRetDateTime;
 }
 
-QString KConfigBase::writeEntry( const QString& pKey, const QString& value,
+void KConfigBase::writeEntry( const QString& pKey, const QString& value,
                                  bool bPersistent,
                                  bool bGlobal,
                                  bool bNLS )
 {
-   return writeEntry(pKey.utf8().data(), value, bPersistent,  bGlobal, bNLS);
+   writeEntry(pKey.utf8().data(), value, bPersistent,  bGlobal, bNLS);
 }
 
-QString KConfigBase::writeEntry( const char *pKey, const QString& value,
+void KConfigBase::writeEntry( const char *pKey, const QString& value,
                                  bool bPersistent,
                                  bool bGlobal,
                                  bool bNLS )
@@ -937,26 +937,76 @@ QString KConfigBase::writeEntry( const char *pKey, const QString& value,
 
   KEntryKey entryKey(mGroup, pKey);
   entryKey.bLocal = bNLS;
+
   KEntry aEntryData;
-  QString aValue;
-
-  // try to retrieve the current entry for this key
-  aEntryData = lookupData(entryKey);
-  if (!aEntryData.mValue.isNull()) {
-    // there already is such a key
-    aValue = QString::fromUtf8(aEntryData.mValue.data(), aEntryData.mValue.length()); // save old key as return value
-  }
-
   aEntryData.mValue = value.utf8();  // set new value
   aEntryData.bGlobal = bGlobal;
   aEntryData.bNLS = bNLS;
+
   if (bPersistent)
     aEntryData.bDirty = true;
 
   // rewrite the new value
   putData(entryKey, aEntryData);
+}
 
-  return aValue;
+void KConfigBase::deleteEntry( const QString& pKey,
+                                 bool bNLS,
+                                 bool bGlobal)
+{
+   deleteEntry(pKey.utf8().data(), bNLS, bGlobal);
+}
+
+void KConfigBase::deleteEntry( const char *pKey,
+                                 bool bNLS,
+                                 bool bGlobal)
+{
+  // the KConfig object is dirty now
+  // set this before any IO takes place so that if any derivative
+  // classes do caching, they won't try and flush the cache out
+  // from under us before we read. A race condition is still
+  // possible but minimized.
+  bDirty = true;
+
+  if (!bLocaleInitialized && KGlobal::locale())
+    setLocale();
+
+  KEntryKey entryKey(mGroup, pKey);
+  KEntry aEntryData;
+
+  aEntryData.bGlobal = bGlobal;
+  aEntryData.bNLS = bNLS;
+  aEntryData.bDirty = true;
+  aEntryData.bDeleted = true;
+
+  // rewrite the new value
+  putData(entryKey, aEntryData);
+}
+
+bool KConfigBase::deleteGroup( const QString& pGroup, bool bDeep )
+{
+  KEntryMap aEntryMap = internalEntryMap(pGroup);
+
+  if (!bDeep) {
+    // Check if it empty
+    return aEntryMap.isEmpty();
+  }
+
+  // we want to remove all entries in the group
+  KEntryMapIterator aIt;
+  for (aIt = aEntryMap.begin(); aIt != aEntryMap.end(); ++aIt)
+  {
+    if (!aIt.key().mKey.isEmpty() && !aIt.key().bDefault && !(*aIt).bDeleted)
+    {
+qWarning("Deleting key = %s", aIt.key().mKey.data());
+      (*aIt).bDeleted = true;
+      (*aIt).bDirty = true;
+      (*aIt).mValue = 0;
+      putData(aIt.key(), *aIt);
+      bDirty = true;
+    }
+  }
+  return true;
 }
 
 void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
@@ -1139,94 +1189,94 @@ void KConfigBase::writeEntry ( const char *pKey, const QValueList<int> &list,
     writeEntry(pKey, strlist, ',', bPersistent, bGlobal, bNLS );
 }
 
-QString KConfigBase::writeEntry( const QString& pKey, int nValue,
+void KConfigBase::writeEntry( const QString& pKey, int nValue,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
-  return writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
 }
 
-QString KConfigBase::writeEntry( const char *pKey, int nValue,
+void KConfigBase::writeEntry( const char *pKey, int nValue,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
-  return writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
 }
 
 
-QString KConfigBase::writeEntry( const QString& pKey, unsigned int nValue,
+void KConfigBase::writeEntry( const QString& pKey, unsigned int nValue,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
-  return writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
 }
 
-QString KConfigBase::writeEntry( const char *pKey, unsigned int nValue,
+void KConfigBase::writeEntry( const char *pKey, unsigned int nValue,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
-  return writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
 }
 
 
-QString KConfigBase::writeEntry( const QString& pKey, long nValue,
+void KConfigBase::writeEntry( const QString& pKey, long nValue,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
-  return writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
 }
 
-QString KConfigBase::writeEntry( const char *pKey, long nValue,
+void KConfigBase::writeEntry( const char *pKey, long nValue,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
-  return writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
 }
 
 
-QString KConfigBase::writeEntry( const QString& pKey, unsigned long nValue,
+void KConfigBase::writeEntry( const QString& pKey, unsigned long nValue,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
-  return writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
 }
 
-QString KConfigBase::writeEntry( const char *pKey, unsigned long nValue,
+void KConfigBase::writeEntry( const char *pKey, unsigned long nValue,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
-  return writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, QString::number(nValue), bPersistent, bGlobal, bNLS );
 }
 
 
-QString KConfigBase::writeEntry( const QString& pKey, double nValue,
-                                 bool bPersistent, bool bGlobal,
-                                 char format, int precision,
-                                 bool bNLS )
-{
-  return writeEntry( pKey, QString::number(nValue, format, precision),
-                     bPersistent, bGlobal, bNLS );
-}
-
-QString KConfigBase::writeEntry( const char *pKey, double nValue,
+void KConfigBase::writeEntry( const QString& pKey, double nValue,
                                  bool bPersistent, bool bGlobal,
                                  char format, int precision,
                                  bool bNLS )
 {
-  return writeEntry( pKey, QString::number(nValue, format, precision),
+  writeEntry( pKey, QString::number(nValue, format, precision),
+                     bPersistent, bGlobal, bNLS );
+}
+
+void KConfigBase::writeEntry( const char *pKey, double nValue,
+                                 bool bPersistent, bool bGlobal,
+                                 char format, int precision,
+                                 bool bNLS )
+{
+  writeEntry( pKey, QString::number(nValue, format, precision),
                      bPersistent, bGlobal, bNLS );
 }
 
 
-QString KConfigBase::writeEntry( const QString& pKey, bool bValue,
+void KConfigBase::writeEntry( const QString& pKey, bool bValue,
                                  bool bPersistent,
                                  bool bGlobal,
                                  bool bNLS )
 {
-  return writeEntry(pKey.utf8().data(), bValue, bPersistent, bGlobal, bNLS);
+  writeEntry(pKey.utf8().data(), bValue, bPersistent, bGlobal, bNLS);
 }
 
-QString KConfigBase::writeEntry( const char *pKey, bool bValue,
+void KConfigBase::writeEntry( const char *pKey, bool bValue,
                                  bool bPersistent,
                                  bool bGlobal,
                                  bool bNLS )
@@ -1238,18 +1288,18 @@ QString KConfigBase::writeEntry( const char *pKey, bool bValue,
   else
     aValue = "false";
 
-  return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
 }
 
 
-QString KConfigBase::writeEntry( const QString& pKey, const QFont& rFont,
+void KConfigBase::writeEntry( const QString& pKey, const QFont& rFont,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
-  return writeEntry(pKey.utf8().data(), rFont, bPersistent, bGlobal, bNLS);
+  writeEntry(pKey.utf8().data(), rFont, bPersistent, bGlobal, bNLS);
 }
 
-QString KConfigBase::writeEntry( const char *pKey, const QFont& rFont,
+void KConfigBase::writeEntry( const char *pKey, const QFont& rFont,
                                  bool bPersistent, bool bGlobal,
                                  bool bNLS )
 {
@@ -1277,7 +1327,7 @@ QString KConfigBase::writeEntry( const char *pKey, const QFont& rFont,
      << aCharset << "," << rFont.weight() << ","
      << static_cast<int>(nFontBits);
 
-  return writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
 }
 
 

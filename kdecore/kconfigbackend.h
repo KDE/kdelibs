@@ -99,11 +99,7 @@ public:
    *        global KDE configuration files.
    */
   void changeFileName(const QString &_fileName, const char * _resType,
-		      bool _useKDEGlobals)
-      { 
-	fileName = _fileName; resType = _resType;
-	useKDEGlobals = _useKDEGlobals;
-      }
+		      bool _useKDEGlobals);
 
   /**
    * Retrieve the state of the app-config object.
@@ -132,6 +128,8 @@ protected:
   QCString resType;
   bool useKDEGlobals;
   QCString localeString;
+  QString mLocalFileName;
+  QString mGlobalFileName;
 
   KConfigBackEndPrivate *d;
 };
@@ -198,9 +196,11 @@ protected:
    * @param bGlobal Specifies whether entries should be marked as
    *        belonging to the global KDE configuration file rather
    *        than the application-specific KDE configuration file(s).
+   * @param bDefault Specifies whether entries should be marked as
+   *        being default values.
    */
   void parseSingleConfigFile(QFile& rFile, KEntryMap *pWriteBackMap = 0L,
-			     bool bGlobal = false);
+			     bool bGlobal = false, bool bDefault = false);
 
   /**
    * Write configuration file back.

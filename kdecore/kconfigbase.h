@@ -2,7 +2,8 @@
    This file is part of the KDE libraries
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Copyright (c) 1997 Matthias Kalle Dalheimer <kalle@kde.org>
-
+   Copyright (c) 2001 Waldo Bastian <bastian@kde.org>
+   
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
@@ -381,13 +382,11 @@ public:
    *                     global KDE config file.
    * @param bNLS         If @p bNLS is true, the locale tag is added to the key
    *                     when writing it back.
-   * @return The old value for this key. If this key did not
-   *         exist, a null string is returned.
    */
-  QString writeEntry( const QString& pKey, const QString& pValue,
+  void writeEntry( const QString& pKey, const QString& pValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
-  QString writeEntry( const char *pKey, const QString& pValue,
+  void writeEntry( const char *pKey, const QString& pValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
 
@@ -506,14 +505,12 @@ public:
    *                    global KDE config file.
    *  @param bNLS       If @p bNLS is true, the locale tag is added to the key
    *                    when writing it back.
-   *  @return The old value for this key. If this key did not
-   *          exist, a null string is returned.
    */
-  QString writeEntry( const QString& pKey, const char *pValue,
+  void writeEntry( const QString& pKey, const char *pValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false )
     { return writeEntry(pKey, QString::fromLatin1(pValue), bPersistent, bGlobal, bNLS); }
-  QString writeEntry( const char *pKey, const char *pValue,
+  void writeEntry( const char *pKey, const char *pValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false )
     { return writeEntry(pKey, QString::fromLatin1(pValue), bPersistent, bGlobal, bNLS); }
@@ -532,13 +529,11 @@ public:
    *                    global KDE config file.
    * @param bNLS        If @p bNLS is true, the locale tag is added to the key
    *                    when writing it back.
-   * @return The old value for this key. If this key did not
-   *         exist, a null string is returned.
    */
-  QString writeEntry( const QString& pKey, int nValue,
+  void writeEntry( const QString& pKey, int nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
-  QString writeEntry( const char *pKey, int nValue,
+  void writeEntry( const char *pKey, int nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
 
@@ -556,13 +551,11 @@ public:
    *                    global KDE config file.
    * @param bNLS        If @p bNLS is true, the locale tag is added to the key
    *                    when writing it back.
-   * @return The old value for this key. If this key did not
-   *         exist, a null string is returned.
    */
-  QString writeEntry( const QString& pKey, unsigned int nValue,
+  void writeEntry( const QString& pKey, unsigned int nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
-  QString writeEntry( const char *pKey, unsigned int nValue,
+  void writeEntry( const char *pKey, unsigned int nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
 
@@ -579,13 +572,11 @@ public:
    *  application specific config file, but to the global KDE config file.
    * @param bNLS        If @p bNLS is true, the locale tag is added to the key
    *  when writing it back.
-   * @return The old value for this key. If this key did not
-   * exist, a null string is returned.
    */
-  QString writeEntry( const QString& pKey, long nValue,
+  void writeEntry( const QString& pKey, long nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
-  QString writeEntry( const char *pKey, long nValue,
+  void writeEntry( const char *pKey, long nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
 
@@ -602,13 +593,11 @@ public:
    *  application specific config file, but to the global KDE config file.
    * @param bNLS        If @p bNLS is true, the locale tag is added to the key
    *  when writing it back.
-   * @return The old value for this key. If this key did not
-   * exist, a null string is returned.
    */
-  QString writeEntry( const QString& pKey, unsigned long nValue,
+  void writeEntry( const QString& pKey, unsigned long nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
-  QString writeEntry( const char *pKey, unsigned long nValue,
+  void writeEntry( const char *pKey, unsigned long nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
 
@@ -628,14 +617,12 @@ public:
    *  value is converted. Default is 6 as in QString.
    * @param bNLS        If @p bNLS is true, the locale tag is added to the key
    *  when writing it back.
-   * @return The old value for this key. If this key did not
-   * exist, a null string is returned.
    */
-  QString writeEntry( const QString& pKey, double nValue,
+  void writeEntry( const QString& pKey, double nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       char format = 'g', int precision = 6,
                       bool bNLS = false );
-  QString writeEntry( const char *pKey, double nValue,
+  void writeEntry( const char *pKey, double nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       char format = 'g', int precision = 6,
                       bool bNLS = false );
@@ -653,13 +640,11 @@ public:
    *  application specific config file, but to the global KDE config file.
    * @param bNLS        If @p bNLS is true, the locale tag is added to the key
    *  when writing it back.
-   * @return The old value for this key. If this key did not
-   * exist, a null string is returned.
    */
-  QString writeEntry( const QString& pKey, bool bValue,
+  void writeEntry( const QString& pKey, bool bValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
-  QString writeEntry( const char *pKey, bool bValue,
+  void writeEntry( const char *pKey, bool bValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
 
@@ -676,13 +661,11 @@ public:
    *  application specific config file, but to the global KDE config file.
    * @param bNLS        If @p bNLS is true, the locale tag is added to the key
    *  when writing it back.
-   * @return The old value for this key. If this key did not
-   * exist, a null string is returned.
    */
-  QString writeEntry( const QString& pKey, const QFont& rFont,
+  void writeEntry( const QString& pKey, const QFont& rFont,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
-  QString writeEntry( const char *pKey, const QFont& rFont,
+  void writeEntry( const char *pKey, const QFont& rFont,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
 
@@ -806,6 +789,40 @@ public:
   void writeEntry( const char *pKey, const QSize& rValue,
                    bool bPersistent = true, bool bGlobal = false,
                    bool bNLS = false );
+
+  /**
+   * Delete the entry specified by @p pKey in the current group.
+   *
+   * @param pKey The key to delete.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not removed from the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the key with the locale tag is removed.
+   */
+   void deleteEntry( const QString& pKey,
+                   bool bNLS = false, bool bGlobal = false);
+   void deleteEntry( const char *pKey,
+                   bool bNLS = false, bool bGlobal = false);
+
+  /**
+   * Delete a configuration entry group
+   *
+   * If the group is not empty and bDeep is false, nothing gets
+   * deleted and false is returned.
+   * If this group is the current group and it is deleted, the
+   * current group is undefined and should be set with setGroup()
+   * before the next operation on the configuration object.
+   *
+   * @param pGroup The name of the group
+   * @param bDeep Specify whether non-empty groups should be completely
+   *        deleted (including their entries).
+   * @return If the group is not empty and bDeep is false, 
+             deleteGroup returns false.
+   */
+  bool deleteGroup( const QString& pGroup, bool bDeep = true );
+
 
   /**
    * Turns on or off "dollar  expansion" (see @ref KConfigBase introduction)

@@ -30,11 +30,10 @@ class KSimpleConfigPrivate;
  * KDE Configuration entries
  *
  * This is a trivial extension of @ref KConfig for applications that need
- * only one configuration file and no default system.  It also adds
- * the ability to delete keys and/or groups.  Lastly, when the data in
- * memory is written back out by @ref sync(), it is not merged with
- * what is on disk.  Whatever is in memory simply replaces what is on
- * disk entirely.
+ * only one configuration file and no default system.  
+ * A difference with KConfig is that when the data in memory is written back 
+ * it is not merged with what is on disk.  
+ * Whatever is in memory simply replaces what is on disk entirely.
  *
  * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
  * @version $Id$
@@ -64,34 +63,6 @@ public:
    * Writes back any dirty configuration entries.
    */
   virtual ~KSimpleConfig();
-
-  /**
-   * Delete a configuration entry.
-   *
-   * @param pKey The key of the entry to delete
-   * @param bLocalized Whether the localized or the non-localized key should
-   *                    be deleted
-   * @return The old value of that key.
-   */
-  QString deleteEntry( const QString& pKey, bool bLocalized );
-  QString deleteEntry( const char *pKey, bool bLocalized );
-
-  /**
-   * Delete a configuration entry group
-   *
-   * If the group is not empty and bDeep is false, nothing gets
-   * deleted and false is returned.
-   * If this group is the current group and it is deleted, the
-   * current group is undefined and should be set with setGroup()
-   * before the next operation on the configuration object.
-   *
-   * @param pGroup The name of the group
-   * @param bDeep Specify whether non-empty groups should be completely
-   *        deleted (including their entries).
-   * @return If the group does not exist or is not empty and bDeep is
-   *         false, deleteGroup returns false.
-   */
-  bool deleteGroup( const QString& pGroup, bool bDeep = true );
 
   virtual void sync();
 
