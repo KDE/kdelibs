@@ -165,6 +165,8 @@ public:
    */
   bool setLanguage(const QString & language);
 
+  bool setLanguage(const QStringList & languages);
+
   /**
    * Changes the current country. The current country will be left 
    * unchanged if failed. It will force a reload of the country specific

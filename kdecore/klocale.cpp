@@ -127,50 +127,51 @@ void KLocale::initLanguage(KConfig * config, bool useEnv)
     m_country = defaultCountry();
 
   // Reset the list and add the new languages
-  d->languageList.clear();
+  QStringList languageList;
   if ( useEnv )
-    d->languageList += QStringList::split
+    languageList += QStringList::split
       (':', QFile::decodeName( ::getenv("KDE_LANG") ));
 
-  d->languageList += config->readListEntry("Language", ':');
+  languageList += config->readListEntry("Language", ':');
 
   // same order as setlocale use
   if ( useEnv )
     {
-      d->languageList << QFile::decodeName( ::getenv("LC_MESSAGES") );
-      d->languageList << QFile::decodeName( ::getenv("LC_ALL") );
-      d->languageList << QFile::decodeName( ::getenv("LANG") );
+      // HPB: Only run splitLocale on the environment variables..
+      QStringList langs;
+
+      langs << QFile::decodeName( ::getenv("LC_MESSAGES") );
+      langs << QFile::decodeName( ::getenv("LC_ALL") );
+      langs << QFile::decodeName( ::getenv("LANG") );
+
+      for ( QStringList::Iterator it = langs.begin();
+	    it != langs.end();
+	    ++it )
+	{
+	  QString ln, ct, chrset;
+	  splitLocale(*it, ln, ct, chrset);
+
+	  if (!ct.isEmpty()) {
+	    langs.insert(it, ln + '_' + ct);
+	    if (!chrset.isEmpty())
+	      langs.insert(it, ln + '_' + ct + '.' + chrset);
+	  }
+
+	}
+
+      languageList += langs;
     }
-  d->languageList << defaultLanguage();
-
-  for ( QStringList::Iterator it = d->languageList.begin();
-        it != d->languageList.end();
-        ++it )
-    {
-      QString ln, ct, chrset;
-      splitLocale(*it, ln, ct, chrset);
-
-      if (!ct.isEmpty()) {
-	d->languageList.insert(it, ln + '_' + ct);
-	if (!chrset.isEmpty())
-	  d->languageList.insert(it, ln + '_' + ct + '.' + chrset);
-      }
-    }
-
+      
   // Remove duplicate entries in reverse so that we
   // can keep user's language preference order intact. (DA)
-  for( QStringList::Iterator it = d->languageList.fromLast();
-         it != d->languageList.begin();
+  for( QStringList::Iterator it = languageList.fromLast();
+         it != languageList.begin();
          --it )
-      if ( d->languageList.contains(*it) > 1 )
-	it = d->languageList.remove( it );
+    if ( languageList.contains(*it) > 1 )
+      it = languageList.remove( it );
 
   // now we have a language list -- let's use the first OK language
-  for ( QStringList::Iterator it = d->languageList.begin();
-        it != d->languageList.end();
-        ++it)
-    if ( setLanguage( *it ) )
-      break;
+  setLanguage( languageList );
 }
 
 void KLocale::doBindInit()
@@ -382,6 +383,24 @@ bool KLocale::setLanguage(const QString & language)
 
       doBindInit();
     }
+
+  return bRes;
+}
+
+bool KLocale::setLanguage(const QStringList & languages)
+{
+  bool bRes = false;
+
+  for ( QStringList::ConstIterator it = languages.begin();
+	it != languages.end();
+	++it )
+    if ( bRes = setLanguage( *it ) )
+      break;
+
+  if ( !bRes )
+    setLanguage(defaultLanguage());
+
+  d->languageList = languages;
 
   return bRes;
 }
@@ -1187,7 +1206,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt) const
 	  break;
 	}
     }
-  //kdDebug() << "KLocale::readDate day=" << day << " month=" << month << " year=" << year << endl;
+  //kdDebug(173) << "KLocale::readDate day=" << day << " month=" << month << " year=" << year << endl;
   if ( year != -1 && month != -1 && day != -1 )
     return QDate(year, month, day);
  error:
