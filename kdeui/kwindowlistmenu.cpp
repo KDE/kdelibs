@@ -83,6 +83,8 @@ void KWindowListMenu::slotAboutToShow()
 		if ( info.windowType == NET::Normal || info.windowType == NET::Unknown ) {
 		    QPixmap pm = KWin::icon(*it, 16, 16, true );
 		    items++;
+                    if (items == 1)
+                        insertSeparator();
 		    insertItem( pm, QString("   ")+ KStringHandler::csqueeze(title,25),i);
 		    if (*it == active_window)
 			setItemChecked(i, TRUE);
