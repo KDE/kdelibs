@@ -70,14 +70,14 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
 
     if(o->pixmap_size() !=  pixSize)
     {
-        kdDebug( 6040 ) << "Image: newSize " << p.width() << "/" << p.height() << endl;
+        //kdDebug( 6040 ) << "Image: newSize " << p.width() << "/" << p.height() << endl;
         pix = p;
         pixSize = o->pixmap_size();
-        kdDebug( 6040 ) << "Image size is now " << pixSize.width() << " " << pixSize.height() << endl;
+        //kdDebug( 6040 ) << "Image size is now " << pixSize.width() << " " << pixSize.height() << endl;
         setLayouted(false);
         setMinMaxKnown(false);
-        kdDebug( 6040 ) << "m_width: : " << m_width << " height: " << m_height << endl;
-        kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
+        //kdDebug( 6040 ) << "m_width: : " << m_width << " height: " << m_height << endl;
+        //kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
         // the updateSize() call should trigger a repaint too
         if (manualUpdate) {
            *manualUpdate = true;
