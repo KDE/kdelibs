@@ -32,6 +32,7 @@
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kxmlguifactory.h>
+#include <klocale.h>
 
 using namespace KParts;
 
@@ -170,5 +171,11 @@ QPtrList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
 
   return objects;
 }
+
+void Plugin::setInstance( KInstance *instance )
+{
+    KGlobal::locale()->insertCatalogue( instance->instanceName() );
+}
+
 
 #include "plugin.moc"

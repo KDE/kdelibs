@@ -104,6 +104,8 @@ protected:
      */
     static Plugin* loadPlugin( QObject * parent, const char* libname );
 
+    virtual void setInstance( KInstance *instance );
+
 private:
     class PluginPrivate;
     PluginPrivate *d;
