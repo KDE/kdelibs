@@ -1082,10 +1082,10 @@ class PostErrorJob : public TransferJob
 {
 public:
 
-  PostErrorJob(const QString& url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo)
+  PostErrorJob(int _error, const QString& url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo)
       : TransferJob(KURL(), CMD_SPECIAL, packedArgs, postData, showProgressInfo)
   {
-    m_error = KIO::ERR_POST_DENIED;
+    m_error = _error;
     m_errorText = url;
   }
 
@@ -1093,11 +1093,7 @@ public:
 
 TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool showProgressInfo )
 {
-    bool valid = true;
-
-    // filter out non https? protocols
-    if ((url.protocol() != "http") && (url.protocol() != "https" ))
-        valid = false;
+    int _error = 0;
 
     // filter out some malicious ports
     static const int bad_ports[] = {
@@ -1165,11 +1161,11 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
     for (int cnt=0; bad_ports[cnt]; ++cnt)
         if (url.port() == bad_ports[cnt])
         {
-            valid = false;
+            _error = KIO::ERR_POST_DENIED;
             break;
         }
 
-    if( !valid )
+    if( _error )
     {
 	static bool override_loaded = false;
 	static QValueList< int >* overriden_ports = NULL;
@@ -1184,17 +1180,12 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
 	     it != overriden_ports->end();
 	     ++it )
 	    if( overriden_ports->contains( url.port()))
-		valid = true;
+		_error = 0;
     }
 
-
-    // if request is not valid, return an invalid transfer job
-    if (!valid)
-    {
-        KIO_ARGS << (int)1 << url;
-        TransferJob * job = new PostErrorJob(url.url(), packedArgs, postData, showProgressInfo);
-        return job;
-    }
+    // filter out non https? protocols
+    if ((url.protocol() != "http") && (url.protocol() != "https" ))
+        _error = KIO::ERR_POST_DENIED;
 
     bool redirection = false;
     KURL _url(url);
@@ -1202,6 +1193,17 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
     {
       redirection = true;
       _url.setPath("/");
+    }
+
+    if (!_error && !kapp->authorizeURLAction("open", KURL(), _url))
+        _error = KIO::ERR_ACCESS_DENIED;
+
+    // if request is not valid, return an invalid transfer job
+    if (_error)
+    {
+        KIO_ARGS << (int)1 << url;
+        TransferJob * job = new PostErrorJob(_error, url.prettyURL(), packedArgs, postData, showProgressInfo);
+        return job;
     }
 
     // Send http post command (1), decoded path and encoded query
