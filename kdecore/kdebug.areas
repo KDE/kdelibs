@@ -270,3 +270,7 @@
 38000        kontour
 39001        kformula
 40000        kformula
+
+# kdenonbeta
+100000       reaktivate (KPart)
+100001       reaktivate (proxy)
