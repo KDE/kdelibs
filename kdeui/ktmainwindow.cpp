@@ -831,13 +831,23 @@ void KTMainWindow::enableToolBar( KToolBar::BarStatus stat, int ID )
 
 void KTMainWindow::enableStatusBar( KStatusBar::BarStatus stat )
 {
-  CHECK_PTR( kstatusbar );
-  if ( ( stat == KStatusBar::Toggle && kstatusbar->isVisible() )
+  if ( ( stat == KStatusBar::Toggle && statusBar()->isVisible() )
        || stat == KStatusBar::Hide )
-    kstatusbar->hide();
+    statusBar()->hide();
   else
-    kstatusbar->show();
+    statusBar()->show();
   updateRects();
 }
 
 
+bool KTMainWindow::hasMenuBar(){
+  return kmenubar != 0;
+}
+
+bool KTMainWindow::hasStatusBar(){
+  return kstatusbar != 0;
+}
+
+bool KTMainWindow::hasToolBar( int ID = 0){
+  return toolbars.at( ID ) != 0;
+}

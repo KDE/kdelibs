@@ -127,10 +127,26 @@ public:
      */
     KStatusBar *statusBar();
 
+
+    /* you probably do not need this. Anyway, if you are porting code
+     * which have been written for the former KTopLevelWidet you may
+     * find the following three boolean has-functions useful:
+     */
+    /*returns wether the menubar is existing 
+     */
+    bool hasMenuBar();
+    /*returns wether the statusbar is existing 
+     */
+    bool hasStatusBar();
+    /*returns wether the specified toolbar  is existing 
+     */
+    bool hasToolBar( int ID = 0);
+
+
+
     /**
      * Shows toplevel widget. Reimplemented from QWidget, and calls
-     * @ref updateRects. Therefore, it is now enough just to show KTMW.
-     */
+     * @ref updateRects. Therefore, it is now enough just to show KTMW.  */
     virtual void show ();
 
     /**
