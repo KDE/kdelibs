@@ -97,7 +97,7 @@ void KEditListBox::init( bool checkAtEntering, int buttons )
    grid->addMultiCellWidget(m_listBox, 2, 6 - lostButtons, 0, 0);
    int row = 2;
    if ( buttons & Add ) {
-       servNewButton = new QPushButton(i18n("&Add..."), gb);
+       servNewButton = new QPushButton(i18n("&Add"), gb);
        servNewButton->setEnabled(false);
        connect(servNewButton, SIGNAL(clicked()), SLOT(addItem()));
 

@@ -73,12 +73,32 @@ class KEditListBox : public QGroupBox
       /**
        * Return a pointer to the embedded QListBox.
        */
-      QListBox* listBox() const     {return m_listBox;}
+      QListBox* listBox() const     { return m_listBox; }
+      /**
+       * Return a pointer to the embedded QLineEdit.
+       */
+      KLineEdit* lineEdit() const     { return m_lineEdit; }
+      /**
+       * Return a pointer to the Add button
+       */
+      QPushButton* addButton() const     { return servNewButton; }
+      /**
+       * Return a pointer to the Remove button
+       */
+      QPushButton* removeButton() const     { return servRemoveButton; }
+      /**
+       * Return a pointer to the Up button
+       */
+      QPushButton* upButton() const     { return servUpButton; }
+      /**
+       * Return a pointer to the Down button
+       */
+      QPushButton* downButton() const     { return servDownButton; }
 
       /**
        * See @ref QListBox::count()
        */
-      int count() const   {return int(m_listBox->count());}
+      int count() const   { return int(m_listBox->count()); }
       /**
        * See @ref QListBox::insertStringList()
        */
@@ -106,15 +126,15 @@ class KEditListBox : public QGroupBox
       /**
        * See @ref QListBox::text()
        */
-      QString text(int index) const {return m_listBox->text(index);}
+      QString text(int index) const { return m_listBox->text(index); }
       /**
        * See @ref QListBox::currentItem()
        */
-      int currentItem() const {return m_listBox->currentItem();}
+      int currentItem() const { return m_listBox->currentItem(); }
       /**
        * See @ref QListBox::currentText()
        */
-      QString currentText() const  {return m_listBox->currentText();}
+      QString currentText() const  { return m_listBox->currentText(); }
 
       /**
        * @returns a stringlist of all items in the listbox
@@ -134,8 +154,7 @@ class KEditListBox : public QGroupBox
       void enableAddButton(const QString& text);
 
    protected:
-      //should they be private ?
-      //I don't think so, at least not the listbox
+      //### should be private, there are accessors for all those.
       QListBox *m_listBox;
       QPushButton *servUpButton, *servDownButton;
       QPushButton *servNewButton, *servRemoveButton;
