@@ -298,7 +298,7 @@ void HTMLFrameElementImpl::attach()
     while ((part = part->parentPart()))
         depth++;
 
-    if (depth < 7)  {
+    if (depth < 5)  {
         m_render = new RenderFrame(this);
         m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
         parentNode()->renderer()->addChild(m_render, nextRenderer());
@@ -314,7 +314,7 @@ void HTMLFrameElementImpl::attach()
       name = DOMString(w->part()->requestFrameName());
 
     // load the frame contents
-    if (!url.isNull())
+    if (!url.isEmpty())
         w->part()->requestFrame( static_cast<RenderFrame*>(m_render), url.string(), name.string() );
 }
 
