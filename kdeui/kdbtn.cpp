@@ -43,6 +43,8 @@ KDirectionButton::~KDirectionButton()
 
 void KDirectionButton::drawButton( QPainter *p)
 {
+  // This is only tested in Motif style. May give poor results in Win9x style.
+
   int style = kapp->applicationStyle;
   int h = height(), w = width(), x, y, cx, cy;
 
@@ -57,6 +59,20 @@ void KDirectionButton::drawButton( QPainter *p)
 
     case RightArrow:
       x = 2;
+      y = 3;
+      cx = w-4;
+      cy = h-4;
+      break;
+
+    case UpArrow:
+      x = 4;
+      y = 3;
+      cx = w-4;
+      cy = h-4;
+      break;
+
+    case DownArrow:
+      x = 0;
       y = 3;
       cx = w-4;
       cy = h-4;
