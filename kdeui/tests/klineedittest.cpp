@@ -14,7 +14,7 @@ int main ( int argc, char **argv)
     // rotation signals.
     KLineEdit *l = new KLineEdit( w, "mylineedit" );
     QStringList list;
-    list <<i18n("Stone") <<i18n("Tree") <<i18n("Peables") <<i18n("Ocean") <<i18n("Sand") <<i18n("Chips") <<i18n("Computer") <<i18n("Mankind");
+    list < "Stone" << "Tree" << "Peables" << "Ocean" << "Sand" << "Chips" << "Computer" << "Mankind";
     list.sort();
     l->completionObject()->setItems( list );
     // Shows of the value of the returnPressed signals with the QString argument.

@@ -22,10 +22,10 @@ int main ( int argc, char **argv)
     // All the other widgets
     KComboBox *rwc = new KComboBox( true, w, "rwcombobox" );
     // rwc->setEnableContextMenu( false );
-    QLabel* lblrw = new QLabel( rwc, i18n("&Editable ComboBox"), w, "rwcombolabel" );
+    QLabel* lblrw = new QLabel( rwc, "&Editable ComboBox", w, "rwcombolabel" );
     KCompletion* comp = rwc->completionObject();
     KComboBox *soc = new KComboBox( w, "socombobox" );
-    QLabel* lblso = new QLabel( soc, i18n("&Select-Only ComboBox"), w, "socombolabel" );
+    QLabel* lblso = new QLabel( soc, "&Select-Only ComboBox", w, "socombolabel" );
     QPushButton * push = new QPushButton( "E&xit", w );
 
     // Set up the editable combo box.
@@ -38,7 +38,7 @@ int main ( int argc, char **argv)
     soc->setDuplicatesEnabled( false );
     // Popuplate the select-only list box
     QStringList list;
-    list <<i18n("Stone") <<i18n("Tree") <<i18n("Peables") <<i18n("Ocean") <<i18n("Sand") <<i18n("Chips") <<i18n("Computer") <<i18n("Mankind");
+    list << "Stone" << "Tree" << "Peables" << "Ocean" << "Sand" << "Chips" << "Computer" << "Mankind";
     list.sort();
     // This is to test a feature that does not currently work.
     soc->completionObject()->setItems( list );
