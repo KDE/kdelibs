@@ -1811,11 +1811,11 @@ bool KHTMLView::focusNextPrevNode(bool next)
     {
 	if ( next )
 	{
-	    targetVisible = scrollTo(QRect(contentsX()+visibleWidth()/2,contentsHeight(),0,0));
+	    targetVisible = scrollTo(QRect(contentsX()+visibleWidth()/2,contentsHeight()-d->borderY,0,0));
 	}
 	else
 	{
-	    targetVisible = scrollTo(QRect(contentsX()+visibleWidth()/2,0,0,0));
+	    targetVisible = scrollTo(QRect(contentsX()+visibleWidth()/2,d->borderY,0,0));
 	}
     }
     else
