@@ -1985,7 +1985,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 face = s->stdFontName();
 
 	    int pos;
-	    if( (pos = available.find( face )) == -1 ) {
+	    if( (pos = available.find( face, 0, false)) == -1 ) {
 		QString str = face;
                 int p = face.find(' ');
                 // Arial Blk --> Arial
@@ -1994,7 +1994,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                     str = str.mid( p+1 );
                 else
                     str.truncate( p );
-		pos = available.find( str );
+		pos = available.find( str, 0, false);
 	    }
 
 	    if ( pos != -1 ) {
