@@ -417,7 +417,7 @@ void KEditToolbarWidget::setupLayout()
 //  del_toolbar->setEnabled(false); // disabled until implemented
 
   // our list of inactive actions
-  QLabel *inactive_label = new QLabel(i18n("&Available actions:"), this);
+  QLabel *inactive_label = new QLabel(i18n("A&vailable actions:"), this);
   m_inactiveList = new KListView(this);
   m_inactiveList->setAllColumnsShowFocus(true);
   m_inactiveList->setMinimumSize(180, 250);
