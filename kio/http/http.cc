@@ -893,19 +893,7 @@ bool HTTPProtocol::http_open()
     agent = KProtocolManager::userAgentForHost( m_state.hostname );
 
   if( !agent.isEmpty() )
-  {
-    header += "User-Agent: " + agent;
-/*
-    header+="; Supports MD5-Digest";
-#ifdef DO_GZIP
-    header+="; Supports gzip encoding";
-#endif
-#ifdef HAVE_SSL
-    header+="; Supports SSL/HTTPS";
-#endif
-*/
-    header += "\r\n";
-  }
+    header += "User-Agent: " + agent + "\r\n";
 
   QString referrer = metaData("referrer");
   if (!referrer.isEmpty())
@@ -2574,7 +2562,7 @@ bool HTTPProtocol::readBody( )
        speed(sz / (t_last - t_start));
      } else {
        speed(0);
-     }	 
+     }
      data( QByteArray() );
      return true;
   }
