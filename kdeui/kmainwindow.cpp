@@ -875,10 +875,16 @@ QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
     KMenuBar *mb = menuBar();
     if (!mb->isHidden()) {
         size += QSize(0,mb->heightForWidth(size.width()));
+        if (style().styleHint(QStyle::SH_MainWindow_SpaceBelowMenuBar, this))
+           size += QSize( 0, dockWindowsMovable() ? 1 : 2);
     }
     QStatusBar *sb = internalStatusBar();
     if( sb && !sb->isHidden() )
        size += QSize(0, sb->sizeHint().height());
+
+#if QT_VERSION == 302
+    size += QSize(0,2); // Qt 3.0.2 insists on wasting 2 pixels it seems.
+#endif 
 
     return size;
 }
