@@ -260,6 +260,7 @@ private: // data members
   bool m_bPersistent;
 
   size_t m_size;
+  static size_t UnknownSize;
 
   enum
   {

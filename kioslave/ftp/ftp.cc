@@ -61,7 +61,7 @@
 
 #define FTP_LOGIN QString::fromLatin1("anonymous")
 #define FTP_PASSWD QString::fromLatin1("anonymous@")
-
+size_t Ftp::UnknownSize = (size_t)-1;
 
 using namespace KIO;
 
@@ -1908,12 +1908,14 @@ void Ftp::get( const KURL & url )
   }
 
   // Read the size from the response string
-  if ( strlen( rspbuf ) > 4 && m_size == 0 ) {
+  if ( strlen( rspbuf ) > 4 && m_size == UnknownSize ) {
     const char * p = strrchr( rspbuf, '(' );
     if ( p != 0L ) m_size = atol( p + 1 );
   }
 
-  size_t bytesLeft = m_size - offset;
+  size_t bytesLeft = 0;
+  if ( m_size != UnknownSize )
+    bytesLeft = m_size - offset;
 
   kdDebug(7102) << "Ftp::get starting with offset=" << offset << endl;
   int processed_size = offset;
@@ -1924,10 +1926,11 @@ void Ftp::get( const KURL & url )
 
   bool mimetypeEmitted = false;
 
-  while( bytesLeft > 0 )
+  while( m_size == UnknownSize || bytesLeft > 0 )
   {
     int n = ftpRead( buffer, 2048 );
-    bytesLeft -= n;
+    if ( m_size != UnknownSize )
+      bytesLeft -= n;
 
     // Buffer the first 1024 bytes for mimetype determination
     if ( !mimetypeEmitted )
@@ -1937,7 +1940,7 @@ void Ftp::get( const KURL & url )
       memcpy(mimetypeBuffer.data()+oldSize, buffer, n);
 
       // Found enough data - or we're arriving to the end of the file -> emit mimetype
-      if (mimetypeBuffer.size() >= 1024 || bytesLeft <= 0)
+      if (mimetypeBuffer.size() >= 1024 || (m_size != UnknownSize && bytesLeft <= 0) )
       {
         KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType( mimetypeBuffer, url.fileName() );
         kdDebug(7102) << "Emitting mimetype " << result->mimeType() << endl;
@@ -1946,7 +1949,8 @@ void Ftp::get( const KURL & url )
         data( mimetypeBuffer );
         mimetypeBuffer.resize(0);
         // Emit total size AFTER mimetype
-        totalSize( m_size );
+        if ( m_size != UnknownSize )
+          totalSize( m_size );
       }
     }
     else if ( n > 0 )
@@ -1954,6 +1958,10 @@ void Ftp::get( const KURL & url )
       array.setRawData(buffer, n);
       data( array );
       array.resetRawData(buffer, n);
+    }
+    else if ( m_size == UnknownSize && n == 0 ) // this is how we detect EOF in case of unknown size
+    {
+      break;
     }
     else // unexpected eof. Happens when the daemon gets killed.
     {
@@ -1972,7 +1980,7 @@ void Ftp::get( const KURL & url )
   (void) ftpCloseCommand();
   // proceed even on error
 
-  processedSize( m_size );
+  processedSize( m_size == UnknownSize ? processed_size : m_size );
 
   kdDebug(7102) << "Get: emitting finished()" << endl;
   finished();
@@ -2218,7 +2226,7 @@ bool Ftp::ftpSize( const QString & path, char mode )
   buf="SIZE ";
   buf+=path.ascii();
   if ( !ftpSendCmd( buf, 0 ) || rspbuf[0] !='2' ) {
-    m_size = 0;
+    m_size = UnknownSize;
     return false;
   }
 
