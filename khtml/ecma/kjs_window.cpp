@@ -976,7 +976,8 @@ void Window::clear( ExecState *exec )
   // Get rid of everything, those user vars could hold references to DOM nodes
   deleteAllProperties( exec );
   // Really delete those properties, so that the DOM nodes get deref'ed
-  KJS::Collector::collect();
+  while(KJS::Collector::collect())
+      ;
   if (!m_part.isNull()) {
     KJSProxy* proxy = KJSProxy::proxy( m_part );
     if (proxy) // i.e. JS not disabled
