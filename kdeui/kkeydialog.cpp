@@ -817,7 +817,7 @@ const QString KKeyChooser::item( uint keyCode, const QString& entryKey )
 	QString str = entryKey;
 	str = str.leftJustify(MAX_FCTN_LENGTH, ' ', TRUE);
 	str += " : ";
-	str += keyToString(keyCode);
+	str += keyToString(keyCode, true);
 	str = str.leftJustify( MAX_FCTN_LENGTH + 3 + 
 						   MAX_KEY_LENGTH+MAX_KEY_MODIFIER_LENGTH, ' ', TRUE );
 	return str;
