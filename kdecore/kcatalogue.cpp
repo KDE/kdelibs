@@ -23,8 +23,6 @@
 
 #include <kdebug.h>
 
-#include <stdlib.h>
-
 #include "kcatalogue.h"
 
 char *k_nl_find_msg(struct loaded_l10nfile *domain_file,
