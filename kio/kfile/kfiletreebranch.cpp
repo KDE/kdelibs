@@ -116,9 +116,10 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
 	 static_cast<KFileTreeViewItem *>(currItem->extraData( this ));
 
       if( ! newKFTVI )
-      {
 	 newKFTVI = createTreeViewItem( m_currParent, currItem );
-	 
+
+      if( newKFTVI )
+      {
 	 currItem->setExtraData( this, newKFTVI );
 
 	 /* Cut off the file extension */
