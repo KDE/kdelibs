@@ -8,7 +8,7 @@ lib_LTLIBRARIES = libkwrite.la
 libkwrite_la_SOURCES = kwrite.cpp kwrite_view.cpp highlight.cpp \
 	kwrite_part.cpp kwrite_factory.cpp kwrite_doc.cpp \
 	kwdialog.cpp undohistory.cpp ktextprint.cpp prefdialog.cpp \
-	kwrite_keys.cpp
+	kwrite_keys.cpp kwrite_misc.cpp
 
 libkwrite_la_LIBADD = -L$(top_srcdir)/kparts -L$(top_srcdir)/kfile -L$(top_srcdir)/kspell ../kparts/libkparts.la ../kfile/libkfile.la ../kspell/libkspell.la
 libkwrite_la_LDFLAGS = $(all_libraries) -version-info 1:0:0 -module -no-undefined
@@ -17,7 +17,7 @@ METASOURCES = AUTO
 
 kwriteincludedir = $(includedir)/kwrite
 kwriteinclude_HEADERS = kwrite_part.h kwrite_factory.h kwrite.h kwrite_view.h \
-	kwrite_doc.h highlight.h
+	kwrite_doc.h kwrite_misc.cpp highlight.h
 
 rcdir = $(kde_datadir)/kwrite
 rc_DATA = kwrite.rc kwrite_browser.rc

@@ -37,9 +37,13 @@
 #include <kconfig.h>
 #include <kparts/part.h>
 
+#include <kwrite/kwrite_misc.h>
+
 class KAction;
 class KSelectAction;
 
+class KWrite;
+class KWriteView;
 class KWriteDoc;
 class KWCommandDispatcher;
 class KWKeyData;
@@ -156,7 +160,7 @@ enum KWEditCommands {
   cmReturn            = 1,
   cmBackspace         = 2,
   cmBackspaceWord     = 3,
-  cmDelete            = 4,
+  cmDeleteChar        = 4,
   cmDeleteWord        = 5,
   cmKillLine          = 6,
   cmUndo              = 7,
@@ -164,12 +168,13 @@ enum KWEditCommands {
   cmCut               = 9,
   cmCopy              = 10,
   cmPaste             = 11,
-  cmIndent            = 12,
-  cmUnindent          = 13,
-  cmCleanIndent       = 14,
-  cmSelectAll         = 15,
-  cmDeselectAll       = 16,
-  cmInvertSelection   = 17
+  cmDelete            = 12,
+  cmIndent            = 13,
+  cmUnindent          = 14,
+  cmCleanIndent       = 15,
+  cmSelectAll         = 16,
+  cmDeselectAll       = 17,
+  cmInvertSelection   = 18
 };
 
 // search commands
@@ -193,39 +198,7 @@ enum KWBookmarkCommands {
 const int cmToggleInsert      = 1;
 const int cmToggleVertical    = 2;
 
-class KWCursor {
-  public:
-    KWCursor() : m_x(0), m_y(0) {}
-    KWCursor(int x, int y) : m_x(x), m_y(y) {}
-    KWCursor(const KWCursor &c) : m_x(c.m_x), m_y(c.m_y) {}
 
-    KWCursor &operator=(const KWCursor &c) {m_x = c.m_x; m_y = c.m_y; return *this;}
-    KWCursor &operator+=(const KWCursor &c) {m_x += c.m_x; m_y += c.m_y; return *this;}
-    KWCursor &operator-=(const KWCursor &c) {m_x -= c.m_x; m_y -= c.m_y; return *this;}
-    bool operator==(const KWCursor &c) {return m_x == c.m_x && m_y == c.m_y;}
-    bool operator!=(const KWCursor &c) {return m_x != c.m_x || m_y != c.m_y;}
-    bool operator>(const KWCursor &c) {return m_y > c.m_y || (m_y == c.m_y && m_x > c.m_x);}
-
-    void set(int x, int y) {m_x = x; m_y = y;}
-    void setX(int x) {m_x = x;}
-    void setY(int y) {m_y = y;}
-    int x() const {return m_x;}
-    int y() const {return m_y;}
-    void incX() {m_x++;}
-    void incY() {m_y++;}
-    void decX() {m_x--;}
-    void decY() {m_y--;}
-    void move(int dx, int dy) {m_x += dx; m_y += dy;}
-    void moveX(int dx) {m_x += dx;}
-    void moveY(int dy) {m_y += dy;}
-
-  protected:
-    int m_x;
-    int m_y;
-};
-
-class KWrite;
-class KWriteView;
 
 struct VConfig {
   KWriteView *view;
@@ -241,25 +214,23 @@ struct SConfig {
   int flags;
 };
 
-struct LineRange {
-  int start;
-  int end;
-};
-
-struct BracketMark {
-  KWCursor cursor;
-  int sXPos;
-  int eXPos;
-};
-
-class KWBookmark {
+class KWBookmark : public KWLineAttribute {
   public:
+    KWBookmark(int xPos, int yPos, const KWCursor &, KWrite *);
 
-    KWBookmark();
-    int xPos;
-    int yPos;
-    KWCursor cursor;
-    QString Name;
+    int xPos() {return m_xPos;}
+    int yPos() {return m_yPos;}
+    int cursorX() {return m_cursorX;}
+    KWCursor cursor() {return KWCursor(m_cursorX, line());}
+    
+  protected:
+    virtual void paint(QPainter &, int y, int height);
+
+    int m_cursorX;
+//    KWCursor cursor;
+    int m_xPos;
+    int m_yPos;
+//    QString m_name;
 };
 
 class KWriteWidget : public QWidget {
@@ -331,8 +302,13 @@ class KWrite : public KParts::ReadWritePart /*QWidget*/ {
     */
     KWriteDoc *doc() {return m_doc;}
     
+  protected:
+    KWriteDoc *m_doc;
+    KWriteWidget *m_widget;
+    KWriteView *m_view;
 
 //status and config functions
+  public:
 
     /**
       Sets the current cursor position
@@ -462,12 +438,12 @@ class KWrite : public KParts::ReadWritePart /*QWidget*/ {
     /**
       Presents a options dialog to the user
     */
-//    void optDlg();
+    void optionsDialog();
 
     /**
       Presents a color dialog to the user
     */
-    void colDlg();
+//    void colDlg();
 
     /**
       Executes state command cmdNum
@@ -490,7 +466,7 @@ class KWrite : public KParts::ReadWritePart /*QWidget*/ {
       The cursor position has changed. Use currentLine() and currentColumn to
       get the position
     */
-    void newCurPos();
+    void newCursorPos();
 
     /**
       The configuration has changed. This is used to update the status bar
@@ -719,14 +695,19 @@ class KWrite : public KParts::ReadWritePart /*QWidget*/ {
   public slots:
 
     /**
-      Does Cursor Command cmdNum
+      Does cursor command cmdNum
     */
     void doCursorCommand(int cmdNum);
 
     /**
-      Does Edit Command cmdNum
+      Does edit command cmdNum
     */
     void doEditCommand(int cmdNum);
+
+    /**
+      Does bookmark command cmdNum
+    */
+    void doBookmarkCommand(int cmdNum);
 
     //void configureKWriteKeys();
   public:
@@ -890,44 +871,39 @@ class KWrite : public KParts::ReadWritePart /*QWidget*/ {
 //bookmarks
 
   public:
-
+    static const int nBookmarks = 10;
     /**
       Install a Bookmark Menu. The bookmark items will be added to the
       end of the menu
     */
     //void installBMPopup(KGuiCmdPopup *);
-    /**
-      Sets the actual edit position as bookmark number n
-    */
-    void setBookmark();
-    void addBookmark();
-    void clearBookmarks();
-    void setBookmark(int n);
-    void gotoBookmark(int n);
 
   public slots:
-
-    void doBookmarkCommand(int cmdNum);
 
     /**
       Shows a popup that lets the user choose the bookmark number
     */
-//    void setBookmark();
+    void setBookmark();
 
     /**
       Adds the actual edit position to the end of the bookmark list
     */
-//    void addBookmark();
+    void addBookmark();
 
     /**
       Clears all bookmarks
     */
-//    void clearBookmarks();
+    void clearBookmarks();
+
+    /**
+      Sets the actual edit position as bookmark number n
+    */
+    void setBookmark(int n);
 
     /**
       Sets the cursor to the bookmark n
     */
-//    void gotoBookmark(int n);
+    void gotoBookmark(int n);
 
   protected slots:
 
@@ -938,8 +914,8 @@ class KWrite : public KParts::ReadWritePart /*QWidget*/ {
 
   protected:
 
-    QList<KWBookmark> bookmarks;
-//    int bmEntries;
+    KWBookmark *bookmark[nBookmarks];
+//    QList<KWBookmark> bookmarks;
 
 //config file / session management functions
 
@@ -1015,9 +991,6 @@ class KWrite : public KParts::ReadWritePart /*QWidget*/ {
 //    virtual void paintEvent(QPaintEvent *);
 //    virtual void resizeEvent(QResizeEvent *);
 
-    KWriteDoc *m_doc;
-    KWriteWidget *m_widget;
-    KWriteView *m_view;
 
 //spell checker
 

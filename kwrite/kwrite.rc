@@ -4,7 +4,7 @@
   <Menu name="edit"><text>&amp;Edit</text>
    <Action name="edit_undo"/>
    <Action name="edit_redo"/>
-   <Action name="undo_redo_history"/>
+   <Action name="undo_history"/>
    <Separator/>
    <Action name="edit_cut"/>
    <Action name="edit_copy"/>
@@ -34,7 +34,7 @@
   <Menu name="tools"><text>&amp;Tools</text>
    <Action name="highlight_select"/>
    <Separator/>
-   <Action name="spell_checking"/>
+   <Action name="spell_check"/>
   </Menu>
 </MenuBar>
 <ToolBar name="mainToolBar">

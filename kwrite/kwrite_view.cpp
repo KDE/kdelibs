@@ -61,6 +61,8 @@
 #define _PATH_TMP "/tmp/"
 #endif
 
+#define BORDER_WIDTH 32
+
 #ifndef KDE_USE_FINAL
 struct BufferInfo {
   void *user;
@@ -83,7 +85,10 @@ KWriteView::KWriteView(KWriteDoc *doc, KWriteWidget *parent, KWrite *kWrite,
   setBackgroundMode(NoBackground);
 
   setFocusPolicy(StrongFocus);
-  move(2, 2);
+  move(2 + BORDER_WIDTH, 2);
+
+  m_border = new KWriteBorder(m_doc, m_widget, this);
+  m_border->setGeometry(2, 2, BORDER_WIDTH, 100);
 
   xScroll = new QScrollBar(QScrollBar::Horizontal, parent);
   yScroll = new QScrollBar(QScrollBar::Vertical, parent);
@@ -116,7 +121,7 @@ KWriteView::KWriteView(KWriteDoc *doc, KWriteWidget *parent, KWrite *kWrite,
 }
 
 KWriteView::~KWriteView() {
-  m_doc->removeView(this);
+  m_doc->removeView(this); // the doc deletes itself if RefCount becomes zero
   delete [] lineRanges;
   releaseBuffer(this);
 }
@@ -207,6 +212,9 @@ void KWriteView::doEditCommand(VConfig &c, int cmdNum) {
       if (c.flags & cfDelOnInput) m_doc->delMarkedText(c);
       m_doc->paste(c);
       return;
+    case cmDelete:
+      m_doc->delMarkedText(c);
+      return;
     case cmUndo:
       m_doc->undo(c);
       return;
@@ -236,8 +244,8 @@ void KWriteView::doEditCommand(VConfig &c, int cmdNum) {
     case cmBackspaceWord:
       m_doc->backspaceWord(c);
       return;
-    case cmDelete:
-      m_doc->del(c);
+    case cmDeleteChar:
+      m_doc->delChar(c);
       return;
     case cmDeleteWord:
       m_doc->delWord(c);
@@ -561,7 +569,7 @@ void KWriteView::insLine(int line) {
     yPos += m_doc->fontHeight();
   } else if (line <= endLine)
     tagAll();
-
+/*
   //bookmarks
   KWBookmark *b;
 
@@ -571,6 +579,7 @@ void KWriteView::insLine(int line) {
       b->yPos += m_doc->fontHeight();
     }
   }
+*/  
 }
 
 void KWriteView::delLine(int line) {
@@ -583,7 +592,7 @@ void KWriteView::delLine(int line) {
     yPos -= m_doc->fontHeight();
   } else if (line <= endLine)
     tagAll();
-
+/*
   //bookmarks
   KWBookmark *b;
   for (b = m_kWrite->bookmarks.first(); b != 0L; b = m_kWrite->bookmarks.next()) {
@@ -592,6 +601,7 @@ void KWriteView::delLine(int line) {
       b->yPos -= m_doc->fontHeight();
     }
   }
+*/  
 }
 
 void KWriteView::updateCursor() {
@@ -609,14 +619,17 @@ void KWriteView::updateCursor(KWCursor &newCursor, int flags) {
   m_doc->unmarkFound();
   exposeCursor = true;
 
+  // mark area of cursor as dirty
   if (cursorOn) {
     tagLines(cursor.y(), cursor.y(), cXPos - 2, cXPos + 3);
     cursorOn = false;
   }
 
+  // mark area of bracket mark as dirty
   if (bm.sXPos < bm.eXPos)
     tagLines(bm.cursor.y(), bm.cursor.y(), bm.sXPos, bm.eXPos);
 
+  // get new bracket mark
   m_doc->newBracketMark(newCursor, bm);
   cursor = newCursor;
   cOldXPos = cXPos = m_doc->textWidth(cursor);
@@ -715,7 +728,7 @@ void KWriteView::updateView(int flags) {
 
 //debug("upView %d %d %d %d %d", exposeCursor, updateState, flags, newXPos, newYPos);
   if (exposeCursor || flags & ufDocGeometry)
-    emit m_kWrite->newCurPos(/*m_doc->currentColumn(cursor), cursor.y()*/); 
+    emit m_kWrite->newCursorPos(/*m_doc->currentColumn(cursor), cursor.y()*/); 
   else {
     if (updateState == 0 && newXPos < 0 && newYPos < 0)
       return;
@@ -741,7 +754,7 @@ void KWriteView::updateView(int flags) {
   z = 0;
 
   do {
-    w = m_widget->width() - 4;
+    w = m_widget->width() - (4 + BORDER_WIDTH);
     h = m_widget->height() - 4;
 
     xMax = m_doc->textWidth() - w;
@@ -805,7 +818,7 @@ void KWriteView::updateView(int flags) {
       pageScroll = fontHeight;
 
     xScroll->blockSignals(true);
-    xScroll->setGeometry(2, h + 2, w, 16);
+    xScroll->setGeometry(2, h + 2, w + BORDER_WIDTH, 16);
     xScroll->setRange(0, xMax);
     xScroll->setValue(xPos);
     xScroll->setSteps(fontHeight, pageScroll);
@@ -821,7 +834,7 @@ void KWriteView::updateView(int flags) {
       pageScroll = fontHeight;
 
     yScroll->blockSignals(true);
-    yScroll->setGeometry(w + 2, 2, 16, h);
+    yScroll->setGeometry(w + 2 + BORDER_WIDTH, 2, 16, h);
     yScroll->setRange(0, yMax);
     yScroll->setValue(yPos);
     yScroll->setSteps(fontHeight, pageScroll);
@@ -830,6 +843,7 @@ void KWriteView::updateView(int flags) {
   } else
     yScroll->hide();
 
+  // adjust and update the text view
   if (w != width() || h != height()) {
     clearDirtyCache(h);
     resize(w, h);
@@ -852,16 +866,34 @@ void KWriteView::updateView(int flags) {
 
       clearDirtyCache(h);
 
-      if (dx || dy)
-        scroll(dx, dy);
+      if (dx || dy) scroll(dx, dy);
 
-      if (cursorOn)
-        paintCursor();
+      if (cursorOn) paintCursor();
 
-      if (bm.eXPos > bm.sXPos)
-        paintBracketMark();
+      if (bm.eXPos > bm.sXPos) paintBracketMark();
     }
   }
+
+
+  // adjust and update the icon border
+  if (h != m_border->height()) {
+    m_border->resize(m_border->width(), h);
+  } else {
+    dy = oldYPos - yPos;
+    b = false;
+    
+    if (flags & ufUpdateOnScroll)
+      b |= dy; 
+    else
+      b |= QABS(dy)*3 > h*2;
+
+    if (b) {
+      m_border->update();
+    } else {
+      if (dy) m_border->scroll(0, dy);
+    }
+  }    
+
 
   exposeCursor = false;
 }
@@ -880,7 +912,7 @@ void KWriteView::paintTextLines(int xPos, int yPos) {
   for (line = startLine; line <= endLine; line++) {
     if (r->start < r->end) {
 //debug("painttextline %d %d %d", line, r->start, r->end);
-      m_doc->paintTextLine(&paint, line, r->start, r->end, m_kWrite->m_configFlags & cfShowTabs);
+      m_doc->paintTextLine(paint, line, r->start, r->end, m_kWrite->m_configFlags & cfShowTabs);
       bitBlt(this, r->start - (xPos-2), line*h - yPos, drawBuffer, 0, 0,
         r->end - r->start, h);
     }
@@ -914,7 +946,7 @@ void KWriteView::paintCursor() {
     paint.drawLine(x - 2, h, x + 2, h);
   } else {
     paint.begin(drawBuffer);
-    m_doc->paintTextLine(&paint, cursor.y(), cXPos - 2, cXPos + 3, m_kWrite->m_configFlags & cfShowTabs);
+    m_doc->paintTextLine(paint, cursor.y(), cXPos - 2, cXPos + 3, m_kWrite->m_configFlags & cfShowTabs);
     bitBlt(this, x - 2, y, drawBuffer, 0, 0, 5, h);
   }
 
@@ -1253,7 +1285,7 @@ void KWriteView::drawContents(QPainter *p, int /*cx*/, int cy, int /*cw*/, int c
 	endLine = m_doc->contents().count() - 1;
 
     while (line <= endLine) {
-	m_doc->paintTextLine2(p, line, 0, width(), m_kWrite->m_configFlags & cfShowTabs);
+	m_doc->paintTextLine2(p, line, 0, width(), m_kWrite->m_configFlags);
 
 	line++;
 	yPos += fontHeight;
@@ -1287,7 +1319,7 @@ void KWriteView::paintEvent(QPaintEvent *event) {
   yEnd = updateR.y() + updateR.height();
 
   while (y < yEnd) {
-    m_doc->paintTextLine(&paint, line, xStart, xEnd, m_kWrite->m_configFlags & cfShowTabs);
+    m_doc->paintTextLine(paint, line, xStart, xEnd, m_kWrite->m_configFlags);
     bitBlt(this, updateR.x(), y, drawBuffer, 0, 0, updateR.width(), h);
     line++;
     y += h;
@@ -1295,11 +1327,9 @@ void KWriteView::paintEvent(QPaintEvent *event) {
 
   paint.end();
 
-  if (cursorOn)
-    paintCursor();
+  if (cursorOn) paintCursor();
 
-  if (bm.eXPos > bm.sXPos)
-    paintBracketMark();
+  if (bm.eXPos > bm.sXPos) paintBracketMark();
 }
 
 void KWriteView::resizeEvent(QResizeEvent *) {
@@ -1437,6 +1467,32 @@ void KWriteView::dropEvent(QDropEvent *event) {
   }
 }
 
-KWBookmark::KWBookmark() {
-  cursor.setY(-1); //mark bookmark as invalid
+
+
+// KWriteBorder
+
+KWriteBorder::KWriteBorder(KWriteDoc *doc, KWriteWidget *widget, KWriteView *view) 
+  : QWidget(widget) {
+
+  m_doc = doc;
+  m_view = view;
+
+  setBackgroundMode(PaletteMid);
 }
+
+void KWriteBorder::paintEvent(QPaintEvent *event) {
+  int line, yStart;
+
+  QRect updateR = event->rect();
+
+  //debug("update rect  = (%i, %i, %i, %i)", updateR.x(), updateR.y(), updateR.width(), updateR.height());
+
+  QPainter paint(this);
+
+  line = (m_view->contentsY() + updateR.y()) / m_doc->fontHeight();
+  yStart = line*m_doc->fontHeight() - m_view->contentsY();
+
+  m_doc->paintBorder(paint, line, yStart, updateR.y() + updateR.height());
+}
+
+

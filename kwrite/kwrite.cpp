@@ -60,8 +60,9 @@
 #include <kwrite/kwrite_factory.h>
 
 #include "kwrite_keys.h"
-#include "kwdialog.h"
 #include "ktextprint.h"
+#include "kwdialog.h"
+#include "prefdialog.h"
 #include "undohistory.h"
 
 
@@ -130,6 +131,23 @@ void releaseBuffer(void *user) {
 }
 
 
+// KWBookmark
+
+KWBookmark::KWBookmark(int xPos, int yPos, const KWCursor &cursor, KWrite *kWrite)
+  : KWLineAttribute(cursor.y(), kWrite) {
+
+  m_cursorX = cursor.x();
+  m_xPos = xPos;
+  m_yPos = yPos;
+}
+
+void KWBookmark::paint(QPainter &paint, int y, int height) {
+//  paint.drawLine(0, y, 8, y + height);
+  paint.setPen(Qt::green);
+  paint.drawEllipse(1, y + 1, 7, height - 1);
+}
+
+
 // KWriteWidget
 
 KWriteWidget::KWriteWidget(QWidget *parent) 
@@ -183,7 +201,7 @@ void KWriteWidget::paintEvent(QPaintEvent *event) {
 
 void KWriteWidget::resizeEvent(QResizeEvent *) {
 //  debug("Resize %d, %d", event->size().width(), event->size().height());
-  m_view->resize(width(), height());
+//  m_view->resize(width(), height());
   m_view->tagAll();
   m_view->updateView(0 /*ufNoScroll*/);
 }
@@ -211,7 +229,7 @@ KWrite::KWrite(QWidget *parentWidget, QObject *parent, int flags, KWriteDoc *doc
   if (doc == 0L) {
     doc = new KWriteDoc(HlManager::self());
   }
-  doc->incRefCount();
+//  doc->incRefCount();
   m_doc = doc;
   m_widget = new KWriteWidget(parentWidget);
   m_view = new KWriteView(m_doc, m_widget, this, flags & kHandleOwnDND);
@@ -227,8 +245,8 @@ KWrite::KWrite(QWidget *parentWidget, QObject *parent, int flags, KWriteDoc *doc
   m_searchFlags = 0;
   m_replacePrompt = 0L;
   popup = 0L;
-  bookmarks.setAutoDelete(true);
-
+//  bookmarks.setAutoDelete(true);
+  for (int z = 0; z < nBookmarks; z++) bookmark[z] = 0L;
   
   // KWrite commands
   m_dispatcher = new KWCommandDispatcher(m_view);
@@ -265,7 +283,7 @@ KWrite::KWrite(QWidget *parentWidget, QObject *parent, int flags, KWriteDoc *doc
   g->addCommand(cmReturn,          i18nop("Return"), Key_Return, Key_Enter);
   g->addCommand(cmBackspace,       i18nop("Backspace"), Key_Backspace, CTRL+Key_H);
   g->addCommand(cmBackspaceWord,   i18nop("Backspace Word"), CTRL+Key_Backspace);
-  g->addCommand(cmDelete,          i18nop("Delete"), Key_Delete, CTRL+Key_D);
+  g->addCommand(cmDeleteChar,      i18nop("Delete Char"), Key_Delete, CTRL+Key_D);
   g->addCommand(cmDeleteWord,      i18nop("Delete Word"), CTRL+Key_Delete);
   g->addCommand(cmKillLine,        i18nop("Kill Line"), CTRL+Key_K);
   g->addCommand(cmUndo,            i18nop("Undo"), /*CTRL+Key_Z, */Key_F14);
@@ -273,6 +291,7 @@ KWrite::KWrite(QWidget *parentWidget, QObject *parent, int flags, KWriteDoc *doc
   g->addCommand(cmCut,             i18nop("Cut"), /*CTRL+Key_X, */SHIFT+Key_Delete, Key_F20);
   g->addCommand(cmCopy,            i18nop("Copy"), /*CTRL+Key_C, */CTRL+Key_Insert, Key_F16);
   g->addCommand(cmPaste,           i18nop("Paste"), /*CTRL+Key_V, */SHIFT+Key_Insert, Key_F18);
+  g->addCommand(cmDelete,          i18nop("Delete"), SHIFT+CTRL+Key_Delete);
   g->addCommand(cmIndent,          i18nop("Indent")/*, CTRL+Key_I*/);
   g->addCommand(cmUnindent,        i18nop("Unindent")/*, CTRL+Key_U*/);
   g->addCommand(cmCleanIndent,     i18nop("Clean Indent"));
@@ -326,7 +345,7 @@ KWrite::KWrite(QWidget *parentWidget, QObject *parent, int flags, KWriteDoc *doc
   m_paste = KStdAction::paste( this, SLOT( paste() ), actionCollection(), "edit_paste" );
   m_undo = KStdAction::undo( this, SLOT( undo() ), actionCollection(), "edit_undo" );
   m_redo = KStdAction::redo( this, SLOT( redo() ), actionCollection(), "edit_redo" );
-  (void)new KAction( i18n( "Undo History" ), 0, this, SLOT( undoHistory() ), actionCollection(), "undohistory" );
+  (void)new KAction( i18n( "Undo History" ), 0, this, SLOT( undoHistory() ), actionCollection(), "undo_history" );
   m_indent = new KAction( i18n( "&Indent"), 0, this, SLOT( indent() ), actionCollection(), "indent" );
   m_unindent = new KAction( i18n( "Unindent" ), 0, this, SLOT( unindent() ), actionCollection(), "unindent" );
   m_cleanIndent = new KAction( i18n( "Clean indent" ), 0, this, SLOT( cleanIndent() ), actionCollection(), "clean_indent" );
@@ -374,10 +393,11 @@ KWrite::KWrite(QWidget *parentWidget, QObject *parent, int flags, KWriteDoc *doc
 }
 
 KWrite::~KWrite() {
-  m_doc->decRefCount(); // deletes itself if RefCount becomes zero
+//  m_doc->decRefCount(); // deletes itself if RefCount becomes zero
   delete m_dispatcher;
   delete popup; // right mouse button popup
-
+  clearBookmarks(); // deletes bookmark objects
+  
   if (kspell.kspell) {
     kspell.kspell->setAutoDelete(true);
     kspell.kspell->cleanUp(); // need a way to wait for this to complete
@@ -554,6 +574,11 @@ void KWrite::emitNewUndo() {
   emit newUndo();
 }
 
+void KWrite::optionsDialog() {
+  PreferencesDlg::doSettings(this);
+}
+
+/*
 void KWrite::colDlg() {
   ColorDialog *dlg = new ColorDialog(m_widget, m_doc->colors());
 
@@ -565,6 +590,7 @@ void KWrite::colDlg() {
 
   delete dlg;
 }
+*/
 
 void KWrite::doStateCommand(int cmdNum) {
   switch (cmdNum) {
@@ -991,6 +1017,20 @@ void KWrite::doEditCommand(int cmdNum) {
   m_view->doEditCommand(c, cmdNum);
   m_doc->updateViews();
 }
+
+void KWrite::doBookmarkCommand(int cmdNum) {
+  if (cmdNum == cmSetBookmark)
+    setBookmark(); 
+  else if (cmdNum == cmAddBookmark)
+    addBookmark();
+  else if (cmdNum == cmClearBookmarks)
+    clearBookmarks();
+  else if (cmdNum >= cmSetBookmarks && cmdNum < cmSetBookmarks + 10)
+    setBookmark(cmdNum - cmSetBookmarks); 
+  else if (cmdNum >= cmGotoBookmarks && cmdNum < cmGotoBookmarks + 10)
+    gotoBookmark(cmdNum - cmGotoBookmarks);
+}
+
 /*
 void KWrite::configureKWriteKeys() {
   KWKeyData data;
@@ -1463,7 +1503,7 @@ void KWrite::setBookmark() {
   int z;
   QPopupMenu *popup = new QPopupMenu(0L);
 
-  for (z = 1; z <= 10; z++)
+  for (z = 1; z <= nBookmarks; z++)
     popup->insertItem(QString::number(z), z);
 
   popup->move(m_widget->mapToGlobal(
@@ -1472,66 +1512,51 @@ void KWrite::setBookmark() {
 
   delete popup;
 
-  if (z > 0)
-    setBookmark(z - 1);
+  if (z > 0) setBookmark(z - 1);
 }
 
 void KWrite::addBookmark() {
   int z;
 
-  for (z = 0; z < (int) bookmarks.count(); z++) {
-    if (bookmarks.at(z)->cursor.y() == -1)
+  for (z = 0; z < nBookmarks; z++) {
+    if (bookmark[z] == 0L) {
+      setBookmark(z);
       break;
+    }
   }
-
-  setBookmark(z);
 }
 
 void KWrite::clearBookmarks() {
-  bookmarks.clear();
+  int z;
+  for (z = 0; z < nBookmarks; z++) {
+    if (bookmark[z] != 0L) {
+      delete bookmark[z]; // removes itself from the doc
+      bookmark[z] = 0L;
+    }
+  }
 }
 
 void KWrite::setBookmark(int n) {
-  KWBookmark *b;
+  if (n >= nBookmarks) return;
 
-  if (n >= 10)
-    return;
-
-  while ((int) bookmarks.count() <= n)
-    bookmarks.append(new KWBookmark());
-
-  b = bookmarks.at(n);
-  b->xPos = m_view->xPos;
-  b->yPos = m_view->yPos;
-  b->cursor = m_view->cursor;
+  if (bookmark[n] != 0L) {
+    delete bookmark[n]; // removes itself from the doc
+  }  
+  bookmark[n] = new KWBookmark(m_view->xPos, m_view->yPos, m_view->cursor, this);;  
+  m_doc->addLineAttribute(bookmark[n]);
 }
 
 void KWrite::gotoBookmark(int n) {
   KWBookmark *b;
 
-  if (n < 0 || n >= (int) bookmarks.count())
-    return;
+  if (n >= nBookmarks) return;
+  if (bookmark[n] == 0L) return;
 
-  b = bookmarks.at(n);
-  if (b->cursor.y() == -1)
-    return;
-
-  m_view->updateCursor(b->cursor);
-  m_view->setPos(b->xPos, b->yPos);
+  b = bookmark[n];
+  KWCursor cursor = b->cursor();
+  m_view->updateCursor(cursor);
+  m_view->setPos(b->xPos(), b->yPos());
   m_doc->updateViews();
-}
-
-void KWrite::doBookmarkCommand(int cmdNum) {
-  if (cmdNum == cmSetBookmark)
-    setBookmark(); 
-  else if (cmdNum == cmAddBookmark)
-    addBookmark();
-  else if (cmdNum == cmClearBookmarks)
-    clearBookmarks();
-  else if (cmdNum >= cmSetBookmarks && cmdNum < cmSetBookmarks + 10)
-    setBookmark(cmdNum - cmSetBookmarks); 
-  else if (cmdNum >= cmGotoBookmarks && cmdNum < cmGotoBookmarks + 10)
-    gotoBookmark(cmdNum - cmGotoBookmarks);
 }
 
 void KWrite::updateBMPopup() {
@@ -1654,16 +1679,10 @@ void KWrite::writeConfig(KConfig *config) {
 
 void KWrite::readSessionConfig(KConfig *config) {
   KWCursor cursor;
-  int count, z;
+  int z;
   char s1[16];
   QString s2;
-  KWBookmark *b;
 
-/*
-  m_searchFlags = config->readNumEntry("SearchFlags", sfPrompt);
-  m_configFlags = config->readNumEntry("ConfigFlags");
-  m_wrapAt = config->readNumEntry("WrapAt", 79);
-*/
   readConfig(config);
 
   m_view->xPos = config->readNumEntry("XPos");
@@ -1672,19 +1691,15 @@ void KWrite::readSessionConfig(KConfig *config) {
     config->readNumEntry("CursorY"));
   m_view->updateCursor(cursor);
 
-  count = config->readNumEntry("Bookmarks");
-  for (z = 0; z < count; z++) {
-    b = new KWBookmark();
-    bookmarks.append(b);
-    sprintf(s1, "Bookmark%d", z+1);
+//  count = config->readNumEntry("Bookmarks");
+  for (z = 0; z < nBookmarks; z++) {
+    sprintf(s1, "Bookmark%d", z + 1);
     s2 = config->readEntry(s1);
     if (!s2.isEmpty()) {
-      int x = b->cursor.x();
-      int y = b->cursor.y();
+      int xPos, yPos, cursorX, line;
 
-      sscanf(s2, "%d, %d, %d, %d", &b->xPos, &b->yPos, &x, &y);
-
-      b->cursor.set(x, y);
+      sscanf(s2, "%d, %d, %d, %d", &cursorX, &line, &xPos, &yPos);
+      bookmark[z] = new KWBookmark(xPos, yPos, KWCursor(cursorX, line), this);
     }
   }
 }
@@ -1695,11 +1710,6 @@ void KWrite::writeSessionConfig(KConfig *config) {
   char s2[64];
   KWBookmark *b;
 
-/*
-  config->writeEntry("SearchFlags", m_searchFlags);
-  config->writeEntry("ConfigFlags", m_configFlags);
-  config->writeEntry("WrapAt", m_wrapAt);
-*/
   writeConfig(config);
 
   config->writeEntry("XPos", m_view->xPos);
@@ -1707,12 +1717,13 @@ void KWrite::writeSessionConfig(KConfig *config) {
   config->writeEntry("CursorX", m_view->cursor.x());
   config->writeEntry("CursorY", m_view->cursor.y());
 
-  config->writeEntry("Bookmarks", bookmarks.count());
-  for (z = 0; z < (int) bookmarks.count(); z++) {
-    b = bookmarks.at(z);
-    if (b->cursor.y() != -1) {
-      sprintf(s1, "Bookmark%d", z+1);
-      sprintf(s2, "%d, %d, %d, %d", b->xPos, b->yPos, b->cursor.x(), b->cursor.y());
+//  config->writeEntry("Bookmarks", bookmarks.count());
+  for (z = 0; z < nBookmarks; z++) {
+    b = bookmark[z];
+    if (b != 0L) {
+      sprintf(s1, "Bookmark%d", z + 1);
+      sprintf(s2, "%d, %d, %d, %d", b->cursorX(), b->line(), 
+        b->xPos(), b->yPos());
       config->writeEntry(s1, s2);
     }
   }

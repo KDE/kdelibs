@@ -327,8 +327,10 @@ void TextLine::unmarkFound() {
 }
 
 
-Attribute::Attribute() : font(), fm(font) {
-}
+// Attribute
+
+//Attribute::Attribute() : font(), fm(font) {
+//}
 
 void Attribute::setFont(const QFont &f) {
   font = f;
@@ -337,6 +339,9 @@ void Attribute::setFont(const QFont &f) {
   if ((fontWidth = fm.width('W')) != fm.width('i')) fontWidth = -1;
 }
 
+
+
+// KWAction
 
 KWAction::KWAction(Action a, KWCursor &cursor, int len, const QString &text)
   : action(a), cursor(cursor), len(len), text(text) {
@@ -438,6 +443,27 @@ void KWriteDoc::decRefCount() {
   m_refCount--;
   if (m_refCount == 0) delete this;
 }
+
+
+void KWriteDoc::registerView(KWriteView *view) {
+  m_views.append(view);
+  incRefCount();
+}
+
+void KWriteDoc::removeView(KWriteView *view) {
+  m_views.remove(view);
+  decRefCount();
+}
+
+bool KWriteDoc::ownedView(KWriteView *view) {
+  // do we own the given view?
+  return (m_views.containsRef(view) > 0);
+}
+
+bool KWriteDoc::isLastView(int numViews) {
+  return ((int) m_views.count() == numViews);
+}
+
  
 TextLine *KWriteDoc::textLine(int line) {
 //  if (line < 0) line = 0;
@@ -589,6 +615,12 @@ void KWriteDoc::makeAttribs() {
   updateLines();
 }
 
+void KWriteDoc::hlChanged() {
+  makeAttribs();
+  updateViews();
+}
+
+
 void KWriteDoc::updateFontData() {
   int maxAscent, maxDescent;
   int minTabWidth, maxTabWidth;
@@ -621,27 +653,14 @@ void KWriteDoc::updateFontData() {
   }
 }
 
-void KWriteDoc::hlChanged() {
-  makeAttribs();
-  updateViews();
-}
+void KWriteDoc::addLineAttribute(KWLineAttribute *a) {
+  KWriteView *view;
 
-void KWriteDoc::registerView(KWriteView *view) {
-  m_views.append(view);
-}
-
-void KWriteDoc::removeView(KWriteView *view) {
-//  if (undoView == view) recordReset();
-  m_views.remove(view);
-}
-
-bool KWriteDoc::ownedView(KWriteView *view) {
-  // do we own the given view?
-  return(m_views.containsRef(view) > 0);
-}
-
-bool KWriteDoc::isLastView(int numViews) {
-  return((int) m_views.count() == numViews);
+  m_lineAttribs.insert(a);
+  
+  for (view = m_views.first(); view != 0L; view = m_views.next()) {
+    view->updateBorder();
+  }
 }
 
 int KWriteDoc::textWidth(TextLine *textLine, int cursorX) {
@@ -1169,7 +1188,7 @@ void KWriteDoc::backspaceWord(VConfig &c) {
 }
 
 
-void KWriteDoc::del(VConfig &c) {
+void KWriteDoc::delChar(VConfig &c) {
   TextLine *textLine;
   int len;
 
@@ -1916,7 +1935,7 @@ void KWriteDoc::paintTextLine2(QPainter *p, int line, int xStart, int xEnd, bool
     p->drawText(0, yPos + m_fontHeight, str);
 }
 
-void KWriteDoc::paintTextLine(QPainter *paint, int line, int xStart, int xEnd, bool showTabs) {
+void KWriteDoc::paintTextLine(QPainter &paint, int line, int xStart, int xEnd, bool showTabs) {
   int y;
   TextLine *textLine;
   int len;
@@ -1933,7 +1952,7 @@ void KWriteDoc::paintTextLine(QPainter *paint, int line, int xStart, int xEnd, b
 
   y = 0;//line*m_fontHeight - yPos;
   if (line >= (int) m_contents.count()) {
-    paint->fillRect(0, y, xEnd - xStart, m_fontHeight, m_colors[4]);
+    paint.fillRect(0, y, xEnd - xStart, m_fontHeight, m_colors[4]);
     return;
   }
 
@@ -1966,7 +1985,7 @@ void KWriteDoc::paintTextLine(QPainter *paint, int line, int xStart, int xEnd, b
   while (x < xEnd) {
     nextAttr = textLine->getRawAttr(z);
     if ((nextAttr ^ attr) & (taSelectMask | 256)) {
-      paint->fillRect(xs - xStart, y, x - xs, m_fontHeight, m_colors[attr >> taShift]);
+      paint.fillRect(xs - xStart, y, x - xs, m_fontHeight, m_colors[attr >> taShift]);
       xs = x;
       attr = nextAttr;
     }
@@ -1980,7 +1999,7 @@ void KWriteDoc::paintTextLine(QPainter *paint, int line, int xStart, int xEnd, b
     }
     z++;
   }
-  paint->fillRect(xs - xStart, y, xEnd - xs, m_fontHeight, m_colors[attr >> taShift]);
+  paint.fillRect(xs - xStart, y, xEnd - xs, m_fontHeight, m_colors[attr >> taShift]);
   len = z; //reduce length to visible length
 
 //gettimeofday(&tv2, &tz);
@@ -1997,7 +2016,7 @@ void KWriteDoc::paintTextLine(QPainter *paint, int line, int xStart, int xEnd, b
         //this should cause no copy at all
         QConstString str((QChar *) &s[zc], z - zc);
         QString s = str.string();
-        paint->drawText(x - xStart, y, s);
+        paint.drawText(x - xStart, y, s);
         x += a->width(s);//a->fm.width(str);//&s[zc], z - zc);
       }
       zc = z +1;
@@ -2008,15 +2027,15 @@ void KWriteDoc::paintTextLine(QPainter *paint, int line, int xStart, int xEnd, b
           attr = nextAttr;
           a = &m_attribs[attr & taAttrMask];
 
-          if (attr & taSelectMask) paint->setPen(a->selCol); else paint->setPen(a->col);
-          paint->setFont(a->font);
+          if (attr & taSelectMask) paint.setPen(a->selCol); else paint.setPen(a->col);
+          paint.setFont(a->font);
         }
         // visualize tabs
-//        paint->drawLine(x - xStart, y -2, x - xStart, y);
-//        paint->drawLine(x - xStart, y, x - xStart + 2, y);
-        paint->drawPoint(x - xStart, y);
-        paint->drawPoint(x - xStart +1, y);
-        paint->drawPoint(x - xStart, y -1);
+//        paint.drawLine(x - xStart, y -2, x - xStart, y);
+//        paint.drawLine(x - xStart, y, x - xStart + 2, y);
+        paint.drawPoint(x - xStart, y);
+        paint.drawPoint(x - xStart +1, y);
+        paint.drawPoint(x - xStart, y -1);
       }
       x += m_tabWidth - (x % m_tabWidth);
     } else {
@@ -2026,22 +2045,22 @@ void KWriteDoc::paintTextLine(QPainter *paint, int line, int xStart, int xEnd, b
           QConstString str((QChar *) &s[zc], z - zc);
           //QConstString str((QChar *) &s[zc], z - zc +1);
           QString s = str.string();
-          paint->drawText(x - xStart, y, s);
+          paint.drawText(x - xStart, y, s);
           x += a->width(s);//a->fm.width(str);//&s[zc], z - zc);
           zc = z;
         }
         attr = nextAttr;
         a = &m_attribs[attr & taAttrMask];
 
-        if (attr & taSelectMask) paint->setPen(a->selCol); else paint->setPen(a->col);
-        paint->setFont(a->font);
+        if (attr & taSelectMask) paint.setPen(a->selCol); else paint.setPen(a->col);
+        paint.setFont(a->font);
       }
     }
     z++;
   }
   if (z > zc) {
     QConstString str((QChar *) &s[zc], z - zc);
-    paint->drawText(x - xStart, y, str.string());
+    paint.drawText(x - xStart, y, str.string());
   }
 }
 
@@ -2092,6 +2111,38 @@ void KWriteDoc::printTextLine(QPainter &paint, int line, int xEnd, int y) {
   if (bufp > 0) paint.drawText(x, y, buf, bufp);
 }
 */
+
+void KWriteDoc::paintBorder(QPainter &paint, int line, int yStart, int yEnd) {
+  KWLineAttribute *current;
+  int y;
+  Attribute *a;
+  
+  current = m_lineAttribs.first();
+  
+  while (current != 0L) {
+    if (current->line() >= line) break;
+    current = m_lineAttribs.next(current);
+  }
+
+  while (current != 0L) {
+    y = yStart + (current->line() - line)*fontHeight();
+    if (y > yEnd) break;
+    current->paint(paint, y, fontHeight());
+    current = m_lineAttribs.next(current);
+  }
+
+  // paint line numbers;
+  y = yStart;
+  a = &m_attribs[0];
+  paint.setFont(a->font);
+  paint.setPen(a->col);  
+  while (y < yEnd) {
+    paint.drawText(10, y + m_fontAscent - 1, QString::number(line + 1));
+    y += fontHeight();
+    line++;
+  }
+}
+
 
 bool KWriteDoc::hasFileName() {
   return m_fName.findRev('/') +1 < (int) m_fName.length();
@@ -2310,30 +2361,46 @@ void KWriteDoc::tagLine(int line) {
 }
 
 void KWriteDoc::insLine(int line) {
-  KWriteView *view;
-
   if (m_selectStart >= line) m_selectStart++;
   if (m_selectEnd >= line) m_selectEnd++;
   if (m_tagStart >= line) m_tagStart++;
   if (m_tagEnd >= line) m_tagEnd++;
 
   m_newDocGeometry = true;
+
+  // notify the views about the new line
+  KWriteView *view;
   for (view = m_views.first(); view != 0L; view = m_views.next()) {
     view->insLine(line);
+  }
+
+  // notify the line attributes
+  KWLineAttribute *current = m_lineAttribs.first();
+  while (current != 0L) {
+    current->insLine(line);
+    current = m_lineAttribs.next(current);
   }
 }
 
 void KWriteDoc::delLine(int line) {
-  KWriteView *view;
-
   if (m_selectStart >= line && m_selectStart > 0) m_selectStart--;
   if (m_selectEnd >= line) m_selectEnd--;
   if (m_tagStart >= line && m_tagStart > 0) m_tagStart--;
   if (m_tagEnd >= line) m_tagEnd--;
 
   m_newDocGeometry = true;
+
+  // notify the views about the deleted line
+  KWriteView *view;
   for (view = m_views.first(); view != 0L; view = m_views.next()) {
     view->delLine(line);
+  }
+
+  // notify the line attributes
+  KWLineAttribute *current = m_lineAttribs.first();
+  while (current != 0L) {
+    current->delLine(line);
+    current = m_lineAttribs.next(current);
   }
 }
 

@@ -33,8 +33,13 @@ class KSelectAction;
 class KConfig;
 class KTextPrint;
 class HlManager;
-/*
 
+// KWrite has to be a part to share the configuration, 
+// the KWritePart could inherit KWrite and provide the KActions. 
+// for now both are identical.
+typedef KWrite KWritePart;
+
+/*
 class KWritePart : public KParts::ReadWritePart
 {
   Q_OBJECT

@@ -29,14 +29,22 @@
 #include <qobject.h>
 #include <qfontmetrics.h>
 
-#include <kwrite/kwrite_view.h>
+//#include <kwrite/kwrite_view.h>
+#include <kwrite/kwrite_misc.h>
 
 #define MAX_COLORS  5
 #define MAX_ATTRIBS 32
 
+class KConfig;
+
+class KWrite;
+class KWriteView;
+class VConfig;
+class SConfig;
+class KWriteBorder;
 class Highlight;
 class HlManager;
-class KWritePart;
+class BracketMark;
 
 /**
   The TextLine represents a line of text. A text line that contains the
@@ -264,10 +272,14 @@ class TextLine {
     int ctx;
 };
 
+/**
+  Attribute of a text line character
+*/
+
 class Attribute {
   public:
 
-    Attribute();
+    Attribute() : fm(font) {}
 //    Attribute(const char *aName, const QColor &, const QColor &, const QFont &);
 //    QString name;
     QColor col;
@@ -283,6 +295,8 @@ class Attribute {
 
     int fontWidth;
 };
+
+
 
 class KWAction {
   public:
@@ -344,15 +358,46 @@ class KWriteDoc : QObject {
 
     friend KWriteView;
     friend KWrite;
-    friend KWritePart;
-
+//    friend KWritePart;
+    friend KWriteBorder;
+    
   public:
-
     KWriteDoc(HlManager *, const QString &path = QString::null);
     virtual ~KWriteDoc();
 
+    /** 
+      Increments the reference counter
+    */
     void incRefCount() {m_refCount++;}
+
+    /**
+      Deletes itself if the reference counter becomes zero
+    */
     void decRefCount();
+
+// views
+    /**
+      Registers a view and increments the reference counter
+    */
+    void registerView(KWriteView *);
+
+    /**
+      Removes a view and decrements the reference counter. Deletes itself
+      if the reference counter becomes zero
+    */
+    void removeView(KWriteView *);
+
+    /**
+      Do we own the given view?
+    */  
+    bool ownedView(KWriteView *);
+
+    /**
+      Checks if the doc has the given number of views
+    */
+    bool isLastView(int numViews);
+
+// properties
 
     /**
       gets the number of lines
@@ -408,12 +453,8 @@ class KWriteDoc : QObject {
     void makeAttribs();
     void updateFontData();
 
-// view interaction
-
-    void registerView(KWriteView *);
-    void removeView(KWriteView *);
-    bool ownedView(KWriteView *);
-    bool isLastView(int numViews);
+// text lines
+    void addLineAttribute(KWLineAttribute *a);
 
     int textWidth(TextLine *, int cursorX);
     int textWidth(KWCursor &cursor);
@@ -434,7 +475,7 @@ class KWriteDoc : QObject {
     void killLine(VConfig &);
     void backspace(VConfig &);
     void backspaceWord(VConfig &);
-    void del(VConfig &);
+    void delChar(VConfig &);
     void delWord(VConfig &);
     void clear();
     void cut(VConfig &);
@@ -459,17 +500,14 @@ class KWriteDoc : QObject {
     void optimizeLeadingSpace(int line, int flags, int change);
 
   public:
-
     QString text();
     void setText(const QString &);
-    
-  protected:
-
     QString getWord(KWCursor &cursor);
     bool hasMarkedText() {return(m_selectEnd >= m_selectStart);}
     QString markedText(int flags);
-    void delMarkedText(VConfig &/*, bool undo = true*/);
+    void delMarkedText(VConfig &);
 
+  protected:
     void tagLineRange(int line, int x1, int x2);
     void tagLines(int start, int end);
     void tagAll();
@@ -478,10 +516,11 @@ class KWriteDoc : QObject {
     void updateViews(KWriteView *exclude = 0L);
 
     QColor &cursorCol(int x, int y);
-    void paintTextLine2(QPainter*, int line, int xStart, int xEnd, bool showTabs);
-    void paintTextLine(QPainter*, int line, int xStart, int xEnd, bool showTabs);
+    void paintTextLine2(QPainter *, int line, int xStart, int xEnd, bool showTabs);
+    void paintTextLine(QPainter &, int line, int xStart, int xEnd, bool showTabs);
 //    void printTextLine(QPainter &, int line, int xEnd, int y);
-
+    void paintBorder(QPainter &, int line, int yStart, int yEnd);
+    
     bool hasFileName();
     const QString fileName();
     void setFileName(const QString &);
@@ -550,21 +589,23 @@ class KWriteDoc : QObject {
   protected:
 
     int                   m_refCount; // reference counter for multiple views
+    QList<KWriteView>     m_views;
 
     QList<TextLine>       m_contents;
+    KWLineAttributeList   m_lineAttribs;
+
     QColor                m_colors[MAX_COLORS];
     HlManager            *m_hlManager;
     Highlight            *m_highlight;
     int                   m_numAttribs;
     Attribute             m_attribs[MAX_ATTRIBS];
-    int                   m_eolMode;
 
+    int                   m_eolMode;
     int                   m_tabChars; // number of characters for one tab (e.g. 8)
     int                   m_tabWidth; // tab width in pixel (for internal use)
-
     int                   m_fontHeight;
     int                   m_fontAscent;
-    QList<KWriteView>     m_views;
+
     bool                  m_newDocGeometry;
     TextLine             *m_longestLine;
     int                   m_maxLength;

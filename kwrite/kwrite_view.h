@@ -42,11 +42,36 @@
 
 class KWriteDoc;
 class KWriteWidget;
+class KWriteBorder;
 class KTextPrint;
 class KSpell;
 class KSpellConfig;
 
 void resizeBuffer(void *user, int w, int h);
+
+class KWriteBorder : public QWidget {
+    Q_OBJECT
+  public:
+    KWriteBorder(KWriteDoc *, KWriteWidget *, KWriteView *);
+
+  protected:
+    virtual void paintEvent(QPaintEvent *);
+
+    KWriteDoc *m_doc;
+    KWriteView *m_view;
+    
+};
+
+struct LineRange {
+  int start;
+  int end;
+};
+
+struct BracketMark {
+  KWCursor cursor;
+  int sXPos;
+  int eXPos;
+};
 
 class KWriteView : public QWidget {
     Q_OBJECT
@@ -62,6 +87,9 @@ class KWriteView : public QWidget {
     // KWriteView always handles text drops
     KWriteView(KWriteDoc *, KWriteWidget *, KWrite *, bool HandleOwnURIDrops);
     ~KWriteView();
+
+    int contentsX() const {return xPos;}
+    int contentsY() const {return yPos;}
 
     virtual void doCursorCommand(VConfig &, int cmdNum);
     virtual void doEditCommand(VConfig &, int cmdNum);
@@ -116,6 +144,8 @@ class KWriteView : public QWidget {
     void paintCursor();
     void paintBracketMark();
 
+    void updateBorder() {m_border->update();}
+
     void placeCursor(int x, int y, int flags = 0);
     bool isTargetSelected(int x, int y);
 
@@ -143,6 +173,7 @@ class KWriteView : public QWidget {
     KWriteDoc *m_doc;
     KWriteWidget *m_widget;
     KWrite *m_kWrite;
+    KWriteBorder *m_border;
 
     QScrollBar *xScroll;
     QScrollBar *yScroll;
@@ -192,5 +223,8 @@ class KWriteView : public QWidget {
     // emitted when KWriteView is not handling its own URI drops
     void dropEventPass(QDropEvent *);
 };
+
+
+
 
 #endif // __KWRITE_VIEW_H__
