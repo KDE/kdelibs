@@ -31,6 +31,8 @@ public:
 
     bool isValid() const;
 
+    QString fileName() const { return m_info->path(); }
+    
     QStringList supportedGroups() const;
     QStringList availableGroups() const;
     QStringList translatedGroups();
