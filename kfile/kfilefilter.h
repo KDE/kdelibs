@@ -58,15 +58,22 @@ class KFileFilter : public KComboBox
     bool showsAllTypes() const { return m_allTypes; }
 
  protected:
+    virtual bool eventFilter( QObject *o, QEvent *e );
+
     QStringList filters;
     bool m_allTypes;
 
  signals:
     void filterChanged();
-    
+
+private slots:
+    void slotFilterChanged();
+
 private:
+    KFileFilterPrivate * d() const;
+
     static QPtrDict<KFileFilterPrivate> *s_Hack;
-    
+
     // ### private pointer!!!
 };
 

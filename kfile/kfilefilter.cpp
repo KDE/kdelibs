@@ -36,6 +36,8 @@ public:
     // instead we show "All supported files". We have to translate
     // that back to the list of mimefilters in currentFilter() tho.
     bool hasAllSupportedFiles;
+    
+    QString lastFilter;
 };
 
 QPtrDict<KFileFilterPrivate> * KFileFilter::s_Hack = 0L;
@@ -57,6 +59,7 @@ KFileFilter::KFileFilter( QWidget *parent, const char *name)
     setInsertionPolicy(NoInsertion);
     connect( this, SIGNAL( activated( int )), this, SIGNAL( filterChanged() ));
     connect( this, SIGNAL( returnPressed() ), this, SIGNAL( filterChanged() ));
+    connect( this, SIGNAL( filterChanged() ), SLOT( slotFilterChanged() ));
     m_allTypes = false;
 }
 
@@ -69,7 +72,7 @@ void KFileFilter::setFilter(const QString& filter)
 {
     clear();
     filters.clear();
-    s_Hack->find( this )->hasAllSupportedFiles = false;
+    d()->hasAllSupportedFiles = false;
 
     if (!filter.isEmpty()) {
 	QString tmp = filter;
@@ -89,6 +92,8 @@ void KFileFilter::setFilter(const QString& filter)
 	insertItem((tab < 0) ? *it :
 		   (*it).mid(tab + 1));
     }
+    
+    d()->lastFilter = currentText();
 }
 
 QString KFileFilter::currentFilter() const
@@ -97,9 +102,7 @@ QString KFileFilter::currentFilter() const
     if (f == text(currentItem())) { // user didn't edit the text
 	f = *filters.at(currentItem());
         int mime = f.contains( '/' );
-        KFileFilter *that = const_cast<KFileFilter*>( this );
-        if ( mime > 0 || (currentItem() == 0 &&
-                          s_Hack->find( that )->hasAllSupportedFiles) ) {
+        if ( mime > 0 || (currentItem() == 0 && d()->hasAllSupportedFiles) ) {
             return f; // we have a mimetype as filter
         }
     }
@@ -116,7 +119,7 @@ void KFileFilter::setMimeFilter( const QStringList& types, const QString& defaul
     clear();
     filters.clear();
     QString delim = QString::fromLatin1(", ");
-    s_Hack->find( this )->hasAllSupportedFiles = false;
+    d()->hasAllSupportedFiles = false;
 
     m_allTypes = defaultType.isEmpty() && (types.count() > 1);
 
@@ -148,11 +151,34 @@ void KFileFilter::setMimeFilter( const QStringList& types, const QString& defaul
             insertItem( allComments, 0 );
         else {
             insertItem( i18n("All supported files"), 0 );
-            s_Hack->find( this )->hasAllSupportedFiles = true;
+            d()->hasAllSupportedFiles = true;
         }
 
         filters.prepend( allTypes );
     }
+    
+    d()->lastFilter = currentText();
+}
+
+void KFileFilter::slotFilterChanged()
+{
+    d()->lastFilter = currentText();
+}
+
+bool KFileFilter::eventFilter( QObject *o, QEvent *e )
+{
+    if ( o == lineEdit() && e->type() == QEvent::FocusOut ) {
+        if ( currentText() != d()->lastFilter )
+            emit filterChanged();
+    }
+    
+    return KComboBox::eventFilter( o, e );
+}
+    
+KFileFilterPrivate * KFileFilter::d() const
+{
+    KFileFilter *that = const_cast<KFileFilter*>( this );
+    return s_Hack->find( that );
 }
 
 #include "kfilefilter.moc"
