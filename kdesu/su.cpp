@@ -190,7 +190,14 @@ int SuProcess::ConverseSU(const char *password)
 		state++;
 		break;
 	    }
-	    return -1;
+	    QCString s=line.stripWhiteSpace();
+	    for (i=0; i<s.length(); i++)
+            {
+		if (s[i] != '*')
+		    return -1;
+	    }
+	    state++;
+	    break;
 	}
     }
     return 0;
