@@ -174,6 +174,12 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
   emit started( _url.url() );
 }
 
+const KURL& KDirLister::url() const
+{
+  // ### DON'T CHANGE THIS METHOD BEFORE KDE 3!!
+  return m_url;
+}
+
 void KDirLister::stop()
 {
   // Stop all running jobs

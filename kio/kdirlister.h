@@ -106,10 +106,10 @@ public:
   /**
    * @return the url used by this instance to list the files, with _keep == true,
    *         this is the first url opened (in e.g. a treeview this is the root).
-   * It might be different from the one given with @ref openURL() or @ref setURL(),
+   * It might be different from the one given with @ref openURL() or @ref setURL()
    * if there was a redirection.
    */
-  virtual const KURL & url() const { return m_url; }
+  virtual const KURL & url() const;
 
   /**
    * Sets @p url as the current url, forgetting any previous ones and stopping
