@@ -600,7 +600,7 @@ void DocumentImpl::recalcStyle()
     NodeImpl *n;
     for (n = _first; n; n = n->nextSibling())
 	n->recalcStyle();
-    kdDebug( ) << "TIME: recalcStyle() dt=" << qt.elapsed() << endl;
+    kdDebug( 6020 ) << "TIME: recalcStyle() dt=" << qt.elapsed() << endl;
 }
 
 
