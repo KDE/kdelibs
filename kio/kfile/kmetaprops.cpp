@@ -20,27 +20,22 @@
 
 #include "kmetaprops.h"
 
-#include <kcombobox.h>
 #include <kfilemetainfo.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kdebug.h>
-#include <klineedit.h>
-#include <kstringvalidator.h>
+#include <kfilemetainfowidget.h>
 
-#include <qspinbox.h>
 #include <qvalidator.h>
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qpushbutton.h>
-#include <qcheckbox.h>
 #include <qfileinfo.h>
 #include <qdatetime.h>
-#include <qdatetimeedit.h>
+#include <qstylesheet.h>
 
-#ifdef Bool
+#include <iostream.h>
+
 #undef Bool
-#endif
 
 class MetaPropsScrollView : public QScrollView
 {
@@ -68,34 +63,17 @@ private:
       QFrame* m_frame;
 };
 
-class MetaPropsItem
-{
-public:
-    MetaPropsItem(QWidget* w, KFileMetaInfoItem& i, const QString& v)
-    {
-        widget = w;
-        info   = i;
-        vclass = v;
-    }
-
-    QWidget*            widget;
-    KFileMetaInfoItem   info;
-    QString             vclass;
-};
-
 class KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate
 {
 public:
     KFileMetaPropsPluginPrivate()  {}
     ~KFileMetaPropsPluginPrivate() {}
 
-    QFrame*                   m_frame;
-    QGridLayout*              m_framelayout;
-    QFrame*                   m_topframe;
-    MetaPropsScrollView*      m_view;
-    KFileMetaInfo             m_info;
-    QPtrList<MetaPropsItem>   m_items;
-//    QPushButton*              m_add;
+    QFrame*                       m_frame;
+    QGridLayout*                  m_framelayout;
+    KFileMetaInfo                 m_info;
+//    QPushButton*                m_add;
+    QPtrList<KFileMetaInfoWidget> m_editWidgets;
 };
 
 KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
@@ -131,104 +109,97 @@ void KFileMetaPropsPlugin::createLayout()
     QStringList l;
     QFileInfo file_info(properties->item()->url().path());
 
+    kdDebug(250) << "KFileMetaPropsPlugin::createLayout" << endl;
+
+    // is there any valid and non-empty info at all?
     if ( !d->m_info.isValid() || (l = d->m_info.preferredKeys()) .isEmpty() )
         return;
 
     // let the dialog create the page frame
-    d->m_topframe = properties->dialog()->addPage(i18n("&Meta Info"));
-    d->m_topframe->setFrameStyle(QFrame::NoFrame);
-    QVBoxLayout* tmp = new QVBoxLayout(d->m_topframe);
+    QFrame* topframe = properties->dialog()->addPage(i18n("&Meta Info"));
+    topframe->setFrameStyle(QFrame::NoFrame);
+    QVBoxLayout* tmp = new QVBoxLayout(topframe);
   
     // create a scroll view in the page
-    d->m_view = new MetaPropsScrollView(d->m_topframe);
+    MetaPropsScrollView* view = new MetaPropsScrollView(topframe);
 
-    tmp->addWidget(d->m_view);
+    tmp->addWidget(view);
   
-    d->m_frame = d->m_view->frame();
-  
+    d->m_frame = view->frame();
+    
     QGridLayout *toplayout = new QGridLayout(d->m_frame);
     toplayout->setSpacing(KDialog::spacingHint());
-  
-    QStringList::Iterator it = l.begin();
-    int count = 0;
-    for (; it!=l.end(); ++it)
-    {
-        KFileMetaInfoItem item = d->m_info.item(*it);
-        if ( !item.isValid() ) continue;
+    
+    // now get a list of groups
+    QStringList groupList = d->m_info.preferredGroups();
 
-        QWidget* w = 0L;
-        QString valClass;
-        bool editable = file_info.isWritable() && item.isEditable();
+    int count = 0;
+    for (QStringList::Iterator git=groupList.begin(); git!=groupList.end(); ++git)
+    {
+        kdDebug(7033) << *git << endl;
         
-        if (!editable)
+        // add the group heading
+        QLabel* groupLabel = new QLabel(QString("<b><u>" + QStyleSheet::escape(*git)) + "</b></u>", d->m_frame);
+        toplayout->addMultiCellWidget( groupLabel, count, count, 0, 1);
+        count++;
+        
+        QStringList itemList=d->m_info.group(*git).preferredKeys();
+        
+        // first create all widgets and add them to the lists
+        QPtrList<KFileMetaInfoWidget> readWidgets;
+        QPtrList<KFileMetaInfoWidget> editWidgets;
+    
+        for (QStringList::Iterator iit = itemList.begin(); iit!=itemList.end(); ++iit)
         {
-            w = new QLabel(item.string(), d->m_frame);
-        }
-        else
-        {
-            switch (item.value().type())
-            {
-                // if you change something here, you need to also change also
-                // slotAdd() and applyChanges()        
-                case QVariant::Bool : w = makeBoolWidget  (item, d->m_frame); break;
-                case QVariant::Int  : w = makeIntWidget   (item, d->m_frame, valClass); break;
-                case QVariant::DateTime  : w = makeDateTimeWidget (item, d->m_frame, valClass); break;
-                default             : w = makeStringWidget(item, d->m_frame, valClass); break;
-            }
-        }
-      
-        if (w)
-        {
+            KFileMetaInfoItem item = d->m_info[*git][*iit];
+            if ( !item.isValid() ) continue;
+
+            KFileMetaInfoWidget* w = 0L;
+            QString valClass;
+            bool editable = file_info.isWritable() && item.isEditable();
+        
+            KFileMetaInfoProvider* prov = KFileMetaInfoProvider::self();
+            const KFileMimeTypeInfo* mtinfo = prov->mimeTypeInfo(d->m_info.mimeType());
+            if (!mtinfo) kdDebug(7034) << "no mimetype info there\n";
+        
+            QValidator* val = mtinfo->createValidator(*git, *iit);
+            if (!val) kdDebug(7033) << "didn't get a validator for " << *git << "/" << *iit << endl;
+            w = new KFileMetaInfoWidget(item, val, d->m_frame);
+            connect(w, SIGNAL(valueChanged(const QVariant&)),
+                    this, SIGNAL(changed()));
+
             // save a mapping between editable info objects and their widgets
             if (editable)
-                 d->m_items.append(new MetaPropsItem(w, item, valClass));
-          
-            toplayout->addWidget( new QLabel(w, item.translatedKey() + ":",
-                                             d->m_frame), count, 0);
-            // start and end column for the value widget
-            
-            QHBoxLayout* sublayout = new QHBoxLayout;
-            toplayout->addLayout(sublayout, count, 1);
-            
-            if (editable && (item.prefix() != QString::null))
             {
-                QLabel* label = new QLabel( item.prefix(), d->m_frame );
-                label->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
-                sublayout->addWidget( label );
-                label->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
-                                                 QSizePolicy::Fixed));
-                
-                if (w->isA("QLabel"))
-                      w->setSizePolicy(QSizePolicy(QSizePolicy::Fixed,
-                                                   QSizePolicy::Fixed));
-                
+                editWidgets.append( w );
+                d->m_editWidgets.append( w );
             }
             else
-                if (w->isA("QLabel"))
-                {
-                      w->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
-                                                   QSizePolicy::Fixed));
-                      ((QLabel*)w)->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
-                }
-
-            sublayout->addWidget( w );
-
-            if (editable && (item.suffix() != QString::null))
-            {
-                QLabel* label = new QLabel( item.suffix(), d->m_frame );
-                label->setAlignment( Qt::AlignLeft | Qt::AlignVCenter);
-                sublayout->addWidget( label );
-                label->setSizePolicy(QSizePolicy(QSizePolicy::Fixed,
-                                                 QSizePolicy::Fixed));
-            }
-
+                readWidgets.append( w );
+        }
+    
+        // then first add the editable items to the layout
+        for (QPtrListIterator<KFileMetaInfoWidget> wit(editWidgets); *wit; ++wit)
+        {
+            toplayout->addWidget( new QLabel(*wit, (*wit)->item().translatedKey() + ":",
+                                             d->m_frame), count, 0);
+            toplayout->addWidget( *wit, count, 1 );
             count++;
+        }
 
+        // and then the read only items
+        for (QPtrListIterator<KFileMetaInfoWidget> wit(readWidgets); *wit; ++wit)
+        {
+            toplayout->addWidget( new QLabel(*wit, (*wit)->item().translatedKey() + ":",
+                                                 d->m_frame), count, 0);
+            toplayout->addWidget( *wit, count, 1 );
+            count++;
         }
     }
-  
+        
+               
     // the add key (disabled until fully implemented)
-/*    d->m_add = new QPushButton(i18n("&Add"), d->m_topframe);
+/*    d->m_add = new QPushButton(i18n("&Add"), topframe);
     d->m_add->setSizePolicy(QSizePolicy(QSizePolicy::Fixed,
                                         QSizePolicy::Fixed));
     connect(d->m_add, SIGNAL(clicked()), this, SLOT(slotAdd()));
@@ -265,85 +236,6 @@ void KFileMetaPropsPlugin::createLayout()
   
 }*/
 
-QWidget* KFileMetaPropsPlugin::makeBoolWidget(const KFileMetaInfoItem& item,
-                                              QWidget* parent)
-{
-  QCheckBox* c = new QCheckBox(parent);
-  c->setChecked(item.value().toBool());
-  connect(c, SIGNAL(toggled(bool)), this, SIGNAL(changed()));
-  return c;
-}
-
-QWidget* KFileMetaPropsPlugin::makeIntWidget(const KFileMetaInfoItem& item, 
-                                             QWidget* parent, QString& valClass)
-{
-  QSpinBox* sb = new QSpinBox(parent);
-  sb->setValue(item.value().toInt());
-
-  kdDebug(250) << "creating validator for " << item.key().local8Bit() << endl;
-  QValidator* val = d->m_info.createValidator(item.key(), 0, 0);
-
-  Q_ASSERT(val);
-  
-  if (val)
-  {
-    valClass = val->className();
-    if (val->isA("QIntValidator"))
-    {
-      QIntValidator* validator = static_cast<QIntValidator*>(val);
-      sb->setMinValue(validator->bottom());
-      sb->setMaxValue(validator->top());
-    }
-
-    sb->insertChild(val);
-    sb->setValidator(val);
-
-  }
-  
-  connect(sb, SIGNAL(valueChanged(int)), this, SIGNAL(changed()));
-  return sb;
-}            
-
-QWidget* KFileMetaPropsPlugin::makeDateTimeWidget(const KFileMetaInfoItem& item, 
-                                             QWidget* parent, QString& /*valClass*/)
-{
-  return new QDateTimeEdit(item.value().toDateTime(), parent);
-}
-
-QWidget* KFileMetaPropsPlugin::makeStringWidget(const KFileMetaInfoItem& item, 
-                                              QWidget* parent, QString& valClass)
-{
-  QValidator* validator = d->m_info.createValidator(item.key(), 0, 0);
-  valClass = validator->className();
-  
-  if (validator->isA("KStringListValidator"))
-  {
-    KComboBox* b = new KComboBox( false, parent );
-
-    // only debugging output
-#ifndef NDEBUG
-    QStringList l = dynamic_cast<KStringListValidator*>(validator)->stringList();
-    QStringList::Iterator it = l.begin();
-    for (; it!=l.end(); ++it) kdDebug(250) << (*it).local8Bit() << endl;
-#endif
-        
-    b->insertStringList(static_cast<KStringListValidator*>(validator)->stringList());
-    b->setCurrentText( item.value().toString() );
-    b->setValidator( validator );
-    b->insertChild( validator );
-    connect(b, SIGNAL(activated(int)), this, SIGNAL(changed()));
-    return b;
-  }
-  else
-  {  
-    KLineEdit* e = new KLineEdit( item.value().toString(), parent);
-    e->setValidator( validator );
-    e->insertChild( validator );
-    connect(e, SIGNAL(textChanged(const QString&)), this, SIGNAL(changed()));
-    return e;
-  }
-}        
-
 KFileMetaPropsPlugin::~KFileMetaPropsPlugin()
 {
   delete d;
@@ -363,39 +255,9 @@ void KFileMetaPropsPlugin::applyChanges()
   kdDebug(250) << "applying changes" << endl;
   // insert the fields that changed into the info object
   
-  QPtrListIterator<MetaPropsItem> it( d->m_items );
-  MetaPropsItem* item;
-  for (; (item = it.current()); ++it)
-  {
-    // we depend on having the correct widget type here
-    kdDebug(250) << "wanna add " << item->info.key().latin1() << endl;
-    kdDebug(250) << "validator class is " << item->vclass.latin1() << endl;
-
-    if (item->widget->inherits("QSpinBox")) {
-        QSpinBox* w = static_cast<QSpinBox*>(item->widget);
-        item->info.setValue(QVariant(w->value()));
-    }
-    else if (item->widget->inherits("QCheckBox")) {
-        QCheckBox* w = static_cast<QCheckBox*>(item->widget);
-        item->info.setValue(QVariant(w->isChecked()));
-    }
-    else if (item->widget->inherits("QComboBox")) {
-          QComboBox* w = static_cast<QComboBox*>(item->widget);
-          item->info.setValue(QVariant(w->currentText()));
-    }
-    else if (item->widget->inherits("QLineEdit")) {
-          QLineEdit* w = static_cast<QLineEdit*>(item->widget);
-          item->info.setValue(QVariant(w->text()));
-    }
-    else if (item->widget->inherits("QDateTimeEdit")) {
-          QDateTimeEdit* w = static_cast<QDateTimeEdit*>(item->widget);
-          item->info.setValue(QVariant(w->dateTime()));
-    }
-    else {
-        kdDebug(250) << "unrecognized widget type. i'm a monster." << endl;
-    }
-    
-  }
+  QPtrListIterator<KFileMetaInfoWidget> it( d->m_editWidgets );
+  KFileMetaInfoWidget* w;
+  for (; (w = it.current()); ++it) w->apply();
   d->m_info.applyChanges();
 }
 

@@ -590,7 +590,7 @@ QString KFileItem::getToolTipText(int maxcount)
   }
   else
   {
-    QStringList keys = info.preferredKeys();
+    QStringList keys = KFileMetaInfoProvider::self()->preferredKeys(info.mimeType());
 
     // now the rest
     QStringList::Iterator it = keys.begin();
@@ -756,8 +756,7 @@ const KFileMetaInfo & KFileItem::metaInfo(bool autoget, int) const
 {
     if ( autoget && m_url.isLocalFile() && !m_metaInfo.isValid() )
     {
-        m_metaInfo = KFileMetaInfo( m_url.path() );
-        Q_ASSERT(m_metaInfo.isValid());
+        m_metaInfo = KFileMetaInfo( m_url.path(), mimetype() );
     }
 
     return m_metaInfo;

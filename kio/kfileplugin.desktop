@@ -13,6 +13,7 @@ Name[de]=KFile: Metadaten-Plugin
 Name[el]=Πρόσθετο ΜεταΔεδομένων του KFile
 Name[eo]=Dosierinterdatuma kromaĵo
 Name[es]=Plugin de meta datos KFile
+Name[eu]=KFile Meta Datu Plugina
 Name[fi]=KFile metatietosovelma
 Name[fr]=Module de méta-données KFile
 Name[he]=תוסף מטא-נתונים ל-KFile
@@ -28,8 +29,13 @@ Name[ro]=Modul meta date KFile
 Name[sk]=Modul KFile pre meta dáta
 Name[sl]=Vstavek za meta podatke pri KFile
 Name[sv]=Kfil metadatainsticksprogram
+Name[tr]=KFile Meta Veri Eklentisi
+Name[uk]=Додаток мета-даних KFile
 Name[ven]=Meta data pulagini ya faela ya K
 Name[xx]=xx
 
 [PropertyDef::PreferredItems]
+Type=QStringList
+
+[PropertyDef::PreferredGroups]
 Type=QStringList
