@@ -27,14 +27,17 @@
 /** 
  * KDE Configuration entries
  *
- * This is a trivial extension of KConfig for applications
- * that need only one configuration file and no default system.
- * It also adds the ability to delete keys and/or groups.
+ * This is a trivial extension of KConfig for applications that need
+ * only one configuration file and no default system.  It also adds
+ * the ability to delete keys and/or groups.  Lastly, when the data in
+ * memory is written back out at sync() time, it is not merged with
+ * what is on disk -- whatever is in memory simply replaces what is on
+ * disk entirely.
  *
  * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
  * @version $Id$
  * @see KApplication::getConfig KConfigBase KConfig
- * @short KDE Configuration Management class with deletion ability
+ * @short KDE Configuration Management class with deletion ability 
  */
 class KSimpleConfig : public KConfig
 {

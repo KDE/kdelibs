@@ -38,39 +38,8 @@
 #include "ksimpleconfig.moc"
 
 KSimpleConfig::KSimpleConfig(const QString &pFileName, bool bReadOnly)
+  : KConfig(pFileName, QString::null, bReadOnly, false)
 {
-  // set the object's read-only status.
-  setReadOnly(bReadOnly);
-
-  if (!bReadOnly) {
-    // the file should exist in any case if the object is not read only.
-    QFileInfo info( pFileName );
-    if (!info.exists()) {
-      // Can we allow the write? (see above)
-      if (checkAccess( pFileName, W_OK )) {
-	// Yes, write OK, create empty file
-	QFile file( pFileName );
-	file.open( IO_WriteOnly );
-	file.close();
-      }
-    }
-  }
-  
-  // for right now we will hardcode that we are using the INI
-  // back end driver.  In the future this should be converted over to
-  // a object factory of some sorts.
-  KConfigINIBackEnd *aBackEnd = new KConfigINIBackEnd(this,
-						      pFileName,
-						      QString::null,
-						      false);
-  // set the object's back end pointer to this new backend
-  backEnd = aBackEnd;
-
-  // add the "default group" marker to the map
-  KEntryKey groupKey = { "<default>", QString::null };
-  aEntryMap.insert(groupKey, KEntry());
-
-  parseConfigFiles();
 }
 
 QString KSimpleConfig::deleteEntry( const QString& pKey, bool bLocalized )

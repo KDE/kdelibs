@@ -109,7 +109,7 @@ KConfigBackEnd::KConfigBackEnd(KConfigBase *_config, const QString &_globalFileN
 			       const QString &_localFileName, bool _useKderc)
   : pConfig(_config), aGlobalFileName(_globalFileName), 
     aLocalFileName(_localFileName), useKderc(_useKderc)
-{ }
+{}
 
 bool KConfigINIBackEnd::parseConfigFiles()
 {
@@ -176,7 +176,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
   // reset the stream's device
   rFile.at(0);
   QTextStream aStream( &rFile );
-  while (!aStream.eof()) {
+  while (!aStream.atEnd()) {
     aCurrentLine = aStream.readLine();
     
     // check for a group

@@ -52,10 +52,11 @@ public:
    * @param pLocalFileName An additional (usually user-specific)
    *        file to parse; has priority over pGlobalFileName.
    * @param bReadOnly Set the config object's read-only status.
+   * @param bUseKderc Toggle reading the global KDE configuration file.
    */
   KConfig( const QString& pGlobalFileName = QString::null, 
 	   const QString& pLocalFileName = QString::null,
-	   bool bReadOnly = false);
+	   bool bReadOnly = false, bool bUseKderc = true);
 
   /** 
    * Destructor. 
@@ -233,7 +234,7 @@ private slots:
 
 inline bool KConfig::hasGroup(const QString &_pGroup) const
 {
-  cacheCheck();
+  //  cacheCheck();
 
   KEntryKey groupKey = { _pGroup, QString::null };
   return aEntryMap.contains(groupKey);
@@ -243,7 +244,7 @@ inline bool KConfig::hasKey(const QString &pKey) const
 {
   KEntryKey aEntryKey;
 
-  cacheCheck();
+  //  cacheCheck();
 
   if (!locale().isNull()) {
     // try the localized key first
@@ -266,7 +267,7 @@ inline bool KConfig::hasKey(const QString &pKey) const
 
 inline void KConfig::putData(const KEntryKey &_key, const KEntry &_data)
 {
-  cacheCheck();
+  //  cacheCheck();
 
   // check to see if the special group key is present,
   // and if not, put it in.
@@ -285,7 +286,7 @@ inline void KConfig::putData(const KEntryKey &_key, const KEntry &_data)
   
 inline KEntry KConfig::lookupData(const KEntryKey &_key) const
 {
-  cacheCheck();
+  //  cacheCheck();
 
   KEntryMapConstIterator aIt;
 

@@ -41,7 +41,7 @@
 
 KConfig::KConfig( const QString& pGlobalFileName,
 		  const QString& pLocalFileName,
-		  bool bReadOnly )
+		  bool bReadOnly, bool bUseKderc )
   : KConfigBase(), flushInterval(30)
 {
   QString aGlobalFileName, aLocalFileName;
@@ -91,7 +91,7 @@ KConfig::KConfig( const QString& pGlobalFileName,
   KConfigINIBackEnd *aBackEnd = new KConfigINIBackEnd(this,
 						      aGlobalFileName,
 						      aLocalFileName,
-						      true);
+						      bUseKderc);
   // set the object's back end pointer to this new backend
   backEnd = aBackEnd;
 
@@ -107,10 +107,10 @@ KConfig::KConfig( const QString& pGlobalFileName,
   parseConfigFiles();
 
   // cache flushing setup
-  cacheTimer = new QTimer(this, "cacheTimer");
-  connect(cacheTimer, SIGNAL(timeout()), SLOT(flushCache()));
+  //  cacheTimer = new QTimer(this, "cacheTimer");
+  //  connect(cacheTimer, SIGNAL(timeout()), SLOT(flushCache()));
   // initial cache timeout of 30 seconds.  It will auto-adjust.
-  cacheTimer->start(flushInterval * 1000);
+  //  cacheTimer->start(flushInterval * 1000);
 }
 
 KConfig::~KConfig()
@@ -138,7 +138,7 @@ QStringList KConfig::groupList() const
 {
   QStringList retList;
 
-  cacheCheck();
+  //  cacheCheck();
 
   KEntryMapConstIterator aIt;
   for (aIt = aEntryMap.begin(); aIt != aEntryMap.end(); ++aIt)
@@ -155,7 +155,7 @@ QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
   KEntry aEntry;
   KEntryKey groupKey = { pGroup, QString::null };
 
-  cacheCheck();
+  //  cacheCheck();
 
   aIt = aEntryMap.find(groupKey);
   for (; aIt.key().group == pGroup && aIt != aEntryMap.end(); ++aIt)
@@ -169,7 +169,7 @@ void KConfig::reparseConfiguration()
   // do this right away to avoid infinite loops inside parseConfigFiles()
   // if it chooses to call putData or lookupData or something which will
   // call cacheCheck() --> reparseConfiguration() --> you get it
-  isCached = true;
+  //  isCached = true;
   aEntryMap.clear();
 
   // add the "default group" marker to the map
@@ -186,7 +186,7 @@ KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
   KEntryKey aKey = { pGroup, QString::null };
   KEntryMap tmpEntryMap;
 
-  cacheCheck();
+  //  cacheCheck();
 
   aIt = aEntryMap.find(aKey);
   if (aIt == aEntryMap.end()) {
