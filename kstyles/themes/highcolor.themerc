@@ -9,6 +9,7 @@ Name[hu]=KDE Classic (színgazdag változat)
 Name[is]=Klassískur hágæða-litastíll
 Name[pt_BR]=Clássico de Alta Resolução
 Name[sk]=Štandardný veľa farieb
+Name[sr]=Klasični HighColor
 Name[sv]=Färgrik klassisk
 Name[tr]=Klasik Yüksek Renk
 Comment=Highcolor version of the classic style
@@ -22,6 +23,7 @@ Comment[hu]=A KDE korábbi stílusának színgazdag változata
 Comment[is]=Útgáfa klassíska stílsins sem notar hágæðaliti (HighColor)
 Comment[pt_BR]=Estilo clássico na versão de alta resolução
 Comment[sk]=Štandardný štýl pre veľa farieb
+Comment[sr]=HighColor verzija klasičnog stila
 Comment[sv]=Färgrik version av den klassiska stilen
 Comment[tr]=Klasik stilin yüksek renk versiyonu
 [KDE]
