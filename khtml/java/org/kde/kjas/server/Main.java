@@ -47,7 +47,6 @@ public class Main
     public static void main( String[] args )
     {
 	// Check for Java version. We do not support Java 1.1
-	// This function can call exit()
 	boolean bad_jdk = checkForJavaVersion(); 
 
         if( bad_jdk || System.getProperty("kjas.showConsole") != null )
