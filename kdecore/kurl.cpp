@@ -190,13 +190,18 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
     unsigned int character = segment[ i++ ].unicode();
     if ((character == ' ') || (character > 255))
        bKeepEncoded = false;
-    if ( (character == '%' ) &&
-         ( i+1 < old_length) ) // Must have at least two chars left!
+    if (character == '%' ) 
     {
-      char a = hex2int( segment[i].latin1() );
-      char b = hex2int( segment[i+1].latin1() );
-      if ((a != -1) && (b != -1)) // Only replace if sequence is valid
+      char a = i+1 < old_length ? hex2int( segment[i].latin1() ) : -1;
+      char b = i+1 < old_length ? hex2int( segment[i+1].latin1() ) : -1;
+      if ((a == -1) || (b == -1)) // Only replace if sequence is valid
       {
+         // Contains stray %, make sure to re-encode!
+         bKeepEncoded = false;
+      }
+      else
+      {
+         // Valid %xx sequence
          character = a * 16 + b; // Replace with value of %dd
          i += 2; // Skip dd
          if (character > 127)
