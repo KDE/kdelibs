@@ -196,34 +196,20 @@ QString KStringHandler::remword( const QString &text , const QString &word )
 //
 QString KStringHandler::capwords( const QString &text )
 {
-    QString tmp = "";
+    if ( text.isEmpty() ) {
+        return text;
+    }
 
-    if ( text.isEmpty() )
-        return tmp;
-
-    QStringList list = QStringList::split( " ", text, true );
-
-    return capwords( QStringList::split( " ", text, true )).join( " " );
+    const QStringList words = QStringList::split( ' ', text );
+    return capwords( words ).join( " " );
 }
 
 QStringList KStringHandler::capwords( const QStringList &list )
 {
-    QStringList tmp;
-    QString word;
-
-    if ( list.count() == 0 )
-        return tmp;
-
-    for ( QStringList::ConstIterator it= list.begin();
-          it != list.end();
-          it++)
-    {
-        word = *it;
-        word = word.left(1).upper() + word.remove(0,1);
-
-        tmp.append( word ); // blank list to start with
+    QStringList tmp = list;
+    for ( QStringList::Iterator it = tmp.begin(); it != tmp.end(); ++it ) {
+        *it = ( *it )[ 0 ].upper() + ( *it ).mid( 1 );
     }
-
     return tmp;
 }
 
