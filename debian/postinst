@@ -8,10 +8,10 @@ case "$1" in
     configure)
       ldconfig
       echo -n "Verifying HTML directory is configured properly:  "
-      if [ ! -L /usr/share/doc/HTML/default ]; then
+      if [ -e /usr/share/doc/HTML/default -a ! -L /usr/share/doc/HTML/default ]; then
         mv /usr/share/doc/HTML/default/* /usr/share/doc/HTML/en >/dev/null 2>&1
         rm -rf /usr/share/doc/HTML/default > /dev/null 2>&1
-        ln -s en /usr/share/doc/HTML/default > /dev/null 2>&1
+        ln -s /usr/share/doc/HTML/en /usr/share/doc/HTML/default > /dev/null 2>&1
         echo "It wasn't, I fixed it"
       else
         echo "Looks ok"
