@@ -450,12 +450,15 @@ public slots:
      * a widget that has been created by plugging this action into a container
      * is clicked on in What's this mode.
      *
-     * The What's this text can of course include QML markup as well as raw text.
+     * The What's this text can include QML markup as well as raw text.
      */
     virtual void setWhatsThis( const QString& text );
 
     /**
      * Set the tooltip text for the action.
+     * This will be used as a tooltip for a toolbar button, as a
+     * statusbar help-text for a menu item, and it also appears
+     * in the toolbar editor, to describe the action.
      */
     virtual void setToolTip( const QString& );
 
@@ -467,6 +470,9 @@ public slots:
 
     virtual void setIcon( const QString& icon );
 
+    /**
+     * @deprecated. Use setToolTip instead (they do the same thing now).
+     */
     virtual void setStatusText( const QString &text );
 
     /**
@@ -502,11 +508,12 @@ protected:
     virtual void setIconSet(int i, const QIconSet &iconSet);
     virtual void setIcon( int i, const QString& icon );
     virtual void setToolTip( int id, const QString& tt );
+    /// To be removed in KDE 3.0
     virtual void setStatusText( int id, const QString &text );
     virtual void setWhatsThis( int id, const QString& text );
 
     /**
-       * for backwards compatibility. depreceated!
+       * for backwards compatibility. deprecated!
        */
     int menuId( int i ) { return itemId( i ); }
 

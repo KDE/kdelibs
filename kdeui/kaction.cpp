@@ -34,6 +34,7 @@
 #include <qptrdict.h>
 #include <qfontdatabase.h>
 #include <qwhatsthis.h>
+#include <qtooltip.h>
 #include <kiconloader.h>
 #include <kpopupmenu.h>
 #include <kglobalsettings.h>
@@ -109,7 +110,6 @@ public:
   QString m_group;
   int m_accel;
   QString m_toolTip;
-  QString m_statusText;
 
   struct Container
   {
@@ -348,12 +348,18 @@ void KAction::setToolTip( const QString& tt )
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
+  {
     setToolTip( i, tt );
+    setStatusText( i, tt );
+  }
 }
 
-void KAction::setToolTip( int, const QString& )
+void KAction::setToolTip( int i, const QString& tt )
 {
-  // DO SOMETHING!
+  QWidget *w = container( i );
+
+  if ( w->inherits( "KToolBar" ) )
+     QToolTip::add( static_cast<KToolBar*>(w)->getWidget( itemId( i ) ), tt );
 }
 
 QString KAction::toolTip() const
@@ -361,23 +367,21 @@ QString KAction::toolTip() const
   return d->m_toolTip;
 }
 
+// remove in KDE 3.0
 void KAction::setStatusText( const QString &text )
 {
-  d->m_statusText = text;
-
-  int len = containerCount();
-  for( int i = 0; i < len; ++i )
-    setStatusText( i, text );
+  setToolTip(text);
 }
 
 void KAction::setStatusText( int, const QString & )
 {
-  // ###
+  // ### remove in KDE 3.0
 }
 
+// remove in KDE 3.0
 QString KAction::statusText() const
 {
-  return d->m_statusText;
+  return toolTip();
 }
 
 int KAction::plug( QWidget *w, int index )
@@ -2800,7 +2804,7 @@ void KActionCollection::slotMenuItemHighlighted( int id )
 
   emit actionHighlighted( d->m_currentHighlightAction );
   emit actionHighlighted( d->m_currentHighlightAction, true );
-  emit actionStatusText( d->m_currentHighlightAction->statusText() );
+  emit actionStatusText( d->m_currentHighlightAction->toolTip() );
 }
 
 void KActionCollection::slotMenuAboutToHide()
