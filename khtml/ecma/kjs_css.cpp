@@ -31,18 +31,29 @@
 using namespace KJS;
 #include <kdebug.h>
 
-static QString jsNameToProp( const Identifier &p )
+static QString cssPropertyName( const Identifier &p, bool& hadPixelPrefix )
 {
     QString prop = p.qstring();
     int i = prop.length();
-    while( --i ) {
-	char c = prop[i].latin1();
-	if ( c < 'A' || c > 'Z' )
-	    continue;
-	prop.insert( i, '-' );
+    while ( --i ) {
+        char c = prop[i].latin1();
+        if ( c >= 'A' && c <= 'Z' )
+            prop.insert( i, '-' );
     }
 
-    return prop.lower();
+    prop = prop.lower();
+
+    if (prop.startsWith("css-")) {
+        prop = prop.mid(4);
+    } else if (prop.startsWith("pixel-")) {
+        prop = prop.mid(6);
+        hadPixelPrefix = true;
+    } else if (prop.startsWith("pos-")) {
+        prop = prop.mid(4);
+        hadPixelPrefix = true;
+    }
+
+    return prop;
 }
 
 /*
@@ -81,9 +92,9 @@ DOMCSSStyleDeclaration::~DOMCSSStyleDeclaration()
 
 bool DOMCSSStyleDeclaration::hasProperty(ExecState *exec, const Identifier &p) const
 {
-  DOM::DOMString cssprop = jsNameToProp(p);
-  // strip pos- / pixel- prefix here?
-  if (DOM::getPropertyID(cssprop.string().ascii(), cssprop.length()))
+  bool hadPixelPrefix;
+  QString cssprop = cssPropertyName(p, hadPixelPrefix);
+  if (DOM::getPropertyID(cssprop.latin1(), cssprop.length()))
       return true;
 
   return ObjectImp::hasProperty(exec, p);
@@ -118,21 +129,15 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const Identifier &property
     return getString(DOM::CSSStyleDeclaration(styleDecl).item(u));
 
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMCSSStyleDeclaration: converting to css property name: " << jsNameToProp(propertyName) << endl;
+  bool needPxSuffix;
+  kdDebug(6070) << "DOMCSSStyleDeclaration: converting to css property name: " << cssPropertyName(propertyName, needPxSuffix) << needPxSuffix ? "px" : "" << endl;
 #endif
-  DOM::DOMString p = jsNameToProp(propertyName);
-  bool asNumber = false;
   // pixelTop returns "CSS Top" as number value in unit pixels
   // posTop returns "CSS top" as number value in unit pixels _if_ its a
   // positioned element. if it is not a positioned element, return 0
   // from MSIE documentation ### IMPLEMENT THAT (Dirk)
-  {
-    QString prop = p.string();
-    if(prop.startsWith( "pixel-") || prop.startsWith( "pos-" ) ) {
-      p = prop.mid(prop.find( '-' )+1);
-      asNumber = true;
-    }
-  }
+  bool asNumber;
+  QString p = cssPropertyName(propertyName, asNumber);
 
   if (asNumber) {
     DOM::CSSValue v = const_cast<DOM::CSSStyleDeclaration &>( styleDecl ).getPropertyCSSValue(p);
@@ -145,18 +150,15 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const Identifier &property
     return String(str);
 
   // see if we know this css property, return empty then
-  QCString prop = p.string().latin1();
-  if (DOM::getPropertyID(prop.data(), prop.length()))
+  if (DOM::getPropertyID(p.latin1(), p.length()))
       return getString(DOM::DOMString(""));
 
   return DOMObject::tryGet(exec, propertyName);
 }
 
 
-void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const Identifier &pName, const Value& value, int attr )
+void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const Identifier &propertyName, const Value& value, int attr )
 {
-  Identifier propertyName = pName;
-
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMCSSStyleDeclaration::tryPut " << propertyName.qstring() << endl;
 #endif
@@ -164,16 +166,12 @@ void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const Identifier &pName, co
     styleDecl.setCssText(value.toString(exec).string());
   }
   else {
-    QString prop = jsNameToProp(propertyName);
+    bool pxSuffix;
+    QString prop = cssPropertyName(propertyName, pxSuffix);
     QString propvalue = value.toString(exec).qstring();
 
-    if(prop.left(4) == "css-")
-      prop = prop.mid(4);
-
-    if(prop.startsWith( "pixel-") || prop.startsWith( "pos-" ) ) {
-      prop = prop.mid(prop.find( '-' )+1);
+    if (pxSuffix)
       propvalue += "px";
-    }
 #ifdef KJS_VERBOSE
     kdDebug(6070) << "DOMCSSStyleDeclaration: prop=" << prop << " propvalue=" << propvalue << endl;
 #endif
@@ -187,7 +185,7 @@ void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const Identifier &pName, co
     }
     else
       // otherwise add it as a JS property
-      DOMObject::tryPut( exec, pName, value, attr );
+      DOMObject::tryPut( exec, propertyName, value, attr );
   }
 }
 
