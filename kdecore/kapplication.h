@@ -959,6 +959,7 @@ public:
    *
    * @param menuId identifying the control module, e.g. kde-mouse.desktop
    * @return true if access to the module is authorized, false otherwise.
+   * @since 3.2
    */
   bool authorizeControlModule(const QString &menuId);
   
@@ -968,6 +969,7 @@ public:
    * @param menuIds list of menu-ids of control module, 
    * an example of a menu-id is kde-mouse.desktop.
    * @return Those control modules for which access has been authorized.
+   * @since 3.2
    */
   QStringList authorizeControlModules(const QStringList &menuIds);
 
