@@ -314,9 +314,9 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
     break;
     case ID_FORM: {
       DOM::HTMLFormElement form = element;
-      KJSO tmp(new HTMLElement(form.elements().namedItem(p.string())));
-      if (tmp.isDefined())
-	return tmp;
+      DOM::Node n = form.elements().namedItem(p.string());
+      if(!n.isNull())
+          return KJSO(new HTMLElement(n));
       if      (p == "elements")        return getHTMLCollection(form.elements()); // type HTMLCollection
       else if (p == "length")          return Number(form.length());
       else if (p == "name")            return getString(form.name());
