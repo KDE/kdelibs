@@ -55,6 +55,10 @@ dnl Image libraries
 KDE_CREATE_LIBS_ALIASES
 KDE_CHECK_KIMGIO
 
+AM_CONDITIONAL(HAVE_LIBJPEG, test "x$LIBJPEG" != x )
+AM_CONDITIONAL(HAVE_LIBPNG, test "x$LIBPNG" != x )
+AM_CONDITIONAL(HAVE_LIBTIFF, test "x$$LIBTIFF" != x)
+
 # configure would do this very late. Too late for us!
 test "x$prefix" = xNONE && prefix=$ac_default_prefix
 
@@ -186,6 +190,8 @@ all_includes='-I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui $(QT_INCLUDES) $(X_I
 AC_SUBST(all_includes)
 
 AC_SUBST(EXTRA_SUBDIRS)
+
+AC_CONFIG_SUBDIRS(libltdl)
 
 AC_OUTPUT(Makefile \
 	kio/Makefile \
