@@ -30,24 +30,34 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
 {
   if (!KSycoca::self()->isBuilding()) // read-only database ?
    {
-      QDataStream *str = KSycoca::self()->findFactory( factory_id );
+      m_str = KSycoca::self()->findFactory( factory_id );
       // can't call factoryId() here since the constructor can't call inherited methods
-      if (!str) return; // No database!
+      if (!m_str) return; // No database!
 
       // Read position of index tables....
-      Q_INT32 sycocaDictOffset;
-      (*str) >> sycocaDictOffset;
+      Q_INT32 i;
+      (*m_str) >> i;
+      m_sycocaDictOffset = i;
+      (*m_str) >> i;
+      m_beginEntryOffset = i;
+      (*m_str) >> i;
+      m_endEntryOffset = i;
 
+      int saveOffset = m_str->device()->at();
       // Init index tables
-      m_sycocaDict = new KSycocaDict(str, sycocaDictOffset);   
+      m_sycocaDict = new KSycocaDict(m_str, m_sycocaDictOffset);   
+      saveOffset = m_str->device()->at(saveOffset);
    }
    else
    {
       // Build new database!
+      m_str = 0;
       m_pathList = new QStringList();
       m_entryDict = new KSycocaEntryDict();
       m_entryDict->setAutoDelete(true);
       m_sycocaDict = new KSycocaDict();
+      m_beginEntryOffset = 0;
+      m_endEntryOffset = 0;
 
       // m_pathList will be filled in by inherited constructors
    }
@@ -69,6 +79,18 @@ void KSycocaFactory::clear()
 }
 
 void
+KSycocaFactory::saveHeader(QDataStream &str)
+{
+   // Write header 
+   str.device()->at(mOffset);
+   str << (Q_INT32) m_sycocaDictOffset;
+   str << (Q_INT32) m_beginEntryOffset;
+   str << (Q_INT32) m_endEntryOffset;
+   kdebug( KDEBUG_INFO, 7011, QString("SycocaFactory : factorId = %1 dictOffset = %2")
+	.arg( factoryId() ) .arg( m_sycocaDictOffset ,8,16));
+}
+
+void
 KSycocaFactory::save(QDataStream &str)
 {
    if (!m_entryDict) return; // Error! Function should only be called when
@@ -76,11 +98,13 @@ KSycocaFactory::save(QDataStream &str)
    if (!m_sycocaDict) return; // Error!
 
    mOffset = str.device()->at(); // store position in member variable
-   Q_INT32 sycocaDictOffset = 0;
+   m_sycocaDictOffset = 0;
 
    // Write header (pass #1)
-   str << sycocaDictOffset;
-   
+   saveHeader(str);
+
+   m_beginEntryOffset = str.device()->at();
+
    // Write all entries.
    for(QDictIterator<KSycocaEntry> it ( *m_entryDict ); 
        it.current(); 
@@ -90,16 +114,17 @@ KSycocaFactory::save(QDataStream &str)
          it.current()->save(str);
    }
 
+   m_endEntryOffset = str.device()->at();
+
    // Write indices...
-   sycocaDictOffset = str.device()->at();      
+   m_sycocaDictOffset = str.device()->at();      
 
    m_sycocaDict->save(str);
 
    int endOfFactoryData = str.device()->at();
 
    // Update header (pass #2)
-   str.device()->at(mOffset);
-   str << sycocaDictOffset;
+   saveHeader(str);
 
    // Seek to end.
    str.device()->at(endOfFactoryData);

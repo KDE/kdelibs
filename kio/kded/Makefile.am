@@ -21,7 +21,9 @@ INCLUDES= -I$(srcdir)/.. $(all_includes)
 bin_PROGRAMS = kded
 kded_LDADD = ../libkio.la
 kded_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-kded_SOURCES = main.cpp kbuildsycoca.cpp kbuildservicetypefactory.cpp
+kded_SOURCES = main.cpp kbuildsycoca.cpp kbuildservicetypefactory.cpp \
+		kbuildservicefactory.cpp
 kded_METASOURCES = AUTO
 
-noinst_HEADERS = kbuildsycoca.h kbuildservicetypefactory.h
+noinst_HEADERS = kbuildsycoca.h kbuildservicetypefactory.h \
+		kbuildservicefactory.h

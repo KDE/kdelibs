@@ -63,22 +63,6 @@ protected:
    void clear();
 
    /**
-    * Saves the offer list 
-    */
-   void saveOfferList( KSycocaFactory * serviceFactory,
-                       KSycocaFactory * servicetypeFactory );
-
-   /**
-    * Saves the mimetype patterns index
-    * @param servicetypeFactory the name says it all
-    * @param entrySize (output)
-    * @param otherIndexOffset (output)
-    */
-   void saveMimeTypePattern( KSycocaFactory * servicetypeFactory, 
-                             Q_INT32 & entrySize,
-                             Q_INT32 & otherIndexOffset );
-   
-   /**
     * Scans dir for new files and new subdirectories.
     * Creates entries in factory.
     */

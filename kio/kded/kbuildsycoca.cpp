@@ -23,7 +23,7 @@
 #include <kservice.h>
 #include <kmimetype.h>
 #include <kbuildservicetypefactory.h>
-#include <kservicefactory.h>
+#include <kbuildservicefactory.h>
 
 #include <qdatastream.h>
 #include <qfile.h>
@@ -109,9 +109,9 @@ void KBuildSycoca::recreate()
   kdebug(KDEBUG_INFO, 7020, "Recreating ksycoca file");
      
   // It is very important to build the servicetype one first
-  // Both a registered in KSycoca, no need to keep the pointers
-  (void) new KBuildServiceTypeFactory;
-  (void) new KServiceFactory;
+  // Both are registered in KSycoca, no need to keep the pointers
+  KSycocaFactory *stf = new KBuildServiceTypeFactory;
+  (void) new KBuildServiceFactory(stf);
   
   build(); // Parse dirs
   save(); // Save database
@@ -208,113 +208,6 @@ void KBuildSycoca::readDirectory( const QString& _path, KSycocaFactory * factory
     }
 }
 
-void KBuildSycoca::saveOfferList( KSycocaFactory * serviceFactory,
-                                  KSycocaFactory * servicetypeFactory )
-{
-   if (!serviceFactory || !servicetypeFactory)
-   {
-     kdebug(KDEBUG_WARN, 7020, "Don't have the two mandatory factories. No servicetype index.");
-     return;
-   }
-   // For each entry in servicetypeFactory
-   for(QDictIterator<KSycocaEntry> it ( *(servicetypeFactory->entryDict()) );
-       it.current(); 
-       ++it)
-   {
-      // export associated services
-      // This means looking for the service type in ALL services
-      // This is SLOW. But it used to be done in every app (in KServiceTypeProfile)
-      // Doing it here saves a lot of time to the clients
-      QString serviceType = it.current()->name();
-      for(QDictIterator<KSycocaEntry> itserv ( *(serviceFactory->entryDict()) );
-          itserv.current(); 
-          ++itserv)
-      {
-         if ( ((KService *)itserv.current())->hasServiceType( serviceType ) )
-         {
-            (*m_str) << (Q_INT32) it.current()->offset();
-            (*m_str) << (Q_INT32) itserv.current()->offset();
-            //kdebug(KDEBUG_INFO, 7020, QString("<< %1 %2")
-            //       .arg(it.current()->offset(),8,16).arg(itserv.current()->offset(),8,16));
-         }
-      }
-   }
-   (*m_str) << (Q_INT32) 0;               // End of list marker (0)
-}
-
-void KBuildSycoca::saveMimeTypePattern( KSycocaFactory * servicetypeFactory, 
-                                        Q_INT32 & entrySize,
-                                        Q_INT32 & otherIndexOffset )
-{
-   if (!servicetypeFactory)
-   {
-     kdebug(KDEBUG_WARN, 7020, "No service type factory. Can't save mimetype patterns index.");
-     entrySize = 0;
-     otherIndexOffset = 0;
-     return;
-   }
-   // Store each patterns in one of the 2 string lists (for sorting)
-   QStringList fastPatterns;  // for *.a to *.abcd
-   QStringList otherPatterns; // for the rest (core.*, *.tar.bz2, *~) ...
-   QDict<KMimeType> dict;
-   // For each mimetype in servicetypeFactory
-   for(QDictIterator<KSycocaEntry> it ( *(servicetypeFactory->entryDict()) );
-       it.current(); 
-       ++it)
-   {
-      if ( it.current()->isType( KST_KMimeType ) )
-      {
-        QStringList pat = ( (KMimeType *) it.current())->patterns();
-        QStringList::ConstIterator patit = pat.begin();
-        for ( ; patit != pat.end() ; ++patit )
-        {
-           if ( (*patit).findRev('*') == 0 
-                && (*patit).findRev('.') == 1 
-                && (*patit).length() <= 6 )
-              // it starts with "*.", has no other '*' and no other '.', and is max 6 chars
-              // => fast patttern
-              fastPatterns.append( (*patit) );
-           else if (!(*patit).isEmpty()) // some stupid mimetype files have "Patterns=;"
-              otherPatterns.append( (*patit) );
-           // Assumption : there is only one mimetype for that pattern
-           // It doesn't really make sense otherwise, anyway.
-           dict.replace( (*patit), (KMimeType *) it.current() );
-        }
-      }
-   }
-   // Sort the list - the fast one, useless for the other one
-   fastPatterns.sort();
-   
-   entrySize = 0;
-
-   // For each fast pattern
-   QStringList::ConstIterator it = fastPatterns.begin();
-   for ( ; it != fastPatterns.end() ; ++it )
-   {
-     int start = m_str->device()->at();
-     // Justify to 6 chars with spaces, so that the size remains constant
-     // in the database file.
-     QString paddedPattern = (*it).leftJustify(6).right(4); // remove leading "*."
-     //kdebug(KDEBUG_INFO, 7020, "%s", QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()).latin1());
-     (*m_str) << paddedPattern;
-     (*m_str) << dict[(*it)]->offset();
-     // Check size remains constant
-     assert( !entrySize || ( entrySize == m_str->device()->at() - start ) );
-     entrySize = m_str->device()->at() - start;
-   }
-   // For the other patterns
-   otherIndexOffset = m_str->device()->at();
-   it = otherPatterns.begin();
-   for ( ; it != otherPatterns.end() ; ++it )
-   {
-     //kdebug(KDEBUG_INFO, 7020, "%s", QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()).latin1());
-     (*m_str) << (*it);
-     (*m_str) << dict[(*it)]->offset();
-   }
-   
-   (*m_str) << QString(""); // end of list marker (has to be a string !)
-}
-
 void KBuildSycoca::save()
 {
    // Write header (#pass 1)
@@ -339,27 +232,17 @@ void KBuildSycoca::save()
       (*m_str) << aOffset;
    }
    (*m_str) << (Q_INT32) 0; // No more factories.
-   (*m_str) << (Q_INT32) 0; // Offer list offset
-   (*m_str) << (Q_INT32) 0; // Mimetype patterns index offset
-   (*m_str) << (Q_INT32) 0; // 'Other' patterns index offset
-   (*m_str) << (Q_INT32) 0; // Entry size in the mimetype-patterns index ("fast" part)
 
    // Write factory data....
    for(KSycocaFactory *factory = m_lstFactories->first();
        factory;
        factory = m_lstFactories->next())
    {
+      kdebug(KDEBUG_INFO, 7020, QString("#2 factory Id = %1, offset = %2") .arg(factory->factoryId()) 
+		.arg(m_str->device()->at(),8,16));
       factory->save(*m_str);
    }
 
-   Q_INT32 offerListOffset = m_str->device()->at();
-   saveOfferList( serviceFactory, servicetypeFactory );
-
-   Q_INT32 mimeTypesPatternsOffset = m_str->device()->at();
-   Q_INT32 entrySize;
-   Q_INT32 otherIndexOffset;
-   saveMimeTypePattern( servicetypeFactory, entrySize, otherIndexOffset );
-   
    int endOfData = m_str->device()->at();
 
    // Write header (#pass 2)
@@ -374,20 +257,11 @@ void KBuildSycoca::save()
       Q_INT32 aOffset;
       aId = factory->factoryId();
       aOffset = factory->offset();
+      kdebug(KDEBUG_INFO, 7020, QString("#2 factory Id = %1, offset = %2") .arg(aId) .arg(aOffset,8,16));
       (*m_str) << aId;
       (*m_str) << aOffset;
    }
    (*m_str) << (Q_INT32) 0; // No more factories.
-   kdebug(KDEBUG_INFO, 7020, QString("offerListOffset : %1").
-          arg(offerListOffset,8,16));
-   (*m_str) << offerListOffset;
-   kdebug(KDEBUG_INFO, 7020, QString("mimeTypesPatternsOffset : %1").
-          arg(mimeTypesPatternsOffset,8,16));
-   (*m_str) << mimeTypesPatternsOffset;;
-   kdebug(KDEBUG_INFO, 7020, QString("otherIndexOffset : %1").
-          arg(otherIndexOffset,8,16));
-   (*m_str) << otherIndexOffset;;
-   (*m_str) << entrySize;
 
    kdebug(KDEBUG_INFO, 7020, QString("endOfData : %1").
           arg(endOfData,8,16));

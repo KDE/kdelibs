@@ -79,9 +79,24 @@ public:
    /**
     * Saves all entries it maintains as well as index files
     * for these entries to the stream 'str'.
+    *
     * Also sets mOffset to the starting position.
+    *
+    * The stream is positioned at the end of the last index.
+    *
+    * Don't forget to call the parent first when you override 
+    * this function.
     */
    virtual void save(QDataStream &str);
+
+   /**
+    * Writes out a header to the stream 'str'.
+    * The baseclass positions the stream correctly.
+    *
+    * Don't forget to call the parent first when you override 
+    * this function.
+    */
+   virtual void saveHeader(QDataStream &str);
 
    /**
     * @return the path for which this factory is responsible.
@@ -93,6 +108,11 @@ private:
    int mOffset;
 
 protected:
+   int m_sycocaDictOffset;
+   int m_beginEntryOffset;
+   int m_endEntryOffset;
+   QDataStream *m_str;
+
    QStringList *m_pathList;
    KSycocaEntryDict *m_entryDict;
    KSycocaDict *m_sycocaDict;

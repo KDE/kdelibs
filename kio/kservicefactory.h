@@ -71,6 +71,7 @@ public:
 
 protected:
   KService * createService(int offset);
+  int m_offerListOffset;
 
 private:
   static KServiceFactory *_self;

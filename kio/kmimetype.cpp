@@ -52,9 +52,14 @@ void KMimeType::buildDefaultType()
 {
   assert ( !s_pDefaultType );
   // Try to find the default type
-  KMimeType::Ptr defaultType = KMimeType::mimeType( "application/octet-stream" );
-  if (!defaultType)  
-//if (defaultType == 0L )  
+  KServiceType * mime = KServiceTypeFactory::self()->
+	findServiceTypeByName( "application/octet-stream" );
+
+  if (mime && mime->isType( KST_KMimeType ))
+  {
+      s_pDefaultType = KMimeType::Ptr((KMimeType *) mime);
+  }
+  else
   {
      errorMissingMimeType( "application/octet-stream" );
      KStandardDirs stdDirs;
@@ -62,8 +67,6 @@ void KMimeType::buildDefaultType()
      s_pDefaultType = new KMimeType( sDefaultMimeType, "application/octet-stream", 
                                      "unknown", "mime", QStringList() );
   }
-  else
-      s_pDefaultType = defaultType;
 }
 
 // Check for essential mimetypes
@@ -132,8 +135,6 @@ KMimeType::Ptr KMimeType::mimeType( const QString& _name )
     
   if ( !mime || !mime->isType( KST_KMimeType ) )
   {
-    if ( _name == "application/octet-stream" )
-      return 0L;
     if ( !s_pDefaultType )
       buildDefaultType();
     return s_pDefaultType;

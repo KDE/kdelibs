@@ -44,7 +44,8 @@ KServiceType * KBuildServiceTypeFactory::findServiceTypeByName(const QString &_n
 }
 
 
-KSycocaEntry * KBuildServiceTypeFactory::createEntry(const QString &file)
+KSycocaEntry * 
+KBuildServiceTypeFactory::createEntry(const QString &file)
 {
   //debug("KBuildServiceTypeFactory::createEntry(%s)",file.ascii());
   // Just a backup file ?
@@ -86,4 +87,119 @@ KSycocaEntry * KBuildServiceTypeFactory::createEntry(const QString &file)
   }
 
   return e;
+}
+
+void
+KBuildServiceTypeFactory::saveHeader(QDataStream &str)
+{
+   KSycocaFactory::saveHeader(str);
+kdebug(KDEBUG_INFO, 7012, QString("KBuildServiceTypeFactory m_fastPatternOffset = %1 m_otherPatternOffset = %2")
+	.arg( m_fastPatternOffset, 8, 16) 
+	.arg( m_otherPatternOffset, 8, 16));
+
+   str << (Q_INT32) m_fastPatternOffset;
+   str << (Q_INT32) m_otherPatternOffset; 
+}
+
+void
+KBuildServiceTypeFactory::save(QDataStream &str)
+{
+   KSycocaFactory::save(str);
+
+   savePatternLists(str);
+
+   int endOfFactoryData = str.device()->at();
+
+   // Update header (pass #3)
+   saveHeader(str);
+
+   // Seek to end.
+   str.device()->at(endOfFactoryData);
+}
+
+void
+KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
+{
+   // Store each patterns in one of the 2 string lists (for sorting)
+   QStringList fastPatterns;  // for *.a to *.abcd
+   QStringList otherPatterns; // for the rest (core.*, *.tar.bz2, *~) ...
+   QDict<KMimeType> dict;
+
+   // For each mimetype in servicetypeFactory
+   for(QDictIterator<KSycocaEntry> it ( *m_entryDict );
+       it.current(); 
+       ++it)
+   {
+      if ( it.current()->isType( KST_KMimeType ) )
+      {
+        KMimeType *mimeType = (KMimeType *) it.current();
+        QStringList pat = mimeType->patterns();
+        QStringList::ConstIterator patit = pat.begin();
+        for ( ; patit != pat.end() ; ++patit )
+        {
+           const QString &pattern = *patit;
+           if ( pattern.findRev('*') == 0 
+                && pattern.findRev('.') == 1 
+                && pattern.length() <= 6 )
+              // it starts with "*.", has no other '*' and no other '.', and is max 6 chars
+              // => fast patttern
+              fastPatterns.append( pattern );
+           else if (!pattern.isEmpty()) // some stupid mimetype files have "Patterns=;"
+              otherPatterns.append( pattern );
+           // Assumption : there is only one mimetype for that pattern
+           // It doesn't really make sense otherwise, anyway.
+           dict.replace( pattern, mimeType );
+        }
+      }
+   }
+   // Sort the list - the fast one, useless for the other one
+   fastPatterns.sort();
+   
+   Q_INT32 entrySize = 0;
+   Q_INT32 nrOfEntries = 0;
+
+   m_fastPatternOffset = str.device()->at();
+
+   // Write out fastPatternHeader (Pass #1)
+   str.device()->at(m_fastPatternOffset);
+   str << nrOfEntries;
+   str << entrySize;
+
+   // For each fast pattern
+   QStringList::ConstIterator it = fastPatterns.begin();
+   for ( ; it != fastPatterns.end() ; ++it )
+   {
+     int start = str.device()->at();
+     // Justify to 6 chars with spaces, so that the size remains constant
+     // in the database file.
+     QString paddedPattern = (*it).leftJustify(6).right(4); // remove leading "*."
+     //kdebug(KDEBUG_INFO, 7020, "%s", QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()).latin1());
+     str << paddedPattern;
+     str << dict[(*it)]->offset();
+     // Check size remains constant
+     assert( !entrySize || ( entrySize == str.device()->at() - start ) );
+     entrySize = str.device()->at() - start;
+     nrOfEntries++;
+   }
+
+   // store position
+   m_otherPatternOffset = str.device()->at();
+
+   // Write out fastPatternHeader (Pass #2)
+   str.device()->at(m_fastPatternOffset);
+   str << nrOfEntries;
+   str << entrySize;
+
+   // For the other patterns
+   str.device()->at(m_otherPatternOffset);
+
+   it = otherPatterns.begin();
+   for ( ; it != otherPatterns.end() ; ++it )
+   {
+     //kdebug(KDEBUG_INFO, 7020, "%s", QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()).latin1());
+     str << (*it);
+     str << dict[(*it)]->offset();
+   }
+   
+   str << QString(""); // end of list marker (has to be a string !)
 }

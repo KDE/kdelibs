@@ -32,10 +32,13 @@
 KServiceFactory::KServiceFactory()
  : KSycocaFactory( KST_KServiceFactory )
 {
-   if (KSycoca::self()->isBuilding())
+   m_offerListOffset = 0;
+   if (m_str)
    {
-      (*m_pathList) += KGlobal::dirs()->resourceDirs( "apps" );
-      (*m_pathList) += KGlobal::dirs()->resourceDirs( "services" );
+      // Read Header
+      Q_INT32 i;
+      (*m_str) >> i;
+      m_offerListOffset = i; 
    }
    _self = this;
 }
@@ -120,21 +123,18 @@ KService::List KServiceFactory::allServices()
 {
    kdebug(KDEBUG_INFO, 7011, "KServiceFactory::allServices()");
    KService::List list;
-   // Assume we're NOT building a database
-   // Get stream to factory start
-   QDataStream *str = KSycoca::self()->findFactory( factoryId() );
-   // Read the dict offset - will serve as an end point for the list of entries
-   Q_INT32 sycocaDictOffset;
-   (*str) >> sycocaDictOffset;
+   if (!m_str) return list;
 
-   int offset = str->device()->at();
+   // Assume we're NOT building a database
+
+   int offset = m_beginEntryOffset;
    KService *newService;
-   while ( offset < sycocaDictOffset )
+   while ( offset < m_endEntryOffset )
    {
       newService = createService(offset);
       if (newService)
          list.append( KService::Ptr( newService ) );
-      offset = str->device()->at();
+      offset = m_str->device()->at();
    }
    return list;
 }
@@ -144,14 +144,10 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
    //kdebug(KDEBUG_INFO, 7011, QString("KServiceFactory::offers ( %1 )")
    //                          .arg(serviceTypeOffset,8,16));
    KService::List list;
-   // Get stream to the header
-   QDataStream *str = KSycoca::self()->findHeader();
-   Q_INT32 offerListOffset;
-   (*str) >> offerListOffset;
-   //kdebug(KDEBUG_INFO, 7011, QString("offerListOffset : %1").
-   //       arg(offerListOffset,8,16));
+
+   QDataStream *str = m_str;
    // Jump to the offer list
-   str->device()->at( offerListOffset );
+   str->device()->at( m_offerListOffset );
    
    Q_INT32 aServiceTypeOffset;
    Q_INT32 aServiceOffset;

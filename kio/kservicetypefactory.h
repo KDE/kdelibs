@@ -102,6 +102,9 @@ protected:
 
 private:
   static KServiceTypeFactory *_self;
+protected:
+  int m_fastPatternOffset;
+  int m_otherPatternOffset;
 };
 
 #endif

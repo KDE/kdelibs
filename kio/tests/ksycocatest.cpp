@@ -98,5 +98,19 @@ main(int argc, char *argv[])
    debug(QString("Name is %1").arg(mf->name()));
    debug(QString("Comment is %1").arg(mf->comment("",false)));
 
+   debug("\nTrying findByURL for Makefile.am");
+
+   KMimeType::List mtl;
+
+   mtl  = KMimeType::allMimeTypes( );
+   assert( mtl.count() );
+   debug(QString("Found %1 mime types.").arg(mtl.count()));
+
+   KService::List sl;
+
+   sl  = KService::allServices( );
+   assert( sl.count() );
+   debug(QString("Found %1 services.").arg(sl.count()));
+
    debug("done");
 }

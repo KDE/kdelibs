@@ -31,6 +31,17 @@ KServiceTypeFactory::KServiceTypeFactory()
  : KSycocaFactory( KST_KServiceTypeFactory )
 {
    _self = this;
+   m_fastPatternOffset = 0;
+   m_otherPatternOffset = 0;
+   if (m_str)
+   {
+      // Read Header
+      Q_INT32 i;
+      (*m_str) >> i;
+      m_fastPatternOffset = i;
+      (*m_str) >> i;
+      m_otherPatternOffset = i;
+   }
 }
 
 
@@ -95,27 +106,25 @@ bool KServiceTypeFactory::matchFilename( const QString& _filename, const QString
 KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
 {
    // Assume we're NOT building a database
+
    // Get stream to the header
-   QDataStream *str = KSycoca::self()->findHeader();
-   Q_INT32 offerListOffset;
-   (*str) >> offerListOffset;
-   Q_INT32 fastOffset;
-   (*str) >> fastOffset;
-   Q_INT32 otherOffset;
-   (*str) >> otherOffset;
+   QDataStream *str = m_str;
+
+   str->device()->at( m_fastPatternOffset );
+
+   Q_INT32 nrOfEntries;
+   (*str) >> nrOfEntries;
    Q_INT32 entrySize;
    (*str) >> entrySize;
 
-   //kdebug(KDEBUG_INFO, 7011, QString("fastOffset : %1").arg(fastOffset,8,16));
-   //kdebug(KDEBUG_INFO, 7011, QString("otherOffset : %1").arg(otherOffset,8,16));
-   //kdebug(KDEBUG_INFO, 7011, QString("entrySize : %1").arg(entrySize));
+   Q_INT32 fastOffset =  str->device()->at( );
 
    QString pattern;
    Q_INT32 mimetypeOffset;
 
    // Let's go for a binary search in the "fast" pattern index
    Q_INT32 left = 0;
-   Q_INT32 right = (otherOffset-fastOffset) / entrySize - 1;
+   Q_INT32 right = nrOfEntries - 1;
    Q_INT32 middle;
    // Extract extension
    int lastDot = _filename.findRev('.');
@@ -148,8 +157,8 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
       }
    }
       
-   // Not found or no extension, try the "other" offset
-   str->device()->at( otherOffset );
+   // Not found or no extension, try the "other" Pattern table
+   str->device()->at( m_otherPatternOffset );
 
    while (true)
    {
@@ -170,19 +179,15 @@ KMimeType::List KServiceTypeFactory::allMimeTypes()
 {
    kdebug(KDEBUG_INFO, 7011, "KServiceTypeFactory::allMimeTypes()");
    KMimeType::List list;
-   // Assume we're NOT building a database
-   // Get stream to factory start
-   QDataStream *str = KSycoca::self()->findFactory( factoryId() );
-   if (!str) return list;
-   // Read the dict offset - will serve as an end point for the list of entries
-   Q_INT32 sycocaDictOffset;
-   (*str) >> sycocaDictOffset;
+   if (!m_str) return list;
 
-   int offset = str->device()->at();
+   int offset = m_beginEntryOffset;
    KServiceType *newServiceType;
-   while ( offset < sycocaDictOffset )
+   while ( offset < m_endEntryOffset )
    {
       newServiceType = createServiceType(offset);
+      offset = m_str->device()->at();
+
       // We don't want service types, but we have to build them
       // anyway, to skip their info
       if (newServiceType && newServiceType->isType( KST_KMimeType ))
@@ -191,8 +196,8 @@ KMimeType::List KServiceTypeFactory::allMimeTypes()
          list.append( KMimeType::Ptr( mimeType ) );
       }
 
-      offset = str->device()->at();
    }
+   assert(offset == m_endEntryOffset);
    return list;
 }
 
@@ -200,24 +205,17 @@ KServiceType::List KServiceTypeFactory::allServiceTypes()
 {
    kdebug(KDEBUG_INFO, 7011, "KServiceTypeFactory::allServiceTypes()");
    KServiceType::List list;
-   // Assume we're NOT building a database
-   // Get stream to factory start
-   QDataStream *str = KSycoca::self()->findFactory( factoryId() );
-   if (!str) return list;
-   // Read the dict offset - will serve as an end point for the list of entries
+   if (!m_str) return list;
 
-   Q_INT32 sycocaDictOffset;
-   (*str) >> sycocaDictOffset;
-
-   int offset = str->device()->at();
+   int offset = m_beginEntryOffset;
    KServiceType *newServiceType;
-   while ( offset < sycocaDictOffset )
+   while ( offset < m_endEntryOffset )
    {
       newServiceType = createServiceType(offset);
+      offset = m_str->device()->at();
+
       if (newServiceType)
          list.append( KServiceType::Ptr( newServiceType ) );
-
-      offset = str->device()->at();
    }
    return list;
 }
@@ -227,12 +225,8 @@ bool KServiceTypeFactory::checkMimeTypes()
    QDataStream *str = KSycoca::self()->findFactory( factoryId() );
    if (!str) return false;
 
-   // Read the dict offset - will serve as an end point for the list of entries
-   Q_INT32 sycocaDictOffset;
-   (*str) >> sycocaDictOffset;
-   // There are mimetypes/servicetypes if the dict offset is
-   // not right now in the file
-   return (str->device()->at() < sycocaDictOffset);
+   // check if there are mimetypes/servicetypes 
+   return (m_beginEntryOffset != m_endEntryOffset);
 }
 
 KServiceType * KServiceTypeFactory::createServiceType(int offset)

@@ -1,5 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 1999 David Faure <faure@kde.org>
+                 1999 Waldo Bastian <bastian@kde.org>
  
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -17,35 +18,24 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef __k_build_service_type_factory_h__
-#define __k_build_service_type_factory_h__
+#ifndef __k_build_service_factory_h__
+#define __k_build_service_factory_h__
 
-#include <kservicetypefactory.h>
+#include <kservicefactory.h>
 
 /**
  * @internal
- * Service-type factory for building ksycoca
+ * Service factory for building ksycoca
  */
-class KBuildServiceTypeFactory : public KServiceTypeFactory
+class KBuildServiceFactory : public KServiceFactory
 {
 public:
   /**
    * Create factory
    */
-  KBuildServiceTypeFactory();
+  KBuildServiceFactory( KSycocaFactory *serviceTypeFactory );
   
-  virtual ~KBuildServiceTypeFactory() { }
-
-  /**
-   * Find a service type in the database file 
-   * @return a pointer to the servicetype in the memory dict (don't free!)
-   */
-  virtual KServiceType * findServiceTypeByName(const QString &_name);
-
-  /**
-   * Construct a KServiceType from a config file.
-   */
-  virtual KSycocaEntry * createEntry(const QString &file);
+  virtual ~KBuildServiceFactory() { }
 
   /**
    * Write out service type specific index files.
@@ -59,10 +49,10 @@ public:
    * this function.
    */
   virtual void saveHeader(QDataStream &str);
-
 private:
+  void saveOfferList(QDataStream &str);
 
-  void savePatternLists(QDataStream &str);
+  KSycocaFactory *m_serviceTypeFactory;
 };
 
 #endif
