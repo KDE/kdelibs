@@ -594,16 +594,21 @@ void DocumentImpl::recalcStyle()
     m_style->setDisplay(BLOCK);
     m_style->setVisuallyOrdered( visuallyOrdered );
     // ### make the font stuff _really_ work!!!!
-    const KHTMLSettings *settings = m_view->part()->settings();
-    QValueList<int> fs = settings->fontSizes();
-    int size = fs[3];
-    if(size < settings->minFontSize())
-        size = settings->minFontSize();
-    QFont f = KGlobalSettings::generalFont();
-    f.setFamily(settings->stdFontName());
-    f.setPointSize(size);
-    //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
-    KGlobal::charsets()->setQFont(f, settings->charset());
+    
+    QFont f = KGlobalSettings::generalFont();      
+    if (m_view)
+    {
+        const KHTMLSettings *settings = m_view->part()->settings();
+        QValueList<int> fs = settings->fontSizes();        
+        int size = fs[3];                
+        if(size < settings->minFontSize())
+            size = settings->minFontSize();
+        f.setFamily(settings->stdFontName()); 
+        f.setPointSize(size);
+        KGlobal::charsets()->setQFont(f, settings->charset());
+    }
+    
+    //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;    
     m_style->setFont(f);
 
     if ( parseMode() != Strict )
@@ -837,7 +842,7 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId )
 
 DOMString DocumentImpl::baseURL() const
 {
-    if(!view()->part()->baseURL().isEmpty()) return view()->part()->baseURL().url();
+    if(view() && !view()->part()->baseURL().isEmpty()) return view()->part()->baseURL().url();
     return url;
 }
 
