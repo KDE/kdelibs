@@ -29,6 +29,7 @@
 
 class KInstance;
 class QTimer;
+class KLibrary;
 class KLibFactory;
 class KLibFactoryPrivate;
 class KLibLoaderPrivate;
@@ -46,6 +47,9 @@ class KLibraryPrivate;
  */
 class KLibrary : public QObject
 {
+    friend class KLibLoader;
+    friend class QAsciiDict<KLibrary>;
+
     Q_OBJECT
 public:
     /**
@@ -53,11 +57,6 @@ public:
      * Don't create KLibrary objects on your own. Instead use @ref KLibLoader.
      */
     KLibrary( const QString& libname, const QString& filename, void * handle );
-    /**
-     * @internal
-     * Don't destruct KLibrary objects yourself. Instead use @ref unload() instead.
-     */
-    ~KLibrary();
 
     /**
      * @return The name of the library like "libkspread".
@@ -93,6 +92,12 @@ private slots:
     void slotTimeout();
 
 private:
+    /**
+     * @internal
+     * Don't destruct KLibrary objects yourself. Instead use @ref unload() instead.
+     */
+    ~KLibrary();
+
     QString m_libname;
     QString m_filename;
     KLibFactory* m_factory;
