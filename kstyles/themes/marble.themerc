@@ -147,7 +147,20 @@ SButtonPosition=Opposite
 ShadeStyle=Motif
 ArrowType=3D
 Name=Marble
+Name[cs]=Mramor
+Name[de]=Marmor
+Name[eo]=Marmoro
+Name[fi]=Marmori
+Name[hu]=Márvány
+Name[sl]=Frnikola
 Comment=Light marble themed style
+Comment[cs]=Téma světlého mramoru
+Comment[de]=Helles Marmordesign
+Comment[eo]=Hela marmoro
+Comment[fi]=Vaalealla marmorilla teemoitetty tyyli
+Comment[hu]=Halvány márvány téma stílus
+Comment[no]=Lettmarble-stil med tema
+Comment[sl]=Tematski slog svetlih frnikol
 
 [General]
 foreground=0,0,0

@@ -1,5 +1,19 @@
 [Misc]
 Name=Cold Ions
+Name[cs]=Studené ionty
+Name[de]=Kalte Ionen
+Name[eo]=Malvarmaj ionoj
+Name[fi]=Kylmät ionit
+Name[hu]=Fagyos ionok
+Name[no]=Kalde ioner
+Name[sl]=Mrzli ioni
 Comment=Cold Ions unthemed style
+Comment[cs]=Styl studené ionty (netémovaný)
+Comment[de]=Kalte Ionen (kein komplettes Design)
+Comment[eo]=Stilo "Malvarmaj ionoj" neetosa
+Comment[fi]=Kylmät ionit teemoittamaton tyyli
+Comment[hu]=Fagyos ionok - téma nélküli stílus
+Comment[no]=Kalde ioner-stil uten tema
+Comment[sl]=Netematski slog mrzlih ionov
 [KDE]
 widgetStyle=coldionsstyle.la

@@ -223,7 +223,21 @@ Pixmap=lightgray.png
 SButtonPosition=BottomRight
 ShadeStyle=Motif
 Name=System-Series
+Name[cs]=Systémová série
+Name[de]=Systemserie
+Name[eo]=Sistem-Serioj
+Name[fi]=Järjestelmä-Sarja
+Name[hu]=Rendszer-sorozat
+Name[no]=System-serier
+Name[sl]=Sistemske vrste
 Comment=System Style 001
+Comment[cs]=Systémový styl 001
+Comment[de]=System-Design 001
+Comment[eo]=Sistemostilo 001
+Comment[fi]=Järjestelmän tyyli 001
+Comment[hu]=Rendszer stílus 001
+Comment[no]=System-stil 001
+Comment[sl]=Sistemski slog 001
 ScrollBarExtent=14
 
 [General]

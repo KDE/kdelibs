@@ -223,7 +223,19 @@ Pixmap=sysarrow_iright.png
 SButtonPosition=BottomRight
 ShadeStyle=Motif
 Name=System
+Name[cs]=Systém
+Name[eo]=Sistemo
+Name[fi]=Järjestelmä
+Name[hu]=Rendszer
+Name[sl]=Sistem
 Comment=System themed style
+Comment[cs]=Systémové téma
+Comment[de]=System-Design
+Comment[eo]=Sistema stilo kun temoj
+Comment[fi]=Järjestelmän teemoitetty tyyli
+Comment[hu]=Rendszer téma stílus
+Comment[no]=System-stil med tema
+Comment[sl]=Sistemski tematski slog
 
 [General]
 foreground=0,0,0

@@ -1,5 +1,14 @@
 [Misc]
 Name=Beos
+Name[cs]=BeOS
+Name[eo]=BeOS
 Comment=Unthemed Beos-like style
+Comment[cs]=Styl jako BeOS (netémovaný)
+Comment[de]=BeOS-Stil (kein komplettes Design)
+Comment[eo]=BeOS-simila stilo neetosa
+Comment[fi]=Teemoittamaton Beos:n kaltainen tyyli
+Comment[hu]=Beos szerű kinézet
+Comment[no]=Beos-lignende stil uten tema
+Comment[sl]=Netematski slog, podoben Beosu
 [KDE]
 widgetStyle=beosstyle.la
