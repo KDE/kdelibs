@@ -71,6 +71,7 @@ fi
 
 if test ! "$USE_RPATH" = "yes"; then
   LIBXLST_RPATH=
+  LIBXML_RPATH=
 fi
 
 AC_SUBST(LIBXSLT_LIBS)
