@@ -158,9 +158,9 @@ public:
 			       bool _is_local_file = false, bool _fast_mode = false );
 
   /** 
-   * Get all the mimetypes dict. Useful for showing the list of
-   * available mimetypes.  The returned dict contains a subset of the
-   * entries returned by @ref KServiceType::serviceTypes 
+   * Get all the mimetypes. Useful for showing the list of
+   * available mimetypes.
+   * Very memory consuming, don't use unless really necessary.
    */
   static List allMimeTypes();
 

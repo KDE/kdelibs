@@ -385,7 +385,7 @@ void KOpenWithDlg::slotClear()
 
 // ----------------------------------------------------------------------
 
-void KOpenWithDlg::slotSelected( const QString& _name, const QString& _exec )
+void KOpenWithDlg::slotSelected( const QString& /*_name*/, const QString& _exec )
 {
     edit->setText( _exec );
 }

@@ -183,6 +183,11 @@ KService::List KServiceType::offers( const QString& _servicetype )
   }
 }
 
+KServiceType::List KServiceType::allServiceTypes()
+{
+  return KServiceTypeFactory::self()->allServiceTypes();
+}
+
 /*
 QDataStream& operator>>( QDataStream& _str, KServiceType& s )
 {

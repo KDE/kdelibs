@@ -1,5 +1,6 @@
 #include <kservice.h>
 #include <kmimetype.h>
+#include <kservicetype.h>
 
 #include <kapp.h>
 
@@ -27,5 +28,14 @@ for (int i = 0 ; i < 2 ; ++i ) { // test twice to see if they got deleted
      debug((*m)->name());
    }
    
+   debug("All service types");
+   KServiceType::List list = KServiceType::allServiceTypes();
+   debug("got %d service types", list.count());
+   QValueListIterator<KServiceType::Ptr> st = list.begin();
+   for ( ; st != list.end() ; ++st )
+   {
+     debug((*st)->name());
+   }
+
    debug("done");
 }

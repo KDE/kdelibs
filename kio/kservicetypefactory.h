@@ -74,6 +74,12 @@ public:
   KMimeType::List allMimeTypes();
   
   /**
+   * @return all servicetypes
+   * Slow and memory consuming, avoid using
+   */
+  KServiceType::List allServiceTypes();
+
+  /**
    * @return true if at least one mimetype is present
    * Safety test
    */

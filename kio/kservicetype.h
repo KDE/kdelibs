@@ -47,7 +47,7 @@ class KServiceType : public KSycocaEntry
   
 public:
   typedef KSharedPtr<KServiceType> Ptr;
-  typedef QValueList<KServiceType::Ptr> List;
+  typedef QValueList<Ptr> List;
   typedef const QSharedPtr<QVariant> PropertyPtr;
 
   /**
@@ -111,7 +111,7 @@ public:
    *         service type is unknown.  
    * VERY IMPORTANT : don't store the result in a KServiceType * !
    */
-  static KServiceType::Ptr serviceType( const QString& _name );
+  static Ptr serviceType( const QString& _name );
 
   /**
    * @return all services supporting the given servicetype name
@@ -123,10 +123,11 @@ public:
 
   /** 
    * @return a list of all the supported servicetypes. Useful for 
-   *         showing the list of available mimetypes in a listbox,
+   *         showing the list of available servicetypes in a listbox,
    *         for example.
+   * Very memory consuming, don't use unless really necessary.
    */
-  //static const KServiceType>& serviceTypes();
+  static List allServiceTypes();
 
 protected:
 

@@ -49,7 +49,7 @@ class KService : public KSycocaEntry
 
 public:
   typedef KSharedPtr<KService> Ptr;
-  typedef QValueList<KService::Ptr> List;
+  typedef QValueList<Ptr> List;
   typedef const QSharedPtr<QVariant> PropertyPtr;
 
   /**
@@ -200,14 +200,14 @@ public:
    *         unknown.
    * VERY IMPORTANT : don't store the result in a KService * !
    */
-  static KService::Ptr service( const QString& _name );
+  static Ptr service( const QString& _name );
 
   /**
    * @return the whole list of services. Useful for being able to
    * to display them in a list box, for example.
    * Very memory consuming, don't use unless really necessary.
    */
-  static KService::List allServices();
+  static List allServices();
 
 private:
   QString m_strName;
@@ -228,14 +228,6 @@ private:
   QMap<QString,QVariant> m_mapProps;
   bool m_bValid;
 };
-
-/*
-class KServiceList : public QValueList<KService::Ptr>
-{
-public:
-   KServiceList() { };
-};
-*/
 
 //QDataStream& operator>>( QDataStream& _str, KService& s );
 //QDataStream& operator<<( QDataStream& _str, KService& s );
