@@ -91,7 +91,7 @@ private:
 
 KJSO Screen::get(const UString &p) const
 {
-  
+
   KWinModule info;
   QPaintDeviceMetrics m(QApplication::desktop());
 
@@ -507,7 +507,7 @@ KJSO Location::get(const UString &p) const
   else if (p == "href")
     str = url.prettyURL();
   else if (p == "pathname")
-    str = url.path();
+    str = url.path().isEmpty() ? "/" : url.path();
   else if (p == "port")
     str = url.port() ? QString::number(url.port()) : QString::fromLatin1("");
   else if (p == "protocol")
@@ -534,7 +534,7 @@ void Location::put(const UString &p, const KJSO &v)
   QString str = v.toString().value().qstring();
 
   KURL url = part->url();
-    
+
   if (p == "href") url = KURL(url,str);
   if (p == "hash") url.setRef(str);;
   if (p == "host") {
@@ -552,7 +552,7 @@ void Location::put(const UString &p, const KJSO &v)
   if (p == "search"){ /* TODO */}
 
   part->scheduleRedirection(0, url.url());
- 
+
 }
 
 KJSO Location::toPrimitive(Type) const
