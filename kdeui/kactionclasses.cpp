@@ -661,6 +661,7 @@ int KSelectAction::plug( QWidget *widget, int index )
         cb->setMaximumWidth( d->m_comboWidth );
       }
       cb->setInsertionPolicy( QComboBox::NoInsertion );
+      QWhatsThis::add( cb, whatsThis() );
     }
 
     addContainer( bar, id_ );
