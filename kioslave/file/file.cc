@@ -320,7 +320,7 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
         dataReq(); // Request for data
         result = readData( buffer );
 
-        if (result > 0)
+        if (result >= 0)
         {
             if (dest.isEmpty())
             {
