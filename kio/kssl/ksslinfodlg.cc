@@ -360,6 +360,7 @@ KSSLCertBox *KSSLInfoDlg::certInfoWidget(QWidget *parent, const QString &certNam
 KSSLCertBox::KSSLCertBox(QWidget *parent, const char *name, WFlags f)
 : QScrollView(parent, name, f)
 {
+    _frame = 0L;
     setBackgroundMode(QWidget::PaletteButton);
     setValues(QString::null, 0L);
 }
