@@ -96,6 +96,8 @@ void Dialog::initConnections()
              SLOT(slotMisspelling(const QString&, int)) );
     connect( d->checker, SIGNAL(done()),
              SLOT(slotDone()) );
+    connect( d->ui->m_suggestions , SIGNAL( doubleClicked (QListViewItem *, const QPoint &, int ) ),
+             SLOT( slotReplaceWord() ) );
 }
 
 void Dialog::initGui()
