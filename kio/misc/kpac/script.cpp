@@ -433,14 +433,25 @@ namespace KPAC
 
     QString Script::evaluate( const KURL& url )
     {
-        QString code =
-            "return FindProxyForURL('" + url.url() + "','" + url.host() + "');";
+	ExecState *exec = m_interpreter.globalExec();
+	Value findFunc = m_interpreter.globalObject().get( exec, "FindProxyForURL" );
+	Object findObj = Object::dynamicCast( findFunc );
+	if (!findObj.isValid() || !findObj.implementsCall())
+	  throw Error( "No such function FindProxyForURL" );
 
-        ExecState* exec = m_interpreter.globalExec();
-        Completion result = m_interpreter.evaluate( code );
-        if ( result.complType() == Throw )
-            throw Error( result.value().toString( exec ).qstring() );
-        return result.value().toString( exec ).qstring();
+	Object thisObj;
+	List args;
+	args.append(String(url.url()));
+	args.append(String(url.host()));
+	Value retval = findObj.call( exec, thisObj, args );
+	
+	if ( exec->hadException() ) {
+	  Value ex = exec->exception();
+	  exec->clearException();
+	  throw Error( ex.toString( exec ).qstring() );
+	}
+
+        return retval.toString( exec ).qstring();
     }
 }
 
