@@ -418,6 +418,7 @@ public:
    * When the setActionText signal is emitted, the browserextension
    * stores the text of the action internally, so that it's possible
    * to query later for the text of the action, using this method.
+   * @since 3.5
    */
   QString actionText( const char * name ) const;
 
@@ -488,6 +489,7 @@ signals:
    * This can be used to change "Paste" into "Paste Image" for instance.
    *
    * See class documentation for the list of standard actions.
+   * @since 3.5
    */
   void setActionText( const char * name, const QString& text );
 
