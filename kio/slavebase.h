@@ -415,7 +415,7 @@ protected:
      * @ref dropNetwork, or the system will stay online until
      * KNetMgr gets closed (or the SlaveBase gets destructed)!
      *
-     * If KNetMgr is not running, then this is a no-op.
+     * If KNetMgr is not running, then this is a no-op and returns true
      *
      * @param host tells the netmgr the host the slave wants to connect
      *             to. As this could also be a proxy, we can't just take

@@ -296,6 +296,24 @@ bool SlaveBase::requestNetwork(const QString& host)
 {
     KIO_DATA << host;
     m_pConnection->send( MSG_NET_REQUEST, data );
+
+    int cmd;
+    if ( m_pConnection->read( &cmd, data ) == -1 ) {
+        return true;
+    }
+    kdDebug(7007) << "reading " << cmd << endl;
+    if (cmd != INF_NETWORK_STATUS) {
+        if (cmd != CMD_NONE)
+            dispatch( cmd, data );
+        return true;
+    } else {
+        bool status;
+        QDataStream stream( data, IO_ReadOnly );
+        stream >> status;
+        kdDebug(7007) << "got " << status << endl;
+        return status;
+    }
+    return true;
 }
 
 void SlaveBase::dropNetwork(const QString& host)

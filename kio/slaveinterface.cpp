@@ -178,18 +178,31 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     case MSG_NET_REQUEST: {
         QString host;
         stream >> host;
-        emit requestNetwork(host);
+        requestNetwork(host);
         break;
     }
     case MSG_NET_DROP: {
         QString host;
         stream >> host;
-        emit dropNetwork(host);
+        dropNetwork(host);
         break;
     }
     default:
 	assert( 0 );
     }
+}
+
+void SlaveInterface::requestNetwork(const QString &host)
+{
+    kdDebug(7007) << "requestNetwork " << host << endl;
+    QByteArray packedArgs;
+    QDataStream stream( packedArgs, IO_WriteOnly );
+    stream << true;
+    m_pConnection->sendnow( INF_NETWORK_STATUS, packedArgs );
+}
+
+void SlaveInterface::dropNetwork(const QString &)
+{
 }
 
 void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass, const QString& key )

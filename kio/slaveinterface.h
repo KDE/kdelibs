@@ -78,7 +78,8 @@ class Connection;
    INF_GETTING_FILE, // ?
    INF_NEED_PASSWD,
    INF_INFOMESSAGE,
-   INF_META_DATA
+   INF_META_DATA,
+   INF_NETWORK_STATUS
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
@@ -153,9 +154,6 @@ public:
     void infoMessage( const QString & ) ;
     void connectFinished();
 
-    void requestNetwork( const QString & );
-    void dropNetwork( const QString & );
-
 protected:
     /////////////////
     // Dispatching
@@ -179,6 +177,9 @@ protected:
      * @return true on ok, false on cancel
      */
     void openPassDlg( const QString& /*head*/, const QString& /*user*/, const QString& /*pass*/, const QString& /*key*/ = QString::null );
+
+    void requestNetwork( const QString & );
+    void dropNetwork( const QString & );
 
     /**
      * @internal
