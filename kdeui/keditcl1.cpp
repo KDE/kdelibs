@@ -1,11 +1,4 @@
  /*
-
-  *  * NOTE THIS CLASS IS NOT THE SAME AS THE ONE IN THE KDEUI LIB
- * The difference is that this one uses KFileDialog instead of
- * QFileDialog. So don't remove this class with the idea in mind to
- * link against kdeui.
- * Bernd
-  *
   $Id$
 
   KEdit, a simple text editor for the KDE project
@@ -26,9 +19,6 @@
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
-  KEdit, simple editor class, hacked version of the original by
-
 
   */
 
@@ -106,6 +96,100 @@ KEdit::insertText(QTextStream *stream)
    setCursorPosition(saveline, savecol);
    setAutoUpdate(true);
 
+   if (!repaintTimer->isActive())
+      repaintTimer->start(0,TRUE);
+   repaint();
+
+   setModified(true);
+   setFocus();
+}
+
+static QStringList split( QString &text , const char *sep )
+{
+    QStringList tmp;
+    
+    if ( text.isEmpty() )
+        return tmp;
+
+    int pos = -1;
+    int old = 0;
+
+    // Append words up to (not including) last
+    while ( (pos = text.find( sep , old )) != -1 )
+    {
+        tmp.append( text.mid(old,pos - old) );
+        old = pos + 1;
+    }
+
+    if (old < (int) text.length())
+    {
+        // Append final word
+        tmp.append( text.mid(old) );
+    }
+    
+    return tmp;
+}
+
+void
+KEdit::cleanWhiteSpace()
+{
+   if (!hasMarkedText()) return;
+   QString oldText = markedText();
+   QString newText;
+   QStringList lines = split(oldText, "\n");
+   bool addSpace = false;
+   bool firstLine = true;
+   QChar lastChar = oldText[oldText.length()-1];
+   QChar firstChar = oldText[0];
+   for(QStringList::Iterator it = lines.begin();
+       it != lines.end();)
+   {
+      QString line = (*it).simplifyWhiteSpace();
+      if (line.isEmpty())
+      {
+         if (addSpace)
+            newText += "\n\n";
+         if (firstLine)
+         {
+            if (firstChar.isSpace())
+               newText += "\n";
+            firstLine = false;
+         }
+         addSpace = false;
+      }
+      else
+      {
+         if (addSpace)
+            newText += " ";
+         if (firstLine)
+         {
+            if (firstChar.isSpace())
+               newText += " ";
+            firstLine = false;
+         }
+         newText += line;
+         addSpace = true;
+      }
+      it = lines.remove(it);
+   }
+   if (addSpace)
+   {
+      if (lastChar == '\n')
+         newText += "\n";
+      else if (lastChar.isSpace())
+         newText += " ";
+   }
+
+   if (oldText == newText) 
+   {
+      deselect();
+      return;
+   }
+
+   setAutoUpdate(FALSE);
+   del();
+   insert(newText);
+   setAutoUpdate(TRUE);
    if (!repaintTimer->isActive())
       repaintTimer->start(0,TRUE);
    repaint();
@@ -366,9 +450,7 @@ bool KEdit::eventFilter(QObject *o, QEvent *ev){
 
 
 QString KEdit::markedText(){
-
   return QMultiLineEdit::markedText();
-
 }
 
 void KEdit::doGotoLine() {

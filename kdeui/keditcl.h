@@ -1,15 +1,9 @@
 /*
- *
- *
- * NOTE THIS CLASS IS NOT THE SAME AS THE ONE IN THE KDEUI LIB
- * File handling functions have been removed from this class.
- * 
- * This class is to replace the version in KDEUI.
-
   KEdit, a simple text editor for the KDE project
 
   Copyright (C) 1996 Bernd Johannes Wuebben
                      wuebben@math.cornell.edu
+  Copyright (C) 2000 Waldo Bastian <bastian@kde.org>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -187,10 +181,15 @@ public:
      */
     void 	replace();
 
-    /// Presents a "Goto Line" dialog to the User
-    /** Presents a "Goto Line" dialog to the User
+    /** 
+     * Presents a "Goto Line" dialog to the User
      */
     void 	doGotoLine();
+
+    /**
+     * Cleans up redundant whitespace from selected text.
+     */
+    void        cleanWhiteSpace();
 
     /**
      * @return true if the document has been modified;.
