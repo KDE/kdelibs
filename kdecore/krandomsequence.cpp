@@ -44,6 +44,23 @@ KRandomSequence::~KRandomSequence()
   delete [] m_ShuffleArray;
 }
 
+KRandomSequence::KRandomSequence(const KRandomSequence &a)
+{
+  // Set the size of the shuffle table
+  m_ShuffleArray = new long [m_nShuffleTableSize];
+  *this = a;
+}
+
+KRandomSequence &
+KRandomSequence::operator=(const KRandomSequence &a)
+{
+  m_lngSeed1 = a.m_lngSeed1;
+  m_lngSeed2 = a.m_lngSeed2;
+  m_lngShufflePos = a.m_lngShufflePos;
+  memcpy(m_ShuffleArray, a.m_ShuffleArray, sizeof(long)*m_nShuffleTableSize);
+  return *this;
+}
+
 
 //////////////////////////////////////////////////////////////////////////////
 //	Member Functions
@@ -145,6 +162,23 @@ void KRandomSequence::Draw()
   {
     m_lngShufflePos += sMM1;
   }
+}
+
+void 
+KRandomSequence::modulate(int i)
+{
+  m_lngSeed2 -= i;
+  if ( m_lngSeed2 < 0 )
+  {
+    m_lngShufflePos += sMod2;
+  }
+  Draw();  
+  m_lngSeed1 -= i;
+  if ( m_lngSeed1 < 0 )
+  {
+    m_lngSeed1 += sMod1;
+  }
+  Draw();
 }
 
 double

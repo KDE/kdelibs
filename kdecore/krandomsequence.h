@@ -60,6 +60,16 @@ public:
   virtual ~KRandomSequence();
 
   /**
+   * Copy constructor
+   */
+  KRandomSequence(const KRandomSequence &a);
+  
+  /**
+   * Assignment
+   */
+  KRandomSequence &operator=(const KRandomSequence &a);
+
+  /**
    * Restart the sequence based on lngSeed
    */
   void setSeed( long lngSeed = 1 );
@@ -92,6 +102,28 @@ public:
    * @return modifies the order of @p list
    */
   void randomize(QGList *list);
+
+  /**
+   * Modulate the random sequence. 
+   *
+   * If S(i) is the sequence of numbers that will follow 
+   * given the current state after calling modulate(i), 
+   * then S(i) != S(j) for i != j and   
+   *      S(i) == S(j) for i == j.
+   *
+   * This can be usefull in game situation where "undo" restores
+   * the state of the random sequence. If the game modulates the
+   * random sequence with the move chosen by the player, the 
+   * random sequence will be identical whenever the player "redo"-s 
+   * his or hers original move, but different when the player 
+   * chooses another move.
+   *
+   * With this scenario "undo" can no longer be used to repeat a 
+   * certain move over and over again until the computer reacts 
+   * with a favourable response or to predict the response for a 
+   * certain move based on the response to another move.
+   */
+  void modulate(int i);
 	
 private:
   void Draw(); // Generate the random number
