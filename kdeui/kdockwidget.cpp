@@ -1079,11 +1079,19 @@ void KDockManager::activate()
 
 bool KDockManager::eventFilter( QObject *obj, QEvent *event )
 {
+/* This doesn't seem to fullfill any sense, other than breaking
+   QMainWindow's layout all over the place
+   The first child of the mainwindow is not necessarily a meaningful
+   content widget but in Qt3's QMainWindow it can easily be a QToolBar.
+   In short: QMainWindow knows how to layout its children, no need to
+   mess that up.
+
   if ( obj == main && event->type() == QEvent::Resize && main->children() ){
     QWidget* fc = (QWidget*)main->children()->getFirst();
     if ( fc )
       fc->setGeometry( QRect(QPoint(0,0), main->geometry().size()) );
   }
+*/
 
   if ( obj->inherits("KDockWidgetAbstractHeaderDrag") ){
     KDockWidget* pDockWdgAtCursor = 0L;
