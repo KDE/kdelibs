@@ -10,7 +10,7 @@ In this file:
 
 About kdelibs
 -------------
-This is version 2.2alpha1 of the KDE libraries. "alpha" indicates that this is
+This is version 2.2alpha2 of the KDE libraries. "alpha" indicates that this is
 a technology preview, but we don't pretend its stable in any way.
 
 This package includes libraries that are central to the development and 
@@ -84,9 +84,6 @@ Here is a list:
 
 * interfaces
     kparts interface for text editors
-
-* kdedb
-    kioslaves for databases as well as database aware dialog widgets.
 
 * libtldl
     System independed dlopen() handler.
