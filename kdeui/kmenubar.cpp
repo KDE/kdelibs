@@ -153,7 +153,9 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 void KMenuBar::showEvent( QShowEvent *e )
 {
     if ( d->topLevel ) {
-        int screen = QApplication::desktop()->screenNumber(parentWidget()->pos());
+        int screen = QApplication::desktop()->screenNumber(parentWidget() ?
+                                                           parentWidget()->pos()
+                                                     : topLevelWidget()->pos());
         QRect area = QApplication::desktop()->screenGeometry(screen);
         setGeometry(area.left(), area.top()-frameWidth()-2, area.width(), heightForWidth( area.width() ) );
 #ifndef Q_WS_QWS //FIXME
