@@ -99,10 +99,10 @@ QBitmap centerBmp;
 QBitmap maskBmp;
 QBitmap xBmp;
 */
-QIntDict<GradientSet> gDict;
-
 namespace
 {
+	QIntDict<GradientSet> gDict;
+
 	const int itemFrame       = 1;
 	const int itemHMargin     = 6;
 	const int itemVMargin     = 0;
