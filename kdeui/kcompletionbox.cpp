@@ -155,7 +155,6 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                       type == QEvent::Move ||
                       type == QEvent::MouseButtonPress) {
                 hide();
-                return false;
             }
             else if ( type == QEvent::Move )
                 move( d->m_parent->mapToGlobal(QPoint(0, d->m_parent->height())));
@@ -215,7 +214,12 @@ void KCompletionBox::show()
         qApp->installEventFilter( this );
     }
     resize( sizeHint() );
-    QWidget::show();
+
+    // we shouldn't need to call this, but without this, the scrollbars
+    // are pretty b0rked.
+    triggerUpdate( true );
+    
+    KListBox::show();
 }
 
 void KCompletionBox::hide()
@@ -223,7 +227,7 @@ void KCompletionBox::hide()
     if ( d->m_parent )
         qApp->removeEventFilter( this );
     d->cancelText = QString::null;
-    QWidget::hide();
+    KListBox::hide();
 }
 
 QSize KCompletionBox::sizeHint() const
