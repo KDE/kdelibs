@@ -380,10 +380,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             n->attach(HTMLWidget);
 
         if(tagPriority[id] == 0 && n->renderer())
-        {
             n->renderer()->calcMinMaxWidth();
-            if (n->id() == ID_EMBED) n->renderer()->close();
-        }
 	return true;
     } else {
 #ifdef PARSER_DEBUG
