@@ -172,6 +172,7 @@ void KHTMLParser::reset()
     haveFrameSet = false;
     haveContent = false;
     haveBody = false;
+    haveMalformedTable = false;
     inSelect = false;
     m_inline = false;
 
@@ -181,7 +182,6 @@ void KHTMLParser::reset()
     head = 0;
     end = false;
     isindex = 0;
-    haveKonqBlock = false;
 
     discard_until = 0;
 }
@@ -497,13 +497,18 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 return false;
             return true;
         }
+        case ID_THEAD:
+        case ID_TBODY:
+        case ID_TFOOT:
+        case ID_TR:
         case ID_TD:
         case ID_TH:
-            // lets try to close the konqblock
-            if ( haveKonqBlock ) {
-                popBlock( ID__KONQBLOCK );
-                haveKonqBlock = false;
-                return insertNode( n );
+            // lets try to close the stray table content
+            if ( haveMalformedTable ) {
+                while (haveMalformedTable)
+                    popOneBlock();
+                handled = true;
+                break;
             }
         default:
             break;
@@ -556,25 +561,6 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             break;
         case ID_BODY:
             break;
-        case ID__KONQBLOCK:
-            switch( id ) {
-            case ID_THEAD:
-            case ID_TFOOT:
-            case ID_TBODY:
-            case ID_TR:
-            case ID_TD:
-            case ID_TH:
-                // now the actual table contents starts
-                // lets close our anonymous block before the table
-                // and go ahead!
-                popBlock( ID__KONQBLOCK );
-                haveKonqBlock = false;
-                handled = checkChild( current->id(), id );
-                break;
-            default:
-                break;
-            }
-            break;
         case ID_TABLE:
         case ID_THEAD:
         case ID_TFOOT:
@@ -613,21 +599,21 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                     node = ( node->id() == ID_TR ) ? parentparent : parent;
                     NodeImpl *parent = node->parentNode();
                     int exceptioncode = 0;
-                    NodeImpl *container = new HTMLGenericElementImpl( document, ID__KONQBLOCK );
-                    parent->insertBefore( container, node, exceptioncode );
-                    if ( exceptioncode ) {
+                    parent->insertBefore(n, node, exceptioncode);
+                    if (exceptioncode) {
 #ifdef PARSER_DEBUG
-                        kdDebug( 6035 ) << "adding anonymous container before table failed!" << endl;
+                        kdDebug(6035) << "adding content before table failed.." << endl;
 #endif
                         break;
                     }
-                    if ( !container->attached() && HTMLWidget )
-			container->attach();
-                    pushBlock( ID__KONQBLOCK, tagPriority[ID__KONQBLOCK] );
-                    haveKonqBlock = true;
-                    current = container;
-                    handled = true;
-                    break;
+                    if ( n->isElementNode() && tagPriority[id] != 0 &&
+                         !flat && endTag[id] != DOM::FORBIDDEN ) {
+
+                        pushBlock(id, tagPriority[id]);
+                        current = n;
+                        haveMalformedTable = true;
+                    }
+                    return true;
                 }
 
                 if ( current->id() == ID_TR )
@@ -1197,6 +1183,14 @@ void KHTMLParser::popOneBlock()
 
     m_inline = Elem->m_inline;
     current = Elem->node;
+
+    if (haveMalformedTable && (!current ||
+                               current->id() == ID_TR ||
+                               current->id() == ID_THEAD ||
+                               current->id() == ID_TBODY ||
+                               current->id() == ID_TFOOT ||
+                               current->id() == ID_TABLE ) )
+        haveMalformedTable = false;
 
     delete Elem;
 }

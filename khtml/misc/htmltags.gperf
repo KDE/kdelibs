@@ -60,7 +60,6 @@ ins, ID_INS
 isindex, ID_ISINDEX
 kbd, ID_KBD
 keygen, ID_KEYGEN
--konqblock, ID__KONQBLOCK
 label, ID_LABEL
 layer, ID_LAYER
 legend, ID_LEGEND

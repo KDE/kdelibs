@@ -45,6 +45,7 @@ using namespace DOM;
 // 8 table
 // 9 body frameset
 // 10 html
+
 const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
     0, // 0
     1, // ID_A == 1
@@ -99,7 +100,6 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
     0, // ID_ISINDEX
     1, // ID_KBD
     0, // ID_KEYGEN
-    5, // ID__KONQBLOCK
     1, // ID_LABEL
     1, // ID_LAYER
     1, // ID_LEGEND
@@ -206,7 +206,6 @@ const tagStatus DOM::endTag[] = {
     FORBIDDEN, // ID_ISINDEX
     REQUIRED,  // ID_KBD
     REQUIRED,  // ID_KEYGEN
-    REQUIRED,  // ID__KONQBLOCK
     REQUIRED,  // ID_LABEL
     REQUIRED,  // ID_LAYER
     REQUIRED,  // ID_LEGEND
@@ -380,7 +379,6 @@ static const ushort tag_list_1[] = {
     ID_COMMENT,
     ID_LI,
     ID_XMP,
-    ID__KONQBLOCK,
     ID_INS,
     ID_DEL,
     ID_NOBR,
@@ -424,7 +422,6 @@ static const ushort tag_list_3[] = {
     ID_COMMENT,
     ID_LI,
     ID_XMP,
-    ID__KONQBLOCK,
     ID_MARQUEE,
     0
 };
@@ -624,9 +621,6 @@ bool DOM::checkChild(ushort tagID, ushort childID)
         // ADDRESS: ( _0 | P ) *
         if( check_array(childID, tag_list_0) ) return true;
         return (childID == ID_P);
-    case ID__KONQBLOCK:
-        if ( childID == ID__KONQBLOCK || childID == ID_TABLE ) return false;
-        // Fall through!
     case ID_LI:
     case ID_DT:
     case ID_DIV:

@@ -156,7 +156,7 @@ protected:
     bool haveFrameSet;
     bool m_inline;
     bool end;
-    bool haveKonqBlock;
+    bool haveMalformedTable;
     bool inSelect;
 
 
