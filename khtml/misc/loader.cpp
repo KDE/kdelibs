@@ -451,7 +451,6 @@ CachedImage::~CachedImage()
 
 void CachedImage::ref( CachedObjectClient *c )
 {
-    qDebug( "CachedImage:: %p ref from %p %s", this, c, kdBacktrace().latin1() );
     CachedObject::ref(c);
 
     if( m ) {
@@ -469,7 +468,6 @@ void CachedImage::ref( CachedObjectClient *c )
 
 void CachedImage::deref( CachedObjectClient *c )
 {
-    qDebug( "CachedImage:: %p deref from %p %s", this, c, kdBacktrace().latin1() );
     CachedObject::deref(c);
     if(m && m_clients.isEmpty() && m->running())
         m->pause();
@@ -1316,9 +1314,9 @@ void Cache::flush(bool force)
             while ( totalSizeOfLRU > maxSize && m_LRULists[i].m_tail )
                 removeCacheEntry( m_LRULists[i].m_tail );
 
-//#ifdef CACHE_DEBUG
+#ifdef CACHE_DEBUG
         statistics();
-//#endif
+#endif
     }
 
     for ( CachedObject* p = freeList->first(); p; p = freeList->next() ) {
