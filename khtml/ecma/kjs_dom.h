@@ -62,7 +62,7 @@ namespace KJS {
     Completion tryExecute(const List &);
     enum { InsertBefore, ReplaceChild, RemoveChild, AppendChild,
 	   HasChildNodes, CloneNode, AddEventListener, RemoveEventListener,
-	   DispatchEvent, Contains };
+	   DispatchEvent, Contains, HasAttributes };
   private:
     DOM::Node node;
     int id;

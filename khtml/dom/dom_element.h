@@ -348,6 +348,18 @@ public:
     NodeList getElementsByTagName ( const DOMString &name );
 
     /**
+     * Returns true when an attribute with a given name is specified on this
+     * element or has a default value, false otherwise.
+     * Introduced in DOM Level 2.
+     *
+     * @param name The name of the attribute to look for.
+     *
+     * @return true if an attribute with the given name is specified on this
+     * element or has a default value, false otherwise.
+     */
+    bool hasAttribute( const DOMString& name );
+
+    /**
      * Puts all <code> Text </code> nodes in the full depth of the
      * sub-tree underneath this <code> Element </code> into a "normal"
      * form where only markup (e.g., tags, comments, processing

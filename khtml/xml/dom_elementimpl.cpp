@@ -316,6 +316,22 @@ DOMString ElementImpl::getAttribute( const DOMString &name ) const
     return defattr->value();
 }
 
+bool ElementImpl::hasAttribute( const DOMString &name ) const
+{
+  // search in already set attributes first
+    int exceptioncode;
+    if(!namedAttrMap) return false;
+    AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name,exceptioncode));
+    if (attr) return true;
+
+    // then search in default attr in case it is not yet set
+    NamedAttrMapImpl* dm = defaultMap();
+    if(!dm) return false;
+    AttrImpl* defattr = static_cast<AttrImpl*>(dm->getNamedItem(name, exceptioncode));
+    if(!defattr || exceptioncode) return false;
+    return true;
+}
+
 DOMString ElementImpl::getAttribute( int id )
 {
     // search in already set attributes first
@@ -433,6 +449,11 @@ NamedNodeMapImpl *ElementImpl::attributes()
         namedAttrMap->ref();
     }
     return namedAttrMap;
+}
+
+bool ElementImpl::hasAttributes() const
+{
+    return namedAttrMap ? (namedAttrMap->length() > 0) : false;
 }
 
 AttrImpl *ElementImpl::getAttributeNode( const DOMString &name )

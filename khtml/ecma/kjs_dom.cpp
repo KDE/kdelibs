@@ -73,7 +73,7 @@ bool DOMNode::hasProperty(const UString &p, bool recursive) const
       p == "namespaceURI" || p == "prefix" || p == "localName" || */
       p == "ownerDocument" || p == "insertBefore" || p == "replaceChild" ||
       p == "removeChild" || p == "appendChild" || p == "hasChildNodes" ||
-      p == "cloneNode" ||
+      p == "cloneNode" || p == "hasAttributes" ||
       /* moved here from Element in DOM2
       p == "normalize"  || p == "supports" */
       // no DOM standard, found in IE only
@@ -133,6 +133,8 @@ KJSO DOMNode::tryGet(const UString &p) const
     result = new DOMNodeFunc(node, DOMNodeFunc::RemoveChild);
   else if (p == "appendChild")
     result = new DOMNodeFunc(node, DOMNodeFunc::AppendChild);
+  else if (p == "hasAttributes") // DOM2
+    result = new DOMNodeFunc(node, DOMNodeFunc::HasAttributes);
   else if (p == "hasChildNodes")
     result = new DOMNodeFunc(node, DOMNodeFunc::HasChildNodes);
   else if (p == "cloneNode")
@@ -332,6 +334,9 @@ Completion DOMNodeFunc::tryExecute(const List &args)
 {
   KJSO result;
   switch (id) {
+    case HasAttributes:
+      result = Boolean(node.hasAttributes());
+      break;
     case HasChildNodes:
       result = Boolean(node.hasChildNodes());
       break;
@@ -644,6 +649,8 @@ Completion DOMDocFunction::tryExecute(const List &args)
 const TypeInfo DOMElement::info = { "Element", HostType,
 				    &DOMNode::info, 0, 0 };
 
+// No hasProperty for DOMElement ??
+
 KJSO DOMElement::tryGet(const UString &p) const
 {
 #ifdef KJS_VERBOSE
@@ -684,11 +691,10 @@ KJSO DOMElement::tryGet(const UString &p) const
     return new DOMElementFunction(element, DOMElementFunction::SetAttributeNodeNS);
   else if (p == "getElementsByTagNameNS") // new for DOM2 - not yet in khtml
     return new DOMElementFunction(element, DOMElementFunction::GetElementsByTagNameNS);
-  else if (p == "hasAttribute") // new for DOM2 - not yet in khtml
-    return new DOMElementFunction(element, DOMElementFunction::HasAttribute);
   else if (p == "hasAttributeNS") // new for DOM2 - not yet in khtml
     return new DOMElementFunction(element, DOMElementFunction::HasAttributeNS);*/
-
+  else if (p == "hasAttribute") // DOM2
+    return new DOMElementFunction(element, DOMElementFunction::HasAttribute);
   else
   {
     DOM::DOMString attr = element.getAttribute( p.string() );
@@ -745,8 +751,10 @@ Completion DOMElementFunction::tryExecute(const List &args)
     case GetAttributeNodeNS: // new for DOM2 - not yet in khtml
     case SetAttributeNodeNS: // new for DOM2 - not yet in khtml
     case GetElementsByTagNameNS: // new for DOM2 - not yet in khtml
-    case HasAttribute: // new for DOM2 - not yet in khtml
     case HasAttributeNS: // new for DOM2 - not yet in khtml*/
+    case HasAttribute: // DOM2
+      result = Boolean(element.hasAttribute(args[0].toString().value().string()));
+      break;
   default:
     result = Undefined();
   }

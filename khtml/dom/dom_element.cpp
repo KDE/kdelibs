@@ -177,6 +177,12 @@ NodeList Element::getElementsByTagName( const DOMString &name )
   return 0;
 }
 
+bool Element::hasAttribute( const DOMString& name )
+{
+    if (impl) return ((ElementImpl *)impl)->hasAttribute(name);
+    return 0;
+}
+
 void Element::normalize()
 {
     if (!impl)

@@ -367,15 +367,20 @@ Node Node::appendChild( const Node &newChild )
     return r;
 }
 
+bool Node::hasAttributes()
+{
+    if (!impl)
+	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
+    bool r = impl->hasAttributes();
+    return r;
+}
+
 bool Node::hasChildNodes(  )
 {
     if (!impl)
 	return 0; // ### enable	throw throw DOMException(DOMException::NOT_FOUND_ERR);
 
-    int exceptioncode = 0;
     bool r = impl->hasChildNodes();
-    if (exceptioncode)
-	throw DOMException(exceptioncode);
     return r;
 }
 

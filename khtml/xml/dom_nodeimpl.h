@@ -121,6 +121,8 @@ public:
 
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
 
+    virtual bool hasAttributes (  ) const;
+
     virtual bool hasChildNodes (  ) const;
 
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode ) = 0;
@@ -157,7 +159,7 @@ public:
             {
                 button = _button; type = _type;
                 url = _url;
-                innerNode = _innerNode; 
+                innerNode = _innerNode;
                 currentZIndex = -1;
                 zIndex = -1;
                 noHref = _noHref;
@@ -234,7 +236,7 @@ public:
      * attach to a KHTMLView. Additional info (like style information,
      * frames, etc...) will only get loaded, when attached to a widget.
      */
-    virtual void attach() { setAttached(true); }  
+    virtual void attach() { setAttached(true); }
     /**
      * detach from a HTMLWidget
      */
@@ -398,7 +400,7 @@ public:
     virtual QRect getRect() const;
     bool getUpperLeftCorner(int &xPos, int &yPos) const;
     bool getLowerRightCorner(int &xPos, int &yPos) const;
-    
+
     virtual bool prepareMouseEvent( int x, int y,
                                     int _tx, int _ty,
                                     MouseEvent *ev);

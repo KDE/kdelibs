@@ -42,7 +42,7 @@ class NodeImpl;
 class NamedNodeMapImpl;
 class EventListener;
 class Event;
- 
+
 /**
  * Objects implementing the <code> NamedNodeMap </code> interface are
  * used to represent collections of nodes that can be accessed by
@@ -537,6 +537,13 @@ public:
     Node appendChild ( const Node &newChild );
 
     /**
+     * Returns whether this node (if it is an element) has any attributes.
+     * @return a boolean. True if this node has any attributes, false otherwise.
+     *  Introduced in DOM Level 2
+     */
+    bool hasAttributes (  );
+
+    /**
      * This is a convenience method to allow easy determination of
      * whether a node has any children.
      *
@@ -599,7 +606,7 @@ public:
     void addEventListener(const DOMString &type,
 			  EventListener *listener,
 			  const bool useCapture);
-			
+
     /**
      * Introduced in DOM Level 2
      * This method is from the EventTarget interface
@@ -689,7 +696,7 @@ public:
      * @returns the exact coordinates and size of this element.
      */
     QRect getRect();
-    
+
 protected:
     NodeImpl *impl;
 };

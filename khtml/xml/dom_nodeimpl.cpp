@@ -161,6 +161,11 @@ NodeImpl *NodeImpl::appendChild( NodeImpl *, int &exceptioncode )
   return 0;
 }
 
+bool NodeImpl::hasAttributes(  ) const
+{
+  return false;
+}
+
 bool NodeImpl::hasChildNodes(  ) const
 {
   return false;

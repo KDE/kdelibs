@@ -107,6 +107,7 @@ public:
     DOMString tagName() const;
 
     DOMString getAttribute ( const DOMString &name ) const;
+    bool hasAttribute ( const DOMString &name ) const;
 
     void setAttribute ( const DOMString &name, const DOMString &value);
     void removeAttribute ( const DOMString &name );
@@ -121,6 +122,7 @@ public:
 
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
     virtual NamedNodeMapImpl *attributes();
+    virtual bool hasAttributes() const;
 
     /**
      * override this in subclasses if you need to parse
