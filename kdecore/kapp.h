@@ -23,10 +23,10 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION_STRING "1.1.1"
+#define KDE_VERSION_STRING "1.1.2"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 1
-#define KDE_VERSION_RELEASE 4
+#define KDE_VERSION_RELEASE 5
 
 #include <kconfig.h>
 
@@ -715,6 +715,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.61.2.2  1999/04/17 22:12:18  kulow
+// setting RELEASE to 4
+//
 // Revision 1.61.2.1  1999/04/10 15:13:41  dfaure
 // in getHelpMenu(), the first param, bAboutQtMenu, doesn't do anything
 // anymore -> fixed docu.
