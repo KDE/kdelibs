@@ -522,7 +522,9 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         }
       }
     }
-    viewport()->setCursor( c );
+    QWidget *vp = viewport();
+    if ( vp->cursor().handle() != c.handle() )
+        vp->setCursor( c );
 
     d->prevMouseX = xm;
     d->prevMouseY = ym;
@@ -1032,7 +1034,7 @@ void KHTMLView::addFormCompletionItem(const QString &name, const QString &value)
     // dashes or spaces as those are likely credit card numbers or
     // something similar
     bool cc_number(true);
-    for (int i = 0; i < value.length(); ++i)
+    for (unsigned int i = 0; i < value.length(); ++i)
     {
       QChar c(value[i]);
       if (!c.isNumber() && c != '-' && !c.isSpace())
