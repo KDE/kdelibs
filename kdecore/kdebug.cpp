@@ -269,17 +269,14 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
 #endif
 }
 
-static void kDebugBackend2( unsigned short nLevel, unsigned short nArea, const char* fmt, ... )
+static void kDebugBackend2( unsigned short nLevel, unsigned short nArea, const char* fmt, va_list arguments )
 {
-    va_list arguments;
-    va_start( arguments, fmt );
     char buf[4096] = "";
-    int nSize = vsprintf( buf, fmt, arguments );
+    int nSize = vsnprintf( buf, 4096, fmt, arguments );
     if( nSize > 4094 ) nSize = 4094;
     buf[nSize] = '\n';
     buf[nSize+1] = '\0';
     kDebugBackend( nLevel, nArea, buf);
-    va_end( arguments );
 }
 
 void kDebugInfo( const char* fmt, ... )
