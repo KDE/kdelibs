@@ -81,7 +81,6 @@
 using namespace KIO;
 
 extern "C" {
-  void sigalrm_handler(int);
   int kdemain(int argc, char **argv);
 };
 
@@ -103,24 +102,6 @@ int kdemain( int argc, char **argv )
   slave.dispatchLoop();
   return 0;
 }
-
-/*
- * We'll use an alarm that will set this flag when transfer has timed out
- */
-char sigbreak = 0;
-
-void sigalrm_handler(int )
-{
-  sigbreak = 1;
-}
-
-void setup_alarm(unsigned int timeout)
-{
-  sigbreak = 0;
-  alarm(timeout);
-  signal(SIGALRM, sigalrm_handler);
-}
-
 
 /***********************************  Generic utility functions ********************/
 
@@ -260,18 +241,14 @@ void HTTPProtocol::resetSessionSettings()
   if ( m_bUseCache )
     cleanCache();
 
-  setRealHost( m_request.hostname );
   // Deal with HTTP tunneling
-  if ( m_bIsSSL && m_bUseProxy && (m_proxyURL.protocol() != "https"
-                                    || m_proxyURL.protocol() != "webdavs") )
+  if ( m_bIsSSL && m_bUseProxy &&
+      (m_proxyURL.protocol() != "https" || m_proxyURL.protocol() != "webdavs") )
   {
-    // Tell parent class about the real hostname
     setEnableSSLTunnel( true );
-  }
-  else
-  {
-    // Should never be needed! Being overcautious!
-    setEnableSSLTunnel( false );
+    // Tell parent class about the real hostname so that it can
+    // correctly deal with the SSL session...
+    setRealHost( m_request.hostname );
   }
 
   m_responseCode = 0;
@@ -302,6 +279,11 @@ void HTTPProtocol::setHost( const QString& host, int port,
   // Reset the webdav-capable flags for this host
   if ( m_request.hostname != host )
     m_davHostOk = m_davHostUnsupported = false;
+
+  // HACK:  This is a temporary solution to fix the condition
+  // where the realhost name was set for the previous request.
+  // SSL tunneling definitely needs to be re-designed!
+  setRealHost (QString::null);
 
   m_request.hostname = host;
   m_request.port = (port == 0) ? m_iDefaultPort : port;
@@ -336,11 +318,13 @@ void HTTPProtocol::retrieveContent( bool dataInternal /* = false */ )
 {
   if ( !retrieveHeader( false ) )
   {
-    if ( m_bError ) { return; }
+    if ( m_bError )
+      return;
   }
   else
   {
-    if ( !readBody( dataInternal ) && m_bError ) { return; }
+    if ( !readBody( dataInternal ) && m_bError )
+      return;
   }
 
   httpClose();
@@ -417,7 +401,8 @@ void HTTPProtocol::stat(const KURL& url)
   if ( !checkRequestURL( url ) )
     return;
 
-  if ( m_protocol != "webdav" && m_protocol != "webdavs" ) {
+  if ( m_protocol != "webdav" && m_protocol != "webdavs" )
+  {
     UDSEntry entry;
     UDSAtom atom;
     atom.m_uds = KIO::UDS_NAME;
@@ -475,10 +460,11 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
 
   for ( QDomElement thisResponse = multiResponse.documentElement().firstChild().toElement();
         !thisResponse.isNull();
-        thisResponse = thisResponse.nextSibling().toElement() ) {
-
+        thisResponse = thisResponse.nextSibling().toElement() )
+  {
     QDomElement href = thisResponse.namedItem( "href" ).toElement();
-    if ( !href.isNull() ) {
+    if ( !href.isNull() )
+    {
       entry.clear();
 
       KURL thisURL = KURL::decode_string( href.text() );
@@ -495,23 +481,32 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
 
       davParsePropstats( propstats, entry );
 
-      if ( stat ) {
+      if ( stat )
+      {
         // return an item
         statEntry( entry );
         finished();
         return;
-
-      } else {
+      }
+      else
+      {
         listEntry( entry, false );
       }
-    } else {
-      kdDebug(7113) << "Error: no URL contained in response to PROPFIND on " << url.prettyURL() << endl;
+    }
+    else
+    {
+      kdDebug(7113) << "Error: no URL contained in response to PROPFIND on "
+                    << url.prettyURL() << endl;
     }
   }
 
   if ( stat )
-    error( ERR_UNSUPPORTED_ACTION, i18n("Your server did not return a WebDAV 1.0 compliant response.") );
-  else {
+  {
+    error( ERR_UNSUPPORTED_ACTION, i18n("Your server did not return a WebDAV "
+                                        "1.0 compliant response.") );
+  }
+  else
+  {
     listEntry( entry, true );
     finished();
   }
@@ -533,11 +528,13 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
   uint lockCount = 0;
   uint supportedLockCount = 0;
 
-  for ( uint i = 0; i < propstats.count(); i++) {
+  for ( uint i = 0; i < propstats.count(); i++)
+  {
     QDomElement propstat = propstats.item(i).toElement();
 
     QDomElement status = propstat.namedItem( "status" ).toElement();
-    if ( status.isNull() ) {
+    if ( status.isNull() )
+    {
       // error, no status code in this propstat
       kdDebug(7113) << "Error, no status code in this propstat" << endl;
       return;
@@ -545,67 +542,80 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
 
     int code = codeFromResponse( status.text() );
 
-    if ( code != 200 ) {
+    if ( code != 200 )
+    {
       kdDebug(7113) << "Error: status code " << code << endl;
       continue;
     }
 
     QDomElement prop = propstat.namedItem( "prop" ).toElement();
-    if ( prop.isNull() ) {
+    if ( prop.isNull() )
+    {
       kdDebug(7113) << "Error: no prop segment in this propstat." << endl;
       return;
     }
 
     for ( QDomElement property = prop.firstChild().toElement();
           !property.isNull();
-          property = property.nextSibling().toElement() ) {
+          property = property.nextSibling().toElement() )
+    {
 
-      if ( property.namespaceURI() != "DAV:" ) {
+      if ( property.namespaceURI() != "DAV:" )
+      {
         // break out - we're only interested in properties from the DAV namespace
         continue;
       }
 
-      if ( property.tagName() == "creationdate" ) {
+      if ( property.tagName() == "creationdate" )
+      {
         // Resource creation date. Should be is ISO 8601 format.
         atom.m_uds = KIO::UDS_CREATION_TIME;
         atom.m_long = parseDateTime( property.text(), property.attribute("dt") );
         entry.append( atom );
-
-      } else if ( property.tagName() == "getcontentlength" ) {
+      }
+      else if ( property.tagName() == "getcontentlength" )
+      {
         // Content length (file size)
         atom.m_uds = KIO::UDS_SIZE;
         atom.m_long = property.text().toULong();
         entry.append( atom );
-
-      } else if ( property.tagName() == "displayname" ) {
+      }
+      else if ( property.tagName() == "displayname" )
+      {
         // Name suitable for presentation to the user
         setMetaData( "davDisplayName", property.text() );
-
-      } else if ( property.tagName() == "source" ) {
+      }
+      else if ( property.tagName() == "source" )
+      {
         // Source template location
         QDomElement source = property.namedItem( "link" ).toElement()
                                       .namedItem( "dst" ).toElement();
         if ( !source.isNull() )
           setMetaData( "davSource", source.text() );
-
-      } else if ( property.tagName() == "getcontentlanguage" ) {
+      }
+      else if ( property.tagName() == "getcontentlanguage" )
+      {
         // equiv. to Content-Language header on a GET
         setMetaData( "davContentLanguage", property.text() );
-
-      } else if ( property.tagName() == "getcontenttype" ) {
+      }
+      else if ( property.tagName() == "getcontenttype" )
+      {
         // Content type (mime type)
         // This may require adjustments for other server-side webdav implementations
         // (tested with Apache + mod_dav 1.0.3)
-        if ( property.text() == "httpd/unix-directory" ) {
-          if ( !isDirectory ) {
+        if ( property.text() == "httpd/unix-directory" )
+        {
+          if ( !isDirectory )
+          {
             atom.m_uds = KIO::UDS_FILE_TYPE;
             atom.m_long = S_IFDIR;
             entry.append( atom );
 
             isDirectory = true;
           }
-
-        } else if ( property.text() != "" ) {
+        } 
+        else if ( property.text() != "" )
+        {
           atom.m_uds = KIO::UDS_FILE_TYPE;
           atom.m_long = S_IFREG;
           entry.append( atom );
@@ -616,31 +626,40 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
 
           foundContentType = true;
         }
-
-      } else if ( property.tagName() == "executable" ) {
+      }
+      else if ( property.tagName() == "executable" )
+      {
         // File executable status
         if ( property.text() == "T" )
           foundExecutable = true;
 
-      } else if ( property.tagName() == "getlastmodified" ) {
+      }
+      else if ( property.tagName() == "getlastmodified" )
+      {
         // Last modification date
         atom.m_uds = KIO::UDS_MODIFICATION_TIME;
         atom.m_long = parseDateTime( property.text(), property.attribute("dt") );
         entry.append( atom );
 
-      } else if ( property.tagName() == "getetag" ) {
+      }
+      else if ( property.tagName() == "getetag" )
+      {
         // Entity tag
         setMetaData( "davEntityTag", property.text() );
-
-      } else if ( property.tagName() == "supportedlock" ) {
+      }
+      else if ( property.tagName() == "supportedlock" )
+      {
         // Supported locking specifications
         for ( QDomElement lockEntry = property.firstChild().toElement();
               !lockEntry.isNull();
-              lockEntry = lockEntry.nextSibling().toElement() ) {
-          if ( lockEntry.tagName() == "lockentry" ) {
+              lockEntry = lockEntry.nextSibling().toElement() )
+        {
+          if ( lockEntry.tagName() == "lockentry" )
+          {
             QDomElement lockScope = lockEntry.namedItem( "lockscope" ).toElement();
             QDomElement lockType = lockEntry.namedItem( "locktype" ).toElement();
-            if ( !lockScope.isNull() && !lockType.isNull() ) {
+            if ( !lockScope.isNull() && !lockType.isNull() )
+            {
               // Lock type was properly specified
               supportedLockCount++;
               QString scope = lockScope.firstChild().toElement().tagName();
@@ -651,25 +670,29 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
             }
           }
         }
-
-      } else if ( property.tagName() == "lockdiscovery" ) {
+      }
+      else if ( property.tagName() == "lockdiscovery" )
+      {
         // Lists the available locks
         davParseActiveLocks( property.elementsByTagName( "activelock" ), lockCount );
-
-      } else if ( property.tagName() == "resourcetype" ) {
+      }
+      else if ( property.tagName() == "resourcetype" )
+      {
         // Resource type. "Specifies the nature of the resource."
-        if ( !property.namedItem( "collection" ).toElement().isNull() ) {
+        if ( !property.namedItem( "collection" ).toElement().isNull() )
+        {
           // This is a collection (directory)
-          if ( !isDirectory ) {
+          if ( !isDirectory )
+          {
             atom.m_uds = KIO::UDS_FILE_TYPE;
             atom.m_long = S_IFDIR;
             entry.append( atom );
-
             isDirectory = true;
           }
         }
-
-      } else {
+      }
+      else
+      {
         kdDebug(7113) << "Found unknown webdav property: " << property.tagName() << endl;
       }
     }
@@ -678,18 +701,22 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
   setMetaData( "davLockCount", QString("%1").arg(lockCount) );
   setMetaData( "davSupportedLockCount", QString("%1").arg(supportedLockCount) );
 
-  if ( foundExecutable || isDirectory ) {
+  if ( foundExecutable || isDirectory )
+  {
     // File was executable, or is a directory.
     atom.m_uds = KIO::UDS_ACCESS;
     atom.m_long = 0700;
     entry.append(atom);
-  } else {
+  }
+  else
+  {
     atom.m_uds = KIO::UDS_ACCESS;
     atom.m_long = 0600;
     entry.append(atom);
   }
 
-  if ( !foundContentType && !isDirectory ) {
+  if ( !foundContentType && !isDirectory )
+  {
     // No type specified for this resource. Assume file.
     atom.m_uds = KIO::UDS_FILE_TYPE;
     atom.m_long = S_IFREG;
@@ -700,7 +727,8 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
 void HTTPProtocol::davParseActiveLocks( const QDomNodeList& activeLocks,
                                         uint& lockCount )
 {
-  for ( uint i = 0; i < activeLocks.count(); i++ ) {
+  for ( uint i = 0; i < activeLocks.count(); i++ )
+  {
     QDomElement activeLock = activeLocks.item(i).toElement();
 
     lockCount++;
@@ -712,7 +740,9 @@ void HTTPProtocol::davParseActiveLocks( const QDomNodeList& activeLocks,
     QDomElement lockOwner = activeLock.namedItem( "owner" ).toElement();
     QDomElement lockTimeout = activeLock.namedItem( "timeout" ).toElement();
     QDomElement lockToken = activeLock.namedItem( "locktoken" ).toElement();
-    if ( !lockScope.isNull() && !lockType.isNull() && !lockDepth.isNull() ) {
+    
+    if ( !lockScope.isNull() && !lockType.isNull() && !lockDepth.isNull() )
+    {
       // lock was properly specified
       lockCount++;
       QString scope = lockScope.firstChild().toElement().tagName();
@@ -729,7 +759,8 @@ void HTTPProtocol::davParseActiveLocks( const QDomNodeList& activeLocks,
       if ( !lockTimeout.isNull() )
         setMetaData( QString("davLockTimeout%1").arg( lockCount ), lockTimeout.text() );
 
-      if ( !lockToken.isNull() ) {
+      if ( !lockToken.isNull() )
+      {
         QDomElement tokenVal = lockScope.namedItem( "href" ).toElement();
         if ( !tokenVal.isNull() )
           setMetaData( QString("davLockToken%1").arg( lockCount ), tokenVal.text() );
@@ -740,40 +771,54 @@ void HTTPProtocol::davParseActiveLocks( const QDomNodeList& activeLocks,
 
 long HTTPProtocol::parseDateTime( const QString& input, const QString& type )
 {
-  if ( type == "dateTime.tz" ) {
+  if ( type == "dateTime.tz" ) 
+  {
     return KRFCDate::parseDateISO8601( input );
-  } else if ( type == "dateTime.rfc1123" ) {
+  } 
+  else if ( type == "dateTime.rfc1123" )
+  {
     return KRFCDate::parseDate( input );
   }
+  
   // format not advertised... try to parse anyway
   time_t time = KRFCDate::parseDate( input );
   if ( time != 0 )
     return time;
+  
   return KRFCDate::parseDateISO8601( input );
 }
 
 QString HTTPProtocol::davProcessLocks()
 {
-  if ( hasMetaData( "davLockCount" ) ) {
+  if ( hasMetaData( "davLockCount" ) ) 
+  {
     QString response("If:");
     int numLocks;
     numLocks = metaData( "davLockCount" ).toInt();
     bool bracketsOpen = false;
-    for ( int i = 0; i < numLocks; i++ ) {
-      if ( hasMetaData( QString("davLockToken%1").arg(i) ) ) {
-        if ( hasMetaData( QString("davLockURL%1").arg(i) ) ) {
-          if ( bracketsOpen ) {
+    for ( int i = 0; i < numLocks; i++ )
+    {
+      if ( hasMetaData( QString("davLockToken%1").arg(i) ) ) 
+      {
+        if ( hasMetaData( QString("davLockURL%1").arg(i) ) ) 
+        {
+          if ( bracketsOpen ) 
+          {
             response += ")";
             bracketsOpen = false;
           }
           response += " <" + metaData( QString("davLockURL%1").arg(i) ) + ">";
         }
 
-        if ( !bracketsOpen ) {
+        if ( !bracketsOpen ) 
+        {
           response += " (";
           bracketsOpen = true;
-        } else
+        }
+        else
+        {
           response += " ";
+        }
 
         if ( hasMetaData( QString("davLockNot%1").arg(i) ) )
           response += "Not ";
@@ -781,8 +826,10 @@ QString HTTPProtocol::davProcessLocks()
         response += "<" + metaData( QString("davLockToken%1").arg(i) ) + ">";
       }
     }
+    
     if ( bracketsOpen )
       response += ")";
+
     response += "\r\n";
     return response;
   }
@@ -1164,7 +1211,8 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
   errorString = i18n("An unexpected error (%1) occurred while attempting to %2.")
                       .arg( code ).arg( action );
 
-  switch ( code ) {
+  switch ( code ) 
+  {
     case -2:
       // internal error: OPTIONS request did not specify DAV compliance
       kError = ERR_UNSUPPORTED_PROTOCOL;
@@ -1172,46 +1220,51 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
       break;
     case 207:
       // 207 Multi-status
+    {
+      // our error info is in the returned XML document.
+      // retrieve the XML document
+      
+      // there was an error retrieving the XML document.
+      // ironic, eh?
+      if ( !readBody( true ) && m_bError )
+        return QString::null;
+
+      QStringList errors;
+      QDomDocument multiResponse;
+
+      multiResponse.setContent( m_intData, true );
+
+      QDomElement multistatus = multiResponse.documentElement().namedItem( "multistatus" ).toElement();
+
+      QDomNodeList responses = multistatus.elementsByTagName( "response" );
+
+      for (uint i = 0; i < responses.count(); i++)
       {
-        // our error info is in the returned XML document.
-        // retrieve the XML document
-        if ( !readBody( true ) && m_bError )
-          // there was an error retrieving the XML document.
-          // ironic, eh?
-          return QString::null;
+        int errCode;
+        QString errUrl;
 
-        QStringList errors;
-        QDomDocument multiResponse;
-        multiResponse.setContent( m_intData, true );
+        QDomElement response = responses.item(i).toElement();
+        QDomElement code = response.namedItem( "status" ).toElement();
 
-        QDomElement multistatus = multiResponse.documentElement()
-                                  .namedItem( "multistatus" ).toElement();
-
-        QDomNodeList responses = multistatus.elementsByTagName( "response" );
-        for (uint i = 0; i < responses.count(); i++) {
-          int errCode;
-          QString errUrl;
-          QDomElement response = responses.item(i).toElement();
-
-          QDomElement code = response.namedItem( "status" ).toElement();
-          if ( !code.isNull() ) {
-            errCode = codeFromResponse( code.text() );
-
-            QDomElement href = response.namedItem( "href" ).toElement();
-            if ( !href.isNull() )
-              errUrl = href.text();
-
-            errors << davError( errCode, errUrl );
-          }
+        if ( !code.isNull() )
+        {
+          errCode = codeFromResponse( code.text() );
+          QDomElement href = response.namedItem( "href" ).toElement();
+          if ( !href.isNull() )
+            errUrl = href.text();
+          errors << davError( errCode, errUrl );
         }
-        //kError = ERR_SLAVE_DEFINED;
-        errorString = i18n("An error occurred while attempting to %1, %2. A summary "
-                           "of the reasons is below.<ul>").arg( action ).arg( url );
-        for ( QStringList::Iterator it = errors.begin(); it != errors.end(); ++it )
-          errorString += "<li>" + *it + "</li>";
-
-        errorString += "</ul>";
       }
+
+      //kError = ERR_SLAVE_DEFINED;
+      errorString = i18n("An error occurred while attempting to %1, %2. A "
+                         "summary of the reasons is below.<ul>").arg( action ).arg( url );
+
+      for ( QStringList::Iterator it = errors.begin(); it != errors.end(); ++it )
+        errorString += "<li>" + *it + "</li>";
+
+      errorString += "</ul>";
+    }
     case 403:
     case 500: // hack: Apache mod_dav returns this instead of 403 (!)
       // 403 Forbidden
@@ -1220,7 +1273,8 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
       break;
     case 405:
       // 405 Method Not Allowed
-      if ( m_request.method == DAV_MKCOL ) {
+      if ( m_request.method == DAV_MKCOL )
+      {
         kError = ERR_DIR_ALREADY_EXIST;
         errorString = i18n("The specified directory already exists.");
       }
@@ -1234,7 +1288,8 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
       break;
     case 412:
       // 412 Precondition failed
-      if ( m_request.method == DAV_COPY || m_request.method == DAV_MOVE ) {
+      if ( m_request.method == DAV_COPY || m_request.method == DAV_MOVE )
+      {
         kError = ERR_ACCESS_DENIED;
         errorString = i18n("The server was unable to maintain the liveness of "
                            "the properties listed in the propertybehavior XML "
@@ -1242,7 +1297,9 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
                            "requesting that files are not overwritten. %1")
                            .arg( ow );
 
-      } else if ( m_request.method == DAV_LOCK ) {
+      }
+      else if ( m_request.method == DAV_LOCK )
+      {
         kError = ERR_ACCESS_DENIED;
         errorString = i18n("The requested lock could not be granted. %1").arg( ow );
       }
@@ -1263,7 +1320,8 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
       break;
     case 502:
       // 502 Bad Gateway
-      if ( m_request.method == DAV_COPY || m_request.method == DAV_MOVE ) {
+      if ( m_request.method == DAV_COPY || m_request.method == DAV_MOVE )
+      {
         kError = ERR_WRITE_ACCESS_DENIED;
         errorString = i18n("Unable to %1 because the destination server refuses "
                            "to accept the file or directory.").arg( action );
@@ -1281,7 +1339,8 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
   // if ( kError != ERR_SLAVE_DEFINED )
   //errorString += " (" + url + ")";
 
-  if ( callError ) {
+  if ( callError )
+  {
     httpClose();
     error( ERR_SLAVE_DEFINED, errorString );
   }
@@ -1343,10 +1402,12 @@ ssize_t HTTPProtocol::write (const void *_buf, size_t nbytes)
 {
   int bytes_sent = 0;
   const char* buf = static_cast<const char*>(_buf);
-  while ( nbytes > 0 ) {
+  while ( nbytes > 0 )
+  {
     int n = TCPSlaveBase::write(buf, nbytes);
 
-    if ( n <= 0 ) {
+    if ( n <= 0 )
+    {
       // remote side closed connection ?
       if ( n == 0 )
         break;
@@ -1370,16 +1431,21 @@ char *HTTPProtocol::gets (char *s, int size)
   int len=0;
   char *buf=s;
   char mybuf[2]={0,0};
+
   while (len < size)
   {
     read(mybuf, 1);
+
     if (*mybuf == '\r') // Ignore!
       continue;
+
     if (*mybuf == '\n')
       break;
+
     *buf++ = *mybuf;
     len++;
   }
+
   *buf=0;
   return s;
 }
@@ -1391,8 +1457,10 @@ void HTTPProtocol::ungets(char *str, int size)
   newbuf[size] = '\n';
   if (m_lineCountUnget)
      memcpy(newbuf+size+1, m_linePtrUnget, m_lineCountUnget);
+
   if (m_lineBufUnget)
      free(m_lineBufUnget);
+
   m_lineBufUnget = newbuf;
   m_linePtrUnget = newbuf;
   m_lineCountUnget = size+1+m_lineCountUnget;
@@ -1401,40 +1469,49 @@ void HTTPProtocol::ungets(char *str, int size)
 ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 {
   ssize_t ret = 0;
+  
   if (m_lineCountUnget > 0)
   {
-     ret = ( nbytes < m_lineCountUnget ? nbytes : m_lineCountUnget );
-     m_lineCountUnget -= ret;
-     memcpy(b, m_linePtrUnget, ret);
-     m_linePtrUnget += ret;
-     if (m_lineCountUnget == 0)
-     {
-        free(m_lineBufUnget);
-        m_lineBufUnget = 0;
-     }
-     return ret;
+    ret = ( nbytes < m_lineCountUnget ? nbytes : m_lineCountUnget );
+    m_lineCountUnget -= ret;
+    memcpy(b, m_linePtrUnget, ret);
+    m_linePtrUnget += ret;
+
+    if (m_lineCountUnget == 0)
+    {
+      free(m_lineBufUnget);
+      m_lineBufUnget = 0;
+    }
+
+    return ret;
   }
+  
   if (m_lineCount > 0)
   {
-     ret = ( nbytes < m_lineCount ? nbytes : m_lineCount );
-     m_lineCount -= ret;
-     memcpy(b, m_linePtr, ret);
-     m_linePtr += ret;
-     return ret;
+    ret = ( nbytes < m_lineCount ? nbytes : m_lineCount );
+    m_lineCount -= ret;
+    memcpy(b, m_linePtr, ret);
+    m_linePtr += ret;
+    return ret;
   }
+  
   if (nbytes == 1)
   {
-     m_lineCount = read(m_lineBuf, 1024); // Read into buffer
-     m_linePtr = m_lineBuf;
-     if (m_lineCount <= 0)
-        return ret;
-     return read(b, 1); // Read from buffer
+    m_lineCount = read(m_lineBuf, 1024); // Read into buffer
+    m_linePtr = m_lineBuf;
+    if (m_lineCount <= 0)
+      return ret;
+    return read(b, 1); // Read from buffer
   }
-  do {
-     ret = TCPSlaveBase::read( b, nbytes);
-     if (ret == 0) m_bEOF = true;
-  }
-  while (( ret == -1) && ((errno == EAGAIN) || (errno == EINTR)));
+
+  do
+  {
+
+    ret = TCPSlaveBase::read( b, nbytes);
+    if (ret == 0)
+      m_bEOF = true;
+
+  } while (( ret == -1) && ((errno == EAGAIN) || (errno == EINTR)));
 
   return ret;
 }
@@ -1677,7 +1754,9 @@ bool HTTPProtocol::httpOpen()
   {
     if (!httpOpenConnection())
        return false;
-  } else {
+  }
+  else
+  {
     setSSLMetaData();
   }
 
@@ -1690,7 +1769,8 @@ bool HTTPProtocol::httpOpen()
   QString davHeader;
 
   // Determine if this is a POST or GET method
-  switch ( m_request.method) {
+  switch ( m_request.method)
+  {
   case HTTP_GET:
       header = "GET ";
       break;
@@ -3387,29 +3467,35 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   {
     kdDebug(7113) << "HTTPProtocol::readBody: read data from cache!" << endl;
 
-     char buffer[ MAX_IPC_SIZE ];
-     // Jippie! It's already in the cache :-)
-     while (!feof(m_fcache) && !ferror(m_fcache))
-     {
-        int nbytes = fread( buffer, 1, MAX_IPC_SIZE, m_fcache);
-        if (nbytes > 0)
-        {
-          m_bufReceive.setRawData( buffer, nbytes);
-          if ( !dataInternal )
-            data( m_bufReceive );
-          else
-            m_intData += m_bufReceive;
-          m_bufReceive.resetRawData( buffer, nbytes );
-          sz += nbytes;
-        }
-     }
-     if ( !dataInternal )
-       processedSize( sz );
+    char buffer[ MAX_IPC_SIZE ];
 
-     m_bufReceive.resize( 0 );
-     if ( !dataInternal )
-       data( QByteArray() );
-     return true;
+    // Jippie! It's already in the cache :-)
+    while (!feof(m_fcache) && !ferror(m_fcache))
+    {
+      int nbytes = fread( buffer, 1, MAX_IPC_SIZE, m_fcache);
+
+      if (nbytes > 0)
+      {
+        m_bufReceive.setRawData( buffer, nbytes);
+        if ( !dataInternal )
+          data( m_bufReceive );
+        else
+          m_intData += m_bufReceive;
+
+        m_bufReceive.resetRawData( buffer, nbytes );
+        sz += nbytes;
+      }
+    }
+
+    if ( !dataInternal )
+      processedSize( sz );
+
+    m_bufReceive.resize( 0 );
+
+    if ( !dataInternal )
+      data( QByteArray() );
+
+    return true;
   }
 
   if (m_iSize > -1)
@@ -3452,7 +3538,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     if (bytesReceived > 0)
     {
       // internal functions don't worry abount mimetypes
-      if ( !dataInternal ) {
+      if ( !dataInternal )
+      {
         // If a broken server does not send the mime-type,
         // we try to id it from the content before dealing
         // with the content itself.
@@ -3472,18 +3559,23 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
           kdDebug(7113) << "(" << m_pid << ") Mimetype buffer size: " << mimeTypeBuffer.size()
                         << endl;
-          KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType( mimeTypeBuffer, m_request.url.fileName() );
+
+          KMimeMagicResult *result;
+
+          result = KMimeMagic::self()->findBufferFileType( mimeTypeBuffer,
+                                                           m_request.url.fileName() );
           if( result )
           {
             m_strMimeType = result->mimeType();
-            kdDebug(7113) << "(" << m_pid << ") Mimetype from content: " << m_strMimeType << endl;
+            kdDebug(7113) << "(" << m_pid << ") Mimetype from content: "
+                          << m_strMimeType << endl;
           }
 
           if ( m_strMimeType.isEmpty() )
           {
             m_strMimeType = QString::fromLatin1( DEFAULT_MIME_TYPE );
-            kdDebug(7113) << "(" << m_pid << ") Using default mimetype: " <<  m_strMimeType
-                          << endl;
+            kdDebug(7113) << "(" << m_pid << ") Using default mimetype: "
+                          <<  m_strMimeType << endl;
           }
 
           if ( m_bCachedWrite )
@@ -3528,9 +3620,9 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
         sz += bytesReceived;
         if (!dataInternal)
-	  processedSize( sz );
-
-      } else
+          processedSize( sz );
+      }
+      else
       {
         // nope.  slap this all onto the end of a big buffer for later use
         unsigned int old_len = 0;
@@ -3596,19 +3688,25 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     {
       sz = 0;
       QByteArray array;
+
       while ( 1 )
       {
         array.setRawData( m_bufEncodedData.data()+sz, bytesToSend);
+
         if ( !dataInternal )
           data( array );
         else
           m_intData += array;
+
         array.resetRawData( m_bufEncodedData.data()+sz, bytesToSend);
         sz += bytesToSend;
+        
         if ( !dataInternal )
           processedSize( sz );
+        
         if ( sz >= bytesReceived )
           break;
+        
         if ( bytesReceived-sz < bytesToSend )
           bytesToSend = bytesReceived-sz;
       }
@@ -3616,12 +3714,15 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     else
     {
       sz = bytesReceived;
-      if ( !dataInternal ) {
+      if ( !dataInternal ) 
+      {
         data( m_bufEncodedData );
         processedSize( bytesReceived );
-      } else
+      } 
+      else
+      {
         m_intData += m_bufEncodedData;
-
+      }
     }
 
     if ( m_bCachedWrite &&  m_fcache )
@@ -3659,10 +3760,10 @@ void HTTPProtocol::error( int _err, const QString &_text )
 {
   m_bKeepAlive = false;
   httpClose();
+  
   if (!m_request.id.isEmpty())
-  {
-     sendMetaData();
-  }
+    sendMetaData();
+
   SlaveBase::error( _err, _text );
   m_bError = true;
 }
@@ -3701,43 +3802,45 @@ void HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader 
 
 QString HTTPProtocol::findCookies( const QString &url)
 {
-   QCString replyType;
-   QString result = QString::null;
+  QCString replyType;
+  QByteArray params;
+  QByteArray reply;
+  QString result;
 
-   QByteArray params, reply;
-   QDataStream stream(params, IO_WriteOnly);
-   stream << url;
+  result = QString::null;
+  QDataStream stream(params, IO_WriteOnly);
+  stream << url;
 
   bool attemptedRestart = false;
   while ( 1 )
   {
-      if ( !m_dcopClient->call( "kcookiejar", "kcookiejar", "findCookies(QString)",
+    if ( !m_dcopClient->call( "kcookiejar", "kcookiejar", "findCookies(QString)",
                                              params, replyType, reply ) )
+    {
+      if ( !initCookieJar() || attemptedRestart )
       {
-          if ( !initCookieJar() || attemptedRestart )
-          {
-              kdWarning(7113) << "(" << m_pid << ") Can't communicate with cookiejar!" << endl;
-              break;
-          }
-          else
-          {
-              attemptedRestart = true;
-          }
+        kdWarning(7113) << "(" << m_pid << ") Can't communicate with cookiejar!" << endl;
+        break;
       }
       else
       {
-          if ( replyType == "QString" )
-          {
-            QDataStream stream2( reply, IO_ReadOnly );
-            stream2 >> result;
-          }
-          else
-          {
-              kdError(7113) << "(" << m_pid << ") DCOP function findCookies(...) returns "
-                                     << replyType << ", expected QString" << endl;
-          }
-          break;
+        attemptedRestart = true;
       }
+    }
+    else
+    {
+      if ( replyType == "QString" )
+      {
+        QDataStream stream2( reply, IO_ReadOnly );
+        stream2 >> result;
+      }
+      else
+      {
+        kdError(7113) << "(" << m_pid << ") DCOP function findCookies(...) returns "
+                                      << replyType << ", expected QString" << endl;
+      }
+      break;
+    }
   }
   return result;
 }
@@ -4341,10 +4444,11 @@ bool HTTPProtocol::getAuthorization()
     if ( Authentication == AUTH_Digest )
     {
       QString auth;
-			if (m_responseCode == 401)
-				auth = m_strAuthorization;
-			else
-				auth = m_strProxyAuthorization;
+      
+      if (m_responseCode == 401)
+        auth = m_strAuthorization;
+      else
+        auth = m_strProxyAuthorization;
 
       int pos = auth.find("stale", 0, false);
       if ( pos != -1 )
