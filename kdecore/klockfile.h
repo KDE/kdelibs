@@ -101,7 +101,7 @@ public:
     * Return the time in seconds after which a lock is considered stale
     * The default is 30.
     */
-   int staleTime() const { return m_staleTime; }
+   int staleTime() const;
    
    /**
     * Set the time in seconds after which a lock is considered stale
@@ -109,24 +109,13 @@ public:
    void setStaleTime(int _staleTime);
 
    /**
-    * Returns the pid and hostname of the process holding the lock after
-    * the lock functon has returned with LockStale.
+    * Returns the pid, hostname and appname of the process holding
+    * the lock after the lock functon has returned with LockStale.
     * @returns false if the pid and hostname could not be determined
     */
-   bool getLockInfo(int &pid, QString &hostname);
+   bool getLockInfo(int &pid, QString &hostname, QString &appname);
 
 private:
-   QString m_file;
-   int m_staleTime;
-   bool m_isLocked;
-   bool m_recoverLock;
-   QTime m_staleTimer;
-   void *m_statBuf;
-   int m_pid;
-   QString m_hostname;
-   QString m_instance;
-   QString m_lockRecoverFile;
-   
    class KLockFilePrivate;
    KLockFilePrivate *d;
 };

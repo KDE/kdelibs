@@ -34,25 +34,55 @@
 #include <qtextstream.h>
 
 #include <kapplication.h>
+#include <kcmdlineargs.h>
 #include <kglobal.h>
 #include <ktempfile.h>
 
+// TODO: http://www.spinnaker.de/linux/nfs-locking.html
+// TODO: Make regression test
+
+class KLockFile::KLockFilePrivate {
+public:
+   QString file;
+   int staleTime;
+   bool isLocked;
+   bool recoverLock;
+   QTime staleTimer;
+   struct stat statBuf;
+   int pid;
+   QString hostname;
+   QString instance;
+   QString lockRecoverFile;
+};
+
+
 // 30 seconds
-KLockFile::KLockFile(const QString &file) : m_file(file), m_staleTime(30), m_isLocked(false), m_recoverLock(false)
+KLockFile::KLockFile(const QString &file)
 {
-  m_statBuf = (void *)malloc(sizeof(struct stat));
+  d = new KLockFilePrivate();
+  d->file = file;
+  d->staleTime = 30;
+  d->isLocked = false;
+  d->recoverLock = false;
 }
 
 KLockFile::~KLockFile()
 {
   unlock();
-  free(m_statBuf);
+  delete d;
 }
+
+int 
+KLockFile::staleTime() const
+{
+  return d->staleTime;
+}
+
 
 void
 KLockFile::setStaleTime(int _staleTime)
 {
-  m_staleTime = _staleTime;
+  d->staleTime = _staleTime;
 }
 
 static bool statResultIsEqual(struct stat &st_buf1, struct stat &st_buf2)
@@ -79,9 +109,10 @@ static KLockFile::LockResult lockFile(const QString &lockFile, struct stat &st_b
   hostname[0] = 0;
   gethostname(hostname, 255);
   hostname[255] = 0;
+  QCString instanceName = KCmdLineArgs::appName();
 
   (*(uniqueFile.textStream())) << QString::number(getpid()) << endl
-      << KGlobal::instance()->instanceName() << endl
+      << instanceName << endl
       << hostname << endl;
   uniqueFile.close();
   
@@ -152,7 +183,7 @@ static KLockFile::LockResult deleteStaleLock(const QString &lockFile, struct sta
 
 KLockFile::LockResult KLockFile::lock(int options)
 {
-  if (m_isLocked)
+  if (d->isLocked)
      return KLockFile::LockOK;
 
   KLockFile::LockResult result;     
@@ -161,15 +192,15 @@ KLockFile::LockResult KLockFile::lock(int options)
   while(true)
   {
      struct stat st_buf;
-     result = lockFile(m_file, st_buf);
+     result = lockFile(d->file, st_buf);
      if (result == KLockFile::LockOK)
      {
-        m_staleTimer = QTime();
+        d->staleTimer = QTime();
         break;
      }
      else if (result == KLockFile::LockError)
      {
-        m_staleTimer = QTime();
+        d->staleTimer = QTime();
         if (--hardErrors == 0)
         {
            break;
@@ -177,13 +208,13 @@ KLockFile::LockResult KLockFile::lock(int options)
      }
      else // KLockFile::Fail
      {
-        if (!m_staleTimer.isNull() && !statResultIsEqual(*(struct stat*)m_statBuf, st_buf))
-           m_staleTimer = QTime();
+        if (!d->staleTimer.isNull() && !statResultIsEqual(d->statBuf, st_buf))
+           d->staleTimer = QTime();
            
-        if (!m_staleTimer.isNull())
+        if (!d->staleTimer.isNull())
         {
            bool isStale = false;
-           if ((m_pid != -1) && !m_hostname.isEmpty())
+           if ((d->pid > 0) && !d->hostname.isEmpty())
            {
               // Check if hostname is us
               char hostname[256];
@@ -191,15 +222,15 @@ KLockFile::LockResult KLockFile::lock(int options)
               gethostname(hostname, 255);
               hostname[255] = 0;
               
-              if (m_hostname == hostname)
+              if (d->hostname == hostname)
               {
                  // Check if pid still exists
-                 int res = ::kill(m_pid, 0);
+                 int res = ::kill(d->pid, 0);
                  if ((res == -1) && (errno == ESRCH))
                     isStale = true;
               }
            }
-           if (m_staleTimer.elapsed() > (m_staleTime*1000))
+           if (d->staleTimer.elapsed() > (d->staleTime*1000))
               isStale = true;
            
            if (isStale)
@@ -207,12 +238,12 @@ KLockFile::LockResult KLockFile::lock(int options)
               if ((options & LockForce) == 0)
                  return KLockFile::LockStale;
                  
-              result = deleteStaleLock(m_file, *((struct stat*)m_statBuf));
+              result = deleteStaleLock(d->file, d->statBuf);
 
               if (result == KLockFile::LockOK)
               {
                  // Lock deletion successful
-                 m_staleTimer = QTime();
+                 d->staleTimer = QTime();
                  continue; // Now try to get the new lock
               }
               else if (result != KLockFile::LockFail)
@@ -223,23 +254,23 @@ KLockFile::LockResult KLockFile::lock(int options)
         }
         else
         {
-           memcpy(m_statBuf, &st_buf, sizeof(struct stat));
-           m_staleTimer.start();
+           memcpy(&(d->statBuf), &st_buf, sizeof(struct stat));
+           d->staleTimer.start();
            
-           m_pid = -1;
-           m_hostname = QString::null;
-           m_instance = QString::null;
+           d->pid = -1;
+           d->hostname = QString::null;
+           d->instance = QString::null;
         
-           QFile file(m_file);
+           QFile file(d->file);
            if (file.open(IO_ReadOnly))
            {
               QTextStream ts(&file);
               if (!ts.atEnd())
-                 m_pid = ts.readLine().toInt();
+                 d->pid = ts.readLine().toInt();
               if (!ts.atEnd())
-                 m_instance = ts.readLine();
+                 d->instance = ts.readLine();
               if (!ts.atEnd())
-                 m_hostname = ts.readLine();
+                 d->hostname = ts.readLine();
            }
         }
      }
@@ -256,29 +287,30 @@ KLockFile::LockResult KLockFile::lock(int options)
      select(0, 0, 0, 0, &tv);
   }
   if (result == LockOK)
-     m_isLocked = true;
+     d->isLocked = true;
   return result;
 }
    
 bool KLockFile::isLocked() const
 {
-  return m_isLocked;
+  return d->isLocked;
 }
    
 void KLockFile::unlock()
 {
-  if (m_isLocked)
+  if (d->isLocked)
   {
-     ::unlink(QFile::encodeName(m_file));
-     m_isLocked = false;
+     ::unlink(QFile::encodeName(d->file));
+     d->isLocked = false;
   }
 }
 
-bool KLockFile::getLockInfo(int &pid, QString &hostname)
+bool KLockFile::getLockInfo(int &pid, QString &hostname, QString &appname)
 {
-  if (m_pid == -1)
+  if (d->pid == -1)
      return false;
-  pid = m_pid;
-  hostname = m_hostname;
+  pid = d->pid;
+  hostname = d->hostname;
+  appname = d->instance;
   return true;
 }
