@@ -740,7 +740,7 @@ QCStringList DCOPClient::remoteFunctions( const QCString& remApp, const QCString
     QCStringList result;
     if ( ok )
 	*ok = FALSE;
-    if ( call( remApp, remObj, "functions()", data, replyType, replyData ) ) {
+    if ( call( remApp, remObj, "functions()", data, replyType, replyData ) && replyType == "QCStringList") {
 	QDataStream reply( replyData, IO_ReadOnly );
 	reply >> result;
 	if ( ok )
