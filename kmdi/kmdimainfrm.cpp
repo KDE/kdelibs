@@ -2362,7 +2362,7 @@ void KMdiMainFrm::fillWindowMenu()
     }
   }
   m_pWindowMenu->insertSeparator();
-  m_pWindowMenu->insertItem(i18n("&MDI Mode..."), m_pMdiModeMenu);
+  m_pWindowMenu->insertItem(i18n("&MDI Mode"), m_pMdiModeMenu);
   m_pMdiModeMenu->clear();
   m_pMdiModeMenu->insertItem(i18n("&Toplevel Mode"), this, SLOT(switchToToplevelMode()));
   m_pMdiModeMenu->insertItem(i18n("C&hildframe Mode"), this, SLOT(switchToChildframeMode()));
