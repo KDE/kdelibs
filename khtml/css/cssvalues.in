@@ -86,6 +86,8 @@ text-top
 text-bottom
 top
 bottom
+#   NS 2.0 Extension
+texttop
 #
 # CSS_PROP_TEXT_ALIGN: 
 #

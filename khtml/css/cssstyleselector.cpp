@@ -1797,21 +1797,44 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         }
         if(!primitiveValue) return;
         if(primitiveValue->getIdent()) {
-            style->setVerticalAlign( (EVerticalAlign) (primitiveValue->getIdent() - CSS_VAL_BASELINE) );
-            return;
-	} else if(primitiveValue->getIdent() == CSS_VAL_CENTER) { // None standard CSS-Value
-            style->setVerticalAlign( MIDDLE );
-            return;
+	  
+	  khtml::EVerticalAlign align;
+	  
+	  switch(primitiveValue->getIdent())
+	    {
+	    case CSS_VAL_TOP:
+	      align = TOP; break;
+            case CSS_VAL_BOTTOM:
+	      align = BOTTOM; break;
+	    case CSS_VAL_MIDDLE:
+	    case CSS_VAL_CENTER: //   None standard CSS-Value
+	      align = MIDDLE; break;
+            case CSS_VAL_BASELINE:
+	      align = BASELINE; break;
+	    case CSS_VAL_TEXT_BOTTOM:
+	      align = TEXT_BOTTOM; break;
+	    case CSS_VAL_TEXT_TOP: 
+	    case CSS_VAL_TEXTTOP: //   NS 2.0 Extension
+	      align = TEXT_TOP; break;
+	    case CSS_VAL_SUB:
+	      align = SUB; break;
+	    case CSS_VAL_SUPER:
+	      align = SUPER; break;
+            default:
+	      return;
+	    }
+	  style->setVerticalAlign(align);
+	  return;
         } else {
-            int type = primitiveValue->primitiveType();
-	    Length l;
-            if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-                l = Length( computeLength(primitiveValue, style, paintDeviceMetrics), Fixed );
-            else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-                l = Length( primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE) , Percent );
+	  int type = primitiveValue->primitiveType();
+	  Length l;
+	  if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
+	    l = Length( computeLength(primitiveValue, style, paintDeviceMetrics), Fixed );
+	  else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
+	    l = Length( primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE) , Percent );
 
-	    style->setVerticalAlign( LENGTH );
-	    style->setVerticalAlignLength( l );
+	  style->setVerticalAlign( LENGTH );
+	  style->setVerticalAlignLength( l );
 	}
         break;
 

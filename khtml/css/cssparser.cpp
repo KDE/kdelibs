@@ -1563,11 +1563,11 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     }
     case CSS_PROP_VERTICAL_ALIGN:
     	// baseline | sub | super | top | text-top | middle | bottom | text-bottom |
-		// <percentage> | <length> | inherit
+	// <percentage> | <length> | inherit
     {
         if (cssval) {
             int id = cssval->id;
-            if ((id >= CSS_VAL_BASELINE && id <= CSS_VAL_BOTTOM) 
+            if ((id >= CSS_VAL_BASELINE && id <= CSS_VAL_TEXTTOP) 
                 || id==CSS_VAL_CENTER) {
                 parsedValue = new CSSPrimitiveValueImpl(id);
             }
@@ -2109,6 +2109,7 @@ bool StyleBaseImpl::parseBackgroundPosition(const QChar *curP, const QChar *&nex
     // We first need to check if the property has two values.
     // if this fails we try one value only.
 
+    while (nextP->isSpace() && nextP < endP) { nextP++; }
     bool dummy;
     const QChar *bckgrNextP = getNext(nextP, endP, dummy);
     //kdDebug(6080) << "BKCGR: 2: \"" << QString(curP, bckgrNextP - curP) << "\"" << endl;
