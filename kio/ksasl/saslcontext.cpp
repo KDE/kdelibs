@@ -28,9 +28,9 @@ QString KSASLContext::chooseMethod (const QString &available, bool isBASE64)
 	QString operate_on;
 
 	if (isBASE64) {
-		operate_on=KBase64::decodeString(available.latin1());
+		operate_on=KBase64::decodeString(available.stripWhiteSpace().latin1());
 	} else
-		operate_on=available;
+		operate_on=available.stripWhiteSpace();
 
 	QStringList server_side = QStringList::split(QString(" "), operate_on);
 	QStringList supported;
