@@ -20,7 +20,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef HTML_INLINEIMPL_H
 #define HTML_INLINEIMPL_H
@@ -37,7 +36,7 @@ public:
     HTMLAnchorElementImpl(DocumentPtr *doc)
         : HTMLElementImpl(doc), m_hasTarget(false) {}
 
-    virtual bool isSelectable() const { return m_hasAnchor; }
+    virtual bool isFocusable() const { return m_hasAnchor; }
     virtual Id id() const;
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void defaultEventHandler(EventImpl *evt);

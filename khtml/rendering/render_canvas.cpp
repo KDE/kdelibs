@@ -124,8 +124,10 @@ void RenderCanvas::layout()
     if (m_printingMode)
        m_minWidth = m_width;
 
+    setChildNeedsLayout(true);
+    setMinMaxKnown(false);
     for(RenderObject* c = firstChild(); c; c = c->nextSibling())
-        c->setLayouted(false);
+        c->setChildNeedsLayout(true);
 
 #ifdef SPEED_DEBUG
     QTime qt;
@@ -201,7 +203,8 @@ void RenderCanvas::layout()
 #endif
 
     layer()->resize( kMax( docW,int( m_width ) ), kMax( docH,m_height ) );
-    setLayouted();
+
+    setNeedsLayout(false);
 }
 
 bool RenderCanvas::absolutePosition(int &xPos, int &yPos, bool f)
@@ -287,7 +290,7 @@ void RenderCanvas::repaint(bool immediate)
         if (immediate) {
             //m_view->resizeContents(docWidth(), docHeight());
             m_view->unscheduleRepaint();
-            if (!layouted()) {
+            if (needsLayout()) {
                 m_view->scheduleRelayout();
                 return;
             }
@@ -310,8 +313,8 @@ static QRect enclosingPositionedRect (RenderObject *n)
         enclosingParent->absolutePosition(ox, oy);
         rect.setX(ox);
         rect.setY(oy);
-        rect.setWidth (enclosingParent->width());
-        rect.setHeight (enclosingParent->height());
+        rect.setWidth (enclosingParent->effectiveWidth());
+        rect.setHeight (enclosingParent->effectiveHeight());
     }
     return rect;
 }
@@ -604,40 +607,22 @@ int RenderCanvas::docHeight() const
         h = m_height;
     else
         h = 0;
-#if 1
+
     RenderObject *fc = firstChild();
     if(fc) {
         int dh = fc->overflowHeight() + fc->marginTop() + fc->marginBottom();
-        int lowestPos = firstChild()->lowestPosition();
+        int lowestPos = firstChild()->lowestPosition(false);
+// kdDebug(6040) << "h " << h << " lowestPos " << lowestPos << " dh " << dh << " fc->rh " << fc->effectiveHeight() << " fc->height() " << fc->height() << endl;
         if( lowestPos > dh )
             dh = lowestPos;
         if( dh > h )
             h = dh;
     }
-#endif
 
     RenderLayer *layer = m_layer;
     int y = 0;
-    while ( layer ) {
-	h = kMax( h, layer->yPos() + layer->height() );
-	h = kMax( h, layer->yPos() + layer->renderer()->overflowHeight() );
-	if ( layer->firstChild() ) {
-	    y += layer->yPos();
-	    layer = layer->firstChild();
-	} else if ( layer->nextSibling() )
-	    layer = layer->nextSibling();
-	else {
-	    while ( layer ) {
-		layer = layer->parent();
-		if ( layer )
-		    y -= layer->yPos();
-		if ( layer && layer->nextSibling() ) {
-		    layer = layer->nextSibling();
-		    break;
-		}
-	    }
-	}
-    }
+    h = kMax( h, layer->yPos() + layer->height() );
+// kdDebug(6040) << "h " << h << " layer(" << layer->renderer()->renderName() << "@" << layer->renderer() << ")->height " << layer->height() << " lp " << (layer->yPos() + layer->height()) << " height() " << layer->renderer()->height() << " rh " << layer->renderer()->effectiveHeight() << endl;
     return h;
 }
 
@@ -649,39 +634,45 @@ int RenderCanvas::docWidth() const
     else
         w = 0;
 
-#if 1
     RenderObject *fc = firstChild();
     if(fc) {
-        int dw = fc->overflowWidth() + fc->marginLeft() + fc->marginRight();
-        int rightmostPos = fc->rightmostPosition();
+        int dw = fc->effectiveWidth() + fc->marginLeft() + fc->marginRight();
+        int rightmostPos = fc->rightmostPosition(false);
+// kdDebug(6040) << "w " << w << " rightmostPos " << rightmostPos << " dw " << dw << " fc->rw " << fc->effectiveWidth() << " fc->width() " << fc->width() << endl;
         if( rightmostPos > dw )
             dw = rightmostPos;
         if( dw > w )
             w = dw;
     }
-#endif
 
     RenderLayer *layer = m_layer;
     int x = 0;
-    while ( layer ) {
-	w = kMax( w, layer->xPos() + layer->width() );
-	w = kMax( w, layer->xPos() + layer->renderer()->overflowWidth() );
-	if ( layer->firstChild() ) {
-	    x += layer->xPos();
-	    layer = layer->firstChild();
-	} else if ( layer->nextSibling() )
-	    layer = layer->nextSibling();
-	else {
-	    while ( layer ) {
-		layer = layer->parent();
-		if ( layer )
-		    x -= layer->xPos();
-		if ( layer && layer->nextSibling() ) {
-		    layer = layer->nextSibling();
-		    break;
-		}
-	    }
-	}
-    }
+    w = kMax( w, layer->xPos() + layer->width() );
+// kdDebug(6040) << "w " << w << " layer(" << layer->renderer()->renderName() << ")->width " << layer->width() << " rm " << (layer->xPos() + layer->width()) << " width() " << layer->renderer()->width() << " rw " << layer->renderer()->effectiveWidth() << endl;
     return w;
+}
+
+// The idea here is to take into account what object is moving the pagination point, and
+// thus choose the best place to chop it.
+void RenderCanvas::setBestTruncatedAt(int y, RenderObject *forRenderer, bool forcedBreak)
+{
+    // Nobody else can set a page break once we have a forced break.
+    if (m_forcedPageBreak) return;
+
+    kdDebug(6040) << "RenderCanvas::setBestTruncatedAt for " << forRenderer->renderName()
+                  << " at " << y << ((forcedBreak) ? " (forced)" : "") << endl;
+
+    // Forced breaks always win over unforced breaks.
+    if (forcedBreak) {
+        m_forcedPageBreak = true;
+        m_bestTruncatedAt = y;
+        return;
+    }
+
+    // prefer the widest object who tries to move the pagination point
+    int width = forRenderer->width();
+    if (width > m_truncatorWidth) {
+        m_truncatorWidth = width;
+        m_bestTruncatedAt = y;
+    }
 }

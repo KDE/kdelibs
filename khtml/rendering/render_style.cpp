@@ -32,7 +32,7 @@
 using namespace khtml;
 using namespace DOM;
 
-/* CSS says Fixde for the default padding value, but we treat variable as 0 padding anyways, and like
+/* CSS says Fixed for the default padding value, but we treat variable as 0 padding anyways, and like
  * this is works fine for table paddings aswell
  */
 StyleSurroundData::StyleSurroundData()
@@ -58,6 +58,7 @@ StyleBoxData::StyleBoxData()
 {
     min_width = min_height = RenderStyle::initialMinSize();
     max_width = max_height = RenderStyle::initialMaxSize();
+    box_sizing = RenderStyle::initialBoxSizing();
 }
 
 StyleBoxData::StyleBoxData(const StyleBoxData& o )
@@ -65,6 +66,7 @@ StyleBoxData::StyleBoxData(const StyleBoxData& o )
       width( o.width ), height( o.height ),
       min_width( o.min_width ), max_width( o.max_width ),
       min_height ( o.min_height ), max_height( o.max_height ),
+      box_sizing( o.box_sizing),
       z_index( o.z_index ), z_auto( o.z_auto )
 {
 }
@@ -78,6 +80,7 @@ bool StyleBoxData::operator==(const StyleBoxData& o) const
 	    max_width == o.max_width &&
 	    min_height == o.min_height &&
 	    max_height == o.max_height &&
+            box_sizing == o.box_sizing &&
 	    z_index == o.z_index &&
             z_auto == o.z_auto;
 }
@@ -176,7 +179,9 @@ StyleInheritedData::StyleInheritedData()
       style_image( RenderStyle::initialListStyleImage() ),
       font(), color( RenderStyle::initialColor() ),
       border_hspacing( RenderStyle::initialBorderHorizontalSpacing() ),
-      border_vspacing( RenderStyle::initialBorderVerticalSpacing() )
+      border_vspacing( RenderStyle::initialBorderVerticalSpacing() ),
+      widows( RenderStyle::initialWidows() ), orphans( RenderStyle::initialOrphans() ),
+      page_break_inside( RenderStyle::initialPageBreak() )
 {
 }
 
@@ -189,7 +194,8 @@ StyleInheritedData::StyleInheritedData(const StyleInheritedData& o )
       indent( o.indent ), line_height( o.line_height ), style_image( o.style_image ),
       font( o.font ), color( o.color ), decoration_color( o.decoration_color ),
       border_hspacing( o.border_hspacing ),
-      border_vspacing( o.border_vspacing )
+      border_vspacing( o.border_vspacing ),
+      widows(o.widows), orphans(o.orphans), page_break_inside(o.page_break_inside)
 {
 }
 
@@ -203,7 +209,12 @@ bool StyleInheritedData::operator==(const StyleInheritedData& o) const
 	style_image == o.style_image &&
 	font == o.font &&
 	color == o.color &&
-	decoration_color == o.decoration_color;
+	decoration_color == o.decoration_color &&
+        border_hspacing == o.border_hspacing &&
+        border_vspacing == o.border_vspacing &&
+        widows == o.widows &&
+        orphans == o.orphans &&
+        page_break_inside == o.page_break_inside;
 
     // doesn't work because structs are not packed
     //return memcmp(this, &o, sizeof(*this))==0;
@@ -652,9 +663,9 @@ static QString describeFont( const QFont &f)
 QString RenderStyle::createDiff( const RenderStyle &parent ) const
 {
     QString res;
-      if ( parent.color() != color() )
+      if ( color().isValid() && parent.color() != color() )
         res += " [color=" + color().name() + "]";
-    if ( parent.backgroundColor() != backgroundColor() )
+    if ( backgroundColor().isValid() && parent.backgroundColor() != backgroundColor() )
         res += " [bgcolor=" + backgroundColor().name() + "]";
     if ( parent.font() != font() )
         res += " [font=" + describeFont( font() ) + "]";

@@ -34,7 +34,6 @@
 #include "html/html_baseimpl.h"
 #include "html/html_documentimpl.h"
 #include "html/html_imageimpl.h"
-#include "html/html_objectimpl.h"
 #include "html/html_miscimpl.h"
 #include "xml/dom2_eventsimpl.h"
 
@@ -53,6 +52,8 @@
 #include "misc/htmlattrs.h"
 #include "rendering/render_object.h"
 #include "rendering/render_canvas.h"
+#include "rendering/render_frames.h"
+#include "rendering/render_layer.h"
 
 #include "kmessagebox.h"
 #include <kstringhandler.h>
@@ -163,10 +164,12 @@ const ClassInfo KJS::HTMLDocument::info =
   height		HTMLDocument::Height		DontDelete|ReadOnly
   width			HTMLDocument::Width		DontDelete|ReadOnly
   dir			HTMLDocument::Dir		DontDelete
+  compatMode		HTMLDocument::CompatMode	DontDelete|ReadOnly
 #IE extension
   frames		HTMLDocument::Frames		DontDelete|ReadOnly
+#NS4 extension
+#  layers		HTMLDocument::Layers		DontDelete|ReadOnly
 #potentially obsolete array properties
-# layers
 # plugins
 # tags
 #potentially obsolete properties
@@ -206,11 +209,11 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const Identifier &p) const
     return false;
 
   // Keep in sync with tryGet
-  NamedTagLengthDeterminer::TagLength tags[3] = {
-    {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}
+  NamedTagLengthDeterminer::TagLength tags[4] = {
+      {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
   };
-  NamedTagLengthDeterminer(p.string(), tags, 3)(doc.handle());
-  for (int i = 0; i < 3; i++)
+  NamedTagLengthDeterminer(p.string(), tags, 4)(doc.handle());
+  for (int i = 0; i < 4; i++)
     if (tags[i].length > 0)
         return true;
 
@@ -243,11 +246,11 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
   // Note that document.myform should only look at forms
   // Check for applets with name==propertyName, return item or list if found
 
-  NamedTagLengthDeterminer::TagLength tags[3] = {
-    {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}
+  NamedTagLengthDeterminer::TagLength tags[4] = {
+    {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}, {ID_LAYER, 0, 0L}
   };
-  NamedTagLengthDeterminer(propertyName.string(), tags, 3)(doc.handle());
-  for (int i = 0; i < 3; i++)
+  NamedTagLengthDeterminer(propertyName.string(), tags, 4)(doc.handle());
+  for (int i = 0; i < 4; i++)
     if (tags[i].length > 0) {
       if (tags[i].length == 1)
         return getDOMNode(exec, tags[i].last);
@@ -271,11 +274,11 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
     case Title:
       return String(doc.title());
     case Referrer:
-      return String(doc.referrer()); // not getString - DOMTS HTMLDocument02.html
+      return String(doc.referrer());
     case Domain:
       return String(doc.domain());
     case URL:
-      return getString(doc.URL());
+      return String(doc.URL());
     case Body:
       return getDOMNode(exec,doc.body());
     case Location:
@@ -293,6 +296,10 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
       return getHTMLCollection(exec,doc.links());
     case Forms:
       return getHTMLCollection(exec,doc.forms());
+    case Layers:
+      return Undefined();
+      // ### Should not be hidden when we emulate Netscape4
+      //return getHTMLCollection(exec,doc.layers(), true);
     case Anchors:
       return getHTMLCollection(exec,doc.anchors());
     case Scripts: // TODO (IE-specific)
@@ -326,6 +333,9 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
     case CaptureEvents:
     case ReleaseEvents:
       return lookupOrCreateFunction<HTMLDocFunction>( exec, propertyName, this, entry->value, entry->params, entry->attr );
+    case CompatMode:
+      return String(static_cast<HTMLDocumentImpl *>(doc.handle())->parseMode()
+              == DocumentImpl::Compat ? "BackCompat" : "CSS1Compat");
     }
   }
   // Look for overrides
@@ -370,6 +380,12 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
     DOM::HTMLElement element = coll.namedItem(propertyName.string());
     if (!element.isNull()) {
       return getDOMNode(exec,element);
+    }
+
+    DOM::HTMLCollection coll2 = doc.layers();
+    DOM::HTMLElement element2 = coll2.namedItem(propertyName.string());
+    if (!element2.isNull()) {
+      return getDOMNode(exec,element2);
     }
   }
 #ifdef KJS_VERBOSE
@@ -505,6 +521,8 @@ const ClassInfo KJS::HTMLElement::tablecell_info = { "HTMLTableCellElement", &KJ
 const ClassInfo KJS::HTMLElement::frameSet_info = { "HTMLFrameSetElement", &KJS::HTMLElement::info, &HTMLFrameSetElementTable, 0 };
 const ClassInfo KJS::HTMLElement::frame_info = { "HTMLFrameElement", &KJS::HTMLElement::info, &HTMLFrameElementTable, 0 };
 const ClassInfo KJS::HTMLElement::iFrame_info = { "HTMLIFrameElement", &KJS::HTMLElement::info, &HTMLIFrameElementTable, 0 };
+const ClassInfo KJS::HTMLElement::marquee_info = { "HTMLMarqueeElement", &KJS::HTMLElement::info, &HTMLMarqueeElementTable, 0 };
+const ClassInfo KJS::HTMLElement::layer_info = { "HTMLLayerElement", &KJS::HTMLElement::info, &HTMLLayerElementTable, 0 };
 
 const ClassInfo* KJS::HTMLElement::classInfo() const
 {
@@ -629,12 +647,16 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
     return &frame_info;
   case ID_IFRAME:
     return &iFrame_info;
+  case ID_MARQUEE:
+    return &marquee_info;
+  case ID_LAYER:
+    return &layer_info;
   default:
     return &info;
   }
 }
 /*
-@begin HTMLElementTable 8
+@begin HTMLElementTable 11
   id		KJS::HTMLElement::ElementId	DontDelete
   title		KJS::HTMLElement::ElementTitle	DontDelete
   lang		KJS::HTMLElement::ElementLang	DontDelete
@@ -1062,6 +1084,15 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   cols		KJS::HTMLElement::FrameSetCols			DontDelete
   rows		KJS::HTMLElement::FrameSetRows			DontDelete
 @end
+@begin HTMLLayerElementTable 6
+  top		  KJS::HTMLElement::LayerTop			DontDelete
+  left		  KJS::HTMLElement::LayerLeft			DontDelete
+  visibility	  KJS::HTMLElement::LayerVisibility		DontDelete
+  bgColor	  KJS::HTMLElement::LayerBgColor		DontDelete
+  document  	  KJS::HTMLElement::LayerDocument		DontDelete|ReadOnly
+  clip	  	  KJS::HTMLElement::LayerClip			DontDelete|ReadOnly
+  layers	  KJS::HTMLElement::LayerLayers			DontDelete|ReadOnly
+@end
 @begin HTMLFrameElementTable 9
   contentDocument KJS::HTMLElement::FrameContentDocument        DontDelete|ReadOnly
   frameBorder     KJS::HTMLElement::FrameFrameBorder		DontDelete
@@ -1087,94 +1118,22 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   src		  KJS::HTMLElement::IFrameSrc			DontDelete
   width		  KJS::HTMLElement::IFrameWidth			DontDelete
 @end
+
+@begin HTMLMarqueeElementTable 2
+  start           KJS::HTMLElement::MarqueeStart		DontDelete|Function 0
+  stop            KJS::HTMLElement::MarqueeStop                 DontDelete|Function 0
+@end
+
 */
 
-class EmbedLiveConnect : public ObjectImp {
-public:
-    EmbedLiveConnect(const DOM::HTMLElement& elm, UString n, KParts::LiveConnectExtension::Type t, int id)
-        : element (elm), name(n), objtype(t), objid(id) {}
-    ~EmbedLiveConnect() {
-        DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
-        if (elm)
-            elm->unregister(objid);
-    }
-    static Value getValue(const DOM::HTMLElement& elm, const QString & name,
-                          const KParts::LiveConnectExtension::Type t,
-                          const QString & value, int id)
-    {
-        switch(t) {
-            case KParts::LiveConnectExtension::TypeBool: {
-                bool ok;
-                int i = value.toInt(&ok);
-                if (ok)
-                    return Boolean(i);
-                return Boolean(!strcasecmp(value.latin1(), "true"));
-            }
-            case KParts::LiveConnectExtension::TypeFunction:
-                return Value(new EmbedLiveConnect(elm, name, t, id));
-            case KParts::LiveConnectExtension::TypeNumber: {
-                bool ok;
-                int i = value.toInt(&ok);
-                if (ok)
-                    return Number(i);
-                else
-                    return Number(value.toDouble(&ok));
-            }
-            case KParts::LiveConnectExtension::TypeObject:
-                return Value(new EmbedLiveConnect(elm, name, t, id));
-            case KParts::LiveConnectExtension::TypeString:
-                return String(value);
-            case KParts::LiveConnectExtension::TypeVoid:
-            default:
-                return Undefined();
-        }
-    }
-    virtual Value get(ExecState *, const Identifier & prop) const {
-        DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
-        KParts::LiveConnectExtension::Type rettype;
-        QString retvalue;
-        unsigned long retobjid;
-        if (elm && elm->get(objid, prop.qstring(), rettype, retobjid, retvalue))
-            return getValue(element, prop.qstring(), rettype, retvalue, retobjid);
-        return Undefined();
-    }
-    virtual void put(ExecState * exec, const Identifier &prop, const Value & value, int=None) {
-        DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
-        if (elm)
-            elm->put(objid, prop.qstring(), value.toString(exec).qstring());
-    }
-    virtual bool implementsCall() const {
-        return objtype == KParts::LiveConnectExtension::TypeFunction;
-    }
-    virtual Value call(ExecState * exec, Object &, const List &args) {
-        DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
-        QStringList qargs;
-        for (ListIterator i = args.begin(); i != args.end(); i++)
-            qargs.append((*i).toString(exec).qstring());
-        KParts::LiveConnectExtension::Type rettype;
-        QString retvalue;
-        unsigned long retobjid;
-        if (elm && elm->call(objid, name.qstring(), qargs, rettype, retobjid, retvalue))
-            return getValue(element, name.qstring(), rettype, retvalue, retobjid);
-        return Undefined();
-    }
-    virtual bool toBoolean(ExecState *) const { return true; }
-    virtual Value toPrimitive(ExecState *exec, Type) const {
-        return String(toString(exec));
-    }
-    virtual UString toString(ExecState *) const {
-        QString str;
-        const char *type = objtype == KParts::LiveConnectExtension::TypeFunction ? "Function" : "Object";
-        str.sprintf("[object %s ref=%d]", type, (int) objid);
-        return UString(str);
-    }
-private:
-    EmbedLiveConnect(const EmbedLiveConnect &);
-    DOM::HTMLElement element;
-    UString name;
-    KParts::LiveConnectExtension::Type objtype;
-    unsigned long objid;
-};
+static KParts::LiveConnectExtension *getLiveConnectExtension(const DOM::HTMLElement & element)
+{
+  DOM::HTMLDocument doc = element.ownerDocument();
+  KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
+  if (view && element.handle())
+    return view->part()->liveConnectExtension(static_cast<khtml::RenderPart*>(element.handle()->renderer()));
+  return 0L;
+}
 
 Value KJS::HTMLElement::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
@@ -1206,17 +1165,17 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const Identifier &propertyName) 
         return getDOMNode(exec,select.options().item(u)); // not specified by DOM(?) but supported in netscape/IE
     }
       break;
-  case ID_APPLET:
-  case ID_OBJECT:
-  case ID_EMBED: {
-      DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
-      QString retvalue;
-      KParts::LiveConnectExtension::Type rettype;
-      unsigned long retobjid;
-      if (elm && elm->get(0, propertyName.qstring(), rettype, retobjid, retvalue))
-          return EmbedLiveConnect::getValue(element, propertyName.qstring(), rettype, retvalue, retobjid);
+    case ID_APPLET:
+    case ID_OBJECT:
+    case ID_EMBED: {
+      KParts::LiveConnectExtension *lc = getLiveConnectExtension(element);
+      QString rvalue;
+      KParts::LiveConnectExtension::Type rtype;
+      unsigned long robjid;
+      if (lc && lc->get(0, propertyName.qstring(), rtype, robjid, rvalue))
+        return getLiveConnectValue(lc, propertyName.qstring(), rtype, rvalue, robjid);
+    }
       break;
-  }
   default:
     break;
   }
@@ -1239,26 +1198,26 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   switch (element.elementId()) {
   case ID_HTML: {
     DOM::HTMLHtmlElement html = element;
-    if      (token == HtmlVersion)         return getString(html.version());
+    if      (token == HtmlVersion)         return String(html.version());
   }
   break;
   case ID_HEAD: {
     DOM::HTMLHeadElement head = element;
-    if      (token == HeadProfile)         return getString(head.profile());
+    if      (token == HeadProfile)         return String(head.profile());
   }
   break;
   case ID_LINK: {
     DOM::HTMLLinkElement link = element;
     switch (token) {
     case LinkDisabled:        return Boolean(link.disabled());
-    case LinkCharset:         return getString(link.charset());
-    case LinkHref:            return getString(link.href());
-    case LinkHrefLang:        return getString(link.hreflang());
-    case LinkMedia:           return getString(link.media());
-    case LinkRel:             return getString(link.rel());
-    case LinkRev:             return getString(link.rev());
-    case LinkTarget:          return getString(link.target());
-    case LinkType:            return getString(link.type());
+    case LinkCharset:         return String(link.charset());
+    case LinkHref:            return String(link.href());
+    case LinkHrefLang:        return String(link.hreflang());
+    case LinkMedia:           return String(link.media());
+    case LinkRel:             return String(link.rel());
+    case LinkRev:             return String(link.rev());
+    case LinkTarget:          return String(link.target());
+    case LinkType:            return String(link.type());
     case LinkSheet:           return getDOMStyleSheet(exec,static_cast<DOM::ProcessingInstruction>(node).sheet());
     }
   }
@@ -1266,7 +1225,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_TITLE: {
     DOM::HTMLTitleElement title = element;
     switch (token) {
-    case TitleText:                 return getString(title.text());
+    case TitleText:                 return String(title.text());
     }
   }
   break;
@@ -1283,8 +1242,8 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_BASE: {
     DOM::HTMLBaseElement base = element;
     switch (token) {
-    case BaseHref:            return getString(base.href());
-    case BaseTarget:          return getString(base.target());
+    case BaseHref:            return String(base.href());
+    case BaseTarget:          return String(base.target());
     }
   }
   break;
@@ -1292,7 +1251,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLIsIndexElement isindex = element;
     switch (token) {
     case IsIndexForm:            return getDOMNode(exec,isindex.form()); // type HTMLFormElement
-    case IsIndexPrompt:          return getString(isindex.prompt());
+    case IsIndexPrompt:          return String(isindex.prompt());
     }
   }
   break;
@@ -1300,8 +1259,8 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLStyleElement style = element;
     switch (token) {
     case StyleDisabled:        return Boolean(style.disabled());
-    case StyleMedia:           return getString(style.media());
-    case StyleType:            return getString(style.type());
+    case StyleMedia:           return String(style.media());
+    case StyleType:            return String(style.type());
     case StyleSheet:           return getDOMStyleSheet(exec,style.sheet());
     }
   }
@@ -1309,12 +1268,12 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_BODY: {
     DOM::HTMLBodyElement body = element;
     switch (token) {
-    case BodyALink:           return getString(body.aLink());
-    case BodyBackground:      return getString(body.background());
-    case BodyBgColor:         return getString(body.bgColor());
-    case BodyLink:            return getString(body.link());
-    case BodyText:            return getString(body.text());
-    case BodyVLink:           return getString(body.vLink());
+    case BodyALink:           return String(body.aLink());
+    case BodyBackground:      return String(body.background());
+    case BodyBgColor:         return String(body.bgColor());
+    case BodyLink:            return String(body.link());
+    case BodyText:            return String(body.text());
+    case BodyVLink:           return String(body.vLink());
     default:
       // Update the document's layout before we compute these attributes.
       DOM::DocumentImpl* docimpl = node.handle()->getDocument();
@@ -1339,10 +1298,10 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case FormElements:        return getHTMLCollection(exec,form.elements());
     case FormLength:          return Number(form.length());
     case FormName:            return String(form.name()); // NOT getString (IE gives empty string)
-    case FormAcceptCharset:   return getString(form.acceptCharset());
-    case FormAction:          return getString(form.action());
-    case FormEncType:         return getString(form.enctype());
-    case FormMethod:          return getString(form.method());
+    case FormAcceptCharset:   return String(form.acceptCharset());
+    case FormAction:          return String(form.action());
+    case FormEncType:         return String(form.enctype());
+    case FormMethod:          return String(form.method());
     case FormTarget:          return String(form.target());
     }
   }
@@ -1350,9 +1309,9 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_SELECT: {
     DOM::HTMLSelectElement select = element;
     switch (token) {
-    case SelectType:            return getString(select.type());
+    case SelectType:            return String(select.type());
     case SelectSelectedIndex:   return Number(select.selectedIndex());
-    case SelectValue:           return getString(select.value());
+    case SelectValue:           return String(select.value());
     case SelectLength:          return Number(select.length());
     case SelectForm:            return getDOMNode(exec,select.form()); // type HTMLFormElement
     case SelectOptions:         return getSelectHTMLCollection(exec, select.options(), select); // type HTMLCollection
@@ -1368,7 +1327,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLOptGroupElement optgroup = element;
     switch (token) {
     case OptGroupDisabled:        return Boolean(optgroup.disabled());
-    case OptGroupLabel:           return getString(optgroup.label());
+    case OptGroupLabel:           return String(optgroup.label());
     }
   }
   break;
@@ -1377,24 +1336,24 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
     case OptionForm:            return getDOMNode(exec,option.form()); // type HTMLFormElement
     case OptionDefaultSelected: return Boolean(option.defaultSelected());
-    case OptionText:            return getString(option.text());
+    case OptionText:            return String(option.text());
     case OptionIndex:           return Number(option.index());
     case OptionDisabled:        return Boolean(option.disabled());
-    case OptionLabel:           return getString(option.label());
+    case OptionLabel:           return String(option.label());
     case OptionSelected:        return Boolean(option.selected());
-    case OptionValue:           return getString(option.value());
+    case OptionValue:           return String(option.value());
     }
   }
   break;
   case ID_INPUT: {
     DOM::HTMLInputElement input = element;
     switch (token) {
-    case InputDefaultValue:    return getString(input.defaultValue());
+    case InputDefaultValue:    return String(input.defaultValue());
     case InputDefaultChecked:  return Boolean(input.defaultChecked());
     case InputForm:            return getDOMNode(exec,input.form()); // type HTMLFormElement
-    case InputAccept:          return getString(input.accept());
-    case InputAccessKey:       return getString(input.accessKey());
-    case InputAlign:           return getString(input.align());
+    case InputAccept:          return String(input.accept());
+    case InputAccessKey:       return String(input.accessKey());
+    case InputAlign:           return String(input.align());
     case InputAlt:             return String(input.alt());
     case InputChecked:         return Boolean(input.checked());
     case InputDisabled:        return Boolean(input.disabled());
@@ -1402,28 +1361,28 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case InputName:            return String(input.name()); // NOT getString (IE gives empty string)
     case InputReadOnly:        return Boolean(input.readOnly());
     case InputSize:            return Number(input.getSize());
-    case InputSrc:             return getString(input.src());
+    case InputSrc:             return String(input.src());
     case InputTabIndex:        return Number(input.tabIndex());
-    case InputType:            return getString(input.type());
-    case InputUseMap:          return getString(input.useMap());
-    case InputValue:           return getString(input.value());
+    case InputType:            return String(input.type());
+    case InputUseMap:          return String(input.useMap());
+    case InputValue:           return String(input.value());
     }
   }
   break;
   case ID_TEXTAREA: {
     DOM::HTMLTextAreaElement textarea = element;
     switch (token) {
-    case TextAreaDefaultValue:    return getString(textarea.defaultValue());
+    case TextAreaDefaultValue:    return String(textarea.defaultValue());
     case TextAreaForm:            return getDOMNode(exec,textarea.form()); // type HTMLFormElement
-    case TextAreaAccessKey:       return getString(textarea.accessKey());
+    case TextAreaAccessKey:       return String(textarea.accessKey());
     case TextAreaCols:            return Number(textarea.cols());
     case TextAreaDisabled:        return Boolean(textarea.disabled());
     case TextAreaName:            return String(textarea.name());
     case TextAreaReadOnly:        return Boolean(textarea.readOnly());
     case TextAreaRows:            return Number(textarea.rows());
     case TextAreaTabIndex:        return Number(textarea.tabIndex());
-    case TextAreaType:            return getString(textarea.type());
-    case TextAreaValue:           return getString(textarea.value());
+    case TextAreaType:            return String(textarea.type());
+    case TextAreaValue:           return String(textarea.value());
     }
   }
   break;
@@ -1431,12 +1390,12 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLButtonElement button = element;
     switch (token) {
     case ButtonForm:            return getDOMNode(exec,button.form()); // type HTMLFormElement
-    case ButtonAccessKey:       return getString(button.accessKey());
+    case ButtonAccessKey:       return String(button.accessKey());
     case ButtonDisabled:        return Boolean(button.disabled());
     case ButtonName:            return String(button.name());
     case ButtonTabIndex:        return Number(button.tabIndex());
-    case ButtonType:            return getString(button.type());
-    case ButtonValue:           return getString(button.value());
+    case ButtonType:            return String(button.type());
+    case ButtonValue:           return String(button.value());
     }
   }
   break;
@@ -1444,8 +1403,8 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLLabelElement label = element;
     switch (token) {
     case LabelForm:            return getDOMNode(exec,label.form()); // type HTMLFormElement
-    case LabelAccessKey:       return getString(label.accessKey());
-    case LabelHtmlFor:         return getString(label.htmlFor());
+    case LabelAccessKey:       return String(label.accessKey());
+    case LabelHtmlFor:         return String(label.htmlFor());
     }
   }
   break;
@@ -1460,8 +1419,8 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLLegendElement legend = element;
     switch (token) {
     case LegendForm:            return getDOMNode(exec,legend.form()); // type HTMLFormElement
-    case LegendAccessKey:       return getString(legend.accessKey());
-    case LegendAlign:           return getString(legend.align());
+    case LegendAccessKey:       return String(legend.accessKey());
+    case LegendAlign:           return String(legend.align());
     }
   }
   break;
@@ -1469,7 +1428,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLUListElement uList = element;
     switch (token) {
     case UListCompact:         return Boolean(uList.compact());
-    case UListType:            return getString(uList.type());
+    case UListType:            return String(uList.type());
     }
   }
   break;
@@ -1478,7 +1437,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
     case OListCompact:         return Boolean(oList.compact());
     case OListStart:           return Number(oList.start());
-    case OListType:            return getString(oList.type());
+    case OListType:            return String(oList.type());
     }
   }
   break;
@@ -1506,7 +1465,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_LI: {
     DOM::HTMLLIElement li = element;
     switch (token) {
-    case LIType:            return getString(li.type());
+    case LIType:            return String(li.type());
     case LIValue:           return Number(li.value());
     }
   }
@@ -1514,14 +1473,14 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_DIV: {
     DOM::HTMLDivElement div = element;
     switch (token) {
-    case DivAlign:           return getString(div.align());
+    case DivAlign:           return String(div.align());
     }
   }
   break;
   case ID_P: {
     DOM::HTMLParagraphElement paragraph = element;
     switch (token) {
-    case ParagraphAlign:           return getString(paragraph.align());
+    case ParagraphAlign:           return String(paragraph.align());
     }
   }
   break;
@@ -1533,20 +1492,20 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_H6: {
     DOM::HTMLHeadingElement heading = element;
     switch (token) {
-    case HeadingAlign:           return getString(heading.align());
+    case HeadingAlign:           return String(heading.align());
     }
   }
   break;
   case ID_BLOCKQUOTE: {
     DOM::HTMLBlockquoteElement blockquote = element;
     switch (token) {
-    case BlockQuoteCite:            return getString(blockquote.cite());
+    case BlockQuoteCite:            return String(blockquote.cite());
     }
   }
   case ID_Q: {
     DOM::HTMLQuoteElement quote = element;
     switch (token) {
-    case QuoteCite:            return getString(quote.cite());
+    case QuoteCite:            return String(quote.cite());
     }
   }
   case ID_PRE: {
@@ -1559,15 +1518,15 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_BR: {
     DOM::HTMLBRElement br = element;
     switch (token) {
-    case BRClear:           return getString(br.clear());
+    case BRClear:           return String(br.clear());
     }
   }
   break;
   case ID_BASEFONT: {
     DOM::HTMLBaseFontElement baseFont = element;
     switch (token) {
-    case BaseFontColor:           return getString(baseFont.color());
-    case BaseFontFace:            return getString(baseFont.face());
+    case BaseFontColor:           return String(baseFont.color());
+    case BaseFontFace:            return String(baseFont.face());
     case BaseFontSize:            return Number(baseFont.getSize());
     }
   }
@@ -1575,19 +1534,19 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_FONT: {
     DOM::HTMLFontElement font = element;
     switch (token) {
-    case FontColor:           return getString(font.color());
-    case FontFace:            return getString(font.face());
-    case FontSize:            return getString(font.size());
+    case FontColor:           return String(font.color());
+    case FontFace:            return String(font.face());
+    case FontSize:            return String(font.size());
     }
   }
   break;
   case ID_HR: {
     DOM::HTMLHRElement hr = element;
     switch (token) {
-    case HRAlign:           return getString(hr.align());
+    case HRAlign:           return String(hr.align());
     case HRNoShade:         return Boolean(hr.noShade());
-    case HRSize:            return getString(hr.size());
-    case HRWidth:           return getString(hr.width());
+    case HRSize:            return String(hr.size());
+    case HRWidth:           return String(hr.width());
     }
   }
   break;
@@ -1595,8 +1554,8 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_DEL: {
     DOM::HTMLModElement mod = element;
     switch (token) {
-    case ModCite:            return getString(mod.cite());
-    case ModDateTime:        return getString(mod.dateTime());
+    case ModCite:            return String(mod.cite());
+    case ModDateTime:        return String(mod.dateTime());
     }
   }
   break;
@@ -1639,16 +1598,16 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLImageElement image = element;
     switch (token) {
     case ImageName:            return String(image.name()); // NOT getString (IE gives empty string)
-    case ImageAlign:           return getString(image.align());
+    case ImageAlign:           return String(image.align());
     case ImageAlt:             return String(image.alt());
     case ImageBorder:          return String(image.getBorder());
     case ImageComplete:        return Boolean(static_cast<DOM::HTMLImageElementImpl*>( image.handle() )->complete());
     case ImageHeight:          return Number(image.height());
     case ImageHspace:          return Number(image.hspace());
     case ImageIsMap:           return Boolean(image.isMap());
-    case ImageLongDesc:        return getString(image.longDesc());
+    case ImageLongDesc:        return String(image.longDesc());
     case ImageSrc:             return String(image.src());
-    case ImageUseMap:          return getString(image.useMap());
+    case ImageUseMap:          return String(image.useMap());
     case ImageVspace:          return Number(image.vspace());
     case ImageWidth:           return Number(image.width());
     case ImageX:               return Number(image.x());
@@ -1660,52 +1619,52 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLObjectElement object = element;
     switch (token) {
     case ObjectForm:            return getDOMNode(exec,object.form()); // type HTMLFormElement
-    case ObjectCode:            return String(object.code()); // not getString, cf DOM2TS-HTMLObjectElement02.html
-    case ObjectAlign:           return getString(object.align());
-    case ObjectArchive:         return getString(object.archive());
-    case ObjectBorder:          return getString(object.border());
-    case ObjectCodeBase:        return getString(object.codeBase());
-    case ObjectCodeType:        return getString(object.codeType());
+    case ObjectCode:            return String(object.code());
+    case ObjectAlign:           return String(object.align());
+    case ObjectArchive:         return String(object.archive());
+    case ObjectBorder:          return String(object.border());
+    case ObjectCodeBase:        return String(object.codeBase());
+    case ObjectCodeType:        return String(object.codeType());
     case ObjectContentDocument: return checkNodeSecurity(exec,object.contentDocument()) ?
 				       getDOMNode(exec, object.contentDocument()) : Undefined();
-    case ObjectData:            return getString(object.data());
+    case ObjectData:            return String(object.data());
     case ObjectDeclare:         return Boolean(object.declare());
-    case ObjectHeight:          return getString(object.height());
+    case ObjectHeight:          return String(object.height());
     case ObjectHspace:          return Number(object.getHspace());
-    case ObjectName:            return getString(object.name());
-    case ObjectStandby:         return getString(object.standby());
+    case ObjectName:            return String(object.name());
+    case ObjectStandby:         return String(object.standby());
     case ObjectTabIndex:        return Number(object.tabIndex());
-    case ObjectType:            return getString(object.type());
-    case ObjectUseMap:          return getString(object.useMap());
+    case ObjectType:            return String(object.type());
+    case ObjectUseMap:          return String(object.useMap());
     case ObjectVspace:          return Number(object.getVspace());
-    case ObjectWidth:           return getString(object.width());
+    case ObjectWidth:           return String(object.width());
     }
   }
   break;
   case ID_PARAM: {
     DOM::HTMLParamElement param = element;
     switch (token) {
-    case ParamName:            return getString(param.name());
-    case ParamType:            return getString(param.type());
-    case ParamValue:           return getString(param.value());
-    case ParamValueType:       return getString(param.valueType());
+    case ParamName:            return String(param.name());
+    case ParamType:            return String(param.type());
+    case ParamValue:           return String(param.value());
+    case ParamValueType:       return String(param.valueType());
     }
   }
   break;
   case ID_APPLET: {
     DOM::HTMLAppletElement applet = element;
     switch (token) {
-    case AppletAlign:           return getString(applet.align());
+    case AppletAlign:           return String(applet.align());
     case AppletAlt:             return String(applet.alt());
-    case AppletArchive:         return getString(applet.archive());
-    case AppletCode:            return getString(applet.code());
-    case AppletCodeBase:        return getString(applet.codeBase());
-    case AppletHeight:          return getString(applet.height());
+    case AppletArchive:         return String(applet.archive());
+    case AppletCode:            return String(applet.code());
+    case AppletCodeBase:        return String(applet.codeBase());
+    case AppletHeight:          return String(applet.height());
     case AppletHspace:          return Number(applet.getHspace());
-    case AppletName:            return getString(applet.name());
-    case AppletObject:          return getString(applet.object());
+    case AppletName:            return String(applet.name());
+    case AppletObject:          return String(applet.object());
     case AppletVspace:          return Number(applet.getVspace());
-    case AppletWidth:           return getString(applet.width());
+    case AppletWidth:           return String(applet.width());
     }
   }
   break;
@@ -1713,16 +1672,16 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLMapElement map = element;
     switch (token) {
     case MapAreas:           return getHTMLCollection(exec, map.areas()); // type HTMLCollection
-    case MapName:            return getString(map.name());
+    case MapName:            return String(map.name());
     }
   }
   break;
   case ID_AREA: {
     DOM::HTMLAreaElement area = element;
     switch (token) {
-    case AreaAccessKey:       return getString(area.accessKey());
+    case AreaAccessKey:       return String(area.accessKey());
     case AreaAlt:             return String(area.alt());
-    case AreaCoords:          return getString(area.coords());
+    case AreaCoords:          return String(area.coords());
     // Group everything that needs href
     case AreaHref:
     case AreaHash:
@@ -1761,22 +1720,22 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
       }
     }
     case AreaNoHref:          return Boolean(area.noHref());
-    case AreaShape:           return getString(area.shape());
+    case AreaShape:           return String(area.shape());
     case AreaTabIndex:        return Number(area.tabIndex());
-    case AreaTarget:          return getString(area.target());
+    case AreaTarget:          return String(area.target());
     }
   }
   break;
   case ID_SCRIPT: {
     DOM::HTMLScriptElement script = element;
     switch (token) {
-    case ScriptText:            return getString(script.text());
-    case ScriptHtmlFor:         return getString(script.htmlFor());
-    case ScriptEvent:           return getString(script.event());
-    case ScriptCharset:         return getString(script.charset());
+    case ScriptText:            return String(script.text());
+    case ScriptHtmlFor:         return String(script.htmlFor());
+    case ScriptEvent:           return String(script.event());
+    case ScriptCharset:         return String(script.charset());
     case ScriptDefer:           return Boolean(script.defer());
-    case ScriptSrc:             return getString(script.src());
-    case ScriptType:            return getString(script.type());
+    case ScriptSrc:             return String(script.src());
+    case ScriptType:            return String(script.type());
     }
   }
   break;
@@ -1788,22 +1747,22 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case TableTFoot:           return getDOMNode(exec,table.tFoot()); // type HTMLTableSectionElement
     case TableRows:            return getHTMLCollection(exec,table.rows()); // type HTMLCollection
     case TableTBodies:         return getHTMLCollection(exec,table.tBodies()); // type HTMLCollection
-    case TableAlign:           return getString(table.align());
-    case TableBgColor:         return getString(table.bgColor());
-    case TableBorder:          return getString(table.border());
-    case TableCellPadding:     return getString(table.cellPadding());
-    case TableCellSpacing:     return getString(table.cellSpacing());
-    case TableFrame:           return getString(table.frame());
-    case TableRules:           return getString(table.rules());
-    case TableSummary:         return getString(table.summary());
-    case TableWidth:           return getString(table.width());
+    case TableAlign:           return String(table.align());
+    case TableBgColor:         return String(table.bgColor());
+    case TableBorder:          return String(table.border());
+    case TableCellPadding:     return String(table.cellPadding());
+    case TableCellSpacing:     return String(table.cellSpacing());
+    case TableFrame:           return String(table.frame());
+    case TableRules:           return String(table.rules());
+    case TableSummary:         return String(table.summary());
+    case TableWidth:           return String(table.width());
     }
   }
   break;
   case ID_CAPTION: {
     DOM::HTMLTableCaptionElement tableCaption = element;
     switch (token) {
-    case TableCaptionAlign:       return getString(tableCaption.align());
+    case TableCaptionAlign:       return String(tableCaption.align());
     }
   }
   break;
@@ -1811,12 +1770,12 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_COLGROUP: {
     DOM::HTMLTableColElement tableCol = element;
     switch (token) {
-    case TableColAlign:           return getString(tableCol.align());
-    case TableColCh:              return getString(tableCol.ch());
-    case TableColChOff:           return getString(tableCol.chOff());
+    case TableColAlign:           return String(tableCol.align());
+    case TableColCh:              return String(tableCol.ch());
+    case TableColChOff:           return String(tableCol.chOff());
     case TableColSpan:            return Number(tableCol.span());
-    case TableColVAlign:          return getString(tableCol.vAlign());
-    case TableColWidth:           return getString(tableCol.width());
+    case TableColVAlign:          return String(tableCol.vAlign());
+    case TableColWidth:           return String(tableCol.width());
     }
   }
   break;
@@ -1825,10 +1784,10 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_TFOOT: {
     DOM::HTMLTableSectionElement tableSection = element;
     switch (token) {
-    case TableSectionAlign:           return getString(tableSection.align());
-    case TableSectionCh:              return getString(tableSection.ch());
-    case TableSectionChOff:           return getString(tableSection.chOff());
-    case TableSectionVAlign:          return getString(tableSection.vAlign());
+    case TableSectionAlign:           return String(tableSection.align());
+    case TableSectionCh:              return String(tableSection.ch());
+    case TableSectionChOff:           return String(tableSection.chOff());
+    case TableSectionVAlign:          return String(tableSection.vAlign());
     case TableSectionRows:            return getHTMLCollection(exec,tableSection.rows()); // type HTMLCollection
     }
   }
@@ -1839,11 +1798,11 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
    case TableRowRowIndex:        return Number(tableRow.rowIndex());
    case TableRowSectionRowIndex: return Number(tableRow.sectionRowIndex());
    case TableRowCells:           return getHTMLCollection(exec,tableRow.cells()); // type HTMLCollection
-   case TableRowAlign:           return getString(tableRow.align());
-   case TableRowBgColor:         return getString(tableRow.bgColor());
-   case TableRowCh:              return getString(tableRow.ch());
-   case TableRowChOff:           return getString(tableRow.chOff());
-   case TableRowVAlign:          return getString(tableRow.vAlign());
+   case TableRowAlign:           return String(tableRow.align());
+   case TableRowBgColor:         return String(tableRow.bgColor());
+   case TableRowCh:              return String(tableRow.ch());
+   case TableRowChOff:           return String(tableRow.chOff());
+   case TableRowVAlign:          return String(tableRow.vAlign());
    }
   }
   break;
@@ -1852,28 +1811,41 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLTableCellElement tableCell = element;
     switch (token) {
     case TableCellCellIndex:       return Number(tableCell.cellIndex());
-    case TableCellAbbr:            return getString(tableCell.abbr());
-    case TableCellAlign:           return getString(tableCell.align());
-    case TableCellAxis:            return getString(tableCell.axis());
-    case TableCellBgColor:         return getString(tableCell.bgColor());
-    case TableCellCh:              return getString(tableCell.ch());
-    case TableCellChOff:           return getString(tableCell.chOff());
+    case TableCellAbbr:            return String(tableCell.abbr());
+    case TableCellAlign:           return String(tableCell.align());
+    case TableCellAxis:            return String(tableCell.axis());
+    case TableCellBgColor:         return String(tableCell.bgColor());
+    case TableCellCh:              return String(tableCell.ch());
+    case TableCellChOff:           return String(tableCell.chOff());
     case TableCellColSpan:         return Number(tableCell.colSpan());
-    case TableCellHeaders:         return getString(tableCell.headers());
-    case TableCellHeight:          return getString(tableCell.height());
+    case TableCellHeaders:         return String(tableCell.headers());
+    case TableCellHeight:          return String(tableCell.height());
     case TableCellNoWrap:          return Boolean(tableCell.noWrap());
     case TableCellRowSpan:         return Number(tableCell.rowSpan());
-    case TableCellScope:           return getString(tableCell.scope());
-    case TableCellVAlign:          return getString(tableCell.vAlign());
-    case TableCellWidth:           return getString(tableCell.width());
+    case TableCellScope:           return String(tableCell.scope());
+    case TableCellVAlign:          return String(tableCell.vAlign());
+    case TableCellWidth:           return String(tableCell.width());
     }
   }
   break;
   case ID_FRAMESET: {
     DOM::HTMLFrameSetElement frameSet = element;
     switch (token) {
-    case FrameSetCols:            return getString(frameSet.cols());
-    case FrameSetRows:            return getString(frameSet.rows());
+    case FrameSetCols:            return String(frameSet.cols());
+    case FrameSetRows:            return String(frameSet.rows());
+    }
+  }
+  break;
+  case ID_LAYER: {
+    DOM::HTMLLayerElement layerElement = element;
+    switch (token) {
+    case LayerTop:            return Number(layerElement.top());
+    case LayerLeft:           return Number(layerElement.left());
+    case LayerVisibility:     return getString(layerElement.visibility());
+    case LayerBgColor:        return getString(layerElement.bgColor());
+    /*case LayerClip:           return getLayerClip(exec, layerElement); */
+    case LayerDocument:       return Undefined();
+    case LayerLayers:         return getHTMLCollection(exec,layerElement.layers());
     }
   }
   break;
@@ -1882,33 +1854,33 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
     case FrameContentDocument: return checkNodeSecurity(exec,frameElement.contentDocument()) ?
 				      getDOMNode(exec, frameElement.contentDocument()) : Undefined();
-    case FrameFrameBorder:     return getString(frameElement.frameBorder());
-    case FrameLongDesc:        return getString(frameElement.longDesc());
-    case FrameMarginHeight:    return getString(frameElement.marginHeight());
-    case FrameMarginWidth:     return getString(frameElement.marginWidth());
-    case FrameName:            return getString(frameElement.name());
+    case FrameFrameBorder:     return String(frameElement.frameBorder());
+    case FrameLongDesc:        return String(frameElement.longDesc());
+    case FrameMarginHeight:    return String(frameElement.marginHeight());
+    case FrameMarginWidth:     return String(frameElement.marginWidth());
+    case FrameName:            return String(frameElement.name());
     case FrameNoResize:        return Boolean(frameElement.noResize());
-    case FrameScrolling:       return getString(frameElement.scrolling());
+    case FrameScrolling:       return String(frameElement.scrolling());
     case FrameSrc:
-    case FrameLocation:        return getString(frameElement.src());
+    case FrameLocation:        return String(frameElement.src());
     }
   }
   break;
   case ID_IFRAME: {
     DOM::HTMLIFrameElement iFrame = element;
     switch (token) {
-    case IFrameAlign:           return getString(iFrame.align());
+    case IFrameAlign:           return String(iFrame.align());
     case IFrameContentDocument: return checkNodeSecurity(exec,iFrame.contentDocument()) ?
 				       getDOMNode(exec, iFrame.contentDocument()) : Undefined();
-    case IFrameFrameBorder:     return getString(iFrame.frameBorder());
-    case IFrameHeight:          return getString(iFrame.height());
-    case IFrameLongDesc:        return getString(iFrame.longDesc());
-    case IFrameMarginHeight:    return getString(iFrame.marginHeight());
-    case IFrameMarginWidth:     return getString(iFrame.marginWidth());
-    case IFrameName:            return getString(iFrame.name());
-    case IFrameScrolling:       return getString(iFrame.scrolling());
-    case IFrameSrc:             return getString(iFrame.src());
-    case IFrameWidth:           return getString(iFrame.width());
+    case IFrameFrameBorder:     return String(iFrame.frameBorder());
+    case IFrameHeight:          return String(iFrame.height());
+    case IFrameLongDesc:        return String(iFrame.longDesc());
+    case IFrameMarginHeight:    return String(iFrame.marginHeight());
+    case IFrameMarginWidth:     return String(iFrame.marginWidth());
+    case IFrameName:            return String(iFrame.name());
+    case IFrameScrolling:       return String(iFrame.scrolling());
+    case IFrameSrc:             return String(iFrame.src());
+    case IFrameWidth:           return String(iFrame.width());
     }
     break;
   }
@@ -1918,19 +1890,19 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   // generic properties
   switch (token) {
   case ElementId:
-    return String(element.id()); // getString is wrong here. Other browsers return empty string if no id specified.
+    return String(element.id()); // String is wrong here. Other browsers return empty string if no id specified.
   case ElementTitle:
     return String(element.title());
   case ElementLang:
-    return getString(element.lang());
+    return String(element.lang());
   case ElementDir:
-    return getString(element.dir());
+    return String(element.dir());
   case ElementClassName:
-    return getString(element.className());
+    return String(element.className());
   case ElementInnerHTML:
-    return getString(element.innerHTML());
+    return String(element.innerHTML());
   case ElementInnerText:
-    return getString(element.innerText());
+    return String(element.innerText());
   case ElementDocument:
     return getDOMNode(exec,element.ownerDocument());
   case ElementChildren:
@@ -1984,14 +1956,14 @@ UString KJS::HTMLElement::toString(ExecState *exec) const
   if (node.elementId() == ID_A)
     return UString(static_cast<const DOM::HTMLAnchorElement&>(node).href());
   else if (node.elementId() == ID_APPLET) {
-    DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(node.handle());
+    KParts::LiveConnectExtension *lc = getLiveConnectExtension(node);
     QStringList qargs;
     QString retvalue;
     KParts::LiveConnectExtension::Type rettype;
     unsigned long retobjid;
-    if (elm && elm->call(0, "hashCode", qargs, rettype, retobjid, retvalue)) {
-        QString str("[object APPLET ref=");
-        return UString(str + retvalue + QString("]"));
+    if (lc && lc->call(0, "hashCode", qargs, rettype, retobjid, retvalue)) {
+      QString str("[object APPLET ref=");
+      return UString(str + retvalue + QString("]"));
     }
   } else if (node.elementId() == ID_IMG) {
     DOM::HTMLImageElement image(node);
@@ -2122,8 +2094,12 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
               trg == "_parent")
             block = false;
 
+          QString caption;
+
           // if there is a frame with the target name, don't block
           if ( view && view->part() )  {
+            if (!view->part()->url().host().isEmpty())
+              caption = view->part()->url().host() + " - ";
             // search all (possibly nested) framesets
             KHTMLPart *currentPart = view->part()->parentPart();
             while( currentPart != 0L ) {
@@ -2134,14 +2110,16 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
           }
 
           if ( block && policy == KHTMLSettings::KJSWindowOpenAsk && view ) {
-
+            if (view && view->part())
+            emit view->part()->browserExtension()->requestFocus(view->part());
+            caption += i18n( "Confirmation: JavaScript Popup" );
             if ( KMessageBox::questionYesNo(view, form.action().isEmpty() ?
                    i18n( "This site is submitting a form which will open up a new browser "
                          "window via JavaScript.\n"
                          "Do you want to allow the form to be submitted?" ) :
                    i18n( "<qt>This site is submitting a form which will open <p>%1</p> in a new browser window via JavaScript.<br />"
                          "Do you want to allow the form to be submitted?</qt>").arg(KStringHandler::csqueeze(form.action().string(),  100)),
-                   i18n( "Confirmation: JavaScript Popup" ) ) == KMessageBox::Yes )
+                   caption ) == KMessageBox::Yes )
               block = false;
 
           } else if ( block && policy == KHTMLSettings::KJSWindowOpenSmart ) {
@@ -2281,6 +2259,21 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
       }
       break;
     }
+    case ID_MARQUEE: {
+      if (id == KJS::HTMLElement::MarqueeStart && element.handle()->renderer() &&
+        element.handle()->renderer()->layer() &&
+        element.handle()->renderer()->layer()->marquee()) {
+        element.handle()->renderer()->layer()->marquee()->start();
+        return Undefined();
+      }
+      else if (id == KJS::HTMLElement::MarqueeStop && element.handle()->renderer() &&
+              element.handle()->renderer()->layer() &&
+              element.handle()->renderer()->layer()->marquee()) {
+        element.handle()->renderer()->layer()->marquee()->stop();
+        return Undefined();
+      }
+      break;
+    }
   }
 
   return Undefined();
@@ -2314,10 +2307,9 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const Identifier &propertyName, c
     case ID_APPLET:
     case ID_OBJECT:
     case ID_EMBED: {
-      DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
-      if (elm && elm->put(0, propertyName.qstring(),
-                          value.toString(exec).qstring()))
-          return;
+      KParts::LiveConnectExtension *lc = getLiveConnectExtension(element);
+      if (lc && lc->put(0, propertyName.qstring(), value.toString(exec).qstring()))
+        return;
       break;
     }
     default:
@@ -2963,6 +2955,17 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       }
     }
     break;
+    case ID_LAYER: {
+      DOM::HTMLLayerElement layerElement = element;
+      switch (token) {
+      case LayerTop:                   { layerElement.setTop(value.toInteger(exec)); return; }
+      case LayerLeft:                  { layerElement.setLeft(value.toInteger(exec)); return; }
+      case LayerVisibility:            { layerElement.setVisibility(str); return; }
+      case LayerBgColor:               { layerElement.setBgColor(str); return; }
+      // read-only: layers, clip
+      }
+    }
+    break;
     case ID_FRAME: {
       DOM::HTMLFrameElement frameElement = element;
       switch (token) {
@@ -3044,11 +3047,22 @@ IMPLEMENT_PROTOTYPE(HTMLCollectionProto,HTMLCollectionProtoFunc)
 const ClassInfo KJS::HTMLCollection::info = { "HTMLCollection", 0, 0, 0 };
 
 KJS::HTMLCollection::HTMLCollection(ExecState *exec, const DOM::HTMLCollection& c)
-  : DOMObject(HTMLCollectionProto::self(exec)), collection(c) {}
+  : DOMObject(HTMLCollectionProto::self(exec)), collection(c), hidden(false) {}
 
 KJS::HTMLCollection::~HTMLCollection()
 {
   ScriptInterpreter::forgetDOMObject(collection.handle());
+}
+
+bool KJS::HTMLCollection::toBoolean(ExecState *) const {
+    return !hidden;
+}
+
+Type KJS::HTMLCollection::type() const {
+    if (hidden) // what, me? No, I do not exist..
+        return UndefinedType;
+    else
+        return ObjectImp::type();
 }
 
 // We have to implement hasProperty since we don't use a hashtable for 'selectedIndex' and 'length'
@@ -3104,8 +3118,11 @@ Value KJS::HTMLCollection::tryGet(ExecState *exec, const Identifier &propertyNam
   bool ok;
   unsigned int u = propertyName.toULong(&ok);
   if (ok) {
-    DOM::Node node = collection.item(u);
-    return getDOMNode(exec,node);
+    if ( u < collection.length() ) {
+      DOM::Node node = collection.item(u);
+      return getDOMNode(exec,node);
+    } else
+      return Undefined();
   }
   else
     return getNamedItems(exec,propertyName);
@@ -3445,15 +3462,16 @@ void Image::tryPut(ExecState *exec, const Identifier &propertyName, const Value&
 void Image::putValueProperty(ExecState *exec, int token, const Value& value, int)
 {
   switch (token) {
-  case Src: {
-    String str = value.toString(exec);
-    src = str.value();
+  case Src:
+    src = value.toString(exec);
     if ( img ) img->deref(this);
     img = static_cast<DOM::DocumentImpl*>( doc.handle() )->docLoader()->requestImage( src.string() );
 // ### img = doc ? doc->docLoader()->requestImage( src.string() ) : 0;
-    if ( img ) img->ref(this);
+    if ( img ) {
+      img->ref(this);
+      src = img->url();
+    }
     break;
-  }
   case OnLoad:
     if ( m_onLoadListener )
         m_onLoadListener->deref();
@@ -3490,9 +3508,14 @@ Image::~Image()
       m_onLoadListener->deref();
 }
 
-Value KJS::getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c)
+Value KJS::getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, bool hide)
 {
-  return cacheDOMObject<DOM::HTMLCollection, KJS::HTMLCollection>(exec, c);
+  Value coll = cacheDOMObject<DOM::HTMLCollection, KJS::HTMLCollection>(exec, c);
+  if (hide) {
+    KJS::HTMLCollection *impl = static_cast<KJS::HTMLCollection*>(coll.imp());
+    impl->hide();
+  }
+  return coll;
 }
 
 Value KJS::getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e)

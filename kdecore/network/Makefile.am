@@ -10,7 +10,7 @@ INCLUDES = $(all_includes)
 # the library search path. 
 # convenience lib - no LDFLAGS or LIBADD !
 # Note:
-#  ksocketdevice.cpp must appear before any inclusion of syssocket.h
+#  ksocketdevice.cpp must appear before any inclusion of ksocketdevice.h
 libkdecorenetwork_la_SOURCES = kresolver.cpp \
 		kresolvermanager.cpp \
 		kresolverworkerbase.cpp \
@@ -42,7 +42,8 @@ include_HEADERS = kresolver.h \
 	knetworkinterface.h \
 	khttpproxysocketdevice.h \
 	ksockssocketdevice.h \
-	kbufferedsocket.h
+	kbufferedsocket.h \
+	kiobuffer.h
 noinst_HEADERS = kresolver_p.h \
 	kresolverworkerbase.h \
 	kresolverstandardworkers_p.h \

@@ -235,8 +235,6 @@ void RenderFlow::repaint(bool immediate)
 
         // Now invalidate a rectangle.
         int ow = style() ? style()->outlineWidth() : 0;
-        if (style()->display() == COMPACT)
-            left -= m_x;
         containingBlock()->repaintRectangle(-ow+left, -ow+top,
                                             width()+ow*2, height()+ow*2, immediate);
     }
@@ -244,7 +242,7 @@ void RenderFlow::repaint(bool immediate)
         if (firstLineBox() && firstLineBox()->topOverflow() < 0) {
             int ow = style() ? style()->outlineWidth() : 0;
             repaintRectangle(-ow, -ow+firstLineBox()->topOverflow(),
-                             overflowWidth()+ow*2, overflowHeight()+ow*2, immediate);
+                             effectiveWidth()+ow*2, effectiveHeight()+ow*2, immediate);
         }
         else
             return RenderBox::repaint(immediate);
@@ -310,15 +308,4 @@ int RenderFlow::leftmostPosition(bool includeOverflowInterior, bool includeSelf)
     }
 
     return left;
-}
-
-RenderBlock* RenderFlow::createAnonymousBlock()
-{
-    RenderStyle *newStyle = new RenderStyle();
-    newStyle->inheritFrom(style());
-    newStyle->setDisplay(BLOCK);
-
-    RenderBlock *newBox = new (renderArena()) RenderBlock(document() /* anonymous*/);
-    newBox->setStyle(newStyle);
-    return newBox;
 }

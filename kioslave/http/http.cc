@@ -78,7 +78,8 @@
 
 // Catch uncompatible crap (BR86019)
 #if defined(GSS_RFC_COMPLIANT_OIDS) && (GSS_RFC_COMPLIANT_OIDS == 0)
-#undef HAVE_LIBGSSAPI
+#include <gssapi/gssapi_generic.h>
+#define GSS_C_NT_HOSTBASED_SERVICE gss_nt_service_name
 #endif
 
 #endif /* HAVE_LIBGSSAPI */
@@ -3567,7 +3568,7 @@ bool HTTPProtocol::readHeader()
   }
 
   // Some webservers say "text/plain" when they mean "application/x-bzip2"
-  else if (m_strMimeType == "text/plain")
+  else if ((m_strMimeType == "text/plain") || (m_strMimeType == "application/octet-stream"))
   {
      QString ext = m_request.url.path().right(4).upper();
      if (ext == ".BZ2")
@@ -5517,11 +5518,12 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
       p+=7;
       while ( *p == '"' ) p++;  // Go past any " mark(s) first
       while ( p[i] != '"' ) i++;  // Read everything until the last " mark
-      int pos = 0, idx = 0;
+      int pos;
+      int idx = 0;
       QCString uri = QCString(p,i+1);
       do
       {
-        pos = uri.find( ',', pos );
+        pos = uri.find( ' ', idx );
         if ( pos != -1 )
         {
           KURL u (m_request.url, uri.mid(idx, pos-idx));

@@ -302,7 +302,7 @@ public:
     bool inTransitionalMode() const { return pMode == Transitional; }
     bool inStrictMode() const { return pMode == Strict; }
 
-    void setHTMLMode( HTMLMode m ) { hMode = m; }
+    //void setHTMLMode( HTMLMode m ) { hMode = m; }
     HTMLMode htmlMode() const { return hMode; }
 
     void setParsing(bool b) { m_bParsing = b; }
@@ -315,8 +315,6 @@ public:
     bool designMode() const;
 
     // internal
-    NodeImpl *findElement( Id id );
-
     bool prepareMouseEvent( bool readonly, int x, int y, MouseEvent *ev );
 
     virtual bool childAllowed( NodeImpl *newChild );
@@ -381,10 +379,16 @@ public:
     LocalStyleRefs* localStyleRefs() { return &m_localStyleRefs; }
 
     virtual void defaultEventHandler(EventImpl *evt);
-    virtual void setWindowEventListener(int id, EventListener *listener);
-    EventListener *getWindowEventListener(int id);
-    virtual void removeWindowEventListener(int id);
+    virtual void setHTMLWindowEventListener(int id, EventListener *listener);
+    EventListener *getHTMLWindowEventListener(int id);
+    virtual void removeHTMLWindowEventListener(int id);
     EventListener *createHTMLEventListener(QString code, QString name);
+
+    void addWindowEventListener(int id, EventListener *listener, const bool useCapture);
+    void removeWindowEventListener(int id, EventListener *listener, bool useCapture);
+    bool hasWindowEventListener(int id);
+
+    EventListener *createHTMLEventListener(QString code);
 
     /**
      * Searches through the document, starting from fromNode, for the next selectable element that comes after fromNode.
@@ -428,9 +432,19 @@ public:
      */
     void processHttpEquiv(const DOMString &equiv, const DOMString &content);
 
+    // Returns the owning element in the parent document.
+    // Returns 0 if this is the top level document.
+    ElementImpl *ownerElement() const;
+
+    DOMString domain() const;
+    void setDomain( const DOMString &newDomain ); // not part of the DOM
+
     bool isURLAllowed(const QString& url) const;
 
     DOMString toString() const;
+
+    void incDOMTreeVersion() { ++m_domtree_version; }
+    unsigned int domTreeVersion() const { return m_domtree_version; }
 
 signals:
     void finishedParsing();
@@ -470,6 +484,8 @@ protected:
     QColor m_textColor;
     NodeImpl *m_hoverNode;
     NodeImpl *m_focusNode;
+
+    unsigned int m_domtree_version;
 
     struct IdNameMapping {
         IdNameMapping(unsigned short _start)
@@ -516,6 +532,8 @@ protected:
     int m_decoderMibEnum;
 
     khtml::RenderArena* m_renderArena;
+private:
+    mutable DOMString m_domain;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl
@@ -561,6 +579,8 @@ public:
 
     // Other methods (not part of DOM)
     void setName(const DOMString& n) { m_qualifiedName = n; }
+    void setPublicId(const DOMString& publicId) { m_publicId = publicId; }
+    void setSystemId(const DOMString& systemId) { m_systemId = systemId; }
     DOMImplementationImpl *implementation() const { return m_implementation; }
     void copyFrom(const DocumentTypeImpl&);
 

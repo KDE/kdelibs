@@ -3,7 +3,7 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	x-tex-gf.desktop x-gzip.desktop x-pak.desktop \
 	x-object.desktop x-tex-pk.desktop pdf.desktop \
 	x-tar.desktop x-trash.desktop x-zip.desktop \
-	x-core.desktop x-java.desktop x-java-applet.desktop \
+	x-core.desktop x-java.desktop x-java-applet.desktop x-javascript.desktop \
 	x-jar.desktop x-arj.desktop x-tarz.desktop \
 	x-gzpostscript.desktop postscript.desktop octet-stream.desktop \
 	x-shellscript.desktop x-desktop.desktop \
@@ -48,7 +48,8 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	vnd.sun.xml.calc.template.desktop vnd.sun.xml.writer.template.desktop \
 	vnd.sun.xml.impress.template.desktop vnd.sun.xml.draw.template.desktop \
 	vnd.stardivision.chart.desktop vnd.stardivision.draw.desktop \
-	vnd.stardivision.math.desktop vnd.stardivision.writer-global.desktop vnd.sun.xml.writer.master.desktop
+	vnd.stardivision.math.desktop vnd.stardivision.writer-global.desktop \
+	vnd.sun.xml.writer.master.desktop java.desktop xml.desktop
 
 mimetypeapplicationdatadir = $(kde_mimedir)/application
 

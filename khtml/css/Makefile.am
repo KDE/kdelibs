@@ -56,8 +56,5 @@ parser: $(srcdir)/parser.y
 	else mv parser.tab.h parser.h; fi \
 	else :; fi
 
-## generate lib documentation
-srcdoc:
-	$(mkinstalldirs) $(SRCDOC_DEST)
-	kdoc -H -d $(SRCDOC_DEST) kdecore -lqt
+.PHONY: parser 
 

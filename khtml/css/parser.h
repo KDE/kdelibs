@@ -138,6 +138,7 @@ typedef union YYSTYPE {
     unsigned int element;
     unsigned int ns;
     CSSSelector::Relation relation;
+    CSSSelector::Match match;
     bool b;
     char tok;
     Value value;

@@ -275,7 +275,7 @@ void KPropertiesDialog::showFileSharingPage()
 {
   if (d->fileSharePage) {
      showPage( pageIndex( d->fileSharePage));
-  }            
+  }
 }
 
 void KPropertiesDialog::setFileSharingPage(QWidget* page) {
@@ -428,7 +428,8 @@ void KPropertiesDialog::insertPages()
     insertPlugin (p);
   }
 
-  if ( KFileSharePropsPlugin::supports( m_items ) )
+  if ( kapp->authorizeKAction("sharefile") && 
+       KFileSharePropsPlugin::supports( m_items ) )
   {
     KPropsDlgPlugin *p = new KFileSharePropsPlugin( this );
     insertPlugin (p);
@@ -789,6 +790,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     KIconButton *iconButton = new KIconButton( d->m_frame );
     int bsize = 66 + 2 * iconButton->style().pixelMetric(QStyle::PM_ButtonMargin);
     iconButton->setFixedSize(bsize, bsize);
+    iconButton->setIconSize(48);
     iconButton->setStrictIconSize(false);
     // This works for everything except Device icons on unmounted devices
     // So we have to really open .desktop files
@@ -814,7 +816,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     QLabel *iconLabel = new QLabel( d->m_frame );
     int bsize = 66 + 2 * iconLabel->style().pixelMetric(QStyle::PM_ButtonMargin);
     iconLabel->setFixedSize(bsize, bsize);
-    iconLabel->setPixmap( DesktopIcon( iconStr ) );
+    iconLabel->setPixmap( KGlobal::iconLoader()->loadIcon( iconStr, KIcon::Desktop, 48) );
     iconArea = iconLabel;
   }
   grid->addWidget(iconArea, curRow, 0, AlignLeft);
@@ -863,6 +865,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     connect( button, SIGNAL( clicked() ), SLOT( slotEditFileType() ));
 
+    if (!kapp->authorizeKAction("editfiletype"))
+       button->hide();
 
     grid->addWidget(box, curRow++, 2);
   }
@@ -954,7 +958,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     l = new QLabel(i18n("Points to:"), d->m_frame );
     grid->addWidget(l, curRow, 0);
 
-    l = new QLabel(item->linkDest(), d->m_frame );
+    l = new KSqueezedTextLabel(item->linkDest(), d->m_frame );
     grid->addWidget(l, curRow++, 2);
   }
 
@@ -1017,7 +1021,7 @@ void KFilePropsPlugin::setFileNameReadOnly( bool ro )
        QPushButton *button = properties->actionButton(KDialogBase::Ok);
        if (button)
           button->setFocus();
-    }    
+    }
   }
 }
 
@@ -1105,7 +1109,7 @@ void KFilePropsPlugin::slotDirSizeUpdate()
     m_sizeLabel->setText( i18n("Calculating... %1 (%2)\n%3, %4")
 			  .arg(KIO::convertSize(totalSize))
                          .arg(KGlobal::locale()->formatNumber(totalSize, 0))
-        .arg(i18n("1 file","%n files",totalFiles)) 
+        .arg(i18n("1 file","%n files",totalFiles))
         .arg(i18n("1 sub-folder","%n sub-folders",totalSubdirs)));
 }
 
@@ -1120,8 +1124,8 @@ void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
 	KIO::filesize_t totalSubdirs = static_cast<KDirSize*>(job)->totalSubdirs();
     m_sizeLabel->setText( QString::fromLatin1("%1 (%2)\n%3, %4")
 			  .arg(KIO::convertSize(totalSize))
-			  .arg(KGlobal::locale()->formatNumber(totalSize, 0)) 
-        .arg(i18n("1 file","%n files",totalFiles)) 
+			  .arg(KGlobal::locale()->formatNumber(totalSize, 0))
+        .arg(i18n("1 file","%n files",totalFiles))
         .arg(i18n("1 sub-folder","%n sub-folders",totalSubdirs)));
   }
   m_sizeStopButton->setEnabled(false);
@@ -1204,11 +1208,11 @@ void KFilePropsPlugin::applyChanges()
     if ( oldName != n || m_bFromTemplate ) { // true for any from-template file
       KIO::Job * job = 0L;
       KURL oldurl = properties->kurl();
-      
+
       QString newFileName = KIO::encodeFileName(n);
       if (d->bDesktopFile && !newFileName.endsWith(".desktop") && !newFileName.endsWith(".kdelnk"))
          newFileName += ".desktop";
-         
+
       // Tell properties. Warning, this changes the result of properties->kurl() !
       properties->rename( newFileName );
 
@@ -1236,6 +1240,10 @@ void KFilePropsPlugin::applyChanges()
       qt_leave_modal(&dummy);
       return;
     }
+    properties->updateUrl(properties->kurl());
+    // Update also relative path (for apps and mimetypes)
+    if ( !m_sRelativePath.isEmpty() )
+      determineRelativePath( properties->kurl().path() );
   }
 
   // No job, keep going
@@ -1574,10 +1582,12 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
 
   /**** Group: Ownership ****/
-  gb = new QGroupBox ( i18n("Ownership"), d->m_frame );
+  gb = new QGroupBox ( 0, Qt::Vertical, i18n("Ownership"), d->m_frame );
+  gb->layout()->setSpacing(KDialog::spacingHint());
+  gb->layout()->setMargin(KDialog::marginHint());
   box->addWidget (gb);
 
-  gl = new QGridLayout (gb, 4, 3, KDialog::marginHint(), KDialog::spacingHint());
+  gl = new QGridLayout (gb->layout(), 4, 3);
   gl->addRowSpacing(0, 10);
 
   /*** Set Owner ***/
@@ -1737,10 +1747,12 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   QGridLayout *gl;
 
   // Group: Access Permissions
-  gb = new QGroupBox ( i18n("Access Permissions"), &dlg );
+  gb = new QGroupBox ( 0, Qt::Vertical, i18n("Access Permissions"), &dlg );
+  gb->layout()->setSpacing(KDialog::spacingHint());
+  gb->layout()->setMargin(KDialog::marginHint());
   dlg.setMainWidget(gb);
 
-  gl = new QGridLayout (gb, 6, 6, 15);
+  gl = new QGridLayout (gb->layout(), 6, 6);
   gl->addRowSpacing(0, 10);
 
   l = new QLabel(i18n("Class"), gb);
@@ -2827,7 +2839,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   }
   else
     m_systrayBool = false;
-    
+
   m_origCommandStr = commandStr;
   QString pathStr = config.readPathEntry( "Path" );
   m_terminalBool = config.readBoolEntry( "Terminal" );

@@ -19,7 +19,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef __render_frames_h__
 #define __render_frames_h__
@@ -101,8 +100,6 @@ public:
     virtual const char *renderName() const { return "RenderPart"; }
 
     virtual void setWidget( QWidget *widget );
-
-    virtual bool eventFilter(QObject *o, QEvent *e);
 
     /**
      * Called by KHTMLPart to notify the frame object that loading the

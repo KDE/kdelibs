@@ -558,6 +558,26 @@ And to prevent a user from adding additional konsole profiles, one would add:
 data_konsole=false
 
 
+Control module restrictions
+===========================
+
+It is possible to restrict access to particular control modules.
+Although it is possible to remove control modules from the Control
+Center by editing the menu structure, such modules will then still
+be available to applications. A better way is to use the control
+module restrictions offered by KIOSK:
+
+[KDE Control Module Restrictions][$i]
+<menu-id>=false
+
+Some example menu-ids are:
+
+kde-display.desktop
+kde-proxy.desktop
+kde-screensaver.desktop
+
+See also kcmshell --list for a list of all the base names.
+
 Expansion of environment variables in KDE config files.
 =======================================================
 

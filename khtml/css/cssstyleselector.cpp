@@ -2,7 +2,9 @@
  * This file is part of the CSS implementation for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
- * Copyright (C) 2003 Apple Computer, Inc.
+ *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2004 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -297,7 +299,7 @@ void CSSStyleSelector::reparseConfiguration()
     s_defaultSheet = 0;
 }
 
-#define MAXFONTSIZES 15
+#define MAXFONTSIZES 9
 
 void CSSStyleSelector::computeFontSizes(QPaintDeviceMetrics* paintDeviceMetrics,  int zoomFactor)
 {
@@ -319,10 +321,10 @@ void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetri
 #endif // ######### fix isFixed code again.
 
     fontSizes.clear();
-    const float factor = 1.2;
-    float scale = 1.0 / (factor*factor*factor);
-    float mediumFontSize;
-    float minFontSize;
+    float scale = 1.0;
+    static const float fontFactors[] =      {3./5., 3./4., 8./9., 1., 6./5., 3./2., 2., 3., 4.};
+    static const float smallFontFactors[] = {3./4., 5./6., 8./9., 1., 6./5., 3./2., 2., 3., 4.};
+    float mediumFontSize, minFontSize, factor;
     if (!khtml::printpainter) {
         scale *= zoomFactor / 100.0;
 #ifdef APPLE_CHANGES
@@ -338,10 +340,11 @@ void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetri
         mediumFontSize = 12;
         minFontSize = 6;
     }
-
+    const float* factors = scale*mediumFontSize >= 12.5 ? fontFactors : smallFontFactors;
     for ( int i = 0; i < MAXFONTSIZES; i++ ) {
-        fontSizes << int(KMAX( mediumFontSize * scale + 0.5f, minFontSize));
-        scale *= factor;
+        factor = scale*factors[i];
+        fontSizes << int(KMAX( mediumFontSize*factor +.5f, minFontSize));
+        //kdDebug( 6080 ) << "index: " << i << " factor: " << factors[i] << " font pix size: " << int(KMAX( mediumFontSize*factor +.5f, minFontSize)) << endl;
     }
 }
 
@@ -544,10 +547,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 
 void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e)
 {
-#ifdef APPLE_CHANGES
      // Cache our original display.
      style->setOriginalDisplay(style->display());
-#endif
 
     if (style->display() != NONE) {
         // If we have a <td> that specifies a float property, in quirks mode we just drop the float
@@ -585,9 +586,10 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
         }
 
         // After performing the display mutation, check table rows.  We do not honor position:relative on
-        // table rows.  This has been established in CSS2.1 (and caused a crash in containingBlock() on
+        // table rows. This has been established in CSS2.1 (and caused a crash in containingBlock() on
         // some sites).
-        if (style->display() == TABLE_ROW && style->position() == RELATIVE)
+        // Likewise, disallow relative positioning on table sections.
+        if ( style->position() == RELATIVE && (style->display() > INLINE_TABLE && style->display() < TABLE_COLUMN_GROUP) )
             style->setPosition(STATIC);
     }
 
@@ -751,7 +753,10 @@ static void checkPseudoState( const CSSStyleSelector::Encodedurl& encodedurl, DO
         cleanpath( u );
     }
     //completeURL( attr.string() );
-    pseudoState = KHTMLFactory::vLinks()->contains( u ) ? PseudoVisited : PseudoLink;
+    bool contains = KHTMLFactory::vLinks()->contains( u );
+    if ( !contains && u.contains('/')==2 )
+      contains = KHTMLFactory::vLinks()->contains( u+'/' );
+    pseudoState = contains ? PseudoVisited : PseudoLink;
 }
 
 void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
@@ -812,13 +817,26 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
         }
         case CSSSelector::Sibling:
         {
-		subject = false;
+            subject = false;
             n = n->previousSibling();
-	    while( n && !n->isElementNode() )
-		n = n->previousSibling();
+            while( n && !n->isElementNode() )
+                n = n->previousSibling();
             if( !n ) return;
             ElementImpl *elem = static_cast<ElementImpl *>(n);
             if(!checkOneSelector(sel, elem)) return;
+            break;
+        }
+        case CSSSelector::Cousin:
+        {
+            subject = false;
+            ElementImpl *elem = 0;
+            do {
+                n = n->previousSibling();
+                while( n && !n->isElementNode() )
+                    n = n->previousSibling();
+                if( !n ) return;
+                elem = static_cast<ElementImpl *>(n);
+            } while (!checkOneSelector(sel, elem));
             break;
         }
         case CSSSelector::SubSelector:
@@ -863,7 +881,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 	selectorCache[ selIndex ].state = Applies;
     //qDebug( "selector %d applies", selIndex );
     //selectors[ selIndex ]->print();
- 	return;
+    return;
 }
 
 bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e)
@@ -907,6 +925,16 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         switch(sel->match)
         {
         case CSSSelector::Exact:
+            /* attribut values are case insensitive in all HTML modes,
+               even in the strict ones */
+            if ( e->getDocument()->htmlMode() != DocumentImpl::XHtml ) {
+                if ( strcasecmp(sel->value, value) )
+                    return false;
+            } else {
+                if ( strcmp(sel->value, value) )
+                    return false;
+            }
+            break;
         case CSSSelector::Id:
 	    if( (strictParsing && strcmp(sel->value, value) ) ||
                 (!strictParsing && strcasecmp(sel->value, value)))
@@ -1009,42 +1037,42 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	    break;
 	case CSSSelector::PseudoFirstChild: {
 	    // first-child matches the first child that is an element!
-                if (e->parentNode() && e->parentNode()->isElementNode()) {
-                    DOM::NodeImpl* n = e->previousSibling();
+            if (e->parentNode() && e->parentNode()->isElementNode()) {
+                DOM::NodeImpl* n = e->previousSibling();
+                while ( n && !n->isElementNode() )
+                    n = n->previousSibling();
+                if ( !n )
+                    return true;
+            }
+            break;
+        }
+        case CSSSelector::PseudoLastChild: {
+            // last-child matches the last child that is an element!
+            if (e->parentNode() && e->parentNode()->isElementNode()) {
+                DOM::NodeImpl* n = e->nextSibling();
+                while ( n && !n->isElementNode() )
+                    n = n->nextSibling();
+                if ( !n )
+                    return true;
+            }
+            break;
+        }
+        case CSSSelector::PseudoOnlyChild: {
+            // If both first-child and last-child apply, then only-child applies.
+            if (e->parentNode() && e->parentNode()->isElementNode()) {
+                DOM::NodeImpl* n = e->previousSibling();
+                while ( n && !n->isElementNode() )
+                    n = n->previousSibling();
+                if ( !n ) {
+                    n = e->nextSibling();
                     while ( n && !n->isElementNode() )
-                        n = n->previousSibling();
+                        n = n->nextSibling();
                     if ( !n )
                         return true;
-                }
-                break;
+	        }
             }
-            case CSSSelector::PseudoLastChild: {
-                // last-child matches the last child that is an element!
-                if (e->parentNode() && e->parentNode()->isElementNode()) {
-                    DOM::NodeImpl* n = e->nextSibling();
-                    while ( n && !n->isElementNode() )
-		n = n->nextSibling();
-                    if ( !n )
-                        return true;
-                }
-                break;
-            }
-            case CSSSelector::PseudoOnlyChild: {
-                // If both first-child and last-child apply, then only-child applies.
-                if (e->parentNode() && e->parentNode()->isElementNode()) {
-                    DOM::NodeImpl* n = e->previousSibling();
-                    while ( n && !n->isElementNode() )
-                        n = n->previousSibling();
-                    if ( !n ) {
-                        n = e->nextSibling();
-                        while ( n && !n->isElementNode() )
-                            n = n->nextSibling();
-                        if ( !n )
-		return true;
-	}
-                }
 	    break;
-            }
+        }
 	case CSSSelector::PseudoFirstLine:
 	    if ( subject ) {
 		dynamicPseudo=RenderStyle::FIRST_LINE;
@@ -1057,7 +1085,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		return true;
 	    }
 	    break;
-            case CSSSelector::PseudoTarget:
+        case CSSSelector::PseudoTarget:
 #ifdef APPLE_CHANGES
                 if (!e->getDocument()->getCSSTarget() && // :target matches the root when no CSS target exists
                      e == e->getDocument()->documentElement())
@@ -1078,7 +1106,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	    if ( pseudoState == PseudoVisited )
 		return true;
 	    break;
-            case CSSSelector::PseudoHover: {
+        case CSSSelector::PseudoHover: {
 	    // If we're in quirks mode, then hover should never match anchors with no
 	    // href.  This is important for sites like wsj.com.
 	    if (strictParsing || e->id() != ID_A || e->hasAnchor()) {
@@ -1110,23 +1138,23 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		    return true;
 	    }
 	    break;
-            case CSSSelector::PseudoRoot:
-                if (e == e->getDocument()->documentElement())
+        case CSSSelector::PseudoRoot:
+            if (e == e->getDocument()->documentElement())
+                return true;
+            break;
+        case CSSSelector::PseudoNot: {
+            // check the simple selector
+            for (CSSSelector* subSel = sel->simpleSelector; subSel;
+                 subSel = subSel->tagHistory) {
+                // :not cannot nest.  I don't really know why this is a restriction in CSS3,
+                // but it is, so let's honor it.
+                if (subSel->simpleSelector)
+                    break;
+                if (!checkOneSelector(subSel, e))
                     return true;
-                break;
-            case CSSSelector::PseudoNot: {
-                // check the simple selector
-                for (CSSSelector* subSel = sel->simpleSelector; subSel;
-                     subSel = subSel->tagHistory) {
-                    // :not cannot nest.  I don't really know why this is a restriction in CSS3,
-                    // but it is, so let's honor it.
-                    if (subSel->simpleSelector)
-                        break;
-                    if (!checkOneSelector(subSel, e))
-                        return true;
-                }
-                break;
             }
+            break;
+        }
 	case CSSSelector::PseudoSelection:
 	    dynamicPseudo = RenderStyle::SELECTION;
 	    return true;
@@ -1140,7 +1168,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case CSSSelector::PseudoNotParsed:
 	    assert(false);
 	    break;
-            case CSSSelector::PseudoLang:
+        case CSSSelector::PseudoLang:
 	    /* not supported for now */
 	case CSSSelector::PseudoOther:
 	    break;
@@ -1755,6 +1783,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         ECaptionSide c = RenderStyle::initialCaptionSide();
         switch(primitiveValue->getIdent())
         {
+        case CSS_VAL_LEFT:
+            c = CAPLEFT; break;
+        case CSS_VAL_RIGHT:
+            c = CAPRIGHT; break;
         case CSS_VAL_TOP:
             c = CAPTOP; break;
         case CSS_VAL_BOTTOM:
@@ -1980,9 +2012,55 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         return;
     }
     break;
-    case CSS_PROP_PAGE_BREAK_AFTER:
     case CSS_PROP_PAGE_BREAK_BEFORE:
-    case CSS_PROP_PAGE_BREAK_INSIDE:
+    {
+        HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(pageBreakBefore, PageBreakBefore, PageBreak)
+        if (!primitiveValue) return;
+        switch (primitiveValue->getIdent()) {
+            case CSS_VAL_AUTO:
+                style->setPageBreakBefore(PBAUTO);
+                break;
+            case CSS_VAL_LEFT:
+            case CSS_VAL_RIGHT:
+            case CSS_VAL_ALWAYS:
+                style->setPageBreakBefore(PBALWAYS); // CSS2.1: "Conforming user agents may map left/right to always."
+                break;
+            case CSS_VAL_AVOID:
+                style->setPageBreakBefore(PBAVOID);
+                break;
+        }
+        break;
+    }
+
+    case CSS_PROP_PAGE_BREAK_AFTER:
+    {
+        HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(pageBreakAfter, PageBreakAfter, PageBreak)
+        if (!primitiveValue) return;
+        switch (primitiveValue->getIdent()) {
+            case CSS_VAL_AUTO:
+                style->setPageBreakAfter(PBAUTO);
+                break;
+            case CSS_VAL_LEFT:
+            case CSS_VAL_RIGHT:
+            case CSS_VAL_ALWAYS:
+                style->setPageBreakAfter(PBALWAYS); // CSS2.1: "Conforming user agents may map left/right to always."
+                break;
+            case CSS_VAL_AVOID:
+                style->setPageBreakAfter(PBAVOID);
+                break;
+        }
+        break;
+    }
+
+    case CSS_PROP_PAGE_BREAK_INSIDE: {
+        HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(pageBreakInside, PageBreakInside, PageBreak)
+        if (!primitiveValue) return;
+        if (primitiveValue->getIdent() == CSS_VAL_AUTO)
+            style->setPageBreakInside(PBAUTO);
+        else if (primitiveValue->getIdent() == CSS_VAL_AVOID)
+            style->setPageBreakInside(PBAVOID);
+        return;
+    }
 //    case CSS_PROP_PAUSE_AFTER:
 //    case CSS_PROP_PAUSE_BEFORE:
         break;
@@ -2034,6 +2112,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
     case CSS_PROP_UNICODE_BIDI: {
         HANDLE_INHERIT_AND_INITIAL(unicodeBidi, UnicodeBidi)
+        if(!primitiveValue) break;
         switch (primitiveValue->getIdent()) {
             case CSS_VAL_NORMAL:
                 style->setUnicodeBidi(UBNormal);
@@ -2052,6 +2131,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_TEXT_TRANSFORM: {
         HANDLE_INHERIT_AND_INITIAL(textTransform, TextTransform)
 
+        if(!primitiveValue) break;
         if(!primitiveValue->getIdent()) return;
 
         ETextTransform tt;
@@ -2070,6 +2150,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     {
         HANDLE_INHERIT_AND_INITIAL(visibility, Visibility)
 
+        if(!primitiveValue) break;
         switch( primitiveValue->getIdent() ) {
         case CSS_VAL_HIDDEN:
             style->setVisibility( HIDDEN );
@@ -2087,6 +2168,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_WHITE_SPACE:
         HANDLE_INHERIT_AND_INITIAL(whiteSpace, WhiteSpace)
 
+        if(!primitiveValue) break;
         if(!primitiveValue->getIdent()) return;
 
         EWhiteSpace s;
@@ -2146,9 +2228,12 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         style->setBackgroundYPosition(l);
         break;
     }
-    case CSS_PROP_BORDER_SPACING:
-        assert( false );
-
+    case CSS_PROP_BORDER_SPACING: {
+        if(value->cssValueType() != CSSValue::CSS_INHERIT || !parentNode) return;
+        style->setBorderHorizontalSpacing(parentStyle->borderHorizontalSpacing());
+        style->setBorderVerticalSpacing(parentStyle->borderVerticalSpacing());
+        break;
+    }
     case CSS_PROP__KHTML_BORDER_HORIZONTAL_SPACING: {
         HANDLE_INHERIT_AND_INITIAL(borderHorizontalSpacing, BorderHorizontalSpacing)
         if (!primitiveValue) break;
@@ -2661,7 +2746,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             case CSS_VAL_LARGE:    size = int( fontSizes[4] ); break;
             case CSS_VAL_X_LARGE:  size = int( fontSizes[5] ); break;
             case CSS_VAL_XX_LARGE: size = int( fontSizes[6] ); break;
-            case CSS_VAL__KHTML_XXX_LARGE:  size = ( fontSizes[6]*5 )/3; break;
+            case CSS_VAL__KHTML_XXX_LARGE: size = int( fontSizes[7] ); break;
             case CSS_VAL_LARGER:
                 // ### use the next bigger standardSize!!!
                 size = ( oldSize * 5 ) / 4;
@@ -2676,7 +2761,8 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         } else {
             int type = primitiveValue->primitiveType();
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG) {
-                if (!khtml::printpainter && element && element->getDocument()->view())
+                if ( !khtml::printpainter && type != CSSPrimitiveValue::CSS_EMS && type != CSSPrimitiveValue::CSS_EXS &&
+                     element && element->getDocument()->view())
                     size = int( primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics) *
                                 element->getDocument()->view()->part()->zoomFactor() ) / 100;
 		else
@@ -2724,7 +2810,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         return;
     }
 
-    /*
     case CSS_PROP_WIDOWS:
     {
         HANDLE_INHERIT_AND_INITIAL(widows, Widows)
@@ -2742,7 +2827,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         style->setOrphans((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER));
         break;
     }
-    */
 
 // length, percent, number
     case CSS_PROP_LINE_HEIGHT:
@@ -3192,6 +3276,15 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         }
         else if (isInitial)
             style->resetOutline();
+        break;
+    case CSS_PROP_BOX_SIZING:
+        HANDLE_INHERIT(boxSizing, BoxSizing)
+        if (!primitiveValue) return;
+        if (primitiveValue->getIdent() == CSS_VAL_CONTENT_BOX)
+            style->setBoxSizing(CONTENT_BOX);
+        else
+        if (primitiveValue->getIdent() == CSS_VAL_BORDER_BOX)
+            style->setBoxSizing(BORDER_BOX);
         break;
     case CSS_PROP__KHTML_MARQUEE:
         if (value->cssValueType() != CSSValue::CSS_INHERIT || !parentNode) return;

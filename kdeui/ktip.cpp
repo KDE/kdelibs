@@ -94,14 +94,14 @@ void KTipDatabase::addTips(const QString& tipFile )
 
     if (fileName.isEmpty())
     {
-	kdDebug() << "can't find '" << tipFile << "' in standard dirs" << endl;
+	kdDebug() << "KTipDatabase::addTips: can't find '" << tipFile << "' in standard dirs" << endl;
         return;
     }
 
     QFile file(fileName);
     if (!file.open(IO_ReadOnly))
     {
-	kdDebug() << "can't open '" << fileName << "' for reading" << endl;
+	kdDebug() << "KTipDatabase::addTips: can't open '" << fileName << "' for reading" << endl;
 	return;
     }
 
@@ -142,6 +142,8 @@ void KTipDatabase::prevTip()
 
 QString KTipDatabase::tip() const
 {
+    if (mTips.isEmpty())
+	return QString::null;
     return mTips[mCurrent];
 }
 

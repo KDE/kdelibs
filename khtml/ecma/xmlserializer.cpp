@@ -57,12 +57,7 @@ Object XMLSerializerConstructorImp::construct(ExecState *exec, const List &)
   return Object(new XMLSerializer(exec));
 }
 
-const ClassInfo XMLSerializer::info = { "XMLSerializer", 0, &XMLSerializerTable, 0 };
-
-/* Source for XMLSerializerTable.
-@begin XMLSerializerTable 0
-@end
-*/
+const ClassInfo XMLSerializer::info = { "XMLSerializer", 0, 0, 0 };
 
 XMLSerializer::XMLSerializer(ExecState *exec)
   : DOMObject(XMLSerializerProto::self(exec))
@@ -112,4 +107,4 @@ Value XMLSerializerProtoFunc::tryCall(ExecState *exec, Object &thisObj, const Li
   return Undefined();
 }
 
-}; // end namespace
+} // end namespace

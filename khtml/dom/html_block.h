@@ -1,7 +1,8 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ *           (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -322,6 +323,80 @@ public:
      * see width
      */
     void setWidth( long );
+};
+
+class HTMLLayerElementImpl;
+
+/**
+ * Layer container for Netscape 4.x compatability.
+ * Behaves mostly like absolute positioned DIV-blocks.
+ *
+ */
+class HTMLLayerElement : public HTMLElement
+{
+public:
+    HTMLLayerElement();
+    HTMLLayerElement(const HTMLLayerElement &other);
+    HTMLLayerElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
+protected:
+    HTMLLayerElement(HTMLLayerElementImpl *impl);
+public:
+
+    HTMLLayerElement & operator = (const HTMLLayerElement &other);
+    HTMLLayerElement & operator = (const Node &other);
+
+    ~HTMLLayerElement();
+
+    /**
+     * The absolute position of the layer from the top.
+     *
+     */
+    long top() const;
+
+    /**
+     * see top
+     */
+    void setTop( long );
+
+    /**
+     * The absolute position of the layer from the left.
+     *
+     */
+    long left() const;
+
+    /**
+     * see left
+     */
+    void setLeft( long );
+
+    /**
+     * The visibility of layers is either "show" or "hide"
+     *
+     */
+    DOMString visibility() const;
+
+    /**
+     * see visibility
+     */
+    void setVisibility( const DOMString & );
+
+    /**
+     * The background color of the layer.
+     *
+     */
+    DOMString bgColor() const;
+
+    /**
+     * see bgColor
+     */
+    void setBgColor( const DOMString & );
+
+    /**
+     * The collection of sub-layers
+     *
+     */
+    HTMLCollection layers() const;
 };
 
 } //namespace

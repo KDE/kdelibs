@@ -219,7 +219,7 @@ void KHTMLParser::parseToken(Token *t)
 
     // holy shit. apparently some sites use </br> instead of <br>
     // be compatible with IE and NS
-    if(t->tid == ID_BR+ID_CLOSE_TAG && document->document()->parseMode() != DocumentImpl::Strict)
+    if(t->tid == ID_BR+ID_CLOSE_TAG && document->document()->inCompatMode())
         t->tid -= ID_CLOSE_TAG;
 
     if(t->tid > ID_CLOSE_TAG)
@@ -888,9 +888,11 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     }
 // formatting elements (block)
     case ID_BLOCKQUOTE:
+        n = new HTMLGenericElementImpl(document, t->tid);
+        break;
     case ID_LAYER:
     case ID_ILAYER:
-        n = new HTMLGenericElementImpl(document, t->tid);
+        n = new HTMLLayerElementImpl(document, t->tid);
         break;
     case ID_P:
     case ID_DIV:

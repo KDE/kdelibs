@@ -20,7 +20,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef _DOM_NodeImpl_h_
 #define _DOM_NodeImpl_h_
@@ -203,10 +202,9 @@ public:
     unsigned short tabIndex() const { return m_tabIndex; }
     void setTabIndex(unsigned short _tabIndex) { m_tabIndex = _tabIndex; }
 
-    /**
-     * whether this node can receive the keyboard focus.
-     */
-    virtual bool isSelectable() const { return false; }
+    virtual bool isFocusable() const { return false; }
+    virtual bool isMouseFocusable() const { return isFocusable(); }
+    virtual bool isTabFocusable() const { return isFocusable(); }
 
     virtual bool isInline() const;
 
@@ -276,6 +274,7 @@ public:
 
     khtml::RenderObject *renderer() const { return m_render; }
     khtml::RenderObject *nextRenderer();
+    void setRenderer(khtml::RenderObject* renderer) { m_render = renderer; }
 
     void checkSetPrefix(const DOMString &_prefix, int &exceptioncode);
     void checkAddChild(NodeImpl *newChild, int &exceptioncode);

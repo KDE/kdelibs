@@ -854,11 +854,11 @@ bool KateView::checkOverwrite( KURL u )
   if( !info.exists() )
     return true;
 
-  return KMessageBox::Cancel != KMessageBox::warningContinueCancel( this,
+  return KMessageBox::Yes == KMessageBox::warningYesNo( this,
     i18n( "A file named \"%1\" already exists. "
           "Are you sure you want to overwrite it?" ).arg( info.fileName() ),
     i18n( "Overwrite File?" ),
-    i18n( "&Overwrite" ) );
+    KGuiItem( i18n( "&Overwrite" ), "filesave" ) );
 }
 
 void KateView::slotSaveCanceled( const QString& error )
@@ -879,6 +879,10 @@ void KateView::gotoLine()
 
 void KateView::gotoLineNumber( int line )
 {
+  // clear selection, unless we are in persistent selection mode
+  if ( ! (m_doc->config()->configFlags() & KateDocumentConfig::cfPersistent) )
+    m_doc->clearSelection();
+
   setCursorPositionInternal ( line, 0, 1 );
 }
 

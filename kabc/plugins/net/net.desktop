@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Network
+Name[af]=Netwerk
 Name[ar]=الشبكة
 Name[az]=Şəbəkə
 Name[be]=Сетка
@@ -37,7 +38,7 @@ Name[mi]=Hao
 Name[mk]=Мрежа
 Name[mn]=Сүлжээ
 Name[ms]=Jaringan
-Name[nds]=Netwark
+Name[nds]=Nettwark
 Name[nl]=Netwerk
 Name[nn]=Nettverk
 Name[nso]=Kgokagano
@@ -66,7 +67,6 @@ Name[ven]=Vhukwamani
 Name[vi]=Mạng 
 Name[wa]=Rantoele
 Name[xh]=Umsebenzi womnatha
-Name[xx]=xxNetworkxx
 Name[zh_CN]=网络
 Name[zh_TW]=網路
 Name[zu]=Umsebenzi wokuxhumana okusakazekile

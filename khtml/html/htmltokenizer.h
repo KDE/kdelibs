@@ -24,7 +24,6 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Tokenizers
-// $Id$
 
 #ifndef HTMLTOKENIZER_H
 #define HTMLTOKENIZER_H
@@ -171,6 +170,7 @@ protected:
     void notifyFinished(khtml::CachedObject *finishedObj);
 
     virtual bool isWaitingForScripts() const;
+    virtual bool isExecutingScript() const;
 protected:
     // Internal buffers
     ///////////////////

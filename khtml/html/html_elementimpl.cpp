@@ -162,7 +162,7 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
             if ( strcasecmp(attr->value(), "middle" ) == 0 )
                 addCSSProperty( CSS_PROP_TEXT_ALIGN, CSS_VAL_CENTER );
             else
-                addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
+                addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value().lower());
         }
         else
             removeCSSProperty(CSS_PROP_TEXT_ALIGN);
@@ -195,7 +195,7 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_LANG:
         break;
     case ATTR_DIR:
-        addCSSProperty(CSS_PROP_DIRECTION, attr->value());
+        addCSSProperty(CSS_PROP_DIRECTION, attr->value().lower());
         addCSSProperty(CSS_PROP_UNICODE_BIDI, CSS_VAL_EMBED);
         break;
 // standard events
@@ -435,7 +435,10 @@ void HTMLElementImpl::removeCSSProperty(int id)
 
 DOMString HTMLElementImpl::innerHTML() const
 {
-    return toString();
+    DOMString result;
+    for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling())
+        result += child->toString();
+    return result;
 }
 
 DOMString HTMLElementImpl::innerText() const

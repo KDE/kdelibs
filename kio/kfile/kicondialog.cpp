@@ -121,7 +121,7 @@ void KIconCanvas::slotLoadFiles()
 #ifdef HAVE_LIBART
     KSVGIconEngine *svgEngine = new KSVGIconEngine();
 #endif
-    
+
     d->m_bLoading = true;
     int i;
     QStringList::ConstIterator it;
@@ -143,7 +143,7 @@ void KIconCanvas::slotLoadFiles()
         if ( !d->m_bLoading ) // user clicked on a button that will load another set of icons
             break;
 	QImage img;
-	
+
 	// Use the extension as the format. Works for XPM and PNG, but not for SVG
 	QString path= *it;
 	QString ext = path.right(3).upper();
@@ -155,8 +155,8 @@ void KIconCanvas::slotLoadFiles()
 	    if (svgEngine->load(60, 60, *it))
 		img = *svgEngine->painter()->image();
 #endif
-	
-	if (img.isNull()) 
+
+	if (img.isNull())
 	    continue;
 	if (img.width() > 60 || img.height() > 60)
 	{
@@ -258,10 +258,12 @@ void KIconDialog::init()
     QVBoxLayout *top = new QVBoxLayout(main);
     top->setSpacing( spacingHint() );
 
-    QButtonGroup *bgroup = new QButtonGroup(i18n("Icon Source"), main);
+    QButtonGroup *bgroup = new QButtonGroup(0, Qt::Vertical, i18n("Icon Source"), main);
+    bgroup->layout()->setSpacing(KDialog::spacingHint());
+    bgroup->layout()->setMargin(KDialog::marginHint());
     top->addWidget(bgroup);
     connect(bgroup, SIGNAL(clicked(int)), SLOT(slotButtonClicked(int)));
-    QGridLayout *grid = new QGridLayout(bgroup, 3, 2, marginHint(), spacingHint());
+    QGridLayout *grid = new QGridLayout(bgroup->layout(), 3, 2);
     grid->addRowSpacing(0, 15);
     mpRb1 = new QRadioButton(i18n("&System icons:"), bgroup);
     grid->addWidget(mpRb1, 1, 0);
@@ -331,7 +333,7 @@ void KIconDialog::showIcons()
     QStringList::Iterator it;
     for( it = filelist.begin(); it != filelist.end(); ++it )
        iconlist.append(new IconPath(*it));
-       
+
     iconlist.sort();
     filelist.clear();
 

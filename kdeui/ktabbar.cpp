@@ -19,6 +19,7 @@
 */
 
 #include <qapplication.h>
+#include <qcursor.h>
 #include <qpainter.h>
 #include <qstyle.h>
 #include <qtimer.h>
@@ -86,6 +87,9 @@ void KTabBar::setTabEnabled( int id, bool enabled )
 
 void KTabBar::mouseDoubleClickEvent( QMouseEvent *e )
 {
+    if( e->button() != LeftButton )
+        return;
+
     QTab *tab = selectTab( e->pos() );
     if( tab!= 0L ) {
         emit( mouseDoubleClick( indexOf( tab->identifier() ) ) );
@@ -217,7 +221,9 @@ void KTabBar::enableCloseButton()
 
 void KTabBar::activateDragSwitchTab()
 {
-    setCurrentTab( mDragSwitchTab );
+    QTab *tab = selectTab( mapFromGlobal( QCursor::pos() ) );
+    if ( tab!= 0L && mDragSwitchTab == tab )
+      setCurrentTab( mDragSwitchTab );
     mDragSwitchTab = 0;
 }
 

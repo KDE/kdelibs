@@ -323,10 +323,14 @@ void NodeImpl::addEventListener(int id, EventListener *listener, const bool useC
 	m_regdListeners->setAutoDelete(true);
     }
 
-    // remove existing ones of the same type - ### is this correct (or do we ignore the new one?)
+    listener->ref();
+
+    // remove existing identical listener set with identical arguments - the DOM2
+    // spec says that "duplicate instances are discarded" in this case.
     removeEventListener(id,listener,useCapture);
 
     m_regdListeners->append(rl);
+    listener->deref();
 }
 
 void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapture)
@@ -424,19 +428,19 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
 
     // dispatch to the actual target node
     it.toLast();
+    NodeImpl* propagationSentinel = 0;
     if (!evt->propagationStopped()) {
         evt->setEventPhase(Event::AT_TARGET);
         evt->setCurrentTarget(it.current());
         it.current()->handleLocalEvents(evt, true);
         if (!evt->propagationStopped())
             it.current()->handleLocalEvents(evt,false);
+        else
+            propagationSentinel = it.current();
     }
     --it;
 
     if (evt->bubbles()) {
-        evt->stopPropagation(false);
-        NodeImpl* propagationSentinel = 0;
-
         evt->setEventPhase(Event::BUBBLING_PHASE);
         for (; it.current() && !evt->propagationStopped(); --it) {
             if (evt->propagationStopped()) propagationSentinel = it.current();
@@ -472,7 +476,7 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
 bool NodeImpl::dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg)
 {
     int exceptioncode = 0;
-    EventImpl *evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
+    EventImpl* const evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
     evt->ref();
     dispatchEvent(evt,exceptioncode,true);
     bool ret = !evt->defaultPrevented();
@@ -483,7 +487,7 @@ bool NodeImpl::dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg)
 void NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableArg)
 {
     int exceptioncode = 0;
-    EventImpl *evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
+    EventImpl* const evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
     evt->setTarget( 0 );
     evt->ref();
     DocumentPtr *doc = document;
@@ -491,6 +495,28 @@ void NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableAr
     dispatchGenericEvent( evt, exceptioncode );
     if (!evt->defaultPrevented() && doc->document())
 	doc->document()->defaultEventHandler(evt);
+
+    if (_id == EventImpl::LOAD_EVENT && !evt->propagationStopped() && doc->document()) {
+        // For onload events, send them to the enclosing frame only.
+        // This is a DOM extension and is independent of bubbling/capturing rules of
+        // the DOM.  You send the event only to the enclosing frame.  It does not
+        // bubble through the parent document.
+        DOM::ElementImpl* elt = doc->document()->ownerElement();
+        if (elt && (elt->getDocument()->domain().isNull() ||
+                    elt->getDocument()->domain() == doc->document()->domain())) {
+            // We also do a security check, since we don't want to allow the enclosing
+            // iframe to see loads of child documents in other domains.
+            evt->setCurrentTarget(elt);
+
+            // Capturing first.
+            elt->handleLocalEvents(evt,true);
+
+            // Bubbling second.
+            if (!evt->propagationStopped())
+                elt->handleLocalEvents(evt,false);
+        }
+    }
+
     doc->deref();
     evt->deref();
 }
@@ -557,7 +583,7 @@ void NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
     bool shiftKey = (_mouse->state() & Qt::ShiftButton);
     bool metaKey = false; // ### qt support?
 
-    EventImpl *evt = new MouseEventImpl(evtId,true,cancelable,getDocument()->defaultView(),
+    EventImpl* const evt = new MouseEventImpl(evtId,true,cancelable,getDocument()->defaultView(),
                    detail,screenX,screenY,clientX,clientY,pageX,pageY,ctrlKey,altKey,shiftKey,metaKey,
                    button,0);
     evt->ref();
@@ -576,7 +602,7 @@ void NodeImpl::dispatchUIEvent(int _id, int detail)
         cancelable = true;
 
     int exceptioncode = 0;
-    UIEventImpl *evt = new UIEventImpl(static_cast<EventImpl::EventId>(_id),true,
+    UIEventImpl* const evt = new UIEventImpl(static_cast<EventImpl::EventId>(_id),true,
                                        cancelable,getDocument()->defaultView(),detail);
     evt->ref();
     dispatchEvent(evt,exceptioncode,true);
@@ -587,17 +613,20 @@ void NodeImpl::dispatchSubtreeModifiedEvent()
 {
     childrenChanged();
     if (!getDocument()->hasListenerType(DocumentImpl::DOMSUBTREEMODIFIED_LISTENER))
-	return;
+        return;
     int exceptioncode = 0;
-    dispatchEvent(new MutationEventImpl(EventImpl::DOMSUBTREEMODIFIED_EVENT,
-			 true,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
+    MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMSUBTREEMODIFIED_EVENT,true,
+                                                         false,0,DOMString(),DOMString(),DOMString(),0);
+    evt->ref();
+    dispatchEvent(evt,exceptioncode,true);
+    evt->deref();
 }
 
 bool NodeImpl::dispatchKeyEvent(QKeyEvent *key, bool keypress)
 {
     int exceptioncode = 0;
     //kdDebug(6010) << "DOM::NodeImpl: dispatching keyboard event" << endl;
-    TextEventImpl *keyEventImpl = new TextEventImpl(key, keypress, getDocument()->defaultView());
+    TextEventImpl* const keyEventImpl = new TextEventImpl(key, keypress, getDocument()->defaultView());
     keyEventImpl->ref();
     dispatchEvent(keyEventImpl,exceptioncode,true);
     bool r = keyEventImpl->defaultHandled() || keyEventImpl->defaultPrevented();
@@ -817,6 +846,7 @@ void NodeImpl::attach()
         m_render->close();
         m_rendererNeedsClose = false;
     }
+    getDocument()->incDOMTreeVersion();
     m_attached = true;
 }
 
@@ -828,6 +858,7 @@ void NodeImpl::detach()
         m_render->detach();
 
     m_render = 0;
+    getDocument()->incDOMTreeVersion();
     m_attached = false;
 }
 
@@ -1042,6 +1073,10 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
 
         // If child is already present in the tree, first remove it
         NodeImpl *newParent = child->parentNode();
+	if ( child == next )
+	    next = child->nextSibling();
+	if ( child == prev )
+	    prev = child->previousSibling();
         if(newParent)
             newParent->removeChild( child, exceptioncode );
         if (exceptioncode)
@@ -1131,7 +1166,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 void NodeBaseImpl::removeChildren()
 {
     NodeImpl *n, *next;
-    for( n = _first; n; n = next )
+    for( n = _first, _first = 0; n; n = next )
     {
         next = n->nextSibling();
         if (n->attached())
@@ -1145,7 +1180,7 @@ void NodeBaseImpl::removeChildren()
             for ( NodeImpl* c = n; c; c = c->traverseNextNode( n ) )
                 c->removedFromDocument();
     }
-    _first = _last = 0;
+    _last = 0;
 }
 
 
@@ -1350,11 +1385,13 @@ bool NodeBaseImpl::getUpperLeftCorner(int &xPos, int &yPos) const
         }
         if((o->isText() && !o->isBR()) || o->isReplaced()) {
             o->container()->absolutePosition( xPos, yPos );
-            if (o->isText())
-                xPos += static_cast<RenderText *>(o)->minXPos();
-            else
+            if (o->isText()) {
+                xPos += o->inlineXPos();
+                yPos += o->inlineYPos();
+            } else {
                 xPos += o->xPos();
-            yPos += o->yPos();
+                yPos += o->yPos();
+            }
             return true;
         }
     }
@@ -1392,11 +1429,13 @@ bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos) const
         }
         if((o->isText() && !o->isBR()) || o->isReplaced()) {
             o->container()->absolutePosition(xPos, yPos);
-            if (o->isText())
-                xPos += static_cast<RenderText *>(o)->minXPos() + o->width();
-            else
-                xPos += o->xPos()+o->width();
-            yPos += o->yPos()+o->height();
+            if (o->isText()) {
+                xPos += o->inlineXPos() + o->width();
+                yPos += o->inlineYPos() + o->height();
+            } else {
+                xPos += o->xPos() + o->width();
+                yPos += o->yPos() + o->height();
+            }
             return true;
         }
     }
@@ -1445,8 +1484,10 @@ NodeImpl *NodeBaseImpl::childNode(unsigned long index)
 void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptioncode )
 {
     if (getDocument()->hasListenerType(DocumentImpl::DOMNODEINSERTED_LISTENER)) {
-        child->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTED_EVENT,
-                                                   true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
+        MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMNODEINSERTED_EVENT,true,false,this,DOMString(),DOMString(),DOMString(),0);
+        evt->ref();
+        child->dispatchEvent(evt,exceptioncode,true);
+        evt->deref();
         if (exceptioncode)
             return;
     }
@@ -1461,8 +1502,10 @@ void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptionc
             c->insertedIntoDocument();
 
             if (hasInsertedListeners) {
-                c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEINSERTEDINTODOCUMENT_EVENT,
-                                                       false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
+                MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMNODEINSERTEDINTODOCUMENT_EVENT,false,false,0,DOMString(),DOMString(),DOMString(),0);
+                evt->ref();
+                c->dispatchEvent(evt,exceptioncode,true);
+                evt->deref();
                 if (exceptioncode)
                     return;
             }
@@ -1475,10 +1518,12 @@ void NodeBaseImpl::dispatchChildRemovalEvents( NodeImpl *child, int &exceptionco
     // Dispatch pre-removal mutation events
     getDocument()->notifyBeforeNodeRemoval(child); // ### use events instead
     if (getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER)) {
-	child->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVED_EVENT,
-			     true,false,this,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
-	if (exceptioncode)
-	    return;
+        MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMNODEREMOVED_EVENT,true,false,this,DOMString(),DOMString(),DOMString(),0);
+        evt->ref();
+        child->dispatchEvent(evt,exceptioncode,true);
+        evt->deref();
+        if (exceptioncode)
+            return;
     }
 
     bool hasRemovalListeners = getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVEDFROMDOCUMENT_LISTENER);
@@ -1486,16 +1531,18 @@ void NodeBaseImpl::dispatchChildRemovalEvents( NodeImpl *child, int &exceptionco
     // dispatch the DOMNodeRemovedFromDocument event to all descendants
     NodeImpl *p = this;
     while (p->parentNode())
-	p = p->parentNode();
+        p = p->parentNode();
     if (p->nodeType() == Node::DOCUMENT_NODE) {
-	for (NodeImpl *c = child; c; c = c->traverseNextNode(child)) {
-	    if (hasRemovalListeners) {
-		c->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVEDFROMDOCUMENT_EVENT,
-				 false,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
-		if (exceptioncode)
-		    return;
-	    }
-	}
+        for (NodeImpl *c = child; c; c = c->traverseNextNode(child)) {
+            if (hasRemovalListeners) {
+                MutationEventImpl* const evt = new MutationEventImpl(EventImpl::DOMNODEREMOVEDFROMDOCUMENT_EVENT,false,false,0,DOMString(),DOMString(),DOMString(),0);
+                evt->ref();
+                c->dispatchEvent(evt,exceptioncode,true);
+                evt->deref();
+                if (exceptioncode)
+                    return;
+            }
+        }
     }
 }
 

@@ -152,7 +152,6 @@ KBookmarkBar::~KBookmarkBar()
 void KBookmarkBar::clear()
 {
     QPtrListIterator<KAction> it( dptr()->m_actions );
-    m_toolBar->clear();
     for (; it.current(); ++it ) {
         (*it)->unplugAll();
     }
@@ -310,15 +309,17 @@ static QString handleToolbarDragMoveEvent(
     {
         index = tb->itemIndex(b->id());
         QRect r = b->geometry();
-        if (index == 0)
-            atFirst = true;
-        else if (pos.x() < ((r.left() + r.right())/2))
+        if (pos.x() < ((r.left() + r.right())/2))
         {
             // if in first half of button then 
             // we jump to previous index
+            if ( index == 0 )
+                atFirst = true;
+            else {
             index--;
             b = tb->getButton(tb->idAt(index));
         }
+    }
     }
     else if (actions.isEmpty())
     {
@@ -340,6 +341,9 @@ static QString handleToolbarDragMoveEvent(
         if (pos.x() <= b->geometry().left())
             goto skipact; // TODO - rename
     }
+
+    if ( !b )
+        return QString::null; // TODO Make it works for that case
 
     a = findPluggedAction(actions, tb, b->id());
     Q_ASSERT(a);

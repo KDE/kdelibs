@@ -206,6 +206,7 @@
       <l:template name="qandadiv" text="%t"/>
       <l:template name="qandaset" text="%t"/>
       <l:template name="question" text="Pergunta %n"/>
+      <l:template name="refentry" text="%t"/>
       <l:template name="reference" text="%t"/>
       <l:template name="refsect1" text="%t"/>
       <l:template name="refsect2" text="%t"/>

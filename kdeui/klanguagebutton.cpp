@@ -104,6 +104,7 @@ void KLanguageButton::setText(const QString & text)
 
 void KLanguageButton::init(const char * name)
 {
+  m_current = 0;
   m_ids = new QStringList;
   m_popup = 0;
   m_oldPopup = 0;

@@ -59,6 +59,13 @@
 #include <kapplication.h>
 #include <klocale.h>
 
+#ifdef Q_OS_LINUX
+#include <sys/prctl.h>
+#ifndef PR_SET_NAME
+#define PR_SET_NAME 15
+#endif
+#endif
+
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #include <kstartupinfo.h> // schroder
 #endif
@@ -89,7 +96,7 @@
 # endif
 #endif
 
-#ifdef KDEINIT_USE_XFT
+#if defined(KDEINIT_USE_XFT) && defined(KDEINIT_USE_FONTCONFIG)
 #include <X11/Xft/Xft.h>
 extern "C" FcBool XftInitFtLibrary (void);
 #include <fontconfig/fontconfig.h>
@@ -155,6 +162,13 @@ int kdeinit_xio_errhandler( Display * );
 int kdeinit_x_errhandler( Display *, XErrorEvent *err );
 }
 #endif
+
+/* These are to link libkparts even if 'smart' linker is used */
+#include <kparts/plugin.h>
+extern "C" KParts::Plugin* _kinit_init_kparts() { return new KParts::Plugin(); }
+/* These are to link libkio even if 'smart' linker is used */
+#include <kio/authinfo.h>
+extern "C" KIO::AuthInfo* _kioslave_init_kio() { return new KIO::AuthInfo(); }
 
 /*
  * Close fd's which are only useful for the parent process.
@@ -492,6 +506,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
           startup_id.setupStartupEnv();
 #endif
      {
+       int r;
        QCString procTitle( name );
        d.argv = (char **) malloc(sizeof(char *) * (argc+1));
        d.argv[0] = (char *) _name;
@@ -506,7 +521,16 @@ static pid_t launch(int argc, const char *_name, const char *args,
        d.argv[argc] = 0;
 
        /** Give the process a new name **/
-       kdeinit_setproctitle( "%s", procTitle.data() );
+#ifdef Q_OS_LINUX
+       /* set the process name, so that killall works like intended */
+       r = prctl(PR_SET_NAME, (unsigned long) name.data(), 0, 0, 0);
+       if ( r == 0 )
+           kdeinit_setproctitle( "%s [kdeinit] %s", name.data(), procTitle.data() );
+       else
+           kdeinit_setproctitle( "kdeinit: %s", procTitle.data() );
+#else
+       kdeinit_setproctitle( "kdeinit: %s", procTitle.data() );
+#endif
      }
 
      d.handle = 0;
@@ -562,8 +586,8 @@ static pid_t launch(int argc, const char *_name, const char *args,
      if (!d.sym )
      {
         d.sym = lt_dlsym( d.handle, "kdemain" );
-        if ( !d.sym ) 
-        { 
+        if ( !d.sym )
+        {
 #if ! KDE_IS_VERSION( 3, 90, 0 )
            d.sym = lt_dlsym( d.handle, "main");
 #endif
@@ -1324,7 +1348,7 @@ static void handle_requests(pid_t waitForPid)
          int sock = accept(d.wrapper, (struct sockaddr *)&client, &sClient);
          if (sock >= 0)
          {
-#ifdef KDEINIT_USE_XFT
+#if defined(KDEINIT_USE_XFT) && defined(KDEINIT_USE_FONTCONFIG)
             if( !FcConfigUptoDate(NULL))
                FcInitReinitialize();
 #endif
@@ -1344,7 +1368,7 @@ static void handle_requests(pid_t waitForPid)
          int sock = accept(d.wrapper_old, (struct sockaddr *)&client, &sClient);
          if (sock >= 0)
          {
-#ifdef KDEINIT_USE_XFT
+#if defined(KDEINIT_USE_XFT) && defined(KDEINIT_USE_FONTCONFIG)
             if( !FcConfigUptoDate(NULL))
                FcInitReinitialize();
 #endif
@@ -1670,7 +1694,7 @@ int main(int argc, char **argv, char **envp)
 
    /** Prepare to change process name **/
    kdeinit_initsetproctitle(argc, argv, envp);
-   kdeinit_setproctitle("Starting up...");
+   kdeinit_setproctitle("kdeinit Starting up...");
    kdeinit_library_path();
    // don't change envvars before kdeinit_initsetproctitle()
    unsetenv("LD_BIND_NOW");
@@ -1759,7 +1783,7 @@ int main(int argc, char **argv, char **envp)
 #endif
 
    {
-#ifdef KDEINIT_USE_XFT
+#if defined(KDEINIT_USE_XFT) && defined(KDEINIT_USE_FONTCONFIG)
       XftInit(0);
       XftInitFtLibrary();
 #endif
@@ -1804,7 +1828,7 @@ int main(int argc, char **argv, char **envp)
    }
    free (safe_argv);
 
-   kdeinit_setproctitle("Running...");
+   kdeinit_setproctitle("kdeinit Running...");
 
    if (!keep_running)
       return 0;

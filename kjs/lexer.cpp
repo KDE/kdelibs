@@ -542,7 +542,7 @@ int Lexer::lex()
     // Same for building an array with function pointers ( 'name', func1, 'name2', func2 )
     // There are lots of other uses, we really have to get this into the grammar
     if ( token == FUNCTION &&
-         ( lastToken == '=' || lastToken == ',' ) )
+         ( lastToken == '=' || lastToken == ',' || lastToken == '(' ) )
             eatNextIdentifier = true;
 
     if (token == CONTINUE || token == BREAK ||

@@ -88,18 +88,18 @@ class KateFileLoader
       , m_decoder (codec->makeDecoder())
       , m_position (0)
       , m_lastLineStart (0)
-      , m_eof (false) // default to not eof     
+      , m_eof (false) // default to not eof
       , lastWasEndOfLine (true) // at start of file, we had a virtual newline
       , lastWasR (false) // we have not found a \r as last char
       , m_eol (-1) // no eol type detected atm
     {
     }
-    
+
     ~KateFileLoader ()
     {
       delete m_decoder;
     }
-    
+
     /**
      * open file, read first chunk of data, detect eol
      */
@@ -108,12 +108,12 @@ class KateFileLoader
       if (m_file.open (IO_ReadOnly))
       {
         int c = m_file.readBlock (m_buffer.data(), m_buffer.size());
-            
+
         if (c > 0)
           m_text = m_decoder->toUnicode (m_buffer, c);
-          
-        m_eol = m_file.atEnd();
-        
+
+        m_eof = m_file.atEnd();
+
         for (uint i=0; i < m_text.length(); i++)
         {
           if (m_text[i] == '\n')
@@ -135,23 +135,28 @@ class KateFileLoader
             }
           }
         }
-      
+
         return true;
       }
-      
+
       return false;
     }
-    
+
     // no new lines around ?
     inline bool eof () const { return m_eof && !lastWasEndOfLine && (m_lastLineStart == m_text.length()); }
-    
+
     // eol mode ? autodetected on open(), -1 for no eol found in the first block!
     inline int eol () const { return m_eol; }
 
-    // read a line, return per reference, only valid until the next readLine call
-    // or until this object goes to trash !!!
-    QConstString readLine ()
-    {  
+    // internal unicode data array
+    inline const QChar *unicode () const { return m_text.unicode(); }
+
+    // read a line, return length + offset in unicode data
+    void readLine (uint &offset, uint &length)
+    {
+      length = 0;
+      offset = 0;
+
       while (m_position <= m_text.length())
       {
         if (m_position == m_text.length())
@@ -160,74 +165,81 @@ class KateFileLoader
           if (!m_eof)
           {
             int c = m_file.readBlock (m_buffer.data(), m_buffer.size());
-            
+
             if (c > 0)
               m_text = m_text.mid (m_lastLineStart, m_position-m_lastLineStart)
                        + m_decoder->toUnicode (m_buffer, c);
             else
               m_text = m_text.mid (m_lastLineStart, m_position-m_lastLineStart);
-            
+
             // is file completly read ?
             m_eof = m_file.atEnd();
-            
+
             // recalc current pos and last pos
             m_position -= m_lastLineStart;
             m_lastLineStart = 0;
           }
-          
+
           // oh oh, end of file, escape !
           if (m_eof && (m_position == m_text.length()))
           {
             lastWasEndOfLine = false;
-          
-            QConstString line = QConstString (m_text.unicode()+m_lastLineStart, m_position-m_lastLineStart);
+
+            // line data
+            offset = m_lastLineStart;
+            length = m_position-m_lastLineStart;
+
             m_lastLineStart = m_position;
-            
-            return line;
+
+            return;
           }
         }
-        
+
         if (m_text[m_position] == '\n')
         {
           lastWasEndOfLine = true;
-        
+
           if (lastWasR)
           {
             m_lastLineStart++;
             lastWasR = false;
           }
           else
-          {         
-            QConstString line = QConstString (m_text.unicode()+m_lastLineStart, m_position-m_lastLineStart);
+          {
+            // line data
+            offset = m_lastLineStart;
+            length = m_position-m_lastLineStart;
+
             m_lastLineStart = m_position+1;
             m_position++;
-                  
-            return line;
+
+            return;
           }
         }
         else if (m_text[m_position] == '\r')
         {
           lastWasEndOfLine = true;
           lastWasR = true;
-          
-          QConstString line = QConstString (m_text.unicode()+m_lastLineStart, m_position-m_lastLineStart);
+
+          // line data
+          offset = m_lastLineStart;
+          length = m_position-m_lastLineStart;
+
           m_lastLineStart = m_position+1;
           m_position++;
-          
-          return line;
+
+          return;
         }
         else
         {
           lastWasEndOfLine = false;
           lastWasR = false;
         }
-        
+
         m_position++;
       }
-      
-      return QConstString (m_text.unicode(), 0);
-    } 
-    
+    }
+
   private:
     QFile m_file;
     QByteArray m_buffer;
@@ -415,11 +427,11 @@ bool KateBuffer::openFile (const QString &m_file)
     clear();
     return false; // Error
   }
-  
+
   // set eol mode, if a eol char was found in the first 256kb block!
   if (file.eol() != -1)
     m_doc->config()->setEol (file.eol());
-  
+
   // flush current content
   clear ();
 
@@ -463,7 +475,7 @@ bool KateBuffer::openFile (const QString &m_file)
     // fix region tree
     m_regionTree.fixRoot (m_lines);
   }
-  
+
   // if we have no hl or the "None" hl activated, whole file is correct highlighted
   // after loading, which wonder ;)
   if (!m_highlight || m_highlight->noHighlighting())
@@ -471,7 +483,7 @@ bool KateBuffer::openFile (const QString &m_file)
     m_lineHighlighted = m_lines;
     m_lineHighlightedMax = m_lines;
   }
-  
+
   return !m_loadingBorked;
 }
 
@@ -648,7 +660,7 @@ KateBufBlock *KateBuffer::findBlock_internal (uint i, uint *index)
       {
         // remember this block as last found !
         m_lastFoundBlock = m_lastInSyncBlock;
-      
+
         if (index)
           (*index) = m_lastFoundBlock;
 
@@ -700,7 +712,7 @@ void KateBuffer::insertLine(uint i, KateTextLine::Ptr line)
   // last sync block adjust
   if (m_lastInSyncBlock > index)
     m_lastInSyncBlock = index;
-    
+
   // last found
   if (m_lastInSyncBlock < m_lastFoundBlock)
     m_lastFoundBlock = m_lastInSyncBlock;
@@ -755,7 +767,7 @@ void KateBuffer::removeLine(uint i)
     if (m_lastInSyncBlock > index)
       m_lastInSyncBlock = index;
   }
-  
+
   // last found
   if (m_lastInSyncBlock < m_lastFoundBlock)
     m_lastFoundBlock = m_lastInSyncBlock;
@@ -1120,8 +1132,10 @@ void KateBufBlock::fillBlock (KateFileLoader *stream)
   uint blockSize = 0;
   while (!stream->eof() && (blockSize < KATE_AVG_BLOCK_SIZE) && (m_lines < KATE_MAX_BLOCK_LINES))
   {
-    QConstString line = stream->readLine();
-    uint length = line.string().length ();
+    uint offset = 0, length = 0;
+    stream->readLine(offset, length);
+    const QChar *unicodeData = stream->unicode () + offset;
+
     blockSize += length;
 
     if (swap)
@@ -1146,13 +1160,13 @@ void KateBufBlock::fillBlock (KateFileLoader *stream)
       memcpy(buf+pos, (char *) &length, sizeof(uint));
       pos += sizeof(uint);
 
-      memcpy(buf+pos, (char *) line.string().unicode(), sizeof(QChar)*length);
+      memcpy(buf+pos, (char *) unicodeData, sizeof(QChar)*length);
       pos += sizeof(QChar)*length;
     }
     else
     {
       KateTextLine::Ptr textLine = new KateTextLine ();
-      textLine->insertText (0, length, line.string().unicode ());
+      textLine->insertText (0, length, unicodeData);
       m_stringList.push_back (textLine);
     }
 

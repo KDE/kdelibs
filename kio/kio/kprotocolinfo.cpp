@@ -27,8 +27,14 @@
 
 static KProtocolInfo* findProtocol(const KURL &url)
 {
+   QString protocol = url.protocol();
+   
+   if ( !KProtocolInfo::proxiedBy( protocol ).isEmpty() )
+   {
    QString dummy;
-   QString protocol = KProtocolManager::slaveProtocol(url, dummy);
+      protocol = KProtocolManager::slaveProtocol(url, dummy);
+   }
+       
    return KProtocolInfoFactory::self()->findProtocol(protocol);
 }
 
@@ -63,8 +69,13 @@ bool KProtocolInfo::isSourceProtocol( const KURL &url )
 
 bool KProtocolInfo::isFilterProtocol( const KURL &url )
 {
-  // We use url.protocol() to bypass any proxy settings.
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url.protocol());
+  return isFilterProtocol (url.protocol());
+}
+
+bool KProtocolInfo::isFilterProtocol( const QString &protocol )
+{
+  // We call the findProtocol (const QString&) to bypass any proxy settings.
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(protocol);
   if ( !prot )
     return false;
 
@@ -73,8 +84,13 @@ bool KProtocolInfo::isFilterProtocol( const KURL &url )
 
 bool KProtocolInfo::isHelperProtocol( const KURL &url )
 {
-  // We use url.protocol() to bypass any proxy settings.
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url.protocol());
+  return isHelperProtocol (url.protocol());
+}
+
+bool KProtocolInfo::isHelperProtocol( const QString &protocol )
+{
+  // We call the findProtocol (const QString&) to bypass any proxy settings.
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(protocol);
   if ( !prot )
     return false;
 
@@ -83,8 +99,13 @@ bool KProtocolInfo::isHelperProtocol( const KURL &url )
 
 bool KProtocolInfo::isKnownProtocol( const KURL &url )
 {
-  // We use url.protocol() to bypass any proxy settings.
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url.protocol());
+  return isKnownProtocol (url.protocol());
+}
+
+bool KProtocolInfo::isKnownProtocol( const QString &protocol )
+{
+  // We call the findProtocol (const QString&) to bypass any proxy settings.
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(protocol);
   return ( prot != 0);
 }
 

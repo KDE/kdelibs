@@ -1369,12 +1369,22 @@ void KExtendedSocket::flush()
       QByteArray *a = outBuf.first();
       unsigned count = 0;
 
-      while (a && count + (a->size() - offset) < buf.size())
+      while (a && count + (a->size() - offset) <= buf.size())
 	{
 	  memcpy(buf.data() + count, a->data() + offset, a->size() - offset);
 	  count += a->size() - offset;
 	  offset = 0;
 	  a = outBuf.next();
+	}
+
+      // see if we can still fit more
+      if (a && count < buf.size())
+	{
+	  // getting here means this buffer (a) is larger than
+	  // (buf.size() - count) (even for count == 0).
+	  memcpy(buf.data() + count, a->data() + offset, buf.size() - count);
+	  offset += buf.size() - count;
+	  count = buf.size();
 	}
 
       // now try to write those bytes

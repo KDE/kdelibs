@@ -6,6 +6,7 @@
  *           (C) 1998 Waldo Bastian (bastian@kde.org)
  *           (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,7 +23,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef RENDER_TABLE_H
 #define RENDER_TABLE_H
@@ -283,6 +283,7 @@ public:
 protected:
     void ensureRows( int numRows );
     void clearGrid();
+    bool emptyRow(int rowNum);
 
     friend class TableSectionIterator;
 };

@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2004 Thiago Macieira <thiago.macieira@kdemail.net>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -314,10 +314,8 @@ KResolver::KResolver(const QString& nodename, const QString& servicename,
 // destructor
 KResolver::~KResolver()
 {
-  // this deletes our d pointer (if necessary)
-  // and cancels the lookup as well
-  KResolverManager::manager()->aboutToBeDeleted(this);
-  d = 0L;
+  cancel(false);
+  delete d;
 }
 
 // get the status
@@ -452,7 +450,6 @@ bool KResolver::start()
   if (!isRunning())
     {
       d->results.empty();
-      d->emitSignal = true;	// reset the variable
 
       // is there anything to be queued?
       if (d->input.node.isEmpty() && d->input.service.isEmpty())
@@ -512,8 +509,9 @@ bool KResolver::wait(int msec)
 
 void KResolver::cancel(bool emitSignal)
 {
-  d->emitSignal = emitSignal;
   KResolverManager::manager()->dequeue(this);
+  if (emitSignal)
+    emitFinished();
 }
 
 KResolverResults
@@ -547,8 +545,7 @@ void KResolver::emitFinished()
 
   QGuardedPtr<QObject> p = this; // guard against deletion
 
-  if (d->emitSignal)
-    emit finished(d->results);
+  emit finished(d->results);
 
   if (p && d->deleteWhenDone)
     deleteLater();		// in QObject
@@ -631,7 +628,11 @@ QStrList KResolver::protocolName(int protonum)
   do
     {
       buf = new char[buflen];
+# ifdef USE_SOLARIS // Solaris uses a 4 argument getprotobynumber_r which returns struct *protoent or NULL
+      if ((pe = getprotobynumber_r(protonum, &protobuf, buf, buflen)) && (errno == ERANGE))
+# else
       if (getprotobynumber_r(protonum, &protobuf, buf, buflen, &pe) == ERANGE)
+# endif
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -673,7 +674,11 @@ QStrList KResolver::protocolName(const char *protoname)
   do
     {
       buf = new char[buflen];
+# ifdef USE_SOLARIS // Solaris uses a 4 argument getprotobyname_r which returns struct *protoent or NULL
+      if ((pe = getprotobyname_r(protoname, &protobuf, buf, buflen)) && (errno == ERANGE))
+# else
       if (getprotobyname_r(protoname, &protobuf, buf, buflen, &pe) == ERANGE)
+# endif
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -715,7 +720,11 @@ int KResolver::protocolNumber(const char *protoname)
   do
     {
       buf = new char[buflen];
+# ifdef USE_SOLARIS // Solaris uses a 4 argument getprotobyname_r which returns struct *protoent or NULL
+      if ((pe = getprotobyname_r(protoname, &protobuf, buf, buflen)) && (errno == ERANGE))
+# else
       if (getprotobyname_r(protoname, &protobuf, buf, buflen, &pe) == ERANGE)
+# endif
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -753,7 +762,11 @@ int KResolver::servicePort(const char *servname, const char *protoname)
   do
     {
       buf = new char[buflen];
+# ifdef USE_SOLARIS // Solaris uses a 5 argument getservbyname_r which returns struct *servent or NULL
+      if ((se = getservbyname_r(servname, protoname, &servbuf, buf, buflen)) && (errno == ERANGE))
+# else
       if (getservbyname_r(servname, protoname, &servbuf, buf, buflen, &se) == ERANGE)
+# endif
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -791,7 +804,11 @@ QStrList KResolver::serviceName(const char* servname, const char *protoname)
   do
     {
       buf = new char[buflen];
+# ifdef USE_SOLARIS // Solaris uses a 5 argument getservbyname_r which returns struct *servent or NULL
+      if ((se = getservbyname_r(servname, protoname, &servbuf, buf, buflen)) && (errno == ERANGE))
+# else
       if (getservbyname_r(servname, protoname, &servbuf, buf, buflen, &se) == ERANGE)
+# endif
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -821,7 +838,7 @@ QStrList KResolver::serviceName(const char* servname, const char *protoname)
 QStrList KResolver::serviceName(int port, const char *protoname)
 {
   struct servent *se;
-#ifndef HAVE_GETSERVBYNAME_R
+#ifndef HAVE_GETSERVBYPORT_R
   QMutexLocker locker(&getXXbyYYmutex);
 
   se = getservbyport(port, protoname);
@@ -833,7 +850,11 @@ QStrList KResolver::serviceName(int port, const char *protoname)
   do
     {
       buf = new char[buflen];
+# ifdef USE_SOLARIS // Solaris uses a 5 argument getservbyport_r which returns struct *servent or NULL
+      if ((se = getservbyport_r(port, protoname, &servbuf, buf, buflen)) && (errno == ERANGE))
+# else
       if (getservbyport_r(port, protoname, &servbuf, buf, buflen, &se) == ERANGE)
+# endif
 	{
 	  buflen += 1024;
 	  delete [] buf;
@@ -881,7 +902,8 @@ QCString KResolver::domainToAscii(const QString& unicodeDomain)
 
   // 4) for each label, apply ToASCII
   QStringList::Iterator it = input.begin();
-  for ( ; it != input.end(); it++)
+  const QStringList::Iterator end = input.end();
+  for ( ; it != end; ++it)
     {
       QCString cs = ToASCII(*it);
       if (cs.isNull())
@@ -922,7 +944,8 @@ QString KResolver::domainToUnicode(const QString& asciiDomain)
 
   // 4) for each label, apply ToUnicode
   QStringList::Iterator it;
-  for (it = input.begin(); it != input.end(); it++)
+  const QStringList::Iterator end = input.end();
+  for (it = input.begin(); it != end; ++it)
     {
       QString label = ToUnicode(*it).lower();
 

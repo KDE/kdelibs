@@ -41,6 +41,10 @@ namespace KJS {
   class KJSDebugWin;
 }
 
+namespace khtml {
+  class ChildFrame;
+}
+
 /**
  * @internal
  *
@@ -64,7 +68,7 @@ public:
 
   void setEventHandlerLineno(int lineno) { m_handlerLineno = lineno; }
 
-  KHTMLPart *m_part;
+  khtml::ChildFrame *m_frame;
   int m_handlerLineno;
 };
 

@@ -326,6 +326,15 @@ KURLBarItem * KURLBar::insertItem(const KURL& url, const QString& description,
                                   bool applicationLocal,
                                   const QString& icon, KIcon::Group group )
 {
+// UGLY HACK, devices:/ and lan:/ don't work in dir selection dialog, better not show it
+if ((url.protocol() == "devices") || (url.protocol() == "lan"))
+{
+  QObject *obj = topLevelWidget();
+  if (obj && (qstrcmp(obj->className(), "KDirSelectDialog") == 0))
+     return 0;
+}
+// END UGLY HACK
+
     KURLBarItem *item = new KURLBarItem(this, url, description, icon, group);
     item->setApplicationLocal( applicationLocal );
     m_listBox->insertItem( item );

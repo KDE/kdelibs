@@ -20,7 +20,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef RENDER_FORM_H
 #define RENDER_FORM_H
@@ -127,16 +126,6 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class CheckBoxWidget : public QCheckBox
-{
-public:
-    CheckBoxWidget(QWidget *parent);
-protected:
-    virtual bool event(QEvent *e);
-};
-
-// -------------------------------------------------------------------------
-
 class RenderCheckBox : public RenderButton
 {
     Q_OBJECT
@@ -157,18 +146,9 @@ public slots:
 
 // -------------------------------------------------------------------------
 
-class RadioButtonWidget : public QRadioButton
-{
-public:
-    RadioButtonWidget(QWidget *parent);
-protected:
-    virtual bool event(QEvent *e);
-};
-
-// -------------------------------------------------------------------------
-
 class RenderRadioButton : public RenderButton
 {
+    Q_OBJECT
 public:
     RenderRadioButton(DOM::HTMLInputElementImpl* node);
 
@@ -180,16 +160,9 @@ public:
     virtual bool handleEvent(const DOM::EventImpl&) { return false; }
 
     QRadioButton *widget() const { return static_cast<QRadioButton*>(m_widget); }
-};
 
-// -------------------------------------------------------------------------
-
-class FormButtonWidget : public QPushButton
-{
-public:
-    FormButtonWidget(QWidget *parent);
-protected:
-    virtual bool event(QEvent *e);
+public slots:
+    virtual void slotToggled(bool);
 };
 
 // -------------------------------------------------------------------------
@@ -316,7 +289,7 @@ class RenderFieldset : public RenderBlock
 {
 public:
     RenderFieldset(DOM::HTMLGenericFormElementImpl *element);
-    
+
     virtual const char *renderName() const { return "RenderFieldSet"; }
     virtual RenderObject* layoutLegend(bool relayoutChildren);
     virtual void setStyle(RenderStyle* _style);
@@ -326,16 +299,6 @@ protected:
     void paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w,
                                   int h, const RenderStyle *style, int lx, int lw);
     RenderObject* findLegend();
-};
-
-// -------------------------------------------------------------------------
-
-class FileButtonWidget : public KURLRequester
-{
-public:
-    FileButtonWidget(QWidget *parent, const char *name);
- protected:
-    virtual bool event(QEvent *);
 };
 
 // -------------------------------------------------------------------------
@@ -402,16 +365,6 @@ protected:
     virtual bool event(QEvent *);
     virtual bool eventFilter(QObject *dest, QEvent *e);
 };
-
-class ListBoxWidget : public KListBox
-{
-public:
-    ListBoxWidget(QWidget *parent, bool multiple);
-
-protected:
-    virtual bool event(QEvent *);
-};
-
 
 // -------------------------------------------------------------------------
 

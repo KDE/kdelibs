@@ -64,6 +64,7 @@ using namespace KJS;
   dispatchEvent		DOMNode::DispatchEvent	DontDelete|Function 1
 # IE extensions
   contains	DOMNode::Contains		DontDelete|Function 1
+  insertAdjacentHTML	DOMNode::InsertAdjacentHTML	DontDelete|Function 2
 # "DOM level 0" (from Gecko DOM reference; also in WinIE)
   item          DOMNode::Item           DontDelete|Function 1
 @end
@@ -167,9 +168,9 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case NodeName:
-    return getString(node.nodeName());
+    return String(node.nodeName());
   case NodeValue:
-    return getString(node.nodeValue());
+    return getString(node.nodeValue()); // initially null, per domts/level1/core/hc_documentcreateelement.html
   case NodeType:
     return Number((unsigned int)node.nodeType());
   case ParentNode:
@@ -189,11 +190,11 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
   case Attributes:
     return getDOMNamedNodeMap(exec,node.attributes());
   case NamespaceURI:
-    return getString(node.namespaceURI());
+    return getString(node.namespaceURI()); // Moz returns null if not set (dom/namespaces.html)
   case Prefix:
-    return getString(node.prefix());
+    return getString(node.prefix());  // Moz returns null if not set (dom/namespaces.html)
   case LocalName:
-    return getString(node.localName());
+    return getString(node.localName());  // Moz returns null if not set (dom/namespaces.html)
   case OwnerDocument:
     return getDOMNode(exec,node.ownerDocument());
   case OnAbort:
@@ -496,6 +497,32 @@ Value DOMNodeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
 	}
         return Undefined();
     }
+    case DOMNode::InsertAdjacentHTML:
+    {
+      // see http://www.faqts.com/knowledge_base/view.phtml/aid/5756 
+      // and http://msdn.microsoft.com/workshop/author/dhtml/reference/methods/insertAdjacentHTML.asp 
+      Range range = node.ownerDocument().createRange();
+
+      range.setStartBefore(node);
+
+      DocumentFragment docFrag = range.createContextualFragment(args[1].toString(exec).string());
+
+      DOMString where = args[0].toString(exec).string();
+
+      if (where == "beforeBegin" || where == "BeforeBegin")
+        node.parentNode().insertBefore(docFrag, node);
+      else if (where == "afterBegin" || where == "AfterBegin")
+        node.insertBefore(docFrag, node.firstChild());
+      else if (where == "beforeEnd" || where == "BeforeEnd")
+        return getDOMNode(exec, node.appendChild(docFrag));
+      else if (where == "afterEnd" || where == "AfterEnd")
+        if (!node.nextSibling().isNull())
+	  node.parentNode().insertBefore(docFrag, node.nextSibling());
+	else
+	  node.parentNode().appendChild(docFrag);
+
+      return Undefined();
+    }
     case DOMNode::Item:
       return getDOMNode(exec, node.childNodes().item(static_cast<unsigned long>(args[0].toNumber(exec))));
   }
@@ -596,12 +623,21 @@ Value DOMNodeList::tryCall(ExecState *exec, Object &, const List &args)
 {
   // Do not use thisObj here. See HTMLCollection.
   UString s = args[0].toString(exec);
+
+  // index-based lookup?
   bool ok;
   unsigned int u = s.toULong(&ok);
   if (ok)
     return getDOMNode(exec,list.item(u));
 
-  kdDebug(6070) << "WARNING: KJS::DOMNodeList::tryCall " << s.qstring() << " not implemented" << endl;
+  // try lookup by name
+  // ### NodeList::namedItem() would be cool to have
+  // ### do we need to support the same two arg overload as in HTMLCollection?
+  Value result = tryGet(exec, Identifier(s));
+
+  if (result.isValid())
+    return result;
+
   return Undefined();
 }
 
@@ -663,11 +699,11 @@ Value DOMAttr::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case Name:
-    return getString(static_cast<DOM::Attr>(node).name());
+    return String(static_cast<DOM::Attr>(node).name());
   case Specified:
     return Boolean(static_cast<DOM::Attr>(node).specified());
   case ValueProperty:
-    return getString(static_cast<DOM::Attr>(node).value());
+    return String(static_cast<DOM::Attr>(node).value());
   case OwnerElement: // DOM2
     return getDOMNode(exec,static_cast<DOM::Attr>(node).ownerElement());
   }
@@ -779,9 +815,9 @@ Value DOMDocument::getValueProperty(ExecState *exec, int token) const
   case DOMDocument::DefaultView: // DOM2
     return getDOMAbstractView(exec, doc.defaultView());
   case PreferredStylesheetSet:
-    return getString(doc.preferredStylesheetSet());
+    return String(doc.preferredStylesheetSet());
   case SelectedStylesheetSet:
-    return getString(doc.selectedStylesheetSet());
+    return String(doc.selectedStylesheetSet());
   case ReadyState:
     {
     DOM::DocumentImpl* docimpl = node.handle()->getDocument();
@@ -912,10 +948,11 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
     Window* active = Window::retrieveActive(exec);
     // Complete the URL using the "active part" (running interpreter). We do this for the security
     // check and to make sure we load exactly the same url as we have verified to be safe
-    if (active->part()) {
+    KHTMLPart *khtmlpart = ::qt_cast<KHTMLPart *>(active->part());
+    if (khtmlpart) {
       // Security: only allow documents to be loaded from the same host
-      QString dstUrl = active->part()->htmlDocument().completeURL(s).string();
-      KHTMLPart *part = static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part();
+      QString dstUrl = khtmlpart->htmlDocument().completeURL(s).string();
+      KParts::ReadOnlyPart *part = static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part();
       if (part->url().host() == KURL(dstUrl).host()) {
 	kdDebug(6070) << "JavaScript: access granted for document.load() of " << dstUrl << endl;
 	doc.load(dstUrl);
@@ -986,7 +1023,7 @@ Value DOMElement::tryGet(ExecState *exec, const Identifier &propertyName) const
   {
     switch( entry->value ) {
     case TagName:
-      return getString(element.tagName());
+      return String(element.tagName());
     case Style:
       return getDOMCSSStyleDeclaration(exec,element.style());
     default:
@@ -1003,7 +1040,7 @@ Value DOMElement::tryGet(ExecState *exec, const Identifier &propertyName) const
   DOM::DOMString attr = element.getAttribute( propertyName.string() );
   // Give access to attributes
   if ( !attr.isNull() )
-    return getString( attr );
+    return String( attr );
 
   return Undefined();
 }
@@ -1093,11 +1130,14 @@ Value DOMDOMImplementationProtoFunc::tryCall(ExecState *exec, Object &thisObj, c
   case DOMDOMImplementation::CreateDocument: { // DOM2
     // Initially set the URL to document of the creator... this is so that it resides in the same
     // host/domain for security checks. The URL will be updated if Document.load() is called.
-    Document doc = implementation.createDocument(args[0].toString(exec).string(),args[1].toString(exec).string(),toNode(args[2]));
-    KHTMLPart *part = static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part();
-    KURL url = static_cast<DocumentImpl*>(part->document().handle())->URL();
-    static_cast<DocumentImpl*>(doc.handle())->setURL(url.url());
-    return getDOMNode(exec,doc);
+    KHTMLPart *part = ::qt_cast<KHTMLPart*>(static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part());
+    if (part) {
+      Document doc = implementation.createDocument(args[0].toString(exec).string(),args[1].toString(exec).string(),toNode(args[2]));
+      KURL url = static_cast<DocumentImpl*>(part->document().handle())->URL();
+      static_cast<DocumentImpl*>(doc.handle())->setURL(url.url());
+      return getDOMNode(exec,doc);
+    }
+    break;
   }
   case DOMDOMImplementation::CreateCSSStyleSheet: // DOM2
     return getDOMStyleSheet(exec,implementation.createCSSStyleSheet(args[0].toString(exec).string(),args[1].toString(exec).string()));
@@ -1140,17 +1180,17 @@ Value DOMDocumentType::getValueProperty(ExecState *exec, int token) const
   DOM::DocumentType type = static_cast<DOM::DocumentType>(node);
   switch (token) {
   case Name:
-    return String(type.name()); // not getString, otherwise doctype.name.indexOf() fails.
+    return String(type.name());
   case Entities:
     return getDOMNamedNodeMap(exec,type.entities());
   case Notations:
     return getDOMNamedNodeMap(exec,type.notations());
   case PublicId: // DOM2
-    return getString(type.publicId());
+    return String(type.publicId());
   case SystemId: // DOM2
-    return getString(type.systemId());
+    return String(type.systemId());
   case InternalSubset: // DOM2
-    return getString(type.internalSubset());
+    return getString(type.internalSubset()); // can be null, see domts/level2/core/internalSubset01.html
   default:
     kdDebug(6070) << "WARNING: DOMDocumentType::getValueProperty unhandled token " << token << endl;
     return Value();
@@ -1257,9 +1297,9 @@ Value DOMProcessingInstruction::getValueProperty(ExecState *exec, int token) con
 {
   switch (token) {
   case Target:
-    return getString(static_cast<DOM::ProcessingInstruction>(node).target());
+    return String(static_cast<DOM::ProcessingInstruction>(node).target());
   case Data:
-    return getString(static_cast<DOM::ProcessingInstruction>(node).data());
+    return String(static_cast<DOM::ProcessingInstruction>(node).data());
   case Sheet:
     return getDOMStyleSheet(exec,static_cast<DOM::ProcessingInstruction>(node).sheet());
   default:
@@ -1296,9 +1336,9 @@ Value DOMNotation::getValueProperty(ExecState *, int token) const
 {
   switch (token) {
   case PublicId:
-    return getString(static_cast<DOM::Notation>(node).publicId());
+    return String(static_cast<DOM::Notation>(node).publicId());
   case SystemId:
-    return getString(static_cast<DOM::Notation>(node).systemId());
+    return String(static_cast<DOM::Notation>(node).systemId());
   default:
     kdDebug(6070) << "WARNING: DOMNotation::getValueProperty unhandled token " << token << endl;
     return Value();
@@ -1325,11 +1365,11 @@ Value DOMEntity::getValueProperty(ExecState *, int token) const
 {
   switch (token) {
   case PublicId:
-    return getString(static_cast<DOM::Entity>(node).publicId());
+    return String(static_cast<DOM::Entity>(node).publicId());
   case SystemId:
-    return getString(static_cast<DOM::Entity>(node).systemId());
+    return String(static_cast<DOM::Entity>(node).systemId());
   case NotationName:
-    return getString(static_cast<DOM::Entity>(node).notationName());
+    return String(static_cast<DOM::Entity>(node).notationName());
   default:
     kdDebug(6070) << "WARNING: DOMEntity::getValueProperty unhandled token " << token << endl;
     return Value();
@@ -1669,7 +1709,7 @@ Value DOMCharacterDataProtoFunc::tryCall(ExecState *exec, Object &thisObj, const
   DOM::CharacterData data = static_cast<DOMCharacterData *>(thisObj.imp())->toData();
   switch(id) {
     case DOMCharacterData::SubstringData:
-      return getString(data.substringData(args[0].toInteger(exec),args[1].toInteger(exec)));
+      return String(data.substringData(args[0].toInteger(exec),args[1].toInteger(exec)));
     case DOMCharacterData::AppendData:
       data.appendData(args[0].toString(exec).string());
       return Undefined();

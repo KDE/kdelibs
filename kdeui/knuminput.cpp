@@ -999,6 +999,7 @@ KDoubleSpinBox::KDoubleSpinBox( QWidget * parent, const char * name )
   editor()->setAlignment( Qt::AlignRight );
   d = new Private();
   updateValidator();
+  connect( this, SIGNAL(valueChanged(int)), SLOT(slotValueChanged(int)) );
 }
 
 KDoubleSpinBox::KDoubleSpinBox( double lower, double upper, double step,

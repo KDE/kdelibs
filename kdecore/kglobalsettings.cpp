@@ -559,24 +559,21 @@ KGlobalSettings::KMouseSettings & KGlobalSettings::mouseSettings()
             // This is a simplified version of the code in input/mouse.cpp
             // Keep in sync !
             s.handed = KMouseSettings::RightHanded;
-            unsigned char map[5];
-            switch (XGetPointerMapping(kapp->getDisplay(), map, 5))
+            unsigned char map[20];
+            int num_buttons = XGetPointerMapping(kapp->getDisplay(), map, 20);
+            if( num_buttons == 2 )
             {
-                case 2:
-                    if ( (int)map[0] == 1 && (int)map[1] == 2 )
-                        s.handed = KMouseSettings::RightHanded;
-                    else if ( (int)map[0] == 2 && (int)map[1] == 1 )
-                        s.handed = KMouseSettings::LeftHanded;
-                    break;
-                case 3:
-                case 5:
-                    if ( (int)map[0] == 1 && (int)map[2] == 3 )
-                        s.handed = KMouseSettings::RightHanded;
-                    else if ( (int)map[0] == 3 && (int)map[2] == 1 )
-                        s.handed = KMouseSettings::LeftHanded;
-                    break;
-                default:
-                    break;
+                if ( (int)map[0] == 1 && (int)map[1] == 2 )
+                    s.handed = KMouseSettings::RightHanded;
+                else if ( (int)map[0] == 2 && (int)map[1] == 1 )
+                    s.handed = KMouseSettings::LeftHanded;
+            }
+            else if( num_buttons >= 3 )
+            {
+                if ( (int)map[0] == 1 && (int)map[2] == 3 )
+                    s.handed = KMouseSettings::RightHanded;
+                else if ( (int)map[0] == 3 && (int)map[2] == 1 )
+                    s.handed = KMouseSettings::LeftHanded;
             }
 #else
 	    // FIXME(E): Implement in Qt Embedded

@@ -34,6 +34,14 @@ class QTimer;
 class KHTMLView;
 class KHTMLPart;
 
+namespace KParts {
+  class ReadOnlyPart;
+}
+
+namespace khtml {
+  class ChildFrame;
+}
+
 namespace KJS {
 
   class WindowFunc;
@@ -67,7 +75,7 @@ namespace KJS {
     friend class WindowQObject;
     friend class ScheduledAction;
   public:
-    Window(KHTMLPart *p);
+    Window(khtml::ChildFrame *p);
   public:
     ~Window();
     /**
@@ -75,17 +83,17 @@ namespace KJS {
      * for the specified part p this will be returned in order to have unique
      * bindings.
      */
-    static Value retrieve(KHTMLPart *p);
+    static Value retrieve(KParts::ReadOnlyPart *p);
     /**
-     * Returns the Window object for a given HTML part
+     * Returns the Window object for a given part
      */
-    static Window *retrieveWindow(KHTMLPart *p);
+    static Window *retrieveWindow(KParts::ReadOnlyPart *p);
     /**
      * returns a pointer to the Window object this javascript interpreting instance
      * was called from.
      */
     static Window *retrieveActive(ExecState *exec);
-    QGuardedPtr<KHTMLPart> part() const { return m_part; }
+    KParts::ReadOnlyPart *part() const;
     virtual void mark();
     virtual bool hasProperty(ExecState *exec, const Identifier &p) const;
     virtual Value get(ExecState *exec, const Identifier &propertyName) const;
@@ -100,8 +108,8 @@ namespace KJS {
     void resizeTo(QWidget* tl, int width, int height);
     void afterScriptExecution();
     bool isSafeScript(ExecState *exec) const {
-      KHTMLPart *activePart = static_cast<KJS::ScriptInterpreter *>(  exec->interpreter() )->part();
-      if ( activePart == m_part ) return true;
+        KParts::ReadOnlyPart *activePart = static_cast<KJS::ScriptInterpreter *>(  exec->interpreter() )->part();
+      if ( activePart == part() ) return true;
       return checkIsSafeScript( activePart );
     }
     Location *location() const;
@@ -142,9 +150,9 @@ namespace KJS {
     struct DelayedAction;
     friend struct DelayedAction;
 
-    bool checkIsSafeScript( KHTMLPart* activePart ) const;
+    bool checkIsSafeScript( KParts::ReadOnlyPart* activePart ) const;
 
-    QGuardedPtr<KHTMLPart> m_part;
+    QGuardedPtr<khtml::ChildFrame> m_frame;
     Screen *screen;
     History *history;
     External *external;
@@ -195,6 +203,7 @@ namespace KJS {
     int installTimeout(const Value &func, List args, int t, bool singleShot);
     void clearTimeout(int timerId);
     void mark();
+    bool hasTimers() const;
   public slots:
     void timeoutClose();
   protected slots:
@@ -204,7 +213,6 @@ namespace KJS {
     void setNextTimer();
   private:
     Window *parent;
-    KHTMLPart *part;   		// not guarded, may be dangling
     QPtrList<ScheduledAction> scheduledActions;
     int pausedTime;
     int lastTimerId;
@@ -219,13 +227,13 @@ namespace KJS {
     virtual UString toString(ExecState *exec) const;
     enum { Hash, Href, Hostname, Host, Pathname, Port, Protocol, Search, EqualEqual,
            Assign, Replace, Reload, ToString };
-    KHTMLPart *part() const { return m_part; }
+    KParts::ReadOnlyPart *part() const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   private:
     friend class Window;
-    Location(KHTMLPart *p);
-    QGuardedPtr<KHTMLPart> m_part;
+    Location(khtml::ChildFrame *f);
+    QGuardedPtr<khtml::ChildFrame> m_frame;
   };
 
 #ifdef Q_WS_QWS

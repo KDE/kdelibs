@@ -836,27 +836,25 @@ void KLineEdit::tripleClickTimeout()
     possibleTripleClick=false;
 }
 
+void KLineEdit::contextMenuEvent( QContextMenuEvent * e )
+{
+    if ( m_bEnableMenu )
+        QLineEdit::contextMenuEvent( e );
+}
+
 QPopupMenu *KLineEdit::createPopupMenu()
 {
     enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
 
-    // Return if popup menu is not enabled !!
-    if ( !m_bEnableMenu )
-        return 0;
-
     QPopupMenu *popup = QLineEdit::createPopupMenu();
 
-    if ( isReadOnly() )
-      popup->changeItem( popup->idAt(0), SmallIconSet("editcopy"), popup->text( popup->idAt(0) ) );
-    else {
-      int id = popup->idAt(0);
-      popup->changeItem( id - IdUndo, SmallIconSet("undo"), popup->text( id - IdUndo) );
-      popup->changeItem( id - IdRedo, SmallIconSet("redo"), popup->text( id - IdRedo) );
-      popup->changeItem( id - IdCut, SmallIconSet("editcut"), popup->text( id - IdCut) );
-      popup->changeItem( id - IdCopy, SmallIconSet("editcopy"), popup->text( id - IdCopy) );
-      popup->changeItem( id - IdPaste, SmallIconSet("editpaste"), popup->text( id - IdPaste) );
-      popup->changeItem( id - IdClear, SmallIconSet("editclear"), popup->text( id - IdClear) );
-    }
+    int id = popup->idAt(0);
+    popup->changeItem( id - IdUndo, SmallIconSet("undo"), popup->text( id - IdUndo) );
+    popup->changeItem( id - IdRedo, SmallIconSet("redo"), popup->text( id - IdRedo) );
+    popup->changeItem( id - IdCut, SmallIconSet("editcut"), popup->text( id - IdCut) );
+    popup->changeItem( id - IdCopy, SmallIconSet("editcopy"), popup->text( id - IdCopy) );
+    popup->changeItem( id - IdPaste, SmallIconSet("editpaste"), popup->text( id - IdPaste) );
+    popup->changeItem( id - IdClear, SmallIconSet("editclear"), popup->text( id - IdClear) );
       
     // If a completion object is present and the input
     // widget is not read-only, show the Text Completion

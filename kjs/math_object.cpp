@@ -236,20 +236,12 @@ Value MathFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
     result = result / RAND_MAX;
     break;
   case MathObjectImp::Round:
-    if (isNaN(arg)) {
-      result = arg;
-    }
-    else if (isInf(arg) || isInf(-arg)) {
-      result = arg;
-    }
-    else if (arg == -0.5 || IS_NEGATIVE_ZERO(arg)) {
+    if (arg < 0 && arg >= -0.5)
       result = -0.0;
-    }
-    else {
-      result = (double)(arg >= 0.0 ? int(arg + 0.5) : int(arg - 0.5));
-      if (result == 0.0 && arg < 0.0)
-	result = -0.0;
-    }
+    else if (IS_NEGATIVE_ZERO(arg))
+      result = arg;
+    else
+      result = ::floor(arg + 0.5);
     break;
   case MathObjectImp::Sin:
     result = ::sin(arg);

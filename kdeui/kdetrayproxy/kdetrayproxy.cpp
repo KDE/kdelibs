@@ -17,32 +17,17 @@
  *
  */
 
-#if !defined(_POSIX_C_SOURCE)
-#define _POSIX_C_SOURCE 199309
-#elif _POSIX_C_SOURCE < 199309
-#undef _POSIX_C_SOURCE
-#define _POSIX_C_SOURCE 199309
-#endif
-
 #include "kdetrayproxy.h"
 
 #include <kapplication.h>
 #include <kdebug.h>
 #include <netwm.h>
 #include <X11/Xlib.h>
-#include <time.h>
-#include <assert.h>
-
-// XXX: FreeBSD 4.x has a buggy time.h and doesn't like the _POSIX_C_SOURCE hacks above.
-#if defined(__FreeBSD__)
-#include <osreldate.h>
-#if __FreeBSD_version < 500042
-#warning FreeBSD 4.x compatibility shims in effect
+#include <sys/select.h>
 #include <sys/time.h>
-// nanosleep is the protoype crunched by the _POSIX_C_SOURCE hack above
-int nanosleep(const struct timespec *, struct timespec *);
-#endif
-#endif
+#include <sys/types.h>
+#include <unistd.h>
+#include <assert.h>
 
 KDETrayProxy::KDETrayProxy()
     :   selection( makeSelectionAtom())
@@ -189,10 +174,10 @@ void KDETrayProxy::withdrawWindow( Window w )
             }
         if( withdrawn )
             return; // --->
-        struct timespec tm;
+        struct timeval tm;
         tm.tv_sec = 0;
-        tm.tv_nsec = 10 * 1000 * 1000; // 10ms
-        nanosleep( &tm, NULL );
+        tm.tv_usec = 10 * 1000; // 10ms
+        select(0, NULL, NULL, NULL, &tm);
         }
     }
 

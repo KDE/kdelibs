@@ -20,7 +20,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef HTML_FORMIMPL_H
 #define HTML_FORMIMPL_H
@@ -52,6 +51,10 @@ namespace khtml
     typedef QValueList<QCString> encodingList;
 }
 
+namespace KWallet {
+    class Wallet;
+}
+
 namespace DOM {
 
 class HTMLFormElement;
@@ -78,6 +81,7 @@ public:
 
     bool autoComplete() const { return m_autocomplete; }
     void doAutoFill();
+    void walletOpened(KWallet::Wallet *w);
 
     virtual void parseAttribute(AttributeImpl *attr);
 
@@ -100,6 +104,7 @@ public:
     friend class HTMLFormCollectionImpl;
 
 private:
+    void gatherWalletData();
     QPtrList<HTMLGenericFormElementImpl> formElements;
     QPtrList<HTMLImageElementImpl> imgElements;
     DOMString m_target;
@@ -114,6 +119,9 @@ private:
     bool m_doingsubmit : 1;
     bool m_inreset : 1;
     bool m_malformed : 1;
+    bool m_haveTextarea : 1; // for wallet storage
+    bool m_havePassword : 1; // for wallet storage
+    QMap<QString, QString> m_walletMap; // for wallet storage
 };
 
 // -------------------------------------------------------------------------
@@ -142,7 +150,7 @@ public:
     bool disabled() const { return m_disabled; }
     void setDisabled(bool _disabled);
 
-    virtual bool isSelectable() const;
+    virtual bool isFocusable() const;
     virtual bool isEnumeratable() const { return false; }
 
     bool readOnly() const { return m_readOnly; }
@@ -292,6 +300,8 @@ public:
     DOMString altText() const;
     void activate();
 
+    void setUnsubmittedFormChange(bool unsubmitted) { m_unsubmittedFormChange = unsubmitted; }
+
 protected:
 
     DOMString m_value;
@@ -320,7 +330,8 @@ public:
     virtual Id id() const;
     virtual void attach();
     virtual void defaultEventHandler(EventImpl *evt);
-    virtual bool isSelectable() const { return true; }
+    virtual bool isFocusable() const { return true; };
+    virtual bool isTabFocusable() const { return false; };
     NodeImpl* getFormElement();
 
  private:
@@ -530,14 +541,16 @@ public:
     void focus();
 
     virtual bool isEditable();
+    void setUnsubmittedFormChange(bool unsubmitted) { m_unsubmittedFormChange = unsubmitted; }
 
 protected:
     int m_rows;
     int m_cols;
     WrapMethod m_wrap;
     QString m_value;
-    bool m_dirtyvalue;
-    bool m_unsubmittedFormChange;
+    bool m_dirtyvalue: 1;
+    bool m_unsubmittedFormChange: 1;
+    bool m_initialized: 1;
 };
 
 // -------------------------------------------------------------------------

@@ -267,6 +267,13 @@ KAction *KMainWindow::toolBarMenuAction()
     return d->toolBarHandler->toolBarMenuAction();
 }
 
+
+void KMainWindow::setupToolbarMenuActions()
+{
+    if ( d->toolBarHandler )
+        d->toolBarHandler->setupActions();
+}
+
 void KMainWindow::parseGeometry(bool parsewidth)
 {
     assert ( !kapp->geometryArgument().isNull() );
@@ -458,7 +465,7 @@ void KMainWindow::setupGUI( int options, const QString & xmlfile ) {
     if( options & Save ){
         // setupGUI() is typically called in the constructor before show(),
         // so the default window size will be incorrect unless the application
-        // hard coded the size which they should try not to do (i.e. use 
+        // hard coded the size which they should try not to do (i.e. use
         // size hints).
         if(!isShown())
           adjustSize();
@@ -1183,6 +1190,19 @@ QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
        size += QSize(0, sb->sizeHint().height());
 
     return size;
+}
+
+#if KDE_IS_VERSION( 3, 9, 0 )
+#ifdef __GNUC__
+#warning Remove, should be in Qt
+#endif
+#endif
+void KMainWindow::setIcon( const QPixmap& p )
+{
+    QMainWindow::setIcon( p );
+    // Qt3 doesn't support _NET_WM_ICON, but KApplication::setTopWidget(), which
+    // is used by KMainWindow, sets it
+    KWin::setIcons( winId(), p, QPixmap());
 }
 
 // why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;

@@ -173,15 +173,25 @@ int main(int argc, char **argv)
     filter( "linuxtoday.com", "http://linuxtoday.com", KURIFilterData::NET_PROTOCOL );
     filter( "LINUXTODAY.COM", "http://linuxtoday.com", KURIFilterData::NET_PROTOCOL );
     filter( "kde.org", "http://kde.org", KURIFilterData::NET_PROTOCOL );
-    filter( "ftp.kde.org", "http://ftp.kde.org", KURIFilterData::NET_PROTOCOL );
+    filter( "ftp.kde.org", "ftp://ftp.kde.org", KURIFilterData::NET_PROTOCOL );
+    filter( "ftp.kde.org:21", "ftp://ftp.kde.org:21", KURIFilterData::NET_PROTOCOL );
     filter( "cr.yp.to", "http://cr.yp.to", KURIFilterData::NET_PROTOCOL );
     filter( "user@192.168.1.0:3128", "http://user@192.168.1.0:3128", KURIFilterData::NET_PROTOCOL );
     filter( "127.0.0.1", "http://127.0.0.1", KURIFilterData::NET_PROTOCOL );
+    filter( "127.0.0.1:3128", "http://127.0.0.1:3128", KURIFilterData::NET_PROTOCOL );
+    filter( "foo@bar.com", "mailto:foo@bar.com", KURIFilterData::NET_PROTOCOL );
+    filter( "www.123.foo", "http://www.123.foo", KURIFilterData::NET_PROTOCOL );
+    filter( "user@www.123.foo:3128", "http://user@www.123.foo:3128", KURIFilterData::NET_PROTOCOL );
     
-    // Exotic IPv4 address formats. Really exercises the shorturi filter.
+    // Exotic IPv4 address formats...
     filter( "127.1", "http://127.1", KURIFilterData::NET_PROTOCOL );
     filter( "127.0.1", "http://127.0.1", KURIFilterData::NET_PROTOCOL );
         
+    // Local domain filter territory - If you uncomment this test, make sure
+    // you adjust this based on the localhost entry in /etc/hosts.
+    // filter( "localhost:3128", "http://localhost.localdomain:3128", KURIFilterData::NET_PROTOCOL );
+    filter( "localhost", "http://localhost", KURIFilterData::NET_PROTOCOL );
+
     filter( "/", "/", KURIFilterData::LOCAL_DIR );
     filter( "/", "/", KURIFilterData::LOCAL_DIR, "kshorturifilter" );
     filter( "~/.kderc", QDir::homeDirPath().local8Bit()+"/.kderc", KURIFilterData::LOCAL_FILE, "kshorturifilter" );
@@ -192,6 +202,8 @@ int main(int argc, char **argv)
     
     // Should not be filtered at all. All valid protocols of this form will be ignored.
     filter( "smb:" , "smb:", KURIFilterData::UNKNOWN );
+    filter( "ftp:" , "ftp:", KURIFilterData::UNKNOWN );
+    filter( "http:" , "http:", KURIFilterData::UNKNOWN );
     
     /* 
      Automatic searching tests. NOTE: If the Default search engine is set to 'None',
@@ -202,18 +214,14 @@ int main(int argc, char **argv)
     filter( "FTP", 0 , KURIFilterData::NET_PROTOCOL );
 
     // If your default search engine is set to 'Google', you can uncomment the test below.
-   
-/*    
     filter( "gg:", "http://www.google.com/search?q=gg%3A&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
     filter( "KDE", "http://www.google.com/search?q=KDE&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
     filter( "FTP", "http://www.google.com/search?q=FTP&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );    
-*/    
-    // Should be handled by the local domain filter unless the user circumvents is
-    // by adding their own pattern match....
-    filter( "localhost", "http://localhost", KURIFilterData::NET_PROTOCOL );
     
-    // Typing 'ls' in konq's location bar should go to google for ls too. Unless
-    // Default search engine is set to 'None' in the Web Shortcuts dialog.
+
+    // Typing 'ls' or any other valid unix command in konq's location bar should result in 
+    // a search using the default search engine unless that is set to 'None' in which
+    // case you should end up with an error message.
     //filter( "ls", "http://www.google.com/search?q=ls&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
 
     // Executable tests - No IKWS in minicli
@@ -284,10 +292,6 @@ int main(int argc, char **argv)
     filter( "../", kdehome, KURIFilterData::LOCAL_DIR, "kshorturifilter", kdehome+"/share" );
     filter( "apps", kdehome+"/share/apps", KURIFilterData::LOCAL_DIR, "kshorturifilter", kdehome+"/share" );
     
-    // This test is against the specification of setAbsolutePath !!
-    // It says a _PATH_ must be used!
-    // kshorturifilter had code for this, but it broke, since it couldn't check that the resulting URL existed. Disabled.
-    //filter( "../../index.html", "http://www.kde.org/index.html", KURIFilterData::NET_PROTOCOL, "kshorturifilter", "http://www.kde.org/tes1/tes2/" );
     kdDebug() << "All tests done. Go home..." << endl;
     return 0;
 }

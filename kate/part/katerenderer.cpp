@@ -354,8 +354,7 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
 
       // Determine current syntax highlighting attribute
       // A bit legacy but doesn't need to change
-      KateAttribute* curAt = (!noAttribs && (*a) >= atLen) ? &at[0] : &at[*a];
-
+      KateAttribute* curAt = (noAttribs || ((*a) >= atLen)) ? &at[0] : &at[*a];
       // X position calculation. Incorrect for fonts with non-zero leftBearing() and rightBearing() results.
       // TODO: make internal charWidth() function, use QFontMetrics::charWidth().
       xPosAfter += curAt->width(*fs, curChar, m_tabWidth);
@@ -500,6 +499,12 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
 
           // Here's where the money is...
           paint.drawText(oldXPos-xStart, y, textLine->string(), oldCol, curCol+1-oldCol);
+
+          // Draw preedit's underline
+          if (isIMEdit) {
+            QRect r( oldXPos - xStart, 0, xPosAfter - oldXPos, fs->fontHeight );
+            paint.drawLine( r.bottomLeft(), r.bottomRight() );
+          }
 
           // Put pen color back
           if (isIMSel) paint.restore();

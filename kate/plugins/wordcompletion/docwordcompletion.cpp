@@ -57,7 +57,7 @@
 //END
 
 //BEGIN DocWordCompletionPlugin
-K_EXPORT_COMPONENT_FACTORY( ktexteditor_docwordcompletion, KGenericFactory<DocWordCompletionPlugin>( "ktexteditor_docwordcompletion" ) );
+K_EXPORT_COMPONENT_FACTORY( ktexteditor_docwordcompletion, KGenericFactory<DocWordCompletionPlugin>( "ktexteditor_docwordcompletion" ) )
 DocWordCompletionPlugin::DocWordCompletionPlugin( QObject *parent,
                             const char* name,
                             const QStringList& /*args*/ )
@@ -223,7 +223,7 @@ void DocWordCompletionPluginView::complete( bool fw )
   KTextEditor::EditInterface *ei = KTextEditor::editInterface( m_view->document() );
   // find the word we are typing
   uint cline, ccol;
-  viewCursorInterface( m_view )->cursorPosition( &cline, &ccol );
+  viewCursorInterface( m_view )->cursorPositionReal( &cline, &ccol );
   QString wrd = word();
   if ( wrd.isEmpty() ) return;
 

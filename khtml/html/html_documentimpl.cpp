@@ -57,6 +57,12 @@
 #include <stdlib.h>
 #include <qptrstack.h>
 
+// Turn off inlining to avoid warning with newer gcc.
+#undef __inline
+#define __inline
+#include "doctypes.cpp"
+#undef __inline
+
 template class QPtrStack<DOM::NodeImpl>;
 
 using namespace DOM;
@@ -67,7 +73,6 @@ HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, KHTML
   : DocumentImpl(_implementation, v)
 {
 //    kdDebug( 6090 ) << "HTMLDocumentImpl constructor this = " << this << endl;
-    bodyElement = 0;
     htmlElement = 0;
 
     m_doAutoFill = false;
@@ -91,38 +96,6 @@ DOMString HTMLDocumentImpl::referrer() const
     if ( view() )
         return view()->part()->pageReferrer();
     return DOMString();
-}
-
-DOMString HTMLDocumentImpl::domain() const
-{
-    if ( m_domain.isEmpty() ) // not set yet (we set it on demand to save time and space)
-        m_domain = URL().host(); // Initially set to the host
-    return m_domain;
-}
-
-void HTMLDocumentImpl::setDomain(const DOMString &newDomain)
-{
-    if ( m_domain.isEmpty() ) // not set yet (we set it on demand to save time and space)
-        m_domain = URL().host().lower(); // Initially set to the host
-
-    if ( m_domain.isEmpty() /*&& view() && view()->part()->openedByJS()*/ )
-        m_domain = newDomain.lower();
-
-    // Both NS and IE specify that changing the domain is only allowed when
-    // the new domain is a suffix of the old domain.
-    int oldLength = m_domain.length();
-    int newLength = newDomain.length();
-    if ( newLength < oldLength ) // e.g. newDomain=kde.org (7) and m_domain=www.kde.org (11)
-    {
-        DOMString test = m_domain.copy();
-        DOMString reference = newDomain.lower();
-        if ( test[oldLength - newLength - 1] == '.' ) // Check that it's a subdomain, not e.g. "de.org"
-        {
-            test.remove( 0, oldLength - newLength ); // now test is "kde.org" from m_domain
-            if ( test == reference )                 // and we check that it's the same thing as newDomain
-                m_domain = reference;
-        }
-    }
 }
 
 DOMString HTMLDocumentImpl::lastModified() const
@@ -272,19 +245,6 @@ HTMLMapElementImpl* HTMLDocumentImpl::getMap(const DOMString& _url)
         return 0;
 }
 
-static bool isTransitional(const QString &spec, int start)
-{
-    if((spec.find("TRANSITIONAL", start, false ) != -1 ) ||
-       (spec.find("LOOSE", start, false ) != -1 ) ||
-       (spec.find("FRAMESET", start, false ) != -1 ) ||
-       (spec.find("LATIN1", start, false ) != -1 ) ||
-       (spec.find("SYMBOLS", start, false ) != -1 ) ||
-       (spec.find("SPECIAL", start, false ) != -1 ) ) {
-        return true;
-    }
-    return false;
-}
-
 void HTMLDocumentImpl::close()
 {
     bool doload = !parsing() && m_tokenizer;
@@ -310,14 +270,8 @@ void HTMLDocumentImpl::close()
         // the first(IE)/last(Moz/Konq) registered onload on a <frame> and the
         // first(IE)/last(Moz/Konq) registered onload on a <frameset>.
 
-        // The body has the listener for <frame onload>
-        b->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
-
-        b = body(); // the onload code could have changed it (e.g. document.open/write/close)
-
-        // The document has the listener for <frameset onload>
-        if (b && b->id() == ID_FRAMESET)
-            getDocument()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
+        //kdDebug() << "dispatching LOAD_EVENT on document " << getDocument() << " " << (view()?view()->part()->name():0) << endl;
+        getDocument()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
 
         // don't update rendering if we're going to redirect anyway
         if ( view() && ( view()->part()->d->m_redirectURL.isNull() ||
@@ -327,111 +281,254 @@ void HTMLDocumentImpl::close()
 }
 
 
+const int PARSEMODE_HAVE_DOCTYPE	=	(1<<0);
+const int PARSEMODE_HAVE_PUBLIC_ID	=	(1<<1);
+const int PARSEMODE_HAVE_SYSTEM_ID	=	(1<<2);
+const int PARSEMODE_HAVE_INTERNAL	=	(1<<3);
+
+static int parseDocTypePart(const QString& buffer, int index)
+{
+    while (true) {
+        QChar ch = buffer[index];
+        if (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r')
+            ++index;
+        else if (ch == '-') {
+            int tmpIndex=index;
+            if (buffer[index+1] == '-' &&
+                ((tmpIndex=buffer.find("--", index+2)) != -1))
+                index = tmpIndex+2;
+            else
+                return index;
+        }
+        else
+            return index;
+    }
+}
+
+static bool containsString(const char* str, const QString& buffer, int offset)
+{
+    QString startString(str);
+    if (offset + startString.length() > buffer.length())
+        return false;
+
+    QString bufferString = buffer.mid(offset, startString.length()).lower();
+    QString lowerStart = startString.lower();
+
+    return bufferString.startsWith(lowerStart);
+}
+
+static bool parseDocTypeDeclaration(const QString& buffer,
+                                    int* resultFlags,
+                                    QString& publicID,
+                                    QString& systemID)
+{
+    bool haveDocType = false;
+    *resultFlags = 0;
+
+    // Skip through any comments and processing instructions.
+    int index = 0;
+    do {
+        index = buffer.find('<', index);
+        if (index == -1) break;
+        QChar nextChar = buffer[index+1];
+        if (nextChar == '!') {
+            if (containsString("doctype", buffer, index+2)) {
+                haveDocType = true;
+                index += 9; // Skip "<!DOCTYPE"
+                break;
+            }
+            index = parseDocTypePart(buffer,index);
+            index = buffer.find('>', index);
+        }
+        else if (nextChar == '?')
+            index = buffer.find('>', index);
+        else
+            break;
+    } while (index != -1);
+
+    if (!haveDocType)
+        return true;
+    *resultFlags |= PARSEMODE_HAVE_DOCTYPE;
+
+    index = parseDocTypePart(buffer, index);
+    if (!containsString("html", buffer, index))
+        return false;
+
+    index = parseDocTypePart(buffer, index+4);
+    bool hasPublic = containsString("public", buffer, index);
+    if (hasPublic) {
+        index = parseDocTypePart(buffer, index+6);
+
+        // We've read <!DOCTYPE HTML PUBLIC (not case sensitive).
+        // Now we find the beginning and end of the public identifers
+        // and system identifiers (assuming they're even present).
+        QChar theChar = buffer[index];
+        if (theChar != '\"' && theChar != '\'')
+            return false;
+
+        // |start| is the first character (after the quote) and |end|
+        // is the final quote, so there are |end|-|start| characters.
+        int publicIDStart = index+1;
+        int publicIDEnd = buffer.find(theChar, publicIDStart);
+        if (publicIDEnd == -1)
+            return false;
+        index = parseDocTypePart(buffer, publicIDEnd+1);
+        QChar next = buffer[index];
+        if (next == '>') {
+            // Public identifier present, but no system identifier.
+            // Do nothing.  Note that this is the most common
+            // case.
+        }
+        else if (next == '\"' || next == '\'') {
+            // We have a system identifier.
+            *resultFlags |= PARSEMODE_HAVE_SYSTEM_ID;
+            int systemIDStart = index+1;
+            int systemIDEnd = buffer.find(next, systemIDStart);
+            if (systemIDEnd == -1)
+                return false;
+            systemID = buffer.mid(systemIDStart, systemIDEnd - systemIDStart);
+        }
+        else if (next == '[') {
+            // We found an internal subset.
+            *resultFlags |= PARSEMODE_HAVE_INTERNAL;
+        }
+        else
+            return false; // Something's wrong.
+
+        // We need to trim whitespace off the public identifier.
+        publicID = buffer.mid(publicIDStart, publicIDEnd - publicIDStart);
+        publicID = publicID.stripWhiteSpace();
+        *resultFlags |= PARSEMODE_HAVE_PUBLIC_ID;
+    } else {
+        if (containsString("system", buffer, index)) {
+            // Doctype has a system ID but no public ID
+            *resultFlags |= PARSEMODE_HAVE_SYSTEM_ID;
+            index = parseDocTypePart(buffer, index+6);
+            QChar next = buffer[index];
+            if (next != '\"' && next != '\'')
+                return false;
+            int systemIDStart = index+1;
+            int systemIDEnd = buffer.find(next, systemIDStart);
+            if (systemIDEnd == -1)
+                return false;
+            systemID = buffer.mid(systemIDStart, systemIDEnd - systemIDStart);
+            index = parseDocTypePart(buffer, systemIDEnd+1);
+        }
+
+        QChar nextChar = buffer[index];
+        if (nextChar == '[')
+            *resultFlags |= PARSEMODE_HAVE_INTERNAL;
+        else if (nextChar != '>')
+            return false;
+    }
+
+    return true;
+}
+
 void HTMLDocumentImpl::determineParseMode( const QString &str )
 {
     //kdDebug() << "DocumentImpl::determineParseMode str=" << str<< endl;
-    // determines the parse mode for HTML
-    // quite some hints here are inspired by the mozilla code.
     int oldPMode = pMode;
 
-    // default parsing mode is Loose
-    pMode = Compat;
-    hMode = Html3;
+    // This code more or less mimics Mozilla's implementation (specifically the
+    // doctype parsing implemented by David Baron in Mozilla's nsParser.cpp).
+    //
+    // There are three possible parse modes:
+    // COMPAT - quirks mode emulates WinIE
+    // and NS4.  CSS parsing is also relaxed in this mode, e.g., unit types can
+    // be omitted from numbers.
+    // ALMOST STRICT - This mode is identical to strict mode
+    // except for its treatment of line-height in the inline box model.  For
+    // now (until the inline box model is re-written), this mode is identical
+    // to STANDARDS mode.
+    // STRICT - no quirks apply.  Web pages will obey the specifications to
+    // the letter.
 
-    ParseMode systemId = Unknown;
-    ParseMode publicId = Unknown;
+    QString systemID, publicID;
+    int resultFlags = 0;
+    if (parseDocTypeDeclaration(str, &resultFlags, publicID, systemID)) {
+        if (resultFlags & PARSEMODE_HAVE_DOCTYPE) {
+            m_doctype->setName("HTML");
+            m_doctype->setPublicId(publicID);
+            m_doctype->setSystemId(systemID);
+        }
+        if (!(resultFlags & PARSEMODE_HAVE_DOCTYPE)) {
+            // No doctype found at all.  Default to quirks mode and Html4.
+            pMode = Compat;
+            hMode = Html4;
+        }
+        else if ((resultFlags & PARSEMODE_HAVE_INTERNAL) ||
+                 !(resultFlags & PARSEMODE_HAVE_PUBLIC_ID)) {
+            // Internal subsets always denote full standards, as does
+            // a doctype without a public ID.
+            pMode = Strict;
+            hMode = Html4;
+        }
+        else {
+            // We have to check a list of public IDs to see what we
+            // should do.
+            QString lowerPubID = publicID.lower();
+            const char* pubIDStr = lowerPubID.latin1();
 
-    int pos = 0;
-    int doctype = str.find("!doctype", 0, false);
-    if( doctype > 2 ) {
-        pos = doctype - 2;
-        // Store doctype name
-        int start = doctype + 9;
-        while ( start < (int)str.length() && str[start].isSpace() )
-            start++;
-        int espace = str.find(' ',start);
-        QString name = str.mid(start,espace-start);
-        //kdDebug() << "DocumentImpl::determineParseMode setName: " << name << endl;
-        m_doctype->setName( name );
-    }
+            // Look up the entry in our gperf-generated table.
+            const PubIDInfo* doctypeEntry = findDoctypeEntry(pubIDStr, publicID.length());
+            if (!doctypeEntry) {
+                // The DOCTYPE is not in the list.  Assume strict mode.
+                pMode = Strict;
+                hMode = Html4;
+                return;
+            }
 
-    // get the first tag (or the doctype tag)
-    int start = str.find('<', pos);
-    int stop = str.find('>', pos);
-    if( start > -1 && stop > start ) {
-        QString spec = str.mid( start + 1, stop - start - 1 );
-        //kdDebug() << "DocumentImpl::determineParseMode dtd=" << spec<< endl;
-        start = 0;
-        int quote = -1;
-        if( doctype != -1 ) {
-            while( (quote = spec.find( "\"", start )) != -1 ) {
-                int quote2 = spec.find( "\"", quote+1 );
-                if(quote2 < 0) quote2 = spec.length();
-                QString val = spec.mid( quote+1, quote2 - quote-1 );
-                //kdDebug() << "DocumentImpl::determineParseMode val = " << val << endl;
-                // find system id
-                pos = val.find("http://www.w3.org/tr/", 0, false);
-                if ( pos != -1 ) {
-                    // loose or strict dtd?
-                    if ( val.find("strict.dtd", pos, false) != -1 )
-                        systemId = Strict;
-                    else if (isTransitional(val, pos))
-                        systemId = Transitional;
-                }
-
-                // find public id
-                pos = val.find("//dtd", 0, false );
-                if ( pos != -1 ) {
-                    if( val.find( "xhtml", pos+6, false ) != -1 ) {
-                        hMode = XHtml;
-                        publicId = isTransitional(val, pos) ? Transitional : Strict;
-                    } else if ( val.find( "15445:1999", pos+6 ) != -1 ) {
-                        hMode = Html4;
-                        publicId = Strict;
-                    } else {
-                        int tagPos = val.find( "html", pos+6, false );
-                        if( tagPos == -1 )
-                            tagPos = val.find( "hypertext markup", pos+6, false );
-                        if ( tagPos != -1 ) {
-                            tagPos = val.find(QRegExp("[0-9]"), tagPos );
-                            int version = val.mid( tagPos, 1 ).toInt();
-                            if( version > 3 ) {
-                                hMode = Html4;
-                                publicId = isTransitional( val, tagPos ) ? Transitional : Strict;
-                            }
-                        }
-                    }
-                }
-                start = quote2 + 1;
+            switch ((resultFlags & PARSEMODE_HAVE_SYSTEM_ID) ?
+                    doctypeEntry->mode_if_sysid :
+                    doctypeEntry->mode_if_no_sysid)
+            {
+                case PubIDInfo::eQuirks3:
+                    pMode = Compat;
+                    hMode = Html3;
+                    break;
+                case PubIDInfo::eQuirks:
+                    pMode = Compat;
+                    hMode = Html4;
+                    break;
+                case PubIDInfo::eAlmostStandards:
+                    pMode = Transitional;
+                    hMode = Html4;
+                    break;
+                 default:
+                    assert(false);
             }
         }
-
-        if( systemId && systemId == publicId ) { // not unknown and both agree
-            pMode = publicId;
-        }
-        else if ( systemId == Unknown )
-            pMode = hMode == Html3 ? Compat : publicId;
-        else if ( ( publicId == Transitional && systemId == Strict ) ||
-                  ( publicId == Strict && systemId == Transitional ) ) {
-            pMode = hMode == Html3 ? Compat : Transitional;
-        } else {
-            pMode = Compat;
-        }
-
-        if ( hMode == XHtml )
-            pMode = publicId;
     }
-    // kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
+    else {
+        // Malformed doctype implies quirks mode.
+        pMode = Compat;
+        hMode = Html3;
+    }
+
+    // This needs to be done last, see tests/parser/compatmode_xhtml_mixed.html
+    if ( hMode == Html4 && !m_htmlRequested ) {
+        // this part is still debatable and possibly UA dependent
+        hMode = XHtml;
+        pMode = Transitional;
+    }
+
+    m_styleSelector->strictParsing = !inCompatMode();
+
+    // kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicID << " systemId = " << systemID << endl;
     // kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << hMode<< endl;
     if( pMode == Strict )
-        kdDebug(6020) << " using strict parseMode" << endl;
+        kdDebug(6030) << " using strict parseMode" << endl;
     else if (pMode == Compat )
-        kdDebug(6020) << " using compatibility parseMode" << endl;
+        kdDebug(6030) << " using compatibility parseMode" << endl;
     else
-        kdDebug(6020) << " using transitional parseMode" << endl;
+        kdDebug(6030) << " using transitional parseMode" << endl;
 
+    // not sure this is needed
     if ( pMode != oldPMode && styleSelector() )
         recalcStyleSelector();
+
 }
+
 
 #include "html_documentimpl.moc"

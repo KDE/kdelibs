@@ -1,3 +1,413 @@
+2004-11-09  Germain Garand  <germain@ebooksfrance.org>
+
+        fix globeandmail.com famlily of crashes (#65715)
+
+        * rendering/render_box.cpp (createAnonymousBlock): moved from RenderFlow
+        (restructureParentFlow): check soundness of parent's flow structure with regard to
+        the child's new display. Adapted from WebCore.
+        (setStyle): check parent if floats or positioned objects become in-flow
+        and thus affects flow structure.
+
+        * rendering/render_flow.cpp (createAnonymousBlock): moved.
+
+        * rendering/render_inline.cpp (splitInlines): use addChildToFlow
+        rather than appendChildNode
+
+        * rendering/render_line.cpp: display COMPACT cleanups
+
+        * rendering/render_object.cpp: ditto.
+
+2004-11-06  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Implement CSS3 property box-sizing to match MacIE, Opera and Mozilla
+
+        * css/css*.in: Add new property and primitive values
+        * css/cssparser.cpp: Detect content-box and border-box as primitives
+        * css/cssstyleselector.cpp: Parse box-sizing
+        * render/render_style.h: Add box-sizing to non-inherited values
+        * render/render_box.cpp: Consult box-sizing before adding padding and
+        border to width and height
+
+2004-11-05  Germain Garand  <germain@ebooksfrance.org>
+
+        * khtml_part.cpp (closeURL/slotData/restoreState): avoid triggering
+        full repaints of the view before the first layout is done.
+
+2004-11-05  Germain Garand  <germain@ebooksfrance.com>
+
+        * css/cssstyleselector.cpp (computeFontSizes): add compensated font scale
+        from Todd Fahrner's "Toward a standard font size interval system"
+        article for 12ppem and below (suggested by Bert Bos <bert@w3.org>)
+
+2004-11-04  Stephan Kulow  <coolo@kde.org>
+
+        * rendering/bidi.cpp (bidiReorderLine): applying patch by Mitz Pettel
+        to fix neutral types at beginning of context
+
+2004-11-03  Germain Garand  <germain@ebooksfrance.com>
+
+        * khtmlview.cpp (slotScrollBarMoved): make sure we are layouted before
+        scrolling if we are still loading (#51473)
+
+2004-11-02  Stephan Kulow  <coolo@kde.org>
+
+        * rendering/render_replaced.cpp (setStyle): set hidden widgets to invisible
+
+        * xml/dom_docimpl.cpp (recalcStyleSelector): avoid invalid casts on XML documents
+
+2004-11-02  Germain Garand  <germain@ebooksfrance.com>
+
+       * css/cssstyleselector.cpp (adjustRenderStyle):
+       ignore relative positioning on table sections. CSS 2.1 does not
+       define that, but it is a consensus amongst all major browsers.
+
+2004-11-01  Sandro Giessl <sandro@giessl.com>
+
+        * rendering/render_replaced.cpp (copyWidget): don't fill the
+	background of QFrames. they paint their own background now
+
+2004-10-30  Stephan Kulow  <coolo@kde.org>
+
+        * html/html_formimpl.cpp (parseAttribute): ignore height element
+        for input elements that are not image
+
+2004-10-28  Stephan Kulow  <coolo@kde.org>
+
+        * html/html_documentimpl.cpp (determineParseMode): adding a fixed list of
+        doctypes to enable quirks mode on (derived from Webcore, but majorly revised)
+        * enable strict CSS parsing also for transitional doctypes
+
+2004-10-27  Germain Garand  <germain@ebooksfrance.com>
+
+        make font-sizes CSS2.1 compliant.
+
+        * css/cssstyleselector.cpp (computeFontSizes): use standard ratios
+        from CSS 2.1 15.7.
+        (applyRule): don't apply zoom factor to ems/exs relative values (#91228).
+
+        * css/html4.css: Hx elements - margin ratios are now 1.1/corresponding ratio.
+        Switch to absolute sizes from CSS 2.1 15.7
+
+2004-10-27  Stephan Kulow  <coolo@kde.org>
+
+        * css/cssstyleselector.cpp (checkOneSelector): match exact matches case sensitive
+        only in XHTML - HTML attributes are all case insensitive
+
+2004-10-26  Stephan Kulow  <coolo@kde.org>
+
+        * html/html_elementimpl.cpp (addCSSProperty): don't add all css properties in
+        lower case but select those those where it matters
+
+2004-10-26  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * rendering/bidi.{h,cpp}: Merge bidi-changes from WebCore
+
+2004-10-26  David Faure  <faure@kde.org>
+
+        * khtml_part.cpp (urlSelected): Only call recursiveFrameRequest if target is
+        different from _self, _top, _blank and _parent. See tests/frames/target/*.
+
+2004-10-25  David Faure  <faure@kde.org>
+
+        * khtml_part.cpp (processObjectRequest): connect to completed(bool) for <embed>
+        too, to avoid a never-ending-spinning-wheel on the following testcase
+        <META HTTP-EQUIV="Refresh" content="10;URL=www.kde.org"><EMBED>
+
+2004-10-25  Stephan Kulow  <coolo@kde.org>
+
+        * html/html_elementimpl.cpp (addCSSProperty): add css properties parsed from
+        attributes as lower case
+
+2004-10-25  George Staikos  <staikos@kde.org>
+
+        * rendering/render_image.cpp: Pass through the CachedObject so we can
+        use the suggested filename possibly provided by the HTTP headers.
+
+	* khtml_ext.cpp: Make use of the suggested filename for images.
+
+2004-10-24  David Faure  <faure@kde.org>
+
+        * html/html_formimpl.cpp (value): Fixed m_value vs ATTR_VALUE problem
+        which didn't allow sending mail on gmail.google.com. Testcases:
+        forms/form_setattribute.html, mozilla/dom/dom-html/{hfor009.html,hinp017.html}
+
+2004-10-22  Stephan Kulow  <coolo@kde.org>
+
+        * ecma/kjs_window.cpp (tryCall): merging handling of event handlers
+
+        * css/cssparser.cpp (parseValue): implementing CSS 2.1 compliant parsing
+        of background-position (#91572)
+
+2004-10-21  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Implement limited DHTML capabilities to the layer implementation
+
+        * html/html_miscimpl.{h,cpp}: Extract collection of all layers
+        * dom/html_block.{h,cpp}: Add layer DOM
+        * dom/html_document.{h,cpp}: Add .layers to document DOM
+        * ecma/kjs_html.{h,cpp}: Add layer DHTML and allow layers to be found by ID
+        * ecma/kjs_window.cpp: Allow layers to be found by ID
+
+2004-10-19  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * rendering/render_box.{h,cpp}: Merge min,max-height fixes
+
+2004-10-19  Germain Garand  <germain@ebooksfrance.org>
+
+        finish merge of static position for positioned objects
+
+        * css/cssstyleselector.cpp (adjustRenderStyle): remember our original display
+        * rendering/bidi.cpp (appendRun): include positioned objects with static X/Y,
+        now that we use those.
+        (findNextLineBreak): adjust static position
+
+        * rendering/render_block.cpp (layoutBlockChildren): ditto.
+
+        * rendering/render_box.cpp (containingBlockWidth): use usesLineWidth
+        (position): activate static position logic
+        (calcAbsoluteHorizontal): replace static position calculation
+        (calcAbsoluteVertical): ditto.
+
+        * rendering/render_object.cpp (removeChild): fix typo
+        (usesLineWidth): merge usesLineWidth from WebCore
+
+        * rendering/render_style.h (NonInheritedFlags::): originalDisplay member
+        (setBitDefaults): initialize the above
+        (originalDisplay/setOriginalDisplay): accessors
+        (isDisplayReplacedType/isDisplayInlineType/isOriginalDisplayInlineType):
+        helpers
+
+2004-10-18  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * rendering/render_table.cpp: Merge layout fixes from Webcore
+
+2004-10-17  Stephan Kulow  <coolo@kde.org>
+
+        * ecma/kjs_dom.cpp: adding patch by Richard Lärkäng to support IE
+        extension insertAdjacentHTML (#33968)
+
+2004-10-16  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * html/html_formimpl.cpp: Escape otherwise unencodable characters.
+        Matches the behavior of Gecko.
+
+2004-10-15  Stephan Kulow  <coolo@kde.org>
+
+        * rendering/render_form.cpp (updateFromElement): don't set assume <select>
+        got items when we calculate a height for items (#87466)
+
+        * css/html4.css: changing default horizontal margins for H1-H6 from
+        auto to 0 (#91327)
+
+2004-10-15  Germain Garand  <germain@ebooksfrance.org>
+
+        bring z-order to QScrollView
+
+        * html/html_formimpl.cpp (defaultEventHandler): propagate events to
+        QScrollView
+
+        * khtmlview.{cpp,h}: QScrollview needs fast repaints. Fix
+        background color of QFrames.
+
+        * rendering/render_form.cpp (createListBox/TextAreaWidget):
+        make those widgets z-ordered as well.
+
+        * rendering/render_replaced.cpp (paintWidget): optimize painting by
+        avoiding unnecessary background repaints and by using a shared
+        paint buffer.
+
+2004-10-15  Germain Garand  <germain@ebooksfrance.org>
+
+        display: compact fixes.
+
+        * rendering/bidi.cpp: remove checks for display: compact,
+        not needed anymore.
+
+        * rendering/render_block.cpp (layoutBlockChildren):
+        simpler implementation for compact display: do not insert the
+        compact child within the next block anymore.
+        Solves lot of problems with host blocks having non-inline children.
+
+        * rendering/render_object.{cpp,h} (getVerticalPosition): add
+        ability to compute vertical position with respect to other
+        RenderObjects than parent.
+
+2004-10-14  David Faure  <faure@kde.org>
+
+        * html/htmltokenizer.cpp (parseTag): Merged patch by John Sullivan (safari)
+        to refuse skip more <script> tags depending on the value of type and language.
+
+        * html/html_documentimpl.cpp (determineParseMode):
+        When the document is loaded as text/html, even if xhtml doctype, activate case-insensitive
+        ("htmlCompat") lookup of tags and attributes (but not in CSS parser). (#86446)
+
+2004-10-14  Allan Sandfeld Jensen <kde@carewolf.com>
+        * rendering/*.*: WebCore merge/port of layouted->needsLayout
+
+2004-10-11  David Faure  <faure@kde.org>
+
+        * xml/dom_nodeimpl.cpp (dispatchGenericEvent): Fixed stopPropagation
+        when called from the target node itself (#90750).
+
+2004-10-11  Harri Porten  <porten@kde.org>
+
+	* ecma/*.cpp: return an empty string (instead of null) when
+	querying unset string properties
+
+	* ecma/kjs_html.cpp: use full url for Image.src.
+
+2004-10-08  David Faure  <faure@kde.org>
+
+        * ecma/kjs_html.cpp (KJS::HTMLCollection::tryGet):
+        return Undefined instead of Null for out-of-range indices.
+
+2004-10-07  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/render_block.cpp
+        (updateFirstLetter): move update of first-letter from addChildToFlow to
+        setStyle/close. Better drilling logic. Use RenderTextFragment to
+        correctly handle text-transform on first-letter(#76078).
+        (addChildToFlow): ditto. fix display: block on pseudo-elements (#90917)
+        (layoutBlockChildren): only clear if floats actually changed our
+        height.
+        * rendering/render_object.h (node): accessor to m_node
+        * rendering/render_text.{cpp,h}: merge RenderTextFragment class
+        * xml/dom_nodeimpl.h (setRenderer): accessor
+
+2004-10-07  Allan Sandfeld Jensen <kde@carewolf.com>
+        * rendering/render_style.h:
+        WebCore merge of paged media attributes (#68930).
+        * rendering/render_block.cpp (paintObject):
+        Break on page-break-before and -after.
+        * rendering/render_canvas.{h,cpp}:
+        Merge bestTruncatedAt from WebCore.
+        * khtmlview.cpp (print):
+        Use bestTruncatedAt for detect truncated pages.
+
+2004-10-07  David Faure  <faure@kde.org>
+
+        * xml/dom_nodeimpl.cpp (dispatchWindowEvent): Emit load event for frames
+        from there, to avoid bubbling (safari merge)
+
+2004-10-05  Rob Buis   <buis@kde.org>
+	* render/render_form.{cpp,h}:
+	Implemented onchange event generating for checkbox and radio buttons (fixes #51765).
+
+2004-10-05  David Faure  <faure@kde.org>
+
+        * html/html_baseimpl.cpp (parseAttribute):
+        Set event listener on frame element itself (fixes #72440)
+        * xml/dom_docimpl.cpp (ownerElement): Safari merge.
+        * html/html_documentimpl.cpp (close):
+        Emit onload event for frames (famous gmail bug).
+
+        * ecma/kjs_html.cpp (getValueProperty):
+        Don't return null when innerText or innerHTML is empty.
+
+2004-10-04  David Faure  <faure@kde.org>
+
+        * khtml_part.cpp (processObjectRequest):
+        Fixed showing of iframe hidden with display=none (#84332).
+
+2004-09-16  Leo Savernik  <l.savernik@aon.at>
+
+ * rendering/render_inline.{cpp,h} (paintOutline): removed.
+ (paintOutlinePath): Paints an outline by following a path consisting of
+ rectangular line segments.
+ (appendIfNew): Append point if not contained at end.
+ (reduceSpike): Reduce spikes.
+ (reduceSegmentSeparators): Redoce segment separators.
+ (appendPoint): Appends point with reductions.
+ (collectHorizontalBoxCoordinates): Determines points for top-/bottommost line box.
+ (lineBoxesDisjoint): Checks whether two line boxes don't share a common x-range.
+ (collectVerticalBoxCoordinates): Determines points for left/right sides of line boxes.
+ (linkBeginToEnd): Links the last point to the first one, reducing even more.
+ (paintOutlines): Uses new painting outline algorithm.
+ (kSwap): Swaps two variables (candidate for misc?)
+ (bsOrientation): returns whether border side is horizontal/vertical.
+ (newBorderSide): Determines new border side.
+ (paintOutlineSegment): Paints a straight outline segment.
+
+2004-09-11  David Faure  <faure@kde.org>
+
+        * khtml_part.cpp (defaultEncoding, encoding, createDecoder):
+        Make default charset latin1 over HTTP, keep default to locale on other protocols.
+
+2004-09-02  Leo Savernik  <l.savernik@aon.at>
+
+ * html_formimpl.{cpp,h} (HTMLTextAreaElementImpl::value):
+        Only take text from RenderTextArea when it has been fully initialized.
+        Mark it fully initialized when RenderTextArea has been initialized
+        from the DOM.
+        (HTMLTextAreaElementImpl::setValue): Mark element as initialized after
+        setting.
+        * render_form.cpp (RenderTextArea::setStyle):
+        Block signals on call to QTextEdit::setAlignment. Otherwise, a bogus
+        textChanged signal is emitted.
+
+2004-08-27  Germain Garand  <germain@ebooksfrance.org>
+
+        scope: - more accurate completed() signal.
+               - anchor jumps (#57360)
+
+        * khtml_part.cpp (openURL): when restoring a previous scroll
+        position on reload, avoid jumping to anchors.
+        (gotoAnchor): keep jumping at least while we are parsing.
+        (gotoAnchor): "top" and "" anchors mean top of document.
+
+        (checkCompleted): entrust the view to emit completed on our behalf
+        after any pending layout/repaint is done.
+
+        * khtmlview.{cpp,h}: ditto
+
+        * xml/dom_nodeimpl.cpp (getUpperLeftCorner/getLowerRightCorner):
+        use inlineYPos for text objects (#57360 c.#17).
+
+2004-08-27  Leo Savernik  <l.savernik@aon.at>
+
+	* html/html_tableimpl.cpp (HTMLTableCellElementImpl::attach):
+	Fixed explicit setting of border to 0 width.
+
+2004-08-24  Leo Savernik  <l.savernik@aon.at>
+
+	* ecma/kjs_html.{cpp,h} (HTMLDocument):
+	Added Javascript-support for HTMLDocument.compatMode.
+
+2004-08-23  Leo Savernik  <l.savernik@aon.at>
+
+	* rendering/render_layer.{cpp,h} (Marquee): Added a stop method for
+	the ECMAScript invokation.
+	Fixed starting and stopping and suspending by properly discriminating
+	against them.
+
+2004-08-19  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/render_body.cpp (setStyle): only disallow fixed positioning
+        on body, not relative/absolute (#77048, #76982).
+
+        * rendering/render_box.cpp (paintBackgroundExtended): make sure backgrounds paint
+        in the border box and not just in the padding box (WC merge - meyerweb.com/unsorted/bg-position.html).
+
+2004-08-18  Leo Savernik  <l.savernik@aon.at>
+
+	* rendering/render_block.cpp (layoutBlock, layoutBlockChildren,
+	layoutPositionedObject): Ensure that m_overflowWidth/m_overflowHeight
+	get updated properly to include relatively positioned
+	elements, but to exclude the overflow-area of clipped children.
+
+	* rendering/render_box.cpp (repaint): Removed superfluous null ptr check.
+	Use effectiveWidth/Height instead of overflowWidth/Height.
+
+	* rendering/render_canvas.cpp (docHeight): Fixed superfluous vertical
+	scrollbars on clipped children.
+	(docWidth): Fixed superfluous horizontal scrollbars on clipped children.
+
+	* rendering/render_flow.cpp (repaint):
+	Use effectiveWidth/Height instead of overflowWidth/Height.
+
+	* rendering/render_object.h: Added effectiveWidth/Height.
+	Made hasClip and hasOverflowClip const.
+
 2004-08-05  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/render_block.cpp (layoutBlockChildren): when positionning floats,
@@ -5,7 +415,7 @@
         self-collapsing blocks in between (#85150).
         (calcMinMaxWidth): better calculation merged from WebCore.  Fixes a few testcases.
 
-        * rendering/render_object.h (collapsedMarginTop/Bottom): don't avoid max(Top|Bottom)Margin, 
+        * rendering/render_object.h (collapsedMarginTop/Bottom): don't avoid max(Top|Bottom)Margin,
         they are virtuals reimplemented for RenderBlock.
 
         * rendering/render_object.cpp (createObject): do not set the style before
@@ -49,15 +459,15 @@
 
         * css/parser.y: catching imports that come between rules.
         They have to be ignored (css1/test11.htm)
-	
+
 2004-07-14 Jean-Baptiste Mardelle <bj@altern.org>
-	* khtmlview.{cpp,h}: Accesskeys now activated when pressing & releasing 
+	* khtmlview.{cpp,h}: Accesskeys now activated when pressing & releasing
 	the crtl key (#83053).
 
 2004-07-12 Jean-Baptiste Mardelle <bj@altern.org>
 	* html/html_formimpl.{h,cpp}: Make form labels clickable (#59489)
 	* khtmlview.cpp (focusNodeWithAccessKey): Make accesskeys work for labels
-	
+
 2004-07-12 Germain Garand <germain@ebooksfrance.org>
 
 	* ecma/kjs_navigator.{h,cpp} (getValueProperty):
@@ -66,8 +476,8 @@
 
 2004-07-10 Germain Garand <germain@ebooksfrance.org>
 
-        * rendering/render_layer.cpp (calculateClipRects): 
-        absolutely positioned objects must update the overflowClipRect 
+        * rendering/render_layer.cpp (calculateClipRects):
+        absolutely positioned objects must update the overflowClipRect
         passed to relatively positioned child layers to match the
         posClipRect in effect (#67665/#72994).
 
@@ -82,12 +492,12 @@
 
 2004-06-26  Germain Garand  <germain@ebooksfrance.org>
 
-        * css/html4.css: 
+        * css/html4.css:
         - do not set vertical-align on the table: it breaks inline-table's
         default (baseline). cf.webcore/fast/inline-block/001.html
         - default all of tbody/tfoot/thead to 'vertical-align: middle'
         as per specification.
-        
+
         * rendering/render_object.cpp:
         (getVerticalPosition): fix inverted logic. cf.unsorted/74399.html
         (lineHeight/baselinePosition): inline-blocks behaves like replaced elements
@@ -97,18 +507,18 @@
         inline-tables need positioning. cf.webcore/fast/inline-block/001.html
 
         * rendering/render_box.cpp (calcAbsoluteHorizontal): subtract p/b width
-        when shrinking-to-fit, otherwise it gets accounted for twice. 
+        when shrinking-to-fit, otherwise it gets accounted for twice.
 
 2004-06-22  Zack Rusin  <zack@kde.org>
 
         * ecma/kjs_events.cpp (JSLazyEventListener): Adding a destructor
-        which is now needed since Niko's eventlistener changes make 
-        jseventlistener destructor not remove the listener from 
+        which is now needed since Niko's eventlistener changes make
+        jseventlistener destructor not remove the listener from
         jsEventListeners
 
 2004-06-22  Germain Garand  <germain@ebooksfrance.org>
 
-        Scope: Inline-blocks inlining. Merge Webcore improvements for 
+        Scope: Inline-blocks inlining. Merge Webcore improvements for
         Fieldset/Legend
 
         * css/html4.css: Legend => display: block.
@@ -136,22 +546,22 @@
 
         Scope: avoid leaking placeholder InlineBoxes. Cleanups.
 
-        * rendering/bidi.cpp (Bidinext): simplified logic. Do not return each 
+        * rendering/bidi.cpp (Bidinext): simplified logic. Do not return each
         InlineFlow twice.
         (layoutInlineChildren): clear InlineBoxes on relayout.
 
-        * rendering/render_object.{cpp,h}: 
+        * rendering/render_object.{cpp,h}:
         (deleteInlineBoxes): new virtual method.
 
         * rendering/render_box.{cpp,h}: added m_placeHolderBox member.
-        (createInlineBox/deleteInlineBoxes): reimplemented. 
+        (createInlineBox/deleteInlineBoxes): reimplemented.
 
         * rendering/render_flow.{cpp,h}:
-        (createInlineBox/deleteInlineBoxes): ditto. 
+        (createInlineBox/deleteInlineBoxes): ditto.
 
         * rendering/render_replaced.cpp (detach): call deleteLineBoxes
 
-        * rendering/render_text.{cpp,h} (deleteInlineBoxes): reimplemented, replacing 
+        * rendering/render_text.{cpp,h} (deleteInlineBoxes): reimplemented, replacing
         deleteTextBoxes
         (~RenderText): no need to clear lineboxes twice.
 
@@ -223,7 +633,7 @@
         * dom/html_elementimpl.h (innerHTML): implement in terms of
         toString,
         * xml/dom_nodeimpl.{h,cpp}: remove the toHTML and recursive_toHTML
-        methods, 
+        methods,
 
 2004-06-09  Zack Rusin  <zack@kde.org>
 
@@ -234,7 +644,7 @@
         the DOM tree back to a string
 
 2004-06-09  Zack Rusin  <zack@kde.org>
-        
+
         * xml/xml_tokenizer.{h,cpp}: adding bool isWaitingForScripts()
         const method to tokenizer interface which should return true if
         the tokenizer is waiting for scripts to finish. Adding the method
@@ -243,10 +653,10 @@
         method,
         * xml/dom_docimpl.cpp (close): On an explicit document.close()
         don't destroy the  tokenizer if it's still waiting on external
-        scripts  
-        
+        scripts
+
 2004-06-09  Zack Rusin  <zack@kde.org>
-        
+
         * ecma/kjs_events.{h,cpp}: made the listener in jseventlistener an
         object instead of a value and switch its function accordingly,
         adding JSLazyEventListener which delays evaluation of event
@@ -258,9 +668,9 @@
         listener implementation is in place (listener is valid),
         * ecma/kjs_proxy.cpp (createHTMLEventHandler): switched to use
         getJSLazyEventListener,
-        
+
 2004-06-08  Zack Rusin  <zack@kde.org>
-        
+
         * html/htmltokenizer.cpp (parseEntity): Fix to make 8-character
         hexadecimal entities work in khtml from Darin Adler. Testcase at
         http://www.alanwood.net/unicode/deseret.html
@@ -270,7 +680,7 @@
         * xml/dom_docimpl.cpp (getId): do html lookup if specified even if not
         in a html document since elements can be in xhtml the namespace
 
-        * xml/dom_docimpl.h (hasPendingSheets): adding function returning true, 
+        * xml/dom_docimpl.h (hasPendingSheets): adding function returning true,
         if stylesheets are currently loading for document.
 
         * xml/xml_tokenizer.cpp: Merging table hack for XML parsing from
@@ -280,12 +690,12 @@
 
 2004-06-02  Zack Rusin  <zack@kde.org>
 
-        * xml/dom_xmlimpl.cpp: Correctly handle stylesheet loading in 
+        * xml/dom_xmlimpl.cpp: Correctly handle stylesheet loading in
         XML documents (try to avoid FOUC)
 
         * xml/xml_tokenizer.{h,cpp}: Added pushNode(), popNode() and
         currenNode() methods. Removed m_currentNode memeber and switched
-        node construction to a stack based ones. Try to attach to the 
+        node construction to a stack based ones. Try to attach to the
         parent of the tag which encloses us if it can't handle children.
 
 2004-05-28  Leo Savernik  <l.savernik@aon.at>

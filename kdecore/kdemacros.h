@@ -36,11 +36,20 @@
 
 #if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 2)
 #define KDE_NO_EXPORT __attribute__ ((visibility("hidden")))
-#define KDE_EXPORT __attribute__ ((visibility("visible")))
+#define KDE_EXPORT __attribute__ ((visibility("default")))
 #else
 #define KDE_NO_EXPORT
 #define KDE_EXPORT
 #endif
+
+/**
+ * KDE_Q_EXPORT_PLUGIN is a workaround for Qt not being able to
+ * cope with symbol visibility.
+ */
+#define KDE_Q_EXPORT_PLUGIN(PLUGIN) \
+  Q_EXTERN_C KDE_EXPORT const char* qt_ucm_query_verification_data(); \
+  Q_EXTERN_C KDE_EXPORT QUnknownInterface* ucm_instantiate(); \
+  Q_EXPORT_PLUGIN(PLUGIN)
 
 /**
  * The KDE_PACKED can be used to hint the compiler that a particular

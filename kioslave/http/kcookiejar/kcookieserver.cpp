@@ -80,6 +80,7 @@ KCookieServer::KCookieServer(const QCString &name)
 {
    mOldCookieServer = new DCOPClient(); // backwards compatibility.
    mOldCookieServer->registerAs("kcookiejar", false);
+   mOldCookieServer->setDaemonMode( true );
    mCookieJar = new KCookieJar;
    mPendingCookies = new KHttpCookieList;
    mPendingCookies->setAutoDelete(true);

@@ -40,6 +40,9 @@
 
 #ifdef APPLE_CHANGES
 #include "KWQLoader.h"
+#else
+#include <kio/netaccess.h>
+using KIO::NetAccess;
 #endif
 
 using namespace KJS;
@@ -204,7 +207,7 @@ void XMLHttpRequest::putValueProperty(ExecState *exec, int token, const Value& v
     if (onLoadListener) onLoadListener->ref();
     break;
   default:
-    kdWarning() << "HTMLDocument::putValue unhandled token " << token << endl;
+    kdWarning() << "XMLHttpRequest::putValue unhandled token " << token << endl;
   }
 }
 
@@ -302,13 +305,6 @@ void XMLHttpRequest::open(const QString& _method, const KURL& _url, bool _async)
 void XMLHttpRequest::send(const QString& _body)
 {
   aborted = false;
-
-#ifndef APPLE_CHANGES
-  if (!async) {
-    return;
-  }
-#endif
-
   if (method.lower() == "post" && (url.protocol().lower() == "http" || url.protocol().lower() == "https") ) {
       // FIXME: determine post encoding correctly by looking in headers for charset
       job = KIO::http_post( url, QCString(_body.utf8()), false );
@@ -322,18 +318,23 @@ void XMLHttpRequest::send(const QString& _body)
   }
   job->addMetaData( "PropagateHttpHeader", "true" );
 
-#ifdef APPLE_CHANGES
   if (!async) {
     QByteArray data;
     KURL finalURL;
     QString headers;
 
+#ifdef APPLE_CHANGES
     data = KWQServeSynchronousRequest(khtml::Cache::loader(), doc->docLoader(), job, finalURL, headers);
+#else
+    QMap<QString, QString> metaData;
+    if ( NetAccess::synchronousRun( job, 0, &data, &finalURL, &metaData ) ) {
+      headers = metaData[ "HTTP-Headers" ];
+    }
+#endif
     job = 0;
     processSyncLoadResults(data, finalURL, headers);
     return;
   }
-#endif
 
   qObject->connect( job, SIGNAL( result( KIO::Job* ) ),
 		    SLOT( slotFinished( KIO::Job* ) ) );
@@ -466,7 +467,6 @@ Value XMLHttpRequest::getStatusText() const
   return String(statusText);
 }
 
-#ifdef APPLE_CHANGES
 void XMLHttpRequest::processSyncLoadResults(const QByteArray &data, const KURL &finalURL, const QString &headers)
 {
   if (!urlMatchesDocumentDomain(finalURL)) {
@@ -480,10 +480,14 @@ void XMLHttpRequest::processSyncLoadResults(const QByteArray &data, const KURL &
     return;
   }
 
+#ifdef APPLE_CHANGES
   const char *bytes = (const char *)data.data();
   int len = (int)data.size();
 
   slotData(0, bytes, len);
+#else
+  slotData(0, data);
+#endif
 
   if (aborted) {
     return;
@@ -491,16 +495,17 @@ void XMLHttpRequest::processSyncLoadResults(const QByteArray &data, const KURL &
 
   slotFinished(0);
 }
-#endif
 
-void XMLHttpRequest::slotFinished(KIO::Job *job)
+void XMLHttpRequest::slotFinished(KIO::Job *)
 {
   if (decoder) {
     response += decoder->flush();
   }
 
-  changeState(Completed);
+  // make sure to forget about the job before emitting completed,
+  // since changeState triggers JS code, which might e.g. call abort.
   job = 0;
+  changeState(Completed);
 
   delete decoder;
   decoder = 0;
@@ -561,7 +566,6 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
   }
 
   XMLHttpRequest *request = static_cast<XMLHttpRequest *>(thisObj.imp());
-
   switch (id) {
   case XMLHttpRequest::Abort:
     request->abort();
@@ -581,11 +585,14 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
   case XMLHttpRequest::Open:
     {
       if (args.size() < 2 || args.size() > 5) {
-    return Undefined();
+        return Undefined();
       }
 
       QString method = args[0].toString(exec).qstring();
-      KURL url = KURL(Window::retrieveActive(exec)->part()->document().completeURL(args[1].toString(exec).qstring()).string());
+      KHTMLPart *part = ::qt_cast<KHTMLPart *>(Window::retrieveActive(exec)->part());
+      if (!part)
+        return Undefined();
+      KURL url = KURL(part->document().completeURL(args[1].toString(exec).qstring()).string());
 
       bool async = true;
       if (args.size() >= 3) {
@@ -617,8 +624,9 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
       QString body;
 
       if (args.size() >= 1) {
-	if (args[0].toObject(exec).inherits(&DOMDocument::info)) {
-	  DOM::Node docNode = static_cast<KJS::DOMDocument *>(args[0].toObject(exec).imp())->toNode();
+	Object obj = Object::dynamicCast(args[0]);
+	if (!obj.isNull() && obj.inherits(&DOMDocument::info)) {
+	  DOM::Node docNode = static_cast<KJS::DOMDocument *>(obj.imp())->toNode();
 	  DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode.handle());
 
 	  try {
@@ -630,8 +638,6 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
 	     exec->setException(err);
 	  }
 	} else {
-	  // converting certain values (like null) to object can set an exception
-	  exec->clearException();
 	  body = args[0].toString(exec).qstring();
 	}
       }
@@ -653,6 +659,6 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
   return Undefined();
 }
 
-}; // end namespace
+} // end namespace
 
 #include "xmlhttprequest.moc"

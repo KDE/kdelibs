@@ -4,11 +4,11 @@ are listed below. See http://lists.kde.org/?l=kde-core-devel&m=101351949010285&w
 Basically, it's here because for now it has better performance than both glibc-2.2.x and
 FreeBSD's libc.
 
- There's a new configure switch, --enable-fast-malloc. By default it's turned on, disabling
+ There's a new configure switch, --enable-fast-malloc. By default it's turned off, disabling
 the system libc one and using this one. Using --enable-fast-malloc=full enables this
 malloc unconditionally, aiming for the maximum performance. By using only --enable-fast-malloc,
-it's possible to select both malloc implementations at runtime. When $KDE_MALLOC is set to 1,
-this malloc is used, the system libc one is used otherwise.
+it's possible to select both malloc implementations at runtime. When $KDE_MALLOC is set to 0,
+the system libc malloc is used, otherwise this malloc is used.
 
  For now, the requirements are :
  - x86 CPU (because of the spinlock implementation in assembler), it should be easy to add

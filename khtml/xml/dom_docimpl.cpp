@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
- *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2002-2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -50,6 +50,7 @@
 #include "rendering/render_replaced.h"
 #include "rendering/render_arena.h"
 #include "rendering/render_layer.h"
+#include "rendering/render_frames.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -218,7 +219,7 @@ QPtrList<DocumentImpl> * DocumentImpl::changedDocuments;
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
-    : NodeBaseImpl( new DocumentPtr() )
+    : NodeBaseImpl( new DocumentPtr() ), m_domtree_version(0)
 {
     document->doc = this;
     m_paintDeviceMetrics = 0;
@@ -971,7 +972,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
         //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
         _style->setFontDef(fontDef);
 	_style->htmlFont().update( paintDeviceMetrics() );
-        if ( parseMode() != Strict )
+        if ( inCompatMode() )
             _style->setHtmlHacks(true); // enable html specific rendering tricks
 
         StyleChange ch = diff( _style, oldStyle );
@@ -992,12 +993,8 @@ void DocumentImpl::recalcStyle( StyleChange change )
             n->recalcStyle( change );
     //kdDebug( 6020 ) << "TIME: recalcStyle() dt=" << qt.elapsed() << endl;
 
-    // ### should be done by the rendering tree itself,
-    // this way is rather crude and CPU intensive
-    if ( changed() ) {
-	renderer()->setLayouted( false );
-	renderer()->setMinMaxKnown( false );
-    }
+    if (changed() && m_view)
+	m_view->layout();
 
 bail_out:
     setChanged( false );
@@ -1052,8 +1049,8 @@ void DocumentImpl::updateLayout()
     updateRendering();
 
     // Only do a layout if changes have occurred that make it necessary.
-    if (m_view && renderer() && !renderer()->layouted())
-        m_view->layout();
+    if (m_view && renderer() && renderer()->needsLayout())
+	m_view->layout();
 
     m_ignorePendingStylesheets = oldIgnore;
 }
@@ -1071,7 +1068,7 @@ void DocumentImpl::attach()
     // Create the rendering tree
     assert(!m_styleSelector);
     m_styleSelector = new CSSStyleSelector( this, m_usersheet, m_styleSheets, m_url,
-                                            pMode == Strict );
+                                            !inCompatMode() );
     m_render = new (m_renderArena) RenderCanvas(this, m_view);
     m_styleSelector->computeFontSizes(paintDeviceMetrics(), m_view ? m_view->part()->zoomFactor() : 100);
     recalcStyle( Force );
@@ -1243,42 +1240,6 @@ void DocumentImpl::determineParseMode( const QString &/*str*/ )
     kdDebug(6020) << " using strict parseMode" << endl;
 }
 
-// Please see if there`s a possibility to merge that code
-// with the next function and getElementByID().
-NodeImpl *DocumentImpl::findElement( Id id )
-{
-    QPtrStack<NodeImpl> nodeStack;
-    NodeImpl *current = _first;
-
-    while(1)
-    {
-        if(!current)
-        {
-            if(nodeStack.isEmpty()) break;
-            current = nodeStack.pop();
-            current = current->nextSibling();
-        }
-        else
-        {
-            if(current->id() == id)
-                return current;
-
-            NodeImpl *child = current->firstChild();
-            if(child)
-            {
-                nodeStack.push(current);
-                current = child;
-            }
-            else
-            {
-                current = current->nextSibling();
-            }
-        }
-    }
-
-    return 0;
-}
-
 NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 {
     unsigned short fromTabIndex;
@@ -1289,7 +1250,7 @@ NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 
 	int lowestTabIndex = 65535;
 	for (n = this; n != 0; n = n->traverseNextNode()) {
-	    if (n->isSelectable()) {
+	    if (n->isTabFocusable()) {
 		if ((n->tabIndex() > 0) && (n->tabIndex() < lowestTabIndex))
 		    lowestTabIndex = n->tabIndex();
 	    }
@@ -1300,7 +1261,7 @@ NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 
 	// Go to the first node in the document that has the desired tab index
 	for (n = this; n != 0; n = n->traverseNextNode()) {
-	    if (n->isSelectable() && (n->tabIndex() == lowestTabIndex))
+	    if (n->isTabFocusable() && (n->tabIndex() == lowestTabIndex))
 		return n;
 	}
 
@@ -1313,7 +1274,7 @@ NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
     if (fromTabIndex == 0) {
 	// Just need to find the next selectable node after fromNode (in document order) that doesn't have a tab index
 	NodeImpl *n = fromNode->traverseNextNode();
-	while (n && !(n->isSelectable() && n->tabIndex() == 0))
+	while (n && !(n->isTabFocusable() && n->tabIndex() == 0))
 	    n = n->traverseNextNode();
 	return n;
     }
@@ -1327,7 +1288,7 @@ NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 
 	bool reachedFromNode = false;
 	for (n = this; n != 0; n = n->traverseNextNode()) {
-	    if (n->isSelectable() &&
+	    if (n->isTabFocusable() &&
 		((reachedFromNode && (n->tabIndex() >= fromTabIndex)) ||
 		 (!reachedFromNode && (n->tabIndex() > fromTabIndex))) &&
 		(n->tabIndex() < lowestSuitableTabIndex) &&
@@ -1345,20 +1306,20 @@ NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 	if (lowestSuitableTabIndex == 65535) {
 	    // No next node with a tab index -> just take first node with tab index of 0
 	    NodeImpl *n = this;
-	    while (n && !(n->isSelectable() && n->tabIndex() == 0))
+	    while (n && !(n->isTabFocusable() && n->tabIndex() == 0))
 		n = n->traverseNextNode();
 	    return n;
 	}
 
 	// Search forwards from fromNode
 	for (n = fromNode->traverseNextNode(); n != 0; n = n->traverseNextNode()) {
-	    if (n->isSelectable() && (n->tabIndex() == lowestSuitableTabIndex))
+	    if (n->isTabFocusable() && (n->tabIndex() == lowestSuitableTabIndex))
 		return n;
 	}
 
 	// The next node isn't after fromNode, start from the beginning of the document
 	for (n = this; n != fromNode; n = n->traverseNextNode()) {
-	    if (n->isSelectable() && (n->tabIndex() == lowestSuitableTabIndex))
+	    if (n->isTabFocusable() && (n->tabIndex() == lowestSuitableTabIndex))
 		return n;
 	}
 
@@ -1379,7 +1340,7 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 
 	int highestTabIndex = 0;
 	for (n = lastNode; n != 0; n = n->traversePreviousNode()) {
-	    if (n->isSelectable()) {
+	    if (n->isTabFocusable()) {
 		if (n->tabIndex() == 0)
 		    return n;
 		else if (n->tabIndex() > highestTabIndex)
@@ -1389,7 +1350,7 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 
 	// No node with a tab index of 0; just go to the last node with the highest tab index
 	for (n = lastNode; n != 0; n = n->traversePreviousNode()) {
-	    if (n->isSelectable() && (n->tabIndex() == highestTabIndex))
+	    if (n->isTabFocusable() && (n->tabIndex() == highestTabIndex))
 		return n;
 	}
 
@@ -1401,7 +1362,7 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 	if (fromTabIndex == 0) {
 	    // Find the previous selectable node before fromNode (in document order) that doesn't have a tab index
 	    NodeImpl *n = fromNode->traversePreviousNode();
-	    while (n && !(n->isSelectable() && n->tabIndex() == 0))
+	    while (n && !(n->isTabFocusable() && n->tabIndex() == 0))
 		n = n->traversePreviousNode();
 	    if (n)
 		return n;
@@ -1409,7 +1370,7 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 	    // No previous nodes with a 0 tab index, go to the last node in the document that has the highest tab index
 	    int highestTabIndex = 0;
 	    for (n = this; n != 0; n = n->traverseNextNode()) {
-		if (n->isSelectable() && (n->tabIndex() > highestTabIndex))
+		if (n->isTabFocusable() && (n->tabIndex() > highestTabIndex))
 		    highestTabIndex = n->tabIndex();
 	    }
 
@@ -1417,7 +1378,7 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 		return 0;
 
 	    for (n = lastNode; n != 0; n = n->traversePreviousNode()) {
-		if (n->isSelectable() && (n->tabIndex() == highestTabIndex))
+		if (n->isTabFocusable() && (n->tabIndex() == highestTabIndex))
 		    return n;
 	    }
 
@@ -1434,7 +1395,7 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 
 	    bool reachedFromNode = false;
 	    for (n = this; n != 0; n = n->traverseNextNode()) {
-		if (n->isSelectable() &&
+		if (n->isTabFocusable() &&
 		    ((!reachedFromNode && (n->tabIndex() <= fromTabIndex)) ||
 		     (reachedFromNode && (n->tabIndex() < fromTabIndex)))  &&
 		    (n->tabIndex() > highestSuitableTabIndex) &&
@@ -1457,12 +1418,12 @@ NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 
 	    // Search backwards from fromNode
 	    for (n = fromNode->traversePreviousNode(); n != 0; n = n->traversePreviousNode()) {
-		if (n->isSelectable() && (n->tabIndex() == highestSuitableTabIndex))
+		if (n->isTabFocusable() && (n->tabIndex() == highestSuitableTabIndex))
 		    return n;
 	    }
 	    // The previous node isn't before fromNode, start from the end of the document
 	    for (n = lastNode; n != fromNode; n = n->traversePreviousNode()) {
-		if (n->isSelectable() && (n->tabIndex() == highestSuitableTabIndex))
+		if (n->isTabFocusable() && (n->tabIndex() == highestSuitableTabIndex))
 		    return n;
 	    }
 
@@ -1706,7 +1667,7 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     QConstString n(_name->s, _name->l);
     bool cs = true; // case sensitive
     if (_type != NodeImpl::NamespaceId) {
-        if (_nsURI) 
+        if (_nsURI)
             nsid = getId( NodeImpl::NamespaceId, 0, 0, _nsURI, false, false, 0 ) << 16;
 
         // Each document maintains a mapping of tag name -> id for every tag name encountered
@@ -1858,10 +1819,8 @@ void DocumentImpl::updateStyleSelector()
 
     m_styleSelectorDirty = true;
 #endif
-    if ( renderer() ) {
-        renderer()->setLayouted( false );
-        renderer()->setMinMaxKnown( false );
-    }
+    if ( renderer() )
+        renderer()->setNeedsLayoutAndMinMaxRecalc();
 }
 
 void DocumentImpl::recalcStyleSelector()
@@ -1913,7 +1872,7 @@ void DocumentImpl::recalcStyleSelector()
                 }
 
             }
-            else if (n->id() == ID_LINK || n->id() == ID_STYLE) {
+            else if (n->isHTMLElement() && ( n->id() == ID_LINK || n->id() == ID_STYLE) ) {
                 QString title;
                 if ( n->id() == ID_LINK ) {
                     HTMLLinkElementImpl* l = static_cast<HTMLLinkElementImpl*>(n);
@@ -1952,7 +1911,7 @@ void DocumentImpl::recalcStyleSelector()
                         m_availableSheets.append( title );
                 }
             }
-            else if (n->id() == ID_BODY) {
+            else if (n->isHTMLElement() && n->id() == ID_BODY) {
                 // <BODY> element (doesn't contain styles as such but vlink="..." and friends
                 // are treated as style declarations)
                 sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
@@ -2001,7 +1960,7 @@ void DocumentImpl::recalcStyleSelector()
     if ( m_view && m_view->mediaType() == "print" )
 	usersheet += m_printSheet;
     m_styleSelector = new CSSStyleSelector( this, usersheet, m_styleSheets, m_url,
-                                            pMode == Strict );
+                                            !inCompatMode() );
 
     m_styleSelectorDirty = false;
 }
@@ -2051,26 +2010,20 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
             if (m_focusNode != newFocusNode) return;
             m_focusNode->setFocus();
             if (m_focusNode != newFocusNode) return;
+
+            // eww, I suck. set the qt focus correctly
+            // ### find a better place in the code for this
+            if (view()) {
+                if (!m_focusNode->renderer() || !m_focusNode->renderer()->isWidget())
+                    view()->setFocus();
+                else if (static_cast<RenderWidget*>(m_focusNode->renderer())->widget())
+                    static_cast<RenderWidget*>(m_focusNode->renderer())->widget()->setFocus();
+            }
         }
 
         updateRendering();
     }
-
-    // ### remove this code as soon as the event flow between frames
-    // is completely handled via the DOM event model.
-    // At the moment, this code is required exactly here (not inside the
-    // if (m_focusNode != newFocusNode) clause), because a form element
-    // which the document erroneously considers the focus widget
-    // can receive focus by a mouse click, e.g. if a widget outside
-    // KHTML was focused before.
-            if (view()) {
-	if (!m_focusNode || !m_focusNode->renderer() || !m_focusNode->renderer()->isWidget())
-                    view()->setFocus();
-	else if (static_cast<RenderWidget*>(m_focusNode->renderer())->widget() &&
-		 qApp->focusWidget() != static_cast<RenderWidget*>(m_focusNode->renderer())->widget())
-                    static_cast<RenderWidget*>(m_focusNode->renderer())->widget()->setFocus();
-            }
-        }
+}
 
 void DocumentImpl::attachNodeIterator(NodeIteratorImpl *ni)
 {
@@ -2137,6 +2090,8 @@ EventImpl *DocumentImpl::createEvent(const DOMString &eventType, int &exceptionc
         return new UIEventImpl();
     else if (eventType == "MouseEvents")
         return new MouseEventImpl();
+    else if (eventType == "TextEvents")
+        return new TextEventImpl();
     else if (eventType == "MutationEvents")
         return new MutationEventImpl();
     else if (eventType == "HTMLEvents" || eventType == "Events")
@@ -2262,29 +2217,28 @@ void DocumentImpl::defaultEventHandler(EventImpl *evt)
             // ## currentTarget is unimplemented in IE, and is "window" in Mozilla (how? not a DOM node)
             evt->setCurrentTarget(0);
             it.current()->listener->handleEvent(ev);
-	    return;
 	}
     }
 }
 
-void DocumentImpl::setWindowEventListener(int id, EventListener *listener)
+void DocumentImpl::setHTMLWindowEventListener(int id, EventListener *listener)
 {
     // If we already have it we don't want removeWindowEventListener to delete it
     if (listener)
 	listener->ref();
-    removeWindowEventListener(id);
+    removeHTMLWindowEventListener(id);
     if (listener) {
-	RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id),listener,false);
-	m_windowEventListeners.append(rl);
+	addWindowEventListener(id, listener, false);
 	listener->deref();
     }
 }
 
-EventListener *DocumentImpl::getWindowEventListener(int id)
+EventListener *DocumentImpl::getHTMLWindowEventListener(int id)
 {
     QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
     for (; it.current(); ++it) {
-	if (it.current()->id == id) {
+	if (it.current()->id == id &&
+            it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
 	    return it.current()->listener;
 	}
     }
@@ -2292,15 +2246,54 @@ EventListener *DocumentImpl::getWindowEventListener(int id)
     return 0;
 }
 
-void DocumentImpl::removeWindowEventListener(int id)
+void DocumentImpl::removeHTMLWindowEventListener(int id)
 {
     QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
     for (; it.current(); ++it) {
-	if (it.current()->id == id) {
+	if (it.current()->id == id &&
+            it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
 	    m_windowEventListeners.removeRef(it.current());
 	    return;
 	}
     }
+}
+
+void DocumentImpl::addWindowEventListener(int id, EventListener *listener, const bool useCapture)
+{
+    listener->ref();
+
+    // remove existing identical listener set with identical arguments - the DOM2
+    // spec says that "duplicate instances are discarded" in this case.
+    removeWindowEventListener(id,listener,useCapture);
+
+    RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id), listener, useCapture);
+    m_windowEventListeners.append(rl);
+
+    listener->deref();
+}
+
+void DocumentImpl::removeWindowEventListener(int id, EventListener *listener, bool useCapture)
+{
+    RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,useCapture);
+
+    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    for (; it.current(); ++it)
+        if (*(it.current()) == rl) {
+            m_windowEventListeners.removeRef(it.current());
+            return;
+        }
+}
+
+bool DocumentImpl::hasWindowEventListener(int id)
+{
+    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    for (; it.current(); ++it) {
+	if (it.current()->id == id) {
+	    return true;
+	}
+    }
+
+    return false;
 }
 
 EventListener *DocumentImpl::createHTMLEventListener(QString code, QString name)
@@ -2311,6 +2304,55 @@ EventListener *DocumentImpl::createHTMLEventListener(QString code, QString name)
 void DocumentImpl::setDecoderCodec(const QTextCodec *codec)
 {
     m_decoderMibEnum = codec->mibEnum();
+}
+
+ElementImpl *DocumentImpl::ownerElement() const
+{
+    KHTMLView *childView = view();
+    if (!childView)
+        return 0;
+    KHTMLPart *childPart = childView->part();
+    if (!childPart)
+        return 0;
+    ChildFrame *childFrame = childPart->d->m_frame;
+    if (!childFrame)
+        return 0;
+    RenderPart *renderPart = childFrame->m_frame;
+    if (!renderPart)
+        return 0;
+    return static_cast<ElementImpl *>(renderPart->element());
+}
+
+DOMString DocumentImpl::domain() const
+{
+    if ( m_domain.isEmpty() ) // not set yet (we set it on demand to save time and space)
+        m_domain = URL().host(); // Initially set to the host
+    return m_domain;
+}
+
+void DocumentImpl::setDomain(const DOMString &newDomain)
+{
+    if ( m_domain.isEmpty() ) // not set yet (we set it on demand to save time and space)
+        m_domain = URL().host().lower(); // Initially set to the host
+
+    if ( m_domain.isEmpty() /*&& view() && view()->part()->openedByJS()*/ )
+        m_domain = newDomain.lower();
+
+    // Both NS and IE specify that changing the domain is only allowed when
+    // the new domain is a suffix of the old domain.
+    int oldLength = m_domain.length();
+    int newLength = newDomain.length();
+    if ( newLength < oldLength ) // e.g. newDomain=kde.org (7) and m_domain=www.kde.org (11)
+    {
+        DOMString test = m_domain.copy();
+        DOMString reference = newDomain.lower();
+        if ( test[oldLength - newLength - 1] == '.' ) // Check that it's a subdomain, not e.g. "de.org"
+        {
+            test.remove( 0, oldLength - newLength ); // now test is "kde.org" from m_domain
+            if ( test == reference )                 // and we check that it's the same thing as newDomain
+                m_domain = reference;
+        }
+    }
 }
 
 DOMString DocumentImpl::toString() const

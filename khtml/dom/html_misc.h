@@ -132,6 +132,7 @@ class HTMLCollection
     friend class HTMLTableElement;
     friend class HTMLTableRowElement;
     friend class HTMLTableSectionElement;
+    friend class HTMLLayerElement;
     friend class HTMLElement;
 
 public:

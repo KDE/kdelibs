@@ -19,7 +19,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef RENDER_IMAGE_H
 #define RENDER_IMAGE_H
@@ -57,6 +56,7 @@ public:
 
     bool complete() const;
 
+    CachedObject *contentObject() { return image; }
     void setContentObject( CachedObject* );
 
     // hook to keep RendeObject::m_inline() up to date

@@ -1,7 +1,7 @@
 /*
    This file is part of the KDE libraries
 
-   Copyright (c) 2002-2003 George Staikos <staikos@kde.org>
+   Copyright (c) 2002-2004 George Staikos <staikos@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -105,6 +105,9 @@ class KWalletD : public KDEDModule {
 		virtual QByteArray readEntry(int handle, const QString& folder, const QString& key);
 		virtual QByteArray readMap(int handle, const QString& folder, const QString& key);
 		virtual QString readPassword(int handle, const QString& folder, const QString& key);
+		virtual QMap<QString, QByteArray> readEntryList(int handle, const QString& folder, const QString& key);
+		virtual QMap<QString, QByteArray> readMapList(int handle, const QString& folder, const QString& key);
+		virtual QMap<QString, QString> readPasswordList(int handle, const QString& folder, const QString& key);
 
 		// Rename an entry.  rc=0 on success.
 		virtual int renameEntry(int handle, const QString& folder, const QString& oldName, const QString& newName);
@@ -143,9 +146,12 @@ class KWalletD : public KDEDModule {
 		void slotAppUnregistered(const QCString& app);
 		void emitWalletListDirty();
 		void timedOut(int);
+		void notifyFailures();
+		void processTransactions();
 
 	private:
 		int internalOpen(const QCString& appid, const QString& wallet, bool isPath = false, WId w = 0);
+		bool isAuthorizedApp(const QCString& appid, const QString& wallet, WId w);
 		// This also validates the handle.  May return NULL.
 		KWallet::Backend* getWallet(const QCString& appid, int handle);
 		// Generate a new unique handle.
@@ -159,9 +165,9 @@ class KWalletD : public KDEDModule {
 		int closeWallet(KWallet::Backend *w, int handle, bool force);
 		// Implicitly allow access for this application
 		bool implicitAllow(const QString& wallet, const QCString& app);
+		bool implicitDeny(const QString& wallet, const QCString& app);
 		QCString friendlyDCOPPeerName();
 
-		void processTransactions();
 		void doTransactionChangePassword(const QCString& appid, const QString& wallet, uint wId);
 		int doTransactionOpen(const QCString& appid, const QString& wallet, uint wId);
 
@@ -171,9 +177,10 @@ class KWalletD : public KDEDModule {
 		KDirWatch *_dw;
 		int _failed;
 
-		bool _leaveOpen, _closeIdle, _launchManager, _enabled, _openPrompt, _firstUse;
+		bool _leaveOpen, _closeIdle, _launchManager, _enabled;
+	       	bool _openPrompt, _firstUse, _showingFailureNotify;
 		int _idleTime;
-		QMap<QString,QStringList> _implicitAllowMap;
+		QMap<QString,QStringList> _implicitAllowMap, _implicitDenyMap;
 		KTimeout *_timeouts;
 
 		QPtrList<KWalletTransaction> _transactions;

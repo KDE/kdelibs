@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2001-2003 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001-2004 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,6 +31,8 @@
 
 #include <qfile.h>
 #include <qfileinfo.h>
+#include <qregexp.h>
+
 #include "blowfish.h"
 #include "sha1.h"
 #include "cbc.h"
@@ -262,6 +264,7 @@ QString Backend::openRCToString(int rc) {
 			return i18n("Error validating wallet integrity. Possibly corrupted.");
 		case -5:
 		case -7:
+		case -9:
 			return i18n("Read error - possibly incorrect password.");
 		case -6:
 			return i18n("Decryption error.");
@@ -338,6 +341,7 @@ int Backend::open(const QByteArray& password) {
 		MD5Digest ba;
 		QMap<MD5Digest,QValueList<MD5Digest> >::iterator it;
 		Q_UINT32 fsz;
+		if (hds.atEnd()) return -43;
 		hds.readRawBytes(reinterpret_cast<char *>(d), 16);
 		hds >> fsz;
 		ba.duplicate(reinterpret_cast<char *>(d), 16);
@@ -401,7 +405,7 @@ int Backend::open(const QByteArray& password) {
 	if (fsize < 0 || fsize > long(encrypted.size()) - blksz - 4) {
 		//kdDebug() << "fsize: " << fsize << " encrypted.size(): " << encrypted.size() << " blksz: " << blksz << endl;
 		encrypted.fill(0);
-		return -7;         // file structure error.
+		return -9;         // file structure error.
 	}
 
 	// compute the hash ourself
@@ -522,22 +526,13 @@ int Backend::sync(const QByteArray& password) {
 		hashStream << static_cast<Q_UINT32>(i.data().count());
 
 		for (EntryMap::ConstIterator j = i.data().begin(); j != i.data().end(); ++j) {
-			switch (j.data()->type()) {
-			case KWallet::Wallet::Password:
-			case KWallet::Wallet::Stream:
-			case KWallet::Wallet::Map:
-				dStream << j.key();
-				dStream << static_cast<Q_INT32>(j.data()->type());
-				dStream << j.data()->value();
+			dStream << j.key();
+			dStream << static_cast<Q_INT32>(j.data()->type());
+			dStream << j.data()->value();
 
-				md5.reset();
-				md5.update(j.key().utf8());
-				hashStream.writeRawBytes(reinterpret_cast<const char*>(&(md5.rawDigest()[0])), 16);
-				break;
-			default:
-				assert(0);
-				break;
-			}
+			md5.reset();
+			md5.update(j.key().utf8());
+			hashStream.writeRawBytes(reinterpret_cast<const char*>(&(md5.rawDigest()[0])), 16);
 		}
 	}
 
@@ -672,12 +667,36 @@ return rc;
 }
 
 
+QPtrList<Entry> Backend::readEntryList(const QString& key) {
+	QPtrList<Entry> rc;
+
+	if (!_open) {
+		return rc;
+	}
+
+	QRegExp re(key, true, true);
+
+	const EntryMap& map = _entries[_folder];
+	for (EntryMap::ConstIterator i = map.begin(); i != map.end(); ++i) {
+		if (re.exactMatch(i.key())) {
+			rc.append(i.data());
+		}
+	}
+	return rc;
+}
+
+
 bool Backend::createFolder(const QString& f) {
 	if (_entries.contains(f)) {
 		return false;
 	}
 
 	_entries.insert(f, EntryMap());
+
+	KMD5 folderMd5;
+	folderMd5.update(f.utf8());
+	_hashes.insert(MD5Digest(folderMd5.rawDigest()), QValueList<MD5Digest>());
+
 return true;
 }
 
@@ -691,6 +710,18 @@ EntryMap::Iterator ni = emap.find(newName);
 		Entry *e = oi.data();
 		emap.remove(oi);
 		emap[newName] = e;
+
+		KMD5 folderMd5;
+		folderMd5.update(_folder.utf8());
+
+		HashMap::iterator i = _hashes.find(MD5Digest(folderMd5.rawDigest()));
+		if (i != _hashes.end()) {
+			KMD5 oldMd5, newMd5;
+			oldMd5.update(oldName.utf8());
+			newMd5.update(newName.utf8());
+			i.data().remove(MD5Digest(oldMd5.rawDigest()));
+			i.data().append(MD5Digest(newMd5.rawDigest()));
+		}
 		return 0;
 	}
 
@@ -706,6 +737,16 @@ void Backend::writeEntry(Entry *e) {
 		_entries[_folder][e->key()] = new Entry;
 	}
 	_entries[_folder][e->key()]->copy(e);
+
+	KMD5 folderMd5;
+	folderMd5.update(_folder.utf8());
+
+	HashMap::iterator i = _hashes.find(MD5Digest(folderMd5.rawDigest()));
+	if (i != _hashes.end()) {
+		KMD5 md5;
+		md5.update(e->key().utf8());
+		i.data().append(MD5Digest(md5.rawDigest()));
+	}
 }
 
 
@@ -725,6 +766,15 @@ bool Backend::removeEntry(const QString& key) {
 	if (fi != _entries.end() && ei != fi.data().end()) {
 		delete ei.data();
 		fi.data().remove(ei);
+		KMD5 folderMd5;
+		folderMd5.update(_folder.utf8());
+
+		HashMap::iterator i = _hashes.find(MD5Digest(folderMd5.rawDigest()));
+		if (i != _hashes.end()) {
+			KMD5 md5;
+			md5.update(key.utf8());
+			i.data().remove(MD5Digest(md5.rawDigest()));
+		}
 		return true;
 	}
 
@@ -749,6 +799,10 @@ bool Backend::removeFolder(const QString& f) {
 		}
 
 		_entries.remove(fi);
+
+		KMD5 folderMd5;
+		folderMd5.update(f.utf8());
+		_hashes.erase(MD5Digest(folderMd5.rawDigest()));
 		return true;
 	}
 

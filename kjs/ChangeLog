@@ -1,3 +1,38 @@
+2004-11-07  Harri Porten  <porten@kde.org>
+
+	* date_object.cpp: fix conversion of Date(value) argument, fixed
+	getDay() for out-of-normal-range dates
+
+2004-10-13  Harri Porten  <porten@kde.org>
+
+	* regexp.cpp: support \u escape sequences in regular expressions 
+
+2004-10-11  Harri Porten  <porten@kde.org>
+
+	* date_object.cpp: make the Date object work outside of the
+	typical Unix range (1900-2038) by shifting other dates into this
+	range. Might still have some bugs with e.g. leap days but this is
+	a big step forward to ECMA compliancy.
+
+	* date_object.cpp: fixed cut-off date in Date.setYear()
+
+2004-10-02  Harri Porten  <porten@kde.org>
+
+	* lexer.cpp: parse function expressions with identifier as
+	function argument
+
+	* date_object.cpp: parse YYYY/MM/DD-style dates
+
+2004-09-30  Harri Porten  <porten@kde.org>
+
+	* math_object.cpp: fixed Math.round() for very large numbers (bug
+	discovered by Pascal) and negative numbers with a .5 decimal.
+
+2004-09-29  Harri Porten  <porten@kde.org>
+
+	* date_object.cpp: don't preset DST when changing parts of the
+	date (most notably the month). Patch by Pascal Letourneau.
+	
 2004-06-08  Harri Porten  <porten@kde.org>
 
 	* regexp.cpp (RegExp): check regcomp's return value in non-PCRE

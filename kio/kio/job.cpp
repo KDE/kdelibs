@@ -50,6 +50,7 @@ extern "C" {
 #include <kmessagebox.h>
 #include <kdatastream.h>
 #include <kmainwindow.h>
+#include <kde_file.h>
 
 #include <errno.h>
 
@@ -2392,6 +2393,15 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
     }
 }
 
+void CopyJob::skipSrc()
+{
+    m_dest = d->m_globalDest;
+    destinationState = d->m_globalDestinationState;
+    ++m_currentStatSrc;
+    skip( m_currentSrcURL );
+    statCurrentSrc();
+}
+
 void CopyJob::statNextSrc()
 {
     m_dest = d->m_globalDest;
@@ -2539,6 +2549,26 @@ void CopyJob::skip( const KURL & sourceUrl )
     dirsToRemove.remove( sourceUrl );
 }
 
+bool CopyJob::shouldOverwrite( const QString& path ) const
+{
+    if ( m_bOverwriteAll )
+        return true;
+    QStringList::ConstIterator sit = m_overwriteList.begin();
+    for( ; sit != m_overwriteList.end(); ++sit )
+        if ( path.startsWith( *sit ) )
+            return true;
+    return false;
+}
+
+bool CopyJob::shouldSkip( const QString& path ) const
+{
+    QStringList::ConstIterator sit = m_skipList.begin();
+    for( ; sit != m_skipList.end(); ++sit )
+        if ( path.startsWith( *sit ) )
+            return true;
+    return false;
+}
+
 void CopyJob::slotResultCreatingDirs( Job * job )
 {
     // The dir we are trying to create:
@@ -2553,19 +2583,14 @@ void CopyJob::slotResultCreatingDirs( Job * job )
             KURL oldURL = ((SimpleJob*)job)->url();
             // Should we skip automatically ?
             if ( m_bAutoSkip ) {
-                // We dont want to copy files in this directory, so we put it on the skip list
+                // We don't want to copy files in this directory, so we put it on the skip list
                 m_skipList.append( oldURL.path( 1 ) );
                 skip( oldURL );
                 dirs.remove( it ); // Move on to next dir
             } else {
                 // Did the user choose to overwrite already?
-                bool bOverwrite = m_bOverwriteAll;
-                QString destFile = (*it).uDest.path();
-                QStringList::Iterator sit = m_overwriteList.begin();
-                for( ; sit != m_overwriteList.end() && !bOverwrite; sit++ )
-                    if ( *sit == destFile.left( (*sit).length() ) )
-                        bOverwrite = true;
-                if ( bOverwrite ) { // overwrite => just skip
+                const QString destFile = (*it).uDest.path();
+                if ( shouldOverwrite( destFile ) ) { // overwrite => just skip
                     emit copyingDone( this, ( *it ).uSource, ( *it ).uDest, true /* directory */, false /* renamed */ );
                     dirs.remove( it ); // Move on to next dir
                 } else {
@@ -2756,16 +2781,8 @@ void CopyJob::createNextDir()
         // Is this URL on the skip list or the overwrite list ?
         while( it != dirs.end() && udir.isEmpty() )
         {
-            QString dir = (*it).uDest.path();
-            bool bCreateDir = true; // we'll create it if it's not in any list
-
-            QStringList::Iterator sit = m_skipList.begin();
-            for( ; sit != m_skipList.end() && bCreateDir; sit++ )
-                // Is dir a subdirectory of *sit ?
-                if ( *sit == dir.left( (*sit).length() ) )
-                    bCreateDir = false; // skip this dir
-
-            if ( !bCreateDir ) {
+            const QString dir = (*it).uDest.path();
+            if ( shouldSkip( dir ) ) {
                 dirs.remove( it );
                 it = dirs.begin();
             } else
@@ -2934,10 +2951,10 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
                 mode = M_OVERWRITE;
         }
 
-        if ( files.count() > 1 ) // Not last one
-            mode = (RenameDlg_Mode) ( mode | M_MULTI | M_SKIP );
-        else
+        if ( m_bSingleFileCopy )
             mode = (RenameDlg_Mode) ( mode | M_SINGLE );
+        else
+            mode = (RenameDlg_Mode) ( mode | M_MULTI | M_SKIP );
 
         res = Observer::self()->open_RenameDlg( this, m_conflictError == ERR_FILE_ALREADY_EXIST ?
                                 i18n("File Already Exists") : i18n("Already Exists as Folder"),
@@ -3021,16 +3038,9 @@ void CopyJob::copyNextFile()
     // Is this URL on the skip list ?
     while (it != files.end() && !bCopyFile)
     {
-        bCopyFile = true;
-        QString destFile = (*it).uDest.path();
-
-        QStringList::Iterator sit = m_skipList.begin();
-        for( ; sit != m_skipList.end() && bCopyFile; sit++ )
-            // Is destFile in *sit (or a subdirectory of *sit) ?
-            if ( *sit == destFile.left( (*sit).length() ) )
-                bCopyFile = false; // skip this file
-
-        if (!bCopyFile) {
+        const QString destFile = (*it).uDest.path();
+        bCopyFile = !shouldSkip( destFile );
+        if ( !bCopyFile ) {
             files.remove( it );
             it = files.begin();
         }
@@ -3039,19 +3049,13 @@ void CopyJob::copyNextFile()
     if (bCopyFile) // any file to create, finally ?
     {
         // Do we set overwrite ?
-        bool bOverwrite = m_bOverwriteAll; // yes if overwrite all
-        QString destFile = (*it).uDest.path();
+        bool bOverwrite;
+        const QString destFile = (*it).uDest.path();
         kdDebug(7007) << "copying " << destFile << endl;
         if ( (*it).uDest == (*it).uSource )
             bOverwrite = false;
         else
-        {
-            // or if on the overwrite list
-            QStringList::Iterator sit = m_overwriteList.begin();
-            for( ; sit != m_overwriteList.end() && !bOverwrite; sit++ )
-                if ( *sit == destFile.left( (*sit).length() ) )
-                    bOverwrite = true;
-        }
+            bOverwrite = shouldOverwrite( destFile );
 
         m_bCurrentOperationIsLink = false;
         KIO::Job * newjob = 0L;
@@ -3118,7 +3122,9 @@ void CopyJob::copyNextFile()
                            KSimpleConfig config( path );
                            config.setDesktopGroup();
                            config.writePathEntry( QString::fromLatin1("URL"), (*it).uSource.url() );
-                           config.writeEntry( QString::fromLatin1("Name"), (*it).uSource.url() );
+                           KURL urlName = (*it).uSource;
+                           urlName.setPass( "" );
+                           config.writeEntry( QString::fromLatin1("Name"), urlName.url() );
                            config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Link") );
                            QString protocol = (*it).uSource.protocol();
                            if ( protocol == QString::fromLatin1("ftp") )
@@ -3296,6 +3302,184 @@ void CopyJob::slotResultDeletingDirs( Job * job )
     deleteNextDir();
 }
 
+void CopyJob::slotResultRenaming( Job* job )
+{
+    int err = job->error();
+    subjobs.remove( job );
+    assert ( subjobs.isEmpty() );
+    // Determine dest again
+    KURL dest = m_dest;
+    if ( destinationState == DEST_IS_DIR && !m_asMethod )
+        dest.addPath( m_currentSrcURL.fileName() );
+    if ( err )
+    {
+        // Direct renaming didn't work. Try renaming to a temp name,
+        // this can help e.g. when renaming 'a' to 'A' on a VFAT partition.
+        // In that case it's the _same_ dir, we don't want to copy+del (data loss!)
+        if ( m_currentSrcURL.isLocalFile() && m_currentSrcURL.url(-1) != dest.url(-1) &&
+             m_currentSrcURL.url(-1).lower() == dest.url(-1).lower() &&
+             ( err == ERR_FILE_ALREADY_EXIST || err == ERR_DIR_ALREADY_EXIST ) )
+        {
+            kdDebug(7007) << "Couldn't rename directly, dest already exists. Detected special case of lower/uppercase renaming in same dir, try with 2 rename calls" << endl;
+            QCString _src( QFile::encodeName(m_currentSrcURL.path()) );
+            QCString _dest( QFile::encodeName(dest.path()) );
+            KTempFile tmpFile( m_currentSrcURL.directory(false) );
+            QCString _tmp( QFile::encodeName(tmpFile.name()) );
+            kdDebug(7007) << "CopyJob::slotResult KTempFile status:" << tmpFile.status() << " using " << _tmp << " as intermediary" << endl;
+            tmpFile.unlink();
+            if ( ::rename( _src, _tmp ) == 0 )
+            {
+                if ( !QFile::exists( _dest ) && ::rename( _tmp, _dest ) == 0 )
+                {
+                    kdDebug(7007) << "Success." << endl;
+                    err = 0;
+                }
+                else
+                {
+                    // Revert back to original name!
+                    if ( ::rename( _tmp, _src ) != 0 ) {
+                        kdError(7007) << "Couldn't rename " << tmpFile.name() << " back to " << _src << " !" << endl;
+                        // Severe error, abort
+                        Job::slotResult( job ); // will set the error and emit result(this)
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    if ( err )
+    {
+        // This code is similar to CopyJob::slotResultConflictCopyingFiles
+        // but here it's about the base src url being moved/renamed
+        // (*m_currentStatSrc) and its dest (m_dest), not about a single file.
+        // It also means we already stated the dest, here.
+        // On the other hand we haven't stated the src yet (we skipped doing it
+        // to save time, since it's not necessary to rename directly!)...
+
+        Q_ASSERT( m_currentSrcURL == *m_currentStatSrc );
+
+        // Existing dest?
+        if ( err == ERR_DIR_ALREADY_EXIST || err == ERR_FILE_ALREADY_EXIST )
+        {
+            if (m_reportTimer)
+                m_reportTimer->stop();
+
+            // Should we skip automatically ?
+            if ( m_bAutoSkip ) {
+                // Move on to next file
+                skipSrc();
+                return;
+            } else if ( m_bOverwriteAll ) {
+                ; // nothing to do, stat+copy+del will overwrite
+            } else {
+                QString newPath;
+                // Offer overwrite only if the existing thing is a file
+                // If src==dest, use "overwrite-itself"
+                RenameDlg_Mode mode = (RenameDlg_Mode)
+                                      ( ( err == ERR_DIR_ALREADY_EXIST ? 0 :
+                                          ( m_currentSrcURL == dest ) ? M_OVERWRITE_ITSELF : M_OVERWRITE ) );
+
+                if ( m_srcList.count() > 1 )
+                    mode = (RenameDlg_Mode) ( mode | M_MULTI | M_SKIP );
+                else
+                    mode = (RenameDlg_Mode) ( mode | M_SINGLE );
+
+                // we lack mtime info for both the src (not stated)
+                // and the dest (stated but this info wasn't stored)
+                // Let's do it for local files, at least
+                KIO::filesize_t sizeSrc = (KIO::filesize_t) -1;
+                KIO::filesize_t sizeDest = (KIO::filesize_t) -1;
+                time_t ctimeSrc = (time_t) -1;
+                time_t ctimeDest = (time_t) -1;
+                time_t mtimeSrc = (time_t) -1;
+                time_t mtimeDest = (time_t) -1;
+
+                KDE_struct_stat stat_buf;
+                if ( m_currentSrcURL.isLocalFile() &&
+                     KDE_stat(QFile::encodeName(m_currentSrcURL.path()), &stat_buf) == 0 ) {
+                    sizeSrc = stat_buf.st_size;
+                    ctimeSrc = stat_buf.st_ctime;
+                    mtimeSrc = stat_buf.st_mtime;
+                }
+                if ( dest.isLocalFile() &&
+                     KDE_stat(QFile::encodeName(dest.path()), &stat_buf) == 0 ) {
+                    sizeDest = stat_buf.st_size;
+                    ctimeDest = stat_buf.st_ctime;
+                    mtimeDest = stat_buf.st_mtime;
+                }
+
+                RenameDlg_Result r = Observer::self()->open_RenameDlg(
+                    this,
+                    err == ERR_FILE_ALREADY_EXIST ? i18n("File Already Exists") : i18n("Already Exists as Folder"),
+                    m_currentSrcURL.prettyURL(0, KURL::StripFileProtocol),
+                    dest.prettyURL(0, KURL::StripFileProtocol),
+                    mode, newPath,
+                    sizeSrc, sizeDest,
+                    ctimeSrc, ctimeDest,
+                    mtimeSrc, mtimeDest );
+                if (m_reportTimer)
+                    m_reportTimer->start(REPORT_TIMEOUT,false);
+
+                switch ( r )
+                {
+                case R_CANCEL:
+                {
+                    m_error = ERR_USER_CANCELED;
+                    emitResult();
+                    return;
+                }
+                case R_RENAME:
+                {
+                    // Set m_dest to the chosen destination
+                    // This is only for this src url; the next one will revert to d->m_globalDest
+                    m_dest.setPath( newPath );
+                    KIO::Job* job = KIO::stat( m_dest, false, 2, false );
+                    state = STATE_STATING;
+                    destinationState = DEST_NOT_STATED;
+                    addSubjob(job);
+                    return;
+                }
+                case R_AUTO_SKIP:
+                    m_bAutoSkip = true;
+                    // fall through
+                case R_SKIP:
+                    // Move on to next file
+                    skipSrc();
+                    return;
+                case R_OVERWRITE_ALL:
+                    m_bOverwriteAll = true;
+                    break;
+                case R_OVERWRITE:
+                    // Add to overwrite list
+                    // Note that we add dest, not m_dest.
+                    // This ensures that when moving several urls into a dir (m_dest),
+                    // we only overwrite for the current one, not for all.
+                    // When renaming a single file (m_asMethod), it makes no difference.
+                    kdDebug(7007) << "adding to overwrite list: " << dest.path() << endl;
+                    m_overwriteList.append( dest.path() );
+                    break;
+                default:
+                    //assert( 0 );
+                    break;
+                }
+            }
+        }
+
+        kdDebug(7007) << "Couldn't rename, reverting to normal way, starting with stat" << endl;
+        //kdDebug(7007) << "KIO::stat on " << m_currentSrcURL << endl;
+        KIO::Job* job = KIO::stat( m_currentSrcURL, true, 2, false );
+        state = STATE_STATING;
+        addSubjob(job);
+        m_bOnlyRenames = false;
+    }
+    else
+    {
+        //kdDebug(7007) << "Renaming succeeded, move on" << endl;
+        emit copyingDone( this, *m_currentStatSrc, dest, true, true );
+        statNextSrc();
+    }
+}
+
 void CopyJob::slotResult( Job *job )
 {
     //kdDebug(7007) << "CopyJob::slotResult() state=" << (int) state << endl;
@@ -3307,139 +3491,12 @@ void CopyJob::slotResult( Job *job )
     switch ( state ) {
         case STATE_STATING: // We were trying to stat a src url or the dest
             slotResultStating( job );
-            break;
+        break;
         case STATE_RENAMING: // We were trying to do a direct renaming, before even stat'ing
         {
-            int err = job->error();
-            subjobs.remove( job );
-            assert ( subjobs.isEmpty() );
-            // Determine dest again
-            KURL dest = m_dest;
-            if ( destinationState == DEST_IS_DIR && !m_asMethod )
-                dest.addPath( m_currentSrcURL.fileName() );
-            if ( err )
-            {
-                // Direct renaming didn't work. Try renaming to a temp name,
-                // this can help e.g. when renaming 'a' to 'A' on a VFAT partition.
-                // In that case it's the _same_ dir, we don't want to copy+del (data loss!)
-                if ( m_currentSrcURL.isLocalFile() && m_currentSrcURL.url(-1) != dest.url(-1) &&
-                     m_currentSrcURL.url(-1).lower() == dest.url(-1).lower() &&
-                     ( err == ERR_FILE_ALREADY_EXIST || err == ERR_DIR_ALREADY_EXIST ) )
-                {
-                    kdDebug(7007) << "Couldn't rename directly, dest already exists. Detected special case of lower/uppercase renaming in same dir, try with 2 rename calls" << endl;
-                    QCString _src( QFile::encodeName(m_currentSrcURL.path()) );
-                    QCString _dest( QFile::encodeName(dest.path()) );
-                    KTempFile tmpFile( m_currentSrcURL.directory(false) );
-                    QCString _tmp( QFile::encodeName(tmpFile.name()) );
-                    kdDebug(7007) << "CopyJob::slotResult KTempFile status:" << tmpFile.status() << " using " << _tmp << " as intermediary" << endl;
-                    tmpFile.unlink();
-                    if ( ::rename( _src, _tmp ) == 0 )
-                    {
-                        if ( !QFile::exists( _dest ) && ::rename( _tmp, _dest ) == 0 )
-                        {
-                            kdDebug(7007) << "Success." << endl;
-                            err = 0;
-                        }
-                        else
-                        {
-                            // Revert back to original name!
-                            if ( ::rename( _tmp, _src ) != 0 ) {
-                                kdError(7007) << "Couldn't rename " << tmpFile.name() << " back to " << _src << " !" << endl;
-                                // Severe error, abort
-                                Job::slotResult( job ); // will set the error and emit result(this)
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-            if ( err )
-            {
-                // This code is similar to CopyJob::slotResultConflictCopyingFiles
-                // but here it's about the base src url being moved/renamed
-                // (*m_currentStatSrc) and its dest (m_dest), not about a single file.
-                // It also means we already stated the dest, here.
-                // On the other hand we haven't stated the src yet (we skipped doing it
-                // to save time, since it's not necessary to rename directly!)...
-
-                Q_ASSERT( m_currentSrcURL == *m_currentStatSrc );
-
-                // Existing dest?
-                if ( err == ERR_DIR_ALREADY_EXIST || err == ERR_FILE_ALREADY_EXIST )
-                {
-                    if (m_reportTimer)
-                        m_reportTimer->stop();
-
-                    QString newPath;
-                    // Offer overwrite only if the existing thing is a file
-                    // If src==dest, use "overwrite-itself"
-                    RenameDlg_Mode mode = (RenameDlg_Mode)
-                        ( ( m_conflictError == ERR_DIR_ALREADY_EXIST ? 0 :
-                            ( m_currentSrcURL == dest ) ? M_OVERWRITE_ITSELF : M_OVERWRITE ) );
-                    // I won't use M_MULTI or M_SKIP there. It's too ambiguous:
-                    // we are in the middle of the stat phase, so it's hard to know
-                    // if it will apply to the already-stated-dirs that will be copied later,
-                    // and/oor to the to-be-stated src urls that might be in the same case...
-                    mode = (RenameDlg_Mode) ( mode | M_SINGLE );
-                    // we lack mtime info for both the src (not stated)
-                    // and the dest (stated but this info wasn't stored)
-                    RenameDlg_Result r = Observer::self()->open_RenameDlg( this,
-                                         err == ERR_FILE_ALREADY_EXIST ? i18n("File Already Exists") : i18n("Already Exists as Folder"),
-                                         m_currentSrcURL.prettyURL(0, KURL::StripFileProtocol),
-                                         dest.prettyURL(0, KURL::StripFileProtocol),
-                                         mode, newPath );
-                    if (m_reportTimer)
-                        m_reportTimer->start(REPORT_TIMEOUT,false);
-
-                    switch ( r )
-                    {
-                        case R_CANCEL:
-                        {
-                            m_error = ERR_USER_CANCELED;
-                            emitResult();
-                            return;
-                        }
-                        case R_RENAME:
-                        {
-                            // Set m_dest to the chosen destination
-                            // This is only for this src url; the next one will revert to d->m_globalDest
-                            m_dest.setPath( newPath );
-                            KIO::Job* job = KIO::stat( m_dest, false, 2, false );
-                            state = STATE_STATING;
-                            destinationState = DEST_NOT_STATED;
-                            addSubjob(job);
-                            return;
-                        }
-                        case R_OVERWRITE:
-                            // Add to overwrite list
-                            // Note that we add dest, not m_dest.
-                            // This ensures that when moving several urls into a dir (m_dest),
-                            // we only overwrite for the current one, not for all.
-                            // When renaming a single file (m_asMethod), it makes no difference.
-                            kdDebug(7007) << "adding to overwrite list: " << dest.path() << endl;
-                            m_overwriteList.append( dest.path() );
-                            break;
-                        default:
-                            //assert( 0 );
-                            break;
-                    }
-                }
-
-                kdDebug(7007) << "Couldn't rename, reverting to normal way, starting with stat" << endl;
-                //kdDebug(7007) << "KIO::stat on " << m_currentSrcURL << endl;
-                KIO::Job* job = KIO::stat( m_currentSrcURL, true, 2, false );
-                state = STATE_STATING;
-                addSubjob(job);
-                m_bOnlyRenames = false;
-            }
-            else
-            {
-                //kdDebug(7007) << "Renaming succeeded, move on" << endl;
-                emit copyingDone( this, *m_currentStatSrc, dest, true, true );
-                statNextSrc();
-            }
+            slotResultRenaming( job );
+            break;
         }
-        break;
         case STATE_LISTING: // recursive listing finished
             //kdDebug(7007) << "totalSize: " << (unsigned int) m_totalSize << " files: " << files.count() << " dirs: " << dirs.count() << endl;
             // Was there an error ?

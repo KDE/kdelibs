@@ -132,6 +132,9 @@ void MainWindow::createGUI( Part * part )
 
     GUIActivateEvent ev( true );
     QApplication::sendEvent( part, &ev );
+
+    if ( autoSaveSettings() )
+        applyMainWindowSettings( KGlobal::config(), autoSaveGroup() );
   }
 
   setUpdatesEnabled( true );

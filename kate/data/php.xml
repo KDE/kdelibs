@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE language SYSTEM "language.dtd">
-<language name="PHP/PHP" version="1.17" kateversion="2.3" section="Scripts" extensions="" priority="5" mimetype="" hidden="true">
+<language name="PHP/PHP" version="1.19" kateversion="2.3" section="Scripts" extensions="" priority="5" mimetype="" hidden="true">
   <highlighting>
     <list name="control structures">
       <item>as</item>
@@ -23,13 +23,25 @@
       <item>include_once</item>
     </list>
     <list name="keywords">
-      <item> var </item>
+      <item> abstract </item>
+      <item> catch </item>
       <item> class </item>
-      <item> new </item>
-      <item> static </item>
-      <item> function </item>
       <item> default </item>
       <item> extends </item>
+      <item> final </item>
+      <item> function </item>
+      <item> implements </item>
+      <item> interface </item>
+      <item> new </item>
+      <item> self </item>
+      <item> static </item>
+      <item> parent </item>
+      <item> private </item>
+      <item> protected </item>
+      <item> public </item>
+      <item> throw </item>
+      <item> try </item>
+      <item> var </item>
       <item> E_ALL </item>
       <item> E_ERROR </item>
       <item> E_NOTICE </item>
@@ -2672,7 +2684,7 @@
         <keyword attribute="Other" context="#stay" String="Others" />
       </context>
       <context name="onelinecomment" attribute="Comment" lineEndContext="#pop">
-        <StringDetect attribute="Keyword" context="#pop#pop" String="?&gt;" />
+        <StringDetect attribute="Keyword" context="#pop" lookAhead="true" String="?&gt;" />
       </context>
       <context name="twolinecomment" attribute="Comment" lineEndContext="#stay">
         <Detect2Chars attribute="Comment" context="#pop" char="*" char1="/" endRegion="Comment" />

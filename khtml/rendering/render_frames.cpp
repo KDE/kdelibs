@@ -4,6 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 2000 Simon Hausmann <hausmann@kde.org>
  *           (C) 2000 Stefan Schimanski (1Stein@gmx.de)
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,7 +21,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 //#define DEBUG_LAYOUT
 
@@ -99,7 +99,7 @@ bool RenderFrameSet::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _t
 
 void RenderFrameSet::layout( )
 {
-    KHTMLAssert( !layouted() );
+    KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
 
     if ( !parent()->isFrameSet() ) {
@@ -272,7 +272,7 @@ void RenderFrameSet::layout( )
     }
     RenderContainer::layout();
  end2:
-    setLayouted();
+    setNeedsLayout(false);
 }
 
 void RenderFrameSet::positionFrames()
@@ -302,8 +302,8 @@ void RenderFrameSet::positionFrames()
       if ((m_gridLayout[1][c] != child->width()) || (m_gridLayout[0][r] != child->height())) {
           child->setWidth( m_gridLayout[1][c] );
           child->setHeight( m_gridLayout[0][r] );
-          child->setLayouted(false);
-	  child->layout();
+          child->setNeedsLayout(true);
+          child->layout();
       }
 
       xPos += m_gridLayout[1][c] + element()->border();
@@ -318,11 +318,11 @@ void RenderFrameSet::positionFrames()
   }
 
   // all the remaining frames are hidden to avoid ugly
-  // spurious nonlayouted frames
+  // spurious unflowed frames
   while ( child ) {
       child->setWidth( 0 );
       child->setHeight( 0 );
-      child->setLayouted();
+      child->setNeedsLayout(false);
 
       child = child->nextSibling();
   }
@@ -330,7 +330,7 @@ void RenderFrameSet::positionFrames()
 
 bool RenderFrameSet::userResize( MouseEventImpl *evt )
 {
-    if (!layouted()) return false;
+    if (needsLayout()) return false;
 
   bool res = false;
   int _x = evt->clientX();
@@ -427,7 +427,7 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
 
     // this just schedules the relayout
     // important, otherwise the moving indicator is not correctly erased
-    setLayouted(false);
+    setNeedsLayout(true);
   }
 
   KHTMLView *view = canvas()->view();
@@ -468,8 +468,8 @@ void RenderFrameSet::setResizing(bool e)
 
 bool RenderFrameSet::canResize( int _x, int _y )
 {
-    // if we're not layouted, the gridLayout doesn't contain useful data
-    if (!layouted() || !m_gridLayout[0] || !m_gridLayout[1] ) return false;
+    // if we haven't received a layout, then the gridLayout doesn't contain useful data yet
+    if (needsLayout() || !m_gridLayout[0] || !m_gridLayout[1] ) return false;
 
     // check if we're over a horizontal or vertical boundary
     int pos = m_gridLayout[1][0];
@@ -517,25 +517,17 @@ void RenderPart::setWidget( QWidget *widget )
 #ifdef DEBUG_LAYOUT
     kdDebug(6031) << "RenderPart::setWidget()" << endl;
 #endif
+
     setQWidget( widget );
     widget->setFocusPolicy(QWidget::WheelFocus);
     if(widget->inherits("KHTMLView"))
         connect( widget, SIGNAL( cleared() ), this, SLOT( slotViewCleared() ) );
 
-    setLayouted( false );
-    setMinMaxKnown( false );
+    setNeedsLayoutAndMinMaxRecalc();
 
     // make sure the scrollbars are set correctly for restore
     // ### find better fix
     slotViewCleared();
-}
-
-bool RenderPart::eventFilter(QObject *o, QEvent *e)
-{
-    if (element() && element()->id() == ID_FRAME && e->type()==QEvent::FocusIn) {
-	element()->getDocument()->setFocusNode(element());
-    }
-    return RenderWidget::eventFilter(o, e);
 }
 
 bool RenderPart::partLoadingErrorNotify(khtml::ChildFrame *, const KURL& , const QString& )
@@ -601,14 +593,13 @@ void RenderPartObject::updateWidget()
   QString url;
   KHTMLPart *part = m_view->part();
 
-  setMinMaxKnown(false);
-  setLayouted(false);
+  setNeedsLayoutAndMinMaxRecalc();
 
   if (element()->id() == ID_IFRAME) {
 
       HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(element());
       url = o->url.string();
-      if( url.isEmpty() || !o->getDocument()->isURLAllowed(url) ) return;
+      if (!o->getDocument()->isURLAllowed(url)) return;
       part->requestFrame( this, url, o->name.string(), QStringList(), true );
   // ### this should be constant true - move iframe to somewhere else
   } else {
@@ -675,48 +666,43 @@ void RenderPartObject::updateWidget()
           if (!objbase->getAttribute(ATTR_HEIGHT).isEmpty())
               params.append( QString::fromLatin1("HEIGHT=\"%1\"").arg( objbase->getAttribute(ATTR_HEIGHT).string() ) );
 
-          if (url.isEmpty() && objbase->classId.startsWith("java:")) {
-              serviceType = "application/x-java-applet";
-              url = objbase->classId.mid(5);
-          }
           if ( embed ) {
               // render embed object
               url = embed->url;
               serviceType = embed->serviceType;
-          }
-          else {
+          } else if (url.isEmpty() && objbase->classId.startsWith("java:")) {
+              serviceType = "application/x-java-applet";
+              url = objbase->classId.mid(5);
+          } else
               serviceType = objbase->serviceType;
-              if(serviceType.isEmpty() && !objbase->classId.isEmpty()) {
+          if(serviceType.isEmpty() && !objbase->classId.isEmpty()) {
 
-                  // We have a clsid, means this is activex (Niko)
-                  serviceType = "application/x-activex-handler";
+              // We have a clsid, means this is activex (Niko)
+              serviceType = "application/x-activex-handler";
 
-                  if(objbase->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
-                      // It is ActiveX, but the nsplugin system handling
-                      // should also work, that's why we don't override the
-                      // serviceType with application/x-activex-handler
-                      // but let the KTrader in khtmlpart::createPart() detect
-                      // the user's preference: launch with activex viewer or
-                      // with nspluginviewer (Niko)
-                      serviceType = "application/x-shockwave-flash";
-                  }
-                  else if(objbase->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")))
-                      serviceType = "audio/x-pn-realaudio-plugin";
-                  else if(objbase->classId.contains(QString::fromLatin1("8AD9C840-044E-11D1-B3E9-00805F499D93")) ||
-                          objbase->classId.contains(QString::fromLatin1("CAFEEFAC-0014-0000-0000-ABCDEFFEDCBA")))
-                      serviceType = "application/x-java-applet";
-
-                  else
-                      kdDebug(6031) << "ActiveX classId " << objbase->classId << endl;
-
-                  // TODO: add more plugins here
+              if(objbase->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
+                  // It is ActiveX, but the nsplugin system handling
+                  // should also work, that's why we don't override the
+                  // serviceType with application/x-activex-handler
+                  // but let the KTrader in khtmlpart::createPart() detect
+                  // the user's preference: launch with activex viewer or
+                  // with nspluginviewer (Niko)
+                  serviceType = "application/x-shockwave-flash";
               }
+              else if(objbase->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")))
+                  serviceType = "audio/x-pn-realaudio-plugin";
+              else if(objbase->classId.contains(QString::fromLatin1("8AD9C840-044E-11D1-B3E9-00805F499D93")) ||
+                      objbase->classId.contains(QString::fromLatin1("CAFEEFAC-0014-0000-0000-ABCDEFFEDCBA")))
+                  serviceType = "application/x-java-applet";
+
+              else
+                  kdDebug(6031) << "ActiveX classId " << objbase->classId << endl;
+
+              // TODO: add more plugins here
           }
       }
       if ((url.isEmpty() && !embed) || !document()->isURLAllowed(url) || !part->requestObject( this, url, serviceType, params ))
           objbase->renderAlternative();
-      else
-          objbase->setLiveConnect(part->liveConnectExtension(this));
   }
 }
 
@@ -839,7 +825,7 @@ void RenderPartObject::slotPartLoadingErrorNotify()
 
 void RenderPartObject::layout( )
 {
-    KHTMLAssert( !layouted() );
+    KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
 
     calcWidth();
@@ -847,7 +833,7 @@ void RenderPartObject::layout( )
 
     RenderPart::layout();
 
-    setLayouted();
+    setNeedsLayout(false);
 }
 
 void RenderPartObject::slotViewCleared()

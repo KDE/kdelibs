@@ -51,6 +51,7 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <ctype.h>
+#include <assert.h>
 
 #include "date_object.h"
 #include "error_object.h"
@@ -58,9 +59,92 @@
 
 #include "date_object.lut.h"
 
-const time_t invalidDate = -1;
-
 using namespace KJS;
+
+// come constants
+const time_t invalidDate = -1;
+const double hoursPerDay = 24;
+const double minutesPerHour = 60;
+const double secondsPerMinute = 60;
+const double msPerSecond = 1000;
+const double msPerMinute = msPerSecond * secondsPerMinute;
+const double msPerHour = msPerMinute * minutesPerHour;
+const double msPerDay = msPerHour * hoursPerDay;
+
+static int day(double t)
+{
+  return int(floor(t / msPerDay));
+}
+
+static double dayFromYear(int year)
+{
+  return 365.0 * (year - 1970)
+    + floor((year - 1969) / 4.0)
+    - floor((year - 1901) / 100.0)
+    + floor((year - 1601) / 400.0);
+}
+
+// depending on whether it's a leap year or not
+static int daysInYear(int year)
+{
+  if (year % 4 != 0)
+    return 365;
+  else if (year % 400 == 0)
+    return 366;
+  else if (year % 100 == 0)
+    return 365;
+  else
+    return 366;
+}
+
+// time value of the start of a year
+double timeFromYear(int year)
+{
+  return msPerDay * dayFromYear(year);
+}
+
+// year determined by time value
+int yearFromTime(double t)
+{
+  // ### there must be an easier way
+  // initial guess
+  int y = 1970 + int(t / (365.25 * msPerDay));
+  // adjustment
+  if (timeFromYear(y) > t) {
+    do {
+      --y;
+    } while (timeFromYear(y) > t);
+  } else {
+    while (timeFromYear(y + 1) < t)
+      ++y;
+  }
+
+  return y;
+}
+
+// 0: Sunday, 1: Monday, etc.
+int weekDay(double t)
+{
+  int wd = (day(t) + 4) % 7;
+  if (wd < 0)
+    wd += 7;
+  return wd;
+}
+
+static double timeZoneOffset(const struct tm *t)
+{
+#if defined BSD || defined(__linux__) || defined(__APPLE__)
+  return -(t->tm_gmtoff / 60);
+#else
+#  if defined(__BORLANDC__)
+// FIXME consider non one-hour DST change
+#error please add daylight savings offset here!
+  return _timezone / 60 - (t->tm_isdst > 0 ? 60 : 0);
+#  else
+  return timezone / 60 - (t->tm_isdst > 0 ? 60 : 0 );
+#  endif
+#endif
+}
 
 // ------------------------------ DateInstanceImp ------------------------------
 
@@ -208,41 +292,39 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
       return Number(NaN);
     }
   }
+
+  // check whether time value is outside time_t's usual range
+  // make the necessary transformations if necessary
+  int realYearOffset = 0;
+  double milliOffset = 0.0;
+  if (milli < 0 || milli >= timeFromYear(2038)) {
+    // ### ugly and probably not very precise
+    int realYear = yearFromTime(milli);
+    int y0 = (realYear / 100) * 100;
+    int base = 1900;
+    if (realYear % 100 == 0)
+      base += 100;
+    milliOffset = timeFromYear(base) - timeFromYear(y0);
+    milli += milliOffset;
+    realYearOffset = realYear - yearFromTime(milli);
+  }
+
   time_t tv = (time_t) floor(milli / 1000.0);
   int ms = int(milli - tv * 1000.0);
 
-  // As long as we're using time_t we need to 'truncate' to avoid 'wrapping'.
-  // Real long term solutions include: writing our own 64-bit-based date/time class,
-  // using wxWindow's datetime.cpp (in wxBase), using QDateTime... or shifting
-  // to a time_t range by substracting a big enough number of years....
-  if (sizeof(time_t) == 4)
-  {
-    // If time_t is signed, the bigger it can be is 2^31-1
-    if ( (time_t)-1 < 0 ) {
-      if ( floor(milli / 1000.0) > ((double)((uint)1<<31)-1) ) {
-#ifdef KJS_VERBOSE
-        fprintf(stderr, "date above time_t limit. Year seems to be %d\n", (int)(milli/(1000.0*365.25*86400)+1970));
-#endif
-        tv = ((uint)1<<31)-1;
-        ms = 0;
-      }
-    }
-    else
-      // time_t is unsigned, the bigger it can be is 2^32-1, aka (uint)-1
-      if ( floor(milli / 1000.0) > ((double)(uint)-1) ) {
-#ifdef KJS_VERBOSE
-        fprintf(stderr, "date above time_t limit. Year seems to be %d\n", (int)(milli/(1000.0*365.25*86400)+1970));
-#endif
-        tv = (uint)-1;
-        ms = 0;
-      }
-  }
+  struct tm *t = utc ? gmtime(&tv) : localtime(&tv);
 
-  struct tm *t;
-  if (utc)
-    t = gmtime(&tv);
-  else
-    t = localtime(&tv);
+  // we had an out of range year. use that one (plus/minus offset
+  // found by calculating tm_year) and fix the week day calculation
+  if (realYearOffset != 0) {
+    t->tm_year += realYearOffset;
+    milli -= milliOffset;
+    // our own weekday calculation. beware of need for local time.
+    double m = milli;
+    if (!utc)
+      m -= timeZoneOffset(t) * msPerMinute;
+    t->tm_wday = weekDay(m);
+  }
 
   // trick gcc. We don't want the Y2K warnings.
   const char xFormat[] = "%x";
@@ -316,16 +398,7 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     result = Number(ms);
     break;
   case GetTimezoneOffset:
-#if defined BSD || defined(__APPLE__)
-    result = Number(-(t->tm_gmtoff / 60) + (t->tm_isdst > 0 ? 60 : 0));
-#else
-#  if defined(__BORLANDC__)
-#error please add daylight savings offset here!
-    result = Number(_timezone / 60 - (t->tm_isdst > 0 ? 60 : 0));
-#  else
-    result = Number((timezone / 60 - (t->tm_isdst > 0 ? 60 : 0 )));
-#  endif
-#endif
+    result = Number(timeZoneOffset(t));
     break;
   case SetTime:
     milli = roundValue(exec,args[0]);
@@ -371,15 +444,19 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     if (args.size() >= 3)
       t->tm_mday = args[2].toInt32(exec);
     break;
-  case SetYear:
-    t->tm_year = args[0].toInt32(exec) >= 1900 ? args[0].toInt32(exec) - 1900 : args[0].toInt32(exec);
+  case SetYear: {
+    int a0 = args[0].toInt32(exec);
+    if (a0 >= 0 && a0 <= 99)
+      a0 += 1900;
+    t->tm_year = a0 - 1900;
     break;
+  }
   }
 
   if (id == SetYear || id == SetMilliSeconds || id == SetSeconds ||
       id == SetMinutes || id == SetHours || id == SetDate ||
       id == SetMonth || id == SetFullYear ) {
-    result = Number(mktime(t) * 1000.0 + ms);
+    result = Number(makeTime(t, ms, utc));
     thisObj.setInternalValue(result);
   }
 
@@ -422,7 +499,7 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
 #ifdef KJS_VERBOSE
   fprintf(stderr,"DateObjectImp::construct - %d args\n", numArgs);
 #endif
-  Value value;
+  double value;
 
   if (numArgs == 0) { // new Date() ECMA 15.9.3.3
 #if HAVE_SYS_TIMEB_H
@@ -439,14 +516,13 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
     gettimeofday(&tv, 0L);
     double utc = floor((double)tv.tv_sec * 1000.0 + (double)tv.tv_usec / 1000.0);
 #endif
-    value = Number(utc);
+    value = utc;
   } else if (numArgs == 1) {
-    UString s = args[0].toString(exec);
-    double d = s.toDouble();
-    if (isNaN(d))
-      value = parseDate(s);
+    Value prim = args[0].toPrimitive(exec);
+    if (prim.isA(StringType))
+      value = parseDate(prim.toString(exec));
     else
-      value = Number(d);
+      value = prim.toNumber(exec);
   } else {
     struct tm t;
     memset(&t, 0, sizeof(t));
@@ -460,12 +536,12 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
     t.tm_sec = (numArgs >= 6) ? args[5].toInt32(exec) : 0;
     t.tm_isdst = -1;
     int ms = (numArgs >= 7) ? args[6].toInt32(exec) : 0;
-    value = Number(mktime(&t) * 1000.0 + ms);
+    value = makeTime(&t, ms, false);
   }
 
   Object proto = exec->interpreter()->builtinDatePrototype();
   Object ret(new DateInstanceImp(proto.imp()));
-  ret.setInternalValue(timeClip(value));
+  ret.setInternalValue(Number(timeClip(value)));
   return ret;
 }
 
@@ -506,7 +582,7 @@ bool DateObjectFuncImp::implementsCall() const
 Value DateObjectFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
 {
   if (id == Parse) {
-    return parseDate(args[0].toString(exec));
+    return Number(parseDate(args[0].toString(exec)));
   } else { // UTC
     struct tm t;
     memset(&t, 0, sizeof(t));
@@ -520,14 +596,14 @@ Value DateObjectFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &
     t.tm_min = (n >= 5) ? args[4].toInt32(exec) : 0;
     t.tm_sec = (n >= 6) ? args[5].toInt32(exec) : 0;
     int ms = (n >= 7) ? args[6].toInt32(exec) : 0;
-    return Number(mktime(&t) * 1000.0 + ms);
+    return Number(makeTime(&t, ms, true));
   }
 }
 
 // -----------------------------------------------------------------------------
 
 
-Value KJS::parseDate(const UString &u)
+double KJS::parseDate(const UString &u)
 {
 #ifdef KJS_VERBOSE
   fprintf(stderr,"KJS::parseDate %s\n",u.ascii());
@@ -550,7 +626,7 @@ Value KJS::parseDate(const UString &u)
   }
 #endif
 
-  return Number(seconds == -1 ? NaN : seconds * 1000.0);
+  return seconds == -1 ? NaN : seconds * 1000.0;
 }
 
 ///// Awful duplication from krfcdate.cpp - we don't link to kdecore
@@ -592,19 +668,44 @@ static const struct {
     { { 0, 0, 0, 0 }, 0 }
 };
 
-int KJS::local_timeoffset()
+double KJS::makeTime(struct tm *t, int ms, bool utc)
 {
-     static int local_offset = -1;
+    int utcOffset;
+    if (utc) {
+	time_t zero = 0;
+	struct tm t3;
+       	localtime_r(&zero, &t3);
+#if defined BSD || defined(__linux__) || defined(__APPLE__)
+        utcOffset = t3.tm_gmtoff;
+        t->tm_isdst = t3.tm_isdst;
+#else
+#  if defined(__BORLANDC__)
+        utcOffset = - _timezone;
+#  else
+        utcOffset = - timezone;
+#  endif
+        t->tm_isdst = 0;
+#endif
+    } else {
+	utcOffset = 0;
+	t->tm_isdst = -1;
+    }
 
-     if ( local_offset != -1 ) return local_offset;
+    double yearOffset = 0.0;
+    if (t->tm_year < (1970 - 1900) || t->tm_year > (2038 - 1900)) {
+      // we'll fool mktime() into believing that this year is within
+      // its normal, portable range (1970-2038) by setting tm_year to
+      // 2000 or 2001 and adding the difference in milliseconds later.
+      // choice between offset will depend on whether the year is a
+      // leap year or not.
+      int y = t->tm_year + 1900;
+      int baseYear = daysInYear(y) == 365 ? 2001 : 2000;
+      const double baseTime = timeFromYear(baseYear);
+      yearOffset = timeFromYear(y) - baseTime;
+      t->tm_year = baseYear - 1900;
+    }
 
-     time_t local = time(0);
-     struct tm* tm_local = gmtime(&local);
-     local_offset = local-mktime(tm_local);
-     if(tm_local->tm_isdst)
-       local_offset += 3600;
-
-     return local_offset;
+    return (mktime(t) + utcOffset) * 1000.0 + ms + yearOffset;
 }
 
 double KJS::KRFCDate_parseDate(const UString &_date)
@@ -677,12 +778,28 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      day = strtol(dateString, &newPosStr, 10);
      dateString = newPosStr;
 
-     if ((day < 1) || (day > 31))
-     	return invalidDate;
      if (!*dateString)
      	return invalidDate;
 
-     if (*dateString == '/' && day <= 12 && month == -1)
+     if (day < 1)
+       return invalidDate;
+     if (day > 31) {
+       // ### where is the boundary and what happens below?
+       if (*dateString == '/' && day >= 1000) {
+         // looks like a YYYY/MM/DD date
+         if (!*++dateString)
+           return invalidDate;
+         year = day;
+         month = strtol(dateString, &newPosStr, 10) - 1;
+         dateString = newPosStr;
+         if (*dateString++ != '/' || !*dateString)
+           return invalidDate;
+         day = strtol(dateString, &newPosStr, 10);
+         dateString = newPosStr;
+       } else {
+         return invalidDate;
+       }
+     } else if (*dateString == '/' && day <= 12 && month == -1)
      {
      	dateString++;
         // This looks like a MM/DD/YYYY date, not an RFC date.....
@@ -743,7 +860,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      }
 
      // '99 23:12:40 GMT'
-     year = strtol(dateString, &newPosStr, 10);
+     if (year <= 0 && *dateString)
+       year = strtol(dateString, &newPosStr, 10);
 
      // Don't fail if the time is missing.
      if (*newPosStr)
@@ -861,7 +979,7 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      if ((year < 1900) || (year > 2500))
      	return invalidDate;
 
-     if (!have_time && !have_tz) {
+     if (!have_tz) {
        // fall back to midnight, local timezone
        struct tm t;
        memset(&t, 0, sizeof(tm));
@@ -869,13 +987,16 @@ double KJS::KRFCDate_parseDate(const UString &_date)
        t.tm_mon = month;
        t.tm_year = year - 1900;
        t.tm_isdst = -1;
+       if (have_time) {
+         t.tm_sec = second;
+         t.tm_min = minute;
+         t.tm_hour = hour;
+       }
+
        return mktime(&t);
      }
 
-     if(!have_tz)
-       offset = local_timeoffset();
-     else
-       offset *= 60;
+     offset *= 60;
 
      result = ymdhms_to_seconds(year, month+1, day, hour, minute, second);
 
@@ -894,9 +1015,10 @@ double KJS::KRFCDate_parseDate(const UString &_date)
 }
 
 
-Value KJS::timeClip(const Value &t)
+double KJS::timeClip(double t)
 {
-  /* TODO */
+  if (isInf(t) || fabs(t) > 8.64E15)
+    return NaN;
   return t;
 }
 

@@ -27,6 +27,8 @@
 #include <unistd.h>
 #endif
 
+#include "kapplication.h"
+
 #include "ksocks.h"
 #include "ksocketaddress.h"
 #include "kresolver.h"
@@ -153,7 +155,7 @@ KSocksSocketDevice* KSocksSocketDevice::accept()
     }
 
   struct sockaddr sa;
-  socklen_t len = sizeof(sa);
+  kde_socklen_t len = sizeof(sa);
   int newfd = KSocks::self()->accept(m_sockfd, &sa, &len);
   if (newfd == -1)
     {
@@ -169,7 +171,7 @@ KSocksSocketDevice* KSocksSocketDevice::accept()
 
 static int socks_read_common(int sockfd, char *data, Q_ULONG maxlen, KSocketAddress* from, ssize_t &retval, bool peek = false)
 {
-  socklen_t len;
+  kde_socklen_t len;
   if (from)
     {
       from->setLength(len = 128); // arbitrary length
@@ -307,7 +309,7 @@ KSocketAddress KSocksSocketDevice::localAddress() const
   if (m_sockfd == -1)
     return KSocketAddress();	// not open, empty value
 
-  socklen_t len;
+  kde_socklen_t len;
   KSocketAddress localAddress;
   localAddress.setLength(len = 32);	// arbitrary value
   if (KSocks::self()->getsockname(m_sockfd, localAddress.address(), &len) == -1)
@@ -336,7 +338,7 @@ KSocketAddress KSocksSocketDevice::peerAddress() const
   if (m_sockfd == -1)
     return KSocketAddress();	// not open, empty value
 
-  socklen_t len;
+  kde_socklen_t len;
   KSocketAddress peerAddress;
   peerAddress.setLength(len = 32);	// arbitrary value
   if (KSocks::self()->getpeername(m_sockfd, peerAddress.address(), &len) == -1)
@@ -436,3 +438,29 @@ bool KSocksSocketDevice::poll(bool *input, bool *output, bool *exception,
 
   return true;
 }
+
+void KSocksSocketDevice::initSocks()
+{
+  static bool init = false;
+
+  if (init)
+    return;
+
+  if (kapp == 0L)
+    return;			// no KApplication, so don't initialise
+                                // this should, however, test for KInstance
+
+  init = true;
+
+  if (KSocks::self()->hasSocks())
+    delete KSocketDevice::setDefaultImpl(new KSocketDeviceFactory<KSocksSocketDevice>);
+}
+
+#if 0
+static bool register()
+{
+  KSocketDevice::addNewImpl(new KSocketDeviceFactory<KSocksSocketDevice>, 0);
+}
+
+static bool register = registered();
+#endif

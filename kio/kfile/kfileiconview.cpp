@@ -686,6 +686,8 @@ void KFileIconView::determineIcon( KFileIconViewItem *item )
 
 void KFileIconView::listingCompleted()
 {
+    arrangeItemsInGrid();
+    
     // QIconView doesn't set the current item automatically, so we have to do
     // that. We don't want to emit selectionChanged() tho.
     if ( !currentItem() ) {

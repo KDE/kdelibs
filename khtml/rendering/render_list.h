@@ -19,7 +19,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef RENDER_LIST_H
 #define RENDER_LIST_H
@@ -96,6 +95,8 @@ public:
     virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *);
 
     virtual void calcWidth();
+
+    virtual bool isListMarker() const { return true; }
 
     RenderListItem* listItem() const { return m_listItem; }
     void setListItem(RenderListItem* listItem) { m_listItem = listItem; }

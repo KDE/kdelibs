@@ -1,6 +1,8 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=PHP Script
+Comment[af]=PHP Skrip
+Comment[ar]=ملف PHP
 Comment[az]=PHP Skripti
 Comment[be]=Скрыпт PHP
 Comment[bg]=Скрипт на PHP
@@ -20,6 +22,7 @@ Comment[eu]=PHP Scripta
 Comment[fa]=نویسه‌ی PHP
 Comment[fi]=PHP-skripti
 Comment[fr]=Script PHP
+Comment[ga]=Script PHP
 Comment[gl]=Script en PHP
 Comment[he]=תסריט PHP
 Comment[hi]=PHP स्क्रिप्ट
@@ -30,6 +33,7 @@ Comment[it]=Script PHP
 Comment[ja]=PHP スクリプト
 Comment[ko]=PHP 스크립트
 Comment[lt]=PHP skriptas
+Comment[mk]=PHP скрипта
 Comment[mn]=PHP скрипт
 Comment[nb]=PHP-skript
 Comment[nds]=PHP-Skript
@@ -55,7 +59,6 @@ Comment[tr]=PHP betiği
 Comment[uk]=Скрипт мови програмування PHP
 Comment[uz]=PHP скрипти
 Comment[wa]=Sicripe PHP
-Comment[xx]=xxPHP Scriptxx
 Comment[zh_CN]=PHP 脚本
 
 Icon=source_php

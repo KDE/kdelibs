@@ -18,7 +18,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #include "rendering/render_body.h"
 #include "rendering/render_canvas.h"
@@ -45,8 +44,8 @@ RenderBody::~RenderBody()
 void RenderBody::setStyle(RenderStyle* style)
 {
 //     qDebug("RenderBody::setStyle()");
-    // ignore position: on body
-    if (style->htmlHacks() && style->position() != STATIC)
+    // ignore position: fixed on body
+    if (style->htmlHacks() && style->position() == FIXED)
         style->setPosition(STATIC);
 
     RenderBlock::setStyle(style);

@@ -4,6 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,7 +21,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 //#define DEBUG_LAYOUT
 
@@ -171,10 +171,10 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
 
     if(needlayout)
     {
-        setMinMaxKnown(false);
-        setLayouted(false);
-//         kdDebug( 6040 ) << "m_width: : " << m_width << " height: " << m_height << endl;
-//         kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
+        if (!selfNeedsLayout())
+            setNeedsLayout(true);
+        if (minMaxKnown())
+            setMinMaxKnown(false);
     }
     else
     {
@@ -350,7 +350,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
 
 void RenderImage::layout()
 {
-    KHTMLAssert(!layouted());
+    KHTMLAssert( needsLayout());
     KHTMLAssert( minMaxKnown() );
 
     short oldwidth = m_width;
@@ -380,7 +380,7 @@ void RenderImage::layout()
     if ( m_width != oldwidth || m_height != oldheight )
         resizeCache = QPixmap();
 
-    setLayouted();
+    setNeedsLayout(false);
 }
 
 void RenderImage::notifyFinished(CachedObject *finishedObj)
@@ -437,7 +437,11 @@ void RenderImage::updateImage(CachedImage* new_image)
     if (tempimage && image != tempimage && oimage != tempimage )
         tempimage->deref(this);
 
-    berrorPic = image->isErrorImage();
+    // if the loading finishes we might get an error and then the image is deleted
+    if ( image )
+        berrorPic = image->isErrorImage();
+    else
+        berrorPic = true;
 }
 
 void RenderImage::updateFromElement()
@@ -470,7 +474,7 @@ bool RenderImage::complete() const
 {
      // "complete" means that the image has been loaded
      // but also that its width/height (contentWidth(),contentHeight()) have been calculated.
-     return image && image->valid_rect().size() == image->pixmap_size() && layouted();
+     return image && image->valid_rect().size() == image->pixmap_size() && !needsLayout();
 }
 
 short RenderImage::calcReplacedWidth() const

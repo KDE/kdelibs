@@ -260,24 +260,24 @@ DOMString CSSSelector::selectorText() const
     // #### fix namespace
     DOMString str;
     const CSSSelector* cs = this;
-    if ( cs->tag == 0xffff && cs->attr == ATTR_ID && cs->match == CSSSelector::Exact )
+    if ( cs->tag == 0xffffffff && cs->attr == ATTR_ID && cs->match == CSSSelector::Exact )
     {
         str = "#";
         str += cs->value;
     }
-    else if ( cs->tag == 0xffff && cs->attr == ATTR_CLASS && cs->match == CSSSelector::List )
+    else if ( cs->tag == 0xffffffff && cs->attr == ATTR_CLASS && cs->match == CSSSelector::List )
     {
         str = ".";
         str += cs->value;
     }
-    else if ( cs->tag == 0xffff && cs->match == CSSSelector::Pseudo )
+    else if ( cs->tag == 0xffffffff && cs->match == CSSSelector::Pseudo )
     {
         str = ":";
         str += cs->value;
     }
     else
     {
-        if ( cs->tag == 0xffff )
+        if ( cs->tag == 0xffffffff )
             str = "*";
         else
             str = getTagName( cs->tag );
@@ -335,6 +335,8 @@ DOMString CSSSelector::selectorText() const
         DOMString tagHistoryText = cs->tagHistory->selectorText();
         if ( cs->relation == Sibling )
             str = tagHistoryText + " + " + str;
+        else if ( cs->relation == Cousin )
+            str = tagHistoryText + " ~ " + str;
         else if ( cs->relation == Child )
             str = tagHistoryText + " > " + str;
         else if ( cs->relation == SubSelector )

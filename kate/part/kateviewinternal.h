@@ -260,6 +260,8 @@ class KateViewInternal : public QWidget
 
     void paintCursor();
 
+    void updateMicroFocusHint();
+
     void placeCursor( const QPoint& p, bool keepSelection = false, bool updateSelection = true );
     bool isTargetSelected( const QPoint& p );
 
@@ -428,6 +430,7 @@ class KateViewInternal : public QWidget
    int m_imPreeditStartLine;
    int m_imPreeditStart;
    int m_imPreeditLength;
+   int m_imPreeditSelStart;
 };
 
 #endif

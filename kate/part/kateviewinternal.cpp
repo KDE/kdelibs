@@ -50,6 +50,7 @@
 #include <qlayout.h>
 #include <qclipboard.h>
 #include <qpixmap.h>
+#include <qvbox.h>
 
 KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   : QWidget (view, "", Qt::WStaticContents | Qt::WRepaintNoErase | Qt::WResizeNoErase )
@@ -84,6 +85,7 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   , m_imPreeditStartLine(0)
   , m_imPreeditStart(0)
   , m_imPreeditLength(0)
+  , m_imPreeditSelStart(0)
 {
   setMinimumSize (0,0);
 
@@ -889,6 +891,26 @@ QPoint KateViewInternal::cursorCoordinates()
 
   return QPoint(x, y);
 }
+
+
+void KateViewInternal::updateMicroFocusHint()
+{
+  int line = displayViewLine(displayCursor, true);
+  if (line == -1)
+      return;
+
+// Cursor placement code is changed for Asian input method that
+  // shows candidate window. This behavior is same as Qt/E 2.3.7
+  // which supports Asian input methods. Asian input methods need
+  // start point of IM selection text to place candidate window as
+  // adjacent to the selection text.
+  uint preeditStrLen = m_view->renderer()->textWidth(textLine(m_imPreeditStartLine), cursor.col()) - m_view->renderer()->textWidth(textLine(m_imPreeditStartLine), m_imPreeditSelStart);
+  uint x = cXPos - m_startX - lineRanges[line].startX + lineRanges[line].xOffset() - preeditStrLen;
+  uint y = line * m_view->renderer()->fontHeight();
+
+  setMicroFocusHint( x, y, 0, m_view->renderer()->fontHeight() );
+}
+
 
 void KateViewInternal::doReturn()
 {
@@ -2061,8 +2083,7 @@ void KateViewInternal::updateCursor( const KateTextCursor& newCursor, bool force
   tagLine(oldDisplayCursor);
   tagLine(displayCursor);
 
-  QPoint cursorP = cursorCoordinates();
-  setMicroFocusHint( cursorP.x(), cursorP.y(), 0, m_view->renderer()->fontHeight() );
+  updateMicroFocusHint();
 
   if (m_cursorTimer.isActive ())
   {
@@ -2277,6 +2298,14 @@ bool KateViewInternal::eventFilter( QObject *obj, QEvent *e )
     {
       QKeyEvent *k = (QKeyEvent *)e;
 
+      if (m_view->m_codeCompletion->codeCompletionVisible ())
+      {
+        kdDebug (13030) << "hint around" << endl;
+
+        if( k->key() == Key_Escape )
+          m_view->m_codeCompletion->abortCompletion();
+      }
+
       if ((k->key() == Qt::Key_Escape) && !(m_doc->configFlags() & KateDocument::cfPersistent) )
       {
         m_doc->clearSelection();
@@ -2309,6 +2338,7 @@ bool KateViewInternal::eventFilter( QObject *obj, QEvent *e )
     } break;
 
     case QEvent::DragLeave:
+      // happens only when pressing ESC while dragging
       stopDragScroll();
       break;
 
@@ -2323,10 +2353,36 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
 {
   KKey key(e);
 
-   if (key == Qt::Key_Left)
+  bool codeComp = m_view->m_codeCompletion->codeCompletionVisible ();
+
+  if (codeComp)
+  {
+    kdDebug (13030) << "hint around" << endl;
+
+    if( e->key() == Key_Enter || e->key() == Key_Return  ||
+    (key == SHIFT + Qt::Key_Return) || (key == SHIFT + Qt::Key_Enter)) {
+      m_view->m_codeCompletion->doComplete();
+      e->accept();
+      return;
+    }
+
+    if( (e->key() == Key_Up)    || (e->key() == Key_Down ) ||
+        (e->key() == Key_Home ) || (e->key() == Key_End)   ||
+        (e->key() == Key_Prior) || (e->key() == Key_Next )) {
+       m_view->m_codeCompletion->handleKey (e);
+       e->accept();
+       return;
+    }
+  }
+
+  if (key == Qt::Key_Left)
   {
     m_view->cursorLeft();
     e->accept();
+
+    if (codeComp)
+      m_view->m_codeCompletion->updateBox ();
+
     return;
   }
 
@@ -2334,6 +2390,10 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
   {
     m_view->cursorRight();
     e->accept();
+
+    if (codeComp)
+      m_view->m_codeCompletion->updateBox ();
+
     return;
   }
 
@@ -2367,18 +2427,31 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
   if ((key == SHIFT + Qt::Key_Return) || (key == SHIFT + Qt::Key_Enter))
   {
     uint ln = cursor.line();
+    int col = cursor.col();
     KateTextLine::Ptr line = m_doc->kateTextLine( ln );
     int pos = line->firstChar();
+    if (pos > cursor.col()) pos = cursor.col();
     if (pos != -1) {
-      while ((int)line->length() > pos && !line->getChar(pos).isLetterOrNumber()) ++pos;
+      while ((int)line->length() > pos &&
+             !line->getChar(pos).isLetterOrNumber() &&
+             pos < cursor.col()) ++pos;
     } else {
       pos = line->length(); // stay indented
     }
-    m_doc->insertText( cursor.line(), line->length(), "\n" +  line->string(0, pos) );
+    m_doc->editStart();
+    m_doc->insertText( cursor.line(), line->length(), "\n" +  line->string(0, pos)
+      + line->string().right( line->length() - cursor.col() ) );
     cursor.setPos(ln + 1, pos);
+    if (col < line->length())
+      m_doc->editRemoveText(ln, col, line->length() - col);
+    m_doc->editEnd();
     updateCursor(cursor, true);
     updateView();
     e->accept();
+
+    if (codeComp)
+      m_view->m_codeCompletion->updateBox ();
+
     return;
   }
 
@@ -2386,6 +2459,10 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
   {
     m_view->backspace();
     e->accept();
+
+    if (codeComp)
+      m_view->m_codeCompletion->updateBox ();
+
     return;
   }
 
@@ -2393,6 +2470,10 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
   {
     m_view->keyDelete();
     e->accept();
+
+    if (codeComp)
+      m_view->m_codeCompletion->updateBox ();
+
     return;
   }
 
@@ -2409,6 +2490,10 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
         m_doc->insertIndentChars ( m_view );
 
       e->accept();
+
+      if (codeComp)
+        m_view->m_codeCompletion->updateBox ();
+
       return;
     }
 
@@ -2416,6 +2501,10 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
     {
       m_doc->indent( m_view, cursor.line(), -1 );
       e->accept();
+
+      if (codeComp)
+        m_view->m_codeCompletion->updateBox ();
+
       return;
     }
   }
@@ -2424,6 +2513,10 @@ void KateViewInternal::keyPressEvent( QKeyEvent* e )
        && m_doc->typeChars ( m_view, e->text() ) )
   {
     e->accept();
+
+    if (codeComp)
+      m_view->m_codeCompletion->updateBox ();
+
     return;
   }
 
@@ -2604,7 +2697,7 @@ void KateViewInternal::mouseReleaseEvent( QMouseEvent* e )
       }
 
       if (dragInfo.state == diPending)
-        placeCursor( e->pos() );
+        placeCursor( e->pos(), e->state() & ShiftButton );
       else if (dragInfo.state == diNone)
         m_scrollTimer.stop ();
 
@@ -2821,7 +2914,7 @@ void KateViewInternal::doDrag()
 {
   dragInfo.state = diDragging;
   dragInfo.dragObject = new QTextDrag(m_doc->selection(), this);
-  dragInfo.dragObject->dragCopy();
+  dragInfo.dragObject->drag();
 }
 
 void KateViewInternal::dragEnterEvent( QDragEnterEvent* event )
@@ -2834,6 +2927,10 @@ void KateViewInternal::dragMoveEvent( QDragMoveEvent* event )
 {
   // track the cursor to the current drop location
   placeCursor( event->pos(), true, false );
+
+  // important: accept action to switch between copy and move mode
+  // without this, the text will always be copied.
+  event->acceptAction();
 }
 
 void KateViewInternal::dropEvent( QDropEvent* event )
@@ -2863,12 +2960,27 @@ void KateViewInternal::dropEvent( QDropEvent* event )
       return;
     }
 
-    // atm only copy the text, no move
+    // use one transaction
+    m_doc->editStart ();
+
+    // on move: remove selected text; on copy: duplicate text
+    if ( event->action() != QDropEvent::Copy )
+      m_doc->removeSelectedText();
+
     m_doc->insertText( cursor.line(), cursor.col(), text );
+
+    m_doc->editEnd ();
+
     placeCursor( event->pos() );
 
+    event->acceptAction();
     updateView();
   }
+
+  // finally finish drag and drop mode
+  dragInfo.state = diNone;
+  // important, because the eventFilter`s DragLeave does not occure
+  stopDragScroll();
 }
 
 void KateViewInternal::imStartEvent( QIMEvent *e )
@@ -2884,6 +2996,7 @@ void KateViewInternal::imStartEvent( QIMEvent *e )
   m_imPreeditStartLine = cursor.line();
   m_imPreeditStart = cursor.col();
   m_imPreeditLength = 0;
+  m_imPreeditSelStart = m_imPreeditStart;
 
   m_doc->setIMSelectionValue( m_imPreeditStartLine, m_imPreeditStart, 0, 0, 0, true );
 }
@@ -2908,7 +3021,9 @@ void KateViewInternal::imComposeEvent( QIMEvent *e )
 
   updateView( true );
   updateCursor( cursor, true );
+
   m_imPreeditLength = e->text().length();
+  m_imPreeditSelStart = m_imPreeditStart + e->cursorPos();
 }
 
 void KateViewInternal::imEndEvent( QIMEvent *e )
@@ -2938,6 +3053,7 @@ void KateViewInternal::imEndEvent( QIMEvent *e )
 
   m_imPreeditStart = 0;
   m_imPreeditLength = 0;
+  m_imPreeditSelStart = 0;
 }
 
 //
@@ -3009,8 +3125,10 @@ void KateViewInternal::doDragScroll()
 
   if (dy)
     scrollLines(startPos().line() + dy);
-  if (dx)
-    scrollColumns(m_startX + dx);
+
+  if (!m_view->dynWordWrap() && m_columnScrollDisplayed && dx)
+    scrollColumns(kMin (m_startX + dx, m_columnScroll->maxValue()));
+
   if (!dy && !dx)
     stopDragScroll();
 }

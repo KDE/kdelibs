@@ -595,28 +595,6 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
         return NoMatch;
     if( d->startups.count() == 0 )
         return NoMatch; // no startups
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-// SELI ???
-    NETWinInfo info( qt_xdisplay(),  w_P, qt_xrootwin(),
-        NET::WMWindowType | NET::WMPid | NET::WMState );
-    // ignore NET::Tool and other special window types
-    NET::WindowType type = info.windowType( NET::NormalMask | NET::DesktopMask
-        | NET::DockMask | NET::ToolbarMask | NET::MenuMask | NET::DialogMask
-        | NET::OverrideMask | NET::TopMenuMask | NET::UtilityMask | NET::SplashMask );
-    if( type != NET::Normal
-        && type != NET::Override
-        && type != NET::Unknown
-        && type != NET::Dialog
-        && type != NET::Utility )
-//        && type != NET::Dock ) why did I put this here?
-	return NoMatch;
-    // lets see if this is a transient
-    Window transient_for;
-    if( XGetTransientForHint( qt_xdisplay(), static_cast< Window >( w_P ), &transient_for )
-        && static_cast< WId >( transient_for ) != qt_xrootwin()
-        && transient_for != None )
-	return NoMatch;
-#endif
     // Strategy:
     //
     // Is this a compliant app ?
@@ -636,6 +614,8 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
         return find_id( id, id_O, data_O ) ? Match : NoMatch;
         }
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
+    NETWinInfo info( qt_xdisplay(),  w_P, qt_xrootwin(),
+        NET::WMWindowType | NET::WMPid | NET::WMState );
     pid_t pid = info.pid();
     if( pid > 0 )
         {
@@ -655,6 +635,23 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
         if( find_wclass( res_name, res_class, id_O, data_O ))
             return Match;
         }
+    // ignore NET::Tool and other special window types, if they can't be matched
+    NET::WindowType type = info.windowType( NET::NormalMask | NET::DesktopMask
+        | NET::DockMask | NET::ToolbarMask | NET::MenuMask | NET::DialogMask
+        | NET::OverrideMask | NET::TopMenuMask | NET::UtilityMask | NET::SplashMask );
+    if( type != NET::Normal
+        && type != NET::Override
+        && type != NET::Unknown
+        && type != NET::Dialog
+        && type != NET::Utility )
+//        && type != NET::Dock ) why did I put this here?
+	return NoMatch;
+    // lets see if this is a transient
+    Window transient_for;
+    if( XGetTransientForHint( qt_xdisplay(), static_cast< Window >( w_P ), &transient_for )
+        && static_cast< WId >( transient_for ) != qt_xrootwin()
+        && transient_for != None )
+	return NoMatch;
 #endif
     kdDebug( 172 ) << "check_startup:cantdetect" << endl;
     return CantDetect;

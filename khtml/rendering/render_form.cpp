@@ -20,7 +20,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 
 #include <kcompletionbox.h>
@@ -35,6 +34,7 @@
 #include <kreplace.h>
 #include <kreplacedialog.h>
 #include <kspell.h>
+#include <kurlcompletion.h>
 #include <kwin.h>
 
 #include <qstyle.h>
@@ -83,7 +83,7 @@ void RenderFormElement::updateFromElement()
 
 void RenderFormElement::layout()
 {
-    KHTMLAssert( !layouted() );
+    KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
 
     // minimum height
@@ -97,7 +97,7 @@ void RenderFormElement::layout()
                      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom());
 
     if ( !style()->width().isPercent() )
-        setLayouted();
+        setNeedsLayout(false);
 }
 
 // -------------------------------------------------------------------------
@@ -114,35 +114,11 @@ short RenderButton::baselinePosition( bool f ) const
 
 // -------------------------------------------------------------------------------
 
-CheckBoxWidget::CheckBoxWidget(QWidget *parent)
-    : QCheckBox(parent, "__khtml")
-{
-}
-
-bool CheckBoxWidget::event(QEvent *e)
-{
-    bool retval = QCheckBox::event(e);
-    switch(e->type())
-    {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-	return true;
-    default:
-	return retval;
-    }
-}
-
-// -------------------------------------------------------------------------------
-
 
 RenderCheckBox::RenderCheckBox(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QCheckBox* b = new CheckBoxWidget(view()->viewport());
+    QCheckBox* b = new QCheckBox(view()->viewport(), "__khtml");
     b->setAutoMask(true);
     b->setMouseTracking(true);
     setQWidget(b);
@@ -173,30 +149,10 @@ void RenderCheckBox::updateFromElement()
 void RenderCheckBox::slotStateChanged(int state)
 {
     element()->setChecked(state == 2);
-}
 
-// -------------------------------------------------------------------------------
-
-RadioButtonWidget::RadioButtonWidget(QWidget *parent)
-    : QRadioButton(parent, "__khtml")
-{
-}
-
-bool RadioButtonWidget::event(QEvent *e)
-{
-    bool retval = QRadioButton::event(e);
-    switch(e->type())
-    {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-	return true;
-    default:
-	return retval;
-    }
+    ref();
+    element()->onChange();
+    deref();
 }
 
 // -------------------------------------------------------------------------------
@@ -204,9 +160,10 @@ bool RadioButtonWidget::event(QEvent *e)
 RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QRadioButton* b = new RadioButtonWidget(view()->viewport());
+    QRadioButton* b = new QRadioButton(view()->viewport(), "__khtml");
     b->setMouseTracking(true);
     setQWidget(b);
+    connect(b,SIGNAL(toggled(bool)),this,SLOT(slotToggled(bool)));
 }
 
 void RenderRadioButton::updateFromElement()
@@ -229,28 +186,11 @@ void RenderRadioButton::calcMinMaxWidth()
     RenderButton::calcMinMaxWidth();
 }
 
-// -------------------------------------------------------------------------------
-
-FormButtonWidget::FormButtonWidget(QWidget *parent)
-    : QPushButton(parent, "__khtml")
+void RenderRadioButton::slotToggled(bool)
 {
-}
-
-bool FormButtonWidget::event(QEvent *e)
-{
-    bool retval = QPushButton::event(e);
-    switch(e->type())
-    {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-	return true;
-    default:
-	return retval;
-    }
+    ref();
+    element()->onChange();
+    deref();
 }
 
 // -------------------------------------------------------------------------------
@@ -259,7 +199,7 @@ bool FormButtonWidget::event(QEvent *e)
 RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QPushButton* p = new FormButtonWidget(view()->viewport());
+    QPushButton* p = new QPushButton(view()->viewport(), "__khtml");
     setQWidget(p);
     p->setAutoMask(true);
     p->setMouseTracking(true);
@@ -317,10 +257,8 @@ void RenderSubmitButton::updateFromElement()
     QString oldText = static_cast<QPushButton*>(m_widget)->text();
     QString newText = rawText();
     static_cast<QPushButton*>(m_widget)->setText(newText);
-    if ( oldText != newText ) {
-        setMinMaxKnown(false);
-	setLayouted(false);
-    }
+    if ( oldText != newText )
+        setNeedsLayoutAndMinMaxRecalc();
     RenderFormElement::updateFromElement();
 }
 
@@ -432,7 +370,7 @@ QPopupMenu *LineEditWidget::createPopupMenu()
 
     if (m_input->autoComplete()) {
         popup->insertSeparator();
-        int id = popup->insertItem( SmallIcon("history_clear"), i18n("Clear &History"), ClearHistory );
+        int id = popup->insertItem( SmallIconSet("history_clear"), i18n("Clear &History"), ClearHistory );
         popup->setItemEnabled( id, (compObj() && !compObj()->isEmpty()) );
     }
 
@@ -463,6 +401,9 @@ void LineEditWidget::extendedMenuActivated( int id)
 
 bool LineEditWidget::event( QEvent *e )
 {
+    if (KLineEdit::event(e))
+	return true;
+
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
         QKeyEvent* ke = (QKeyEvent*) e;
         if ( ke->state() & ControlButton ) {
@@ -479,21 +420,7 @@ bool LineEditWidget::event( QEvent *e )
             }
         }
     }
-
-    bool retval = KLineEdit::event(e);
-
-    switch(e->type())
-    {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-	return true;
-    default:
-	return retval;
-    }
+    return false;
 }
 
 void LineEditWidget::mouseMoveEvent(QMouseEvent *e)
@@ -657,9 +584,9 @@ RenderObject* RenderFieldset::layoutLegend(bool relayoutChildren)
     RenderObject* legend = findLegend();
     if (legend) {
         if (relayoutChildren)
-            legend->setLayouted( false );
-        if ( !legend->layouted() )
-            legend->layout();
+            legend->setNeedsLayout(true);
+        legend->layoutIfNeeded();
+
         int xPos = borderLeft() + paddingLeft() + legend->marginLeft();
         if (style()->direction() == RTL)
             xPos = m_width - paddingRight() - borderRight() - legend->width() - legend->marginRight();
@@ -787,34 +714,13 @@ void RenderFieldset::setStyle(RenderStyle* _style)
 
 // -------------------------------------------------------------------------
 
-FileButtonWidget::FileButtonWidget(QWidget *w, const char *name)
-    : KURLRequester(w, name)
-{
-}
-
-bool FileButtonWidget::event(QEvent *e)
-{
-    bool retval = KURLRequester::event(e);
-    switch(e->type())
-    {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-	return true;
-    default:
-	return retval;
-    }
-}
-
-// -------------------------------------------------------------------------
-
 RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     : RenderFormElement(element)
 {
-    KURLRequester* w = new FileButtonWidget( view()->viewport(), "__khtml" );
+    KURLRequester* w = new KURLRequester( view()->viewport(), "__khtml" );
+
+    w->setMode(KFile::File | KFile::ExistingOnly);
+    w->completionObject()->setDir(KGlobalSettings::documentPath());
 
     connect(w->lineEdit(), SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(w->lineEdit(), SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
@@ -915,11 +821,8 @@ ComboBoxWidget::ComboBoxWidget(QWidget *parent)
 
 bool ComboBoxWidget::event(QEvent *e)
 {
-    bool retval = KComboBox::event(e);
-
-    if (retval)
+    if (KComboBox::event(e))
 	return true;
-
     if (e->type()==QEvent::KeyPress)
     {
 	QKeyEvent *ke = static_cast<QKeyEvent *>(e);
@@ -931,22 +834,10 @@ bool ComboBoxWidget::event(QEvent *e)
 	    ke->accept();
 	    return true;
 	default:
-	    break;
+	    return false;
 	}
     }
-
-    switch(e->type())
-    {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-	return true;
-    default:
-	return retval;
-    }
+    return false;
 }
 
 bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
@@ -972,32 +863,6 @@ bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
 	}
     }
     return KComboBox::eventFilter(dest, e);
-}
-
-// -------------------------------------------------------------------------
-
-ListBoxWidget::ListBoxWidget(QWidget *parent, bool multiple)
-    : KListBox(parent, "blah")
-{
-    setMouseTracking(true);
-    setSelectionMode(multiple ? QListBox::Extended : QListBox::Single);
-}
-
-bool ListBoxWidget::event(QEvent *e)
-{
-    bool retval = KListBox::event(e);
-    switch(e->type())
-    {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-	return true;
-    default:
-	return retval;
-    }
 }
 
 // -------------------------------------------------------------------------
@@ -1111,8 +976,7 @@ void RenderSelect::updateFromElement()
             KComboBox *that = static_cast<KComboBox*>(m_widget);
             that->setFont( that->font() );
         }
-        setMinMaxKnown(false);
-        setLayouted(false);
+        setNeedsLayoutAndMinMaxRecalc();
         m_optionsChanged = false;
     }
 
@@ -1136,10 +1000,8 @@ void RenderSelect::calcMinMaxWidth()
 
     // ### ugly HACK FIXME!!!
     setMinMaxKnown();
-    if ( !layouted() )
-        layout();
-    setLayouted( false );
-    setMinMaxKnown( false );
+    layoutIfNeeded();
+    setNeedsLayoutAndMinMaxRecalc();
     // ### end FIXME
 
     RenderFormElement::calcMinMaxWidth();
@@ -1147,7 +1009,7 @@ void RenderSelect::calcMinMaxWidth()
 
 void RenderSelect::layout( )
 {
-    KHTMLAssert(!layouted());
+    KHTMLAssert(needsLayout());
     KHTMLAssert(minMaxKnown());
 
     // ### maintain selection properly between type/size changes, and work
@@ -1166,6 +1028,10 @@ void RenderSelect::layout( )
             height = kMax(height, p->height(p->listBox()));
             p = p->next();
         }
+        if ( !height )
+            height = w->fontMetrics().height();
+        if ( !width )
+            width = w->fontMetrics().width( 'x' );
 
         int size = m_size;
         // check if multiple and size was not given or invalid
@@ -1189,7 +1055,7 @@ void RenderSelect::layout( )
     }
 
     /// uuh, ignore the following line..
-    setLayouted( false );
+    setNeedsLayout(true);
     RenderFormElement::layout();
 
     // and now disable the widget in case there is no <option> given
@@ -1291,11 +1157,14 @@ void RenderSelect::setOptionsChanged(bool _optionsChanged)
 
 KListBox* RenderSelect::createListBox()
 {
-    KListBox *lb = new ListBoxWidget(view()->viewport(), m_multiple);
+    KListBox *lb = new KListBox(view()->viewport(), "__khtml");
+    lb->setSelectionMode(m_multiple ? QListBox::Extended : QListBox::Single);
+    // ### looks broken
+    //lb->setAutoMask(true);
     connect( lb, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
-
-    // ### is this necessary and wanted?
+//     connect( lb, SIGNAL( clicked( QListBoxItem * ) ), this, SLOT( slotClicked() ) );
     m_ignoreSelectEvents = false;
+    lb->setMouseTracking(true);
 
     return lb;
 }
@@ -1316,7 +1185,7 @@ void RenderSelect::updateSelection()
         KListBox *listBox = static_cast<KListBox*>(m_widget);
         for (i = 0; i < int(listItems.size()); i++)
             listBox->setSelected(i,listItems[i]->id() == ID_OPTION &&
-                                static_cast<HTMLOptionElementImpl*>(listItems[i])->selected());
+                                 static_cast<HTMLOptionElementImpl*>(listItems[i])->selected());
     }
     else {
         bool found = false;
@@ -1343,7 +1212,7 @@ void RenderSelect::updateSelection()
 // -------------------------------------------------------------------------
 
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
-    : KTextEdit(parent), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
+    : KTextEdit(parent, "__khtml"), m_findDlg(0), m_find(0), m_repDlg(0), m_replace(0)
 {
     setCheckSpellingEnabled( true );
     setTabChangesFocus( true );
@@ -1656,36 +1525,22 @@ void TextAreaWidget::slotReplace()
 bool TextAreaWidget::event( QEvent *e )
 {
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
-	QKeyEvent* ke = (QKeyEvent*) e;
-	if ( ke->state() & ControlButton ) {
-	    switch ( ke->key() ) {
-	    case Key_Left:
-	    case Key_Right:
-	    case Key_Up:
-	    case Key_Down:
-	    case Key_Home:
-	    case Key_End:
-		ke->accept();
-	    default:
-		break;
-	    }
-	}
+        QKeyEvent* ke = (QKeyEvent*) e;
+        if ( ke->state() & ControlButton ) {
+            switch ( ke->key() ) {
+                case Key_Left:
+                case Key_Right:
+                case Key_Up:
+                case Key_Down:
+                case Key_Home:
+                case Key_End:
+                    ke->accept();
+                default:
+                break;
+            }
+        }
     }
-    
-    bool retval = KTextEdit::event( e );
-
-    switch(e->type())
-    {
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-	return true;
-    default:
-	return retval;
-    }
+    return KTextEdit::event( e );
 }
 
 // -------------------------------------------------------------------------
@@ -1694,7 +1549,7 @@ RenderTextArea::RenderTextArea(HTMLTextAreaElementImpl *element)
     : RenderFormElement(element)
 {
     scrollbarsStyled = false;
-    
+
     TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view());
     setQWidget(edit);
 
@@ -1742,20 +1597,22 @@ void RenderTextArea::calcMinMaxWidth()
 void RenderTextArea::setStyle(RenderStyle* _style)
 {
     bool unsubmittedFormChange = element()->m_unsubmittedFormChange;
-    
+
     RenderFormElement::setStyle(_style);
 
+    widget()->blockSignals(true);
     widget()->setAlignment( _style->direction() == RTL ?
                             Qt::AlignRight : Qt::AlignLeft );
+    widget()->blockSignals(false);
 
     scrollbarsStyled = false;
-    
+
     element()->m_unsubmittedFormChange = unsubmittedFormChange;
 }
 
 void RenderTextArea::layout()
 {
-    KHTMLAssert( !layouted() );
+    KHTMLAssert( needsLayout() );
 
     RenderFormElement::layout();
 
@@ -1773,13 +1630,16 @@ void RenderTextArea::updateFromElement()
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     w->setReadOnly(element()->readOnly());
     QString elementText = element()->value().string();
-    if ( elementText != text() )
+    if ( elementText != w->text() )
     {
         w->blockSignals(true);
         int line, col;
         w->getCursorPosition( &line, &col );
+        int cx = w->contentsX();
+        int cy = w->contentsY();
         w->setText( elementText );
         w->setCursorPosition( line, col );
+        w->scrollBy( cx, cy );
         w->blockSignals(false);
     }
     element()->m_dirtyvalue = false;
@@ -1794,38 +1654,38 @@ void RenderTextArea::close( )
     RenderFormElement::close();
 }
 
-static QString expandLF(const QString& s) 
-{ 
-    // LF -> CRLF 
-    unsigned crs = s.contains( '\n' ); 
+static QString expandLF(const QString& s)
+{
+    // LF -> CRLF
+    unsigned crs = s.contains( '\n' );
     if (crs == 0)
 	return s;
-    unsigned len = s.length(); 
- 
+    unsigned len = s.length();
+
     QString r;
-    r.reserve(len + crs + 1); 
-    unsigned pos2 = 0; 
-    for(unsigned pos = 0; pos < len; pos++) 
-    { 
-       QChar c = s.at(pos); 
-       switch(c.unicode()) 
-       { 
-         case '\n': 
-           r[pos2++] = '\r'; 
-           r[pos2++] = '\n'; 
-           break; 
- 
-         case '\r': 
-           break; 
- 
-         default: 
-           r[pos2++]= c; 
-           break; 
-       } 
-    } 
+    r.reserve(len + crs + 1);
+    unsigned pos2 = 0;
+    for(unsigned pos = 0; pos < len; pos++)
+    {
+       QChar c = s.at(pos);
+       switch(c.unicode())
+       {
+         case '\n':
+           r[pos2++] = '\r';
+           r[pos2++] = '\n';
+           break;
+
+         case '\r':
+           break;
+
+         default:
+           r[pos2++]= c;
+           break;
+       }
+    }
     r.squeeze();
-    return r; 
-} 
+    return r;
+}
 
 QString RenderTextArea::text()
 {

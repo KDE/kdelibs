@@ -200,9 +200,9 @@ void HTMLBRElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_CLEAR:
     {
-        DOMString str = attr->value();
+        DOMString str = attr->value().lower();
         if( str.isEmpty() ) str = "none";
-        else if( strcasecmp (str,"all")==0 ) str = "both";
+        else if( strcmp (str,"all")==0 ) str = "both";
         addCSSProperty(CSS_PROP_CLEAR, str);
         break;
     }
@@ -256,7 +256,7 @@ void HTMLFontElementImpl::parseAttribute(AttributeImpl *attr)
             switch (num)
             {
             case -2:
-            case  1: size = CSS_VAL_X_SMALL;  break;
+            case  1: size = CSS_VAL_XX_SMALL;  break;
             case -1:
             case  2: size = CSS_VAL_SMALL;    break;
             case  0: // treat 0 the same as 3, because people

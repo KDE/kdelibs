@@ -106,7 +106,7 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
 	addHTMLAlignment( attr->value() );
 	break;
     case ATTR_VALIGN:
-	addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
+	addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value().lower());
         break;
     case ATTR_USEMAP:
         if ( attr->value()[0] == '#' )

@@ -189,7 +189,7 @@ ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString a
   m_sAppId = app_id;
   m_iJobId = job_id;
   m_visible = true;
-  m_defaultProgressVisible = true;
+  m_defaultProgressVisible = showDefault;
 
   // create dialog, but don't show it
   defaultProgress = new KIO::DefaultProgress( false );

@@ -552,7 +552,7 @@ void ElementImpl::recalcStyle( StyleChange change )
     setHasChangedChild( false );
 }
 
-bool ElementImpl::isSelectable() const
+bool ElementImpl::isFocusable() const
 {
     // Only make editable elements selectable if its parent element
     // is not editable. FIXME: this is not 100% right as non-editable elements
@@ -598,7 +598,7 @@ void ElementImpl::createDecl( )
     m_styleDecls->ref();
     m_styleDecls->setParent(getDocument()->elementSheet());
     m_styleDecls->setNode(this);
-    m_styleDecls->setStrictParsing( getDocument()->parseMode() == DocumentImpl::Strict );
+    m_styleDecls->setStrictParsing( !getDocument()->inCompatMode() );
 }
 
 void ElementImpl::dispatchAttrRemovalEvent(NodeImpl::Id /*id*/, DOMStringImpl */*value*/)

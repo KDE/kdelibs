@@ -63,7 +63,7 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
         if ( filter )
             return filter;
     }
-    kdWarning() << "KFilterBase::findFilterByExtension : no filter found for " << mimeType << endl;
+    kdDebug(7005) << "KFilterBase::findFilterByExtension : no filter found for " << mimeType << endl;
 
     return 0L;
 }

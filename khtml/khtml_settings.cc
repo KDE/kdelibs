@@ -106,7 +106,7 @@ static KPerDomainSettings &setup_per_domain_policy(
   if (domain.isEmpty()) {
     kdWarning() << "setup_per_domain_policy: domain is empty" << endl;
   }
-  QString ldomain = domain.lower();
+  const QString ldomain = domain.lower();
   PolicyMap::iterator it = d->domainPolicy.find(ldomain);
   if (it == d->domainPolicy.end()) {
     // simply copy global domain settings (they should have been initialized
@@ -322,11 +322,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
     d->fonts = config->readListEntry( "Fonts" );
 
-    if ( reset || config->hasKey( "DefaultEncoding" ) ) {
+    if ( reset || config->hasKey( "DefaultEncoding" ) )
         d->m_encoding = config->readEntry( "DefaultEncoding", "" );
-        if ( d->m_encoding.isEmpty() )
-            d->m_encoding = KGlobal::locale()->encoding();
-    }
 
     if ( reset || config->hasKey( "EnforceDefaultCharset" ) )
         d->enforceCharset = config->readBoolEntry( "EnforceDefaultCharset", false );
@@ -413,15 +410,16 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     bool check_old_java_settings = true;
     // merge all domains into one list
     QMap<QString,int> domainList;	// why can't Qt have a QSet?
-    for (unsigned i = 0; i < sizeof domain_keys/sizeof domain_keys[0]; i++) {
+    for (unsigned i = 0; i < sizeof domain_keys/sizeof domain_keys[0]; ++i) {
       if ( reset || config->hasKey(domain_keys[i]) ) {
         if (i == 0) check_old_ecma_settings = false;
 	else if (i == 1) check_old_java_settings = false;
-        QStringList dl = config->readListEntry( domain_keys[i] );
-	QMap<QString,int>::Iterator notfound = domainList.end();
-	QStringList::ConstIterator it;
-	for (it = dl.begin(); it != dl.end(); ++it) {
-	  QString domain = (*it).lower();
+        const QStringList dl = config->readListEntry( domain_keys[i] );
+	const QMap<QString,int>::Iterator notfound = domainList.end();
+	QStringList::ConstIterator it = dl.begin();
+	const QStringList::ConstIterator itEnd = dl.end();
+	for (; it != itEnd; ++it) {
+	  const QString domain = (*it).lower();
 	  QMap<QString,int>::Iterator pos = domainList.find(domain);
 	  if (pos == notfound) domainList.insert(domain,0);
 	}/*next it*/
@@ -432,15 +430,18 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       d->domainPolicy.clear();
 
     QString js_group_save = config->group();
-    for ( QMap<QString,int>::ConstIterator it = domainList.begin();
-                it != domainList.end(); ++it)
     {
-      QString domain = it.key();
-      config->setGroup(domain);
-      readDomainSettings(config,reset,false,d->domainPolicy[domain]);
+      QMap<QString,int>::ConstIterator it = domainList.begin();
+      const QMap<QString,int>::ConstIterator itEnd = domainList.end();
+      for ( ; it != itEnd; ++it)
+      {
+        const QString domain = it.key();
+        config->setGroup(domain);
+        readDomainSettings(config,reset,false,d->domainPolicy[domain]);
 #ifdef DEBUG_SETTINGS
-      d->domainPolicy[domain].dump("init "+domain);
+        d->domainPolicy[domain].dump("init "+domain);
 #endif
+      }
     }
     config->setGroup(js_group_save);
 
@@ -449,9 +450,10 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     	&& check_old_java_settings )
     {
       check_old_java = false;
-      QStringList domainList = config->readListEntry( "JavaDomainSettings" );
-      for ( QStringList::ConstIterator it = domainList.begin();
-                it != domainList.end(); ++it)
+      const QStringList domainList = config->readListEntry( "JavaDomainSettings" );
+      QStringList::ConstIterator it = domainList.begin();
+      const QStringList::ConstIterator itEnd = domainList.end();
+      for ( ; it != itEnd; ++it)
       {
         QString domain;
         KJavaScriptAdvice javaAdvice;
@@ -470,9 +472,10 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 	&& check_old_ecma_settings )
     {
       check_old_ecma = false;
-      QStringList domainList = config->readListEntry( "ECMADomainSettings" );
-      for ( QStringList::ConstIterator it = domainList.begin();
-                it != domainList.end(); ++it)
+      const QStringList domainList = config->readListEntry( "ECMADomainSettings" );
+      QStringList::ConstIterator it = domainList.begin();
+      const QStringList::ConstIterator itEnd = domainList.end();
+      for ( ; it != itEnd; ++it)
       {
         QString domain;
         KJavaScriptAdvice javaAdvice;
@@ -490,9 +493,10 @@ void KHTMLSettings::init( KConfig * config, bool reset )
              && ( check_old_java || check_old_ecma )
 	     && ( check_old_ecma_settings || check_old_java_settings ) )
     {
-      QStringList domainList = config->readListEntry( "JavaScriptDomainAdvice" );
-      for ( QStringList::ConstIterator it = domainList.begin();
-                it != domainList.end(); ++it)
+      const QStringList domainList = config->readListEntry( "JavaScriptDomainAdvice" );
+      QStringList::ConstIterator it = domainList.begin();
+      const QStringList::ConstIterator itEnd = domainList.end();
+      for ( ; it != itEnd; ++it)
       {
         QString domain;
         KJavaScriptAdvice javaAdvice;
@@ -561,7 +565,7 @@ static const KPerDomainSettings &lookup_hostname_policy(
     return d->global;
   }
 
-  PolicyMap::const_iterator notfound = d->domainPolicy.end();
+  const PolicyMap::const_iterator notfound = d->domainPolicy.end();
 
   // First check whether there is a perfect match.
   PolicyMap::const_iterator it = d->domainPolicy.find(hostname);
@@ -714,7 +718,10 @@ const QString &KHTMLSettings::availableFamilies()
         QRegExp foundryExp(" \\[.+\\]");
 
         //remove foundry info
-        for ( QStringList::Iterator f = families.begin(); f != families.end(); ++f ) {
+        QStringList::Iterator f = families.begin();
+        const QStringList::Iterator fEnd = families.end();
+
+        for ( ; f != fEnd; ++f ) {
                 (*f).replace( foundryExp, "");
                 if (!s.contains(*f))
                         s << *f;

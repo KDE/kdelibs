@@ -169,7 +169,10 @@ Value Navigator::get(ExecState *exec, const Identifier &propertyName) const
 Value Navigator::getValueProperty(ExecState *exec, int token) const
 {
   KURL url = m_part->url();
-  QString userAgent = KProtocolManager::userAgentForHost(url.host());
+  QString userAgent = url.host();
+  if (userAgent.isEmpty())
+     userAgent = "localhost";
+  userAgent = KProtocolManager::userAgentForHost(userAgent);
   switch (token) {
   case AppCodeName:
     return String("Mozilla");
@@ -193,11 +196,24 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
     // We assume the string is something like Mozilla/version (properties)
     return String(userAgent.mid(userAgent.find('/') + 1));
   case Product:
+    // We are pretending to be Mozilla or Safari
+    if (userAgent.find(QString::fromLatin1("Mozilla")) >= 0 &&
+        userAgent.find(QString::fromLatin1("compatible")) == -1)
+    {
+        return String("Gecko");
+    }
+    // When spoofing as IE, we use Undefined().
+    if (userAgent.find(QString::fromLatin1("Microsoft")) >= 0 ||
+        userAgent.find(QString::fromLatin1("MSIE")) >= 0)
+    {
+        return Undefined();
+    }
+    // We are acting straight
     return String("Konqueror/khtml");
   case ProductSub:
     {
       int ix = userAgent.find("Gecko");
-      if (ix >= 0 && userAgent.length() >= (uint)ix+14 && userAgent.at(ix+5) == '/' && 
+      if (ix >= 0 && userAgent.length() >= (uint)ix+14 && userAgent.at(ix+5) == '/' &&
           userAgent.find(QRegExp("\\d{8}"), ix+6) == ix+6)
       {
           // We have Gecko/<productSub> in the UA string
@@ -207,7 +223,7 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
       {
           return String("20040107");
       }
-    } 
+    }
     return Undefined();
   case Vendor:
     return String("KDE");

@@ -18,7 +18,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef render_replaced_h
 #define render_replaced_h
@@ -101,6 +100,8 @@ public:
     KHTMLView* view() const { return m_view; }
 
     void deref();
+    
+    void cancelPendingResize();
 
     static void paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty);
     virtual bool handleEvent(const DOM::EventImpl& ev);
@@ -123,13 +124,17 @@ protected:
     void setQWidget(QWidget *widget);
     void resizeWidget( int w, int h );
 
-    void sendEventToWidget(QEvent *e);
-
     QWidget *m_widget;
     KHTMLView* m_view;
 
     bool m_resizePending;
-    bool m_ignoreEvents;
+    bool m_discardResizes;
+
+public:
+    class EventPropagator : public QWidget {
+    public:
+        void sendEvent(QEvent *e);
+    };
 };
 
 extern bool allowWidgetPaintEvents;

@@ -47,6 +47,7 @@
 #include <kpopupmenu.h>
 #include <kstdaccel.h>
 #include <kstdaction.h>
+#include <kstringhandler.h>
 #include <kconfig.h>
 
 #include <qlistview.h>
@@ -1044,7 +1045,7 @@ void KBookmarkMenuNSImporter::connectToImporter(const QObject &importer)
 
 void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QCString & url, const QString & )
 {
-  QString _text = text;
+  QString _text = KStringHandler::csqueeze(text);
   _text.replace( '&', "&&" );
   KAction * action = new KBookmarkAction(_text, "html", 0,
                                          m_menu, SLOT( slotBookmarkSelected() ),
@@ -1057,7 +1058,7 @@ void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QCString 
 
 void KBookmarkMenuNSImporter::newFolder( const QString & text, bool, const QString & )
 {
-  QString _text = text;
+  QString _text = KStringHandler::csqueeze(text);
   _text.replace( '&', "&&" );
   KActionMenu * actionMenu = new KActionMenu( _text, "folder", m_actionCollection, 0L );
   actionMenu->plug( mstack.top()->m_parentMenu );

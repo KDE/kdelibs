@@ -290,9 +290,8 @@ KeramikStyle::KeramikStyle()
 
 	if (animateProgressBar)
 	{
-		QTimer* timer = new QTimer( this );
-		timer->start(50, false);
-		connect(timer, SIGNAL(timeout()), this, SLOT(updateProgressPos()));
+		animationTimer = new QTimer( this );
+		connect( animationTimer, SIGNAL(timeout()), this, SLOT(updateProgressPos()) );
 	}
 	
 	firstComboPopupRelease = false;
@@ -302,6 +301,7 @@ void KeramikStyle::updateProgressPos()
 {
 	//Update the registered progressbars.
 	QMap<QProgressBar*, int>::iterator iter;
+	bool visible = false;
 	for (iter = progAnimWidgets.begin(); iter != progAnimWidgets.end(); iter++)
 	{
 		QProgressBar* pbar = iter.key(); 
@@ -313,7 +313,12 @@ void KeramikStyle::updateProgressPos()
 				iter.data() = 0;
 			iter.key()->update();
 		}
+		if (iter.key()->isVisible())
+			visible = true;
+		
 	}
+	if (!visible)
+		animationTimer->stop();
 }
 
 KeramikStyle::~KeramikStyle()
@@ -360,8 +365,11 @@ void KeramikStyle::polish(QWidget* widget)
 
 	if (animateProgressBar && ::qt_cast<QProgressBar*>(widget))
 	{
+		widget->installEventFilter(this);
 		progAnimWidgets[static_cast<QProgressBar*>(widget)] = 0;
 		connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(progressBarDestroyed(QObject*)));
+		if (!animationTimer->isActive())
+			animationTimer->start( 50, false );
 	}
 
 	KStyle::polish(widget);
@@ -2911,6 +2919,14 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 			p.drawLine( 0, wr.height()-1, wr.width()-1, wr.height()-1 );
 		return true;
 
+	}
+	// Track show events for progress bars
+	if ( animateProgressBar && ::qt_cast<QProgressBar*>(object) )
+	{
+		if ((event->type() == QEvent::Show) && !animationTimer->isActive())
+		{
+			animationTimer->start( 50, false );
+		}
 	}
 	return false;
 }

@@ -18,7 +18,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #include <config.h>
 #include <klocale.h>
@@ -90,7 +89,7 @@ void RenderApplet::layout()
 {
     //kdDebug(6100) << "RenderApplet::layout" << endl;
 
-    KHTMLAssert( !layouted() );
+    KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
 
     calcWidth();
@@ -115,7 +114,7 @@ void RenderApplet::layout()
         tmp->showApplet();
     }
 
-    setLayouted();
+    setNeedsLayout(false);
 }
 
 void RenderApplet::processArguments(const QMap<QString, QString> &args)

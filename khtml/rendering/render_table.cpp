@@ -29,6 +29,7 @@
 //#define DEBUG_LAYOUT
 //#define BOX_DEBUG
 #include "rendering/render_table.h"
+#include "rendering/render_replaced.h"
 #include "rendering/table_layout.h"
 #include "html/html_tableimpl.h"
 #include "misc/htmltags.h"
@@ -190,8 +191,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 	    }
         }
         o->addChild(child);
-	child->setLayouted( false );
-	child->setMinMaxKnown( false );
+        child->setNeedsLayoutAndMinMaxRecalc();
         return;
     }
     RenderContainer::addChild(child,beforeChild);
@@ -208,25 +208,29 @@ void RenderTable::calcWidth()
     RenderBlock *cb = containingBlock();
     int availableWidth = cb->contentWidth();
 
+    // Subtract minimum margins
+    availableWidth -= style()->marginLeft().minWidth(cb->contentWidth());
+    availableWidth -= style()->marginRight().minWidth(cb->contentWidth());
+
     LengthType widthType = style()->width().type();
     if(widthType > Relative && style()->width().value() > 0) {
 	// Percent or fixed table
         m_width = style()->width().minWidth( availableWidth );
         if(m_minWidth > m_width) m_width = m_minWidth;
-	//kdDebug( 6040 ) << "1 width=" << m_width << " minWidth=" << m_minWidth << " availableWidth=" << availableWidth << " " << endl;
     } else {
         m_width = KMIN(short( availableWidth ),m_maxWidth);
     }
 
     // restrict width to what we really have in case we flow around floats
     // EXCEPT percent tables, which are still calculated as above
-    if ( style()->flowAroundFloats() && widthType!=Percent ) {
-	availableWidth = cb->lineWidth( m_y );
-	m_width = KMIN( short( availableWidth ), m_width );
+    if ( flowAroundFloats() && widthType!=Percent ) {
+        availableWidth = cb->lineWidth( m_y );
+        m_width = KMIN( short( availableWidth ), m_width );
     }
 
     m_width = KMAX (m_width, m_minWidth);
 
+    // Finally, with our true width determined, compute our margins for real.
     m_marginRight=0;
     m_marginLeft=0;
 
@@ -235,11 +239,16 @@ void RenderTable::calcWidth()
 
 void RenderTable::layout()
 {
-    KHTMLAssert( !layouted() );
+    KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
     KHTMLAssert( !needSectionRecalc );
 
-    //kdDebug( 6040 ) << renderName() << "(Table)"<< this << " ::layout0() width=" << width() << ", layouted=" << layouted() << endl;
+    if (posChildNeedsLayout() && !normalChildNeedsLayout() && !selfNeedsLayout()) {
+        // All we have to is lay out our positioned objects.
+        layoutPositionedObjects(true);
+        setNeedsLayout(false);
+        return;
+    }
 
     m_height = 0;
     initMaxMarginValues();
@@ -266,7 +275,7 @@ void RenderTable::layout()
 
     RenderObject *child = firstChild();
     while( child ) {
-	if ( !child->layouted() && !(child->element() && child->element()->id() == ID_FORM) )
+	if ( child->needsLayout() && !(child->element() && child->element()->id() == ID_FORM) )
 	    child->layout();
 	if ( child->isTableSection() ) {
 	    static_cast<RenderTableSection *>(child)->calcRowHeight();
@@ -281,39 +290,24 @@ void RenderTable::layout()
         m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }
 
-    m_height += borderTop();
+    int bpTop = borderTop();
+    int bpBottom = borderBottom();
 
-    // html tables with percent height are relative to view
+    m_height += bpTop;
+
+    int oldHeight = m_height;
+    calcHeight();
+    int newHeight = m_height;
+    m_height = oldHeight;
+
     Length h = style()->height();
-    int th=0;
-    if (h.isFixed())
-        th = h.value();
-    else if (h.isPercent()) {
-        RenderObject* c = containingBlock();
-        for ( ;
-            !c->isCanvas() && !c->isBody() && !c->isTableCell() &&
-		  !c->isPositioned() && c->isFloating();
-             c = c->containingBlock()) {
-            Length ch = c->style()->height();
-            if (ch.isFixed()) {
-                th = h.width(ch.value());
-                break;
-            }
-        }
-
-        if (!c->isTableCell()) {
-            Length ch = c->style()->height();
-	    if (ch.isFixed())
-		th = h.width(ch.value());
-	    else {
-		// we need to substract out the margins of this block. -dwh
-		th = h.width(viewRect().height() - c->marginBottom() - c->marginTop());
-		// not really, but this way the view height change
-		// gets propagated correctly
-		setOverhangingContents();
-	    }
-        }
-    }
+    int th = -(bpTop + bpBottom); // Tables size as though CSS height includes border/padding.
+    if (isPositioned())
+        th = newHeight; // FIXME: Leave this alone for now but investigate later.
+    else if (h.isFixed())
+        th += h.value();
+    else if (h.isPercent())
+        th += calcPercentageHeight(h);
 
     // layout rows
     if ( th > calculatedHeight ) {
@@ -346,8 +340,7 @@ void RenderTable::layout()
 	m_height += foot->height();
     }
 
-
-    m_height += borderBottom();
+    m_height += bpBottom;
 
     if(tCaption && tCaption->style()->captionSide()==CAPBOTTOM) {
         tCaption->setPos(tCaption->marginLeft(), m_height);
@@ -356,15 +349,11 @@ void RenderTable::layout()
 
     //kdDebug(0) << "table height: " << m_height << endl;
 
-    calcHeight();
-
-    //kdDebug(0) << "table height: " << m_height << endl;
-
     // table can be containing block of positioned elements.
     // ### only pass true if width or height changed.
     layoutPositionedObjects( true );
 
-    setLayouted();
+    setNeedsLayout(false);
 }
 
 void RenderTable::setCellWidths()
@@ -383,8 +372,7 @@ void RenderTable::setCellWidths()
 
 void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
 {
-
-    if(!layouted()) return;
+    if(needsLayout()) return;
 
     _tx += xPos();
     _ty += yPos();
@@ -495,8 +483,7 @@ void RenderTable::calcMinMaxWidth()
 void RenderTable::close()
 {
 //    kdDebug( 6040 ) << "RenderTable::close()" << endl;
-    setLayouted(false);
-    setMinMaxKnown(false);
+    setNeedsLayoutAndMinMaxRecalc();
 }
 
 int RenderTable::borderTopExtra()
@@ -550,8 +537,7 @@ void RenderTable::splitColumn( int pos, int firstSpan )
 	child = child->nextSibling();
     }
     columnPos.resize( numEffCols()+1 );
-    setMinMaxKnown( false );
-    setLayouted( false );
+    setNeedsLayoutAndMinMaxRecalc();
 }
 
 void RenderTable::appendColumn( int span )
@@ -581,8 +567,7 @@ void RenderTable::appendColumn( int span )
 	child = child->nextSibling();
     }
     columnPos.resize( numEffCols()+1 );
-    setMinMaxKnown( false );
-    setLayouted( false );
+    setNeedsLayoutAndMinMaxRecalc();
 }
 
 RenderTableCol *RenderTable::colElement( int col ) {
@@ -625,7 +610,7 @@ void RenderTable::recalcSections()
 	case TABLE_CAPTION:
 	    if ( !tCaption) {
 		tCaption = static_cast<RenderBlock*>(child);
-                tCaption->setLayouted(false);
+                tCaption->setNeedsLayout(true);
             }
 	    break;
 	case TABLE_COLUMN:
@@ -665,7 +650,7 @@ void RenderTable::recalcSections()
 	child = child->nextSibling();
     }
     needSectionRecalc = false;
-    setLayouted( false );
+    setNeedsLayout(true);
 }
 
 RenderObject* RenderTable::removeChildNode(RenderObject* child)
@@ -966,8 +951,7 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 	    }
         }
         row->addChild(child);
-	child->setLayouted( false );
-	child->setMinMaxKnown( false );
+        child->setNeedsLayoutAndMinMaxRecalc();
         return;
     }
 
@@ -1138,7 +1122,7 @@ void RenderTableSection::setCellWidths()
 #endif
 	    int oldWidth = cell->width();
 	    if ( w != oldWidth ) {
-		cell->setLayouted(false);
+		cell->setNeedsLayout(true);
 		cell->setWidth( w );
 	    }
 	}
@@ -1183,9 +1167,15 @@ void RenderTableSection::calcRowHeight()
 	    if ( ( indx = r - cell->rowSpan() + 1 ) < 0 )
 		indx = 0;
 
-	    ch = cell->style()->height().width(0);
-	    if ( cell->height() > ch)
-		ch = cell->height();
+            if (cell->cellPercentageHeight()) {
+                cell->setCellPercentageHeight(0);
+                cell->setChildNeedsLayout(true, false);
+                cell->layoutIfNeeded();
+            }
+
+            ch = cell->style()->height().width(0);
+            if ( cell->height() > ch)
+                ch = cell->height();
 
 	    pos = rowPos[ indx ] + ch + vspacing;
 
@@ -1235,19 +1225,19 @@ int RenderTableSection::layoutRows( int toAdd )
     if (toAdd && totalRows && (rowPos[totalRows] || !nextSibling())) {
 
 	int totalHeight = rowPos[totalRows] + toAdd;
-// 	qDebug("layoutRows: totalHeight = %d",  totalHeight );
+//	qDebug("layoutRows: totalHeight = %d",  totalHeight );
 
-        int dh = totalHeight-rowPos[totalRows];
+        int dh = toAdd;
 	int totalPercent = 0;
 	int numVariable = 0;
 	for ( int r = 0; r < totalRows; r++ ) {
-	    if ( grid[r].height.isVariable() )
+            if ( grid[r].height.isVariable() && !emptyRow(r))
 		numVariable++;
 	    else if ( grid[r].height.isPercent() )
 		totalPercent += grid[r].height.value();
 	}
 	if ( totalPercent ) {
-// 	    qDebug("distributing %d over percent rows totalPercent=%d", dh,  totalPercent );
+//	    qDebug("distributing %d over percent rows totalPercent=%d", dh,  totalPercent );
 	    // try to satisfy percent
 	    int add = 0;
 	    if ( totalPercent > 100 )
@@ -1262,7 +1252,7 @@ int RenderTableSection::layoutRows( int toAdd )
 		    add += toAdd;
 		    dh -= toAdd;
 		    totalPercent -= grid[r].height.value();
-// 		    qDebug( "adding %d to row %d", toAdd, r );
+//		    qDebug( "adding %d to row %d", toAdd, r );
 		}
 		if ( r < totalRows-1 )
 		    rh = rowPos[r+2] - rowPos[r+1];
@@ -1270,20 +1260,20 @@ int RenderTableSection::layoutRows( int toAdd )
 	    }
 	}
 	if ( numVariable ) {
-	    // distribute over variable cols
-// 	    qDebug("distributing %d over variable rows numVariable=%d", dh,  numVariable );
+	    // distribute over non-empty variable rows
+//	    qDebug("distributing %d over variable rows numVariable=%d", dh,  numVariable );
 	    int add = 0;
-	    for ( int r = 0; r < totalRows; r++ ) {
-		if ( numVariable > 0 && grid[r].height.isVariable() ) {
-		    int toAdd = dh/numVariable;
+            int toAdd = dh/numVariable;
+            for ( int r = 0; r < totalRows; r++ ) {
+                if ( grid[r].height.isVariable() && !emptyRow(r)) {
 		    add += toAdd;
-		    dh -= toAdd;
 		}
                 rowPos[r+1] += add;
 	    }
-	}
-        if (dh>0) {
-	    // if some left overs, distribute equally.
+            dh -= add;
+        }
+        if (dh>0 && rowPos[totalRows]) {
+	    // if some left overs, distribute weighted.
             int tot=rowPos[totalRows];
             int add=0;
             int prev=rowPos[0];
@@ -1293,7 +1283,29 @@ int RenderTableSection::layoutRows( int toAdd )
                 prev=rowPos[r+1];
                 rowPos[r+1]+=add;
             }
+            dh -= add;
         }
+        if (dh > totalRows) {
+            // distribute to tables with all empty rows
+            int add=0;
+            int toAdd = dh/totalRows;
+            for ( int r = 0; r < totalRows; r++ ) {
+                add += toAdd;
+                rowPos[r+1] += add;
+            }
+            dh -= add;
+        }
+        // Finally distribute round-off values
+        if (dh > 0) {
+            // There is not enough for every row
+            int add=0;
+            for ( int r = 0; r < totalRows; r++ ) {
+                if (add < dh) add++;
+                rowPos[r+1] += add;
+            }
+            dh -= add;
+        }
+        assert (dh == 0);
     }
 
     int leftOffset = borderLeft() + hspacing;
@@ -1325,15 +1337,20 @@ int RenderTableSection::layoutRows( int toAdd )
             bool cellChildrenFlex = false;
             RenderObject* o = cell->firstChild();
             while (o) {
-                if (o->style()->height().isPercent()) {
-                    o->setLayouted(false);
+                if (!o->isText() && o->style()->height().isPercent()) {
+                    if (o->isWidget()) {
+                        // cancel resizes from transitory relayouts
+                        static_cast<RenderWidget *>(o)->cancelPendingResize();
+                    }
+                    o->setNeedsLayout(true, false);
+                    cell->setChildNeedsLayout(true, false);
                     cellChildrenFlex = true;
                 }
                 o = o->nextSibling();
             }
             if (cellChildrenFlex) {
                 cell->setCellPercentageHeight(rHeight);
-                if (!cell->layouted()) cell->layout();
+                cell->layoutIfNeeded();
 
                 // Alignment within a cell is based off the calculated
                 // height, which becomes irrelevant once the cell has
@@ -1474,7 +1491,7 @@ void RenderTableSection::recalcCells()
 	row = row->nextSibling();
     }
     needCellRecalc = false;
-    setLayouted( false );
+    setNeedsLayout(true);
 }
 
 void RenderTableSection::clearGrid()
@@ -1483,6 +1500,19 @@ void RenderTableSection::clearGrid()
     while ( rows-- ) {
 	delete grid[rows].row;
     }
+}
+
+bool RenderTableSection::emptyRow(int rowNum) {
+    Row &r = *grid[rowNum].row;
+    const int s = r.size();
+    RenderTableCell *cell;
+    for(int i=0; i<s; i++) {
+        cell = r[i];
+        if (!cell || cell==(RenderTableCell*)-1)
+            continue;
+        return false;
+    }
+    return true;
 }
 
 RenderObject* RenderTableSection::removeChildNode(RenderObject* child)
@@ -1564,7 +1594,7 @@ FindSelectionResult RenderTableSection::checkSelectionPoint( int _x, int _y, int
 
 //    bool save_last = false;	// true to save last investigated cell
 
-    if (!layouted() || _y < _ty) return SelectionPointBefore;
+    if (needsLayout() || _y < _ty) return SelectionPointBefore;
 //    else if (_y >= _ty + height()) save_last = true;
 
     // bluntly taken from paint (LS)
@@ -1683,8 +1713,7 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
 	    addChild(cell, beforeChild);
         }
         cell->addChild(child);
-	child->setLayouted( false );
-	child->setMinMaxKnown( false );
+        child->setNeedsLayoutAndMinMaxRecalc();
         return;
     } else
         cell = static_cast<RenderTableCell *>(child);
@@ -1714,19 +1743,14 @@ void RenderTableRow::dump(QTextStream &stream, const QString &ind) const
 
 void RenderTableRow::layout()
 {
-    KHTMLAssert( !layouted() );
+    KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
 
     RenderObject *child = firstChild();
     while( child ) {
 	if ( child->isTableCell() ) {
             RenderTableCell *cell = static_cast<RenderTableCell *>(child);
-            if ( cell->cellPercentageHeight() ) {
-                cell->setCellPercentageHeight( 0 );
-                if ( cell->layouted() )
-                    cell->setLayouted( false );
-            }
-            if ( !child->layouted() ) {
+            if ( child->needsLayout() ) {
                 cell->calcVerticalMargins();
                 cell->layout();
                 cell->setCellTopExtra(0);
@@ -1735,7 +1759,7 @@ void RenderTableRow::layout()
 	}
 	child = child->nextSibling();
     }
-    setLayouted();
+    setNeedsLayout(false);
 }
 
 // -------------------------------------------------------------------------
@@ -2192,10 +2216,10 @@ void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
 {
 
 #ifdef TABLE_PRINT
-    kdDebug( 6040 ) << renderName() << "(layouted: " << layouted() << ")::paint() w/h = (" << width() << "/" << height() << ")" << " _y/_h=" << _y << "/" << _h << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderTableCell)::paint() w/h = (" << width() << "/" << height() << ")" << " _y/_h=" << _y << "/" << _h << endl;
 #endif
 
-    if (!layouted()) return;
+    if (needsLayout()) return;
 
     _tx += m_x;
     _ty += m_y/* + _topExtra*/;
@@ -2205,7 +2229,7 @@ void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
     // check if we need to do anything at all...
     int os = kMax(tbl->currentBorderStyle() ? (tbl->currentBorderStyle()->border->width+1)/2 : 0, 2*maximalOutlineSize(pI.phase));
     if (!overhangingContents() && ((_ty >= pI.r.y() + pI.r.height() + os)
-                                   || (_ty + _topExtra + m_height + _bottomExtra <= pI.r.y() - os))) return;
+         || (_ty + _topExtra + m_height + _bottomExtra <= pI.r.y() - os))) return;
 
     if (pI.phase == PaintActionCollapsedTableBorders && style()->visibility() == VISIBLE) {
         int w = width();

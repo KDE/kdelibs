@@ -47,8 +47,8 @@
 #include "kpushbutton.h"
 #include <kprocio.h>
 
-#define LINESEPARATORSTRING i18n("--- line separator ---")
-#define SEPARATORSTRING i18n("--- separator ---")
+#define LINESEPARATORSTRING I18N_NOOP("--- line separator ---")
+#define SEPARATORSTRING I18N_NOOP("--- separator ---")
 
 static void dump_xml(const QDomDocument& doc)
 {
@@ -105,9 +105,9 @@ public:
   virtual QString key(int column, bool) const
   {
     QString s = text( column );
-    if ( s == LINESEPARATORSTRING )
+    if ( s == i18n(LINESEPARATORSTRING) )
       return "0";
-    if ( s == SEPARATORSTRING )
+    if ( s == i18n(SEPARATORSTRING) )
       return "1";
     return "2" + s;
   }
@@ -875,17 +875,19 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   QMap<QString, bool> active_list;
 
   // see if our current action is in this toolbar
-  QDomElement it = elem.lastChild().toElement();
-  for( ; !it.isNull(); it = it.previousSibling().toElement() )
+  QDomNode n = elem.lastChild();
+  for( ; !n.isNull(); n = n.previousSibling() )
   {
+    QDomElement it = n.toElement();
+    if (it.isNull()) continue;
     if (it.tagName() == tagSeparator)
     {
       ToolbarItem *act = new ToolbarItem(m_activeList, tagSeparator, sep_name.arg(sep_num++), QString::null);
       bool isLineSep = ( it.attribute(attrLineSeparator, "true").lower() == QString::fromLatin1("true") );
       if(isLineSep)
-        act->setText(1, LINESEPARATORSTRING);
+        act->setText(1, i18n(LINESEPARATORSTRING));
       else
-        act->setText(1, SEPARATORSTRING);
+        act->setText(1, i18n(SEPARATORSTRING));
       it.setAttribute( attrName, act->internalName() );
       continue;
     }
@@ -954,9 +956,9 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
 
   // finally, add default separators to the inactive list
   ToolbarItem *act = new ToolbarItem(m_inactiveList, tagSeparator, sep_name.arg(sep_num++), QString::null);
-  act->setText(1, LINESEPARATORSTRING);
+  act->setText(1, i18n(LINESEPARATORSTRING));
   act = new ToolbarItem(m_inactiveList, tagSeparator, sep_name.arg(sep_num++), QString::null);
-  act->setText(1, SEPARATORSTRING);
+  act->setText(1, i18n(SEPARATORSTRING));
 }
 
 KActionCollection *KEditToolbarWidget::actionCollection() const
@@ -1103,9 +1105,9 @@ void KEditToolbarWidget::insertActive(ToolbarItem *item, QListViewItem *before, 
 
   QDomElement new_item;
   // let's handle the separator specially
-  if (item->text(1) == LINESEPARATORSTRING) {
+  if (item->text(1) == i18n(LINESEPARATORSTRING)) {
     new_item = domDocument().createElement(tagSeparator);
-  } else if (item->text(1) == SEPARATORSTRING) {
+  } else if (item->text(1) == i18n(SEPARATORSTRING)) {
     new_item = domDocument().createElement(tagSeparator);
     new_item.setAttribute(attrLineSeparator, "false");
   } else

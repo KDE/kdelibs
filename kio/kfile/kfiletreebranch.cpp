@@ -160,6 +160,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
     while ( (currItem = it.current()) != 0 )
     {
         parentItem = parentKFTVItem( currItem );
+        
 
         /* Only create a new KFileTreeViewItem if it does not yet exist */
         KFileTreeViewItem *newKFTVI =
@@ -168,8 +169,13 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
         if( ! newKFTVI )
         {
             newKFTVI = createTreeViewItem( parentItem, currItem );
+            if (!newKFTVI)
+            {
+                // TODO: Don't fail if parentItem == 0
+                ++it;
+                continue;
+            }
             currItem->setExtraData( this, newKFTVI );
-
 
             /* Cut off the file extension in case it is not a directory */
             if( !m_showExtensions && !currItem->isDir() )	/* Need to cut the extension */
@@ -293,6 +299,11 @@ void KFileTreeBranch::slotDeleteItem( KFileItem *it )
         }
 
         kdDebug(250) << "Found corresponding KFileTreeViewItem" << endl;
+        if( m_lastFoundURL.equals( it->url(), true ))
+        {
+          m_lastFoundURL = KURL();
+          m_lastFoundItem = 0L;
+        }
         delete( kfti );
     }
     else
@@ -309,7 +320,9 @@ void KFileTreeBranch::slotCanceled( const KURL& url )
     m_openChildrenURLs.remove( url);
 
     // stop animations etc.
-    emit populateFinished( findTVIByURL(url));
+    KFileTreeViewItem *item = findTVIByURL(url);
+    if (!item) return; // Uh oh...
+    emit populateFinished(item);
 }
 
 void KFileTreeBranch::slotDirlisterClear()

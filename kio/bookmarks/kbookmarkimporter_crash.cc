@@ -47,7 +47,7 @@ void KCrashBookmarkImporter::parseCrashLog( QString /*filename*/, bool /*del*/ )
 
 ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filename, bool del ) 
 {
-    static const int g_lineLimit = 4096;
+    static const int g_lineLimit = 16*1024;
 
     QFile f( filename );
     ViewMap views;

@@ -25,7 +25,6 @@
  * Technology , Institut National de Recherche en Informatique et en
  * Automatique , Keio University ). All Rights Reserved.
  *
- * $Id$
  */
 
 #ifndef HTML_DOCUMENT_H
@@ -169,6 +168,12 @@ public:
      *
      */
     HTMLCollection forms() const;
+
+    /**
+     * A collection of all the layers of a document.
+     *
+     */
+    HTMLCollection layers() const;
 
     /**
      * A collection of all the anchor ( \c A ) elements in

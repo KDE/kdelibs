@@ -3,6 +3,8 @@
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,7 +21,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 // -------------------------------------------------------------------------
 //#define DEBUG
@@ -42,10 +43,15 @@ void HTMLDivElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_ALIGN:
     {
-        DOMString v = attr->value();
-        if ( strcasecmp( attr->value(), "center" ) == 0 )
-            v = "\\2d khtml-center";
-        addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
+        DOMString v = attr->value().lower();
+        if ( strcmp( v, "middle" ) == 0 || strcmp( v, "center" ) == 0 )
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_CENTER);
+        else if (strcmp(v, "left") == 0)
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_LEFT);
+        else if (strcmp(v, "right") == 0)
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, CSS_VAL__KHTML_RIGHT);
+        else
+            addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
         break;
     }
     default:
@@ -64,16 +70,21 @@ void HTMLHRElementImpl::parseAttribute(AttributeImpl *attr)
 {
     switch( attr->id() )
     {
-    case ATTR_ALIGN:
-        if ( strcasecmp( attr->value(), "left") != 0) // _not_ equal
-            addCSSProperty(CSS_PROP_MARGIN_LEFT, CSS_VAL_AUTO);
-        else
-            addCSSProperty(CSS_PROP_MARGIN_LEFT, "1px");
-        if( strcasecmp( attr->value(), "right") != 0)
+    case ATTR_ALIGN: {
+        if (strcasecmp(attr->value(), "left") == 0) {
+            addCSSProperty(CSS_PROP_MARGIN_LEFT, "0");
+	    addCSSProperty(CSS_PROP_MARGIN_RIGHT, CSS_VAL_AUTO);
+	}
+        else if (strcasecmp(attr->value(), "right") == 0) {
+	    addCSSProperty(CSS_PROP_MARGIN_LEFT, CSS_VAL_AUTO);
+	    addCSSProperty(CSS_PROP_MARGIN_RIGHT, "0");
+	}
+	else {
+	    addCSSProperty(CSS_PROP_MARGIN_LEFT, CSS_VAL_AUTO);
             addCSSProperty(CSS_PROP_MARGIN_RIGHT, CSS_VAL_AUTO);
-        else
-            addCSSProperty(CSS_PROP_MARGIN_RIGHT, "1px");
+	}
         break;
+    }
     case ATTR_WIDTH:
     {
         if(!attr->val()) break;
@@ -218,25 +229,104 @@ void HTMLMarqueeElementImpl::parseAttribute(AttributeImpl *attr)
                 if (attr->value() == "-1" || strcasecmp(attr->value(), "infinite") == 0)
                     addCSSProperty(CSS_PROP__KHTML_MARQUEE_REPETITION, CSS_VAL_INFINITE);
                 else
-                    addCSSLength(CSS_PROP__KHTML_MARQUEE_REPETITION, attr->value(), true);
+                    addCSSLength(CSS_PROP__KHTML_MARQUEE_REPETITION, attr->value().lower(), true);
             }
             else
                 removeCSSProperty(CSS_PROP__KHTML_MARQUEE_REPETITION);
             break;
         case ATTR_BEHAVIOR:
             if (!attr->value().isEmpty())
-                addCSSProperty(CSS_PROP__KHTML_MARQUEE_STYLE, attr->value());
+                addCSSProperty(CSS_PROP__KHTML_MARQUEE_STYLE, attr->value().lower());
             else
                 removeCSSProperty(CSS_PROP__KHTML_MARQUEE_STYLE);
             break;
         case ATTR_DIRECTION:
             if (!attr->value().isEmpty())
-                addCSSProperty(CSS_PROP__KHTML_MARQUEE_DIRECTION, attr->value());
+                addCSSProperty(CSS_PROP__KHTML_MARQUEE_DIRECTION, attr->value().lower());
             else
                 removeCSSProperty(CSS_PROP__KHTML_MARQUEE_DIRECTION);
             break;
         case ATTR_TRUESPEED:
             m_minimumDelay = attr->val() ? 0 : defaultMinimumDelay;
+            break;
+        default:
+            HTMLElementImpl::parseAttribute(attr);
+    }
+}
+
+// ------------------------------------------------------------------------
+
+HTMLLayerElementImpl::HTMLLayerElementImpl(DocumentPtr *doc, ushort _tagid)
+    : HTMLDivElementImpl( doc, _tagid )
+{
+    absolute = false;
+    fixed = false;
+}
+
+void HTMLLayerElementImpl::parseAttribute(AttributeImpl *attr)
+{
+    // Layers are evil
+    // They are mainly implemented here to correctly parse the hidden attribute
+    switch(attr->id()) {
+        case ATTR_LEFT:
+            if (!absolute && id() == ID_LAYER) {
+                addCSSProperty(CSS_PROP_POSITION, CSS_VAL_ABSOLUTE);
+                absolute = true;
+            }
+            addCSSProperty(CSS_PROP_LEFT, attr->value());
+            break;
+        case ATTR_TOP:
+            if (!absolute && id() == ID_LAYER) {
+                addCSSProperty(CSS_PROP_POSITION, CSS_VAL_ABSOLUTE);
+                absolute = true;
+            }
+            addCSSProperty(CSS_PROP_TOP, attr->value());
+            break;
+        case ATTR_PAGEX:
+            if (!fixed) {
+                addCSSProperty(CSS_PROP_POSITION, CSS_VAL_FIXED);
+                fixed = true;
+            }
+            addCSSProperty(CSS_PROP_LEFT, attr->value());
+            break;
+        case ATTR_PAGEY:
+            if (!fixed) {
+                addCSSProperty(CSS_PROP_POSITION, CSS_VAL_FIXED);
+                fixed = true;
+            }
+            addCSSProperty(CSS_PROP_TOP, attr->value());
+            break;
+        case ATTR_WIDTH:
+            if (!attr->value().isEmpty())
+                addCSSLength(CSS_PROP_WIDTH, attr->value());
+            else
+                removeCSSProperty(CSS_PROP_WIDTH);
+            break;
+        case ATTR_HEIGHT:
+            if (!attr->value().isEmpty())
+                addCSSLength(CSS_PROP_HEIGHT, attr->value());
+            else
+                removeCSSProperty(CSS_PROP_HEIGHT);
+            break;
+        case ATTR_BGCOLOR:
+            if (!attr->value().isEmpty())
+                addHTMLColor(CSS_PROP_BACKGROUND_COLOR, attr->value());
+            else
+                removeCSSProperty(CSS_PROP_BACKGROUND_COLOR);
+            break;
+        case ATTR_Z_INDEX:
+            if (!attr->value().isEmpty())
+                addCSSProperty(CSS_PROP_Z_INDEX, attr->value());
+            else
+                removeCSSProperty(CSS_PROP_Z_INDEX);
+            break;
+        case ATTR_VISIBILITY:
+            if (attr->value().lower() == "show")
+                addCSSProperty(CSS_PROP_VISIBILITY, CSS_VAL_VISIBLE);
+            else if (attr->value().lower() == "hide")
+                addCSSProperty(CSS_PROP_VISIBILITY, CSS_VAL_HIDDEN);
+            else if (attr->value().lower() == "inherit")
+                addCSSProperty(CSS_PROP_VISIBILITY, CSS_VAL_INHERIT);
             break;
         default:
             HTMLElementImpl::parseAttribute(attr);

@@ -59,7 +59,7 @@ KJavaAppletContext::KJavaAppletContext()
     id = contextCount;
     server->createContext( id, this );
 
-    contextCount++;
+    ++contextCount;
 }
 
 KJavaAppletContext::~KJavaAppletContext()
@@ -107,7 +107,7 @@ bool KJavaAppletContext::create( KJavaApplet* applet )
 
 void KJavaAppletContext::destroy( KJavaApplet* applet )
 {
-    int appletId = applet->appletId();
+    const int appletId = applet->appletId();
     d->applets.remove( appletId );
 
     server->destroyApplet( id, appletId );
@@ -139,9 +139,9 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
     kdDebug(6100) << "arg count = " << arg.count() << endl;
 
     if ( cmd == QString::fromLatin1("showstatus")
-         && arg.count() > 0 )
+	 && !arg.empty() )
     {
-        QString tmp = arg[0];
+        QString tmp = arg.first();
         tmp.replace(QRegExp("[\n\r]"), "");
         kdDebug(6100) << "status message = " << tmp << endl;
         emit showStatus( tmp );
@@ -153,10 +153,10 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
         emit showDocument( arg[0], arg[1] );
     }
     else if ( cmd == QString::fromLatin1( "showdocument" )
-              && arg.count() > 0 )
+              && !arg.empty() )
     {
-        kdDebug(6100) << "url = " << arg[0] << endl;
-        emit showDocument( arg[0], "_top" );
+        kdDebug(6100) << "url = " << arg.first() << endl;
+        emit showDocument( arg.first(), "_top" );
     }
     else if ( cmd == QString::fromLatin1( "resizeapplet" )
               && arg.count() > 2 )
@@ -165,9 +165,9 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
         //arg[2] should be new width
         //arg[3] should be new height
         bool ok;
-        int appletID = arg[0].toInt( &ok );
-        int width = arg[1].toInt( &ok );
-        int height = arg[2].toInt( &ok );
+        const int appletID = arg[0].toInt( &ok );
+        const int width = arg[1].toInt( &ok );
+        const int height = arg[2].toInt( &ok );
 
         if( !ok )
         {
@@ -175,7 +175,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
         }
         else
         {
-            KJavaApplet* tmp = d->applets[appletID];
+            KJavaApplet* const tmp = d->applets[appletID];
             if (tmp)
                 tmp->resizeAppletWidget( width, height );
         }
@@ -187,7 +187,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
               && arg.count() > 2 )
     {
         bool ok;
-        int appletID = arg[0].toInt(&ok);
+        const int appletID = arg.first().toInt(&ok);
         KJavaApplet * applet;
         if (ok && (applet = d->applets[appletID]))
         {
@@ -201,13 +201,13 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
     else if ( cmd == QString::fromLatin1( "AppletStateNotification" ) )
     {
         bool ok;
-        int appletID = arg[0].toInt(&ok);
+        const int appletID = arg.first().toInt(&ok);
         if (ok)
         {
-            KJavaApplet * applet = d->applets[appletID];
+            KJavaApplet* const applet = d->applets[appletID];
             if ( applet )
             {
-                int newState   = arg[1].toInt(&ok);
+                const int newState   = arg[1].toInt(&ok);
                 if (ok)
                 {
                     applet->stateChange(newState);
@@ -224,10 +224,10 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
     }
     else if ( cmd == QString::fromLatin1( "AppletFailed" ) ) {
         bool ok;
-        int appletID = arg[0].toInt(&ok);
+        const int appletID = arg.first().toInt(&ok);
         if (ok)
         {
-            KJavaApplet * applet = d->applets[appletID];
+            KJavaApplet* const applet = d->applets[appletID];
             /*
             QString errorDetail(arg[1]);
             errorDetail.replace(QRegExp(":\\s*"), ":\n");
@@ -242,7 +242,8 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
 
 void KJavaAppletContext::javaProcessExited(int) {
     AppletMap::iterator it = d->applets.begin();
-    for (; it != d->applets.end(); it++)
+    const AppletMap::iterator itEnd = d->applets.end();
+    for (; it != itEnd; ++it)
         if (!(*it).isNull() && (*it)->isCreated() && !(*it)->failed()) {
             (*it)->setFailed();
             if ((*it)->state() < KJavaApplet::INITIALIZED)

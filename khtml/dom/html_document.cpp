@@ -164,6 +164,12 @@ HTMLCollection HTMLDocument::forms() const
     return HTMLCollection(impl, HTMLCollectionImpl::DOC_FORMS);
 }
 
+HTMLCollection HTMLDocument::layers() const
+{
+    if(!impl) return HTMLCollection();
+    return HTMLCollection(impl, HTMLCollectionImpl::DOC_LAYERS);
+}
+
 HTMLCollection HTMLDocument::anchors() const
 {
     if(!impl) return HTMLCollection();

@@ -34,10 +34,27 @@ void openWallet()
 	QTimer::singleShot( 30000, qApp, SLOT( quit() ) );
 	int ret = qApp->exec();
 
+
 	if ( ret == 0 )
 		_out << "Timed out!" << endl;
 	else
 		_out << "Success!" << endl;
+
+	QMap<QString,QString> p;
+	ret = wallet->readPasswordList("*", p);
+	_out << "readPasswordList returned: " << ret << endl;
+	_out << "readPasswordList returned " << p.keys().count() << " entries" << endl;
+	QMap<QString, QMap<QString, QString> > q;
+	ret = wallet->readMapList("*", q);
+	_out << "readMapList returned: " << ret << endl;
+	_out << "readMapList returned " << q.keys().count() << " entries" << endl;
+
+	QMap<QString, QByteArray> s;
+	ret = wallet->readEntryList("*", s);
+	_out << "readEntryList returned: " << ret << endl;
+	_out << "readEntryList returned " << s.keys().count() << " entries" << endl;
+
+	delete wallet;
 }
 
 void WalletReceiver::walletOpened( bool got )

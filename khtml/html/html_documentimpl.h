@@ -19,13 +19,13 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 
 #ifndef HTML_DOCUMENTIMPL_H
 #define HTML_DOCUMENTIMPL_H
 
 #include "xml/dom_docimpl.h"
+#include "html/html_miscimpl.h"
 
 #include <qmap.h>
 
@@ -53,8 +53,6 @@ public:
     virtual bool isHTMLDocument() const { return true; }
 
     DOMString referrer() const;
-    DOMString domain() const;
-    void setDomain( const DOMString &newDomain ); // not part of the DOM
     DOMString lastModified() const;
     DOMString cookie() const;
     void setCookie( const DOMString &);
@@ -74,14 +72,17 @@ public:
     virtual void close();
 
     void setAutoFill() { m_doAutoFill = true; }
+    void setHTMLRequested( bool html ) { m_htmlRequested = html; }
+
+    HTMLCollectionImpl::CollectionInfo *collectionInfo(int type) { return m_collection_info+type; }
 
 protected:
-    HTMLElementImpl *bodyElement;
     HTMLElementImpl *htmlElement;
     friend class HTMLMapElementImpl;
     friend class HTMLImageElementImpl;
     QMap<QString,HTMLMapElementImpl*> mapMap;
     bool m_doAutoFill;
+    bool m_htmlRequested;
 
 protected slots:
     /**
@@ -89,7 +90,7 @@ protected slots:
      */
     void slotHistoryChanged();
 private:
-    mutable DOMString m_domain;
+    HTMLCollectionImpl::CollectionInfo m_collection_info[HTMLCollectionImpl::LAST_TYPE];
 };
 
 } //namespace

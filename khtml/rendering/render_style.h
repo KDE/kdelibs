@@ -4,7 +4,7 @@
  * Copyright (C) 2000-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2000 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2002-2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,7 +21,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef RENDERSTYLE_H
 #define RENDERSTYLE_H
@@ -257,7 +256,7 @@ public:
 
     bool hasBorder() const
     {
-    	return left.width || right.width || top.width || bottom.width;
+    	return left.nonZero() || right.nonZero() || top.nonZero() || bottom.nonZero();
     }
 
     bool operator==(const BorderData& o) const
@@ -288,6 +287,10 @@ public:
 //------------------------------------------------
 // Box attributes. Not inherited.
 
+enum EBoxSizing {
+    BORDER_BOX, CONTENT_BOX
+};
+
 class StyleBoxData : public Shared<StyleBoxData>
 {
 public:
@@ -315,6 +318,8 @@ public:
     Length max_height;
 
     Length vertical_align;
+
+    EBoxSizing box_sizing;
 
     signed int z_index :31;
     bool z_auto        : 1;
@@ -462,7 +467,7 @@ enum EWhiteSpace {
 };
 
 enum ETextAlign {
-    TAAUTO, LEFT, RIGHT, CENTER, JUSTIFY, KONQ_CENTER
+    TAAUTO, LEFT, RIGHT, CENTER, JUSTIFY, KHTML_LEFT, KHTML_RIGHT, KHTML_CENTER
 };
 
 enum ETextTransform {
@@ -475,6 +480,10 @@ enum EDirection {
 
 enum ETextDecoration {
     TDNONE = 0x0 , UNDERLINE = 0x1, OVERLINE = 0x2, LINE_THROUGH= 0x4, BLINK = 0x8
+};
+
+enum EPageBreak {
+    PBAUTO, PBALWAYS, PBAVOID
 };
 
 class StyleInheritedData : public Shared<StyleInheritedData>
@@ -503,6 +512,11 @@ public:
 
     short border_hspacing;
     short border_vspacing;
+
+    // Paged media properties.
+    short widows;
+    short orphans;
+    EPageBreak page_break_inside : 2;
 };
 
 
@@ -512,7 +526,7 @@ enum EEmptyCell {
 
 enum ECaptionSide
 {
-    CAPTOP, CAPBOTTOM
+    CAPTOP, CAPBOTTOM, CAPLEFT, CAPRIGHT
 };
 
 
@@ -589,7 +603,7 @@ protected:
 
     // inherit
     struct InheritedFlags {
-    // 32 bit inherited, don't add to the struct, or the operator will break.
+    // 64 bit inherited, don't add to the struct, or the operator will break.
 	bool operator==( const InheritedFlags &other ) const
         {    return _iflags ==other._iflags;    }
 	bool operator!=( const InheritedFlags &other ) const
@@ -598,12 +612,12 @@ protected:
         union {
             struct {
                 EEmptyCell _empty_cells : 1 ;
-                ECaptionSide _caption_side : 1;
+                ECaptionSide _caption_side : 2;
                 EListStyleType _list_style_type : 5 ;
                 EListStylePosition _list_style_position :1;
 
                 EVisibility _visibility : 2;
-                ETextAlign _text_align : 3;
+                ETextAlign _text_align : 4;
                 ETextTransform _text_transform : 2;
                 unsigned _text_decorations : 4;
                 ECursor _cursor_style : 5;
@@ -615,14 +629,15 @@ protected:
                 bool _visuallyOrdered : 1;
                 bool _htmlHacks :1;
                 EUserInput _user_input : 2;
+                unsigned int unused : 30;
             } f;
-            Q_UINT32 _iflags;
+            Q_UINT64 _iflags;
         };
     } inherited_flags;
 
 // don't inherit
     struct NonInheritedFlags {
-    // 32 bit non-inherited, don't add to the struct, or the operator will break.
+    // 64 bit non-inherited, don't add to the struct, or the operator will break.
 	bool operator==( const NonInheritedFlags &other ) const
         {   return _niflags == other._niflags;    }
 	bool operator!=( const NonInheritedFlags &other ) const
@@ -631,6 +646,7 @@ protected:
         union {
             struct {
                 EDisplay _display : 5;
+                EDisplay _originalDisplay: 5;
                 EBackgroundRepeat _bg_repeat : 2;
                 bool _bg_attachment : 1;
                 EOverflow _overflow : 4 ;
@@ -641,13 +657,18 @@ protected:
                 ETableLayout _table_layout : 1;
                 bool _flowAroundFloats :1;
 
+                EPageBreak _page_break_before : 2;
+                EPageBreak _page_break_after : 2;
+
                 PseudoId _styleType : 3;
 		bool _affectedByHover : 1;
 		bool _affectedByActive : 1;
                 bool _hasClip : 1;
                 EUnicodeBidi _unicodeBidi : 2;
+
+                unsigned int unused : 23;
             } f;
-            Q_UINT32 _niflags;
+            Q_UINT64 _niflags;
         };
     } noninherited_flags;
 
@@ -693,8 +714,12 @@ protected:
 	inherited_flags.f._visuallyOrdered = false;
 	inherited_flags.f._htmlHacks=false;
 	inherited_flags.f._user_input = UI_NONE;
+        inherited_flags.f.unused = 0;
 
-        noninherited_flags.f._display = initialDisplay();
+	noninherited_flags._niflags = 0L; // for safety: without this, the equality method sometimes
+	                                  // makes use of uninitialised bits according to valgrind
+
+        noninherited_flags.f._display = noninherited_flags.f._originalDisplay = initialDisplay();
 	noninherited_flags.f._bg_repeat = initialBackgroundRepeat();
 	noninherited_flags.f._bg_attachment = initialBackgroundAttachment();
 	noninherited_flags.f._overflow = initialOverflow();
@@ -704,11 +729,14 @@ protected:
 	noninherited_flags.f._floating = initialFloating();
 	noninherited_flags.f._table_layout = initialTableLayout();
 	noninherited_flags.f._flowAroundFloats= initialFlowAroundFloats();
+        noninherited_flags.f._page_break_before = initialPageBreak();
+        noninherited_flags.f._page_break_after = initialPageBreak();
 	noninherited_flags.f._styleType = NOPSEUDO;
 	noninherited_flags.f._affectedByHover = false;
 	noninherited_flags.f._affectedByActive = false;
 	noninherited_flags.f._hasClip = false;
 	noninherited_flags.f._unicodeBidi = initialUnicodeBidi();
+        noninherited_flags.f.unused = 0;
     }
 
 public:
@@ -744,6 +772,7 @@ public:
 // attribute getter methods
 
     EDisplay 	display() const { return noninherited_flags.f._display; }
+    EDisplay    originalDisplay() const { return noninherited_flags.f._originalDisplay; }
 
     Length  	left() const {  return surround->offset.left; }
     Length  	right() const {  return surround->offset.right; }
@@ -864,7 +893,14 @@ public:
 
     ECursor cursor() const { return inherited_flags.f._cursor_style; }
 
+    short widows() const { return inherited->widows; }
+    short orphans() const { return inherited->orphans; }
+    EPageBreak pageBreakInside() const { return inherited->page_break_inside; }
+    EPageBreak pageBreakBefore() const { return noninherited_flags.f._page_break_before; }
+    EPageBreak pageBreakAfter() const { return noninherited_flags.f._page_break_after; }
+
     // CSS3 Getter Methods
+    EBoxSizing boxSizing() const { return box->box_sizing; }
     EUserInput userInput() const { return inherited_flags.f._user_input; }
 
     Length marqueeIncrement() { return css3NonInheritedData->marquee->increment; }
@@ -877,6 +913,7 @@ public:
 // attribute setter methods
 
     void setDisplay(EDisplay v) {  noninherited_flags.f._display = v; }
+    void setOriginalDisplay(EDisplay v) {  noninherited_flags.f._originalDisplay = v; }
     void setPosition(EPosition v) {  noninherited_flags.f._position = v; }
     void setFloating(EFloat v) {  noninherited_flags.f._floating = v; }
 
@@ -1003,7 +1040,14 @@ public:
     bool hasAutoZIndex() const { return box->z_auto; }
     void setHasAutoZIndex() { SET_VAR(box, z_auto, true ); }
 
+    void setWidows(short w) { SET_VAR(inherited, widows, w); }
+    void setOrphans(short o) { SET_VAR(inherited, orphans, o); }
+    void setPageBreakInside(EPageBreak b) { SET_VAR(inherited, page_break_inside, b); }
+    void setPageBreakBefore(EPageBreak b) { noninherited_flags.f._page_break_before = b; }
+    void setPageBreakAfter(EPageBreak b) { noninherited_flags.f._page_break_after = b; }
+
     // CSS3 Setters
+    void setBoxSizing( EBoxSizing b ) { SET_VAR(box,box_sizing,b); }
     void setUserInput(EUserInput ui) { inherited_flags.f._user_input = ui; }
 
     void setMarqueeIncrement(const Length& f) { SET_VAR(css3NonInheritedData.access()->marquee, increment, f); }
@@ -1031,6 +1075,18 @@ public:
     enum Diff { Equal, NonVisible = Equal, Visible, Position, Layout, CbLayout };
     Diff diff( const RenderStyle *other ) const;
 
+    bool isDisplayReplacedType() {
+        return display() == INLINE_BLOCK ||/* display() == INLINE_BOX ||*/ display() == INLINE_TABLE;
+    }
+    bool isDisplayInlineType() {
+        return display() == INLINE || isDisplayReplacedType();
+    }
+    bool isOriginalDisplayInlineType() {
+        return originalDisplay() == INLINE || originalDisplay() == INLINE_BLOCK ||
+               /*originalDisplay() == INLINE_BOX ||*/ originalDisplay() == INLINE_TABLE;
+    }
+
+
 #ifdef ENABLE_DUMP
     QString createDiff( const RenderStyle &parent ) const;
 #endif
@@ -1049,9 +1105,11 @@ public:
     static EListStylePosition initialListStylePosition() { return OUTSIDE; }
     static EListStyleType initialListStyleType() { return DISC; }
     static EOverflow initialOverflow() { return OVISIBLE; }
+    static EPageBreak initialPageBreak() { return PBAUTO; }
     static EPosition initialPosition() { return STATIC; }
     static ETableLayout initialTableLayout() { return TAUTO; }
     static EUnicodeBidi initialUnicodeBidi() { return UBNormal; }
+    static EBoxSizing initialBoxSizing() { return CONTENT_BOX; }
     static ETextTransform initialTextTransform() { return TTNONE; }
     static EVisibility initialVisibility() { return VISIBLE; }
     static EWhiteSpace initialWhiteSpace() { return NORMAL; }

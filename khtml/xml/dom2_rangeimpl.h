@@ -21,7 +21,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 
 #ifndef _DOM2_RangeImpl_h_
@@ -43,7 +42,6 @@ public:
 
     ~RangeImpl();
 
-    // ### remove the get from these methods (i.e. getStartContainer() -> startContainer())
     NodeImpl *startContainer(int &exceptioncode) const;
     long startOffset(int &exceptioncode) const;
     NodeImpl *endContainer(int &exceptioncode) const;
