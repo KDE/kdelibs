@@ -244,6 +244,13 @@ See kdelibs/pics/hicolor/kde for an example of its use.
 <H4>KContainerLayout</H4>
 This class has been removed, use Qt layouts instead.
 
+<H4>KCommand</H4>
+This class has been made lighter: the name isn't stored into the command anymore,
+but must be provided by the inherited class, as the result of the virtual name() function.
+This saves storing a QString into each command in memory.
+The former behavior is available in the class KNamedCommand, so for a quick port
+simply replace KCommand with KNamedCommand.
+
 <H4>KDialogBase</H4>
 The deprecated getMainWidget() method has been removed. Use mainWidget() instead.
 
