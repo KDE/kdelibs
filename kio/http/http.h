@@ -15,7 +15,7 @@
 #include <errno.h>
 #include <stdio.h>
 #ifdef DO_SSL
-#include <openssl/ssl.h>
+#include <kssl.h>
 #endif
 #include <unistd.h>
 #include <netdb.h>
@@ -301,12 +301,8 @@ protected: // Members
   QStringList m_userAgentList;
 
 #ifdef DO_SSL
-  // Stuff for OpenSSL/SSLeay
-  bool m_bUseSSL2, m_bUseSSL3, m_bUseTLS1, m_bUseSSL;
-  SSL_METHOD *meth;
-  SSL_CTX *ctx;
-  SSL *hand;
-  bool m_bssl_init;
+  bool m_bUseSSL;
+  KSSL m_ssl;
 #endif
 
 };

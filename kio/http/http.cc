@@ -48,8 +48,7 @@
 #include <kdesu/client.h>
 
 #ifdef DO_SSL
-#include <openssl/ssl.h>
-#include <openssl/err.h>
+#include <kssl.h>
 #endif
 
 #ifdef DO_MD5
@@ -102,9 +101,6 @@ extern "C" {
   char *create_basic_auth (const char *header, const char *user, const char *passwd);
   const char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *auth_str);
   void sigalrm_handler(int);
-#ifdef DO_SSL
-  int verify_callback(int, X509_STORE_CTX *);
-#endif
 };
 
 extern "C" { int kdemain(int argc, char **argv); }
@@ -326,18 +322,6 @@ bool revmatch(const char *host, const char *nplist)
   return false;
 }
 
-#ifdef DO_SSL
-// This is for now a really stupid yes-man callback.
-// If I (or someone else) feels motivated enough to do some
-// real verification a la OpenSSL, then this might be a
-// more useful function.
-int verify_callback (int, X509_STORE_CTX *)
-{
-  return 1;
-}
-#endif
-
-
 /*****************************************************************************/
 
 HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, const QCString &app )
@@ -361,16 +345,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
 
   m_bEOF=false;
 #ifdef DO_SSL
-  KConfig *config = new KConfig("cryptodefaults");
-  config->setGroup("TLSv1");
-  m_bUseTLS1 = config->readBoolEntry("Enabled", false);
-  config->setGroup("SSLv2");
-  m_bUseSSL2 = config->readBoolEntry("Enabled", true);
-  config->setGroup("SSLv3");
-  m_bUseSSL3 = config->readBoolEntry("Enabled", true);
   m_bUseSSL=true;
-  m_bssl_init=false;
-  meth=0; ctx=0; hand=0;
 #endif
 
   m_sContentMD5 = "";
@@ -416,120 +391,17 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
 
 #ifdef DO_SSL
 void HTTPProtocol::initSSL() {
-  if (m_bssl_init) return;
-  kdDebug(7103) << "SSL Initialisation code called." << endl;
-  // George Staikos <staikos@kde.org> 9/4/2000
-  //         I have found some sites that don't work with SSL3
-  //         recently.  This may be an OpenSSL problem but in any
-  //         case, we have to make Konqueror work.
-  KConfig *config = new KConfig("cryptodefaults");
-  config->setGroup("TLSv1");
-  m_bUseTLS1 = config->readBoolEntry("Enabled", false);
-  config->setGroup("SSLv2");
-  m_bUseSSL2 = config->readBoolEntry("Enabled", true);
-  config->setGroup("SSLv3");
-  m_bUseSSL3 = config->readBoolEntry("Enabled", true);
-
-  // TLS1 goes first - it excludes SSL2/3
-  // FIXME: we should be able to force SSL off entirely.
-  //        This logic here makes v2 a "default" if no other SSL
-  //        version is turned on.  IMHO this is the safest one to
-  //        use as the default anyways, so I'm not changing it yet.
-  if (m_bUseTLS1)
-    meth=TLSv1_client_method();
-  else if (m_bUseSSL2 && m_bUseSSL3)
-    meth=SSLv23_client_method();
-  else if (m_bUseSSL3)
-    meth=SSLv3_client_method();
-  else
-    meth=SSLv2_client_method();
-
-  SSLeay_add_all_algorithms();  // is this really necessary?
-  SSLeay_add_ssl_algorithms();
-  ctx=SSL_CTX_new(meth);
-  if (ctx == NULL) {
-    // FIXME: This is a critical error - we should do more here.
-    kdDebug(7103) << "Can't create SSL context!" << endl;
-    fflush(stderr);
-  }
-
-  SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_callback);
-
-  // now we use only the ciphers that the user wants
-  if (!m_bUseTLS1) {
-    QString clist = "";
-    QString tcipher;
-    bool firstcipher = true;
-    bool v2ciphers_unset = false, v3ciphers_unset = false;
-
-    // The user might have v2 and v3 enabled so we start with an
-    // empty buffer and add v2 if needed, then v3 if needed.
-    // we assume that the config file will have consecutive entries.
-    for (int k = 0; k < 2; k++) {
-
-      if (k == 0) {                   // do v2, then v3
-        if (!m_bUseSSL2) continue;
-        config->setGroup("SSLv2");
-      } else {
-        if (!m_bUseSSL3) continue;
-        config->setGroup("SSLv3");
-      }
-
-      for(int i = 0;; i++) {
-        tcipher.sprintf("cipher_%d", i);
-
-        if (!config->hasKey(tcipher)) {
-          if (i == 0)
-            if (k == 0)
-              v2ciphers_unset = true;
-            else v3ciphers_unset = true;
-          break;
-        } // if
-
-        if (config->readBoolEntry(tcipher)) {  // add it to the list
-          SSL_CIPHER *sc = (meth->get_cipher)(i);
-          if (!sc) continue;
-
-          if (firstcipher)          // we don't start with a ':'
-            firstcipher = false;
-          else clist.append(":");
-
-          clist.append(sc->name);
-        } // if
-      } // for  i
-    } // for    k
-
-    // for now we are just going to use the default ciphers if none
-    // are selected
-    if (m_bUseSSL2 && m_bUseSSL3 && v2ciphers_unset && v3ciphers_unset) {
-      kdDebug(7103) << "SSL will use default ciphers." << endl;
-    } else if (m_bUseSSL2 && !m_bUseSSL3 && v2ciphers_unset) {
-      kdDebug(7103) << "SSL will use default ciphers." << endl;
-    } else if (!m_bUseSSL2 && m_bUseSSL3 && v3ciphers_unset) {
-      kdDebug(7103) << "SSL will use default ciphers." << endl;
-    } else {
-      kdDebug(7103) << "SSL CIPHERS IN USE: " << clist << endl;
-      SSL_CTX_set_cipher_list(ctx, clist.ascii());
-    }
-  } // if
-
-  hand=SSL_new(ctx);
-  m_bssl_init = true;
+  m_ssl.initialize();
+  kdDebug(7103) << "SSL was initialised." << endl;
 }
 
 void HTTPProtocol::closeSSL() {
-  if (!m_bssl_init) return;
-
+  m_ssl.close();
   kdDebug(7103) << "SSL was deinitialised." << endl;
-  SSL_shutdown(hand);
-  SSL_free(hand);
-  SSL_CTX_free(ctx);
-  m_bssl_init = false;
 }
 
 void HTTPProtocol::resetSSL() {
-  closeSSL();
-  initSSL();
+  m_ssl.reInitialize();
 }
 
 #endif
@@ -539,11 +411,12 @@ int HTTPProtocol::openStream() {
 #ifdef DO_SSL
   if (m_bUseSSL) {
     initSSL();     // incase it's not initialised somehow - it's wrapped though
-    SSL_set_fd(hand, m_sock);
-    if (SSL_connect(hand) == -1) {
+    kdDebug(7103) << "SSL about to connect." << endl;
+    if (m_ssl.connect(m_sock) == -1) {
+      kdDebug(7103) << "SSL connection failed." << endl;
       return false;
     }
-    kdDebug(7103) << "SSL CIPHER NEGOTIATED: " << SSL_get_cipher_name(hand) << endl;
+    kdDebug(7103) << "SSL connection established." << endl;
     return true;
   }
 #endif
@@ -559,7 +432,7 @@ ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
 {
 #ifdef DO_SSL
   if (m_bUseSSL)
-    return SSL_write(hand, (char *)buf, nbytes);
+    return m_ssl.write((char *)buf, nbytes);
 #endif
   int n;
  keeptrying:
@@ -597,7 +470,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 #ifdef DO_SSL
   if (m_bUseSSL) {
     m_bEOF=false;
-    ret=SSL_read(hand, (char *)b, nbytes);
+    ret=m_ssl.read((char *)b, nbytes);
     if (ret==0) m_bEOF=true;
     return ret;
   }
