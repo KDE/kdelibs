@@ -184,10 +184,8 @@ void HTTPProtocol::resetSessionSettings()
     m_bUseProxy = m_proxyURL.isValid();
 
     kdDebug(7113) << "(" << m_pid << ") Using proxy: " << m_bUseProxy << endl;
-    kdDebug(7113) << "(" << m_pid << ") Proxy realm value: " << m_strRealm
-                  << endl;
-    kdDebug(7113) << "(" << m_pid << ") Proxy URL is now: "
-                  << m_proxyURL.url() << endl;
+    kdDebug(7113) << "(" << m_pid << ")   URL: " << m_proxyURL.url() << endl;
+    kdDebug(7113) << "(" << m_pid << ")   Realm value: " << m_strRealm << endl;
   }
 
   m_bUseCookiejar = config()->readBoolEntry("Cookies");
@@ -246,9 +244,20 @@ void HTTPProtocol::resetSessionSettings()
       (m_proxyURL.protocol() != "https" || m_proxyURL.protocol() != "webdavs") )
   {
     setEnableSSLTunnel( true );
-    // Tell parent class about the real hostname so that it can
-    // correctly deal with the SSL session...
+
+    // HACK:  This is a temporary solution to fix the condition
+    // where the realhost name was set for the previous request.
+    // SSL tunneling definitely needs to be re-designed!
     setRealHost( m_request.hostname );
+
+    kdDebug(7113) << "(" << m_pid << ") Setting real host name to: " << m_request.hostname << endl;
+  }
+  else
+  {
+    // HACK:  This is a temporary solution to fix the condition
+    // where the realhost name was set for the previous request.
+    // SSL tunneling definitely needs to be re-designed!
+    setRealHost( QString::null);
   }
 
   m_responseCode = 0;
@@ -279,11 +288,6 @@ void HTTPProtocol::setHost( const QString& host, int port,
   // Reset the webdav-capable flags for this host
   if ( m_request.hostname != host )
     m_davHostOk = m_davHostUnsupported = false;
-
-  // HACK:  This is a temporary solution to fix the condition
-  // where the realhost name was set for the previous request.
-  // SSL tunneling definitely needs to be re-designed!
-  setRealHost (QString::null);
 
   m_request.hostname = host;
   m_request.port = (port == 0) ? m_iDefaultPort : port;
