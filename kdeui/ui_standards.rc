@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="standard_containers" version="1">
+<kpartgui name="standard_containers" version="2">
 <MenuBar>
   <Menu name="file"><text>&amp;File</text>
     <Action name="file_new"/>
@@ -28,22 +28,24 @@
   <Menu name="game"><text>&amp;Game</text>
     <Action name="game_new"/>
     <Action name="game_load"/>
-	<MergeLocal name="new_merge"/>
+    <Action name="game_load_recent"/>
+    <MergeLocal name="new_merge"/>
     <Separator/>
     <Action name="game_save"/>
     <Action name="game_save_as"/>
-	<MergeLocal name="save_merge"/>
+    <MergeLocal name="save_merge"/>
     <Separator/>
     <Action name="game_end"/>
-        <MergeLocal name="end_merge"/>
+    <MergeLocal name="end_merge"/>
     <Separator/>
     <Action name="game_pause"/>
     <Action name="game_highscores"/>
     <Action name="game_print"/>
-	<MergeLocal name="misc_merge"/>
+    <Action name="game_print_preview"/>
+    <MergeLocal name="misc_merge"/>
     <Separator/>
-	<MergeLocal/>
-	<Separator/>
+    <MergeLocal/>
+    <Separator/>
     <Action name="game_quit"/>
   </Menu>
   <Menu name="edit"><text>&amp;Edit</text>
