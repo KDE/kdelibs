@@ -109,7 +109,7 @@ KPQtPage::KPQtPage(QWidget *parent, const char *name)
 	QRadioButton	*m_landscape = new QRadioButton(i18n("&Landscape"), m_orientbox);
 	m_orientpix = new QLabel(m_orientbox);
 	m_orientpix->setAlignment(Qt::AlignCenter);
-	QRadioButton	*m_color = new QRadioButton(i18n("&Color"), m_colorbox);
+	QRadioButton	*m_color = new QRadioButton(i18n("Colo&r"), m_colorbox);
 	QRadioButton	*m_grayscale = new QRadioButton(i18n("&Grayscale"), m_colorbox);
 	m_colorpix = new QLabel(m_colorbox);
 	m_colorpix->setAlignment(Qt::AlignCenter);
