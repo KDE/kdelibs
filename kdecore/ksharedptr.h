@@ -1,5 +1,5 @@
 /* The QSharedPtr class is property of Troll Tech. It's here temporarily
-   until it appears in Qt's CVS 
+   until it appears in Qt's CVS
 */
 /*
    The KShared / KSharedPtr class is Copyright 1999 W. Bastian
@@ -16,17 +16,17 @@
  * @version $Id$
  */
 class KShared {
-public:      
-   KShared() : count(0) { }      
-   KShared( const KShared & ) : count(0) { }      
-   KShared &operator=(const KShared & ) { return *this; }      
-   void _KShared_ref() { count++; }      
-   void _KShared_unref() { if (!--count) delete this; }      
+public:
+   KShared() : count(0) { }
+   KShared( const KShared & ) : count(0) { }
+   KShared &operator=(const KShared & ) { return *this; }
+   void _KShared_ref() { count++; }
+   void _KShared_unref() { if (!--count) delete this; }
    int _KShared_count() { return count; }
-protected:            
-   virtual ~KShared() { }      
+protected:
+   virtual ~KShared() { }
    int count;
-}; 
+};
 
 /**
  * Can be used to control the lifetime of an object
@@ -36,7 +36,7 @@ protected:
  * This struct emulates C++ pointers perfectly. So just use
  * it like a simple C++ pointer.
  *
- * KShared and KSharedPtr are preferred over QShared / 
+ * KShared and KSharedPtr are preferred over QShared /
  * QSharedPtr since they are more safe.
  * @author Waldo Bastian <bastian@kde.org>
  * @version $Id$
@@ -47,26 +47,26 @@ template< class T >
 struct KSharedPtr
 {
 public:
-  KSharedPtr() 
+  KSharedPtr()
     : ptr(0) { }
-  KSharedPtr( T* t ) 
+  KSharedPtr( T* t )
     : ptr(t) { if ( ptr ) ptr->_KShared_ref(); }
-  KSharedPtr( const KSharedPtr& p ) 
+  KSharedPtr( const KSharedPtr& p )
     : ptr(p.ptr) { if ( ptr ) ptr->_KShared_ref(); }
-    
+
   ~KSharedPtr() { if ( ptr ) ptr->_KShared_unref(); }
 
   KSharedPtr<T>& operator= ( const KSharedPtr<T>& p ) {
     if ( ptr == p.ptr ) return *this;
     if ( ptr ) ptr->_KShared_unref();
-    ptr = p.ptr; 
+    ptr = p.ptr;
     if ( ptr ) ptr->_KShared_ref();
     return *this;
   }
-  KSharedPtr<T>& operator= ( T* p ) { 
+  KSharedPtr<T>& operator= ( T* p ) {
     if ( ptr == p ) return *this;
     if ( ptr ) ptr->_KShared_unref();
-    ptr = p; 
+    ptr = p;
     if ( ptr ) ptr->_KShared_ref();
     return *this;
   }
@@ -75,11 +75,7 @@ public:
   bool operator== ( const T* p ) const { return ( ptr == p ); }
   bool operator!= ( const T* p ) const { return ( ptr != p ); }
   bool operator!() const { return ( ptr == 0 ); }
-  operator bool() const { return ( ptr != 0 ); }
-  // the non-const version looks stupid, but -pedantic prefers that one
-  operator bool() { return ( ptr != 0 ); }
-  operator T*() { return ptr; }
-  operator const T*() const { return ptr; }
+  operator T*() const { return ptr; }
 
   const T& operator*() const { return *ptr; }
   T& operator*() { return *ptr; }
@@ -114,7 +110,7 @@ public:
     ptr = p.ptr; if ( ptr ) ptr->ref();
     return *this;
   }
-  QSharedPtr<T>& operator= ( T* p ) { 
+  QSharedPtr<T>& operator= ( T* p ) {
     if ( ptr && ptr->deref() ) delete ptr;
     ptr = p;
     return *this;
@@ -124,10 +120,7 @@ public:
   bool operator== ( const T* p ) const { return ( ptr == p ); }
   bool operator!= ( const T* p ) const { return ( ptr != p ); }
   bool operator!() const { return ( ptr == 0 ); }
-  operator bool() const { return ( ptr != 0 ); }
-  operator bool() { return ( ptr != 0 ); }
-  operator T*() { return ptr; }
-  operator const T*() const { return ptr; }
+  operator T*() const { return ptr; }
 
   const T& operator*() const { return *ptr; }
   T& operator*() { return *ptr; }
