@@ -25,6 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kpanelmenu.h"
 #include <qstringlist.h>
 #include <dcopclient.h>
+#include <kapp.h>
 #include <kdebug.h>
 
 static int panelmenu_get_seq_id()
