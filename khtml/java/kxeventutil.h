@@ -1,3 +1,6 @@
+#ifndef KXEVENTUTIL_H
+#define KXEVENTUTIL_H
+
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <qstring.h>
@@ -24,3 +27,5 @@ class KXEventUtil {
         static QString getXConfigureRequestEventInfo(XEvent *xevent);
         static QString getX11EventInfo( XEvent* e );
 };
+
+#endif
