@@ -22,7 +22,7 @@
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kstringhandler.h>
-#include <klineeditdlg.h>
+#include <kinputdialog.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <assert.h>
@@ -91,15 +91,14 @@ KBookmarkGroup KBookmarkGroup::createNewFolder( KBookmarkManager* mgr, const QSt
     QString txt( text );
     if ( text.isEmpty() )
     {
-        KLineEditDlg l( i18n("New folder:"), "", 0L );
-        l.setCaption( parentGroup().fullText().isEmpty() ?
-                      i18n("Create New Bookmark Folder") :
-                      i18n("Create New Bookmark Folder in %1").arg( parentGroup().text() ) );
-        //text is empty so disable ok button.
-        l.enableButtonOK( false );
-        if ( l.exec() )
-            txt = l.text();
-        else
+        bool ok;
+        QString caption = parentGroup().fullText().isEmpty() ?
+                      i18n( "Create New Bookmark Folder" ) :
+                      i18n( "Create New Bookmark Folder in %1" )
+                      .arg( parentGroup().text() );
+        txt = KInputDialog::getText( caption, i18n( "New folder:" ),
+                      QString::null, &ok );
+        if ( !ok )
             return KBookmarkGroup();
     }
 
