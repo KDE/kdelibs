@@ -700,6 +700,9 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 	    // combobox shouldn't emit onblur)
 	}
     }
+    if (evt->target() == this && evt->isMouseEvent() && renderer())
+        evt->setDefaultHandled();
+
     HTMLElementImpl::defaultEventHandler(evt);
 }
 
@@ -1340,8 +1343,6 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
             m_render->absolutePosition(offsetX,offsetY);
             xPos = me->clientX()-offsetX;
             yPos = me->clientY()-offsetY;
-
-            me->setDefaultHandled();
         }
 
         // DOMActivate events cause the input to be "activated" - in the case of image and submit inputs, this means
