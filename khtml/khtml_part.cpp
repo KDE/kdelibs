@@ -2150,7 +2150,10 @@ void KHTMLPart::findTextNext()
         // Grab text from render object
         QString s;
         if ( obj->isText() )
+        {
           s = static_cast<khtml::RenderText *>(obj)->data().string();
+          s = s.replace(0xa0, ' ');
+        }
         else if ( obj->isBR() )
           s = '\n';
         else if ( !obj->isInline() && !str.isEmpty() )
