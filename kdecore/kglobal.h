@@ -19,11 +19,11 @@
 #define _KGLOBAL_H
 
 #include "kdemacros.h"
+#include <kinstance.h> // KDE4: class KInstance is enough here
 
 class KCharsets;
 class KConfig;
 class KIconLoader;
-class KInstance;
 class KLocale;
 class KStandardDirs;
 class KStaticDeleterBase;
