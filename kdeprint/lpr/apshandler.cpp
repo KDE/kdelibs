@@ -396,7 +396,10 @@ QString ApsHandler::printOptions(KPrinter *printer)
 	if (!optstr.isEmpty())
 	{
 		optstr = optstr.left(optstr.length()-1);
-		optstr.prepend("-C '").append("'");
+		if (LprSettings::self()->mode() == LprSettings::LPR)
+			optstr.prepend("-C '").append("'");
+		else
+			optstr.prepend("-Z '").append("'");
 	}
 	return optstr;
 }
