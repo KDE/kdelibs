@@ -35,7 +35,7 @@
 #include "xml/dom2_eventsimpl.h"
 #include "khtml_part.h"
 #include "xml/dom_docimpl.h" // ### remove dependency
-//#include <kdebug.h>
+#include <kdebug.h>
 
 using namespace khtml;
 using namespace DOM;
@@ -289,8 +289,6 @@ void RenderWidget::handleDOMEvent(EventImpl *evt)
     if (!m_widget)
 	return;
 
-    bool doRepaint = false;
-
     if (evt->isMouseEvent()) {
 	MouseEventImpl *mev = static_cast<MouseEventImpl*>(evt);
         //kdDebug() << "RenderWidget("<<this<<")::handleDOMEvent for a mouse event of type " << mev->type().string() << endl;
@@ -345,8 +343,7 @@ void RenderWidget::handleDOMEvent(EventImpl *evt)
 
 	// Send the actual event to the widget
 	if (event) {
-	    if (sendWidgetEvent(event))
-		doRepaint = true;
+	    sendWidgetEvent(event);
 	    delete event;
 	}
     }
@@ -362,7 +359,6 @@ void RenderWidget::handleDOMEvent(EventImpl *evt)
         m_widget->setFocus();
 
 	sendWidgetEvent(&focusEvent);
-	doRepaint = true;
     }
     else if (evt->id() == EventImpl::DOMFOCUSOUT_EVENT) {
 	QFocusEvent focusEvent(QEvent::FocusOut);
@@ -370,7 +366,6 @@ void RenderWidget::handleDOMEvent(EventImpl *evt)
 	//m_widget->setFocusProxy(0);
 
 	sendWidgetEvent(&focusEvent);
-	doRepaint = true;
     }
     else if (evt->id() == EventImpl::KHTML_KEYDOWN_EVENT ||
              evt->id() == EventImpl::KHTML_KEYPRESS_EVENT || // necessary for auto-repeat keys
@@ -381,17 +376,9 @@ void RenderWidget::handleDOMEvent(EventImpl *evt)
 	if (sendWidgetEvent(keyEvent->qKeyEvent)) {
             //kdDebug(6000) << "RenderWidget("<<this<<")::handleDOMEvent key event accepted" << endl;
 	    keyEvent->qKeyEvent->accept();
-	    doRepaint = true;
         } else {
             //kdDebug(6000) << "RenderWidget("<<this<<")::handleDOMEvent key event NOT accepted" << endl;
         }
-    }
-
-    if (doRepaint) {
-	int xpos = 0;
-	int ypos = 0;
-	absolutePosition(xpos,ypos);
-	m_view->updateContents(xpos,ypos,width(),height());
     }
 
     evt->setDefaultHandled();
