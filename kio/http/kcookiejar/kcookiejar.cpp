@@ -1037,8 +1037,8 @@ bool KCookieJar::saveCookies(const QString &_filename)
 
     fprintf(fStream, "# KDE Cookie File\n#\n");
 
-    fprintf(fStream, "%-20s %-20s %-12s %-9s %-4s %-10s %s %-4s\n",
-    	"# Host", "Domain", "Path", "Exp.date", "Prot", "Name", "Value", "Secure");
+    fprintf(fStream, "%-20s %-20s %-12s %-10s %-4s %-20s %-4s %s\n",
+    	"# Host", "Domain", "Path", "Exp.date", "Prot", "Name", "Sec", "Value");
 
     for ( QStringList::Iterator it=domainList.begin();
     	  it != domainList.end();
@@ -1073,11 +1073,12 @@ bool KCookieJar::saveCookies(const QString &_filename)
                 QString domain("\"");
                 domain += cookie->domain();
                 domain += "\"";
-                fprintf(fStream, "%-20s %-20s %-12s %9lu   %2d %-10s %s %-4i\n",
+                fprintf(fStream, "%-20s %-20s %-12s %10lu  %3d %-20s %-4i %s\n",
 		    cookie->host().local8Bit().data(), domain.local8Bit().data(), path.local8Bit().data(),
-		    (unsigned long) cookie->expireDate(), cookie->protocolVersion()+100,
-		    cookie->name().local8Bit().data(), cookie->value().local8Bit().data(),
-		    cookie->isSecure());
+		    (unsigned long) cookie->expireDate(), cookie->protocolVersion()+200,
+		    cookie->name().local8Bit().data(), 
+		    cookie->isSecure(),
+		    cookie->value().local8Bit().data());
 		cookie = cookieList->next();
 	    }
 	    else
@@ -1164,13 +1165,25 @@ bool KCookieJar::loadCookies(const QString &_filename)
             int protVer  = (time_t) strtoul(verStr, 0, 10);
             const char *name( parseField(line) );
             bool keepQuotes = false;
-            if (protVer >= 100)
+            bool secure = false;
+            const char *value = 0;
+            if (protVer >= 200)
             {
-                protVer -= 100;
-                keepQuotes = true;
+                protVer -= 200;
+                secure = atoi( parseField(line) );
+                line[strlen(line)-1] = '\0'; // Strip LF.
+                value = line;
             }
-            const char *value( parseField(line, keepQuotes) );
-            bool secure = atoi( parseField(line) );
+            else
+            {
+                if (protVer >= 100)
+                {
+                    protVer -= 100;
+                    keepQuotes = true;
+                }
+                value = parseField(line, keepQuotes);
+                secure = atoi( parseField(line) );
+            }
 
             // Parse error
             if (!value) continue;

@@ -137,6 +137,11 @@ int main(int argc, char *argv[])
    printf("Requesting to set cookie for %s\n", arg1.latin1());
    arg2 = "Set-Cookie: some_value=value6; expires=Fri, 04-May-2002 01:00:00 GMT";
    addCookies(arg1, arg2);
+
+   arg1 = "http://acme.com";
+   printf("Requesting to set cookie for %s\n", arg1.latin1());
+   arg2 = "Set-Cookie: some_other_value=value7 space; expires=Fri, 04-May-2002 01:00:00 GMT";
+   addCookies(arg1, arg2);
    
    
    
