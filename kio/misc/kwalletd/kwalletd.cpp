@@ -794,4 +794,38 @@ bool KWalletD::isEnabled() const {
 }
 
 
+bool KWalletD::folderDoesNotExist(const QString& wallet, const QString& folder) {
+	for (QIntDictIterator<KWallet::Backend> it(_wallets);
+						it.current();
+							++it) {
+		if (it.current()->walletName() == wallet) {
+			return it.current()->folderDoesNotExist(folder);
+		}
+	}
+
+	KWallet::Backend *b = new KWallet::Backend(wallet);
+	b->open(QByteArray());
+	bool rc = b->folderDoesNotExist(folder);
+	delete b;
+	return rc;
+}
+
+
+bool KWalletD::keyDoesNotExist(const QString& wallet, const QString& folder, const QString& key) {
+	for (QIntDictIterator<KWallet::Backend> it(_wallets);
+						it.current();
+							++it) {
+		if (it.current()->walletName() == wallet) {
+			return it.current()->folderDoesNotExist(folder);
+		}
+	}
+
+	KWallet::Backend *b = new KWallet::Backend(wallet);
+	b->open(QByteArray());
+	bool rc = b->entryDoesNotExist(folder, key);
+	delete b;
+	return rc;
+}
+
+
 #include "kwalletd.moc"

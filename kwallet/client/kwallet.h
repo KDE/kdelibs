@@ -336,6 +336,27 @@ class Wallet : public QObject, public DCOPObject {
 		 */
 		virtual EntryType entryType(const QString& key);
 
+		/**
+		 *  Determine if a folder does not exist in a wallet.  This
+		 *  does not require decryption of the wallet.
+		 *  @param wallet The wallet to look in.
+		 *  @param folder The folder to look up.
+		 *  @return Returns true if the folder does NOT exist in the
+		 *  wallet, or the wallet does not exist.
+		 */
+		static bool folderDoesNotExist(const QString& wallet, const QString& folder);
+
+		/**
+		 *  Determine if an entry in a folder does not exist in a
+		 *  wallet.  This does not require decryption of the wallet.
+		 *  @param wallet The wallet to look in.
+		 *  @param folder The folder to look in.
+		 *  @param key The key to look up.
+		 *  @return Returns true if the key does NOT exist in the
+		 *  wallet, or the folder or wallet does not exist.
+		 */
+		static bool keyDoesNotExist(const QString& wallet, const QString& folder, const QString& key);
+
 	signals:
 		/**
 		 *  Emitted when this wallet is closed.

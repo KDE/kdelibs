@@ -579,6 +579,26 @@ void Wallet::walletOpenResult(int id) {
 }
 
 
+bool Wallet::folderDoesNotExist(const QString& wallet, const QString& folder) {
+DCOPReply r = DCOPRef("kded", "kwalletd").call("fodlerDoesNotExist", wallet, folder);
+bool rc = true;
+	if (r.isValid()) {
+		r.get(rc);
+	}
+return rc;
+}
+
+
+bool Wallet::keyDoesNotExist(const QString& wallet, const QString& folder, const QString& key) {
+DCOPReply r = DCOPRef("kded", "kwalletd").call("keyDoesNotExist", wallet, folder, key);
+bool rc = true;
+	if (r.isValid()) {
+		r.get(rc);
+	}
+return rc;
+}
+
+
 void Wallet::virtual_hook(int, void*) {
 	//BASE::virtual_hook( id, data );
 }
