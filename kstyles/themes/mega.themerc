@@ -3,5 +3,10 @@ Name=MegaGradient highcolor style
 Name[da]=MegaOvergang højfarve stil
 Name[de]=MegaGradient-Stil für 64000 Farben
 Name[es]=Estilo MegaGradient de alta calidad
+Name[hu]=Rengeteg színárnyalatot használó stílus
+Name[ro]=Stil MegaGradient cu culori multe
+Name[ru]=Градиентный стиль highcolor
+Name[sl]=Mnogobarvni slog MegaGradient
+Name[uk]=Багатокольоровий стиль Мега-градієнт
 [KDE]
 widgetStyle=mega.la
