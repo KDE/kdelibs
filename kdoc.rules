@@ -9,13 +9,13 @@
 kde_MODULES = dcop kdecore kdeui kio kfile kparts khtml kjs kdejava kspell kab libkmid interfaces
 
 dcop_FILES = *.h
-dcop_LIBS = -lkde-qt-addon -lqt
+dcop_LIBS = -lqt
 
 kdecore_FILES = k*.h
-kdecore_LIBS = -lkde-qt-addon -ldcop -lqt
+kdecore_LIBS = -ldcop -lqt
 
 kdeui_FILES = *.h
-kdeui_LIBS = -lkdecore -lkde-qt-addon -ldcop -lqt
+kdeui_LIBS = -lkdecore -ldcop -lqt
 
 kab_FILES = kabapi.h
 kab_LIBS = -lkdecore -lkdeui -lqt

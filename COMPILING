@@ -8,8 +8,7 @@ What you need
 
 Make sure you get the following stuff from CVS:
 
-qt-copy (This is qt-2.2.0-beta0)
-kde-qt-addon (stuff which TrollTech forgot to add to Qt :-)
+qt-copy (This is qt-2.2.0-beta1)
 kdesupport (mimelib and odbc are the only things really needed from here)
 kdelibs
 kdebase (strongly recommended but not strictly necessary)
