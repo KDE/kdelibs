@@ -472,7 +472,7 @@ HTTPProtocol::http_openConnection()
         m_sock = ks.fd();
 
         int on = 1;
-        (void) setsockopt( m_sock, IPPROTO_TCP, TCP_NODELAY, 
+        (void) setsockopt( m_sock, IPPROTO_TCP, TCP_NODELAY,
                            (char*)&on, sizeof( on ) );
 
         // SSL proxying requires setting up a tunnel through the proxy server
@@ -782,46 +782,11 @@ bool HTTPProtocol::http_open()
   if (m_state.do_proxy)
   {
     KURL u;
+    u.setUser( m_state.user );
     u.setProtocol( m_protocol );
     u.setHost( m_state.hostname );
     u.setPort( m_state.port );
     u.setEncodedPathAndQuery( m_request.url.encodedPathAndQuery(0,true) );
-/*
-    // For all protocols other than HTTP/HTTPS we need to prompt the user
-    // for password if a username is specified.  However, unlike normal direct
-    // connections, we have no responsiblities of managing (caching) thess
-    // passwords since we are simply a gateway to a proxy server! (DA)
-    if ( m_protocol.find("http",0, false) == -1 &&
-         !m_state.user.isEmpty() &&
-         m_state.passwd.isEmpty() )
-    {
-      AuthInfo info;
-      info.username = m_state.user;
-      info.commentLabel = i18n( "Site:" );
-      info.comment = i18n("<b>%1</b>").arg( m_state.hostname );
-
-      if ( !openPassDlg( info ) )
-      {
-        error( ERR_USER_CANCELED, m_state.hostname );
-        return false;
-      }
-      else
-      {
-        u.setUser( info.username );
-        u.setPass( info.password );
-        m_request.user = info.username;
-        m_request.passwd = info.password;
-      }
-    }
-    else
-    {
-      if ( !m_state.user.isEmpty() && !m_state.passwd.isEmpty() )
-      {
-        u.setUser( m_state.user );
-        u.setPass( m_state.passwd );
-      }
-    }
-*/
     header += u.url();
   }
   else
@@ -1599,6 +1564,7 @@ bool HTTPProtocol::readHeader()
      {
         // Give cookies to the cookiejar.
         addCookies( m_request.url.url(), cookieStr );
+        
      }
      else if (m_cookieMode == CookiesManual)
      {
@@ -3339,20 +3305,28 @@ bool HTTPProtocol::getAuthorization()
     // out if we have a cached version and avoid a re-prompt!
     // We also do not use verify path unlike the pre-emptive
     // requests because we already know the realm value...
+    info.verifyPath = false;
     if ( m_responseCode == 407 )
     {
       info.url = m_proxyURL;
+      info.username = m_proxyURL.user();
+      info.password = m_proxyURL.pass();
       info.realmValue = m_strProxyRealm;
     }
     else
     {
       info.url = m_request.url;
       info.username = m_request.user;
+      info.password = m_request.passwd;
       info.realmValue = m_strRealm;
     }
 
-    info.verifyPath = false;
-    result = checkCachedAuthentication( info );
+    // If either username or password is not supplied
+    // with the request, check the password cache.
+    if ( info.username.isNull() ||
+         info.password.isNull() )
+      result = checkCachedAuthentication( info );
+
     if ( Authentication == AUTH_Digest )
     {
       QString auth = (m_responseCode == 401) ? m_strAuthorization : m_strProxyAuthorization;
@@ -3373,8 +3347,12 @@ bool HTTPProtocol::getAuthorization()
 
   if ( !result  )
   {
-    if ( !repeatFailure && !m_request.user.isEmpty() &&
-         !m_request.passwd.isEmpty() && m_responseCode == 401 )
+    // Do not prompt if the username & password
+    // is already supplied and the login attempt
+    // did not fail before.
+    if ( !repeatFailure &&
+         !info.username.isNull() &&
+         !info.password.isNull() )
       result = true;
     else
     {
