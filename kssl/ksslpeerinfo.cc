@@ -66,7 +66,7 @@ bool KSSLPeerInfo::certMatchesAddress() {
   QString cn = certinfo.getValue("CN");
   if (cn.startsWith("*")) {   // stupid wildcard cn
      QRegExp cnre(cn, false, true);
-     if (cnre.match(d->host->nodeName())) return true;
+     if (!cnre.match(d->host->nodeName())) return true;
   } else {
      QList<KAddressInfo> cns = KExtendedSocket::lookup(cn.latin1(), 0, 0, &err);
      cns.setAutoDelete(true);
