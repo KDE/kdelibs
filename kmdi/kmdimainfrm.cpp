@@ -1532,23 +1532,23 @@ void KMdiMainFrm::setIDEAlModeStyle(int flags)
 {
     d->m_styleIDEAlMode = flags; // see KMultiTabBar for the first 3 bits
     if (m_leftContainer) {
-	KMdiDockContainer *tmpL=(KMdiDockContainer*) (m_leftContainer->getWidget()->qt_cast("KMdiDockContainer"));
-	if (tmpL) tmpL->setStyle(flags);
+    KMdiDockContainer *tmpL=(KMdiDockContainer*) (m_leftContainer->getWidget()->qt_cast("KMdiDockContainer"));
+    if (tmpL) tmpL->setStyle(flags);
    }
 
     if (m_rightContainer) {
-	KMdiDockContainer *tmpR=(KMdiDockContainer*) (m_rightContainer->getWidget()->qt_cast("KMdiDockContainer"));
-	if (tmpR) tmpR->setStyle(flags);
+    KMdiDockContainer *tmpR=(KMdiDockContainer*) (m_rightContainer->getWidget()->qt_cast("KMdiDockContainer"));
+    if (tmpR) tmpR->setStyle(flags);
    }
 
     if (m_topContainer) {
-	KMdiDockContainer *tmpT=(KMdiDockContainer*) (m_topContainer->getWidget()->qt_cast("KMdiDockContainer"));
-	if (tmpT) tmpT->setStyle(flags);
+    KMdiDockContainer *tmpT=(KMdiDockContainer*) (m_topContainer->getWidget()->qt_cast("KMdiDockContainer"));
+    if (tmpT) tmpT->setStyle(flags);
    }
 
     if (m_bottomContainer) {
-	KMdiDockContainer *tmpB=(KMdiDockContainer*) (m_bottomContainer->getWidget()->qt_cast("KMdiDockContainer"));
-	if (tmpB) tmpB->setStyle(flags);
+    KMdiDockContainer *tmpB=(KMdiDockContainer*) (m_bottomContainer->getWidget()->qt_cast("KMdiDockContainer"));
+    if (tmpB) tmpB->setStyle(flags);
    }
 }
 
@@ -2233,6 +2233,9 @@ void KMdiMainFrm::fillWindowMenu()
    bool bTabPageMode = false;
    if (m_mdiMode == KMdi::TabPageMode)
       bTabPageMode = true;
+   bool bIDEAlMode = FALSE;
+   if (m_mdiMode == KMdi::IDEAlMode)
+      bIDEAlMode = TRUE;
 
    bool bNoViewOpened = false;
    if (m_pDocumentViews->isEmpty()) {
@@ -2248,7 +2251,7 @@ void KMdiMainFrm::fillWindowMenu()
       m_pWindowMenu->setItemEnabled(closeId, false);
       m_pWindowMenu->setItemEnabled(closeAllId, false);
    }
-   if (!bTabPageMode) {
+   if (!bTabPageMode && !bIDEAlMode) {
       int iconifyId = m_pWindowMenu->insertItem(i18n("&Minimize All"), this, SLOT(iconifyAllViews()));
       if (bNoViewOpened) {
          m_pWindowMenu->setItemEnabled(iconifyId, false);
@@ -2278,7 +2281,7 @@ void KMdiMainFrm::fillWindowMenu()
       break;
    }
    m_pWindowMenu->insertSeparator();
-   if (!bTabPageMode) {
+   if (!bTabPageMode && !bIDEAlMode) {
       int placMenuId = m_pWindowMenu->insertItem(i18n("&Tile..."), m_pPlacingMenu);
       m_pPlacingMenu->clear();
       m_pPlacingMenu->insertItem(i18n("Ca&scade Windows"), m_pMdi,SLOT(cascadeWindows()));
