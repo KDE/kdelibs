@@ -889,6 +889,94 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
   m_cmd = CMD_NONE;
 }
 
+void FtpProtocol::slotGet( const char *_url )
+{
+  string url = _url;
+  
+  KURL usrc( _url );
+  if ( usrc.isMalformed() )
+  {
+    error( ERR_MALFORMED_URL, url.c_str() );
+    m_cmd = CMD_NONE;
+    return;
+  }
+
+  if ( strcmp( usrc.protocol(), "ftp" ) != 0L )
+  {
+    error( ERR_INTERNAL, "kio_ftp got non ftp file in get command" );
+    m_cmd = CMD_NONE;
+    return;
+  }
+
+  if ( !ftp.ftpConnect( usrc ) )
+  {
+    error( ftp.error(), ftp.errorText() );
+    ftp.ftpDisconnect( true );
+    m_cmd = CMD_NONE;
+    return;
+  }
+  
+  FtpEntry *e = ftp.ftpStat( usrc );
+  if ( !e )
+  {
+    error( ERR_DOES_NOT_EXIST, url.c_str() );
+    m_cmd = CMD_NONE;
+    return;
+  }
+  
+  if ( S_ISDIR( e->type ) )
+  {
+    error( ERR_IS_DIRECTORY, url.c_str() );
+    m_cmd = CMD_NONE;
+    return;
+  }
+
+  m_cmd = CMD_GET;
+  
+  if ( !ftp.open( usrc, Ftp::READ ) )
+  {
+    error( ERR_CANNOT_OPEN_FOR_READING, url.c_str() );
+    m_cmd = CMD_NONE;
+    return;
+  }
+
+  ready();
+
+  gettingFile( _url );
+  
+  totalSize( e->size );  
+  int processed_size = 0;
+  time_t t_start = time( 0L );
+  time_t t_last = t_start;
+  
+  char buffer[ 4096 ];
+  while( !ftp.atEOF() )
+  {
+    int n = ftp.read( buffer, 2048 );
+    data( buffer, n );
+
+    processed_size += n;
+    time_t t = time( 0L );
+    if ( t - t_last >= 1 )
+    {
+      processedSize( processed_size );
+      speed( processed_size / ( t - t_start ) );
+      t_last = t;
+    }
+  }
+
+  dataEnd();
+  
+  ftp.close();
+
+  processedSize( e->size );
+  time_t t = time( 0L );
+  if ( t - t_start >= 1 )
+    speed( processed_size / ( t - t_start ) );
+
+  finished();
+  m_cmd = CMD_NONE;
+}
 
 void FtpProtocol::slotGetSize( const char* _url ) {
   

@@ -14,6 +14,7 @@ public:
   FtpProtocol( Connection* _conn );
   virtual ~FtpProtocol() { }
 
+  virtual void slotGet( const char *_url );
   virtual void slotGetSize( const char *_url );
 
   virtual void slotPut( const char *_url, int _mode,
