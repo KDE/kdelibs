@@ -1506,6 +1506,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 
 	// we never want to get smaller than 7 points to keep fonts readable
 	int min = e->ownerDocument()->view()->part()->settings()->minFontSize();
+	kdDebug(0) << "minFontSize = " << min << endl;
 	if(size < min ) size = min;
 	
 	//kdDebug( 6080 ) << "computed raw font size: " << size << endl;

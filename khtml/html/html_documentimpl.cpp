@@ -316,9 +316,12 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
     // ### make the font stuff _really_ work!!!!
     const KHTMLSettings *settings = w->part()->settings();
     QValueList<int> fs = settings->fontSizes();
+    int size = fs[3];
+    if(size < settings->minFontSize())
+	size = settings->minFontSize();
     QFont f = KGlobalSettings::generalFont();
     f.setFamily(settings->stdFontName());
-    f.setPointSize(fs[3]);
+    f.setPointSize(size);
     f.setCharSet(settings->charset());
     m_style->setFont(f);
 
@@ -374,9 +377,12 @@ void HTMLDocumentImpl::applyChanges(bool,bool force)
     if (force || changed()) {
 	const KHTMLSettings *settings = m_view->part()->settings();
 	QValueList<int> fs = settings->fontSizes();
+	int size = fs[3];
+	if(size < settings->minFontSize())
+	    size = settings->minFontSize();
 	QFont f = KGlobalSettings::generalFont();
 	f.setFamily(settings->stdFontName());
-	f.setPointSize(fs[3]);
+	f.setPointSize(size);
 	f.setCharSet(settings->charset());
 	m_style->setFont(f);
     }
