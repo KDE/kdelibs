@@ -344,11 +344,21 @@ void KCursorPrivate::unhideCursor( QWidget *w )
 
 
 // what a mess :-/
+// no kidding!
 bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
 {
     if ( !enabled || !o->isWidgetType() )
         return false;
 
+    int t = e->type();
+    
+    // If it is not one of the events we respond to, ignore it.
+    if( ! ( (t >= QEvent::MouseButtonPress && t <= QEvent::Leave) ||
+            (t >= QEvent::Destroy && t <= QEvent::Hide) ||
+             t == QEvent::AccelOverride ||
+             t == QEvent::Wheel ) )
+      return false;
+    
     // disconnect() and connect() on events for a new widget
     if ( o != hideWidget ) {
         if ( hideWidget ) {
@@ -359,7 +369,6 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
                  this, SLOT( slotWidgetDestroyed()));
     }
 
-    int t = e->type();
     QWidget *w = static_cast<QWidget *>( o );
     hideWidget = w;
 
@@ -369,7 +378,6 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
         if ( isCursorHidden && t != QEvent::Destroy )
             unhideCursor( w );
 
-        isCursorHidden = false;
         return false;
     }
 
