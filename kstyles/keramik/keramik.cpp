@@ -33,6 +33,7 @@
 // $Id$
 
 #include <qbitmap.h>
+#include <qcheckbox.h>
 #include <qcombobox.h>
 #include <qdrawutil.h>
 #include <qframe.h>
@@ -63,6 +64,8 @@
 #include "bitmaps.h"
 #include "pixmaploader.h"
 
+#define loader Keramik::PixmapLoader::the()
+
 // -- Style Plugin Interface -------------------------
 class KeramikStylePlugin : public QStylePlugin
 {
@@ -73,14 +76,15 @@ public:
 	QStringList keys() const
 	{
 		if (QPixmap::defaultDepth() > 8)
-			return QStringList() << "Keramik";
+			return QStringList() << "Keramik"<<"Keramik/II";
 		else
 			return QStringList();
 	}
 
 	QStyle* create( const QString& key )
 	{
-		if ( key == "keramik" ) return new KeramikStyle;
+		if ( key == "keramik" ) return new KeramikStyle(1);
+		if ( key == "keramik/ii" ) return new KeramikStyle(2);
 		return 0;
 	}
 };
@@ -106,7 +110,7 @@ namespace
 	const int arrowHMargin    = 6;
 	const int rightBorder     = 12;
 	const char* kdeToolbarWidget = "kde toolbar widget";
-	
+
 	const int smallButMaxW    = 27;
 	const int smallButMaxH    = 20;
 }
@@ -209,6 +213,27 @@ QRect KeramikStyle::subRect(SubRect r, const QWidget *widget) const
 			return querySubControlMetrics( CC_ComboBox, widget, SC_ComboBoxEditField );
 		}
 
+		case SR_CheckBoxFocusRect:
+		{
+			const QCheckBox* cb = static_cast<const QCheckBox*>(widget);
+
+			//Only checkbox, no label
+			if (cb->text().isEmpty() && (cb->pixmap() == 0) )
+			{
+				QRect bounding = cb->rect();
+				QSize checkDim = loader.size( keramik_checkbox_on);
+				int   cw = checkDim.width();;
+				int   ch = checkDim.height();
+
+				QRect checkbox(bounding.x() + 1, bounding.y() + 1 + (bounding.height() - ch)/2,
+								cw - 3, ch - 4);
+
+				return checkbox;
+			}
+
+			//Fallthrough intentional
+		}
+
 		default:
 			return KStyle::subRect( r, widget );
 	}
@@ -221,7 +246,7 @@ QPixmap KeramikStyle::stylePixmap(StylePixmap stylepixmap,
 {
     switch (stylepixmap) {
 		case SP_TitleBarMinButton:
-			return Keramik::PixmapLoader::the().pixmap(keramik_title_iconify, 
+			return Keramik::PixmapLoader::the().pixmap(keramik_title_iconify,
 				Qt::black, Qt::black, false, false);
 			//return qpixmap_from_bits( iconify_bits, "title-iconify.png" );
 		case SP_TitleBarMaxButton:
@@ -244,12 +269,16 @@ QPixmap KeramikStyle::stylePixmap(StylePixmap stylepixmap,
 }
 
 
-#define loader Keramik::PixmapLoader::the()
 
-KeramikStyle::KeramikStyle()
-	:KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar ), maskMode(false),
+
+KeramikStyle::KeramikStyle(int version)
+	:KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar ), versionMode(version), maskMode(false),
 		toolbarBlendWidget(0), titleBarMode(None), flatMode(false), customScrollMode(false), kickerMode(false)
 {
+	if (versionMode == 1)
+		tabHeightAdjust = 4;
+	else
+		tabHeightAdjust = 3;
 	hoverWidget = 0;
 }
 
@@ -692,18 +721,53 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			// line edit frame
 		case PE_PanelLineEdit:
 		{
-			p->setPen( cg.dark() );
-			p->drawLine( x, y, x + w - 1, y );
-			p->drawLine( x, y, x, y + h - 1 );
-			p->setPen( cg.mid() );
-			p->drawLine( x + 1, y + 1, x + w - 1, y + 1 );
-			p->drawLine( x + 1, y + 1, x + 1, y + h - 1 );
-			p->setPen( cg.light() );
-			p->drawLine( x + w - 1, y, x + w - 1, y + h - 1 );
-			p->drawLine( x, y + h - 1, x + w - 1, y + h - 1);
-			p->setPen( cg.light().dark( 110 ) );
-			p->drawLine( x + w - 2, y + 1, x + w - 2, y + h - 2 );
-			p->drawLine( x + 1, y + h - 2, x + w - 2, y + h - 2);
+			if ( versionMode == 1 )
+			{
+				p->setPen( cg.dark() );
+				p->drawLine( x, y, x + w - 1, y );
+				p->drawLine( x, y, x, y + h - 1 );
+				p->setPen( cg.mid() );
+				p->drawLine( x + 1, y + 1, x + w - 1, y + 1 );
+				p->drawLine( x + 1, y + 1, x + 1, y + h - 1 );
+				p->setPen( cg.light() );
+				p->drawLine( x + w - 1, y, x + w - 1, y + h - 1 );
+				p->drawLine( x, y + h - 1, x + w - 1, y + h - 1);
+				p->setPen( cg.light().dark( 110 ) );
+				p->drawLine( x + w - 2, y + 1, x + w - 2, y + h - 2 );
+				p->drawLine( x + 1, y + h - 2, x + w - 2, y + h - 2);
+
+			}
+			else //Keramik/II
+			{
+				if ( (flags & Style_HasFocus) && (flags & QStyle::Style_Enabled) )
+				{
+					p->setPen(cg.highlight().light(85));
+					p->drawRect( r );
+
+					// a bit lighter ->not so thick
+					p->setPen( cg.highlight().light(120) );
+					p->drawLine(x+1, y+1, x2-1, y+1);
+					p->drawLine(x+1, y+1, x+1, y2-1);
+					p->drawLine(x+1, y2-1, x2-1, y2-1);
+					p->drawLine(x2-1, y+1, x2-1, y2-1);
+				}
+				else
+				{
+					p->setPen( cg.background().light(45));
+					p->drawLine(x, y, x2, y);
+					p->drawLine(x, y, x, y2);
+					p->setPen( cg.background().light(85));
+					p->drawLine(x, y2, x2, y2);
+					p->drawLine(x2, y, x2, y2);
+
+					// Fill the rest  with base color
+					p->setPen(cg.base());
+					p->drawLine(x+1, y+1, x2-1, y+1);
+					p->drawLine(x+1, y+1, x+1, y2-1);
+					p->drawLine(x+1, y2-1, x2-1, y2-1);
+					p->drawLine(x2-1, y+1, x2-1, y2-1);
+				}
+			}
 			break;
 		}
 
@@ -1145,7 +1209,7 @@ void KeramikStyle::drawControl( ControlElement element,
 			if ( button->isMenuButton() )
 			{
 				int dx = pixelMetric( PM_MenuButtonIndicator, widget );
-				if ( button->iconSet() && !button->iconSet()->isNull()  && 
+				if ( button->iconSet() && !button->iconSet()->isNull()  &&
 					(dx + button->iconSet()->pixmap (QIconSet::Small, QIconSet::Normal, QIconSet::Off ).width()) >= w )
 				{
 					cornArrow = true; //To little room. Draw the arrow in the corner, don't adjust the widget
@@ -1237,7 +1301,11 @@ void KeramikStyle::drawControl( ControlElement element,
 			              tabBar->shape() == QTabBar::TriangularBelow;
 
 			if ( flags & Style_Selected )
-				Keramik::ActiveTabPainter( bottom ).draw( p, r, cg.button(), cg.background(), !tabBar->isEnabled(), pmode());
+				if (versionMode == 1)
+					Keramik::ActiveTabPainter( bottom ).draw( p, r, cg.button(), cg.background(), !tabBar->isEnabled(), pmode());
+				else //Keramik/II makes active tabs lighter
+					Keramik::ActiveTabPainter( bottom ).draw( p, r, cg.button().light(110), cg.background(), !tabBar->isEnabled(), pmode());
+
 			else
 			{
 				Keramik::InactiveTabPainter::Mode mode;
@@ -1248,13 +1316,13 @@ void KeramikStyle::drawControl( ControlElement element,
 
 				if ( bottom )
 				{
-					Keramik::InactiveTabPainter( mode, bottom ).draw( p, x, y, w, h - 4, cg.button(), cg.background(), disabled, pmode() );
+					Keramik::InactiveTabPainter( mode, bottom ).draw( p, x, y, w, h - tabHeightAdjust, cg.button(), cg.background(), disabled, pmode() );
 					p->setPen( cg.dark() );
 					p->drawLine( x, y, x + w, y );
 				}
 				else
 				{
-					Keramik::InactiveTabPainter( mode, bottom ).draw( p, x, y + 4, w, h - 4, cg.button(), cg.background(), disabled, pmode() );
+					Keramik::InactiveTabPainter( mode, bottom ).draw( p, x, y + tabHeightAdjust, w, h - tabHeightAdjust, cg.button(), cg.background(), disabled, pmode() );
 					p->setPen( cg.light() );
 					p->drawLine( x, y + h - 1, x + w, y + h - 1 );
 				}
@@ -1960,14 +2028,17 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
                         loader.size( keramik_scrollbar_vbar + KeramikSlider3 ).height();
 
 		case PM_DefaultFrameWidth:
+			//#### Other frames with the right style? <sigh>
+			if (versionMode == 2 && widget && widget->inherits("QLineEdit"))
+				return 2;
 			return 1;
 
 		case PM_MenuButtonIndicator:
 			return 13;
 
 		case PM_TabBarTabVSpace:
-			return 12;
-			
+			return 8 + tabHeightAdjust;
+
 		case PM_TitleBarHeight:
 			return 22;
 
@@ -2129,6 +2200,16 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 					else
 						return QRect( 6, 4, widget->width() - arrow - 22, widget->height() - 9 );
 				}
+				
+				case SC_ComboBoxListBoxPopup:
+				{
+					QRect def = opt.rect();
+					if ( widget->inherits( "KCompletionBox" ) )
+						def.addCoords( -4, 4, 10, 8 );
+					else def.addCoords( 4, -4, -6, 4 );
+					
+					return def;
+				}
 
 				default: break;
 			}
@@ -2264,6 +2345,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 
 	if ( !object->isWidgetType() ) return false;
 
+	//Hover highlight on buttons and combos
 	if ( object->inherits("QPushButton") || object->inherits("QComboBox") )
 	{
 		if ( (event->type() == QEvent::Enter) && static_cast<QWidget*>(object)->isEnabled())
@@ -2280,6 +2362,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		}
 		return false;
 	}
+	//Combo line edits get special frames
 	else if ( event->type() == QEvent::Paint && object->inherits( "QLineEdit" ) )
 	{
 		static bool recursion = false;
@@ -2297,6 +2380,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		return true;
 	}
 #ifdef HAVE_X11_EXTENSIONS_SHAPE_H
+	//Combo dropdowns are shaped
 	else if ( event->type() == QEvent::Resize && object->inherits("QListBox") )
 	{
 		QListBox* listbox = static_cast<QListBox*>(object);
@@ -2317,6 +2401,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 			  rects, 5, ShapeSet, YXSorted);
 	}
 #endif
+	//Combo dropdowns get fancy borders
 	else if ( event->type() == QEvent::Paint && object->inherits("QListBox") )
 	{
 		static bool recursion = false;
@@ -2324,7 +2409,6 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 			return false;
 		QListBox* listbox = (QListBox*) object;
 		QPaintEvent* paint = (QPaintEvent*) event;
-
 
 
 		if ( !listbox->contentsRect().contains( paint->rect() ) )
@@ -2341,15 +2425,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 			return true;
 		}
 	}
-	else if ( event->type() == QEvent::Show && object->inherits( "QListBox" ) )
-	{
-		QListBox* listbox = (QListBox*) object;
-		QRect geometry = listbox->geometry();
-		if ( listbox->inherits( "KCompletionBox" ) )
-			geometry.addCoords( -4, 4, 10, 8 );
-		else geometry.addCoords( 4, -4, -6, 4 );
-		listbox->setGeometry( geometry );
-	}
+	//Toolbar background gradient handling
 	else if (event->type() == QEvent::Paint &&
 			 object->parent() && !qstrcmp(object->name(), kdeToolbarWidget) )
 	{

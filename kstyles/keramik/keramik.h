@@ -5,7 +5,7 @@
 
    Copyright (C) 2001-2002 Karol Szwed      <gallium@kde.org>
              (C) 2001-2002 Fredrik Höglund  <fredrik@kde.org> 
- 
+
    Drawing routines adapted from the KDE2 HCStyle,
    Copyright (C) 2000 Daniel M. Duley       <mosfet@kde.org>
              (C) 2000 Dirk Mueller          <mueller@kde.org>
@@ -42,7 +42,7 @@ class KeramikStyle : public KStyle
 	Q_OBJECT
 
 public:
-	KeramikStyle();
+	KeramikStyle(int versionMode);
 	virtual ~KeramikStyle();
 
 	void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg, const QPopupMenu* ) const;
@@ -120,7 +120,11 @@ public:
 					const QStyleOption& = QStyleOption::Default ) const;*/
 
 protected:
-	mutable bool maskMode; //Ugly round trip flag to permit masking with little code;
+	int     tabHeightAdjust; //Height adjustment for inactive tabs
+							 //It's 4 for Keramik, 3 for Keramik/II
+
+	int     versionMode;     //1=Keramik, 2 = Keramik/II
+	mutable bool maskMode;   //Ugly round trip flag to permit masking with little code;
 	mutable const QWidget* toolbarBlendWidget;  //Ditto for blending with toolbars
 
 	enum TitleBarMode
@@ -129,36 +133,36 @@ protected:
 		Regular,
 		Maximized
 	};
-	
+
 	mutable TitleBarMode titleBarMode; //Set when passing back CC_TilteBar modes to handle
 	//PE_ButtonTool properly for them, as well as when handling CC_ToolButton from
 	//The maximized window controls.
-	
+
 	mutable bool flatMode; //Set when calling PE_PushButton or PE_ButtonDefault
 	// on a flat button.
 
 	mutable bool customScrollMode; //Set when drawing scrollbars with custom colors.
 
-	
+
 	bool eventFilter( QObject* object, QEvent* event );
-	
+
 	Keramik::TilePainter::PaintMode pmode() const
 	{
 		return maskMode?Keramik::TilePainter::PaintMask : Keramik::TilePainter::PaintNormal;
 	}
-	
+
 	Keramik::TilePainter::PaintMode pmodeFullBlend() const
 	{
 		return maskMode?Keramik::TilePainter::PaintMask : Keramik::TilePainter::PaintFullBlend;
 	}
 
-	
+
 	QWidget* hoverWidget;
 private:
 	bool kickerMode;
-	
+
 	QRect subRect(SubRect r, const QWidget *widget) const;
-	
+
 	// Disable copy constructor and = operator
 	KeramikStyle( const KeramikStyle&  );
 	KeramikStyle& operator=( const KeramikStyle&  );
