@@ -1,5 +1,8 @@
 2004-03-21  Dirk Mueller  <mueller@kde.org>
 
+	* html/html_formimpl.cpp (encoding): fix submission of forms
+	without file upload (#77382).
+
 	* css/css_renderstyledeclarationimpl.cpp (getPropertyCSSValue): fix crash (#77324).
 
 2004-03-20  Dirk Mueller  <mueller@kde.org>
