@@ -30,9 +30,11 @@
 #include "dom/html_document.h"
 #include "dom/dom_exception.h"
 #include <stdio.h>
+#include <khtml_factory.h>
 
 int main(int argc, char *argv[])
 {
+    KHTMLFactory *fac = new KHTMLFactory();
     KApplication a(argc, argv, "testkhtml");
 
     KHTMLPart *doc = new KHTMLPart;
@@ -71,6 +73,7 @@ int main(int argc, char *argv[])
 
     khtml::Cache::clear();
 
+    delete fac;
     return ret;
 }
 
