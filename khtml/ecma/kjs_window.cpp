@@ -171,6 +171,12 @@ KJSO Window::get(const UString &p) const
     return Number(part->view() ? part->view()->mapToGlobal(QPoint(0,0)).y() : 0);
   else if (p == "scrollbars")
     return Undefined(); // ###
+  else if (p == "scroll")
+    return Function(new WindowFunc(this, WindowFunc::ScrollTo)); // compatibility
+  else if (p == "scrollBy")
+    return Function(new WindowFunc(this, WindowFunc::ScrollBy));
+  else if (p == "scrollTo")
+    return Function(new WindowFunc(this, WindowFunc::ScrollTo));
   else if (p == "self")
     return KJSO(newWindow(part));
   else if (p == "top") {
@@ -352,6 +358,14 @@ Completion WindowFunc::tryExecute(const List &args)
         result = Undefined();
     break;
   }
+  case ScrollBy:
+    if(args.size() == 2 && part->view())
+      part->view()->scrollBy(args[0].toInt32(), args[1].toInt32());
+    break;
+  case ScrollTo:
+    if(args.size() == 2 && part->view())
+      part->view()->setContentsPos(args[0].toInt32(), args[1].toInt32());
+    break;
   case SetTimeout:
     result = Undefined();
     if (args.size() == 2 && v.isA(StringType)) {
