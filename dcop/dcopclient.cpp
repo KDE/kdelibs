@@ -198,8 +198,12 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
     if (!d->serverAddr) {
       // here, we obtain the list of possible DCOP connections,
       // and attach to them.
-      QString fName = ::getenv("HOME");
-      fName += "/.DCOPserver";
+      QCString fName;
+      fName = ::getenv("DCOPSERVER");
+      if (fName.isNull()) {
+	fName = ::getenv("HOME");
+	fName += "/.DCOPserver";
+      }
       QFile f(fName);
       if (!f.open(IO_ReadOnly)) {
 	emit attachFailed("Could not read network connection list.");
