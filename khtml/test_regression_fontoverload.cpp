@@ -31,3 +31,15 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
 {
     return new QFontEngineBox( request.pixelSize );
 }
+
+bool QFontDatabase::isBitmapScalable( const QString &family,
+				      const QString &style) const
+{
+    return true;
+}
+
+bool  QFontDatabase::isSmoothlyScalable( const QString &family,
+                                         const QString &style) const
+{
+    return true;
+}
