@@ -1,6 +1,9 @@
 kdelibs-cvs (4:2.0-20000221-1.0) experimental; urgency=low
 
   * More upstream changes
+  * Adding in a shlibs.local file to clear up self-dependency
+  * Adding in missing man pages
+  * Seperating out doc files again
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 21 Feb 2000 22:00:00 -0700
 
