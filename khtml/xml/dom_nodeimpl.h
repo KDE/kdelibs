@@ -26,6 +26,7 @@
 
 #include "dom/dom_misc.h"
 #include "dom/dom_string.h"
+#include "dom/dom_node.h"
 
 class QPainter;
 class KHTMLView;
@@ -147,6 +148,7 @@ public:
         NodeImpl *innerNode;
         long offset;
         bool urlHandling; // specify whether the part should handle the url or not
+        int nodeAbsX, nodeAbsY; // temporary hack for selection stuff
     };
 
     /*
@@ -157,6 +159,10 @@ public:
     virtual bool mouseEvent( int /*_x*/, int /*_y*/,
                              int /*_tx*/, int /*_ty*/,
                              MouseEvent */*ev*/ ) { return false; }
+
+    // Return -2 = before, -1 = after, 0 = inside the text, at @p node et @p offset
+    virtual int findSelectionNode( int /*_x*/, int /*_y*/, int /*_tx*/, int /*_ty*/,
+                                    DOM::Node & /*node*/, int & /*offset*/ ) { return -2; }
 
     virtual void setStyle(khtml::RenderStyle *) {}
     virtual khtml::RenderStyle *style() { return 0; }

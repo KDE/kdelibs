@@ -411,7 +411,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
     setXMLFile( "khtml_browser.rc" );
 
   d = new KHTMLPartPrivate(parent());
-  kdDebug() << "KHTMLPart::init this=" << this << " d=" << d << endl;
+  kdDebug(6050) << "KHTMLPart::init this=" << this << " d=" << d << endl;
 
   d->m_view = view;
   setWidget( d->m_view );
@@ -608,7 +608,7 @@ bool KHTMLPart::openURL( const KURL &url )
   // d->m_ssl_in_use = false;
   // Tell the slave that this is about loading the main page, so activate warnings
   d->m_job->addMetaData( "ssl_activate_warnings", "TRUE" );
-  kdDebug() << "ACTIVATING SSL WARNINGS" << endl;
+  kdDebug(6050) << "ACTIVATING SSL WARNINGS" << endl;
 
   d->m_workingURL = url;
 
@@ -748,7 +748,7 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 
 bool KHTMLPart::scheduleScript(const DOM::Node &n, const QString& script)
 {
-    //kdDebug() << "KHTMLPart::scheduleScript "<< script << endl;
+    //kdDebug(6050) << "KHTMLPart::scheduleScript "<< script << endl;
 
     d->scheduledScript = script;
     d->scheduledScriptNode = n;
@@ -761,7 +761,7 @@ QVariant KHTMLPart::executeScheduledScript()
   if( d->scheduledScript.isEmpty() )
     return QVariant();
 
-  //kdDebug() << "executing delayed " << d->scheduledScript << endl;
+  //kdDebug(6050) << "executing delayed " << d->scheduledScript << endl;
 
   QVariant ret = executeScript( d->scheduledScriptNode, d->scheduledScript );
   d->scheduledScript = QString();
@@ -1041,9 +1041,9 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
 
     //kdDebug( 6050 ) << "First data is arriving. Reading SSL metadata." << endl;
     d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
-    //kdDebug() << "SSL in use ? " << d->m_ssl_in_use << endl;
+    //kdDebug(6050) << "SSL in use ? " << d->m_ssl_in_use << endl;
     d->m_paSecurity->setIcon( d->m_ssl_in_use ? "lock" : "unlock" );
-    //kdDebug() << "setIcon " << ( d->m_ssl_in_use ? "lock" : "unlock" ) << " done." << endl;
+    //kdDebug(6050) << "setIcon " << ( d->m_ssl_in_use ? "lock" : "unlock" ) << " done." << endl;
 
     // Shouldn't all of this be done only if ssl_in_use == true ? (DF)
 
@@ -1207,7 +1207,7 @@ void KHTMLPart::write( const char *str, int len )
       d->m_doc->determineParseMode( decoded );
       d->m_bFirstData = false;
 
-  //kdDebug() << "KHTMLPart::write haveEnc = " << d->m_haveEncoding << endl;
+  //kdDebug(6050) << "KHTMLPart::write haveEnc = " << d->m_haveEncoding << endl;
       // ### this is still quite hacky, but should work a lot better than the old solution
       if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
       if (!d->m_haveCharset)
@@ -1369,7 +1369,7 @@ void KHTMLPart::checkCompleted()
           if (links.item(i)->isElementNode())
           {
               DOM::ElementImpl *link = static_cast<DOM::ElementImpl *>(links.item(i));
-              kdDebug() << "Checking..." << endl;
+              kdDebug(6005) << "Checking..." << endl;
               if (link->getAttribute("REL").string().upper() == "SHORTCUT ICON")
               {
                   KURL iconURL(d->m_baseURL, link->getAttribute("HREF").string());
@@ -1381,7 +1381,7 @@ void KHTMLPart::checkCompleted()
               }
           }
   }
-  
+
   emit completed();
   emit setStatusBarText( i18n("Loading complete") );
 }
@@ -2199,7 +2199,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
 {
   if ( child->m_bPreloaded )
   {
-//      kdDebug() << "requestObject preload" << endl;
+//      kdDebug(6005) << "requestObject preload" << endl;
     if ( child->m_frame && child->m_part )
       child->m_frame->setWidget( child->m_part->widget() );
 
@@ -2265,7 +2265,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
     if ( child->m_bFrame )
       partManager()->addPart( part );
 //     else
-//         kdDebug() << "AH! NO FRAME!!!!!" << endl;
+//         kdDebug(6005) << "AH! NO FRAME!!!!!" << endl;
 
     child->m_part = part;
 
@@ -3081,9 +3081,25 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
     {
       if ( !innerNode.isNull() )
       {
-        d->m_selectionStart = innerNode;
-        d->m_startOffset = event->offset();
-        d->m_selectionEnd = innerNode;
+        int offset;
+        DOM::Node node;
+        innerNode.handle()->findSelectionNode( event->x(), event->y(),
+                                               event->nodeAbsX(), event->nodeAbsY(),
+                                               node, offset );
+        // When this stuff is finished, this should never happen.
+        // But currently....
+        if ( node.isNull() || !node.handle() )
+        {
+            kdWarning( 6000 ) << "findSelectionNode returned no node" << endl;
+            d->m_selectionStart = innerNode;
+            d->m_startOffset = 0; //?
+        } else {
+            d->m_selectionStart = node;
+            d->m_startOffset = offset;
+        }
+        kdDebug(6005) << "KHTMLPart::khtmlMousePressEvent selectionStart=" << d->m_selectionStart.handle()->renderer()
+                      << " offset=" << d->m_startOffset << endl;
+        d->m_selectionEnd = d->m_selectionStart;
         d->m_endOffset = d->m_startOffset;
         d->m_doc->clearSelection();
       }
@@ -3200,10 +3216,30 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
   }
 
   // selection stuff
-  if( d->m_bMousePressed && !innerNode.isNull() && innerNode.nodeType() == DOM::Node::TEXT_NODE ) {
-        d->m_selectionEnd = innerNode;
-        d->m_endOffset = event->offset();
-        //kdDebug( 6000 ) << "setting end of selection to " << innerNode.handle() << "/" << event->offset() << endl;
+  if( d->m_bMousePressed && !innerNode.isNull() /* && innerNode.nodeType() == DOM::Node::TEXT_NODE */ ) {
+        int offset;
+        DOM::Node node;
+        kdDebug(6000) << "KHTMLPart::khtmlMouseMoveEvent x=" << event->x() << " y=" << event->y()
+                      << " nodeAbsX=" << event->nodeAbsX() << " nodeAbsY=" << event->nodeAbsY()
+                      << endl;
+        innerNode.handle()->findSelectionNode( event->x(), event->y(),
+                                               event->nodeAbsX(), event->nodeAbsY(),
+                                               node, offset );
+        // When this stuff is finished, this should never happen.
+        // But currently....
+        if ( node.isNull() || !node.handle() )
+        {
+            kdWarning( 6000 ) << "findSelectionNode returned no node" << endl;
+            d->m_selectionEnd = innerNode;
+            d->m_endOffset = 0; //?
+        }
+        else
+        {
+            d->m_selectionEnd = node;
+            d->m_endOffset = offset;
+        }
+        kdDebug( 6000 ) << "setting end of selection to " << d->m_selectionEnd.handle()->renderer() << "/"
+                        << d->m_endOffset << endl;
 
         // we have to get to know if end is before start or not...
         DOM::Node n = d->m_selectionStart;
@@ -3241,7 +3277,6 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
     }
 }
-
 
 void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 {
@@ -3305,11 +3340,13 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
      urlSelected( url, _mouse->button(), _mouse->state(), target );
    }
 
+#if 0 // We shouldn't need this, we had to move here anyway
   if(!innerNode.isNull() && innerNode.nodeType() == DOM::Node::TEXT_NODE) {
   //    kdDebug( 6000 ) << "final range of selection to " << d->selectionStart << "/" << d->startOffset << " --> " << innerNode << "/" << offset << endl;
         d->m_selectionEnd = innerNode;
         d->m_endOffset = event->offset();
     }
+#endif
 
     // delete selection in case start and end position are at the same point
     if(d->m_selectionStart == d->m_selectionEnd && d->m_startOffset == d->m_endOffset) {
@@ -3571,7 +3608,7 @@ void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
 //    kdDebug(6050) << "KHTMLPart::slotActiveFrameChanged part=" << part << endl;
     if ( part == this )
     {
-        kdDebug() << "strange error! we activated ourselves" << endl;
+        kdError(6050) << "strange error! we activated ourselves" << endl;
         assert( false );
         return;
     }

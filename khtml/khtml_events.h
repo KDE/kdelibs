@@ -39,7 +39,14 @@ public:
   int y() const { return m_y; }
   DOM::DOMString url() const { return m_url; }
   DOM::Node innerNode() const { return m_innerNode; }
-  long offset() const { return m_offset; }
+  long offset() const { return m_offset; } // ## remove
+
+  // Temporary, for text selection only. To be removed when findSelectionNode determines
+  // this by itself.
+  int nodeAbsX() const;
+  int nodeAbsY() const;
+  void setNodePos( int x, int y);
+
   // returns whether the receiving object should handle the provided url
   // (like on mouse-release -> load url) or whether this should not be
   // done (because for example some javascript onClick handler returned false)

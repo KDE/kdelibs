@@ -33,6 +33,8 @@
 #include "misc/htmlhashes.h"
 #include "rendering/render_text.h"
 
+#include <kdebug.h>
+
 using namespace DOM;
 using namespace khtml;
 
@@ -317,9 +319,30 @@ bool TextImpl::mouseEvent( int _x, int _y,
     {
 	ev->offset = off;
 	ev->innerNode = this;
+        ev->nodeAbsX = _tx;
+        ev->nodeAbsY = _ty;
 	return true;
     }
     return false;
+}
+
+int TextImpl::findSelectionNode( int _x, int _y, int _tx, int _ty,
+                                 DOM::Node & node, int & offset )
+{
+    kdDebug(6030) << "TextImpl::findSelectionNode " << this << " _x=" << _x << " _y=" << _y
+               << " _tx=" << _tx << " _ty=" << _ty << endl;
+    if(!m_render) return -2;
+
+    if(m_render->parent() && m_render->parent()->isAnonymousBox())
+    {
+	// we need to add the offset of the anonymous box
+	_tx += m_render->parent()->xPos();
+	_ty += m_render->parent()->yPos();
+    }
+
+    node = this;
+    // Will return -2 (before), -1 (after) or 0 (hit), and will set offset
+    return static_cast<RenderText *>(m_render)->checkSelectionPoint(_x, _y, _tx, _ty, offset);
 }
 
 ushort TextImpl::id() const

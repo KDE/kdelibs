@@ -33,6 +33,7 @@ public:
   }
 
     bool urlHandling; // ### make member KDE 3.0
+    int nodeAbsX, nodeAbsY;
 };
 
 MouseEvent::MouseEvent( const char *name, QMouseEvent *qmouseEvent, int x, int y, const DOM::DOMString &url,
@@ -46,6 +47,22 @@ MouseEvent::MouseEvent( const char *name, QMouseEvent *qmouseEvent, int x, int y
 MouseEvent::~MouseEvent()
 {
   delete d;
+}
+
+int MouseEvent::nodeAbsX() const
+{
+    return d->nodeAbsX;
+}
+
+int MouseEvent::nodeAbsY() const
+{
+    return d->nodeAbsY;
+}
+
+void MouseEvent::setNodePos( int x, int y)
+{
+    d->nodeAbsX = x;
+    d->nodeAbsY = y;
 }
 
 bool MouseEvent::isURLHandlingEnabled() const

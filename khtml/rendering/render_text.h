@@ -65,6 +65,10 @@ public:
     void printActivation( QPainter *, int, int );
 
     bool checkPoint(int _x, int _y, int _tx, int _ty);
+
+    // Return -2 = before, -1 = after (offset set to max), 0 = inside the text, at @p offset
+    int checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetrics * fm, int & offset);
+
     /**
      * if this textslave was rendered @ref _ty pixels below the upper edge
      * of a view, would the @ref _y -coordinate be inside the vertical range
@@ -136,6 +140,9 @@ public:
     virtual void layout() {assert(false);}
 
     bool checkPoint(int _x, int _y, int _tx, int _ty, int &off);
+
+    // Return -2 = before, -1 = after, 0 = inside the text, at @p offset
+    virtual int checkSelectionPoint( int _x, int _y, int _tx, int _ty, int & offset );
 
     virtual unsigned int length() const { return str->l; }
     // no need for this to be virtual, however length needs to be!

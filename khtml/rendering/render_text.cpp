@@ -165,13 +165,56 @@ void TextSlave::printActivation( QPainter *p, int _tx, int _ty)
   p->drawRect(_tx+m_x-3,_ty+m_y+1, m_width+5, m_height);
 }
 
-
 bool TextSlave::checkPoint(int _x, int _y, int _tx, int _ty)
 {
     if((_ty + m_y > _y) || (_ty + m_y + m_height < _y) ||
        (_tx + m_x > _x) || (_tx + m_x + m_width < _x))
         return false;
     return true;
+}
+
+// Return -2 = before, -1 = after (offset set to max), 0 = inside the text, at @p offset
+int TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, QFontMetrics * fm, int & offset)
+{
+    kdDebug(6040) << "TextSlave::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
+                  << " _tx+m_x=" << _tx+m_x << " _ty+m_y=" << _ty+m_y << endl;
+    offset = 0;
+
+    if ( _y < _ty + m_y )
+        return -2; // above -> before
+
+    if ( _y > _ty + m_y + m_height || _x > _tx + m_x + m_width )
+    {
+        // below or on the right -> after
+        // Set the offset to the max
+        offset = m_len;
+        return -1;
+    }
+
+    // The Y matches, check if we're on the left
+    if ( _x < _tx + m_x )
+        return -2; // on the left (and not below) -> before
+
+    if ( m_reversed )
+        return -2; // Abort if RTL (TODO)
+
+    int delta = _x - (_tx + m_x);
+    kdDebug(6040) << "TextSlave::checkSelectionPoint delta=" << delta << endl;
+    int pos = 0;
+    while(pos < m_len)
+    {
+        // ### this will produce wrong results for RTL text!!!
+        int w = fm->width(*(m_text+pos));
+        int w2 = w/2;
+        w -= w2;
+        delta -= w2;
+        if(delta <= 0) break;
+        pos++;
+        delta -= w;
+    }
+    //kdDebug( 6040 ) << " Text  --> inside at position " << pos << endl;
+    offset = pos;
+    return 0;
 }
 
 // -----------------------------------------------------------------------------
@@ -305,16 +348,17 @@ TextSlave * RenderText::findTextSlave( int offset, int &pos )
 
 bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
 {
+    // #### TODO get rid of offset, we won't need it anymore now that
+    // selection is handled separately.
+
     TextSlave *s = m_lines.count() ? m_lines[0] : 0;
     int si = 0;
     while(s)
     {
-        // TODO: this checks for a perfect intersection.
-        // Instead, we should find the closest char in the closest textslave
-        // This way it would be possible to select text when clicking on
-        // empty lines and when clicking after the end of the line.
         if( s->checkPoint(_x, _y, _tx, _ty) )
         {
+// Disabled, we don't need this anymore, offset isn't used (we have checkSelectionPoint instead)
+#if 0
             // now we need to get the exact position
             int delta = _x - _tx - s->m_x;
             int pos = 0;
@@ -334,13 +378,51 @@ bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
             // ### only for visuallyOrdered !
             offset = s->m_text - str->s + pos;
             //kdDebug( 6040 ) << " Text  --> inside at position " << offset << endl;
-
+#endif
             return true;
         }
         // ### this might be wrong, if combining chars are used ( eg arabic )
         s = si < (int)m_lines.count()-1 ? m_lines[++si] : 0;
     }
     return false;
+}
+
+int RenderText::checkSelectionPoint(int _x, int _y, int _tx, int _ty, int &offset)
+{
+    for(unsigned int si = 0; si < m_lines.count(); si++)
+    {
+        TextSlave* s = m_lines[si];
+        if ( s->m_reversed )
+            return -2; // abort if RTL (TODO)
+        int result = s->checkSelectionPoint(_x, _y, _tx, _ty, fm, offset);
+        kdDebug(6040) << "RenderText::checkSelectionPoint line " << si << " result=" << result << endl;
+        if ( result == 0 ) // x,y is inside the textslave
+        {
+            // ### only for visuallyOrdered !
+            offset += s->m_text - str->s; // add the offset from the previous lines
+            kdDebug(6040) << "RenderText::checkSelectionPoint inside -> " << offset << endl;
+            return 0;
+        } else if ( result == -2 )
+        {
+            // x,y is before the textslave -> stop here
+            if ( si > 0 )
+            {
+                // ### only for visuallyOrdered !
+                offset = s->m_text - str->s - 1;
+                kdDebug(6040) << "RenderText::checkSelectionPoint before -> " << offset << endl;
+                return 0;
+            } else
+            {
+                offset = 0;
+                kdDebug(6040) << "RenderText::checkSelectionPoint before us -> returning -2" << endl;
+                return -2;
+            }
+        }
+    }
+
+    // set offset to max
+    offset = str->l;
+    return -1; // after
 }
 
 void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)

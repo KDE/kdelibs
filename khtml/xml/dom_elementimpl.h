@@ -161,6 +161,9 @@ public:
 
     virtual void mouseEventHandler( MouseEvent */*ev*/, bool /*inside*/ ) {};
 
+    virtual int findSelectionNode( int _x, int _y, int _tx, int _ty,
+                                    DOM::Node & node, int & offset );
+
 protected: // member variables
 
     NamedAttrMapImpl *namedAttrMap;

@@ -124,6 +124,9 @@ public:
                              int _tx, int _ty,
                              MouseEvent *ev );
 
+    virtual int findSelectionNode( int _x, int _y, int _tx, int _ty,
+                                   DOM::Node & node, int & offset );
+
     bool frameBorder() { return frameborder; }
     bool noResize() { return noresize; }
 

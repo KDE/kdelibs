@@ -549,7 +549,7 @@ void ElementImpl::setOwnerDocument(DocumentImpl *_document)
 }
 
 bool ElementImpl::mouseEvent( int _x, int _y,
-				  int _tx, int _ty,
+                              int _tx, int _ty,
                               MouseEvent *ev)
 {
 #ifdef EVENT_DEBUG
@@ -577,7 +577,11 @@ bool ElementImpl::mouseEvent( int _x, int _y,
 	    (_x < _tx ) || (_x >= _tx + m_render->width() ) )
 	    inside = false;
 	else
+        {
 	    ev->innerNode = this;
+            ev->nodeAbsX = _tx;
+            ev->nodeAbsY = _ty;
+        }
     }
 
     NodeImpl *child = firstChild();
@@ -605,6 +609,70 @@ bool ElementImpl::mouseEvent( int _x, int _y,
         applyChanges(true,false);
 
     return inside;
+}
+
+int ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node & node, int & offset )
+{
+    kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " _x=" << _x << " _y=" << _y
+               << " _tx=" << _tx << " _ty=" << _ty << endl;
+
+    // ######### Duplicated code from mouseEvent
+    // TODO put the code above (getting _tx,_ty) in a common place and call it from here
+
+    if (!m_render) return -1;
+
+    RenderObject *p = m_render->parent();
+    while( p && p->isAnonymousBox() ) {
+// 	kdDebug( 6030 ) << "parent is anonymous!" << endl;
+	// we need to add the offset of the anonymous box
+	_tx += p->xPos();
+	_ty += p->yPos();
+	p = p->parent();
+    }
+
+    if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating() )
+    {
+        m_render->absolutePosition(_tx, _ty);
+    }
+
+    int off=0, lastOffset=0;
+    DOM::Node nod;
+    DOM::Node lastNode;
+    NodeImpl *child = firstChild();
+    while(child != 0)
+    {
+	int pos = child->findSelectionNode(_x, _y, _tx, _ty, nod, off);
+        kdDebug(6030) << this << " child->findSelectionNode returned " << pos << endl;
+        if ( pos == 0 ) // perfect match
+        {
+            node = nod;
+            offset = off;
+            kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " match offset=" << offset << endl;
+            return 0;
+        } else if ( pos == -2 )
+        {
+            //x,y is before this element -> stop here
+            if ( !lastNode.isNull() ) {
+                node = lastNode;
+                offset = lastOffset;
+                kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " before this child -> returning 0, offset=" << offset << endl;
+                return 0;
+            } else {
+                kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " before us -> returning -2" << endl;
+                return -2;
+            }
+        }
+        ASSERT( pos == -1 ); // the only allowable values are -2/-1/0
+        if ( !nod.isNull() )
+        {
+            lastNode = nod;
+            lastOffset = off;
+        }
+	child = child->nextSibling();
+    }
+    node = lastNode;
+    offset = lastOffset;
+    return -1; // after
 }
 
 // -------------------------------------------------------------------------
@@ -975,6 +1043,3 @@ void NamedAttrMapImpl::detachFromElement()
     element = 0;
     clearAttrs();
 }
-
-
-
