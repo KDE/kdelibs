@@ -1213,10 +1213,10 @@ QString KURL::fileName( bool _strip_trailing_slash ) const
     return fname;
 
   int i = m_strPath.findRev( '/', len - 1 );
-  // If ( i == -1 ) => The first character is not a '/' ???
-  // This looks like an error to me.
+  // If ( i == -1 ) => the first character is not a '/'
+  // So it's some URL like file:blah.tgz, return the whole path
   if ( i == -1 )
-    return fname;
+    return m_strPath;
 
   fname = m_strPath.mid( i + 1, len - i - 1 ); // TO CHECK
   // fname.assign( m_strPath, i + 1, len - i - 1 );
