@@ -449,35 +449,34 @@ bool Scheduler::regCachedAuthKey( const QCString& key, const QCString& group )
     return true;
 }
 
-void Scheduler::delCachedAuthKeys( AuthKeyList& list )
+void Scheduler::delCachedAuthKeys( const AuthKeyList& list )
 {
-    if( !pingCacheDaemon() )
-        return;
-
-    bool ok;
-    int count;
-    QCString val, ref_key;
-    KDEsuClient client;
-    AuthKey* auth_key = list.first();
-    for( ; auth_key!=0 ; auth_key=list.next() )
+    if ( !list.isEmpty() && pingCacheDaemon() )
     {
-        // Do not delete passwords that are supposed
-        // to be persistent
-        if( auth_key->persist )
-            continue;
-
-        ref_key = auth_key->key.copy() + "-refcount";
-        count = client.getVar(ref_key).toInt( &ok );
-        if( ok )
+        bool ok;
+        int count;
+        KDEsuClient client;
+        QCString val, ref_key;
+        QListIterator<AuthKey> it( list );
+        for ( ; it.current(); ++it )
         {
-            if( count > 1 )
+            AuthKey* auth_key = it.current();
+            // Do not delete passwords that are supposed
+            // to be persistent
+            if ( auth_key->persist )
+                continue;
+
+            ref_key = auth_key->key.copy() + "-refcount";
+            count = client.getVar( ref_key ).toInt( &ok );
+            if ( ok )
             {
-                val.setNum(count-1);
-                client.setVar( ref_key, val, 0, auth_key->group );                
-            }
-            else
-            {
-	       client.delVars(auth_key->key);                
+                if ( count > 1 )
+                {
+                    val.setNum(count-1);
+                    client.setVar( ref_key, val, 0, auth_key->group );
+                }
+                else
+                    client.delVars(auth_key->key);
             }
         }
     }

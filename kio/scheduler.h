@@ -136,11 +136,11 @@ namespace KIO {
     bool regCachedAuthKey( const QCString&, const QCString& );
 
     /**
-     * Deletes any cached keys for the given group.
+     * Deletes any cached keys for the given list.
      *
-     * @param grpname cached authentication key to be deleted.
+     * @param list list of cached authentication key to be deleted.
      */
-    void delCachedAuthKeys( AuthKeyList& grpname );
+    void delCachedAuthKeys( const AuthKeyList& list );
 
 };
 
