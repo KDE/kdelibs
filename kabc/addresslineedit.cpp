@@ -302,6 +302,8 @@ void AddressLineEdit::doCompletion(bool ctrlT)
     {
         match = s_completion->makeCompletion( s );
         if (match.isNull() && mode == KGlobalSettings::CompletionPopup)
+          match = s_completion->makeCompletion( "\"" + s );
+        if (match.isNull() && mode == KGlobalSettings::CompletionPopup)
           match = s_completion->makeCompletion( "$$" + s );
     }
 
@@ -341,6 +343,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
             {
                 m_previousAddresses = prevAddr;
 		QStringList items = s_completion->allMatches( s );
+                items += s_completion->allMatches( "\"" + s );
 		items += s_completion->substringCompletion( '<' + s );
 		if( !s.contains( ' ' )) // one word, possibly given name
 		    items += s_completion->allMatches( "$$" + s );
