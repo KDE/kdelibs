@@ -99,6 +99,12 @@ public:
   void setPath( const QString& _txt ) { m_strPath = _txt; }  
   bool hasPath() const { return !m_strPath.isEmpty(); }
 
+  /** Removes all multiple directory separators ('/') and 
+   * resolves any "." or ".." found in the path.
+   * Calls QDir::cleanDirPath but saves the trailing slash if any.
+   */
+  void cleanPath();
+
   /**
    * This is useful for HTTP. It looks first for '?' and decodes then.
    * The encoded path is the concatenation of the current path and the query.
@@ -329,7 +335,6 @@ public:
   
 protected:
   void reset();
-  void cleanPath();
   void parse( const QString& _url );
   
   static char hex2int( char _char );
