@@ -288,11 +288,14 @@ void SlaveBase::errorPage()
 
 void SlaveBase::mimeType( const QString &_type)
 {
+  int cmd;
+  do
+  {
     KIO_DATA << _type;
     m_pConnection->send( INF_MIME_TYPE, data );
-    int cmd = 0;
     while(true)
     {
+       cmd = 0;
        if ( m_pConnection->read( &cmd, data ) == -1 ) {
            kdDebug(7019) << "SlaveBase: mimetype: read error" << endl;
            ::exit(255);
@@ -306,6 +309,8 @@ void SlaveBase::mimeType( const QString &_type)
        };
        break;
     }
+  }
+  while (cmd != CMD_NONE);
 // WABA: cmd can be "CMD_NONE" or "CMD_GET" (in which case the slave
 // had been put on hold.) [or special, for http posts].
 // Something else is basically an error
