@@ -1,7 +1,7 @@
 
 lib_LTLIBRARIES = libkhtmlw.la
 libkhtmlw_la_SOURCES = jscript.cpp html.cpp htmlobj.cpp htmlfont.cpp gif.cpp jpeg.cpp formats.cpp htmlform.cpp ampseq.cpp htmltoken.cpp htmlframe.cpp htmlview.cpp
-libkhtmlw_la_LIBADD = -L@topdir@/kdecore/.libs -L@topdir@/kdeui/.libs -L@topdir@/jscript/.libs @all_libraries@ -lkdecore -lqt -lX11 -lgif -ljpeg
+libkhtmlw_la_LIBADD = -L@topdir@/kdecore/.libs -L@topdir@/kdeui/.libs -L@topdir@/jscript/.libs @all_libraries@ -lkdecore -lqt -lX11 -lgif @LIBJPEG@
 
 BUILT_SOURCES = html.moc htmlform.moc htmlframe.moc htmlview.moc
 html.cpp: html.moc
