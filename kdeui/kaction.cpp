@@ -249,6 +249,8 @@ KAction::KAction( QObject* parent, const char* name )
 
 KAction::~KAction()
 {
+    if (d->m_kaccel)
+      unplugAccel();
     if ( m_parentCollection )
       m_parentCollection->take( this );
 
