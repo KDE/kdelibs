@@ -25,14 +25,15 @@
 #include <qfile.h>
 #include "blowfish.h"
 #include "sha1.h"
+#include "cbc.h"
 
 #include <assert.h>
 
 #define KWALLET_VERSION_MAJOR		0
 #define KWALLET_VERSION_MINOR		0
 
-#define KWALLET_CIPHER_BLOWFISH		0
-#define KWALLET_CIPHER_3DES		1 // unsupported
+#define KWALLET_CIPHER_BLOWFISH_CBC	0
+#define KWALLET_CIPHER_3DES_CBC		1 // unsupported
 
 #define KWALLET_HASH_SHA1		0
 #define KWALLET_HASH_MD5		1 // unsupported
@@ -121,63 +122,90 @@ static int getRandomBlock(QByteArray& randBlock) {
 
 // this should be SHA-512 for release probably
 static int password2hash(const QByteArray& password, QByteArray& hash) {
-	QByteArray first, second, third;
-
-	// FIXME: really broken - also crashes if password.length() < 3
-	first.resize(password.size()/3 + (password.size()%3 == 1 ? 1 : 0));
-	second.resize(password.size()/3 + (password.size()%3 == 2 ? 1 : 0));
-	third.resize(password.size()/3);
-
-	// The hash works like this:
-	//     Split the passphrase into thirds and make three hashes
-	//     with them.  Concatenate them.
-	for (unsigned int i = 0; i < password.size(); i++) {
-		switch (i % 3) {
-			case 0:
-				first[i/3] = password[i];
-				break;
-			case 1:
-				second[(i-1)/3] = password[i];
-				break;
-			case 2:
-				third[(i-2)/3] = password[i];
-				break;
-		}
-	}
-
 	SHA1 sha;
+	int shasz = sha.size() / 8;
 
-	sha.process(first.data(), first.size());
+	assert(shasz >= 20);
 
-	hash.duplicate((const char *)sha.getHash(), 19);
+	QByteArray block1(shasz);
 
-	sha.reset();
+	sha.process(password.data(), QMIN(password.size(), 16));
 
-	sha.process(second.data(), second.size());
-
-	hash.resize(56);
-
-	const char *t = (const char *)sha.getHash();
-
-	for (unsigned int i = 0; i < 19; i++) {
-		hash[19+i] = t[i];
+	// To make brute force take longer
+	for (int i = 0; i < 2000; i++) {
+		memcpy(block1.data(), sha.getHash(), shasz);
+		sha.reset();
+		sha.process(block1.data(), shasz);
 	}
 
 	sha.reset();
 
-	sha.process(third.data(), third.size());
+	if (password.size() > 16) {
+		sha.process(password.data() + 16, QMIN(password.size() - 16, 16));
+		QByteArray block2(shasz);
+		// To make brute force take longer
+		for (int i = 0; i < 2000; i++) {
+			memcpy(block2.data(), sha.getHash(), shasz);
+			sha.reset();
+			sha.process(block2.data(), shasz);
+		}
 
-	t = (const char *)sha.getHash();
+		sha.reset();
 
-	for (unsigned int i = 0; i < 18; i++) {
-		hash[38+i] = t[i];
+		if (password.size() > 32) {
+			sha.process(password.data() + 32, QMIN(password.size() - 32, 16));
+
+			QByteArray block3(shasz);
+			// To make brute force take longer
+			for (int i = 0; i < 2000; i++) {
+				memcpy(block3.data(), sha.getHash(), shasz);
+				sha.reset();
+				sha.process(block3.data(), shasz);
+			}
+
+			sha.reset();
+
+			if (password.size() > 48) {
+				sha.process(password.data() + 48, password.size() - 48);
+
+				QByteArray block4(shasz);
+				// To make brute force take longer
+				for (int i = 0; i < 2000; i++) {
+					memcpy(block4.data(), sha.getHash(), shasz);
+					sha.reset();
+					sha.process(block4.data(), shasz);
+				}
+
+				sha.reset();
+				// split 14/14/14/14
+				hash.resize(56);
+				memcpy(hash.data(),      block1.data(), 14);
+				memcpy(hash.data() + 14, block2.data(), 14);
+				memcpy(hash.data() + 28, block3.data(), 14);
+				memcpy(hash.data() + 42, block4.data(), 14);
+				block4.fill(0);
+			} else {
+				// split 20/20/16
+				hash.resize(56);
+				memcpy(hash.data(),      block1.data(), 20);
+				memcpy(hash.data() + 20, block2.data(), 20);
+				memcpy(hash.data() + 40, block3.data(), 16);
+			}
+			block3.fill(0);
+		} else {
+			// split 20/20
+			hash.resize(40);
+			memcpy(hash.data(),      block1.data(), 20);
+			memcpy(hash.data() + 20, block2.data(), 20);
+		}
+		block2.fill(0);
+	} else {
+		// entirely block1
+		hash.resize(20);
+		memcpy(hash.data(), block1.data(), 20);
 	}
 
-	sha.reset();
-
-	first.fill(0);
-	second.fill(0);
-	third.fill(0);
+	block1.fill(0);
 
 	return 0;
 }
@@ -234,24 +262,26 @@ int Backend::open(const QByteArray& password) {
 		return -4;	   // unknown version
 	}
 
-	if (magicBuf[2] != KWALLET_CIPHER_BLOWFISH) {
-		return -44;	   // unknown cipher
+	if (magicBuf[2] != KWALLET_CIPHER_BLOWFISH_CBC) {
+		return -42;	   // unknown cipher
 	}
 
 	if (magicBuf[3] != KWALLET_HASH_SHA1) {
-		return -44;	   // unknown hash
+		return -42;	   // unknown hash
 	}
 
 	QByteArray encrypted = db.readAll();
 	assert(encrypted.size() < db.size());
 
-	BlowFish bf;
+	BlowFish _bf;
+	CipherBlockChain bf(&_bf);
 	int blksz = bf.blockSize();
 	if ((encrypted.size() % blksz) != 0) {
 		return -5;	   // invalid file structure
 	}
 
 	// Decrypt the encrypted data
+	passhash.resize(bf.getKeyLen()/8);
 	password2hash(password, passhash);
 
 	bf.setKey((void *)passhash.data(), passhash.size()*8);
@@ -273,13 +303,13 @@ int Backend::open(const QByteArray& password) {
 	// strip the file size off
 	long fsize = 0;
 
-	fsize |= (*t << 24);
+	fsize |= (long(*t) << 24) & 0xff000000;
 	t++;
-	fsize |= (*t << 16);
+	fsize |= (long(*t) << 16) & 0x00ff0000;
 	t++;
-	fsize |= (*t <<  8);
+	fsize |= (long(*t) <<  8) & 0x0000ff00;
 	t++;
-	fsize |= *t;
+	fsize |= long(*t) & 0x000000ff;
 	t++;
 
 	if (fsize < 0 || fsize > long(encrypted.size()) - blksz - 4) {
@@ -377,7 +407,7 @@ int Backend::close(const QByteArray& password) {
 	QByteArray version(4);
 	version[0] = KWALLET_VERSION_MAJOR;
 	version[1] = KWALLET_VERSION_MINOR;
-	version[2] = KWALLET_CIPHER_BLOWFISH;
+	version[2] = KWALLET_CIPHER_BLOWFISH_CBC;
 	version[3] = KWALLET_HASH_SHA1;
 	qf.writeBlock(version, 4);
 
@@ -407,7 +437,8 @@ int Backend::close(const QByteArray& password) {
 
 	// calculate the hash of the file
 	SHA1 sha;
-	BlowFish bf;
+	BlowFish _bf;
+	CipherBlockChain bf(&_bf);
 
 	sha.process(decrypted.data(), decrypted.size());
 
