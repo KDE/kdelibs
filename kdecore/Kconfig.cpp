@@ -1,6 +1,11 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.8  1997/05/13 05:48:58  kalle
+ * Kalle: Default arguments for KConfig::read*Entry()
+ * app-specific config files don't start with a dot
+ * Bufgix for the bugfix in htmlobj.cpp (FontManager)
+ *
  * Revision 1.7  1997/05/09 15:10:09  kulow
  * Coolo: patched ltconfig for FreeBSD
  * removed some stupid warnings
@@ -315,6 +320,38 @@ QString KConfig::readEntry( const QString& rKey,
   return aValue;
 }
 
+int KConfig::readListEntry ( const QString &rKey, QStrList &list, 
+							 char sep = ',' ) const
+{
+  if( !hasKey( rKey ) )
+    return 0;
+  QString str_list, value;
+  str_list = readEntry(rKey);
+  if(str_list.isEmpty())
+    return 0; 
+  list.clear();
+  int i;
+  int len = str_list.length();
+  for( i = 0; i < len; i++ )
+    {
+      if( str_list[i] != sep && str_list[i] != '\\' )
+	{
+	  value += str_list[i];
+	  continue;
+	}
+      if( str_list[i] == '\\' )
+	{
+	  i++;
+	  value += str_list[i];
+	  continue;
+	}
+      list.append(value);
+      value.truncate(0);
+    }
+  list.append(value);
+  return list.count();
+}
+
 int KConfig::readNumEntry( const QString& rKey, int nDefault ) const
 {
   bool ok;
@@ -479,6 +516,32 @@ QString KConfig::writeEntry( const QString& rKey, const QString& rValue,
 	pData->bDirty = true;
   return aValue;
 }
+
+void KConfig::writeEntry( const QString& rKey, QStrList& list, 
+						  char sep = ',', bool bPersistent = true )
+{
+  if( list.isEmpty() )
+    {
+      writeEntry(rKey, "", bPersistent );      
+      return;
+    }
+  QString str_list, value;
+  int i;
+  for( value = list.first(); value != NULL; value = list.next() )
+    {
+      for( i = 0; i < (int) value.length(); i++ )
+	{
+	  if( value[i] == sep || value[i] == '\\' )
+	    str_list += '\\';
+	  str_list += value[i];
+	}
+      str_list += sep;
+    }
+  if( str_list.right(1) == sep )
+    str_list.truncate(str_list.length()-1);
+  writeEntry(rKey, str_list, bPersistent );
+}
+
 
 QString KConfig::writeEntry( const QString& rKey, int nValue,
 							 bool bPersistent )

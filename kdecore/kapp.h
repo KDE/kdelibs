@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.10  1997/06/25 14:41:58  ssk
+// Taj: Updated source documentation.
+//
 // Revision 1.9  1997/05/17 20:38:22  kalle
 // Kalle:
 // - Bugfix for KPanner (from Paul Kendall)
@@ -144,6 +147,11 @@ class KIconLoader;
 * Constructor. Pass command-line arguments. 
 /** Destructor */
 * name is "~/." + rAppName + "rc". The state of the application-specific 
+* config file may be queried afterwards with getConfigState(). 
+/** Restore previous main window geometry. If there is no previous size
+	(e.g. first app start or deleted config file), nothing is
+	done. */ 
+  void restoreTopLevelGeometry() const;
 * Destructor 
 /** Return the current application object.
 	*

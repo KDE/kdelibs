@@ -1,6 +1,14 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.12  1997/05/30 20:04:37  kalle
+// Kalle:
+// 30.05.97:	signal handler for reaping zombie help processes reinstalls itself
+// 		patch to KIconLoader by Christian Esken
+// 		slightly better look for KTabCtl
+// 		kdecore Makefile does not expect current dir to be in path
+// 		Better Alpha support
+//
 // Revision 1.11  1997/05/17 20:38:21  kalle
 // Kalle:
 // - Bugfix for KPanner (from Paul Kendall)
@@ -271,6 +279,23 @@ void KApplication::init()
   KDEChangePalette = XInternAtom( display, "KDEChangePalette", False );
   KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", False );
   KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", False);
+void KApplication::restoreTopLevelGeometry() const
+{
+  QWidget* mw = kapp->mainWidget();
+  if( !mw )
+	return;
+  
+  pConfig->setGroup( "Geometry" );
+
+  int x = pConfig->readNumEntry( "TopLevelGeometry-x", mw->x() );
+  int y = pConfig->readNumEntry( "TopLevelGeometry-y", mw->y() );
+  int w = pConfig->readNumEntry( "TopLevelGeometry-w", mw->width() );
+  int h = pConfig->readNumEntry( "TopLevelGeometry-h", mw->height() );
+  mw->setGeometry( x, y, mw->width(), mw->height() );
+  mw->resize( w, h );
+}
+ 
+    pLocale = new KLocale();
 
   return pLocale;
   for( int i = 0; i < argc; i++ )
@@ -281,6 +306,19 @@ void KApplication::init()
         aIconPixmap = QPixmap(argv[i+1]);
       else
         aIconPixmap = getIconLoader()->loadApplicationIcon( argv[i+1] );
+  /* If there is a main level widget, save its position and size */
+  QWidget* w = kapp->mainWidget();
+  if( !w )
+	debug( "No main widget when running destructor\n" );
+  if( w )
+	{
+	  pConfig->setGroup( "Geometry" );
+	  pConfig->writeEntry( "TopLevelGeometry-x", w->frameGeometry().x() );
+	  pConfig->writeEntry( "TopLevelGeometry-y", w->frameGeometry().y() );
+	  pConfig->writeEntry( "TopLevelGeometry-w", w->frameGeometry().width() );
+	  pConfig->writeEntry( "TopLevelGeometry-h", w->frameGeometry().height() );
+	}
+
 		  aMiniIconPixmap = aIconPixmap;
       aDummyString2 += argv[i+1];
       aDummyString2 += " ";

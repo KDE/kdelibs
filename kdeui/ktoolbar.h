@@ -17,9 +17,10 @@ public:
 	int ID();
 	void enable(bool enable);
 	void makeDisabledPixmap();
-        QPixmap disabledPixmap;  	
-        virtual void setPixmap( QPixmap & ); 
+        virtual void setPixmap( QPixmap & );
 
+  	QPixmap disabledPixmap;
+  	
 protected:
 	void paletteChange(const QPalette &);
 
@@ -91,6 +92,3 @@ signals:
 };
 
 #endif
-
-
-

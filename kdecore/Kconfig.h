@@ -1,6 +1,11 @@
 // $Id$
 //
 // $Log$
+// Revision 1.7  1997/05/13 05:48:59  kalle
+// Kalle: Default arguments for KConfig::read*Entry()
+// app-specific config files don't start with a dot
+// Bufgix for the bugfix in htmlobj.cpp (FontManager)
+//
 // Revision 1.6  1997/04/28 06:57:44  kalle
 // Various widgets moved from apps to libs
 // Added KSeparator
@@ -107,6 +112,7 @@
 #include <qfile.h>    // QFile
 #include <qfont.h>    // QFont
 #include <qstring.h>  // QString
+#include <qstrlist.h>   // QStrList
 #include <qtstream.h> // QTextStream
 
 #ifndef _KCONFIGDATA_H
@@ -115,8 +121,7 @@
 
 class KConfigData;
 
-/// KDE configuration entries.
-/**
+/** KDE configuration entries.
     The KConfig class encapsulates all the configuration entries for
 	one application, independent of the configuration files they came
 	from. All configuration entries are of the form "key=value" and
@@ -149,7 +154,6 @@ friend class KApplication;
 protected:
 
 public:
-  /// Construct a KConfig object.
   /** Construct a KConfig object. Files searched will be all
 	standard config files and the file given by pStream (if pStream
     != NULL ). The QFile associated with QTextStream already must be 
@@ -159,19 +163,16 @@ public:
 	*/
   KConfig( QTextStream* pStream = NULL );
 
-  /// Destroy the KConfig object and write back dirty config entries.
   /** Destructor. Writes back any dirty configuration entries.
    */
   ~KConfig();
 
-  /// Set the group in which to search for keys.
   /** Specify the group in which keys will be searched
 	  Switch back to the default group by passing an empty string.
 	  @param rGroup The name of the new group.
    */
   void setGroup( const QString& rGroup );
 
-  /// Retrieve the current group.
   /** Retrieve the group where keys are currently searched in.
 	  @return The current group
    */
@@ -193,8 +194,17 @@ public:
   QString readEntry( const QString& rKey, 
 					 const QString* pDefault = NULL ) const;
 
-  /// Read a numerical value
-  /** Read the value of an entry specified by rKey in the current group
+  /** Read a list of strings.
+	  @param rKey The key to search for
+	  @param list In this object, the read list will be returned.
+	  @param sep  The list separator (default ",")
+	  @return The number of entries in the list.
+	  */
+  int readListEntry( const QString &rKey, QStrList &list,  
+					 char sep = ',' ) const;
+
+  /** Read a numerical value. Read the value of an entry specified by
+	  rKey in the current group  
 	  and interpret it numerically.
 	  @param rKey The key to search for.
 	  @param nDefault A default value returned if the key was not found.
@@ -251,6 +261,19 @@ public:
   QString writeEntry( const QString& rKey, const char* pValue,
 					  bool bPersistent = true )
 	{ return writeEntry( rKey, QString( pValue ), bPersistent ); }
+
+  /** Same as above, but writes a list of strings. Note: The old value
+	  is _not_ returned here!
+	  @param rKey The key to write
+	  @param list The list to write
+	  @param sep  The list separator
+	  @param bPersistent If bPersistent is false, the entry's dirty
+	  flag will not be set and thus the entry will not be written to
+	  disk at deletion time.
+	  */
+  void writeEntry ( const QString &rKey, QStrList &list, char sep = ',',
+					bool bPersistent = true );
+
 
   /// Write the key value pair
   /** Same as above, but write a numerical value.

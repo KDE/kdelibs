@@ -37,16 +37,16 @@ KToolBarItem::KToolBarItem( QPixmap& pixmap, int ID,
 
 void KToolBarItem::setPixmap( QPixmap &pixmap )
 {
-    if ( ! pixmap.isNull() )
-	enabledPixmap = pixmap;
-    else
+  if ( ! pixmap.isNull() )
+    enabledPixmap = pixmap;
+  else
     {
-	warning("KToolBarItem: pixmap is empty, perhaps some missing file");
-	enabledPixmap.resize( 22, 22);
+      warning("KToolBarItem: pixmap is empty, perhaps some missing file");
+      enabledPixmap.resize( 22, 22);
     }
-    // makeDisabledPixmap();
-    KButton::setPixmap( enabledPixmap );
- }            
+  // makeDisabledPixmap();
+     KButton::setPixmap( enabledPixmap );
+}
   icontext=config->readNumEntry("IconText", 0);
 void KToolBarItem::makeDisabledPixmap()
 {
@@ -173,6 +173,13 @@ void KToolBar::drawContents ( QPainter *)
 {
 }
 
+void KToolBar::setItemPixmap( int id, QPixmap& _pixmap )
+{
+  for ( KToolBarItem *b = buttons.first(); b!=NULL; b=buttons.next() )
+    if ( b->ID() == id )
+      b->setPixmap( _pixmap );
+}    
+      
 KToolBar::~KToolBar()
 {
 	// Get a seg. fault in this destructor with the following line included.
@@ -394,13 +401,8 @@ void KToolBar::setItemEnabled( int id, bool enabled )
     if ( b->ID() == id )
       b->enable( enabled );
 }
-					
-void KToolBar::setItemPixmap( int id, QPixmap& _pixmap )
-{
-    for ( KToolBarItem *b = buttons.first(); b!=NULL; b=buttons.next() )
-	if ( b->ID() == id )
-       b->setPixmap( _pixmap );
-}                                         
+				
+	
 
 void KToolBar::ItemClicked( int id )
 {
@@ -416,16 +418,6 @@ void KToolBar::ItemReleased( int id )
 {
 	emit released( id );
 }
-
-
-
-
-
-
-
-
-
-
       ++it;
     }
   }
