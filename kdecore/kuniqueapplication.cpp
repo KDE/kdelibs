@@ -277,20 +277,6 @@ KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled, bool c
     QTimer::singleShot( 0, this, SLOT(newInstanceNoFork()) );
 }
 
-// KDE 3.0: remove me
-KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled)
-  : KApplication( allowStyles, GUIenabled, initHack( false )),
-    DCOPObject(KCmdLineArgs::about->appName())
-{
-  d = new KUniqueApplicationPrivate;
-  d->processingRequest = false;
-  d->firstInstance = true;
-
-  if (s_nofork)
-    // Can't call newInstance directly from the constructor since it's virtual...
-    QTimer::singleShot( 0, this, SLOT(newInstanceNoFork()) );
-}
-
 KUniqueApplication::~KUniqueApplication()
 {
   delete d;

@@ -666,12 +666,6 @@ bool KInetSocketAddress::areEqualInet6(const KSocketAddress &s1, const KSocketAd
 #endif
 }
 
-// KDE 3.0: Remove me!
-bool KInetSocketAddress::isCoreEqual(const KSocketAddress& other) const
-{
-  return KSocketAddress::isCoreEqual(other);
-}
-
 void KInetSocketAddress::fromV4()
 {
   // converts an address from v4

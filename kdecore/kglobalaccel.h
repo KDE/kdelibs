@@ -219,9 +219,7 @@ class KGlobalAccel : public QObject
 	 * The group in which the configuration is stored can be
 	 * set with @ref setConfigGroup().
 	 */
-	void readSettings(KConfig* config);
-        // BCI merge with the one above
-	void readSettings();
+	void readSettings(KConfig* config=0);
 
  	/**
 	 * Removes the accelerator item with the action name action.
@@ -263,9 +261,7 @@ class KGlobalAccel : public QObject
          * or (if @p config is zero) to the application's
 	 * configuration file.
 	 */
-	void writeSettings(KConfig* config) const;
-        // BCI merge with the one above
-	void writeSettings() const;
+	void writeSettings(KConfig* config=0) const;
     
 	/**
 	 * Enables or disables raw mode on an accelerator item.

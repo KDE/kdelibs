@@ -301,21 +301,11 @@ QCString KCodecs::base64Encode( const QCString& str, bool insertLFs )
     return base64Encode( in, insertLFs );
 }
 
-QCString KCodecs::base64Encode( const QCString& str )
-{
-    return base64Encode(str,false);
-}
-
 QCString KCodecs::base64Encode( const QByteArray& in, bool insertLFs )
 {
     QByteArray out;
     base64Encode( in, out, insertLFs );
     return QCString( out.data(), out.size()+1 );
-}
-
-QCString KCodecs::base64Encode( const QByteArray& in )
-{
-   return base64Encode(in,false);
 }
 
 void KCodecs::base64Encode( const QByteArray& in, QByteArray& out,
@@ -387,11 +377,6 @@ void KCodecs::base64Encode( const QByteArray& in, QByteArray& out,
         out[didx] = '=';
         didx++;
     }
-}
-
-void KBase64::base64Encode( const QByteArray& in, QByteArray& out )
-{
-    base64Encode(in, out, false);
 }
 
 QCString KBase64::base64Decode( const QCString& str )

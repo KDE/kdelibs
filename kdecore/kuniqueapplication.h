@@ -50,12 +50,9 @@ public:
    *                 key in the "KDE" group of the application config file.
    *
    */
-  KUniqueApplication( bool allowStyles,
-		      bool GUIenabled,
-		      bool configUnique);
-  // KDE 3.0: Remove me
   KUniqueApplication( bool allowStyles=true,
-		      bool GUIenabled=true);
+		      bool GUIenabled=true,
+		      bool configUnique=false);
 
   /**
    * Adds command line options specific for KUniqueApplication.

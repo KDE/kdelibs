@@ -119,7 +119,7 @@ public:
    * the same as isEqual.
    * @param other	the other socket
    */
-  virtual bool isCoreEqual(const KSocketAddress& other) const;
+  bool isCoreEqual(const KSocketAddress& other) const;
   bool isCoreEqual(const KSocketAddress* other) const
   { return isCoreEqual(*other); }
 
@@ -394,14 +394,6 @@ public:
   /* comparation */
   static bool areEqualInet(const KSocketAddress &s1, const KSocketAddress &s2, bool coreOnly);
   static bool areEqualInet6(const KSocketAddress &s1, const KSocketAddress &s2, bool coreOnly);
-
-  /**
-   * @obsolete KDE 3.0: To be removed
-   * This kind of socket supports core comparation. This will
-   * compare the IP part of the sockets only.
-   * @param other	the other socket
-   */
-  virtual bool isCoreEqual(const KSocketAddress& other) const;
 
   /* operators */
 

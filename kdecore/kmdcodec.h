@@ -185,17 +185,7 @@ public:
    * @param insertLFs  limit the number of characters per line.
    * @return           a base64 encoded data.
    */
-  static QCString base64Encode( const QByteArray& in, bool insertLFs );
-
-  /**
-   * @deprecated.
-   *
-   * Use @ref base64Encode(const QByteArray&, bool)
-   * with the boolean argument set to false.
-   */
-   // BC: Merge in KDE 3.x with the above function by
-   // defaulting boolean argument to false.
-  static QCString base64Encode( const QByteArray& in );
+  static QCString base64Encode( const QByteArray& in, bool insertLFs = false);
 
   /**
    * Encodes the given data using the base64 algorithm.
@@ -216,17 +206,7 @@ public:
    * @param out       the container for the encoded data.
    */
   static void base64Encode( const QByteArray& in, QByteArray& out,
-                            bool insertLFs );
-
-  /**
-   * @deprecated.
-   *
-   * Use @ref base64Encode(const QByteArray&, QByteArray&, bool)
-   * with the boolean argument set to false.
-   */
-   // BC: Merge in KDE 3.x with the above function by
-   // defaulting boolean argument to false.
-  static void base64Encode( const QByteArray& in, QByteArray& out );
+                            bool insertLFs = false );
 
   /**
    * Encodes the given string using the base64 algorithm.
@@ -240,17 +220,7 @@ public:
    * @param insertLFs limit the number of characters per line.
    * @return          the decoded string.
    */
-  static QCString base64Encode( const QCString& str, bool insertLFs );
-
-  /**
-   * @deprecated.
-   *
-   * Use @ref base64Encode(const QCString&, bool)
-   * with the boolean argument set to false.
-   */
-   // BC: Merge in KDE 3.x with the above function by
-   // defaulting boolean argument to false.
-  static QCString base64Encode( const QCString& str );
+  static QCString base64Encode( const QCString& str, bool insertLFs = false );
 
   /**
    * Decodes the given data that was encoded using the

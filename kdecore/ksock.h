@@ -186,11 +186,6 @@ protected:
   
     bool init_sockaddr( const QString& hostname, unsigned short int port );
 
-    // BCI: remove in libkdecore.so.4
-    /* These are only here because I can't remove them */
-    ksockaddr_in server_name;
-    struct sockaddr_un unix_addr;
-
     /******************************************************
      * The file descriptor for this socket. sock may be -1.
      * This indicates that it is not connected.

@@ -3,6 +3,7 @@
 	Jani Jaakkola (jjaakkol@cs.helsinki.fi),
 	Nicolas Hadacek <hadacek@via.ecp.fr>
 	Matthias Ettrich (ettrich@kde.org)
+	Copyright (C) 2001      Waldo Bastian <bastian@kde.org>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -281,11 +282,6 @@ void KGlobalAccel::readSettings(KConfig* config)
 #endif
 }
 
-void KGlobalAccel::readSettings()
-{
-    readSettings( NULL );
-}
-
 void KGlobalAccel::removeItem( const QString& action )
 {
     aKeyMap.remove(action);
@@ -376,11 +372,6 @@ bool KGlobalAccel::setKeyDict( const KKeyEntryMap& nKeyMap )
 void KGlobalAccel::writeSettings(KConfig* config) const
 {
     KAccel::writeKeyMap( aKeyMap, aGroup, config );
-}
-
-void KGlobalAccel::writeSettings() const
-{
-    KAccel::writeKeyMap( aKeyMap, aGroup, NULL );
 }
 
 #ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
