@@ -101,15 +101,15 @@ void EditEntryDialog::createTabs()
     int widestString=0;
     const char* labels[]= { 
       i18n("Address:"),
-      i18n("Zip/postal code:"),
-      i18n("Town:"),
+      i18n("Town/City:"),
       i18n("State:"),
+      i18n("Zip/Postal Code:"),
       i18n("Country:") };
     QLineEdit** ledits[]= {
       &leAddress,
-      &leZip,
       &leTown,
       &leState,
+      &leZip,
       &leCountry };
     const int Size=sizeof(labels)/sizeof(labels[0]);
     CHECK(Size==sizeof(ledits)/sizeof(ledits[0]));
@@ -143,9 +143,9 @@ void EditEntryDialog::createTabs()
     int widestString=0;
     const char* labels[]= {
       i18n("Organization:"),
-      i18n("Org Unit:"),
-      i18n("Org Subunit:"),
-      i18n("Role:") };
+      i18n("Department:"),
+      i18n("Sub-Department:"),
+      i18n("Job/Role:") };
     QLineEdit** ledits[]= {
       &leOrg,
       &leOrgUnit,
@@ -236,7 +236,7 @@ void EditEntryDialog::createTabs()
    layout->setColStretch(0, 1);
    layout->setColStretch(1, 2);     
 
-   label=new QLabel(i18n("Comment:"), others);
+   label=new QLabel(i18n("Additional Comment:"), others);
    mleComment=new QMultiLineEdit(others);
    layout->addWidget(label, 0, 0);
    layout->addWidget(mleComment, 0, 1);

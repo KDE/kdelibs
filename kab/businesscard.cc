@@ -221,23 +221,26 @@ void BusinessCard::paintEvent(QPaintEvent*)
     {
       p.drawText(2*Grid, cy+p.fontMetrics().height(), current.address.c_str());
       cy+=p.fontMetrics().height();
-    }        
-  temp=current.zip;
+    }
+
+  temp = "";
   if(!current.town.empty())
     {
-      if(!temp.empty())
-	{
-	  temp+=" ";
-	}
       temp+=current.town;
-      p.drawText(2*Grid, cy+p.fontMetrics().height(), temp.c_str());
-      cy+=p.fontMetrics().height();
     } 
   if(!current.state.empty())
     {
-      p.drawText(2*Grid, cy+p.fontMetrics().height(), current.state.c_str());
+      if (!temp.empty()) temp += " ";
+      temp+=current.state;
+    }
+  if (!current.zip.empty())
+    {
+      if (!temp.empty()) temp += " ";
+      temp += current.zip;
+      p.drawText(2*Grid, cy+p.fontMetrics().height(), temp.c_str());
       cy+=p.fontMetrics().height();
-    }        
+    }
+
   if(!current.country.empty())
     {
       p.drawText(2*Grid, cy+p.fontMetrics().height(), current.country.c_str());
