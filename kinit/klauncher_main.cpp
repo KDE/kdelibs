@@ -67,22 +67,31 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    // Allow the locale to initialize properly
    KLocale::setMainCatalogue("kdelibs");
 
-   // Check DCOP communication.
+   int maxTry = 3;
+   while(true)
    {
-      DCOPClient testDCOP;
-      QCString dcopName = testDCOP.registerAs(cname, false);
+      QCString dcopName = KApplication::dcopClient()->registerAs(name, false);
       if (dcopName.isEmpty())
       {
          kdWarning() << "DCOP communication problem!" << endl;
          return 1;
       }
-      if (dcopName != cname)
-      {
-         kdWarning() << "Already running!" << endl;
-      }
-   }
+      if (dcopName == cname)
+         break; // Good!
 
-   KApplication::dcopClient()->registerAs(name, false);
+      if (--maxTry == 0)
+      {
+         kdWarning() << "Another instance of klauncher is already running!" << endl;
+         return 1;
+      }
+      
+      // Wait a bit...
+      kdWarning() << "Waiting for already running klauncher to exit." << endl;
+      sleep(1);
+
+      // Try again...
+   }
+   
    KLauncher *launcher = new KLauncher(LAUNCHER_FD);
    launcher->dcopClient()->setDefaultObject( name );
    launcher->dcopClient()->setDaemonMode( true );
