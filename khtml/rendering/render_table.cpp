@@ -32,6 +32,7 @@
 #include "rendering/table_layout.h"
 #include "html/html_tableimpl.h"
 #include "misc/htmltags.h"
+#include "misc/htmlattrs.h"
 
 #include <kglobal.h>
 
@@ -42,6 +43,7 @@
 #include <assert.h>
 
 using namespace khtml;
+using namespace DOM;
 
 RenderTable::RenderTable(DOM::NodeImpl* node)
     : RenderFlow(node)
@@ -1395,7 +1397,18 @@ void RenderTableCell::calcMinMaxWidth()
 #endif
 
     RenderFlow::calcMinMaxWidth();
-
+    if (element() && style()->whiteSpace() == NORMAL) {
+        // See if nowrap was set.
+        DOMString nowrap = static_cast<ElementImpl*>(element())->getAttribute(ATTR_NOWRAP);
+        if (!nowrap.isNull() && style()->width().isFixed())
+            // Nowrap is set, but we didn't actually use it because of the
+            // fixed width set on the cell.  Even so, it is a WinIE/Moz trait
+            // to make the minwidth of the cell into the fixed width.  They do this
+            // even in strict mode, so do not make this a quirk.  Affected the top
+            // of hiptop.com.
+            m_minWidth = style()->width().value;
+    }
+    
     setMinMaxKnown();
 }
 
