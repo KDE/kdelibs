@@ -522,12 +522,12 @@ trans_mkdir(char *path, int mode)
 	    if (updateOwner && !updatedOwner) {
 	  	PRMSG(1, "mkdir: Owner of %s should be set to root\n",
 		      path, 0, 0);
-		sleep(5);
+/*		sleep(5); */
 	    }
 	    if (updateMode && !updatedMode) {
 	  	PRMSG(1, "mkdir: Mode of %s should be set to %04o\n",
 		      path, mode, 0);
-		sleep(5);
+/*		sleep(5); */
 	    }
 	    return 0;
 	}
