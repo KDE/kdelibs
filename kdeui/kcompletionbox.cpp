@@ -199,6 +199,8 @@ void KCompletionBox::popup()
         hide();
     else {
         ensureCurrentVisible();
+        setCurrentItem( 0 );
+        clearSelection();
         if ( !isVisible() )
             show();
         else if ( size().height() < sizeHint().height() )
@@ -325,7 +327,6 @@ void KCompletionBox::insertItems( const QStringList& items, int index )
     bool block = signalsBlocked();
     blockSignals( true );
     insertStringList( items, index );
-    clearSelection();
     blockSignals( block );
     d->down_workaround = true;
 }
@@ -334,7 +335,6 @@ void KCompletionBox::setItems( const QStringList& items )
 {
     bool block = signalsBlocked();
     blockSignals( true );
-    clearSelection();
 
     QListBoxItem* item = firstItem();
     if ( !item ) {
@@ -357,7 +357,6 @@ void KCompletionBox::setItems( const QStringList& items )
         }
     }
 
-    clearSelection();
     blockSignals( block );
     d->down_workaround = true;
 }
