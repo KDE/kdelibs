@@ -20,6 +20,8 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <stdlib.h>
+
 #include <qclipboard.h>
 #include <qlistbox.h>
 #include <qpopupmenu.h>
@@ -308,18 +310,18 @@ void KComboBox::setLineEdit( QLineEdit *edit )
     setDelegate( d->klineEdit );
 
     // forward some signals. We only emit returnPressed() ourselves.
-    if ( d->klineEdit ) 
+    if ( d->klineEdit )
     {
         connect( d->klineEdit, SIGNAL( completion( const QString& )),
                  SIGNAL( completion( const QString& )) );
-        
+
         connect( d->klineEdit, SIGNAL( substringCompletion( const QString& )),
                  SIGNAL( substringCompletion( const QString& )) );
-        
+
         connect( d->klineEdit,
                  SIGNAL( textRotation( KCompletionBase::KeyBindingType )),
                  SIGNAL( textRotation( KCompletionBase::KeyBindingType )) );
-        
+
         connect( d->klineEdit,
                  SIGNAL( completionModeChanged( KGlobalSettings::Completion )),
                  SIGNAL( completionModeChanged( KGlobalSettings::Completion)));
@@ -327,7 +329,7 @@ void KComboBox::setLineEdit( QLineEdit *edit )
         connect( d->klineEdit,
                  SIGNAL( aboutToShowContextMenu( QPopupMenu * )),
                  SIGNAL( aboutToShowContextMenu( QPopupMenu * )) );
-                 
+
         connect( d->klineEdit,
                  SIGNAL( completionBoxActivated( const QString& )),
                  SIGNAL( activated( const QString& )) );
@@ -398,6 +400,11 @@ void KHistoryCombo::init( bool useCompletion )
     myRotated = false;
     myPixProvider = 0L;
 
+    // obey HISTCONTROL setting
+    QCString histControl = getenv("HISTCONTROL");
+    if ( histControl == "ignoredups" || histControl == "ignoreboth" )
+        setDuplicatesEnabled( false );
+    
     connect( this, SIGNAL(aboutToShowContextMenu(QPopupMenu*)),
              SLOT(addContextMenuItems(QPopupMenu*)) );
     connect( this, SIGNAL( activated(int) ), SLOT( slotReset() ));

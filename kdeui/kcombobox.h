@@ -528,6 +528,12 @@ class KPixmapProvider;
  * load and save the completion list to preserve the weighting between
  * sessions.
  *
+ * KHistoryCombo obeys the HISTCONTROL environment variable to determine 
+ * whether duplicates in the history should be tolerated in 
+ * @ref addToHistory() or not. During construction of KHistoryCombo,
+ * duplicates will be disabled when HISTCONTROL is set to "ignoredups" or
+ * "ignoreboth". Otherwise, duplicates are enabled by default.
+ *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @short A combobox for offering a history and completion
  */
