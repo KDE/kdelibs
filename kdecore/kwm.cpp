@@ -189,7 +189,7 @@ static void sendClientMessage(Window w, Atom a, long x){
 
 static void setQStringProperty(Window w, Atom a, const QString &str){
   XChangeProperty(qt_xdisplay(), w, a, XA_STRING, 8,
-		  PropModeReplace, (unsigned char *)str.ascii(),
+		  PropModeReplace, (unsigned const char *)str.ascii(),
 		  str.length()+1);
 }
 

@@ -81,7 +81,7 @@ QString KConfigBase::readEntry( const QString& aKey,
   // loop, and nobody likes those.
   if (!bLocaleInitialized && KGlobal::_locale) {
     // get around const'ness.
-    KConfigBase *that = (KConfigBase *)this;
+    KConfigBase *that = const_cast<KConfigBase *>(this);
     that->setLocale();
   }
 

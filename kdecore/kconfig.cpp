@@ -265,7 +265,7 @@ KEntry KConfig::lookupData(const KEntryKey &_key) const
 
 void KConfig::cacheCheck() const
 {
-  KConfig *that = (KConfig *)this;
+  KConfig *that = const_cast<KConfig *>(this);
   that->lastIoOp = QTime::currentTime();
   if (!isCached) {
     that->reparseConfiguration();
