@@ -63,6 +63,7 @@ make -f Makefile.cvs
 %build
 export QTDIR=%{qtdir}
 ./configure --prefix=%{prefix} \
+	--disable-debug --with-distribution='SPEC files from sources' \
 	--includedir=%{prefix}/include/kde \
 	--enable-final
 
