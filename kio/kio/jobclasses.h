@@ -1339,7 +1339,7 @@ namespace KIO {
          * Returns the ListJob's redirection URL. This will be invalid if there
          * was no redirection.
          * @return the redirection url
-	 * @since 3.5
+         * @since 3.4.1
          */
         const KURL& redirectionURL() const { return m_redirectionURL; }
 
