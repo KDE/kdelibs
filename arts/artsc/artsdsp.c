@@ -41,7 +41,14 @@
  */
 static int (*orig_open)(const char *pathname, int flags, mode_t mode);
 static int (*orig_close)(int fd);
+#ifdef HAVE_IOCTL_INT_INT_DOTS
 static int (*orig_ioctl)(int fd, int request, ...);
+#endif
+#ifdef HAVE_IOCTL_INT_ULONG_DOTS
+static int (*orig_ioctl)(int fd, unsigned long request, ...);
+#else
+#error Unknown ioctl type
+#endif
 static ssize_t (*orig_write)(int fd, const void *buf, size_t count);
 static int orig_init = 0;
 
@@ -127,7 +134,11 @@ int open (const char *pathname, int flags, mode_t mode)
   return sndfd;
 }
 
+#ifdef HAVE_IOCTL_INT_INT_DOTS
 int ioctl (int fd, int request, ...)
+#else /* HAVE_IOCTL_INT_ULONG_DOTS */
+int ioctl (int fd, unsigned long request, ...)
+#endif
 {
   static int channels;
   static int bits;
