@@ -20,6 +20,8 @@
 
 #include "tga.h"
 
+#include <assert.h>
+
 #include <qimage.h>
 #include <qdatastream.h>
 
@@ -222,7 +224,8 @@ namespace {	// Private.
 	
 				if (c & 0x80) {
 					// RLE pixels.
-					char pixel[pixel_size];
+                                        assert(pixel_size <= 8);
+					char pixel[8];
 					s.readRawBytes( pixel, pixel_size );
 					do {
 						memcpy(dst, pixel, pixel_size);
