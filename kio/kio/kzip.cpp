@@ -37,8 +37,19 @@
 
 */
 
+// $Id$
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <sys/time.h>
+#ifdef HAVE_ALLOCA_H
+// explicitely included for systems that don't provide it in stdlib.h
+#include <alloca.h>
+#else
 #include <stdlib.h>
+#endif
 
 #include <qasciidict.h>
 #include <qfile.h>
