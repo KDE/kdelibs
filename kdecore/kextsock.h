@@ -147,12 +147,12 @@ public:
 
 public:
   /**
-   * Creates an empty KExtendedSocket
+   * Creates an empty KExtendedSocket.
    */
   KExtendedSocket();
 
   /**
-   * Creates a socket with the given hostname and port
+   * Creates a socket with the given hostname and port.
    * @param host	the hostname
    * @param port	the port number
    * @param flags	flags
@@ -160,7 +160,7 @@ public:
   KExtendedSocket(const QString& host, int port, int flags = 0);
 
   /**
-   * Creates a socket with the given hostname and service
+   * Creates a socket with the given hostname and service.
    * @param host	the hostname
    * @param serv	the service
    * @param flags	flags
@@ -184,7 +184,9 @@ public:
    */
 
   /**
-   * Returns the class status
+   * Returns the class status.
+   * @return the class status
+   * @see ::SockStatus
    */
   int socketStatus() const;
 
@@ -192,47 +194,53 @@ public:
    * Returns the related system error code
    * Except for IO_LookupError errors, these are codes found in
    * errno
+   * @return the system error code
    */
   int systemError() const;
 
   /**
-   * Sets the given flags. Will return the new flags status, or
-   * -1 if flags can no longer be set.
+   * Sets the given flags. 
    * @param flags	the flags to be set
+   * @return the new flags status, or -1 if flags can no longer be set
    */
   int setSocketFlags(int flags);
 
   /**
    * Returns the current flags
+   * @return the current flags
+   * @see ::Flags
    */
   int socketFlags() const;
 
   /**
    * Sets the hostname to the given value.
-   * Returns true on success, false on error
    * @param host	the hostname
+   * @return true on success, false on error
    */
   bool setHost(const QString& host);
 
   /**
-   * Returns the hostname
+   * Returns the hostname.
+   * @return the hostname or QString::null if no host has been set
    */
   QString host() const;
 
   /**
-   * Sets the port/service
+   * Sets the port/service.
    * @param port	the port
    */
   bool setPort(int port);
 
   /**
-   * Sets the port/service
+   * Sets the port/service.
    * @param port	the port
+   * @return true if successful, false on error (e.g. connection already established)
    */
   bool setPort(const QString& service);
 
   /**
-   * Returns the port/service
+   * Returns the port/service. If it is a port, the string contains a number.
+   * @return the port or QString::null if it has not been set.
    */
   QString port() const;
 
@@ -240,6 +248,7 @@ public:
    * Sets the address where we will connect to.
    * @param host	the hostname
    * @param port	port number
+   * @return true if successful, false on error (e.g. connection already established)
    */
   bool setAddress(const QString& host, int port);
 
@@ -247,45 +256,52 @@ public:
    * Sets the address where we will connect to.
    * @param host	the hostname
    * @param serv	the service
+   * @return true if successful, false on error (e.g. connection already established)
    */
   bool setAddress(const QString& host, const QString& serv);
 
   /**
    * Sets the hostname to which we will bind locally before connecting.
-   * Returns false if this is a passiveSocket, otherwise true.
    * @param host	the hostname
+   * @return false if this is a passiveSocket, otherwise true.
    */
   bool setBindHost(const QString& host);
 
   /**
    * Unsets the bind hostname. That is, don't request a binding host.
+   * @return true if successful, false on error (e.g. connection already established)
    */
   bool unsetBindHost();
 
   /**
    * Returns the hostname to which the socket will be/is bound.
+   * @return the host or QString::null if it has not been set.
    */
   QString bindHost() const;
 
   /**
    * Sets the port/service to which we will bind before connecting
    * @param port	the port number
+   * @return true if successful, false on error (e.g. connection already established)
    */
   bool setBindPort(int port);
 
   /**
    * Sets the port/service to which we will bind before connecting.
-   * @param port	the port number
+   * @param service	the port number or service name
+   * @return true if successful, false on error (e.g. connection already established)
    */
   bool setBindPort(const QString& service);
 
   /**
    * Unsets the bind port/service.
+   * @return true if successful, false on error (e.g. connection already established)
    */
   bool unsetBindPort();
 
   /**
    * Returns the service to which the socket will be/is bound.
+   * @return the host or QString::null if it has not been set.
    */
   QString bindPort() const;
 
@@ -294,6 +310,7 @@ public:
    * false if this is a passiveSocket.
    * @param host	the hostname
    * @param port	the port number
+   * @return true if successful, false on error (e.g. connection already established)
    */
   bool setBindAddress(const QString& host, int port);
 
@@ -302,12 +319,14 @@ public:
    * false if this is a passiveSocket.
    * @param host	the hostname
    * @param serv	the service
+   * @return true if successful, false on error (e.g. connection already established)
    */
   bool setBindAddress(const QString& host, const QString& service);
 
   /**
    * Unsets the bind address for the socket. That means that we won't
    * attempt to bind to an address before connecting.
+   * @return true if successful, false on error (e.g. connection already established)
    */
   bool unsetBindAddress();
 
@@ -318,14 +337,15 @@ public:
    *
    * Setting the timeout to 0 disables the timeout feature.
    *
-   * Returns false if setting timeout makes no sense in the context.
    * @param secs	the timeout length, in seconds
    * @param usecs	the timeout complement, in microseconds
+   * @return false if setting timeout makes no sense in the context.
    */
   bool setTimeout(int secs, int usecs = 0);
 
   /**
-   * Returns the timeout value for the connection
+   * Returns the timeout value for the connection.
+   * @return the timeout value. 0 if there is no timeout.
    */
   timeval timeout() const;
 
@@ -334,13 +354,14 @@ public:
    * I/O operations might return error and set errno to EWOULDBLOCK. Also,
    * it's not recommended to use this when using the class signals.
    *
-   * Returns false on error.
    * @param enable	if true, set blocking mode. False, non-blocking mode.
+   * @return false on error.
    */
   bool setBlockingMode(bool enable);
 
   /**
-   * Returns the current blocking mode for this socket
+   * Returns the current blocking mode for this socket.
+   * @return true if in blocking mode
    */
   bool blockingMode();
 
@@ -350,11 +371,13 @@ public:
    * This function returns true if the value was set correctly. That is NOT
    * the result of the set.
    * @param enable	if true, set address reusable
+   * @return true on success, false if this is not possible in this state
    */
   bool setAddressReusable(bool enable);
 
   /**
    * Returns whether this socket's address can be reused
+   * @return true if the address can be reused
    */
   bool addressReusable();
 
@@ -376,22 +399,29 @@ public:
    * reading from the connection, we don't know when it closed.
    * @param rsize	read buffer size
    * @param wsize	write buffer size
+   * @return true on success, false if this is not possible in this state (e.g. connection
+   *         not established yet)
    */
   virtual bool setBufferSize(int rsize, int wsize = -2);
 
   /**
    * Returns the local socket address
+   * @return the local socket address, can be 0 if the connection has not been established
+   *         yet
    */
   const KSocketAddress *localAddress();
 
   /**
    * Returns the peer socket address. Use KExtendedSocket::resolve() to
    * resolve this to a human-readable hostname/service or port.
+   * @return the peer address, can be 0 if the connection has not been established yet
+   *         or the socket is passive
    */
   const KSocketAddress *peerAddress();
 
   /**
    * Returns the file descriptor
+   * @return the file descriptor. -1 if there is no fd yet.
    */
   inline int fd() const
   { return sockfd; }
@@ -404,17 +434,13 @@ public:
    * Performs lookup on the addresses we were given before.
    *
    * This will perform lookups on the bind addresses if they were given.
-   * Returns 0 or an error. Do not rely on the values returned by lookup
+   * @return 0 or an error. Do not rely on the values returned by lookup
    * as of now. They are not specified.
    */
   virtual int lookup();
 
   /**
    * Starts an asynchronous lookup for the addresses given.
-   *
-   * This function returns 0 on success or -1 on error. Note that
-   * returning 0 means that either we are in the process of doing
-   * lookup or that it has finished already.
    *
    * When the lookup is done, the lookupReady signal will be emitted.
    *
@@ -426,6 +452,10 @@ public:
    * One such case is when noResolve flag is set.
    * If this function is able to determine the results without queueing
    * and the lookup failed, this function will return -1.
+   * 
+   * @return 0 on success or -1 on error. Note that
+   * returning 0 means that either we are in the process of doing
+   * lookup or that it has finished already.
    */
   virtual int startAsyncLookup();
 
@@ -436,9 +466,10 @@ public:
 
   /**
    * Place the socket in listen mode. The parameters are the same as for
-   * the system listen() call. Returns 0 on success, -1 on system error (errno
-   * available) and -2 if this is not a passiveSocket.
+   * the system listen() call. 
    * @param N		the queue length for pending connections
+   * @return 0 on success, -1 on system error (errno
+   *         available) and -2 if this is not a passiveSocket.
    */
   virtual int listen(int N = 5); // 5 is arbitrary
 
@@ -452,22 +483,14 @@ public:
    * created socket will be already connected. The socket will be unbuffered
    * and readyRead() and readyWrite() signals will be disabled.
    *
-   * Returns 0 on success, -1 on system error (errno set) and -2 if this is
-   * not a passiveSocket and -3 if this took too long (time out)
    * @param sock	a pointer to an KExtendedSocket variable
+   * @return 0 on success, -1 on system error (errno set) and -2 if this is
+   * not a passiveSocket and -3 if this took too long (time out)
    */
   virtual int accept(KExtendedSocket *&sock);
 
   /**
-   * Attempts to connect to the remote host. The return values are:
-   * @li 0: success
-   * @li -1: system error, errno was set accordingly
-   * @li -2: this socket cannot connect(); this is a passiveSocket. It can also
-   *   mean that the function was unable to make a connection with the given
-   *   bind address or that an asynchronous connection attempt is already
-   *   in progress.
-   * @li -3: connection timed out
-   *
+   * Attempts to connect to the remote host. 
    * After successful connection (return value 0), the socket will be ready
    * for I/O operations. Note, however, that not all signals may be enabled
    * for emission by this socket:
@@ -479,18 +502,27 @@ public:
    *
    * Note that, in general, functions inherited/overriden from KBufferedIO will only
    * work on buffered sockets, like bytesAvailable and bytesToWrite.
+   * @return    The return values are:
+   * @li 0: success
+   * @li -1: system error, errno was set accordingly
+   * @li -2: this socket cannot connect(); this is a passiveSocket. It can also
+   *   mean that the function was unable to make a connection with the given
+   *   bind address or that an asynchronous connection attempt is already
+   *   in progress.
+   * @li -3: connection timed out
+   *
    */
   virtual int connect();
 
   /**
    * Starts an asynchronous connect. This works exactly the same as #connect,
-   * except that the connection result won't be returned. This function will
-   * return either 0 on successful queueing of the connect or -1 on error. If
-   * this function returns 0, then the connectionSuccess or the connectionFailed
-   * signals will be emitted.
+   * except that the connection result won't be returned. 
    *
    * Note that those signals might be emitted before this function returns, so your
    * code should be prepared for that condition.
+   * @return 0 on successful queueing of the connect or -1 on error. 
+   *         If this function returns 0, then the @ref connectionSuccess() or the 
+   *         @ref connectionFailed() signals will be emitted.
    */
   virtual int startAsyncConnect();
 
@@ -500,12 +532,14 @@ public:
   virtual void cancelAsyncConnect();
 
   /**
-   * Implementation of QIODevice's open() pure virtual function.
+   * Implementation of @ref QIODevice::open() pure virtual function.
    * This depends on the target host address already being there.
    * If this is a passiveSocket, this is identical to call listen(); else, if
    * this is not a passiveSocket and no connection attempt is in progress, this
    * is like connect(). If one is in progress, this function will fail.
-   * @param mode	the open mode. Must be IO_Raw | IO_ReadWrite
+   * @param mode the open mode. Must be IO_Raw | IO_ReadWrite
+   * @return true if successful, false when an error occurred or the most was
+   *         not correct
    */
   virtual bool open(int mode = IO_Raw | IO_ReadWrite);
 
@@ -513,8 +547,8 @@ public:
    * Closes the socket. If we have data still in the write buffer yet to be
    * sent, the socket won't be closed right now. It'll be closed after we managed
    * to send everything out.
-   * If you want to close the socket now, you may want to call #flush first,
-   * and then @ref closeNow.
+   * If you want to close the socket now, you may want to call @ref flush() first,
+   * and then @ref closeNow().
    */
   virtual void close();
 
@@ -557,37 +591,42 @@ public:
    * ready to receive data, it will block, unless this is a non-blocking socket.
    *
    * This function does not touch the read buffer. You can empty it by calling
-   * @ref readBlock with a null destination buffer.
+   * @ref readBlock() with a null destination buffer.
    */
   virtual void flush();
 
   /**
-   * Returns length of this socket. This call is not supported on sockets
+   * Returns length of this socket. This call is not supported on sockets.
+   * @return the length of this socket, or 0 if unsupported
    */
   virtual inline Q_ULONG size() const
   { return 0; }
 
   /**
-   * Returns relative position from start. This call is not supported on sockets
+   * Returns relative position from start. This call is not supported on sockets.
+   * @return the relative position from the start, or 0 if unsupported
    */
   virtual inline Q_ULONG at() const
   { return 0; }
 
   /**
-   * Returns true if we are at position. This is not supported on sockets
+   * Returns true if we are at position. This is not supported on sockets.
+   * @param i the position to check
+   * @return true if we art at the given position, or always true if unsupported.
    */
-  virtual inline bool at(int)
+  virtual inline bool at(int i)
   { return true; }
 
   /**
    * Returns true if we are at the end. This is not supported on sockets, but
    * we always are at the end in a socket...
+   * @return true if we are at the end. Always false if unsupported.
    */
   virtual inline bool atEnd() const
   { return false; }
 
   /**
-   * reads a block of data from the socket
+   * Reads a block of data from the socket.
    *
    * If the socket is not buffered, this function will simply call the underlying
    * read method. This function will block if the socket is not on non-blocking mode
@@ -601,8 +640,10 @@ public:
    * are empty, this function will always return -1 and set the system error to
    * EWOULDBLOCK (aka EAGAIN), so as to mimic non-blocking operation.
    *
-   * The return value for this function is the number of bytes effectively
-   * read. If the @p data param is not null, then this is also the number
+   * @param data	where we will write the read data to
+   * @param maxlen	maximum length of data to be read
+   * @return the number of bytes effectively read, or a negative number in case
+   * or an error. If the @p data param is not null, then this is also the number
    * of bytes copied into that buffer. If the return value is different than
    * @p maxlen, then this function encountered a situation in which no more
    * bytes were available. Subsequent calls might cause this function to one
@@ -610,17 +651,13 @@ public:
    * @li return an error, with EWOULDBLOCK system error, if we buffering
    *   or we are in non-blocking mode
    * @li otherwise, it'll block
-   *
    * This function returns 0, if the function detected end-of-file condition
    * (socket was closed)
-   *
-   * @param data	where we will write the read data to
-   * @param maxlen	maximum length of data to be read
    */
   virtual Q_LONG readBlock(char *data, Q_ULONG maxlen);
 
   /**
-   * writes a block of data to the socket
+   * Writes a block of data to the socket.
    *
    * If the socket is not buffered, this function will simply call the underlying
    * write method. This means that the function might block if that method blocks
@@ -636,17 +673,16 @@ public:
    * to write with a full buffer will return -1 and set system error to
    * EWOULDBLOCK.
    *
-   * The function returns the number of bytes written from @p data buffer.
-   * The return value might be less than @p len if the output buffers cannot
-   * accommodate that many bytes.
-   *
    * @param data	the data to write
    * @param len		the length of data to write
+   * @return the number of bytes written from @p data buffer.
+   * The return value might be less than @p len if the output buffers cannot
+   * accommodate that many bytes and -1 in the case of an errro.
    */
   virtual Q_LONG writeBlock(const char *data, Q_ULONG len);
 
   /**
-   * peeks at a block of data from the socket.
+   * Peeks at a block of data from the socket.
    *
    * This is exactly like read, except that the data won't be flushed from the
    * read buffer.
@@ -654,26 +690,29 @@ public:
    * If this socket is not buffered, this function will always return with
    * 0 bytes copied.
    *
-   * The return value of 0 does not mean end-of-file condition.
    * @param data	where to store the data
    * @param maxlen	how many bytes to copy, at most
+   * @return the number of bytes copied. 0 does not mean end-of-file 
+   *         condition.
    */
   virtual int peekBlock(char *data, uint maxlen);
 
   /**
-   * reimplementation of unreadBlock method. This is so because unreading in
+   * Reimplementation of unreadBlock() method. This is so because unreading in
    * sockets doesn't make sense, so this function will always return -1 (error)
    * and set the system error to ENOSYS.
+   * @return always -1 (error)
    */
   virtual int unreadBlock(const char *data, uint len);
 
   /**
    * Returns the number of available bytes yet to be read via @ref readBlock
-   * and family of functions. Returns -1 on error or -2 if this call is invalid
-   * in the current state.
+   * and family of functions. 
    *
    * Note: as of now, this only works on input-buffered sockets. This will
    * change in the future
+   * @return The number of available bytes, or -1 on error or -2 if this call is invalid
+   * in the current state.
    */
   virtual int bytesAvailable() const;
 
@@ -682,25 +721,28 @@ public:
    * wait forever). The return value is the amount of data available for
    * read in the read buffer.
    *
-   * This function returns -1 in case of system error and -2 in case of
-   * invalid socket state
    * @param msec	milliseconds to wait
+   * @return -1 in case of system error and -2 in case of invalid socket 
+   *         state
    */
   virtual int waitForMore(int msec);
 
   /**
-   * gets a single character from the stream
+   * Gets a single character (unsigned char) from the stream.
+   * @return the value of the character. Negative if there was an error.
    */
   virtual int getch();
 
   /**
-   * writes a single character to the stream
-   * @param ch		character to write, converted to char
+   * Writes a single character (unsigned char) to the stream. All other bits
+   * will be ignored.
+   * @param ch	character to write, converted to char
    */
   virtual int putch(int ch);
 
   /**
-   * unreads one character from the stream. This is not possible on sockets
+   * Unreads one character from the stream. This is not possible on sockets.
+   * @return always returns -1 on sockets.
    */
   virtual int ungetch(int)
   { return -1; }
@@ -731,7 +773,8 @@ public:
 signals:
   /**
    * This signal is emitted whenever an asynchronous lookup process is done.
-   * The parameter @p count tells how many results were found.
+   * The parameter @p count tells 
+   * @param count the number of results
    */
   void lookupFinished(int count);
 
@@ -750,7 +793,7 @@ signals:
   /**
    * This signal is emitted whenever this socket is ready to accept another
    * socket.
-   * @see accept
+   * @see accept()
    */
   void readyAccept();
 
@@ -804,27 +847,36 @@ public:
    * That is, tries to resolve the raw form of the socket address into a textual
    * representation.
    *
-   * Returns 0 on success.
    * @param sockaddr	the socket address
    * @param host	where the hostname will be written
    * @param port	where the service-port will be written
    * @param flags	the same flags as getnameinfo()
+   * @returns 0 on success, nonzero otherwise.
    */
   static int resolve(sockaddr* sock, ksocklen_t len, QString& host, QString& port, int flags = 0);
 
   /**
-   * Same as above.
+   * Performs resolution on the given socket address.
+   *
+   * That is, tries to resolve the raw form of the socket address into a textual
+   * representation.
+   *
+   * @param sockaddr	the socket address
+   * @param host	where the hostname will be written
+   * @param port	where the service-port will be written
+   * @param flags	the same flags as getnameinfo()
+   * @returns 0 on success, nonzero otherwise.
    */
   static int resolve(KSocketAddress* sock, QString& host, QString& port, int flags = 0);
 
   /**
    * Performs lookup on the given hostname/port combination and returns a list
    * of matching addresses.
-   * The error code can be transformed into string by @ref KExtendedSocket::strError
+   * The error code can be transformed into string by @ref KExtendedSocket::strError()
    * with code of IO_LookupError.
    *
-   * IMPORTANT: the result values of the QPtrList must be deleted after use. So,
-   * if you don't copy the KAddressInfo objects, the best way to assure that
+   * IMPORTANT: the result values of the @ref QPtrList must be deleted after use. So,
+   * if you don't copy the @ref KAddressInfo objects, the best way to assure that
    * is to call setAutoDelete(true) on the list right after this function
    * returns. If you do copy the results out, you must assure that the objects
    * get deleted when they are not needed any more.
@@ -833,6 +885,7 @@ public:
    * @param port	the port/service to look up
    * @param flags	flags to be used when looking up, @ref Flags
    * @param error	pointer to a variable holding the error code
+   * @return a list of @ref KAddressInfos
    */
   static QPtrList<KAddressInfo> lookup(const QString& host, const QString& port, int flags = 0, int *error = 0);
 
@@ -840,6 +893,7 @@ public:
    * Returns the local socket address
    * Remember to delete the returned object when it is no longer needed.
    * @param fd		the file descriptor
+   * @return the local socket address or 0 if an error occurred. Delete after use.
    */
   static KSocketAddress *localAddress(int fd);
 
@@ -848,6 +902,7 @@ public:
    * resolve this to a human-readable hostname/service or port.
    * Remember to delete the returned object when it is no longer needed.
    * @param fd		the file descriptor
+   * @return the peer socket address or 0 if an error occurred. Delete after use.
    */
   static KSocketAddress *peerAddress(int fd);
 
@@ -855,6 +910,7 @@ public:
    * Returns the representing text of this error code
    * @param code	the error code, as seen in status()
    * @param syserr	the system error, as from systemError()
+   * @return the text for the given error code
    */
   static QString strError(int code, int syserr);
 
@@ -867,6 +923,10 @@ private:
   friend class KServerSocket;
 };
 
+/**
+ * Contains information about an internet address. It wraps addrinfo,
+ * see getaddrinfo(3) for more information.
+ */
 class KAddressInfo
 {
 private:
@@ -883,24 +943,70 @@ private:
 public:
   ~KAddressInfo();
 
+  /**
+   * Returns the KAddressInfo's @ref KSocketAddress.
+   * Only valid as long as the KAddressInfo exists.
+   */
   inline operator const KSocketAddress*() const
   { return addr; }
 
+  /**
+   * Returns the KAddressInfo's addrinfo.
+   */
   inline operator const addrinfo&() const
   { return *ai; }
 
+  /**
+   * Returns a pointer to KAddressInfo's addrinfo. 
+   * Only valid as long as the KAddressInfo exists.
+   */
   inline operator const addrinfo*() const
   { return ai; }
 
+  /**
+   * Returns the KAddressInfo's @ref KSocketAddress.
+   * Only valid as long as the KAddressInfo exists.
+   * @return the KAddressInfo's KSocketAddress.
+   */
   inline const KSocketAddress* address() const
   { return addr; }
 
+  /**
+   * Returns the flags of the address info (see getaddrinfo(3)).
+   * @return the flags of the addres info.
+   */
   int flags() const;
+
+  /**
+   * Returns the family of the address info (see getaddrinfo(3)).
+   * @return the family of the addres info.
+   */
   int family() const;
+
+  /**
+   * Returns the socket type of the address info (see getaddrinfo(3)).
+   * @return the socket type of the addres info.
+   */
   int socktype() const;
+
+  /**
+   * Returns the protocol of the address info (see getaddrinfo(3)).
+   * @return the protocol of the addres info.
+   */
   int protocol() const;
+
+
+  /**
+   * Returns the official name of the host (see getaddrinfo(3)).
+   * Only valid as long as the KAddressInfo exists.
+   * @return the official name of the host
+   */
   const char* canonname() const;
 
+  /**
+   * Returns the length of the KSocketAddress.
+   * @return the KSocketAddress's length
+   */
   inline int length() const
   { if (addr) return addr->size(); return 0; }
 
