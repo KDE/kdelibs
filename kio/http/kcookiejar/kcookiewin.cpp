@@ -24,13 +24,25 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // KDE File Manager -- HTTP Cookie Dialogs
 // $Id$
+
+// The purpose of the QT_NO_TOOLTIP and QT_NO_WHATSTHIS ifdefs is because
+// this file is also used in Konqueror/Embedded. One of the aims of
+// Konqueror/Embedded is to be a small as possible to fit on embedded
+// devices. For this it's also useful to strip out unneeded features of
+// Qt, like for example QToolTip or QWhatsThis. The availability (or the
+// lack thereof) can be determined using these preprocessor defines. (Simon)
+
 #include <qhbox.h>
 #include <qvbox.h>
 #include <qlabel.h>
 #include <qwidget.h>
 #include <qlayout.h>
+#ifndef QT_NO_TOOLTIP
 #include <qtooltip.h>
+#endif
+#ifndef QT_NO_WHATSTHIS
 #include <qwhatsthis.h>
+#endif
 #include <qgroupbox.h>
 #include <qdatetime.h>
 #include <qmessagebox.h>
@@ -105,22 +117,28 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
 
     txt = (count == 1)? i18n("&Only this cookie") : i18n("&Only these cookies");
     QRadioButton* rb = new QRadioButton( txt, m_btnGrp );
+#ifndef QT_NO_WHATSTHIS
     QWhatsThis::add( rb, i18n("Select this option to accept/reject only this cookie. "
                               "You will be prompted if another cookie is received. "
                               "<em>(see WebBrowsing/Cookies in the Control Center)</em>." ) );
+#endif
     m_btnGrp->insert( rb );
     rb = new QRadioButton( i18n("All cookies from this &domain"), m_btnGrp );
+#ifndef QT_NO_WHATSTHIS
     QWhatsThis::add( rb, i18n("Select this option to accept/reject all cookies from "
                               "this site. Choosing this option will add a new policy for "
                               "the site this cookie originated from.  This policy will be "
                               "permanent until you manually change it from the Control Center "
                               "<em>(see WebBrowsing/Cookies in the Control Center)</em>.") );
+#endif
     m_btnGrp->insert( rb );
     rb = new QRadioButton( i18n("All &cookies"), m_btnGrp );
+#ifndef QT_NO_WHATSTHIS
     QWhatsThis::add( rb, i18n("Select this option to accept/reject all cookies from "
                               "anywhere. Choosing this option will change the global "
                               "cookie policy set in the Control Center for all cookies "
                               "<em>(see WebBrowsing/Cookies in the Control Center)</em>.") );
+#endif
     m_btnGrp->insert( rb );
     vlayout->addWidget( m_btnGrp );
 
@@ -137,8 +155,10 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     bbox->addStretch();
     m_button = bbox->addButton(m_showDetails ? i18n("&Details <<"):i18n("&Details >>"),
                                 this, SLOT(slotCookieDetails()), false );
+#ifndef QT_NO_WHATSTHIS
     QWhatsThis::add( m_button, i18n("Click this button to show or hide the detailed "
                                     "cookie information") );
+#endif
     bbox->layout();
     vlayout->addWidget( bbox, 0, Qt::AlignCenter );
     setFixedSize( sizeHint() );
@@ -202,9 +222,11 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
 
     QString val = cookie->value();
     m_value = new QLabel( this );
-    QToolTip::add( m_value, val ); 
-    val.truncate( 40 ); 
-    m_value->setText( i18n("Value: %1").arg( val ) );    
+#ifndef QT_NO_TOOLTIP
+    QToolTip::add( m_value, val );
+#endif
+    val.truncate( 40 );
+    m_value->setText( i18n("Value: %1").arg( val ) );
     vlayout->addWidget( m_value );
 
     val = cookie->domain();
@@ -232,7 +254,9 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
         QPushButton* btnNext = new QPushButton( i18n("&Next >"), this );
         btnNext->setFlat( true );
         btnNext->setFixedSize( btnNext->sizeHint() );
+#ifndef QT_NO_TOOLTIP
         QToolTip::add( btnNext, i18n("Click here to see the details for the next cookie") );
+#endif
         vlayout->addWidget( btnNext, 0, Qt::AlignCenter );
         connect( btnNext, SIGNAL(clicked()), SLOT(slotNextCookie()) );
     }
@@ -255,8 +279,10 @@ void KCookieDetail::slotNextCookie()
     if ( m_cookie )
     {
         QString val = m_cookie->value();
-        QToolTip::add( m_value, val );       
-        val.truncate( 40 );      
+#ifndef QT_NO_TOOLTIP
+        QToolTip::add( m_value, val );
+#endif
+        val.truncate( 40 );
         m_value->setText( i18n("Value: %1").arg( m_cookie->value() ) );
 
         val = m_cookie->domain();
