@@ -22,6 +22,7 @@
 #include "knuminput.h"
 #include "kdualcolorbutton.h"
 #include "keditlistbox.h"
+#include "kfontdialog.h"
 #include "kfontcombo.h"
 #include "kselect.h"
 #include "kcolordialog.h"
@@ -216,6 +217,14 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	widget.whatsThis = "KEditListBox";
 	widget.isContainer = false;
 	m_widgets.insert("KEditListBox", widget);
+
+	widget.group = "Input (KDE)";
+	widget.iconSet = "kfontcombo.png";
+	widget.includeFile = "kfontdialog.h";
+	widget.toolTip = "Font Chooser (KDE)";
+	widget.whatsThis = "KFontChooser";
+	widget.isContainer = false;
+	m_widgets.insert("KFontChooser", widget);
 
 	widget.group = "Input (KDE)";
 	widget.iconSet = "kfontcombo.png";
@@ -446,6 +455,8 @@ QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const cha
 		return new KDualColorButton(parent, name);
 	if (key == "KEditListBox")
 		return new KEditListBox(parent, name);
+	if (key == "KFontChooser")
+		return new KFontChooser(parent, name);
 	if (key == "KFontCombo")
 		return new KFontCombo(parent, name);
 	if (key == "KGradientSelector")

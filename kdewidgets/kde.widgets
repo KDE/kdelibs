@@ -62,6 +62,13 @@ ToolTip=Font Combo Box (KDE)
 WhatsThis=A QCombo Box showing the installed system fonts (with preview)
 Group=Input (KDE)
 
+[KFontChooser]
+IncludeFile=kfontdialog.h
+IconSet=kfontcombo.png
+ToolTip=Font Chooser (KDE)
+WhatsThis=A font type, size and style selection widget complete with preview
+Group=Input (KDE)
+
 [KGradientSelector]
 IncludeFile=kselect.h
 WhatsThis=A widget that allows the user to select two colors to form a gradient
