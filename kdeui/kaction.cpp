@@ -791,5 +791,73 @@ void KActionMenu::setIconSet( const QIconSet& iconSet )
   QActionMenu::setIconSet( iconSet );
 }
 
+KActionSeparator::KActionSeparator( QObject *parent, const char *name )
+: QActionSeparator( parent, name )
+{
+}
+
+int KActionSeparator::plug( QWidget *widget )
+{
+  if ( widget->inherits( "KMenuBar" ) )
+  {
+    KMenuBar *menuBar = (KMenuBar *)widget;
+    
+    int id = menuBar->insertSeparator();
+    
+    addContainer( menuBar, id );
+    
+    connect( menuBar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+    
+    return containerCount() - 1;
+  }
+  else if ( widget->inherits( "KToolBar" ) )
+  {
+    KToolBar *toolBar = (KToolBar *)widget;
+    
+    int id = toolBar->insertSeparator( id );
+    
+    addContainer( toolBar, id );
+    
+    connect( toolBar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+    
+    return containerCount() - 1;
+  }
+  
+  return QActionSeparator::plug( widget );
+} 
+
+void KActionSeparator::unplug( QWidget *widget )
+{
+  if ( widget->inherits( "KMenuBar" ) )
+  {
+    KMenuBar *menuBar = (KMenuBar *)widget;
+
+    int i = findContainer( menuBar );
+
+    if ( i != -1 )
+    {
+      menuBar->removeItem( menuId( i ) );
+      removeContainer( i );
+    }
+    return;
+  }
+  else if ( widget->inherits( "KToolBar" ) ) 
+  {
+    KToolBar *toolBar = (KToolBar *)widget;
+    
+    int i = findContainer( toolBar );
+    
+    if ( i != -1 )
+    {
+      toolBar->removeItem( menuId( i ) );
+      removeContainer( i );
+    }
+    return;
+  }
+
+  QActionSeparator::unplug( widget );
+  return;    
+}  
+  
 #include "kaction.moc"
 

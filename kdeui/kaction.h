@@ -180,4 +180,15 @@ public:
     virtual void setIconSet( const QIconSet& iconSet );
 };
 
+class KActionSeparator : public QActionSeparator
+{
+    Q_OBJECT
+public: 
+    KActionSeparator( QObject* parent = 0, const char* name = 0 );
+
+    virtual int plug( QWidget* );
+    virtual void unplug( QWidget* );
+};
+
+
 #endif
