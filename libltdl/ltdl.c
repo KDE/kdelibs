@@ -90,6 +90,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 #  define LT_READTEXT_MODE "r"
 #endif
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#  include "ltdl_win.h"
+#endif
 
 
 
@@ -816,12 +819,12 @@ sys_wll_open (loader_data, filename)
     {
       /* Get the name of main module */
       *self_name_buf = 0;
-      GetModuleFileName (NULL, self_name_buf, sizeof (self_name_buf));
+      GetModuleFileName (NULL, (unsigned short*)self_name_buf, sizeof (self_name_buf));
       filename = ext = self_name_buf;
     }
   else
     {
-      ext = strrchr (filename, '.');
+      ext = (char *)strrchr (filename, '.');
     }
 
   if (ext)
@@ -848,6 +851,15 @@ sys_wll_open (loader_data, filename)
     char wpath[MAX_PATH];
     cygwin_conv_to_full_win32_path(searchname, wpath);
     module = LoadLibrary(wpath);
+  }
+#elif defined(_WIN32)
+  {
+     char wpath[MAX_PATH];
+     strncpy(wpath, searchname, MAX_PATH);
+     win32_backslashify( wpath );
+     win32_mapSo2Dll( wpath );
+//fprintf (stderr, "LoadLibraryA(\"%s\")\n", wpath);
+     module = LoadLibraryA( wpath );
   }
 #else
   module = LoadLibrary (searchname);
@@ -1647,7 +1659,7 @@ canonicalize_path (path)
 
 #ifdef LT_DIRSEP_CHAR
       /* Avoid this overhead where '/' is the only separator. */
-      while (ptr = strchr (ptr, LT_DIRSEP_CHAR))
+      while (ptr = (char*)strchr (ptr, LT_DIRSEP_CHAR))
 	{
 	  *ptr++ = '/';
 	}
@@ -1695,7 +1707,7 @@ find_file (basename, search_path, pdir, handle)
       int lendir;
       char *cur = next;
 
-      next = strchr (cur, LT_PATHSEP_CHAR);
+      next = (char*)strchr (cur, LT_PATHSEP_CHAR);
       if (!next)
 	{
 	  next = cur + strlen (cur);
@@ -2069,7 +2081,7 @@ lt_dlopen (filename)
 
   /* If the canonical module name is a path (relative or absolute)
      then split it into a directory part and a name part.  */
-  basename = strrchr (canonical, '/');
+  basename = (char*)strrchr (canonical, '/');
   if (basename)
     {
       ++basename;
@@ -2228,6 +2240,9 @@ lt_dlopen (filename)
 	else if (strncmp (line, STR_LIBDIR, sizeof (STR_LIBDIR) - 1) == 0)
 	  {
 	    error = trim (&libdir, &line[sizeof(STR_LIBDIR) - 1]);
+#ifdef _WIN32
+	    win32_mapDir(&libdir);
+#endif
 	  }
 
 #undef  STR_DL_DEPLIBS
@@ -2254,7 +2269,7 @@ lt_dlopen (filename)
 	    char *last_libname;
 	    error = trim (&dlname, &line[sizeof (STR_LIBRARY_NAMES) - 1]);
 	    if (! error && dlname &&
-		(last_libname = strrchr (dlname, ' ')) != NULL)
+		(last_libname = (char*)strrchr (dlname, ' ')) != NULL)
 	      {
 		last_libname = strdup (last_libname + 1);
 		LT_DLMEM_REASSIGN (dlname, last_libname);

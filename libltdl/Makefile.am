@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = no-dependencies foreign
 
-noinst_HEADERS = ltdl.h
+noinst_HEADERS = ltdl.h ltdl_win.h
 noinst_LTLIBRARIES = libltdlc.la
 
 libltdlc_la_SOURCES = ltdl.c
