@@ -154,6 +154,14 @@ bool KProgress::setIndicator(QString &indicator, int progress, int totalSteps)
     return false;
 }
 
+struct KProgressDialog::KProgressDialogPrivate
+{
+    KProgressDialogPrivate() : cancelButtonShown(true)
+    {
+    }
+
+    bool cancelButtonShown;
+};
 
 /*
  * KProgressDialog implementation
@@ -168,7 +176,8 @@ KProgressDialog::KProgressDialog(QWidget* parent, const char* name,
       mCancelled(false),
       mAllowCancel(true),
       mShown(false),
-      mMinDuration(2000)
+      mMinDuration(2000),
+      d(new KProgressDialogPrivate)
 {
     KWin::setIcons(winId(), kapp->icon(), kapp->miniIcon());
     mShowTimer = new QTimer(this);
@@ -193,6 +202,7 @@ KProgressDialog::KProgressDialog(QWidget* parent, const char* name,
 
 KProgressDialog::~KProgressDialog()
 {
+    delete d;
 }
 
 void KProgressDialog::slotAutoShow()
@@ -349,7 +359,11 @@ void KProgressDialog::slotAutoActions(int percentage)
 {
     if (percentage < 100)
     {
-        setButtonCancel(mCancelText);
+        if (!d->cancelButtonShown)
+        {
+            setButtonCancel(mCancelText);
+            d->cancelButtonShown = true;
+        }
         return;
     }
 
@@ -363,6 +377,7 @@ void KProgressDialog::slotAutoActions(int percentage)
     {
         setAllowCancel(true);
         setButtonCancel(KStdGuiItem::close());
+        d->cancelButtonShown = false;
     }
 
     if (mAutoClose)
