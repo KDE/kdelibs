@@ -21,6 +21,7 @@
     */
 
 #include "ifacerepo_impl.h"
+#include <stdio.h>
 
 using namespace std;
 using namespace Arts;
@@ -87,7 +88,7 @@ void InterfaceRepo_impl::removeModule(long moduleID)
 	}
 }
 
-InterfaceDef InterfaceRepo_impl::queryInterface(const string& name)
+InterfaceDef InterfaceRepo_impl::queryInterfaceLocal(const string& name)
 {
 	list<InterfaceEntry *>::iterator ii;
 
@@ -100,12 +101,56 @@ InterfaceDef InterfaceRepo_impl::queryInterface(const string& name)
 			return InterfaceDef(b);
 		}
 	}
-	cout << "MCOP error: no information about the interface "
-		 << name << " is known" << endl;
-	/* TODO: what happens here?
-	assert(false);
-	*/
 	return InterfaceDef();
+}
+
+InterfaceDef InterfaceRepo_impl::queryInterface(const string& name)
+{
+	InterfaceDef def = queryInterfaceLocal(name);
+
+	if(def.name == "")
+	{
+		TraderQuery q;
+		q.supports("Type",name);
+		vector<TraderOffer> *offers = q.query();
+		vector<TraderOffer>::iterator i;
+		for(i = offers->begin(); i != offers->end();i++)
+		{
+			TraderOffer& offer = *i;
+
+			if(def.name == "")
+			{
+				vector<string> *types = offer.getProperty("TypeFile");
+				if(types->size() == 1)
+				{
+					string filename = string(EXTENSION_DIR)
+					                + "/" + types->front();
+
+					cout << "InterfaceRepo: loading " << filename << endl;
+
+					FILE *extfile = fopen(filename.c_str(),"r");
+					Buffer b;
+					int c;
+					while((c = fgetc(extfile)) >= 0) b.writeByte(c);
+					fclose(extfile);
+
+					insertModule(ModuleDef(b));
+					def = queryInterfaceLocal(name);
+					//removeModule(id);
+				}
+				delete types;
+			}
+		}
+		delete offers;
+	}
+
+	if(def.name == "")
+	{
+		cout << "MCOP error: no information about the interface "
+			 << name << " is known" << endl;
+	}
+		 
+	return def;
 }
 
 TypeDef InterfaceRepo_impl::queryType(const string& name)

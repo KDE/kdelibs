@@ -2245,6 +2245,47 @@ void doInterfaceRepoSource(FILE *source, string prefix)
 		prefix.c_str(),prefix.c_str(),data.c_str());
 }
 
+void doTypeFile(string prefix)
+{
+	Buffer b;
+	module.moduleName = prefix;
+	module.writeType(b);
+	
+	FILE *typeFile = fopen((prefix+".mcoptype.new").c_str(),"w");
+	unsigned long towrite = b.size();
+	fwrite(b.read(towrite),1,towrite,typeFile);
+	fclose(typeFile);
+}
+
+void doTypeIndex(string prefix)
+{
+	FILE *typeIndex = fopen((prefix+".mcopclass.new").c_str(),"w");
+
+	vector<string> supportedTypes;
+
+	vector<InterfaceDef>::iterator ii;
+	for(ii = module.interfaces.begin(); ii != module.interfaces.end(); ii++)
+		if(!fromInclude(ii->name)) supportedTypes.push_back(ii->name);
+
+	vector<TypeDef>::iterator ti;
+	for(ti = module.types.begin(); ti != module.types.end(); ti++)
+		if(!fromInclude(ti->name)) supportedTypes.push_back(ti->name);
+
+	string supportedTypesList;
+	vector<string>::iterator si;
+	bool first = true;
+	for(si = supportedTypes.begin(); si != supportedTypes.end(); si++)
+	{
+		if(!first) supportedTypesList += ",";
+
+		supportedTypesList += (*si);
+		first = false;
+	}
+	fprintf(typeIndex,"Type=%s\n",supportedTypesList.c_str());
+	fprintf(typeIndex,"TypeFile=%s.mcoptype\n",prefix.c_str());
+	fclose(typeIndex);
+}
+
 void exit_usage(char *name)
 {
 	fprintf(stderr,"usage: %s [ <options> ] <filename>\n",name);
@@ -2409,7 +2450,8 @@ int main(int argc, char **argv)
 	 * parse command line options
 	 */
 	int c;
-	while((c = getopt(argc, argv, "I:P:C:")) != -1)
+	bool makeTypeInfo = false;
+	while((c = getopt(argc, argv, "I:P:C:t")) != -1)
 	{
 		switch(c)
 		{
@@ -2418,6 +2460,8 @@ int main(int argc, char **argv)
 			case 'P': packetTypes.push_back(optarg);
 				break;
 			case 'C': customIncludes.push_back(optarg);
+				break;
+			case 't': makeTypeInfo = true;
 				break;
 			default: exit_usage(argv[0]);
 				break;
@@ -2484,4 +2528,13 @@ int main(int argc, char **argv)
 	doInterfaceRepoSource(source,prefix);
 	endSource(source);
 	moveIfChanged(string(prefix)+".cc");
+
+	// create type file
+	if(makeTypeInfo)
+	{
+		doTypeFile(prefix);
+		doTypeIndex(prefix);
+		moveIfChanged(string(prefix)+".mcoptype");
+		moveIfChanged(string(prefix)+".mcopclass");
+	}
 }

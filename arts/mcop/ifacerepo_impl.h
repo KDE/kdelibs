@@ -39,16 +39,16 @@ class InterfaceRepo_impl : virtual public InterfaceRepo_skel {
 	class InterfaceEntry : public InterfaceDef {
 	public:
 		long moduleID;
-		InterfaceEntry(Buffer& stream, long moduleID) :InterfaceDef(stream)
-		{
-			this->moduleID = moduleID;
-		}
+		InterfaceEntry(Buffer& stream, long moduleID) :InterfaceDef(stream),
+			moduleID(moduleID) { };
 	};
 
 	std::list<TypeEntry *> types;
 	std::list<InterfaceEntry *> interfaces;
 
 	long nextModuleID;
+
+	InterfaceDef queryInterfaceLocal(const std::string& name);
 public:
 
 	InterfaceRepo_impl();
