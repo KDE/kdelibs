@@ -24,7 +24,7 @@
 // KDE HTML Widget -- Main Widget
 // $Id$
 
-#define CLUE_DEBUG
+#undef CLUE_DEBUG
 
 #ifdef GrayScale
 #undef GrayScale
@@ -50,6 +50,7 @@
 #include "khtmltable.h"
 #include "khtmlview.h"
 #include "khtmlsavedpage.h"
+#include "khtmltags.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -121,7 +122,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     bFramesComplete = false;
     painter       = 0;
     overURL       = "";
-    granularity   = 600;
+    granularity   = 1000;
     linkCursor    = arrowCursor;
     bIsTextSelected = false;
 
@@ -1275,8 +1276,6 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
         emit setTitle( "* Unknown *" );
     }
 
-
-    
     if ( painter )
     {
 	painter->end();
@@ -1403,7 +1402,7 @@ void KHTMLWidget::stopParser()
 void KHTMLWidget::timerEvent( QTimerEvent * )
 {
     debugM("Timer event\n");
-    static const char *end[] = { "</body>", 0 }; 
+    static const char end[] = { ID_BODY + ID_CLOSE_TAG, 0 }; 
 
     if ( !painter )
 	return;
