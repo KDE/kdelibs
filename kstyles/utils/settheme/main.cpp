@@ -3,20 +3,40 @@
 #include <qfileinfo.h>
 #include <qdir.h>
 #include <kapp.h>
+#include <kcmdlineargs.h>
+#include <klocale.h>
+
+static const char *description = 
+	I18N_NOOP("KDE tool to change themes.");
+
+static const char *version = "v0.0.1";
+
+static KCmdLineOptions options[] =
+{
+   { "+Theme", I18N_NOOP("Input file containing a theme."), 0 },
+   { 0, 0, 0 }
+};
 
 int main(int argc, char **argv)
 {
-    KApplication app(argc, argv, "settheme"); // needed now because of properties.
+    KCmdLineArgs::init(argc, argv, "settheme", description, version );
+
+    KCmdLineArgs::addCmdLineOptions( options );
+
+    KApplication app; // needed now because of properties.
     puts("settheme: (C)1999 KDE Artisic License - D.M. Duley (mosfet@kde.org)");
-    if(argc < 2){
-        puts("settheme: You must specify an input file!");
-        return(1);
+
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+
+    if(args->count() < 1){
+        KCmdLineArgs::usage(i18n("You must specify an input file!\n"));
     }
-    QFileInfo fi(argv[1]);
+
+    QFileInfo fi(args->arg(0));
     if(!fi.exists()){
         puts("settheme: The input file does not exist.");
         return(2);
     }
-    KThemeBase::applyConfigFile(argv[1]);
+    KThemeBase::applyConfigFile(args->arg(0));
     return(0);
 }
