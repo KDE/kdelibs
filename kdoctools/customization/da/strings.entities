@@ -7,17 +7,22 @@
 <!-- Entities to fill in slots in docbook version of FDL notice.
      The default values of the parameter entities is IGNORE. -->
 <![%FDLIS;[
-<!ENTITY FDLISTitles "LISTNING AF TITLER"><!-- keep capitals -->
-<!ENTITY FDLInvariantSections "De invariante afsnit er &FDLISTitles;">
+<!ENTITY FDLISTitles "LISTE AF TITLER"><!-- keep capitals -->
+<!ENTITY FDLInvariantSections "hvor de invariante afsnit er &FDLISTitles;">
  ]]>
 <!ENTITY FDLInvariantSections "uden invariante afsnit">
 <![%FDLFCT;[
-<!ENTITY FDLFCTTitles "LIST"><!-- keep capitals -->
-<!ENTITY FDLFrontCoverText "Forsidetekster er &FDLFCTTitles;">
+<!ENTITY FDLFCTTitles "LISTE"><!-- keep capitals -->
+<!ENTITY FDLFrontCoverText "hvor forsidetekster er &FDLFCTTitles;">
  ]]>
 <!ENTITY FDLFrontCoverText "uden forsidetekster">
 <![%FDLBCT;[
-<!ENTITY FDLBCTTitles "LIST THEIR TITLES"><!-- keep capitals -->
-<!ENTITY FDLBackCoverText "Bagsidetekster er &FDLBCTTitles;">
+<!ENTITY FDLBCTTitles "LISTE AF TITLER"><!-- keep capitals -->
+<!ENTITY FDLBackCoverText "hvor bagsidetekster er &FDLBCTTitles;">
  ]]>
 <!ENTITY FDLBackCoverText "uden bagsidetekster">
+<!ENTITY kde.modespec '
+ <modespec id="kdems-help">help:</modespec>
+ <modespec id="kdems-man">man:</modespec>'>
+
+<!ENTITY olinktype "kde-installation">
