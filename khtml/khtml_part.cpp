@@ -355,8 +355,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
 KHTMLPart::~KHTMLPart()
 {
-  delete d->m_manager;
-
   d->m_redirectionTimer.stop();
   closeURL();
 
@@ -1745,7 +1743,7 @@ KParts::PartManager *KHTMLPart::partManager()
 {
   if ( !d->m_manager )
   {
-    d->m_manager = new KParts::PartManager( d->m_view->topLevelWidget() );
+    d->m_manager = new KParts::PartManager( d->m_view->topLevelWidget(), this, "khtml part manager" );
     d->m_manager->setAllowNestedParts( true );
     connect( d->m_manager, SIGNAL( activePartChanged( KParts::Part * ) ),
              this, SLOT( slotActiveFrameChanged( KParts::Part * ) ) );
