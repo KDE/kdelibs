@@ -283,11 +283,8 @@ void KLineEdit::setSqueezedText( const QString &text)
         d->squeezedText = text;
         d->squeezedStart = 0;
         d->squeezedEnd = 0;
-        if (isVisible())
-        {
-            QResizeEvent ev(size(), size());
-            resizeEvent(&ev);
-        }
+        QResizeEvent ev(size(), size());
+        resizeEvent(&ev);
     }
     else
     {
