@@ -35,7 +35,7 @@ protected:
 public slots:
   virtual void slotRedo() = 0;
   virtual void slotUndo() = 0;
-  virtual void slotSetRegexp( QString regexp ) = 0;
+  virtual void slotSetRegExp( QString regexp ) = 0;
 
 };
 
