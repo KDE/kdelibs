@@ -27,6 +27,7 @@
 #include <qsocketnotifier.h>
 #include <qapplication.h>
 #include <assert.h>
+#include "dispatcher.h"
 
 using namespace std;
 using namespace Arts;
@@ -60,10 +61,43 @@ void QTimeWatch::notify()
 	_client->notifyTime();
 }
 
+namespace Arts {
+
+class HandleNotifications : public TimeNotify {
+public:
+	HandleNotifications()
+	{
+		Arts::Dispatcher::the()->ioManager()->addTimer(50, this);
+	}
+	void notifyTime()
+	{
+		NotificationManager::the()->run();
+	}
+	virtual ~HandleNotifications()
+	{
+		Arts::Dispatcher::the()->ioManager()->removeTimer(this);
+	}
+};
+
+class HandleNotificationsStartup :public StartupClass
+{
+public:
+	void startup()	{ h = new HandleNotifications(); }
+	void shutdown()	{ delete h; }
+private:
+	HandleNotifications *h;
+};
+static HandleNotificationsStartup handleNotifications;
+
+};
+
 QIOManager::QIOManager()
 {
 }
 
+QIOManager::~QIOManager()
+{
+}
 
 void QIOManager::processOneEvent(bool blocking)
 {

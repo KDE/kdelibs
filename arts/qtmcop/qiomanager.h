@@ -79,6 +79,7 @@ protected:
 
 public:
 	QIOManager();
+	~QIOManager();
 
 	void processOneEvent(bool blocking);
 	void run();
