@@ -1,3 +1,8 @@
+2004-10-25  Stephan Kulow  <coolo@kde.org>
+
+        * html/html_elementimpl.cpp (addCSSProperty): add css properties parsed from
+        attributes as lower case 
+
 2004-10-25  George Staikos  <staikos@kde.org>
 
         * rendering/render_image.cpp: Pass through the CachedObject so we can

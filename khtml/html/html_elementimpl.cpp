@@ -268,7 +268,7 @@ void HTMLElementImpl::recalcStyle( StyleChange ch )
 void HTMLElementImpl::addCSSProperty(int id, const DOMString &value)
 {
     if(!m_styleDecls) createDecl();
-    m_styleDecls->setProperty(id, value, false, true);
+    m_styleDecls->setProperty(id, value.lower(), false, true);
     setChanged();
 }
 
