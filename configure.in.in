@@ -64,19 +64,14 @@ test "x$prefix" = xNONE && prefix=$ac_default_prefix
 AC_DEFINE_UNQUOTED(KDEDIR, "$prefix", [The prefix to use as fallback])
 
 ac_cpp_safe=$ac_cpp
-ac_cpp='$CXXCPP $CPPFLAGS $X_INCLUDES'
+ac_CPPFLAGS_safe=$CPPFLAGS
+CPPFLAGS="$CPPFLAGS $X_INCLUDES"
+ac_cpp='$CXXCPP $CPPFLAGS'
 AC_CHECK_HEADERS(X11/extensions/shape.h)
-ac_cpp=$ac_cpp_safe
-
-ac_cpp_safe=$ac_cpp
-ac_cpp='$CXXCPP $CPPFLAGS $X_INCLUDES'
 AC_CHECK_HEADERS(X11/extensions/XShm.h,have_mitshm=yes)
-ac_cpp=$ac_cpp_safe
-
-ac_cpp_safe=$ac_cpp
-ac_cpp='$CXXCPP $CPPFLAGS $X_INCLUDES'
 AC_CHECK_HEADERS(X11/ICE/ICElib.h)
 ac_cpp=$ac_cpp_safe
+CPPFLAGS=$ac_CPPFLAGS_safe
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_TIME
