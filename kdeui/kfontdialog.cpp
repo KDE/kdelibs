@@ -95,7 +95,7 @@ public:
 KFontChooser::KFontChooser(QWidget *parent, const char *name,
 			   bool onlyFixed, const QStringList &fontList,
 			   bool makeFrame, int visibleListSize, bool diff,
-                           bool* sizeIsRelativeFlag )
+                           QButton::ToggleState *sizeIsRelativeState )
   : QWidget(parent, name), usingFixed(onlyFixed)
 {
   QString mainWhatsThisText =
@@ -230,7 +230,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 
   sizeListBox = new KListBox( page, "sizeListBox");
   sizeListBox->setEnabled( !diff );
-  if( sizeIsRelativeFlag ) {
+  if( sizeIsRelativeState ) {
     QString sizeIsRelativeCBText =
       i18n("relative");
     QString sizeIsRelativeCBToolTipText =
@@ -242,12 +242,12 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
     sizeIsRelativeCheckBox = new QCheckBox( sizeIsRelativeCBText,
                                             page,
                                            "sizeIsRelativeCheckBox" );
+    sizeIsRelativeCheckBox->setTristate( true );
     QGridLayout *sizeLayout2 = new QGridLayout( 2,2, KDialog::spacingHint()/2, "sizeLayout2" );
     gridLayout->addLayout(sizeLayout2, row, 2);
     sizeLayout2->setColStretch( 1, 1 ); // to prevent text from eating the right border
     sizeLayout2->addMultiCellWidget(sizeListBox, 0,0, 0,1);
     sizeLayout2->addWidget(sizeIsRelativeCheckBox, 1, 0, Qt::AlignLeft);
-    sizeIsRelativeCheckBox->setChecked( *sizeIsRelativeFlag );
     QWhatsThis::add( sizeIsRelativeCheckBox, sizeIsRelativeCBWhatsThisText );
     QToolTip::add(   sizeIsRelativeCheckBox, sizeIsRelativeCBToolTipText );
   }
@@ -341,9 +341,9 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   setFont( KGlobalSettings::generalFont(), usingFixed );
   // Create displayable charsets list
   fillCharsetsCombo();
-  // check or uncheck the "relative" checkbox
-  if( sizeIsRelativeFlag && sizeIsRelativeCheckBox )
-    sizeIsRelativeCheckBox->setChecked( *sizeIsRelativeFlag );
+  // check or uncheck or gray out the "relative" checkbox
+  if( sizeIsRelativeState && sizeIsRelativeCheckBox )
+    setSizeIsRelative( *sizeIsRelativeState ); 
 
   KConfig *config = KGlobal::config();
   KConfigGroupSaver saver(config, QString::fromLatin1("General"));
@@ -368,17 +368,22 @@ QColor KFontChooser::color() const
   return d->m_color;
 }
 
-void KFontChooser::setSizeIsRelative( bool relative )
+void KFontChooser::setSizeIsRelative( QButton::ToggleState relative )
 {
-  if( sizeIsRelativeCheckBox )
-    sizeIsRelativeCheckBox->setChecked( relative );
+  // check or uncheck or gray out the "relative" checkbox
+  if( sizeIsRelativeCheckBox ) {
+    if( QButton::NoChange == relative )
+      sizeIsRelativeCheckBox->setNoChange();
+    else
+      sizeIsRelativeCheckBox->setChecked(  QButton::On == relative );
+  }
 }
 
-bool KFontChooser::sizeIsRelative() const
+QButton::ToggleState KFontChooser::sizeIsRelative() const
 {
   return sizeIsRelativeCheckBox
-       ? sizeIsRelativeCheckBox->isChecked()
-       : false;
+       ? sizeIsRelativeCheckBox->state()
+       : QButton::NoChange;
 }
 
 QSize KFontChooser::sizeHint( void ) const
@@ -553,16 +558,13 @@ void KFontChooser::setupDisplay()
 {
   QString aString;
   int numEntries, i=0;
-  //  bool found;
 
   numEntries =  familyListBox->count();
   aString = selFont.family();
-  //  found = false;
 
   for (i = 0; i < numEntries; i++) {
     if (aString.lower() == (familyListBox->text(i).lower())) {
       familyListBox->setCurrentItem(i);
-      //      found = true;
       break;
     }
   }
@@ -570,12 +572,10 @@ void KFontChooser::setupDisplay()
 
   numEntries =  sizeListBox->count();
   aString.setNum(selFont.pointSize());
-  //  found = false;
 
   for (i = 0; i < numEntries; i++){
     if (aString == sizeListBox->text(i)) {
       sizeListBox->setCurrentItem(i);
-      //      found = true;
       break;
     }
   }
@@ -693,22 +693,22 @@ void KFontChooser::showXLFDArea(bool show)
 KFontDialog::KFontDialog( QWidget *parent, const char* name,
 			  bool onlyFixed, bool modal,
 			  const QStringList &fontList, bool makeFrame, bool diff,
-                          bool* sizeIsRelativeFlag )
+                          QButton::ToggleState *sizeIsRelativeState )
   : KDialogBase( parent, name, modal, i18n("Select Font"), Ok|Cancel, Ok )
 {
   chooser = new KFontChooser( this, "fontChooser",
                               onlyFixed, fontList, makeFrame, 8,
-                              diff, sizeIsRelativeFlag );
+                              diff, sizeIsRelativeState );
   setMainWidget(chooser);
 }
 
 
 int KFontDialog::getFontDiff( QFont &theFont, int &diffFlags, bool onlyFixed,
                              QWidget *parent, bool makeFrame,
-                             bool* sizeIsRelativeFlag )
+                             QButton::ToggleState *sizeIsRelativeState )
 {
   KFontDialog dlg( parent, "Font Selector", onlyFixed, true, QStringList(),
-		   makeFrame, true, sizeIsRelativeFlag );
+		   makeFrame, true, sizeIsRelativeState );
   dlg.setFont( theFont, onlyFixed );
 
   int result = dlg.exec();
@@ -716,25 +716,26 @@ int KFontDialog::getFontDiff( QFont &theFont, int &diffFlags, bool onlyFixed,
   {
     theFont = dlg.chooser->font();
     diffFlags = dlg.chooser->fontDiffFlags();
-    if( sizeIsRelativeFlag )
-      *sizeIsRelativeFlag = dlg.chooser->sizeIsRelative();
+    if( sizeIsRelativeState )
+      *sizeIsRelativeState = dlg.chooser->sizeIsRelative();
   }
   return( result );
 }
 
-int KFontDialog::getFont( QFont &theFont, bool onlyFixed, QWidget *parent,
-			  bool makeFrame, bool* sizeIsRelativeFlag )
+int KFontDialog::getFont( QFont &theFont, bool onlyFixed,
+                          QWidget *parent, bool makeFrame,
+                          QButton::ToggleState *sizeIsRelativeState )
 {
   KFontDialog dlg( parent, "Font Selector", onlyFixed, true, QStringList(),
-		   makeFrame, false, sizeIsRelativeFlag );
+		   makeFrame, false, sizeIsRelativeState );
   dlg.setFont( theFont, onlyFixed );
 
   int result = dlg.exec();
   if( result == Accepted )
   {
     theFont = dlg.chooser->font();
-    if( sizeIsRelativeFlag )
-      *sizeIsRelativeFlag = dlg.chooser->sizeIsRelative();
+    if( sizeIsRelativeState )
+      *sizeIsRelativeState = dlg.chooser->sizeIsRelative();
   }
   return( result );
 }
@@ -742,10 +743,11 @@ int KFontDialog::getFont( QFont &theFont, bool onlyFixed, QWidget *parent,
 
 int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 				 bool onlyFixed, QWidget *parent,
-				 bool makeFrame, bool* sizeIsRelativeFlag )
+				 bool makeFrame,
+                                 QButton::ToggleState *sizeIsRelativeState )
 {
   KFontDialog dlg( parent, "Font and Text Selector", onlyFixed, true,
-		   QStringList(), makeFrame, false, sizeIsRelativeFlag );
+		   QStringList(), makeFrame, false, sizeIsRelativeState );
   dlg.setFont( theFont, onlyFixed );
 
   int result = dlg.exec();
@@ -753,8 +755,8 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
   {
     theFont   = dlg.chooser->font();
     theString = dlg.chooser->sampleText();
-    if( sizeIsRelativeFlag )
-      *sizeIsRelativeFlag = dlg.chooser->sizeIsRelative();
+    if( sizeIsRelativeState )
+      *sizeIsRelativeState = dlg.chooser->sizeIsRelative();
   }
   return( result );
 }
@@ -764,6 +766,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.76  2001/12/14 23:48:23  khz
+* added initialization of  sizeIsRelativeCheckBox
+*
 * Revision 1.75  2001/12/14 19:09:30  khz
 * adjusted CVS comment: corrected Alexander\'s misspelled alias
 *
