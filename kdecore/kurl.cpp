@@ -682,6 +682,8 @@ QString KURL::directory( bool _strip_trailing_slash_from_result,
 
 void KURL::encode( QString& _url )
 {
+  // Does not handle Unicode contents in _url.
+
   int old_length = _url.length();
 
   if ( !old_length )
@@ -690,6 +692,8 @@ void KURL::encode( QString& _url )
   // a worst case approximation
   char *new_url = new char[ old_length * 3 + 1 ];
   int new_length = 0;
+
+  // The (char)(QChar) casts below should use QChar::latin1() instead.
      
   for ( int i = 0; i < old_length; i++ )
   {
@@ -697,21 +701,21 @@ void KURL::encode( QString& _url )
     // according to RFC 1738,
     // 2.2. URL Character Encoding Issues (pp. 3-4)
     // Torben: Added the space characters
-    if ( strchr("<>#@\"&%$:,;?={}|^~[]\'`\\ \n\t\r", _url[i]) )
+    if ( strchr("<>#@\"&%$:,;?={}|^~[]\'`\\ \n\t\r", (char)(QChar)_url[i]) )
     {
       new_url[ new_length++ ] = '%';
 
-      char c = _url[ i ] / 16;
+      char c = (char)(QChar)_url[ i ] / 16;
       c += (c > 9) ? ('A' - 10) : '0';
       new_url[ new_length++ ] = c;
 
-      c = _url[ i ] % 16;
+      c = (char)(QChar)_url[ i ] % 16;
       c += (c > 9) ? ('A' - 10) : '0';
       new_url[ new_length++ ] = c;
 	    
     }
     else
-      new_url[ new_length++ ] = _url[i];
+      new_url[ new_length++ ] = (char)(QChar)_url[i];
   }
 
   new_url[new_length] = 0;
@@ -732,6 +736,8 @@ char KURL::hex2int( char _char )
 
 void KURL::decode( QString& _url )
 {
+  // Does not handle Unicode in _url.
+
   int old_length = _url.length();
   if ( !old_length )
     return;
@@ -741,13 +747,16 @@ void KURL::decode( QString& _url )
   // make a copy of the old one
   char *new_url = new char[ old_length + 1];
 
+  // The (char)(QChar) casts below should use QChar::latin1() instead.
+
   int i = 0;
   while( i < old_length )
   {
-    char character = _url[ i++ ];
+    char character = (char)(QChar)_url[ i++ ];
     if ( character == '%' )
     {
-      character = hex2int( _url[i] ) * 16 + hex2int( _url[i+1] );
+      character = hex2int( (char)(QChar)_url[i] ) * 16
+		+ hex2int( (char)(QChar)_url[i+1] );
       i += 2;
     }
     new_url [ new_length++ ] = character;

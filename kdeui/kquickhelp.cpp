@@ -441,13 +441,13 @@ QString KQuickHelpWindow::token() {
   bool  backslash = false;
 
   while(tokIndex < (int)txt.length()) {
-    char c = txt[tokIndex++];
+    QChar c = txt[tokIndex++];
 
     if(backslash) {
       backslash = false;
       t += c;
     } else {
-      switch(c) {
+      switch((char)c) {
       case '\\':
 	backslash = true;
 	break;

@@ -17,7 +17,7 @@
 
 #include <qtabdialog.h>
 #include <qlineedit.h>
-#include <qmultilinedit.h> 
+#include <qmultilineedit.h> 
 #include <qpushbutton.h>
 #include "addressbook.h"
 #include "datepickerdialog.h"

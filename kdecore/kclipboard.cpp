@@ -274,7 +274,9 @@ void KClipboard::fetchData()
     int len = ba.size();
     for( int j = 0; j < len; j++ )
     {
-      if ( !isprint( d[j] ) && d[j] != '\n' && d[j] != '\r' && d[j] != '\t' )
+      if (
+	    d[j].unicode() < ' '  // #### Can use isPrintable()
+	&& d[j] != '\n' && d[j] != '\r' && d[j] != '\t' )
       {
 	m_strFormat = "application/octet-stream";
 	return;

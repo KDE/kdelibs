@@ -165,7 +165,7 @@ void box::calculate(QPainter &p, int setFontsize)
 	break;
       }
       //if the box is not empty:
-      if(isspace((char)text[text.length() - 1])) {
+      if(text[text.length() - 1].isSpace()) {
 	// we have a space at the end so count it!
 	QString temptext = text;
 

@@ -467,13 +467,13 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
     //and insert cats after spaces
     for(i = 0; i < (int)text.length() - 1; i++)
       {
-	if(isdigit((char)text[i]) &&
-	   isalpha((char)text[i + 1])) {
+	if(text[i].isDigit() &&
+	   text[i + 1].isLetter()) {
 	  text.insert(i + 1, QChar(CAT));
 	  INSERTED(i + 1);
 	  i++;
 	}
-	else if((char)text[i] == ' ' && (char)text[i + 1] != ' ') {
+	else if(text[i] == ' ' && text[i + 1] != ' ') {
 	  text.insert(i + 1, QChar(CAT));
 	  INSERTED(i + 1);
 	  i++;

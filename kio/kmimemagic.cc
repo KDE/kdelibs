@@ -1199,7 +1199,7 @@ KMimeMagic::finishResult()
 	encoding_pos = encoding_len = 0;
 	/* loop through the characters in the result */
 	for (cur_pos = 0; cur_pos < (int)resultBuf.length(); cur_pos++) {
-		if (isspace(resultBuf.at(cur_pos))) {
+		if (resultBuf[cur_pos].isSpace()) {
 			/* process whitespace actions for each state */
 			if (state == rsl_leading_space) {
 				/* eat whitespace in this state */

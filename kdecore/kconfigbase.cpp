@@ -245,8 +245,8 @@ QString KConfigBase::readEntry( const QString& pKey,
 	do
 	{
 	  nEndPos++;
-	} while ( isalnum( (aValue)[nEndPos] ) || 
-		  nEndPos > aValue.length() );
+	} while ( aValue[nEndPos].isNumber()
+	    || aValue[nEndPos].isLetter() || nEndPos > aValue.length() );
 	QString aVarName = aValue.mid( nDollarPos+1, nEndPos-nDollarPos-1 );
 	const char* pEnv = getenv( aVarName );
 	if( pEnv )
