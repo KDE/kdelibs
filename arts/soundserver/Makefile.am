@@ -12,7 +12,7 @@ artsinclude_HEADERS = soundserver.h soundserver.idl kmedia2.h kmedia2.idl
 
 ####### libsoundserver_idl, libkmedia2_idl (idl files as library)
 
-lib_LTLIBRARIES = libsoundserver_idl.la libkmedia2_idl.la
+lib_LTLIBRARIES = libkmedia2_idl.la libsoundserver_idl.la
 
 libsoundserver_idl_la_LIBADD = libkmedia2_idl.la \
                           $(top_builddir)/arts/flow/libartsflow_idl.la
