@@ -85,7 +85,10 @@ public:
    * realPort is the port of the host you're connecting to
    * proxy is the IP or hostname of the proxy server
    */
+  // DEPRECATED
   void setProxyUse(bool active, QString realIP = QString::null, int realPort = 0, QString proxy = QString::null);
+
+  void setProxy(bool active, QString realHost = QString::null);
 
   int connect(int sock);
 

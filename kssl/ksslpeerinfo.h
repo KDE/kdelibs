@@ -22,9 +22,9 @@
 #define _KSSLPEERINFO_H
 
 class KSSL;
-class QString;
 
 #include <qglobal.h>
+#include <qstring.h>
 #include <ksslcertificate.h>
 
 class KSSLPeerInfoPrivate;
@@ -38,6 +38,8 @@ public:
   KSSLCertificate& getPeerCertificate();
   bool certMatchesAddress();
   QString getPeerAddress();
+
+  void setProxying(bool active, QString realHost = QString::null);
   
  
 protected:
