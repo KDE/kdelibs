@@ -264,5 +264,9 @@ int main(int argc, char *argv[])
   check("mailto: URL, general form", umail2.protocol(), "mailto");
   check("mailto: URL, general form", umail2.path(), "Faure David <faure@kde.org>");
   check("isRelativeURL(\"mailto:faure@kde.org\")", KURL::isRelativeURL("mailto:faure@kde.org") ? "yes" : "no", "no");
+
+  check("man: URL, is relative", KURL::isRelativeURL("man:mmap") ? "true" : "false", "false");
+  check("javascript: URL, is relative", KURL::isRelativeURL("javascript:doSomething()") ? "true" : "false", "false");
+
   printf("\nTest OK !\n");
 }
