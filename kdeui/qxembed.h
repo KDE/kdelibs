@@ -54,7 +54,9 @@ public:
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
     QSizePolicy sizePolicy() const;
-
+    
+signals:
+    void embeddedWindowDestroyed();
 
 protected:
     void keyPressEvent( QKeyEvent * );

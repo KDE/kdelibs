@@ -418,9 +418,11 @@ bool QXEmbed::x11Event( XEvent* e)
 {
     switch ( e->type ) {
     case DestroyNotify:
-	if ( e->xdestroywindow.window == window )
+	if ( e->xdestroywindow.window == window ) {
 	    window = 0;
 	    windowChanged( window );
+	    emit embeddedWindowDestroyed();
+	}
 	break;
     case ReparentNotify:
 	if ( window && e->xreparent.window == window &&
