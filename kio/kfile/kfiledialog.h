@@ -103,7 +103,7 @@ public:
       *         @li ':&lt;keyword&gt;' to start in the directory last used
       *             by a filedialog in the same application that specified
       *             the same keyword.
-      *         @li '::&lt;keyword&gt;' to start in the direcotry last used
+      *         @li '::&lt;keyword&gt;' to start in the directory last used
       *             by a filedialog in any application that specified the
       *             same keyword.
       *
@@ -136,7 +136,7 @@ public:
       *         @li ':&lt;keyword&gt;' to start in the directory last used
       *             by a filedialog in the same application that specified
       *             the same keyword.
-      *         @li '::&lt;keyword&gt;' to start in the direcotry last used
+      *         @li '::&lt;keyword&gt;' to start in the directory last used
       *             by a filedialog in any application that specified the
       *             same keyword.
       *
@@ -394,7 +394,7 @@ public:
      *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -425,7 +425,7 @@ public:
      *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -455,7 +455,7 @@ public:
      *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -486,7 +486,7 @@ public:
      *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -518,7 +518,7 @@ public:
      *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -550,7 +550,7 @@ public:
      *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -576,7 +576,7 @@ public:
      *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param parent The widget the dialog will be centered on initially.
@@ -601,7 +601,7 @@ public:
      *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param parent The widget the dialog will be centered on initially.
@@ -623,7 +623,7 @@ public:
      *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param parent The widget the dialog will be centered on initially.
