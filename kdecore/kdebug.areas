@@ -13,7 +13,7 @@
 1903	kfind (KfindTabDialog::createQuery)
 2000	kfind (kdebase)
 4300	kdvi (kdegraphics)
-5001    kget
+5001    caitoo
 7001    kiolib (KDirWatch)
 7002    kiolib (KIOCache)
 7005    kiolib (Filter)
