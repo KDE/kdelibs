@@ -181,9 +181,15 @@ KACLEntry *KACLEntry::GetACLEntry (acl_entry &acl)
 
 	acl_permset_t perms;
 	if (!acl_get_permset(&acl, &perms)) {
+#if defined(ACL_READ)
+		e->access_r = (*perms & ACL_READ);
+		e->access_w = (*perms & ACL_WRITE);
+		e->access_x = (*perms & ACL_EXEC);
+#else
 		e->access_r = (*perms & ACL_PERM_READ);
 		e->access_w = (*perms & ACL_PERM_WRITE);
 		e->access_x = (*perms & ACL_PERM_EXEC);
+#endif
 	} else {
 		kdDebug() << "acl-get_permset failed: " << strerror(errno) << endl;
 		e->error = true;
