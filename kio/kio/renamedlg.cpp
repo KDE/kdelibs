@@ -313,7 +313,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
     }
     QHBoxLayout* layout2 = new QHBoxLayout();
     d->m_pLayout->addLayout( layout2 );
-    
+
     d->m_pLineEdit = new QLineEdit( this );
     layout2->addWidget( d->m_pLineEdit );
     QString fileName = KURL(d->dest).fileName();
@@ -329,7 +329,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 
     KSeparator* separator = new KSeparator( this );
     d->m_pLayout->addWidget( separator );
-    
+
     QHBoxLayout* layout = new QHBoxLayout();
     d->m_pLayout->addLayout( layout );
 
@@ -414,7 +414,7 @@ void RenameDlg::b1Pressed()
     return;
 
   KURL u = newDestURL();
-  if ( u.isMalformed() )
+  if ( !u.isValid() )
   {
     KMessageBox::error( this, i18n( "Malformed URL\n%1" ).arg( u.prettyURL() ) );
     return;

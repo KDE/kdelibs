@@ -62,7 +62,7 @@ public:
 
     bool m_showingError;
     bool m_runExecutables;
-    
+
     QString m_preferredService;
     QGuardedPtr <QWidget> m_window;
 };
@@ -124,7 +124,7 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile, bool
 
   if ( noRun )
   {
-    KMessageBox::sorry( 0L, 
+    KMessageBox::sorry( 0L,
         i18n("<qt>The file <b>%1</b> is an executable program. "
              "For safety it will not be started.</qt>").arg(u.htmlURL()));
     return 0;
@@ -135,7 +135,7 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile, bool
         i18n("<qt>You do not have permission to run <b>%1</b>.</qt>").arg(u.htmlURL()) );
     return 0;
   }
-  
+
   KURL::List lst;
   lst.append( u );
 
@@ -682,7 +682,7 @@ void KRun::init ( const KURL& url, QWidget* window, mode_t mode, bool isLocalFil
 void KRun::init()
 {
   kdDebug(7010) << "INIT called" << endl;
-  if ( m_strURL.isMalformed() )
+  if ( !m_strURL.isValid() )
   {
     d->m_showingError = true;
     KMessageBoxWrapper::error( 0L, i18n( "Malformed URL\n%1" ).arg( m_strURL.url() ) );

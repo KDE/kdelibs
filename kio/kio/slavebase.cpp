@@ -1044,7 +1044,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
 
 QString SlaveBase::createAuthCacheKey( const KURL& url )
 {
-    if( url.isMalformed() )
+    if( !url.isValid() )
         return QString::null;
 
     // Generate the basic key sequence.

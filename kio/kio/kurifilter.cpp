@@ -122,7 +122,7 @@ bool KURIFilterData::setAbsolutePath( const QString& absPath )
 {
     // Since a malformed URL could possibly be a relative
     // URL we tag it as a possible local resource...
-    if( (m_pURI.isMalformed() || m_pURI.isLocalFile()) )
+    if( (!m_pURI.isValid() || m_pURI.isLocalFile()) )
     {
         d->abs_path = absPath;
         return true;
