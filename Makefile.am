@@ -33,9 +33,9 @@ $(top_srcdir)/subdirs:
 $(top_srcdir)/configure.files:
 	cd $(top_srcdir) && $(MAKE) -f admin/Makefile.common configure.files
 
-AUTOMAKE_OPTIONS = foreign 1.4
+AUTOMAKE_OPTIONS = foreign 1.5
 
-	include_HEADERS = kde.pot
+include_HEADERS = kde.pot
 
 messages:
 	find . -type d | grep -v CVS | sed -e 's,$$,/,' > dirs
