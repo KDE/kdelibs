@@ -1691,11 +1691,11 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     QString name = cs ? n.string() : n.string().upper();
 
     if (!_nsURI) {
-        id = (NodeImpl::Id) map->ids.find( name );
+        id = (NodeImpl::Id)(long) map->ids.find( name );
         if (!id && _type != NodeImpl::NamespaceId)
-            id = (NodeImpl::Id) map->ids.find( "aliases: " + name );
+            id = (NodeImpl::Id)(long) map->ids.find( "aliases: " + name );
     } else {
-        id = (NodeImpl::Id) map->ids.find( name );
+        id = (NodeImpl::Id)(long) map->ids.find( name );
         if (!readonly && id && _prefix && _prefix->l) {
             // we were called in registration mode... check if the alias exists
             QConstString px( _prefix->s, _prefix->l );

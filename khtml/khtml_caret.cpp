@@ -2103,7 +2103,7 @@ static RenderTableCell *findNearestTableCellInRow(KHTMLPart *part, int x,
   int i;
   for (i = 0; i < n; i++) {
     RenderTableCell *cell = row->row->at(i);
-    if (!cell || (int)cell == -1) continue;
+    if (!cell || (long)cell == -1) continue;
 
     int absx, absy;
     cell->absolutePosition(absx, absy, false); // ### position: fixed?
@@ -2127,7 +2127,7 @@ static RenderTableCell *findNearestTableCellInRow(KHTMLPart *part, int x,
     if (index < 0 || index >= n) continue;
 
     RenderTableCell *cell = row->row->at(index);
-    if (!cell || (int)cell == -1) continue;
+    if (!cell || (long)cell == -1) continue;
 
 #if DEBUG_CARETMODE > 1
     kdDebug(6201) << "index " << index << " cell " << cell << endl;
