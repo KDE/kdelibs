@@ -378,6 +378,8 @@ KHTMLPart::~KHTMLPart()
 
 bool KHTMLPart::openURL( const KURL &url )
 {
+  QString referrerUrl = m_url.url();
+
   kdDebug( 6050 ) << "KHTMLPart::openURL " << url.url() << endl;
 
   d->m_redirectionTimer.stop();
@@ -411,6 +413,8 @@ bool KHTMLPart::openURL( const KURL &url )
       d->m_job = KIO::http_post( url, args.postData, d->m_userHeaders, false );
   else
       d->m_job = KIO::get( url, args.reload, false );
+
+  d->m_job->addMetaData("referrer", referrerUrl);
 
   connect( d->m_job, SIGNAL( result( KIO::Job * ) ),
            SLOT( slotFinished( KIO::Job * ) ) );

@@ -45,6 +45,7 @@
 #include <qmovie.h>
 
 #include <kio/job.h>
+#include <kio/jobclasses.h>
 #include <kdebug.h>
 
 #include "css/css_stylesheetimpl.h"
@@ -770,7 +771,8 @@ void Loader::servePendingRequests()
   kdDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
 #endif
 
-  KIO::Job* job = KIO::get( req->object->url().string(), req->object->reload(), false /*no GUI*/);
+  KIO::TransferJob* job = KIO::get( req->object->url().string(), req->object->reload(), false /*no GUI*/);
+  job->addMetaData("referrer", req->m_baseURL.string());
 
   connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );
   connect( job, SIGNAL( data( KIO::Job*, const QByteArray &)),
