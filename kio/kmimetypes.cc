@@ -191,11 +191,6 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
   // Do some magic for local files
   kdebug( KDEBUG_INFO, 7009, "Mime Type finding for '%s'", path.data() );
   KMimeMagicResult* result = KMimeMagic::self()->findFileType( path.ascii() );
-  /** DEBUG code **/
-  /* assert( result );
-  assert( result->mimeType() );
-  assert( result->mimeType()[0] != 0 ); */
-  /** End Debug code **/
 
   // If we still did not find it, we must assume the default mime type
   if ( !result || !result->isValid() )  /* !result->mimeType() || result->mimeType()[0] == 0 ) */

@@ -11,7 +11,6 @@
 
 
 #include <iostream.h>
-#include <assert.h>
 #include <string.h>
 
 #include <qdir.h>

@@ -84,7 +84,7 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, Q
       e = new KExecMimeType( _str );
       break;
     default:
-      ASSERT( 0 );
+      kdebug( KDEBUG_WARN, 7012, "Invalid ServiceType : %s", _file.ascii() );
       return 0;
     }
 
