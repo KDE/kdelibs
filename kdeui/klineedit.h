@@ -135,9 +135,11 @@ class KURL;
 
 class KLineEdit : public QLineEdit, public KCompletionBase
 {
-  Q_OBJECT
-  Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
-  Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
+    friend class KComboBox;
+    
+    Q_OBJECT
+    Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
+    Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
 
 public:
 
@@ -300,7 +302,7 @@ signals:
      * Emitted when the shortcut for substring completion is pressed.
      */
     void substringCompletion( const QString& );
-    
+
     /**
      * Emitted when the text rotation key-bindings are pressed.
      *
