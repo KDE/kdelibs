@@ -46,7 +46,7 @@ public:
     bool isChecked() const;
 
     void uncheckGroup();
-    
+
 protected slots:
     void slotActivated();
 
@@ -56,24 +56,28 @@ protected:
 
 };
 
-// class KSelectAction : public QSelectAction
-// {
-//     Q_OBJECT
-// public:
-//     KSelectAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
-//     KSelectAction( const QString& text, int accel,
-// 	     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
-//     KSelectAction( const QString& text, const QIconSet& pix, int accel = 0,
-// 	     QObject* parent = 0, const char* name = 0 );
-//     KSelectAction( const QString& text, const QIconSet& pix, int accel,
-// 	     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
-//     KSelectAction( QObject* parent = 0, const char* name = 0 );
+class KSelectAction : public QSelectAction
+{
+    Q_OBJECT
 
-//     int plug( QWidget* );
+public:
+    KSelectAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
+    KSelectAction( const QString& text, int accel,
+	     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+    KSelectAction( const QString& text, const QIconSet& pix, int accel = 0,
+	     QObject* parent = 0, const char* name = 0 );
+    KSelectAction( const QString& text, const QIconSet& pix, int accel,
+	     QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+    KSelectAction( QObject* parent = 0, const char* name = 0 );
 
-// protected slots:
-//     virtual void slotActivated( int );
+    int plug( QWidget* );
 
-// };
+    virtual void setCurrentItem( int i );	
+    void setItems( const QStringList& lst );
+
+protected slots:
+    virtual void slotActivated( int );
+
+};
 
 #endif

@@ -272,7 +272,7 @@ void KToggleAction::uncheckGroup()
 	    QObjectListIt it( *list );
 	    for( ; it.current(); ++it )
 	    {
-		if ( it.current()->inherits( "KToggleAction" ) && 
+		if ( it.current()->inherits( "KToggleAction" ) &&
 		     ((KToggleAction*)it.current())->exclusiveGroup() == exclusiveGroup() ) {
  		    ((KToggleAction*)it.current())->blockSignals( TRUE );
 		    ((KToggleAction*)it.current())->setChecked( FALSE );
@@ -280,6 +280,169 @@ void KToggleAction::uncheckGroup()
 		}
 	    }
 	}
+    }
+}
+
+KSelectAction::KSelectAction( const QString& text, int accel = 0,
+			      QObject* parent = 0, const char* name = 0 )
+    : QSelectAction( text, accel, parent, name )
+{
+}
+
+KSelectAction::KSelectAction( const QString& text, int accel,
+			      QObject* receiver, const char* slot, QObject* parent,
+			      const char* name = 0 )
+    : QSelectAction( text, accel, parent, name )
+{
+}
+
+KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int accel = 0,
+			      QObject* parent = 0, const char* name = 0 )
+    : QSelectAction( text, pix, accel, parent, name )
+{
+}
+
+KSelectAction::KSelectAction( const QString& text, const QIconSet& pix, int accel,
+			      QObject* receiver, const char* slot, QObject* parent,
+			      const char* name = 0 )
+    : QSelectAction( text, pix, accel, receiver, slot, parent, name )
+{
+}
+
+KSelectAction::KSelectAction( QObject* parent = 0, const char* name = 0 )
+    : QSelectAction( parent, name )
+{
+}
+
+void KSelectAction::setCurrentItem( int id )
+{
+    if ( id >= (int)items().count() )
+	return;
+
+    if ( popupMenu() )
+    {
+	if ( currentItem() >= 0 )
+	    popupMenu()->setItemChecked( currentItem(), FALSE );
+	if ( id >= 0 )
+	    popupMenu()->setItemChecked( id, TRUE );
+    }
+
+    setCurrentItem( id );
+	
+    int len = containerCount();
+    for( int i = 0; i < len; ++i )
+    {
+	QWidget* w = container( i );
+	if ( w->inherits( "KToolBar" ) ) {
+	    QWidget* r = ( (KToolBar*)w )->getWidget( menuId( i ) );
+	    if ( r->inherits( "QComboBox" ) ) {
+		QComboBox *b = (QComboBox*)r;
+		b->setCurrentItem( currentItem() );
+	    }
+	} else if ( w->inherits( "QActionWidget" ) )
+	    ((QActionWidget*)w)->updateAction( this );	
+    }
+	
+    emit QAction::activated();
+    emit activated( currentItem() );
+    emit activated( currentText() );
+}
+
+void KSelectAction::setItems( const QStringList& lst )
+{
+    QSelectAction::setItems( lst );
+
+    int len = containerCount();
+    for( int i = 0; i < len; ++i )
+    {
+	QWidget* w = container( i );
+	if ( w->inherits( "KToolBar" ) ) {
+	    QWidget* r = ( (KToolBar*)w )->getWidget( menuId( i ) );
+	    if ( r->inherits( "QComboBox" ) ) {
+		QComboBox *b = (QComboBox*)r;
+		b->clear();
+		QStringList::ConstIterator it = items().begin();
+		for( ; it != items().end(); ++it )
+		    b->insertItem( *it );
+	    }
+	}
+	else if ( w->inherits( "QActionWidget" ) )
+	    ((QActionWidget*)w)->updateAction( this );	
+    }
+}
+
+int KSelectAction::plug( QWidget *widget )
+{
+    if ( widget->inherits("KPopupMenu") )
+    {
+	// Create the PopupMenu and store it in m_menu
+	(void)popupMenu();
+	
+	QPopupMenu* menu = (QPopupMenu*)widget;
+	int id;
+	if ( !pixmap().isNull() )
+        {
+	    id = menu->insertItem( pixmap(), popupMenu() );
+	}
+	else
+        {
+	    if ( hasIconSet() )
+		id = menu->insertItem( iconSet(), text(), popupMenu() );
+	    else
+		id = menu->insertItem( text(), popupMenu() );
+	}
+
+	menu->setItemEnabled( id, isEnabled() );
+	menu->setWhatsThis( id, whatsThis() );
+
+	addContainer( menu, id );
+	connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+	
+	return containerCount() - 1;
+    }
+    else if ( widget->inherits("QActionWidget" ) )
+    {
+	connect( widget, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );	
+	addContainer( widget, (int)0 );
+	
+	return containerCount() - 1;
+    }
+    else if ( widget->inherits("KToolBar") )
+    {
+	KToolBar* bar = (KToolBar*)widget;
+	int id_ = get_toolbutton_id();
+	bar->insertCombo( items(), id_, isEditable(), SIGNAL( activated( int ) ),
+			  this, SLOT( slotActivated( int ) ) );
+	
+	addContainer( bar, id_ );
+
+	connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+	
+	return containerCount() - 1;
+    }
+
+    qDebug("Can not plug QAction in %s", widget->className() );
+    return -1;
+}
+
+void QSelectAction::clear()
+{
+    if ( popupMenu() )
+	popupMenu()->clear();
+
+    int len = containerCount();
+    for( int i = 0; i < len; ++i )
+    {
+	QWidget* w = container( i );
+	if ( w->inherits( "KToolBar" ) ) {
+	    QWidget* r = ( (KToolBar*)w )->getWidget( menuId( i ) );
+	    if ( r->inherits( "QComboBox" ) ) {
+		QComboBox *b = (QComboBox*)r;
+		b->clear();
+	    }
+	}
+	else if ( w->inherits( "QActionWidget" ) )
+	    ((QActionWidget*)w)->updateAction( this );	
     }
 }
 
