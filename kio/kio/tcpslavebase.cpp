@@ -743,7 +743,22 @@ int TCPSlaveBase::verifyCertificate()
 
     KSSLCertificate& pc = d->kssl->peerInfo().getPeerCertificate();
 
-    KSSLCertificate::KSSLValidation ksv = pc.validate();
+    KSSLCertificate::KSSLValidationList ksvl = pc.validateVerbose(KSSLCertificate::SSLServer);
+
+   _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
+   if (!_IPmatchesCN && !d->militantSSL) {  // force this if the user wants it
+      if (d->cc->getHostList(pc).contains(ourHost))
+         _IPmatchesCN = true;
+   }
+
+   if (!_IPmatchesCN)
+   {
+      ksvl << KSSLCertificate::InvalidHost;
+   }
+
+   KSSLCertificate::KSSLValidation ksv = KSSLCertificate::Ok;
+   if (!ksvl.isEmpty())
+      ksv = ksvl.first();
 
     /* Setting the various bits of meta-info that will be needed. */
     setMetaData("ssl_cipher", d->kssl->connectionInfo().getCipher());
@@ -756,7 +771,14 @@ int TCPSlaveBase::verifyCertificate()
     setMetaData("ssl_cipher_bits",
                   QString::number(d->kssl->connectionInfo().getCipherBits()));
     setMetaData("ssl_peer_ip", d->ip);
-    setMetaData("ssl_cert_state", QString::number(ksv));
+    
+    QString errorStr;
+    for(KSSLCertificate::KSSLValidationList::ConstIterator it = ksvl.begin();
+        it != ksvl.end(); ++it)
+    {
+       errorStr += QString::number(*it)+":";
+    }
+    setMetaData("ssl_cert_errors", errorStr);
     setMetaData("ssl_peer_certificate", pc.toString());
 
     if (pc.chain().isValid() && pc.chain().depth() > 1) {
@@ -769,16 +791,11 @@ int TCPSlaveBase::verifyCertificate()
        setMetaData("ssl_peer_chain", theChain);
     } else setMetaData("ssl_peer_chain", "");
 
+   setMetaData("ssl_cert_state", QString::number(ksv));
 
    if (ksv == KSSLCertificate::Ok) {
       rc = 1;
       setMetaData("ssl_action", "accept");
-   }
-
-   _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
-   if (!_IPmatchesCN && !d->militantSSL) {  // force this if the user wants it
-      if (d->cc->getHostList(pc).contains(ourHost))
-         _IPmatchesCN = true;
    }
 
    kdDebug(7029) << "SSL HTTP frame the parent? " << metaData("main_frame_request") << endl;
@@ -791,10 +808,10 @@ int TCPSlaveBase::verifyCertificate()
                                          d->cc->getPolicyByCertificate(pc);
 
       //  - validation code
-      if (ksv != KSSLCertificate::Ok || !_IPmatchesCN) {
-   if (d->militantSSL) {
-         return -1;
-   }
+      if (ksv != KSSLCertificate::Ok) {
+         if (d->militantSSL) {
+            return -1;
+         }
 
          if (cp == KSSLCertificateCache::Unknown ||
              cp == KSSLCertificateCache::Ambiguous) {
@@ -806,7 +823,7 @@ int TCPSlaveBase::verifyCertificate()
 
          if (!_IPmatchesCN && cp == KSSLCertificateCache::Accept) {
             cp = KSSLCertificateCache::Prompt;
-            ksv = KSSLCertificate::Ok;
+//            ksv = KSSLCertificate::Ok;
          }
 
          // Precondition: cp is one of Reject, Accept or Prompt
@@ -822,7 +839,7 @@ int TCPSlaveBase::verifyCertificate()
          case KSSLCertificateCache::Prompt:
            {
              do {
-                if (ksv == KSSLCertificate::Ok && !_IPmatchesCN) {
+                if (ksv == KSSLCertificate::InvalidHost) {
                         QString msg = i18n("The IP address of the host %1 "
                                            "does not match the one the "
                                            "certificate was issued to.");
@@ -907,7 +924,7 @@ int TCPSlaveBase::verifyCertificate()
       bool certAndIPTheSame = (d->ip == metaData("ssl_parent_ip") &&
                                pc.toString() == metaData("ssl_parent_cert"));
 
-      if (ksv == KSSLCertificate::Ok && _IPmatchesCN) {
+      if (ksv == KSSLCertificate::Ok) {
         if (certAndIPTheSame) {       // success
           rc = 1;
           setMetaData("ssl_action", "accept");
