@@ -129,35 +129,37 @@ KShortcut KStdAccel::shortcutDefault(StdAccel id)
 
 KShortcut KStdAccel::shortcutDefault3(StdAccel id)
 {
-	if( id < 0 || id >= NB_STD_ACCELS )
-		return KShortcut();
-	KShortcut cut = g_infoStdAccel[id].cutDefault;
+	KShortcut cut;
 
-	if( !g_infoStdAccel[id].cutDefault3B )
-		cut.insert( QKeySequence(g_infoStdAccel[id].cutDefault3B) );
+	if( id >= 0 && id < NB_STD_ACCELS ) {
+		if( g_infoStdAccel[id].cutDefault )
+			cut.init( g_infoStdAccel[id].cutDefault );
+		if( !g_infoStdAccel[id].cutDefault3B )
+			cut.insert( QKeySequence(g_infoStdAccel[id].cutDefault3B) );
+	}
 
 	return cut;
 }
 
 KShortcut KStdAccel::shortcutDefault4(StdAccel id)
 {
-	if( id < 0 || id >= NB_STD_ACCELS )
-		return KShortcut();
-	KStdAccelInfo& info = g_infoStdAccel[id];
-
 	KShortcut cut;
-	KKeySequence key2;
 
-	cut.init( (info.cutDefault4) ?
-		QKeySequence(info.cutDefault) : QKeySequence(info.cutDefault4) );
+	if( id >= 0 && id < NB_STD_ACCELS ) {
+		KStdAccelInfo& info = g_infoStdAccel[id];
+		KKeySequence key2;
 
-	if( !info.cutDefault4B )
-		key2.init( QKeySequence(info.cutDefault4B) );
-	else if( !info.cutDefault3B )
-		key2.init( QKeySequence(info.cutDefault3B) );
+		cut.init( (info.cutDefault4) ?
+			QKeySequence(info.cutDefault) : QKeySequence(info.cutDefault4) );
 
-	if( key2.count() )
-		cut.insert( key2 );
+		if( !info.cutDefault4B )
+			key2.init( QKeySequence(info.cutDefault4B) );
+		else if( !info.cutDefault3B )
+			key2.init( QKeySequence(info.cutDefault3B) );
+
+		if( key2.count() )
+			cut.insert( key2 );
+	}
 
 	return cut;
 }

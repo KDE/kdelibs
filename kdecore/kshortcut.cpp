@@ -322,25 +322,34 @@ void KKeySequence::clear()
 
 bool KKeySequence::init( const QKeySequence& seq )
 {
-	m_nKeys = 1;
-	m_rgkey[0].init( seq );
-	m_bTriggerOnRelease = false;
+	if( seq ) {
+		m_nKeys = 1;
+		m_rgkey[0].init( seq );
+		m_bTriggerOnRelease = false;
+	} else
+		clear();
 	return true;
 }
 
-bool KKeySequence::init( const KKey& spec )
+bool KKeySequence::init( const KKey& key )
 {
-	m_nKeys = 1;
-	m_rgkey[0].init( spec );
-	m_bTriggerOnRelease = false;
+	if( !key.isNull() ) {
+		m_nKeys = 1;
+		m_rgkey[0].init( key );
+		m_bTriggerOnRelease = false;
+	} else
+		clear();
 	return true;
 }
 
-bool KKeySequence::init( const KKeyVariations& key )
+bool KKeySequence::init( const KKeyVariations& keyvar )
 {
-	m_nKeys = 1;
-	m_rgkey[0] = key;
-	m_bTriggerOnRelease = false;
+	if( !keyvar.isNull() ) {
+		m_nKeys = 1;
+		m_rgkey[0] = keyvar;
+		m_bTriggerOnRelease = false;
+	} else
+		clear();
 	return true;
 }
 
@@ -621,7 +630,7 @@ bool KShortcut::contains( const KKey& spec ) const
 bool KShortcut::contains( const KKeySequence& seq ) const
 {
 	for( uint i = 0; i < count(); i++ ) {
-		if( m_rgseq[i] == seq )
+		if( !m_rgseq[i].isNull() && m_rgseq[i] == seq )
 			return true;
 	}
 	return false;
@@ -630,8 +639,10 @@ bool KShortcut::contains( const KKeySequence& seq ) const
 bool KShortcut::insert( const KKeySequence& seq )
 {
 	if( m_nSeqs < MAX_SEQUENCES ) {
-		m_rgseq[m_nSeqs] = seq;
-		m_nSeqs++;
+		if( !seq.isNull() ) {
+			m_rgseq[m_nSeqs] = seq;
+			m_nSeqs++;
+		}
 		return true;
 	} else
 		return false;
