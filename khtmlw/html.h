@@ -673,7 +673,7 @@ protected slots:
   
 protected:
     enum ListType { Unordered, UnorderedPlain, Ordered, Menu, Dir };
-    enum ListNumType { Numeric, LowAlpha, UpAlpha, LowRoman, UpRoman };
+    enum ListNumType { Numeric = 0, LowAlpha, UpAlpha, LowRoman, UpRoman };
 
     virtual void mousePressEvent( QMouseEvent * );
 
@@ -1057,7 +1057,8 @@ protected:
     class HTMLList
     {
 	public:
-	    HTMLList( ListType t, ListNumType nt = Numeric )
+	    // Stephan: The ListNumType value is Numeric!
+	    HTMLList( ListType t, ListNumType nt = 0 )
 		{ type = t; numType = nt; itemNumber = 1; }
 	    ListType type;
 	    ListNumType numType;
