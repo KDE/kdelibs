@@ -49,17 +49,12 @@ HTMLElement &HTMLElement::operator = (const HTMLElement &other)
 
 HTMLElement &HTMLElement::operator = (const Node &other)
 {
-    if(other.nodeType() != ELEMENT_NODE)
-    {
+    NodeImpl* ohandle = other.handle();
+    if (!ohandle || !ohandle->isHTMLElement()) {
 	impl = 0;
 	return *this;
     }
-    Element e;
-    e = other;
-    if(!e.isHTMLElement())
-	impl = 0;
-    else
-	Node::operator = (other);
+    Node::operator = (other);
     return *this;
 }
 

@@ -43,8 +43,8 @@ Attr::Attr( AttrImpl *_impl )
 
 Attr &Attr::operator = (const Node &other)
 {
-    if(other.nodeType() != ATTRIBUTE_NODE)
-    {
+    NodeImpl* ohandle = other.handle();
+    if (!ohandle || !ohandle->isAttributeNode()) {
 	impl = 0;
 	return *this;
     }
@@ -114,8 +114,8 @@ Element::Element(ElementImpl *impl) : Node(impl)
 
 Element &Element::operator = (const Node &other)
 {
-    if(other.nodeType() != ELEMENT_NODE)
-    {
+    NodeImpl* ohandle = other.handle();
+    if (!ohandle || !ohandle->isElementNode()) {
 	impl = 0;
 	return *this;
     }

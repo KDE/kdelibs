@@ -158,7 +158,6 @@ public:
     virtual NodeImpl *cloneNode ( bool deep );
     virtual DOMString nodeName() const;
     virtual bool isElementNode() const { return true; }
-    virtual bool isHTMLElement() const { return false; }
 
     // convenience methods which ignore exceptions
     void setAttribute (NodeImpl::Id id, const DOMString &value);

@@ -168,8 +168,8 @@ Document::Document(DocumentImpl *i) : Node(i)
 
 Document &Document::operator = (const Node &other)
 {
-    if(other.nodeType() != DOCUMENT_NODE)
-    {
+    NodeImpl* ohandle = other.handle();
+    if (!ohandle || ohandle->nodeType() != DOCUMENT_NODE) {
 	impl = 0;
 	return *this;
     }
@@ -415,8 +415,8 @@ DocumentFragment::DocumentFragment(const DocumentFragment &other) : Node(other)
 
 DocumentFragment &DocumentFragment::operator = (const Node &other)
 {
-    if(other.nodeType() != DOCUMENT_FRAGMENT_NODE)
-    {
+    NodeImpl* ohandle = other.handle();
+    if (!ohandle || ohandle->nodeType() != DOCUMENT_FRAGMENT_NODE) {
 	impl = 0;
 	return *this;
     }
@@ -456,8 +456,8 @@ DocumentType::DocumentType(DocumentTypeImpl *impl) : Node(impl)
 
 DocumentType &DocumentType::operator = (const Node &other)
 {
-    if(other.nodeType() != DOCUMENT_TYPE_NODE)
-    {
+    NodeImpl* ohandle = other.handle();
+    if (!ohandle || ohandle->nodeType() != DOCUMENT_TYPE_NODE) {
 	impl = 0;
 	return *this;
     }

@@ -39,8 +39,8 @@ CDATASection::CDATASection(const CDATASection &) : Text()
 
 CDATASection &CDATASection::operator = (const Node &other)
 {
-    if(other.nodeType() != CDATA_SECTION_NODE)
-    {
+    NodeImpl* ohandle = other.handle();
+    if (!ohandle || ohandle->nodeType() != CDATA_SECTION_NODE) {
 	impl = 0;
 	return *this;
     }
@@ -73,8 +73,8 @@ Entity::Entity(const Entity &) : Node()
 
 Entity &Entity::operator = (const Node &other)
 {
-    if(other.nodeType() != ENTITY_NODE)
-    {
+    NodeImpl* ohandle = other.handle();
+    if (!ohandle || ohandle->nodeType() != ENTITY_NODE) {
 	impl = 0;
 	return *this;
     }
@@ -132,8 +132,8 @@ EntityReference::EntityReference(const EntityReference &) : Node()
 
 EntityReference &EntityReference::operator = (const Node &other)
 {
-    if(other.nodeType() != ENTITY_REFERENCE_NODE)
-    {
+    NodeImpl* ohandle = other.handle();
+    if (!ohandle || ohandle->nodeType() != ENTITY_REFERENCE_NODE) {
 	impl = 0;
 	return *this;
     }
@@ -167,8 +167,8 @@ Notation::Notation(const Notation &) : Node()
 
 Notation &Notation::operator = (const Node &other)
 {
-    if(other.nodeType() != NOTATION_NODE)
-    {
+    NodeImpl* ohandle = other.handle();
+    if (!ohandle || ohandle->nodeType() != NOTATION_NODE) {
 	impl = 0;
 	return *this;
     }
@@ -220,8 +220,8 @@ ProcessingInstruction::ProcessingInstruction(const ProcessingInstruction &)
 
 ProcessingInstruction &ProcessingInstruction::operator = (const Node &other)
 {
-    if(other.nodeType() != PROCESSING_INSTRUCTION_NODE)
-    {
+    NodeImpl* ohandle = other.handle();
+    if (!ohandle || ohandle->nodeType() != PROCESSING_INSTRUCTION_NODE) {
 	impl = 0;
 	return *this;
     }
