@@ -1119,6 +1119,8 @@ static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyl
 	    l = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)), Percent);
 	else if(type == CSSPrimitiveValue::CSS_NUMBER)
 	    l = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER)*100), Percent);
+	else if (type == CSSPrimitiveValue::CSS_HTML_RELATIVE)
+	    l = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_HTML_RELATIVE)), Relative);
 	else if ( ok )
 	    *ok = false;
     }
@@ -2069,6 +2071,8 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
                 l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
                 l = Length((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
+	    else if (type == CSSPrimitiveValue::CSS_HTML_RELATIVE)
+		l = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_HTML_RELATIVE)), Relative);
             else
                 return;
             apply = true;

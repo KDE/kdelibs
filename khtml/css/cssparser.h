@@ -116,8 +116,8 @@ public:
     class StyleBaseImpl : public khtml::TreeShared<StyleBaseImpl>
     {
     public:
-	StyleBaseImpl()  { m_parent = 0; hasInlinedDecl = false; strictParsing = true; }
-	StyleBaseImpl(StyleBaseImpl *p) { m_parent = p; hasInlinedDecl = false; strictParsing = true; }
+	StyleBaseImpl()  { m_parent = 0; hasInlinedDecl = false; strictParsing = true; multiLength = false; }
+	StyleBaseImpl(StyleBaseImpl *p) { m_parent = p; hasInlinedDecl = false; strictParsing = true; multiLength = false; }
 
 	virtual ~StyleBaseImpl() {}
 
@@ -187,7 +187,8 @@ public:
 	    ANGLE     = 0x0010,
 	    TIME      = 0x0020,
 	    FREQUENCY = 0x0040,
-	    NONNEGATIVE = 0x0080
+	    NONNEGATIVE = 0x0080,
+	    RELATIVE  = 0x0100
 	};
 
 	/* called by parseValue, parses numbers+units */
@@ -209,6 +210,7 @@ public:
     protected:
 	bool hasInlinedDecl : 1;
 	bool strictParsing : 1;
+	bool multiLength : 1;
     };
 
     // a style class which has a list of children (StyleSheets for example)

@@ -60,7 +60,7 @@ public:
     void setProperty ( int propertyId, int value, bool important = false, bool nonCSSHint = false);
     // this treats integers as pixels!
     // needed for conversion of html attributes
-    void setLengthProperty(int id, const DOM::DOMString &value, bool important, bool nonCSSHint = true);
+    void setLengthProperty(int id, const DOM::DOMString &value, bool important, bool nonCSSHint = true, bool multiLength = false);
 
     // add a whole, unparsed property
     void setProperty ( const DOMString &propertyString);

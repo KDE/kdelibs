@@ -184,7 +184,7 @@ void HTMLElementImpl::addCSSProperty(int id, int value)
     setChanged();
 }
 
-void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool numOnly)
+void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool numOnly, bool multiLength)
 {
     if(!m_styleDecls) createDecl();
 
@@ -201,13 +201,13 @@ void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool numOnly)
                 break;
         }
         if ( l != v->l ) {
-            m_styleDecls->setLengthProperty( id, DOMString( v->s, l ), false, true );
+            m_styleDecls->setLengthProperty( id, DOMString( v->s, l ), false, true, multiLength );
             setChanged();
             return;
         }
     }
 
-    m_styleDecls->setLengthProperty(id, value, false, true);
+    m_styleDecls->setLengthProperty(id, value, false, true, multiLength);
     setChanged();
 }
 

@@ -44,7 +44,7 @@ public:
 
     virtual void parseAttribute(AttributeImpl *token);
 
-    void addCSSLength(int id, const DOMString &value, bool numOnly = false);
+    void addCSSLength(int id, const DOMString &value, bool numOnly = false, bool multiLength = false);
     void addCSSProperty(int id, const DOMString &value);
     void addCSSProperty(int id, int value);
     void removeCSSProperty(int id);

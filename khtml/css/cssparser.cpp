@@ -1765,7 +1765,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	  if (cssval && cssval->id == CSS_VAL_AUTO) {
             parsedValue = new CSSPrimitiveValueImpl(cssval->id);
 	  } else {
-            parsedValue = parseUnit(curP, endP, LENGTH | PERCENT | NONNEGATIVE );
+            parsedValue = parseUnit(curP, endP, LENGTH | PERCENT | NONNEGATIVE | (multiLength ? RELATIVE : 0) );
 	  }
 	  break;
 	}
@@ -2525,8 +2525,12 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 
     bool ok;
     float value = s.toFloat(&ok);
-    if ( !ok || (value < 0 && (allowedUnits & NONNEGATIVE)) )
-	return 0;
+    if ( !ok ) {
+	if ( allowedUnits & RELATIVE && *curP == '*' )
+	    return new CSSPrimitiveValueImpl( 1., CSSPrimitiveValue::CSS_HTML_RELATIVE );
+	if ( value < 0 && (allowedUnits & NONNEGATIVE) )
+	    return 0;
+    }
 
     if(split > endP) // no unit
     {
@@ -2552,8 +2556,11 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     {
     case '%':
         type = CSSPrimitiveValue::CSS_PERCENTAGE;
-        unit =StyleBaseImpl:: PERCENT;
+        unit = StyleBaseImpl::PERCENT;
         break;
+    case '*':
+	type = CSSPrimitiveValue::CSS_HTML_RELATIVE;
+	unit = StyleBaseImpl::RELATIVE;
     case 'e':
         split++;
         if(split > endP) break;

@@ -201,12 +201,14 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
     setChanged();
 }
 
-void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOM::DOMString &value, bool important, bool nonCSSHint)
+void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOM::DOMString &value, bool important, bool nonCSSHint, bool _multiLength )
 {
     bool parseMode = strictParsing;
     strictParsing = false;
+    multiLength = _multiLength;
     setProperty( id, value, important, nonCSSHint);
     strictParsing = parseMode;
+    multiLength = false;
 }
 
 unsigned long CSSStyleDeclarationImpl::length() const
