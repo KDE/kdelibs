@@ -328,7 +328,7 @@ MethodDef& MethodDef::operator=(const MethodDef& assignType)
 
 MethodDef::~MethodDef()
 {
-	freeTypeSeq<ParamDef>(signature);
+	freeTypeSeq(signature);
 }
 
 void MethodDef::readType(Buffer& stream)
@@ -336,7 +336,7 @@ void MethodDef::readType(Buffer& stream)
 	stream.readString(name);
 	stream.readString(type);
 	flags = stream.readLong();
-	readTypeSeq<ParamDef>(stream,signature);
+	readTypeSeq(stream,signature);
 }
 
 void MethodDef::writeType(Buffer& stream) const
@@ -344,7 +344,7 @@ void MethodDef::writeType(Buffer& stream) const
 	stream.writeString(name);
 	stream.writeString(type);
 	stream.writeLong(flags);
-	writeTypeSeq<ParamDef>(stream,signature);
+	writeTypeSeq(stream,signature);
 }
 
 AttributeDef::AttributeDef()
@@ -430,24 +430,24 @@ InterfaceDef& InterfaceDef::operator=(const InterfaceDef& assignType)
 
 InterfaceDef::~InterfaceDef()
 {
-	freeTypeSeq<MethodDef>(methods);
-	freeTypeSeq<AttributeDef>(attributes);
+	freeTypeSeq(methods);
+	freeTypeSeq(attributes);
 }
 
 void InterfaceDef::readType(Buffer& stream)
 {
 	stream.readString(name);
 	stream.readStringSeq(inheritedInterfaces);
-	readTypeSeq<MethodDef>(stream,methods);
-	readTypeSeq<AttributeDef>(stream,attributes);
+	readTypeSeq(stream,methods);
+	readTypeSeq(stream,attributes);
 }
 
 void InterfaceDef::writeType(Buffer& stream) const
 {
 	stream.writeString(name);
 	stream.writeStringSeq(inheritedInterfaces);
-	writeTypeSeq<MethodDef>(stream,methods);
-	writeTypeSeq<AttributeDef>(stream,attributes);
+	writeTypeSeq(stream,methods);
+	writeTypeSeq(stream,attributes);
 }
 
 TypeComponent::TypeComponent()
@@ -528,19 +528,19 @@ TypeDef& TypeDef::operator=(const TypeDef& assignType)
 
 TypeDef::~TypeDef()
 {
-	freeTypeSeq<TypeComponent>(contents);
+	freeTypeSeq(contents);
 }
 
 void TypeDef::readType(Buffer& stream)
 {
 	stream.readString(name);
-	readTypeSeq<TypeComponent>(stream,contents);
+	readTypeSeq(stream,contents);
 }
 
 void TypeDef::writeType(Buffer& stream) const
 {
 	stream.writeString(name);
-	writeTypeSeq<TypeComponent>(stream,contents);
+	writeTypeSeq(stream,contents);
 }
 
 EnumComponent::EnumComponent()
@@ -621,19 +621,19 @@ EnumDef& EnumDef::operator=(const EnumDef& assignType)
 
 EnumDef::~EnumDef()
 {
-	freeTypeSeq<EnumComponent>(contents);
+	freeTypeSeq(contents);
 }
 
 void EnumDef::readType(Buffer& stream)
 {
 	stream.readString(name);
-	readTypeSeq<EnumComponent>(stream,contents);
+	readTypeSeq(stream,contents);
 }
 
 void EnumDef::writeType(Buffer& stream) const
 {
 	stream.writeString(name);
-	writeTypeSeq<EnumComponent>(stream,contents);
+	writeTypeSeq(stream,contents);
 }
 
 ModuleDef::ModuleDef()
@@ -671,28 +671,28 @@ ModuleDef& ModuleDef::operator=(const ModuleDef& assignType)
 
 ModuleDef::~ModuleDef()
 {
-	freeTypeSeq<ModuleDef>(modules);
-	freeTypeSeq<EnumDef>(enums);
-	freeTypeSeq<TypeDef>(types);
-	freeTypeSeq<InterfaceDef>(interfaces);
+	freeTypeSeq(modules);
+	freeTypeSeq(enums);
+	freeTypeSeq(types);
+	freeTypeSeq(interfaces);
 }
 
 void ModuleDef::readType(Buffer& stream)
 {
 	stream.readString(moduleName);
-	readTypeSeq<ModuleDef>(stream,modules);
-	readTypeSeq<EnumDef>(stream,enums);
-	readTypeSeq<TypeDef>(stream,types);
-	readTypeSeq<InterfaceDef>(stream,interfaces);
+	readTypeSeq(stream,modules);
+	readTypeSeq(stream,enums);
+	readTypeSeq(stream,types);
+	readTypeSeq(stream,interfaces);
 }
 
 void ModuleDef::writeType(Buffer& stream) const
 {
 	stream.writeString(moduleName);
-	writeTypeSeq<ModuleDef>(stream,modules);
-	writeTypeSeq<EnumDef>(stream,enums);
-	writeTypeSeq<TypeDef>(stream,types);
-	writeTypeSeq<InterfaceDef>(stream,interfaces);
+	writeTypeSeq(stream,modules);
+	writeTypeSeq(stream,enums);
+	writeTypeSeq(stream,types);
+	writeTypeSeq(stream,interfaces);
 }
 
 InterfaceRepo *InterfaceRepo::_fromString(std::string objectref)

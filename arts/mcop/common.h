@@ -141,11 +141,11 @@ void writeObject(Buffer& stream, T* object) {
 };
 
 template<class T>
-T *readObject(Buffer& stream) {
+void readObject(Buffer& stream, T*& result) {
 	ObjectReference reference(stream);
 
 	if(reference.serverID == "null") return 0;		// null reference?
-	return T::_fromReference(reference,false);
+	result = T::_fromReference(reference,false);
 };
 
 #endif

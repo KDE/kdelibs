@@ -349,7 +349,7 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_READ)
 			result = name+".readType(stream)";
 		if(model==MODEL_READ_SEQ)
-			result = "readTypeSeq<"+type+">(stream,"+name+")";
+			result = "readTypeSeq(stream,"+name+")";
 		if(model==MODEL_REQ_READ)
 			result = indent + type+" "+name+"(*request);\n";
 
@@ -358,9 +358,9 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_REQ_WRITE)
 			result = name+".writeType(*request)";
 		if(model==MODEL_WRITE_SEQ)
-			result = "writeTypeSeq<"+type+">(stream,"+name+")";
+			result = "writeTypeSeq(stream,"+name+")";
 		if(model==MODEL_REQ_WRITE_SEQ)
-			result = "writeTypeSeq<"+type+">(*request,"+name+")";
+			result = "writeTypeSeq(*request,"+name+")";
 
 		if(model==MODEL_INVOKE)
 			result = indent + type + " *_returnCode = "+name+";\n"
@@ -413,27 +413,30 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_RESULT)		result = type+" *";
 		//if(model==MODEL_RESULT_SEQ)	result = "std::vector<"+type+"> *";
 		if(model==MODEL_READ)
-			result = name+" = readObject<"+type+">(stream)";
+			result = "readObject(stream,"+name+")";
 		//if(model==MODEL_READ_SEQ)
 		//	result = "stream.readLongSeq("+name+")";		// TODO
 		if(model==MODEL_RES_READ)
 		{
-			result = indent + type+"* returnCode "
-									"= readObject<"+type+">(*result);\n";
+			result = indent + type+"* returnCode;\n";
+			result += indent + "readObject(*result,returnCode);\n";
 			result += indent + "delete result;\n";
 			result += indent + "return returnCode;\n";
 		}
 		if(model==MODEL_REQ_READ)
-			result = indent +
-				type+"_var "+name+" = readObject<"+type+">(request);\n";
+		{
+			result = indent + type +"* _temp_"+name+";\n";
+			result += indent + "readObject(request,_temp_"+name+");\n";
+			result += indent + type+"_var "+name+" = _temp_"+name+";\n";
+		}
 		if(model==MODEL_WRITE)
-			result = "writeObject<"+type+">(stream,"+name+")";
+			result = "writeObject(stream,"+name+")";
 		if(model==MODEL_REQ_WRITE)
-			result = "writeObject<"+type+">(*request,"+name+")";
+			result = "writeObject(*request,"+name+")";
 		if(model==MODEL_INVOKE)
 		{
 			result = indent + type+" *returnCode = "+name+";\n"
-			       + indent + "writeObject<"+type+">(*result,returnCode);\n"
+			       + indent + "writeObject(*result,returnCode);\n"
 			       + indent + "if(returnCode) returnCode->_release();\n";
 		}
 	}
@@ -692,8 +695,7 @@ void doStructSource(FILE *source)
 			string type = stype.substr(1,stype.length()-1);
 			if(stype[0] == '*' && isStruct(type))
 			{
-				fprintf(source,"\tfreeTypeSeq<%s>(%s);\n",
-					type.c_str(),(*i)->name.c_str());
+				fprintf(source,"\tfreeTypeSeq(%s);\n",(*i)->name.c_str());
 			}
 		}
 		fprintf(source,"}\n\n");
