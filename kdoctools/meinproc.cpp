@@ -234,9 +234,6 @@ int main(int argc, char **argv) {
             return(1);
         }
 
-        if ( warnings_exist )
-            return( 1 );
-
         QString cache = args->getOption( "cache" );
         if ( !cache.isEmpty() ) {
             if ( !saveToCache( output, cache ) ) {
@@ -253,7 +250,7 @@ int main(int argc, char **argv) {
             } else {
                 if (args->isSet( "output" ) )
                    file.setName( QFile::decodeName(args->getOption( "output" )));
-                else 
+                else
                    file.setName( "index.html" );
                 file.open(IO_WriteOnly);
             }

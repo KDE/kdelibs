@@ -33,49 +33,6 @@ extern HelpProtocol *slave;
 #define INFO( x )
 #endif
 
-extern "C" void warningsFunc(void *ctx, const char *msg, ...)
-#ifdef __GNUC__
-  __attribute__ (( format ( printf, 2, 3 ) ) )
-#endif
-;
-
-bool warnings_exist = false;
-
-void warningsFunc(void *ctx, const char *msg, ...)
-{
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
-    xmlParserInputPtr input;
-    xmlParserInputPtr cur = NULL;
-
-    input = ctxt->input;
-    if ((input != NULL) && (input->filename == NULL) &&
-        (ctxt->inputNr > 1))
-    {
-        cur = input;
-        input = ctxt->inputTab[ctxt->inputNr - 2];
-    }
-
-    va_list args;
-
-    char buffer[50000];
-    int l;
-
-    if (input->filename) {
-        l = sprintf(buffer, "%s:%d: ", input->filename, input->line);
-    } else {
-        l = sprintf(buffer, "Entity: line %d: ", input->line);
-    }
-
-    va_start(args, msg);
-    vsnprintf(buffer + l, sizeof(buffer) - l, msg, args);
-    va_end(args);
-
-    fputs( buffer, stderr );
-    xmlParserPrintFileContext(input);
-
-    warnings_exist = true;
-}
-
 int writeToQString(void * context, const char * buffer, int len)
 {
     QString *t = (QString*)context;
@@ -91,50 +48,7 @@ int closeQString(void * context) {
 
 QString transform( const QString &pat, const QString& tss)
 {
-    INFO(i18n("Reading document"));
-    QFile xmlFile( pat );
-    xmlFile.open(IO_ReadOnly);
-    QCString contents;
-    contents.assign(xmlFile.readAll());
-    contents.truncate(xmlFile.size());
-    xmlFile.close();
-    /* if (contents.left(5) != "<?xml") {
-        fprintf(stderr, "xmlizer\n");
-        INFO(i18n("XMLize document"));
-        QString cmd = "xmlizer ";
-        cmd += KProcess::quote(pat);
-        FILE *p = popen(QFile::encodeName(cmd), "r");
-        xmlFile.open(IO_ReadOnly, p);
-        char buffer[5001];
-        contents.truncate(0);
-        int len;
-        while ((len = xmlFile.readBlock(buffer, 5000)) != 0) {
-            buffer[len] = 0;
-            contents += buffer;
-        }
-        xmlFile.close();
-        pclose(p);
-    } */
-
-    INFO(i18n("Parsing document"));
-    xmlParserCtxtPtr ctxt = xmlCreateMemoryParserCtxt
-                            (contents.data(),
-                             contents.length());
-    ctxt->sax->warning = warningsFunc;
-
-    int directory = pat.findRev('/');
-    if (directory != -1)
-        ctxt->directory = (char *)xmlStrdup((const xmlChar *)pat.
-                                            left(directory + 1).latin1());
-
-    return transform( ctxt, tss );
-}
-
-QString transform(xmlParserCtxtPtr ctxt, const QString &tss)
-{
     QString parsed;
-
-    warnings_exist = false;
 
     INFO(i18n("Parsing stylesheet"));
 
@@ -150,18 +64,14 @@ QString transform(xmlParserCtxtPtr ctxt, const QString &tss)
     else
         xmlIndentTreeOutput = 0;
 
-    xmlParseDocument(ctxt);
-    xmlDocPtr doc;
+    INFO(i18n("Parsing document"));
 
-    if (ctxt->wellFormed)
-        doc = ctxt->myDoc;
-    else {
-        xmlFreeDoc(ctxt->myDoc);
-        xmlFreeParserCtxt(ctxt);
+    xmlDocPtr doc = xmlParseFile( pat.latin1() );
+    xsltTransformContextPtr ctxt;
+
+    ctxt = xsltNewTransformContext(style_sheet, doc);
+    if (ctxt == NULL)
         return parsed;
-    }
-
-    xmlFreeParserCtxt(ctxt);
 
     // the params can be used to customize it more flexible
     const char *params[16 + 1];

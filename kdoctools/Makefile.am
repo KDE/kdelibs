@@ -24,12 +24,9 @@ noinst_HEADERS = kio_help.h
 kdelnk_DATA = help.protocol ghelp.protocol
 kdelnkdir = $(kde_servicesdir)
 
-bin_PROGRAMS = meinproc xml2man
+bin_PROGRAMS = meinproc 
 meinproc_LDADD = xslt_pure.o libkbzipfilter_dummy.la $(LIBXSLT_LIBS) $(LIBXML_LIBS) 
 meinproc_SOURCES = meinproc.cpp
-
-xml2man_LDADD = xslt_pure.o $(LIBXSLT_LIBS) $(LIBXML_LIBS) libkbzipfilter_dummy.la
-xml2man_SOURCES = xml2man.cpp 
 
 xslt_pure.o: xslt.cpp
 	-rm -f xslt_pure.cpp

@@ -4,7 +4,6 @@
 #include <libxml/parser.h>
 
 QString transform(const QString &file, const QString& stylesheet);
-QString transform(xmlParserCtxtPtr ctxt, const QString &tss);
 QString splitOut(const QString &parsed, int index);
 void fillInstance(KInstance &ins, const QString &srcdir = QString::null );
 bool saveToCache( const QString &contents, const QString &filename );
