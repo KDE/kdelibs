@@ -1081,8 +1081,11 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
    if (e->text()=="MajorHack")
    {
       d->selectedBySimpleMove=true;
-      if (currentItem()!=0) currentItem()->setSelected(true);
-      return;
+      if (currentItem()!=0)
+      {
+         currentItem()->setSelected(true);
+         currentItem()->repaint();
+         return;
    };
 
    if ((e->state()==ShiftButton) && (e->key()!=Key_Shift) &&
