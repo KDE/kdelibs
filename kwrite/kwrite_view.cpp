@@ -174,6 +174,7 @@ void KWriteView::doCursorCommand(VConfig &c, int cmdNum) {
 }
 
 void KWriteView::doEditCommand(VConfig &c, int cmdNum) {
+  // read-commands
   switch (cmdNum) {
     case cmCopy:
       m_doc->copy(c.flags);
@@ -189,33 +190,14 @@ void KWriteView::doEditCommand(VConfig &c, int cmdNum) {
       return;
   }
   if (m_mainview->isReadOnly()) return;
+
+  // write-commands
   switch (cmdNum) {
     case cmReturn:
       if (c.flags & cfDelOnInput) m_doc->delMarkedText(c);
       m_doc->newLine(c);
       //emit returnPressed();
       //event->ignore();
-      return;
-    case cmBackspace:
-      if ((c.flags & cfDelOnInput) && m_doc->hasMarkedText())
-        m_doc->delMarkedText(c); 
-      else 
-        m_doc->backspace(c);
-      return;
-    case cmBackspaceWord:
-      if ((c.flags & cfDelOnInput) && m_doc->hasMarkedText())
-        m_doc->delMarkedText(c); 
-      else 
-        m_doc->backspaceWord(c);
-      return;
-    case cmDelete:
-      if ((c.flags & cfDelOnInput) && m_doc->hasMarkedText())
-        m_doc->delMarkedText(c); 
-      else 
-        m_doc->del(c);
-      return;
-    case cmKillLine:
-      m_doc->killLine(c);
       return;
     case cmCut:
       m_doc->cut(c);
@@ -238,6 +220,29 @@ void KWriteView::doEditCommand(VConfig &c, int cmdNum) {
       return;
     case cmCleanIndent:
       m_doc->cleanIndent(c);
+      return;
+  }
+
+  // commands that delete marked text
+  if ((c.flags & cfDelOnInput) && m_doc->hasMarkedText()) {
+    m_doc->delMarkedText(c); 
+    return;
+  }
+  switch (cmdNum) {
+    case cmBackspace:
+      m_doc->backspace(c);
+      return;
+    case cmBackspaceWord:
+      m_doc->backspaceWord(c);
+      return;
+    case cmDelete:
+      m_doc->del(c);
+      return;
+    case cmDeleteWord:
+      m_doc->delWord(c);
+      return;
+    case cmKillLine:
+      m_doc->killLine(c);
       return;
   }
 }
@@ -301,9 +306,8 @@ void KWriteView::wordRight(VConfig &c) {
   int len = textLine->length();
 
   if (cursor.x() < len) {
-    do {
+    while (cursor.x() < len && highlight->isInWord(textLine->getChar(cursor.x())))
       cursor.incX();
-    } while (cursor.x() < len && highlight->isInWord(textLine->getChar(cursor.x())));
 
     while (cursor.x() < len && !highlight->isInWord(textLine->getChar(cursor.x())))
       cursor.incX();
@@ -418,7 +422,7 @@ void KWriteView::pageUp(VConfig &c) {
       newYPos = 0;
   }
 
-  cursor.addY(-lines);
+  cursor.moveY(-lines);
   cXPos = m_doc->textWidth(c.flags & cfWrapCursor, cursor, cOldXPos);
   changeState(c);
 }
@@ -433,7 +437,7 @@ void KWriteView::pageDown(VConfig &c) {
       newYPos = yPos + (m_doc->lastLine() - endLine)*m_doc->fontHeight();
   }
 
-  cursor.addY(lines);
+  cursor.moveY(lines);
   cXPos = m_doc->textWidth(c.flags & cfWrapCursor, cursor, cOldXPos);
   changeState(c);
 }

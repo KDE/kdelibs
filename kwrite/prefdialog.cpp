@@ -40,13 +40,13 @@ PreferencesDlg::PreferencesDlg( KWrite* kwrite, QWidget* parent, char* name )
   vbox = addVBoxPage( i18n( "Highlighting" ), QString::null, UserIcon( "misc" ) );
   (void) new QWidget( vbox );
 
-  // key binding options
+  // kwrite keys
   vbox = addVBoxPage( i18n( "Key bindings"), QString::null, UserIcon( "misc" ) );
-  (void) new QWidget( vbox );
+//  (void) new QWidget( vbox );
+  kwrite->getKeyData(m_keyData);
+  m_keyConfig = new KWKeyConfigTab(vbox, m_keyData);
   //QDict<KKeyEntry> *keys;
   //(void) new KKeyChooser( keys, vbox );
-  //KGuiCmdConfigTab *keys = new KGuiCmdConfigTab( vbox , &cmdMngr );
-  //qtd->addTab(keys, i18n("Keys"));
 
   // spell checker
   vbox = addVBoxPage( i18n( "Spellchecker" ), QString::null, BarIcon( "spellcheck" ) );
@@ -81,15 +81,8 @@ void PreferencesDlg::applySettings()
   m_ksc->writeGlobalSettings();
   m_kwrite->setKSConfig(*m_ksc);
 
-  // select options
-  /*
-  keys
-      cmdMngr.changeAccels();
-      cmdMngr.writeConfig(kapp->config());
-    } else {
-      // cancel keys
-      cmdMngr.restoreAccels();
-  */
+  // kwrite keys
+  m_kwrite->setKeyData(m_keyData);
 }
 
 void PreferencesDlg::doSettings( KWrite* kwrite )

@@ -42,6 +42,7 @@
 
 class KWriteDoc;
 class KWCommandDispatcher;
+class KWKeyData;
 class KTextPrint;
 class KSpell;
 class KSpellConfig;
@@ -64,37 +65,40 @@ const int srNo                = 10;
 const int srAll               = 11;
 const int srCancel            = QDialog::Rejected;
 
-// indent
-const int cfAutoIndent        = 0x1;
-const int cfSpaceIndent       = 0x400000;
-const int cfBackspaceIndents  = 0x2;
-const int cfTabIndents        = 0x80000;
-const int cfKeepIndentProfile = 0x8000;
-const int cfKeepExtraSpaces   = 0x10000;
+// config flags
+enum KWConfigFlags {
+  // indent
+  cfAutoIndent        = 0x1,
+  cfSpaceIndent       = 0x2,
+  cfBackspaceIndents  = 0x4,
+  cfTabIndents        = 0x8,
+  cfKeepIndentProfile = 0x10,
+  cfKeepExtraSpaces   = 0x20,
 
-// select
-const int cfPersistent        = 0x80;
-const int cfDelOnInput        = 0x400;
-const int cfMouseAutoCopy     = 0x20000;
-const int cfSingleSelection   = 0x40000;
-const int cfVerticalSelect    = 0x200;
-const int cfXorSelect         = 0x800;
+  // select
+  cfPersistent        = 0x100,
+  cfDelOnInput        = 0x200,
+  cfMouseAutoCopy     = 0x400,
+  cfSingleSelection   = 0x800,
+  cfVerticalSelect    = 0x1000,
+  cfXorSelect         = 0x2000,
 
-// edit
-const int cfWordWrap          = 0x4;
-const int cfReplaceTabs       = 0x8;
-const int cfRemoveSpaces      = 0x10;
-const int cfAutoBrackets      = 0x40;
-const int cfGroupUndo         = 0x4000;
-const int cfShowTabs          = 0x200000;
-const int cfSmartHome         = 0x800000; // biggest number
-const int cfPageUDMovesCursor = 0x100000;
-const int cfWrapCursor        = 0x20;
+  // edit
+  cfWordWrap          = 0x10000,
+  cfReplaceTabs       = 0x20000,
+  cfRemoveSpaces      = 0x40000,
+  cfAutoBrackets      = 0x80000,
+  cfGroupUndo         = 0x100000,
+  cfShowTabs          = 0x200000,
+  cfSmartHome         = 0x400000,
+  cfPageUDMovesCursor = 0x800000,
+  cfWrapCursor        = 0x1000000,
 
-// other
-const int cfKeepSelection     = 0x100;
-const int cfOvr               = 0x1000;
-const int cfMark              = 0x2000;
+  // other
+  cfKeepSelection     = 0x10000000,
+  cfOvr               = 0x20000000,
+  cfMark              = 0x40000000
+};
 
 //update flags
 const int ufDocGeometry       = 1;
@@ -118,7 +122,7 @@ const int ctFindCommands      = 2;
 const int ctBookmarkCommands  = 3;
 const int ctStateCommands     = 4;
 
-//cursor movement commands
+// cursor movement commands
 enum KWCursorCommands {
   kSelectFlag         = 0x100000,
   kMultiSelectFlag    = 0x200000,
@@ -146,12 +150,13 @@ enum KWCursorCommands {
   cmSelectDown        = cmDown | kSelectFlag
 };  
 
-//edit commands
-enum KWEdigCommands {
+// edit commands
+enum KWEditCommands {
   cmReturn            = 1,
   cmBackspace         = 2,
   cmBackspaceWord     = 3,
   cmDelete            = 4,
+  cmDeleteWord        = 5,
   cmKillLine          = 6,
   cmUndo              = 7,
   cmRedo              = 8,
@@ -166,25 +171,26 @@ enum KWEdigCommands {
   cmInvertSelection   = 17
 };
 
-//find commands
-const int cmFind              = 1;
-const int cmReplace           = 2;
-const int cmFindAgain         = 3;
-const int cmGotoLine          = 4;
+// search commands
+enum KWSearchCommands {
+  cmFind              = 1,
+  cmReplace           = 2,
+  cmFindAgain         = 3,
+  cmGotoLine          = 4
+};
 
-//bookmark commands
-const int cmSetBookmark       = 1;
-const int cmAddBookmark       = 2;
-const int cmClearBookmarks    = 3;
-const int cmSetBookmarks      = 10;
-const int cmGotoBookmarks     = 20;
+// bookmark commands
+enum KWBookmarkCommands {
+  cmSetBookmark       = 1,
+  cmAddBookmark       = 2,
+  cmClearBookmarks    = 3,
+  cmSetBookmarks      = 10,
+  cmGotoBookmarks     = 20
+};
 
 //state commands
 const int cmToggleInsert      = 1;
 const int cmToggleVertical    = 2;
-
-class KWrite;
-class KWriteView;
 
 class KWCursor {
   public:
@@ -208,14 +214,17 @@ class KWCursor {
     void incY() {m_y++;}
     void decX() {m_x--;}
     void decY() {m_y--;}
-    void add(int dx, int dy) {m_x += dx; m_y += dy;}
-    void addX(int dx) {m_x += dx;}
-    void addY(int dy) {m_y += dy;}
+    void move(int dx, int dy) {m_x += dx; m_y += dy;}
+    void moveX(int dx) {m_x += dx;}
+    void moveY(int dy) {m_y += dy;}
 
   protected:
     int m_x;
     int m_y;
 };
+
+class KWrite;
+class KWriteView;
 
 struct VConfig {
   KWriteView *view;
@@ -270,20 +279,14 @@ class KWrite : public QWidget {
       HandleOwnURIDrops should be set to false for a container that can handle URI drops
       better than KWriteView does.
     */
-    KWrite(KWriteDoc *, QWidget *parent = 0L, const QString &name = QString::null, bool HandleOwnURIDrops = true);
+    KWrite(KWriteDoc *, QWidget *parent = 0L, const QString &name = QString::null, 
+      bool HandleOwnURIDrops = true);
 
     /**
       The destructor does not delete the document
     */
     ~KWrite();
 
-/*
-    static void addCursorCommands(KGuiCmdManager &);
-    static void addEditCommands(KGuiCmdManager &);
-    static void addFindCommands(KGuiCmdManager &);
-    static void addBookmarkCommands(KGuiCmdManager &);
-    static void addStateCommands(KGuiCmdManager &);
-*/
 
 //status and config functions
 
@@ -301,7 +304,7 @@ class KWrite : public QWidget {
     int currentColumn();
 
     /**
-      Returns the number of the character, that the cursor is on(cursor x)
+      Returns the number of the character, that the cursor is on (cursor x)
     */
     int currentCharNum();
 
@@ -666,10 +669,14 @@ class KWrite : public QWidget {
     */
     void doEditCommand(int cmdNum);
 
+//    void configureKWriteKeys();
+  public:
+    void getKeyData(KWKeyData &);
+    void setKeyData(const KWKeyData &);
   protected:
 
     KWCommandDispatcher *m_dispatcher;
-    bool m_persistent;
+    bool m_persistent; // to make multiple selections always persistent
     
 //edit functions
 

@@ -70,8 +70,8 @@ class KWCommand : public QObject {
 //    void restoreAccels();
 //    void changeAccels();
 
-    void getData(KWCommandData *data);
-    void setData(const KWCommandData *data);
+    void getData(KWCommandData &data);
+    void setData(const KWCommandData &data);
 
     void readConfig(KConfig *);
     void writeConfig(KConfig *);
@@ -106,13 +106,13 @@ class KWCommandGroup : public QObject {
     KWCommandGroup(const QString &name);
     void setSelectModifiers(int selectModifiers, int selectFlag,
       int selectModifiers2, int selectFlag2);
-    void addCommand(KWCommand *command);
-    void addCommand(int id, const QString &name, int keyCode01 = 0,
+//    void addCommand(KWCommand *command);
+    KWCommand *addCommand(int id, const QString &name, int keyCode01 = 0,
       int keyCode11 = 0, int keyCode21 = 0);
     const QString &name() {return m_name;}
 
-    void getData(KWCommandGroupData *data);
-    void setData(const KWCommandGroupData *data);
+    void getData(KWCommandGroupData &data);
+    void setData(const KWCommandGroupData &data);
 
     void readConfig(KConfig *);
     void writeConfig(KConfig *);
@@ -134,11 +134,12 @@ class KWCommandDispatcher : public QObject {
   public:
     KWCommandDispatcher(QObject *host);
 
-    void addGroup(KWCommandGroup *group);
+//    void addGroup(KWCommandGroup *group);
+    KWCommandGroup *addGroup(const QString &name);
     void setEnabled(bool enabled) {m_enabled = enabled;}
 
-    void getData(KWKeyData *data);
-    void setData(const KWKeyData *data);
+    void getData(KWKeyData &data);
+    void setData(const KWKeyData &data);
 
     void readConfig(KConfig *);
     void writeConfig(KConfig *);
@@ -151,7 +152,6 @@ class KWCommandDispatcher : public QObject {
 
     QList<KWCommandGroup> m_groupList;
     bool m_enabled;
-    bool m_second;
 };
 
 

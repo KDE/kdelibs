@@ -3,12 +3,14 @@
 
 #include <kdialogbase.h>
 
+#include "kwrite_keys.h"
+
+class KWrite;
 class IndentConfigTab;
 class SelectConfigTab;
 class EditConfigTab;
-class KSpellConfig;
 class ColorConfig;
-class KWrite;
+class KSpellConfig;
 
 class PreferencesDlg : public KDialogBase
 {
@@ -30,14 +32,16 @@ protected slots:
   virtual void slotApply();
   virtual void slotDefault();
 
-private:
+protected:
 
+  KWrite          *m_kwrite;
   IndentConfigTab *m_indentConfig;
   SelectConfigTab *m_selectConfig;
   EditConfigTab   *m_editConfig;
-  KSpellConfig    *m_ksc;
-  KWrite          *m_kwrite;
   ColorConfig     *m_colorConfig;
+  KWKeyData        m_keyData;
+  KWKeyConfigTab  *m_keyConfig;
+  KSpellConfig    *m_ksc;
 };
 
 #endif // __prefdialog_h__

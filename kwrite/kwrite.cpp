@@ -148,7 +148,7 @@ KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const QString &name, bool Handle
   
   // cursor commands
   m_persistent = false;
-  m_dispatcher->addGroup(g = new KWCommandGroup(i18nop("Cursor Movement")));
+  g = m_dispatcher->addGroup(i18nop("Cursor Movement"));
   g->setSelectModifiers(SHIFT, kSelectFlag, ALT, kMultiSelectFlag);
   g->addCommand(cmLeft,            i18nop("Left"), Key_Left, CTRL+Key_B);
   g->addCommand(cmRight,           i18nop("Right"), Key_Right, CTRL+Key_F);
@@ -173,11 +173,12 @@ KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const QString &name, bool Handle
   connect(g, SIGNAL(activated(int)), this, SLOT(doCursorCommand(int)));
 
   // edit commands (only handles extra keys)
-  m_dispatcher->addGroup(g = new KWCommandGroup(i18nop("Edit Commands")));
+  g = m_dispatcher->addGroup(i18nop("Edit Commands"));
   g->addCommand(cmReturn,          i18nop("Return"), Key_Return, Key_Enter);
   g->addCommand(cmBackspace,       i18nop("Backspace"), Key_Backspace, CTRL+Key_H);
   g->addCommand(cmBackspaceWord,   i18nop("Backspace Word"), CTRL+Key_Backspace);
   g->addCommand(cmDelete,          i18nop("Delete"), Key_Delete, CTRL+Key_D);
+  g->addCommand(cmDeleteWord,      i18nop("Delete Word"), CTRL+Key_Delete);
   g->addCommand(cmKillLine,        i18nop("Kill Line"), CTRL+Key_K);
   g->addCommand(cmUndo,            i18nop("Undo"), /*CTRL+Key_Z, */Key_F14);
   g->addCommand(cmRedo,            i18nop("Redo"), /*CTRL+Key_Y, */Key_F12);
@@ -192,6 +193,32 @@ KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const QString &name, bool Handle
   g->addCommand(cmInvertSelection, i18nop("Invert Selection"));
   connect(g, SIGNAL(activated(int)), this, SLOT(doEditCommand(int)));
 
+  // bookmark commands
+  g = m_dispatcher->addGroup(i18nop("Bookmark Commands"));
+  g->addCommand(cmSetBookmark,       i18nop("Set Bookmark")/*, ALT+Key_S*/);
+  g->addCommand(cmAddBookmark,       i18nop("Add Bookmark")/*, ALT+Key_A*/);
+  g->addCommand(cmClearBookmarks,    i18nop("Clear Bookmarks")/*, ALT+Key_C*/);
+  g->addCommand(cmSetBookmarks +0,   i18nop("Set Bookmark 1"), CTRL+Key_1);
+  g->addCommand(cmSetBookmarks +1,   i18nop("Set Bookmark 2"), CTRL+Key_2);
+  g->addCommand(cmSetBookmarks +2,   i18nop("Set Bookmark 3"), CTRL+Key_3);
+  g->addCommand(cmSetBookmarks +3,   i18nop("Set Bookmark 4"), CTRL+Key_4);
+  g->addCommand(cmSetBookmarks +4,   i18nop("Set Bookmark 5"), CTRL+Key_5);
+  g->addCommand(cmSetBookmarks +5,   i18nop("Set Bookmark 6"), CTRL+Key_6);
+  g->addCommand(cmSetBookmarks +6,   i18nop("Set Bookmark 7"), CTRL+Key_7);
+  g->addCommand(cmSetBookmarks +7,   i18nop("Set Bookmark 8"), CTRL+Key_8);
+  g->addCommand(cmSetBookmarks +8,   i18nop("Set Bookmark 9"), CTRL+Key_9);
+  g->addCommand(cmSetBookmarks +9,   i18nop("Set Bookmark 10"), CTRL+Key_0);
+  g->addCommand(cmGotoBookmarks +0,  i18nop("Goto Bookmark 1"), ALT+Key_1);
+  g->addCommand(cmGotoBookmarks +1,  i18nop("Goto Bookmark 2"), ALT+Key_2);
+  g->addCommand(cmGotoBookmarks +2,  i18nop("Goto Bookmark 3"), ALT+Key_3);
+  g->addCommand(cmGotoBookmarks +3,  i18nop("Goto Bookmark 4"), ALT+Key_4);
+  g->addCommand(cmGotoBookmarks +4,  i18nop("Goto Bookmark 5"), ALT+Key_5);
+  g->addCommand(cmGotoBookmarks +5,  i18nop("Goto Bookmark 6"), ALT+Key_6);
+  g->addCommand(cmGotoBookmarks +6,  i18nop("Goto Bookmark 7"), ALT+Key_7);
+  g->addCommand(cmGotoBookmarks +7,  i18nop("Goto Bookmark 8"), ALT+Key_8);
+  g->addCommand(cmGotoBookmarks +8,  i18nop("Goto Bookmark 9"), ALT+Key_9);
+  g->addCommand(cmGotoBookmarks +9,  i18nop("Goto Bookmark 10"), ALT+Key_0);
+  connect(g, SIGNAL(activated(int)), this, SLOT(doBookmarkCommand(int)));
 
 
   //KSpell initial values
@@ -215,91 +242,18 @@ KWrite::~KWrite() {
 }
 
 /*
-void KWrite::addCursorCommands(KGuiCmdManager &cmdMngr) {
-  cmdMngr.addCategory(ctCursorCommands, 18N_NOOP("Cursor Movement"));
-  cmdMngr.setSelectModifiers(Qt::SHIFT, selectFlag, Qt::ALT, multiSelectFlag);
-  cmdMngr.addCommand(cmLeft,            I18N_NOOP("Left"), Qt::Key_Left, Qt::CTRL+Qt::Key_B);
-  cmdMngr.addCommand(cmRight,           I18N_NOOP("Right"), Qt::Key_Right, Qt::CTRL+Qt::Key_F);
-  cmdMngr.addCommand(cmWordLeft,        I18N_NOOP("Word Left"), Qt::CTRL+Qt::Key_Left);
-  cmdMngr.addCommand(cmWordRight,       I18N_NOOP("Word Right"), Qt::CTRL+Qt::Key_Right);
-  cmdMngr.addCommand(cmHome,            I18N_NOOP("Home"), Qt::Key_Home, Qt::CTRL+Qt::Key_A, Qt::Key_F27);
-  cmdMngr.addCommand(cmEnd,             I18N_NOOP("End"), Qt::Key_End, Qt::CTRL+Qt::Key_E, Qt::Key_F33);
-  cmdMngr.addCommand(cmUp,              I18N_NOOP("Up"), Qt::Key_Up, Qt::CTRL+Qt::Key_P);
-  cmdMngr.addCommand(cmDown,            I18N_NOOP("Down"), Qt::Key_Down, Qt::CTRL+Qt::Key_N);
-  cmdMngr.addCommand(cmScrollUp,        I18N_NOOP("Scroll Up"), Qt::CTRL+Qt::Key_Up);
-  cmdMngr.addCommand(cmScrollDown,      I18N_NOOP("Scroll Down"), Qt::CTRL+Qt::Key_Down);
-  cmdMngr.addCommand(cmTopOfView,       I18N_NOOP("Top Of View"), Qt::CTRL+Qt::Key_PageUp);
-  cmdMngr.addCommand(cmBottomOfView,    I18N_NOOP("Bottom Of View"), Qt::CTRL+Qt::Key_PageDown);
-  cmdMngr.addCommand(cmPageUp,          I18N_NOOP("Page Up"), Qt::Key_PageUp, Qt::Key_F29);
-  cmdMngr.addCommand(cmPageDown,        I18N_NOOP("Page Down"), Qt::Key_PageDown, Qt::Key_F35);
-//  cmdMngr.addCommand(cmCursorPageUp,    I18N_NOOP("Cursor Page Up"));
-//  cmdMngr.addCommand(cmCursorPageDown,  I18N_NOOP("Cursor Page Down"));
-  cmdMngr.addCommand(cmTop,             I18N_NOOP("Top"), Qt::CTRL+Qt::Key_Home);
-  cmdMngr.addCommand(cmBottom,          I18N_NOOP("Bottom"), Qt::CTRL+Qt::Key_End);
-  cmdMngr.addCommand(cmLeft | selectFlag, I18N_NOOP("Left + Select") , Qt::SHIFT+Qt::Key_F30);//, Qt::SHIFT+Qt::Key_4);
-  cmdMngr.addCommand(cmRight | selectFlag, I18N_NOOP("Right + Select") , Qt::SHIFT+Qt::Key_F32);//, Qt::SHIFT+Qt::Key_6);
-  cmdMngr.addCommand(cmUp | selectFlag,   I18N_NOOP("Up + Select") , Qt::SHIFT+Qt::Key_F28);//, Qt::SHIFT+Qt::Key_8);
-  cmdMngr.addCommand(cmDown | selectFlag, I18N_NOOP("Down + Select") , Qt::SHIFT+Qt::Key_F34);//, Qt::SHIFT+Qt::Key_2);
-}
-
-void KWrite::addEditCommands(KGuiCmdManager &cmdMngr) {
-  cmdMngr.addCategory(ctEditCommands, I18N_NOOP("Edit Commands"));
-  cmdMngr.addCommand(cmReturn,          I18N_NOOP("Return"), Qt::Key_Return, Qt::Key_Enter);
-  cmdMngr.addCommand(cmDelete,          I18N_NOOP("Delete"), Qt::Key_Delete, Qt::CTRL+Qt::Key_D);
-  cmdMngr.addCommand(cmBackspace,       I18N_NOOP("Backspace"), Qt::Key_Backspace, Qt::CTRL+Qt::Key_H);
-  cmdMngr.addCommand(cmKillLine,        I18N_NOOP("Kill Line"), Qt::CTRL+Qt::Key_K);
-  cmdMngr.addCommand(cmUndo,            I18N_NOOP("&Undo"), Qt::CTRL+Qt::Key_Z, Qt::Key_F14);
-  cmdMngr.addCommand(cmRedo,            I18N_NOOP("R&edo"), Qt::CTRL+Qt::Key_Y, Qt::Key_F12);
-  cmdMngr.addCommand(cmCut,             I18N_NOOP("C&ut"), Qt::CTRL+Qt::Key_X, Qt::SHIFT+Qt::Key_Delete, Qt::Key_F20);
-  cmdMngr.addCommand(cmCopy,            I18N_NOOP("&Copy"), Qt::CTRL+Qt::Key_C, Qt::CTRL+Qt::Key_Insert, Qt::Key_F16);
-  cmdMngr.addCommand(cmPaste,           I18N_NOOP("&Paste"), Qt::CTRL+Qt::Key_V, Qt::SHIFT+Qt::Key_Insert, Qt::Key_F18);
-  cmdMngr.addCommand(cmIndent,          I18N_NOOP("&Indent"), Qt::CTRL+Qt::Key_I);
-  cmdMngr.addCommand(cmUnindent,        I18N_NOOP("Uninden&t"), Qt::CTRL+Qt::Key_U);
-  cmdMngr.addCommand(cmCleanIndent,     I18N_NOOP("Clean Indent"));
-  cmdMngr.addCommand(cmSelectAll,       I18N_NOOP("&Select All"));
-  cmdMngr.addCommand(cmDeselectAll,     I18N_NOOP("&Deselect All"));
-  cmdMngr.addCommand(cmInvertSelection, I18N_NOOP("In&vert Selection"));
-}
-
 void KWrite::addFindCommands(KGuiCmdManager &cmdMngr) {
-  cmdMngr.addCategory(ctFindCommands, I18N_NOOP("Find Commands"));
-  cmdMngr.addCommand(cmFind,            I18N_NOOP("&Find...") , Qt::CTRL+Qt::Key_F, Qt::Key_F19);
-  cmdMngr.addCommand(cmReplace,         I18N_NOOP("&Replace...") , Qt::CTRL+Qt::Key_R);
-  cmdMngr.addCommand(cmFindAgain,       I18N_NOOP("Find &Again") , Qt::Key_F3);
-  cmdMngr.addCommand(cmGotoLine,        I18N_NOOP("&Goto Line...") , Qt::CTRL+Qt::Key_G);
-}
-
-void KWrite::addBookmarkCommands(KGuiCmdManager &cmdMngr) {
-  cmdMngr.addCategory(ctBookmarkCommands, I18N_NOOP("Bookmark Commands"));
-  cmdMngr.addCommand(cmSetBookmark,       I18N_NOOP("&Set Bookmark..."), Qt::ALT+Qt::Key_X);
-  cmdMngr.addCommand(cmAddBookmark,       I18N_NOOP("&Add Bookmark"), Qt::ALT+Qt::Key_A);
-  cmdMngr.addCommand(cmClearBookmarks,    I18N_NOOP("&Clear Bookmarks"), Qt::ALT+Qt::Key_C);
-  cmdMngr.addCommand(cmSetBookmarks +0,   I18N_NOOP("Set Bookmark 1"));
-  cmdMngr.addCommand(cmSetBookmarks +1,   I18N_NOOP("Set Bookmark 2"));
-  cmdMngr.addCommand(cmSetBookmarks +2,   I18N_NOOP("Set Bookmark 3"));
-  cmdMngr.addCommand(cmSetBookmarks +3,   I18N_NOOP("Set Bookmark 4"));
-  cmdMngr.addCommand(cmSetBookmarks +4,   I18N_NOOP("Set Bookmark 5"));
-  cmdMngr.addCommand(cmSetBookmarks +5,   I18N_NOOP("Set Bookmark 6"));
-  cmdMngr.addCommand(cmSetBookmarks +6,   I18N_NOOP("Set Bookmark 7"));
-  cmdMngr.addCommand(cmSetBookmarks +7,   I18N_NOOP("Set Bookmark 8"));
-  cmdMngr.addCommand(cmSetBookmarks +8,   I18N_NOOP("Set Bookmark 9"));
-  cmdMngr.addCommand(cmSetBookmarks +9,   I18N_NOOP("Set Bookmark 10"));
-  cmdMngr.addCommand(cmGotoBookmarks +0,  I18N_NOOP("Goto Bookmark 1"), Qt::ALT+Qt::Key_1);
-  cmdMngr.addCommand(cmGotoBookmarks +1,  I18N_NOOP("Goto Bookmark 2"), Qt::ALT+Qt::Key_2);
-  cmdMngr.addCommand(cmGotoBookmarks +2,  I18N_NOOP("Goto Bookmark 3"), Qt::ALT+Qt::Key_3);
-  cmdMngr.addCommand(cmGotoBookmarks +3,  I18N_NOOP("Goto Bookmark 4"), Qt::ALT+Qt::Key_4);
-  cmdMngr.addCommand(cmGotoBookmarks +4,  I18N_NOOP("Goto Bookmark 5"), Qt::ALT+Qt::Key_5);
-  cmdMngr.addCommand(cmGotoBookmarks +5,  I18N_NOOP("Goto Bookmark 6"), Qt::ALT+Qt::Key_6);
-  cmdMngr.addCommand(cmGotoBookmarks +6,  I18N_NOOP("Goto Bookmark 7"), Qt::ALT+Qt::Key_7);
-  cmdMngr.addCommand(cmGotoBookmarks +7,  I18N_NOOP("Goto Bookmark 8"), Qt::ALT+Qt::Key_8);
-  cmdMngr.addCommand(cmGotoBookmarks +8,  I18N_NOOP("Goto Bookmark 9"), Qt::ALT+Qt::Key_9);
-  cmdMngr.addCommand(cmGotoBookmarks +9,  I18N_NOOP("Goto Bookmark 10"), Qt::ALT+Qt::Key_0);
+  cmdMngr.addCategory(ctFindCommands, i18nop("Find Commands"));
+  cmdMngr.addCommand(cmFind,            i18nop("&Find...") , CTRL+Key_F, Key_F19);
+  cmdMngr.addCommand(cmReplace,         i18nop("&Replace...") , CTRL+Key_R);
+  cmdMngr.addCommand(cmFindAgain,       i18nop("Find &Again") , Key_F3);
+  cmdMngr.addCommand(cmGotoLine,        i18nop("&Goto Line...") , CTRL+Key_G);
 }
 
 void KWrite::addStateCommands(KGuiCmdManager &cmdMngr) {
-  cmdMngr.addCategory(ctStateCommands, I18N_NOOP("State Commands"));
-  cmdMngr.addCommand(cmToggleInsert,   I18N_NOOP("Insert Mode"), Qt::Key_Insert);
-  cmdMngr.addCommand(cmToggleVertical, I18N_NOOP("&Vertical Selections"), Qt::Key_F5);
+  cmdMngr.addCategory(ctStateCommands, i18nop("State Commands"));
+  cmdMngr.addCommand(cmToggleInsert,   i18nop("Insert Mode"), Key_Insert);
+  cmdMngr.addCommand(cmToggleVertical, i18nop("&Vertical Selections"), Key_F5);
 }
 */
 
@@ -866,7 +820,34 @@ void KWrite::doEditCommand(int cmdNum) {
   m_view->doEditCommand(c, cmdNum);
   m_doc->updateViews();
 }
+/*
+void KWrite::configureKWriteKeys() {
+  KWKeyData data;
+  
+  m_dispatcher->getData(data);
+  
+  KDialogBase *dlg = new KDialogBase(this, "tabdialog", true, 
+    i18n("KWrite Keys"), KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok);
+  
+  KWKeyConfigTab *keys = new KWKeyConfigTab(dlg, data);
+  dlg->setMainWidget(keys);
+  dlg->resize(450, 320);
+  
+  if (dlg->exec()) {
+    m_dispatcher->setData(data);  
+  }
+  
+  delete dlg;
+}
+*/
 
+void KWrite::getKeyData(KWKeyData &data) {
+  m_dispatcher->getData(data);
+}
+
+void KWrite::setKeyData(const KWKeyData &data) {
+  m_dispatcher->setData(data);
+}
 
 void KWrite::clear() {
   if (isReadOnly())
@@ -1088,7 +1069,7 @@ void KWrite::initSearch(SConfig &s, int flags) {
     if (!(s.cursor.x() || s.cursor.y()))
       s.flags |= sfFinished;
   } else
-    s.startCursor.addX(-searchFor.length());
+    s.startCursor.moveX(-searchFor.length());
 
   s.startCursor = s.cursor;
 }
@@ -1117,7 +1098,7 @@ void KWrite::searchAgain(SConfig &s) {
       cursor = s.cursor;
 
       if (!(s.flags & sfBackward))
-        s.cursor.addX(slen);
+        s.cursor.moveX(slen);
 
       m_view->updateCursor(s.cursor); //does deselectAll()
       exposeFound(cursor, slen, (s.flags & sfAgain) ? 0 : ufUpdateOnScroll, false);
@@ -1168,12 +1149,12 @@ void KWrite::doReplaceAction(int result, bool found) {
       m_doc->recordReplace(s.cursor, slen, replaceWith);
       m_replaces++;
       if (s.cursor.y() == s.startCursor.y() && s.cursor.x() < s.startCursor.x())
-        s.startCursor.addX(rlen - slen);
-      if (!(s.flags & sfBackward)) s.cursor.addX(rlen);
+        s.startCursor.moveX(rlen - slen);
+      if (!(s.flags & sfBackward)) s.cursor.moveX(rlen);
       m_doc->recordEnd(m_view, s.cursor, m_configFlags | cfPersistent);
       break;
     case srNo: //no
-      if (!(s.flags & sfBackward)) s.cursor.addX(slen);
+      if (!(s.flags & sfBackward)) s.cursor.moveX(slen);
       break;
     case srAll: //replace all
       deleteReplacePrompt();
@@ -1189,8 +1170,8 @@ void KWrite::doReplaceAction(int result, bool found) {
           m_doc->recordReplace(s.cursor, slen, replaceWith);
           m_replaces++;
           if (s.cursor.y() == s.startCursor.y() && s.cursor.x() < s.startCursor.x())
-            s.startCursor.addX(rlen - slen);
-          if (!(s.flags & sfBackward)) s.cursor.addX(rlen);
+            s.startCursor.moveX(rlen - slen);
+          if (!(s.flags & sfBackward)) s.cursor.moveX(rlen);
         }
         if (started) m_doc->recordEnd(m_view, s.cursor,
           m_configFlags | cfPersistent);
@@ -1207,7 +1188,7 @@ void KWrite::doReplaceAction(int result, bool found) {
     if (m_doc->doSearch(s, searchFor)) {
       //text found: highlight it, show replace prompt if needed and exit
       cursor = s.cursor;
-      if (!(s.flags & sfBackward)) cursor.addX(slen);
+      if (!(s.flags & sfBackward)) cursor.moveX(slen);
       m_view->updateCursor(cursor); //does deselectAll()
       exposeFound(s.cursor, slen, (s.flags & sfAgain) ? 0 : ufUpdateOnScroll, true);
       if (m_replacePrompt == 0L) {

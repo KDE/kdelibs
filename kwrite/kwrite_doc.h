@@ -432,6 +432,7 @@ class KWriteDoc : QObject {
     void backspace(VConfig &);
     void backspaceWord(VConfig &);
     void del(VConfig &);
+    void delWord(VConfig &);
     void clear();
     void cut(VConfig &);
     void copy(int flags);

@@ -225,7 +225,7 @@ KWCommand::KWCommand(int id, const QString &name, KWCommandGroup *group)
 
   int z;
   for (z = 0; z < nAccels; z++) m_accels[z].keyCode1 = 0;
-  group->addCommand(this);
+//  group->addCommand(this);
 }
 
 int KWCommand::accelCount() {
@@ -310,21 +310,21 @@ void KGuiCmd::changeAccels() {
 }
 */
 
-void KWCommand::getData(KWCommandData *data) {
-//  data->setData(m_name, m_accels);
+void KWCommand::getData(KWCommandData &data) {
+//  data.setData(m_name, m_accels);
   int z;
   
-  data->m_name = m_name;
+  data.m_name = m_name;
   for (z = 0; z < nAccels; z++) {
-    data->m_accels[z] = m_accels[z];
+    data.m_accels[z] = m_accels[z];
   }
 }
 
-void KWCommand::setData(const KWCommandData *data) {
+void KWCommand::setData(const KWCommandData &data) {
   int z;
   
   for (z = 0; z < nAccels; z++) {
-    m_accels[z] = data->m_accels[z];
+    m_accels[z] = data.m_accels[z];
   }
 }
 
@@ -475,7 +475,7 @@ void KWCommand::matchKey(int keyCode, int modifiers, KWAccelMatch &match) {
           match.command = this;
           match.group = m_group;
           match.consumeKeyEvent = true;
-//          match.second = second;
+          match.second = second;
         }
       }
     }
@@ -500,41 +500,40 @@ void KWCommandGroup::setSelectModifiers(int selectModifiers, int selectFlag,
   m_selectModifiers2 = selectModifiers2;
   m_selectFlag2 = selectFlag2;
 }
-
+/*
 void KWCommandGroup::addCommand(KWCommand *command) {
   m_commandList.append(command);
 }
-
-void KWCommandGroup::addCommand(int id, const QString &name, int keyCode01,
+*/
+KWCommand *KWCommandGroup::addCommand(int id, const QString &name, int keyCode01,
   int keyCode11, int keyCode21) {
   
-  KWCommand *command;
-  
-  command = new KWCommand(id, name, this);
+  KWCommand *command = new KWCommand(id, name, this);
   command->addAccel(keyCode01, 0);
   command->addAccel(keyCode11, 0);
   command->addAccel(keyCode21, 0);
-
+  m_commandList.append(command);
+  return command;
 }
 
-void KWCommandGroup::getData(KWCommandGroupData *data) {
+void KWCommandGroup::getData(KWCommandGroupData &data) {
   int z;
   int count = m_commandList.count();
   KWCommandData *commandList = new KWCommandData[count];
   
   for (z = 0; z < count; z++) {
-    m_commandList.at(z)->getData(&commandList[z]);
+    m_commandList.at(z)->getData(commandList[z]);
   }
-  data->m_name = m_name;
-  data->m_commandList = commandList;
-  data->m_count = count;
+  data.m_name = m_name;
+  data.m_commandList = commandList;
+  data.m_count = count;
 }
 
-void KWCommandGroup::setData(const KWCommandGroupData *data) {
+void KWCommandGroup::setData(const KWCommandGroupData &data) {
   int z;
   
-  for (z = 0; z < data->m_count; z++) {
-    m_commandList.at(z)->setData(&data->m_commandList[z]);
+  for (z = 0; z < data.m_count; z++) {
+    m_commandList.at(z)->setData(data.m_commandList[z]);
   }
 }
 
@@ -569,30 +568,35 @@ KWCommandDispatcher::KWCommandDispatcher(QObject *host) {
 //  connect(host, SIGNAL(destroyed()), this, SLOT(destroy()));
   m_groupList.setAutoDelete(true);
   m_enabled = true;
-  m_second = false;
 }
-
+/*
 void KWCommandDispatcher::addGroup(KWCommandGroup *group) {
   m_groupList.append(group);
 }
+*/
+KWCommandGroup *KWCommandDispatcher::addGroup(const QString &name) {
+  KWCommandGroup *group = new KWCommandGroup(name);
+  m_groupList.append(group);
+  return group;
+}
 
-void KWCommandDispatcher::getData(KWKeyData *data) {
+void KWCommandDispatcher::getData(KWKeyData &data) {
   int z;
   int count = m_groupList.count();
   KWCommandGroupData *groupList = new KWCommandGroupData[count];
   
   for (z = 0; z < count; z++) {
-    m_groupList.at(z)->getData(&groupList[z]);
+    m_groupList.at(z)->getData(groupList[z]);
   }
-  data->m_groupList = groupList;
-  data->m_count = count;
+  data.m_groupList = groupList;
+  data.m_count = count;
 }
 
-void KWCommandDispatcher::setData(const KWKeyData *data) {
+void KWCommandDispatcher::setData(const KWKeyData &data) {
   int z;
   
-  for (z = 0; z < data->m_count; z++) {
-    m_groupList.at(z)->setData(&data->m_groupList[z]);
+  for (z = 0; z < data.m_count; z++) {
+    m_groupList.at(z)->setData(data.m_groupList[z]);
   }
 }
 
@@ -631,20 +635,16 @@ bool KWCommandDispatcher::eventFilter(QObject *, QEvent *e) {
 
     match.unmatchedModifiers = -1;
     match.consumeKeyEvent = false;
-    match.second = m_second;
+    match.second = false;
 //  printf("Event Filter %d %d\n", keyCode, modifiers);
     for (z = 0; z < (int) m_groupList.count(); z++) {
       m_groupList.at(z)->matchKey(keyCode, modifiers, match);
     }
-    m_second = false;
     
     if (match.consumeKeyEvent) {
       if (match.unmatchedModifiers != -1) {
         emit match.command->activated(match.id);
         emit match.group->activated(match.id);
-      } else {
-        // one or more accels switched to second key
-        m_second = true; // disable first keys for the next event
       }	
       ((QKeyEvent *) e)->accept();
       return true;

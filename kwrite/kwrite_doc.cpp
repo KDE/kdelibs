@@ -771,7 +771,7 @@ void KWriteDoc::insert(VConfig &c, const QString &s) {
       } else if (ch == '\n') {
         recordInsert(c, buf);
         buf.truncate(0);
-	c.cursor.add(buf.length(), 1);
+	c.cursor.move(buf.length(), 1);
         if (c.cursor.y() >= numLines())
           recordAction(KWAction::insLine, c.cursor);
         c.cursor.setX(textPos(m_contents.at(c.cursor.y()), xPos));
@@ -780,7 +780,7 @@ void KWriteDoc::insert(VConfig &c, const QString &s) {
     } while (pos < (int) s.length());
   }
   recordInsert(c, buf);
-  c.cursor.addX(buf.length());
+  c.cursor.moveX(buf.length());
   recordEnd(c);
 }
 
@@ -987,7 +987,7 @@ bool KWriteDoc::insertChars(VConfig &c, const QString &chars) {
 
   recordStart(c, KWActionGroup::ugInsChar);
   recordReplace(c/*.cursor*/, (c.flags & cfOvr) ? buf.length() : 0, buf);
-  c.cursor.addX(pos);
+  c.cursor.moveX(pos);
 
   if (c.flags & cfWordWrap && c.wrapAt > 0) {
     int line;
@@ -1013,7 +1013,7 @@ bool KWriteDoc::insertChars(VConfig &c, const QString &chars) {
 
       if (line == c.cursor.y() && pos <= c.cursor.x()) {
         //wrap cursor
-	c.cursor.add(-pos, 1);
+	c.cursor.move(-pos, 1);
       }
 
       if (textLine == m_contents.getLast() || m_contents.next()->length() == 0) {
@@ -1132,7 +1132,7 @@ void KWriteDoc::backspace(VConfig &c) {
         }
       }
       // break effectively jumps here
-      c.cursor.addX(-l);
+      c.cursor.moveX(-l);
       recordDelete(c.cursor, l);
     }
   } else {
@@ -1182,11 +1182,41 @@ void KWriteDoc::del(VConfig &c) {
   int len;
 
   textLine = m_contents.at(c.cursor.y());
-  len =  (c.flags & cfRemoveSpaces) ? textLine->lastChar() : textLine->length();
-  if (c.cursor.x() < len/*m_contents.at(c.cursor.y())->length()*/) {
+  len = (c.flags & cfRemoveSpaces) ? textLine->lastChar() : textLine->length();
+  if (c.cursor.x() < len) {
     // delete one character
     recordStart(c, KWActionGroup::ugDelChar);
     recordDelete(c.cursor, 1);
+    recordEnd(c);
+  } else {
+    if (c.cursor.y() < (int) m_contents.count() -1) {
+      // wrap next line to this line
+      textLine->truncate(c.cursor.x()); // truncate spaces
+      recordStart(c, KWActionGroup::ugDelLine);
+      recordAction(KWAction::delLine, c.cursor);
+      recordEnd(c);
+    }
+  }
+}
+
+void KWriteDoc::delWord(VConfig &c) {
+  TextLine *textLine;
+  int len;
+
+  textLine = m_contents.at(c.cursor.y());
+  len = (c.flags & cfRemoveSpaces) ? textLine->lastChar() : textLine->length();
+  if (c.cursor.x() < len) {
+    int x = c.cursor.x();
+
+    // delete one word
+    recordStart(c, KWActionGroup::ugDelChar);
+    while (x < len && m_highlight->isInWord(textLine->getChar(x)))
+      x++;
+
+    while (x < len && !m_highlight->isInWord(textLine->getChar(x)))
+      x++;
+
+    recordDelete(c.cursor, x - c.cursor.x());
     recordEnd(c);
   } else {
     if (c.cursor.y() < (int) m_contents.count() -1) {
