@@ -48,13 +48,15 @@ enum SortItem { BY_NAME = 1000, BY_SIZE, BY_DATE, BY_OWNER, BY_GROUP };
 
 const int idStart = 1;
 
+static QString kfile_lastDirectory; // to set the start path
+
 KFileBaseDialog::KFileBaseDialog(const char *dirName, const char *filter,
 			 QWidget *parent, const char *name, bool modal,
 			 bool acceptURLs)
     : QDialog(parent, name, modal), boxLayout(0)
 {
     QAccel *a = new QAccel( this );
-    a->connectItem(a->insertItem(Key_T + CTRL), this,
+    a->connectItem(a->insertItem(Key_T + CTRL), this, 
 		   SLOT(completion()));
 
     // I hard code this for now
@@ -63,7 +65,10 @@ KFileBaseDialog::KFileBaseDialog(const char *dirName, const char *filter,
     bookmarksMenu= 0;
     acceptUrls = acceptURLs;
 
-    dir = new KDir();
+    if (kfile_lastDirectory.isNull())
+	kfile_lastDirectory = QDir::currentDirPath();
+
+    dir = new KDir(kfile_lastDirectory);
     visitedDirs = new QStrIList();
     
     // we remember the selected name for init()
@@ -326,9 +331,11 @@ void KFileBaseDialog::initGUI()
     boxLayout->addSpacing(3);
     btngroup= new QHBoxLayout(10);
     boxLayout->addLayout(btngroup, 0);
-    btngroup->addWidget(bOk);
-    btngroup->addWidget(bCancel);
-    btngroup->addWidget(bHelp);
+    btngroup->addWidget(bHelp, 1);
+    btngroup->addStretch(2);
+    btngroup->addWidget(bOk, 1);
+    btngroup->addWidget(bCancel, 1);
+   
     boxLayout->activate();
 
     fileList->connectDirSelected(this, SLOT(dirActivated(KFileInfo*)));
@@ -562,7 +569,7 @@ QString KFileDialog::getSaveFileName(const char *dir, const char *filter,
 // Protected
 void KFileBaseDialog::pathChanged()
 {
-  debugC("changed %ld", time(0));
+    debugC("changed %ld", time(0));
     // Not forgetting of course the path combo box
     toolbar->clearCombo(PATH_COMBO);
     
@@ -590,6 +597,10 @@ void KFileBaseDialog::pathChanged()
     
     // when kfm emits finished, the slot will restore the cursor
     QApplication::setOverrideCursor( waitCursor );
+
+    // kfile_lastDirectory is used to set the start path next time
+    // we select a file
+    kfile_lastDirectory = dir->url();
 
     const KFileInfoList *il = dir->entryInfoList(filter, 
 						 QDir::Name | QDir::IgnoreCase);
@@ -1163,14 +1174,14 @@ QString KFileDialog::getOpenFileURL(const char *url, const char *filter,
 {
     QString retval;
     
-    KFileDialog *dlg= new KFileDialog(url, filter, parent, name, true, true);
+    KFileDialog *dlg = new KFileDialog(url, filter, parent, name, true, true);
     
     dlg->setCaption(i18n("Open"));
     
     if (dlg->exec() == QDialog::Accepted)
 	retval = dlg->selectedFileURL();
     else
-	retval= 0;
+	retval = 0;
     
     delete dlg;
     if (!retval.isNull())
