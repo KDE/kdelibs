@@ -313,6 +313,8 @@ void RenderWidget::setStyle(RenderStyle *_style)
     {
         m_widget->setFont(style()->font());
         if (style()->visibility() != VISIBLE) {
+            if (m_view)
+                m_view->setWidgetVisible(this, false);
             m_widget->hide();
         }
     }

@@ -1,5 +1,7 @@
 2004-11-02  Stephan Kulow  <coolo@kde.org>
 
+        * rendering/render_replaced.cpp (setStyle): set hidden widgets to invisible
+
         * xml/dom_docimpl.cpp (recalcStyleSelector): avoid invalid casts on XML documents
 
 2004-11-02  Germain Garand  <germain@ebooksfrance.com>
