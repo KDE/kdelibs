@@ -42,8 +42,8 @@ debian/tmp/usr/lib/kde3/kabc_ldap.la
 debian/tmp/usr/lib/kde3/kabc_ldap.so
 debian/tmp/usr/lib/kde3/kabc_sql.la
 debian/tmp/usr/lib/kde3/kabc_sql.so
-debian/tmp/usr/lib/kde3/katepart.la
-debian/tmp/usr/lib/kde3/katepart.so
+debian/tmp/usr/lib/kde3/libkatepart.la
+debian/tmp/usr/lib/kde3/libkatepart.so
 debian/tmp/usr/lib/kde3/kbzip2filter.la
 debian/tmp/usr/lib/kde3/kbzip2filter.so
 debian/tmp/usr/lib/kde3/kcm_kabc.la
