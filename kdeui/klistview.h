@@ -149,8 +149,6 @@ protected:
   virtual void contentsMouseMoveEvent( QMouseEvent *e );
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent *e );
 
-  virtual void mousePressEvent(QMouseEvent *e);
-
   /**
    * Override this method.  event is as you'd expect
    * after is the item to drop this after
