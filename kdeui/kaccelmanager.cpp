@@ -187,8 +187,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
     if (it->m_widget->inherits("QTabBar"))
     {
       QTabBar *bar = static_cast<QTabBar*>(it->m_widget);
-      if (it->m_index >= 0)
-          bar->tab(it->m_index)->setText(contents[cnt].accelerated());
+      bar->tabAt(it->m_index)->setText(contents[cnt].accelerated());
 
       continue;
     }
@@ -297,9 +296,7 @@ void KAcceleratorManagerPrivate::manageTabBar(QTabBar *bar, Item *item)
 {
   for (int i=0; i<bar->count(); i++)
   {
-    if (!bar->tab(i))
-	continue;
-    QString content = bar->tab(i)->text();
+    QString content = bar->tabAt(i)->text();
     if (content.isEmpty())
       continue;
 
