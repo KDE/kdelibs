@@ -135,7 +135,7 @@ public:
     enum Overlays {
       LockOverlay=0x100, ///< a file is locked
       ZipOverlay=0x200,  ///< a file is zipped
-      LinkOverlay=0x400, ///< a fileis a link
+      LinkOverlay=0x400, ///< a file is a link
       HiddenOverlay=0x800, ///< a file is hidden
       ShareOverlay=0x1000, ///< a file is shared
       OverlayMask = ~0xff
