@@ -67,6 +67,10 @@ class KApplicationPrivate;
 * avoid zombie children. If you want to catch this signal yourself or
 * don't want it to be caught at all, you have set a new signal handler
 * (or SIG_IGN) after KApplication's constructor has run.
+* @li Installs an empty signal handler for the SIGPIPE signal using
+* @ref installSigpipeHandler(). If you want to catch this signal
+* yourself, you have set a new signal handler after KApplication's
+* constructor has run.
 * @li It can start new services
 *
 *
@@ -219,7 +223,7 @@ public:
    * by default.
    */
   void enableSessionManagement();
-  
+
   /**
    * The possible values for the @p confirm parameter of requestShutDown().
    */
@@ -334,7 +338,7 @@ public:
      * @internal
      */
   void saveState( QSessionManager& sm );
-  
+
   /**
    * Returns true if the application is currently saving its session
    * data (most probably before KDE logout). This is intended for use
@@ -474,7 +478,7 @@ public slots:
    * <pre>
    * KStdAction::cut( kapp, SLOT( cut() ), actionCollection() );
    * </pre>
-   */ 
+   */
   void cut();
 
   /**
@@ -502,13 +506,13 @@ public slots:
    * new KAction( i18n( "Clear" ), "editclear", 0, kapp, SLOT( clear() ), actionCollection(), "clear" );
    * </pre>
    *
-   * Note that for some widgets, this may not provide the intended bahavior.  For 
+   * Note that for some widgets, this may not provide the intended bahavior.  For
    * example if you make use of the code above and a KListView has the focus, clear()
    * will clear all of the items in the list.  If this is not the intened behavior
    * and you want to make use of this slot, you can subclass KListView and reimplement
    * this slot.  For example the following code would implement a KListView without this
    * behavior:
-   * 
+   *
    * <pre>
    * class MyListView : public KListView {
    *   Q_OBJECT
@@ -519,7 +523,7 @@ public slots:
    *   virtual void clear() {}
    * };
    * </pre>
-   */ 
+   */
   void clear();
 
   /**
@@ -528,7 +532,7 @@ public slots:
    * <pre>
    * KStdAction::selectAll( kapp, SLOT( selectAll() ), actionCollection() );
    * </pre>
-   */ 
+   */
   void selectAll();
 
 public:
@@ -548,7 +552,7 @@ public:
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
    *         ignored
-   * @param dcopService On success, @p dcopService contains the DCOP name 
+   * @param dcopService On success, @p dcopService contains the DCOP name
    *         under which this service is available. If empty, the service does
    *         not provide DCOP services. If the pointer is 0 the argument
    *         will be ignored
@@ -571,7 +575,7 @@ public:
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
    *         ignored
-   * @param dcopService On success, @p dcopService contains the DCOP name 
+   * @param dcopService On success, @p dcopService contains the DCOP name
    *         under which this service is available. If empty, the service does
    *         not provide DCOP services. If the pointer is 0 the argument
    *         will be ignored
@@ -594,7 +598,7 @@ public:
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
    *         ignored
-   * @param dcopService On success, @p dcopService contains the DCOP name 
+   * @param dcopService On success, @p dcopService contains the DCOP name
    *         under which this service is available. If empty, the service does
    *         not provide DCOP services. If the pointer is 0 the argument
    *         will be ignored
@@ -617,7 +621,7 @@ public:
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
    *         ignored
-   * @param dcopService On success, @p dcopService contains the DCOP name 
+   * @param dcopService On success, @p dcopService contains the DCOP name
    *         under which this service is available. If empty, the service does
    *         not provide DCOP services. If the pointer is 0 the argument
    *         will be ignored
@@ -640,7 +644,7 @@ public:
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
    *         ignored
-   * @param dcopService On success, @p dcopService contains the DCOP name 
+   * @param dcopService On success, @p dcopService contains the DCOP name
    *         under which this service is available. If empty, the service does
    *         not provide DCOP services. If the pointer is 0 the argument
    *         will be ignored
@@ -663,7 +667,7 @@ public:
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
    *         ignored
-   * @param dcopService On success, @p dcopService contains the DCOP name 
+   * @param dcopService On success, @p dcopService contains the DCOP name
    *         under which this service is available. If empty, the service does
    *         not provide DCOP services. If the pointer is 0 the argument
    *         will be ignored
@@ -812,7 +816,7 @@ public:
    * @ref installX11EventFilter().
    */
   void removeX11EventFilter( const QWidget* filter );
-  
+
   /**
    * Generates a uniform random number.
    * @return A truly unpredictable number in the range [0, RAND_MAX)
@@ -904,7 +908,7 @@ public:
    * @since 3.1
    */
   bool authorizeURLAction(const QString &action, const KURL &baseURL, const KURL &destURL);
-                   
+
 
   // Same values as ShiftMask etc. in X.h
   enum { ShiftModifier = 1<<0,
@@ -918,7 +922,7 @@ public:
   /**
    * Returns the currently pressed keyboard modifiers (e.g. shift, control, etc.)
    * Usually you simply want to test for those in key events, in which case
-   * @ref QKeyEvent::state() does the job (or @ref QKeyEvent::key() to 
+   * @ref QKeyEvent::state() does the job (or @ref QKeyEvent::key() to
    * notice when a modifier is pressed alone).
    * But it can be useful to query for the status of the modifiers at another moment
    * (e.g. some KDE apps do that upon a drop event).
@@ -939,7 +943,7 @@ public:
    * @ref QMouseEvent::button() does the job (or @ref QMouseEvent::state()).
    * But it can be useful to query for the status of the mouse buttons at another moment.
    * To query for the mouse pointer position, use @ref QCursor::pos().
-   * @return the currently pressed mouse buttons 
+   * @return the currently pressed mouse buttons
    * @since 3.1
    */
   static uint mouseState();
@@ -996,14 +1000,14 @@ protected:
    *   invokeEditSlot( SLOT( deselect() ) );
    * }
    * </pre>
-   * 
+   *
    * Now in your application calls to MyApplication::deselect() will call this slot on the
    * focused widget if it provides this slot.  You can combine this with KAction with:
-   * 
+   *
    * <pre>
    * KStdAction::deselect( static_cast<MyApplication *>( kapp ), SLOT( cut() ), actionCollection() );
    * </pre>
-   * 
+   *
    * @see cut()
    * @see copy()
    * @see paste()
@@ -1077,7 +1081,7 @@ public:
 
   /**
    * Used to obtain the QPalette that will be used to set the application palette.
-   * 
+   *
    * This is only useful for configuration modules such as krdb and should not be
    * used in normal circumstances.
    * @return the QPalette
@@ -1090,6 +1094,15 @@ public:
    * Raw access for use by KDM.
    */
   static QPalette createApplicationPalette( KConfig *config, int contrast );
+
+  /**
+   * Installs a handler for the SIGPIPE signal. It is thrown when you write to
+   * a pipe or socket that has been closed.
+   * The handler is installed automatically in the constructor, but you may
+   * need it if your application or component does not have a KApplication
+   * instance.
+   */
+  static void installSigpipeHandler();
 
 signals:
   /**
@@ -1116,7 +1129,7 @@ signals:
    * connect to this to monitor global font changes, especially if you are
    * using explicit fonts.
    *
-   * Note: If you derive from a QWidget-based class, a faster method is to 
+   * Note: If you derive from a QWidget-based class, a faster method is to
    *       reimplement @ref QWidget::fontChange(). This is the preferred way
    *       to get informed about font updates.
    */
@@ -1212,6 +1225,7 @@ private:
   void kdisplaySetStyle();
   void kdisplaySetFont();
   void applyGUIStyle();
+  static void sigpipeHandler(int);
 
   int captionLayout;
 

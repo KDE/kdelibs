@@ -511,6 +511,7 @@ KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
     Q_ASSERT (!rAppName.isEmpty());
     setName(rAppName);
 
+    installSigpipeHandler();
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
     parseCommandLine( );
     init(GUIenabled);
@@ -532,6 +533,7 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
     useStyles = allowStyles;
     setName( instanceName() );
 
+    installSigpipeHandler();
     parseCommandLine( );
     init(GUIenabled);
     d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
@@ -552,6 +554,7 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _insta
     useStyles = allowStyles;
     setName( instanceName() );
 
+    installSigpipeHandler();
     parseCommandLine( );
     init(GUIenabled);
 }
@@ -571,6 +574,7 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QCStr
     Q_ASSERT (!rAppName.isEmpty());
     setName(rAppName);
 
+    installSigpipeHandler();
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
     parseCommandLine( );
     init(GUIenabled);
@@ -2601,6 +2605,29 @@ uint KApplication::mouseState()
     XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
                    &root_x, &root_y, &win_x, &win_y, &keybstate );
     return keybstate & 0xff00;
+}
+
+void KApplication::installSigpipeHandler()
+{
+    struct sigaction act;
+    act.sa_handler = sigpipeHandler;
+    sigemptyset( &act.sa_mask );
+    act.sa_flags = 0;
+    sigaction( SIGPIPE, &act, 0 );
+}
+
+void KApplication::sigpipeHandler(int)
+{
+    int saved_errno = errno;
+    // Using kdDebug from a signal handler is not a good idea.
+#ifndef NDEBUG
+    char msg[1000];
+    sprintf(msg, "*** SIGPIPE *** (ignored, pid = %ld)\n", (long) getpid());
+    write(2, msg, strlen(msg));
+#endif
+
+    // Do nothing.
+    errno = saved_errno;
 }
 
 void KApplication::virtual_hook( int id, void* data )

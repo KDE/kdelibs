@@ -76,7 +76,7 @@ static void runDontChangeHostname(const QCString &oldName, const QCString &newNa
 }
 
 Kded::Kded(bool checkUpdates)
-  : DCOPObject("kbuildsycoca"), DCOPObjectProxy(), 
+  : DCOPObject("kbuildsycoca"), DCOPObjectProxy(),
     b_checkUpdates(checkUpdates)
 {
   _self = this;
@@ -92,7 +92,7 @@ Kded::Kded(bool checkUpdates)
   QTimer::singleShot(100, this, SLOT(installCrashHandler()));
 
   m_pDirWatch = 0;
-  
+
   m_windowIdList.setAutoDelete(true);
 }
 
@@ -106,7 +106,7 @@ Kded::~Kded()
   m_modules.setAutoDelete(true);
 }
 
-bool Kded::process(const QCString &obj, const QCString &fun, 
+bool Kded::process(const QCString &obj, const QCString &fun,
                    const QByteArray &data,
                    QCString &replyType, QByteArray &replyData)
 {
@@ -117,7 +117,7 @@ bool Kded::process(const QCString &obj, const QCString &fun,
 
   KDEDModule *module = loadModule(obj, true);
   if (!module)
-     return false; 
+     return false;
 
   module->setCallingDcopClient(kapp->dcopClient());
   return module->process(fun, data, replyType, replyData);
@@ -153,7 +153,7 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
     }
     QCString obj = s->desktopEntryName().latin1();
     // get the library loader instance
- 
+
     KLibLoader *loader = KLibLoader::self();
 
     QVariant v = s->property("X-KDE-Factory");
@@ -162,7 +162,7 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
       factory = s->library();
 
     factory = "create_" + factory;
-    QString libname = "kded_"+s->library(); 
+    QString libname = "kded_"+s->library();
 
     KLibrary *lib = loader->library(QFile::encodeName(libname));
     if (!lib)
@@ -178,7 +178,7 @@ KDEDModule *Kded::loadModule(const KService *s, bool onDemand)
       if (create)
       {
         // create the module
-        KDEDModule* (*func)(const QCString &); 
+        KDEDModule* (*func)(const QCString &);
         func = (KDEDModule* (*)(const QCString &)) create;
         module = func(obj);
         if (module)
@@ -271,7 +271,7 @@ void Kded::updateDirWatch()
   QObject::connect( m_pDirWatch, SIGNAL(deleted(const QString&)),
            this, SLOT(dirDeleted(const QString&)));
 
-  // For each resource 
+  // For each resource
   for( QStringList::ConstIterator it = m_allResourceDirs.begin();
        it != m_allResourceDirs.end();
        ++it )
@@ -287,7 +287,7 @@ void Kded::updateResourceList()
   if (!b_checkUpdates) return;
 
   QStringList dirs = KSycoca::self()->allResourceDirs();
-  // For each resource 
+  // For each resource
   for( QStringList::ConstIterator it = dirs.begin();
        it != dirs.end();
        ++it )
@@ -305,8 +305,8 @@ void Kded::crashHandler(int)
    DCOPClient::emergencyClose();
    system("kded");
 qWarning("Last DCOP call before KDED crash was from application '%s'\n"
-         "to object '%s', function '%s'.", 
-         DCOPClient::postMortemSender(), 
+         "to object '%s', function '%s'.",
+         DCOPClient::postMortemSender(),
          DCOPClient::postMortemObject(),
          DCOPClient::postMortemFunction());
 }
@@ -324,7 +324,7 @@ void Kded::recreate()
    updateDirWatch(); // Update tree first, to be sure to miss nothing.
 
    runBuildSycoca();
-   
+
    updateResourceList();
 
    while( !m_requests.isEmpty())
@@ -496,7 +496,7 @@ KUpdateD::~KUpdateD()
 
 void KUpdateD::runKonfUpdate()
 {
-    ::runKonfUpdate();    
+    ::runKonfUpdate();
 }
 
 void KUpdateD::slotNewUpdateFile()
@@ -534,7 +534,7 @@ void KHostnameD::checkHostname()
     QCString newHostname = buf;
 
     runDontChangeHostname(m_hostname, newHostname);
-    m_hostname = newHostname;    
+    m_hostname = newHostname;
 }
 
 
@@ -582,7 +582,7 @@ public:
       QDataStream _replyStream( replyData, IO_WriteOnly );
       _replyStream << result;
       return true;
-    } 
+    }
     else if (fun == "unloadModule(QCString)") {
       QCString module;
       QDataStream arg( data, IO_ReadOnly );
@@ -627,6 +627,8 @@ extern "C" int kdemain(int argc, char *argv[])
         "$Id$",
         I18N_NOOP("KDE Daemon - triggers Sycoca database updates when needed."));
 
+     KApplication::installSigpipeHandler();
+
      KCmdLineArgs::init(argc, argv, &aboutData);
 
      KUniqueApplication::addCmdLineOptions();
@@ -638,7 +640,7 @@ extern "C" int kdemain(int argc, char *argv[])
 
      // WABA: Make sure not to enable session management.
      putenv(strdup("SESSION_MANAGER="));
-     
+
      // Parse command line before checking DCOP
      KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
@@ -733,10 +735,10 @@ extern "C" int kdemain(int argc, char *argv[])
      client->send( "ksplash", "", "upAndRunning(QString)",  QString("kded"));
 
      int result = k.exec(); // keep running
-       
+
      delete kded;
      delete instance; // Deletes config as well
-       
+
      return result;
 }
 
