@@ -481,6 +481,20 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
         if (element()->dispatchKeyEvent(static_cast<QKeyEvent*>(e),false))
             filtered = true;
         break;
+
+    case QEvent::Wheel:
+        if (widget()->parentWidget() == view()->viewport()) {
+            // don't allow the widget to react to wheel event unless its
+            // currently focused. this avoids accidentally changing a select box
+            // or something while wheeling a webpage.
+            if (qApp->focusWidget() != widget() &&
+                widget()->focusPolicy() <= QWidget::StrongFocus)  {
+                static_cast<QWheelEvent*>(e)->ignore();
+                QApplication::sendEvent(view(), e);
+                filtered = true;
+            }
+        }
+        break;
     default:
         break;
     };

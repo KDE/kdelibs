@@ -1,3 +1,9 @@
+2004-01-09  Dirk Mueller  <mueller@kde.org>
+
+	* rendering/render_replaced.cpp (eventFilter): readd the wheel event handling
+	which allows scrolling of the page again. Thanks a lot for just removing it. (#45180)
+	
+
 2004-01-02  Dirk Mueller  <mueller@kde.org>
 
 	* html/htmltokenizer.cpp (notifyFinished): fix null pointer dereference

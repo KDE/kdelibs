@@ -1249,10 +1249,10 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    return true;
 		default:
 		    break;
-		}/*end switch*/
-	    }/*end if*/
-	}/*end if*/
-    }/*end if*/
+		}
+	    }
+	}
+    }
 
     QWidget *view = viewport();
 
@@ -1293,6 +1293,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
             c = v;
 	    v = v->parentWidget(true);
 	}
+
 	if (v && !strcmp(c->name(), "__khtml")) {
 	    bool block = false;
 	    QWidget *w = static_cast<QWidget *>(o);
@@ -1313,19 +1314,6 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    QPaintEvent *pe = static_cast<QPaintEvent *>(e);
 		    scheduleRepaint(x + pe->rect().x(), y + pe->rect().y(),
 				    pe->rect().width(), pe->rect().height());
-		}
-		break;
-	    case QEvent::Wheel:
-		if (w->parentWidget() == view) {
-		    // don't allow the widget to react to wheel event unless its
-		    // currently focused. this avoids accidentally changing a select box
-		    // or something while wheeling a webpage.
-		    if (qApp->focusWidget() != w &&
-			w->focusPolicy() <= QWidget::StrongFocus)  {
-			static_cast<QWheelEvent*>(e)->ignore();
-			QApplication::sendEvent(this, e);
-			block = true;
-		    }
 		}
 		break;
 	    case QEvent::MouseMove:
