@@ -1077,29 +1077,39 @@ QString KApplication::makeStdCaption( const QString &userCaption,
     modified = modString.isNull() == true ? false : true;
   }
 
+  // WABA:
+  // Always put the "userCaption" in as last arg because it can
+  // can contain the text "%1" or "%2" which will mess up the rest
+  // of the arguments.
+
   if( withAppName == true )
   {
     if( captionLayout == CaptionAppLast )
     {
       if( modified == true )
-      {
-	return( QString("%1 %2 - %3").arg(modString).arg(userCaption).
-		arg(caption()));
+      { 
+	// userCaption must be last arg!!!
+	return( QString("%1 %3 - %2").arg(modString).
+		arg(caption()).arg(userCaption)); // useCaption last!!!
       }
-      else
-      {
-	return( QString("%1 - %2").arg(userCaption).arg(caption()));
+      else {
+ 
+	// userCaption must be last arg!!!	
+	return( QString("%2 - %1").arg(caption()).arg(userCaption));
       }
     }
     else if( captionLayout == CaptionAppFirst )
     {
       if( modified == true )
       {
+ 
+	// userCaption must be last!!!
 	return( QString("%1: %2 %3").arg(caption()).arg(modString).
 		arg(userCaption) );
       }
       else
       {
+	// userCaption must be last!!!
 	return( QString("%1: %2").arg(caption()).arg(userCaption) );
       }
     }
@@ -1107,6 +1117,7 @@ QString KApplication::makeStdCaption( const QString &userCaption,
 
   if( modified == true )
   {
+    // userCaption must be last!!!
     return( QString("%1 %2").arg(modString).arg(userCaption) );
   }
   else
