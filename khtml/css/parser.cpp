@@ -1,5 +1,5 @@
 /* A Bison parser, made from parser.y
-   by GNU bison 1.35.  */
+   by GNU bison 1.33.  */
 
 #define YYBISON 1  /* Identify Bison output.  */
 
@@ -152,7 +152,6 @@ typedef union {
     ValueList *valueList;
 } yystype;
 # define YYSTYPE yystype
-# define YYSTYPE_IS_TRIVIAL 1
 #endif
 #line 100 "parser.y"
 
@@ -303,16 +302,16 @@ static const short yyrline[] =
      362,   364,   365,   366,   367,   368,   371,   373,   376,   380,
      384,   389,   393,   400,   415,   417,   426,   448,   452,   457,
      461,   466,   468,   469,   472,   474,   477,   497,   511,   525,
-     531,   535,   550,   556,   561,   566,   573,   575,   583,   585,
-     586,   590,   607,   610,   615,   623,   629,   636,   637,   638,
-     641,   650,   652,   658,   678,   684,   692,   696,   699,   702,
-     705,   708,   713,   715,   718,   724,   732,   736,   741,   744,
-     750,   758,   762,   768,   774,   779,   785,   793,   816,   823,
-     825,   828,   833,   846,   852,   856,   859,   864,   866,   867,
-     868,   874,   875,   876,   878,   883,   885,   886,   887,   888,
-     889,   890,   891,   892,   893,   894,   895,   896,   897,   898,
-     899,   900,   901,   902,   906,   921,   928,   935,   943,   969,
-     971,   974,   976
+     531,   535,   556,   562,   567,   572,   579,   581,   589,   591,
+     592,   596,   613,   616,   621,   629,   635,   642,   643,   644,
+     647,   656,   658,   664,   684,   690,   698,   702,   705,   708,
+     711,   714,   719,   721,   724,   730,   738,   742,   747,   750,
+     756,   764,   768,   774,   780,   785,   791,   799,   822,   829,
+     831,   834,   839,   852,   858,   862,   865,   870,   872,   873,
+     874,   880,   881,   882,   884,   889,   891,   892,   893,   894,
+     895,   896,   897,   898,   899,   900,   901,   902,   903,   904,
+     905,   906,   907,   908,   912,   927,   934,   941,   949,   975,
+     977,   980,   982
 };
 #endif
 
@@ -636,6 +635,12 @@ static const short yycheck[] =
    define necessary library symbols; they are noted "INFRINGES ON
    USER NAME SPACE" below.  */
 
+#ifdef __cplusplus
+# define YYSTD(x) std::x
+#else
+# define YYSTD(x) x
+#endif
+
 #ifndef YYPARSE_RETURN_TYPE
 #define YYPARSE_RETURN_TYPE int
 #endif
@@ -662,19 +667,18 @@ static const short yycheck[] =
    /* Pacify GCC's `empty if-body' warning. */
 #  define YYSTACK_FREE(Ptr) do { /* empty */; } while (0)
 # else
-#  if defined (__STDC__) || defined (__cplusplus)
-#   include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
-#   define YYSIZE_T size_t
+#  ifdef __cplusplus
+#   include <cstdlib> /* INFRINGES ON USER NAME SPACE */
+#   define YYSIZE_T std::size_t
+#  else
+#   ifdef __STDC__
+#    include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
+#    define YYSIZE_T size_t
+#   endif
 #  endif
-#  define YYSTACK_ALLOC malloc
-#  define YYSTACK_FREE free
+#  define YYSTACK_ALLOC YYSTD (malloc)
+#  define YYSTACK_FREE YYSTD (free)
 # endif
-#endif /* ! defined (yyoverflow) || defined (YYERROR_VERBOSE) */
-
-
-#if (! defined (yyoverflow) \
-     && (! defined (__cplusplus) \
-	 || ((YYLTYPE_IS_TRIVIAL || ! YYLSP_NEEDED) && YYSTYPE_IS_TRIVIAL)))
 
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
@@ -701,41 +705,24 @@ union yyalloc
       + YYSTACK_GAP_MAX)
 # endif
 
-/* Copy COUNT objects from FROM to TO.  The source and destination do
-   not overlap.  */
-# ifndef YYCOPY
-#  if 1 < __GNUC__
-#   define YYCOPY(To, From, Count) \
-      __builtin_memcpy (To, From, (Count) * sizeof (*(From)))
-#  else
-#   define YYCOPY(To, From, Count)		\
-      do					\
-	{					\
-	  register YYSIZE_T yyi;		\
-	  for (yyi = 0; yyi < (Count); yyi++)	\
-	    (To)[yyi] = (From)[yyi];		\
-	}					\
-      while (0)
-#  endif
-# endif
-
-/* Relocate STACK from its old location to the new one.  The
+/* Relocate the TYPE STACK from its old location to the new one.  The
    local variables YYSIZE and YYSTACKSIZE give the old and new number of
    elements in the stack, and YYPTR gives the new location of the
    stack.  Advance YYPTR to a properly aligned location for the next
    stack.  */
-# define YYSTACK_RELOCATE(Stack)					\
+# define YYSTACK_RELOCATE(Type, Stack)					\
     do									\
       {									\
 	YYSIZE_T yynewbytes;						\
-	YYCOPY (&yyptr->Stack, Stack, yysize);				\
+	yymemcpy ((char *) yyptr, (char *) (Stack),			\
+		  yysize * (YYSIZE_T) sizeof (Type));			\
 	Stack = &yyptr->Stack;						\
-	yynewbytes = yystacksize * sizeof (*Stack) + YYSTACK_GAP_MAX;	\
+	yynewbytes = yystacksize * sizeof (Type) + YYSTACK_GAP_MAX;	\
 	yyptr += yynewbytes / sizeof (*yyptr);				\
       }									\
     while (0)
 
-#endif
+#endif /* ! defined (yyoverflow) || defined (YYERROR_VERBOSE) */
 
 
 #if ! defined (YYSIZE_T) && defined (__SIZE_TYPE__)
@@ -745,9 +732,14 @@ union yyalloc
 # define YYSIZE_T size_t
 #endif
 #if ! defined (YYSIZE_T)
-# if defined (__STDC__) || defined (__cplusplus)
-#  include <stddef.h> /* INFRINGES ON USER NAME SPACE */
-#  define YYSIZE_T size_t
+# ifdef __cplusplus
+#  include <cstddef> /* INFRINGES ON USER NAME SPACE */
+#  define YYSIZE_T std::size_t
+# else
+#  ifdef __STDC__
+#   include <stddef.h> /* INFRINGES ON USER NAME SPACE */
+#   define YYSIZE_T size_t
+#  endif
 # endif
 #endif
 #if ! defined (YYSIZE_T)
@@ -826,8 +818,12 @@ while (0)
 #if YYDEBUG
 
 # ifndef YYFPRINTF
-#  include <stdio.h> /* INFRINGES ON USER NAME SPACE */
-#  define YYFPRINTF fprintf
+#  ifdef __cplusplus
+#   include <cstdio>  /* INFRINGES ON USER NAME SPACE */
+#  else
+#   include <stdio.h> /* INFRINGES ON USER NAME SPACE */
+#  endif
+#  define YYFPRINTF YYSTD (fprintf)
 # endif
 
 # define YYDPRINTF(Args)			\
@@ -835,8 +831,10 @@ do {						\
   if (yydebug)					\
     YYFPRINTF Args;				\
 } while (0)
-/* Nonzero means print parse trace.  It is left uninitialized so that
-   multiple parsers can coexist.  */
+/* Nonzero means print parse trace. [The following comment makes no
+   sense to me.  Could someone clarify it?  --akim] Since this is
+   uninitialized, it does not stop multiple parsers from coexisting.
+   */
 int yydebug;
 #else /* !YYDEBUG */
 # define YYDPRINTF(Args)
@@ -862,6 +860,33 @@ int yydebug;
 # define YYMAXDEPTH 10000
 #endif
 
+#if ! defined (yyoverflow) && ! defined (yymemcpy)
+# if __GNUC__ > 1		/* GNU C and GNU C++ define this.  */
+#  define yymemcpy __builtin_memcpy
+# else				/* not GNU C or C++ */
+
+/* This is the most reliable way to avoid incompatibilities
+   in available built-in functions on various systems.  */
+static void
+#  if defined (__STDC__) || defined (__cplusplus)
+yymemcpy (char *yyto, const char *yyfrom, YYSIZE_T yycount)
+#  else
+yymemcpy (yyto, yyfrom, yycount)
+     char *yyto;
+     const char *yyfrom;
+     YYSIZE_T yycount;
+#  endif
+{
+  register const char *yyf = yyfrom;
+  register char *yyt = yyto;
+  register YYSIZE_T yyi = yycount;
+
+  while (yyi-- != 0)
+    *yyt++ = *yyf++;
+}
+# endif
+#endif
+
 #ifdef YYERROR_VERBOSE
 
 # ifndef yystrlen
@@ -914,7 +939,7 @@ yystpcpy (yydest, yysrc)
 # endif
 #endif
 
-#line 319 "/usr/share/bison/bison.simple"
+#line 345 "/usr/share/bison/bison.simple"
 
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
@@ -924,13 +949,13 @@ yystpcpy (yydest, yysrc)
    to the proper pointer type.  */
 
 #ifdef YYPARSE_PARAM
-# if defined (__STDC__) || defined (__cplusplus)
+# ifdef __cplusplus
 #  define YYPARSE_PARAM_ARG void *YYPARSE_PARAM
 #  define YYPARSE_PARAM_DECL
-# else
+# else /* !__cplusplus */
 #  define YYPARSE_PARAM_ARG YYPARSE_PARAM
 #  define YYPARSE_PARAM_DECL void *YYPARSE_PARAM;
-# endif
+# endif /* !__cplusplus */
 #else /* !YYPARSE_PARAM */
 # define YYPARSE_PARAM_ARG
 # define YYPARSE_PARAM_DECL
@@ -1104,9 +1129,6 @@ yyparse (YYPARSE_PARAM_ARG)
 	yyvs = yyvs1;
       }
 #else /* no yyoverflow */
-# ifndef YYSTACK_RELOCATE
-      goto yyoverflowlab;
-# else
       /* Extend the stack our own way.  */
       if (yystacksize >= YYMAXDEPTH)
 	goto yyoverflowlab;
@@ -1120,16 +1142,15 @@ yyparse (YYPARSE_PARAM_ARG)
 	  (union yyalloc *) YYSTACK_ALLOC (YYSTACK_BYTES (yystacksize));
 	if (! yyptr)
 	  goto yyoverflowlab;
-	YYSTACK_RELOCATE (yyss);
-	YYSTACK_RELOCATE (yyvs);
+	YYSTACK_RELOCATE (short, yyss);
+	YYSTACK_RELOCATE (YYSTYPE, yyvs);
 # if YYLSP_NEEDED
-	YYSTACK_RELOCATE (yyls);
+	YYSTACK_RELOCATE (YYLTYPE, yyls);
 # endif
 # undef YYSTACK_RELOCATE
 	if (yyss1 != yyssa)
 	  YYSTACK_FREE (yyss1);
       }
-# endif
 #endif /* no yyoverflow */
 
       yyssp = yyss + yysize - 1;
@@ -1578,37 +1599,43 @@ case 60:
 case 61:
 #line 535 "parser.y"
 {
-        yyval.selector = yyvsp[0].selector;
-        CSSSelector *end = yyvsp[0].selector;
-        while( end->tagHistory )
-            end = end->tagHistory;
-        end->relation = yyvsp[-1].relation;
-        end->tagHistory = yyvsp[-2].selector;
-	if ( yyvsp[-1].relation == CSSSelector::Descendant ||
-	     yyvsp[-1].relation == CSSSelector::Child ) {
-	    CSSParser *p = static_cast<CSSParser *>(parser);
-	    DOM::DocumentImpl *doc = p->document();
-	    if ( doc )
-		doc->setUsesDescendantRules(true);
+	if ( !yyvsp[-2].selector || !yyvsp[0].selector ) {
+	    delete yyvsp[-2].selector;
+	    delete yyvsp[0].selector;
+	    yyval.selector = 0;
+	} else {
+	    yyval.selector = yyvsp[0].selector;
+	    CSSSelector *end = yyvsp[0].selector;
+	    while( end->tagHistory )
+		end = end->tagHistory;
+	    end->relation = yyvsp[-1].relation;
+	    end->tagHistory = yyvsp[-2].selector;
+	    if ( yyvsp[-1].relation == CSSSelector::Descendant ||
+		 yyvsp[-1].relation == CSSSelector::Child ) {
+		CSSParser *p = static_cast<CSSParser *>(parser);
+		DOM::DocumentImpl *doc = p->document();
+		if ( doc )
+		    doc->setUsesDescendantRules(true);
+	    }
 	}
     ;
     break;}
 case 62:
-#line 550 "parser.y"
+#line 556 "parser.y"
 {
 	delete yyvsp[-1].selector;
 	yyval.selector = 0;
     ;
     break;}
 case 63:
-#line 557 "parser.y"
+#line 563 "parser.y"
 {
 	yyval.selector = new CSSSelector();
 	yyval.selector->tag = yyvsp[-1].element;
     ;
     break;}
 case 64:
-#line 561 "parser.y"
+#line 567 "parser.y"
 {
 	yyval.selector = yyvsp[-1].selector;
         if ( yyval.selector )
@@ -1616,7 +1643,7 @@ case 64:
     ;
     break;}
 case 65:
-#line 566 "parser.y"
+#line 572 "parser.y"
 {
 	yyval.selector = yyvsp[-1].selector;
         if ( yyval.selector )
@@ -1624,11 +1651,11 @@ case 65:
     ;
     break;}
 case 66:
-#line 574 "parser.y"
+#line 580 "parser.y"
 { yyval.element = (yyvsp[-1].ns<<16) | yyvsp[0].element; ;
     break;}
 case 67:
-#line 575 "parser.y"
+#line 581 "parser.y"
 {
         /* according to the specs this one matches all namespaces if no
 	   default namespace has been specified otherwise the default namespace */
@@ -1637,19 +1664,19 @@ case 67:
     ;
     break;}
 case 68:
-#line 584 "parser.y"
+#line 590 "parser.y"
 { yyval.ns = 0; ;
     break;}
 case 69:
-#line 585 "parser.y"
+#line 591 "parser.y"
 { yyval.ns = 1; /* #### insert correct namespace id here */ ;
     break;}
 case 70:
-#line 586 "parser.y"
+#line 592 "parser.y"
 { yyval.ns = 0xffff; ;
     break;}
 case 71:
-#line 591 "parser.y"
+#line 597 "parser.y"
 {
 	CSSParser *p = static_cast<CSSParser *>(parser);
 	DOM::DocumentImpl *doc = p->document();
@@ -1668,18 +1695,18 @@ case 71:
     ;
     break;}
 case 72:
-#line 607 "parser.y"
+#line 613 "parser.y"
 { yyval.element = 0xffff; ;
     break;}
 case 73:
-#line 611 "parser.y"
+#line 617 "parser.y"
 {
 	yyval.selector = yyvsp[0].selector;
 	yyval.selector->nonCSSHint = static_cast<CSSParser *>(parser)->nonCSSHint;
     ;
     break;}
 case 74:
-#line 615 "parser.y"
+#line 621 "parser.y"
 {
 	yyval.selector = yyvsp[-1].selector;
         CSSSelector *end = yyvsp[-1].selector;
@@ -1690,14 +1717,14 @@ case 74:
     ;
     break;}
 case 75:
-#line 623 "parser.y"
+#line 629 "parser.y"
 {
 	delete yyvsp[-1].selector;
 	yyval.selector = 0;
 ;
     break;}
 case 76:
-#line 630 "parser.y"
+#line 636 "parser.y"
 {
 	yyval.selector = new CSSSelector();
 	yyval.selector->match = CSSSelector::Id;
@@ -1706,7 +1733,7 @@ case 76:
     ;
     break;}
 case 80:
-#line 642 "parser.y"
+#line 648 "parser.y"
 {
 	yyval.selector = new CSSSelector();
 	yyval.selector->match = CSSSelector::List;
@@ -1715,18 +1742,18 @@ case 80:
     ;
     break;}
 case 81:
-#line 651 "parser.y"
+#line 657 "parser.y"
 { yyval.attribute = (yyvsp[-1].ns<<16) | yyvsp[0].attribute; ;
     break;}
 case 82:
-#line 652 "parser.y"
+#line 658 "parser.y"
 {
 	/* opposed to elements, these only match for non namespaced attributes */
 	yyval.attribute = yyvsp[0].attribute;
     ;
     break;}
 case 83:
-#line 659 "parser.y"
+#line 665 "parser.y"
 {
 	CSSParser *p = static_cast<CSSParser *>(parser);
 	DOM::DocumentImpl *doc = p->document();
@@ -1746,7 +1773,7 @@ case 83:
     ;
     break;}
 case 84:
-#line 679 "parser.y"
+#line 685 "parser.y"
 {
 	yyval.selector = new CSSSelector();
 	yyval.selector->attr = yyvsp[-1].attribute;
@@ -1754,7 +1781,7 @@ case 84:
     ;
     break;}
 case 85:
-#line 684 "parser.y"
+#line 690 "parser.y"
 {
 	yyval.selector = new CSSSelector();
 	yyval.selector->attr = yyvsp[-5].attribute;
@@ -1763,43 +1790,43 @@ case 85:
     ;
     break;}
 case 86:
-#line 693 "parser.y"
+#line 699 "parser.y"
 {
 	yyval.val = CSSSelector::Exact;
     ;
     break;}
 case 87:
-#line 696 "parser.y"
+#line 702 "parser.y"
 {
 	yyval.val = CSSSelector::List;
     ;
     break;}
 case 88:
-#line 699 "parser.y"
+#line 705 "parser.y"
 {
 	yyval.val = CSSSelector::Hyphen;
     ;
     break;}
 case 89:
-#line 702 "parser.y"
+#line 708 "parser.y"
 {
 	yyval.val = CSSSelector::Begin;
     ;
     break;}
 case 90:
-#line 705 "parser.y"
+#line 711 "parser.y"
 {
 	yyval.val = CSSSelector::End;
     ;
     break;}
 case 91:
-#line 708 "parser.y"
+#line 714 "parser.y"
 {
 	yyval.val = CSSSelector::Contain;
     ;
     break;}
 case 94:
-#line 719 "parser.y"
+#line 725 "parser.y"
 {
 	yyval.selector = new CSSSelector();
 	yyval.selector->match = CSSSelector::Pseudo;
@@ -1807,7 +1834,7 @@ case 94:
     ;
     break;}
 case 95:
-#line 724 "parser.y"
+#line 730 "parser.y"
 {
 	yyval.selector = new CSSSelector();
 	yyval.selector->match = CSSSelector::Pseudo;
@@ -1816,13 +1843,13 @@ case 95:
     ;
     break;}
 case 96:
-#line 733 "parser.y"
+#line 739 "parser.y"
 {
 	yyval.ok = yyvsp[0].ok;
     ;
     break;}
 case 97:
-#line 736 "parser.y"
+#line 742 "parser.y"
 {
 	yyval.ok = yyvsp[-1].ok;
 	if ( yyvsp[0].ok )
@@ -1830,13 +1857,13 @@ case 97:
     ;
     break;}
 case 98:
-#line 741 "parser.y"
+#line 747 "parser.y"
 {
 	yyval.ok = yyvsp[0].ok;
     ;
     break;}
 case 99:
-#line 744 "parser.y"
+#line 750 "parser.y"
 {
 	yyval.ok = false;
 #ifdef CSS_DEBUG
@@ -1845,7 +1872,7 @@ case 99:
     ;
     break;}
 case 100:
-#line 750 "parser.y"
+#line 756 "parser.y"
 {
 	yyval.ok = false;
 #ifdef CSS_DEBUG
@@ -1854,21 +1881,12 @@ case 100:
     ;
     break;}
 case 101:
-#line 759 "parser.y"
+#line 765 "parser.y"
 {
 	yyval.ok = yyvsp[-2].ok;
     ;
     break;}
 case 102:
-#line 762 "parser.y"
-{
-	yyval.ok = false;
-#ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipping bogus declaration" << endl;
-#endif
-    ;
-    break;}
-case 103:
 #line 768 "parser.y"
 {
 	yyval.ok = false;
@@ -1877,8 +1895,17 @@ case 103:
 #endif
     ;
     break;}
-case 104:
+case 103:
 #line 774 "parser.y"
+{
+	yyval.ok = false;
+#ifdef CSS_DEBUG
+	kdDebug( 6080 ) << "skipping bogus declaration" << endl;
+#endif
+    ;
+    break;}
+case 104:
+#line 780 "parser.y"
 {
 	yyval.ok = yyvsp[-3].ok;
 	if ( yyvsp[-2].ok )
@@ -1886,7 +1913,7 @@ case 104:
     ;
     break;}
 case 105:
-#line 779 "parser.y"
+#line 785 "parser.y"
 {
 	yyval.ok = yyvsp[-3].ok;
 #ifdef CSS_DEBUG
@@ -1895,7 +1922,7 @@ case 105:
     ;
     break;}
 case 106:
-#line 785 "parser.y"
+#line 791 "parser.y"
 {
 	yyval.ok = yyvsp[-5].ok;
 #ifdef CSS_DEBUG
@@ -1904,7 +1931,7 @@ case 106:
     ;
     break;}
 case 107:
-#line 794 "parser.y"
+#line 800 "parser.y"
 {
 	yyval.ok = false;
 	CSSParser *p = static_cast<CSSParser *>(parser);
@@ -1927,29 +1954,29 @@ case 107:
     ;
     break;}
 case 108:
-#line 817 "parser.y"
+#line 823 "parser.y"
 {
 	QString str = qString(yyvsp[-1].string);
 	yyval.prop_id = getPropertyID( str.lower().latin1(), str.length() );
     ;
     break;}
 case 109:
-#line 824 "parser.y"
+#line 830 "parser.y"
 { yyval.b = true; ;
     break;}
 case 110:
-#line 825 "parser.y"
+#line 831 "parser.y"
 { yyval.b = false; ;
     break;}
 case 111:
-#line 829 "parser.y"
+#line 835 "parser.y"
 {
 	yyval.valueList = new ValueList;
 	yyval.valueList->addValue( yyvsp[0].value );
     ;
     break;}
 case 112:
-#line 833 "parser.y"
+#line 839 "parser.y"
 {
 	yyval.valueList = yyvsp[-2].valueList;
 	if ( yyval.valueList ) {
@@ -1965,44 +1992,44 @@ case 112:
     ;
     break;}
 case 113:
-#line 846 "parser.y"
+#line 852 "parser.y"
 {
 	delete yyvsp[-1].valueList;
 	yyval.valueList = 0;
     ;
     break;}
 case 114:
-#line 853 "parser.y"
+#line 859 "parser.y"
 {
 	yyval.tok = '/';
     ;
     break;}
 case 115:
-#line 856 "parser.y"
+#line 862 "parser.y"
 {
 	yyval.tok = ',';
     ;
     break;}
 case 116:
-#line 859 "parser.y"
+#line 865 "parser.y"
 {
         yyval.tok = 0;
   ;
     break;}
 case 117:
-#line 865 "parser.y"
+#line 871 "parser.y"
 { yyval.value = yyvsp[0].value; ;
     break;}
 case 118:
-#line 866 "parser.y"
+#line 872 "parser.y"
 { yyval.value = yyvsp[0].value; yyval.value.fValue *= yyvsp[-1].val; ;
     break;}
 case 119:
-#line 867 "parser.y"
+#line 873 "parser.y"
 { yyval.value.id = 0; yyval.value.string = yyvsp[-1].string; yyval.value.unit = CSSPrimitiveValue::CSS_STRING; ;
     break;}
 case 120:
-#line 868 "parser.y"
+#line 874 "parser.y"
 {
       QString str = qString( yyvsp[-1].string );
       yyval.value.id = getValueID( str.lower().latin1(), str.length() );
@@ -2011,101 +2038,101 @@ case 120:
   ;
     break;}
 case 121:
-#line 874 "parser.y"
+#line 880 "parser.y"
 { yyval.value.id = 0; yyval.value.string = yyvsp[-1].string; yyval.value.unit = CSSPrimitiveValue::CSS_URI; ;
     break;}
 case 122:
-#line 875 "parser.y"
+#line 881 "parser.y"
 { yyval.value.id = 0; yyval.value.iValue = 0; yyval.value.unit = CSSPrimitiveValue::CSS_UNKNOWN;/* ### */ ;
     break;}
 case 123:
-#line 876 "parser.y"
+#line 882 "parser.y"
 { yyval.value.id = 0; yyval.value.string = yyvsp[0].string; yyval.value.unit = CSSPrimitiveValue::CSS_RGBCOLOR; ;
     break;}
 case 124:
-#line 878 "parser.y"
+#line 884 "parser.y"
 {
       yyval.value = yyvsp[0].value;
   ;
     break;}
 case 125:
-#line 884 "parser.y"
+#line 890 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_NUMBER; ;
     break;}
 case 126:
-#line 885 "parser.y"
+#line 891 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PERCENTAGE; ;
     break;}
 case 127:
-#line 886 "parser.y"
+#line 892 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PX; ;
     break;}
 case 128:
-#line 887 "parser.y"
+#line 893 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_CM; ;
     break;}
 case 129:
-#line 888 "parser.y"
+#line 894 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_MM; ;
     break;}
 case 130:
-#line 889 "parser.y"
+#line 895 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_IN; ;
     break;}
 case 131:
-#line 890 "parser.y"
+#line 896 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PT; ;
     break;}
 case 132:
-#line 891 "parser.y"
+#line 897 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_PC; ;
     break;}
 case 133:
-#line 892 "parser.y"
+#line 898 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_DEG; ;
     break;}
 case 134:
-#line 893 "parser.y"
+#line 899 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_RAD; ;
     break;}
 case 135:
-#line 894 "parser.y"
+#line 900 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_GRAD; ;
     break;}
 case 136:
-#line 895 "parser.y"
+#line 901 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_MS; ;
     break;}
 case 137:
-#line 896 "parser.y"
+#line 902 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_S; ;
     break;}
 case 138:
-#line 897 "parser.y"
+#line 903 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_HZ; ;
     break;}
 case 139:
-#line 898 "parser.y"
+#line 904 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_KHZ; ;
     break;}
 case 140:
-#line 899 "parser.y"
+#line 905 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_EMS; ;
     break;}
 case 141:
-#line 900 "parser.y"
+#line 906 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = Value::Q_EMS; ;
     break;}
 case 142:
-#line 901 "parser.y"
+#line 907 "parser.y"
 { yyval.value.id = 0; yyval.value.fValue = yyvsp[-1].val; yyval.value.unit = CSSPrimitiveValue::CSS_EXS; ;
     break;}
 case 143:
-#line 902 "parser.y"
+#line 908 "parser.y"
 { yyval.value.id = 0; yyval.value.string = yyvsp[-1].string; yyval.value.unit = CSSPrimitiveValue::CSS_DIMENSION ;
     break;}
 case 144:
-#line 907 "parser.y"
+#line 913 "parser.y"
 {
       Function *f = new Function;
       f->name = yyvsp[-4].string;
@@ -2116,19 +2143,10 @@ case 144:
   ;
     break;}
 case 145:
-#line 922 "parser.y"
+#line 928 "parser.y"
 { yyval.string = yyvsp[-1].string; ;
     break;}
 case 146:
-#line 929 "parser.y"
-{
-	yyval.rule = 0;
-#ifdef CSS_DEBUG
-	kdDebug( 6080 ) << "skipped invalid @-rule" << endl;
-#endif
-    ;
-    break;}
-case 147:
 #line 935 "parser.y"
 {
 	yyval.rule = 0;
@@ -2137,8 +2155,17 @@ case 147:
 #endif
     ;
     break;}
+case 147:
+#line 941 "parser.y"
+{
+	yyval.rule = 0;
+#ifdef CSS_DEBUG
+	kdDebug( 6080 ) << "skipped invalid @-rule" << endl;
+#endif
+    ;
+    break;}
 case 148:
-#line 944 "parser.y"
+#line 950 "parser.y"
 {
 	yyval.rule = 0;
 #ifdef CSS_DEBUG
@@ -2148,7 +2175,7 @@ case 148:
     break;}
 }
 
-#line 709 "/usr/share/bison/bison.simple"
+#line 731 "/usr/share/bison/bison.simple"
 
 
   yyvsp -= yylen;
@@ -2379,6 +2406,6 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 979 "parser.y"
+#line 985 "parser.y"
 
 

@@ -23,7 +23,6 @@ typedef union {
     ValueList *valueList;
 } yystype;
 # define YYSTYPE yystype
-# define YYSTYPE_IS_TRIVIAL 1
 #endif
 # define	S	257
 # define	SGML_CD	258
