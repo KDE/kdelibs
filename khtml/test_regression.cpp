@@ -335,7 +335,7 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 
     return result;
 }
-        
+
 // signal handler
 static void sighandler(int sig) {
     signal(SIGSEGV, sighandler);
@@ -440,14 +440,16 @@ int main(int argc, char *argv[])
     if ( visual )
         toplevel->show();
 
-    signal(SIGSEGV, sighandler);
-    signal(SIGABRT, sighandler);
-    signal(SIGILL, sighandler);
-    signal(SIGFPE, sighandler);
-    
-    // set ulimits
-    static rlimit vmem_limit = { 0, 128*1024 };	// 128Mb Memory should suffice
-    setrlimit(RLIMIT_AS, &vmem_limit);
+    if (!getenv("KDE_DEBUG")) {
+        signal(SIGSEGV, sighandler);
+        signal(SIGABRT, sighandler);
+        signal(SIGILL, sighandler);
+        signal(SIGFPE, sighandler);
+
+        // set ulimits
+        static rlimit vmem_limit = { 0, 128*1024*1024 };	// 128Mb Memory should suffice
+        setrlimit(RLIMIT_AS, &vmem_limit);
+    }
 
     // run the tests
     RegressionTest *regressionTest = new RegressionTest(part,
