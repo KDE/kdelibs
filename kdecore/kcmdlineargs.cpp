@@ -974,8 +974,11 @@ KCmdLineArgs::arg(int n)
 KURL
 KCmdLineArgs::url(int n)
 {
-   const char *urlArg = arg(n);
+   return makeURL( arg(n) );
+}
 
+KURL KCmdLineArgs::makeURL( const char *urlArg )
+{
    if (*urlArg == '/')
    {
       KURL result;
