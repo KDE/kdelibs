@@ -105,10 +105,8 @@ int kdemain( int argc, char **argv )
      exit(-1);
   }
 
-
   HTTPProtocol slave(argv[1], argv[2], argv[3]);
   slave.dispatchLoop();
-
   return 0;
 }
 
@@ -174,7 +172,7 @@ bool revmatch(const char *host, const char *nplist)
 /************************************** HTTPProtocol **********************************************/
 
 HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, const QCString &app )
-             :SlaveBase( (protocol=="ftp") ? QCString("ftp-proxy") : protocol , pool, app )
+             :SlaveBase( protocol , pool, app )
 {
   m_protocol = protocol;
   kdDebug(7113) << "HTTPProtocol: mProtocol=" << mProtocol << " m_protocol=" << m_protocol << endl;
@@ -254,9 +252,7 @@ void HTTPProtocol::closeSSL() {
 void HTTPProtocol::resetSSL() {
   m_ssl.reInitialize();
 }
-
 #endif
-
 
 int HTTPProtocol::openStream() {
 #ifdef DO_SSL
@@ -342,7 +338,6 @@ ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
   return n;
 }
 
-
 char *HTTPProtocol::gets (char *s, int size)
 {
   int len=0;
@@ -360,7 +355,6 @@ char *HTTPProtocol::gets (char *s, int size)
   *buf=0;
   return s;
 }
-
 
 ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 {
@@ -397,7 +391,6 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 
   return ret;
 }
-
 
 bool HTTPProtocol::eof()
 {
@@ -842,17 +835,53 @@ bool HTTPProtocol::http_open()
   }
 
   // format the URI
-  char c_buffer[64];
-  memset(c_buffer, 0, 64);
-  if (m_state.do_proxy) {
-    sprintf(c_buffer, ":%u", m_state.port);
-    // The URL for the request uses ftp:// if we are in "ftp-proxy" mode
-    kdDebug(7103) << "Using basis for URL : " << m_protocol << endl;
-    header += (m_protocol == "ftp") ? "ftp://" : "http://";
-    header += m_state.hostname;
-    header += c_buffer;
+  if (m_state.do_proxy)
+  {
+    KURL u;
+    u.setProtocol( m_protocol );
+    u.setHost( m_state.hostname );
+    u.setPort( m_state.port );
+    u.setEncodedPathAndQuery( m_request.url.encodedPathAndQuery(0,true) );
+/*
+    // For all protocols other than HTTP/HTTPS we need to prompt the user
+    // for password if a username is specified.  However, unlike normal direct
+    // connections, we have no responsiblities of managing (caching) thess
+    // passwords since we are simply a gateway to a proxy server! (DA)
+    if ( m_protocol.find("http",0, false) == -1 &&
+         !m_state.user.isEmpty() &&
+         m_state.passwd.isEmpty() )
+    {
+      AuthInfo info;
+      info.username = m_state.user;
+      info.commentLabel = i18n( "Site:" );
+      info.comment = i18n("<b>%1</b>").arg( m_state.hostname );
+
+      if ( !openPassDlg( info ) )
+      {
+        error( ERR_USER_CANCELED, m_state.hostname );
+        return false;
+      }
+      else
+      {
+        u.setUser( info.username );
+        u.setPass( info.password );
+        m_request.user = info.username;
+        m_request.passwd = info.password;
+      }
+    }
+    else
+    {
+      if ( !m_state.user.isEmpty() && !m_state.passwd.isEmpty() )
+      {
+        u.setUser( m_state.user );
+        u.setPass( m_state.passwd );
+      }
+*/
+    }
+    header += u.url();
   }
-  header += m_request.url.encodedPathAndQuery(0, true);
+  else
+    header += m_request.url.encodedPathAndQuery(0, true);
 
   header += " HTTP/1.1\r\n"; /* start header */
 
@@ -892,10 +921,10 @@ bool HTTPProtocol::http_open()
   if ( !resumeOffset.isEmpty() )
       m_request.offset = resumeOffset.toInt();
 
-  if ( m_request.offset > 0 ) {
-    sprintf(c_buffer, "Range: bytes=%li-\r\n", m_request.offset);
-    header += c_buffer;
-    kdDebug(7103) << "kio_http : Range = " << c_buffer << endl;
+  if ( m_request.offset > 0 )
+  {
+    header += QString("Range: bytes=%1-\r\n").arg(m_request.offset);
+    kdDebug(7103) << "kio_http : Range = " << m_request.offset << endl;
   }
 
 
@@ -924,7 +953,7 @@ bool HTTPProtocol::http_open()
   // header += "Accept-Encoding: x-gzip; q=1.0, x-deflate, gzip; q=1.0, deflate, identity\r\n";
     header += "Accept-Encoding: x-gzip; q=1.0, gzip; q=1.0, identity\r\n";
 #endif
-   
+
   // Charset negotiation:
   if ( !m_strCharsets.isEmpty() )
     header += "Accept-Charset: " + m_strCharsets + "\r\n";
@@ -945,9 +974,7 @@ bool HTTPProtocol::http_open()
     header += m_state.hostname;
   if (m_state.port != m_DefaultPort)
   {
-    memset(c_buffer, 0, 64);
-    sprintf(c_buffer, ":%u", m_state.port);
-    header += c_buffer;
+    header += QString(":%1").arg(m_state.port);
   }
   header += "\r\n";
 
@@ -2125,12 +2152,9 @@ void HTTPProtocol::stat(const KURL& url)
 
 void HTTPProtocol::get( const KURL& url )
 {
-  if (m_request.hostname.isEmpty())
-  {
-     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
-     return;
-  }
-
+  if ( !checkRequestURL( url ) )
+    return;
+ 
   kdDebug(7113) << "HTTPProtocol::get " << url.url() << endl;
 
   m_request.method = HTTP_GET;
@@ -2152,11 +2176,8 @@ void HTTPProtocol::get( const KURL& url )
 
 void HTTPProtocol::put( const KURL &url, int, bool, bool)
 {
-  if (m_request.hostname.isEmpty())
-  {
-     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
-     return;
-  }
+  if ( !checkRequestURL( url ) )
+    return;
 
   kdDebug(7113) << "HTTPProtocol::put " << url.prettyURL() << endl;
 
@@ -2174,11 +2195,8 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
 
 void HTTPProtocol::post( const KURL& url)
 {
-  if (m_request.hostname.isEmpty())
-  {
-     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
-     return;
-  }
+  if ( !checkRequestURL( url ) )
+    return;
 
   kdDebug(7113) << "HTTPProtocol::post " << url.prettyURL() << endl;
 
@@ -2223,11 +2241,8 @@ void HTTPProtocol::cache_update( const KURL& url, bool no_cache, time_t expireDa
 
 void HTTPProtocol::mimetype( const KURL& url )
 {
-  if (m_request.hostname.isEmpty())
-  {
-     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
-     return;
-  }
+  if ( !checkRequestURL( url ) )
+    return;
 
   kdDebug(7113) << "HTTPProtocol::mimetype " << url.prettyURL() << endl;
 
@@ -2273,6 +2288,21 @@ void HTTPProtocol::special( const QByteArray &data)
   }
 
 }
+
+bool HTTPProtocol::checkRequestURL( const KURL& u )
+{
+  if (m_request.hostname.isEmpty())
+  {
+     error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
+     return false;
+  }
+   
+  if ( m_request.url.protocol() != u.protocol() )
+    reparseConfiguration();
+ 
+  return true; 
+}
+
 
 void HTTPProtocol::decodeDeflate()
 {
@@ -3353,11 +3383,17 @@ bool HTTPProtocol::getAuthorization()
     }
   }
 
-  if ( !result )
+  if ( !result  )
   {
-    kdDebug( 7113 ) << "About to prompt user for authorization..." << endl;
-    promptInfo( info );
-    result = openPassDlg( info );
+    if ( !repeatFailure && !m_request.user.isEmpty() &&
+         !m_request.passwd.isEmpty() && m_responseCode == 401 )
+      result = true;
+    else
+    {
+      kdDebug( 7113 ) << "About to prompt user for authorization..." << endl;
+      promptInfo( info );
+      result = openPassDlg( info );
+    }
   }
 
   if ( result )
@@ -3489,7 +3525,6 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, HASHHEX Response )
   md.finalize();
   md.hexDigest( Response );
 }
-
 
 QString HTTPProtocol::createDigestAuth ( bool isForProxy )
 {

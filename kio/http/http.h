@@ -132,6 +132,8 @@ public:
 
   virtual void closeConnection(); // Forced close of connection
 
+  bool checkRequestURL( const KURL& );
+
 protected:
 
   void error( int _errid, const QString &_text );
