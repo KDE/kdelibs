@@ -50,6 +50,7 @@ public:
   KPushButton *openLocation;
   QCheckBox   *keepOpen;
   KURL        location;
+  QTime       startTime;
 };
 
 DefaultProgress::DefaultProgress( bool showNow )
@@ -173,6 +174,8 @@ DefaultProgress::~DefaultProgress()
 void DefaultProgress::slotTotalSize( KIO::Job*, KIO::filesize_t bytes )
 {
   m_iTotalSize = bytes;
+  if (d->startTime.isNull())
+    d->startTime.start();
 }
 
 
@@ -393,6 +396,14 @@ void DefaultProgress::slotClean() {
     slotPercent(0, 100);
     d->cancelClose->setText( KStdGuiItem::close().text() );
     d->openFile->setEnabled(true);
+    slotProcessedSize(0, m_iTotalSize);
+    d->keepOpen->setEnabled(false);
+    if (!d->startTime.isNull()) {
+      int s = d->startTime.elapsed();
+      if (!s)
+	s = 1;
+      speedLabel->setText(i18n("%1/s ( done )").arg(KIO::convertSize(1000 * m_iTotalSize / s)));
+    }
     setOnlyClean(false);
   }
   else
