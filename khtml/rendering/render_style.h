@@ -193,7 +193,7 @@ enum EFloat {
 // These have been defined in the order of their precedence for border-collapsing. Do
 // not change this order!
 enum EBorderStyle {
-    BNONE, BHIDDEN, INSET, GROOVE, RIDGE, OUTSET, DOTTED, DASHED, SOLID, DOUBLE
+    BNATIVE, BNONE, BHIDDEN, INSET, GROOVE, RIDGE, OUTSET, DOTTED, DASHED, SOLID, DOUBLE
 };
 
 class BorderValue
@@ -203,7 +203,7 @@ public:
 
     QColor color;
     unsigned short width : 12;
-    EBorderStyle style : 4;
+    EBorderStyle style : 5;
 
     bool nonZero() const
     {

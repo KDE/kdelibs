@@ -74,7 +74,6 @@ short RenderFormElement::baselinePosition( bool f ) const
     return RenderWidget::baselinePosition( f ) - 2 - style()->fontMetrics().descent();
 }
 
-
 void RenderFormElement::updateFromElement()
 {
     m_widget->setEnabled(!element()->disabled());

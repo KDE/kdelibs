@@ -1754,27 +1754,27 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_BORDER_TOP_STYLE:
         HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(borderTopStyle, BorderTopStyle, BorderStyle)
         if (!primitiveValue) return;
-        style->setBorderTopStyle((EBorderStyle)(primitiveValue->getIdent() - CSS_VAL_NONE));
+        style->setBorderTopStyle((EBorderStyle)(primitiveValue->getIdent() - CSS_VAL__KHTML_NATIVE));
         break;
     case CSS_PROP_BORDER_RIGHT_STYLE:
         HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(borderRightStyle, BorderRightStyle, BorderStyle)
         if (!primitiveValue) return;
-        style->setBorderRightStyle((EBorderStyle)(primitiveValue->getIdent() - CSS_VAL_NONE));
+        style->setBorderRightStyle((EBorderStyle)(primitiveValue->getIdent() - CSS_VAL__KHTML_NATIVE));
         break;
     case CSS_PROP_BORDER_BOTTOM_STYLE:
         HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(borderBottomStyle, BorderBottomStyle, BorderStyle)
         if (!primitiveValue) return;
-        style->setBorderBottomStyle((EBorderStyle)(primitiveValue->getIdent() - CSS_VAL_NONE));
+        style->setBorderBottomStyle((EBorderStyle)(primitiveValue->getIdent() - CSS_VAL__KHTML_NATIVE));
         break;
     case CSS_PROP_BORDER_LEFT_STYLE:
         HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(borderLeftStyle, BorderLeftStyle, BorderStyle)
         if (!primitiveValue) return;
-        style->setBorderLeftStyle((EBorderStyle)(primitiveValue->getIdent() - CSS_VAL_NONE));
+        style->setBorderLeftStyle((EBorderStyle)(primitiveValue->getIdent() - CSS_VAL__KHTML_NATIVE));
         break;
     case CSS_PROP_OUTLINE_STYLE:
         HANDLE_INHERIT_AND_INITIAL_WITH_VALUE(outlineStyle, OutlineStyle, BorderStyle)
         if (!primitiveValue) return;
-        style->setOutlineStyle((EBorderStyle)(primitiveValue->getIdent() - CSS_VAL_NONE));
+        style->setOutlineStyle((EBorderStyle)(primitiveValue->getIdent() - CSS_VAL__KHTML_NATIVE));
         break;
     case CSS_PROP_CAPTION_SIDE:
     {

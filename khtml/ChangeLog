@@ -1,3 +1,15 @@
+2004-11-22  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Implement CSS border on form-widgets
+
+        * css/cssvalues.in: Add -khtml-native
+        * css/cssparser.cpp: Accept -khtml-native as a border-type
+        * css/cssstyleselector.cpp: BNATIVE and not BNONE is now lowest border-style
+        * css/html4.css: Make -khtml-native default border-style for form-widgets
+        * render/render_style.h: Add BNATIVE
+        * render/render_object.cpp: Treat BNATIVE like BNONE
+        * render/render_replaced.cpp: Remove native, and paint CSS border when allowed
+
 2004-11-21  Germain Garand  <germain@ebooksfrance.org>
 
         float and flowAroundFloat fixes.
@@ -5,7 +17,7 @@
         * css/html4.css: make fieldset -khtml-around-floats (#92979)
 
         * rendering/render_block.cpp (layoutBlockChildren): cleanup float/flowAroundFloats
-        logic. Merges: add better RTL layouting of fAFs. 
+        logic. Merges: add better RTL layouting of fAFs.
         (lineWidth): guard against negative values
         (clearFloats): don't copy floats if element defines a new block
         formatting context (#93511)
@@ -24,6 +36,7 @@
 
         * rendering/render_table.cpp (calcWidth): style()->flowAroundFloats => flowAroundFloats()
 
+>>>>>>> 1.336
 2004-11-19  Stephan Kulow  <coolo@kde.org>
 
         * rendering/render_form.cpp (updateFromElement): restore scrolling position in case of a change

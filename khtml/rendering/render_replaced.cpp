@@ -214,7 +214,6 @@ void RenderWidget::setQWidget(QWidget *widget)
             // widget immediately, but we have to have really been full constructed (with a non-null
             // style pointer).
             if (!needsLayout() && style()) {
-                // ugly hack to limit the maximum size of the widget (as X11 has problems if it's bigger)
                 resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                               m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
             }
@@ -242,6 +241,7 @@ void RenderWidget::layout( )
 void RenderWidget::updateFromElement()
 {
     if (m_widget) {
+        // Color:
         QColor color = style()->color();
         QColor backgroundColor = style()->backgroundColor();
 
@@ -305,6 +305,15 @@ void RenderWidget::updateFromElement()
         }
         else
             m_widget->unsetPalette();
+        // Border:
+        QFrame* frame = ::qt_cast<QFrame*>(m_widget);
+        if (frame) {
+            if (shouldPaintBackgroundOrBorder())
+            {
+                frame->setFrameShape(QFrame::NoFrame);
+            }
+        }
+
     }
 
     RenderReplaced::updateFromElement();
@@ -330,21 +339,32 @@ void RenderWidget::setStyle(RenderStyle *_style)
         }
     }
 
-    // do not paint background or borders for widgets
-    setShouldPaintBackgroundOrBorder(false);
+    // Don't paint borders if the border-style is native
+    // or borders are not supported on this widget
+    if (!canHaveBorder() ||
+        (style()->borderLeftStyle()   == BNATIVE &&
+         style()->borderRightStyle()  == BNATIVE &&
+         style()->borderTopStyle()    == BNATIVE &&
+         style()->borderBottomStyle() == BNATIVE))
+    {
+        setShouldPaintBackgroundOrBorder(false);
+    }
 }
 
 void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
 {
+    _tx += m_x;
+    _ty += m_y;
+
+    if (shouldPaintBackgroundOrBorder() && paintInfo.phase != PaintActionOutline)
+        paintBoxDecorations(paintInfo, _tx, _ty);
+
     if (!m_widget || !m_view || paintInfo.phase != PaintActionForeground)
         return;
 
     // not visible or not even once layouted
     if (style()->visibility() != VISIBLE || m_y <= -500000 || m_resizePending )
         return;
-
-    _tx += m_x;
-    _ty += m_y;
 
     if ( (_ty > paintInfo.r.bottom()) || (_ty + m_height <= paintInfo.r.top()) ||
          (_tx + m_width <= paintInfo.r.left()) || (_tx > paintInfo.r.right()) )
@@ -395,7 +415,7 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
     m_view->addChild(m_widget, xPos, yPos );
     m_widget->show();
     if (khtmlw)
-        paintWidget(paintInfo, m_widget, _tx, _ty);
+        paintWidget(paintInfo, m_widget, xPos, yPos);
 }
 
 #include <private/qinternal_p.h>

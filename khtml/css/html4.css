@@ -132,7 +132,7 @@ embed {
 /*
  * heading elements
  * margin values rely on font-sizes ratio defined in CSS-2.1 15.7
- * (cf. CSSStyleSelector for absolute font-sizes computation) 
+ * (cf. CSSStyleSelector for absolute font-sizes computation)
  * We have an 1.1/font-ratio margin
  */
 
@@ -392,6 +392,7 @@ INPUT { color: windowtext;
         font-size: small;
         margin: 0__qem;
         text-align: -khtml-auto;
+        border: 0px -khtml-native;
 }
 
 INPUT[type="hidden"] {
@@ -432,6 +433,7 @@ TEXTAREA {
         color: windowtext;
         font-family: monospace;
         margin: 0__qem;
+        border: 0px -khtml-native;
 }
 
 /*

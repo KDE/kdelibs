@@ -100,7 +100,7 @@ public:
     KHTMLView* view() const { return m_view; }
 
     void deref();
-    
+
     void cancelPendingResize();
 
     static void paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty);
@@ -117,6 +117,8 @@ public slots:
     void slotWidgetDestructed();
 
 protected:
+    virtual bool canHaveBorder() const { return false; }
+
     virtual void handleFocusOut() {}
     bool event( QEvent *e );
 

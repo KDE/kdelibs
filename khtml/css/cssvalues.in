@@ -16,6 +16,7 @@ initial
 # CSS_PROP_BORDER_TOP_STYLE
 # CSS_PROP_BORDER_BOTTOM_STYLE
 # CSS_PROP_BORDER_LEFT_STYLE
+-khtml-native
 none
 hidden
 inset

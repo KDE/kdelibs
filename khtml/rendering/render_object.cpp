@@ -685,6 +685,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
 
     switch(style)
     {
+    case BNATIVE:
     case BNONE:
     case BHIDDEN:
         // should not happen
