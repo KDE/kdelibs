@@ -30,7 +30,9 @@ int main(int argc,char **argv)
   
   AddressBook::Ticket *t = ab.requestSaveTicket( "my.kabc" );
   if ( t ) {
-    ab.save( t );
+    if ( !ab.save( t ) ) {
+      kdDebug() << "Can't save." << endl;
+    }
   } else {
     kdDebug() << "No ticket for save." << endl;
   }
