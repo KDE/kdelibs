@@ -912,8 +912,8 @@ void KFilePropsPlugin::determineRelativePath( const QString & path )
 void KFilePropsPlugin::slotFoundMountPoint( const QString &, unsigned long kBSize, unsigned long kBUsed, unsigned long kBAvail )
 {
     d->m_freeSpaceLabel->setText( i18n("Available space out of total partition size (percent used)", "%1/%2 (%3% used)")
-                               .arg(KIO::convertSize(kBAvail*1024))
-                               .arg(KIO::convertSize(kBSize*1024))
+                               .arg(KIO::convertSizeFromKB(kBAvail))
+                               .arg(KIO::convertSizeFromKB(kBSize))
                                .arg( (int)(100.0 * kBUsed / kBSize) ) );
 }
 

@@ -92,7 +92,7 @@ int KDiskFreeSp::readDF( const QString & mountPoint )
 **/
 void KDiskFreeSp::dfDone()
 {
-  kdDebug() << "KDiskFreeSp::dfDone" << endl;
+  //kdDebug() << "KDiskFreeSp::dfDone" << endl;
   readingDFStdErrOut=TRUE;
 
   QTextStream t (dfStringErrOut, IO_ReadOnly);
@@ -104,7 +104,7 @@ void KDiskFreeSp::dfDone()
     s=t.readLine();
     s=s.simplifyWhiteSpace();
     if ( !s.isEmpty() ) {
-      kdDebug() << "GOT: [" << s << "]" << endl;
+      //kdDebug() << "GOT: [" << s << "]" << endl;
 
       if (s.find(BLANK)<0)      // devicename was too long, rest in next line
 	if ( !t.eof() ) {       // just appends the next line
@@ -114,11 +114,11 @@ void KDiskFreeSp::dfDone()
             kdDebug() << "SPECIAL GOT: [" << s << "]" << endl;
 	 }//if silly linefeed
 
-      kdDebug() << "EFFECTIVELY GOT " << s.length() << " chars: [" << s << "]" << endl;
+      kdDebug() << "[" << s << "]" << endl;
 
-      QString deviceName = s.left(s.find(BLANK));
+      //QString deviceName = s.left(s.find(BLANK));
       s=s.remove(0,s.find(BLANK)+1 );
-      kdDebug() << "    DeviceName:    [" << deviceName << "]" << endl;
+      //kdDebug() << "    DeviceName:    [" << deviceName << "]" << endl;
 
       if (!NO_FS_TYPE)
           s=s.remove(0,s.find(BLANK)+1 ); // eat fs type
@@ -145,7 +145,10 @@ void KDiskFreeSp::dfDone()
       kdDebug() << "    MountPoint:       [" << mountPoint << "]" << endl;
 
       if ( mountPoint == m_mountPoint )
+      {
+        kdDebug() << "Found mount point. Emitting" << endl;
         emit foundMountPoint( mountPoint, kBSize, kBUsed, kBAvail );
+      }
     }//if not header
   }//while further lines available
 
