@@ -67,17 +67,17 @@ Window *KJS::newWindow(KHTMLPart *p)
 class History : public HostImp {
   friend class HistoryFunc;
 public:
-  History(KHTMLPart */*p*/) /*: part(p)*/ { }
+  History(KHTMLPart *p) : part(p) { }
   virtual KJSO get(const UString &p) const;
   virtual bool hasProperty(const UString &p, bool recursive) const;
 private:
-  //  QGuardedPtr<KHTMLPart> part;
+   QGuardedPtr<KHTMLPart> part;
 };
 
 class HistoryFunc : public DOMFunction {
 public:
   HistoryFunc(const History *h, int i) : history(h), id(i) { };
-  Completion tryExecute(const List &);
+  Completion tryExecute(const List &args);
   enum { Back, Forward, Go };
 
 private:
@@ -873,17 +873,29 @@ KJSO History::get(const UString &p) const
     return HostImp::get(p);
 }
 
-Completion HistoryFunc::tryExecute(const List &)
+Completion HistoryFunc::tryExecute(const List &args)
 {
+  KParts::BrowserExtension *ext = history->part->browserExtension();
+  
+  KJSO v = args[0];
+  Number n;
+  if(!v.isNull())
+    n = v.toInteger();
+
+  if(!ext)
+    return Completion(Normal);
+    
   switch (id) {
   case Back:
-      // ###
+      emit ext->goHistory(-1);
+      break;
   case Forward:
-      // ###
+      emit ext->goHistory(1);
+      break;
   case Go:
-    // ###
+      emit ext->goHistory(n.intValue());
+      break;
   default:
-    kdDebug(6070) << "history.back/forward/go() not implemented yet." << endl;
     break;
   }
 
