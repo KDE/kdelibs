@@ -648,6 +648,9 @@ dcop_connect()
   if((i = strrchr(displayName, '.')) > strrchr(displayName, ':') && i)
       *i = '\0';
 
+  while((i = strchr(displayName, ':')) != NULL)
+     *i = '_';
+
   dcopServer = getenv("DCOPSERVER");
 
   if (NULL == dcopServer) {

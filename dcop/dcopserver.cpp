@@ -347,39 +347,6 @@ qWarning("DCOPServer: Flushing data, fd = %d", IceConnectionNumber(_iceConn));
    DCOPIceWrite(_iceConn, _data);
 }
 
-QCString dcopServerFile()
-{
-   QCString fName = ::getenv("HOME");
-   if (fName.isEmpty())
-   {
-      fprintf(stderr, "Aborting. $HOME is not set.\n");
-      exit(1);
-   }
-#ifdef Q_WS_X11
-   QCString disp = getenv("DISPLAY");
-#elif defined(Q_WS_QWS)
-   QCString disp = getenv("QWS_DISPLAY");
-#endif
-   if (disp.isEmpty())
-   {
-      fprintf(stderr, "Aborting. $DISPLAY is not set.\n");
-      exit(1);
-   }
-   int i;
-   if((i = disp.findRev('.')) > disp.findRev(':') && i >= 0)
-       disp.truncate(i);
-
-   fName += "/.DCOPserver_";
-   char hostName[256];
-   if (gethostname(hostName, 255))
-      fName += "localhost";
-   else
-      fName += hostName;
-   fName += "_"+disp;
-   return fName;
-}
-
-
 DCOPServer* the_server = 0;
 
 class DCOPListener : public QSocketNotifier
@@ -1008,7 +975,7 @@ DCOPServer::DCOPServer(bool _only_local, bool _suicide)
 	} else {
 	    (void) umask(orig_umask);
 	    // publish available transports.
-	    QCString fName = dcopServerFile();
+	    QCString fName = DCOPClient::dcopServerFile();
 	    FILE *f;
 	    if(!(f = ::fopen(fName.data(), "w+"))) {
 	        fprintf (stderr, "Can not create file %s: %s\n", 
@@ -1022,9 +989,8 @@ DCOPServer::DCOPServer(bool _only_local, bool _suicide)
 	    }
 	    fprintf(f, "\n%i\n", getpid());
 	    fclose(f);
-            // Create a link named like the old-style (KDE 2.0) naming
-            QCString compatName(fName);
-            compatName.truncate(compatName.findRev('_'));
+            // Create a link named like the old-style (KDE 2.x) naming
+            QCString compatName = DCOPClient::dcopServerFileOld();
             ::symlink(fName,compatName);
 	}
 
@@ -1544,7 +1510,7 @@ int main( int argc, char* argv[] )
     }
 
     // check if we are already running
-    QCString fName = dcopServerFile();
+    QCString fName = DCOPClient::dcopServerFile();
     if (::access(fName.data(), R_OK) == 0) {
 	QFile f(fName);
 	f.open(IO_ReadOnly);

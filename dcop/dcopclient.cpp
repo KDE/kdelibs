@@ -180,7 +180,7 @@ struct ReplyStruct
     Q_INT32 replyId;
 };
 
-QCString DCOPClient::dcopServerFile()
+static QCString dcopServerFile(const QCString &hostname, bool old)
 {
    QCString fName = ::getenv("HOME");
    if (fName.isEmpty())
@@ -206,14 +206,41 @@ QCString DCOPClient::dcopServerFile()
    if((i = disp.findRev('.')) > disp.findRev(':') && i >= 0)
        disp.truncate(i);
 
+   if (!old)
+   {
+      while( (i = disp.find(':')) >= 0)
+         disp[i] = '_';
+   }
+
    fName += "/.DCOPserver_";
-   char hostName[256];
-   if (gethostname(hostName, 255))
-      fName += "localhost";
+   if (hostname.isEmpty())
+   {
+      char hostName[256];
+      if (gethostname(hostName, 255))
+         fName += "localhost";
+      else
+         fName += hostName;
+   }
    else
-      fName += hostName;
+   {
+      fName += hostname;
+   }
    fName += "_"+disp;
    return fName;
+}
+
+
+// static 
+QCString DCOPClient::dcopServerFile(const QCString &hostname)
+{
+   return ::dcopServerFile(hostname, false);
+}
+
+
+// static 
+QCString DCOPClient::dcopServerFileOld(const QCString &hostname)
+{
+   return ::dcopServerFile(hostname, true);
 }
 
 

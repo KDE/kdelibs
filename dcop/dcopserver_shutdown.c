@@ -68,10 +68,11 @@ static char *getDisplay()
    return result;
 }
 
-static void getDCOPFile(char *dcop_file, int max_length)
+static void getDCOPFile(char *dcop_file, char *dcop_file_old, int max_length)
 {
   const char *home_dir;
   char *display;
+  char *i;
   int n;
 
   n = max_length;
@@ -94,6 +95,10 @@ static void getDCOPFile(char *dcop_file, int max_length)
   n -= strlen("_");
 
   display = getDisplay();
+  strcpy(dcop_file_old, dcop_file);
+  strncat(dcop_file_old,display, n);
+  while(i = strchr(display, ':'))
+     *i = '_';
   strncat(dcop_file, display, n);
   free(display);
 
@@ -126,12 +131,14 @@ static void cleanupDCOP(int dont_kill_dcop)
 {
    FILE *f;
    char dcop_file[2048+1];
+   char dcop_file_old[2048+1];
    char buffer[2048+1];
    pid_t pid = 0;
 
-   getDCOPFile(dcop_file, 2048);
+   getDCOPFile(dcop_file, dcop_file_old, 2048);
    if (strlen(dcop_file) == 0)
       return;
+   unlink(dcop_file_old);
 
    f = fopen(dcop_file, "r");
    unlink(dcop_file); /* Clean up .DCOPserver file */

@@ -515,9 +515,18 @@ class DCOPClient : public QObject
   static void emergencyClose();
 
   /**
-    * @internal File with information how to reach the dcopserver.
+    * File with information how to reach the dcopserver.
+    * @param hostname Hostname to use, if empty current hostname of
+    * the system is used.
+    * @return Filename that contains information how to contact the 
+    * DCOPserver.
     */
-  static QCString dcopServerFile();
+  static QCString dcopServerFile(const QCString &hostname=0);
+
+  /**
+    * For backwards compatibility with KDE 2.x
+    */
+  static QCString dcopServerFileOld(const QCString &hostname=0);
 
 signals:
   /**
