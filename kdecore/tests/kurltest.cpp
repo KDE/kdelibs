@@ -39,6 +39,15 @@ int main(int argc, char *argv[])
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
   check("KURL::upURL()", url1.upURL().url(), "file:/home/dfaure");
 
+  u1 = "file:/opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject::connect";
+  url1 = u1;
+  check("KURL::url()", url1.url(), "file:/opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject::connect");
+  check("KURL::hasRef()", url1.hasRef() ? "yes" : "no", "yes");
+  check("KURL::hasHTMLRef()", url1.hasHTMLRef() ? "yes" : "no", "yes");
+  check("KURL::htmlRef()", url1.htmlRef(), "QObject::connect");
+  check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
+  check("KURL::upURL()", url1.upURL().url(), "file:/opt/kde2/qt2/doc/html/showimg-main-cpp.html");
+
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref";
   url1 = u1;
   check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref");
@@ -120,8 +129,8 @@ int main(int argc, char *argv[])
   // more tricky, renaming a directory (kpropsdlg.cc, line ~ 238)
       QString tmpurl = "file:/home/dfaure/myolddir/";
       if ( tmpurl.at(tmpurl.length() - 1) == '/')
-	  // It's a directory, so strip the trailing slash first
-	  tmpurl.truncate( tmpurl.length() - 1);
+          // It's a directory, so strip the trailing slash first
+          tmpurl.truncate( tmpurl.length() - 1);
       KURL newUrl = tmpurl;
       newUrl.setFileName( "mynewdir" );
   check("KURL::setFileName() special", newUrl.url(), "file:/home/dfaure/mynewdir");
