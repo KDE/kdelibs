@@ -104,7 +104,7 @@ bool KMCupsJobManager::listJobs()
 		{
 			QString	name(attr->name);
 			if (name == "job-id") job->setId(attr->values[0].integer);
-			else if (name == "job-uri") job->setUri(QString::fromLatin1(attr->values[0].string.text));
+			else if (name == "job-uri") job->setUri(QString::fromLocal8Bit(attr->values[0].string.text));
 			else if (name == "job-name") job->setName(QString::fromLocal8Bit(attr->values[0].string.text));
 			else if (name == "job-state")
 			{
@@ -131,7 +131,7 @@ bool KMCupsJobManager::listJobs()
 			else if (name == "job-originating-user-name") job->setOwner(QString::fromLocal8Bit(attr->values[0].string.text));
 			else if (name == "job-printer-uri")
 			{
-				uri = QString::fromLatin1(attr->values[0].string.text);
+				uri = QString::fromLocal8Bit(attr->values[0].string.text);
 				int	p = uri.findRev('/');
 				if (p != -1)
 					job->setPrinter(uri.right(uri.length()-p-1));

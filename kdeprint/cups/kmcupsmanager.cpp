@@ -32,6 +32,7 @@
 #include <qtextstream.h>
 #include <kdebug.h>
 #include <kapp.h>
+#include <klocale.h>
 #include <kconfig.h>
 #include <kstddirs.h>
 #include <klibloader.h>
@@ -83,7 +84,7 @@ void KMCupsManager::reportIppError(IppRequest *req)
 {
 	int 	status = req->status();
 	if (status == IPP_OK)
-		setErrorMsg(QString::fromLatin1("IPP connection error."));
+		setErrorMsg(i18n("IPP connection error."));
 	else
 		setErrorMsg(QString::fromLocal8Bit(ippErrorString((ipp_status_t)status)));
 }
@@ -103,7 +104,7 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 	{
 		req.setOperation(CUPS_ADD_CLASS);
 		QStringList	members = p->members(), uris;
-		QString		s = QString::fromLatin1("ipp://%1:%2/printers/").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port());
+		QString		s = QString::fromLocal8Bit("ipp://%1:%2/printers/").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port());
 		for (QStringList::ConstIterator it=members.begin(); it!=members.end(); ++it)
 			uris.append(s+(*it));
 		req.addURI(IPP_TAG_PRINTER,"member-uris",uris);
@@ -181,7 +182,7 @@ bool KMCupsManager::completePrinter(KMPrinter *p)
 	{
 		// driver informations
 		QString	ppdname = cupsGetPPD(p->printerName().local8Bit().data());
-		ppd_file_t	*ppd = (ppdname.isEmpty() ? NULL : ppdOpenFile(ppdname.latin1()));
+		ppd_file_t	*ppd = (ppdname.isEmpty() ? NULL : ppdOpenFile(ppdname.local8Bit()));
 		if (ppd)
 		{
 			p->setManufacturer(QString::fromLocal8Bit(ppd->manufacturer));
@@ -255,7 +256,7 @@ bool KMCupsManager::testPrinter(KMPrinter *p)
 	QString	testpage = testPage();
 	if (testpage.isEmpty())
 	{
-		setErrorMsg(QString::fromLatin1("Unable to locate test page."));
+		setErrorMsg(i18n("Unable to locate test page."));
 		return false;
 	}
 
@@ -387,7 +388,7 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 		else driver->set("temporary",unzipfname);
 
 		// at this point we can only work with unzipfname
-		ppd_file_t	*ppd = ppdOpenFile(unzipfname.latin1());
+		ppd_file_t	*ppd = ppdOpenFile(unzipfname.local8Bit());
 		if (ppd)
 		{
 			ppdMarkDefaults(ppd);
@@ -420,16 +421,16 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 					   default:
 						continue;	// skip option
 					}
-					op->setName(QString::fromLatin1(opt->keyword));
+					op->setName(QString::fromLocal8Bit(opt->keyword));
 					op->set("text",QString::fromLocal8Bit(opt->text));
-					op->set("default",QString::fromLatin1(opt->defchoice));
+					op->set("default",QString::fromLocal8Bit(opt->defchoice));
 					if (fixed) op->set("fixed","1");
 					gr->addOption(op);
 					for (int n=0;n<opt->num_choices;n++)
 					{
 						ppd_choice_t	*cho = opt->choices+n;
 						DrBase	*ch = new DrBase();
-						ch->setName(QString::fromLatin1(cho->choice));
+						ch->setName(QString::fromLocal8Bit(cho->choice));
 						ch->set("text",QString::fromLocal8Bit(cho->text));
 						op->addChoice(ch);
 					}
@@ -605,13 +606,13 @@ void* KMCupsManager::loadCupsdConfFunction(const char *name)
 		m_cupsdconf = KLibLoader::self()->library("libcupsdconf");
 		if (!m_cupsdconf)
 		{
-			setErrorMsg(QString::fromLatin1("Library <b>libcupsdconf</b> not found. Check your installation."));
+			setErrorMsg(i18n("Library <b>libcupsdconf</b> not found. Check your installation."));
 			return NULL;
 		}
 	}
 	void*	func = m_cupsdconf->symbol(name);
 	if (!func)
-		setErrorMsg(QString::fromLatin1("Symbol <b>%1</b> not found in libcupsdconf library.").arg(name));
+		setErrorMsg(i18n("Symbol <b>%1</b> not found in libcupsdconf library.").arg(name));
 	return func;
 }
 
