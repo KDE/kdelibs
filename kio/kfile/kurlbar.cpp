@@ -282,7 +282,7 @@ void KURLBar::setListBox( KURLBarListBox *view )
     setPalette( pal );
     m_listBox->viewport()->setBackgroundMode( PaletteMid );
 
-    connect( m_listBox, SIGNAL( executed( QListBoxItem * ) ),
+    connect( m_listBox, SIGNAL( clicked( QListBoxItem * ) ),
              SLOT( slotSelected( QListBoxItem * )));
     connect( m_listBox, SIGNAL( dropped( QDropEvent * )),
              this, SLOT( slotDropped( QDropEvent * )));
