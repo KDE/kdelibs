@@ -66,6 +66,7 @@ bool ValueImp::marked() const
   return (_flags & VI_MARKED);
 }
 
+// TODO: inline
 void ValueImp::setGcAllowed()
 {
   //fprintf(stderr,"ValueImp::setGcAllowed %p\n",(void*)this);
@@ -196,7 +197,7 @@ Value::Value(ValueImp *v)
   {
     rep->ref();
     //fprintf(stderr, "Value::Value(%p) imp=%p ref=%d\n", this, rep, rep->refcount);
-    v->setGcAllowed();
+    v->inlinedSetGcAllowed();
   }
 }
 

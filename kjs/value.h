@@ -100,7 +100,8 @@ namespace KJS {
      *
      * set by Object() so that the collector is allowed to delete us
      */
-    void setGcAllowed();
+    void setGcAllowed(); // TODO: inline, remove function below
+    void inlinedSetGcAllowed() { _flags |= VI_MARKED; }
 
     virtual Type type() const = 0;
 

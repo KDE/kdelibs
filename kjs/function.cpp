@@ -340,7 +340,7 @@ ActivationImp::ActivationImp(ExecState *exec, FunctionImp *f, const List &args)
 
 ActivationImp::~ActivationImp()
 {
-  arguments->setGcAllowed();
+  arguments->inlinedSetGcAllowed();
 }
 
 // ------------------------------ GlobalFunc -----------------------------------

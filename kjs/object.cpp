@@ -220,11 +220,11 @@ ObjectImp::~ObjectImp()
 {
   //fprintf(stderr,"ObjectImp::~ObjectImp %p\n",(void*)this);
   if (_proto)
-    _proto->setGcAllowed();
+    _proto->inlinedSetGcAllowed();
   if (_internalValue)
-    _internalValue->setGcAllowed();
+    _internalValue->inlinedSetGcAllowed();
   if (_scope)
-    _scope->setGcAllowed();
+    _scope->inlinedSetGcAllowed();
   delete _prop;
 }
 
@@ -519,7 +519,8 @@ const List ObjectImp::scope() const
 
 void ObjectImp::setScope(const List &s)
 {
-  if (_scope) _scope->setGcAllowed();
+  if (_scope)
+    _scope->inlinedSetGcAllowed();
   _scope = static_cast<ListImp*>(s.imp());
 }
 
