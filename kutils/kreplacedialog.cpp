@@ -24,7 +24,10 @@
 #include <qgroupbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qregexp.h>
 #include <kcombobox.h>
+#include <klocale.h>
+#include <kmessagebox.h>
 
 /**
  * we need to insert the strings after the dialog is set
@@ -118,8 +121,35 @@ void KReplaceDialog::setReplacementHistory(const QStringList &strings)
 
 void KReplaceDialog::slotOk()
 {
+    // If regex and backrefs are enabled, do a sanity check.
+    if ( m_regExp->isChecked() && m_backRef->isChecked() )
+    {
+        QRegExp r ( pattern() );
+        int caps = r.numCaptures();
+        QRegExp check(QString("((?:\\\\)+)(\\d+)"));
+        int p = 0;
+        QString rep = replacement();
+        while ( (p = check.search( rep, p ) ) > -1 )
+        {
+            if ( check.cap(1).length()%2 && check.cap(2).toInt() > caps )
+            {
+                KMessageBox::information( this, i18n(
+                        "Your replacement string is referencing a capture greater than '\\%1', ").arg( caps ) +
+                    ( caps ?
+                        i18n("but your pattern only defines %1 capture.\n",
+                             "but your pattern only defines %1 captures.\n", caps ) :
+                        i18n("but your pattern defines no captures.\n") ) +
+                    i18n("Please correct.") );
+                return; // abort OKing
+            }
+            p += check.matchedLength();
+        }
+
+    }
+
     KFindDialog::slotOk();
     m_replace->addToHistory(replacement());
 }
 
+// kate: space-indent on; indent-width 4; replace-tabs on;
 #include "kreplacedialog.moc"

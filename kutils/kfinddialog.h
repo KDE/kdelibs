@@ -241,6 +241,13 @@ protected slots:
 protected:
     virtual void showEvent ( QShowEvent * );
 
+private slots:
+    /**
+     * connected to the aboutToShow of the placeholders menu,
+     * updates it according to the text in the pattern.
+     */
+    void slotPlaceholdersAboutToShow();
+
 private:
 
     QGroupBox *m_findGrp;

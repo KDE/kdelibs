@@ -40,7 +40,7 @@ class KFindDialog::KFindDialogPrivate
 {
 public:
     KFindDialogPrivate() : m_regexpDialog(0),
-        m_regexpDialogQueryDone(false), 
+        m_regexpDialogQueryDone(false),
         m_enabled(WholeWordsOnly | FromCursor | SelectedText | CaseSensitive | FindBackwards | RegularExpression), m_initialShowDone(false) {}
     QDialog* m_regexpDialog;
     bool m_regexpDialogQueryDone;
@@ -450,35 +450,31 @@ void KFindDialog::showPatterns()
 // compose a regular expression replacement pattern.
 void KFindDialog::showPlaceholders()
 {
-    typedef struct
-    {
-        const char *description;
-        const char *backRef;
-    } term;
-    static const term items[] =
-    {
-        { I18N_NOOP("Complete text found"),             "\\0" },
-    };
-    int i;
-
     // Populate the popup menu.
     if (!m_placeholders)
     {
         m_placeholders = new QPopupMenu(this);
-        for (i = 0; (unsigned)i < sizeof(items) / sizeof(items[0]); i++)
-        {
-            m_placeholders->insertItem(i18n(items[i].description), i, i);
-        }
+        connect( m_placeholders, SIGNAL(aboutToShow()), this, SLOT(slotPlaceholdersAboutToShow()) );
     }
 
     // Insert the selection into the edit control.
-    i = m_placeholders->exec(m_backRefItem->mapToGlobal(m_backRefItem->rect().bottomLeft()));
+    int i = m_placeholders->exec(m_backRefItem->mapToGlobal(m_backRefItem->rect().bottomLeft()));
     if (i != -1)
     {
         QLineEdit *editor = m_replace->lineEdit();
-
-        editor->insert(items[i].backRef);
+        editor->insert( QString("\\%1").arg( i ) );
     }
+}
+
+void KFindDialog::slotPlaceholdersAboutToShow()
+{
+    m_placeholders->clear();
+    m_placeholders->insertItem( i18n("Complete match"), 0 );
+
+    QRegExp r( pattern() );
+    uint n = r.numCaptures();
+    for ( uint i=0; i < n; i++ )
+        m_placeholders->insertItem( i18n("Captured text (%1)").arg( i+1 ), i+1 );
 }
 
 void KFindDialog::slotOk()
@@ -506,5 +502,5 @@ void KFindDialog::slotOk()
     if ( testWFlags( WShowModal ) )
         accept();
 }
-
+// kate: space-indent on; indent-width 4; replace-tabs on;
 #include "kfinddialog.moc"
