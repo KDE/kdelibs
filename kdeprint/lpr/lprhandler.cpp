@@ -100,3 +100,8 @@ PrintcapEntry* LprHandler::createEntry(KMPrinter *prt)
 	}
 	return entry;
 }
+
+bool LprHandler::removePrinter(KMPrinter*, PrintcapEntry*)
+{
+	return true;
+}

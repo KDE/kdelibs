@@ -88,18 +88,19 @@ void LpcHelper::updateStates()
 			else if (!line[0].isSpace() && (p = line.find(':')) != -1)
 			{
 				printer = line.left(p);
-				m_state[printer] = KMPrinter::Processing;
+				m_state[printer] = KMPrinter::Idle;
 			}
 			else if (line.find("disabled") != -1)
 			{
 				if (!printer.isEmpty())
 					m_state[printer] = KMPrinter::Stopped;
 			}
-			else if (line.find("no entries") != -1)
+			else if (line.find("entries") != -1)
 			{
 				if (!printer.isEmpty() &&
-				    (!m_state.contains(printer) || m_state[printer] == KMPrinter::Processing))
-					m_state[printer] = KMPrinter::Idle;
+				    m_state[printer] != KMPrinter::Stopped &&
+				    line.find("no entries") == -1)
+					m_state[printer] = KMPrinter::Processing;
 			}
 		}
 		proc.close();

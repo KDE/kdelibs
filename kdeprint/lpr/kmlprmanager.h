@@ -44,6 +44,7 @@ public:
 	DrMain* loadPrinterDriver(KMPrinter*, bool = false);
 	DrMain* loadFileDriver(const QString&);
 	bool createPrinter(KMPrinter*);
+	bool removePrinter(KMPrinter*);
 	
 	LpcHelper* lpcHelper()	{ return m_lpchelper; }
 

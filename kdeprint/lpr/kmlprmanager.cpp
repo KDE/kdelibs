@@ -29,6 +29,8 @@
 #include <qlist.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
+
+#include <stdlib.h>
 #include <unistd.h>
 
 KMLprManager::KMLprManager(QObject *parent, const char *name)
@@ -41,7 +43,13 @@ KMLprManager::KMLprManager(QObject *parent, const char *name)
 	m_lpchelper = new LpcHelper(this);
 
 	setHasManagement(/*getuid() == 0*/true);
-	setPrinterOperationMask(KMManager::PrinterEnabling|KMManager::PrinterConfigure|KMManager::PrinterTesting|KMManager::PrinterCreation);
+	setPrinterOperationMask(
+		KMManager::PrinterEnabling |
+		KMManager::PrinterConfigure |
+		KMManager::PrinterTesting |
+		KMManager::PrinterCreation |
+		KMManager::PrinterRemoval
+	);
 
 	initHandlers();
 }
@@ -236,6 +244,7 @@ bool KMLprManager::savePrintcapFile()
 		{
 			it.current()->writeEntry(t);
 		}
+		return true;
 	}
 	else
 	{
@@ -275,7 +284,7 @@ bool KMLprManager::createPrinter(KMPrinter *prt)
 		return false;
 	}
 	sd.append("/").append(prt->printerName());
-	if (!KStandardDirs::makeDir(sd, 0700))
+	if (!KStandardDirs::makeDir(sd, 0755))
 	{
 		setErrorMsg(i18n("Unable to create the spool directory %1. Check that you "
 		                 "have the required permissions for that operation.").arg(sd));
@@ -300,4 +309,36 @@ bool KMLprManager::createPrinter(KMPrinter *prt)
 			result = savePrinterDriver(prt, prt->driver());
 	}
 	return result;
+}
+
+bool KMLprManager::removePrinter(KMPrinter *prt)
+{
+	LprHandler	*handler = findHandler(prt);
+	PrintcapEntry	*entry = findEntry(prt);
+	if (handler && entry)
+	{
+		if (handler->removePrinter(prt, entry))
+		{
+			QString	sd = entry->field("sd");
+			// first try to save the printcap file, and if
+			// successfull, remove the spool directory
+			m_entries.take(prt->printerName());
+			bool	status = savePrintcapFile();
+			if (status)
+			{
+				// printcap file saved, entry can be deleted now
+				delete entry;
+				status =  (::system(QFile::encodeName("rm -rf " + sd)) == 0);
+				if (!status)
+					setErrorMsg(i18n("Unable to remove spool directory %1. "
+					                 "Check that you have write permissions "
+					                 "for that directory.").arg(sd));
+				return status;
+			}
+			else
+				// push back the non-removed entry
+				m_entries.insert(prt->printerName(), entry);
+		}
+	}
+	return false;
 }
