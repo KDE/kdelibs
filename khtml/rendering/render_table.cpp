@@ -1191,9 +1191,6 @@ void RenderTable::calcRowHeight(int r)
     if ( rowHeights[r+1] < rowHeights[r] )
 	rowHeights[r+1] = rowHeights[r];
 	
-#if 0
-    // calcHeight does that for us.... (lars)
-    
     // html tables with percent height are relative to view
     if (r+1 == (int)totalRows)
     {
@@ -1204,9 +1201,11 @@ void RenderTable::calcRowHeight(int r)
 	else if (h.isPercent())
 	{
     	    Length ch = containingBlock()->style()->height();
+	    RenderObject *containing = containingBlock();
 	    if (ch.isFixed())
     		th = h.width(ch.value);
-	    else if (style()->htmlHacks())
+	    else if (containing->parent() && containing->parent()->parent() 
+		     && containing->parent()->parent()->isRoot())
 	    {
 	    	th = h.width(viewRect().height());
 		// not really, but this way the view height change
@@ -1217,8 +1216,6 @@ void RenderTable::calcRowHeight(int r)
 	if (rowHeights[r+1]<th)
 	    rowHeights[r+1]=th;
     }	
-#endif
-    
 }
 
 void RenderTable::layout()
