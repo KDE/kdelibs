@@ -1218,7 +1218,7 @@ void HTMLInputElementImpl::reset()
 {
     setValue(m_defaultValue);
     setChecked(m_defaultChecked);
-    if ((m_type == SUBMIT || m_type == RESET || m_type == BUTTON || m_type == IMAGE) && m_render)
+    if ((m_type == SUBMIT || m_type == RESET || m_type == BUTTON) && m_render)
         static_cast<RenderSubmitButton*>(m_render)->setClicked(false);
 }
 
