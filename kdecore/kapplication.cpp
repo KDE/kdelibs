@@ -2473,6 +2473,9 @@ void KApplication::initUrlActionRestrictions()
 
 bool KApplication::authorizeURLAction(const QString &action, const KURL &_baseURL, const KURL &_destURL)
 {
+  if (_destURL.isEmpty())
+       return true;
+
   bool result = false;
   if (d->urlActionRestrictions.isEmpty())
      initUrlActionRestrictions();
