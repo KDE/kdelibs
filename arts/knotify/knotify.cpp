@@ -368,11 +368,6 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname )
         return false;
     }
     
-    //If we disabled using aRts, just return, 
-    //(If we don't, we'll blow up accessing the null soundServer)
-    if (!d->useArts)
-	return false;
-    
     bool external = d->useExternal && !d->externalPlayer.isEmpty();
     // get file name
     QString soundFile(sound);
@@ -390,6 +385,11 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname )
     // kdDebug() << "KNotify::notifyBySound - trying to play file " << soundFile << endl;
 
     if (!external) {
+        //If we disabled using aRts, just return, 
+        //(If we don't, we'll blow up accessing the null soundServer)
+        if (!d->useArts)
+            return false;
+    
         // play sound finally
         while( d->playObjects.count()>5 )
             d->playObjects.removeFirst();
