@@ -31,7 +31,7 @@ picsdir = $(kde_datadir)/kdeui/pics
 pics_DATA = aboutkde.png keys.png ktip-bulb.png ktip-background.png
 
 include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
-		kdatepik.h kdatetbl.h kfontdialog.h kpopupmenu.h \
+		kdatepik.h kdatepicker.h kdatetbl.h kfontdialog.h kpopupmenu.h \
 		ktabctl.h kstatusbar.h \
 		kmainwindow.h kmainwindowiface.h ktoolbar.h kmenubar.h \
 		knuminput.h kseparator.h klineedit.h \
@@ -45,7 +45,7 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 		knumvalidator.h kdialog.h kdialogbase.h \
 		kjanuswidget.h kaboutdialog.h \
 		kauthicon.h kmessagebox.h ksharedpixmap.h \
-		kdualcolorbtn.h ktoolbarbutton.h \
+		kdualcolorbtn.h kdualcolorbutton.h ktoolbarbutton.h \
 		ktoolbarradiogroup.h ktextbrowser.h kaction.h khelpmenu.h \
 		kcmodule.h kcmenumngr.h kpanelmenu.h kpanelappmenu.h \
 		kstdaction.h kcombobox.h \
@@ -68,7 +68,7 @@ libkdeui_la_SOURCES = \
 		qxembed.cpp ksharedpixmap.cpp \
 		kurllabel.cpp \
 		knuminput.cpp ktoolbar.cpp klineedit.cpp klistview.cpp kprogress.cpp \
-		kcolordialog.cpp kselect.cpp kdatepik.cpp \
+		kcolordialog.cpp kselect.cpp kdatepicker.cpp \
 		kdatetbl.cpp kfontdialog.cpp kpopupmenu.cpp ktabctl.cpp \
 		kstatusbar.cpp kmainwindow.cpp \
 		kmenubar.cpp kpixmapio.cpp keditlistbox.cpp \
@@ -81,7 +81,7 @@ libkdeui_la_SOURCES = \
 		kcharselect.cpp kcolordrag.cpp  \
 		knumvalidator.cpp kdialog.cpp kdialogbase.cpp \
 		kjanuswidget.cpp kaboutdialog.cpp \
-		kauthicon.cpp kmessagebox.cpp kdualcolorbtn.cpp \
+		kauthicon.cpp kmessagebox.cpp kdualcolorbutton.cpp \
 		ktoolbarradiogroup.cpp ktoolbarbutton.cpp \
 		ktextbrowser.cpp kaction.cpp khelpmenu.cpp \
 		kcmenumngr.cpp kpanelmenu.cpp kstdaction.cpp \
