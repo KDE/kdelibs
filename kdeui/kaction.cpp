@@ -285,6 +285,16 @@ void KAction::setIcon( const QString &icon )
 {
   d->m_iconName = icon;
 
+  // ugly hack.  by default, we will just set the small pixmap as the
+  // icon and assume that setIcon(int, QString) will take care of
+  // more specific implementations.
+  if ( parent() && parent()->inherits( "KActionCollection" ) )
+    setIconSet( BarIcon( icon, KIconLoader::Small,
+                static_cast<KActionCollection*>(parent())->instance() ) );
+  else
+    setIconSet( BarIcon( icon, KIconLoader::Small ) );
+
+  // now handle any toolbars
   int len = containerCount();
   for ( int i = 0; i < len; ++i )
     setIcon( i, icon );
@@ -296,11 +306,6 @@ void KAction::setIcon( int id, const QString &icon )
 
   if ( w->inherits( "KToolBar" ) )
     ((KToolBar *)w)->setButtonIcon( menuId( id ), icon );
-  else if ( parent() && parent()->inherits( "KActionCollection" ) )
-    setIconSet( BarIcon( icon, KIconLoader::Small,
-                static_cast<KActionCollection*>(parent())->instance() ) );
-  else
-    setIconSet( BarIcon( icon, KIconLoader::Small ) );
 }
 
 QString KAction::iconName() const
