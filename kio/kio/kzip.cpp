@@ -73,7 +73,7 @@ static void transformToMsDos(const QDateTime& dt, char* buffer)
 {
     if ( dt.isValid() )
     {
-        Q_UINT16 time =
+        const Q_UINT16 time =
              ( dt.time().hour() << 11 )    // 5 bit hour
            | ( dt.time().minute() << 5 )   // 6 bit minute
            | ( dt.time().second() >> 1 );  // 5 bit double seconds
@@ -81,7 +81,7 @@ static void transformToMsDos(const QDateTime& dt, char* buffer)
         buffer[0] = char(time);
         buffer[1] = char(time >> 8);
 
-        Q_UINT16 date =
+        const Q_UINT16 date =
              ( ( dt.date().year() - 1980 ) << 9 ) // 7 bit year 1980-based
            | ( dt.date().month() << 5 )           // 4 bit month
            | ( dt.date().day() );                 // 5 bit day
