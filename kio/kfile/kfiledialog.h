@@ -718,6 +718,21 @@ public:
      */
     int pathComboIndex();
 
+    /**
+     * This method implements the logic to determine the user's default directory
+     * to be listed. E.g. the documents direcory, home directory or a recently 
+     * used directory.
+     * @param startDir A url/directory, to be used. May use the ':' and '::' syntax 
+     *        as documented in the @ref KFileDialog() constructor.
+     * @param recentDirClass If the ':' or '::' syntax is used, recentDirClass
+     *        will contain the string to be used later for @ref KRecentDir::dir()
+     * @return The URL that should be listed by default (e.g. by KFileDialog or
+     *         KDirSelectDialog).
+     * @since 3.1
+     */
+    static KURL getStartURL( const QString& startDir, QString& recentDirClass );
+
+
 signals:
     /**
       * Emitted when the user selects a file. It is only emitted in single-
