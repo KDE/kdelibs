@@ -580,9 +580,9 @@
 0       beshort&0xfff0  0xfff0                  audio/x-mp3
 
 # FLI animation format
-0	leshort		0xAF11				video/fli
+0	leshort		0xAF11				video/x-flic
 # FLC animation format
-0	leshort		0xAF12				video/flc
+0	leshort		0xAF12				video/x-flic
 #
 # SGI and Apple formats
 #
