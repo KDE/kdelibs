@@ -63,10 +63,12 @@ void KPassivePopup::setView( QWidget *child )
     layout->activate();
 }
 
-void KPassivePopup::setView( const QString &caption, const QString &text, const QPixmap &icon )
+void KPassivePopup::setView( const QString &caption, const QString &text,
+                             const QPixmap &icon )
 {
     // kdDebug() << "KPassivePopup::setView " << caption << ", " << text << endl;
-    QWidget *vb = new QVBox( this );
+    QVBox *vb = new QVBox( this );
+    vb->setSpacing( KDialog::spacingHint() );
 
     QHBox *hb=0;
     if ( !icon.isNull() ) {
@@ -82,7 +84,8 @@ void KPassivePopup::setView( const QString &caption, const QString &text, const 
 	QFont fnt = ttl->font();
 	fnt.setBold( true );
 	ttl->setFont( fnt );
-    };
+	ttl->setAlignment( Qt::AlignHCenter );
+    }
 
     msg = new QLabel( text, vb, "msg_label" );
 
