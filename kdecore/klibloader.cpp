@@ -39,6 +39,7 @@ KLibFactory::KLibFactory( QObject* parent, const char* name )
 
 KLibFactory::~KLibFactory()
 {
+    delete d;
 }
 
 void KLibFactory::setMocClasses( const char **names )
