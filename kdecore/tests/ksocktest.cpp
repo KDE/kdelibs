@@ -37,35 +37,6 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
-
-class TestApp : public KUniqueApplication
-{
-public:
-   TestApp()
-	: KUniqueApplication() { }
-   int newInstance( QValueList<QCString> params );
-   KExtendedSocket sock;
-};
-
-
-int
-TestApp::newInstance( QValueList<QCString> )
-{
-   printf("Use netstat -t -n in a shell to check actual connection status.\n");
-   printf("Connecting to tink:110...\n");
-   KSocket *sock1 = new KSocket( "tink", 110);
-   printf("OK Fd = %d\n", sock1->socket());
-   printf("Connecting to www.kde.org:80...\n");
-   KSocket *sock2 = new KSocket( "www.kde.org", 80);
-   printf("OK Fd = %d\n", sock2->socket());
-   printf("Connecting to www.kde.org:70...\n");
-   KSocket *sock3 = new KSocket( "www.kde.org", 70);
-   printf("OK Fd = %d\n", sock3->socket());
-   exit(0);
-   printf("Exiting\n");
-   return 1;
-}
-
 bool check(QString txt, QString a, QString b)
 {
   if (a.isEmpty())
@@ -88,15 +59,18 @@ main(int argc, char *argv[])
 {
    KAboutData about("socktest", "SockTest", "version");
    KCmdLineArgs::init(argc, argv, &about);
-   KUniqueApplication::addCmdLineOptions();
+   KApplication::addCmdLineOptions();
+
+   KApplication app;
 
    QString host, port;
-   
+
    KInetSocketAddress host_address("213.203.58.36", 80);
 
    check("KInetSocketAddress(\"213.203.58.36\", 80)", host_address.pretty(), "213.203.58.36 port 80");
 
    int result = KExtendedSocket::resolve(&host_address, host, port, NI_NAMEREQD);
+   printf( "resolve result: %d\n", result );
    check("KExtendedSocket::resolve() host=", host, "www.kde.org");
    check("KExtendedSocket::resolve() port=", port, "http");
    QPtrList<KAddressInfo> list;
@@ -107,9 +81,29 @@ main(int argc, char *argv[])
    }
    check("KExtendedSocket::lookup()", list.first()->address()->pretty(), "213.203.58.36 port 80");
 
-#if 0
-   TestApp a(&host_address);
-   a.exec();   
-#endif
-   return 0;
+
+   int err;
+
+   QPtrList<KAddressInfo> cns = KExtendedSocket::lookup("www.kde.org", 0, 0, &err);
+   cns.setAutoDelete(true);
+
+   qDebug( "err: %d,cns.count(): %d", err, cns.count() );
+
+   for (KAddressInfo *x = cns.first(); x; x = cns.next()) {
+       qDebug( "got addrinfo: %p", x );
+
+       // Waldo: is this supposed to fail?
+       if ((*x).canonname()) {
+           qDebug( "found : %s", ( *x ).canonname() );
+
+        }
+     }
+
+   KExtendedSocket * sock2 = new KExtendedSocket( "www.kde.org", 80 );
+   check( "KExtendedSocket ctor / connect", QString::number( sock2->connect() ), "0" );
+
+   printf("FD %d\n", sock2->fd());
+
+   KSocketAddress* addr = KExtendedSocket::peerAddress( sock2->fd() );
+   check( "peerAddress:", addr->nodeName().latin1(), "213.203.58.36" );
 }
