@@ -31,7 +31,7 @@ namespace Keramik
 	class PixmapLoader
 	{
 	public:
-		PixmapLoader():m_cache( 193 ) { s_instance = this; }
+		PixmapLoader();
 		~PixmapLoader() { s_instance = 0; }
 
 		const QPixmap& pixmap( const QString& name );

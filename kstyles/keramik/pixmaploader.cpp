@@ -26,6 +26,7 @@
 #include <qimage.h>
 #include <qpainter.h>
 #include <qpixmap.h>
+#include <qpixmapcache.h>
 
 #include "pixmaploader.h"
 
@@ -34,6 +35,13 @@
 using namespace Keramik;
 
 PixmapLoader* PixmapLoader::s_instance = 0;
+
+PixmapLoader::PixmapLoader()
+	:m_cache( 193 ) 
+{ 
+	s_instance = this; 
+	QPixmapCache::setCacheLimit( 32 );
+}
 
 const QPixmap& PixmapLoader::pixmap( const QString& name )
 {
@@ -48,9 +56,15 @@ const QPixmap& PixmapLoader::pixmap( const QString& name )
 
 QPixmap PixmapLoader::scale( const QString& name, int width, int height )
 {
+	QString key = name + '-' + QString::number( width ) + '-' + QString::number( height );
+	QPixmap result;
+	if ( QPixmapCache::find( key, result  ) )
+		return result;
 	const QPixmap& pix = pixmap( name );
-	return pix.xForm( QWMatrix( width ? double (width ) / pix.width() : 1.0, 0.0, 0.0,
-	                            height ? double ( height ) / pix.height() : 1.0, 0.0, 0.0 ) );
+	result = pix.xForm( QWMatrix( width ? double (width ) / pix.width() : 1.0, 0.0, 0.0,
+								  height ? double ( height ) / pix.height() : 1.0, 0.0, 0.0 ) );
+	QPixmapCache::insert( key, result );
+	return result;
 }
 
 void TilePainter::draw( QPainter *p, int x, int y, int width, int height )
