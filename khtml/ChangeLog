@@ -1,3 +1,13 @@
+2004-02-20  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/bidi.cpp (operator ++): skip empty RenderText.
+        Remove unused forcedMinWidth cruft.
+
+        * rendering/render_block.cpp (addChildToFlow): keep the refcount
+        high for first-letter affected text while we manipulate it.
+
+        * rendering/render_text.cpp: remove unused forcedMinWidth cruft.
+
 2004-02-20  Frerich Raabe  <raabe@kde.org>
 
 	* misc/loader.cpp (DOCLOADER_SECCHECK): Adjusted the macro so that it

@@ -282,7 +282,7 @@ BidiIterator::BidiIterator(RenderFlow *_par)
     }
     obj = first( par );
     isText = obj ? obj->isText() : false;
-    pos = isText ? static_cast<RenderText *>(obj)->forcedMinOffset() : 0;
+    pos = 0;
     //kdDebug(6041) << "bidiiterator init: pos " << pos << endl;
 }
 
@@ -299,8 +299,7 @@ inline BidiIterator::BidiIterator(RenderFlow *_par, RenderObject *_obj, int _pos
     par = _par;
     obj = _obj;
     isText = obj ? obj->isText() : false;
-    pos = _pos > 0 ? _pos : (
-    		isText ? static_cast<RenderText *>(obj)->forcedMinOffset() : 0);
+    pos = _pos;
     //kdDebug(6041) << "bidiiterator init(2): pos " << pos << endl;
 }
 
@@ -320,14 +319,18 @@ inline void BidiIterator::operator ++ ()
         pos++;
         if(pos >= static_cast<RenderText *>(obj)->stringLength()) {
             obj = Bidinext( par, obj );
+            while (obj && obj->isText() && !static_cast<RenderText *>(obj)->stringLength())
+                obj = Bidinext( par, obj);
 	    isText = obj ? obj->isText() : false;
-            pos = isText ? static_cast<RenderText *>(obj)->forcedMinOffset() : 0;
+            pos = 0;
 //kdDebug(6041) << "bidiiterator ++(1): pos " << pos << endl;
         }
     } else {
-        obj = Bidinext( par, obj );
+        obj = Bidinext( par, obj);
+        while (obj && obj->isText() && !static_cast<RenderText *>(obj)->stringLength())
+            obj = Bidinext( par, obj);
 	isText = obj ? obj->isText() : false;
-        pos = isText ? static_cast<RenderText *>(obj)->forcedMinOffset() : 0;
+        pos = 0;
 //kdDebug(6041) << "bidiiterator ++(2): pos " << pos << endl;
     }
 }
@@ -378,7 +381,7 @@ static void appendRun()
             sruns->append( new BidiRun(start, obj->length(), obj, context, dir) );
         }
         obj = Bidinext( sor.par, obj );
-        start = obj && obj->isText() ? static_cast<RenderText *>(obj)->forcedMinOffset() : 0;
+        start = 0;
     }
     if( obj && !obj->isHidden()) {
 #if BIDI_DEBUG > 1

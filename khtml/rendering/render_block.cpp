@@ -132,6 +132,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
             DOMStringImpl* oldText = newTextChild->string();
 
             if(oldText->l >= 1) {
+                oldText->ref();
                 unsigned int length = 0;
                 while ( length < oldText->l &&
                         ( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ) )
@@ -146,6 +147,7 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
                 newStyle->inheritFrom(pseudoStyle);
                 letter->setStyle(newStyle);
                 firstLetter->addChild(letter);
+                oldText->deref();
             }
             firstLetter->close();
         }

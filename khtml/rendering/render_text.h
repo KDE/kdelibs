@@ -251,20 +251,11 @@ public:
      * still point to a valid position.
      */
     virtual long minOffset() const;
+
     /** returns the highest possible value the caret offset may have to
      * still point to a valid position.
      */
     virtual long maxOffset() const;
-
-    /** returns the forced minimum offset
-     */
-    long forcedMinOffset() const { return m_minOfs; }
-    /** sets the forced minimum offset
-     *
-     * The forced minimum offset specifies the character into the DOM string
-     * at which position this render object starts to represent the string.
-     */
-    void setForcedMinOffset(long ofs) { m_minOfs = (short)ofs; }
 
     /** returns the number of inline text boxes
      */
@@ -307,8 +298,6 @@ protected: // members
 
     ushort m_startMin : 8;
     ushort m_endMin : 8;
-    short m_minOfs : 8;		// forced minimum offset
-    // all 32 bits used
 };
 
 inline const RenderText* InlineTextBox::renderText() const

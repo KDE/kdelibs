@@ -509,8 +509,6 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
     m_selectionState = SelectionNone;
     m_hasReturn = true;
 
-    m_minOfs = 0;
-
 #ifdef DEBUG_LAYOUT
     QConstString cstr(str->s, str->l);
     kdDebug( 6040 ) << "RenderText ctr( "<< cstr.string().length() << " )  '" << cstr.string() << "'" << endl;
