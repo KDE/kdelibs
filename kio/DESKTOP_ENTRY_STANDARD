@@ -191,12 +191,12 @@ program if necessary.  Recognized fields are as follows:
      question cannot handle multiple file arguments, and it should
      should probably spawn and execute multiple copies of a program
      for each selected file if the program is not able to handle
-     additional file arguments.
-
-%F - a list of files.  If files are not on the local file system
+     additional file arguments. If files are not on the local file system
      (i.e. HTTP or FTP locations), the files will be copied to the local
      file system and %f will be expanded to point at the temporary
-     file.  Used for programs that do not understand URL syntax.
+     file. Used for programs that do not understand URL syntax.
+
+%F - a list of files. Use for apps that can open several local files at once.
 
 %u - a single URL.
 
