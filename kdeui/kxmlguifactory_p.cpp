@@ -541,7 +541,7 @@ void BuildHelper::processElement( const QDomElement &e )
     else if ( containerTags.findIndex( tag ) != -1 )
         processContainerElement( e, tag, currName );
     else if ( tag == tagMerge || tag == tagDefineGroup || tag == tagActionList )
-        processMergeElement( tag, currName );
+        processMergeElement( tag, currName, e );
     else if ( tag == tagState )
         processStateElement( e );
 }
@@ -648,7 +648,7 @@ void BuildHelper::processStateElement( const QDomElement &element )
     }
 }
 
-void BuildHelper::processMergeElement( const QString &tag, const QString &name )
+void BuildHelper::processMergeElement( const QString &tag, const QString &name, const QDomElement &e )
 {
     static const QString &tagDefineGroup = KGlobal::staticQString( "definegroup" );
     static const QString &tagActionList = KGlobal::staticQString( "actionlist" );
@@ -682,13 +682,16 @@ void BuildHelper::processMergeElement( const QString &tag, const QString &name )
 
     MergingIndexList::Iterator mIt( parentNode->mergingIndices.end() );
 
+    QString group( e.attribute( attrGroup ) );
+    if ( !group.isEmpty() ) 
+        group.prepend( attrGroup );
+
     // calculate the index of the new merging index. Usually this does not need any calculation,
     // we just want the last available index (i.e. append) . But in case the <Merge> tag appears
     // "inside" another <Merge> tag from a previously build client, then we have to use the
     // "parent's" index. That's why we call calcMergingIndex here.
     MergingIndex newIdx;
-    newIdx.value = parentNode->calcMergingIndex( QString::null /* ### allow group for <merge/> ? */ ,
-                                                  mIt, m_state, ignoreDefaultMergingIndex );
+    newIdx.value = parentNode->calcMergingIndex( group, mIt, m_state, ignoreDefaultMergingIndex );
     newIdx.mergingName = mergingName;
     newIdx.clientName = m_state.clientName;
 

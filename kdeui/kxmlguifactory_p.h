@@ -194,7 +194,7 @@ private:
 
     void processStateElement( const QDomElement &element );
 
-    void processMergeElement( const QString &tag, const QString &name );
+    void processMergeElement( const QString &tag, const QString &name, const QDomElement &e );
 
     void processContainerElement( const QDomElement &e, const QString &tag,
                                   const QString &name );
