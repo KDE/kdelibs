@@ -173,7 +173,7 @@ KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
 	// Read style settings
 	QSettings settings;
 	d->popupMenuDelay       = settings.readNumEntry ("/KStyle/Settings/PopupMenuDelay", 256);
-	d->sloppySubMenus       = settings.readBoolEntry("/KStyle/Settings/SloppySubMenus", true);
+	d->sloppySubMenus       = settings.readBoolEntry("/KStyle/Settings/SloppySubMenus", false);
 	d->etchDisabledText     = settings.readBoolEntry("/KStyle/Settings/EtchDisabledText", true);
 	d->menuAltKeyNavigation = settings.readBoolEntry("/KStyle/Settings/MenuAltKeyNavigation", true);
 	d->scrollablePopupmenus = settings.readBoolEntry("/KStyle/Settings/ScrollablePopupMenus", false);
