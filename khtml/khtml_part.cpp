@@ -723,11 +723,12 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 
 void KHTMLPart::write( const char *str, int len )
 {
-  if ( !d->m_decoder )
-  {
-    d->m_decoder = new khtml::Decoder();
-    if(d->m_encoding != QString::null)
-	d->m_decoder->setEncoding(d->m_encoding.latin1());
+    if ( !d->m_decoder ) {
+	d->m_decoder = new khtml::Decoder();
+	if(d->m_encoding != QString::null)
+	    d->m_decoder->setEncoding(d->m_encoding.latin1());
+	else 
+	    d->m_decoder->setEncoding(settings()->encoding().latin1());
   }
   if ( len == 0 )
     return;
