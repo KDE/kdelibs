@@ -18,8 +18,9 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "rendering/render_root.h"
 
+
+#include "rendering/render_root.h"
 
 #include "khtmlview.h"
 #include <kdebug.h>
@@ -119,8 +120,8 @@ void RenderRoot::layout()
     if (!m_printingMode) {
         QSize s = m_view->viewportSize(m_view->contentsWidth(),
                                        m_view->contentsHeight());
-        m_width = s.width();
-        m_height = s.height();
+        m_viewportWidth = m_width = s.width();
+        m_viewportHeight = m_height = s.height();
     }
     else {
         m_width = m_rootWidth;
@@ -264,6 +265,8 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
 
     if ( changedSelectionBorder )
         clearSelection();
+    else if( m_selectionStart )
+        m_selectionStart->repaint();
 
     // set selection start
     if (m_selectionStart)
@@ -286,7 +289,6 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
         for( RenderObject* o = s; o != e; ) {
             o->setSelectionState(SelectionInside);
             o->repaint();
-//      kdDebug( 6040 ) << "setting selected " << o << ", " << o->isText() << endl;
             RenderObject* no;
             if ( !(no = o->firstChild()) )
                 if ( !(no = o->nextSibling()) )
