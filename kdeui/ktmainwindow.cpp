@@ -93,13 +93,13 @@ KTMainWindow::KTMainWindow( const char *name, WFlags f )
     : QWidget( 0L, name, f )
 {
     initing = TRUE;
-    
+
     kmenubar = 0L;
     kmainwidget = 0L;
     kstatusbar = 0L;
     borderwidth = 0;
     mHelpMenu = 0L;
-    
+
     kmainwidgetframe = new QFrame( this );
     CHECK_PTR( kmainwidgetframe );
     kmainwidgetframe ->setFrameStyle( QFrame::Panel | QFrame::Sunken);
@@ -118,7 +118,7 @@ KTMainWindow::KTMainWindow( const char *name, WFlags f )
     // enter the widget in the list of all KTWs
     memberList->append( this );
 
-    
+
     if ( !name ) {
 	// set a unique object name. Required by session management.
 	QCString s;
@@ -128,7 +128,7 @@ KTMainWindow::KTMainWindow( const char *name, WFlags f )
 
     localKill = false;
     layoutMgr = 0;
-    
+
     initing = FALSE;
 }
 
@@ -341,7 +341,8 @@ void KTMainWindow::updateRects()
 	 * current size.  This does not hurt if there are no constraints
 	 * (I hope Qt is intelligent enough) and causes the size to change
 	 * to the correct size in case of any constraints. */
-	resize(size());
+	if ( isVisible() )
+	    resize(size());
 }
 
 void KTMainWindow::saveGlobalProperties(KConfig*)
@@ -455,7 +456,7 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
 {
     if ( number == 1 )
 	readGlobalProperties( config );
-    
+
     QString entry;
     QStrList entryList;
     int n = 1; // Tolbar counter. toolbars are counted from 1,
@@ -465,10 +466,10 @@ bool KTMainWindow::readPropertiesInternal (KConfig* config, int number)
     s.setNum(number);
     s.prepend("WindowProperties");
     config->setGroup(s);
-    
-    if ( config->hasKey("ObjectName" ) ) 
+
+    if ( config->hasKey("ObjectName" ) )
 	setName( config->readEntry("ObjectName").latin1() ); // latin1 is right here
-    
+
 
 //     // Use KWM for window properties
 //     QString geom = config->readEntry ("KTWGeometry");
@@ -638,20 +639,23 @@ bool KTMainWindow::event(QEvent* ev)
 
 void KTMainWindow::resizeEvent(QResizeEvent *)
 {
-	/* This is an ugly hack to work around a Qt layout management
-	 * problem.  If the minimum or maximum size changes during the
-	 * execution of resizeEvent() functions this new size is not
-	 * honored. Unfortunately due to the multiple resizeEvents() this
-	 * flickers like hell in opaque resize mode. CS */
-	if (width() < minimumWidth())
-		resize(minimumWidth(), height());
-	if (maximumWidth() > 0 && width() > maximumWidth())
-		resize(maximumWidth(), height());
+    
+// 	/* This is an ugly hack to work around a Qt layout management
+// 	 * problem.  If the minimum or maximum size changes during the
+// 	 * execution of resizeEvent() functions this new size is not
+// 	 * honored. Unfortunately due to the multiple resizeEvents() this
+// 	 * flickers like hell in opaque resize mode. CS */
+// 	if (width() < minimumWidth())
+// 		resize(minimumWidth(), height());
+// 	if (maximumWidth() > 0 && width() > maximumWidth())
+// 		resize(maximumWidth(), height());
 
-	if (height() < minimumHeight())
-		resize(width(), minimumHeight());
-	if (maximumHeight() > 0 && height() > maximumHeight())
-		resize(width(), maximumHeight());
+// 	if (height() < minimumHeight())
+// 		resize(width(), minimumHeight());
+// 	if (maximumHeight() > 0 && height() > maximumHeight())
+// 		resize(width(), maximumHeight());
+    
+    // We cannot do that. It can lead into situtions where it loops endlessly (Matthias )
 }
 
 KStatusBar *KTMainWindow::statusBar()
