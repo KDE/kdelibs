@@ -1190,7 +1190,7 @@ void HTMLOptionElement::setSelected(bool _selected) {
 DOMString HTMLOptionElement::value() const
 {
     if(!impl) return DOMString();
-    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_VALUE);
+    return static_cast<HTMLOptionElementImpl*>(impl)->value();
 }
 
 void HTMLOptionElement::setValue( const DOMString &value )
