@@ -671,6 +671,11 @@ private slots:
     */
    void menubarKilled();
 
+   /**
+	* Called when the app is shutting down.
+	*/
+   void shuttingDown();
+
 public:
 
    /**

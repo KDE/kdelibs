@@ -142,6 +142,8 @@ KTMainWindow::KTMainWindow( const char *name, WFlags f )
 
     kapp->setTopWidget( this );
 
+    connect(kapp, SIGNAL(shutDown()), this, SLOT(shuttingDown()));
+
     // see if there already is a member list
     if( !memberList )
 	memberList = new QList<KTMainWindow>;
@@ -236,6 +238,12 @@ bool KTMainWindow::queryClose()
 
 bool KTMainWindow::queryExit(){
     return true;
+}
+
+void KTMainWindow::shuttingDown()
+{
+  // call the virtual queryExit
+  queryExit();
 }
 
 int KTMainWindow::addToolBar( KToolBar *toolbar, int index )
