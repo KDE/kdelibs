@@ -1091,10 +1091,8 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
 {
   const QString rst = shortFormat?dateFormatShort():dateFormat();
 
-  // I'm rather safe than sorry
-  QChar *buffer = new QChar[rst.length() * 3 / 2 + 50];
+  QString buffer;
 
-  unsigned int index = 0;
   bool escape = false;
   int number = 0;
 
@@ -1109,64 +1107,59 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
 	  if ( rst.at( format_index ).unicode() == '%' )
 	    escape = true;
 	  else
-	    buffer[index++] = rst.at( format_index );
+	    buffer.append(rst.at(format_index));
 	}
       else
 	{
 	  switch ( rst.at( format_index ).unicode() )
 	    {
 	    case '%':
-	      buffer[index++] = '%';
+	      buffer.append('%');
 	      break;
 	    case 'Y':
-	      put_it_in( buffer, index, year / 100 );
+	      buffer.append(calendar()->yearString(pDate, false));
+	      break;
 	    case 'y':
-	      put_it_in( buffer, index, year % 100 );
+	      buffer.append(calendar()->yearString(pDate, true));
 	      break;
 	    case 'n':
-	      number = month;
+              buffer.append(calendar()->monthString(pDate, true));
+	      break;
 	    case 'e':
-	      // to share the code
-	      if ( rst.at( format_index ).unicode() == 'e' )
-		number = day;
-	      if ( number / 10 )
-		buffer[index++] = number / 10 + '0';
-	      buffer[index++] = number % 10 + '0';
+              buffer.append(calendar()->dayString(pDate, false));
 	      break;
 	    case 'm':
-	      put_it_in( buffer, index, month );
+              buffer.append(calendar()->monthString(pDate, false));
 	      break;
 	    case 'b':
 	      if (d->nounDeclension && d->dateMonthNamePossessive)
-		put_it_in( buffer, index, calendar()->monthNamePossessive(month, year, true) );
+		buffer.append(calendar()->monthNamePossessive(month, year, true));
 	      else
-		put_it_in( buffer, index, calendar()->monthName(month, year, true) );
+		buffer.append(calendar()->monthName(month, year, true));
 	      break;
 	    case 'B':
 	      if (d->nounDeclension && d->dateMonthNamePossessive)
-		put_it_in( buffer, index, calendar()->monthNamePossessive(month, year, false) );
+		buffer.append(calendar()->monthNamePossessive(month, year, false));
 	      else
-		put_it_in( buffer, index, calendar()->monthName(month, year, false) );
+		buffer.append(calendar()->monthName(month, year, false));
 	      break;
 	    case 'd':
-	      put_it_in( buffer, index, day );
+              buffer.append(calendar()->dayString(pDate, false));
 	      break;
 	    case 'a':
-	      put_it_in( buffer, index, calendar()->weekDayName(pDate, true) );
+	      buffer.append(calendar()->weekDayName(pDate, true));
 	      break;
 	    case 'A':
-	      put_it_in( buffer, index, calendar()->weekDayName(pDate, false) );
+	      buffer.append(calendar()->weekDayName(pDate, false));
 	      break;
 	    default:
-	      buffer[index++] = rst.at( format_index );
+	      buffer.append(rst.at(format_index));
 	      break;
 	    }
 	  escape = false;
 	}
     }
-  QString ret( buffer, index );
-  delete [] buffer;
-  return ret;
+  return buffer;
 }
 
 void KLocale::setMainCatalogue(const char *catalogue)
@@ -1376,6 +1369,8 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
   uint strpos = 0;
   uint fmtpos = 0;
 
+  int iLength; // Temperary variable used when reading input
+
   bool error = false;
 
   while (fmt.length() > fmtpos && str.length() > strpos && !error)
@@ -1446,28 +1441,36 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 	  break;
 	case 'd':
 	case 'e':
-	  day = readInt(str, strpos);
-	  error = (day < 1 || day > 31);
+	  day = calendar()->dayStringToInteger(str.mid(strpos), iLength);
+	  strpos += iLength;
+
+	  error = iLength <= 0;
 	  break;
 
 	case 'n':
 	case 'm':
-	  month = readInt(str, strpos);
-	  error = (month < 1 || month > 12);
+	  month = calendar()->monthStringToInteger(str.mid(strpos), iLength);
+	  strpos += iLength;
+
+	  error = iLength <= 0;
 	  break;
 
 	case 'Y':
 	case 'y':
-	  year = readInt(str, strpos);
-	  error = (year < 0);
+	  year = calendar()->yearStringToInteger(str.mid(strpos), iLength);
+	  strpos += iLength;
+
+	  error = iLength <= 0;
+
+	  // ### HPB: This should be moved to the implemtnation classes of KCalendarSystem
 	  // Qt treats a year in the range 0-100 as 1900-1999.
 	  // It is nicer for the user if we treat 0-68 as 2000-2068
-	  if (c == 'y' && year < 69)
+	  //if (c == 'y' && year < 69)
 	    // eg. gregorian += 2000
-	    year += (calendar()->year(QDate::currentDate()) / 100) * 100;
-	  else if (c == 'y' && year < 100)
+	  //  year += (calendar()->year(QDate::currentDate()) / 100) * 100;
+	  //else if (c == 'y' && year < 100)
 	    // eg. gregorian += 1900
-	    year += (calendar()->year(QDate::currentDate()) / 100) * 100 - 100;
+	  //  year += (calendar()->year(QDate::currentDate()) / 100) * 100 - 100;
 	  break;
       }
     }
