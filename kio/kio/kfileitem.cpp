@@ -574,30 +574,27 @@ QString KFileItem::getToolTipText(int maxcount)
 
   tip = "<table cellspacing=0 cellpadding=0>";
 
-  // if we got no or empty info, show a default tip
-  if ( !info.isValid() || info.isEmpty() )
-  {
-    //kdDebug() << "Found no meta info" << endl;
+  //kdDebug() << "Found no meta info" << endl;
 
-    tip += start + i18n("Type:") + mid;
+  tip += start + i18n("Type:") + mid;
 
-    QString type = QStyleSheet::escape(determineMimeType()->comment());
-    if ( m_bLink )
-      tip += i18n("Link to %1").arg(type) + end;
-    else
-      tip += type + end;
-
-    if ( !S_ISDIR ( m_fileMode ) )
-      tip += start + i18n("Size:") + mid +
-             KIO::convertSize( size() ) + end;
-
-    tip += start + i18n("Modified:") + mid +
-           timeString( KIO::UDS_MODIFICATION_TIME) + end +
-           start + i18n("Owner:") + mid + user() + " - " + group() + end +
-           start + i18n("Permissions:") + mid +
-           parsePermissions(m_permissions) + end;
-  }
+  QString type = QStyleSheet::escape(determineMimeType()->comment());
+  if ( m_bLink )
+    tip += i18n("Link to %1").arg(type) + end;
   else
+    tip += type + end;
+
+  if ( !S_ISDIR ( m_fileMode ) )
+    tip += start + i18n("Size:") + mid +
+           KIO::convertSize( size() ) + end;
+
+  tip += start + i18n("Modified:") + mid +
+         timeString( KIO::UDS_MODIFICATION_TIME) + end +
+         start + i18n("Owner:") + mid + user() + " - " + group() + end +
+         start + i18n("Permissions:") + mid +
+         parsePermissions(m_permissions) + end;
+
+  if (info.isValid() && !info.isEmpty() )
   {
     QStringList keys = info.preferredKeys();
 
