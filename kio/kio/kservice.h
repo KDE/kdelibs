@@ -44,6 +44,9 @@ class KService : public KSycocaEntry
 {
   K_SYCOCATYPE( KST_KService, KSycocaEntry )
 
+  KService(const KService&);
+  KService& operator=(const KService&);
+
   friend class KBuildSycoca;
 
 public:

@@ -525,4 +525,4 @@ DOMString getTagName(unsigned short id)
 {
     if(id > ID_CLOSE_TAG*2) id = ID_CLOSE_TAG+1;
     return DOMString(tagList[id]);
-};
+}

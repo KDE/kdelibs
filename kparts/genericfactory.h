@@ -182,7 +182,7 @@ namespace KParts
         return s_aboutData;
     }
 
-};
+}
 
 #endif
 

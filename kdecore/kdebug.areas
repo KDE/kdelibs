@@ -9,6 +9,7 @@
 127        kio (KProtocolInfo)
 128        kdecore (KRegExp)
 129        kdecore (KAction)
+130        kio (KPasswdServer)
 150        kdecore (KLibLoader)
 160        kdecore (KNotifyClient)
 170        kdecore (KSocket)
@@ -212,6 +213,7 @@
 7121        kio_nfs
 7122        kio_sieve
 7123        kio_kamera
+7125        kio_ldap
 
 # kdesdk
 8100        kompare
@@ -319,6 +321,7 @@
 30003        koffice (lib kofficecore)
 30004        koffice (lib kofficeui)
 30005        koffice (lib kopainter)
+30006        koffice (lib kospell)
 30500        koffice (filter manager)
 30501        csvfilter
 30502        asciifilter
@@ -327,7 +330,7 @@
 30505        msodfilter
 30506        abiwordfilter
 30507        docbookfilter
-30508        kword-export-filter-lib
+30508        export-filter-lib
 30509        mswritefilter
 30510        ole-lib
 30511        ole-excel
@@ -335,6 +338,10 @@
 30513        ole-winword
 30514        svgfilter
 30515        rtffilter
+30516        pdffilter
+30517        applixgraphics-filter
+30518        openoffice-filter
+30519        import-export-openoffice-filter-lib
 31000        koffice
 32001        kword
 32002        kword (formatting)
@@ -351,12 +358,13 @@
 36002        kspread (cell)
 37000        kspread
 37001        graphite
-38000        kontour
+38000        karbon
 39001        kformula
 40000        kformula
 40001	     krayon
 41000	     krayon
 42000        kplato
+43000        kivio
 
 # kdeextragear
 50001	kfortune

@@ -60,7 +60,7 @@ extern "C" {
         khtml_error_mgr* myerr = (khtml_error_mgr*) cinfo->err;
         char buffer[JMSG_LENGTH_MAX];
         (*cinfo->err->format_message)(cinfo, buffer);
-        qWarning(buffer);
+        qWarning("%s", buffer);
         longjmp(myerr->setjmp_buffer, 1);
     }
 }
@@ -137,7 +137,7 @@ extern "C" {
 #endif
 
         if(skipbytes < src->bytes_in_buffer)
-            memcpy(src->buffer, src->next_input_byte+skipbytes, src->bytes_in_buffer - skipbytes);
+            memmove(src->buffer, src->next_input_byte+skipbytes, src->bytes_in_buffer - skipbytes);
 
         src->bytes_in_buffer -= skipbytes;
         src->valid_buffer_len = src->bytes_in_buffer;
@@ -309,7 +309,7 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
     if(state == startDecompress)
     {
         cinfo.buffered_image = TRUE;
-        cinfo.do_fancy_upsampling = FALSE;
+        cinfo.do_fancy_upsampling = TRUE;
         cinfo.do_block_smoothing = FALSE;
         cinfo.dct_method = JDCT_FASTEST;
 
@@ -450,8 +450,8 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
     qDebug("bytes_in_buffer is now %d", jsrc.bytes_in_buffer);
     qDebug("consumed %d bytes", consumed);
 #endif
-    if(jsrc.bytes_in_buffer)
-        memcpy(jsrc.buffer, jsrc.next_input_byte, jsrc.bytes_in_buffer);
+    if(jsrc.bytes_in_buffer && jsrc.buffer != jsrc.next_input_byte)
+        memmove(jsrc.buffer, jsrc.next_input_byte, jsrc.bytes_in_buffer);
     jsrc.valid_buffer_len = jsrc.bytes_in_buffer;
     return consumed;
 }

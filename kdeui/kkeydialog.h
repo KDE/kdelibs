@@ -150,6 +150,7 @@ class KKeyChooser : public QWidget
 	void slotListItemSelected( QListViewItem *item );
 	void capturedShortcut( const KShortcut& cut );
         void slotSettingsChanged( int );
+        void slotListItemDoubleClicked ( QListViewItem * ipoQListViewItem, const QPoint & ipoQPoint, int c );
 
  protected:
 	ActionType m_type;

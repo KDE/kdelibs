@@ -73,7 +73,7 @@ manpage.1: manpage.sgml
     <para>This manual page documents briefly the
       <command>&dhpackage;</command> command.</para>
 
-    <para><command>&dhpackage;</command> is the server for KDE's Desktop Communications Protocol.</para>
+    <para><command>&dhpackage;</command> is a generic image to ps filter.</para>
 
   </refsect1>
   <refsect1>

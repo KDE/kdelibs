@@ -45,9 +45,9 @@ CSSRule::CSSRule(CSSRuleImpl *i)
 CSSRule &CSSRule::operator = (const CSSRule &other)
 {
     if ( impl != other.impl ) {
-    if(impl) impl->deref();
-    impl = other.impl;
-    if(impl) impl->ref();
+        if(impl) impl->deref();
+        impl = other.impl;
+        if(impl) impl->ref();
     }
     return *this;
 }
@@ -507,9 +507,9 @@ CSSRuleList::CSSRuleList(StyleListImpl *lst)
 CSSRuleList &CSSRuleList::operator = (const CSSRuleList &other)
 {
     if ( impl != other.impl ) {
-    if(impl) impl->deref();
-    impl = other.impl;
-    if(impl) impl->ref();
+        if(impl) impl->deref();
+        impl = other.impl;
+        if(impl) impl->ref();
     }
     return *this;
 }

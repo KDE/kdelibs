@@ -34,7 +34,7 @@
 #include <qstringlist.h>
 #include <qregexp.h>
 #include <qstylesheet.h>
-
+#include <qmap.h>
 #include <qtextcodec.h>
 
 static QTextCodec * codecForHint( int encoding_hint /* not 0 ! */ )
@@ -200,7 +200,7 @@ static void decode( const QString& segment, QString &decoded, QString &encoded, 
   {
     bool bReencode = false;
     unsigned char character = csegment[ i++ ];
-    if ((character == ' ') || (character > 127))
+    if ((character <= ' ') || (character > 127))
        bReencode = true;
 
     new_usegment [ new_length2++ ] = character;
@@ -507,6 +507,12 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
   {
     KURL tmp( rUrl, encoding_hint);
     *this = tmp;
+    // Preserve userinfo if applicable.
+    if (!_u.m_strUser.isEmpty() && m_strUser.isEmpty() && (_u.m_strHost == m_strHost) && (_u.m_strProtocol == m_strProtocol))
+    {
+       m_strUser = _u.m_strUser;
+       m_strPass = _u.m_strPass;
+    }
   }
 }
 
@@ -1358,7 +1364,7 @@ KURL KURL::join( const KURL::List & lst )
 QString KURL::fileName( bool _strip_trailing_slash ) const
 {
   QString fname;
-  const QString &path = m_strPath_encoded.isEmpty() ? m_strPath : m_strPath_encoded;
+  const QString &path = m_strPath;
 
   int len = path.length();
   if ( len == 0 )
@@ -1376,7 +1382,23 @@ QString KURL::fileName( bool _strip_trailing_slash ) const
   if ( len == 1 && path[ 0 ] == '/' )
     return fname;
 
-  int i = path.findRev( '/', len - 1 );
+  // Skip last n slashes
+  int n = 1;
+  if (!m_strPath_encoded.isEmpty())
+  {
+     // This is hairy, we need the last unencoded slash.
+     // Count in the encoded string how many encoded slashes follow the last
+     // unencoded one.
+     int i = m_strPath_encoded.findRev( '/', len - 1 );
+     QString fileName_encoded = m_strPath_encoded.mid(i+1);
+     n += fileName_encoded.contains("%2f", false);
+  }
+  int i = len;
+  do {
+    i = path.findRev( '/', i - 1 );
+  }
+  while (--n && (i > 0));
+
   // If ( i == -1 ) => the first character is not a '/'
   // So it's some URL like file:blah.tgz, return the whole path
   if ( i == -1 ) {
@@ -1390,11 +1412,7 @@ QString KURL::fileName( bool _strip_trailing_slash ) const
   {
      fname = path.mid( i + 1, len - i - 1 ); // TO CHECK
   }
-  // fname.assign( m_strPath, i + 1, len - i - 1 );
-  if (m_strPath_encoded.isEmpty())
      return fname;
-  else
-     return decode_string(fname);
 }
 
 void KURL::addPath( const QString& _txt )
@@ -1752,6 +1770,37 @@ bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, 
       return false;
 
   return true;
+}
+
+QMap< QString, QString > KURL::queryItems( int options ) const {
+  if ( m_strQuery_encoded.isEmpty() )
+    return QMap<QString,QString>();
+
+  QMap< QString, QString > result;
+  QStringList items = QStringList::split( '&', m_strQuery_encoded );
+  for ( QStringList::const_iterator it = items.begin() ; it != items.end() ; ++it ) {
+    int equal_pos = (*it).find( '=' );
+    if ( equal_pos > 0 ) { // = is not the first char...
+      QString name = (*it).left( equal_pos );
+      if ( options & CaseInsensitiveKeys )
+	name = name.lower();
+      QString value = (*it).mid( equal_pos + 1 );
+      if ( value.isEmpty() )
+	result.insert( name, QString::fromLatin1("") );
+      else {
+	// ### why is decoding name not neccessary?
+	value.replace( '+', ' ' ); // + in queries means space
+	result.insert( name, decode_string( value ) );
+      }
+    } else if ( equal_pos < 0 ) { // no =
+      QString name = (*it);
+      if ( options & CaseInsensitiveKeys )
+	name = name.lower();
+      result.insert( name, QString::null );
+    }
+  }
+
+  return result;
 }
 
 QString KURL::queryItem( const QString& _item ) const

@@ -4,7 +4,6 @@
 SUBDIRS = kcookiejar
 
 INCLUDES= -I$(top_srcdir)/interfaces $(all_includes)
-LDFLAGS = $(all_libraries)
 
 ####### Files
 
@@ -19,11 +18,11 @@ kio_http_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 
 kio_http_cache_cleaner_SOURCES = dummy.cpp
 kio_http_cache_cleaner_LDADD   = kio_http_cache_cleaner.la
-kio_http_cache_cleaner_LDFLAGS = $(KDE_RPATH)
+kio_http_cache_cleaner_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 kio_http_cache_cleaner_la_SOURCES = http_cache_cleaner.cpp
 kio_http_cache_cleaner_la_LIBADD  = $(LIB_KIO)
-kio_http_cache_cleaner_la_LDFLAGS = -module -avoid-version
+kio_http_cache_cleaner_la_LDFLAGS = -module -avoid-version $(all_libraries)
 
 noinst_HEADERS = http.h
 

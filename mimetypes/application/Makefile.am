@@ -2,7 +2,7 @@
 data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-object.desktop x-tex-pk.desktop pdf.desktop \
 	x-tar.desktop x-trash.desktop x-zip.desktop \
-	x-core.desktop x-java.desktop \
+	x-core.desktop x-java.desktop x-java-applet.desktop \
 	x-jar.desktop x-arj.desktop x-tarz.desktop \
 	postscript.desktop octet-stream.desktop \
 	x-shellscript.desktop x-desktop.desktop \

@@ -29,7 +29,7 @@
 #define __propsdlg_h
 
 #include <qstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 #include <kurl.h>
 #include <kfileitem.h>

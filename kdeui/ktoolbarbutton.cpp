@@ -36,6 +36,7 @@
 #include <qpopupmenu.h>
 #include <qcursor.h>
 #include <qpainter.h>
+#include <qlayout.h>
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -48,9 +49,6 @@
 #include <kmainwindow.h>
 
 template class QIntDict<KToolBarButton>;
-
-// Delay in ms before delayed popup pops up
-#define POPUP_DELAY 500
 
 class KToolBarButtonPrivate
 {
@@ -673,6 +671,7 @@ void KToolBarButton::showMenu()
         p.setY( p.y() - d->m_popup->sizeHint().height() );
     else
         p.setY( p.y() + height( ));
+    if (QApplication::reverseLayout()) p.setX(p.x() -d->m_popup->sizeHint().width() + width() );	
   }
   else
     p = QCursor::pos();
@@ -703,7 +702,7 @@ void KToolBarButton::slotPressed()
     if (d->m_isPopup)
     {
       d->m_delayTimer->stop(); // just in case?
-      d->m_delayTimer->start(POPUP_DELAY, true);
+      d->m_delayTimer->start( QApplication::startDragTime() , true);
       return;
     }
     else

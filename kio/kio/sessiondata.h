@@ -62,6 +62,6 @@ private:
     SessionDataPrivate* d;
 };
 
-}; // namespace
+} // namespace
 
 #endif

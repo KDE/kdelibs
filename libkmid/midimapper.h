@@ -27,6 +27,8 @@
 #include <stdio.h>
 #include <libkmid/dattypes.h>
 
+#define KM_NAME_SIZE 30
+
 /**
  * A Midi Mapper class which defines the way MIDI events are translated
  * (or "mapped") to different ones. This way, when two MIDI devices "talk"
@@ -65,7 +67,7 @@ class MidiMapper
      */
     struct Keymap
     {
-      char name[30];
+      char name[KM_NAME_SIZE];
       uchar key[128];
       struct Keymap *next;
     };

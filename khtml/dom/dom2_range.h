@@ -470,6 +470,6 @@ private:
     void throwException(int exceptioncode) const;
 };
 
-}; // namespace
+} // namespace
 
 #endif

@@ -6,7 +6,8 @@
               (C) 1998 Waldo Bastian (bastian@kde.org)
               (C) 1999 Lars Knoll (knoll@kde.org)
               (C) 1999 Antti Koivisto (koivisto@kde.org)
-              (C) 2001 Dirk Mueller (mueller@kde.org)
+              (C) 2001-2003 Dirk Mueller (mueller@kde.org)
+              (C) 2002 Apple Computer, Inc.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -124,22 +125,6 @@ static const char titleEnd [] = "</title";
 \
                 case 0x9E: (x) = 0x017E; break; \
                 case 0x9F: (x) = 0x0178; break; \
-                /* This one should die */ \
-                case 0xb7: (x) = '*';    break; \
-                default: break; \
-                } \
-            } \
-            else { \
-                /* These should all die sooner rather than later */ \
-                switch( (x).unicode() ) { \
-                case 0x2013: (x) = '-'; break; \
-                case 0x2014: (x) = '-'; break; \
-                case 0x2018: (x) = '\''; break; \
-                case 0x2019: (x) = '\''; break; \
-                case 0x201c: (x) = '"'; break; \
-                case 0x201d: (x) = '"'; break; \
-                case 0x2022: (x) = '*'; break; \
-                case 0x2122: (x) = 0x2122; break; \
                 default: break; \
                 } \
             }
@@ -225,11 +210,10 @@ void HTMLTokenizer::begin()
     tquote = NoQuote;
     searchCount = 0;
     Entity = NoEntity;
-    scriptSrc = "";
-    pendingSrc = "";
     noMoreData = false;
     brokenComments = false;
     brokenServer = false;
+    brokenScript = false;
     lineno = 0;
     scriptStartLineno = 0;
     tagStartLineno = 0;
@@ -238,6 +222,7 @@ void HTMLTokenizer::begin()
 void HTMLTokenizer::processListing(DOMStringIt list)
 {
     bool old_pre = pre;
+
     // This function adds the listing 'list' as
     // preformatted text-tokens to the token-collection
     // thereby converting TABs.
@@ -305,10 +290,10 @@ void HTMLTokenizer::processListing(DOMStringIt list)
 
     if ((pending == SpacePending) || (pending == TabPending))
         addPending();
-    pending = NonePending;
+    else
+        pending = NonePending;
 
     prePos = 0;
-
     pre = old_pre;
 }
 
@@ -418,7 +403,7 @@ void HTMLTokenizer::scriptHandler()
 
             setSrc(QString::null);
             scriptCodeSize = scriptCodeResync = 0;
-            scriptExecution( exScript, QString(), scriptStartLineno );
+            scriptExecution( exScript, QString::null, tagStartLineno /*scriptStartLineno*/ );
         }
     }
 
@@ -430,7 +415,7 @@ void HTMLTokenizer::scriptHandler()
         QString newStr = QString(src.current(), src.length());
         newStr += pendingSrc;
         setSrc(newStr);
-        pendingSrc = "";
+        pendingSrc = QString::null;
     }
     else if ( !prependingSrc.isEmpty() )
         write( prependingSrc, false );
@@ -750,10 +735,14 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         // Found '<!--' sequence
                         ++src;
                         dest = buffer; // ignore the previous part of this tag
-                        comment = true;
                         tag = NoTag;
-                        parseComment(src);
 
+                        comment = true;
+                        // push what we parsed so far upon the stack. helps for <!-->
+                        checkScriptBuffer();
+                        scriptCode[0] = scriptCode[1] = '-';
+                        scriptCodeSize = 2;
+                        parseComment(src);
                         return; // Finished parsing tag!
                     }
                     // cuts of high part, is okay
@@ -1063,9 +1052,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
             if(tagID >= ID_CLOSE_TAG)
                 tagID -= ID_CLOSE_TAG;
-            else if ( beginTag && tagID == ID_SCRIPT ) {
+            else if ( beginTag && !brokenScript && tagID == ID_SCRIPT ) {
                 AttributeImpl* a = 0;
-                scriptSrc = scriptSrcCharset = "";
+                scriptSrc = scriptSrcCharset = QString::null;
                 if ( currToken.attrs && /* potentially have a ATTR_SRC ? */
                      parser->doc()->view()->part()->jScriptEnabled() && /* jscript allowed at all? */
                      view /* are we a regular tokenizer or just for innerHTML ? */
@@ -1405,12 +1394,19 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
         {
             if ( pre || textarea)
             {
-                if (pending)
-                    addPending();
-                if (cc == ' ')
-                    pending = SpacePending;
-                else
-                    pending = TabPending;
+                if (discard == SpaceDiscard || discard == AllDiscard)
+                {
+                    // Ignore this LF
+                    discard = NoneDiscard; // We have discarded 1 LF
+                }
+                else {
+                    if (pending)
+                        addPending();
+                    if (cc == ' ')
+                        pending = SpacePending;
+                    else
+                        pending = TabPending;
+                }
             }
             else
             {
@@ -1439,7 +1435,7 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
             ++src;
         }
     }
-    _src = QString();
+    _src = QString::null;
 
     if (noMoreData && cachedScript.isEmpty() && !m_executingScript )
         end(); // this actually causes us to be deleted
@@ -1471,19 +1467,21 @@ void HTMLTokenizer::end()
 void HTMLTokenizer::finish()
 {
     // do this as long as we don't find matching comment ends
-    while((comment || server) && scriptCode && scriptCodeSize)
+    while((title || script || comment || server) && scriptCode && scriptCodeSize)
     {
         // we've found an unmatched comment start
         if (comment)
             brokenComments = true;
-        else
+        else if (server)
+            brokenServer = true;
+        else if (script)
             brokenServer = true;
         checkScriptBuffer();
         scriptCode[ scriptCodeSize ] = 0;
         scriptCode[ scriptCodeSize + 1 ] = 0;
         int pos;
         QString food;
-        if (script || style) {
+        if (title || script || style) {
             food.setUnicode(scriptCode, scriptCodeSize);
         }
         else if (server) {
@@ -1497,7 +1495,9 @@ void HTMLTokenizer::finish()
         KHTML_DELETE_QCHAR_VEC(scriptCode);
         scriptCode = 0;
         scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
-        comment = server = false;
+        if ( script )
+            scriptHandler();
+        comment = script = title = server = false;
         if ( !food.isEmpty() )
             write(food, true);
     }
@@ -1562,6 +1562,8 @@ void HTMLTokenizer::processToken()
 
     if ( currToken.flat && currToken.id != ID_TEXT && !parser->noSpaces() )
 	discard = NoneDiscard;
+    else if ( parser->selectMode() )
+        discard = AllDiscard;
 
     currToken.reset();
     if (jsProxy)
@@ -1593,7 +1595,7 @@ void HTMLTokenizer::enlargeScriptBuffer(int len)
     scriptCodeMaxSize = newsize;
 }
 
-void HTMLTokenizer::notifyFinished(CachedObject */*finishedObj*/)
+void HTMLTokenizer::notifyFinished(CachedObject* /*finishedObj*/)
 {
     assert(!cachedScript.isEmpty());
     bool done = false;
@@ -1621,7 +1623,7 @@ void HTMLTokenizer::notifyFinished(CachedObject */*finishedObj*/)
         // of 'scriptOutput'.
         if ( !script ) {
             QString rest = pendingSrc;
-            pendingSrc = "";
+            pendingSrc = QString::null;
             write(rest, false);
             // we might be deleted at this point, do not
             // access any members.
@@ -1629,7 +1631,7 @@ void HTMLTokenizer::notifyFinished(CachedObject */*finishedObj*/)
     }
 }
 
-void HTMLTokenizer::setSrc(QString source)
+void HTMLTokenizer::setSrc(const QString& source)
 {
     lineno += src.lineCount();
     _src = source;

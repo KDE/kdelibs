@@ -118,10 +118,36 @@ QString KGuiItem::text() const {
     return d->m_text;
 }
 QString KGuiItem::plainText() const {
-  QString stripped( d->m_text );
-  stripped.replace( QRegExp( "&(?!&)" ), QString::null );
+    int len = d->m_text.length();
 
-  return stripped;
+    if (len == 0)
+        return d->m_text;
+
+    //Can assume len >= 1 from now on.
+    QString stripped;
+
+    int resultLength = 0;
+    stripped.setLength(len);
+
+    const QChar* data    = d->m_text.unicode();
+    for (int pos = 0; pos < len; pos++)
+    {
+#if QT_VERSION >= 0x030200
+        if (data[pos] != '&')
+            stripped[resultLength++] = data[pos];
+        else if (pos+1<len && data[pos+1]=='&')
+            stripped[resultLength++] = data[pos++];
+#else
+        //We pass through any non-ampersand character,
+        //and any ampersand that's preceded by an ampersand
+        if (data[pos] != '&' || (pos >= 1 && data[pos-1] == '&') )
+            stripped[resultLength++] = data[pos];
+#endif
+    }
+
+    stripped.truncate(resultLength);
+
+    return stripped;
 }
 
 QIconSet KGuiItem::iconSet( KIcon::Group group, int size, KInstance* instance ) const

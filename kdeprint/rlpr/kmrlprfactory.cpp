@@ -28,7 +28,7 @@ extern "C"
 	{
 		return new KRlprFactory;
 	}
-};
+}
 
 KRlprFactory::KRlprFactory(QObject *parent, const char *name)
 : KLibFactory(parent,name)

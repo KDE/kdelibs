@@ -60,17 +60,19 @@ struct URLArgsPrivate
 {
     URLArgsPrivate() {
       doPost = false;
+      redirectedRequest = false;
       lockHistory = false;
       newTab = false;
     }
     QString contentType; // for POST
     QMap<QString, QString> metaData;
     bool doPost;
+    bool redirectedRequest;
     bool lockHistory;
     bool newTab;
 };
 
-};
+}
 
 URLArgs::URLArgs()
 {
@@ -130,6 +132,18 @@ void URLArgs::setContentType( const QString & contentType )
   d->contentType = contentType;
 }
 
+void URLArgs::setRedirectedRequest( bool redirected )
+{
+  if (!d)
+     d = new URLArgsPrivate;
+  d->redirectedRequest = redirected;
+}
+
+bool URLArgs::redirectedRequest () const
+{
+  return d ? d->redirectedRequest : false;
+}
+
 QString URLArgs::contentType() const
 {
   return d ? d->contentType : QString::null;
@@ -185,7 +199,7 @@ struct WindowArgsPrivate
 {
 };
 
-};
+}
 
 WindowArgs::WindowArgs()
 {
@@ -302,7 +316,7 @@ public:
   BrowserInterface *m_browserInterface;
 };
 
-};
+}
 
 BrowserExtension::ActionSlotMap * BrowserExtension::s_actionSlotMap = 0L;
 KStaticDeleter<BrowserExtension::ActionSlotMap> actionSlotMapsd;
@@ -530,7 +544,7 @@ public:
   KParts::ReadOnlyPart *m_part;
 };
 
-};
+}
 
 BrowserHostExtension::BrowserHostExtension( KParts::ReadOnlyPart *parent, const char *name )
  : QObject( parent, name )
@@ -568,7 +582,7 @@ bool BrowserHostExtension::openURLInFrame( const KURL &, const KParts::URLArgs &
 
 BrowserHostExtension *BrowserHostExtension::childObject( QObject *obj )
 {
-    if ( !obj )
+    if ( !obj || !obj->children() )
         return 0L;
 
     // we try to do it on our own, in hope that we are faster than

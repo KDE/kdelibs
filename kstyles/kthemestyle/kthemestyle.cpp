@@ -48,6 +48,7 @@ Port version 0.9.7
 #include <kimageeffect.h>
 
 #include <qbitmap.h>
+#include <qcheckbox.h>
 #define INCLUDE_MENUITEM_DEF
 #include <qmenudata.h>
 #include <qpopupmenu.h>
@@ -309,6 +310,28 @@ QSize KThemeStyle::sizeFromContents( ContentsType contents,
 }
 
 
+QRect KThemeStyle::subRect(SubRect sr, const QWidget* widget) const
+{
+    if (sr == SR_CheckBoxFocusRect)
+    {
+        const QCheckBox* cb = static_cast<const QCheckBox*>(widget);
+
+        //Only checkbox, no label
+        if (cb->text().isEmpty() && (cb->pixmap() == 0) )
+        {
+            QRect bounding = cb->rect();
+
+            int   cw = pixelMetric(PM_IndicatorWidth, widget);
+            int   ch = pixelMetric(PM_IndicatorHeight, widget);
+
+            QRect checkbox(bounding.x() + 2, bounding.y() + 2 + (bounding.height() - ch)/2,  cw - 4, ch - 4);
+
+            return checkbox;
+        }
+    }
+    return KStyle::subRect(sr, widget);
+}
+
 int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget ) const
 {
     switch ( metric )
@@ -369,7 +392,7 @@ int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget ) cons
         default:
             return KThemeBase::pixelMetric ( metric, widget );
     }
-};
+}
 
 
 
@@ -463,6 +486,13 @@ bool KThemeStyle::eventFilter( QObject* object, QEvent* event )
             w->setPalette(pal);
         }
     }
+    if (!qstrcmp(object->name(), "kde toolbar widget") && object->inherits("QLabel"))
+    {
+        QWidget* lb = static_cast<QWidget*>(object);
+        if (lb->backgroundMode() == Qt::PaletteButton)
+            lb->setBackgroundMode(Qt::PaletteBackground);
+        lb->removeEventFilter(this);
+    }
 
     return KStyle::eventFilter(object, event);
 }
@@ -471,6 +501,9 @@ void KThemeStyle::polish( QWidget *w )
 {
     if (w->inherits("QStatusBar"))
          w->setPaletteBackgroundColor(QApplication::palette().color(QPalette::Normal, QColorGroup::Background));
+    if (w->inherits("QLabel") && !qstrcmp(w->name(), "kde toolbar widget"))
+         w->installEventFilter(this);
+
 
     if (w->backgroundPixmap() && !w->isTopLevel())
     {
@@ -1070,7 +1103,7 @@ void KThemeStyle::drawControl( ControlElement element,
                 const QPushButton * btn = ( const QPushButton* ) widget;
                 bool sunken = btn->isOn() || btn->isDown();
                 int diw = pixelMetric( PM_ButtonDefaultIndicator, btn );
-                drawBaseButton( p, diw, diw, btn->width() - 2 * diw, btn->height() - 2 * diw,
+                drawBaseButton( p, diw, diw, w - 2 * diw, h - 2 * diw,
                                 *colorGroup( btn->colorGroup(), sunken ? PushButtonDown :
                                              PushButton ), sunken, roundButton(),
                                 sunken ? PushButtonDown : PushButton );

@@ -156,6 +156,7 @@ static void refdec_nri(NETRootInfoPrivate *p) {
 	if (p->stacking) delete [] p->stacking;
 	if (p->clients) delete [] p->clients;
 	if (p->virtual_roots) delete [] p->virtual_roots;
+	if (p->kde_system_tray_windows) delete [] p->kde_system_tray_windows;
 
 	int i;
 	for (i = 0; i < p->desktop_names.size(); i++)
@@ -178,6 +179,8 @@ static void refdec_nwi(NETWinInfoPrivate *p) {
 
 	if (p->name) delete [] p->name;
 	if (p->visible_name) delete [] p->visible_name;
+	if (p->icon_name) delete [] p->icon_name;
+	if (p->visible_icon_name) delete [] p->visible_icon_name;
 
 	int i;
 	for (i = 0; i < p->icons.size(); i++)

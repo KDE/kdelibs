@@ -19,7 +19,6 @@
 */
 // -*- mode: c++; c-basic-offset: 4 -*-
 
-#include <qtimer.h>
 #include <qregexp.h>
 
 #include <kconfig.h>
@@ -99,9 +98,10 @@ ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString a
   defaultProgress = new KIO::DefaultProgress( false );
   defaultProgress->setOnlyClean( true );
   connect ( defaultProgress, SIGNAL( stopped() ), this, SLOT( slotCanceled() ) );
-
+  connect ( &m_showTimer, SIGNAL( timeout() ), this, SLOT(slotShowDefaultProgress()) );
+  
   if ( showDefault ) {
-    QTimer::singleShot( 500, this, SLOT(slotShowDefaultProgress()) ); // start a 1/2 second timer
+    m_showTimer.start( 500, true );
   }
 }
 
@@ -283,41 +283,53 @@ void ProgressItem::slotCanceled() {
 
 // Called 0.5s after the job has been started
 void ProgressItem::slotShowDefaultProgress() {
-  if ( m_visible && m_defaultProgressVisible )
-    defaultProgress->show();
+  if (defaultProgress)
+  {
+    if ( m_visible && m_defaultProgressVisible )
+      defaultProgress->show();
+    else
+      defaultProgress->hide();      
+  }
 }
 
 void ProgressItem::slotToggleDefaultProgress() {
-  if ( defaultProgress->isVisible() )
-    defaultProgress->hide();
-  else
-    defaultProgress->show();
+  setDefaultProgressVisible( !m_defaultProgressVisible );
 }
 
 // Called when a rename or skip dialog pops up
 // We want to prevent someone from killing the job in the uiserver then
 void ProgressItem::setVisible( bool visible ) {
-    if ( m_visible != visible )
-    {
-        m_visible = visible;
-        if ( !visible ) {
-            // we save the current visibility of the defaultProgress
-            m_defaultProgressVisible = defaultProgress && defaultProgress->isVisible();
-            setDefaultProgressVisible( false );
-        } else {
-            setDefaultProgressVisible( m_defaultProgressVisible );
-        }
-    }
+  if ( m_visible != visible )
+  {
+    m_visible = visible;
+    updateVisibility();
+  }
 }
 
 // Can be toggled by the user
 void ProgressItem::setDefaultProgressVisible( bool visible ) {
-    if ( defaultProgress ) {
-        if ( visible )
-            defaultProgress->show();
-        else
-            defaultProgress->hide();
+  if ( m_defaultProgressVisible != visible )
+  {
+    m_defaultProgressVisible = visible;
+    updateVisibility();
+  }
+}
+
+// Update according to state
+void ProgressItem::updateVisibility()
+{
+  if (defaultProgress)
+  {
+    if ( m_visible && m_defaultProgressVisible )
+    {
+      m_showTimer.start(250, true); // Show delayed
+    }      
+    else
+    {
+      m_showTimer.stop();
+      defaultProgress->hide();
     }
+  }
 }
 
 

@@ -86,7 +86,7 @@ QString KReplaceDialog::replacement() const
 
 QStringList KReplaceDialog::replacementHistory() const
 {
-    return m_find->historyItems();
+    return m_replace->historyItems();
 }
 
 void KReplaceDialog::setOptions(long options)

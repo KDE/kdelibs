@@ -658,6 +658,11 @@ void StatJob::slotStatEntry( const KIO::UDSEntry & entry )
 void StatJob::slotRedirection( const KURL &url)
 {
      kdDebug(7007) << "StatJob::slotRedirection(" << url.prettyURL() << ")" << endl;
+     if (!kapp->authorizeURLAction("redirect", m_url, url))
+     {
+       kdWarning(7007) << "StatJob: Redirection from " << m_url.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
+       return;
+     }
      m_redirectionURL = url; // We'll remember that when the job finishes
      if (m_url.hasUser() && !url.hasUser() && (m_url.host().lower() == url.host().lower()))
         m_redirectionURL.setUser(m_url.user()); // Preserve user
@@ -741,6 +746,11 @@ void TransferJob::slotData( const QByteArray &_data)
 void TransferJob::slotRedirection( const KURL &url)
 {
     kdDebug(7007) << "TransferJob::slotRedirection(" << url.prettyURL() << ")" << endl;
+     if (!kapp->authorizeURLAction("redirect", m_url, url))
+     {
+       kdWarning(7007) << "TransferJob: Redirection from " << m_url.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
+       return;
+     }
 
     // Some websites keep redirecting to themselves where each redirection
     // acts as the stage in a state-machine. We define "endless redirections"
@@ -778,7 +788,7 @@ void TransferJob::slotFinished()
         // happens (unpacking+repacking)
         staticData.truncate(0);
         m_incomingMetaData.clear();
-        if (queryMetaData("cache") != "reload");
+        if (queryMetaData("cache") != "reload")
             addMetaData("cache","refresh");
         m_suspended = false;
         m_url = m_redirectionURL;
@@ -806,7 +816,6 @@ void TransferJob::slotFinished()
             case CMD_SPECIAL: {
                 int specialcmd;
                 istream >> specialcmd;
-                assert(specialcmd == 1); // you have to switch() here if other cmds are added
                 if (specialcmd == 1) // Assume HTTP POST
                 {
                    addMetaData("cache","reload");
@@ -1646,6 +1655,11 @@ void ListJob::slotResult( KIO::Job * job )
 
 void ListJob::slotRedirection( const KURL & url )
 {
+     if (!kapp->authorizeURLAction("redirect", m_url, url))
+     {
+       kdWarning(7007) << "ListJob: Redirection from " << m_url.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
+       return;
+     }
     m_redirectionURL = url; // We'll remember that when the job finishes
     if (m_url.hasUser() && !url.hasUser() && (m_url.host().lower() == url.host().lower()))
         m_redirectionURL.setUser(m_url.user()); // Preserve user
@@ -1909,7 +1923,7 @@ void CopyJob::slotReport()
         default:
             break;
     }
-};
+}
 
 void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 {
@@ -2804,12 +2818,12 @@ void CopyJob::slotResult( Job *job )
             int err = job->error();
             subjobs.remove( job );
             assert ( subjobs.isEmpty() );
+            // Determine dest again
+            KURL dest = m_dest;
+            if ( destinationState == DEST_IS_DIR && !m_asMethod )
+                dest.addPath( m_currentSrcURL.fileName() );
             if ( err )
             {
-                // Determine dest again
-                KURL dest = m_dest;
-                if ( destinationState == DEST_IS_DIR && !m_asMethod )
-                    dest.addPath( m_currentSrcURL.fileName() );
                 // Direct renaming didn't work. Try renaming to a temp name,
                 // this can help e.g. when renaming 'a' to 'A' on a VFAT partition.
                 // In that case it's the _same_ dir, we don't want to copy+del (data loss!)
@@ -2859,7 +2873,7 @@ void CopyJob::slotResult( Job *job )
             else
             {
                 kdDebug(7007) << "Renaming succeeded, move on" << endl;
-                emit copyingDone( this, *m_currentStatSrc, m_currentDest, true, true );
+                emit copyingDone( this, *m_currentStatSrc, dest, true, true );
                 ++m_currentStatSrc;
                 statNextSrc();
             }
@@ -3487,6 +3501,11 @@ bool MultiGetJob::findCurrentEntry()
 void MultiGetJob::slotRedirection( const KURL &url)
 {
   if (!findCurrentEntry()) return; // Error
+  if (!kapp->authorizeURLAction("redirect", m_url, url))
+  {
+     kdWarning(7007) << "MultiGetJob: Redirection from " << m_currentEntry->url.prettyURL() << " to " << url.prettyURL() << " REJECTED!" << endl;
+     return;
+  }
   m_redirectionURL = url;
   if (m_currentEntry->url.hasUser() && !url.hasUser() && (m_currentEntry->url.host().lower() == url.host().lower()))
       m_redirectionURL.setUser(m_currentEntry->url.user()); // Preserve user

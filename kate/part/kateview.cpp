@@ -121,7 +121,7 @@ KateView::KateView( KateDocument *doc, QWidget *parent, const char * name )
 
   // update the enabled state of the undo/redo actions...
   slotNewUndo();
-  
+
   m_viewInternal->show ();
 }
 
@@ -245,7 +245,7 @@ void KateView::setupActions()
   a=new KAction(i18n("Decrease Font Sizes"), "viewmag-", 0, this, SLOT(slotDecFontSizes()), ac, "decFontSizes");
   a->setWhatsThis(i18n("This decreases the display font size."));
 
-  a=new KAction(i18n("T&oggle Block Selection"), Key_F4, m_doc, SLOT(toggleBlockSelectionMode()), ac, "set_verticalSelect");
+  a=new KAction(i18n("T&oggle Block Selection"), CTRL + SHIFT + Key_B, m_doc, SLOT(toggleBlockSelectionMode()), ac, "set_verticalSelect");
   a->setWhatsThis(i18n("This command allows switching between the normal (line based) selection mode and the block selection mode."));
 
   a=new KAction(i18n("Toggle &Insert"), Key_Insert, this, SLOT(toggleInsert()), ac, "set_insert" );
@@ -414,39 +414,42 @@ void KateView::setupEditActions()
     i18n("Select to Matching Bracket"),      SHIFT +  CTRL + Key_6,
     this, SLOT(shiftToMatchingBracket()),
     ac, "select_matching_bracket" );
+  // anders: shortcuts doing any changes should not be created in browserextension
+  if ( !m_doc->m_bReadOnly )
+  {
+    new KAction(
+      i18n("Transpose Characters"),           CTRL          + Key_T,
+      this, SLOT(transpose()),
+      ac, "transpose_char" );
+//   new KAction(
+//      i18n("Transpose Words"),                CTRL + SHIFT + Key_T,
+//      this, SLOT(transposeWord()),
+//      ac, "transpose_word" );
+//   new KAction(
+//      i18n("Transpose Line"),                 CTRL + SHIFT + Key_T, ??? What key combo?
+//      this, SLOT(transposeLine()),
+//      ac, "transpose_line" );
 
-  new KAction(
-    i18n("Transpose Characters"),           CTRL          + Key_T,
-    this, SLOT(transpose()),
-    ac, "transpose_char" );
-// new KAction(
-//    i18n("Transpose Words"),                CTRL + SHIFT + Key_T,
-//    this, SLOT(transposeWord()),
-//    ac, "transpose_word" );
-// new KAction(
-//    i18n("Transpose Line"),                 CTRL + SHIFT + Key_T, ??? What key combo?
-//    this, SLOT(transposeLine()),
-//    ac, "transpose_line" );
+//   new KAction(
+//     i18n("Delete Word"),                    CTRL + Key_K, ??? What key combo?
+//     this, SLOT(killWord()),
+//     ac, "delete_word" );
+    new KAction(
+      i18n("Delete Line"),                    CTRL + Key_K,
+      this, SLOT(killLine()),
+      ac, "delete_line" );
 
-//  new KAction(
-//    i18n("Delete Word"),                    CTRL + Key_K, ??? What key combo?
-//    this, SLOT(killWord()),
-//    ac, "delete_word" );
-  new KAction(
-    i18n("Delete Line"),                    CTRL + Key_K,
-    this, SLOT(killLine()),
-    ac, "delete_line" );
+    new KAction(
+      i18n("Delete Word Left"),               CTRL + Key_Backspace,
+      this, SLOT(deleteWordLeft()),
+      ac, "delete_word_left" );
 
-  new KAction(
-    i18n("Delete Word Left"),               CTRL + Key_Backspace,
-    this, SLOT(deleteWordLeft()),
-    ac, "delete_word_left" );
-
-  new KAction(
-    i18n("Delete Word Right"),              CTRL + Key_Delete,
-    this, SLOT(deleteWordRight()),
-    ac, "delete_word_right" );
-
+    new KAction(
+      i18n("Delete Word Right"),              CTRL + Key_Delete,
+      this, SLOT(deleteWordRight()),
+      ac, "delete_word_right" );
+  }
+  
   connect( this, SIGNAL(gotFocus(Kate::View*)),
            this, SLOT(slotGotFocus()) );
   connect( this, SIGNAL(lostFocus(Kate::View*)),
@@ -542,6 +545,11 @@ void KateView::slotStatusMsg ()
 
 
   emit viewStatusMsg (" " + s1 + " " + s2 + " " + ovrstr + " " + blockstr+ " " + modstr);
+}
+
+void KateView::slotSelectionTypeChanged()
+{
+  emit newStatus();
 }
 
 void KateView::reloadFile()

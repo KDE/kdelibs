@@ -936,5 +936,5 @@ protected:
     DocumentType(DocumentTypeImpl *impl);
 };
 
-}; //namespace
+} //namespace
 #endif

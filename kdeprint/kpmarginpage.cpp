@@ -80,8 +80,8 @@ void KPMarginPage::initPageSize(const QString& ps, bool landscape)
 				QRect r = ps->pageRect();
 				mt = r.top();
 				ml = r.left();
-				mb = sz.height() - r.bottom();
-				mr = sz.width() - r.right();
+				mb = sz.height() - r.bottom() - 1;
+				mr = sz.width() - r.right() - 1;
 			}
 		}
 	}

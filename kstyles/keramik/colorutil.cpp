@@ -17,7 +17,7 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-// $Id:$
+// $Id$
 
 #include <qcolor.h>
 
@@ -60,6 +60,6 @@ namespace Keramik
 		
 		return in;
 	}
-};
+}
 
 // vim: ts=4 sw=4 noet

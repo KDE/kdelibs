@@ -54,6 +54,7 @@ class QTimer;
 class KURLRequester : public QHBox
 {
     Q_OBJECT
+    Q_PROPERTY( QString url READ url WRITE setURL )
 
 public:
     /**

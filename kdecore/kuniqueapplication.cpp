@@ -256,7 +256,7 @@ KUniqueApplication::start()
      QCString replyType;
      if (!dc->call(appName, KCmdLineArgs::about->appName(), "newInstance()", data, replyType, reply))
      {
-        kdError() << "KUniqueApplication: DCOP communication error!" << endl;
+        kdError() << "Communication problem with " << KCmdLineArgs::about->appName() << ", it probably crashed." << endl;
         delete dc;	// Clean up DCOP commmunication
         ::exit(255);
      }
@@ -315,7 +315,7 @@ void KUniqueApplication::newInstanceNoFork()
   if (dcopClient()->isSuspended())
   {
     // Try again later.
-    QTimer::singleShot( 100, this, SLOT(newInstanceNoFork()) );
+    QTimer::singleShot( 200, this, SLOT(newInstanceNoFork()) );
     return;
   }
   
@@ -351,6 +351,12 @@ KUniqueApplication::delayRequest(const QCString &fun, const QByteArray &data)
 void
 KUniqueApplication::processDelayed()
 {
+  if (dcopClient()->isSuspended())
+  {
+    // Try again later.
+    QTimer::singleShot( 200, this, SLOT(processDelayed()));
+    return;
+  }
   d->processingRequest = true;
   while( !d->requestList.isEmpty() )
   {

@@ -22,8 +22,6 @@
 
 #include <kparts/factory.h>
 #include <kparts/historyprovider.h>
-#include <qptrlist.h>
-#include <kurl.h>
 
 class KInstance;
 class KAboutData;

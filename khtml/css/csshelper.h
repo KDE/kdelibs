@@ -34,7 +34,7 @@ class KHTMLSettings;
 namespace DOM
 {
     class CSSPrimitiveValueImpl;
-};
+}
 
 namespace khtml
 {
@@ -45,7 +45,7 @@ namespace khtml
      */
     DOM::DOMString parseURL(const DOM::DOMString &url);
 
-};
+}
 
 
 

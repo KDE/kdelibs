@@ -121,7 +121,7 @@ AlsaOut::AlsaOut(int d,int _client, int _port, const char *cname,const char *pna
 #endif
 
   _ok=1;
-};
+}
 
 AlsaOut::~AlsaOut()
 {

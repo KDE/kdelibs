@@ -146,6 +146,6 @@ private:
     PasswordDialogPrivate* d;
 };
 
-};
+}
 
 #endif

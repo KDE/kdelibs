@@ -55,7 +55,7 @@ public:
   virtual ~HTTPProtocol();
 
   /** HTTP version **/
-  enum HTTP_REV    {HTTP_Unknown, HTTP_10, HTTP_11};
+  enum HTTP_REV    {HTTP_Unknown, HTTP_10, HTTP_11, SHOUTCAST};
 
   /** Authorization method used **/
   enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest};
@@ -458,8 +458,8 @@ protected:
 
   // Processing related
   bool m_bChunked; // Chunked tranfer encoding
-  int m_iSize; // Expected size of message
-  long m_iBytesLeft; // # of bytes left to receive in this message.
+  KIO::filesize_t m_iSize; // Expected size of message
+  KIO::filesize_t m_iBytesLeft; // # of bytes left to receive in this message.
   QByteArray m_bufReceive; // Receive buffer
   bool m_dataInternal; // Data is for internal consumption
   char m_lineBuf[1024];
@@ -478,7 +478,7 @@ protected:
 
 //--- WebDAV
   // Data structure to hold data which will be passed to an internal func.
-  QString m_intData;
+  QByteArray m_bufWebDavData;
   QString m_davVersions;
 
   bool m_davHostOk;
@@ -501,6 +501,7 @@ protected:
   bool m_bUseProxy;
   bool m_bNeedTunnel; // Whether we need to make a SSL tunnel
   bool m_bIsTunneled; // Whether we have an active SSL tunnel 
+  bool m_bProxyAuthValid;
   int m_iProxyPort;
   KURL m_proxyURL;
   QString m_strProxyRealm;

@@ -561,5 +561,5 @@ protected:
     Element(ElementImpl *_impl);
 };
 
-}; //namespace
+} //namespace
 #endif

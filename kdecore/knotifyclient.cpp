@@ -30,12 +30,14 @@
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 
-static const char * const daemonName="knotify";
+static const char daemonName[] = "knotify";
 
 static bool sendNotifyEvent(const QString &message, const QString &text,
                  int present, int level, const QString &sound,
-                 const QString &file)
+                            const QString &file, int winId )
 {
+  if (!kapp) return false;
+
   DCOPClient *client=kapp->dcopClient();
   if (!client->isAttached())
   {
@@ -47,15 +49,34 @@ static bool sendNotifyEvent(const QString &message, const QString &text,
   QByteArray data;
   QDataStream ds(data, IO_WriteOnly);
   QString appname = KNotifyClient::instance()->instanceName();
-  ds << message << appname << text << sound << file << present << level;
+  ds << message << appname << text << sound << file << present << level << winId;
 
   if ( !KNotifyClient::startDaemon() )
       return false;
 
-  return client->send(daemonName, "Notify", "notify(QString,QString,QString,QString,QString,int,int)", data);
+  return client->send(daemonName, "Notify", "notify(QString,QString,QString,QString,QString,int,int,int)", data);
 }
 
+//#ifndef KDE_NO_COMPAT
 bool KNotifyClient::event( StandardEvent type, const QString& text )
+{
+    return event( 0, type, text );
+}
+
+bool KNotifyClient::event(const QString &message, const QString &text)
+{
+    return event(0, message, text);
+}
+
+bool KNotifyClient::userEvent(const QString &text, int present, int level,
+                              const QString &sound, const QString &file)
+{
+    return userEvent( 0, text, present, level, sound, file );
+}
+
+//#endif    
+
+bool KNotifyClient::event( int winId, StandardEvent type, const QString& text )
 {
     QString message;
     switch ( type ) {
@@ -78,18 +99,20 @@ bool KNotifyClient::event( StandardEvent type, const QString& text )
     }
 
     return sendNotifyEvent( message, text, Default, Default,
-			    QString::null, QString::null);
+			    QString::null, QString::null, winId );
 }
 
-bool KNotifyClient::event(const QString &message, const QString &text)
+bool KNotifyClient::event(int winId, const QString &message, 
+                          const QString &text)
 {
-  return sendNotifyEvent(message, text, Default, Default, QString::null, QString::null);
+  return sendNotifyEvent(message, text, Default, Default, QString::null, QString::null, winId);
 }
 
-bool KNotifyClient::userEvent(const QString &text, int present, int level,
+bool KNotifyClient::userEvent(int winId, const QString &text, int present, 
+                              int level,
                               const QString &sound, const QString &file)
 {
-  return sendNotifyEvent(QString::null, text, present, level, sound, file);
+  return sendNotifyEvent(QString::null, text, present, level, sound, file, winId);
 }
 
 int KNotifyClient::getPresentation(const QString &eventname)
@@ -115,9 +138,9 @@ QString KNotifyClient::getFile(const QString &eventname, int present)
 	switch (present)
 	{
 	case (Sound):
-		return eventsfile.readEntry("soundfile");
+		return eventsfile.readPathEntry("soundfile");
 	case (Logfile):
-		return eventsfile.readEntry("logfile");
+		return eventsfile.readPathEntry("logfile");
 	}
 
 	return QString::null;
@@ -146,9 +169,9 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 	switch (present)
 	{
 	case (Sound):
-		return eventsfile.readEntry("default_sound");
+		return eventsfile.readPathEntry("default_sound");
 	case (Logfile):
-		return eventsfile.readEntry("default_logfile");
+		return eventsfile.readPathEntry("default_logfile");
 	}
 
 	return QString::null;
@@ -156,15 +179,18 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 
 bool KNotifyClient::startDaemon()
 {
-  if (!kapp->dcopClient()->isApplicationRegistered(daemonName))
+  static bool firstTry = true;
+  if (firstTry && !kapp->dcopClient()->isApplicationRegistered(daemonName)) {
+    firstTry = false;
     return KApplication::startServiceByDesktopName(daemonName) == 0;
+  }
   return true;
 }
 
 
 void KNotifyClient::beep(const QString& reason)
 {
-  if ( KNotifyClient::Instance::currentInstance()->useSystemBell() ) {
+  if ( !kapp || KNotifyClient::Instance::currentInstance()->useSystemBell() ) {
     QApplication::beep();
     return;
   }

@@ -20,7 +20,6 @@
 #ifndef __khtmlimage_h__
 #define __khtmlimage_h__
 
-#include <kparts/part.h>
 #include <kparts/factory.h>
 #include <kparts/browserextension.h>
 

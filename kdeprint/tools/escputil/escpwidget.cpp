@@ -57,7 +57,7 @@ extern "C"
 	{
 		return new EscpFactory;
 	}
-};
+}
 
 EscpWidget::EscpWidget(QWidget *parent, const char *name)
 : QWidget(parent, name)

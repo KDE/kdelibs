@@ -259,6 +259,6 @@ private:
     class NetAccessPrivate* d;
 };
 
-};
+}
 
 #endif

@@ -119,7 +119,7 @@ namespace KJS {
     };
     const ClassInfo MimeType::info = { "MimeType", 0, 0, 0 };
 
-};
+}
 
 
 QPtrList<PluginBase::PluginInfo> *KJS::PluginBase::plugins = 0;
@@ -189,8 +189,7 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
     return String("KDE");
   case Language:
   case UserLanguage:
-    return String(KGlobal::locale()->language() == "C" ?
-                  QString::fromLatin1("en") : KGlobal::locale()->language());
+    return String(KGlobal::locale()->language());
   case UserAgent:
     return String(userAgent);
   case Platform:
@@ -241,7 +240,7 @@ PluginBase::PluginBase(ExecState *exec)
             PluginInfo *plugin = new PluginInfo;
 
             plugin->name = c.readEntry("name");
-            plugin->file = c.readEntry("file");
+            plugin->file = c.readPathEntry("file");
             plugin->desc = c.readEntry("description");
 
             //kdDebug(6070) << "plugin : " << plugin->name << " - " << plugin->desc << endl;
@@ -254,11 +253,12 @@ PluginBase::PluginBase(ExecState *exec)
             for ( type=types.begin(); type!=types.end(); ++type ) {
 
                 // get mime information
-                MimeClassInfo *mime = new MimeClassInfo;
                 QStringList tokens = QStringList::split(':', *type, TRUE);
-                QStringList::Iterator token;
+                if ( tokens.count() < 3 ) // we need 3 items
+                  continue;
 
-                token = tokens.begin();
+                MimeClassInfo *mime = new MimeClassInfo;
+                QStringList::Iterator token = tokens.begin();
                 mime->type = (*token).lower();
                 //kdDebug(6070) << "mime->type=" << mime->type << endl;
                 ++token;

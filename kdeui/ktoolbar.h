@@ -360,13 +360,13 @@ public:
      * Inserts a separator into the toolbar with the given id.
      * Returns the separator's index
      */
-    int insertSeparator( int index = -1, int id = -1 ); 
+    int insertSeparator( int index = -1, int id = -1 );
 
     /**
      * Inserts a line separator into the toolbar with the given id.
      * Returns the separator's index
      */
-    int insertLineSeparator( int index = -1, int id = -1 ); 
+    int insertLineSeparator( int index = -1, int id = -1 );
 
   /**
    * Inserts a user-defined widget.  The widget @p must have this
@@ -987,13 +987,23 @@ signals:
 
     /**
      * @internal
-     * This signal is emited when toolbar detects changing of
+     * This signal is emitted when toolbar detects changing of
      * following parameters:
      * highlighting, button-size, button-mode. This signal is
      * internal, aimed to buttons.
      */
     void modechange ();
 
+    /**
+     * This signal is emitted when the toolbar is getting deleted,
+     * and before ~KToolbar finishes (so it's still time to remove
+     * widgets from the toolbar).
+     * Used by KWidgetAction.
+     * @since 3.2
+     */
+    void toolbarDestroyed();
+
+public:
     /**
      * @return global setting for "Highlight buttons under mouse"
      */

@@ -233,5 +233,5 @@ public:
 	QPtrList<StyleBaseImpl> *m_lstChildren;
     };
 
-}; // namespace
+} // namespace
 #endif

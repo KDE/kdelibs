@@ -82,6 +82,6 @@ namespace KJS {
     uint lastNrSubPatterns;
   };
 
-}; // namespace
+} // namespace
 
 #endif

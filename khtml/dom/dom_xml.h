@@ -309,5 +309,5 @@ protected:
     ProcessingInstruction(ProcessingInstructionImpl *i);
 };
 
-}; //namespace
+} //namespace
 #endif

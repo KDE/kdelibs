@@ -207,7 +207,7 @@ void KateIconBorder::updateFont()
 
 int KateIconBorder::lineNumberWidth() const
 {
-  return ((int)log10(m_view->doc()->numLines()) + 1) * m_maxCharWidth + 4;
+  return ((int)log10((double)(m_view->doc()->numLines())) + 1) * m_maxCharWidth + 4;
 }
 
 void KateIconBorder::paintEvent(QPaintEvent* e)

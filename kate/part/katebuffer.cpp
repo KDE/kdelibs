@@ -446,7 +446,7 @@ bool KateBuffer::openFile(const QString &m_file, QTextCodec *codec)
   // here we feed the loader with info
   m_loader = new KateBufFileLoader (m_file);
   
-  if ( !m_loader->file.open( IO_ReadOnly ) )
+  if ( !m_loader->file.open( IO_ReadOnly ) || !m_loader->file.isDirectAccess() )
   {
     clear();
     return false; // Error
@@ -975,7 +975,7 @@ int KateBuffer::lineLength ( uint i )
   
   TextLine::Ptr l = buf->line(i - buf->startLine());
    
-  return l->length();
+  return l ? l->length() : 0;
 }
 
 QString KateBuffer::text()

@@ -56,6 +56,6 @@ class DynWordWrapInterface
 
 DynWordWrapInterface *dynWordWrapInterface (class View *view);
 
-};
+}
 
 #endif

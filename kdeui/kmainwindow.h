@@ -381,6 +381,15 @@ public:
     bool autoSaveSettings() const;
 
     /**
+     * @return the group used for setting-autosaving.
+     * Only meaningful if setAutoSaveSettings() was called.
+     * This can be useful for forcing a save or an apply, e.g. before and after
+     * using KEditToolbar.
+     * @since 3.1
+     */
+    QString autoSaveGroup() const;
+
+    /**
      * Read settings for statusbar, menubar and toolbar from their respective
      * groups in the config file and apply them.
      *
@@ -570,9 +579,11 @@ protected:
 
        Default implementation returns @p true. Returning @p false will
        cancel the exiting. In the latter case, the last window will
-       remain visible.
+       remain visible. If KApplication::sessionSaving() is true, refusing
+       the exit will also cancel KDE logout.
 
        @see queryClose()
+       @see KApplication::sessionSaving()
      */
     virtual bool queryExit();
 
@@ -584,7 +595,8 @@ protected:
        safe to close it, i.e. without the user losing some data.
 
        Default implementation returns true. Returning @p false will cancel
-       the closing.
+       the closing, and, if KApplication::sessionSaving() is true, it will also
+       cancel KDE logout.
 
        Reimplement this function to prevent the user from losing data.
        Example:
@@ -603,6 +615,7 @@ protected:
     </pre>
 
    @see queryExit()
+   @see KApplication::sessionSaving()
 
     */
     virtual bool queryClose();
@@ -709,6 +722,8 @@ private slots:
     * Called when the app is shutting down.
     */
     void shuttingDown();
+
+    void saveAutoSaveSettings();
 
 private:
     KMenuBar *internalMenuBar();

@@ -157,8 +157,8 @@ namespace KJS {
   public:
     Value();
     explicit Value(ValueImp *v);
-    Value(const Value &v);
-    virtual ~Value(); 		// TODO: virtual makes no sense. just slower.
+    Value(const Value &v) { if ((rep = v.rep)) rep->ref(); }
+    ~Value() { if (rep) rep->deref(); }
 
     Value& operator=(const Value &v);
     /**
@@ -426,6 +426,6 @@ namespace KJS {
     explicit Number(NumberImp *v);
   };
 
-}; // namespace
+} // namespace
 
 #endif // _KJS_VALUE_H_

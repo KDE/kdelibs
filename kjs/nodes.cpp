@@ -298,6 +298,11 @@ Value GroupNode::value(ExecState *exec) const
   return group->value(exec);
 }
 
+Reference2 GroupNode::evaluate(ExecState *exec) const
+{
+  return group->evaluate(exec);
+}
+
 // ----------------------------- ElisionNode ----------------------------------
 
 ElisionNode::~ElisionNode()

@@ -67,28 +67,32 @@ namespace
 	
 	QIntCache<GradientCacheEntry> cache(65636, 17);
 	
-};
+}
 
 using namespace Keramik;
 
-void GradientPainter::renderGradient( QPainter* p, const QRect& r, QColor c, bool horizontal, bool menu, int px, int py,
-																int pwidth, int pheight)
+void GradientPainter::releaseCache()
+{
+	cache.clear();
+}
+
+void GradientPainter::renderGradient( QPainter* p, const QRect& r, QColor c,
+										bool horizontal, bool menu, int px, int py,
+										int pwidth, int pheight)
 {
 	int width = r.width(), height = r.height();
 	if (pwidth != -1) width = pwidth;
 	if (pheight != -1) height = pheight;
 	
 	if (horizontal)
-	{
-		width   = 18;
-	}
+		width  = 18;
 	else
-	{
 		height = 18;
-	}
 	
 	GradientCacheEntry entry (width, height, c, menu);
 	GradientCacheEntry* cacheEntry = 0;
+	
+	cache.setAutoDelete(true);
 	
 	int key = entry.key();
 	
@@ -99,13 +103,15 @@ void GradientPainter::renderGradient( QPainter* p, const QRect& r, QColor c, boo
 			p->drawTiledPixmap(r, *cacheEntry->m_pixmap, horizontal? QPoint(0,py): QPoint(px,0));
 			return;
 		}
+		else
+			cache.remove(key);
+			//Remove old entry in case of conflicts.. otherwise we end up w/unreachable items in cache
 	}
 	
 	
 	if (horizontal)
 	{
-		QPixmap* pix = new QPixmap;
-		pix->resize(18, height);
+		QPixmap* pix = new QPixmap(18, height);
 		
 		if (menu)
 		{
@@ -136,8 +142,7 @@ void GradientPainter::renderGradient( QPainter* p, const QRect& r, QColor c, boo
 	}
 	else
 	{
-		QPixmap* pix = new QPixmap;
-		pix->resize(width, 18);
+		QPixmap* pix = new QPixmap(width, 18);
 		
 		int h1 = 3 * width/4;
 		int h2 = width - h1;
@@ -149,20 +154,26 @@ void GradientPainter::renderGradient( QPainter* p, const QRect& r, QColor c, boo
 		QPixmap botT(bot);
 
 		QPainter p2(pix);
-		p2.drawTiledPixmap(0 ,0, h1, 18, topT);
-		p2.drawTiledPixmap(h1 ,0, h2, 18, botT);
+		p2.drawTiledPixmap(0,  0, h1, 18, topT);
+		p2.drawTiledPixmap(h1, 0, h2, 18, botT);
 		p2.end();
 		
 		entry.m_pixmap = pix;
 
 	}
 		
+	bool cacheOK = false;
 	GradientCacheEntry* imgToAdd = new GradientCacheEntry(entry);
-	cache.insert(imgToAdd->key(), imgToAdd, 
-		imgToAdd->m_pixmap->width()*imgToAdd->m_pixmap->height()*imgToAdd->m_pixmap->depth()/8);
-	
+	cacheOK = cache.insert(imgToAdd->key(), imgToAdd, 
+		imgToAdd->m_pixmap->width() * imgToAdd->m_pixmap->height()*
+		imgToAdd->m_pixmap->depth()/8);
+		
 	p->drawTiledPixmap(r, *imgToAdd->m_pixmap, horizontal? QPoint(0,py): QPoint(px,0));
+	
+	if (!cacheOK)
+		delete imgToAdd;
+	
 	entry.m_pixmap = 0;//Don't free too early..
-};
+}
 
 // vim: ts=4 sw=4 noet

@@ -67,7 +67,7 @@ void ResourceNetConfig::loadSettings( KConfig *config )
   QString format = config->readEntry( "NetFormat" );
   mFormatBox->setCurrentItem( mFormatTypes.findIndex( format ) );
 
-  mUrlEdit->setURL( config->readEntry( "NetUrl" ) );    
+  mUrlEdit->setURL( config->readPathEntry( "NetUrl" ) );    
   if ( mUrlEdit->url().isEmpty() )
     mUrlEdit->setURL( KABC::StdAddressBook::directoryName() );
 }

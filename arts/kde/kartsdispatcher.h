@@ -28,7 +28,7 @@ namespace Arts
 {
 	class QIOManager;
 	class Dispatcher;
-};
+}
 
 /**
  * KArtsDispatcher ensures that an instance of Arts::Dispatcher using an

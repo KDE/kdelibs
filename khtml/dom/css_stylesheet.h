@@ -487,6 +487,6 @@ protected:
     DocumentStyleImpl *impl;
 };
 
-}; // namespace
+} // namespace
 
 #endif

@@ -40,6 +40,6 @@ namespace KJS {
   private:
     KHTMLPart *m_part;
   };
-}; // namespace
+} // namespace
 
 #endif

@@ -30,7 +30,7 @@ class KPACDownloader;
 
 namespace KJS {
   class Interpreter;
-};
+}
 
 class KPACImpl : public KPAC
 {

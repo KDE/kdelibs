@@ -104,7 +104,7 @@ void KBookmarkImporter::scanIntern( QDomElement & parentElem, const QString & _p
                     continue;
                 cfg.setGroup( *grp.begin() );
 
-                QString url = cfg.readEntry("URL");
+                QString url = cfg.readPathEntry("URL");
                 if (!url.isEmpty() )
                     parseBookmark( parentElem, ep->d_name, cfg, *grp.begin() );
             } else
@@ -123,8 +123,8 @@ void KBookmarkImporter::parseBookmark( QDomElement & parentElem, QCString _text,
     else
         _cfg.setDesktopGroup();
 
-    QString url = _cfg.readEntry( "URL" );
-    QString icon = _cfg.readEntry( "Icon", QString::null );
+    QString url = _cfg.readPathEntry( "URL" );
+    QString icon = _cfg.readEntry( "Icon" );
     if (icon.right( 4 ) == ".xpm" ) // prevent warnings
         icon.truncate( icon.length() - 4 );
 

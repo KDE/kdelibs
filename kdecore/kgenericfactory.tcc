@@ -35,11 +35,12 @@
 //
 
 #include <qmetaobject.h>
+#include <ktypelist.h>
 
 namespace KParts
 {
     class Part;
-};
+}
 
 namespace KDEPrivate
 {
@@ -259,7 +260,7 @@ namespace KDEPrivate
             return object;
         }
     };
-};
+}
 
 /*
  * vim: et sw=4

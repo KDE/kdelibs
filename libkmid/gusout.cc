@@ -128,7 +128,7 @@ GUSOut::~GUSOut()
   delete vm;
   if (delete_GUS_patches_directory)
   {
-    delete GUS_patches_directory;
+    free((char *)GUS_patches_directory);
     delete_GUS_patches_directory = 0;
     GUS_patches_directory="/etc";
   }
@@ -322,10 +322,10 @@ void GUSOut::sysex(uchar *, ulong )
 void GUSOut::setGUSPatchesDirectory(const char *dir)
 {
     if ((dir==NULL)||(dir[0]==0)) return;
-    if (delete_GUS_patches_directory) delete GUS_patches_directory;
-    char *GUS_patches_directory2=new char[strlen(dir)+1];
-    strcpy(GUS_patches_directory2,dir);
-    GUS_patches_directory = GUS_patches_directory2;
+    if (delete_GUS_patches_directory)
+        free((char *)GUS_patches_directory);
+
+    GUS_patches_directory = strdup(dir);
     delete_GUS_patches_directory=1;
 }
 

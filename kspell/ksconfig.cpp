@@ -131,6 +131,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   encodingcombo->insertItem ("KOI8-R");
   encodingcombo->insertItem ("KOI8-U");
   encodingcombo->insertItem ("CP1251");
+  encodingcombo->insertItem ("CP1255");
 
   connect (encodingcombo, SIGNAL (activated(int)), this,
 	   SLOT (sChangeEncoding(int)));
@@ -143,6 +144,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   clientcombo = new QComboBox( this );
   clientcombo->insertItem (i18n("International Ispell"));
   clientcombo->insertItem (i18n("Aspell"));
+  clientcombo->insertItem (i18n("Hspell"));
   connect (clientcombo, SIGNAL (activated(int)), this,
 	   SLOT (sChangeClient(int)));
   glay->addMultiCellWidget( clientcombo, 4, 4, 1, 2 );
@@ -220,6 +222,13 @@ KSpellConfig::sChangeClient (int i)
   if (dictcombo) {
     if (iclient == KS_CLIENT_ISPELL)
       getAvailDictsIspell();
+    else if (iclient == KS_CLIENT_HSPELL)
+    {
+      langfnames.clear();
+      dictcombo->clear();
+      dictcombo->insertItem(i18n("Hebrew"));
+      sChangeEncoding(KS_E_CP1255);
+    }
     else
       getAvailDictsAspell();
   }
@@ -243,7 +252,7 @@ KSpellConfig::interpret (QString &fname, QString &lname,
      dname.remove(dname.length()-3,3);
 
   QString extension;
-  
+
   int i = dname.find('-');
   if (i != -1)
   {
@@ -364,6 +373,12 @@ KSpellConfig::fillInDialog ()
   // get list of available dictionaries
   if (iclient == KS_CLIENT_ISPELL)
     getAvailDictsIspell();
+  else if (iclient == KS_CLIENT_HSPELL)
+  {
+    langfnames.clear();
+    dictcombo->clear();
+    dictcombo->insertItem(i18n("Hebrew"));
+  }
   else
     getAvailDictsAspell();
 
@@ -386,7 +401,14 @@ KSpellConfig::fillInDialog ()
 	dictcombo->setCurrentItem(whichelement);
     }
   else
-    setDictFromList (FALSE);
+    // Current dictionary vanished, present the user with a default if possible.
+    if (langfnames.count()>=1)
+    {
+      setDictFromList (TRUE);
+      dictcombo->setCurrentItem(0);
+    }
+    else
+      setDictFromList (FALSE);
 
   sDictionary (dictFromList());
   sPathDictionary (!dictFromList());

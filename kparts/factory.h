@@ -105,7 +105,7 @@ protected:
     virtual QObject *createObject( QObject *parent = 0, const char *name = 0, const char *classname = "QObject", const QStringList &args = QStringList() );
 };
 
-};
+}
 
 /*
  * vim: et sw=4

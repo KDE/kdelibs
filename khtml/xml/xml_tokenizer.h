@@ -34,7 +34,7 @@ class KHTMLView;
 namespace khtml {
     class CachedObject;
     class CachedScript;
-};
+}
 
 namespace DOM {
     class DocumentImpl;
@@ -42,7 +42,7 @@ namespace DOM {
     class HTMLScriptElementImpl;
     class DocumentPtr;
     class HTMLScriptElementImpl;
-};
+}
 
 class XMLHandler : public QXmlDefaultHandler
 {

@@ -48,6 +48,6 @@ namespace KJS {
    */
   DOM::AbstractView toAbstractView(const Value&);
 
-}; // namespace
+} // namespace
 
 #endif

@@ -393,44 +393,44 @@ void RenameDlg::b1Pressed()
 
   done( 1 );
 }
-// Propose
+// Propose button clicked
 void RenameDlg::b8Pressed()
 {
   int pos;
+
+  /* no name to play with */
   if ( d->m_pLineEdit->text().isEmpty() )
     return;
+
   QString basename, dotSuffix, tmp;
   QFileInfo info ( d->m_pLineEdit->text() );
   basename = info.baseName();
   dotSuffix = info.extension();
+
   if ( !dotSuffix.isEmpty() )
     dotSuffix = '.' + dotSuffix;
+
   pos = basename.findRev('_' );
-  if(pos != -1 )
-  {
+  if(pos != -1 ){
     bool ok;
     tmp = basename.right( basename.length() - (pos + 1) );
     int number = tmp.toInt( &ok, 10 );
-    if ( !ok ) // ok there is no number
-    {
+    if ( !ok ) {// ok there is no number
       basename.append("_1" );
       d->m_pLineEdit->setText(basename + dotSuffix );
-      b1Pressed(); // prepended now  'click' rename
       return;
     }
-    else
-    { // yes there's allready a number behind the _ so increment it by one
+    else {
+     // yes there's allready a number behind the _ so increment it by one
       QString tmp2 = QString::number ( number + 1 );
       basename.replace( pos+1, tmp.length() ,tmp2);
       d->m_pLineEdit->setText( basename + dotSuffix );
-      //b1Pressed();
       return;
     }
   }
   else // no underscore yet
   {
     d->m_pLineEdit->setText( basename + "_1" + dotSuffix );
-    //b1Pressed();
     return;
 
   }

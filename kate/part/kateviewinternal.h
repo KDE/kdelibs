@@ -2,10 +2,10 @@
    Copyright (C) 2002 John Firebaugh <jfirebaugh@kde.org>
    Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org>
    Copyright (C) 2002 Christoph Cullmann <cullmann@kde.org>
-      
+
    Based on:
      KWriteView : Copyright (C) 1999 Jochen Wilhelmy <digisnap@cs.tu-berlin.de>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
@@ -29,8 +29,7 @@
 
 #include <qpoint.h>
 #include <qlayout.h>
-
-class QScrollBar;
+#include <qscrollbar.h>
 
 class KateView;
 class KateIconBorder;
@@ -40,6 +39,32 @@ class KateIconBorder;
     none  =  0,
     right =  1
   };
+
+/**
+ * This class is required because QScrollBar's sliderMoved() signal is
+ * really supposed to be a sliderDragged() signal... so this way we can capture
+ * MMB slider moves as well
+ */
+class KateScrollBar : public QScrollBar
+{
+  Q_OBJECT
+
+public:
+  KateScrollBar(Orientation orientation, QWidget* parent, const char* name = 0L);
+
+signals:
+  void sliderMMBMoved(int value);
+
+protected:
+  virtual void mousePressEvent(QMouseEvent* e);
+  virtual void mouseReleaseEvent(QMouseEvent* e);
+
+protected slots:
+  void sliderMaybeMoved(int value);
+
+private:
+  bool m_middleMouseDown;
+};
 
 class KateViewInternal : public QWidget
 {
@@ -138,6 +163,7 @@ class KateViewInternal : public QWidget
     void paintEvent(QPaintEvent *e);
     bool eventFilter( QObject *obj, QEvent *e );
     void keyPressEvent( QKeyEvent* );
+    void keyReleaseEvent( QKeyEvent* );
     void resizeEvent( QResizeEvent* );
     void mousePressEvent(       QMouseEvent* );
     void mouseDoubleClickEvent( QMouseEvent* );
@@ -248,6 +274,7 @@ class KateViewInternal : public QWidget
     // This is set to false on resize or scroll (other than that called by makeVisible),
     // so that makeVisible is again called when a key is pressed and the cursor is in the same spot
     bool m_madeVisible;
+    bool m_shiftKeyPressed;
     
     //
     // column scrollbar + x position
@@ -257,8 +284,8 @@ class KateViewInternal : public QWidget
     int m_startX;
     int m_oldStartX;
     
-    // cache the with of the text area
-    //uint m_width;
+    // has selection changed while your mouse or shift key is pressed
+    bool m_selChangedByUser; 
     
     //
     // lines Ranges, mostly useful to speedup + dyn. word wrap
@@ -314,11 +341,9 @@ class KateViewInternal : public QWidget
     KateTextCursor m_cachedMaxStartPos;
 
   private slots:
-#ifndef QT_NO_DRAGANDDROP
     void doDragScroll();
     void startDragScroll();
     void stopDragScroll();
-#endif
 
   private:
     // Timer for drag & scroll

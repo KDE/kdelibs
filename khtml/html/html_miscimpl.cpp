@@ -509,43 +509,19 @@ NodeImpl* HTMLFormCollectionImpl::getNamedFormItem(int attr_id, const DOMString&
         // IE looks at <img> only if no <input> has the same name
         if ( !foundInputElements )
         {
-            NodeImpl* retval = getNamedImgItem( base->firstChild(), attr_id, name, duplicateNumber );
-            if ( retval )
-                return retval;
+            HTMLImageElementImpl* element;
+            HTMLFormElementImpl* f = static_cast<HTMLFormElementImpl*>(e);
+
+            for(element = f->imgElements.first(); element; element = f->imgElements.next())
+                if(element->getAttribute(attr_id) == name)
+                {
+                    if (!duplicateNumber)
+                        return element;
+                    --duplicateNumber;
+                    foundInputElements = true;
+                }
         }
     }
-    return 0;
-}
-
-NodeImpl* HTMLFormCollectionImpl::getNamedImgItem(NodeImpl* current, int attr_id, const DOMString& name, int& duplicateNumber) const
-{
-    // strange case. IE and NS allow to get hold of <img> tags,
-    // only _if_ there is no input tag with the same name
-    // and they don't include them in the elements() collection.
-    while ( current )
-    {
-        if(current->nodeType() == Node::ELEMENT_NODE)
-        {
-            HTMLElementImpl *currelem = static_cast<HTMLElementImpl *>(current);
-            if(currelem->id() == ID_IMG && currelem->getAttribute(attr_id) == name)
-            {
-                if (!duplicateNumber)
-                    return current;
-                --duplicateNumber;
-            }
-            if(current->firstChild())
-            {
-                // The recursion here is the reason why this is a separate method
-                NodeImpl *retval = getNamedImgItem(current->firstChild(), attr_id, name, duplicateNumber);
-                if(retval)
-                {
-                    //kdDebug( 6030 ) << "got a return value " << retval << endl;
-                    return retval;
-                }
-            }
-        }
-        current = current->nextSibling();
-    } // while
     return 0;
 }
 

@@ -31,6 +31,7 @@
 
 #include <qdir.h>
 #include <qfile.h>
+#include <qsettings.h>
 
 #include <klibloader.h>
 #include <kconfig.h>
@@ -100,6 +101,13 @@ KMFactory::KMFactory()
 	// (David Faure, doing as advised by Lars Knoll)
 	qt_generate_epsf( false );
 #endif
+
+	// By default, embed PS fonts
+	bool ok = false;
+	QSettings settings;
+	settings.readBoolEntry( "/qt/embedFonts", true, &ok );
+	if ( !ok )
+		settings.writeEntry( "/qt/embedFonts", true );
 
 	KGlobal::iconLoader()->addAppDir("kdeprint");
 

@@ -14,7 +14,8 @@
 <!ENTITY Jogchum.Reitsma    '<othercredit role="translator"><firstname>Jogchum</firstname><surname>Reitsma</surname><affiliation><address><email>j.reitsma@hcc.net</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
 <!ENTITY Otto.Bruggeman     '<othercredit role="translator"><firstname>Otto</firstname><surname>Bruggeman</surname><affiliation><address><email>bruggie@home.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Douwe.vanderSchaaf '<othercredit role="translator"><firstname>Douwe</firstname><surname>van der Schaaf</surname><affiliation><address><email>dvdsch@chello.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
-
+<!ENTITY Rinse.devries31      '<othercredit role="translator"><firstname>Rinse</firstname><surname>de Vries</surname><affiliation><address><email>dvdsch@chello.nl</email></address></affiliation><contrib>Nederlandse vertaling voor KDE 3.1</contrib></othercredit>'>
+<!ENTITY Rinse.devries32      '<othercredit role="translator"><firstname>Rinse</firstname><surname>de Vries</surname><affiliation><address><email>dvdsch@chello.nl</email></address></affiliation><contrib>Nederlandse vertaling voor KDE 3.2</contrib></othercredit>'>
 <!ENTITY kde.nl.groep "<email>i18n@kde.nl</email>">
 
 <!-- Tekstschema's -->
@@ -27,7 +28,8 @@
 <!ENTITY vertaling.michel  "<para>Dit document is vertaald naar het Nederlands door &Michel.Fontes;.</para>">
 <!ENTITY vertaling.niels   "<para>Dit document is vertaald naar het Nederlands door &Niels.Reedijk;.</para>">
 <!ENTITY vertaling.otto    "<para>Dit document is vertaald naar het Nederlands door &Otto.Bruggeman;.</para>">
-
+<!ENTITY vertaling.rinse31 "<para>Dit document is vertaald naar het Nederlands door Rinse.devries31;.</para>">
+<!ENTITY vertaling.rinse32 "<para>Dit document is vertaald naar het Nederlands door Rinse.devries32;.</para>">
 
 <!ENTITY nagelezen.douwe   "<para>De vertaling werd nagelezen door &Douwe.vanderSchaaf;.</para>">
 <!ENTITY nagelezen.floris  "<para>De vertaling werd nagelezen door &Floris.Lambrechts;.</para>">
@@ -35,10 +37,13 @@
 <!ENTITY nagelezen.michel  "<para>De vertaling werd nagelezen door &Michel.Fontes;.</para>">
 <!ENTITY nagelezen.niels   "<para>De vertaling werd nagelezen door &Niels.Reedijk;.</para>">
 <!ENTITY nagelezen.otto    "<para>De vertaling werd nagelezen door &Otto.Bruggeman;.</para>">
+<!ENTITY nagelezen.rinse31 "<para>De vertaling werd nagelezen door &Rinsedevries.31;.</para>">
+<!ENTITY nagelezen.rinse32 "<para>De vertaling werd nagelezen door &Rinsedevries.32;.</para>">
 
 <!-- Algemene afkortingen -->
 <!ENTITY Alt     "<keycap>Alt</keycap>">
 <!ENTITY bijv    "<abbrev>bijv.</abbrev>">
+<!ENTITY Bijv    "<abbrev>Bijv.</abbrev>">
 <!ENTITY Ctrl    "<keycap>Ctrl</keycap>">
 <!ENTITY enz     "<abbrev>enz.</abbrev>">
 <!ENTITY etc     "<abbrev>etc.</abbrev>"> <!-- enz is beter -->
@@ -50,7 +55,7 @@
 </inlinemediaobject>
 </guiicon>"><!-- if image is localised, then entityref should be used instead
                  of fileref -->
-<!ENTITY kmenu  "<guimenu>K</guimenu> menu">
+<!ENTITY kmenu  "<guimenu>K</guimenu>-menu">
 <!ENTITY LMB     "<mousebutton>LMK</mousebutton>">
 <!ENTITY MMB     "<mousebutton>MMK</mousebutton>">
 <!ENTITY RMB     "<mousebutton>RMK</mousebutton>">

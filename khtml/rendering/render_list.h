@@ -48,9 +48,9 @@ public:
     // so the marker gets to layout itself. Only needed for
     // list-style-position: inside
 
-    virtual void print(QPainter *p, int x, int y, int w, int h,
+    virtual void paint(QPainter *p, int x, int y, int w, int h,
                            int xoff, int yoff);
-    virtual void printObject(QPainter *p, int x, int y, int w, int h,
+    virtual void paintObject(QPainter *p, int x, int y, int w, int h,
                              int xoff, int yoff);
     virtual void layout( );
     virtual void calcMinMaxWidth();
@@ -93,6 +93,6 @@ protected:
     RenderListMarker *m_marker;
 };
 
-}; //namespace
+} //namespace
 
 #endif

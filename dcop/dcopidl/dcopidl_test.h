@@ -49,7 +49,7 @@ k_dcop:
     QValueList<DCOPRef> getWindows();
 
 k_dcop_signals:
-    static void blah_signal();
+    void blah_signal();
 
 private:
     Test3 *doc();
@@ -63,7 +63,7 @@ class Test2 : public DCOPObject
     K_DCOP
 public:
 k_dcop_signals:
-    static void fooSignal(int arg);
+    void fooSignal(int arg);
 };
 
 class Test3 : public DCOPObject

@@ -34,7 +34,7 @@ class KSycocaFactoryList;
  * If the existing file is outdated, it will not get read
  * but instead we'll ask kded to regenerate a new one...
 */
-#define KSYCOCA_VERSION 60
+#define KSYCOCA_VERSION 61
 
 /**
  * @internal
@@ -113,6 +113,11 @@ public:
     * @return true if building (i.e. if a KBuildSycoca);
     */
    virtual bool isBuilding() { return false; }
+
+   /**
+    * @internal - disables launching of kbuildsycoca
+    */
+   void disableAutoRebuild();
 
    /**
     * Determine relative path for a .desktop file from a full path and a resource name

@@ -63,7 +63,7 @@ manpage.1: manpage.sgml
       <command>&dhpackage;</command>
 
       <arg><option><replaceable>options</replaceable></option></arg>
-      <arg><option><replaceable>application <arg><option><replaceable>function<arg><option><replaceable>arg1</replaceable></option></arg><arg><option><replaceable>arg2</replaceable></option></arg>... </replaceable></option></arg></replaceable></option></arg>
+      <arg><option><replaceable>application <optional><replaceable>function <optional><replaceable>arg1</replaceable></optional> <optional><replaceable>arg2</replaceable></optional> ... </replaceable></optional> </replaceable></option></arg>
 
     </cmdsynopsis>
   </refsynopsisdiv>

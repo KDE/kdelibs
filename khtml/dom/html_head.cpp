@@ -25,6 +25,7 @@
 #include "dom/html_head.h"
 #include "html/html_headimpl.h"
 #include "misc/htmlhashes.h"
+#include "xml/dom_docimpl.h"
 
 using namespace DOM;
 
@@ -59,7 +60,8 @@ HTMLBaseElement::~HTMLBaseElement()
 DOMString HTMLBaseElement::href() const
 {
     if(!impl) return DOMString();
-    return ((ElementImpl *)impl)->getAttribute(ATTR_HREF);
+    DOMString href = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_HREF);
+    return href.length() ? impl->getDocument()->completeURL(href.string()) : href;
 }
 
 void HTMLBaseElement::setHref( const DOMString &value )
@@ -134,7 +136,8 @@ void HTMLLinkElement::setCharset( const DOMString &value )
 DOMString HTMLLinkElement::href() const
 {
     if(!impl) return DOMString();
-    return ((ElementImpl *)impl)->getAttribute(ATTR_HREF);
+    DOMString href = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_HREF);
+    return href.length() ? impl->getDocument()->completeURL(href.string()) : href;
 }
 
 void HTMLLinkElement::setHref( const DOMString &value )

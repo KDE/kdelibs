@@ -34,7 +34,7 @@ namespace DOM
   class HTMLFrameElementImpl;
   class HTMLElementImpl;
   class MouseEventImpl;
-};
+}
 
 namespace khtml
 {
@@ -151,11 +151,6 @@ public:
     virtual void layout( );
     virtual void updateWidget();
 
-    // IE does not scale according to intrinsicWidth/Height
-    // aspect ratio :-(
-    virtual short calcReplacedWidth(bool* ieHack=0) const;
-    virtual int   calcReplacedHeight() const;
-
     virtual bool partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KURL& url, const QString& serviceType );
 
 public slots:
@@ -164,6 +159,6 @@ private slots:
     void slotPartLoadingErrorNotify();
 };
 
-};
+}
 
 #endif

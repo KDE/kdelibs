@@ -227,7 +227,7 @@ int KDEsuClient::exec(const QCString &prog, const QCString &user, const QCString
     cmd += escape(prog);
     cmd += " ";
     cmd += escape(user);
-    if (!options.isEmpty())
+    if (!options.isEmpty() || !env.isEmpty())
     {
        cmd += " ";
        cmd += escape(options);

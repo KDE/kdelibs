@@ -23,7 +23,7 @@
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 #include <unistd.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -66,7 +66,7 @@ public:
   KSSLCertificate::KSSLValidation m_cert_vfy_res;
   QString proxyPeer;
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
     SSL *m_ssl;
     SSL_CTX *m_ctx;
     SSL_METHOD *m_meth;
@@ -80,7 +80,7 @@ KSSL::KSSL(bool init) {
   m_bInit = false;
   m_bAutoReconfig = true;
   m_cfg = new KSSLSettings();
-#ifdef HAVE_SSL  
+#ifdef KSSL_HAVE_SSL  
   d->m_ssl = NULL;
 #endif  
 
@@ -97,7 +97,7 @@ KSSL::~KSSL() {
 
 int KSSL::seedWithEGD() {
 int rc = 0;
-  #ifdef HAVE_SSL
+  #ifdef KSSL_HAVE_SSL
   if (m_cfg->useEGD() && !m_cfg->getEGDPath().isEmpty()) {
     rc = d->kossl->RAND_egd(m_cfg->getEGDPath().latin1());
     if (rc < 0) 
@@ -119,7 +119,7 @@ int rc = 0;
 
 
 bool KSSL::TLSInit() {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
   // kdDebug(7029) << "KSSL TLS initialize" << endl;
   if (m_bInit) return false;
 
@@ -152,7 +152,7 @@ return false;
 
 
 bool KSSL::initialize() {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
   kdDebug(7029) << "KSSL initialize" << endl;
   if (m_bInit) return false;
 
@@ -203,7 +203,7 @@ return false;
 
 
 void KSSL::close() {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
   //kdDebug(7029) << "KSSL close" << endl;
   if (!m_bInit) return;
   if (d->m_ssl) {
@@ -231,7 +231,7 @@ bool KSSL::reInitialize() {
 
 bool KSSL::setVerificationLogic() {
 #if 0
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
   //  SSL_set_verify_result(d->m_ssl, X509_V_OK);
   //  SSL_CTX_set_verify(d->m_ctx, SSL_VERIFY_PEER, X509Callback);
 #endif
@@ -241,7 +241,7 @@ bool KSSL::setVerificationLogic() {
 
 
 int KSSL::accept(int sock) {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
   // kdDebug(7029) << "KSSL accept" << endl;
   int rc;
   if (!m_bInit) return -1;
@@ -278,7 +278,7 @@ int KSSL::accept(int sock) {
 
 
 int KSSL::connect(int sock) {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
   // kdDebug(7029) << "KSSL connect" << endl;
   int rc;
   if (!m_bInit) return -1;
@@ -316,7 +316,7 @@ int KSSL::connect(int sock) {
 
 
 int KSSL::pending() {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
   if (!m_bInit) return -1;
   return d->kossl->SSL_pending(d->m_ssl);
 #else
@@ -326,7 +326,7 @@ int KSSL::pending() {
 
 
 int KSSL::peek(void *buf, int len) {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
   if (!m_bInit) return -1;
   return d->kossl->SSL_peek(d->m_ssl, buf, len);
 #else
@@ -336,7 +336,7 @@ int KSSL::peek(void *buf, int len) {
 
 
 int KSSL::read(void *buf, int len) {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
   if (!m_bInit) return -1;
 
   int rc = d->kossl->SSL_read(d->m_ssl, (char *)buf, len);
@@ -356,7 +356,7 @@ int KSSL::read(void *buf, int len) {
 
 
 int KSSL::write(const void *buf, int len) {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
   if (!m_bInit) return -1;
 
   int rc = d->kossl->SSL_write(d->m_ssl, (const char *)buf, len);
@@ -391,7 +391,7 @@ bool KSSL::setSettings(KSSLSettings *settings) {
 }
 
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 bool KSSL::m_bSSLWorks = true;
 #else
 bool KSSL::m_bSSLWorks = false;
@@ -403,7 +403,7 @@ bool KSSL::doesSSLWork() {
 
 
 void KSSL::setConnectionInfo() {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
   SSL_CIPHER *sc;
   char buf[1024];   // WARNING - is this making us non-thread-safe?  FIXME
 
@@ -427,7 +427,7 @@ void KSSL::setConnectionInfo() {
 
 
 void KSSL::setPeerInfo() {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
   m_pi.setPeerHost(d->proxyPeer);
   m_pi.m_cert.setCert(d->kossl->SSL_get_peer_certificate(d->m_ssl));
   STACK_OF(X509) *xs = d->kossl->SSL_get_peer_cert_chain(d->m_ssl);
@@ -457,7 +457,7 @@ KSSLPeerInfo& KSSL::peerInfo() {
 
 
 bool KSSL::setClientCertificate(KSSLPKCS12 *pkcs) {
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 	if (!pkcs || !pkcs->getCertificate()) return false;
 
   int rc;

@@ -29,7 +29,7 @@ extern "C"
 	{
 		return new KLpdUnixFactory;
 	}
-};
+}
 
 KLpdUnixFactory::KLpdUnixFactory(QObject *parent, const char *name)
 : KLibFactory(parent,name)

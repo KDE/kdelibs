@@ -122,6 +122,6 @@ namespace khtml {
 	QChar::Direction last		: 5;
     };
 
-};
+}
 
 #endif

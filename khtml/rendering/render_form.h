@@ -53,7 +53,7 @@ namespace DOM {
     class HTMLSelectElementImpl;
     class HTMLGenericFormElementImpl;
     class HTMLTextAreaElementImpl;
-};
+}
 
 namespace khtml {
 
@@ -73,10 +73,6 @@ public:
     virtual bool isRendered() const  { return true; }
     virtual bool isFormElement() const { return true; }
 
-    // IE does not scale according to intrinsicWidth/Height
-    // aspect ratio :-(
-    virtual short calcReplacedWidth(bool* ieHack=0) const;
-    virtual int   calcReplacedHeight() const;
     virtual void updateFromElement();
 
     virtual void layout();
@@ -96,8 +92,6 @@ protected:
 
     QPoint m_mousePos;
     int m_state;
-    int m_button;
-    int m_clickCount;
     bool m_isDoubleClick;
 };
 
@@ -231,7 +225,7 @@ public:
 public slots:
     void slotReturnPressed();
     void slotTextChanged(const QString &string);
-
+    void slotClearCompletionHistory();
 protected:
     virtual void handleFocusOut();
 
@@ -249,9 +243,18 @@ public:
 
 protected:
     virtual bool event( QEvent *e );
+    void clearMenuHistory();
+    virtual QPopupMenu *createPopupMenu();
 signals:
     void pressed();
     void released();
+    void clearCompletionHistory();
+private slots:
+    void extendedMenuActivated( int id);
+private:
+    enum LineEditMenuID {
+        ClearHistory
+    };
 };
 
 // -------------------------------------------------------------------------
@@ -263,9 +266,9 @@ public:
 
     virtual const char *renderName() const { return "RenderFieldSet"; }
 protected:
-    virtual void printBoxDecorations(QPainter *p,int, int _y,
+    virtual void paintBoxDecorations(QPainter *p,int, int _y,
                                        int, int _h, int _tx, int _ty);
-    void printBorderMinusLegend(QPainter *p, int _tx, int _ty, int w,
+    void paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w,
                                   int h, const RenderStyle *style, int lx, int lw);
     bool findLegend( int &lx, int &ly, int &lw, int &lh);
 };
@@ -423,6 +426,6 @@ protected:
 
 // -------------------------------------------------------------------------
 
-}; //namespace
+} //namespace
 
 #endif

@@ -94,7 +94,7 @@ private:
     short wordSpacing;
 };
 
-};
+}
 
 
 #endif

@@ -41,6 +41,7 @@
 #include "rendering/render_table.h"
 
 #include <kdebug.h>
+#include <kglobal.h>
 
 using namespace khtml;
 using namespace DOM;
@@ -272,7 +273,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
         section = lastSection;
         index = section ? section->numRows() : 0;
     }
-    if ( section && index >= 0 ) {
+    if ( section && ( index >= 0 || append ) ) {
         //kdDebug(6030) << "Inserting row into section " << section << " at index " << index << endl;
         return section->insertRow( index, exceptioncode );
     } else {
@@ -306,7 +307,7 @@ void HTMLTableElementImpl::deleteRow( long index, int &exceptioncode )
         section = 0L;
     }
     if ( lastRow )
-        lastSection->deleteRow( lastSection->numRows(), exceptioncode );
+        lastSection->deleteRow( -1, exceptioncode );
     else if ( section && index >= 0 && index < section->numRows() )
         section->deleteRow( index, exceptioncode );
     else
@@ -463,7 +464,7 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
             addCSSLength(CSS_PROP_PADDING_LEFT, attr->value(), true);
             addCSSLength(CSS_PROP_PADDING_BOTTOM, attr->value(), true);
             addCSSLength(CSS_PROP_PADDING_RIGHT, attr->value(), true);
-	    padding = QMAX( 0, attr->value().toInt() );
+	    padding = kMax( 0, attr->value().toInt() );
         }
         else {
             removeCSSProperty(CSS_PROP_PADDING_TOP);

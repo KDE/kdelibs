@@ -98,7 +98,6 @@ static Display *X11_startup_notify_display = 0;
 static const KInstance *s_instance = 0;
 #define MAX_SOCK_FILE 255
 static char sock_file[MAX_SOCK_FILE];
-static Atom net_current_desktop;
 
 #ifdef Q_WS_X11
 #define DISPLAY "DISPLAY"
@@ -109,7 +108,7 @@ static Atom net_current_desktop;
 #endif
 
 /* Group data */
-struct {
+static struct {
   int maxname;
   int fd[2];
   int launcher[2]; /* socket pair for launcher communication */
@@ -130,10 +129,13 @@ struct {
   bool debug_wait;
   int lt_dlopen_flag;
   QCString errorMsg;
+  bool launcher_ok;
+  bool suicide;
 } d;
 
 extern "C" {
 int kdeinit_xio_errhandler( Display * );
+int kdeinit_x_errhandler( Display *, XErrorEvent *err );
 }
 
 /*
@@ -234,6 +236,7 @@ static void setup_tty( const char* tty )
 static int get_current_desktop( Display* disp )
 {
 #ifdef Q_WS_X11 // Only X11 supports multiple desktops
+    Atom net_current_desktop = XInternAtom( disp, "_NET_CURRENT_DESKTOP", False );
     Atom type_ret;
     int format_ret;
     unsigned char *data_ret;
@@ -733,15 +736,26 @@ static void init_kdeinit_socket()
 
   {
      QCString path = home_dir;
+     QCString readOnly = getenv("KDE_HOME_READONLY");
      if (access(path.data(), R_OK|W_OK))
      {
        if (errno == ENOENT)
+       {
           fprintf(stderr, "kdeinit: Aborting. $HOME directory (%s) does not exist.\n", path.data());
-       else
+          exit(255);
+       }
+       else if (readOnly.isEmpty())
+       {
           fprintf(stderr, "kdeinit: Aborting. No write access to $HOME directory (%s).\n", path.data());
-       exit(255);
+          exit(255);
+       }
      }
-     path += "/.ICEauthority";
+     path = getenv("ICEAUTHORITY");
+     if (path.isEmpty())
+     {
+        path = home_dir;
+        path += "/.ICEauthority";
+     }
      if (access(path.data(), R_OK|W_OK) && (errno != ENOENT))
      {
        fprintf(stderr, "kdeinit: Aborting. No write access to '%s'.\n", path.data());
@@ -885,10 +899,27 @@ static void WaitPid( pid_t waitForPid)
 
 static void launcher_died()
 {
-   /* This is bad. */
-   fprintf(stderr, "kdeinit: Communication error with launcher. Exiting!\n");
-   ::exit(255);
-   return;
+   if (!d.launcher_ok)
+   {
+      /* This is bad. */
+      fprintf(stderr, "kdeinit: Communication error with launcher. Exiting!\n");
+      ::exit(255);
+      return;
+   }
+
+   // KLauncher died... restart
+#ifndef NDEBUG
+   fprintf(stderr, "kdeinit: KLauncher died unexpectedly.\n");
+#endif
+   d.launcher_pid = 0;
+   close(d.launcher[0]);
+   d.launcher[0] = -1;
+
+   pid_t pid = launch( 1, "klauncher", 0 );
+#ifndef NDEBUG
+   fprintf(stderr, "kdeinit: Relaunching KLauncher, pid = %ld result = %d\n", (long) pid, d.result);
+#endif
+   WaitPid(pid);
 }
 
 static void handle_launcher_request(int sock = -1)
@@ -923,6 +954,8 @@ static void handle_launcher_request(int sock = -1)
            return;
        }
    }
+   
+   d.launcher_ok = true;
 
    if ((request_header.cmd == LAUNCHER_EXEC) ||
        (request_header.cmd == LAUNCHER_EXT_EXEC) ||
@@ -996,6 +1029,13 @@ static void handle_launcher_request(int sock = -1)
      {
          startup_id_str = arg_n;
          arg_n += strlen( startup_id_str ) + 1;
+     }
+     
+     if ((request_header.arg_length > (arg_n - request_data)) &&
+         (request_header.cmd == LAUNCHER_EXT_EXEC || request_header.cmd == LAUNCHER_EXEC_NEW ))
+     {
+         // Optional cwd
+         cwd = arg_n; arg_n += strlen(cwd) + 1;
      }
 
      if ((arg_n - request_data) != request_header.arg_length)
@@ -1133,7 +1173,12 @@ static void handle_requests(pid_t waitForPid)
 #endif
            if (waitForPid && (exit_pid == waitForPid))
               return;
-           if (d.launcher_pid)
+              
+           if (exit_pid == d.launcher_pid)
+           {
+             launcher_died();
+           }
+           else if (d.launcher_pid)
            {
            // TODO send process died message
               klauncher_header request_header;
@@ -1273,9 +1318,12 @@ static void kdeinit_library_path()
    strcpy(sock_file, socketName.data());
 }
 
-int kdeinit_xio_errhandler( Display * )
+int kdeinit_xio_errhandler( Display *disp )
 {
-    qWarning( "kdeinit: Fatal IO error: client killed" );
+    // disp is 0L when KDE shuts down. We don't want those warnings then.
+
+    if ( disp )
+        qWarning( "kdeinit: Fatal IO error: client killed" );
 
     if (sock_file[0])
     {
@@ -1283,7 +1331,8 @@ int kdeinit_xio_errhandler( Display * )
       unlink(sock_file);
     }
 
-    qWarning( "kdeinit: sending SIGHUP to children." );
+    if ( disp )
+        qWarning( "kdeinit: sending SIGHUP to children." );
 
     /* this should remove all children we started */
     signal(SIGHUP, SIG_IGN);
@@ -1291,17 +1340,45 @@ int kdeinit_xio_errhandler( Display * )
 
     sleep(2);
 
-    qWarning( "kdeinit: sending SIGTERM to children." );
+    if ( disp )
+        qWarning( "kdeinit: sending SIGTERM to children." );
 
     /* and if they don't listen to us, this should work */
     signal(SIGTERM, SIG_IGN);
     kill(0, SIGTERM);
 
-    qWarning( "kdeinit: Exit." );
+    // Don't kill our children in suicide mode, they may still be in use
+    if (d.suicide)
+    {
+       if (d.launcher_pid)
+          kill(d.launcher_pid, SIGTERM);
+      exit( 0 );
+    }
 
-    exit( 1 );
+    if ( disp )
+        qWarning( "kdeinit: Exit." );
+
+    exit( 0 );
     return 0;
 }
+
+int kdeinit_x_errhandler( Display *dpy, XErrorEvent *err )
+{
+#ifndef NDEBUG
+    char errstr[256];
+    XGetErrorText( dpy, err->error_code, errstr, 256 );
+    if ( err->error_code != BadWindow )
+    {
+        fprintf(stderr, "kdeinit: KDE detected X Error: %s %d\n", errstr, err->error_code );
+        fprintf(stderr, "  Major opcode:  %d\n", err->request_code);
+    }
+#else
+    Q_UNUSED(dpy);
+    Q_UNUSED(err);
+#endif
+    return 0;
+}
+
 
 #ifdef Q_WS_X11
 // Borrowed from kdebase/kaudio/kaudioserver.cpp
@@ -1310,6 +1387,8 @@ static int initXconnection()
   X11display = XOpenDisplay(NULL);
   if ( X11display != 0 ) {
     XSetIOErrorHandler(kdeinit_xio_errhandler);
+    XSetErrorHandler(kdeinit_x_errhandler);
+     
     XCreateSimpleWindow(X11display, DefaultRootWindow(X11display), 0,0,1,1, \
         0,
         BlackPixelOfScreen(DefaultScreenOfDisplay(X11display)),
@@ -1317,7 +1396,6 @@ static int initXconnection()
 #ifndef NDEBUG
     fprintf(stderr, "kdeinit: opened connection to %s\n", DisplayString(X11display));
 #endif
-    net_current_desktop = XInternAtom( X11display, "_NET_CURRENT_DESKTOP", False );
     int fd = XConnectionNumber( X11display );
     int on = 1;
     (void) setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char *) &on, (int) sizeof(on));
@@ -1369,7 +1447,7 @@ int main(int argc, char **argv, char **envp)
    int launch_klauncher = 1;
    int launch_kded = 1;
    int keep_running = 1;
-   int suicide = 0;
+   d.suicide = false;
 
    /** Save arguments first... **/
    char **safe_argv = (char **) malloc( sizeof(char *) * argc);
@@ -1383,9 +1461,19 @@ int main(int argc, char **argv, char **envp)
       if (strcmp(safe_argv[i], "--no-kded") == 0)
          launch_kded = 0;
       if (strcmp(safe_argv[i], "--suicide") == 0)
-         suicide = 1;
+         d.suicide = true;
       if (strcmp(safe_argv[i], "--exit") == 0)
          keep_running = 0;
+      if (strcmp(safe_argv[i], "--help") == 0)
+      {
+        printf("Usage: kdeinit [options]\n");
+     // printf("    --no-dcop         Do not start dcopserver\n");
+     // printf("    --no-klauncher    Do not start klauncher\n");
+        printf("    --no-kded         Do not start kded\n");
+        printf("    --suicide         Terminate when no KDE applications are left running\n");
+     // printf("    --exit            Terminate when kded has run\n");
+        exit(0);
+      }
    }
 
    pipe(d.initpipe);
@@ -1430,6 +1518,7 @@ int main(int argc, char **argv, char **envp)
    d.launcher_pid = 0;
    d.wrapper = 0;
    d.debug_wait = false;
+   d.launcher_ok = false;
    d.lt_dlopen_flag = lt_dlopen_flag;
    lt_dlopen_flag |= LTDL_GLOBAL;
    init_signals();
@@ -1445,7 +1534,7 @@ int main(int argc, char **argv, char **envp)
 
    if (launch_dcop)
    {
-      if (suicide)
+      if (d.suicide)
          pid = launch( 3, "dcopserver", "--nosid\0--suicide" );
       else
          pid = launch( 2, "dcopserver", "--nosid" );
@@ -1460,7 +1549,7 @@ int main(int argc, char **argv, char **envp)
       }
    }
 
-   if (!suicide)
+   if (!d.suicide)
    {
       QString konq = locate("lib", "libkonq.la", s_instance);
       if (!konq.isEmpty())

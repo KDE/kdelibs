@@ -654,7 +654,7 @@ const QChar *HlRegExpr::checkHgl(const QChar *s, int len, bool lineStart)
   if (pos==-1) return 0L;
     else
 	 return (s+Expr->matchedLength());
-};
+}
 
 
 HlLineContinue::HlLineContinue(int attribute, int context, signed char regionId)

@@ -46,7 +46,7 @@ public:
 
     virtual bool isRendered() const { return true; }
 
-    virtual void printObject( QPainter *p, int /*x*/, int /*y*/, int /*w*/, int /*h*/, int tx, int ty);
+    virtual void paintObject( QPainter *p, int /*x*/, int /*y*/, int /*w*/, int /*h*/, int tx, int ty);
 
     virtual void layout();
 
@@ -64,8 +64,10 @@ public:
     virtual void updateFromElement();
 
     virtual void notifyFinished(CachedObject *finishedObj);
-
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
+
+    virtual short calcReplacedWidth() const;
+    virtual int   calcReplacedHeight() const;
 
 private:
     /*
@@ -91,6 +93,6 @@ private:
 };
 
 
-}; //namespace
+} //namespace
 
 #endif

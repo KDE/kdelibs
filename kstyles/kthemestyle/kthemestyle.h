@@ -128,6 +128,7 @@ public:
                                     const QSize &contentsSize,
                                     const QStyleOption& = QStyleOption::Default ) const;
 
+    virtual QRect subRect(SubRect, const QWidget *) const;
 
     virtual void polish( QWidget* );
     virtual void unPolish( QWidget* );

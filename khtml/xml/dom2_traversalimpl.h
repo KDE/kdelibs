@@ -26,10 +26,8 @@
 #ifndef _DOM2_TraversalImpl_h_
 #define _DOM2_TraversalImpl_h_
 
-#include "dom/dom_node.h"
-#include "dom/dom_misc.h"
-#include "misc/shared.h"
 #include "dom/dom2_traversal.h"
+#include "misc/shared.h"
 
 namespace DOM {
 
@@ -191,7 +189,7 @@ protected:
 };
 
 
-}; // namespace
+} // namespace
 
 #endif
 

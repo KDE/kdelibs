@@ -57,5 +57,5 @@ namespace KTextEditor
 	private:
 		BlockSelectionInterface *m_parent;
 	};
-};
+}
 #endif

@@ -40,6 +40,7 @@
 #include <qdir.h>
 
 #include <stdlib.h>
+#include <assert.h>
 
 #define KJAS_CREATE_CONTEXT    (char)1
 #define KJAS_DESTROY_CONTEXT   (char)2
@@ -69,11 +70,10 @@
 
 class JSStackNode {
 public:
-    JSStackNode(JSStackNode *u) : ready(false), size(u ? u->size+1: 1), up(u) {}
+    JSStackNode() : ready(false) {}
     bool ready;
     QStringList args;
     int size;
-    JSStackNode *up;
 };
 
 // For future expansion
@@ -82,9 +82,11 @@ class KJavaAppletServerPrivate
 friend class KJavaAppletServer;
 private:
    int counter;
+   int ticketcounter;
    QMap< int, QGuardedPtr<KJavaAppletContext> > contexts;
    QString appletLabel;
-   JSStackNode *jsstack;
+   QMap< int, JSStackNode* > jsstack;
+   bool javaProcessFailed;
 };
 
 static KJavaAppletServer* self = 0;
@@ -92,7 +94,7 @@ static KJavaAppletServer* self = 0;
 KJavaAppletServer::KJavaAppletServer()
 {
     d = new KJavaAppletServerPrivate;
-    d->jsstack = 0L;
+    d->ticketcounter = 0;
     process = new KJavaProcess();
 
     connect( process, SIGNAL(received(const QByteArray&)),
@@ -100,11 +102,14 @@ KJavaAppletServer::KJavaAppletServer()
 
     setupJava( process );
 
-    if( process->startJava() )
+    if( process->startJava() ) {
         d->appletLabel = i18n( "Loading Applet" );
-    else
+        d->javaProcessFailed = false;
+    }
+    else {
         d->appletLabel = i18n( "Error: java executable not found" );
-
+        d->javaProcessFailed = true;
+    }
 }
 
 KJavaAppletServer::~KJavaAppletServer()
@@ -175,7 +180,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
 
     QString jvm_path = "java";
 
-    QString jPath = config.readEntry( "JavaPath" );
+    QString jPath = config.readPathEntry( "JavaPath" );
     if ( !jPath.isEmpty() && jPath != "java" )
     {
         // Cut off trailing slash if any
@@ -225,7 +230,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     p->setClasspath( classes );
 
     // Fix all the extra arguments
-    QString extraArgs = config.readEntry( "JavaArgs", "" );
+    QString extraArgs = config.readEntry( "JavaArgs" );
     p->setExtraArgs( extraArgs );
 
     if( config.readBoolEntry( "ShowJavaConsole", false) )
@@ -265,6 +270,8 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
 void KJavaAppletServer::createContext( int contextId, KJavaAppletContext* context )
 {
 //    kdDebug(6100) << "createContext: " << contextId << endl;
+    if ( d->javaProcessFailed ) return;
+
     d->contexts.insert( contextId, context );
 
     QStringList args;
@@ -275,6 +282,7 @@ void KJavaAppletServer::createContext( int contextId, KJavaAppletContext* contex
 void KJavaAppletServer::destroyContext( int contextId )
 {
 //    kdDebug(6100) << "destroyContext: " << contextId << endl;
+    if ( d->javaProcessFailed ) return;
     d->contexts.remove( contextId );
 
     QStringList args;
@@ -282,12 +290,13 @@ void KJavaAppletServer::destroyContext( int contextId )
     process->send( KJAS_DESTROY_CONTEXT, args );
 }
 
-void KJavaAppletServer::createApplet( int contextId, int appletId,
-                                      const QString name, const QString clazzName,
-                                      const QString baseURL, const QString codeBase,
-                                      const QString jarFile, QSize size,
-                                      const QMap<QString,QString>& params,
-                                      const QString windowTitle )
+bool KJavaAppletServer::createApplet( int contextId, int appletId,
+                             const QString & name, const QString & clazzName,
+                             const QString & baseURL, const QString & user,
+                             const QString & password, const QString & authname,
+                             const QString & codeBase, const QString & jarFile,
+                             QSize size, const QMap<QString,QString>& params,
+                             const QString & windowTitle )
 {
 //    kdDebug(6100) << "createApplet: contextId = " << contextId     << endl
 //              << "              appletId  = " << appletId      << endl
@@ -299,6 +308,8 @@ void KJavaAppletServer::createApplet( int contextId, int appletId,
 //              << "              width     = " << size.width()  << endl
 //              << "              height    = " << size.height() << endl;
 
+    if ( d->javaProcessFailed ) return false;
+
     QStringList args;
     args.append( QString::number( contextId ) );
     args.append( QString::number( appletId ) );
@@ -307,6 +318,9 @@ void KJavaAppletServer::createApplet( int contextId, int appletId,
     args.append( name );
     args.append( clazzName );
     args.append( baseURL );
+    args.append( user );
+    args.append( password );
+    args.append( authname );
     args.append( codeBase );
     args.append( jarFile );
 
@@ -329,10 +343,13 @@ void KJavaAppletServer::createApplet( int contextId, int appletId,
     }
 
     process->send( KJAS_CREATE_APPLET, args );
+
+    return true;
 }
 
 void KJavaAppletServer::initApplet( int contextId, int appletId )
 {
+    if ( d->javaProcessFailed ) return;
     QStringList args;
     args.append( QString::number( contextId ) );
     args.append( QString::number( appletId ) );
@@ -342,6 +359,7 @@ void KJavaAppletServer::initApplet( int contextId, int appletId )
 
 void KJavaAppletServer::destroyApplet( int contextId, int appletId )
 {
+    if ( d->javaProcessFailed ) return;
     QStringList args;
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
@@ -351,6 +369,7 @@ void KJavaAppletServer::destroyApplet( int contextId, int appletId )
 
 void KJavaAppletServer::startApplet( int contextId, int appletId )
 {
+    if ( d->javaProcessFailed ) return;
     QStringList args;
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
@@ -360,6 +379,7 @@ void KJavaAppletServer::startApplet( int contextId, int appletId )
 
 void KJavaAppletServer::stopApplet( int contextId, int appletId )
 {
+    if ( d->javaProcessFailed ) return;
     QStringList args;
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
@@ -451,15 +471,19 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             break;
         case KJAS_GET_MEMBER:
         case KJAS_PUT_MEMBER:
-        case KJAS_CALL_MEMBER:
-            if (d->jsstack) {
-                d->jsstack->args = args;
-                d->jsstack->ready = true;
-                d->jsstack = d->jsstack->up;
-                process->syncCommandReceived();
+        case KJAS_CALL_MEMBER: {
+            int ticket = args[0].toInt();
+            QMap<int, JSStackNode*>::iterator it = d->jsstack.find(ticket);
+            if (it != d->jsstack.end()) {
+                kdDebug(6100) << "slotJavaRequest: " << ticket << endl; 
+                args.pop_front();
+                it.data()->args = args;
+                it.data()->ready = true;
+                process->syncCommandReceived(ticket);
             } else
                 kdDebug(6100) << "Error: Missed return member data" << endl;
             return;
+        }
         case KJAS_AUDIOCLIP_PLAY:
             cmd = QString::fromLatin1( "audioclip_play" );
             kdDebug(6100) << "Audio Play: url=" << args[0] << endl;
@@ -510,18 +534,20 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
 
 bool KJavaAppletServer::getMember(int contextId, int appletId, const unsigned long objid, const QString & name, int & type, unsigned long & rid, QString & value) {
     QStringList args;
+    int ticket = d->ticketcounter++;
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
+    args.append( QString::number(ticket) );
     args.append( QString::number(objid) );
     args.append( name );
 
-    JSStackNode * frame = d->jsstack = new JSStackNode(d->jsstack);
-
-    kdDebug(6100) << "KJavaAppletServer::getMember " << name << endl;
-    process->sendSync( KJAS_GET_MEMBER, args );
+    JSStackNode * frame = new JSStackNode;
+    d->jsstack.insert(ticket, frame); 
+    kdDebug(6100) << "KJavaAppletServer::getMember " << name << " " << ticket << endl;
+    process->sendSync( ticket, KJAS_GET_MEMBER, args );
 
     bool retval = frame->ready;
-    if (retval) {
+    if (retval && frame->args.count() == 3) {
         type = frame->args[0].toInt(&retval);
         if (retval && type >= 0) {
             rid = frame->args[1].toInt(&retval);
@@ -529,10 +555,10 @@ bool KJavaAppletServer::getMember(int contextId, int appletId, const unsigned lo
         } else
             retval = false;
     } else {
-        kdError(6100) << "getMember: timeout" << endl;
-        d->jsstack = frame->up; // FIXME: if(d->jsstack != frame)
+        kdError(6100) << "getMember: " << (retval ? "args ":"timeout ") << ticket << endl;
     }
 
+    d->jsstack.erase(ticket);
     delete frame;
 
     return retval;
@@ -540,25 +566,28 @@ bool KJavaAppletServer::getMember(int contextId, int appletId, const unsigned lo
 
 bool KJavaAppletServer::putMember(int contextId, int appletId, const unsigned long objid, const QString & name, const QString & value) {
     QStringList args;
+    int ticket = d->ticketcounter++;
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
+    args.append( QString::number(ticket) );
     args.append( QString::number(objid) );
     args.append( name );
     args.append( value );
 
-    kdDebug(6100) << "KJavaAppletServer::putMember " << name << endl;
-    JSStackNode * frame = d->jsstack = new JSStackNode(d->jsstack);
+    JSStackNode * frame = new JSStackNode;
+    d->jsstack.insert(ticket, frame); 
+    kdDebug(6100) << "KJavaAppletServer::putMember " << name << " " << ticket << endl;
 
-    process->sendSync( KJAS_PUT_MEMBER, args );
+    process->sendSync( ticket, KJAS_PUT_MEMBER, args );
 
     bool retval = frame->ready;
     if (retval) {
         retval = frame->args[0].toInt(&retval);
     } else {
         kdError(6100) << "putMember: timeout" << endl;
-        d->jsstack = frame->up;
     }
 
+    d->jsstack.erase(ticket);
     delete frame;
 
     return retval;
@@ -566,17 +595,20 @@ bool KJavaAppletServer::putMember(int contextId, int appletId, const unsigned lo
 
 bool KJavaAppletServer::callMember(int contextId, int appletId, const unsigned long objid, const QString & name, const QStringList & fargs, int & type, unsigned long & rid, QString & value) {
     QStringList args;
+    int ticket = d->ticketcounter++;
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
+    args.append( QString::number(ticket) );
     args.append( QString::number(objid) );
     args.append( name );
     for (QStringList::const_iterator it = fargs.begin(); it != fargs.end(); it++)
         args.append(*it);
 
-    JSStackNode * frame = d->jsstack = new JSStackNode(d->jsstack);
+    JSStackNode * frame = new JSStackNode;
+    d->jsstack.insert(ticket, frame); 
 
-    kdDebug(6100) << "KJavaAppletServer::callMember " << name << endl;
-    process->sendSync( KJAS_CALL_MEMBER, args );
+    kdDebug(6100) << "KJavaAppletServer::callMember " << name << " " << ticket << endl;
+    process->sendSync( ticket, KJAS_CALL_MEMBER, args );
 
     bool retval = frame->ready;
     if (retval) {
@@ -589,9 +621,9 @@ bool KJavaAppletServer::callMember(int contextId, int appletId, const unsigned l
             retval = false;
     } else {
         kdError(6100) << "callMember: timeout return data" << endl;
-        d->jsstack = frame->up;
     }
 
+    d->jsstack.erase(ticket);
     delete frame;
 
     return retval;

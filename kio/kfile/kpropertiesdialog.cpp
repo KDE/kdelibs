@@ -4,6 +4,7 @@
    Copyright (c) 1999, 2000 Preston Brown <pbrown@kde.org>
    Copyright (c) 2000 Simon Hausmann <hausmann@kde.org>
    Copyright (c) 2000 David Faure <faure@kde.org>
+   Copyright (c) 2003 Waldo Bastian <bastian@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -47,6 +48,10 @@ extern "C" {
 #include <unistd.h>
 #include <errno.h>
 #include <assert.h>
+
+#ifdef HAVE_MNTENT_H
+#include <mntent.h>
+#endif
 
 #include <qfile.h>
 #include <qdir.h>
@@ -1734,8 +1739,8 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   KSimpleConfig config( path );
   config.setDollarExpansion( false );
   config.setDesktopGroup();
-  execStr = config.readEntry( QString::fromLatin1("Exec") );
-  swallowExecStr = config.readEntry( QString::fromLatin1("SwallowExec") );
+  execStr = config.readPathEntry( QString::fromLatin1("Exec") );
+  swallowExecStr = config.readPathEntry( QString::fromLatin1("SwallowExec") );
   swallowTitleStr = config.readEntry( QString::fromLatin1("SwallowTitle") );
   termBool = config.readBoolEntry( QString::fromLatin1("Terminal") );
   termOptionsStr = config.readEntry( QString::fromLatin1("TerminalOptions") );
@@ -1917,7 +1922,7 @@ KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
 
   KSimpleConfig config( path );
   config.setDesktopGroup();
-  URLStr = config.readEntry( QString::fromLatin1("URL") );
+  URLStr = config.readPathEntry( QString::fromLatin1("URL") );
 
   if ( !URLStr.isNull() )
     URLEdit->setURL( URLStr );
@@ -2443,6 +2448,7 @@ public:
   }
 
   QFrame *m_frame;
+  QStringList mountpointlist;
 };
 
 KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgPlugin( _props )
@@ -2467,6 +2473,39 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   // insert your favorite location for fstab here
   if ( !fstabFile.isEmpty() )
   {
+#ifdef HAVE_SETMNTENT
+
+#define SETMNTENT setmntent
+#define ENDMNTENT endmntent
+#define STRUCT_MNTENT struct mntent *
+#define STRUCT_SETMNTENT FILE *
+#define GETMNTENT(file, var) ((var = getmntent(file)) != 0)
+#define MOUNTPOINT(var) var->mnt_dir
+#define MOUNTTYPE(var) var->mnt_type
+#define MOUNTOPTIONS(var) var->mnt_opts
+#define HASMNTOPT(var, opt) hasmntopt(var, opt)
+#define FSNAME(var) var->mnt_fsname
+
+  STRUCT_SETMNTENT fstab = SETMNTENT(fstabFile, "r");
+  if (fstab)
+  {
+    STRUCT_MNTENT fe;
+    while (GETMNTENT(fstab, fe))
+    {
+       QString mountPoint = QFile::decodeName(MOUNTPOINT(fe));
+       QString device = QFile::decodeName(FSNAME(fe));
+       if (device.startsWith("/") && (mountPoint != "-") &&
+           (mountPoint != "none") && !mountPoint.isEmpty())
+       {
+          devices.append( device + QString::fromLatin1(" (")
+                          + mountPoint + QString::fromLatin1(")") );
+          m_devicelist.append(device);
+          d->mountpointlist.append(mountPoint);
+       } 
+    }
+  }
+#else
+
     QFile f( fstabFile );
     if ( f.open( IO_ReadOnly ) )
     {
@@ -2484,12 +2523,14 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
           {
             devices.append( lst[indexDevice]+QString::fromLatin1(" (")
                              +lst[indexMountPoint]+QString::fromLatin1(")") );
-            m_devicelist.append( line );
+            m_devicelist.append( lst[indexDevice] );
+            d->mountpointlist.append( lst[indexMountPoint] );
           }
         }
       }
       f.close();
     }
+#endif
   }
 
 
@@ -2554,15 +2595,11 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   device->setEditText( deviceStr );
   if ( !deviceStr.isEmpty() ) {
     // Set default options for this device (first matching entry)
-    int index = 0;
-    for ( QStringList::Iterator it = m_devicelist.begin();
-          it != m_devicelist.end(); ++it, ++index ) {
-      // WARNING : this works only if indexDevice == 0
-      if ( (*it).left( deviceStr.length() ) == deviceStr ) {
-        //kdDebug(250) << "found it " << index << endl;
-        slotActivated( index );
-        break;
-      }
+    int index = m_devicelist.findIndex(deviceStr);
+    if (index != -1)
+    {
+      //kdDebug(250) << "found it " << index << endl;
+      slotActivated( index );
     }
   }
 
@@ -2598,9 +2635,8 @@ KDevicePropsPlugin::~KDevicePropsPlugin()
 
 void KDevicePropsPlugin::slotActivated( int index )
 {
-  QStringList lst = QStringList::split( ' ', m_devicelist[index] );
-  device->setEditText( lst[indexDevice] );
-  mountpoint->setText( lst[indexMountPoint] );
+  device->setEditText( m_devicelist[index] );
+  mountpoint->setText( d->mountpointlist[index] );
 }
 
 bool KDevicePropsPlugin::supports( KFileItemList _items )

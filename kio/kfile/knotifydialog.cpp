@@ -94,7 +94,7 @@ namespace KNotify
             return KNotifyClient::None;
         }
     };
-};
+}
 
 
 int KNotifyDialog::configure( QWidget *parent, const char *name,
@@ -118,7 +118,7 @@ KNotifyDialog::KNotifyDialog( QWidget *parent, const char *name, bool modal,
 
     connect( this, SIGNAL( okClicked() ), m_notifyWidget, SLOT( save() ));
     connect( this, SIGNAL( applyClicked() ), m_notifyWidget, SLOT( save() ));
-};
+}
 
 KNotifyDialog::~KNotifyDialog()
 {
@@ -218,6 +218,8 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
 
     connect( m_listview, SIGNAL( currentChanged( QListViewItem * ) ),
              SLOT( slotEventChanged( QListViewItem * ) ));
+    connect( m_listview, SIGNAL(clicked( QListViewItem *, const QPoint&, int)),
+             SLOT( slotItemClicked( QListViewItem *, const QPoint&, int )));
 
     connect( m_playSound, SIGNAL( toggled( bool )),
              SLOT( soundToggled( bool )) );
@@ -253,6 +255,8 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
     connect( m_buttonDisable, SIGNAL( clicked() ), SLOT( enableAll() ));
 
     showAdvanced( false );
+    
+    slotEventChanged( 0L ); // disable widgets by default
 }
 
 KNotifyWidget::~KNotifyWidget()
@@ -329,6 +333,7 @@ void KNotifyWidget::clearVisible()
 {
     m_visibleApps.clear();
     m_listview->clear();
+    slotEventChanged( 0L ); // disable widgets
 }
 
 void KNotifyWidget::showEvent( QShowEvent *e )
@@ -615,6 +620,51 @@ void KNotifyWidget::commandlineChanged( const QString& text )
     emit changed( true );
 }
 
+void KNotifyWidget::slotItemClicked( QListViewItem *item, const QPoint&, 
+                                     int col )
+{
+    if ( !item || !item->isSelected() )
+        return;
+
+    Event *event = currentEvent();
+    if ( !event )
+        return; // very unlikely, but safety first
+    
+    bool doShowAdvanced = false;
+    
+    switch( col )
+    {
+        case COL_EXECUTE:
+            m_execute->toggle();
+            m_executePath->setFocus();
+            doShowAdvanced = true;
+            break;
+        case COL_STDERR:
+            m_stderr->toggle();
+            break;
+        case COL_MESSAGE:
+            m_passivePopup->setChecked( true ); // default to passive popups
+            m_messageBox->toggle();
+            break;
+        case COL_LOGFILE:
+            m_logToFile->toggle();
+            m_logfilePath->setFocus();
+            doShowAdvanced = true;
+            break;
+        case COL_SOUND:
+            m_playSound->toggle();
+            break;
+        default: // do nothing
+            break;
+    }
+    
+    if ( doShowAdvanced && !m_logToFile->isVisible() )
+    {
+        showAdvanced( true );
+        m_listview->ensureItemVisible( m_listview->currentItem() );
+    }
+}
+
 void KNotifyWidget::sort( bool ascending )
 {
     m_listview->setSorting( COL_EVENT, ascending );
@@ -707,11 +757,9 @@ Event * KNotifyWidget::currentEvent()
 
 void KNotifyWidget::openSoundDialog( KURLRequester *requester )
 {
-    static bool init = true;
-    if ( !init )
-        return;
-
-    init = false;
+    // only need to init this once
+    requester->disconnect( SIGNAL( openFileDialog( KURLRequester * )),
+                           this, SLOT( openSoundDialog( KURLRequester * )));
 
     KFileDialog *fileDialog = requester->fileDialog();
     fileDialog->setCaption( i18n("Select Sound File") );
@@ -745,11 +793,9 @@ void KNotifyWidget::openSoundDialog( KURLRequester *requester )
 
 void KNotifyWidget::openLogDialog( KURLRequester *requester )
 {
-    static bool init = true;
-    if ( !init )
-        return;
-
-    init = false;
+    // only need to init this once
+    requester->disconnect( SIGNAL( openFileDialog( KURLRequester * )),
+                           this, SLOT( openLogDialog( KURLRequester * )));
 
     KFileDialog *fileDialog = requester->fileDialog();
     fileDialog->setCaption( i18n("Select Log File") );
@@ -760,11 +806,10 @@ void KNotifyWidget::openLogDialog( KURLRequester *requester )
 
 void KNotifyWidget::openExecDialog( KURLRequester *requester )
 {
-    static bool init = true;
-    if ( !init )
-        return;
+    // only need to init this once
+    requester->disconnect( SIGNAL( openFileDialog( KURLRequester * )),
+                           this, SLOT( openExecDialog( KURLRequester * )));
 
-    init = false;
 
     KFileDialog *fileDialog = requester->fileDialog();
     fileDialog->setCaption( i18n("Select File to Execute") );
@@ -924,10 +969,12 @@ void Application::reloadEvents( bool revertToDefaults )
                 delete e;
 
             else { // load the event
-                int default_rep = kc->readNumEntry("default_presentation", 0);
-                QString default_logfile = kc->readEntry("default_logfile");
-                QString default_soundfile = kc->readEntry("default_sound");
-                QString default_commandline = kc->readEntry("default_commandline");
+                // default to passive popups over plain messageboxes
+                int default_rep = kc->readNumEntry("default_presentation", 
+                                                   0 | KNotifyClient::PassivePopup);
+                QString default_logfile = kc->readPathEntry("default_logfile");
+                QString default_soundfile = kc->readPathEntry("default_sound");
+                QString default_commandline = kc->readPathEntry("default_commandline");
                 config->setGroup(*it);
                 e->dontShow = config->readNumEntry("nopresentation", 0 );
 
@@ -943,11 +990,11 @@ void Application::reloadEvents( bool revertToDefaults )
                 {
                     e->presentation = config->readNumEntry("presentation",
                                                            default_rep);
-                    e->logfile = config->readEntry("logfile",
+                    e->logfile = config->readPathEntry("logfile",
                                                    default_logfile);
-                    e->soundfile = config->readEntry("soundfile",
+                    e->soundfile = config->readPathEntry("soundfile",
                                                      default_soundfile);
-                    e->commandline = config->readEntry("commandline",
+                    e->commandline = config->readPathEntry("commandline",
                                                        default_commandline);
                 }
 

@@ -144,8 +144,10 @@ signals:
     void quitSelected();
 
 private slots:
-    void toggleMinimizeRestore();
+    void minimizeRestoreAction();
 private:
+    void activateOrHide();
+    void minimizeRestore( bool restore );
     KPopupMenu* menu;
     // minimizeRestoreId is no longer needed. remove in KDE 4.0
     int minimizeRestoreId;

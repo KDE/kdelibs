@@ -1,12 +1,13 @@
 
-INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kioslave -I$(top_srcdir)/kioslave/bzip2 $(all_includes) $(LIBXML_CFLAGS) $(LIBXSLT_CFLAGS)
-LDFLAGS = $(KDE_RPATH) $(LIBXML_RPATH) $(LIBXSLT_RPATH) $(all_libraries)
-AM_CPPFLAGS = -DSRCDIR="\"$(shell (cd $(top_srcdir)/kdoctools && pwd))\"" 
+INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kioslave -I$(top_srcdir)/kioslave/bzip2 \
+           $(all_includes) $(LIBXML_CFLAGS) $(LIBXSLT_CFLAGS) \
+           -DSRCDIR="\"$(shell (cd $(top_srcdir)/kdoctools && pwd))\""
 
 noinst_LTLIBRARIES = libkbzipfilter_dummy.la
 
 libkbzipfilter_dummy_la_SOURCES = kbzip2filter.cpp
 libkbzipfilter_dummy_la_LIBADD = $(LIB_KIO) $(LIBBZ2)
+libkbzipfilter_dummy_la_LDFLAGS = $(KDE_RPATH) $(LIBXML_RPATH) $(LIBXSLT_RPATH) $(all_libraries)
 
 ####### Files
 
@@ -14,7 +15,7 @@ kde_module_LTLIBRARIES = kio_help.la
 
 kio_help_la_SOURCES = kio_help.cpp main.cpp xslt.cpp
 kio_help_la_LIBADD = $(LIBXSLT_LIBS) $(LIBXML_LIBS)  libkbzipfilter_dummy.la
-kio_help_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
+kio_help_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN) $(LIBXML_RPATH) $(LIBXSLT_RPATH)
 noinst_HEADERS = kio_help.h
 
 kdelnk_DATA = help.protocol
@@ -23,9 +24,11 @@ kdelnkdir = $(kde_servicesdir)
 bin_PROGRAMS = meinproc xml2man
 meinproc_LDADD = xslt_pure.o libkbzipfilter_dummy.la $(LIBXSLT_LIBS) $(LIBXML_LIBS) 
 meinproc_SOURCES = meinproc.cpp 
+meinproc_LDFLAGS = $(KDE_RPATH) $(LIBXML_RPATH) $(LIBXSLT_RPATH) $(all_libraries)
 
 xml2man_LDADD = xslt_pure.o $(LIBXSLT_LIBS) $(LIBXML_LIBS) libkbzipfilter_dummy.la
 xml2man_SOURCES = xml2man.cpp 
+xml2man_LDFLAGS = $(KDE_RPATH) $(LIBXML_RPATH) $(LIBXSLT_RPATH) $(all_libraries)
 
 xslt_pure.o: xslt.cpp
 	-rm -f xslt_pure.cpp
@@ -56,3 +59,5 @@ uninstall-local:
 
 kbzip2filter.cpp:
 	-$(LN_S) $(srcdir)/../kioslave/bzip2/kbzip2filter.cpp .
+
+CLEANFILES = kbzip2filter.cpp xslt_pure.cpp

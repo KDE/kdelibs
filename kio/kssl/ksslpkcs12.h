@@ -24,11 +24,9 @@
 #ifndef _KSSLPKCS12_H
 #define _KSSLPKCS12_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "ksslconfig.h"
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 #define crypt _openssl_crypt
 #include <openssl/pkcs12.h>
 #undef crypt
@@ -113,6 +111,7 @@ public:
    *   Check the X.509 and private key to make sure they're valid.
    */
   KSSLCertificate::KSSLValidation validate();
+  KSSLCertificate::KSSLValidation validate(KSSLCertificate::KSSLPurpose p);
 
 
   /*
@@ -120,12 +119,14 @@ public:
    *   Ignore any cached validation result.
    */
   KSSLCertificate::KSSLValidation revalidate();
+  KSSLCertificate::KSSLValidation revalidate(KSSLCertificate::KSSLPurpose p);
 
 
   /*
    *   Return true if the X.509 and private key are valid.
    */
   bool isValid();
+  bool isValid(KSSLCertificate::KSSLPurpose p);
 
 
 

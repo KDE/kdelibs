@@ -192,6 +192,6 @@ class Document : public KTextEditor::Document, public KTextEditor::EditInterface
     };
 };
 
-};
+}
 
 #endif

@@ -55,6 +55,6 @@ class ViewStatusMsgInterface
                   
 ViewStatusMsgInterface *viewStatusMsgInterface (class View *view);
 
-};
+}
 
 #endif

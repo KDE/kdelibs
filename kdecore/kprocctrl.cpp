@@ -56,6 +56,8 @@ KProcessController::KProcessController()
 	printf(strerror(errno));
 
   fcntl(fd[0], F_SETFL, O_NONBLOCK);
+  fcntl(fd[0], F_SETFD, FD_CLOEXEC);
+  fcntl(fd[1], F_SETFD, FD_CLOEXEC);
 
   notifier = new QSocketNotifier(fd[0], QSocketNotifier::Read);
   notifier->setEnabled(true);

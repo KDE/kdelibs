@@ -604,6 +604,6 @@ public:
     void setVersion( const DOMString & );
 };
 
-}; //namespace
+} //namespace
 
 #endif

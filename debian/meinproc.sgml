@@ -369,7 +369,7 @@ manpage.1: manpage.sgml
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term><option>-o</option>, <option>--output <replaceable>file</replaceable>
+        <term><option>-o</option>, <option>--output <replaceable>file</replaceable></option>
         </term>
         <listitem>
           <para>Output whole document to file.</para>

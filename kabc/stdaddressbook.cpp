@@ -35,40 +35,6 @@
 
 using namespace KABC;
 
-extern "C" {
-
-static void setSignalHandler( void (*handler)(int) );
-
-// Crash recovery signal handler
-static void signalHandler( int sigId )
-{
-  setSignalHandler( SIG_DFL );
-  fprintf( stderr, "*** libkabc got signal %d (Exiting)\n", sigId );
-  // try to cleanup all lock files
-  StdAddressBook::self()->cleanUp();
-  ::exit(-1);
-}
-
-// Crash recovery signal handler
-static void crashHandler( int sigId )
-{
-  setSignalHandler( SIG_DFL );
-  fprintf( stderr, "*** libkabc got signal %d (Crashing)\n", sigId );
-  // try to cleanup all lock files
-  StdAddressBook::self()->cleanUp();
-  // Return to DrKonqi.
-}
-
-static void setSignalHandler( void (*handler)(int) )
-{
-  signal( SIGKILL, handler );
-  signal( SIGTERM, handler );
-  signal( SIGHUP,  handler );
-  KCrash::setEmergencySaveFunction( crashHandler );
-}
-
-}
-
 AddressBook *StdAddressBook::mSelf = 0;
 bool StdAddressBook::mAutomaticSave = true;
 
@@ -80,6 +46,11 @@ QString StdAddressBook::fileName()
 QString StdAddressBook::directoryName()
 {
   return locateLocal( "data", "kabc/stdvcf" );
+}
+
+void StdAddressBook::handleCrash()
+{
+  StdAddressBook::self()->cleanUp();
 }
 
 AddressBook *StdAddressBook::self()
@@ -199,8 +170,6 @@ void StdAddressBook::init( bool onlyFastResources )
   }
 
   load();
-
-  setSignalHandler( signalHandler );
 }
 
 void StdAddressBook::close()

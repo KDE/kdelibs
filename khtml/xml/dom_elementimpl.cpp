@@ -51,6 +51,14 @@ void AttributeImpl::allocateImpl(ElementImpl* e) {
     _impl->ref();
 }
 
+void AttributeImpl::detachImpl()
+{
+    if (_impl) {
+	_impl->deref();
+	_impl = 0;
+    }
+}
+
 AttrImpl::AttrImpl(ElementImpl* element, DocumentPtr* docPtr, AttributeImpl* a)
     : NodeBaseImpl(docPtr),
       m_element(element),
@@ -59,11 +67,11 @@ AttrImpl::AttrImpl(ElementImpl* element, DocumentPtr* docPtr, AttributeImpl* a)
     assert(!m_attribute->_impl);
     m_attribute->_impl = this;
     m_attribute->ref();
+    m_specified = true; // we don't yet support default attributes
 }
 
 AttrImpl::~AttrImpl()
 {
-    assert(m_attribute->_impl == this);
     m_attribute->_impl = 0;
     m_attribute->deref();
 }
@@ -242,18 +250,22 @@ void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
 
     if(namedAttrMap) {
         namedAttrMap->ref();
-        namedAttrMap->element = this;
+        namedAttrMap->m_element = this;
         unsigned int len = namedAttrMap->length();
         for(unsigned int i = 0; i < len; i++)
-            parseAttribute(namedAttrMap->attrs[i]);
+            parseAttribute(namedAttrMap->m_attrs[i]);
     }
 }
 
 NodeImpl *ElementImpl::cloneNode(bool deep)
 {
-    // ### we loose the namespace here ... FIXME
-    ElementImpl *clone = getDocument()->createElement(tagName());
+    ElementImpl *clone = getDocument()->createElement(tagName(), 0);
     if (!clone) return 0;
+
+    // clone prefix (namespace)
+    clone->m_prefix = m_prefix;
+    if ( clone->m_prefix )
+        clone->m_prefix->ref();
 
     // clone attributes
     if(namedAttrMap)
@@ -477,7 +489,13 @@ void ElementImpl::dump(QTextStream *stream, QString ind) const
 XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_tagName)
     : ElementImpl(doc)
 {
-    m_id = doc->document()->tagId(0 /* no namespace */, _tagName,  false /* allocate */);
+    m_id = doc->document()->tagId(0 /* no namespace */, _tagName,
+                                  false /* allocate */, 0);
+}
+
+XMLElementImpl::XMLElementImpl(DocumentPtr *doc, Id id)
+    : ElementImpl(doc), m_id(id)
+{
 }
 
 XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, DOMStringImpl *_namespaceURI)
@@ -495,7 +513,7 @@ XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, 
         DOMStringImpl* localName = _qualifiedName->copy();
         localName->ref();
         localName->remove(0,colonpos+1);
-        m_id = doc->document()->tagId(_namespaceURI, localName, false /* allocate */);
+        m_id = doc->document()->tagId(_namespaceURI, localName, false /* allocate */, 0);
         localName->deref();
         m_prefix = _qualifiedName->copy();
         m_prefix->ref();
@@ -503,7 +521,7 @@ XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, 
     }
     else {
         // no prefix
-        m_id = doc->document()->tagId(_namespaceURI, _qualifiedName, false /* allocate */);
+        m_id = doc->document()->tagId(_namespaceURI, _qualifiedName, false /* allocate */, 0);
         m_prefix = 0;
     }
 }
@@ -520,10 +538,11 @@ DOMString XMLElementImpl::localName() const
 
 NodeImpl *XMLElementImpl::cloneNode ( bool deep )
 {
-    // ### we loose namespace here FIXME
-    // should pass id around
-    XMLElementImpl *clone = new XMLElementImpl(docPtr(), getDocument()->tagName(m_id).implementation());
-    clone->m_id = m_id;
+    XMLElementImpl *clone = new XMLElementImpl(docPtr(), m_id);
+    // clone prefix (namespace)
+    clone->m_prefix = m_prefix;
+    if ( clone->m_prefix )
+        clone->m_prefix->ref();
 
     // clone attributes
     if(namedAttrMap)
@@ -542,10 +561,10 @@ NodeImpl *XMLElementImpl::cloneNode ( bool deep )
 // -------------------------------------------------------------------------
 
 NamedAttrMapImpl::NamedAttrMapImpl(ElementImpl *e)
-    : element(e)
+    : m_element(e)
 {
-    attrs = 0;
-    len = 0;
+    m_attrs = 0;
+    m_len = 0;
 }
 
 NamedAttrMapImpl::~NamedAttrMapImpl()
@@ -560,14 +579,14 @@ AttrImpl *NamedAttrMapImpl::getNamedItem ( NodeImpl::Id id ) const
     if (!a) return 0;
 
     if (!a->attrImpl())
-        a->allocateImpl(element);
+        a->allocateImpl(m_element);
 
     return a->attrImpl();
 }
 
 Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, int &exceptioncode )
 {
-    if (!element) {
+    if (!m_element) {
         exceptioncode = DOMException::NOT_FOUND_ERR;
         return 0;
     }
@@ -579,7 +598,7 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, int &exceptioncode )
     }
 
     // WRONG_DOCUMENT_ERR: Raised if arg was created from a different document than the one that created this map.
-    if (arg->getDocument() != element->getDocument()) {
+    if (arg->getDocument() != m_element->getDocument()) {
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return 0;
     }
@@ -593,7 +612,7 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, int &exceptioncode )
 
     // INUSE_ATTRIBUTE_ERR: Raised if arg is an Attr that is already an attribute of another Element object.
     // The DOM user must explicitly clone Attr nodes to re-use them in other elements.
-    if (attr->ownerElement()) {
+    if (attr->ownerElement() && attr->ownerElement() != m_element) {
         exceptioncode = DOMException::INUSE_ATTRIBUTE_ERR;
         return 0;
     }
@@ -606,7 +625,7 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, int &exceptioncode )
     Node r;
     if (old) {
         if (!old->attrImpl())
-            old->allocateImpl(element);
+            old->allocateImpl(m_element);
         r = old->_impl;
         removeAttribute(a->id());
     }
@@ -628,7 +647,7 @@ Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, int &exceptioncode )
     AttributeImpl* a = getAttributeItem(id);
     if (!a) return Node();
 
-    if (!a->attrImpl())  a->allocateImpl(element);
+    if (!a->attrImpl())  a->allocateImpl(m_element);
     Node r(a->attrImpl());
     removeAttribute(id);
     return r;
@@ -636,25 +655,25 @@ Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, int &exceptioncode )
 
 AttrImpl *NamedAttrMapImpl::item ( unsigned long index ) const
 {
-    if (index >= len)
+    if (index >= m_len)
         return 0;
 
-    if (!attrs[index]->attrImpl())
-        attrs[index]->allocateImpl(element);
+    if (!m_attrs[index]->attrImpl())
+        m_attrs[index]->allocateImpl(m_element);
 
-    return attrs[index]->attrImpl();
+    return m_attrs[index]->attrImpl();
 }
 
 unsigned long NamedAttrMapImpl::length(  ) const
 {
-    return len;
+    return m_len;
 }
 
 AttributeImpl* NamedAttrMapImpl::getAttributeItem(NodeImpl::Id id) const
 {
-    for (unsigned long i = 0; i < len; ++i)
-        if (attrs[i]->id() == id)
-            return attrs[i];
+    for (unsigned long i = 0; i < m_len; ++i)
+        if (m_attrs[i]->id() == id)
+            return m_attrs[i];
 
     return 0;
 }
@@ -662,53 +681,54 @@ AttributeImpl* NamedAttrMapImpl::getAttributeItem(NodeImpl::Id id) const
 NodeImpl::Id NamedAttrMapImpl::mapId(const DOMString& namespaceURI,
                                      const DOMString& localName, bool readonly)
 {
-    assert(element);
-    if (!element) return 0;
-    return element->getDocument()->attrId(namespaceURI.implementation(),
-                                            localName.implementation(), readonly);
+    assert(m_element);
+    if (!m_element) return 0;
+    return m_element->getDocument()->attrId(namespaceURI.implementation(),
+                                            localName.implementation(), readonly, 0);
 }
 
 void NamedAttrMapImpl::clearAttributes()
 {
-    if (attrs) {
+    if (m_attrs) {
         uint i;
-        for (i = 0; i < len; i++) {
-            if (attrs[i]->_impl)
-                attrs[i]->_impl->m_element = 0;
-            attrs[i]->deref();
+        for (i = 0; i < m_len; i++) {
+            if (m_attrs[i]->_impl)
+                m_attrs[i]->_impl->m_element = 0;
+	    m_attrs[i]->detachImpl();
+            m_attrs[i]->deref();
         }
-        delete [] attrs;
-        attrs = 0;
+        delete [] m_attrs;
+        m_attrs = 0;
     }
-    len = 0;
+    m_len = 0;
 }
 
 void NamedAttrMapImpl::detachFromElement()
 {
     // we allow a NamedAttrMapImpl w/o an element in case someone still has a reference
     // to if after the element gets deleted - but the map is now invalid
-    element = 0;
+    m_element = 0;
     clearAttributes();
 }
 
 NamedAttrMapImpl& NamedAttrMapImpl::operator=(const NamedAttrMapImpl& other)
 {
     // clone all attributes in the other map, but attach to our element
-    if (!element) return *this;
+    if (!m_element) return *this;
 
     clearAttributes();
-    len = other.len;
-    attrs = new AttributeImpl* [len];
+    m_len = other.m_len;
+    m_attrs = new AttributeImpl* [m_len];
 
-    // first initialize attrs vector, then call parseAttribute on it
+    // first initialize m_attrs vector, then call parseAttribute on it
     // this allows parseAttribute to use getAttribute
-    for (uint i = 0; i < len; i++) {
-        attrs[i] = new AttributeImpl(other.attrs[i]->id(), other.attrs[i]->val());
-        attrs[i]->ref();
+    for (uint i = 0; i < m_len; i++) {
+        m_attrs[i] = new AttributeImpl(other.m_attrs[i]->id(), other.m_attrs[i]->val());
+        m_attrs[i]->ref();
     }
 
-    for(uint i = 0; i < len; i++)
-        element->parseAttribute(attrs[i]);
+    for(uint i = 0; i < m_len; i++)
+        m_element->parseAttribute(m_attrs[i]);
 
     return *this;
 }
@@ -716,69 +736,70 @@ NamedAttrMapImpl& NamedAttrMapImpl::operator=(const NamedAttrMapImpl& other)
 void NamedAttrMapImpl::addAttribute(AttributeImpl *attr)
 {
     // Add the attribute tot he list
-    AttributeImpl **newAttrs = new AttributeImpl* [len+1];
-    if (attrs) {
-      for (uint i = 0; i < len; i++)
-        newAttrs[i] = attrs[i];
-      delete [] attrs;
+    AttributeImpl **newAttrs = new AttributeImpl* [m_len+1];
+    if (m_attrs) {
+      for (uint i = 0; i < m_len; i++)
+        newAttrs[i] = m_attrs[i];
+      delete [] m_attrs;
     }
-    attrs = newAttrs;
-    attrs[len++] = attr;
+    m_attrs = newAttrs;
+    m_attrs[m_len++] = attr;
     attr->ref();
 
     // Notify the element that the attribute has been added, and dispatch appropriate mutation events
     // Note that element may be null here if we are called from insertAttr() during parsing
-    if (element) {
-        element->parseAttribute(attr);
-        element->dispatchAttrAdditionEvent(attr);
-        element->dispatchSubtreeModifiedEvent();
+    if (m_element) {
+        m_element->parseAttribute(attr);
+        m_element->dispatchAttrAdditionEvent(attr);
+        m_element->dispatchSubtreeModifiedEvent();
     }
 }
 
 void NamedAttrMapImpl::removeAttribute(NodeImpl::Id id)
 {
-    unsigned long index = len+1;
-    for (unsigned long i = 0; i < len; ++i)
-        if (attrs[i]->id() == id) {
+    unsigned long index = m_len+1;
+    for (unsigned long i = 0; i < m_len; ++i)
+        if (m_attrs[i]->id() == id) {
             index = i;
             break;
         }
 
-    if (index >= len) return;
+    if (index >= m_len) return;
 
     // Remove the attribute from the list
-    AttributeImpl* attr = attrs[index];
-    if (attrs[index]->_impl)
-        attrs[index]->_impl->m_element = 0;
-    if (len == 1) {
-        delete [] attrs;
-        attrs = 0;
-        len = 0;
+    AttributeImpl* attr = m_attrs[index];
+    if (m_attrs[index]->_impl)
+        m_attrs[index]->_impl->m_element = 0;
+    if (m_len == 1) {
+        delete [] m_attrs;
+        m_attrs = 0;
+        m_len = 0;
     }
     else {
-        AttributeImpl **newAttrs = new AttributeImpl* [len-1];
+        AttributeImpl **newAttrs = new AttributeImpl* [m_len-1];
         uint i;
         for (i = 0; i < uint(index); i++)
-            newAttrs[i] = attrs[i];
-        len--;
-        for (; i < len; i++)
-            newAttrs[i] = attrs[i+1];
-        delete [] attrs;
-        attrs = newAttrs;
+            newAttrs[i] = m_attrs[i];
+        m_len--;
+        for (; i < m_len; i++)
+            newAttrs[i] = m_attrs[i+1];
+        delete [] m_attrs;
+        m_attrs = newAttrs;
     }
 
     // Notify the element that the attribute has been removed
     // dispatch appropriate mutation events
-    if (attr->_value) {
-        attr->_value->deref();
+    if (m_element && attr->_value) {
+        DOMStringImpl* value = attr->_value;
         attr->_value = 0;
-        if (element)
-            element->parseAttribute(attr);
+        m_element->parseAttribute(attr);
+        attr->_value = value;
     }
-    if (element) {
-        element->dispatchAttrRemovalEvent(attr);
-        element->dispatchSubtreeModifiedEvent();
+    if (m_element) {
+        m_element->dispatchAttrRemovalEvent(attr);
+        m_element->dispatchSubtreeModifiedEvent();
     }
+    attr->detachImpl();
     attr->deref();
 }
 

@@ -108,7 +108,7 @@ public:
      * @param name The object name.
      */
     KTipDialog(KTipDatabase *db, QWidget *parent = 0, const char *name = 0);
-
+    ~KTipDialog();
     /**
      * Shows a tip.
      *
@@ -118,7 +118,7 @@ public:
      *
      * Note that you probably want an item in the help menu calling
      * this method with force=true.
-     * 
+     *
      * @param parent Parent widget of TipDialog.
      * @param tipFile The name of the tip file.
      * @param force If true, the dialog is show, even when the users

@@ -331,5 +331,5 @@ namespace KIO {
 	class SchedulerPrivate* d;
 };
 
-};
+}
 #endif

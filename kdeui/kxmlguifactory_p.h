@@ -245,7 +245,7 @@ struct BuildState
 
 typedef QValueStack<BuildState> BuildStateStack;
 
-};
+}
 
 #endif
 /* vim: et sw=4

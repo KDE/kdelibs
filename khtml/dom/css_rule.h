@@ -529,6 +529,6 @@ protected:
 };
 
 
-}; // namespace
+} // namespace
 
 #endif

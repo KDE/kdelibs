@@ -2,6 +2,7 @@
 #define __kparts_componentfactory_h__
 
 #include <kparts/factory.h>
+#include <kparts/part.h>
 #include <ktrader.h>
 #include <qmetaobject.h>
 
@@ -350,7 +351,7 @@ namespace KParts
                                                const QStringList &args = QStringList(),
                                                int *error = 0 )
         {
-            KTrader::OfferList offers = KTrader::self()->query( serviceType, "KParts/ReadOnlyPart", constraint, QString::null );
+            KTrader::OfferList offers = KTrader::self()->query( serviceType, QString::fromLatin1( "KParts/ReadOnlyPart" ), constraint, QString::null );
             if ( offers.isEmpty() )
             {
                 if ( error )
@@ -365,7 +366,7 @@ namespace KParts
  
     }
 
-};
+}
 
 /*
  * vim: et sw=4

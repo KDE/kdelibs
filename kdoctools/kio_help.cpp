@@ -235,8 +235,17 @@ void HelpProtocol::get( const KURL& url )
 
         // if we have a query, look if it contains an anchor
         if (!query.isEmpty())
-            if (query.left(8) == "?anchor=")
+            if (query.left(8) == "?anchor=") {
                 anchor = query.mid(8).lower();
+			
+			KURL redirURL(url);
+			
+			redirURL.setQuery(QString::null);
+			redirURL.setHTMLRef(anchor);
+			redirection(redirURL);
+			finished();
+			return;
+		}
         if (anchor.isEmpty() && url.hasHTMLRef())
 	    anchor = url.htmlRef();
 

@@ -140,7 +140,6 @@ void KHTMLPartBrowserExtension::cut()
         return;
     }
 
-    assert( m_editableFormWidget );
     if ( !m_editableFormWidget )
         return; // shouldn't happen
 
@@ -185,7 +184,6 @@ void KHTMLPartBrowserExtension::paste()
         return;
     }
 
-    assert( m_editableFormWidget );
     if ( !m_editableFormWidget )
         return; // shouldn't happen
 
@@ -486,7 +484,7 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
             // the empty key  means no integration
             KConfig *cfg = new KConfig("konquerorrc", false, false);
             cfg->setGroup("HTML Settings");
-            QString downloadManger=cfg->readEntry("DownloadManager");
+            QString downloadManger=cfg->readPathEntry("DownloadManager");
             if (!downloadManger.isEmpty())
             {
                 // then find the download manager location
@@ -515,6 +513,7 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
                 KIO::Job *job = KIO::copy( url, destURL );
                 job->setMetaData(metadata);
                 job->addMetaData("MaxCacheSize", "0"); // Don't store in http cache.
+                job->addMetaData("cache", "cache"); // Use entry from cache if available.
                 job->setAutoErrorHandlingEnabled( true );
             }
             delete cfg;

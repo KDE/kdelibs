@@ -47,5 +47,5 @@ protected:
     DocumentImpl *m_document;
 };
 
-}; //namespace
+} //namespace
 #endif

@@ -24,11 +24,9 @@
 #ifndef _KSSLPKCS7_H
 #define _KSSLPKCS7_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "ksslconfig.h"
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 #define crypt _openssl_crypt
 #include <openssl/pkcs7.h>
 #undef crypt
@@ -106,6 +104,7 @@ public:
    *   Check the chain to make sure it's valid.
    */
   KSSLCertificate::KSSLValidation validate();
+  KSSLCertificate::KSSLValidation validate(KSSLCertificate::KSSLPurpose p);
 
 
   /*
@@ -113,6 +112,7 @@ public:
    *   Ignore any cached validation result.
    */
   KSSLCertificate::KSSLValidation revalidate();
+  KSSLCertificate::KSSLValidation revalidate(KSSLCertificate::KSSLPurpose p);
 
 
   /*

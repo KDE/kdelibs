@@ -55,7 +55,7 @@ MidiMapper::MidiMapper(const char *name)
 
 MidiMapper::~MidiMapper()
 {
-  delete _filename;
+  if (_filename) free(_filename);
   deallocateMaps();
 }
 
@@ -77,7 +77,7 @@ void MidiMapper::getValue(char *s,char *v)
 {
   char *c=s;
   while ((*c!=0)&&(*c!='=')) c++;
-  if (c==0) v[0]=0;
+  if (*c==0) v[0]=0;
   else
   {
     c++;
@@ -147,9 +147,8 @@ void MidiMapper::loadFile(const char *name)
   if ( fh == NULL ) { _ok = -1; return; };
   char s[101];
   s[0] = 0;
-  if ( _filename != NULL ) delete _filename;
-  _filename = new char[ strlen(name)+1 ];
-  strcpy(_filename,name);
+  if ( _filename != NULL ) free(_filename);
+  _filename = strdup(name);
 #ifdef MIDIMAPPERDEBUG
   printf("Loading mapper ...\n");
 #endif
@@ -184,7 +183,9 @@ void MidiMapper::loadFile(const char *name)
 MidiMapper::Keymap *MidiMapper::createKeymap(char *name,uchar use_same_note,uchar note)
 {
   Keymap *km=new Keymap;
-  strcpy(km->name,name);
+  strncpy(km->name, name, KM_NAME_SIZE);
+  km->name[KM_NAME_SIZE - 1] = 0;
+
   int i;
   if (use_same_note==1)
   {
@@ -263,7 +264,7 @@ void MidiMapper::readPatchmap(FILE *fh)
   char s[101];
   char v[101];
   char t[101];
-  char name[101];
+  char name[256]; /* Longer than t and 'AllKeysTo' */
   int i=0;
   int j,w;
 #ifdef MIDIMAPPERDEBUG
@@ -323,7 +324,9 @@ void MidiMapper::readKeymap(FILE *fh,char *first_line)
   removeSpaces(first_line);
   getWord(v,first_line,2);
   Keymap *km=new Keymap;
-  strcpy(km->name,v);
+  strncpy(km->name, v, KM_NAME_SIZE);
+  km->name[KM_NAME_SIZE - 1] = 0;
+
   int i=0;
   while (i<128)
   {

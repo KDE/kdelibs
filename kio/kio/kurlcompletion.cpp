@@ -33,6 +33,8 @@
 #include <qdir.h>
 #include <qfile.h>
 #include <qtextstream.h>
+
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kcompletion.h>
 #include <kurl.h>
@@ -288,7 +290,17 @@ bool KURLCompletion::DirLister::listDirectories(
 {
 	stop();
 
-	m_dir_list = dir_list;
+	m_dir_list.clear();
+	
+	for(QStringList::ConstIterator it = dir_list.begin();
+	    it != dir_list.end(); ++it)
+	{
+	   KURL u;
+	   u.setPath(*it);
+	   if (kapp->authorizeURLAction("list", KURL(), u))
+	      m_dir_list.append(*it);
+	}        
+   
 	m_filter = filter;
 	m_only_exe = only_exe;
 	m_only_dir = only_dir;
@@ -533,7 +545,7 @@ void KURLCompletion::setReplaceEnv( bool replace )
 bool KURLCompletion::replaceHome() const
 {
 	return d->replace_home;
-};
+}
 
 void KURLCompletion::setReplaceHome( bool replace )
 {
@@ -1246,6 +1258,7 @@ void KURLCompletion::slotIOFinished( KIO::Job * job )
 //		kdDebug() << "Start KIO: " << kurl->prettyURL() << endl;
 
 		d->list_job = KIO::listDir( *kurl, false );
+		d->list_job->addMetaData("no-auth-prompt", "true");
 
 		assert( d->list_job );
 

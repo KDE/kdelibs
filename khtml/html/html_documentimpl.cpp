@@ -30,6 +30,7 @@
 
 #include "khtmlview.h"
 #include "khtml_part.h"
+#include "khtmlpart_p.h"
 #include "khtml_settings.h"
 #include "misc/htmlattrs.h"
 #include "misc/htmlhashes.h"
@@ -84,7 +85,7 @@ HTMLDocumentImpl::~HTMLDocumentImpl()
 DOMString HTMLDocumentImpl::referrer() const
 {
     if ( view() )
-        return view()->part()->referrer();
+        return view()->part()->pageReferrer();
     return DOMString();
 }
 
@@ -140,15 +141,11 @@ DOMString HTMLDocumentImpl::cookie() const
     QDataStream stream(params, IO_WriteOnly);
     stream << URL() << windowId;
     if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
-                                  "findDOMCookies(QString, int)", params,
-                                  replyType, reply)) {
-         // Maybe it wasn't running (e.g. we're opening local html files)
-         KApplication::startServiceByDesktopName( "kcookiejar");
-         if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
-                                       "findDOMCookies(QString)", params, replyType, reply)) {
-           kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
-           return DOMString();
-         }
+                                  "findDOMCookies(QString,long int)", params,
+                                  replyType, reply))
+    {
+       kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
+       return DOMString();
     }
 
     QDataStream stream2(reply, IO_ReadOnly);
@@ -236,9 +233,12 @@ bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
     return (newChild->id() == ID_HTML || newChild->id() == ID_COMMENT);
 }
 
-ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name )
+ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name, int* pExceptioncode )
 {
-    return createHTMLElement(name);
+    ElementImpl* e = createHTMLElement( name );
+    if ( e )
+        return e;
+    return DOM::DocumentImpl::createElement( name, pExceptioncode );
 }
 
 void HTMLDocumentImpl::slotHistoryChanged()
@@ -302,6 +302,9 @@ void HTMLDocumentImpl::close()
         if (b && b->id() == ID_FRAMESET)
             getDocument()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
 
+        // don't update rendering if we're going to redirect anyway
+        if ( view() && ( view()->part()->d->m_redirectURL.isNull() ||
+                         view()->part()->d->m_delayRedirect > 1 ) )
         updateRendering();
     }
 }
@@ -312,6 +315,7 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
     //kdDebug() << "DocumentImpl::determineParseMode str=" << str<< endl;
     // determines the parse mode for HTML
     // quite some hints here are inspired by the mozilla code.
+    int oldPMode = pMode;
 
     // default parsing mode is Loose
     pMode = Compat;
@@ -406,6 +410,9 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
 //         kdDebug(6020) << " using compatibility parseMode" << endl;
 //     else
 //         kdDebug(6020) << " using transitional parseMode" << endl;
+
+    if ( pMode != oldPMode && styleSelector() )
+	recalcStyleSelector();
 }
 
 #include "html_documentimpl.moc"

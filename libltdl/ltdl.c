@@ -294,14 +294,14 @@ int
 lt_dladderror (diagnostic)
      const char *diagnostic;
 {
-  int		index	 = 0;
+  int		_index	 = 0;
   int		result	 = -1;
   const char  **temp     = (const char **) 0;
 
   MUTEX_LOCK ();
 
-  index	 = errorcount - LT_ERROR_MAX;
-  temp = LT_DLREALLOC (const char *, user_error_strings, 1 + index);
+  _index	 = errorcount - LT_ERROR_MAX;
+  temp = LT_DLREALLOC (const char *, user_error_strings, 1 + _index);
   if (temp == 0)
     {
       MUTEX_SETERROR (LT_DLSTRERROR (NO_MEMORY));
@@ -309,7 +309,7 @@ lt_dladderror (diagnostic)
   else
     {
       user_error_strings	= temp;
-      user_error_strings[index] = diagnostic;
+      user_error_strings[_index] = diagnostic;
       result			= errorcount++;
     }
 
@@ -319,20 +319,20 @@ lt_dladderror (diagnostic)
 }
 
 int
-lt_dlseterror (index)
-     int index;
+lt_dlseterror (_index)
+     int _index;
 {
   int		errors	 = 0;
 
   MUTEX_LOCK ();
 
-  if (index >= errorcount || index < 0)
+  if (_index >= errorcount || _index < 0)
     {
       /* Ack!  Error setting the error message! */
       MUTEX_SETERROR (LT_DLSTRERROR (INVALID_ERRORCODE));
       ++errors;
     }
-  else if (index < LT_ERROR_MAX)
+  else if (_index < LT_ERROR_MAX)
     {
       /* No error setting the error message! */
       MUTEX_SETERROR (lt_dlerror_strings[errorcount]);

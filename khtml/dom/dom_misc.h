@@ -54,6 +54,6 @@ protected:
     unsigned int _ref;
 };
 
-}; // namespace
+} // namespace
 
 #endif

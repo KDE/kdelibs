@@ -353,9 +353,9 @@ bool Sym::initQt( int keyQt )
 	}
 
 	m_sym = 0;
-	if( symQt != Qt::Key_Shift && symQt != Qt::Key_Control && symQt != Qt::Key_Alt && 
+	if( symQt != Qt::Key_Shift && symQt != Qt::Key_Control && symQt != Qt::Key_Alt &&
 	    symQt != Qt::Key_Meta && symQt != Qt::Key_Direction_L && symQt != Qt::Key_Direction_R )
-		kdWarning(125) << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key." << endl;
+		kdDebug(125) << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key." << endl;
 	return false;
 }
 
@@ -855,7 +855,7 @@ void Variations::init( const KKey& key, bool bQt )
 	}
 }
 
-}; // end of namespace KKeyServer block
+} // end of namespace KKeyServer block
 #undef KeyPress
 
 // FIXME: This needs to be moved to kshortcut.cpp, and create a 

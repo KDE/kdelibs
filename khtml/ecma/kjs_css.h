@@ -34,7 +34,7 @@ namespace KJS {
 
   class DOMCSSStyleDeclaration : public DOMObject {
   public:
-    DOMCSSStyleDeclaration(ExecState *exec, DOM::CSSStyleDeclaration s);
+    DOMCSSStyleDeclaration(ExecState *exec, const DOM::CSSStyleDeclaration& s);
     virtual ~DOMCSSStyleDeclaration();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
@@ -49,14 +49,14 @@ namespace KJS {
     DOM::CSSStyleDeclaration styleDecl;
   };
 
-  Value getDOMCSSStyleDeclaration(ExecState *exec, DOM::CSSStyleDeclaration n);
+  Value getDOMCSSStyleDeclaration(ExecState *exec, const DOM::CSSStyleDeclaration& n);
 
   class DOMStyleSheet : public DOMObject {
   public:
     // Build a DOMStyleSheet
-    DOMStyleSheet(ExecState *, DOM::StyleSheet ss);
+    DOMStyleSheet(ExecState *, const DOM::StyleSheet& ss);
     // Constructor for inherited classes
-    DOMStyleSheet(Object proto, DOM::StyleSheet ss) : DOMObject(proto), styleSheet(ss) { }
+    DOMStyleSheet(const Object& proto, const DOM::StyleSheet& ss) : DOMObject(proto), styleSheet(ss) { }
     virtual ~DOMStyleSheet();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
@@ -69,11 +69,11 @@ namespace KJS {
     DOM::StyleSheet styleSheet;
   };
 
-  Value getDOMStyleSheet(ExecState *exec, DOM::StyleSheet ss);
+  Value getDOMStyleSheet(ExecState *exec, const DOM::StyleSheet& ss);
 
   class DOMStyleSheetList : public DOMObject {
   public:
-    DOMStyleSheetList(ExecState *, DOM::StyleSheetList ssl, DOM::Document doc);
+    DOMStyleSheetList(ExecState *, const DOM::StyleSheetList& ssl, const DOM::Document& doc);
     virtual ~DOMStyleSheetList();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);
@@ -91,11 +91,11 @@ namespace KJS {
   };
 
   // The document is only used for get-stylesheet-by-name (make optional if necessary)
-  Value getDOMStyleSheetList(ExecState *exec, DOM::StyleSheetList ss, DOM::Document doc);
+  Value getDOMStyleSheetList(ExecState *exec, const DOM::StyleSheetList& ss, const DOM::Document& doc);
 
   class DOMMediaList : public DOMObject {
   public:
-    DOMMediaList(ExecState *, DOM::MediaList ml);
+    DOMMediaList(ExecState *, const DOM::MediaList& ml);
     virtual ~DOMMediaList();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
@@ -109,11 +109,11 @@ namespace KJS {
     DOM::MediaList mediaList;
   };
 
-  Value getDOMMediaList(ExecState *exec, DOM::MediaList ss);
+  Value getDOMMediaList(ExecState *exec, const DOM::MediaList& ss);
 
   class DOMCSSStyleSheet : public DOMStyleSheet {
   public:
-    DOMCSSStyleSheet(ExecState *exec, DOM::CSSStyleSheet ss);
+    DOMCSSStyleSheet(ExecState *exec, const DOM::CSSStyleSheet& ss);
     virtual ~DOMCSSStyleSheet();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
@@ -126,7 +126,7 @@ namespace KJS {
 
   class DOMCSSRuleList : public DOMObject {
   public:
-    DOMCSSRuleList(ExecState *, DOM::CSSRuleList rl);
+    DOMCSSRuleList(ExecState *, const DOM::CSSRuleList& rl);
     virtual ~DOMCSSRuleList();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
@@ -138,11 +138,11 @@ namespace KJS {
     DOM::CSSRuleList cssRuleList;
   };
 
-  Value getDOMCSSRuleList(ExecState *exec, DOM::CSSRuleList rl);
+  Value getDOMCSSRuleList(ExecState *exec, const DOM::CSSRuleList& rl);
 
   class DOMCSSRule : public DOMObject {
   public:
-    DOMCSSRule(ExecState *, DOM::CSSRule r);
+    DOMCSSRule(ExecState *, const DOM::CSSRule& r);
     virtual ~DOMCSSRule();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
@@ -161,7 +161,7 @@ namespace KJS {
     DOM::CSSRule cssRule;
   };
 
-  Value getDOMCSSRule(ExecState *exec, DOM::CSSRule r);
+  Value getDOMCSSRule(ExecState *exec, const DOM::CSSRule& r);
 
   /**
    * Convert an object to a CSSRule. Returns a null CSSRule if not possible.
@@ -184,8 +184,8 @@ namespace KJS {
 
   class DOMCSSValue : public DOMObject {
   public:
-    DOMCSSValue(ExecState *, DOM::CSSValue v);
-    DOMCSSValue(Object proto, DOM::CSSValue v) : DOMObject(proto), cssValue(v) { }
+    DOMCSSValue(ExecState *, const DOM::CSSValue& v);
+    DOMCSSValue(const Object& proto, const DOM::CSSValue& v) : DOMObject(proto), cssValue(v) { }
     virtual ~DOMCSSValue();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
@@ -196,7 +196,7 @@ namespace KJS {
     DOM::CSSValue cssValue;
   };
 
-  Value getDOMCSSValue(ExecState *exec, DOM::CSSValue v);
+  Value getDOMCSSValue(ExecState *exec, const DOM::CSSValue& v);
 
   // Constructor for CSSValue - currently only used for some global values
   class CSSValueConstructor : public DOMObject {
@@ -214,7 +214,7 @@ namespace KJS {
 
   class DOMCSSPrimitiveValue : public DOMCSSValue {
   public:
-    DOMCSSPrimitiveValue(ExecState *exec, DOM::CSSPrimitiveValue v);
+    DOMCSSPrimitiveValue(ExecState *exec, const DOM::CSSPrimitiveValue& v);
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -239,7 +239,7 @@ namespace KJS {
 
   class DOMCSSValueList : public DOMCSSValue {
   public:
-    DOMCSSValueList(ExecState *exec, DOM::CSSValueList v);
+    DOMCSSValueList(ExecState *exec, const DOM::CSSValueList& v);
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -250,7 +250,7 @@ namespace KJS {
 
   class DOMRGBColor : public DOMObject {
   public:
-    DOMRGBColor(ExecState*, DOM::RGBColor c);
+    DOMRGBColor(ExecState*, const DOM::RGBColor& c);
     ~DOMRGBColor();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
@@ -262,11 +262,11 @@ namespace KJS {
     DOM::RGBColor rgbColor;
   };
 
-  Value getDOMRGBColor(ExecState *exec, DOM::RGBColor c);
+  Value getDOMRGBColor(ExecState *exec, const DOM::RGBColor& c);
 
   class DOMRect : public DOMObject {
   public:
-    DOMRect(ExecState *, DOM::Rect r);
+    DOMRect(ExecState *, const DOM::Rect& r);
     ~DOMRect();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
@@ -278,24 +278,24 @@ namespace KJS {
     DOM::Rect rect;
   };
 
-  Value getDOMRect(ExecState *exec, DOM::Rect r);
+  Value getDOMRect(ExecState *exec, const DOM::Rect& r);
 
   class DOMCounter : public DOMObject {
   public:
-    DOMCounter(ExecState *, DOM::Counter c);
+    DOMCounter(ExecState *, const DOM::Counter& c);
     ~DOMCounter();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { Identifier, ListStyle, Separator };
+    enum { _Identifier, ListStyle, Separator };
   protected:
     DOM::Counter counter;
   };
 
-  Value getDOMCounter(ExecState *exec, DOM::Counter c);
+  Value getDOMCounter(ExecState *exec, const DOM::Counter& c);
 
-}; // namespace
+} // namespace
 
 #endif

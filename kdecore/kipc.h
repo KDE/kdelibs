@@ -22,6 +22,8 @@
 #ifndef __KIPC_h_Included__
 #define __KIPC_h_Included__
 
+#include <qwindowdefs.h>
+
 /**
  * This class implements a very simple IPC mechanism for KDE. You can send
  * a message of a predefined type to either a specific application, or to all

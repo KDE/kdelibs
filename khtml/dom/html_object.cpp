@@ -133,6 +133,17 @@ void HTMLAppletElement::setHspace( const DOMString &value )
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_HSPACE, value);
 }
 
+long HTMLAppletElement::getHspace() const
+{
+    if(!impl) return 0;
+    return ((ElementImpl *)impl)->getAttribute(ATTR_HSPACE).toInt();
+}
+
+void HTMLAppletElement::setHspace( long value )
+{
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_HSPACE, QString::number(value));
+}
+
 DOMString HTMLAppletElement::name() const
 {
     if(!impl) return DOMString();
@@ -165,6 +176,18 @@ void HTMLAppletElement::setVspace( const DOMString &value )
 {
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VSPACE, value);
 }
+
+long HTMLAppletElement::getVspace() const
+{
+    if(!impl) return 0;
+    return ((ElementImpl *)impl)->getAttribute(ATTR_VSPACE).toInt();
+}
+
+void HTMLAppletElement::setVspace( long value )
+{
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VSPACE, QString::number(value));
+}
+
 
 DOMString HTMLAppletElement::width() const
 {
@@ -329,6 +352,17 @@ void HTMLObjectElement::setHspace( const DOMString &value )
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_HSPACE, value);
 }
 
+long HTMLObjectElement::getHspace() const
+{
+    if(!impl) return 0;
+    return ((ElementImpl *)impl)->getAttribute(ATTR_HSPACE).toInt();
+}
+
+void HTMLObjectElement::setHspace( long value )
+{
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_HSPACE, QString::number(value));
+}
+
 DOMString HTMLObjectElement::name() const
 {
     if(!impl) return DOMString();
@@ -396,6 +430,17 @@ DOMString HTMLObjectElement::vspace() const
 void HTMLObjectElement::setVspace( const DOMString &value )
 {
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VSPACE, value);
+}
+
+long HTMLObjectElement::getVspace() const
+{
+    if(!impl) return 0;
+    return ((ElementImpl *)impl)->getAttribute(ATTR_VSPACE).toInt();
+}
+
+void HTMLObjectElement::setVspace( long value )
+{
+    if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_VSPACE, QString::number(value));
 }
 
 DOMString HTMLObjectElement::width() const

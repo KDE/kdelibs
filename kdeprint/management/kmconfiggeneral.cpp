@@ -104,7 +104,7 @@ void KMConfigGeneral::loadConfig(KConfig *conf)
 {
 	conf->setGroup("General");
 	m_timer->setValue(conf->readNumEntry("TimerDelay",5));
-	QString	tpage = conf->readEntry("TestPage",QString::null);
+	QString	tpage = conf->readPathEntry("TestPage");
 	if (!tpage.isEmpty())
 	{
 		m_defaulttestpage->setChecked(true);

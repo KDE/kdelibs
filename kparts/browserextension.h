@@ -142,6 +142,16 @@ struct URLArgs
    */
   bool trustedSource;
 
+  /**
+   * @internal Do not use.
+   */
+  bool redirectedRequest () const;
+
+  /**
+   * @internal Do not use.
+   */
+  void setRedirectedRequest(bool redirected);
+
   URLArgsPrivate *d;
 };
 
@@ -665,7 +675,7 @@ signals:
   virtual void partEvent( const unsigned long objid, const QString & event, const ArgList & args );
 };
 
-};
+}
 
 #endif
 

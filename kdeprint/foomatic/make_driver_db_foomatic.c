@@ -91,6 +91,8 @@ int nextEntity(char *s, FILE *in)
 			break;
 		}
 	}
+    
+    p[WORD_SIZE - 1] = 0;
 	strcpy(s, p);
 	return istag;
 }
@@ -126,7 +128,7 @@ int parseOverview(const char *dbdir, FILE *out)
 	int		index = 0;
 	char	cmd[BUFFER_SIZE] = {0};
 
-	sprintf(cmd, "foomatic-combo-xml -O -l %s", dbdir);
+	snprintf(cmd, BUFFER_SIZE, "foomatic-combo-xml -O -l %s", dbdir);
 	in = popen(cmd, "r");
 	if (in == NULL)
 		return 0;

@@ -23,10 +23,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <time.h>
+
 #include <qstring.h>
 #include <qvaluelist.h>
 #include <qsocketnotifier.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qtimer.h>
 
 #include <dcopclient.h>
@@ -94,6 +95,7 @@ public:
    QCString startup_dpy; // Display to send startup notification to.
 #endif
    QValueList<QCString> envs; // env. variables to be app's environment
+   QCString cwd;
 };
 
 struct serviceResult

@@ -84,7 +84,7 @@ SFileDialog::SFileDialog( QString initially, const QStringList& filter, const ch
   KConfig* config = kapp->config();
   config->setGroup( QString::fromLatin1("SFileDialogData:") + name );
   if ( initially == QString::null ){
-    initially = config->readEntry( "InitiallyDir", QDir::currentDirPath() );
+    initially = config->readPathEntry( "InitiallyDir", QDir::currentDirPath() );
   }
 
   QStringList bookmark;

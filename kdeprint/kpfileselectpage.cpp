@@ -48,7 +48,7 @@ void KPFileSelectPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 	if (!incldef)
 	{
 		QStringList	l = m_files->fileList();
-		opts["kde-filelist"] = l.join(",");
+		opts["kde-filelist"] = l.join("@@");
 	}
 }
 
@@ -57,7 +57,7 @@ void KPFileSelectPage::setOptions(const QMap<QString,QString>& opts)
 	// do it only once as files will only be selected there
 	if (m_first)
 	{
-		QStringList	l = QStringList::split(QRegExp(",\\s*"), opts["kde-filelist"], false);
+		QStringList	l = QStringList::split("@@", opts["kde-filelist"], false);
 		m_files->setFileList(l);
 
 		m_first = false;

@@ -21,6 +21,8 @@
 
 #include <qintdict.h>
 #include <qdatetime.h>
+#include <qtimer.h>
+
 #include <dcopobject.h>
 #include <kio/global.h>
 #include <kio/authinfo.h>
@@ -30,13 +32,12 @@
 #include <klistview.h>
 #include <ksslcertdlg.h>
 
-class QTimer;
 class ListProgress;
 
 namespace KIO {
   class Job;
   class DefaultProgress;
-};
+}
 
 /**
 * One item in the @ref #ListProgress
@@ -99,6 +100,7 @@ signals:
   void jobCanceled( ProgressItem* );
 
 protected:
+  void updateVisibility();
 
   // ids that uniquely identify this progress item
   QCString m_sAppId;
@@ -121,6 +123,7 @@ protected:
   unsigned long m_iProcessedFiles;
   unsigned long m_iSpeed;
   QTime m_remainingTime;
+  QTimer m_showTimer;
 };
 
 

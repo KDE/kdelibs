@@ -1092,6 +1092,6 @@ namespace KIO {
 	class DeleteJobPrivate* d;
     };
 
-};
+}
 
 #endif

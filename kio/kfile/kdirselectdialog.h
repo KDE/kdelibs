@@ -24,7 +24,10 @@
 #include <kurl.h>
 
 class QVBoxLayout;
+class KConfig;
+class KFileTreeBranch;
 class KFileTreeView;
+class KFileTreeViewItem;
 
 /**
  * A pretty dialog for a KDirSelect control for selecting directories.
@@ -80,12 +83,28 @@ public:
      */
     QString startDir() const { return m_startDir; }
 
+public slots:
+    void setCurrentURL( const KURL& url );
+
 protected:
+    virtual void accept();
+
     // Layouts protected so that subclassing is easy
     QVBoxLayout *m_mainLayout;
     QString m_startDir;
 
+private slots:
+    void slotCurrentChanged();
+    void slotURLActivated( const QString& );
+    void slotNextDirToList( KFileTreeViewItem *dirItem );
+    void slotComboTextChanged( const QString& text );
+
 private:
+    void readConfig( KConfig *config, const QString& group );
+    void saveConfig( KConfig *config, const QString& group );
+    void openNextDir( KFileTreeViewItem *parent );
+    KFileTreeBranch * createBranch( const KURL& url );
+
     KFileTreeView *m_treeView;
     bool m_localOnly;
 
