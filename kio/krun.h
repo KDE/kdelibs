@@ -280,7 +280,7 @@ protected:
     pid_t pid,
     const QString & resName,
     bool compliant,
-    int screen_number);
+    int screen_number = 0 );
 
   /**
    * Extracts binary name from Exec command line
