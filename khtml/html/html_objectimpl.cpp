@@ -37,6 +37,7 @@
 #include "css/cssproperties.h"
 #include "rendering/render_applet.h"
 #include "rendering/render_frames.h"
+#include "xml/dom2_eventsimpl.h"
 
 using namespace DOM;
 using namespace khtml;
@@ -349,6 +350,14 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
       classId = val;
       needWidgetUpdate = true;
       break;
+    case ATTR_ONLOAD: // ### support load/unload on object elements
+        removeHTMLEventListener(EventImpl::LOAD_EVENT);
+        addEventListener(EventImpl::LOAD_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
+    case ATTR_ONUNLOAD:
+        removeHTMLEventListener(EventImpl::UNLOAD_EVENT);
+        addEventListener(EventImpl::UNLOAD_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
     default:
       HTMLElementImpl::parseAttribute( attr );
   }
@@ -372,6 +381,16 @@ void HTMLObjectElementImpl::attach(KHTMLView *w)
   }
 
   NodeBaseImpl::attach( w );
+
+  // ### do this when we are actually finished loading instead
+  dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
+}
+
+void HTMLObjectElementImpl::detach()
+{
+  HTMLElementImpl::detach();
+  // ### do this when we are actualy removed from document instead
+  dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
 }
 
 void HTMLObjectElementImpl::applyChanges(bool top, bool force)

@@ -39,6 +39,7 @@
 #include "misc/loader.h"
 #include "misc/htmlhashes.h"
 #include "dom/dom_string.h"
+#include "xml/dom2_eventsimpl.h"
 
 #include <kurl.h>
 #include <kdebug.h>
@@ -130,8 +131,16 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 	m_styleSheet->setNonCSSHints();
 	break;
     }
-     case ATTR_ALINK:
-      break;
+    case ATTR_ALINK:
+	break;
+    case ATTR_ONLOAD:
+        removeHTMLEventListener(EventImpl::LOAD_EVENT);
+        addEventListener(EventImpl::LOAD_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
+    case ATTR_ONUNLOAD:
+        removeHTMLEventListener(EventImpl::UNLOAD_EVENT);
+        addEventListener(EventImpl::UNLOAD_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
@@ -375,6 +384,14 @@ void HTMLFrameSetElementImpl::parseAttribute(AttrImpl *attr)
 	if(!m_border)
 	    frameborder = false;
 	break;
+    case ATTR_ONLOAD:
+        removeHTMLEventListener(EventImpl::LOAD_EVENT);
+        addEventListener(EventImpl::LOAD_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
+    case ATTR_ONUNLOAD:
+        removeHTMLEventListener(EventImpl::UNLOAD_EVENT);
+        addEventListener(EventImpl::UNLOAD_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        break;
     default:
 	HTMLElementImpl::parseAttribute(attr);
     }
@@ -453,6 +470,14 @@ khtml::FindSelectionResult HTMLFrameSetElementImpl::findSelectionNode( int _x, i
     }
     return SelectionPointAfter;
 }
+
+void HTMLFrameSetElementImpl::detach()
+{
+    HTMLElementImpl::detach();
+    // ### send the event when we actually get removed from the doc instead of here
+    dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
+}
+
 
 // -------------------------------------------------------------------------
 

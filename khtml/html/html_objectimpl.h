@@ -112,6 +112,7 @@ public:
     virtual void parseAttribute(AttrImpl *token);
 
     virtual void attach(KHTMLView *w);
+    virtual void detach();
 
     virtual void applyChanges(bool = true, bool = true);
 

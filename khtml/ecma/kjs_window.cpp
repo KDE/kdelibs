@@ -421,8 +421,11 @@ void Window::put(const UString &p, const KJSO &v)
     }
   } else if (p == "onload") {
     if (isSafeScript() && v.isA(ConstructorType)) {
-      DOM::DOMString s = ((FunctionImp*)v.imp())->name().string() + "()";
-      static_cast<DOM::HTMLDocumentImpl *>(part->htmlDocument().handle())->setOnload(s.string());
+      // ### other attributes like this?
+      DOM::Element body;
+      if (!part->htmlDocument().isNull() &&
+          !(body = part->htmlDocument().body()).isNull())
+        body.setAttribute("onload",((FunctionImp*)v.imp())->name().string() + "()");
     }
   } else {
     if (isSafeScript())
@@ -819,7 +822,7 @@ KJSO Location::get(const UString &p) const
   else if (p == "host") {
     str = url.host();
     if (url.port())
-      str += ":" + QString::number(url.port());
+      str += ":" + QString::number((int)url.port());
   } else if (p == "hostname")
     str = url.host();
   else if (p == "href"){
@@ -831,7 +834,7 @@ KJSO Location::get(const UString &p) const
   else if (p == "pathname")
     str = url.path().isEmpty() ? QString("/") : url.path();
   else if (p == "port")
-    str = url.port() ? QString::number(url.port()) : QString::fromLatin1("");
+    str = url.port() ? QString::number((int)url.port()) : QString::fromLatin1("");
   else if (p == "protocol")
     str = url.protocol()+":";
   else if (p == "search")

@@ -615,7 +615,8 @@ void HTMLEventListener::handleEvent(const Event &evt)
 	evt.handle() && evt.handle()->isUIEvent() && (static_cast<UIEventImpl*>(evt.handle())->detail() % 2 != 0))
 	return; // single or odd-numbered click
 
-    m_part->executeScript(m_scriptCode);
+    // ### should evt.target() be used as the this value instead?
+    m_part->executeScript(evt.currentTarget(),m_scriptCode);
 }
 
 DOMString HTMLEventListener::eventListenerType()

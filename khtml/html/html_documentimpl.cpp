@@ -34,6 +34,7 @@
 #include "html_imageimpl.h"
 #include "html_headimpl.h"
 #include "html/html_baseimpl.h"
+#include "dom2_eventsimpl.h"
 
 #include "khtml_factory.h"
 #include "html_miscimpl.h"
@@ -154,14 +155,10 @@ StyleSheetListImpl *HTMLDocumentImpl::styleSheets()
 
 void HTMLDocumentImpl::detach()
 {
-    // onunload script...
-    if(m_view && m_view->part() && m_view->part()->jScriptEnabled() && body()) {
-        DOMString script = body()->getAttribute(ATTR_ONUNLOAD);
-        if(script.length()) {
-            //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
-            m_view->part()->executeScript( Node(this), script.string() );
-        }
-    }
+    NodeImpl *b = body();
+    if (b)
+	dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
+
     kdDebug( 6090 ) << "HTMLDocumentImpl::detach()" << endl;
     m_view = 0;
 
@@ -173,17 +170,9 @@ void HTMLDocumentImpl::slotFinishedParsing()
     // first propagate that we finished parsing
     DocumentImpl::slotFinishedParsing();
 
-    // and then execute the onload script... as the part
-    // blocks submitting while we're still parsing
-    if(m_view && m_view->part()->jScriptEnabled() && body()) {
-        DOMString script = body()->getAttribute(ATTR_ONLOAD);
-        if(script.length()) {
-            kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
-            m_view->part()->executeScript( Node(this), script.string() );
-        }
-    }
-    if ( !onloadScript.isEmpty() )
-	m_view->part()->executeScript( Node(this), onloadScript );
+    NodeImpl *b = body();
+    if (b)
+	dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
 }
 
 bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )

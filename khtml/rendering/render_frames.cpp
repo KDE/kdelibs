@@ -28,6 +28,7 @@
 #include "html_baseimpl.h"
 #include "html_objectimpl.h"
 #include "misc/htmlattrs.h"
+#include "dom2_eventsimpl.h"
 #include "htmltags.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -88,9 +89,7 @@ void RenderFrameSet::close()
 {
     RenderBox::close();
 
-    DOMString script = m_frameset->getAttribute(ATTR_ONLOAD);
-    if (!script.isNull())
-        m_view->part()->executeScript(Node(m_frameset), script.string());
+    m_frameset->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
 }
 
 

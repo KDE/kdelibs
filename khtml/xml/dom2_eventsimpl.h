@@ -33,6 +33,8 @@ class KHTMLPart;
 
 namespace DOM {
 
+// ### support user-defined events
+
 class EventImpl : public DomShared
 {
 public:

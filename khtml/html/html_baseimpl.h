@@ -137,6 +137,7 @@ public:
     int totalRows() const { return m_totalRows; }
     int totalCols() const { return m_totalCols; }
     int border() const { return m_border; }
+    virtual void detach();
 
 protected:
     QList<khtml::Length> *m_rows;

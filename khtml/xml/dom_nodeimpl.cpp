@@ -341,8 +341,7 @@ unsigned long NodeImpl::index() const
     return 0;
 }
 
-void NodeImpl::addEventListener(int id, EventListener *listener,
-				const bool useCapture, int &exceptioncode)
+void NodeImpl::addEventListener(int id, EventListener *listener, const bool useCapture)
 {
     RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id),listener,useCapture);
     if (!m_regdListeners) {
@@ -350,20 +349,19 @@ void NodeImpl::addEventListener(int id, EventListener *listener,
     }
 
     // remove existing ones of the same type - ### is this correct (or do we ignore the new one?)
-    removeEventListener(id,listener,useCapture,exceptioncode);
+    removeEventListener(id,listener,useCapture);
 
     m_regdListeners->append(rl);
     listener->ref();
 }
 
 void NodeImpl::addEventListener(const DOMString &type, EventListener *listener,
-				  const bool useCapture, int &exceptioncode)
+				  const bool useCapture, int &/*exceptioncode*/)
 {
-    addEventListener(EventImpl::typeToId(type),listener,useCapture,exceptioncode);
+    addEventListener(EventImpl::typeToId(type),listener,useCapture);
 }
 
-void NodeImpl::removeEventListener(int id, EventListener *listener,
-				   bool useCapture, int &/*exceptioncode*/)
+void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapture)
 {
     if (!m_regdListeners) // nothing to remove
 	return;
@@ -403,9 +401,9 @@ void NodeImpl::removeHTMLEventListener(int id, bool doubleClickOnly)
         }
 }
 
-bool NodeImpl::dispatchEvent(EventImpl *evt,
-			     int &/*exceptioncode*/)
+bool NodeImpl::dispatchEvent(EventImpl *evt, int &/*exceptioncode*/)
 {
+    // ### check that type specified
     evt->setTarget(this);
     // work out what nodes to send event to
     QList<NodeImpl> nodeChain;
@@ -451,6 +449,15 @@ bool NodeImpl::dispatchEvent(EventImpl *evt,
 	it.current()->deref(); // this may delete us
 
     return !evt->defaultPrevented(); // ### what if defaultPrevented was called before dispatchEvent?
+}
+
+bool NodeImpl::dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg)
+{
+    int exceptioncode;
+    EventImpl *evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
+    evt->ref();
+    dispatchEvent(evt,exceptioncode);
+    evt->deref();
 }
 
 void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
