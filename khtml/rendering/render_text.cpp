@@ -72,7 +72,7 @@ void TextSlave::print( QPainter *pt, RenderText* p, int _tx, int _ty)
     Q_UNUSED( p );
 #endif
 
-    pt->drawText(m_x + _tx, m_y + _ty + m_baseline, s.string());
+    pt->drawText(m_x + _tx, m_y + _ty + m_baseline, s.string(), -1, QPainter::LTR);
 
 #ifdef DEBUG_VALIGN
     pt->setBrush( Qt::NoBrush );
@@ -118,7 +118,7 @@ void TextSlave::printSelection(QPainter *p, RenderStyle* style, int tx, int ty, 
     ty += m_baseline;
 
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
-    p->drawText(m_x + tx + _offset, m_y + ty, s.string());
+    p->drawText(m_x + tx + _offset, m_y + ty, s.string(), -1, QPainter::LTR);
     p->restore();
 }
 
