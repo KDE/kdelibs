@@ -666,9 +666,9 @@ KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
   QGridLayout *gbox = new QGridLayout( group, 3, 2, spacingHint() );
   gbox->addRowSpacing( 0, fontMetrics().lineSpacing() );
 
-  text = i18n("Case Sensitive");
+  text = i18n("Case &Sensitive");
   sensitive = new QCheckBox( text, group, "case");
-  text = i18n("Find Backwards");
+  text = i18n("Find &Backwards");
   direction = new QCheckBox( text, group, "direction" );
   gbox->addWidget( sensitive, 1, 0 );
   gbox->addWidget( direction, 1, 1 );
@@ -796,9 +796,9 @@ KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
   QGridLayout *gbox = new QGridLayout( group, 3, 2, spacingHint() );
   gbox->addRowSpacing( 0, fontMetrics().lineSpacing() );
 
-  text = i18n("Case Sensitive");
+  text = i18n("Case &Sensitive");
   sensitive = new QCheckBox( text, group, "case");
-  text = i18n("Find Backwards");
+  text = i18n("Find &Backwards");
   direction = new QCheckBox( text, group, "direction" );
   gbox->addWidget( sensitive, 1, 0 );
   gbox->addWidget( direction, 1, 1 );
