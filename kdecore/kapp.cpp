@@ -20,6 +20,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.91  1998/02/24 15:54:29  kulow
+// replaced some hard coded paths with the kapp->kde_ methodes.
+// I'm not sure, if kde_datadir() is optimal for /share/apps ;)
+//
 // Revision 1.90  1998/02/20 06:21:18  kalle
 // Don't connect the Help/About slot when there is no text for an about box
 //
@@ -198,6 +202,7 @@
 #include <qmsgbox.h>
 #include <qtstream.h>
 #include <qregexp.h>
+#include <qkeycode.h>
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
@@ -441,6 +446,7 @@ QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/,
 
   int id = pMenu->insertItem( klocale->translate( "&Contents" ) );
   pMenu->connectItem( id, this, SLOT( appHelpActivated() ) );
+  pMenu->setAccel( Key_F1, id );
 
   pMenu->insertSeparator();
 
