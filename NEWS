@@ -1,6 +1,9 @@
+03.08.97:	added KProcess
+			small bugfix in KTopWidget
+
 26.07.97:	more portability fixes
 			security fix: KApplication drops suid/sgid before calling kdehelp 
-		new interface for KToolBar
+			new interface for KToolBar
 
 25.07.97:	new KStatusBar by Sven Radej
 			KRestrictedLine and KIntegerLine by Michael Wiedmann
