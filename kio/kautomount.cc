@@ -13,10 +13,10 @@
  ***********************************************************************/
 
 KAutoMount::KAutoMount( bool _readonly, const char *_format, const char *_device, 
-                        const char * _mountpoint, const QString & _desktopFileDir, 
+                        const char * _mountpoint, const QString & _desktopFile, 
                         bool _show_filemanager_window )
   : m_strDevice( _device ),
-    m_desktopFileDir( _desktopFileDir )
+    m_desktopFile( _desktopFile )
 {
   m_bShowFilemanagerWindow = _show_filemanager_window;
   
@@ -38,8 +38,8 @@ void KAutoMount::slotFinished( int )
     KFileManager::getFileManager()->openFileManagerWindow( mp.ascii() );
 
   // Update of window which contains the desktop entry which is used for mount/unmount
-  kdebug( KDEBUG_INFO, 7015, " mount finished : updating %s", m_desktopFileDir.ascii());
-  KDirWatch::self()->setVeryDirty( m_desktopFileDir );
+  kdebug( KDEBUG_INFO, 7015, " mount finished : updating %s", m_desktopFile.ascii());
+  KDirWatch::self()->setFileDirty( m_desktopFile );
 
   delete this;
 }
@@ -51,8 +51,8 @@ void KAutoMount::slotError( int, int _errid, const char* _errortext )
   delete this;
 }
 
-KAutoUnmount::KAutoUnmount( const QString & _mountpoint, const QString & _desktopFileDir )
-  : m_desktopFileDir( _desktopFileDir )
+KAutoUnmount::KAutoUnmount( const QString & _mountpoint, const QString & _desktopFile )
+  : m_desktopFile( _desktopFile )
 {
   KIOJob* job = new KIOJob();
   connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
@@ -64,8 +64,8 @@ KAutoUnmount::KAutoUnmount( const QString & _mountpoint, const QString & _deskto
 void KAutoUnmount::slotFinished( int )
 {
   // Update of window which contains the desktop entry which is used for mount/unmount
-  kdebug( KDEBUG_INFO, 7015, "unmount finished : updating %s", m_desktopFileDir.ascii());
-  KDirWatch::self()->setVeryDirty( m_desktopFileDir );
+  kdebug( KDEBUG_INFO, 7015, "unmount finished : updating %s", m_desktopFile.ascii());
+  KDirWatch::self()->setFileDirty( m_desktopFile );
 
   delete this;
 }

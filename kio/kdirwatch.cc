@@ -203,9 +203,9 @@ bool KDirWatch::contains( const QString& _path ) const
   return m_mapDirs.contains( path );
 }
 
-void KDirWatch::setVeryDirty( const QString & dir )
+void KDirWatch::setFileDirty( const QString & _file )
 {
-  emit veryDirty( dir );
+  emit fileDirty( _file );
 }
 
 /*******************************************************************/
