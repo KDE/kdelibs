@@ -23,21 +23,6 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
-    Revision 1.15  1997/12/13 15:09:57  jacek
-    KCharsets support added
-
-    Revision 1.1.1.4  1997/12/13 12:57:27  jacek
-    Imported sources from KDE CVS
-
-    Revision 1.1.1.3  1997/12/11 07:19:26  jacek
-    Imported sources from KDE CVS
-
-    Revision 1.1.1.2  1997/12/10 07:08:50  jacek
-    Imported sources from KDE CVS
-
-    Revision 1.1.1.1  1997/12/09 22:02:49  jacek
-    Imported sorces fromkde
-
     Revision 1.14  1997/11/20 22:36:48  kalle
     - Removed some more hardcoded colors
     - A patch from Bernd regarding KProgress
@@ -121,6 +106,7 @@
 #include <X11/Xlib.h>
 
 #include <klocale.h>
+#include <kcharsets.h>
 #include <kapp.h>
 
 #define YOFFSET  5
@@ -134,27 +120,6 @@
 #define COMBO_ADJUST 3
 #define OKBUTTONY 260
 #define BUTTONHEIGHT 25
-
-#define CHARSETS_COUNT 9
-static char *charsetsStr[CHARSETS_COUNT]={"ISO-8859-1","Any",
-                                   "ISO-8859-2",
-                                   "ISO-8859-3",
-                                   "ISO-8859-4",
-                                   "ISO-8859-5",
-                                   "ISO-8859-6",
-                                   "ISO-8859-7",
-                                   "ISO-8859-8"};
-
-static QFont::CharSet charsetsIds[CHARSETS_COUNT]={ QFont::ISO_8859_1,
-                                             QFont::AnyCharSet,
-					     QFont::ISO_8859_2,
-					     QFont::ISO_8859_3,
-					     QFont::ISO_8859_4,
-					     QFont::ISO_8859_5,
-					     QFont::ISO_8859_6,
-					     QFont::ISO_8859_7,
-					     QFont::ISO_8859_8};
-                   
 
 KFontDialog::KFontDialog( QWidget *parent, const char *name, 
    bool modal, const QStrList* fontlist)  : QDialog( parent, name, modal )
@@ -273,12 +238,15 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
   charset_combo->setGeometry(6*XOFFSET + LABLE_LENGTH
 			    ,11*YOFFSET - COMBO_ADJUST +60 ,
 			     4* LABLE_LENGTH,COMBO_BOX_HEIGHT);
-  for(int i=0;i<CHARSETS_COUNT;i++)
-      charset_combo->insertItem( charsetsStr[i] );
+  KCharsets *charsets=KApplication::getKApplication()->getCharsets();
+  QStrList lst=charsets->displayable(selFont.family());
+  for(const char * chset=lst.first();chset;chset=lst.next())
+      charset_combo->insertItem( chset );
+  charset_combo->insertItem( "any" );
 
   charset_combo->setInsertionPolicy(QComboBox::NoInsertion);
-  connect( charset_combo, SIGNAL(activated(int)),
-	   SLOT(charset_chosen_slot(int)) );
+  connect( charset_combo, SIGNAL(activated(const char *)),
+	   SLOT(charset_chosen_slot(const char *)) );
   // QToolTip::add( charset_combo, "Select Font Weight" );
 
   size_combo = new QComboBox( true, this, klocale->translate("Size") );
@@ -383,9 +351,9 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
 }
 
 
-void KFontDialog::charset_chosen_slot(int index){
+void KFontDialog::charset_chosen_slot(const char *chset){
 
-  selFont.setCharSet(charsetsIds[index]);
+  KCharset(chset).setQFont(selFont);
   emit fontSelected(selFont);
 }
 
@@ -413,6 +381,15 @@ void KFontDialog::setFont( const QFont& aFont){
 void KFontDialog::family_chosen_slot(const char* family){
 
   selFont.setFamily(family);
+ 
+  // Re-create displayable charsets list
+  KCharsets *charsets=KApplication::getKApplication()->getCharsets();
+  QStrList lst=charsets->displayable(selFont.family());
+  charset_combo->clear();
+  for(const char * chset=lst.first();chset;chset=lst.next())
+      charset_combo->insertItem( chset );
+  charset_combo->insertItem( "any" );
+  
   //display_example();
   emit fontSelected(selFont);
 }
@@ -455,7 +432,6 @@ void KFontDialog::style_chosen_slot(const char* style){
 void KFontDialog::display_example(const QFont& font){
 
   QString string;
-  int i;
 
   example_label->setFont(font);
 
@@ -475,13 +451,9 @@ void KFontDialog::display_example(const QFont& font){
   else
     actual_style_label_data->setText(klocale->translate("roman"));
   
- QFont::CharSet charset=info.charSet();
-  for(i = 0;i<CHARSETS_COUNT;i++)
-    if (charset==charsetsIds[i]){
-      actual_charset_label_data->setText(charsetsStr[i]);
-      break;
-    }
-  
+  KCharsets *charsets=KApplication::getKApplication()->getCharsets();
+  const char * charset=charsets->name(selFont);
+  actual_charset_label_data->setText(charset);
 }
 
 void KFontDialog::setCombos(){
@@ -532,9 +504,10 @@ void KFontDialog::setCombos(){
  else
    style_combo->setCurrentItem(0);
 
- QFont::CharSet charset=selFont.charSet();
- for(i = 0;i<CHARSETS_COUNT;i++)
-   if (charset==charsetsIds[i]){
+ KCharsets *charsets=KApplication::getKApplication()->getCharsets();
+ const char * charset=charsets->name(selFont);
+ for(i = 0;i<charset_combo->count();i++)
+   if (charset==charset_combo->text(i)){
      charset_combo->setCurrentItem(i);
      break;
    }
