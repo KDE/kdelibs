@@ -103,8 +103,8 @@ bool KFileInfoContents::addItem(const KFileInfo *i)
     // we add it nonetheless, we could need it.
     // TODO: think about it
     // NOTE: usd in completion - could use sortedList?? dg
-    //nameList->inSort(i->fileName());
-    nameList->append(i->fileName());
+    nameList->inSort(i->fileName());
+    // nameList->append(i->fileName());
 
     return addItemInternal(i);
 }

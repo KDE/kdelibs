@@ -1,3 +1,7 @@
+1998-05-14  Stephan Kulow  <coolo@kde.org>
+
+	* kfileinfocontents.cpp: some more speed improvment
+
 1998-05-10  Stephan Kulow  <coolo@kde.org>
 
 	* kfiledialog.cpp: tried to speed up the refresh
