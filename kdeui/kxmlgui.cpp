@@ -365,8 +365,9 @@ bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
     kdError(1000) << "Could not write to " << filename << endl;
     return false;
   }
-
+#ifdef __GNUC__
 #warning REMOVE THIS AS SOON AS POSSIBLE!
+#endif
   #if QT_VERSION == 220
   // ### Workaround for evil bug in QXML!
   // QXML doesn't correctly parse the DOCTTYPE (leaves out the value!) and therefore
