@@ -537,7 +537,7 @@ public:
      * Filters the URI given by the object URIFilterData.
      *
      * The given URL is filtered based on the specified list of filters.
-     * If the list is empty all avaliable filters would be used.
+     * If the list is empty all available filters would be used.
      *
      * @param data object that contains the URI to be filtered.
      * @param filters specify the list of filters to be used.
@@ -550,7 +550,7 @@ public:
      * Filters the URI given by the URL.
      *
      * The given URL is filtered based on the specified list of filters.
-     * If the list is empty all avaliable filters would be used.
+     * If the list is empty all available filters would be used.
      *
      * @param uri the URI to filter.
      * @param filters specify the list of filters to be used.
@@ -563,7 +563,7 @@ public:
      * Filters a string representing a URI.
      *
      * The given URL is filtered based on the specified list of filters.
-     * If the list is empty all avaliable filters would be used.
+     * If the list is empty all available filters would be used.
      *
      * @param uri The URI to filter.
      * @param filters specify the list of filters to be used.
@@ -576,7 +576,7 @@ public:
      * Returns the filtered URI.
      *
      * The given URL is filtered based on the specified list of filters.
-     * If the list is empty all avaliable filters would be used.
+     * If the list is empty all available filters would be used.
      *
      * @param uri The URI to filter.
      * @param filters specify the list of filters to be used.
@@ -589,7 +589,7 @@ public:
      * Return a filtered string representation of a URI.
      *
      * The given URL is filtered based on the specified list of filters.
-     * If the list is empty all avaliable filters would be used.
+     * If the list is empty all available filters would be used.
      *
      * @param uri the URI to filter.
      * @param filters specify the list of filters to be used.

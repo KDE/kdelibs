@@ -508,7 +508,7 @@ QString KFolderType::icon( const KURL& _url, bool _is_local ) const
   u.addPath( ".directory" );
 
   QString icon;
-  // using KStandardDirs as this one checks for path beeing
+  // using KStandardDirs as this one checks for path being
   // a file instead of a directory
   if ( KStandardDirs::exists( u.path() ) )
   {

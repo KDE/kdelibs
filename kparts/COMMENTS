@@ -47,7 +47,7 @@ its items in the menus/toolbars, there is no "in between" IMO ?
 I couldn't find anything with a quick grep in the sources...
 I'm still looking for an example when it's useful :)
 
-(Simon) I think that's the whole idea of making KPartManager independend from
+(Simon) I think that's the whole idea of making KPartManager independent from
 	the guibuilder. Perhaps some apps wants to embed stuff without showing
 	the parts a full-fledged gui (remember the part-children thingy in the
 	old OpenParts? ;-) ) . Konqueror is one example. However I think

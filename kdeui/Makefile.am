@@ -71,7 +71,7 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		kspell.h ksconfig.h kspelldlg.h ksyntaxhighlighter.h \
 		ktabbar.h ktabwidget.h
 		
-# the order of the sources isn't randomly (at least not completly).
+# the order of the sources isn't randomly (at least not completely).
 # the order is predictated by the use of X11 header files
 # the files on the first line need to occur first when compiling
 # with --enable-final since they use X defines that get undefined

@@ -114,7 +114,7 @@ bool KShortcutList::writeSettings( const QString &sConfigGroup, KConfigBase* pCo
 
 	QString sGroup = (!sConfigGroup.isEmpty()) ? sConfigGroup : QString("Shortcuts");
 
-	// If it has the depricated group [Keys], remove it
+	// If it has the deprecated group [Keys], remove it
 	if( pConfig->hasGroup( "Keys" ) )
 		pConfig->deleteGroup( "Keys", true );
 

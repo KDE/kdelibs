@@ -53,7 +53,7 @@ ScriptLoader::~ScriptLoader()
 
 KSelectAction * ScriptLoader::getScripts()
 {
-	// Get the avaliable scripts for this application.
+	// Get the available scripts for this application.
 	QStringList pluginList = "";
 	// Find plugins
 	QString searchPath = kapp->name();

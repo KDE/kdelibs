@@ -98,13 +98,13 @@ listRecursive is implemented as listDir and finding out if in the result
 bIgnoreSubJobsError is true, which is what we want (David)
 
 del is implemented as listRecursive, removing all files and removing all
- empty directories. This basicly means if one directory isn't readable
+ empty directories. This basically means if one directory isn't readable
  we don't remove it as listRecursive didn't find it. But the del will later
  on try to remove it's parent directory and fail. But there are cases when
  it would be possible to delete the dir in chmod the dir before. On the
  other hand del("/") shouldn't list the whole file system and remove all
  user owned files just to find out it can't remove everything else (this
- basicly means we have to take care of things we can remove before we try)
+ basically means we have to take care of things we can remove before we try)
 
  ... Well, rm -rf / refuses to do anything, so we should just do the same:
  use a listRecursive with bIgnoreSubJobsError = false. If anything can't

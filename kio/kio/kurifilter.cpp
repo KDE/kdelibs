@@ -244,7 +244,7 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
 
     QPtrListIterator<KURIFilterPlugin> it( use_plugins );
     //kdDebug() << "Using " << use_plugins.count() << " out of the "
-    //          << m_lstPlugins.count() << " avaliable plugins" << endl;
+    //          << m_lstPlugins.count() << " available plugins" << endl;
     for (; it.current() && !filtered; ++it)
     {
         //kdDebug() << "Using a filter plugin named: " << it.current()->name() << endl;

@@ -518,7 +518,7 @@ void KXMLGUIFactory::configureAction( KAction *action, const QDomAttr &attribute
 
     QVariant::Type propertyType = action->property( attribute.name().latin1() ).type();
 
-    // If the attribute is a depricated "accel", change to "shortcut".
+    // If the attribute is a deprecated "accel", change to "shortcut".
     if ( attrName.lower() == "accel" )
         attrName = attrShortcut;
 

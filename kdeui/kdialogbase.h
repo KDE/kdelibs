@@ -840,7 +840,7 @@ class KDialogBase : public KDialog
    /**
     * read the dialogs size from the configuration according to the screen size.
     * If no size is saved for one dimension of the screen, a default size
-    * is choosed. The default width is 50 percent of the screen width, the
+    * is chosen. The default width is 50 percent of the screen width, the
     * default height is 40 percent of the screen height.
     *
     * @param groupName Name of the group to read from. The old group
@@ -851,7 +851,7 @@ class KDialogBase : public KDialog
    /**
     * read the dialogs size from the configuration according to the screen size.
     * If no size is saved for one dimension of the screen, a default size
-    * is choosed. The default width is 50 percent of the screen width, the
+    * is chosen. The default width is 50 percent of the screen width, the
     * default height is 40 percent of the screen height.
     *
     * @param config The @ref KConfig object to read from

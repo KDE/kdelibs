@@ -17,7 +17,7 @@
 <refsect1><title>Description</title>
 
 <para>HTML Help Compiler is not UTF-8 aware, so you should always use
-apropriate single-byte encoding here.</para>
+appropriate single-byte encoding here.</para>
 
 </refsect1>
 </refentry>

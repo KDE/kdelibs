@@ -264,12 +264,12 @@ class AddressBook : public QObject
 
     /**
       Set the @p ErrorHandler, that is used by @ref error() to
-      provide gui-independend error messages.
+      provide GUI independent error messages.
     */
     void setErrorHandler( ErrorHandler * );
 
     /**
-      Shows gui independend error messages.
+      Shows GUI independent error messages.
     */
     void error( const QString& );
 

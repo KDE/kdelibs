@@ -163,7 +163,7 @@ not be available.
 	You might replace the QString::null paramter with
 	<pre> i18n("Scroll the current document's contents up by one line.") </pre>
 	for example.</li>
-	<li> KAccel::changeMenuAccel() has been depricated because it was
+	<li> KAccel::changeMenuAccel() has been deprecated because it was
 	never used in cvs.  If you've used it in your application, the following
 	can replace it.  Note, however, that this would be handled automatically
 	by using KAction instead.
@@ -182,7 +182,7 @@ The preferred means of defining a shortcut, however, is to use <b>KAction</b>.
 <h5>KGlobalAccel</h5>
 <ul>
 	<li>Call <i>updateConnections()</i> after all <i>insert()</i> or
-	<i>insertItem()</i> (depricated) calls have been made.  This function then performs the
+	<i>insertItem()</i> (deprecated) calls have been made.  This function then performs the
 	actually key grabbing.  In order to improve program startup speed,
 	grabbing is no longer done automatically: usually <i>readSettings()</i>
 	is called after the actions have been defined, and this may cause
@@ -197,7 +197,7 @@ The preferred means of defining a shortcut, however, is to use <b>KAction</b>.
 	supposed to be.)  Calls to <i>insert()</i> and the equivalent
 	<i>key(KStdAccel::Insert)</i> can be replaced with the former default
 	of <i>Qt::CTRL+Qt::Key_Insert</i>.</li>
-	<li>The following functions have been depricated and will need to be changed if KDE_NO_COMPAT is defined:
+	<li>The following functions have been deprecated and will need to be changed if KDE_NO_COMPAT is defined:
 		<table border=1>
 			<tr><th>Old</th><th>New</th></tr>
 			<tr><td>QString action(StdAccel id)</td><td>QString name(StdAccel id)</td></tr>
@@ -227,7 +227,7 @@ Use QPopupMenu/KPopupMenu or the XML-UI method for building menus.
 
 <H4>KAction</H4>
 <ul>
-	<li>The following methods have been depricated and will need to be
+	<li>The following methods have been deprecated and will need to be
 	replaced if KDE_NO_COMPAT is defined.
 		<table border=1>
 			<tr><th>Old</th><th>New</th></tr>
@@ -240,7 +240,7 @@ Use QPopupMenu/KPopupMenu or the XML-UI method for building menus.
 <h4>KActionCollection</h4>
 <ul>
 	<li>When constructing a KActionCollection object, a pointer to the focus widget should be passed.</li>
-	<li>The insert(), remove(), and take() methods have been depricated.
+	<li>The insert(), remove(), and take() methods have been deprecated.
 	If you wish to keep a list of actions, use the KActionPtrList container instead.
 	If you want to configure the shortcuts from multiple actions collections,
 	pass each collection to KKeyChooser or KKeyDialog via their insert() methods.</li>

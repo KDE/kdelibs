@@ -157,7 +157,7 @@ public:
     }
 };
 
-static bool beeing_first = true;
+static bool being_first = true;
 
 KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     : QMainWindow( parent, name, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
@@ -230,8 +230,8 @@ void KMainWindow::initKMainWindow(const char *name)
     d->toolBarHandler = 0;
     d->settingsTimer = 0;
     d->showStatusBarAction = NULL;
-    if ((d->care_about_geometry = beeing_first)) {
-        beeing_first = false;
+    if ((d->care_about_geometry = being_first)) {
+        being_first = false;
         if ( kapp->geometryArgument().isNull() ) // if there is no geometry, it doesn't mater
             d->care_about_geometry = false;
         else

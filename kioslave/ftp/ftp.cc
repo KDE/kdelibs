@@ -664,7 +664,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, int maxretries )
       // The command was sent from the ftpLogin function, i.e. we are actually
       // attempting to login in. NOTE: If we already sent the username, we
       // return false and let the user decide whether (s)he wants to start from
-      // the beggining...
+      // the beginning...
       if (maxretries > 0 && !isPassCmd)
       {
         closeConnection ();
