@@ -393,7 +393,7 @@ DOMString MediaListImpl::item( unsigned long index )
     return m_lstMedia[index];
 }
 
-void MediaListImpl::del( const DOMString &oldMedium )
+void MediaListImpl::deleteMedium( const DOMString &oldMedium )
 {
     for ( QValueList<DOMString>::Iterator it = m_lstMedia.begin(); it != m_lstMedia.end(); ++it ) {
         if( (*it) == oldMedium ) {
@@ -403,7 +403,7 @@ void MediaListImpl::del( const DOMString &oldMedium )
     }
 }
 
-void MediaListImpl::append( const DOMString &newMedium )
+void MediaListImpl::appendMedium( const DOMString &newMedium )
 {
     m_lstMedia.append( newMedium );
 }

@@ -325,13 +325,13 @@ DOM::DOMString MediaList::item(unsigned long index)
 void MediaList::deleteMedium(const DOM::DOMString &oldMedium)
 {
     if(impl)
-        ((MediaListImpl *)impl)->del( oldMedium );
+        ((MediaListImpl *)impl)->deleteMedium( oldMedium );
 }
 
 void MediaList::appendMedium(const DOM::DOMString &newMedium)
 {
     if(impl)
-        ((MediaListImpl *)impl)->append( newMedium );
+        ((MediaListImpl *)impl)->appendMedium( newMedium );
 }
 
 MediaListImpl *MediaList::handle() const

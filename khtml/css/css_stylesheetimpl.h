@@ -136,9 +136,6 @@ public:
 
 // ----------------------------------------------------------------------------
 
-// ### This has different methods from the MediaList class because MediaList has
-// been adjusted to fit to the spec - this class needs to be updated
-
 class MediaListImpl : public StyleBaseImpl
 {
 public:
@@ -153,8 +150,8 @@ public:
     CSSRuleImpl *parentRule() const;
     unsigned long length() const;
     DOM::DOMString item ( unsigned long index );
-    void del ( const DOM::DOMString &oldMedium );
-    void append ( const DOM::DOMString &newMedium );
+    void deleteMedium ( const DOM::DOMString &oldMedium );
+    void appendMedium ( const DOM::DOMString &newMedium );
 
     DOM::DOMString mediaText() const;
     void setMediaText(const DOM::DOMString &value);
