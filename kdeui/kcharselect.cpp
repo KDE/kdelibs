@@ -64,7 +64,7 @@ void KCharSelect::cleanupFontDatabase()
 KCharSelectTable::KCharSelectTable( QWidget *parent, const char *name, const QString &_font,
 				    const QChar &_chr, int _tableNum )
     : QGridView( parent, name ), vFont( _font ), vChr( _chr ),
-      vTableNum( _tableNum ), vPos( 0, 0 ), focusItem( _chr ), focusPos( 0, 0 )
+      vTableNum( _tableNum ), vPos( 0, 0 ), focusItem( _chr ), focusPos( 0, 0 ), d(0)
 {
     setBackgroundColor( colorGroup().base() );
 
@@ -124,8 +124,8 @@ QSize KCharSelectTable::sizeHint() const
 //==================================================================
 void KCharSelectTable::resizeEvent( QResizeEvent * e )
 {
-    int new_w   = (e->size().width()  - 2*(margin()+frameWidth())) / numCols();
-    int new_h   = (e->size().height() - 2*(margin()+frameWidth())) / numRows();
+    const int new_w   = (e->size().width()  - 2*(margin()+frameWidth())) / numCols();
+    const int new_h   = (e->size().height() - 2*(margin()+frameWidth())) / numRows();
 
     if( new_w !=  cellWidth())
         setCellWidth( new_w );
@@ -138,10 +138,10 @@ void KCharSelectTable::resizeEvent( QResizeEvent * e )
 //==================================================================
 void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
 {
-    int w = cellWidth();
-    int h = cellHeight();
-    int x2 = w - 1;
-    int y2 = h - 1;
+    const int w = cellWidth();
+    const int h = cellHeight();
+    const int x2 = w - 1;
+    const int y2 = h - 1;
 
     //if( row == 0 && col == 0 ) {
     //    printf("Repaint %d\n", temp++);
@@ -195,17 +195,17 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
 //==================================================================
 void KCharSelectTable::mouseMoveEvent( QMouseEvent *e )
 {
-    int row = rowAt( e->y() );
-    int col = columnAt( e->x() );
+    const int row = rowAt( e->y() );
+    const int col = columnAt( e->x() );
     if ( row >= 0 && row < numRows() && col >= 0 && col < numCols() ) {
-	QPoint oldPos = vPos;
+	const QPoint oldPos = vPos;
 
 	vPos.setX( col );
 	vPos.setY( row );
 
 	vChr = QChar( vTableNum * 256 + numCols() * vPos.y() + vPos.x() );
 
-	QPoint oldFocus = focusPos;
+	const QPoint oldFocus = focusPos;
 
 	focusPos = vPos;
 	focusItem = vChr;
@@ -251,7 +251,7 @@ void KCharSelectTable::keyPressEvent( QKeyEvent *e )
 	emit highlighted();
         break;
     case Key_Enter: case Key_Return: {
-	QPoint oldPos = vPos;
+	const QPoint oldPos = vPos;
 
 	vPos = focusPos;
 	vChr = focusItem;
@@ -271,7 +271,7 @@ void KCharSelectTable::keyPressEvent( QKeyEvent *e )
 void KCharSelectTable::gotoLeft()
 {
     if ( focusPos.x() > 0 ) {
-	QPoint oldPos = focusPos;
+	const QPoint oldPos = focusPos;
 
 	focusPos.setX( focusPos.x() - 1 );
 
@@ -289,7 +289,7 @@ void KCharSelectTable::gotoLeft()
 void KCharSelectTable::gotoRight()
 {
     if ( focusPos.x() < numCols()-1 ) {
-	QPoint oldPos = focusPos;
+	const QPoint oldPos = focusPos;
 
 	focusPos.setX( focusPos.x() + 1 );
 
@@ -307,7 +307,7 @@ void KCharSelectTable::gotoRight()
 void KCharSelectTable::gotoUp()
 {
     if ( focusPos.y() > 0 ) {
-	QPoint oldPos = focusPos;
+	const QPoint oldPos = focusPos;
 
 	focusPos.setY( focusPos.y() - 1 );
 
@@ -325,7 +325,7 @@ void KCharSelectTable::gotoUp()
 void KCharSelectTable::gotoDown()
 {
     if ( focusPos.y() < numRows()-1 ) {
-	QPoint oldPos = focusPos;
+	const QPoint oldPos = focusPos;
 
 	focusPos.setY( focusPos.y() + 1 );
 
@@ -342,9 +342,11 @@ void KCharSelectTable::gotoDown()
 //==================================================================
 void KCharSelectTable::setToolTips()
 {
-    for( int i=0 ; i< numRows(); i++ )
+    const int rowCount = numRows();
+    const int colCount = numCols();
+    for( int i=0 ; i< rowCount; ++i )
     {
-	for( int j=0; j< numCols(); j++ )
+	for( int j=0; j< colCount; ++j )
 	{
 	    const QRect r( cellWidth()*j, cellHeight()*i, cellWidth(), cellHeight() );
 	    QToolTip::remove(this,r);
@@ -362,14 +364,13 @@ void KCharSelectTable::setToolTips()
 
 //==================================================================
 KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_font, const QChar &_chr, int _tableNum )
-    : QVBox( parent, name )
+  : QVBox( parent, name ), d(new KCharSelectPrivate)
 {
-    d = new KCharSelectPrivate;
     setSpacing( KDialog::spacingHint() );
-    QHBox *bar = new QHBox( this );
+    QHBox* const bar = new QHBox( this );
     bar->setSpacing( KDialog::spacingHint() );
 
-    QLabel *lFont = new QLabel( i18n( "Font:" ), bar );
+    QLabel* const lFont = new QLabel( i18n( "Font:" ), bar );
     lFont->resize( lFont->sizeHint() );
     lFont->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
     lFont->setMaximumWidth( lFont->sizeHint().width() );
@@ -380,7 +381,7 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
 
     connect( fontCombo, SIGNAL( activated( const QString & ) ), this, SLOT( fontSelected( const QString & ) ) );
 
-    QLabel *lTable = new QLabel( i18n( "Table:" ), bar );
+    QLabel* const lTable = new QLabel( i18n( "Table:" ), bar );
     lTable->resize( lTable->sizeHint() );
     lTable->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
     lTable->setMaximumWidth( lTable->sizeHint().width() );
@@ -390,13 +391,13 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
 
     connect( tableSpinBox, SIGNAL( valueChanged( int ) ), this, SLOT( tableChanged( int ) ) );
 
-    QLabel *lUnicode = new QLabel( i18n( "&Unicode code point:" ), bar );
+    QLabel* const lUnicode = new QLabel( i18n( "&Unicode code point:" ), bar );
     lUnicode->resize( lUnicode->sizeHint() );
     lUnicode->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
     lUnicode->setMaximumWidth( lUnicode->sizeHint().width() );
 
-    QRegExp rx( "[a-fA-F0-9]{1,4}" );
-    QValidator* validator = new QRegExpValidator( rx, this );
+    const QRegExp rx( "[a-fA-F0-9]{1,4}" );
+    QValidator* const validator = new QRegExpValidator( rx, this );
 
     d->unicodeLine = new QLineEdit( bar );
     d->unicodeLine->setValidator(validator);
@@ -407,8 +408,8 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
     connect( d->unicodeLine, SIGNAL( returnPressed() ), this, SLOT( slotUnicodeEntered() ) );
 
     charTable = new KCharSelectTable( this, name, _font.isEmpty() ? QVBox::font().family() : _font, _chr, _tableNum );
-    QSize sz( charTable->contentsWidth()  +  4 ,
-              charTable->contentsHeight() +  4 );
+    const QSize sz( charTable->contentsWidth()  +  4 ,
+                    charTable->contentsHeight() +  4 );
     charTable->resize( sz );
     //charTable->setMaximumSize( sz );
     charTable->setMinimumSize( sz );
@@ -449,7 +450,7 @@ QSize KCharSelect::sizeHint() const
 //==================================================================
 void KCharSelect::setFont( const QString &_font )
 {
-    QValueList<QString>::Iterator it = fontList.find( _font );
+    const QValueList<QString>::Iterator it = fontList.find( _font );
     if ( it != fontList.end() ) {
 	QValueList<QString>::Iterator it2 = fontList.begin();
 	int pos = 0;
@@ -502,26 +503,26 @@ void KCharSelect::tableChanged( int _value )
 //==================================================================
 void KCharSelect::slotUnicodeEntered( )
 {
-    QString s = d->unicodeLine->text();
+    const QString s = d->unicodeLine->text();
     if (s.isEmpty())
         return;
     
     bool ok;
-    int uc = s.toInt(&ok, 16);
+    const int uc = s.toInt(&ok, 16);
     if (!ok)
         return;
     
-    int table = uc / 256;
+    const int table = uc / 256;
     charTable->setTableNum( table );
     tableSpinBox->setValue(table);
-    QChar ch(uc);
+    const QChar ch(uc);
     charTable->setChar( ch );
     charActivated( ch );
 }
 
 void KCharSelect::slotUpdateUnicode( const QChar &c )
 {
-    int uc = c.unicode();
+    const int uc = c.unicode();
     QString s;
     s.sprintf("%04X", uc);
     d->unicodeLine->setText(s);

@@ -105,7 +105,7 @@ private:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    KCharSelectTablePrivate *d;
+    KCharSelectTablePrivate* const d;
 };
 
 /**
@@ -260,7 +260,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     class KCharSelectPrivate;
-    KCharSelectPrivate *d;
+    KCharSelectPrivate* const d;
 };
 
 #endif

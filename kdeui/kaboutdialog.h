@@ -80,7 +80,7 @@ class KDEUI_EXPORT KAboutContainer : public QFrame
   private:
     QVBoxLayout *mVbox;
     int mAlignment;
-    KAboutContainerPrivate *d;
+    KAboutContainerPrivate* const d;
 };
 
 class KAboutContributorPrivate;
@@ -137,7 +137,7 @@ class KDEUI_EXPORT KAboutContributor : public QFrame
     bool mShowHeader;
     bool mShowBold;
 
-    KAboutContributorPrivate *d;
+    KAboutContributorPrivate* const d;
 
 	virtual void setName(const char *_name) { QFrame::setName(_name); }
 };
@@ -245,7 +245,7 @@ protected:
   // #########################################################################
   //
 private:
-  KAboutWidgetPrivate *d;
+  KAboutWidgetPrivate* const d;
 };
 
 class KAboutDialogPrivate;
@@ -627,7 +627,7 @@ protected slots:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  KAboutDialogPrivate *d;
+  KAboutDialogPrivate* const d;
 };
 
 #endif // defined KABOUTDIALOG_H
