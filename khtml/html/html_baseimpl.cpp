@@ -604,7 +604,6 @@ ushort HTMLIFrameElementImpl::id() const
 void HTMLIFrameElementImpl::parseAttribute(AttrImpl *attr )
 {
   DOM::DOMStringImpl *stringImpl = attr->value().implementation();
-  QString val = QConstString( stringImpl->s, stringImpl->l ).string();
   switch (  attr->attrId )
   {
     case ATTR_WIDTH:
@@ -653,6 +652,7 @@ void HTMLIFrameElementImpl::attach()
       m_render->setStyle(m_style);
       r->addChild( m_render, nextRenderer() );
       renderFrame->updateWidget();
+      needWidgetUpdate = false;
   }
 
   HTMLElementImpl::attach();
