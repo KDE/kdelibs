@@ -371,8 +371,8 @@ void KHTMLView::drawContents( QPainter*)
 void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 {
     //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
-    if(!m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
-        p->fillRect(ex, ey, ew, eh, palette().normal().brush(QColorGroup::Base));
+    if(!m_part || !m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
+        p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
         return;
     }
     if (eh > PAINT_BUFFER_HEIGHT && ew <= 10) {
@@ -380,7 +380,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
             d->vertPaintBuffer->resize(10, visibleHeight());
         d->tp->begin(d->vertPaintBuffer);
         d->tp->translate(-ex, -ey);
-        d->tp->fillRect(ex, ey, ew, eh, palette().normal().brush(QColorGroup::Base));
+        d->tp->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
         m_part->xmlDocImpl()->renderer()->paint(d->tp, ex, ey, ew, eh, 0, 0);
         d->tp->end();
         p->drawPixmap(ex, ey, *d->vertPaintBuffer, 0, 0, ew, eh);
@@ -394,7 +394,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
             int ph = eh-py < PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;
             d->tp->begin(d->paintBuffer);
             d->tp->translate(-ex, -ey-py);
-            d->tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Base));
+            d->tp->fillRect(ex, ey+py, ew, ph, palette().active().brush(QColorGroup::Base));
             m_part->xmlDocImpl()->renderer()->paint(d->tp, ex, ey+py, ew, ph, 0, 0);
 #ifdef BOX_DEBUG
             if (m_part->xmlDocImpl()->focusNode())
@@ -431,7 +431,7 @@ void KHTMLView::layout()
 {
     d->layoutSchedulingEnabled=false;
 
-    if( m_part->xmlDocImpl() ) {
+    if( m_part && m_part->xmlDocImpl() ) {
         DOM::DocumentImpl *document = m_part->xmlDocImpl();
 
         khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
@@ -1510,7 +1510,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
             swallowEvent = true;
 	me->deref();
 
-	if (eventId == EventImpl::CLICK_EVENT) {
+	if (eventId == EventImpl::MOUSEDOWN_EVENT) {
             if (targetNode->isSelectable())
                 m_part->xmlDocImpl()->setFocusNode(targetNode);
             else
