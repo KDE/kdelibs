@@ -136,6 +136,7 @@ void KCMultiDialog::apply()
         kdDebug(710) << k_funcinfo << *it << " " << ( *it ).latin1() << endl;
         emit configCommitted( ( *it ).latin1() );
     }
+    emit configCommitted();
 }
 
 void KCMultiDialog::slotApply()

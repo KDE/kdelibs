@@ -113,6 +113,29 @@ public:
     void show();
 
 signals:
+    /**
+     * Emitted after all KCModules have been told to save their configuration.
+     *
+     * The applyClicked and okClicked signals are emitted before the
+     * configuration is saved.
+     */
+    void configCommitted();
+
+    /**
+     * Emitted after the KCModules have been told to save their configuration.
+     * It is emitted once for every instance the KCMs that were changed belong
+     * to.
+     *
+     * You can make use of this if you have more than one component in your
+     * application. instanceName tells you the instance that has to reload its
+     * configuration.
+     *
+     * The applyClicked and okClicked signals are emitted before the
+     * configuration is saved.
+     *
+     * @param instanceName The name of the instance that needs to reload its
+     *                     configuration.
+     */
     void configCommitted( const QCString & instanceName );
 
 protected slots:
