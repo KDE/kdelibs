@@ -606,10 +606,8 @@ CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, const DOMString &base
     if (root->isCSSStyleSheet())
 	docLoader = static_cast<CSSStyleSheetImpl*>(root)->docLoader();
 
-    if (docLoader)
-	m_image = docLoader->requestImage(url, baseurl);
-    else
-	m_image = khtml::Cache::requestImage(url, baseurl);
+    // we must have a docLoader here!
+    m_image = docLoader->requestImage(url, baseurl);
 
     if(m_image) m_image->ref(this);
 }

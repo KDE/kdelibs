@@ -125,10 +125,8 @@ CSSImportRuleImpl::CSSImportRuleImpl(StyleBaseImpl *parent, const DOM::DOMString
     if (root->isCSSStyleSheet())
 	docLoader = static_cast<CSSStyleSheetImpl*>(root)->docLoader();
 
-    if (docLoader)
-	m_cachedSheet = docLoader->requestStyleSheet(href, baseUrl());
-    else
-	m_cachedSheet = khtml::Cache::requestStyleSheet(href, baseUrl(),false);
+    // we must have a docLoader !
+    m_cachedSheet = docLoader->requestStyleSheet(href, baseUrl());
 
     m_cachedSheet->ref(this);
     m_loading = true;
