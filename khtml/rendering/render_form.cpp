@@ -701,83 +701,13 @@ void RenderFieldset::paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w
 
 // -------------------------------------------------------------------------
 
-//A helper widget that generates a mask
-class TransHBox:public QHBox
-{
-public:
-    TransHBox(RenderFileButton* owner, QWidget* parent):QHBox(parent), m_owner(owner)
-    {
-        setAutoMask(true);
-    }
-
-    virtual void updateMask()
-    {
-        QBitmap  mask(size());
-        QPainter p(&mask);
-
-        const QPushButton* push     = m_owner->pushButton();
-        const QLineEdit*   lineEdit = m_owner->lineEdit();
-
-        //If we have the button & line edit, make a proper mask
-        if (push && lineEdit)
-        {
-           //Mask everything off
-           p.fillRect(0, 0, width(), height(), Qt::color0);
-
-           //Draw button mask
-           QRect buttonRect = QRect(push->pos(), push->size());
-           parentWidget()->style().drawControlMask(QStyle::CE_PushButton,
-                                             &p, push, buttonRect);
-
-           //Draw line edit mask
-           QRect lineEditRect = QRect(lineEdit->pos(), lineEdit->size());
-           p.fillRect(lineEditRect, Qt::color1);
-        }
-        else //Fall back everything visible.
-            p.fillRect(0, 0, width(), height(), Qt::color1);
-
-        p.end();
-        setMask(mask);
-    }
-protected:
-    virtual void paintEvent(QPaintEvent *);
-
-private:
-    RenderFileButton* m_owner;
-};
-
-void TransHBox::paintEvent(QPaintEvent *)
-{
-    QPainter p(this);
-    QWidget *w = m_owner->lineEdit();
-    RenderWidget::paintWidget(&p, w, 0, 0, width(), height(), w->x(), w->y());
-    w = const_cast<QPushButton *>(m_owner->pushButton());
-    RenderWidget::paintWidget(&p, w, 0, 0, width(), height(), w->x(), w->y());
-}
-
-
 RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     : RenderFormElement(element)
 {
-    m_edit   = 0; //For the benefit of the transhbox.
-    m_button = 0;
+    KURLRequester* w = new KURLRequester( view()->viewport() );
 
-    // this sucks, we need to use a custom widget to get a proper background
-    TransHBox *w = new TransHBox(this, view()->viewport());
-
-    m_edit = new LineEditWidget(element, view(), w);
-
-    connect(m_edit, SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
-    connect(m_edit, SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
-
-    m_button = new QPushButton(i18n("Browse..."), w);
-    m_button->setFocusPolicy(QWidget::ClickFocus);
-    connect(m_button,SIGNAL(clicked()), this, SLOT(slotClicked()));
-
-    w->setStretchFactor(m_edit, 2);
-    w->setFocusProxy(m_edit);
-
-    w->updateMask();
+    connect(w->lineEdit(), SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
+    connect(w->lineEdit(), SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
 
     setQWidget(w);
     m_haveFocus = false;
@@ -794,10 +724,12 @@ void RenderFileButton::calcMinMaxWidth()
 
     int h = fm.lineSpacing();
     int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
-    QSize s = m_edit->style().sizeFromContents(QStyle::CT_LineEdit, m_edit,
-          QSize(w + 2 + 2*m_edit->frameWidth(), kMax(h, 14) + 2 + 2*m_edit->frameWidth()))
+    KLineEdit* edit = static_cast<KURLRequester*>( m_widget )->lineEdit();
+    QSize s = edit->style().sizeFromContents(QStyle::CT_LineEdit,
+                                             edit,
+          QSize(w + 2 + 2*edit->frameWidth(), kMax(h, 14) + 2 + 2*edit->frameWidth()))
         .expandedTo(QApplication::globalStrut());
-    QSize bs = m_button->sizeHint();
+    QSize bs = static_cast<KURLRequester*>( m_widget )->sizeHint();
 
     setIntrinsicWidth( s.width() + bs.width() );
     setIntrinsicHeight( kMax(s.height(), bs.height()) );
@@ -807,39 +739,33 @@ void RenderFileButton::calcMinMaxWidth()
 
 void RenderFileButton::handleFocusOut()
 {
-    if ( m_edit && m_edit->edited() ) {
+    if ( widget()->lineEdit() && widget()->lineEdit()->edited() ) {
         element()->onChange();
-        m_edit->setEdited( false );
+        widget()->lineEdit()->setEdited( false );
     }
 }
 
 void RenderFileButton::updateFromElement()
 {
-    m_edit->blockSignals(true);
-    m_edit->setText(element()->value().string());
-    m_edit->blockSignals(false);
+    KLineEdit* edit = widget()->lineEdit();
+    edit->blockSignals(true);
+    edit->setText(element()->value().string());
+    edit->blockSignals(false);
     int ml = element()->maxLength();
     if ( ml < 0 || ml > 1024 )
         ml = 1024;
-    m_edit->setMaxLength( ml );
-    m_edit->setEdited( false );
+    edit->setMaxLength( ml );
+    edit->setEdited( false );
 
     RenderFormElement::updateFromElement();
 }
 
 void RenderFileButton::slotReturnPressed()
 {
+    handleFocusOut();
+
     if (element()->form())
 	element()->form()->submitFromKeyboard();
-}
-
-void RenderFileButton::slotClicked()
-{
-    QString file_name = KFileDialog::getOpenFileName(QString::null, QString::null, 0, i18n("Browse..."));
-    if (!file_name.isNull()) {
-        element()->m_value = DOMString(file_name);
-        m_edit->setText(file_name);
-    }
 }
 
 void RenderFileButton::slotTextChanged(const QString &string)
@@ -849,7 +775,7 @@ void RenderFileButton::slotTextChanged(const QString &string)
 
 void RenderFileButton::select()
 {
-    m_edit->selectAll();
+    widget()->lineEdit()->selectAll();
 }
 
 // -------------------------------------------------------------------------
@@ -1716,7 +1642,7 @@ QString RenderTextArea::text()
                 txt += QString::fromLatin1("\n");
         }
     }
-    else 
+    else
         txt = w->text();
 
     return txt;

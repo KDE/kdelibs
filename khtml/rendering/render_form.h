@@ -36,6 +36,7 @@ class QLineEdit;
 class QListboxItem;
 
 #include <ktextedit.h>
+#include <kurlrequester.h>
 #include <klineedit.h>
 #include <qcheckbox.h>
 #include <qradiobutton.h>
@@ -52,6 +53,7 @@ class KReplaceDialog;
 class KFind;
 class KReplace;
 class KAction;
+class KURLRequester;
 
 namespace DOM {
     class HTMLFormElementImpl;
@@ -297,16 +299,14 @@ public:
     virtual void updateFromElement();
     void select();
 
+    KURLRequester *widget() const { return static_cast<KURLRequester*>(m_widget); }
+
     DOM::HTMLInputElementImpl *element() const
     { return static_cast<DOM::HTMLInputElementImpl*>(RenderObject::element()); }
-
-    KLineEdit* lineEdit() const { return m_edit; }
-    const QPushButton* pushButton() const { return m_button; }
 
 public slots:
     void slotReturnPressed();
     void slotTextChanged(const QString &string);
-    void slotClicked();
 
 protected:
     virtual void handleFocusOut();
@@ -315,8 +315,6 @@ protected:
 
     bool m_clicked;
     bool m_haveFocus;
-    KLineEdit   *m_edit;
-    QPushButton *m_button;
 };
 
 
