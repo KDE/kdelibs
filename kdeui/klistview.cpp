@@ -72,15 +72,17 @@ public:
   KListViewPrivate (KListView* listview)
     : pCurrentItem (0L),
       oldCursor (listview->viewport()->cursor()),
-      validDrag (false),
       dragDelay (KGlobalSettings::dndEventDelay()),
       editor (new KListViewLineEdit (listview)),
       itemsMovable (true),
       itemsRenameable (false),
+      validDrag (false),
       dragEnabled (false),
       autoOpen (true),
       dropVisualizer (true),
       createChildren (true),
+      pressedOnSelected (false),
+      wasShiftEvent (false),
       tooltipColumn (0),
       selectionMode (Single),
       contextMenuKey (KGlobalSettings::contextMenuKey()),
@@ -96,11 +98,7 @@ public:
     delete editor;
   }
 
-  bool bUseSingle;
-  bool bChangeCursorOverItem;
-
   QListViewItem* pCurrentItem;
-  bool cursorInExecuteArea;
 
   QTimer autoSelect;
   int autoSelectDelay;
@@ -108,27 +106,30 @@ public:
   QCursor oldCursor;
 
   QPoint startDragPos;
-  bool validDrag;
   int dragDelay;
 
   KListViewLineEdit *editor;
   QValueList<int> renameable;
 
-  bool itemsMovable;
-  bool itemsRenameable;
-  bool dragEnabled;
-  bool autoOpen;
-  bool dropVisualizer;
-  bool dropHighlighter;
-  bool createChildren;
+  bool cursorInExecuteArea:1;
+  bool bUseSingle:1;
+  bool bChangeCursorOverItem:1;
+  bool itemsMovable:1;
+  bool itemsRenameable:1;
+  bool validDrag:1;
+  bool dragEnabled:1;
+  bool autoOpen:1;
+  bool dropVisualizer:1;
+  bool dropHighlighter:1;
+  bool createChildren:1;
+  bool pressedOnSelected:1;
+  bool wasShiftEvent:1;
 
   int tooltipColumn;
 
   SelectionModeExt selectionMode;
   int contextMenuKey;
   bool showContextMenusOnPress;
-
-  bool wasShiftEvent;
 
   QRect mOldDropVisualizer;
   int mDropVisualizerWidth;
@@ -485,26 +486,13 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
 
   if (e->button() == LeftButton && !rootDecoClicked)
   {
-    bool renameStarted = false;
+    //Start a drag
+    d->startDragPos = e->pos();
 
-    // If the row was already selected, create an editor widget.
-    if (at && at->isSelected() && itemsRenameable())
+    if (at)
     {
-      int col = header()->mapToLogical( header()->cellAt( p.x() ) );
-      if ( d->renameable.contains(col) )
-      {
-        rename(at, col);
-        renameStarted = true;
-      }
-    }
-
-    //Start a drag, if we didn't just start a rename
-    if (!renameStarted)
-    {
-      d->startDragPos = e->pos();
-
-      if (at)
-        d->validDrag = true;
+      d->validDrag = true;
+      d->pressedOnSelected = at->isSelected();
     }
   }
 
@@ -548,13 +536,39 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
       d->startDragPos = QPoint();
       d->validDrag = false;
     }
+}
 
-  /*
-  if (!dragOn || d->startDragPos.isNull() || !d->validDrag)
+void KListView::contentsMouseReleaseEvent( QMouseEvent *e )
+{
+  if (e->button() == LeftButton)
   {
-    QListView::contentsMouseMoveEvent (e);
+    // If the row was already selected, maybe we want to start an in-place editing
+    if ( d->pressedOnSelected && itemsRenameable() )
+    {
+      QPoint p( contentsToViewport( e->pos() ) );
+      QListViewItem *at = itemAt (p);
+      if ( at )
+      {
+        // true if the root decoration of the item "at" was clicked (i.e. the +/- sign)
+        bool rootDecoClicked = 
+                  ( p.x() <= header()->cellPos( header()->mapToActual( 0 ) ) +
+                    treeStepSize() * ( at->depth() + ( rootIsDecorated() ? 1 : 0) ) + itemMargin() )
+               && ( p.x() >= header()->cellPos( header()->mapToActual( 0 ) ) );
+
+        if (!rootDecoClicked)
+        {
+          int col = header()->mapToLogical( header()->cellAt( p.x() ) );
+          if ( d->renameable.contains(col) )
+            rename(at, col);
+        }
+      }
+    }
+
+    d->pressedOnSelected = false;
+    d->validDrag = false;
+    d->startDragPos = QPoint();
   }
-  */
+  QListView::contentsMouseReleaseEvent( e );
 }
 
 void KListView::contentsMouseDoubleClickEvent ( QMouseEvent *e )
@@ -708,17 +722,6 @@ void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewIte
   }
 
   parent = after ? after->parent() : 0L ;
-}
-
-
-void KListView::contentsMouseReleaseEvent( QMouseEvent *e )
-{
-  if (e->button() == LeftButton)
-  {
-    d->validDrag = false;
-    d->startDragPos = QPoint();
-  }
-  QListView::contentsMouseReleaseEvent( e );
 }
 
 QListViewItem* KListView::lastChild () const
