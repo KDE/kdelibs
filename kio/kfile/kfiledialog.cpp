@@ -1538,6 +1538,11 @@ QString KFileDialog::selectedFile() const
     {
        if (d->url.isLocalFile())
            return d->url.path();
+       else {
+           KMessageBox::sorry( d->mainWidget,
+                               i18n("You can only select local files."),
+                               i18n("Remote Files Not Accepted") );
+       }
     }
     return QString::null;
 }
