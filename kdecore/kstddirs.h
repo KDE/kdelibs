@@ -366,13 +366,13 @@ public:
 	 */
 	QStringList resourceDirs(const char *type) const;
 
-        /**
-         * This function will return a list of all the types that KStandardDirs
-         * supports.
-         *
-         * @return All types that KDE supports
-         */
-        QStringList allTypes() const;
+	/**
+	 * This function will return a list of all the types that KStandardDirs
+	 * supports.
+	 *
+	 * @return All types that KDE supports
+	 */
+	QStringList allTypes() const;
 
 	/**
 	 * Find a location to save files into for the given type
@@ -383,7 +383,7 @@ public:
 	 *   You can't pass filenames here, you _have_ to pass
 	 *       directory names only and add possible filename in
 	 *       that directory yourself. A directory name always has a
-         *       trailing slash ('/').
+ 	 *       trailing slash ('/').
 	 * @param create If set, saveLocation() will create the directories
 	 *        needed (including those given by @p suffix).
 	 *
@@ -407,25 +407,25 @@ public:
 
 	/**
 	 * This returns a default relative path for the standard KDE
-         * resource types. Below is a list of them so you get an idea
-         * of what this is all about.
-         *
-         * @li data - share/apps
-         * @li html - share/doc/HTML
-         * @li icon - share/icon
-         * @li config - share/config
-         * @li pixmap - share/pixmaps
-         * @li apps - share/applnk
-         * @li sound - share/sounds
-         * @li locale - share/locale
-         * @li services - share/services
-         * @li servicetypes - share/servicetypes
-         * @li mime - share/mimelnk
-         * @li wallpaper - share/wallpapers
-         * @li templates - share/templates
-         * @li exe - bin
-         * @li lib - lib
-         *
+	 * resource types. Below is a list of them so you get an idea
+	 * of what this is all about.
+	 *
+	 * @li data - share/apps
+	 * @li html - share/doc/HTML
+	 * @li icon - share/icon
+	 * @li config - share/config
+	 * @li pixmap - share/pixmaps
+	 * @li apps - share/applnk
+	 * @li sound - share/sounds
+	 * @li locale - share/locale
+	 * @li services - share/services
+	 * @li servicetypes - share/servicetypes
+	 * @li mime - share/mimelnk
+	 * @li wallpaper - share/wallpapers
+	 * @li templates - share/templates
+	 * @li exe - bin
+	 * @li lib - lib
+	 *
 	 * @returns Static default for the specified resource.  You
 	 *          should probably be using @ref locate() or @ref locateLocal()
 	 *          instead.
@@ -434,10 +434,10 @@ public:
 	 */
 	static QString kde_default(const char *type);
 
-        /**
-         * @internal (for use by sycoca only)
-         */
-        QString kfsstnd_prefixes();
+	/**
+	 * @internal (for use by sycoca only)
+	 */
+	QString kfsstnd_prefixes();
 
 	/**
 	 * @returns the toplevel directory in which KStandardDirs
@@ -471,7 +471,7 @@ public:
 
 	KStandardDirsPrivate *d;
 
-        void checkConfig() const;
+	void checkConfig() const;
 };
 
 /**
