@@ -1558,6 +1558,22 @@ Completion KJS::HTMLCollectionFunc::tryExecute(const List &args)
   return Completion(Normal, result);
 }
 
+////////////////////// Option Object ////////////////////////
+
+OptionConstructor::OptionConstructor(const DOM::Document &d)
+    : doc(d)
+{
+  setPrototype(global.functionPrototype());
+}
+
+Object OptionConstructor::construct(const List &args)
+{
+  DOM::Element el = doc.createElement("OPTION");
+  DOM::HTMLOptionElement opt = static_cast<DOM::HTMLOptionElement>(el);
+  opt.setValue(args[0].toString().value().string());
+  return Object(getDOMNode(opt).imp());
+}
+
 ////////////////////// Image Object ////////////////////////
 
 #if 0

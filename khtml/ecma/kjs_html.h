@@ -100,6 +100,17 @@ namespace KJS {
     int id;
   };
 
+  ////////////////////// Option Object ////////////////////////
+
+  class OptionConstructor : public ConstructorImp {
+  public:
+    OptionConstructor(const DOM::Document &d);
+    Object construct(const List &);
+  private:
+    Global global;
+    DOM::Document doc;
+  };
+
   ////////////////////// Image Object ////////////////////////
 
 #if 0

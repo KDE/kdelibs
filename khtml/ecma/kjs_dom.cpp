@@ -168,6 +168,7 @@ String DOMNode::toString() const
       { ID_A,		"HTMLAnchorElement" },
       { ID_BODY, 	"HTMLBodyElement" },
       { ID_OBJECT,	"HTMLObjectElement" },
+      { ID_OPTION,	"Option" },
       // ### other >90 elements from htmltags.h. and put this into khtml.
       { -1, 		0 }
   };

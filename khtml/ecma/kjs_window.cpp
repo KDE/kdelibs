@@ -157,6 +157,7 @@ bool Window::hasProperty(const UString &p, bool recursive) const
       p == "top" ||
       p == "screen" ||
       p == "Image" ||
+      p == "Option" ||
       p == "alert" ||
       p == "confirm" ||
       p == "prompt" ||
@@ -262,6 +263,8 @@ KJSO Window::get(const UString &p) const
     return KJSO(new Screen());
   else if (p == "Image")
     return KJSO(new ImageConstructor(Global::current(), part->document()));
+  else if (p == "Option")
+    return KJSO(new OptionConstructor(part->document()));
   else if (p == "alert")
     return Function(new WindowFunc(this, WindowFunc::Alert));
   else if (p == "confirm")
