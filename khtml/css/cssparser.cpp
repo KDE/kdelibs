@@ -1963,7 +1963,7 @@ bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const i
    */
   bool isLast = false;
   bool foundAnything = false;
-  bool fnd[num];
+  bool *fnd = new bool[num];
   for( int i = 0; i < num; i++ )
     fnd[i] = false;
 #ifdef CSS_DEBUG
@@ -1986,6 +1986,7 @@ bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const i
             curP = nextP;
           } else {
             // we've found a property for the last token, so bye
+            delete [] fnd;
             return true;
           }
         }
@@ -1998,6 +1999,7 @@ bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const i
       }
     }
   }
+  delete [] fnd;
   return foundAnything;
 }
 
