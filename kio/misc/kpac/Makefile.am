@@ -2,7 +2,7 @@
 kde_module_LTLIBRARIES = kded_proxyscout.la
 bin_PROGRAMS = kpac_dhcp_helper
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libltdl -I$(top_srcdir)/kded \
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libltdl -I$(top_srcdir)/kded -I$(top_builddir)/kjs \
            $(all_includes)
 METASOURCES = AUTO
 KDE_CXXFLAGS = $(USE_EXCEPTIONS)
