@@ -2972,6 +2972,7 @@ int KWidgetAction::plug( QWidget* w, int index )
 
   addContainer( toolBar, id );
 
+  connect( toolBar, SIGNAL( toolbarDestroyed() ), this, SLOT( slotToolbarDestroyed() ) );
   connect( toolBar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
   return containerCount() - 1;
@@ -2980,12 +2981,26 @@ int KWidgetAction::plug( QWidget* w, int index )
 void KWidgetAction::unplug( QWidget *w )
 {
   // ### shouldn't this method check if w == m_widget->parent() ? (Simon)
-  if( !m_widget )
+  if( !m_widget || !isPlugged() )
     return;
+
+  KToolBar* toolBar = (KToolBar*)m_widget->parent();
+  disconnect( toolBar, SIGNAL( toolbarDestroyed() ), this, SLOT( slotToolbarDestroyed() ) );
 
   m_widget->reparent( 0L, QPoint(), false /*showIt*/ );
 
   KAction::unplug( w );
+}
+
+void KWidgetAction::slotToolbarDestroyed()
+{
+  Q_ASSERT( m_widget );
+  Q_ASSERT( isPlugged() );
+  if( !m_widget || !isPlugged() )
+    return;
+
+  // Don't let a toolbar being destroyed, delete my widget.
+  m_widget->reparent( 0L, QPoint(), false /*showIt*/ );
 }
 
 ////////

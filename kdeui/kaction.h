@@ -97,12 +97,12 @@ class KMainWindow;
  * one-to-one relationship between the "real" action and @p all
  * GUI representations of it.
  *
- * KAction emits the activated() signal if the user activated the 
+ * KAction emits the activated() signal if the user activated the
  * corresponding GUI element ( menu item, toolbar button, etc. )
  *
- * If you are in the situation of wanting to map the activated() 
- * signal of multiple action objects to one slot, with a special 
- * argument bound to each action, then you might consider using 
+ * If you are in the situation of wanting to map the activated()
+ * signal of multiple action objects to one slot, with a special
+ * argument bound to each action, then you might consider using
  * @ref QSignalMapper . A tiny example:
  *
  * <PRE>
@@ -1725,6 +1725,8 @@ public:
      * destroyed. It will be hidden and reparented to 0L instead.
      */
     virtual void unplug( QWidget *w );
+protected slots:
+    void slotToolbarDestroyed();
 private:
     QGuardedPtr<QWidget> m_widget;
     bool                 m_autoSized;
