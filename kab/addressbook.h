@@ -537,7 +537,7 @@ public slots:
 signals:
   void changed(); /**< The entries have changed, update the selector. */
   void setStatus(const QString&); /**< This is kab radio with the news... */
-  void newFile(const char*); /**< Notifies changes of the file name. */
+  void newFile(const QString&); /**< Notifies changes of the file name. */
   // ############################################################################
 };
 
