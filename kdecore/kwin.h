@@ -73,9 +73,14 @@ public:
      * would be obtrusive, and may refuse the request.
      *
      * The usage of setActiveWindow() is meant only for pagers
-     * and similar tools, which represent direct user actions.
+     * and similar tools, which represent direct user actions
+     * related to window manipulation.
      * Except for rare cases, this request will be always honored,
      * and normal applications are forbidden to use it.
+     *
+     * In case of problems, consult the KWin README in the kdebase
+     * package (kdebase/kwin/README), or ask on the kwin@kde.org
+     * mailing list.
      *
      * @param win the if of the window to make active
      * @param time X server timestamp of the user activity that
@@ -103,7 +108,9 @@ public:
      * @deprecated Consider using activateWindow(), use setActiveWindow()
      * only if necessary.
      */
-    // KDE4 merge with above with time = 0
+    // KDE4 merge with above with time = 0 ???
+    // this method is not really deprecated, but in most cases it should
+    // be replaced with activateWindow()
     static void setActiveWindow( WId win ) KDE_DEPRECATED;
 
     /**
