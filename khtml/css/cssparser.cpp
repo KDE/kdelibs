@@ -555,9 +555,9 @@ StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
             curP = parseSpace(curP, endP);
             if (!curP) {
 #ifdef CSS_DEBUG
-		kdDebug() << "selector stack is:" << endl; 
+		kdDebug( 6080 ) << "selector stack is:" << endl;
 		selecStack->print();
-		kdDebug() << endl; 
+		kdDebug( 6080 ) << endl;
 #endif
                 return(selecStack);
 	    }
@@ -999,7 +999,7 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP,
     if ( f.yyIn == "caption" || f.yyIn == "icon" || f.yyIn == "menu" ||
          f.yyIn == "message-box" || f.yyIn == "small-caption" ||
          f.yyIn == "status-bar" || f.yyIn == "inherit" ) {
-        kdDebug() << "system font requested..." << endl;
+        kdDebug( 6080 ) << "system font requested..." << endl;
     } else {
         f.yyTok = f.getToken();
         if ( f.matchRealFont(&fstyle, &fvariant, &fweight, &fsize, &lheight,
@@ -1784,7 +1784,7 @@ bool StyleBaseImpl::parseBackground(const QChar *curP, const QChar *endP, bool i
     if(!found && !fnd[1]) {
       found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_IMAGE, important, propList);
       if( found ) {
-	kdDebug() << "image!!!" << endl;
+	kdDebug( 6080 ) << "image!!!" << endl;
 	fnd[1] = true;
       }
     }
