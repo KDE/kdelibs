@@ -2534,6 +2534,8 @@ bool HTTPProtocol::readHeader()
   // Convert some common mimetypes to standard KDE mimetypes
   if (m_strMimeType == "application/x-targz")
      m_strMimeType = QString::fromLatin1("application/x-tgz");
+  else if (m_strMimeType == "application/zip")
+     m_strMimeType = QString::fromLatin1("application/x-zip");
   else if (m_strMimeType == "image/x-png")
      m_strMimeType = QString::fromLatin1("image/png");
   else if (m_strMimeType == "audio/mpeg" || m_strMimeType == "audio/x-mpeg" || m_strMimeType == "audio/mp3")
