@@ -41,6 +41,7 @@
 #include <kwrite/kwrite.h>
 
 class KWriteDoc;
+class KWriteWidget;
 class KTextPrint;
 class KSpell;
 class KSpellConfig;
@@ -51,6 +52,7 @@ class KWriteView : public QWidget {
     Q_OBJECT
 
     friend KWriteDoc;
+    friend KWriteWidget;
     friend KWrite;
 
   public:
@@ -58,7 +60,7 @@ class KWriteView : public QWidget {
     // a drop-aware container should set HandleOwnURIDrops = false and handle all URI drops
     // KWriteView will otherwise handle URI drops, but is slightly limited
     // KWriteView always handles text drops
-    KWriteView(KWrite *, KWriteDoc *, bool HandleOwnURIDrops);
+    KWriteView(KWriteDoc *, KWriteWidget *, KWrite *, bool HandleOwnURIDrops);
     ~KWriteView();
 
     virtual void doCursorCommand(VConfig &, int cmdNum);
@@ -136,11 +138,11 @@ class KWriteView : public QWidget {
 //  virtual void dragLeaveEvent(QDragLeaveEvent *);
     virtual void dropEvent(QDropEvent *);
 
-    KWrite *m_mainview;
-
   protected:
 
     KWriteDoc *m_doc;
+    KWriteWidget *m_widget;
+    KWrite *m_kWrite;
 
     QScrollBar *xScroll;
     QScrollBar *yScroll;

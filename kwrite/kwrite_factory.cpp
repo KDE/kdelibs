@@ -4,6 +4,7 @@
 #include <kaboutdata.h>
 
 #include <kwrite/kwrite_factory.h>
+#include <kwrite/kwrite.h>
 #include <kwrite/kwrite_part.h>
 
 #include "highlight.h"
@@ -38,7 +39,7 @@ KParts::Part* KWriteFactory::createPart( QWidget *parentWidget, const char *, QO
 
   bool bROP = ( strcmp( classname, "KParts::ReadOnlyPart" ) == 0 );
 
-  KWritePart* obj = new KWritePart( parentWidget, parent, bBrowser );
+  KWrite* obj = new KWrite( parentWidget, parent, (bBrowser) ? KWrite::kBrowser : 0 );
 
   if ( bBrowser || bROP )
     obj->setReadWrite( false );

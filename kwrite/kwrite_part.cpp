@@ -47,6 +47,7 @@
 #include "ktextprint.h"
 #include "prefdialog.h"
 
+/*
 KWritePart::KWritePart( QWidget * parentWidget, QObject *parent, bool bBrowser )
  : KParts::ReadWritePart( parent, "KWritePart" )
 {
@@ -314,12 +315,12 @@ void KWritePart::slotVerticalSelections()
     // TODO
 }
 
-void KWritePart::saveConfig( KConfig* /*config*/ )
+void KWritePart::saveConfig( KConfig* )
 {
     // TODO
 }
 
-void KWritePart::restoreConfig( KConfig* /*config*/ )
+void KWritePart::restoreConfig( KConfig* )
 {
     // TODO
 }
@@ -377,7 +378,7 @@ void KWritePart::newUndo()
   else
     m_redo->setEnabled( false );
 
-/*
+/ *
   QString t;
   int state, uType, rType;
 
@@ -417,14 +418,15 @@ void KWritePart::newUndo()
   }
 
   edit->setText( t, menuRedo );
-*/
+* /
 }
 
 void KWritePart::doPrint( KTextPrint& text )
 {
 }
+*/
 
-KWriteBrowserExtension::KWriteBrowserExtension( KWritePart *part )
+KWriteBrowserExtension::KWriteBrowserExtension( KWrite *part )
  : KParts::BrowserExtension( part )
 {
 }

@@ -234,7 +234,7 @@ void IndentConfigTab::getData(KWrite *kWrite) {
 }
 
 const int SelectConfigTab::flags[] = {cfPersistent, cfDelOnInput,
-  cfMouseAutoCopy, cfSingleSelection, cfVerticalSelect, cfXorSelect};
+  cfMouseAutoCopy, cfSingleSelectMode, cfVerticalSelect, cfXorSelect};
 
 SelectConfigTab::SelectConfigTab(QWidget *parent, KWrite *kWrite)
   : QWidget(parent, 0L) {

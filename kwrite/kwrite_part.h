@@ -33,6 +33,7 @@ class KSelectAction;
 class KConfig;
 class KTextPrint;
 class HlManager;
+/*
 
 class KWritePart : public KParts::ReadWritePart
 {
@@ -111,6 +112,7 @@ private:
   KAction       *m_cut, *m_copy, *m_paste, *m_undo, *m_redo, *m_replace;
   KAction       *m_indent, *m_unindent, *m_cleanIndent, *m_spell;
 };
+*/
 
 class KWriteBrowserExtension : public KParts::BrowserExtension
 {
@@ -118,7 +120,7 @@ class KWriteBrowserExtension : public KParts::BrowserExtension
 
 public:
 
-  KWriteBrowserExtension( KWritePart *part );
+  KWriteBrowserExtension( KWrite *part );
 };
 
 #endif // __kwritepart_h__

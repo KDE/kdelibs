@@ -349,7 +349,10 @@ class KWriteDoc : QObject {
   public:
 
     KWriteDoc(HlManager *, const QString &path = QString::null);
-    ~KWriteDoc();
+    virtual ~KWriteDoc();
+
+    void incRefCount() {m_refCount++;}
+    void decRefCount();
 
     /**
       gets the number of lines
@@ -375,12 +378,12 @@ class KWriteDoc : QObject {
 
     void setTabWidth(int);
     int tabWidth() {return m_tabChars;}
-    void setReadOnly(bool);
-    bool isReadOnly();
+    void setReadWrite(bool);
+    bool isReadWrite() {return m_readWrite;}
     void setModified(bool);
-    bool isModified();
-    void setSingleSelection(bool ss) {m_singleSelection = ss;}
-    bool singleSelection() {return m_singleSelection;}
+    bool isModified() {return m_modified;}
+    void setSingleSelectMode(bool ss) {m_singleSelectMode = ss;}
+    bool isSingleSelectMode() {return m_singleSelectMode;}
 
     void readConfig(KConfig *);
     void writeConfig(KConfig *);
@@ -515,7 +518,7 @@ class KWriteDoc : QObject {
     void recordReplace(KWCursor &, int len, const QString &text);
     void recordEnd(VConfig &);
     void recordEnd(KWriteView *, KWCursor &, int flags);
-    void doActionGroup(KWActionGroup *, int flags, bool undo = false);
+    void doActionGroup(KWActionGroup *, int flags);
     int nextUndoType();
     int nextRedoType();
     void undoTypeList(QValueList<int> &lst);
@@ -540,14 +543,13 @@ class KWriteDoc : QObject {
     QList<TextLine> contents() {return m_contents;};
     int eolMode() {return m_eolMode;};
     void setEolMode(int mode) {m_eolMode = mode;};
-    bool modified() {return m_modified;};
-    bool readOnly() {return m_readOnly;};
     HlManager *hlManager() {return m_hlManager;};
     int undoSteps() {return m_undoSteps;};
     int undoState() {return m_undoState;};
-    int tabChars() {return m_tabChars;};
 
   protected:
+
+    int                   m_refCount; // reference counter for multiple views
 
     QList<TextLine>       m_contents;
     QColor                m_colors[MAX_COLORS];
@@ -557,11 +559,8 @@ class KWriteDoc : QObject {
     Attribute             m_attribs[MAX_ATTRIBS];
     int                   m_eolMode;
 
-    // TODO: why do we have both: m_tabChars AND m_tabWidth ?
-    // A: tabChars is the number of spaces(eg. 8),
-    //  tabWidth is the number of pixels(only for internal use)
-    int                   m_tabChars;
-    int                   m_tabWidth;
+    int                   m_tabChars; // number of characters for one tab (e.g. 8)
+    int                   m_tabWidth; // tab width in pixel (for internal use)
 
     int                   m_fontHeight;
     int                   m_fontAscent;
@@ -575,9 +574,9 @@ class KWriteDoc : QObject {
     int                   m_selectStart;
     int                   m_selectEnd;
     bool                  m_oldMarkState;
-    bool                  m_singleSelection; // false: windows-like, true: X11-like
-    bool                  m_readOnly;
+    bool                  m_readWrite;
     bool                  m_modified;
+    bool                  m_singleSelectMode; // false: windows-like, true: X11-like
     QString               m_fName;
     int                   m_foundLine;
     QList<KWActionGroup>  m_undoList;

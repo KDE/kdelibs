@@ -29,6 +29,7 @@
 #include <qpainter.h>
 #include <qclipboard.h>
 #include <qapplication.h>
+#include <qtextstream.h>
 
 #include <kcharsets.h>
 
@@ -390,9 +391,10 @@ QString KWActionGroup::typeName(int type) {
 }
 
 KWriteDoc::KWriteDoc(HlManager *hlManager, const QString &path)
-  : QObject(0L)
-  , m_hlManager(hlManager)
-  , m_fName(path) {
+  : QObject(0L), m_hlManager(hlManager), m_fName(path) {
+
+  m_refCount = 0;
+
   m_contents.setAutoDelete(true);
 
   m_colors[0] = white;
@@ -404,10 +406,10 @@ KWriteDoc::KWriteDoc(HlManager *hlManager, const QString &path)
   m_highlight = 0L;
   m_tabChars = 8;
 
-  m_singleSelection = false;
+  m_singleSelectMode = false;
 
   m_newDocGeometry = false;
-  m_readOnly = false;
+  m_readWrite = true;
 
   m_modified = false;
 
@@ -432,6 +434,11 @@ KWriteDoc::~KWriteDoc() {
   m_highlight->release();
 }
 
+void KWriteDoc::decRefCount() {
+  m_refCount--;
+  if (m_refCount == 0) delete this;
+}
+ 
 TextLine *KWriteDoc::textLine(int line) {
 //  if (line < 0) line = 0;
   if (line >= (int) m_contents.count())
@@ -465,35 +472,27 @@ void KWriteDoc::setTabWidth(int chars) {
 //  tagAll();
 }
 
-void KWriteDoc::setReadOnly(bool m) {
+void KWriteDoc::setReadWrite(bool readWrite) {
   KWriteView *view;
 
-  if (m != m_readOnly) {
-    m_readOnly = m;
-//    if (readOnly) recordReset();
+  if (readWrite != m_readWrite) {
+    m_readWrite = readWrite;
     for (view = m_views.first(); view != 0L; view = m_views.next()) {
-      emit view->m_mainview->newStatus();
+      view->m_kWrite->emitNewStatus();
     }
+    newUndo(); // undo/redo become disabled when readWrite is switched off
   }
 }
 
-bool KWriteDoc::isReadOnly() {
-  return m_readOnly;
-}
-
-void KWriteDoc::setModified(bool m) {
+void KWriteDoc::setModified(bool modified) {
   KWriteView *view;
 
-  if (m != m_modified) {
-    m_modified = m;
+  if (modified != m_modified) {
+    m_modified = modified;
     for (view = m_views.first(); view != 0L; view = m_views.next()) {
-      emit view->m_mainview->newStatus();
+      view->m_kWrite->emitNewStatus();
     }
   }
-}
-
-bool KWriteDoc::isModified() {
-  return m_modified;
 }
 
 void KWriteDoc::readConfig(KConfig *config) {
@@ -502,7 +501,7 @@ void KWriteDoc::readConfig(KConfig *config) {
 
   setTabWidth(config->readNumEntry("TabWidth", 8));
   setUndoSteps(config->readNumEntry("UndoSteps", 50));
-  m_singleSelection = config->readBoolEntry("SingleSelection", false);
+  m_singleSelectMode = config->readBoolEntry("SingleSelectMode", false);
   for (z = 0; z < 5; z++) {
     sprintf(s, "Color%d", z);
     m_colors[z] = config->readColorEntry(s, &m_colors[z]);
@@ -515,7 +514,7 @@ void KWriteDoc::writeConfig(KConfig *config) {
 
   config->writeEntry("TabWidth", m_tabChars);
   config->writeEntry("UndoSteps", m_undoSteps);
-  config->writeEntry("SingleSelection", m_singleSelection);
+  config->writeEntry("SingleSelectMode", m_singleSelectMode);
   for (z = 0; z < 5; z++) {
     sprintf(s, "Color%d", z);
     config->writeEntry(s, m_colors[z]);
@@ -820,51 +819,44 @@ void KWriteDoc::insertFile(VConfig &c, QIODevice &dev) {
 }
 
 void KWriteDoc::loadFile(QIODevice &dev) {
+  QTextStream t(&dev);
   TextLine *textLine;
-  char block[256];
-  int len;
-  char *s;
   QChar ch;
-  char last = '\0';
+  QChar last = '\0';
 
   clear();
 
   textLine = m_contents.getFirst();
-  do {
-    len = dev.readBlock(block, 256);
-    s = block;
-    while (len > 0) {
-      ch = *s;
-      if (ch.isPrint() || *s == '\t') {
-        textLine->append(&ch, 1);
-      } else if (*s == '\n' || *s == '\r') {
-        if (last != '\r' || *s != '\n') {
-          textLine = new TextLine();
-          m_contents.append(textLine);
-          if (*s == '\r') m_eolMode = eolMacintosh;
-        } else m_eolMode = eolDos;
-        last = *s;
-      }
-      s++;
-      len--;
+  while (!t.atEnd()) {
+    t >> ch;
+    if (ch.isPrint() || ch == '\t') {
+      textLine->append(&ch, 1);
+    } else if (ch == '\n' || ch == '\r') {
+      if (last != '\r' || ch != '\n') {
+        textLine = new TextLine();
+        m_contents.append(textLine);
+        if (ch == '\r') m_eolMode = eolMacintosh;
+      } else m_eolMode = eolDos;
+      last = ch;
     }
-  } while (s != block);
+  }
 //  updateLines();
 }
 
 void KWriteDoc::writeFile(QIODevice &dev) {
+  QTextStream t(&dev);
   TextLine *textLine;
 
   textLine = m_contents.first();
   do {
-    QConstString str((QChar *) textLine->getText(), textLine->length());
-    dev.writeBlock(str.string().latin1(), textLine->length());
-//    dev.writeBlock(QString(textLine->getText(),
-//      textLine->length()).latin1(), textLine->length());
+    QString str(textLine->getText(), textLine->length());
+//    QConstString str((QChar *) textLine->getText(), textLine->length());
+//    dev.writeBlock(str.string().latin1(), textLine->length());
+    t << str;
     textLine = m_contents.next();
     if (!textLine) break;
-    if (m_eolMode != eolUnix) dev.putch('\r');
-    if (m_eolMode != eolMacintosh) dev.putch('\n');
+    if (m_eolMode != eolUnix) t << '\r'; //dev.putch('\r');
+    if (m_eolMode != eolMacintosh) t << '\n'; //dev.putch('\n');
   } while (true);
 }
 
@@ -1270,17 +1262,13 @@ void KWriteDoc::copy(int flags) {
 
   QString s = markedText(flags);
   if (!s.isEmpty()) {
-//#if defined(_WS_X11_)
-    if (m_singleSelection)
+    if (m_singleSelectMode)
       disconnect(QApplication::clipboard(), SIGNAL(dataChanged()), this, 0);
-//#endif
     QApplication::clipboard()->setText(s);
-//#if defined(_WS_X11_)
-    if (m_singleSelection) {
+    if (m_singleSelectMode) {
       connect(QApplication::clipboard(), SIGNAL(dataChanged()),
         this, SLOT(clipboardChanged()));
     }
-//#endif
   }
 }
 
@@ -1574,7 +1562,7 @@ void KWriteDoc::doIndent(VConfig &c, int change) {
       for (line = m_selectStart; line <= m_selectEnd; line++) {
         textLine = m_contents.at(line);
         if (textLine->isSelected() || textLine->numSelected()) {
-          for (z = 0; z < tabChars(); z++) {
+          for (z = 0; z < tabWidth(); z++) {
             ch = textLine->getChar(z);
             if (ch == '\t') break;
             if (ch != ' ') {
@@ -1884,7 +1872,7 @@ void KWriteDoc::updateViews(KWriteView *exclude) {
     if (view != exclude) view->updateView(flags);
 
     // notify every view about the changed mark state....
-    if (m_oldMarkState != markState) emit view->m_mainview->newMarkStatus();
+    if (m_oldMarkState != markState) view->m_kWrite->emitNewStatus();
   }
   m_oldMarkState = markState;
   m_newDocGeometry = false;
@@ -2119,7 +2107,7 @@ void KWriteDoc::setFileName(const QString &s) {
   m_fName = s;
 
   for (view = m_views.first(); view != 0L; view = m_views.next()) {
-    emit view->m_mainview->fileChanged();
+    emit view->m_kWrite->fileChanged();
   }
 
   //highlight detection
@@ -2141,7 +2129,7 @@ void KWriteDoc::clearFileName() {
 
   // notify views
   for (view = m_views.first(); view != 0L; view = m_views.next()) {
-    emit view->m_mainview->fileChanged();
+    emit view->m_kWrite->fileChanged();
   }
 }
 
@@ -2503,11 +2491,16 @@ void KWriteDoc::newUndo() {
   KWriteView *view;
   int state = 0;
 
-  if (m_currentUndo > 0) state |= 1;
-  if (m_currentUndo < (int) m_undoList.count()) state |= 2;
-  m_undoState = state;
-  for (view = m_views.first(); view != 0L; view = m_views.next()) {
-    emit view->m_mainview->newUndo();
+  if (m_readWrite) {
+    if (m_currentUndo > 0) state |= KWrite::kUndoPossible;
+    if (m_currentUndo < (int) m_undoList.count()) state |= KWrite::kRedoPossible;
+  }
+  // only emit signals if undo state has changed
+  if (state != m_undoState) {
+    m_undoState = state;
+    for (view = m_views.first(); view != 0L; view = m_views.next()) {
+      view->m_kWrite->emitNewUndo();
+    }
   }
 }
 
@@ -2520,17 +2513,9 @@ void KWriteDoc::recordStart(KWriteView *, KWCursor &cursor, int flags,
 
   KWActionGroup *g;
 
-//  if (newUndoType == KWActionGroup::ugNone) {
-    // only a bug would cause this
-//why should someone do this? we can't prevent all programming errors :) (jochen whilhelmy)
-//    debug("KWriteDoc::recordStart() called with no undo group type!");
-//    return;
-//}
-
   if (!keepModal) setPseudoModal(0L);
 
-  //i optimized the group undo stuff a bit(jochen wilhelmy)
-  //  recordReset() is not needed any more
+  // try to append to last action 
   g = m_undoList.getLast();
   if (g != 0L && ((m_undoCount < 1024 && flags & cfGroupUndo
     && g->end == cursor) || mergeUndo)) {
@@ -2549,27 +2534,7 @@ void KWriteDoc::recordStart(KWriteView *, KWCursor &cursor, int flags,
     }
   }
   m_undoCount = 0;
-/*
-  if (undoView != view) {
-    // always kill the current undo group if the editing view changes
-    recordReset();
-    undoType = newUndoType;
-  } else if (newUndoType == undoType) {
-printf("bla!!!\n");
-    // same as current type, keep using it
-    return;
-  } else if ((undoType == KWActionGroup::ugInsChar && newUndoType == KWActionGroup::ugInsLine) ||
-               (undoType == KWActionGroup::ugDelChar && newUndoType == KWActionGroup::ugDelLine)) {
-    // some type combinations can run together...
-    undoType += 1000;
-    return;
-  } else {
-    recordReset();
-    undoType = newUndoType;
-  }
 
-  undoView = view;
-*/
   while ((int) m_undoList.count() > m_currentUndo) m_undoList.removeLast();
   while ((int) m_undoList.count() > m_undoSteps) {
     m_undoList.removeFirst();
@@ -2578,7 +2543,6 @@ printf("bla!!!\n");
 
   g = new KWActionGroup(cursor, newUndoType);
   m_undoList.append(g);
-//  currentUndo++;
 
   unmarkFound();
   m_tagEnd = 0;
@@ -2603,7 +2567,7 @@ void KWriteDoc::recordReplace(VConfig &c, int len, const QString &text) {
   if (c.cursor.x() > 0 && !(c.flags & cfSpaceIndent)) {
     textLine = m_contents.at(c.cursor.y());
     if (textLine->length() == 0) {
-      QString s = tabString(c.cursor.x(), tabChars());
+      QString s = tabString(c.cursor.x(), tabWidth());
       int len = s.length();
       s += text;
       c.cursor.setX(0);
@@ -2679,53 +2643,11 @@ void KWriteDoc::recordEnd(KWriteView *view, KWCursor &cursor, int flags) {
 
   view->updateCursor(cursor, flags);
 
-//  newUndo();
-/*
-  undoCount++;
-  // we limit the number of individual undo operations for sanity - is 1K reasonable?
-  // this is also where we handle non-group undo preference
-  // if the undo type is singlular, we always finish it now
-  if (undoType == KWActionGroup::ugPaste ||
-       undoType == KWActionGroup::ugDelBlock ||
-       undoType > 1000 ||
-       undoCount > 1024 || !(flags & cfGroupUndo)) {
-printf("recordend %d %d\n", undoType, undoCount);
-    recordReset();
-  }
-*/
-
-  // this should keep the flood of signals down a little...
-  if (m_undoCount == 0) newUndo();
+  newUndo(); // only emits signals if undo state has changed
 }
-/*
-void KWriteDoc::recordReset() {
-  if (pseudoModal)
-    return;
-
-  // forces the next call of recordStart() to begin a new undo group
-  // not used in normal editing, but used by markFound(), etc.
-  undoType = KWActionGroup::ugNone;
-  undoCount = 0;
-  undoView = NULL;
-  undoReported = false;
-printf("recordreset\n");
-}
-*/
-
-/*
-void KWriteDoc::recordDel(KWCursor &cursor, TextLine *textLine, int l) {
-  int len;
-
-  len = textLine->length() - cursor.x();
-  if (len > l) len = l;
-  if (len > 0) {
-    insertUndo(new KWAction(KWAction::replace, cursor, &textLine->getText()[cursor.x()], len));
-  }
-}
-*/
 
 
-void KWriteDoc::doActionGroup(KWActionGroup *g, int flags, bool undo) {
+void KWriteDoc::doActionGroup(KWActionGroup *g, int flags) {
   KWAction *a, *next;
 
   setPseudoModal(0L);
@@ -2745,12 +2667,9 @@ void KWriteDoc::doActionGroup(KWActionGroup *g, int flags, bool undo) {
   optimizeSelection();
   if (m_tagStart <= m_tagEnd) updateLines(m_tagStart, m_tagEnd, flags);
 
-  // the undo/redo functions set undo to true, all others should leave it
-  // alone(default)
-  if (!undo) {
-    setModified(true);
-    newUndo();
-  }
+  // these functions now only emit signals if state really changes
+  setModified(true);
+  newUndo();
 }
 
 int KWriteDoc::nextUndoType() {
@@ -2810,13 +2729,10 @@ void KWriteDoc::undo(VConfig &c, int count) {
     if (m_currentUndo <= 0) break;
     m_currentUndo--;
     g = m_undoList.at(m_currentUndo);
-    doActionGroup(g, c.flags, true); // do not setModified() or newUndo()
+    doActionGroup(g, c.flags);
   }
-  if (num > 0) {// only update the cursor if doActionGroup was called
-    // since we told doActionGroup() not to do this stuff, we need to do it now
+  if (num > 0) { // only update the cursor if doActionGroup was called
     c.view->updateCursor(g->start);
-    setModified(true);
-    newUndo();
   }
 }
 
@@ -2828,13 +2744,10 @@ void KWriteDoc::redo(VConfig &c, int count) {
     if (m_currentUndo+1 > (int) m_undoList.count()) break;
     g = m_undoList.at(m_currentUndo);
     m_currentUndo++;
-    doActionGroup(g, c.flags, true); // do not setModified() or newUndo()
+    doActionGroup(g, c.flags);
   }
-  if (num > 0) {// only update the cursor if doActionGroup was called
-    // since we told doActionGroup() not to do this stuff, we need to do it now
+  if (num > 0) { // only update the cursor if doActionGroup was called
     c.view->updateCursor(g->end);
-    setModified(true);
-    newUndo();
   }
 }
 
@@ -2951,14 +2864,12 @@ found:
 }
 
 void KWriteDoc::clipboardChanged() {//slot
-//#if defined(_WS_X11_)
-  if (m_singleSelection) {
+  if (m_singleSelectMode) {
     disconnect(QApplication::clipboard(), SIGNAL(dataChanged()),
       this, SLOT(clipboardChanged()));
     deselectAll();
     updateViews();
   }
-//#endif
 }
 
 void KWriteDoc::setColors(QColor *colors) {

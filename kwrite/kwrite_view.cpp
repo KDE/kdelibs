@@ -72,11 +72,12 @@ struct BufferInfo {
 extern QPixmap *getBuffer(void *user);
 extern void releaseBuffer(void *user);
 
-KWriteView::KWriteView(KWrite *write, KWriteDoc *doc, bool HandleOwnDND)
-  : QWidget( write )
-{
-  m_mainview = write;
+KWriteView::KWriteView(KWriteDoc *doc, KWriteWidget *parent, KWrite *kWrite,
+  bool HandleOwnDND) : QWidget(parent, "KWriteView") {
+
   m_doc = doc;
+  m_widget = parent;
+  m_kWrite = kWrite;
 
   QWidget::setCursor(ibeamCursor);
   setBackgroundMode(NoBackground);
@@ -84,8 +85,8 @@ KWriteView::KWriteView(KWrite *write, KWriteDoc *doc, bool HandleOwnDND)
   setFocusPolicy(StrongFocus);
   move(2, 2);
 
-  xScroll = new QScrollBar(QScrollBar::Horizontal, write);
-  yScroll = new QScrollBar(QScrollBar::Vertical, write);
+  xScroll = new QScrollBar(QScrollBar::Horizontal, parent);
+  yScroll = new QScrollBar(QScrollBar::Vertical, parent);
   connect(xScroll, SIGNAL(valueChanged(int)), SLOT(changeXPos(int)));
   connect(yScroll, SIGNAL(valueChanged(int)), SLOT(changeYPos(int)));
 
@@ -189,7 +190,7 @@ void KWriteView::doEditCommand(VConfig &c, int cmdNum) {
       m_doc->invertSelection();
       return;
   }
-  if (m_mainview->isReadOnly()) return;
+  if (!m_kWrite->isReadWrite()) return;
 
   // write-commands
   switch (cmdNum) {
@@ -495,8 +496,8 @@ void KWriteView::getVConfig(VConfig &c) {
   c.view = this;
   c.cursor = cursor;
   c.cXPos = cXPos;
-  c.flags = m_mainview->m_configFlags;
-  c.wrapAt = m_mainview->m_wrapAt;
+  c.flags = m_kWrite->m_configFlags;
+  c.wrapAt = m_kWrite->m_wrapAt;
 }
 
 void KWriteView::changeState(VConfig &c) {
@@ -564,7 +565,7 @@ void KWriteView::insLine(int line) {
   //bookmarks
   KWBookmark *b;
 
-  for (b = m_mainview->bookmarks.first(); b != 0L; b = m_mainview->bookmarks.next()) {
+  for (b = m_kWrite->bookmarks.first(); b != 0L; b = m_kWrite->bookmarks.next()) {
     if (b->cursor.y() >= line) {
       b->cursor.incY();
       b->yPos += m_doc->fontHeight();
@@ -585,7 +586,7 @@ void KWriteView::delLine(int line) {
 
   //bookmarks
   KWBookmark *b;
-  for (b = m_mainview->bookmarks.first(); b != 0L; b = m_mainview->bookmarks.next()) {
+  for (b = m_kWrite->bookmarks.first(); b != 0L; b = m_kWrite->bookmarks.next()) {
     if (b->cursor.y() > line) {
       b->cursor.decY();
       b->yPos -= m_doc->fontHeight();
@@ -598,7 +599,7 @@ void KWriteView::updateCursor() {
 }
 
 void KWriteView::updateCursor(KWCursor &newCursor) {
-  updateCursor(newCursor, m_mainview->config());
+  updateCursor(newCursor, m_kWrite->config());
 }
 
 void KWriteView::updateCursor(KWCursor &newCursor, int flags) {
@@ -714,7 +715,7 @@ void KWriteView::updateView(int flags) {
 
 //debug("upView %d %d %d %d %d", exposeCursor, updateState, flags, newXPos, newYPos);
   if (exposeCursor || flags & ufDocGeometry)
-    emit m_mainview->newCurPos(); 
+    emit m_kWrite->newCurPos(/*m_doc->currentColumn(cursor), cursor.y()*/); 
   else {
     if (updateState == 0 && newXPos < 0 && newYPos < 0)
       return;
@@ -740,8 +741,8 @@ void KWriteView::updateView(int flags) {
   z = 0;
 
   do {
-    w = m_mainview->width() - 4;
-    h = m_mainview->height() - 4;
+    w = m_widget->width() - 4;
+    h = m_widget->height() - 4;
 
     xMax = m_doc->textWidth() - w;
     b = (xPos > 0 || xMax > 0);
@@ -879,7 +880,7 @@ void KWriteView::paintTextLines(int xPos, int yPos) {
   for (line = startLine; line <= endLine; line++) {
     if (r->start < r->end) {
 //debug("painttextline %d %d %d", line, r->start, r->end);
-      m_doc->paintTextLine(&paint, line, r->start, r->end, m_mainview->m_configFlags & cfShowTabs);
+      m_doc->paintTextLine(&paint, line, r->start, r->end, m_kWrite->m_configFlags & cfShowTabs);
       bitBlt(this, r->start - (xPos-2), line*h - yPos, drawBuffer, 0, 0,
         r->end - r->start, h);
     }
@@ -913,7 +914,7 @@ void KWriteView::paintCursor() {
     paint.drawLine(x - 2, h, x + 2, h);
   } else {
     paint.begin(drawBuffer);
-    m_doc->paintTextLine(&paint, cursor.y(), cXPos - 2, cXPos + 3, m_mainview->m_configFlags & cfShowTabs);
+    m_doc->paintTextLine(&paint, cursor.y(), cXPos - 2, cXPos + 3, m_kWrite->m_configFlags & cfShowTabs);
     bitBlt(this, x - 2, y, drawBuffer, 0, 0, 5, h);
   }
 
@@ -980,7 +981,7 @@ void KWriteView::keyPressEvent(QKeyEvent *event) {
   getVConfig(c);
 //  ascii = event->ascii();
 
-  if (!m_mainview->isReadOnly()) {
+  if (m_kWrite->isReadWrite()) {
     if (c.flags & cfTabIndents && m_doc->hasMarkedText()) {
       if (event->key() == Qt::Key_Tab) {
         m_doc->indent(c);
@@ -1002,7 +1003,7 @@ void KWriteView::keyPressEvent(QKeyEvent *event) {
   event->ignore();
 }
 /*
-  if (!m_mainview->isReadOnly()) {
+  if (m_kWrite->isReadWrite()) {
     if (c.flags & cfTabIndents && m_doc->hasMarkedText()) {
       if (event->key() == Qt::Key_Tab) {
         m_doc->indent(c);
@@ -1140,14 +1141,14 @@ void KWriteView::mousePressEvent(QMouseEvent *event) {
   if (event->button() == MidButton) {
     placeCursor(event->x(), event->y());
 
-    if (!m_mainview->isReadOnly())
-      m_mainview->paste();
+    if (m_kWrite->isReadWrite())
+      m_kWrite->paste();
   }
 
-  if (m_mainview->popup && event->button() == RightButton)
-    m_mainview->popup->popup(mapToGlobal(event->pos()));
+  if (m_kWrite->popup && event->button() == RightButton)
+    m_kWrite->popup->popup(mapToGlobal(event->pos()));
 
-  m_mainview->mousePressEvent(event); // this doesn't do anything, does it?
+//  m_widget->mousePressEvent(event); // this doesn't do anything, does it?
   // it does :-), we need this for KDevelop, so please don't uncomment it again -Sandy
 }
 
@@ -1168,8 +1169,8 @@ void KWriteView::mouseReleaseEvent(QMouseEvent *event) {
       placeCursor(event->x(), event->y(), 0);
       m_doc->updateViews();
     } else if (dragInfo.state == diNone) {
-      if (m_mainview->config() & cfMouseAutoCopy)
-        m_mainview->copy();
+      if (m_kWrite->config() & cfMouseAutoCopy)
+        m_kWrite->copy();
 
       killTimer(scrollTimer);
       scrollTimer = 0;
@@ -1252,7 +1253,7 @@ void KWriteView::drawContents(QPainter *p, int /*cx*/, int cy, int /*cw*/, int c
 	endLine = m_doc->contents().count() - 1;
 
     while (line <= endLine) {
-	m_doc->paintTextLine2(p, line, 0, width(), m_mainview->m_configFlags & cfShowTabs);
+	m_doc->paintTextLine2(p, line, 0, width(), m_kWrite->m_configFlags & cfShowTabs);
 
 	line++;
 	yPos += fontHeight;
@@ -1286,7 +1287,7 @@ void KWriteView::paintEvent(QPaintEvent *event) {
   yEnd = updateR.y() + updateR.height();
 
   while (y < yEnd) {
-    m_doc->paintTextLine(&paint, line, xStart, xEnd, m_mainview->m_configFlags & cfShowTabs);
+    m_doc->paintTextLine(&paint, line, xStart, xEnd, m_kWrite->m_configFlags & cfShowTabs);
     bitBlt(this, updateR.x(), y, drawBuffer, 0, 0, updateR.width(), h);
     line++;
     y += h;
@@ -1329,7 +1330,7 @@ void KWriteView::doDrag() {
   dragInfo.state = diDragging;
   dragInfo.dragObject = new QTextDrag(m_doc->markedText(0), this);
 
-  if (m_mainview->isReadOnly())
+  if (!m_kWrite->isReadWrite())
     dragInfo.dragObject->dragCopy();
   else {
 /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1352,7 +1353,7 @@ void KWriteView::doDrag() {
 }
 
 void KWriteView::dragEnterEvent(QDragEnterEvent *event) {
-  event->accept((QTextDrag::canDecode(event) && ! m_mainview->isReadOnly()) || QUriDrag::canDecode(event));
+  event->accept((QTextDrag::canDecode(event) && m_kWrite->isReadWrite()) || QUriDrag::canDecode(event));
 }
 
 /*
@@ -1379,13 +1380,13 @@ void KWriteView::dropEvent(QDropEvent *event) {
         if (s) {
           // Load the first file in this window
           if (s == urls.getFirst()) {
-            if (m_mainview->canDiscard())
-	      m_mainview->loadURL(KURL(s));
+            if (m_kWrite->canDiscard())
+	      m_kWrite->loadURL(KURL(s));
           }
         }
       }
     }
-  } else if (QTextDrag::canDecode(event) && ! m_mainview->isReadOnly()) {
+  } else if (QTextDrag::canDecode(event) && m_kWrite->isReadWrite()) {
     QString text;
 
     if (QTextDrag::decode(event, text)) {

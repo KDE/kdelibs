@@ -42,12 +42,22 @@
 #include <kfiledialog.h>
 #include <kmessagebox.h>
 #include <kio/netaccess.h>
+#include <kxmlgui.h>
+#include <kaction.h>
+#include <kstdaction.h>
+
+#include <kparts/partmanager.h>
+#include <kparts/mainwindow.h>
 
 #include <X11/Xlib.h> //used to have XSetTransientForHint()
+
+#define i18nop // a no-operation i18n(), only KWrite-internal and defined in Makefile.am
 
 #include <kwrite/kwrite.h>
 #include <kwrite/highlight.h>
 #include <kwrite/kwrite_doc.h>
+#include <kwrite/kwrite_part.h>
+#include <kwrite/kwrite_factory.h>
 
 #include "kwrite_keys.h"
 #include "kwdialog.h"
@@ -119,15 +129,93 @@ void releaseBuffer(void *user) {
   resizeBuffer(0, 0, 0);
 }
 
-KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const QString &name, bool HandleOwnDND)
-  : QWidget(parent, name) {
+
+// KWriteWidget
+
+KWriteWidget::KWriteWidget(QWidget *parent) 
+  : QWidget(parent, "KWriteWidget") {
+
+  setFocusPolicy(ClickFocus);
+}
+
+void KWriteWidget::paintEvent(QPaintEvent *event) {
+  int x, y;
+
+  QRect updateR = event->rect();                    // update rectangle
+//  debug("Update rect = (%i, %i, %i, %i)",
+//    updateR.x(), updateR.y(), updateR.width(), updateR.height());
+
+  int ux1 = updateR.x();
+  int uy1 = updateR.y();
+  int ux2 = ux1 + updateR.width();
+  int uy2 = uy1 + updateR.height();
+
+  QPainter paint;
+  paint.begin(this);
+
+  QColorGroup g = colorGroup();
+  x = width();
+  y = height();
+
+  paint.setPen(g.dark());
+  if (uy1 <= 0) paint.drawLine(0, 0, x-2, 0);
+  if (ux1 <= 0) paint.drawLine(0, 1, 0, y-2);
+
+  paint.setPen(black);
+  if (uy1 <= 1) paint.drawLine(1, 1, x-3, 1);
+  if (ux1 <= 1) paint.drawLine(1, 2, 1, y-3);
+
+  paint.setPen(g.midlight());
+  if (uy2 >= y-1) paint.drawLine(1, y-2, x-3, y-2);
+  if (ux2 >= x-1) paint.drawLine(x-2, 1, x-2, y-2);
+
+  paint.setPen(g.light());
+  if (uy2 >= y) paint.drawLine(0, y-1, x-2, y-1);
+  if (ux2 >= x) paint.drawLine(x-1, 0, x-1, y-1);
+
+  x -= 2 + 16;
+  y -= 2 + 16;
+  if (ux2 > x && uy2 > y) {
+    paint.fillRect(x, y, 16, 16, g.background());
+  }
+  paint.end();
+}
+
+void KWriteWidget::resizeEvent(QResizeEvent *) {
+//  debug("Resize %d, %d", event->size().width(), event->size().height());
+  m_view->resize(width(), height());
+  m_view->tagAll();
+  m_view->updateView(0 /*ufNoScroll*/);
+}
+
+
+// KWrite
+
+KWrite::KWrite(QWidget *parentWidget, QObject *parent, int flags, KWriteDoc *doc)
+  : KParts::ReadWritePart(parent, "KWritePart") {
+  
+//KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const QString &name, bool HandleOwnDND)
+//  : QWidget(parent, name) {
 
   if (!bufferInfoList)
     bufferInfoList = new QList<BufferInfo>;
 
-  m_doc = doc;
-  m_view = new KWriteView(this, doc, HandleOwnDND);
+  setInstance( KWriteFactory::instance() );
 
+  if (flags & kBrowser) {
+    setXMLFile("kwrite_browser.rc");
+    (void) new KWriteBrowserExtension(this);
+  } else setXMLFile( "kwrite.rc" );
+
+  // if no external doc given, create a new one
+  if (doc == 0L) {
+    doc = new KWriteDoc(HlManager::self());
+  }
+  doc->incRefCount();
+  m_doc = doc;
+  m_widget = new KWriteWidget(parentWidget);
+  m_view = new KWriteView(m_doc, m_widget, this, flags & kHandleOwnDND);
+  m_widget->m_view = m_view;
 
   // some defaults
   m_configFlags = cfAutoIndent | cfSpaceIndent | cfBackspaceIndents
@@ -226,14 +314,69 @@ KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const QString &name, bool Handle
   kspell.ksc = new KSpellConfig; //default KSpellConfig to start
   kspell.kspellon = FALSE;
 
-  m_view->setFocus();
-  resize(parent->width(), parent->height());
+//  m_view->setFocus();
+  m_widget->resize(parentWidget->width(), parentWidget->height());
+  
+
+  // KPart initialisation
+  setWidget(m_widget);
+
+  m_cut = KStdAction::cut( this, SLOT( cut() ), actionCollection(), "edit_cut" );
+  m_copy = KStdAction::copy( this, SLOT( copy() ), actionCollection(), "edit_copy" );
+  m_paste = KStdAction::paste( this, SLOT( paste() ), actionCollection(), "edit_paste" );
+  m_undo = KStdAction::undo( this, SLOT( undo() ), actionCollection(), "edit_undo" );
+  m_redo = KStdAction::redo( this, SLOT( redo() ), actionCollection(), "edit_redo" );
+  (void)new KAction( i18n( "Undo History" ), 0, this, SLOT( undoHistory() ), actionCollection(), "undohistory" );
+  m_indent = new KAction( i18n( "&Indent"), 0, this, SLOT( indent() ), actionCollection(), "indent" );
+  m_unindent = new KAction( i18n( "Unindent" ), 0, this, SLOT( unindent() ), actionCollection(), "unindent" );
+  m_cleanIndent = new KAction( i18n( "Clean indent" ), 0, this, SLOT( cleanIndent() ), actionCollection(), "clean_indent" );
+  KStdAction::selectAll( this, SLOT( selectAll() ), actionCollection(), "select_all" );
+  (void)new KAction( i18n( "Unselect All" ), 0, this, SLOT( unselectAll() ), actionCollection(), "unselect_all" );
+  (void)new KAction( i18n( "Invert Selection" ), 0, this, SLOT( invertSelection() ), actionCollection(), "invert_select" );
+  m_spell = KStdAction::spelling( this, SLOT( spellCheck() ), actionCollection(), "spell_check" );
+
+  // get list of supported programming languages
+  QStringList langList;
+  HlManager *hlManager = m_doc->hlManager();
+  for (int z = 0; z < hlManager->highlights(); z++) {
+    langList.append(hlManager->hlName(z));
+  }
+
+  m_langAction = new KSelectAction( i18n( "Set highlighting" ), 0, 
+    actionCollection(), "highlight_select" );
+  m_langAction->setItems( langList );
+  m_langAction->setCurrentItem( 1 );
+  connect( m_langAction, SIGNAL( activated( int ) ), this, SLOT( setHighlight( int ) ) );
+
+  KStdAction::find( this, SLOT( find() ), actionCollection(), "find" );
+  m_replace = KStdAction::replace( this, SLOT( replace() ), actionCollection(), "replace" );
+  KStdAction::findNext( this, SLOT( findAgain() ), actionCollection(), "find_again" );
+  KStdAction::gotoLine( this, SLOT( gotoLine() ), actionCollection(), "goto_line" );
+
+  (void) new KAction( i18n( "Set bookmark" ), KStdAccel::addBookmark(), this, SLOT( setBookmark() ), 
+    actionCollection(), "set_bookmark" );
+  KStdAction::addBookmark( this, SLOT( addBookmark() ), actionCollection(), "add_bookmark" );
+  (void) new KAction( i18n( "Clear bookmarks" ), 0, this, SLOT( clearBookmarks() ), 
+    actionCollection(), "clear_bookmarks" );
+
+  // TODO: add KListAction here for bookmark list.
+
+//  connect( m_kwrite, SIGNAL( fileChanged() ), this, SLOT( newCaption() ) );
+  //connect( m_kwrite->view(), SIGNAL( dropEventPass( QDropEvent* ) ), this, SLOT( slotDropEvent( QDropEvent* ) ) );
+
+  m_cut->setEnabled( false );
+  m_copy->setEnabled( false );
+  m_paste->setEnabled( false );
+  m_undo->setEnabled( false );
+  m_redo->setEnabled( false );
+
+  m_langAction->setCurrentItem( 0 );
 }
 
 KWrite::~KWrite() {
+  m_doc->decRefCount(); // deletes itself if RefCount becomes zero
   delete m_dispatcher;
-
-  delete popup; //right mouse button popup
+  delete popup; // right mouse button popup
 
   if (kspell.kspell) {
     kspell.kspell->setAutoDelete(true);
@@ -285,28 +428,24 @@ int KWrite::config() {
   int flags;
 
   flags = m_configFlags;
-  if (m_doc->singleSelection()) flags |= cfSingleSelection;
+  if (m_doc->isSingleSelectMode()) flags |= cfSingleSelectMode;
   return flags;
 }
 
 void KWrite::setConfig(int flags) {
   bool updateView;
 
-  // cfSingleSelection is a doc-property
-  m_doc->setSingleSelection(flags & cfSingleSelection);
-  flags &= ~cfSingleSelection;
+  // cfSingleSelectMode is a doc-property
+  m_doc->setSingleSelectMode(flags & cfSingleSelectMode);
+  flags &= ~cfSingleSelectMode;
 
   if (flags != m_configFlags) {
     // update the view if visibility of tabs has changed
     updateView = (flags ^ m_configFlags) & cfShowTabs;
     m_configFlags = flags;
-    emit newStatus();
+    emit newConfig();
     if (updateView) m_view->update();
   }
-}
-
-int KWrite::tabWidth() {
-  return m_doc->tabChars();
 }
 
 void KWrite::setTabWidth(int w) {
@@ -314,12 +453,24 @@ void KWrite::setTabWidth(int w) {
   m_doc->updateViews();
 }
 
-int KWrite::undoSteps() {
-  return m_doc->undoSteps();
+int KWrite::tabWidth() {
+  return m_doc->tabWidth();
 }
 
 void KWrite::setUndoSteps(int s) {
   m_doc->setUndoSteps(s);
+}
+
+int KWrite::undoSteps() {
+  return m_doc->undoSteps();
+}
+
+void KWrite::setColors(QColor *colors) {
+  m_doc->setColors(colors);
+}
+
+void KWrite::getColors(QColor *colors) {
+  colors = m_doc->colors();
 }
 
 /*
@@ -328,39 +479,28 @@ bool KWrite::isOverwriteMode() {
 }
 */
 
-bool KWrite::isReadOnly() {
-  return m_doc->readOnly();
+void KWrite::setReadWrite(bool readWrite) {
+  m_doc->setReadWrite(readWrite);
+}
+
+bool KWrite::isReadWrite() {
+  return m_doc->isReadWrite();
+}
+
+void KWrite::setModified(bool modified) {
+  m_doc->setModified(modified);
 }
 
 bool KWrite::isModified() {
-  return m_doc->modified();
-}
-
-void KWrite::setReadOnly(bool m) {
-  m_doc->setReadOnly(m);
-}
-
-void KWrite::setModified(bool m) {
-  m_doc->setModified(m);
+  return m_doc->isModified();
 }
 
 bool KWrite::isLastView() {
   return m_doc->isLastView(1);
 }
 
-KWriteDoc *KWrite::doc() {
-  return m_doc;
-}
-
-KWriteView *KWrite::view() {
-  return m_view;
-}
-
 int KWrite::undoState() {
-  if (isReadOnly())
-    return 0; 
-  else
-    return m_doc->undoState();
+  return m_doc->undoState();
 }
 
 int KWrite::nextUndoType() {
@@ -389,8 +529,33 @@ void KWrite::copySettings(KWrite *w) {
   m_searchFlags = w->m_searchFlags;
 }
 
+void KWrite::emitNewStatus() {
+  bool rw = isReadWrite();
+  bool mt = hasMarkedText();
+
+  m_cut->setEnabled(rw && mt);
+  m_copy->setEnabled(rw && mt);
+  m_paste->setEnabled(rw);
+  m_replace->setEnabled(rw);
+  m_indent->setEnabled(rw);
+  m_unindent->setEnabled(rw);
+  m_cleanIndent->setEnabled(rw);
+  m_spell->setEnabled(rw);
+
+  emit newStatus();
+}
+
+void KWrite::emitNewUndo() {
+  int state = undoState();
+
+  m_undo->setEnabled(state & kUndoPossible);
+  m_redo->setEnabled(state & kRedoPossible);
+
+  emit newUndo();
+}
+
 void KWrite::colDlg() {
-  ColorDialog *dlg = new ColorDialog(this, m_doc->colors());
+  ColorDialog *dlg = new ColorDialog(m_widget, m_doc->colors());
 
   if (dlg->exec() == QDialog::Accepted) {
     dlg->getColors(m_doc->colors());
@@ -412,13 +577,6 @@ void KWrite::doStateCommand(int cmdNum) {
   }
 }
 
-void KWrite::setColors(QColor *colors) {
-  m_doc->setColors(colors);
-}
-
-void KWrite::getColors(QColor *colors) {
-  colors = m_doc->colors();
-}
 
 void KWrite::toggleInsert() {
   setConfig(m_configFlags ^ cfOvr);
@@ -510,17 +668,17 @@ bool KWrite::loadFile(const QString &name, int flags) {
     if (flags & lfNewFile)
       return true;
 
-    KMessageBox::sorry(this, i18n("The specified File does not exist"));
+    KMessageBox::sorry(m_widget, i18n("The specified File does not exist"));
     return false;
   }
 
   if (info.isDir()) {
-    KMessageBox::sorry(this, i18n("You have specified a directory"));
+    KMessageBox::sorry(m_widget, i18n("You have specified a directory"));
     return false;
   }
 
   if (!info.isReadable()) {
-    KMessageBox::sorry(this, i18n("You do not have read permission to this file"));
+    KMessageBox::sorry(m_widget, i18n("You do not have read permission to this file"));
     return false;
   }
 
@@ -531,7 +689,7 @@ bool KWrite::loadFile(const QString &name, int flags) {
     return true;
   }
 
-  KMessageBox::sorry(this, i18n("An Error occured while trying to open this Document"));
+  KMessageBox::sorry(m_widget, i18n("An Error occured while trying to open this Document"));
   return false;
 }
 
@@ -539,7 +697,7 @@ bool KWrite::writeFile(const QString &name) {
 
   QFileInfo info(name);
   if (info.exists() && !info.isWritable()) {
-    KMessageBox::sorry(this, i18n("You do not have write permission to this file"));
+    KMessageBox::sorry(m_widget, i18n("You do not have write permission to this file"));
     return false;
   }
 
@@ -549,7 +707,7 @@ bool KWrite::writeFile(const QString &name) {
     f.close();
     return true;//m_doc->setFileName(name);
   }
-  KMessageBox::sorry(this, i18n("An Error occured while trying to open this Document"));
+  KMessageBox::sorry(m_widget, i18n("An Error occured while trying to open this Document"));
   return false;
 }
 
@@ -698,7 +856,7 @@ void KWrite::setFileName(const QString &s) {
 
 bool KWrite::canDiscard() {
   if (isModified()) {
-    int query = KMessageBox::warningYesNoCancel(this,
+    int query = KMessageBox::warningYesNoCancel(m_widget,
                 i18n("The current Document has been modified.\nWould you like to save it?"));
 
     switch (query) {
@@ -707,7 +865,7 @@ bool KWrite::canDiscard() {
 	  return false;
 
 	if (isModified()) {
-	  query = KMessageBox::warningYesNo(this,
+	  query = KMessageBox::warningYesNo(m_widget,
 	          i18n("Could not save the document.\nDiscard it and continue?"));
 
 	  if (query == 1)
@@ -727,6 +885,7 @@ void KWrite::newDoc() {
     clear();
 }
 
+/*
 void KWrite::open() {
   KURL url;
 
@@ -784,7 +943,7 @@ KWrite::fileResult KWrite::saveAs() {
       info.setFile(url.path());
 
       if (info.exists())
-        query = KMessageBox::warningYesNo(this,
+        query = KMessageBox::warningYesNo(m_widget,
 	        i18n("A Document with this Name already exists.\nDo you want to overwrite it?"));
     }
   }
@@ -794,6 +953,18 @@ KWrite::fileResult KWrite::saveAs() {
   writeURL(url);
   return OK;
 }
+*/
+
+bool KWrite::openFile() {
+  loadFile(m_file);
+  m_doc->setFileName(m_file);
+  return true;
+}
+
+bool KWrite::saveFile() {
+  return writeFile(m_file);
+}
+
 
 void KWrite::doCursorCommand(int cmdNum) {
   VConfig c;
@@ -826,7 +997,7 @@ void KWrite::configureKWriteKeys() {
   
   m_dispatcher->getData(data);
   
-  KDialogBase *dlg = new KDialogBase(this, "tabdialog", true, 
+  KDialogBase *dlg = new KDialogBase(m_widget, "tabdialog", true, 
     i18n("KWrite Keys"), KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok);
   
   KWKeyConfigTab *keys = new KWKeyConfigTab(dlg, data);
@@ -850,13 +1021,14 @@ void KWrite::setKeyData(const KWKeyData &data) {
 }
 
 void KWrite::clear() {
-  if (isReadOnly())
+  if (!isReadWrite())
     return;
 
   m_doc->clear();
   m_doc->clearFileName();
   m_doc->updateViews();
 }
+
 /*
 void KWrite::cut() {
   if (isReadOnly())
@@ -890,8 +1062,9 @@ void KWrite::redo() {
   redoMultiple(1);
 }
 */
+
 void KWrite::undoMultiple(int count) {
-  if (isReadOnly())
+  if (!isReadWrite())
     return;
 
   VConfig c;
@@ -901,7 +1074,7 @@ void KWrite::undoMultiple(int count) {
 }
 
 void KWrite::redoMultiple(int count) {
-  if (isReadOnly())
+  if (!isReadWrite())
     return;
 
   VConfig c;
@@ -911,7 +1084,7 @@ void KWrite::redoMultiple(int count) {
 }
 
 void KWrite::undoHistory() {
-  UndoHistory *undoH = new UndoHistory(this, this, "UndoHistory", true);
+  UndoHistory *undoH = new UndoHistory(this, m_widget, "UndoHistory", true);
 
   undoH->setCaption(i18n("Undo/Redo History"));
   connect(this, SIGNAL(newUndo()), undoH, SLOT(newUndo()));
@@ -933,7 +1106,7 @@ void KWrite::indent() {
 */
 }
 
-void KWrite::unIndent() {
+void KWrite::unindent() {
 /*
   if (isReadOnly())
     return;
@@ -963,7 +1136,7 @@ void KWrite::selectAll() {
   m_doc->updateViews();
 }
 
-void KWrite::deselectAll() {
+void KWrite::unselectAll() {
   m_doc->deselectAll();
   m_doc->updateViews();
 }
@@ -989,7 +1162,7 @@ void KWrite::find() {
   if (!m_doc->hasMarkedText())
     m_searchFlags &= ~sfSelected;
 
-  SearchDialog *searchDialog = new SearchDialog(this, m_searchForList, m_replaceWithList, m_searchFlags & ~sfReplace);
+  SearchDialog *searchDialog = new SearchDialog(m_widget, m_searchForList, m_replaceWithList, m_searchFlags & ~sfReplace);
 
   m_view->focusOutEvent(0L);// QT bug ?
 
@@ -1004,13 +1177,13 @@ void KWrite::find() {
 }
 
 void KWrite::replace() {
-  if (isReadOnly())
+  if (!isReadWrite())
     return;
 
   if (!m_doc->hasMarkedText())
     m_searchFlags &= ~sfSelected;
 
-  SearchDialog *searchDialog = new SearchDialog(this, m_searchForList, m_replaceWithList, m_searchFlags | sfReplace);
+  SearchDialog *searchDialog = new SearchDialog(m_widget, m_searchForList, m_replaceWithList, m_searchFlags | sfReplace);
 
   m_view->focusOutEvent(0L);// QT bug ?
 
@@ -1035,7 +1208,7 @@ void KWrite::findAgain() {
 }
 
 void KWrite::gotoLine() {
-  GotoLineDialog *dlg = new GotoLineDialog(this, m_view->cursor.y() + 1, m_doc->numLines());
+  GotoLineDialog *dlg = new GotoLineDialog(m_widget, m_view->cursor.y() + 1, m_doc->numLines());
 
   if (dlg->exec() == QDialog::Accepted) {
     KWCursor cursor(0, dlg->getLine() - 1);
@@ -1108,23 +1281,23 @@ void KWrite::searchAgain(SConfig &s) {
         if (!(s.flags & sfBackward)) {
           // forward search
           str = i18n("End of document reached.\nContinue from the beginning?");
-          query = KMessageBox::questionYesNo(this, str, i18n("Find"));
+          query = KMessageBox::questionYesNo(m_widget, str, i18n("Find"));
 	} else {
           // backward search
           str = i18n("Beginning of document reached.\nContinue from the end");
-          query = KMessageBox::questionYesNo(this, str, i18n("Find"));
+          query = KMessageBox::questionYesNo(m_widget, str, i18n("Find"));
 	}
 
 	continueSearch(s);
       } else
-        KMessageBox::sorry(this, i18n("Search string not found!"), i18n("Find"));
+        KMessageBox::sorry(m_widget, i18n("Search string not found!"), i18n("Find"));
     }
   }
   while (query == 0);
 }
 
 void KWrite::replaceAgain() {
-  if (isReadOnly())
+  if (!isReadWrite())
     return;
 
   m_replaces = 0;
@@ -1192,8 +1365,8 @@ void KWrite::doReplaceAction(int result, bool found) {
       m_view->updateCursor(cursor); //does deselectAll()
       exposeFound(s.cursor, slen, (s.flags & sfAgain) ? 0 : ufUpdateOnScroll, true);
       if (m_replacePrompt == 0L) {
-        m_replacePrompt = new ReplacePrompt(this);
-        XSetTransientForHint(qt_xdisplay(), m_replacePrompt->winId(), topLevelWidget()->winId());
+        m_replacePrompt = new ReplacePrompt(m_widget);
+        XSetTransientForHint(qt_xdisplay(), m_replacePrompt->winId(), m_widget->topLevelWidget()->winId());
         m_doc->setPseudoModal(m_replacePrompt);//disable();
         connect(m_replacePrompt, SIGNAL(clicked()), this, SLOT(replaceSlot()));
         m_replacePrompt->show(); //this is not modal
@@ -1230,7 +1403,7 @@ void KWrite::exposeFound(KWCursor &cursor, int slen, int flags, bool replace) {
   }
   if (y1 < yPos || y2 > yPos + m_view->height()) {
     xPos = x2 - m_view->width();
-    yPos = m_doc->fontHeight()*cursor.y() - height()/3;
+    yPos = m_doc->fontHeight()*cursor.y() - m_widget->height()/3;
   }
   m_view->setPos(xPos, yPos);
   m_view->updateView(flags);// | ufPos, xPos, yPos);
@@ -1251,7 +1424,7 @@ bool KWrite::askReplaceEnd() {
   if (s.flags & sfFinished) {
     // replace finished
     str = i18n("%1 replace(s) made").arg(m_replaces);
-    KMessageBox::information(this, str, i18n("Replace"));
+    KMessageBox::information(m_widget, str, i18n("Replace"));
     return true;
   }
 
@@ -1259,11 +1432,11 @@ bool KWrite::askReplaceEnd() {
   if (!(s.flags & sfBackward)) {
     // forward search
     str = i18n("%1 replace(s) made.\nEnd of document reached.\nContinue from the beginning?").arg(m_replaces);
-    query = KMessageBox::questionYesNo(this, str, i18n("Replace"));
+    query = KMessageBox::questionYesNo(m_widget, str, i18n("Replace"));
   } else {
     // backward search
     str = i18n("%1 replace(s) made.\nBeginning of document reached.\nContinue from the end?").arg(m_replaces);
-    query = KMessageBox::questionYesNo(this, str, i18n("Replace"));
+    query = KMessageBox::questionYesNo(m_widget, str, i18n("Replace"));
   }
 
   m_replaces = 0;
@@ -1293,7 +1466,8 @@ void KWrite::setBookmark() {
   for (z = 1; z <= 10; z++)
     popup->insertItem(QString::number(z), z);
 
-  popup->move(mapToGlobal(QPoint((width() - 41) / 2, (height() - 211) / 2)));
+  popup->move(m_widget->mapToGlobal(
+    QPoint((m_widget->width() - 41) / 2, (m_widget->height() - 211) / 2)));
   z = popup->exec();
 
   delete popup;
@@ -1544,6 +1718,7 @@ void KWrite::writeSessionConfig(KConfig *config) {
   }
 }
 
+
 /*
 void KWrite::setHighlight(Highlight *hl) {
   if (hl) {
@@ -1552,6 +1727,15 @@ void KWrite::setHighlight(Highlight *hl) {
   }
 }
 */
+
+int KWrite::highlightNum() {
+  return m_doc->highlightNum();
+}
+
+void KWrite::setHighlight(int n) {
+  m_doc->setHighlight(n);
+  m_doc->updateViews();
+}
 
 void KWrite::hlDef() {
   DefaultsDialog *dlg;
@@ -1571,7 +1755,7 @@ void KWrite::hlDef() {
     itemStyleList.append(new ItemStyle(*defItemStyleList->at(z)));
   }
   */
-  dlg = new DefaultsDialog(hlManager, &defaultStyleList, &defaultFont, this);
+  dlg = new DefaultsDialog(hlManager, &defaultStyleList, &defaultFont, m_widget);
 
   dlg->setCaption(i18n("Highlight Defaults"));
 
@@ -1596,7 +1780,7 @@ void KWrite::hlDlg() {
   //this gets the data from the KConfig object
   hlManager->getHlDataList(hlDataList);
   dlg = new HighlightDialog(hlManager, &hlDataList,
-    m_doc->highlightNum(), this);
+    m_doc->highlightNum(), m_widget);
   dlg->setCaption(i18n("Highlight Settings"));
 //  dlg->hlChanged(m_doc->highlightNum());
   if (dlg->exec() == QDialog::Accepted) {
@@ -1606,27 +1790,19 @@ void KWrite::hlDlg() {
   delete dlg;
 }
 
-int KWrite::getHl() {
-  return m_doc->highlightNum();
-}
-
-void KWrite::setHl(int n) {
-  m_doc->setHighlight(n);
-  m_doc->updateViews();
-}
-
-int KWrite::getEol() {
+int KWrite::eolMode() {
   return m_doc->eolMode();
 }
 
-void KWrite::setEol(int eol) {
-  if (isReadOnly())
+void KWrite::setEolMode(int eol) {
+  if (!isReadWrite())
     return;
 
   m_doc->setEolMode(eol);
   m_doc->setModified(true);
 }
 
+/*
 void KWrite::paintEvent(QPaintEvent *event) {
   int x, y;
 
@@ -1676,8 +1852,9 @@ void KWrite::resizeEvent(QResizeEvent *) {
 
   m_view->resize(width(), height());
   m_view->tagAll();
-  m_view->updateView(0 /*ufNoScroll*/);
+  m_view->updateView(0); // ufNoScroll);
 }
+*/
 
 //  Spellchecking methods
 
@@ -1689,12 +1866,12 @@ void KWrite::setKSConfig(const KSpellConfig _ksc) {
   *kspell.ksc = _ksc;
 }
 
-void KWrite::spellcheck() {
-  if (isReadOnly())
+void KWrite::spellCheck() {
+  if (!isReadWrite())
     return;
 
-  kspell.kspell= new KSpell(this, "KWrite: Spellcheck", this,
-                      SLOT(spellcheck2(KSpell *)));
+  kspell.kspell= new KSpell(m_widget, "KWrite: Spellcheck", this,
+                      SLOT(spellCheck2(KSpell *)));
 
   connect(kspell.kspell, SIGNAL(death()),
           this, SLOT(spellCleanDone()));
@@ -1709,8 +1886,8 @@ void KWrite::spellcheck() {
           this, SLOT(spellResult(const char *)));
 }
 
-void KWrite::spellcheck2(KSpell *) {
-  m_doc->setReadOnly(TRUE);
+void KWrite::spellCheck2(KSpell *) {
+  m_doc->setReadWrite(false);
 
   // this is a hack, setPseudoModal() has been hacked to recognize 0x01
   // as special(never tries to delete it)
@@ -1784,7 +1961,7 @@ void KWrite::corrected(QString originalword, QString newword, unsigned pos) {
 }
 
 void KWrite::spellResult(const char *) {
-  deselectAll(); //!!! this should not be done with persistent selections
+  unselectAll(); //!!! this should not be done with persistent selections
 
 //  if (kspellReplaceCount) m_doc->recordReset();
 
@@ -1808,7 +1985,7 @@ void KWrite::spellResult(const char *) {
   }
 
   m_doc->setPseudoModal(0L);
-  m_doc->setReadOnly(FALSE);
+  m_doc->setReadWrite(true);
 
   // if we marked up the text, clear it now
   if (kspell.kspellMispellCount)
@@ -1828,18 +2005,18 @@ void KWrite::spellCleanDone() {
   kspell.kspellon = FALSE;
 
   if (status == KSpell::Error) {
-     KMessageBox::sorry(this, i18n("ISpell could not be started.\n"
+     KMessageBox::sorry(m_widget, i18n("ISpell could not be started.\n"
      "Please make sure you have ISpell properly configured and in your PATH."));
   } else if (status == KSpell::Crashed) {
      m_doc->setPseudoModal(0L);
-     m_doc->setReadOnly(FALSE);
+     m_doc->setReadWrite(true);
 
      // if we marked up the text, clear it now
      if (kspell.kspellMispellCount)
         m_doc->unmarkFound();
 
      m_doc->updateViews();
-     KMessageBox::sorry(this, i18n("ISpell seems to have crashed."));
+     KMessageBox::sorry(m_widget, i18n("ISpell seems to have crashed."));
   } else {
      emit spellcheck_done();
   }

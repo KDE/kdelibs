@@ -23,8 +23,6 @@
 #ifndef __KWVIEV_H__
 #define __KWVIEV_H__
 
-#define i18nop // a no-operation i18n()
-
 #include <qstring.h>
 #include <qdialog.h>
 #include <qkeycode.h>
@@ -39,10 +37,13 @@
 #include <kconfig.h>
 #include <kparts/part.h>
 
+class KAction;
+class KSelectAction;
 
 class KWriteDoc;
 class KWCommandDispatcher;
 class KWKeyData;
+class HlManager;
 class KTextPrint;
 class KSpell;
 class KSpellConfig;
@@ -79,7 +80,7 @@ enum KWConfigFlags {
   cfPersistent        = 0x100,
   cfDelOnInput        = 0x200,
   cfMouseAutoCopy     = 0x400,
-  cfSingleSelection   = 0x800,
+  cfSingleSelectMode  = 0x800,
   cfVerticalSelect    = 0x1000,
   cfXorSelect         = 0x2000,
 
@@ -261,34 +262,82 @@ class KWBookmark {
     QString Name;
 };
 
+class KWriteWidget : public QWidget {
+    Q_OBJECT
+    friend KWrite;
+  public:
+    KWriteWidget(QWidget *parent);
+    
+  protected:
+    virtual void paintEvent(QPaintEvent *);
+    virtual void resizeEvent(QResizeEvent *);
+
+    KWriteView *m_view;
+};
+
 /**
   The KWrite text editor widget. It has many options, document/view
   architecture and syntax highlight.
   @author Jochen Wilhelmy
 */
-class KWrite : public QWidget {
+class KWrite : public KParts::ReadWritePart /*QWidget*/ {
     Q_OBJECT
 
     friend KWriteView;
     friend KWriteDoc;
 
   public:
+    enum ConstructorFlags {
+      kBrowser = 1,
+      kHandleOwnDND = 2
+    };
 
+    enum UndoFlags {
+      kUndoPossible = 1,
+      kRedoPossible = 2
+    };
+    
     /**
       The document can be used by more than one KWrite objects.
       HandleOwnURIDrops should be set to false for a container that can handle URI drops
       better than KWriteView does.
     */
-    KWrite(KWriteDoc *, QWidget *parent = 0L, const QString &name = QString::null, 
-      bool HandleOwnURIDrops = true);
+//    KWrite(KWriteDoc *, QWidget *parent = 0L, const QString &name = QString::null, 
+//      bool HandleOwnURIDrops = true);
+
+    KWrite(QWidget * parentWidget, QObject *parent, int flags = kHandleOwnDND,
+      KWriteDoc *doc = 0L);
 
     /**
-      The destructor does not delete the document
+      Decrements the reference count of the document and deletes it if zero
     */
-    ~KWrite();
+    virtual ~KWrite();
 
+
+//sub-objects
+
+    /**
+      returns the editor widget
+    */
+    KWriteWidget *widget() {return m_widget;}
+    
+    /**
+      returns the view widget
+    */
+    KWriteView *view() {return m_view;}
+
+    /**
+      returns the document
+    */
+    KWriteDoc *doc() {return m_doc;}
+    
 
 //status and config functions
+
+    /**
+      Sets the current cursor position
+    */
+    void setCursorPosition(int line, int col);
 
     /**
       Returns the current line number, that is the line the cursor is on.
@@ -309,26 +358,22 @@ class KWrite : public QWidget {
     int currentCharNum();
 
     /**
-      Sets the current cursor position
-    */
-    void setCursorPosition(int line, int col);
-
-    /**
-      Returns the config flags. See the cfXXX constants in the .h file.
-    */
-    int config();// {return m_configFlags;}
-
-    /**
       Sets the config flags
     */
     void setConfig(int);
 
+    /**
+      Returns the config flags. See the cfXXX constants in the .h file.
+    */
+    int config();
+
+
+    void setWordWrapAt(int wrapAt) {m_wrapAt = wrapAt;}
     int wordWrapAt() {return m_wrapAt;}
-    void setWordWrapAt(int at) {m_wrapAt = at;}
-    int tabWidth();
     void setTabWidth(int);
-    int undoSteps();
+    int tabWidth();
     void setUndoSteps(int);
+    int undoSteps();
 
     void setColors(QColor *colors);
     void getColors(QColor *colors);
@@ -336,24 +381,26 @@ class KWrite : public QWidget {
   //    bool isOverwriteMode();
 
     /**
-      Returns true if the document is in read only mode.
+      Sets Read/Write mode, which is a doc-property. 
+      ReadWritePart::m_bReadWrite is therefore not used.
     */
-    bool isReadOnly();
+    virtual void setReadWrite(bool readWrite = true);
+
+    /**
+      Returns true if the document is in read/write mode.
+    */
+    virtual bool isReadWrite();
+
+    /**
+      Sets the modification status of the document.
+      ReadWritePart::m_bModified is not used.
+    */
+    virtual void setModified(bool modified = true);
 
     /**
       Returns true if the document has been modified.
     */
-    bool isModified();
-
-    /**
-      Sets the read-only flag of the document
-    */
-    void setReadOnly(bool);
-
-    /**
-      Sets the modification status of the document
-    */
-    void setModified(bool m = true);
+    virtual bool isModified();
 
     void findHightlighting(const QString &filename);
 
@@ -361,16 +408,6 @@ class KWrite : public QWidget {
       Returns true if this editor is the only owner of its document
     */
     bool isLastView();
-
-    /**
-      Returns the document object
-    */
-    KWriteDoc *doc();
-
-    /**
-      Returns the view object
-    */
-    KWriteView *view();
 
     /**
       Bit 0 : undo possible, Bit 1 : redo possible.
@@ -408,6 +445,18 @@ class KWrite : public QWidget {
 
     void copySettings(KWrite *);
 
+
+    /**
+      enables or disables cut, copy and other edit commands 
+      and emits the newStatus signal
+    */
+    virtual void emitNewStatus();
+
+    /** 
+      enables or disables undo and redo and emits the newUndo signal
+    */  
+    virtual void emitNewUndo();
+    
   public slots:
 
     /**
@@ -438,13 +487,19 @@ class KWrite : public QWidget {
   signals:
 
     /**
-      The cursor position has changed. Get the values with currentLine()
-      and currentColumn()
+      The cursor position has changed. Use currentLine() and currentColumn to
+      get the position
     */
     void newCurPos();
 
     /**
-      Modified flag or config flags have changed
+      The configuration has changed. This is used to update the status bar
+    */
+    void newConfig();
+    
+    /**
+      isReadWrite(), isModified() or hasMarkedText() have changed. This is
+      used to enbable/disable cut, copy and other edit commands. 
     */
     void newStatus();
 
@@ -454,19 +509,13 @@ class KWrite : public QWidget {
     void newUndo();
 
     /**
-      The marked text state has changed. This can be used to enable/disable
-      cut and copy
-    */
-    void newMarkStatus();
-
-    /**
       The file name has changed. The main window can use this to change
       its caption
     */
     void fileChanged();
 
     /**
-      Emits messages for the status line
+      Emits messages for the status bar
     */
     void statusMsg(const QString &);
 
@@ -626,37 +675,47 @@ class KWrite : public QWidget {
       current file if it has been modified. This starts the automatic
       highlight selection.
     */
-    void open();
+//    void open();
 
     /**
       Calling this method will let the user insert a file at the current
       cursor position.
     */
-    void insertFile();
+//    void insertFile();
 
     /**
       Saves the file if necessary under the current file name. If the current file
       name is Untitled, as it is after a call to newFile(), this routing will
       call saveAs().
     */
-    fileResult save();
+//    fileResult save();
 
     /**
       Allows the user to save the file under a new name. This starts the
       automatic highlight selection.
     */
-    fileResult saveAs();
+//    fileResult saveAs();
+
+
+    /**
+      open file for KParts
+    */
+    virtual bool openFile();
+
+    /**
+      save file for KParts
+    */
+    virtual bool saveFile();
 
   protected:
-
 //    KFM *kfm;
 //    QString kfmURL;
 //    QString kfmFile;
 //    fileAction kfmAction;
 //    int kfmFlags;
 
-//command processors
 
+//command processors
   public slots:
 
     /**
@@ -669,17 +728,21 @@ class KWrite : public QWidget {
     */
     void doEditCommand(int cmdNum);
 
-//    void configureKWriteKeys();
+    //void configureKWriteKeys();
   public:
     void getKeyData(KWKeyData &);
     void setKeyData(const KWKeyData &);
-  protected:
 
+  protected:
     KWCommandDispatcher *m_dispatcher;
     bool m_persistent; // to make multiple selections always persistent
     
-//edit functions
+    KSelectAction *m_langAction;
+    KAction       *m_cut, *m_copy, *m_paste, *m_undo, *m_redo, *m_replace;
+    KAction       *m_indent, *m_unindent, *m_cleanIndent, *m_spell;
 
+
+//edit functions
   public:
 
     /**
@@ -739,7 +802,7 @@ class KWrite : public QWidget {
     /**
       Moves the current line or the selection one position to the left
     */
-    void unIndent();
+    void unindent();
 
     /**
       Optimizes the selected indentation, replacing tabs and spaces as needed
@@ -754,7 +817,7 @@ class KWrite : public QWidget {
     /**
       Deselects all text
     */
-    void deselectAll() {doEditCommand(cmDeselectAll);}
+    void unselectAll() {doEditCommand(cmDeselectAll);}
 
     /**
       Inverts the current selection
@@ -903,9 +966,19 @@ class KWrite : public QWidget {
     */
     void writeSessionConfig(KConfig *);
 
+
 //syntax highlight
+  public:
+    /**
+      Gets the current highlight number
+    */
+    int highlightNum();
 
   public slots:
+    /**
+      Sets the highlight number n
+    */
+    void setHighlight(int n);
 
     /**
       Presents the highlight defaults dialog to the user
@@ -917,34 +990,33 @@ class KWrite : public QWidget {
     */
     void hlDlg();
 
-    /**
-      Gets the highlight number
-    */
-    int getHl();
+  protected:
+    static HlManager *hlManager;
 
-    /**
-      Sets the highlight number n
-    */
-    void setHl(int n);
 
+//end of line mode
+  public:
     /**
-      Get the end of line mode(Unix, Macintosh or Dos)
+      Get the end of line mode (Unix, Macintosh or Dos)
     */
-    int getEol();
+    int eolMode();
 
+  public slots:
     /**
-      Set the end of line mode(Unix, Macintosh or Dos)
+      Set the end of line mode (Unix, Macintosh or Dos)
     */
-    void setEol(int);
+    void setEolMode(int);
+
 
 //internal
 
   protected:
 
-    virtual void paintEvent(QPaintEvent *);
-    virtual void resizeEvent(QResizeEvent *);
+//    virtual void paintEvent(QPaintEvent *);
+//    virtual void resizeEvent(QResizeEvent *);
 
     KWriteDoc *m_doc;
+    KWriteWidget *m_widget;
     KWriteView *m_view;
 
 //spell checker
@@ -964,8 +1036,8 @@ class KWrite : public QWidget {
 
   public slots:    //please keep prototypes and implementations in same order
 
-    void spellcheck();
-    void spellcheck2(KSpell *);
+    void spellCheck();
+    void spellCheck2(KSpell *);
     void misspelling(QString word, QStringList *, unsigned pos);
     void corrected(QString originalword, QString newword, unsigned pos);
     void spellResult(const char *newtext);
