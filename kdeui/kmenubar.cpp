@@ -115,11 +115,11 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
     d = new KMenuBarPrivate;
     connect( &d->selection_timer, SIGNAL( timeout()),
         this, SLOT( selectionTimeout()));
-    
-#ifdef XRANDR_SUPPORT
+
+#if (QT_VERSION-0 >= 0x030200) // XRANDR support
     connect( qApp->desktop(), SIGNAL( resized( int )), SLOT( updateFallbackSize()));
 #endif
-    
+
     if ( kapp )
         // toolbarAppearanceChanged(int) is sent when changing macstyle
         connect( kapp, SIGNAL(toolbarAppearanceChanged(int)),
