@@ -106,6 +106,8 @@ void KJavaAppletWidget::setParameter( const QString name, const QString value )
 const QString KJavaAppletWidget::parameter( const QString name )
 {
     //   return applet->parameter( name );
+    // TODO
+    return QString::null;
 }
 
 void KJavaAppletWidget::setBaseURL( const QString base )
