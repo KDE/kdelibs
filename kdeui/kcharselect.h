@@ -36,10 +36,10 @@ public:
   virtual void setFont(const QString &_font);
   virtual void setChar(const QChar &_chr);
   virtual void setTableNum(int _tableNum);
-  
+
   virtual QChar chr()
   { return vChr; }
-  
+
 protected:
   virtual void paintCell(class QPainter *p,int row,int col);
 
@@ -49,16 +49,29 @@ protected:
   { mouseMoveEvent(e); emit activated(chr()); emit activated(); }
   virtual void mouseMoveEvent(QMouseEvent *e);
 
+  virtual void keyPressEvent(QKeyEvent *e);
+  
+  void gotoLeft();
+  void gotoRight();
+  void gotoUp();
+  void gotoDown();
+  
   QString vFont;
   QChar vChr;
   int vTableNum;
-  QPoint vPos;  
-  
+  QPoint vPos;
+  QChar focusItem;
+  QPoint focusPos;
+
 signals:
   void highlighted(const QChar &c);
   void highlighted();
   void activated(const QChar &c);
   void activated();
+  void focusItemChanged();
+  void focusItemChanged(const QChar &c);
+  void tableUp();
+  void tableDown();
   
 };
 
@@ -69,16 +82,16 @@ signals:
 class KCharSelect : public QVBox
 {
   Q_OBJECT
-  
+
 public:
   KCharSelect(QWidget *parent,const char *name,const QString &_font = QString::null,const QChar &_chr = ' ',int _tableNum = 0);
-  
+
   virtual QSize sizeHint();
 
   virtual void setFont(const QString &_font);
   virtual void setChar(const QChar &_chr);
   virtual void setTableNum(int _tableNum);
-  
+
   virtual QChar chr()
   { return charTable->chr(); }
   virtual QString font()
@@ -90,15 +103,15 @@ public:
   { fontCombo->setEnabled(e); }
   virtual void enableTableSpinBox(bool e)
   { tableSpinBox->setEnabled(e); }
-  
+
   virtual bool isFontComboEnabled()
   { return fontCombo->isEnabled(); }
   virtual bool isTableSpinBoxEnabled()
   { return tableSpinBox->isEnabled(); }
-  
+
 protected:
   virtual void fillFontCombo();
-  
+
   QComboBox *fontCombo;
   QSpinBox *tableSpinBox;
   KCharSelectTable *charTable;
@@ -115,6 +128,14 @@ protected slots:
   { emit activated(c); }
   void charActivated()
   { emit activated(); }
+  void charFocusItemChanged()
+  { emit focusItemChanged(); }
+  void charFocusItemChanged(const QChar &c)
+  { emit focusItemChanged(c); }
+  void charTableUp()
+  { if (tableNum() < 255) setTableNum(tableNum() + 1); }
+  void charTableDown()
+  { if (tableNum() > 0) setTableNum(tableNum() - 1); }
   
 signals:
   void highlighted(const QChar &c);
@@ -122,7 +143,9 @@ signals:
   void activated(const QChar &c);
   void activated();
   void fontChanged(const QString &_font);
-  
+  void focusItemChanged();
+  void focusItemChanged(const QChar &c);
+
 };
-  
+
 #endif

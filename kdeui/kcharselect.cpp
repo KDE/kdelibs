@@ -15,6 +15,7 @@
 #include <qcolor.h>
 #include <qlabel.h>
 #include <qhbox.h>
+#include <qkeycode.h>
 
 #include <klocale.h>
 #include <kapp.h>
@@ -27,7 +28,7 @@
 
 //==================================================================
 KCharSelectTable::KCharSelectTable(QWidget *parent,const char *name,const QString &_font,const QChar &_chr,int _tableNum)
-  : QTableView(parent,name), vFont(_font), vChr(_chr), vTableNum(_tableNum), vPos(0,0)
+  : QTableView(parent,name), vFont(_font), vChr(_chr), vTableNum(_tableNum), vPos(0,0), focusItem(_chr), focusPos(0,0)
 {
   setBackgroundColor(colorGroup().base());
 
@@ -36,8 +37,11 @@ KCharSelectTable::KCharSelectTable(QWidget *parent,const char *name,const QStrin
 
   setNumCols(32);
   setNumRows(8);
-  
+
   repaint(true);
+  
+  setFocusPolicy(QWidget::StrongFocus);
+  setBackgroundMode(QWidget::NoBackground);
 }
 
 //==================================================================
@@ -57,6 +61,8 @@ void KCharSelectTable::setChar(const QChar &_chr)
 //==================================================================
 void KCharSelectTable::setTableNum(int _tableNum)
 {
+  focusItem = QChar(_tableNum * 255);
+  
   vTableNum = _tableNum;
   repaint(true);
 }
@@ -94,10 +100,21 @@ void KCharSelectTable::paintCell(class QPainter* p,int row,int col)
       vPos = QPoint(col,row);
     }
   else
-    p->setPen(colorGroup().text());
-
-  p->setFont(QFont(vFont));
+    {
+      p->setBrush(QBrush(colorGroup().base()));
+      p->setPen(NoPen);
+      p->drawRect(0,0,w,h);
+      p->setPen(colorGroup().text());
+    }
   
+  if (c == focusItem.unicode() && hasFocus())
+    {
+      style().drawFocusRect(p,QRect(2,2,w - 4,h - 4),colorGroup());
+      focusPos = QPoint(col,row);
+    }
+  
+  p->setFont(QFont(vFont));
+
   p->drawText(0,0,x2,y2,AlignHCenter | AlignVCenter,QString(QChar(c)));
 
   p->setPen(colorGroup().text());
@@ -122,12 +139,138 @@ void KCharSelectTable::mouseMoveEvent(QMouseEvent *e)
       vPos.setY(findRow(e->y()));
 
       vChr = QChar(vTableNum * 255 + 32 * vPos.y() + vPos.x());
+
+      QPoint oldFocus = focusPos;
       
+      focusPos = vPos;
+      focusItem = vChr;
+
+      updateCell(oldFocus.y(),oldFocus.x(),true);
       updateCell(oldPos.y(),oldPos.x(),true);
       updateCell(vPos.y(),vPos.x(),true);
-      
+
       emit highlighted(vChr);
       emit highlighted();
+
+      emit focusItemChanged(focusItem);
+      emit focusItemChanged();
+    }
+}
+
+//==================================================================
+void KCharSelectTable::keyPressEvent(QKeyEvent *e)
+{
+  switch (e->key())
+    {
+    case Key_Left:
+      gotoLeft();
+      break;
+    case Key_Right:
+      gotoRight();
+      break;
+    case Key_Up:
+      gotoUp();
+      break;
+    case Key_Down:
+      gotoDown();
+      break;
+    case Key_Next:
+      emit tableDown();
+      break;
+    case Key_Prior:
+      emit tableUp();
+      break;
+    case Key_Space: case Key_Enter: case Key_Return:
+      {
+	QPoint oldPos = vPos;
+
+	vPos = focusPos;
+	vChr = focusItem;
+
+	updateCell(oldPos.y(),oldPos.x(),true);
+	updateCell(vPos.y(),vPos.x(),true);
+
+	emit activated(vChr);
+	emit activated();
+	emit highlighted(vChr);
+	emit highlighted();
+      } break;
+    }
+}
+  
+//==================================================================
+void KCharSelectTable::gotoLeft()
+{
+  if (focusPos.x() > 0)
+    {
+      QPoint oldPos = focusPos;
+
+      focusPos.setX(focusPos.x() - 1);
+
+      focusItem = QChar(vTableNum * 255 + 32 * focusPos.y() + focusPos.x());
+
+      updateCell(oldPos.y(),oldPos.x(),true);
+      updateCell(focusPos.y(),focusPos.x(),true);
+
+      emit focusItemChanged(vChr);
+      emit focusItemChanged();
+    }
+}
+
+//==================================================================
+void KCharSelectTable::gotoRight()
+{
+  if (focusPos.x() < 31)
+    {
+      QPoint oldPos = focusPos;
+
+      focusPos.setX(focusPos.x() + 1);
+
+      focusItem = QChar(vTableNum * 255 + 32 * focusPos.y() + focusPos.x());
+
+      updateCell(oldPos.y(),oldPos.x(),true);
+      updateCell(focusPos.y(),focusPos.x(),true);
+
+      emit focusItemChanged(vChr);
+      emit focusItemChanged();
+    }
+}
+
+//==================================================================
+void KCharSelectTable::gotoUp()
+{
+  if (focusPos.y() > 0)
+    {
+      QPoint oldPos = focusPos;
+
+      focusPos.setY(focusPos.y() - 1);
+
+      focusItem = QChar(vTableNum * 255 + 32 * focusPos.y() + focusPos.x());
+
+      updateCell(oldPos.y(),oldPos.x(),true);
+      updateCell(focusPos.y(),focusPos.x(),true);
+
+      emit focusItemChanged(vChr);
+      emit focusItemChanged();
+    }
+}
+
+//==================================================================
+void KCharSelectTable::gotoDown()
+{
+  if (focusPos.y() < 7)
+    {
+      QPoint oldPos = focusPos;
+
+      focusPos.setY(focusPos.y() + 1);
+
+      focusItem = QChar(vTableNum * 255 + 32 * focusPos.y() + focusPos.x());
+
+      updateCell(oldPos.y(),oldPos.x(),true);
+      updateCell(focusPos.y(),focusPos.x(),true);
+
+      emit focusItemChanged(vChr);
+      emit focusItemChanged();
     }
 }
 
@@ -140,18 +283,18 @@ KCharSelect::KCharSelect(QWidget *parent,const char *name,const QString &_font,c
   : QVBox(parent,name)
 {
   QHBox *bar = new QHBox(this);
-  
+
   QLabel *lFont = new QLabel(i18n("  Font:  "),bar);
   lFont->resize(lFont->sizeHint());
   lFont->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   lFont->setMaximumWidth(lFont->sizeHint().width());
-  
+
   fontCombo = new QComboBox(true,bar);
   fillFontCombo();
   fontCombo->resize(fontCombo->sizeHint());
-  
+
   connect(fontCombo,SIGNAL(activated(const QString &)),this,SLOT(fontSelected(const QString &)));
-  
+
   QLabel *lTable = new QLabel(i18n("  Table:  "),bar);
   lTable->resize(lTable->sizeHint());
   lTable->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -159,9 +302,9 @@ KCharSelect::KCharSelect(QWidget *parent,const char *name,const QString &_font,c
 
   tableSpinBox = new QSpinBox(0,255,1,bar);
   tableSpinBox->resize(tableSpinBox->sizeHint());
-  
+
   connect(tableSpinBox,SIGNAL(valueChanged(int)),this,SLOT(tableChanged(int)));
-  
+
   charTable = new KCharSelectTable(this,name,_font.isEmpty() ? QVBox::font().family() : _font,_chr,_tableNum);
   charTable->resize(charTable->sizeHint());
   charTable->setMaximumSize(charTable->size());
@@ -174,6 +317,13 @@ KCharSelect::KCharSelect(QWidget *parent,const char *name,const QString &_font,c
   connect(charTable,SIGNAL(highlighted()),this,SLOT(charHighlighted()));
   connect(charTable,SIGNAL(activated(const QChar &)),this,SLOT(charActivated(const QChar &)));
   connect(charTable,SIGNAL(activated()),this,SLOT(charActivated()));
+  connect(charTable,SIGNAL(focusItemChanged(const QChar &)),this,SLOT(charFocusItemChanged(const QChar &)));
+  connect(charTable,SIGNAL(focusItemChanged()),this,SLOT(charFocusItemChanged()));
+  connect(charTable,SIGNAL(tableUp()),this,SLOT(charTableUp()));
+  connect(charTable,SIGNAL(tableDown()),this,SLOT(charTableDown()));
+
+  setFocusPolicy(QWidget::StrongFocus);
+  setFocusProxy(charTable);
 }
 
 //==================================================================
@@ -216,7 +366,7 @@ void KCharSelect::fillFontCombo()
   char** fontNames;
   char** fontNames_copy;
   QString qfontname;
-  
+
   bool have_installed = kapp->getKDEFonts(&fontList);
 
   if (!have_installed)
@@ -265,10 +415,10 @@ void KCharSelect::fillFontCombo()
 
 	  fontNames++;
 	}
-    
+
       XFreeFontNames(fontNames_copy);
     }
-  
+
   fontCombo->insertStrList(fontList);
 }
 
