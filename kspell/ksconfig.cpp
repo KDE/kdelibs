@@ -254,16 +254,16 @@ KSpellConfig::interpret (QString &fname, QString &lname,
     lname="no"; hname=i18n("Norwegian");
   }
   else if (fname=="polish") {
-    lname="pl"; hname=i18n("Polish");
+    lname="pl"; hname=i18n("Polish"); sChangeEncoding(KS_E_LATIN2);
   }
   else if (fname=="russian") {
     lname="ru"; hname=i18n("Russian");
   }
   else if (fname=="slovensko") {
-    lname="sk"; hname=i18n("Slovak");
+    lname="sk"; hname=i18n("Slovak"); sChangeEncoding(KS_E_LATIN2);
   }
   else if (fname=="czech") {
-    lname="cs"; hname=i18n("Czech");
+    lname="cs"; hname=i18n("Czech"); sChangeEncoding(KS_E_LATIN2);
   }
   else if (fname=="svenska") {
     lname="sv"; hname=i18n("Swedish");
