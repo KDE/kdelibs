@@ -338,7 +338,6 @@ public:
 
     virtual void calcMinMaxWidth();
     virtual void layout();
-    virtual void close( );
 
     void setOptionsChanged(bool _optionsChanged);
 

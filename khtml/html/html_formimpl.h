@@ -332,6 +332,8 @@ public:
 
 class HTMLSelectElementImpl : public HTMLGenericFormElementImpl
 {
+    friend class khtml::RenderSelect;
+
 public:
     HTMLSelectElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);
 
@@ -368,6 +370,7 @@ public:
     virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
     virtual NodeImpl *removeChild ( NodeImpl *oldChild, int &exceptioncode );
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
+    virtual NodeImpl *addChild( NodeImpl* newChild );
 
     virtual void parseAttribute(AttributeImpl *attr);
 
@@ -379,16 +382,26 @@ public:
     int optionToListIndex(int optionIndex) const;
     // reverse of optionToListIndex - get optionIndex from listboxIndex
     int listToOptionIndex(int listIndex) const;
-    void recalcListItems();
-    QMemArray<HTMLGenericFormElementImpl*> listItems() const { return m_listItems; }
+
+    void setRecalcListItems();
+
+    QMemArray<HTMLGenericFormElementImpl*> listItems() const
+     {
+         if (m_recalcListItems) const_cast<HTMLSelectElementImpl*>(this)->recalcListItems();
+         return m_listItems;
+     }
     virtual void reset();
     void notifyOptionSelected(HTMLOptionElementImpl *selectedOption, bool selected);
 
+private:
+    void recalcListItems();
+
 protected:
-    QMemArray<HTMLGenericFormElementImpl*> m_listItems;
+    mutable QMemArray<HTMLGenericFormElementImpl*> m_listItems;
     short m_minwidth;
     short m_size : 15;
     bool m_multiple : 1;
+    bool m_recalcListItems;
 };
 
 // -------------------------------------------------------------------------
@@ -427,6 +440,7 @@ public:
     virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
     virtual NodeImpl *removeChild ( NodeImpl *oldChild, int &exceptioncode );
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
+    virtual NodeImpl *addChild( NodeImpl* newChild );
     virtual void parseAttribute(AttributeImpl *attr);
     void recalcSelectOptions();
     virtual void setChanged(bool);

@@ -682,9 +682,8 @@ RenderSelect::RenderSelect(HTMLSelectElementImpl *element)
     m_multiple = element->multiple();
     m_size = element->size();
     m_useListBox = (m_multiple || m_size > 1);
-    m_selectionChanged = false;
-    m_optionsChanged = false;
-
+    m_selectionChanged = true;
+    m_optionsChanged = true;
 
     if(m_useListBox)
         setQWidget(createListBox());
@@ -694,42 +693,9 @@ RenderSelect::RenderSelect(HTMLSelectElementImpl *element)
 
 void RenderSelect::updateFromElement()
 {
-    // ### remove me, quick hack
-    setMinMaxKnown(false);
-    setLayouted(false);
-
-    RenderFormElement::updateFromElement();
-}
-
-void RenderSelect::calcMinMaxWidth()
-{
-    KHTMLAssert( !minMaxKnown() );
-
-    // ### ugly HACK FIXME!!!
-    setMinMaxKnown();
-    if ( !layouted() )
-        layout();
-    setLayouted( false );
-    setMinMaxKnown( false );
-    // ### end FIXME
-
-    RenderFormElement::calcMinMaxWidth();
-}
-
-void RenderSelect::layout( )
-{
-    KHTMLAssert(!layouted());
-    KHTMLAssert(minMaxKnown());
-
-    // ### maintain selection properly between type/size changes, and work
-    // out how to handle multiselect->singleselect (probably just select
-    // first selected one)
-
-    // ### reconnect mouse signals when we change widget type
     m_ignoreSelectEvents = true;
 
     // change widget type
-
     bool oldMultiple = m_multiple;
     unsigned oldSize = m_size;
     bool oldListbox = m_useListBox;
@@ -758,6 +724,8 @@ void RenderSelect::layout( )
 
     // update contents listbox/combobox based on options in m_element
     if ( m_optionsChanged ) {
+        if (element()->m_recalcListItems)
+            element()->recalcListItems();
         QMemArray<HTMLGenericFormElementImpl*> listItems = element()->listItems();
         int listIndex;
 
@@ -800,12 +768,46 @@ void RenderSelect::layout( )
                 KHTMLAssert(false);
             m_selectionChanged = true;
         }
+        setMinMaxKnown(false);
+        setLayouted(false);
         m_optionsChanged = false;
     }
 
     // update selection
     if (m_selectionChanged)
         updateSelection();
+
+    m_ignoreSelectEvents = false;
+
+    RenderFormElement::updateFromElement();
+}
+
+void RenderSelect::calcMinMaxWidth()
+{
+    KHTMLAssert( !minMaxKnown() );
+
+    if (m_optionsChanged)
+        updateFromElement();
+
+    // ### ugly HACK FIXME!!!
+    setMinMaxKnown();
+    if ( !layouted() )
+        layout();
+    setLayouted( false );
+    setMinMaxKnown( false );
+    // ### end FIXME
+
+    RenderFormElement::calcMinMaxWidth();
+}
+
+void RenderSelect::layout( )
+{
+    KHTMLAssert(!layouted());
+    KHTMLAssert(minMaxKnown());
+
+    // ### maintain selection properly between type/size changes, and work
+    // out how to handle multiselect->singleselect (probably just select
+    // first selected one)
 
     // calculate size
     if(m_useListBox) {
@@ -853,15 +855,6 @@ void RenderSelect::layout( )
 	foundOption = (listItems[i]->id() == ID_OPTION);
 
     m_widget->setEnabled(foundOption && ! element()->disabled());
-
-    m_ignoreSelectEvents = false;
-}
-
-void RenderSelect::close()
-{
-    element()->recalcListItems();
-
-    RenderFormElement::close();
 }
 
 void RenderSelect::slotSelected(int index)
