@@ -1097,19 +1097,18 @@ RenderTextArea::RenderTextArea(QScrollView *view, HTMLTextAreaElementImpl *eleme
 
 void RenderTextArea::layout( )
 {
-    if(layouted())
-        return;
-
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     HTMLTextAreaElementImpl* f = static_cast<HTMLTextAreaElementImpl*>(m_element);
 
-    w->setReadOnly(m_element->readOnly());
-    w->blockSignals(true);
-    int line, col;
-    w->getCursorPosition( &line, &col );
-    w->setText(f->value().string().visual());
-    w->setCursorPosition( line, col );
-    w->blockSignals(false);
+    if (!layouted()) {
+	w->setReadOnly(m_element->readOnly());
+	w->blockSignals(true);
+	int line, col;
+	w->getCursorPosition( &line, &col );
+	w->setText(f->value().string().visual());
+	w->setCursorPosition( line, col );
+	w->blockSignals(false);
+    }
 
     QFontMetrics m = fontMetrics(w->font());
     QSize size( QMAX(f->cols(), 1)*m.width('x') + w->frameWidth()*5 +
