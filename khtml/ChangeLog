@@ -1,3 +1,8 @@
+2005-04-03  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * ecma/kjs_html.{h,cpp}: Implement frame and iframe .contentWindow
+        * ecma/kjs_window.{h,cpp}: Implement window.frameElement
+
 2005-03-30  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * html/htmlparser.{h,cpp}: Merge WebCore handling of residual styles.

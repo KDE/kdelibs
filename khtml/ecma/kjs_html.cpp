@@ -1099,6 +1099,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 @end
 @begin HTMLFrameElementTable 9
   contentDocument KJS::HTMLElement::FrameContentDocument        DontDelete|ReadOnly
+  contentWindow KJS::HTMLElement::FrameContentWindow        DontDelete|ReadOnly
   frameBorder     KJS::HTMLElement::FrameFrameBorder		DontDelete
   longDesc	  KJS::HTMLElement::FrameLongDesc		DontDelete
   marginHeight	  KJS::HTMLElement::FrameMarginHeight		DontDelete
@@ -1112,6 +1113,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 @begin HTMLIFrameElementTable 12
   align		  KJS::HTMLElement::IFrameAlign			DontDelete
   contentDocument KJS::HTMLElement::IFrameContentDocument       DontDelete|ReadOnly
+  contentWindow KJS::HTMLElement::IFrameContentWindow        DontDelete|ReadOnly
   frameBorder	  KJS::HTMLElement::IFrameFrameBorder		DontDelete
   height	  KJS::HTMLElement::IFrameHeight		DontDelete
   longDesc	  KJS::HTMLElement::IFrameLongDesc		DontDelete
@@ -1867,6 +1869,13 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
     case FrameContentDocument: return checkNodeSecurity(exec,frameElement.contentDocument()) ?
 				      getDOMNode(exec, frameElement.contentDocument()) : Undefined();
+    case FrameContentWindow:   {
+        KHTMLView *view = static_cast<DOM::DocumentImpl*>(frameElement.contentDocument().handle())->view();
+        if (view && view->part())
+            return Value(Window::retrieveWindow(view->part()));
+        else
+            return Undefined();
+    }
     case FrameFrameBorder:     return String(frameElement.frameBorder());
     case FrameLongDesc:        return String(frameElement.longDesc());
     case FrameMarginHeight:    return String(frameElement.marginHeight());
@@ -1885,6 +1894,13 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case IFrameAlign:           return String(iFrame.align());
     case IFrameContentDocument: return checkNodeSecurity(exec,iFrame.contentDocument()) ?
 				       getDOMNode(exec, iFrame.contentDocument()) : Undefined();
+    case IFrameContentWindow:       {
+        KHTMLView *view = static_cast<DOM::DocumentImpl*>(iFrame.contentDocument().handle())->view();
+        if (view && view->part())
+            return Value(Window::retrieveWindow(view->part()));
+        else
+            return Undefined();
+    }
     case IFrameFrameBorder:     return String(iFrame.frameBorder());
     case IFrameHeight:          return String(iFrame.height());
     case IFrameLongDesc:        return String(iFrame.longDesc());

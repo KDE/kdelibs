@@ -224,6 +224,7 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   status	Window::Status		DontDelete
   document	Window::Document	DontDelete|ReadOnly
   Node		Window::Node		DontDelete
+  frameElement		Window::FrameElement		DontDelete|ReadOnly
   Event		Window::EventCtor	DontDelete
   Range		Window::Range		DontDelete
   NodeFilter	Window::NodeFilter	DontDelete
@@ -571,6 +572,8 @@ Value Window::get(ExecState *exec, const Identifier &p) const
         part->end();
       }
       return getDOMNode(exec,part->document());
+    case FrameElement:
+      return retrieve(m_frame->m_part);
     case Node:
       return getNodeConstructor(exec);
     case Range:
