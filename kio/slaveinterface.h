@@ -167,6 +167,8 @@ protected:
     Connection * m_pConnection;
 };
 
+};
+
 inline QDataStream& operator>>(QDataStream& s, unsigned long& n)
 {
     Q_INT32 hi, lo;
@@ -221,7 +223,5 @@ inline QDataStream &operator <<(QDataStream &s, const KIO::UDSAtom &a )
 
     return s;
 }
-
-};
 
 #endif

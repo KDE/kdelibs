@@ -95,6 +95,6 @@ parser: $(parserfiles)
 bin_PROGRAMS = kioslave
 
 kioslave_SOURCES = kioslave.cpp slavewrapper.cpp
-kioslave_LDADD = libksycoca.la
+kioslave_LDADD = libksycoca.la libkio.la
 kioslave_LDFLAGS = $(KDE_RPATH)
 
