@@ -12,6 +12,12 @@ BUILDDIR = $(shell pwd)
 QTDOCDIR  = usr/share/doc/qt-doc/doc/html
 KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
 export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
+ARCH = $(shell dpkg-architecture -qDEB_BUILD_ARCH)
+ifeq ($(ARCH),alpha)
+  COMPILER_FLAGS=CXX=g++-3.0 CC=gcc-3.0
+else
+  COMPILER_FLAGS=CXX=g++ CC=gcc
+endif
 
 tmp = $(shell pwd)/debian/kdelibs3
 alsa-tmp = $(shell pwd)/debian/alsa-tmp
@@ -29,6 +35,7 @@ build-stamp:
 	  $(MAKE) -f admin/Makefile.common ;\
 	fi
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
+	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
 	--includedir=/usr/include/kde --without-ssl --without-alsa \
 	--disable-cups
