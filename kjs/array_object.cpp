@@ -124,7 +124,7 @@ ArrayPrototypeImp::ArrayPrototypeImp(ExecState *exec,
 Value ArrayPrototypeImp::get(ExecState *exec, const UString &propertyName) const
 {
   //fprintf( stderr, "ArrayPrototypeImp::get(%s)\n", propertyName.ascii() );
-  return lookupGetFunction<ArrayProtoFuncImp, ArrayPrototypeImp, ArrayInstanceImp>( exec, propertyName, &arrayTable, this );
+  return lookupGetFunction<ArrayProtoFuncImp, ArrayInstanceImp>( exec, propertyName, &arrayTable, this );
 }
 
 // ------------------------------ ArrayProtoFuncImp ----------------------------

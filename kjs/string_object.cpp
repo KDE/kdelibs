@@ -95,7 +95,7 @@ StringPrototypeImp::StringPrototypeImp(ExecState *exec,
 
 Value StringPrototypeImp::get(ExecState *exec, const UString &propertyName) const
 {
-  return lookupGetFunction<StringProtoFuncImp, StringPrototypeImp, StringInstanceImp>( exec, propertyName, &stringTable, this );
+  return lookupGetFunction<StringProtoFuncImp, StringInstanceImp>( exec, propertyName, &stringTable, this );
 }
 
 // ------------------------------ StringProtoFuncImp ---------------------------

@@ -101,9 +101,9 @@ namespace KJS {
   class UString;
   /** @internal
    * Helper for lookupFunction and lookupValueOrFunction */
-  template <class FuncImp, class ThisImp>
+  template <class FuncImp>
   inline Value lookupOrCreateFunction(ExecState *exec, const UString &propertyName,
-                                      const ThisImp *thisObj, const HashEntry *entry)
+                                      const ObjectImp *thisObj, int token, int params, int attr)
   {
       // Look for cached value in dynamic map of properties (in ObjectImp)
       ValueImp * cachedVal = thisObj->ObjectImp::getDirect(propertyName);
@@ -113,8 +113,9 @@ namespace KJS {
       if (cachedVal && cachedVal->type() == ObjectType)
         return cachedVal;
 
-      Value val = new FuncImp(exec, entry->value, entry->params);
-      const_cast<ThisImp *>(thisObj)->ObjectImp::put(exec, propertyName, val, entry->attr);
+      Value val = new FuncImp(exec,token, params);
+      ObjectImp *thatObj = const_cast<ObjectImp *>(thisObj);
+      thatObj->ObjectImp::put(exec, propertyName, val, attr);
       return val;
   }
 
@@ -149,7 +150,7 @@ namespace KJS {
 
     //fprintf(stderr, "lookupGet: found value=%d attr=%d\n", entry->value, entry->attr);
     if (entry->attr & Function)
-      return lookupOrCreateFunction<FuncImp, ThisImp>(exec, propertyName, thisObj, entry);
+      return lookupOrCreateFunction<FuncImp>(exec, propertyName, thisObj, entry->value, entry->params, entry->attr);
     return thisObj->getValue(exec, entry->value);
   }
 
@@ -157,17 +158,17 @@ namespace KJS {
    * Simplified version of lookupGet in case there are only functions.
    * Using this instead of lookupGet prevents 'this' from implementing a dummy getValue.
    */
-  template <class FuncImp, class ThisImp, class ParentImp>
+  template <class FuncImp, class ParentImp>
   inline Value lookupGetFunction(ExecState *exec, const UString &propertyName,
-                         const HashTable* table, const ThisImp* thisObj)
+                         const HashTable* table, const ObjectImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
 
     if (!entry) // not found, forward to parent
-      return thisObj->ParentImp::get(exec, propertyName);
+      return static_cast<const ParentImp *>(thisObj)->ParentImp::get(exec, propertyName);
 
     if (entry->attr & Function)
-      return lookupOrCreateFunction<FuncImp, ThisImp>(exec, propertyName, thisObj, entry);
+      return lookupOrCreateFunction<FuncImp>(exec, propertyName, thisObj, entry->value, entry->params, entry->attr);
 
     fprintf(stderr, "Function bit not set! Shouldn't happen in lookupGetFunction!\n" );
     return Undefined();
