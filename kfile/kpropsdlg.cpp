@@ -24,7 +24,7 @@
  * kpropsdlg.cpp
  * View/Edit Properties of files, locally or remotely
  *
- * some FilePermissionsPropsPage-changes by
+ * some FilePermissionsPropsPlugin-changes by
  *  Henner Zeller <zeller@think.de>
  * some layout management by
  *  Bertrand Leconte <B.Leconte@mail.dotcom.fr>
@@ -38,14 +38,13 @@
  */
 
 #include <config.h>
+extern "C" {
 #include <pwd.h>
 #include <grp.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/stat.h>
 #include <time.h>
-#include <errno.h>
-#include <assert.h>
+}
+#include <cerrno>
+#include <cassert>
 
 #include <qfile.h>
 #include <qapplication.h>
@@ -59,7 +58,6 @@
 #include <qpainter.h>
 #include <qlayout.h>
 #include <qcombobox.h>
-#include <qmap.h>
 
 #include <kdialog.h>
 #include <kdirsize.h>
@@ -86,17 +84,15 @@
 
 #include "kpropsdlg.h"
 
+extern "C" {
 #include <X11/Xlib.h> // for XSetTransientForHint
+}
 
-template class QList<KFileItem>;
-
-mode_t KFilePermissionsPropsPage::fperm[3][4] = {
+mode_t KFilePermissionsPropsPlugin::fperm[3][4] = {
         {S_IRUSR, S_IWUSR, S_IXUSR, S_ISUID},
         {S_IRGRP, S_IWGRP, S_IXGRP, S_ISGID},
         {S_IROTH, S_IWOTH, S_IXOTH, S_ISVTX}
     };
-
-template class QList<KPropsPage>;
 
 class KPropertiesDialog::KPropertiesDialogPrivate
 {
@@ -109,129 +105,121 @@ public:
   {
   }
   bool m_aborted;
-
-  QMap<QString, int> m_pageIndex;
 };
 
-KPropertiesDialog::KPropertiesDialog( KFileItem * item ) :
+KPropertiesDialog::KPropertiesDialog (KFileItem* item,
+                                      QWidget* parent, const char* name,
+                                      bool modal, bool autoShow)
+  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(item->url().fileName()),
+                 KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
+                 parent, name, modal),
+  
   m_singleUrl( item->url() ), m_bMustDestroyItems( false )
 {
   d = new KPropertiesDialogPrivate;
   m_items.append( item );
+
   assert( item );
   assert(!m_singleUrl.isEmpty());
-  init();
+
+  init (modal, autoShow);
 }
 
-// BIC: MERGE with the above, parent = 0L, modal = false
-KPropertiesDialog::KPropertiesDialog (KFileItem* item,
-                                      QWidget* parent, bool modal, bool autoShow)
-  : m_singleUrl( item->url() ), m_bMustDestroyItems( false )
+KPropertiesDialog::KPropertiesDialog (const QString& title,
+                                      QWidget* parent, const char* name, bool modal)
+  : KDialogBase (KDialogBase::Tabbed, i18n ("Properties for %1").arg(title),
+                 KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
+                 parent, name, modal),
+  
+  m_bMustDestroyItems (false)
 {
   d = new KPropertiesDialogPrivate;
-  m_items.append( item );
-  assert( item );
-  assert(!m_singleUrl.isEmpty());
-  init(parent, modal, autoShow);
+  
+  init (modal, false);
 }
 
-KPropertiesDialog::KPropertiesDialog( KFileItemList _items ) :
-  m_singleUrl( _items.first()->url() ), m_items( _items ),
+KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
+                                      QWidget* parent, const char* name,
+                                      bool modal, bool autoShow)
+  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(_items.first()->url().fileName()),
+                 KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
+                 parent, name, modal),
+
+  m_singleUrl( _items.first()->url() ),
+  m_items( _items ),
   m_bMustDestroyItems( false )
 {
   d = new KPropertiesDialogPrivate;
+
   assert( !_items.isEmpty() );
   assert(!m_singleUrl.isEmpty());
-  init();
+
+  init (modal, autoShow);
 }
 
-// BIC: MERGE with the above, parent = 0L, modal = false
-KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
-                                      QWidget* parent, bool modal, bool autoShow)
-  : m_singleUrl( _items.first()->url() ), m_items( _items ),
-    m_bMustDestroyItems( false )
-{
-  d = new KPropertiesDialogPrivate;
-  assert( !_items.isEmpty() );
-  assert(!m_singleUrl.isEmpty());
-  init(parent, modal, autoShow);
-}
-
-KPropertiesDialog::KPropertiesDialog( const KURL& _url, mode_t _mode ) :
-  m_singleUrl( _url ), m_bMustDestroyItems( true )
-{
-  d = new KPropertiesDialogPrivate;
-  assert(!_url.isEmpty());
-  // Create a KFileItem from the information we have
-  m_items.append( new KFileItem( _mode, -1, m_singleUrl ) );
-  init();
-}
-
-// BIC: MERGE with the above, parent = 0L, modal = false
 KPropertiesDialog::KPropertiesDialog (const KURL& _url, mode_t _mode,
-                                      QWidget* parent, bool modal, bool autoShow)
-  : m_singleUrl( _url ), m_bMustDestroyItems( true )
+                                      QWidget* parent, const char* name,
+                                      bool modal, bool autoShow)
+  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(_url.fileName()),
+                 KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
+                 parent, name, modal),
+  m_singleUrl( _url ),
+  m_bMustDestroyItems( true )
 {
   d = new KPropertiesDialogPrivate;
+
   assert(!_url.isEmpty());
+
   // Create a KFileItem from the information we have
   m_items.append( new KFileItem( _mode, -1, m_singleUrl ) );
-  init(parent, modal, autoShow);
+  init (modal, autoShow);
 }
 
-KPropertiesDialog::KPropertiesDialog( const KURL& _tempUrl, const KURL& _currentDir,
-                                    const QString& _defaultName )
-  : m_singleUrl( _tempUrl ), m_bMustDestroyItems( true ),
-    m_defaultName( _defaultName ), m_currentDir( _currentDir )
-{
-  d = new KPropertiesDialogPrivate;
-  assert(!m_singleUrl.isEmpty());
-  // Create the KFileItem for the _template_ file, in order to read from it.
-  m_items.append( new KFileItem( -1, -1, m_singleUrl ) );
-  init();
-}
-
-// BIC: MERGE with the above, parent = 0L, modal = false
 KPropertiesDialog::KPropertiesDialog (const KURL& _tempUrl, const KURL& _currentDir,
                                       const QString& _defaultName,
-                                      QWidget* parent, bool modal, bool autoShow)
-  : m_singleUrl( _tempUrl ), m_bMustDestroyItems( true ),
-    m_defaultName( _defaultName ), m_currentDir( _currentDir )
+                                      QWidget* parent, const char* name,
+                                      bool modal, bool autoShow)
+  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(_tempUrl.fileName()),
+                 KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
+                 parent, name, modal),
+
+  m_singleUrl( _tempUrl ),
+  m_bMustDestroyItems( true ),
+  m_defaultName( _defaultName ),
+  m_currentDir( _currentDir )
 {
   d = new KPropertiesDialogPrivate;
+
   assert(!m_singleUrl.isEmpty());
+
   // Create the KFileItem for the _template_ file, in order to read from it.
   m_items.append( new KFileItem( -1, -1, m_singleUrl ) );
-  init(parent, modal, autoShow);
+  init (modal, autoShow);
 }
 
-void KPropertiesDialog::init (QWidget* parent, bool modal, bool autoShow)
+void KPropertiesDialog::init (bool modal, bool autoShow)
 {
   m_pageList.setAutoDelete( true );
 
-  m_tab = new KDialogBase( KDialogBase::Tabbed, i18n( "Properties for %1" ).arg(m_singleUrl.fileName()),
-                           KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
-                           parent, "propsdlg", modal );
-
   // Matthias: let the dialog look like a modal dialog
   if (!modal)
-    XSetTransientForHint(qt_xdisplay(), m_tab->winId(), m_tab->winId());
+    XSetTransientForHint(qt_xdisplay(), winId(), winId());
 
-  m_tab->setGeometry( m_tab->x(), m_tab->y(), 400, 400 );
+  setGeometry( x(), y(), 400, 400 );
 
   insertPages();
 
-  connect( m_tab, SIGNAL( okClicked() ), this, SLOT( slotApply() ) );
-  connect( m_tab, SIGNAL( cancelClicked() ), this, SLOT( slotCancel() ) );
+  connect( this, SIGNAL( okClicked() ), this, SLOT( slotApply() ) );
+  connect( this, SIGNAL( cancelClicked() ), this, SLOT( slotCancel() ) );
 
-  m_tab->resize(m_tab->sizeHint());
+  resize(sizeHint());
 
   if (autoShow)
     {
       if (!modal)
-        m_tab->show();
+        show();
       else
-        m_tab->exec();
+        exec();
     }
 }
 
@@ -241,7 +229,6 @@ KPropertiesDialog::~KPropertiesDialog()
   m_pageList.clear();
   // HACK
   if ( m_bMustDestroyItems ) delete m_items.first();
-  delete m_tab;
   delete d;
 }
 
@@ -250,32 +237,31 @@ void KPropertiesDialog::slotDeleteMyself()
   delete this;
 }
 
-void KPropertiesDialog::addPage(KPropsPage *page)
+void KPropertiesDialog::insertPlugin (KPropsDlgPlugin* plugin)
 {
-  connect (page, SIGNAL (changed ()),
-           page, SLOT (setDirty ()));
+  connect (plugin, SIGNAL (changed ()),
+           plugin, SLOT (setDirty ()));
 
-  d->m_pageIndex[page->tabName()] = m_pageList.count();
-  m_pageList.append (page);
+  m_pageList.append (plugin);
 }
 
 bool KPropertiesDialog::canDisplay( KFileItemList _items )
 {
-  return KFilePropsPage::supports( _items ) ||
-         KFilePermissionsPropsPage::supports( _items ) ||
-         KExecPropsPage::supports( _items ) ||
-         KApplicationPropsPage::supports( _items ) ||
-         KBindingPropsPage::supports( _items ) ||
-         KURLPropsPage::supports( _items ) ||
-         KDevicePropsPage::supports( _items );
+  return KFilePropsPlugin::supports( _items ) ||
+         KFilePermissionsPropsPlugin::supports( _items ) ||
+         KExecPropsPlugin::supports( _items ) ||
+         KApplicationPropsPlugin::supports( _items ) ||
+         KBindingPropsPlugin::supports( _items ) ||
+         KURLPropsPlugin::supports( _items ) ||
+         KDevicePropsPlugin::supports( _items );
 }
 
 void KPropertiesDialog::slotApply()
 {
-  KPropsPage *page;
+  KPropsDlgPlugin *page;
   d->m_aborted = false;
   // Apply the changes in the _normal_ order of the tabs now
-  // This is because in case of renaming a file, KFilePropsPage will call
+  // This is because in case of renaming a file, KFilePropsPlugin will call
   // KPropertiesDialog::rename, so other tab will be ok with whatever order
   // BUT for file copied from templates, we need to do the renaming first !
   for ( page = m_pageList.first(); page != 0L && !d->m_aborted; page = m_pageList.next() )
@@ -288,8 +274,8 @@ void KPropertiesDialog::slotApply()
     else
       kdDebug( 1202 ) << "skipping page " << page->className() << endl;
 
-  if ( !d->m_aborted && m_pageList.first()->isA("KFilePropsPage") )
-    static_cast<KFilePropsPage *>(m_pageList.first())->postApplyChanges();
+  if ( !d->m_aborted && m_pageList.first()->isA("KFilePropsPlugin") )
+    static_cast<KFilePropsPlugin *>(m_pageList.first())->postApplyChanges();
 
   if ( !d->m_aborted )
     emit applied();
@@ -310,46 +296,49 @@ void KPropertiesDialog::slotCancel()
 
 void KPropertiesDialog::insertPages()
 {
-  if ( KFilePropsPage::supports( m_items ) )
+  if (m_items.isEmpty())
+    return;
+
+  if ( KFilePropsPlugin::supports( m_items ) )
   {
-    KPropsPage *p = new KFilePropsPage( this );
-    addPage (p);
+    KPropsDlgPlugin *p = new KFilePropsPlugin( this );
+    insertPlugin (p);
   }
 
-  if ( KFilePermissionsPropsPage::supports( m_items ) )
+  if ( KFilePermissionsPropsPlugin::supports( m_items ) )
   {
-    KPropsPage *p = new KFilePermissionsPropsPage( this );
-    addPage (p);
+    KPropsDlgPlugin *p = new KFilePermissionsPropsPlugin( this );
+    insertPlugin (p);
   }
 
-  if ( KExecPropsPage::supports( m_items ) )
+  if ( KExecPropsPlugin::supports( m_items ) )
   {
-    KPropsPage *p = new KExecPropsPage( this );
-    addPage (p);
+    KPropsDlgPlugin *p = new KExecPropsPlugin( this );
+    insertPlugin (p);
   }
 
-  if ( KApplicationPropsPage::supports( m_items ) )
+  if ( KApplicationPropsPlugin::supports( m_items ) )
   {
-    KPropsPage *p = new KApplicationPropsPage( this );
-    addPage (p);
+    KPropsDlgPlugin *p = new KApplicationPropsPlugin( this );
+    insertPlugin (p);
   }
 
-  if ( KBindingPropsPage::supports( m_items ) )
+  if ( KBindingPropsPlugin::supports( m_items ) )
   {
-    KPropsPage *p = new KBindingPropsPage( this );
-    addPage (p);
+    KPropsDlgPlugin *p = new KBindingPropsPlugin( this );
+    insertPlugin (p);
   }
 
-  if ( KURLPropsPage::supports( m_items ) )
+  if ( KURLPropsPlugin::supports( m_items ) )
   {
-    KPropsPage *p = new KURLPropsPage( this );
-    addPage (p);
+    KPropsDlgPlugin *p = new KURLPropsPlugin( this );
+    insertPlugin (p);
   }
 
-  if ( KDevicePropsPage::supports( m_items ) )
+  if ( KDevicePropsPlugin::supports( m_items ) )
   {
-    KPropsPage *p = new KDevicePropsPage( this );
-    addPage (p);
+    KPropsDlgPlugin *p = new KDevicePropsPlugin( this );
+    insertPlugin (p);
   }
 
   //plugins
@@ -386,32 +375,21 @@ void KPropertiesDialog::insertPages()
       continue;
     }
 
-    QObject *obj = factory->create( this, (*it)->name().latin1(), "KPropsPage" );
+    QObject *obj = factory->create( this, (*it)->name().latin1(), "KPropsDlgPlugin" );
     if ( !obj )
     {
       delete lib;
       continue;
     }
 
-    if ( !obj->inherits( "KPropsPage" ) )
+    if ( !obj->inherits( "KPropsDlgPlugin" ) )
     {
       delete obj;
       continue;
     }
 
-    addPage (static_cast<KPropsPage *>( obj ));
+    insertPlugin (static_cast<KPropsDlgPlugin *>( obj ));
   }
-
-  // this is already done in addPage
-//   KPropsPage *page;
-//   for (page = m_pageList.first(); page != 0L; page = m_pageList.next() )
-//     connect( page, SIGNAL( changed() ),
-// 	     page, SLOT( setDirty() ) );
-}
-
-int KPropertiesDialog::pageIndex (const QString& tabName)
-{
-  return d->m_pageIndex[tabName];
 }
 
 void KPropertiesDialog::updateUrl( const KURL& _newUrl )
@@ -446,34 +424,34 @@ void KPropertiesDialog::abortApplying()
   d->m_aborted = true;
 }
 
-class KPropsPage::KPropsPagePrivate
+class KPropsDlgPlugin::KPropsDlgPluginPrivate
 {
 public:
-  KPropsPagePrivate()
+  KPropsDlgPluginPrivate()
   {
   }
-  ~KPropsPagePrivate()
+  ~KPropsDlgPluginPrivate()
   {
   }
 
   bool m_bDirty;
 };
 
-KPropsPage::KPropsPage( KPropertiesDialog *_props )
+KPropsDlgPlugin::KPropsDlgPlugin( KPropertiesDialog *_props )
 : QObject( _props, 0L )
 {
-  d = new KPropsPagePrivate;
+  d = new KPropsDlgPluginPrivate;
   properties = _props;
   fontHeight = 2*properties->dialog()->fontMetrics().height();
   d->m_bDirty = false;
 }
 
-KPropsPage::~KPropsPage()
+KPropsDlgPlugin::~KPropsDlgPlugin()
 {
   delete d;
 }
 
-bool KPropsPage::isDesktopFile( KFileItem * _item )
+bool KPropsDlgPlugin::isDesktopFile( KFileItem * _item )
 {
   // only local files
   if ( !_item->url().isLocalFile() )
@@ -494,36 +472,36 @@ bool KPropsPage::isDesktopFile( KFileItem * _item )
   return ( _item->mimetype() == QString::fromLatin1("application/x-desktop") );
 }
 
-void KPropsPage::setDirty( bool b )
+void KPropsDlgPlugin::setDirty( bool b )
 {
   d->m_bDirty = b;
 }
 
-void KPropsPage::setDirty()
+void KPropsDlgPlugin::setDirty()
 {
   d->m_bDirty = true;
 }
 
-bool KPropsPage::isDirty() const
+bool KPropsDlgPlugin::isDirty() const
 {
   return d->m_bDirty;
 }
 
-void KPropsPage::applyChanges()
+void KPropsDlgPlugin::applyChanges()
 {
   kdWarning(1202) << "applyChanges() not implemented in page !" << endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class KFilePropsPage::KFilePropsPagePrivate
+class KFilePropsPlugin::KFilePropsPluginPrivate
 {
 public:
-  KFilePropsPagePrivate()
+  KFilePropsPluginPrivate()
   {
     dirSizeJob = 0L;
   }
-  ~KFilePropsPagePrivate()
+  ~KFilePropsPluginPrivate()
   {
     if ( dirSizeJob )
       dirSizeJob->kill();
@@ -533,10 +511,10 @@ public:
   QFrame *m_frame;
 };
 
-KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
-  : KPropsPage( _props )
+KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
+  : KPropsDlgPlugin( _props )
 {
-  d = new KFilePropsPagePrivate;
+  d = new KFilePropsPluginPrivate;
   m_bFromTemplate = false;
   // Extract the file name only
   QString filename = properties->defaultName();
@@ -579,12 +557,12 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
       directory += ')';
   }
 
-  if (KExecPropsPage::supports(properties->items()) ||
-      KBindingPropsPage::supports(properties->items())) {
+  if (KExecPropsPlugin::supports(properties->items()) ||
+      KBindingPropsPlugin::supports(properties->items())) {
     m_sRelativePath = "";
     // now let's make it relative
     QStringList dirs;
-    if (KBindingPropsPage::supports(properties->items()))
+    if (KBindingPropsPlugin::supports(properties->items()))
       dirs = KGlobal::dirs()->resourceDirs("mime");
     else
       dirs = KGlobal::dirs()->resourceDirs("apps");
@@ -597,14 +575,14 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
     }
     if ( m_sRelativePath.isEmpty() )
     {
-      if (KBindingPropsPage::supports(properties->items()))
+      if (KBindingPropsPlugin::supports(properties->items()))
         kdWarning(1202) << "Warning : editing a mimetype file out of the mimetype dirs!" << endl;
       // for Application desktop files, no problem : we can editing a .desktop file anywhere...
     } else
       while ( m_sRelativePath.left( 1 ).at(0) == '/' ) m_sRelativePath.remove( 0, 1 );
   }
 
-  d->m_frame = properties->dialog()->addPage (tabName());
+  d->m_frame = properties->dialog()->addPage (i18n("&General"));
 
   QVBoxLayout *vbl = new QVBoxLayout( d->m_frame, KDialog::marginHint(),
 				     KDialog::spacingHint(), "vbl");
@@ -772,12 +750,12 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
   vbl->addStretch(1);
 }
 
-QString KFilePropsPage::tabName () const
-{
-  return i18n ("&General");
-}
+// QString KFilePropsPlugin::tabName () const
+// {
+//   return i18n ("&General");
+// }
 
-void KFilePropsPage::slotDirSizeFinished( KIO::Job * job )
+void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
 {
   if (job->error())
     job->showErrorDialog( properties->dialog() );
@@ -790,7 +768,7 @@ void KFilePropsPage::slotDirSizeFinished( KIO::Job * job )
   d->dirSizeJob = 0L;
 }
 
-void KFilePropsPage::slotSizeDetermine()
+void KFilePropsPlugin::slotSizeDetermine()
 {
   m_sizeLabel->setText( i18n("Calculating...") );
   d->dirSizeJob = KDirSize::dirSizeJob( properties->item()->url() );
@@ -800,7 +778,7 @@ void KFilePropsPage::slotSizeDetermine()
   m_sizeDetermineButton->setEnabled(false);
 }
 
-void KFilePropsPage::slotSizeStop()
+void KFilePropsPlugin::slotSizeStop()
 {
   if ( d->dirSizeJob )
   {
@@ -812,12 +790,12 @@ void KFilePropsPage::slotSizeStop()
   m_sizeDetermineButton->setEnabled(true);
 }
 
-KFilePropsPage::~KFilePropsPage()
+KFilePropsPlugin::~KFilePropsPlugin()
 {
   delete d;
 }
 
-bool KFilePropsPage::supports( KFileItemList /*_items*/ )
+bool KFilePropsPlugin::supports( KFileItemList /*_items*/ )
 {
   return true;
 }
@@ -826,7 +804,7 @@ bool KFilePropsPage::supports( KFileItemList /*_items*/ )
 void qt_enter_modal( QWidget *widget );
 void qt_leave_modal( QWidget *widget );
 
-void KFilePropsPage::applyChanges()
+void KFilePropsPlugin::applyChanges()
 {
   QString fname = properties->kurl().fileName();
   QString n;
@@ -867,7 +845,7 @@ void KFilePropsPage::applyChanges()
   }
 }
 
-void KFilePropsPage::slotCopyFinished( KIO::Job * job )
+void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
 {
   if (job)
   {
@@ -885,12 +863,12 @@ void KFilePropsPage::slotCopyFinished( KIO::Job * job )
   assert( !properties->item()->url().isEmpty() );
 
   // Save the file where we can -> usually in ~/.kde/...
-  if (KBindingPropsPage::supports(properties->items()) && !m_sRelativePath.isEmpty())
+  if (KBindingPropsPlugin::supports(properties->items()) && !m_sRelativePath.isEmpty())
   {
     QString path = locateLocal("mime", m_sRelativePath);
     properties->updateUrl( KURL( path ) );
   }
-  else if (KExecPropsPage::supports(properties->items()) && !m_sRelativePath.isEmpty())
+  else if (KExecPropsPlugin::supports(properties->items()) && !m_sRelativePath.isEmpty())
   {
     QString path = locateLocal("apps", m_sRelativePath);
     properties->updateUrl( KURL( path ) );
@@ -936,14 +914,14 @@ void KFilePropsPage::slotCopyFinished( KIO::Job * job )
   }
 }
 
-void KFilePropsPage::slotFileRenamed( KIO::Job *, const KURL &, const KURL & newUrl )
+void KFilePropsPlugin::slotFileRenamed( KIO::Job *, const KURL &, const KURL & newUrl )
 {
     // This is called in case of an existing local file during the copy/move operation,
     // if the user chooses Rename.
     properties->updateUrl( newUrl );
 }
 
-void KFilePropsPage::postApplyChanges()
+void KFilePropsPlugin::postApplyChanges()
 {
   // Called after all pages applied their changes
   if (properties->kurl().isLocalFile())
@@ -953,23 +931,23 @@ void KFilePropsPage::postApplyChanges()
   }
 }
 
-class KFilePermissionsPropsPage::KFilePermissionsPropsPagePrivate
+class KFilePermissionsPropsPlugin::KFilePermissionsPropsPluginPrivate
 {
 public:
-  KFilePermissionsPropsPagePrivate()
+  KFilePermissionsPropsPluginPrivate()
   {
   }
-  ~KFilePermissionsPropsPagePrivate()
+  ~KFilePermissionsPropsPluginPrivate()
   {
   }
 
   QFrame *m_frame;
 };
 
-KFilePermissionsPropsPage::KFilePermissionsPropsPage( KPropertiesDialog *_props )
-  : KPropsPage( _props )
+KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_props )
+  : KPropsDlgPlugin( _props )
 {
-  d = new KFilePermissionsPropsPagePrivate;
+  d = new KFilePermissionsPropsPluginPrivate;
   grpCombo = 0L; grpEdit = 0;
   usrEdit = 0L;
   QString path = properties->kurl().path(-1);
@@ -1010,7 +988,7 @@ KFilePermissionsPropsPage::KFilePermissionsPropsPage( KPropertiesDialog *_props 
     //KIO::chmod will tell, if we had no right to change permissions
   }
 
-  d->m_frame = properties->dialog()->addPage(tabName());
+  d->m_frame = properties->dialog()->addPage(i18n("&Permissions"));
 
   QBoxLayout *box = new QVBoxLayout( d->m_frame, KDialog::spacingHint() );
 
@@ -1224,22 +1202,22 @@ KFilePermissionsPropsPage::KFilePermissionsPropsPage( KPropertiesDialog *_props 
     cl[2]->setText(i18n("<b>Others</b>"));
 }
 
-QString KFilePermissionsPropsPage::tabName () const
-{
-  return i18n ("&Permissions");
-}
+// QString KFilePermissionsPropsPlugin::tabName () const
+// {
+//   return i18n ("&Permissions");
+// }
 
-KFilePermissionsPropsPage::~KFilePermissionsPropsPage()
+KFilePermissionsPropsPlugin::~KFilePermissionsPropsPlugin()
 {
   delete d;
 }
 
-bool KFilePermissionsPropsPage::supports( KFileItemList /*_items*/ )
+bool KFilePermissionsPropsPlugin::supports( KFileItemList /*_items*/ )
 {
   return true;
 }
 
-void KFilePermissionsPropsPage::applyChanges()
+void KFilePermissionsPropsPlugin::applyChanges()
 {
   mode_t p = 0L;
   for (int row = 0;row < 3; ++row)
@@ -1294,9 +1272,9 @@ void KFilePermissionsPropsPage::applyChanges()
   }
 }
 
-void KFilePermissionsPropsPage::slotChmodResult( KIO::Job * job )
+void KFilePermissionsPropsPlugin::slotChmodResult( KIO::Job * job )
 {
-  kdDebug(1203) << "KFilePermissionsPropsPage::slotChmodResult" << endl;
+  kdDebug(1203) << "KFilePermissionsPropsPlugin::slotChmodResult" << endl;
   if (job->error())
     job->showErrorDialog( d->m_frame );
   else
@@ -1308,24 +1286,24 @@ void KFilePermissionsPropsPage::slotChmodResult( KIO::Job * job )
   qApp->exit_loop();
 }
 
-class KExecPropsPage::KExecPropsPagePrivate
+class KExecPropsPlugin::KExecPropsPluginPrivate
 {
 public:
-  KExecPropsPagePrivate()
+  KExecPropsPluginPrivate()
   {
   }
-  ~KExecPropsPagePrivate()
+  ~KExecPropsPluginPrivate()
   {
   }
 
   QFrame *m_frame;
 };
 
-KExecPropsPage::KExecPropsPage( KPropertiesDialog *_props )
-  : KPropsPage( _props )
+KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
+  : KPropsDlgPlugin( _props )
 {
-  d = new KExecPropsPagePrivate;
-  d->m_frame = properties->dialog()->addPage(tabName());
+  d = new KExecPropsPluginPrivate;
+  d->m_frame = properties->dialog()->addPage(i18n("E&xecute"));
   QVBoxLayout * mainlayout = new QVBoxLayout( d->m_frame, KDialog::spacingHint());
 
   // Now the widgets in the top layout
@@ -1499,38 +1477,38 @@ KExecPropsPage::KExecPropsPage( KPropertiesDialog *_props )
 
 }
 
-KExecPropsPage::~KExecPropsPage()
+KExecPropsPlugin::~KExecPropsPlugin()
 {
   delete d;
 }
 
-QString KExecPropsPage::tabName () const
-{
-  return i18n ("E&xecute");
-}
+// QString KExecPropsPlugin::tabName () const
+// {
+//   return i18n ("E&xecute");
+// }
 
-void KExecPropsPage::enableCheckedEdit()
+void KExecPropsPlugin::enableCheckedEdit()
 {
   terminalEdit->setEnabled(terminalCheck->isChecked());
 }
 
-void KExecPropsPage::enableSuidEdit()
+void KExecPropsPlugin::enableSuidEdit()
 {
   suidEdit->setEnabled(suidCheck->isChecked());
 }
 
-bool KExecPropsPage::supports( KFileItemList _items )
+bool KExecPropsPlugin::supports( KFileItemList _items )
 {
   KFileItem * item = _items.first();
   // check if desktop file
-  if ( !KPropsPage::isDesktopFile( item ) )
+  if ( !KPropsDlgPlugin::isDesktopFile( item ) )
     return false;
   // open file and check type
   KDesktopFile config( item->url().path(), true /* readonly */ );
   return config.hasApplicationType();
 }
 
-void KExecPropsPage::applyChanges()
+void KExecPropsPlugin::applyChanges()
 {
   QString path = properties->kurl().path();
 
@@ -1555,7 +1533,7 @@ void KExecPropsPage::applyChanges()
 }
 
 
-void KExecPropsPage::slotBrowseExec()
+void KExecPropsPlugin::slotBrowseExec()
 {
     KURL f = KFileDialog::getOpenURL( QString::null,
 				      QString::null, d->m_frame );
@@ -1570,24 +1548,24 @@ void KExecPropsPage::slotBrowseExec()
     execEdit->setText( f.path() );
 }
 
-class KURLPropsPage::KURLPropsPagePrivate
+class KURLPropsPlugin::KURLPropsPluginPrivate
 {
 public:
-  KURLPropsPagePrivate()
+  KURLPropsPluginPrivate()
   {
   }
-  ~KURLPropsPagePrivate()
+  ~KURLPropsPluginPrivate()
   {
   }
 
   QFrame *m_frame;
 };
 
-KURLPropsPage::KURLPropsPage( KPropertiesDialog *_props )
-  : KPropsPage( _props )
+KURLPropsPlugin::KURLPropsPlugin( KPropertiesDialog *_props )
+  : KPropsDlgPlugin( _props )
 {
-  d = new KURLPropsPagePrivate;
-  d->m_frame = properties->dialog()->addPage(tabName());
+  d = new KURLPropsPluginPrivate;
+  d->m_frame = properties->dialog()->addPage(i18n("U&RL"));
   QVBoxLayout * layout = new QVBoxLayout(d->m_frame, KDialog::spacingHint());
 
   QLabel *l;
@@ -1618,21 +1596,21 @@ KURLPropsPage::KURLPropsPage( KPropertiesDialog *_props )
   layout->addStretch (1);
 }
 
-KURLPropsPage::~KURLPropsPage()
+KURLPropsPlugin::~KURLPropsPlugin()
 {
   delete d;
 }
 
-QString KURLPropsPage::tabName () const
-{
-  return i18n ("U&RL");
-}
+// QString KURLPropsPlugin::tabName () const
+// {
+//   return i18n ("U&RL");
+// }
 
-bool KURLPropsPage::supports( KFileItemList _items )
+bool KURLPropsPlugin::supports( KFileItemList _items )
 {
   KFileItem * item = _items.first();
   // check if desktop file
-  if ( !KPropsPage::isDesktopFile( item ) )
+  if ( !KPropsDlgPlugin::isDesktopFile( item ) )
     return false;
 
   // open file and check type
@@ -1640,7 +1618,7 @@ bool KURLPropsPage::supports( KFileItemList _items )
   return config.hasLinkType();
 }
 
-void KURLPropsPage::applyChanges()
+void KURLPropsPlugin::applyChanges()
 {
   QString path = properties->kurl().path();
 
@@ -1659,28 +1637,28 @@ void KURLPropsPage::applyChanges()
 
 /* ----------------------------------------------------
  *
- * KApplicationPropsPage
+ * KApplicationPropsPlugin
  *
  * -------------------------------------------------- */
 
-class KApplicationPropsPage::KApplicationPropsPagePrivate
+class KApplicationPropsPlugin::KApplicationPropsPluginPrivate
 {
 public:
-  KApplicationPropsPagePrivate()
+  KApplicationPropsPluginPrivate()
   {
   }
-  ~KApplicationPropsPagePrivate()
+  ~KApplicationPropsPluginPrivate()
   {
   }
 
   QFrame *m_frame;
 };
 
-KApplicationPropsPage::KApplicationPropsPage( KPropertiesDialog *_props )
-  : KPropsPage( _props )
+KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
+  : KPropsDlgPlugin( _props )
 {
-  d = new KApplicationPropsPagePrivate;
-  d->m_frame = properties->dialog()->addPage(tabName());
+  d = new KApplicationPropsPluginPrivate;
+  d->m_frame = properties->dialog()->addPage(i18n("&Application"));
   QVBoxLayout *toplayout = new QVBoxLayout( d->m_frame, KDialog::spacingHint());
 
   availableExtensionsList = new QListBox( d->m_frame );
@@ -1771,17 +1749,17 @@ KApplicationPropsPage::KApplicationPropsPage( KPropertiesDialog *_props )
 	   this, SIGNAL( changed() ) );
 }
 
-KApplicationPropsPage::~KApplicationPropsPage()
+KApplicationPropsPlugin::~KApplicationPropsPlugin()
 {
   delete d;
 }
 
-QString KApplicationPropsPage::tabName () const
-{
-  return i18n ("&Application");
-}
+// QString KApplicationPropsPlugin::tabName () const
+// {
+//   return i18n ("&Application");
+// }
 
-void KApplicationPropsPage::addMimeType( const QString & name )
+void KApplicationPropsPlugin::addMimeType( const QString & name )
 {
   // Add a mimetype to the list of available mime types if not in the extensionsList
 
@@ -1795,13 +1773,13 @@ void KApplicationPropsPage::addMimeType( const QString & name )
     availableExtensionsList->inSort( name );
 }
 
-bool KApplicationPropsPage::supports( KFileItemList _items )
+bool KApplicationPropsPlugin::supports( KFileItemList _items )
 {
-  // same constraints as KExecPropsPage : desktop file with Type = Application
-  return KExecPropsPage::supports( _items );
+  // same constraints as KExecPropsPlugin : desktop file with Type = Application
+  return KExecPropsPlugin::supports( _items );
 }
 
-void KApplicationPropsPage::applyChanges()
+void KApplicationPropsPlugin::applyChanges()
 {
   QString path = properties->kurl().path();
 
@@ -1834,7 +1812,7 @@ void KApplicationPropsPage::applyChanges()
   f.close();
 }
 
-void KApplicationPropsPage::slotAddExtension()
+void KApplicationPropsPlugin::slotAddExtension()
 {
   int pos = availableExtensionsList->currentItem();
 
@@ -1845,7 +1823,7 @@ void KApplicationPropsPage::slotAddExtension()
   availableExtensionsList->removeItem( pos );
 }
 
-void KApplicationPropsPage::slotDelExtension()
+void KApplicationPropsPlugin::slotDelExtension()
 {
   int pos = extensionsList->currentItem();
 
@@ -1858,27 +1836,27 @@ void KApplicationPropsPage::slotDelExtension()
 
 /* ----------------------------------------------------
  *
- * KBindingPropsPage
+ * KBindingPropsPlugin
  *
  * -------------------------------------------------- */
 
-class KBindingPropsPage::KBindingPropsPagePrivate
+class KBindingPropsPlugin::KBindingPropsPluginPrivate
 {
 public:
-  KBindingPropsPagePrivate()
+  KBindingPropsPluginPrivate()
   {
   }
-  ~KBindingPropsPagePrivate()
+  ~KBindingPropsPluginPrivate()
   {
   }
 
   QFrame *m_frame;
 };
 
-KBindingPropsPage::KBindingPropsPage( KPropertiesDialog *_props ) : KPropsPage( _props )
+KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDlgPlugin( _props )
 {
-  d = new KBindingPropsPagePrivate;
-  d->m_frame = properties->dialog()->addPage(tabName());
+  d = new KBindingPropsPluginPrivate;
+  d->m_frame = properties->dialog()->addPage(i18n("A&ssociation"));
   patternEdit = new KLineEdit( d->m_frame, "LineEdit_1" );
   commentEdit = new KLineEdit( d->m_frame, "LineEdit_2" );
   mimeEdit = new KLineEdit( d->m_frame, "LineEdit_3" );
@@ -1960,21 +1938,21 @@ KBindingPropsPage::KBindingPropsPage( KPropertiesDialog *_props ) : KPropsPage( 
 	   this, SIGNAL( changed() ) );
 }
 
-KBindingPropsPage::~KBindingPropsPage()
+KBindingPropsPlugin::~KBindingPropsPlugin()
 {
   delete d;
 }
 
-QString KBindingPropsPage::tabName () const
-{
-  return i18n ("A&ssociation");
-}
+// QString KBindingPropsPlugin::tabName () const
+// {
+//   return i18n ("A&ssociation");
+// }
 
-bool KBindingPropsPage::supports( KFileItemList _items )
+bool KBindingPropsPlugin::supports( KFileItemList _items )
 {
   KFileItem * item = _items.first();
   // check if desktop file
-  if ( !KPropsPage::isDesktopFile( item ) )
+  if ( !KPropsDlgPlugin::isDesktopFile( item ) )
     return false;
 
   // open file and check type
@@ -1982,7 +1960,7 @@ bool KBindingPropsPage::supports( KFileItemList _items )
   return config.hasMimeTypeType();
 }
 
-void KBindingPropsPage::applyChanges()
+void KBindingPropsPlugin::applyChanges()
 {
   QString path = properties->kurl().path();
   QFile f( path );
@@ -2010,27 +1988,27 @@ void KBindingPropsPage::applyChanges()
 
 /* ----------------------------------------------------
  *
- * KDevicePropsPage
+ * KDevicePropsPlugin
  *
  * -------------------------------------------------- */
 
-class KDevicePropsPage::KDevicePropsPagePrivate
+class KDevicePropsPlugin::KDevicePropsPluginPrivate
 {
 public:
-  KDevicePropsPagePrivate()
+  KDevicePropsPluginPrivate()
   {
   }
-  ~KDevicePropsPagePrivate()
+  ~KDevicePropsPluginPrivate()
   {
   }
 
   QFrame *m_frame;
 };
 
-KDevicePropsPage::KDevicePropsPage( KPropertiesDialog *_props ) : KPropsPage( _props )
+KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgPlugin( _props )
 {
-  d = new KDevicePropsPagePrivate;
-  d->m_frame = properties->dialog()->addPage(tabName());
+  d = new KDevicePropsPluginPrivate;
+  d->m_frame = properties->dialog()->addPage(i18n("De&vice"));
 
   QStringList devices;
   QCString fstabFile;
@@ -2182,17 +2160,17 @@ KDevicePropsPage::KDevicePropsPage( KPropertiesDialog *_props ) : KPropsPage( _p
 	   this, SIGNAL( changed() ) );
 }
 
-KDevicePropsPage::~KDevicePropsPage()
+KDevicePropsPlugin::~KDevicePropsPlugin()
 {
   delete d;
 }
 
-QString KDevicePropsPage::tabName () const
-{
-  return i18n ("De&vice");
-}
+// QString KDevicePropsPlugin::tabName () const
+// {
+//   return i18n ("De&vice");
+// }
 
-void KDevicePropsPage::slotActivated( int index )
+void KDevicePropsPlugin::slotActivated( int index )
 {
   QStringList lst = QStringList::split( ' ', m_devicelist[index] );
   device->setEditText( lst[indexDevice] );
@@ -2200,18 +2178,18 @@ void KDevicePropsPage::slotActivated( int index )
   fstype->setText( lst[indexFSType] );
 }
 
-bool KDevicePropsPage::supports( KFileItemList _items )
+bool KDevicePropsPlugin::supports( KFileItemList _items )
 {
   KFileItem * item = _items.first();
   // check if desktop file
-  if ( !KPropsPage::isDesktopFile( item ) )
+  if ( !KPropsDlgPlugin::isDesktopFile( item ) )
     return false;
   // open file and check type
   KDesktopFile config( item->url().path(), true /* readonly */ );
   return config.hasDeviceType();
 }
 
-void KDevicePropsPage::applyChanges()
+void KDevicePropsPlugin::applyChanges()
 {
   QString path = properties->kurl().path();
   QFile f( path );

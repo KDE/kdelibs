@@ -27,10 +27,13 @@
 #ifndef __propsdlg_h
 #define __propsdlg_h
 
+extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <stdio.h>
+}
+
+#include <cstdio>
 
 #include <qbuttongroup.h>
 #include <qradiobutton.h>
@@ -53,7 +56,9 @@ class QPushButton;
 class KLineEdit;
 
 class KIconButton;
-class KPropsPage;
+class KPropsDlgPlugin;
+
+#define KPropsPage KPropsDlgPlugin
 
 namespace KIO { class Job; }
 
@@ -69,9 +74,10 @@ namespace KIO { class Job; }
  * This class must be created with (void)new PropertiesDialog(...)
  * It will take care of deleting itself.
  */
-class KPropertiesDialog : public QObject
+class KPropertiesDialog : public KDialogBase
 {
   Q_OBJECT
+
 public:
 
   /**
@@ -86,10 +92,14 @@ public:
    * method rather than the one below.
    *
    * @param item file item whose properties should be displayed.
+   * @param parent is the parent of the dialog widget.
+   * @param name is the internal name.
+   * @param modal tells the dialog whether it should be modal.
+   * @param autoShow tells the dialog whethr it should show itself automatically.
    */
-  KPropertiesDialog( KFileItem * item );
   KPropertiesDialog( KFileItem * item,
-                     QWidget* parent, bool modal = false, bool autoShow = true);
+                     QWidget* parent = 0L, const char* name = 0L,
+                     bool modal = false, bool autoShow = true);
   /**
    * Bring up a Properties dialog. Normal constructor for
    * file-manager-like applications.
@@ -100,10 +110,14 @@ public:
    * provided for future expansion when the properties dialog may be
    * able to get/set properties for a group of items all at once.
    *
+   * @param parent is the parent of the dialog widget.
+   * @param name is the internal name.
+   * @param modal tells the dialog whether it should be modal.
+   * @param autoShow tells the dialog whethr it should show itself automatically.
    */
-  KPropertiesDialog( KFileItemList _items );
   KPropertiesDialog( KFileItemList _items,
-                     QWidget *parent, bool modal = false, bool autoShow = true);
+                     QWidget *parent = 0L, const char* name = 0L,
+                     bool modal = false, bool autoShow = true);
 
   /**
    * Bring up a Properties dialog. Convenience constructor for
@@ -111,10 +125,14 @@ public:
    *
    * @param _url the URL whose properties should be displayed
    * @param _mode the mode, as returned by stat(). Don't set if unknown.
+   * @param parent is the parent of the dialog widget.
+   * @param name is the internal name.
+   * @param modal tells the dialog whether it should be modal.
+   * @param autoShow tells the dialog whethr it should show itself automatically.
    */
-  KPropertiesDialog( const KURL& _url, mode_t _mode = (mode_t) -1 );
-  KPropertiesDialog( const KURL& _url, mode_t _mode,
-                     QWidget* parent, bool modal = false, bool autoShow = true);
+  KPropertiesDialog( const KURL& _url, mode_t _mode = (mode_t) -1,
+                     QWidget* parent = 0L, const char* name = 0L,
+                     bool modal = false, bool autoShow = true);
 
   /**
    * Create a properties dialog for a new .desktop file (whose name
@@ -125,12 +143,27 @@ public:
    * @param _currentDir directory where the file will be written to
    * @param _defaultName something to put in the name field,
    * like mimetype.desktop
+   * @param parent is the parent of the dialog widget.
+   * @param name is the internal name.
+   * @param modal tells the dialog whether it should be modal.
+   * @param autoShow tells the dialog whethr it should show itself automatically.
    */
   KPropertiesDialog( const KURL& _tempUrl, const KURL& _currentDir,
-                    const QString& _defaultName );
-  KPropertiesDialog( const KURL& _tempUrl, const KURL& _currentDir,
                      const QString& _defaultName,
-                     QWidget* parent, bool modal = false, bool autoShow = true);
+                     QWidget* parent = 0L, const char* name = 0L,
+                     bool modal = false, bool autoShow = true);
+
+  /**
+   * Create an empty properties dialog (for applications that want use
+   * a standard dialog, but for things not doable via the plugin-mechanism.
+   *
+   * @param title is the string display as the "filename" in the caption of the dialog.
+   * @param parent is the parent of the dialog widget.
+   * @param name is the internal name.
+   * @param modal tells the dialog whether it should be modal.
+   */
+  KPropertiesDialog (const QString& title,
+                     QWidget* parent = 0L, const char* name = 0L, bool modal = false);
 
   /**
    * Cleans up the properties dialog and frees any associated resources,
@@ -141,25 +174,18 @@ public:
 
 
   /**
-   * Adds a "3rd party" properties page to the dialog.  Useful
+   * Adds a "3rd party" properties plugin to the dialog.  Useful
    * for extending the properties mechanism.
    *
-   * To create a new page type, inherit from the base class PropsPage
+   * To create a new lugin type, inherit from the base class KPropsPlugin
    * and implement all the methods.
    *
-   * @param page is a pointer to the PropsPage widget.  The Properties
-   *        dialog will do destruction for you.  The PropsPage MUST
-   *        have been created with the Properties Dialog as its parent.
-   * @see PropsPage
+   * @param plugin is a pointer to the PropsPlugin. The Properties
+   *        dialog will do destruction for you. The KPropsPlugin MUST
+   *        have been created with the KPropertiesDialog as its parent.
+   * @see KPropsDlgPlugin
    */
-  void addPage(KPropsPage *page);
-
-  /**
-   * @return the page index of the page named @a tabName.
-   *
-   * @param tabName is the name of page.
-   */
-  int pageIndex (const QString& tabName);
+  void insertPlugin (KPropsDlgPlugin *plugin);
 
   /**
    * @return a parsed URL.
@@ -177,8 +203,10 @@ public:
 
   /**
    * @return a pointer to the dialog
+   * @deprecated
    */
-  KDialogBase* dialog() const { return m_tab; }
+  KDialogBase* dialog() { return this; }
+  const KDialogBase* dialog() const { return this; }
 
   /**
    * If we are building this dialog from a template,
@@ -202,7 +230,7 @@ public:
   void updateUrl( const KURL& _newUrl );
 
   /**
-   * #see FilePropsPage::applyChanges
+   * #see FilePropsPlugin::applyChanges
    * @param _name new filename, encoded.
    */
   void rename( const QString& _name );
@@ -232,7 +260,7 @@ private:
   /**
    * Common initialization for all constructors
    */
-  void init(QWidget* parent = 0L, bool modal = false, bool autoShow = true);
+  void init (bool modal = false, bool autoShow = true);
 
   /**
    * Inserts all pages in the dialog.
@@ -255,14 +283,9 @@ private:
   KURL m_currentDir;
 
   /**
-   * List of all pages inserted ( first one first )
+   * List of all plugins inserted ( first one first )
    */
-  QList<KPropsPage> m_pageList;
-
-  /**
-   * The dialog
-   */
-  KDialogBase *m_tab;
+  QList<KPropsDlgPlugin> m_pageList;
 
 private slots:
   void slotDeleteMyself();
@@ -272,11 +295,11 @@ private:
 };
 
 /**
- * A Page in the Properties dialog
+ * A Plugin in the Properties dialog
  * This is an abstract class. You must inherit from this class
  * to build a new kind of page.
  */
-class KPropsPage : public QObject
+class KPropsDlgPlugin : public QObject
 {
   Q_OBJECT
 public:
@@ -285,17 +308,12 @@ public:
    * To insert tabs into the properties dialog, use the add methods provided by
    * KDialogBase (via props->dialog() )
    */
-  KPropsPage( KPropertiesDialog *_props );
-  virtual ~KPropsPage();
-
-  /**
-   * @return the name that should appear in the tab.
-   */
-  virtual QString tabName() const { return QString::null; }
+  KPropsDlgPlugin( KPropertiesDialog *_props );
+  virtual ~KPropsDlgPlugin();
 
   /**
    * Apply all changes to the file.
-   * This function is called when the user presses 'Ok'. The last page inserted
+   * This function is called when the user presses 'Ok'. The last plugin inserted
    * is called first.
    */
   virtual void applyChanges();
@@ -314,9 +332,9 @@ public slots:
 
 signals:
   /**
-   * Emit this event when the user changed anything the page's tabs.
+   * Emit this event when the user changed anything the plugin's tabs.
    * The hosting PropertiesDialog will call @ref applyChanges only if the
-   * PropsPage emits the changed event.
+   * PropsPlugin emits the changed event.
    */
   void changed();
 
@@ -328,41 +346,39 @@ protected:
 
   int fontHeight;
 private:
-  class KPropsPagePrivate;
-  KPropsPagePrivate *d;
+  class KPropsDlgPluginPrivate;
+  KPropsDlgPluginPrivate *d;
 };
 
 /**
- * 'General' page
- *  This page displays the name of the file, its size and access times.
+ * 'General' plugin
+ *  This plugin displays the name of the file, its size and access times.
  * @internal
  */
-class KFilePropsPage : public KPropsPage
+class KFilePropsPlugin : public KPropsDlgPlugin
 {
   Q_OBJECT
 public:
   /**
    * Constructor
    */
-  KFilePropsPage( KPropertiesDialog *_props );
-  virtual ~KFilePropsPage();
+  KFilePropsPlugin( KPropertiesDialog *_props );
+  virtual ~KFilePropsPlugin();
 
   /**
-   * Applies all changes made.  This page must be always the first
-   * page in the dialog, since this function may rename the file which
+   * Applies all changes made.  This plugin must be always the first
+   * plugin in the dialog, since this function may rename the file which
    * may confuse other applyChanges functions.
    */
   virtual void applyChanges();
 
-  virtual QString tabName() const;
-
   /**
-   * Tests whether the files specified by _items need a 'General' page.
+   * Tests whether the files specified by _items need a 'General' plugin.
    */
   static bool supports( KFileItemList _items );
 
   /**
-   * Called after all pages applied their changes
+   * Called after all plugins applied their changes
    */
   void postApplyChanges();
 
@@ -389,32 +405,30 @@ private:
    */
   QString oldName;
 
-  class KFilePropsPagePrivate;
-  KFilePropsPagePrivate *d;
+  class KFilePropsPluginPrivate;
+  KFilePropsPluginPrivate *d;
 };
 
 /**
- * 'Permissions' page
- * In this page you can modify permissions and change
+ * 'Permissions' plugin
+ * In this plugin you can modify permissions and change
  * the owner of a file.
  * @internal
  */
-class KFilePermissionsPropsPage : public KPropsPage
+class KFilePermissionsPropsPlugin : public KPropsDlgPlugin
 {
   Q_OBJECT
 public:
   /**
    * Constructor
    */
-  KFilePermissionsPropsPage( KPropertiesDialog *_props );
-  virtual ~KFilePermissionsPropsPage();
+  KFilePermissionsPropsPlugin( KPropertiesDialog *_props );
+  virtual ~KFilePermissionsPropsPlugin();
 
   virtual void applyChanges();
 
-  virtual QString tabName() const;
-
   /**
-   * Tests whether the file specified by _items needs a 'Permissions' page.
+   * Tests whether the file specified by _items needs a 'Permissions' plugin.
    */
   static bool supports( KFileItemList _items );
 
@@ -446,8 +460,8 @@ private:
    */
   static mode_t fperm[3][4];
 
-  class KFilePermissionsPropsPagePrivate;
-  KFilePermissionsPropsPagePrivate *d;
+  class KFilePermissionsPropsPluginPrivate;
+  KFilePermissionsPropsPluginPrivate *d;
 };
 
 /**
@@ -458,18 +472,17 @@ private:
  * Such files are used to represent a program in kpanel and kfm.
  * @internal
  */
-class KExecPropsPage : public KPropsPage
+class KExecPropsPlugin : public KPropsDlgPlugin
 {
   Q_OBJECT
 public:
   /**
    * Constructor
    */
-  KExecPropsPage( KPropertiesDialog *_props );
-  virtual ~KExecPropsPage();
+  KExecPropsPlugin( KPropertiesDialog *_props );
+  virtual ~KExecPropsPlugin();
 
   virtual void applyChanges();
-  virtual QString tabName() const;
 
   static bool supports( KFileItemList _items );
 
@@ -499,8 +512,8 @@ private:
     bool suidBool;
     QString suidUserStr;
 
-    class KExecPropsPagePrivate;
-    KExecPropsPagePrivate *d;
+    class KExecPropsPluginPrivate;
+    KExecPropsPluginPrivate *d;
 };
 
 /**
@@ -511,18 +524,17 @@ private:
  * Such files are used to represent a program in kpanel and kfm.
  * @internal
  */
-class KURLPropsPage : public KPropsPage
+class KURLPropsPlugin : public KPropsDlgPlugin
 {
   Q_OBJECT
 public:
   /**
    * Constructor
    */
-  KURLPropsPage( KPropertiesDialog *_props );
-  virtual ~KURLPropsPage();
+  KURLPropsPlugin( KPropertiesDialog *_props );
+  virtual ~KURLPropsPlugin();
 
   virtual void applyChanges();
-  virtual QString tabName() const;
 
   static bool supports( KFileItemList _items );
 
@@ -536,8 +548,8 @@ private:
   QPixmap pixmap;
   QString pixmapFile;
 private:
-  class KURLPropsPagePrivate;
-  KURLPropsPagePrivate *d;
+  class KURLPropsPluginPrivate;
+  KURLPropsPluginPrivate *d;
 };
 
 /**
@@ -548,18 +560,17 @@ private:
  * Such files are used to represent a program in kpanel and kfm.
  * @internal
  */
-class KApplicationPropsPage : public KPropsPage
+class KApplicationPropsPlugin : public KPropsDlgPlugin
 {
   Q_OBJECT
 public:
   /**
    * Constructor
    */
-  KApplicationPropsPage( KPropertiesDialog *_props );
-  virtual ~KApplicationPropsPage();
+  KApplicationPropsPlugin( KPropertiesDialog *_props );
+  virtual ~KApplicationPropsPlugin();
 
   virtual void applyChanges();
-  virtual QString tabName() const;
 
   static bool supports( KFileItemList _items );
 
@@ -582,8 +593,8 @@ private:
   QStringList extensions;
   QString commentStr;
 
-  class KApplicationPropsPagePrivate;
-  KApplicationPropsPagePrivate *d;
+  class KApplicationPropsPluginPrivate;
+  KApplicationPropsPluginPrivate *d;
 };
 
 /**
@@ -592,18 +603,17 @@ private:
  * Type=MimeType
  * @internal
  */
-class KBindingPropsPage : public KPropsPage
+class KBindingPropsPlugin : public KPropsDlgPlugin
 {
   Q_OBJECT
 public:
   /**
    * Constructor
    */
-  KBindingPropsPage( KPropertiesDialog *_props );
-  virtual ~KBindingPropsPage();
+  KBindingPropsPlugin( KPropertiesDialog *_props );
+  virtual ~KBindingPropsPlugin();
 
   virtual void applyChanges();
-  virtual QString tabName() const;
   static bool supports( KFileItemList _items );
 
 private:
@@ -615,23 +625,22 @@ private:
 
   QCheckBox * cbAutoEmbed;
 
-  class KBindingPropsPagePrivate;
-  KBindingPropsPagePrivate *d;
+  class KBindingPropsPluginPrivate;
+  KBindingPropsPluginPrivate *d;
 };
 
 /**
- * Properties page for device .desktop files
+ * Properties plugin for device .desktop files
  * @internal
  */
-class KDevicePropsPage : public KPropsPage
+class KDevicePropsPlugin : public KPropsDlgPlugin
 {
   Q_OBJECT
 public:
-  KDevicePropsPage( KPropertiesDialog *_props );
-  virtual ~KDevicePropsPage();
+  KDevicePropsPlugin( KPropertiesDialog *_props );
+  virtual ~KDevicePropsPlugin();
 
   virtual void applyChanges();
-  virtual QString tabName() const;
 
   static bool supports( KFileItemList _items );
 
@@ -654,8 +663,8 @@ private:
   QPixmap pixmap;
   QString pixmapFile;
 
-  class KDevicePropsPagePrivate;
-  KDevicePropsPagePrivate *d;
+  class KDevicePropsPluginPrivate;
+  KDevicePropsPluginPrivate *d;
 };
 
 #endif
