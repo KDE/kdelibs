@@ -69,8 +69,9 @@ static QString processLocaleString( const QString& s )
 	return res;
 }
 
-static QValueList<float> splitNumberString( const QString& s )
+static QValueList<float> splitNumberString( const QString& _s )
 {
+        QString s = _s.simplifyWhiteSpace();
 	QValueList<float> l;
 	int p1 = 1, p2 = 0;
 	while ( true )
