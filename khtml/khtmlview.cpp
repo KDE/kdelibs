@@ -399,7 +399,11 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseMove );
     m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, 0, 0, &mev );
     dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,mev.innerNode.handle(),false,0,_mouse,true);
-    d->clickCount = 0;  // moving the mouse invalidats the click (### support mouse threshold)
+
+    if (d->clickCount > 0 &&
+        QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() > QApplication::startDragDistance()) {
+	d->clickCount = 0;  // moving the mouse outside the threshold invalidates the click
+    }
 
     // execute the scheduled script. This is to make sure the mouseover events come after the mouseout events
     m_part->executeScheduledScript();
@@ -468,7 +472,8 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
     dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),true,d->clickCount,_mouse,false);
 
-    if (d->clickCount > 0 && d->clickX == xm && d->clickY == ym)
+    if (d->clickCount > 0 &&
+        QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance())
 	dispatchMouseEvent(EventImpl::CLICK_EVENT,mev.innerNode.handle(),true,d->clickCount,_mouse,true);
 
     if (mev.innerNode.handle())

@@ -134,20 +134,20 @@ bool RenderFormElement::eventFilter(QObject* o, QEvent* e)
             if(!isRenderButton()) {
                 // ### DOMActivate is also dispatched for thigs like selects & textareas -
                 // not sure if this is correct
-                m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,1);
+                m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,m_isDoubleClick ? 2 : 1);
             }
         }
 	// special case for HTML click & ondblclick handler
 	m_element->dispatchMouseEvent(&e2,m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT,m_clickCount);
 	
-        m_isDoubleClick = false;
+	if (!isRenderButton())
+	    m_isDoubleClick = false;
     }
     break;
     case QEvent::MouseButtonDblClick:
     {
         m_isDoubleClick = true;
         handleMousePressed(static_cast<QMouseEvent*>(e));
-        m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT, 2);
     }
     break;
     case QEvent::MouseMove:
@@ -167,7 +167,10 @@ bool RenderFormElement::eventFilter(QObject* o, QEvent* e)
 
 void RenderFormElement::slotClicked()
 {
-    if(isRenderButton())  m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,1);
+    if(isRenderButton()) {
+	m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,m_isDoubleClick ? 2 : 1);
+	m_isDoubleClick = false;
+    }
 }
 
 void RenderFormElement::handleMousePressed(QMouseEvent *e)
@@ -279,6 +282,7 @@ RenderSubmitButton::RenderSubmitButton(QScrollView *view, HTMLInputElementImpl *
 {
     QPushButton* p = new QPushButton(view->viewport());
     setQWidget(p, false);
+    p->setMouseTracking(true);
     p->installEventFilter(this);
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
@@ -942,7 +946,8 @@ bool TextAreaWidget::event( QEvent *e )
 RenderTextArea::RenderTextArea(QScrollView *view, HTMLTextAreaElementImpl *element)
     : RenderFormElement(view, element)
 {
-    TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view);
+    TextAreaWidget *edit = new TextAreaWidget(element->wrap(), 0);
+    view->addChild(edit);
     setQWidget(edit, false);
     edit->setMouseTracking(true);
     edit->installEventFilter(this);
