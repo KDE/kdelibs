@@ -1484,7 +1484,6 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
 	x_offset = initialXPos;
     if( initialYPos )
 	y_offset = initialYPos;
-    initialXPos = initialYPos = 0;
 
     emit scrollHorz( x_offset );
     emit scrollVert( y_offset );
@@ -1972,6 +1971,8 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 	}	    
 	// Adjust the scrollbar
 	emit scrollHorz( x_offset );
+
+	initialXPos = initialYPos = 0;
 
 	painter->end();
 	delete painter;
@@ -4972,9 +4973,10 @@ void KHTMLWidget::slotScrollVert( int _val )
     int ofs = 0;
     int diff = y_offset - _val;
     
-    // otherwise, it might reset the initially given positin to
+    // otherwise, it might reset the initially given position to
     // something smaller...
-    if( parsing && _val < y_offset ) return;
+    if( initialYPos && _val < y_offset ) return;
+    initialYPos = 0;
 
     if ( !isUpdatesEnabled() )
 	return;
@@ -5032,7 +5034,8 @@ void KHTMLWidget::slotScrollHorz( int _val )
 
     // otherwise, it might reset the initially given positin to
     // something smaller...
-    if( parsing && _val < y_offset ) return;
+    if( initialXPos && _val < x_offset ) return;
+    initialXPos = 0;
 
     if ( !isUpdatesEnabled() )
 	return;
@@ -6268,6 +6271,9 @@ KHTMLWidget::saveYourself(SavedPage *p)
 
     if(isFrameSet() && !parsing)
 	buildFrameTree(p, frameSet);
+
+    // clear this up
+    initialXPos = initialYPos = 0;
 
     return p;
 }
