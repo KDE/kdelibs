@@ -1,7 +1,7 @@
 /*
  *  This file is part of the KDE Libraries
- *  Copyright (C) 1999 Mirko Sucker (mirko@kde.org) and 
- *  Espen Sand (espensa@online.no)
+ *  Copyright (C) 1999-2000 Mirko Sucker (mirko@kde.org) and 
+ *  Espen Sand (espen@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -45,7 +45,7 @@ KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
 			  ButtonCode defaultButton, bool separator, 
 			  const QString &user1, const QString &user2,
 			  const QString &user3 )
-  :KDialog( parent, name, modal, WStyle_Customize|WStyle_DialogBorder),
+  :KDialog( parent, name, modal, /*WStyle_Customize|*/WStyle_DialogBorder),
    mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
    mIsActivated(false), mShowTile(false), mMessageBoxMode(false)
 {
@@ -67,7 +67,7 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
 			  QWidget *parent, const char *name, bool modal, 
 			  bool separator, const QString &user1, 
 			  const QString &user2, const QString &user3 )
-  :KDialog( parent, name, modal, WStyle_Customize|WStyle_DialogBorder ),
+  :KDialog( parent, name, modal, /*WStyle_Customize|*/WStyle_DialogBorder ),
    mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
    mIsActivated(false), mShowTile(false), mMessageBoxMode(false)
 {
@@ -92,7 +92,7 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
 			  QWidget *parent, const char *name, bool modal, 
 			  bool separator, QString yes,
 			  QString no, QString cancel )
-  :KDialog( parent, name, modal, WStyle_Customize|WStyle_DialogBorder ),
+  :KDialog( parent, name, modal, /*WStyle_Customize|*/WStyle_DialogBorder ),
    mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
    mIsActivated(false), mShowTile(false), mMessageBoxMode(true),
    mEscapeButton(escapeButton)
@@ -950,6 +950,13 @@ void KDialogBase::keyPressEvent( QKeyEvent *e )
 
     }
   }
+  else if( e->key() == Key_F1 && e->state() == ShiftButton )
+  {
+    QWhatsThis::enterWhatsThisMode();
+    e->accept();
+    return;
+  }
+
 
   //
   // Do the default action instead. Note KDialog::keyPressEvent is bypassed
