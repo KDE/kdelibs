@@ -131,7 +131,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
   }
 
   int n, m;
-  UString u, u2, u3;
+  UString u2, u3;
   int pos, p0, i;
   double d = 0.0;
 
@@ -149,10 +149,10 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
   case CharAt:
     pos = a0.toInteger(exec);
     if (pos < 0 || pos >= len)
-      u = "";
+      s = "";
     else
-      u = s.substr(pos, 1);
-    result = String(u);
+      s = s.substr(pos, 1);
+    result = String(s);
     break;
   case CharCodeAt:
     pos = a0.toInteger(exec);
@@ -195,7 +195,6 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     break;
   case Match:
   case Search: {
-    u = s;
     RegExp *reg, *tmpReg = 0;
     RegExpImp *imp = 0;
     if (a0.isA(ObjectType) && a0.toObject(exec).inherits(&RegExpImp::info))
@@ -212,8 +211,8 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       reg = tmpReg = new RegExp(a0.toString(exec), RegExp::None);
     }
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
-    int **ovector = regExpObj->registerRegexp(reg, u);
-    UString mstr = reg->match(u, -1, &pos, ovector);
+    int **ovector = regExpObj->registerRegexp(reg, s);
+    UString mstr = reg->match(s, -1, &pos, ovector);
     if (id == Search) {
       result = Number(pos);
     } else {
@@ -233,7 +232,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 	  lastIndex = pos;
 	  pos += mstr.isEmpty() ? 1 : mstr.size();
 	  delete [] *ovector;
-	  mstr = reg->match(u, pos, &pos, ovector);
+	  mstr = reg->match(s, pos, &pos, ovector);
 	}
 	if (imp)
 	  imp->put(exec, "lastIndex", Number(lastIndex), DontDelete|DontEnum);
@@ -244,7 +243,6 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     break;
   }
   case Replace:
-    u = s;
     if (a0.type() == ObjectType && a0.toObject(exec).inherits(&RegExpImp::info)) {
       RegExpImp* imp = static_cast<RegExpImp *>( a0.toObject(exec).imp() );
       RegExp *reg = imp->regExp();
@@ -264,8 +262,8 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 
       // This is either a loop (if global is set) or a one-way (if not).
       do {
-        int **ovector = regExpObj->registerRegexp( reg, u );
-        UString mstr = reg->match(u, lastIndex, &pos, ovector);
+        int **ovector = regExpObj->registerRegexp( reg, s );
+        UString mstr = reg->match(s, lastIndex, &pos, ovector);
         regExpObj->setSubPatterns(reg->subPatterns());
         if (pos == -1)
           break;
@@ -273,7 +271,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
         // special case of empty match
         if (len == 0 && lastIndex > 0) {
           pos = lastIndex + 1;
-          if (pos > u.size())
+          if (pos > s.size())
             break;
         }
 
@@ -293,7 +291,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
             unsigned long pos = rstr.substr(i+1,1).toULong(&ok);
             if (ok && pos <= (unsigned)reg->subPatterns()) {
               rstr = rstr.substr(0,i)
-                     + u.substr((*ovector)[2*pos],
+                     + s.substr((*ovector)[2*pos],
                                 (*ovector)[2*pos+1]-(*ovector)[2*pos])
                      + rstr.substr(i+2);
               i += (*ovector)[2*pos+1]-(*ovector)[2*pos] - 1; // -1 offsets i++
@@ -305,7 +303,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
           l.append(String(mstr)); // First arg: complete matched substring
           // Then the submatch strings
           for ( unsigned int sub = 1; sub <= reg->subPatterns() ; ++sub )
-            l.append( String( u.substr((*ovector)[2*sub],
+            l.append( String( s.substr((*ovector)[2*sub],
                                (*ovector)[2*sub+1]-(*ovector)[2*sub]) ) );
           l.append(Number(pos)); // The offset within the string where the match occurred
           l.append(String(s)); // Last arg: the string itself. Can't see the difference with the 1st arg!
@@ -313,21 +311,21 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
           rstr = o1.call( exec, thisObj, l ).toString(exec);
         }
         lastIndex = pos + rstr.size();
-        u = u.substr(0, pos) + rstr + u.substr(pos + len);
+        s = s.substr(0, pos) + rstr + s.substr(pos + len);
         //fprintf(stderr,"pos=%d,len=%d,lastIndex=%d,u=%s\n",pos,len,lastIndex,u.ascii());
       } while (global);
 
-      result = String(u);
+      result = String(s);
     } else { // First arg is a string
       u2 = a0.toString(exec);
-      pos = u.find(u2);
+      pos = s.find(u2);
       len = u2.size();
       // Do the replacement
       if (pos == -1)
         result = String(s);
       else {
-        u3 = u.substr(0, pos) + a1.toString(exec) +
-             u.substr(pos + len);
+        u3 = s.substr(0, pos) + a1.toString(exec) +
+             s.substr(pos + len);
         result = String(u3);
       }
     }
@@ -358,29 +356,28 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     Object constructor = exec->interpreter()->builtinArray();
     Object res = Object::dynamicCast(constructor.construct(exec,List::empty()));
     result = res;
-    u = s;
     i = p0 = 0;
     d = (a1.type() != UndefinedType) ? a1.toInteger(exec) : -1; // optional max number
     if (a0.type() == ObjectType && Object::dynamicCast(a0).inherits(&RegExpImp::info)) {
       Object obj0 = Object::dynamicCast(a0);
       RegExp reg(obj0.get(exec,"source").toString(exec));
-      if (u.isEmpty() && !reg.match(u, 0).isNull()) {
+      if (s.isEmpty() && !reg.match(s, 0).isNull()) {
 	// empty string matched by regexp -> empty array
 	res.put(exec, "length", Number(0), DontDelete|ReadOnly|DontEnum);
 	break;
       }
       pos = 0;
-      while (pos < u.size()) {
+      while (pos < s.size()) {
 	// TODO: back references
         int mpos;
         int *ovector = 0L;
-	UString mstr = reg.match(u, pos, &mpos, &ovector);
+	UString mstr = reg.match(s, pos, &mpos, &ovector);
         delete [] ovector; ovector = 0L;
 	if (mpos < 0)
 	  break;
 	pos = mpos + (mstr.isEmpty() ? 1 : mstr.size());
 	if (mpos != p0 || !mstr.isEmpty()) {
-	  res.put(exec,UString::from(i), String(u.substr(p0, mpos-p0)));
+	  res.put(exec,UString::from(i), String(s.substr(p0, mpos-p0)));
 	  p0 = mpos + mstr.size();
 	  i++;
 	}
@@ -388,17 +385,17 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     } else if (a0.type() != UndefinedType) {
       u2 = a0.toString(exec);
       if (u2.isEmpty()) {
-	if (u.isEmpty()) {
+	if (s.isEmpty()) {
 	  // empty separator matches empty string -> empty array
 	  put(exec,"length", Number(0));
 	  break;
 	} else {
-	  while (i != d && i < u.size()-1)
-	    res.put(exec,UString::from(i++), String(u.substr(p0++, 1)));
+	  while (i != d && i < s.size()-1)
+	    res.put(exec,UString::from(i++), String(s.substr(p0++, 1)));
 	}
       } else {
-	while (i != d && (pos = u.find(u2, p0)) >= 0) {
-	  res.put(exec,UString::from(i), String(u.substr(p0, pos-p0)));
+	while (i != d && (pos = s.find(u2, p0)) >= 0) {
+	  res.put(exec,UString::from(i), String(s.substr(p0, pos-p0)));
 	  p0 = pos + u2.size();
 	  i++;
 	}
@@ -406,7 +403,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     }
     // add remaining string, if any
     if (i != d)
-      res.put(exec,UString::from(i++), String(u.substr(p0)));
+      res.put(exec,UString::from(i++), String(s.substr(p0)));
     res.put(exec,"length", Number(i));
     }
     break;
@@ -451,16 +448,14 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     }
     break;
   case ToLowerCase:
-    u = s;
     for (i = 0; i < len; i++)
-      u[i] = u[i].toLower();
-    result = String(u);
+      s[i] = s[i].toLower();
+    result = String(s);
     break;
   case ToUpperCase:
-    u = s;
     for (i = 0; i < len; i++)
-      u[i] = u[i].toUpper();
-    result = String(u);
+      s[i] = s[i].toUpper();
+    result = String(s);
     break;
 #ifndef KJS_PURE_ECMA
   case Big:
