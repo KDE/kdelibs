@@ -98,7 +98,7 @@ again1:
   
   if ( n != 8 )
   {
-    kdebug( KDEBUG_ERROR, 7017, "Header has invalid size (%d)", n);
+    //kdebug( KDEBUG_ERROR, 7017, "Header has invalid size (%d)", n);
     return 0L;
   }
   
