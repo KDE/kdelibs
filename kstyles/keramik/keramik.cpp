@@ -1741,16 +1741,52 @@ void KeramikStyle::drawControl( ControlElement element,
 				else
 					progressRect = QRect(cr.x(), cr.y(), width, cr.height());
 
-				//### RTL
 				//Apply the animation rectangle.
+				//////////////////////////////////////
+				if (animateProgressBar)
+				{
+					if (reverse)
+					{
+						//Here, we can't simply shift, as the painter code calculates everything based
+						//on the left corner, so we need to draw the 2 portions ourselves.
 
-				//Clip to the old rectangle
-				p->setClipRect(progressRect, QPainter::CoordPainter);
+						//Start off by checking the geometry of the end pixmap - it introduces a bit of an offset
+						QSize   endDim = loader.size(keramik_progressbar + 3); //3 = 3*1 + 0 = (1,0) = cl
 
-				//Expand
-				progressRect.setLeft(progressRect.x() - 28 + progAnimShift);
+						//We might not have anything to animate at all, though, if the ender is the only thing to paint
+						if (endDim.width() < progressRect.width())
+						{
+							//OK, so we do have some stripes.
+							// Render the endline now - the clip region below will protect it from getting overwriten
+							QPixmap endline = loader.scale(keramik_progressbar + 3, endDim.width(), progressRect.height(),
+															cg.highlight(), cg.background());
+							p->drawPixmap(progressRect.x(), progressRect.y(), endline);
 
+							//Now, calculate where the stripes should be, and set a clip region to that
+							progressRect.setLeft(progressRect.x() + endline.width());
+							p->setClipRect(progressRect, QPainter::CoordPainter);
 
+							//Expand the paint region slightly to get the animation offset.
+							progressRect.setLeft(progressRect.x() - progAnimShift);
+
+							//Paint the stripes.
+							QPixmap stripe = loader.scale(keramik_progressbar + 4, 28, progressRect.height(),
+														  cg.highlight(), cg.background());
+														  //4 = 3*1 + 1 = (1,1) = cc
+
+							p->drawTiledPixmap(progressRect,  stripe);
+							//Exit out here to skip the regular paint path
+							return;
+						}
+					}
+					else
+					{
+						//Clip to the old rectangle
+						p->setClipRect(progressRect, QPainter::CoordPainter);
+						//Expand the paint region
+						progressRect.setLeft(progressRect.x() - 28 + progAnimShift);
+					}
+				}
 
 				Keramik::ProgressBarPainter(keramik_progressbar, reverse).draw( p,
 							progressRect , cg.highlight(), cg.background());
