@@ -1006,7 +1006,7 @@ int main( int argc, char* argv[] )
   signal(SIGTERM, sighandler);
   signal(SIGPIPE, SIG_IGN);
 
-  QApplication a( argc, argv );
+  QApplication a( argc, argv, false );
 
   InstallIOErrorHandler();
   DCOPServer server;
