@@ -106,23 +106,29 @@ void VFolderMenu::registerFile(const QString &file)
 
 void VFolderMenu::registerDirectory(const QString &directory)
 {
-   for(QStringList::Iterator it = m_allDirectories.begin();
-       it != m_allDirectories.end(); ++it)
-   {
-       if (directory.startsWith(*it))
-          return;
-       if ((*it).startsWith(directory))
-       {
-          // We only keep the most top-level directory.
-          *it = directory;
-          return;
-       }
-   }
-   m_allDirectories.prepend(directory);
+   m_allDirectories.append(directory);
 }
 
 QStringList VFolderMenu::allDirectories()
 {
+   if (m_allDirectories.isEmpty())
+     return m_allDirectories;
+   m_allDirectories.sort();
+
+   QStringList::Iterator it = m_allDirectories.begin();
+   QString previous = *it++;
+   for(;it != m_allDirectories.end();)
+   {
+     if ((*it).startsWith(previous))
+     {
+        it = m_allDirectories.remove(it);
+     }
+     else
+     {
+        previous = *it;
+        ++it;
+     }
+   }
    return m_allDirectories;
 }
 
