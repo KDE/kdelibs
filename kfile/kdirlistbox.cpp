@@ -23,8 +23,8 @@
 #include "kfileinfo.h"
 #include "kdirlistbox.h"
 #include <kapp.h>
+#include <klistbox.h>
 #include <qpainter.h>
-#include <qlistbox.h>
 #include <kstddirs.h>
 #include <kglobal.h>
 
@@ -33,7 +33,7 @@ class QPainter;
 class KFileInfo;
 
 /**
- * Class to allow pixmaps and text in QListBox.
+ * Class to allow pixmaps and text in KListBox.
  * Taken from the Qt library documentation.
  */
 class KDirListBoxItem : public QListBoxItem
@@ -46,8 +46,8 @@ public:
 
 protected:
     virtual void paint( QPainter * );
-    virtual int height( const QListBox * ) const;
-    virtual int width( const QListBox * ) const;
+    virtual int height( const KListBox * ) const;
+    virtual int width( const KListBox * ) const;
     virtual const QPixmap *pixmap() const { return pm; }
 
 private:
@@ -91,7 +91,7 @@ void KDirListBoxItem::paint( QPainter *p )
 	p->restore();
 }
 
-int KDirListBoxItem::height(const QListBox *lb ) const
+int KDirListBoxItem::height(const KListBox *lb ) const
 {
     int retval;
 
@@ -100,7 +100,7 @@ int KDirListBoxItem::height(const QListBox *lb ) const
     return retval;
 }
 
-int KDirListBoxItem::width(const QListBox *lb ) const
+int KDirListBoxItem::width(const KListBox *lb ) const
 {
     return pm->width() + lb->fontMetrics().width( text() ) + 6;
 }
@@ -128,7 +128,7 @@ void KDirListBox::mousePressEvent ( QMouseEvent *inEvent )
 
 KDirListBox::KDirListBox( bool accepts, bool s, QDir::SortSpec sorting,
                           QWidget * parent , const char * name )
-    : QListBox(parent, name) , KFileView(s,sorting)
+    : KListBox(parent, name) , KFileView(s,sorting)
 {
     _acceptFiles = accepts;
     setSortMode(Increasing);
@@ -137,7 +137,7 @@ KDirListBox::KDirListBox( bool accepts, bool s, QDir::SortSpec sorting,
 
 KDirListBox::KDirListBox( bool s, QDir::SortSpec sorting,
                           QWidget * parent , const char * name )
-    : QListBox(parent, name) , KFileView(s,sorting)
+    : KListBox(parent, name) , KFileView(s,sorting)
 {
    _acceptFiles = false;
     setSortMode(Increasing);
@@ -155,25 +155,25 @@ void KDirListBox::mouseDoubleClickEvent ( QMouseEvent *inEvent )
 
 void KDirListBox::setAutoUpdate(bool f)
 {
-    QListBox::setAutoUpdate(f);
+    KListBox::setAutoUpdate(f);
 }
 
 bool KDirListBox::insertItem(const KFileInfo *i, int index)
 {
     KDirListBoxItem *li = new KDirListBoxItem(i);
     li->setItalic(i->isSymLink());
-    QListBox::insertItem(li, index);
+    KListBox::insertItem(li, index);
     return true;
 }
 
 void KDirListBox::clearView()
 {
-    QListBox::clear();
+    KListBox::clear();
 }
 
 void KDirListBox::highlightItem(unsigned int i)
 {
-    QListBox::setCurrentItem(i);
+    KListBox::setCurrentItem(i);
 }
 
 #include "kdirlistbox.moc"

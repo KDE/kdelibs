@@ -22,10 +22,10 @@
 #ifndef KDE_KDIRLISTBOX_H
 #define KDE_KDIRLISTBOX_H
 
-#include <qlistbox.h>
+#include <klistbox.h>
 #include "kfileview.h"
 
-class KDirListBox : protected QListBox, public KFileView
+class KDirListBox : protected KListBox, public KFileView
 {
     Q_OBJECT
 	
