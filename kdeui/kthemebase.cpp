@@ -100,7 +100,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
         if(gradients[i] != GrNone){
             grLowColors[i] =
                 new QColor(config->readColorEntry(widgetEntries[i],
-                                                  &kapp->palette().normal().
+                                                  &kapp->palette()->normal().
                                                   background()));
         }
         else
@@ -112,7 +112,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
         if(gradients[i] != GrNone){
             grHighColors[i] =
                 new QColor(config->readColorEntry(widgetEntries[i],
-                                                  &kapp->palette().normal().
+                                                  &kapp->palette()->normal().
                                                   background()));
         }
         else
@@ -130,7 +130,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
     QColor fg;
     for(i=0; i < WIDGETS; ++i){
         if(config->hasKey(widgetEntries[i]) || bg[i].isValid()){
-            fg = kapp->palette().normal().foreground();
+            fg = kapp->palette()->normal().foreground();
             fg = config->readColorEntry(widgetEntries[i], &fg);
             colors[i] = makeColorGroup(fg, bg[i], style);
         }
@@ -389,11 +389,11 @@ QColorGroup* KThemeBase::makeColorGroup(QColor &fg, QColor &bg,
         lowlightVal=100+(2*kapp->contrast()+4)*10;
         return(new QColorGroup(fg, bg, bg.light(highlightVal),
                                bg.dark(lowlightVal), bg.dark(120),
-                               fg, kapp->palette().normal().base()));
+                               fg, kapp->palette()->normal().base()));
     }else
         return(new QColorGroup( fg, bg, bg.light(150), bg.dark(),
                                 bg.dark(120), fg,
-                                kapp->palette().normal().base()));
+                                kapp->palette()->normal().base()));
 }
 
 QImage* KThemeBase::loadImage(QString &name)
