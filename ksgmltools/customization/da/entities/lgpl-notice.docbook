@@ -1,16 +1,16 @@
-<para>This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public License
-as published by the Free Software Foundation; either version 2 of
-the License, or (at your option) any later version.</para>
+<para>Dette bibliotek er frit programmel; du kan videregive det og/eller ændre
+det under betingelserne i GNU's LGPL licens som publiceret af Free Software 
+Foundation; enten version 2 af licensen, eller (hvis du hellere vil) en
+vilkårlig senere udgave.</para>
 
-<para>This library is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.</para>
+<para>Dette bibliotek er udgivet i det håb at det måtte være nyttigt, men UDEN
+NOGEN GARANTI; selv uden den implicitte garanti at det kan bruges ved SALG
+eller kan BRUGES TIL ET BESTEMT FORMÅL.  Se GNU LGPL licensen for flere
+detaljer.</para>
 
-<para>You should have received a copy of the GNU Lesser General
-Public License along with this library; if not, write to the Free
-Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+<para>Du skulle have modtaget en kopi af GNU LGPL licensen med dette bibliotek;
+hvis ikke, skriv til Free Software Foundation, Inc., 59 Temple Place, 
+Suite 330, Boston, MA
 02111-1307 USA</para>
 <!--
 Local variables:
