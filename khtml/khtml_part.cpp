@@ -3357,7 +3357,8 @@ void KHTMLPart::slotViewPageInfo()
   if (!d->m_pageServices.isEmpty())
     editStr = i18n("   <a href=\"%1\">[Properties]</a>").arg(d->m_pageServices);
 
-  dlg->_url->setText("<a href=\"" + url().url() + "\">" + url().prettyURL() + "</a>" + editStr);
+  QString squeezedURL = KStringHandler::csqueeze( url().prettyURL(), 80 );
+  dlg->_url->setText("<a href=\"" + url().url() + "\">" + squeezedURL + "</a>" + editStr);
   if (lastModified().isEmpty())
   {
     dlg->_lastModified->hide();
