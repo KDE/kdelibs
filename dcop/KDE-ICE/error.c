@@ -383,7 +383,7 @@ int		severity;
 IcePointer	values;
 
 {
-    const char *str;
+    char *str;
     char *pData = (char *) values;
 
     switch (offendingMinorOpcode)
