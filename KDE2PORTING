@@ -17,6 +17,7 @@ cases. Just call "make -k 2>&1 | perl .../fixheaders" and it will try
 to look after the error messages and add includes as it recognize the
 errors
 
+
 //////////////////////////////////////////////////////////////////////
 // * kdelibs/khtmlw
 
@@ -88,19 +89,42 @@ khtmlw has been replaced with khtml.
 //////////////////////////////////////////////////////////////////////
 // * KDNDIcon, KDNDDropZone, KDNDWidget
 
-  These classes have been replaced by the Qt DND interface.
-  A good starting point may be reading the Qt Drag and Drop Tutorial.
+//////////////////////////////////////////////////////////////////////
+// * kdelibs/drag.h
+KDE Drag and Drop is Dead.  Long live Qt Xdnd.
 
-  Hints:
-   - QMultiLineEdit has already a DnD interface that accepts text/*
-     If you want to add support for other mimetypes, you need to 
-     re-implement all DnD-methods (also dragMoveEvent()) and pass
-     QTextDrag's to the parent methods. 
-   - QTextDrag also accepts text/uri-list, which means that you
-     always need to check for QUriDrag first if you want to get
-     both working. 
-   - The mimetype for Uri's is now text/uri-list. If you've used
-     the proprietary Qt 1.x url/url, you need to adjust that.  
+Xdnd is better anyway, because it has been adopted by all the other
+major GUI toolkits still under active development (this precludes
+Motif, but maybe we can convince the lesstif guys!).  Some changes
+are necessary to convert your old KDND-based stuff to Qt DND.
+
+- Remove drag.h from all of your sources / header files.
+- Remove KDNDDropZone object creations.  Instead of creating an
+  object of this type and then connecting it to some arbitrary slot
+  to handle drops, call "setAcceptDrops(true)" in your widget
+  constructor and then override the protected methods dragEnterEvent,
+  dragMoveEvent, dragLeaveEvent, and dropEvent.
+- You should be aware that to handle drops, you will either have to
+  inherit a widget and then override the methods mentioned above,
+  or install an event handler for the widget in that widget's parent,
+  and then handle QEvent::DragMove or QEvent::Drop inside there (if
+  you want to avoid inheritance).
+- You can emulate the old DndURL drop-type behaviour with the Qt
+  Drag Object type QUriList.
+- You can start a drag from inside your widget's mouseMoveEvent
+  method if you wish.
+- Qt includes a Drag and Drop tutorial.  We suggest you read that
+  now if you are confused.
+- QMultiLineEdit has already a DnD interface that accepts text/*
+  If you want to add support for other mimetypes, you need to 
+  re-implement all DnD-methods (also dragMoveEvent()) and pass
+  QTextDrag's to the parent methods. 
+- QTextDrag also accepts text/uri-list, which means that you
+  always need to check for QUriDrag first if you want to get
+  both working. 
+- The mimetype for Uri's is now text/uri-list. If you've used
+  the proprietary Qt 1.x url/url, you need to adjust that.  
+
 
 //////////////////////////////////////////////////////////////////////
 // * KConfigBase, KConfig, KSimpleConfig
@@ -108,13 +132,14 @@ khtmlw has been replaced with khtml.
   These classes have been largely reimplemented.  The external API
   remains mostly the same, with the single notable change that
   the groupIterator and entryIterator methods have been removed and
-  instead replaced my groupList (which returns a QStringList of groups)
+  instead replaced by groupList (which returns a QStringList of groups)
   and entryMap(const QString &group) (which returns a QMap of entries
   in the specified group).  This is due to internal changes in KConfig
   which would make providing iterators possibly rather difficult.
 
   Much more extensive documentation on the KConfig and friends API can
-  be found in the kdoc generated documentation from the header files.
+  be found in the kdoc generated documentation from the header files,
+  and in kdecore/KCONFIG_DESIGN.
 
   To use the new iterator, you will probably want to do something like
   this:
@@ -126,6 +151,7 @@ khtmlw has been replaced with khtml.
    // body here.  Access iterator key as aIt.key(),
    // data as *aIt.
   }
+
 
 //////////////////////////////////////////////////////////////////////
 // * libkfm has disappeared
@@ -241,7 +267,27 @@ HINTS:
 ////////////////////////////////////////////////////////////////////////
 // * KClipboard
 
-In case you've been using KClipboard, QClipboard is the way to go now.
+KClipboard has been removed. In case you've been using KClipboard,
+QClipboard is the way to go now, as it has all the functionality the K
+version had, and more.
+
+////////////////////////////////////////////////////////////////////////
+// * KPanner, KNewPanner
+
+KPanner and KNewPanner have been removed.  QSplitter does everything
+KPanner did and more. The api is similar, but not compatible.
+Basically to set it up so that you have a vertical splitter between a
+listbox, a listview and multi line editor, you would do something like
+this:
+
+    QSplitter *split = new QSplitter( parent );
+    QListBox *lb = new QListBox( split );
+    QListView *lv = new QListView( split );
+    QMultiLineEdit *ed = new QMultiLineEdit( split );
+
+As you can see you are not limited to two children.  Additionally, you
+do not have to call activate when you are done, and opaque resizing is
+possible if you call setOpaqueResize(true).
 
 ////////////////////////////////////////////////////////////////////////
 // * KTreeList, KTreeListItem
