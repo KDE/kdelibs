@@ -381,8 +381,9 @@ void KDirOperator::slotToggleIgnoreCase()
 void KDirOperator::mkdir()
 {
     bool ok;
+    QString where = url().isLocalFile() ? url().path(+1) : url().prettyURL();
     QString dir = KInputDialog::getText( i18n( "New Directory" ),
-                                         i18n( "Create new directory in:\n%1" ).arg( url().prettyURL() ),
+                                         i18n( "Create new directory in:\n%1" ).arg( where ),
                                          i18n("New Directory"), &ok, this);
     if (ok)
       mkdir( dir, true );
@@ -390,25 +391,29 @@ void KDirOperator::mkdir()
 
 bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
 {
+    // Creates "directory", relative to the current directory (currUrl).
+    // The given path may contain any number directories, existant or not.
+    // They will all be created, if possible.
+    
     bool writeOk = false;
     bool exists = false;
     KURL url( currUrl );
-    url.addPath(directory);
 
-    if ( url.isLocalFile() ) {
-        exists = QFile::exists( url.path() );
-        // check if we are allowed to create local directories
-        writeOk = !exists && checkAccess( url.path(), W_OK );
-        if ( writeOk )
-            writeOk = QDir().mkdir( url.path() );
-    }
-    else {
+    QStringList dirs = QStringList::split( QDir::separator(), directory );
+    QStringList::ConstIterator it = dirs.begin();
+    
+    for ( ; it != dirs.end(); ++it )
+    {
+        url.addPath( *it );
         exists = KIO::NetAccess::exists( url, false );
         writeOk = !exists && KIO::NetAccess::mkdir( url, kapp->mainWidget() );
     }
-
-    if ( exists ) {
-        KMessageBox::sorry(viewWidget(), i18n("A file or directory named %1 already exists.").arg(url.prettyURL()));
+    
+    if ( exists ) // url was already existant
+    {
+        QString which = url.isLocalFile() ? url.path() : url.prettyURL();
+        KMessageBox::sorry(viewWidget(), i18n("A file or directory named %1 already exists.").arg(which));
+        enterDirectory = false;
     }
     else if ( !writeOk ) {
         KMessageBox::sorry(viewWidget(), i18n("You don't have permission to "
