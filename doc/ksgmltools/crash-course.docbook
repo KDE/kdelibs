@@ -273,16 +273,7 @@ The tags covered in this section are listed below.
 <title>An example of a minimal DocBook Book file</title>
 <screen>
 <![ CDATA [
-<!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
-  <!ENTITY kapp "<application>Kapp</application>">
-  <!ENTITY kappname "&kapp;" -- this only *seems* redundant -->
-  <!ENTITY % ents PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN">
-  %ents;
-  <!ENTITY % FDLNotice PUBLIC "-//KDE//ENTITIES KDE GNU FDL 1.1 Notice Entities//EN">
-  %FDLNotice;
-  <!ENTITY % addindex "IGNORE">
-  <![ %addindex; [ <!ENTITY kdedocindex SYSTEM "docindex.docbook"> ]]>]]&gt;<![CDATA [
-]>
+<!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN">
 
 <book lang="en">
 <bookinfo>
@@ -297,46 +288,111 @@ The tags covered in this section are listed below.
 </screen>
 </example>
 </para>
+
 <para>
-The above example shows a skeleton of all of the required structural tags. The
-first lines in any DocBook file are the DTD declaration which indicates which DTD
-to use to process this document. KDE documentation uses an extension to the
-standard DocBook 3.1 DTD which adds support for PNG graphics to the
-graphics-related DocBook tags. Here you also find other definitions like
-<markup>&amp;kapp;</markup> which defines a shortcut for the name of the "kapp"
-application, and the inclusion of a legal notice.
+The above example shows a skeleton of all of the required structural
+tags. The first lines in any DocBook file are the DTD declaration which
+indicates which DTD to use to process this document. KDE documentation
+uses an extension to the standard DocBook 3.1 DTD which adds support for
+PNG graphics to the graphics-related DocBook tags and other enhancements.
+Here you can also find other definitions that will be described in
+more detail in the <link linkend="declaration">Document Type
+Declation</link> section.
 </para>
+
 <para>
-Next comes the content model, which is <markup>&lt;book&gt;</markup>
-for all KDE documentation. Note the use of the <markup>lang</markup>
-attribute in the <markup>&lt;book&gt;</markup> tag. The language attribute
-should always be used to make it easy to determine what language in which
-the document is written.  Human-readable (not numerical) ID attributes
-for <markup>&lt;chapter&gt;</markup> and <markup>&lt;sect&gt;</markup>
-tags are required for two reasons:
+Next comes the content model, which is <markup>&lt;book&gt;</markup> for
+all KDE documentation. Note the use of the <markup>lang</markup> attribute
+in the <markup>&lt;book&gt;</markup> tag. The language attribute should
+always be used to make it easy to determine what language in which the
+document is written.
+</para>
+
+<para>
+After the <markup>&lt;book&gt;</markup> tag comes the meta
+information for the document which is encapsulated within the
+<markup>&lt;bookinfo&gt;</markup> tag. This information will be described
+in more detail in the <link linkend="metainfo">Meta Information</link>
+section.
+</para>
+
+<para>
+Then come the chapters of your book, which may contain
+one or more section tags (<markup>&lt;sect1&gt;</markup> -
+<markup>&lt;sect5&gt;</markup>).  Human-readable (not numerical)
+ID attributes for <markup>&lt;chapter&gt;</markup> and
+<markup>&lt;sect&gt;</markup> tags are required for two reasons:
 <itemizedlist>
-<listitem><para>Labelling all of the sections of your document allows you to
-easily cross-reference your document with hyperlinks.</para></listitem>
-<listitem><para>Jade uses the ID's of Chapters to name the output files, so if
-you do not include ID's for all your Chapters, the file names will be different
-each time the docs are updated, which wastes space in CVS.</para></listitem>
+<listitem><para>Labelling all of the sections of your document allows you
+to easily cross-reference your document with hyperlinks.</para></listitem>
+<listitem><para>Jade uses the ID's of Chapters to name the output files,
+so if you do not include ID's for all your Chapters, the file names
+will be different each time the docs are updated, which wastes space
+in CVS.</para></listitem>
 </itemizedlist>
 </para>
+
 <para>
-After the <markup>&lt;book&gt;</markup> tag comes the meta information for the
-document which is encapsulated within the <markup>&lt;bookinfo&gt;</markup> tag.
-This information will be described in more detail in the
-<link linkend="metainfo">Meta Information</link> section. Then come the chapters
-of your book, which may contain one or more section tags
-(<markup>&lt;sect1&gt;</markup> - <markup>&lt;sect5&gt;</markup>). Chapters and
-sections must contain at least a <markup>&lt;title&gt;</markup> and an empty
-<markup>&lt;para&gt;</markup> tag. To make it easier to visualize how the
-sections relate to one another, refer to the documentation template.</para>
+Chapters and sections must contain at least a
+<markup>&lt;title&gt;</markup> and an empty <markup>&lt;para&gt;</markup>
+tag. To make it easier to visualize how the sections relate to one
+another, refer to the documentation template.
+</para>
+
 <para>
 Content in DocBook is contained within a <markup>&lt;para&gt;</markup>
-tag, which is very similar to the <markup>&lt;p&gt;</markup> tag in HTML and
-Linuxdoc except that it must always have a closing
-<markup>&lt;/para&gt;</markup> tag.</para>
+tag, which is very similar to the <markup>&lt;p&gt;</markup> tag
+in HTML and Linuxdoc except that it must always have a closing
+<markup>&lt;/para&gt;</markup> tag.
+</para>
+
+</sect1>
+
+<sect1 id="declaration">
+<title>The document type declaration</title>
+
+<para>
+<example>
+<title>An example of document type declaration</title>
+<screen>
+<![ CDATA [
+<!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN" [
+  <!ENTITY kapp "<application>Kapp</application>">
+  <!ENTITY kappname "&kapp;" -- this only *seems* redundant -->
+  <!ENTITY % ents PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN">
+  %ents;
+  <!ENTITY % addindex "IGNORE">
+]>
+]]>
+</screen>
+</example>
+</para>
+
+<para>
+In "real life", the document type declaration is slightly more complicated than
+the single ligne presented in the document skeleton in the previous section.
+</para>
+
+<para>First you find there an "entity definition" that makes <markup>&amp;kapp;</markup>
+a synonymous for the name of the "Kapp" application, marked up as
+<markup>&lt;application&gt;Kapp&lt;/application&gt;</markup>.
+</para>
+
+<para>
+Then "&amp;kappname;" is defined as the name of the application. This symbol is always
+provided, should the real name of the application be iobtained through "&amp;kshisen;",
+"&amp;konqueror;", or "&amp;kapp;" like in our example.
+</para> 
+
+<para>
+Then other entities depending on this application name are included. For example,
+this makes "&amp;FDL;" available as a shortcut for the Free Documentation Licence
+notice.
+</para>
+
+<para>
+Finally, it is said that by default, no index is generated.
+</para>
 
 </sect1>
 
