@@ -169,7 +169,7 @@ KService* KService::parseService( const QString& _file, KSimpleConfig &config,
 
 KService::KService( const QString& _name, const QString& _exec, const QString& _icon,
 		    const QStringList& _lstServiceTypes, const QString& _comment,
-		    bool _allow_as_default = true, const QString& _path,
+		    bool _allow_as_default, const QString& _path,
 		    const QString& _terminal, const QString& _file,
 		    bool _put_in_list )
 {

@@ -51,7 +51,7 @@ Filter::Filter( const char *_cmd , const char **arguments)
       while(arguments[i]) i++;
     }
 
-    char *argv[i+2];
+    char **argv = new char*[i+2];
     argv[i+1]=0;
     if (arguments) {
     i=0; while (arguments[i]) {

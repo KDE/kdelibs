@@ -924,7 +924,7 @@ void KSpell::setProgressResolution (unsigned int res)
 
 void KSpell::emitProgress (void)
 {
-  int nextprog=(int) (100.*lastpos/totalpos);
+  uint nextprog = (uint) (100.*lastpos/totalpos);
 
   if (nextprog>=curprog)
     {
