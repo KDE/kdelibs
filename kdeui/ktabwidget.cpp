@@ -1,4 +1,5 @@
 /* This file is part of the KDE libraries
+    Copyright (C) 2003 Stephan Binner <binner@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -31,6 +32,7 @@ KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
   connect(m_pTabBar, SIGNAL(mouseMiddleClick( QWidget * )), this, SIGNAL(mouseMiddleClick( QWidget * )));
   connect(m_pTabBar, SIGNAL(dragInitiated( QWidget * )), this, SIGNAL(dragInitiated( QWidget * )));
   connect(m_pTabBar, SIGNAL(receivedDropEvent( QWidget *, QDropEvent * )), this, SIGNAL(receivedDropEvent( QWidget *, QDropEvent * )));
+  connect(m_pTabBar, SIGNAL(movedTab( int, int )), this, SIGNAL(movedTab( int, int )));
 }
 
 void KTabWidget::dragMoveEvent( QDragMoveEvent *e )

@@ -1,4 +1,5 @@
 /* This file is part of the KDE libraries
+    Copyright (C) 2003 Stephan Binner <binner@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -42,6 +43,7 @@ signals:
     void receivedDropEvent( QDropEvent * );
     void receivedDropEvent( QWidget *, QDropEvent * );
     void dragInitiated( QWidget * );
+    void movedTab( int, int );
 
     void contextMenu( QWidget *, const QPoint & );
     void mouseDoubleClick( QWidget * );

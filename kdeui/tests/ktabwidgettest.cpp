@@ -1,6 +1,7 @@
 #include <qcheckbox.h>
 #include <qlayout.h>
 #include <qdragobject.h>
+#include <qinputdialog.h>
 
 #include "tab.h"
 
@@ -31,6 +32,7 @@ Test::Test( QWidget* parent, const char *name )
   connect( mWidget, SIGNAL( receivedDropEvent( QDropEvent * )), this, SLOT(receivedDropEvent( QDropEvent * )));
   connect( mWidget, SIGNAL( receivedDropEvent( QWidget *, QDropEvent * )), this, SLOT(receivedDropEvent( QWidget *, QDropEvent * )));
   connect( mWidget, SIGNAL( dragInitiated( QWidget * )), this, SLOT(dragInitiated( QWidget * )));
+  connect( mWidget, SIGNAL( movedTab( int, int )), this, SLOT(movedTab( int, int )));
 
   QWidget * grid = new QWidget(this);
   QGridLayout * gridlayout = new QGridLayout( grid, 5, 2 );
@@ -291,7 +293,14 @@ void Test::tabbarContextMenuActivated(int item)
 
 void Test::mouseDoubleClick(QWidget *w)
 {
-  mWidget->changeTab( w, Qt::green );
+  bool ok;
+  QString text = QInputDialog::getText(
+            "Rename Tab", "Enter new name:", QLineEdit::Normal,
+            mWidget->label( mWidget->indexOf( w ) ), &ok, this );
+  if ( ok && !text.isEmpty() ) {
+     mWidget->changeTab( w, text );
+     mWidget->changeTab( w, Qt::green );
+  }
 }
 
 void Test::mouseMiddleClick(QWidget *w)
@@ -301,6 +310,27 @@ void Test::mouseMiddleClick(QWidget *w)
   IntList::iterator it = mList.at( mWidget->indexOf(w) );
   mList.erase( it );
   mWidget->removePage( w );
+}
+
+void Test::movedTab(int from, int to)
+{
+printf("reorder Tab from %d to %d\n",from,to);
+  IntList::iterator it;
+  QString label = mWidget->label(from);
+  QString tabtooltip = mWidget->tabToolTip( mWidget->page(from) );
+  QIconSet tabiconset = mWidget->tabIconSet( mWidget->page(from) );
+  QWidget* page = mWidget->page(from);
+  QColor color = mWidget->tabColor( mWidget->page(from) );
+
+  it = mList.at( from );
+  mList.erase( it );
+  mWidget->removePage( mWidget->page(from) );
+
+  it = mList.at( to );
+  mList.insert(it, mWidget->insertChangeableTab( label, to, page ) );
+  mWidget->changeTab( mList[to], tabiconset, label );
+  mWidget->setTabToolTip( page, tabtooltip );
+  mWidget->changeTab( mList[to], color );
 }
 
 void Test::timerDone()

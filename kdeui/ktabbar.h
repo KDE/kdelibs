@@ -1,4 +1,5 @@
 /* This file is part of the KDE libraries
+    Copyright (C) 2003 Stephan Binner <binner@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -36,16 +37,19 @@ signals:
     void mouseMiddleClick( QWidget * );
     void dragInitiated( QWidget * );
     void receivedDropEvent( QWidget *, QDropEvent * );
+    void movedTab( int, int );
 
 protected slots:
     virtual void mouseDoubleClickEvent(QMouseEvent *e);
     virtual void mousePressEvent(QMouseEvent *e);
     virtual void mouseMoveEvent(QMouseEvent *e);
+    virtual void mouseReleaseEvent(QMouseEvent *e);
     virtual void dragMoveEvent( QDragMoveEvent * );
     virtual void dropEvent( QDropEvent * );
 
 private:
     QPoint mDragStart;
+    int    reorderStartTab,previousTabIndex;
 
     KTabBarPrivate * d;
 };
