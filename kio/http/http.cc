@@ -654,8 +654,8 @@ static bool waitForHeader( int sock, int maxTimeout )
       FD_ZERO(&wr);
       FD_SET(sock, &rd);
 
-      timeout.tv_usec = 1000*1000; // 1/10th sec
-      timeout.tv_sec = 0;
+      timeout.tv_usec = 0; 
+      timeout.tv_sec = 1; // 1 second
 
       select(sock + 1, &rd, &wr, (fd_set *)0, &timeout);
 
