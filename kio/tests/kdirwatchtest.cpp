@@ -53,6 +53,8 @@ int main (int argc, char **argv)
   QString desk = home + "Desktop/";
   kdDebug() << "Watching: " << home << endl;
   dirwatch1->addDir(home);
+  kdDebug() << "Watching file: " << home << "foo " << endl;
+  dirwatch1->addFile(home+"foo");
   kdDebug() << "Watching: " << desk << endl;
   dirwatch1->addDir(desk);
   QString test = home + "test/";
