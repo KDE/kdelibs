@@ -1,3 +1,10 @@
+Sun Jan 30 12:41:04 2000  Werner Trobin  <wtrobin@carinthia.com>
+	The preview mode works again. It's very similar to the Qt-2.1 QFD
+	preview mode - but it's not totally the same. There are some rough
+	edges which have to be ironed out, but it works :)
+	For further information, see kfilepreview.*
+	Note: kpreview and so on are obsolete (IMHO)
+	
 Sat Jan 29 15:33:37 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	Time to add some changelogs again, all the recent hard work of the 
