@@ -61,7 +61,7 @@ QList<KHTMLWidget> *KHTMLWidget::lstViews = 0L;
 
 using namespace DOM;
 
-static QPixmap* KHTMLWidget::paintBuffer = 0L;
+QPixmap* KHTMLWidget::paintBuffer = 0L;
 
 KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
     : QScrollView( parent, name)
