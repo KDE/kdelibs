@@ -48,11 +48,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qsocketnotifier.h>
 #include <qregexp.h>
 
-#ifdef HAVE_PRIVATE_QUCOMEXTRA_P_H
 #include <private/qucomextra_p.h>
-#else
-#include <qucom.h>
-#endif
 
 #include <dcopglobal.h>
 #include <dcopclient.h>
