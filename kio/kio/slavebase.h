@@ -627,9 +627,14 @@ public:
      * }
      * \endcode
      *
-     * NOTE: A call to this function can fail and return @p false,
+     * \note You should consider using checkCachedAuthentication() to
+     * see if the password is available either in the slave's process or
+     * KWallet before calling this function.
+     *
+     * \note A call to this function can fail and return @p false,
      * if the UIServer could not be started for whatever reason.
      *
+     * @see checkCachedAuthentication
      * @param info  See AuthInfo.
      * @param errorMsg Error message to show
      * @return      @p true if user clicks on "OK", @p false otherwsie.
