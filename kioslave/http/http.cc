@@ -1584,6 +1584,8 @@ void HTTPProtocol::slotDataEnd()
 	// we are getting the following URL
 	gettingFile(m_state.url.url());
 
+	totalSize( m_iSize );
+
 	// get the starting time.  this is used later to compute the transfer
 	// speed.
 	time_t t_start = time(0L);
@@ -1623,6 +1625,13 @@ void HTTPProtocol::slotDataEnd()
 			// yep, let the world know that we have some data
 			data(buffer, nbytes);
 			sz += nbytes;
+			processedSize( sz );
+			time_t t = time( 0L );
+			if ( t - t_last >= 1 )
+			{
+			  speed( sz / ( t - t_start ) );
+			  t_last = t;
+			}
 		} else {
 			// nope.  slap this all onto the end of a big buffer
 			// for later use
