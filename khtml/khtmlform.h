@@ -115,6 +115,8 @@ public:
 
 	virtual void calcAbsolutePos( int _x, int _y );
 
+    virtual const char * objectName() const { return "HTMLWidgetElement"; };
+
 protected:
 	QWidget *widget;
 
@@ -146,6 +148,8 @@ public:
 	virtual QString encoding();
 	virtual void resetElement();
 
+    virtual const char * objectName() const { return "HTMLSelect"; };
+
 protected slots:
 	void slotHighlighted( int indx );
 
@@ -171,6 +175,8 @@ public:
 	virtual QString encoding();
 	virtual void resetElement();
 
+    virtual const char * objectName() const { return "HTMLTextArea"; };
+
 private:
 	QString _defText;
 };
@@ -189,6 +195,8 @@ public:
 	void setValue( const char *v )
 		{	_value = v; }
 
+    virtual const char * objectName() const { return "HTMLInput"; };
+
 private:
 	QString   _value;
 };
@@ -205,6 +213,8 @@ public:
 	virtual QString encoding();
 	virtual void resetElement();
 
+    virtual const char * objectName() const { return "HTMLCheckBox"; };
+
 private:
 	bool _defCheck;
 };
@@ -219,6 +229,8 @@ public:
 	virtual ~HTMLHidden() { }
 
 	virtual QString encoding();
+
+    virtual const char * objectName() const { return "HTMLHidden"; };
 };
 
 //---------------------------------------------------------------------------
@@ -232,6 +244,8 @@ public:
 
 	virtual QString encoding();
 	virtual void resetElement();
+
+    virtual const char * objectName() const { return "HTMLRadio"; };
 
 public slots:
 	void slotRadioSelected( const char *n, const char *v );
@@ -255,6 +269,8 @@ public:
 	HTMLReset( QWidget *parent, const char *v );
 	virtual ~HTMLReset() { }
 
+    virtual const char * objectName() const { return "HTMLReset"; };
+
 protected slots:
 	void slotClicked();
 
@@ -272,6 +288,8 @@ public:
 	virtual ~HTMLSubmit() { }
 
 	virtual QString encoding();
+
+    virtual const char * objectName() const { return "HTMLSubmit"; };
 
 protected slots:
 	void slotClicked();
@@ -296,6 +314,8 @@ public:
 	virtual QString encoding();
 	virtual void resetElement();
 
+    virtual const char * objectName() const { return "HTMLTextInput"; };
+
 protected slots:
 	void slotTextChanged( const char * );
 	void slotReturnPressed();
@@ -319,6 +339,8 @@ public:
     virtual QString encoding();
 
     virtual HTMLObject *mouseEvent( int, int, int, int );
+
+    virtual const char * objectName() const { return "HTMLImageInput"; };
 
 signals:
     void submitForm();
@@ -379,6 +401,8 @@ public:
     HTMLButton( KHTMLWidget *_parent, const char *_name, const char *v, QList<JSEventHandler> *_handlers );
     virtual ~HTMLButton();
     
+    virtual const char * objectName() const { return "HTMLButton"; };
+
 protected slots:
     void slotClicked();
     

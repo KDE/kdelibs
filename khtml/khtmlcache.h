@@ -40,11 +40,13 @@
 class QPixmap;
 class QMovie;
 #include <qdict.h>
+#include <qobject.h>
 
 class KHTMLWidget;
 
-class KHTMLCachedImage
+class KHTMLCachedImage : public QObject
 {
+    Q_OBJECT
 public:
 
     KHTMLCachedImage();
@@ -80,12 +82,20 @@ public:
 
     void clear();
 
+public slots:
+    void movieUpdated( const QRect &rect );
+    void statusChanged(int status);
+
+public:
     QPixmap *p;
     QMovie *m;
+    int width;
+    int height;
 
     QList<HTMLObject> clients;
     int status;
     int size;
+    bool gotFrame;
 };
 
 class ImageList : public QStrList
@@ -128,13 +138,15 @@ public:
      */
     virtual void fileLoaded( const char *_url, const char *localfile );
 
-    /** if an htmlimage is destructed it calls
+    /** 
+     * if an htmlimage is destructed it calls
      * this function, to tell the cache, the image is not used
      * anymore.
      */
     void free( const char *_url, HTMLObject *o = 0);
 
-    /** this is called from the KHTMLWidget to indicate that a
+    /** 
+     * this is called from the KHTMLWidget to indicate that a
      * HTMLObject needs an Image
      */
     void requestImage( HTMLObject *obj, const char * _url );
@@ -165,6 +177,8 @@ public:
      * clears the cache
      */
     static void clear();
+
+    virtual const char * objectName() const { return "HTMLCache"; };
 
 protected:
     static void init();

@@ -184,7 +184,7 @@ HTMLTable::HTMLTable( int _x, int _y, int _max_width, int _width, int _percent,
     {
 //WABA does this make sense? 
     	max_width = width; 
-	setFixedWidth( TRUE );
+	//setFixedWidth( TRUE );
     }
 }
 

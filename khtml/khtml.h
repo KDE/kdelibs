@@ -1227,9 +1227,14 @@ public:
     /**
      * Loads an image into the cache and makes it persistant
      */
-	static void preloadImage( const char *_filename );
+    static void preloadImage( const char *_filename );
 
+    /** returns the imageCache object */
     KHTMLCache *imageCache() { return cache; }
+    /** set the size of the image cache */
+    static void setCacheSize( int size );
+    
+    static int cacheSize();
 };
 
 #endif // HTML

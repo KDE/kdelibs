@@ -188,6 +188,11 @@ public:
      * The returned iterator must be deleted by the caller.
      */
     virtual HTMLIterator *getIterator();
+
+    virtual const char * objectName() const { return "HTMLClue"; };
+
+    virtual void printDebug( bool propagate = false, int indent = 0, 
+			     bool printObjects = false );
   
 protected:
     HTMLObject *head;
@@ -220,7 +225,9 @@ public:
 	{ return nextAligned; }
     void setNextClue( HTMLClueAligned *n )
 	{ nextAligned = n; }
-    
+
+    virtual const char * objectName() const { return "HTMLClueAligned"; };
+
 private:
     HTMLClue *prnt;
     HTMLClueAligned *nextAligned;
@@ -247,6 +254,8 @@ public:
 
     virtual void setIndent( int i )
 	    {	indent = i; }
+
+    virtual const char * objectName() const { return "HTMLClueFlow"; };
 
 protected:
     short indent;
@@ -288,6 +297,9 @@ public:
     virtual int  getLeftClear( int _y );
     virtual int  getRightClear( int _y );
   
+    virtual const char * objectName() const { return "HTMLClueV"; };
+    virtual void printDebug( bool propagate, int indent, bool printObjects );
+
 protected:
     void removeAlignedByParent( HTMLObject *p );
 
@@ -319,6 +331,8 @@ public:
   virtual void setMarker( QPainter *_painter, int _tx, int _ty, bool _mode );
   virtual void findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list );
 
+  virtual const char * objectName() const { return "HTMLCell"; };
+
 protected:
   const char *url;
   const char *target;
@@ -349,6 +363,8 @@ public:
     virtual void setIndent( int i )
 	    {	indent = i; }
 
+    virtual const char * objectName() const { return "HTMLClueH"; };
+
 private:
     short indent;
 };
@@ -356,4 +372,3 @@ private:
 //-----------------------------------------------------------------------------
 
 #endif // HTMLCLUE_H
-

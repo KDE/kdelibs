@@ -1,6 +1,16 @@
 KHTML CHANGES
 =============
 
+Version 0.20.0  - 12 Nov 1998 (Lars Knoll)
+--------------
+
+* added a debugging help for the page layouting (virtual functions 
+  objectname() and printDebug() in HTMLObject). To activate it
+  just #define CLUE_DEBUG in khtml.cpp (_not_ khtmlclue.cpp).
+* HMTLImage is no longer a QObject. Moved that to the cache.
+* added a workaround for a bug in QMovie
+* fixed a compile error in khtmldata.h
+
 Version 0.20.0  - 6 Nov 1998 (Lars Knoll)
 --------------
 

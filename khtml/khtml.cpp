@@ -24,6 +24,8 @@
 // KDE HTML Widget -- Main Widget
 // $Id$
 
+//#define CLUE_DEBUG
+
 #ifdef GrayScale
 #undef GrayScale
 #endif
@@ -161,7 +163,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
 }
 
 //
-// Configuration
+// Cache handling
 //
 ///////////////////////////////////////////////////
 
@@ -176,6 +178,18 @@ void KHTMLWidget::preloadImage( const char *_filename)
 {
     KHTMLCache::preload( _filename, KHTMLCache::Persistent );
 }
+
+void KHTMLWidget::setCacheSize( int size )
+{
+    KHTMLCache::setSize( size );
+}
+
+int KHTMLWidget::cacheSize()
+{
+    return KHTMLCache::size();
+}
+
+
 //
 // File handling
 //
@@ -186,9 +200,6 @@ void KHTMLWidget::requestFile( HTMLObject *_obj, const char *_url,
 {
   printf("==== REQUEST %s  ====\n", _url );
   
-  ///////////////
-  // The new code
-  ///////////////
   HTMLPendingFile *p = mapPendingFiles[ _url ];
   if ( p )
   {
@@ -1439,6 +1450,11 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
     // Parsing is over ?
     if ( !parser )
     {
+#ifdef CLUE_DEBUG
+	printf("------------------ clue + object list ------------------------\n");
+	clue->printDebug(true, 0, true);
+	printf("--------------------------------------------------------------\n");
+#endif
         debugM("Yes\n");
 	debug( "Parsing done" );
 

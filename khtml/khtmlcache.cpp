@@ -1,4 +1,4 @@
-#include "khtmlcache.h"
+#include "khtmlcache.moc"
 #include "khtml.h"
 
 #undef CACHE_DEBUG
@@ -11,6 +11,7 @@
 #include <unistd.h>
   
 KHTMLCachedImage::KHTMLCachedImage()
+    : QObject()
 {
     p = 0;
     m = 0;
@@ -43,13 +44,6 @@ KHTMLCachedImage::remove( HTMLObject *o )
 inline QPixmap *
 KHTMLCachedImage::pixmap() 
 {
-/*    if(m && !p)
-    {
-	p = new QPixmap();
-	*p = m->framePixmap();
-    } 
-    else if( m )
-	*p = m->framePixmap();*/
     return p;
 }
 
@@ -86,26 +80,36 @@ KHTMLCachedImage::load( const char * _file )
 
     // Workaround for bug in QMovie
     // Load the image in memory to avoid vasting file handles
+    struct stat buff;
+    stat( _file, &buff );
+    int s = buff.st_size;
     FILE *f = fopen( _file, "rb" );
     if( !f )
     {
 	warning( "Cache: Could not load %s\n", _file );
 	return;
     }
-    struct stat buff;
-    stat( _file, &buff );
-    int s = buff.st_size;
     char *c = new char[ s ];
     fread( c, 1, s, f );
     fclose( f );
     QByteArray arr;
     arr.assign( c, s );
 
+
     if ( strncmp( c, "GIF89a", 6 ) == 0 )
     {
+        // set width and height of image
+        width  = (uchar)c[6] + ((uchar)c[7]<<8);
+        height = (uchar)c[8] + ((uchar)c[9]<<8);
+
 	m = new QMovie( arr, 8192 );
-	p = new QPixmap();
-	*p = m->framePixmap();
+	m->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
+#if QT_VERSION <= 141
+	// fix for a bug in QMovie
+	m->connectStatus( this, SLOT( statusChanged(int) ));
+#endif
+	p = new QPixmap(width, height);
+	gotFrame = false;
 	// well, this is the size of the compressed gif...
 	// ... but that's better than nothing
 	size = s;
@@ -114,8 +118,12 @@ KHTMLCachedImage::load( const char * _file )
     {
 	p = new QPixmap();
 	p->loadFromData( arr );	    
-	if( p && !p->isNull() )
-	  size = p->width() * p->height() * p->depth() / 8;
+	if( p && ! p->isNull() )
+	{
+	  width = p->width();
+	  height = p->height();
+	  size = width * height * p->depth() / 8;
+	}
     }
 
     computeStatus();
@@ -139,8 +147,12 @@ KHTMLCachedImage::data ( QBuffer & _buffer, bool eof )
     if ( strcmp( buffer, "GIF89a" ) == 0 )
     {
 	m = new QMovie( _buffer.buffer() );
-	p = new QPixmap();
-	*p = m->framePixmap();
+	m->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
+#if QT_VERSION <= 141
+	m->connectStatus( this, SLOT( statusChanged(int) ));
+#endif
+	p = new QPixmap(width, height);
+	gotFrame = false;
 	size = _buffer.size();
     }
     else
@@ -168,27 +180,53 @@ KHTMLCachedImage::notify( HTMLObject *o )
 	    clients.append( o );
 	if( m )
 	{
-	    o->setMovie( m, p );
 	    if(m->finished()) m->restart();
 	    if(m->paused()) m->unpause();
 	}
-	else if ( p != 0 && !p->isNull() )
+	if ( p != 0 && !p->isNull() )
 	    o->setPixmap( p );
 	return;
     }
 
     // notify all objects in our list...
-    if( m )
-    {
-	for( o = clients.first(); o != 0L; o = clients.next() )
-	  o->setMovie( m, p );
-	return;
-    }
-
     if ( p == 0 || p->isNull() )
 	return;
     for( o = clients.first(); o != 0L; o = clients.next() )
 	o->setPixmap( p );
+}
+
+void 
+KHTMLCachedImage::movieUpdated( const QRect & )
+{
+    HTMLObject *o;
+
+    if( !gotFrame )
+    {
+	if( p ) delete p;
+	p = new QPixmap();
+	*p = m->framePixmap();
+	for( o = clients.first(); o != 0L; o = clients.next() )
+	    o->pixmapChanged( p );
+    }
+    else
+    {
+	for( o = clients.first(); o != 0L; o = clients.next() )
+	    o->pixmapChanged();
+	gotFrame = true;
+    }
+}
+
+// the following function is a workaround for a bug in QMovie.
+// QMovie sometimes hangs, if it gets an image with data it can't read
+// correctly. Example is the file dochead.gif in the qt docs... <g>
+void
+KHTMLCachedImage::statusChanged(int status)
+{
+    if(status < 0) 
+    {
+	printf("ERROR: QMovie::status = %d\n", status);
+	m->pause();
+    }
 }
 
 // --------------------------------------------------------------------------

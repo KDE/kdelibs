@@ -47,7 +47,6 @@
 #include <qfile.h>
 #include <qimage.h>
 #include <qdrawutil.h>
-#include <qmovie.h>
 #include <qregexp.h>
 
 #include "khtmlobj.moc"
@@ -230,6 +229,23 @@ bool HTMLObject::getObjectPosition( const HTMLObject *obj, int &xp, int &yp )
     }
 
     return false;
+}
+
+// HTMLObjects generally do not have children, so propagate is
+// uninteresting. 
+void 
+HTMLObject::printDebug( bool, int indent, bool printObjects )
+{
+    // return if printing out the objects is not desired
+    if(!printObjects) return;
+
+    QString str = "    ";
+    int i;
+    for( i=0; i<indent; i++)
+	printf(str);
+
+    printf(objectName());
+    printf("\n");
 }
 
 //-----------------------------------------------------------------------------
@@ -544,6 +560,31 @@ void HTMLText::print( QPainter *_painter, int _tx, int _ty )
 	_painter->drawText( x + _tx, y + _ty, text );
     }
 }
+
+void 
+HTMLText::printDebug( bool, int indent, bool printObjects )
+{
+    // return if printing out the objects is not desired
+    if(!printObjects) return;
+
+    QString str = "    ";
+    int i;
+    for( i=0; i<indent; i++)
+	printf(str);
+
+    str = objectName();
+    QString aStr = text;
+    str += " (\"";
+    if(aStr.length() > 20)
+    {
+	aStr.resize(20);
+	str += aStr + "...";
+    } else
+	str += aStr;
+    str += "\")\n";
+    printf(str);
+}
+
 
 //-----------------------------------------------------------------------------
 HTMLTextMaster::HTMLTextMaster( const char* _text, const HTMLFont *_font,
@@ -1236,7 +1277,6 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     : QObject(), HTMLObject()
 {
     pixmap = 0;
-    movie = 0;
     overlay = 0;
     bComplete = true;
 
@@ -1278,7 +1318,7 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
       return;
     }
 
-    printf("********* IMAGE %s ******\n",_filename );
+    //printf("********* IMAGE %s ******\n",_filename );
     
     synchron = TRUE;
     htmlWidget->requestImage( this, imageURL.data() );
@@ -1363,13 +1403,12 @@ void HTMLImage::setPixmap( QPixmap *p )
     }
 }
 
-void HTMLImage::setMovie( QMovie *m, QPixmap *p )
+void HTMLImage::pixmapChanged(QPixmap *p)
 {
-  movie = m;
-  pixmap = p;
-  movie->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
+    if( p )
+	pixmap = p;
+    htmlWidget->paintSingleObject(this);
 }
-
 
 void HTMLImage::setOverlay( const char *_ol )
 {
@@ -1431,15 +1470,7 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
     const QPixmap *pixptr = pixmap;
     QRect rect( 0, 0, width - border*2, ascent - border );
 
-#ifdef USE_QMOVIE
-    if ( movie && pixmap )
-    {
-	pixptr = &movie->framePixmap();
-	rect = movie->getValidRect();
-    }
-#endif
-
-    if ( !movie && pixmap )
+    if ( pixmap )
     {
 	if ( predefinedWidth )
 	    rect.setWidth( pixmap->width() );
@@ -1521,34 +1552,33 @@ int HTMLImage::getAbsY()
     return absY;
 }
 
-void HTMLImage::movieUpdated( const QRect & )
-{
-#ifdef USE_QMOVIE
-    if ( !pixmap )
-    {
-	*pixmap = movie->framePixmap();
-	init();
-	if ( !predefinedWidth || !predefinedHeight )
-	{
-	    htmlWidget->calcSize();
-	    htmlWidget->calcAbsolutePos();
-	    htmlWidget->scheduleUpdate( true );
-	    return;
-	}
-    }
-    htmlWidget->paintSingleObject( this );
-#endif
-}
 
 HTMLImage::~HTMLImage()
 {
-#ifdef USE_QMOVIE
-    if ( movie )
-    {
-	movie->disconnectUpdate( this, 0 );
-    }
-#endif
    htmlWidget->imageCache()->free( imageURL, this );
+}
+
+void 
+HTMLImage::printDebug( bool, int indent, bool printObjects )
+{
+    // return if printing out the objects is not desired
+    if(!printObjects) return;
+
+    QString str = "    ";
+    int i;
+    for( i=0; i<indent; i++)
+	printf(str);
+
+    QString aStr = imageURL;
+    if(aStr.length() > 20)
+    {
+	aStr.resize(20);
+	str = aStr + "...";
+    } else
+	str = aStr;
+    str.sprintf("%s (\"%s \"/%dx%d)\n", objectName(), str.data(), 
+		width, ascent);
+    printf(str);
 }
 
 //----------------------------------------------------------------------------

@@ -39,10 +39,6 @@
 #include <qfont.h>
 #include <qtimer.h>
 
-class QMovie;
-
-#define USE_QMOVIE
-
 #include <kurl.h>
 
 //
@@ -91,24 +87,24 @@ public:
     enum VAlign { Top, Bottom, VCenter, VNone };
     enum HAlign { Left, HCenter, Right, HNone };
 
-    /*
+    /**
      * This function should cause the HTMLObject to calculate its
      * width and height.
      */
     virtual void calcSize( HTMLClue * = 0L ) { }
 
-    /*
+    /**
      * This function should cause the HTMLObject to break itself up so 
      * that it will fit within the given length. Only usefull for text.
      * If 'startOfLine' is 'false', this function may return 'HTMLNoFit' to 
      * indicate it is not possible to use the specified 'widthLeft'.
      */
     virtual HTMLFitType fitLine( bool startOfLine, 
-    							 bool firstRun, 
-    							 int widthLeft ) 
+				 bool firstRun, 
+				 int widthLeft ) 
     { return HTMLCompleteFit; }
     
-    /*
+    /**
      * This function forces a size calculation for objects which
      * calculate their size at construction.  This is useful if
      * the metrics of the painter change, e.g. if the html is to
@@ -116,13 +112,13 @@ public:
      */
     virtual void recalcBaseSize( QPainter * ) { }
 
-    /*
+    /**
      * This function calculates the minimum width that the object
      * can be set to. (added for table support)
      */
     virtual int  calcMinWidth() { return width; }
 
-    /*
+    /**
      * This function calculates the width that the object would like
      * to be. (added for table support)
      */
@@ -133,7 +129,7 @@ public:
     virtual void setMaxWidth( int _w ) { max_width = _w; }
     virtual int  findPageBreak( int _y );
 
-    /*
+    /**
      * Print the object but only if it fits in the rectangle given
      * by _x,_y,_width,_ascender. (_x|_y) is the lower left corner relative
      * to the parent of this object ( usually HTMLClue ).
@@ -147,7 +143,7 @@ public:
     virtual void print( QPainter *_p, HTMLChain *, int _x, int _y, int _w,
 	    int _h, int _tx, int _ty)
 	{ print( _p, _x, _y, _w, _h, _tx, _ty, false ); }
-    /*
+    /**
      * Print the object.
      */
     virtual void print( QPainter *, int, int ) { }
@@ -158,27 +154,31 @@ public:
 	int _tx, int _ty);
     virtual void select( KHTMLWidget *, HTMLChain *, bool, int _tx, int _ty );
 
-    /*
+    /**
      * Selects the object if it is inside the rectangle and deselects it
      * otherwise.
      */
     virtual void select( KHTMLWidget *, HTMLChain *, QRect &_rect, int _tx,
 	int _ty );
 
-    // Select all objects matching the regular expression.
+    /**
+     * Select all objects matching the regular expression.
+     */
     virtual void select( KHTMLWidget *, HTMLChain *, QRegExp& _pattern,
 	bool _select, int _tx, int _ty );
 
     virtual void select( bool _s ) { setSelected( _s ); }
 
-    // select text.  returns whether any text was selected.
+    /**
+     * select text.  returns whether any text was selected.
+     */
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	int _y1, int _x2, int _y2, int _tx, int _ty );
 
     virtual void getSelected( QStrList & );
     virtual void getSelectedText( QString & ) {}
 
-    /*
+    /**
      * Some objects may need to know their absolute position on the page.
      */
     virtual void calcAbsolutePos( int, int ) { }
@@ -186,19 +186,16 @@ public:
     virtual int  getAbsX() { return -1; }
     virtual int  getAbsY() { return -1; }
 
-    /*
+    /**
      * returns the postion on the page of the specified object
      */
     virtual bool getObjectPosition( const HTMLObject *obj, int &x, int &y );
 
     virtual void reset() { setPrinted( false ); }
 
-    virtual void setPixmap(QPixmap * ) { };
-    virtual void setMovie( QMovie * , QPixmap * ) { };
-
     /********************************
      * These two functions are overloaded by objects that need to have a remote
-     * file downloaded, e.g. HTMLImage.
+     * file downloaded, e.g. HTMLMap.
      *
      * fileLoaded is called when the requested file has arrived.
      */
@@ -207,21 +204,35 @@ public:
     virtual bool fileLoaded( const char* /* _url */, QBuffer& /* _buffer */, 
 			     bool /* eof */ = false ) { return false; }
 
+    /**
+     * This function is called from the imagecache, when it can deliver
+     * an image requested with htmlWidget->requestImage()
+     */
+    virtual void setPixmap( QPixmap * ) { }
+
+    /** 
+     * This function is called, whenever the pixmap changes (animated gifs, 
+     * etc.). If pixmap = 0, just the content of the pixmap changed.
+     * In this case, the object just needs to call 
+     * htmlWidget->paintSingleObject(this).
+     */
+    virtual void pixmapChanged( QPixmap * = 0 ) { }
+
     enum ObjectType { Object, Clue };
 
-    /*
+    /**
      * sometimes a clue would like to know if an object is a 
      * clue or a basic object.
      */
     virtual ObjectType getObjectType() const
 	    {	return Object; }
 
-    /*
+    /**
      * Get X-Position of this object relative to its parent
      */
     int getXPos() const { return x; }
 
-    /*
+    /**
      * Get Y-Position of this object relative to its parent
      */
     int getYPos() const { return y; }
@@ -233,7 +244,7 @@ public:
     int getMaxWidth() const { return max_width; }
     int getPercent() const { return percent; }
 
-    /*
+    /**
      * return the URL associated with this object if available, else 0.
      */
     virtual const char* getURL() const { return 0; }
@@ -266,7 +277,7 @@ public:
     void setPrinted( bool p ) { p ? flags|=Printed : flags&=~Printed; }
     void setHidden( bool p ) { p ? flags|=Hidden : flags&=~Hidden; }
     
-    /*
+    /**
      * Searches in all children ( and tests itself ) for an HTMLAnchor object
      * with the name '_name'. Returns 0L if the anchor could not be found.
      * '_point' is modified so that it holds the position of the anchor relative
@@ -275,7 +286,7 @@ public:
     virtual HTMLAnchor* findAnchor( const char */*_name*/, QPoint */*_point*/ )
 			{ return 0L; }
 
-    /*
+    /**
      * All objects can be an element in a list and maintain a pointer to
      * the next object.
      */
@@ -286,18 +297,35 @@ public:
 
     virtual void findCells( int, int, QList<HTMLCellInfo> & ) { }
 
-    /*
+    /**
      * Create an iterator.
      * The returned iterator must be deleted by the caller.
      */
     virtual HTMLIterator *getIterator() { return 0; }
 
-    /*
+    /**
      * Select this object's text if it matches.
      * returns true if a match was found.
      */
     virtual bool selectText( const QRegExp & ) { return false; }
 
+    //
+    // functions mainly used for debugging
+    //
+    //////////////////////////////////////
+
+    /**
+     * returns the actual class name of the html object
+     */
+    virtual const char * objectName() const = 0;// { return "HTMLObject"; }
+    // the above declaration makes HTMLObject pure virtual...
+
+    /**
+     * prints debug info to stdout
+     */
+    virtual void printDebug( bool propagate = false, int indent = 0, 
+			     bool printObjects = false );
+    
 protected:
     int x;
     int y;
@@ -358,6 +386,9 @@ public:
 
     virtual void recalcBaseSize( QPainter *_painter );
     virtual void getSelectedText( QString & );
+
+    virtual const char * objectName() const { return "HTMLHSpace"; }
+
 protected:
     const HTMLFont *font;
 };
@@ -381,6 +412,10 @@ public:
     virtual void print( QPainter *, int _tx, int _ty );
 
     virtual bool selectText( const QRegExp &exp );
+
+    virtual const char * objectName() const { return "HTMLText"; }
+    virtual void printDebug( bool propagate = false, int indent = 0, 
+			     bool printObjects = false );
 
 protected:
     int getCharIndex( int _xpos );
@@ -411,6 +446,9 @@ public:
 							 int _y1, int _x2, int _y2, int _tx, int _ty )
 		{ return false; } // Dummy
     virtual bool selectText( const QRegExp & ) { return false; }
+
+    virtual const char * objectName() const { return "HTMLTextMaster"; }
+
 protected:
 	int minWidth;
 	int prefWidth;  
@@ -423,8 +461,8 @@ public:
     HTMLTextSlave( HTMLTextMaster *_owner, short _posStart, short _posLen);
     virtual HTMLFitType fitLine( bool startOfLine, bool firstRun, int widthLeft );
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
-	int _y1, int _x2, int _y2, int _tx, int _ty );
-    virtual void getSelectedText( QString & ) { }; // Handled by master
+			     int _y1, int _x2, int _y2, int _tx, int _ty );
+    virtual void getSelectedText( QString & ) { } // Handled by master
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 	    int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
@@ -436,6 +474,8 @@ public:
 
     virtual const char* getURL() const { return owner->getURL(); }
     virtual const char* getTarget() const { return owner->getTarget(); }
+
+    virtual const char * objectName() const { return "HTMLTextSlave"; }
 
 protected:
     int getCharIndex( int _xpos );
@@ -463,6 +503,8 @@ public:
     virtual const char* getURL() const { return url; }
     virtual const char* getTarget() const { return target; }
 
+    virtual const char * objectName() const { return "HTMLLinkText"; };
+
 protected:
     const char *url;
     const char *target;
@@ -485,6 +527,8 @@ public:
     virtual const char* getURL() const { return url; }
     virtual const char* getTarget() const { return target; }
 
+    virtual const char * objectName() const { return "HTMLLinkTextMaster"; };
+
 protected:
     const char *url;
     const char *target;
@@ -504,6 +548,8 @@ public:
 	int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
 
+    virtual const char * objectName() const { return "HTMLRule"; };
+
 protected:
     bool shade;
 };
@@ -519,6 +565,8 @@ public:
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 	int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
+
+    virtual const char * objectName() const { return "HTMLBullet"; };
 
 protected:
     char level;
@@ -540,6 +588,8 @@ public:
     Clear clear()
 	{ return cl; }
 
+    virtual const char * objectName() const { return "HTMLVSpace"; };
+
 private:
     Clear cl;
 };
@@ -558,6 +608,8 @@ public:
 
     virtual void setMaxAscent( int _a );
     virtual HTMLAnchor* findAnchor( const char *_name, QPoint *_p );
+
+    virtual const char * objectName() const { return "HTMLAnchor"; };
 
 protected:
     QString name;
@@ -588,7 +640,7 @@ public:
     virtual void changeImage( const char *_url );
 
     virtual void setPixmap( QPixmap * );
-    virtual void setMovie( QMovie *, QPixmap * );
+    virtual void pixmapChanged( QPixmap * = 0 );
 
     void setOverlay( const char *ol );
 
@@ -598,8 +650,8 @@ public:
     void setBorderColor( const QColor &color )
 	{   borderColor = color; }
 
-protected slots:
-    void movieUpdated( const QRect &rect );
+    virtual const char * objectName() const { return "HTMLImage"; };
+    virtual void printDebug( bool, int indent, bool printObjects );
 
 protected:
 
@@ -618,20 +670,12 @@ protected:
      */
     QPixmap *pixmap;
 
-#ifdef USE_QMOVIE
-    QMovie *movie;
-#else
-    void *movie;
-#endif
-
     // this image is overlaid on top of the image.
     // Used by HTML widget to show links/read only files, etc.
     QPixmap *overlay;
 
-    /*
+    /**
      * The URL of this image.
-     * This variable is only used if we have to wait for the image.
-     * Otherwise this string will be empty.
      */
     QString imageURL;
     
@@ -738,6 +782,8 @@ public:
     const char *mapURL() const
 	    {	return mapurl; }
 
+    virtual const char * objectName() const { return "HTMLMap"; };
+
 protected:
     bool fileLoaded( QIODevice& file );
   
@@ -773,21 +819,23 @@ public:
     bool mapType() const
 	    {	return type; }
 
+    virtual const char * objectName() const { return "HTMLImageMap"; };
+
 protected:
     /*
      * The URL set by <a href=...><img ... ISMAP></a> for server side maps
      */
     QString serverurl;
 
-	/*
-	 * The destination URL
-	 */
-	QString dynamicURL;
+    /*
+     * The destination URL
+     */
+    QString dynamicURL;
 
-	/*
-	 * The destination Target
-	 */
-	QString dynamicTarget;
+    /*
+     * The destination Target
+     */
+    QString dynamicTarget;
 
     /*
      * The URL set by <img ... USEMAP=mapurl> for client side maps
@@ -803,4 +851,3 @@ protected:
 //----------------------------------------------------------------------------
 
 #endif // HTMLOBJ
-

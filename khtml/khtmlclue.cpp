@@ -466,9 +466,31 @@ bool HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
 
 #ifdef CLUE_DEBUG
     // draw rectangles around clues - for debugging
-    QBrush brush;
-    _painter->setBrush( brush );
+    QString str = objectName();
+    QPen pen;
+    pen.setWidth(2);
+    if(str == "HTMLClueFlow")
+    {
+	pen.setColor( QColor( "black" ));
+	pen.setWidth(1);
+    }
+    else if(str == "HTMLClueH")
+	pen.setColor( QColor( "green" ));
+    else if(str == "HTMLClueV")
+    {
+	pen.setColor( QColor( "blue" ));
+	pen.setWidth(3);
+    }
+    else if(str == "HTMLClueAligned")
+	pen.setColor( QColor( "yellow" ));
+    else if(str == "HTMLCell")
+	pen.setColor( QColor( "gray" ));
+    else
+	pen.setColor( QColor( "cyan" ));
+    _painter->setPen(pen);
     _painter->drawRect( _tx, _ty, width, getHeight() );
+    QBrush brush( QColor("white"));
+    _painter->setBrush( brush );
 #endif
 
     for ( obj = head; obj != 0; obj = obj->next() )
@@ -527,6 +549,34 @@ void HTMLClue::print( QPainter *_painter, HTMLObject *_obj, int _x, int _y, int 
 		_width, _height, _tx, _ty );
     }
 }
+
+void 
+HTMLClue::printDebug( bool propagate, int indent, bool printObjects )
+{
+    QString str = "    ";
+    QString iStr = "";
+    int i;
+    for( i=0; i<indent; i++)
+	iStr += str;
+
+    printf(iStr + objectName());
+    printf("\n");
+
+    if(!propagate) return;
+
+    printf(iStr + "\\---> pos = (%d/%d)  size = (%d/%d)\n",
+	   x, y, width, ascent+descent);
+    //printf(iStr + " ---> leftMargin = %d\n", getLeftMargin( getYPos() ));
+    printf(iStr + " ---> this = %p\n", this);
+    
+    // ok... go through the children
+    HTMLObject *obj;
+    indent++;
+    for ( obj = head; obj != 0; obj = obj->next() )
+	obj->printDebug( propagate, indent, printObjects);
+
+}
+
 
 //-----------------------------------------------------------------------------
 
@@ -1127,6 +1177,35 @@ int HTMLClueV::getRightClear( int _y )
     return _y;
 }
 
+void 
+HTMLClueV::printDebug( bool propagate, int indent, bool printObjects )
+{
+    QString str = "    ";
+    QString iStr = "";
+    int i;
+    for( i=0; i<indent; i++)
+	iStr += str;
+
+    printf(iStr + objectName());
+    printf("\n");
+
+    if(!propagate) return;
+
+    printf(iStr + "\\---> pos = (%d/%d)  size = (%d/%d)\n",
+	   x, y, width, ascent+descent);
+    if(alignLeftList)
+	printf(iStr + " ---> alignLeftList != 0\n");
+    //printf(iStr + " ---> leftMargin = %d\n", getLeftMargin( getYPos() ));
+    printf(iStr + " ---> this = %p\n", this);
+
+    // ok... go through the children
+    HTMLObject *obj;
+    indent++;
+    for ( obj = head; obj != 0; obj = obj->next() )
+	obj->printDebug( propagate, indent, printObjects);
+
+}
+
 //-----------------------------------------------------------------------------
 
 HTMLCell::HTMLCell( int _x, int _y, int _max_width, int _percent, const char *_url, const char *_target ) :
@@ -1311,6 +1390,7 @@ void HTMLClueH::calcSize( HTMLClue *parent )
     HTMLObject *obj;
     int lmargin = 0;
     
+    // FIXME need absloute ypos here...
     if ( parent )
 	lmargin = parent->getLeftMargin( getYPos() );
 

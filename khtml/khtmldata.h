@@ -64,7 +64,7 @@ public:
 
     bool    underlineLinks;
 
-	static const int fontBaseSize=3;
+    static const int fontBaseSize;
 };
 
 #endif

@@ -81,6 +81,8 @@ public:
 		int _width, int _height, int _tx, int _ty )
 	{ HTMLClueV::print(_painter,_obj,_x,_y,_width,_height,_tx,_ty); }
 
+    virtual const char * objectName() const { return "HTMLTableCell"; };
+
 protected:
     int rspan;
     int cspan;
@@ -158,6 +160,8 @@ public:
      */
     virtual HTMLIterator *getIterator();
   
+    virtual const char * objectName() const { return "HTMLTable"; };
+
 protected:
     enum ColType { Fixed, Percent, Variable };
 
