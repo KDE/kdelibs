@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2000-2004 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2000-2005 Thiago Macieira <thiago.macieira@kdemail.net>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -749,6 +749,10 @@ int KExtendedSocket::lookup()
     }
 
   d->status = lookupDone;
+  if (d->resRemote.error() != KResolver::NoError)
+    return d->resRemote.error();
+  if (d->resLocal.error() != KResolver::NoError)
+    return d->resLocal.error();
   return 0;
 }
 
@@ -1795,6 +1799,7 @@ void KExtendedSocket::connectionEvent()
 
 	  sockfd = -1;
 	  d->qsnIn = d->qsnOut = NULL;
+	  d->current++;
 	  setError(IO_ConnectError, errcode);
 	}
       else
