@@ -500,7 +500,7 @@ class KPluginSelector::KPluginSelectorPrivate
     splitter->setOpaqueResize( true );
     splitter->setResizeMode( d->widgetstack, QSplitter::FollowSizeHint );
 
-    QLabel * label = new QLabel( i18n( "this plugin is not configurable" ),
+    QLabel * label = new QLabel( i18n( "(This plugin is not configurable)" ),
             d->widgetstack );
     ( new QVBoxLayout( label, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     label->setAlignment( Qt::AlignCenter );
