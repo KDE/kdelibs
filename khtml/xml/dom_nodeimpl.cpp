@@ -336,14 +336,11 @@ void NodeImpl::setChanged(bool b)
     m_changed = b;
     if ( b ) {
 	NodeImpl *p = parentNode();
-	NodeImpl *doc = p;
 	while ( p ) {
 	    p->setHasChangedChild( true );
-	    doc = p;
 	    p = p->parentNode();
 	}
-	if ( doc->isDocumentNode() )
-	    ((DocumentImpl *)doc)->setDocumentChanged( true );
+        getDocument()->setDocumentChanged(true);
     }
 }
 
