@@ -16,7 +16,7 @@ noinst_PROGRAMS = kconfigtest kledlamptest kprogresstest kurltest \
 		kmsgboxtest kpopuptest ktabctltest ktreelisttest	\
 		kkeyconfigtest kseparatortest kiconloadertest		\
 		kwindowtest klinetest kstatusbartest kspinboxtest	\
-		kprocesstest kpannertest kbuttonboxtest
+		kprocesstest kpannertest kbuttonboxtest ksimpleconfigtest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
 		kkeyconfigtest.h ktabctltest.h kiconloadertestmain.h	\
@@ -63,6 +63,7 @@ kstatusbartest_SOURCES = kstatusbartest.cpp
 kspinboxtest_SOURCES = kspinboxtest.cpp
 kprocesstest_SOURCES = kprocesstest.cpp
 kbuttonboxtest_SOURCES = kbuttonboxtest.cpp
+ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
 
 klinetest.moc: klinetest.h
 	$(MOC) klinetest.h -o klinetest.moc
