@@ -170,7 +170,25 @@ void B2Style::drawBevelButton(QPainter *p, int x, int y, int w, int h,
                               const QColorGroup &g, bool sunken,
                               const QBrush *fill)
 {
-    drawButton(p, x, y, w, h, g, sunken, fill);
+    // I like black instead of dark() for the darkest shade
+    int x2 = x+w-1;
+    int y2 = y+h-1;
+    p->setPen(sunken ? Qt::black : g.light());
+    p->drawLine(x, y, x2, y);
+    p->drawLine(x, y, x, y2);
+    p->setPen(sunken ? g.light() : Qt::black);
+    p->drawLine(x, y2, x2, y2);
+    p->drawLine(x2, y, x2, y2);
+
+    p->setPen(sunken ? g.dark() : g.midlight());
+    p->drawLine(x+1, y+1, x2-1, y+1);
+    p->drawLine(x+1, y+1, x+1, y2-1);
+    p->setPen(sunken ? g.midlight() : g.dark());
+    p->drawLine(x+1, y2-1, x2-1, y2-1);
+    p->drawLine(x2-1, y+1, x2-1, y2-1);
+    p->fillRect(x+2, y+2, w-4, h-4, fill ? *fill :
+                g.brush(QColorGroup::Button));
+
 }
 
 QRect B2Style::buttonRect(int x, int y, int w, int h)
@@ -591,12 +609,13 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                                     const QString& btext, const QPixmap *pixmap,
                                     QFont *font)
 {
-    int x2 = x+w-1;
-    int y2 = y+h-1;
+    //int x2 = x+w-1;
+    //int y2 = y+h-1;
     int dx, dy;
 
     QFontMetrics fm(*font);
 
+    /*
     p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
     p->setPen(g.dark());
     p->drawLine(x+1, y+1, x2-2, y+1);
@@ -612,10 +631,16 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
     p->drawLine(x2, y+2, x2, y2-3);
 
     p->drawPoint(x2-1, y2-2);
-    p->setPen(g.text());
     if(sunken)
         p->fillRect(x+2, y+3, w-4, h-6, g.brush(QColorGroup::Midlight));
-    
+    */
+    if(sunken)
+        qDrawShadePanel(p, x, y, w, h, g, true, 1,
+                        &g.brush(QColorGroup::Midlight));
+    else
+        p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
+    p->setPen(g.text());
+
     if (icontext == Icon){ // icon only
         if (pixmap){
             dx = ( w - pixmap->width() ) / 2;
@@ -717,24 +742,19 @@ void B2Style::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, bool active, QMenuItem *mi,
                             QBrush *)
 {
-    QColor btext = active ? g.highlightedText() : g.text();
     if(active){
-        QFont oldFont = p->font();
-        QFont newFont = oldFont;
-        newFont.setBold(true);
-        p->setFont(newFont);
-        p->fillRect(x, y, w, h, g.brush(QColorGroup::Highlight));
+        qDrawShadePanel(p, x, y, w, h, g, true, 1,
+                        &g.brush(QColorGroup::Midlight));
         QApplication::style().drawItem(p, x, y, w, h,
                                        AlignCenter|ShowPrefix|DontClip|SingleLine,
                                        g, mi->isEnabled(), mi->pixmap(), mi->text(),
-                                       -1, &btext );
-        p->setFont(oldFont);
+                                       -1, &g.text());
     }
     else
         QApplication::style().drawItem(p, x, y, w, h,
                                        AlignCenter|ShowPrefix|DontClip|SingleLine,
                                        g, mi->isEnabled(), mi->pixmap(), mi->text(),
-                                       -1, &btext );
+                                       -1, &g.text() );
 }
 
 void B2Style::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
@@ -750,18 +770,13 @@ static const int windowsRightBorder     = 12;
     if(act){
         bool dis = !enabled;
         QColorGroup itemg = dis ? pal.disabled() : pal.active();
-        itemg.setColor(QColorGroup::Text, itemg.highlightedText());
         
         if (checkable)
             maxpmw = QMAX( maxpmw, 12 );
         int checkcol = maxpmw;
 
-        QFont newFont = p->font();
-        QFont oldFont(newFont);
-        newFont.setBold(true);
-        p->setFont(newFont);
-        
-        p->fillRect(x, y, w, h, itemg.highlight());
+        qDrawShadePanel(p, x, y, w, h, itemg, true, 1,
+                        &itemg.brush(QColorGroup::Midlight));
 
         if ( mi->iconSet() ) {
             QIconSet::Mode mode = dis? QIconSet::Disabled : QIconSet::Normal;
@@ -785,7 +800,7 @@ static const int windowsRightBorder     = 12;
                                y+motifItemFrame, mw, mh, itemg, act, dis );
             }
         }
-        p->setPen(itemg.highlightedText());
+        p->setPen(itemg.text());
         QColor discol;
         if (dis) {
             discol = itemg.text();
@@ -822,7 +837,6 @@ static const int windowsRightBorder     = 12;
                       x+w - motifArrowHMargin - motifItemFrame - dim,  y+h/2-dim/2,
                       dim, dim, itemg, TRUE);
         }
-        p->setFont(oldFont);
     }
     else
         KStyle::drawPopupMenuItem(p, checkable, maxpmw, tab, mi, pal, act,
