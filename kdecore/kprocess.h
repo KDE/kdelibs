@@ -784,6 +784,24 @@ protected:
   int childError(int fdno);
 
   /**
+   * Returns the buffer holding the data that has to be sent to the child.
+   */
+  const char *inputData() const;
+
+  /**
+   * The buffer holding the data that has to be sent to the child
+   */
+  const char *input_data;
+  /**
+   * The number of bytes already transmitted
+   */
+  int input_sent;
+  /**
+   * The total length of input_data
+   */
+  int input_total;
+
+  /**
    * @ref KProcessController is a friend of KProcess because it has to have
    * access to various data members.
    */
