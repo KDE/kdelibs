@@ -292,7 +292,6 @@ public:
     int clickY() const { return yPos; }
 
 protected:
-    void init();
     DOMString m_value;
     DOMString m_filename;
     DOMString m_src;
@@ -308,6 +307,9 @@ protected:
     bool m_checked : 1;
     bool m_haveType : 1;
     bool m_firstAttach :1;
+
+private:
+    void init();
 };
 
 // -------------------------------------------------------------------------
