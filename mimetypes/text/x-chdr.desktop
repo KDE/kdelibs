@@ -70,6 +70,7 @@ Type=MimeType
 MimeType=text/x-chdr
 Patterns=*.h;
 X-KDE-IsAlso=text/plain
+X-KDE-PatternsAccuracy=40
 
 [Property::X-KDE-text]
 Type=bool
