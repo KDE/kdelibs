@@ -2,7 +2,7 @@
 dnl aRts specific configure tests
 dnl
 dnl Check for libaudioio (which can be used to get solaris audio support)
-AC_DEFUN(AC_CHECK_LIBAUDIOIO,
+AC_DEFUN([AC_CHECK_LIBAUDIOIO],
 [
   ac_ldflags_save="$LDFLAGS"
   ac_CPPFLAGS_save="$CPPFLAGS"
@@ -34,7 +34,7 @@ AC_DEFUN(AC_CHECK_LIBAUDIOIO,
 dnl aRts specific configure tests
 dnl
 dnl Check for libaudio (which can be used to get network audio support)
-AC_DEFUN(AC_CHECK_LIBAUDIONAS,
+AC_DEFUN([AC_CHECK_LIBAUDIONAS],
 [
   ac_ldflags_save="$LDFLAGS"
   ac_CPPFLAGS_save="$CPPFLAGS"
@@ -47,7 +47,7 @@ AC_DEFUN(AC_CHECK_LIBAUDIONAS,
   AC_CHECK_HEADER(audio/audiolib.h,
   [
     kde_has_audio_lib=yes
-    ],[],-lXt)
+    ])
   if test "x$kde_has_audio_lib" = "xyes"; then
     AC_CHECK_LIB(audio,AuOpenServer,[
      dnl LDFLAGS in case it's in KDEDIR/lib
@@ -64,7 +64,7 @@ AC_DEFUN(AC_CHECK_LIBAUDIONAS,
 ])
 
 dnl libaudiofile is used for loading wave files
-AC_DEFUN(AC_CHECK_LIBAUDIOFILE,
+AC_DEFUN([AC_CHECK_LIBAUDIOFILE],
 [
   ac_ldflags_save="$LDFLAGS"
   ac_CPPFLAGS_save="$CPPFLAGS"
@@ -78,7 +78,7 @@ AC_DEFUN(AC_CHECK_LIBAUDIOFILE,
   AC_CHECK_HEADER(audiofile.h,
   [ 
      kde_has_audio_lib=yes
-    ], , -lm)
+    ])
   if test "x$kde_has_audio_lib" = "xyes"; then
       KDE_CHECK_LIB(audiofile,afOpenFile,[
       dnl LDFLAGS in case it's in KDEDIR/lib
@@ -98,7 +98,7 @@ AC_DEFUN(AC_CHECK_LIBAUDIOFILE,
 dnl Posix realtime scheduling - this is helpful if you want arts to run with
 dnl higher priority than everthing else
 
-AC_DEFUN(AC_CHECK_REALTIME_SCHED,
+AC_DEFUN([AC_CHECK_REALTIME_SCHED],
 [
 AC_MSG_CHECKING([for posix realtime scheduling support])
 AC_CACHE_VAL(ac_cv_realtime_sched,
@@ -125,7 +125,7 @@ dnl that only the Linux documentation claims that it has an "int" as second
 dnl argument. But maybe there will pop up systems for which the signature
 dnl differs, later.
 
-AC_DEFUN(AC_CHECK_IOCTL_TYPE,
+AC_DEFUN([AC_CHECK_IOCTL_TYPE],
 [
   AC_MSG_CHECKING([ioctl type])
   AC_CACHE_VAL(ac_cv_ioctl_type,
@@ -178,7 +178,7 @@ fi
 
 dnl check whether we can do rouding using asm optimization
 
-AC_DEFUN(AC_CHECK_X86_FLOAT_INT,
+AC_DEFUN([AC_CHECK_X86_FLOAT_INT],
 [
 AC_MSG_CHECKING([for x86 float to int conversions])
 AC_CACHE_VAL(ac_cv_x86_float_int,
@@ -208,7 +208,7 @@ fi
 ])
 
 dnl check if the assembler supports SSE instructions
-AC_DEFUN(AC_CHECK_X86_SSE,
+AC_DEFUN([AC_CHECK_X86_SSE],
 [
 AC_MSG_CHECKING([for x86 SSE instructions])
 AC_CACHE_VAL(ac_cv_x86_sse,
@@ -234,7 +234,7 @@ fi
 dnl check whether we should try to emulate stdio fopen/fclose via
 dnl glibc facilities (this *really* depends on glibc internals)
 
-AC_DEFUN(AC_CHECK_ARTSDSP_STDIO_EMU,
+AC_DEFUN([AC_CHECK_ARTSDSP_STDIO_EMU],
 [
 AC_MSG_CHECKING([for stdio emulation in artsdsp])
 AC_CACHE_VAL(ac_cv_artsdsp_stdio_emu,
@@ -288,7 +288,7 @@ AC_ARG_WITH(alsa, [  --with-alsa             enable aRts ALSA support],
 [arts_with_alsa=$withval])
 
 if test "$arts_with_alsa" = "yes"; then
-AC_DEFUN(AC_CHECK_LIBASOUND,
+AC_DEFUN([AC_CHECK_LIBASOUND],
 [
   ac_ldflags_save="$LDFLAGS"
   LDFLAGS="$all_libraries $LDFLAGS"
