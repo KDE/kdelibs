@@ -606,6 +606,7 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 
     pixmap = 0;
     movie = 0;
+    overlay = 0;
 
     htmlWidget = widget;
     
@@ -709,6 +710,15 @@ void HTMLImage::init()
 
     width += border*2;
     ascent += border*2;
+}
+
+void HTMLImage::setOverlay( const char *_ol )
+{
+    // overlays must be cached
+    overlay = HTMLImage::findImage( _ol );
+
+    if ( overlay )
+	debug( "Found image: %s", _ol );
 }
 
 void HTMLImage::fileLoaded( const char *_filename )
@@ -858,6 +868,10 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 	else
 	    _painter->drawPixmap( QPoint( x + _tx + border,
 		    y - ascent + _ty + border ), pm, rect );
+	
+	if ( overlay )
+	    _painter->drawPixmap( QPoint( x + _tx + border,
+		    y - ascent + _ty + border ), *overlay, rect );
     }
 
     if ( border )

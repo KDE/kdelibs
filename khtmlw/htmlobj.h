@@ -423,6 +423,8 @@ public:
     virtual int  getAbsX();
     virtual int  getAbsY();
 
+    void setOverlay( const char *ol );
+
     static void cacheImage( const char * );
     static QPixmap* findImage( const char * );
 
@@ -465,6 +467,10 @@ protected:
 #else
     void *movie;
 #endif
+
+    // this image is overlaid on top of the image.
+    // Used by HTML widget to show links/read only files, etc.
+    QPixmap *overlay;
 
     /*
      * The URL of this image.

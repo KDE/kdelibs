@@ -1,6 +1,12 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.12.14 - 21 Mar 1998 (Martin)
+---------------
+
+Added <img oversrc=...> so that images could be overlaid on the icons in KFM.
+
+
 Version 0.12.13 - 6 Mar 1998 (Martin)
 ---------------
 

@@ -2702,7 +2702,8 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	vspace_inserted = FALSE;
 
 	// Parse all arguments but delete '<' and '>' and skip 'cell'
-	const char* filename = 0L;
+	const char* filename = 0;
+	const char *overlay = 0;
 	QString fullfilename;
 	QString usemap;
 	bool    ismap = false;
@@ -2717,7 +2718,9 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	{
 	    const char* token = stringTok->nextToken();
 	    if (strncasecmp( token, "src=", 4 ) == 0)
-	    filename = token + 4;
+		filename = token + 4;
+	    else if (strncasecmp( token, "oversrc=", 8 ) == 0)
+		overlay = token + 8;
 	    else if (strncasecmp( token, "width=", 6 ) == 0)
 	    {
 		if ( strchr( token + 6, '%' ) )
@@ -2807,6 +2810,10 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 		else
 		    ((HTMLImageMap *)image)->setMapType( HTMLImageMap::ServerSide );
 	    }
+
+	    // used only by kfm to overlay links, readonly etc.
+	    if ( overlay )
+		image->setOverlay( overlay );
 
 	    image->setBorderColor( *(colorStack.top()) );
 
