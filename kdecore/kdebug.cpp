@@ -49,7 +49,7 @@ public:
 static QList<KDebugEntry> *KDebugCache;
 #define MAX_CACHE 20
 
-QString getDescrFromNum(uint _num)
+QString getDescrFromNum(unsigned short _num)
 {
   QString data, filename(KApplication::kde_configdir()+"/kdebug.areas");
   QFile file(filename);
