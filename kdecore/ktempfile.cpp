@@ -74,7 +74,7 @@ KTempFile::KTempFile(QString filePrefix, QString fileExtension, int mode)
       filePrefix = tmpDir ? tmpDir : _PATH_TMP;
       if (filePrefix.right(1) != "/")
          filePrefix += "/";
-   
+
       filePrefix += KGlobal::instance()->instanceName();
    }
    (void) create(filePrefix, fileExtension, mode);
@@ -92,7 +92,7 @@ KTempFile::KTempFile(bool)
    bOpen = false;
 }
 
-bool   
+bool
 KTempFile::create(const QString &filePrefix, const QString &fileExtension,
 		  int mode)
 {
@@ -107,7 +107,7 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
             free(mktmpName);
             return false;
    }
-   mTmpName = mktmpName; 
+   mTmpName = mktmpName;
    free(mktmpName);
    fchmod( mFd, mode); // Fix the mode
 #else
@@ -129,7 +129,7 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
             return false;
          }
       }
-      else 
+      else
       {
          if (tries >= maxTries)
          {
@@ -163,13 +163,13 @@ KTempFile::status()
    return mError;
 }
 
-QString 
+QString
 KTempFile::name()
 {
    return mTmpName;
 }
 
-int 
+int
 KTempFile::handle()
 {
    return mFd;
@@ -197,7 +197,7 @@ KTempFile::file()
 
    mFile = new QFile();
    mFile->setName( name() );
-   mFile->open(IO_WriteOnly, mStream);
+   mFile->open(IO_ReadWrite, mStream);
    return mFile;
 }
 
