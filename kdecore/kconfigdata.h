@@ -81,6 +81,8 @@ inline bool operator <(const KEntryKey &k1, const KEntryKey &k2)
      return result < 0;
   if (!k1.bLocal && k2.bLocal)
     return true;
+  if (k1.bLocal && !k2.bLocal)
+    return false;
   return (!k1.bDefault && k2.bDefault);
 }
 
