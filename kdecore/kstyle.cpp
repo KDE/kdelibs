@@ -82,7 +82,7 @@ void KStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h, const
                                 bool enabled, bool popup,
                                 KToolButtonType icontext, const QString& btext,
                                 const QPixmap *pixmap,
-                                QFont *font)
+                                QFont *font, QWidget *)
 {
     if ( sunken )
         qDrawWinButton(p, x, y, w, h, g, true );

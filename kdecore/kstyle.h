@@ -68,7 +68,7 @@ public:
                                     KToolButtonType icontext = Icon,
                                     const QString& btext=QString::null,
                                     const QPixmap *icon=NULL,
-                                    QFont *font=NULL);
+                                    QFont *font=NULL, QWidget *btn=NULL);
     /**
      * Draw a menubar (without menus).
      *
