@@ -170,7 +170,7 @@ signals:
 
 protected slots:
     /**
-     * This slot is called when the user presses the "Default" Button
+     * This slot is called when the user presses the "Default" Button.
      * You can reimplement it if needed.
      *
      * @note Make sure you call the original implementation!
@@ -178,7 +178,7 @@ protected slots:
     virtual void slotDefault();
 
     /**
-     * This slot is called when the user presses the "Reset" Button
+     * This slot is called when the user presses the "Reset" Button.
      * You can reimplement it if needed.
      *
      * @note Make sure you call the original implementation!
@@ -186,24 +186,28 @@ protected slots:
     virtual void slotUser1();
 
     /**
-     * This slot is called when the user presses the "Apply" Button
-     * You can reimplement it if needed
+     * This slot is called when the user presses the "Apply" Button.
+     * You can reimplement it if needed.
      *
      * @note Make sure you call the original implementation!
      **/
     virtual void slotApply();
 
     /**
-     * This slot is called when the user presses the "OK" Button
-     * You can reimplement it if needed
+     * This slot is called when the user presses the "OK" Button.
+     * You can reimplement it if needed.
      *
      * @note Make sure you call the original implementation!
      **/
     virtual void slotOk();
 
     /**
-     * This slot is called when the user presses the "Help" Button
-     * You can reimplement it if needed
+     * This slot is called when the user presses the "Help" Button.
+     * It reads the DocPath field of the currently selected KControl
+     * module's .desktop file to find the path to the documentation,
+     * which it then attempts to load.
+     * 
+     * You can reimplement this slot it if needed.
      *
      * @note Make sure you call the original implementation!
      **/
