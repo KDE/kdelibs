@@ -239,10 +239,11 @@ void KStyle::polish( QWidget* widget )
 {
 	if ( d->useFilledFrameWorkaround )
 	{
-		if (widget->inherits("QToolBar"))
-			widget->installEventFilter(this);
-		if (widget->inherits("QMenuBar"))
-			widget->installEventFilter(this);
+		if ( QFrame *frame = ::qt_cast< QFrame* >( widget ) ) {
+			QFrame::Shape shape = frame->frameShape();
+			if (shape == QFrame::ToolBarPanel || shape == QFrame::MenuBarPanel)
+				widget->installEventFilter(this);
+		} 
 	}
 }
 
@@ -251,10 +252,11 @@ void KStyle::unPolish( QWidget* widget )
 {
 	if ( d->useFilledFrameWorkaround )
 	{
-		if (widget->inherits("QMenuBar"))
-			widget->removeEventFilter(this);
-		if (widget->inherits("QToolBar"))
-			widget->removeEventFilter(this);
+		if ( QFrame *frame = ::qt_cast< QFrame* >( widget ) ) {
+			QFrame::Shape shape = frame->frameShape();
+			if (shape == QFrame::ToolBarPanel || shape == QFrame::MenuBarPanel)
+				widget->removeEventFilter(this);
+		} 
 	}
 }
 
@@ -968,6 +970,14 @@ int KStyle::pixelMetric(PixelMetric m, const QWidget* widget) const
 		// ------------------------------------------------------------------------
 		case PM_MaximumDragDistance:
 			return -1;
+
+#if QT_VERSION >= 0x030300
+		case PM_MenuBarItemSpacing:
+			return 3;
+
+		case PM_ToolBarItemSpacing:
+			return 0;
+#endif
 
 		default:
 			return QCommonStyle::pixelMetric( m, widget );
@@ -1759,43 +1769,36 @@ bool KStyle::eventFilter( QObject* object, QEvent* event )
 		// This is nasty, but I see no other way to properly repaint
 		// filled frames in all QMenuBars and QToolBars.
 		// -- Karol.
-		if (event->type() == QEvent::Paint)
+		QFrame *frame = 0;
+		if ( event->type() == QEvent::Paint
+				&& (frame = ::qt_cast<QFrame*>(object)) )
 		{
-			QMenuBar* menubar = 0;
-			QToolBar* toolbar = 0;
-			if (object->inherits("QMenuBar"))
-				menubar = static_cast<QMenuBar*>(object);
-			else if (object->inherits("QToolBar"))
-				toolbar = static_cast<QToolBar*>(object);
-			if ( menubar || toolbar )
-			{
-				bool horizontal = true;
-				QPaintEvent* pe = (QPaintEvent*)event;
-				QFrame* frame   = (QFrame*)object;
-				QRect r = pe->rect();
+			bool horizontal = true;
+			QPaintEvent* pe = (QPaintEvent*)event;
+			QToolBar *toolbar = ::qt_cast< QToolBar *>( frame );
+			QRect r = pe->rect();
 
-				if (toolbar && toolbar->orientation() == Qt::Vertical)
-					horizontal = false;
+			if (toolbar && toolbar->orientation() == Qt::Vertical)
+				horizontal = false;
 
-				if (horizontal) {
-					if ( r.height() == frame->height() )
-						return false;	// Let QFrame handle the painting now.
+			if (horizontal) {
+				if ( r.height() == frame->height() )
+					return false;	// Let QFrame handle the painting now.
 
-					// Else, send a new paint event with an updated paint rect.
-					QPaintEvent dummyPE( QRect( r.x(), 0, r.width(), frame->height()) );
-					QApplication::sendEvent( frame, &dummyPE );
-				}
-				else {	// Vertical
-					if ( r.width() == frame->width() )
-						return false;
-
-					QPaintEvent dummyPE( QRect( 0, r.y(), frame->width(), r.height()) );
-					QApplication::sendEvent( frame, &dummyPE );
-				}
-
-				// Discard this event as we sent a new paintEvent.
-				return true;
+				// Else, send a new paint event with an updated paint rect.
+				QPaintEvent dummyPE( QRect( r.x(), 0, r.width(), frame->height()) );
+				QApplication::sendEvent( frame, &dummyPE );
 			}
+			else {	// Vertical
+				if ( r.width() == frame->width() )
+					return false;
+
+				QPaintEvent dummyPE( QRect( 0, r.y(), frame->width(), r.height()) );
+				QApplication::sendEvent( frame, &dummyPE );
+			}
+
+			// Discard this event as we sent a new paintEvent.
+			return true;
 		}
 	}
 
