@@ -79,7 +79,7 @@ bool StyleBoxData::operator==(const StyleBoxData& o) const
 }
 
 StyleVisualData::StyleVisualData()
-     : counter_increment( 0 ), counter_reset( 0 ),
+     : textDecoration(TDNONE), counter_increment( 0 ), counter_reset( 0 ),
       palette( QApplication::palette() )
 {
 }
@@ -89,7 +89,7 @@ StyleVisualData::~StyleVisualData() {
 
 StyleVisualData::StyleVisualData(const StyleVisualData& o )
     : Shared<StyleVisualData>(),
-      clip( o.clip ),
+      clip( o.clip ), textDecoration(o.textDecoration),
       counter_increment( o.counter_increment ), counter_reset( o.counter_reset ),
       palette( o.palette )
 {
@@ -124,7 +124,7 @@ bool StyleBackgroundData::operator==(const StyleBackgroundData& o) const
 
 StyleInheritedData::StyleInheritedData()
     : indent( Fixed ), line_height( -100, Percent ), style_image( 0 ),
-      font(), color( Qt::black ), decoration_color( Qt::black ), border_spacing( 0 )
+      font(), color( Qt::black ), border_spacing( 0 )
 {
 }
 
@@ -388,7 +388,7 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 //     EOverflow _overflow : 4 ;
 //     EBackgroundRepeat _bg_repeat : 2;
 //     bool _bg_attachment : 1;
-// 	int _text_decoration : 4;
+// 	int _text_decorations : 4;
 //     DataRef<StyleBackgroundData> background;
     if (inherited->color != other->inherited->color ||
         inherited->decoration_color != other->inherited->decoration_color ||
@@ -396,8 +396,9 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
         !(noninherited_flags.f._overflow == other->noninherited_flags.f._overflow) ||
         !(noninherited_flags.f._bg_repeat == other->noninherited_flags.f._bg_repeat) ||
         !(noninherited_flags.f._bg_attachment == other->noninherited_flags.f._bg_attachment) ||
+        !(inherited_flags.f._text_decorations == other->inherited_flags.f._text_decorations) ||
         !(noninherited_flags.f._hasClip == other->noninherited_flags.f._hasClip) ||
-        !(inherited_flags.f._text_decoration == other->inherited_flags.f._text_decoration) ||
+        visual->textDecoration != other->visual->textDecoration ||
         *background.get() != *other->background.get()
 	)
         return Visible;

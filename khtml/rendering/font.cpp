@@ -90,7 +90,7 @@ inline void closeAndDrawWord(QPainter *p, QPainter::TextDirection d,
 }
 
 void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, int len,
-        int toAdd, QPainter::TextDirection d, int from, int to, QColor bg ) const
+        int toAdd, QPainter::TextDirection d, int from, int to, QColor bg, int uy, int h, int deco ) const
 {
     QConstString cstr = QConstString(str, slen);
     QString qstr = cstr.string();
@@ -130,7 +130,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	    upper = qstr.upper();
 	    sc_fm = QFontMetrics( *scFont );
 	}
-        
+
 	// ### sc could be optimized by only painting uppercase letters extra,
 	// and treat the rest WordWise, but I think it's not worth it.
 	// Somebody else may volunteer, and implement this ;-) (LS)
@@ -143,9 +143,6 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	  mode = WordWise;
 	else if (letterSpacing || scFont)
 	  mode = CharacterWise;
-	                                   
-	int leading = fm.leading();
-	int upperHalfLeading = leading / 2;
 
 	if (mode == Whole) {	// most likely variant is treated extra
 
@@ -159,9 +156,10 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 
 	    // draw whole string segment, with optional background
 	    if ( bg.isValid() )
-		p->fillRect( eff_x, y-fm.ascent()-upperHalfLeading, segmentWidth,
-		fm.height()+leading, bg );
+		p->fillRect( eff_x, uy, segmentWidth, h, bg );
 	    p->drawText(eff_x, y, segStr.string(), -1, d);
+	    if (deco)
+	        drawDecoration(p, eff_x, uy, y - uy, segmentWidth, h, deco);
 	    return;
 	}/*end if*/
 
@@ -238,8 +236,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	// optionally draw background
 	if ( bg.isValid() )
 	    p->fillRect( d == QPainter::RTL ? x-segmentWidth : x,
-	    		y-fm.ascent()-upperHalfLeading, segmentWidth,
-			fm.height()+leading, bg );
+	    		uy, segmentWidth, h, bg );
 
 	// second pass: do the actual drawing
         lastWordBegin = from;
@@ -272,6 +269,10 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	if (mode == WordWise) {
 	    closeAndDrawWord(p, d, x, y, widthList, str, pos, lastWordBegin, to);
 	}
+        
+	if (deco)
+	    drawDecoration(p, d == QPainter::RTL ? x-segmentWidth : x, uy,
+	    		y - uy, segmentWidth, h, deco);
 
 	if ( scFont )
 	    p->setFont( f );
@@ -406,3 +407,21 @@ void Font::update( QPaintDeviceMetrics* devMetrics ) const
 	scFont->setPixelSize( f.pixelSize()*7/10 );
     }
 }
+
+void Font::drawDecoration(QPainter *pt, int _tx, int _ty, int baseline, int width, int height, int deco) const
+{
+    Q_UNUSED(height);
+    if (deco & UNDERLINE) {
+        int underlineOffset = ( fm.height() + baseline ) / 2;
+        if (underlineOffset <= baseline) underlineOffset = baseline+1;
+
+        pt->drawLine(_tx, _ty + underlineOffset, _tx + width, _ty + underlineOffset );
+    }
+    if (deco & OVERLINE) {
+        pt->drawLine(_tx, _ty, _tx + width, _ty );
+    }
+    if(deco & LINE_THROUGH) {
+        pt->drawLine(_tx, _ty + 2*baseline/3, _tx + width, _ty + 2*baseline/3 );
+    }
+}
+

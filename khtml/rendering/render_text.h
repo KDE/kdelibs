@@ -69,9 +69,9 @@ public:
 
     virtual bool isInlineTextBox() const { return true; }
 
-    void paintDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int decoration, bool begin, bool end);
+    void paintDecoration( QPainter *pt, const Font *f, int _tx, int _ty, int decoration, bool begin, bool end);
     void paintBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, bool begin, bool end);
-    void paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
+    void paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos, int deco);
 
     // Return before, after (offset set to max), or inside the text, at @p offset
     FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, RenderText *text, int & offset, short lineheight);
@@ -249,7 +249,7 @@ public:
      * still point to a valid position.
      */
     virtual long maxOffset() const;
-    
+
     /** returns the forced minimum offset
      */
     long forcedMinOffset() const { return m_minOfs; }
@@ -259,7 +259,7 @@ public:
      * at which position this render object starts to represent the string.
      */
     void setForcedMinOffset(long ofs) { m_minOfs = (short)ofs; }
-    
+
     /** returns the number of inline text boxes
      */
     unsigned inlineTextBoxCount() const { return m_lines.count(); }

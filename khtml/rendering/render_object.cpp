@@ -1464,3 +1464,55 @@ InlineBox* RenderObject::createInlineBox(bool /*makePlaceHolderBox*/)
     return new (renderArena()) InlineBox(this);
 }
 
+void RenderObject::getTextDecorationColors(int decorations, QColor& underline, QColor& overline,
+                                           QColor& linethrough, bool quirksMode)
+{
+    RenderObject* curr = this;
+    do {
+        RenderStyle *st = curr->style();
+        int currDecs = st->textDecoration();
+        if (currDecs) {
+	bool isValid = st->textDecorationColor().isValid();
+            if (currDecs & UNDERLINE) {
+                decorations &= ~UNDERLINE;
+                underline = st->textDecorationColor().isValid()
+				? st->textDecorationColor()
+				: st->color();
+            }
+            if (currDecs & OVERLINE) {
+                decorations &= ~OVERLINE;
+                overline = st->textDecorationColor().isValid()
+				? st->textDecorationColor()
+				: st->color();
+            }
+            if (currDecs & LINE_THROUGH) {
+                decorations &= ~LINE_THROUGH;
+                linethrough = st->textDecorationColor().isValid()
+				? st->textDecorationColor()
+				: st->color();
+            }
+        }
+        curr = curr->parent();
+        if (curr && curr->isRenderBlock() && curr->continuation())
+            curr = curr->continuation();
+    } while (curr && decorations && (!quirksMode || !curr->element() ||
+                                     (curr->element()->id() != ID_A && curr->element()->id() != ID_FONT)));
+
+    // If we bailed out, use the element we bailed out at (typically a <font> or <a> element).
+    if (decorations && curr) {
+        RenderStyle *st = curr->style();
+        if (decorations & UNDERLINE)
+            underline = st->textDecorationColor().isValid()
+				? st->textDecorationColor()
+				: st->color();
+        if (decorations & OVERLINE)
+            overline = st->textDecorationColor().isValid()
+				? st->textDecorationColor()
+				: st->color();
+        if (decorations & LINE_THROUGH)
+            linethrough = st->textDecorationColor().isValid()
+				? st->textDecorationColor()
+				: st->color();
+    }
+}
+

@@ -485,7 +485,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
             style->setDisplay(TABLE);
     }
 
-#ifdef APPLE_CHANGES // ####### include this for us aswell.
     // Finally update our text decorations in effect, but don't allow text-decoration to percolate through
     // tables, inline blocks, inline tables, or run-ins.
     if (style->display() == TABLE || style->display() == INLINE_TABLE || style->display() == RUN_IN)
@@ -493,7 +492,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
         style->setTextDecorationsInEffect(style->textDecoration());
     else
         style->addToTextDecorationsInEffect(style->textDecoration());
-#endif
 
     // Now return the style.
     return style;
@@ -2947,7 +2945,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         {
             if(!parentNode) return;
             style->setTextDecoration(parentStyle->textDecoration());
-            style->setTextDecorationColor(parentStyle->textDecorationColor());
             return;
         }
         int t = TDNONE;
@@ -2980,7 +2977,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    }
         }
 	style->setTextDecoration(t);
-	style->setTextDecorationColor(style->color());
         break;
     }
     case CSS_PROP__KHTML_FLOW_MODE:

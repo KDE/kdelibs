@@ -82,9 +82,34 @@ public:
 
     void update( QPaintDeviceMetrics *devMetrics ) const;
 
+    /**
+     * Draws a piece from the given piece of text.
+     * @param p painter
+     * @param x x-coordinate to begin drawing, always denotes leftmost position
+     * @param y y-coordinate of baseline of text
+     * @param str string to draw a piece from
+     * @param slen total length of string
+     * @param pos zero-based offset of beginning of piece
+     * @param len length of piece
+     * @param width additional pixels to be distributed equally among all
+     *		spaces
+     * @param d text direction
+     * @param from begin with this position relative to @p pos, -1 to start
+     *		at @p pos
+     * @param to stop before this position relative to @p pos, -1 to use full
+     *		length of piece
+     * @param bg if valid, fill the background of the drawn piece with this
+     *		color
+     * @param uy y-coordinate of top position, used for background and text
+     *		decoration painting
+     * @param h total height of line, only used for background and text
+     *		decoration painting
+     * @param deco combined text decoration (see Decoration)
+     */
     void drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, int len, int width,
-                   QPainter::TextDirection d, int from=-1, int to=-1, QColor bg=QColor() ) const;
-            
+                   QPainter::TextDirection d, int from=-1, int to=-1, QColor bg=QColor(),
+		   int uy=-1, int h=-1, int deco=0 ) const;
+
     /** returns the width of the given string chunk in pixels.
      *
      * The method also considers various styles like text-align and font-variant
@@ -102,7 +127,27 @@ public:
      * @param pos zero-based position of char in string
      */
     int width( QChar *str, int slen, int pos) const;
-    
+
+    /** Text decoration constants.
+     *
+     * The enumeration constant values match those of ETextDecoration, but only
+     * a subset is supported.
+     */
+    enum Decoration { UNDERLINE = 0x1, OVERLINE = 0x2, LINE_THROUGH= 0x4 };
+    // Keep in sync with ETextDecoration
+
+    /** draws text decoration
+     * @param p painter
+     * @param x x-coordinate
+     * @param y top y-coordinate of line box
+     * @param baseline baseline
+     * @param width length of decoration in pixels
+     * @param height height of line box
+     * @param deco decoration to be drawn (see Decoration). The enumeration
+     *		constants may be combined.
+     */
+    void drawDecoration(QPainter *p, int x, int y, int baseline, int width, int height, int deco) const;
+
     /** returns letter spacing
      */
     int getLetterSpacing() const { return letterSpacing; }

@@ -156,7 +156,7 @@ inline const RenderStyle *retrieveSelectionPseudoStyle(const RenderObject *obj)
   return 0;
 }
 
-void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
+void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos, int deco)
 {
     if(startPos > m_len) return;
     if(startPos < 0) startPos = 0;
@@ -186,38 +186,71 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
 
     p->setPen(hc);
 
-    ty += m_baseline;
-
     //kdDebug( 6040 ) << "textRun::painting(" << QConstString(text->str->s + m_start, m_len).string() << ") at(" << m_x+tx << "/" << m_y+ty << ")" << endl;
-    f->drawText(p, m_x + tx, m_y + ty, text->str->s, text->str->l, m_start, m_len,
-		m_toAdd, m_reversed ? QPainter::RTL : QPainter::LTR, startPos, endPos, hbg);
+    f->drawText(p, m_x + tx, m_y + ty + m_baseline, text->str->s, text->str->l,
+    		m_start, m_len, m_toAdd,
+		m_reversed ? QPainter::RTL : QPainter::LTR,
+		startPos, endPos, hbg, m_y + ty, height(), deco);
 }
 
-void InlineTextBox::paintDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int deco, bool begin, bool end)
+#ifdef APPLE_CHANGES
+void InlineTextBox::paintDecoration( QPainter *pt, int _tx, int _ty, int deco)
+{
+    _tx += m_x;
+    _ty += m_y;
+
+    // Get the text decoration colors.
+    QColor underline, overline, linethrough;
+    object()->getTextDecorationColors(deco, underline, overline, linethrough, true);
+
+    // Use a special function for underlines to get the positioning exactly right.
+    if (deco & UNDERLINE) {
+        pt->setPen(underline);
+        pt->drawLineForText(_tx, _ty, m_baseline, m_width);
+    }
+    if (deco & OVERLINE) {
+        pt->setPen(overline);
+        pt->drawLineForText(_tx, _ty, 0, m_width);
+    }
+    if (deco & LINE_THROUGH) {
+        pt->setPen(linethrough);
+        pt->drawLineForText(_tx, _ty, 2*m_baseline/3, m_width);
+    }
+}
+#else
+void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _ty, int deco, bool begin, bool end)
 {
     _tx += m_x;
     _ty += m_y;
 
     int width = m_width - 1;
 
+    RenderObject *p = object();
     if( begin )
-  	width -= p->paddingLeft() + p->borderLeft();
+        width -= p->paddingLeft() + p->borderLeft();
 
     if ( end )
         width -= p->paddingRight() + p->borderRight();
 
-    int underlineOffset = ( pt->fontMetrics().height() + m_baseline ) / 2;
-    if(underlineOffset <= m_baseline) underlineOffset = m_baseline+1;
+    QColor underline, overline, linethrough;
+    p->getTextDecorationColors(deco, underline, overline, linethrough, p->style()->htmlHacks());
 
-    if(deco & UNDERLINE)
-        pt->drawLine(_tx, _ty + underlineOffset, _tx + width, _ty + underlineOffset );
-    if(deco & OVERLINE)
-        pt->drawLine(_tx, _ty, _tx + width, _ty );
-    if(deco & LINE_THROUGH)
-        pt->drawLine(_tx, _ty + 2*m_baseline/3, _tx + width, _ty + 2*m_baseline/3 );
+    if(deco & UNDERLINE){
+        pt->setPen(underline);
+        f->drawDecoration(pt, _tx, _ty, baseline(), width, height(), Font::UNDERLINE);
+    }
+    if (deco & OVERLINE) {
+        pt->setPen(overline);
+        f->drawDecoration(pt, _tx, _ty, baseline(), width, height(), Font::OVERLINE);
+    }
+    if(deco & LINE_THROUGH) {
+        pt->setPen(linethrough);
+        f->drawDecoration(pt, _tx, _ty, baseline(), width, height(), Font::LINE_THROUGH);
+    }
     // NO! Do NOT add BLINK! It is the most annouing feature of Netscape, and IE has a reason not to
     // support it. Lars
 }
+#endif
 
 void InlineTextBox::paintBoxDecorations(QPainter *pt, RenderStyle* style, RenderText *p, int _tx, int _ty, bool begin, bool end)
 {
@@ -567,14 +600,14 @@ InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkF
     // FIXME: make this use binary search? Dirk says it won't work :-( (LS)
 
     if (checkFirstLetter && forcedMinOffset()) {
-        kdDebug(6040) << "checkFirstLetter: forcedMinOffset: " << forcedMinOffset() << endl;
+//        kdDebug(6040) << "checkFirstLetter: forcedMinOffset: " << forcedMinOffset() << endl;
         RenderFlow *firstLetter = static_cast<RenderFlow *>(previousSibling());
         if (firstLetter && firstLetter->isFlow() && firstLetter->isFirstLetter()) {
             RenderText *letterText = static_cast<RenderText *>(firstLetter->firstChild());
-            kdDebug(6040) << "lettertext: " << letterText << " minOfs: " << letterText->minOffset() << " maxOfs: " << letterText->maxOffset() << endl;
+            //kdDebug(6040) << "lettertext: " << letterText << " minOfs: " << letterText->minOffset() << " maxOfs: " << letterText->maxOffset() << endl;
 	    if (offset >= letterText->minOffset() && offset <= letterText->maxOffset()) {
 	        InlineTextBox *result = letterText->findInlineTextBox(offset, pos, false);
-            kdDebug(6040) << "result: " << result << endl;
+            //kdDebug(6040) << "result: " << result << endl;
 		if (result) return result;
 	    }/*end if*/
         }/*end if*/
@@ -834,7 +867,6 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     Q_UNUSED(paintAction);
     int ow = style()->outlineWidth();
     RenderStyle* pseudoStyle = hasFirstLine() ? style()->getPseudoStyle(RenderStyle::FIRST_LINE) : 0;
-    int d = style()->textDecoration();
     InlineTextBox f(0, y-ty);
     int si = m_lines.findFirstMatching(&f);
     // something matching found, find the first one to paint
@@ -902,6 +934,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             }
 
             RenderStyle* _style = pseudoStyle && s->m_firstLine ? pseudoStyle : style();
+            int d = _style->textDecorationsInEffect();
 
             if(_style->font() != p->font()) {
                 p->setFont(_style->font());
@@ -962,8 +995,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
             if(d != TDNONE)
             {
-                p->setPen(_style->textDecorationColor());
-                s->paintDecoration(p, this, tx, ty, d, si == 0, si == ( int ) m_lines.count()-1);
+                s->paintDecoration(p, font, tx, ty, d, si == 0, si == ( int ) m_lines.count()-1);
             }
 
             if (haveSelection) {
@@ -972,7 +1004,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 		int ePos = QMIN( endPos - offset, s->m_len );
                 //kdDebug(6040) << this << " paintSelection with startPos=" << sPos << " endPos=" << ePos << endl;
 		if ( sPos < ePos )
-		    s->paintSelection(font, this, p, _style, tx, ty, sPos, ePos);
+		    s->paintSelection(font, this, p, _style, tx, ty, sPos, ePos, d);
 
             }
             if(renderOutline) {
