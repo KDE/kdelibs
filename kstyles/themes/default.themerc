@@ -1,6 +1,8 @@
 [Misc]
 Name=KDE Classic
+Name[ga]=KDE Claisaiceach
 Comment=Classic KDE style
+Comment[ga]=Stíl Chlaisaiceach KDE
 Highcolor=hcstyle.la
 InactiveShading=true
 [KDE]
