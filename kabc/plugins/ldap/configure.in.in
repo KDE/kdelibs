@@ -27,7 +27,7 @@ if test "x$with_ldap" = "xCHECK" ; then
           LDAP_LIBS="-L$ldap_libdir "
           test "$USE_RPATH" = yes && LDAP_RPATH="-R $ldap_libdir"
         fi
-        LDAP_LIBS="${LDAP_LIBS}-lldap -llber -lresolv"
+        LDAP_LIBS="${LDAP_LIBS}-lldap -llber ${LIBRESOLV}"
         with_ldap=FOUND
         break
       fi
@@ -51,7 +51,7 @@ NOTFOUND) AC_MSG_RESULT(searched but not found) ;;
         LDAP_RPATH="-R ${LDAP_ROOT}/lib"
       fi
     fi
-    LDAP_LIBS="${LDAP_LIBS}-lldap -llber -lresolv"
+    LDAP_LIBS="${LDAP_LIBS}-lldap -llber ${LIBRESOLV}"
   fi
   kde_safe_LIBS="$LIBS"
   kde_safe_CFLAGS="$CFLAGS"
