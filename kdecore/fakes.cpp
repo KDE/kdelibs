@@ -44,6 +44,16 @@ int setenv(const char *name, const char *value, int overwrite) {
     
     return putenv(a);
 }
+#endif
+
+#ifndef HAVE_FUNC_UNSETENV
+
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
+
+#include <string.h>
+#include <stdlib.h>
 
 int unsetenv(const char * name) {
     int i;
