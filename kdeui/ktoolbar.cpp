@@ -1246,6 +1246,7 @@ void KToolBar::paintEvent(QPaintEvent *)
 void KToolBar::rebuildLayout()
 {
     layoutTimer->stop();
+    QApplication::sendPostedEvents( this, QEvent::ChildInserted );
     delete bl;
     bl = new QBoxLayout( this, orientation() == Vertical
 			 ? QBoxLayout::Down : QBoxLayout::LeftToRight, 2, 0 );
