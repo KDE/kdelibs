@@ -320,7 +320,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP, CSSSelector 
     kdDebug( 6080 ) << "selectString = \"" << selecString << "\"" << endl;
 #endif
     const QChar *endVal = 0;
-
+    
     if (*curP == '#' && (curP < endP && !((*(curP+1)).isDigit())))
     {
         cs->tag = -1;
@@ -442,7 +442,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP, CSSSelector 
                     else
                         endVal--;
                     cs->value = DOMString(equal, endVal - equal);
-		    if ( hasQuote )
+		    if ( hasQuote ) 
 			endVal++;
 		    while( endVal < endP && *endVal != ']' )
 			endVal++;
@@ -484,21 +484,21 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP, CSSSelector 
    relation = CSSSelector::SubSelector;
    stack = cs;
 
-   stack->print();
+   //stack->print();
    if( endVal ) {
        // lets be recursive
        stack = parseSelector2(endVal, endP, stack, relation);
-   }
-
+   }   
+       
    return(stack);
 }
 
 CSSSelector *
 StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
 {
-#ifdef CSS_DEBUG
+//#ifdef CSS_DEBUG
     kdDebug( 6080 ) << "selector1 is \'" << QString(curP, endP-curP) << "\'" << endl;
-#endif
+//#endif
 
     CSSSelector *selecStack=0;
 
@@ -1719,7 +1719,7 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP,
 
     startTokenizer( str );
 
-    // qDebug( "%s", str.latin1() );
+    //qDebug( "%s", str.latin1() );
 
     if ( yyIn == "caption" || yyIn == "icon" || yyIn == "menu" ||
          yyIn == "message-box" || yyIn == "small-caption" ||
@@ -1729,9 +1729,9 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP,
         yyTok = getToken();
         if ( matchRealFont(&fstyle, &fvariant, &fweight, &fsize, &lheight,
                            &ffamily) ) {
-           /* qDebug( "  %s %s %s %s / %s", fstyle.latin1(),
+	  /*      qDebug( "  %s %s %s %s / %s", fstyle.latin1(),
                     fvariant.latin1(), fweight.latin1(), fsize.latin1(),
-                    lheight.latin1() ); */
+                    lheight.latin1() );*/
             if(!fstyle.isNull())
                 parseValue(fstyle.unicode(), fstyle.unicode()+fstyle.length(),
                            CSS_PROP_FONT_STYLE,
@@ -1783,6 +1783,8 @@ StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
 #endif
 
     slist = parseSelector(startP, curP );
+
+    curP++; // need to get past the '{' from above
 
     startP = curP;
     curP = parseToChar(startP, endP, '}', false);
@@ -1927,7 +1929,7 @@ CSSSelector::~CSSSelector(void)
 
 void CSSSelector::print(void)
 {
-//    kdDebug( 6080 ) << "[Selector: tag = " <<       tag << ", attr = \"" << attr << "\", value = \"" << value.string().latin1() << "\" relation = " << (int)relation << endl;
+    kdDebug( 6080 ) << "[Selector: tag = " <<       tag << ", attr = \"" << attr << "\", value = \"" << value.string().latin1() << "\" relation = " << (int)relation << endl;
 }
 
 int CSSSelector::specificity()
