@@ -464,7 +464,7 @@ public:
     bool selected() const { return m_selected; }
     void setSelected(bool _selected);
 
-    HTMLSelectElementImpl *getSelect();
+    HTMLSelectElementImpl *getSelect() const;
 
     virtual void setChanged(bool);
 

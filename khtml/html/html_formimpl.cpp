@@ -1534,6 +1534,7 @@ void HTMLSelectElementImpl::setValue(DOMStringImpl* /*value*/)
 {
     // ### find the option with value() matching the given parameter
     // and make it the current selection.
+    kdWarning() << "Unimplemented HTMLSelectElementImpl::setValue called" << endl;
 }
 
 QString HTMLSelectElementImpl::state( )
@@ -1918,12 +1919,26 @@ DOMString HTMLOptionElementImpl::text() const
 
 long HTMLOptionElementImpl::index() const
 {
-    // ###
+    // Let's do this dynamically. Might be a bit slow, but we're sure
+    // we won't forget to update a member variable in some cases...
+    QArray<HTMLGenericFormElementImpl*> items = getSelect()->listItems();
+    int l = items.count();
+    int optionIndex = 0;
+    for(int i = 0; i < l; i++) {
+        if(items[i]->id() == ID_OPTION)
+        {
+            if (items[i] == this)
+                return optionIndex;
+            optionIndex++;
+        }
+    }
+    kdWarning() << "HTMLOptionElementImpl::index(): option not found!" << endl;
     return 0;
 }
 
 void HTMLOptionElementImpl::setIndex( long  )
 {
+    kdWarning() << "Unimplemented HTMLOptionElementImpl::setIndex(long) called" << endl;
     // ###
 }
 
@@ -1961,7 +1976,7 @@ void HTMLOptionElementImpl::setSelected(bool _selected)
         select->notifyOptionSelected(this,_selected);
 }
 
-HTMLSelectElementImpl *HTMLOptionElementImpl::getSelect()
+HTMLSelectElementImpl *HTMLOptionElementImpl::getSelect() const
 {
     NodeImpl *select = parentNode();
     while (select && select->id() != ID_SELECT)
