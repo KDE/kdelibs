@@ -635,9 +635,12 @@ void KAction::setIcon( const QString &icon )
     setIcon( i, icon );
 }
 
-void KAction::setIcon( int, const QString & )
+void KAction::setIcon( int id, const QString &icon )
 {
-  // nothing to do anymore, see setIconSet
+  QWidget* w = container( id );
+
+  if ( w->inherits( "KToolBar" ) )
+    static_cast<KToolBar *>(w)->setButtonIcon( itemId( id ), icon );
 }
 
 QString KAction::icon() const
@@ -663,8 +666,8 @@ void KAction::setIconSet( int id, const QIconSet& iconset )
     static_cast<QPopupMenu*>(w)->changeItem( itemId( id ), iconset, d->m_text );
   else if ( w->inherits( "QMenuBar" ) )
     static_cast<QMenuBar*>(w)->changeItem( itemId( id ), iconset, d->m_text );
-  else if ( w->inherits( "KToolBar" ) )
-    static_cast<KToolBar *>(w)->setButtonIconSet( itemId( id ), iconset );
+  // Don't do anything on toolbar buttons, the iconset is the wrong size.
+  // Use setIcon to set the icon everywhere
 }
 
 QIconSet KAction::iconSet() const
