@@ -1,3 +1,9 @@
+kdelibs (4:1.1.2-20000331-1.0) stable; urgency=low
+
+  * Merging in fixes for postinst and other minor items
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 31 Mar 2000 18:30:00 -0700
+
 kdelibs (4:1.1.2-20000202-1) stable; urgency=low
 
   * kdelibs-doc package: Install index files into
