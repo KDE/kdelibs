@@ -1485,7 +1485,7 @@ void NETRootInfo2::sendPing( Window window, Time timestamp )
     e.xclient.format = 32;
     e.xclient.data.l[0] = net_wm_ping;
     e.xclient.data.l[1] = timestamp;
-    e.xclient.data.l[2] = 0;
+    e.xclient.data.l[2] = window;
     e.xclient.data.l[3] = 0;
     e.xclient.data.l[4] = 0;
 
@@ -1635,7 +1635,7 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 		event->xclient.window, event->xclient.data.l[1]);
 #endif
 	    if( NETRootInfo2* this2 = dynamic_cast< NETRootInfo2* >( this ))
-		this2->gotPing( event->xclient.window, event->xclient.data.l[1]);
+		this2->gotPing( event->xclient.data.l[2], event->xclient.data.l[1]);
 	}
     }
 
