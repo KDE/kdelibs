@@ -40,6 +40,7 @@ class KEditListBox : public QGroupBox
 {
    Q_OBJECT
 
+public:
     class CustomEditor
     {
     public:
