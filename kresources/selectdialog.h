@@ -53,7 +53,7 @@ class Resource;
  * }
  * \endcode
  */
-class SelectDialog : KDialog
+class KRESOURCES_EXPORT SelectDialog : KDialog
 {
   public:
     /**

@@ -59,7 +59,7 @@ namespace KRES {
  *
  * \endcode
  */
-class Factory
+class KRESOURCES_EXPORT Factory
 {
   public:
 

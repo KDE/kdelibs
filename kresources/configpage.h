@@ -37,7 +37,7 @@ class QPushButton;
 
 namespace KRES {
 
-class ResourcePageInfo : public KShared
+class KRESOURCES_EXPORT ResourcePageInfo : public KShared
 {
   public:
     ResourcePageInfo();
@@ -49,7 +49,7 @@ class ResourcePageInfo : public KShared
 class Resource;
 class ConfigViewItem;
 
-class ConfigPage : public QWidget, public ManagerObserver<Resource>
+class KRESOURCES_EXPORT ConfigPage : public QWidget, public ManagerObserver<Resource>
 {
   Q_OBJECT
 

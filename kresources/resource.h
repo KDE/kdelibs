@@ -252,7 +252,7 @@ service_DATA = resourceexample.desktop
   data. Subclasses of ResourceCalendar would implement this API for local files,
   remote files, specific calendar servers etc.
 */
-class Resource : public QObject
+class KRESOURCES_EXPORT Resource : public QObject
 {
     friend class Factory;
     friend class ManagerImpl;
@@ -381,7 +381,7 @@ class Resource : public QObject
     ResourcePrivate *d;
 };
 
-class PluginFactoryBase : public KLibFactory
+class KRESOURCES_EXPORT PluginFactoryBase : public KLibFactory
 {
   public:
     virtual Resource *resource( const KConfig *config ) = 0;
@@ -397,7 +397,7 @@ class PluginFactoryBase : public KLibFactory
 };
 
 template<class TR,class TC>
-class PluginFactory : public PluginFactoryBase
+class KRESOURCES_EXPORT PluginFactory : public PluginFactoryBase
 {
   public:
     Resource *resource( const KConfig *config )

@@ -32,7 +32,7 @@ namespace KRES {
   class Resource;
   class ConfigWidget;
 
-class ConfigDialog : public KDialogBase
+class KRESOURCES_EXPORT ConfigDialog : public KDialogBase
 {
     Q_OBJECT
   public:
