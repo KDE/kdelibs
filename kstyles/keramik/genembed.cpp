@@ -32,12 +32,11 @@ DEALINGS IN THE SOFTWARE.
 
 #include <kimageeffect.h>
 
+#include <iostream.h>
 #include <string.h>
 #include <math.h>
 
-#include <iostream>
-using std::cout;
-using std::cerr;
+//NOTE: Use of old-style header is intentional for portability. See revisions 1.6 and 1.7
 
 //Force-touch-embedded-revision: 2
 
