@@ -311,7 +311,7 @@ public:
    * time.  The first one to come wins. The later can check the result
    * with isKWMDockModule.  
    *
-   * The KWMDockModule recieves two addition client messages:
+   * The KWMDockModule recieves two additional client messages:
    * KWM_MODULE_DOCKWIN_ADD
    * KWM_MODULE_DOCKWIN_REMOVE
    */
@@ -465,6 +465,17 @@ public:
    * maybe XReparentWindow will fail. There is nothing I can do about it.
    */
   static void prepareForSwallowing(Window w);
+
+  /**
+    * doNotManage(...) allows to define the first 20 character of a window
+    * title that should not be managed by the windowmanager. This is useful
+    * to avoid flickering when a panel swallows legacy applications.
+    * doNotManage(...) applies only for the first window which meets the
+    * criteria. 
+    *
+    * Note: May have no effect with other windowmanagers.
+    */
+  static void doNotManage(const QString&);
 
 
   /**

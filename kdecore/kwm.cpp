@@ -871,6 +871,32 @@ void KWM::prepareForSwallowing(Window w){
   while (getWindowState(w) != WithdrawnState);
 }
 
+void KWM::doNotManage(const QString& title){
+  static Atom a = 0;
+  if (!a)
+    a = XInternAtom(qt_xdisplay(), "KWM_DO_NOT_MANAGE", False);
+
+  XEvent ev;
+  int status;
+  long mask;
+  memset(&ev, 0, sizeof(ev));
+  ev.xclient.type = ClientMessage;
+  ev.xclient.window = qt_xrootwin();
+  ev.xclient.message_type = a;
+  ev.xclient.format = 8;
+
+  int i;
+  const char* s = title.data();
+  for (i=0;i<19 && s[i];i++)
+    ev.xclient.data.b[i]=s[i];
+  
+  mask = SubstructureRedirectMask; 
+
+  status = XSendEvent(qt_xdisplay(),
+		      qt_xrootwin(),
+		      False, mask, &ev);
+}
+
 
 QString KWM::getMaximizeString(){
   static Atom a = 0;
