@@ -374,6 +374,9 @@ protected slots:
   void slotSizeDetermine();
 
 private:
+
+  void determineRelativePath( const QString & path );
+
   QWidget *iconArea;
   QWidget *nameArea;
 
