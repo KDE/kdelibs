@@ -373,7 +373,9 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 
         // make sure we relayout children if we need it.
         if ( relayoutChildren || floatBottom() > m_y ||
-             (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())))
+             ( ( child->isReplaced() || child->isFloating() ) &&
+	       ( child->style()->width().isPercent() || child->style()->height().isPercent() ) )
+	    )
                 child->setLayouted(false);
 	if ( child->style()->flowAroundFloats() && !child->isFloating() &&
 	     style()->width().isFixed() ) {
@@ -402,6 +404,8 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
             if ( !child->layouted() )
                 child->layout();
         } else if ( child->isFloating() ) {
+            if ( !child->layouted() )
+                child->layout();
 	    // margins of floats and other objects do not collapse. The hack below assures this.
 	    if ( prevMargin != TABLECELLMARGIN )
 		m_height += prevMargin;
