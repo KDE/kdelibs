@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.69  1998/06/17 12:58:30  radej
+// sven: Removed compiler warning.
+// Bugfixes: Unhighlighting a handle and catching the fast click
 // Revision 1.68  1998/06/16 17:20:46  radej
 // sven: Fixed Warnings when switching palettes (separators hav no pixmaps)
 // Changelog order
@@ -841,7 +844,7 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
         }
         delete mgr;
         mgr=0;
-        debug ("KToolBar: moving done");
+        //debug ("KToolBar: moving done");
       }
   }
 }
@@ -1702,11 +1705,11 @@ void KToolBar::mouseReleaseEvent ( QMouseEvent * )
 {
   if (mgr)
     {
-      debug ("KToolBar: mouseRelease event (stoping mgr)");
+      //debug ("KToolBar: mouseRelease event (stoping mgr)");
       mgr->stop();
     }
-  else
-    debug ("KToolBar: mouseRelease event (no mgr)");
+//  else
+//    debug ("KToolBar: mouseRelease event (no mgr)");
 }
 
 // sven
