@@ -26,12 +26,37 @@
 #define DCOPVendorString "KDE"
 #define DCOPReleaseString "1.0"
 #define DCOPVersionMajor 1
-#define DCOPVersionMinor 0
+#define DCOPVersionMinor 1
 
 #define DCOPSend 1
 #define DCOPCall 2
 #define DCOPReply 3
 #define DCOPReplyFailed 4
+#define DCOPReplyWait 5
+#define DCOPReplyDelayed 6
+
+/**
+ * A DCOPSend message does not expect any reply.
+ * data: << fromId << toId << objId << fun << dataSize + data[dataSize]
+ *
+ * A DCOPCall message can get a DCOPReply, a DCOPReplyFailed
+ * or a DCOPReplyWait message in response.
+ * data: << fromId << toId << objId << fun << dataSize + data[dataSize]
+ *
+ * DCOPReply is the successfull reply to a DCOPCall message
+ * data: << replyType << replyData
+ *
+ * DCOPReplyFailed indicates failure of a DCOPCall message
+ * data: 
+ *
+ * DCOPReplyWait indicates that a DCOPCall message is succesfully 
+ * being processed but that response will come later.
+ * data: << transactionId
+ * 
+ * DCOPReplyDelayed is the successfull reply to a DCOPCall message
+ * after a DCOPReplyWait message.
+ * data: << fromId << toId << transactionId << replyType << replyData
+ */
 
 int DCOPAuthCount = 1;
 const char *DCOPAuthNames[] = {"MIT-MAGIC-COOKIE-1"};

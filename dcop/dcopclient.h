@@ -30,6 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 class DCOPObjectProxy;
 class DCOPClientPrivate;
+class DCOPClientTransaction;
 
 typedef QValueList<QCString> QCStringList;
 
@@ -194,6 +195,30 @@ class DCOPClient : public QObject
   virtual bool process(const QCString &fun, const QByteArray &data,
 		       QCString& replyType, QByteArray &replyData);
 
+  /**
+   * Delays the reply of the current function call 
+   * until 'endTransaction()' is called.
+   *
+   * This allows a server to queue requests.
+   *
+   * NOTE: Should be called from inside proces(...) only!
+   */
+  DCOPClientTransaction *beginTransaction( );
+  
+  /**
+   * Sends the delayed reply of a function call.
+   */
+  void endTransaction( DCOPClientTransaction *, QCString& replyType, QByteArray &replyData);
+
+  /**
+   * Returns whether the current function call is delayed.
+   *
+   * NOTE: Should be called from inside process(...) only!
+   * @return the ID of the current transaction
+   *         0 if no transaction is going on.
+   */
+  Q_INT32 transactionId(); 
+   
   /**
    * Check whether @p remApp is registered with the DCOPServer.
    * @return true if the remote application is registered, otherwise false.
