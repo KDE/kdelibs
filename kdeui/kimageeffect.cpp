@@ -1085,37 +1085,60 @@ QImage& KImageEffect::fade(QImage &img, float val, const QColor &color)
     if (img.depth() == 1)
 	return img;
 
+    unsigned char tbl[256];
+    for (int i=0; i<256; i++)
+	tbl[i] = (int) (val * i + 0.5);
+
     int red = color.red();
     int green = color.green();
     int blue = color.blue();
 
     QRgb col;
-    int r, g, b;
+    int r, g, b, cr, cg, cb;
 
     if (img.depth() <= 8) {
 	// pseudo color
-
 	for (int i=0; i<img.numColors(); i++) {
 	    col = img.color(i);
-	    r = (int) ((1 - val) * qRed(col) + val * red + 0.5);
-	    g = (int) ((1 - val) * qGreen(col) + val * green + 0.5);
-	    b = (int) ((1 - val) * qBlue(col) + val * blue + 0.5);
+	    cr = qRed(col); cg = qGreen(col); cb = qBlue(col);
+	    if (cr > red)
+		r = cr - tbl[cr - red];
+	    else
+		r = cr + tbl[red - cr];
+	    if (cg > green)
+		g = cg - tbl[cg - green];
+	    else
+		g = cg + tbl[green - cg];
+	    if (cb > blue)
+		b = cb - tbl[cb - blue];
+	    else
+		b = cb + tbl[blue - cb];
 	    img.setColor(i, qRgb(r, g, b));
 	}
 
     } else {
 	// truecolor
-
-	for (int y=0; y<img.height(); y++) {
-	    for (int x=0; x<img.width(); x++) {
-		col = img.pixel(x, y);
-		r = (int) ((1 - val) * qRed(col) + val * red + 0.5);
-		g = (int) ((1 - val) * qGreen(col) + val * green + 0.5);
-		b = (int) ((1 - val) * qBlue(col) + val * blue + 0.5);
-		img.setPixel(x, y, qRgb(r, g, b));
-	    }
-        }
- }
+        for (int y=0; y<img.height(); y++) {
+            QRgb *data = (QRgb *) img.scanLine(y);
+            for (int x=0; x<img.width(); x++) {
+                col = *data;
+                cr = qRed(col); cg = qGreen(col); cb = qBlue(col);
+                if (cr > red)
+                    r = cr - tbl[cr - red];
+                else
+                    r = cr + tbl[red - cr];
+                if (cg > green)
+                    g = cg - tbl[cg - green];
+                else
+                    g = cg + tbl[green - cg];
+                if (cb > blue)
+                    b = cb - tbl[cb - blue];
+                else
+                    b = cb + tbl[blue - cb];
+                *data++ = qRgb(r, g, b);
+            }
+        }        
+    }
 
     return img;
 }
