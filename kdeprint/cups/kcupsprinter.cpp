@@ -1,6 +1,7 @@
 #include "kcupsprinter.h"
 #include "kcupsdialogimpl.h"
 
+#include <qfile.h>
 #include <qpaintdevicemetrics.h>
 #include <klocale.h>
 
@@ -110,7 +111,7 @@ void KCupsPrinter::translateOptions(const OptionSet& opts)
 	  // PPD value.
 		if (!printername_.isEmpty())
 		{
-			QString	str = cupsGetPPD(printername_);
+			QString	str = cupsGetPPD(printername_.local8Bit());
 			if (!str.isEmpty())
 			{
 				ppd_file_t	*ppd = ppdOpenFile(QFile::encodeName(str));
