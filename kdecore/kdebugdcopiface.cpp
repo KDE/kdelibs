@@ -33,3 +33,8 @@ void KDebugDCOPIface::notifyKDebugConfigChanged()
  kdClearDebugConfig();
 }
 
+void KDebugDCOPIface::printBacktrace()
+{
+  kdDebug() << kdBacktrace() << endl;
+}
+

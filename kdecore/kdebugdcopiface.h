@@ -39,6 +39,12 @@ k_dcop:
 	 * This will simply call kdClearDebugConfig
 	 **/
 	void notifyKDebugConfigChanged();
+
+	/**
+	 * Print out a kdBacktrace. Useful when trying to understand why
+	 * a dialog is popping up, without having to launch gdb
+	 */
+	void printBacktrace();
 };
 
 #endif
