@@ -24,6 +24,7 @@
 #include <qobject.h>
 #include <qguardedptr.h>
 #include <qmap.h>
+#include <qlist.h>
 #include <kjs/object.h>
 #include <kjs/function.h>
 
@@ -40,6 +41,7 @@ namespace KJS {
   class Location;
   class History;
   class FrameArray;
+  class JSEventListener;
 
   class Screen : public ObjectImp {
   public:
@@ -89,6 +91,8 @@ namespace KJS {
     virtual String toString() const;
     void setListener(int eventId, KJSO func);
     KJSO getListener(int eventId) const;
+    JSEventListener *getJSEventListener(const KJSO &obj, bool html = false);
+    QList<JSEventListener> jsEventListeners;
   private:
     QGuardedPtr<KHTMLPart> m_part;
     Screen *screen;

@@ -44,7 +44,7 @@ typedef QVariant (KJSExecFuncCall)(KJS::KJSO &, KJS::KJSO &, KJS::List &, bool, 
 typedef void (KJSClearFunc)(KJScript *script, KHTMLPart *part);
 typedef const char* (KJSSpecialFunc)(KJScript *script, const char *);
 typedef void (KJSDestroyFunc)(KJScript *script);
-typedef DOM::EventListener* (KJSCreateHTMLEventHandlerFunc)(KJScript *script, QString code);
+typedef DOM::EventListener* (KJSCreateHTMLEventHandlerFunc)(KJScript *script, QString code, KHTMLPart *part);
 extern "C" {
   KJSCreateFunc kjs_create;
   KJSEvalFunc kjs_eval;
@@ -122,7 +122,7 @@ inline DOM::EventListener *KJSProxy::createHTMLEventHandler(QString code)
 {
   if (!script)
     script = (*create)(khtmlpart);
-  return (*createHTMLEH)(script,code);
+  return (*createHTMLEH)(script,code,khtmlpart);
 }
 
 #endif

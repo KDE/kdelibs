@@ -261,19 +261,19 @@ void KJS::HTMLDocument::tryPut(const UString &p, const KJSO& v)
     part->scheduleRedirection(0, str);
   }
   else if (p == "onClick" || p == "onclick")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_CLICK_EVENT,getJSEventListener(v,true));
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_CLICK_EVENT,Window::retrieveActive()->getJSEventListener(v,true));
   else if (p == "onDblClick" || p == "ondblclick")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_DBLCLICK_EVENT,getJSEventListener(v,true));
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_DBLCLICK_EVENT,Window::retrieveActive()->getJSEventListener(v,true));
   else if (p == "onKeyDown" || p == "onkeydown")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYDOWN_EVENT,getJSEventListener(v,true));
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYDOWN_EVENT,Window::retrieveActive()->getJSEventListener(v,true));
   else if (p == "onKeyPress" || p == "onkeypress")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYPRESS_EVENT,getJSEventListener(v,true));
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYPRESS_EVENT,Window::retrieveActive()->getJSEventListener(v,true));
   else if (p == "onKeyUp" || p == "onkeyup")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYUP_EVENT,getJSEventListener(v,true));
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::KHTML_KEYUP_EVENT,Window::retrieveActive()->getJSEventListener(v,true));
   else if (p == "onMouseDown" || p == "onmousedown")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::MOUSEDOWN_EVENT,getJSEventListener(v,true));
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::MOUSEDOWN_EVENT,Window::retrieveActive()->getJSEventListener(v,true));
   else if (p == "onMouseUp" || p == "onmouseup")
-    doc.handle()->setHTMLEventListener(DOM::EventImpl::MOUSEUP_EVENT,getJSEventListener(v,true));
+    doc.handle()->setHTMLEventListener(DOM::EventImpl::MOUSEUP_EVENT,Window::retrieveActive()->getJSEventListener(v,true));
   else
     DOMDocument::tryPut(p,v);
 }

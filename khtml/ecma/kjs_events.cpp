@@ -22,29 +22,31 @@
 #include "kjs_window.h"
 #include "kjs_events.h"
 #include "kjs_views.h"
+#include "kjs_proxy.h"
 #include <dom_string.h>
 #include <qptrdict.h>
 #include <qlist.h>
 #include "khtml_part.h"
 #include <xml/dom_nodeimpl.h>
+#include <kjs/kjs.h>
 
 using namespace KJS;
 
 QPtrDict<DOMEvent> events;
-QList<JSEventListener> jsEventListeners;
 
 // -------------------------------------------------------------------------
 
-JSEventListener::JSEventListener(KJSO _listener, bool _html)
+JSEventListener::JSEventListener(KJSO _listener, Window *_win, bool _html)
 {
     listener = _listener;
-    jsEventListeners.append(this);
     html = _html;
+    win = _win;
+    win->jsEventListeners.append(this);
 }
 
 JSEventListener::~JSEventListener()
 {
-    jsEventListeners.removeRef(this);
+    win->jsEventListeners.removeRef(this);
 }
 
 void JSEventListener::handleEvent(DOM::Event &evt)
@@ -53,9 +55,9 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     List args;
     args.append(getDOMEvent(evt));
 
-    QGuardedPtr<KHTMLPart> part = Window::retrieveActive()->part();
-    KJSO thisVal = Null();
-    QVariant ret = part->executeKJSFunctionCall(thisVal,listener,args); // ### currect this value ?
+    win->part()->jScript()->jScript()->init(); // set a valid current interpreter
+    KJSO thisVal = getDOMNode(evt.currentTarget());
+    QVariant ret = win->part()->executeKJSFunctionCall(thisVal,listener,args); // ### currect this value ?
     if (ret.type() == QVariant::Bool && ret.toBool() == false)
         evt.preventDefault();
   }
@@ -67,22 +69,6 @@ DOM::DOMString JSEventListener::eventListenerType()
 	return "_khtml_HTMLEventListener";
     else
 	return "_khtml_JSEventListener";
-}
-
-JSEventListener *KJS::getJSEventListener(const KJSO &obj, bool html)
-{
-  if (obj.isA(KJS::NullType))
-    return 0;
-    
-  QListIterator<JSEventListener> it(jsEventListeners);
-
-  for (; it.current(); ++it)
-    if (it.current()->listenerObj().imp() == obj.imp())
-      return it.current();
-
-  JSEventListener *listener = new JSEventListener(obj,html);
-  jsEventListeners.append(listener);
-  return listener;
 }
 
 KJSO KJS::getNodeEventListener(DOM::Node n, int eventId)

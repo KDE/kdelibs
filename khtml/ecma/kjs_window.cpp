@@ -208,6 +208,9 @@ void Window::mark(Imp *)
     frames->mark();
   if (loc && !loc->refcount)
     loc->mark();
+  QListIterator<JSEventListener> it(jsEventListeners);
+  for (; it.current(); ++it)
+    it.current()->listenerObj().imp()->mark();
 
 #if 0
   // Mark all Window objects from the map. Necessary to keep
@@ -817,6 +820,23 @@ KJSO Window::getListener(int eventId) const
     return static_cast<JSEventListener*>(listener)->listenerObj();
   else
     return Null();
+}
+
+
+JSEventListener *Window::getJSEventListener(const KJSO &obj, bool html)
+{
+  if (obj.isA(KJS::NullType))
+    return 0;
+    
+  QListIterator<JSEventListener> it(jsEventListeners);
+
+  for (; it.current(); ++it)
+    if (it.current()->listenerObj().imp() == obj.imp())
+      return it.current();
+
+  JSEventListener *listener = new JSEventListener(obj,this,html);
+//  jsEventListeners.append(listener);
+  return listener;
 }
 
 Completion WindowFunc::tryExecute(const List &args)

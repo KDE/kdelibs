@@ -38,6 +38,7 @@
 #include "kjs_traversal.h"
 #include "kjs_events.h"
 #include "kjs_views.h"
+#include "kjs_window.h"
 #include "dom/dom_exception.h"
 
 using namespace KJS;
@@ -288,7 +289,7 @@ String DOMNode::toString() const
 
 void DOMNode::setListener(int eventId,KJSO func) const
 {
-    node.handle()->setHTMLEventListener(eventId,getJSEventListener(func,true));
+    node.handle()->setHTMLEventListener(eventId,Window::retrieveActive()->getJSEventListener(func,true));
 }
 
 KJSO DOMNode::getListener(int eventId) const
@@ -313,13 +314,13 @@ Completion DOMNodeFunc::tryExecute(const List &args)
       break;
     case AddEventListener: {
 //        JSEventListener *listener = new JSEventListener(args[1]); // will get deleted when the node derefs it
-        JSEventListener *listener = getJSEventListener(args[1]);
+        JSEventListener *listener = Window::retrieveActive()->getJSEventListener(args[1]);
         node.addEventListener(args[0].toString().value().string(),listener,args[2].toBoolean().value());
         result = Undefined();
       }
       break;
     case RemoveEventListener: {
-        JSEventListener *listener = getJSEventListener(args[1]);
+        JSEventListener *listener = Window::retrieveActive()->getJSEventListener(args[1]);
         node.removeEventListener(args[0].toString().value().string(),listener,args[2].toBoolean().value());
         result = Undefined();
       }

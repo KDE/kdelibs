@@ -26,9 +26,11 @@
 
 namespace KJS {
 
+  class Window;
+
   class JSEventListener : public DOM::EventListener {
   public:
-    JSEventListener(KJSO _listener, bool _html = false);
+    JSEventListener(KJSO _listener, Window *_win, bool _html = false);
     virtual ~JSEventListener();
     virtual void handleEvent(DOM::Event &evt);
     virtual DOM::DOMString eventListenerType();
@@ -36,9 +38,9 @@ namespace KJS {
   protected:
     KJSO listener;
     bool html;
+    Window *win;
   };
 
-  JSEventListener *getJSEventListener(const KJSO &obj, bool html = false);
   KJSO getNodeEventListener(DOM::Node n, int eventId);
 
   // Prototype object Event

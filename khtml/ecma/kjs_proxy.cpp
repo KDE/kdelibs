@@ -161,14 +161,14 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
     return ret;
   }
 
-  DOM::EventListener* kjs_createHTMLEventHandler(KJScript */*script*/, QString code)
+  DOM::EventListener* kjs_createHTMLEventHandler(KJScript */*script*/, QString code, KHTMLPart *part)
   {
     KJS::Constructor constr(KJS::Global::current().get("Function").imp());
     KJS::List args;
     args.append(KJS::String("event"));
     args.append(KJS::String(code));
     KJS::KJSO handlerFunc = constr.construct(args);
-    return new KJS::JSEventListener(handlerFunc,true);
+    return KJS::Window::retrieveWindow(part)->getJSEventListener(handlerFunc,true);
   }
 
 
