@@ -59,6 +59,8 @@ public:
     bool setInnerHTML( const DOMString &html );
     bool setInnerText( const DOMString &text );
 
+    virtual DOMString namespaceURI() const;
+
 protected:
     // for IMG, OBJECT and APPLET
     void addHTMLAlignment( DOMString alignment );

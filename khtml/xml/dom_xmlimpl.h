@@ -47,6 +47,7 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
+    virtual DOMString namespaceURI() const;
 
     virtual DOMString publicId() const;
     virtual DOMString systemId() const;
@@ -70,6 +71,7 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
+    virtual DOMString namespaceURI() const;
     virtual bool childTypeAllowed( unsigned short type );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 protected:
@@ -85,6 +87,7 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
+    virtual DOMString namespaceURI() const;
 
     virtual DOMString publicId() const;
     virtual DOMString systemId() const;
@@ -106,6 +109,7 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
+    virtual DOMString namespaceURI() const;
     virtual DOMString nodeValue() const;
 
     virtual DOMString target() const;

@@ -337,6 +337,16 @@ bool HTMLElementImpl::setInnerText( const DOMString &text )
     return false;
 }
 
+DOMString HTMLElementImpl::namespaceURI() const
+{
+    // For HTML documents, we treat HTML elements as having no namespace. But for XML documents
+    // the elements have the namespace defined in the XHTML spec
+    if (ownerDocument()->isHTMLDocument())
+        return DOMString();
+    else
+        return XHTML_NAMESPACE;
+}
+
 void HTMLElementImpl::addHTMLAlignment( DOMString alignment )
 {
     //qDebug("alignment is %s", alignment.string().latin1() );

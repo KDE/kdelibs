@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2001 Peter Kelly (pmk@post.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -47,26 +48,27 @@ public:
     AttrImpl &operator = (const AttrImpl &other);
     ~AttrImpl();
 
-    virtual const DOMString nodeName() const;
-    virtual unsigned short nodeType() const;
-    virtual bool isAttributeNode() const { return true; }
-
+    // DOM methods & attributes for Attr
     DOMString name() const;
     bool specified() const { return m_specified; }
     Element ownerElement() const;
-
     virtual DOMString value() const;
     virtual void setValue( const DOMString &v );
 
+    // DOM methods overridden from  parent classes
+    virtual const DOMString nodeName() const;
+    virtual unsigned short nodeType() const;
+    virtual DOMString namespaceURI() const;
+
     virtual DOMString nodeValue() const { return value(); }
-
     virtual void setNodeValue( const DOMString &, int &exceptioncode );
-
     virtual NodeImpl *parentNode() const;
     virtual NodeImpl *previousSibling() const;
     virtual NodeImpl *nextSibling() const;
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 
+    // Other methods (not part of DOM)
+    virtual bool isAttributeNode() const { return true; }
     virtual bool deleteMe();
     DOMStringImpl *val() { return _value; }
     virtual bool childAllowed( NodeImpl *newChild );
@@ -80,6 +82,7 @@ protected:
 
     DOMStringImpl *_name;
     DOMStringImpl *_value;
+    DOMStringImpl *_namespaceURI;
 
     ElementImpl *_element;
 public:
@@ -237,46 +240,71 @@ protected:
 
 class NamedAttrMapImpl : public NamedNodeMapImpl
 {
+    friend class ElementImpl;
 public:
     NamedAttrMapImpl(ElementImpl *e);
     virtual ~NamedAttrMapImpl();
     NamedAttrMapImpl &operator =(const NamedAttrMapImpl &other);
 
-    unsigned long length(int &exceptioncode) const;
-    unsigned long length() const; // ### remove?
+    // DOM methods & attributes for NamedNodeMap
 
     NodeImpl *getNamedItem ( const DOMString &name, int &exceptioncode ) const;
-    NodeImpl *getNamedItem ( const DOMString &name ) const; // ### remove?
-    AttrImpl *getIdItem ( int id ) const;
 
     Node setNamedItem ( const Node &arg, int &exceptioncode );
-    Attr setIdItem ( AttrImpl *attr, int& exceptioncode );
 
     Node removeNamedItem ( const DOMString &name, int &exceptioncode );
-    Attr removeIdItem ( int id );
 
-    NodeImpl *item ( unsigned long index, int &exceptioncode ) const;
-    NodeImpl *item ( unsigned long index ) const; // ### remove?
+    NodeImpl *item ( unsigned long index ) const;
+
+    unsigned long length(  ) const;
 
     virtual NodeImpl *getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
                                       int &exceptioncode ) const;
+
     virtual NodeImpl *setNamedItemNS( NodeImpl *arg, int &exceptioncode );
+
     virtual NodeImpl *removeNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
                                          int &exceptioncode );
 
-    Attr removeAttr( AttrImpl *oldAttr, int &exceptioncode );
+    // Other methods (not part of DOM)
+
+    AttrImpl *getIdItem ( int id ) const;
+    Attr setIdItem ( AttrImpl *attr, int& exceptioncode );
+    Attr removeIdItem ( int id );
+
 
     // only use this during parsing !
     void insertAttr(AttrImpl* newAtt);
+    void clearAttrs();
 
     void detachFromElement();
 
 protected:
-    friend class ElementImpl;
+    // generic functions for accessing attributes - can be used with different compare
+    // types (id, name or name + namespace)
+    enum AttrCompare {
+        ID_COMPARE,
+        NAME_COMPARE,
+        NAME_NAMESPACE_COMPARE
+    };
+
+    AttrImpl *getItem ( int id, const DOMString &name, const DOMString &namespaceURI,
+                        AttrCompare compareType, int &exceptioncode ) const;
+    Node setItem ( const Node &arg, AttrCompare compareType, int &exceptioncode );
+    Node removeItem ( int id, const DOMString &name, const DOMString &namespaceURI,
+                      AttrCompare compareType, int &exceptioncode );
+    int findAttr ( int id, const DOMString &name, const DOMString &namespaceURI,
+                   AttrCompare compareType ) const;
+
+    Attr replaceAttr(int i, AttrImpl *attr);
+    void addAttr(AttrImpl *attr);
+    Attr removeAttr(int index, AttrImpl *clearAttr);
+
+    Attr removeAttr( AttrImpl *oldAttr, int &exceptioncode );
+
     ElementImpl *element;
     AttrImpl **attrs;
     uint len;
-    void clearAttrs();
 };
 
 }; //namespace

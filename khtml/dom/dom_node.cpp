@@ -109,11 +109,7 @@ Node NamedNodeMap::item( unsigned long index ) const
     if (!impl)
 	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
-    int exceptioncode = 0;
-    NodeImpl *r = impl->item(index,exceptioncode);
-    if (exceptioncode)
-	throw DOMException(exceptioncode);
-    return r;
+    return impl->item(index);
 }
 
 Node NamedNodeMap::getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName ) const
@@ -157,11 +153,7 @@ unsigned long NamedNodeMap::length() const
     if (!impl)
 	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
-    int exceptioncode = 0;
-    unsigned long r = impl->length(exceptioncode);
-    if (exceptioncode)
-	throw DOMException(exceptioncode);
-    return r;
+    return impl->length();
 }
 
 NamedNodeMapImpl *NamedNodeMap::handle() const

@@ -85,6 +85,12 @@ unsigned short EntityImpl::nodeType() const
     return Node::ENTITY_NODE;
 }
 
+DOMString EntityImpl::namespaceURI() const
+{
+    // ###
+    return DOMString();
+}
+
 DOMString EntityImpl::publicId() const
 {
     return m_publicId;
@@ -151,6 +157,12 @@ const DOMString EntityReferenceImpl::nodeName() const
 unsigned short EntityReferenceImpl::nodeType() const
 {
     return Node::ENTITY_REFERENCE_NODE;
+}
+
+DOMString EntityReferenceImpl::namespaceURI() const
+{
+    // ###
+    return DOMString();
 }
 
 // DOM Section 1.1.1
@@ -222,6 +234,12 @@ unsigned short NotationImpl::nodeType() const
     return Node::NOTATION_NODE;
 }
 
+DOMString NotationImpl::namespaceURI() const
+{
+    // ###
+    return DOMString();
+}
+
 DOMString NotationImpl::publicId() const
 {
     return m_publicId;
@@ -288,6 +306,12 @@ const DOMString ProcessingInstructionImpl::nodeName() const
 unsigned short ProcessingInstructionImpl::nodeType() const
 {
     return Node::PROCESSING_INSTRUCTION_NODE;
+}
+
+DOMString ProcessingInstructionImpl::namespaceURI() const
+{
+    // ###
+    return DOMString();
 }
 
 DOMString ProcessingInstructionImpl::nodeValue() const

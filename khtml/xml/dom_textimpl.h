@@ -81,6 +81,7 @@ public:
     virtual const DOMString nodeName() const;
     virtual DOMString nodeValue() const;
     virtual unsigned short nodeType() const;
+    virtual DOMString namespaceURI() const;
     virtual ushort id() const;
     virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
     virtual bool childTypeAllowed( unsigned short type );
@@ -100,6 +101,7 @@ public:
     virtual void setNodeValue( const DOMString &, int &exceptioncode );
 
     virtual unsigned short nodeType() const;
+    virtual DOMString namespaceURI() const;
     virtual bool isTextNode() const { return true; }
 
     TextImpl *splitText ( const unsigned long offset, int &exceptioncode );
@@ -134,6 +136,7 @@ public:
     virtual ~CDATASectionImpl();
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
+    virtual DOMString namespaceURI() const;
     virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
     virtual bool childTypeAllowed( unsigned short type );
 

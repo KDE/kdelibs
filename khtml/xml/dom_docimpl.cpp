@@ -257,19 +257,19 @@ NodeImpl *DocumentImpl::importNode( NodeImpl */*importedNode*/, bool /*deep*/,
     return 0;
 }
 
-ElementImpl *DocumentImpl::createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName )
+ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, const DOMString &_qualifiedName )
 {
-    // ### DOM2 Core 1.1.8 states that null can be supplied as the namespace URI, indicating the element has
-    // no namespace (also check this for Element.*attribute())
     ElementImpl *e = 0;
-    // ### somehow set the namespace for html elements to http://www.w3.org/1999/xhtml ?
-    if (_namespaceURI == "http://www.w3.org/1999/xhtml") {
+    if (_namespaceURI == XHTML_NAMESPACE) {
+        // User requested an element in the XHTML namespace - this means we create a HTML element
+        // (elements not in this namespace are treated as normal XML elements)
         QString qName = _qualifiedName.string();
         int colonPos = qName.find(':',0);
         e = createHTMLElement(colonPos ? qName.mid(colonPos+1) : qName);
     }
     if (!e)
         e = new XMLElementImpl( document, _qualifiedName.implementation(), _namespaceURI.implementation() );
+    // note that if _namespaceURI is null, the element will have no namespace
     return e;
 }
 
@@ -324,52 +324,6 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
     return 0;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const DOMString DocumentImpl::nodeName() const
 {
     return "#document";
@@ -378,6 +332,12 @@ const DOMString DocumentImpl::nodeName() const
 unsigned short DocumentImpl::nodeType() const
 {
     return Node::DOCUMENT_NODE;
+}
+
+DOMString DocumentImpl::namespaceURI() const
+{
+    // ###
+    return DOMString();
 }
 
 ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
@@ -1607,6 +1567,12 @@ unsigned short DocumentFragmentImpl::nodeType() const
     return Node::DOCUMENT_FRAGMENT_NODE;
 }
 
+DOMString DocumentFragmentImpl::namespaceURI() const
+{
+    // ###
+    return DOMString();
+}
+
 // DOM Section 1.1.1
 bool DocumentFragmentImpl::childTypeAllowed( unsigned short type )
 {
@@ -1691,6 +1657,12 @@ const DOMString DocumentTypeImpl::nodeName() const
 unsigned short DocumentTypeImpl::nodeType() const
 {
     return Node::DOCUMENT_TYPE_NODE;
+}
+
+DOMString DocumentTypeImpl::namespaceURI() const
+{
+    // ###
+    return DOMString();
 }
 
 // DOM Section 1.1.1

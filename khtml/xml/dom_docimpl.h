@@ -141,9 +141,10 @@ public:
     ElementImpl *getElementById ( const DOMString &elementId ) const;
 
     // DOM methods overridden from  parent classes
-    virtual const DOMString nodeName() const;
 
+    virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
+    virtual DOMString namespaceURI() const;
 
 
     // Other methods (not part of DOM)
@@ -368,6 +369,7 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
+    virtual DOMString namespaceURI() const;
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 
 protected:
@@ -396,14 +398,11 @@ public:
 
     virtual DOMString internalSubset() const;
 
-
-
-
-
-
+    // DOM methods overridden from  parent classes
 
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
+    virtual DOMString namespaceURI() const;
 
     GenericRONamedNodeMapImpl *m_entities;
     GenericRONamedNodeMapImpl *m_notations;

@@ -227,6 +227,12 @@ unsigned short CommentImpl::nodeType() const
     return Node::COMMENT_NODE;
 }
 
+DOMString CommentImpl::namespaceURI() const
+{
+    // ###
+    return DOMString();
+}
+
 ushort CommentImpl::id() const
 {
     return ID_COMMENT;
@@ -315,6 +321,12 @@ void TextImpl::setNodeValue( const DOMString & newstr, int &exceptioncode )
 unsigned short TextImpl::nodeType() const
 {
     return Node::TEXT_NODE;
+}
+
+DOMString TextImpl::namespaceURI() const
+{
+    // ###
+    return DOMString();
 }
 
 void TextImpl::attach()
@@ -424,6 +436,12 @@ const DOMString CDATASectionImpl::nodeName() const
 unsigned short CDATASectionImpl::nodeType() const
 {
     return Node::CDATA_SECTION_NODE;
+}
+
+DOMString CDATASectionImpl::namespaceURI() const
+{
+    // ###
+    return DOMString();
 }
 
 NodeImpl *CDATASectionImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)

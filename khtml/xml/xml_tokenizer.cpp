@@ -344,18 +344,18 @@ void XMLTokenizer::finish()
           stream.readLine();
         QString line = stream.readLine();
 
-        m_doc->document()->appendChild(m_doc->document()->createElementNS("http://www.w3.org/1999/xhtml","html"),exceptioncode);
-        NodeImpl *body = m_doc->document()->createElementNS("http://www.w3.org/1999/xhtml","body");
+        m_doc->document()->appendChild(m_doc->document()->createElementNS(XHTML_NAMESPACE,"html"),exceptioncode);
+        NodeImpl *body = m_doc->document()->createElementNS(XHTML_NAMESPACE,"body");
         m_doc->document()->firstChild()->appendChild(body,exceptioncode);
 
-        NodeImpl *h1 = m_doc->document()->createElementNS("http://www.w3.org/1999/xhtml","h1");
+        NodeImpl *h1 = m_doc->document()->createElementNS(XHTML_NAMESPACE,"h1");
         body->appendChild(h1,exceptioncode);
         h1->appendChild(m_doc->document()->createTextNode(i18n("XML parsing error")),exceptioncode);
         h1->renderer()->close();
 
         body->appendChild(m_doc->document()->createTextNode(handler.errorProtocol()),exceptioncode);
-        body->appendChild(m_doc->document()->createElementNS("http://www.w3.org/1999/xhtml","hr"),exceptioncode);
-        NodeImpl *pre = m_doc->document()->createElementNS("http://www.w3.org/1999/xhtml","pre");
+        body->appendChild(m_doc->document()->createElementNS(XHTML_NAMESPACE,"hr"),exceptioncode);
+        NodeImpl *pre = m_doc->document()->createElementNS(XHTML_NAMESPACE,"pre");
         body->appendChild(pre,exceptioncode);
         pre->appendChild(m_doc->document()->createTextNode(line+"\n"),exceptioncode);
 

@@ -28,6 +28,9 @@
 #include "dom/dom_string.h"
 #include "dom/dom_node.h"
 
+// The namespace used for XHTML elements
+#define XHTML_NAMESPACE "http://www.w3.org/1999/xhtml"
+
 #include <qlist.h>
 
 class QPainter;
@@ -124,7 +127,7 @@ public:
 
     virtual bool isSupported( const DOMString &feature, const DOMString &version, int &exceptioncode ) const;
 
-    virtual DOMString namespaceURI() const;
+    virtual DOMString namespaceURI() const = 0;
 
     virtual DOMString prefix() const;
 
@@ -535,15 +538,17 @@ public:
     NamedNodeMapImpl();
     virtual ~NamedNodeMapImpl();
 
+    // DOM methods & attributes for NamedNodeMap
+
     virtual NodeImpl *getNamedItem ( const DOMString &name, int &exceptioncode ) const = 0;
 
     virtual Node setNamedItem ( const Node &arg, int &exceptioncode ) = 0;
 
     virtual Node removeNamedItem ( const DOMString &name, int &exceptioncode ) = 0;
 
-    virtual NodeImpl *item ( unsigned long index, int &exceptioncode ) const = 0;
+    virtual NodeImpl *item ( unsigned long index ) const = 0;
 
-    virtual unsigned long length(int &exceptioncode) const = 0;
+    virtual unsigned long length(  ) const = 0;
 
     virtual NodeImpl *getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
                                       int &exceptioncode ) const = 0;
@@ -552,6 +557,10 @@ public:
 
     virtual NodeImpl *removeNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
                                          int &exceptioncode ) = 0;
+
+    // Other methods (not part of DOM)
+
+    virtual bool isReadOnly() { return false; }
 };
 
 
@@ -563,15 +572,17 @@ public:
     GenericRONamedNodeMapImpl();
     virtual ~GenericRONamedNodeMapImpl();
 
+    // DOM methods & attributes for NamedNodeMap
+
     virtual NodeImpl *getNamedItem ( const DOMString &name, int &exceptioncode ) const;
 
     virtual Node setNamedItem ( const Node &arg, int &exceptioncode );
 
     virtual Node removeNamedItem ( const DOMString &name, int &exceptioncode );
 
-    virtual NodeImpl *item ( unsigned long index, int &exceptioncode ) const;
+    virtual NodeImpl *item ( unsigned long index ) const;
 
-    virtual unsigned long length(int &exceptioncode) const;
+    virtual unsigned long length(  ) const;
 
     virtual NodeImpl *getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
                                       int &exceptioncode ) const;
@@ -580,6 +591,10 @@ public:
 
     virtual NodeImpl *removeNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
                                          int &exceptioncode );
+
+    // Other methods (not part of DOM)
+
+    virtual bool isReadOnly() { return true; }
 
     void addNode(NodeImpl *n);
 

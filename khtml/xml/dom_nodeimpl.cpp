@@ -182,11 +182,6 @@ bool NodeImpl::isSupported( const DOMString &/*feature*/, const DOMString &/*ver
     return false;
 }
 
-DOMString NodeImpl::namespaceURI() const
-{
-    return DOMString();
-}
-
 DOMString NodeImpl::prefix() const
 {
     // ### implement
@@ -278,13 +273,12 @@ QString NodeImpl::recursive_toHTML(bool start) const
         {
             ElementImpl *el = const_cast<ElementImpl*>(static_cast<const ElementImpl *>(this));
             AttrImpl *attr;
-            int exceptioncode;
             if(el->namedAttrMap) {
                 NamedNodeMapImpl *attrs = el->namedAttrMap;
-            unsigned long lmap = attrs->length(exceptioncode);
+            unsigned long lmap = attrs->length();
             for( unsigned int j=0; j<lmap; j++ )
             {
-                attr = static_cast<AttrImpl*>(attrs->item(j,exceptioncode));
+                attr = static_cast<AttrImpl*>(attrs->item(j));
                 me += " " + attr->name().string() + "=\"" + escapeHTML( attr->value().string() ) + "\"";
                 }
             }
@@ -371,12 +365,11 @@ void NodeImpl::printTree(int indent)
 
         ElementImpl *el = const_cast<ElementImpl*>(static_cast<const ElementImpl *>(this));
         AttrImpl *attr;
-        int exceptioncode;
         NamedNodeMapImpl *attrs = el->attributes();
-        unsigned long lmap = attrs->length(exceptioncode);
+        unsigned long lmap = attrs->length();
         for( unsigned int j=0; j<lmap; j++ )
         {
-            attr = static_cast<AttrImpl*>(attrs->item(j,exceptioncode));
+            attr = static_cast<AttrImpl*>(attrs->item(j));
             s += " " + attr->name().string() + "=\"" + attr->value().string() + "\"";
         }
         if(!firstChild())
@@ -1872,7 +1865,7 @@ Node GenericRONamedNodeMapImpl::removeNamedItem ( const DOMString &/*name*/, int
     return 0;
 }
 
-NodeImpl *GenericRONamedNodeMapImpl::item ( unsigned long index, int &/*exceptioncode*/ ) const
+NodeImpl *GenericRONamedNodeMapImpl::item ( unsigned long index ) const
 {
     // ### check this when calling from javascript using -1 = 2^sizeof(int)-1
     // (also for other similar methods)
@@ -1882,30 +1875,36 @@ NodeImpl *GenericRONamedNodeMapImpl::item ( unsigned long index, int &/*exceptio
     return m_contents->at(index);
 }
 
-unsigned long GenericRONamedNodeMapImpl::length(int &/*exceptioncode*/) const
+unsigned long GenericRONamedNodeMapImpl::length(  ) const
 {
     return m_contents->count();
 }
 
-NodeImpl *GenericRONamedNodeMapImpl::getNamedItemNS( const DOMString &/*namespaceURI*/,
-                                                     const DOMString &/*localName*/,
+NodeImpl *GenericRONamedNodeMapImpl::getNamedItemNS( const DOMString &namespaceURI,
+                                                     const DOMString &localName,
                                                      int &/*exceptioncode*/ ) const
 {
-    // ### implement
+    QListIterator<NodeImpl> it(*m_contents);
+    for (; it.current(); ++it)
+        if (it.current()->nodeName() == localName &&
+            it.current()->namespaceURI() == namespaceURI)
+            return it.current();
     return 0;
 }
 
-NodeImpl *GenericRONamedNodeMapImpl::setNamedItemNS( NodeImpl */*arg*/, int &/*exceptioncode*/ )
+NodeImpl *GenericRONamedNodeMapImpl::setNamedItemNS( NodeImpl */*arg*/, int &exceptioncode )
 {
-    // ### implement
+    // can't modify this list through standard DOM functions
+    exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
     return 0;
 }
 
 NodeImpl *GenericRONamedNodeMapImpl::removeNamedItemNS( const DOMString &/*namespaceURI*/,
                                                         const DOMString &/*localName*/,
-                                                        int &/*exceptioncode*/ )
+                                                        int &exceptioncode )
 {
-    // ### implement
+    // can't modify this list through standard DOM functions
+    exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
     return 0;
 }
 

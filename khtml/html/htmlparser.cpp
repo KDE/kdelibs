@@ -387,7 +387,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 int exceptioncode;
                 bool changed = false;
                 for (attrNo = 0; map && attrNo < map->length(); attrNo++)
-                    if(!bodymap->getNamedItem(static_cast<AttrImpl*>(map->item(attrNo))->name())) {
+                    if(!bodymap->getNamedItem(static_cast<AttrImpl*>(map->item(attrNo))->name(),exceptioncode)) {
                         doc()->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false,exceptioncode)), exceptioncode);
                         changed = true;
                     }
