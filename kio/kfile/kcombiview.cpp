@@ -252,8 +252,10 @@ KFileItem * KCombiView::nextItem( const KFileItem *fileItem ) const
     else { // no item, check other view
         // when changing from one to another view, we need to continue
         // with the next view's first item!
-        if ( m_lastViewForNextItem != otherView )
-            fileItem = otherView->firstFileItem();
+        if ( m_lastViewForNextItem != otherView ) {
+            m_lastViewForNextItem = otherView;
+            return otherView->firstFileItem();
+        }
 
         item = otherView->nextItem( fileItem );
         m_lastViewForNextItem = otherView;
