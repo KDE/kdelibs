@@ -329,9 +329,20 @@ void LdapSearch::startSearch( const QString& txt )
     return;
 
   cancelSearch();
-  mSearchText = txt;
+  int pos = txt.find( '\"' );
+  if( pos >= 0 )
+  {
+    ++pos;
+    int pos2 = txt.find( '\"', pos );
+    if( pos2 >= 0 )
+        mSearchText = txt.mid( pos , pos2 - pos );
+    else
+        mSearchText = txt.mid( pos );
+  } else
+    mSearchText = txt;
+
   QString filter = QString( "|(cn=%1*)(mail=%2*)(givenName=%3*)(sn=%4*)" )
-                          .arg( txt ).arg( txt ).arg( txt ).arg( txt );
+      .arg( mSearchText ).arg( mSearchText ).arg( mSearchText ).arg( mSearchText );
 
   QValueList< LdapClient* >::Iterator it;
   for ( it = mClients.begin(); it != mClients.end(); ++it ) {
@@ -404,14 +415,18 @@ QStringList LdapSearch::makeSearchData()
         sn = QString( "%1" ).arg( (*it2).first() );
     }
 
-    if ( name.isEmpty() )
+    if( mail.isEmpty())
+        ; // nothing, bad entry
+    else if ( name.isEmpty() )
       ret.append( mail );
-    else { // this sucks
-      ret.append( QString( "\"%1\" <%2>" ).arg( name ).arg( mail ) );
+    else {
+        kdDebug() << "<" << name << "><" << mail << ">" << endl;
+      ret.append( QString( "%1 <%2>" ).arg( name ).arg( mail ) );
+      // this sucks
       if ( givenname.upper().startsWith( search_text_upper ) )
-        ret.append( QString( "$$%1$\"%2\" <%3>" ).arg( givenname ).arg( name ).arg( mail ) );
+        ret.append( QString( "$$%1$%2 <%3>" ).arg( givenname ).arg( name ).arg( mail ) );
       if ( sn.upper().startsWith( search_text_upper ) )
-        ret.append( QString( "$$%1$\"%2\" <%3>" ).arg( sn ).arg( name ).arg( mail ) );
+        ret.append( QString( "$$%1$%2 <%3>" ).arg( sn ).arg( name ).arg( mail ) );
     }
   }
 
