@@ -28,7 +28,6 @@
 
 #include <qkeysequence.h>
 #include <qobject.h>
-#include <qpopupmenu.h>
 #include <qvaluelist.h>
 #include <qguardedptr.h>
 #include <kguiitem.h>
