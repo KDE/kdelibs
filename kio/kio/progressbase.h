@@ -21,6 +21,8 @@
 
 #include <qwidget.h>
 
+#include <kio/global.h>
+
 class KURL;
 namespace KIO {
   class Job;
