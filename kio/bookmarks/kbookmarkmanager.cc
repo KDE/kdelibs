@@ -84,8 +84,6 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportD
         // First time we use this class
         QDomElement topLevel = m_doc.createElement("xbel");
         m_doc.appendChild( topLevel );
-        m_doc.insertBefore( m_doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\""), 
-                            topLevel );
         if ( bImportDesktopFiles )
             importDesktopFiles();
         m_docIsLoaded = true;
@@ -147,11 +145,6 @@ void KBookmarkManager::parse() const
         }
         else if ( mainTag != "xbel" )
             kdWarning() << "KBookmarkManager::parse : unknown main tag " << mainTag << endl;
-
-        if (m_doc.firstChild().isProcessingInstruction())
-            m_doc.removeChild(m_doc.firstChild());
-        m_doc.insertBefore( m_doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"" ),
-                            docElem );
     }
 
     file.close();
@@ -264,7 +257,6 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
         KMessageBox::error( 0L, i18n("Couldn't save bookmarks in %1. %2").arg(filename).arg(strerror(file.status())) );
         return false;
     }
-
     QCString cstr = internalDocument().toCString(); // is in UTF8
     file.file()->writeBlock( cstr.data(), cstr.length() );
     if (!file.close())
