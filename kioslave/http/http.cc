@@ -3203,6 +3203,7 @@ bool HTTPProtocol::readHeader()
   // We don't cache certain text objects
   if (m_strMimeType.startsWith("text/") &&
       (m_strMimeType != "text/css") &&
+      (m_strMimeType != "text/x-javascript") &&
       !hasCacheDirective)
   {
      // Do not cache secure pages or pages 
