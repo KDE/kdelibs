@@ -438,7 +438,7 @@ void RenderFlow::positionNewFloats()
 	    int fx = leftMargin(y);
 	    if (rightMargin(y)-fx < f->width)
 	    {
-		fx=0;
+		fx=borderLeft();
 		y=leftBottom()+1;
 	    }
 	    f->left = fx;
@@ -452,7 +452,7 @@ void RenderFlow::positionNewFloats()
 	    int fx = rightMargin(y);
 	    if (fx - leftMargin(y) < f->width)
 	    {
-		fx=m_width;
+		fx=m_width-borderRight();
 		y=leftBottom()+1;
 	    }
 	    f->left = fx - f->width;
@@ -461,9 +461,10 @@ void RenderFlow::positionNewFloats()
 	    o->setXPos(fx - o->marginRight() - o->width());
 	    o->setYPos(y + o->marginTop());
 	}	
-
-	f->startY = currentY();
+	f->startY = y;
 	f->endY = f->startY + _height;
+
+
 	
 //	printf("specialObject y= (%d-%d)\n",f->startY,f->endY);
 
@@ -557,23 +558,7 @@ RenderFlow::lineWidth(int y) const
 {
 //    printf("lineWidth(%d)=%d\n",y,rightMargin(y) - leftMargin(y));
     return rightMargin(y) - leftMargin(y);
-#if 0
-    int res = m_width;
-    if(m_style->hasBorder())
-	res -= borderLeft() + borderRight();
-    if(m_style->hasPadding())
-	res -= paddingLeft() + paddingRight();
 
-    if (!specialObjects) return res;
-
-    SpecialObject* r;	
-    QListIterator<SpecialObject> it(*specialObjects);
-    for ( ; (r = it.current()); ++it )
-	if (r->startY<=y && r->endY>y && r->type <= SpecialObject::FloatRight ) res-=r->width;
-
-    if (res<0) res=0;
-    return res;
-#endif
 }
 
 int
@@ -624,23 +609,6 @@ RenderFlow::clearFloats()
 //    printf("clearFloats\n");
     if (specialObjects)
     {
-#if 0
-	//printf("clearFloats num specialobject = %d\n",
-	       specialObjects->count());
-	SpecialObject* r;	
-	QListIterator<SpecialObject> it(*specialObjects);
-	it.toFirst();
-	while ( (r = it.current()) )
-	{
-	    //printf("testing %p\n", r);
-	    if (r->type == SpecialObject::FloatRight ||
-		r->type == SpecialObject::FloatLeft)
-		specialObjects->remove(r);
-	    ++it;
-	}
-	//printf("after clear num specialobject = %d\n",
-	       specialObjects->count());
-#endif
 	specialObjects->clear();
     }
 

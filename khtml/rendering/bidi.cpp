@@ -168,6 +168,44 @@ inline bool operator < ( const BiDiIterator &it1, const BiDiIterator &it2 )
     return (it2 > it1);
 }
 
+static int special(BiDiParagraph *par, const BiDiIterator &it1, const BiDiIterator &it2, int y)
+{
+    int oldline=0;
+    int change=0;
+
+    BiDiObject *o = it1.obj;
+    if(!o) return 0;
+    BiDiObject *last = it2.obj;
+
+    while(o != last)
+    {
+	if(o->isSpecial() || o->isHidden()) 
+	{
+	    if (!oldline)   
+	    	oldline=par->lineWidth(y);
+	    par->specialHandler(o);	    
+	}
+	o = it1.par->next(o);
+	if(!o) break;
+    }
+    if(o && (o->isSpecial() || o->isHidden())) 	
+    {
+	if (!oldline)   
+	    oldline=par->lineWidth(y);
+	par->specialHandler(o);	    
+    }
+    
+    if (oldline)
+    	change = par->lineWidth(y) - oldline;
+
+#if BIDI_DEBUG > 1
+    printf("special(%p, %p) = %d\n", it1.obj, it2.obj,  change);
+#endif
+    return change;
+
+
+}
+
 static int width(BiDiParagraph *par, const BiDiIterator &it1, const BiDiIterator &it2,
 		 bool ignoreLast = false)
 {
@@ -183,7 +221,6 @@ static int width(BiDiParagraph *par, const BiDiIterator &it1, const BiDiIterator
 	to = o->length();
 	while(o != last)
 	{
-	    if(o->isSpecial() || o->isHidden()) par->specialHandler(o);
 	    if(!o->isHidden())
 		w += o->width(from, to - from);
 	    o = it1.par->next(o);
@@ -194,7 +231,6 @@ static int width(BiDiParagraph *par, const BiDiIterator &it1, const BiDiIterator
 	from = 0;
     }
     to = it2.pos;
-    if(o->isSpecial() || o->isHidden()) par->specialHandler(o);
     if(!o->isHidden())
     {
 	int len = to - from;
@@ -450,6 +486,7 @@ void BiDiParagraph::breakLines(int xOff, int yOff)
 		// we have line breaks, and have to add them one by one until the
 		// line is full
 		int w = width(this, pos, b, true);
+		availableWidth+=special(this,pos,b,d->y);
 		if(w > availableWidth)
 		{
 		    layoutLine(levelLow, levelHigh, false);
@@ -481,6 +518,7 @@ void BiDiParagraph::breakLines(int xOff, int yOff)
 	}
 	//++pos;
 	int w = width(this, pos, r->to);
+	availableWidth+=special(this,pos,r->to,d->y);
 	if(w > availableWidth)
 	{
 	    layoutLine(levelLow, levelHigh);
