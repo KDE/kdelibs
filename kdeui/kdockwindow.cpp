@@ -60,8 +60,17 @@ KPopupMenu* KDockWindow::contextMenu()
 }
 
 
-void KDockWindow::mousePressEvent( QMouseEvent * e)
+void KDockWindow::mousePressEvent( QMouseEvent * )
 {
+}
+
+
+
+void KDockWindow::mouseReleaseEvent( QMouseEvent * e)
+{
+    if ( !rect().contains( e->pos() ) )
+	return;
+    
     switch ( e->button() ) {
     case LeftButton:
 	if ( parentWidget() ){
@@ -85,12 +94,6 @@ void KDockWindow::mousePressEvent( QMouseEvent * e)
 	// nothing
 	break;
     }
-}
-
-
-
-void KDockWindow::mouseReleaseEvent( QMouseEvent * )
-{
 }
 
 

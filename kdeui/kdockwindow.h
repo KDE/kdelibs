@@ -20,6 +20,9 @@ class KDockWindowPrivate;
    main application window is shown/raised and activated. With the
    right mouse button, she gets a popupmenu with application specific
    commands, including "Minimize/Restore" and "Quit".
+   
+   Docking happens magically when calling show(). The window undocks
+   with either hide() or when it is destroyed.
 
    KDockWindow inherits methods such as setPixmap() and setMovie() to
    specify an icon or movie (animated icon) respectively. It is
