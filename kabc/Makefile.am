@@ -1,7 +1,7 @@
 SUBDIRS = scripts vcard . vcardparser formats plugins
 
 # Make sure $(all_includes) remains last!
-INCLUDES = $(LDAP_INCS) -I$(top_builddir)/kabc -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated \
+INCLUDES = -I$(top_builddir)/kabc -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated \
   -I$(top_srcdir)/kabc -I$(top_srcdir)/kab -I$(srcdir)/vcardparser $(all_includes)
 
 
@@ -19,7 +19,7 @@ lib_LTLIBRARIES   = libkabc.la
 libkabc_la_COMPILE_FIRST = addressee.h
 libkabc_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2 -module
 libkabc_la_LIBADD  = vcard/libvcard.la ../kdeui/libkdeui.la ../kio/libkio.la \
-  ../kresources/libkresources.la $(LDAP_LIBS)
+  ../kresources/libkresources.la
 
 libkabc_la_SOURCES = \
   address.cpp addressbook.cpp addressee.cpp addresseedialog.cpp agent.cpp \
