@@ -214,6 +214,10 @@ void KHTMLWidget::clear()
 
     m_strRedirectUrl = QString::null;
     m_delayRedirect = 0;
+
+    setVScrollBarMode(Auto);
+    setHScrollBarMode(Auto);
+
 }
 
 void KHTMLWidget::setFollowsLinks( bool follow )
