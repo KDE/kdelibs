@@ -470,6 +470,11 @@ void KServiceGroup::setLayoutInfo(const QStringList &layout)
     d->sortOrder = layout;
 }
 
+QStringList KServiceGroup::layoutInfo()
+{
+    return d->sortOrder;
+}
+
 KServiceGroup::Ptr
 KServiceGroup::baseGroup( const QString & _baseGroupName )
 {
