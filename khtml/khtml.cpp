@@ -270,8 +270,11 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
     {
     
 	KURL::List lst = KURL::split( m_strURL );
-	assert ( !lst.isEmpty() );
-	QString baseurl = (*lst.begin()).url();
+	QString baseurl;
+	if ( !lst.isEmpty() )
+	    baseurl = (*lst.begin()).url();
+	else
+	    baseurl = QString::null;
 
         // Set a default title
         KURL title(baseurl);
