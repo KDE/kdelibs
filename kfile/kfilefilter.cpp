@@ -1,5 +1,7 @@
+
 #include "kfilefilter.h"
 #include <qstrlist.h>
+#include <kapp.h>
 
 KFileFilter::KFileFilter( QWidget *parent, const char *name)
     : QComboBox(true, parent, name), filters(0)
