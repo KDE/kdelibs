@@ -152,37 +152,49 @@ enum DebugLevels {
     KDEBUG_FATAL=   3
 };
 
-static KConfig *debug_Config = 0;
-static KStaticDeleter<KConfig> pcd;
+
+struct kDebugPrivate {
+  kDebugPrivate() : 
+  	oldarea(0), config(0) { }
+  	
+  ~kDebugPrivate() { delete config; }
+
+  QString aAreaName;
+  unsigned int oldarea;
+  KConfig *config;
+};
+
+static kDebugPrivate *kDebug_data = 0;
+static KStaticDeleter<kDebugPrivate> pcd;
 
 static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char *data)
 {
-  if ( !debug_Config && KGlobal::_instance )
+  if ( !kDebug_data )
   {
-      pcd.setObject(debug_Config, new KConfig( "kdebugrc", false, false ));
+      pcd.setObject(kDebug_data, new kDebugPrivate());
       // Do not call this deleter from ~KApplication
       KGlobal::unregisterStaticDeleter(&pcd);
-      debug_Config->setGroup("0");
   }
 
-  static QString aAreaName;
-  static unsigned int oldarea = 0;
-  if (debug_Config && oldarea != nArea) {
-    debug_Config->setGroup( QString::number(static_cast<int>(nArea)) );
-    oldarea = nArea;
+  if (!kDebug_data->config && KGlobal::_instance )
+  {
+      kDebug_data->config = new KConfig("kdebugrc", false, false);
+      kDebug_data->config->setGroup("0");
+  }
+
+  if (kDebug_data->config && kDebug_data->oldarea != nArea) {
+    kDebug_data->config->setGroup( QString::number(static_cast<int>(nArea)) );
+    kDebug_data->oldarea = nArea;
     if ( nArea > 0 && KGlobal::_instance )
-      aAreaName = getDescrFromNum(nArea);
-    if ((nArea == 0) || aAreaName.isEmpty())
+      kDebug_data->aAreaName = getDescrFromNum(nArea);
+    if ((nArea == 0) || kDebug_data->aAreaName.isEmpty())
       if ( KGlobal::_instance )
-        aAreaName = KGlobal::instance()->instanceName();
+        kDebug_data->aAreaName = KGlobal::instance()->instanceName();
   }
 
-  static short nOutput = 2;
-  static ushort oldLevel = KDEBUG_FATAL + 1;
-  static int nPriority = 0;
-  static QString aCaption;
+  int nPriority = 0;
+  QString aCaption;
 
-  if (oldLevel != nLevel) {
     /* Determine output */
 
     QString key;
@@ -212,8 +224,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
 	break;
       }
 
-    nOutput = debug_Config ? debug_Config->readNumEntry(key, 2) : 2;
-  }
+  short nOutput = kDebug_data->config ? kDebug_data->config->readNumEntry(key, 2) : 2;
 
   // If the application doesn't have a QApplication object it can't use
   // a messagebox.
@@ -242,12 +253,12 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
                         aKey = "ErrorFilename";
                         break;
                 }
-                QString aOutputFileName = debug_Config->readEntry(aKey, "kdebug.dbg");
+                QString aOutputFileName = kDebug_data->config->readEntry(aKey, "kdebug.dbg");
 
                 char buf[4096] = "";
 		int nSize;
-                if ( !aAreaName.isEmpty() )
-		    nSize = sprintf( buf, "%s: %s", aAreaName.ascii(), data);
+                if ( !kDebug_data->aAreaName.isEmpty() )
+		    nSize = sprintf( buf, "%s: %s", kDebug_data->aAreaName.ascii(), data);
 		else
 		    nSize = sprintf( buf, "%s", data);
 
@@ -261,7 +272,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
           {
                 // Since we are in kdecore here, we cannot use KMsgBox and use
                 // QMessageBox instead
-	      if ( !aAreaName.isEmpty() ) aCaption += QString("(")+aAreaName+")";
+	      if ( !kDebug_data->aAreaName.isEmpty() ) aCaption += QString("(")+kDebug_data->aAreaName+")";
 	      QMessageBox::warning( 0L, aCaption, data, i18n("&OK") );
 	      break;
           }
@@ -274,8 +285,8 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
               else */
                   output = stderr;
               // Uncomment this to get the pid of the app in the output (useful for e.g. kioslaves)
-	      // if ( !aAreaName.isEmpty() ) fprintf( output, "%d %s: ", (int)getpid(), aAreaName.ascii() );
-	      if ( !aAreaName.isEmpty() ) fprintf( output, "%s: ", aAreaName.ascii() );
+	      // if ( !kDebug_data->aAreaName.isEmpty() ) fprintf( output, "%d %s: ", (int)getpid(), kDebug_data->aAreaName.ascii() );
+	      if ( !kDebug_data->aAreaName.isEmpty() ) fprintf( output, "%s: ", kDebug_data->aAreaName.ascii() );
 	      fputs(  data, output);
 	      break;
           }
@@ -290,7 +301,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
 
   // check if we should abort
   if( ( nLevel == KDEBUG_FATAL )
-      && ( !debug_Config || debug_Config->readNumEntry( "AbortFatal", 1 ) ) )
+      && ( !kDebug_data->config || kDebug_data->config->readNumEntry( "AbortFatal", 1 ) ) )
         abort();
 }
 
