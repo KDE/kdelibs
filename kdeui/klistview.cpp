@@ -1671,13 +1671,14 @@ void KListView::setFullWidth()
 {
   d->fullWidth = true;
   header()->setResizeEnabled(false);
+  verticalScrollBar()->installEventFilter(this);
 }
 
-void KListView::resizeEvent(QResizeEvent* e)
+void KListView::viewportResizeEvent(QResizeEvent* e)
 {
-  QListView::resizeEvent(e);
   if (d->fullWidth && columns())
-     setColumnWidth( 0, visibleWidth() - 1 );
+     setColumnWidth( 0, e->size().width() - 1 );
+  QListView::viewportResizeEvent(e);
 }
 
 const QColor &KListView::alternateBackground() const

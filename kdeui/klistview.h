@@ -728,7 +728,7 @@ protected:
   /**
    * Reimplemented for setFullWidth()
    */
-  virtual void resizeEvent(QResizeEvent* e);
+  virtual void viewportResizeEvent(QResizeEvent* e);
 
 protected slots:
   /**
