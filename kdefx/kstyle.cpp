@@ -984,6 +984,18 @@ int KStyle::pixelMetric(PixelMetric m, const QWidget* widget) const
 	}
 }
 
+//Helper to find the next sibling that's not hidden
+static QListViewItem* nextVisibleSibling(QListViewItem* item)
+{
+    QListViewItem* sibling = item;
+    do
+    {
+        sibling = sibling->nextSibling();
+    }
+    while (sibling && !sibling->isVisible());
+    
+    return sibling;
+}
 
 void KStyle::drawComplexControl( ComplexControl control,
 								 QPainter* p,
@@ -1212,10 +1224,10 @@ void KStyle::drawComplexControl( ComplexControl control,
 						}
 
 						y += child->totalHeight();
-						child = child->nextSibling();
+						child = nextVisibleSibling(child);
 					}
 
-					if ( child ) // there's a child, so move linebot to edge of rectangle
+					if ( child ) // there's a child to draw, so move linebot to edge of rectangle
 						linebot = r.height();
 
 					if ( linetop < linebot )
