@@ -1064,6 +1064,8 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     QByteArray reply;
     AuthInfo authResult;
     long windowId = metaData("window-id").toLong();
+
+    kdWarning(7019) << "SlaveBase::checkCachedAuthInfo window = " << windowId << " url = " << info.url.url() << endl; 
             
     (void) dcopClient(); // Make sure to have a dcop client.
 
@@ -1092,7 +1094,6 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     {
        return false;
     }       
-    kdWarning(7019) << "SlaveBase::checkCachedAuthInfo url = " << authResult.url.url() << endl; 
 
     info = authResult;
     return true;
