@@ -47,13 +47,9 @@ KIconLoader::KIconLoader( KConfig *conf, const QString &app_name, const QString 
   if( !readListConf( var_name, pixmap_dirs, ':' ) )
     {
       QString temp = KApplication::kdedir();
-      if( temp.isNull() )
-		{
-		  debug("KDE: KDEDIR not set. Using '/usr/local/lib/kde' as default.");
-		  temp = "/usr/local/lib/kde";
-		}
-      temp += "/lib/pics";
-      pixmap_dirs.append(temp);                          // using KDEDIR/lib/pics as default
+      pixmap_dirs.append(temp + "/share/toolbar");       
+      pixmap_dirs.append(temp + "/share/apps/" + kapp->appName() + "/toolbar");
+      pixmap_dirs.append(temp + "/share/apps/" + kapp->appName() + "/pics");
     }
   name_list.setAutoDelete(TRUE);
   pixmap_dirs.setAutoDelete(TRUE);
@@ -69,13 +65,9 @@ KIconLoader::KIconLoader( )
   if( !readListConf( "IconPath", pixmap_dirs, ':' ) )
     {
       QString temp = KApplication::kdedir();
-      if( temp.isNull() )
-		{
-		  debug("KDE: KDEDIR not set. Using '/usr/local/lib/kde' as default.");
-		  temp = "/usr/local/lib/kde";
-		}
-      temp += "/lib/pics";
-      pixmap_dirs.append(temp);                          // using KDEDIR/lib/pics as default
+      pixmap_dirs.append(temp + "/share/toolbar");
+      pixmap_dirs.append(temp + "/share/apps/" + kapp->appName() + "/toolbar");
+      pixmap_dirs.append(temp + "/share/apps/" + kapp->appName() + "/pics");
     }
   name_list.setAutoDelete(TRUE);
   pixmap_dirs.setAutoDelete(TRUE);
