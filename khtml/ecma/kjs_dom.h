@@ -258,10 +258,11 @@ namespace KJS {
   // when multiple nodes have the same name.
   class DOMNamedNodesCollection : public DOMObject {
   public:
-    DOMNamedNodesCollection(ExecState *exec, QValueList<DOM::Node>& nodes );
+    DOMNamedNodesCollection(ExecState *exec, QValueList<DOM::Node>& nodes, int returnType );
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
   private:
     QValueList<DOM::Node> m_nodes;
+    int m_returnType;
   };
 
   class DOMCharacterData : public DOMNode {
