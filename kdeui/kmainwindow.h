@@ -25,7 +25,6 @@
 #include "kxmlgui.h"
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
-#include "kmainwindowiface.h"
 #include <qmainwindow.h>
 #include <ktoolbar.h>
 

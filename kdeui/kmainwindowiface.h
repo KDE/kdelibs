@@ -2,7 +2,7 @@
    Copyright (C) 2001 Ian Reinhart Geiser <geiseri@yahoo.com>
 
    This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
+   modify it under the terms of the Library GNU General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
@@ -11,7 +11,7 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
+   You should have received a copy of the Library GNU General Public License
    along with this program; see the file COPYING.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
@@ -54,7 +54,7 @@ k_dcop:
 	Return a list of actions available to the application's window.
 	@return A QCStringList containing valid names actions.
 	*/
-	QCStringList actions();
+	QCStringList listActions();
 
 	/**
 	Activates the requested action.
@@ -62,7 +62,7 @@ k_dcop:
 	can actions can be found by calling @ref actions().
 	@return The success of the operation.
 	*/
-	bool activate( QCString action);
+	bool activateAction( QCString action);
 
 	/**
 	Disables the requested action.
@@ -70,7 +70,7 @@ k_dcop:
 	can actions can be found by calling @ref actions().
 	@return The success of the operation.
 	*/
-	bool disable( QCString action);
+	bool disableAction( QCString action);
 
 	/**
 	Enables the requested action.
@@ -78,7 +78,7 @@ k_dcop:
 	can actions can be found by calling @ref actions().
 	@return The success of the operation.
 	*/
-	bool enable( QCString action);
+	bool enableAction( QCString action);
 
 	/**
 	Returns the status of the requested action.
@@ -86,7 +86,7 @@ k_dcop:
 	can actions can be found by calling @ref actions().
 	@returns The state of the current Actions, TRUE - enabled, FALSE - disabled.
 	*/
-	bool isEnabled( QCString action);
+	bool actionIsEnabled( QCString action);
 
 	/**
 	Returns the tool tip text of the requested action.
@@ -94,7 +94,7 @@ k_dcop:
 	can actions can be found by calling @ref actions().
 	@return A QCString containing the text of the actions tool tip.
 	*/
-	QCString tooltip( QCString action);
+	QCString actionToolTip( QCString action);
 
 	/**
 	Returns a dcop reference to the selected KAction
@@ -102,12 +102,13 @@ k_dcop:
 	actions can be found by calling @actions().
 	@return A @DCOPRef for the kaction.
 	**/
-	DCOPRef action( const QCString &name );
+	DCOPRef actionDCOPRef( const QCString &name );
 
 	/**
 	Returns and action map
 	**/
     	QMap<QCString,DCOPRef> actionMap();
+
 private:
 	KMainWindow *m_MainWindow;
 	KDCOPActionProxy *m_dcopActionProxy;

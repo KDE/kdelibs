@@ -2,7 +2,7 @@
    Copyright (C) 2001 Ian Reinhart Geiser <geiseri@yahoo.com>
 
    This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
+   modify it under the terms of the Lesser GNU General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
@@ -11,7 +11,7 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
+   You should have received a copy of the Lesser GNU General Public License
    along with this program; see the file COPYING.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
@@ -38,7 +38,7 @@ KMainWindowInterface::~KMainWindowInterface()
 	delete m_dcopActionProxy;
 }
 
-QCStringList KMainWindowInterface::actions()
+QCStringList KMainWindowInterface::listActions()
 {
 	delete m_dcopActionProxy;
 	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
@@ -51,7 +51,7 @@ QCStringList KMainWindowInterface::actions()
 			tmp_actions.append( (QCString)(*it)->name() );
 	return tmp_actions;
 }
-bool KMainWindowInterface::activate( QCString action)
+bool KMainWindowInterface::activateAction( QCString action)
 {
 	delete m_dcopActionProxy;
 	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
@@ -64,7 +64,7 @@ bool KMainWindowInterface::activate( QCString action)
 	else
 		return false;
 }
-bool KMainWindowInterface::disable( QCString action)
+bool KMainWindowInterface::disableAction( QCString action)
 {
 	delete m_dcopActionProxy;
 	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
@@ -77,7 +77,7 @@ bool KMainWindowInterface::disable( QCString action)
 	else
 		return false;
 }
-bool KMainWindowInterface::enable( QCString action)
+bool KMainWindowInterface::enableAction( QCString action)
 {
 	delete m_dcopActionProxy;
 	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
@@ -90,7 +90,7 @@ bool KMainWindowInterface::enable( QCString action)
 	else
 		return false;
 }
-bool KMainWindowInterface::isEnabled( QCString action)
+bool KMainWindowInterface::actionIsEnabled( QCString action)
 {
 	delete m_dcopActionProxy;
 	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
@@ -102,7 +102,7 @@ bool KMainWindowInterface::isEnabled( QCString action)
 	else
 		return false;
 }
-QCString KMainWindowInterface::tooltip( QCString action)
+QCString KMainWindowInterface::actionToolTip( QCString action)
 {
 	delete m_dcopActionProxy;
 	m_dcopActionProxy = new KDCOPActionProxy( m_MainWindow->actionCollection(), this );
@@ -115,7 +115,7 @@ QCString KMainWindowInterface::tooltip( QCString action)
 		return "Error no such object!";
 }
 
-DCOPRef KMainWindowInterface::action( const QCString &name )
+DCOPRef KMainWindowInterface::actionDCOPRef( const QCString &name )
 {
 	return DCOPRef( kapp->dcopClient()->appId(), m_dcopActionProxy->actionObjectId( name ) );
 }

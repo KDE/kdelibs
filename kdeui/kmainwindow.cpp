@@ -22,7 +22,7 @@
  */
 
 #include "kmainwindow.h"
-
+#include "kmainwindowiface.h"
 #include <qsessionmanager.h>
 #include <qobjectlist.h>
 
