@@ -1,14 +1,17 @@
 # $Id$
+
 INCLUDES = $(all_includes)
 
 SUBDIRS = . auth_CRAM-MD5 auth_PLAIN
 
 lib_LTLIBRARIES = libksasl.la
-libksasl_la_LDFLAGS = $(all_libraries) -version-info 1:0 -no-undefined
-libksasl_la_LIBADD = $(LIB_KDECORE)
+libksasl_la_LDFLAGS = -module $(KDE_PLUGIN)
+libksasl_la_LIBADD = $(LIB_KSYCOCA)
 libksasl_la_SOURCES = saslcontext.cpp
 
 ksaslincludedir = $(includedir)/kio/sasl
 ksaslinclude_HEADERS = saslcontext.h saslmodule.h
+
+kde_servicetypes_DATA = ksasl.desktop
 
 METASOURCES = AUTO

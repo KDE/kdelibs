@@ -18,11 +18,11 @@ public:
 	QString generateResponse (const QString &challenge = QString::null, bool isBASE64 = false);
 
 protected:
-	bool loadModule (const QString &mod_name);
+	void loadModules ();
 
-	QList<KSASLAuthModule> modules;
-	KURL auth_url;
-	QString auth_method;
+	QList<KSASLAuthModule> m_lstModules;
+	KURL m_urlAuthPath;
+	QString m_sAuthMethod;
 };
 
 #endif
