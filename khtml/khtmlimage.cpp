@@ -70,6 +70,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
     m_khtml = new KHTMLPart( box, widgetName, this, "htmlimagepart", prof );
     m_khtml->setAutoloadImages( true );
     m_khtml->widget()->installEventFilter(this);
+    connect( m_khtml->view(), SIGNAL( finishedLayout() ), this, SLOT( restoreScrollPosition() ) );
 
     setWidget( box );
 
@@ -147,7 +148,11 @@ bool KHTMLImage::openURL( const KURL &url )
 
     emit setWindowCaption( url.prettyURL() );
 
-    m_khtml->begin( m_url, args.xOffset, args.yOffset );
+    // Need to keep a copy of the offsets since they are cleared when emitting completed
+    m_xOffset = args.xOffset;
+    m_yOffset = args.yOffset;
+    
+    m_khtml->begin( m_url );
     m_khtml->setAutoloadImages( true );
 
     DOM::DocumentImpl *impl = dynamic_cast<DOM::DocumentImpl *>( m_khtml->document().handle() ); // ### hack ;-)
@@ -175,6 +180,7 @@ bool KHTMLImage::closeURL()
     return m_khtml->closeURL();
 }
 
+// This can happen after openURL returns, or directly from m_image->ref()
 void KHTMLImage::notifyFinished( khtml::CachedObject *o )
 {
     if ( !m_image || o != m_image )
@@ -207,6 +213,13 @@ void KHTMLImage::notifyFinished( khtml::CachedObject *o )
     emit setStatusBarText(i18n("Done."));
 }
 
+void KHTMLImage::restoreScrollPosition()
+{
+    if ( m_khtml->view()->contentsY() == 0 ) {
+        m_khtml->view()->setContentsPos( m_xOffset, m_yOffset );
+    }
+}
+
 void KHTMLImage::guiActivateEvent( KParts::GUIActivateEvent *e )
 {
     // prevent the base implementation from emitting setWindowCaption with
@@ -227,14 +240,7 @@ void KHTMLImage::slotImageJobFinished( KIO::Job *job )
     }
     else
     {
-        if ( m_khtml->view()->contentsY() == 0 )
-        {
-            KParts::URLArgs args = m_ext->urlArgs();
-            m_khtml->view()->setContentsPos( args.xOffset, args.yOffset );
-        }
-
         emit completed();
-
         QTimer::singleShot( 0, this, SLOT( updateWindowCaption() ) );
     }
 }

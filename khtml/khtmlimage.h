@@ -80,6 +80,7 @@ protected:
     virtual bool eventFilter( QObject *filterTarget, QEvent *e );
 
 private slots:
+    void restoreScrollPosition();
 //    void slotImageJobFinished( KIO::Job *job );
 
 //    void updateWindowCaption();
@@ -91,6 +92,7 @@ private:
     KParts::BrowserExtension *m_ext;
     QString m_mimeType;
     khtml::CachedImage *m_image;
+    int m_xOffset, m_yOffset;
 };
 
 /**
