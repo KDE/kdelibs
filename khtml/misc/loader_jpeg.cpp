@@ -60,7 +60,7 @@ extern "C" {
         khtml_error_mgr* myerr = (khtml_error_mgr*) cinfo->err;
         char buffer[JMSG_LENGTH_MAX];
         (*cinfo->err->format_message)(cinfo, buffer);
-        qWarning(buffer);
+        qWarning("%s", buffer);
         longjmp(myerr->setjmp_buffer, 1);
     }
 }
