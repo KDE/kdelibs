@@ -928,10 +928,19 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 		if( isBreakable( str, pos, strlen ) ) {
 		    tmpW += t->width(lastSpace, pos - lastSpace, &fm);
 #ifdef DEBUG_LINEBREAKS
-		    kdDebug(6041) << "found space adding " << tmpW << " new width = " << w << endl;
+		    kdDebug(6041) << "found space at " << pos << " in string '" << QString( str, strlen ).latin1() << "' adding " << tmpW << " new width = " << w << endl;
 #endif
-		    if ( w + tmpW > width )
+		    if ( w + tmpW > width && w == 0 ) {
+			int fb = floatBottom();
+			if(!w && m_height < fb && width < lineWidth(fb)) {
+			    m_height = fb;
+			    width = lineWidth(m_height);
+			    //kdDebug() << "RenderFlow::findNextLineBreak new position at " << m_height << " newWidth " << width << endl; 
+			}
+		    }
+		    if ( w + tmpW > width ) 
 			goto end;
+
 		    lBreak.obj = o;
 		    lBreak.pos = pos;
 
@@ -961,6 +970,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
             if(!w && m_height < fb && width < lineWidth(fb)) {
                 m_height = fb;
                 width = lineWidth(m_height);
+		//kdDebug() << "RenderFlow::findNextLineBreak new position at " << m_height << " newWidth " << width << endl; 
             }
 	    if( !w && w + tmpW > width+1 && (o != start.obj || (unsigned) pos != start.pos) ) {
 		// getting below floats wasn't enough...
