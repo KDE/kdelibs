@@ -21,6 +21,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************************************************/
 
 #include <qvariant.h>
+#include <qcolor.h>
 #include "../../kdecore/kdatastream.h"
 #include "../dcopclient.h"
 #include "../dcopref.h"
@@ -96,6 +97,14 @@ QRect mkRect( const QString& s )
 {
     QStringList l = QStringList::split( ',', s.mid( 6, s.length() - 7 ) );
     return QRect( l[0].toInt(), l[1].toInt(), l[2].toInt(), l[3].toInt() );
+}
+
+QColor mkColor( const QString& s )
+{
+    int r=s.mid(8,2).toInt(0,16);
+    int g=s.mid(10,2).toInt(0,16);
+    int b=s.mid(12,2).toInt(0,16);
+    return QColor( r,g,b );
 }
 
 void callFunction( const char* app, const char* obj, const char* func, int argc, char** args )
@@ -200,6 +209,8 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 		arg << QVariant( mkSize( s ) );
 	    else if ( s.left( 6 ) == "QRect(" )
 		arg << QVariant( mkRect( s ) );
+	    else if ( s.left( 8 ) == "QColor(#" )
+		arg << QVariant( mkColor( s ) );
 	    else
 		arg << QVariant( s );
 	} else
@@ -266,6 +277,9 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	    } else if ( v.type() == QVariant::Size ) {
 		QSize s = v.toSize();
 		printf( "QSize(%d,%d)\n", s.width(), s.height() );
+	    } else if ( v.type() == QVariant::Color ) {
+		QColor s = v.toColor();
+		printf( "QColor(%s)\n", s.name().latin1() );
 	    } else if ( v.canCast( QVariant::Int ) )
 		printf( "%d\n", v.toInt() );
 	    else if ( !v.toString().isNull() )
