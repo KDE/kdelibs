@@ -42,6 +42,7 @@
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
 #include "xml/dom2_eventsimpl.h"
+#include "xml/dom2_rangeimpl.h"
 #include "xml/xml_tokenizer.h"
 #include "css/cssstyleselector.h"
 #include "css/csshelper.h"
@@ -5202,61 +5203,9 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
   } while ( selectParagraph || (!ch.isSpace() && !ch.isPunct()) );
 }
 
-/** Determines whether @p start_sp appears before @p end_sp in document order
- */
-// duplicated in khtml_caret
-#ifndef KDE_USE_FINAL
-static bool isBeforeNode(DOM::Node start_sp, DOM::Node end_sp) {
-  if ( start_sp.isNull() || end_sp.isNull() ) return true;
-
-  bool result = false;
-  int start_depth=0, end_depth=0;
-  // First we find the depths of the two nodes in the tree (start_depth, end_depth)
-  DOM::Node n = start_sp;
-  while( !n.parentNode().isNull() ){
-    n = n.parentNode();
-    start_depth++;
-  }
-  n = end_sp;
-  while( !n.parentNode().isNull() ){
-    n = n.parentNode();
-    end_depth++;
-  }
-  // start_sp and end_sp initially point to selectionStart and selectionEnd
-  // here we climb up the tree with the deeper node, until both nodes have equal depth
-  while( end_depth > start_depth ){
-    end_sp = end_sp.parentNode();
-    end_depth--;
-  }
-  while( start_depth > end_depth ){
-    start_sp = start_sp.parentNode();
-    start_depth--;
-  }
-  // Climb the tree with both start_sp and end_sp until they have the same parent
-  while( start_sp.parentNode() != end_sp.parentNode() ){
-    start_sp = start_sp.parentNode();
-    end_sp = end_sp.parentNode();
-  }
-  // Now we iterator through the parent's children until we find start_sp or end_sp
-  // ### parentNode is sometimes 0?? (LS)
-  n = start_sp.parentNode().isNull() ? DOM::Node(0) : start_sp.parentNode().firstChild();
-  while( !n.isNull() ){
-    if( n == start_sp ){
-      result=true;
-      break;
-    }else if( n == end_sp ){
-      result=false;
-      break;
-    }
-    n = n.nextSibling();
-  }
-  return result;
-}
-#endif
-
 #ifndef KHTML_NO_SELECTION
 void KHTMLPart::extendSelectionTo(int x, int y, int absX, int absY, const DOM::Node &innerNode)
-{                                 
+{
       int offset;
       //kdDebug(6000) << "KHTMLPart::khtmlMouseMoveEvent x=" << event->x() << " y=" << event->y() << endl;
       DOM::NodeImpl* node=0;
@@ -5264,6 +5213,8 @@ void KHTMLPart::extendSelectionTo(int x, int y, int absX, int absY, const DOM::N
       innerNode.handle()->renderer()->checkSelectionPoint( x, y,
                                                            absX-innerNode.handle()->renderer()->xPos(),
                                                            absY-innerNode.handle()->renderer()->yPos(), node, offset, state);
+      if (!node) return;
+
       d->m_selectionEnd = node;
       d->m_endOffset = offset;
       //kdDebug( 6000 ) << "setting end of selection to " << d->m_selectionEnd.handle() << "/" << d->m_endOffset << endl;
@@ -5287,7 +5238,10 @@ void KHTMLPart::extendSelectionTo(int x, int y, int absX, int absY, const DOM::N
         //d->m_view->viewport()->repaint(false);
       }
 #else
-      d->m_startBeforeEnd = isBeforeNode(d->m_selectionStart, d->m_selectionEnd);
+      if (d->m_selectionStart.isNull()) return;
+      d->m_startBeforeEnd = RangeImpl::compareBoundaryPoints(
+      			d->m_selectionStart.handle(), d->m_startOffset,
+			d->m_selectionEnd.handle(), d->m_endOffset) <= 0;
 #endif
 
       if ( !d->m_selectionStart.isNull() && !d->m_selectionEnd.isNull() )
@@ -5532,7 +5486,11 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
         n = next;
       }
 #else
-      d->m_startBeforeEnd = isBeforeNode(d->m_selectionStart, d->m_selectionEnd);
+      // shouldn't be null but who knows
+      if (d->m_selectionStart.isNull() || d->m_selectionEnd.isNull()) return;
+      d->m_startBeforeEnd = RangeImpl::compareBoundaryPoints(
+      			d->m_selectionStart.handle(), d->m_startOffset,
+			d->m_selectionEnd.handle(), d->m_endOffset) <= 0;
 #endif
     }
     if(!d->m_startBeforeEnd)

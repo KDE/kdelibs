@@ -214,71 +214,6 @@ InlineBoxIterator& InlineBoxIterator::operator --()
     return *this;
 }
 
-
-// code copied from khtml_part.cpp
-// ### please, use DOM::Range before you rewrite the functionality!
-/** Determines whether @p start_sp appears before @p end_sp in document order
- */
-static bool isBeforeNode(DOM::Node start_sp, DOM::Node end_sp) {
-  if ( start_sp.isNull() || end_sp.isNull() ) return true;
-
-  bool result = false;
-  int start_depth=0, end_depth=0;
-  // First we find the depths of the two nodes in the tree (start_depth, end_depth)
-  DOM::Node n = start_sp;
-  while( !n.parentNode().isNull() ){
-    n = n.parentNode();
-    start_depth++;
-  }
-  n = end_sp;
-  while( !n.parentNode().isNull() ){
-    n = n.parentNode();
-    end_depth++;
-  }
-  // start_sp and end_sp initially point to selectionStart and selectionEnd
-  // here we climb up the tree with the deeper node, until both nodes have equal depth
-  while( end_depth > start_depth ){
-    end_sp = end_sp.parentNode();
-    end_depth--;
-  }
-  while( start_depth > end_depth ){
-    start_sp = start_sp.parentNode();
-    start_depth--;
-  }
-  // Climb the tree with both start_sp and end_sp until they have the same parent
-  while( start_sp.parentNode() != end_sp.parentNode() ){
-    start_sp = start_sp.parentNode();
-    end_sp = end_sp.parentNode();
-  }
-  // Now we iterator through the parent's children until we find start_sp or end_sp
-  // ### parentNode is sometimes 0?? (LS)
-  n = start_sp.parentNode().isNull() ? DOM::Node(0) : start_sp.parentNode().firstChild();
-  while( !n.isNull() ){
-    if( n == start_sp ){
-      result=true;
-      break;
-    }else if( n == end_sp ){
-      result=false;
-      break;
-    }
-    n = n.nextSibling();
-  }
-  return result;
-}
-
-/** tests whether the given (n1, ofs1) pair is before the second given
- * (n2, ofs2) pair.
- *
- * The difference between isBeforeNode is that this methods also works if
- * n1 and n2 are equal.
- */
-static inline bool isBeforePosition(NodeImpl *n1, long ofs1, NodeImpl *n2, long ofs2)
-{
-  if (n1 == n2) return ofs1 < ofs2;
-
-  return isBeforeNode(n1, n2);
-}
-
 /** generates a transient inline flow box.
  *
  * Empty blocks don't have inline flow boxes constructed. This function
@@ -1066,45 +1001,18 @@ kdDebug(6200) << "_offset: " << _offset << " _peekNext: " << _peekNext << endl;
 
 // == class TableRowIterator implementation
 
-/** iterates through the sections of a table.
- * @param table table
- * @param section section to start with, 0 if beyond table
- * @param toBegin @p true if iterate towards beginning, @p false if iterate
- *	towards end.
- * @return the next section or 0 if end of table has been reached.
- */
-static RenderTableSection *iterateTableSections(RenderTable *table,
-		RenderTableSection *section, bool toBegin)
-{
-  if (!section) {
-    // ### this is all borken for thead/tfoot/tbody
-    if (toBegin)
-      section = static_cast<RenderTableSection *>(table->lastChild());	// ### are sections direct children of RenderTable?
-    else
-      section = table->firstBodySection();
-    if (section->isTableSection()) return section;
-  }/*end if*/
-
-  do {
-    section = static_cast<RenderTableSection *>(toBegin
-  		? section->previousSibling() : section->nextSibling());
-  } while (section && !section->isTableSection());
-  return section;
-}
-
 TableRowIterator::TableRowIterator(RenderTable *table, bool fromEnd,
   		RenderTableSection::RowStruct *row)
+		: sec(table, fromEnd)
 {
-  sec = iterateTableSections(table, 0, fromEnd);
-
   // set index
-  if (sec) {
-    if (fromEnd) index = sec->grid.size() - 1;
+  if (*sec) {
+    if (fromEnd) index = (*sec)->grid.size() - 1;
     else index = 0;
   }/*end if*/
 
   // initialize with given row
-  if (row && sec) {
+  if (row && *sec) {
     while (operator *() != row)
       if (fromEnd) operator --(); else operator ++();
   }/*end if*/
@@ -1114,10 +1022,10 @@ TableRowIterator &TableRowIterator::operator ++()
 {
   index++;
 
-  if (index >= (int)sec->grid.size()) {
-    sec = iterateTableSections(0, sec, false);
+  if (index >= (int)(*sec)->grid.size()) {
+    ++sec;
 
-    if (sec) index = 0;
+    if (*sec) index = 0;
   }/*end if*/
   return *this;
 }
@@ -1127,9 +1035,9 @@ TableRowIterator &TableRowIterator::operator --()
   index--;
 
   if (index < 0) {
-    sec = iterateTableSections(0, sec, true);
+    --sec;
 
-    if (sec) index = sec->grid.size() - 1;
+    if (*sec) index = (*sec)->grid.size() - 1;
   }/*end if*/
   return *this;
 }
@@ -1178,7 +1086,7 @@ static inline RenderTableCell *findNearestTableCell(KHTMLPart *part, int x,
  * @param part khtml part
  * @param x absolute x-coordinate
  * @param row table row to be searched
- * @param fromEnd @p true, begin from end (applies only for nested tables)
+ * @param fromEnd @p true, begin from end (applies only to nested tables)
  * @return the found cell or 0 if no editable cell was found
  */
 static RenderTableCell *findNearestTableCellInRow(KHTMLPart *part, int x,
@@ -1506,6 +1414,8 @@ ErgonomicEditableLineIterator &ErgonomicEditableLineIterator::operator --()
 
   return *this;
 }
+
+// == Navigational helper functions ==
 
 /** seeks the inline box which contains or is the nearest to @p x
  * @param it line iterator pointing to line to be searched

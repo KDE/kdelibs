@@ -21,6 +21,8 @@
 #ifndef KHTML_CARET_P_H
 #define KHTML_CARET_P_H
 
+#include "rendering/render_table.h"
+
 #define DEBUG_CARETMODE 0
 
 namespace khtml {
@@ -606,7 +608,7 @@ protected:
  */
 class TableRowIterator {
 protected:
-  RenderTableSection *sec;	// current section
+  TableSectionIterator sec;	// current section
   int index;			// index of row within section
 public:
   /** Constructs a new iterator.
@@ -636,8 +638,8 @@ public:
    */
   RenderTableSection::RowStruct *operator *()
   {
-    if (!sec) return 0;
-    return &sec->grid[index];
+    if (!*sec) return 0;
+    return &(*sec)->grid[index];
   }
 
   /** advances to the next row

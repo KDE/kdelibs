@@ -446,6 +446,11 @@ public:
    * @param start table section to start with.
    */
   TableSectionIterator(RenderTableSection *start) : sec(start) {}
+  
+  /**
+   * Uninitialized iterator.
+   */
+  TableSectionIterator() {}
 
   /** Returns the current section, or @p 0 if the end has been reached.
    */

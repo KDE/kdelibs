@@ -56,7 +56,7 @@ public:
     void setEnd ( NodeImpl *refNode, long offset, int &exceptioncode );
     void collapse ( bool toStart, int &exceptioncode );
     short compareBoundaryPoints ( Range::CompareHow how, RangeImpl *sourceRange, int &exceptioncode );
-    short compareBoundaryPoints ( NodeImpl *containerA, long offsetA, NodeImpl *containerB, long offsetB );
+    static short compareBoundaryPoints ( NodeImpl *containerA, long offsetA, NodeImpl *containerB, long offsetB );
     bool boundaryPointsValid (  );
     void deleteContents ( int &exceptioncode );
     DocumentFragmentImpl *extractContents ( int &exceptioncode );

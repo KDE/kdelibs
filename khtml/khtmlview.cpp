@@ -54,6 +54,7 @@
 
 #ifndef KHTML_NO_CARET
 #include "khtml_caret_p.h"
+#include "xml/dom2_rangeimpl.h"
 #endif
 
 #include <kcursor.h>
@@ -2473,8 +2474,12 @@ bool KHTMLView::extendSelection(NodeImpl *oldStartSel, long oldStartOfs,
       m_part->d->m_endOffset = m_part->d->m_startOffset;
     }/*end if*/
 
-    bool swapNeeded = isBeforePosition(m_part->d->m_selectionEnd.handle(),
-			m_part->d->m_endOffset, startNode, startOffset);
+    bool swapNeeded = false;
+    if (!m_part->d->m_selectionEnd.isNull() && startNode) {
+      swapNeeded = RangeImpl::compareBoundaryPoints(startNode, startOffset,
+      			m_part->d->m_selectionEnd.handle(),
+			m_part->d->m_endOffset) >= 0;
+    }/*end if*/
 
     m_part->d->m_selectionStart = startNode;
     m_part->d->m_startOffset = startOffset;
@@ -2503,23 +2508,20 @@ void KHTMLView::updateSelection(NodeImpl *oldStartSel, long oldStartOfs,
     m_part->d->m_extendAtEnd = true;
   } else {
     // check if the extending end has passed the immobile end
-    if (m_part->d->m_selectionStart == m_part->d->m_selectionEnd) {
-      if (m_part->d->m_startOffset > m_part->d->m_endOffset) {
+    if (!m_part->d->m_selectionEnd.isNull() && !m_part->d->m_selectionEnd.isNull()) {
+      bool swapNeeded = RangeImpl::compareBoundaryPoints(
+      			m_part->d->m_selectionStart.handle(), m_part->d->m_startOffset,
+			m_part->d->m_selectionEnd.handle(), m_part->d->m_endOffset) >= 0;
+      if (swapNeeded) {
+        DOM::Node tmpNode = m_part->d->m_selectionStart;
         long tmpOffset = m_part->d->m_startOffset;
+        m_part->d->m_selectionStart = m_part->d->m_selectionEnd;
         m_part->d->m_startOffset = m_part->d->m_endOffset;
+        m_part->d->m_selectionEnd = tmpNode;
         m_part->d->m_endOffset = tmpOffset;
         m_part->d->m_startBeforeEnd = true;
         m_part->d->m_extendAtEnd = !m_part->d->m_extendAtEnd;
       }/*end if*/
-    } else if (isBeforeNode(m_part->d->m_selectionEnd, m_part->d->m_selectionStart)) {
-      DOM::Node tmpNode = m_part->d->m_selectionStart;
-      long tmpOffset = m_part->d->m_startOffset;
-      m_part->d->m_selectionStart = m_part->d->m_selectionEnd;
-      m_part->d->m_startOffset = m_part->d->m_endOffset;
-      m_part->d->m_selectionEnd = tmpNode;
-      m_part->d->m_endOffset = tmpOffset;
-      m_part->d->m_startBeforeEnd = true;
-      m_part->d->m_extendAtEnd = !m_part->d->m_extendAtEnd;
     }/*end if*/
 
     m_part->xmlDocImpl()->setSelection(m_part->d->m_selectionStart.handle(),
