@@ -118,6 +118,8 @@ private:
     PartPrivate *d;
 };
 
+class ReadOnlyPartPrivate;
+
 /**
  * Base class for any "viewer" part.
  * You need to implement openFile().
@@ -134,6 +136,8 @@ public:
   // Don't reimplement this one, reimplement openFile
   virtual bool openURL( const KURL &url );
   virtual const KURL & url() const { return m_url; }
+
+  virtual void closeURL();
 
 signals:
   // hosting apps will want to know when the process of loading the data is finished, so that they can access the data when everything is loaded
@@ -152,12 +156,6 @@ protected:
   virtual bool openFile() = 0;
 
   /**
-   * @internal
-   * Automatically called before opening another URL
-   */
-  virtual void closeURL();
-
-  /**
    * Remote (or local) url - the one displayed to the user
    */
   KURL m_url;
@@ -169,6 +167,9 @@ protected:
    * If true, m_file is a temp file that needs to be deleted later
    */
   bool m_bTemp;
+
+private:
+  ReadOnlyPartPrivate *d;
 };
 
 /**

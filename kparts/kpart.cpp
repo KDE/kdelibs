@@ -244,14 +244,35 @@ void Part::slotWidgetDestroyed()
 
 //////////////////////////////////////////////////
 
+namespace KParts
+{
+
+class ReadOnlyPartPrivate
+{
+public:
+  ReadOnlyPartPrivate()
+  {
+    m_jobId = 0;
+  }
+  ~ReadOnlyPartPrivate()
+  {
+  }
+
+  int m_jobId;
+};
+
+};
+
 ReadOnlyPart::ReadOnlyPart( const char *name )
  : Part( name ), m_bTemp( false )
 {
+  d = new ReadOnlyPartPrivate;
 }
 
 ReadOnlyPart::~ReadOnlyPart()
 {
   closeURL();
+  delete d;
 }
 
 void ReadOnlyPart::init()
@@ -280,6 +301,7 @@ bool ReadOnlyPart::openURL( const KURL &url )
     // KIOJob has to create it
 
     KIOJob * job = new KIOJob;
+    d->m_jobId = job->id();
     connect( job, SIGNAL( sigFinished (int) ), this, SLOT( slotJobFinished (int) ) );
     connect( job, SIGNAL( sigError( int, int, const char * ) ),
              this, SLOT( slotJobError ( int, int, const char * ) ) );
@@ -290,6 +312,15 @@ bool ReadOnlyPart::openURL( const KURL &url )
 
 void ReadOnlyPart::closeURL()
 {
+  if ( d->m_jobId )
+  {
+    KIOJob *job = KIOJob::find( d->m_jobId );
+    if ( job )
+      job->kill();
+
+    d->m_jobId = 0;
+  }
+  
   if ( m_bTemp )
   {
     unlink( m_file.ascii() );
@@ -299,12 +330,14 @@ void ReadOnlyPart::closeURL()
 
 void ReadOnlyPart::slotJobFinished( int /*_id*/ )
 {
+  d->m_jobId = 0; 
   openFile();
   emit completed();
 }
 
 void ReadOnlyPart::slotJobError( int, int, const char * text )
 {
+  d->m_jobId = 0; 
   emit canceled( QString(text) );
 }
 
