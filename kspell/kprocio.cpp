@@ -80,15 +80,11 @@ bool KProcIO::start (RunMode runmode)
 
 bool KProcIO::writeStdin (const QString &line, bool appendnewline)
 {
-  //kdDebug(750) << "line \"" << line << "\"" << endl 
-  //	       << "      has " << line.length() << " chars" << endl;
 
-  QCString qs( codec->fromUnicode(line));
+  QCString qs(codec->fromUnicode(line));
+
   if (appendnewline)
     qs+='\n';
-
-  //kdDebug(750) << "buffer has " << qs.length() << "=" << strlen(qs.data()) 
-  //	       << " bytes" << endl;
 
   qlist.append (qs.data());
 
@@ -96,11 +92,9 @@ bool KProcIO::writeStdin (const QString &line, bool appendnewline)
 
   if (writeready)
     {
-      kdDebug(750) << "really writing" << endl
-       << "KIO::write [" << strlen (qlist.current()) << ": " <<
-	qlist.current() << "]" << endl;
-      writeready=FALSE;
+      kdDebug(750) << "really writing" << endl;
 
+      writeready=FALSE;
       return KProcess::writeStdin (qlist.current(),
 				   strlen (qlist.current()));
     }
@@ -116,13 +110,13 @@ void KProcIO::sent (KProcess *)
 
   if (qlist.count()==0)
     {
-            kdDebug(750) << "Empty" << endl;
+      kdDebug(750) << "Empty" << endl;
+
       writeready=TRUE;
     }
   else
     {
-      kdDebug(750) << "Sending [" << strlen(qlist.first()) << ": " <<
-       qlist.first() << "]" << endl;
+      kdDebug(750) << "Sending [" << qlist.first() << "]" << endl;
       KProcess::writeStdin (qlist.first(), strlen (qlist.first()));
     }
 

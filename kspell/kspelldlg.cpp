@@ -28,6 +28,7 @@
 #include <klineedit.h>
 #include <kprogress.h>
 #include <kbuttonbox.h>
+#include <kdebug.h>
 
 #include "kspelldlg.h"
 
@@ -142,6 +143,8 @@ KSpellDlg::init(const QString & _word, QStringList * _sugg)
 
   listbox->clear();
   listbox->insertStringList(*sugg);
+
+  kdDebug(750) << "KSpellDlg::init [" << word << "]" << endl; 
 
   emit(ready(true));
 
