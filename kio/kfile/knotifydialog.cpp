@@ -757,11 +757,9 @@ Event * KNotifyWidget::currentEvent()
 
 void KNotifyWidget::openSoundDialog( KURLRequester *requester )
 {
-    static bool init = true;
-    if ( !init )
-        return;
-
-    init = false;
+    // only need to init this once
+    requester->disconnect( SIGNAL( openFileDialog( KURLRequester * )),
+                           this, SLOT( openSoundDialog( KURLRequester * )));
 
     KFileDialog *fileDialog = requester->fileDialog();
     fileDialog->setCaption( i18n("Select Sound File") );
@@ -795,11 +793,9 @@ void KNotifyWidget::openSoundDialog( KURLRequester *requester )
 
 void KNotifyWidget::openLogDialog( KURLRequester *requester )
 {
-    static bool init = true;
-    if ( !init )
-        return;
-
-    init = false;
+    // only need to init this once
+    requester->disconnect( SIGNAL( openFileDialog( KURLRequester * )),
+                           this, SLOT( openLogDialog( KURLRequester * )));
 
     KFileDialog *fileDialog = requester->fileDialog();
     fileDialog->setCaption( i18n("Select Log File") );
@@ -810,11 +806,10 @@ void KNotifyWidget::openLogDialog( KURLRequester *requester )
 
 void KNotifyWidget::openExecDialog( KURLRequester *requester )
 {
-    static bool init = true;
-    if ( !init )
-        return;
+    // only need to init this once
+    requester->disconnect( SIGNAL( openFileDialog( KURLRequester * )),
+                           this, SLOT( openExecDialog( KURLRequester * )));
 
-    init = false;
 
     KFileDialog *fileDialog = requester->fileDialog();
     fileDialog->setCaption( i18n("Select File to Execute") );
