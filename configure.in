@@ -194,11 +194,11 @@ AC_OUTPUT(Makefile \
 	kimgio/Makefile \
 	khtml/Makefile \
 	khtml/java/Makefile \
+	khtml/kjs/Makefile \
 	kdetest/Makefile \
 	kfile/Makefile \
 	kio/Makefile \
 	kio/file/Makefile \
-	jscript/Makefile \
 	corba/Makefile \
 	corba/cuteidl/Makefile \
 	corba/cuteidl/sti/Makefile \
