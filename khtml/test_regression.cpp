@@ -62,6 +62,7 @@
 #include "html_document.h"
 #include "htmltokenizer.h"
 #include "khtml_part.h"
+#include "khtml_settings.h"
 #include "khtmlview.h"
 #include "rendering/render_object.h"
 #include "xml/dom_docimpl.h"
@@ -316,7 +317,7 @@ static KCmdLineOptions options[] =
 int main(int argc, char *argv[])
 {
     // forget about any settings
-    setenv( "KDE_HOME", "/var/tmp/non_existant", 1 );
+    setenv( "KDEHOME", "/var/tmp/non_existant", 1 );
     setenv( "LC_ALL", "C", 1 );
     setenv( "LANG", "C", 1 );
 
@@ -801,4 +802,13 @@ void RegressionTest::slotOpenURL(const KURL &url, const KParts::URLArgs &args)
     pm.waitForCompletion();
 }
 
+const QString &KHTMLSettings::availableFamilies()
+{
+    if ( !avFamilies ) {
+        avFamilies = new QString;
+        *avFamilies = ",Adobe Courier,Adobe Helvetica,Adobe New Century Schoolbook,Adobe Times,Adobe Utopia,Century Schoolbook L,Charter,Clean,Console,Courier,Courier 10 Pitch,Cursor,DEC Terminal,Dingbats,ETL Fixed,Fixed,Goha Tibeb Zemen,Gothic,Helvetica,Luxi Mono,Luxi Sans,Luxi Serif,Mincho,New Century Schoolbook,Newspaper,Nil,Proof,Schumacher Clean,Song Ti,Sony Fixed,Standard Symbols L,Symbol,Terminal,Times,Utopia,";
+    }
+
+  return *avFamilies;
+}
 #include "test_regression.moc"
