@@ -2,6 +2,7 @@
 Type=BMP
 Header=
 Name=BMP Image
+Name[az]=BMP Rəsmi
 Name[be]=Малюнак BMP
 Name[bg]=Изображение BMP
 Name[ca]=Imatge BMP
@@ -24,6 +25,7 @@ Name[hi]=BMP चित्र
 Name[hu]=BMP kép
 Name[is]=BMP-myndir
 Name[it]=Immagine BMP
+Name[lt]=BMP paveiksliukas
 Name[nb]=BMP-bilde
 Name[nl]=BMP-afbeelding
 Name[nn]=BMP-bilete

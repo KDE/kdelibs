@@ -2,6 +2,7 @@
 Type=ICO
 Header=^\001\001[\001|\002]\001
 Name=Windows Icon
+Name[az]=Windows Timsalı
 Name[be]=Піктаграма Windows
 Name[bg]=Икони на Windows
 Name[ca]=Icona de Windows
@@ -24,6 +25,7 @@ Name[hi]=विंडोस आइकन
 Name[hu]=Windows ikon
 Name[is]=MS Windows táknmyndir
 Name[it]=Icona Windows
+Name[lt]=Windows ženkliukas
 Name[nb]=MS Windows ikoner
 Name[nl]=Windows-pictogram
 Name[nn]=Windows-ikon

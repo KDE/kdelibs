@@ -2,6 +2,7 @@
 Type=PNM
 Header=
 Name=Portable Pixmap Image
+Name[az]=Portable Pixmap Rəsmi
 Name[bg]=Изображение Portable Pixmap Image
 Name[ca]=Imatge portable mapa de píxels
 Name[cs]=Obrázek ve formátu "Portable Pixmap"

@@ -2,6 +2,7 @@
 Type=GIF
 Header=
 Name=GIF Image
+Name[az]=GIF Rəsmi
 Name[be]=Малюнак GIF
 Name[bg]=Изображение GIF
 Name[ca]=Imatge GIF
@@ -24,6 +25,7 @@ Name[hi]=GIF चित्र
 Name[hu]=GIF kép
 Name[is]=GIF-mynd(ir)
 Name[it]=Immagine GIF
+Name[lt]=GIF paveiksliukas
 Name[nb]=GIF-bilde
 Name[nl]=GIF-afbeelding
 Name[nn]=GIF-bilete

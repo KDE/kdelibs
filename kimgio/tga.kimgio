@@ -2,6 +2,7 @@
 Type=TGA
 Header=^\x01\x01[\x02|\x0a]\x01\x01\x01\x01\x01\x01\x01\x01\x01
 Name=Truevision Targa Image
+Name[az]=Truevision Targa Rəsmi
 Name[be]=Малюнак Truevision Targa
 Name[bg]=Изображение Truevision Targa Image
 Name[ca]=Imatge Truevision de Targa
