@@ -89,7 +89,8 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     // "hicolor" icon themes. For these, the _global_ theme description
     // files are used..
 
-    if (!appName.isEmpty() && ( name== "hicolor" || name == "locolor" ) )
+    if (!appName.isEmpty() && 
+       ( name == "crystalsvg" || name== "hicolor" || name == "locolor" ) )
     {
 	icnlibs = KGlobal::dirs()->resourceDirs("data");
 	for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
@@ -430,7 +431,7 @@ void KIconTheme::reconfigure()
 // static
 QString KIconTheme::defaultThemeName()
 {
-    return QString::fromLatin1("hicolor");
+    return QString::fromLatin1("crystalsvg");
 }
 
 /*** KIconThemeDir ***/
