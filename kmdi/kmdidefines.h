@@ -30,8 +30,8 @@
 #include <qglobal.h>
 
 #define KMDI_CHILDFRM_SEPARATOR 2
-#define KMDI_CHILDFRM_BORDER 3
-#define KMDI_CHILDFRM_DOUBLE_BORDER 6
+#define KMDI_CHILDFRM_BORDER 4
+#define KMDI_CHILDFRM_DOUBLE_BORDER 8
 #define KMDI_CHILDFRM_MIN_WIDTH 130
 
 //----------------------------------------------------------------------------
