@@ -20,7 +20,7 @@
 
 SUBDIRS = . tests
 
-INCLUDES= $(all_includes)
+INCLUDES= $(all_includes) -I$(top_srcdir)/interfaces
 
 lib_LTLIBRARIES = libkdeui.la
 libkdeui_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined -version-info 4:0
