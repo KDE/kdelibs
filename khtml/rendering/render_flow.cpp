@@ -493,9 +493,6 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
         if (child->isPositioned()) {
             child = child->nextSibling();
             continue;
-        } else if ( child->isReplaced() ) {
-            if ( !child->layouted() )
-                child->layout();
         } else if ( child->isFloating() ) {
             if ( !child->layouted() )
                 child->layout();
@@ -509,6 +506,9 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 		m_height -= prevMargin;
 	    child = child->nextSibling();
 	    continue;
+        } else if ( child->isReplaced() ) {
+            if ( !child->layouted() )
+                child->layout();            
 	}
 
         child->calcVerticalMargins();
