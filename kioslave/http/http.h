@@ -80,7 +80,7 @@ public:
     bool overwrite;
     int depth;
   } DAVRequest;
-  
+
   /** The request for the current connection **/
   typedef struct
   {
@@ -336,8 +336,8 @@ protected:
   void resetSessionSettings();
 
   /**
-   * Returns any pre-cached authentication info
-   * in HTTP header format.
+   * Returns any pre-cached proxy authentication info
+   * info in HTTP header format.
    */
   QString proxyAuthenticationHeader();
 
@@ -382,7 +382,7 @@ protected:
   QPtrList<HTTPRequest> m_requestQueue;
 
   HTTP_REV m_HTTPrev;
-  
+
   bool m_bBusy; // Busy handling request queue.
   bool m_bEOF;
 

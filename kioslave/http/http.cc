@@ -185,7 +185,7 @@ void HTTPProtocol::resetSessionSettings()
 
     kdDebug(7113) << "(" << m_pid << ") Using proxy: " << m_bUseProxy << endl;
     kdDebug(7113) << "(" << m_pid << ")   URL: " << m_proxyURL.url() << endl;
-    kdDebug(7113) << "(" << m_pid << ")   Realm value: " << m_strRealm << endl;
+    kdDebug(7113) << "(" << m_pid << ")   Realm: " << m_strRealm << endl;
   }
 
   m_bUseCookiejar = config()->readBoolEntry("Cookies");
@@ -240,8 +240,8 @@ void HTTPProtocol::resetSessionSettings()
     cleanCache();
 
   // Deal with HTTP tunneling
-  if ( m_bIsSSL && m_bUseProxy &&
-      (m_proxyURL.protocol() != "https" || m_proxyURL.protocol() != "webdavs") )
+  if ( m_bIsSSL && m_bUseProxy && (m_proxyURL.protocol() != "https" ||
+       m_proxyURL.protocol() != "webdavs") && !m_bKeepAlive )
   {
     setEnableSSLTunnel( true );
 
@@ -274,10 +274,8 @@ void HTTPProtocol::resetSessionSettings()
 
   setMetaData("request-id", m_request.id);
 
-
   m_bCanResume = false;
   m_bUnauthorized = false;
-  m_bIsTunneled = false;
 }
 
 void HTTPProtocol::setHost( const QString& host, int port,
@@ -293,6 +291,9 @@ void HTTPProtocol::setHost( const QString& host, int port,
   m_request.port = (port == 0) ? m_iDefaultPort : port;
   m_request.user = user;
   m_request.passwd = pass;
+
+  m_bKeepAlive = false;
+  m_bIsTunneled = false;
 }
 
 bool HTTPProtocol::checkRequestURL( const KURL& u )
@@ -358,6 +359,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
                     << m_prevResponseCode << endl;
       kdDebug(7113) << "(" << m_pid << ") Current Response: "
                     << m_responseCode << endl;
+
       if (m_responseCode < 400 && (m_prevResponseCode == 401 ||
           m_prevResponseCode == 407))
         saveAuthorization();
@@ -1698,15 +1700,10 @@ bool HTTPProtocol::httpOpen()
     return false;
   }
 
-  httpCheckConnection();
-
   m_fcache = 0;
-  m_lineCount = 0;
-  m_lineCountUnget = 0;
   m_bCachedRead = false;
   m_bCachedWrite = false;
   m_bMustRevalidate = false;
-  m_bEOF = false;
 
   if (m_bUseCache)
   {
@@ -1743,18 +1740,25 @@ bool HTTPProtocol::httpOpen()
      }
   }
 
-  // Let's also clear out some things, so bogus values aren't used.
-  // m_HTTPrev = HTTP_Unknown;
+  // Clear out some things so that bogus values aren't used.
+  m_bEOF = false;
+  m_bError = false;
+  m_bChunked = false;
+
+  m_iSize = -1;
+  m_lineCount = 0;
   m_iWWWAuthCount = 0;
+  m_lineCountUnget = 0;
   m_iProxyAuthCount = 0;
-  m_sContentMD5 = QString::null;
-  m_strMimeType = QString::null;
+
   m_qContentEncodings.clear();
   m_qTransferEncodings.clear();
-  m_bChunked = false;
-  m_bError = false;
+  m_sContentMD5 = QString::null;
+  m_strMimeType = QString::null;
   m_bErrorPage = (metaData("errorPage") != "false");
-  m_iSize = -1;
+
+
+  httpCheckConnection();
 
   // Let's try to open up our socket if we don't have one already.
   if ( m_iSock == -1)
@@ -2145,20 +2149,27 @@ bool HTTPProtocol::readHeader()
      if (!fgets(buffer, 4096, m_fcache) )
      {
         // Error, delete cache entry
-        kdDebug(7103) << "(" << m_pid << ")" << "readHeader: Connnection broken ! " << endl;
+        kdDebug(7103) << "(" << m_pid << ") HTTPProtocol::readHeader: "
+                      << "Could not access cache to obtain mimetype!" << endl;
         error( ERR_CONNECTION_BROKEN, m_state.hostname );
         return false;
      }
-     kdDebug(7103) << "(" << m_pid << ")" << "readHeader: returning mimetype " << buffer << endl;
+
+     kdDebug(7103) << "(" << m_pid << ") HTTPProtocol::readHeader: cached "
+                   << "data mimetype: " << buffer << endl;
+
      m_strMimeType = QString::fromUtf8( buffer).stripWhiteSpace();
      mimeType(m_strMimeType);
+
      if (!fgets(buffer, 4096, m_fcache) )
      {
         // Error, delete cache entry
-        kdDebug(7103) << "(" << m_pid << ")" << "readHeader(2): Connnection broken ! " << endl;
+        kdDebug(7103) << "(" << m_pid << ") HTTPProtocol::readHeader: "
+                      << "Could not access cached data! " << endl;
         error( ERR_CONNECTION_BROKEN, m_state.hostname );
         return false;
      }
+
      m_strCharset = QString::fromUtf8( buffer).stripWhiteSpace().lower();
      setMetaData("charset", m_strCharset);
      if (!m_lastModified.isEmpty())
@@ -2201,7 +2212,8 @@ bool HTTPProtocol::readHeader()
   gets(buffer, sizeof(buffer)-1);
   if (m_bEOF)
   {
-    kdDebug(7103) << "(" << m_pid << ")" << "readHeader: EOF while waiting for header start." << endl;
+    kdDebug(7103) << "(" << m_pid << ")" << "HTTPProtocol::readHeader: "
+                  << "EOF while waiting for header start." << endl;
     if (m_bKeepAlive) // Try to reestablish connection.
     {
       httpCloseConnection();
@@ -2216,7 +2228,7 @@ bool HTTPProtocol::readHeader()
       }
       gets(buffer, sizeof(buffer)-1);
     }
-    
+
     if (m_bEOF)
     {
       if (m_request.method == HTTP_HEAD)
@@ -2225,7 +2237,7 @@ bool HTTPProtocol::readHeader()
         // Some web-servers fail to respond properly to a HEAD request.
         // We compensate for their failure to properly implement the HTTP standard
         // by assuming that they will be sending html.
-        kdDebug(7103) << "readHeader(): HEAD -> returning " << DEFAULT_MIME_TYPE << endl;
+        kdDebug(7103) << "(" << m_pid << ") HTTPPreadHeader: HEAD -> returne mimetype: " << DEFAULT_MIME_TYPE << endl;
         mimeType(QString::fromLatin1(DEFAULT_MIME_TYPE));
            return true;
       }
@@ -2249,7 +2261,7 @@ bool HTTPProtocol::readHeader()
     // if there was only a newline then continue
     if (!len)
     {
-      kdDebug(7103) << "(" << m_pid << "): --empty--" << endl;
+      kdDebug(7103) << "(" << m_pid << ") --empty--" << endl;
       continue;
     }
 
@@ -2628,9 +2640,7 @@ bool HTTPProtocol::readHeader()
       if (strncasecmp(trimLead(buf + 17), "Close", 5) == 0) {
         m_bKeepAlive = false;
       } else if (strncasecmp(trimLead(buf + 17), "Keep-Alive", 10)==0) {
-        // Don't do persistant connections with SSL.
-        if (!m_bIsSSL)
-           m_bKeepAlive = true;
+        m_bKeepAlive = true;
       }
     }
     // continue only if we know that we're HTTP/1.1
@@ -3123,7 +3133,7 @@ void HTTPProtocol::httpClose()
   if (!m_bKeepAlive)
      httpCloseConnection();
   else
-     kdDebug(7113) << "(" << m_pid << ") httpClose: keep alive" << endl;
+     kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive" << endl;
 }
 
 void HTTPProtocol::closeConnection()
@@ -3135,7 +3145,8 @@ void HTTPProtocol::closeConnection()
 void HTTPProtocol::httpCloseConnection()
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpCloseConnection" << endl;
-  m_bKeepAlive = false; // Just in case.
+  m_bKeepAlive = false;
+  m_bIsTunneled = false;
   closeDescriptor();
 }
 
@@ -3928,7 +3939,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
       p = CEF.find('/', p);
    }
 
-   QString host = m_state.hostname.lower();
+   QString host = m_request.hostname.lower();
    CEF = host + CEF + '_';
 
    QString dir = m_strCacheDir;
@@ -4844,9 +4855,10 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
 
 QString HTTPProtocol::proxyAuthenticationHeader()
 {
-  // We keep proxy authentication locally until they are
-  // changed.  Thus, no need to check with kdesud on every
-  // connection!!
+  QString header;
+
+  // We keep proxy authentication locally until they are changed.
+  // Thus, no need to check with kdesud on every connection!!
   if ( m_strProxyRealm.isEmpty() )
   {
     AuthInfo info;
@@ -4859,8 +4871,12 @@ QString HTTPProtocol::proxyAuthenticationHeader()
     // and password simply attempt to retrieve it
     // without prompting the user...
     if ( !info.username.isNull() && !info.password.isNull() )
-      ProxyAuthentication = (m_strProxyAuthorization.isEmpty() ?
-                            AUTH_Basic:AUTH_Digest);
+    {
+      if( m_strProxyAuthorization.isEmpty() )
+        ProxyAuthentication = AUTH_Basic;
+      else
+        ProxyAuthentication = AUTH_Digest;
+    }
     else
     {
       if ( checkCachedAuthentication(info) )
@@ -4895,7 +4911,6 @@ QString HTTPProtocol::proxyAuthenticationHeader()
     kdDebug(7113) << "(" << m_pid << ")   EXTRA= " << m_strProxyAuthorization << endl;
   }
 
-  QString header;
   switch ( ProxyAuthentication )
   {
     case AUTH_Basic:
@@ -4910,6 +4925,7 @@ QString HTTPProtocol::proxyAuthenticationHeader()
     default:
       break;
   }
+
   return header;
 }
 
