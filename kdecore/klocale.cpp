@@ -22,8 +22,6 @@
 #include <config.h>
 #endif
 
-#undef ENABLE_NLS
-
 // Overloading of all standard locale functions makes no sense
 // Let application use them
 #ifdef HAVE_LOCALE_H
@@ -201,11 +199,6 @@ KLocale::KLocale( const QString& _catalogue )
 
     initLanguage(config, catalogue);
     initFormat(config);
-}
-
-void KLocale::setMainCatalogue(const char *catalogue)
-{
-    maincatalogue = catalogue;
 }
 
 void KLocale::setEncodingLang(const QString &_lang)
@@ -676,6 +669,11 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 #endif
 
 ////// Those methods don't depend on ENABLE_NLS /////
+
+void KLocale::setMainCatalogue(const char *catalogue)
+{
+    maincatalogue = catalogue;
+}
 
 double KLocale::readNumber(const QString &str, bool * ok) const
 {
