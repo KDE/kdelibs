@@ -374,6 +374,8 @@ Value KHTMLPartFunction::call(ExecState *exec, Object &/*thisObj*/, const List &
 
 static KCmdLineOptions options[] =
 {
+    { "b", 0, 0 },
+    { "base <base_dir>", "Directory containing tests, basedir and output directories.", 0},
     { "d", 0, 0 },
     { "debug", "Do not supress debug output", 0},
     { "g", 0, 0 } ,
@@ -381,12 +383,13 @@ static KCmdLineOptions options[] =
     { "s", 0, 0 } ,
     { "show", "Show the window while running tests", 0 } ,
     { "t", 0, 0 } ,
-    { "test <filename>", "Run only a single test. Multiple options allowed.", 0 } ,
+    { "test <filename>", "Only run a single test. Multiple options allowed.", 0 } ,
     { "js",  "Only run .js tests", 0 },
     { "html", "Only run .html tests", 0},
     { "o", 0, 0 },
     { "output <directory>", "Put output in <directory> instead of <base_dir>/output", 0 } ,
-    { "+base_dir", "Directory containing tests,basedir and output directories", 0 } ,
+    { "+[base_dir]", "Directory containing tests,basedir and output directories. Only regarded if -b is not specified.", 0 } ,
+    { "+[testcases]", "Relative path to testcase, or directory of testcases to be run (equivalent to -t).", 0 } ,
     KCmdLineLastOption
 };
 
@@ -413,16 +416,21 @@ int main(int argc, char *argv[])
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
 
-    if ( args->count() < 1 ) {
+    QCString baseDir = args->getOption("base");
+
+    if ( args->count() < 1 && baseDir.isEmpty() ) {
 	KCmdLineArgs::usage();
 	::exit( 1 );
     }
 
+    int testcase_index = 0;
+    if (baseDir.isEmpty()) baseDir = args->arg(testcase_index++);
+
     const char *subdirs[] = {"tests", "baseline", "output", "resources"};
     for ( int i = 0; i < 3; i++ ) {
-        QFileInfo sourceDir(QFile::encodeName( args->arg(0) ) + "/" + subdirs[i]);
+        QFileInfo sourceDir(QFile::encodeName( baseDir ) + "/" + subdirs[i]);
         if ( !sourceDir.exists() || !sourceDir.isDir() ) {
-            fprintf(stderr,"ERROR: Source directory \"%s/%s\": no such directory.\n",args->arg(0), subdirs[i]);
+            fprintf(stderr,"ERROR: Source directory \"%s/%s\": no such directory.\n", (const char *)baseDir, subdirs[i]);
             exit(1);
         }
     }
@@ -436,7 +444,7 @@ int main(int argc, char *argv[])
     xvfb = fork();
     if ( !xvfb ) {
         char buffer[1000];
-        sprintf( buffer, "%s/resources,/usr/X11R6/lib/X11/fonts/75dpi:unscaled,/usr/X11R6/lib/X11/fonts/misc:unscaled,/usr/X11R6/lib/X11/fonts/Type1", args->arg( 0 ) );
+        sprintf( buffer, "%s/resources,/usr/X11R6/lib/X11/fonts/75dpi:unscaled,/usr/X11R6/lib/X11/fonts/misc:unscaled,/usr/X11R6/lib/X11/fonts/Type1", (const char *)baseDir );
         execl( "/usr/X11R6/bin/Xvfb", "/usr/X11R6/bin/Xvfb", "-screen", "0", "1024x768x16", "-fp", buffer, ":47", 0 );
     }
 
@@ -513,7 +521,7 @@ int main(int argc, char *argv[])
 
     // run the tests
     RegressionTest *regressionTest = new RegressionTest(part,
-                                                        args->arg(0),
+                                                        baseDir,
                                                         args->getOption("output"),
                                                         args->isSet("genoutput"),
                                                         !args->isSet( "html" ),
@@ -525,6 +533,9 @@ int main(int argc, char *argv[])
 
     bool result = false;
     QCStringList tests = args->getOptionList("test");
+    // merge testcases specified on command line
+    for (; testcase_index < args->count(); testcase_index++)
+        tests << args->arg(testcase_index);
     if (tests.count() > 0)
         for (QValueListConstIterator<QCString> it = tests.begin(); it != tests.end(); ++it) {
 	    result = regressionTest->runTests(*it,true);
