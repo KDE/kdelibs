@@ -27,6 +27,7 @@
 #include "kapp.h"
 #include <qtl.h>
 #include <qlist.h>
+#include <klocale.h>
 #include "netwm.h"
 
 extern Atom net_wm_context_help;
@@ -225,7 +226,7 @@ QString KWinModule::desktopName( int desktop ) const
     const char* name = d->desktopName( (desktop > 0 && desktop <= (int) d->numberOfDesktops() ) ? desktop : currentDesktop() );
     if ( name && name[0] )
 	return QString::fromUtf8( name );
-    return QString("Desktop " ) + QString::number( desktop );
+    return i18n("Desktop %1").arg( desktop );
 }
 
 void KWinModule::setDesktopName( int desktop, const QString& name )
