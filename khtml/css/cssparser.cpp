@@ -91,6 +91,8 @@ CSSParser::CSSParser( bool strictParsing )
     numParsedProperties = 0;
     maxParsedProperties = 32;
 
+    defaultNamespace = 0xffff;
+
     valueList = 0;
     rule = 0;
     id = 0;

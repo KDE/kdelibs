@@ -36,7 +36,6 @@ namespace DOM {
     class StyleSheetImpl;
     class MediaList;
 
-    class CSSSelector;
     class CSSProperty;
     class CSSValueImpl;
     class CSSPrimitiveValueImpl;

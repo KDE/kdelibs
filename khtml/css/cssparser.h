@@ -54,7 +54,7 @@ namespace DOM {
     };
 
     struct Value {
-	unsigned int id;
+	int id;
 	union {
 	    double fValue;
 	    int iValue;
@@ -135,6 +135,7 @@ namespace DOM {
 	int numParsedProperties;
 	int maxParsedProperties;
 	bool inParseShortHand;
+	unsigned int defaultNamespace;
 
 	static CSSParser *currentParser;
 

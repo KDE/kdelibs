@@ -348,14 +348,13 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     unsigned int numPseudoProps = 0;
 
     // try to sort out most style rules as early as possible.
-    // ### implement CSS3 namespace support
     int cssTagId = (e->id() & NodeImpl_IdLocalMask);
     int smatch = 0;
     int schecked = 0;
 
     for ( unsigned int i = 0; i < selectors_size; i++ ) {
-	int tag = selectors[i]->tag;
-	if ( cssTagId == tag || tag == -1 ) {
+	int tag = selectors[i]->tag&NodeImpl_IdLocalMask;
+	if ( cssTagId == tag || tag == 0xffff ) {
 	    ++schecked;
 
 	    checkSelector( i, e );
@@ -540,7 +539,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 
     // hack. We can't allow :hover, as it would trigger a complete
     // relayout with every mouse event.
-    bool single = ( (sel->tag & 0xffff) == 0xffff );
+    bool single = ( (sel->tag & NodeImpl_IdLocalMask) == NodeImpl_IdLocalMask );
 
     bool affectedByHover = style->affectedByHoverRules();
 
@@ -551,7 +550,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     CSSSelector::Relation relation = sel->relation;
     while((sel = sel->tagHistory))
     {
-        if (strictParsing || (sel->tag & 0xffff) != 0xffff) single = false;
+        if (strictParsing || (sel->tag & NodeImpl_IdLocalMask) != NodeImpl_IdLocalMask) single = false;
         if(!n->isElementNode()) return;
         switch(relation)
         {
@@ -694,13 +693,37 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 //     qDebug("element: %d", e->id());
 //     sel->print();
 
-
-    // ###### fix namespace
-    if((e->id() & NodeImpl_IdLocalMask) != uint(sel->tag) && sel->tag != 0xffff) return false;
+    int element_id = e->id();
+    if ( (sel->tag & NodeImpl_IdNSMask) == NodeImpl_IdNSMask ) {
+	// all namespaces would match
+	unsigned int sel_id = sel->tag & NodeImpl_IdLocalMask;
+	if ( (element_id & NodeImpl_IdLocalMask) != sel_id &&
+	     sel_id != NodeImpl_IdLocalMask )
+	    return false;
+    } else {
+	// specific namespace selected
+	if( (element_id & NodeImpl_IdNSMask) != (sel->tag & NodeImpl_IdNSMask) )
+	    return false;
+	if ( element_id != sel->tag &&
+	     (sel->tag & NodeImpl_IdLocalMask) != NodeImpl_IdLocalMask )
+	    return false;
+    }
 
     if(sel->attr)
     {
-        DOMString value = e->getAttribute(sel->attr);
+	unsigned int attr_id = sel->attr;
+	if ( (attr_id & NodeImpl_IdNSMask ) == NodeImpl_IdNSMask ) {
+	    // ### fixme: this should allow attributes from all
+	    // ### namespaces. I'm not 100% sure what the semantics
+	    // ### should be in this case. Do they all have to match?
+	    // ### Or should only one of them match. Anyways it might
+	    // ### be we have to iterate over all namespaces and check
+	    // ### all of them. For now we just set the namespace to
+	    // ### 0, so they at least match attributes in the default
+	    // ### namespace.
+	    attr_id &= NodeImpl_IdLocalMask;
+	}
+        DOMString value = e->getAttribute(attr_id);
         if(value.isNull()) return false; // attribute is not set
 
         switch(sel->match)

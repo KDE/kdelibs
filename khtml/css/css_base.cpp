@@ -122,7 +122,7 @@ StyleListImpl::~StyleListImpl()
 
 void CSSSelector::print(void)
 {
-    kdDebug( 6080 ) << "[Selector: tag = " <<       tag << ", attr = \"" << attr << "\", match = \"" << match
+    kdDebug( 6080 ) << "[Selector: tag = " <<       QString::number(tag,16) << ", attr = \"" << attr << "\", match = \"" << match
 		    << "\" value = \"" << value.string().latin1() << "\" relation = " << (int)relation
 		    << "]" << endl;
     if ( tagHistory )
