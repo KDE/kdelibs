@@ -1690,7 +1690,7 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP,
 
     startTokenizer( str );
 
-    qDebug( "%s", str.latin1() );
+    // qDebug( "%s", str.latin1() );
 
     if ( yyIn == "caption" || yyIn == "icon" || yyIn == "menu" ||
          yyIn == "message-box" || yyIn == "small-caption" ||
