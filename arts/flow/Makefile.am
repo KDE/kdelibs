@@ -22,7 +22,7 @@ libartsflow_la_SOURCES =  synth_play_impl.cc \
   stereoeffectstack_impl.cc fft.c stereofftscope_impl.cc virtualports.cc \
   bus.cc audiomanager_impl.cc synth_record_impl.cc resample.cc \
   audioio.cc audioiooss.cc audioioalsa.cc audioionull.cc audioiolibaudioio.cc \
-  audioiosun.cc audioioaix.cc audioionas.cc cpuinfo.cc
+  audioiosun.cc audioioaix.cc audioionas.cc audioioalsa9.cc cpuinfo.cc
 
 artsincludedir = $(includedir)/arts
 artsinclude_HEADERS = artsflow.h audiosubsys.h cache.h \

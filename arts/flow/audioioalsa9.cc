@@ -268,11 +268,9 @@ int AudioIOALSA::getParam(AudioParam p)
 		}
 		return snd_pcm_frames_to_bytes(m_pcm_playback, snd_pcm_status_get_avail(status));
 
-	case selectReadFD:
-		return audio_read_fd;
-
-	case selectWriteFD:
+	case selectFD:
 		return audio_write_fd;
+		//return audio_read_fd;
 
 	case autoDetect:
 		/*
