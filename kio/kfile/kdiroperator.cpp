@@ -246,6 +246,7 @@ void KDirOperator::insertViewDependentActions()
 
 void KDirOperator::activatedMenu( const KFileItem *, const QPoint& pos )
 {
+    setupMenu();
     updateSelectionDependentActions();
 
     actionMenu->popup( pos );
@@ -1371,12 +1372,12 @@ void KDirOperator::setupMenu(int whichActions)
     if (whichActions & FileActions)
     {
         actionMenu->insert( mkdirAction );
-        actionMenu->insert( myActionCollection->action( "trash" ) );
-
-	KConfig globalconfig("kdeglobals", true, false);
-	globalconfig.setGroup( "KDE" );
-	if ( globalconfig.readBoolEntry("ShowDeleteCommand", false) )
-	    actionMenu->insert( myActionCollection->action( "delete" ) );
+        if (currUrl.isLocalFile())
+            actionMenu->insert( myActionCollection->action( "trash" ) );
+        KConfig *globalconfig = KGlobal::config();
+        KConfigGroupSaver cs( globalconfig, QString::fromLatin1("KDE") );
+        if (!currUrl.isLocalFile() || globalconfig->readBoolEntry("ShowDeleteCommand", false)) 
+            actionMenu->insert( myActionCollection->action( "delete" ) );
         actionMenu->insert( actionSeparator );
     }
 
