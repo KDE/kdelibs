@@ -173,18 +173,14 @@ protected:
     QSortedList<SpecialObject>* specialObjects;
 
 private:
+    // width/height of overflowing contents
+    int m_overflowHeight;
+    short m_overflowWidth;
+
     bool m_childrenInline : 1;
     bool m_pre            : 1;
     bool firstLine        : 1; // used in inline layouting
     EClear m_clearStatus  : 2; // used during layuting of paragraphs
-
-    // How much content overflows out of our block vertically or
-    // horizontally (all we support for now is spillage out of the
-    // bottom and the right, which are the common cases).  XXX
-    // Generalize to work with top and left as well.
-    short m_overflowWidth;
-    int m_overflowHeight;
-
 };
 
 

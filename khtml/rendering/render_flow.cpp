@@ -81,6 +81,8 @@ RenderFlow::RenderFlow(DOM::NodeImpl* node)
     m_clearStatus = CNONE;
 
     specialObjects = 0;
+    m_overflowWidth = 0;
+    m_overflowHeight = 0;
 }
 
 void RenderFlow::setStyle(RenderStyle *_style)
@@ -301,6 +303,8 @@ void RenderFlow::layout()
 
     calcWidth();
 
+    m_overflowWidth = m_width;
+
     bool relayoutChildren = false;
     if ( oldWidth != m_width )
 	relayoutChildren = true;
@@ -327,7 +331,7 @@ void RenderFlow::layout()
 
     clearFloats();
 
-    m_height = 0;
+    m_overflowHeight= m_height = 0;
     m_clearStatus = CNONE;
 
 //    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
@@ -338,19 +342,38 @@ void RenderFlow::layout()
 
     int oldHeight = m_height;
     calcHeight();
-    if ( oldHeight != m_height )
+    if ( oldHeight != m_height ) {
 	relayoutChildren = true;
+        if ( m_overflowHeight > m_height )
+            m_overflowHeight -= borderBottom() + paddingBottom();
+        if ( m_overflowHeight < m_height )
+            m_overflowHeight = m_height;
+    }
 
-    if ( isTableCell() && lastChild() && lastChild()->hasOverhangingFloats() ) {
-        m_height = lastChild()->yPos() + static_cast<RenderFlow*>(lastChild())->floatBottom();
+    // table cells have never overflowing contents
+    if ( isTableCell() && lastChild() ) {
+        if ( lastChild()->hasOverhangingFloats() )
+            m_height = lastChild()->yPos() + static_cast<RenderFlow*>(lastChild())->floatBottom();
+        if ( m_overflowHeight > m_height )
+            m_height = m_overflowHeight;
+
 	m_height += borderBottom() + paddingBottom();
     }
+
     if( hasOverhangingFloats() && (isFloating() || isTableCell()) ) {
 	m_height = floatBottom();
 	m_height += borderBottom() + paddingBottom();
     }
 
     layoutSpecialObjects( relayoutChildren );
+
+    if ( style()->overflow() == OHIDDEN ) {
+        // ok, we don't have any overflow..
+        m_overflowHeight = m_height;
+        m_overflowWidth = m_width;
+    }
+    else 
+        m_overflowWidth = kMax(m_overflowWidth, m_width);
 
     //kdDebug() << renderName() << " layout width=" << m_width << " height=" << m_height << endl;
 
@@ -391,6 +414,7 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
     xPos += borderLeft() + paddingLeft();
     m_height += borderTop() + paddingTop();
     toAdd += borderBottom() + paddingBottom();
+    m_overflowHeight = m_height;
 
     if( style()->direction() == RTL ) {
         xPos = marginLeft() + m_width - paddingRight() - borderRight();
@@ -512,6 +536,8 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 	    child->layout();
 
         m_height += child->height();
+        if ( m_overflowHeight < m_height )
+            m_overflowHeight = kMax(m_overflowHeight, m_height + child->overflowHeight() - child->height());
 
         prevMargin = child->marginBottom();
 
@@ -523,6 +549,8 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 	    addOverHangingFloats( static_cast<RenderFlow *>(child), -child->xPos(), -child->yPos(), true );
 	}
 
+        m_overflowWidth = kMax(int(m_overflowWidth), child->overflowWidth() + child->xPos());
+
         child = child->nextSibling();
     }
 
@@ -530,7 +558,9 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 	m_height += prevMargin;
     if ( isPositioned() || isRelPositioned() )
 	m_height = QMAX( m_height,  floatBottom() );
+
     m_height += toAdd;
+    m_overflowHeight = kMax(m_overflowHeight, m_height);
 
     setLayouted();
 
