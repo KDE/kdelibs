@@ -82,8 +82,8 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
                                 database->handle(), 0);
      if (!m_sycoca_mmap)
      {
-#endif
         kdDebug(7011) << "mmap failed. (length = " << m_sycoca_size << ")" << endl;
+#endif
         m_str = new QDataStream(database);
 #ifdef HAVE_MMAP
      }
