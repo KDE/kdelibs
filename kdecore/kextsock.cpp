@@ -49,6 +49,7 @@
 #include <qdns.h>
 #include <qguardedptr.h>
 
+#include "kidna.h"
 #include "kdebug.h"
 #include "kextsock.h"
 #include "ksockaddr.h"
@@ -1794,11 +1795,10 @@ int KExtendedSocket::doLookup(const QString &host, const QString &serv, addrinfo
 {
   int err;
 
-  // FIXME! What is the encoding?
-  const char *_host = NULL,
-    *_serv = NULL;
+  QCString _host;
+  QCString _serv;
   if (!host.isNull())
-    _host = host.latin1();
+    _host = KIDNA::toAscii(host);
   if (!serv.isNull())
     _serv = serv.latin1();
   // Please read the comments before kde_getaddrinfo in netsupp.cpp

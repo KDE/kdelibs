@@ -53,7 +53,8 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
 	klargefile.h kmultipledrag.h kgenericfactory.h kgenericfactory.tcc ktypelist.h \
 	ksortablevaluelist.h kdebugclasses.h kclipboard.h kcalendarsystem.h \
-	kcalendarsystemfactory.h kmacroexpander.h kmanagerselection.h
+	kcalendarsystemfactory.h kmacroexpander.h kmanagerselection.h \
+	kidna.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
 libkdefakes_la_LDFLAGS = -version-info 6:0:2
@@ -103,7 +104,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kdeversion.cpp kdebugdcopiface.cpp kdebugdcopiface.skel \
 	hconv.cpp kcalendarsystem.cpp kcalendarsystemgregorian.cpp \
 	kcalendarsystemhijri.cpp kcalendarsystemhebrew.cpp \
-	kcalendarsystemfactory.cpp kmacroexpander.cpp
+	kcalendarsystemfactory.cpp kmacroexpander.cpp kidna.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 6:0:2 -no-undefined
 libkdecore_la_LIBADD = malloc/libklmalloc.la $(SVGICON_LIB) ../dcop/libDCOP.la ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBUTIL) $(LIBART_LIBS) ../kdefx/libkdefx.la

@@ -22,6 +22,7 @@
 #ifndef KDE_QT_ONLY
 #include <kdebug.h>
 #include <kglobal.h>
+#include <kidna.h>
 #endif
 
 #include <stdio.h>
@@ -1259,9 +1260,17 @@ QString KURL::prettyURL( int _trailing ) const
     }
     bool IPv6 = (m_strHost.find(':') != -1);
     if (IPv6)
+    {
        u += '[' + m_strHost + ']';
+    }
     else
+    {
+#ifndef KDE_QT_ONLY
+       u += lazy_encode(KIDNA::toUnicode(m_strHost));
+#else
        u += lazy_encode(m_strHost);
+#endif
+    }
     if ( m_iPort != 0 ) {
       QString buffer;
       buffer.sprintf( ":%u", m_iPort );
