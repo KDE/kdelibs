@@ -16,14 +16,11 @@
 
 - export configuration interfaces from the soundserver (so that
   you can see and change the autosuspend timeout for instance)
-- add -N option (to add extra network buffers)
 - support multiple artsd instances on one computer (like multiple displays),
   and think of a clever way to register them
 - more support for different audio input/output methods (i.e. SDL, NAS, ESD,
   AIX, Solaris)
 - support channels != 2
-- better defaults (i.e. realtime should be default)
-- complain nicer when realtime rights not there
 - expand capabilities of shell utils (making them eventually as powerful as
   artscontrol, or better ;)
 - artsdsp should offer version information when invoked with -v
