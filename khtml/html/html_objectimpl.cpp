@@ -65,13 +65,15 @@ void HTMLObjectBaseElementImpl::setServiceType(const QString & val) {
 
 void HTMLObjectBaseElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    DOM::DOMStringImpl *stringImpl = attr->val();
-    QString val = QConstString( stringImpl->s, stringImpl->l ).string();
     switch ( attr->id() )
     {
         case ATTR_TYPE:
         case ATTR_CODETYPE:
-            setServiceType( val );
+	    if (attr->val()) {
+	      DOM::DOMStringImpl *stringImpl = attr->val();
+	      QString val = QConstString( stringImpl->s, stringImpl->l ).string();
+	      setServiceType( val );
+	    }
             break;
         case ATTR_WIDTH:
             addCSSLength( CSS_PROP_WIDTH, attr->value());
