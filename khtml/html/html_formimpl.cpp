@@ -50,6 +50,7 @@
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kmessagebox.h>
+#include <kapplication.h>
 #include <klocale.h>
 #include <netaccess.h>
 #include <kfileitem.h>
@@ -76,7 +77,7 @@ HTMLFormElementImpl::HTMLFormElementImpl(DocumentPtr *doc, bool implicit)
     m_doingsubmit = false;
     m_inreset = false;
     m_enctype = "application/x-www-form-urlencoded";
-    m_boundary = "----------0xKhTmLbOuNdArY";
+    m_boundary = "----------" + KApplication::randomString( 42 + 13 );
     m_acceptcharset = "UNKNOWN";
 }
 
@@ -249,7 +250,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                 else
                 {
                     QCString hstr("--");
-                    hstr += m_boundary.string().latin1();
+                    hstr += m_boundary.latin1();
                     hstr += "\r\n";
                     hstr += "Content-Disposition: form-data; name=\"";
                     hstr += (*it).data();
@@ -304,7 +305,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     }
 
     if (m_multipart)
-        enc_string = ("--" + m_boundary.string() + "--\r\n").ascii();
+        enc_string = ("--" + m_boundary + "--\r\n").ascii();
 
     int old_size = form_data.size();
     form_data.resize( form_data.size() + enc_string.length() );
@@ -332,11 +333,6 @@ void HTMLFormElementImpl::setEnctype( const DOMString& type )
         m_multipart = false;
     }
     m_encCharset = QString::null;
-}
-
-void HTMLFormElementImpl::setBoundary( const DOMString& bound )
-{
-    m_boundary = bound;
 }
 
 void HTMLFormElementImpl::submitFromKeyboard()
@@ -414,7 +410,7 @@ void HTMLFormElementImpl::submit(  )
             view->part()->submitForm( "post", url.string(), form_data,
                                       m_target.string(),
                                       enctype().string(),
-                                      boundary().string() );
+                                      m_boundary );
         }
         else {
             view->part()->submitForm( "get", url.string(), form_data,

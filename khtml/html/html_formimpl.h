@@ -72,9 +72,6 @@ public:
     DOMString enctype() const { return m_enctype; }
     void setEnctype( const DOMString & );
 
-    DOMString boundary() const { return m_boundary; }
-    void setBoundary( const DOMString & );
-
     bool autoComplete() const { return m_autocomplete; }
 
     virtual void parseAttribute(AttributeImpl *attr);
@@ -99,7 +96,7 @@ private:
     QPtrList<HTMLGenericFormElementImpl> formElements;
     DOMString m_target;
     DOMString m_enctype;
-    DOMString m_boundary;
+    QString m_boundary;
     DOMString m_acceptcharset;
     QString m_encCharset;
     bool m_post : 1;
