@@ -1,6 +1,9 @@
 #ifndef JSBUILTIN_H
 #define JSBUILTIN_H
 
+#include <qstring.h>
+#include <jsexec.h>
+
 class KHTMLView;
 class JSEnvironment;
 class JSDocumentObject;
@@ -9,9 +12,6 @@ class JSWindowObject;
 class JSWindowVarObject;
 class JSInstanceScope;
 class JSWindowArrayObject;
-
-#include <qstring.h>
-#include <jsexec.h>
 
 class JSEventHandler
 {
