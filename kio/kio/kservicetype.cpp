@@ -39,7 +39,7 @@ KServiceType::KServiceType( const QString & _fullpath)
 }
 
 KServiceType::KServiceType( KDesktopFile *config )
- : KSycocaEntry(config->filename())
+ : KSycocaEntry(config->fileName())
 {
   init(config);
 }
