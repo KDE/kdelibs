@@ -122,12 +122,12 @@ QList<Length> *DOMStringImpl::toLengthList() const
     list->setAutoDelete(true);
     while((pos2 = str.find(',', pos)) != -1)
     {
-	Length *l = new Length(parseLength(str.unicode()+pos, pos2-pos));
+	Length *l = new Length(parseLength((QChar *) str.unicode()+pos, pos2-pos));
 	list->append(l);
 	pos = pos2+1;
     }
 
-    Length *l = new Length(parseLength(str.unicode()+pos, str.length()-pos));
+    Length *l = new Length(parseLength((QChar *) str.unicode()+pos, str.length()-pos));
     list->append(l);
 
     return list;
