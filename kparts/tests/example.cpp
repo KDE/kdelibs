@@ -159,15 +159,15 @@ Part2::Part2( QWidget * parentWidget )
   QWidget * w = new QWidget( parentWidget, "Part2Widget" );
   setWidget( w );
 
-  // Added some more widgets to test the focus thing
-  QCheckBox * cb = new QCheckBox( "something", widget() );
+  QCheckBox * cb = new QCheckBox( "something", w );
+
   QLineEdit * l = new QLineEdit( "something", widget() );
   l->move(0,50);
   // Since the main widget is a dummy one, we HAVE to set
-  // a focus proxy for it, otherwise we get the
+  // strong focus for it, otherwise we get the
   // the famous activating-file-menu-switches-part bug.
-  w->setFocusProxy( cb );
-  w->setFocusPolicy( cb->focusPolicy() );
+  w->setFocusPolicy( QWidget::StrongFocus );
+  //w->setFocusProxy( cb );
 
   // setXMLFile( ... ); // no actions currently
 }
