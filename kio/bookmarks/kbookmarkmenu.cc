@@ -68,6 +68,9 @@
 
 template class QPtrList<KBookmarkMenu>;
 
+#ifndef enable_final_users_suck
+#define enable_final_users_suck
+
 static bool *s_advanced = 0;
 
 static bool isAdvanced()
@@ -81,6 +84,8 @@ static bool isAdvanced()
   }
   return (*s_advanced);
 }
+
+#endif
 
 /*
    change the kbookmarkbar to have a "toolbar items"

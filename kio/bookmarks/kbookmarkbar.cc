@@ -65,6 +65,9 @@ private:
     static QPtrDict<KBookmarkBarPrivate>* d_ptr;
 };
 
+#ifndef enable_final_users_suck
+#define enable_final_users_suck
+
 static bool *s_advanced = 0;
 
 static bool isAdvanced()
@@ -78,6 +81,8 @@ static bool isAdvanced()
   }
   return (*s_advanced);
 }
+
+#endif
 
 class KBookmarkBarPrivate : public Private<KBookmarkBar, KBookmarkBarPrivate> {
 public:
