@@ -50,14 +50,24 @@ using namespace KJS;
 
 CString::CString(const char *c)
 {
-  data = new char[strlen(c)+1];
+  length = strlen(c);
+  data = new char[length+1];
   strcpy(data, c);
+}
+
+CString::CString(const char *c, int len)
+{
+  length = len;
+  data = new char[len+1];
+  memcpy(data, c, len);
+  data[len] = 0;
 }
 
 CString::CString(const CString &b)
 {
-  data = new char[b.size()+1];
-  strcpy(data, b.c_str());
+  length = b.length;
+  data = new char[length+1];
+  memcpy(data, b.data, length);
 }
 
 CString::~CString()
@@ -67,15 +77,13 @@ CString::~CString()
 
 CString &CString::append(const CString &t)
 {
-  char *n;
-  if (data) {
-    n = new char[strlen(data)+t.size()+1];
-    strcpy(n, data);
-  } else {
-    n = new char[t.size()+1];
-    n[0] = '\0';
-  }
-  strcat(n, t.c_str());
+  char *n = new char[length + t.length + 1];
+  if (length)
+    memcpy(n, data, length);
+  if (t.length)
+    memcpy(n+length, t.data, t.length);
+  length += t.length;
+  n[length] = 0;
 
   delete [] data;
   data = n;
@@ -87,7 +95,8 @@ CString &CString::operator=(const char *c)
 {
   if (data)
     delete [] data;
-  data = new char[strlen(c)+1];
+  length = strlen(c);
+  data = new char[length+1];
   strcpy(data, c);
 
   return *this;
@@ -100,20 +109,17 @@ CString &CString::operator=(const CString &str)
 
   if (data)
     delete [] data;
-  data = new char[str.size()+1];
-  strcpy(data, str.c_str());
+  length = str.length;
+  data = new char[length + 1];
+  memcpy(data, str.data, length + 1);
 
   return *this;
 }
 
-int CString::size() const
-{
-  return strlen(data);
-}
-
 bool KJS::operator==(const KJS::CString& c1, const KJS::CString& c2)
 {
-  return (strcmp(c1.c_str(), c2.c_str()) == 0);
+  int len = c1.size();
+  return len == c2.size() && (len == 0 || memcmp(c1.c_str(), c2.c_str(), len) == 0);
 }
 
 UChar UChar::null((char)0);
@@ -121,7 +127,7 @@ UString::Rep UString::Rep::null = { 0, 0, 0, 1, 1 };
 UString::Rep UString::Rep::empty = { 0, 0, 0, 1, 1 };
 UString UString::null;
 static const int normalStatBufferSize = 4096;
-static char *statBuffer = 0L;
+static char *statBuffer = 0;
 static int statBufferSize = 0;
 
 UChar UChar::toLower() const

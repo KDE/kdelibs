@@ -1,5 +1,8 @@
 2003-10-26  Harri Porten  <porten@kde.org>
 
+	* ustring.*: store length within CString to be able to have
+	null bytes in the string (JavaScriptCore)
+	
 	* added Apple's Identifier::toArrayIndex() and use it in
 	ArrayInstanceImp instead of our range validity checks
 

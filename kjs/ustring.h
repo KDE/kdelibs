@@ -164,8 +164,9 @@ namespace KJS {
    */
   class CString {
   public:
-    CString() : data(0L) { }
+    CString() : data(0L), length(0) { }
     CString(const char *c);
+    CString(const char *c, int len);
     CString(const CString &);
 
     ~CString();
@@ -175,10 +176,11 @@ namespace KJS {
     CString &operator=(const CString &);
     CString &operator+=(const CString &c) { return append(c); }
 
-    int size() const;
+    int size() const { return length; }
     const char *c_str() const { return data; }
   private:
     char *data;
+    int length;
   };
 
   /**
