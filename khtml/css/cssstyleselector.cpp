@@ -333,7 +333,7 @@ void CSSStyleSelector::addInlineDeclarations(DOM::CSSStyleDeclarationImpl *decl,
     }
 }
 
-
+static bool subject;
 
 void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 {
@@ -343,6 +343,9 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 
     selectorCache[ selIndex ].state = Invalid;
     CSSSelector *sel = selectors[ selIndex ];
+
+    // we have the subject part of the selector
+    subject = true;
 
     // first selector has to match
     if(!checkOneSelector(sel, e)) return;
@@ -359,6 +362,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
             bool found = false;
             while(!found)
             {
+		subject = false;
                 n = n->parentNode();
                 if(!n || !n->isElementNode()) return;
                 ElementImpl *elem = static_cast<ElementImpl *>(n);
@@ -368,6 +372,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
         }
         case CSSSelector::Child:
         {
+		subject = false;
             n = n->parentNode();
             if(!n || !n->isElementNode()) return;
             ElementImpl *elem = static_cast<ElementImpl *>(n);
@@ -376,6 +381,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
         }
         case CSSSelector::Sibling:
         {
+		subject = false;
             n = n->previousSibling();
 	    while( n && !n->isElementNode() )
 		n = n->previousSibling();
@@ -525,10 +531,10 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		n = n->nextSibling();
 	    if( n == e )
 		return true;
-	} else if ( value == "first-line" ) {
+	} else if ( value == "first-line" && subject ) {
 	    dynamicPseudo=RenderStyle::FIRST_LINE;
 	    return true;
-	} else if ( value == "first-letter" ) {
+	} else if ( value == "first-letter" && subject ) {
 	    dynamicPseudo=RenderStyle::FIRST_LETTER;
 	    return true;
 	} else if( value == "link") {
