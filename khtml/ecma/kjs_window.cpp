@@ -161,7 +161,7 @@ Window::Window(KHTMLPart *p)
   : m_part(p), screen(0), history(0), frames(0), loc(0)
 {
   winq = new WindowQObject(this);
-  //kdDebug() << "Window::Window this=" << this << " part=" << m_part << endl;
+  //kdDebug(6070) << "Window::Window this=" << this << " part=" << m_part << endl;
 }
 
 Window::~Window()
@@ -346,7 +346,7 @@ String Window::toString() const
 KJSO Window::get(const UString &p) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "Window::get " << p.qstring() << endl;
+  kdDebug(6070) << "Window::get " << p.qstring() << endl;
 #endif
   if (p == "closed")
     return Boolean(m_part.isNull());
@@ -386,11 +386,16 @@ KJSO Window::get(const UString &p) const
   else if (p == "frames")
     return KJSO(frames ? frames :
 		(const_cast<Window*>(this)->frames = new FrameArray(m_part)));
-  else if (p == "history") {
+  else if (p == "history")
     return KJSO(history ? history :
 		(const_cast<Window*>(this)->history = new History(m_part)));
- // else if (p == "event")
-//    return getDOMEvent(static_cast<DOM::Event>(m_part->view()->lastDOMMouseEvent()));
+
+  else if (p == "event") {
+    ASSERT( m_evt );
+    if (m_evt)
+      return getDOMEvent(*m_evt);
+    else
+      return Undefined();
   }
 
   else if (p == "innerHeight")
@@ -662,7 +667,7 @@ KJSO Window::get(const UString &p) const
 void Window::put(const UString &p, const KJSO &v)
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "Window::put " << p.qstring() << endl;
+  kdDebug(6070) << "Window::put " << p.qstring() << endl;
 #endif
   if (p == "status") {
     String s = v.toString();
@@ -1177,7 +1182,7 @@ void WindowQObject::timeoutClose()
 KJSO FrameArray::get(const UString &p) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "FrameArray::get " << p.qstring() << " part=" << (void*)part << endl;
+  kdDebug(6070) << "FrameArray::get " << p.qstring() << " part=" << (void*)part << endl;
 #endif
   if (part.isNull())
     return Undefined();
@@ -1213,7 +1218,7 @@ Location::Location(KHTMLPart *p) : m_part(p) { }
 KJSO Location::get(const UString &p) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "Location::get " << p.qstring() << " m_part=" << (void*)m_part << endl;
+  kdDebug(6070) << "Location::get " << p.qstring() << " m_part=" << (void*)m_part << endl;
 #endif
 
   if (m_part.isNull())
@@ -1266,7 +1271,7 @@ KJSO Location::get(const UString &p) const
 void Location::put(const UString &p, const KJSO &v)
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "Location::put " << p.qstring() << " m_part=" << (void*)m_part << endl;
+  kdDebug(6070) << "Location::put " << p.qstring() << " m_part=" << (void*)m_part << endl;
 #endif
   if (m_part.isNull())
     return;

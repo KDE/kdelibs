@@ -94,6 +94,9 @@ namespace KJS {
     void clear();
     virtual String toString() const;
 
+    // Set the current "event" object
+    void setCurrentEvent( DOM::Event *evt ) { m_evt = evt; }
+
     QList<JSEventListener> jsEventListeners;
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -104,6 +107,7 @@ namespace KJS {
     FrameArray *frames;
     Location *loc;
     WindowQObject *winq;
+    DOM::Event *m_evt;
   };
 
   class WindowFunc : public DOMFunction {

@@ -26,6 +26,7 @@
 #include <dom_string.h>
 #include <qptrdict.h>
 #include <qlist.h>
+#include <kdebug.h>
 #include "khtml_part.h"
 #include <xml/dom_nodeimpl.h>
 #include <kjs/kjs.h>
@@ -57,15 +58,24 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     args.append(getDOMEvent(evt));
 
     scr->init(); // set a valid current interpreter
+    // Add the event's target element to the scope
     KJSO thisVal = getDOMNode(evt.currentTarget());
     List *scope = 0;
     if (thisVal.type() != NullType)
       scope = static_cast<DOMNode*>(thisVal.imp())->eventHandlerScope();
-    Global::current().setExtra(static_cast<Window*>(win.imp())->part());
+
+    // Set the current part as the "extra" pointer in KJS
+    Window *window = static_cast<Window*>(win.imp());
+    Global::current().setExtra(window->part());
+    
+    // Set the event we're handling in the Window object
+    window->setCurrentEvent( &evt );
+    
     scr->call(listener, thisVal, args, *scope);
     QVariant ret = KJSOToVariant(scr->returnValue());
     if (scope)
       delete scope;
+    window->setCurrentEvent( 0 );
     if (ret.type() == QVariant::Bool && ret.toBool() == false)
         evt.preventDefault();
   }
@@ -289,7 +299,9 @@ DOMMouseEvent::~DOMMouseEvent()
 
 KJSO DOMMouseEvent::tryGet(const UString &p) const
 {
-
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMMouseEvent::get " << p.qstring() << endl;
+#endif
   if (p == "screenX")
     return Number(static_cast<DOM::MouseEvent>(event).screenX());
   else if (p == "screenY")
