@@ -185,7 +185,10 @@ RenameDlg::~RenameDlg()
 void RenameDlg::enableRenameButton(const QString &newDest)
 {
   if (newDest != dest)
+  {
     b1->setEnabled(true);
+    b1->setDefault(true);
+  }
   else
     b1->setEnabled(false);
 }
