@@ -36,7 +36,8 @@
 
 #include <kdebug.h>
 #include <kfilemetainfo.h>
-#include <kfileshare.h>
+#include <ksambashare.h>
+#include <knfsshare.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kiconloader.h>
@@ -442,7 +443,8 @@ int KFileItem::overlays() const
 
   if( S_ISDIR( m_fileMode ) && m_bIsLocalURL)
   {
-    if (KFileShare::isDirectoryShared( m_url.path() ))
+    if (KSambaShare::instance()->isDirectoryShared( m_url.path() ) ||
+        KNFSShare::instance()->isDirectoryShared( m_url.path() ))
     {
       //kdDebug()<<"KFileShare::isDirectoryShared : "<<m_url.path()<<endl;
       _state |= KIcon::ShareOverlay;
