@@ -42,7 +42,7 @@ public:
     // the last observed modification time
     time_t m_ctime;
     // the last observed link count
-    int m_nlink; 
+    int m_nlink;
     entryStatus m_status;
     entryMode m_mode;
     bool isDir;
@@ -95,6 +95,8 @@ public:
   // Memory management - delete when last KDirWatch gets deleted
   void ref() { m_ref++; }
   bool deref() { return ( --m_ref == 0 ); }
+
+ static bool isNoisyFile( const char *filename );
 
 public slots:
   void slotRescan();

@@ -121,7 +121,7 @@ void KDirWatchPrivate::dnotify_sigio_handler(int sig, siginfo_t *si, void *p)
 
     errno = saved_errno;
   }
-  
+
   // Call previous signal handler
   if (old_sigio_act.sa_flags & SA_SIGINFO)
   {
@@ -211,7 +211,7 @@ KDirWatchPrivate::KDirWatchPrivate()
     supports_dnotify = false; // *shrug*
   else if( major * 1000000 + minor * 1000 + patch < 2004019 ) { // <2.4.19
     kdDebug(7001) << "Can't use DNotify, Linux kernel too old" << endl;
-    supports_dnotify = false; 
+    supports_dnotify = false;
   }
 
   if( supports_dnotify ) {
@@ -235,7 +235,7 @@ KDirWatchPrivate::KDirWatchPrivate()
        act.sa_flags |= SA_RESTART;
 #endif
        sigaction(dnotify_signal, &act, NULL);
-    
+
        act.sa_sigaction = KDirWatchPrivate::dnotify_sigio_handler;
        sigaction(SIGIO, &act, &old_sigio_act);
     }
@@ -451,16 +451,16 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
     e->dirty = false;
     if (e->m_status == Normal) {
       int fd = open(QFile::encodeName(e->path).data(), O_RDONLY);
-      // Migrate fd to somewhere above 128. Some libraries have 
+      // Migrate fd to somewhere above 128. Some libraries have
       // constructs like:
       //    fd = socket(...)
       //    if (fd > ARBITRARY_LIMIT)
       //       return error;
       //
-      // Since programs might end up using a lot of KDirWatch objects 
+      // Since programs might end up using a lot of KDirWatch objects
       // for a rather long time the above braindamage could get
       // triggered.
-      // 
+      //
       // By moving the kdirwatch fd's to > 128, calls like socket() will keep
       // returning fd's < ARBITRARY_LIMIT for a bit longer.
       int fd2 = fcntl(fd, F_DUPFD, 128);
@@ -587,7 +587,8 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   // we have a new path to watch
 
   struct stat stat_buf;
-  bool exists = (stat(QFile::encodeName(path), &stat_buf) == 0);
+  QCString tpath = QFile::encodeName(path);
+  bool exists = (stat(tpath, &stat_buf) == 0);
 
   Entry newEntry;
   m_mapEntries.insert( path, newEntry );
@@ -629,6 +630,9 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   // now setup the notification method
   e->m_mode = UnknownMode;
   e->msecLeft = 0;
+
+  if ( isNoisyFile( tpath ) )
+    return;
 
 #if defined(HAVE_FAM)
   if (useFAM(e)) return;
@@ -908,8 +912,8 @@ int KDirWatchPrivate::scanEntry(Entry* e)
       return Created;
     }
 
-    if ( (e->m_ctime != invalid_ctime) && 
-	 ((stat_buf.st_ctime != e->m_ctime) || 
+    if ( (e->m_ctime != invalid_ctime) &&
+	 ((stat_buf.st_ctime != e->m_ctime) ||
 	  (stat_buf.st_nlink != (nlink_t) e->m_nlink)) ) {
       e->m_ctime = stat_buf.st_ctime;
       e->m_nlink = stat_buf.st_nlink;
@@ -1115,6 +1119,20 @@ void KDirWatchPrivate::famEventReceived()
   QTimer::singleShot(0, this, SLOT(slotRemoveDelayed()));
 }
 
+bool KDirWatchPrivate::isNoisyFile( const char * filename )
+{
+  // $HOME/.X.err grows with debug output, so don't notify change
+  if ( *filename == '.') {
+    if (strncmp(filename, ".X.err", 6) == 0) return true;
+    if (strncmp(filename, ".xsession-errors", 16) == 0) return true;
+    // fontconfig updates the cache on every KDE app start
+    // (inclusive kio_thumbnail slaves)
+    if (strncmp(filename, ".fonts.cache", 12) == 0) return true;
+  }
+
+  return false;
+}
+
 void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 {
   // Don't be too verbose ;-)
@@ -1122,14 +1140,8 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
       (fe->code == FAMEndExist) ||
       (fe->code == FAMAcknowledge)) return;
 
-  // $HOME/.X.err grows with debug output, so don't notify change
-  if ( *(fe->filename) == '.') {
-    if (strncmp(fe->filename, ".X.err", 6) == 0) return;
-    if (strncmp(fe->filename, ".xsession-errors", 16) == 0) return;
-    // fontconfig updates the cache on every KDE app start 
-    // (inclusive kio_thumbnail slaves)
-    if (strncmp(fe->filename, ".fonts.cache", 12) == 0) return;
-  }
+  if ( isNoisyFile( fe->filename ) )
+    return;
 
   Entry* e = 0;
   EntryMap::Iterator it = m_mapEntries.begin();
@@ -1434,7 +1446,7 @@ KDirWatch::Method KDirWatch::internalMethod()
 #ifdef HAVE_DNOTIFY
   if (d->supports_dnotify)
      return KDirWatch::DNotify;
-#endif      
+#endif
   return KDirWatch::Stat;
 }
 
