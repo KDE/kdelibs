@@ -1294,7 +1294,7 @@ public:
     /**
      * @deprecated: ### KDE 4.0: remove
      */
-    HTMLFormElement form() const KDE_DEPRECATED;
+    HTMLFormElement form() const;
 
     /**
      * The prompt message. See the <a
