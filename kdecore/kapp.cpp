@@ -427,9 +427,15 @@ void KApplication::aboutQt(){
 
 void KApplication::dcopFailure(const QString &msg)
 {
+  QString msgStr(i18n("There was some error setting up inter-process\n"
+		      "communications for KDE.  The message returned\n"
+		      "by the system was:\n\n"));
+  msgStr += +  msg;
+  msgStr += i18n("\n\nPlease check that the \"dcopserver\" program is running!");
+
   QMessageBox::critical(kapp->mainWidget(), 
-			i18n("DCOP communications error"),
-			msg, i18n("Ok"));
+			i18n("DCOP communications error (%1)").arg(kapp->caption()),
+			msgStr, i18n("Ok"));
 }
 
 bool KApplication::eventFilter ( QObject*, QEvent* e )
