@@ -34,6 +34,7 @@
 #include <kio/job.h>
 
 #include <assert.h>
+#include <stdio.h>
 
 #include <kurl.h>
 #include <kapp.h>
