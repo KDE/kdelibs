@@ -819,7 +819,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     button->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
     QToolTip::add(button, i18n("Edit file type"));
 
-    connect( button, SIGNAL( pressed() ), SLOT( slotEditFileType() ));
+    connect( button, SIGNAL( clicked() ), SLOT( slotEditFileType() ));
 
 
     grid->addWidget(box, curRow++, 2);
