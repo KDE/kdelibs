@@ -1247,6 +1247,16 @@ Value KJS::getDOMNodeOrFrame(ExecState *exec, DOM::Node n)
   return getDOMNode(exec, n);
 }
 
+bool KJS::checkNodeSecurity(ExecState *exec, const DOM::Node& n)
+{
+  // Check to see if the currently executing interpreter is allowed to access the specified node
+  KHTMLView *view = n.handle()->getDocument()->view();
+  Window* win = view && view->part() ? Window::retrieveWindow(view->part()) : 0L;
+  if ( !win || !win->isSafeScript(exec) )
+    return false;
+  return true;
+}
+
 Value KJS::getDOMNode(ExecState *exec, DOM::Node n)
 {
   DOMObject *ret = 0;

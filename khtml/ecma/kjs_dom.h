@@ -246,6 +246,7 @@ namespace KJS {
     static const ClassInfo info;
   };
 
+  bool checkNodeSecurity(ExecState *exec, const DOM::Node& n);
   Value getDOMNode(ExecState *exec, DOM::Node n);
   Value getDOMNodeOrFrame(ExecState *exec, DOM::Node n);
   Value getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMap m);
