@@ -102,6 +102,7 @@ void Lexer::setCode(const UChar *c, unsigned int len)
   code = c;
   length = len;
   skipLF = false;
+  skipCR = false;
 #ifndef KJS_PURE_ECMA
   bol = true;
 #endif
@@ -139,6 +140,7 @@ int Lexer::lex()
   done = false;
   terminator = false;
   skipLF = false;
+  skipCR = false;
 
   // did we push a token on the stack previously ?
   // (after an automatic semicolon insertion)
@@ -151,9 +153,12 @@ int Lexer::lex()
   while (!done) {
     if (skipLF && current != '\n') // found \r but not \n afterwards
         skipLF = false;
-    if (skipLF) // found \r\n, eat \n and move on
+    if (skipCR && current != '\r') // found \n but not \r afterwards
+        skipCR = false;
+    if (skipLF || skipCR) // found \r\n or \n\r -> eat the second one
     {
         skipLF = false;
+        skipCR = false;
         shift(1);
     }
     switch (state) {
@@ -508,6 +513,8 @@ bool Lexer::isLineTerminator()
   bool lf = (current == '\n');
   if (cr)
       skipLF = true;
+  else if (lf)
+      skipCR = true;
   return cr || lf;
 }
 

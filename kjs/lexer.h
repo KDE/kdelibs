@@ -82,6 +82,7 @@ namespace KJS {
     // encountered delimiter like "'" and "}" on last run
     bool delimited;
     bool skipLF;
+    bool skipCR;
     int stackToken;
 
     State state;
