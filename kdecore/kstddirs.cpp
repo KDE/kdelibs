@@ -12,6 +12,9 @@
 #include <unistd.h>
 #include <assert.h>
 #include <iostream.h>
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
 
 #include <qdict.h>
 #include <qdir.h>
@@ -310,18 +313,49 @@ QString KStandardDirs::getSaveLocation(const QString& type,
 	if ((*it).left(length) == local) {
 	    // Check for existance of typed directory + suffix
 	    QString fullPath = *it + suffix;
-	    if (access(fullPath.data(), F_OK) == 0)
-		return fullPath;
-	    else if (create) {
-		// TODO: create requested dir
-	    } else {
-		debug("save location %s doesn't exist", fullPath.ascii());
-		return local;
-	    }
+	    if (access(fullPath.data(), F_OK) != 0) {
+                if(!create) {
+                    debug("save location %s doesn't exist", fullPath.ascii());
+                    return local;
+                }
+                if(!makeDir(fullPath)) {
+                    debug("failed to create %s", fullPath.ascii());
+                    return local;
+                }
+            }
+            return fullPath;
 	}
     }
     debug("couldn't find save location for type %s", type.ascii());
     return local;
+}
+
+bool KStandardDirs::makeDir(const QString& dir)
+{
+    // we want an absolute path
+    if (dir.at(0) != '/')
+        return false;
+
+    QString target = dir;
+    uint len = target.length();
+
+    // append trailing slash if missing
+    if (dir.at(len - 1) != '/')
+        target += '/';
+    
+    QString base("/");
+    uint i = 1;
+
+    while( i < len )
+    {
+        int pos = target.find('/', i);
+        base += target.mid(i, pos - i + 1);
+        // bail out if we encountered a problem
+        if (access(base.ascii(), F_OK) != 0 && mkdir(base.ascii(), 0777) != 0)
+            return false;
+        i = pos + 1;
+    }
+    return true;
 }
 
 void KStandardDirs::addKDEDefaults(const QString &appName) {

@@ -232,6 +232,14 @@ public:
 				 const QString& suffix = QString::null, 
 				 bool create = true) const;
 
+	/**
+	 * Recursively creates still missing directories in the given path.
+	 * The directory permissions will depend on your umask setting.
+	 *
+	 * @param dir absolute path of the directory to be made
+	 */
+	static bool makeDir(const QString& dir);
+
 	static QString kde_data_relative();
 
  private:
