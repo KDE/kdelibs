@@ -103,12 +103,13 @@ void setColor(int ColorIndex, const QColor &v) function.
 
 Example 2:
   <entry name="Sound$(SoundEvent)" type="String" key="sound_$(SoundEvent)">
-    <parameter name="SoundEvent" type="Enum"/>
-    <choices>
-      <choice name="Explosion"/>
-      <choice name="Crash"/>
-      <choice name="Missile"/>
-    </choices>
+    <parameter name="SoundEvent" type="Enum">
+      <values>
+        <value>Explosion</value>
+        <value>Crash</value>
+        <value>Missile</value>
+      </values>
+    </parameter>
     <default param="Explosion">boom.wav</default>
     <default param="Crash">crash.wav</default>
     <default param="Missile">missile.wav</default>
