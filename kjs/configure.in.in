@@ -16,43 +16,60 @@ AC_CHECK_LIB(m, isnan, [
 
 AC_DEFUN(AC_CHECK_PCREPOSIX,
 [
-  AC_CACHE_VAL(ac_cv_have_pcreposix,
-  [
-    ac_save_libs="$LIBS"
-    KDE_FIND_PATH(pcre-config, PCRE_CONFIG, [${prefix}/bin /usr/local/bin /opt/local/bin], [PCRE_CONFIG="" ])
-    if test -n "$PCRE_CONFIG" && $PCRE_CONFIG --libs >/dev/null 2>&1; then
-        LIBS=`$PCRE_CONFIG --libs --libs-posix`
-	PCRECFLAGS=`$PCRE_CONFIG --cflags`
-        CPPFLAGS="$CPPFLAGS $PCRECFLAGS"
-    else
-        LIBS="-lpcre -lpcreposix"
+  dnl define the configure option that disables pcre
+  AC_ARG_ENABLE(pcre, [  --disable-pcre     don't require libpcre (poor RegExp support in Javascript)],
+      with_pcre=$enableval, with_pcre=yes)
+
+ if test "$with_pcre" = "yes"; then
+   if test -n "$ac_cv_have_pcreposix"; then
+     dnl doing this conditionnally because KDE_FIND_PATH outputs stuff too
+     AC_MSG_CHECKING([for pcreposix])
     fi
-    ac_CPPFLAGS_save="$CPPFLAGS"
-    CPPFLAGS="$CPPFLAGS $all_includes"
-    ac_LDFLAGS_save="$LDFLAGS"
-    LDFLAGS="$LDFLAGS $all_libraries"
-    AC_TRY_LINK(
-      [#include <pcreposix.h>],
-      [regfree(0);],
-      [ac_cv_have_pcreposix="yes"],
-      [ac_cv_have_pcreposix="no"]
-    )
-    LIBS="$ac_save_libs"
-    LDFLAGS="$ac_LDFLAGS_save"
-    CPPFLAGS="$ac_CPPFLAGS_save"
-  ])
-  AC_MSG_CHECKING([for pcreposix])
-  AC_MSG_RESULT($ac_cv_have_pcreposix)
-  if test "$ac_cv_have_pcreposix" = "yes"; then
-    LIBPCRE="-lpcre -lpcreposix"
-    AC_DEFINE(HAVE_PCREPOSIX, 1, [Define if you have pcreposix libraries and header files.])
-  fi
-  AC_MSG_CHECKING([for pcre cflags])
-  AC_CACHE_VAL(ac_cv_pcre_cflags,[ac_cv_pcre_cflags="$PCRECFLAGS"])
-  if test -z "$ac_cv_pcre_cflags"; then
-    AC_MSG_RESULT("none")
-  else
-    AC_MSG_RESULT($ac_cv_pcre_cflags)
+    AC_CACHE_VAL(ac_cv_have_pcreposix,
+    [
+      ac_save_libs="$LIBS"
+      KDE_FIND_PATH(pcre-config, PCRE_CONFIG, [${prefix}/bin /usr/local/bin /opt/local/bin], [PCRE_CONFIG="" ])
+      if test -n "$PCRE_CONFIG" && $PCRE_CONFIG --libs >/dev/null 2>&1; then
+          LIBS=`$PCRE_CONFIG --libs --libs-posix`
+          PCRECFLAGS=`$PCRE_CONFIG --cflags`
+          CPPFLAGS="$CPPFLAGS $PCRECFLAGS"
+      else
+          LIBS="-lpcre -lpcreposix"
+      fi
+      ac_CPPFLAGS_save="$CPPFLAGS"
+      CPPFLAGS="$CPPFLAGS $all_includes"
+      ac_LDFLAGS_save="$LDFLAGS"
+      LDFLAGS="$LDFLAGS $all_libraries"
+      AC_TRY_LINK(
+        [#include <pcreposix.h>],
+        [regfree(0);],
+        [ac_cv_have_pcreposix="yes"],
+        [ac_cv_have_pcreposix="no"]
+      )
+      LIBS="$ac_save_libs"
+      LDFLAGS="$ac_LDFLAGS_save"
+      CPPFLAGS="$ac_CPPFLAGS_save"
+      dnl doing this last because KDE_FIND_PATH outputs stuff too
+      AC_MSG_CHECKING([for pcreposix])
+    ])
+    AC_MSG_RESULT($ac_cv_have_pcreposix)
+    if test "$ac_cv_have_pcreposix" = "yes"; then
+      LIBPCRE="-lpcre -lpcreposix"
+      AC_DEFINE(HAVE_PCREPOSIX, 1, [Define if you have pcreposix libraries and header files.])
+    else
+      AC_MSG_ERROR([You're missing libpcre.
+Download libpcre from http://www.pcre.org or find a binary package for your platform.
+Alternatively, you can specify --disable-pcre, but some web pages - using regular
+expressions in Javascript code - will not work correctly, the regexp support being
+quite limited if libpcre isn't present.])
+    fi
+    AC_MSG_CHECKING([for pcre cflags])
+    AC_CACHE_VAL(ac_cv_pcre_cflags,[ac_cv_pcre_cflags="$PCRECFLAGS"])
+    if test -z "$ac_cv_pcre_cflags"; then
+      AC_MSG_RESULT("none")
+    else
+      AC_MSG_RESULT($ac_cv_pcre_cflags)
+    fi
   fi
 ])
 AC_CHECK_PCREPOSIX
