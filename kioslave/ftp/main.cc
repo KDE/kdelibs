@@ -9,7 +9,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include <k2url.h>
+#include <kurl.h>
 
 int check( Connection *_con );
 
@@ -91,7 +91,7 @@ void FtpProtocol::slotMkdir( const char *_url, int _mode )
 {
   string url = _url;
   
-  K2URL usrc( _url );
+  KURL usrc( _url );
   if ( usrc.isMalformed() )
   {
     error( ERR_MALFORMED_URL, url.c_str() );
@@ -196,12 +196,12 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
   
   debug( "kio_ftp : Making copy to %s", _dest );
   
-  // Check wether the URLs are wellformed
+  // Check whether the URLs are wellformed
   list<string>::iterator soit = _source.begin();
   for( ; soit != _source.end(); ++soit )
   {    
     debug( "kio_ftp : Checking %s", soit->c_str() );
-    K2URL usrc( *soit );
+    KURL usrc( soit->c_str() );
     if ( usrc.isMalformed() )
     {
       error( ERR_MALFORMED_URL, soit->c_str() );
@@ -220,50 +220,50 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 
   // Make a copy of the parameter. if we do IPC calls from here, then we overwrite
   // our argument. This is tricky! ( but saves memory and speeds things up )
-  string dest = _dest;
+  QString dest = _dest;
   
   // Check wellformedness of the destination
-  K2URL udest( dest );
+  KURL udest( dest );
   if ( udest.isMalformed() )
   {
-    error( ERR_MALFORMED_URL, dest.c_str() );
+    error( ERR_MALFORMED_URL, dest );
     m_cmd = CMD_NONE;
     return;
   }
 
-  debug( "kio_ftp : Dest ok %s", dest.c_str() );
+  debug( "kio_ftp : Dest ok %s", dest.data() );
 
   // Extract destinations right most protocol
-  list<K2URL> lst;
-  if ( !K2URL::split( dest.c_str(), lst )  )
+  KURLList lst;
+  if ( !KURL::split( dest, lst )  )
   {
-    error( ERR_MALFORMED_URL, dest.c_str() );
+    error( ERR_MALFORMED_URL, dest );
     m_cmd = CMD_NONE;
     return;
   }
 
   // Find IO server for destination
-  string exec = ProtocolManager::self()->find( lst.back().protocol() );
+  string exec = ProtocolManager::self()->find( lst.getLast()->protocol() );
 
   if ( exec.empty() )
   {
-    error( ERR_UNSUPPORTED_PROTOCOL, lst.back().protocol() );
+    error( ERR_UNSUPPORTED_PROTOCOL, lst.getLast()->protocol() );
     m_cmd = CMD_NONE;
     return;
   }
 
   // Is the right most protocol a filesystem protocol ?
-  if ( ProtocolManager::self()->outputType( lst.back().protocol() ) != ProtocolManager::T_FILESYSTEM )
+  if ( ProtocolManager::self()->outputType( lst.getLast()->protocol() ) != ProtocolManager::T_FILESYSTEM )
   {
-    error( ERR_PROTOCOL_IS_NOT_A_FILESYSTEM, lst.back().protocol() );
+    error( ERR_PROTOCOL_IS_NOT_A_FILESYSTEM, lst.getLast()->protocol() );
     m_cmd = CMD_NONE;
     return;
   }
       
-  debug( "kio_ftp : IO server ok %s", dest.c_str() );
+  debug( "kio_ftp : IO server ok %s", dest.data() );
 
   // Connect to the ftp server
-  K2URL usrc( _source.front() );
+  KURL usrc( _source.front().c_str() );
   if ( !ftp.ftpConnect( usrc ) )
   {
     error( ftp.error(), ftp.errorText() );
@@ -289,7 +289,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
   for( ; soit != _source.end(); ++soit )
   {    
     debug( "kio_ftp : Executing %s", soit->c_str() );
-    K2URL usrc( *soit );
+    KURL usrc( soit->c_str() );
     debug( "kio_ftp : Parsed URL" );
     // Did an error occur ?
     int s;
@@ -304,7 +304,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
     size += s;
   }
 
-  debug( "kio_ftp : Recursive 1 %s", dest.c_str() );
+  debug( "kio_ftp : Recursive 1 %s", dest.data() );
 
   /*
   // Check wether we do not copy a directory in itself or one of its subdirectories
@@ -314,7 +314,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
     bool b_error = false;
     for( soit = _source.begin(); soit != _source.end(); ++soit )
     {    
-      K2URL usrc( *soit );  
+      KURL usrc( *soit );  
 
       struct stat buff1;
       // Can we stat both the source, too ? ( Should always be the case )
@@ -346,7 +346,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
   }
   */
 
-  debug( "kio_ftp : Recursive ok %s", dest.c_str() );
+  debug( "kio_ftp : Recursive ok %s", dest.data() );
 
   m_cmd = CMD_GET;
   
@@ -363,7 +363,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
   // Put a protocol on top of the job
   FtpIOJob job( &slave, this );
 
-  debug( "kio_ftp : Job started ok %s", dest.c_str() );
+  debug( "kio_ftp : Job started ok %s", dest.data() );
 
   // Tell our client what we 'r' gonna do
   totalSize( size );
@@ -376,9 +376,9 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
   
   // Replace the relative destinations with absolut destinations
   // by prepending the destinations path
-  string tmp1 = lst.back().path( 1 );
+  string tmp1 = lst.getLast()->path( 1 ).data();
   // Strip '/'
-  string tmp1_stripped = lst.back().path( -1 );
+  string tmp1_stripped = lst.getLast()->path( -1 ).data();
 
   list<CopyDir>::iterator dit = dirs.begin();
   for( ; dit != dirs.end(); dit++ )
@@ -401,7 +401,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
     fit->m_strRelDest += tmp2;
   }
   
-  debug( "kio_ftp : Destinations ok %s", dest.c_str() );
+  debug( "kio_ftp : Destinations ok %s", dest.data() );
 
   /*****
    * Make directories
@@ -423,12 +423,12 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
     {
       job.clearError();
 
-      list<K2URL> l( lst );
-      l.back().setPath( dit->m_strRelDest.c_str() );
+      KURLList l( lst );
+      l.getLast()->setPath( dit->m_strRelDest.c_str() );
 
-      string d;
-      list<K2URL>::iterator it = l.begin();
-      for( ; it != l.end(); it++ )
+      QString d;
+      KURL * it = l.first();
+      for( ; it ; it = l.next() )
 	d += it->url();
 
       // Is this URL on the skip list ?
@@ -436,7 +436,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
       list<string>::iterator sit = skip_list.begin();
       for( ; sit != skip_list.end() && !skip; sit++ )
 	// Is d a subdirectory of *sit ?
-	if ( strncmp( sit->c_str(), d.c_str(), sit->size() ) == 0 )
+	if ( strncmp( sit->c_str(), d.data(), sit->size() ) == 0 )
 	  skip = true;
       
       if ( skip )
@@ -446,18 +446,18 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
       bool overwrite = false;
       list<string>::iterator oit = overwrite_list.begin();
       for( ; oit != overwrite_list.end() && !overwrite; oit++ )
-	if ( strncmp( oit->c_str(), d.c_str(), oit->size() ) == 0 )
+	if ( strncmp( oit->c_str(), d.data(), oit->size() ) == 0 )
 	  overwrite = true;
       
       if ( overwrite )
 	continue;
       
       // Tell what we are doing
-      makingDir( d.c_str() );
+      makingDir( d.data() );
       
       // debug( "kio_ftp : Making remote dir %s", d );
       // Create the directory
-      job.mkdir( d.c_str(), dit->m_access );
+      job.mkdir( d.data(), dit->m_access );
       while( !job.hasFinished() )
 	job.dispatch();
 
@@ -467,8 +467,8 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	// Can we prompt the user and ask for a solution ?
 	if ( /* m_bGUI && */ job.errorId() == ERR_DOES_ALREADY_EXIST )
 	{    
-	  string old_path = l.back().path( 1 );
-	  string old_url = l.back().url( 1 );
+	  string old_path = l.getLast()->path( 1 ).data();
+	  string old_url = l.getLast()->url( 1 ).data();
 	  // Should we skip automatically ?
 	  if ( auto_skip )
 	  {
@@ -488,8 +488,8 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	  if ( dirs.size() > 1 )
 	    m = (RenameDlg_Mode)(M_MULTI | M_SKIP | M_OVERWRITE ); */
 	  RenameDlg_Mode m = (RenameDlg_Mode)( M_MULTI | M_SKIP | M_OVERWRITE );
-	  string tmp2 = l.back().url();
-	  RenameDlg_Result r = open_RenameDlg( dit->m_strAbsSource.c_str(), tmp2.c_str(), m, n );
+	  QString tmp2 = l.getLast()->url();
+	  RenameDlg_Result r = open_RenameDlg( dit->m_strAbsSource.c_str(), tmp2, m, n );
 	  if ( r == R_CANCEL ) 
 	  {
 	    ftp.ftpDisconnect();
@@ -499,12 +499,12 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	  }
 	  else if ( r == R_RENAME )
 	  {
-	    K2URL u( n.c_str() );
+	    KURL u( n.c_str() );
 	    // The Dialog should have checked this.
 	    if ( u.isMalformed() )
 	      assert( 0 );
 	    // The new path with trailing '/'
-	    string tmp3 = u.path( 1 );
+	    string tmp3 = u.path( 1 ).data();
 	    ///////
 	    // Replace old path with tmp3 
 	    ///////
@@ -569,7 +569,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
     processedDirs( ++processed_dirs );
   }
 
-  debug( "kio_ftp : Created directories %s", dest.c_str() );
+  debug( "kio_ftp : Created directories %s", dest.data() );
   
 
   /*****
@@ -599,14 +599,14 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
     { 
       job.clearError();
 
-      list<K2URL> l( lst );
-      l.back().setPath( fit->m_strRelDest.c_str() );
+      KURLList l( lst );
+      l.getLast()->setPath( fit->m_strRelDest.c_str() );
     
       // debug( "kio_ftp : ########### SET Path to '%s'", fit->m_strRelDest.c_str() );
       
-      string d;
-      list<K2URL>::iterator it = l.begin();
-      for( ; it != l.end(); it++ )
+      QString d;
+      KURL * it = l.first();
+      for( ; it  ; it = l.next())
 	d += it->url();
 
       // Is this URL on the skip list ?
@@ -614,7 +614,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
       list<string>::iterator sit = skip_list.begin();
       for( ; sit != skip_list.end() && !skip; sit++ )
 	// Is 'd' a file in directory '*sit' or one of its subdirectories ?
-	if ( strncmp( sit->c_str(), d.c_str(), sit->size() ) == 0 )
+	if ( strncmp( sit->c_str(), d.data(), sit->size() ) == 0 )
 	  skip = true;
     
       if ( skip )
@@ -624,14 +624,14 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
       canResume( m_bCanResume );
 
       string realpath = "ftp:"; realpath += fit->m_strAbsSource;
-      copyingFile( realpath.c_str(), d.c_str() );
+      copyingFile( realpath.c_str(), d.data() );
     
       // debug( "kio_ftp : Writing to %s", d );
        
       // Is this URL on the overwrite list ?
       list<string>::iterator oit = overwrite_list.begin();
       for( ; oit != overwrite_list.end() && !overwrite; oit++ )
-	if ( strncmp( oit->c_str(), d.c_str(), oit->size() ) == 0 )
+	if ( strncmp( oit->c_str(), d.data(), oit->size() ) == 0 )
 	  overwrite = true;
       
       // implicitly set permissions rw-r--r-- for anonymous ftp
@@ -640,8 +640,8 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
       if ( b_user )
 	md = fit->m_access;
 
-      job.put( d.c_str(), md, overwrite_all || overwrite,
-		 resume_all || resume, fit->m_size );
+      job.put( d, md, overwrite_all || overwrite,
+               resume_all || resume, fit->m_size );
 
       while( !job.isReady() && !job.hasFinished() )
 	job.dispatch();
@@ -662,9 +662,9 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	    skip_copying = true;
 	    continue;
 	  }
-	  string tmp2 = l.back().url();
+	  QString tmp2 = l.getLast()->url();
 	  SkipDlg_Result r;
-	  r = open_SkipDlg( tmp2.c_str(), ( files.size() > 1 ) );
+	  r = open_SkipDlg( tmp2, ( files.size() > 1 ) );
 	  if ( r == S_CANCEL )
 	  {
 	    error( ERR_USER_CANCELED, "" );
@@ -724,8 +724,8 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 		m = (RenameDlg_Mode)( M_SINGLE | M_OVERWRITE);
 	    }
 
-	    string tmp2 = l.back().url();
-	    r = open_RenameDlg( fit->m_strAbsSource.c_str(), tmp2.c_str(), m, n );
+	    QString tmp2 = l.getLast()->url();
+	    r = open_RenameDlg( fit->m_strAbsSource.c_str(), tmp2, m, n );
 	  }
 
 	  if ( r == R_CANCEL ) 
@@ -737,7 +737,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	  }
 	  else if ( r == R_RENAME )
 	  {
-	    K2URL u( n.c_str() );
+	    KURL u( n.c_str() );
 	    // The Dialog should have checked this.
 	    if ( u.isMalformed() )
 	      assert( 0 );
@@ -769,13 +769,13 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	  else if ( r == R_RESUME )
 	  {
 	    resume = true;
-	    offset = getOffset( l.back().url() );
+	    offset = getOffset( l.getLast()->url().data() );
 	    // Dont clear error => we will repeat the current command
 	  }
 	  else if ( r == R_RESUME_ALL )
 	  {
 	    resume_all = true;
-	    offset = getOffset( l.back().url() );
+	    offset = getOffset( l.getLast()->url().data() );
 	    // Dont clear error => we will repeat the current command
 	  }
 	  else
@@ -802,7 +802,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
       debug( "kio_ftp : Offset = %ld", offset );
     }
 
-    K2URL tmpurl( "ftp:/" );
+    KURL tmpurl( "ftp:/" );
     tmpurl.setPath( fit->m_strAbsSource.c_str() );
 
     debug( "kio_ftp : Opening %s", fit->m_strAbsSource.c_str() );
@@ -877,7 +877,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
     processedFiles( ++processed_files );
   }
 
-  debug( "kio_ftp : Copied files %s", dest.c_str() );
+  debug( "kio_ftp : Copied files %s", dest.data() );
   
   // slotDel() handles disconnecting by itself
   if ( _move ) {
@@ -895,7 +895,7 @@ void FtpProtocol::slotGetSize( const char* _url ) {
   m_cmd = CMD_GET_SIZE;
   
   // Check wether URL is wellformed
-  K2URL usrc( _url );
+  KURL usrc( _url );
   if ( usrc.isMalformed() )
     {
       error( ERR_MALFORMED_URL, _url );
@@ -949,8 +949,8 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
   string url_orig = _url;
   string url_part = url_orig + ".part";
 
-  K2URL udest_orig( url_orig );
-  K2URL udest_part( url_part );
+  KURL udest_orig( url_orig.c_str() );
+  KURL udest_part( url_part.c_str() );
 
   bool m_bMarkPartial = ProtocolManager::self()->getMarkPartial();
 
@@ -1028,7 +1028,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
       }
   }
 
-  K2URL udest;
+  KURL udest;
 
   // if we are using marking of partial downloads -> add .part extension
   if ( m_bMarkPartial ) {
@@ -1136,7 +1136,7 @@ void FtpProtocol::slotDel( list<string>& _source )
   for( ; soit != _source.end(); ++soit )
   {    
     debug( "kio_ftp : Checking %s", soit->c_str() );
-    K2URL usrc( *soit );
+    KURL usrc( soit->c_str() );
 
     if ( usrc.isMalformed() ) {
       error( ERR_MALFORMED_URL, soit->c_str() );
@@ -1164,11 +1164,11 @@ void FtpProtocol::slotDel( list<string>& _source )
   for( ; soit != _source.end(); ++soit )
   {    
     debug( "kio_ftp : Executing %s", soit->c_str() );
-    K2URL usrc( *soit );
+    KURL usrc( soit->c_str() );
     debug( "kio_ftp : Parsed URL" );
 
     // Did an error occur ?
-    int s;
+//    int s;
 //     if ( ( s = listRecursive( usrc.path(), fs, ds, false ) ) == -1 )
 //       {
 // 	// Error message is already sent
@@ -1177,7 +1177,7 @@ void FtpProtocol::slotDel( list<string>& _source )
 // 	return;
 //       }
     // Sum up the total amount of bytes we have to copy
-    size += s;
+//    size += s;
   }
 
   debug( "kio_ftp : Recursive ok" );
@@ -1287,7 +1287,7 @@ long FtpProtocol::listRecursive( const char *_path, list<Copy>& _files, list<Cop
   p.assign( _path, len );
   debug( "kio_ftp : ########## RECURSIVE LISTING %s", p.c_str() );
   
-  K2URL tmpurl( "ftp:/" );
+  KURL tmpurl( "ftp:/" );
   tmpurl.setPath( p.c_str() );
   FtpEntry* e = ftp.ftpStat( tmpurl );
   if ( !e )
@@ -1296,7 +1296,7 @@ long FtpProtocol::listRecursive( const char *_path, list<Copy>& _files, list<Cop
     return -1;
   }
   
-  K2URL u( p.c_str() );
+  KURL u( p.c_str() );
   // Should be checked before, but who knows
   if ( u.isMalformed() )
     assert( 0 );
@@ -1363,7 +1363,7 @@ long FtpProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
 
   scanningDir( p.c_str() );
   
-  K2URL tmpurl( "ftp:/" );
+  KURL tmpurl( "ftp:/" );
   tmpurl.setPath( p.c_str() );
   if ( !ftp.ftpOpenDir( tmpurl ) )
   {
@@ -1451,7 +1451,7 @@ void FtpProtocol::slotListDir( const char *_url )
   
   string url = _url;
   
-  K2URL usrc( _url );
+  KURL usrc( _url );
   if ( usrc.isMalformed() )
   {
     error( ERR_MALFORMED_URL, url.c_str() );
@@ -1554,7 +1554,7 @@ void FtpProtocol::slotTestDir( const char *_url )
 {
   string url = _url;
   
-  K2URL usrc( _url );
+  KURL usrc( _url );
   if ( usrc.isMalformed() )
   {
     error( ERR_MALFORMED_URL, url.c_str() );

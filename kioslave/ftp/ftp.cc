@@ -6,6 +6,8 @@
 #include <kio_interface.h>
 #include <kio_manager.h>
 
+#include <kurl.h>
+
 #include <iostream.h>
 
 #define FTP_LOGIN "anonymous"
@@ -169,7 +171,7 @@ void Ftp::ftpDisconnect( bool really )
 }
 
 
-bool Ftp::ftpConnect( K2URL& _url )
+bool Ftp::ftpConnect( KURL& _url )
 {
   string dummy;
   return ftpConnect( _url.host(), _url.port(), _url.user(), _url.pass(), dummy );
@@ -198,7 +200,7 @@ bool Ftp::ftpConnect( const char *_host, int _port, const char *_user, const cha
   
   _path = "";
   
-  m_bFtpStarted = ftpConnect2( _host );
+  m_bFtpStarted = ftpConnect2( _host, _port );
 
   if ( !m_bFtpStarted )
   {
@@ -781,7 +783,7 @@ bool Ftp::ftpChmod( const char *src, int mode )
 }
 
 
-FtpEntry* Ftp::stat( K2URL& _url )
+FtpEntry* Ftp::stat( KURL& _url )
 { 
   string redirect;
   
@@ -789,7 +791,7 @@ FtpEntry* Ftp::stat( K2URL& _url )
     // The error is already set => we just return
     return 0L;
 
-  K2URL url( _url );
+  KURL url( _url );
   if ( !redirect.empty() && !_url.hasPath() )
   {    
     url.setPath( redirect.c_str() );
@@ -803,13 +805,13 @@ FtpEntry* Ftp::stat( K2URL& _url )
 }
 
 
-FtpEntry* Ftp::ftpStat( K2URL& _url )
+FtpEntry* Ftp::ftpStat( KURL& _url )
 {
   static FtpEntry fe;
 
   cerr << "ftpStat : " << _url.url() << endl;
 
-  string path = _url.directory();
+  QString path = _url.directory();
 
   if ( path == "" || path == "/" )
   {
@@ -824,7 +826,7 @@ FtpEntry* Ftp::ftpStat( K2URL& _url )
     return &fe;
   }
   
-  if( !ftpOpenCommand( "list", path.c_str(), 'A' ) )
+  if( !ftpOpenCommand( "list", path, 'A' ) )
   {
     cerr << "COULD NOT LIST" << endl;
     return 0L;
@@ -836,7 +838,7 @@ FtpEntry* Ftp::ftpStat( K2URL& _url )
 
   cerr << "Starting of list was ok" << endl;
 
-  string search = _url.filename();
+  string search = _url.filename().data();
   assert( search != "" && search != "/" );
   
   bool found = false;
@@ -868,7 +870,7 @@ FtpEntry* Ftp::ftpStat( K2URL& _url )
 }
 
 
-bool Ftp::opendir( K2URL& _url )
+bool Ftp::opendir( KURL& _url )
 {
   string path( _url.path(-1) );
   bool haspath = _url.hasPath();
@@ -880,20 +882,20 @@ bool Ftp::opendir( K2URL& _url )
 
   // Did we get a redirect and did not we specify a path ourselfs ?
   if ( path != redirect && !haspath )
-    redirection( _url.url().c_str() );
+    redirection( _url.url() );
   else
     redirect = path;
 
   cerr << "hunting for path '" << redirect << "' now" << endl;
 
-  K2URL url( _url );
+  KURL url( _url );
   url.setPath( redirect.c_str() );
 
   return ftpOpenDir( url );
 }
 
 
-bool Ftp::ftpOpenDir( K2URL& _url )
+bool Ftp::ftpOpenDir( KURL& _url )
 {
   string path( _url.path(-1) );
 
@@ -1041,7 +1043,7 @@ bool Ftp::ftpCloseDir()
 }
 
 
-bool Ftp::open( K2URL& _url, Ftp::Mode mode )
+bool Ftp::open( KURL& _url, Ftp::Mode mode )
 {
   string redirect;
 
@@ -1053,7 +1055,7 @@ bool Ftp::open( K2URL& _url, Ftp::Mode mode )
 }
 
 
-bool Ftp::ftpOpen( K2URL& _url, Ftp::Mode mode, unsigned long offset )
+bool Ftp::ftpOpen( KURL& _url, Ftp::Mode mode, unsigned long offset )
 {
   if( mode & READ ) {
     ftpSize( _url.path(),'I'); // try to find the size of the file
@@ -1197,7 +1199,7 @@ size_t Ftp::write(void *buffer, long len)
 }
 
 
-bool Ftp::mkdir( K2URL& _url )
+bool Ftp::mkdir( KURL& _url )
 {
   string redirect;
 

@@ -25,7 +25,9 @@
 #define FTP_BUFSIZ 1024
 #define ACCEPT_TIMEOUT 30
 
-#include <k2url.h>
+#include <string>
+
+class KURL;
 
 struct FtpEntry
 {
@@ -161,7 +163,7 @@ public:
   Ftp();
   virtual ~Ftp();
 
-  bool ftpConnect( K2URL& _url );
+  bool ftpConnect( KURL& _url );
   /**
    * The counterpart to @ref #ftpConnect
    */
@@ -169,11 +171,11 @@ public:
  
   bool isConnected() { return m_bLoggedOn; }
 
-  bool ftpOpenDir( K2URL& _url );
+  bool ftpOpenDir( KURL& _url );
   bool ftpCloseDir();
-  FtpEntry* ftpStat( K2URL& _url );
+  FtpEntry* ftpStat( KURL& _url );
 
-  bool ftpOpen( K2URL& _url, Mode mode, unsigned long offset = 0 );
+  bool ftpOpen( KURL& _url, Mode mode, unsigned long offset = 0 );
   bool ftpClose();
   bool ftpPort();
 
@@ -186,20 +188,20 @@ public:
   // this will send "rest offset" , use it before ftpOpen()
   bool ftpResume( unsigned long offset );
   
-  bool opendir( K2URL& _url );
+  bool opendir( KURL& _url );
   FtpEntry *readdir();
   bool closedir();
 
-  FtpEntry* stat( K2URL& _url );
+  FtpEntry* stat( KURL& _url );
 
-  bool open( K2URL& _url, Mode mode );
+  bool open( KURL& _url, Mode mode );
   bool close();
   size_t size();
   size_t read( void *buffer, long len );
   size_t write( void *buffer, long len );
   bool atEOF();
   
-  bool mkdir( K2URL& _url );
+  bool mkdir( KURL& _url );
 
   int error() { return m_error; }
   const char* errorText() { return m_errorText.c_str(); }
