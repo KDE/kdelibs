@@ -26,7 +26,7 @@
 #include "config.h"
 
 #include "kcheckaccelerators.h"
-
+#include "kaccelmanager.h"
 #include <qpopupmenu.h>
 #include <qapplication.h>
 #include <qdialog.h>
@@ -40,6 +40,7 @@
 #include <qcheckbox.h>
 
 #include <kconfig.h>
+#include <kdebug.h>
 #include <kglobal.h>
 #include <kshortcut.h>
 #include <klocale.h>
@@ -76,17 +77,17 @@
 */
 
 KCheckAccelerators::KCheckAccelerators( QObject* parent )
-    : QObject( parent, "kapp_accel_filter" ), block( false )
+    : QObject( parent, "kapp_accel_filter" ), block( false ), drklash(0)
 {
     parent->installEventFilter( this );
     KConfigGroupSaver saver( KGlobal::config(), "Development" );
-    QString sKey = KGlobal::config()->readEntry( "CheckAccelerators" ).stripWhiteSpace();
+    QString sKey = KGlobal::config()->readEntry( "CheckAccelerators", "F12" ).stripWhiteSpace();
     if( !sKey.isEmpty() ) {
       KShortcut cuts( sKey );
       if( cuts.count() > 0 )
-        key = cuts.seq(0).qt();
+        key = int(cuts.seq(0).qt());
     }
-    alwaysShow = KGlobal::config()->readBoolEntry( "AlwaysShowCheckAccelerators", false );
+    alwaysShow = KGlobal::config()->readBoolEntry( "AlwaysShowCheckAccelerators", true );
     autoCheck = KGlobal::config()->readBoolEntry( "AutoCheckAccelerators", true );
     connect( &autoCheckTimer, SIGNAL( timeout()), SLOT( autoCheckSlot()));
 }
@@ -95,261 +96,103 @@ bool KCheckAccelerators::eventFilter( QObject * , QEvent * e) {
     if ( block )
         return false;
     if ( e->type() == QEvent::Accel ) {
-        if ( ( static_cast<QKeyEvent *>(e) )->key() == key ) {
+        if ( static_cast<QKeyEvent *>(e)->key() == key ) {
     	    block = true;
 	    checkAccelerators( false );
 	    block = false;
-	    ( static_cast<QKeyEvent *>(e) )->accept();
+	    static_cast<QKeyEvent *>(e)->accept();
 	    return true;
 	}
     }
     if( autoCheck
-        && ( e->type() == QEvent::ChildInserted || e->type() == QEvent::ChildRemoved )) {
+        && ( e->type() == QEvent::ChildInserted ||
+             e->type() == QEvent::ChildRemoved ))
+    {
         autoCheckTimer.start( 100, true ); // 100 ms
     }
     return false;
 }
 
 void KCheckAccelerators::autoCheckSlot()
+{
+    if( block || QWidget::mouseGrabber() ||
+        QWidget::keyboardGrabber() ||
+        QApplication::activePopupWidget())
     {
-    if( block || QWidget::mouseGrabber() || QWidget::keyboardGrabber() || QApplication::activePopupWidget()) {
         autoCheckTimer.start( 100, true );
         return;
     }
     block = true;
     checkAccelerators( true );
     block = false;
-    }
-
-void KCheckAccelerators::findAccel( const QString& item, const QString &txt, AccelMap &accels ) {
-    QChar c;
-    int search_pos = 0;
-    for(;;) {
-        int i = txt.find( "&", search_pos );
-        if ( i == -1 )
-            return;
-        c = txt[ i + 1 ];
-        if ( !c.isNull() && c != '&')
-            break;
-        search_pos = i + 2; // search also after '&&'
-    }
-    c = c.lower();
-    AccelMap::Iterator it = accels.find( c );
-    AccelInfo info;
-    info.item  = item;
-    info.string = txt;
-    if ( it == accels.end() ) {
-        AccelInfoList list;
-        list.append( info );
-        accels.insert( c, list );
-    } else {
-        AccelInfoList &list = it.data();
-        list.append( info );
-    }
 }
 
-void KCheckAccelerators::checkMenuData( const QString& prefix, QMenuData* m ) {
-    AccelMap accels;
-    QMenuItem* mi;
-    int i;
-    QString s;
-    for ( i = 0; i < (int) m->count(); i++ ) {
-        mi = m->findItem( m->idAt( i ) );
-        s = mi->text();
-        if ( s.contains( '\t' ) )
-    	    s = s.left( s.find( '\t' ) );
-	findAccel( prefix.isEmpty() ? s : prefix + "/" + s, s, accels );
-    }
+void KCheckAccelerators::createDialog(QWidget *actWin, bool automatic)
+{
+    if ( drklash )
+        return;
 
-    menuAccels[ prefix ] = accels;
-
-    for ( i = 0; i < (int) m->count(); i++ ) {
-        mi = m->findItem( m->idAt( i ) );
-        if ( mi->popup() ) {
-    	    s = mi->text();
-	    if ( s.contains( '\t' ) )
-	        s = s.left( s.find( '\t' ) );
-	    checkMenuData( prefix.isEmpty() ? s : prefix + "/" + s, mi->popup());
-	}
+    drklash = new QDialog( actWin, "kapp_accel_check_dlg", false, Qt::WDestructiveClose);
+    drklash->setCaption( i18n( "Dr. Klash' Accelerator Diagnosis" ));
+    drklash->resize( 500, 460 );
+    QVBoxLayout* layout = new QVBoxLayout( drklash, 11, 6 );
+    layout->setAutoAdd( TRUE );
+    drklash_view = new QTextView( drklash );
+    QCheckBox* disableAutoCheck = NULL;
+    if( automatic )  {
+        disableAutoCheck = new QCheckBox( i18n( "&Disable automatic checking" ), drklash );
+        connect(disableAutoCheck, SIGNAL(toggled(bool)), SLOT(slotDisableCheck(bool)));
     }
+    QPushButton* btnClose = new QPushButton( i18n( "&Close" ), drklash );
+    btnClose->setDefault( true );
+    connect( btnClose, SIGNAL( clicked() ), drklash, SLOT( close() ) );
+    if (disableAutoCheck)
+        disableAutoCheck->setFocus();
+    else
+        drklash_view->setFocus();
 }
 
-void KCheckAccelerators::checkMenuData( QMenuData* m ) {
-    checkMenuData( "", m );
+void KCheckAccelerators::slotDisableCheck(bool on)
+{
+    autoCheck = !on;
+    if (!on)
+        autoCheckSlot();
 }
 
 void KCheckAccelerators::checkAccelerators( bool automatic ) {
     QWidget* actWin = qApp->activeWindow();
     if ( !actWin )
         return;
-    QMap<QChar, AccelInfoList > accels;
-    QObjectList *l = actWin->queryList( "QWidget" );
-    if ( !l )
+
+    KAcceleratorManager::manage(actWin);
+    QString a, c, r;
+    KAcceleratorManager::last_manage(a, c,  r);
+    if (c.isEmpty() && r.isEmpty() && (automatic || a.isEmpty()))
         return;
-    QMenuBar* mbar = 0;
-    QObject *p;
-    for ( QObject *o = l->first(); o; o = l->next() ) {
-        if ( ( static_cast<QWidget *>(o) )->isVisibleTo( actWin ) ) {
-    	    QWidget *w = static_cast<QWidget *>(o);
-	    if ( w->inherits( "QMenuBar" ) ) {
-	        mbar = static_cast<QMenuBar *>(w);
-                for( unsigned int i = 0;
-                     i < mbar->count();
-                     ++i )
-                    findAccel( w->className(), mbar->text( mbar->idAt( i )), accels );
-            }
-	    if (w->inherits("QLineEdit") || w->inherits("QComboBox") || w->inherits("QTextEdit") || w->inherits("QTextView") )
-		continue;
-
-	    // Skip widgets that are children of non-visible objects
-	    p = w->parent();
-	    while ( p && p->inherits("QWidget") && static_cast<QWidget *>(p)->isVisible() )
-		p = p->parent();
-	    if ( p )
-		continue;
-
-	    QMetaObject *mo = w->metaObject();
-	    const QMetaProperty* text = mo->property( mo->findProperty( "text", TRUE ), TRUE );
-	    const QMetaProperty* title = mo->property( mo->findProperty( "title", TRUE ), TRUE );
-	    if ( text )
-	        findAccel( w->className(), w->property( "text" ).toString(), accels );
-	    if ( title )
-	        findAccel( w->className(), w->property( "title" ).toString(), accels );
-
-    	    if ( w->inherits( "QTabBar" ) ) {
-    	        QTabBar *tbar = static_cast<QTabBar *>(w);
-		for ( int i = 0; i < tbar->count(); i++ )
-		    findAccel( tbar->className(), tbar->tabAt( i )->text(), accels );
-	    }
-	}
-    }
-    delete l;
 
     QString s;
 
-    bool was_clash = false;
-    int num_clashes = 0;
-    QString used;
-    for ( QMap<QChar,AccelInfoList>::Iterator it = accels.begin(); it != accels.end(); ++it  ) {
-        AccelInfoList list = it.data();
-        if( used.isEmpty())
-            used = it.key();
-        else {
-            used += ", ";
-            used += it.key();
-        }
-
-        if ( list.count() <= 1 )
-      	    continue;
-
-	if ( ++num_clashes == 1 ) {
-	    s += "<table border>";
-	    s += "<tr><th>" + i18n( "Accel" ) + "</th><th>" + i18n( "String" ) + "</th><th>" + i18n( "Widget" ) + "</th></tr>";
-	}
-	AccelInfoList::Iterator ait = list.begin();
-	s += "<tr><td rowspan=" + QString::number( list.count() ) + "><large><b>" + it.key() + "</b></large></td>";
-	s += "<td>";
-	s += (*ait).string;
-	s += "</td><td>";
-	s += (*ait).item;
-	s += "</td></tr>";
-
-	for ( ait++; ait != list.end(); ++ait ) {
-	    s += "<tr><td>";
-	    s += (*ait).string;
-	    s += "</td><td>";
-	    s += (*ait).item;
-	    s += "</td></tr>";
-	}
-    }
-    if ( num_clashes  ) {
-        s += "</table>";
-        s.prepend( "<h3>" + i18n( "One clash detected", "%n clashes detected", num_clashes ) + "</h3>" );
-    } else {
-        s += "<h3>" + i18n( "No clashes detected" ) + "</h3>";
+    if ( ! c.isEmpty() )  {
+        s += i18n("<h2>Accelerators changed</h2>");
+        s += "<table border><tr><th><b>Old Text</b></th><th><b>New Text</b></th></tr>"
+             + c + "</table>";
     }
 
-    s += "<h3>" + i18n( "Used accelerators:" ) + "</h3> " + ( used.isEmpty() ? i18n( "None" ) : used );
-    was_clash |= ( num_clashes > 0 );
-
-    if ( mbar ) {
-	checkMenuData( mbar );
-        QString s2;
-        for( QMap<QString,AccelMap>::Iterator mit = menuAccels.begin(); mit != menuAccels.end(); ++mit ) {
-            if( mit.key().isEmpty()) // don't list the menubar itself, it's already handled
-                continue;           //  together with other controls, do only submenus here
-    	    num_clashes = 0;
-            used = "";
-            QString m;
-	    for ( AccelMap::Iterator it = (*mit).begin(); it != (*mit).end(); ++it  ) {
-	        AccelInfoList list = it.data();
-                if( used.isEmpty())
-                    used = it.key();
-                else {
-                    used += ", ";
-                    used += it.key();
-                }
-	        if ( list.count() <= 1 )
-	            continue;
-
-    	        if ( ++num_clashes == 1 ) {
-	            m += "<table border>";
-	            m += "<tr><th>" + i18n( "Accel" ) + "</th><th>" + i18n( "Menu Item" ) + "</th></tr>";
-	        }
-	        AccelInfoList::Iterator ait = list.begin();
-    	        m += "<tr><td rowspan=" + QString::number( list.count() ) + "><large><b>" + it.key() + "</b></large></td>";
-    	        m += "<td>";
-	        m += (*ait).item;
-	        m += "</td></tr>";
-
-	        for ( ++ait; ait != list.end(); ++ait ) {
-		    m += "<tr><td>";
-	            m += (*ait).item;
-		    m += "</td></tr>";
-	        }
-	    }
-    	    if ( num_clashes  ) {
-    	        m += "</table>";
-                m.prepend( "<h3>" + i18n( "One clash detected", "%n clashes detected", num_clashes ) + "</h3>" );
-            }
-
-            if( num_clashes || alwaysShow ) {
-                m.prepend( "<h2>" + i18n( "Submenu" ) + " " + mit.key() + "</h2>" );
-                m += "<h3>" + i18n( "Used accelerators:" ) + "</h3> " + ( used.isEmpty() ? i18n( "None" ) : used );
-            }
-            s2 += m;
-            was_clash |= ( num_clashes > 0 );
-        }
-
-        if( s2.isEmpty())
-            s2 = "<h3>" + i18n( "No clashes detected" ) + "</h3>";
-	s2.prepend( "<h2>" + i18n( "Menu" ) + "</h2>" );
-	s2 += "<h2>" + i18n( "Other control elements" ) + "</h2>";
-	s.prepend( s2 );
+    if ( ! r.isEmpty() )  {
+        s += i18n("<h2>Accelerators removed</h2>");
+        s += "<table border><tr><th><b>Old Text</b></th></tr>" + r + "</table>";
     }
 
-    if( automatic && !alwaysShow && !was_clash )
-        return;
+    if ( ! a.isEmpty() )  {
+        s += i18n("<h2>Accelerators added (just for your info)</h2>");
+        s += "<table border><tr><th><b>New Text</b></th></tr>" + a + "</table>";
+    }
 
-    s.prepend( QString("<h2><em>") + actWin->caption() + "<em></h2>" );
+    createDialog(actWin, automatic);
+    drklash_view->setText(s);
+    drklash->show();
+    drklash->raise();
 
-    QDialog dlg( actWin, "kapp_accel_check_dlg", true );
-    dlg.setCaption( i18n( "Dr. Klash' Accelerator Diagnosis" ));
-    dlg.resize( 500, 460 );
-    QVBoxLayout* layout = new QVBoxLayout( &dlg, 11, 6 );
-    layout->setAutoAdd( TRUE );
-    QTextView* view = new QTextView( &dlg );
-    QCheckBox* disableAutoCheck = NULL;
-    if( automatic )
-        disableAutoCheck = new QCheckBox( i18n( "&Disable automatic checking" ), &dlg );
-    QPushButton* btnClose = new QPushButton( i18n( "&Close" ), &dlg );
-    btnClose->setDefault( true );
-    connect( btnClose, SIGNAL( clicked() ), &dlg, SLOT( close() ) );
-    view->setText( s );
-    view->setFocus();
-    dlg.exec();
-    if( disableAutoCheck != NULL && disableAutoCheck->isChecked())
-        autoCheck = false;
     // dlg will be destroyed before returning
 }
 

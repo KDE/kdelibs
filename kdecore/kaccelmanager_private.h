@@ -54,11 +54,14 @@ public:
   int accel() const { return m_accel; };
   void setAccel(int accel) { m_accel = accel; };
 
+  int originalAccel() const { return m_orig_accel; }
+  QString originalText() const { return m_origText; }
+
   QChar accelerator() const;
 
   int maxWeight(int &index, const QString &used);
 
-  bool operator == (const KAccelString &c) const { return m_pureText == c.m_pureText && m_accel == c.m_accel && orig_accel == c.orig_accel; }
+  bool operator == (const KAccelString &c) const { return m_pureText == c.m_pureText && m_accel == c.m_accel && m_orig_accel == c.m_orig_accel; }
 
 
 private:
@@ -67,8 +70,8 @@ private:
 
   void dump();
 
-  QString        m_pureText;
-  int            m_accel, orig_accel;
+  QString        m_pureText,  m_origText;
+  int            m_accel, m_orig_accel;
   QMemArray<int> m_weight;
 
 };
@@ -95,6 +98,7 @@ public:
   static const int WORD_BEGINNING_EXTRA_WEIGHT;
   static const int WANTED_ACCEL_EXTRA_WEIGHT;
   static const int DIALOG_BUTTON_EXTRA_WEIGHT;
+  static const int STANDARD_ACCEL;
 
   static const int ACTION_ELEMENT_WEIGHT;
   static const int GROUP_BOX_WEIGHT;

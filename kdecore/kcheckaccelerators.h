@@ -23,6 +23,7 @@
 #ifndef KCHECKACCELERATORS_H_
 #define KCHECKACCELERATORS_H_
 
+#include <qguardedptr.h>
 #include <qobject.h>
 #include <qkeysequence.h>
 #include <qmap.h>
@@ -30,6 +31,7 @@
 #include <qtimer.h>
 
 class QMenuData;
+class QTextView;
 
 /**
  @internal
@@ -64,35 +66,31 @@ class QMenuData;
 class KCheckAccelerators : public QObject
 {
     Q_OBJECT
-    public:
+public:
     /**
      * Creates a KCheckAccelerators instance for the given object.
      * @param parent the parent to check
      */
-        KCheckAccelerators( QObject* parent );
+    KCheckAccelerators( QObject* parent );
     /**
      * Re-implemented to filter the parent's events.
      */
-        bool eventFilter( QObject * , QEvent * e);
-    private:
-        void checkAccelerators( bool automatic );
-        struct AccelInfo {
-            QString item;
-	    QString string;
-        };
-        typedef QValueList<AccelInfo> AccelInfoList;
-        typedef QMap<QChar, AccelInfoList> AccelMap;
-        void findAccel( const QString& item, const QString &txt, AccelMap &accels );
-        void checkMenuData( const QString& prefix, QMenuData* m );
-        void checkMenuData( QMenuData* m );
-        QKeySequence key;
-        bool alwaysShow;
-        bool autoCheck;
-        bool block;
-        QMap<QString, AccelMap> menuAccels;
-        QTimer autoCheckTimer;
-    private slots:
-        void autoCheckSlot();
+    bool eventFilter( QObject * , QEvent * e);
+
+private:
+    void checkAccelerators( bool automatic );
+    int key;
+    bool alwaysShow;
+    bool autoCheck;
+    bool block;
+    QTimer autoCheckTimer;
+    void createDialog(QWidget *parent, bool automatic);
+    QGuardedPtr<QDialog> drklash;
+    QTextView *drklash_view;
+
+private slots:
+    void autoCheckSlot();
+    void slotDisableCheck(bool);
 };
 
 #endif

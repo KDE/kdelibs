@@ -88,7 +88,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kautoconfig.cpp \
 	kcrash.cpp kurl.cpp kregexp.cpp kglobal.cpp kglobalsettings.cpp \
 	kallocator.cpp kvmallocator.cpp kmimesourcefactory.cpp \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \
-	kuniqueapplication.cpp \
+	kuniqueapplication.cpp kaccelmanager.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdcoppropertyproxy.cpp \
