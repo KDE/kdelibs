@@ -75,10 +75,9 @@ public:
 	
 	enum {
 		Notification=1,
-		Question=2,
-		Warning=4,
-		Error=8,
-		Catastrophe=16
+		Warning=2,
+		Error=4,
+		Catastrophe=8
 	};
 	
 public:

@@ -312,3 +312,22 @@ Comment[sv]=Ett allvarligt fel uppstod vilket fick programmet att avslutas.
 Comment[tr]=Programın kapanmasına neden olan ciddi bir hata oluştu.
 Comment[uk]=Серйозна помилка стала причиною виходу програми.
 default_presentation=2
+level=4
+
+[notification]
+Name=Notification
+Comment=Something Special Happened in the Program
+default_presentation=2
+level=1
+
+[warning]
+Name=Warning
+Comment=There was an error in the program which may cause problems.
+default_presentation=2
+level=2
+
+[catastrophe]
+Name=Catastrophe
+Comment=A very serious error occured, at least causing the program to exit
+default_presentation=2
+level=8
