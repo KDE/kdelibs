@@ -29,6 +29,7 @@
 265        kdecore (KIconEffect)
 270        kdeui (KRootPixmap)
 280        kdeui (KSharedPixmap)
+281        kdeui (KCModule)
 290        kdeui (KPixmapIO)
 291        kdeui (KAboutDialog)
 292        kdeui (KComboBox)
