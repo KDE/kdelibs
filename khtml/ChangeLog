@@ -1,4 +1,9 @@
 2005-01-25  Germain Garand  <germain@ebooksfrance.org>
+
+        * khtmlview.cpp (clear/timerEvent): disable scrollbars before first relayout (avoids blanking the view)
+        (viewportWheelEvent): same for wheel events. Also support Horizontal wheel events (needs qt-copy/patch #61).
+
+2005-01-25  Germain Garand  <germain@ebooksfrance.org>
         
         fix #95704: float double-painting bug.  Most of the work done by Charles Samuels.
 
