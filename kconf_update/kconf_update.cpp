@@ -788,7 +788,7 @@ void KonfUpdate::resetOptions()
 }
 
 
-int main(int argc, char **argv)
+extern "C" int kdemain(int argc, char **argv)
 {
    KAboutData aboutData("kconf_update", I18N_NOOP("KConf Update"),
                         "1.0.2",
