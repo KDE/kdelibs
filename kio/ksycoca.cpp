@@ -52,7 +52,8 @@ struct KSycocaPrivate {
 
 // Read-only constructor
 KSycoca::KSycoca()
-  : DCOPObject("ksycoca")
+  : DCOPObject("ksycoca"), m_lstFactories(0), m_str(0), bNoDatabase(false),
+    m_sycoca_size(0), m_sycoca_mmap(0)
 {
    d = new KSycocaPrivate;
    openDatabase();
@@ -67,6 +68,7 @@ KSycoca::KSycoca()
 bool KSycoca::openDatabase( bool openDummyIfNotFound )
 {
    m_sycoca_mmap = 0;
+   m_str = 0;
    QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca";
    delete d->database;
    d->database = 0L;
@@ -120,7 +122,8 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
 
 // Read-write constructor - only for KBuildSycoca
 KSycoca::KSycoca( bool /* dummy */ )
-  : DCOPObject("kbuildsycoca")
+  : DCOPObject("kbuildsycoca"), m_lstFactories(0), m_str(0), bNoDatabase(false),
+    m_sycoca_size(0), m_sycoca_mmap(0)
 {
    d = new KSycocaPrivate;
    m_lstFactories = new KSycocaFactoryList();
@@ -144,7 +147,6 @@ KSycoca * KSycoca::self()
 KSycoca::~KSycoca()
 {
    closeDatabase();
-   delete m_lstFactories;
    if (d->database != 0) delete d->database;
    delete d;
    _self = 0L;

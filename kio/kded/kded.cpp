@@ -27,6 +27,7 @@
 
 #include <unistd.h>
 #include <stdlib.h>
+#include <signal.h>
 
 #include <qfile.h>
 #include <qtimer.h>
@@ -211,6 +212,11 @@ void Kded::readDirectory( const QString& _path )
   }
 }
 
+static void sighandler(int /*sig*/)
+{
+    kapp->quit();
+}
+
 static KCmdLineOptions options[] =
 {
   { "check", I18N_NOOP("Check sycoca database only once."), 0 },
@@ -265,6 +271,7 @@ int main(int argc, char *argv[])
      if (check)
         return 0;
 
+     signal(SIGTERM, sighandler);
      KUniqueApplication k( false, false ); // No styles, no GUI
 
      // During startup kdesktop waits for KDED to finish.
