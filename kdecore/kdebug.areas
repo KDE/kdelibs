@@ -41,7 +41,7 @@
 8000    corba
 8001    parts (corba)
 8002    partsui (corba)
-
+8003    kom (corba)
 
 # 30001-65534 are for KOffice
 30001 koffice
