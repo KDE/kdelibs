@@ -820,6 +820,11 @@ int TCPSlaveBase::verifyCertificate()
                    if (!d->dcc) {
                       d->dcc = new DCOPClient;
                       d->dcc->attach();
+                      if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
+                         KApplication::startServiceByDesktopPath("kio_uiserver.desktop",
+                         QStringList() );
+                      }
+
                    }
                    QByteArray data, ignore;
                    QCString ignoretype;
@@ -941,6 +946,10 @@ int TCPSlaveBase::verifyCertificate()
                    if (!d->dcc) {
                       d->dcc = new DCOPClient;
                       d->dcc->attach();
+                      if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
+                         KApplication::startServiceByDesktopPath("kio_uiserver.desktop",
+                         QStringList() );
+                      }
                    }
                    QByteArray data, ignore;
                    QCString ignoretype;
@@ -1006,6 +1015,10 @@ int TCPSlaveBase::verifyCertificate()
           if (!d->dcc) {
              d->dcc = new DCOPClient;
              d->dcc->attach();
+             if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
+                KApplication::startServiceByDesktopPath("kio_uiserver.desktop",
+                QStringList() );
+             }
           }
           QByteArray data, ignore;
           QCString ignoretype;
