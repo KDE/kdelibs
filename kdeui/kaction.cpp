@@ -446,9 +446,8 @@ int KAction::plug( QWidget *w, int index )
     else
     {
       KInstance *instance;
-      KActionCollection *coll = parentCollection();
-      if ( coll )
-        instance = coll->instance();
+      if ( m_parentCollection )
+        instance = m_parentCollection->instance();
       else
         instance = KGlobal::instance();
 
