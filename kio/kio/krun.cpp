@@ -712,7 +712,7 @@ KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _showProgr
   m_bInit = true;
   connect( &m_timer, SIGNAL( timeout() ), this, SLOT( slotTimeout() ) );
   m_timer.start( 0, true );
-  kdDebug(7010) << " new KRun " << this << " timer=" << &m_timer << endl;
+  kdDebug(7010) << " new KRun " << this << " " << _url.prettyURL() << " timer=" << &m_timer << endl;
 
   kapp->ref();
 }
