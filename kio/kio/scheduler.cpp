@@ -879,6 +879,7 @@ Scheduler::slotUnregisterWindow(QObject *obj)
    if (it == m_windowList.end())
       return;
    long windowId = it.data();
+   m_windowList.remove( it );
    if (kapp)
    {
       QByteArray params;
