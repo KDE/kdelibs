@@ -24,6 +24,7 @@
 
 #include "html_form.h"
 #include "html_formimpl.h"
+#include "dom_doc.h"
 #include "dom_string.h"
 #include "html_miscimpl.h"
 #include "dom_exception.h"
@@ -484,7 +485,11 @@ void HTMLInputElement::setSize( const DOMString &value )
 DOMString HTMLInputElement::src() const
 {
     if(!impl) return DOMString();
-    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_SRC);
+    DOMString s = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_SRC);
+    if ( !s.isEmpty() )
+        s = ownerDocument().completeURL( s );
+
+    return s;
 }
 
 void HTMLInputElement::setSrc( const DOMString &value )

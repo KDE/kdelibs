@@ -338,6 +338,12 @@ KHTMLView *Document::view() const
     return ((DocumentImpl*)impl)->view();
 }
 
+DOMString Document::completeURL(const DOMString& url)
+{
+    if ( !impl ) return url;
+    return static_cast<DocumentImpl*>( impl )->completeURL( url.string() );
+}
+
 CSSStyleDeclaration Document::getOverrideStyle(const Element &elt, const DOMString &pseudoElt)
 {
     if (!impl)

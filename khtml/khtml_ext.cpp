@@ -6,6 +6,7 @@
 #include "khtml_pagecache.h"
 #include "rendering/render_form.h"
 #include "dom/html_form.h"
+#include "dom/html_image.h"
 #include <qapplication.h>
 #include <qclipboard.h>
 #include <qpopupmenu.h>
@@ -329,7 +330,10 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   if ( !e.isNull() && (e.elementId() == ID_IMG ||
                        (e.elementId() == ID_INPUT && !static_cast<DOM::HTMLInputElement>(e).src().isEmpty())))
   {
-    d->m_imageURL = KURL( d->m_khtml->url(), e.getAttribute( "src" ).string() );
+      if ( e.elementId() == ID_IMG )
+          d->m_imageURL = KURL( static_cast<DOM::HTMLImageElement>( e ).src().string() );
+      else
+          d->m_imageURL = KURL( static_cast<DOM::HTMLInputElement>( e ).src().string() );
     d->m_paSaveImageAs = new KAction( i18n( "Save Image As..." ), 0, this, SLOT( slotSaveImageAs() ),
                                       actionCollection(), "saveimageas" );
     d->m_paCopyImageLocation = new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),

@@ -23,6 +23,7 @@
 // --------------------------------------------------------------------------
 
 #include "dom_string.h"
+#include "dom_doc.h"
 #include "html_image.h"
 #include "html_imageimpl.h"
 #include "html_misc.h"
@@ -304,7 +305,10 @@ void HTMLImageElement::setLongDesc( const DOMString &value )
 DOMString HTMLImageElement::src() const
 {
     if(!impl) return DOMString();
-    return ((ElementImpl *)impl)->getAttribute(ATTR_SRC);
+    DOMString s = ((ElementImpl *)impl)->getAttribute(ATTR_SRC);
+    if ( !s.isEmpty() )
+        s = ownerDocument().completeURL( s );
+    return s;
 }
 
 void HTMLImageElement::setSrc( const DOMString &value )

@@ -51,7 +51,7 @@ class Attr;
 class EntityReference;
 class ProcessingInstruction;
 class DocumentImpl;
-class Range; 
+class Range;
 class NodeIterator;
 class TreeWalker;
 class NodeFilter;
@@ -60,7 +60,7 @@ class DocumentTypeImpl;
 class Event;
 class AbstractView;
 class CSSStyleDeclaration;
- 
+
 /**
  * The <code> DOMImplementation </code> interface provides a number of
  * methods for performing operations that are independent of any
@@ -524,6 +524,13 @@ public:
      * @return The override style declaration.
      */
     CSSStyleDeclaration getOverrideStyle(const Element &elt, const DOMString &pseudoElt);
+
+    /**
+     * not part of the DOM
+     *
+     * completes a given URL
+     */
+    DOMString completeURL(const DOMString& url);
 
 protected:
     Document( DocumentImpl *i);
