@@ -97,8 +97,6 @@ extern "C" {
  *
  */
 
-int DCOPAuthCount = 1;
-const char *DCOPAuthNames[] = {"MIT-MAGIC-COOKIE-1"};
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -107,8 +105,11 @@ extern IcePaAuthStatus _KDE_IcePaMagicCookie1Proc (IceConn, void **, int, int, v
 #ifdef __cplusplus
 }
 #endif
-IcePoAuthProc DCOPClientAuthProcs[] = {_KDE_IcePoMagicCookie1Proc};
-IcePaAuthProc DCOPServerAuthProcs[] = {_KDE_IcePaMagicCookie1Proc};
+// these 4 below are static, otherwise build with --disable-shared will fail
+static IcePoAuthProc DCOPClientAuthProcs[] = {_KDE_IcePoMagicCookie1Proc};
+static IcePaAuthProc DCOPServerAuthProcs[] = {_KDE_IcePaMagicCookie1Proc};
+static int DCOPAuthCount = 1;
+static const char *DCOPAuthNames[] = {"MIT-MAGIC-COOKIE-1"};
 
 /**
  * @internal
