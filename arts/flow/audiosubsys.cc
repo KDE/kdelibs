@@ -334,6 +334,11 @@ int AudioSubSystem::open()
 	{  
 		_error = "can't set requested samplingrate";
 
+		char details[80];
+		sprintf(details," (requested rate %d, got rate %d)",
+			_samplingRate, speed);
+		_error += details;
+
 		close();
 		return -1;
 	} 
