@@ -715,7 +715,8 @@ void KFileBaseDialog::back()
 
     updateHistory( true, !backStack.isEmpty());
 
-    setDir(*s, false);
+    setDir(s->data(), false);
+    delete s;
 }
 
 // Code pinched from kfm then hacked
@@ -729,7 +730,8 @@ void KFileBaseDialog::forward()
 
     QString *s = forwardStack.pop();
     updateHistory( !forwardStack.isEmpty(), true);
-    setDir(*s, false);
+    setDir(s->data(), false);
+    delete s;
 }
 
 // SLOT
