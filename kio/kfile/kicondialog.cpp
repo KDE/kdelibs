@@ -187,6 +187,7 @@ class KIconDialog::KIconDialogPrivate
     ~KIconDialogPrivate() {}
     bool m_bStrictIconSize;
     QString custom;
+    QString customLocation;
 };
 
 /*
@@ -286,7 +287,9 @@ void KIconDialog::showIcons()
             filelist=mpLoader->queryIcons(mGroupOrSize, mContext);
         else
             filelist=mpLoader->queryIconsByContext(mGroupOrSize, mContext);
-    else
+    else if ( !d->customLocation.isNull() ) 
+	filelist=mpLoader->queryIconsByDir( d->customLocation );
+    else 
 	filelist=mFileList;
 
     QSortedList <IconPath>iconlist;
@@ -351,6 +354,11 @@ void KIconDialog::setup(KIcon::Group group, KIcon::Context context,
     mpCombo->setCurrentItem(mContext-1);
 }
 
+void KIconDialog::setCustomLocation( const QString& location )
+{
+    d->customLocation = location;
+}
+
 QString KIconDialog::openDialog()
 {
     showIcons();
@@ -411,6 +419,8 @@ void KIconDialog::slotButtonClicked(int id)
 	if (!file.isEmpty())
         {
             d->custom = file;
+	    if ( mType == 1 )
+	      d->customLocation = QFileInfo( file ).dirPath( true );
             accept();
 	}
 	break;
@@ -528,6 +538,10 @@ void KIconButton::setIcon(const QString& icon)
 {
     mIcon = icon;
     setPixmap(mpLoader->loadIcon(mIcon, mGroup, d->iconSize));
+    if (!mpDialog)
+        mpDialog = new KIconDialog(mpLoader, this);
+    if ( mbUser )
+      mpDialog->setCustomLocation( QFileInfo( mpLoader->iconPath(mIcon, mGroup, true) ).dirPath( true ) );
 }
 
 void KIconButton::resetIcon()
@@ -550,6 +564,8 @@ void KIconButton::slotChangeIcon()
     QPixmap pm = mpLoader->loadIcon(name, mGroup, d->iconSize);
     setPixmap(pm);
     mIcon = name;
+    if ( mbUser )
+      mpDialog->setCustomLocation( QFileInfo( mpLoader->iconPath(mIcon, mGroup, true) ).dirPath( true ) );
     emit iconChanged(name);
 }
 

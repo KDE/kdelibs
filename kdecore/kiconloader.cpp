@@ -824,6 +824,17 @@ int KIconLoader::currentSize(KIcon::Group group) const
     return d->mpGroups[group].size;
 }
 
+QStringList KIconLoader::queryIconsByDir( const QString& iconsDir ) const
+{
+  QDir dir(iconsDir);
+  QStringList lst = dir.entryList("*.png;*.xpm", QDir::Files);
+  QStringList result;
+  QStringList::ConstIterator it;
+  for (it=lst.begin(); it!=lst.end(); it++)
+    result += iconsDir + "/" + *it;
+  return result;
+}
+
 QStringList KIconLoader::queryIconsByContext(int group_or_size,
 					    KIcon::Context context) const
 {

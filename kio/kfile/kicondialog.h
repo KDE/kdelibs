@@ -119,6 +119,10 @@ public:
      * Returns true if a strict icon size policy is set.
      */
     bool strictIconSize() const;
+    /**
+     * sets a custom icon directory
+     */
+    void setCustomLocation( const QString& location );
 
     /**
      * Sets the size of the icons to be shown / selected.

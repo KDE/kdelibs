@@ -194,6 +194,8 @@ public:
     QStringList queryIconsByContext(int group_or_size,
 				    KIcon::Context context=KIcon::Any) const;
 
+    QStringList queryIconsByDir( const QString& iconsDir ) const;
+
     /**
      * @return the current size for an icon group.
      */
