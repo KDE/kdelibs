@@ -1075,15 +1075,15 @@ void KRecentFilesAction::setMaxItems( uint maxItems )
 
 void KRecentFilesAction::addURL( const KURL& url )
 {
-    QString     file = url.prettyURL();
     if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
        return;
+    QString     file = url.prettyURL( 0, KURL::StripFileProtocol );
     QStringList lst = items();
 
     // remove file if already in list
     lst.remove( file );
 
-    // remove las item if already maxitems in list
+    // remove last item if already maxitems in list
     if( lst.count() == d->m_maxItems )
     {
         // remove last item
@@ -1098,7 +1098,7 @@ void KRecentFilesAction::addURL( const KURL& url )
 void KRecentFilesAction::removeURL( const KURL& url )
 {
     QStringList lst = items();
-    QString     file = url.prettyURL();
+    QString     file = url.prettyURL( 0, KURL::StripFileProtocol );
 
     // remove url
     if( lst.count() > 0 )
