@@ -1,7 +1,7 @@
 usr/lib/libmcop.so.0.0.0
 usr/lib/libmcop.so.0
 usr/lib/libmcop.la
-usr/lib/mcop/Arts/*
+usr/lib/mcop/*
 usr/lib/libarts*.so.*
 usr/lib/libarts*.la
 usr/lib/libkmedia2_idl.so.0.0.0
