@@ -1,3 +1,5 @@
+// $Id$
+
 #include "kio_filter.h"
 
 #include <kdebug.h>
@@ -40,7 +42,8 @@ Filter::Filter( const char *_cmd )
     char *cmd = strdup( _cmd );
     argv[0] = cmd;
     execv( argv[0], argv );
-    fprintf( stderr, "Slave: exec failed...!\n" );
+    cerr << "Slave: exec failed...!" << endl;
+    cerr << "Have you installed kdebase?" << endl;
     exit( 0 );
   }
   close( recv_in );

@@ -1,3 +1,5 @@
+// $Id$
+
 #include "kio_connection.h"
 
 #include <stdio.h>
@@ -157,7 +159,8 @@ Slave::Slave( const char *_cmd ) : Connection()
     char *cmd = strdup( _cmd );
     argv[0] = cmd;
     execv( argv[0], argv );
-    cerr << "Slave: exec failed...!\n";
+    cerr << "Slave: exec failed...!" << endl;
+    cerr << "Have you installed kdebase?" << endl;
     exit( 0 );
   }
   close( recv_in );
