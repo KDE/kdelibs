@@ -411,6 +411,21 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
 
   topLayout->addWidget(terminal);
 
+  nocloseonexit = new QCheckBox( i18n("Do not &close when command exits"), this );
+  nocloseonexit->setChecked( true );
+  nocloseonexit->setDisabled( true );
+  
+  // check to see if we use konsole if not disable the nocloseonexit
+  // because we don't know how to do this on other terminal applications
+  KSimpleConfig conf(QString::fromLatin1("kdeglobals"), true);
+  conf.setGroup(QString::fromLatin1("General"));
+  m_command = conf.readEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
+
+  if (bReadOnly || m_command != "konsole")
+     nocloseonexit->hide();
+
+  topLayout->addWidget(nocloseonexit);
+
   if (!qServiceType.isNull())
   {
     remember = new QCheckBox(i18n("&Remember application association for this type of file"), this);
@@ -424,11 +439,11 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   KButtonBox* b = new KButtonBox( this );
   b->addStretch( 2 );
 
-  ok = b->addButton(  i18n ( "&OK" ) );
+  QPushButton* ok = b->addButton(  i18n ( "&OK" ) );
   ok->setDefault( true );
   connect(  ok, SIGNAL( clicked() ), SLOT( slotOK() ) );
 
-  cancel = b->addButton(  i18n( "&Cancel" ) );
+  QPushButton* cancel = b->addButton(  i18n( "&Cancel" ) );
   connect(  cancel, SIGNAL( clicked() ), SLOT( reject() ) );
 
   b->layout();
@@ -498,6 +513,9 @@ void KOpenWithDlg::slotTerminalToggled(bool)
 {
     // ### indicate that default value was overridden
     m_terminaldirty = true;
+    if( terminal->isChecked() ) {
+      nocloseonexit->setDisabled( false );
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -528,11 +546,12 @@ void KOpenWithDlg::slotOK()
     initialServiceName = serviceName;
     kdDebug(250) << "initialServiceName=" << initialServiceName << endl;
     int i = 1; // We have app, app-2, app-3... Looks better for the user.
+    bool ok = false;
     // Check if there's already a service by that name, with the same Exec line
     do {
         kdDebug(250) << "looking for service " << serviceName << endl;
         KService::Ptr serv = KService::serviceByDesktopName( serviceName );
-        bool ok = !serv; // ok if no such service yet
+        ok = !serv; // ok if no such service yet
         // also ok if we find the exact same service (well, "kwrite" == "kwrite %U"
         if ( serv &&
              serv->type() == "Application" && ( // only apps
@@ -570,13 +589,8 @@ void KOpenWithDlg::slotOK()
   }
 
   if (terminal->isChecked()) {
-    KSimpleConfig conf(QString::fromLatin1("konquerorrc"), true);
-    conf.setGroup(QString::fromLatin1("Misc Defaults"));
-    m_command = conf.readEntry(QString::fromLatin1("Terminal"), QString::fromLatin1("konsole"));
-
-    m_command += QString::fromLatin1(" -e ");
-    m_command += edit->url();
-    kdDebug(250) << "Setting m_command to " << m_command << endl;
+    KSimpleConfig conf(QString::fromLatin1("kdeglobals"), true);
+    conf.setGroup(QString::fromLatin1("General"));
   }
   if ( m_pService && terminal->isChecked() != m_pService->terminal() )
       m_pService = 0L; // It's not exactly this service we're running
@@ -607,6 +621,18 @@ void KOpenWithDlg::slotOK()
   desktop.writeEntry(QString::fromLatin1("Type"), QString::fromLatin1("Application"));
   desktop.writeEntry(QString::fromLatin1("Name"), initialServiceName);
   desktop.writeEntry(QString::fromLatin1("Exec"), fullExec);
+  if (terminal->isChecked())
+  {
+    desktop.writeEntry(QString::fromLatin1("Terminal"), true);
+    KSimpleConfig conf(QString::fromLatin1("kdeglobals"), true);
+    conf.setGroup(QString::fromLatin1("General"));
+    m_command = conf.readEntry(QString::fromLatin1("TerminalApplication"), QString::fromLatin1("konsole"));
+    // only add --noclose when we are sure it is konsole we'r using
+    if (m_command == "konsole" && nocloseonexit->isChecked())
+      desktop.writeEntry(QString::fromLatin1("TerminalOptions"), " --noclose ");
+  }
+  else
+    desktop.writeEntry(QString::fromLatin1("Terminal"), false);
   desktop.writeEntry(QString::fromLatin1("InitialPreference"), maxPreference + 1);
   if (remember)
     if (remember->isChecked()) {
@@ -616,10 +642,6 @@ void KOpenWithDlg::slotOK()
       if (!qServiceType.isEmpty() && !mimeList.contains(qServiceType))
         mimeList.append(qServiceType);
       desktop.writeEntry(QString::fromLatin1("MimeType"), mimeList, ';');
-      if (terminal->isChecked())
-        desktop.writeEntry(QString::fromLatin1("Terminal"), true);
-      else
-        desktop.writeEntry(QString::fromLatin1("Terminal"), false);
 
       if ( !qServiceType.isEmpty() )
       {
