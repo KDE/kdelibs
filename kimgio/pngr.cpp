@@ -147,6 +147,8 @@ void kimgio_png_read( QImageIO *io )
 	return;
 }
 
+#if (defined PNG_LIBPNG_VER) && (PNG_LIBPNG_VER >= 100)
+
 void kimgio_png_write( QImageIO *iio )
 {
 	QIODevice *f = ( iio->ioDevice() );
@@ -336,5 +338,16 @@ void kimgio_png_write( QImageIO *iio )
 
 	return;
 }
+#else
+	// png library is too old
+
+void kimgio_png_write( QImageIO *iio )
+{
+        // TODO: implement this
+        warning("kimgio_png_write: not yet implemented for old PNG libraries");
+}
+
+#endif
+
 
 #endif /* HAVE_LIBPNG */
