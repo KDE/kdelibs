@@ -242,8 +242,31 @@ KSpellConfig::interpret (QString &fname, QString &lname,
   if(dname.right(3)=="sml" || dname.right(3)=="med" || dname.right(3)=="lrg" || dname.right(3)=="xlg")
      dname.remove(dname.length()-3,3);
 
+  QString extension;
+  
+  int i = dname.find('-');
+  if (i != -1)
+  {
+    extension = dname.mid(i+1);
+    dname.truncate(i);
+  }
+
+  // Aspell uses 2 alpha language codes or 2 alpha language + 2 alpha country
+  if (dname.length() == 2) {
+    lname = dname;
+    hname = KGlobal::locale()->twoAlphaToLanguageName(lname);
+  }
+  else if ((dname.length() == 5) && (dname[2] == '_')) {
+    lname = dname.left(2);
+    hname = KGlobal::locale()->twoAlphaToLanguageName(lname);
+    QString country = KGlobal::locale()->twoAlphaToCountryName(dname.right(2));
+    if (extension.isEmpty())
+      extension = country;
+    else
+      extension = country + " - " + extension;
+  }
   //These are mostly the ispell-langpack defaults
-  if (dname=="english" || dname=="american" ||
+  else if (dname=="english" || dname=="american" ||
       dname=="british" || dname=="canadian") {
     lname="en"; hname=i18n("English");
   }
@@ -310,6 +333,10 @@ KSpellConfig::interpret (QString &fname, QString &lname,
   }
   else {
     lname=""; hname=i18n("Unknown ispell dictionary", "Unknown");
+  }
+  if (!extension.isEmpty())
+  {
+    hname = hname + " (" + extension + ")";
   }
 
   //We have explicitly chosen English as the default here.
@@ -450,7 +477,7 @@ void KSpellConfig::getAvailDictsAspell () {
   kdDebug(750) << "KSpellConfig::getAvailDictsAspell "
 	       << dir.filePath() << " " << dir.dirPath() << endl;
 
-  QDir thedir (dir.filePath(),"*");
+  QDir thedir (dir.filePath(),"*.multi");
 
   kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
   kdDebug(750) << "entryList().count()="
@@ -464,7 +491,7 @@ void KSpellConfig::getAvailDictsAspell () {
       // consider only simple dicts without '-' in the name
       // FIXME: may be this is wrong an the list should contain
       // all *.multi files too, to allow using special dictionaries
-      if (fname[0] != '.' &&  fname.find('-') < 0)
+      if (fname[0] != '.')
 	{
 
 	  // remove .multi
@@ -478,15 +505,13 @@ void KSpellConfig::getAvailDictsAspell () {
 	      langfnames.prepend ( fname );
 
 	      hname=i18n("default spelling dictionary"
-			 ,"Default - %1 [%2]").arg(hname).arg(fname);
+			 ,"Default - %1").arg(hname);
 
 	      dictcombo->changeItem (hname,0);
 	    }
 	  else
 	    {
 	      langfnames.append (fname);
-	      hname=hname+" ["+fname+"]";
-
 	      dictcombo->insertItem (hname);
 	    }
 	}
