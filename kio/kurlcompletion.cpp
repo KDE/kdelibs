@@ -857,14 +857,13 @@ bool KURLCompletion::fileCompletion(const MyURL &url, QString *match)
 
 bool KURLCompletion::urlCompletion(const MyURL &url, QString *match)
 {
-	//kdDebug() << "urlCompletion " << url.kurl()->prettyURL() << endl;
+	//kdDebug() << "urlCompletion: url = " << url.kurl()->prettyURL() << endl;
 
 	// Use m_cwd as base url in case url is not absolute
 	KURL url_cwd = KURL( m_cwd ); 
 	
 	// Create an URL with the directory to be listed
 	KURL *url_dir = new KURL( url_cwd, url.kurl()->url() );
-	url_dir->setFileName(""); // not really nesseccary...
 
 	// Don't try url completion if
 	// 1. malformed url
@@ -883,6 +882,7 @@ bool KURLCompletion::urlCompletion(const MyURL &url, QString *match)
 	                    && !d->url_auto_completion ) ) ) )
 		return false;
 
+	url_dir->setFileName(""); // not really nesseccary, but clear the filename anyway...
 
 	// Remove escapes
 	QString dir = url_dir->directory( false, false );
@@ -1161,14 +1161,6 @@ void KURLCompletion::slotIOFinished( KIO::Job * job )
 //	kdDebug() << "slotIOFinished() " << endl;
 
 	assert( job == m_list_job );
-
-	if (job && job->error()
-		&& job->error() != KIO::ERR_UNKNOWN_HOST
-		&& job->error() != KIO::ERR_DOES_NOT_EXIST
-		&& job->error() != KIO::ERR_CANNOT_ENTER_DIRECTORY)
-	{
-		job->showErrorDialog();
-	}
 
 	if ( d->list_urls.isEmpty() ) {
 		
