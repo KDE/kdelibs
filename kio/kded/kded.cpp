@@ -38,6 +38,7 @@
 #include <kaboutdata.h>
 #include <klocale.h>
 #include <kglobal.h>
+#include <kprocess.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <kstddirs.h>
@@ -121,7 +122,12 @@ void Kded::recreate()
    // Using KLauncher here is difficult since we might not have a
    // database
 
-   system("kbuildsycoca --incremental");
+   // Avoid relying on $PATH and on /bin/sh -> don't use system()
+   KProcess proc;
+   proc << locate("exe","kbuildsycoca");
+   proc << "--incremental";
+   proc.start( KProcess::Block );
+
    build();
 }
 
@@ -151,7 +157,7 @@ bool Kded::process(const QCString &fun, const QByteArray &/*data*/,
     return true;
   } else
     return false;
-    // don't call KSycoca::process - this is for other apps, not k
+    // don't call KSycoca::process - this is for other apps, not kded
 }
 
 
