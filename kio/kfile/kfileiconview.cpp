@@ -63,7 +63,7 @@ public:
 				      SLOT( slotLargeRows() ),
 				      parent->actionCollection(),
 				      "large rows" );
-	
+
 	smallColumns->setExclusiveGroup(QString::fromLatin1("IconView mode"));
 	largeRows->setExclusiveGroup(QString::fromLatin1("IconView mode"));
 
@@ -576,7 +576,7 @@ void KFileIconView::slotPreviewResult( KIO::Job *job )
 }
 
 void KFileIconView::gotPreview( const KFileItem *item, const QPixmap& pix )
-{   
+{
     KFileIconViewItem *it = viewItem( item );
     if ( it )
         if( item->overlays() & KIcon::HiddenOverlay )
@@ -649,7 +649,8 @@ void KFileIconView::setSorting( QDir::SortSpec spec )
 
     if ( spec & QDir::Time ) {
         for ( ; (item = it.current()); ++it )
-            viewItem(item)->setKey( sortingKey( item->time( KIO::UDS_MODIFICATION_TIME ), item->isDir(), spec ));
+            // warning, time_t is often signed -> cast it
+            viewItem(item)->setKey( sortingKey( (unsigned long)item->time( KIO::UDS_MODIFICATION_TIME ), item->isDir(), spec ));
     }
 
     else if ( spec & QDir::Size ) {
@@ -737,7 +738,8 @@ void KFileIconView::initItem( KFileIconViewItem *item, const KFileItem *i,
     QDir::SortSpec spec = KFileView::sorting();
 
     if ( spec & QDir::Time )
-        item->setKey( sortingKey( i->time( KIO::UDS_MODIFICATION_TIME ),
+        // warning, time_t is often signed -> cast it
+        item->setKey( sortingKey( (unsigned long) i->time( KIO::UDS_MODIFICATION_TIME ),
                                   i->isDir(), spec ));
     else if ( spec & QDir::Size )
         item->setKey( sortingKey( i->size(), i->isDir(), spec ));
@@ -788,7 +790,7 @@ QDragObject *KFileIconView::dragObject()
     if( urls.count() > 1 )
         pixmap = DesktopIcon( "kmultiple", iconSize() );
     if( pixmap.isNull() )
-        pixmap = currentFileItem()->pixmap( iconSize() );	
+        pixmap = currentFileItem()->pixmap( iconSize() );
 
     QPoint hotspot;
     hotspot.setX( pixmap.width() / 2 );
@@ -803,14 +805,14 @@ void KFileIconView::slotAutoOpen()
     d->autoOpenTimer.stop();
     if( !d->dropItem )
         return;
-    
+
     KFileItem *fileItem = d->dropItem->fileInfo();
     if (!fileItem)
         return;
-        
+
     if( fileItem->isFile() )
         return;
-    
+
     if ( fileItem->isDir() || fileItem->isLink())
         sig->activate( fileItem );
 }
@@ -894,9 +896,9 @@ void KFileIconView::contentsDropEvent( QDropEvent *e )
     KFileItem * fileItem = 0;
     if (item)
         fileItem = item->fileInfo();
-       
+
     emit dropped(e, fileItem);
-    
+
     KURL::List urls;
     if (KURLDrag::decode( e, urls ) && !urls.isEmpty())
     {
