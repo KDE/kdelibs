@@ -1,5 +1,8 @@
 2004-06-06  Zack Rusin  <zack@kde.org>
 
+        * xml/dom_docimpl.cpp (getId): do html lookup if specified even if not
+        in a html document since elements can be in xhtml the namespace
+
         * xml/dom_docimpl.h (hasPendingSheets): adding function returning true, 
         if stylesheets are currently loading for document.
 
