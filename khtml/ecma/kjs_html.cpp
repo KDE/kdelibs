@@ -221,7 +221,11 @@ void KJS::HTMLDocument::tryPut(const UString &p, const KJSO& v)
     doc.setBody((new DOMNode(KJS::toNode(v)))->toNode());
   else if (p == "cookie")
     doc.setCookie(v.toString().value().string());
-  else
+  else if (p == "location") {
+    KHTMLPart *part = static_cast<DOM::DocumentImpl *>( doc.handle() )->view()->part();
+    QString str = v.toString().value().qstring();
+    part->scheduleRedirection(0, str);
+  } else
     DOMDocument::tryPut(p,v);
 }
 
