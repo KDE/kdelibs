@@ -350,6 +350,9 @@ public:
      */
     bool isChecked() const;
 
+    virtual void setText(const QString &text) 
+       { QToggleAction::setText(text); }   // nasty compilers...
+
 protected slots:
 
     virtual void slotActivated();
