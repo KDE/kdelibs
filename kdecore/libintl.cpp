@@ -86,8 +86,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #ifdef __BEGIN_DECLS
 #undef __BEGIN_DECLS
 #define __BEGIN_DECLS
+#define _ARGZ_H_WORKAROUND_ 
+extern "C" {
 #endif
 # include <argz.h>
+#ifdef _ARGZ_H_WORKAROUND_
+}
+#endif
 #undef __BEGIN_DECLS
 #ifdef HAVE_SYS_CDEFS_H
 #include <sys/cdefs.h>
