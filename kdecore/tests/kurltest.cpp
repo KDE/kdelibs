@@ -408,6 +408,20 @@ int main(int argc, char *argv[])
   check("wrong order of query and hypertext reference #1", tobi1.ref(), "fragmentPrecedes");
   check("wrong order of query and hypertext reference #2", tobi1.query(), "?theQuery");
 
+  tobi1 = "http://host.net/path/?#http://brokenäadsfküpoij31ü029muß2890zupycÜ*!*'O´+ß0i";
+  check("zero-length query",tobi1.query(),"?");
+
+  tobi1 = "http://host.net/path/#no-query";
+  check("no query", tobi1.query(),"");
+
+  tobi1 = "http://host.net/path?myfirstquery#andsomeReference";
+  tobi1.setEncodedPathAndQuery("another/path/?another&query");
+  check("setEncodedPathAndQuery test#1", tobi1.query(), "?another&query");
+  check("setEncodedPathAndQuery test#2", tobi1.path(), "another/path/");
+  tobi1.setEncodedPathAndQuery("another/path?another&query");
+  check("setEncodedPathAndQuery test#1", tobi1.query(), "?another&query");
+  check("setEncodedPathAndQuery test#2", tobi1.path(), "another/path");
+
   printf("\nTest OK !\n");
 }
 
