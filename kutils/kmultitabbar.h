@@ -134,8 +134,9 @@ public:
 	 */
 	void showActiveTabTexts(bool show=true);
 protected:
+	friend class KMultiTabBarButton;
 	virtual void fontChange( const QFont& );
-
+	void updateSeparator();
 private:
 	class KMultiTabBarInternal *m_internal;
 	QBoxLayout *m_l;
@@ -182,7 +183,8 @@ protected:
 	KMultiTabBar::KMultiTabBarPosition m_position;
 	KMultiTabBar::KMultiTabBarStyle m_style;
 	QString m_text;
-
+	virtual void hideEvent( class QHideEvent*);
+	virtual void showEvent( class QShowEvent*);
 private:
 	int m_id;
 	KMultiTabBarButtonPrivate *d;

@@ -332,6 +332,19 @@ void KMultiTabBarButton::setStyle(KMultiTabBar::KMultiTabBarStyle style)
 	repaint();
 }
 
+void KMultiTabBarButton::hideEvent( QHideEvent* he) {
+	QPushButton::hideEvent(he);
+	KMultiTabBar *tb=dynamic_cast<KMultiTabBar*>(parentWidget());
+	if (tb) tb->updateSeparator();
+}
+
+void KMultiTabBarButton::showEvent( QShowEvent* he) {
+	QPushButton::showEvent(he);
+	KMultiTabBar *tb=dynamic_cast<KMultiTabBar*>(parentWidget());
+	if (tb) tb->updateSeparator();
+}
+
+
 QSize KMultiTabBarButton::sizeHint() const
 {
     constPolish();
@@ -755,6 +768,19 @@ int KMultiTabBar::appendButton(const QPixmap &pic ,int id,QPopupMenu *popup,cons
 	btn->show();
 	m_btnTabSep->show();
 	return 0;
+}
+
+void KMultiTabBar::updateSeparator() {
+	bool hideSep=true;
+	for (QPtrListIterator<KMultiTabBarButton> it(m_buttons);it.current();++it){
+		if (it.current()->isVisibleTo(this)) {
+			hideSep=false;
+			break;
+		}
+	}
+	if (hideSep) m_btnTabSep->hide(); 
+		else m_btnTabSep->show();
+
 }
 
 int KMultiTabBar::appendTab(const QPixmap &pic ,int id ,const QString& text)
