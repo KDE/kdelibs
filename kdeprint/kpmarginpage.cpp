@@ -59,46 +59,43 @@ KPMarginPage::~KPMarginPage()
 
 void KPMarginPage::initPageSize(const QString& ps, bool landscape)
 {
-	float w( -1 ), h( -1 );
-	float mt( 36 ), mb( mt ), ml( 24 ), mr( ml );
-	QString	m_currentps(ps);
+	// first retrieve the Qt values for page size and margins
+	QPrinter	prt(QPrinter::PrinterResolution);
+	prt.setFullPage(true);
+	prt.setPageSize((QPrinter::PageSize)(ps.isEmpty() ? KGlobal::locale()->pageSize() : ps.toInt()));
+	QPaintDeviceMetrics	metrics(&prt);
+	float	w = metrics.width();
+	float	h = metrics.height();
+	unsigned int	it, il, ib, ir;
+	prt.margins( &it, &il, &ib, &ir );
+	float	mt = it;
+	float	ml = il;
+	float	mb = ib;
+	float	mr = ir;
+
 	if (driver() && m_usedriver )
 	{
-		if (m_currentps.isEmpty())
+		QString	pageSize(ps);
+
+		if (pageSize.isEmpty())
 		{
 			DrListOption	*o = (DrListOption*)driver()->findOption("PageSize");
 			if (o)
-				m_currentps = o->get("default");
+				pageSize = o->get("default");
 		}
-		if (!m_currentps.isEmpty())
+		if (!pageSize.isEmpty())
 		{
-			DrPageSize	*ps = driver()->findPageSize(m_currentps);
-			if (ps)
+			DrPageSize	*dps = driver()->findPageSize(pageSize);
+			if (dps)
 			{
-				w = ps->pageWidth();
-				h = ps->pageHeight();
-				mt = ps->topMargin();
-				ml = ps->leftMargin();
-				mb = ps->bottomMargin();
-				mr = ps->rightMargin();
+				w = dps->pageWidth();
+				h = dps->pageHeight();
+				mt = QMAX( mt, dps->topMargin() );
+				ml = QMAX( ml, dps->leftMargin() );
+				mb = QMAX( mb, dps->bottomMargin() );
+				mr = QMAX( mr, dps->rightMargin() );
 			}
 		}
-	}
-	else
-	{
-		// no driver, use the Qt values for page size and margins
-		QPrinter	prt(QPrinter::PrinterResolution);
-		prt.setFullPage(true);
-		prt.setPageSize((QPrinter::PageSize)(m_currentps.isEmpty() ? KGlobal::locale()->pageSize() : ps.toInt()));
-		QPaintDeviceMetrics	metrics(&prt);
-		w = metrics.width();
-		h = metrics.height();
-		unsigned int it, il, ib, ir;
-		prt.margins( &it, &il, &ib, &ir );
-		mt = it;
-		ml = il;
-		mb = ib;
-		mr = ir;
 	}
 	m_margin->setPageSize(w, h);
 	m_margin->setOrientation(landscape ? KPrinter::Landscape : KPrinter::Portrait);
