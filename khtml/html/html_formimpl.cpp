@@ -640,7 +640,7 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
     {
         // Report focus in/out changes to the browser extension (editable widgets only)
         KHTMLView *view = getDocument()->view();
-        if (evt->id()==EventImpl::DOMFOCUSIN_EVENT && isEditable() && m_render->isWidget()) {
+        if (evt->id()==EventImpl::DOMFOCUSIN_EVENT && isEditable() && m_render && m_render->isWidget()) {
             KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>(view->part()->browserExtension());
             QWidget *widget = static_cast<RenderWidget*>(m_render)->widget();
             if (ext)
@@ -670,7 +670,7 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 		QApplication::sendEvent(static_cast<RenderWidget *>(m_render)->widget(), k->qKeyEvent);
 	}
 
-	if (evt->id()==EventImpl::DOMFOCUSOUT_EVENT && isEditable() && m_render->isWidget()) {
+	if (evt->id()==EventImpl::DOMFOCUSOUT_EVENT && isEditable() && m_render && m_render->isWidget()) {
 	    KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>(view->part()->browserExtension());
 	    QWidget *widget = static_cast<RenderWidget*>(m_render)->widget();
 	    if (ext)
