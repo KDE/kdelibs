@@ -243,12 +243,12 @@ bool KListView::isExecuteArea( const QPoint& point )
      else {
 
       int x = point.x();
-      int pos = header()->mapToActual( 0 );
       int offset = 0;
-      int width = columnWidth( pos );
+      int width = columnWidth( 0 );
+      int pos = header()->mapToIndex( 0 );
 
       for ( int index = 0; index < pos; index++ )
-         offset += columnWidth( index );
+         offset += columnWidth( header()->mapToSection( index ) );
 
       return ( x > offset && x < ( offset + width ) );
      }
@@ -1210,7 +1210,7 @@ int KListView::itemIndex( const QListViewItem *item ) const
         QListViewItemIterator it(firstChild());
 	uint j = 0;
 	for (; it.current() && it.current() != item; ++it, ++j );
-   
+
 	if( !it.current() )
 	  return -1;
 
