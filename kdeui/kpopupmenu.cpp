@@ -488,7 +488,7 @@ QPopupMenu* KPopupMenu::contextMenu()
 
 const QPopupMenu* KPopupMenu::contextMenu() const
 {
-    return contextMenu();
+    return const_cast< KPopupMenu* >( this )->contextMenu();
 }
 
 void KPopupMenu::hideContextMenu()
