@@ -58,6 +58,21 @@ private:
     typedef QMap<KIO::Job *, KIODownload> KIODownloadMap;
 };
 
+class Test2 : public DCOPObject
+{
+    K_DCOP
+public:
+k_dcop_signals:
+    static void fooSignal();
+};
+
+class Test3 : public DCOPObject
+{
+    K_DCOP
+public:
+    void yadda();
+};
+
 #endif // end
 
 /* Test for line numbers */
