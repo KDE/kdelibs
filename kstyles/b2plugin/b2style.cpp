@@ -55,14 +55,17 @@ void B2Style::polish(QPalette &)
     if(config->hasKey("RadioOnColor")){
         tmpColor = config->readColorEntry("RadioOnColor", &tmpColor);
         radioOnGrp.setColor(QColorGroup::Mid, tmpColor);
+        radioOnGrp.setColor(QColorGroup::Button, tmpColor);
         radioOnGrp.setColor(QColorGroup::Light, tmpColor.light(130));
         radioOnGrp.setColor(QColorGroup::Dark, tmpColor.dark(130));
     }
     else{
         radioOnGrp.setColor(QColorGroup::Mid, tmpColor);
+        radioOnGrp.setColor(QColorGroup::Button, tmpColor);
         radioOnGrp.setColor(QColorGroup::Light, QColor(0, 0, 255));
         radioOnGrp.setColor(QColorGroup::Dark, QColor(0, 0, 128));
     }
+    
     tmpColor.setRgb(152, 204, 152);
     if(config->hasKey("SliderGrooveColor")){
         tmpColor = config->readColorEntry("SliderGrooveColor", &tmpColor);
@@ -255,7 +258,7 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
 
     bool horiz = sb->orientation() == QScrollBar::Horizontal;
     QColorGroup g = sb->colorGroup();
-    QRect addB, subB;
+    QRect addB, subB2, subB;
     QRect addPageR, subPageR, sliderR;
     int addX, addY, subX, subY;
     int len = horiz ? sb->width() : sb->height();
@@ -273,22 +276,29 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     }
     subB.setRect( subX,subY,buttonDim,buttonDim );
     addB.setRect( addX,addY,buttonDim,buttonDim );
- 
+    if(horiz)
+        subB2.setRect(addX-buttonDim,addY,buttonDim,buttonDim );
+    else
+        subB2.setRect(addX,addY-buttonDim,buttonDim,buttonDim );
+        
     int sliderEnd = sliderStart + sliderLength;
     int sliderW = extent;
+
     if (horiz) {
         subPageR.setRect( subB.right() + 1, 0,
                           sliderStart - subB.right() - 1 , sliderW );
-        addPageR.setRect( sliderEnd, 0, addX - sliderEnd, sliderW );
+        addPageR.setRect( sliderEnd, 0, addX - sliderEnd - buttonDim, sliderW );
         sliderR .setRect( sliderStart, 0, sliderLength, sliderW );
     }
     else {
         subPageR.setRect( 0, subB.bottom() + 1, sliderW,
                           sliderStart - subB.bottom() - 1 );
-        addPageR.setRect( 0, sliderEnd, sliderW, addY - sliderEnd );
+        addPageR.setRect( 0, sliderEnd, sliderW, addY - buttonDim - sliderEnd);
         sliderR .setRect( 0, sliderStart, sliderW, sliderLength );
     }
+    
     bool maxed = sb->maxValue() == sb->minValue();
+    
     if ( controls & AddLine ) {
         drawSBButton(p, addB, g);
         drawArrow( p, horiz ? RightArrow : DownArrow,
@@ -300,6 +310,10 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         drawArrow( p, horiz ? LeftArrow : UpArrow,
                    activeControl == SubLine, subB.x()+4, subB.y()+4,
                    subB.width()-8, subB.height()-8, g, !maxed);
+        drawSBButton(p, subB2, g);
+        drawArrow( p, horiz ? LeftArrow : UpArrow,
+                   activeControl == SubLine, subB2.x()+4, subB2.y()+4,
+                   subB2.width()-8, subB2.height()-8, g, !maxed);
     }
     if(controls & AddPage){
         if(addPageR.width()){
@@ -426,15 +440,57 @@ void B2Style::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
                                   int &sliderMax, int &sliderLength,
                                   int &buttonDim)
 {
-    QWindowsStyle::scrollBarMetrics(sb, sliderMin, sliderMax, sliderLength,
-                                    buttonDim);
+
+    int maxLength;
+    int b = 0;
+    bool horiz = sb->orientation() == QScrollBar::Horizontal;
+    int length = horiz ? sb->width()  : sb->height();
+    int extent = horiz ? sb->height() : sb->width();
+
+    if ( length > ( extent - b*2 - 1 )*2 + b*2  )
+	buttonDim = extent - b*2;
+    else
+	buttonDim = ( length - b*2 )/2 - 1;
+
+    sliderMin = b + buttonDim;
+    maxLength  = length - b*2 - buttonDim*3;
+
+    if ( sb->maxValue() == sb->minValue() ) {
+	sliderLength = maxLength;
+    } else {
+	sliderLength = (sb->pageStep()*maxLength)/
+			(sb->maxValue()-sb->minValue()+sb->pageStep());
+	uint range = sb->maxValue()-sb->minValue();
+	if ( sliderLength < 9 || range > INT_MAX/2 )
+	    sliderLength = 9;
+	if ( sliderLength > maxLength )
+	    sliderLength = maxLength;
+    }
+    sliderMax = sliderMin + maxLength - sliderLength;
+
 }
 
 QStyle::ScrollControl B2Style::scrollBarPointOver(const QScrollBar *sb,
                                                      int sliderStart,
                                                      const QPoint &p)
 {
-    return(QWindowsStyle::scrollBarPointOver(sb, sliderStart, p));
+    if ( !sb->rect().contains( p ) )
+        return NoScroll;
+    int sliderMin, sliderMax, sliderLength, buttonDim, pos;
+    scrollBarMetrics( sb, sliderMin, sliderMax, sliderLength, buttonDim );
+    pos = (sb->orientation() == QScrollBar::Horizontal)? p.x() : p.y();
+    if ( pos < sliderMin )
+	return SubLine;
+    if ( pos < sliderStart )
+	return SubPage;
+    if ( pos < sliderStart + sliderLength )
+        return Slider;
+    if ( pos < sliderMax + sliderLength)
+        return AddPage;
+    if(pos > sliderMax + sliderLength + 16)
+        return AddLine;
+
+    return SubLine;
 }
 
 #define QCOORDARRLEN(x) sizeof(x)/(sizeof(QCOORD)*2)
@@ -860,7 +916,6 @@ void B2Style::drawFocusRect(QPainter *p, const QRect &r,
     else
         p->drawWinFocusRect( r );
 }
-
 
 
 
