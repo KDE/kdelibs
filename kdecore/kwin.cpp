@@ -50,7 +50,7 @@ extern Atom qt_wm_state;
 
 
 Atom net_wm_context_help;
-Atom net_wm_kde_docking_window_for;
+static Atom kde_wm_change_state;
 void kwin_net_create_atoms() {
     if (!atoms_created){
 	const int max = 20;
@@ -62,8 +62,8 @@ void kwin_net_create_atoms() {
 	atoms[n] = &net_wm_context_help;
 	names[n++] = "_NET_WM_CONTEXT_HELP";
 
-	atoms[n] = &net_wm_kde_docking_window_for;
-	names[n++] = "_NET_KDE_DOCKING_WINDOW_FOR";
+	atoms[n] = &kde_wm_change_state;
+	names[n++] = "_KDE_WM_CHANGE_STATE";
 	
 	// we need a const_cast for the shitty X API
 	XInternAtoms( qt_xdisplay(), const_cast<char**>(names), n, FALSE, atoms_return );
@@ -77,8 +77,7 @@ void kwin_net_create_atoms() {
 /*
   Sends a client message to the ROOT window.
  */
-/*
-static void sendClientMessageToRoot(Window w, Atom a, long x){
+static void sendClientMessageToRoot(Window w, Atom a, long x, long y = 0, long z = 0 ){
   XEvent ev;
   long mask;
 
@@ -88,11 +87,12 @@ static void sendClientMessageToRoot(Window w, Atom a, long x){
   ev.xclient.message_type = a;
   ev.xclient.format = 32;
   ev.xclient.data.l[0] = x;
-  ev.xclient.data.l[1] = CurrentTime;
+  ev.xclient.data.l[1] = y;
+  ev.xclient.data.l[2] = z;
   mask = SubstructureRedirectMask;
   XSendEvent(qt_xdisplay(), qt_xrootwin(), False, mask, &ev);
 }
-*/
+
 /*
   Send a client message to window w
  */
@@ -376,3 +376,20 @@ void KWin::setCurrentDesktop( int desktop )
     NETRootInfo info( qt_xdisplay(), NET::CurrentDesktop );
     info.setCurrentDesktop( desktop );
 }
+
+
+void KWin::iconifyWindow( WId win, bool animation)
+{
+    if ( !animation )
+	sendClientMessageToRoot( win, kde_wm_change_state, IconicState, 1 ); 
+    XIconifyWindow( qt_xdisplay(), win, qt_xscreen() );
+}
+
+
+void KWin::deIconifyWindow( WId win, bool animation )
+{
+    if ( !animation )
+	sendClientMessageToRoot( win, kde_wm_change_state, NormalState, 1 ); 
+    XMapWindow( qt_xdisplay(), win );
+}
+

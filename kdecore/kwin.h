@@ -23,6 +23,7 @@
 #include <qwindowdefs.h>
 #include <qstring.h>
 #include <qpixmap.h>
+#include <qvaluelist.h>
 
 #include "netwm_def.h"
 
@@ -68,10 +69,10 @@ public:
      * Invoke interactive context help.
      */
     static void invokeContextHelp();
-    
-    
+
+
     /**
-     * Makes @p dockWin a dock window for @p forWin. 
+     * Makes @p dockWin a dock window for @p forWin.
      *
      * A dock window serves as an icon replacement.
      */
@@ -94,7 +95,7 @@ public:
 	QRect geometry;
 	QRect frameGeometry;
 	
-	/** Returns a visible name with state. 
+	/** Returns a visible name with state.
 	 *
 	 * This is a simple convenience function that returns the
 	 * visible name but with parantheses around iconified windows
@@ -162,7 +163,7 @@ public:
      *
      */
     static void setStrut( WId win, int left, int right, int top, int bottom );
-    
+
     /**
      * Convienence function to access the current desktop.  See NETRootInfo.
      */
@@ -179,6 +180,24 @@ public:
      * See NETRootInfo.
      */
     static void setCurrentDesktop( int desktop );
+    
+    
+    /** 
+     * Iconifies a window. Compatible to XIconifyWindow but has an
+     * additional parameter @p animation.
+     *
+     * @ref deIconifyWindow()
+     */
+    static void iconifyWindow( WId win, bool animation = true  );
+    
+    /** 
+     * DeIconifies a window. Compatible to XMapWindow but has an
+     * additional parameter @p animation.
+     *
+     * @ref iconifyWindow()
+     */
+    static void deIconifyWindow( WId win, bool animation = true );
+    
 };
 
 #endif
