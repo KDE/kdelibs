@@ -5,3 +5,4 @@ MimeType=image/cgm
 Icon=image.xpm
 Patterns=*.cgm;*.CGM;
 Comment=Computer Graphics Metafile
+Comment[no]=Metafil for datagrafikk

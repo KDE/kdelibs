@@ -1,6 +1,15 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Bzipped Tar Archives
+Comment[de]=BZip2-Tar-Archive
+Comment[es]=Archivo BZIP
+Comment[fi]=Bzip pakattu tar paketti
+Comment[fr]=Archives bzip
+Comment[pl]=Archiwum Zip
+Comment[pt]=Arquivos Zip
+Comment[pt_BR]=Arquivos Zip
+Comment[ro]=Arhivã bzip
+Comment[sk]=Bzipované Tar archívy
 MimeType=application/x-tbz
 DefaultApp=ark
 Icon=tgz.xpm

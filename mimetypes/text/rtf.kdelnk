@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 MimeType=text/rtf
 Comment=Rich Text Format
+Comment[no]=Rikt tekstformat
 DefaultApp=kwrite
 Icon=txt.xpm
 Type=MimeType

@@ -6,3 +6,4 @@ Icon=video.xpm
 Patterns=*.mpeg;*.mpg;
 DefaultApp=aktion
 Comment=MPEG Video
+Comment[pt_BR]=Vídeo MPEG
