@@ -218,6 +218,11 @@ HTMLVSpace::HTMLVSpace( int _vspace, Clear c ) : HTMLObject()
     cl = c;
 }
 
+void HTMLVSpace::getSelectedText( QString &_str )
+{
+    _str += '\n';
+}
+
 //-----------------------------------------------------------------------------
 
 HTMLText::HTMLText(const char* _text, const HTMLFont *_font, QPainter *_painter
@@ -350,8 +355,20 @@ void HTMLText::getSelectedText( QString &_str )
 	    _str += '\n';
 	else
 	{
-	    for ( int i = selStart; i < selEnd; i++ )
-		    _str += text[ i ];
+	    int i = selStart;
+
+	    // skip white space at the start of a line.
+	    if ( !_str.isEmpty() && _str[ _str.length() - 1 ] == '\n' )
+	    {
+		while ( text[ i ] == ' ' )
+		    i++;
+	    }
+
+	    while ( i < selEnd )
+	    {
+		_str += text[ i ];
+		i++;
+	    }
 	}
     }
 }

@@ -338,6 +338,8 @@ public:
     HTMLVSpace( int _vspace, Clear c = CNone );
     virtual ~HTMLVSpace() { }
 
+    virtual void getSelectedText( QString & );
+
     Clear clear()
 	{ return cl; }
 

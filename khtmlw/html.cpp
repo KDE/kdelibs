@@ -2290,6 +2290,13 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 		    }
 		    else if ( strncasecmp( token, "color=", 6 ) == 0 )
 		    {
+			if ( *(token+6) != '#' && strlen( token+6 ) == 6 )
+			{
+			    QString col = "#";
+			    col += token+6;
+			    color->setNamedColor( col );
+			}
+			else
 			    color->setNamedColor( token+6 );
 		    }
 		    else if ( strncasecmp( token, "face=", 5 ) == 0 )
