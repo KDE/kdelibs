@@ -2707,10 +2707,13 @@ bool HTTPProtocol::readHeader()
         m_qContentEncodings.remove(m_qContentEncodings.fromLast());
         m_strMimeType = QString::fromLatin1("application/x-tgz");
      }
-     else if ( m_strMimeType == "text/html" ||
-               (m_strMimeType.startsWith("text/") &&
-                m_request.url.path().right(3) != ".gz") ||
-               (m_strMimeType.startsWith("image/") &&
+     else if ( (m_request.allowCompressedPage && 
+                m_strMimeType == "text/html") 
+                ||
+               (m_request.allowCompressedPage &&
+                m_strMimeType != "application/x-tgz" &&
+                m_strMimeType != "application/x-targz" &&
+                m_strMimeType != "application/x-gzip" &&
                 m_request.url.path().right(3) != ".gz")
                 )
      {
@@ -2757,7 +2760,7 @@ bool HTTPProtocol::readHeader()
   else if (m_strMimeType == "application/pkix-cert" ||
            m_strMimeType == "application/binary-certificate")
   {
-	  m_strMimeType = QString::fromLatin1("application/x-x509-ca-cert");
+     m_strMimeType = QString::fromLatin1("application/x-x509-ca-cert");
   }
 
   // Prefer application/x-tgz over application/x-gzip
