@@ -75,7 +75,7 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
            SLOT( slotOk() ) );
   connect( mAddresseeList, SIGNAL( selectionChanged( QListViewItem * ) ),
            SLOT( updateEdit( QListViewItem * ) ) );
-  
+
   mAddresseeEdit = new KLineEdit( topWidget );
   mAddresseeEdit->setCompletionMode( KGlobalSettings::CompletionAuto );
   connect( mAddresseeEdit->completionObject(), SIGNAL( match( const QString & ) ),
@@ -89,10 +89,10 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
     topLayout->setSpacing( spacingHint() );
 //    selectedLayout->addSpacing( spacingHint() );
 
-    QGroupBox *selectedGroup = new QGroupBox( 1, Horizontal, i18n("Selected: "), 
+    QGroupBox *selectedGroup = new QGroupBox( 1, Horizontal, i18n("Selected: "),
                                               topWidget );
-    selectedLayout->addWidget( selectedGroup );    
-    
+    selectedLayout->addWidget( selectedGroup );
+
     mSelectedList = new KListView( selectedGroup );
     mSelectedList->addColumn( i18n("Name") );
     mSelectedList->addColumn( i18n("Email") );
@@ -131,6 +131,8 @@ void AddresseeDialog::loadAddressBook()
 
 void AddresseeDialog::addCompletionItem( const QString &str, QListViewItem *item )
 {
+  if ( str.isEmpty() ) return;
+
   QString s = str.lower();
   mItemDict.insert( s, item );
   mAddresseeEdit->completionObject()->addItem( s );
@@ -160,7 +162,7 @@ void AddresseeDialog::addSelected( QListViewItem *item )
   if ( !addrItem ) return;
 
   Addressee a = addrItem->addressee();
-  
+
   QListViewItem *selectedItem = mSelectedDict.find( a.uid() );
   if ( !selectedItem ) {
     selectedItem = new AddresseeItem( mSelectedList, a );
