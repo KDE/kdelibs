@@ -130,10 +130,16 @@ QString HelpProtocol::lookupFile(const QString &fname,
 }
 
 
+void HelpProtocol::unicodeError( const QString &t )
+{
+   data(fromUnicode( QString(
+        "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\"></head>\n"
+        "%2</html>" ).arg( QTextCodec::codecForLocale()->name() ).arg( t ) ) );
+}
+
 void HelpProtocol::notFound()
 {
-    data( fromUnicode( i18n("<html>The requested help file could not be found. Check that "
-                                                          "you have installed the documentation.</html>" ) ) );
+    unicodeError( i18n("The requested help file could not be found. Check that you have installed the documentation." ) );
     finished();
 }
 
@@ -214,10 +220,7 @@ void HelpProtocol::get( const KURL& url )
         kdDebug( 7119 ) << "parsed " << mParsed.length() << endl;
 
         if (mParsed.isEmpty()) {
-            data(fromUnicode( QString(
-                "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\"></head>\n"
-                "%2<br>%3</html>" ).arg( QTextCodec::codecForLocale()->name() ).
-                                                            arg( i18n( "The requested help file could not be parsed:" ) ).arg( file ) ) );
+            unicodeError( i18n( "The requested help file could not be parsed:<br>%1" ).arg( file ) );
         } else {
             data( fromUnicode( mParsed ) );
         }
@@ -243,10 +246,7 @@ void HelpProtocol::get( const KURL& url )
         kdDebug( 7119 ) << "parsed " << mParsed.length() << endl;
 
         if (mParsed.isEmpty()) {
-            data(fromUnicode( QString(
-                "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\"></head>\n"
-                "%2<br>%3</html>" ).arg( QTextCodec::codecForLocale()->name() ).
-                                                            arg( i18n( "The requested help file could not be parsed:" ) ).arg( file ) ) );
+            unicodeError( i18n( "The requested help file could not be parsed:<br>%1" ).arg( file ) );
         } else {
             QString query = url.query(), anchor;
 
@@ -314,7 +314,7 @@ void HelpProtocol::emitFile( const KURL& url )
             return;
         }
 
-        data(fromUnicode( i18n("<html>Couldn't find filename %1 in %2</html>").arg(filename).arg(url.url() ) ) );
+        unicodeError( i18n("Couldn't find filename %1 in %2.").arg(filename).arg( url.url() ) );
         return;
     }
 

@@ -38,8 +38,9 @@ private:
                        bool &redirect);
 
     void notFound();
+    void unicodeError( const QString &t );
 
-    QString mParsed;    
+    QString mParsed;
     bool mGhelp;
 };
 
