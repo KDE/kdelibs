@@ -65,14 +65,14 @@ bool FunctionPrototypeImp::implementsCall() const
 }
 
 // ECMA 15.3.4
-Value FunctionPrototypeImp::call(ExecState */*exec*/, Object &/*thisObj*/, const List &/*args*/)
+Value FunctionPrototypeImp::call(ExecState* /*exec*/, Object &/*thisObj*/, const List &/*args*/)
 {
   return Undefined();
 }
 
 // ------------------------------ FunctionProtoFuncImp -------------------------
 
-FunctionProtoFuncImp::FunctionProtoFuncImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
+FunctionProtoFuncImp::FunctionProtoFuncImp(ExecState* /*exec*/, FunctionPrototypeImp *funcProto,
 					   int i, int len, const Identifier &_ident)
   : InternalFunctionImp(funcProto), id(i)
 {
@@ -181,7 +181,7 @@ Value FunctionProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &a
 
 // ------------------------------ FunctionObjectImp ----------------------------
 
-FunctionObjectImp::FunctionObjectImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto)
+FunctionObjectImp::FunctionObjectImp(ExecState* /*exec*/, FunctionPrototypeImp *funcProto)
   : InternalFunctionImp(funcProto)
 {
   Value protect(this);

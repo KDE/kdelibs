@@ -617,7 +617,7 @@ Value StringObjectImp::call(ExecState *exec, Object &/*thisObj*/, const List &ar
 // ------------------------------ StringObjectFuncImp --------------------------
 
 // ECMA 15.5.3.2 fromCharCode()
-StringObjectFuncImp::StringObjectFuncImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto)
+StringObjectFuncImp::StringObjectFuncImp(ExecState* /*exec*/, FunctionPrototypeImp *funcProto)
   : InternalFunctionImp(funcProto)
 {
   Value protect(this);
