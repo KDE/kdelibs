@@ -2002,10 +2002,22 @@ void KListView::restoreLayout(KConfig *config, const QString &group)
   for (QStringList::ConstIterator it = cols.begin(); it != cols.end(); ++it)
     setColumnWidth(i++, (*it).toInt());
 
+  // move sections in the correct sequence: from lowest to highest index position
+  // otherwise we move a section from an index, which modifies
+  // all index numbers to the right of the moved one
   cols = config->readListEntry("ColumnOrder");
-  i = 0;
-  for (QStringList::ConstIterator it = cols.begin(); it != cols.end(); ++it)
-    header()->moveSection(i++, (*it).toInt());
+  for (i = 0; i < columns(); i++)   // final index positions from lowest to highest
+  {
+    QStringList::ConstIterator it;
+    int section = 0;
+    for (it = cols.begin(); (it != cols.end()) && ((*it).toInt() != i); ++it, section++) ;
+
+    if ( it != cols.end() ) {
+      // found the section to move to position i
+      header()->moveSection(section, i);
+    }
+  }
+
   if (config->hasKey("SortColumn"))
     setSorting(config->readNumEntry("SortColumn"), config->readBoolEntry("SortAscending", true));
 }
