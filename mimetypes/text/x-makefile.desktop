@@ -1,7 +1,12 @@
 [Desktop Entry]
 MimeType=text/x-makefile
 Comment=Makefile
+Comment[da]=Makefil
+Comment[eo]=Muntdosiero
+Comment[hu]=Makefájl
+Comment[is]=Make-skrá
+Comment[ro]=Fiºier Makefile
 DefaultApp=kwrite
-Icon=unknown.xpm
+Icon=unknown.png
 Type=MimeType
 Patterns=Makefile*;makefile*;

@@ -1,12 +1,13 @@
 [Desktop Entry]
 Type=MimeType
-Icon=core.xpm
+Icon=core.png
 Patterns=core;core.*;*.core;
 MimeType=application/x-core
 Comment=Core dump
 Comment[ca]=Bolcat de nucli
 Comment[da]=Dumpning af kode
 Comment[de]=Speicherauszug (Core dump)
+Comment[eo]=Core dump (mortoatestilo:)
 Comment[es]=Archivo Core
 Comment[fi]=Core dump -tiedosto
 Comment[fr]=Dump mémoire

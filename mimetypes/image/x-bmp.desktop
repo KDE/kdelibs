@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=image/x-bmp
-Icon=image.xpm
+Icon=image.png
 Patterns=*.bmp;*.BMP;
 Comment=BMP Image
-Comment[fr]=Image BMP
+Comment[hu]=BMP kép

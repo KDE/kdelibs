@@ -1,6 +1,12 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=image/tiff
-Icon=image.xpm
+Icon=image.png
 Patterns=*.tif;*.TIF;*.TIFF;*.tiff;
 Comment=TIFF Images
+Comment[de]=TIFF Bilder
+Comment[eo]=TIFF-grafiko
+Comment[fi]=TIFF -kuva
+Comment[hu]=TIFF kép
+Comment[ja]=TIFF¥¤¥á¡¼¥¸
+Comment[sv]=TIFF-bilder

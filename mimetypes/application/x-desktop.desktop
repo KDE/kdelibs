@@ -2,9 +2,11 @@
 Comment=Desktop config file
 Comment[de]=Konfigurationsdatei für die Arbeitsfläche
 Comment[eo]=Labortabula agordo-dosiero
+Comment[fi]=Työpöydän asetustiedosto
 Comment[hu]=Munkaasztal konfigurációs fájl
 Comment[ja]=¥Ç¥¹¥¯¥È¥Ã¥×ÀßÄê¥Õ¥¡¥¤¥ë
-Icon=exec.xpm
+Comment[sv]=Skrivbordsinställningsfil
+Icon=exec.png
 Type=MimeType
 MimeType=application/x-desktop
 Patterns=;

@@ -1,13 +1,14 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=application/x-zip
-Icon=tgz.xpm
+Icon=tgz.png
 Patterns=*.zip;*.ZIP;
 Comment=Zip archive
 Comment[ca]=Arxiu zip
 Comment[cs]=Zip archív
 Comment[da]=Zip arkiv
 Comment[de]=Zip Archiv
+Comment[eo]=Zip-ar¶ivo
 Comment[es]=Archivo ZIP
 Comment[fi]=Zip -pakkaus
 Comment[fr]=Archive ZIP
@@ -15,6 +16,7 @@ Comment[hr]=Zip Arhive
 Comment[hu]=Zip arhívum
 Comment[is]=Zip-safnskrá
 Comment[it]=Archivio Zip
+Comment[ja]=Zip¥¢¡¼¥«¥¤¥Ö
 Comment[nl]=Zip archief
 Comment[no]=Zip-arkiv
 Comment[pl]=Archiwum Zip

@@ -1,7 +1,11 @@
 [Desktop Entry]
 MimeType=text/sgml
 Comment=SGML
+Comment[eo]=SGML-teskto
+Comment[ro]=Fi∫ier SGML
+Comment[ru]=‰œÀ’Õ≈Œ‘ SGML
+Comment[sv]=Dokument i SGML-format
 DefaultApp=kwrite
-Icon=txt.xpm
+Icon=txt.png
 Type=MimeType
 Patterns=*.sgml;*.SGML;

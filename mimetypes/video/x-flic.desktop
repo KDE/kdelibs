@@ -1,7 +1,25 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=video/x-flic
-Icon=aktion.xpm
+Icon=aktion.png
 Patterns=*.fli;*.flc;*.FLI;*.FLC;
 Comment=Autodesk's FLIC files
+Comment[cs]=FLIC soubory programu Autodesk
+Comment[da]=Autodesks FLIC filer
+Comment[de]=Autodesk FLIC-Dateien
+Comment[eo]=Autodesk-FLIC-dosiero
+Comment[es]=Animación FLIC de Autodesk
+Comment[fi]=Autodeskin FLIC tiedosto
+Comment[fr]=Fichier FLIC d'Autodesk
+Comment[hu]=Autodesk FLIC fájl
+Comment[is]=Autodesk FLIC-skrár
+Comment[it]=Animazione FLIC di Autodesk
+Comment[ja]=Autodesk's FLIC ¥Õ¥¡¥¤¥ë
+Comment[no]=Autodesk's FLIC-filer
+Comment[pl]=Plik FLIC Autodesku
+Comment[pt_BR]=Arquivos FLIC do Autodesk
+Comment[ro]=Fiºier video FLIC (Autodesk)
+Comment[ru]=FLIC ÆÁÊÌÙ Autodesk
+Comment[sk]=FLIC súbory produktov spoloènosti Autodesk
+Comment[sv]=Autodesks FLIC-filer
 

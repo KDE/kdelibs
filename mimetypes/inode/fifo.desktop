@@ -1,6 +1,22 @@
 [Desktop Entry]
 Comment=Pipe
-Icon=pipe.xpm
+Comment[ca]=Tub (pipe)
+Comment[cs]=FIFO roura
+Comment[de]=Weiterleitung (Pipe)
+Comment[eo]=Dukto
+Comment[es]=Tubería
+Comment[fi]=Putki
+Comment[fr]=FIFO (canal de communication)
+Comment[hu]=Csõ
+Comment[is]=Pípa
+Comment[ja]=¥Ñ¥¤¥×
+Comment[pl]=Kolejka
+Comment[ro]=Canal de comunicaþie de tip FIFO
+Comment[ru]=ëÁÎÁÌ FIFO
+Comment[sk]=FIFO rúra
+Comment[sl]=Cev
+Comment[sv]=FIFO-rör (kommunikationskanal)
+Icon=pipe.png
 Type=MimeType
 MimeType=inode/fifo
 Patterns=;
