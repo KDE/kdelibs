@@ -29,6 +29,7 @@
 using namespace khtml;
 
 #include <kglobal.h>
+#include <kglobalsettings.h>
 
 #include <assert.h>
 
@@ -43,7 +44,7 @@ Settings::Settings()
 
     standardFamilies = new QString[6];
 
-    charset	  = KGlobal::generalFont().charSet();
+    charset = KGlobalSettings::generalFont().charSet();
 
     resetStandardFamilies();
 }
@@ -104,12 +105,12 @@ const Settings &Settings::operator=( const Settings &s )
 
 void Settings::resetStandardFamilies()
 {
-    standardFamilies[0] = KGlobal::generalFont().family();
+    standardFamilies[0] = KGlobalSettings::generalFont().family();
     standardFamilies[1] = "times";
     standardFamilies[2] = "helvetica";
     standardFamilies[3] = "times";
     standardFamilies[4] = "comic";
-    standardFamilies[5] = KGlobal::fixedFont().family();
+    standardFamilies[5] = KGlobalSettings::fixedFont().family();
 }
 
 void Settings::setDefaultFamily(const QString& family)

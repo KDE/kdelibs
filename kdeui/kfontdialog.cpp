@@ -46,6 +46,7 @@
 #include <kconfig.h>
 #include <kdialog.h>
 #include <kglobal.h>
+#include <kglobalsettings.h>
 #include <qlineedit.h>
 #include <klistbox.h>
 #include <klocale.h>
@@ -190,7 +191,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 
   row ++;
   sampleEdit = new QLineEdit( page, "sampleEdit");
-  QFont tmpFont( KGlobal::generalFont().family(), 64, QFont::Black );
+  QFont tmpFont( KGlobalSettings::generalFont().family(), 64, QFont::Black );
   sampleEdit->setFont(tmpFont);
   sampleEdit->setText(i18n("The Quick Brown Fox Jumps Over The Lazy Dog"));
   sampleEdit->setMinimumHeight( sampleEdit->fontMetrics().lineSpacing() );
@@ -220,7 +221,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   vbox->addWidget( xlfdEdit );
 
   // lets initialize the display if possible
-  setFont( KGlobal::generalFont(), usingFixed );
+  setFont( KGlobalSettings::generalFont(), usingFixed );
   // Create displayable charsets list
   fillCharsetsCombo();
 
@@ -532,6 +533,10 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.51  2000/05/03 19:25:41  jsixt
+* Use KConfigGroupSaver instead of a simple setGroup() to change
+* the group in config files and to revert it back again automatically.
+*
 * Revision 1.50  2000/04/23 11:44:20  espen
 *
 * New (bin. compatible) feature to allow an application to

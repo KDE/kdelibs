@@ -38,6 +38,7 @@
 #include <kdebug.h>
 #include <kurl.h>
 #include <kglobal.h>
+#include <kglobalsettings.h>
 
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
@@ -309,7 +310,7 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
     // ### make the font stuff _really_ work!!!!
     const QString *families = w->part()->settings()->families();
     QValueList<int> fs = w->part()->settings()->fontSizes();
-    QFont f = KGlobal::generalFont();
+    QFont f = KGlobalSettings::generalFont();
     f.setFamily(families[0]);
     f.setPointSize(fs[3]);
     f.setCharSet(w->part()->settings()->charset);
@@ -355,7 +356,7 @@ void HTMLDocumentImpl::applyChanges(bool)
 
     const QString *families = m_view->part()->settings()->families();
     QValueList<int> fs = m_view->part()->settings()->fontSizes();
-    QFont f = KGlobal::generalFont();
+    QFont f = KGlobalSettings::generalFont();
     f.setFamily(families[0]);
     f.setPointSize(fs[3]);
     f.setCharSet(m_view->part()->settings()->charset);

@@ -1414,8 +1414,8 @@ void HCStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, bool active, QMenuItem *mi,
                             QBrush *)
 {
-    if ( p->font() == KGlobal::generalFont() )
-      p->setFont( KGlobal::menuFont() );
+    if ( p->font() == KGlobalSettings::generalFont() )
+      p->setFont( KGlobalSettings::menuFont() );
 
     if(active){
         qDrawShadePanel(p, x, y, w, h, g, true, 1,
@@ -1444,8 +1444,8 @@ static const int motifArrowHMargin      = 6;
 static const int windowsRightBorder     = 12;
     maxpmw = QMAX( maxpmw, 20 );
 
-    if ( p->font() == KGlobal::generalFont() )
-      p->setFont( KGlobal::menuFont() );
+    if ( p->font() == KGlobalSettings::generalFont() )
+      p->setFont( KGlobalSettings::menuFont() );
 
     if(act){
         bool dis = !enabled;

@@ -193,7 +193,7 @@ void KToolBar::init()
       size->insertItem( text, CONTEXT_ICONSIZES + *it );
   }
 
-  context->setFont(KGlobal::menuFont());
+  context->setFont(KGlobalSettings::menuFont());
 
   context->insertItem( i18n("Orientation"), orient );
   orient->setItemChecked(CONTEXT_TOP, true);

@@ -565,19 +565,11 @@ private:
   virtual void kdisplaySetFont();
   virtual void applyGUIStyle(GUIStyle);
 
-  QColor inactiveTitleColor_;
-  QColor inactiveTextColor_;
-  QColor activeTitleColor_;
-  QColor activeTextColor_;
   int contrast_;
   int captionLayout;
 
 public:
 
-  QColor inactiveTitleColor() const;
-  QColor inactiveTextColor() const;
-  QColor activeTitleColor() const;
-  QColor activeTextColor() const;
   int contrast() const;
 
   /**
@@ -754,6 +746,18 @@ public:
 #endif
 
 // $Log$
+// Revision 1.157  2000/05/31 21:40:26  ettrich
+//
+// Make dcop calls smarter: no more hanging user interfaces
+//
+// From the documentation:
+//
+//    * A call blocks the application until the process receives the
+//    * answer, for a maximum of 1/10 of a second. If the call was not
+//    * answered by then, the client opens a local event loop in order to
+//    * keep the user interface updated (by processing paint events and
+//    * such) until the answer message finally drops in.
+//
 // Revision 1.156  2000/05/30 20:53:17  coolo
 // >= 20000531 (at least in Moscwa :)
 //

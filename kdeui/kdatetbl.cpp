@@ -33,6 +33,7 @@
 //      dateSelected(QDate)
 
 #include <kglobal.h>
+#include <kglobalsettings.h>
 #include <kapp.h>
 #include <klocale.h>
 #include <kdebug.h>
@@ -112,7 +113,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
   int pos;
   QBrush brushBlue(blue);
   QBrush brushLightblue(lightGray);
-  QFont font=KGlobal::generalFont();
+  QFont font=KGlobalSettings::generalFont();
   // -----
   font.setPointSize(fontsize);
   if(row==0)
@@ -335,7 +336,7 @@ KDateInternalMonthPicker::KDateInternalMonthPicker
   // -----
   activeCol = -1;
   activeRow = -1;
-  font=KGlobal::generalFont();
+  font=KGlobalSettings::generalFont();
   font.setPointSize(fontsize);
   setFont(font);
   setNumRows(4);
@@ -490,7 +491,7 @@ KDateInternalYearSelector::KDateInternalYearSelector
 {
   QFont font;
   // -----
-  font=KGlobal::generalFont();
+  font=KGlobalSettings::generalFont();
   font.setPointSize(fontsize);
   setFont(font);
   // we have to respect the limits of QDate here, I fear:

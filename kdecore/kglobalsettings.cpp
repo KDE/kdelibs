@@ -19,21 +19,20 @@
 #include "kglobalsettings.h"
 
 #include <qdir.h>
-
-#include <dirent.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <unistd.h>
-
-#include <kapp.h>
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kstddirs.h>
+#include <kcharsets.h>
+#include <qfontinfo.h>
 
 QString* KGlobalSettings::s_desktopPath = 0;
 QString* KGlobalSettings::s_autostartPath = 0;
 QString* KGlobalSettings::s_trashPath = 0;
+QFont *KGlobalSettings::_generalFont = 0;
+QFont *KGlobalSettings::_fixedFont = 0;
+QFont *KGlobalSettings::_toolBarFont = 0;
+QFont *KGlobalSettings::_menuFont = 0;
+
 
 int KGlobalSettings::dndEventDelay()
 {
@@ -91,6 +90,106 @@ bool KGlobalSettings::honorGnome()
     return c->readBoolEntry("honorGnome", false);
 }
 
+QColor KGlobalSettings::toolBarHighlightColor()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("Toolbar style") );
+    return c->readColorEntry("HighlightColor", &Qt::blue);
+}
+
+QColor KGlobalSettings::inactiveTitleColor()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("WM") );
+    return c->readColorEntry( "inactiveBackground", &Qt::lightGray );
+}
+
+QColor KGlobalSettings::inactiveTextColor()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("WM") );
+    return c->readColorEntry( "inactiveForeground", &Qt::darkGray );
+}
+
+QColor KGlobalSettings::activeTitleColor()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("WM") );
+    return c->readColorEntry( "activeBackground", &Qt::darkBlue );
+}
+
+QColor KGlobalSettings::activeTextColor()
+{
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("WM") );
+    return c->readColorEntry( "activeForeground", &Qt::white );
+}
+
+QFont KGlobalSettings::generalFont()
+{
+    if (_generalFont)
+        return *_generalFont;
+
+    _generalFont = new QFont("helvetica", 12, QFont::Normal);
+    KCharsets *charsets = KGlobal::charsets();
+    charsets->setQFont(*_generalFont, charsets->charsetForLocale());
+
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
+    *_generalFont = c->readFontEntry("font", _generalFont);
+    return *_generalFont;
+}
+	
+QFont KGlobalSettings::fixedFont()
+{
+    if (_fixedFont) 
+        return *_fixedFont;
+
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
+    _fixedFont = new QFont(c->readFontEntry("fixedFont"));
+
+    if(!QFontInfo(*_fixedFont).fixedPitch() ) {
+        *_fixedFont = QFont("fixed",
+                            _fixedFont->pointSize(), QFont::Normal);
+        _fixedFont->setStyleHint(QFont::Courier);
+        _fixedFont->setFixedPitch(true);
+        KCharsets *charsets = KGlobal::charsets();
+        charsets->setQFont(*_fixedFont, charsets->charsetForLocale());
+    }
+    return *_fixedFont;
+}
+
+QFont KGlobalSettings::toolBarFont()
+{
+    if(_toolBarFont)
+        return *_toolBarFont;
+
+    _toolBarFont = new QFont("helvetica", 10, QFont::Normal);
+    KCharsets *charsets = KGlobal::charsets();
+    charsets->setQFont(*_toolBarFont, charsets->charsetForLocale());
+
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
+    *_toolBarFont = c->readFontEntry(QString::fromLatin1("toolBarFont"), _toolBarFont);
+    return *_toolBarFont;
+}
+
+QFont KGlobalSettings::menuFont()
+{
+    if(_menuFont)
+        return *_menuFont;
+
+    _menuFont = new QFont("helvetica", 10);
+    KCharsets *charsets = KGlobal::charsets();
+    charsets->setQFont(*_menuFont, charsets->charsetForLocale());
+
+    KConfig *c = KGlobal::config();
+    KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
+    *_menuFont = c->readFontEntry(QString::fromLatin1("menuFont"), _menuFont);
+    return *_menuFont;
+}
+
 void KGlobalSettings::initStatic()
 {
     if ( s_desktopPath != 0 )
@@ -133,9 +232,14 @@ void KGlobalSettings::initStatic()
     config->setDollarExpansion(dollarExpansion);
 }
 
-QColor KGlobalSettings::toolBarHighlightColor()
+void KGlobalSettings::rereadFontSettings()
 {
-    KConfig *c = KGlobal::config();
-    KConfigGroupSaver cgs( c, QString::fromLatin1("Toolbar style") );
-    return c->readColorEntry("HighlightColor", &Qt::blue);
+    delete _generalFont;
+    _generalFont = 0L;
+    delete _fixedFont;
+    _fixedFont = 0L;
+    delete _menuFont;
+    _menuFont = 0L;
+    delete _toolBarFont;
+    _toolBarFont = 0L;
 }

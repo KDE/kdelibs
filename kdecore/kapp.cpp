@@ -1198,12 +1198,6 @@ void KApplication::kdisplaySetPalette()
     QColor base = config->readColorEntry( "windowBackground", &white );
     QColor foreground = config->readColorEntry( "windowForeground", &black );
 
-    config->setGroup( "WM");
-    inactiveTitleColor_ = config->readColorEntry( "inactiveBackground", &lightGray );
-    inactiveTextColor_ = config->readColorEntry( "inactiveForeground", &darkGray );
-    activeTitleColor_ = config->readColorEntry( "activeBackground", &darkBlue );
-    activeTextColor_ = config->readColorEntry( "activeForeground", &white );
-
     config->setGroup( "KDE");
     contrast_ = config->readNumEntry( "contrast", 7 );
 
@@ -1268,16 +1262,8 @@ void KApplication::kdisplaySetPalette()
 
 void KApplication::kdisplaySetFont()
 {
-    delete KGlobal::_generalFont;
-    KGlobal::_generalFont = 0L;
-    delete KGlobal::_fixedFont;
-    KGlobal::_fixedFont = 0L;
-    delete KGlobal::_menuFont;
-    KGlobal::_menuFont = 0L;
-    delete KGlobal::_toolBarFont;
-    KGlobal::_toolBarFont = 0L;
-
-    QApplication::setFont(KGlobal::generalFont(), true);
+    KGlobalSettings::rereadFontSettings();
+    QApplication::setFont(KGlobalSettings::generalFont(), true);
     emit kdisplayFontChanged();
     emit appearanceChanged();
 }
@@ -1663,29 +1649,6 @@ void KApplication::setTopWidget( QWidget *topWidget )
     // a user?
     XSetIconName( qt_xdisplay(), topWidget->winId(), caption().ascii() );
   }
-}
-
-QColor KApplication::inactiveTitleColor() const
-{
-    return inactiveTitleColor_;
-}
-
-
-QColor KApplication::inactiveTextColor() const
-{
-    return inactiveTextColor_;
-}
-
-
-QColor KApplication::activeTitleColor() const
-{
-    return activeTitleColor_;
-}
-
-
-QColor KApplication::activeTextColor() const
-{
-    return activeTextColor_;
 }
 
 int KApplication::contrast() const

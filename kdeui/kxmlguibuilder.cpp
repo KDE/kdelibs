@@ -112,7 +112,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
   if ( element.tagName().lower() == d->tagMenu )
   {
     QPopupMenu *popup = new QPopupMenu( d->m_widget, element.attribute( "name" ).utf8());
-    popup->setFont(KGlobal::menuFont());
+    popup->setFont(KGlobalSettings::menuFont());
 
     QString i18nText;
     QCString text = element.namedItem( "text" ).toElement().text().utf8();

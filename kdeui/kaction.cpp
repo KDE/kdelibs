@@ -35,6 +35,7 @@
 #include <qwhatsthis.h>
 #include <kiconloader.h>
 #include <kpopmenu.h>
+#include <kglobalsettings.h>
 
 static QFontDatabase *fontDataBase = 0;
 
@@ -904,7 +905,7 @@ int KToggleAction::plug( QWidget* widget, int index )
     int id = menuId( _index );
 
     popupMenu( _index )->setItemChecked( id, d->m_checked );
-    popupMenu( _index )->setFont(KGlobal::menuFont());
+    popupMenu( _index )->setFont(KGlobalSettings::menuFont());
   } else if ( widget->inherits( "KToolBar" ) ) {
     KToolBar *bar = (KToolBar *)widget;
 
@@ -1289,7 +1290,7 @@ int KSelectAction::plug( QWidget *widget, int index )
   {
     // Create the PopupMenu and store it in m_menu
     (void)popupMenu();
-    popupMenu()->setFont(KGlobal::menuFont());
+    popupMenu()->setFont(KGlobalSettings::menuFont());
 
     QPopupMenu* menu = (QPopupMenu*)widget;
     int id;
@@ -2008,7 +2009,7 @@ public:
   KActionMenuPrivate()
   {
     m_popup = new KPopupMenu;
-    m_popup->setFont(KGlobal::menuFont());
+    m_popup->setFont(KGlobalSettings::menuFont());
   }
   ~KActionMenuPrivate()
   {

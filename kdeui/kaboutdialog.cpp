@@ -33,6 +33,7 @@
 
 #include <kapp.h>
 #include <kglobal.h>
+#include <kglobalsettings.h>
 #include <klocale.h>
 #include <ktextbrowser.h>
 #include <kurllabel.h>
@@ -433,7 +434,7 @@ void KAboutContainerBase::fontChange( const QFont &/*oldFont*/ )
 {
   if( mTitleLabel != 0 )
   {
-    QFont f( KGlobal::generalFont() );
+    QFont f( KGlobalSettings::generalFont() );
     f.setBold( true );
     f.setPointSize( 14 ); // Perhaps changeable ?
     mTitleLabel->setFont(f);
@@ -441,7 +442,7 @@ void KAboutContainerBase::fontChange( const QFont &/*oldFont*/ )
 
   if( mVersionLabel != 0 )
   {
-    QFont f( KGlobal::generalFont() );
+    QFont f( KGlobalSettings::generalFont() );
     f.setBold( true );
     mVersionLabel->setFont(f);
     mAuthorLabel->setFont(f);

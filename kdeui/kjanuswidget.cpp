@@ -34,6 +34,7 @@
 #include <kdialog.h> // Access to some static members
 #include <klocale.h>
 #include <kglobal.h>
+#include <kglobalsettings.h>
 #include <kseparator.h>
 
 #include "kjanuswidget.h"
@@ -669,7 +670,7 @@ void KJanusWidget::slotFontChanged()
 {
   if( mTitleLabel != 0 )
   {
-    mTitleLabel->setFont( KGlobal::generalFont() );
+    mTitleLabel->setFont( KGlobalSettings::generalFont() );
     QFont titleFont( mTitleLabel->font() );
     titleFont.setBold( true );
     mTitleLabel->setFont( titleFont );

@@ -30,7 +30,8 @@
 #include <qaccel.h>
 
 #include <kconfig.h>
-#include "kmenubar.h"
+#include <kglobalsettings.h>
+#include <kmenubar.h>
 #include <kstyle.h>
 #include <kapp.h>
 #include <kwm.h>
@@ -72,7 +73,7 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
     d = new KMenuBarPrivate(parent);
 
     mouseActive = false;
-    setFont(KGlobal::menuFont());
+    setFont(KGlobalSettings::menuFont());
 
     connect( kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
 

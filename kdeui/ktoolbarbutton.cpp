@@ -229,7 +229,7 @@ void KToolBarButton::modeChange()
   // okay, we have to deal with fonts.  let's get our information now
   QFont tmp_font;
 
-  tmp_font = KGlobal::toolBarFont();
+  tmp_font = KGlobalSettings::toolBarFont();
 
   // now parse out our font sizes from our chosen font
   QFontMetrics fm(tmp_font);
@@ -362,7 +362,7 @@ void KToolBarButton::setDisabledPixmap( const QPixmap &pixmap )
 void KToolBarButton::setPopup(QPopupMenu *p)
 {
   d->m_popup = p;
-  d->m_popup->setFont(KGlobal::toolBarFont());
+  d->m_popup->setFont(KGlobalSettings::toolBarFont());
   p->installEventFilter(this);
 }
 
@@ -504,7 +504,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
         iconType = KStyle::IconTextBottom;
         break;
     }
-    QFont ref_font(KGlobal::toolBarFont());
+    QFont ref_font(KGlobalSettings::toolBarFont());
     kapp->kstyle()->drawKToolBarButton(_painter, 0, 0, width(), height(),
       isEnabled()? colorGroup() : palette().disabled(), isDown() || isOn(),
       d->m_isRaised, isEnabled(), d->m_popup != 0L, iconType, d->m_text,
@@ -530,7 +530,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
 
   int dx, dy;
 
-  QFont tmp_font(KGlobal::toolBarFont());
+  QFont tmp_font(KGlobalSettings::toolBarFont());
   QFontMetrics fm(tmp_font);
 
   if (d->m_iconText == KToolBar::IconOnly) // icon only
@@ -575,7 +575,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
         ++dy;
       }
 
-      _painter->setFont(KGlobal::toolBarFont());
+      _painter->setFont(KGlobalSettings::toolBarFont());
       if(d->m_isRaised)
         _painter->setPen(KGlobalSettings::toolBarHighlightColor());
       _painter->drawText(dx, dy, width()-dx, height(), tf, d->m_text);
@@ -596,7 +596,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
         ++dy;
       }
 
-      _painter->setFont(KGlobal::toolBarFont());
+      _painter->setFont(KGlobalSettings::toolBarFont());
       if(d->m_isRaised)
         _painter->setPen(KGlobalSettings::toolBarHighlightColor());
       _painter->drawText(dx, dy, fm.width(d->m_text), fm.lineSpacing(), tf, d->m_text);
@@ -628,7 +628,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
         ++dy;
       }
 
-      _painter->setFont(KGlobal::toolBarFont());
+      _painter->setFont(KGlobalSettings::toolBarFont());
       if(d->m_isRaised)
         _painter->setPen(KGlobalSettings::toolBarHighlightColor());
       _painter->drawText(dx, dy, fm.width(d->m_text), fm.lineSpacing(), tf, d->m_text);

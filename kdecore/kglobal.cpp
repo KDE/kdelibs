@@ -95,67 +95,6 @@ KCharsets *KGlobal::charsets()
     return _charsets;
 }
 
-QFont KGlobal::generalFont()
-{
-    if(_generalFont)
-        return *_generalFont;
-
-    _generalFont = new QFont("helvetica", 12, QFont::Normal);
-    charsets()->setQFont(*_generalFont, charsets()->charsetForLocale());
-    KConfig *c = KGlobal::config();
-    c->setGroup( "General" );
-    *_generalFont = c->readFontEntry("font", _generalFont);
-    return *_generalFont;
-}
-	
-QFont KGlobal::fixedFont()
-{
-    if(_fixedFont) {
-        return *_fixedFont;
-    }
-
-    KConfig *c = KGlobal::config();
-    c->setGroup( "General" );
-    _fixedFont = new QFont(c->readFontEntry("fixedFont"));
-
-    if(!QFontInfo(*_fixedFont).fixedPitch() ) {
-        *_fixedFont = QFont("fixed",
-                            _fixedFont->pointSize(), QFont::Normal);
-        _fixedFont->setStyleHint(QFont::Courier);
-        _fixedFont->setFixedPitch(true);
-        charsets()->setQFont(*_fixedFont, charsets()->charsetForLocale());
-    }
-    return *_fixedFont;
-}
-
-QFont KGlobal::toolBarFont()
-{
-    if(_toolBarFont)
-        return *_toolBarFont;
-
-    _toolBarFont = new QFont("helvetica", 10, QFont::Normal);
-    charsets()->setQFont(*_toolBarFont, charsets()->charsetForLocale());
-    KConfig *c = KGlobal::config();
-    c->setGroup( QString::fromLatin1("General") );
-    *_toolBarFont = c->readFontEntry(QString::fromLatin1("toolBarFont"),
-                                    _toolBarFont);
-    return *_toolBarFont;
-}
-
-QFont KGlobal::menuFont()
-{
-    if(_menuFont)
-        return *_menuFont;
-
-    _menuFont = new QFont("helvetica", 10);
-    charsets()->setQFont(*_menuFont, charsets()->charsetForLocale());
-    KConfig *c = KGlobal::config();
-    c->setGroup( QString::fromLatin1("General") );
-    *_menuFont = c->readFontEntry(QString::fromLatin1("menuFont"),
-                                  _menuFont);
-    return *_menuFont;
-}
-
 /*
 void KGlobal::init()
 {
@@ -188,8 +127,3 @@ KInstance       *KGlobal::_instance     = 0;
 KInstance       *KGlobal::_activeInstance = 0;
 KLocale         *KGlobal::_locale	= 0;
 KCharsets       *KGlobal::_charsets	= 0;
-
-QFont           *KGlobal::_generalFont  = 0;
-QFont           *KGlobal::_fixedFont    = 0;
-QFont           *KGlobal::_toolBarFont  = 0;
-QFont           *KGlobal::_menuFont     = 0;

@@ -61,19 +61,10 @@ public:
     static KLocale             *locale();
     static KCharsets	        *charsets();
 
-    static QFont                generalFont();
-    static QFont                fixedFont();
-    static QFont                toolBarFont();
-    static QFont                menuFont();
-
+    //private:
     static  KInstance           *_instance;
     static  KLocale             *_locale;
     static  KCharsets	        *_charsets;
-
-    static  QFont               *_generalFont;
-    static  QFont               *_fixedFont;
-    static  QFont               *_toolBarFont;
-    static  QFont               *_menuFont;
 
     /**
      * The instance currently active (useful in a multi-instance
@@ -81,7 +72,6 @@ public:
      * Don't use this - it's mainly for KAboutDialog and KBugReport.
      */
     static  KInstance           *_activeInstance;
-
 };
 
 /**

@@ -19,7 +19,8 @@
 #define _KGLOBALSETTINGS_H
 
 #include <qstring.h>
-class QColor;
+#include <qcolor.h>
+#include <qfont.h>
 
 #define KDE_DEFAULT_SINGLECLICK true
 #define KDE_DEFAULT_INSERTTEAROFFHANDLES true
@@ -154,17 +155,32 @@ class KGlobalSettings
      * The default color to use when highlighting toolbar buttons
      */
     static QColor toolBarHighlightColor();
+    static QColor inactiveTitleColor();
+    static QColor inactiveTextColor();
+    static QColor activeTitleColor();
+    static QColor activeTextColor();
+
+    static QFont generalFont();
+    static QFont fixedFont();
+    static QFont toolBarFont();
+    static QFont menuFont();
 
 private:
     /**
      * reads in all paths from kdeglobals
      */
     static void initStatic();
+    static void rereadFontSettings();
 
     static QString* s_desktopPath;
     static QString* s_autostartPath;
     static QString* s_trashPath;
+    static QFont *_generalFont;
+    static QFont *_fixedFont;
+    static QFont *_toolBarFont;
+    static QFont *_menuFont;
 
+    friend class KApplication;
 };
 
 #endif
