@@ -364,16 +364,21 @@ void KFileInfo::readUserInfo()
 
 void KFileInfo::cleanup()
 {
-  PasswdMapper::Iterator it;
-  for( it = passwdMap->begin(); it != passwdMap->end(); ++it )
-    delete it.data();
+  if ( passwdMap ) {
+    PasswdMapper::Iterator it;
+    for( it = passwdMap->begin(); it != passwdMap->end(); ++it )
+      delete it.data();
 
-  GroupMapper::Iterator it2;
-  for( it2 = groupMap->begin(); it2 != groupMap->end(); ++it2 )
-    delete it.data();
+    delete passwdMap;
+    passwdMap = 0L;
+  }
 
-  delete passwdMap;
-  passwdMap = 0L;
-  delete groupMap;
-  groupMap = 0L;
+  if ( groupMap ) {
+    GroupMapper::Iterator it2;
+    for( it2 = groupMap->begin(); it2 != groupMap->end(); ++it2 )
+      delete it2.data();
+
+    delete groupMap;
+    groupMap = 0L;
+  }
 }
