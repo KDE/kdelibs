@@ -3,7 +3,7 @@
 
 #include <qobject.h>
 #include <qstring.h>
-#include <qlist.h>
+#include <qdict.h>
 
 #include <kurl.h>
 
@@ -69,7 +69,7 @@ protected:
 	  **/
 	void loadModules ();
 
-	QList<KSASLAuthModule> m_lstModules;
+	QDict<KSASLAuthModule> m_lstModules;
 	KURL m_urlAuthPath;
 	QString m_sAuthMethod;
 };
