@@ -90,6 +90,9 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
 // init the interpreter
   KJScript* kjs_create(KHTMLPart *khtmlpart)
   {
+    // Creating an interpreter doesn't mean it should be made current !
+    KJScript *current = KJScript::current();
+
     KJScript *script = new KJScript();
 #ifndef NDEBUG
     script->enableDebug();
@@ -98,6 +101,7 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
 
     global->setPrototype(new Window(khtmlpart));
 
+    KJScript::setCurrent(current);
     return script;
   }
 
@@ -132,7 +136,7 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
       return QVariant();
   }
   // clear resources allocated by the interpreter
-  void kjs_clear(KJScript *script, KHTMLPart *part)
+  void kjs_clear(KJScript *script, KHTMLPart * /*part*/)
   {
     script->clear();
     //    delete script;
