@@ -902,8 +902,12 @@ ECHO;
 	YY_BREAK
 #line 1310 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
+    	yyterminate();
+
 	case YY_END_OF_BUFFER:
-	yyterminate();
+        yy_c_buf_p = yytext;
+        yy_act = YY_STATE_EOF(YY_START);
+        goto do_action;
 
 	default:
 		YY_FATAL_ERROR(
