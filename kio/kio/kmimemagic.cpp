@@ -36,9 +36,7 @@ KMimeMagic* KMimeMagic::self()
 
 void KMimeMagic::initStatic()
 {
-  // Magic file detection init
-  QString mimefile = locate( "mime", "magic" );
-  s_pSelf = kmimemagicsd.setObject( new KMimeMagic( mimefile ) );
+  s_pSelf = kmimemagicsd.setObject( new KMimeMagic() );
   s_pSelf->setFollowLinks( TRUE );
 }
 
@@ -57,12 +55,20 @@ void KMimeMagic::initStatic()
 #include <qregexp.h>
 #include <qstring.h>
 
+//#define MIME_MAGIC_DEBUG_TABLE // untested
+
+// Uncomment to debug the config-file parsing phase
+//#define DEBUG_APPRENTICE
+// Uncomment to debug the matching phase
+//#define DEBUG_MIMEMAGIC
+
+#if (defined DEBUG_MIMEMAGIC || defined DEBUG_APPRENTICE)
+#define DEBUG_LINENUMBERS
+#endif
+
 /*
  * data structures and related constants
  */
-#define MIME_MAGIC_DEBUG_TABLE 0
-//#define DEBUG_MIMEMAGIC 1
-
 #define DECLINED 999
 #define ERROR    998
 #define OK         0
@@ -103,7 +109,9 @@ typedef union VALUETYPE {
 
 struct magic {
 	struct magic *next;     /* link to next entry */
-	int lineno;             /* line number from magic file */
+#ifdef DEBUG_LINENUMBERS
+	int lineno;             /* line number from magic file - doesn't say from which one ;) */
+#endif
 
 	short flag;
 #define INDIR    1              /* if '>(...)' appears,  */
@@ -505,7 +513,7 @@ public:
 #if 0
         // debug code
         for ( QStringList::Iterator it = tmpDirs.begin() ; it != tmpDirs.end() ; ++it )
-            kdDebug() << " atimeDir: " << *it << endl;
+            kdDebug(7018) << " atimeDir: " << *it << endl;
 #endif
     }
 
@@ -521,20 +529,19 @@ public:
 
 /* current config */
 struct config_rec {
-	QString magicfile;      /* where magic be found      */
 	struct magic *magic,    /* head of magic config list */
 	*last;
         KMimeMagicUtimeConf * utimeConf;
 };
 
-#if (MIME_MAGIC_DEBUG_TABLE > 1)
+#ifdef MIME_MAGIC_DEBUG_TABLE
 static void
 test_table()
 {
 	struct magic *m;
 	struct magic *prevm = NULL;
 
-	// debug("test_table : started", );
+	kdDebug(7018) << "test_table : started" << endl;
 	for (m = conf->magic; m; m = m->next) {
 		if (isprint((((unsigned long) m) >> 24) & 255) &&
 		    isprint((((unsigned long) m) >> 16) & 255) &&
@@ -589,7 +596,7 @@ int KMimeMagic::parse_line(char *line, int *rule, int lineno)
 /*
  * apprentice - load configuration from the magic file.
  */
-int KMimeMagic::apprentice()
+int KMimeMagic::apprentice( const QString& magicfile )
 {
 	FILE *f;
 	char line[BUFSIZ + 1];
@@ -598,9 +605,9 @@ int KMimeMagic::apprentice()
 	int rule = 0;
 	QCString fname;
 
-	if (conf->magicfile.isEmpty())
+	if (magicfile.isEmpty())
 		return -1;
-	fname = QFile::encodeName(conf->magicfile);
+	fname = QFile::encodeName(magicfile);
 	f = fopen(fname, "r");
 	if (f == NULL) {
 		kdError(7018) << "can't read magic file " << fname.data() << ": " << strerror(errno) << endl;
@@ -614,10 +621,12 @@ int KMimeMagic::apprentice()
 
 	fclose(f);
 
-	//kdDebug(7018) << "apprentice: conf=" << conf << " file=" << conf->magicfile.local8Bit().data() << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
-	//kdDebug(7018) << "apprentice: read " << lineno << " lines, " << rule << " rules, " << errs << " errors" << endl;
+#ifdef DEBUG_APPRENTICE
+	kdDebug(7018) << "apprentice: conf=" << conf << " file=" << magicfile << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
+	kdDebug(7018) << "apprentice: read " << lineno << " lines, " << rule << " rules, " << errs << " errors" << endl;
+#endif
 
-#if (MIME_MAGIC_DEBUG_TABLE > 1)
+#ifdef MIME_MAGIC_DEBUG_TABLE
 	test_table();
 #endif
 
@@ -652,10 +661,12 @@ int KMimeMagic::buff_apprentice(char *buff)
 		lineno++;
 	} while (len > 0);
 
-	//kdDebug(7018) << "buff_apprentice: conf=" << conf << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
-	//kdDebug(7018) << "buff_apprentice: read " << lineno << " lines, " << rule << " rules, " << errs << " errors" << endl;
+#ifdef DEBUG_APPRENTICE
+	kdDebug(7018) << "buff_apprentice: conf=" << conf << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
+	kdDebug(7018) << "buff_apprentice: read " << lineno << " lines, " << rule << " rules, " << errs << " errors" << endl;
+#endif
 
-#if ( MIME_MAGIC_DEBUG_TABLE > 1 )
+#ifdef MIME_MAGIC_DEBUG_TABLE
 	test_table();
 #endif
 
@@ -726,7 +737,9 @@ int KMimeMagic::parse(char *l, int lineno)
 	/* set values in magic structure */
 	m->flag = 0;
 	m->cont_level = 0;
+#ifdef DEBUG_LINENUMBERS
 	m->lineno = lineno;
+#endif
 
 	while (*l == '>') {
 		++l;            /* step over */
@@ -892,10 +905,20 @@ int KMimeMagic::parse(char *l, int lineno)
 		m->nospflag = 1;
 	} else
 		m->nospflag = 0;
-	while ((m->desc[i++] = *l++) != '\0' && i < MAXDESC)
-		/* NULLBODY */ ;
+        // Copy description - until EOL or '#' (for comments)
+        while (*l != '\0' && *l != '#' && i < MAXDESC-1)
+            m->desc[i++] = *l++;
+        m->desc[i] = '\0';
+        // Remove trailing spaces
+        while (--i>0 && isspace( m->desc[i] ))
+            m->desc[i] = '\0';
 
-	//kdDebug(7018) << "parse: line=" << lineno << " m=" << m << " next=" << m->next << " cont=" << m->cont_level << " desc=" << (m->desc ? m->desc : "NULL") << endl;
+        // old code
+	//while ((m->desc[i++] = *l++) != '\0' && i < MAXDESC) /* NULLBODY */ ;
+
+#ifdef DEBUG_APPRENTICE
+	kdDebug(7018) << "parse: line=" << lineno << " m=" << m << " next=" << m->next << " cont=" << m->cont_level << " desc=" << (m->desc ? m->desc : "NULL") << endl;
+#endif
 	return 0;
 }
 
@@ -1583,19 +1606,23 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 	union VALUETYPE p;
 	struct magic *m;
 
-	//kdDebug(7018) << "match: conf=" << conf << " file=" << conf->magicfile.local8Bit().data() << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
+#ifdef DEBUG_MIMEMAGIC
+	kdDebug(7018) << "match: conf=" << conf << " m=" << (conf->magic ? "set" : "NULL") << " m->next=" << ((conf->magic && conf->magic->next) ? "set" : "NULL") << " last=" << (conf->last ? "set" : "NULL") << endl;
 	for (m = conf->magic; m; m = m->next) {
 		if (isprint((((unsigned long) m) >> 24) & 255) &&
 		    isprint((((unsigned long) m) >> 16) & 255) &&
 		    isprint((((unsigned long) m) >> 8) & 255) &&
 		    isprint(((unsigned long) m) & 255)) {
-			//kdDebug(7018) << "match: POINTER CLOBBERED! " << endl;
+			kdDebug(7018) << "match: POINTER CLOBBERED! " << endl;
 			break;
 		}
 	}
+#endif
 
 	for (m = conf->magic; m; m = m->next) {
-		//kdDebug(7018) << "match: line=" << m->lineno << " desc=" << m->desc << endl;
+#ifdef DEBUG_MIMEMAGIC
+		kdDebug(7018) << "match: line=" << m->lineno << " desc=" << m->desc << endl;
+#endif
 
 		/* check if main entry matches */
 		if (!mget(&p, s, m, nbytes) ||
@@ -1610,7 +1637,9 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 			}
 			m_cont = m->next;
 			while (m_cont && (m_cont->cont_level != 0)) {
-				//kdDebug(7018) << "match: line=" << m->lineno << " cont=" << m_cont->cont_level << " mc=" << m_cont->lineno << " mc->next=" << m_cont << " " << endl;
+#ifdef DEBUG_MIMEMAGIC
+				kdDebug(7018) << "match: line=" << m->lineno << " cont=" << m_cont->cont_level << " mc=" << m_cont->lineno << " mc->next=" << m_cont << " " << endl;
+#endif
 				/*
 				 * this trick allows us to keep *m in sync
 				 * when the continue advances the pointer
@@ -1622,7 +1651,9 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 		}
 		/* if we get here, the main entry rule was a match */
 		/* this will be the last run through the loop */
-		//kdDebug(7018) << "match: rule matched, line=" << m->lineno << " type=" << m->type << " " << ((m->type == STRING) ? m->value.s : "") << endl;
+#ifdef DEBUG_MIMEMAGIC
+		kdDebug(7018) << "match: rule matched, line=" << m->lineno << " type=" << m->type << " " << ((m->type == STRING) ? m->value.s : "") << endl;
+#endif
 
 		/* remember the match */
 		resultBuf = m->desc;
@@ -1634,8 +1665,10 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 		 */
 		m = m->next;
 		while (m && (m->cont_level != 0)) {
-			//kdDebug(7018) << "match: line=" << m->lineno << " cont=" << m->cont_level << " type=" << m->type << " " << ((m->type == STRING) ? m->value.s : "") << endl;
-			if (cont_level >= m->cont_level) {
+#ifdef DEBUG_MIMEMAGIC
+                    kdDebug(7018) << "match: line=" << m->lineno << " cont=" << m->cont_level << " type=" << m->type << " " << ((m->type == STRING) ? m->value.s : "") << endl;
+#endif
+                    if (cont_level >= m->cont_level) {
 				if (cont_level > m->cont_level) {
 					/*
 					 * We're at the end of the level
@@ -1651,18 +1684,29 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 					 * it if the previous item printed
 					 * and this item isn't empty.
 					 */
-                                        //kdDebug() << "continuation matched" << endl;
-					resultBuf = m->desc;
+#ifdef DEBUG_MIMEMAGIC
+                                    kdDebug(7018) << "continuation matched" << endl;
+#endif
+                                    resultBuf = m->desc;
 					cont_level++;
 				}
 			}
 			/* move to next continuation record */
 			m = m->next;
 		}
-		//kdDebug(7018) << "match: matched" << endl;
-		return 1;       /* all through */
+                // KDE-specific: need an actual mimetype for a real match
+                // If we only matched a rule with continuations but no mimetype, it's not a match
+                if ( !resultBuf.isEmpty() )
+                {
+#ifdef DEBUG_MIMEMAGIC
+                    kdDebug(7018) << "match: matched" << endl;
+#endif
+                    return 1;       /* all through */
+                }
 	}
-	//kdDebug(7018) << "match: failed" << endl;
+#ifdef DEBUG_MIMEMAGIC
+	kdDebug(7018) << "match: failed" << endl;
+#endif
 	return 0;               /* no match at all */
 }
 
@@ -1995,10 +2039,24 @@ from_oct(int digs, char *where)
 	return value;
 }
 
-/*
- * The Constructor
- */
+KMimeMagic::KMimeMagic()
+{
+    // Magic file detection init
+    QString mimefile = locate( "mime", "magic" );
+    init( mimefile );
+    // Add snippets from share/config/magic/*
+    QStringList snippets = KGlobal::dirs()->findAllResources( "config", "magic/*.magic", true );
+    for ( QStringList::Iterator it = snippets.begin() ; it != snippets.end() ; ++it )
+        if ( !mergeConfig( *it ) )
+            kdWarning() << k_funcinfo << "Failed to parse " << *it << endl;
+}
+
 KMimeMagic::KMimeMagic(const QString & _configfile)
+{
+    init( _configfile );
+}
+
+void KMimeMagic::init( const QString& _configfile )
 {
 	int result;
 	conf = new config_rec;
@@ -2008,13 +2066,12 @@ KMimeMagic::KMimeMagic(const QString & _configfile)
 	magicResult = NULL;
 	followLinks = FALSE;
 
-	conf->magicfile = _configfile;
         conf->utimeConf = 0L; // created on demand
 	/* on the first time through we read the magic file */
-	result = apprentice();
+	result = apprentice(_configfile);
 	if (result == -1)
 		return;
-#if (MIME_MAGIC_DEBUG_TABLE > 1)
+#ifdef MIME_MAGIC_DEBUG_TABLE
 	test_table();
 #endif
 }
@@ -2042,20 +2099,16 @@ KMimeMagic::~KMimeMagic()
 bool
 KMimeMagic::mergeConfig(const QString & _configfile)
 {
+	kdDebug(7018) << k_funcinfo << _configfile << endl;
 	int result;
 
-	QString old_magicfile = conf->magicfile;
-
-	if (!_configfile.isEmpty())
-		conf->magicfile = _configfile;
-	else
+	if (_configfile.isEmpty())
 		return false;
-	result = apprentice();
+	result = apprentice(_configfile);
 	if (result == -1) {
-		conf->magicfile = old_magicfile;
 		return false;
 	}
-#if (MIME_MAGIC_DEBUG_TABLE > 1)
+#ifdef MIME_MAGIC_DEBUG_TABLE
 	test_table();
 #endif
 	return true;
@@ -2070,7 +2123,7 @@ KMimeMagic::mergeBufConfig(char * _configbuf)
 		result = buff_apprentice(_configbuf);
 		if (result == -1)
 			return false;
-#if (MIME_MAGIC_DEBUG_TABLE > 1)
+#ifdef MIME_MAGIC_DEBUG_TABLE
 		test_table();
 #endif
 		return true;
@@ -2144,7 +2197,10 @@ KMimeMagic::findBufferFileType( const QByteArray &data,
  */
 KMimeMagicResult* KMimeMagic::findFileType(const QString & fn)
 {
-        resultBuf = QString::null;
+#ifdef DEBUG_MIMEMAGIC
+    kdDebug(7018) << "KMimeMagic::findFileType " << fn << endl;
+#endif
+    resultBuf = QString::null;
 
         if ( !magicResult )
 	  magicResult = new KMimeMagicResult();

@@ -101,6 +101,12 @@ class KMimeMagic
 {
 public:
   /**
+   * Create a parser and initialize it with the KDE-global data:
+   * the "magic" config file as well as the snippets from share/config/magic.
+   */
+  KMimeMagic();
+
+  /**
    * Create a parser and initialize it with the given config file.
    */
   KMimeMagic( const QString & configFile );
@@ -192,6 +198,8 @@ protected:
   static KMimeMagic* s_pSelf;
 
 private:
+  void init( const QString& configFile );
+
   /**
    * If true, follow symlinks.
    */
@@ -210,7 +218,7 @@ private:
   int parse_line(char *line, int *rule, int lineno);
   int parse(char *, int);
   int buff_apprentice(char*buff);
-  int apprentice();
+  int apprentice(const QString &configFile);
   int ascmagic(unsigned char *, int);
   int textmagic(unsigned char *, int);
 
