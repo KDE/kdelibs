@@ -967,6 +967,7 @@ void NamedAttrMapImpl::copyAttributes(NamedAttrMapImpl *other)
 	    m_attrs[i].m_data.attr->ref();
 	    m_attrs[i].m_data.attr->setElement(m_element);
 	}
+	m_element->parseAttribute(&m_attrs[i]);
     }
 }
 
