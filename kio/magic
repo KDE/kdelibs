@@ -193,11 +193,11 @@
 0	string		#!\ /usr/bin/env python 	  application/x-python
 0	belong		0x994e0d0a		application/x-python-bytecode
 
-# ruby - what's the correct mimetype?
-#0	string		#!/bin/env ruby                   text/x-ruby
-#0	string		#!\ /bin/env ruby                 text/x-ruby
-#0	string		#!/usr/bin/env ruby               text/x-ruby
-#0	string		#!\ /usr/bin/env ruby             text/x-ruby
+# ruby
+0	string		#!/bin/env ruby                   application/x-ruby
+0	string		#!\ /bin/env ruby                 application/x-ruby
+0	string		#!/usr/bin/env ruby               application/x-ruby
+0	string		#!\ /usr/bin/env ruby             application/x-ruby
 
 #------------------------------------------------------------------------------
 # compress:  file(1) magic for pure-compression formats (no archives)
