@@ -413,6 +413,9 @@ void HTMLFramePanner::mouseMoveEvent( QMouseEvent *_ev )
     if ( !moveable )
         return;
     
+    if ( child1 == 0L || child2 == 0L )
+	return;
+
     if ( orientation == HTMLFramePanner::HORIZONTAL )
     {
 	QPoint p = mapToGlobal( _ev->pos() );
@@ -445,6 +448,9 @@ void HTMLFramePanner::mouseReleaseEvent( QMouseEvent * )
 {
     if ( !moveable )
         return;
+
+    if ( child1 == 0L || child2 == 0L )
+	return;
     
     releaseMouse();
 
