@@ -86,6 +86,7 @@ static int tcp_connect(const char *url)
     {
         fprintf(stderr,"tcp_connect: unable to set socket linger value to %d\n",
                 lin.l_linger);
+		close(my_socket);
         return 0;
     }
 
@@ -94,6 +95,7 @@ static int tcp_connect(const char *url)
 	if(rc != 0)
 	{
 		fprintf(stderr,"tcp_connect: can't connect to server (%s)\n", url);
+		close(my_socket);
 		return 0;
 	}
 
