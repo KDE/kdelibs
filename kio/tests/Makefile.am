@@ -33,8 +33,6 @@ speed_LDADD = $(top_builddir)/kio/libkio.la
 speed_SOURCES = speed.cpp
 kioslavetest_LDADD = $(top_builddir)/kio/libkio.la
 kioslavetest_SOURCES = kioslavetest.cpp
-ktartest_LDADD = $(top_builddir)/kio/libkio.la
-ktartest_SOURCES = ktartest.cpp
 kshredtest_LDADD = $(top_builddir)/kio/libkio.la
 kshredtest_SOURCES = kshredtest.cpp
 kdefaultprogresstest_LDADD = $(top_builddir)/kio/libkio.la
@@ -57,6 +55,7 @@ kfiltertest_SOURCES = kfiltertest.cpp
 kscantest_SOURCES = kscantest.cpp
 kdirlistertest_SOURCES = kdirlistertest.cpp kdirlistertest.h
 previewtest_SOURCES = previewtest.cpp previewtest.h
+ktartest_SOURCES = ktartest.cpp
 
 #Needs kfile, so commented out
 #kopenwithtest_SOURCES = kopenwithtest.cpp
