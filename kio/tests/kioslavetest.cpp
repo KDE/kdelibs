@@ -18,7 +18,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kurl.h>
-#include <kio_job.h>
+#include <kio/job.h>
 
 #include "kioslavetest.h"
 

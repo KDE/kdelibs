@@ -2,7 +2,7 @@
 #include <qwidget.h>
 #include <qstringlist.h>
 #include <qdir.h>
-#include <kio_openwith.h>
+#include <kio/openwith.h>
 #include <kurl.h>
 
 int main(int argc, char **argv)

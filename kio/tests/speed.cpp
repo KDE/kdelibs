@@ -3,7 +3,7 @@
 #include <kapp.h>
 #include <time.h>
 #include "speed.h"
-#include <kio_job.h>
+#include <kio/job.h>
 #include <qdir.h>
 
 using namespace KIO;

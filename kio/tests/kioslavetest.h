@@ -21,8 +21,8 @@
 
 #include <ktmainwindow.h>
 
-//#include "kio_littleprogress_dlg.h"
-#include "kio_job.h"
+//#include "kio/littleprogress_dlg.h"
+#include "kio/job.h"
 #include "kio/global.h"
 
 class KioslaveTest : public KTMainWindow {
