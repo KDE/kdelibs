@@ -34,6 +34,10 @@ class KIOConnection
     final static int FINISHED = 1;
     final static int ERRORCODE = 2;
 
+    final static int STOP = 0;
+    final static int HOLD = 1;
+    final static int RESUME = 2;
+
     protected static int id = 0;
     static Hashtable jobs = new Hashtable();
 
@@ -44,6 +48,7 @@ class KIOConnection
     protected LinkedList data = new LinkedList ();
     protected int errorcode = 0;
     protected boolean finished = false;
+    protected boolean onhold = false;
     protected URL url;
 
     void checkConnected() throws IOException {
@@ -88,13 +93,20 @@ class KIOConnection
             checkConnected();
             if (buf != null && bufpos < buf.length)
                 return true;
+            int datasize = 0;
             synchronized (jobs) {
-                if (data.size() > 0) {
+                datasize = data.size();
+                if (datasize > 0) {
                     buf = (byte []) data.removeFirst();
                     bufpos = 0;
-                    return true;
                 }
             }
+            if (onhold) {
+                Main.protocol.sendDataCmd(jobid, RESUME);
+                onhold = false;
+            }
+            if (datasize > 0)
+                return true;
             if (finished) {
                 eof = true;
                 synchronized (jobs) {
@@ -121,7 +133,7 @@ class KIOConnection
         public int read(byte[] b, int off, int len) throws IOException {
             if (!getData())
                 return -1;
-            int nr = buf.length - bufpos;
+            int nr = buf.length - bufpos; // FIXME add length of all buffers
             if (nr > len)
                 nr = len;
             System.arraycopy(buf, bufpos, b, off, nr);
@@ -135,7 +147,7 @@ class KIOConnection
             if (eof)
                 return 0;
             checkConnected();
-            return buf == null ? 0 : buf.length - bufpos;
+            return buf == null ? 0 : buf.length - bufpos; // FIXME see read
         }
         public boolean markSupported() {
             return false;
@@ -159,16 +171,21 @@ class KIOConnection
                 if (d != null && d.length > 0)
                     data.addLast(d);
                 finished = true;
+                Main.debug ("FINISHED (" + jobid + ") " + data.size());
                 break;
             case DATA:
                 if (d.length > 0)
                     data.addLast(d);
-                Main.debug ("DATA " + data.size());
+                Main.debug ("DATA (" + jobid + ") " + data.size());
+                if (!onhold && data.size() > 2) {
+                    Main.protocol.sendDataCmd(jobid, HOLD);
+                    onhold = true;
+                }
                 break;
             case ERRORCODE:
                 String codestr = new String(d);
                 errorcode = Integer.parseInt(codestr);
-                Main.debug ("ERRORECODE " + errorcode);
+                Main.debug ("ERRORECODE(" + jobid + ") " + errorcode);
                 break;
         }
     }
@@ -194,6 +211,7 @@ class KIOConnection
                 out = new KJASOutputStream();
             if (!haveError()) {
                 thread = null;
+                Main.debug ("connect(" + jobid + ") " + url);
                 return;
             }
         }
@@ -203,30 +221,34 @@ class KIOConnection
         thread = null;
         if (connected) {
             connected = false;
-            Main.debug ("connect error");
-            throw new IOException("connection failed (not found)");
+            Main.protocol.sendDataCmd(jobid, STOP);
+            Main.debug ("connect error(" + jobid + ") " + url);
+            throw new IOException("connection failed (not found)" + jobid);
         }
-        Main.debug ("connect timeout");
+        Main.debug ("connect timeout(" + jobid + ") " + url);
         throw new IOException("connection failed (timeout)");
     }
     void disconnect() {
         if (!connected)
             return;
+        Main.debug ("disconnect " + jobid);
         synchronized (jobs) {
             jobs.remove(jobid);
         }
         connected = false;
         out = null;
         in = null;
+        if (!finished)
+            Main.protocol.sendDataCmd(jobid, STOP);
     }
     InputStream getInputStream() throws IOException {
-        Main.debug ("getInputStream " + url);
+        Main.debug ("getInputStream(" + jobid + ") " + url);
         if (!connected)
             connect(true);
         return in;
     }
     OutputStream getOutputStream() throws IOException {
-        Main.debug ("getOutputStream " + url);
+        Main.debug ("getOutputStream(" + jobid + ") " + url);
         if (!connected)
             connect(false);
         return out;

@@ -33,7 +33,11 @@ static const int ERRORCODE = 2;
 static const int HEADERS = 3;
 static const int REDIRECT = 4;
 static const int MIMETYPE = 5;
-                
+
+static const int KJAS_STOP = 0;
+static const int KJAS_HOLD = 1;
+static const int KJAS_RESUME = 2;
+
 class KJavaDownloaderPrivate
 {
 friend class KJavaDownloader;
@@ -41,8 +45,8 @@ public:
     KJavaDownloaderPrivate() : responseCode(0), isfirstdata(true) {}
     ~KJavaDownloaderPrivate()
     {
-        if( url )
         delete url;
+        if (job) job->kill(); // KIO::Job::kill deletes itself
     }
 private:
     int               loaderID;
@@ -54,10 +58,9 @@ private:
 };
 
 
-/* KDE 4: Make them const QString & */
 KJavaDownloader::KJavaDownloader( int ID, const QString& url )
 {
-    kdDebug(6100) << "KJavaDownloader for ID = " << ID << " and url = " << url << endl;
+    kdDebug(6100) << "KJavaDownloader(" << ID << ") = " << url << endl;
 
     d = new KJavaDownloaderPrivate;
 
@@ -83,7 +86,7 @@ KJavaDownloader::~KJavaDownloader()
 
 void KJavaDownloader::slotData( KIO::Job*, const QByteArray& qb )
 {
-    kdDebug(6100) << "slotData for url = " << d->url->url() << endl;
+    kdDebug(6100) << "slotData(" << d->loaderID << ")" << endl;
 
     KJavaAppletServer* server = KJavaAppletServer::allocateJavaServer();
     if (d->isfirstdata) {
@@ -121,11 +124,10 @@ void KJavaDownloader::slotMimetype(KIO::Job*, const QString & type) {
 
 void KJavaDownloader::slotResult( KIO::Job* )
 {
-    kdDebug(6100) << "slotResult for url = " << d->url->url() << endl;
+    kdDebug(6100) << "slotResult(" << d->loaderID << ")" << endl;
 
     KJavaAppletServer* server = KJavaAppletServer::allocateJavaServer();
     if( d->job->error())
-    //if( d->job->error() || d->job->isErrorPage())
     {
         kdDebug(6100) << "slave had an error = " << d->job->errorString() << endl;
         int code = d->job->error();
@@ -144,9 +146,33 @@ void KJavaDownloader::slotResult( KIO::Job* )
         kdDebug(6100) << "size of data = " << d->file.size() << endl;
         server->sendURLData( d->loaderID, FINISHED, d->file );
     }
+    d->job = 0L; // signal KIO::Job::result deletes itself
+    server->removeDataJob( d->loaderID ); // will delete this
     KJavaAppletServer::freeJavaServer();
+}
 
-    delete this;
+void KJavaDownloader::jobCommand( int cmd )
+{
+    if (!d->job) return;
+    switch (cmd) {
+        case KJAS_STOP: {
+            kdDebug(6100) << "jobCommand(" << d->loaderID << ") stop" << endl;
+            d->job->kill();
+            d->job = 0L; // KIO::Job::kill deletes itself
+            KJavaAppletServer* server = KJavaAppletServer::allocateJavaServer();
+            server->removeDataJob( d->loaderID ); // will delete this
+            KJavaAppletServer::freeJavaServer();
+            break;
+        }
+        case KJAS_HOLD:
+            kdDebug(6100) << "jobCommand(" << d->loaderID << ") hold" << endl;
+            d->job->suspend();
+            break;
+        case KJAS_RESUME:
+            kdDebug(6100) << "jobCommand(" << d->loaderID << ") resume" << endl;
+            d->job->resume();
+            break;
+    }
 }
 
 #include "kjavadownloader.moc"

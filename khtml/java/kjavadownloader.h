@@ -44,6 +44,7 @@ public:
     KJavaDownloader( int ID, const QString& url );
     ~KJavaDownloader();
 
+    void jobCommand( int cmd );
 protected slots:
     void slotData( KIO::Job*, const QByteArray& );
     void slotConnected( KIO::Job* );

@@ -117,9 +117,12 @@ public:
     /**
      * Send data we got back from a KJavaDownloader back to the appropriate
      * class loader.
-     * (This is currently unimplemented on the java side.
      */
     void sendURLData( int loaderID, int code, const QByteArray& data );
+    /**
+     * Removes KJavaDownloader from the list (deletes it too).
+     */
+    void removeDataJob( int loaderID );
 
     /**
      * Shut down the KJAS server.

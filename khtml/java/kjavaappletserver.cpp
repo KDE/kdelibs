@@ -68,6 +68,7 @@
 #define KJAS_AUDIOCLIP_STOP    (char)22
 #define KJAS_APPLET_STATE      (char)23
 #define KJAS_APPLET_FAILED     (char)24
+#define KJAS_DATA_COMMAND      (char)25
 
 
 class JSStackNode {
@@ -80,20 +81,23 @@ public:
     bool exit : 1;
 };
 
-// For future expansion
+typedef QMap< int, KJavaDownloader* > KIOJobMap;
+
 class KJavaAppletServerPrivate
 {
 friend class KJavaAppletServer;
 private:
-   KJavaAppletServerPrivate() : ticketcounter(0), locked_context(-1) {}
+   //KJavaAppletServerPrivate() : ticketcounter(0), locked_context(-1) {}
+   KJavaAppletServerPrivate() : ticketcounter(0) {}
    int counter;
    int ticketcounter;
    QMap< int, QGuardedPtr<KJavaAppletContext> > contexts;
    QString appletLabel;
    QMap< int, JSStackNode* > jsstack;
+   KIOJobMap kiojobs;
    bool javaProcessFailed;
-   int locked_context;
-   QValueList<QByteArray> java_requests;
+   //int locked_context;
+   //QValueList<QByteArray> java_requests;
 };
 
 static KJavaAppletServer* self = 0;
@@ -408,6 +412,15 @@ void KJavaAppletServer::sendURLData( int loaderID, int code, const QByteArray& d
 
 }
 
+void KJavaAppletServer::removeDataJob( int loaderID )
+{
+    KIOJobMap::iterator it = d->kiojobs.find( loaderID );
+    if (it != d->kiojobs.end()) {
+        it.data()->deleteLater();
+        d->kiojobs.erase( it );
+    }
+}
+
 void KJavaAppletServer::quit()
 {
     QStringList args;
@@ -435,9 +448,9 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
         contextID += qb[ index++ ];
     }
     bool ok;
-    int contextID_num = contextID.toInt( &ok );
+    int ID_num = contextID.toInt( &ok ); // context id or kio job id
     /*if (d->locked_context > -1 && 
-        contextID_num != d->locked_context &&
+        ID_num != d->locked_context &&
         (cmd_code == KJAS_JAVASCRIPT_EVENT ||
          cmd_code == KJAS_APPLET_STATE ||
          cmd_code == KJAS_APPLET_FAILED))
@@ -483,10 +496,22 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             break;
 
         case KJAS_GET_URLDATA:
-            //here we need to get some data for a class loader and send it back...
-            kdDebug(6100) << "GetURLData from classloader: "<< contextID
-                          << " for url: " << args[0] << endl;
-            break;
+            if (ok && args.size () > 0) {
+                d->kiojobs.insert(ID_num, new KJavaDownloader(ID_num, args[0]));
+                kdDebug(6100) << "GetURLData(" << ID_num << ") url=" << args[0] << endl;
+            } else
+                kdError(6100) << "GetURLData error " << ok << " args:" << args.size () << endl;
+            return;
+        case KJAS_DATA_COMMAND:
+            if (ok && args.size () > 0) {
+                int cmd = args[0].toInt( &ok );
+                KIOJobMap::iterator it = d->kiojobs.find( ID_num );
+                if (ok && it != d->kiojobs.end())
+                    it.data()->jobCommand( cmd );
+                kdDebug(6100) << "KIO Data command: " << ID_num << " " << args[0] << endl;
+            } else
+                kdError(6100) << "KIO Data command error " << ok << " args:" << args.size () << endl;
+            return;
         case KJAS_JAVASCRIPT_EVENT:
             cmd = QString::fromLatin1( "JS_Event" );
             kdDebug(6100) << "Javascript request: "<< contextID
@@ -539,18 +564,11 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
         return;
     }
 
-    if( cmd_code == KJAS_GET_URLDATA )
-    {
-        new KJavaDownloader( contextID_num, args[0] );
-    }
-    else
-    {
-        KJavaAppletContext* context = d->contexts[ contextID_num ];
-        if( context )
-            context->processCmd( cmd, args );
-        else if (cmd != "AppletStateNotification") 
-            kdError(6100) << "no context object for this id" << endl;
-    }
+    KJavaAppletContext* context = d->contexts[ ID_num ];
+    if( context )
+        context->processCmd( cmd, args );
+    else if (cmd != "AppletStateNotification") 
+        kdError(6100) << "no context object for this id" << endl;
 }
 
 void KJavaAppletServer::endWaitForReturnData() {
