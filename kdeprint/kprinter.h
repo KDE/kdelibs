@@ -460,6 +460,11 @@ public:
 	 * @see realPageSize()
 	 */
 	void setRealPageSize(QSize p);
+
+	void setRealDrawableArea( const QRect& r );
+	QRect realDrawableArea() const;
+	void margins( uint *top, uint *left, uint *bottom, uint *right ) const;
+
 	/**
 	 * Returns the page list to be printed, correpsonding to the options selected by the user. This
 	 * takes into account collate, page order, page set, ranges, ... This is useful when the

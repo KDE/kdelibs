@@ -19,6 +19,8 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+#include <config.h>
+
 #include "kmuimanager.h"
 #include "kprintdialog.h"
 #include "kprintdialogpage.h"
@@ -145,9 +147,11 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 		if (dlg->parent() && dlg->parent()->isA("KPrintDialog"))
 			prt = static_cast<KPrintDialog*>(dlg->parent())->printer();
 
+#ifdef KDEPRINT_USE_MARGINS
 		// add margin page
-		//if (prt && !prt->fullPage() && prt->applicationType() == KPrinter::Dialog)
-		//	dlg->addPage(new KPMarginPage(prt, driver, dlg, "MarginPage"));
+		if (prt && !prt->fullPage() && prt->applicationType() == KPrinter::Dialog)
+			dlg->addPage(new KPMarginPage(prt, driver, dlg, "MarginPage"));
+#endif
 
 		// add driver page
 		if (driver)

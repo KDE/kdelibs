@@ -34,7 +34,7 @@ rm -f conftest*
 ac_link="$kde_save_link"
 CFLAGS="$kde_save_cflags"
 LIBS="$kde_save_libs"
-AC_MSG_RESULT("$ac_have_new_cups")
+AC_MSG_RESULT($ac_have_new_cups)
 ])
 
 dnl CUPS stuffs (to be changed)
@@ -80,3 +80,27 @@ if test "$ac_use_cups" = "yes"; then
 fi
 AM_CONDITIONAL(include_cups_SUBDIR, test -n "$CUPSSUBDIR")
 AC_SUBST(LIB_CUPS)
+
+dnl check for Qt-3.1 feature: QPrinter::setMargins()
+AC_MSG_CHECKING(Qt contains QPrinter::setMargins())
+kdeprint_use_margins="no"
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+kdeprint_save_cxxflags="$CXXFLAGS"
+CXXFLAGS="$CXXFLAGS $all_includes"
+AC_TRY_COMPILE(
+[
+#include <qprinter.h>
+],
+[
+QPrinter prt;
+prt.setMargins(0, 0, 0, 0);
+],
+kdeprint_use_margins="yes"
+)
+AC_LANG_RESTORE
+CXXFLAGS="$kdeprint_save_cxxflags"
+AC_MSG_RESULT($kdeprint_use_margins)
+if test "$kdeprint_use_margins" = "yes"; then
+  AC_DEFINE(KDEPRINT_USE_MARGINS, 1, [Defines if KDEPrint should include user-specified margins support])
+fi

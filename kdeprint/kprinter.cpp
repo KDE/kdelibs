@@ -19,6 +19,8 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+#include <config.h>
+
 #include "kprinter.h"
 #include "kprinterimpl.h"
 #include "kprintdialog.h"
@@ -110,6 +112,7 @@ public:
 	QString			m_errormsg;
 	bool			m_ready;
 	int		m_pagenumber;
+	QRect m_drawablearea;
 };
 
 //**************************************************************************************
@@ -276,8 +279,21 @@ void KPrinter::translateQtOptions()
 	d->m_wrapper->setOutputToFile(true);
 	d->m_wrapper->setOutputFileName(d->m_tmpbuffer);
 	d->m_wrapper->setNumCopies(option("kde-qtcopies").isEmpty() ? 1 : option("kde-qtcopies").toInt());
-	//if (!option("kde-margin-top").isEmpty() && !option("kde-margin-left").isEmpty())
-	//	d->m_wrapper->setMargins(QSize(option("kde-margin-left").toInt(), option("kde-margin-top").toInt()));
+#ifdef KDEPRINT_USE_MARGINS
+	if (!option("kde-margin-top").isEmpty())
+		d->m_wrapper->setMargins(option("kde-margin-top").toInt(), option("kde-margin-left").toInt(), option("kde-margin-bottom").toInt(), option("kde-margin-right").toInt());
+	else if ( d->m_drawablearea.isValid() && d->m_pagesize.isValid() )
+	{
+		QRect r = d->m_drawablearea;
+		QSize ps = d->m_pagesize;
+		d->m_wrapper->setMargins( r.top(), r.left(), ps.height() - r.bottom(), ps.width() - r.right() );
+	}
+	/*else
+	{
+		int res = d->m_wrapper->resolution();
+		d->m_wrapper->setMargins( res/3, res/2, res/3, res/2 );
+	}*/
+#endif
 	// for special printers, copies are handled by Qt
 	if (option("kde-isspecial") == "1")
 		d->m_wrapper->setNumCopies(numCopies());
@@ -369,6 +385,7 @@ void KPrinter::preparePrinting()
 	// re-initialize margins and page size (by default, use Qt mechanism)
 	setMargins(QSize(-1,-1));
 	setRealPageSize(QSize(-1,-1));
+	setRealDrawableArea( QRect() );
 
 	// print-system-specific setup, only if not printing to file
 	if (option("kde-isspecial") != "1")
@@ -484,6 +501,17 @@ QSize KPrinter::margins() const
 	return d->m_wrapper->margins();
 }
 
+void KPrinter::margins( uint *top, uint *left, uint *bottom, uint *right ) const
+{
+#ifdef KDEPRINT_USE_MARGINS
+	d->m_wrapper->margins( top, left, bottom, right );
+#else
+	QSize mg = d->m_wrapper->margins();
+	*top = *bottom = mg.height();
+	*left = *right = mg.width();
+#endif
+}
+
 int KPrinter::metric(int m) const
 {
 	if (!d->m_pagesize.isValid())
@@ -491,7 +519,8 @@ int KPrinter::metric(int m) const
 
 	int	val(0);
 	bool	land = (orientation() == KPrinter::Landscape);
-	int	res(d->m_wrapper->resolution());
+	uint	res(d->m_wrapper->resolution()), top = res/2, left = res/2, bottom = res/3, right = res/2;
+	margins( &top, &left, &bottom, &right );
 	switch ( m )
 	{
 		case QPaintDeviceMetrics::PdmWidth:
@@ -499,14 +528,14 @@ int KPrinter::metric(int m) const
 			if ( res != 72 )
 				val = (val * res + 36) / 72;
 			if ( !fullPage() )
-				val -= 2*margins().width();
+				val -= ( left + right );
 			break;
 		case QPaintDeviceMetrics::PdmHeight:
 			val = (land ? d->m_pagesize.width() : d->m_pagesize.height());
 			if ( res != 72 )
 				val = (val * res + 36) / 72;
 			if ( !fullPage() )
-				val -= 2*margins().height();
+				val -= ( top + bottom );
 			break;
 		case QPaintDeviceMetrics::PdmWidthMM:
 			val = metric( QPaintDeviceMetrics::PdmWidth );
@@ -548,6 +577,10 @@ void KPrinter::setOptions(const QMap<QString,QString>& opts)
 	tmpset.remove("kde-pagesize");
 	tmpset.remove("kde-orientation");
 	tmpset.remove("kde-colormode");
+	tmpset.remove("kde-margin-top");
+	tmpset.remove("kde-margin-left");
+	tmpset.remove("kde-margin-bottom");
+	tmpset.remove("kde-margin-right");
 	for (QMap<QString,QString>::ConstIterator it=tmpset.begin();it!=tmpset.end();++it)
 		if (it.key().left(4) == "kde-" && !(d->m_options.contains(it.key())))
 			d->m_options[it.key()] = it.data();
@@ -892,3 +925,9 @@ void KPrinter::setResolution(int dpi)
 
 int KPrinter::resolution() const
 { return d->m_wrapper->resolution(); }
+
+void KPrinter::setRealDrawableArea( const QRect& r )
+{ d->m_drawablearea = r; }
+
+QRect KPrinter::realDrawableArea() const
+{ return d->m_drawablearea; }
