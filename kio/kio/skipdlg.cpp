@@ -54,11 +54,11 @@ SkipDlg::SkipDlg(QWidget *parent, bool _multi, const QString& _error_text, bool 
   b0 = new QPushButton( i18n( "Cancel" ), this );
   connect(b0, SIGNAL(clicked()), this, SLOT(b0Pressed()));
 
-  b1 = new QPushButton( i18n( "Skip" ), this );
-  connect(b1, SIGNAL(clicked()), this, SLOT(b1Pressed()));
-
   if ( _multi )
   {
+    b1 = new QPushButton( i18n( "Skip" ), this );
+    connect(b1, SIGNAL(clicked()), this, SLOT(b1Pressed()));
+  
     b2 = new QPushButton( i18n( "Auto Skip" ), this );
     connect(b2, SIGNAL(clicked()), this, SLOT(b2Pressed()));
   }
