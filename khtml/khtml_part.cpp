@@ -1508,10 +1508,6 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 
   if ( !m_url.isEmpty() )
   {
-    KURL::List lst = KURL::split( m_url );
-    if ( !lst.isEmpty() )
-      baseurl = *lst.begin();
-
     KURL title( baseurl );
     title.setRef( QString::null );
     title.setQuery( QString::null );
