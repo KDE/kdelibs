@@ -40,7 +40,7 @@ BODY { background-color: rgb(255,255,255);
         background-color: white; /* should be inherited */ }
 /* :visited { color: rgb(170,0,0); } what is KDE value?*/
 
-TABLE { padding: 7px; }
+TABLE { padding: 5px; }
 
 TABLE.programlisting
 TABLE.screen { border-style: none;
