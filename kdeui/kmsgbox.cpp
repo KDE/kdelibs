@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.22  1999/06/17 18:49:13  mkoch
+ * #include <kstddirs.h>
+ *
  * Revision 1.21  1999/06/17 18:48:12  mkoch
  * make it compilable.
  *
@@ -164,12 +167,10 @@ KMsgBox::KMsgBox( QWidget *parent, const QString& caption,
     static QPixmap icons[4];
 
     if( !icons_initialized ) {
-    	QString ipath = locate( "data", "kde/pics/" );
-        QString ifile = ipath + "info.xpm";
-        icons[0].load( ifile );
-        icons[1].load( ipath + "exclamation.xpm" );
-        icons[2].load( ipath + "stopsign.xpm" );
-        icons[3].load( ipath + "question.xpm" );
+        icons[0].load( locate("data", "kde/pics/info.xpm") );
+        icons[1].load( locate("data", "kde/pics/exclamation.xpm") );
+        icons[2].load( locate("data", "kde/pics/stopsign.xpm") );
+        icons[3].load( locate("data", "kde/pics/question.xpm") );
         icons_initialized = 1;
     }
 
