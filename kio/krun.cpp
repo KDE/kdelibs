@@ -249,7 +249,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
   // The application accepts only local files ?
   if ( b_local_app && !b_local_files )
   {
-    return runOldApplication( _exec, _urls, b_allow_multiple );
+    return runOldApplication( exec, _urls, b_allow_multiple );
   }
 
   if ( b_allow_multiple || _urls.isEmpty() )
