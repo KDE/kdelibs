@@ -61,63 +61,6 @@ static long ascii_to_longlong( long base, const char *s )
   return ll;
 }
 
-static double ascii_to_longdouble (const char *s)
-{
-  double d;
-#ifdef HAVE_SCANF_LF
-  sscanf (s, "%Lf", &d);
-#else
-  /*
-   * this is only an approximation and will probably break fixed<>
-   * parameter calculation on systems where
-   * sizeof(double) < sizeof(long double). but fortunately all
-   * systems where scanf("%Lf") is known to be broken (Linux/Alpha
-   * and HPUX) have sizeof(double) == sizeof(long double).
-   */
-  d = strtod (s, NULL);
-#endif
-  return d;
-}
-
-static char translate_char( const char *s )
-{
-  char c = *s++;
-
-  if( c != '\\' )
-    return c;
-  c = *s++;
-  switch( c ) {
-  case 'n':
-    return '\n';
-  case 't':
-    return '\t';
-  case 'v':
-    return '\v';
-  case 'b':
-    return '\b';
-  case 'r':
-    return '\r';
-  case 'f':
-    return '\f';
-  case 'a':
-    return '\a';
-  case '\\':
-    return '\\';
-  case '?':
-    return '\?';
-  case '\'':
-    return '\'';
-  case '"':
-    return '"';
-  case 'x':
-  case 'X':
-    return (char) ascii_to_longlong( 16, s );
-  default:
-    // Gotta be an octal
-    return (char) ascii_to_longlong( 8, s );
-  }
-}
-
 extern void startInclude(const char *line);
 extern void endInclude();
 
