@@ -483,6 +483,10 @@
 # kdeextragear
 50001	kfortune
 
+# KIPI - KDE Imaging Plugin Interface
+51000   KIPI (general)
+51001   KIPI (loading)
+
 # kdemultimedia
 60001	kreatecd
 60002	kaudiocreator
