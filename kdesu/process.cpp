@@ -159,12 +159,22 @@ QCString PtyProcess::readLine(bool block)
     return ret;
 }
 
+
 void PtyProcess::writeLine(QCString line, bool addnl)
 {
     if (!line.isEmpty())
 	write(m_Fd, line, line.length());
     if (addnl)
 	write(m_Fd, "\n", 1);
+}
+
+
+void PtyProcess::unreadLine(QCString line, bool addnl)
+{
+    if (addnl)
+	line += '\n';
+    if (!line.isEmpty())
+	m_Inbuf.prepend(line);
 }
 
 /*

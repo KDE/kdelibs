@@ -62,15 +62,16 @@ void SshProcess::setStub(QCString stub)
     d->m_Stub = stub;
 }
 
-int SshProcess::checkNeedPassword()
-{
-    return exec(0L, 2);
-}
-
 
 int SshProcess::checkInstall(const char *password)
 {
     return exec(password, 1);
+}
+
+
+int SshProcess::checkNeedPassword()
+{
+    return exec(0L, 2);
 }
 
 
@@ -80,17 +81,6 @@ int SshProcess::exec(const char *password, int check)
 	setTerminal(true);
 
     QCStringList args;
-    if (!m_bXOnly) 
-    {
-	// Install DCOP forward
-	QCString fwd = dcopForward();
-	if (fwd.isEmpty()) 
-	{
-	    kdError(900) << k_lineinfo << "Could not get DCOP forward\n";
-	    return -1;
-	}
-	args += "-R"; args += fwd;
-    }
     args += "-l"; args += m_User;
     args += "-o"; args += "StrictHostKeyChecking no";
     args += m_Host; args += d->m_Stub;
@@ -103,12 +93,13 @@ int SshProcess::exec(const char *password, int check)
     int ret = ConverseSsh(password, check);
     if (ret < 0)
     {
-	kdError(900) << k_lineinfo << "Conversation with ssh failed\n";
+	if (!check)
+	    kdError(900) << k_lineinfo << "Conversation with ssh failed\n";
 	return ret;
     }
     if (check == 2)
     {
-	if (ret == SshNeedsPassword)
+	if (ret == 1)
 	{
 	    kill(m_Pid, SIGTERM);
 	    waitForChild();
@@ -126,19 +117,17 @@ int SshProcess::exec(const char *password, int check)
     ret = ConverseStub(check);
     if (ret < 0)
     {
-	kdError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
+	if (!check)
+	    kdError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
 	return ret;
-    }
-    if (ret == StubUnknownRequest)
+    } else if (ret == 1)
     {
 	kill(m_Pid, SIGTERM);
 	waitForChild();
-	return ret;
+	ret = SshIncorrectPassword;
     }
-
-    if (check)
+    if (check == 1)
     {
-	// All checks are ok.
 	waitForChild();
 	return 0;
     }
@@ -157,6 +146,8 @@ int SshProcess::exec(const char *password, int check)
  * random number between 10k and 50k. This is not ok, of course, but I see
  * no other way. There is, afaik, no security issue involved here. If the port 
  * happens to be occupied, ssh will refuse to start.
+ *
+ * 14/SEP/2000: DCOP forwarding is not used anymore.
  */
 
 QCString SshProcess::dcopForward()
@@ -221,15 +212,8 @@ int SshProcess::ConverseSsh(const char *password, int check)
 	    // Check for "kdesu_stub" header.
 	    if (line == "kdesu_stub") 
 	    {
-		// This makes parsing a lot easier. Normally, 
-		// StubProcess::ConverseStub will do this.
-		enableLocalEcho(false);
-		if (check > 0)
-		    write(m_Fd, "stop\n", 5);
-		else
-		    write(m_Fd, "ok\n", 3);
-		state += 2;
-		break;
+		unreadLine(line);
+		return 0;
 	    }
 
 	    // Match "Password: " with the regex ^[^:]+:[\w]*$.

@@ -60,6 +60,13 @@ public:
     void writeLine(QCString line, bool addNewline=true);
 
     /**
+     * Put back a line of input.
+     * @param line The line to put back.
+     * @param addNewline Adds a '\n' to the line.
+     */
+    void unreadLine(QCString line, bool addNewline=true);
+
+    /**
      * Set exit string. If a line of program output matches this,
      * @ref #waitForChild() will terminate the program and return.
      */

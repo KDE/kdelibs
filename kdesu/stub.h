@@ -33,8 +33,6 @@ public:
     StubProcess();
     ~StubProcess();
 
-    enum Errors { StubUnknownRequest=1 };
-
     /** Set the command. */
     void setCommand(QCString command) { m_Command = command; }
 
@@ -68,7 +66,7 @@ public:
 protected:
 
     /** Exchange all parameters with kdesu_stub. */
-    int ConverseStub(bool check_only);
+    int ConverseStub(int check);
 
     /** Notify the taskbar that a new application has been started. */
     void notifyTaskbar(QString suffix);

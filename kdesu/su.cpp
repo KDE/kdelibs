@@ -60,6 +60,11 @@ int SuProcess::checkInstall(const char *password)
     return exec(password, 1);
 }
 
+int SuProcess::checkNeedPassword()
+{
+    return exec(0L, 2);
+}
+
 /*
  * Execute a command with su(1).
  */
@@ -83,12 +88,18 @@ int SuProcess::exec(const char *password, int check)
     }
     
     int ret = ConverseSU(password);
-    if (ret != 0) 
+    if (ret < 0) 
     {
 	if (!check)
-	{
 	    kdError(900) << k_lineinfo << "Conversation with su failed\n";
-	    ret = -1;
+	return ret;
+    } 
+    if (check == 2)
+    {
+	if (ret == 1)
+	{
+	    kill(m_Pid, SIGTERM);
+	    waitForChild();
 	}
 	return ret;
     }
@@ -101,22 +112,19 @@ int SuProcess::exec(const char *password, int check)
     }
 
     ret = ConverseStub(check);
-    if (ret != 0)
+    if (ret < 0)
     {
-	if (ret < 0)
+	if (!check)
 	    kdError(900) << k_lineinfo << "Converstation with kdesu_stub failed\n";
-	if (ret == StubUnknownRequest)
-	{
-	    kill(m_Pid, SIGTERM);
-	    waitForChild();
-	    ret = SuIncorrectPassword;
-	}
 	return ret;
-    }
-
-    if (check)
+    } else if (ret == 1)
     {
-	// All checks are ok
+	kill(m_Pid, SIGTERM);
+	waitForChild();
+	ret = SuIncorrectPassword;
+    }
+    if (check == 1)
+    {
 	waitForChild();
 	return 0;
     }
@@ -130,7 +138,7 @@ int SuProcess::exec(const char *password, int check)
 
 /*
  * Conversation with su: feed the password.
- * Return values: -1 = parse error, 0 = ok or >0 an error code.
+ * Return values: -1 = error, 0 = ok, 1 = kill me
  */
 
 int SuProcess::ConverseSU(const char *password)
@@ -143,15 +151,18 @@ int SuProcess::ConverseSU(const char *password)
     {
 	line = readLine(); 
 	if (line.isNull())
-	{
-	    if (state == 0)
-		return SuNotAllowed;
 	    return -1;
-	}
-
+	
 	switch (state) 
 	{
 	case 0:
+	    // In case no password is needed.
+	    if (line == "kdesu_stub")
+	    {
+		unreadLine(line);
+		return 0;
+	    }
+
 	    // Match "Password: " with the regex ^[^:]+:[\w]*$.
 	    for (i=0,j=0,colon=0; i<line.length(); i++) 
 	    {
@@ -165,6 +176,8 @@ int SuProcess::ConverseSU(const char *password)
 	    }
 	    if ((colon == 1) && (line[j] == ':')) 
 	    {
+		if (password == 0L)
+		    return 1;
 		WaitSlave();
 		write(m_Fd, password, strlen(password));
 		write(m_Fd, "\n", 1);

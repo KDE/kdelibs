@@ -38,6 +38,11 @@ public:
      */
     int checkInstall(const char *password);
 
+    /**
+     * Checks if a password is needed.
+     */
+    int checkNeedPassword();
+
 protected:
     virtual QCStringList dcopServer();
 

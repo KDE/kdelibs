@@ -73,9 +73,10 @@ QCString StubProcess::commaSeparatedList(QCStringList lst)
 /*
  * Conversation with kdesu_stub. This is how we pass the authentication
  * tokens (X11, DCOP) and other stuff to kdesu_stub.
+ * return values: -1 = error, 0 = ok, 1 = kill me
  */
 
-int StubProcess::ConverseStub(bool check_only)
+int StubProcess::ConverseStub(int check)
 {
     QCString line, tmp;
     while (1) 
@@ -88,7 +89,7 @@ int StubProcess::ConverseStub(bool check_only)
 	{
 	    // This makes parsing a lot easier.
 	    enableLocalEcho(false);
-	    if (check_only) writeLine("stop");
+	    if (check) writeLine("stop");
 	    else writeLine("ok");
 	} else if (line == "display") {
 	    writeLine(display());
@@ -99,7 +100,7 @@ int StubProcess::ConverseStub(bool check_only)
 	} else if (line == "dcop_auth") {
 	    writeLine("no");
 	} else if (line == "ice_auth") {
-	    writeLine(commaSeparatedList(iceAuth()));
+	    writeLine("no");
 	} else if (line == "command") {
 	    writeLine(m_Command);
 	} else if (line == "path") {
@@ -124,7 +125,7 @@ int StubProcess::ConverseStub(bool check_only)
 	{
 	    kdWarning(900) << k_lineinfo << "Unknown request: -->" << line 
 		           << "<--\n";
-	    return StubUnknownRequest;
+	    return 1;
 	}
     }
 
