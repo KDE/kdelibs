@@ -32,6 +32,7 @@
 KAccel::KAccel( QWidget * parent, const char * name )
 	: aKeyDict(100)
 {
+  aKeyDict.setAutoDelete(false);
 	aAvailableId = 1;
 	bEnabled = true;
 	aGroup.sprintf("Keys");
@@ -162,95 +163,78 @@ bool KAccel::insertItem( const char* descr, const char * action,
 
 const char * KAccel::insertStdItem( StdAccel id )
 {
-	QString name, action, key;
+	QString name;
+	const char* action=0, *key=0;
 	switch( id ) {
 		case Open:
-			action = "Open";		  
 			name.sprintf( i18n("Open") );
 			key = "CTRL+O";
 			break;
 		case New:
-			action = "New";		  
 			name.sprintf( i18n("New") );
 			key = "CTRL+N";
 			break;
 		case Close:
-			action = "Close";		  
 			name.sprintf( i18n("Close") );
 			key = "CTRL+W";
 			break;
 		case Save:
-			action = "Save";		  
 			name.sprintf( i18n("Save") );
 			key = "CTRL+S";
 			break;
 		case Print:
-			action = "Print";		  
 			name.sprintf( i18n("Print") );
 			key = "CTRL+P";
 			break;
 		case Quit:
-			action = "Quit";		  
 			name.sprintf( i18n("Quit") );
 			key = "CTRL+Q";
 			break;
 		case Cut:
-			action = "Cut";		  
 			name.sprintf( i18n("Cut") );
 			key = "CTRL+X";
 			break;
 		case Copy:
-			action = "Copy";		  
 			name.sprintf( i18n("Copy") );
 			key = "CTRL+C";
 			break;
 		case Paste:
-			action = "Paste";		  
 			name.sprintf( i18n("Paste") );
 			key = "CTRL+V";
 			break;
 		case Undo:
-			action = "Undo";		  
 			name.sprintf( i18n("Undo") );
 			key = "CTRL+Z";
 			break;
 		case Find:
-			action = "Open";		  
 			name.sprintf( i18n("Find") );
 			key = "CTRL+F";
 			break;
 		case Replace:
-			action = "Replace";		  
 			name.sprintf( i18n("Replace") );
 			key = "CTRL+R";
 			break;
 		case Insert:
-			action = "Insert";		  
 			name.sprintf( i18n("Insert") );
 			key = "CTRL+Insert";
 			break;
 		case Home:
-			action = "Home";		  
 			name.sprintf( i18n("Home") );
 			key = "CTRL+Home";
 			break;
 		case End:
-			action = "End";		  
 			name.sprintf( i18n("End") );
 			key = "CTRL+End";
 			break;
 		case Prior:
-			action = "Prior";		  
 			name.sprintf( i18n("Prior") );
 			key = "Prior";
 			break;
 		case Next:
-			action = "Next";		  
 			name.sprintf( i18n("Next") );
 			key = "Next";
 			break;
 		case Help:
-			action = "Help";		  
 			name.sprintf( i18n("Help") );
 			key = "F1";
 			break;
@@ -258,8 +242,8 @@ const char * KAccel::insertStdItem( StdAccel id )
 			return 0;
 			break;
 	}
-	insertItem( name.data(), action.data(), key.data(), false );
-	return action.data();
+	insertItem( name.data(), stdAction(id), key, false );
+	return action;
 }
 
 bool KAccel::isEnabled()

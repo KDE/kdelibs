@@ -42,6 +42,7 @@
 KGlobalAccel::KGlobalAccel(bool _do_not_grab)
  : QObject(), aKeyDict(100)
 {
+  aKeyDict.setAutoDelete(false);
 	aAvailableId = 1;
 	bEnabled = true;
 	aGroup.sprintf("Global Keys");
