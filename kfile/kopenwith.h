@@ -105,6 +105,7 @@ public slots:
     void slotClear();
     void slotSelected( const QString&_name, const QString& _exec );
     void slotHighlighted( const QString& _name, const QString& _exec );
+    void slotTextChanged();
     void slotTerminalToggled(bool);
     void slotDbClick();
     void slotOK();

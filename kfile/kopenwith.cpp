@@ -347,6 +347,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   KURLCompletion *comp = new KURLCompletion( KURLCompletion::ExeCompletion );
   edit->comboBox()->setCompletionObject( comp );
   connect ( edit, SIGNAL(returnPressed()), SLOT(slotOK()) );
+  connect ( edit, SIGNAL(textChanged(const QString&)), SLOT(slotTextChanged()) );
 
   m_pTree = new KApplicationTree( this );
   topLayout->addWidget(m_pTree);
@@ -437,6 +438,14 @@ void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 	terminal->setChecked(m_pService->terminal());
         m_terminaldirty = false; // slotTerminalToggled changed it
     }
+}
+
+// ----------------------------------------------------------------------
+
+void KOpenWithDlg::slotTextChanged()
+{
+    // Forget about the service
+    m_pService = 0L;
 }
 
 // ----------------------------------------------------------------------
@@ -607,9 +616,7 @@ bool KFileOpenWithHandler::displayOpenWithDialog( const KURL::List& urls )
       if ( !!service )
         return KRun::run( *service, urls );
 
-      QString exec = l.text();
-      exec += QString::fromLatin1(" %f");
-      return KRun::run( exec, urls );
+      return KRun::run( l.text(), urls );
     }
     return false;
 }
