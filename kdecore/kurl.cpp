@@ -1364,7 +1364,7 @@ QString KURL::fileName( bool _strip_trailing_slash ) const
     KURL::List::Iterator it = list.fromLast();
     return (*it).fileName(_strip_trailing_slash);
   }
-  const QString &path = m_strPath_encoded.isEmpty() ? m_strPath : m_strPath_encoded;
+  const QString &path = m_strPath;
 
   int len = path.length();
   if ( len == 0 )
@@ -1382,7 +1382,23 @@ QString KURL::fileName( bool _strip_trailing_slash ) const
   if ( len == 1 && path[ 0 ] == '/' )
     return fname;
 
-  int i = path.findRev( '/', len - 1 );
+  // Skip last n slashes
+  int n = 1;
+  if (!m_strPath_encoded.isEmpty())
+  {
+     // This is hairy, we need the last unencoded slash.
+     // Count in the encoded string how many encoded slashes follow the last
+     // unencoded one.
+     int i = m_strPath_encoded.findRev( '/', len - 1 );
+     QString fileName_encoded = m_strPath_encoded.mid(i+1);
+     n += fileName_encoded.contains("%2f", false);
+  }
+  int i = len;
+  do {
+    i = path.findRev( '/', i - 1 );
+  }
+  while (--n && (i > 0));
+
   // If ( i == -1 ) => the first character is not a '/'
   // So it's some URL like file:blah.tgz, return the whole path
   if ( i == -1 ) {
@@ -1396,11 +1412,7 @@ QString KURL::fileName( bool _strip_trailing_slash ) const
   {
      fname = path.mid( i + 1, len - i - 1 ); // TO CHECK
   }
-  // fname.assign( m_strPath, i + 1, len - i - 1 );
-  if (m_strPath_encoded.isEmpty())
-     return fname;
-  else
-     return decode_string(fname);
+  return fname;
 }
 
 void KURL::addPath( const QString& _txt )
