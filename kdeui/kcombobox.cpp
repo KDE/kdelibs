@@ -615,7 +615,7 @@ void KHistoryCombo::addToHistory( const QString& item )
 	rmItem = text( last );
 	removeItem( last );
 	if ( !contains( rmItem ) )
-	    completionObject()->removeItem( item );
+	    completionObject()->removeItem( rmItem );
     }
 
     // remove all existing items before adding
@@ -628,7 +628,7 @@ void KHistoryCombo::addToHistory( const QString& item )
 
     // now add the item
     if ( myPixProvider )
-	insertItem( myPixProvider->pixmapFor( item, KIcon::SizeSmall), item, 0 );
+	insertItem( myPixProvider->pixmapFor(item, KIcon::SizeSmall), item, 0);
     else
 	insertItem( item, 0 );
     completionObject()->addItem( item );
