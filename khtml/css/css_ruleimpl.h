@@ -41,9 +41,7 @@ class CSSStyleSheetImpl;
 class CSSStyleDeclarationImpl;
 class MediaListImpl;
 
-// @media needs a list...
-// ### I'd prefer having CSSRuleImpl derived from StyleBaseImpl only, though.
-class CSSRuleImpl : public StyleListImpl
+class CSSRuleImpl : public StyleBaseImpl
 {
 public:
     CSSRuleImpl(StyleBaseImpl *parent);
@@ -134,13 +132,14 @@ public:
     virtual ~CSSMediaRuleImpl();
 
     MediaListImpl *media() const;
-    CSSRuleList cssRules();
+    CSSRuleListImpl *cssRules();
     unsigned long insertRule ( const DOM::DOMString &rule, unsigned long index );
     void deleteRule ( unsigned long index );
 
     virtual bool isMediaRule() { return true; }
 protected:
     MediaListImpl *m_lstMedia;
+	CSSRuleListImpl *m_cssRules;
 };
 
 

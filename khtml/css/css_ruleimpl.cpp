@@ -36,7 +36,7 @@ using namespace DOM;
 #include <kdebug.h>
 
 CSSRuleImpl::CSSRuleImpl(StyleBaseImpl *parent)
-    : StyleListImpl(parent)
+    : StyleBaseImpl(parent)
 {
     m_type = CSSRule::UNKNOWN_RULE;
 }
@@ -186,6 +186,7 @@ CSSMediaRuleImpl::CSSMediaRuleImpl(StyleBaseImpl *parent)
 {
     m_type = CSSRule::MEDIA_RULE;
     m_lstMedia = 0;
+    m_cssRules = 0;
 }
 
 CSSMediaRuleImpl::~CSSMediaRuleImpl()
@@ -198,9 +199,9 @@ MediaListImpl *CSSMediaRuleImpl::media() const
     return m_lstMedia;
 }
 
-CSSRuleList CSSMediaRuleImpl::cssRules()
+CSSRuleListImpl *CSSMediaRuleImpl::cssRules()
 {
-    return this;
+    return m_cssRules;
 }
 
 unsigned long CSSMediaRuleImpl::insertRule( const DOMString &/*rule*/, unsigned long /*index*/ )
