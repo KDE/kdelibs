@@ -68,6 +68,18 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
   m_strComment = config.readEntry( "Comment" );
   m_bDeleted = config.readBoolEntry( "Hidden", false );
   d->m_bNoDisplay = config.readBoolEntry( "NoDisplay", false );
+  QStringList tmpList;
+  if (config.hasKey("OnlyShowIn"))
+  {
+     if (!config.readListEntry("OnlyShowIn", ';').contains("KDE"))
+        d->m_bNoDisplay = true;
+  }
+  if (config.hasKey("NotShowIn"))
+  {
+     if (config.readListEntry("NotShowIn", ';').contains("KDE"))
+        d->m_bNoDisplay = true;
+  }
+  
   m_strBaseGroupName = config.readEntry( "X-KDE-BaseGroup" );
   d->suppressGenericNames = config.readListEntry( "X-KDE-SuppressGenericNames" );
 //  d->sortOrder = config.readListEntry("SortOrder");
