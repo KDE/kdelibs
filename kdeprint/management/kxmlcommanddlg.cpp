@@ -617,10 +617,11 @@ void KXmlCommandAdvancedDlg::removeItem(QListViewItem *item)
 	delete m_opts[item->text(1)];
 	m_opts.remove(item->text(1));
 	QListViewItem	*child = item->firstChild();
-	while (child)
+	while (child && item)
 	{
 		removeItem(child);
-		item = item->nextSibling();
+                if ( item )
+                    item = item->nextSibling();
 	}
 }
 
