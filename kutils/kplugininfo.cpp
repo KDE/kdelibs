@@ -31,7 +31,13 @@ class KPluginInfo::KPluginInfoPrivate
 		KPluginInfoPrivate()
 			: hidden( false )
 			, enabledbydefault( false )
+			, config( 0 )
 		{}
+
+		~KPluginInfoPrivate()
+		{
+			delete config;
+		}
 
 		QString specfile; // the filename of the file containing all the info
 /*		QString name;
@@ -47,6 +53,8 @@ class KPluginInfo::KPluginInfoPrivate
 		QValueList<KService::Ptr> services;
 		bool hidden;
 		bool enabledbydefault;
+		KConfig * config;
+		QString configgroup;
 		/** WARNING: add every entry to the cctor and operator= */
 };
 
@@ -89,7 +97,7 @@ KPluginInfo::KPluginInfo( const QString & filename )
 		d->requirements = file.readListEntry( "Require" );
 	}
 	d->services = KTrader::self()->query( "KCModule", "'" + pluginname() + "' in [X-KDE-ParentComponents]" );
-	kdDebug( 702 ) << "found " << d->services.count() << " offers for " << pluginname() << endl;
+	kdDebug( 703 ) << "found " << d->services.count() << " offers for " << pluginname() << endl;
 	d->enabledbydefault = file.readBoolEntry( "EnabledByDefault", d->enabledbydefault );
 }
 
@@ -130,30 +138,37 @@ KPluginInfo::~KPluginInfo()
 	delete d;
 }
 
-QValueList<KPluginInfo> KPluginInfo::fromServices( const KService::List & services )
+QValueList<KPluginInfo*> KPluginInfo::fromServices( const KService::List & services, KConfig * config, const QString & group )
 {
-	QValueList<KPluginInfo> infolist;
+	QValueList<KPluginInfo*> infolist;
+	KPluginInfo * info;
 	for( KService::List::ConstIterator it = services.begin();
 			it != services.end(); ++it )
 	{
-		infolist += KPluginInfo( ( *it )->desktopEntryPath() );
+		info = new KPluginInfo( ( *it )->desktopEntryPath() );
+		info->setConfig( config, group );
+		infolist += info;
 	}
 	return infolist;
 }
 
-QValueList<KPluginInfo> KPluginInfo::fromFiles( const QStringList & files )
+QValueList<KPluginInfo*> KPluginInfo::fromFiles( const QStringList & files, KConfig * config, const QString & group )
 {
-	QValueList<KPluginInfo> infolist;
+	QValueList<KPluginInfo*> infolist;
 	for( QStringList::ConstIterator it = files.begin(); it != files.end(); ++it )
-		infolist += KPluginInfo( *it );
+	{
+		KPluginInfo * info = new KPluginInfo( *it );
+		info->setConfig( config, group );
+		infolist += info;
+	}
 	return infolist;
 }
 
-QValueList<KPluginInfo> KPluginInfo::fromKPartsInstanceName( const QString & name )
+QValueList<KPluginInfo*> KPluginInfo::fromKPartsInstanceName( const QString & name, KConfig * config, const QString & group )
 {
 	QStringList files = KGlobal::dirs()->findAllResources( "data", name +
 			"/kpartplugins/*.desktop", true, false );
-	return fromFiles( files );
+	return fromFiles( files, config, group );
 }
 
 bool KPluginInfo::isHidden() const
@@ -163,19 +178,19 @@ bool KPluginInfo::isHidden() const
 
 void KPluginInfo::setPluginEnabled( bool loaded )
 {
-	kdDebug( 702 ) << k_funcinfo << endl;
+	kdDebug( 703 ) << k_funcinfo << endl;
 	m_loaded = loaded;
 }
 
 bool KPluginInfo::pluginEnabled() const
 {
-	kdDebug( 702 ) << k_funcinfo << endl;
+	kdDebug( 703 ) << k_funcinfo << endl;
 	return m_loaded;
 }
 
 bool KPluginInfo::pluginEnabledByDefault() const
 {
-	kdDebug( 702 ) << k_funcinfo << endl;
+	kdDebug( 703 ) << k_funcinfo << endl;
 	return d->enabledbydefault;
 }
 
@@ -194,21 +209,59 @@ const QValueList<KService::Ptr> & KPluginInfo::services() const
 	return d->services;
 }
 
+void KPluginInfo::setConfig( KConfig * config, const QString & group )
+{
+	d->config = config;
+	d->configgroup = group;
+}
+
+KConfig * KPluginInfo::config() const
+{
+	return d->config;
+}
+
+const QString & KPluginInfo::configgroup() const
+{
+	return d->configgroup;
+}
+
 void KPluginInfo::save( KConfigGroup * config )
 {
-	kdDebug( 702 ) << k_funcinfo << endl;
-	config->writeEntry( pluginname() + "Enabled", pluginEnabled() );
+	kdDebug( 703 ) << k_funcinfo << endl;
+	if( 0 == config )
+	{
+		if( 0 == d->config )
+		{
+			kdWarning( 703 ) << "no KConfigGroup, cannot save" << endl;
+			return;
+		}
+		d->config->setGroup( d->configgroup );
+		d->config->writeEntry( pluginname() + "Enabled", pluginEnabled() );
+	}
+	else
+		config->writeEntry( pluginname() + "Enabled", pluginEnabled() );
 }
 
 void KPluginInfo::load( KConfigGroup * config )
 {
-	kdDebug( 702 ) << k_funcinfo << endl;
-	setPluginEnabled( config->readBoolEntry( pluginname() + "Enabled", pluginEnabledByDefault() ) );
+	kdDebug( 703 ) << k_funcinfo << endl;
+	if( 0 == config )
+	{
+		if( 0 == d->config )
+		{
+			kdWarning( 703 ) << "no KConfigGroup, cannot load" << endl;
+			return;
+		}
+		d->config->setGroup( d->configgroup );
+		setPluginEnabled( d->config->readBoolEntry( pluginname() + "Enabled", pluginEnabledByDefault() ) );
+	}
+	else
+		setPluginEnabled( config->readBoolEntry( pluginname() + "Enabled", pluginEnabledByDefault() ) );
 }
 
 void KPluginInfo::defaults()
 {
-	kdDebug( 702 ) << k_funcinfo << endl;
+	kdDebug( 703 ) << k_funcinfo << endl;
 	setPluginEnabled( pluginEnabledByDefault() );
 }
 

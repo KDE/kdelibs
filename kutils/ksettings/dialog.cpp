@@ -30,34 +30,66 @@
 #include <kjanuswidget.h>
 #include <kdebug.h>
 #include <ktrader.h>
+#include "kselectentriesdialog.h"
+#include "kplugininfo.h"
+
+class KCMISortedList : public QPtrList<KCModuleInfo>
+{
+	public:
+		KCMISortedList() : QPtrList<KCModuleInfo>() {}
+		KCMISortedList( const KCMISortedList &list ) : QPtrList<KCModuleInfo>( list ) {}
+		~KCMISortedList() { clear(); }
+		KCMISortedList &operator=( const KCMISortedList &list )
+		{ return ( KCMISortedList& )QPtrList<KCModuleInfo>::operator=( list ); }
+
+	protected:
+		int compareItems( QPtrCollection::Item item1, QPtrCollection::Item item2 )
+		{
+			KCModuleInfo * info1 = static_cast<KCModuleInfo *>( item1 );
+			KCModuleInfo * info2 = static_cast<KCModuleInfo *>( item2 );
+
+			int size1 = info1->groups().size();
+			int size2 = info2->groups().size();
+
+			if( size1 == size2 )
+				return 0;
+			else if( size1 < size2 )
+				return -1;
+			else
+				return 1;
+		}
+};
 
 class KConfigureDialog::KConfigureDialogPrivate
 {
 	public:
 		KConfigureDialogPrivate()
 			: dlg( 0 )
-		{
-			moduleinfos.setAutoDelete( true );
-		}
+			{
+				moduleinfos.setAutoDelete( true );
+			}
 
-		QPtrList<KCModuleInfo> moduleinfos;
+		bool staticlistview;
+		KCMISortedList moduleinfos;
 		KCMultiDialog * dlg;
+		QValueList<KService::Ptr> services;
+		QMap<QString, KPluginInfo*> plugininfomap;
 };
 
-KConfigureDialog::KConfigureDialog( QObject * parent, const char * name )
+	KConfigureDialog::KConfigureDialog( ContentInListView content, QObject * parent, const char * name )
 	: QObject( parent, name )
-	, d( new KConfigureDialogPrivate )
+, d( new KConfigureDialogPrivate )
 {
-	QValueList<KService::Ptr> services = instanceServices();
-	createDialogFromServices( services );
+	d->staticlistview = ( content == Static );
+	d->services = instanceServices();
 }
 
-KConfigureDialog::KConfigureDialog( const QStringList & kcdparents, QObject * parent, const char * name )
+	KConfigureDialog::KConfigureDialog( const QStringList & kcdparents, ContentInListView content, QObject * parent, const char * name )
 	: QObject( parent, name )
-	, d( new KConfigureDialogPrivate )
+, d( new KConfigureDialogPrivate )
 {
-	QValueList<KService::Ptr> services = instanceServices() + parentComponentsServices( kcdparents );
-	createDialogFromServices( services );
+	d->staticlistview = ( content == Static );
+	d->services = instanceServices() + parentComponentsServices( kcdparents );
 }
 
 KConfigureDialog::~KConfigureDialog()
@@ -65,30 +97,26 @@ KConfigureDialog::~KConfigureDialog()
 	delete d;
 }
 
-#if 0
-void KConfigureDialog::addKPartsPluginPage()
+void KConfigureDialog::addPluginInfos( const QValueList<KPluginInfo*> & plugininfos )
 {
-	kdDebug( 700 ) << k_funcinfo << endl;
-	QValueList<KService::Ptr> services = KTrader::self()->query( "KCModule", "Library == 'kpartspluginpage'" );
-	kdDebug( 700 ) << "got " << services.count() << " offers" << endl;
-	for( QValueList<KService::Ptr>::ConstIterator it = services.begin(); it != services.end(); ++it )
-	{
-		kdDebug( 700 ) << k_funcinfo << ( *it )->type() << ( *it )->name() << ( *it )->library() << endl;
-	}
-	KService::Ptr service = services.first();
-	if( service.data() )
-	{
-		KCModuleInfo * moduleinfo = new KCModuleInfo( service );
-		d->moduleinfos.append( moduleinfo );
-		d->dlg->addModule( *moduleinfo );
-	}
+	for( QValueList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
+			it != plugininfos.end(); ++it )
+		d->plugininfomap[ ( *it )->pluginname() ] = *it;
 }
-#endif
 
 void KConfigureDialog::show()
 {
+	if( 0 == d->dlg )
+		createDialogFromServices();
 	KCDDispatcher::self()->syncConfiguration();
 	return d->dlg->show();
+}
+
+KCMultiDialog * KConfigureDialog::dialog()
+{
+	if( 0 == d->dlg )
+		createDialogFromServices();
+	return d->dlg;
 }
 
 QValueList<KService::Ptr> KConfigureDialog::instanceServices() const
@@ -129,28 +157,83 @@ QValueList<KService::Ptr> KConfigureDialog::parentComponentsServices( const QStr
 	return KTrader::self()->query( "KCModule", constraint );
 }
 
-void KConfigureDialog::createDialogFromServices( const QValueList<KService::Ptr> & services )
+void KConfigureDialog::createDialogFromServices()
 {
-	int dialogface = KJanusWidget::IconList;
-	QString basegroup;
-	for( QValueList<KService::Ptr>::const_iterator it = services.begin(); it != services.end(); ++it )
+	QStringList groupnames;
+	// for all services
+	for( QValueList<KService::Ptr>::ConstIterator it = d->services.begin(); it != d->services.end(); ++it )
 	{
+		// we create the KCModuleInfo
 		KCModuleInfo * moduleinfo = new KCModuleInfo( *it );
+		if( ! d->staticlistview )
+		{
+			// and if the user of this class requested to hide disabled modules
+			// we check whether it should be enabled or not
+			bool enabled = false;
+			kdDebug( 700 ) << "check whether the " << moduleinfo->moduleName() << " KCM should be shown" << endl;
+			// for all parent components
+			for( QStringList::ConstIterator pcit = moduleinfo->parentComponents().begin();
+					pcit != moduleinfo->parentComponents().end(); ++pcit )
+			{
+				// we check if the parent component is a plugin
+				if( ! d->plugininfomap.contains( *pcit ) )
+				{
+					// if not the KCModule must be enabled
+					enabled = true;
+					// we're done for this KCModuleInfo
+					break;
+				}
+				// if it is a plugin we check whether the plugin is enabled
+				KPluginInfo * pinfo = d->plugininfomap[ *pcit ];
+				pinfo->load();
+				enabled = pinfo->pluginEnabled();
+				kdDebug( 700 ) << "parent " << *pcit << " is " << ( enabled ? "enabled" : "disabled" ) << endl;
+				// if it is enabled we're done for this KCModuleInfo
+				if( enabled )
+					break;
+			}
+			if( ! enabled )
+			{
+				// it's not enabled so the KCModuleInfo is not needed anymore
+				delete moduleinfo;
+				continue;
+			}
+		}
 		d->moduleinfos.append( moduleinfo );
-		if( basegroup.isNull() )
-			basegroup = moduleinfo->groups().front();
-		else if( basegroup != moduleinfo->groups().front() )
-			// we need a treelist dialog
-			dialogface = KJanusWidget::TreeList;
+		for( QStringList::ConstIterator it2 = moduleinfo->groups().begin();
+				it2 != moduleinfo->groups().end(); ++it2 )
+			if( ! groupnames.contains( *it2 ) )
+				groupnames.append( *it2 );
 	}
-
 	kdDebug( 700 ) << "creating KCMultiDialog" << endl;
-	d->dlg = new KCMultiDialog( dialogface, i18n( "Preferences" ) );
-	if( dialogface == KJanusWidget::TreeList )
+	if( groupnames.size() > 1 )
 	{
+		// we need a treelist dialog
+		d->dlg = new KCMultiDialog( KJanusWidget::TreeList, i18n( "Preferences" ) );
 		d->dlg->setShowIconsInTreeList( true );
 		d->dlg->unfoldTreeList( true );
+		// We need to find the .desktop files for all group names (those where
+		// Name=<group name>)
+
+		// sort the services after their depth: toplevel first
+		//X 		d->moduleinfos.sort();
+		//X 		KCModuleInfo * info;
+		//X 		for( info = d->moduleinfos.first(); info; info = d->moduleinfos.next() )
+		//X 		{
+		//X 			if( info->groups().size() == 0 );
+		//X 		}
+		/*for( QStringList::ConstIterator it = groupnames.begin();
+		  it != groupnames.end(); ++it )
+		  {
+		  if( ( *it )->
+		  }*/
 	}
+	else
+		d->dlg = new KCMultiDialog( KJanusWidget::IconList, i18n( "Preferences" ) );
+
+	if( ! d->staticlistview )
+		d->dlg->addButtonBelowList( i18n( "Configure ..." ), this, SLOT( configureTree() ) );
+
 	connect( d->dlg, SIGNAL( okClicked() ), KCDDispatcher::self(), SLOT( syncConfiguration() ) );
 	connect( d->dlg, SIGNAL( applyClicked() ), KCDDispatcher::self(), SLOT( syncConfiguration() ) );
 	connect( d->dlg, SIGNAL( configCommitted( const QCString & ) ), KCDDispatcher::self(), SLOT( reparseConfiguration( const QCString & ) ) );
@@ -161,6 +244,84 @@ void KConfigureDialog::createDialogFromServices( const QValueList<KService::Ptr>
 	}
 }
 
+void KConfigureDialog::configureTree()
+{
+	kdDebug( 700 ) << k_funcinfo << endl;
+	KSelectEntriesDialog * subdlg = new KSelectEntriesDialog( d->dlg );
+	subdlg->show();
+	connect( subdlg, SIGNAL( okClicked() ), this, SLOT( updateTreeList() ) );
+	connect( subdlg, SIGNAL( applyClicked() ), this, SLOT( updateTreeList() ) );
+}
+
+void KConfigureDialog::updateTreeList()
+{
+	// FIXME: very inefficient code
+	kdDebug( 700 ) << k_funcinfo << endl;
+	// for all services
+	for( QValueList<KService::Ptr>::ConstIterator it = d->services.begin(); it != d->services.end(); ++it )
+	{
+		// we create the KCModuleInfo
+		KCModuleInfo * moduleinfo = new KCModuleInfo( *it );
+		bool enabled = false;
+		kdDebug( 700 ) << "check whether the " << moduleinfo->moduleName() << " KCM should be shown" << endl;
+		// for all parent components
+		for( QStringList::ConstIterator pcit = moduleinfo->parentComponents().begin();
+				pcit != moduleinfo->parentComponents().end(); ++pcit )
+		{
+			// we check if the parent component is a plugin
+			if( ! d->plugininfomap.contains( *pcit ) )
+			{
+				// if not the KCModule must be enabled
+				enabled = true;
+				// we're done for this KCModuleInfo
+				break;
+			}
+			// if it is a plugin we check whether the plugin is enabled
+			KPluginInfo * pinfo = d->plugininfomap[ *pcit ];
+			if( pinfo->config() )
+				pinfo->config()->reparseConfiguration();
+			pinfo->load();
+			enabled = pinfo->pluginEnabled();
+			kdDebug( 700 ) << "parent " << *pcit << " is " << ( enabled ? "enabled" : "disabled" ) << endl;
+			// if it is enabled we're done for this KCModuleInfo
+			if( enabled )
+				break;
+		}
+		if( ! enabled )
+		{
+			// it's not enabled so the KCModuleInfo is not needed anymore
+			for( KCModuleInfo * torm = d->moduleinfos.first(); torm;
+					torm = d->moduleinfos.next() )
+				if( *torm == *moduleinfo )
+				{
+					kdDebug( 700 ) << "remove module " << torm->moduleName() << endl;
+					d->dlg->removeModule( *torm );
+					d->moduleinfos.remove( torm ); //autodeleted
+					break;
+				}
+			delete moduleinfo;
+		}
+		else
+		{
+			// it's enabled, check if we need to add it (if it's not there yet)
+			bool needtoadd = true;
+			for( KCModuleInfo * inthere = d->moduleinfos.first(); inthere;
+					inthere = d->moduleinfos.next() )
+				if( *inthere == *moduleinfo )
+				{
+					needtoadd = false;
+					break;
+				}
+			if( needtoadd )
+			{
+				// it's not there yet - add it
+				d->dlg->addModule( *moduleinfo );
+				d->moduleinfos.append( moduleinfo );
+			}
+		}
+	}
+}
+
 #include "kconfiguredialog.moc"
 
-// vim: sw=4 ts=4
+// vim: sw=4 ts=4 noet

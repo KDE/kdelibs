@@ -85,7 +85,7 @@ class KPluginSelectionWidget : public QWidget
 		 *
 		 * @internal
 		 */
-		KPluginSelectionWidget( const QValueList<KPluginInfo> & plugininfos,
+		KPluginSelectionWidget( const QValueList<KPluginInfo*> & plugininfos,
 				KPluginSelector * kps, QWidget * parent, const QString & catname,
 				const QString & category, KConfigGroup * config = 0,
 				const char * name = 0 );
@@ -165,7 +165,7 @@ class KPluginSelectionWidget : public QWidget
 		 *
 		 * @internal
 		 */
-		void updateConfigPage( const KPluginInfo & plugininfo, bool checked );
+		void updateConfigPage( KPluginInfo * plugininfo, bool checked );
 
 		/**
 		 * Whenever an embedded KCM emits the changed signal we count the number
@@ -186,9 +186,9 @@ class KPluginSelectionWidget : public QWidget
 		 */
 		QWidget * insertKCM( QWidget * parent, const KCModuleInfo & );
 
-		QValueList<KPluginInfo> kpartsPluginInfos() const;
-		void init( const QValueList<KPluginInfo> & plugininfos, const QString & );
-		void checkDependencies( const KPluginInfo & );
+		QValueList<KPluginInfo*> kpartsPluginInfos() const;
+		void init( const QValueList<KPluginInfo*> & plugininfos, const QString & );
+		void checkDependencies( const KPluginInfo * );
 
 		struct KPluginSelectionWidgetPrivate;
 		KPluginSelectionWidgetPrivate * d;

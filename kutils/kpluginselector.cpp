@@ -101,6 +101,7 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
 		, kps( _kps )
 		, config( _config )
 		, catname( _cat )
+		, currentplugininfo( 0 )
 		, currentchecked( false )
 		, changed( 0 )
 	{}
@@ -110,7 +111,7 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
 		delete config;
 	}
 
-	QMap<QCheckListItem*, KPluginInfo> pluginInfoMap;
+	QMap<QCheckListItem*, KPluginInfo*> pluginInfoMap;
 
 	QString instanceName; // isNull() for non-KParts plugins
 	QWidgetStack * widgetstack;
@@ -121,7 +122,7 @@ struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
 	QMap<QString, int> widgetIDs;
 	QString catname;
 
-	KPluginInfo currentplugininfo;
+	KPluginInfo * currentplugininfo;
 	bool currentchecked;
 	int changed;
 };
@@ -136,7 +137,7 @@ KPluginSelectionWidget::KPluginSelectionWidget( const QString & instanceName,
 }
 
 KPluginSelectionWidget::KPluginSelectionWidget(
-		const QValueList<KPluginInfo> & plugininfos, KPluginSelector * kps,
+		const QValueList<KPluginInfo*> & plugininfos, KPluginSelector * kps,
 		QWidget * parent, const QString & catname, const QString & category,
 		KConfigGroup * config, const char * name )
     : QWidget( parent, name )
@@ -150,11 +151,11 @@ inline QString KPluginSelectionWidget::catName() const
 	return d->catname;
 }
 
-QValueList<KPluginInfo> KPluginSelectionWidget::kpartsPluginInfos() const
+QValueList<KPluginInfo*> KPluginSelectionWidget::kpartsPluginInfos() const
 {
 	if( d->instanceName.isNull() )
 	{
-		QValueList<KPluginInfo> list;
+		QValueList<KPluginInfo*> list;
 		return list; //nothing
 	}
 
@@ -163,7 +164,7 @@ QValueList<KPluginInfo> KPluginSelectionWidget::kpartsPluginInfos() const
 	return KPluginInfo::fromFiles( desktopfilenames );
 }
 
-void KPluginSelectionWidget::init( const QValueList<KPluginInfo> & plugininfos,
+void KPluginSelectionWidget::init( const QValueList<KPluginInfo*> & plugininfos,
 		const QString & category )
 {
 	// setup Widgets
@@ -184,19 +185,19 @@ void KPluginSelectionWidget::init( const QValueList<KPluginInfo> & plugininfos,
 	listview->addColumn( i18n( "Author" ) );
 	listview->addColumn( i18n( "Version" ) );
 	listview->addColumn( i18n( "License" ) );
-	for( QValueList<KPluginInfo>::ConstIterator it = plugininfos.begin();
+	for( QValueList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
 			it != plugininfos.end(); ++it )
 	{
-		if( !( *it ).isHidden() &&
-				( category.isNull() || ( *it ).category() == category ) )
+		if( !( *it )->isHidden() &&
+				( category.isNull() || ( *it )->category() == category ) )
 		{
 			QCheckListItem * item = new QCheckListItem( listview,
-					( *it ).name(), QCheckListItem::CheckBox );
-			item->setText( 1, ( *it ).comment() );
-			item->setText( 2, ( *it ).author()  );
-			item->setText( 3, ( *it ).version() );
-			item->setText( 4, ( *it ).license() );
-			item->setOn( ( *it ).pluginEnabled() );
+					( *it )->name(), QCheckListItem::CheckBox );
+			item->setText( 1, ( *it )->comment() );
+			item->setText( 2, ( *it )->author()  );
+			item->setText( 3, ( *it )->version() );
+			item->setText( 4, ( *it )->license() );
+			item->setOn( ( *it )->pluginEnabled() );
 			d->pluginInfoMap.insert( item, *it );
 		}
 	}
@@ -213,10 +214,10 @@ KPluginSelectionWidget::~KPluginSelectionWidget()
 
 bool KPluginSelectionWidget::pluginIsLoaded( const QString & pluginname ) const
 {
-	for( QMap<QCheckListItem*, KPluginInfo>::ConstIterator it =
+	for( QMap<QCheckListItem*, KPluginInfo*>::ConstIterator it =
 			d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
-		if( it.data().pluginname() == pluginname )
-			return it.data().pluginEnabled();
+		if( it.data()->pluginname() == pluginname )
+			return it.data()->pluginEnabled();
 	return false;
 }
 
@@ -240,22 +241,28 @@ QWidget * KPluginSelectionWidget::insertKCM( QWidget * parent,
 	return module;
 }
 
-void KPluginSelectionWidget::updateConfigPage( const KPluginInfo & plugininfo,
+void KPluginSelectionWidget::updateConfigPage( KPluginInfo * plugininfo,
 		bool checked )
 {
 	kdDebug( 702 ) << k_funcinfo << endl;
 	d->currentplugininfo = plugininfo;
 	d->currentchecked = checked;
 
-	// if no widget exists for the plugin (yet)
-	if( !d->widgetIDs.contains( plugininfo.pluginname() ) )
+	if( 0 == plugininfo )
 	{
-		if( !plugininfo.services().empty() )
+		d->kps->configPage( 1 );
+		return;
+	}
+
+	// if no widget exists for the plugin (yet)
+	if( !d->widgetIDs.contains( plugininfo->pluginname() ) )
+	{
+		if( !plugininfo->services().empty() )
 		{
 			//if we have Services for the plugin we should be able to
 			//create KCM(s)
 			QApplication::setOverrideCursor( Qt::WaitCursor );
-			if( plugininfo.services().size() > 1 )
+			if( plugininfo->services().size() > 1 )
 			{
 				// we need a tabwidget
 				KTabWidget * tabwidget = new KTabWidget( d->widgetstack );
@@ -263,11 +270,11 @@ void KPluginSelectionWidget::updateConfigPage( const KPluginInfo & plugininfo,
 
 				int id = d->widgetstack->addWidget( tabwidget );
 				d->kps->configPage( id );
-				d->widgetIDs[ plugininfo.pluginname() ] = id;
+				d->widgetIDs[ plugininfo->pluginname() ] = id;
 
 				for( QValueList<KService::Ptr>::ConstIterator it =
-						plugininfo.services().begin();
-						it != plugininfo.services().end(); ++it )
+						plugininfo->services().begin();
+						it != plugininfo->services().end(); ++it )
 				{
 					if( !( *it )->noDisplay() )
 					{
@@ -279,15 +286,15 @@ void KPluginSelectionWidget::updateConfigPage( const KPluginInfo & plugininfo,
 			}
 			else
 			{
-				if( !plugininfo.services().front()->noDisplay() )
+				if( !plugininfo->services().front()->noDisplay() )
 				{
-					KCModuleInfo moduleinfo( plugininfo.services().front() );
+					KCModuleInfo moduleinfo( plugininfo->services().front() );
 					QWidget * module = insertKCM( d->widgetstack, moduleinfo );
 					module->setEnabled( checked );
 
 					int id = d->widgetstack->addWidget( module );
 					d->kps->configPage( id );
-					d->widgetIDs[ plugininfo.pluginname() ] = id;
+					d->widgetIDs[ plugininfo->pluginname() ] = id;
 				}
 			}
 			QApplication::restoreOverrideCursor();
@@ -301,7 +308,7 @@ void KPluginSelectionWidget::updateConfigPage( const KPluginInfo & plugininfo,
 	else
 	{
 		// the page already exists
-		int id = d->widgetIDs[ plugininfo.pluginname() ];
+		int id = d->widgetIDs[ plugininfo->pluginname() ];
 		d->kps->configPage( id );
 		d->widgetstack->widget( id )->setEnabled( checked );
 	}
@@ -337,22 +344,22 @@ void KPluginSelectionWidget::executed( QListViewItem * item )
 	kdDebug( 702 ) << "it's a " << ( checked ? "checked" : "unchecked" )
 		<< " QCheckListItem" << endl;
 
-	const KPluginInfo * info = &d->pluginInfoMap[ citem ];
+	KPluginInfo * info = d->pluginInfoMap[ citem ];
 	if( info->isHidden() )
 		kdFatal( 702 ) << "bummer" << endl;
-	checkDependencies( *info );
+	checkDependencies( info );
 
-	updateConfigPage( *info, checked );
+	updateConfigPage( info, checked );
 }
 
 void KPluginSelectionWidget::load()
 {
 	kdDebug( 702 ) << k_funcinfo << endl;
 
-	for( QMap<QCheckListItem*, KPluginInfo>::Iterator it =
+	for( QMap<QCheckListItem*, KPluginInfo*>::Iterator it =
 			d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
 	{
-		KPluginInfo * info = &it.data();
+		KPluginInfo * info = it.data();
 		info->load( d->config );
 		it.key()->setOn( info->pluginEnabled() );
 	}
@@ -364,10 +371,10 @@ void KPluginSelectionWidget::save()
 {
 	kdDebug( 702 ) << k_funcinfo << endl;
 
-	for( QMap<QCheckListItem*, KPluginInfo>::Iterator it =
+	for( QMap<QCheckListItem*, KPluginInfo*>::Iterator it =
 			d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
 	{
-		KPluginInfo * info = &it.data();
+		KPluginInfo * info = it.data();
 		bool checked = it.key()->isOn();
 		info->setPluginEnabled( checked );
 		info->save( d->config );
@@ -383,27 +390,27 @@ void KPluginSelectionWidget::defaults()
 {
 	kdDebug( 702 ) << k_funcinfo << endl;
 
-	for( QMap<QCheckListItem*, KPluginInfo>::Iterator it =
+	for( QMap<QCheckListItem*, KPluginInfo*>::Iterator it =
 			d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
 	{
-		it.data().defaults();
-		it.key()->setOn( it.data().pluginEnabled() );
+		it.data()->defaults();
+		it.key()->setOn( it.data()->pluginEnabled() );
 	}
 	updateConfigPage( d->currentplugininfo, d->currentchecked );
 	// TODO: update changed state
 }
 
-void KPluginSelectionWidget::checkDependencies( const KPluginInfo & info )
+void KPluginSelectionWidget::checkDependencies( const KPluginInfo * info )
 {
-	if( info.requirements().isEmpty() )
+	if( info->requirements().isEmpty() )
 		return;
 
-	for( QStringList::ConstIterator it = info.requirements().begin();
-			it != info.requirements().end(); ++it )
+	for( QStringList::ConstIterator it = info->requirements().begin();
+			it != info->requirements().end(); ++it )
 		for( QMap<QCheckListItem*,
-				KPluginInfo>::Iterator infoIt = d->pluginInfoMap.begin();
-				infoIt != d->pluginInfoMap.end(); ++it )
-			if( infoIt.data().pluginname() == *it )
+				KPluginInfo*>::Iterator infoIt = d->pluginInfoMap.begin();
+				infoIt != d->pluginInfoMap.end(); ++infoIt )
+			if( infoIt.data()->pluginname() == *it )
 			{
 				if( !infoIt.key()->isOn() )
 				{
@@ -502,7 +509,7 @@ void KPluginSelector::addPlugins( const QString & instanceName,
 	d->pswidgets += w;
 }
 
-void KPluginSelector::addPlugins( const QValueList<KPluginInfo> & plugininfos,
+void KPluginSelector::addPlugins( const QValueList<KPluginInfo*> & plugininfos,
 		const QString & catname, const QString & category, KConfig * config )
 {
 	checkNeedForTabWidget();

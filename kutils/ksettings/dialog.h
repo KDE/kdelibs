@@ -23,6 +23,10 @@
 #include <qobject.h>
 #include <kservice.h>
 
+template<class T> class QValueList;
+class KPluginInfo;
+class KCMultiDialog;
+
 /**
  * @short Generic configuration dialog that even works over component boundaries
  *
@@ -61,10 +65,28 @@ class KConfigureDialog : public QObject
 	Q_OBJECT
 	public:
 		/**
+		 * Tells the dialog whether the entries in the listview are all static
+		 * or whether it should add a Configure... button to select which parts
+		 * of the optional functionality should be active or not.
+		 */
+		enum ContentInListView
+		{
+			/**
+			 * Static listview, while running no entries are added or deleted
+			 */
+			Static,
+			/**
+			 * Configurable listview. The user can select what functionality he
+			 * wants.
+			 */
+			Configurable
+		};
+
+		/**
 		 * Construct a new Preferences Dialog for the application. It uses all
 		 * KCMs with X-KDE-ParentApp set to KGlobal::instance()->instanceName().
 		 */
-		KConfigureDialog( QObject * parent = 0, const char * name = 0 );
+		KConfigureDialog( ContentInListView content = Static, QObject * parent = 0, const char * name = 0 );
 
 		/**
 		 * Construct a new Preferences Dialog with the pages for the selected
@@ -72,11 +94,17 @@ class KConfigureDialog : public QObject
 		 * pages for the kviewviewer KPart you would pass a
 		 * QStringList consisting of only the name of the part "kviewviewer".
 		 */
-		KConfigureDialog( const QStringList & kcdparents, QObject * parent = 0, const char * name = 0 );
-
-		//void addKPartsPluginPage();
+		KConfigureDialog( const QStringList & kcdparents, ContentInListView content = Static, QObject * parent = 0, const char * name = 0 );
 
 		~KConfigureDialog();
+
+		/**
+		 * If you use a Configurable dialog you need to pass KPluginInfo
+		 * objects that the dialog should configure.
+		 */
+		void addPluginInfos( const QValueList<KPluginInfo*> & plugininfos );
+
+		KCMultiDialog * dialog();
 
 	public slots:
 		/**
@@ -85,10 +113,14 @@ class KConfigureDialog : public QObject
 		 */
 		void show();
 
+	protected slots:
+		void configureTree();
+		void updateTreeList();
+
 	private:
 		QValueList<KService::Ptr> instanceServices() const;
 		QValueList<KService::Ptr> parentComponentsServices( const QStringList & ) const;
-		void createDialogFromServices( const QValueList<KService::Ptr> & );
+		void createDialogFromServices();
 		class KConfigureDialogPrivate;
 		KConfigureDialogPrivate * d;
 };

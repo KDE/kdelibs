@@ -123,7 +123,7 @@ class KPluginSelector : public QWidget
 		 *                     For example KViewCanvas passes KSimpleConfig(
 		 *                     "kviewcanvas" ).
 		 */
-		void addPlugins( const QValueList<KPluginInfo> & plugininfos,
+		void addPlugins( const QValueList<KPluginInfo*> & plugininfos,
 				const QString & catname = QString::null,
 				const QString & category = QString::null,
 				KConfig * config = 0 );
