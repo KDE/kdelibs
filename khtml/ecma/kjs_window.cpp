@@ -152,6 +152,10 @@ KJSO Window::get(const UString &p) const
   else if (p == "frames")
     return new FrameArray(part);
 
+  KJSO v = Imp::get(p);
+  if (v.isDefined())
+      return v;
+
   // allow shortcuts like 'Image1' instead of document.images.Image1
   DOM::HTMLCollection coll = part->htmlDocument().all();
   DOM::HTMLElement element = coll.namedItem(p.string());
@@ -162,7 +166,7 @@ KJSO Window::get(const UString &p) const
   if (kp)
     return KJSO(newWindow(kp));
 
-  return Imp::get(p);
+  return Undefined();
 }
 
 void Window::put(const UString &p, const KJSO &v)
