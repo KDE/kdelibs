@@ -46,8 +46,8 @@ int main(int argc, char *argv[])
     delete p;
     delete doc;
 
-    if(pSettings) delete pSettings;
-    if(pFontManager) delete pFontManager;
+    delete pSettings;
+    delete pFontManager;
     KHTMLCache::clear();
     //if(KBrowser::lstViews) delete KBrowser::lstViews;
 }
