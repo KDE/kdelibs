@@ -19,6 +19,7 @@
 #include <qevent.h>
 #include <qimage.h>
 #include <qpixmap.h>
+#include <qcstring.h>
 
 #include <kapp.h>
 #include <klocale.h>
@@ -28,12 +29,15 @@
 #include <kmessagebox.h>
 #include <kpixmapio.h>
 #include <kdebug.h>
+#include <netwm.h>
+#include <dcopclient.h>
 
 #include <ksharedpixmap.h>
 #include <krootpixmap.h>
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
+
 
 KRootPixmap::KRootPixmap(QWidget *widget)
 {
@@ -54,9 +58,26 @@ KRootPixmap::KRootPixmap(QWidget *widget)
 }
 
 
+int KRootPixmap::currentDesktop()
+{
+    NETRootInfo rinfo( qt_xdisplay(), NET::CurrentDesktop );
+    rinfo.activate();
+    return rinfo.currentDesktop();
+}
+
+    
 void KRootPixmap::start()
 {
+    if (m_bActive)
+	return;
+
     m_bActive = true;
+    if (!checkAvailable( false ))
+    {
+	// We will get a KIPC message when the shared pixmap is available.
+	enableExports();
+	return;
+    }
     if (m_bInit)
 	repaint(true);
 }
@@ -87,7 +108,7 @@ bool KRootPixmap::eventFilter(QObject *, QEvent *event)
     if (!m_bInit && (event->type() == QEvent::Paint))
     {
 	m_bInit = true;
-	m_Desk = 0; // ### KWin::currentDesktop();
+	m_Desk = currentDesktop();
     }
 
     if (!m_bActive)
@@ -137,7 +158,7 @@ void KRootPixmap::repaint(bool force)
 	return;
     }
     m_Rect = QRect(p1, p2);
-    m_Desk = 0; //### KWin::currentDesktop();
+    m_Desk = currentDesktop();
 
     // KSharedPixmap will correctly generate a tile for us.
     if (!m_pPixmap->loadFromShared(QString("DESKTOP%1").arg(m_Desk), m_Rect))
@@ -145,23 +166,25 @@ void KRootPixmap::repaint(bool force)
 }
 
 
-bool KRootPixmap::checkAvailable(bool show_warning)
+bool KRootPixmap::checkAvailable( bool /* ignored */ )
 {
-    int desk = 0; // ####KWin::currentDesktop();
-    QString name = QString("DESKTOP%1").arg( desk );
-    bool avail = m_pPixmap->isAvailable(name);
-    if (!avail && show_warning)
-    {
-	KMessageBox::sorry(0L,
-	    i18n("Cannot find the desktop background. Pseudo transparency\n"
-		 "cannot be used! To make the desktop background available,\n"
-		 "go to Preferences -> Display -> Advanced and enable\n"
-		 "the setting `Export background to shared Pixmap'"),
-	    i18n("Warning: Pseudo Transparency not Available"));
-    }
-    return avail;
+    QString name = QString("DESKTOP%1").arg( currentDesktop() );
+    return m_pPixmap->isAvailable(name);
 }
 
+
+void KRootPixmap::enableExports()
+{
+    kdDebug(270) << k_lineinfo << "activating background exports.\n";
+    DCOPClient *client = kapp->dcopClient();
+    if (!client->isAttached())
+	client->attach();
+    QByteArray data;
+    QDataStream args( data, IO_WriteOnly );
+    args << 1;
+    client->send( "kdesktop", "KBackgroundIface", "setExport(int)", data );
+}
+    
 
 void KRootPixmap::slotDone(bool success)
 {

@@ -34,7 +34,7 @@ class KRootPixmapData;
  * are handled automatically.
  *
  * @author Geert Jansen <jansen@kde.org>
- * @version $Id: $
+ * @version $Id$
  */
 class KRootPixmap: public QObject
 {
@@ -71,12 +71,9 @@ public:
 
     /**
      * Check if pseudo transparency is available.
-     *
-     * @param show_warning Show a warning message when transparent
-     * backgrounds are not available.
      * @return True if transparency is available, false otherwise.
      */
-    bool checkAvailable(bool show_warning);
+    bool checkAvailable(bool ignored);
 
     /**
      * Repaint the widget background. Normally, you shouldn't need this.
@@ -97,6 +94,9 @@ private slots:
     void slotDone(bool);
 
 private:
+    void enableExports();
+    int currentDesktop();
+
     bool m_bActive, m_bInit;
     int m_Desk;
 
