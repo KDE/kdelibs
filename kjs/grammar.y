@@ -74,6 +74,7 @@ using namespace KJS;
   PropertyNode        *pnode;
   CatchNode           *cnode;
   FinallyNode         *fnode;
+  VarStatementNode::Type vtype;
 }
 
 %start Program
@@ -87,7 +88,7 @@ using namespace KJS;
 %token STRING NUMBER
 
 /* keywords */
-%token BREAK CASE DEFAULT FOR NEW VAR CONTINUE
+%token BREAK CASE DEFAULT FOR NEW VAR CONST CONTINUE
 %token FUNCTION RETURN VOID DELETE
 %token IF THIS DO WHILE ELSE IN INSTANCEOF TYPEOF
 %token SWITCH WITH RESERVED
@@ -159,6 +160,7 @@ using namespace KJS;
 %type <elm>   ElementList
 %type <plist> PropertyNameAndValueList
 %type <pnode> PropertyName
+%type <vtype> Var
 
 %%
 
@@ -407,11 +409,16 @@ StatementList:
   | StatementList Statement        { $$ = new StatListNode($1, $2); }
 ;
 
+Var:
+    VAR                            { $$ = VarStatementNode::Variable; }
+  | CONST                          { $$ = VarStatementNode::Constant; }
+;
+
 VariableStatement:
-    VAR VariableDeclarationList ';' { $$ = new VarStatementNode($2);
+    Var VariableDeclarationList ';' { $$ = new VarStatementNode($1, $2);
                                       DBG($$, @1, @3); }
-  | VAR VariableDeclarationList error { if (automatic()) {
-                                          $$ = new VarStatementNode($2);
+  | Var VariableDeclarationList error { if (automatic()) {
+                                          $$ = new VarStatementNode($1, $2);
 					  DBG($$, @1, @2);
                                         } else {
 					  YYABORT;

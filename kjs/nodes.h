@@ -707,13 +707,16 @@ namespace KJS {
 
   class VarStatementNode : public StatementNode {
   public:
-    VarStatementNode(VarDeclListNode *l) : list(l->list) { l->list = 0; }
+    enum Type { Variable, Constant };
+    VarStatementNode(Type t, VarDeclListNode *l)
+      : varType(t), list(l->list) { l->list = 0; }
     virtual void ref();
     virtual bool deref();
     virtual Completion execute(ExecState *exec);
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
+    Type varType;
     VarDeclListNode *list;
   };
 

@@ -1750,6 +1750,9 @@ bool VarDeclNode::deref()
   return Node::deref();
 }
 
+// global var/const flag
+static VarStatementNode::Type currentVarType;
+
 // ECMA 12.2
 Value VarDeclNode::evaluate(ExecState *exec) const
 {
@@ -1770,10 +1773,12 @@ Value VarDeclNode::evaluate(ExecState *exec) const
 #endif
   // We use Internal to bypass all checks in derived objects, e.g. so that
   // "var location" creates a dynamic property instead of activating window.location.
-  if (exec->_context->type() == EvalCode)
-    variable.put(exec, ident, val, Internal);
-  else
-    variable.put(exec, ident, val, DontDelete | Internal);
+  int flags = Internal;
+  if (exec->_context->type() != EvalCode)
+    flags |= Internal;
+  if (currentVarType == VarStatementNode::Constant)
+    flags |= ReadOnly;
+  variable.put(exec, ident, val, flags);
 
   return String(ident.ustring());
 }
@@ -1781,8 +1786,15 @@ Value VarDeclNode::evaluate(ExecState *exec) const
 void VarDeclNode::processVarDecls(ExecState *exec)
 {
   Object variable = exec->context().variableObject();
-  if ( !variable.hasProperty( exec, ident ) ) // already declared ?
-    variable.put(exec,ident, Undefined(), exec->_context->type() == EvalCode ? None : DontDelete);
+  if ( !variable.hasProperty( exec, ident ) ) { // already declared ?
+    int flags = Internal;
+    if (exec->_context->type() != EvalCode)
+      flags |= Internal;
+    if (currentVarType == VarStatementNode::Constant)
+      flags |= ReadOnly;
+    // TODO: check for forbidden redeclaration of consts
+    variable.put(exec,ident, Undefined(), flags);
+  }
   //else warning "variable %1 hides argument"
 }
 
@@ -1848,7 +1860,10 @@ Completion VarStatementNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  (void) list->evaluate(exec); // returns 0L
+  // set global var/const flag
+  currentVarType = varType;
+
+  (void) list->evaluate(exec);
   KJS_CHECKEXCEPTION
 
   return Completion(Normal);
@@ -1856,6 +1871,9 @@ Completion VarStatementNode::execute(ExecState *exec)
 
 void VarStatementNode::processVarDecls(ExecState *exec)
 {
+  // set global var/const flag
+  currentVarType = varType;
+
   list->processVarDecls(exec);
 }
 
