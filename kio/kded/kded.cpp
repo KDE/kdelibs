@@ -47,11 +47,9 @@
 
 static void runBuildSycoca()
 {
-   // Avoid relying on $PATH and on /bin/sh -> don't use system()
-   KProcess proc;
-   proc << locate("exe","kbuildsycoca");
-   proc << "--incremental";
-   proc.start( KProcess::Block );
+   QStringList args;
+   args.append("--incremental");
+   KApplication::kdeinitExecWait( "kbuildsycoca", args );
 }
 
 
