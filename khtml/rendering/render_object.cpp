@@ -114,7 +114,7 @@ RenderObject::RenderObject()
     m_containsPositioned = false;
     m_isAnonymous = false;
     m_isText = false;
-    m_inline = false;
+    m_inline = true;
     m_replaced = false;
     m_visible = true;
 
