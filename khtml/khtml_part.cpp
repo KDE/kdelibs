@@ -823,7 +823,7 @@ void KHTMLPart::autoloadImages( bool enable )
     d->m_paLoadImages = 0;
   }
   else if ( !d->m_paLoadImages )
-    d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "mime-image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
+    d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "images_display", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
 
   if ( d->m_paLoadImages )
   {
