@@ -18,9 +18,12 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <sys/time.h>
+
 #include <qfile.h>
 #include <qdir.h>
 #include <time.h>
+#include <qdatetime.h>
 #include <kdebug.h>
 #include <qptrlist.h>
 #include <kmimetype.h>
@@ -29,6 +32,44 @@
 #include "kfilterdev.h"
 #include "kzip.h"
 #include "klimitediodevice.h"
+
+static void transformToMsDos(const QDateTime& dt, char* buffer)
+{
+    if ( dt.isValid() )
+    {
+        Q_UINT16 time =
+             ( ( ( ( dt.time().hour() ) ) & 0x1f ) << 11 )      // 5 bit hour
+             + ( ( ( ( dt.time().minute() ) ) & 0x3f ) << 5 )   // 6 bit minute
+             + ( ( ( ( dt.time().second() >> 1 ) ) & 0x1f ) );  // 5 bit double seconds
+
+        buffer[0]=char( time & 0xff );          // Least significant byte of time
+        buffer[1]=char( ( time >> 8 ) & 0xff ); // Most significant byte of time
+
+        Q_UINT16 date =
+             ( ( ( ( dt.date().year() - 1980 ) ) & 0x7f ) << 9 )    // 7 bit year 1980-based
+             + ( ( ( ( dt.date().month() ) ) & 0xf ) << 5 )         // 4 bit month
+             + ( ( ( ( dt.date().day() ) ) & 0x1f ) );              // 5 bit day
+
+        buffer[2]=char( date & 0xff );          // Least significant byte of date
+        buffer[3]=char( ( date >> 8 ) & 0xff ); // Most significant byte of date
+
+    }
+    else
+    {
+        // We have no valid date, so assume 1980-01-01 midnight
+        buffer[0]=0;
+        buffer[1]=0;
+        buffer[2]=33;
+        buffer[3]=0;
+    }
+}
+
+static int getActualTime( void )
+{
+    timeval value;
+    gettimeofday( &value, NULL );
+    return value.tv_sec;
+}
 
 ////////////////////////////////////////////////////////////////////////
 /////////////////////////// KZip ///////////////////////////////////////
@@ -193,7 +234,8 @@ bool KZip::openArchive( int mode )
 
             bool isdir = false;
             int access = 0777; // TODO available in zip file?
-            int time = 1234; // TODO fill time field
+            int time = getActualTime();
+
 	    QString entryName;
 
             if ( name.right(1) == "/" ) // Entries with a trailing slash are directories
@@ -340,10 +382,7 @@ bool KZip::closeArchive()
             buffer[ 10 ] = 0; // compression method, stored
         buffer[ 11 ] = 0;
 
-        buffer[ 12 ] = 0; //dummy last mod file time
-	buffer[ 13 ] = 0;
-        buffer[ 14 ] = 0; //dummy last mod file date
-	buffer[ 15 ] = 0;
+        transformToMsDos( it.current()->datetime(), &buffer[ 12 ] );
 
         uLong mycrc = it.current()->crc32();
 	buffer[ 16 ] = (uchar)(mycrc % 256); //crc checksum
@@ -503,8 +542,10 @@ bool KZip::prepareWriting( const QString& name, const QString& user, const QStri
         parentDir = findOrCreate( dir );
     }
 
+    int time = getActualTime();
+
     // construct a KZipFileEntry and add it to list
-    KZipFileEntry * e = new KZipFileEntry( this, fileName, 0777, time( 0 ), user, group, QString::null,
+    KZipFileEntry * e = new KZipFileEntry( this, fileName, 0777, time, user, group, QString::null,
                                            name, device()->at() + 30 + name.length(), // start
                                            0 /*size unknown yet*/, d->m_compression, 0 /*csize unknown yet*/ );
     e->setHeaderStart( device()->at() );
@@ -534,10 +575,7 @@ bool KZip::prepareWriting( const QString& name, const QString& user, const QStri
     buffer[ 8 ] = (uchar)(e->encoding() % 256); // compression method
     buffer[ 9 ] = (uchar)(e->encoding() / 256);
 
-    buffer[ 10 ] = 0; //dummy last mod file time
-    buffer[ 11 ] = 0;
-    buffer[ 12 ] = 0; //dummy last mod file date
-    buffer[ 13 ] = 0;
+    transformToMsDos( e->datetime(), &buffer[ 10 ] );
 
     buffer[ 14 ] = 'C'; //dummy crc
     buffer[ 15 ] = 'R';
