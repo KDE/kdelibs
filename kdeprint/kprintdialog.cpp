@@ -550,8 +550,10 @@ void KPrintDialog::reload()
 
 void KPrintDialog::configChanged()
 {
-	// simply update the printer list if filtering is enabled
-	if (d->m_filter->isOn())
+	// simply update the printer list: do it all the time
+	// as changing settings may influence the way printer
+	// are listed.
+	//if (d->m_filter->isOn())
 		initialize(d->m_printer);
 }
 

@@ -47,6 +47,7 @@ CupsInfos* CupsInfos::self()
 }
 
 CupsInfos::CupsInfos()
+: KPReloadObject(true)
 {
 	count_ = 0;
 
@@ -58,6 +59,10 @@ CupsInfos::CupsInfos()
 	password_ = QString::null;*/
 
 	cupsSetPasswordCB(cupsGetPasswordCB);
+}
+
+CupsInfos::~CupsInfos()
+{
 }
 
 void CupsInfos::setHost(const QString& s)
@@ -131,4 +136,15 @@ void CupsInfos::save()
 	conf_->writeEntry("Login",login_);
 	// don't write password for obvious security...
 	conf_->sync();
+}
+
+void CupsInfos::reload()
+{
+	// do nothing, but needs to be implemented
+}
+
+void CupsInfos::configChanged()
+{
+	// we need to reload settings
+	load();
 }

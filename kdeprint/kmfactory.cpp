@@ -321,12 +321,15 @@ PluginInfo KMFactory::pluginInfo(const QString& name)
 	return info;
 }
 
-void KMFactory::registerObject(KPReloadObject *obj)
+void KMFactory::registerObject(KPReloadObject *obj, bool priority)
 {
 	// check if object already registered, then add it
 	if (m_objects.findRef(obj) == -1)
 	{
-		m_objects.append(obj);
+		if (priority)
+			m_objects.prepend(obj);
+		else
+			m_objects.append(obj);
 		kdDebug() << "kdeprint: registering " << (void*)obj << ", number of objects = " << m_objects.count() << endl;
 	}
 }

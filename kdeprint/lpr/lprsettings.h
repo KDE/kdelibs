@@ -21,8 +21,9 @@
 #define LPRSETTINGS_H
 
 #include <qobject.h>
+#include "kpreloadobject.h"
 
-class LprSettings : public QObject
+class LprSettings : public QObject, public KPReloadObject
 {
 public:
 	LprSettings(QObject *parent = 0, const char *name = 0);
@@ -39,6 +40,8 @@ public:
 
 protected:
 	void init();
+	void reload();
+	void configChanged();
 
 private:
 	static LprSettings*	m_self;

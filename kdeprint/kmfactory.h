@@ -78,7 +78,7 @@ public:
 	void saveConfig();
 
 	void reload(const QString& syst, bool saveSyst = true);
-	void registerObject(KPReloadObject*);
+	void registerObject(KPReloadObject*, bool = false);
 	void unregisterObject(KPReloadObject*);
 
 	struct Settings

@@ -20,9 +20,9 @@
 #include "kpreloadobject.h"
 #include "kmfactory.h"
 
-KPReloadObject::KPReloadObject()
+KPReloadObject::KPReloadObject(bool priority)
 {
-	KMFactory::self()->registerObject(this);
+	KMFactory::self()->registerObject(this, priority);
 }
 
 KPReloadObject::~KPReloadObject()

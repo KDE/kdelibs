@@ -23,8 +23,9 @@
 #define CUPSINFOS_H
 
 #include <qstring.h>
+#include "kpreloadobject.h"
 
-class CupsInfos
+class CupsInfos : public KPReloadObject
 {
 public:
 	static CupsInfos* self();
@@ -47,6 +48,10 @@ public:
 
 	void load();
 	void save();
+
+protected:
+	void reload();
+	void configChanged();
 
 private:
 	static CupsInfos	*unique_;

@@ -24,7 +24,7 @@ class KPReloadObject
 {
 friend class KMFactory;
 public:
-	KPReloadObject();
+	KPReloadObject(bool priority = false);
 	virtual ~KPReloadObject();
 
 protected:

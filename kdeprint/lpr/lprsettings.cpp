@@ -28,7 +28,7 @@
 LprSettings* LprSettings::m_self = 0;
 
 LprSettings::LprSettings(QObject *parent, const char *name)
-: QObject(parent, name)
+: QObject(parent, name), KPReloadObject(true)
 {
 	init();
 }
@@ -107,4 +107,13 @@ QString LprSettings::printcapFile()
 		}
 	}
 	return m_printcapfile;
+}
+
+void LprSettings::reload()
+{
+}
+
+void LprSettings::configChanged()
+{
+	init();
 }
