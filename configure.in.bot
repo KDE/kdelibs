@@ -1,9 +1,6 @@
-dnl put here things which have to be done after all usual autoconf macros
-dnl have been run
+dnl put here things which have to be done as very last part of configure
 
-all_includes='-I$(top_srcdir)/dcop -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui $(QT_INCLUDES) $(X_INCLUDES) $(KDE_INCLUDES) $(USER_INCLUDES)'
-AC_SUBST(all_includes)
+echo ""
+echo "Good - your configure finished. Start make now"
+echo ""
 
-# -DQT_NO_ASCII_CAST
-dnl CXXFLAGS="$CXXFLAGS -DQT_NO_COMPAT -DQT_CLEAN_NAMESPACE"
-CXXFLAGS="$CXXFLAGS -DQT_CLEAN_NAMESPACE"
