@@ -67,7 +67,7 @@ void RenderHR::printReplaced(QPainter *p, int _tx, int _ty)
     while(prev && !prev->isFlow())
 	prev = prev->previousSibling();
     if(prev)
-	xp += static_cast<RenderFlow *>(prev)->leftMargin( prev->height() );
+	xp += static_cast<RenderFlow *>(prev)->leftOffset( prev->height() );
 
 
     int yp = _ty ;

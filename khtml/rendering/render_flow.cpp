@@ -355,7 +355,7 @@ void RenderFlow::layoutBlockChildren()
 
         // html blocks flow around floats
         if (style()->htmlHacks() && child->style()->flowAroundFloats() )
-            child->setXPos(leftMargin(m_height) + child->marginLeft());
+            child->setXPos(leftOffset(m_height) + child->marginLeft());
         else
             child->setXPos(xPos + child->marginLeft());
 
@@ -524,13 +524,13 @@ void RenderFlow::positionNewFloats()
 
         if (o->style()->floating() == FLEFT)
         {
-            int fx = leftMargin(y);
+            int fx = leftOffset(y);
             if (contentWidth() >= f->width)
             {
-                while (rightMargin(y)-fx < f->width)
+                while (rightOffset(y)-fx < f->width)
                 {
                     y++;
-                    fx = leftMargin(y);
+                    fx = leftOffset(y);
                 }
             }
             f->left = fx;
@@ -540,13 +540,13 @@ void RenderFlow::positionNewFloats()
         }
         else
         {
-            int fx = rightMargin(y);
+            int fx = rightOffset(y);
             if (contentWidth() >= f->width)
             {
-                while (fx - leftMargin(y) < f->width)
+                while (fx - leftOffset(y) < f->width)
                 {
                     y++;
-                    fx = rightMargin(y);
+                    fx = rightOffset(y);
                 }
             }
             f->left = fx - f->width;
@@ -560,7 +560,7 @@ void RenderFlow::positionNewFloats()
 
 
         // html blocks flow around floats, to do this add floats to parent too
-        if(style()->htmlHacks() && childrenInline() )
+        if(style()->htmlHacks() && childrenInline() && !style()->flowAroundFloats())
         {
             RenderObject* obj = parent();
             while ( obj && obj->childrenInline() ) obj=obj->parent();
@@ -628,7 +628,7 @@ void RenderFlow::newLine()
 
 
 short
-RenderFlow::leftMargin(int y) const
+RenderFlow::leftOffset(int y) const
 {
     int left = 0;
 
@@ -656,12 +656,12 @@ RenderFlow::leftMargin(int y) const
             r->left + r->width > left)
             left = r->left + r->width;
     }
-//    kdDebug( 6040 ) << "leftMargin(" << y << ") = " << left << endl;
+//    kdDebug( 6040 ) << "leftOffset(" << y << ") = " << left << endl;
     return left;
 }
 
 int
-RenderFlow::rightMargin(int y) const
+RenderFlow::rightOffset(int y) const
 {
     int right = m_width;
 
@@ -689,15 +689,15 @@ RenderFlow::rightMargin(int y) const
             r->left < right)
             right = r->left;
     }
-//    kdDebug( 6040 ) << "rightMargin(" << y << ") = " << right << endl;
+//    kdDebug( 6040 ) << "rightOffset(" << y << ") = " << right << endl;
     return right;
 }
 
 unsigned short
 RenderFlow::lineWidth(int y) const
 {
-//    kdDebug( 6040 ) << "lineWidth(" << y << ")=" << rightMargin(y) - leftMargin(y) << endl;
-    return rightMargin(y) - leftMargin(y);
+//    kdDebug( 6040 ) << "lineWidth(" << y << ")=" << rightOffset(y) - leftOffset(y) << endl;
+    return rightOffset(y) - leftOffset(y);
 }
 
 int

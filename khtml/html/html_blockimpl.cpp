@@ -227,7 +227,6 @@ void HTMLParagraphElementImpl::parseAttribute(AttrImpl *attr)
 void HTMLParagraphElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
-    style()->setFlowAroundFloats(true);
 }
 
 // -------------------------------------------------------------------------

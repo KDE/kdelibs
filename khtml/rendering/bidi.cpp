@@ -747,7 +747,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     // now construct the reordered string out of the runs...
 
     r = runs.first();
-    int x = leftMargin(m_height);
+    int x = leftOffset(m_height);
     int availableWidth = lineWidth(m_height);
     switch(m_style->textAlign()) {
     case LEFT:

@@ -90,9 +90,9 @@ public:
 
     virtual int lowestPosition() const;
 
-    inline int rightMargin(int y) const;
+    inline int rightOffset(int y) const;
     // overrides BiDiParagraph
-    virtual short leftMargin(int y) const;
+    virtual short leftOffset(int y) const;
 
 protected:
 
