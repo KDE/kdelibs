@@ -1,42 +1,33 @@
 <!DOCTYPE kprintfilter>
 <kprintfilter name="poster" >
- <filtercommand data="poster %filterargs %filterinput %filteroutput" />
- <filterargs name="__root__" description="Poster printing" >
-  <filtergroup name="general" description="General" >
-   <filterarg format="-m%value" type="list" name="media" default="A4" description="Media Size" >
-    <value name="A5" description="A5" />
+<filtercommand data="poster %filterargs %filterinput %filteroutput" />
+ <filterargs name="__root__" description="Poster Printing" >
+<filtergroup name="general" description="General" >
+<filterarg format="-m%value" type="list" name="media" default="A4" description="Media Size" >
+<value name="A5" description="A5" />
     <value name="A4" description="A4" />
     <value name="A3" description="A3" />
     <value name="A2" description="A2" />
-    <value name="A1" description="A1" />
-   </filterarg>
+    <value name="A1" description="A1" />   </filterarg>
    <filterarg format="-p%value" type="list" name="size" default="default" description="Poster Size" >
-    <value name="A5" description="A5" />
+<value name="A5" description="A5" />
     <value name="A4" description="A4" />
     <value name="A3" description="A3" />
     <value name="A2" description="A2" />
     <value name="A1" description="A1" />
     <value name="default" description="Use Media Size" />
-    <value name="%psu" description="Use Original Print Size" />
-   </filterarg>
-  </filtergroup>
+    <value name="%psu" description="Use Original Print Size" />   </filterarg>  </filtergroup>
   <filtergroup name="margin" description="Margins" >
-   <filterarg format="-c%value%" type="int" min="0" max="100" name="cut" default="5" description="Cut Margin (% of media size)" />
-   <filterarg format="-w%value%" type="int" min="0" max="100" name="white" default="0" description="White Margin (% of media size)" />
-  </filtergroup>
+<filterarg format="-c%value%" type="int" min="0" max="100" name="cut" default="5" description="Cut Margin (% of media size)" />
+   <filterarg format="-w%value%" type="int" min="0" max="100" name="white" default="0" description="White Margin (% of media size)" />  </filtergroup>
   <filtergroup name="extra" description="Misc" >
-   <filterarg format="-f" type="bool" name="feed" default="false" description="Manual Feed" >
-    <value name="false" description="Disabled" />
-    <value name="true" description="Enabled" />
-   </filterarg>
-  </filtergroup>
- </filterargs>
+<filterarg format="-f" type="bool" name="feed" default="false" description="Manual Feed" >
+<value name="false" description="Disabled" />
+    <value name="true" description="Enabled" />   </filterarg>
+   <filterarg format="-P%value" type="string" name="select" default="" description="Page Selection" />  </filtergroup> </filterargs>
  <filterinput>
-  <filterarg format="%in" name="file" />
-  <filterarg format="" name="pipe" />
- </filterinput>
+<filterarg format="%in" name="file" />
+  <filterarg format="" name="pipe" /> </filterinput>
  <filteroutput>
-  <filterarg format="-o%out" name="file" />
-  <filterarg format="> %out" name="pipe" />
- </filteroutput>
-</kprintfilter>
+<filterarg format="-o%out" name="file" />
+  <filterarg format="> %out" name="pipe" /> </filteroutput></kprintfilter>
