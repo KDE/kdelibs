@@ -377,13 +377,41 @@ public:
 	 */
 	void setPrinterName(const QString&);
 	/**
-	 * See @ref QPrinter::printProgram(). Unused
+	 * Returns the print program as set by @ref setPrintProgram() or by the print dialog
+	 * if a special printer has been selected.
+	 * @return the print command line
+	 * @see setPrintProgram()
 	 */
 	QString printProgram() const;
 	/**
-	 * See @ref QPrinter::SetPrintProgram(). Unused
+	 * Sets the command line to use when printing. This function is useful
+	 * when using a KPrinter object without the print dialog, to control what
+	 * to print and how to do it. The command line may contain the following
+	 * tags:
+	 * @li %in : the input file to the print program. It is required and automatically
+	 *           appended at the end of the command line if not present.
+	 * @li %out : the output file. Use this tag in conjunction with @ref setOutputToFile()
+	 *            and @ref setOutputFileName()
+	 * @li %psl : the page size in lower case. This may be useful with some
+	 *            programs like gs.
+	 * <pre>
+	 * void createPNGOutputFile(const QString& filename)
+	 * {
+	 *   // use a clean KPrinter object
+	 *   KPrinter prt(false);
+	 *
+	 *   prt.setOutputToFile( true );
+	 *   prt.setOutputFileName( filename );
+	 *   prt.setPrintProgram( "gs -sDEVICE=png256 -sPAPERSIZE=%psl -sOutputFile=%out %in" );
+	 *
+	 *   QPainter painter( &prt );
+	 *   doPaint( &painter );
+	 * }
+	 * </pre>
+	 * @param cmd the print command line (containing at least the @p %in tag)
+	 * @see printProgram()
 	 */
-	void setPrintProgram(const QString&);
+	void setPrintProgram(const QString& cmd);
 	/**
 	 * See @ref QPrinter::printerSelectionOption(). Unused.
 	 */

@@ -692,10 +692,24 @@ void KPrinter::setPrinterName(const QString& s)
 { m_printername = s; }
 
 QString KPrinter::printProgram() const
-{ return QString::fromLatin1(""); }
+{ return (option("kde-isspecial") == "1" ? option("kde-special-command") : QString::null); }
 
-void KPrinter::setPrintProgram(const QString&)
-{}
+void KPrinter::setPrintProgram(const QString& prg)
+{
+	if (prg.isNull())
+	{
+		setOption("kde-isspecial", "0");
+		m_options.remove("kde-special-command");
+	}
+	else
+	{
+		setOption("kde-isspecial", "1");
+		QString	s(prg);
+		if (s.find("%in") == -1)
+			s.append(" %in");
+		setOption("kde-special-command", s);
+	}
+}
 
 QString KPrinter::printerSelectionOption() const
 { return QString::fromLatin1(""); }
