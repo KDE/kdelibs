@@ -10,6 +10,7 @@ reading=true
 writing=true
 makedir=true
 deleting=true
+ProxiedBy=http
 Icon=ftp
 maxInstances=2
 DocPath=kioslave/ftp.html
