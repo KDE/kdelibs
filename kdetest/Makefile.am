@@ -19,9 +19,14 @@
 
 
 INCLUDES = $(all_includes)
-LDFLAGS = -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs -rpath $(topdir)/kdecore/.libs -rpath $(topdir)/kdeui/.libs $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
+LDFLAGS = -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs \
+          -L$(topdir)/kformula/.libs -L$(topdir)/kio/.libs\
+          -rpath $(topdir)/kdecore/.libs -rpath $(topdir)/kdeui/.libs \
+          -rpath $(topdir)/kformula/.libs -rpath $(topdir)/kio/.libs \
+          $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
-LDADD = $(LIB_KDEUI)
+LDADD = $(LIB_KIO) $(LIB_KDEUI)
+kformulatest_LDADD = $(LIB_KFORMULA)
 
 check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kcolordlgtest kdatepicktest kfontdialogtest	\
@@ -30,7 +35,7 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kwindowtest klinetest kstatusbartest kspinboxtest	\
 		kprocesstest kpannertest kbuttonboxtest ksimpleconfigtest \
 		kcharsetstest kledtest kcontainertest klocaletest krulertest \
-		knotebooktest kwizardtest kquickhelptest kurltest
+		knotebooktest kwizardtest kquickhelptest kurltest kformulatest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
 		ktabctltest.h kiconloadertestmain.h	\
@@ -53,6 +58,7 @@ kconfigtest_SOURCES = kconfigtest.cpp
 kcontainertest_SOURCES = kcontainertest.cpp 
 kdatepicktest_SOURCES = kdatepicktest.cpp kdatepicktestdlg.cpp 
 kfontdialogtest_SOURCES = kfontdialogtest.cpp
+kformulatest_SOURCES = kformulatest.cpp
 kiconloadertest_SOURCES = kiconloadertest.cpp kiconloadertestmain.cpp 
 kledlamptest_SOURCES = kledlamptest.cpp 
 kledtest_SOURCES = kledtest.cpp 
