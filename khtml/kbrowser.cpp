@@ -241,7 +241,7 @@ void KBrowser::openURL( QString _url, bool _reload, int _xoffset, int _yoffset, 
 
   m_bReload = _reload;
   
-  CachedKIOJob* job = new CachedKIOJob;
+  KIOCachedJob* job = new KIOCachedJob;
   
   job->setGUImode( KIOJob::NONE );
   
@@ -916,7 +916,7 @@ void KBrowserURLRequestJob::run( QString _url, QString _simple_url, bool _reload
   m_strSimpleURL = _simple_url;
   m_strURL = _url;
 
-  CachedKIOJob* job = new CachedKIOJob;
+  KIOCachedJob* job = new KIOCachedJob;
   job->setGUImode( KIOJob::NONE );
   
   connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
