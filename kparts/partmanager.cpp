@@ -361,7 +361,7 @@ void PartManager::addPart( Part *part, bool setActive )
     kdWarning(1000) << "Part '" << part->name() << "' has a widget " << part->widget()->name() << " with a focus policy of TabFocus. It should have at least a ClickFocus policy, for part activation to work well." << endl;
   }
 
-  if ( part->widget() )
+  if ( setActive && part->widget() )
     part->widget()->show();
   emit partAdded( part );
 }
