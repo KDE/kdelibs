@@ -133,15 +133,18 @@ bool KBufferedIO::canReadLine() const
   QPtrList<QByteArray> &buflist = ((KBufferedIO*)this)->inBuf;
   buf = buflist.first();
   char *p = buf->data() + inBufIndex;
+  int n = buf->size() - inBufIndex;
   while (buf != NULL)
     {
-      int n = buf->size();
       while (n--)
 	if (*p++ == '\n')
 	  return true;
       buf = buflist.next();
       if (buf != NULL)
-	p = buf->data();
+	{
+	  p = buf->data();
+	  n = buf->size();
+	}
     }
 
   return false;			// no new line found
