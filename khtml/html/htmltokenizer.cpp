@@ -362,6 +362,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 m_executingScript--;
             }
             script = style = listing = textarea = false;
+            scriptCodeSize = 0;
             if ( !m_executingScript && !loadingExtScript )
                 addPendingSource();
 
