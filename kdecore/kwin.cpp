@@ -38,6 +38,7 @@
 
 #include <kglobal.h>
 #include <kiconloader.h>
+#include <kdebug.h>
 
 #include <kdatastream.h>
 #include <klocale.h>
@@ -598,25 +599,29 @@ WId KWin::WindowInfo::win() const
 
 unsigned long KWin::WindowInfo::state() const
 {
-    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMState );
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMState ) == 0, 176 )
+        << "Pass NET::WMState to KWin::windowInfo()" << endl;
     return d->info->state();
 }
 
 NET::MappingState KWin::WindowInfo::mappingState() const
 {
-    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::XAWMState );
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::XAWMState ) == 0, 176 )
+        << "Pass NET::XAWMState to KWin::windowInfo()" << endl;
     return d->info->mappingState();
 }
 
 NETStrut KWin::WindowInfo::strut() const
 {
-    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMStrut );
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMStrut ) == 0, 176 )
+        << "Pass NET::WMStrut to KWin::windowInfo()" << endl;
     return d->info->strut();
 }
 
 NET::WindowType KWin::WindowInfo::windowType( int supported_types ) const
 {
-    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMWindowType );
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMWindowType ) == 0, 176 )
+        << "Pass NET::WMWindowType to KWin::windowInfo()" << endl;
     return d->info->windowType( supported_types );
 }
 
@@ -642,13 +647,15 @@ QString KWin::Info::visibleNameWithState() const
 
 QString KWin::WindowInfo::visibleName() const
 {
-    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleName );
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleName ) == 0, 176 )
+        << "Pass NET::WMVisibleName to KWin::windowInfo()" << endl;
     return d->info->visibleName() ? d->info->visibleName() : d->name_;
 }
 
 QString KWin::WindowInfo::name() const
 {
-    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMName );
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMName ) == 0, 176 )
+        << "Pass NET::WMName to KWin::windowInfo()" << endl;
     return d->name_;
 }
 
@@ -659,25 +666,29 @@ bool KWin::WindowInfo::isOnCurrentDesktop() const
 
 bool KWin::WindowInfo::isOnDesktop( int desktop ) const
 {
-    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop );
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
+        << "Pass NET::WMDesktop to KWin::windowInfo()" << endl;
     return d->info->desktop() == desktop || d->info->desktop() == NET::OnAllDesktops;
 }
 
 bool KWin::WindowInfo::onAllDesktops() const
 {
-    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop );
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
+        << "Pass NET::WMDesktop to KWin::windowInfo()" << endl;
     return d->info->desktop() == NET::OnAllDesktops;
 }
 
 int KWin::WindowInfo::desktop() const
 {
-    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop );
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
+        << "Pass NET::WMDesktop to KWin::windowInfo()" << endl;
     return d->info->desktop();
 }
 
 QRect KWin::WindowInfo::geometry() const
 {
-    Q_ASSERT( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMGeometry );
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMGeometry ) == 0, 176 )
+        << "Pass NET::WMGeometry to KWin::windowInfo()" << endl;
     return d->geometry_;
 }
 
