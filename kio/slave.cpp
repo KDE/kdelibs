@@ -107,7 +107,7 @@ void Slave::gotInput()
 
 void Slave::gotAnswer()
 {
-    int cmd;
+    int cmd = 0;
     QByteArray data;
     bool ok = true;
 
@@ -172,18 +172,21 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     {
         kDebugInfo("Trying to start kioslave");
         // Launch the kioslave service
-        QString error;
+        QString errort;
         QCString dcopName;
         if (KApplication::startServiceByDesktopName( "kioslave",
-		QString::null, dcopName, error))
+		QString::null, dcopName, errort))
         {
-           kDebugError("Can't launch kioslave: '%s'", error.ascii());
+	   error = KIO::ERR_INTERNAL;
+	   error_text=i18n("Can't launch kioslave: '%1'").arg(errort);
+	   kdError() << error_text << endl;
            return 0;
         }
         if (dcopName != "kioslave")
         {
-           kDebugError("Error launching kioslave: got '%s' but expected '%s'",
-		dcopName.data(), "kioslave");
+	   error = KIO::ERR_INTERNAL;
+	   error_text = i18n("Error launching kioslave: got '%1' but expected 'kioslave'")
+		.arg(dcopName);
            return 0;
         }
     }
