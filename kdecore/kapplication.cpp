@@ -2540,8 +2540,9 @@ bool checkAccess(const QString& pathname, int mode)
 
 void KApplication::setTopWidget( QWidget *topWidget )
 {
-  if( topWidget != 0 )
-  {
+  if( !topWidget )
+      return;
+
 #ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
     Window leader = topWidget->winId();
     char* argv = const_cast< char* >( KCmdLineArgs::appName());
@@ -2584,7 +2585,6 @@ void KApplication::setTopWidget( QWidget *topWidget )
     // set the app startup notification window property
     KStartupInfo::setWindowStartupId( topWidget->winId(), startupId());
 #endif
-  }
 }
 
 QCString KApplication::startupId() const
