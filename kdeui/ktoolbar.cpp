@@ -22,6 +22,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.80  1998/10/05 15:09:53  kulow
+// purify (and me) likes initialized members, so I choose one (like the compiler
+// would do :)
+//
 // Revision 1.79  1998/09/15 05:56:45  antlarr
 //       pressed. kdetest/kwindowtest updated. This is Binary COMPATIBLE.
 //
@@ -211,7 +215,6 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
   delayPopup = false;
   parentWidget = (KToolBar *) _parent;
   raised = false;
-//  iconSet = 0L;
   myPopup = 0L;
   
   toolBarButton = !_mb;
@@ -315,8 +318,7 @@ void KToolBarButton::leaveEvent(QEvent *)
   if (delayPopup)
     delayTimer->stop();
 
-//  if (isEnabled())
-//    setPixmap(iconSet->pixmap(iconSize, QIconSet::Normal));
+  emit highlighted (id, false);
 }
 
 void KToolBarButton::enterEvent(QEvent *)
@@ -332,6 +334,7 @@ void KToolBarButton::enterEvent(QEvent *)
 
     repaint(false);
   }
+  emit highlighted (id, true);
 }
 
 bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
@@ -381,7 +384,7 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
   items.setAutoDelete(true);
 void KToolBarButton::drawButton( QPainter *_painter )
 {
-  if ( raised )
+/*  if ( raised )
   {
     if ( style() == WindowsStyle )
       qDrawWinButton( _painter, 0, 0, width(), height(), colorGroup(), false );
@@ -389,12 +392,20 @@ void KToolBarButton::drawButton( QPainter *_painter )
       qDrawShadePanel( _painter, 0, 0, width(), height(), colorGroup(), false, 2, 0L );
   }
   setMouseTracking(true);
-  else if ( isDown() || isOn() )
+  else*/ if ( isDown() || isOn() )
   {
     if ( style() == WindowsStyle )
       qDrawWinButton(_painter, 0, 0, width(), height(), colorGroup(), true );
     else
       qDrawShadePanel(_painter, 0, 0, width(), height(), colorGroup(), true, 2, 0L );
+  }
+
+  else if ( raised )
+  {
+    if ( style() == WindowsStyle )
+      qDrawWinButton( _painter, 0, 0, width(), height(), colorGroup(), false );
+    else
+      qDrawShadePanel( _painter, 0, 0, width(), height(), colorGroup(), false, 2, 0L );
   }
   
   int dx, dy;
@@ -1300,6 +1311,12 @@ void KToolBar::ButtonToggled( int id )
   emit toggled( id );
 }
 
+void KToolBar::ButtonHighlighted(int id, bool on )
+{
+  emit highlighted(id, on);
+}
+
+
  /********************\
  *                    *
  * I N T E R F A C E  *
@@ -1324,6 +1341,8 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
   connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
   connect(button, SIGNAL(released(int)), this, SLOT(ButtonReleased(int)));
   connect(button, SIGNAL(pressed(int)), this, SLOT(ButtonPressed(int)));
+  connect(button, SIGNAL(highlighted(int, bool)), this,
+          SLOT(ButtonHighlighted(int, bool)));
 
   item->setEnabled( enabled );
   item->show();
@@ -1351,6 +1370,13 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
 
   item->setEnabled( enabled );
   item->show();
+
+  connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
+  connect(button, SIGNAL(released(int)), this, SLOT(ButtonReleased(int)));
+  connect(button, SIGNAL(pressed(int)), this, SLOT(ButtonPressed(int)));
+  connect(button, SIGNAL(highlighted(int, bool)), this,
+          SLOT(ButtonHighlighted(int, bool)));
+      b->show();
   
   if (position == Floating)
     updateRects( true );
@@ -1375,7 +1401,13 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
     items.append( item );
   else
     items.insert( index, item );
-		
+
+  connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
+  connect(button, SIGNAL(released(int)), this, SLOT(ButtonReleased(int)));
+  connect(button, SIGNAL(pressed(int)), this, SLOT(ButtonPressed(int)));
+  connect(button, SIGNAL(highlighted(int, bool)), this,
+          SLOT(ButtonHighlighted(int, bool)));
+
   connect( button, signal, receiver, slot );
   item->setEnabled( enabled );
   item->show();
@@ -1691,6 +1723,15 @@ void KToolBar::setButton (int id, bool on)
     if (b->ID() == id )
       ((KToolBarButton *) b->getItem())->on(on);
 }
+
+//Autorepeat buttons
+void KToolBar::setAutoRepeat (int id, bool flag /*, int delay, int repeat */)
+{
+  for (KToolBarItem *b = items.first(); b; b=items.next())
+    if (b->ID() == id )
+      ((KToolBarButton *) b->getItem())->setAutoRepeat(flag);
+}
+
 
 bool KToolBar::isButtonOn (int id)
 {

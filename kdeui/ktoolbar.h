@@ -22,6 +22,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.40  1998/09/15 05:56:47  antlarr
+// I've added a setIconText function to change the state of a variable
+// in KToolBar
+//
 // Revision 1.39  1998/09/01 20:22:24  kulow
 // I renamed all old qt header files to the new versions. I think, this looks
 // nicer (and gives the change in configure a sense :)
@@ -69,6 +73,10 @@ class KToolBar;
 class KToolBoxManager;
 
 #define Item QWidget
+
+// I will undefine this when I insert radiogroup - sven
+// for now it is used only in kwindowtest (if present)
+//#define _HAVE_RADIOGROUP
 
 enum itemType {
     ITEM_LINED = 0,
@@ -186,6 +194,7 @@ class KToolBarButton : public QButton
      void pressed(int);
      void released(int);
      void toggled(int);
+     void highlighted (int, bool);
  };
 
 
@@ -388,7 +397,18 @@ public:
    */
   void setDelayedPopup (int id , QPopupMenu *_popup);
 
+ /**
+   * Makes a button autorepeat button. Toggle, buttons with menu or
+   * delayed menu cannot be autorepeat. More, you can and will receive
+   * only signals clicked, and not pressed or released.
+   * When use presses this buton, you will receive signal clicked,
+   * and if button is still pressed after some time, more clicks
+   * in some interval. Since this uses @ref QButton::setAutoRepeat ,
+   * I don't know how much is 'some'.
+   */
+  void setAutoRepeat (int id, bool flag=true);
   
+   
   /**
    * Makes button a toggle button if flag is true
    */
@@ -724,6 +744,16 @@ signals:
     void toggled(int);
     
     /**
+     * This signal is emmited when item id gets highlighted/unhighlighted
+     * (i.e when mouse enters/exits). Note that this signal is emited from
+     * all buttons (normal and toggle) even when there is no visible
+     * change in buttons (meaning, buttons do not raise when mouse enters).
+     * Parameter isHighlighted is true when mouse enters and false when
+     * mouse exits.
+     */
+    void highlighted(int id, bool isHighlighted);
+
+    /**
      * Emits when toolbar changes its position, or when
      * item is removed from toolbar. This is normaly connected to
      * @ref KTopLevelWidget::updateRects.
@@ -792,6 +822,8 @@ protected slots:
   void ButtonPressed(int);
   void ButtonReleased(int);
   void ButtonToggled(int);
+  void ButtonHighlighted(int,bool);
+   
   void ContextCallback(int);
   void slotReadConfig ();
   void slotHotSpot (int i);
