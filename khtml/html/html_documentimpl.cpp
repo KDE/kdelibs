@@ -304,6 +304,8 @@ void HTMLDocumentImpl::close()
                      n->id() == ID_FRAMESET)
                 break;
         }
+        if (title().isEmpty()) // ensure setTitle is called at least once
+            setTitle( DOMString() );
 
         // auto fill: walk the tree and try to fill in login credentials
         if (view() && m_doAutoFill) {

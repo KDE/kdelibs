@@ -1,3 +1,11 @@
+2003-11-04  David Faure  <faure@kde.org>
+
+	* html/html_documentimpl.cpp (close): Ensure setTitle is called
+	at least once, with an empty string if there's no title tag.
+
+	* xml/dom_docimpl.cpp (setTitle): Skip equality test if passing an
+	empty title, since m_title is initially empty.
+
 2003-11-03  Dirk Mueller  <mueller@kde.org>
 
 	* misc/loader.cpp (buildAcceptHeader): add */* to Accept-Header
