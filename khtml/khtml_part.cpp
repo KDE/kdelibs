@@ -203,37 +203,37 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paSetEncoding = new KActionMenu( i18n( "Set &Encoding" ), "charset", actionCollection(), "setEncoding" );
   d->m_paSetEncoding->setDelayed( false );
 
-  m_automaticDetection = new KPopupMenu( 0L );
+  d->m_automaticDetection = new KPopupMenu( 0L );
 
-  m_automaticDetection->insertItem( i18n( "Semiautomatic" ), 0 );
-  m_automaticDetection->insertItem( i18n( "Arabic" ), 1 );
-  m_automaticDetection->insertItem( i18n( "Baltic" ), 2 );
-  m_automaticDetection->insertItem( i18n( "Central European" ), 3 );
-  //m_automaticDetection->insertItem( i18n( "Chinese" ), 4 );
-  m_automaticDetection->insertItem( i18n( "Greek" ), 5 );
-  m_automaticDetection->insertItem( i18n( "Hebrew" ), 6 );
-  m_automaticDetection->insertItem( i18n( "Japanese" ), 7 );
-  //m_automaticDetection->insertItem( i18n( "Korean" ), 8 );
-  m_automaticDetection->insertItem( i18n( "Russian" ), 9 );
-  //m_automaticDetection->insertItem( i18n( "Thai" ), 10 );
-  m_automaticDetection->insertItem( i18n( "Turkish" ), 11 );
-  m_automaticDetection->insertItem( i18n( "Ukrainian" ), 12 );
-  //m_automaticDetection->insertItem( i18n( "Unicode" ), 13 );
-  m_automaticDetection->insertItem( i18n( "Western European" ), 14 );
+  d->m_automaticDetection->insertItem( i18n( "Semiautomatic" ), 0 );
+  d->m_automaticDetection->insertItem( i18n( "Arabic" ), 1 );
+  d->m_automaticDetection->insertItem( i18n( "Baltic" ), 2 );
+  d->m_automaticDetection->insertItem( i18n( "Central European" ), 3 );
+  //d->m_automaticDetection->insertItem( i18n( "Chinese" ), 4 );
+  d->m_automaticDetection->insertItem( i18n( "Greek" ), 5 );
+  d->m_automaticDetection->insertItem( i18n( "Hebrew" ), 6 );
+  d->m_automaticDetection->insertItem( i18n( "Japanese" ), 7 );
+  //d->m_automaticDetection->insertItem( i18n( "Korean" ), 8 );
+  d->m_automaticDetection->insertItem( i18n( "Russian" ), 9 );
+  //d->m_automaticDetection->insertItem( i18n( "Thai" ), 10 );
+  d->m_automaticDetection->insertItem( i18n( "Turkish" ), 11 );
+  d->m_automaticDetection->insertItem( i18n( "Ukrainian" ), 12 );
+  //d->m_automaticDetection->insertItem( i18n( "Unicode" ), 13 );
+  d->m_automaticDetection->insertItem( i18n( "Western European" ), 14 );
 
 
-  connect( m_automaticDetection, SIGNAL( activated( int ) ), this, SLOT( slotAutomaticDetectionLanguage( int ) ) );
+  connect( d->m_automaticDetection, SIGNAL( activated( int ) ), this, SLOT( slotAutomaticDetectionLanguage( int ) ) );
 
-  d->m_paSetEncoding->popupMenu()->insertItem( i18n( "Automatic Detection" ), m_automaticDetection, 0 );
+  d->m_paSetEncoding->popupMenu()->insertItem( i18n( "Automatic Detection" ), d->m_automaticDetection, 0 );
 
   d->m_paSetEncoding->insert( new KActionSeparator( actionCollection() ) );
 
 
-  m_manualDetection = new KSelectAction( i18n( "Manual Detection" ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "manualDetection" );
+  d->m_manualDetection = new KSelectAction( i18n( "Manual Detection" ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "manualDetection" );
   QStringList encodings = KGlobal::charsets()->descriptiveEncodingNames();
-  m_manualDetection->setItems( encodings );
-  m_manualDetection->setCurrentItem( -1 );
-  d->m_paSetEncoding->insert( m_manualDetection );
+  d->m_manualDetection->setItems( encodings );
+  d->m_manualDetection->setCurrentItem( -1 );
+  d->m_paSetEncoding->insert( d->m_manualDetection );
 
 
   KConfig *config = KGlobal::config();
@@ -278,7 +278,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       language = khtml::Decoder::SemiautomaticDetection;
 
     int _id = config->readNumEntry( "AutomaticDetectionLanguage", language );
-    m_automaticDetection->setItemChecked( _id, true );
+    d->m_automaticDetection->setItemChecked( _id, true );
     d->m_paSetEncoding->popupMenu()->setItemChecked( 0, true );
     d->m_automaticDetectionLanguage = static_cast< khtml::Decoder::AutomaticDetectinonLanguage >( _id );
   }
@@ -366,8 +366,8 @@ KHTMLPart::~KHTMLPart()
   config->setGroup( "HTML Settings" );
   config->writeEntry( "AutomaticDetectionLanguage", d->m_automaticDetectionLanguage );
 
-  delete m_automaticDetection;
-  delete m_manualDetection;
+  delete d->m_automaticDetection;
+  delete d->m_manualDetection;
 
   delete d->m_find;
   d->m_find = 0;
@@ -2956,11 +2956,11 @@ void KHTMLPart::slotSaveFrame()
 
 void KHTMLPart::slotSetEncoding()
 {
-  m_automaticDetection->setItemChecked( int( d->m_automaticDetectionLanguage ), false );
+  d->m_automaticDetection->setItemChecked( int( d->m_automaticDetectionLanguage ), false );
   d->m_paSetEncoding->popupMenu()->setItemChecked( 0, false );
   d->m_paSetEncoding->popupMenu()->setItemChecked( d->m_paSetEncoding->popupMenu()->idAt( 2 ), true );
 
-  QString enc = KGlobal::charsets()->encodingForName( m_manualDetection->currentText() );
+  QString enc = KGlobal::charsets()->encodingForName( d->m_manualDetection->currentText() );
   setEncoding( enc, true );
 }
 
@@ -5162,7 +5162,7 @@ void KHTMLPart::setPluginPageQuestionAsked(const QString& mimetype)
 
 void KHTMLPart::slotAutomaticDetectionLanguage( int _id )
 {
-  m_automaticDetection->setItemChecked( _id, true );
+  d->m_automaticDetection->setItemChecked( _id, true );
 
   switch ( _id ) {
     case 0 :
@@ -5217,15 +5217,15 @@ void KHTMLPart::slotAutomaticDetectionLanguage( int _id )
 
   for ( int i = 0; i <= 14; ++i ) {
     if ( i != _id )
-      m_automaticDetection->setItemChecked( i, false );
+      d->m_automaticDetection->setItemChecked( i, false );
   }
 
   d->m_paSetEncoding->popupMenu()->setItemChecked( 0, true );
 
   setEncoding( QString::null, false );
 
-  if( m_manualDetection )
-    m_manualDetection->setCurrentItem( -1 );
+  if( d->m_manualDetection )
+    d->m_manualDetection->setCurrentItem( -1 );
   d->m_paSetEncoding->popupMenu()->setItemChecked( d->m_paSetEncoding->popupMenu()->idAt( 2 ), false );
 }
 

@@ -43,6 +43,9 @@
 #include "java/kjavaappletcontext.h"
 #include "ecma/kjs_proxy.h"
 
+class KPopupMenu;;
+class KSelectAction;
+
 namespace KIO
 {
   class Job;
@@ -395,6 +398,8 @@ public:
   bool m_newJSInterpreterExists; // set to 1 by setOpenedByJS, for window.open
 
   khtml::Decoder::AutomaticDetectinonLanguage m_automaticDetectionLanguage;
+  KPopupMenu *m_automaticDetection;
+  KSelectAction *m_manualDetection;
 };
 
 #endif

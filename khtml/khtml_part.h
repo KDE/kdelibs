@@ -40,8 +40,6 @@ class KJSProxy;
 class KHTMLView;
 class KHTMLSettings;
 class KJavaAppletContext;
-class KPopupMenu;;
-class KSelectAction;
 
 namespace DOM
 {
@@ -1135,10 +1133,6 @@ private:
 
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;
-
-
-  KPopupMenu *m_automaticDetection;
-  KSelectAction *m_manualDetection;
 };
 
 
