@@ -58,15 +58,15 @@ bool KNotifyClient::send()
 
 bool KNotifyClient::event(const QString &message, const QString &text)
 {
-	KNotifyClient *c=new KNotifyClient(message, text);
-	return c->send();
+	KNotifyClient c(message, text);
+	return c.send();
 }
 
 bool KNotifyClient::userEvent(const QString &text, Presentation present,
                               const QString &soundfile)
 {
-	KNotifyClient *c=new KNotifyClient(0, text, present, soundfile);
-	return c->send();
+	KNotifyClient c(0, text, present, soundfile);
+	return c.send();
 }
 
 QString KNotifyClient::soundFileByName(const QString &eventname)
