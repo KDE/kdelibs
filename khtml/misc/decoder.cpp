@@ -23,8 +23,8 @@
 // KDE HTML Widget -- decoder for input stream
 // $Id$
 
-//#define DECODE_DEBUG
-#undef DECODE_DEBUG
+#define DECODE_DEBUG
+//#undef DECODE_DEBUG
 
 #include "decoder.h"
 using namespace khtml;
@@ -42,6 +42,7 @@ using namespace khtml;
 Decoder::Decoder()
 {
     m_codec = QTextCodec::codecForName("ISO 8859-1");
+    m_decoder = 0;
     enc = 0;
     body = false;
     beginning = true;
@@ -50,6 +51,7 @@ Decoder::Decoder()
 }
 Decoder::~Decoder()
 {
+    delete m_decoder;
 }
 
 void Decoder::setEncoding(const char *_encoding, bool force)
@@ -105,19 +107,24 @@ QString Decoder::decode(const char *data, int len)
         if( uchars[0] == 0xfe && uchars[1] == 0xff ||
             uchars[0] == 0xff && uchars[1] == 0xfe ) {
             enc = "ISO-10646-UCS-2";
+            haveEncoding = true;
             m_codec = QTextCodec::codecForMib(1000);
+            delete m_decoder;
+            m_decoder = m_codec->makeDecoder();
         } else {
 
-            // ### hack for a bug in QTextCodec. It cut's the input stream
-            // in case there are \0 in it. ZDNET has them inside... :-(
-            char *d = const_cast<char *>(data);
-            int i = len - 1;
-            while(i >= 0) {
-                if(*(d+i) == 0) *(d+i) = ' ';
-                i--;
+            if(m_codec->mibEnum() != 1000) // utf16
+            {
+                // ### hack for a bug in QTextCodec. It cut's the input stream
+                // in case there are \0 in it. ZDNET has them inside... :-(
+                char *d = const_cast<char *>(data);
+                int i = len - 1;
+                while(i >= 0) {
+                    if(*(d+i) == 0) *(d+i) = ' ';
+                    i--;
+                }
             }
             buffer += QCString(data, len+1);
-
 
             // we still don't have an encoding, and are in the head
             // the following tags are allowed in <head>:
@@ -221,28 +228,25 @@ QString Decoder::decode(const char *data, int len)
     }
     QString out;
 
-    if(!buffer.isEmpty() && enc != "utf16") {
+    if(!buffer.isEmpty() && enc != "ISO-10646-UCS-2") {
         out = m_codec->toUnicode(buffer);
         buffer = "";
     } else {
-        // ### hack for a bug in QTextCodec. It cut's the input stream
-        // in case there are \0 in it. ZDNET has them inside... :-(
-        char *d = const_cast<char *>(data);
-        int i = len - 1;
-        while(i >= 0) {
-            if(*(d+i) == 0) *(d+i) = ' ';
-            i--;
-        }
-#if QT_VERSION == 220
-        if(m_codec->mibEnum() == 4 && len > 0) // latin1
-            out = QString::fromLatin1(data, len);
-        else
+        if(m_codec->mibEnum() != 1000) // utf16
+        {
+            // ### hack for a bug in QTextCodec. It cut's the input stream
+            // in case there are \0 in it. ZDNET has them inside... :-(
+            char *d = const_cast<char *>(data);
+            int i = len - 1;
+            while(i >= 0) {
+                if(*(d+i) == 0) *(d+i) = ' ';
+                i--;
+            }
             out = m_codec->toUnicode(data, len);
-#else
-        out = m_codec->toUnicode(data, len);
-#endif
+        }
+        else
+            out = m_decoder->toUnicode(data, len);
     }
-
 
     // the hell knows, why the output does sometimes have a QChar::null at
     // the end...
