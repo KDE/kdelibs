@@ -324,7 +324,6 @@ bool HTMLFormElementImpl::submit(  )
     m_insubmit = true;
     if ( !dispatchHTMLEvent(EventImpl::SUBMIT_EVENT,true,true) && !m_doingsubmit)
         return ( m_insubmit = false );
-    }
 
 #ifdef FORMS_DEBUG
     kdDebug( 6030 ) << "submitting!" << endl;
