@@ -248,17 +248,12 @@ public:
 
   /**
    * @return @p true if the reference part of the URL is not empty. In a URL like
-   *         tar:/kde/README#http://www.kde.org/kdebase.tgz it would return @p true, too.
+   *         http://www.kde.org/kdebase.tar#tar:/README it would return @p true, too.
    */
   bool hasRef() const { return !m_strRef_encoded.isEmpty(); }
 
   /**
-   * @return The HTML-style reference. The HTML-style reference can only be the
-   *         last of all references. For example in tar:/#gzip:/decompress#file:/home/x.tgz#ref1
-   *         the return value would be ref because it is the last reference and follows
-   *         a source protocol. In contrast tar:/#gzip:/decompress#file:/home/x.tgz has no
-   *         HTML-style reference at all since file:/home/x.tgz is a sub URL to the filter
-   *         protocol gzip. The returned string is, in contrast to @ref ref() already decoded.
+   * @return The HTML-style reference. 
    */
   QString htmlRef() const;
 
@@ -293,12 +288,6 @@ public:
   /**
    * @return @p true if the file has at least one sub URL.
    *         Use @ref split() to get the sub URLs.
-   *
-   * The function tests whether the protocol is a filter protocol and whether
-   * the reference is not empty. For performance reasons it does @em not test
-   * whether the reference is in turn a well-formed URL.
-   *
-   * @see isFilterProtocol()
    */
   bool hasSubURL() const;
 
@@ -317,6 +306,8 @@ public:
   /**
    * In comparison to @ref addPath() this function does not assume that the current path
    * is a directory. This is only assumed if the current path ends with '/'.
+   *
+   * Any reference is reset.
    *
    * @param _txt This is considered to be decoded. If the current path ends with '/'
    *             then @p _txt ist just appended, otherwise all text behind the last '/'
@@ -361,14 +352,15 @@ public:
    * current URL will be "protocol://host/dir" otherwise @p _dir will
    * be appended to the path. @p _dir can be ".."
    * This function won't strip protocols. That means that when you are in
-   * tar:/#file:/dir/dir2/my.tgz and you do cd("..") you will
-   * still be in tar:/#file:/dir/dir2/my.tgz.
+   * file:/dir/dir2/my.tgz#tar:/ and you do cd("..") you will
+   * still be in file:/dir/dir2/my.tgz#tar:/
    *
-   * @param zapRef If @p true, delete the HTML-style reference.
-   * @return true if the operation was successful
-   * For instance, (cd ".." from "/" is impossible)
+   * @return true
    */
-  bool cd( const QString& _dir, bool zapRef = true );
+  bool cd( const QString& _dir );
+
+  /** Provide for binary compatibility only. **/
+  bool cd( const QString& _dir, bool zapRef );
 
   /**
    * @return The complete URL, with all escape sequences intact.
@@ -395,17 +387,14 @@ public:
   /**
    * This function is useful to implement the "Up" button in a file manager for example.
    * @ref cd() never strips a sub-protocol. That means that if you are in
-   * tar:/#gzip:/decompress#file:/home/x.tgz and hit the up button you expect to see
-   * file:/home. The algorithm tries to go up on the left-most URL. If that is not
-   * possible it strips the left most URL. It continues stripping URLs as they use
-   * stream protocols. If it finds the first protocol implementing a directory structure,
-   * in this case "file", it tries to step up there, and so on.
-   * One more example: tar:/#gzip:/decompress#tar:/dir/x.tgz#gzip:/decompress#http://www/my.tgz
-   * will be returned as tar:/dir#gzip:/decompress#http://www/my.tgz.
-   *
-   * @param _zapRef This tells whether the HTML-style reference should be stripped.
+   * file:/home/x.tgz#gzip:/#tar:/ and hit the up button you expect to see
+   * file:/home. The algorithm tries to go up on the right-most URL. If that is not
+   * possible it strips the right most URL. It continues stripping URLs.
    */
-  KURL upURL( bool _zapRef = true ) const;
+  KURL upURL( ) const;
+
+  /** Provide for binary compatibility only. **/
+  KURL upURL( bool ) const;
 
   KURL& operator=( const KURL& _u );
   KURL& operator=( const QString& _url );
@@ -433,12 +422,12 @@ public:
   bool isParentOf( const KURL& u ) const;
 
   /**
-   * Splits nested URLs like tar:/kdebase#gzip:/decompress#file:/home/weis/kde.tgz.
-   * A URL like tar:/kde/README.html#http://www.kde.org#ref1 will be split in
-   * tar:/kde/README.html#ref1 and http://www.kde.org. That is because http is
-   * a source protocol and not a filter protocol. That means in turn that "#ref1"
-   * is an HTML-style reference and not a new sub URL. Since HTML-style references mark
-   * a certain position in a document this reference is appended to the first URL.
+   * Splits nested URLs like file:/home/weis/kde.tgz#gzip:/#tar:/kdebase
+   * A URL like http://www.kde.org#tar:/kde/README.hml#ref1 will be split in
+   * http://www.kde.org and tar:/kde/README.html#ref1.
+   * That means in turn that "#ref1" is an HTML-style reference and not a new sub URL. 
+   * Since HTML-style references mark
+   * a certain position in a document this reference is appended to every URL.
    * The idea behind this is that browsers, for example, only look at the first URL while
    * the rest is not of interest to them.
    *
@@ -458,7 +447,7 @@ public:
    * is considered to be HTML-like and is appended at the end of the resulting
    * joined URL.
    */
-  static QString join( const List& _list );
+  static KURL join( const List& _list );
 
   /**
    * Convenience function

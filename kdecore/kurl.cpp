@@ -18,7 +18,6 @@
 */
 
 #include "kurl.h"
-#include <kprotocolmanager.h>
 #include <kdebug.h>
 
 #include <stdio.h>
@@ -603,20 +602,11 @@ void KURL::parse( const QString& _url, int /* encoding_hint */ )
         m_strHost = QString::null; // We can ignore localhost
       }
       else {
-        // What to do with a remote file?
-        QString remoteProtocol( KProtocolManager::self().remoteFileProtocol() );
-        if (remoteProtocol.isEmpty())
-        {
-           // Pass the hostname as part of the path. Perhaps system calls
-           // just handle it.
-           m_strPath = "//"+m_strHost+m_strPath;
-           m_strHost = QString::null;
-        }
-        else
-        {
-           // Use 'remoteProtocol' as protocol.
-           m_strProtocol = remoteProtocol;
-         }
+        // Pass the hostname as part of the path. Perhaps system calls
+        // just handle it.
+        m_strPath = "//"+m_strHost+m_strPath;
+        m_strPath_encoded = QString::null;
+        m_strHost = QString::null;
       }
     }
   }
@@ -757,6 +747,7 @@ bool KURL::isParentOf( const KURL& _u ) const
 
 void KURL::setFileName( const QString& _txt )
 {
+  m_strRef_encoded = QString::null;
   int i = 0;
   while( _txt[i] == '/' ) ++i;
   QString tmp;
@@ -897,7 +888,11 @@ bool KURL::hasSubURL() const
 {
   if ( m_strProtocol.isEmpty() || m_bIsMalformed )
     return false;
-  return ( KProtocolManager::self().isFilterProtocol( m_strProtocol ) && !m_strRef_encoded.isEmpty() );
+  if (m_strRef_encoded.isEmpty())
+     return false;
+  if (isRelativeURL(m_strRef_encoded))
+     return false;
+  return true;
 }
 
 QString KURL::url( int _trailing ) const
@@ -992,77 +987,58 @@ QString KURL::prettyURL() const
 
 KURL::List KURL::split( const KURL& _url )
 {
-  return split( _url.url() );
+  QString ref;
+  KURL::List lst;
+  KURL url = _url;  
+
+  while(true)
+  {
+     KURL u = url;
+     u.m_strRef_encoded = QString::null;
+     lst.append(u);
+     if (url.hasSubURL())
+     {  
+        url = KURL(url.m_strRef_encoded);
+     }
+     else
+     {
+        ref = url.m_strRef_encoded;
+        break;
+     }
+  }
+
+  // Set HTML ref in all URLs.
+  KURL::List::Iterator it;
+  for( it = lst.begin() ; it != lst.end(); ++it )
+  {
+     (*it).m_strRef_encoded = ref;
+  }  
+
+  return lst;
 }
 
 KURL::List KURL::split( const QString& _url )
 {
-  KURL::List lst;
-  QString tmp = _url;
-
-  do
-  {
-    KURL u( tmp );
-    if ( u.isMalformed() )
-      return KURL::List();
-
-    // Continue with recursion ?
-    if ( u.hasSubURL() )
-    {
-      kdDebug() << "Has SUB URL " << u.ref().local8Bit().data() << endl;
-      tmp = u.ref();
-      u.setRef( QString::null );
-      lst.append( u );
-    }
-    // A HTML style reference finally ?
-    else if ( u.hasRef() )
-    {
-      tmp = u.ref();
-      u.setRef( QString::null );
-      lst.append( u );
-      // Append the HTML style reference to the
-      // first URL.
-      (*lst.begin()).setRef( tmp );
-      return lst;
-    }
-    // No more references and suburls
-    else
-    {
-      lst.append( u );
-      return lst;
-    }
-  } while( 1 );
-
-  // Never reached
-  return lst;
+  return split(KURL(_url));
 }
 
-QString KURL::join( const KURL::List & lst )
+KURL KURL::join( const KURL::List & lst )
 {
-  QString dest = QString::null;
-  QString ref;
+  if (lst.isEmpty()) return KURL();
+  KURL tmp;
 
-  KURL::List::ConstIterator it;
-  for( it = lst.begin() ; it != lst.end(); ++it )
+  KURL::List::ConstIterator first = lst.fromLast();
+  for( KURL::List::ConstIterator it = first; it != lst.end(); --it )
   {
-    if ( it == lst.begin() )
-      ref = (*it).ref();
-    else
-      ASSERT( !(*it).hasRef() );
-
-    QString tmp = (*it).url();
-    dest += tmp;
-    if ( it != lst.fromLast() )
-      dest += "#";
+     KURL u(*it);
+     if (it != first) 
+     {
+        u.m_strRef_encoded = tmp.url();
+     }
+     tmp = u;
   }
 
-  if ( !ref.isEmpty() )
-  {
-    dest += "#";
-    dest += ref;
-  }
-
-  return dest;
+  return tmp;
 }
 
 QString KURL::filename( bool _ignore_trailing_slash_in_path ) const
@@ -1161,22 +1137,33 @@ QString KURL::directory( bool _strip_trailing_slash_from_result,
 }
 
 
+bool KURL::cd( const QString& _dir, bool )
+{
+   return cd(_dir);
+}
+
 // implemented by David, faure@kde.org
 // Modified by Torben, weis@kde.org
-bool KURL::cd( const QString& _dir, bool zapRef )
+bool KURL::cd( const QString& _dir )
 {
-//TODO
-//WABA: Add support for m_strPath_encoded
   if ( _dir.isEmpty() || m_bIsMalformed )
     return false;
+
+  if (hasSubURL())
+  {
+     KURL::List lst = split( *this );
+     KURL &u = lst.last();
+     u.cd(_dir);
+     *this = join( lst );
+     return true;
+  }
 
   // absolute path ?
   if ( _dir[0] == '/' )
   {
     m_strPath_encoded = QString::null;
     m_strPath = _dir;
-    if ( zapRef )
-      setHTMLRef( QString::null );
+    setHTMLRef( QString::null );
     return true;
   }
 
@@ -1187,8 +1174,7 @@ bool KURL::cd( const QString& _dir, bool zapRef )
     m_strPath = QDir::homeDirPath().copy();
     m_strPath += "/";
     m_strPath += _dir.right(m_strPath.length() - 1);
-    if ( zapRef )
-      setHTMLRef( QString::null );
+    setHTMLRef( QString::null );
     return true;
   }
 
@@ -1197,70 +1183,47 @@ bool KURL::cd( const QString& _dir, bool zapRef )
   // Sub URLs are not touched.
 
   // append '/' if necessary
-//TODO
-//WABA: Add better support for m_strPath_encoded
   QString p = path(1);
   p += _dir;
   p = QDir::cleanDirPath( p );
   setPath( p );
 
-  if ( zapRef )
-    setHTMLRef( QString::null );
+  setHTMLRef( QString::null );
 
   return true;
 }
 
-KURL KURL::upURL( bool _zapRef ) const
+
+/** Provide for binary compatibility only. **/
+KURL KURL::upURL( bool ) const
 {
-  QString old = m_strPath;
+  return upURL();
+}
 
-  KURL u( *this );
-  u.cd("..", false /*don't zap ref yet*/);
-
-  // Did we change the directory ? => job done
-  if ( ( u.path() != old ) && ( KProtocolManager::self().outputType( u.protocol() ) != KProtocolManager::T_STREAM ) )
+KURL KURL::upURL( ) const
+{
+  if (!hasSubURL())
   {
-    if ( _zapRef )
-      u.setHTMLRef( QString::null );
-
-    return u;
+     KURL u(*this);
+     u.cd("../");
+     return u;
   }
 
-  // So we have to strip protocols.
-  // Example: tar:/#gzip:/decompress#file:/home/weis/test.tgz will be changed
-  // to file:/home/weis/
-  KURL::List lst = split( u );
+  // We have a subURL.
+  KURL::List lst = split( *this );
   if (lst.isEmpty())
-      return KURL();
-
-  QString ref = (*lst.begin()).ref();
-
-  // Remove first protocol
-  lst.remove( lst.begin() );
-
-  // Remove all stream protocols
-  while( lst.begin() != lst.end() )
+      return KURL(); // Huh?
+  while (true) 
   {
-    if ( KProtocolManager::self().inputType( (*lst.begin()).protocol() ) == KProtocolManager::T_STREAM )
-      lst.remove( lst.begin() );
-    else
-      break;
-  }
-
-  // No source protocol at all ?
-  if ( lst.begin() == lst.end() )
-    return KURL();
-
-  // Remove the filename. Example: We start with
-  // tar:/#gzip:/decompress#file:/home/x.tgz
-  // and end with file:/home/x.tgz until now. Yet we
-  // just strip the filename at the end of the leftmost
-  // url.
-  (*lst.begin()).setPath( (*lst.begin()).directory( false ) );
-
-  if ( !_zapRef )
-    (*lst.begin()).setRef( ref );
-
+     KURL &u = lst.last();
+     QString old = u.path();
+     u.cd("../");
+     if (u.path() != old)
+         break; // Finshed.
+     if (lst.count() == 1)
+         break; // Finished.
+     lst.remove(lst.fromLast());
+  } 
   return join( lst );
 }
 
