@@ -110,8 +110,8 @@ void RenderApplet::layout()
             child = child->nextSibling();
         }
         //kdDebug(6100) << "setting applet widget to size: " << m_width << ", " << m_height << endl;
-        m_widget->resize(m_width-marginLeft()-marginRight()-paddingLeft()-paddingRight(),
-                         m_height-marginTop()-marginBottom()-paddingTop()-paddingBottom());
+        m_widget->resize(m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
+                         m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom());
         tmp->showApplet();
     }
 
@@ -175,8 +175,8 @@ void RenderEmptyApplet::layout()
     if(m_widget)
     {
         //kdDebug(6100) << "RenderEmptyApplet::layout, m_width = " << m_width << ", m_height = " << m_height << endl;
-        m_widget->resize(m_width-marginLeft()-marginRight()-paddingLeft()-paddingRight(),
-                         m_height-marginTop()-marginBottom()-paddingTop()-paddingBottom());
+        m_widget->resize(m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
+                         m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom());
     }
 
     setLayouted();
