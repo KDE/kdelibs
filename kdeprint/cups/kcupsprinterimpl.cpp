@@ -24,6 +24,7 @@
 #include "driver.h"
 #include "kmfactory.h"
 #include "kmmanager.h"
+#include "cupsinfos.h"
 
 #include <qfile.h>
 #include <cups/cups.h>
@@ -47,7 +48,15 @@ bool KCupsPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 	// check printer object
 	if (!printer) return false;
 
-	cmd = QString::fromLatin1("lpr -P%1 -J '%2'").arg(printer->printerName()).arg(printer->docName());
+	cmd = QString::fromLatin1("cupsdoprint -P%1 -J '%2' -H '%3:%4'").arg(printer->printerName()).arg(printer->docName()).arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port());
+	if (!CupsInfos::self()->login().isEmpty())
+	{
+		QString	s(" -U '"+CupsInfos::self()->login());
+		if (!CupsInfos::self()->password().isEmpty())
+			s += (":"+CupsInfos::self()->password());
+		s.append('\'');
+		cmd.append(s);
+	}
 	mapToCupsOptions(printer->options(),cmd);
 	return true;
 }
