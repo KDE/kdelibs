@@ -1,0 +1,436 @@
+# Makefile.in generated automatically by automake 1.1n from Makefile.am
+
+# Copyright (C) 1994, 1995, 1996 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy, distribute and modify it.
+
+
+SHELL = /bin/sh
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+top_builddir = ..
+
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
+
+NORMAL_INSTALL = true
+PRE_INSTALL = true
+POST_INSTALL = true
+NORMAL_UNINSTALL = true
+PRE_UNINSTALL = true
+POST_UNINSTALL = true
+build_alias = @build_alias@
+build_triplet = @build@
+host_alias = @host_alias@
+host_triplet = @host@
+target_alias = @target_alias@
+target_triplet = @target@
+CC = @CC@
+CXX = @CXX@
+LIBCOMPAT = @LIBCOMPAT@
+LIBSOCKET = @LIBSOCKET@
+LIBTOOL = @LIBTOOL@
+MISCOBJS = @MISCOBJS@
+PACKAGE = @PACKAGE@
+RANLIB = @RANLIB@
+VERSION = @VERSION@
+all_includes = @all_includes@
+all_libraries = @all_libraries@
+kde_includes = @kde_includes@
+kde_libraries = @kde_libraries@
+qt_includes = @qt_includes@
+qt_libraries = @qt_libraries@
+topdir = @topdir@
+x_includes = @x_includes@
+x_libraries = @x_libraries@
+
+MOC = @MOC@
+INCLUDES = -I$(topdir)/kdeui -I$(topdir)/kdecore -I@qt_includes@ -I@x_includes@
+
+CLEANFILES = *.moc
+
+noinst_PROGRAMS = kconfigtest kledlamptest kprogresstest kurltest kpannertest \
+					kcolordlgtest kdatepicktest kfontdialogtest	\
+					kmsgboxtest kpopuptest ktabctltest ktreelisttest	\
+					kkeyconfigtest
+
+noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
+					kkeyconfigtest.h ktabctltest.h
+BUILT_SOURCES = kconfigtest.moc kpannertest.moc ktabctltest.moc \
+				kmsgboxtest.moc kdatepicktestdlg.moc ktreelisttest.moc	\
+				kkeyconfigtest.moc
+
+kconfigtest_SOURCES = kconfigtest.cpp
+kledlamptest_SOURCES = kledlamptest.cpp
+kprogresstest_SOURCES = kprogresstest.cpp
+kurltest_SOURCES = kurltest.cpp
+kpannertest_SOURCES = kpannertest.cpp
+kcolordlgtest_SOURCES = kcolordlgtest.cpp
+kdatepicktest_SOURCES = kdatepicktest.cpp kdatepicktestdlg.cpp
+kfontdialogtest_SOURCES = kfontdialogtest.cpp
+kmsgboxtest_SOURCES = kmsgboxtest.cpp
+kpopuptest_SOURCES = kpopuptest.cpp
+ktabctltest_SOURCES = ktabctltest.cpp
+ktreelisttest_SOURCES = ktreelisttest.cpp
+kkeyconfigtest_SOURCES = kkeyconfigtest.cpp
+
+SUFFIXES = .moc
+LDADD =  -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs -lkdeui -lkdecore -L@x_libraries@ -lX11 -lXext -L@qt_libraries@ -lqt
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = ../config.h
+CONFIG_CLEAN_FILES = 
+PROGRAMS =  $(noinst_PROGRAMS)
+
+
+DEFS = @DEFS@ -I. -I$(srcdir) -I..
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+kconfigtest_OBJECTS =  kconfigtest.o
+kconfigtest_LDADD = $(LDADD)
+kconfigtest_DEPENDENCIES = 
+kconfigtest_LDFLAGS = 
+kledlamptest_OBJECTS =  kledlamptest.o
+kledlamptest_LDADD = $(LDADD)
+kledlamptest_DEPENDENCIES = 
+kledlamptest_LDFLAGS = 
+kprogresstest_OBJECTS =  kprogresstest.o
+kprogresstest_LDADD = $(LDADD)
+kprogresstest_DEPENDENCIES = 
+kprogresstest_LDFLAGS = 
+kurltest_OBJECTS =  kurltest.o
+kurltest_LDADD = $(LDADD)
+kurltest_DEPENDENCIES = 
+kurltest_LDFLAGS = 
+kpannertest_OBJECTS =  kpannertest.o
+kpannertest_LDADD = $(LDADD)
+kpannertest_DEPENDENCIES = 
+kpannertest_LDFLAGS = 
+kcolordlgtest_OBJECTS =  kcolordlgtest.o
+kcolordlgtest_LDADD = $(LDADD)
+kcolordlgtest_DEPENDENCIES = 
+kcolordlgtest_LDFLAGS = 
+kdatepicktest_OBJECTS =  kdatepicktest.o kdatepicktestdlg.o
+kdatepicktest_LDADD = $(LDADD)
+kdatepicktest_DEPENDENCIES = 
+kdatepicktest_LDFLAGS = 
+kfontdialogtest_OBJECTS =  kfontdialogtest.o
+kfontdialogtest_LDADD = $(LDADD)
+kfontdialogtest_DEPENDENCIES = 
+kfontdialogtest_LDFLAGS = 
+kmsgboxtest_OBJECTS =  kmsgboxtest.o
+kmsgboxtest_LDADD = $(LDADD)
+kmsgboxtest_DEPENDENCIES = 
+kmsgboxtest_LDFLAGS = 
+kpopuptest_OBJECTS =  kpopuptest.o
+kpopuptest_LDADD = $(LDADD)
+kpopuptest_DEPENDENCIES = 
+kpopuptest_LDFLAGS = 
+ktabctltest_OBJECTS =  ktabctltest.o
+ktabctltest_LDADD = $(LDADD)
+ktabctltest_DEPENDENCIES = 
+ktabctltest_LDFLAGS = 
+ktreelisttest_OBJECTS =  ktreelisttest.o
+ktreelisttest_LDADD = $(LDADD)
+ktreelisttest_DEPENDENCIES = 
+ktreelisttest_LDFLAGS = 
+kkeyconfigtest_OBJECTS =  kkeyconfigtest.o
+kkeyconfigtest_LDADD = $(LDADD)
+kkeyconfigtest_DEPENDENCIES = 
+kkeyconfigtest_LDFLAGS = 
+CXXFLAGS = @CXXFLAGS@
+CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CXXFLAGS)
+LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CXXFLAGS)
+CXXLINK = $(LIBTOOL) --mode=link $(CXX) $(LDFLAGS) -o $@
+HEADERS =  $(noinst_HEADERS)
+
+DIST_COMMON =  Makefile.am Makefile.in
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = tar
+GZIP = --best
+DEP_FILES =  .deps/kcolordlgtest.P .deps/kconfigtest.P \
+.deps/kdatepicktest.P .deps/kdatepicktestdlg.P .deps/kfontdialogtest.P \
+.deps/kkeyconfigtest.P .deps/kledlamptest.P .deps/kmsgboxtest.P \
+.deps/kpannertest.P .deps/kpopuptest.P .deps/kprogresstest.P \
+.deps/ktabctltest.P .deps/ktreelisttest.P .deps/kurltest.P
+CXXMKDEP = $(CXX) -M $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CXXFLAGS)
+SOURCES = $(kconfigtest_SOURCES) $(kledlamptest_SOURCES) $(kprogresstest_SOURCES) $(kurltest_SOURCES) $(kpannertest_SOURCES) $(kcolordlgtest_SOURCES) $(kdatepicktest_SOURCES) $(kfontdialogtest_SOURCES) $(kmsgboxtest_SOURCES) $(kpopuptest_SOURCES) $(ktabctltest_SOURCES) $(ktreelisttest_SOURCES) $(kkeyconfigtest_SOURCES)
+OBJECTS = $(kconfigtest_OBJECTS) $(kledlamptest_OBJECTS) $(kprogresstest_OBJECTS) $(kurltest_OBJECTS) $(kpannertest_OBJECTS) $(kcolordlgtest_OBJECTS) $(kdatepicktest_OBJECTS) $(kfontdialogtest_OBJECTS) $(kmsgboxtest_OBJECTS) $(kpopuptest_OBJECTS) $(ktabctltest_OBJECTS) $(ktreelisttest_OBJECTS) $(kkeyconfigtest_OBJECTS)
+
+default: all
+
+.SUFFIXES:
+.SUFFIXES: .c .o .lo .cpp .moc
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu kdetest/Makefile
+
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+
+mostlyclean-noinstPROGRAMS:
+
+clean-noinstPROGRAMS:
+	test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
+
+distclean-noinstPROGRAMS:
+
+maintainer-clean-noinstPROGRAMS:
+
+.c.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	rm -f *.o core
+
+clean-compile:
+
+distclean-compile:
+	rm -f *.tab.c
+
+maintainer-clean-compile:
+
+.c.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	rm -f *.lo
+
+clean-libtool:
+	rm -rf .libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
+
+kconfigtest: $(kconfigtest_OBJECTS) $(kconfigtest_DEPENDENCIES)
+	@rm -f kconfigtest
+	$(CXXLINK) $(kconfigtest_LDFLAGS) $(kconfigtest_OBJECTS) $(kconfigtest_LDADD) $(LIBS)
+
+kledlamptest: $(kledlamptest_OBJECTS) $(kledlamptest_DEPENDENCIES)
+	@rm -f kledlamptest
+	$(CXXLINK) $(kledlamptest_LDFLAGS) $(kledlamptest_OBJECTS) $(kledlamptest_LDADD) $(LIBS)
+
+kprogresstest: $(kprogresstest_OBJECTS) $(kprogresstest_DEPENDENCIES)
+	@rm -f kprogresstest
+	$(CXXLINK) $(kprogresstest_LDFLAGS) $(kprogresstest_OBJECTS) $(kprogresstest_LDADD) $(LIBS)
+
+kurltest: $(kurltest_OBJECTS) $(kurltest_DEPENDENCIES)
+	@rm -f kurltest
+	$(CXXLINK) $(kurltest_LDFLAGS) $(kurltest_OBJECTS) $(kurltest_LDADD) $(LIBS)
+
+kpannertest: $(kpannertest_OBJECTS) $(kpannertest_DEPENDENCIES)
+	@rm -f kpannertest
+	$(CXXLINK) $(kpannertest_LDFLAGS) $(kpannertest_OBJECTS) $(kpannertest_LDADD) $(LIBS)
+
+kcolordlgtest: $(kcolordlgtest_OBJECTS) $(kcolordlgtest_DEPENDENCIES)
+	@rm -f kcolordlgtest
+	$(CXXLINK) $(kcolordlgtest_LDFLAGS) $(kcolordlgtest_OBJECTS) $(kcolordlgtest_LDADD) $(LIBS)
+
+kdatepicktest: $(kdatepicktest_OBJECTS) $(kdatepicktest_DEPENDENCIES)
+	@rm -f kdatepicktest
+	$(CXXLINK) $(kdatepicktest_LDFLAGS) $(kdatepicktest_OBJECTS) $(kdatepicktest_LDADD) $(LIBS)
+
+kfontdialogtest: $(kfontdialogtest_OBJECTS) $(kfontdialogtest_DEPENDENCIES)
+	@rm -f kfontdialogtest
+	$(CXXLINK) $(kfontdialogtest_LDFLAGS) $(kfontdialogtest_OBJECTS) $(kfontdialogtest_LDADD) $(LIBS)
+
+kmsgboxtest: $(kmsgboxtest_OBJECTS) $(kmsgboxtest_DEPENDENCIES)
+	@rm -f kmsgboxtest
+	$(CXXLINK) $(kmsgboxtest_LDFLAGS) $(kmsgboxtest_OBJECTS) $(kmsgboxtest_LDADD) $(LIBS)
+
+kpopuptest: $(kpopuptest_OBJECTS) $(kpopuptest_DEPENDENCIES)
+	@rm -f kpopuptest
+	$(CXXLINK) $(kpopuptest_LDFLAGS) $(kpopuptest_OBJECTS) $(kpopuptest_LDADD) $(LIBS)
+
+ktabctltest: $(ktabctltest_OBJECTS) $(ktabctltest_DEPENDENCIES)
+	@rm -f ktabctltest
+	$(CXXLINK) $(ktabctltest_LDFLAGS) $(ktabctltest_OBJECTS) $(ktabctltest_LDADD) $(LIBS)
+
+ktreelisttest: $(ktreelisttest_OBJECTS) $(ktreelisttest_DEPENDENCIES)
+	@rm -f ktreelisttest
+	$(CXXLINK) $(ktreelisttest_LDFLAGS) $(ktreelisttest_OBJECTS) $(ktreelisttest_LDADD) $(LIBS)
+
+kkeyconfigtest: $(kkeyconfigtest_OBJECTS) $(kkeyconfigtest_DEPENDENCIES)
+	@rm -f kkeyconfigtest
+	$(CXXLINK) $(kkeyconfigtest_LDFLAGS) $(kkeyconfigtest_OBJECTS) $(kkeyconfigtest_LDADD) $(LIBS)
+.cpp.o:
+	$(CXXCOMPILE) -c $<
+.cpp.lo:
+	$(LTCXXCOMPILE) -c $<
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES)
+	here=`pwd` && cd $(srcdir) && mkid -f$$here/ID $(SOURCES) $(HEADERS)
+
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES)
+	tags=; \
+	here=`pwd`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test -f $$subdir/TAGS && tags="$$tags -i $$here/$$subdir/TAGS"; \
+	done; \
+	test -z "$(ETAGS_ARGS)$(SOURCES)$(HEADERS)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $(SOURCES) $(HEADERS) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = kdetest
+distdir: $(DISTFILES)
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  test -f $(distdir)/$$file \
+	  || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	  || cp -p $$d/$$file $(distdir)/$$file; \
+	done
+
+MKDEP = gcc -M $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
+
+-include .deps/.P
+.deps/.P:
+	test -d .deps || mkdir .deps
+	echo > $@
+
+-include $(DEP_FILES)
+$(DEP_FILES): .deps/.P
+
+mostlyclean-depend:
+
+clean-depend:
+
+distclean-depend:
+
+maintainer-clean-depend:
+	rm -rf .deps
+
+.deps/%.P: $(srcdir)/%.c
+	@echo "Computing dependencies for $<..."
+	@o='o';				\
+	test -n "$o" && o='$$o';	\
+	$(MKDEP) $< | sed "s,^\(.*\)\.o:,\1.$$o \1.l$$o $@:," > $@
+
+.deps/%.P: $(srcdir)/%.cpp
+	@echo "Computing dependencies for $<..."
+	@o='o';				\
+	$(CXXMKDEP) $< | sed "s,^\(.*\)\.o:,\1.$$o \1.l$$o $@:," > $@
+info:
+dvi:
+check: all
+	$(MAKE)
+installcheck:
+install-exec: 
+	@$(NORMAL_INSTALL)
+
+install-data: 
+	@$(NORMAL_INSTALL)
+
+install: install-exec install-data all
+	@:
+
+uninstall: 
+
+all: $(PROGRAMS) $(BUILT_SOURCES) $(HEADERS) Makefile
+
+install-strip:
+	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' install
+installdirs:
+
+
+mostlyclean-generic:
+	test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
+
+clean-generic:
+	test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
+
+distclean-generic:
+	rm -f Makefile $(DISTCLEANFILES)
+	rm -f config.cache config.log stamp-h
+	test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
+
+maintainer-clean-generic:
+	test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+	test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+mostlyclean:  mostlyclean-noinstPROGRAMS mostlyclean-compile \
+		mostlyclean-libtool mostlyclean-tags mostlyclean-depend \
+		mostlyclean-generic
+
+clean:  clean-noinstPROGRAMS clean-compile clean-libtool clean-tags \
+		clean-depend clean-generic mostlyclean
+
+distclean:  distclean-noinstPROGRAMS distclean-compile distclean-libtool \
+		distclean-tags distclean-depend distclean-generic clean
+	rm -f config.status
+	rm -f libtool
+
+maintainer-clean:  maintainer-clean-noinstPROGRAMS \
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-tags maintainer-clean-depend \
+		maintainer-clean-generic distclean
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+.PHONY: default mostlyclean-noinstPROGRAMS distclean-noinstPROGRAMS \
+clean-noinstPROGRAMS maintainer-clean-noinstPROGRAMS \
+mostlyclean-compile distclean-compile clean-compile \
+maintainer-clean-compile mostlyclean-libtool distclean-libtool \
+clean-libtool maintainer-clean-libtool tags mostlyclean-tags \
+distclean-tags clean-tags maintainer-clean-tags distdir \
+mostlyclean-depend distclean-depend clean-depend \
+maintainer-clean-depend info dvi installcheck install-exec install-data \
+install uninstall all installdirs mostlyclean-generic distclean-generic \
+clean-generic maintainer-clean-generic clean mostlyclean distclean \
+maintainer-clean
+
+
+%.moc: %.h
+	$(MOC) $< -o $@
+
+.cpp.moc:
+	$(MOC) $< -o $@	
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:
