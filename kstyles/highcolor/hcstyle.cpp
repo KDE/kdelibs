@@ -196,6 +196,7 @@ HCStyle::HCStyle()
     else{
         vSmall = vMed = vLarge = NULL;
         hMed = hLarge = NULL;
+        vDark = NULL;
     }
 }
 
@@ -1829,7 +1830,7 @@ void HCStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
 {
     int x2 = x+w-1;
     int y2 = y+h-1;
-    if(sunken)
+    if( sunken || ( !vSmall ) )
         p->fillRect(x+1, y+1, w-2, h-2, g.brush(QColorGroup::Mid));
     else
         p->drawTiledPixmap(x+1, y+1, w-2, h-2, sunken ? *vLarge : *vSmall);
