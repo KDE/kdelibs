@@ -104,15 +104,16 @@ void kimgio_krl_read( QImageIO *iio )
 
 	char buffer[ BUF_SIZE ];
 
-	int rbytes = io->readBlock( buffer, 37 );
+// KRL has a 512 bytes header, although not much of it is used 
+	int rbytes = io->readBlock( buffer, 512 );
 
-	if( rbytes < 37 ) {
-		warning( "krl_read: wanted %d bytes, read %d", 37, rbytes );
+	if( rbytes < 512 ) {
+		warning( "krl_read: wanted %d bytes, read %d", 512, rbytes );
 		return;
 	}
 
-	Q_INT16 w = LOCAL_ENDIAN( buffer[ 34 ], buffer[ 35 ] );
-	Q_INT16 h = LOCAL_ENDIAN( buffer[ 36 ], buffer[ 37 ] );
+	Q_INT16 w = LOCAL_ENDIAN( buffer[ 35 ], buffer[ 34 ] );
+	Q_INT16 h = LOCAL_ENDIAN( buffer[ 37 ], buffer[ 36 ] );
 	int samples = (int)(w*h);
 
 	debug( "kimgio_krl_read: image w: %d, h: %d samples: %d", 
@@ -122,16 +123,40 @@ void kimgio_krl_read( QImageIO *iio )
 	rbytes = 0;
 	Q_INT16 *currptr = (Q_INT16 *)buffer, 
 			*endptr = (Q_INT16 *) (buffer + BUF_SIZE);
-	uint *ptr = (uint *)image.bits();
-	
+        Q_INT16 min=32766;
+        Q_INT16 max=0; 
+
+//First, we have to guess the maximum and minimum
+        rbytes = io->readBlock( (char *)buffer, BUF_SIZE );
+        for ( int samp = 0; samp < samples; samp++, currptr++ ) {
+                if ( currptr >= endptr ) {
+                        rbytes = io->readBlock( (char *)buffer, BUF_SIZE );
+                        currptr = (Q_INT16 *)buffer;
+                }
+                SWAP_BYTES( *(unsigned short *)currptr );
+                if (*currptr<min) min=*currptr;
+                if (*currptr>max) max=*currptr;
+        }
+ 
+        currptr = (Q_INT16 *)buffer;
+        uint *ptr = (uint *)image.bits();
+ 
+//Let's do a real read   
+	io->at(512);     
 	for ( int samp = 0; samp < samples; samp++, currptr++, ptr++ ) {
 		if ( currptr >= endptr ) {
-			rbytes = io->readBlock( buffer, BUF_SIZE );
+			rbytes = io->readBlock( (char *)buffer, BUF_SIZE );
 			currptr = (Q_INT16 *)buffer;
 		}
-		SWAP_BYTES( *currptr );
-		*ptr = ((*currptr >> 2) & 0xFF);
-		*ptr = qGray( *ptr, *ptr, *ptr );
+		SWAP_BYTES( *(unsigned short *)currptr );
+
+// It's not enought to delete the two least significant bits, because krl
+// doesn't use the whole range of colours all the time and we want a quality
+// image, so we have to scale the used colour range
+		*ptr = (Q_INT16)((((unsigned short)*currptr)-min)*255.0/(max-min));
+//		*ptr = ((*currptr >> 2) & 0xFF);
+
+		*ptr = qRgb( *ptr, *ptr, *ptr );
 	}
 
 	iio->setImage( image );
