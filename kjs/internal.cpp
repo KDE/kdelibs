@@ -576,6 +576,12 @@ void KJScriptImp::init()
 
 void KJScriptImp::clear()
 {
+  if ( recursion ) {
+#ifndef NDEBUG
+      fprintf(stderr, "KJS: ignoring clear() while running\n");
+#endif
+      return;
+  }
   KJScriptImp *old = curr;
   if (initialized) {
     KJScriptImp::curr = this;
