@@ -62,6 +62,8 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
     m_actionCollection( collec ),
     m_parentAddress( parentAddress )
 {
+  m_parentMenu->setKeyboardShortcutsEnabled( true );
+
   m_lstSubMenus.setAutoDelete( true );
   m_actions.setAutoDelete( true );
 
@@ -158,7 +160,12 @@ void KBookmarkMenu::refill()
 
 void KBookmarkMenu::addAddBookmark()
 {
-  KAction * paAddBookmarks = new KAction( i18n( "&Add Bookmark" ),
+  QString title = i18n( "&Add Bookmark" );
+  int p;
+  while ( ( p = title.find( '&' ) ) >= 0 )
+    title.remove( p, 1 );
+
+  KAction * paAddBookmarks = new KAction( title,
                                           "bookmark_add",
                                           m_bIsRoot ? KStdAccel::addBookmark() : KShortcut(),
                                           this,
@@ -182,7 +189,12 @@ void KBookmarkMenu::addEditBookmarks()
 
 void KBookmarkMenu::addNewFolder()
 {
-  KAction * paNewFolder = new KAction( i18n( "&New Folder..." ),
+  QString title = i18n( "&New Folder..." );
+  int p;
+  while ( ( p = title.find( '&' ) ) >= 0 )
+    title.remove( p, 1 );
+
+  KAction * paNewFolder = new KAction( title,
                                        "folder_new", //"folder",
                                        0,
                                        this,
