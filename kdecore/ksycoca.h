@@ -34,7 +34,7 @@ class KSycocaFactoryList;
  * If the existing file is outdated, it will not get read
  * but instead we'll ask kded to regenerate a new one...
 */
-#define KSYCOCA_VERSION 39
+#define KSYCOCA_VERSION 41
 
 /**
  * @internal
@@ -79,6 +79,10 @@ public:
     * @internal - returns kfsstnd stored inside database
     */
    QString kfsstnd_prefixes();
+   /**
+    * @internal - returns language stored inside database
+    */
+   QString language();
 
    /**
     * @internal - returns timestamp of database

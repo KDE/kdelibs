@@ -48,6 +48,7 @@ struct KSycocaPrivate {
     }
     QFile *database;
     QStringList changeList;
+    QString language;
 };
 
 // Read-only constructor
@@ -314,6 +315,7 @@ QString KSycoca::kfsstnd_prefixes()
    QString prefixes;
    (*m_str) >> prefixes;
    (*m_str) >> m_timeStamp;
+   (*m_str) >> d->language;
    return prefixes;
 }
 
@@ -322,6 +324,13 @@ Q_UINT32 KSycoca::timeStamp()
    if (!m_timeStamp)
       (void) kfsstnd_prefixes();
    return m_timeStamp;
+}
+
+QString KSycoca::language()
+{
+   if (d->language.isEmpty())
+      (void) kfsstnd_prefixes();
+   return d->language;
 }
 
 QString KSycoca::determineRelativePath( const QString & _fullpath, const char *_resource )
