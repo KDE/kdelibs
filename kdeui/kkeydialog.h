@@ -223,6 +223,14 @@ public:
 	KKeyDialog( bool bAllowLetterShortcuts = true, QWidget* parent = 0, const char* name = 0 );
 	virtual ~KKeyDialog();
 
+	/**
+         * Insert an action collection, i.e. add all its actions to the ones
+         * displayed by the dialog.
+         * This method can be useful in applications following the document/view
+         * design, with actions in both the document and the view.
+         * Simply call @ref insert with the action collections of each one in turn.
+         * @return true :)
+         */
 	bool insert( KActionCollection* );
 	bool configure( bool bSaveSettings = true );
 	void commitChanges();
@@ -233,10 +241,6 @@ public:
 	 * when the dialog is closed.
 	 * @return Accept if the dialog was closed with OK, Reject otherwise.
 	 **/
-	//static int configure( KAccelActions& actions, QWidget* parent = 0,
-	//	KKeyChooser::ActionType = KKeyChooser::Application );
-	//static int configure( KAccelActions& actions, const QString& sXmlFile = QString::null,
-	//	QWidget* parent = 0, bool bSaveSettings = true );
 	static int configure( KAccel* keys, QWidget* parent = 0, bool bSaveSettings = true );
 	static int configure( KGlobalAccel* keys, QWidget* parent = 0, bool bSaveSettings = true );
 	/**
@@ -247,11 +251,13 @@ public:
 	static int configure( KActionCollection* coll,
 		QWidget* parent = 0, bool bSaveSettings = true );
 
-	// obsolete.
+	/** @deprecated. Obsolete. */
 	static int configureKeys( KAccel* keys, bool save_settings = true, QWidget* parent = 0 )
 		{ return configure( keys, parent, save_settings ); }
+	/** @deprecated. Obsolete. */
 	static int configureKeys( KGlobalAccel* keys, bool save_settings = true, QWidget* parent = 0 )
 		{ return configure( keys, parent, save_settings ); }
+	/** @deprecated. Obsolete. */
 	static int configureKeys( KActionCollection* coll, const QString& /*xmlfile*/,
 		bool save_settings = true, QWidget* parent = 0 )
 		{ return configure( coll, parent, save_settings ); }
