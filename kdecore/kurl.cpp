@@ -868,8 +868,10 @@ void KURL::setEncodedPathAndQuery( const QString& _txt, int )
   }
   bool keepEncoded;
   m_strPath = decode( m_strPath_encoded, &keepEncoded );
-  if (!keepEncoded)
-     m_strPath_encoded = QString::null;
+// WABA: Always keep the original encoding. There are a lot of
+// braindead web-servers out there you know.
+//  if (!keepEncoded)
+//     m_strPath_encoded = QString::null;
 }
 
 QString KURL::path( int _trailing ) const
