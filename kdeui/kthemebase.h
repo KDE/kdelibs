@@ -55,7 +55,7 @@ protected:
  * skip the string operations.
  *
  * This class is mostly just inline methods that do bit operations on a key
- * composed the widget ID, width and/or height, and then calls
+ * composed of the widget ID, width and/or height, and then calls
  * QIntCache::find().
  *
  * One other thing to note is that full, horizontal, and vertically scaled
@@ -317,7 +317,7 @@ public:
     virtual KThemePixmap *scalePixmap(int w, int h, WidgetType widget);
     /**
      * This method reads a configuration file and applies it to the user's
-     * kdeglobals file. It does not signal applications to reload via the
+     * kstylerc file. It does not signal applications to reload via the
      * KDEChangeGeneral atom, if you want to do this you must do so yourself.
      * See kcmdisplay's general.cpp for an example.
      *
