@@ -373,7 +373,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   QToolButton *clearButton = new QToolButton( this );
   clearButton->setIconSet( BarIcon( "locationbar_erase" ) );
   clearButton->setFixedSize( clearButton->sizeHint() );
-  connect( clearButton, SIGNAL( pressed() ), SLOT( slotClear() ) );
+  connect( clearButton, SIGNAL( clicked() ), SLOT( slotClear() ) );
   QToolTip::add( clearButton, i18n( "Clear input field" ) );
 
   hbox->addWidget( clearButton );
