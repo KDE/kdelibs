@@ -2531,7 +2531,11 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   {
       child->m_bNotify = false;
       emit d->m_extension->openURLNotify();
-      emit d->m_extension->setLocationBarURL( url.prettyURL() );
+      // why change the locationbar URL here? Other browsers don't do it
+      // either for framesets and it's actually confusing IMHO, as it
+      // makes the user think he's visiting that new URL while he actually
+      // isn't. Not to mention that it breaks bookmark'ing framed sites (Simon)
+//      emit d->m_extension->setLocationBarURL( url.prettyURL() );
   }
 
   if ( !child->m_services.contains( mimetype ) )
@@ -2883,8 +2887,6 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
   if ( child ) {
       // Inform someone that we are about to show something else.
       child->m_bNotify = true;
-//      emit d->m_extension->openURLNotify();
-//      emit d->m_extension->setLocationBarURL( url.prettyURL() );
       requestObject( child, url, args );
   }  else if ( frameName==QString::fromLatin1("_self") ) // this is for embedded objects (via <object>) which want to replace the current document
   {
