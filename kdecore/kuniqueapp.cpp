@@ -22,10 +22,14 @@
 #include <dcopclient.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <qfile.h>
 #include <kcmdlineargs.h>
+#include <kstddirs.h>
 #include <kaboutdata.h>
 #include "kdebug.h"
 
+#include <sys/types.h>
+#include <sys/wait.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -179,6 +183,31 @@ KUniqueApplication::start(int& argc, char** argv,
   return true;
 }
 
+static int my_system (const char *command) {
+   int pid, status;
+
+   QApplication::flushX();
+   pid = fork();
+   if (pid == -1)
+      return -1;
+   if (pid == 0) {
+      setuid( getuid() ); // Make sure a set-user-id prog. is not root anymore
+      setgid( getgid() );
+      const char* shell = "/bin/sh";
+      if (getenv("SHELL"))
+         shell = getenv("SHELL");
+      execl(shell, shell, "-c", command, 0L);
+      exit(127);
+   }
+   do {
+      if (waitpid(pid, &status, 0) == -1) {
+         if (errno != EINTR)
+            return -1;
+       } else
+            return status;
+   } while(1);
+}
+
 bool
 KUniqueApplication::start()
 {
@@ -217,11 +246,23 @@ KUniqueApplication::start()
         QCString regName = dc->registerAs(appName, false);
         if (regName.isEmpty())
         {
+           // Try to launch kdeinit.
            kdDebug() << "KUniqueApplication: Child can't attach to DCOP.\n" << endl;
-           result = -1;
-           delete dc;	// Clean up DCOP commmunication
-           ::write(fd[1], &result, 1);
-           ::exit(255);
+           kdDebug() << "KUniqueApplication: Trying to launch kdeinit.\n" << endl;
+           QString srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"));
+           if (!srv.isEmpty())
+           {
+              my_system(QFile::encodeName(srv));
+              regName = dc->registerAs(appName, false);
+           }
+           if (regName.isEmpty())
+           {
+              kdDebug() << "KUniqueApplication: Fatal DCOP communication error.\n" << endl;
+              result = -1;
+              delete dc;	// Clean up DCOP commmunication
+              ::write(fd[1], &result, 1);
+              ::exit(255);
+           }
         }
         if (regName != appName)
         {
