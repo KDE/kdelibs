@@ -483,7 +483,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& _url, bool not
         else
           item->complete = false;
       }
-      else 
+      else
       {
         delete item;
         item = 0;
@@ -1662,7 +1662,7 @@ const KURL& KDirLister::url() const
 {
   return d->url;
 }
-  
+
 const KURL::List& KDirLister::directories() const
 {
   return d->lstDirs;
@@ -1891,6 +1891,9 @@ bool KDirLister::matchesFilter( const KFileItem *item ) const
 bool KDirLister::matchesMimeFilter( const KFileItem *item ) const
 {
   Q_ASSERT( item );
+  // Don't lose time determining the mimetype if there is no filter
+  if ( d->mimeFilter.isEmpty() && d->mimeExcludeFilter.isEmpty() )
+      return true;
   return matchesMimeFilter( item->mimetype() );
 }
 
@@ -2002,15 +2005,15 @@ void KDirLister::addRefreshItem( const KFileItem *item )
       d->lstRefreshItems = new KFileItemList;
 
     d->lstRefreshItems->append( item );
-  } 
-  else 
+  }
+  else
   {
     if ( !d->lstRemoveItems )
       d->lstRemoveItems = new KFileItemList;
 
     // notify the user that the mimetype of a file changed that doesn't match
     // a filter or does match an exclude filter
-    d->lstRemoveItems->append( item );  
+    d->lstRemoveItems->append( item );
   }
 }
 
