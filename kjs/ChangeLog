@@ -1,3 +1,9 @@
+2004-01-25  Harri Porten  <porten@kde.org>
+
+	* nodes.cpp: better error messages when property access fails
+	because of null or undefined reference. In debug builds only
+	to not cause a speed impact.
+
 2003-12-29  Dirk Mueller  <mueller@kde.org>
 
 	* create_hash_table: implement string table to reduce amount

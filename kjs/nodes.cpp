@@ -162,7 +162,8 @@ Value Node::throwError(ExecState *exec, ErrorType e, const char *msg) const
   return err;
 }
 
-Value Node::throwError(ExecState *exec, ErrorType e, const char *msg, Value v, Node *expr) const
+Value Node::throwError(ExecState *exec, ErrorType e, const char *msg,
+                       const Value &v, const Node *expr) const
 {
   char *vStr = strdup(v.toString(exec).ascii());
   char *exprStr = strdup(expr->toCode().ascii());
@@ -608,6 +609,15 @@ Reference AccessorNode1::evaluateReference(ExecState *exec) const
   KJS_CHECKEXCEPTIONREFERENCE
   Value v2 = expr2->evaluate(exec);
   KJS_CHECKEXCEPTIONREFERENCE
+#ifndef NDEBUG
+  // catch errors before being caught in toObject(). better error message.
+  if (v1.isA(UndefinedType) || v1.isA(NullType)) {
+    UString s = "Attempted to access property on %s object "
+                "(result of expression %s)";
+        (void)throwError(exec, TypeError, s.cstring().c_str(), v1, this);
+    return Reference::makeValueReference(Undefined());
+  }
+#endif
   Object o = v1.toObject(exec);
   unsigned i;
   if (v2.toUInt32(i))
@@ -638,6 +648,15 @@ Reference AccessorNode2::evaluateReference(ExecState *exec) const
   Value v = expr->evaluate(exec);
   assert(v.isValid());
   KJS_CHECKEXCEPTIONREFERENCE
+#ifndef NDEBUG
+  // catch errors before being caught in toObject(). better error message.
+  if (v.isA(UndefinedType) || v.isA(NullType)) {
+    UString s = "Attempted to access '" + ident.ustring() +
+                "' property on %s object (result of expression %s)";
+        (void)throwError(exec, TypeError, s.cstring().c_str(), v, this);
+    return Reference::makeValueReference(Undefined());
+  }
+#endif
   Object o = v.toObject(exec);
   return Reference(o, ident);
 }
@@ -1948,6 +1967,7 @@ Completion IfNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
+  assert(expr);
   bool b = expr->toBoolean(exec);
   KJS_CHECKEXCEPTION
 

@@ -113,7 +113,8 @@ namespace KJS {
 #endif
   protected:
     Value throwError(ExecState *exec, ErrorType e, const char *msg) const;
-    Value throwError(ExecState *exec, ErrorType e, const char *msg, Value v, Node *expr) const;
+    Value throwError(ExecState *exec, ErrorType e, const char *msg,
+                     const Value &v, const Node *expr) const;
     Value throwError(ExecState *exec, ErrorType e, const char *msg, Identifier label) const;
     int line;
     unsigned int refcount;
