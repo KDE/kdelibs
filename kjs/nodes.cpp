@@ -883,20 +883,20 @@ KJSO VarDeclNode::evaluate()
   } else
       val = Undefined();
   variable.put(ident, val);
-    //  }
 
-  return Undefined();
+  // spec wants to return ident. But what for ? Will be ignored above.
+  return KJSO();
 }
 
 // ECMA 12.2
 KJSO VarDeclListNode::evaluate()
 {
   if (list)
-    list->evaluate();
+    (void) list->evaluate();
 
-  var->evaluate();
+  (void) var->evaluate();
 
-  return Undefined();
+  return KJSO();
 }
 
 // ECMA 12.2
