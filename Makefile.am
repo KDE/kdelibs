@@ -18,6 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
+DO_NOT_COMPILE = kprint
 COMPILE_FIRST = dcop libltdl kdecore kdeui kdesu kio kimgio kfile kparts kjs libkmid ksgmltools
 
 SUBDIRS = $(COMPILE_FIRST) $(TOPSUBDIRS)
