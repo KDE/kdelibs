@@ -345,7 +345,7 @@ public:
    * this iterator to handle with the MDI view list in a more abstract way.
    * The iterator hides what special data structure is used in KMdi.
    */
-#warning fixme
+   // FIXME
    KMdiIterator<KMdiChildView*>* createIterator() {
       if ( m_pDocumentViews == 0L) {
          return new KMdiNullIterator<KMdiChildView*>();
