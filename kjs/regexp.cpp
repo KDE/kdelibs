@@ -21,6 +21,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 
 #include "regexp.h"
 
@@ -109,12 +110,14 @@ UString RegExp::match(const UString &s, int i, int *pos)
   if (i < 0)
     i = 0;
 
+  char *str = strdup(s.ascii());
   if (i > s.size() || s.isNull() ||
-      regexec(&preg, s.ascii() + i, 10, rmatch, 0)) {
+      regexec(&preg, str + i, 10, rmatch, 0)) {
     if (pos)
       *pos = -1;
     return UString::null;
   }
+  free(str);
 
   if (pos)
     *pos = rmatch[0].rm_so + i;
@@ -137,7 +140,9 @@ bool RegExp::test(const UString &s, int)
 
 #else
 
-  int r = regexec(&preg, s.ascii(), 0, 0, 0);
+  char *str = strdup(s.ascii());
+  int r = regexec(&preg, str, 0, 0, 0);
+  free(str);
 
   return r == 0;
 #endif

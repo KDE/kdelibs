@@ -341,10 +341,8 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     result = String(s.substr((int)d, (int)d2));
     break;
   case Substring: {
-    n = a0.toInteger(exec);
-    m = a1.toInteger(exec);
-    double start = n.value();
-    double end = m.value();
+    double start = a0.toNumber(exec);
+    double end = a1.toNumber(exec);
     if (KJS::isNaN(start))
       start = 0;
     if (KJS::isNaN(end))
@@ -364,7 +362,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
       end = start;
       start = temp;
     }
-    result = String(s.substr((int)start, (int)(end-start)));
+    result = String(s.substr((int)start, (int)end-(int)start));
     }
     break;
   case ToLowerCase:
