@@ -333,3 +333,19 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 22/01/2002 Michael Goffioul <goffioul@imec.be>
   * kdeprintfax: make use of new address book (libkabc) instead of the old
     one (libkab).
+
+29/01/2002 Michael Goffioul <goffioul@imec.be>
+  * LPR: enhancement of the APSFilter handler. Still missing: setup the
+    options in the print command line
+  * wizard: removed the garbage '&' in last page
+  * general: added SMB util functions -> to be used whenever it's
+    possible (CUPS plugin, Foomatic handler => TO BE DONE)
+
+30/01/2002 Michael Goffioul <goffioul@imec.be>
+  * general: use QGuardedPtr to keep KPrinterImpl object in KPrinter, this
+    should avoid some crashes.
+  * LPR:
+  	. added print options for APSFilter handler
+	. make use of smb-url conversion functions in Foomatic handler
+	. fix problem with rmote lpd queues: force lp=<empty string> in
+	  printcap entry

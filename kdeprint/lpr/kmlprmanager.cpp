@@ -70,6 +70,10 @@ void KMLprManager::listPrinters()
 	{
 		// cleanup previous entries
 		m_entries.clear();
+		// notify handlers
+		QPtrListIterator<LprHandler>	hit(m_handlerlist);
+		for (; hit.current(); ++hit)
+			hit.current()->reset();
 
 		// try to open the printcap file and parse it
 		PrintcapReader	reader;
@@ -119,7 +123,7 @@ void KMLprManager::initHandlers()
 	m_handlerlist.clear();
 
 	insertHandler(new MaticHandler(this));
-#if 0
+#if 1
 	insertHandler(new ApsHandler(this));
 #endif
 
@@ -289,7 +293,7 @@ bool KMLprManager::createPrinter(KMPrinter *prt)
 	// and there's an old entry (sometimes needed to keep the backend
 	// like in Foomatic)
 	if (!prt->driver() && oldEntry)
-		prt->setDriver(handler->loadDriver(prt, oldEntry));
+		prt->setDriver(handler->loadDriver(prt, oldEntry, true));
 
 	QString	sd = LprSettings::self()->baseSpoolDir();
 	if (sd.isEmpty())
@@ -325,7 +329,7 @@ bool KMLprManager::createPrinter(KMPrinter *prt)
 		{
 			result = handler->savePrinterDriver(prt, entry, prt->driver());
 		}
-		
+
 		// in case of LPRng, we need to tell the daemon about new printer
 		if (LprSettings::self()->mode() == LprSettings::LPRng)
 		{

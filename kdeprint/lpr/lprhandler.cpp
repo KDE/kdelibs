@@ -92,7 +92,7 @@ PrintcapEntry* LprHandler::createEntry(KMPrinter *prt)
 	QString	prot = uri.protocol();
 	if (!prot.isEmpty() && prot != "parallel" && prot != "file" && prot != "lpd")
 	{
-		manager()->setErrorMsg(i18n("Unsupported backend."));
+		manager()->setErrorMsg(i18n("Unsupported backend: %1.").arg(prot));
 		return NULL;
 	}
 	PrintcapEntry	*entry = new PrintcapEntry;
@@ -104,6 +104,9 @@ PrintcapEntry* LprHandler::createEntry(KMPrinter *prt)
 		if (rp[0] == '/')
 			rp = rp.mid(1);
 		entry->addField("rp", Field::String, rp);
+		// force this entry to null (otherwise it seems it's redirected
+		// to /dev/lp0 by default)
+		entry->addField("lp", Field::String, QString::null);
 	}
 	else
 	{
@@ -120,4 +123,8 @@ bool LprHandler::removePrinter(KMPrinter*, PrintcapEntry*)
 QString LprHandler::printOptions(KPrinter*)
 {
 	return QString::null;
+}
+
+void LprHandler::reset()
+{
 }

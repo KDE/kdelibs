@@ -27,6 +27,7 @@
 #include "kmmanager.h"
 #include "kprinter.h"
 #include "lprsettings.h"
+#include "util.h"
 
 #include <klocale.h>
 #include <kstandarddirs.h>
@@ -246,20 +247,9 @@ QString MaticHandler::createPostpipe(const KURL& url)
 	}
 	else if (prot == "smb")
 	{
-		QStringList	p = QStringList::split('/', url.path(), false);
 		str += ("| (\\n echo \\\"print -\\\"\\n cat \\n) | " + m_smbpath);
 		QString	work, server, printer;
-		if (p.count() > 1)
-		{
-			work = url.host();
-			server = p[0];
-			printer = p[1];
-		}
-		else
-		{
-			server = url.host();
-			printer = p[0];
-		}
+		urlToSmb(url, work, server, printer);
 		str += (" \\\"//" + server + "/" + printer + "\\\"");
 		if (!url.pass().isEmpty())
 			str += (" " + url.pass());

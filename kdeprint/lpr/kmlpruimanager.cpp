@@ -58,7 +58,7 @@ void KMLprUiManager::setupWizard(KMWizard *wizard)
 	backend->addBackend(KMWizard::Local, i18n("&Local printer (parallel, serial, USB)"), true);
 	backend->addBackend(KMWizard::LPD, i18n("&Remote LPD queue"), true);
 	backend->addBackend(KMWizard::TCP, i18n("&Network printer (TCP)"), true);
-	backend->addBackend(KMWizard::SMB, i18n("&SMB shared printer (Windows)"), true);
+	backend->addBackend(KMWizard::SMB, i18n("&SMB shared printer (Windows)"), true, KMWizard::Password);
 }
 
 void KMLprUiManager::setupConfigDialog(KMConfigDialog *dlg)

@@ -51,6 +51,7 @@ public:
 	QStringList		aliases;
 	QString			comment;
 	QMap<QString,Field>	fields;
+	QString			postcomment;
 
 	bool has(const QString& f) const	{ return fields.contains(f); }
 	QString field(const QString& f) const	{ return fields[f].value; }

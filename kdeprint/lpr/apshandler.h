@@ -34,6 +34,11 @@ public:
 	bool completePrinter(KMPrinter*, PrintcapEntry*, bool = true);
 	DrMain* loadDriver(KMPrinter*, PrintcapEntry*, bool = false);
 	DrMain* loadDbDriver(const QString&);
+	void reset();
+	PrintcapEntry* createEntry(KMPrinter*);
+	bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*);
+	bool removePrinter(KMPrinter*, PrintcapEntry*);
+	QString printOptions(KPrinter*);
 
 private:
 	QMap<QString,QString> loadResources(PrintcapEntry*);
@@ -41,6 +46,9 @@ private:
 	QString sysconfDir();
 	QString shareDir();
 	DrMain* loadApsDriver(bool = false);
+
+private:
+	int	m_counter;
 };
 
 #endif

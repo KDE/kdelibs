@@ -254,7 +254,7 @@ int main(int argc, char **argv)
 		dbFile = stdout;
 	initFiles();
 	n += initMatic();
-	/*n += initAps();*/
+	n += initAps();
 	/* do it for other handlers */
 
 	fprintf(stdout, "%d\n", n);

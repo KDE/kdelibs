@@ -46,7 +46,10 @@ bool PrintcapEntry::writeEntry(QTextStream& t)
 				return false;
 		}
 	}
-	t << endl << endl;
+	t << endl;
+	if (!postcomment.isEmpty())
+		t << postcomment << endl;
+	t << endl;
 	return true;
 }
 

@@ -33,6 +33,5 @@ WISHES
 
 - extension of the print ioslave to view jobs (print:/jobs)
 
-- possibility to print whole screen or highlighted window
-  directly to printer?
-                                                         (-kp-)                                 
+- move the execution of kjobviewer to kdeprintd, and start it only
+  if the print process has terminated successfully

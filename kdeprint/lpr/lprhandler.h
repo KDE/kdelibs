@@ -42,6 +42,7 @@ public:
 	virtual PrintcapEntry* createEntry(KMPrinter*);
 	virtual bool removePrinter(KMPrinter*, PrintcapEntry*);
 	virtual QString printOptions(KPrinter*);
+	virtual void reset();
 
 	QString name() const;
 	KMManager* manager() const;
