@@ -95,11 +95,15 @@ public:
   KTMainWindowPrivate()
   {
     m_factory = 0L;
+    m_helpMenu = 0L;
   }
   ~KTMainWindowPrivate()
   {
+    if (m_factory) delete m_factory;
+    if (m_helpMenu) delete m_helpMenu;
   }
   KXMLGUIFactory *m_factory;
+  KHelpMenu *m_helpMenu;
 };
 
 static KTLWSessionManaged* ksm = 0;
@@ -187,9 +191,6 @@ KTMainWindow::~KTMainWindow()
 
   //if (!QApplication::closingDown())
     delete mHelpMenu;
-
-  if ( d->m_factory )
-    delete d->m_factory;
 
   delete d;
 
@@ -991,7 +992,12 @@ void KTMainWindow::removeSeparator( QWidget *parent, int id )
 
 void KTMainWindow::createGUI( const QString &xmlfile )
 {
-  setXMLFile( locate( "config", "gui.rc" ) );
+  setUpdatesEnabled( false );
+
+  if (d->m_helpMenu == 0)
+    d->m_helpMenu = new KHelpMenu(this, instance()->aboutData(), true,
+                                  actionCollection());
+  setXMLFile( locate( "config", "ui/ui_standards.rc", instance() ) );
 
   if ( !xmlfile.isNull() )
     setXMLFile( xmlfile, true );
@@ -1000,6 +1006,7 @@ void KTMainWindow::createGUI( const QString &xmlfile )
 
   guiFactory()->addServant( this );
 
+  setUpdatesEnabled( true );
   updateRects();
 }
 
