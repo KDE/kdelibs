@@ -315,6 +315,13 @@ void KNumericSpinBox::setStep(int step)
   _step=step;
 }
 
+void KNumericSpinBox::getRange(int &min, int &max)
+{
+  min = _min;
+  max = _max;
+}
+
+
 void KNumericSpinBox::setRange(int min, int max)
 {
   if(min < max)
