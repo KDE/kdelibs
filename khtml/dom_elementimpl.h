@@ -64,7 +64,7 @@ public:
     virtual DOMString value() const;
     virtual void setValue( const DOMString &v );
 
-    virtual DOMString nodeValue();
+    virtual DOMString nodeValue() const;
 
     virtual void setNodeValue( const DOMString & );
 

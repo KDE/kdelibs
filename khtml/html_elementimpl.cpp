@@ -809,7 +809,7 @@ HTMLBlockElementImpl::insertMarginElement(HAlign align_, int y_,
 
 }
 int
-HTMLBlockElementImpl::getLeftMargin(int y) {
+HTMLBlockElementImpl::getLeftMargin(int y) const {
     if (!leftMargin)
 	return 0;;
     QListIterator<MarginRange> lIt(*leftMargin);
@@ -825,7 +825,7 @@ HTMLBlockElementImpl::getLeftMargin(int y) {
 
 }
 int
-HTMLBlockElementImpl::getRightMargin(int y) {
+HTMLBlockElementImpl::getRightMargin(int y) const {
     if (!rightMargin)
 	return width;
     QListIterator<MarginRange> rIt(*rightMargin);
@@ -885,7 +885,7 @@ HTMLBlockElementImpl::clearMargins()
 }
 
 int
-HTMLBlockElementImpl::getWidth(int y) {
+HTMLBlockElementImpl::getWidth(int y) const {
     int res;
     res = getRightMargin(y)-getLeftMargin(y);
 //    printf("y:%d, r:%d, l:%d\n",y,getRightMargin(y),getLeftMargin(y));

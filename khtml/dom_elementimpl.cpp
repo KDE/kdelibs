@@ -108,7 +108,7 @@ void AttrImpl::setValue( const DOMString &v )
     _specified = true;
 }
 
-DOMString AttrImpl::nodeValue()
+DOMString AttrImpl::nodeValue() const
 {
     return attr.value();
 }

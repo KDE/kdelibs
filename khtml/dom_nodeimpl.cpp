@@ -476,7 +476,7 @@ void NodeBaseImpl::detach()
 
 // ---------------------------------------------------------------------------
 
-NodeImpl *NodeListImpl::item( unsigned long /*index*/ )
+NodeImpl *NodeListImpl::item( unsigned long /*index*/ ) const
 {
     return 0;
 }
@@ -546,7 +546,7 @@ unsigned long ChildNodeListImpl::length() const
     return len;
 }
 
-NodeImpl *ChildNodeListImpl::item ( unsigned long index )
+NodeImpl *ChildNodeListImpl::item ( unsigned long index ) const
 {
     unsigned int pos = 0;
     NodeImpl *n = refNode->firstChild();

@@ -213,11 +213,11 @@ protected:
     NodeImpl *aligned;
     NodeImpl *startPar;
 
-    inline int getRightMargin(int y);
-    inline int getLeftMargin(int y);
+    inline int getRightMargin(int y) const;
+    inline int getLeftMargin(int y) const;
     inline int getLeftBottom();
     inline int getRightBottom();
-    inline int getWidth(int y);
+    virtual int getWidth(int y) const;
 
     void insertMarginElement(HAlign align, int y, NodeImpl* node);
     void clearMargins();

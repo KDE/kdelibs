@@ -375,7 +375,7 @@ class NodeListImpl : public DomShared
 public:
     virtual unsigned long length() const;
 
-    virtual NodeImpl *item ( unsigned long index );
+    virtual NodeImpl *item ( unsigned long index ) const;
 
 protected:
     // helper functions for searching all ElementImpls in a tree
@@ -395,7 +395,7 @@ public:
 
     virtual unsigned long length() const;
 
-    virtual NodeImpl *item ( unsigned long index );
+    virtual NodeImpl *item ( unsigned long index ) const;
 
 protected:
     NodeImpl *refNode;
