@@ -34,6 +34,8 @@
 #include <qwidcoll.h>
 #include <qpopupmenu.h>
 #include <qsessionmanager.h>
+#include <qlist.h>
+#include <qtranslator.h>
 
 #include <kapp.h>
 #include <kglobal.h>
@@ -42,17 +44,15 @@
 #include <kdebugdialog.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kconfig.h>
+#include <ksimpleconfig.h>
+#include <kstddirs.h>
 
 #include <kstyle.h>
 #include <qplatinumstyle.h>
 #include <qcdestyle.h>
-#include <kconfig.h>
-#include <ksimpleconfig.h>
-#include <kstddirs.h>
+
 #include <dcopclient.h>
-#include <qlist.h>
-#include <qsessionmanager.h>
-#include <qtranslator.h>
 
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
@@ -1286,14 +1286,56 @@ int KApplication::contrast() const
     return contrast_;
 }
 
+//////////////////////////////////////////////////////////////////////////////
 
-// pointless, to be removed########
-Qt::GUIStyle KApplication::applicationStyle() const
+KUniqueApplication::KUniqueApplication(int& argc, char** argv,
+				       const QCString& rAppName)
+  : KApplication(argc, argv, rAppName), DCOPObject(name())
 {
-    return style();
+  DCOPClient *dc = dcopClient();
+  if (dc->attach()) {
+    if (name() != 0L) {
+      if (dc->isApplicationRegistered(name())) {
+	QByteArray data;
+	QDataStream ds(data, IO_WriteOnly);
+	QValueList<QCString> params;
+	for (int i = 0; i < argc; i++)
+	  params.append(argv[i]);
+
+	ds << params;
+	dc->send(name(), name(), "newInstance(QValueList<QCString>)", data);
+	::exit(0);
+      }
+    }
+  }
+  dc->registerAs(name());
+}
+
+KUniqueApplication::~KUniqueApplication()
+{
+}
+
+bool KUniqueApplication::process(const QCString &fun, const QByteArray &data,
+				 QCString &replyType, QByteArray &reply)
+{
+  if (fun == "newInstance(QValueList<QCString>)") {
+    QDataStream ds(data, IO_ReadOnly);
+    QValueList<QCString> params;
+    ds >> params;
+    newInstance(params);
+    replyType = "void";
+    return true;
+  } else
+    return false;
+}
+
+void KUniqueApplication::newInstance(QValueList<QCString> params)
+{
+  qDebug("KUniqueApplication::newInstance was called, arguments:\n");
+  QValueList<QCString>::ConstIterator pIt(params.begin());
+  for (; pIt != params.end(); ++pIt)
+    qDebug("  %s",(*pIt).data());
 }
 
 
 #include "kapp.moc"
-
-

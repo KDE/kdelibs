@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
+    Copyright (c) 1998, 1999 KDE Team
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -33,6 +34,7 @@ class KCharsets;
 class KStyle;
 class QTDispatcher;
 class DCOPClient;
+class DCOPObject;
 
 typedef unsigned long Atom;
 
@@ -357,7 +359,6 @@ private:
   QColor activeTitleColor_;
   QColor activeTextColor_;
   int contrast_;
-    GUIStyle applicationStyle_; // ###### pointless, to be removed
   int captionLayout;
 
 public:
@@ -367,8 +368,6 @@ public:
   QColor activeTitleColor() const;
   QColor activeTextColor() const;
   int contrast() const;
-  GUIStyle applicationStyle() const;
-
 
   /**
       @internal
@@ -454,47 +453,94 @@ private:
   KApplication& operator=(const KApplication&);
 };
 
-  /** Check, if a file may be accessed in a given mode.
-        * This is a wrapper around the access() system call.
-        * checkAccess() calls access() with the given parameters.
-        * If this is OK, checkAccess() returns true. If not, and W_OK
-        * is part of mode, it is checked if there is write access to
-        * the directory. If yes, checkAccess() returns true.
-        * In all other cases checkAccess() returns false.
-        *
-        * Other than access() this function EXPLICITELY ignores non-existant
-        * files if checking for write access.
-        *
-        * @param pathname The full path of the file you want to test
-        * @param mode     The access mode, as in the access() system call.
-        * @return Whether the access is allowed, true = Access allowed
-        */
-  bool checkAccess(const QString& pathname, int mode);
-
-
+#include <dcopobject.h>
 
 /**
-*  Provides highlevel aceess to session management on a per-object base.
-*
-*  You don't need to do anything with this class when using KTMainWindow
-*
-* @short Highlevel access to session management.
-* @author Matthias Ettrich <ettrich@kde.org>
-*/
-class KSessionManaged
+ * KUniqueApplication provides a way of maintaining only a single
+ * instance of a running application at a time.  If another instance
+ * is started, it will determine (via DCOP) whether it is the first instance
+ * or a second instance.  If it is a second instance, it will forward on
+ * the information to the first instance and then quit.
+ *
+ * @see KApplication, DCOPObject
+ * @author Preston Brown <pbrown@kde.org>
+ */
+class KUniqueApplication : public KApplication, DCOPObject
 {
+  Q_OBJECT
 public:
-    KSessionManaged();
-    virtual ~KSessionManaged();
-    virtual bool saveState( QSessionManager& sm );
-    virtual bool commitData( QSessionManager& sm );
+  /**
+   * Constructor. Parses command-line arguments.
+   *
+   */
+  KUniqueApplication( int& argc, char** argv,
+		      const QCString& rAppName = 0);
+  
+  /** Destructor */
+  virtual ~KUniqueApplication();
+  
+  /** 
+   * dispatch any incoming DCOP message for a new instance.  If
+   * it is not a request for a new instance, return false.
+   */
+  bool process(const QCString &fun, const QByteArray &data,
+	       QCString &replyType, QByteArray &reply);
+
+  /**
+   * create a new "instance" of the application.  Usually this
+   * will involve making some calls into the GUI portion of your
+   * application asking for a new window to be created, possibly with
+   * some data already loaded based on the arguments received.
+   *
+   * @params is the bundled up command line parameters that were passed
+   *          on the command line when the application request was initiated,
+   *          _after_ being processed by Qt's QApplication.
+   */
+  virtual void newInstance(QValueList<QCString> params);
 };
 
 
+/** Check, if a file may be accessed in a given mode.
+ * This is a wrapper around the access() system call.
+ * checkAccess() calls access() with the given parameters.
+ * If this is OK, checkAccess() returns true. If not, and W_OK
+ * is part of mode, it is checked if there is write access to
+ * the directory. If yes, checkAccess() returns true.
+ * In all other cases checkAccess() returns false.
+ *
+ * Other than access() this function EXPLICITELY ignores non-existant
+ * files if checking for write access.
+ *
+ * @param pathname The full path of the file you want to test
+ * @param mode     The access mode, as in the access() system call.
+ * @return Whether the access is allowed, true = Access allowed
+ */
+bool checkAccess(const QString& pathname, int mode);
+
+
+/**
+ *  Provides highlevel aceess to session management on a per-object base.
+ *
+ *  You don't need to do anything with this class when using KTMainWindow
+ *
+ * @short Highlevel access to session management.
+ * @author Matthias Ettrich <ettrich@kde.org>
+ */
+class KSessionManaged
+{
+public:
+  KSessionManaged();
+  virtual ~KSessionManaged();
+  virtual bool saveState( QSessionManager& sm );
+  virtual bool commitData( QSessionManager& sm );
+};
 
 #endif
 
 // $Log$
+// Revision 1.112  1999/10/19 10:55:00  jansen
+// Added "desk" argument to signal backgroundChanged().
+//
 // Revision 1.111  1999/10/18 19:25:16  jansen
 // 1. Added KIPC class: "Old style" IPC for KDE applications.
 // 2. Added backgroundChanged() signal to KApplication.
