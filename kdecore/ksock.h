@@ -64,8 +64,7 @@ class KServerSocketPrivate;
  * You can connect this socket to any Internet address.
  *
  * This class is deprecated and will be removed in the future. For new
- * programs, please use @ref KExtendedSocket or the Qt (addon) socket
- * classes
+ * programs, please use @ref KExtendedSocket class.
  *
  * The socket gives you three signals: When ready for reading,
  * ready for writing or if the connection is broken.
@@ -229,8 +228,7 @@ private:
 /**
  * @deprecated
  * This class is deprecated and will be removed in the future. For new
- * programs, please use @ref KExtendedSocket or the Qt (addon) socket
- * classes
+ * programs, please use @ref KExtendedSocket class.
  *
  * You can use a KServerSocket to listen on a port for incoming
  * connections. When a connection arrived in the port, a KSocket
