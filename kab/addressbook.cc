@@ -1944,24 +1944,6 @@ AddressBook::baseDir()
   // ###########################################################################
 }
 
-/*
-  QString
-  AddressBook::globalDir()
-  {
-  // ###########################################################################
-  QString dir;
-  // -----
-  // dir=locate("appdata", "");
-  dir="./";
-  ENSURE(dir!=QString::null);
-  debug("AddressBook::globalDir: THIS IS NOT IMPLEMENTED!"
-  "AddressBook::globalDir: %s.\n"
-  "AddressBook::globalDir: FIXME!", (const char*)dir.utf8());
-  return dir;
-  // ###########################################################################
-  }
-*/
-  
 QString AddressBook::phoneType(AddressBook::Telephone phone)
 {
   switch(phone)
@@ -1978,3 +1960,20 @@ void AddressBook::externalChange()
 {
   updateMirrorMap();
 }
+
+Section* AddressBook::configurationSection()
+{
+  Section *section;
+  if(data!=0)
+    {
+      if(data->get(LOCAL_CONFIG_SECTION, section))
+	{
+	  return section;
+	} else {
+	  return 0;
+	}
+    } else {
+      return 0;
+    }
+}
+

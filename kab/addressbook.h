@@ -3,7 +3,7 @@
  * used in the KDE addressbook.
  * 
  * the KDE addressbook
- * copyright:  (C) Mirko Sucker, 1998, 1999
+ * copyright:  (C) Mirko Sucker, 1998, 1999, 2000
  * license:    GNU Public License, Version 2
  * mail to:    Mirko Sucker <mirko@kde.org>
  * requires:   recent C++-compiler, at least Qt 2.0
@@ -422,6 +422,16 @@ public:
    *  in the combo. */
   ErrorCode getListOfNames(QStringList*, bool reverse=true, bool initials=true);
   QConfigDB* getConfig(); /**< Hand over the configuration database. Careful! */
+  /** This method returns the QConfigDB section where the configuration of the
+      currently opened file is stored. It might be used to retrieve or to modify
+      these settings. The file-specific settings are saved along with
+      the open file.
+      Do not confuse the configuration section of the opened file with 
+      the configuration of the program. Each file might have its own
+      local configuration for some settings where it makes sense. 
+      @ return Null if no file has been opened. 
+  */
+  Section *configurationSection();
   /** This method opens a dialog for configuring the file-specific settings
    *  for the loaded file. The database is automatically saved if the user
    *  accepts the changes. */
