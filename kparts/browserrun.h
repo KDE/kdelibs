@@ -75,7 +75,10 @@ namespace KParts {
         KURL url() const { return m_strURL; }
 
         bool hideErrorDialog() const;
-
+        
+        // Suggested filename given by the server (e.g. HTTP content-disposition)
+        QString suggestedFilename() const { return m_suggestedFilename; }
+        
         enum AskSaveResult { Save, Open, Cancel };
         /**
          * Ask the user whether to save or open a url in another application.
