@@ -81,11 +81,13 @@ static int dnotify_signal = 0;
  */
 void KDirWatchPrivate::dnotify_handler(int, siginfo_t *si, void *)
 {
+  if (!dwp_self) return;
+
   // write might change errno, we have to save it and restore it
   // (Richard Stevens, Advanced programming in the Unix Environment)
   int saved_errno = errno;
 
-  Entry* e = (dwp_self) ? dwp_self->fd_Entry.find(si->si_fd) :0;
+  Entry* e = dwp_self->fd_Entry.find(si->si_fd);
 
 //  kdDebug(7001) << "DNOTIFY Handler: fd " << si->si_fd << " path "
 //		<< QString(e ? e->path:"unknown") << endl;
@@ -107,17 +109,18 @@ static struct sigaction old_sigio_act;
  */
 void KDirWatchPrivate::dnotify_sigio_handler(int sig, siginfo_t *si, void *p)
 {
-  // write might change errno, we have to save it and restore it
-  // (Richard Stevens, Advanced programming in the Unix Environment)
-  int saved_errno = errno;
+  if (dwp_self)
+  {
+    // write might change errno, we have to save it and restore it
+    // (Richard Stevens, Advanced programming in the Unix Environment)
+    int saved_errno = errno;
 
-  if (dwp_self) 
     dwp_self->rescan_all = true;
+    char c = 0;
+    write(dwp_self->mPipe[1], &c, 1);
 
-  char c = 0;
-  write(dwp_self->mPipe[1], &c, 1);
-
-  errno = saved_errno;
+    errno = saved_errno;
+  }
   
   // Call previous signal handler
   if (old_sigio_act.sa_flags & SA_SIGINFO)
