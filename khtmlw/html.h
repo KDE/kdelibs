@@ -1137,9 +1137,14 @@ protected:
      * for example 'URLSelected' should provide a complete URL.
      */
     KURL actualURL;
+
     KURL baseURL;	// this will do for now - MRJ
 			// actually we need something like this to implement
 			// <base ...>
+	/*
+	 * This sets the baseURL given a URL. It strips of any filename.
+	 */
+    void setBaseURL( const char *_url);
 
     /*
      * from <BASE TARGET="...">

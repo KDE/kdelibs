@@ -65,8 +65,9 @@
 
 enum ID { ID_ADDRESS, ID_BIG, ID_BLOCKQUOTE, ID_B, ID_CELL, ID_CITE, 
     ID_CODE, ID_EM, ID_FONT, ID_HEADER, ID_I, ID_KBD, ID_PRE, ID_SAMP, 
-    ID_SMALL, ID_STRIKE, ID_STRONG, ID_S, ID_TT, ID_U, ID_CAPTION, 
-    ID_TH, ID_TD, ID_TABLE, ID_DIR, ID_MENU, ID_OL, ID_UL, ID_VAR };
+    ID_SMALL, ID_STRIKE, ID_STRONG, ID_S, ID_TEXTAREA, ID_TT, ID_U, 
+    ID_CAPTION, ID_TH, ID_TD, ID_TABLE, ID_DIR, ID_MENU, ID_OL, ID_UL, 
+    ID_VAR };
 
 
 //----------------------------------------------------------------------------
@@ -1188,6 +1189,25 @@ void KHTMLWidget::print()
     }
 }
 
+void KHTMLWidget::setBaseURL( const char *_url)
+{
+    baseURL = _url;
+    baseURL.setReference( 0 );
+    baseURL.setSearchPart( 0 );
+
+    QString p = baseURL.httpPath();
+
+    if ( p.length() > 0 )
+    {
+       int pos = p.findRev( '/' );
+       if ( pos >= 0 )
+          p.truncate( pos );
+    }
+    p += "/";
+      
+    baseURL.setPath( p );
+}
+
 void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
 {
     emit documentStarted();
@@ -1228,22 +1248,8 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     if ( _url != 0 )
     {
       actualURL = _url;
-      baseURL = _url;
-      reference = baseURL.reference();
-      baseURL.setReference( 0 );
-      baseURL.setSearchPart( 0 );
-
-      QString p = baseURL.httpPath();
-
-      if ( p.length() > 0 )
-      {
-	int pos = p.findRev( '/' );
-	if ( pos >= 0 )
-	    p.truncate( pos );
-      }
-      p += "/";
-      
-      baseURL.setPath( p );
+      reference = actualURL.reference();
+      setBaseURL( _url);
     }
 
     baseTarget = "";
@@ -2366,7 +2372,7 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	    }
 	    else if ( strncasecmp( token, "href=", 5 ) == 0 )
 	    {
-		baseURL = token + 5;
+		setBaseURL( token + 5);
 	    }
 	}
     }
@@ -3274,6 +3280,7 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	    _clue->append( flow );
 	}
 	parseInput( str + 6 );
+	vspace_inserted = false;
     }
     else if ( strncmp(str, "i", 1 ) == 0 )
     {
@@ -3614,6 +3621,7 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 	else if ( *str == '/' && *(str+1) == 'p' &&
 	    ( *(str+2) == ' ' || *(str+2) == '>' ) )
 	{
+	    closeAnchor();
 	    vspace_inserted = insertVSpace( _clue, vspace_inserted );
 	}
 }
@@ -3694,6 +3702,7 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 
 		formSelect = 0;
 		inOption = false;
+		vspace_inserted = false;
 	}
 	else if ( strncmp(str, "small", 5 ) == 0 )
 	{
@@ -3821,14 +3830,18 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 
 		formText = "";
 		inTextArea = true;
+		pushBlock(ID_TEXTAREA, 3);
 	}
 	else if ( strncmp( str, "/textarea", 9 ) == 0 )
 	{
+		popBlock(ID_TEXTAREA, _clue);
 		if ( inTextArea )
-			formTextArea->setText( formText );
-
-		formTextArea = 0;
-		inTextArea = false;
+		{
+		    formTextArea->setText( formText );
+		    inTextArea = false;
+		    vspace_inserted = false;
+		    formTextArea = 0;
+		}
 	}
 	else if ( strncmp( str, "tt", 2 ) == 0 )
 	{
