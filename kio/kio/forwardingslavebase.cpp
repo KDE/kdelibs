@@ -20,6 +20,7 @@
 #include <kdebug.h>
 #include <kio/job.h>
 #include <kmimetype.h>
+#include <kprotocolinfo.h>
 
 #include <qapplication.h>
 #include <qeventloop.h>
@@ -54,15 +55,19 @@ bool ForwardingSlaveBase::internalRewriteURL(const KURL &url, KURL &newURL)
     }
 
     m_processedURL = newURL;
+    m_requestedURL = url;
     return result;
 }
 
 void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry, bool listing)
 {
+    kdDebug() << "ForwardingSlaveBase::prepareUDSEntry: listing=="
+              << listing << endl;
+
     bool mimetype_found = false;
     bool name_found = false;
     bool url_found = false;
-    QString name;
+    QString name, mimetype;
     KURL url;
     
     KIO::UDSEntry::iterator it = entry.begin();
@@ -77,6 +82,7 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry, bool listing)
         case KIO::UDS_NAME:
             name_found = true;
             name = (*it).m_str;
+            kdDebug() << "Name = " << name << endl;
 	    break;
         case KIO::UDS_URL:
             url_found = true;
@@ -86,9 +92,13 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry, bool listing)
                 new_url.addPath(url.fileName());
             }
             (*it).m_str = new_url.url();
+            kdDebug() << "URL = " << url << endl;
+            kdDebug() << "New URL = " << (*it).m_str << endl;
             break;
         case KIO::UDS_MIME_TYPE:
             mimetype_found = true;
+            mimetype = (*it).m_str;
+            kdDebug() << "Mimetype = " << (*it).m_str << endl;
             break;
         }
     }
@@ -96,21 +106,46 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry, bool listing)
     if (!mimetype_found)
     {
         KURL new_url = m_processedURL;
-        if (name_found && listing)
+        if (url_found && listing)
         {
-            new_url.addPath(name);
-        }
-	else if (url_found && listing)
-	{
             new_url.addPath( url.fileName() );
-	}
+        }
+        else if (name_found && listing)
+        {
+            new_url.addPath( name );
+        }
 
         KMimeType::Ptr mime = KMimeType::findByURL(new_url);
+        mimetype = mime->name();
+
         KIO::UDSAtom atom;
         atom.m_uds = KIO::UDS_MIME_TYPE;
         atom.m_long = 0;
-        atom.m_str = mime->name();
+        atom.m_str = mimetype;
         entry.append(atom);
+
+        kdDebug() << "New Mimetype = " << mime->name() << endl;
+    }
+
+    if ( mimetype=="application/x-desktop" && name_found
+      && m_processedURL.isLocalFile() )
+    {
+        QString prot_class = KProtocolInfo::protocolClass( mProtocol );
+
+        if ( prot_class==":local" )
+        {
+            KURL new_url = m_processedURL;
+            if (listing)
+            {
+                new_url.addPath( name );
+            }
+            
+            KIO::UDSAtom atom;
+            atom.m_uds = KIO::UDS_URL;
+            atom.m_long = 0;
+            atom.m_str = new_url.url();
+            entry.append(atom);
+        }
     }
 }
 

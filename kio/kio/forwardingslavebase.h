@@ -75,6 +75,7 @@ protected:
   
 private:
     KURL m_processedURL;
+    KURL m_requestedURL;
     
     bool internalRewriteURL(const KURL &url, KURL &newURL);
     void prepareUDSEntry(KIO::UDSEntry &entry, bool listing=false);
