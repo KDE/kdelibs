@@ -933,6 +933,8 @@ void KApplication::saveState( QSessionManager& sm )
     // tell the session manager about our new lifecycle
     QStringList restartCommand = sm.restartCommand();
 
+    QCString multiHead = getenv("KDE_MULTIHEAD");
+    if (multiHead.lower() == "true")
     {
         // if multihead is enabled, we save our -display argument so that
 	// we are restored onto the correct head... one problem with this
@@ -940,16 +942,12 @@ void KApplication::saveState( QSessionManager& sm )
 	// to a different display (ie. if we are in a university lab and try,
 	// try to restore a multihead session, our apps could be started on
 	// someone else's display instead of our own)
-        KConfig config("kdeglobals", true);
-	config.setGroup("X11");
-        if (config.readBoolEntry("enableMultihead")) {
-            QCString displayname = getenv("DISPLAY");
-            if (! displayname.isNull()) {
-                // only store the command if we actually have a DISPLAY
-		// environment variable
-	        restartCommand.append("-display");
-	        restartCommand.append(displayname);
-	    }
+        QCString displayname = getenv("DISPLAY");
+        if (! displayname.isNull()) {
+            // only store the command if we actually have a DISPLAY
+            // environment variable
+            restartCommand.append("-display");
+            restartCommand.append(displayname);
 	}
     }
 
