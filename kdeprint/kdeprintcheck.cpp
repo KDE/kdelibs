@@ -39,7 +39,10 @@
 #include "kdeprintcheck.h"
 
 #include <kstandarddirs.h>
+#include <kdebug.h>
 #include <kextsock.h>
+#include <qfile.h>
+#include <unistd.h>
 
 static const char* const config_stddirs[] = {
 	"/etc/",
@@ -62,7 +65,10 @@ bool KdeprintChecker::check(const QStringList& uris)
 {
 	bool	state(true);
 	for (QStringList::ConstIterator it=uris.begin(); it!=uris.end() && state; ++it)
+	{
 		state = (state && checkURL(KURL(*it)));
+		// kdDebug( 500 ) << "auto-detection uri=" << *it << ", state=" << state << endl;
+	}
 	return state;
 }
 
@@ -95,7 +101,8 @@ bool KdeprintChecker::checkConfig(const KURL& url)
 		const char* const *p = config_stddirs;
 		while (*p)
 		{
-			if (KStandardDirs::exists(QString::fromLatin1(*p)+f))
+			// kdDebug( 500 ) << "checkConfig() with " << QString::fromLatin1( *p ) + f << endl;
+			if ( ::access( QFile::encodeName( QString::fromLatin1( *p ) + f ), F_OK ) == 0 )
 			{
 				state = true;
 				break;
