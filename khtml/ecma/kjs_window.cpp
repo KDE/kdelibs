@@ -119,27 +119,38 @@ Value Screen::get(ExecState *exec, const UString &p) const
   return lookupGetValue<Screen,ObjectImp>(exec,p,&ScreenTable,this);
 }
 
-Value Screen::getValueProperty(ExecState *, int token) const
+Value Screen::getValueProperty(ExecState *exec, int token) const
 {
   KWinModule info;
+  QWidget *thisWidget = Window::retrieveActive(exec)->part()->view();
+  QRect sg = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(thisWidget));
+
   switch( token ) {
   case Height:
-    return Number(QApplication::desktop()->height());
+    return Number(sg.height());
   case Width:
-    return Number(QApplication::desktop()->width());
+    return Number(sg.width());
   case ColorDepth:
   case PixelDepth: {
     QPaintDeviceMetrics m(QApplication::desktop());
     return Number(m.depth());
   }
-  case AvailLeft:
-    return Number(info.workArea().left());
-  case AvailTop:
-    return Number(info.workArea().top());
-  case AvailHeight:
-    return Number(info.workArea().height());
-  case AvailWidth:
-    return Number(info.workArea().width());
+  case AvailLeft: {
+    QRect clipped = info.workArea().intersect(sg);
+    return Number(clipped.x()-sg.x());
+  }
+  case AvailTop: {
+    QRect clipped = info.workArea().intersect(sg);
+    return Number(clipped.y()-sg.y());
+  }
+  case AvailHeight: {
+    QRect clipped = info.workArea().intersect(sg);
+    return Number(clipped.height());
+  }
+  case AvailWidth: {
+    QRect clipped = info.workArea().intersect(sg);
+    return Number(clipped.width());
+  }
   default:
     kdWarning() << "Screen::getValueProperty unhandled token " << token << endl;
     return Undefined();
@@ -442,10 +453,14 @@ Value Window::get(ExecState *exec, const UString &p) const
       return Value(retrieve(m_part->parentPart() ? m_part->parentPart() : (KHTMLPart*)m_part));
     case Personalbar:
       return Undefined(); // ###
-    case ScreenX:
-      return Number(m_part->view() ? m_part->view()->mapToGlobal(QPoint(0,0)).x() : 0);
-    case ScreenY:
-      return Number(m_part->view() ? m_part->view()->mapToGlobal(QPoint(0,0)).y() : 0);
+    case ScreenX: {
+	  QRect sg = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(m_part->view()));
+      return Number(m_part->view()->mapToGlobal(QPoint(0,0)).x() + sg.x());
+    }
+    case ScreenY: {
+	  QRect sg = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(m_part->view()));
+      return Number(m_part->view()->mapToGlobal(QPoint(0,0)).y() + sg.y());
+    }
     case Scrollbars:
       return Undefined(); // ###
     case Self:
@@ -1078,11 +1093,12 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     if(args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
+	  QRect sg = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(tl));
       QPoint dest = tl->pos() + QPoint( args[0].toInt32(exec), args[1].toInt32(exec) );
       // Security check (the spec talks about UniversalBrowserWrite to disable this check...)
-      if ( dest.x() >= 0 && dest.y() >= 0 &&
-           dest.x()+tl->width() <= QApplication::desktop()->width() &&
-           dest.y()+tl->height() <= QApplication::desktop()->height() )
+      if ( dest.x() >= sg.x() && dest.y() >= sg.x() &&
+           dest.x()+tl->width() <= sg.width()+sg.x() &&
+           dest.y()+tl->height() <= sg.height()+sg.y() )
         tl->move( dest );
     }
     return Undefined();
@@ -1090,11 +1106,12 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     if(args.size() == 2 && widget)
     {
       QWidget * tl = widget->topLevelWidget();
-      QPoint dest = QPoint( args[0].toInt32(exec), args[1].toInt32(exec) );
+	  QRect sg = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(tl));
+      QPoint dest( args[0].toInt32(exec)+sg.x(), args[1].toInt32(exec)+sg.y() );
       // Security check (the spec talks about UniversalBrowserWrite to disable this check...)
-      if ( dest.x() >= 0 && dest.y() >= 0 &&
-           dest.x()+tl->width() <= QApplication::desktop()->width() &&
-           dest.y()+tl->height() <= QApplication::desktop()->height() )
+      if ( dest.x() >= sg.x() && dest.y() >= sg.y() &&
+           dest.x()+tl->width() <= sg.width()+sg.x() &&
+           dest.y()+tl->height() <= sg.height()+sg.y() )
         tl->move( dest );
     }
     return Undefined();
@@ -1103,9 +1120,10 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     {
       QWidget * tl = widget->topLevelWidget();
       QSize dest = tl->size() + QSize( args[0].toInt32(exec), args[1].toInt32(exec) );
+	  QRect sg = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(tl));
       // Security check: within desktop limits and bigger than 100x100 (per spec)
-      if ( tl->x()+dest.width() <= QApplication::desktop()->width() &&
-           tl->y()+dest.height() <= QApplication::desktop()->height() &&
+      if ( tl->x()+dest.width() <= sg.x()+sg.width() &&
+           tl->y()+dest.height() <= sg.y()+sg.height() &&
            dest.width() >= 100 && dest.height() >= 100 )
       {
         // Take into account the window frame
@@ -1120,9 +1138,10 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     {
       QWidget * tl = widget->topLevelWidget();
       QSize dest = QSize( args[0].toInt32(exec), args[1].toInt32(exec) );
+	  QRect sg = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(tl));
       // Security check: within desktop limits and bigger than 100x100 (per spec)
-      if ( tl->x()+dest.width() <= QApplication::desktop()->width() &&
-           tl->y()+dest.height() <= QApplication::desktop()->height() &&
+      if ( tl->x()+dest.width() <= sg.x()+sg.width() &&
+           tl->y()+dest.height() <= sg.y()+sg.height() &&
            dest.width() >= 100 && dest.height() >= 100 )
       {
         // Take into account the window frame
