@@ -55,7 +55,7 @@ namespace Arts {
 			if(_filename == "-")
 				out = stdout;
 			else
-				out = fopen(_filename.c_str(),"r");
+				out = fopen(_filename.c_str(),"w");
 		}
 		void streamEnd() {
 			if(outblock)
