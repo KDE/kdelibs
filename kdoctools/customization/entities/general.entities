@@ -129,6 +129,7 @@
 <!ENTITY ATAPI	"<acronym>ATAPI</acronym>">
 <!ENTITY atlantik "<application>Atlantik</application>">
 <!ENTITY brahms "<application>Brahms</application>">
+<!ENTITY catalogmanager	"<application>Catalog Manager</application>">
 <!ENTITY CD	"<acronym>CD</acronym>">
 <!ENTITY CDE	"<acronym>CDE</acronym>">
 <!ENTITY CD-ROM	"<acronym>CD-ROM</acronym>">
@@ -169,6 +170,8 @@
 <!ENTITY kasteroids	"<application>KAsteroids</application>">
 <!ENTITY kate	"<application>Kate</application>">
 <!ENTITY katomic	"<application>KAtomic</application>">
+<!ENTITY kbabel	"<application>KBabel</application>">
+<!ENTITY kbabeldict	"<application>KBabelDict</application>">
 <!ENTITY kbackgammon 	"<application>KBackgammon</application>">
 <!ENTITY kbattleship 	"<application>KBattleship</application>">
 <!ENTITY kbiff	"<application>KBiff</application>">
@@ -261,6 +264,7 @@
 <!ENTITY kpm	"<application>Kpm</application>">
 <!ENTITY kpresenter "<application>KPresenter</application>">
 <!ENTITY kpoker	"<application>KPoker</application>">
+<!ENTITY kpovmodeler "<application>KPovModeler</application>">
 <!ENTITY kppp	"<application>kppp</application>">
 <!ENTITY kpresenter "<application>KPresenter</application>">
 <!ENTITY kregexpeditor	"<application>KRegExpEditor</application>">
