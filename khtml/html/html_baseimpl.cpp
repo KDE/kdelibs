@@ -125,8 +125,6 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
 	aStr += " { color: " + attr->value().string() + "; }";
         m_styleSheet->parseString(aStr);
         m_styleSheet->setNonCSSHints();
-        if (attached())
-            getDocument()->updateStyleSelector();
         break;
     }
     case ATTR_ONLOAD:
@@ -156,11 +154,9 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
     }
 }
 
-void HTMLBodyElementImpl::attach()
+void HTMLBodyElementImpl::insertedIntoDocument()
 {
-    assert(!m_render);
-    assert(parentNode());
-    assert(parentNode()->renderer());
+    HTMLElementImpl::insertedIntoDocument();
 
     KHTMLView* w = getDocument()->view();
     if(w->marginWidth() != -1) {
@@ -178,6 +174,24 @@ void HTMLBodyElementImpl::attach()
 
     if ( m_bgSet && !m_fgSet )
         addCSSProperty(CSS_PROP_COLOR, "#000000");
+
+    if (m_styleSheet)
+        getDocument()->updateStyleSelector();
+}
+
+void HTMLBodyElementImpl::removedFromDocument()
+{
+    HTMLElementImpl::removedFromDocument();
+
+    if (m_styleSheet)
+        getDocument()->updateStyleSelector();
+}
+
+void HTMLBodyElementImpl::attach()
+{
+    assert(!m_render);
+    assert(parentNode());
+    assert(parentNode()->renderer());
 
     RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
     style->ref();

@@ -59,6 +59,9 @@ public:
     virtual void parseAttribute(AttributeImpl *);
     virtual void attach();
 
+    virtual void insertedIntoDocument();
+    virtual void removedFromDocument();
+
     CSSStyleSheetImpl *sheet() const { return m_styleSheet; }
 
 protected:
