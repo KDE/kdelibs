@@ -79,7 +79,7 @@ void KServiceTypeProfile::initStatic()
           p = new KServiceTypeProfile( type, type2 );
 
         bool allow = config.readBoolEntry( "AllowAsDefault" );
-        //kdDebug(7010) << "KServiceTypeProfile::initStatic adding service " << application << " to profile for " << type << " with preference " << pref << endl;
+        //kdDebug(7014) << "KServiceTypeProfile::initStatic adding service " << application << " to profile for " << type << " with preference " << pref << endl;
         p->addService( application, pref, allow );
       }
     }
@@ -96,7 +96,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
 KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _servicetype, const QString& _genericServiceType )
 {
     OfferList offers;
-    kdDebug(7010) << "KServiceTypeProfile::offers( " << _servicetype << "," << _genericServiceType << " )" << endl;
+    kdDebug(7014) << "KServiceTypeProfile::offers( " << _servicetype << "," << _genericServiceType << " )" << endl;
 
     /// ### TODO
     // It's not enough to return the profile. The user might have installed
@@ -122,19 +122,19 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
     KServiceTypeProfile* profile = serviceTypeProfile( _servicetype, _genericServiceType );
     if ( profile )
     {
-        kdDebug(7010) << "Found profile, returning " << profile->offers().count() << " offers" << endl;
+        kdDebug(7014) << "Found profile, returning " << profile->offers().count() << " offers" << endl;
         return profile->offers();
     }
     // Try the other way round, order is not like size, it doesn't matter.
     profile = serviceTypeProfile( _genericServiceType, _servicetype );
     if ( profile )
     {
-        kdDebug(7010) << "Found profile after switching, returning " << profile->offers().count() << " offers" << endl;
+        kdDebug(7014) << "Found profile after switching, returning " << profile->offers().count() << " offers" << endl;
         return profile->offers();
     }
 
     KService::List list = KServiceType::offers( _servicetype );
-    kdDebug(7010) << "No profile, using KServiceType::offers, result: " << list.count() << " offers" << endl;
+    kdDebug(7014) << "No profile, using KServiceType::offers, result: " << list.count() << " offers" << endl;
     QValueListIterator<KService::Ptr> it = list.begin();
     for( ; it != list.end(); ++it )
     {
@@ -143,17 +143,19 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
             bool allow = (*it)->allowAsDefault();
             KServiceOffer o( (*it), (*it)->initialPreference(), allow );
             offers.append( o );
-            //kdDebug(7010) << "Appending offer " << (*it)->name() << " allow-as-default=" << allow << endl;
+            //kdDebug(7014) << "Appending offer " << (*it)->name() << " allow-as-default=" << allow << endl;
         }
     }
 
     qBubbleSort( offers );
 
+#if 0
     // debug code, comment if you wish but don't remove.
-    kdDebug(7010) << "Sorted list:" << endl;
+    kdDebug(7014) << "Sorted list:" << endl;
     OfferList::Iterator itOff = offers.begin();
     for( ; itOff != offers.end(); ++itOff )
-        kdDebug(7010) << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << endl;
+        kdDebug(7014) << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << endl;
+#endif
 
     return offers;
 }
@@ -232,7 +234,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
   int posHack = m_strServiceType.find( HACK_ST_SEPARATOR );
   QString serviceType = m_strServiceType.left( posHack );
   QString genericServiceType = m_strServiceType.mid( posHack + strlen(HACK_ST_SEPARATOR) );
-  kdDebug(7010) << "KServiceTypeProfile::offers serviceType=" << serviceType << " genericServiceType=" << genericServiceType << endl;
+  kdDebug(7014) << "KServiceTypeProfile::offers serviceType=" << serviceType << " genericServiceType=" << genericServiceType << endl;
   KService::List list = KServiceType::offers( serviceType );
   QValueListIterator<KService::Ptr> it = list.begin();
   for( ; it != list.end(); ++it )
@@ -286,7 +288,7 @@ KService::Ptr KServiceTypeProfile::preferredService( const QString & _serviceTyp
       else break; // The allowed-as-default are first anyway
   }
 
-  kdDebug(7010) << "No offers, or none allowed as default" << endl;
+  kdDebug(7014) << "No offers, or none allowed as default" << endl;
   return 0L;
 }
 
