@@ -37,6 +37,7 @@
 #include <qpalette.h>
 #include <qevent.h>
 #include <qdatetime.h>
+#include <qclipboard.h>
 
 #include <kapp.h>
 #include <kmimetype.h>
@@ -182,7 +183,7 @@ void KHTMLView::resizeEvent ( QResizeEvent * event )
 void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 {
     QRect r = pe->rect();
-    
+
 //    printf("viewportPaintEvent r x=%d,y=%d,w=%d,h=%d\n",
 //    	r.x(),r.y(),r.width(),r.height());
 
@@ -200,7 +201,7 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
     int ey = r.y() + viewport()->y() + contentsY();
     int ew = r.width();
     int eh = r.height();
-    
+
     if (ew<0)	    	// events generated with repaint() are bit weird...
     	ew = pe->rect().width();
     if (eh<0)
@@ -261,11 +262,11 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 void KHTMLView::paintSelection()
 {
     printf("painting selection\n");
-    
+
     if(d->selectionStart == d->selectionEnd && d->startOffset == d->endOffset) return;
 
     printf("selection from %p/%d to %p/%d\n", d->selectionStart, d->startOffset, d->selectionEnd, d->endOffset);
-    
+
 #if 0
     int xm, ym;
     contentsToViewport(0, 0, xm, ym);
@@ -595,7 +596,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	    if(!next) next = n->nextSibling();
 	    while( !next && (n = n->parentNode()) ) {
 		next = n->nextSibling();
-	    }	    
+	    }	
 	    n = next;
 	}
 	if(!d->startBeforeEnd)
@@ -610,7 +611,9 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	}
 	// get selected text and paste to the clipboard
 	QString text = selectedText();
-	printf("selectedText = %s\n",text.latin1());
+	QClipboard *cb = QApplication::clipboard();
+	cb->setText(text);
+	//printf("selectedText = %s\n",text.latin1());
 	
     }
 }
@@ -628,7 +631,7 @@ QString KHTMLView::selectedText() const
 	if(!next) next = n->nextSibling();
 	while( !next && (n = n->parentNode()) ) {
 	    next = n->nextSibling();
-	}    
+	}
 
 	n = next;
     }
