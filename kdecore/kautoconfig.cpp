@@ -257,15 +257,15 @@ void KAutoConfig::resetSettings(){
   }
 }
 
-void KAutoConfig::addWidgetChangedSignal(const QString &widgetName, const char *signal){
 #ifndef NDEBUG
+void KAutoConfig::addWidgetChangedSignal(const QString &widgetName, const char *signal){
   if(d->retrievedSettings){
     kdDebug() << "This should NEVER happen.  Function KAutoConfig::addWidgetChangedSignal() called after retrieveSettings. Please Fix.";
     return;
   }
-#endif
   changedMap.insert(widgetName, signal);
 }
+#endif
 
 bool KAutoConfig::parseChildren(const QWidget *widget,
 	QPtrList<QWidget>& currentGroup, bool trackChanges){
