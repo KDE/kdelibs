@@ -97,6 +97,9 @@ public:
     /** Return the filedescriptor of the process. */
     int fd() {return m_Fd;};
 
+    /** Return the pid of the process. */
+    int pid() {return m_Pid;};
+
 protected:
     bool m_bErase, m_bTerminal;
     int m_Pid, m_Fd;
