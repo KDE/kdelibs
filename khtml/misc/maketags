@@ -54,12 +54,12 @@ while (<IN>) {
 print out "anchor, ID_A\n";
 print out "image, ID_IMG\n";
 print out "listing, ID_PRE\n";
+print header "#define ID_LAST_TAG $num\n";
 $num = $num+1;
 print header "#define ID_TEXT $num\n";
 $num = $num+1;
 print header "#define ID_COMMENT $num\n";
 print header "#define ID_CLOSE_TAG $num\n";
-print header "#define ID_LAST_TAG 2*$num\n";
 
 print out "%%\n";
 close out;

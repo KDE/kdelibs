@@ -109,9 +109,9 @@ DOM::DOMString getTagName(unsigned short id);
 #define ID_VAR 99
 #define ID_WBR 100
 #define ID_XMP 101
+#define ID_LAST_TAG 101
 #define ID_TEXT 102
 #define ID_COMMENT 103
 #define ID_CLOSE_TAG 103
-#define ID_LAST_TAG 2*103
 
 #endif

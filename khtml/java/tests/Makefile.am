@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/khtml/java/ $(all_includes)
+INCLUDES = -I$(top_srcdir)/khtml/java/ -I$(top_srcdir)/khtml $(all_includes)
 LDADD = $(LIB_QT) $(LIB_KDECORE) ../libkjava.la 
 
 check_PROGRAMS = testserver 
@@ -6,5 +6,3 @@ check_PROGRAMS = testserver
 testserver_SOURCES = testkjavaappletserver.cpp
 
 METASOURCES = AUTO
-
-
