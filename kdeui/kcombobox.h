@@ -99,6 +99,10 @@ class KURL;
  * connect(combo,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
  * </pre>
  *
+ * Note that you have to either delete the allocated completion object
+ * when you don't need it anymore, or call 
+ * setAutoDeleteCompletionObject( true );
+ *
  * Miscellaneous function calls:
  *
  * <pre>
