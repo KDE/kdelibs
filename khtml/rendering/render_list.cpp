@@ -105,7 +105,7 @@ void RenderListItem::calcListValue()
 	m_marker->val = 1;
     else
     {
-	if(m_previous && m_previous->isListItem())
+	if( m_previous && m_previous->isListItem() && m_previous->style()->listStyleType() != LNONE )
 	{
 	    RenderListItem *item = static_cast<RenderListItem *>(m_previous);
 	    m_marker->val = item->value() + 1;
@@ -273,6 +273,8 @@ void RenderListMarker::printObject(QPainter *p, int, int,
 	p->drawPolyline( a );
 	return;
     }
+    case LNONE:
+	    return;
     default:
 	if(item != QString::null) {
 	    //_ty += fm.ascent() - fm.height()/2 + 1;

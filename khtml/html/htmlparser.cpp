@@ -442,8 +442,8 @@ void KHTMLParser::insertNode(NodeImpl *n)
             break;
         case ID_LI:
             e = new HTMLUListElementImpl(document);
-            e->addCSSProperty(CSS_PROP_MARGIN_LEFT, DOMString("0pt"), false);
-            e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, DOMString("inside"), false);
+	    e->addCSSProperty(CSS_PROP_MARGIN_LEFT, DOMString("0pt"), false);
+	    e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, DOMString("inside"), false);
             insertNode(e);
             insertNode(n);
             return;
@@ -658,6 +658,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
         case ID_DIR:
         case ID_MENU:
             e = new HTMLLIElementImpl(document);
+	    e->addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, DOMString("none"), false);
             insertNode(e);
             handled = true;
             break;
