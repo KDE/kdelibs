@@ -227,16 +227,16 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     {
        setButtonOKText(i18n("&Replace"),
                     i18n("Start replace"),
-                    i18n("<qt>If you press the <b>Replace</b> button, the document is "
-                         "searched for the text to find and any occurrence is replaced "
-                         "with the replacement text.</qt>"));
+                    i18n("<qt>If you press the <b>Replace</b> button, the text you entered "
+                         "above is searched for within the document and any occurrence is "
+                         "replaced with the replacement text.</qt>"));
     }
     else
     {
        setButtonOKText(i18n("&Find"),
                     i18n("Start searching"),
-                    i18n("<qt>If you press the <b>Find</b> button, the document is "
-                         "searched for the text that you entered above.</qt>"));
+                    i18n("<qt>If you press the <b>Find</b> button, the text you entered "
+                         "above is searched for within the document.</qt>"));
     }
 }
 
