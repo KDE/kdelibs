@@ -10,9 +10,7 @@ In this file:
 
 About kdelibs
 -------------
-This is version 2.2beta1 of the KDE libraries. "beta" indicates that we think
-it is prety stable but we anticipate that it contains a few bugs that we have
-missed.
+This is version 2.2 of the KDE libraries.
 
 This package includes libraries that are central to the development and 
 execution of a KDE program, as well as internationalization files for these 
@@ -201,7 +199,7 @@ So, here are some tips on bug reporting:
 * make sure your bug is due to KDE ... and not due to a packaging problem of
   your Linux distrubutor. For example, most "I can not install the XYZ.rpm"
   problem are due to packaging issues. Refer with such questions to your
-  Linux Distrubutor and his appropriate mailing list or bug reporting tool.
+  Linux Distributor and his appropriate mailing list or bug reporting tool.
 
 * The chance is high that your bug has already been dealt with ... so look
   if there is a newer version of kdelibs available. Reporting bugs for
@@ -211,8 +209,8 @@ So, here are some tips on bug reporting:
   bug report wizard at http://bugs.kde.org will help you to find out if your
   problem has already been reported.
 
-* The best bug report for a project based on voluentary work is of course a
-  bugfix patch. :-)
+* The best bug report for a project based on voluntary work is of course one
+  that comes with a patch that solves the problem. :-)
 
 
 More info
