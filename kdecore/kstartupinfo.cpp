@@ -24,6 +24,11 @@ DEALINGS IN THE SOFTWARE.
 
 ****************************************************************************/
 
+// kdDebug() can't be turned off in kdeinit
+#if 0
+#define KSTARTUPINFO_ALL_DEBUG
+#endif
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -233,7 +238,9 @@ bool KStartupInfo::sendStartupX( Display* disp_P, const KStartupInfoId& id_P,
         return false;
     QString msg = QString::fromLatin1( "new: %1 %2" )
         .arg( id_P.to_text()).arg( data_P.to_text());
+#ifdef KSTARTUPINFO_ALL_DEBUG
     kdDebug( 172 ) << "sending " << msg << endl;
+#endif
     return KXMessages::broadcastMessageX( disp_P, KDE_STARTUP_INFO, msg );
     }
 
@@ -256,7 +263,9 @@ bool KStartupInfo::sendChangeX( Display* disp_P, const KStartupInfoId& id_P,
         return false;
     QString msg = QString::fromLatin1( "change: %1 %2" )
         .arg( id_P.to_text()).arg( data_P.to_text());
+#ifdef KSTARTUPINFO_ALL_DEBUG
     kdDebug( 172 ) << "sending " << msg << endl;
+#endif
     return KXMessages::broadcastMessageX( disp_P, KDE_STARTUP_INFO, msg );
     }
 
@@ -276,7 +285,9 @@ bool KStartupInfo::sendFinishX( Display* disp_P, const KStartupInfoId& id_P )
     if( id_P.none())
         return false;
     QString msg = QString::fromLatin1( "remove: %1" ).arg( id_P.to_text());
+#ifdef KSTARTUPINFO_ALL_DEBUG
     kdDebug( 172 ) << "sending " << msg << endl;
+#endif
     return KXMessages::broadcastMessageX( disp_P, KDE_STARTUP_INFO, msg );
     }
 
@@ -299,7 +310,9 @@ bool KStartupInfo::sendFinishX( Display* disp_P, const KStartupInfoId& id_P,
 //        return false;
     QString msg = QString::fromLatin1( "remove: %1 %2" )
         .arg( id_P.to_text()).arg( data_P.to_text());
+#ifdef KSTARTUPINFO_ALL_DEBUG
     kdDebug( 172 ) << "sending " << msg << endl;
+#endif
     return KXMessages::broadcastMessageX( disp_P, KDE_STARTUP_INFO, msg );
     }
 
@@ -620,13 +633,18 @@ void KStartupInfoId::initId( const QCString& id_P )
     if( !id_P.isEmpty())
         {
         d->id = id_P;
+#ifdef KSTARTUPINFO_ALL_DEBUG
+        kdDebug( 172 ) << "using: " << d->id << endl;
+#endif
         return;
         }
     const char* startup_env = getenv( KDE_STARTUP_ENV );
     if( startup_env != NULL && *startup_env != '\0' )
         { // already has id
         d->id = startup_env;
+#ifdef KSTARTUPINFO_ALL_DEBUG
         kdDebug( 172 ) << "reusing: " << d->id << endl;
+#endif
         return;
         }
     // assign a unique id  CHECKME
@@ -639,7 +657,9 @@ void KStartupInfoId::initId( const QCString& id_P )
     gethostname( hostname, 255 );
     d->id = QString( "%1;%2;%3;%4" ).arg( hostname ).arg( tm.tv_sec )
         .arg( tm.tv_usec ).arg( getpid()).latin1();
+#ifdef KSTARTUPINFO_ALL_DEBUG
     kdDebug( 172 ) << "creating: " << d->id << endl;
+#endif
     }
 
 bool KStartupInfoId::setupStartupEnv() const
