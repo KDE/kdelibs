@@ -60,14 +60,14 @@ AC_REQUIRE([AC_PATH_X])
 
 if test -z $x_includes; then
   X_INCLUDES=""
-  x_includes="." dnl better than nothing :-)
+  x_includes="."; dnl better than nothing :-)
  else
   X_INCLUDES="-I$x_includes"
 fi
 
 if test -z $x_libraries; then
   X_LDFLAGS=""
-  x_libraries="." dnl better than nothing :-)
+  x_libraries="."; dnl better than nothing :-)
  else
   X_LDFLAGS="-I$x_libraries"
 fi
@@ -110,7 +110,7 @@ if test "$ac_qt_includes" = NO || test "$ac_qt_libraries" = NO; then
   ac_qt_notfound=""
   if test "$ac_qt_includes" = NO; then
     if test "$ac_qt_libraries" = NO; then
-      ac_qt_notfound="(headers and libraries)"
+      ac_qt_notfound="(headers and libraries)";
     else 
       ac_qt_notfound="(headers)";
     fi
@@ -118,7 +118,7 @@ if test "$ac_qt_includes" = NO || test "$ac_qt_libraries" = NO; then
     ac_qt_notfound="(libraries)";
   fi
   
-  AC_MSG_ERROR([QT $ac_qt_notfound not found. Please check your installation! ])
+  AC_MSG_ERROR([QT $ac_qt_notfound not found. Please check your installation! ]);
 else
   ac_cv_have_qt="have_qt=yes \
   ac_qt_includes=$ac_qt_includes ac_qt_libraries=$ac_qt_libraries"
@@ -127,7 +127,7 @@ fi])dnl
 eval "$ac_cv_have_qt"
 
 if test "$have_qt" != yes; then
-  AC_MSG_RESULT([$have_qt])
+  AC_MSG_RESULT([$have_qt]);
 else
   ac_cv_have_qt="have_qt=yes \
     ac_qt_includes=$ac_qt_includes ac_qt_libraries=$ac_qt_libraries"
@@ -140,7 +140,7 @@ AC_SUBST(qt_libraries)
 AC_SUBST(qt_includes)
 
 if test "$qt_includes" = "$x_includes"; then
- QT_INCLUDES=""
+ QT_INCLUDES="";
 else
  QT_INCLUDES="-I$qt_includes"
  all_includes="$all_includes $QT_INCLUDES"

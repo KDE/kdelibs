@@ -1713,13 +1713,13 @@ fi
 
 if test -z $x_includes; then
   X_INCLUDES=""
-  x_includes="."  else
+  x_includes=".";  else
   X_INCLUDES="-I$x_includes"
 fi
 
 if test -z $x_libraries; then
   X_LDFLAGS=""
-  x_libraries="."  else
+  x_libraries=".";  else
   X_LDFLAGS="-I$x_libraries"
 fi
 
@@ -1805,7 +1805,7 @@ if test "$ac_qt_includes" = NO || test "$ac_qt_libraries" = NO; then
   ac_qt_notfound=""
   if test "$ac_qt_includes" = NO; then
     if test "$ac_qt_libraries" = NO; then
-      ac_qt_notfound="(headers and libraries)"
+      ac_qt_notfound="(headers and libraries)";
     else 
       ac_qt_notfound="(headers)";
     fi
@@ -1813,7 +1813,7 @@ if test "$ac_qt_includes" = NO || test "$ac_qt_libraries" = NO; then
     ac_qt_notfound="(libraries)";
   fi
   
-  { echo "configure: error: QT $ac_qt_notfound not found. Please check your installation! " 1>&2; exit 1; }
+  { echo "configure: error: QT $ac_qt_notfound not found. Please check your installation! " 1>&2; exit 1; };
 else
   ac_cv_have_qt="have_qt=yes \
   ac_qt_includes=$ac_qt_includes ac_qt_libraries=$ac_qt_libraries"
@@ -1823,7 +1823,7 @@ fi
 eval "$ac_cv_have_qt"
 
 if test "$have_qt" != yes; then
-  echo "$ac_t""$have_qt" 1>&6
+  echo "$ac_t""$have_qt" 1>&6;
 else
   ac_cv_have_qt="have_qt=yes \
     ac_qt_includes=$ac_qt_includes ac_qt_libraries=$ac_qt_libraries"
@@ -1836,7 +1836,7 @@ fi
 
 
 if test "$qt_includes" = "$x_includes"; then
- QT_INCLUDES=""
+ QT_INCLUDES="";
 else
  QT_INCLUDES="-I$qt_includes"
  all_includes="$all_includes $QT_INCLUDES"
