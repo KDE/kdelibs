@@ -41,13 +41,13 @@
 #include <ksock.h>
 #include <kcrash.h>
 #include <kdesu/client.h>
-#include <kprotocolmanager.h>
 
 #include "slavebase.h"
 
 #include "kio/slavebase.h"
 #include "kio/slaveinterface.h"
 #include "kio/connection.h"
+#include "kio/ioslave_defaults.h"
 
 using namespace KIO;
 
@@ -792,7 +792,6 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         slave_status();
         break;
     case CMD_REPARSECONFIGURATION:
-        KProtocolManager::reparseConfiguration();
         reparseConfiguration();
         break;
     case CMD_CONFIG:
@@ -1270,7 +1269,7 @@ int SlaveBase::connectTimeout()
     int result = tmp.toInt(&ok);
     if (ok)
        return result;
-    return KProtocolManager::defaultConnectTimeout();
+    return DEFAULT_CONNECT_TIMEOUT;
 }
 
 int SlaveBase::proxyConnectTimeout()
@@ -1280,9 +1279,8 @@ int SlaveBase::proxyConnectTimeout()
     int result = tmp.toInt(&ok);
     if (ok)
        return result;
-    return KProtocolManager::defaultProxyConnectTimeout();
+    return DEFAULT_PROXY_CONNECT_TIMEOUT;
 }
-
 
 int SlaveBase::responseTimeout()
 {
@@ -1291,9 +1289,8 @@ int SlaveBase::responseTimeout()
     int result = tmp.toInt(&ok);
     if (ok)
        return result;
-    return KProtocolManager::defaultResponseTimeout();
+    return DEFAULT_RESPONSE_TIMEOUT;
 }
-
 
 int SlaveBase::readTimeout()
 {
@@ -1302,5 +1299,5 @@ int SlaveBase::readTimeout()
     int result = tmp.toInt(&ok);
     if (ok)
        return result;
-    return KProtocolManager::defaultReadTimeout();
+    return DEFAULT_READ_TIMEOUT;
 }
