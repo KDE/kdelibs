@@ -41,6 +41,10 @@
 #include "khtmltags.h"
 
 #include <qstring.h>
+#include <dom_stringimpl.h>
+#include <khtmllayout.h>
+using namespace DOM;
+using namespace khtml;
 
 //
 // Classes for internal use only
@@ -776,6 +780,30 @@ void setNamedColor(QColor &color, const QString name)
         QString col("#");
         col += name;
         color.setNamedColor(col);
+    }
+    else if ( name.length() > 4 && name[0] == 'r' 
+	      && name[1] == 'g' && name[2] == 'b' 
+	      && name[3] == '(' && name[name.length()-1] == ')')
+    {
+	// CSS like rgb(r, g, b) style
+	DOMString rgb = name.mid(4, name.length()-5);
+	QList<Length> *l = rgb.implementation()->toLengthList();
+	if(l->count() != 3)
+	{
+	    delete l;
+	    return;
+	}
+	int r = l->at(0)->width(255);
+	if(r < 0) r = 0;
+	if(r > 255) r = 255;
+	int g = l->at(1)->width(255);
+	if(g < 0) g = 0;
+	if(g > 255) g = 255;
+	int b = l->at(2)->width(255);
+	if(b < 0) b = 0;
+	if(b > 255) b = 255;
+	color.setRgb(r, g, b);
+	delete l;
     }
     else
     {

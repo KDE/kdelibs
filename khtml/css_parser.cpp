@@ -36,6 +36,9 @@ using namespace DOM;
 #include "kcssprop.h"
 #include "kcssvalues.h"
 
+// ### this file should disappear at some point!
+#include "khtmlstyle.h"
+
 //
 // The following file defines the function
 //     const struct props *findProp(const char *word, int len)
@@ -615,15 +618,15 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
     case CSS_PROP_BORDER_LEFT_COLOR:
     case CSS_PROP_COLOR:
     case CSS_PROP_OUTLINE_COLOR:
-	// ### extent the html color parser, to accept the following constructs, and use it!
-	//  EM { color: #f00 }              /* #rgb */
-	//  EM { color: #ff0000 }           /* #rrggbb */
-	//  EM { color: rgb(255,0,0) }      /* integer range 0 - 255 */
-	//  EM { color: rgb(100%, 0%, 0%) } /* float range 0.0% - 100.0% */
+    {
+	QString value(curP, endP - curP);
+	QColor c;
+	setNamedColor(c, value);
+	printf("color is: %d, %d, %d\n", c.red(), c.green(), c.blue());
+    }
   break;
 
-// uri || inherit
-    case CSS_PROP_BACKGROUND_IMAGE:
+// uri || inherit    case CSS_PROP_BACKGROUND_IMAGE:
     case CSS_PROP_CUE_AFTER:
     case CSS_PROP_CUE_BEFORE:
     case CSS_PROP_LIST_STYLE_IMAGE:

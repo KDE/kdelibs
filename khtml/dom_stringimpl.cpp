@@ -96,8 +96,9 @@ static Length parseLength(QChar *s, unsigned int l)
 	    return Length(QConstString(s, l-1).string().toInt(), Relative);
     }
 
-    int v = QConstString(s, l).string().toInt();
-    if(v)
+    bool ok;
+    int v = QConstString(s, l).string().toInt(&ok);
+    if(ok)
 	return Length(v, Fixed);
     return Length(0, Undefined);
 }
