@@ -89,15 +89,11 @@ bool KRun::runURL( const KURL& u, const QString& _mimetype )
 
 void KRun::shellQuote( QString &_str )
 {
-  int i = 0;
-  while( ( i = _str.find( '\'', i ) ) != -1 )
-  {
-    _str.replace( i, 1, "'\''" );
-    i += 4;
-  }
-
-  _str.insert( 0, "'" );
-  _str += "'";
+    // Credits to Walter, says Bernd G. :)
+    QString res = "'";
+    res += _str.replace(QRegExp("'"), "'\"'\"'");
+    res += "'";
+    _str = res;
 }
 
 bool KRun::run( const KService& _service, const KURL::List& _urls )
