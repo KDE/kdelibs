@@ -84,56 +84,73 @@ public:
 
    /**
     * Get the description of the palette.
+    * @return the description of the palette.
     **/
    QString description() const
    	{ return mDesc; }
 
    /**   	
     * Set the description of the palette.
+    * @param desc the new description
     **/
    void setDescription(const QString &desc)
    	{ mDesc = desc; }
    
    /**
     * Get the name of the palette. 
+    * @return the name of the palette
     **/
    QString name() const
    	{ return mName; }
 
    /**
     * Set the name of the palette.
+    * @param name the name of the palette
     **/
    void setName(const QString &name)
    	{ mName = name; }
 
-   enum Editable { Yes, No, Ask };
+   /**
+    * Used to specify whether a palette may be edited.
+    * @see editable()
+    * @see setEditable()
+    */
+   enum Editable { Yes, ///< Palette may be edited 
+		   No,  ///< Palette may not be edited
+		   Ask  ///< Ask user before editing
+   };
   
    /**
     * Returns whether the palette may be edited.
+    * @return the state of the palette
     **/
    Editable editable() const
    	{ return mEditable; }
 
    /**
     * Change whether the palette may be edited.
+    * @param editable the state of the palette
     **/
    void setEditable(Editable editable)
    	{ mEditable = editable; }
    
    /**
     * Return the number of colors in the palette.
+    * @return the number of colors
     **/
    int nrColors() const
    	{ return (int) mKolorList.count(); }
 
    /**
     * Find color by index.
-    * @return The @p index -th color of the palette.
+    * @param index the index of the desired color
+    * @return The @p index -th color of the palette, null if not found.
     **/
    QColor color(int index);
    
    /**
     * Find index by @p color.
+    * @param color the color to find
     * @return The index of the color in the palette or -1 if the
     * color is not found.
     **/
@@ -141,8 +158,10 @@ public:
 
    /** 
     * Find color name by @p index.
+    * @param the index of the color
     * @return The name of the @p index -th color.
-    * Note that not all palettes have named the colors.
+    * Note that not all palettes have named the colors. Null is
+    * returned if the color does not exist or has no name.
     **/
    QString colorName(int index);
    
@@ -159,7 +178,8 @@ public:
    /**
     * Add a color.
     * @param newColor The color to add.
-    * @param newColorName The name of the color.
+    * @param newColorName The name of the color, null to remove 
+    *                     the name.
     * @return The index of the added color.
     **/
    int addColor(const QColor &newColor, 
@@ -169,7 +189,8 @@ public:
     * Change a color.
     * @param index Index of the color to change
     * @param newColor The new color.
-    * @param newColorName The new color name.
+    * @param newColorName The new color name, null to remove 
+    *                     the name.
     * @return The index of the new color or -1 if the color couldn't
     * be changed.
     **/
@@ -181,7 +202,8 @@ public:
     * Change a color.
     * @param oldColor The original color
     * @param newColor The new color.
-    * @param newColorName The new color name.
+    * @param newColorName The new color name, null to remove 
+    *                     the name.
     * @return The index of the new color or -1 if the color couldn't
     * be changed.
     **/
