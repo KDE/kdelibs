@@ -376,10 +376,13 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 
 	struct dirent *ep;
 
+        QString _dot(".");
+        QString _dotdot("..");
+
 	while( ( ep = readdir( dp ) ) != 0L )
 	    {
 		QString fn( QFile::decodeName(ep->d_name));
-		if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
+		if (fn == _dot || fn == _dotdot || fn.at(fn.length() - 1) == '~')
 		    continue;
 
 		if (pathExp.search(fn) == -1)
