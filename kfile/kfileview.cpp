@@ -213,6 +213,7 @@ void KFileView::insertSorted(KFileViewItem *tfirst, uint counter)
 
 KFileViewItem *KFileView::mergeLists(KFileViewItem *list1, KFileViewItem *list2)
 {
+    kdDebug(kfile_area) << "mergeLists " << list1 << "-" << list2 << " " << viewname << endl;
     // this is the central place where we know that our itemList is dirty
     itemListDirty = true;
 

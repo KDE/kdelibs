@@ -118,7 +118,6 @@ void KCombiView::insertItem( KFileViewItem * )
 void KCombiView::setSorting( QDir::SortSpec sort )
 {
     kdDebug(kfile_area) << "KCombiView::setSorting " << (int)sort << " " << name() << endl;
-    KFileView::setSorting( sort );
     right->setSorting( sort );
 }
 
