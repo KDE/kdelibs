@@ -75,6 +75,12 @@ class KURL;
  * mode, unlike in the read-write mode, works by matching any typed key with the
  * first letter of entries in the combobox.
  *
+ * A read-only KComboBox will have the same background color as a 
+ * disabled KComboBox, but its foreground color will be the one used 
+ * for read-write KComboBoxs. This differs from QComboBox's implementation
+ * and is done to give visual distinction between the three different modes, 
+ * disabled, read-only, and read-write.
+ * 
  * \b Usage \n
  *
  * To enable the basic completion feature:

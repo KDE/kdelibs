@@ -80,12 +80,17 @@ class KURL;
  * individual key-bindings by usning setKeyBinding() with the default
  * second argument.
  *
- * NOTE that if the @p EchoMode for this widget is set to something other
- * than @p QLineEdit::Normal, the completion mode will always be defaulted
- * to KGlobalSettings::CompletionNone.  This is done purposefully to guard
- * against protected entries such as passwords being cached in KCompletion's
- * list. Hence, if the @p EchoMode is not QLineEdit::Normal, the completion
- * mode is automatically disabled.
+ * If @p EchoMode for this widget is set to something other than @p QLineEdit::Normal, 
+ * the completion mode will always be defaulted to KGlobalSettings::CompletionNone.  
+ * This is done purposefully to guard against protected entries such as passwords being
+ * cached in KCompletion's list. Hence, if the @p EchoMode is not QLineEdit::Normal, the
+ * completion mode is automatically disabled.
+ *
+ * A read-only KLineEdit will have the same background color as a 
+ * disabled KLineEdit, but its foreground color will be the one used 
+ * for read-write KLineEdits. This differs from QLineEdit's implementation
+ * and is done to give visual distinction between the three different modes, 
+ * disabled, read-only, and read-write.
  *
  * \b Usage \n
  *
