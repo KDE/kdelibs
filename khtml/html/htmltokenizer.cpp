@@ -1542,16 +1542,12 @@ void HTMLTokenizer::processToken()
     if(!text.isNull())
         kdDebug( 6036 ) << "text: \"" << text << "\"" << endl;
     int l = currToken.attrs ? currToken.attrs->length() : 0;
-    if(l>0)
-    {
-        int i = 0;
+    if(l) {
         kdDebug( 6036 ) << "Attributes: " << l << endl;
-        while(i<l)
-        {
-            AttrImpl* c = static_cast<AttrImpl*>(currToken.attrs->item(i));
-            kdDebug( 6036 ) << "    " << c->attrId << " " << c->name().string()
+        for (unsigned long i = 0; i < l; ++i) {
+            AttributeImpl* c = currToken.attrs->attributeItem(i);
+            kdDebug( 6036 ) << "    " << c->id() << " " << parser->doc()->getDocument()->attrName(c->id()).string()
                             << "=\"" << c->value().string() << "\"" << endl;
-            i++;
         }
     }
     kdDebug( 6036 ) << endl;
