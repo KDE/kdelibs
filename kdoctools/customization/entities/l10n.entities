@@ -1,7 +1,7 @@
 <!--
     Language-independent entities for the KDE documentation
     
-    Copyright (C) 2001 Frederik Fouvry
+    Copyright (C) 2001,2002 Frederik Fouvry
      
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -90,6 +90,14 @@
 <![%Greek;[
 <!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Greek Documentation V1.0//EL"
            "../el/lang.entities">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
+<!ENTITY % British-English "IGNORE">
+<![%British-English;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES English Documentation V1.0//ENGB"
+           "../en-GB/lang.entities">
 %kde.l10n.ents;
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
