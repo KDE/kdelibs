@@ -15,7 +15,7 @@ kio_https_la_SOURCES = https.cc extern_md5.c base64.c
 kio_https_la_LIBADD = ../libksycoca.la $(LIBZ) $(LIBSSL)
 kio_https_la_LDFLAGS = $(all_libraries) $(SSL_LDFLAGS) -module -avoid-version -no-undefined
 
-kio_http_la_SOURCES = http.cc base64.c
+kio_http_la_SOURCES = http.cc base64.c extern_md5.c
 kio_http_la_LIBADD = ../libksycoca.la $(LIBZ)
 kio_http_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
 

@@ -19,14 +19,16 @@
 
 #ifdef HAVE_SSL
 #define DO_SSL
-#define DO_MD5
 #endif
 
+#define DO_MD5
+
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
+
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>		// Needed on some systems.
 #endif
@@ -48,7 +50,6 @@
 #endif
 
 #ifdef DO_MD5
-#include <openssl/md5.h>
 #include "extern_md5.h"
 #endif
 
@@ -2388,8 +2389,8 @@ bool HTTPProtocol::readBody( )
   }
 
 #ifdef DO_MD5
-  MD5_CTX context;
-  MD5_Init(&context);
+  Local_MD5_CTX context;
+  MD5Init(&context);
 #endif
   if (m_iSize > -1)
     m_iBytesLeft = m_iSize;
@@ -2423,7 +2424,7 @@ bool HTTPProtocol::readBody( )
       if ( !decode ) {
 #ifdef DO_MD5
         if (useMD5) {
-          MD5_Update(&context, (const unsigned char*)m_bufReceive.data(), bytesReceived);
+          MD5Update(&context, (const unsigned char*)m_bufReceive.data(), bytesReceived);
         }
 #endif
         // yep, let the world know that we have some data
@@ -2478,7 +2479,7 @@ bool HTTPProtocol::readBody( )
     // received with a transfer-encoding, that encoding MUST be removed
     // prior to checking the Content-MD5 value against the received entity.
 #ifdef DO_MD5
-    MD5_Update(&context, (const unsigned char*)big_buffer.data(),
+    MD5Update(&context, (const unsigned char*)big_buffer.data(),
 	       big_buffer.size());
 #endif
 
@@ -2506,7 +2507,7 @@ bool HTTPProtocol::readBody( )
   // this block is all final MD5 stuff
 #ifdef DO_MD5
   char buf[16], *enc_digest;
-  MD5_Final((unsigned char*)buf, &context); // Wrap everything up
+  MD5Final((unsigned char*)buf, &context); // Wrap everything up
   enc_digest = base64_encode_string(buf, 16);
   if ( useMD5 ) {
     int f;

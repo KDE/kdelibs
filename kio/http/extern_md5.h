@@ -1,5 +1,5 @@
 #ifndef EXTERN_MD5_H
-#define EXTERN_MD5_H
+#define EXTERN_MD5_H "$Id$"
 
 #ifdef DO_MD5
 
@@ -7,37 +7,34 @@
 typedef char HASH[HASHLEN];
 #define HASHHEXLEN 32
 typedef char HASHHEX[HASHHEXLEN+1];
-#define IN
-#define OUT
 
+/* MD5 context. */
+typedef struct Local_MD5Context {
+  u_int32_t state[4];   /* state (ABCD) */
+  u_int32_t count[2];   /* number of bits, modulo 2^64 (lsb first) */
+  unsigned char buffer[64];     /* input buffer */
+} Local_MD5_CTX;
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+	/* calculate H(A1) as per HTTP Digest spec */
+	extern void DigestCalcHA1 (const char *pszAlg, const char *pszUserName, const char *pszRealm, const char *pszPassword, const char *pszNonce, const char *pszCNonce, HASHHEX SessionKey);
 
-/* calculate H(A1) as per HTTP Digest spec */
-extern void DigestCalcHA1(
-    IN const char * pszAlg,
-    IN const char * pszUserName,
-    IN const char * pszRealm,
-    IN const char * pszPassword,
-    IN const char * pszNonce,
-    IN const char * pszCNonce,
-    OUT HASHHEX SessionKey
-    );
+	/* calculate request-digest/response-digest as per HTTP Digest spec */
+	extern void DigestCalcResponse (HASHHEX HA1, const char *pszNonce, const char *pszNonceCount, const char *pszCNonce, const char *pszQop, const char *pszMethod, const char *pszDigestUri,  HASHHEX HEntity, HASHHEX Response);
 
-/* calculate request-digest/response-digest as per HTTP Digest spec */
-extern void DigestCalcResponse(
-    IN HASHHEX HA1,           /* H(A1) */
-    IN const char * pszNonce,       /* nonce from server */
-    IN const char * pszNonceCount,  /* 8 hex digits */
-    IN const char * pszCNonce,      /* client nonce */
-    IN const char * pszQop,         /* qop-value: "", "auth", "auth-int" */
-    IN const char * pszMethod,      /* method from the request */
-    IN const char * pszDigestUri,   /* requested URL */
-    IN HASHHEX HEntity,       /* H(entity body) if qop="auth-int" */
-    OUT HASHHEX Response      /* request-digest or response-digest */
-    );
+	void MD5Init (Local_MD5_CTX *);
+	void MD5Update (Local_MD5_CTX *, const unsigned char *, unsigned int);
+	void MD5Pad (Local_MD5_CTX *);
+	void MD5Final (unsigned char [16], Local_MD5_CTX *);
+	char *MD5End(Local_MD5_CTX *, char *);
+	char *MD5File(const char *, char *);
+	char *MD5Data(const unsigned char *, unsigned int, char *);
+	static void MD5Transform (u_int32_t state[4], const unsigned char block[64]);
+#ifdef __cplusplus
 }
 #endif
+
 #endif
 #endif
