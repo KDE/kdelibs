@@ -72,7 +72,7 @@
  * like so:
  * <PRE>
  * KTrader::OfferList offers = KTrader::self()->query("text/html", "'KParts/ReadOnlyPart' in ServiceTypes");
- * KService::Ptr ptr = offers.begin();
+ * KService::Ptr ptr = offers.first();
  * KLibFactory *factory = KLibLoader::self()->factory( ptr->library() );
  * if (factory)
  *   part = static_cast<KParts::ReadOnlyPart *>(factory->create(this, ptr->name(), "KParts::ReadOnlyPart"));
