@@ -341,7 +341,8 @@ void HTMLTokenizer::scriptHandler()
     bool doScriptExec = false;
     if (!scriptSrc.isEmpty()) {
         // forget what we just got; load from src url instead
-        cachedScript = parser->doc()->docLoader()->requestScript(scriptSrc, parser->doc()->baseURL(), scriptSrcCharset);
+        if ( !parser->skipMode() )
+            cachedScript = parser->doc()->docLoader()->requestScript(scriptSrc, parser->doc()->baseURL(), scriptSrcCharset);
         scriptSrc="";
     }
     else {
@@ -360,36 +361,40 @@ void HTMLTokenizer::scriptHandler()
     processToken();
 
     QString prependingSrc;
-    if (cachedScript) {
+    if ( !parser->skipMode() ) {
+        if (cachedScript) {
 //                 qDebug( "cachedscript extern!" );
 //                 qDebug( "src: *%s*", QString( src.current(), src.length() ).latin1() );
 //                 qDebug( "pending: *%s*", pendingSrc.latin1() );
-        pendingSrc.prepend( QString(src.current(), src.length() ) );
-        _src = QString::null;
-        src = DOMStringIt(_src);
-        scriptCodeSize = scriptCodeResync = 0;
-        cachedScript->ref(this);
-        // will be 0 if script was already loaded and ref() executed it
-        if (cachedScript)
-            loadingExtScript = true;
-    }
-    else if (view && doScriptExec && javascript && !parser->skipMode()) {
-        if ( !m_executingScript )
-            pendingSrc.prepend( QString( src.current(), src.length() ) ); // deep copy - again
-        else
-            prependingSrc = QString( src.current(), src.length() ); // deep copy
+            pendingSrc.prepend( QString(src.current(), src.length() ) );
+            _src = QString::null;
+            src = DOMStringIt(_src);
+            scriptCodeSize = scriptCodeResync = 0;
+            cachedScript->ref(this);
+            // will be 0 if script was already loaded and ref() executed it
+            if (cachedScript)
+                loadingExtScript = true;
+        }
+        else if (view && doScriptExec && javascript && !parser->skipMode()) {
+            if ( !m_executingScript )
+                pendingSrc.prepend( QString( src.current(), src.length() ) ); // deep copy - again
+            else
+                prependingSrc = QString( src.current(), src.length() ); // deep copy
 
-        _src = QString::null;
-        src = DOMStringIt( _src );
-        scriptCodeSize = scriptCodeResync = 0;
-        scriptExecution( exScript );
+            _src = QString::null;
+            src = DOMStringIt( _src );
+            scriptCodeSize = scriptCodeResync = 0;
+            scriptExecution( exScript );
+        }
     }
     script = false;
     scriptCodeSize = scriptCodeResync = 0;
-    if ( !m_executingScript && !loadingExtScript )
-        addPendingSource();
-    else if ( !prependingSrc.isEmpty() )
-        write( prependingSrc, false );
+    if ( !parser->skipMode() ) {
+        if ( !m_executingScript && !loadingExtScript )
+            addPendingSource();
+        else if ( !prependingSrc.isEmpty() )
+            write( prependingSrc, false );
+    }
 }
 
 void HTMLTokenizer::scriptExecution( const QString& str )
@@ -1155,7 +1160,8 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
     if ( !buffer )
         return;
 
-    if ( appendData && (loadingExtScript || m_executingScript ) ) {
+    if ( ( m_executingScript && appendData ) ||
+         ( !m_executingScript && loadingExtScript ) ) {
         // don't parse; we will do this later
         pendingSrc += str;
         return;
