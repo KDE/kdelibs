@@ -577,6 +577,12 @@ void QResolverManager::doNotifying(RequestData *p)
 	// around
 	delete p->obj;
     }
+  else
+    {
+      // there's no object!
+      if (p->worker)
+	p->worker->postprocess();
+    }
 
   delete p->worker;
 
