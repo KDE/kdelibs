@@ -22,11 +22,13 @@ AM_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
                  kioslavetest kdirwatchtest kshredtest speed kurifiltertest \
-                 ktradertest kdefaultprogresstest kclipboardtest kmimemagictest \
+                 kdefaultprogresstest kclipboardtest kmimemagictest \
                  kfiltertest kiopassdlgtest kscantest kdirlistertest \
                  previewtest kionetrctest kdcopcheck metatest \
 		 kmimefromext kpropsdlgtest kmfitest dataprotocoltest \
 		 kprotocolinfotest ksycocaupdatetest
+
+bin_PROGRAMS = ktradertest
 
 METASOURCES = AUTO
 
