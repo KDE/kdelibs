@@ -335,7 +335,7 @@ void Dialog::createDialogFromServices()
 			d->parentmodulenames[ info ] = parentnames;
 		}
 	}
-	else if( d->moduleinfos.count() > 1 )
+	else if( d->moduleinfos.count() > 1 || ! d->staticlistview )
 		d->dlg = new KCMultiDialog( KJanusWidget::IconList,
 				i18n( "Preferences" ), d->parentwidget );
 	else
