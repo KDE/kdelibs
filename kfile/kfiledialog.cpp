@@ -756,6 +756,9 @@ void KFileDialog::accept()
     if (!d->fileClass.isEmpty())
        KRecentDirs::add(d->fileClass, ops->url().url());
 
+    // clear the topmost item, we insert it as full path later on as item 1
+    locationEdit->changeItem( QString::null, 0 );
+    
     KURL::List list = selectedURLs();
     QValueListConstIterator<KURL> it = list.begin();
     for ( ; it != list.end(); ++it ) {
@@ -766,7 +769,7 @@ void KFileDialog::accept()
         QString file = url.isLocalFile() ? url.path(-1) : url.prettyURL(-1);
 
         // remove dupes
-        for ( int i = 0; i < locationEdit->count(); i++ ) {
+        for ( int i = 1; i < locationEdit->count(); i++ ) {
             if ( locationEdit->text( i ) == file ) {
                 locationEdit->removeItem( i-- );
                 break;
