@@ -1600,7 +1600,9 @@ void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
             m_wrap = ta_Virtual;
         else if ( strcasecmp ( attr->value(), "physical" ) == 0 || strcasecmp( attr->value(), "hard") == 0)
             m_wrap = ta_Physical;
-        else
+        else if(strcasecmp( attr->value(), "on" ) == 0)
+            m_wrap = ta_Physical;
+        else if(strcasecmp( attr->value(), "off") == 0)
             m_wrap = ta_NoWrap;
         break;
     case ATTR_TABINDEX:
