@@ -294,6 +294,30 @@ public:
      * @param state the flags that will be cleared
      */
     static void clearState( WId win, unsigned long  state );
+    
+    /**
+     * Sets the opacity of window @p win to percetage @p percent.
+     *
+     * Convenience function that just sets an X property
+     * needs a running composite manager for any visible effect
+     *
+     * @param win the id of the window
+     * @param percent the opacity value in percent (will be justified to [ 0: transparent - 100: opaque ])
+     * @since 3.4
+     */
+    static void setOpacity( WId win, uint percent );
+    
+    /**
+     * Sets the shadowsize of window @p win to percetage @p percent.
+     *
+     * Convenience function that just sets an X property
+     * needs the running KDE kompmgr manager for any visible effect
+     *
+     * @param win the id of the window
+     * @param percent the opacity value in percent (0 leads to a completely unshadowed window)
+     * @since 3.4
+     */
+    static void setShadowSize( WId win, uint percent );
 
     /**
      * Sets window @p win to be present on all virtual desktops if @p
