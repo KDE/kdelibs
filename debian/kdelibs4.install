@@ -96,6 +96,8 @@ debian/tmp/usr/lib/libkdeprint_management.so.*
 debian/tmp/usr/lib/libkdesasl.so.*
 debian/tmp/usr/lib/libkdesu.so.*
 debian/tmp/usr/lib/libkdeui.so.*
+debian/tmp/usr/lib/libkhtml.la
+debian/tmp/usr/lib/libkhtml.so
 debian/tmp/usr/lib/libkhtml.so.*
 debian/tmp/usr/lib/libkio.so.*
 debian/tmp/usr/lib/libkjava.so.*
