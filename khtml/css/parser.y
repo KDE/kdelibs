@@ -132,7 +132,9 @@ static int cssyylex( YYSTYPE *yylval ) {
 %no-lines
 %verbose
 
-%expect 17
+%expect 16
+
+%left UNIMPORTANT_TOK
 
 %token S SGML_CD
 
@@ -153,7 +155,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 %nonassoc '*'
 %left '|'
 
-%token IMPORT_SYM
+%left IMPORT_SYM
 %token PAGE_SYM
 %token MEDIA_SYM
 %token FONT_FACE_SYM
@@ -347,7 +349,7 @@ import:
   ;
 
 maybe_namespace
-  : /* empty */
+  : /* empty */ %prec UNIMPORTANT_TOK
   | namespace maybe_sgml
 ;
 
