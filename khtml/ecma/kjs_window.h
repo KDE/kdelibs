@@ -67,6 +67,7 @@ namespace KJS {
     Completion tryExecute(const List &);
     enum { Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout };
     static void setStatusBarText(KHTMLPart *, const QString &);
+    static void initJScript(KHTMLPart *);
   private:
     const Window *window;
     int id;

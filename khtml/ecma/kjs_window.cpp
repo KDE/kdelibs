@@ -55,6 +55,7 @@ Window *KJS::newWindow(KHTMLPart *p)
 
   w = new Window(p);
   window_dict->insert(p, w);
+  WindowFunc::initJScript(p);
 
   return w;
 }
@@ -325,6 +326,11 @@ void WindowFunc::setStatusBarText(KHTMLPart *p, const QString &s)
   p->setStatusBarText(s);
 }
 
+void WindowFunc::initJScript(KHTMLPart *p)
+{
+  (void)p->jScript(); // dummy call to create an interpreter
+}
+
 WindowQObject::WindowQObject(Window *w)
   : parent(w), timer(0L)
 {
@@ -378,6 +384,9 @@ KJSO FrameArray::get(const UString &p) const
       frame = frames.at(i);
   }
 
+  // we are potentially fetching a reference to a another Window object here.
+  // i.e. we may be accessing objects from another interpreter instance.
+  // Therefore we have to be a bit careful with memory managment.
   if (frame && frame->inherits("KHTMLPart")) {
     const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
     return KJSO(newWindow(const_cast<KHTMLPart*>(khtml)));
