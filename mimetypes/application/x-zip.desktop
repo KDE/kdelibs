@@ -37,6 +37,7 @@ Comment[it]=Archivio Zip
 Comment[ja]=Zip アーカイブ
 Comment[ko]=Zip 저장고
 Comment[lt]=Zip archyvas
+Comment[mk]=Zip архива
 Comment[mn]=Zip-Архив
 Comment[ms]=Arkib Zip
 Comment[mt]=Arkivju Zip
@@ -72,3 +73,7 @@ Comment[xx]=xxZip Archivexx
 Comment[zh_CN]=Zip 归档
 Comment[zh_TW]=Zip 壓縮文件
 Comment[zu]=Umqulu we-Zip
+
+[Property::X-KDE-LocalProtocol]
+Type=QString
+Value=zip
