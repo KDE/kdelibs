@@ -35,7 +35,7 @@
 **
 */
 
-uint KDir::maxReturns = 100;
+uint KDir::maxReturns = 50;
 
 KDir::KDir()
     : QObject(0, "KDir")

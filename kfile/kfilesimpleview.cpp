@@ -228,11 +228,12 @@ bool KFileSimpleView::insertItem(const KFileInfo *i, int index)
 	    pixmaps.insert(index, locked_file);
     }
     
-    for (int j = index / rowsVisible; j < numCols(); j++)
+    int curCol = index / rowsVisible;
+
+    for (int j = curCol; j < numCols(); j++)
 	cellWidths[ j ] = -1; // reset values
     
-    // TODO: find out, if a repaint is really necessary
-    return true;
+    return colIsVisible(curCol) || curCol < leftCell() ;
 }
 
 int KFileSimpleView::cellWidth ( int col )

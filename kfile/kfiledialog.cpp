@@ -688,9 +688,9 @@ void KFileBaseDialog::addDirEntry(KFileInfo *entry, bool disableUpdating)
 	fileList->setAutoUpdate(true);
 	if (repaint_files)
 	    fileList->repaint(true);
+	if ( showStatusLine )
+	  updateStatusLine();
     }
-    if ( showStatusLine )
-	updateStatusLine();
 }
 
 void KFileBaseDialog::slotDirEntry(KFileInfo *entry)
