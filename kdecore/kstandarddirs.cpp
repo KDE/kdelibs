@@ -35,6 +35,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <pwd.h>
+#include <grp.h>
 
 #include <qregexp.h>
 #include <qasciidict.h>
@@ -1253,45 +1254,75 @@ void KStandardDirs::checkConfig() const
 static QStringList lookupProfiles(const QString &mapFile)
 {
     QStringList profiles;
-    
-    QString file = QString::fromLatin1("/var/run/kde-user-profile/%1").arg(getuid());
-    if (QFile::exists(file))
+
+    struct passwd *pw = getpwuid(geteuid());
+    if (!pw)
     {
-        QFile f(file);
-        if (f.open(IO_ReadOnly))
+        profiles << "default";
+        return profiles; // Not good
+    }
+
+    QCString user = pw->pw_name;
+    QCString file = "/var/run/kde-user-profile/"+user;
+    FILE *fs = fopen(file, "r");
+    if (fs)
+    {
+        QTextStream ts(fs, IO_ReadOnly);
+        ts.setEncoding(QTextStream::UnicodeUTF8);
+        while(!ts.atEnd())
         {
-           QTextStream ts(&f);
-           ts.setEncoding(QTextStream::UnicodeUTF8);
-           while(!ts.atEnd())
-           {
-              QString profile = ts.readLine();
-              if (!profile.isEmpty())
-                 profiles << profile;
-           }
+            QString profile = ts.readLine();
+            if (!profile.isEmpty())
+                profiles << profile;
         }
+        fclose(fs);
         return profiles;
     }
 
     if (!mapFile.isEmpty() && QFile::exists(mapFile))
     {
-        KSimpleConfig mapCfg(mapFile);
-        QString user;
-        user.setNum(getuid());
-        if (mapCfg.hasKey(user))
+        KSimpleConfig mapCfg(mapFile, true);
+        mapCfg.setGroup("Users");
+        if (mapCfg.hasKey(user.data()))
         {
-           profiles = mapCfg.readListEntry(user, ':');
-           return profiles; 
+            profiles = mapCfg.readListEntry(user.data(), ':');
+            return profiles; 
+        }
+        
+        QMap<QString, QString> groups = mapCfg.entryMap("Groups");
+        QMap<QString, QString>::Iterator it;
+        for ( it = groups.begin(); it != groups.end(); ++it )
+        {
+            QCString grp = it.key().utf8();
+            // Check if user is in this group
+            struct group *grp_ent = getgrnam(grp);
+            if (!grp_ent) continue;
+
+            char ** members = grp_ent->gr_mem;
+            for(char * member; (member = *members); ++members)
+            {
+                if (user == member)
+                {
+                    // User is in this group --> add profiles
+                    profiles += QStringList::split(":", it.data());
+                    break;
+                }
+            }
         }
     }
 
-    profiles << "default";
+    if (profiles.isEmpty())
+        profiles << "default";
     return profiles;
 }
 
 bool KStandardDirs::addCustomized(KConfig *config)
 {
     if (addedCustoms) // there are already customized entries
-        return false; // we just quite and hope they are the right ones
+        return false; // we just quit and hope they are the right ones
+
+    // save it for future calls - that will return
+    addedCustoms = true;
 
     // save the numbers of config directories. If this changes,
     // we will return true to give KConfig a chance to reparse
@@ -1356,8 +1387,6 @@ bool KStandardDirs::addCustomized(KConfig *config)
         }
     }
 
-    // save it for future calls - that will return
-    addedCustoms = true;
     config->setGroup(oldGroup);
 
     // return true if the number of config dirs changed
