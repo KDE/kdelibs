@@ -787,14 +787,14 @@ public:
    *        changes to disk even if it is destroyed or @ref sync() is called.
    *
    */
-   void setReadOnly(bool _ro) { bReadOnly = _ro; }
+  virtual void setReadOnly(bool _ro) { bReadOnly = _ro; }
 
    /**
     * Queries the read-only status of the config object.
     *
     * @return The read-only status.
     */
-   bool isReadOnly() const { return bReadOnly; }
+  bool isReadOnly() const { return bReadOnly; }
 
   /**
    * Check whether the key has an entry in the currently active group.
@@ -867,14 +867,14 @@ protected:
    *
    * @param _bDirty How to mark the object's dirty status
    */
-  void setDirty(bool _bDirty = true) { bDirty = _bDirty; }
+  virtual void setDirty(bool _bDirty = true) { bDirty = _bDirty; }
 
   /**
    * Parse all configuration files for a configuration object.
    *
    * The actual parsing is done by the associated KConfigBackEnd.
    */
-  void parseConfigFiles();
+  virtual void parseConfigFiles();
 
   /**
    * Returns an map (tree) of the entries in the specified group.
