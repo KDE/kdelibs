@@ -36,6 +36,7 @@
 #include <kxmlguifactory.h>
 #include <klocale.h>
 #include <kconfig.h>
+#include <ksimpleconfig.h>
 
 using namespace KParts;
 
@@ -233,6 +234,17 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
 
         // Check configuration
         QString name = docElem.attribute( "name" );
+        QString desktopfile = instance->dirs()->findResource( "data",
+                QString( instance->instanceName() ) + "/kpartplugins/" + name +
+                ".desktop" );
+        kdDebug( 1000 ) << "loadPlugins found desktopfile for " << instance->instanceName() << ": " << desktopfile << endl;
+        if( ! desktopfile.isNull() )
+        {
+            KSimpleConfig desktop( desktopfile );
+            desktop.setGroup( "X-KDE Plugin Info" );
+            enableNewPluginsByDefault = desktop.readBoolEntry(
+                    "EnabledByDefault", enableNewPluginsByDefault );
+        }
         bool pluginEnabled = cfgGroup.readBoolEntry( name + "Enabled", enableNewPluginsByDefault );
 
         // search through already present plugins

@@ -109,7 +109,8 @@ public:
      * This method uses the KConfig object of the given instance, to find out which
      * plugins are enabled and which are disabled. What happens by default (i.e.
      * for new plugins that are not in that config file) is controlled by
-     * @p enableNewPluginsByDefault.
+     * @p enableNewPluginsByDefault. It can be overridden by the plugin if it
+     * sets the EnabledByDefault key in the .desktop file.
      *
      * If a disabled plugin is already loaded it will be removed from the GUI
      * factory and deleted.

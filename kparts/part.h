@@ -94,10 +94,30 @@ protected:
    */
   virtual void setInstance( KInstance *instance, bool loadPlugins );
 
+  /**
+   * We have three different policies, whether to load new plugins or not. The
+   * value in the KConfig object of the KInstance object always overrides
+   * LoadPlugins and LoadPluginsIfEnabled.
+   */
   enum PluginLoadingMode {
+    /**
+     * Don't load any plugins at all.
+     */
     DoNotLoadPlugins = 0,
-    LoadPlugins = 1,         // load new plugins automatically
-    LoadPluginsIfEnabled = 2 // new plugins are disabled by default
+    /**
+     * Load new plugins automatically. Can be
+     * overridden by the plugin if it sets
+     * EnabledByDefault=false in the corresponding
+     * .desktop file.
+     */
+    LoadPlugins = 1,
+    /**
+     * New plugins are disabled by default. Can be
+     * overridden by the plugin if it sets
+     * EnabledByDefault=true in the corresponding
+     * .desktop file.
+     */
+    LoadPluginsIfEnabled = 2
   };
 
   /**
