@@ -62,7 +62,9 @@ namespace KStdAccel
     RotateUp, RotateDown,
 
     // Tabular navigation since 3.2
-    TabNext, TabPrev
+    TabNext, TabPrev,
+    // Full screen mode since 3.2
+    FullScreen
 
 #ifndef KDE_NO_COMPAT
     , WhatThis = WhatsThis
@@ -303,6 +305,13 @@ namespace KStdAccel
    * @since 3.2
    */
   const KShortcut& tabPrev();
+
+  /**
+   * Full Screen Mode. Default: Ctrl+Shift+F
+   * @return the shortcut of the standard accelerator
+   * @since 3.2
+   */
+  const KShortcut& fullScreen();
 
   /**
    * Help the user in the current situation. Default: F1

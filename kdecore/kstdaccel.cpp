@@ -81,6 +81,7 @@ static KStdAccelInfo g_infoStdAccel[] =
 	{ Reload,              I18N_NOOP("Reload"), 0,   Qt::Key_F5, 0, 0, 0, KShortcut(), false },
 	{ PopupMenuContext,    "PopupMenuContext", I18N_NOOP("Popup Menu Context"), Qt::Key_Menu, 0, 0, 0, KShortcut(), false },
 	{ ShowMenubar,         "ShowMenubar", I18N_NOOP("Show Menu Bar"), Qt::CTRL+Qt::Key_M, 0, 0, 0, KShortcut(), false },
+	{ FullScreen,          "FullScreen", I18N_NOOP("Full Screen Mode"), Qt::CTRL+Qt::SHIFT+Qt::Key_F, 0, 0, 0, KShortcut(), false },
 	{AccelNone,            "Group:Help", I18N_NOOP("Help"), 0, 0, 0, 0, KShortcut(), false },
 	{ Help,                I18N_NOOP("Help"), 0,     Qt::Key_F1, 0, 0, 0, KShortcut(), false },
 	{ WhatsThis,           "WhatsThis", I18N_NOOP("What's This"), Qt::SHIFT+Qt::Key_F1, 0, 0, 0, KShortcut(), false },
@@ -273,6 +274,7 @@ const KShortcut& gotoLine()              { return shortcut( GotoLine ); }
 const KShortcut& addBookmark()           { return shortcut( AddBookmark ); }
 const KShortcut& tabNext()               { return shortcut( TabNext ); }
 const KShortcut& tabPrev()               { return shortcut( TabPrev ); }
+const KShortcut& fullScreen()            { return shortcut( FullScreen ); }
 const KShortcut& zoomIn()                { return shortcut( ZoomIn ); }
 const KShortcut& zoomOut()               { return shortcut( ZoomOut ); }
 const KShortcut& help()                  { return shortcut( Help ); }
