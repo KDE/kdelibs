@@ -85,12 +85,6 @@ public:
     long value() const { return m_marker->m_value; }
     void setValue( long v ) { predefVal = v; }
     void calcListValue();
-    bool checkChildren() const;
-
-    virtual void print(QPainter *p, int x, int y, int w, int h,
-                       int xoff, int yoff);
-    virtual void printObject(QPainter *p, int x, int y, int w, int h,
-                       int xoff, int yoff);
 
     virtual void layout( );
 

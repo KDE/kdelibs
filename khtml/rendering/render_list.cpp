@@ -132,10 +132,6 @@ void RenderListItem::setStyle(RenderStyle *_style)
 
     RenderStyle *newStyle = new RenderStyle();
     newStyle->inheritFrom(style());
-    if(newStyle->direction() == LTR)
-        newStyle->setFloating(FLEFT);
-    else
-        newStyle->setFloating(FRIGHT);
 
     if(!m_marker && style()->listStyleType() != LNONE) {
 
@@ -177,74 +173,14 @@ void RenderListItem::calcListValue()
     }
 }
 
-
 void RenderListItem::layout( )
 {
     KHTMLAssert( !layouted() );
     KHTMLAssert( minMaxKnown() );
 
-    if ( !checkChildren() ) {
-        m_height = 0;
-        //kdDebug(0) << "empty item" << endl;
-        return;
-    }
     if (m_marker && !m_marker->layouted())
         m_marker->layout();
     RenderFlow::layout();
-}
-
-// this function checks if there is other rendered contents in the list item than a marker. If not, the whole
-// list item will not get printed.
-bool RenderListItem::checkChildren() const
-{
-    //kdDebug(0) << " checkCildren" << endl;
-    if(!firstChild())
-        return false;
-    RenderObject *o = firstChild();
-    while(o->firstChild())
-        o = o->firstChild();
-    while (!o->nextSibling() && o->parent() != static_cast<const RenderObject*>(this))
-        o = o->parent();
-    //o = o->nextSibling();
-    while( o ) {
-        //kdDebug(0) << "checking " << renderName() << endl;
-        if ( o->isText() || o->isReplaced() ) {
-            //kdDebug(0) << "found" << endl;
-            return true;
-        }
-        RenderObject *next = o->firstChild();
-        if ( !next )
-            next = o->nextSibling();
-        while ( !next && o->parent() != static_cast<const RenderObject*>(this) ) {
-            o = o->parent();
-            next =  o->nextSibling();
-        }
-        if( !next )
-            break;
-        o = next;
-    }
-    //kdDebug(0) << "not found" << endl;
-    return false;
-}
-
-void RenderListItem::print(QPainter *p, int _x, int _y, int _w, int _h,
-                             int _tx, int _ty)
-{
-    if ( !m_height )
-        return;
-
-#ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << nodeName().string() << "(LI)::print()" << endl;
-#endif
-    RenderFlow::print(p, _x, _y, _w, _h, _tx, _ty);
-}
-
-void RenderListItem::printObject(QPainter *p, int _x, int _y,
-                                    int _w, int _h, int _tx, int _ty)
-{
-    // ### this should scale with the font size in the body... possible?
-    //m_marker->printIcon(p, _tx, _ty);
-    RenderFlow::printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
 // -----------------------------------------------------------
@@ -313,10 +249,10 @@ void RenderListMarker::printObject(QPainter *p, int, int _y,
             if (_ty < rootObj->truncatedAt())
                 rootObj->setTruncatedAt(_ty);
             // Let's print this on the next page.
-            return; 
+            return;
         }
     }
-    
+
 
     int xoff = 0;
     int yoff = fm.ascent() - offset;
