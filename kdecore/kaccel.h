@@ -133,14 +133,20 @@ class KAccel : public QAccel
 	void setEnabled( bool bEnabled );
 
 	/**
-	 * @internal
-	 * (this function gets a flag, but it is used nowhere??)
+	 * Checks whether auto-update of connections is enabled.
+	 * @return true if auto-update is enabled (the default)
+	 * @see setAutoUpdate()
 	 */
 	bool getAutoUpdate();
-	// return value of AutoUpdate flag before this call.
+
 	/**
-	 * @internal
-	 * (this function sets a flag, but it is used nowhere??)
+	 * Enable auto-update of connections. This means that the signals
+	 * are automatically disconnected when you disable an action, and
+	 * re-enabled when you enable it. By default auto update is turned 
+	 * on.
+	 *
+	 * @param bAuto true to enable, false to disable
+	 * @return the value of the flag before this call
 	 */
 	bool setAutoUpdate( bool bAuto );
 
