@@ -32,24 +32,25 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
  : m_resourceList(0), m_entryDict(0), m_sycocaDict(0)
 {
   if (!KSycoca::self()->isBuilding()) // read-only database ?
-   {
+  {
       m_str = KSycoca::self()->findFactory( factory_id );
       // can't call factoryId() here since the constructor can't call inherited methods
-      if (!m_str) return; // No database!
+      if (m_str) // Can be 0 in case of errors
+      {
+          // Read position of index tables....
+          Q_INT32 i;
+          (*m_str) >> i;
+          m_sycocaDictOffset = i;
+          (*m_str) >> i;
+          m_beginEntryOffset = i;
+          (*m_str) >> i;
+          m_endEntryOffset = i;
 
-      // Read position of index tables....
-      Q_INT32 i;
-      (*m_str) >> i;
-      m_sycocaDictOffset = i;
-      (*m_str) >> i;
-      m_beginEntryOffset = i;
-      (*m_str) >> i;
-      m_endEntryOffset = i;
-
-      int saveOffset = m_str->device()->at();
-      // Init index tables
-      m_sycocaDict = new KSycocaDict(m_str, m_sycocaDictOffset);   
-      saveOffset = m_str->device()->at(saveOffset);
+          int saveOffset = m_str->device()->at();
+          // Init index tables
+          m_sycocaDict = new KSycocaDict(m_str, m_sycocaDictOffset);   
+          saveOffset = m_str->device()->at(saveOffset);
+      }
    }
    else
    {
