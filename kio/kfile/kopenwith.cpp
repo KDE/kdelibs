@@ -649,10 +649,27 @@ void KOpenWithDlg::slotOK()
   // association to be remembered.  Create/update service.
 
   kdDebug(250) << "service pathName=" << pathName << endl;
-  if (pathName.right(8) != QString::fromLatin1(".desktop"))
+  if (!pathName.endsWith(".desktop"))
     pathName += QString::fromLatin1(".desktop");
-  QString path(locateLocal("apps", pathName));
-
+    
+  QString path;
+  if (!pathName.startsWith("/"))
+  {
+    path = locateLocal("apps", pathName); // Relative to apps
+  }
+  else
+  {
+    // XDG Desktop menu items come with absolute paths, we need to 
+    // extract their relative path and then build a local path.
+    path = KGlobal::dirs()->relativeLocation("xdgdata-apps", pathName);
+    if (path.startsWith("/"))
+    {
+      // What now? Use filename only and hope for the best.
+      path = pathName.mid(pathName.findRev('/')+1);
+    }
+    path = locateLocal("xdgdata-apps", path);
+  }
+  
   int maxPreference = 1;
   if (!qServiceType.isEmpty())
   {
@@ -661,42 +678,55 @@ void KOpenWithDlg::slotOK()
       maxPreference = offerList.first().preference();
   }
 
-  KDesktopFile desktop(path);
-  desktop.writeEntry(QString::fromLatin1("Type"), QString::fromLatin1("Application"));
-  desktop.writeEntry(QString::fromLatin1("Name"), initialServiceName);
-  desktop.writeEntry(QString::fromLatin1("Exec"), fullExec);
-  if (terminal->isChecked())
+  KConfig *desktop = 0;
+  if (pathName != path)
   {
-    desktop.writeEntry(QString::fromLatin1("Terminal"), true);
-    // only add --noclose when we are sure it is konsole we're using
-    if (preferredTerminal == "konsole" && nocloseonexit->isChecked())
-      desktop.writeEntry(QString::fromLatin1("TerminalOptions"), "--noclose");
+     KConfig orig(pathName, true, false, "apps");
+     desktop = orig.copyTo(path);
   }
   else
-    desktop.writeEntry(QString::fromLatin1("Terminal"), false);
-  desktop.writeEntry(QString::fromLatin1("InitialPreference"), maxPreference + 1);
+  {
+     desktop = new KConfig(pathName, false, false, "apps");
+  }
+  desktop->setDesktopGroup();
+  desktop->writeEntry("Type", QString::fromLatin1("Application"));
+  desktop->writeEntry("Name", initialServiceName);
+  desktop->writeEntry("Exec", fullExec);
+  if (terminal->isChecked())
+  {
+    desktop->writeEntry("Terminal", true);
+    // only add --noclose when we are sure it is konsole we're using
+    if (preferredTerminal == "konsole" && nocloseonexit->isChecked())
+      desktop->writeEntry("TerminalOptions", "--noclose");
+  }
+  else
+  {
+    desktop->writeEntry("Terminal", false);
+  }
+  desktop->writeEntry("InitialPreference", maxPreference + 1);
 
   if (remember)
     if (remember->isChecked()) {
       QStringList mimeList;
       KDesktopFile oldDesktop(locate("apps", pathName), true);
-      mimeList = oldDesktop.readListEntry(QString::fromLatin1("MimeType"), ';');
+      mimeList = oldDesktop.readListEntry("MimeType", ';');
       if (!qServiceType.isEmpty() && !mimeList.contains(qServiceType))
         mimeList.append(qServiceType);
-      desktop.writeEntry(QString::fromLatin1("MimeType"), mimeList, ';');
+      desktop->writeEntry("MimeType", mimeList, ';');
 
       if ( !qServiceType.isEmpty() )
       {
         // Also make sure the "auto embed" setting for this mimetype is off
         KDesktopFile mimeDesktop( locateLocal( "mime", qServiceType + ".desktop" ) );
-        mimeDesktop.writeEntry( QString::fromLatin1( "X-KDE-AutoEmbed" ), false );
+        mimeDesktop.writeEntry( "X-KDE-AutoEmbed", false );
         mimeDesktop.sync();
       }
     }
 
 
   // write it all out to the file
-  desktop.sync();
+  desktop->sync();
+  delete desktop;
 
   QApplication::setOverrideCursor( waitCursor );
 
