@@ -21,7 +21,7 @@
 #include "knotifyclient.h"
 
 #include <qdatastream.h>
-#include <qstack.h>
+#include <qptrstack.h>
 
 #include <kstddirs.h>
 #include <kconfig.h>
@@ -222,7 +222,7 @@ public:
 	}
 	
 private:
-	QStack<Instance> m_instances;
+	QPtrStack<Instance> m_instances;
 	Instance *m_defaultInstance;
 };
 

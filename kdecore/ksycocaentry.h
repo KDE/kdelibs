@@ -22,7 +22,6 @@
 #include "ksycocatype.h"
 
 #include <qdatastream.h>
-#include <qlist.h>
 #include <qvaluelist.h>
 #include <ksharedptr.h>
 

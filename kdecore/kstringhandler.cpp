@@ -486,11 +486,9 @@ KStringHandler::perlSplit(const QRegExp & sep, const QString & s, uint max)
 
   QStringList l;
 
-  int len = 0;
-
   int searchStart = 0;
-
-  int tokenStart = sep.match(s, searchStart, &len);
+  int tokenStart = sep.search(s, searchStart);
+  int len = sep.matchedLength();
 
   while (-1 != tokenStart && (ignoreMax || l.count() < max - 1))
   {
@@ -498,7 +496,8 @@ KStringHandler::perlSplit(const QRegExp & sep, const QString & s, uint max)
       l << s.mid(searchStart, tokenStart - searchStart);
 
     searchStart = tokenStart + len;
-    tokenStart = sep.match(s, searchStart, &len);
+    tokenStart = sep.search(s, searchStart);
+    len = sep.matchedLength();
   }
 
   if (!s.mid(searchStart, s.length() - searchStart).isEmpty())

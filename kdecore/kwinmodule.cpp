@@ -65,7 +65,7 @@ public:
     {
     }
 
-    QList<KWinModule> modules;
+    QPtrList<KWinModule> modules;
     KWinModule* module;
 
     QValueList<WId> windows;

@@ -19,7 +19,7 @@
 #include "ksycocadict.h"
 #include "ksycocaentry.h"
 
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qvaluelist.h>
 #include <kdebug.h>
 #include <stdlib.h>
@@ -34,9 +34,9 @@ struct string_entry {
   KSycocaEntry *payload;
 };
 
-template class QList<string_entry>;
+template class QPtrList<string_entry>;
 
-class KSycocaDictStringList : public QList<string_entry>
+class KSycocaDictStringList : public QPtrList<string_entry>
 {
 public:
    KSycocaDictStringList();
@@ -335,7 +335,7 @@ KSycocaDict::save(QDataStream &str)
 
    struct hashtable_entry {
       string_entry *entry;
-      QList<string_entry> *duplicates;
+      QPtrList<string_entry> *duplicates;
       int duplicate_offset;
    };
 
@@ -360,7 +360,7 @@ KSycocaDict::save(QDataStream &str)
       {
          if (!hashTable[hash].duplicates)
          { // Second entry, build duplicate list.
-            hashTable[hash].duplicates = new QList<string_entry>();
+            hashTable[hash].duplicates = new QPtrList<string_entry>();
             hashTable[hash].duplicates->append(hashTable[hash].entry);
             hashTable[hash].duplicate_offset = 0;
          }
@@ -397,7 +397,7 @@ KSycocaDict::save(QDataStream &str)
       {
          if (hashTable[i].duplicates)
          {
-            QList<string_entry> *dups = hashTable[i].duplicates;
+            QPtrList<string_entry> *dups = hashTable[i].duplicates;
             hashTable[i].duplicate_offset = str.device()->at();
 
             /*kdDebug(7011) << QString("Duplicate lists: Offset = %1 list_size = %2")                           .arg(hashTable[i].duplicate_offset,8,16).arg(dups->count()) << endl;

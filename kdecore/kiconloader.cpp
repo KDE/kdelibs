@@ -55,7 +55,7 @@ public:
     void printTree(QString& dbgString) const;
 
     KIconTheme *theme;
-    QList<KIconThemeNode> links;
+    QPtrList<KIconThemeNode> links;
 };
 
 KIconThemeNode::KIconThemeNode(KIconTheme *_theme)
@@ -74,7 +74,7 @@ void KIconThemeNode::printTree(QString& dbgString) const
     dbgString += "(";
     dbgString += theme->name();
     bool first;
-    QListIterator<KIconThemeNode> it(links);
+    QPtrListIterator<KIconThemeNode> it(links);
     for (first=true ; it.current(); ++it, first=false)
     {
 	if (first) dbgString += ": ";
@@ -89,7 +89,7 @@ void KIconThemeNode::queryIcons(QStringList *result,
 {
     // add the icons of this theme to it
     *result += theme->queryIcons(size, context);
-    QListIterator<KIconThemeNode> it(links);
+    QPtrListIterator<KIconThemeNode> it(links);
     for (; it.current(); ++it) // recursivly going down
 	it.current()->queryIcons(result, size, context);
 }
@@ -99,7 +99,7 @@ void KIconThemeNode::queryIconsByContext(QStringList *result,
 {
     // add the icons of this theme to it
     *result += theme->queryIconsByContext(size, context);
-    QListIterator<KIconThemeNode> it(links);
+    QPtrListIterator<KIconThemeNode> it(links);
     for (; it.current(); ++it) // recursivly going down
 	it.current()->queryIconsByContext(result, size, context);
 }
@@ -112,7 +112,7 @@ KIcon KIconThemeNode::findIcon(const QString& name, int size,
     if (icon.isValid())
 	return icon;
 
-    QListIterator <KIconThemeNode> it(links);
+    QPtrListIterator <KIconThemeNode> it(links);
     for (; it.current(); ++it)
     {
 	icon = it.current()->findIcon(name, size, match);

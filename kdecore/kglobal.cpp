@@ -144,7 +144,7 @@ KGlobal::staticQString(const QString &str)
    return *result;
 }
 
-class KStaticDeleterList: public QList<KStaticDeleterBase>
+class KStaticDeleterList: public QPtrList<KStaticDeleterBase>
 {
 public:
    KStaticDeleterList() { };

@@ -139,7 +139,7 @@ bool kde_have_kipc = true; // magic hook to disable kipc in kdm
 KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
 
-template class QList<KSessionManaged>;
+template class QPtrList<KSessionManaged>;
 
 #ifdef Q_WS_X11
 extern "C" {
@@ -449,13 +449,13 @@ public:
 };
 
 
-static QList<QWidget>*x11Filter = 0;
+static QPtrList<QWidget>*x11Filter = 0;
 void KApplication::installX11EventFilter( QWidget* filter )
 {
     if ( !filter )
         return;
     if (!x11Filter)
-        x11Filter = new QList<QWidget>;
+        x11Filter = new QPtrList<QWidget>;
     connect ( filter, SIGNAL( destroyed() ), this, SLOT( x11FilterDestroyed() ) );
     x11Filter->append( filter );
 }
@@ -539,11 +539,11 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
 
 
 // the help class for session management communication
-static QList<KSessionManaged>* sessionClients()
+static QPtrList<KSessionManaged>* sessionClients()
 {
-    static QList<KSessionManaged>* session_clients = 0L;
+    static QPtrList<KSessionManaged>* session_clients = 0L;
     if ( !session_clients )
-        session_clients = new QList<KSessionManaged>;
+        session_clients = new QPtrList<KSessionManaged>;
     return session_clients;
 }
 

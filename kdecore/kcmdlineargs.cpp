@@ -69,14 +69,14 @@ public:
    { return QGDict::read(s); }
 
 protected:
-   virtual QDataStream& write( QDataStream &s, QCollection::Item data) const
+   virtual QDataStream& write( QDataStream &s, QPtrCollection::Item data) const
    {
       QCString *str = (QCString *) data;
       s << (*str);
       return s;
    }
 
-   virtual QDataStream& read( QDataStream &s, QCollection::Item &item)
+   virtual QDataStream& read( QDataStream &s, QPtrCollection::Item &item)
    {
       QCString *str = new QCString;
       s >> (*str);

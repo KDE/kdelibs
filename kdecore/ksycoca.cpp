@@ -40,7 +40,7 @@
 #include <sys/mman.h>
 #endif
 
-template class QList<KSycocaFactory>;
+template class QPtrList<KSycocaFactory>;
 
 struct KSycocaPrivate {
     KSycocaPrivate() {

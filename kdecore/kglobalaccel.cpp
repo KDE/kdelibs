@@ -573,7 +573,7 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 		return false;
 	} else {
 		QRegExp r1( "([ ]*int[ ]*)" ), r2( " [0-9]+$" );
-		if( r1.match( entry.member ) >= 0 && r2.match( sConfigKey ) >= 0 ) {
+		if( r1.search( entry.member ) >= 0 && r2.search( sConfigKey ) >= 0 ) {
 			int n = sConfigKey.mid( sConfigKey.findRev(' ')+1 ).toInt();
 			kdDebug(125) << "Calling " << entry.member << " int = " << n << endl;
 			connect( this, SIGNAL( activated( int ) ),
