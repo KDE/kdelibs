@@ -94,12 +94,12 @@ style="position : absolute;
           </xsl:choose>
        </td>
        <td align="right" class="right">
-	   <xsl:if test="count($prev)>0">
+	   <xsl:if test="count($next)>0">
               <a>
-                <xsl:attribute name="href"><!-- generates an error message in object.id 
+                <xsl:attribute name="href">
                   <xsl:call-template name="href.target">
                     <xsl:with-param name="object" select="$next"/>
-                  </xsl:call-template>-->
+                  </xsl:call-template>
                 </xsl:attribute>
                 <xsl:call-template name="gentext.nav.next"/>
               </a>
