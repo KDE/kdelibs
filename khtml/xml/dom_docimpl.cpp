@@ -1102,15 +1102,10 @@ void DocumentImpl::detach()
     delete m_tokenizer;
     m_tokenizer = 0;
 
-    QTime t;
-    t.start();
-
     NodeBaseImpl::detach();
 
     if ( render )
         render->detach();
-
-    qDebug( "*** DETACH TOOK %d", t.elapsed() );
 
     m_view = 0;
 
