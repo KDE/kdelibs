@@ -37,8 +37,8 @@ KDirListerTest::KDirListerTest( QWidget *parent, const char *name )
   connect( setURL, SIGNAL( clicked() ), SLOT( setURL() ) );
   connect( test, SIGNAL( clicked() ), SLOT( test() ) );
 
-  debug->connect( lister, SIGNAL( started( const QString & ) ),
-                           SLOT( started( const QString & ) ) );
+  debug->connect( lister, SIGNAL( started( const KURL & ) ),
+                           SLOT( started( const KURL & ) ) );
   debug->connect( lister, SIGNAL( completed() ),
                            SLOT( completed() ) );
   debug->connect( lister, SIGNAL( completed( const KURL & ) ),

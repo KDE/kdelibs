@@ -24,38 +24,39 @@ public:
    PrintSignals() : QObject() { }
 
 public slots:
-   void started( const QString &url )
+   void started( const KURL &url )
    {
-      cout << "*** started( " << url.latin1() << " )" << endl;
+      cout << "*** started( " << url.url().local8Bit() << " )" << endl;
    }
    void canceled() { cout << "canceled()" << endl; }
    void canceled( const KURL& url )
    {
-      cout << "*** canceled( " << url.prettyURL().latin1() << " )" << endl;
+      cout << "*** canceled( " << url.prettyURL().local8Bit() << " )" << endl;
    }
    void completed() { cout << "*** completed()" << endl; }
    void completed( const KURL& url )
    {
-      cout << "*** completed( " << url.prettyURL().latin1() << " )" << endl;
+      cout << "*** completed( " << url.prettyURL().local8Bit() << " )" << endl;
    }
    void redirection( const KURL& url )
    {
-      cout << "*** redirection( " << url.prettyURL().latin1() << " )" << endl;
+      cout << "*** redirection( " << url.prettyURL().local8Bit() << " )" << endl;
    }
    void redirection( const KURL& src, const KURL& dest )
    {
-      cout << "*** redirection( " << src.prettyURL().latin1() << ", "
-           << dest.prettyURL().latin1() << " )" << endl;
+      cout << "*** redirection( " << src.prettyURL().local8Bit() << ", "
+           << dest.prettyURL().local8Bit() << " )" << endl;
    }
    void clear() { cout << "*** clear()" << endl; }
    void newItems( const KFileItemList& items )
    {
       cout << "*** newItems: " << endl;
-      // TODO
+      for ( KFileItemListIterator it( items ) ; it.current() ; ++it )
+          cout << it.current()->name().local8Bit() << endl;
    }
    void deleteItem( KFileItem* item )
    {
-      cout << "*** deleteItem: " << item->url().prettyURL().latin1() << endl;
+      cout << "*** deleteItem: " << item->url().prettyURL().local8Bit() << endl;
    }
    void itemsFilteredByMime( const KFileItemList& items )
    {
