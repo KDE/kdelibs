@@ -1072,9 +1072,10 @@ void KeramikStyle::drawControl( ControlElement element,
 			{
 				if ( enabled )
 					Keramik::RowPainter( keramik_menuitem ).draw( p, main, cg.highlight(), cg.background() );
-				else
+				else {
+					p->fillRect( main, cg.background().light( 105 ) );
 					p->drawWinFocusRect( r );
-				//p->fillRect(main.x(), main.y(), main.width(), main.height(), cg.brush(QColorGroup::Highlight) );
+				}
 			}
 			// Draw the transparency pixmap
 			else if ( widget->erasePixmap() && !widget->erasePixmap()->isNull() )
