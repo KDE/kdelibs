@@ -2,6 +2,17 @@
 Type=KRL
 Header=DUMMYKRLREGEXP
 Name=KRL-Images
+Name[da]=Krl billeder
+Name[de]=KRL-Bilder
+Name[eo]=KRL-bildoj
+Name[fi]=KRL-kuvat
+Name[he]=KRL תונומת
+Name[it]=Immagini KRL
+Name[nl]=KRL-afbeeldingen
+Name[pt]=Imagens KRL
+Name[pt_BR]=Imagens KRL
+Name[sl]=Slike KRL
+Name[sv]=KRL-bilder
 Read=true
 Write=true
 Suffices=
