@@ -265,7 +265,7 @@ void KStandardDirs::addKDEDefaults() {
     
     addResourceType("html", "share/doc/HTML/");
     addResourceType("icon", "share/icons/");
-    addResourceType("mini", "share/icons/mini");
+    addResourceType("mini", "share/icons/mini/");
     addResourceType("applnk", "share/applnk/");
     addResourceType("sound", "share/sounds/");
     addResourceType("data", "share/apps/");
