@@ -9,7 +9,7 @@ noinst_HEADERS = javaembed.h kjavaappletwidget.h kqeventutil.h kxeventutil.h \
                  kjavaapplet.h kjavaappletcontext.h \
                  kjavaappletserver.h kjavaprocess.h kjavaappletviewer.h
 
-libkjava_la_METASOURCES = AUTO
+METASOURCES = AUTO
 
 libkjava_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined
 libkjava_la_LIBADD = $(LIB_KPARTS)
@@ -28,6 +28,5 @@ kjavaappletviewer_la_SOURCES= kjavaapplet.cpp kjavaappletcontext.cpp \
 
 kjavaappletviewer_la_LDFLAGS= $(all_libraries) -module $(KDE_PLUGIN)
 kjavaappletviewer_la_LIBADD= $(LIB_KPARTS)
-kjavaappletviewer_la_METASOURCES=kjavaappletviewer.moc
 
 kde_services_DATA= kjavaappletviewer.desktop
