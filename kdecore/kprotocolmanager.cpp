@@ -304,6 +304,20 @@ bool KProtocolManager::useCache()
   return config.readBoolEntry( "UseCache", true );
 }
 
+int KProtocolManager::maxCacheAge()
+{
+  KConfig config("kioslaverc", true, false);
+  config.setGroup( "Cache Settings" );
+  return config.readNumEntry( "MaxCacheAge", 60*60*24*14 ); // 14 days
+}
+
+int KProtocolManager::maxCacheSize()
+{
+  KConfig config("kioslaverc", true, false);
+  config.setGroup( "Cache Settings" );
+  return config.readNumEntry( "MaxCacheSize", 5000 );
+}
+
 QString KProtocolManager::ftpProxy()
 {
   KConfig config("kioslaverc", true, false);

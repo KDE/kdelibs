@@ -56,6 +56,8 @@ public:
   static QString noProxyFor();
 
   static bool useCache();
+  static int maxCacheAge();  // Maximum cache age in seconds.
+  static int maxCacheSize(); // Maximum cache size in Kb.
 
   /**
    * Sets timeout for read operations. This applies to ftp and http connections.
