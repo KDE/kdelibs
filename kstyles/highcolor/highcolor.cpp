@@ -212,7 +212,8 @@ void HighColorStyle::unPolish(QWidget* widget)
 
 
 /* reimp. */
-void HighColorStyle::renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg ) const
+void HighColorStyle::renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg,
+		const QPopupMenu* /* popup */ ) const
 {
 	QColor col = cg.button();
 
@@ -1249,7 +1250,7 @@ void HighColorStyle::drawControl( ControlElement element,
 			// Draw a solid background
 			else
 				p->fillRect( r, cg.button() );
-				
+
 			// Do we have an icon?
 			if ( mi->iconSet() ) {
 				QIconSet::Mode mode;

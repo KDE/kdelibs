@@ -4,6 +4,9 @@
  * KStyle
  * Copyright (C) 2001-2002 Karol Szwed <gallium@kde.org>
  *
+ * QWindowsStyle CC_ListView and style images were kindly donated by TrollTech,
+ * Copyright (C) 1998-2000 TrollTech AS.
+ * 
  * Many thanks to Bradley T. Hughes for the 3 button scrollbar code.
  * 
  * This library is free software; you can redistribute it and/or
@@ -26,7 +29,10 @@
 #endif
 
 #include <qapplication.h>
+#include <qbitmap.h>
+#include <qcleanuphandler.h>
 #include <qimage.h>
+#include <qlistview.h>
 #include <qmenubar.h>
 #include <qpainter.h>
 #include <qpixmap.h>
@@ -68,7 +74,7 @@ class TransparencyHandler : public QObject
 
 	protected:
 		void blendToColor(const QColor &col);
-		void blendToPixmap(const QColorGroup &cg);
+		void blendToPixmap(const QColorGroup &cg, const QPopupMenu* p);
 #ifdef HAVE_XRENDER
 		void XRenderBlendToPixmap(const QPopupMenu* p);
 #endif
@@ -115,7 +121,6 @@ KStyle::KStyle( KStyleFlags flags, KStyleScrollBarType sbtype )
 	d->menuAltKeyNavigation = settings.readBoolEntry("/KStyle/Settings/MenuAltKeyNavigation", true);
 	d->menuHandler = NULL;
 
-//	if (d->highcolor && useMenuTransparency) {
 	if (useMenuTransparency) {
 		QString effectEngine = settings.readEntry("/KStyle/Settings/MenuTransparencyEngine", "Disabled");
 
@@ -211,7 +216,8 @@ KStyle::KStyleFlags KStyle::styleFlags() const
 	return d->flags;
 }
 
-void KStyle::renderMenuBlendPixmap( KPixmap &pix, const QColorGroup &cg ) const
+void KStyle::renderMenuBlendPixmap( KPixmap &pix, const QColorGroup &cg,
+	const QPopupMenu* /* popup */ ) const
 {
 	pix.fill(cg.button());	// Just tint as the default behaviour
 }
@@ -287,6 +293,108 @@ void KStyle::drawKStylePrimitive( KStylePrimitive kpe,
 			break;
 		}
 
+
+		/*
+		 * KPE_ListViewExpander and KPE_ListViewBranch are based on code from
+		 * QWindowStyle's CC_ListView, kindly donated by TrollTech.
+		 * CC_ListView code is Copyright (C) 1998-2000 TrollTech AS.
+		 */
+
+		case KPE_ListViewExpander: {
+			// Typical Windows style expand/collapse element.
+			int radius = (r.width() - 4) / 2;
+			int centerx = r.x() + r.width()/2;
+			int centery = r.y() + r.height()/2;
+
+			// Outer box
+			p->setPen( cg.mid() );
+			p->drawRect( r );
+
+			// plus or minus
+			p->setPen( cg.text() );
+			p->drawLine( centerx - radius, centery, centerx + radius, centery );
+			if ( flags & Style_On )	// Collapsed = On
+				p->drawLine( centerx, centery - radius, centerx, centery + radius );
+			break;
+		}
+
+		case KPE_ListViewBranch: {
+			// Typical Windows style listview branch element (dotted line).
+
+			static QBitmap *verticalLine = 0, *horizontalLine = 0;
+			static QCleanupHandler<QBitmap> qlv_cleanup_bitmap;
+
+			// Create the dotline pixmaps if not already created
+			if ( !verticalLine ) 
+			{
+				// make 128*1 and 1*128 bitmaps that can be used for
+				// drawing the right sort of lines.
+				verticalLine   = new QBitmap( 1, 129, TRUE );
+				horizontalLine = new QBitmap( 128, 1, TRUE );
+				QPointArray a( 64 );
+				QPainter p2;
+				p2.begin( verticalLine );
+
+				int i;
+				for( i=0; i < 64; i++ )
+					a.setPoint( i, 0, i*2+1 );
+				p2.setPen( color1 );
+				p2.drawPoints( a );
+				p2.end();
+				QApplication::flushX();
+				verticalLine->setMask( *verticalLine );
+					
+				p2.begin( horizontalLine );
+				for( i=0; i < 64; i++ )
+					a.setPoint( i, i*2+1, 0 );
+				p2.setPen( color1 );
+				p2.drawPoints( a );
+				p2.end();
+				QApplication::flushX();
+				horizontalLine->setMask( *horizontalLine );
+
+				qlv_cleanup_bitmap.add( &verticalLine );
+				qlv_cleanup_bitmap.add( &horizontalLine );
+			}
+
+			p->setPen( cg.text() );		// cg.dark() is bad for dark color schemes.
+
+			if (flags & Style_Horizontal) 
+			{
+				int point = r.x();
+				int other = r.y();
+				int end = r.x()+r.width();
+				int thickness = r.height();
+
+				while( point < end ) 
+				{
+					int i = 128;
+					if ( i+point > end )
+						i = end-point;
+					p->drawPixmap( point, other, *horizontalLine, 0, 0, i, thickness );
+					point += i;
+				}
+
+			} else {
+				int point = r.y();
+				int other = r.x();
+				int end = r.y()+r.height();
+				int thickness = r.width();
+				int pixmapoffset = (flags & Style_NoChange) ? 0 : 1;	// ### Hackish
+
+				while( point < end ) 
+				{
+					int i = 128;
+					if ( i+point > end )
+						i = end-point;
+					p->drawPixmap( other, point, *verticalLine, 0, pixmapoffset, thickness, i );
+					point += i;
+				}
+			}
+
+			break;
+		}
+
 		// Reimplement the other primitives in your styles.
 		// The current implementation just paints something visibly different.
 		case KPE_ToolBarHandle:
@@ -304,6 +412,32 @@ void KStyle::drawKStylePrimitive( KStylePrimitive kpe,
 			break;
 	}
 }
+
+
+int KStyle::kPixelMetric( KStylePixelMetric kpm, const QWidget* /* widget */) const
+{
+	int value;
+	switch(kpm)
+	{
+		case KPM_ListViewBranchThickness:
+			value = 1;
+			break;
+
+		case KPM_MenuItemSeparatorHeight:
+		case KPM_MenuItemHMargin:
+		case KPM_MenuItemVMargin:
+		case KPM_MenuItemHFrame:
+		case KPM_MenuItemVFrame:
+		case KPM_MenuItemCheckMarkHMargin:
+		case KPM_MenuItemArrowHMargin:
+		case KPM_MenuItemTabSpacing:
+		default:
+			value = 0;
+	}
+
+	return value;
+}
+
 
 // -----------------------------------------------------------------------------
 
@@ -872,11 +1006,159 @@ void KStyle::drawComplexControl( ComplexControl control,
 			break;
 		}
 
+		// LISTVIEW
+		// -------------------------------------------------------------------
+		case CC_ListView: {
+
+			/*
+			 * Many thanks to TrollTech AS for donating CC_ListView from QWindowsStyle.
+			 * CC_ListView code is Copyright (C) 1998-2000 TrollTech AS.
+			 */
+
+			// Paint the icon and text.
+			if ( controls & SC_ListView )
+				QCommonStyle::drawComplexControl( control, p, widget, r, cg, flags, controls, active, opt );
+
+			// If we're have a branch or are expanded...
+			if ( controls & (SC_ListViewBranch | SC_ListViewExpand) )
+			{
+				// If no list view item was supplied, break
+				if (opt.isDefault())
+					break;
+
+				QListViewItem *item  = opt.listViewItem();
+				QListViewItem *child = item->firstChild();
+
+				int y = r.y();
+				int c;	// dotline vertice count
+				int dotoffset = 0;
+				QPointArray dotlines;
+
+				if ( active == SC_All && controls == SC_ListViewExpand ) {
+					// We only need to draw a vertical line
+					c = 2;
+					dotlines.resize(2);
+					dotlines[0] = QPoint( r.right(), r.top() );
+					dotlines[1] = QPoint( r.right(), r.bottom() );
+
+				} else {
+
+					int linetop = 0, linebot = 0;
+					// each branch needs at most two lines, ie. four end points
+					dotoffset = (item->itemPos() + item->height() - y) % 2;
+					dotlines.resize( item->childCount() * 4 );
+					c = 0;
+
+					// skip the stuff above the exposed rectangle
+					while ( child && y + child->height() <= 0 ) 
+					{
+						y += child->totalHeight();
+						child = child->nextSibling();
+					}
+
+					int bx = r.width() / 2;
+
+					// paint stuff in the magical area
+					QListView* v = item->listView();
+					int lh = QMAX( p->fontMetrics().height() + 2 * v->itemMargin(),
+								   QApplication::globalStrut().height() );
+					if ( lh % 2 > 0 )
+						lh++;
+
+					// Draw all the expand/close boxes...
+					QRect boxrect;
+					QStyle::StyleFlags boxflags;
+					while ( child && y < r.height() ) 
+					{
+						linebot = y + lh/2;
+						if ( (child->isExpandable() || child->childCount()) &&
+							 (child->height() > 0) ) 
+						{
+							// The primitive requires a rect.
+							boxrect = QRect( bx-4, linebot-4, 9, 9 );
+							boxflags = child->isOpen() ? QStyle::Style_Off : QStyle::Style_On;
+
+							// KStyle extension: Draw the box and expand/collapse indicator
+							drawKStylePrimitive( KPE_ListViewExpander, p, NULL, boxrect, cg, boxflags, opt );
+
+							// dotlinery
+							p->setPen( cg.mid() );
+							dotlines[c++] = QPoint( bx, linetop );
+							dotlines[c++] = QPoint( bx, linebot - 5 );
+							dotlines[c++] = QPoint( bx + 5, linebot );
+							dotlines[c++] = QPoint( r.width(), linebot );
+							linetop = linebot + 5;
+						} else {
+							// just dotlinery
+							dotlines[c++] = QPoint( bx+1, linebot );
+							dotlines[c++] = QPoint( r.width(), linebot );
+						}
+
+						y += child->totalHeight();
+						child = child->nextSibling();
+					}
+
+					if ( child ) // there's a child, so move linebot to edge of rectangle
+						linebot = r.height();
+
+					if ( linetop < linebot ) 
+					{
+						dotlines[c++] = QPoint( bx, linetop );
+						dotlines[c++] = QPoint( bx, linebot );
+					}
+				}
+
+				// Draw all the branches...
+				static int thickness = kPixelMetric( KPM_ListViewBranchThickness );
+				int line; // index into dotlines
+				QRect branchrect;
+				QStyle::StyleFlags branchflags;
+				for( line = 0; line < c; line += 2 ) 
+				{
+					// assumptions here: lines are horizontal or vertical.
+					// lines always start with the numerically lowest
+					// coordinate.
+
+					// point ... relevant coordinate of current point
+					// end ..... same coordinate of the end of the current line
+					// other ... the other coordinate of the current point/line
+					if ( dotlines[line].y() == dotlines[line+1].y() ) 
+					{
+						// Horizontal branch
+						int end = dotlines[line+1].x();
+						int point = dotlines[line].x();
+						int other = dotlines[line].y();
+
+						branchrect  = QRect( point, other-(thickness/2), end-point, thickness );
+						branchflags = QStyle::Style_Horizontal;
+
+						// KStyle extension: Draw the horizontal branch
+						drawKStylePrimitive( KPE_ListViewBranch, p, NULL, branchrect, cg, branchflags, opt );
+
+					} else {
+						// Vertical branch
+						int end = dotlines[line+1].y();
+						int point = dotlines[line].y();
+						int other = dotlines[line].x();
+						int pixmapoffset = ((point & 1) != dotoffset ) ? 1 : 0;
+
+						branchrect  = QRect( other-(thickness/2), point, thickness, end-point );
+						if (!pixmapoffset)	// ### Hackish - used to hint the offset
+							branchflags = QStyle::Style_NoChange;
+						else
+							branchflags = QStyle::Style_Default;
+
+						// KStyle extension: Draw the vertical branch
+						drawKStylePrimitive( KPE_ListViewBranch, p, NULL, branchrect, cg, branchflags, opt );
+					}
+				}
+			}
+			break;
+		}
 
 		default:
-			// ### Only needed for CC_ListView if the style has been fully implemented.
-			d->winstyle->drawComplexControl( control, p, widget, r, cg,
-										  flags, controls, active, opt );
+			QCommonStyle::drawComplexControl( control, p, widget, r, cg,
+											  flags, controls, active, opt );
 			break;
 	}
 }
@@ -1077,6 +1359,8 @@ int KStyle::styleHint( StyleHint sh, const QWidget* w,
 		case SH_MenuBar_MouseTracking:
 		case SH_PopupMenu_MouseTracking:
 		case SH_ComboBox_ListMouseTracking:
+// Uncomment when this behaviour is fixed in a future release of Qt.
+//		case SH_ScrollBar_MiddleClickAbsolutePosition:
 			return 1;
 
 		default:
@@ -1181,7 +1465,7 @@ bool TransparencyHandler::eventFilter( QObject* object, QEvent* event )
 			case XRender:
 #endif
 			case SoftwareBlend:
-				blendToPixmap(p->colorGroup());
+				blendToPixmap(p->colorGroup(), p);
 				break;
 
 			case SoftwareTint:
@@ -1210,7 +1494,7 @@ void TransparencyHandler::blendToColor(const QColor &col)
 }
 
 
-void TransparencyHandler::blendToPixmap(const QColorGroup &cg)
+void TransparencyHandler::blendToPixmap(const QColorGroup &cg, const QPopupMenu* p)
 {
 	if (opacity < 0.0 || opacity > 1.0)
 		return;
@@ -1223,7 +1507,7 @@ void TransparencyHandler::blendToPixmap(const QColorGroup &cg)
 		return;
 
 	// Allow styles to define the blend pixmap - allows for some interesting effects.
-	kstyle->renderMenuBlendPixmap( blendPix, cg );
+	kstyle->renderMenuBlendPixmap( blendPix, cg, p );
 
 	QImage blendImg = blendPix.convertToImage();
 	QImage backImg  = pix.convertToImage();
@@ -1242,7 +1526,7 @@ void TransparencyHandler::XRenderBlendToPixmap(const QPopupMenu* p)
 	renderPix.resize( pix.width(), pix.height() );
 
 	// Allow styles to define the blend pixmap - allows for some interesting effects.
-	kstyle->renderMenuBlendPixmap( renderPix, p->colorGroup() );
+	kstyle->renderMenuBlendPixmap( renderPix, p->colorGroup(), p );
 
 	Display* dpy = qt_xdisplay();
 	Pixmap   alphaPixmap;

@@ -53,6 +53,8 @@ class GradientSet
 };
 
 
+class QPopupMenu;
+
 class HighColorStyle : public KStyle
 {
 	Q_OBJECT
@@ -66,7 +68,8 @@ class HighColorStyle : public KStyle
 		void polish( QWidget* widget );
 		void unPolish( QWidget* widget );
 
-		void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg ) const;
+		void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg,
+								 	const QPopupMenu* popup ) const;
 
 		void drawKStylePrimitive( KStylePrimitive kpe,
 					QPainter* p,
@@ -149,7 +152,6 @@ class HighColorStyle : public KStyle
 		// Disable copy constructor and = operator
 		HighColorStyle( const HighColorStyle & );
 		HighColorStyle& operator=( const HighColorStyle & );
-		QStyle *winstyle;
 };
 
 // vim: set noet ts=4 sw=4:

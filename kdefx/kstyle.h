@@ -3,6 +3,11 @@
  * 
  * KStyle
  * Copyright (C) 2001-2002 Karol Szwed <gallium@kde.org>
+ * 
+ * QWindowsStyle CC_ListView and style images were kindly donated by TrollTech,
+ * Copyright (C) 1998-2000 TrollTech AS.
+ * 
+ * Many thanks to Bradley T. Hughes for the 3 button scrollbar code.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -161,7 +166,8 @@ class KStyle: public QCommonStyle
 		 * This virtual is never called if XRender/Software blending is disabled by
 		 * the user in KDE's style control module.
 		 */
-		virtual void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup& cg ) const;
+		virtual void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup& cg, 
+											const QPopupMenu* popup ) const;
 
 		/**
 		 * KStyle Primitive Elements:
@@ -198,6 +204,13 @@ class KStyle: public QCommonStyle
 		 * @li KPE_SliderHandle - This primitive must be reimplemented. It is used to
 		 * paint the slider handle. The default implementation paints a filled rect of
 		 * arbitrary color.
+		 *
+		 * @li KPE_ListViewExpander - This primitive is already implemented in KStyle. It
+		 * is used to draw the Expand/Collapse element in QListViews. To indicate the 
+		 * expanded state, the style flags are set to Style_Off, while Style_On implies collapsed.
+		 *
+		 * @li KPE_ListViewBranch - This primitive is already implemented in KStyle. It is
+		 * used to draw the ListView branches where necessary.
 		 */
 		enum KStylePrimitive {
 			KPE_DockWindowHandle,
@@ -205,7 +218,10 @@ class KStyle: public QCommonStyle
 			KPE_GeneralHandle,
 
 			KPE_SliderGroove,
-			KPE_SliderHandle
+			KPE_SliderHandle,
+
+			KPE_ListViewExpander,
+			KPE_ListViewBranch
 		};
 
 		/**
@@ -224,6 +240,22 @@ class KStyle: public QCommonStyle
 					const QColorGroup &cg,
 					SFlags flags = Style_Default,
 					const QStyleOption& = QStyleOption::Default ) const;
+
+
+		enum KStylePixelMetric {
+			KPM_MenuItemSeparatorHeight		= 0x00000001,
+			KPM_MenuItemHMargin				= 0x00000002,
+			KPM_MenuItemVMargin				= 0x00000004,
+			KPM_MenuItemHFrame				= 0x00000008,
+			KPM_MenuItemVFrame				= 0x00000010,
+			KPM_MenuItemCheckMarkHMargin	= 0x00000020,
+			KPM_MenuItemArrowHMargin		= 0x00000040,
+			KPM_MenuItemTabSpacing			= 0x00000080,
+
+			KPM_ListViewBranchThickness		= 0x00000100
+		};
+
+		int kPixelMetric( KStylePixelMetric kpm, const QWidget* widget = 0 ) const;
 
 		// ---------------------------------------------------------------------------
 
