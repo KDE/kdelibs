@@ -314,8 +314,17 @@ void TCPSlaveBase::certificatePrompt()
 QString certname;   // the cert to use this session
 bool send = false, prompt = false, save = false, forcePrompt = false;
 
+  setMetaData("ssl_using_client_cert", "FALSE"); // we change this if needed
+
   if (metaData("ssl_no_client_cert") == "TRUE") return;
   forcePrompt = (metaData("ssl_force_cert_prompt") == "TRUE");
+
+  if (hasMetaData("ssl_demand_certificate")) {
+     certname = metaData("ssl_demand_certificate");
+     if (!certname.isEmpty())
+        forcePrompt = false;
+  }
+
   forcePrompt = true;   // FIXME
 
   // Delete the old cert since we're certainly done with it now
@@ -327,7 +336,8 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
   if (!d->kssl) return;
 
   // Look for a certificate on a per-host basis
-  certname = KSSLCertificateHome::getDefaultCertificateName(d->host, &send, &prompt);
+  if (certname.isEmpty())
+     certname = KSSLCertificateHome::getDefaultCertificateName(d->host, &send, &prompt);
 
   // Look for a general certificate
   if (certname.isEmpty() && !prompt && !forcePrompt) {
@@ -374,7 +384,7 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
   // The user may have said to not send the certificate, but to save the choice
   if (!send) {
      if (save) {
-        // FIXME
+        KSSLCertificateHome::setDefaultCertificate(certname, d->host, false, false);
      }
      return;
   }
@@ -421,12 +431,14 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
 
    // If we could open the certificate, let's send it
    if (pkcs) {
-      if (save) {
-      // FIXME
-      }
       if (!d->kssl->setClientCertificate(pkcs)) {
          messageBox(Information, i18n("Sorry, the procedure to set the client certificate for the session failed."), i18n("SSL"));
          delete pkcs;  // we don't need this anymore
+      } else {
+         setMetaData("ssl_using_client_cert", "TRUE");
+         if (save) {
+           KSSLCertificateHome::setDefaultCertificate(certname, d->host, false, false);
+         }
       }
       d->pkcs = pkcs;
    }
