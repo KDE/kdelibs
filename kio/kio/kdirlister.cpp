@@ -429,15 +429,16 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
       // this job is a running update
       if ( killJob( (*it).url() ) )
       {
-        kdDebug(7004) << k_funcinfo << "Killing the update running for this lister!" << endl;
+        kdDebug(7004) << k_funcinfo << "Killing update job for " << (*it).url() << endl;
 
         lister->d->numJobs--;
-        Q_ASSERT( lister->d->numJobs == 0 );
 
         emit lister->canceled( *it );
-        emit lister->canceled();
-
-        lister->d->complete = true;
+        if ( lister->d->numJobs == 0 )
+        {
+          lister->d->complete = true;
+          emit lister->canceled();
+        }
       }
 
       if ( item->complete )
@@ -488,13 +489,16 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url )
     // this job is a running update
     if ( killJob( url.url() ) )
     {
-      lister->d->numJobs--;
-      Q_ASSERT( lister->d->numJobs == 0 );
-      
-      emit lister->canceled( url );
-      emit lister->canceled();
+      kdDebug(7004) << k_funcinfo << "Killing update job for " << url.url() << endl;
 
-      lister->d->complete = true;
+      lister->d->numJobs--;
+
+      emit lister->canceled( url );
+      if ( lister->d->numJobs == 0 )
+      {
+        lister->d->complete = true;
+        emit lister->canceled();
+      }
     }
 
     if ( item->complete )
