@@ -190,6 +190,15 @@ public:
   QString menuId() const;
 
   /**
+   * Returns a normalized ID suitable for storing in configuration files.
+   * It will be based on the menu-id when available and otherwise falls
+   * back to desktopEntryPath()
+   * @return the storage ID
+   * @since 3.2
+   */
+  QString storageId() const;
+
+  /**
    * Describes the DCOP type of the service.
    * @li None - This service has no DCOP support
    * @li Unique - This service provides a unique DCOP service.
@@ -407,10 +416,8 @@ public:
   static Ptr serviceByName( const QString& _name );
 
   /**
-   * Find a service by its relative path to the applnk or services
-   * directory, for instance "Internet/konqbrowser.desktop". Better not use
-   * it for menu entries though, since the user can move them.
-   * It's ok to use it for services though (e.g. "http_cache_cleaner.desktop")
+   * Find a service based on its path as returned by @ref desktopEntryPath().
+   * It's usually better to use @ref serviceByStorageId() instead.
    *
    * @param _path the path of the configuration file
    * @return a pointer to the requested service or 0 if the service is
@@ -442,8 +449,21 @@ public:
    * @return a pointer to the requested service or 0 if the service is
    *         unknown.
    * @em Very @em important: Don't store the result in a KService* !
+   * @since 3.2
    */
   static Ptr serviceByMenuId( const QString& _menuId );
+
+  /**
+   * Find a service by its storage-id or desktop-file path. This 
+   * function will try very hard to find a matching service.
+   *
+   * @param _storageId the storage id or desktop-file path of the service
+   * @return a pointer to the requested service or 0 if the service is
+   *         unknown.
+   * @em Very @em important: Don't store the result in a KService* !
+   * @since 3.2
+   */
+  static Ptr serviceByStorageId( const QString& _menuId );
 
   /**
    * Returns the whole list of services.

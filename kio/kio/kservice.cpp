@@ -611,6 +611,33 @@ KService::Ptr KService::serviceByMenuId( const QString& _name )
   return KService::Ptr( s );
 }
 
+KService::Ptr KService::serviceByStorageId( const QString& _storageId )
+{
+  KService::Ptr service = KService::serviceByMenuId( _storageId );
+  if (service)
+     return service;
+     
+  service = KService::serviceByDesktopPath(_storageId);
+  if (service)
+     return service;
+     
+  if (_storageId.startsWith("/") && QFile::exists(_storageId))
+     return new KService(_storageId);
+
+  QString tmp = _storageId;
+  tmp = tmp.mid(tmp.findRev('/')+1); // Strip dir
+
+  if (tmp.endsWith(".desktop"))
+     tmp.truncate(tmp.length()-8);
+
+  if (tmp.endsWith(".kdelnk"))
+     tmp.truncate(tmp.length()-7);
+
+  service = KService::serviceByDesktopName(tmp);
+
+  return service;
+}
+
 KService::List KService::allInitServices()
 {
   return KServiceFactory::self()->allInitServices();
@@ -692,20 +719,12 @@ void KService::setMenuId(const QString &menuId)
   d->menuId = menuId;
 }
 
-  /** 
-   * Returns a path that can be used to create a new KService based
-   * on @p suggestedName.
-   * @param showInMenu true, if the service should be shown in the KDE menu
-   *        false, if the service should be hidden from the menu
-   * @param suggestedName name to base the file on, if a service with such 
-   *        name already exists, a prefix will be added to make it unique.
-   * @param menuId If provided, menuId will be set to the menu id to use for
-   *        the KService
-   * @param reservedMenuIds If provided, the path and menu id will be chosen
-   *        in such a way that the new menu id does not conflict with any
-   *        of the reservedMenuIds
-   * @return The path to use for the new KService.
-   */
+QString KService::storageId() const
+{
+  if (!d->menuId.isEmpty())
+     return d->menuId;
+  return entryPath();
+}
 
 QString KService::locateLocal()
 {
