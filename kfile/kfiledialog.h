@@ -329,7 +329,6 @@ protected slots:
     
     void setHiddenToggle(bool);
     void slotDirEntry(KFileInfo *);
-    void insertFile(const KFileInfo *);
     void slotFinished();
     void slotKfmError(int, const char *);
     void insertNewFiles(const KFileInfoList *newone);

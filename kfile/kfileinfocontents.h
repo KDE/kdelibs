@@ -94,10 +94,9 @@ public:
     /**
      * inserts a list of items. This is an speed optimized version of 
      * function above.
-     * @return true, if a repaint is necessary
      * @see addItem
      **/
-    bool addItemList(const KFileInfoList *list);
+    virtual void addItemList(const KFileInfoList *list);
 
     /**
       * @return the name of the file at position index. 
@@ -324,6 +323,15 @@ protected:
      * undefined!
      **/
     int compareItems(const KFileInfo *fi1, const KFileInfo *fi2);
+    
+    /**
+     * this is a help function for sorting, since I can't use the libc
+     * version (because I have a variable sort function)
+     *
+     * I heard, STL has a qsort function too, but I don't want to use
+     * STL now
+     */
+    void QuickSort(KFileInfo* a[], int lo0, int hi0);
 
 private:
     bool useSingleClick;

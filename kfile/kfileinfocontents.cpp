@@ -95,50 +95,27 @@ bool KFileInfoContents::addItem(const KFileInfo *i)
     return addItemInternal(i);
 }
 
-bool KFileInfoContents::addItemList(const KFileInfoList *list)
+void KFileInfoContents::addItemList(const KFileInfoList *list)
 {
-    KFileInfo** array = new (KFileInfo*)[list->count()];
-    uint length = 0;
+    setAutoUpdate(false);
     
+    bool repaint_needed = false;
     KFileInfoListIterator it(*list);
-    for (; it.current(); ++it) {
-	KFileInfo *item = it.current();
-	
-	if (!acceptsFiles() && item->isFile())
-	    continue;
-	if (!acceptsDirs() && item->isDir())
-	    continue;
-	
-	if (item->isDir())
-	    dirsNumber++;
-	else
-	    filesNumber++;
-	
-	// no sorting
-	itemsList->append(item);
-	array[length++] = item;
+    for (; it.current(); it++) {
+	debugC("insert %s", it.current()->fileName());
+	repaint_needed |= addItem(it.current());
     }
-    for (uint j = 0; j < length; j++) 
-	debug("array %d %x", j, array + j);
+    setAutoUpdate(true);
 
-    qsort(array, length, sizeof(KFileInfo*), (int (*)(const void *, const void *))compareItems);
-    
-    int left = 0;
-    bool repaint = false;
-    for (uint j = 0; j < length; j++) {
-	left = findPosition(array[j], left);
-	insertSortedItem(array[j], left);
-	repaint |= insertItem(array[j], left);
-    }
-    delete [] array;
-    return repaint;
+    if (repaint_needed)
+	repaint(true);
 }
 
 void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
 {
     QDir::SortSpec old_sort = static_cast<QDir::SortSpec>(sorting() & QDir::SortByMask);
     QDir::SortSpec sortflags = static_cast<QDir::SortSpec>(sorting() & (~QDir::SortByMask));
-
+    
     if (mySortMode == Switching) {
 	if (new_sort == old_sort)
 	    reversed = !reversed;
@@ -146,7 +123,7 @@ void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
 	    reversed = false;
     } else 
 	reversed = (mySortMode == Decreasing);
-
+    
     mySorting = static_cast<QDir::SortSpec>(new_sort | sortflags);
    
     if (count() <= 1) // nothing to do in this case
@@ -161,7 +138,7 @@ void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
     clearView();
 
     debugC("qsort %ld", time(0));
-    qsort(sortedArray, sorted_length, sizeof(KFileInfo*), (int (*)(const void *, const void *))&compareItems);
+    QuickSort(sortedArray, 0, sorted_length - 1);
     debugC("qsort %ld", time(0));
     for (uint i = 0; i < sorted_length; i++)
       insertItem(sortedArray[i], -1);
@@ -199,14 +176,70 @@ void KFileInfoContents::connectFileSelected( QObject *receiver,
     sig->connect(sig, SIGNAL(fileSelected(KFileInfo*)), receiver, member);
 }
 
+// this implementation is from the jdk demo Sorting
+void KFileInfoContents::QuickSort(KFileInfo* a[], int lo0, int hi0)
+{
+    int lo = lo0;
+    int hi = hi0;
+    const KFileInfo *mid;
+    
+    if ( hi0 > lo0)
+	{
+	    
+	    /* Arbitrarily establishing partition element as the midpoint of
+	     * the array.
+	     */
+	    mid = a[ ( lo0 + hi0 ) / 2 ];
+	    
+	    // loop through the array until indices cross
+	    while( lo <= hi )
+		{
+		    /* find the first element that is greater than or equal to 
+		     * the partition element starting from the left Index.
+		     */
+		    while( ( lo < hi0 ) && ( compareItems(a[lo], mid) < 0 ) )
+			++lo;
+		    
+		    /* find an element that is smaller than or equal to 
+		     * the partition element starting from the right Index.
+		     */
+		    while( ( hi > lo0 ) &&  ( compareItems(a[hi], mid) > 0) )
+			--hi;
+
+		    // if the indexes have not crossed, swap
+		    if( lo <= hi ) 
+			{
+			    if (lo != hi) {
+				const KFileInfo *T = a[lo];
+				a[lo] = a[hi];
+				a[hi] = const_cast<KFileInfo*>(T);
+			    }
+			    ++lo;
+			    --hi;
+			}
+		}
+	    
+	    /* If the right index has not reached the left side of array
+	     * must now sort the left partition.
+	     */
+	    if( lo0 < hi )
+		QuickSort( a, lo0, hi );
+	    
+	    /* If the left index has not reached the right side of array
+	     * must now sort the right partition.
+	     */
+	    if( lo < hi0 )
+		QuickSort( a, lo, hi0 );
+	    
+	}
+}
+
 int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
 {
     static int counter = 0;
     counter++;
     if (counter % 1000 == 0)
 	debugC("compare %d", counter);
-    
-    debug("compare %x against %x", fi1, fi2);
     
     bool bigger = true;
     
@@ -236,6 +269,8 @@ int KFileInfoContents::compareItems(const KFileInfo *fi1, const KFileInfo *fi2)
     if (reversed)
       bigger = !bigger;
 
+    debugC("compare %s against %s: %s", fi1->fileName(), fi2->fileName(), bigger ? "bigger" : "smaller");
+    
     return (bigger ? 1 : -1);
 }
 
@@ -259,6 +294,9 @@ int KFileInfoContents::findPosition(const KFileInfo *i, int left)
     else 
 	pos = right;
 
+    if (pos == -1)
+	pos = sorted_length;
+
     return pos;
 }
 
@@ -270,17 +308,13 @@ bool KFileInfoContents::addItemInternal(const KFileInfo *i)
 	// insertation using log(n)
 	pos = findPosition(i, 0);
     } else {
-	if (sorted_length == 1) {
-	    pos = (compareItems(i, sortedArray[0]) < 0) ? 0 : 1;
-	}
+	if (sorted_length == 1 && compareItems(i, sortedArray[0]) > 0)
+	    pos = 1;
+	else
+	    pos = sorted_length;
     }
-    if (pos < 0) {
-	insertSortedItem(i, sorted_length);
-	// sorted_length has new value 
-	pos = sorted_length - 1;
-    }  else 
-	insertSortedItem(i, pos); 
     
+    insertSortedItem(i, pos); 
     return insertItem(i, pos);
 } 
 
@@ -439,34 +473,34 @@ QString KFileInfoContents::findCompletion( const char *base,
 
 void KFileInfoContents::insertSortedItem(const KFileInfo *item, uint pos)
 {
-  //  debug("insert %s %d", item->fileName().data(), pos);
-  if (sorted_length == sorted_max) {
-    sorted_max *= 2;
-    KFileInfo **newArray = new KFileInfo*[sorted_max];
-    int found = 0;
-    for (uint j = 0; j < sorted_length; j++) {
-      if (j == pos) {
-	found = 1;
-	newArray[j] = const_cast<KFileInfo*>(item);
-      }
-      newArray[j+found] = sortedArray[j];
+    //  debug("insert %s %d", item->fileName(), pos);
+    if (sorted_length == sorted_max) {
+	sorted_max *= 2;
+	KFileInfo **newArray = new KFileInfo*[sorted_max];
+	int found = 0;
+	for (uint j = 0; j < sorted_length; j++) {
+	    if (j == pos) {
+		found = 1;
+		newArray[j] = const_cast<KFileInfo*>(item);
+	    }
+	    newArray[j+found] = sortedArray[j];
+	}
+	if (!found)
+	    newArray[pos] = const_cast<KFileInfo*>(item);
+	
+	delete [] sortedArray;
+	sortedArray = newArray;
+	sorted_length++;
+	return;
     }
-    if (!found)
-      newArray[pos] = const_cast<KFileInfo*>(item);
-
-    delete [] sortedArray;
-    sortedArray = newArray;
+    
+    // faster repositioning (very fast :)
+    memmove(sortedArray + pos+1,
+	    sortedArray + pos,
+	    (sorted_max - 1 - pos) * sizeof(KFileInfo*));
+    
+    sortedArray[pos] = const_cast<KFileInfo*>(item);
     sorted_length++;
-    return;
-  }
-
-  // faster repositioning (very fast :)
-  memmove(sortedArray + pos+1,
-	 sortedArray + pos,
-	 (sorted_max - 1 - pos) * sizeof(KFileInfo*));
-
-  sortedArray[pos] = const_cast<KFileInfo*>(item);
-  sorted_length++;
 }
 
 #include "kfileinfocontents.moc" // for the signaler

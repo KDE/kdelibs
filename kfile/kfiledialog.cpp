@@ -655,19 +655,10 @@ void KFileBaseDialog::pathChanged()
     }
 }
 
-void KFileBaseDialog::insertFile(const KFileInfo *entry)
-{
-    repaint_files |= fileList->addItem(entry);
-}
-
 void KFileBaseDialog::insertNewFiles(const KFileInfoList *newone) 
 {
-    fileList->setAutoUpdate(false);
-    repaint_files = fileList->addItemList(newone);
-    fileList->setAutoUpdate(true);
-
-    if (repaint_files)
-	fileList->repaint(true);
+    // does always repainting itself
+    fileList->addItemList(newone);
 
     if ( showStatusLine )
 	updateStatusLine();
@@ -679,7 +670,7 @@ void KFileBaseDialog::addDirEntry(KFileInfo *entry, bool disableUpdating)
 	repaint_files = false;
 	fileList->setAutoUpdate(false);
     }
-    insertFile(entry);
+    repaint_files |= fileList->addItem(entry);
     
     if (disableUpdating) {
 	fileList->setAutoUpdate(true);

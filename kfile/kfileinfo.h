@@ -55,7 +55,7 @@ public:
     /**
       * Constructs a "little" KFileInfo (just for local files)
       **/
-    KFileInfo(const char *dir, const char *name = 0);
+    KFileInfo(const char *dir, const char *name = "");
 
     /**
       * Destroy the KFileInfo object.
