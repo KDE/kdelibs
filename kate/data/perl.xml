@@ -32,7 +32,7 @@
 
    HERE document delimiters - requires support for saving data in contexts.
 -->
-<language name="Perl" version="1.12" kateversion="2.3" section="Scripts" extensions="*.pl;*.pm" mimetype="application/x-perl;text/x-perl" author="Anders Lund (anders@alweb.dk)" license="LGPL">
+<language name="Perl" version="1.13" kateversion="2.3" section="Scripts" extensions="*.pl;*.pm" mimetype="application/x-perl;text/x-perl" author="Anders Lund (anders@alweb.dk)" license="LGPL">
   <highlighting>
     <list name="keywords">
       <item> if </item>
@@ -59,7 +59,6 @@
       <item> END </item>
       <item>require</item>
       <item> package </item>
-      <item> sub </item>
       <item> do </item>
       <item> __END__ </item>
       <item> __DATA__ </item>
@@ -271,7 +270,6 @@
       <item>srand</item>
       <item>stat</item>
       <item>study</item>
-      <item>sub</item>
       <item>substr</item>
       <item>symlink</item>
       <item>syscall</item>
