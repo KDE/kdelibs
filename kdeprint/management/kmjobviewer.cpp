@@ -38,6 +38,7 @@
 #include <kiconloader.h>
 #include <kapplication.h>
 #include <kcursor.h>
+#include <kmenubar.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->jobManager()
@@ -195,6 +196,7 @@ void KMJobViewer::initActions()
 		createGUI();
 	}
 
+	loadPluginActions();
 	slotSelectionChanged();
 }
 
@@ -279,6 +281,9 @@ void KMJobViewer::slotSelectionChanged()
 	bool	completed(true);
 
 	QPtrListIterator<JobItem>	it(m_items);
+	QPtrList<KMJob>	joblist;
+
+	joblist.setAutoDelete(false);
 	for (;it.current();++it)
 	{
 		if (it.current()->isSelected())
@@ -295,14 +300,19 @@ void KMJobViewer::slotSelectionChanged()
 			else if (state != 0 && state != it.current()->job()->state()) state = 0;
 
 			completed = (completed && it.current()->job()->isCompleted());
+			joblist.append(it.current()->job());
 		}
 	}
+	if (thread != 2)
+		joblist.clear();
 
 	actionCollection()->action("job_remove")->setEnabled((thread == 1) || (!completed && (state >= 0) && (acts & KMJob::Remove)));
 	actionCollection()->action("job_hold")->setEnabled(!completed && (thread == 2) && (state > 0) && (state != KMJob::Held) && (acts & KMJob::Hold));
 	actionCollection()->action("job_resume")->setEnabled(!completed && (thread == 2) && (state > 0) && (state == KMJob::Held) && (acts & KMJob::Resume));
 	actionCollection()->action("job_move")->setEnabled(!completed && (thread == 2) && (state >= 0) && (acts & KMJob::Move));
 	actionCollection()->action("job_restart")->setEnabled((thread == 2) && (state >= 0) && (completed) && (acts & KMJob::Restart));
+
+	m_manager->validatePluginActions(actionCollection(), joblist);
 }
 
 void KMJobViewer::jobSelection(QPtrList<KMJob>& l)
@@ -438,6 +448,56 @@ void KMJobViewer::slotShowCompleted(bool on)
 {
 	m_manager->setJobType((on ? KMJobManager::CompletedJobs : KMJobManager::ActiveJobs));
 	slotRefresh();
+}
+
+void KMJobViewer::loadPluginActions()
+{
+	m_manager->createPluginActions(actionCollection());
+	QValueList<KAction*>	acts = actionCollection()->actions("plugin");
+	int	mpopindex(7), toolbarindex(parentWidget()?7:8), menuindex(7);
+	QMenuData	*menu(0);
+	if (!parentWidget())
+	{
+		// standalone window, insert actions into main menubar
+		KAction	*act = actionCollection()->action("job_restart");
+		for (int i=0;i<act->containerCount();i++)
+		{
+			if (menuBar()->findItem(act->itemId(i), &menu))
+			{
+				menuindex = mpopindex = menu->indexOf(act->itemId(i))+1;
+				break;
+			}
+		}
+	}
+	for (QValueList<KAction*>::Iterator it=acts.begin(); it!=acts.end(); ++it)
+	{
+		// should add it to the toolbar and menubar
+		(*it)->plug(toolBar(), toolbarindex++);
+		if (m_pop)
+			(*it)->plug(m_pop, mpopindex++);
+		if (menu)
+			(*it)->plug(static_cast<QPopupMenu*>(menu), menuindex++);
+	}
+}
+
+void KMJobViewer::removePluginActions()
+{
+	QValueList<KAction*>	acts = actionCollection()->actions("plugin");
+	for (QValueList<KAction*>::Iterator it=acts.begin(); it!=acts.end(); ++it)
+	{
+		(*it)->unplugAll();
+		delete (*it);
+	}
+}
+
+void KMJobViewer::reload()
+{
+	removePluginActions();
+	loadPluginActions();
+	if (!parentWidget())
+		// refresh it only if no parent, otherwise it
+		// will be triggered by the parent itself.
+		slotRefresh();
 }
 
 #include "kmjobviewer.moc"

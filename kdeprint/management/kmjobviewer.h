@@ -24,6 +24,7 @@
 
 #include <kmainwindow.h>
 #include "kmprinterpage.h"
+#include "kpreloadobject.h"
 
 class KMJobManager;
 class KMJob;
@@ -33,7 +34,7 @@ class QPopupMenu;
 class QListViewItem;
 class KMPrinter;
 
-class KMJobViewer : public KMainWindow, public KMPrinterPage
+class KMJobViewer : public KMainWindow, public KMPrinterPage, public KPReloadObject
 {
 	Q_OBJECT
 public:
@@ -75,6 +76,9 @@ protected:
 	void jobSelection(QPtrList<KMJob>& l);
 	void send(int cmd, const QString& name, const QString& arg = QString::null);
 	void loadPrinters();
+	void loadPluginActions();
+	void removePluginActions();
+	void reload();
 
 private:
 	QListView		*m_view;

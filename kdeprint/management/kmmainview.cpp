@@ -107,7 +107,6 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	connect(m_printerview,SIGNAL(rightButtonClicked(KMPrinter*,const QPoint&)),SLOT(slotRightButtonClicked(KMPrinter*,const QPoint&)));
 	connect(m_pop,SIGNAL(aboutToShow()),SLOT(slotShowMenu()));
 	connect(m_pop,SIGNAL(aboutToHide()),SLOT(slotHideMenu()));
-	connect(m_plugin, SIGNAL(aboutToChange()), SLOT(slotPluginChange()));
 
 	// actions
     if (coll)
@@ -592,7 +591,7 @@ KAction* KMMainView::action(const char *name)
 	return m_actions->action(name);
 }
 
-void KMMainView::slotPluginChange()
+void KMMainView::aboutToReload()
 {
 	m_printerview->setPrinterList(0);
 }
@@ -601,7 +600,10 @@ void KMMainView::reload()
 {
 	removePluginActions();
 	loadPluginActions();
-	slotTimer();
+	// We must delay the refresh such that all objects has been
+	// correctly reloaded (otherwise, crash in KMJobViewer).
+	stopTimer();
+	QTimer::singleShot(10, this, SLOT(slotTimer()));
 }
 
 void KMMainView::showPrinterInfos(bool on)
@@ -631,8 +633,8 @@ void KMMainView::removePluginActions()
 	QValueList<KAction*>	pactions = m_actions->actions("plugin");
 	for (QValueList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
 	{
-		m_toolbar->removeItem((*it)->itemId(0));
-		m_actions->remove(*it);
+		(*it)->unplugAll();
+		delete (*it);
 	}
 }
 

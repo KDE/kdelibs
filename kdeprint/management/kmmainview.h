@@ -77,7 +77,6 @@ protected slots:
 	void slotHideMenu();
 	void slotRightButtonClicked(KMPrinter*, const QPoint&);
 	void slotToggleToolBar(bool);
-	void slotPluginChange();
 	void slotChangeView(int);
 	void slotChangeDirection(int);
 
@@ -88,6 +87,7 @@ protected:
 	void saveSettings();
 	void loadParameters();
 	void reload();
+	void aboutToReload();
 	void loadPluginActions();
 	void removePluginActions();
 
