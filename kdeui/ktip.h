@@ -47,6 +47,11 @@ class KTextBrowser;
  * Once the file is read in, you can access the tips to display
  * them in the tip of the day dialog.
  *
+ * The state of the tipdialog is saved to the applications's config file
+ * in the group "TipOfDay" with a bool entry "RunOnStart". Check this value
+ * if you want to allow the user to enable/disable the tipdialog in the
+ * application's configuration dialog.
+ *
  * @author Matthias Hoelzer-Kluepfel <mhk@caldera.de>
  *
  */
