@@ -20,7 +20,10 @@
                 left : 0px;
                 width : 100%;
                 color : #000000;">
-        <h1><xsl:apply-templates select="/" mode="title.ref"/></h1>
+        <h1><!-- Why was this used in fact: could the text not just be copied?
+	<xsl:apply-templates select="/" mode="title.ref"/>-->
+	<xsl:apply-templates select="title"/><!-- probably not safe: more than one title might be found? -->
+        </h1>
        </div>
 
 <div id="navbackground"
@@ -86,7 +89,7 @@ style="position : absolute;
        <td align="center" class="center">
           <xsl:choose>
              <xsl:when test="count($up) > 0 and $up != $home">
-               <xsl:apply-templates select="$up" mode="title.ref"/>
+               <xsl:apply-templates select="$up//title"/>
              </xsl:when>
              <xsl:otherwise>&#160;</xsl:otherwise>
           </xsl:choose>
@@ -94,10 +97,10 @@ style="position : absolute;
        <td align="right" class="right">
 	   <xsl:if test="count($prev)>0">
               <a>
-                <xsl:attribute name="href">
+                <xsl:attribute name="href"><!-- generates an error message in object.id 
                   <xsl:call-template name="href.target">
                     <xsl:with-param name="object" select="$next"/>
-                  </xsl:call-template>
+                  </xsl:call-template>-->
                 </xsl:attribute>
                 <xsl:call-template name="gentext.nav.next"/>
               </a>
@@ -147,7 +150,6 @@ style="position : absolute;
 	        margin-right: 0px;     
                 z-index : 15;	
                 background-color : transparent;">
-    
     <table width="100%" border="0" cellpadding="0" cellspacing="0"
 	style="position: absolute;
 	       top: 70px;
@@ -197,7 +199,7 @@ style="position : absolute;
 
         <tr>
           <td width="33%" align="left">
-            <xsl:apply-templates select="$prev" mode="title.ref"/>
+            <xsl:apply-templates select="$prev//title"/>
             <xsl:text>&#160;</xsl:text>
           </td>
           <td width="34%" align="center">
@@ -217,7 +219,7 @@ style="position : absolute;
           </td>
           <td width="33%" align="right">
             <xsl:text>&#160;</xsl:text>
-            <xsl:apply-templates select="$next" mode="title.ref"/>
+            <xsl:apply-templates select="$next//title"/>
           </td>
         </tr>
       </table>
