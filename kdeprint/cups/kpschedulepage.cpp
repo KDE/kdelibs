@@ -26,6 +26,7 @@
 #include <qdatetimeedit.h>
 #include <qdatetime.h>
 #include <qlineedit.h>
+#include <qwhatsthis.h>
 #include <klocale.h>
 #include <kseparator.h>
 #include <knuminput.h>
@@ -35,6 +36,56 @@
 KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 : KPrintDialogPage(parent, name)
 {
+       QString whatsThisBillingInfo = i18n(     " <qt> <p>Insert a meaningfull string here to associate"
+						" the current print job with a certain account. This"
+						" string will appear in the CUPS \"page_log\" to help"
+						" with the print accounting in your organisation. (Leave"
+						" it empty if you don't need it.)"
+						" <p> It is useful for people"
+						" who print on behalf of different \"customers\", like"
+						" print service bureaus, letter shops, press and prepress"
+						" companies, or secretaries who serve different bosses, etc."
+                                                " </qt>" );
+
+       QString whatsThisScheduledPrinting = i18n(" <qt> <p>Scheduled printing lets you control the time "
+						" of the actual printout, while you can still send away your"
+						" job *now* and have it out of your way."
+						" <p> Especially useful"
+						" is the \"Never (hold indefinitely)\" option. It allows you"
+						" to park your job until a time when you (or a printer admin)"
+						" decides to manually release it."
+						" <p> This is often required in"
+						" enterprise environments, where you normally are not"
+						" allowed to directly and immediately access the huge production"
+						" printers in your <em>Central Repro Department</em>. However it"
+						" is OK to send jobs to the queue which is under the control of the"
+						" operators (who, after all, need to make sure that the 10.000"
+						" sheets of pink paper which is required by the Marketing"
+						" Department for a particular job are available and loaded"
+						" into the paper trays...   <b>;-)    )</b> "
+                                                " </qt>" );
+
+       QString whatsThisPageLabel = i18n(       " <qt> <p>Page Labels are printed by CUPS at the top and bottom"
+						" of each page. They appear on the pages surrounded by a little"
+						" frame box."
+						" <p>They contain any string you type into the line edit field."
+                                                " </qt>" );
+
+       QString whatsThisJobPriority = i18n(     " <qt> <p>Usually CUPS prints all jobs per queue according to"
+						" the \"FIFO\" priniciple: <em>First In, First Out</em>."
+						" <p> The"
+						" job priority option lets you re-order the queue according"
+						" to your needs."
+						" <p> It works in both directions: you can increase"
+						" as well as decrease priorities. (Usually you can only control"
+						" your *own* jobs)."
+						" <p> Since the default job priority is \"50\", any"
+						" job sent with f.e. \"49\" will printed only after all those"
+						" others have finished. And a"
+						" \"51\" or higher priority job will go right at the top of"
+						" a populated queue (if no other, higher prioritized one is present)"
+                                                " </qt>" );
+
 	setTitle(i18n("Advanced Options"));
 	setOnlyRealPrinters(true);
 
@@ -55,22 +106,31 @@ KPSchedulePage::KPSchedulePage(QWidget *parent, const char *name)
 	m_time->insertItem(i18n("Second Shift (4 pm - 12 am)"));
 	m_time->insertItem(i18n("Third Shift (12 am - 8 am)"));
 	m_time->insertItem(i18n("Specified Time"));
+        QWhatsThis::add(m_time, whatsThisScheduledPrinting);
 	m_tedit = new QTimeEdit(this);
 	m_tedit->setAutoAdvance(true);
 	m_tedit->setTime(QTime::currentTime());
 	m_tedit->setEnabled(false);
+        QWhatsThis::add(m_tedit, whatsThisScheduledPrinting);
 	m_billing = new QLineEdit(this);
+        QWhatsThis::add(m_billing, whatsThisBillingInfo);
 	m_pagelabel = new QLineEdit(this);
+        QWhatsThis::add(m_pagelabel, whatsThisPageLabel);
 	m_priority = new KIntNumInput(50, this);
+        QWhatsThis::add(m_priority, whatsThisJobPriority);
 	m_priority->setRange(1, 100, 10, true);
 
 	QLabel	*lab = new QLabel(i18n("&Schedule printing:"), this);
 	lab->setBuddy(m_time);
+        QWhatsThis::add(lab, whatsThisScheduledPrinting);
 	QLabel	*lab1 = new QLabel(i18n("&Billing information:"), this);
+        QWhatsThis::add(lab1, whatsThisBillingInfo);
 	lab1->setBuddy(m_billing);
 	QLabel	*lab2 = new QLabel(i18n("T&op/Bottom page label:"), this);
+        QWhatsThis::add(lab2, whatsThisPageLabel);
 	lab2->setBuddy(m_pagelabel);
 	m_priority->setLabel(i18n("&Job priority:"), Qt::AlignVCenter|Qt::AlignLeft);
+        QWhatsThis::add(m_priority, whatsThisJobPriority);
 
 	KSeparator	*sep0 = new KSeparator(this);
 	sep0->setFixedHeight(10);

@@ -25,12 +25,22 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <klocale.h>
+#include <qwhatsthis.h>
 
 PluginComboBox::PluginComboBox(QWidget *parent, const char *name)
 :QWidget(parent, name)
 {
+        QString whatsThisCurrentPrintsystem = i18n(" <qt> This combo box shows (and lets you select)"
+						" a print subsystem to be used by KDEPrint. (This print"
+						" subsystem must, of course, be installed inside your"
+						" Operating System.) KDEPrint usually auto-detects it."
+						" Most Linux distributions have \"CUPS\", the <em>Common"
+						" Unix Printing System</em>." 
+                                                " </qt>" );
+
 	m_combo = new QComboBox(this, "PluginCombo");
 	QLabel	*m_label = new QLabel(i18n("Print s&ystem currently used:"), this);
+        QWhatsThis::add(m_label, whatsThisCurrentPrintsystem);
 	m_label->setAlignment(AlignVCenter|AlignRight);
 	m_label->setBuddy(m_combo);
 	m_plugininfo = new QLabel("Plugin information", this);

@@ -19,6 +19,11 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+/* 
+ *  "WhatsThis" help items added by Kurt Pfeifle, August 2003, 
+ *  same copyright as above.
+ **/
+
 #include "kprintdialog.h"
 #include "kprinter.h"
 #include "kprinterimpl.h"
@@ -46,6 +51,7 @@
 #include <kmessagebox.h>
 #include <qdir.h>
 #include <qtooltip.h>
+#include <qwhatsthis.h>
 
 #include <klocale.h>
 #include <kiconloader.h>
@@ -85,6 +91,152 @@ public:
 KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 : KDialog(parent,name,true)
 {
+	//WhatsThis strings.... (added by pfeifle@kde.org)
+	QString whatsThisLocationLabel = i18n(  " <qt> The <em>Location</em> may describe where the"
+						" selected printer is located. The Location description is created"
+						" by the admin of the print system (or may be"
+						" left empty)."
+						" </qt>" );
+	QString whatsThisPrinterType = i18n(    " <qt> The <em>Type</em> indicates your printer type."
+						" </qt>" );
+	QString whatsThisPrinterState = i18n(   " <qt> The <em>State</em> indicates the state of the"
+						" print queue on the print server (which could be your localhost). The"
+						" state may be 'Idle'. 'Processing', 'Stopped', 'Paused' or similar."
+						" </qt>" );
+	QString whatsThisPrinterComment = i18n( " <qt> The <em>Comment</em> may describe the selected"
+						" printer. This comment is created by the admin of the"
+						" print system (or may be left empty)."
+						" </qt>" );
+	QString whatsThisPrinterSelect = i18n(  " <qt>Use this combo box to select the printer you want to print"
+						" to. If you only find the <em>KDE special printers</em> -- which save"
+						" jobs to disk (as PostScript- or PDF-files), or deliver jobs via"
+						" e-Mail (as a PDF"
+						" attachment) -- but are missing a real printer, you need to..."
+						" <ul>"
+						" <li>...either create a local printer with the help of the <em>KDE"
+						" Add Printer Wizard</em> (available for the CUPS and RLPR printing"
+						" systems (click button to the left of the 'Properties' button),</li>"
+						" <li>...or, if you use CUPS, you can try and connect to a remote"
+						" CUPS print server (clicking the <em>System Options...</em> button"
+						" below. A new dialog opens: here click on the <em>CUPS server</em>"
+						" icon and fill in the information required to use the remote"
+						" CUPS server.</li>"
+						" </ul>"
+						" </qt>" );
+	QString whatsThisPrintJobProperties = i18n( " <qt> This button beams you to the place where you"
+						" can decide about all supported print job options."
+						" </qt>" );
+	QString whatsThisPrinterFilter = i18n(  " <qt> This button reduces the list of visible printers"
+						" to a shorter, more convenient, pre-defined list."
+						" It is particularly useful in enterprise environments"
+						" with lots of printers. The default is to show *all* printers."
+						" To create a personal filter list, click on the"
+						" <em>System Options...</em> button at the bottom of this dialog,"
+						" and in the new dialog select <em>Filter</em> (left column in the"
+						" <em>KDE Print Configuration</em> dialog)."
+						" </qt>" );
+	QString whatsThisAddPrinterWizard = i18n( "<qt> This button starts the KDE Add Printer Wizard."
+						" (<b>NOT</b> if you use <em>Generic LPD</em>"
+						" or <em>LPRng</em>, or <em>Print Through an External Program</em>.)"
+						" Use the Wizard (with <em>CUPS</em> or <em>RLPR</em>) to add locally"
+						" defined printers to your system."
+						" </qt>" );
+	QString whatsThisExternalPrintCommand = i18n( " <qt> You can enter any command that"
+						" would also print for you in a <em>konsole</em> window. <br>"
+						" <b>Example:</b> <pre>a2ps -P &lt;printername&gt; --medium=A3</pre>."
+						" </qt>" );
+	QString whatsThisExpandCollapse = i18n( " <qt>This button expands or reduces the KDE"
+						" printing dialog."
+						" KDEPrint will remember what you do here; next time, it will"
+						" start this dialog 'expanded' or 'collapsed', depending"
+						" on the mode you are using this time...."
+						" </qt>" );
+	QString whatsThisSystemOptions = i18n(  " <qt> This button starts a new dialog where you can adjust various"
+  						" settings of your printing system. Amongst them:"
+						" <ul><li> Should KDE"
+						" applications embed all fonts into the PostScript they"
+ 						" generate for printing?"
+						" <li> Should KDE use an external PostScript viewer"
+						" like <em>gv</em>for print page previews?"
+						" <li> Should KDEPrint use a local or a remote CUPS server?,"
+						" </ul> and many more.... "
+					        " </qt>" );
+
+	QString whatsThisHelpButton = i18n(     " <qt> This button leads you to the complete <em>KDEPrint"
+						" Manual</em>."
+					        " </qt>" );
+
+	QString whatsThisCancelButton = i18n(   " <qt> This button cancels your print job and quits the"
+						" kprinter dialog."
+					        " </qt>" );
+
+	QString whatsThisPrintButton = i18n(    " <qt> This button sends the job to the printing process."
+						" If you are sending non-PostScript files, you may be"
+						" asked if you want KDE to convert the files into PostScript,"
+						" or if you want your print subsystem (like CUPS) to do this."
+					        " </qt>" );
+
+	QString whatsThisKeepDialogOpenCheckbox = i18n( " <qt> If you enable this checkbox, the printing dialog"
+						" stays open after you hit the <em>Print</em> button. This is"
+						" especially useful, if you need to \"play\" with various"
+						" print settings (like color matching for an inkjet printer)"
+						" or if you want to send your job to multiple printers (one after"
+						" the other) to have it finished more quickly."
+					        " </qt>" );
+
+	QString whatsThisOutputFileLabel = i18n(" <qt> The \"Output file:\" shows you where your file will be"
+						" saved if you decide to \"Print to File\" your job, using one of the"
+						" KDE <em>Special Printers</em> named \"Print to File (PostScript)\""
+						" or \"Print to File (PDF)\". Choose a name and location that suits"
+						" you by using the button and/or editing the line on the right."
+					        " </qt>" );
+
+	QString whatsThisOutputFileLineedit = i18n(" <qt> Edit this line to create a path and filename that suits"
+						" you. (Only available if you \"Print to File\")"
+					        " </qt>" );
+
+	QString whatsThisOutputFileButton = i18n(" <qt> This button calls the \"File Open\" dialog to let you"
+						" choose a directory and file name where your \"Print-to-File\""
+						" job should be saved."
+					        " </qt>" );
+
+	QString whatsThisAddFileButton = i18n(  " <qt> This button calls the \"File Open\" dialog to let you"
+						" select a file for printing. Note, that "
+						" <ul><li>you can select ASCII or International Text, PDF,"
+						" PostScript, JPEG, TIFF, PNG, GIF and many other graphic"
+						" formats."
+						" <li>you can select various files from different paths"
+						" and send them as one \"multi-file job\" to the printing"
+						" system."
+						" </ul>"
+					        " </qt>" );
+
+	QString whatsThisRemoveFileButton = i18n(" <qt> This button removes the highlighted file from the"
+						" list of to-be-printed files."
+					        " </qt>" );
+
+	QString whatsThisOpenFileButton = i18n( " <qt> This button tries to open the hightlighted file, so"
+						" you can view or edit it before you send it to the printing"
+						" system."
+					        " </qt>" );
+
+	QString whatsThisMoveFileUpButton = i18n(" <qt> This button moves the highlighted file up in the list"
+						" of files to be printed. (In effect, this changes the order"
+						" of the files' printout."
+					        " </qt>" );
+
+	QString whatsThisMoveFileDownButton = i18n(" <qt> This button moves the highlighted file down in the list"
+						" of files to be printed. (In effect, this changes the order"
+						" of the files' printout."
+					        " </qt>" );
+
+	QString whatsThisPreviewCheckBox = i18n(" <qt> Enable this checkbox if you want to peak a preview of"
+						" your printout. A preview lets you check if for instance your"
+ 						" your intended \"poster\" or \"pamphlet\" layout imposition"
+						" looks like you intended, without wasting paper first, and it"
+						" also lets you cancel the job if something looks wrong. "
+					        " </qt>" );
+
 	d = new KPrintDialogPrivate;
 
 	d->m_pages.setAutoDelete(false);
@@ -94,19 +246,32 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	// widget creation
 	QGroupBox	*m_pbox = new QGroupBox(0,Qt::Vertical,i18n("Printer"), this);
 	d->m_type = new QLabel(m_pbox);
+	QWhatsThis::add(d->m_type, whatsThisPrinterType);
 	d->m_state = new QLabel(m_pbox);
+	QWhatsThis::add(d->m_state, whatsThisPrinterState);
 	d->m_comment = new QLabel(m_pbox);
+	QWhatsThis::add(d->m_comment, whatsThisPrinterComment);
 	d->m_location = new QLabel(m_pbox);
+	QWhatsThis::add(d->m_location, whatsThisLocationLabel);
+
 	d->m_printers = new TreeComboBox(m_pbox);
+	QWhatsThis::add(d->m_printers, whatsThisPrinterSelect);
 	d->m_printers->setMinimumHeight(25);
 	QLabel	*m_printerlabel = new QLabel(i18n("&Name:"), m_pbox);
+	QWhatsThis::add(m_printerlabel, whatsThisPrinterSelect);
 	QLabel	*m_statelabel = new QLabel(i18n("Status", "State:"), m_pbox);
+	QWhatsThis::add(m_statelabel, whatsThisPrinterState);
 	QLabel	*m_typelabel = new QLabel(i18n("Type:"), m_pbox);
+	QWhatsThis::add(m_typelabel, whatsThisPrinterType);
 	QLabel	*m_locationlabel = new QLabel(i18n("Location:"), m_pbox);
+	QWhatsThis::add(m_locationlabel, whatsThisLocationLabel);
 	QLabel	*m_commentlabel = new QLabel(i18n("Comment:"), m_pbox);
+	QWhatsThis::add(m_commentlabel, whatsThisPrinterComment);
 	m_printerlabel->setBuddy(d->m_printers);
 	d->m_properties = new KPushButton(KGuiItem(i18n("P&roperties..."), "edit"), m_pbox);
+	QWhatsThis::add( d->m_properties, whatsThisPrintJobProperties);
 	d->m_options = new KPushButton(KGuiItem(i18n("System Op&tions..."), "kdeprint_configmgr"), this);
+	QWhatsThis::add(d->m_options,whatsThisSystemOptions);
 	d->m_default = new KPushButton(KGuiItem(i18n("Set as &Default"), "kdeprint_defaultsoft"), m_pbox);
 	d->m_filter = new QPushButton(m_pbox);
 	d->m_filter->setPixmap(SmallIcon("filter"));
@@ -114,28 +279,41 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	d->m_filter->setToggleButton(true);
 	d->m_filter->setOn(KMManager::self()->isFilterEnabled());
 	QToolTip::add(d->m_filter, i18n("Toggle printer filtering"));
+	QWhatsThis::add(d->m_filter, whatsThisPrinterFilter);
 	d->m_wizard = new QPushButton(m_pbox);
 	d->m_wizard->setPixmap(SmallIcon("wizard"));
 	d->m_wizard->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
 	QToolTip::add(d->m_wizard, i18n("Add printer..."));
+	QWhatsThis::add(d->m_wizard, whatsThisAddPrinterWizard);
 	d->m_ok = new KPushButton(KGuiItem(i18n("&Print"), "fileprint"), this);
+        QWhatsThis::add( d->m_ok, whatsThisPrintButton);
 	d->m_ok->setDefault(true);
 	d->m_ok->setEnabled( false );
 	QPushButton	*m_cancel = new KPushButton(KStdGuiItem::cancel(), this);
+        QWhatsThis::add(m_cancel, whatsThisCancelButton);
 	d->m_preview = new QCheckBox(i18n("Previe&w"), m_pbox);
+	QWhatsThis::add(d->m_preview, whatsThisPreviewCheckBox);
 	d->m_filelabel = new QLabel(i18n("O&utput file:"), m_pbox);
+	QWhatsThis::add(d->m_filelabel,whatsThisOutputFileLabel);
 	d->m_file = new KURLRequester(QDir::homeDirPath()+"/print.ps", m_pbox);
+	QWhatsThis::add(d->m_file,whatsThisOutputFileLineedit);
 	d->m_file->setEnabled(false);
 	d->m_filelabel->setBuddy(d->m_file);
 	d->m_cmdlabel = new QLabel(i18n("Print co&mmand:"), m_pbox);
+        QWhatsThis::add( d->m_cmdlabel, whatsThisExternalPrintCommand);
+
 	d->m_cmd = new QLineEdit(m_pbox);
+        QWhatsThis::add( d->m_cmd, whatsThisExternalPrintCommand);
 	d->m_cmdlabel->setBuddy(d->m_cmd);
 	d->m_dummy = new QVBox(this);
 	d->m_plugin = new PluginComboBox(this);
 	d->m_extbtn = new KPushButton(this);
 	QToolTip::add(d->m_extbtn, i18n("Show/hide advanced options"));
+	QWhatsThis::add(d->m_extbtn, whatsThisExpandCollapse);
 	d->m_persistent = new QCheckBox(i18n("&Keep this dialog open after printing"), this);
+        QWhatsThis::add( d->m_persistent, whatsThisKeepDialogOpenCheckbox);
 	QPushButton	*m_help = new KPushButton(KGuiItem(i18n("&Help"), "help"), this);
+        QWhatsThis::add( m_help, whatsThisHelpButton);
 
 	QWidget::setTabOrder( d->m_printers, d->m_filter );
 	QWidget::setTabOrder( d->m_filter, d->m_wizard );
