@@ -39,7 +39,7 @@ uidata_DATA = kprintpreviewui.rc
 uidatadir = $(kde_confdir)/ui
 
 # Test page
-printdata_DATA = testprint.ps specials.xml
+printdata_DATA = testprint.ps specials.desktop
 printdatadir = $(kde_datadir)/kdeprint
 
 # Services

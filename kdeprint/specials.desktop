@@ -1,0 +1,26 @@
+[General]
+Number=3
+
+[Printer 0]
+Name=Print to file (PS)
+Description=Print to local file
+Icon=filesave
+Command=
+File=1
+Location=
+
+[Printer 1]
+Name=PDF writer
+Description=Write PDF/Acrobat file
+Icon=acroread
+Command=ps2pdf -sPAPERSIZE=%psl %in %out
+File=1
+Location=
+
+[Printer 2]
+Name=Send To Fax
+Description=Send to serial fax/modem
+Icon=kfax
+Command=ksendfax %in
+File=0
+Location=

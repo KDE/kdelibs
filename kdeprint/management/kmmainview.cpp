@@ -32,6 +32,7 @@
 #include "kmwizard.h"
 #include "kmvirtualmanager.h"
 #include "kmconfigdialog.h"
+#include "kmspecialprinterdlg.h"
 
 #include <qtimer.h>
 #include <qsplitter.h>
@@ -321,7 +322,10 @@ void KMMainView::slotRemove()
 		bool	result(false);
 		if (KMessageBox::warningYesNo(this,i18n("<nobr>Do you really want to remove <b>%1</b> ?</nobr>").arg(m_current->printerName())) == KMessageBox::Yes)
 			if (m_current->isSpecial())
-				showErrorMsg(i18n("Not implemented yet."),false);
+			{
+				if (!(result=m_manager->removeSpecialPrinter(m_current)))
+					showErrorMsg(i18n("Unable to remove special printer <b>%1</b>.").arg(m_current->printerName()));
+			}
 			else if (!(result=m_manager->removePrinter(m_current)))
 				showErrorMsg(i18n("Unable to remove printer <b>%1</b>.").arg(m_current->printerName()));
 		KMTimer::releaseTimer(result);
@@ -333,9 +337,19 @@ void KMMainView::slotConfigure()
 	if (m_current)
 	{
 		KMTimer::blockTimer();
+		bool	needRefresh(false);
 		if (m_current->isSpecial())
 		{
-			showErrorMsg(i18n("Not implemented yet."),false);
+			KMSpecialPrinterDlg	dlg(this);
+			dlg.setPrinter(m_current);
+			if (dlg.exec())
+			{
+				KMPrinter	*prt = dlg.printer();
+				if (prt->name() != m_current->name())
+					m_manager->removeSpecialPrinter(m_current);
+				m_manager->createSpecialPrinter(prt);
+				needRefresh = true;
+			}
 		}
 		else
 		{
@@ -353,7 +367,7 @@ void KMMainView::slotConfigure()
 			else
 				showErrorMsg(i18n("Unable to load a valid driver for printer <b>%1</b>.").arg(m_current->printerName()));
 		}
-		KMTimer::releaseTimer(false);
+		KMTimer::releaseTimer(needRefresh);
 	}
 }
 
@@ -473,7 +487,12 @@ void KMMainView::slotManagerConfigure()
 void KMMainView::slotAddSpecial()
 {
 	KMTimer::blockTimer();
-	KMessageBox::error(this,i18n("Not implemented yet."));
+	KMSpecialPrinterDlg	dlg(this);
+	if (dlg.exec())
+	{
+		KMPrinter	*prt = dlg.printer();
+		m_manager->createSpecialPrinter(prt);
+	}
 	KMTimer::releaseTimer(true);
 }
 #include "kmmainview.moc"

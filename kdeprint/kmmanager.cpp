@@ -334,3 +334,29 @@ bool KMManager::validateDbDriver(KMDBEntry*)
 {
 	return true;
 }
+
+bool KMManager::createSpecialPrinter(KMPrinter *p)
+{
+	if (p && p->isSpecial())
+	{
+		KMPrinter	*old = findPrinter(p->name());
+		if (old && !old->isSpecial())
+		{
+			setErrorMsg(i18n("Can't overwrite regular printer with special printer settings."));
+			return false;
+		}
+		// if the special printer already exists, it will be overwritten
+		addPrinter(p);
+		return m_specialmgr->savePrinters();
+	}
+	return false;
+}
+
+bool KMManager::removeSpecialPrinter(KMPrinter *p)
+{
+	if (p && p->isSpecial() && m_printers.findRef(p) != -1)
+	{
+		m_printers.removeRef(p);
+		return m_specialmgr->savePrinters();
+	}
+}

@@ -80,6 +80,10 @@ public:
 	bool setDefaultPrinter(const QString& name);
 	int printerOperationMask() const 	{ return m_printeroperationmask; }
 
+	// special printer management functions
+	bool createSpecialPrinter(KMPrinter *p);
+	bool removeSpecialPrinter(KMPrinter *p);
+
 	// printer listing functions
 	KMPrinter* findPrinter(const QString& name);
 	QList<KMPrinter>* printerList(bool reload = true);

@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<Specials>
-  <Printer name="Print to file (PS)" desc="Print PS to local file" command="" file="1" icon="filesave" />
-  <Printer name="PDF writer" desc="Print PDF to local file (needs GS)" command="ps2pdf -sPAPERSIZE=%psl %in %out" file="1" icon="acroread" />
-  <Printer name="Send To Fax" desc="Send to external fax program" command="ksendfax %in" file="0" icon="kfax" />
-</Specials>

@@ -21,10 +21,8 @@
 #include "kmmanager.h"
 #include "kmprinter.h"
 
-#include <qdom.h>
-#include <qfile.h>
-#include <qtextstream.h>
 #include <kstddirs.h>
+#include <ksimpleconfig.h>
 
 KMSpecialManager::KMSpecialManager(KMManager *parent, const char *name)
 : QObject(parent,name), m_mgr(parent), m_loaded(false)
@@ -33,72 +31,61 @@ KMSpecialManager::KMSpecialManager(KMManager *parent, const char *name)
 
 bool KMSpecialManager::savePrinters()
 {
-	QFile	f(locate("data","kdeprint/specials.xml"));
-	QDomDocument	doc;
-	if (!f.open(IO_ReadOnly))
-		return false;
-	doc.setContent(&f);
-	f.close();
-	f.setName(locateLocal("data","kdeprint/specials.xml"));
+	KSimpleConfig	conf(locateLocal("data","kdeprint/specials.desktop"));
 
-	if (f.open(IO_WriteOnly))
+	// first clear existing groups
+	conf.setGroup("General");
+	int	n = conf.readNumEntry("Number",0);
+	for (int i=0;i<n;i++)
+		conf.deleteGroup(QString::fromLatin1("Printer %1").arg(i),true);
+
+	// then add printers
+	n = 0;
+	QListIterator<KMPrinter>	it(m_mgr->m_printers);
+	for (;it.current();++it)
 	{
-		QTextStream	t(&f);
-		QDomElement	root = doc.documentElement();
-		root.clear();
-		QListIterator<KMPrinter>	it(m_mgr->m_printers);
-		for (;it.current();++it)
-		{
-			if (!it.current()->isSpecial()) continue;
-			KMPrinter	*printer = it.current();
-			QDomElement	elem = doc.createElement("Printer");
-			elem.setAttribute("name",printer->name());
-			elem.setAttribute("desc",printer->description());
-			elem.setAttribute("command",printer->option("kde-specical-command"));
-			elem.setAttribute("file",printer->option("kde-special-file"));
-			elem.setAttribute("icon",printer->pixmap());
-			root.appendChild(elem);
-		}
-		t << doc;
-		return true;
+		if (!it.current()->isSpecial()) continue;
+		conf.setGroup(QString::fromLatin1("Printer %1").arg(n));
+		conf.writeEntry("Name",it.current()->name());
+		conf.writeEntry("Description",it.current()->description());
+		conf.writeEntry("Location",it.current()->location());
+		conf.writeEntry("Command",it.current()->option("kde-special-command"));
+		conf.writeEntry("File",it.current()->option("kde-special-file"));
+		conf.writeEntry("Icon",it.current()->pixmap());
+		n++;
 	}
-	else
-		return false;
+	conf.setGroup("General");
+	conf.writeEntry("Number",n);
+
+	return true;
 }
 
 bool KMSpecialManager::loadPrinters()
 {
 	if (m_loaded) return true;
 
-	QFile	f(locate("data","kdeprint/specials.xml"));
-	if (f.exists() && f.open(IO_ReadOnly))
+	KSimpleConfig	conf(locate("data","kdeprint/specials.desktop"));
+	conf.setGroup("General");
+	int	n = conf.readNumEntry("Number",0);
+	for (int i=0;i<n;i++)
 	{
-		QDomDocument	doc;
-		doc.setContent(&f);
-		QDomNode	node = doc.documentElement().firstChild();
-		while (!node.isNull())
-		{
-			QDomElement	elem = node.toElement();
-			if (!elem.isNull() && elem.tagName() == "Printer")
-			{
-				KMPrinter	*printer = new KMPrinter;
-				printer->setName(elem.attribute("name"));
-				printer->setPrinterName(printer->name());
-				printer->setDescription(elem.attribute("desc"));
-				printer->setOption("kde-special-command",elem.attribute("command"));
-				printer->setOption("kde-special-file",elem.attribute("file","0"));
-				printer->setPixmap(elem.attribute("icon","unknown"));
-				printer->setType(KMPrinter::Special);
-				printer->setState(KMPrinter::Idle);
-				m_mgr->addPrinter(printer);
-			}
-			node = node.nextSibling();
-		}
-		m_loaded = true;
-		return true;
+		QString	grpname = QString::fromLatin1("Printer %1").arg(i);
+		if (!conf.hasGroup(grpname)) continue;
+		conf.setGroup(grpname);
+		KMPrinter	*printer = new KMPrinter;
+		printer->setName(conf.readEntry("Name"));
+		printer->setPrinterName(printer->name());
+		printer->setDescription(conf.readEntry("Description"));
+		printer->setLocation(conf.readEntry("Location"));
+		printer->setOption("kde-special-command",conf.readEntry("Command"));
+		printer->setOption("kde-special-file",conf.readEntry("File"));
+		printer->setPixmap(conf.readEntry("Icon","unknown"));
+		printer->setType(KMPrinter::Special);
+		printer->setState(KMPrinter::Idle);
+		m_mgr->addPrinter(printer);
 	}
-	else
-		return false;
+
+	return true;
 }
 
 void KMSpecialManager::refresh()
