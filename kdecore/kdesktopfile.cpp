@@ -260,3 +260,8 @@ KDesktopFile::sortOrder() const
 void KDesktopFile::virtual_hook( int id, void* data )
 { KConfig::virtual_hook( id, data ); }
 
+QString KDesktopFile::readDocPath() const
+{
+	return readEntry( "DocPath" );
+}
+

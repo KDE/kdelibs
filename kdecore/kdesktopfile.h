@@ -164,6 +164,11 @@ public:
    */
   QString resource() const;
 
+  /**
+   * @return The value of the "DocPath=" entry.
+   */
+  QString readDocPath() const;
+
   QStringList sortOrder() const;
 
 
