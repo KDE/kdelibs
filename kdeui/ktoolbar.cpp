@@ -1241,11 +1241,14 @@ void KToolBar::rebuildLayout()
 void KToolBar::childEvent( QChildEvent *e )
 {
     if ( e->child()->isWidgetType() ) {
-        QWidget * w = (QWidget*)e->child();
+        QWidget * w = dynamic_cast<QWidget *>(e->child());
+        if (!w || (::qstrcmp( "qt_dockwidget_internal", w->name()) == 0))
+        {
+           QToolBar::childEvent( e );
+           return;
+        }
         if ( e->type() == QEvent::ChildInserted ) {
-            if ( !dynamic_cast<QPopupMenu *>(e->child()) && // e->child() is not a QPopupMenu
-                 ::qstrcmp( "qt_dockwidget_internal", e->child()->name() ) != 0 ) {
-
+            if ( !dynamic_cast<QPopupMenu *>(w)) { // e->child() is not a QPopupMenu
                 // prevent items that have been explicitly inserted by insert*() from
                 // being inserted again
                 if ( !widget2id.contains( w ) )
@@ -1400,7 +1403,18 @@ void KToolBar::resizeEvent( QResizeEvent *e )
     setUpdatesEnabled( false );
     QToolBar::resizeEvent( e );
     if (b)
-       d->repaintTimer.start( 100, true );
+    {
+      if (layoutTimer->isActive())
+      {
+         // Wait with repainting till layout is complete.
+         d->repaintTimer.start( 100, true );
+      }
+      else
+      {
+         // Repaint now
+         slotRepaint();
+      }
+    }
 }
 
 void KToolBar::slotIconChanged(int group)
