@@ -61,15 +61,13 @@ KGuiItem::KGuiItem() {
     d = new KGuiItemPrivate;
 }
 KGuiItem::KGuiItem( const QString &text, const QIconSet &iconSet, const QString &iconName,
-                    const QString &toolTip, const QString &whatsThis, 
-                    const QString &statusText ) {
+                    const QString &toolTip, const QString &whatsThis ) {
     d = new KGuiItemPrivate;
     d->m_text = text;
     d->m_iconSet = iconSet;
     d->m_iconName = iconName;
     d->m_toolTip =  toolTip;
     d->m_whatsThis = whatsThis;
-    d->m_statusText = statusText;
 }
 
 KGuiItem::KGuiItem( const KGuiItem &rhs )
@@ -118,9 +116,6 @@ QString KGuiItem::toolTip() const {
 QString KGuiItem::whatsThis() const {
     return d->m_whatsThis;
 }
-QString KGuiItem::statusText() const {
-    return d->m_toolTip;
-}
 bool KGuiItem::isEnabled( ) const {
     return d->m_enabled;
 }
@@ -135,9 +130,6 @@ void KGuiItem::setIconName( const QString &iconName ) {
 }
 void KGuiItem::setToolTip( const QString &toolTip) {
     d->m_toolTip = toolTip;
-}
-void KGuiItem::setStatusText( const QString &statustext ) {
-    d->m_toolTip = statustext;
 }
 void KGuiItem::setWhatsThis( const QString &whatsThis ) {
     d->m_whatsThis = whatsThis;

@@ -34,8 +34,7 @@ public:
               const QIconSet &iconSet=QIconSet(), 
               const QString &iconName=QString::null,
               const QString &toolTip=QString::null, 
-              const QString &whatsThis=QString::null,
-              const QString &statusText=QString::null );
+              const QString &whatsThis=QString::null);
 
     KGuiItem( const KGuiItem &rhs );
     KGuiItem &operator=( const KGuiItem &rhs );
@@ -48,7 +47,6 @@ public:
     QString iconName() const;
     QString toolTip() const;
     QString whatsThis() const;
-    QString statusText() const;
     bool isEnabled() const;
 
     void setText( const QString &text );
@@ -56,7 +54,6 @@ public:
     void setIconName( const QString &iconName );
     void setToolTip( const QString &tooltip );
     void setWhatsThis( const QString &whatsThis );
-    void setStatusText( const QString &statustext );
     void setEnabled( bool enable );
 
 private:
