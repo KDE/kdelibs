@@ -11,7 +11,10 @@
  */
 namespace KKeyServer
 {
-	// supplement enum KKey::ModFlag
+	/**
+	 * Supplement enum KKey::ModFlag
+	 * @since 3.1
+	 */
 	enum ExtraModFlag { MODE_SWITCH = 0x2000 };
 	
 	struct CodeMod	{ int code, mod; };

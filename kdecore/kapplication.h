@@ -950,6 +950,8 @@ public:
    * 
    * This is only useful for configuration modules such as krdb and should not be
    * used in normal circumstances.
+   * @return the QPalette
+   * @since 3.1
    */
   static QPalette createApplicationPalette();
 	  

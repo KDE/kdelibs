@@ -28,11 +28,37 @@
 #define KDE_VERSION_MINOR 0
 #define KDE_VERSION_RELEASE 9
 
+/**
+ * Namespace for general KDE functions.
+ */
 namespace KDE
 {
+    /**
+     * Returns the major number of KDE's version, e.g.
+     * 3 for KDE 3.1.2. 
+     * @return the major version number
+     * @since 3.1
+     */
     unsigned int versionMajor();
+    /**
+     * Returns the minor number of KDE's version, e.g.
+     * 1 for KDE 3.1.2. 
+     * @return the minor version number
+     * @since 3.1
+     */
     unsigned int versionMinor();
+    /**
+     * Returns the release of KDE's version, e.g.
+     * 2 for KDE 3.1.2. 
+     * @return the release number
+     * @since 3.1
+     */
     unsigned int versionRelease();
+    /**
+     * Returns the KDE version as string, e.g. "3.1.2".
+     * @return the KDE version. You can keep the string forever
+     * @since 3.1
+     */
     const char *versionString();
 };
 
