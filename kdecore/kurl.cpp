@@ -134,6 +134,7 @@ KURL::KURL( KURL & _base_url, const char * _rel_url )
     dir_part = _base_url.dir_part;
     user_part = _base_url.user_part;
     passwd_part = _base_url.passwd_part;
+    search_part = _base_url.search_part;
     bNoPath = _base_url.bNoPath;
     detach();
     
@@ -154,7 +155,7 @@ void KURL::parse( const char * _url )
     // defaults
     malformed = false;
     path_part_decoded = 0;
-    search_part = "";
+    search_part = 0L;
     bNoPath = false;
 
     if ( _url[0] == '/' )
@@ -513,7 +514,7 @@ QString KURL::url() const
     if( !path_part.isEmpty() && hasPath() )
 	url += path_part; 
 
-    if( !search_part.isNull())
+    if( !search_part.isEmpty())
     	url += "?" + search_part;
     
     if( !ref_part.isEmpty() )
