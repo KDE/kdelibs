@@ -51,6 +51,13 @@ public:
     * the dictionary gets saved.
     **/
    void add(const QString &key, KSycocaEntry *payload);
+
+   /**
+    * Removes the 'payload' from the dictionary with key 'key'.
+    * 
+    * Not very fast, use with care O(N)
+    **/
+   void remove(const QString &key);
    
    /**
     * Looks up an entry identified by 'key'.

@@ -73,6 +73,12 @@ public:
    virtual void addEntry(KSycocaEntry *newEntry, const char *resource);
 
    /**
+    * Remove an entry
+    * Not very fast, use with care. O(N)
+    */
+   void removeEntry(KSycocaEntry *newEntry);
+
+   /**
     * Read an entry from the database
     */
    virtual KSycocaEntry *createEntry(int offset)=0;

@@ -149,6 +149,19 @@ KSycocaFactory::addEntry(KSycocaEntry *newEntry, const char *)
    m_sycocaDict->add( name, newEntry );
 }
 
+void 
+KSycocaFactory::removeEntry(KSycocaEntry *newEntry)
+{
+   if (!m_entryDict) return; // Error! Function should only be called when
+                             // building database
+
+   if (!m_sycocaDict) return; // Error!
+
+   QString name = newEntry->name();
+   m_entryDict->remove( name );
+   m_sycocaDict->remove( name );
+}
+
 KSycocaEntry::List KSycocaFactory::allEntries()
 {
    KSycocaEntry::List list;

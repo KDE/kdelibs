@@ -94,6 +94,22 @@ KSycocaDict::add(const QString &key, KSycocaEntry *payload)
    string_entry *entry= new string_entry(key, payload);
    d->append(entry);
 }
+
+void 
+KSycocaDict::remove(const QString &key)
+{
+   if (d)
+   {
+      for(string_entry *entry=d->first(); entry; entry = d->next())
+      {
+         if (entry->keyStr == key)
+         {
+            d->remove();
+            break;
+         }
+      }
+   }
+}
    
 int 
 KSycocaDict::find_string(const QString &key )
