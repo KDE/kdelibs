@@ -494,6 +494,53 @@ Z &RArray<Z>::operator[](int index) {
 // Construct a new NETRootInfo object.
 
 NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmName,
+			 unsigned long properties[], int properties_size,
+                         int screen, bool doActivate)
+{
+
+#ifdef    NETWMDEBUG
+    fprintf(stderr, "NETRootInfo::NETRootInfo: using window manager constructor\n");
+#endif
+
+    p = new NETRootInfoPrivate;
+    p->ref = 1;
+
+    p->display = display;
+    p->name = nstrdup(wmName);
+
+    if (screen != -1) {
+	p->screen = screen;
+    } else {
+	p->screen = DefaultScreen(p->display);
+    }
+
+    p->root = RootWindow(p->display, p->screen);
+    p->supportwindow = supportWindow;
+    p->number_of_desktops = p->current_desktop = 0;
+    p->active = None;
+    p->clients = p->stacking = p->virtual_roots = (Window *) 0;
+    p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
+    p->kde_system_tray_windows = 0;
+    p->kde_system_tray_windows_count = 0;
+    setDefaultProperties();
+    if( properties_size > PROPERTIES_SIZE ) {
+        fprintf( stderr, "NETRootInfo::NETRootInfo(): properties array too large\n");
+        properties_size = PROPERTIES_SIZE;
+    }
+    for( int i = 0; i < properties_size; ++i )
+        p->properties[ i ] = properties[ i ];
+    // force support for Supported and SupportingWMCheck for window managers
+    p->properties[ PROTOCOLS ] |= ( Supported | SupportingWMCheck );
+    p->client_properties = DesktopNames; // the only thing that can't be changed by clients
+
+    role = WindowManager;
+
+    if (! netwm_atoms_created) create_atoms(p->display);
+
+    if (doActivate) activate();
+}
+
+NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmName,
 			 unsigned long properties, int screen, bool doActivate)
 {
 
@@ -515,13 +562,17 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
 
     p->root = RootWindow(p->display, p->screen);
     p->supportwindow = supportWindow;
-    p->protocols = properties;
     p->number_of_desktops = p->current_desktop = 0;
     p->active = None;
     p->clients = p->stacking = p->virtual_roots = (Window *) 0;
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
     p->kde_system_tray_windows = 0;
     p->kde_system_tray_windows_count = 0;
+    setDefaultProperties();
+    p->properties[ PROTOCOLS ] = properties;
+    // force support for Supported and SupportingWMCheck for window managers
+    p->properties[ PROTOCOLS ] |= ( Supported | SupportingWMCheck );
+    p->client_properties = DesktopNames; // the only thing that can't be changed by clients
 
     role = WindowManager;
 
@@ -557,13 +608,15 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
     p->rootSize.height = HeightOfScreen(ScreenOfDisplay(p->display, p->screen));
 
     p->supportwindow = None;
-    p->protocols = properties;
     p->number_of_desktops = p->current_desktop = 0;
     p->active = None;
     p->clients = p->stacking = p->virtual_roots = (Window *) 0;
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
     p->kde_system_tray_windows = 0;
     p->kde_system_tray_windows_count = 0;
+    p->client_properties = properties;
+    for( int i = 0; i < PROPERTIES_SIZE; ++i )
+        p->properties[ i ] = 0;
 
     role = Client;
 
@@ -597,6 +650,15 @@ NETRootInfo::~NETRootInfo() {
 }
 
 
+void NETRootInfo::setDefaultProperties()
+{
+    p->properties[ PROTOCOLS ] = Supported | SupportingWMCheck;
+    p->properties[ WINDOW_TYPES ] = Normal | Desktop | Dock | Toolbar | Menu
+        | Dialog;
+    p->properties[ STATES ] = Modal | Sticky | MaxVert | MaxHoriz | Shaded
+        | SkipTaskbar | StaysOnTop;
+}
+
 void NETRootInfo::activate() {
     if (role == WindowManager) {
 
@@ -605,15 +667,14 @@ void NETRootInfo::activate() {
 		"NETRootInfo::activate: setting supported properties on root\n");
 #endif
 
-	// force support for Supported and SupportingWMCheck for window managers
-	setSupported(p->protocols | Supported | SupportingWMCheck);
+	setSupported();
     } else {
 
 #ifdef    NETWMDEBUG
 	fprintf(stderr, "NETRootInfo::activate: updating client information\n");
 #endif
 
-	update(p->protocols);
+	update(p->client_properties);
     }
 }
 
@@ -854,9 +915,7 @@ void NETRootInfo::setDesktopViewport(int desktop, const NETPoint &viewport) {
 }
 
 
-void NETRootInfo::setSupported(unsigned long pr) {
-    p->protocols = pr;
-
+void NETRootInfo::setSupported() {
     if (role != WindowManager) {
 #ifdef    NETWMDEBUG
 	fprintf(stderr, "NETRootInfo::setSupported - role != WindowManager\n");
@@ -872,121 +931,143 @@ void NETRootInfo::setSupported(unsigned long pr) {
     atoms[0] = net_supported;
     atoms[1] = net_supporting_wm_check;
 
-    if (p->protocols & ClientList)
+    if (p->properties[ PROTOCOLS ] & ClientList)
 	atoms[pnum++] = net_client_list;
 
-    if (p->protocols & ClientListStacking)
+    if (p->properties[ PROTOCOLS ] & ClientListStacking)
 	atoms[pnum++] = net_client_list_stacking;
 
-    if (p->protocols & NumberOfDesktops)
+    if (p->properties[ PROTOCOLS ] & NumberOfDesktops)
 	atoms[pnum++] = net_number_of_desktops;
 
-    if (p->protocols & DesktopGeometry)
+    if (p->properties[ PROTOCOLS ] & DesktopGeometry)
 	atoms[pnum++] = net_desktop_geometry;
 
-    if (p->protocols & DesktopViewport)
+    if (p->properties[ PROTOCOLS ] & DesktopViewport)
 	atoms[pnum++] = net_desktop_viewport;
 
-    if (p->protocols & CurrentDesktop)
+    if (p->properties[ PROTOCOLS ] & CurrentDesktop)
 	atoms[pnum++] = net_current_desktop;
 
-    if (p->protocols & DesktopNames)
+    if (p->properties[ PROTOCOLS ] & DesktopNames)
 	atoms[pnum++] = net_desktop_names;
 
-    if (p->protocols & ActiveWindow)
+    if (p->properties[ PROTOCOLS ] & ActiveWindow)
 	atoms[pnum++] = net_active_window;
 
-    if (p->protocols & WorkArea)
+    if (p->properties[ PROTOCOLS ] & WorkArea)
 	atoms[pnum++] = net_workarea;
 
-    if (p->protocols & VirtualRoots)
+    if (p->properties[ PROTOCOLS ] & VirtualRoots)
 	atoms[pnum++] = net_virtual_roots;
 
-    if (p->protocols & CloseWindow)
+    if (p->properties[ PROTOCOLS ] & CloseWindow)
 	atoms[pnum++] = net_close_window;
 
 
     // Application window properties/messages
-    if (p->protocols & WMMoveResize)
+    if (p->properties[ PROTOCOLS ] & WMMoveResize)
 	atoms[pnum++] = net_wm_moveresize;
 
-    if (p->protocols & WMName)
+    if (p->properties[ PROTOCOLS ] & WMName)
 	atoms[pnum++] = net_wm_name;
 
-    if (p->protocols & WMVisibleName)
+    if (p->properties[ PROTOCOLS ] & WMVisibleName)
 	atoms[pnum++] = net_wm_visible_name;
 
-    if (p->protocols & WMIconName)
+    if (p->properties[ PROTOCOLS ] & WMIconName)
 	atoms[pnum++] = net_wm_icon_name;
 
-    if (p->protocols & WMVisibleIconName)
+    if (p->properties[ PROTOCOLS ] & WMVisibleIconName)
 	atoms[pnum++] = net_wm_visible_icon_name;
 
-    if (p->protocols & WMDesktop)
+    if (p->properties[ PROTOCOLS ] & WMDesktop)
 	atoms[pnum++] = net_wm_desktop;
 
-    if (p->protocols & WMWindowType) {
+    if (p->properties[ PROTOCOLS ] & WMWindowType) {
 	atoms[pnum++] = net_wm_window_type;
 
 	// Application window types
-	atoms[pnum++] = net_wm_window_type_normal;
-	atoms[pnum++] = net_wm_window_type_desktop;
-	atoms[pnum++] = net_wm_window_type_dock;
-	atoms[pnum++] = net_wm_window_type_toolbar;
-	atoms[pnum++] = net_wm_window_type_menu;
-	atoms[pnum++] = net_wm_window_type_dialog;
-/*	atoms[pnum++] = net_wm_window_type_utility;	##### UNCOMMENT WHEN IMPLEMENTED IN KWIN!!!
-	atoms[pnum++] = net_wm_window_type_splash; */
+        if (p->properties[ WINDOW_TYPES ] & NormalMask)
+	    atoms[pnum++] = net_wm_window_type_normal;
+        if (p->properties[ WINDOW_TYPES ] & DesktopMask)
+	    atoms[pnum++] = net_wm_window_type_desktop;
+        if (p->properties[ WINDOW_TYPES ] & DockMask)
+            atoms[pnum++] = net_wm_window_type_dock;
+        if (p->properties[ WINDOW_TYPES ] & ToolbarMask)
+	    atoms[pnum++] = net_wm_window_type_toolbar;
+        if (p->properties[ WINDOW_TYPES ] & MenuMask)
+	    atoms[pnum++] = net_wm_window_type_menu;
+        if (p->properties[ WINDOW_TYPES ] & DialogMask)
+	    atoms[pnum++] = net_wm_window_type_dialog;
+        if (p->properties[ WINDOW_TYPES ] & UtilityMask)
+	    atoms[pnum++] = net_wm_window_type_utility;
+        if (p->properties[ WINDOW_TYPES ] & SplashMask)
+	    atoms[pnum++] = net_wm_window_type_splash;
 	// KDE extensions
-	atoms[pnum++] = kde_net_wm_window_type_override;
-	atoms[pnum++] = kde_net_wm_window_type_topmenu;
+        if (p->properties[ WINDOW_TYPES ] & OverrideMask)
+	    atoms[pnum++] = kde_net_wm_window_type_override;
+        if (p->properties[ WINDOW_TYPES ] & TopMenuMask)
+	    atoms[pnum++] = kde_net_wm_window_type_topmenu;
     }
 
-    if (p->protocols & WMState) {
+    if (p->properties[ PROTOCOLS ] & WMState) {
 	atoms[pnum++] = net_wm_state;
 
 	// Application window states
-	atoms[pnum++] = net_wm_state_modal;
-	atoms[pnum++] = net_wm_state_sticky;
-	atoms[pnum++] = net_wm_state_max_vert;
-	atoms[pnum++] = net_wm_state_max_horiz;
-	atoms[pnum++] = net_wm_state_shaded;
-	atoms[pnum++] = net_wm_state_skip_taskbar;
-	atoms[pnum++] = net_wm_state_skip_pager;
-/*	atoms[pnum++] = net_wm_state_hidden;   ##### UNCOMMENT WHEN IMPLEMENTED IN KWIN!!!
-	atoms[pnum++] = net_wm_state_fullscreen;
-	atoms[pnum++] = net_wm_state_above;
-	atoms[pnum++] = net_wm_state_below; */
+        if (p->properties[ STATES ] & Modal)
+    	    atoms[pnum++] = net_wm_state_modal;
+        if (p->properties[ STATES ] & Sticky)
+	    atoms[pnum++] = net_wm_state_sticky;
+        if (p->properties[ STATES ] & MaxVert)
+	    atoms[pnum++] = net_wm_state_max_vert;
+        if (p->properties[ STATES ] & MaxHoriz)
+	    atoms[pnum++] = net_wm_state_max_horiz;
+        if (p->properties[ STATES ] & Shaded)
+	    atoms[pnum++] = net_wm_state_shaded;
+        if (p->properties[ STATES ] & SkipTaskbar)
+	    atoms[pnum++] = net_wm_state_skip_taskbar;
+        if (p->properties[ STATES ] & SkipPager)
+	    atoms[pnum++] = net_wm_state_skip_pager;
+        if (p->properties[ STATES ] & Hidden)
+	    atoms[pnum++] = net_wm_state_hidden;
+        if (p->properties[ STATES ] & FullScreen)
+	    atoms[pnum++] = net_wm_state_fullscreen;
+        if (p->properties[ STATES ] & Above)
+	    atoms[pnum++] = net_wm_state_above;
+        if (p->properties[ STATES ] & Below)
+	    atoms[pnum++] = net_wm_state_below;
 
-	atoms[pnum++] = net_wm_state_stays_on_top;
+        if (p->properties[ STATES ] & StaysOnTop)
+	    atoms[pnum++] = net_wm_state_stays_on_top;
     }
 
-    if (p->protocols & WMStrut)
+    if (p->properties[ PROTOCOLS ] & WMStrut)
 	atoms[pnum++] = net_wm_strut;
 
-    if (p->protocols & WMIconGeometry)
+    if (p->properties[ PROTOCOLS ] & WMIconGeometry)
 	atoms[pnum++] = net_wm_icon_geometry;
 
-    if (p->protocols & WMIcon)
+    if (p->properties[ PROTOCOLS ] & WMIcon)
 	atoms[pnum++] = net_wm_icon;
 
-    if (p->protocols & WMPid)
+    if (p->properties[ PROTOCOLS ] & WMPid)
 	atoms[pnum++] = net_wm_pid;
 
-    if (p->protocols & WMHandledIcons)
+    if (p->properties[ PROTOCOLS ] & WMHandledIcons)
 	atoms[pnum++] = net_wm_handled_icons;
 
-    if (p->protocols & WMPing)
+    if (p->properties[ PROTOCOLS ] & WMPing)
 	atoms[pnum++] = net_wm_ping;
 
     // KDE specific extensions
-    if (p->protocols & KDESystemTrayWindows)
+    if (p->properties[ PROTOCOLS ] & KDESystemTrayWindows)
 	atoms[pnum++] = kde_net_system_tray_windows;
 
-    if (p->protocols & WMKDESystemTrayWinFor)
+    if (p->properties[ PROTOCOLS ] & WMKDESystemTrayWinFor)
 	atoms[pnum++] = kde_net_wm_system_tray_window_for;
 
-    if (p->protocols & WMKDEFrameStrut)
+    if (p->properties[ PROTOCOLS ] & WMKDEFrameStrut)
 	atoms[pnum++] = kde_net_wm_frame_strut;
 
     XChangeProperty(p->display, p->root, net_supported, XA_ATOM, 32,
@@ -1009,6 +1090,151 @@ void NETRootInfo::setSupported(unsigned long pr) {
 		    strlen(p->name));
 }
 
+void NETRootInfo::updateSupportedProperties( Atom atom )
+{
+    if( atom == net_supported )
+        p->properties[ PROTOCOLS ] |= Supported;
+
+    else if( atom == net_supporting_wm_check )
+        p->properties[ PROTOCOLS ] |= SupportingWMCheck;
+
+    else if( atom == net_client_list )
+        p->properties[ PROTOCOLS ] |= ClientList;
+
+    else if( atom == net_client_list_stacking )
+        p->properties[ PROTOCOLS ] |= ClientListStacking;
+
+    else if( atom == net_number_of_desktops )
+        p->properties[ PROTOCOLS ] |= NumberOfDesktops;
+
+    else if( atom == net_desktop_geometry )
+        p->properties[ PROTOCOLS ] |= DesktopGeometry;
+
+    else if( atom == net_desktop_viewport )
+        p->properties[ PROTOCOLS ] |= DesktopViewport;
+
+    else if( atom == net_current_desktop )
+        p->properties[ PROTOCOLS ] |= CurrentDesktop;
+
+    else if( atom == net_desktop_names )
+        p->properties[ PROTOCOLS ] |= DesktopNames;
+
+    else if( atom == net_active_window )
+        p->properties[ PROTOCOLS ] |= ActiveWindow;
+
+    else if( atom == net_workarea )
+        p->properties[ PROTOCOLS ] |= WorkArea;
+
+    else if( atom == net_virtual_roots )
+        p->properties[ PROTOCOLS ] |= VirtualRoots;
+
+    else if( atom == net_close_window )
+        p->properties[ PROTOCOLS ] |= CloseWindow;
+
+
+    // Application window properties/messages
+    else if( atom == net_wm_moveresize )
+        p->properties[ PROTOCOLS ] |= WMMoveResize;
+
+    else if( atom == net_wm_name )
+        p->properties[ PROTOCOLS ] |= WMName;
+
+    else if( atom == net_wm_visible_name )
+        p->properties[ PROTOCOLS ] |= WMVisibleName;
+
+    else if( atom == net_wm_icon_name )
+        p->properties[ PROTOCOLS ] |= WMIconName;
+
+    else if( atom == net_wm_visible_icon_name )
+        p->properties[ PROTOCOLS ] |= WMVisibleIconName;
+
+    else if( atom == net_wm_desktop )
+        p->properties[ PROTOCOLS ] |= WMDesktop;
+
+    else if( atom == net_wm_window_type )
+        p->properties[ PROTOCOLS ] |= WMWindowType;
+
+	// Application window types
+    else if( atom == net_wm_window_type_normal )
+        p->properties[ WINDOW_TYPES ] |= NormalMask;
+    else if( atom == net_wm_window_type_desktop )
+        p->properties[ WINDOW_TYPES ] |= DesktopMask;
+    else if( atom == net_wm_window_type_dock )
+        p->properties[ WINDOW_TYPES ] |= DockMask;
+    else if( atom == net_wm_window_type_toolbar )
+        p->properties[ WINDOW_TYPES ] |= ToolbarMask;
+    else if( atom == net_wm_window_type_menu )
+        p->properties[ WINDOW_TYPES ] |= MenuMask;
+    else if( atom == net_wm_window_type_dialog )
+        p->properties[ WINDOW_TYPES ] |= DialogMask;
+    else if( atom == net_wm_window_type_utility )
+        p->properties[ WINDOW_TYPES ] |= UtilityMask;
+    else if( atom == net_wm_window_type_splash )
+        p->properties[ WINDOW_TYPES ] |= SplashMask;
+	// KDE extensions
+    else if( atom == kde_net_wm_window_type_override )
+        p->properties[ WINDOW_TYPES ] |= OverrideMask;
+    else if( atom == kde_net_wm_window_type_topmenu )
+        p->properties[ WINDOW_TYPES ] |= TopMenuMask;
+
+    else if( atom == net_wm_state )
+        p->properties[ PROTOCOLS ] |= WMState;
+
+	// Application window states
+    else if( atom == net_wm_state_modal )
+        p->properties[ STATES ] |= Modal;
+    else if( atom == net_wm_state_sticky )
+        p->properties[ STATES ] |= Sticky;
+    else if( atom == net_wm_state_max_vert )
+        p->properties[ STATES ] |= MaxVert;
+    else if( atom == net_wm_state_max_horiz )
+        p->properties[ STATES ] |= MaxHoriz;
+    else if( atom == net_wm_state_shaded )
+        p->properties[ STATES ] |= Shaded;
+    else if( atom == net_wm_state_skip_taskbar )
+        p->properties[ STATES ] |= SkipTaskbar;
+    else if( atom == net_wm_state_skip_pager )
+        p->properties[ STATES ] |= SkipPager;
+    else if( atom == net_wm_state_hidden )
+        p->properties[ STATES ] |= Hidden;
+    else if( atom == net_wm_state_fullscreen )
+        p->properties[ STATES ] |= FullScreen;
+    else if( atom == net_wm_state_above )
+        p->properties[ STATES ] |= Above;
+    else if( atom == net_wm_state_below )
+        p->properties[ STATES ] |= Below;
+
+    else if( atom == net_wm_state_stays_on_top )
+        p->properties[ STATES ] |= StaysOnTop;
+
+    else if( atom == net_wm_strut )
+        p->properties[ PROTOCOLS ] |= WMStrut;
+
+    else if( atom == net_wm_icon_geometry )
+        p->properties[ PROTOCOLS ] |= WMIconGeometry;
+
+    else if( atom == net_wm_icon )
+        p->properties[ PROTOCOLS ] |= WMIcon;
+
+    else if( atom == net_wm_pid )
+        p->properties[ PROTOCOLS ] |= WMPid;
+
+    else if( atom == net_wm_handled_icons )
+        p->properties[ PROTOCOLS ] |= WMHandledIcons;
+
+    else if( atom == net_wm_ping )
+        p->properties[ PROTOCOLS ] |= WMPing;
+
+    // KDE specific extensions
+    else if( atom == kde_net_system_tray_windows )
+        p->properties[ PROTOCOLS ] |= KDESystemTrayWindows;
+
+    else if( atom == kde_net_wm_system_tray_window_for )
+        p->properties[ PROTOCOLS ] |= WMKDESystemTrayWinFor;
+
+    else if( atom == kde_net_wm_frame_strut )
+        p->properties[ PROTOCOLS ] |= WMKDEFrameStrut;
+}
 
 void NETRootInfo::setActiveWindow(Window window) {
 
@@ -1302,15 +1528,15 @@ unsigned long NETRootInfo::event(XEvent *event) {
 		break;
 	}
 
-	update(dirty & p->protocols);
+	update(dirty & p->client_properties);
     }
 
 #ifdef   NETWMDEBUG
     fprintf(stderr, "NETRootInfo::event: handled events, returning dirty = 0x%lx\n",
-	    dirty & p->protocols);
+	    dirty & p->client_properties);
 #endif
 
-    return dirty & p->protocols;
+    return dirty & p->client_properties;
 }
 
 
@@ -1322,8 +1548,26 @@ void NETRootInfo::update(unsigned long dirty) {
     unsigned char *data_ret;
     unsigned long nitems_ret, unused;
 
-    dirty &= p->protocols;
+    dirty &= p->client_properties;
 
+    if (dirty & Supported ) {
+        // only in Client mode
+        for( int i = 0; i < PROPERTIES_SIZE; ++i )
+            p->properties[ i ] = 0;
+        if( XGetWindowProperty(p->display, p->root, net_supported,
+                               0l, (long)BUFSIZE, False, XA_ATOM, &type_ret,
+                               &format_ret, &nitems_ret, &unused, &data_ret)
+            == Success ) {
+            if( type_ret == XA_ATOM && format_ret == 32 ) {
+                Atom* atoms = (Atom*) data_ret;
+                for( unsigned int i = 0;
+                     i < nitems_ret;
+                     ++i )
+                    updateSupportedProperties( atoms[ i ] );
+            }
+        }
+    }
+    
     if (dirty & ClientList) {
         bool read_ok = false;
 	if (XGetWindowProperty(p->display, p->root, net_client_list,
@@ -1745,7 +1989,13 @@ int NETRootInfo::screenNumber() const {
 
 
 unsigned long NETRootInfo::supported() const {
-    return p->protocols;
+    return role == WindowManager
+        ? p->properties[ PROTOCOLS ]
+        : p->client_properties;
+}
+
+const unsigned long* NETRootInfo::supportedProperties() const {
+    return p->properties;
 }
 
 

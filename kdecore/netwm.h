@@ -69,18 +69,42 @@ public:
        @param wmName A string which should be the window manager's name (ie. "KWin"
        or "Blackbox").
 
-       @param properties An OR'ed list of all properties and protocols the window
-       manager supports (see the NET base class documentation for a description
-       of all properties and protocols).
+       @param properties An array of elements listing all properties and protocols
+       the window manager supports. The elements contain OR'ed values of constants
+       from the NET base class, in the following order: [0]= NET::Property,
+       [2]= NET::WindowTypeMask (not NET::WindowType!), [3]= NET::State.
+       In future versions, the list may be extended. In case you pass less elements,
+       the missing ones will be replaced with default values.
+       
+       @param properties_size The number of elements in the properties array.
 
        @param screen For Window Managers that support multiple screen (ie.
        "multiheaded") displays, the screen number may be explicitly defined.  If
        this argument is omitted, the default screen will be used.
        
        @param doActivate true to activate the window
+       
+       @since 3.2
+    **/
+    NETRootInfo(Display *display, Window supportWindow, const char *wmName,
+		unsigned long properties[], int properties_size,
+                int screen = -1, bool doActivate = true);
+
+    /**
+        @deprecated
+        This constructor differs from the above one only in the way it accepts
+        the list of supported properties. The properties argument is equivalent
+        to the first element of the properties array in the above constructor.
     **/
     NETRootInfo(Display *display, Window supportWindow, const char *wmName,
 		unsigned long properties, int screen = -1, bool doActivate = true);
+
+    /**
+        Indexes for the properties array.
+    **/
+    // update also NETRootInfoPrivate::properties[] size when extending this
+    enum { PROTOCOLS, WINDOW_TYPES, STATES,
+        PROPERTIES_SIZE };
 
     /**
        Clients should use this constructor to create a NETRootInfo object, which
@@ -89,9 +113,8 @@ public:
 
        @param display An X11 Display struct.
 
-       @param properties An OR'ed list of all properties and protocols the client
-       supports (see the NET base class documentation for a description of all
-       properties and protocols).
+       @param properties An OR'ed list of all protocols the client is interested in.
+       (See the NET::Property enum.)
 
        @param screen For Clients that support multiple screen (ie. "multiheaded")
        displays, the screen number may be explicitly defined. If this argument is
@@ -150,13 +173,34 @@ public:
     int screenNumber() const;
 
     /**
-       Returns an OR'ed list of supported protocols and properties.
+       Returns an OR'ed list of protocols passed to the constructor.
+       For the constructor used by Window Managers, this is equivalent
+       to the first element of the properties argument, for the constructor
+       for Clients, it's the properties argument.
        
-       @return an OR'ed list of protocols and properties
+       Clients willing to find out all properties and protocols supported
+       by the WindowManager should use @ref supportedProperties().
+       
+       @return an OR'ed list of protocols
 
        @see NET::Property
     **/
+    // KDE4 rename to a better name
     unsigned long supported() const;
+
+    /**
+       In the Window Manager mode, this is equivalent to the properties
+       argument passed to the constructor. In the Client mode, if
+       NET::Supported was passed in the properties argument, the returned
+       value is array of all protocols and properties supported
+       by the Window Manager. The elements of the array are the same
+       as they would be passed to the Window Manager mode constructor,
+       the size is the maximum array size the constructor accepts.
+       
+       @since 3.2
+    **/
+    // KDE4 rename to a better name
+    const unsigned long* supportedProperties() const;
 
     /**
        Returns an array of Window id's, which contain all managed windows.
@@ -564,7 +608,9 @@ protected:
 
 private:
     void update(unsigned long);
-    void setSupported(unsigned long);
+    void setSupported();
+    void setDefaultProperties();
+    void updateSupportedProperties( Atom atom );
     Role role;
 
 protected:
@@ -600,9 +646,8 @@ public:
 
        @param rootWindow The Window id of the root window.
 
-       @param properties An OR'ed list of all properties and protocols the
-       client/window manager supports (see the NET base class documentation
-       for a description of all properties and protocols).
+       @param properties An OR'ed list of all protocols the client is interested in.
+       (See the NET::Property enum.)
 
        @param role Select the application role.  If this argument is omitted,
        the role will default to Client.
@@ -624,9 +669,9 @@ public:
     virtual ~NETWinInfo();
 
     /**
-       Returns an OR'ed list of supported protocols and properties.
+       Returns an OR'ed list of protocols passed to the constructor.
        
-       @return an OR'ed list of protocols and properties
+       @return an OR'ed list of protocols
 
        @see NET::Property
     **/

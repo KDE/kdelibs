@@ -101,9 +101,8 @@ struct NETRootInfoPrivate {
     unsigned long clients_count, stacking_count, virtual_roots_count,
 	kde_system_tray_windows_count;
 
-    // the list of supported protocols shouldn't change, but NET clients will
-    // need to read this property to know what is supported...
-    unsigned long protocols;
+    unsigned long properties[ 3 ];
+    unsigned long client_properties; // properties the client is interested in
 
     int ref;
 };

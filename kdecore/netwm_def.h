@@ -252,6 +252,24 @@ public:
 	Utility  = 8,	///< @since 3.2
 	Splash   = 9	///< @since 3.2
     };
+    
+    /**
+        Values for WindowType when they should be OR'ed together, e.g.
+        for the properties argument of the NETRootInfo constructor.
+        @since 3.2
+    **/
+    enum WindowTypeMask {
+	NormalMask   = 1<<0,
+	DesktopMask  = 1<<1,
+	DockMask     = 1<<2,
+	ToolbarMask  = 1<<3,
+	MenuMask     = 1<<4,
+	DialogMask   = 1<<5,
+	OverrideMask = 1<<6,
+        TopMenuMask  = 1<<7,
+	UtilityMask  = 1<<8,
+	SplashMask   = 1<<9
+    };
 
     /**
        Window state.
