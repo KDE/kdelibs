@@ -66,9 +66,12 @@ KJSO Window::get(const UString &p) const
     return KJSO(new Window(part));
   else if (p == "parent")
     return KJSO(new Frame(part->parentPart() ? part->parentPart() : part));
-  else if (p == "top") /* TODO */
-    return KJSO(new Frame(part->parentPart() ? part->parentPart() : part));
-  else if (p == "name")
+  else if (p == "top") {
+    KHTMLPart *p = part;
+    while (p->parentPart())
+      p = p->parentPart();
+    return KJSO(new Frame(p));
+  } else if (p == "name")
     return String(part->name());
   else if (p == "Image")
     return KJSO(new ImageConstructor(Global::current()));
