@@ -99,7 +99,9 @@
       BR:before       { content: "\n" }
 
 /* we want a fixed font for form elements (input & textarea) */
-      INPUT, TEXTAREA { font-family: monospace }
+      INPUT[type="text"],
+      INPUT[type="password"],
+      TEXTAREA { font-family: monospace }
       OPTION, OPTGROUP  { display: none }
 
       /* An example of style for HTML 4.0's ABBR/ACRONYM elements */
