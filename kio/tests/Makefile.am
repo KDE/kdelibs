@@ -23,7 +23,7 @@ LDFLAGS = $(all_libraries) $(KDE_RPATH)
 check_PROGRAMS = ksycocatest getalltest kruntest ktartest \
                  kioslavetest kdirwatchtest kshredtest speed kurifiltertest \
                  ktradertest kdefaultprogresstest kclipboardtest kmimemagictest \
-                 kfiltertest kiopassdlgtest kmdbasetest
+                 kfiltertest kiopassdlgtest kmdcodectest
 
 METASOURCES = AUTO
 
@@ -40,8 +40,8 @@ kdefaultprogresstest_LDADD = $(top_builddir)/kio/libkio.la
 kdefaultprogresstest_SOURCES = kdefaultprogresstest.cpp
 kclipboardtest_LDADD = $(top_builddir)/kio/libkio.la
 kclipboardtest_SOURCES = kclipboardtest.cpp
-kmdbasetest_SOURCES = kmdbasetest.cpp 
-kmdbasetest_LDADD = $(top_builddir)/kio/libkio.la
+kmdcodectest_SOURCES = kmdcodectest.cpp 
+kmdcodectest_LDADD = $(top_builddir)/kio/libkio.la
 
 ## libksycoca
 kiopassdlgtest_SOURCES = kiopassdlgtest.cpp
