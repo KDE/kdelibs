@@ -231,8 +231,6 @@ AC_CONFIG_SUBDIRS(libltdl)
 
 CXXFLAGS="$CXXFLAGS $USE_RTTI"
 
-dnl AC_OUTPUT(kde-config)
-
 rgb_file="$x_libraries/X11/rgb.txt"
 AC_DEFINE_UNQUOTED(X11_RGBFILE, "$rgb_file", [where rgb.txt is in])
 
