@@ -1345,7 +1345,7 @@ void TextAreaWidget::slotFindHighlight(const QString& text, int matchingIndex, i
 }
 
 
-void TextAreaWidget::slotReplaceText(const QString &text, int replacementIndex, int replacedLength, int matchedLength) {
+void TextAreaWidget::slotReplaceText(const QString &text, int replacementIndex, int /*replacedLength*/, int matchedLength) {
     Q_UNUSED(text)
     //kdDebug() << "Replace: [" << text << "] ri:" << replacementIndex << " rl:" << replacedLength << " ml:" << matchedLength << endl;
     setSelection(m_repPara, replacementIndex, m_repPara, replacementIndex + matchedLength);
