@@ -86,7 +86,9 @@ HTMLURLRequestJob::HTMLURLRequestJob( KHTMLWidget* _browser, HTMLURLRequest *r, 
 
   m_jobId = job->id();
 //  job->get( m_req->m_strURL, _reload );
+#ifdef __GNUC__
 #warning WABA: Reload support is missing from KIOJob!
+#endif
   job->get( m_req->m_strURL );
 }
 
