@@ -146,7 +146,7 @@ class DCOPClient : public QObject
    * Returns whether the DCOP - Qt bridge is enabled.
    * By default the DCOP - Qt bridge is enabled.
    */
-  bool qtBridgeEnabled();
+  bool qtBridgeEnabled(); // ### KDE 4.0: make const
 
   /**
    * Specify whether Qt objects of the application should be accessible 
