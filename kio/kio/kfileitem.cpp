@@ -520,8 +520,8 @@ bool KFileItem::isReadable() const
 bool KFileItem::isHidden() const
 {
   if ( !m_url.isEmpty() )
-      return m_url.filename()[0] == '.';
-  else
+      return m_url.fileName()[0] == '.';
+  else // should never happen
       return m_strName[0] == '.';
 }
 
