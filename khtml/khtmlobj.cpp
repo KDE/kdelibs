@@ -576,16 +576,16 @@ HTMLText::printDebug( bool, int indent, bool printObjects )
 	printf(str.ascii());
 
     str = objectName();
+
     QString aStr = text;
+
     str += " (\"";
     if(aStr.length() > 20)
-    {
-	aStr.truncate(19);
-	str += aStr + "...";
-    } else
-	str += aStr;
+	str += aStr.left(19) + "...";
+    else
+        str += aStr;
     str += "\")\n";
-    printf(str.ascii());
+    printf("%s", str.ascii());
 }
 
 
@@ -1623,7 +1623,7 @@ HTMLImage::printDebug( bool, int indent, bool printObjects )
     } else
 	str = aStr;
 
-    printf("%s (\"%s \"/%dx%d)\n", objectName(), str.data(),
+    printf("%s (\"%s \"/%dx%d)\n", objectName(), str.latin1(),
 		width, ascent);
 }
 
