@@ -1326,11 +1326,33 @@ void DocumentImpl::setFocusNode(ElementImpl *n)
         {
             if (m_focusNode->active()) m_focusNode->setActive(false);
             m_focusNode->setFocus(false);
+            
+	    int exceptioncode;
+	    
+	    UIEventImpl *ue = new UIEventImpl(EventImpl::DOMFOCUSOUT_EVENT,
+	                                      true,false,defaultView(),
+					      0);
+					      
+	    ue->ref();
+	    m_focusNode->dispatchEvent(ue,exceptioncode);
+	    ue->deref();
         }
         m_focusNode = n;
         //kdDebug(6020)<<"DOM::DocumentImpl::setFocusNode("<<n<<")"<<endl;
         if (n)
+	{
+	    int exceptioncode;
+	    
+	    UIEventImpl *ue = new UIEventImpl(EventImpl::DOMFOCUSIN_EVENT,
+	                                      true,false,defaultView(),
+					      0);
+					      
+	    ue->ref();
+	    m_focusNode->dispatchEvent(ue,exceptioncode);
+	    ue->deref();
+
             n->setFocus();
+	}
     }
 }
 

@@ -123,6 +123,10 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
         removeHTMLEventListener(EventImpl::MOUSEUP_EVENT);
         addEventListener(EventImpl::MOUSEUP_EVENT,new HTMLEventListener(ownerDocument()->view()->part(),DOMString(attr->value()).string()),false);
         break;
+    case ATTR_ONFOCUS:
+        removeHTMLEventListener(EventImpl::DOMFOCUSIN_EVENT);
+        addEventListener(EventImpl::DOMFOCUSIN_EVENT,new HTMLEventListener(ownerDocument()->view()->part(),DOMString(attr->value()).string()),false);
+        break;
     case ATTR_ONKEYDOWN:
     case ATTR_ONKEYPRESS:
     case ATTR_ONKEYUP:
