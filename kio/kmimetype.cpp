@@ -120,7 +120,7 @@ void KMimeType::errorMissingMimeType( const QString& _type )
 
 KMimeType::Ptr KMimeType::mimeType( const QString& _name )
 {
-  check();
+  //check(); We don't need to do it since we know which mimetype we're looking for
   KServiceType * mime = KServiceTypeFactory::self()->findServiceTypeByName( _name );
     
   if ( !mime || !mime->isType( KST_KMimeType ) )
