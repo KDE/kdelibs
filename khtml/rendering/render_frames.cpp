@@ -613,7 +613,7 @@ void RenderPartObject::updateWidget()
           }
       }
       params.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
-      params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
+      params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg(element()->getDocument()->baseURL()));
       if (element()->id() != ID_OBJECT) {
           // add all attributes set on the embed object
           HTMLElementImpl *o = static_cast<HTMLElementImpl *>(element());
