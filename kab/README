@@ -1,6 +1,6 @@
-Note: libkab is now obsolete. Please use libkabc in kdelibs/kabc. libkab is no
-longer installed. It's only needed for the conversion tool converting libkab
-data to libkabc data.
+Note: libkab is now obsolete. Please use libkabc in kdelibs/kabc. libkab is
+no longer installed. It's only needed for the conversion tool converting
+libkab data to libkabc data.
 
 Cornelius Schumacher, February 2002.
 
@@ -9,13 +9,13 @@ Cornelius Schumacher, February 2002.
 The KDE addressbook
 ===================
 
-This directory contains the sources for the kab API provided by
-"libkab.so". kab is the KDE addressbook, users usually know it by one of
-the applications using the kab API, kab itselfes. But kab intends to do
-more, it tries to be a central database to store personal information for
-as much KDE applications as possible.
+This directory contains the sources for the kab API provided by "libkab.so".
+kab is the KDE addressbook, users usually know it by one of the applications
+using the kab API, kab itselfes. But kab intends to do more, it tries to be
+a central database to store personal information for as much KDE
+applications as possible.
 
-To compile this subdirectory, your C++ compiler will be stressed a little.  
+To compile this subdirectory, your C++ compiler will be stressed a little. 
 You need either a recent version of gcc (2.7.2 or later) or egcs (1.0.2 or
 later), or another C++ compiler that supports the following things:
 

@@ -2,18 +2,19 @@ About KNotify
 
 Historic overview. From KDE-1 to KDE-2:
 ---------------------------------------
-KDE-1 ships with a notification system for window manager events - a sound could
-be played for example on startup or when a window closes. This was a very limited
-notification system.
+KDE-1 ships with a notification system for window manager events - a sound
+could be played for example on startup or when a window closes. This was a
+very limited notification system.
 
 KNotify in contrast is a very flexible notification system. It can easily be
-accessed by any application, and notifications can have several presentations:
-Sound is still supported, but you can as well display a message box, write a text
-to a log file or log window.
+accessed by any application, and notifications can have several
+presentations: Sound is still supported, but you can as well display a
+message box, write a text to a log file or log window.
 
-The notification presentation will be user configurable. Some people don't like
-message boxes popping up at unexpected times, so they prefer sounds instead.
-Deaf people on the otehr hand will not be happy about desktop sounds.
+The notification presentation will be user configurable. Some people don't
+like message boxes popping up at unexpected times, so they prefer sounds
+instead. Deaf people on the otehr hand will not be happy about desktop
+sounds.
 
 
 
@@ -25,9 +26,8 @@ Usage:
 
 Ideas:
 ------
-It might be useful to modify message presentation from time to time. For example,
-while the screen is locked, it is very likely that the user is not present. Thus,
-he will not be able to hear a "You have mail" sound (or to see a talk request).
-Re-routing this to a log window sounds like a very good ideas.
-
-
+It might be useful to modify message presentation from time to time. For
+example, while the screen is locked, it is very likely that the user is not
+present. Thus, he will not be able to hear a "You have mail" sound (or to
+see a talk request). Re-routing this to a log window sounds like a very good
+idea.
