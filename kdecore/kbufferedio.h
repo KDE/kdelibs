@@ -212,13 +212,8 @@ protected:
    * at the top of kbufferedio.cpp
    */
 
-#if QT_VERSION < 300  
-  QList<QByteArray> inBuf;
-  QList<QByteArray> outBuf;
-#else
   QPtrList<QByteArray> inBuf;
   QPtrList<QByteArray> outBuf;
-#endif  
   
   unsigned inBufIndex, outBufIndex;
 

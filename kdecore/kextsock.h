@@ -771,11 +771,7 @@ public:
    * @param flags	flags to be used when looking up
    * @param error	pointer to a variable holding the error code
    */
-#if QT_VERSION < 300
-  static QList<KAddressInfo> lookup(const QString& host, const QString& port, int flags = 0, int *error = 0);
-#else  
   static QPtrList<KAddressInfo> lookup(const QString& host, const QString& port, int flags = 0, int *error = 0);
-#endif
   /**
    * Returns the local socket address
    * Remember to delete the returned object when it is no longer needed.
