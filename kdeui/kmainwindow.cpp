@@ -98,8 +98,8 @@ public:
                     QCloseEvent e;
                     QApplication::sendEvent( last, &e );
                     cancelled = !e.isAccepted();
-                    if ( !cancelled && it.current()->testWFlags( Qt::WDestructiveClose ) )
-                      delete it.current();
+//                     if ( !cancelled && it.current()->testWFlags( Qt::WDestructiveClose ) )
+//                       delete it.current();
                 }
             }
             no_query_exit = FALSE;
