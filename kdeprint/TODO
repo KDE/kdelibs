@@ -6,8 +6,6 @@ BUGS
 - Allow to view a set of specified printers in the job viewer
   (instead of "one or all").
 
-- implement the number of jobs showing for LPR plugin
-
 
 WISHES
 ------
@@ -37,10 +35,6 @@ WISHES
   collects the data to be send in for bug reports (like PPD in use,
   CUPS version, KDEPrint version, printer-make-and-modell, usage
   of foomatic/cupsomatic, ghostscript version etc.).	-kp-
-
-- Should think about a plugin mechanism for LPR plugin so that 
-  distro specific code could be added as separate packages without
-  loosing the independemt character of KDE (ex: SuSE/Lpdfilter support)
 
 - allow preview with kprinter: may be useful for PS files coming from
   other apps (GNOME). Ex: use a --with-preview option, and don't not

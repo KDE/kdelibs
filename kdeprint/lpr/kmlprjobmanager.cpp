@@ -33,11 +33,11 @@ KMLprJobManager::KMLprJobManager(QObject *parent, const char *name)
 	m_lpqhelper = new LpqHelper(this, "LpqHelper");
 }
 
-bool KMLprJobManager::listJobs(const QString& prname, JobType, int)
+bool KMLprJobManager::listJobs(const QString& prname, JobType, int limit)
 {
 	QPtrList<KMJob>	jobList;
 	jobList.setAutoDelete(false);
-	m_lpqhelper->listJobs(jobList, prname);
+	m_lpqhelper->listJobs(jobList, prname, limit);
 	QPtrListIterator<KMJob>	it(jobList);
 	for (; it.current(); ++it)
 		addJob(it.current());

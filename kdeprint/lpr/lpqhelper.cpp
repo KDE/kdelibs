@@ -80,7 +80,7 @@ KMJob* LpqHelper::parseLineLPRng(const QString& line)
 	return job;
 }
 
-void LpqHelper::listJobs(QPtrList<KMJob>& jobs, const QString& prname)
+void LpqHelper::listJobs(QPtrList<KMJob>& jobs, const QString& prname, int limit)
 {
 	KPipeProcess	proc;
 	if (!m_exepath.isEmpty() && proc.open(m_exepath + " -P " + KShellProcess::quote(prname)))
@@ -88,6 +88,7 @@ void LpqHelper::listJobs(QPtrList<KMJob>& jobs, const QString& prname)
 		QTextStream	t(&proc);
 		QString		line;
 		bool	lprng = (LprSettings::self()->mode() == LprSettings::LPRng);
+		int count = 0;
 
 		while (!t.atEnd())
 		{
@@ -98,12 +99,15 @@ void LpqHelper::listJobs(QPtrList<KMJob>& jobs, const QString& prname)
 		while (!t.atEnd())
 		{
 			line = t.readLine();
+			if ( limit > 0 && count >= limit )
+				continue;
 			KMJob	*job = (lprng ? parseLineLPRng(line) : parseLineLpr(line));
 			if (job)
 			{
 				job->setPrinter(prname);
 				job->setUri("lpd://"+prname+"/"+QString::number(job->id()));
 				jobs.append(job);
+				count++;
 			}
 			else
 				break;

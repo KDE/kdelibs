@@ -31,7 +31,7 @@ public:
 	LpqHelper(QObject *parent = 0, const char *name = 0);
 	~LpqHelper();
 
-	void listJobs(QPtrList<KMJob>& jobs, const QString& prname);
+	void listJobs(QPtrList<KMJob>& jobs, const QString& prname, int limit = 0);
 
 protected:
 	KMJob* parseLineLpr(const QString&);
