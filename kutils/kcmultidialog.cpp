@@ -83,11 +83,15 @@ KCMultiDialog::KCMultiDialog( int dialogFace, const KGuiItem &user2,
 {
     kdDebug( 710 ) << "Root modules will not work with this constructor. See the API documentation." << endl;
     init();
+    if ( buttonMask & User2 )
+        showButton( User2, true );
 }
 
 inline void KCMultiDialog::init()
 {
     connect( this, SIGNAL( finished()), SLOT( dialogClosed()));
+    showButton( User1, false );
+    showButton( User2, false );
     enableButton(Apply, false);
     connect(this, SIGNAL(aboutToShowPage(QWidget *)), this, SLOT(slotAboutToShow(QWidget *)));
     setInitialSize(QSize(640,480));
