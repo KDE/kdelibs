@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
  *  Copyright (C) 2000 Yves Arrouye <yves@realnames.com>
- *  Copyright (C) 2000 Dawit Alemayehu <adawit@kde.org>
+ *  Copyright (C) 2000 Dawit Alemayehu <adawit at kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -62,6 +62,7 @@ KURIFilterData::KURIFilterData( const KURIFilterData& data )
     m_strErrMsg = data.m_strErrMsg;
     m_strIconName = data.m_strIconName;
     m_bChanged = data.m_bChanged;
+    m_bCheckForExecutables = data.m_bCheckForExecutables;
     d = new KURIFilterDataPrivate;
     d->abs_path = data.absolutePath();
 }
@@ -78,9 +79,14 @@ void KURIFilterData::init( const KURL& url )
     m_pURI = url;
     m_strErrMsg = QString::null;
     m_strIconName = QString::null;
-    m_bFiltered = true;  //deprecated!!! Always returns true!
+    m_bCheckForExecutables = true;
     m_bChanged = true;
     d = new KURIFilterDataPrivate;
+}
+
+void KURIFilterData::setCheckForExecutables( bool check )
+{
+    m_bCheckForExecutables = check;
 }
 
 bool KURIFilterData::hasArgsAndOptions() const
@@ -196,8 +202,7 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
     KURIFilterPluginList use_plugins;
 
     // If we have a filter list, only include the once
-    // explicitly specified by it.  Otherwise use all
-    // available filters...
+    // explicitly specified by it. Otherwise, use all available filters...
     if( filters.isEmpty() )
         use_plugins = m_lstPlugins;  // Use everything that is loaded...
     else
@@ -276,23 +281,22 @@ QStringList KURIFilter::pluginNames() const
 void KURIFilter::loadPlugins()
 {
     KTrader::OfferList offers = KTrader::self()->query( "KURIFilter/Plugin" );
+
     KTrader::OfferList::ConstIterator it = offers.begin();
     KTrader::OfferList::ConstIterator end = offers.end();
 
     for (; it != end; ++it )
     {
-	KURIFilterPlugin *plugin = 
-	    KParts::ComponentFactory::createInstanceFromService<KURIFilterPlugin>( *it,
-                                                                                   0,
-										   (*it)->desktopEntryName().latin1() );
-	if ( plugin )
-	    m_lstPlugins.append( plugin );
+      KURIFilterPlugin *plugin = KParts::ComponentFactory::createInstanceFromService<KURIFilterPlugin>( *it, 0, (*it)->desktopEntryName().latin1() );
+      if ( plugin )
+        m_lstPlugins.append( plugin );
     }
-     // NOTE: Plugin priority is now determined by
-     // the entry in the .desktop files...
-     // TODO: Config dialog to differentiate "system"
-     // plugins from "user-defined" ones...
-     // m_lstPlugins.sort();
+
+    // NOTE: Plugin priority is now determined by
+    // the entry in the .desktop files...
+    // TODO: Config dialog to differentiate "system"
+    // plugins from "user-defined" ones...
+    // m_lstPlugins.sort();
 }
 
 void KURIFilterPlugin::virtual_hook( int, void* )

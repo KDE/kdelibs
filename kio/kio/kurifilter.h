@@ -1,6 +1,10 @@
 /*
  *  This file is part of the KDE libraries
+ *  Copyright (C) 2000-2001,2003 Dawit Alemayehu <adawit at kde.org>
+ *
+ *  Original author
  *  Copyright (C) 2000 Yves Arrouye <yves@realnames.com>
+ *
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -33,21 +37,25 @@ class KURIFilterDataPrivate;
 class KCModule;
 
 /**
-* This is a basic message object used for exchanging filtering
+* A basic message object used for exchanging filtering
 * information between the filter plugins and the application
-* whenever the application requires more information about the
-* URI than just a filtered version of it.  Any application can
-* create an instance of this class and send it to @ref KURIFilter
-* to have the filter plugins fill the necessary information.
+* requesting the filtering service.
+*
+* Use this object if you require a more detailed information
+* about the URI you want to filter. Any application can create
+* an instance of this class and send it to @ref KURIFilter to
+* have the plugins fill out all possible information about the
+* URI.
 *
 * @sect Example
 * <pre>
 *   QString text = "kde.org";
 *   KURIFilterData d = text;
-*   bool filtered = KURIFilter::self()->filterURI( d );
-*   if( filtered )
-*     print ( "URI: %s\n"Filtered URI: %s\n URI Type: %i\n"Was Filtered: %i"
-*             text.latin1(), d.uri().url().latin1(), d.uriType(), filtered );
+*   bool filtered = KURIFilter::self()->filter( d );
+*   cout << "URL: " << text.latin1() << endl
+*        << "Filtered URL: " << d.uri().url().latin1() << endl
+*        << "URI Type: " << d.uriType() << endl
+*        << "Was Filtered: " << filtered << endl;
 * </pre>
 *
 * The above code should yield the following output:
@@ -59,6 +67,7 @@ class KCModule;
 * </pre>
 *
 * @short A message object for exchanging filtering URI info.
+* @author Dawit Alemayehu <adawit at kde.org>
 */
 
 class KURIFilterData
@@ -127,7 +136,7 @@ public:
      *
      * @deprecated
      */
-    bool hasBeenFiltered() const { return m_bFiltered; }
+    bool hasBeenFiltered() const { return true; }
 
     /**
      * Returns the filtered or the original URL.
@@ -161,7 +170,7 @@ public:
      * @return the type of the URI
      */
     URITypes uriType() const { return m_iType; }
-    
+
     /**
      * Sets the URL to be filtered.
      *
@@ -169,10 +178,10 @@ public:
      * filtered when you construct an empty filter
      * object.
      *
-     * @param url the string to be filtered.     
-     */    
+     * @param url the string to be filtered.
+     */
     void setData( const QString& url ) { init( url ); }
-    
+
     /**
      * Same as above except the argument is a URL.
      *
@@ -180,8 +189,8 @@ public:
      * filtered when you construct an empty filter
      * object.
      *
-     * @param url the URL to be filtered.     
-     */        
+     * @param url the URL to be filtered.
+     */
     void setData( const KURL& url ) { init( url ); }
 
     /**
@@ -210,7 +219,7 @@ public:
     /**
      * Checks whether the supplied data had an absolute path.
      * @return true if the supplied data has an absolute path
-     * @see absolutePath()   
+     * @see absolutePath()
      */
     bool hasAbsolutePath() const;
 
@@ -239,9 +248,29 @@ public:
      *
      * @return the name of the icon associated with the resource,
      *         or QString::null if not found
-     */    
+     */
     QString iconName();
-    
+
+    /**
+     * Check whether the provided uri is executable or not.
+     *
+     * Setting this to false ensures that typing the name of
+     * an executable does not start that application. This is
+     * useful in the location bar of a browser. The default
+     * value is true.
+     *
+     * @since 3.2
+     */
+    void setCheckForExecutables (bool check);
+
+    /**
+     * @return true if the filters should attempt to check whether the
+     * supplied uri is an executable. False otherwise.
+     *
+     * @since 3.2
+     */
+    bool checkForExecutables() const { return m_bCheckForExecutables; }
+
     /**
      * Overloaded assigenment operator.
      *
@@ -271,13 +300,13 @@ protected:
     void init( const KURL& url = QString::null );
 
 private:
-    bool m_bFiltered;
+    bool m_bCheckForExecutables;
     bool m_bChanged;
-    
+
     QString m_strErrMsg;
     QString m_strIconName;
-    
-    KURL m_pURI; 
+
+    KURL m_pURI;
     URITypes m_iType;
     KURIFilterDataPrivate *d;
 };
@@ -286,14 +315,12 @@ private:
 /**
  * Base class for URI filter plugins.
  *
- * This class applies a single filter to a URI.  All
- * plugins designed to provide URI filtering functionalities
- * should inherit from this abstract class and provide a
- * specific filtering implementation.
+ * This class applies a single filter to a URI.  All plugins designed
+ * to provide URI filtering service should inherit from this abstract
+ * class and provide a concrete implementation.
  *
- * All inheriting classes need to implement the pure
- * virtual function @ref filterURI.  Otherwise, they
- * would also become abstract.
+ * All inheriting classes need to implement the pure virtual function
+ * @ref filterURI.
  *
  * @short Abstract class for URI filter plugins.
  */
@@ -401,8 +428,8 @@ class KURIFilterPluginList : public QPtrList<KURIFilterPlugin>
 public:
     virtual int compareItems(Item a, Item b)
     {
-	    double diff = ((KURIFilterPlugin *) a)->priority() - ((KURIFilterPlugin *) b)->priority();
-    	return diff < 0 ? -1 : (diff > 0 ? 1 : 0);
+      double diff = ((KURIFilterPlugin *) a)->priority() - ((KURIFilterPlugin *) b)->priority();
+      return diff < 0 ? -1 : (diff > 0 ? 1 : 0);
     }
 
 private:
@@ -411,64 +438,72 @@ private:
 };
 
 /**
- * Manages the filtering of a URI.
+ * Manages the filtering of URIs.
  *
- * The intention of this plugin class is to allow people to extend
- * the functionality of KURL without modifying it directly.  This
- * way KURL will remain a generic parser capable of parsing any
- * generic URL that adheres to specifications.
+ * The intention of this plugin class is to allow people to extend the
+ * functionality of KURL without modifying it directly. This way KURL will
+ * remain a generic parser capable of parsing any generic URL that adheres
+ * to specifications.
  *
- * The KURIFilter class applies a number of filters to a URI,
- * and returns the filtered version whenever possible. The filters
- * are implemented using plugins to provide easy extensibility
- * of the filtering mechanism.  That is, new filters can be added in
- * the future by simply inheriting from @ref KURIFilterPlugin and
- * implementing the @ref KURIFilterPlugin::filterURI method.
+ * The KURIFilter class applies a number of filters to a URI and returns the
+ * filtered version whenever possible. The filters are implemented using
+ * plugins to provide easy extensibility of the filtering mechanism. New
+ * filters can be added in the future by simply inheriting from
+ * @ref KURIFilterPlugin and implementing the @ref KURIFilterPlugin::filterURI
+ * method.
  *
- * Use of this plugin-manager class is straight forward.  Since
- * it is a singleton object, all you have to do is obtain an instance
- * by doing @p KURIFilter::self() and use any of the public member
- * functions to preform the filtering.
- * 
+ * Use of this plugin-manager class is straight forward.  Since it is a
+ * singleton object, all you have to do is obtain an instance by doing
+ * @p KURIFilter::self() and use any of the public member functions to
+ * preform the filtering.
+ *
  * @sect Example
  *
  * To simply filter a given string:
+ *
  * <pre>
  * bool filtered = KURIFilter::self()->filterURI( "kde.org" );
  * </pre>
- * 
+ *
  * You can alternatively use a KURL:
+ *
  * <pre>
  * KURL url = "kde.org";
  * bool filtered = KURIFilter::self()->filterURI( url );
  * </pre>
  *
- * If you have a constant string or a constant URL,
- * simply invoke the corresponding function to obtain
- * the filtered string or URL instead of a boolean flag:
+ * If you have a constant string or a constant URL, simply invoke the
+ * corresponding function to obtain the filtered string or URL instead
+ * of a boolean flag:
+ *
  * <pre>
  * QString u = KURIFilter::self()->filteredURI( "kde.org" );
  * </pre>
  *
- * You can also specify only specific filter(s) to be applied
- * by supplying the name(s) of the filter(s).  By defualt all
- * filters that are found are loaded when the KURIFilter object
- * is created will be used.  These names are taken from the
- * enteries in the \".desktop\" files.  Here are a couple of
- * examples:
+ * You can also restrict the filter(s) to be used by supplying
+ * the name of the filter(s) to use.  By defualt all available
+ * filters will be used. To use specific filters, add the names
+ * of the filters you want to use to a QStringList and invoke
+ * the appropriate filtering function. The examples below show
+ * the use of specific filters. The first one uses a single
+ * filter called kshorturifilter while the second example uses
+ * multiple filters:
+ *
  * <pre>
  * QString text = "kde.org";
- * bool filtered = KURIFilter::self()->filterURI( text, "KShortURIFilter" );
+ * bool filtered = KURIFilter::self()->filterURI( text, "kshorturifilter" );
+ * </pre>
  *
+ * <pre>
  * QStringList list;
- * list << "KShortURIFilter" << "MyFilter";
+ * list << "kshorturifilter" << "localdomainfilter";
  * bool filtered = KURIFilter::self()->filterURI( text, list );
  * </pre>
  *
  * KURIFilter also allows richer data exchange through a simple
- * meta-object called @p KURIFilterData.  Using this meta-object
+ * meta-object called @p KURIFilterData. Using this meta-object
  * you can find out more information about the URL you want to
- * filter.  See @ref KURIFilterData for examples and details.
+ * filter. See @ref KURIFilterData for examples and details.
  *
  * @short Filters a given URL into its proper format whenever possible.
  */
@@ -482,21 +517,18 @@ public:
     ~KURIFilter ();
 
     /**
-     * Return a static instance of KURIFilter.
-     * @return the KURIFilter
+     * Returns an instance of KURIFilter.
      */
     static KURIFilter* self();
 
     /**
      * Filters the URI given by the object URIFilterData.
      *
-     * This filters the given data based on the specified
-     * filter list.  If the list is empty all avaliable
-     * filter plugins would be used.  If not, only those
-     * given in the list are used.
+     * The given URL is filtered based on the specified list of filters.
+     * If the list is empty all avaliable filters would be used.
      *
      * @param data object that contains the URI to be filtered.
-     * @param filters specify the list filters to be used
+     * @param filters specify the list of filters to be used.
      *
      * @return a boolean indicating whether the URI has been changed
      */
@@ -505,13 +537,11 @@ public:
     /**
      * Filters the URI given by the URL.
      *
-     * This filters the given URL based on the specified
-     * filter list.  If the list is empty all avaliable
-     * filter plugins would be used.  If not, only those
-     * given in the list are used.
+     * The given URL is filtered based on the specified list of filters.
+     * If the list is empty all avaliable filters would be used.
      *
      * @param uri the URI to filter.
-     * @param filters specify the list of filters to be used
+     * @param filters specify the list of filters to be used.
      *
      * @return a boolean indicating whether the URI has been changed
      */
@@ -520,13 +550,11 @@ public:
     /**
      * Filters a string representing a URI.
      *
-     * This filters the given string based on the specified
-     * filter list.  If the list is empty all avaliable
-     * filter plugins would be used.  If not, only those
-     * given in the list are used.
+     * The given URL is filtered based on the specified list of filters.
+     * If the list is empty all avaliable filters would be used.
      *
      * @param uri The URI to filter.
-     * @param filters specify the list filters to be used
+     * @param filters specify the list of filters to be used.
      *
      * @return a boolean indicating whether the URI has been changed
      */
@@ -535,13 +563,11 @@ public:
     /**
      * Returns the filtered URI.
      *
-     * This filters the given URL based on the specified
-     * filter list.  If the list is empty all avaliable
-     * filter plugins would be used.  If not, only those
-     * given in the list are used.
+     * The given URL is filtered based on the specified list of filters.
+     * If the list is empty all avaliable filters would be used.
      *
      * @param uri The URI to filter.
-     * @param filters specify the list filters to be used
+     * @param filters specify the list of filters to be used.
      *
      * @return the filtered URI or null if it cannot be filtered
      */
@@ -550,13 +576,11 @@ public:
     /**
      * Return a filtered string representation of a URI.
      *
-     * This filters the given URL based on the specified
-     * filter list.  If the list is empty all avaliable
-     * filter plugins would be used.  If not, only those
-     * given in the list are used.
+     * The given URL is filtered based on the specified list of filters.
+     * If the list is empty all avaliable filters would be used.
      *
      * @param uri the URI to filter.
-     * @param filters specify the list filters to be used
+     * @param filters specify the list of filters to be used.
      *
      * @return the filtered URI or null if it cannot be filtered
      */
@@ -598,12 +622,9 @@ protected:
     void loadPlugins();
 
 private:
-
     static KURIFilter *m_self;
     KURIFilterPluginList m_lstPlugins;
     KURIFilterPrivate *d;
-
 };
 
 #endif
-
