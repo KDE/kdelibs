@@ -39,8 +39,8 @@
 #define i18n(X) KApplication::getKApplication()->getLocale()->translate(X)
 #endif
 
-#define Icon(x) kapp->getIconLoader()->loadIcon(x)         
-#define ICON(x) kapp->getIconLoader()->loadIcon(x)
+#define Icon(x) kapp->getIconLoader()->loadIcon(x,0,0,false)
+#define ICON(x) kapp->getIconLoader()->loadIcon(x,0,0,false)
 
 class KIconLoader;
 class KCharsets;
@@ -715,6 +715,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.62  1999/03/01 23:33:11  kulow
+// CVS_SILENT ported to Qt 2.0
+//
 // Revision 1.60.2.8  1999/02/23 18:21:01  pbrown
 // reverted changes to kapp -- old dnd functionality should work again.
 //

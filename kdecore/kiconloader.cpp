@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.27  1999/03/01 23:33:30  kulow
+   CVS_SILENT ported to Qt 2.0
+	for ( ; it != list.end(); ++it ) {
    Revision 1.26  1999/01/18 10:56:20  kulow
    .moc files are back in kdelibs. Built fine here using automake 1.3
 	}
@@ -149,17 +152,19 @@ KIconLoader::~KIconLoader()
   pixmap_list.clear();
 }
 
-QPixmap KIconLoader::loadIcon ( const QString &name, int w, int h ){
+QPixmap KIconLoader::loadIcon ( const QString &name, int w, int h, bool canReturnNull ){
   QPixmap result = loadInternal(name, w, h);
 	return result;
 /* Stephan: It's OK to know, how many icons are still missing, but
        we don't need to tell everybody ;) Perhaps this can be con-
        verted to a KDEBUG solution, that is more silent? Don't know.
-
-  if (result.isNull())
-    warning(klocale->translate("ERROR: couldn't find icon: %s"), (const char*) name);
-
+   David: Re-enabled the warning. Most applications (esp. koffice) crash
+        if the icon doesn't exist, anyway. And base apps should be ok now.
 */
+  if (result.isNull() && !canReturnNull) {
+    warning("%s : ERROR: couldn't find icon: %s", kapp->appName().data(), name.data());
+    result = loadInternal("unknown.xpm", w, h);
+  }
 QPixmap KIconLoader::loadApplicationIcon ( const QString& name, int w, int h )
   return result;
 }

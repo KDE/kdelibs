@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.15  1998/11/02 10:08:35  ettrich
+   new reload method for kiconloader (Rene Beutler)
+
    Revision 1.14  1998/09/01 20:21:27  kulow
    I renamed all old qt header files to the new versions. I think, this looks
    nicer (and gives the change in configure a sense :)
@@ -106,7 +109,8 @@ public:
   /**
 	 This function searches for the icon called name 
 	 and returns a QPixmap object
-	 of this icon if it was found and 0 otherwise.
+	 of this icon if it was found and 0 otherwise (if canReturnNull is true).
+         Returns pixmap from unknown.xpm if canReturnNull is false.
 	 If name starts with "/..." loadIcon treats it as an absolut pathname.
 	 LoadIcon() creates a list of all loaded icons, 
 	 so calling loadIcon() a second time
@@ -120,7 +124,7 @@ public:
          0, the icon is not scaled at all.
 
   */
-  QPixmap loadIcon( const QString &name, int w = 0, int h = 0 );
+  QPixmap loadIcon( const QString &name, int w = 0, int h = 0, bool canReturnNull = true);
 
 
   /// Load an icon from disk without cache
