@@ -23,16 +23,17 @@
 #include "kaccelbase.h"
 
 #include <qkeycode.h>
+#include <qlabel.h>
 #include <qpopupmenu.h>
 
 #include <kconfig.h>
 #include <kckey.h>
 #include <kdebug.h>
 #include <kglobal.h>
-#include <kglobalsettings.h>
 #include <kkeynative.h>
 #include <kkeyserver_x11.h>
 #include <klocale.h>
+#include <kshortcutmenu.h>
 
 //---------------------------------------------------------------------
 // class KAccelBase::ActionInfo
@@ -566,10 +567,8 @@ void KAccelBase::writeSettings( KConfigBase* pConfig ) const
 
 QPopupMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& seq )
 {
-	QPopupMenu* pMenu = new QPopupMenu( pParent, "KAccelBase-QPopupMenu" );
-	pMenu->setFont( KGlobalSettings::menuFont() );
-	//pMenu->insertTitle( "Key: " + seq.toString() );
-
+	KShortcutMenu* pMenu = new KShortcutMenu( pParent, &actions(), seq );
+	
 	bool bActionInserted = false;
 	bool bInsertSeparator = false;
 	for( uint i = 0; i < actionCount(); i++ ) {
@@ -592,29 +591,18 @@ QPopupMenu* KAccelBase::createPopupMenu( QWidget* pParent, const KKeySequence& s
 					bInsertSeparator = false;
 				}
 
-				QString sLabel = pAction->label();
-				if( seq.count() < seqAction.count() ) {
-					sLabel += "\t&";
-					for( uint iKey = seq.count(); iKey < seqAction.count(); iKey++ ) {
-						sLabel += seqAction.key(iKey).toString();
-						if( iKey < seqAction.count() - 1 )
-							sLabel += '+';
-					}
-				}
+				pMenu->insertAction( i, seqAction );
 
-				kdDebug(125) << "sLabel = " << sLabel << ", i = " << i << endl;
-				pMenu->insertItem( sLabel, i );
+				//kdDebug(125) << "sLabel = " << sLabel << ", seq = " << (QString)seqMenu.qt() << ", i = " << i << endl;
+				//kdDebug(125) << "pMenu->accel(" << i << ") = " << (QString)pMenu->accel(i) << endl;
 				bActionInserted = true;
 				break;
 			}
 		}
 	}
-
-	// Try to highlight the first item.  Unfortunately, it doesn't work!
-	pMenu->setActiveItem( 0 );
+	pMenu->updateShortcuts();
 	return pMenu;
 }
 
 void KAccelBase::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
-
