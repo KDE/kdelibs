@@ -14,6 +14,7 @@ TIFF	<read>
 TGA	<read> <write>
 PCX	<read> <write>
 SGI	<read> <write>   (images/x-rgb: *.bw, *.rgb, *.rgba, *.sgi)
+DDS	<read>
 
 To use these formats, you only need to:
 

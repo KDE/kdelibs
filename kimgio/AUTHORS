@@ -7,3 +7,4 @@ Sven Wiegand <SWiegand@tfh-berlin.de> -- eps output filter (from KSnapshot)
 Dominik Seichter <domseichter@web.de> -- TGA format read/write support
 Nadeem Hasan <nhasan@kde.org> -- PCX format read/write support
 Melchior Franz <mfranz@kde.org> -- SGI format read/write support
+Ignacio Castaño <castano@ludicon.com> -- DDS format reader.

@@ -1,0 +1,10 @@
+[Image Format]
+Type=DDS
+Header=^DDS 
+Name=Direct Draw Surface
+Read=true
+Write=false
+Suffices=dds,DDS
+Mimetype=image/x-dds
+Library=kimg_dds.la
+ 
