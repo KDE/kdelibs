@@ -104,10 +104,10 @@ void KDatePicker::init( const QDate &dt )
   setFontSize(fontsize);
   line->setValidator(val);
   line->installEventFilter( this );
-  yearForward->setPixmap(BarIcon(QString::fromLatin1("2rightarrow")));
-  yearBackward->setPixmap(BarIcon(QString::fromLatin1("2leftarrow")));
-  monthForward->setPixmap(BarIcon(QString::fromLatin1("1rightarrow")));
-  monthBackward->setPixmap(BarIcon(QString::fromLatin1("1leftarrow")));
+  yearForward->setIconSet(BarIconSet(QString::fromLatin1("2rightarrow")));
+  yearBackward->setIconSet(BarIconSet(QString::fromLatin1("2leftarrow")));
+  monthForward->setIconSet(BarIconSet(QString::fromLatin1("1rightarrow")));
+  monthBackward->setIconSet(BarIconSet(QString::fromLatin1("1leftarrow")));
   setDate(dt); // set button texts
   connect(table, SIGNAL(dateChanged(QDate)), SLOT(dateChangedSlot(QDate)));
   connect(table, SIGNAL(tableClicked()), SLOT(tableClickedSlot()));
