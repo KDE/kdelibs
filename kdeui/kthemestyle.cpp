@@ -25,6 +25,8 @@
 #include <qmenudata.h>
 #include <qpopupmenu.h>
 
+#define QCOORDARRLEN(x) sizeof(x)/(sizeof(QCOORD)*2)
+
 void KThemeStyle::polish(QApplication *app)
 {
   oldPalette = app->palette();
@@ -41,7 +43,8 @@ void KThemeStyle::polish(QApplication *app)
     bgBrush.setColor(oldPalette.color(QPalette::Active,
 					QColorGroup::Background));
     oldPalette.setBrush(QPalette::Active, QColorGroup::Background,
-			  bgBrush);
+                        bgBrush);
+
     app->setPalette(oldPalette);
   }
 }
@@ -77,22 +80,26 @@ void KThemeStyle::drawBaseButton(QPainter *p, int x, int y, int w, int h,
 {
     int offset = decoWidth(type);
     QPen oldPen = p->pen();
-    
-    drawShade(p, x, y, w, h, *colorGroup(g, type), sunken, rounded,
-              highlightWidth(type), borderWidth(type), shade());
-    
+
     // This stinks. I wanted to assign a color and optional pixmap to a
     // brush with pixmapBrush and fillRect that, but the pixmap in a brush
     // doesn't necessarily paint at 0,0 in the pixmap. It depends on where
     // you start painting :( Faster to just do this...
     if((w-offset*2) > 0 && (h-offset*2) > 0){
         if(isPixmap(type))
-            p->drawTiledPixmap(x+offset, y+offset, w-offset*2, h-offset*2,
-                               *scalePixmap(w-offset*2, h-offset*2, type));
+            if(rounded)
+                p->drawTiledPixmap(x, y, w, h, *scalePixmap(w, h, type));
+            else
+                p->drawTiledPixmap(x+offset, y+offset, w-offset*2, h-offset*2,
+                                   *scalePixmap(w-offset*2, h-offset*2, type));
         else
             p->fillRect(x+offset, y+offset, w-offset*2, h-offset*2,
                         colorGroup(g, type)->brush(QColorGroup::Button));
     }
+    
+    drawShade(p, x, y, w, h, *colorGroup(g, type), sunken, rounded,
+              highlightWidth(type), borderWidth(type), shade());
+
     p->setPen(oldPen);
 }
 
@@ -114,37 +121,53 @@ void KThemeStyle::drawPushButton(QPushButton* btn, QPainter *p)
 void KThemeStyle::drawBaseMask(QPainter *p, int x, int y, int w, int h,
                                bool round)
 {
-    p->setPen(color1);
-    if(round && borderWidth(PushButton) == 1){
-        int x2 = x+w-1;
-        int y2 = y+h-1;
-        p->drawLine(x+1, y, x2-1, y);
-        p->drawLine(x+1, y2, x2-1, y2);
-        p->drawLine(x, y+1, x, y2-1);
-        p->drawLine(x2, y+1, x2, y2-1);
-        p->fillRect(x+1, y+1, w-2, h-2, QBrush(color1, SolidPattern));
-    }
-    else if(round){
-        int x2 = x+w-1;
-        int y2 = y+h-1;
-        p->drawLine(x+2, y, x2-2, y);
-        p->drawLine(x+2, y2, x2-2, y2);
-        p->drawLine(x, y+2, x, y2-2);
-        p->drawLine(x2, y+2, x2, y2-2);
+    // round edge fills
+    static QCOORD btm_left_fill[]={ 0,0,1,0,2,0,3,0,4,0,0,1,1,1,2,1,3,1,4,1,
+    1,2,2,2,3,2,4,2,2,3,3,3,4,3,3,4,4,4 };
 
-        p->drawLine(x+1, y+1, x2-1, y+1);
-        p->drawLine(x+1, y2-1, x2-1, y2-1);
-        p->drawLine(x+1, y+1, x+1, y2-1);
-        p->drawLine(x2-1, y+1, x2-1, y2-1);
-        p->fillRect(x+2, y+2, w-4, h-4, QBrush(color1, SolidPattern));
+    static QCOORD btm_right_fill[]={ 0,0,1,0,2,0,3,0,4,0,0,1,1,1,2,1,3,1,4,
+    1,0,2,1,2,2,2,3,2,0,3,1,3,2,3,0,4,1,4 };
+
+    static QCOORD top_left_fill[]={ 3,0,4,0,2,1,3,1,4,1,1,2,2,2,3,2,4,2,0,3,
+    1,3,2,3,3,3,4,3,0,4,1,4,2,4,3,4,4,4 };
+
+    static QCOORD top_right_fill[]={ 0,0,1,0,0,1,1,1,2,1,0,2,1,2,2,2,3,2,0,
+    3,1,3,2,3,3,3,4,3,0,4,1,4,2,4,3,4,4,4 };
+
+    QBrush fillBrush(color1, SolidPattern);
+    p->setPen(color1);
+    if(round && w > 19 && h > 19){
+        int x2 = x+w-1;
+        int y2 = y+h-1;
+        QPointArray a(QCOORDARRLEN(top_left_fill), top_left_fill);
+        a.translate(1, 1);
+        p->drawPoints(a);
+        a.setPoints(QCOORDARRLEN(btm_left_fill), btm_left_fill);
+        a.translate(1, h-6);
+        p->drawPoints(a);
+        a.setPoints(QCOORDARRLEN(top_right_fill), top_right_fill);
+        a.translate(w-6, 1);
+        p->drawPoints(a);
+        a.setPoints(QCOORDARRLEN(btm_right_fill), btm_right_fill);
+        a.translate(w-6, h-6);
+        p->drawPoints(a);
+
+        p->fillRect(x+6, y, w-12, h, fillBrush);
+        p->fillRect(x, y+6, x+6, h-12, fillBrush);
+        p->fillRect(x2-6, y+6, x2, h-12, fillBrush);
+        p->drawLine(x+6, y, x2-6, y);
+        p->drawLine(x+6, y2, x2-6, y2);
+        p->drawLine(x, y+6, x, y2-6);
+        p->drawLine(x2, y+6, x2, y2-6);
 
     }
     else
-        p->fillRect(x, y, w, h, QBrush(color1, SolidPattern));
+        p->fillRect(x, y, w, h, fillBrush);
 }
 
 void KThemeStyle::drawButtonMask(QPainter *p, int x, int y, int w, int h)
 {
+
     drawBaseMask(p, x, y, w, h, roundButton());
 }                                         
 
@@ -165,7 +188,7 @@ void KThemeStyle::drawBevelButton(QPainter *p, int x, int y, int w, int h,
 void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                                      const QColorGroup &g, bool sunken,
                                      bool raised, bool enabled, bool popup,
-                                     KToolButtonType type, const QString btext,
+                                     KToolButtonType type, const QString &btext,
                                      const QPixmap *pixmap, QFont *font){
     drawBaseButton(p, x, y, w, h, g, sunken, false, ToolButton);
     int dx, dy;
@@ -288,7 +311,7 @@ void KThemeStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
                                   const QColorGroup &g, bool sunken, bool,
                                   bool, const QBrush *)
 {
-    drawBaseButton(p, x, y, w, h, g, sunken, false, ComboBox);
+    drawBaseButton(p, x, y, w, h, g, sunken, roundComboBox(), ComboBox);
     if(isPixmap(ComboDeco))
         p->drawPixmap(w - uncached(ComboDeco)->width()-decoWidth(ComboBox)-2,
                       y +(h - uncached(ComboDeco)->
@@ -380,20 +403,20 @@ void KThemeStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     }
     // End of the button placement code
 
-    if((controls & SubPage)){
+    if((controls & QStyle::SubPage)){
         drawScrollBarGroove(p, sb, horizontal, subPage, g);
     }
-    if((controls & AddPage)){
+    if((controls & QStyle::AddPage)){
         drawScrollBarGroove(p, sb, horizontal, addPage, g);
     }
-    if(controls & AddLine){
+    if(controls & QStyle::AddLine){
         drawBaseButton(p, add.x(), add.y(), add.width(), add.height(), g,
                        activeControl == AddLine, ScrollButton);
         drawArrow(p, (horizontal) ? RightArrow : DownArrow, false,
                   add.x()+3, add.y()+3, add.width()-6,
                   add.height()-6, *colorGroup(g, ScrollButton));
     }
-    if(controls & SubLine){
+    if(controls & QStyle::SubLine){
         p->setPen(g.dark());
         p->drawRect(sub);
         drawBaseButton(p, sub.x(), sub.y(), sub.width(), sub.height(), g,
@@ -402,7 +425,7 @@ void KThemeStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                   sub.y()+3, sub.width()-6, sub.height()-6,
                   *colorGroup(g, ScrollButton));
     }
-    if(controls & Slider){
+    if(controls & QStyle::Slider){
         drawBaseButton(p, slider.x(), slider.y(), slider.width(),
                        slider.height(), g, false, ScrollBarSlider);
         if(isPixmap(ScrollDeco)){
@@ -489,7 +512,7 @@ QStyle::ScrollControl KThemeStyle::scrollBarPointOver(const QScrollBar *sb,
                                                       const QPoint &p)
 {
     if(!sb->rect().contains(p))
-        return(NoScroll);
+        return(QStyle::NoScroll);
     int sliderMin, sliderMax, sliderLength, buttonDim;
     int pos = (sb->orientation() == QScrollBar::Horizontal) ? p.x() : p.y();
     scrollBarMetrics(sb, sliderMin, sliderMax, sliderLength, buttonDim);
@@ -503,7 +526,7 @@ QStyle::ScrollControl KThemeStyle::scrollBarPointOver(const QScrollBar *sb,
             return QStyle::Slider;
         if (pos < sliderMax + sliderLength )
             return QStyle::AddPage;
-        return AddLine;
+        return QStyle::AddLine;
     }
     if(scrollBarLayout() == SBBottomLeft && sb->orientation() ==
        QScrollBar::Horizontal){
@@ -526,7 +549,7 @@ QStyle::ScrollControl KThemeStyle::scrollBarPointOver(const QScrollBar *sb,
             return QStyle::AddPage;
         if (pos < sliderMax + sliderLength + buttonDim)
             return QStyle::SubLine;
-        return AddLine;
+        return QStyle::AddLine;
     }
 }
 
@@ -631,20 +654,10 @@ void KThemeStyle::drawSliderMask(QPainter *p, int x, int y, int w, int h,
                                  Orientation orient, bool tickAbove,
                                  bool tickBelow)
 {
-    // Offset is off here...
-    if(isPixmap(Slider)){
-        const QBitmap *mask = uncached(Slider)->mask();
-        if(mask){
-            if(orient == Qt::Horizontal)
-                p->drawPixmap(x, y+(h-uncached(Slider)->height())/2,
-                              *mask);
-            else
-                p->drawPixmap(x+(w-uncached(Slider)->width())/2,
-                              y, *mask);
-        }
-        else
-            p->fillRect(x, y, w, h, QBrush(color1, SolidPattern));
-    }
+    // This is odd. If we fill in the entire region it still masks the slider
+    // properly. I have no idea, this used to be different in Qt betas...
+    if(isPixmap(Slider))
+        p->fillRect(x, y, w, h, QBrush(color1, SolidPattern));
     else
         QPlatinumStyle::drawSliderMask(p, x, y, w, h, orient, tickAbove,
                                        tickBelow);
@@ -706,44 +719,117 @@ void KThemeStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
     }
 }
 
+/* This is where we draw the borders and highlights. The new round button
+ * code is a pain in the arse. We don't want to be calculating arcs so
+ * use a whole lotta QPointArray's ;-) The code is made a lot more complex
+ * because you can have variable width border and highlights...
+ * I may want to cache this if round buttons are used, but am concerned
+ * about excessive cache misses. This is a memory/speed tradeoff that I
+ * have to test.
+ */
 void KThemeStyle::drawShade(QPainter *p, int x, int y, int w, int h,
-                            QColorGroup g, bool sunken, bool rounded,
+                            const QColorGroup &g, bool sunken, bool rounded,
                             int hWidth, int bWidth, ShadeStyle style)
 {
-    int i = 0;
-    
-    p->setPen(g.shadow());
-    for(; i < bWidth && w > 2 && h > 2; ++i, ++x, ++y, w-=2, h-=2)
-        p->drawRect(x, y , w, h);
+    int i, sc, bc, x2, y2;
+    QPen highPen, lowPen;
 
-    if(!hWidth)
-        return;
-
-    int x2 = x+w-1, y2 = y+h-1;
-    QPen oldPen = p->pen();
-    QPointArray highShade(hWidth*4);
-    QPointArray lowShade(hWidth*4);
-    QPointArray roundFill(4);  //small for a QPointArray, but that will change
-
-    if(rounded && bWidth > 1)
-        roundFill.putPoints(0, 4, x,y, x2,y, x,y2, x2,y2);
-
-    for(i=0; i < hWidth; ++i, ++x, ++y, --x2, --y2){
-        highShade.putPoints(i*4, 4, x,y, x2,y, x,y, x,y2);
-        lowShade.putPoints(i*4, 4, x,y2, x2,y2, x2,y, x2,y2);
+    if(style == Motif){
+        highPen.setColor(sunken ? g.dark() : g.light());
+        lowPen.setColor(sunken ? g.light() : g.dark());
     }
-    switch(style){
-    case Motif:
-        p->setPen((sunken) ? g.dark() : g.light());
-        p->drawLineSegments(highShade);
-        p->setPen((sunken) ? g.light() : g.dark());
-        p->drawLineSegments(lowShade);
-        break;
-    case Windows:
-        if(hWidth > 1){
-            p->setPen((sunken) ? g.shadow() : g.light());
+    else{
+        highPen.setColor(sunken ? g.shadow() : g.light());
+        lowPen.setColor(sunken ? g.light() : g.shadow());
+    }
+
+    // Advanced round buttons
+    if(rounded && w > 19 && h > 19){
+        x2 = x+w-1, y2 = y+h-1;
+        QPointArray bPntArray, hPntArray, lPntArray;
+        QPointArray bLineArray, hLineArray, lLineArray;
+        // borders
+        for(i=0,bc=0; i < bWidth; ++i){
+            bPntArray.putPoints(bc, 24, x+4,y+1, x+5,y+1, x+3,y+2, x+2,y+3,
+                                x+1,y+4, x+1,y+5, x+1,y2-5, x+1,y2-4, x+2,y2-3,
+                                x2-5,y+1, x2-4,y+1, x2-3,y+2, x2-5,y2-1,
+                                x2-4,y2-1, x2-3,y2-2, x2-2,y2-3, x2-1,y2-5,
+                                x2-1,y2-4, x+3,y2-2, x+4,y2-1, x+5,y2-1,
+                                x2-2,y+3, x2-1,y+4, x2-1,y+5);
+            bc+=24;
+            // ellispe edges don't match exactly, so fill in blanks
+            if(i < bWidth-1 || hWidth != 0){
+                bPntArray.putPoints(bc, 20, x+6,y+1, x+4,y+2,  x+3,y+3,
+                                    x+2,y+4, x+1,y+6, x2-6,y+1, x2-4,y+2,
+                                    x2-3,y+3, x+2,y2-4, x+1,y2-6, x2-6,y2-1,
+                                    x2-4,y2-2, x2-3,y2-3,x2-2,y2-4, x2-1,y2-6,
+                                    x+6,y2-1, x+4,y2-2, x+3,y2-3, x2-1,y+6,
+                                    x2-2,y+4);
+                bc+=20;
+            }
+            bLineArray.putPoints(i*8, 8, x+6,y, x2-6,y, x,y+6, x,y2-6,
+                                 x+6,y2, x2-6,y2, x2,y+6, x2,y2-6);
+            ++x, ++y;
+            --x2, --y2;
+        }
+        // highlights
+        for(i=0,sc=0; i < hWidth; ++i){
+            hPntArray.putPoints(sc, 12, x+4,y+1, x+5,y+1, // top left
+                                x+3,y+2, x+2,y+3, x+1,y+4, x+1,y+5,
+                                x+1,y2-5, x+1,y2-4, x+2,y2-3, // half corners
+                                x2-5,y+1, x2-4,y+1, x2-3,y+2);
+            lPntArray.putPoints(sc, 12, x2-5,y2-1, x2-4,y2-1, // btm right
+                                x2-3,y2-2, x2-2,y2-3, x2-1,y2-5, x2-1,y2-4,
+                                x+3,y2-2, x+4,y2-1, x+5,y2-1, //half corners
+                                x2-2,y+3, x2-1,y+4, x2-1,y+5);
+            sc+=12;
+            if(i < hWidth-1){
+                hPntArray.putPoints(sc, 10, x+6,y+1, x+4,y+2, // top left
+                                    x+3,y+3, x+2,y+4, x+1,y+6,
+                                    x2-6,y+1, x2-4,y+2, // half corners
+                                    x2-3,y+3, x+2,y2-4, x+1,y2-6);
+                lPntArray.putPoints(sc, 10, x2-6,y2-1, x2-4,y2-2, // btm right
+                                    x2-3,y2-3,x2-2,y2-4, x2-1,y2-6,
+                                    x+6,y2-1, x+4,y2-2, // half corners
+                                    x+3,y2-3, x2-1,y+6, x2-2,y+4);
+                sc+=10;
+            }
+            hLineArray.putPoints(i*4, 4, x+6,y, x2-6,y, x,y+6, x,y2-6);
+            lLineArray.putPoints(i*4, 4, x+6,y2, x2-6,y2, x2,y+6, x2,y2-6);
+            ++x, ++y;
+            --x2, --y2;
+        }
+        p->setPen(Qt::black);
+        p->drawPoints(bPntArray);
+        p->drawLineSegments(bLineArray);
+        p->setPen(highPen);
+        p->drawPoints(hPntArray);
+        p->drawLineSegments(hLineArray);
+        p->setPen(lowPen);
+        p->drawPoints(lPntArray);
+        p->drawLineSegments(lLineArray);
+    }
+    // Rectangular buttons
+    else{
+        QPointArray highShade(hWidth*4);
+        QPointArray lowShade(hWidth*4);
+
+        p->setPen(g.shadow());
+        for(i=0; i < bWidth && w > 2 && h > 2; ++i, ++x, ++y, w-=2, h-=2)
+            p->drawRect(x, y , w, h);
+
+        if(!hWidth)
+            return;
+        
+        x2 = x+w-1, y2 = y+h-1;
+        for(i=0; i < hWidth; ++i, ++x, ++y, --x2, --y2){
+            highShade.putPoints(i*4, 4, x,y, x2,y, x,y, x,y2);
+            lowShade.putPoints(i*4, 4, x,y2, x2,y2, x2,y, x2,y2);
+        }
+        if(style == Windows && hWidth > 1){
+            p->setPen(highPen);
             p->drawLineSegments(highShade, 0, 2);
-            p->setPen((sunken) ? g.light() : g.shadow());
+            p->setPen(lowPen);
             p->drawLineSegments(lowShade, 0, 2);
 
             p->setPen((sunken) ? g.dark() : g.mid());
@@ -752,26 +838,12 @@ void KThemeStyle::drawShade(QPainter *p, int x, int y, int w, int h,
             p->drawLineSegments(lowShade, 4);
         }
         else{
-            p->setPen((sunken) ? g.shadow() : g.light());
+            p->setPen((sunken) ? g.dark() : g.light());
             p->drawLineSegments(highShade);
-            p->setPen((sunken) ? g.light() : g.shadow());
+            p->setPen((sunken) ? g.light() : g.dark());
             p->drawLineSegments(lowShade);
         }
-        break;
-    case Next:
-    default:
-        p->setPen((sunken) ? g.shadow() : g.light());
-        p->drawLineSegments(highShade);
-        p->setPen((sunken) ? g.light() : g.shadow());
-        p->drawLineSegments(lowShade);
-        break;
     }
-
-    if(rounded && bWidth > 1){
-        p->setPen(g.shadow());
-        p->drawPoints(roundFill);
-    }
-    p->setPen(oldPen);
 }
 
 void KThemeStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
@@ -857,6 +929,7 @@ void KThemeStyle::drawPopupMenuItem(QPainter *p, bool checkable, int /*maxpmw*/,
     int offset = decoWidth(widget);
     int pWidth = QMAX(isPixmap(CheckMark) ? uncached(CheckMark)->width()+2 : 0 ,
                       12);
+    int pOffset=0;
     const QColorGroup cg = *colorGroup(!enabled ? pal.disabled() : act ?
                                        pal.active() : pal.normal(),
                                        widget);
@@ -891,11 +964,14 @@ void KThemeStyle::drawPopupMenuItem(QPainter *p, bool checkable, int /*maxpmw*/,
         pmr.moveCenter(cr.center());
         p->setPen(cg.text());
         p->drawPixmap(pmr.topLeft(), pixmap);
+        pOffset = 1;
 
     }
-    else if(checkable && mi->isChecked())
+    else if(checkable && mi->isChecked()){
         drawCheckMark(p, x+offset, y+offset, pWidth, h-offset*2, cg, act,
                       !enabled);
+        pOffset = 1;
+    }
 
     QString s = mi->text();
     p->setPen(enabled ? cg.text() : cg.light());
@@ -923,6 +999,24 @@ void KThemeStyle::drawPopupMenuItem(QPainter *p, bool checkable, int /*maxpmw*/,
                   y+5, dim, dim, cg, mi->isEnabled());
     }
 }
+
+void KThemeStyle::drawFocusRect(QPainter *p, const QRect &r,
+                                const QColorGroup &g, const QColor *c,
+                                bool atBorder)
+{
+    p->setPen(g.dark());
+    if(!is3DFocus())
+        QPlatinumStyle::drawFocusRect(p, r, g, c, atBorder);
+    else{
+        int i = focusOffset();
+        p->drawLine(r.x()+i, r.y()+1+i, r.x()+i, r.bottom()-1-i);
+        p->drawLine(r.x()+1+i, r.y()+i, r.right()-1-i, r.y()+i);
+        p->setPen(g.light());
+        p->drawLine(r.right()-i, r.y()+1+i, r.right()-i, r.bottom()-1-i);
+        p->drawLine(r.x()+1+i, r.bottom()-i, r.right()-1-i, r.bottom()-i);
+    }
+}
+            
 
 #include "kthemestyle.moc"
 

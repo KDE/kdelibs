@@ -107,7 +107,7 @@ public:
                                     const QColorGroup &g, bool sunken=false,
                                     bool raised = true, bool enabled = true,
                                     bool popup = false, KToolButtonType type = Icon,
-                                    const QString btext=QString::null,
+                                    const QString &btext=QString::null,
                                     const QPixmap *icon=NULL,
                                     QFont *font=NULL);             
     virtual void drawKBarHandle(QPainter *p, int x, int y, int w, int h,
@@ -244,7 +244,7 @@ public:
      * @param style The shading style to use.
      */
     virtual void drawShade(QPainter *p, int x, int y, int w, int h,
-                           QColorGroup g, bool sunken, bool rounded,
+                           const QColorGroup &g, bool sunken, bool rounded,
                            int hWidth, int bWidth, ShadeStyle style);
     virtual void drawPushButtonLabel(QPushButton *btn, QPainter *p);
     /**
@@ -261,6 +261,8 @@ public:
                                    int h);
     int popupMenuItemHeight(bool checkable, QMenuItem *mi,
                             const QFontMetrics &fm);
+    void drawFocusRect(QPainter *p, const QRect &r, const QColorGroup &g,
+                       const QColor *c=0, bool atBorder=false);
 
 protected:
     QPalette oldPalette;

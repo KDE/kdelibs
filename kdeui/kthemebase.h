@@ -144,11 +144,8 @@ class KThemeBase: public KStyle
 public:
     /**
      * Constructs a new KThemeBase object.
-     *
-     * @param configFile A KConfig file to use as the theme configuration.
-     * Defaults to global config (~/.kde/share/config/kdeglobals).
      */
-    KThemeBase(const QString &configFile = QString::null);
+    KThemeBase(const QString &configFile);
     ~KThemeBase();
     /**
      * Describes if a pixmap should be scaled fully, horizontally, vertically,
@@ -221,6 +218,16 @@ public:
      * True if the widget has a color group specified.
      */
     bool isColor(WidgetType widget) const;
+    /**
+     * True if the user specified a 3D focus rectangle
+     */
+    bool is3DFocus();
+    /**
+     * If the user specified a 3D focus rectangle, they may also specify an
+     * offset from the default rectangle to use when drawing it. This returns
+     * the specified offset.
+     */
+    int focusOffset();
     /**
      * The border width of the specified widget.
      */
@@ -305,16 +312,6 @@ public:
      * @param file The configuration file to apply.
      */
     static void applyConfigFile(const QString &file);
-    /**
-     * This writes the current configuration in kdeglobals to a file.
-     *
-     * @param file The file to write the current configuration to.
-     */
-    static void writeConfigFile(const QString &file);
-    /**
-     * Removes blank theme config entries from a file.
-     */
-    static void compactConfigFile(const QString &file);
 protected:
     /**
      * Returns a QImage for the given widget if the widget is scaled, NULL
@@ -339,10 +336,6 @@ protected:
      * is obsolete.
      */
     void readConfig(Qt::GUIStyle colorStyle = Qt::WindowsStyle);
-    /**
-     * Internal method for saving and applying a configuration file.
-     */
-    static void writeConfig(KConfigBase &inConfig, KConfigBase &outConfig);
     /**
      * Makes a full color group based on the given foreground and background
      * colors. This is the same code used by KDE (kapp.cpp) in previous
@@ -369,12 +362,13 @@ private:
     int btnYShift;
     int sliderLen;
     int splitterWidth;
+    int focus3DOffset;
     bool smallGroove;
     bool roundedButton;
     bool roundedCombo;
     bool roundedSlider;
+    bool focus3D;
     KThemeCache *cache;
-    KConfig *config;
     int cacheSize;
 
     /**
@@ -386,7 +380,8 @@ private:
      */
     KPixmap *pixmaps[WIDGETS];
     /**
-     * The theme images. 
+     * The theme images. These are for scaled images and are kept in order
+     * to maintain fast smoothscaling.
      */
     QImage *images[WIDGETS];
     /**
@@ -431,6 +426,16 @@ inline bool KThemeBase::isPixmap(const WidgetType widget) const
 inline bool KThemeBase::isColor(WidgetType widget) const
 {
     return(colors[widget] != NULL);
+}
+
+inline bool KThemeBase::is3DFocus()
+{
+    return(focus3D);
+}
+
+inline int KThemeBase::focusOffset()
+{
+    return(focus3DOffset);
 }
 
 inline KThemeBase::ScaleHint KThemeBase::scaleHint(WidgetType widget) const

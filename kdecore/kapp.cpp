@@ -471,8 +471,6 @@ KApplication::~KApplication()
 {
   removeEventFilter( this );
 
-  delete pKStyle;
-
   delete smw;
 
   KGlobal::freeAll();
@@ -721,22 +719,24 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
         styleHandle = 0;
     }
 
-    delete pKStyle;
-
     if(styleStr == "Platinum"){
         pKStyle=0;
+        styleHandle=0;
         setStyle(new QPlatinumStyle);
     }
     else if(styleStr == "Windows 95"){
         pKStyle=0;
+        styleHandle=0;
         setStyle(new QWindowsStyle);
     }
     else if(styleStr == "CDE"){
         pKStyle=0;
+        styleHandle=0;
         setStyle(new QCDEStyle);
     }
     else if(styleStr == "Motif"){
         pKStyle=0;
+        styleHandle=0;
         setStyle(new QMotifStyle);
     }
     else{
@@ -752,6 +752,7 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
         else {
           warning("KApp: Unable to find style plugin %s.", styleStr.ascii());
           pKStyle = 0;
+          styleHandle=0;
           setStyle(new QPlatinumStyle);
           return;
         }
