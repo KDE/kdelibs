@@ -23,12 +23,12 @@
 
 #include <qcombobox.h>
 #include <kpushbutton.h>
-#include <qinputdialog.h>
 #include <qlabel.h>
 #include <qcheckbox.h>
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qlineedit.h>
+#include <klineeditdlg.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
@@ -155,7 +155,7 @@ void KXmlCommandSelector::setCommand(const QString& cmd)
 void KXmlCommandSelector::slotAddCommand()
 {
 	bool	ok(false);
-	QString	cmdId = QInputDialog::getText(i18n("Command Name"), i18n("Enter an identification name for the new command:"), QLineEdit::Normal, QString::null, &ok, this);
+	QString	cmdId = KLineEditDlg::getText(i18n("Command Name"), i18n("Enter an identification name for the new command:"), QString::null, &ok, this);
 	if (ok)
 	{
 		bool	added(true);

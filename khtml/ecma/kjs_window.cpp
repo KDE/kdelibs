@@ -20,11 +20,11 @@
 
 #include <qstylesheet.h>
 #include <qtimer.h>
-#include <qinputdialog.h>
 #include <qpaintdevicemetrics.h>
 #include <qapplication.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
+#include <klineeditdlg.h>
 #include <klocale.h>
 #include <kparts/browserinterface.h>
 #include <kwin.h>
@@ -967,16 +967,14 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
                                                 i18n("OK"), i18n("Cancel")) == KMessageBox::Yes));
   case Window::Prompt:
     part->xmlDocImpl()->updateRendering();
-    bool ok;
+    bool ok; 
     if (args.size() >= 2)
-      str2 = QInputDialog::getText(i18n("Konqueror: Prompt"),
+      str2 = KLineEditDlg::getText(i18n("Konqueror: Prompt"),
                                    QStyleSheet::convertFromPlainText(str),
-                                   QLineEdit::Normal,
                                    args[1].toString(exec).qstring(), &ok);
     else
-      str2 = QInputDialog::getText(i18n("Konqueror: Prompt"),
+      str2 = KLineEditDlg::getText(i18n("Konqueror: Prompt"),
                                    QStyleSheet::convertFromPlainText(str),
-                                   QLineEdit::Normal,
                                    QString::null, &ok);
     if ( ok )
         return String(str2);

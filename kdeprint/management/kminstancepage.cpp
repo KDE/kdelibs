@@ -29,11 +29,11 @@
 #include "kmtimer.h"
 
 #include <qlayout.h>
-#include <qinputdialog.h>
 #include <qregexp.h>
 #include <qwhatsthis.h>
 #include <qpushbutton.h>
 #include <kmessagebox.h>
+#include <klineeditdlg.h>
 #include <klistbox.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -136,8 +136,8 @@ void KMInstancePage::slotNew()
 	KMTimer::self()->hold();
 
 	bool	ok(false);
-	QString	name = QInputDialog::getText(i18n("Instance name"),i18n("Enter name for new instance (leave untouched for default):"),
-			                     QLineEdit::Normal,i18n("(Default)"),&ok,this);
+	QString	name = KLineEditDlg::getText(i18n("Instance Name"),i18n("Enter name for new instance (leave untouched for default):"),
+			                     i18n("(Default)"),&ok,this);
 	if (ok)
 	{
 		if (name.find(QRegExp("\\s")) != -1)
@@ -181,8 +181,8 @@ void KMInstancePage::slotCopy()
 	if (!src.isEmpty())
 	{
 		bool	ok(false);
-		QString	name = QInputDialog::getText(i18n("Instance name"),i18n("Enter name for new instance (leave untouched for default):"),
-				                     QLineEdit::Normal,i18n("(Default)"),&ok,this);
+		QString	name = KLineEditDlg::getText(i18n("Instance Name"),i18n("Enter name for new instance (leave untouched for default):"),
+				                     i18n("(Default)"),&ok,this);
 		if (ok)
 		{
 			if (name.find(QRegExp("\\s")) != -1)
