@@ -596,7 +596,7 @@ void Window::put(ExecState* exec, const UString &p, const Value &v, int attr)
 {
   // Called by an internal KJS call (e.g. InterpreterImp's constructor) ?
   // If yes, save time and jump directly to ObjectImp.
-  if ( attr != None )
+  if ( attr != None && attr != DontDelete )
   {
     ObjectImp::put( exec, p, v, attr );
     return;
