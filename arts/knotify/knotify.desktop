@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Service
+Name=KNotify
+Exec=knotify
+Comment=KDE Notification Daemon
+Comment[fr]=KDE Daemon Notification
+Icon=knotify
+ServiceTypes=KNotify

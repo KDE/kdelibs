@@ -1,5 +1,6 @@
 /*
    Copyright (c) 1997 Christian Esken (esken@kde.org)
+   Copyright (c) 2000 Charles Samuels (charles@kde.org)
  
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,14 +33,11 @@
 #include "knotify.h"
 #include "knotify.moc"
 
-#include <iostream.h>
-
 #include <qmessagebox.h>
 #include <qfileinfo.h>
 #include <qiomanager.h>
 
 #include <qtextstream.h>
-
 
 
 int main(int argc, char **argv)
@@ -111,13 +109,12 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 		delete eventsfile;
 	}
 	
-	// Not sure if the QFile::is[[:alpha:]]{4,5}able() works yet!
 	eventRunning=true;
-	if ((present & KNotifyClient::Sound) /* && (QFile(sound).isReadable())*/)
+	if ((present & KNotifyClient::Sound) && (QFile(sound).isReadable()))
 		notifyBySound(sound);
 	if (present & KNotifyClient::Messagebox)
 		notifyByMessagebox(text);
-	if (present & KNotifyClient::Logfile/* && (QFile(file).isWriteable())*/)
+	if (present & KNotifyClient::Logfile && (QFile(file).isWritable()))
 		notifyByLogfile(text, file);
 	if (present & KNotifyClient::Stderr)
 		notifyByStderr(text);

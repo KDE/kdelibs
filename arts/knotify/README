@@ -21,18 +21,7 @@ Usage:
 ------
 1. Compile
 2. Start knotify
-3. Test it with knotifyclient. This program takes an event name as
-   parameter. You can try these:
-
-   Desktop1    : Pops up a message box
-   Desktop2    : Pops up a message box AND prints to stderr
-   Desktop3    : Prints to stderr
-   Desktop4    : Is ignored
-   foo         : Unknown event name. It will do an internal notification.
-                 I bound it to a message box at the moment, but as any
-                 notification it could for example print to stderr as well.
-
-
+3. Test it with knotifyclient.
 
 Ideas:
 ------

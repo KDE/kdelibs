@@ -20,6 +20,9 @@ knotifytest_LDFLAGS	= $(all_libraries) $(KDE_RPATH)
 
 noinst_HEADERS	=  knotify.h
 
+kdelnkdir = $(kde_servicesdir)
+kdelnk_DATA = knotify.desktop
+
 messages:
 	$(XGETTEXT) knotify.cpp -o $(podir)/knotify.pot
 
