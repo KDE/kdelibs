@@ -33,6 +33,7 @@
 
 #include <kcompletionbox.h>
 #include <kstdaccel.h>
+#include <kurldrag.h>
 
 #include <kabc/stdaddressbook.h>
 #include <kabc/distributionlist.h>
