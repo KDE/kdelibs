@@ -95,7 +95,8 @@ int KDialog::spacingHint()
 void KDialog::polish()
 {
   QDialog::polish();
-  if( focusWidget() && focusWidget()->inherits( "QLineEdit" ) )
+  if( focusWidget() && focusWidget()->inherits( "QLineEdit" ) &&
+      !focusWidget()->inherits( "KPasswordEdit" ))
     ((QLineEdit*)focusWidget())->selectAll();
 }
 
