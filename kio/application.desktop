@@ -2,15 +2,19 @@
 Type=ServiceType
 X-KDE-ServiceType=Application
 Name=Application
-Name[bg]=Ïðîãðàìà
+Name[af]=Applikasie
+Name[az]=Proqram
+Name[bg]=Програма
+Name[br]=Arload
+Name[bs]=Program
 Name[ca]=Aplicacions
-Name[cs]=Aplikace
 Name[da]=Program
 Name[de]=Anwendung
 Name[el]=Εφαρμογή
 Name[eo]=Aplikaĵo
 Name[es]=Aplicación
 Name[et]=Rakendus
+Name[eu]=Aplikazioa
 Name[fi]=Sovellus
 Name[gl]=Aplicación
 Name[he]=םושיי
@@ -29,8 +33,8 @@ Name[no]=Applikasjon
 Name[no_NY]=Program
 Name[oc]=Aplicacions
 Name[pl]=Aplikacja
-Name[pt]=Aplicação
 Name[pt_BR]=Aplicativo
+Name[pt]=Aplicação
 Name[ro]=Aplicaţie
 Name[ru]=Приложение
 Name[sk]=Aplikácia
@@ -53,5 +57,8 @@ Type=QString
 Type=bool
 
 [PropertyDef::X-KDE-Username]
+Type=QString
+
+[PropertyDef::X-KDE-WMClass]
 Type=QString
 
