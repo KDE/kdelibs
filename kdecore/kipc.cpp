@@ -52,7 +52,7 @@ static long getSimpleProperty(Window w, Atom a)
             &real_type, &format, &n, &extra, (unsigned char **) &p);
     if ((status == Success) && (n == 1) && (format == 32))
 	res = p[0];
-    XFree((char *) p);
+    if (p) XFree((char *) p);
     return res;
 }
 
