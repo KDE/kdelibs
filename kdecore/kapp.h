@@ -23,10 +23,10 @@
 #define _KAPP_H
 
 // Version macros. Never put this further down.
-#define KDE_VERSION_STRING "1.1"
+#define KDE_VERSION_STRING "1.1.1"
 #define KDE_VERSION_MAJOR 1
 #define KDE_VERSION_MINOR 1
-#define KDE_VERSION_RELEASE 3
+#define KDE_VERSION_RELEASE 4
 
 #include <kconfig.h>
 
@@ -715,6 +715,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.61.2.1  1999/04/10 15:13:41  dfaure
+// in getHelpMenu(), the first param, bAboutQtMenu, doesn't do anything
+// anymore -> fixed docu.
+//
 // Revision 1.61  1999/02/06 16:27:11  kulow
 // make KDE "1.1" and 1 - 1 - 3 (pre1 and 2 was 1 - 1 - 1). Then again
 // 1.1.1 has to be 1 - 1 - 4. Would be strange, not? I see no other way around.
