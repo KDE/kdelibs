@@ -18,11 +18,12 @@
    Boston, MA 02111-1307, USA.
 */
 
+
 #include "kcompletionbox.h"
 
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
-    : KListBox( 0L, name, WType_Popup | WStyle_NoBorderEx )
+    : KListBox( 0L, name, WStyle_Customize | WStyle_NoBorder )
 {
     m_parent = parent;
 
@@ -76,15 +77,18 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
  	hide();
  	break;
     case QEvent::Show:
-	releaseKeyboard(); // so that we get "dead keys" working
+	grabMouse();
+	break;
+    case QEvent::Hide:
+	releaseMouse();
+	revertFocus();
 	break;
     case QEvent::KeyPress: {
  	QKeyEvent *ev = static_cast<QKeyEvent *>( e );
  	if ( ev->key() == Key_Escape )
  	    hide();
 	else if ( ev->key() == Key_Up && currentItem() == 0 ) {
-	    m_parent->setFocus();
-	    setSelected( 0, false );
+	    revertFocus();
 	}
 
 	break;
@@ -104,6 +108,13 @@ void KCompletionBox::popup( QWidget *relativeWidget )
     move( relativeWidget->mapToGlobal( QPoint(0, relativeWidget->height())) );
     raise();
     show();
+}
+
+void KCompletionBox::revertFocus()
+{
+    m_parent->setActiveWindow();
+    m_parent->setFocus();
+    setSelected( 0, false );
 }
 
 #include "kcompletionbox.moc"

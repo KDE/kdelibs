@@ -346,6 +346,7 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
 		if ( k == Key_Tab || k == Key_Down || k == Key_Up )
 		    //	      e->state() & NoButton) )
 		{
+		    d->completionBox->setActiveWindow();
 		    d->completionBox->setFocus();
 		    e->accept();
 		    return true;

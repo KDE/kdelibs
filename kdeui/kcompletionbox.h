@@ -104,6 +104,7 @@ private slots:
 
 private:
     QWidget *m_parent; // necessary to set the focus back
+    void revertFocus();
 };
 
 
