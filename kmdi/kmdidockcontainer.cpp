@@ -35,20 +35,12 @@
 #include <kconfig.h>
 #include <klocale.h>
 
-static const char* const not_close_xpm[]={
-"5 5 2 1",
-"# c black",
-". c None",
-"#####",
-"#...#",
-"#...#",
-"#...#",
-"#####"};
+extern const char* const not_close_xpm[]; //defined in kdeui/kdockwidget.cpp
 
 KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position, int flags)
 : QWidget(parent),KDockContainer()
 {
-  m_tabSwitching = false;     
+  m_tabSwitching = false;
   m_block=false;
   m_inserted=-1;
   m_mainWin = win;
