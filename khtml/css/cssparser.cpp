@@ -1437,7 +1437,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         kdDebug( 6080 ) << "CSS_PROP_BACKGROUND_COLOR: " << val << endl;
 #endif
         if (cssval && cssval->id == CSS_VAL_TRANSPARENT) {
-            // ### What are we to do here?
+            parsedValue = new CSSPrimitiveValueImpl( QColor() );
             break;
         }
         // Break is explictly missing, looking for <color>
