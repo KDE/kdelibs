@@ -32,6 +32,7 @@
 
 #include <kglobal.h>
 #include <kconfig.h>
+#include <qscrollview.h>
 
 #include "kcursor_private.h"
 
@@ -252,6 +253,10 @@ void KCursorPrivate::hideCursor( QWidget *w )
 {
     if ( !w )
         return;
+    // Is w a scrollview ? Call setCursor on the viewport in that case.
+    QScrollView * sv = dynamic_cast<QScrollView *>( w );
+    if ( sv )
+        w = sv->viewport();
 
     isCursorHidden = true;
     isOwnCursor = w->ownCursor();
@@ -265,6 +270,10 @@ void KCursorPrivate::unhideCursor( QWidget *w )
 {
     isCursorHidden = false;
     if ( w ) {
+        QScrollView * sv = dynamic_cast<QScrollView *>( w );
+        if ( sv )
+            w = sv->viewport();
+
         if ( isOwnCursor )
             w->setCursor( oldCursor );
         else
@@ -309,7 +318,7 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     // don't process events not coming from the focus-window
     // or from widgets that accept focus, but don't have it.
     if ( !w->isActiveWindow() || (w->isFocusEnabled() && !w->hasFocus()) ) {
-        disconnect( hideWidget, SIGNAL( destroyed() ), 
+        disconnect( hideWidget, SIGNAL( destroyed() ),
                     this, SLOT( slotWidgetDestroyed() ));
  	hideWidget = 0L;
  	return false;
