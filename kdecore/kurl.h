@@ -188,6 +188,12 @@ public:
    * @return the complete encoded URL.
    */
   QString url() const;
+  /*
+   * convenience method
+   * @return the complete decoded URL, for instance to be displayed to the user.
+   */
+  QString decodedURL() const { QString s = url( 0 ); decode( s ); return s; }
+
   /**
    * @return the complete encoded URL.
    *
@@ -203,6 +209,7 @@ public:
 
   bool KURL::operator==( const KURL& _u ) const;
   bool KURL::operator==( const char* _u ) const;
+
   /**
    * This function should be used if you want to ignore trailing '/' characters.
    *
