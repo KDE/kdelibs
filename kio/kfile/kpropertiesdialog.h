@@ -191,6 +191,42 @@ public:
    */
   virtual ~KPropertiesDialog();
 
+  /**
+   * Immediately displays a Properties dialog using constructor with 
+   * the same parameters. 
+   * On MS Windows, if @p item points to a local file, native (non modal) property 
+   * dialog is displayed (@p parent and @p modal are ignored in this case).
+   * 
+   * @return true on succesfull dialog displaying (can be false on win32).
+   * @since 3.4
+   */
+  static bool showDialog(KFileItem* item, QWidget* parent = 0, 
+                         const char* name = 0, bool modal = false);
+
+  /**
+   * Immediately displays a Properties dialog using constructor with 
+   * the same parameters. 
+   * On MS Windows, if @p _url points to a local file, native (non modal) property 
+   * dialog is displayed (@p parent and @p modal are ignored in this case).
+   * 
+   * @return true on succesfull dialog displaying (can be false on win32).
+   * @since 3.4
+   */
+  static bool showDialog(const KURL& _url, QWidget* parent = 0, 
+                         const char* name = 0, bool modal = false);
+
+  /**
+   * Immediately displays a Properties dialog using constructor with 
+   * the same parameters. 
+   * On MS Windows, if @p _items has one element and this element points 
+   * to a local file, native (non modal) property dialog is displayed 
+   * (@p parent and @p modal are ignored in this case).
+   * 
+   * @return true on succesfull dialog displaying (can be false on win32).
+   * @since 3.4
+   */
+  static bool showDialog(const KFileItemList& _items, QWidget* parent = 0, 
+                         const char* name = 0, bool modal = false);
 
   /**
    * Adds a "3rd party" properties plugin to the dialog.  Useful

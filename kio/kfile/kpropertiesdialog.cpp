@@ -112,6 +112,10 @@ extern "C" {
 
 #include "kpropertiesdialog.h"
 
+#ifdef Q_WS_WIN
+# include <win32_utils.h>
+#endif
+
 static QString nameFromFileName(QString nameStr)
 {
    if ( nameStr.endsWith(".desktop") )
@@ -255,6 +259,38 @@ KPropertiesDialog::KPropertiesDialog (const KURL& _tempUrl, const KURL& _current
   // Create the KFileItem for the _template_ file, in order to read from it.
   m_items.append( new KFileItem( KFileItem::Unknown, KFileItem::Unknown, m_singleUrl ) );
   init (modal, autoShow);
+}
+
+bool KPropertiesDialog::showDialog(KFileItem* item, QWidget* parent, 
+                                   const char* name, bool modal)
+{
+#ifdef Q_WS_WIN
+  QString localPath = item->localPath();
+  if (!localPath.isEmpty())
+    return showWin32FilePropertyDialog(localPath);
+#endif
+  new KPropertiesDialog(item, parent, name, modal);
+  return true;
+}
+
+bool KPropertiesDialog::showDialog(const KURL& _url, QWidget* parent, 
+                                   const char* name, bool modal)
+{
+#ifdef Q_WS_WIN
+  if (_url.isLocalFile())
+    return showWin32FilePropertyDialog( _url.path() );
+#endif
+  new KPropertiesDialog(_url, parent, name, modal);
+  return true;
+}
+
+bool KPropertiesDialog::showDialog(const KFileItemList& _items, QWidget* parent,
+                                   const char* name, bool modal)
+{
+  if (_items.count()==1)
+    return KPropertiesDialog::showDialog(_items.getFirst(), parent, name, modal);
+  new KPropertiesDialog(_items, parent, name, modal);
+  return true;
 }
 
 void KPropertiesDialog::init (bool modal, bool autoShow)
