@@ -90,8 +90,12 @@ mcleanup(str, n, p)
 	size_t n;
 	char *p;
 {
-	strncpy(str, p, n-1);
-	str[n-1] = '\0';
+	int l = strlen(p);
+	
+	if (l > n - 1)
+	    l = n - 1;
+	memcpy(str, p, l);
+	str[l] = '\0';
 	if (mprotect((caddr_t)(p + n + EXTRABYTES), pgsize,
 	    PROT_READ|PROT_WRITE|PROT_EXEC) == -1)
 		mprotect((caddr_t)(p + n + EXTRABYTES), pgsize,
