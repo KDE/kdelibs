@@ -18,7 +18,7 @@
 
 SUBDIRS = . tests
 
-INCLUDES= -I$(srcdir)/.. $(all_includes)
+INCLUDES= -I$(srcdir)/.. -I$(top_srcdir) $(all_includes)
 
 bin_PROGRAMS = klauncher
 lib_LTLIBRARIES = klauncher.la
