@@ -286,14 +286,18 @@ void HTMLObjectElement::setData( const DOMString &value )
 bool HTMLObjectElement::declare() const
 {
     if(!impl) return 0;
-    return ((HTMLObjectElementImpl *)impl)->declare();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_DECLARE).isNull();
 }
 
 void HTMLObjectElement::setDeclare( bool _declare )
 {
-
-    if(impl)
-        ((HTMLObjectElementImpl *)impl)->setDeclare( _declare );
+   if(impl)
+    {
+	DOMString str;
+	if( _declare )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_DECLARE, str);
+    }
 }
 
 DOMString HTMLObjectElement::height() const

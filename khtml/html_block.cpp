@@ -135,15 +135,19 @@ void HTMLHRElement::setAlign( const DOMString &value )
 
 bool HTMLHRElement::noShade() const
 {
-    if(!impl) return 0;
-    return ((HTMLHRElementImpl *)impl)->noShade();
+    if(!impl) return false;
+    return !((ElementImpl *)impl)->getAttribute(ATTR_NOSHADE).isNull();
 }
 
 void HTMLHRElement::setNoShade( bool _noShade )
 {
-    // ### 
     if(impl)
-        ((HTMLHRElementImpl *)impl)->setNoShade( _noShade );
+    {
+	DOMString str;
+	if( _noShade )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_NOSHADE, str);
+    }
 }
 
 DOMString HTMLHRElement::size() const

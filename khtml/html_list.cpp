@@ -53,14 +53,18 @@ HTMLDListElement::~HTMLDListElement()
 bool HTMLDListElement::compact() const
 {
     if(!impl) return 0;
-    return ((HTMLDListElementImpl *)impl)->compact();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_COMPACT).isNull();
 }
 
 void HTMLDListElement::setCompact( bool _compact )
 {
-
-    if(impl)
-        ((HTMLDListElementImpl *)impl)->setCompact( _compact );
+   if(impl)
+    {
+	DOMString str;
+	if( _compact )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_COMPACT, str);
+    }
 }
 
 // --------------------------------------------------------------------------
@@ -90,14 +94,18 @@ HTMLDirectoryElement::~HTMLDirectoryElement()
 bool HTMLDirectoryElement::compact() const
 {
     if(!impl) return 0;
-    return ((HTMLDirectoryElementImpl *)impl)->compact();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_COMPACT).isNull();
 }
 
 void HTMLDirectoryElement::setCompact( bool _compact )
 {
-
-    if(impl)
-        ((HTMLDirectoryElementImpl *)impl)->setCompact( _compact );
+   if(impl)
+    {
+	DOMString str;
+	if( _compact )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_COMPACT, str);
+    }
 }
 
 // --------------------------------------------------------------------------
@@ -175,14 +183,18 @@ HTMLMenuElement::~HTMLMenuElement()
 bool HTMLMenuElement::compact() const
 {
     if(!impl) return 0;
-    return ((HTMLMenuElementImpl *)impl)->compact();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_COMPACT).isNull();
 }
 
 void HTMLMenuElement::setCompact( bool _compact )
 {
-
-    if(impl)
-        ((HTMLMenuElementImpl *)impl)->setCompact( _compact );
+   if(impl)
+    {
+	DOMString str;
+	if( _compact )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_COMPACT, str);
+    }
 }
 
 // --------------------------------------------------------------------------
@@ -212,14 +224,18 @@ HTMLOListElement::~HTMLOListElement()
 bool HTMLOListElement::compact() const
 {
     if(!impl) return 0;
-    return ((HTMLOListElementImpl *)impl)->compact();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_COMPACT).isNull();
 }
 
 void HTMLOListElement::setCompact( bool _compact )
 {
-
-    if(impl)
-        ((HTMLOListElementImpl *)impl)->setCompact( _compact );
+   if(impl)
+    {
+	DOMString str;
+	if( _compact )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_COMPACT, str);
+    }
 }
 
 long HTMLOListElement::start() const
@@ -273,14 +289,18 @@ HTMLUListElement::~HTMLUListElement()
 bool HTMLUListElement::compact() const
 {
     if(!impl) return 0;
-    return ((HTMLUListElementImpl *)impl)->compact();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_COMPACT).isNull();
 }
 
 void HTMLUListElement::setCompact( bool _compact )
 {
-
-    if(impl)
-        ((HTMLUListElementImpl *)impl)->setCompact( _compact );
+   if(impl)
+    {
+	DOMString str;
+	if( _compact )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_COMPACT, str);
+    }
 }
 
 DOMString HTMLUListElement::type() const

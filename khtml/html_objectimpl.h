@@ -82,12 +82,10 @@ public:
 
     virtual tagStatus startTag() { return OBJECTStartTag; }
     virtual tagStatus endTag() { return OBJECTEndTag; }
+
     HTMLFormElement form() const;
-    bool declare() const;
 
-    void setDeclare( bool );
     long tabIndex() const;
-
     void setTabIndex( long );
 };
 

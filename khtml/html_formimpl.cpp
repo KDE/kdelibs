@@ -217,6 +217,7 @@ HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc, HTMLFo
     w = 0;
 
     badPos = true;
+    _disabled = false;
 }
 
 HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc)
@@ -229,6 +230,7 @@ HTMLGenericFormElementImpl::HTMLGenericFormElementImpl(DocumentImpl *doc)
     w = 0;
 
     badPos = true;
+    _disabled = false;
 }
 
 HTMLGenericFormElementImpl::~HTMLGenericFormElementImpl()
@@ -318,6 +320,9 @@ void HTMLGenericFormElementImpl::parseAttribute(Attribute *attr)
     case ATTR_NAME:
 	_name = attr->value();
 	break;
+    case ATTR_DISABLED:
+	_disabled = true;
+	break;
     default:
 	HTMLPositionedElementImpl::parseAttribute(attr);
     }
@@ -355,7 +360,7 @@ void HTMLGenericFormElementImpl::setYPos( int yPos )
     badPos = true;
 }
 
-void HTMLGenericFormElementImpl::print(QPainter *p, int, int,
+void HTMLGenericFormElementImpl::print(QPainter *, int, int,
 				       int, int, int tx, int ty)
 {
     //if(badPos && view && w)
@@ -402,7 +407,6 @@ short HTMLGenericFormElementImpl::getMaxWidth() const
 HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
     : HTMLGenericFormElementImpl(doc, f)
 {
-    _disabled = false;
     _clicked = false;
     _type = SUBMIT;
     setBlocking();
@@ -411,7 +415,6 @@ HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc, HTMLFormElementI
 HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc)
     : HTMLGenericFormElementImpl(doc)
 {
-    _disabled = false;
     _clicked = false;
     _type = SUBMIT;
     setBlocking();
@@ -429,10 +432,6 @@ const DOMString HTMLButtonElementImpl::nodeName() const
 ushort HTMLButtonElementImpl::id() const
 {
     return ID_BUTTON;
-}
-
-void HTMLButtonElementImpl::setDisabled( bool )
-{
 }
 
 long HTMLButtonElementImpl::tabIndex() const
@@ -466,9 +465,6 @@ void HTMLButtonElementImpl::parseAttribute(Attribute *attr)
     case ATTR_VALUE:
 	_value = attr->value();
 	currValue = _value.string();
-	break;
-    case ATTR_DISABLED:
-	_disabled = true;
 	break;
     case ATTR_TABINDEX:
     case ATTR_ACCESSKEY:
@@ -612,7 +608,6 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc)
 {
     _type = TEXT;
     _checked = false;
-    _disabled = false;
     _maxLen = 0;
     _size = 20;
     _pixmap = 0;
@@ -630,7 +625,6 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImp
 {
     _type = TEXT;
     _checked = false;
-    _disabled = false;
     _maxLen = 0;
     _size = 20;
     _pixmap = 0;
@@ -658,16 +652,6 @@ ushort HTMLInputElementImpl::id() const
     return ID_INPUT;
 }
 
-bool HTMLInputElementImpl::defaultChecked() const
-{
-    // ###
-    return false;
-}
-
-void HTMLInputElementImpl::setDefaultChecked( bool )
-{
-}
-
 void HTMLInputElementImpl::setChecked(bool b)
 {
     if(_type == RADIO)
@@ -677,21 +661,7 @@ void HTMLInputElementImpl::setChecked(bool b)
     }
 }
 
-void HTMLInputElementImpl::setDisabled( bool )
-{
-}
-
 void HTMLInputElementImpl::setMaxLength( long  )
-{
-}
-
-bool HTMLInputElementImpl::readOnly() const
-{
-    // ###
-    return false;
-}
-
-void HTMLInputElementImpl::setReadOnly( bool )
 {
 }
 
@@ -759,9 +729,6 @@ void HTMLInputElementImpl::parseAttribute(Attribute *attr)
 	break;
     case ATTR_CHECKED:
 	_checked = true;
-	break;
-    case ATTR_DISABLED:
-	_disabled = true;
 	break;
     case ATTR_MAXLENGTH:
 	_maxLen = attr->val()->toInt();
@@ -1141,7 +1108,6 @@ HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentImpl *doc)
     : HTMLGenericFormElementImpl(doc)
 {
     _multiple = false;
-    _disabled = false;
     w = 0;
     view = 0;
     _size = 1;
@@ -1151,7 +1117,6 @@ HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentImpl *doc, HTMLFormElementI
     : HTMLGenericFormElementImpl(doc, f)
 {
     _multiple = false;
-    _disabled = false;
     w = 0;
     view = 0;
     _size = 1;
@@ -1193,21 +1158,6 @@ long HTMLSelectElementImpl::length() const
     return 0;
 }
 
-bool HTMLSelectElementImpl::disabled() const
-{
-    // ###
-    return false;
-}
-
-void HTMLSelectElementImpl::setDisabled( bool )
-{
-}
-
-
-void HTMLSelectElementImpl::setMultiple( bool )
-{
-}
-
 void HTMLSelectElementImpl::setSize( long  )
 {
 }
@@ -1245,9 +1195,6 @@ void HTMLSelectElementImpl::parseAttribute(Attribute *attr)
     case ATTR_SIZE:
 	_size = attr->val()->toInt();
 	break;
-    case ATTR_DISABLED:
-	_disabled = true;
-	break;
     case ATTR_MULTIPLE:
 	_multiple = true;
 	break;
@@ -1283,7 +1230,6 @@ void HTMLSelectElementImpl::attach(KHTMLWidget *_view)
 	w = new QComboBox( FALSE, view->viewport() );
     }
 
-    if(w && _disabled) w->setEnabled(false);
 }
 
 void HTMLSelectElementImpl::layout( bool )
@@ -1445,16 +1391,6 @@ ushort HTMLOptGroupElementImpl::id() const
     return ID_OPTGROUP;
 }
 
-bool HTMLOptGroupElementImpl::disabled() const
-{
-    // ###
-    return false;
-}
-
-void HTMLOptGroupElementImpl::setDisabled( bool )
-{
-}
-
 // -------------------------------------------------------------------------
 
 HTMLOptionElementImpl::HTMLOptionElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
@@ -1481,16 +1417,6 @@ ushort HTMLOptionElementImpl::id() const
     return ID_OPTION;
 }
 
-bool HTMLOptionElementImpl::defaultSelected() const
-{
-    // ###
-    return false;
-}
-
-void HTMLOptionElementImpl::setDefaultSelected( bool )
-{
-}
-
 DOMString HTMLOptionElementImpl::text() const
 {
     // ###
@@ -1507,16 +1433,6 @@ void HTMLOptionElementImpl::setIndex( long  )
 {
 }
 
-bool HTMLOptionElementImpl::disabled() const
-{
-    // ###
-    return false;
-}
-
-void HTMLOptionElementImpl::setDisabled( bool )
-{
-}
-
 bool HTMLOptionElementImpl::selected() const
 {
     // ###
@@ -1529,14 +1445,12 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc)
     : HTMLGenericFormElementImpl(doc)
 {
     _rows = _cols = 0;
-    _disabled = false;
 }
 
 HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
     : HTMLGenericFormElementImpl(doc, f)
 {
     _rows = _cols = 0;
-    _disabled = false;
 }
 
 HTMLTextAreaElementImpl::~HTMLTextAreaElementImpl()
@@ -1560,26 +1474,6 @@ long HTMLTextAreaElementImpl::cols() const
 }
 
 void HTMLTextAreaElementImpl::setCols( long  )
-{
-}
-
-bool HTMLTextAreaElementImpl::disabled() const
-{
-    // ###
-    return false;
-}
-
-void HTMLTextAreaElementImpl::setDisabled( bool )
-{
-}
-
-bool HTMLTextAreaElementImpl::readOnly() const
-{
-    // ###
-    return false;
-}
-
-void HTMLTextAreaElementImpl::setReadOnly( bool )
 {
 }
 
@@ -1630,9 +1524,6 @@ void HTMLTextAreaElementImpl::parseAttribute(Attribute *attr)
 	break;
     case ATTR_COLS:
 	_cols = attr->val()->toInt();
-	break;
-    case ATTR_DISABLED:
-	_disabled = true;
 	break;
     case ATTR_READONLY:
     case ATTR_TABINDEX:

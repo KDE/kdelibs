@@ -77,17 +77,6 @@ ushort HTMLImageElementImpl::id() const
     return ID_IMG;
 }
 
-bool HTMLImageElementImpl::isMap() const
-{
-    return ismap;
-}
-
-void HTMLImageElementImpl::setIsMap( bool b)
-{
-    ismap = b;
-    // ### set Attribute too...
-}
-
 bool HTMLImageElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
 				  int _tx, int _ty, DOMString &url)
 {
@@ -523,17 +512,6 @@ const DOMString HTMLAreaElementImpl::nodeName() const
 ushort HTMLAreaElementImpl::id() const
 {
     return ID_AREA;
-}
-
-bool HTMLAreaElementImpl::noHref() const
-{
-    // ###
-    return false;
-}
-
-void HTMLAreaElementImpl::setNoHref( bool )
-{
-    // ###
 }
 
 long HTMLAreaElementImpl::tabIndex() const

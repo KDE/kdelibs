@@ -119,6 +119,7 @@ public:
     virtual short getMaxWidth() const;
 
     virtual void reset() {}
+    bool disabled() const { return _disabled; }
 
 protected:
     HTMLFormElementImpl *getForm() const;
@@ -130,6 +131,7 @@ protected:
     KHTMLWidget *view;
     QWidget *w;
     bool badPos;
+    bool _disabled;
 };
 
 // -------------------------------------------------------------------------
@@ -155,9 +157,6 @@ public:
     virtual tagStatus startTag() { return BUTTONStartTag; }
     virtual tagStatus endTag() { return BUTTONEndTag; }
 
-    bool disabled() const { return _disabled; }
-    void setDisabled( bool );
-
     long tabIndex() const;
     void setTabIndex( long );
 
@@ -178,7 +177,6 @@ public slots:
 
 protected:
     DOMString _value;
-    bool _disabled;
     bool _clicked;
     typeEnum _type;
     QString currValue;
@@ -234,20 +232,11 @@ public:
     virtual tagStatus startTag() { return INPUTStartTag; }
     virtual tagStatus endTag() { return INPUTEndTag; }
 
-    bool defaultChecked() const;
-    void setDefaultChecked( bool );
-
     bool checked() const { return _checked; }
     void setChecked(bool b);
 
-    bool disabled() const { return _disabled; }
-    void setDisabled( bool );
-
     long maxLength() const { return _maxLen; }
     void setMaxLength( long );
-
-    bool readOnly() const;
-    void setReadOnly( bool );
 
     long tabIndex() const;
     void setTabIndex( long );
@@ -286,7 +275,6 @@ protected:
     DOMString _value;
     QString currValue;
     bool _checked;
-    bool _disabled;
     int _maxLen;
     int _size;
     DOMString _src;
@@ -348,12 +336,6 @@ public:
 
     long length() const;
 
-    bool disabled() const;
-    void setDisabled( bool );
-
-    bool multiple() const { return _multiple; }
-    void setMultiple( bool );
-
     long size() const { return _size; }
     void setSize( long );
 
@@ -382,7 +364,6 @@ public:
 
 protected:
     int _size;
-    bool _disabled;
     bool _multiple;
 };
 
@@ -401,9 +382,6 @@ public:
     virtual tagStatus startTag() { return OPTGROUPStartTag; }
     virtual tagStatus endTag() { return OPTGROUPEndTag; }
 
-    bool disabled() const;
-
-    void setDisabled( bool );
 };
 
 // ---------------------------------------------------------------------------
@@ -421,16 +399,10 @@ public:
     virtual tagStatus startTag() { return OPTIONStartTag; }
     virtual tagStatus endTag() { return OPTIONEndTag; }
 
-    bool defaultSelected() const;
-    void setDefaultSelected( bool );
-
     DOMString text() const;
 
     long index() const;
     void setIndex( long );
-
-    bool disabled() const;
-    void setDisabled( bool );
 
     bool selected() const;
 };
@@ -452,12 +424,6 @@ public:
 
     long cols() const;
     void setCols( long );
-
-    bool disabled() const;
-    void setDisabled( bool );
-
-    bool readOnly() const;
-    void setReadOnly( bool );
 
     long rows() const;
     void setRows( long );
@@ -485,7 +451,6 @@ public:
 protected:
     int _rows;
     int _cols;
-    bool _disabled;
 };
 
 }; //namespace

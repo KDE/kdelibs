@@ -50,9 +50,6 @@ public:
     virtual tagStatus startTag() { return ULStartTag; }
     virtual tagStatus endTag() { return ULEndTag; }
 
-    bool compact() const { return false; }
-    void setCompact( bool ) {};
-
     virtual void parseAttribute(Attribute *);
     virtual void layout(bool deep = false);
     virtual void print(QPainter *p, int x, int y, int w, int h, 
@@ -168,9 +165,6 @@ public:
 
     virtual tagStatus startTag() { return DLStartTag; }
     virtual tagStatus endTag() { return DLEndTag; }
-
-    bool compact() const { return false; }
-    void setCompact( bool ) { }
 
     virtual void layout(bool deep = false);
 };

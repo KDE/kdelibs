@@ -52,9 +52,6 @@ public:
 
     virtual bool isFloating() { return hAlign()==Left || hAlign()==Right; }
 
-    bool isMap() const;
-    void setIsMap( bool );
-
     virtual bool isRendered() { return true; }
     virtual void parseAttribute(Attribute *);
 
@@ -142,11 +139,8 @@ public:
 
     virtual tagStatus startTag() { return AREAStartTag; }
     virtual tagStatus endTag() { return AREAEndTag; }
-    bool noHref() const;
 
-    void setNoHref( bool );
     long tabIndex() const;
-
     void setTabIndex( long );
 
     void parseAttribute(Attribute *attr);

@@ -100,14 +100,18 @@ void HTMLAreaElement::setHref( const DOMString &value )
 bool HTMLAreaElement::noHref() const
 {
     if(!impl) return 0;
-    return ((HTMLAreaElementImpl *)impl)->noHref();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_NOHREF).isNull();
 }
 
 void HTMLAreaElement::setNoHref( bool _noHref )
 {
-
     if(impl)
-        ((HTMLAreaElementImpl *)impl)->setNoHref( _noHref );
+    {
+	DOMString str;
+	if( _noHref )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_NOHREF, str);
+    }
 }
 
 DOMString HTMLAreaElement::shape() const
@@ -249,14 +253,18 @@ void HTMLImageElement::setHspace( const DOMString &value )
 bool HTMLImageElement::isMap() const
 {
     if(!impl) return 0;
-    return ((HTMLImageElementImpl *)impl)->isMap();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_DISABLED).isNull();
 }
 
 void HTMLImageElement::setIsMap( bool _isMap )
 {
-
     if(impl)
-        ((HTMLImageElementImpl *)impl)->setIsMap( _isMap );
+    {
+	DOMString str;
+	if( _isMap )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_ISMAP, str);
+    }
 }
 
 DOMString HTMLImageElement::longDesc() const

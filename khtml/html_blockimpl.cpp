@@ -179,17 +179,6 @@ ushort HTMLHRElementImpl::id() const
     return ID_HR;
 }
 
-bool HTMLHRElementImpl::noShade() const
-{
-    return shade;
-}
-
-void HTMLHRElementImpl::setNoShade( bool s)
-{
-    shade = s;
-    // ### change Attribute too...
-}
-
 void HTMLHRElementImpl::parseAttribute(Attribute *attr)
 {
     switch( attr->id )

@@ -91,9 +91,6 @@ public:
     virtual tagStatus startTag() { return HRStartTag; }
     virtual tagStatus endTag() { return HREndTag; }
 
-    bool noShade() const;
-    void setNoShade( bool );
-
     virtual void layout(bool deep = false);
     virtual void print(QPainter *p, int x, int y, int w, int h, 
 		       int xoff, int yoff);

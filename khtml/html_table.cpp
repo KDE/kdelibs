@@ -207,13 +207,18 @@ void HTMLTableCellElement::setHeight( const DOMString &value )
 bool HTMLTableCellElement::noWrap() const
 {
     if(!impl) return 0;
-    return ((HTMLTableCellElementImpl *)impl)->noWrap();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_NOWRAP).isNull();
 }
 
 void HTMLTableCellElement::setNoWrap( bool _noWrap )
 {
-    if(impl)
-        ((HTMLTableCellElementImpl *)impl)->setNoWrap( _noWrap );
+   if(impl)
+    {
+	DOMString str;
+	if( _noWrap )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_NOWRAP, str);
+    }
 }
 
 long HTMLTableCellElement::rowSpan() const

@@ -72,14 +72,18 @@ void HTMLButtonElement::setAccessKey( const DOMString &value )
 bool HTMLButtonElement::disabled() const
 {
     if(!impl) return 0;
-    return ((HTMLButtonElementImpl *)impl)->disabled();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_DISABLED).isNull();
 }
 
 void HTMLButtonElement::setDisabled( bool _disabled )
 {
-    // ###
     if(impl)
-        ((HTMLButtonElementImpl *)impl)->setDisabled( _disabled );
+    {
+	DOMString str;
+	if( _disabled )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, str);
+    }
 }
 
 DOMString HTMLButtonElement::name() const
@@ -309,14 +313,18 @@ void HTMLInputElement::setDefaultValue( const DOMString &value )
 bool HTMLInputElement::defaultChecked() const
 {
     if(!impl) return 0;
-    return ((HTMLInputElementImpl *)impl)->defaultChecked();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_CHECKED).isNull();
 }
 
 void HTMLInputElement::setDefaultChecked( bool _defaultChecked )
 {
-    // ###
     if(impl)
-        ((HTMLInputElementImpl *)impl)->setDefaultChecked( _defaultChecked );
+    {
+	DOMString str;
+	if( _defaultChecked )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_CHECKED, str);
+    }
 }
 
 HTMLFormElement HTMLInputElement::form() const
@@ -377,7 +385,6 @@ bool HTMLInputElement::checked() const
 
 void HTMLInputElement::setChecked( bool _checked )
 {
-    // ###
     if(impl)
         ((HTMLInputElementImpl *)impl)->setChecked( _checked );
 }
@@ -385,14 +392,18 @@ void HTMLInputElement::setChecked( bool _checked )
 bool HTMLInputElement::disabled() const
 {
     if(!impl) return 0;
-    return ((HTMLInputElementImpl *)impl)->disabled();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_DISABLED).isNull();
 }
 
 void HTMLInputElement::setDisabled( bool _disabled )
 {
-
     if(impl)
-        ((HTMLInputElementImpl *)impl)->setDisabled( _disabled );
+    {
+	DOMString str;
+	if( _disabled )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, str);
+    }
 }
 
 long HTMLInputElement::maxLength() const
@@ -422,14 +433,18 @@ void HTMLInputElement::setName( const DOMString &value )
 bool HTMLInputElement::readOnly() const
 {
     if(!impl) return 0;
-    return ((HTMLInputElementImpl *)impl)->readOnly();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_READONLY).isNull();
 }
 
 void HTMLInputElement::setReadOnly( bool _readOnly )
 {
-
     if(impl)
-        ((HTMLInputElementImpl *)impl)->setReadOnly( _readOnly );
+    {
+	DOMString str;
+	if( _readOnly )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_READONLY, str);
+    }
 }
 
 DOMString HTMLInputElement::size() const
@@ -650,14 +665,18 @@ HTMLOptGroupElement::~HTMLOptGroupElement()
 bool HTMLOptGroupElement::disabled() const
 {
     if(!impl) return 0;
-    return ((HTMLOptGroupElementImpl *)impl)->disabled();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_DISABLED).isNull();
 }
 
 void HTMLOptGroupElement::setDisabled( bool _disabled )
 {
-
     if(impl)
-        ((HTMLOptGroupElementImpl *)impl)->setDisabled( _disabled );
+    {
+	DOMString str;
+	if( _disabled )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, str);
+    }
 }
 
 DOMString HTMLOptGroupElement::label() const
@@ -746,27 +765,36 @@ HTMLCollection HTMLSelectElement::options() const
 bool HTMLSelectElement::disabled() const
 {
     if(!impl) return 0;
-    return ((HTMLSelectElementImpl *)impl)->disabled();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_DISABLED).isNull();
 }
 
 void HTMLSelectElement::setDisabled( bool _disabled )
 {
-
     if(impl)
-        ((HTMLSelectElementImpl *)impl)->setDisabled( _disabled );
+    {
+	DOMString str;
+	if( _disabled )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, str);
+    }
 }
+
 
 bool HTMLSelectElement::multiple() const
 {
     if(!impl) return 0;
-    return ((HTMLSelectElementImpl *)impl)->multiple();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_MULTIPLE).isNull();
 }
 
 void HTMLSelectElement::setMultiple( bool _multiple )
 {
-
     if(impl)
-        ((HTMLSelectElementImpl *)impl)->setMultiple( _multiple );
+    {
+	DOMString str;
+	if( _multiple )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_MULTIPLE, str);
+    }
 }
 
 DOMString HTMLSelectElement::name() const
@@ -898,14 +926,18 @@ void HTMLTextAreaElement::setCols( long _cols )
 bool HTMLTextAreaElement::disabled() const
 {
     if(!impl) return 0;
-    return ((HTMLTextAreaElementImpl *)impl)->disabled();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_DISABLED).isNull();
 }
 
 void HTMLTextAreaElement::setDisabled( bool _disabled )
 {
-
     if(impl)
-        ((HTMLTextAreaElementImpl *)impl)->setDisabled( _disabled );
+    {
+	DOMString str;
+	if( _disabled )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, str);
+    }
 }
 
 DOMString HTMLTextAreaElement::name() const
@@ -922,14 +954,18 @@ void HTMLTextAreaElement::setName( const DOMString &value )
 bool HTMLTextAreaElement::readOnly() const
 {
     if(!impl) return 0;
-    return ((HTMLTextAreaElementImpl *)impl)->readOnly();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_READONLY).isNull();
 }
 
 void HTMLTextAreaElement::setReadOnly( bool _readOnly )
 {
-
     if(impl)
-        ((HTMLTextAreaElementImpl *)impl)->setReadOnly( _readOnly );
+    {
+	DOMString str;
+	if( _readOnly )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_READONLY, str);
+    }
 }
 
 long HTMLTextAreaElement::rows() const
@@ -1026,14 +1062,18 @@ HTMLFormElement HTMLOptionElement::form() const
 bool HTMLOptionElement::defaultSelected() const
 {
     if(!impl) return 0;
-    return ((HTMLOptionElementImpl *)impl)->defaultSelected();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_SELECTED).isNull();
 }
 
 void HTMLOptionElement::setDefaultSelected( bool _defaultSelected )
 {
-
     if(impl)
-        ((HTMLOptionElementImpl *)impl)->setDefaultSelected( _defaultSelected );
+    {
+	DOMString str;
+	if( _defaultSelected )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_SELECTED, str);
+    }
 }
 
 DOMString HTMLOptionElement::text() const
@@ -1058,14 +1098,18 @@ void HTMLOptionElement::setIndex( long _index )
 bool HTMLOptionElement::disabled() const
 {
     if(!impl) return 0;
-    return ((HTMLOptionElementImpl *)impl)->disabled();
+    return !((ElementImpl *)impl)->getAttribute(ATTR_DISABLED).isNull();
 }
 
 void HTMLOptionElement::setDisabled( bool _disabled )
 {
-
     if(impl)
-        ((HTMLOptionElementImpl *)impl)->setDisabled( _disabled );
+    {
+	DOMString str;
+	if( _disabled )
+	    str = "";
+	((ElementImpl *)impl)->setAttribute(ATTR_DISABLED, str);
+    }
 }
 
 DOMString HTMLOptionElement::label() const

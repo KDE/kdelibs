@@ -191,14 +191,6 @@ HTMLFormElement HTMLObjectElementImpl::form() const
 {
 }
 
-bool HTMLObjectElementImpl::declare() const
-{
-}
-
-void HTMLObjectElementImpl::setDeclare( bool )
-{
-}
-
 long HTMLObjectElementImpl::tabIndex() const
 {
 }
