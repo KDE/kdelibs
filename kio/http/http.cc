@@ -378,7 +378,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   m_bEOF=false;
 #ifdef DO_SSL
   m_bUseSSL2=true; m_bUseSSL3=true; m_bUseTLS1=false;
-  m_bUseSSL=false;
+  m_bUseSSL=true;
   meth=0; ctx=0; hand=0;
 #endif
 
@@ -773,7 +773,8 @@ bool HTTPProtocol::http_open()
      if (m_request.reload && m_fcache)
 #endif
      {
-        fclose(m_fcache);
+	 	if (m_fcache)
+          fclose(m_fcache);
         m_fcache = 0;
      }
      m_bCachedWrite = true;
