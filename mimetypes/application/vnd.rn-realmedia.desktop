@@ -2,6 +2,6 @@
 Encoding=UTF-8
 Type=MimeType
 MimeType=application/vnd.rn-realmedia
-Icon=multimedia
-Patterns=
-Comment=RealMedia file
+Icon=video
+Patterns=*.rm;*.RM;
+Comment=RealMedia File

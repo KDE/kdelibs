@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=audio/vnd.rn-realvideo
+Icon=video
+Patterns=*.rv;*.RV;
+Comment=RealVideo File
+

@@ -1,6 +1,7 @@
 mimetypevideodata_DATA = mpeg.desktop quicktime.desktop x-flic.desktop \
 	x-msvideo.desktop x-mng.desktop x-ms-asf.desktop x-ms-wmv.desktop \
-	x-theora.desktop mp4.desktop x-ogm.desktop x-matroska.desktop
+	x-theora.desktop mp4.desktop x-ogm.desktop x-matroska.desktop \
+	vnd.rn-realvideo.desktop
 
 mimetypevideodatadir = $(kde_mimedir)/video
 
