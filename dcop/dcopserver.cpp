@@ -1259,14 +1259,11 @@ void DCOPServer::removeConnection( void* data )
 
     if ( !conn->appId.isNull() ) {
 #ifndef NDEBUG
-	qDebug("DCOP:  unregister '%s'", conn->appId.data() );
+	qDebug("DCOP: unregister '%s'", conn->appId.data() );
 #endif
         if ( !conn->daemon )
         {
             currentClientNumber--;
-#ifndef NDEBUG
-            qDebug("DCOP: number of clients is now down to %d", currentClientNumber );
-#endif
         }
 
 	appIds.remove( conn->appId );

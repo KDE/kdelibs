@@ -257,7 +257,7 @@ KSycocaDict::save(QDataStream &str)
 
    mOffset = str.device()->at();
 
-   kdDebug(7011) << QString("KSycocaDict: %1 entries.").arg(count()) << endl;
+   //kdDebug(7011) << QString("KSycocaDict: %1 entries.").arg(count()) << endl;
 
    //kdDebug(7011) << "Calculating hash keys.." << endl;
 
