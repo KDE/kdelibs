@@ -8,8 +8,6 @@ libplayer_a_SOURCES  = midiout.cc player.cc track.cc midimapper.cc \
 	 fmout.cc gusout.cc voiceman.cc songlist.cc slman.cc mt32togm.cc \
 	 notearray.cc
 
-noinst_HEADERS = *.h
-
 noinst_PROGRAMS = consolekmid
 consolekmid_SOURCES = main.cc
 consolekmid_LDFLAGS	=
