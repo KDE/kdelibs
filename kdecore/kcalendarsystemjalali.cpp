@@ -50,7 +50,7 @@ typedef struct {
         } SDATE;
 // converting funcs from
 
-int Ceil(float number)
+static int Ceil(float number)
 {
     int ret;
     if(number>0)
@@ -59,7 +59,7 @@ int Ceil(float number)
     return ret;
 }
 
-long jalali_jdn(int year, int month, int day)
+static long jalali_jdn(int year, int month, int day)
 {
     const long PERSIAN_EPOCH = 1948321; /* The JDN of 1 Farvardin 1*/
     int epbase;
@@ -125,7 +125,7 @@ static SDATE jdn_jalali(long jdn)
 
 
 
-long civil_jdn(int year, int month, int day)
+static long civil_jdn(int year, int month, int day)
 {
     long jdn = ((1461 * (year + 4800 + ((month - 14) / 12))) / 4)
 	+ ((367 * (month - 2 - 12 * (((month - 14) / 12)))) / 12)
@@ -185,7 +185,7 @@ static void gregorianToJalali(const QDate & date, int * pYear, int * pMonth,
 
 // End of converting functions
 
-int isJalaliLeap(int year)
+static int isJalaliLeap(int year)
 {
  int     tmp;
  tmp = year % 33;
