@@ -20,7 +20,7 @@
 #include <kapp.h>
 #include <qfile.h>
 #include <kstddirs.h>
-#include <cassert>
+#include <assert.h>
 
 KMimeMagic* KMimeMagic::s_pSelf = 0L;
 
