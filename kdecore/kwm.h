@@ -621,8 +621,9 @@ public:
   static void prepareForSwallowing(Window w);
 
   /**
-    * doNotManage(...) allows to define the first 20 character of a window
-    * title that should not be managed by the windowmanager. This is useful
+    * doNotManage(...) allows to define the first 20 character of a
+      window title (or a regular expression) that should not be
+      managed by the windowmanager. This is useful
     * to avoid flickering when a panel swallows legacy applications.
     * doNotManage(...) applies only for the first window which meets the
     * criteria.
