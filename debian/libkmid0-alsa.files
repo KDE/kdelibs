@@ -2,8 +2,5 @@ usr/lib/kde/libartskde.so
 usr/lib/kde/knotify.so
 usr/lib/kde/knotify.la
 usr/lib/kde/libkmid.so.*
-usr/lib/kde/libkmid.la
 usr/lib/kde/libqtmcop.so.*
-usr/lib/kde/libqtmcop.la
 usr/lib/kde/libgmcop.so.*
-usr/lib/kde/libgmcop.la

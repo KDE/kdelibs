@@ -12,5 +12,17 @@ usr/lib/kde/libartscbackend.so
 usr/lib/kde/libartsdsp.so
 usr/lib/kde/libkmedia2_idl.so
 usr/lib/kde/libkmedia2.so
+usr/lib/kde/libmcop.la
+usr/lib/kde/libmcop_mt.la
+usr/lib/kde/libartsflow_idl.la
+usr/lib/kde/libartsflow.la
+usr/lib/kde/libsoundserver_idl.la
+usr/lib/kde/libartswavplayobject.la
+usr/lib/kde/libx11globalcomm.la
+usr/lib/kde/libartsc.la
+usr/lib/kde/libartscbackend.la
+usr/lib/kde/libartsdsp.la
+usr/lib/kde/libkmedia2_idl.la
+usr/lib/kde/libkmedia2.la
 usr/include/kde/arts/*
 usr/include/kde/artsc/*
