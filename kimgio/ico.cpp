@@ -39,6 +39,8 @@ enum IcoType
 };
 
 // HACK HACK HACK from qt/src/kernel/qimage.cpp (malte)
+// ******** The following block is copied from Qt (qimage.cpp)
+// copyright (c) TrollTech AS
 extern bool qt_read_dib(QDataStream &, QImage &);
 
 const int BMP_OLD  = 12;            // old Windows/OS2 BMP size
@@ -95,6 +97,7 @@ QDataStream &operator<<( QDataStream &s, const BMP_INFOHDR &bi )
     s << bi.biClrUsed << bi.biClrImportant;
     return s;                                                                   
 }
+// ********* END Qt copyrighted block *********
 
 // Header for every icon in the file
 struct IconRec
