@@ -2,7 +2,7 @@
 
 #include <assert.h>
 
-#include <iostream>
+#include <iostream.h>
 
 IOJob::IOJob( Connection *_conn ) : IOProtocol( _conn )
 {

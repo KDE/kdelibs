@@ -11,7 +11,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include <iostream>
+#include <iostream.h>
 
 Connection::Connection( int _in_fd, int _out_fd )
 {

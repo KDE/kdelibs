@@ -14,7 +14,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include <iostream>
+#include <iostream.h>
 
 Filter::Filter( const char *_cmd )
 {

@@ -4,6 +4,8 @@
 #include <string>
 #include <list>
 
+#include <qstring.h>
+
 class K2Config;
 
 class ProtocolManager
@@ -30,6 +32,11 @@ public:
   int getMinimumKeepSize();
   bool getAutoResume();
   bool getPersistent();
+
+  bool getUseProxy();
+  QString getFtpProxy();
+  QString getHttpProxy();
+  QString getNoProxyFor();
 
   /**
    * Sets timeout for read operations. This applies to ftp and http connections.
@@ -78,6 +85,34 @@ public:
    *
    */
   void setPersistent( bool _mode );
+
+  /**
+   * Set this flag if you want use proxies
+   *
+   * Default value is false - don't use proxies.
+   *
+   */
+  void setUseProxy( bool _mode );
+
+  /**
+   * Set the proxy for ftp transfer
+   *
+   */
+  void setFtpProxy( const char* _proxy );
+
+  /**
+   * Set the proxy for http transfer
+   *
+   */
+  void setHttpProxy( const char* _proxy );
+
+
+  /**
+   * Set the URL's for which we should not use proxy
+   *
+   */
+  void setNoProxyFor( const char* _noproxy );
+
 
   static ProtocolManager* self() { 
     if ( ! s_pManager )

@@ -347,7 +347,7 @@ public:
 		 const char *_user, const char *_pass );
   
   static KIOSlavePool* self();
-  
+
 protected:
   void eraseOldest();
   

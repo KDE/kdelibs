@@ -22,7 +22,7 @@
 #include <sys/wait.h>
 
 #include <string>
-#include <iostream>
+#include <iostream.h>
 
 #ifdef __FreeBSD__
 #include <sys/param.h>
@@ -614,9 +614,6 @@ void KIOJob::slotFinished()
   assert( s_mapJobs );
   s_mapJobs->erase( m_id );
 
-  emit sigFinished( m_id );
-  m_id = 0;
-  
   // Put the slave back to the pool
   if ( m_pSlave )
   {  
@@ -638,6 +635,9 @@ void KIOJob::slotFinished()
 
     m_pSlave = 0L;
   }
+  
+  emit sigFinished( m_id );
+  m_id = 0;
   
   clean();
   
@@ -1042,7 +1042,8 @@ Slave* KIOSlavePool::slave( const char *_protocol, const char *_host,
   }
 
   // if we didn't find complete match, try at least protocol
-  if ( it == m_mapSlaves.end() ) {
+  if ( it == m_mapSlaves.end() ||
+       !strcmp( _protocol, "http" ) ) { // we don't support persistent http yet
     it == m_mapSlaves.find( _protocol );
 
     if ( it == m_mapSlaves.end() ) // sorry, no match

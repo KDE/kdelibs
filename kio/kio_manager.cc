@@ -225,26 +225,21 @@ ProtocolManager::Type ProtocolManager::outputType( const char *_protocol )
 
 int
 ProtocolManager::getReadTimeout() {
-  K2Config *g = findIntern( "common" );
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
 
-  int read_timeout = 15; // 15 seconds
-
-  if ( g )
-    g->readLong( "readTimeout", read_timeout );
-
-
+  int read_timeout = config.readNumEntry( "ReadTimeout", 15 ); // 15 seconds
+  
   return read_timeout;
 }
 
 
 bool
 ProtocolManager::getMarkPartial() {
-  K2Config *g = findIntern( "common" );
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
 
-  bool mark_partial = true;
-
-  if ( g )
-    g->readBool( "markPartial", mark_partial );
+  bool mark_partial = config.readBoolEntry( "MarkPartial", true );
 
   return mark_partial;
 }
@@ -252,12 +247,10 @@ ProtocolManager::getMarkPartial() {
 
 int
 ProtocolManager::getMinimumKeepSize() {
-  K2Config *g = findIntern( "common" );
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
 
-  int minimum_keep_size = 5000;  // 5000 bytes
-
-  if ( g )
-    g->readLong( "minimumKeepSize", minimum_keep_size );
+  int minimum_keep_size = config.readNumEntry( "MinimumKeepSize", 5000 ); // 5000 bytes
 
   return minimum_keep_size;
 }
@@ -265,12 +258,10 @@ ProtocolManager::getMinimumKeepSize() {
 
 bool
 ProtocolManager::getAutoResume() {
-  K2Config *g = findIntern( "common" );
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
 
-  bool automatic_resume = false;
-
-  if ( g )
-    g->readBool( "autoResume", automatic_resume );
+  bool automatic_resume = config.readBoolEntry( "AutoResume", false );
 
   return automatic_resume;
 }
@@ -278,62 +269,144 @@ ProtocolManager::getAutoResume() {
 
 bool
 ProtocolManager::getPersistent() {
-  K2Config *g = findIntern( "common" );
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
 
-  bool persistent = true;
-
-  if ( g )
-    g->readBool( "persistentConnections", persistent );
+  bool persistent = config.readBoolEntry( "PersistentConnections", true );
 
   return persistent;
 }
 
 
+bool
+ProtocolManager::getUseProxy() {
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
+
+  bool useproxy = config.readBoolEntry( "UseProxy", false );
+
+  return useproxy;
+}
+
+
+QString
+ProtocolManager::getFtpProxy() {
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
+
+  QString ftpproxy = config.readEntry( "FtpProxy" );
+
+  return ftpproxy;
+}
+
+
+QString
+ProtocolManager::getHttpProxy() {
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
+
+  QString httpproxy = config.readEntry( "HttpProxy" );
+
+  return httpproxy;
+}
+
+
+QString
+ProtocolManager::getNoProxyFor() {
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
+
+  QString noproxy = config.readEntry( "NoProxyFor" );
+
+  return noproxy;
+}
+
+
 void ProtocolManager::setReadTimeout( int _timeout ) {
-  K2Config *g = findIntern( "common" );
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
 
-  if ( g )
-    g->writeLong( "readTimeout", _timeout );
+  config.writeEntry( "ReadTimeout", _timeout );
 
-  m_pConfig->save();
+  config.sync();
 }
 
 
 void ProtocolManager::setMarkPartial( bool _mode ) {
-  K2Config *g = findIntern( "common" );
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
 
-  if ( g )
-    g->writeBool( "markPartial", _mode );
+  config.writeEntry( "MarkPartial", _mode );
 
-  m_pConfig->save();
+  config.sync();
 }
 
 
 void ProtocolManager::setMinimumKeepSize( int _size ) {
-  K2Config *g = findIntern( "common" );
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
 
-  if ( g )
-    g->writeLong( "minimumKeepSize", _size );
+  config.writeEntry( "MinimumKeepSize", _size );
 
-  m_pConfig->save();
+  config.sync();
 }
 
 
 void ProtocolManager::setAutoResume( bool _mode ) {
-  K2Config *g = findIntern( "common" );
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
 
-  if ( g )
-    g->writeBool( "autoResume", _mode );
+  config.writeEntry( "AutoResume", _mode );
 
-  m_pConfig->save();
+  config.sync();
 }
 
 
 void ProtocolManager::setPersistent( bool _mode ) {
-  K2Config *g = findIntern( "common" );
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
 
-  if ( g )
-    g->writeBool( "persistentConnections", _mode );
+  config.writeEntry( "PersistentConnections", _mode );
 
-  m_pConfig->save();
+  config.sync();
+}
+
+
+void ProtocolManager::setUseProxy( bool _mode ) {
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
+
+  config.writeEntry( "UseProxy", _mode );
+
+  config.sync();
+}
+
+
+void ProtocolManager::setFtpProxy( const char* _proxy ) {
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
+
+  config.writeEntry( "FtpProxy", _proxy );
+
+  config.sync();
+}
+
+
+void ProtocolManager::setHttpProxy( const char* _proxy ) {
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
+
+  config.writeEntry( "HttpProxy", _proxy );
+
+  config.sync();
+}
+
+
+void ProtocolManager::setNoProxyFor( const char* _noproxy ) {
+  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
+		  KApplication::localconfigdir() + "/kioslaverc" );
+
+  config.writeEntry( "NoProxyFor", _noproxy );
+
+  config.sync();
 }

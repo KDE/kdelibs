@@ -99,6 +99,7 @@
 // This means for example: file, ftp, http, ...
 #define ERR_SLAVE_DIED 43
 #define ERR_OUT_OF_MEMORY 44
+#define ERR_UNKNOWN_PROXY_HOST 45
 
 /************
  *
