@@ -417,7 +417,7 @@ void KFileReader::slotDirUpdate()
     }
 }
 
-void KFileReader::slotDirDeleted( const QString& dir )
+void KFileReader::slotDirDeleted( const QString&  )
 {
 }
 

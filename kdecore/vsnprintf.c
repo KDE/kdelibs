@@ -160,3 +160,6 @@ snprintf(str, n, fmt, va_alist)
 
 #endif
 
+// ANSI C forbids en empty source file...
+static int dummy_func() {
+}

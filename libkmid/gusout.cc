@@ -10,12 +10,12 @@
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
- 
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
- 
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -107,7 +107,7 @@ unsigned short get_word(unsigned char *p)
   return (short)v;
 }
 
-#endif 
+#endif
 
 GUSOut::GUSOut(int d,int total)
 {
@@ -130,7 +130,7 @@ GUSOut::~GUSOut()
 {
   delete map;
   closeDev();
-  if (delete_GUS_patches_directory) 
+  if (delete_GUS_patches_directory)
   {
     delete GUS_patches_directory;
     delete_GUS_patches_directory = 0;
@@ -167,7 +167,7 @@ void GUSOut::openDev (int sqfd)
   //ioctl(seqfd,SNDCTL_SEQ_RESET);
   //ioctl(seqfd,SNDCTL_SEQ_PANIC);
 
-  if (ioctl(seqfd, SNDCTL_SEQ_RESETSAMPLES, &device)==-1) 
+  if (ioctl(seqfd, SNDCTL_SEQ_RESETSAMPLES, &device)==-1)
   {
     printfdebug("Error reseting gus samples. Please report\n");
   };
@@ -263,7 +263,7 @@ void GUSOut::noteOn  (uchar chn, uchar note, uchar vel)
     if (chn==PERCUSSION_CHANNEL)
       SEQ_SET_PATCH(device,v ,p=patch(note+128))
     else
-      SEQ_SET_PATCH(device,v ,p=map->patch(chn,chnpatch[chn])); 
+      SEQ_SET_PATCH(device,v ,p=map->patch(chn,chnpatch[chn]));
     SEQ_BENDER(device, v, chnbender[chn]);
 
     SEQ_START_NOTE(device, v, note, vel);
@@ -303,12 +303,12 @@ void GUSOut::chnPatchChange (uchar chn, uchar patch)
   int i;
   vm->initSearch();
   while ((i=vm->search(chn))!=-1)
-    SEQ_SET_PATCH(device,i,map->patch(chn,patch)); 
+    SEQ_SET_PATCH(device,i,map->patch(chn,patch));
   chnpatch[chn]=patch;
 
 }
 
-void GUSOut::chnPressure (uchar chn, uchar vel)
+void GUSOut::chnPressure (uchar /*chn*/, uchar /*vel*/)
 {
   /*    int i;
 	vm->initSearch();
@@ -328,7 +328,7 @@ void GUSOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
     SEQ_BENDER(device, i, chnbender[chn]);
 }
 
-void GUSOut::chnController (uchar chn, uchar ctl, uchar v) 
+void GUSOut::chnController (uchar chn, uchar ctl, uchar v)
 {
   if ((ctl==11)||(ctl==7))
   {
@@ -346,7 +346,7 @@ void GUSOut::chnController (uchar chn, uchar ctl, uchar v)
 
 void GUSOut::sysex(uchar *, ulong )
 {
-    
+
 }
 
 void GUSOut::setGUSPatchesDirectory(const char *dir)
@@ -418,7 +418,7 @@ int GUSOut::loadPatch(int pgm)
 #endif
     return -1;
   }
-  memcpy ((char *) &header, tmp, sizeof (header)); 
+  memcpy ((char *) &header, tmp, sizeof (header));
 
   if (strncmp(header.magic,"GF1PATCH110",12)!=0)
   {
@@ -465,7 +465,7 @@ int GUSOut::loadPatch(int pgm)
     sample.high_note = get_dint(&tmp[26]);
     sample.base_note = get_dint(&tmp[30]);
     sample.detune = (short)get_word(&tmp[34]);
-    sample.panning = (unsigned char) tmp[36];  
+    sample.panning = (unsigned char) tmp[36];
 
     memcpy (sample.envelope_rate, &tmp[37], 6);
     memcpy (sample.envelope_offset, &tmp[43], 6);
@@ -519,7 +519,7 @@ int GUSOut::loadPatch(int pgm)
     patch->scale_frequency = sample.scale_frequency;
     patch->scale_factor = sample.scale_factor;
 
-    patch->volume = header.master_volume; 
+    patch->volume = header.master_volume;
 
     if (fseek (fh, offset, 0) == -1)
     {
@@ -596,7 +596,7 @@ int compare_decreasing(const void *a,const void *b)
   struct instr_gm
   {
     int used;
-    int pgm; 
+    int pgm;
   };
   instr_gm *ai=(instr_gm *)a;
   instr_gm *bi=(instr_gm *)b;
@@ -609,13 +609,13 @@ void GUSOut::patchesLoadingOrder(int *patchesused,int *patchesordered)
   struct instr_gm
   {
     int used;
-    int pgm; 
+    int pgm;
   };
 
   instr_gm tempmelody[128];
   instr_gm tempdrums[128];
   int i,j;
-  for (i=0,j=128;i<128;i++,j++) 
+  for (i=0,j=128;i<128;i++,j++)
   {
     tempmelody[i].used=patchesused[i];
     tempmelody[i].pgm=i;
@@ -676,7 +676,7 @@ void GUSOut::patchesLoadingOrder(int *patchesused,int *patchesordered)
     tgt+=2;
     while ((tm>0)&&(td>0))
     {
-      if (((tgt-1)%3)==0) 
+      if (((tgt-1)%3)==0)
       {
 	patchesordered[tgt]=tempdrums[cd].pgm;
 	cd++;

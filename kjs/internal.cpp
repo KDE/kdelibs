@@ -113,7 +113,7 @@ Boolean BooleanImp::toBoolean() const
 
 Number BooleanImp::toNumber() const
 {
-  return Number(val);
+  return Number(val ? 1 : 0);
 }
 
 String BooleanImp::toString() const
@@ -446,7 +446,7 @@ bool KJScriptImp::evaluate(const QChar *code, unsigned int length)
 
   Context *context = Context::current();
   context->clearError();
-  
+
   KJSO res = Node::progNode()->evaluate();
 
   if (context->hadError()) {

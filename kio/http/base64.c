@@ -25,14 +25,14 @@ char *base64_encode_line(const char *s)
  *
  * Permission to use, copy, modify, and distribute this material
  * for any purpose and without fee is hereby granted, provided
- * that the above copyright notice and this permission notice   
+ * that the above copyright notice and this permission notice
  * appear in all copies, and that the name of Bellcore not be
  * used in advertising or publicity pertaining to this
  * material without the specific, prior written permission
  * of an authorized representative of Bellcore.  BELLCORE
  * MAKES NO REPRESENTATIONS ABOUT THE ACCURACY OR SUITABILITY
  * OF THIS MATERIAL FOR ANY PURPOSE.  IT IS PROVIDED "AS IS",
- * WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES. 
+ * WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
  */
 char* base64_encode_string( const char *buf, unsigned int len )
 {
@@ -41,10 +41,11 @@ char* base64_encode_string( const char *buf, unsigned int len )
   char * out;
   int inPos  = 0;
   int outPos = 0;
-  int c1, c2, c3,i;
-  
+  int c1, c2, c3;
+  unsigned int i;
+
   out=malloc( (len*4/3)+8 );
-  
+
   /* Get three characters at a time and encode them. */
   for (i=0; i < len/3; ++i) {
       c1 = buf[inPos++] & 0xFF;
@@ -57,7 +58,7 @@ char* base64_encode_string( const char *buf, unsigned int len )
   }
 
   /* Encode the remaining one or two characters. */
-    
+
   switch (len % 3) {
       case 0:
           break;

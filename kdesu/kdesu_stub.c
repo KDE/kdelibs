@@ -4,13 +4,13 @@
  *
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
- * 
- * kdesu_stub.c: KDE su executes this stub through su or ssh. This stub in turn 
- *               executes the target program. Before that, startup parameters 
- *               are sent through stdin.
- * 
  *
- * Available parameters:   
+ * kdesu_stub.c: KDE su executes this stub through su or ssh. This stub in turn
+ *               executes the target program. Before that, startup parameters
+ *               are sent through stdin.
+ *
+ *
+ * Available parameters:
  *
  *   Parameter       Description         Format (csl = comma separated list)
  *
@@ -54,8 +54,8 @@
  */
 
 struct param_struct {
-    char *name;
-    char *value;
+  const char *name;
+  const char *value;
 };
 
 struct param_struct params[] = {
@@ -87,11 +87,17 @@ struct param_struct params[] = {
 #define P_SCHEDULER 11
 #define P_LAST 12
 
+/* Prototypes */
+char *xmalloc(size_t);
+char *xrealloc(char *ptr, int size);
+int xsetenv(const char *name, const char *value);
+char *xstrdup(char *src);
+char **xstrsep(char *str);
 
 /**
  * Safe malloc functions.
  */
-char *xmalloc(int size)
+char *xmalloc(size_t size)
 {
     char *ptr = malloc(size);
     if (ptr) return ptr;
@@ -112,7 +118,7 @@ char *xrealloc(char *ptr, int size)
 /**
  * Solaris does not have a setenv()...
  */
-int xsetenv(char *name, char *value)
+int xsetenv(const char *name, const char *value)
 {
     char *s = malloc(strlen(name)+strlen(value)+2);
     if (!s) return -1;
@@ -161,7 +167,7 @@ char **xstrsep(char *str)
  * The main program
  */
 
-int main(int argc, char **argv)
+int main(int, char **)
 {
     char buf[1024];
     char command[200], xauthority[200], iceauthority[200];
@@ -191,7 +197,7 @@ int main(int argc, char **argv)
     }
     printf("end\n");
     fflush(stdout);
-    
+
     xsetenv("PATH", params[P_PATH].value);
 
     /* Do we need to change uid? */
@@ -251,7 +257,7 @@ int main(int argc, char **argv)
 		perror("kdesu_stub: fopen()");
 		exit(1);
 	    }
-	    fprintf(fout, "add %s %s\n", params[P_DISPLAY].value, 
+	    fprintf(fout, "add %s %s\n", params[P_DISPLAY].value,
 		    params[P_DISPLAY_AUTH].value);
 	    fclose(fout);
 	    tmpnam(xauthority);
@@ -262,7 +268,7 @@ int main(int argc, char **argv)
 	    unlink(fname);
 	}
     }
-    
+
 
     /* Handle DCOP */
 
@@ -291,7 +297,7 @@ int main(int argc, char **argv)
 	    unlink(fname);
 	}
     }
- 
+
     /* Rebuild ksycoca */
 
     if (strcmp(params[P_SYCOCA].value, "no") && system("kded --check"))

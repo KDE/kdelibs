@@ -29,7 +29,7 @@
 #include "kshred.h"
 #include <time.h>
 #include <kdebug.h>
-
+#include <stdlib.h>
 
 KShred::KShred(QString fileName)
 {
@@ -214,7 +214,7 @@ KShred::shred()
   unsigned char p[6][3] = {{'\222', '\111', '\044'}, {'\111', '\044', '\222'},
                            {'\044', '\222', '\111'}, {'\155', '\266', '\333'},
                            {'\266', '\333', '\155'}, {'\333', '\155', '\266'}};
- 
+
   kdDebug() << "KShred::shred" << endl;
 
   emit processedSize(0);
