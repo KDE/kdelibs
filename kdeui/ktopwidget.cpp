@@ -21,6 +21,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.39  1998/04/16 18:46:49  radej
+ // Removed som debug messages before beta4
+ //
  // Revision 1.38  1998/04/16 16:06:48  ettrich
  // Matthias: kfm session management showstopper hopefully fixed
  //
@@ -44,77 +47,77 @@
 QList<KTopLevelWidget>* KTopLevelWidget::memberList = 0L;
 
 KTopLevelWidget::KTopLevelWidget( const char *name )
-    : QWidget( 0L, name )
+  : QWidget( 0L, name )
 {
-    kmenubar = 0L;
-    kmainwidget = 0L;
-    kstatusbar = 0L;
-    borderwidth = 0;
+  kmenubar = 0L;
+  kmainwidget = 0L;
+  kstatusbar = 0L;
+  borderwidth = 0;
 
-    // set the specified icons
-    KWM::setIcon(winId(), kapp->getIcon());
-    KWM::setMiniIcon(winId(), kapp->getMiniIcon());
+  // set the specified icons
+  KWM::setIcon(winId(), kapp->getIcon());
+  KWM::setMiniIcon(winId(), kapp->getMiniIcon());
 
-    kmainwidgetframe = new QFrame( this );
-    CHECK_PTR( kmainwidgetframe );
-    kmainwidgetframe ->setFrameStyle( QFrame::Panel | QFrame::Sunken);
-    kmainwidgetframe ->setLineWidth(0);
-    kmainwidgetframe ->hide();
+  kmainwidgetframe = new QFrame( this );
+  CHECK_PTR( kmainwidgetframe );
+  kmainwidgetframe ->setFrameStyle( QFrame::Panel | QFrame::Sunken);
+  kmainwidgetframe ->setLineWidth(0);
+  kmainwidgetframe ->hide();
 
-    // If the application does not yet have a top widget, make it this one
+  // If the application does not yet have a top widget, make it this one
 
 
-    // Enable session management (Matthias)
-    setUnsavedData(False);
-    if( !kapp->topWidget() ){
-      kapp->setTopWidget( this );
-      kapp->enableSessionManagement();
-      connect(kapp, SIGNAL(saveYourself()), SLOT(saveYourself()));
-    }
+  // Enable session management (Matthias)
+  setUnsavedData(False);
+  if( !kapp->topWidget() ){
+    kapp->setTopWidget( this );
+    kapp->enableSessionManagement();
+    connect(kapp, SIGNAL(saveYourself()), SLOT(saveYourself()));
+  }
 
-    // see if there already is a member list
-    if( !memberList )
-      memberList = new QList<KTopLevelWidget>;
+  // see if there already is a member list
+  if( !memberList )
+    memberList = new QList<KTopLevelWidget>;
     
-    // enter the widget in the list of all KTWs
-    memberList->append( this );
+  // enter the widget in the list of all KTWs
+  memberList->append( this );
 
-    // finally set the caption
-    setCaption(kapp->getCaption());
+  // finally set the caption
+  setCaption(kapp->getCaption());
 }
 
 KTopLevelWidget::~KTopLevelWidget()
 {
-    toolbars.setAutoDelete(false);
-    toolbars.clear();
+  toolbars.setAutoDelete(false);
+  toolbars.clear();
 
-	// remove this widget from the member list
-	memberList->remove( this );
+  // remove this widget from the member list
+  memberList->remove( this );
 
-	// if this was the topWidget, find a new one to be it
-	if( kapp && kapp->topWidget() == this ){
-	    KTopLevelWidget* pTemp = 0;
-	    if( ( pTemp = memberList->getFirst() ) )
-	      kapp->setTopWidget( pTemp );
-	}
-	if(kapp && memberList->isEmpty()){
-	  // if there is no mainWidget left: bad luck
-	  // Matthias:
-	  //        Nope, not bad luck. We should simply
-	  //        exit the application in this case.
-          //        (But emit a signal before)
-          // Sven: set topwidget to 0 but don't quit. KFM.
+  // if this was the topWidget, find a new one to be it
+  if( kapp && kapp->topWidget() == this ){
+    KTopLevelWidget* pTemp = 0;
+    if( ( pTemp = memberList->getFirst() ) )
+      kapp->setTopWidget( pTemp );
+  }
+  if(kapp && memberList->isEmpty()){
+    // if there is no mainWidget left: bad luck
+    // Matthias:
+    //        Nope, not bad luck. We should simply
+    //        exit the application in this case.
+    //        (But emit a signal before)
+    // Sven: set topwidget to 0 but don't quit. KFM.
 	  
-	  if (kapp && kapp->topWidget() == this)
-	    kapp->setTopWidget( 0 );
-        }
-        //debug ("KTW destructor: dead as a dodo (exiting)");
+    if (kapp && kapp->topWidget() == this)
+      kapp->setTopWidget( 0 );
+  }
+  //debug ("KTW destructor: dead as a dodo (exiting)");
 }
 
 void KTopLevelWidget::closeEvent ( QCloseEvent *e)
-  {
-    e->accept();
-  }
+{
+  e->accept();
+}
 
 bool KTopLevelWidget::queryExit(){
   debug ("KTW: querryExit does nothing.");
@@ -164,7 +167,7 @@ void KTopLevelWidget::setMenu( KMenuBar *menu )
 
 void KTopLevelWidget::setStatusBar( KStatusBar *statusbar )
 {
-    kstatusbar = statusbar;
+  kstatusbar = statusbar;
 }
 
 void KTopLevelWidget::focusInEvent( QFocusEvent *)
@@ -179,334 +182,361 @@ void KTopLevelWidget::focusOutEvent( QFocusEvent *)
 
 void KTopLevelWidget::show ()
 {
-    QWidget::show();
-    updateRects();
+  QWidget::show();
+  updateRects();
 }
 
 void KTopLevelWidget::updateRects()
 {
-    //debug ("Update");
-    int t=0, b=0, l=0, r=0;
-    int to=-1, bo=-1, lo=-1, ro=-1;
-    int h, w;
-    int freeHeight, freeWidth;
+  //debug ("Update");
+  int t=0, b=0, l=0, r=0;
+  int to=-1, bo=-1, lo=-1, ro=-1;
+  int h, w;
+  int freeHeight, freeWidth;
+  int widest; // To find widest toolbar
+  bool fixedY = FALSE;
 
-    bool fixedY = FALSE;
-
-    if (kmainwidget && kmainwidget->minimumSize().height() == kmainwidget->maximumSize().height())
-        fixedY = TRUE;
+  if (kmainwidget && kmainwidget->minimumSize().height() ==
+      kmainwidget->maximumSize().height())
+    fixedY = TRUE;
     
-    if (kmainwidget && kmainwidget->minimumSize() == kmainwidget->maximumSize())
+  if (kmainwidget && kmainwidget->minimumSize() ==
+      kmainwidget->maximumSize())
     {
-        KToolBar *toolbar;
-        w = kmainwidget->width()+2*borderwidth;
-        h = kmainwidget->height()+2*borderwidth;
+      KToolBar *toolbar;
+      w = kmainwidget->width()+2*borderwidth;
+      h = kmainwidget->height()+2*borderwidth;
 
-        // left toolbars first
-        for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next() )
-            if ( toolbar->barPos() == KToolBar::Left && toolbar->isVisible() )
-            {
-                toolbar->setMaxHeight(h);   // Sven: You have to do this here
-                toolbar->updateRects (TRUE);        // Sven: You have to this
-                if ( lo < 0 )
-                {
-                    lo = 0;
-                    l += toolbar->width();
-                }
-                if ( lo + toolbar->height() > h)
-                {
-                    lo = 0;
-                    l += toolbar->width();
-                }
-                toolbar->move( l-toolbar->width(), t  + lo );
-                lo += toolbar->height();
-            }
+      // left toolbars first
+      widest = 0;
+      for (toolbar=toolbars.first(); toolbar != 0L; toolbar=toolbars.next())
+	if ( toolbar->barPos() == KToolBar::Left && toolbar->isVisible() )
+	  {
+	    toolbar->setMaxHeight(h);   // Sven: You have to do this here
+	    toolbar->updateRects (TRUE);        // Sven: You have to this
+	    if ( lo < 0 )
+	      {
+		lo = 0;
+		l += toolbar->width();
+	      }
+	    if ( lo + toolbar->height() > h)
+	      {
+		lo = 0;
+		l += toolbar->width();
+	      }
+	    toolbar->move( l-toolbar->width(), t  + lo );
+	    lo += toolbar->height();
+	  }
 
-        w+=l; //AAAARRRGGGHHH!!!
+      w+=l; //AAAARRRGGGHHH!!!
         
-        // Now right (I'm ok now)
-        for ( toolbar = toolbars.first();
-              toolbar != 0L; toolbar = toolbars.next() )
-            if ( toolbar->barPos() == KToolBar::Right && toolbar->isVisible() )
-            {
-                toolbar->setMaxHeight(h);   // Sven: You have to do this here
-                toolbar->updateRects (TRUE);   // Sven: You have to this
-                if ( ro < 0 )
-                {
-                    ro = 0;
-                    r += toolbar->width();
-                }
-                if (ro + toolbar->height() > h)
-                {
-                    ro = 0;
-                    r += toolbar->width();
-                }
-                toolbar->move(w+r-toolbar->width(), t + ro);
-                ro += toolbar->height();
-            }
-        w+=r;
+      // Now right (I'm ok now)
+      for ( toolbar = toolbars.first();
+	    toolbar != 0L; toolbar = toolbars.next() )
+	if ( toolbar->barPos() == KToolBar::Right && toolbar->isVisible() )
+	  {
+	    toolbar->setMaxHeight(h);   // Sven: You have to do this here
+	    toolbar->updateRects (TRUE);   // Sven: You have to this
+	    if ( ro < 0 )
+	      {
+		ro = 0;
+		r += toolbar->width();
+	      }
+	    if (ro + toolbar->height() > h)
+	      {
+		ro = 0;
+		r += toolbar->width();
+	      }
+	    toolbar->move(w+r-toolbar->width(), t + ro);
+	    ro += toolbar->height();
+	  }
+      w+=r;
         
-        // Now kmenubar and top toolbars
-        // No, first I'll have a beer.
-        // Aaah, kold beer.. my nerves ar circulating better now...
+      // Now kmenubar and top toolbars
+      // No, first I'll have a beer.
+      // Aaah, kold beer.. my nerves ar circulating better now...
         
-        if (kmenubar && kmenubar->isVisible())   // (gulp)
-            if (kmenubar->menuBarPos() == KMenuBar::Top)      // !? This beer isn't cold!
-            {
-		int mh = kmenubar->heightForWidth(w);
-                kmenubar->setGeometry(0, 0, w, mh);
-                t += mh;
-            }
+      if (kmenubar && kmenubar->isVisible())   // (gulp)
+	if (kmenubar->menuBarPos() == KMenuBar::Top)      // !? This beer isn't cold!
+	  {
+	    int mh = kmenubar->heightForWidth(w);
+	    kmenubar->setGeometry(0, 0, w, mh);
+	    t += mh;
+	  }
 
-        // Top toolbars
-        for ( toolbar = toolbars.first() ;
-              toolbar != 0L ; toolbar = toolbars.next() )
-            if ( toolbar->barPos() == KToolBar::Top && toolbar->isVisible() )
-            {
-                toolbar->setMaxWidth(w);
-                toolbar->updateRects (TRUE);     // Sven: You have to do this
-                if ( to < 0 )
-                {
-                    to = 0;
-                    t += toolbar->height();
-                }
-                if (to + toolbar->width() > w)
-                {
-                    to = 0;
-                    t += toolbar->height();
-                }
-                toolbar->move( to, t-toolbar->height() );
-                to += toolbar->width();
-            }
-        h+=t;
+      // Top toolbars
+      for ( toolbar = toolbars.first() ;
+	    toolbar != 0L ; toolbar = toolbars.next() )
+	if ( toolbar->barPos() == KToolBar::Top && toolbar->isVisible() )
+	  {
+	    toolbar->setMaxWidth(w);
+	    toolbar->updateRects (TRUE);     // Sven: You have to do this
+	    if ( to < 0 )
+	      {
+		to = 0;
+		t += toolbar->height();
+	      }
+	    if (to + toolbar->width() > w)
+	      {
+		to = 0;
+		t += toolbar->height();
+	      }
+	    toolbar->move( to, t-toolbar->height() );
+	    to += toolbar->width();
+	  }
+      h+=t;
 
-        // move vertical toolbar for t down.
-        for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next())
-            if (toolbar->isVisible())
-                if (toolbar->barPos() == KToolBar::Left ||
-                    toolbar->barPos() == KToolBar::Right)
-                    toolbar->move(toolbar->x(), t);
+      // move vertical toolbar for t down.
+      for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next())
+	if (toolbar->isVisible())
+	  if (toolbar->barPos() == KToolBar::Left ||
+	      toolbar->barPos() == KToolBar::Right)
+	    toolbar->move(toolbar->x(), t);
         
-        // Bottom toolbars
-        for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next())
-            if ( toolbar->barPos() == KToolBar::Bottom && toolbar->isVisible() )
-            {
-                toolbar->setMaxWidth(w);
-                toolbar->updateRects (TRUE);   // Sven: You have to this
-                if ( bo < 0 )
-                {
-                    bo = 0;
-                    b += toolbar->height();
-                }
-                if (bo + toolbar->width() > w)
-                {
-                    bo = 0;
-                    b += toolbar->height();
-                }
-                toolbar->move(bo, h+b-toolbar->height());
-                bo += toolbar->width();
-            }
+      // Bottom toolbars
+      for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next())
+	if ( toolbar->barPos() == KToolBar::Bottom && toolbar->isVisible() )
+	  {
+	    toolbar->setMaxWidth(w);
+	    toolbar->updateRects (TRUE);   // Sven: You have to this
+	    if ( bo < 0 )
+	      {
+		bo = 0;
+		b += toolbar->height();
+	      }
+	    if (bo + toolbar->width() > w)
+	      {
+		bo = 0;
+		b += toolbar->height();
+	      }
+	    toolbar->move(bo, h+b-toolbar->height());
+	    bo += toolbar->width();
+	  }
 
-        // Statusbar
-        if ( kstatusbar && kstatusbar->isVisible() )
+      // Statusbar
+      if ( kstatusbar && kstatusbar->isVisible() )
         {
-            kstatusbar->setGeometry(0, h+b, w, kstatusbar->height());
-            b += kstatusbar->height();
+	  kstatusbar->setGeometry(0, h+b, w, kstatusbar->height());
+	  b += kstatusbar->height();
         }
         
-        // Bottom menubar
-        if (kmenubar && kmenubar->isVisible())
-            if (kmenubar->menuBarPos() == KMenuBar::Bottom)
-            {
-		int mh = kmenubar->heightForWidth(w);
-                kmenubar->setGeometry(0, h+b, w, mh);
-                b+=mh;
-            }
-        h+=b;
+      // Bottom menubar
+      if (kmenubar && kmenubar->isVisible())
+	if (kmenubar->menuBarPos() == KMenuBar::Bottom)
+	  {
+	    int mh = kmenubar->heightForWidth(w);
+	    kmenubar->setGeometry(0, h+b, w, mh);
+	    b+=mh;
+	  }
+      h+=b;
         
-        // Move everything
-        if (kmainwidgetframe)
-            kmainwidgetframe->move(l, t);
-        if (kmainwidget)
-            kmainwidget->move(l+borderwidth, t+borderwidth);
+      // Move everything
+      if (kmainwidgetframe)
+	kmainwidgetframe->move(l, t);
+      if (kmainwidget)
+	kmainwidget->move(l+borderwidth, t+borderwidth);
         
-        // Set geometry
-        setFixedSize(w, h);
-        resize(w,h);
-        return;
+      // Set geometry
+      setFixedSize(w, h);
+      resize(w,h);
+      view_left = l;
+      view_right = width()-r;
+      view_top = t;
+      view_bottom = height()-b;
+      return;
     }
-    else // resizable and y-fixed widgets
+  else // resizable and y-fixed widgets
     {
-        KToolBar *toolbar;
-        if (fixedY)
-            h=kmainwidget->height()+2*borderwidth;
-        else
-            h = height();
-        w = width();
+      KToolBar *toolbar;
+      if (fixedY)
+	h=kmainwidget->height()+2*borderwidth;
+      else
+	h = height();
+      w = width();
 
-        // menubar if on top
-        if (kmenubar && kmenubar->isVisible())
-            if (kmenubar->menuBarPos() == KMenuBar::Top)
-            {
-		int mh = kmenubar->heightForWidth(w);
-                kmenubar->setGeometry(0, 0, w, mh);
-                t += mh;
-            }
+      // menubar if on top
+      if (kmenubar && kmenubar->isVisible())
+	if (kmenubar->menuBarPos() == KMenuBar::Top)
+	  {
+	    int mh = kmenubar->heightForWidth(w);
+	    kmenubar->setGeometry(0, 0, w, mh);
+	    t += mh;
+	  }
 
-        // top toolbars
-        for (toolbar = toolbars.first(); toolbar != 0L ; toolbar = toolbars.next())
-            if ( toolbar->barPos() == KToolBar::Top && toolbar->isVisible() )
-            {
-                toolbar->updateRects (TRUE);     // Sven: You have to do this
-                if ( to < 0 )
-                {
-                    to = 0;
-                    t += toolbar->height();
-                }
-                if (to + toolbar->width() > width())
-                {
-                    to = 0;
-                    t += toolbar->height();
-                }
-                toolbar->move( to, t-toolbar->height() );
-                to += toolbar->width();
-            }
+      // top toolbars
+      for (toolbar = toolbars.first(); toolbar != 0L ; toolbar = toolbars.next())
+	if ( toolbar->barPos() == KToolBar::Top && toolbar->isVisible() )
+	  {
+	    toolbar->updateRects (TRUE);     // Sven: You have to do this
+	    if ( to < 0 )
+	      {
+		to = 0;
+		t += toolbar->height();
+	      }
+	    if (to + toolbar->width() > width())
+	      {
+		to = 0;
+		t += toolbar->height();
+	      }
+	    toolbar->move( to, t-toolbar->height() );
+	    to += toolbar->width();
+	  }
 
-        if (fixedY == TRUE)
+      if (fixedY == TRUE)
         {
-            // Bottom toolbars
-            for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next())
-                if ( toolbar->barPos() == KToolBar::Bottom && toolbar->isVisible() )
-                {
-                    toolbar->updateRects (TRUE);   // Sven: You have to this
-                    if ( bo < 0 )
-                    {
-                        bo = 0;
-                        b += toolbar->height();
-                    }
-                    if (bo + toolbar->width() > w)
-                    {
-                        bo = 0;
-                        b += toolbar->height();
-                    }
-                    toolbar->move(bo, h+b+t-toolbar->height());
-                    bo += toolbar->width();
-                }
+	  // Bottom toolbars
+	  for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next())
+	    if ( toolbar->barPos() == KToolBar::Bottom && toolbar->isVisible() )
+	      {
+		toolbar->updateRects (TRUE);   // Sven: You have to this
+		if ( bo < 0 )
+		  {
+		    bo = 0;
+		    b += toolbar->height();
+		  }
+		if (bo + toolbar->width() > w)
+		  {
+		    bo = 0;
+		    b += toolbar->height();
+		  }
+		toolbar->move(bo, h+b+t-toolbar->height());
+		bo += toolbar->width();
+	      }
             
-            // Statusbar
-            if ( kstatusbar && kstatusbar->isVisible() )
+	  // Statusbar
+	  if ( kstatusbar && kstatusbar->isVisible() )
             {
-                b += kstatusbar->height();
-                kstatusbar->setGeometry(0, h+b+t-kstatusbar->height(), w, kstatusbar->height());
+	      b += kstatusbar->height();
+	      kstatusbar->setGeometry(0, h+b+t-kstatusbar->height(), w, kstatusbar->height());
             }
 
-            // menubar if on bottom
-            if (kmenubar && kmenubar->isVisible())
-                if (kmenubar->menuBarPos() == KMenuBar::Bottom)
-                {
-                    b+=kmenubar->height();
-                    kmenubar->setGeometry(0, h+b+t-kmenubar->height(), w, kmenubar->height());
-                }
-            freeHeight = h;
+	  // menubar if on bottom
+	  if (kmenubar && kmenubar->isVisible())
+	    if (kmenubar->menuBarPos() == KMenuBar::Bottom)
+	      {
+		b+=kmenubar->height();
+		kmenubar->setGeometry(0, h+b+t-kmenubar->height(), w, kmenubar->height());
+	      }
+	  freeHeight = h;
         }
-        else
+      else
         {
-            // menubar if on bottom
-            if (kmenubar && kmenubar->isVisible())
-                if (kmenubar->menuBarPos() == KMenuBar::Bottom)
-                {
-                    b+=kmenubar->height();
-                    kmenubar->setGeometry(0, h-b, w, kmenubar->height());
-                }
+	  // menubar if on bottom
+	  if (kmenubar && kmenubar->isVisible())
+	    if (kmenubar->menuBarPos() == KMenuBar::Bottom)
+	      {
+		b+=kmenubar->height();
+		kmenubar->setGeometry(0, h-b, w, kmenubar->height());
+	      }
 
-            // statusbar
-            if ( kstatusbar && kstatusbar->isVisible() )
+	  // statusbar
+	  if ( kstatusbar && kstatusbar->isVisible() )
             {
-                b += kstatusbar->height();
-                kstatusbar->setGeometry(0, h-b, w, kstatusbar->height());
+	      b += kstatusbar->height();
+	      kstatusbar->setGeometry(0, h-b, w, kstatusbar->height());
             }
 
-            // Bottom toolbars
-            for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next())
-                if ( toolbar->barPos() == KToolBar::Bottom && toolbar->isVisible() )
-                {
-                    toolbar->updateRects (TRUE);   // Sven: You have to this
-                    if ( bo < 0 )
-                    {
-                        bo = 0;
-                        b += toolbar->height();
-                    }
-                    if (bo + toolbar->width() > w)
-                    {
-                        bo = 0;
-                        b += toolbar->height();
-                    }
-                    toolbar->move(bo, h-b);
-                    bo += toolbar->width();
-                }
+	  // Bottom toolbars
+	  for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next())
+	    if ( toolbar->barPos() == KToolBar::Bottom && toolbar->isVisible() )
+	      {
+		toolbar->updateRects (TRUE);   // Sven: You have to this
+		if ( bo < 0 )
+		  {
+		    bo = 0;
+		    b += toolbar->height();
+		  }
+		if (bo + toolbar->width() > w)
+		  {
+		    bo = 0;
+		    b += toolbar->height();
+		  }
+		toolbar->move(bo, h-b);
+		bo += toolbar->width();
+	      }
 
-            freeHeight = h-b-t;
+	  freeHeight = h-b-t;
         }
-        // left toolbars
-        for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next() )
-            if ( toolbar->barPos() == KToolBar::Left && toolbar->isVisible() )
-            {
-                toolbar->setMaxHeight(freeHeight);   // Sven: You have to do this here
-                toolbar->updateRects (TRUE);        // Sven: You have to this
-                if ( lo < 0 )
-                {
-                    lo = 0;
-                    l += toolbar->width();
-                }
-                if ( lo + toolbar->height() > freeHeight)
-                {
-                    lo = 0;
-                    l += toolbar->width();
-                }
-                toolbar->move( l-toolbar->width(), t  + lo );
-                lo += toolbar->height();
-            }
+      // left toolbars
+      widest=0;
+      for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next() )
+	if ( toolbar->barPos() == KToolBar::Left && toolbar->isVisible() )
+	  {
+	    toolbar->setMaxHeight(freeHeight);   // Sven: You have to do this here
+	    toolbar->updateRects (TRUE);        // Sven: You have to this
+	    widest = (widest>toolbar->width())?widest:toolbar->width();
+	    if ( lo < 0 )
+	      {
+		lo = 0;
+		l += toolbar->width();
+		toolbar->move( l-toolbar->width(), t  + lo );
+		lo += toolbar->height();
+	      }
+	    else if ( lo + toolbar->height() > freeHeight)
+	      {
+		lo = 0;
+		l += toolbar->width();
+		toolbar->move( l-toolbar->width(), t  + lo );
+		lo += toolbar->height();
+	      }
+	    else
+	      {
+		l=widest;
+		toolbar->move( l-toolbar->width(), t  + lo );
+		lo += toolbar->height();
+	      }
+	  }
         
-        // right toolbars
-        for ( toolbar = toolbars.first();
-              toolbar != 0L; toolbar = toolbars.next() )
-            if ( toolbar->barPos() == KToolBar::Right && toolbar->isVisible() )
-            {
-                toolbar->setMaxHeight(freeHeight);   // Sven: You have to do this here
-                toolbar->updateRects (TRUE);   // Sven: You have to this
-                if ( ro < 0 )
-                {
-                    ro = 0;
-                    r += toolbar->width();
-                }
-                if (ro + toolbar->height() > freeHeight)
-                {
-                    ro = 0;
-                    r += toolbar->width();
-                }
-                toolbar->move(w-r, t + ro);
-                ro += toolbar->height();
-            }
+      // right toolbars
+      widest=0;
+      for ( toolbar = toolbars.first();
+	    toolbar != 0L; toolbar = toolbars.next() )
+	if ( toolbar->barPos() == KToolBar::Right && toolbar->isVisible() )
+	  {
+	    toolbar->setMaxHeight(freeHeight);   // Sven: You have to do this here
+	    toolbar->updateRects (TRUE);   // Sven: You have to this
+	    widest = (widest>toolbar->width())?widest:toolbar->width();
+	    if ( ro < 0 )
+	      {
+		ro = 0;
+		r += toolbar->width();
+		toolbar->move(w-r, t + ro);
+		ro += toolbar->height();
+	      }
+	    else if (ro + toolbar->height() > freeHeight)
+	      {
+		ro = 0;
+		r += toolbar->width();
+		toolbar->move(w-r, t + ro);
+		ro += toolbar->height();
+	      }
+	    else
+	      {
+		r=widest;
+		toolbar->move(w-r, t + ro);
+		ro += toolbar->height();
+	      }
+	  }
 
-        freeWidth = w-l-r;
+      freeWidth = w-l-r;
 
-        // set geometry of everything
-        if (kmainwidgetframe)
-            kmainwidgetframe->setGeometry(l, t, freeWidth, freeHeight);
-        if (kmainwidget)
-            kmainwidget->setGeometry(l+borderwidth, t+borderwidth,
-                                     freeWidth-2*borderwidth,
-                                     freeHeight-2*borderwidth);
-        // set public variables (for compatibility - kghostview)
-        view_left = l;
-        view_right = width()-r;
-        view_top = t;
-        view_bottom = height()-b;
-        if (fixedY == TRUE)
+      // set geometry of everything
+      if (kmainwidgetframe)
+	kmainwidgetframe->setGeometry(l, t, freeWidth, freeHeight);
+      if (kmainwidget)
+	kmainwidget->setGeometry(l+borderwidth, t+borderwidth,
+				 freeWidth-2*borderwidth,
+				 freeHeight-2*borderwidth);
+      // set public variables (for compatibility - kghostview)
+      view_left = l;
+      view_right = width()-r;
+      view_top = t;
+      view_bottom = height()-b;
+      if (fixedY == TRUE)
         {
-            setMaximumSize(9999, h+t+b);
-            setMinimumSize(kmainwidget->minimumSize().width()+(2*borderwidth)+l+r, h+t+b);
-            resize (width(), h+t+b);  // Carefull now!
+	  setMaximumSize(9999, h+t+b);
+	  setMinimumSize(kmainwidget->minimumSize().width()+(2*borderwidth)+l+r, h+t+b);
+	  resize (width(), h+t+b);  // Carefull now!
         }
 
         
@@ -534,208 +564,208 @@ void KTopLevelWidget::saveYourself(){
 //Matthias
 void KTopLevelWidget::savePropertiesInternal (KConfig* config, int number)
 {
-    QString entry;
-    QStrList entryList;
-    int n = 1; // Tolbar counter. toolbars are counted from 1,
-               // in order they are in toolbar list
+  QString entry;
+  QStrList entryList;
+  int n = 1; // Tolbar counter. toolbars are counted from 1,
+  // in order they are in toolbar list
     
-    QString s;
-    s.setNum(number);
-    s.prepend("WindowProperties");
-    config->setGroup(s);
+  QString s;
+  s.setNum(number);
+  s.prepend("WindowProperties");
+  config->setGroup(s);
 
-    // store the className for later restorating (Matthias)
-    config->writeEntry("ClassName", className());
+  // store the className for later restorating (Matthias)
+  config->writeEntry("ClassName", className());
 
-    //use KWM for window properties (Matthias)
-    config->writeEntry("KTWGeometry", KWM::getProperties(winId()));
-    entryList.clear();
+  //use KWM for window properties (Matthias)
+  config->writeEntry("KTWGeometry", KWM::getProperties(winId()));
+  entryList.clear();
     
-    if (kstatusbar)
+  if (kstatusbar)
     {
-        if (kstatusbar->isVisible())
-            config->writeEntry("StatusBar", "Enabled");
-        else
-            config->writeEntry("StatusBar", "Disabled");
+      if (kstatusbar->isVisible())
+	config->writeEntry("StatusBar", "Enabled");
+      else
+	config->writeEntry("StatusBar", "Disabled");
     }
     
-    if (kmenubar)
+  if (kmenubar)
     {
-        if (kmenubar->isVisible())
-            entryList.append("Enabled");
-        else
-            entryList.append("Disabled");
-        switch (kmenubar->menuBarPos())
+      if (kmenubar->isVisible())
+	entryList.append("Enabled");
+      else
+	entryList.append("Disabled");
+      switch (kmenubar->menuBarPos())
         {
-            case KMenuBar::Top:
-                entryList.append("Top");
-                break;
-            case KMenuBar::Bottom:
-                entryList.append("Bottom");
-                break;
-            case KMenuBar::Floating:
-                entryList.append("Floating");
-                entryList.append(KWM::getProperties(kmenubar->winId()));
-                break;
+	case KMenuBar::Top:
+	  entryList.append("Top");
+	  break;
+	case KMenuBar::Bottom:
+	  entryList.append("Bottom");
+	  break;
+	case KMenuBar::Floating:
+	  entryList.append("Floating");
+	  entryList.append(KWM::getProperties(kmenubar->winId()));
+	  break;
         }
-        config->writeEntry("MenuBar", entryList, ';');
-        entryList.clear();
+      config->writeEntry("MenuBar", entryList, ';');
+      entryList.clear();
     }
 
-    KToolBar *toolbar;
-    QString toolKey;
-    for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next())
+  KToolBar *toolbar;
+  QString toolKey;
+  for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next())
     {
-        if (toolbar->isVisible())
-            entryList.append("Enabled");
-        else
-            entryList.append("Disabled");
-        switch (toolbar->barPos())
+      if (toolbar->isVisible())
+	entryList.append("Enabled");
+      else
+	entryList.append("Disabled");
+      switch (toolbar->barPos())
         {
-            case KToolBar::Top:
-                entryList.append("Top");
-                break;
-            case KToolBar::Bottom:
-                entryList.append("Bottom");
-                break;
-            case KToolBar::Left:
-                entryList.append("Left");
-                break;
-            case KToolBar::Right:
-                entryList.append("Right");
-                break;
-            case KToolBar::Floating:
-                entryList.append("Floating");
-                entryList.append(KWM::getProperties(toolbar->winId()));
-                break;
+	case KToolBar::Top:
+	  entryList.append("Top");
+	  break;
+	case KToolBar::Bottom:
+	  entryList.append("Bottom");
+	  break;
+	case KToolBar::Left:
+	  entryList.append("Left");
+	  break;
+	case KToolBar::Right:
+	  entryList.append("Right");
+	  break;
+	case KToolBar::Floating:
+	  entryList.append("Floating");
+	  entryList.append(KWM::getProperties(toolbar->winId()));
+	  break;
         }
-        toolKey.setNum(n);
-        toolKey.prepend("ToolBar");
-        config->writeEntry(toolKey.data(), entryList, ';');
-        entryList.clear();
-        n++;
+      toolKey.setNum(n);
+      toolKey.prepend("ToolBar");
+      config->writeEntry(toolKey.data(), entryList, ';');
+      entryList.clear();
+      n++;
     }
 
-    s.setNum(number);
-    config->setGroup(s);
-    saveProperties(config);
+  s.setNum(number);
+  config->setGroup(s);
+  saveProperties(config);
 }
 
 //Matthias
 bool KTopLevelWidget::readPropertiesInternal (KConfig* config, int number)
 {
-    // All comments by sven
+  // All comments by sven
     
-    QString entry;
-    QStrList entryList;
-    int n = 1; // Tolbar counter. toolbars are counted from 1,
-               // in order they are in toolbar list
-    int i = 0; // Number of entries in list
-    QString s;
-    s.setNum(number);
-    s.prepend("WindowProperties");
-    config->setGroup(s);
-    if (config->hasKey("KTWGeometry") == FALSE) // No global, return False
-      {
-	return FALSE;
-      }
-
-    // Use KWM for window properties  (Matthias)
-    QString geom = config->readEntry ("KTWGeometry");
-    if (!geom.isEmpty()){
-      setGeometry(KWM::setProperties(winId(), geom));
-    }
-    
-    if (kstatusbar)
+  QString entry;
+  QStrList entryList;
+  int n = 1; // Tolbar counter. toolbars are counted from 1,
+  // in order they are in toolbar list
+  int i = 0; // Number of entries in list
+  QString s;
+  s.setNum(number);
+  s.prepend("WindowProperties");
+  config->setGroup(s);
+  if (config->hasKey("KTWGeometry") == FALSE) // No global, return False
     {
-        entry = config->readEntry("StatusBar");
-        if (entry == "Enabled")
-            enableStatusBar(KStatusBar::Show);
-        else enableStatusBar(KStatusBar::Hide);
+      return FALSE;
     }
 
-    if (kmenubar)
+  // Use KWM for window properties  (Matthias)
+  QString geom = config->readEntry ("KTWGeometry");
+  if (!geom.isEmpty()){
+    setGeometry(KWM::setProperties(winId(), geom));
+  }
+    
+  if (kstatusbar)
     {
-        i = config->readListEntry ("MenuBar", entryList, ';');
-        if (i < 2)
+      entry = config->readEntry("StatusBar");
+      if (entry == "Enabled")
+	enableStatusBar(KStatusBar::Show);
+      else enableStatusBar(KStatusBar::Hide);
+    }
+
+  if (kmenubar)
+    {
+      i = config->readListEntry ("MenuBar", entryList, ';');
+      if (i < 2)
         {
-            //debug ("KTWreadProps: bad number of kmenubar args");
-            return FALSE;
+	  //debug ("KTWreadProps: bad number of kmenubar args");
+	  return FALSE;
         }
-	bool showmenubar = False;  //Matthias
-        entry = entryList.first();
-        if (entry=="Enabled")
-	  showmenubar = True; //Matthias
-        else 
-	  kmenubar->hide();
+      bool showmenubar = False;  //Matthias
+      entry = entryList.first();
+      if (entry=="Enabled")
+	showmenubar = True; //Matthias
+      else 
+	kmenubar->hide();
 	
-        entry = entryList.next();
-        if (entry == "Top")
-            kmenubar->setMenuBarPos(KMenuBar::Top);
-        else if (entry == "Bottom")
-            kmenubar->setMenuBarPos(KMenuBar::Bottom);
-        else if (entry == "Floating")
+      entry = entryList.next();
+      if (entry == "Top")
+	kmenubar->setMenuBarPos(KMenuBar::Top);
+      else if (entry == "Bottom")
+	kmenubar->setMenuBarPos(KMenuBar::Bottom);
+      else if (entry == "Floating")
         {
-            kmenubar->setMenuBarPos(KMenuBar::Floating);
-            entry=entryList.next();
-            kmenubar->setGeometry(KWM::setProperties(kmenubar->winId(), entry));
-	    kmenubar->show();
-        }
-        entryList.clear();
-	if (showmenubar) //Matthias
+	  kmenubar->setMenuBarPos(KMenuBar::Floating);
+	  entry=entryList.next();
+	  kmenubar->setGeometry(KWM::setProperties(kmenubar->winId(), entry));
 	  kmenubar->show();
+        }
+      entryList.clear();
+      if (showmenubar) //Matthias
+	kmenubar->show();
     }
-    KToolBar *toolbar;
-    QString toolKey;
-    QListIterator<KToolBar> it(toolbars); // must use own iterator
+  KToolBar *toolbar;
+  QString toolKey;
+  QListIterator<KToolBar> it(toolbars); // must use own iterator
 
-    for ( ; it.current(); ++it)
+  for ( ; it.current(); ++it)
     {
-        toolbar= it.current();
-        toolKey.setNum(n);
-        toolKey.prepend("ToolBar");
+      toolbar= it.current();
+      toolKey.setNum(n);
+      toolKey.prepend("ToolBar");
 
-        i = config->readListEntry(toolKey.data(), entryList, ';');
-        if (i < 2)
+      i = config->readListEntry(toolKey.data(), entryList, ';');
+      if (i < 2)
         {
-            //printf ("KTWRP: bad number of toolbar%d args\n", n);
-            return FALSE;
+	  //printf ("KTWRP: bad number of toolbar%d args\n", n);
+	  return FALSE;
         }
         
-	bool showtoolbar = False;  //Matthias
-        entry = entryList.first();
-        if (entry=="Enabled")
-	  showtoolbar = True; //Matthias
-        else 
-	  toolbar->enable(KToolBar::Hide);
+      bool showtoolbar = False;  //Matthias
+      entry = entryList.first();
+      if (entry=="Enabled")
+	showtoolbar = True; //Matthias
+      else 
+	toolbar->enable(KToolBar::Hide);
 
-        entry = entryList.next();
-        if (entry == "Top")
-            toolbar->setBarPos(KToolBar::Top);
-        else if (entry == "Bottom")
-            toolbar->setBarPos(KToolBar::Bottom);
-        else if (entry == "Left")
-            toolbar->setBarPos(KToolBar::Left);
-        else if (entry == "Right")
-            toolbar->setBarPos(KToolBar::Right);
-        else if (entry == "Floating")
+      entry = entryList.next();
+      if (entry == "Top")
+	toolbar->setBarPos(KToolBar::Top);
+      else if (entry == "Bottom")
+	toolbar->setBarPos(KToolBar::Bottom);
+      else if (entry == "Left")
+	toolbar->setBarPos(KToolBar::Left);
+      else if (entry == "Right")
+	toolbar->setBarPos(KToolBar::Right);
+      else if (entry == "Floating")
         {
-            toolbar->setBarPos(KToolBar::Floating);
-            entry=entryList.next();
-            toolbar->setGeometry(KWM::setProperties(toolbar->winId(), entry));
-            toolbar->updateRects(TRUE);
-	    toolbar->show();
+	  toolbar->setBarPos(KToolBar::Floating);
+	  entry=entryList.next();
+	  toolbar->setGeometry(KWM::setProperties(toolbar->winId(), entry));
+	  toolbar->updateRects(TRUE);
+	  toolbar->show();
         }
-	if (showtoolbar)
-	  toolbar->enable(KToolBar::Show); //Matthias
-        n++; // next toolbar
-        entryList.clear();
+      if (showtoolbar)
+	toolbar->enable(KToolBar::Show); //Matthias
+      n++; // next toolbar
+      entryList.clear();
     }
 
-    s.setNum(number);
-    config->setGroup(s);
-    readProperties(config);
-    return True;
+  s.setNum(number);
+  config->setGroup(s);
+  readProperties(config);
+  return True;
 }
 
 void KTopLevelWidget::setFrameBorderWidth(int size){
@@ -792,12 +822,12 @@ void KTopLevelWidget::setUnsavedData( bool b){
 
 void KTopLevelWidget::resizeEvent( QResizeEvent *ev )
 {
-    if (kmainwidget && kmainwidget->minimumSize() == kmainwidget->maximumSize())
-        return;
-    if (kmainwidget && kmainwidget->minimumSize().height() == kmainwidget->maximumSize().height())
-        if (ev->oldSize() == ev->size())
-            return;
-    updateRects();
+  if (kmainwidget && kmainwidget->minimumSize() == kmainwidget->maximumSize())
+    return;
+  if (kmainwidget && kmainwidget->minimumSize().height() == kmainwidget->maximumSize().height())
+    if (ev->oldSize() == ev->size())
+      return;
+  updateRects();
 }
 
 KStatusBar *KTopLevelWidget::statusBar()
