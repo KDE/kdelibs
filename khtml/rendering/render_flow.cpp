@@ -32,6 +32,8 @@
 #include <qfontmetrics.h>
 #include <qsortedlist.h>
 
+#include <kglobal.h>
+
 #include "render_flow.h"
 #include "render_text.h"
 #include "misc/helper.h"
@@ -964,14 +966,13 @@ void RenderFlow::calcMinMaxWidth()
 #endif
 
     m_minWidth = 0;
-    m_maxWidth = 0;
+    m_maxWidth = 0;   
 
     if (isInline())
-        return;
+        return;    
 
 //    if(minMaxKnown())
 //        return;
-
 
     int cw = containingBlock()->contentWidth();
 
@@ -1127,6 +1128,9 @@ void RenderFlow::calcMinMaxWidth()
         }
     }
     if(m_maxWidth < m_minWidth) m_maxWidth = m_minWidth;
+    
+    if (style()->width().isFixed())
+        m_maxWidth = KMAX(m_minWidth,short(style()->width().value)); 
 
     int toAdd = 0;
     if(style()->hasBorder())

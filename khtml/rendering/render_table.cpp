@@ -450,16 +450,18 @@ void RenderTable::addColInfo(int _startCol, int _colSpan,
         col->max = _maxSize;
         col->maxCell = _cell;
     }
-
-    // percent has highest priority, even over fixed
-    // variable overwrites fixed, but not percent
-    if ( ( _width.type == Percent ) ||
-         ( _width.type == Variable && col->type != Percent ) ||
-         ( _width.type > col->type && col->type < Percent ))
-        col->type = _width.type;
+    
+    // Fixed width is treated as variable 
 
     if (_width.type == col->type)
-        col->value = _width.value > col->value ? _width.value : col->value;
+        col->value = _width.value > col->value ? _width.value : col->value;    
+    
+    if ( (_width.type > col->type && (_width.type!=Fixed || col->type<=Variable))
+            || ( col->type == Fixed && _width.type!=Variable) )
+    {
+        col->type = _width.type;
+        col->value = _width.value;
+    }
 
     setMinMaxKnown(false);
 
@@ -671,19 +673,8 @@ void RenderTable::calcSingleColMinMax(int c, ColInfo* col)
 #endif
 
     int span=col->span;
-
-    int oldmin=0;
-    int oldmax=0;
-    for (int o=c; o<c+span; ++o)
-    {
-        oldmin+=colMinWidth[o];
-        oldmax+=colMaxWidth[o];
-    }
     int smin = col->min;
     int smax = col->max;
-
-    if (col->type==Fixed)
-        smax = KMAX(smin,col->value);
 
     if (span==1)
     {
@@ -695,6 +686,13 @@ void RenderTable::calcSingleColMinMax(int c, ColInfo* col)
     }
     else
     {
+        int oldmin=0;
+        int oldmax=0;
+        for (int o=c; o<c+span; ++o)
+        {
+            oldmin+=colMinWidth[o];
+            oldmax+=colMaxWidth[o];
+        }        
         int spreadmin = smin-oldmin-(span-1)*spacing;
 //        kdDebug( 6040 ) << "colmin " << smin  << endl;
 //        kdDebug( 6040 ) << "oldmin " << oldmin  << endl;
@@ -725,21 +723,16 @@ void RenderTable::calcFinalColMax(int c, ColInfo* col)
     int smin = col->min;
     int smax = col->max;
 
-    if (col->type==Fixed)
-    {
-        smax = KMAX(smin,col->value);
-    }
-    else if (col->type == Percent)
+    if (col->type == Percent)
     {
         smax = m_width * col->value / KMAX(100u,totalPercent);
     }
     else if (col->type == Relative && totalRelative)
     {
-        smax= m_width * col->value / totalRelative;
+        smax = m_width * col->value / totalRelative;
     }
 
     smax = KMAX(smax,oldmin);
-//    smax = KMIN(smax,m_width);
 
 //    kdDebug( 6040 ) << "smin " << smin << " smax " << smax << " span " << span << endl;
     if (span==1)
@@ -782,6 +775,9 @@ void RenderTable::calcColMinMax()
     int availableWidth = containingBlockWidth();
 
     int realMaxWidth=spacing;
+    
+    int* spanPercent = new int[maxColSpan];
+    int* spanPercentMax = new int[maxColSpan];
 
     LengthType widthType = style()->width().type;
 
@@ -799,6 +795,8 @@ void RenderTable::calcColMinMax()
         ColInfoLine* spanCols = colInfos[s];
 
         int spanMax=0;
+        spanPercentMax[s] = spacing;
+        spanPercent[s] = 0;        
 
         for ( unsigned int c=0; c<totalCols-s; ++c)
         {
@@ -811,14 +809,20 @@ void RenderTable::calcColMinMax()
             kdDebug( 6040 ) << " s=" << s << " c=" << c << " min=" << col->min << " value=" << col->value  <<
                         " max="<<col->max<< endl;
 #endif
-            spanMax += col->max + spacing;
-
             col->update();
+            
+            spanMax += col->max + spacing;
+            
+            if (col->type==Percent)
+            {
+                spanPercentMax[s] += col->max+spacing;
+                spanPercent[s] += col->value;
+            }
 
             calcSingleColMinMax(c, col);
 
             if ( col->span>1 && widthType != Percent
-                && (col->type==Fixed || col->type==Variable ))
+                && (col->type==Variable || col->type==Fixed))
             {
                 calcFinalColMax(c, col);
             }
@@ -831,21 +835,18 @@ void RenderTable::calcColMinMax()
             realMaxWidth=spanMax;
     }
 
-
     // PHASE 3, calculate table width
-    // NOT as simple as it sounds
 
     totalPercent=0;
     totalRelative=0;
 
-    int maxFixed=0;
     int minPercent=0;
-    int percentWidest=0;
-    int percentWidestPercent=0;
+    int maxPercent=0;
 
     int minRel=0;
     int minVar=0;
-    bool hasFixed=false;
+    int maxRel=0;
+    int maxVar=0;    
     bool hasPercent=false;
     bool hasRel=false;
     bool hasVar=false;
@@ -860,37 +861,45 @@ void RenderTable::calcColMinMax()
 
         switch(colType[i])
         {
-        case Fixed:
-            maxFixed += colMaxWidth[i] + spacing;
-            hasFixed=true;
-            break;
         case Percent:
-            hasPercent=true;
+            if (!hasPercent){
+                hasPercent=true;
+                minPercent=maxPercent=spacing;
+            }
             totalPercent += colValue[i];
             minPercent += colMinWidth[i] + spacing;
-            if (colValue[i]>0)
-            {
-                int pw =  colMaxWidth[i]*100/colValue[i];
-                if (  pw > percentWidest)
-                {
-                    percentWidest = pw;
-                    percentWidestPercent = colValue[i];
-                }
-            }
+            maxPercent += colMaxWidth[i] + spacing;
             break;
         case Relative:
-            hasRel=true;
+            if (!hasRel){
+                hasRel=true;
+                minRel=maxRel=spacing;
+            }            
             totalRelative += colValue[i] ;
             minRel += colMinWidth[i] + spacing;
+            maxRel += colMaxWidth[i] + spacing;
             break;
         case Undefined:
         case Variable:
+        case Fixed:
         default:
-            hasVar=true;
+            if (!hasVar){
+                hasVar=true;
+                minVar=maxVar=spacing;
+            }                
             minVar += colMinWidth[i] + spacing;
+            maxVar += colMaxWidth[i] + spacing;
         }
 
     }
+    
+    for ( int s=0; s<maxColSpan ; ++s)
+    {
+        maxPercent = KMAX(spanPercentMax[s],maxPercent);
+        totalPercent = KMAX(spanPercent[s],int(totalPercent));
+    }
+    delete[] spanPercentMax;
+    delete[] spanPercent;
 
     if(widthType > Relative) // Percent or fixed table
     {
@@ -898,37 +907,15 @@ void RenderTable::calcColMinMax()
         if(m_minWidth > m_width) m_width = m_minWidth;
 	//kdDebug( 6040 ) << "1 width=" << m_width << " minWidth=" << m_minWidth << " availableWidth=" << availableWidth << " " << endl;
     }
-    else if (hasPercent && !hasFixed)
-    {
-        //kdDebug( 6040 ) << "2 percentWidest=" << percentWidest << " percentWidestPercent=" << percentWidestPercent << " " << endl;
-	if ( hasVar || hasRel )
-	    m_width = availableWidth;
-	else {
+    else if (hasPercent)
+    {        
 	    int tot = KMIN(100u, totalPercent );
-	    m_width = KMAX( availableWidth*tot/100, minPercent );
-	}
-    }
-    else if (hasPercent && hasFixed)
-    {
-	//kdDebug( 6040 ) << "3 maxFixed=" << maxFixed << "  totalPercent=" << totalPercent << endl;
-	if ( style()->htmlHacks() ) {
-	    m_width = availableWidth;
-	    // Netscape degrades fixed to relative in this case.
-	    for(int i = 0; i < (int)totalCols; i++) {
-		if ( colType[i] == Fixed ) {
-		    colType[i] = Relative;
-		    hasRel=true;
-		    totalRelative += colValue[i] ;
-		    minRel += colMinWidth[i] + spacing;
-		}
-	    }
-	    maxFixed = 0;
-	    hasFixed = false;
-	} else {
-	    // more correct CSS2 compliant
-	    int w = (maxFixed + minVar + minRel);
-	    m_width = KMIN( availableWidth, minPercent + w );
-	}
+        if (tot>0)
+	        m_maxWidth = maxPercent*100/tot;
+        if (tot<100) 
+            m_maxWidth = KMAX( short((maxVar+maxRel)*100/(100-tot)), m_maxWidth );
+        m_width = KMIN(short( availableWidth ),m_maxWidth);
+//        kdDebug( 6040 ) << "width=" << m_width << " maxPercent=" << maxPercent << " maxVar=" << maxVar << " " << endl;
     }
     else
     {
@@ -952,7 +939,7 @@ void RenderTable::calcColMinMax()
 
             if (!col || col->span==0)
                 continue;
-            if (col->type==Fixed || col->type==Variable)
+            if (col->type==Variable || col->type==Fixed)
                 continue;
 
             calcFinalColMax(c, col);
@@ -968,24 +955,7 @@ void RenderTable::calcColMinMax()
     {
         m_minWidth = m_maxWidth = m_width;
     }
-
-    else if(widthType == Variable && hasPercent)
-    {
-        unsigned int tot = KMIN(99u,totalPercent);
-        int mx;
-        if (hasFixed)
-            mx = (maxFixed + minVar + minRel) * 100 /(100 - tot);
-        else
-            mx = (minVar + minRel)*100/(100-tot);
-
-        if (mx>0) m_maxWidth=mx;
-
-        if (realMaxWidth > m_maxWidth)
-            m_maxWidth = realMaxWidth;
-    }
-
-
-    else if (widthType == Percent)
+    else 
     {
         if (realMaxWidth > m_maxWidth)
             m_maxWidth = realMaxWidth;
@@ -995,11 +965,11 @@ void RenderTable::calcColMinMax()
     m_maxWidth += borderLeft() + borderRight();
     m_width += borderLeft() + borderRight();
 
-    /*kdDebug( 6040 ) << "TABLE width=" << m_width <<
+/*    kdDebug( 6040 ) << "TABLE width=" << m_width <<
                 " m_minWidth=" << m_minWidth <<
                 " m_maxWidth=" << m_maxWidth <<
-                " realMaxWidth=" << realMaxWidth << endl;*/
-
+                " realMaxWidth=" << realMaxWidth << endl;
+*/
 
 //    setMinMaxKnown(true);
 
@@ -1994,7 +1964,7 @@ void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
     if ( !c.isValid() && parent() ) // take from row
         c = parent()->style()->backgroundColor();
     if ( !c.isValid() && parent() && parent()->parent() ) // take from rowgroup
-        c = parent()->parent()->style()->backgroundColor();
+        c = parent()->parent()->style()->backgroundColor();    
     // ### col is missing...
 
     // ### get offsets right in case the bgimage is inherited.
