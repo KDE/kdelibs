@@ -2284,16 +2284,10 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
      // We don't really want to reload, we just want to verify our
      // cached images, but the khtml image cache can't handle that yet.
      args.reload = true;
-     d->m_extension->setURLArgs( args );
-     openURL(cURL);
   }
-  else
-  {
-    // New URL.
-    if (!m_url.url().isEmpty())
-        args.metaData()["referrer"]=m_url.url();
-    emit d->m_extension->openURLRequest( cURL, args );
-  }
+  if (!m_url.url().isEmpty())
+      args.metaData()["referrer"]=m_url.url();
+  emit d->m_extension->openURLRequest( cURL, args );
 }
 
 void KHTMLPart::slotViewDocumentSource()
