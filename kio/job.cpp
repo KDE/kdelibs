@@ -62,6 +62,7 @@ extern "C" {
 using namespace KIO;
 template class QList<KIO::Job>;
 
+//this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
 #define REPORT_TIMEOUT 200
 
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( packedArgs, IO_WriteOnly ); stream
@@ -1421,79 +1422,221 @@ void ListJob::start(Slave *slave)
 CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool asMethod, bool showProgressInfo )
   : Job(showProgressInfo), m_mode(mode), m_asMethod(asMethod),
     destinationState(DEST_NOT_STATED), state(STATE_STATING),
-    m_srcList(src), m_srcListCopy(src), m_bCurrentOperationIsLink(false),
+    m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0),
+    m_processedFiles(0), m_processedDirs(0),
+    m_srcList(src), m_currentStatSrc(m_srcList.begin()),
+    m_bCurrentOperationIsLink(false),
     m_dest(dest), m_bAutoSkip( false ), m_bOverwriteAll( false ),
-    m_reportTimer(0)
+    m_conflictError(0), m_reportTimer(0)
 {
-  if ( showProgressInfo ) {
-    connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
-             Observer::self(), SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
+    if ( showProgressInfo ) {
+        connect( this, SIGNAL( totalFiles( KIO::Job*, unsigned long ) ),
+                 Observer::self(), SLOT( slotTotalFiles( KIO::Job*, unsigned long ) ) );
 
-    connect( this, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
-             Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
+        connect( this, SIGNAL( totalDirs( KIO::Job*, unsigned long ) ),
+                 Observer::self(), SLOT( slotTotalDirs( KIO::Job*, unsigned long ) ) );
 
-    /**
-       We call the functions directly instead of using signals.
-       Calling a function via a signal takes approx. 65 times the time
-       compared to calling it directly (at least on my machine). aleXXX
-    */
-    /*connect( this, SIGNAL( processedFiles( KIO::Job*, unsigned long ) ),
-             Observer::self(), SLOT( slotProcessedFiles( KIO::Job*, unsigned long ) ) );
+        /**
+           We call the functions directly instead of using signals.
+           Calling a function via a signal takes approx. 65 times the time
+           compared to calling it directly (at least on my machine). aleXXX
+        */
+        m_reportTimer = new QTimer(this);
 
-    connect( this, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
-             Observer::self(), SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
-
-    connect( this, SIGNAL( creatingDir( KIO::Job*, const KURL& ) ),
-             Observer::self(), SLOT( slotCreatingDir( KIO::Job*, const KURL& ) ) );*/
-
-    m_reportTimer=new QTimer(this);
-
-    connect(m_reportTimer,SIGNAL(timeout()),this,SLOT(slotReport()));
-    //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
-    m_reportTimer->start(REPORT_TIMEOUT,false);
-  }
+        connect(m_reportTimer,SIGNAL(timeout()),this,SLOT(slotReport()));
+        m_reportTimer->start(REPORT_TIMEOUT,false);
+    }
     // Stat the dest
     KIO::Job * job = KIO::stat( m_dest, false );
     kdDebug(7007) << "CopyJob:stating the dest " << m_dest.prettyURL() << endl;
     addSubjob(job);
 }
 
+void CopyJob::slotResultStating( Job *job )
+{
+    kdDebug(7007) << "CopyJob::slotResultStating" << endl;
+    // Was there an error while stating the src ?
+    if (job->error() && destinationState != DEST_NOT_STATED )
+    {
+        KURL srcurl = ((SimpleJob*)job)->url();
+        if ( !srcurl.isLocalFile() )
+        {
+            // Probably : src doesn't exist. Well, over some protocols (e.g. FTP)
+            // this info isn't really reliable (thanks to MS FTP servers).
+            // We'll assume a file, and try to download anyway.
+            kdDebug() << "Error while stating source. Activating hack" << endl;
+            subjobs.remove( job );
+            assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
+            struct CopyInfo info;
+            info.permissions = (mode_t) -1;
+            info.mtime = (time_t) -1;
+            info.ctime = (time_t) -1;
+            info.size = (off_t)-1;
+            info.uSource = srcurl;
+            info.uDest = m_dest;
+            // Append filename or dirname to destination URL, if allowed
+            if ( destinationState == DEST_IS_DIR && !m_asMethod )
+                info.uDest.addPath( srcurl.fileName() );
+            files.append( info );
+            ++m_currentStatSrc;
+            statNextSrc();
+            return;
+        }
+        // Local file. If stat fails, the file definitely doesn't exist.
+        Job::slotResult( job ); // will set the error and emit result(this)
+        return;
+    }
+
+    // Is it a file or a dir ?
+    UDSEntry entry = ((StatJob*)job)->statResult();
+    bool bDir = false;
+    bool bLink = false;
+    UDSEntry::ConstIterator it2 = entry.begin();
+    for( ; it2 != entry.end(); it2++ ) {
+        if ( ((*it2).m_uds) == UDS_FILE_TYPE )
+            bDir = S_ISDIR( (mode_t)(*it2).m_long );
+        else if ( ((*it2).m_uds) == UDS_LINK_DEST )
+            bLink = !((*it2).m_str.isEmpty());
+    }
+
+    if ( destinationState == DEST_NOT_STATED )
+        // we were stating the dest
+    {
+        if (job->error())
+            destinationState = DEST_DOESNT_EXIST;
+        else
+            // Treat symlinks to dirs as dirs here, so no test on bLink
+            destinationState = bDir ? DEST_IS_DIR : DEST_IS_FILE;
+        subjobs.remove( job );
+        assert ( subjobs.isEmpty() );
+        statNextSrc();
+        return;
+    }
+    // We were stating the current source URL
+    m_currentDest = m_dest; // used by slotEntries
+    // Create a dummy list with it, for slotEntries
+    UDSEntryList lst;
+    lst.append(entry);
+
+    // There 6 cases, and all end up calling slotEntries(job, lst) first :
+    // 1 - src is a dir, destination is a directory,
+    // slotEntries will append the source-dir-name to the destination
+    // 2 - src is a dir, destination is a file, ERROR (done later on)
+    // 3 - src is a dir, destination doesn't exist, then it's the destination dirname,
+    // so slotEntries will use it as destination.
+
+    // 4 - src is a file, destination is a directory,
+    // slotEntries will append the filename to the destination.
+    // 5 - src is a file, destination is a file, m_dest is the exact destination name
+    // 6 - src is a file, destination doesn't exist, m_dest is the exact destination name
+    // Tell slotEntries not to alter the src url
+    m_bCurrentSrcIsDir = false;
+    slotEntries(job, lst);
+
+    KURL srcurl = ((SimpleJob*)job)->url();
+
+    subjobs.remove( job );
+    assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
+
+    if ( bDir
+         && !bLink // treat symlinks as files (no recursion)
+         && m_mode != Link ) // No recursion in Link mode either.
+    {
+        kdDebug(7007) << " Source is a directory " << endl;
+
+        m_bCurrentSrcIsDir = true; // used by slotEntries
+        if ( destinationState == DEST_IS_DIR ) // (case 1)
+            // Use <desturl>/<directory_copied> as destination, from now on
+            m_currentDest.addPath( srcurl.fileName() );
+        else if ( destinationState == DEST_IS_FILE ) // (case 2)
+        {
+            m_error = ERR_IS_FILE;
+            m_errorText = m_dest.prettyURL();
+            emitResult();
+            return;
+        }
+        else // (case 3)
+        {
+            // otherwise dest is new name for toplevel dir
+            // so the destination exists, in fact, from now on.
+            // (This even works with other src urls in the list, since the
+            //  dir has effectively been created)
+            destinationState = DEST_IS_DIR;
+        }
+
+        // If moving,
+        // Before going for the full list+copy+del thing, try to rename
+        if ( m_mode == Move )
+        {
+            if ((srcurl.protocol() == m_currentDest.protocol()) &&
+                (srcurl.host() == m_currentDest.host()) &&
+                (srcurl.port() == m_currentDest.port()) &&
+                (srcurl.user() == m_currentDest.user()) &&
+                (srcurl.pass() == m_currentDest.pass()))
+            {
+                kdDebug(7007) << "This seems to be a suitable case for trying to rename the dir before copy+del" << endl;
+                state = STATE_RENAMING;
+                SimpleJob * newJob = KIO::rename( srcurl, m_currentDest, false /*no overwrite */);
+                Scheduler::scheduleJob(newJob);
+                addSubjob( newJob );
+                return;
+            }
+        }
+
+        startListing( srcurl );
+    }
+    else
+    {
+        kdDebug(7007) << " Source is a file (or a symlink), or we are linking -> no recursive listing " << endl;
+        ++m_currentStatSrc;
+        statNextSrc();
+    }
+}
+
 void CopyJob::slotReport()
 {
-   if ( m_progressId == 0 )
-      return;
+    if ( m_progressId == 0 )
+        return;
 
-   Observer * observer = Observer::self();
-   if ((state==STATE_COPYING_FILES) || (state==STATE_CONFLICT_COPYING_FILES))
-   {
-      emit processedFiles( this, m_processedFiles );
-      observer->slotProcessedFiles(this,m_processedFiles);
-      if (m_mode==Move)
-      {
-         observer->slotMoving( this, m_currentSrcURL,m_currentDestURL);
-         emit moving( this, m_currentSrcURL, m_currentDestURL);
-      }
-      else if (m_mode==Link)
-      {
-         observer->slotCopying( this, m_currentSrcURL, m_currentDestURL ); // we don't have a slotLinking
-         emit linking( this, m_currentSrcURL.path(), m_currentDestURL );
-      }
-      else
-      {
-         observer->slotCopying( this, m_currentSrcURL, m_currentDestURL );
-         emit copying( this, m_currentSrcURL, m_currentDestURL );
-      };
-   };
+    Observer * observer = Observer::self();
+    switch (state) {
+        case STATE_COPYING_FILES:
+            emit processedFiles( this, m_processedFiles );
+            observer->slotProcessedFiles(this,m_processedFiles);
+            if (m_mode==Move)
+            {
+                observer->slotMoving( this, m_currentSrcURL,m_currentDestURL);
+                emit moving( this, m_currentSrcURL, m_currentDestURL);
+            }
+            else if (m_mode==Link)
+            {
+                observer->slotCopying( this, m_currentSrcURL, m_currentDestURL ); // we don't have a slotLinking
+                emit linking( this, m_currentSrcURL.path(), m_currentDestURL );
+            }
+            else
+            {
+                observer->slotCopying( this, m_currentSrcURL, m_currentDestURL );
+                emit copying( this, m_currentSrcURL, m_currentDestURL );
+            };
+            break;
 
-   if ((state==STATE_CREATING_DIRS) || (state==STATE_CONFLICT_CREATING_DIRS))
-   {
-      observer->slotProcessedDirs( this, m_processedDirs );
-      observer->slotCreatingDir( this,m_currentDestURL);
-      emit creatingDir( this, m_currentDestURL );
-   };
+        case STATE_CREATING_DIRS:
+            observer->slotProcessedDirs( this, m_processedDirs );
+            observer->slotCreatingDir( this,m_currentDestURL);
+            emit creatingDir( this, m_currentDestURL );
+            break;
 
-   if (state==STATE_STATING)
-      observer->slotCopying( this, m_currentSrcURL, m_currentDestURL );
+        case STATE_STATING:
+        case STATE_LISTING:
+            observer->slotCopying( this, m_currentSrcURL, m_currentDestURL );
+            emit totalSize( this, m_totalSize );
+            emit totalFiles( this, files.count() );
+            emit totalDirs( this, dirs.count() );
+            break;
+
+        default:
+            break;
+    }
 };
 
 void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
@@ -1559,22 +1702,9 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
     }
 }
 
-void CopyJob::startNextJob()
+void CopyJob::statNextSrc()
 {
-    // Each source file starts a different copying operation
-    // Maybe this shouldn't be the case (for a better overall
-    // progress report), but while it's the case, initialise
-    // the stuff here:
-    m_totalSize=0;
-    m_processedSize=0;
-    m_fileProcessedSize=0;
-    m_processedFiles=0;
-    m_processedDirs=0;
-
-    files.clear();
-    dirs.clear();
-    KURL::List::Iterator it = m_srcList.begin();
-    if (it != m_srcList.end())
+    if ( m_currentStatSrc != m_srcList.end() )
     {
         if ( m_mode == Link )
         {
@@ -1585,203 +1715,37 @@ void CopyJob::startNextJob()
             info.mtime = (time_t) -1;
             info.ctime = (time_t) -1;
             info.size = (off_t)-1;
-            info.uSource = *it;
+            info.uSource = *m_currentStatSrc;
             info.uDest = m_currentDest;
             // Append filename or dirname to destination URL, if allowed
             if ( destinationState == DEST_IS_DIR && !m_asMethod )
-                info.uDest.addPath( (*it).fileName() );
+                info.uDest.addPath( (*m_currentStatSrc).fileName() );
             files.append( info ); // Files and any symlinks
-
-            // emit all signals for total numbers
-            emit totalSize( this, 0 );
-            emit totalFiles( this, 1 );
-            emit totalDirs( this, 0 );
-
-            // Skip the "listing" stage and go directly copying the file
-            state = STATE_COPYING_FILES;
-            copyNextFile();
+            ++m_currentStatSrc;
+            statNextSrc(); // we could use a loop instead of a recursive call :)
         }
         else
         {
-            // First, stat the src
-            Job * job = KIO::stat( *it, false );
+            // Stat the next src url
+            Job * job = KIO::stat( *m_currentStatSrc, false );
             //kdDebug(7007) << "KIO::stat on " << (*it).prettyURL() << endl;
             state = STATE_STATING;
             addSubjob(job);
-            m_currentSrcURL=(*it);
+            m_currentSrcURL=(*m_currentStatSrc);
             m_currentDestURL=m_dest;
-            // keep src url in the list, just in case we need it later
         }
     } else
     {
-        // Finished - tell the world
-        KDirNotify_stub allDirNotify("*", "KDirNotify*");
-        KURL url( m_dest );
-        if ( destinationState != DEST_IS_DIR )
-            url.setPath( url.directory() );
-        kdDebug(7007) << "KDirNotify'ing FilesAdded " << url.prettyURL() << endl;
-        allDirNotify.FilesAdded( url );
-
-        if ( m_mode == Move && !m_srcListCopy.isEmpty() )
-            allDirNotify.FilesRemoved( m_srcListCopy );
-
-        if (m_reportTimer!=0)
-           m_reportTimer->stop();
-        emitResult();
+        // Finished the stat'ing phase
+        // First make sure that the totals were correctly emitted
+        state = STATE_STATING;
+        slotReport();
+        // Then start copying things
+        state = STATE_CREATING_DIRS;
+        createNextDir();
     }
 }
 
-void CopyJob::slotResultStating( Job *job )
-{
-    kdDebug(7007) << "CopyJob::slotResultStating" << endl;
-    // Was there an error while stating the src ?
-    if (job->error() && destinationState != DEST_NOT_STATED )
-    {
-        KURL srcurl = ((SimpleJob*)job)->url();
-        if ( !srcurl.isLocalFile() )
-        {
-            // Probably : src doesn't exist. Well, over some protocols (e.g. FTP)
-            // this info isn't really reliable (thanks to MS FTP servers).
-            // We'll assume a file, and try to download anyway.
-            kdDebug() << "Error while stating source. Activating hack" << endl;
-            subjobs.remove( job );
-            assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
-            m_currentDest = m_dest;
-            struct CopyInfo info;
-            info.permissions = (mode_t) -1;
-            info.mtime = (time_t) -1;
-            info.ctime = (time_t) -1;
-            info.size = (off_t)-1;
-            info.uSource = srcurl;
-            info.uDest = m_currentDest;
-            // Append filename or dirname to destination URL, if allowed
-            if ( destinationState == DEST_IS_DIR && !m_asMethod )
-                info.uDest.addPath( srcurl.fileName() );
-            files.append( info );
-            emit totalFiles( this, 1 );
-            emit totalDirs( this, 0 );
-
-            state = STATE_COPYING_FILES;
-            copyNextFile();
-            return;
-        }
-        // Local file. If stat fails, the file definitely doesn't exist.
-        Job::slotResult( job ); // will set the error and emit result(this)
-        return;
-    }
-
-    // Is it a file or a dir ?
-    UDSEntry entry = ((StatJob*)job)->statResult();
-    bool bDir = false;
-    bool bLink = false;
-    UDSEntry::ConstIterator it2 = entry.begin();
-    for( ; it2 != entry.end(); it2++ ) {
-        if ( ((*it2).m_uds) == UDS_FILE_TYPE )
-            bDir = S_ISDIR( (mode_t)(*it2).m_long );
-        else if ( ((*it2).m_uds) == UDS_LINK_DEST )
-            bLink = !((*it2).m_str.isEmpty());
-    }
-
-    if ( destinationState == DEST_NOT_STATED )
-        // we were stating the dest
-    {
-        if (job->error())
-            destinationState = DEST_DOESNT_EXIST;
-        else
-            // Treat symlinks to dirs as dirs here, so no test on bLink
-            destinationState = bDir ? DEST_IS_DIR : DEST_IS_FILE;
-        subjobs.remove( job );
-        assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
-        startNextJob();
-        return;
-    }
-    // We were stating the current source URL
-    m_currentDest = m_dest;
-    // Create a dummy list with it, for slotEntries
-    UDSEntryList lst;
-    lst.append(entry);
-
-    // There 6 cases, and all end up calling slotEntries(job, lst) first :
-    // 1 - src is a dir, destination is a directory,
-    // slotEntries will append the source-dir-name to the destination
-    // 2 - src is a dir, destination is a file, ERROR (done later on)
-    // 3 - src is a dir, destination doesn't exist, then it's the destination dirname,
-    // so slotEntries will use it as destination.
-
-    // 4 - src is a file, destination is a directory,
-    // slotEntries will append the filename to the destination.
-    // 5 - src is a file, destination is a file, m_dest is the exact destination name
-    // 6 - src is a file, destination doesn't exist, m_dest is the exact destination name
-    // Tell slotEntries not to alter the src url
-    m_bCurrentSrcIsDir = false;
-    slotEntries(job, lst);
-
-    KURL srcurl = ((SimpleJob*)job)->url();
-
-    subjobs.remove( job );
-    assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
-
-    if ( bDir
-         && !bLink // treat symlinks as files (no recursion)
-         && m_mode != Link ) // No recursion in Link mode either.
-    {
-        kdDebug(7007) << " Source is a directory " << endl;
-
-        m_bCurrentSrcIsDir = true; // used by slotEntries
-        if ( destinationState == DEST_IS_DIR ) // (case 1)
-            // Use <desturl>/<directory_copied> as destination, from now on
-            m_currentDest.addPath( srcurl.fileName() );
-        else if ( destinationState == DEST_IS_FILE ) // (case 2)
-        {
-            m_error = ERR_IS_FILE;
-            emitResult();
-            return;
-        }
-        else // (case 3)
-        {
-            // otherwise dest is new name for toplevel dir
-            // so the destination exists, in fact, from now on.
-            // (This even works with other src urls in the list, since the
-            //  dir has effectively been created)
-            destinationState = DEST_IS_DIR;
-        }
-
-        // If moving,
-        // Before going for the full list+copy+del thing, try to rename
-        if ( m_mode == Move )
-        {
-            if ((srcurl.protocol() == m_currentDest.protocol()) &&
-                (srcurl.host() == m_currentDest.host()) &&
-                (srcurl.port() == m_currentDest.port()) &&
-                (srcurl.user() == m_currentDest.user()) &&
-                (srcurl.pass() == m_currentDest.pass()))
-            {
-                kdDebug(7007) << "This seems to be a suitable case for trying to rename the dir before copy+del" << endl;
-                state = STATE_RENAMING;
-                SimpleJob * newJob = KIO::rename( srcurl, m_currentDest, false /*no overwrite */);
-                Scheduler::scheduleJob(newJob);
-                addSubjob( newJob );
-                return;
-            }
-        }
-
-        startListing( srcurl );
-    }
-    else
-    {
-        kdDebug(7007) << " Source is a file (or a symlink), or we are linking -> no recursive listing " << endl;
-
-        kdDebug(7007) << "totalSize: " << (unsigned int) m_totalSize << endl;
-        // emit all signals for total numbers
-        emit totalSize( this, m_totalSize );
-        emit totalFiles( this, 1 );
-        emit totalDirs( this, 0 );
-
-        // Skip the "listing" stage and go directly copying the file
-        state = STATE_COPYING_FILES;
-        copyNextFile();
-    }
-}
 
 void CopyJob::startListing( const KURL & src )
 {
@@ -1797,12 +1761,13 @@ void CopyJob::startListing( const KURL & src )
 void CopyJob::skip( const KURL & sourceUrl )
 {
     // Check if this is one if toplevel sources
+    // IF yes, remove it from m_srcList, for a correct FilesRemoved() signal
     kdDebug(7007) << "CopyJob::skip: looking for " << sourceUrl.prettyURL() << endl;
-    KURL::List::Iterator sit = m_srcListCopy.find( sourceUrl );
-    if ( sit != m_srcListCopy.end() )
+    KURL::List::Iterator sit = m_srcList.find( sourceUrl );
+    if ( sit != m_srcList.end() )
     {
         kdDebug(7007) << "CopyJob::skip: removing " << sourceUrl.prettyURL() << " from list" << endl;
-        m_srcListCopy.remove( sit );
+        m_srcList.remove( sit );
     }
 }
 
@@ -1972,35 +1937,38 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
 
 void CopyJob::createNextDir()
 {
-    // Take first dir to create out of list
-    QValueList<CopyInfo>::Iterator it = dirs.begin();
-    bool bCreateDir = false; // get in the loop
-    QString dir = (*it).uDest.path();
-    // Is this URL on the skip list or the overwrite list ?
-    while( it != dirs.end() && !bCreateDir )
+    KURL udir;
+    if ( !dirs.isEmpty() )
     {
-        bCreateDir = true; // we'll create it if it's not in any list
+        // Take first dir to create out of list
+        QValueList<CopyInfo>::Iterator it = dirs.begin();
+        // Is this URL on the skip list or the overwrite list ?
+        while( it != dirs.end() && udir.isEmpty() )
+        {
+            QString dir = (*it).uDest.path();
+            bool bCreateDir = true; // we'll create it if it's not in any list
 
-        QStringList::Iterator sit = m_skipList.begin();
-        for( ; sit != m_skipList.end() && bCreateDir; sit++ )
-            // Is dir a subdirectory of *sit ?
-            if ( *sit == dir.left( (*sit).length() ) )
-                bCreateDir = false; // skip this dir
+            QStringList::Iterator sit = m_skipList.begin();
+            for( ; sit != m_skipList.end() && bCreateDir; sit++ )
+                // Is dir a subdirectory of *sit ?
+                if ( *sit == dir.left( (*sit).length() ) )
+                    bCreateDir = false; // skip this dir
 
-        if ( !bCreateDir ) {
-            dirs.remove( it );
-            it = dirs.begin();
+            if ( !bCreateDir ) {
+                dirs.remove( it );
+                it = dirs.begin();
+            } else
+                udir = (*it).uDest;
         }
     }
-    if ( bCreateDir ) // any dir to create, finally ?
+    if ( !udir.isEmpty() ) // any dir to create, finally ?
     {
         // Create the directory - with default permissions so that we can put files into it
         // TODO : change permissions once all is finished
-        KIO::SimpleJob *newjob = KIO::mkdir( (*it).uDest, -1 );
+        KIO::SimpleJob *newjob = KIO::mkdir( udir, -1 );
         Scheduler::scheduleJob(newjob);
 
-        //emit creatingDir( this, (*it).uDest );
-        m_currentDestURL=(*it).uDest;
+        m_currentDestURL = udir;
 
         addSubjob(newjob);
         return;
@@ -2085,7 +2053,11 @@ void CopyJob::slotResultCopyingFiles( Job * job )
         files.remove( it );
     }
     m_processedFiles++;
-    //emit processedFiles( this, m_processedFiles );
+
+    // clear processed size for last file and add it to overall processed size
+    m_processedSize += m_fileProcessedSize;
+    m_fileProcessedSize = 0;
+
     //kdDebug(7007) << files.count() << " files remaining" << endl;
     subjobs.remove( job );
     assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
@@ -2202,20 +2174,15 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
 
 void CopyJob::copyNextFile()
 {
+    bool bCopyFile = false;
     //kdDebug(7007) << "CopyJob::copyNextFile()" << endl;
-
-    // clear processed size for last file and add it to overall processed size
-    m_processedSize += m_fileProcessedSize;
-    m_fileProcessedSize = 0;
-
     // Take the first file in the list
     QValueList<CopyInfo>::Iterator it = files.begin();
-    bool bCopyFile = false; // get into the loop
-    QString destFile = (*it).uDest.path();
     // Is this URL on the skip list ?
     while (it != files.end() && !bCopyFile)
     {
         bCopyFile = true;
+        QString destFile = (*it).uDest.path();
 
         QStringList::Iterator sit = m_skipList.begin();
         for( ; sit != m_skipList.end() && bCopyFile; sit++ )
@@ -2233,6 +2200,7 @@ void CopyJob::copyNextFile()
     {
         // Do we set overwrite ?
         bool bOverwrite = m_bOverwriteAll; // yes if overwrite all
+        QString destFile = (*it).uDest.path();
         // or if on the overwrite list
         QStringList::Iterator sit = m_overwriteList.begin();
         for( ; sit != m_overwriteList.end() && !bOverwrite; sit++ )
@@ -2260,8 +2228,8 @@ void CopyJob::copyNextFile()
                 m_bCurrentOperationIsLink = true;
                 if (m_progressId)
                 {
-                   m_currentSrcURL=(*it).uSource;
-                   m_currentDestURL=(*it).uDest;
+                    m_currentSrcURL=(*it).uSource;
+                    m_currentDestURL=(*it).uDest;
                 };
                 //Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest ); // should be slotLinking perhaps
             } else {
@@ -2331,8 +2299,8 @@ void CopyJob::copyNextFile()
             //emit linking( this, (*it).linkDest, (*it).uDest );
             if (m_progressId)
             {
-               m_currentSrcURL=(*it).linkDest;
-               m_currentDestURL=(*it).uDest;
+                m_currentSrcURL=(*it).linkDest;
+                m_currentDestURL=(*it).uDest;
             };
             //Observer::self()->slotCopying( this, (*it).linkDest, (*it).uDest ); // should be slotLinking perhaps
             m_bCurrentOperationIsLink = true;
@@ -2346,8 +2314,8 @@ void CopyJob::copyNextFile()
             //emit moving( this, (*it).uSource, (*it).uDest );
             if (m_progressId)
             {
-               m_currentSrcURL=(*it).uSource;
-               m_currentDestURL=(*it).uDest;
+                m_currentSrcURL=(*it).uSource;
+                m_currentDestURL=(*it).uDest;
             };
             //Observer::self()->slotMoving( this, (*it).uSource, (*it).uDest );
         }
@@ -2366,11 +2334,11 @@ void CopyJob::copyNextFile()
             //emit copying( this, (*it).uSource, (*it).uDest );
             if (m_progressId)
             {
-               m_currentSrcURL=(*it).uSource;
-               m_currentDestURL=(*it).uDest;
+                m_currentSrcURL=(*it).uSource;
+                m_currentDestURL=(*it).uDest;
             };
             //if ( m_progressId ) // Did we get an ID from the observer ?
-                //Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest );
+            //Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest );
         }
         addSubjob(newjob);
         connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
@@ -2380,24 +2348,17 @@ void CopyJob::copyNextFile()
     }
     else
     {
-        if ( m_mode == Move ) // moving ? We need to delete dirs
-        {
-            kdDebug(7007) << "copyNextFile finished, deleting dirs" << endl;
-            state = STATE_DELETING_DIRS;
-            deleteNextDir();
-        } else {
-            // When we're done : move on to next src url
-            kdDebug(7007) << "copyNextFile finished, moving to next url" << endl;
-            m_srcList.remove(m_srcList.begin());
-            startNextJob();
-        }
+        // We're done
+        kdDebug(7007) << "copyNextFile finished" << endl;
+        deleteNextDir();
     }
 }
 
 void CopyJob::deleteNextDir()
 {
-    if ( !dirsToRemove.isEmpty() ) // some dirs to delete ?
+    if ( m_mode == Move && !dirsToRemove.isEmpty() ) // some dirs to delete ?
     {
+        state = STATE_DELETING_DIRS;
         // Take first dir to delete out of list - last ones first !
         KURL::List::Iterator it = dirsToRemove.fromLast();
         SimpleJob *job = KIO::rmdir( *it );
@@ -2405,10 +2366,22 @@ void CopyJob::deleteNextDir()
         dirsToRemove.remove(it);
         addSubjob( job );
     }
-    else // We have finished deleting
+    else
     {
-        m_srcList.remove(m_srcList.begin()); // done with this url
-        startNextJob();
+        // Finished - tell the world
+        KDirNotify_stub allDirNotify("*", "KDirNotify*");
+        KURL url( m_dest );
+        if ( destinationState != DEST_IS_DIR )
+            url.setPath( url.directory() );
+        kdDebug(7007) << "KDirNotify'ing FilesAdded " << url.prettyURL() << endl;
+        allDirNotify.FilesAdded( url );
+
+        if ( m_mode == Move && !m_srcList.isEmpty() )
+            allDirNotify.FilesRemoved( m_srcList );
+
+        if (m_reportTimer!=0)
+            m_reportTimer->stop();
+        emitResult();
     }
 }
 
@@ -2471,18 +2444,19 @@ void CopyJob::slotResult( Job *job )
         {
             bool err = job->error() != 0;
             subjobs.remove( job );
-            assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
+            assert ( subjobs.isEmpty() );
             if ( err )
             {
                 kdDebug(7007) << "Couldn't rename, starting listing, for copy and del" << endl;
-                startListing( *(m_srcList.begin()) );
+                startListing( *m_currentStatSrc );
             }
             else
             {
                 kdDebug(7007) << "Renaming succeeded, move on" << endl;
-                emit copyingDone( this, m_srcList.first(), m_currentDest, true, true );
-                m_srcList.remove(m_srcList.begin()); // done with this url
-                startNextJob(); // done
+                emit copyingDone( this, *m_currentStatSrc, m_currentDest, true, true );
+                dirs.remove( dirs.fromLast() );
+                ++m_currentStatSrc;
+                statNextSrc();
             }
         }
         break;
@@ -2496,15 +2470,10 @@ void CopyJob::slotResult( Job *job )
             }
 
             subjobs.remove( job );
-            assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
+            assert ( subjobs.isEmpty() );
 
-            // emit all signals for total numbers
-            emit totalSize( this, m_totalSize );
-            emit totalFiles( this, files.count() );
-            emit totalDirs( this, dirs.count() );
-
-            state = STATE_CREATING_DIRS;
-            createNextDir();
+            ++m_currentStatSrc;
+            statNextSrc();
             break;
         case STATE_CREATING_DIRS:
             slotResultCreatingDirs( job );
@@ -3166,7 +3135,7 @@ void CacheInfo::flush()
 
 void CacheInfo::touch()
 {
-    
+
 }
 void CacheInfo::setExpireDate(int);
 void CacheInfo::setExpireTimeout(int);

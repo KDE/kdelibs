@@ -745,11 +745,12 @@ namespace KIO {
         /**
          * The job is copying or moving a symbolic link, that points to target.
          * The new link is created in @p to. The existing one is/was in @p from.
+         * This signal is mainly for the Undo feature.
          */
         void copyingLinkDone( KIO::Job *, const KURL &from, const QString& target, const KURL& to );
 
     protected:
-        void startNextJob();
+        void statNextSrc();
 
         // Those aren't slots but submethods for slotResult.
         void slotResultStating( KIO::Job * job );
@@ -792,8 +793,8 @@ namespace KIO {
         QValueList<CopyInfo> files;
         QValueList<CopyInfo> dirs;
         KURL::List dirsToRemove;
-        KURL::List m_srcList; // is emptied while copying
-        KURL::List m_srcListCopy;
+        KURL::List m_srcList;
+        KURL::List::Iterator m_currentStatSrc;
         bool m_bCurrentSrcIsDir;
         bool m_bCurrentOperationIsLink;
         KURL m_dest;
