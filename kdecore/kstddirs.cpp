@@ -65,6 +65,11 @@ void KStandardDirs::addPrefix( QString dir )
     }
 }
 
+QString KStandardDirs::kfsstnd_prefixes()
+{
+   return prefixes.join(":");
+}
+
 bool KStandardDirs::addResourceType( const char *type,
 				     const QString& relativename )
 {

@@ -364,6 +364,11 @@ public:
 	 */
 	static QString kde_default(const char *type);
 
+        /**
+         * @internal (for use by sycoca only)
+         */
+        QString kfsstnd_prefixes();         
+
  private:
 
 	QString localkdedir() const;
