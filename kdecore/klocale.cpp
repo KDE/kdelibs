@@ -545,9 +545,9 @@ QString put_n_in(const QString &orig, unsigned long n)
 }
 
 #define EXPECT_LENGTH(x) \
-   if (forms.count() != x) \
+   if (forms.count() != x) { \
       kdError() << "translation of \"" << singular << "\" doesn't contain " << x << " different plural forms as expected\n"; \
-      return QString( "BROKEN TRANSLATION %1" ).arg( singular );
+      return QString( "BROKEN TRANSLATION %1" ).arg( singular ); }
 
 QString KLocale::translate( const char *singular, const char *plural,
                             unsigned long n ) const
