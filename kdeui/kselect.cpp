@@ -312,33 +312,38 @@ void KSelector::drawContents( QPainter * )
 
 void KSelector::drawArrow( QPainter *painter, bool show, const QPoint &pos )
 {
-	QPointArray array(3);
+  if ( show )
+  {
+    QPointArray array(3);
 
-	if ( show )
-	{
-		painter->setPen( QPen() );
-		painter->setBrush( QBrush( black ) );
-	}
-	else
-	{
-		painter->setPen( QPen( backgroundColor() ) );
-		painter->setBrush( backgroundColor() );
-	}
+    painter->setPen( QPen() );
+    painter->setBrush( QBrush( colorGroup().buttonText() ) );
+    if ( orientation() == Vertical )
+    {
+      array.setPoint( 0, pos.x()+0, pos.y()+0 );
+      array.setPoint( 1, pos.x()+5, pos.y()+5 );
+      array.setPoint( 2, pos.x()+5, pos.y()-5 );
+    }
+    else
+    {
+      array.setPoint( 0, pos.x()+0, pos.y()+0 );
+      array.setPoint( 1, pos.x()+5, pos.y()+5 );
+      array.setPoint( 2, pos.x()-5, pos.y()+5 );
+    }
 
-	if ( orientation() == Vertical )
-	{
-		array.setPoint( 0, pos.x()+0, pos.y()+0 );
-		array.setPoint( 1, pos.x()+5, pos.y()+5 );
-		array.setPoint( 2, pos.x()+5, pos.y()-5 );
-	}
-	else
-	{
-		array.setPoint( 0, pos.x()+0, pos.y()+0 );
-		array.setPoint( 1, pos.x()+5, pos.y()+5 );
-		array.setPoint( 2, pos.x()-5, pos.y()+5 );
-	}
-
-	painter->drawPolygon( array );
+    painter->drawPolygon( array );
+  } 
+  else 
+  {
+    if ( orientation() == Vertical )
+    {
+       repaint(pos.x(), pos.y()-5, 6, 11, true);
+    }
+    else
+    {
+       repaint(pos.x()-5, pos.y(), 11, 6, true);
+    }
+  }
 }
 
 //----------------------------------------------------------------------------
