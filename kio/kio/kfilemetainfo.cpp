@@ -265,9 +265,9 @@ void KFileMetaInfoItem::deref()
 class KFileMetaInfo::Data : public QShared
 {
 public:
-    Data(const QString& _path, uint _what)
+    Data(const KURL& _url, uint _what)
         : QShared(),
-          path(_path),
+          url(_url),
           what(_what),
           mimeTypeInfo( 0L )
     {}
@@ -275,7 +275,7 @@ public:
     // wee use this one for the streaming operators
     Data() {};
 
-    QString                           path;
+    KURL                              url;
     uint                              what;
     QMap<QString, KFileMetaInfoGroup> groups;
     const KFileMimeTypeInfo*          mimeTypeInfo;
@@ -288,13 +288,27 @@ public:
 
 KFileMetaInfo::KFileMetaInfo( const QString& path, const QString& mimeType,
                               uint what )
-    : d(new Data( path, what ) )
 {
-//    kdDebug(7033) << "KFileMetaInfo( " << path << ", " << mimeType << ", what )\n";
+    KURL u;
+
+    u.setPath(path);
+    init(u, mimeType, what);
+}
+
+KFileMetaInfo::KFileMetaInfo( const KURL& url, const QString& mimeType,
+                              uint what )
+{
+    init(url, mimeType, what);
+}
+
+void KFileMetaInfo::init( const KURL& url, const QString& mimeType,
+                          uint what )
+{
+    d = new Data( url, what );
 
     QString mT;
     if (mimeType.isEmpty())
-        mT = KMimeType::findByPath(path)->name();
+        mT = KMimeType::findByURL(url)->name();
     else
         mT = mimeType;
 
@@ -683,7 +697,12 @@ KFileMetaInfoGroup KFileMetaInfo::appendGroup(const QString& name)
 
 QString KFileMetaInfo::path() const
 {
-    return d->path;
+    return d->url.isLocalFile() ? d->url.path() : QString::null;
+}
+
+KURL KFileMetaInfo::url() const
+{
+    return d->url;
 }
 
 void KFileMetaInfo::ref()
@@ -699,7 +718,7 @@ void KFileMetaInfo::deref()
     // null is 0L when it hasn't been initialized and d is never 0L.
     if ((d != Data::null) && d->deref())
     {
-//        kdDebug(7033) << "metainfo object for " << d->path << " is finally deleted\n";
+//        kdDebug(7033) << "metainfo object for " << d->url.path << " is finally deleted\n";
         delete d;
     }
 
@@ -1649,7 +1668,7 @@ QDataStream& operator <<(QDataStream& s, const KFileMetaInfo& info )
     s << isValid;
     if (isValid)
     {
-        s << d->path
+        s << d->url
           << d->what
           << d->groups
           << d->mimeTypeInfo->mimeType();
@@ -1675,7 +1694,7 @@ QDataStream& operator >>(QDataStream& s, KFileMetaInfo& info )
     info.d = new KFileMetaInfo::Data();
     info.ref();
 
-    s >> info.d->path
+    s >> info.d->url
       >> info.d->what
       >> info.d->groups
       >> mimeType;

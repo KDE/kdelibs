@@ -30,6 +30,7 @@
 #include <qvariant.h>
 #include <qobject.h>
 #include <qstring.h>
+#include <kurl.h>
 
 #undef m_unit
 
@@ -964,8 +965,21 @@ public:
      *              hint to the plugin what information is desired. The plugin
      *              may still return more items.
      *
+     * NOTE: This version will ONLY work for LOCAL (file:/) files.
+     *
      **/
     KFileMetaInfo( const QString& path,
+                   const QString& mimeType = QString::null,
+                   uint what = Fastest);
+
+   /**
+    * Another constructor
+    *
+    * Similar to the above, but takes a URL so that meta-data may be retreived
+    * over other protocols (ftp, etc.)
+    *
+    **/
+    KFileMetaInfo( const KURL& url,
                    const QString& mimeType = QString::null,
                    uint what = Fastest);
 
@@ -1154,10 +1168,16 @@ public:
     QString mimeType() const;
 
     /**
-     * Returns the path of file.
-     * @return the file's path
+     * Returns the path of file - or QString::null if file is non-local
+     * @return the file's path - or QString::null if file is non-local
      */
     QString path() const;
+
+    /**
+     * Returns the url of file
+     * @return the file's url
+     */
+    KURL url() const;
 
     friend QDataStream& operator >>(QDataStream& s, KFileMetaInfo& );
     friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfo& );
@@ -1180,6 +1200,10 @@ protected:
 private:
     KFileMetaInfoItem findEditableItem( KFileMetaInfoGroup& group,
                                         const QString& key );
+
+    void init( const KURL& url,
+               const QString& mimeType = QString::null,
+               uint what = Fastest);
 };
 
 ///////////////////////////////////////////////////////////////////
