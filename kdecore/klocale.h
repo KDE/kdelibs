@@ -393,6 +393,15 @@ public:
 #endif
 
   /**
+   * Use this to determine whether nouns are declined in
+   * locale's language. This property should remain
+   * read-only (no setter function)
+   *
+   * @return If nouns are declined
+   */
+   bool nounDeclension() const;
+
+  /**
    * Returns a string formatted to the current locale's conventions
    * regarding dates.
    *
@@ -402,6 +411,14 @@ public:
    * @return The date as a string
    */
   QString formatDate(const QDate &pDate, bool shortFormat = false) const;
+
+  /**
+   * Use this to determine whether in dates a possessive form of month
+   * name is preferred ("of January" rather than "January")
+   *
+   * @return If possessive form should be used
+  */
+  bool dateMonthNamePossessive() const;
 
   /**
    * Returns a string formatted to the current locale's conventions
@@ -449,6 +466,18 @@ public:
    * @return The name of the month
    */
   QString monthName(int i, bool shortName = false) const;
+
+  /**
+   * Returns a string containing the possessive form of the month name.
+   * ("of January", "of February", etc.)
+   * It's needed in long format dates in some languages.
+   *
+   * @param i the month number of the year starting at 1/January.
+   * @param shortName we will return the short version of the string.
+   *
+   * @return The possessive form of the name of the month
+  */
+  QString monthNamePossessive(int i, bool shortName = false) const;
 
   /**
    * Returns a string containing the name of the week day.
@@ -628,6 +657,12 @@ public:
    * @param format The new short date format
    */
   void setDateFormatShort(const QString & format);
+  /**
+   * Changes the form of month name used in dates.
+   *
+   * @param possessive True if possessive forms should be used
+   */
+  void setDateMonthNamePossessive(bool possessive);
   /**
    * Changes the current time format.
    *

@@ -51,6 +51,8 @@ class KLocalePrivate
 public:
   int weekStartDay;
   int plural_form;
+  bool nounDeclension;
+  bool dateMonthNamePossessive;
   QStringList languageList;
   QValueList<KCatalogue> catalogues;
   QString encoding;
@@ -306,10 +308,15 @@ void KLocale::initFormat()
   readConfigNumEntry("NegativeMonetarySignPosition", (int)ParensAround,
 		     m_negativeMonetarySignPosition, SignPosition);
 
+  //Grammatical
+  readConfigBoolEntry("NounDeclension", false, d->nounDeclension);
+
   // Date and time
   readConfigEntry("TimeFormat", "%H:%M:%S", m_timeFormat);
   readConfigEntry("DateFormat", "%A %d %B %Y", m_dateFormat);
   readConfigEntry("DateFormatShort", "%Y-%m-%d", m_dateFormatShort);
+  readConfigBoolEntry("DateMonthNamePossessive", false,
+		      d->dateMonthNamePossessive);
   readConfigNumEntry("WeekStartDay", 1, d->weekStartDay, int);
 
   // other
@@ -482,6 +489,44 @@ QString KLocale::monthName(int i, bool shortName) const
       case 10:  return translate("October");
       case 11:  return translate("November");
       case 12:  return translate("December");
+      }
+
+  return QString::null;
+}
+
+QString KLocale::monthNamePossessive(int i, bool shortName) const
+{
+  if ( shortName )
+    switch ( i )
+      {
+      case 1:   return translate("of January", "of Jan");
+      case 2:   return translate("of February", "of Feb");
+      case 3:   return translate("of March", "of Mar");
+      case 4:   return translate("of April", "of Apr");
+      case 5:   return translate("of May short", "of May");
+      case 6:   return translate("of June", "of Jun");
+      case 7:   return translate("of July", "of Jul");
+      case 8:   return translate("of August", "of Aug");
+      case 9:   return translate("of September", "of Sep");
+      case 10:  return translate("of October", "of Oct");
+      case 11:  return translate("of November", "of Nov");
+      case 12:  return translate("of December", "of Dec");
+      }
+  else
+    switch (i)
+      {
+      case 1:   return translate("of January");
+      case 2:   return translate("of February");
+      case 3:   return translate("of March");
+      case 4:   return translate("of April");
+      case 5:   return translate("of May long", "of May");
+      case 6:   return translate("of June");
+      case 7:   return translate("of July");
+      case 8:   return translate("of August");
+      case 9:   return translate("of September");
+      case 10:  return translate("of October");
+      case 11:  return translate("of November");
+      case 12:  return translate("of December");
       }
 
   return QString::null;
@@ -812,6 +857,18 @@ QString KLocale::translateQt( const char *context, const char *source,
   return QString::null;
 }
 
+bool KLocale::nounDeclension() const
+{
+  doFormatInit();
+  return d->nounDeclension;
+}
+
+bool KLocale::dateMonthNamePossessive() const
+{
+  doFormatInit();
+  return d->dateMonthNamePossessive;
+}
+
 int KLocale::weekStartDay() const
 {
   doFormatInit();
@@ -1043,10 +1100,16 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
 	      put_it_in( buffer, index, pDate.month() );
 	      break;
 	    case 'b':
-	      put_it_in( buffer, index, monthName(pDate.month(), true) );
+	      if (d->nounDeclension && d->dateMonthNamePossessive)
+		put_it_in( buffer, index, monthNamePossessive(pDate.month(), true) );
+	      else
+		put_it_in( buffer, index, monthName(pDate.month(), true) );
 	      break;
 	    case 'B':
-	      put_it_in( buffer, index, monthName(pDate.month(), false) );
+	      if (d->nounDeclension && d->dateMonthNamePossessive)
+		put_it_in( buffer, index, monthNamePossessive(pDate.month(), false) );
+	      else
+		put_it_in( buffer, index, monthName(pDate.month(), false) );
 	      break;
 	    case 'd':
 	      put_it_in( buffer, index, pDate.day() );
@@ -1292,6 +1355,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
     }
     else
     {
+      int j;
       // remove space at the begining
       if (str.length() > strpos && str.at(strpos).isSpace())
         strpos++;
@@ -1303,7 +1367,8 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 	case 'A':
 
           error = true;
-	  for (int j = 1; j < 8; j++) {
+	  j = 1;
+	  while (error && (j < 8)) {
 	    QString s = weekDayName(j, c == 'a').lower();
 	    int len = s.length();
 	    if (str.mid(strpos, len) == s)
@@ -1311,13 +1376,28 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 	      strpos += len;
               error = false;
             }
+	    j++;
 	  }
 	  break;
 	case 'b':
 	case 'B':
 
           error = true;
-	  for (int j = 1; j < 13; j++) {
+	  if (d->nounDeclension && d->dateMonthNamePossessive) {
+	    j = 1;
+	    while (error && (j < 13)) {
+	      QString s = monthNamePossessive(j, c == 'b').lower();
+	      int len = s.length();
+	      if (str.mid(strpos, len) == s) {
+	        month = j;
+	        strpos += len;
+                error = false;
+	      }
+	      j++;
+	    }
+	  }
+	  j = 1;
+	  while (error && (j < 13)) {
 	    QString s = monthName(j, c == 'b').lower();
 	    int len = s.length();
 	    if (str.mid(strpos, len) == s) {
@@ -1325,6 +1405,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 	      strpos += len;
               error = false;
 	    }
+	    j++;
 	  }
 	  break;
 	case 'd':
@@ -1729,6 +1810,12 @@ void KLocale::setDateFormatShort(const QString & format)
 {
   doFormatInit();
   m_dateFormatShort = format.stripWhiteSpace();
+}
+
+void KLocale::setDateMonthNamePossessive(bool possessive)
+{
+  doFormatInit();
+  d->dateMonthNamePossessive = possessive;
 }
 
 void KLocale::setTimeFormat(const QString & format)
