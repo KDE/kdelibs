@@ -851,7 +851,7 @@ void RenderFlow::layoutInlineChildren()
     //kdDebug(6040) << "height = " << m_height <<endl;
 }
 
-#if 1
+#if 0
 BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 {
     BidiIterator lBreak = start;
