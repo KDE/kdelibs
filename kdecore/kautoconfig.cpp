@@ -133,6 +133,7 @@ bool KAutoConfig::retrieveSettings(bool trackChanges){
     changedMap.insert("QTextBrowser", SIGNAL(sourceChanged(const QString &)));
     changedMap.insert("QMultiLineEdit", SIGNAL(textChanged()));
     changedMap.insert("QListBox", SIGNAL(selectionChanged()));
+    changedMap.insert("QTabWidget", SIGNAL(currentChanged(QWidget *)));
 
     // KDE
     changedMap.insert( "KComboBox", SIGNAL(activated (int)));
