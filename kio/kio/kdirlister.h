@@ -422,6 +422,7 @@ protected:
   virtual void addNewItems( const KFileItemList& items );
   virtual void addRefreshItem( const KFileItem *item );
   virtual void emitItems();
+  virtual void emitDeleteItem( KFileItem *item );
 
   class KDirListerPrivate;
   KDirListerPrivate *d;

@@ -164,6 +164,7 @@ private slots:
   void slotUpdateResult( KIO::Job *job );
   
 private:
+  bool killJob( const QString &_url );
   void deleteUnmarkedItems( QPtrList<KDirLister> *, KFileItemList *, bool really );
   void processPendingUpdates();
 
