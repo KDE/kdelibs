@@ -1,3 +1,7 @@
+1998-12-07  Alex Zepeda  <garbanzo@hooked.net>
+
+	* kdebug.cpp: fix warnings.  Thanks gis.
+
 1998-12-05  Alex Zepeda  <garbanzo@hooked.net>
 
 	* kapp.h: Moved the Log tag thingy to the end, and fixed a few

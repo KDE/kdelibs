@@ -60,7 +60,7 @@ QString getDescrFromNum(unsigned short _num)
   if (!KDebugCache)
       KDebugCache = new QList<KDebugEntry>;
 
-  KDebugEntry *ent;
+  KDebugEntry *ent=0;
   for (ent=KDebugCache->first(); ent != 0; ent=KDebugCache->next()) {
     if (ent->number == _num) {
       return ent->descr.copy();
