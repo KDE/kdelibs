@@ -65,6 +65,8 @@ class KateBookmarks : public QObject
     KAction*                     m_goNext;
     KAction*                     m_goPrevious;
     Sorting                      m_sorting;
+
+    int _tries; // menu connection hack
 };
 
 #endif // _KateBookmarks_H_

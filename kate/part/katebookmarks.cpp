@@ -126,10 +126,17 @@ void KateBookmarks::connectMenuAndDisConnectAgain()
       m_view->removeEventFilter( this );
       return;
     }
-
     // FUCKY-SUCKY -- try later
+    if ( _tries > 3 ) // give up
+    {
+      m_view->removeEventFilter( this );
+      return;
+    }
+
     if ( m_view->isVisible() )
       QTimer::singleShot( 0, this, SLOT(connectMenuAndDisConnectAgain()));
+
+    _tries++;
 }
 
 void KateBookmarks::toggleBookmark ()
