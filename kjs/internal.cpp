@@ -315,8 +315,8 @@ AnonymousFunction::AnonymousFunction()
   /* TODO */
 }
 
-DeclaredFunctionImp::DeclaredFunctionImp(StatementNode *b)
-  : block(b)
+DeclaredFunctionImp::DeclaredFunctionImp(const UString &n, StatementNode *b)
+  : ConstructorImp(n), block(b)
 {
 }
 

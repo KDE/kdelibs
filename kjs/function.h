@@ -46,6 +46,7 @@ namespace KJS {
     friend Function;
   public:
     FunctionImp();
+    FunctionImp(const UString &n);
     virtual ~FunctionImp();
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -56,6 +57,7 @@ namespace KJS {
     void addParameter(const UString &n);
     void processParameters(const List *);
     KJSO executeCall(Imp *thisV, const List *args);
+    UString name() const;
   protected:
     UString ident;
     FunctionAttribute attr;
@@ -68,6 +70,7 @@ namespace KJS {
   class InternalFunctionImp : public FunctionImp {
   public:
     InternalFunctionImp();
+    InternalFunctionImp(const UString &n);
     virtual ~InternalFunctionImp() { }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
@@ -94,7 +97,9 @@ namespace KJS {
   class ConstructorImp : public InternalFunctionImp {
   public:
     ConstructorImp();
+    ConstructorImp(const UString &n);
     ConstructorImp(const KJSO &, int);
+    ConstructorImp(const UString &n, const KJSO &p, int len);
     virtual ~ConstructorImp();
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;

@@ -204,7 +204,7 @@ namespace KJS {
 
   class DeclaredFunctionImp : public ConstructorImp {
   public:
-    DeclaredFunctionImp(StatementNode *b);
+    DeclaredFunctionImp(const UString &n, StatementNode *b);
     Completion execute(const List &);
     Object construct(const List &);
     CodeType codeType() const { return FunctionCode; }

@@ -1011,7 +1011,7 @@ Completion FinallyNode::execute()
 // ECMA 13
 void FuncDeclNode::processFuncDecl()
 {
-  FunctionImp *fimp = new DeclaredFunctionImp(block);
+  FunctionImp *fimp = new DeclaredFunctionImp(ident, block);
 
   for(ParameterNode *p = param; p != 0L; p = p->nextParam())
     fimp->addParameter(p->ident());

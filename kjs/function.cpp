@@ -53,6 +53,11 @@ FunctionImp::FunctionImp()
 {
 }
 
+FunctionImp::FunctionImp(const UString &n)
+  : ObjectImp(/*TODO*/BooleanClass), ident(n), param(0L)
+{
+}
+
 FunctionImp::~FunctionImp()
 {
   delete param;
@@ -116,7 +121,17 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
     return Undefined();
 }
 
+UString FunctionImp::name() const
+{
+  return ident;
+}
+
 InternalFunctionImp::InternalFunctionImp()
+{
+}
+
+InternalFunctionImp::InternalFunctionImp(const UString &n)
+  : FunctionImp(n)
 {
 }
 
@@ -131,7 +146,20 @@ ConstructorImp::ConstructorImp() {
   put("length", Number(1), DontEnum);
 }
 
+ConstructorImp::ConstructorImp(const UString &n)
+  : InternalFunctionImp(n)
+{
+}
+
 ConstructorImp::ConstructorImp(const KJSO &p, int len)
+{
+  setPrototype(p);
+  // TODO ???  put("constructor", *this);
+  put("length", Number(len), DontEnum);
+}
+
+ConstructorImp::ConstructorImp(const UString &n, const KJSO &p, int len)
+  : InternalFunctionImp(n)
 {
   setPrototype(p);
   // TODO ???  put("constructor", *this);
