@@ -128,12 +128,16 @@ signals:
 protected:
 	void valueChange();
 	void rangeChange();
-	void styleChange(GUIStyle);
-	void drawContents(QPainter *);
+	void styleChange( GUIStyle );
+	void paletteChange( const QPalette & );
+	void drawContents( QPainter * );
 	
 private:
 	QPixmap		*bar_pixmap;
 	QColor		bar_color;
+	QColor		bar_text_color;
+	QColor		text_color;
+	QRect fr;
 	BarStyle	bar_style;
 	Orientation orient;
 	bool		text_enabled;

@@ -9,7 +9,7 @@
 #include <qpainter.h>
 #include <qstring.h>
 #include <qpixmap.h>
-#include <qapp.h>
+#include <kapp.h>
 
 KProgress::KProgress(QWidget *parent, const char *name)
 	: QFrame(parent, name),
@@ -47,13 +47,15 @@ void KProgress::advance(int offset)
 
 void KProgress::initialize()
 {
-	setFrameStyle(QFrame::Panel | QFrame::Sunken);
-	setLineWidth(2);
-	setMidLineWidth(2);
+	//setFrameStyle(QFrame::Panel | QFrame::Sunken);
+	//setLineWidth(2);
+	//setMidLineWidth(2);
 	bar_pixmap = 0;
 	bar_style = Solid;
-	bar_color = QApplication::winStyleHighlightColor();
-	setBackgroundColor(white);
+	bar_color = kapp->selectColor;
+	bar_text_color = kapp->selectTextColor;
+	text_color = kapp->textColor;
+	setBackgroundColor( kapp->windowColor );
 	setFont(QFont("helvetica", 12, QFont::Normal));
 	text_enabled = TRUE;
 	adjustStyle();
@@ -163,26 +165,40 @@ void KProgress::adjustStyle()
 		case MotifStyle:
 		default:
 			setFrameStyle(QFrame::Panel | QFrame::Sunken);
+			setLineWidth( 2 );
 			break;
 	}
 	update();
+}
+
+void KProgress::paletteChange( const QPalette & )
+{
+	bar_color = kapp->selectColor;
+	bar_text_color = kapp->selectTextColor;
+	text_color = kapp->textColor;
+	setBackgroundColor( kapp->windowColor );
 }
 		
 void KProgress::drawText(QPainter *p)
 {
 	QRect r(contentsRect());
-	QColor c(bar_color.rgb() ^ backgroundColor().rgb());
+	//QColor c(bar_color.rgb() ^ backgroundColor().rgb());
 	QString s;
 	
 	s.sprintf("%i%%", recalcValue(100));
-	p->setPen(c);
-	p->setRasterOp(XorROP);
+	p->setPen(text_color);
+	//p->setRasterOp(XorROP);
 	p->drawText(r, AlignCenter, s);
+	p->setClipRegion( fr );
+	p->setPen(bar_text_color);
+	p->drawText(r, AlignCenter, s);
+	
 }
 
 void KProgress::drawContents(QPainter *p)
 {
-	QRect cr = contentsRect(), fr = cr, er = cr;
+	QRect cr = contentsRect(), er = cr;
+	fr = cr;
 	QBrush fb(bar_color), eb(backgroundColor());
 
 	if (bar_pixmap)
