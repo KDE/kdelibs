@@ -75,6 +75,15 @@ class KStartupInfo
 	 * @param name the name of the QObject (can be 0 for no name)
 	 */
         KStartupInfo( bool clean_on_cantdetect, QObject* parent = 0, const char* name = 0 );
+        /**
+         * @overload
+         * This constructor allows disabling the usage of KWinModule, which is
+         * internally used for detecting new application windows. With KWinModule
+         * disabled, checkStartup() must be called in order to check newly
+         * mapped windows.
+         */
+        KStartupInfo( bool clean_on_cantdetect, bool disable_kwinmodule,
+            QObject* parent, const char* name );
         virtual ~KStartupInfo();
 	/**
 	 * Sends given notification data about started application
@@ -183,7 +192,8 @@ class KStartupInfo
         enum startup_t { NoMatch, Match, CantDetect };
 	/**
 	 * Checks if the given windows matches any existing startup notification. If yes,
-	 * the startup notification is removed.
+	 * the startup notification is removed. Prevents emitting gotRemoveStartup()
+         * for the window if the window matches.
 	 * @param w the window id to check
 	 * @return the result of the operation
 	 */
@@ -191,6 +201,7 @@ class KStartupInfo
 	/**
 	 * Checks if the given windows matches any existing startup notification, and
 	 * if yes, returns the identification in id, and removes the startup notification.
+         * Prevents emitting gotRemoveStartup() for the window if the window matches.
 	 * @param w the window id to check
 	 * @param id if found, the id of the startup notification will be written here
 	 * @return the result of the operation
@@ -199,7 +210,8 @@ class KStartupInfo
 	/**
 	 * Checks if the given windows matches any existing startup notification, and
 	 * if yes, returns the notification data in data, and removes the startup
-	 * notification.
+	 * notification. Prevents emitting gotRemoveStartup() for the window
+         * if the window matches.
 	 * @param w the window id to check
 	 * @param data if found, the data of the startup notification will be written here
 	 * @return the result of the operation
@@ -208,7 +220,8 @@ class KStartupInfo
 	/**
 	 * Checks if the given windows matches any existing startup notification, and
 	 * if yes, returns the identification in id and notification data in data,
-	 * and removes the startup notification.
+	 * and removes the startup notification. Prevents emitting gotRemoveStartup()
+         * for the window if the window matches.
 	 * @param w the window id to check
 	 * @param id if found, the id of the startup notification will be written here
 	 * @param data if found, the data of the startup notification will be written here
@@ -266,6 +279,7 @@ class KStartupInfo
         void window_added( WId w );
 	void slot_window_added( WId w );
     private:
+        void init( bool disable_kwinmodule_P );
         friend class KStartupInfoPrivate;
         void got_startup_info( const QString& msg_P, bool update_only_P );
         void got_remove_startup_info( const QString& msg_P );

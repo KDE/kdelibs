@@ -103,13 +103,31 @@ KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P, const
     : QObject( parent_P, name_P ),
         clean_on_cantdetect( clean_on_cantdetect_P ), timeout( 60 ), d(0L)
     {
+    init( false );
+    }
+
+KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, bool disable_kwinmodule_P,
+    QObject* parent_P, const char* name_P )
+    : QObject( parent_P, name_P ),
+        clean_on_cantdetect( clean_on_cantdetect_P ), timeout( 60 ), d(0L)
+    {
+    init( disable_kwinmodule_P );
+    }
+
+void KStartupInfo::init( bool disable_kwinmodule_P )
+    {
     if (!KApplication::kApplication()) return;
     if (!KApplication::kApplication()->getDisplay()) return;
 
     d = new KStartupInfoPrivate;
-    d->wm_module = new KWinModule( this );
-    connect( d->wm_module, SIGNAL( windowAdded( WId )), SLOT( slot_window_added( WId )));
-    connect( d->wm_module, SIGNAL( systemTrayWindowAdded( WId )), SLOT( slot_window_added( WId )));
+    if( !disable_kwinmodule_P )
+        {
+        d->wm_module = new KWinModule( this );
+        connect( d->wm_module, SIGNAL( windowAdded( WId )), SLOT( slot_window_added( WId )));
+        connect( d->wm_module, SIGNAL( systemTrayWindowAdded( WId )), SLOT( slot_window_added( WId )));
+        }
+    else
+        d->wm_module = NULL;
     connect( &d->msgs, SIGNAL( gotMessage( const QString& )), SLOT( got_message( const QString& )));
     connect( &d->msgs_2, SIGNAL( gotMessage( const QString& )), SLOT( got_message( const QString& )));
     d->cleanup = new QTimer( this );
