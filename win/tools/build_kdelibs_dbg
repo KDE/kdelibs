@@ -51,6 +51,10 @@ done
 cd kdewidgets
 qmake makekdewidgets.pro && $make clean && $make || exit 1
 qmake && $make clean && $make || exit 1
+
+# copy kdewidgets plugin for Qt Designer
+cp $KDEDIR/lib/kde3/plugins/designer/kdewidgets.dll $QTDIR/plugins/designer/
+
 cd $pwd
 
 cd kded
