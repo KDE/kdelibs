@@ -23,6 +23,8 @@
 #include <qfont.h>
 #include <unistd.h>
 
+#include <kdeversion.h>
+
 KURLDrag::KURLDrag( const KURL::List &urls, QWidget* dragSource, const char * name )
     : QUriDrag(dragSource, name), m_metaData()
 {
