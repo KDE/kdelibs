@@ -22,6 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
+#include <qpainter.h>
 #include <qvaluelist.h>
 
 #include <kwin.h>
@@ -32,6 +33,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <netwm.h>
 #endif
 #include <kapplication.h>
+#include <kstyle.h>
 #include <dcopclient.h>
 
 #undef Bool
@@ -64,7 +66,64 @@ int NameSortedInfoList::compareItems( QPtrCollection::Item s1, QPtrCollection::I
     return title1.compare(title2);
 #endif
 }
+
+class WindowListDesktopMenuItem : public QCustomMenuItem
+{
+public:
+    WindowListDesktopMenuItem(const QString &name, const QFont &font) : 
+        QCustomMenuItem(),
+        m_desktopName(name),
+        m_font(font)
+    {
+        m_font.setBold(true);
+    }
+
+    bool fullSpan () const { return true; }
+
+    void paint(QPainter* p, const QColorGroup& cg, 
+               bool /* act */, bool /*enabled*/, 
+               int x, int y, int w, int h)
+    {
+        p->save();
+        QRect r(x, y, w, h);
+        kapp->style().drawPrimitive(QStyle::PE_HeaderSection, 
+                                    p, r, cg);
+
+        if (!m_desktopName.isEmpty())
+        {
+            p->setPen(cg.text());
+            p->setFont(m_font);
+            p->drawText(x, y, w, h,
+                        AlignCenter | SingleLine, 
+                        m_desktopName);
+        }
+
+        p->setPen(cg.highlight());
+        p->drawLine(0, 0, r.right(), 0);
+        p->restore();
+    }
+
+    void setFont(const QFont &font)
+    {
+        m_font = font;
+        m_font.setBold(true);
+    }
+
+    QSize sizeHint()
+    {
+      QSize size = QFontMetrics(m_font).size(AlignHCenter, m_desktopName);
+      size.setHeight(size.height() + 
+                     (kapp->style().pixelMetric(QStyle::PM_DefaultFrameWidth) * 2 + 1));
+      return size;
+    }
+
+  private:
+    QString m_desktopName;
+    QFont m_font;
+};
+
 } // namespace
+
 
 KWindowListMenu::KWindowListMenu(QWidget *parent, const char *name)
   : KPopupMenu(parent, name)
@@ -103,7 +162,10 @@ void KWindowListMenu::init()
 
     for (d = 1; d <= nd; d++) {
 	if (nd > 1)
-	    insertItem( kwin_module->desktopName( d ), 1000 + d);
+        {
+	    insertItem(new WindowListDesktopMenuItem(kwin_module->desktopName( d ), 
+                       font()), 1000 + d);
+        }
 
 	int items = 0;
 
