@@ -39,6 +39,7 @@
 using namespace khtml;
 
 #include <kurl.h>
+#include <kstringhandler.h>
 #include <kio/job.h>
 
 #include <kdebug.h>
@@ -262,7 +263,7 @@ void HTMLMetaElementImpl::attach()
         if (pos == -1) // There can be no url (David)
         {
             bool ok = false;
-            int delay;
+            int delay = 0;
             if(!_content.isNull())
                 delay = _content.implementation()->toInt(&ok);
 //             kdDebug( ) << "delay = " << delay << " ok = " << ok << endl;
@@ -454,6 +455,7 @@ void HTMLTitleElementImpl::setTitle()
     TextImpl *t = static_cast<TextImpl *>(_first);
     QString s = t->data().string();
     s.compose();
+    s = KStringHandler::csqueeze( s.visual(), 128 );
 
     HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(ownerDocument());
     if ( !d->view()->part()->parentPart() )
