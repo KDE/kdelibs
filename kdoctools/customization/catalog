@@ -1,7 +1,7 @@
 --
-Recommended catalogue for KDE DocBook
+Recommended catalogue for KDE DocBook XML
 
-Copyright (C) 1999-2001 Frederik Fouvry
+Copyright (C) 2001 Frederik Fouvry
  
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,62 +22,29 @@ Send suggestions, comments, etc. to Frederik Fouvry
 --
 
 OVERRIDE YES
-SGMLDECL "kde.dcl"
+SGMLDECL "xml.soc"
 
 			    -- DocBook --
 
-PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN"
-       "dtd/kde.dtd"
-PUBLIC "-//KDE//DTD DocBook V4.1-Based Variant V1.0//EN"
-       "dtd/kde-next.dtd"
 PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
        "dtd/kdex.dtd"
 -- This is to work round a bug in the docbook tools --
 PUBLIC "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN"
        "dtd/kdex.dtd"
 -- --
-PUBLIC "+//IDN kde.org//DTD DocBook V4.1-Based Variant V1.0//EN"
-       "dtd/kde-next.dtd"
-PUBLIC "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V2.0//EN"
-       "dtd/kde-rdbhier2.elements"
-PUBLIC "-//KDE//ELEMENTS DocBook XML Hierarchy Redeclarations 2 V2.0//EN"
+PUBLIC "-//KDE//ELEMENTS DocBook XML Hierarchy Redeclarations 2 V1.0//EN"
        "dtd/kdex-rdbhier2.elements"
-PUBLIC "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN"
-       "dtd/kde-rdbhier2.elements"
-PUBLIC "-//KDE//ELEMENTS DocBook Pool Redeclarations V2.0//EN"
-       "dtd/kde-rdbpool.elements"
-PUBLIC "-//KDE//ELEMENTS DocBook XML Pool Redeclarations V2.0//EN"
+PUBLIC "-//KDE//ELEMENTS DocBook XML Pool Redeclarations V1.0//EN"
        "dtd/kdex-rdbpool.elements"
-PUBLIC "-//KDE//ELEMENTS DocBook Pool Redeclarations V1.0//EN"
-       "dtd/kde-rdbpool.elements"
-PUBLIC "-//KDE//ENTITIES DocBook General Entity Declarations V1.0//EN"
-       "entities/kde-genent.entities"
-PUBLIC "-//KDE//ENTITIES DocBook General Entity Declarations V2.0//EN"
-       "entities/kde-genent.entities"
-PUBLIC "-//KDE//ENTITIES DocBook XML General Entity Declarations V2.0//EN"
+PUBLIC "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.0//EN"
        "entities/kdex-genent.entities"
-PUBLIC "-//KDE//ELEMENTS DocBook XML Modifications V2.0//EN"
+PUBLIC "-//KDE//ELEMENTS DocBook XML Modifications V1.0//EN"
        "dtd/kdex-modifications.elements"
 
 		      -- General KDE Entities --
 
-PUBLIC "-//KDE//ENTITIES Documentation V1.0//EN"
-       "entities/kde-prologue.entities"
-PUBLIC "-//KDE//ENTITIES Documentation V2.0//EN"
-       "entities/kde-prologue.entities"
 PUBLIC "-//KDE//ENTITIES DocBook XML Localisation Entity Declarations V2.0//EN"
        "entities/kdex-l10n.entities"
-PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN"
-       "entities/kde-prologue.entities"
-PUBLIC "-//KDE//ENTITIES Application-Variable Entities V2.0//EN"
-       "entities/kde-prologue.entities"
-
-		  -- DocBook Modular Style Sheets --
-
-PUBLIC "-//KDE//DOCUMENT Style Sheet V1.0//EN"
-       "stylesheets/kde.dsl"
-PUBLIC "-//KDE//ENTITIES Localisation Style Sheet Entities//EN"
-       "stylesheets/kde-l10n.entities"
 
 		     -- Various external files --
 
