@@ -8,5 +8,5 @@
     value for the character (e.g. \U-00F3).
     Let us know should you know of other encodings that work.
  -->
-<!ENTITY Default "Default">
-<!ENTITY Chinese "Chinese">
+<!ENTITY Default "Ä¬ÈÏ">
+<!ENTITY Chinese "ÖÐÎÄ">

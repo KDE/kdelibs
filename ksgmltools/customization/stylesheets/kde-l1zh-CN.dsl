@@ -29,7 +29,7 @@
     <STYLE-SPECIFICATION-BODY>
 
 (define %kde-gentext-zh-CN-home-url% "http://www.kde.org/")
-(define %kde-gentext-zh-CN-logo-alt% "The K Desktop Environment")
+(define %kde-gentext-zh-CN-logo-alt% "KDE ×ÀÃæ»·¾³")
 (define %kde-gentext-zh-CN-encoding% "gb2312")
 (define %kde-gentext-zh-CN-html-header-tags% '())
 (define %kde-gentext-zh-CN-default% "&Default;")
