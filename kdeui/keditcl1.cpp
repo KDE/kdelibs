@@ -283,7 +283,7 @@ int KEdit::loadFile(QString name, int mode){
 
 	char* buf = (char*)malloc(addr + i - 1 - beginning_of_line + 2);
 	strncpy(buf, beginning_of_line, addr + i - 1 - beginning_of_line +1);
-	buf[ addr + i - 1 - beginning_of_line + 2 ] = '\0';
+	buf[ addr + i - 1 - beginning_of_line + 1 ] = '\0';
 	append(buf);
 
 	free(buf);
@@ -321,7 +321,7 @@ int KEdit::loadFile(QString name, int mode){
 
 	char* buf = (char*)malloc(addr + i - 1 - beginning_of_line + 2);
 	strncpy(buf, beginning_of_line, addr + i - 1 - beginning_of_line +1);
-	buf[ addr + i - 1 - beginning_of_line + 2 ] = '\0';
+	buf[ addr + i - 1 - beginning_of_line + 1 ] = '\0';
 	append(buf);
 
 	free(buf);
