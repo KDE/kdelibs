@@ -266,7 +266,9 @@ public:
                    const QString& appname = QString::null ) const;
 
   /**
+   * @deprecated
    * Invoke the khelpcenter HTML help viewer from HTML sources.
+   * Please use invokeHelp() instead.
    *
    * @param aFilename  The filename that is to be loaded. Its
    *                   location is computed automatically
@@ -800,6 +802,12 @@ private:
 #endif
 
 // $Log$
+// Revision 1.211  2001/02/23 21:26:20  waba
+// -#define KDE_VERSION 210
+// -#define KDE_VERSION_STRING "2.1"
+// +#define KDE_VERSION 220
+// +#define KDE_VERSION_STRING "2.1.9 >= 20010223"
+//
 // Revision 1.210  2001/02/19 11:05:10  faure
 // 2.1, and fixing a docu bug found by werner
 //
