@@ -17,6 +17,7 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include "kmdimainfrm.h"
 #include "kmdidockcontainer.h"
 #include "kmdidockcontainer.moc"
 
@@ -609,6 +610,10 @@ void KMdiDockContainer::toggle() {
 	if (m_tb->isTabRaised(oldtab)) {
 		m_tb->setTab(oldtab,false);
 	    	tabClicked(oldtab);
+		KMdiMainFrm *mainFrm = dynamic_cast<KMdiMainFrm*>(m_mainWin);
+	        if (mainFrm)
+                    mainFrm->activeWindow()->setFocus();
+
 	} else {
 		kdDebug()<<"KMdiDockContainer::toggle(): raising tab"<<endl;
 		if (m_tb->tab(m_previousTab)==0) {
