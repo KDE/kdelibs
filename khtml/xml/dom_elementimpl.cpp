@@ -30,6 +30,7 @@
 
 #include "css/cssstyleselector.h"
 #include "rendering/render_object.h"
+#include "rendering/render_form.h"
 #include "misc/htmlhashes.h"
 #include <kdebug.h>
 #include "css_valueimpl.h"
@@ -543,8 +544,13 @@ void ElementImpl::attach()
 void ElementImpl::detach()
 {
     NodeBaseImpl::detach();
-    delete m_render;
-    m_render = 0;
+    if (m_render) {
+	if (m_render->isFormElement())
+	    static_cast<RenderFormElement*>(m_render)->deref();
+	else
+	    delete m_render;
+	m_render = 0;
+    }
 }
 
 void ElementImpl::recalcStyle()

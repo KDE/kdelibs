@@ -993,6 +993,8 @@ void HTMLInputElementImpl::attach()
 
         if (m_render)
         {
+	    if (m_render->isFormElement())
+		static_cast<RenderFormElement*>(m_render)->ref();
             m_render->setStyle(m_style);
 #ifdef FORMS_DEBUG
             kdDebug( 6030 ) << "adding " << m_render->renderName() << " as child of " << r->renderName() << endl;

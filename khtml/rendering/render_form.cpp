@@ -64,6 +64,7 @@ RenderFormElement::RenderFormElement(QScrollView *view,
     m_element = element;
     m_clickCount = 0;
     m_isDoubleClick = false;
+    _ref = 0;
 }
 
 RenderFormElement::~RenderFormElement()
@@ -99,6 +100,7 @@ void RenderFormElement::calcMinMaxWidth()
 
 bool RenderFormElement::eventFilter(QObject* o, QEvent* e)
 {
+    ref();
     switch(e->type()) {
     case QEvent::FocusOut:
         m_element->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
@@ -162,7 +164,12 @@ bool RenderFormElement::eventFilter(QObject* o, QEvent* e)
     break;
     default: break;
     };
-    return khtml::RenderWidget::eventFilter(o, e);
+    bool deleted = (_ref == 1);
+    deref();
+    if (deleted)
+	return true;
+    else
+	return khtml::RenderWidget::eventFilter(o, e);
 }
 
 void RenderFormElement::slotClicked()
