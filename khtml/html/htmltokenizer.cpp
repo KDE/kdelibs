@@ -355,9 +355,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                 script = false;
                 QString exScript( scriptCode, scriptCodeSize ); // deep copy
                 scriptCodeSize = 0;
-                // ### remove me
-                if ( m_executingScript == 1 )
-                    view->part()->executeScript(exScript);
+		view->part()->executeScript(exScript);
                 script = true;
                 m_executingScript--;
             }
