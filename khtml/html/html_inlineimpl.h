@@ -79,7 +79,7 @@ public:
     virtual tagStatus startTag() const { return BRStartTag; }
     virtual tagStatus endTag() const { return BREndTag; }
 
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
 };
 
 // -------------------------------------------------------------------------
@@ -98,7 +98,7 @@ public:
     virtual tagStatus endTag() const { return FONTEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
-    void attach(KHTMLView *w);
+    void attach();
 };
 
 // -------------------------------------------------------------------------

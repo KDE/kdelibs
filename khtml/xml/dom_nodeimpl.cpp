@@ -750,7 +750,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
         child->setPreviousSibling(prev);
         child->setNextSibling(refChild);
         if (attached() && !child->attached() && ownerDocument() )
-            child->attach(ownerDocument()->view());
+            child->attach();
 
         prev = child;
         child = nextChild;
@@ -827,7 +827,7 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
         child->setPreviousSibling(prev);
         child->setNextSibling(next);
         if (attached() && !child->attached() && ownerDocument() )
-            child->attach(ownerDocument()->view());
+            child->attach();
         prev = child;
         child = nextChild;
     }
@@ -942,7 +942,7 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
             _first = _last = child;
         }
         if (attached() && !child->attached() && ownerDocument() )
-            child->attach( ownerDocument()->view() );
+            child->attach();
 
         child = nextChild;
     }
@@ -1091,15 +1091,15 @@ void NodeBaseImpl::applyChanges(bool top, bool force)
 
 
 
-void NodeBaseImpl::attach(KHTMLView *w)
+void NodeBaseImpl::attach()
 {
     NodeImpl *child = _first;
     while(child != 0)
     {
-        child->attach(w);
+        child->attach();
         child = child->nextSibling();
     }
-    NodeWParentImpl::attach(w);
+    NodeWParentImpl::attach();
 }
 
 void NodeBaseImpl::detach()

@@ -49,7 +49,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *);
 
-    virtual void attach(KHTMLView *);
+    virtual void attach();
     virtual int start() const { return 1; }
 };
 
@@ -67,7 +67,7 @@ public:
     virtual tagStatus startTag() const { return DIRStartTag; }
     virtual tagStatus endTag() const { return DIREndTag; }
 
-    virtual void attach(KHTMLView *);
+    virtual void attach();
 };
 
 // -------------------------------------------------------------------------
@@ -84,7 +84,7 @@ public:
     virtual tagStatus startTag() const { return MENUStartTag; }
     virtual tagStatus endTag() const { return MENUEndTag; }
 
-    virtual void attach(KHTMLView *);
+    virtual void attach();
 };
 
 // -------------------------------------------------------------------------
@@ -104,7 +104,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *);
 
-    virtual void attach(KHTMLView *);
+    virtual void attach();
 
     int start() const { return _start; }
 private:
@@ -128,7 +128,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
 
-    virtual void attach(KHTMLView *);
+    virtual void attach();
 
 private:
     bool isValued;

@@ -78,8 +78,9 @@ void HTMLBaseElementImpl::parseAttribute(AttrImpl *attr)
 }
 
 
-void HTMLBaseElementImpl::attach(KHTMLView *v)
+void HTMLBaseElementImpl::attach()
 {
+    KHTMLView* v = ownerDocument()->view();
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
     if(_href.length())
     {
@@ -89,7 +90,7 @@ void HTMLBaseElementImpl::attach(KHTMLView *v)
     {
       v->part()->setBaseTarget(_target.string());
     }
-    NodeBaseImpl::attach( v );
+    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -118,7 +119,7 @@ ushort HTMLLinkElementImpl::id() const
 }
 
 // other stuff...
-void HTMLLinkElementImpl::attach(KHTMLView *v)
+void HTMLLinkElementImpl::attach()
 {
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
 
@@ -139,7 +140,7 @@ void HTMLLinkElementImpl::attach(KHTMLView *v)
             if(m_cachedSheet) m_cachedSheet->ref(this);
         }
     }
-    NodeBaseImpl::attach( v );
+    HTMLElementImpl::attach();
 }
 
 void HTMLLinkElementImpl::parseAttribute(AttrImpl *attr)
@@ -237,8 +238,9 @@ void HTMLMetaElementImpl::parseAttribute(AttrImpl *attr)
 }
 
 
-void HTMLMetaElementImpl::attach(KHTMLView *v)
+void HTMLMetaElementImpl::attach()
 {
+    KHTMLView *v = ownerDocument()->view();
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
 //    kdDebug() << "meta::attach() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
     if(strcasecmp(_equiv, "refresh") == 0 && !_content.isNull() && v->part()->metaRefreshEnabled())
@@ -294,7 +296,7 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
            KIO::http_update_cache(url, true, 0);
         }
     }
-    NodeBaseImpl::attach( v );
+    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------

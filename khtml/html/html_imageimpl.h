@@ -53,7 +53,7 @@ public:
                                     int _tx, int _ty,
                                     MouseEvent *ev );
 
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
     virtual void applyChanges(bool top=true, bool force=true);
     virtual void recalcStyle();
 

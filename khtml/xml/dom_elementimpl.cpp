@@ -518,22 +518,26 @@ NamedAttrMapImpl* ElementImpl::defaultMap() const
     return 0;
 }
 
-void ElementImpl::attach(KHTMLView *w)
+void ElementImpl::attach()
 {
+    if (!m_render)
+    {            
 #if SPEED_DEBUG < 2
-    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
+        setStyle(ownerDocument()->styleSelector()->styleForElement(this));        
 #if SPEED_DEBUG < 1
-    if(_parent && _parent->renderer())
-    {
-        m_render = khtml::RenderObject::createObject(this);
-        if(m_render)
+        if(_parent && _parent->renderer())
         {
-            _parent->renderer()->addChild(m_render, _next ? _next->renderer() : 0);
+            m_render = khtml::RenderObject::createObject(this);
+            if(m_render)
+            {
+                _parent->renderer()->addChild(m_render, _next ? _next->renderer() : 0);
+            }
         }
+#endif
+#endif
+    
     }
-#endif
-#endif
-    NodeBaseImpl::attach(w);
+    NodeBaseImpl::attach();
 }
 
 void ElementImpl::detach()
@@ -546,7 +550,6 @@ void ElementImpl::detach()
 void ElementImpl::recalcStyle()
 {
     if(!m_style) return;
-    bool faf = m_style->flowAroundFloats();
     EDisplay oldDisplay = m_style->display();
 
     int dynamicState = StyleSelector::None;
@@ -576,11 +579,9 @@ void ElementImpl::recalcStyle()
         else
         {
             detach();
-            attach(ownerDocument()->view());
+            attach();
         }
     }
-
-    m_style->setFlowAroundFloats(faf);
     if( m_render && m_style )
         m_render->setStyle(m_style);
     NodeImpl *n;

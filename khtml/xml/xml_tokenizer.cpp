@@ -91,7 +91,7 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
         newElement->setAttribute(atts.localName(i),atts.value(i));
     if (m_currentNode->addChild(newElement)) {
         if (m_view)
-            newElement->attach(m_view);
+            newElement->attach();
         m_currentNode = newElement;
         return TRUE;
     }
@@ -125,7 +125,7 @@ bool XMLHandler::startCDATA()
     NodeImpl *newNode = m_doc->document()->createCDATASection("");
     if (m_currentNode->addChild(newNode)) {
         if (m_view)
-            newNode->attach(m_view);
+            newNode->attach();
         m_currentNode = newNode;
         return TRUE;
     }
@@ -217,7 +217,7 @@ bool XMLHandler::enterText()
     NodeImpl *newNode = m_doc->document()->createTextNode("");
     if (m_currentNode->addChild(newNode)) {
         if (m_view)
-            newNode->attach(m_view);
+            newNode->attach();
         m_currentNode = newNode;
         return TRUE;
     }

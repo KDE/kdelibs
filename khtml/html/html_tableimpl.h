@@ -100,7 +100,7 @@ public:
     virtual NodeImpl *addChild(NodeImpl *child);
     virtual void parseAttribute(AttrImpl *attr);
 
-    virtual void attach(KHTMLView *);
+    virtual void attach();
 
 protected:
     HTMLTableSectionElementImpl *head;
@@ -128,7 +128,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
 
-    void attach(KHTMLView *);
+    void attach();
 };
 
 // -------------------------------------------------------------------------
@@ -209,7 +209,7 @@ public:
 
     // overrides
     virtual void parseAttribute(AttrImpl *attr);
-    virtual void attach(KHTMLView *);
+    virtual void attach();
 
 protected:
     int _row;

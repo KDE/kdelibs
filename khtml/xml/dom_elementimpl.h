@@ -142,7 +142,7 @@ public:
     // State of the element.
     virtual QString state() { return QString::null; }
 
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
     virtual void detach();
     virtual void recalcStyle();
 

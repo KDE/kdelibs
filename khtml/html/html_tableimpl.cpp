@@ -299,8 +299,8 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
     {
         if (!attr->value().isEmpty()) {
             HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(ownerDocument());
-            DOMString url(Cache::completeURL(attr->value(), doc->baseURL()).url());
-            addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, url );
+            QString url = Cache::completeURL(attr->value(), doc->baseURL()).url();
+            addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+url+"')" );
         }
         else
             removeCSSProperty(CSS_PROP_BACKGROUND_IMAGE);
@@ -389,11 +389,9 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLTableElementImpl::attach(KHTMLView *w)
+void HTMLTableElementImpl::attach()
 {
-    HTMLElementImpl::attach(w);
-    if(ownerDocument()->parseMode() != DocumentImpl::Strict )
-        style()->setFlowAroundFloats(true);
+    HTMLElementImpl::attach();
 }
 
 // --------------------------------------------------------------------------
@@ -412,8 +410,8 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
     {
         if (attr->val()) {
             HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(ownerDocument());
-            DOMString url(Cache::completeURL(attr->value(), doc->baseURL()).url());
-            addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, url );
+            QString url = Cache::completeURL(attr->value(), doc->baseURL()).url();
+            addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+url+"')" );
         }
         else
             removeCSSProperty(CSS_PROP_BACKGROUND_IMAGE);
@@ -424,9 +422,9 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLTablePartElementImpl::attach(KHTMLView *w)
+void HTMLTablePartElementImpl::attach()
 {
-    HTMLElementImpl::attach(w);
+    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -678,7 +676,7 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLTableCellElementImpl::attach(KHTMLView *_view)
+void HTMLTableCellElementImpl::attach()
 {
     HTMLElementImpl* p = static_cast<HTMLElementImpl*>(_parent);
     while(p && p->id() != ID_TABLE)
@@ -708,7 +706,7 @@ void HTMLTableCellElementImpl::attach(KHTMLView *_view)
         if(m_render) r->addChild(m_render, _next ? _next->renderer() : 0);
     }
 
-    NodeBaseImpl::attach(_view);
+    HTMLElementImpl::attach();
 }
 
 

@@ -78,7 +78,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
 
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
     virtual void detach();
 
     void radioClicked( HTMLGenericFormElementImpl *caller );
@@ -131,7 +131,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
 
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
     virtual void detach();
 
     virtual void reset() {}
@@ -196,7 +196,7 @@ public:
 
     void parseAttribute(AttrImpl *attr);
 
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
 
     virtual void defaultEventHandler(EventImpl *evt);
 
@@ -277,7 +277,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
 
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
 
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
@@ -394,7 +394,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
 
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
     // get the actual listbox index of the optionIndexth option
@@ -504,7 +504,7 @@ public:
     void select (  );
 
     virtual void parseAttribute(AttrImpl *attr);
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
     virtual void reset();
     DOMString value();
@@ -539,7 +539,7 @@ public:
     virtual tagStatus endTag() const { return ISINDEXEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
 
 protected:
     DOMString m_prompt;

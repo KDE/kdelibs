@@ -77,7 +77,7 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
     {
         KURL u = khtml::Cache::completeURL(attr->value(), static_cast<HTMLDocumentImpl *>(ownerDocument())->baseURL());
         bgImage = u.url();
-        addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, u.url() );
+        addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+u.url()+"')" );
         break;
     }
     case ATTR_MARGINWIDTH:
@@ -146,8 +146,9 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 }
 
 
-void HTMLBodyElementImpl::attach(KHTMLView *w)
+void HTMLBodyElementImpl::attach()
 {
+    KHTMLView* w = ownerDocument()->view();
     if(w->marginWidth() != -1) {
         QString str;
         str.sprintf("%dpx",w->marginWidth());
@@ -174,7 +175,7 @@ void HTMLBodyElementImpl::attach(KHTMLView *w)
     m_render->setStyle(m_style);
     r->addChild( m_render, _next ? _next->renderer() : 0 );
 
-    NodeBaseImpl::attach( w );
+    HTMLElementImpl::attach();
 
 }
 
@@ -246,8 +247,9 @@ void HTMLFrameElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLFrameElementImpl::attach(KHTMLView *w)
+void HTMLFrameElementImpl::attach()
 {
+    KHTMLView* w = ownerDocument()->view();
     // limit to how deep we can nest frames
     KHTMLPart *part = w->part();
     int depth = 0;
@@ -290,7 +292,7 @@ void HTMLFrameElementImpl::attach(KHTMLView *w)
 
     w->part()->requestFrame( renderFrame, url.string(), name.string() );
 
-    NodeBaseImpl::attach( w );
+    HTMLElementImpl::attach();
     return;
 }
 
@@ -394,8 +396,9 @@ void HTMLFrameSetElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLFrameSetElementImpl::attach(KHTMLView *w)
+void HTMLFrameSetElementImpl::attach()
 {
+    KHTMLView* w = ownerDocument()->view();
     // inherit default settings from parent frameset
     HTMLElementImpl* node = static_cast<HTMLElementImpl*>(parentNode());
     while(node)
@@ -422,7 +425,7 @@ void HTMLFrameSetElementImpl::attach(KHTMLView *w)
     m_render->setStyle(m_style);
     r->addChild( m_render, _next ? _next->renderer() : 0 );
 
-    NodeBaseImpl::attach( w );
+    HTMLElementImpl::attach();
 }
 
 // verifies that we have enough m_rows/m_cols entries for the actual document structure
@@ -547,7 +550,7 @@ ushort HTMLHeadElementImpl::id() const
     return ID_HEAD;
 }
 
-void HTMLHtmlElementImpl::attach(KHTMLView *w)
+void HTMLHtmlElementImpl::attach()
 {
     setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
     khtml::RenderObject *r = _parent->renderer();
@@ -555,11 +558,11 @@ void HTMLHtmlElementImpl::attach(KHTMLView *w)
     if ( !r )
       return;
 
-    m_render = new khtml::RenderHtml(w);
+    m_render = new khtml::RenderHtml();
     m_render->setStyle(m_style);
     r->addChild( m_render, _next ? _next->renderer() : 0 );
 
-    NodeBaseImpl::attach( w );
+    HTMLElementImpl::attach();
 }
 
 
@@ -630,8 +633,9 @@ void HTMLIFrameElementImpl::parseAttribute(AttrImpl *attr )
   }
 }
 
-void HTMLIFrameElementImpl::attach(KHTMLView *w)
+void HTMLIFrameElementImpl::attach()
 {
+  KHTMLView* w = ownerDocument()->view();    
   // limit to how deep we can nest frames
   KHTMLPart *part = w->part();
   int depth = 0;
@@ -661,7 +665,7 @@ void HTMLIFrameElementImpl::attach(KHTMLView *w)
   renderFrame->updateWidget();
 
 
-  NodeBaseImpl::attach( w );
+  HTMLElementImpl::attach();
 }
 
 void HTMLIFrameElementImpl::applyChanges(bool top, bool force)

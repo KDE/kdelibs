@@ -101,7 +101,7 @@ public:
 
     virtual khtml::RenderStyle *style() const;
 
-    virtual void attach(KHTMLView *);
+    virtual void attach();
     virtual void detach();
     virtual void applyChanges(bool top=true, bool force=true);
 

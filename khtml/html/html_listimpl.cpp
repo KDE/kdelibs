@@ -54,11 +54,9 @@ void HTMLUListElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLUListElementImpl::attach(KHTMLView *w)
+void HTMLUListElementImpl::attach()
 {
-    HTMLElementImpl::attach(w);
-    if(ownerDocument()->parseMode() != DocumentImpl::Strict )
-        style()->setFlowAroundFloats(true);
+    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -73,11 +71,9 @@ ushort HTMLDirectoryElementImpl::id() const
     return ID_DIR;
 }
 
-void HTMLDirectoryElementImpl::attach(KHTMLView *w)
+void HTMLDirectoryElementImpl::attach()
 {
-    HTMLElementImpl::attach(w);
-    if(ownerDocument()->parseMode() != DocumentImpl::Strict )
-        style()->setFlowAroundFloats(true);
+    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -92,11 +88,9 @@ ushort HTMLMenuElementImpl::id() const
     return ID_MENU;
 }
 
-void HTMLMenuElementImpl::attach(KHTMLView *w)
+void HTMLMenuElementImpl::attach()
 {
-    HTMLElementImpl::attach(w);
-    if(ownerDocument()->parseMode() != DocumentImpl::Strict )
-        style()->setFlowAroundFloats(true);
+    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -134,11 +128,9 @@ void HTMLOListElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLOListElementImpl::attach(KHTMLView *w)
+void HTMLOListElementImpl::attach()
 {
-    HTMLElementImpl::attach(w);
-    if(ownerDocument()->parseMode() != DocumentImpl::Strict )
-        style()->setFlowAroundFloats(true);
+    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -189,9 +181,9 @@ void HTMLLIElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLLIElementImpl::attach(KHTMLView *w)
+void HTMLLIElementImpl::attach()
 {
-    HTMLElementImpl::attach(w);
+    HTMLElementImpl::attach();
 
     // If we are first, and the OL has a start attr.
     if (parentNode() && parentNode()->id() == ID_OL)

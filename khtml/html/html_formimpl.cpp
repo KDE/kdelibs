@@ -416,10 +416,10 @@ void HTMLFormElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLFormElementImpl::attach(KHTMLView *_view)
+void HTMLFormElementImpl::attach()
 {
-    view = _view;
-    HTMLElementImpl::attach(_view);
+    view = ownerDocument()->view();
+    HTMLElementImpl::attach();
 }
 
 void HTMLFormElementImpl::detach()
@@ -518,10 +518,10 @@ HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
 }
 
 
-void HTMLGenericFormElementImpl::attach(KHTMLView *_view)
+void HTMLGenericFormElementImpl::attach()
 {
-    view = _view;
-    HTMLElementImpl::attach(_view);
+    view = ownerDocument()->view();
+    HTMLElementImpl::attach();
 }
 
 void HTMLGenericFormElementImpl::detach()
@@ -662,9 +662,9 @@ void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
     }
 }
 
-void HTMLButtonElementImpl::attach(KHTMLView *_view)
+void HTMLButtonElementImpl::attach()
 {
-    HTMLElementImpl::attach(_view);
+    HTMLElementImpl::attach();
 }
 
 bool HTMLButtonElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoding, bool /*multipart*/)
@@ -924,10 +924,10 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLInputElementImpl::attach(KHTMLView *_view)
+void HTMLInputElementImpl::attach()
 {
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-    view = _view;
+    view = ownerDocument()->view();
 
     if(m_firstAttach) {
         m_defaultChecked = m_checked;
@@ -993,7 +993,7 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
             r->addChild(m_render, _next ? _next->renderer() : 0);
         }
     }
-    NodeBaseImpl::attach(_view);
+    HTMLElementImpl::attach();
 
     if (m_render && m_type == IMAGE) {
         static_cast<RenderImageButton*>
@@ -1519,10 +1519,10 @@ void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLSelectElementImpl::attach(KHTMLView *_view)
+void HTMLSelectElementImpl::attach()
 {
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-    view = _view;
+    view = ownerDocument()->view();
 
     khtml::RenderObject *r = _parent->renderer();
     if(r)
@@ -1535,7 +1535,7 @@ void HTMLSelectElementImpl::attach(KHTMLView *_view)
             r->addChild(m_render, _next ? _next->renderer() : 0);
         }
     }
-    NodeBaseImpl::attach(_view);
+    HTMLElementImpl::attach();
 }
 
 
@@ -1920,10 +1920,10 @@ void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLTextAreaElementImpl::attach(KHTMLView *_view)
+void HTMLTextAreaElementImpl::attach()
 {
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-    view = _view;
+    view = ownerDocument()->view();
 
     khtml::RenderObject *r = _parent->renderer();
     if(r)
@@ -1940,7 +1940,7 @@ void HTMLTextAreaElementImpl::attach(KHTMLView *_view)
 
         }
     }
-    NodeBaseImpl::attach(_view);
+    HTMLElementImpl::attach();
 }
 
 bool HTMLTextAreaElementImpl::encoding(const QTextCodec* codec, encodingList& encoding, bool)
@@ -2041,9 +2041,9 @@ void HTMLIsIndexElementImpl::parseAttribute(AttrImpl* attr)
     }
 }
 
-void HTMLIsIndexElementImpl::attach(KHTMLView* v)
+void HTMLIsIndexElementImpl::attach()
 {
-    HTMLInputElementImpl::attach(v);
+    HTMLInputElementImpl::attach();
     _name = "isindex";
     // ### fix this, this is just a crude hack
     setValue(m_prompt);

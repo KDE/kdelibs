@@ -54,11 +54,9 @@ ushort HTMLBlockquoteElementImpl::id() const
     return ID_BLOCKQUOTE;
 }
 
-void HTMLBlockquoteElementImpl::attach(KHTMLView *w)
+void HTMLBlockquoteElementImpl::attach()
 {
-    HTMLElementImpl::attach(w);
-    if(ownerDocument()->parseMode() != DocumentImpl::Strict )
-        style()->setFlowAroundFloats(true);
+    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -178,11 +176,9 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLHRElementImpl::attach(KHTMLView *w)
+void HTMLHRElementImpl::attach()
 {
-    HTMLElementImpl::attach(w);
-    if(ownerDocument()->parseMode() != DocumentImpl::Strict )
-        style()->setFlowAroundFloats(true);
+    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -252,9 +248,9 @@ void HTMLParagraphElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLParagraphElementImpl::attach(KHTMLView *w)
+void HTMLParagraphElementImpl::attach()
 {
-    HTMLElementImpl::attach(w);
+    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------

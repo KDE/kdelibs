@@ -126,7 +126,7 @@ void HTMLAppletElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLAppletElementImpl::attach(KHTMLView *_view)
+void HTMLAppletElementImpl::attach()
 {
   setStyle(ownerDocument()->styleSelector()->styleForElement(this));
   if(!code)
@@ -136,7 +136,7 @@ void HTMLAppletElementImpl::attach(KHTMLView *_view)
   if(!r)
       return;
 
-  view = _view;
+  view = ownerDocument()->view();
   RenderWidget *f;
 
   if( view->part()->javaEnabled() )
@@ -167,7 +167,7 @@ void HTMLAppletElementImpl::attach(KHTMLView *_view)
       m_render->setStyle(m_style);
       r->addChild(m_render, _next ? _next->renderer() : 0);
   }
-  NodeBaseImpl::attach(_view);
+  HTMLElementImpl::attach();
 }
 
 void HTMLAppletElementImpl::detach()
@@ -269,8 +269,9 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
   }
 }
 
-void HTMLEmbedElementImpl::attach(KHTMLView *w)
+void HTMLEmbedElementImpl::attach()
 {
+   KHTMLView* w = ownerDocument()->view();    
    setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
    khtml::RenderObject *r = _parent->renderer();
    RenderPartObject* p = 0;
@@ -289,7 +290,7 @@ void HTMLEmbedElementImpl::attach(KHTMLView *w)
         r->setStyle(m_style);
    }
 
-  NodeBaseImpl::attach( w );
+  HTMLElementImpl::attach();
 
   if ( p )
       p->updateWidget();
@@ -367,8 +368,9 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
   }
 }
 
-void HTMLObjectElementImpl::attach(KHTMLView *w)
+void HTMLObjectElementImpl::attach()
 {
+  KHTMLView* w = ownerDocument()->view();    
   setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
 
   khtml::RenderObject *r = _parent->renderer();
@@ -384,7 +386,7 @@ void HTMLObjectElementImpl::attach(KHTMLView *w)
     p->updateWidget();
   }
 
-  NodeBaseImpl::attach( w );
+  HTMLElementImpl::attach();
 
   // ### do this when we are actually finished loading instead
   dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);

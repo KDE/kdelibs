@@ -203,7 +203,7 @@ void HTMLBRElementImpl::parseAttribute(AttrImpl *attr)
     }
 }
 
-void HTMLBRElementImpl::attach(KHTMLView *w)
+void HTMLBRElementImpl::attach()
 {
     //kdDebug( 6030 ) << "HTMLBRElementImpl::attach" << endl;
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
@@ -214,7 +214,7 @@ void HTMLBRElementImpl::attach(KHTMLView *w)
         m_render->setStyle(m_style);
         r->addChild(m_render, _next ? _next->renderer() : 0);
     }
-    NodeBaseImpl::attach( w );
+    HTMLElementImpl::attach();
 }
 
 // -------------------------------------------------------------------------
@@ -296,9 +296,9 @@ void HTMLFontElementImpl::parseAttribute(AttrImpl *attr)
 }
 
 
-void HTMLFontElementImpl::attach(KHTMLView *w)
+void HTMLFontElementImpl::attach()
 {
-    HTMLElementImpl::attach(w);
+    HTMLElementImpl::attach();
 #if 0
     // the font element needs special handling because it has to behave like
     // an inline or block level element depending on context.
@@ -316,7 +316,7 @@ void HTMLFontElementImpl::attach(KHTMLView *w)
         }
     }
 
-    NodeBaseImpl::attach(w);
+    HTMLElementImpl::attach();
 #endif
 }
 

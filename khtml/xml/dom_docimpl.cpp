@@ -688,7 +688,18 @@ void DocumentImpl::attach(KHTMLView *w)
     m_render = new RenderRoot(w);
     recalcStyle();
 
-    NodeBaseImpl::attach(w);
+    NodeBaseImpl::attach();
+}
+
+
+void DocumentImpl::attach()
+{
+    m_view = 0;
+    if(!m_styleSelector) createSelector();
+    m_render = new RenderRoot(0);
+    recalcStyle();
+
+    NodeBaseImpl::attach();
 }
 
 void DocumentImpl::detach()

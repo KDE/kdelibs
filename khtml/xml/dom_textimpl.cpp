@@ -268,16 +268,20 @@ unsigned short TextImpl::nodeType() const
     return Node::TEXT_NODE;
 }
 
-void TextImpl::attach(KHTMLView *w)
+void TextImpl::attach()
 {
-    RenderObject *r = _parent->renderer();
-    if(r && style())
+    if (!m_render)
     {
-        m_render = new RenderText(str);
-        m_render->setStyle(style());
-        r->addChild(m_render, _next ? _next->renderer() : 0);
+        RenderObject *r = _parent->renderer();
+        if(r && style())
+        {
+            m_render = new RenderText(str);
+            m_render->setStyle(style());
+            r->addChild(m_render, _next ? _next->renderer() : 0);
+        }
     }
-    CharacterDataImpl::attach(w);
+    
+    CharacterDataImpl::attach();
 }
 
 void TextImpl::detach()

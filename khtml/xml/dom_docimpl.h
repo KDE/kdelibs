@@ -159,6 +159,7 @@ public:
     virtual void updateRendering();
     khtml::DocLoader *docLoader() { return m_docLoader; }
     virtual void attach(KHTMLView *w);
+    virtual void attach();
     virtual void detach();
 
     // to get visually ordered hebrew and arabic pages right

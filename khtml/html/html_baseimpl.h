@@ -57,7 +57,7 @@ public:
     virtual tagStatus endTag() const { return BODYEndTag; }
 
     virtual void parseAttribute(AttrImpl *);
-    void attach(KHTMLView *w);
+    void attach();
 
     CSSStyleSheetImpl *sheet() const { return m_styleSheet; }
 
@@ -85,7 +85,7 @@ public:
     virtual tagStatus endTag() const { return FRAMEEndTag; }
 
     virtual void parseAttribute(AttrImpl *);
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
     virtual void detach();
 
     bool noResize() { return noresize; }
@@ -124,7 +124,7 @@ public:
     virtual tagStatus endTag() const { return FRAMESETEndTag; }
 
     virtual void parseAttribute(AttrImpl *);
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
 
     virtual bool prepareMouseEvent( int _x, int _y,
                                     int _tx, int _ty,
@@ -194,7 +194,7 @@ public:
     virtual tagStatus startTag() const { return HTMLStartTag; }
     virtual tagStatus endTag() const { return HTMLEndTag; }
 
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
 
 };
 
@@ -215,7 +215,7 @@ public:
     virtual tagStatus endTag() const { return IFRAMEEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
     virtual void applyChanges(bool = true, bool = true);
 protected:
     bool needWidgetUpdate;

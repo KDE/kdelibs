@@ -54,7 +54,7 @@ public:
     virtual tagStatus endTag() const { return BASEEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
-    virtual void attach(KHTMLView *);
+    virtual void attach();
 
 protected:
     DOMString _href;
@@ -81,7 +81,7 @@ public:
     StyleSheetImpl *sheet() const;
 
     // overload from HTMLElementImpl
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
     virtual void parseAttribute(AttrImpl *attr);
 
     // from CachedObjectClient
@@ -116,7 +116,7 @@ public:
     virtual tagStatus endTag() const { return METAEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
-    virtual void attach(KHTMLView *);
+    virtual void attach();
 
 protected:
     DOMString _equiv;

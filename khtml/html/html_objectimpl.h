@@ -52,7 +52,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *token);
 
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
     virtual void detach();
 
 protected:
@@ -82,7 +82,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
 
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
     virtual void detach();
 
     QString url;
@@ -111,7 +111,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *token);
 
-    virtual void attach(KHTMLView *w);
+    virtual void attach();
     virtual void detach();
 
     virtual void applyChanges(bool = true, bool = true);
