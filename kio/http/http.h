@@ -53,6 +53,7 @@ public:
   enum HTTP_PROTO  {PROTO_HTTP, PROTO_HTTPS, PROTO_WEBDAV};
   enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_POST, HTTP_HEAD, HTTP_DELETE};
 
+  // KDE3.0 (BCI): use job::CacheControl instead
   enum CacheControl { CC_CacheOnly, // Fail request if not in cache
                       CC_Cache,     // Use cached entry if available
                       CC_Verify,    // Validate cached entry with remote site

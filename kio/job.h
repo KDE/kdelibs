@@ -26,6 +26,52 @@
 
 namespace KIO {
 
+#ifdef CACHE_INFO
+    class CacheInfo
+    {
+    public:
+	/**
+	 * @param url
+	 */
+	CacheInfo(const KURL& url);
+
+	/**
+	 * Null if not cached
+	 */
+	QFile *cachedFile();
+
+	/**
+	 * Null if not cached
+	 */
+	QString &cachedFileName();
+
+	/**
+	 * delete the Cache file
+	 */
+	void flush();
+
+	int creationDate();
+
+	// set creation date to current local machine time
+	void touch();
+
+	// the local machine time when the cache entry will be / was expired
+	int expireDate();
+	void setExpireDate(int);
+
+	bool expired() { return difftime(time(0),expireDate())>=0; };
+
+
+
+	// the duration the cache entry is/was valid.
+	int expireTimeout();
+	void setExpireTimeout();
+
+    private:
+	QFile *cef;
+    }
+#endif
+
     /**
      * Creates a single directory.
      *
@@ -128,6 +174,23 @@ namespace KIO {
      * supposed to expire.
      */
     SimpleJob *http_update_cache( const KURL& url, bool no_cache, time_t expireDate);
+
+#ifdef CACHE_INFO
+    /**
+     * @param url Url to be checked.
+     * @param CacheControl
+     * possible values:
+     * - cache-only: sets the creation date to the current one for the cached copy, if cached.
+     * - cache: returns valid CacheInfo if available, else an empty one.
+     * - verify: returns empty CacheInfo if already expired
+     * - reload: cache entry for @p url is deleted. Returns empty CacheInfo
+     * @param expireDate Local machine time indicating when the entry is
+     * supposed to expire, counted from creation date. if the result is in the past,
+     * cache entry is considered expired.
+     */
+    // KDE3.0 (BCI): use job::CacheControl instead
+    CacheInfo* getCacheInfo(const KURL& url, HTTP::CacheControl 
+#endif
 
     /**
      * Find all details for one file or directory.

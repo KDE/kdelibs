@@ -3013,4 +3013,168 @@ DeleteJob *KIO::del( const KURL::List& src, bool shred, bool showProgressInfo )
   return job;
 }
 
+
+#ifdef CACHE_INFO
+CacheInfo::CacheInfo(const KURL &url)
+{
+    m_url = url;
+}
+
+QString CacheInfo::cachedFileName()
+{
+   const QChar seperator = '_';
+
+   QString CEF = m_url.path();
+
+   int p = CEF.find('/');
+
+   while(p != -1)
+   {
+      CEF[p] = seperator;
+      p = CEF.find('/', p);
+   }
+
+   QString host = m_url.host().lower();
+   CEF = host + CEF + ':';
+
+   QString dir = KProtocolManager::cacheDir();
+   if (dir[dir.length()-1] != '/')
+      dir += "/";
+
+   int l = m_url.host().length();
+   for(int i = 0; i < l; i++)
+   {
+      if (host[i].isLetter() && (host[i] != 'w'))
+      {
+         dir += host[i];
+         break;
+      }
+   }
+   if (dir[dir.length()-1] == '/')
+      dir += "0";
+
+   unsigned long hash = 0x00000000;
+   QCString u = m_url.url().latin1();
+   for(int i = u.length(); i--;)
+   {
+      hash = (hash * 12211 + u[i]) % 2147483563;
+   }
+
+   QString hashString;
+   hashString.sprintf("%08lx", hash);
+
+   CEF = CEF + hashString;
+
+   CEF = dir + "/" + CEF;
+
+   return CEF;
+}
+
+QFile *CacheInfo::cachedFile()
+{
+   const char *mode = (readWrite ? "r+" : "r");
+
+   FILE *fs = fopen( CEF.latin1(), mode); // Open for reading and writing
+   if (!fs)
+      return 0;
+
+   char buffer[401];
+   bool ok = true;
+
+  // CacheRevision
+  if (ok && (!fgets(buffer, 400, fs)))
+      ok = false;
+   if (ok && (strcmp(buffer, CACHE_REVISION) != 0))
+      ok = false;
+
+   time_t date;
+   time_t currentDate = time(0);
+
+   // URL
+   if (ok && (!fgets(buffer, 400, fs)))
+      ok = false;
+   if (ok)
+   {
+      int l = strlen(buffer);
+      if (l>0)
+         buffer[l-1] = 0; // Strip newline
+      if (m_.url.url() != buffer)
+      {
+         ok = false; // Hash collision
+      }
+   }
+
+   // Creation Date
+   if (ok && (!fgets(buffer, 400, fs)))
+      ok = false;
+   if (ok)
+   {
+      date = (time_t) strtoul(buffer, 0, 10);
+      if (m_maxCacheAge && (difftime(currentDate, date) > m_maxCacheAge))
+      {
+         m_bMustRevalidate = true;
+         m_expireDate = currentDate;
+      }
+   }
+
+   // Expiration Date
+   m_cacheExpireDateOffset = ftell(fs);
+   if (ok && (!fgets(buffer, 400, fs)))
+      ok = false;
+   if (ok)
+   {
+      if (m_request.cache == CC_Verify)
+      {
+         date = (time_t) strtoul(buffer, 0, 10);
+         // After the expire date we need to revalidate.
+         if (!date || difftime(currentDate, date) >= 0)
+            m_bMustRevalidate = true;
+         m_expireDate = date;
+      }
+   }
+
+   // ETag
+   if (ok && (!fgets(buffer, 400, fs)))
+      ok = false;
+   if (ok)
+   {
+      m_etag = QString(buffer).stripWhiteSpace();
+   }
+
+   // Last-Modified
+   if (ok && (!fgets(buffer, 400, fs)))
+      ok = false;
+   if (ok)
+   {
+      m_lastModified = QString(buffer).stripWhiteSpace();
+   }
+
+   fclose(fs);
+
+   if (ok)
+      return fs;
+
+   unlink( CEF.latin1());
+   return 0;
+
+}
+
+void CacheInfo::flush()
+{
+    cachedFile().remove();
+}
+
+void CacheInfo::touch()
+{
+    
+}
+void CacheInfo::setExpireDate(int);
+void CacheInfo::setExpireTimeout(int);
+
+
+int CacheInfo::creationDate();
+int CacheInfo::expireDate();
+int CacheInfo::expireTimeout();
+#endif
+
 #include "jobclasses.moc"
