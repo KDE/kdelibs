@@ -1599,23 +1599,28 @@ QPalette KApplication::createApplicationPalette()
 
 QPalette KApplication::createApplicationPalette( KConfig *config, int contrast_ )
 {
-    QColor kde2Gray(220, 220, 220);
-    QColor kde2Blue;
-    if (QPixmap::defaultDepth() > 8)
-      kde2Blue.setRgb(84, 112, 152);
-    else
-      kde2Blue.setRgb(0, 0, 192);
+    QColor kde31Background( 238, 238, 230 );
+    QColor kde31Beige( 255,221,118 );
 
-    QColor background = config->readColorEntry( "background", &kde2Gray );
+    QColor kde31Button;
+    if ( QPixmap::defaultDepth() > 8 )
+      kde31Button.setRgb( 238, 234, 222 );
+    else
+      kde31Button.setRgb( 220, 220, 220 );
+
+    QColor kde31Link( 0, 0, 192 );
+    QColor kde31VisitedLink( 128, 0,128 );
+
+    QColor background = config->readColorEntry( "background", &kde31Background );
     QColor foreground = config->readColorEntry( "foreground", &black );
-    QColor button = config->readColorEntry( "buttonBackground", &background );
+    QColor button = config->readColorEntry( "buttonBackground", &kde31Button );
     QColor buttonText = config->readColorEntry( "buttonForeground", &foreground );
-    QColor highlight = config->readColorEntry( "selectBackground", &kde2Blue);
-    QColor highlightedText = config->readColorEntry( "selectForeground", &white );
+    QColor highlight = config->readColorEntry( "selectBackground", &kde31Beige );
+    QColor highlightedText = config->readColorEntry( "selectForeground", &black );
     QColor base = config->readColorEntry( "windowBackground", &white );
     QColor baseText = config->readColorEntry( "windowForeground", &black );
-    QColor link = config->readColorEntry( "linkColor", &blue );
-    QColor visitedLink = config->readColorEntry( "visitedLinkColor", &magenta );
+    QColor link = config->readColorEntry( "linkColor", &kde31Link );
+    QColor visitedLink = config->readColorEntry( "visitedLinkColor", &kde31VisitedLink );
 
     int highlightVal, lowlightVal;
     highlightVal = 100 + (2*contrast_+4)*16/10;
