@@ -30,7 +30,7 @@
 
 using namespace KABC;
 
-bool BinaryFormat::load( AddressBook *addressBook, const QString &fileName )
+bool BinaryFormat::load( AddressBook *addressBook, Resource *resource, const QString &fileName )
 {
     kdDebug(5700) << "BinaryFormat::load(): " << fileName << endl;
 
@@ -58,12 +58,19 @@ bool BinaryFormat::load( AddressBook *addressBook, const QString &fileName )
 	return false;
     }
 
-    s >> (*addressBook);
+    Q_UINT32 entries;
+    s >> entries;
+    for (uint i = 0; i < entries; ++i ) {
+	Addressee addressee;
+	s >> addressee;
+	addressee.setResource( resource );
+	addressBook->insertAddressee( addressee );
+    }
 
     return true;
 }
 
-bool BinaryFormat::save( AddressBook *addressBook, const QString &fileName )
+bool BinaryFormat::save( AddressBook *addressBook, Resource *resource, const QString &fileName )
 {
     kdDebug( 5700 ) << "BinaryFormat::save(): " << fileName << endl;
 
@@ -77,15 +84,29 @@ bool BinaryFormat::save( AddressBook *addressBook, const QString &fileName )
 
     QDataStream s( &file );
 
-    Q_UINT32 magic, version;
+    Q_UINT32 magic, version, entries;
+
+    entries = 0; // dummy entry, we will change it later
 
     // magic code
     magic = 0x2e93e;
     version = BINARY_FORMAT_VERSION;
 
-    s << magic << version;
+    s << magic << version << entries;
 
-    s << (*addressBook);
+    AddressBook::Iterator it;
+    uint counter = 0;
+    for ( it = addressBook->begin(); it != addressBook->end(); ++it ) {
+	if ( (*it).resource() != resource && (*it).resource() != 0 )
+	    continue;
+	
+	s << (*it);
+	counter++;
+    }
+
+    // change the dummy entry to correct number of entries
+    s.device()->at( 2 * sizeof( Q_UINT32 ) );
+    s << counter;
 
     file.close();
 

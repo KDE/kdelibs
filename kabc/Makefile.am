@@ -67,4 +67,17 @@ autostart_DATA = kab2kabc.desktop
 autostartdir = $(prefix)/share/autostart
 
 DOXYGEN_REFERENCES = kdecore kdeui
+
+kde_module_LTLIBRARIES = kcm_kabc.la
+
+kcm_kabc_la_SOURCES = kcmkabc.cpp kcm_config.ui resourcesqlconfig.ui resourcefileconfig.ui
+kcm_kabc_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
+kcm_kabc_la_LIBADD = $(LIB_KIO)
+kcm_kabc_la_METASOURCES = AUTO
+
+data_DATA = kabc.desktop
+datadir = $(kde_appsdir)/Settings/Personalization
+
+EXTRA_DIST = $(data_DATA)
+
 include ../Doxyfile.am

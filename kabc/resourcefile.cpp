@@ -6,9 +6,10 @@
 #include <qregexp.h>
 #include <qfile.h>
 
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
-#include <kapplication.h>
+#include <kurlrequester.h>
 
 #include "vcardformat.h"
 #include "addressbook.h"
@@ -18,9 +19,40 @@
 
 using namespace KABC;
 
+ResourceFile::ResourceFile( AddressBook *addressBook, const KConfig *config,
+                            Format *format ) :
+  Resource( addressBook )      
+{
+	QString fileName = config->readEntry( "File" );
+	uint type = config->readNumEntry( "Type", RES_VCARD );
+
+	if ( fileName.isEmpty() ) {
+	    switch ( type ) {
+		case RES_BINARY:
+		    fileName = locateLocal( "data", "kabc/std.bin" );
+		    break;
+		case RES_VCARD:
+		    fileName = locateLocal( "data", "kabc/std.vcf" );
+		    break;
+	    }
+	}
+
+	init( fileName, format );
+}
+
 ResourceFile::ResourceFile( AddressBook *addressBook, const QString &filename,
                             Format *format ) :
   Resource( addressBook )      
+{
+	init( filename, format );
+}
+
+ResourceFile::~ResourceFile()
+{
+  delete mFormat;
+}
+
+void ResourceFile::init( const QString &filename, Format *format )
 {
   if ( !format ) {
     mFormat = new VCardFormat();
@@ -33,11 +65,6 @@ ResourceFile::ResourceFile( AddressBook *addressBook, const QString &filename,
   setFileName( filename );
 
   connect( mFileCheckTimer, SIGNAL( timeout() ), SLOT( checkFile() ) );
-}
-
-ResourceFile::~ResourceFile()
-{
-  delete mFormat;
 }
 
 Ticket *ResourceFile::requestSaveTicket()
@@ -70,14 +97,14 @@ bool ResourceFile::load( AddressBook *ab )
 
   setAddressBook( ab );
   
-  return mFormat->load( ab, mFileName );
+  return mFormat->load( ab, this, mFileName );
 }
 
 bool ResourceFile::save( Ticket *ticket )
 {
   kdDebug(5700) << "ResourceFile::save()" << endl;
   
-  bool success = mFormat->save( addressBook(), mFileName );
+  bool success = mFormat->save( addressBook(), this, mFileName );
 
   delete ticket;
   unlock( mFileName );

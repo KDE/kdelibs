@@ -22,6 +22,8 @@
 
 #include <qstring.h>
 
+#include "resource.h"
+
 namespace KABC {
 
 class AddressBook;
@@ -36,11 +38,11 @@ class Format {
     /**
       Load addressbook from file.
     */
-    virtual bool load( AddressBook *, const QString &fileName ) = 0;
+    virtual bool load( AddressBook *, Resource *, const QString &fileName ) = 0;
     /**
       Save addressbook to file.
     */
-    virtual bool save( AddressBook *, const QString &fileName ) = 0;
+    virtual bool save( AddressBook *, Resource *, const QString &fileName ) = 0;
 };
 
 }

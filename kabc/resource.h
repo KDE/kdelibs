@@ -3,6 +3,11 @@
 
 #include "addressbook.h"
 
+#define RES_VCARD	0 // default
+#define RES_BINARY	1
+#define RES_SQL		2
+
+
 namespace KABC {
 
 /**

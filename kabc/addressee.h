@@ -36,6 +36,8 @@
 
 namespace KABC {
 
+class Resource;
+
 /**
   @short address book entry
   
@@ -586,6 +588,18 @@ class Addressee
     */
     void dump() const;
   
+
+    /**
+      Set resource where the addressee is from
+    */
+    void setResource( Resource *resource );
+
+    /**
+      Return pointer to resource
+    */
+    Resource *resource() const;
+
+
   private:
     Addressee copy();
     void detach();

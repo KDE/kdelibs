@@ -21,6 +21,7 @@
 #include <qfile.h>
 
 #include <ksimpleconfig.h>
+#include <kstandarddirs.h>
 #include <kdebug.h>
 
 #include "addressbook.h"
@@ -29,64 +30,91 @@
 
 using namespace KABC;
 
-bool SimpleFormat::load( AddressBook *addressBook, const QString &fileName )
+bool SimpleFormat::load( AddressBook *addressBook, Resource *resource, const QString &fileName )
 {
   kdDebug(5700) << "SimpleFormat::load(): " << fileName << endl;
 
   KSimpleConfig cfg( fileName );
   
   QStringList uids = cfg.groupList();
+
   QStringList::ConstIterator it;
   for( it = uids.begin(); it != uids.end(); ++it ) {
-    if ( (*it) == "<default>" ) continue;
+    if ( (*it) == "<default>" )
+      continue;
+
     cfg.setGroup( *it );
-    Addressee a;
-    a.setUid( *it );
-    a.setName( cfg.readEntry( "name" ) );
-    a.setFormattedName( cfg.readEntry( "formattedName" ) );
-    a.insertEmail( cfg.readEntry( "email" ) );
-#if 0
-    QStringList phoneNumbers = cfg.readListEntry( "phonenumbers" );
-    QStringList::ConstIterator it2;
-    for( it2 = phoneNumbers.begin(); it2 != phoneNumbers.end(); ++it2 ) {
-      PhoneNumber n;
-      n.setNumber( cfg.readEntry( "phonenumber" + (*it2) ) );
-      n.setType( PhoneNumber::Type((*it2).toInt()));
-      a.insertPhoneNumber( n );
+
+    Addressee addr;
+    addr.setResource( resource );
+    addr.setUid( *it );
+    addr.setName( cfg.readEntry( "name" ) );
+    addr.setFormattedName( cfg.readEntry( "formattedName" ) );
+
+    // emails
+    {
+      QStringList emails = cfg.readListEntry( "emails" );
+      QStringList::ConstIterator it;
+      bool preferred = true;
+      for( it = emails.begin(); it != emails.end(); ++it ) {
+        addr.insertEmail( (*it), preferred );
+        preferred = false;
+      }
     }
-#endif
-    addressBook->insertAddressee( a );
+
+    // phonenumbers
+    {
+      QStringList phoneNumbers = cfg.readListEntry( "phonenumbers" );
+      QStringList::ConstIterator it;
+      for( it = phoneNumbers.begin(); it != phoneNumbers.end(); ++it ) {
+        PhoneNumber n;
+        n.setNumber( cfg.readEntry( "phonenumber" + (*it) ) );
+        n.setType((*it).toInt());
+        addr.insertPhoneNumber( n );
+      }
+    }
+
+    addressBook->insertAddressee( addr );
   }
 
   return true;
 }
 
-bool SimpleFormat::save( AddressBook *addressBook, const QString &fileName )
+bool SimpleFormat::save( AddressBook *addressBook, Resource *resource, const QString &fileName )
 {
   kdDebug(5700) << "SimpleFormat::save(): " << fileName << endl;
 
-  QFile::remove( fileName );
+  QFile::remove( locateLocal("config", fileName) );
 
   KSimpleConfig cfg( fileName );
 
   AddressBook::Iterator it;
   for ( it = addressBook->begin(); it != addressBook->end(); ++it ) {
+    if ( (*it).resource() != resource && (*it).resource() != 0 )
+	continue;
+
     cfg.setGroup( (*it).uid() );
+
     cfg.writeEntry( "name", (*it).name() );
     cfg.writeEntry( "formattedName", (*it).formattedName() );
-    cfg.writeEntry( "email", (*it).preferredEmail() );
 
-#if 0
-    QStringList phoneNumberList;
-    PhoneNumber::List phoneNumbers = (*it).phoneNumbers();
-    PhoneNumber::List::ConstIterator it2;
-    for( it2 = phoneNumbers.begin(); it2 != phoneNumbers.end(); ++it2 ) {
-      cfg.writeEntry( "phonenumber" + QString::number( int((*it2).type()) ),
-                      (*it2).number() );
-      phoneNumberList.append( QString::number( int((*it2).type()) ) );
+    // emails
+    {
+      cfg.writeEntry( "emails", (*it).emails() );
     }
-    cfg.writeEntry( "phonenumbers", phoneNumberList );
-#endif
+
+    // phonenumbers
+    {
+      QStringList phoneNumberList;
+      PhoneNumber::List phoneNumbers = (*it).phoneNumbers();
+      PhoneNumber::List::ConstIterator it;
+      for( it = phoneNumbers.begin(); it != phoneNumbers.end(); ++it ) {
+        cfg.writeEntry( "phonenumber" + QString::number( int((*it).type()) ),
+                      (*it).number() );
+        phoneNumberList.append( QString::number( int((*it).type()) ) );
+      }
+      cfg.writeEntry( "phonenumbers", phoneNumberList );
+    }
   }
 
   return true;

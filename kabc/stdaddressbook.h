@@ -46,11 +46,6 @@ class StdAddressBook : public AddressBook
     */
     static bool save();
 
-    /**
-      Get the file name of the standard address book.
-    */
-    static QString fileName();
-    
     QString identifier();
     
   protected:
@@ -59,6 +54,7 @@ class StdAddressBook : public AddressBook
     
   private:
     static AddressBook *mSelf;
+    QString mIdentifier;
 };
 
 }

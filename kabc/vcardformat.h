@@ -40,8 +40,8 @@ class VCardFormat : public Format {
     VCardFormat();
     virtual ~VCardFormat();
   
-    bool load( AddressBook *, const QString &fileName );
-    bool save( AddressBook *, const QString &fileName );
+    bool load( AddressBook *, Resource *, const QString &fileName );
+    bool save( AddressBook *, Resource *, const QString &fileName );
 
   private:
     VCardFormatImpl *mImpl;

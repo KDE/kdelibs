@@ -1,0 +1,14 @@
+[Desktop Entry]
+Encoding=UTF-8
+Exec=kcmshell kabc
+Icon=kaddressbook
+Type=Application
+
+X-KDE-ModuleType=Library
+X-KDE-Library=kabc
+X-KDE-HasReadOnlyMode=false
+
+Name=Address Book Configuration
+Comment=You can configure the resources of your address book here
+
+Keywords=kaddressbook,resources

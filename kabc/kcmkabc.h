@@ -16,29 +16,59 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
+
+    $Id$
 */
-#ifndef KABC_BINARYFORMAT_H
-#define KABC_BINARYFORMAT_H
-// $Id$
 
-#include <qstring.h>
+#include <qcombobox.h>
+#include <qlistbox.h>
+#include <qwidget.h>
 
-#include "format.h"
+#include <kcmodule.h>
+#include <klineedit.h>
+#include <kpushbutton.h>
 
-namespace KABC {
+#include "kcm_config.h"
 
-class AddressBook;
+#ifndef KCMKABC_H
+#define KCMKABC_H
 
-/*
-  @short binary file format for addressbook entries.
-*/
-class BinaryFormat : public Format
+class ConfigPageImpl : public ConfigPage
 {
+    Q_OBJECT
 public:
-    bool load( AddressBook *, Resource *, const QString &fileName );
-    bool save( AddressBook *, Resource *, const QString &fileName );
+    ConfigPageImpl( QWidget *parent = 0, const char *name = 0 );
+
+    void load();
+    void save();
+    void defaults();
+
+public slots:
+    void slotAdd();
+    void slotRemove();
+    void slotEdit();
+    void slotStandard();
+    void slotSelectionChanged();
+
+signals:
+    void changed(bool);
+
+private:
+    KConfig *config;
 };
 
-}
+class KCMkabc : public KCModule
+{
+    Q_OBJECT
+public:
+    KCMkabc( QWidget *parent = 0, const char *name = 0 );
 
-#endif
+    void load();
+    void save();
+    void defaults();
+
+private:
+    ConfigPageImpl *mConfigPage;
+};
+
+#endif // KCMKABC_H

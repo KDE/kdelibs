@@ -32,8 +32,9 @@
 using namespace KABC;
 using namespace VCARD;
 
-bool VCardFormatImpl::load( AddressBook *addressBook, const QString &fileName )
+bool VCardFormatImpl::load( AddressBook *addressBook, Resource *resource, const QString &fileName )
 {
+    kdDebug(5700) << "VCardFormat::addressBook(): " << addressBook << endl;
   QString data;
 
   QFile f( fileName );
@@ -46,8 +47,6 @@ bool VCardFormatImpl::load( AddressBook *addressBook, const QString &fileName )
     return false;
   }
   
-  addressBook->clear();
-
   VCardEntity e( data.utf8() );
   
   VCardListIterator it( e.cardList() );
@@ -172,6 +171,7 @@ bool VCardFormatImpl::load( AddressBook *addressBook, const QString &fileName )
       }
     }
   
+    a.setResource( resource );
     addressBook->insertAddressee( a );
   }
 
@@ -179,7 +179,7 @@ bool VCardFormatImpl::load( AddressBook *addressBook, const QString &fileName )
   return true;
 }
 
-bool VCardFormatImpl::save( AddressBook *addressBook, const QString &fileName )
+bool VCardFormatImpl::save( AddressBook *addressBook, Resource *resource, const QString &fileName )
 {
   VCardEntity vcards;
   VCardList vcardlist;
@@ -189,6 +189,9 @@ bool VCardFormatImpl::save( AddressBook *addressBook, const QString &fileName )
 
   AddressBook::Iterator it;
   for ( it = addressBook->begin(); it != addressBook->end(); ++it ) {
+    if ( (*it).resource() != resource && (*it).resource() != 0 )
+	continue;
+
     VCard *v = new VCard;
 
     addTextValue( v, EntityName, (*it).name() );

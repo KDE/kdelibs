@@ -33,9 +33,7 @@ int main(int argc,char **argv)
   
     ResourceFile r( &ab, locateLocal("data", "kabc/std.bin"), new BinaryFormat);
   
-    if ( !ab.addResource( &r ) ) {
-	kdDebug() << "Can't add Resource." << endl;
-    }
+    ab.addResource( &r );
 
     if (args->isSet("save"))
 {
@@ -110,4 +108,5 @@ int main(int argc,char **argv)
 
     ab.dump();
 }
+
 }

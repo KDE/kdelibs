@@ -24,6 +24,7 @@
 #include <klocale.h>
 
 #include "phonenumber.h"
+#include "resource.h"
 
 #include "addressee.h"
 
@@ -59,6 +60,8 @@ struct Addressee::AddresseeData : public KShared
   QStringList categories;
   QStringList custom;
 
+  Resource *resource;
+
   bool empty;
 };
 
@@ -67,6 +70,7 @@ Addressee::Addressee()
   mData = new AddresseeData;
   mData->uid = KApplication::randomString( 10 );
   mData->empty = true;
+  mData->resource = 0;
 }
 
 Addressee::~Addressee()
@@ -126,6 +130,7 @@ bool Addressee::operator==( const Addressee &a ) const
   if ( mData->emails != a.mData->emails ) return false;
   if ( mData->categories != a.mData->categories ) return false;
   if ( mData->custom != a.mData->custom ) return false;
+  // should we compare the resource pointer as well? Please Fix...
 
   return true;
 }
@@ -1073,6 +1078,16 @@ void Addressee::parseEmailAddress( const QString &rawEmail, QString &fullName,
         fullName = fullName.mid(1, len-2);
     }
   }
+}
+
+void Addressee::setResource( Resource *resource )
+{
+    mData->resource = resource;
+} 
+
+Resource *Addressee::resource() const
+{
+    return mData->resource;
 }
 
 QDataStream &KABC::operator<<( QDataStream &s, const Addressee &a )

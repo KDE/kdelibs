@@ -147,7 +147,7 @@ class AddressBook : public QObject
       Return const iterator for first entry of address book.
     */
     ConstIterator end() const;
-    
+
     /**
       Remove all entries from address book.
     */

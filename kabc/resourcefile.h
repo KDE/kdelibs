@@ -1,6 +1,8 @@
 #ifndef KABC_RESOURCEFILE_H
 #define KABC_RESOURCEFILE_H
 
+#include <kconfig.h>
+
 #include <sys/types.h>
 
 #include "resource.h"
@@ -18,6 +20,7 @@ class ResourceFile : public QObject, public Resource {
     Q_OBJECT
   public:
     ResourceFile( AddressBook *, const QString &filename, Format *format=0 );
+    ResourceFile( AddressBook *, const KConfig *, Format *format=0 );
     ~ResourceFile();
   
     bool open();
@@ -46,6 +49,8 @@ class ResourceFile : public QObject, public Resource {
 
 
   private:
+    void init( const QString &filename, Format *format );
+
     QString mFileName;
     Format *mFormat;
 

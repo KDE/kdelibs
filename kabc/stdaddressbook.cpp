@@ -18,20 +18,21 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <kapplication.h>
 #include <kstandarddirs.h>
+#include <ksimpleconfig.h>
 #include <kdebug.h>
 
 #include "stdaddressbook.h"
+
+#include "binaryformat.h"
 #include "resourcefile.h"
+#include "resourcesql.h"
+#include "vcardformat.h"
 
 using namespace KABC;
 
 AddressBook *StdAddressBook::mSelf = 0;
-
-QString StdAddressBook::fileName()
-{
-  return locateLocal( "data", "kabc/std.vcf" );
-}
 
 AddressBook *StdAddressBook::self()
 {
@@ -57,8 +58,40 @@ bool StdAddressBook::save()
 
 StdAddressBook::StdAddressBook()
 {
-  addResource( new ResourceFile( this, fileName() ) );
-  load();
+    KSimpleConfig config( "kabcrc", true );
+    config.setGroup( "General" );
+
+    QStringList keys = config.readListEntry( "ResourceKeys" );
+    for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
+	config.setGroup( "Resource_" + (*it) );
+	uint type = config.readNumEntry( "Type" );
+
+	Resource *resource = 0;
+
+	switch ( type ) {
+	    case RES_SQL:
+		resource = new ResourceSql( this, &config );
+		break;
+	    case RES_BINARY:
+		resource = new ResourceFile( this, &config, new BinaryFormat );
+		break;
+	    case RES_VCARD:
+	    default:
+		resource = new ResourceFile( this, &config, new VCardFormat );
+		break;
+	}
+
+	addResource( resource );
+    }
+
+    if ( keys.count() == 0 ) {
+	/* there is an empty config file, so we create a default resource */
+	addResource( new ResourceFile( this, &config, new VCardFormat ) );
+    }
+
+    load();
+
+    mIdentifier = KApplication::randomString( 10 );
 }
 
 StdAddressBook::~StdAddressBook()
@@ -68,5 +101,5 @@ StdAddressBook::~StdAddressBook()
 
 QString StdAddressBook::identifier()
 {
-  return fileName();
+  return mIdentifier;
 }

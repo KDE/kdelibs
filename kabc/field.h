@@ -33,6 +33,7 @@ class Field
 {
     class FieldImpl;
     friend class FieldImpl;
+
   public:
     typedef QValueList<Field *> List;
   
