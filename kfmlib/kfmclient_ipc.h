@@ -31,6 +31,8 @@ public slots:
 public slots:
 	void openProperties(const char* _url);
 public slots:
+	void list(const char* _url);
+public slots:
 	void exec(const char* _url, const char* _binding);
 public slots:
 	void copy(const char* _src, const char* _dest);
@@ -50,6 +52,14 @@ signals:
 	void finished();
 private:
 	void parse_finished( char *_data, int _len );
+signals:
+	void error(int _kerror, const char* _text);
+private:
+	void parse_error( char *_data, int _len );
+signals:
+	void dirEntry(const char* _name, const char* _access, const char* _owner, const char* _group, const char* _date, int _size);
+private:
+	void parse_dirEntry( char *_data, int _len );
 public slots:
     void readEvent( KSocket * );
     void closeEvent( KSocket * );

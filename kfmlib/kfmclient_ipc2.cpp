@@ -41,6 +41,16 @@ void KfmIpc::openProperties(const char* _url)
 	write_string( sock->socket(), _url );
 }
 
+void KfmIpc::list(const char* _url)
+{
+	int len = 0;
+	len += len_string( _url );
+	len += len_string("list");
+	write_int( sock->socket(), len );
+	write_string( sock->socket(), "list" );
+	write_string( sock->socket(), _url );
+}
+
 void KfmIpc::exec(const char* _url, const char* _binding)
 {
 	int len = 0;
@@ -143,5 +153,51 @@ void KfmIpc::parse_finished( char *_data, int _len )
 
 	// Calling function
 	emit finished(  );
+}
+
+void KfmIpc::parse_error( char *_data, int _len )
+{
+	int pos = 0;
+
+	// Parsing int
+	int _kerror;
+	_kerror = read_int( _data, pos, _len );
+	// Parsing string
+	const char* _text;
+	_text = read_string( _data, pos, _len );
+	// Calling function
+	emit error( _kerror, _text );
+	free( (void*)_text );
+}
+
+void KfmIpc::parse_dirEntry( char *_data, int _len )
+{
+	int pos = 0;
+
+	// Parsing string
+	const char* _name;
+	_name = read_string( _data, pos, _len );
+	// Parsing string
+	const char* _access;
+	_access = read_string( _data, pos, _len );
+	// Parsing string
+	const char* _owner;
+	_owner = read_string( _data, pos, _len );
+	// Parsing string
+	const char* _group;
+	_group = read_string( _data, pos, _len );
+	// Parsing string
+	const char* _date;
+	_date = read_string( _data, pos, _len );
+	// Parsing int
+	int _size;
+	_size = read_int( _data, pos, _len );
+	// Calling function
+	emit dirEntry( _name, _access, _owner, _group, _date, _size );
+	free( (void*)_name );
+	free( (void*)_access );
+	free( (void*)_owner );
+	free( (void*)_group );
+	free( (void*)_date );
 }
 

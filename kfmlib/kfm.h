@@ -6,8 +6,20 @@
 #include <qlined.h>
 #include <qpushbt.h>
 #include <qlabel.h>
+#include <qstring.h>
 
 #include "kfmclient_ipc.h"
+
+class KDirEntry
+{
+public:
+  QString name;
+  QString access;
+  QString date;
+  QString owner;
+  QString group;
+  int size;
+};
 
 class KFM : public QObject
 {
@@ -34,6 +46,7 @@ public:
     void move( const char *_src, const char *_dest );    
     void copyClient( const char *_src, const char *_dest );
     void moveClient( const char *_src, const char *_dest );    
+    void list( const char *_url );
     // For KWM only
     void selectRootIcons( int _x, int _y, int _w, int _h, bool _add );
   
@@ -48,9 +61,14 @@ public:
     
 signals:    
     void finished();
-    
+    void error( int _kerror, const char *_text );
+    void dirEntry( KDirEntry& _entry );
+
 public slots:
     void slotFinished();
+    void slotError( int _kerror, const char *_text );
+    void slotDirEntry(const char* _name, const char* _access, const char* _owner,
+		      const char* _group, const char* _date, int _size);
     
 protected:
     void init();
@@ -61,6 +79,8 @@ protected:
     bool allowRestart;
     
     KfmIpc *ipc;
+
+    KDirEntry entry;
 };
 
 /// Asking for a location

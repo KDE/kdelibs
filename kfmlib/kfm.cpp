@@ -98,6 +98,10 @@ void KFM::init()
     ipc = new KfmIpc( slot );
 
     connect( ipc, SIGNAL( finished() ), this, SLOT( slotFinished() ) );
+    connect( ipc, SIGNAL( error( int, const char* ) ),
+	     this, SLOT( slotError( int, const char* ) ) );
+    connect( ipc, SIGNAL( dirEntry( const char*, const char*, const char*, const char*, const char*, int ) ),
+	     this, SLOT( slotDirEntry( const char*, const char*, const char*, const char*, const char*, int ) ) );
 
     // Read the password
     QString fn = getenv( "HOME" );
@@ -145,6 +149,14 @@ void KFM::openURL( const char *_url )
 	return;
     
     ipc->openURL( _url );
+}
+
+void KFM::list( const char *_url )
+{
+    if ( !test() )
+	return;
+    
+    ipc->list( _url );
 }
 
 void KFM::refreshDirectory( const char *_url )
@@ -252,6 +264,23 @@ bool KFM::isKFMRunning()
     if ( ipc->isConnected() )
 	return TRUE;
     return FALSE;
+}
+
+void KFM::slotError( int _kerror, const char *_text )
+{
+  emit error( _kerror, _text );
+}
+
+void KFM::slotDirEntry(const char* _name, const char* _access, const char* _owner,
+		  const char* _group, const char* _date, int _size)
+{
+  entry.name = _name;
+  entry.access = _access;
+  entry.owner = _owner;
+  entry.group = _group;
+  entry.date = _date;
+  entry.size = _size;
+  emit dirEntry( entry );
 }
 
 DlgLocation::DlgLocation( const char *_text, const char* _value, QWidget *parent )
