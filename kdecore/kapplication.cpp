@@ -2381,14 +2381,18 @@ void KApplication::initUrlActionRestrictions()
   ("redirect", QString::null, QString::null, QString::null, "ftp*", QString::null, QString::null, true));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", QString::null, QString::null, QString::null, "mailto", QString::null, QString::null, true));
+
+  // We allow redirections to file: but not from http:, redirecting to file:
+  // is very popular among io-slaves and we don't want to break them
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("redirect", QString::null, QString::null, QString::null, "file", QString::null, QString::null, true));
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("redirect", "http*", QString::null, QString::null, "file", QString::null, QString::null, false));
+  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
+  ("redirect", "webdav*", QString::null, QString::null, "file", QString::null, QString::null, false));
+
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", QString::null, QString::null, QString::null, "=", QString::null, QString::null, true));
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", "tar", QString::null, QString::null, "file", QString::null, QString::null, true));
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", "zip", QString::null, QString::null, "file", QString::null, QString::null, true));
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", "devices", QString::null, QString::null, QString::null, QString::null, QString::null, true));
 }
 
 bool KApplication::authorizeURLAction(const QString &action, const KURL &baseURL, const KURL &destURL)
