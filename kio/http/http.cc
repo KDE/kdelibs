@@ -439,9 +439,10 @@ void HTTPProtocol::post( const KURL& url)
   retrieveContent();
 }
 
-ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
+ssize_t HTTPProtocol::write (const void *_buf, size_t nbytes)
 {
   int bytes_sent = 0;
+  const char* buf = static_cast<const char*>( _buf );
   while ( nbytes > 0 ) {
     int n = Write(buf, nbytes);
 
@@ -457,7 +458,7 @@ ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
     }
 
     nbytes -= n;
-    static_cast<const char *>(buf) += n;
+    buf += n;
     bytes_sent += n;
   }
 
