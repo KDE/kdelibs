@@ -92,14 +92,14 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 	return;
     }
     mDir = *it + name + "/";
-    KConfig *cfg = new KSimpleConfig(mDir + "index.desktop");
-    cfg->setGroup("KDE Icon Theme");
-    mName = cfg->readEntry("Name");
-    mDesc = cfg->readEntry("Description");
-    mDepth = cfg->readNumEntry("DisplayDepth", 32);
-    mInherits = cfg->readListEntry("Inherits");
-    d->example = cfg->readEntry("Example");
-    d->screenshot = cfg->readEntry("ScreenShot");
+    KSimpleConfig cfg(mDir + "index.desktop");
+    cfg.setGroup("KDE Icon Theme");
+    mName = cfg.readEntry("Name");
+    mDesc = cfg.readEntry("Description");
+    mDepth = cfg.readNumEntry("DisplayDepth", 32);
+    mInherits = cfg.readListEntry("Inherits");
+    d->example = cfg.readEntry("Example");
+    d->screenshot = cfg.readEntry("ScreenShot");
 
     if (isApp)
     {
@@ -118,12 +118,12 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 	mName += appName;
     }
 
-    QStringList dirs = cfg->readListEntry("Directories");
+    QStringList dirs = cfg.readListEntry("Directories");
     mDirs.setAutoDelete(true);
     for (it=dirs.begin(); it!=dirs.end(); it++)
     {
-	cfg->setGroup(*it);
-	mDirs.append(new KIconThemeDir(mDir + *it, cfg));
+	cfg.setGroup(*it);
+	mDirs.append(new KIconThemeDir(mDir + *it, &cfg));
     }
 
     // Expand available sizes for scalable icons to their full range
@@ -145,11 +145,11 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     groups += "Toolbar";
     groups += "MainToolbar";
     groups += "Small";
-    cfg->setGroup("KDE Icon Theme");
+    cfg.setGroup("KDE Icon Theme");
     for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
     {
-	mDefSize[i] = cfg->readNumEntry(*it + "Default", 32);
-	QValueList<int> lst = cfg->readIntListEntry(*it + "Sizes"), exp;
+	mDefSize[i] = cfg.readNumEntry(*it + "Default", 32);
+	QValueList<int> lst = cfg.readIntListEntry(*it + "Sizes"), exp;
 	QValueList<int>::ConstIterator it2;
 	for (it2=lst.begin(); it2!=lst.end(); it2++)
 	{
@@ -161,7 +161,6 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 	mSizes[i] = exp;
     }
 
-    delete cfg;
 }
 
 KIconTheme::~KIconTheme()

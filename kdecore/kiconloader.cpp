@@ -44,6 +44,9 @@ public:
       links.setAutoDelete(true);
       theme = _theme;
     }
+    ~KIconThemeNode() {
+        delete theme;
+    }
     KIconTheme *theme;
 
     void queryIcons(QStringList *lst, int size, int context) const;
