@@ -187,20 +187,20 @@ class HTMLStackElem
 {
 public:
     HTMLStackElem( int _id,
-		   int _level,
-		   DOM::NodeImpl *_node,
-		   blockFunc _exitFunc,
-		   int _miscData1,
-		   HTMLStackElem * _next
-	)
-	:	
-	id(_id),
-	level(_level),
-	node(_node),
-	exitFunc(_exitFunc),
-	miscData1(_miscData1),
-	next(_next)
-	{ }
+                   int _level,
+                   DOM::NodeImpl *_node,
+                   blockFunc _exitFunc,
+                   int _miscData1,
+                   HTMLStackElem * _next
+        )
+        :
+        id(_id),
+        level(_level),
+        node(_node),
+        exitFunc(_exitFunc),
+        miscData1(_miscData1),
+        next(_next)
+        { }
 
     int       id;
     int       level;
@@ -235,7 +235,7 @@ public:
  *
  */
 KHTMLParser::KHTMLParser( KHTMLView *_parent,
-			  HTMLDocumentImpl *doc)
+                          HTMLDocumentImpl *doc)
 {
     //kdDebug( 6035 ) << "parser constructor" << endl;
 
@@ -287,11 +287,11 @@ void KHTMLParser::parseToken(Token *t)
     }
     if(discard_until)
     {
-	if(t->id == discard_until)
-	    discard_until = 0;
-	delete t;
-	return;
-    }	
+        if(t->id == discard_until)
+            discard_until = 0;
+        delete t;
+        return;
+    }
 
 #ifdef PARSER_DEBUG
     kdDebug( 6035 ) << "\n\n==> parser: processing token " << t->id << " current = " << current->id() << endl;
@@ -299,41 +299,41 @@ void KHTMLParser::parseToken(Token *t)
 
     if(t->id > ID_CLOSE_TAG)
     {
-	processCloseTag(t);
-	delete t;
-	return;
+        processCloseTag(t);
+        delete t;
+        return;
     }
 
     // ignore spaces, if we're not inside a paragraph or other inline code
     if(t->id == ID_TEXT && (!_inline ))
-//    	|| ( current && current->renderer() && !current->renderer()->isInline())))
+//      || ( current && current->renderer() && !current->renderer()->isInline())))
     {
-	if(t->text.length() == 1 && t->text[0] == QChar(' '))
-	{
-	    //kdDebug( 6035 ) << "discarding space!" << endl;
-	    delete t;
-	    return;
-	}
+        if(t->text.length() == 1 && t->text[0] == QChar(' '))
+        {
+            //kdDebug( 6035 ) << "discarding space!" << endl;
+            delete t;
+            return;
+        }
     }
 
 
     NodeImpl *n = getElement(t);
     // just to be sure, and to catch currently unimplemented stuff
     if(!n) {
-	delete t;
-	return;
+        delete t;
+        return;
     }
 
     // set attributes
     if(n->isElementNode())
     {
-	ElementImpl *e = static_cast<ElementImpl *>(n);
-	e->setAttribute(t->attrs);
-	e->saveDefaults(); // for form field reset and the like
+        ElementImpl *e = static_cast<ElementImpl *>(n);
+        e->setAttribute(t->attrs);
+        e->saveDefaults(); // for form field reset and the like
 
-	// take care of optional close tags
-	if(e->endTag() == DOM::OPTIONAL)
-	    popBlock(t->id);
+        // take care of optional close tags
+        if(e->endTag() == DOM::OPTIONAL)
+            popBlock(t->id);
     }
 
     // if this tag is forbidden inside the current context, pop
@@ -342,12 +342,12 @@ void KHTMLParser::parseToken(Token *t)
 
     try
     {
-	insertNode(n);
+        insertNode(n);
     }
     catch(DOMException)
     {
-	// we couldn't insert the node...
-	kdDebug( 6035 ) << "insertNode failed current=" << current->id() << ", new=" << n->id() << "!" << endl;
+        // we couldn't insert the node...
+        kdDebug( 6035 ) << "insertNode failed current=" << current->id() << ", new=" << n->id() << "!" << endl;
         if (map == n)
         {
             kdDebug( 6035 ) << "  --> resetting map!" << endl;
@@ -358,7 +358,7 @@ void KHTMLParser::parseToken(Token *t)
             kdDebug( 6035 ) << "   --> resetting form!" << endl;
             form = 0;
         }
-	delete n;
+        delete n;
     }
 
     delete t;
@@ -373,333 +373,333 @@ void KHTMLParser::insertNode(NodeImpl *n)
     try
     {
 #ifdef PARSER_DEBUG
-	NodeImpl *tmp = current;
+        NodeImpl *tmp = current;
 #endif
-	NodeImpl *newNode = current->addChild(n);
+        NodeImpl *newNode = current->addChild(n);
 #ifdef PARSER_DEBUG
-	kdDebug( 6035 ) << "added " << n->nodeName().string() << " to " << tmp->nodeName().string() << ", new current=" << newNode->nodeName().string() << endl;
+        kdDebug( 6035 ) << "added " << n->nodeName().string() << " to " << tmp->nodeName().string() << ", new current=" << newNode->nodeName().string() << endl;
 #endif
-	// don't push elements without end tag on the stack
-	if(tagPriority[id] != 0)
-	{
-	    pushBlock(id, tagPriority[id], exitFunc, exitFuncData);
-	    current = newNode;
-	    n->attach(HTMLWidget);
-	    // ### HACK!!!
-	    if(n->id() == ID_BODY)
-		document->createSelector();
-	    if(current->isInline()) _inline = true;
-	}
-	else
-	    n->attach(HTMLWidget);
+        // don't push elements without end tag on the stack
+        if(tagPriority[id] != 0)
+        {
+            pushBlock(id, tagPriority[id], exitFunc, exitFuncData);
+            current = newNode;
+            n->attach(HTMLWidget);
+            // ### HACK!!!
+            if(n->id() == ID_BODY)
+                document->createSelector();
+            if(current->isInline()) _inline = true;
+        }
+        else
+            n->attach(HTMLWidget);
 
-	if(tagPriority[id] == 0 && n->renderer())
-	    n->renderer()->calcMinMaxWidth();
+        if(tagPriority[id] == 0 && n->renderer())
+            n->renderer()->calcMinMaxWidth();
 
     }
     catch(DOMException exception)
     {
 #ifdef PARSER_DEBUG
-	kdDebug( 6035 ) << "ADDING NODE FAILED!!!! current = " << current->nodeName().string() << ", new = " << n->nodeName().string() << endl;
+        kdDebug( 6035 ) << "ADDING NODE FAILED!!!! current = " << current->nodeName().string() << ", new = " << n->nodeName().string() << endl;
 #endif
-	// error handling...
-	HTMLElementImpl *e;
-	bool handled = false;
+        // error handling...
+        HTMLElementImpl *e;
+        bool handled = false;
 
-	// switch according to the element to insert
-	switch(id)
-	{
-	case ID_COMMENT:
-	    break;
-	case ID_TITLE:
-	    if(inBody)
-		discard_until = ID_TITLE + ID_CLOSE_TAG;
-	    // fall through
-	case ID_HEAD:
-	    throw exception;
-	    break;
-	case ID_HTML:
-	case ID_BODY:
-	case ID_BASE:
-	case ID_META:
-	case ID_LINK:
-	    // SCRIPT and OBJECT are allowd in the body.
-	    if(inBody) throw exception;
-	    break;
-	case ID_STYLE:
-	    if(inBody)
-	    {
-		discard_until = ID_STYLE + ID_CLOSE_TAG;
-		throw exception;
-	    }
-	    break;
-	case ID_LI:
-	    e = new HTMLUListElementImpl(document);
+        // switch according to the element to insert
+        switch(id)
+        {
+        case ID_COMMENT:
+            break;
+        case ID_TITLE:
+            if(inBody)
+                discard_until = ID_TITLE + ID_CLOSE_TAG;
+            // fall through
+        case ID_HEAD:
+            throw exception;
+            break;
+        case ID_HTML:
+        case ID_BODY:
+        case ID_BASE:
+        case ID_META:
+        case ID_LINK:
+            // SCRIPT and OBJECT are allowd in the body.
+            if(inBody) throw exception;
+            break;
+        case ID_STYLE:
+            if(inBody)
+            {
+                discard_until = ID_STYLE + ID_CLOSE_TAG;
+                throw exception;
+            }
+            break;
+        case ID_LI:
+            e = new HTMLUListElementImpl(document);
             e->addCSSProperty(CSS_PROP_MARGIN_LEFT, DOMString("0pt"), false);
             e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, DOMString("inside"), false);
-	    insertNode(e);
-	    insertNode(n);
-	    return;
-	    break;
+            insertNode(e);
+            insertNode(n);
+            return;
+            break;
 
-	    // the following is a hack to move non rendered elements
-	    // outside of tables.
-	    // needed for broken constructs like <table><form ...><tr>....
-	case ID_INPUT:
-	{
-	    ElementImpl *e = static_cast<ElementImpl *>(n);
-	    DOMString type = e->getAttribute(ATTR_TYPE);
+            // the following is a hack to move non rendered elements
+            // outside of tables.
+            // needed for broken constructs like <table><form ...><tr>....
+        case ID_INPUT:
+        {
+            ElementImpl *e = static_cast<ElementImpl *>(n);
+            DOMString type = e->getAttribute(ATTR_TYPE);
 
-	    if ( strcasecmp( type, "hidden" ) != 0 )
-		break;
-	    // Fall through!
-	}
-	case ID_MAP:
-	case ID_FORM:
-	case ID_SCRIPT:
-	{
-	    kdDebug( 6035 ) << "--> badly placed element!!!" << endl;
-	    NodeImpl *node = current;
-	    // in case the form is opened inside the table (<table><form ...><tr> or similar)
-	    // we need to move it outside the table.
-	    if(node->id() == ID_TR)
-		node = node->parentNode();
-	    if(node->id() == ID_THEAD)
-		node = node->parentNode();
-	    else if(node->id() == ID_TBODY)
-		node = node->parentNode();
-	    else if(node->id() == ID_TFOOT)
-		node = node->parentNode();
-	
-	    if(node->id() == ID_TABLE)
-	    {
-		NodeImpl *parent = node->parentNode();
-		//kdDebug( 6035 ) << "trying to add form to " << parent->id() << endl;
-		try
-		{
-		    parent->insertBefore(n, node);
-		    if(tagPriority[id] != 0)
-		    {
-			pushBlock(id, tagPriority[id], exitFunc, exitFuncData);
-		    }
-		    n->attach(HTMLWidget);
-		    if(tagPriority[id] == 0 && n->renderer())
-			n->renderer()->close();
+            if ( strcasecmp( type, "hidden" ) != 0 )
+                break;
+            // Fall through!
+        }
+        case ID_MAP:
+        case ID_FORM:
+        case ID_SCRIPT:
+        {
+            kdDebug( 6035 ) << "--> badly placed element!!!" << endl;
+            NodeImpl *node = current;
+            // in case the form is opened inside the table (<table><form ...><tr> or similar)
+            // we need to move it outside the table.
+            if(node->id() == ID_TR)
+                node = node->parentNode();
+            if(node->id() == ID_THEAD)
+                node = node->parentNode();
+            else if(node->id() == ID_TBODY)
+                node = node->parentNode();
+            else if(node->id() == ID_TFOOT)
+                node = node->parentNode();
 
-		}
-		catch(DOMException e)
-		{
-		    kdDebug( 6035 ) << "adding form before of table failed!!!!" << endl;
-		    throw e;
-		}
-		return;
-	    }
-	    break;
-	}
-	case ID_AREA:
-	{
-	    if(map)
-	    {
-		map->addChild(n);
-		n->attach(HTMLWidget);
-		handled = true;
-	    }
-	    else
-		throw exception;
-	    return;
-	}
-	case ID_TEXT:
-	    // ignore text inside the following elements.
-	    switch(current->id())
-	    {
-	    case ID_SELECT:
-		throw exception;
-		return;
-	    default:
-		break;
-	    }
-	    break;
-	default:
-	    break;
-	}
+            if(node->id() == ID_TABLE)
+            {
+                NodeImpl *parent = node->parentNode();
+                //kdDebug( 6035 ) << "trying to add form to " << parent->id() << endl;
+                try
+                {
+                    parent->insertBefore(n, node);
+                    if(tagPriority[id] != 0)
+                    {
+                        pushBlock(id, tagPriority[id], exitFunc, exitFuncData);
+                    }
+                    n->attach(HTMLWidget);
+                    if(tagPriority[id] == 0 && n->renderer())
+                        n->renderer()->close();
 
-	// switch on the currently active element
-	switch(current->id())
-	{
-	case ID_HTML:
-	    switch(id)
-	    {
-		// ### check, there's only one HTML and one BODY tag!
-	    case ID_SCRIPT:
-	    case ID_STYLE:
-	    case ID_META:
-	    case ID_LINK:
-	    case ID_OBJECT:
-	    case ID_EMBED:
-	    case ID_TITLE:
-	    case ID_ISINDEX:
-	    case ID_BASE:
-		// ### what about <script> tags between head and body????
-		e = new HTMLHeadElementImpl(document);
-		insertNode(e);
-		handled = true;
-		break;
-	    default:
-		e = new HTMLBodyElementImpl(document);
-		inBody = true;
-		document->createSelector();
-		insertNode(e);
-		handled = true;
-		break;
-	    }
-	    break;
-	case ID_HEAD:
-	    // we can get here only if the element is not allowed in head.
-	    // This means the body starts here...
-	    popBlock(ID_HEAD);
-	    e = new HTMLBodyElementImpl(document);
-	    inBody = true;
-	    document->createSelector();
-	    insertNode(e);
-	    handled = true;
-	    break;
-	case ID_BODY:
-	
-	    break;
-	case ID_TABLE:
-	    switch(id)
-	    {
-	    case ID_COL:
-	    case ID_COLGROUP:
-	    case ID_P:
-		break;
-	    case ID_TEXT:
-	    {
-		TextImpl *t = static_cast<TextImpl *>(n);
-		DOMStringImpl *i = t->string();
-		unsigned int pos = 0;
-		while(pos < i->l && ( *(i->s+pos) == QChar(' ') ||
-				      *(i->s+pos) == QChar(0xa0))) pos++;
-		if(pos == i->l)
-		{
-		    break;
-		}
-	    }
-	    case ID_COMMENT:
-		break;
-	    // Fall through!
-	    default:
-		e = new HTMLTableSectionElementImpl(document, ID_TBODY);
-		insertNode(e);
-		handled = true;
-		break;
-	    }
-	    break;
-	case ID_THEAD:
-	case ID_TFOOT:
-	case ID_TBODY:
-	    switch(id)
-	    {
-	    case ID_COMMENT:
-		break;
-	    case ID_COL:
-	    case ID_COLGROUP:
-	    case ID_P:
-		break;
-	    default:
-		e = new HTMLTableRowElementImpl(document);
-		insertNode(e);
-		handled = true;
-		break;
-	    }
-	    break;
-	case ID_TR:
-	    switch(id)
-	    {
-	    case ID_COMMENT:
-		break;
-	    case ID_COL:
-	    case ID_COLGROUP:
-	    case ID_P:
-		break;
-	    case ID_TEXT:
-	    {
-		TextImpl *t = static_cast<TextImpl *>(n);
-		DOMStringImpl *i = t->string();
-		unsigned int pos = 0;
-		while(pos < i->l && ( *(i->s+pos) == QChar(' ') ||
-				      *(i->s+pos) == QChar(0xa0))) pos++;
-		if(pos == i->l)
-		{
-		    break;
-		}
-	    }
-	    // Fall through!
-	    default:
-		e = new HTMLTableCellElementImpl(document, ID_TD);
-		insertNode(e);
-		handled = true;
-		break;
-	    }
-	    break;
-	case ID_UL:
-	case ID_OL:
-	case ID_DIR:
-	case ID_MENU:
-	    e = new HTMLLIElementImpl(document);
-	    insertNode(e);
-	    handled = true;
-	    break;
-	case ID_P:
-	case ID_H1:
-	case ID_H2:
-	case ID_H3:
-	case ID_H4:
-	case ID_H5:
-	case ID_H6:
-	    if(!n->isInline())
-	    {
-		popBlock(current->id());
-		handled = true;
+                }
+                catch(DOMException e)
+                {
+                    kdDebug( 6035 ) << "adding form before of table failed!!!!" << endl;
+                    throw e;
+                }
+                return;
             }
-	    break;
-	case ID_OPTION:
-	    if (id == ID_OPTGROUP)
-	    {
-		popBlock(ID_OPTION);
-		handled = true;
-	    }
-	    break;
-	    // head elements in the body should be ignored.
-	case ID_ADDRESS:
-	    popBlock(ID_ADDRESS);
-	    handled = true;
-	    break;
-	default:
-	    if(current->isDocumentNode())
-	    {
-		if(current->firstChild() == 0)
-		{
-		    e = new HTMLHtmlElementImpl(document);
-		    insertNode(e);
-		    handled = true;
-		}
-	    }
-	    else if(current->isInline())
-	    {
-		popInlineBlocks();
-		handled = true;
+            break;
+        }
+        case ID_AREA:
+        {
+            if(map)
+            {
+                map->addChild(n);
+                n->attach(HTMLWidget);
+                handled = true;
             }
-	}	
+            else
+                throw exception;
+            return;
+        }
+        case ID_TEXT:
+            // ignore text inside the following elements.
+            switch(current->id())
+            {
+            case ID_SELECT:
+                throw exception;
+                return;
+            default:
+                break;
+            }
+            break;
+        default:
+            break;
+        }
 
-	// if we couldn't handle the error, just rethrow the exception...
-	if(!handled)
-	{
-	    //kdDebug( 6035 ) << "Exception handler failed in HTMLPArser::insertNode()" << endl;
-	    throw exception;
-	}
-	
-	insertNode(n);
+        // switch on the currently active element
+        switch(current->id())
+        {
+        case ID_HTML:
+            switch(id)
+            {
+                // ### check, there's only one HTML and one BODY tag!
+            case ID_SCRIPT:
+            case ID_STYLE:
+            case ID_META:
+            case ID_LINK:
+            case ID_OBJECT:
+            case ID_EMBED:
+            case ID_TITLE:
+            case ID_ISINDEX:
+            case ID_BASE:
+                // ### what about <script> tags between head and body????
+                e = new HTMLHeadElementImpl(document);
+                insertNode(e);
+                handled = true;
+                break;
+            default:
+                e = new HTMLBodyElementImpl(document);
+                inBody = true;
+                document->createSelector();
+                insertNode(e);
+                handled = true;
+                break;
+            }
+            break;
+        case ID_HEAD:
+            // we can get here only if the element is not allowed in head.
+            // This means the body starts here...
+            popBlock(ID_HEAD);
+            e = new HTMLBodyElementImpl(document);
+            inBody = true;
+            document->createSelector();
+            insertNode(e);
+            handled = true;
+            break;
+        case ID_BODY:
+
+            break;
+        case ID_TABLE:
+            switch(id)
+            {
+            case ID_COL:
+            case ID_COLGROUP:
+            case ID_P:
+                break;
+            case ID_TEXT:
+            {
+                TextImpl *t = static_cast<TextImpl *>(n);
+                DOMStringImpl *i = t->string();
+                unsigned int pos = 0;
+                while(pos < i->l && ( *(i->s+pos) == QChar(' ') ||
+                                      *(i->s+pos) == QChar(0xa0))) pos++;
+                if(pos == i->l)
+                {
+                    break;
+                }
+            }
+            case ID_COMMENT:
+                break;
+            // Fall through!
+            default:
+                e = new HTMLTableSectionElementImpl(document, ID_TBODY);
+                insertNode(e);
+                handled = true;
+                break;
+            }
+            break;
+        case ID_THEAD:
+        case ID_TFOOT:
+        case ID_TBODY:
+            switch(id)
+            {
+            case ID_COMMENT:
+                break;
+            case ID_COL:
+            case ID_COLGROUP:
+            case ID_P:
+                break;
+            default:
+                e = new HTMLTableRowElementImpl(document);
+                insertNode(e);
+                handled = true;
+                break;
+            }
+            break;
+        case ID_TR:
+            switch(id)
+            {
+            case ID_COMMENT:
+                break;
+            case ID_COL:
+            case ID_COLGROUP:
+            case ID_P:
+                break;
+            case ID_TEXT:
+            {
+                TextImpl *t = static_cast<TextImpl *>(n);
+                DOMStringImpl *i = t->string();
+                unsigned int pos = 0;
+                while(pos < i->l && ( *(i->s+pos) == QChar(' ') ||
+                                      *(i->s+pos) == QChar(0xa0))) pos++;
+                if(pos == i->l)
+                {
+                    break;
+                }
+            }
+            // Fall through!
+            default:
+                e = new HTMLTableCellElementImpl(document, ID_TD);
+                insertNode(e);
+                handled = true;
+                break;
+            }
+            break;
+        case ID_UL:
+        case ID_OL:
+        case ID_DIR:
+        case ID_MENU:
+            e = new HTMLLIElementImpl(document);
+            insertNode(e);
+            handled = true;
+            break;
+        case ID_P:
+        case ID_H1:
+        case ID_H2:
+        case ID_H3:
+        case ID_H4:
+        case ID_H5:
+        case ID_H6:
+            if(!n->isInline())
+            {
+                popBlock(current->id());
+                handled = true;
+            }
+            break;
+        case ID_OPTION:
+            if (id == ID_OPTGROUP)
+            {
+                popBlock(ID_OPTION);
+                handled = true;
+            }
+            break;
+            // head elements in the body should be ignored.
+        case ID_ADDRESS:
+            popBlock(ID_ADDRESS);
+            handled = true;
+            break;
+        default:
+            if(current->isDocumentNode())
+            {
+                if(current->firstChild() == 0)
+                {
+                    e = new HTMLHtmlElementImpl(document);
+                    insertNode(e);
+                    handled = true;
+                }
+            }
+            else if(current->isInline())
+            {
+                popInlineBlocks();
+                handled = true;
+            }
+        }
+
+        // if we couldn't handle the error, just rethrow the exception...
+        if(!handled)
+        {
+            //kdDebug( 6035 ) << "Exception handler failed in HTMLPArser::insertNode()" << endl;
+            throw exception;
+        }
+
+        insertNode(n);
     }
 }
 
@@ -714,237 +714,237 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     switch(t->id)
     {
     case ID_HTML:
-	n = new HTMLHtmlElementImpl(document);
-	break;
+        n = new HTMLHtmlElementImpl(document);
+        break;
     case ID_HEAD:
-	n = new HTMLHeadElementImpl(document);
-	break;
+        n = new HTMLHeadElementImpl(document);
+        break;
     case ID_BODY:
-	popBlock(ID_HEAD);
-	n = new HTMLBodyElementImpl(document);
-	inBody = true;
-	break;
+        popBlock(ID_HEAD);
+        n = new HTMLBodyElementImpl(document);
+        inBody = true;
+        break;
 
 // head elements
     case ID_BASE:
-	n = new HTMLBaseElementImpl(document);
-	break;
+        n = new HTMLBaseElementImpl(document);
+        break;
     case ID_ISINDEX:
-	n = new HTMLIsIndexElementImpl(document);
-	break;
+        n = new HTMLIsIndexElementImpl(document);
+        break;
     case ID_LINK:
-	n = new HTMLLinkElementImpl(document);
-	break;
+        n = new HTMLLinkElementImpl(document);
+        break;
     case ID_META:
-	n = new HTMLMetaElementImpl(document);
-	break;
+        n = new HTMLMetaElementImpl(document);
+        break;
     case ID_STYLE:
-	n = new HTMLStyleElementImpl(document);
-	break;
+        n = new HTMLStyleElementImpl(document);
+        break;
     case ID_TITLE:
-	n = new HTMLTitleElementImpl(document);
-	break;
+        n = new HTMLTitleElementImpl(document);
+        break;
 
 // frames
     case ID_FRAME:
-	n = new HTMLFrameElementImpl(document);
-	break;
+        n = new HTMLFrameElementImpl(document);
+        break;
     case ID_FRAMESET:
-	popBlock(ID_HEAD);
-	if ( haveFrameSet && current->id() == ID_HTML )
-	    break;
-	n = new HTMLFrameSetElementImpl(document);
-	haveFrameSet = true;
-	break;
-	// a bit a special case, since the frame is inlined...
+        popBlock(ID_HEAD);
+        if ( haveFrameSet && current->id() == ID_HTML )
+            break;
+        n = new HTMLFrameSetElementImpl(document);
+        haveFrameSet = true;
+        break;
+        // a bit a special case, since the frame is inlined...
     case ID_IFRAME:
-	n = new HTMLIFrameElementImpl(document);
-	break;
+        n = new HTMLIFrameElementImpl(document);
+        break;
 
 // form elements
     case ID_FORM:
-	// close all open forms...
-	popBlock(ID_FORM);
-	form = new HTMLFormElementImpl(document);
-	n = form;
-	break;
+        // close all open forms...
+        popBlock(ID_FORM);
+        form = new HTMLFormElementImpl(document);
+        n = form;
+        break;
     case ID_BUTTON:
-	n = new HTMLButtonElementImpl(document, form);
-	break;
+        n = new HTMLButtonElementImpl(document, form);
+        break;
     case ID_FIELDSET:
-	n = new HTMLFieldSetElementImpl(document, form);
-	break;
+        n = new HTMLFieldSetElementImpl(document, form);
+        break;
     case ID_INPUT:
-	n = new HTMLInputElementImpl(document, form);
-	break;
+        n = new HTMLInputElementImpl(document, form);
+        break;
     case ID_LABEL:
-	n = new HTMLLabelElementImpl(document, form);
-	break;
+        n = new HTMLLabelElementImpl(document, form);
+        break;
     case ID_LEGEND:
-	n = new HTMLLegendElementImpl(document, form);
-	break;
+        n = new HTMLLegendElementImpl(document, form);
+        break;
     case ID_OPTGROUP:
-	n = new HTMLOptGroupElementImpl(document, form);
-	break;
+        n = new HTMLOptGroupElementImpl(document, form);
+        break;
     case ID_OPTION:
-	n = new HTMLOptionElementImpl(document, form);
-	break;
+        n = new HTMLOptionElementImpl(document, form);
+        break;
     case ID_SELECT:
-	n = new HTMLSelectElementImpl(document, form);
-	break;
+        n = new HTMLSelectElementImpl(document, form);
+        break;
     case ID_TEXTAREA:
-	n = new HTMLTextAreaElementImpl(document, form);
-	break;
+        n = new HTMLTextAreaElementImpl(document, form);
+        break;
 
 // lists
     case ID_DL:
-	n = new HTMLDListElementImpl(document);
-	break;
+        n = new HTMLDListElementImpl(document);
+        break;
     case ID_DD:
-	n = new HTMLGenericElementImpl(document, t->id);
-	popBlock(ID_DT);
-	popBlock(ID_DD);
-	break;
+        n = new HTMLGenericElementImpl(document, t->id);
+        popBlock(ID_DT);
+        popBlock(ID_DD);
+        break;
     case ID_DT:
-	n = new HTMLGenericElementImpl(document, t->id);
-	popBlock(ID_DD);
-	popBlock(ID_DT);
-	break;
+        n = new HTMLGenericElementImpl(document, t->id);
+        popBlock(ID_DD);
+        popBlock(ID_DT);
+        break;
     case ID_UL:
     {
-	n = new HTMLUListElementImpl(document);
-	break;
+        n = new HTMLUListElementImpl(document);
+        break;
     }
     case ID_OL:
     {
-	n = new HTMLOListElementImpl(document);
-	break;
+        n = new HTMLOListElementImpl(document);
+        break;
     }
     case ID_DIR:
-	n = new HTMLDirectoryElementImpl(document);
-	break;
+        n = new HTMLDirectoryElementImpl(document);
+        break;
     case ID_MENU:
-	n = new HTMLMenuElementImpl(document);
-	break;
+        n = new HTMLMenuElementImpl(document);
+        break;
     case ID_LI:
-	popBlock(ID_LI);
-	n = new HTMLLIElementImpl(document);
-	break;
+        popBlock(ID_LI);
+        n = new HTMLLIElementImpl(document);
+        break;
 
 // formatting elements (block)
     case ID_BLOCKQUOTE:
-	n = new HTMLBlockquoteElementImpl(document);
-	break;
+        n = new HTMLBlockquoteElementImpl(document);
+        break;
     case ID_DIV:
-	n = new HTMLDivElementImpl(document);
-	break;
+        n = new HTMLDivElementImpl(document);
+        break;
     case ID_H1:
     case ID_H2:
     case ID_H3:
     case ID_H4:
     case ID_H5:
     case ID_H6:
-	n = new HTMLHeadingElementImpl(document, t->id);
-	break;
+        n = new HTMLHeadingElementImpl(document, t->id);
+        break;
     case ID_HR:
-	n = new HTMLHRElementImpl(document);
-	break;
+        n = new HTMLHRElementImpl(document);
+        break;
     case ID_P:
-	n = new HTMLParagraphElementImpl(document);
-	break;
+        n = new HTMLParagraphElementImpl(document);
+        break;
     case ID_PRE:
-	n = new HTMLPreElementImpl(document);
-	break;
+        n = new HTMLPreElementImpl(document);
+        break;
 
 // font stuff
     case ID_BASEFONT:
-	n = new HTMLBaseFontElementImpl(document);
-	break;
+        n = new HTMLBaseFontElementImpl(document);
+        break;
     case ID_FONT:
-	n = new HTMLFontElementImpl(document);
-	break;
+        n = new HTMLFontElementImpl(document);
+        break;
 
 // ins/del
     case ID_DEL:
     case ID_INS:
-	n = new HTMLModElementImpl(document, t->id);
-	break;
+        n = new HTMLModElementImpl(document, t->id);
+        break;
 
 // anchor
     case ID_A:
-	n = new HTMLAnchorElementImpl(document);
-	break;
+        n = new HTMLAnchorElementImpl(document);
+        break;
 
 // images
     case ID_IMG:
-	n = new HTMLImageElementImpl(document);
-	break;
+        n = new HTMLImageElementImpl(document);
+        break;
     case ID_MAP:
-	map = new HTMLMapElementImpl(document);
-	n = map;
-	break;
+        map = new HTMLMapElementImpl(document);
+        n = map;
+        break;
     case ID_AREA:
-	n = new HTMLAreaElementImpl(document);
-	break;
+        n = new HTMLAreaElementImpl(document);
+        break;
 
 // objects, applets and scripts
     case ID_APPLET:
-	n = new HTMLAppletElementImpl(document);
-	break;
+        n = new HTMLAppletElementImpl(document);
+        break;
     case ID_EMBED:
-	n = new HTMLEmbedElementImpl(document);
-	break;
+        n = new HTMLEmbedElementImpl(document);
+        break;
     case ID_OBJECT:
-	n = new HTMLObjectElementImpl(document);
-	break;
+        n = new HTMLObjectElementImpl(document);
+        break;
     case ID_PARAM:
-	n = new HTMLParamElementImpl(document);
-	break;
+        n = new HTMLParamElementImpl(document);
+        break;
     case ID_SCRIPT:
-	n = new HTMLScriptElementImpl(document);
-	break;
+        n = new HTMLScriptElementImpl(document);
+        break;
 
 // tables
     case ID_TABLE:
-	n = new HTMLTableElementImpl(document);
-	break;
+        n = new HTMLTableElementImpl(document);
+        break;
     case ID_CAPTION:
-	n = new HTMLTableCaptionElementImpl(document);
-	break;
+        n = new HTMLTableCaptionElementImpl(document);
+        break;
     case ID_COLGROUP:
     case ID_COL:
-	n = new HTMLTableColElementImpl(document, t->id);
-	break;
+        n = new HTMLTableColElementImpl(document, t->id);
+        break;
     case ID_TR:
-	n = new HTMLTableRowElementImpl(document);
-	break;
+        n = new HTMLTableRowElementImpl(document);
+        break;
     case ID_TD:
     case ID_TH:
-	n = new HTMLTableCellElementImpl(document, t->id);
-	break;
+        n = new HTMLTableCellElementImpl(document, t->id);
+        break;
     case ID_THEAD:
     case ID_TBODY:
     case ID_TFOOT:
-	n = new HTMLTableSectionElementImpl(document, t->id);
-	break;
-	
+        n = new HTMLTableSectionElementImpl(document, t->id);
+        break;
+
 // inline elements
     case ID_BR:
-	n = new HTMLBRElementImpl(document);
-	break;
+        n = new HTMLBRElementImpl(document);
+        break;
     case ID_Q:
-	n = new HTMLQuoteElementImpl(document);
-	break;
+        n = new HTMLQuoteElementImpl(document);
+        break;
 
 // elements with no special representation in the DOM
 
 // block:
     case ID_ADDRESS:
     case ID_CENTER:
-	n = new HTMLGenericElementImpl(document, t->id);
-	break;
+        n = new HTMLGenericElementImpl(document, t->id);
+        break;
 // inline
-	// %fontstyle
+        // %fontstyle
     case ID_TT:
     case ID_U:
     case ID_B:
@@ -954,7 +954,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_BIG:
     case ID_SMALL:
 
-	// %phrase
+        // %phrase
     case ID_EM:
     case ID_STRONG:
     case ID_DFN:
@@ -966,42 +966,42 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_ABBR:
     case ID_ACRONYM:
 
-	// %special
+        // %special
     case ID_SUB:
     case ID_SUP:
     case ID_SPAN:
-	n = new HTMLGenericElementImpl(document, t->id);
-	break;
+        n = new HTMLGenericElementImpl(document, t->id);
+        break;
 
     case ID_BDO:
-	break;
+        break;
 
-	// these are special, and normally not rendered
+        // these are special, and normally not rendered
     case ID_NOEMBED:
         discard_until = ID_NOEMBED + ID_CLOSE_TAG;
-	return 0;
+        return 0;
     case ID_NOFRAMES:
-	discard_until = ID_NOFRAMES + ID_CLOSE_TAG;
-	return 0;
+        discard_until = ID_NOFRAMES + ID_CLOSE_TAG;
+        return 0;
     case ID_NOSCRIPT:
         if(HTMLWidget->part()->jScriptEnabled())
             discard_until = ID_NOSCRIPT + ID_CLOSE_TAG;
-	return 0;
-	// Waldo's plaintext stuff
+        return 0;
+        // Waldo's plaintext stuff
     case ID_PLAIN:
-	return 0;
-	break;
+        return 0;
+        break;
 // text
     case ID_TEXT:
-	n = new TextImpl(document, t->text);
-	break;
-#ifdef COMMENTS_IN_DOM
+        n = new TextImpl(document, t->text);
+        break;
     case ID_COMMENT:
-	n = new CommentImpl(document, t->text);
-	break;
+#ifdef COMMENTS_IN_DOM
+        n = new CommentImpl(document, t->text);
 #endif
+        break;
     default:
-	kdDebug( 6035 ) << "Unknown tag " << t->id << "!" << endl;
+        kdDebug( 6035 ) << "Unknown tag " << t->id << "!" << endl;
     }
     return n;
 }
@@ -1012,31 +1012,31 @@ void KHTMLParser::processCloseTag(Token *t)
     switch(t->id)
     {
     case ID_HTML+ID_CLOSE_TAG:
-    case ID_BODY+ID_CLOSE_TAG:	
-	// we never close the body tag, since some stupid web pages close it before the actual end of the doc.
-	// let's rely on the end() call to close things.
-	return;
+    case ID_BODY+ID_CLOSE_TAG:
+        // we never close the body tag, since some stupid web pages close it before the actual end of the doc.
+        // let's rely on the end() call to close things.
+        return;
     case ID_FORM+ID_CLOSE_TAG:
-	form = 0;
-	// this one is to get the right style on the body element
-	break;
+        form = 0;
+        // this one is to get the right style on the body element
+        break;
     case ID_MAP+ID_CLOSE_TAG:
-	map = 0;
-	break;
+        map = 0;
+        break;
     case ID_HEAD+ID_CLOSE_TAG:
-	inBody = true;
-	document->createSelector();
-	break;
+        inBody = true;
+        document->createSelector();
+        break;
     case ID_TITLE+ID_CLOSE_TAG:
         // This crashes with http://lists.kde.org/?t=95871288200004&w=2&r=1
         // i.e. when a title contains <pre>. (David)
         //static_cast<HTMLTitleElementImpl *>(current)->setTitle();
         // then let's use khtml's "RTTI" ;-) (Simon)
         if ( current->id() == ID_TITLE )
-    	  static_cast<HTMLTitleElementImpl *>(current)->setTitle();
-	break;
+          static_cast<HTMLTitleElementImpl *>(current)->setTitle();
+        break;
     default:
-	break;
+        break;
     }
 
 #ifdef PARSER_DEBUG
@@ -1044,8 +1044,8 @@ void KHTMLParser::processCloseTag(Token *t)
     NodeImpl *child = current->firstChild();
     while(child != 0)
     {
-	kdDebug( 6035 ) << "    " << child->nodeName().string() << endl;
-	child = child->nextSibling();
+        kdDebug( 6035 ) << "    " << child->nodeName().string() << endl;
+        child = child->nextSibling();
     }
 #endif
     popBlock(t->id-ID_CLOSE_TAG);
@@ -1060,11 +1060,11 @@ void KHTMLParser::pushBlock(int _id, int _level,
                             int _miscData1)
 {
     HTMLStackElem *Elem = new HTMLStackElem(_id, _level, current, _exitFunc, _miscData1,
-    					    blockStack);
+                                            blockStack);
 
     blockStack = Elem;
     addForbidden(_id, forbiddenTag);
-}    					
+}
 
 void KHTMLParser::popBlock( int _id )
 {
@@ -1073,35 +1073,35 @@ void KHTMLParser::popBlock( int _id )
 
     while( Elem && (Elem->id != _id))
     {
-    	if (maxLevel < Elem->level)
-    	{
-    	    maxLevel = Elem->level;
-    	}
-    	Elem = Elem->next;
+        if (maxLevel < Elem->level)
+        {
+            maxLevel = Elem->level;
+        }
+        Elem = Elem->next;
     }
     if (!Elem || maxLevel > Elem->level)
-	return;
+        return;
 
     Elem = blockStack;
 
     while (Elem)
     {
-    	if (Elem->id == _id)
-	{
-	    popOneBlock();
-    	    Elem = 0;
-	}
-    	else
-	{
-	    popOneBlock();
-	    Elem = blockStack;
-	}
+        if (Elem->id == _id)
+        {
+            popOneBlock();
+            Elem = 0;
+        }
+        else
+        {
+            popOneBlock();
+            Elem = blockStack;
+        }
     }
 }
 
 void KHTMLParser::popOneBlock()
 {
-    HTMLStackElem *Elem = blockStack;		
+    HTMLStackElem *Elem = blockStack;
 
     // we should never get here, but some bad html might cause it.
 #ifndef PARSER_DEBUG
@@ -1111,17 +1111,17 @@ void KHTMLParser::popOneBlock()
 #endif
 
     if(Elem->node != current)
-	if(current->renderer()) current->renderer()->close();
+        if(current->renderer()) current->renderer()->close();
 
     if (Elem->exitFunc != 0)
-	(this->*(Elem->exitFunc))( Elem );
+        (this->*(Elem->exitFunc))( Elem );
 
     removeForbidden(Elem->id, forbiddenTag);
 
     blockStack = Elem->next;
     current = Elem->node;
     if(!current->isInline())
-    	_inline = false;
+        _inline = false;
 
     delete Elem;
 }
@@ -1129,13 +1129,13 @@ void KHTMLParser::popOneBlock()
 void KHTMLParser::popInlineBlocks()
 {
     while(current->isInline())
-	popOneBlock();
+        popOneBlock();
 }
 
 void KHTMLParser::freeBlock()
 {
     while (blockStack)
-	popOneBlock();
+        popOneBlock();
     blockStack = 0;
 }
 
