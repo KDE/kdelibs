@@ -37,12 +37,12 @@ KHTMLSettings::KJavaScriptAdvice KHTMLSettings::strToAdvice(const QString& _str)
   KJavaScriptAdvice ret = KJavaScriptDunno;
 
   if (!_str)
-	ret = KJavaScriptDunno;
+        ret = KJavaScriptDunno;
 
   if (_str.lower() == QString::fromLatin1("accept"))
-	ret = KJavaScriptAccept;
+        ret = KJavaScriptAccept;
   else if (_str.lower() == QString::fromLatin1("reject"))
-	ret = KJavaScriptReject;
+        ret = KJavaScriptReject;
 
   return ret;
 }
@@ -54,12 +54,12 @@ const char* KHTMLSettings::adviceToStr(KJavaScriptAdvice _advice)
     case KJavaScriptReject: return I18N_NOOP("Reject");
     default: return 0;
     }
-	return 0;
+        return 0;
 }
 
 
 void KHTMLSettings::splitDomainAdvice(const QString& configStr, QString &domain,
-									  KJavaScriptAdvice &javaAdvice, KJavaScriptAdvice& javaScriptAdvice)
+                                                                          KJavaScriptAdvice &javaAdvice, KJavaScriptAdvice& javaScriptAdvice)
 {
     QString tmp(configStr);
     int splitIndex = tmp.find(':');
@@ -67,23 +67,23 @@ void KHTMLSettings::splitDomainAdvice(const QString& configStr, QString &domain,
     {
         domain = configStr;
         javaAdvice = KJavaScriptDunno;
-		javaScriptAdvice = KJavaScriptDunno;
+                javaScriptAdvice = KJavaScriptDunno;
     }
     else
     {
         domain = tmp.left(splitIndex);
-		QString adviceString = tmp.mid( splitIndex+1, tmp.length() );
-		int splitIndex2 = adviceString.find( ':' );
-		if( splitIndex2 == -1 ) {
-		  // Java advice only
-		  javaAdvice = strToAdvice( adviceString );
-		  javaScriptAdvice = KJavaScriptDunno;
-		} else {
-		  // Java and JavaScript advice
-		  javaAdvice = strToAdvice( adviceString.left( splitIndex2 ) );
-		  javaScriptAdvice = strToAdvice( adviceString.mid( splitIndex2+1,
-															adviceString.length() ) );
-		}
+                QString adviceString = tmp.mid( splitIndex+1, tmp.length() );
+                int splitIndex2 = adviceString.find( ':' );
+                if( splitIndex2 == -1 ) {
+                  // Java advice only
+                  javaAdvice = strToAdvice( adviceString );
+                  javaScriptAdvice = KJavaScriptDunno;
+                } else {
+                  // Java and JavaScript advice
+                  javaAdvice = strToAdvice( adviceString.left( splitIndex2 ) );
+                  javaScriptAdvice = strToAdvice( adviceString.mid( splitIndex2+1,
+                                                                                                                        adviceString.length() ) );
+                }
     }
 }
 
@@ -117,14 +117,14 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   if ( reset || config->hasKey( "FontSize" ) )
   {
     m_fontSize = config->readNumEntry( "FontSize" );
-	resetFontSizes();
+        resetFontSizes();
   }
 
   if ( reset || config->hasKey( "MinimumFontSize" ) )
   {
     m_minFontSize = config->readNumEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
     if(m_minFontSize < 6)
-	m_minFontSize = 6;
+        m_minFontSize = 6;
   }
 
   if ( reset || config->hasKey( "StandardFont" ) )
@@ -171,7 +171,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
   if ( reset || config->hasKey( "DefaultCharset" ) )
     {
-	m_charset = KGlobal::charsets()->nameToID(config->readEntry( "DefaultCharset", "iso-8859-1") );
+        m_charset = KGlobal::charsets()->nameToID(config->readEntry( "DefaultCharset", "iso-8859-1") );
     };
 
   if ( reset || config->hasKey( "EnforceDefaultCharset" ) )
@@ -208,33 +208,33 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   }
 
   if( reset || config->hasGroup( "Java/JavaScript Settings" ) ) {
-	config->setGroup( "Java/JavaScript Settings" );
+        config->setGroup( "Java/JavaScript Settings" );
 
-	// The global setting for Java
+        // The global setting for Java
     if ( reset || config->hasKey( "EnableJava" ) )
       m_bEnableJava = config->readBoolEntry( "EnableJava", false );
 
-	// The global setting for JavaScript
+        // The global setting for JavaScript
     if ( reset || config->hasKey( "EnableJavaScript" ) )
       m_bEnableJavaScript = config->readBoolEntry( "EnableJavaScript", false );
-	
-	// The global setting for JavaScript
+
+        // The global setting for JavaScript
     if ( reset || config->hasKey( "EnableCSS" ) )
-      m_bEnableJavaScript = config->readBoolEntry( "EnableCSS", true );
-	
-	// The domain-specific settings.
-	if( reset || config->hasKey( "JavaScriptDomainAdvice" ) ) {
-	  QStringList domainList = config->readListEntry( "JavaScriptDomainAdvice" );
-	  for (QStringList::ConstIterator it = domainList.begin();
-		   it != domainList.end(); ++it) {
-		QString domain;
-		KJavaScriptAdvice javaAdvice;
-		KJavaScriptAdvice javaScriptAdvice;
-		splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
-		javaDomainPolicy[domain] = javaAdvice;
-		javaScriptDomainPolicy[domain] = javaScriptAdvice;
-	  }
-	}
+        m_bEnableCSS = config->readBoolEntry( "EnableCSS", true );
+
+        // The domain-specific settings.
+        if( reset || config->hasKey( "JavaScriptDomainAdvice" ) ) {
+          QStringList domainList = config->readListEntry( "JavaScriptDomainAdvice" );
+          for (QStringList::ConstIterator it = domainList.begin();
+                   it != domainList.end(); ++it) {
+                QString domain;
+                KJavaScriptAdvice javaAdvice;
+                KJavaScriptAdvice javaScriptAdvice;
+                splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
+                javaDomainPolicy[domain] = javaAdvice;
+                javaScriptDomainPolicy[domain] = javaScriptAdvice;
+          }
+        }
   }
 }
 
@@ -243,12 +243,12 @@ bool KHTMLSettings::isJavaEnabled( const QString& hostname )
 {
   // First check whether there is a Domain-specific entry.
   if( javaDomainPolicy.contains( hostname ) ) {
-	// yes, use it (unless dunno)
-	KJavaScriptAdvice adv = javaDomainPolicy[ hostname ];
-	if( adv == KJavaScriptReject )
-	  return false;
-	else if( adv == KJavaScriptAccept )
-	  return true;
+        // yes, use it (unless dunno)
+        KJavaScriptAdvice adv = javaDomainPolicy[ hostname ];
+        if( adv == KJavaScriptReject )
+          return false;
+        else if( adv == KJavaScriptAccept )
+          return true;
   }
 
   // No domain-specific entry, or was dunno: use global setting
@@ -260,12 +260,12 @@ bool KHTMLSettings::isJavaScriptEnabled( const QString& hostname )
 {
   // First check whether there is a Domain-specific entry.
   if( javaScriptDomainPolicy.contains( hostname ) ) {
-	// yes, use it (unless dunno)
-	KJavaScriptAdvice adv = javaScriptDomainPolicy[ hostname ];
-	if( adv == KJavaScriptReject )
-	  return false;
-	else if( adv == KJavaScriptAccept )
-	  return true;
+        // yes, use it (unless dunno)
+        KJavaScriptAdvice adv = javaScriptDomainPolicy[ hostname ];
+        if( adv == KJavaScriptReject )
+          return false;
+        else if( adv == KJavaScriptAccept )
+          return true;
   }
 
   // No domain-specific entry, or was dunno: use global setting
@@ -277,12 +277,12 @@ bool KHTMLSettings::isCSSEnabled( const QString& hostname = QString::null )
 #if 0
       // First check whether there is a Domain-specific entry.
   if( cssDomainPolicy.contains( hostname ) ) {
-	// yes, use it (unless dunno)
-	KJavaScriptAdvice adv = cssDomainPolicy[ hostname ];
-	if( adv == KJavaScriptReject )
-	  return false;
-	else if( adv == KJavaScriptAccept )
-	  return true;
+        // yes, use it (unless dunno)
+        KJavaScriptAdvice adv = cssDomainPolicy[ hostname ];
+        if( adv == KJavaScriptReject )
+          return false;
+        else if( adv == KJavaScriptAccept )
+          return true;
   }
 
 #endif
@@ -295,12 +295,12 @@ void KHTMLSettings::resetFontSizes()
 {
   m_fontSizes.clear();
   for ( int i = 0; i < MAXFONTSIZES; i++ )
-	if( m_fontSize == 0 ) // small
-	  m_fontSizes << defaultSmallFontSizes[ i ];
-	else if( m_fontSize == 2 ) // large
-	  m_fontSizes << defaultLargeFontSizes[ i ];
-	else
-	  m_fontSizes << defaultMediumFontSizes[ i ];
+        if( m_fontSize == 0 ) // small
+          m_fontSizes << defaultSmallFontSizes[ i ];
+        else if( m_fontSize == 2 ) // large
+          m_fontSizes << defaultLargeFontSizes[ i ];
+        else
+          m_fontSizes << defaultMediumFontSizes[ i ];
 }
 
 void KHTMLSettings::setFontSizes(const QValueList<int> &_newFontSizes )
