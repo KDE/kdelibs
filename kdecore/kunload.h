@@ -5,15 +5,15 @@
 static void unload_##p (const char **list) \
 { \
     if (!objectDict) return; \
-    qDebug("removing meta classes for %s", #p); \
+    /*qDebug("removing meta classes for %s", #p);*/ \
     const char **n = list; \
     for (; *n; n++) { \
-        qDebug("  removing metaclass %s", *n); \
+        /*qDebug("  removing metaclass %s", *n);*/ \
 	/* Because objectDict was set to AutoDelete the following does the \
            right thing. */ \
         while (objectDict->remove(*n)) ; \
     } \
-    qDebug("removing done"); \
+    /*qDebug("removing done");*/ \
 } \
  \
 class _KUnloadMetaClass_Helper##p { \
