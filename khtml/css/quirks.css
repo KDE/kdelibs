@@ -23,3 +23,8 @@ TABLE {
     line-height: normal;
 }
 
+/* NN3+, IE don't have a top margin on <p> if it's the first child element.
+   Not having this breaks pages like the Design Patterns CD. */
+p:first-child {
+	margin-top: 0em;
+}
