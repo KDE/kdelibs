@@ -467,6 +467,9 @@ public:
      */
     virtual void del( const KURL &url, bool isfile);
 
+    // TODO KDE4: add setLinkDest() or something, to modify symlink targets.
+    // Will be used for kio_file but also kio_remote (#97129)
+
     /**
      * Used for any command that is specific to this slave (protocol)
      * Examples are : HTTP POST, mount and unmount (kio_file)
