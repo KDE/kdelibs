@@ -202,9 +202,6 @@ class KAction : public QObject
   Q_PROPERTY( QString toolTip READ toolTip WRITE setToolTip )
   Q_PROPERTY( QString icon READ icon WRITE setIcon )
 public:
-    /// @since 3.1
-    enum Scope { ScopeUnspecified, ScopeWidget, ScopeBuilder, ScopeGlobal };
-
     /**
      * Constructs an action with text, potential keyboard
      * shortcut, and a SLOT to call when this action is invoked by
@@ -1798,7 +1795,7 @@ public:
    * would have been ScopeWidget, but that would cause some backwards
    * compatibility problems.
    */
-  void setDefaultScope( KAction::Scope );
+  //void setDefaultScope( KAction::Scope );
 
   /**
    * Doc/View model.  This lets you add the action collection of a document
