@@ -6,3 +6,6 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
+<!ENTITY LMB    "<mousebutton>left</mousebutton> mouse button" -- please translate both entity name and content -->
+<!ENTITY MMB    "<mousebutton>middle</mousebutton> mouse button" -- please translate both entity name and content -->
+<!ENTITY RMB    "<mousebutton>right</mousebutton> mouse button" -- please translate both entity name and content -->
