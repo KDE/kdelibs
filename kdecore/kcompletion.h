@@ -173,6 +173,16 @@ public:
    */
   const QString& lastMatch() const { return myLastMatch; } // FIXME
 
+
+  /**
+   * @returns a list of all items inserted into KCompletion. This is useful
+   * if you need to save the state of a KCompletion object and restore it
+   * later.
+   * @see setItems
+   */
+  QStringList items() const;
+
+
   /**
    * Sets the completion mode to Auto/Manual (@see KCompletion documentation),
    * Shell or None.
@@ -218,22 +228,35 @@ public:
   QStringList allMatches() { return findAllCompletions( myLastString ); }
 
   /**
-   * Enables/disables beeping when
+   * Enables playing a sound when
    * @li @ref makeCompletion can't find a match
    * @li there is a partial completion
-   * Beeps only in manual-completion mode
-   * Default is enabled (does beep).
-   * @see isBeepEnabled
+   *
+   * Sounds are only played in shell-completion mode. Default is enabled
+   * @see disableSounds
+   * @see isSoundEnabled
    */
-  void setBeepEnabled( bool enable ) { myBeep = enable; }
+  void enableSounds() { myBeep = true; }
+
+  /**
+   * Disables playing a sound when
+   * @li @ref makeCompletion can't find a match
+   * @li there is a partial completion
+   *
+   * Sounds are only played in shell-completion mode. Default is enabled
+   * @see enableSounds
+   * @see isSoundEnabled
+   */
+  void disableSounds() { myBeep = false; }
 
   /**
    * Tells you whether KCompletion will issue beeps (@ref KApplication::beep)
    * Beeps only in manual-completion mode
-   * Default is enabled (does beep).
-   * @see setEnableBeep
+   * Default is enabled
+   * @see enableSounds
+   * @see disableSounds
    */
-  bool isBeepEnabled() const { return myBeep; }
+  bool isSoundsEnabled() const { return myBeep; }
 
 
 public slots:
@@ -273,8 +296,14 @@ public slots:
   /**
    * Sets the list of items available for completion. Removes all previous
    * items.
+   * @see items
    */
-  void setItemList( const QStringList& );
+  void setItems( const QStringList& );
+  inline void setItemList( const QStringList& list ) {
+    warning("KCompletion::setItemList() is deprecated, use setItems() instead");
+    setItems( list );
+  }
+
 
   /**
    * Adds an item to the list of available completions.
@@ -324,7 +353,9 @@ private:
   QString 		findCompletion( KCompFork * );
   const QStringList& 	findAllCompletions( const QString& );
   void 			extractStringsFromNode( const KCompTreeNode *,
-						const QString& beginning );
+						const QString& beginning,
+						QStringList *matches,
+						bool getAllItems = false ) const;
   void 			doBeep();
 
   QStringList           myMatches;

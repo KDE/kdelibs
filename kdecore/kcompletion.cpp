@@ -42,7 +42,7 @@ KCompletion::~KCompletion()
 }
 
 
-void KCompletion::setItemList( const QStringList& items )
+void KCompletion::setItems( const QStringList& items )
 {
     myForkList.clear();
     myLastString = QString::null;
@@ -50,6 +50,15 @@ void KCompletion::setItemList( const QStringList& items )
     QStringList::ConstIterator it;
     for ( it = items.begin(); it != items.end(); ++it )
         addItemInternal( *it );
+}
+
+
+QStringList KCompletion::items() const
+{
+    QStringList list;
+    extractStringsFromNode( myTreeRoot, QString::null, &list, true );
+    
+    return list;
 }
 
 
@@ -319,7 +328,7 @@ QString KCompletion::findCompletion( const QString& string )
 	    index = 0;
         myForkList.append( completion, node, index );
 	
-	if ( myCompletionMode == KGlobal::CompletionAuto || 
+	if ( myCompletionMode == KGlobal::CompletionAuto ||
 	     myCompletionMode == KGlobal::CompletionMan || myBackwards )
 	    completion = findCompletion( myForkList.last() );
 	else
@@ -409,7 +418,7 @@ const QStringList& KCompletion::findAllCompletions( const QString& string )
     else {
         // node has more than one child
         // -> recursively find all remaining completions
-        extractStringsFromNode( node, completion );
+        extractStringsFromNode( node, completion, &myMatches );
     }
 
     return myMatches;
@@ -417,9 +426,11 @@ const QStringList& KCompletion::findAllCompletions( const QString& string )
 
 
 void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
-					  const QString& beginning )
+					  const QString& beginning, 
+					  QStringList *matches,
+					  bool getAllItems ) const
 {
-    if ( !node )
+    if ( !node || !matches )
         return;
 
     // debug("Beginning: %s", beginning.ascii());
@@ -440,14 +451,14 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
 	        string += *node;
 
 	    else { // we found a leaf
-	        myMatches.append( string );
+	        matches->append( string );
 		// debug( " -> found match: %s", debugString( string ));
 	    }
 	}
 
 	// recursively find all other strings.
 	if ( node && node->childrenCount() > 1 )
-	    extractStringsFromNode( node, string );
+	    extractStringsFromNode( node, string, matches );
     }
 }
 
