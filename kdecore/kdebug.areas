@@ -102,6 +102,9 @@
 5005        knewsticker
 5006        kmail
 5007        kpf
+5050        libkmime
+5051        libkmime (Codecs)
+5052        libkmime (Plugin Loader)
 5100        libkdenetwork
 
 # kdepim
