@@ -715,8 +715,24 @@ public:
   static QString langLookup(const QString &fname, const char *rtype = "html");
 
   /**
+   * Retrieves the name of the internal language
+   *
+   * @return Name of the default language
+   */
+  static QString defaultLanguage();
+
+  /**
+   * Retrieves the name of the default country
+   *
+   * @return Name of the default country
+   */
+  static QString defaultCountry();
+
+  /**
    * @internal Creates a KLocale object for KGlobal and inits the locale
    * pointer.
+   *
+   * #### HPB: Make protected again?
    */
   static void initInstance();
 
@@ -797,17 +813,7 @@ private:
   /**
    * @internal function used to determine if we are using the C translation
    */
-  bool useInternalLanguage() const;
-
-  /**
-   * @internal Retrieves the name of the internal language
-   */
-  static QString internalLanguage();
-
-  /**
-   * @internal Retrieves the name of the internal country
-   */
-  static QString internalCountry();
+  bool useDefaultLanguage() const;
 
 private:
   // #### HPB: remove for KDE 3?

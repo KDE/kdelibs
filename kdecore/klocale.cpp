@@ -124,7 +124,7 @@ void KLocale::initLanguage(KConfig * config, bool useEnv)
 
   m_country = config->readEntry( "Country" );
   if ( m_country.isEmpty() )
-    m_country = internalCountry();
+    m_country = defaultCountry();
 
   // Reset the list and add the new languages
   d->languageList.clear();
@@ -141,7 +141,7 @@ void KLocale::initLanguage(KConfig * config, bool useEnv)
       d->languageList << QFile::decodeName( ::getenv("LC_ALL") );
       d->languageList << QFile::decodeName( ::getenv("LANG") );
     }
-  d->languageList << internalLanguage();
+  d->languageList << defaultLanguage();
 
   for ( QStringList::Iterator it = d->languageList.begin();
         it != d->languageList.end();
@@ -182,7 +182,7 @@ void KLocale::doBindInit()
 	++it )
     initCatalogue( it );
 
-  if ( useInternalLanguage() )
+  if ( useDefaultLanguage() )
     d->plural_form = -1;
   else
     {
@@ -364,7 +364,7 @@ bool KLocale::setLanguage(const QString & language)
     return false;
 
   bool bRes = true;
-  if ( language != internalLanguage() )
+  if ( language != defaultLanguage() )
     for ( QListIterator<KCatalogue> it(d->catalogues);
 	  it.current() && bRes;
 	  ++it )
@@ -520,7 +520,7 @@ QString KLocale::translate_priv(const char *msgid,
       return QString::null;
     }
 
-  if ( useInternalLanguage() )
+  if ( useDefaultLanguage() )
     return QString::fromUtf8( fallback );
 
   for ( QListIterator<KCatalogue> it(d->catalogues);
@@ -556,7 +556,7 @@ QString KLocale::translate( const char *index, const char *fallback) const
       return QString::null;
     }
 
-  if ( useInternalLanguage() )
+  if ( useDefaultLanguage() )
     return QString::fromUtf8( fallback );
 
   char *newstring = new char[strlen(index) + strlen(fallback) + 5];
@@ -599,7 +599,7 @@ QString KLocale::translate( const char *singular, const char *plural,
   QString r = translate_priv(newstring, 0);
   delete [] newstring;
 
-  if ( r.isEmpty() || useInternalLanguage() || d->plural_form == -1) {
+  if ( r.isEmpty() || useDefaultLanguage() || d->plural_form == -1) {
     if ( n == 1 )
       return put_n_in( QString::fromUtf8( singular ),  n );
     else
@@ -706,7 +706,7 @@ QString KLocale::translateQt( const char *index, const char *fallback) const
       return QString::null;
     }
 
-    if ( useInternalLanguage() )
+    if ( useDefaultLanguage() )
       return QString::null;
 
     char *newstring = new char[strlen(index) + strlen(fallback) + 5];
@@ -1473,7 +1473,7 @@ QString KLocale::langLookup(const QString &fname, const char *rtype)
     {
       QStringList langs = KGlobal::locale()->languageList();
       langs.append( "en" );
-      langs.remove( internalLanguage() );
+      langs.remove( defaultLanguage() );
       QStringList::ConstIterator lang;
       for (lang = langs.begin(); lang != langs.end(); ++lang)
 	search.append(QString("%1%2/%3").arg(localDoc[id]).arg(*lang).arg(fname));
@@ -1498,9 +1498,9 @@ QString KLocale::charset() const
   return m_charset;
 }
 
-bool KLocale::useInternalLanguage() const
+bool KLocale::useDefaultLanguage() const
 {
-  return language() == internalLanguage();
+  return language() == defaultLanguage();
 }
 
 void KLocale::initCharset(KConfig *config)
@@ -1672,12 +1672,12 @@ void KLocale::setCurrencySymbol(const QString & symbol)
   m_currencySymbol = symbol.stripWhiteSpace();
 }
 
-QString KLocale::internalLanguage()
+QString KLocale::defaultLanguage()
 {
   return QString::fromLatin1("en_US");
 }
 
-QString KLocale::internalCountry()
+QString KLocale::defaultCountry()
 {
   return QString::fromLatin1("C");
 }
