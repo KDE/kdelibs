@@ -296,7 +296,7 @@
       <template name="set" text="%t"/>
       <template name="setindex" text="%t"/>
       <template name="table" text="Tabelle %n. %t"/>
-      <template name="question" text="F: %t"/>
+      <template name="question" text="F: %n"/>
    </context>
 
    <context name="section-xref">
