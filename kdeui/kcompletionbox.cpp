@@ -25,6 +25,7 @@
 #include <qevent.h>
 #include <qstyle.h>
 
+#include <kglobalsettings.h>
 #include <knotifyclient.h>
 
 #include "kcompletionbox.h"
@@ -88,8 +89,11 @@ void KCompletionBox::slotActivated( QListBoxItem *item )
     if ( !item )
         return;
 
+    if ( !KGlobalSettings::singleClick() )
+    {
     hide();
     emit activated( item->text() );
+}
 }
 
 bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
@@ -213,11 +217,25 @@ void KCompletionBox::popup()
 
 void KCompletionBox::show()
 {
+    resize( sizeHint() );
+
     if ( d->m_parent ) {
-        move( d->m_parent->mapToGlobal( QPoint(0, d->m_parent->height()) ));
+	QRect screen = QApplication::desktop()->
+                       screenGeometry( QApplication::desktop()->
+                                       screenNumber( this ) );
+
+	QPoint orig = d->m_parent->mapToGlobal( QPoint(0, d->m_parent->height()) );
+       	int x = orig.x();
+	int y = orig.y();
+
+	if ( x + width() > screen.width() )
+	    x = screen.width() - width();
+	if (y + height() > screen.height() )
+	    y = y - height() - d->m_parent->height();
+
+        move( x, y);
         qApp->installEventFilter( this );
     }
-    resize( sizeHint() );
 
     // ### we shouldn't need to call this, but without this, the scrollbars
     // are pretty b0rked.
@@ -372,9 +390,18 @@ void KCompletionBox::slotCurrentChanged()
 
 void KCompletionBox::slotItemClicked( QListBoxItem *item )
 {
-    if ( d->down_workaround && item ) {
+    if ( item )
+    {
+        if ( d->down_workaround ) {
         d->down_workaround = false;
         emit highlighted( item->text() );
+        }
+    
+        if ( KGlobalSettings::singleClick() )
+        {
+            hide();
+            emit activated( item->text() );
+        }
     }
 }
 
