@@ -19,6 +19,7 @@
 
 #include <qstring.h>
 #include <html_element.h>
+#include <html_head.h>
 #include <dom_string.h>
 
 #include "kjs.h"
@@ -80,6 +81,8 @@ KJSO *KJS::HTMLDocFunction::execute(KJSContext *context)
 {
   KJSO *result;
   Ptr v, n;
+  DOM::HTMLElement element;
+  DOM::Node node;
   
   switch (id) {
   case IDDocWrite:
@@ -141,11 +144,41 @@ void KJS::HTMLDocument::put(const CString &p, KJSO *v, int)
 KJSO *KJS::HTMLElement::get(const CString &p) const
 {
   DOM::DOMString str;
+  DOM::HTMLHtmlElement html;
+  DOM::HTMLBodyElement body;
+  DOM::HTMLLinkElement link;
 
   switch (element.elementId()) {
+  case ID_HTML:
+    html = element;
+    if (p == "version")
+      return new KJSString(html.version());
+    break;
+  case ID_A:
+    link = element;
+    if (p == "disabled")
+      return new KJSBoolean(link.disabled());
+    else if (p == "charset")
+      str = link.charset();
+    else if (p == "href")
+      str = link.href();
+    else if (p == "hreflang")
+      str = link.hreflang();
+    else if (p == "media")
+      str = link.media();
+    else if (p == "rel")
+      str = link.rel();
+    else if (p == "rev")
+      str = link.rev();
+    else if (p == "target")
+      str = link.target();
+    else if (p == "type")
+      str = link.type();
+    else
+      break;
+    return new KJSString(str);
+    break;
   case ID_BODY:
-    // HTMLBodyElement
-    DOM::HTMLBodyElement body;
     body = element;
     if (p == "aLink")
       str = body.aLink();
@@ -185,10 +218,41 @@ KJSO *KJS::HTMLElement::get(const CString &p) const
 
 void KJS::HTMLElement::put(const CString &p, KJSO *v, int)
 {
+  DOM::HTMLHtmlElement html;
+  DOM::HTMLLinkElement link;
+
   Ptr s = toString(v);
   DOM::DOMString str = s->sVal().string();
+  Ptr b = toBoolean(v);
 
   switch (element.elementId()) {
+  case ID_HTML:
+    html = element;
+    html.setVersion(str);
+    return;
+  case ID_A:
+    link = element;
+    if (p == "disabled")
+      link.setDisabled(b->bVal());
+    else if (p == "charset")
+      link.setCharset(str);
+    else if (p == "href")
+      link.setHref(str);
+    else if (p == "hreflang")
+      link.setHreflang(str);
+    else if (p == "media")
+      link.setMedia(str);
+    else if (p == "rel")
+      link.setRel(str);
+    else if (p == "rev")
+      link.setRev(str);
+    else if (p == "target")
+      link.setTarget(str);
+    else if (p == "type")
+      link.setType(str);
+    else
+      break;
+    return;
   case ID_BODY:
     // HTMLBodyElement
     DOM::HTMLBodyElement body;
