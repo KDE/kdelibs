@@ -456,12 +456,7 @@ void HTMLFormElementImpl::walletOpened(KWallet::Wallet *w) {
         }
     }
 
-    if (last) {
-        RenderWidget *r = static_cast<RenderWidget*>(last->renderer());
-        if (r && r->widget()) {
-            r->widget()->setFocus();
-        }
-    }
+    getDocument()->setFocusNode(last);
 }
 
 void HTMLFormElementImpl::submitFromKeyboard()
