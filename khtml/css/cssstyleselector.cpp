@@ -96,7 +96,7 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
     //kdDebug( 6080 ) << "number of style sheets in document " << authorStyleSheets.count() << endl;
     //kdDebug( 6080 ) << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl;
 
-    KURL u = doc->url();
+    KURL u = doc->URL();
 
     u.setQuery( QString::null );
     u.setRef( QString::null );

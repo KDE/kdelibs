@@ -848,7 +848,7 @@ void KHTMLView::print()
         // set up KPrinter
         printer->setFullPage(false);
         printer->setCreator("KDE 2.1 HTML Library");
-        QString docname = m_part->xmlDocImpl()->url();
+        QString docname = m_part->xmlDocImpl()->URL();
         if ( !docname.isEmpty() )
 	    printer->setDocName(docname);
 

@@ -179,7 +179,7 @@ public:
     // moved from HTMLDocument in DOM2
     ElementImpl *getElementById ( const DOMString &elementId );
     
-    QString url() const { return m_url; }
+    QString URL() const { return m_url; }
     void setURL(QString url) { m_url = url; }
 
     QString baseURL() const { return m_baseURL.isEmpty() ? m_url : m_baseURL; }

@@ -131,7 +131,7 @@ DOMString HTMLDocument::domain() const
 DOMString HTMLDocument::URL() const
 {
     if(!impl) return DOMString();
-    return ((HTMLDocumentImpl *)impl)->url();
+    return ((HTMLDocumentImpl *)impl)->URL();
 }
 
 HTMLElement HTMLDocument::body() const

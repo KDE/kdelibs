@@ -912,7 +912,7 @@ void Loader::servePendingRequests()
   if (!req->object->accept().isEmpty())
       job->addMetaData("accept", req->object->accept());
   if ( req->m_docLoader )  {
-      KURL r = req->m_docLoader->doc()->url();
+      KURL r = req->m_docLoader->doc()->URL();
       if ( r.protocol().startsWith( "http" ) && r.path().isEmpty() )
           r.setPath( "/" );
 
