@@ -43,7 +43,7 @@ class HTMLCollection;
 /**
  * All HTML element interfaces derive from this class. Elements that
  * only expose the HTML core attributes are represented by the base
- * <code> HTMLElement </code> interface. These elements are as
+ * \c HTMLElement interface. These elements are as
  * follows:
  *
  *  <ulist> <item> HEAD
@@ -61,7 +61,7 @@ class HTMLCollection;
  *
  *  </item> <item> ADDRESS, CENTER
  *
- *  </item> </ulist> Note. The <code> style </code> attribute for this
+ *  </item> </ulist> Note. The \c style attribute for this
  * interface is reserved for future usage.
  *
  */

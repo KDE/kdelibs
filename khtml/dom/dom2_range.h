@@ -120,23 +120,22 @@ public:
      */
     // ### BIC make const in the next release
     Node commonAncestorContainer();
-    
+
     /**
      * Sets the attributes describing the start of the range.
      *
-     * @param refNode The <code> refNode </code> value. This parameter
-     * must be different from <code> null </code> .
+     * @param refNode The \c refNode value. This parameter
+     * must be different from \c null .
      *
-     * @param offset The <code> startOffset </code> value.
+     * @param offset The \c startOffset value.
      *
      * @return
      *
      * @exception RangeException
-     * NULL_NODE_ERR: Raised if <code> refNode </code> is <code> null
-     * </code> .
+     * NULL_NODE_ERR: Raised if \c refNode is \c null .
      *
-     *  INVALID_NODE_TYPE_ERR: Raised if <code> refNode </code> or an
-     * ancestor of <code> refNode </code> is an Attr, Entity,
+     *  INVALID_NODE_TYPE_ERR: Raised if \c refNode or an
+     * ancestor of \c refNode is an Attr, Entity,
      * Notation, or DocumentType node.
      *
      *  If an offset is out-of-bounds, should it just be fixed up or
@@ -148,19 +147,18 @@ public:
     /**
      * Sets the attributes describing the end of a range.
      *
-     * @param refNode The <code> refNode </code> value. This parameter
-     * must be different from <code> null </code> .
+     * @param refNode The \c refNode value. This parameter
+     * must be different from \c null .
      *
-     * @param offset The <code> endOffset </code> value.
+     * @param offset The \c endOffset value.
      *
      * @return
      *
      * @exception RangeException
-     * NULL_NODE_ERR: Raised if <code> refNode </code> is <code> null
-     * </code> .
+     * NULL_NODE_ERR: Raised if \c refNode is \c null .
      *
-     *  INVALID_NODE_TYPE_ERR: Raised if <code> refNode </code> or an
-     * ancestor of <code> refNode </code> is an Attr, Entity,
+     *  INVALID_NODE_TYPE_ERR: Raised if \c refNode or an
+     * ancestor of \c refNode is an Attr, Entity,
      * Notation, or DocumentType node.
      *
      */
@@ -169,14 +167,14 @@ public:
     /**
      * Sets the start position to be before a node
      *
-     * @param refNode Range starts before <code> refNode </code>
+     * @param refNode Range starts before \c refNode
      *
      * @return
      *
      * @exception RangeException
-     * INVALID_NODE_TYPE_ERR: Raised if an ancestor of <code> refNode
-     * </code> is an Attr, Entity, Notation, or DocumentType node or
-     * if <code> refNode </code> is a Document, DocumentFragment,
+     * INVALID_NODE_TYPE_ERR: Raised if an ancestor of \c refNode
+     * is an Attr, Entity, Notation, or DocumentType node or
+     * if \c refNode is a Document, DocumentFragment,
      * Attr, Entity, or Notation node.
      *
      */
@@ -185,14 +183,14 @@ public:
     /**
      * Sets the start position to be after a node
      *
-     * @param refNode Range starts after <code> refNode </code>
+     * @param refNode Range starts after \c refNode
      *
      * @return
      *
      * @exception RangeException
-     * INVALID_NODE_TYPE_ERR: Raised if an ancestor of <code> refNode
-     * </code> is an Attr, Entity, Notation, or DocumentType node or
-     * if <code> refNode </code> is a Document, DocumentFragment,
+     * INVALID_NODE_TYPE_ERR: Raised if an ancestor of \c refNode
+     * is an Attr, Entity, Notation, or DocumentType node or
+     * if \c refNode is a Document, DocumentFragment,
      * Attr, Entity, or Notation node.
      *
      */
@@ -201,14 +199,14 @@ public:
     /**
      * Sets the end position to be before a node.
      *
-     * @param refNode Range ends before <code> refNode </code>
+     * @param refNode Range ends before \c refNode
      *
      * @return
      *
      * @exception RangeException
-     * INVALID_NODE_TYPE_ERR: Raised if an ancestor of <code> refNode
-     * </code> is an Attr, Entity, Notation, or DocumentType node or
-     * if <code> refNode </code> is a Document, DocumentFragment,
+     * INVALID_NODE_TYPE_ERR: Raised if an ancestor of \c refNode
+     * is an Attr, Entity, Notation, or DocumentType node or
+     * if \c refNode is a Document, DocumentFragment,
      * Attr, Entity, or Notation node.
      *
      */
@@ -217,14 +215,14 @@ public:
     /**
      * Sets the end of a range to be after a node
      *
-     * @param refNode Range ends after <code> refNode </code> .
+     * @param refNode Range ends after \c refNode .
      *
      * @return
      *
      * @exception RangeException
-     * INVALID_NODE_TYPE_ERR: Raised if an ancestor of <code> refNode
-     * </code> is an Attr, Entity, Notation or DocumentType node or if
-     * <code> refNode </code> is a Document, DocumentFragment, Attr,
+     * INVALID_NODE_TYPE_ERR: Raised if an ancestor of \c refNode
+     * is an Attr, Entity, Notation or DocumentType node or if
+     * \c refNode is a Document, DocumentFragment, Attr,
      * Entity, or Notation node.
      *
      */
@@ -249,9 +247,9 @@ public:
      * @return
      *
      * @exception RangeException
-     * INVALID_NODE_TYPE_ERR: Raised if an ancestor of <code> refNode
-     * </code> is an Attr, Entity, Notation or DocumentType node or if
-     * <code> refNode </code> is a Document, DocumentFragment, Attr,
+     * INVALID_NODE_TYPE_ERR: Raised if an ancestor of \c refNode
+     * is an Attr, Entity, Notation or DocumentType node or if
+     * \c refNode is a Document, DocumentFragment, Attr,
      * Entity, or Notation node.
      *
      */
@@ -265,8 +263,8 @@ public:
      * @return
      *
      * @exception RangeException
-     * INVALID_NODE_TYPE_ERR: Raised if <code> refNode </code> or an
-     * ancestor of <code> refNode </code> is an Attr, Entity, Notation
+     * INVALID_NODE_TYPE_ERR: Raised if \c refNode or an
+     * ancestor of \c refNode is an Attr, Entity, Notation
      * or DocumentType node.
      *
      */
@@ -288,7 +286,7 @@ public:
      *
      * @return -1, 0 or 1 depending on whether the corresponding
      * end-point of the Range is before, equal to, or after the
-     * corresponding end-point of <code> sourceRange </code> .
+     * corresponding end-point of \c sourceRange .
      *
      * @exception DOMException
      * WRONG_DOCUMENT_ERR: Raised if the two Ranges are not in the
@@ -367,17 +365,17 @@ public:
      * NO_MODIFICATION_ALLOWED_ERR: Raised if an ancestor container of
      * the start of the range is read-only.
      *
-     *  WRONG_DOCUMENT_ERR: Raised if <code> newNode </code> and the
+     *  WRONG_DOCUMENT_ERR: Raised if \c newNode and the
      * container of the start of the Range were not created from the
      * same document.
      *
      *  HIERARCHY_REQUEST_ERR: Raised if the container of the start of
      * the Range is of a type that does not allow children of the type
-     * of <code> newNode </code> or if <code> newNode </code> is an
+     * of \c newNode or if \c newNode is an
      * ancestor of the container .
      *
      * @exception RangeException
-     * INVALID_NODE_TYPE_ERR: Raised if <code> node </code> is an
+     * INVALID_NODE_TYPE_ERR: Raised if \c node is an
      * Attr, Entity, Notation, DocumentFragment, or Document node.
      *
      */
@@ -395,22 +393,22 @@ public:
      * NO_MODIFICATION_ALLOWED_ERR: Raised if an ancestor container of
      * either end-point of the range is read-only.
      *
-     *  WRONG_DOCUMENT_ERR: Raised if <code> newParent </code> and the
+     *  WRONG_DOCUMENT_ERR: Raised if \c newParent and the
      * container of the start of the Range were not created from the
      * same document.
      *
      *  HIERARCHY_REQUEST_ERR: Raised if the container of the start of
      * the Range is of a type that does not allow children of the type
-     * of <code> newParent </code> or if <code> newParent </code> is
-     * an ancestor of the container or if <code> node </code> would
+     * of \c newParent or if \c newParent is
+     * an ancestor of the container or if \c node would
      * end up with a child node of a type not allowed by the type of
-     * <code> node </code> .
+     * \c node .
      *
      * @exception RangeException
      * BAD_ENDPOINTS_ERR: Raised if the range partially selects a
      * non-text node.
      *
-     *  INVALID_NODE_TYPE_ERR: Raised if <code> node </code> is an
+     *  INVALID_NODE_TYPE_ERR: Raised if \c node is an
      * Attr, Entity, DocumentType, Notation, Document, or
      * DocumentFragment node.
      *
@@ -433,7 +431,7 @@ public:
      *
      */
     DOMString toString (  );
-    
+
     /**
      * @internal Not part of DOM
      */
@@ -441,7 +439,7 @@ public:
 
     /* Mozilla extension - only works for HTML documents. */
     DocumentFragment createContextualFragment (const DOMString &html);
-    
+
     /**
      * Called to indicate that the range is no longer in use and that
      * the implementation may relinquish any resources associated with

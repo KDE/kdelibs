@@ -37,7 +37,7 @@ namespace DOM {
 class CSSRuleImpl;
 
 /**
- * The <code> CSSRule </code> interface is the abstract base interface
+ * The \c CSSRule interface is the abstract base interface
  * for any type of CSS <a
  * href="http://www.w3.org/TR/REC-CSS2/syndata.html#q5"> statement
  * </a> . This includes both <a
@@ -46,8 +46,8 @@ class CSSRuleImpl;
  * href="http://www.w3.org/TR/REC-CSS2/syndata.html#at-rules">
  * at-rules </a> . An implementation is expected to preserve all rules
  * specified in a CSS style sheet, even if it is not recognized.
- * Unrecognized rules are represented using the <code> CSSUnknownRule
- * </code> interface.
+ * Unrecognized rules are represented using the \c CSSUnknownRule
+ * interface.
  *
  */
 class CSSRule
@@ -79,8 +79,8 @@ public:
     /**
      * The type of the rule, as defined above. The expectation is that
      * binding-specific casting methods can be used to cast down from
-     * an instance of the <code> CSSRule </code> interface to the
-     * specific derived interface implied by the <code> type </code> .
+     * an instance of the \c CSSRule interface to the
+     * specific derived interface implied by the \c type .
      *
      */
     unsigned short type() const;
@@ -121,7 +121,7 @@ public:
      * If this rule is contained inside another rule (e.g. a style
      * rule inside an @media block), this is the containing rule. If
      * this rule is not nested inside any other rules, this returns
-     * <code> null </code> .
+     * \c null .
      *
      */
     CSSRule parentRule() const;
@@ -142,8 +142,8 @@ protected:
 class CSSCharsetRuleImpl;
 
 /**
- * The <code> CSSCharsetRule </code> interface a <a href=""> @charset
- * rule </a> in a CSS style sheet. A <code> @charset </code> rule can
+ * The \c CSSCharsetRule interface a <a href=""> @charset
+ * rule </a> in a CSS style sheet. A \c @charset rule can
  * be used to define the encoding of the style sheet.
  *
  */
@@ -162,7 +162,7 @@ public:
     ~CSSCharsetRule();
 
     /**
-     * The encoding information used in this <code> @charset </code>
+     * The encoding information used in this \c @charset
      * rule.
      *
      */
@@ -185,10 +185,10 @@ public:
 
 class CSSFontFaceRuleImpl;
 /**
- * The <code> CSSFontFaceRule </code> interface represents a <a
+ * The \c CSSFontFaceRule interface represents a <a
  * href="http://www.w3.org/TR/REC-CSS2/fonts.html#font-descriptions">
- * @font-face rule </a> in a CSS style sheet. The <code> @font-face
- * </code> rule is used to hold a set of font descriptions.
+ * @font-face rule </a> in a CSS style sheet. The \c @font-face
+ * rule is used to hold a set of font descriptions.
  *
  */
 class CSSFontFaceRule : public CSSRule
@@ -215,10 +215,10 @@ public:
 
 class CSSImportRuleImpl;
 /**
- * The <code> CSSImportRule </code> interface represents a <a
+ * The \c CSSImportRule interface represents a <a
  * href="http://www.w3.org/TR/REC-CSS2/cascade.html#at-import">
- * @import rule </a> within a CSS style sheet. The <code> @import
- * </code> rule is used to import style rules from other style sheets.
+ * @import rule </a> within a CSS style sheet. The \c @import
+ * rule is used to import style rules from other style sheets.
  *
  */
 class CSSImportRule : public CSSRule
@@ -237,7 +237,7 @@ public:
 
     /**
      * The location of the style sheet to be imported. The attribute
-     * will not contain the <code> "url(...)" </code> specifier around
+     * will not contain the \c "url(...)" specifier around
      * the URI.
      *
      */
@@ -262,9 +262,9 @@ public:
 
 class CSSMediaRuleImpl;
 /**
- * The <code> CSSMediaRule </code> interface represents a <a
+ * The \c CSSMediaRule interface represents a <a
  * href="http://www.w3.org/TR/REC-CSS2/media.html#at-media-rule">
- * @media rule </a> in a CSS style sheet. A <code> @media </code> rule
+ * @media rule </a> in a CSS style sheet. A \c @media rule
  * can be used to delimit style rules for specific media types.
  *
  */
@@ -315,7 +315,7 @@ public:
      *
      * @exception DOMException
      * HIERARCHY_REQUEST_ERR: Raised if the rule cannot be inserted at
-     * the specified index. e.g. if an <code> @import </code> rule is
+     * the specified index. e.g. if an \c @import rule is
      * inserted after a standard rule set or other at-rule.
      *
      *  INDEX_SIZE_ERR: Raised if the specified index is not a valid
@@ -353,9 +353,9 @@ public:
 
 class CSSPageRuleImpl;
 /**
- * The <code> CSSPageRule </code> interface represents a <a
+ * The \c CSSPageRule interface represents a <a
  * href="http://www.w3.org/TR/REC-CSS2/page.html#page-box"> @page rule
- * </a> within a CSS style sheet. The <code> @page </code> rule is
+ * </a> within a CSS style sheet. The \c @page rule is
  * used to specify the dimensions, orientation, margins, etc. of a
  * page box for paged media.
  *
@@ -404,7 +404,7 @@ public:
 
 class CSSStyleRuleImpl;
 /**
- * The <code> CSSStyleRule </code> interface represents a single <a
+ * The \c CSSStyleRule interface represents a single <a
  * href="http://www.w3.org/TR/REC-CSS2/syndata.html#q8"> rule set </a>
  * in a CSS style sheet.
  *
@@ -455,7 +455,7 @@ public:
 
 class CSSUnknownRuleImpl;
 /**
- * The <code> CSSUnkownRule </code> interface represents an at-rule
+ * The \c CSSUnkownRule interface represents an at-rule
  * not supported by this user agent.
  *
  */
@@ -478,7 +478,7 @@ public:
 class CSSRuleListImpl;
 class StyleListImpl;
 /**
- * The <code> CSSRuleList </code> interface provides the abstraction
+ * The \c CSSRuleList interface provides the abstraction
  * of an ordered collection of CSS rules.
  *
  */
@@ -496,9 +496,9 @@ public:
     ~CSSRuleList();
 
     /**
-     * The number of <code> CSSRule </code> s in the list. The range
-     * of valid child rule indices is <code> 0 </code> to <code>
-     * length-1 </code> inclusive.
+     * The number of \c CSSRule s in the list. The range
+     * of valid child rule indices is \c 0 to
+     * \c length-1 inclusive.
      *
      */
     unsigned long length() const;
@@ -510,8 +510,8 @@ public:
      *
      * @param index Index into the collection
      *
-     * @return The style rule at the <code> index </code> position in
-     * the <code> CSSRuleList </code> , or <code> null </code> if that
+     * @return The style rule at the \c index position in
+     * the \c CSSRuleList , or \c null if that
      * is not a valid index.
      *
      */

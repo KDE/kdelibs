@@ -229,7 +229,7 @@ public:
     void setMarginWidth( const DOMString & );
 
     /**
-     * The frame name (object of the <code> target </code> attribute).
+     * The frame name (object of the \c target attribute).
      * See the <a
      * href="http://www.w3.org/TR/REC-html40/present/frames.html#adef-name-FRAME">
      * name attribute definition </a> in HTML 4.0.
@@ -456,7 +456,7 @@ public:
     void setMarginWidth( const DOMString & );
 
     /**
-     * The frame name (object of the <code> target </code> attribute).
+     * The frame name (object of the \c target attribute).
      * See the <a
      * href="http://www.w3.org/TR/REC-html40/present/frames.html#adef-name-IFRAME">
      * name attribute definition </a> in HTML 4.0.

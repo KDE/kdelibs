@@ -51,16 +51,16 @@ class ProcessingInstructionImpl;
  * nested. The primary purpose is for including material such as XML
  * fragments, without needing to escape all the delimiters.
  *
- *  The <code> DOMString </code> attribute of the <code> Text </code>
+ *  The \c DOMString attribute of the \c Text
  * node holds the text that is contained by the CDATA section. Note
  * that this may contain characters that need to be escaped outside of
  * CDATA sections and that, depending on the character encoding
  * ("charset") chosen for serialization, it may be impossible to write
  * out some characters as part of a CDATA section.
  *
- *  The <code> CDATASection </code> interface inherits the <code>
- * CharacterData </code> interface through the <code> Text </code>
- * interface. Adjacent <code> CDATASections </code> nodes are not
+ *  The \c CDATASection interface inherits the
+ * \c CharacterData interface through the \c Text
+ * interface. Adjacent \c CDATASections nodes are not
  * merged by use of the Element.normalize() method.
  *
  */
@@ -86,15 +86,15 @@ class DOMString;
 /**
  * This interface represents an entity, either parsed or unparsed, in
  * an XML document. Note that this models the entity itself not the
- * entity declaration. <code> Entity </code> declaration modeling has
+ * entity declaration. \c Entity declaration modeling has
  * been left for a later Level of the DOM specification.
  *
- *  The <code> nodeName </code> attribute that is inherited from
- * <code> Node </code> contains the name of the entity.
+ *  The \c nodeName attribute that is inherited from
+ * \c Node contains the name of the entity.
  *
  *  An XML processor may choose to completely expand entities before
  * the structure model is passed to the DOM; in this case there will
- * be no <code> EntityReference </code> nodes in the document tree.
+ * be no \c EntityReference nodes in the document tree.
  *
  *  XML does not mandate that a non-validating XML processor read and
  * process entity declarations made in the external subset or declared
@@ -102,24 +102,24 @@ class DOMString;
  * declared in the external subset need not be expanded by some
  * classes of applications, and that the replacement value of the
  * entity may not be available. When the replacement value is
- * available, the corresponding <code> Entity </code> node's child
+ * available, the corresponding \c Entity node's child
  * list represents the structure of that replacement text. Otherwise,
  * the child list is empty.
  *
- *  The resolution of the children of the <code> Entity </code> (the
+ *  The resolution of the children of the \c Entity (the
  * replacement value) may be lazily evaluated; actions by the user
- * (such as calling the <code> childNodes </code> method on the <code>
- * Entity </code> Node) are assumed to trigger the evaluation.
+ * (such as calling the \c childNodes method on the
+ * \c Entity Node) are assumed to trigger the evaluation.
  *
- *  The DOM Level 1 does not support editing <code> Entity </code>
- * nodes; if a user wants to make changes to the contents of an <code>
- * Entity </code> , every related <code> EntityReference </code> node
- * has to be replaced in the structure model by a clone of the <code>
- * Entity </code> 's contents, and then the desired changes must be
+ *  The DOM Level 1 does not support editing \c Entity
+ * nodes; if a user wants to make changes to the contents of an
+ * \c Entity , every related \c EntityReference node
+ * has to be replaced in the structure model by a clone of the
+ * \c Entity 's contents, and then the desired changes must be
  * made to each of those clones instead. All the descendants of an
- * <code> Entity </code> node are readonly.
+ * \c Entity node are readonly.
  *
- *  An <code> Entity </code> node does not have any parent.
+ *  An \c Entity node does not have any parent.
  *
  */
 class Entity : public Node
@@ -137,23 +137,21 @@ public:
 
     /**
      * The public identifier associated with the entity, if specified.
-     * If the public identifier was not specified, this is <code> null
-     * </code> .
+     * If the public identifier was not specified, this is \c null .
      *
      */
     DOMString publicId() const;
 
     /**
      * The system identifier associated with the entity, if specified.
-     * If the system identifier was not specified, this is <code> null
-     * </code> .
+     * If the system identifier was not specified, this is \c null .
      *
      */
     DOMString systemId() const;
 
     /**
      * For unparsed entities, the name of the notation for the entity.
-     * For parsed entities, this is <code> null </code> .
+     * For parsed entities, this is \c null .
      *
      */
     DOMString notationName() const;
@@ -163,7 +161,7 @@ protected:
 
 
 /**
- * <code> EntityReference </code> objects may be inserted into the
+ * \c EntityReference objects may be inserted into the
  * structure model when an entity reference is in the source document,
  * or when the user wishes to insert an entity reference. Note that
  * character references and references to predefined entities are
@@ -171,20 +169,20 @@ protected:
  * characters are represented by their Unicode equivalent rather than
  * by an entity reference. Moreover, the XML processor may completely
  * expand references to entities while building the structure model,
- * instead of providing <code> EntityReference </code> objects. If it
- * does provide such objects, then for a given <code> EntityReference
- * </code> node, it may be that there is no <code> Entity </code> node
- * representing the referenced entity; but if such an <code> Entity
- * </code> exists, then the child list of the <code> EntityReference
- * </code> node is the same as that of the <code> Entity </code> node.
- * As with the <code> Entity </code> node, all descendants of the
- * <code> EntityReference </code> are readonly.
+ * instead of providing \c EntityReference objects. If it
+ * does provide such objects, then for a given \c EntityReference
+ * node, it may be that there is no \c Entity node
+ * representing the referenced entity; but if such an \c Entity
+ * exists, then the child list of the \c EntityReference
+ * node is the same as that of the \c Entity node.
+ * As with the \c Entity node, all descendants of the
+ * \c EntityReference are readonly.
  *
- *  The resolution of the children of the <code> EntityReference
- * </code> (the replacement value of the referenced <code> Entity
- * </code> ) may be lazily evaluated; actions by the user (such as
- * calling the <code> childNodes </code> method on the <code>
- * EntityReference </code> node) are assumed to trigger the
+ *  The resolution of the children of the \c EntityReference
+ * (the replacement value of the referenced \c Entity
+ * ) may be lazily evaluated; actions by the user (such as
+ * calling the \c childNodes method on the
+ * \c EntityReference node) are assumed to trigger the
  * evaluation.
  *
  */
@@ -212,14 +210,14 @@ class DOMString;
  * notation either declares, by name, the format of an unparsed entity
  * (see section 4.7 of the XML 1.0 specification), or is used for
  * formal declaration of Processing Instruction targets (see section
- * 2.6 of the XML 1.0 specification). The <code> nodeName </code>
- * attribute inherited from <code> Node </code> is set to the declared
+ * 2.6 of the XML 1.0 specification). The \c nodeName
+ * attribute inherited from \c Node is set to the declared
  * name of the notation.
  *
- *  The DOM Level 1 does not support editing <code> Notation </code>
+ *  The DOM Level 1 does not support editing \c Notation
  * nodes; they are therefore readonly.
  *
- *  A <code> Notation </code> node does not have any parent.
+ *  A \c Notation node does not have any parent.
  *
  */
 class Notation : public Node
@@ -237,14 +235,14 @@ public:
 
     /**
      * The public identifier of this notation. If the public
-     * identifier was not specified, this is <code> null </code> .
+     * identifier was not specified, this is \c null .
      *
      */
     DOMString publicId() const;
 
     /**
      * The system identifier of this notation. If the system
-     * identifier was not specified, this is <code> null </code> .
+     * identifier was not specified, this is \c null .
      *
      */
     DOMString systemId() const;
@@ -254,7 +252,7 @@ protected:
 
 
 /**
- * The <code> ProcessingInstruction </code> interface represents a
+ * The \c ProcessingInstruction interface represents a
  * &quot;processing instruction&quot;, used in XML as a way to keep
  * processor-specific information in the text of the document.
  *
@@ -284,7 +282,7 @@ public:
     /**
      * The content of this processing instruction. This is from the
      * first non white space character after the target to the
-     * character immediately preceding the <code> ?&gt; </code> .
+     * character immediately preceding the \c ?&gt; .
      *
      */
     DOMString data() const;

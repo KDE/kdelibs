@@ -34,7 +34,7 @@
 namespace DOM {
 
 /**
- * The <code> CSS2Azimuth </code> interface represents the <a
+ * The \c CSS2Azimuth interface represents the <a
  * href="http://www.w3.org/TR/REC-CSS2/aural.html#propdef-azimuth">
  * azimuth </a> CSS Level 2 property.
  *
@@ -52,17 +52,17 @@ public:
     ~CSS2Azimuth();
 
     /**
-     * A code defining the type of the value as defined in <code>
-     * CSSValue </code> . It would be one of <code> CSS_DEG </code> ,
-     * <code> CSS_RAD </code> , <code> CSS_GRAD </code> or <code>
-     * CSS_IDENT </code> .
+     * A code defining the type of the value as defined in
+     * \c CSSValue . It would be one of \c CSS_DEG ,
+     * \c CSS_RAD , \c CSS_GRAD or
+     * \c CSS_IDENT .
      *
      */
     unsigned short azimuthType() const;
 
     /**
-     * If <code> azimuthType </code> is <code> CSS_IDENT </code> ,
-     * <code> identifier </code> contains one of left-side, far-left,
+     * If \c azimuthType is \c CSS_IDENT ,
+     * \c identifier contains one of left-side, far-left,
      * left, center-left, center, center-right, right, far-right,
      * right-side, leftwards, rightwards. The empty string if none is
      * set.
@@ -71,7 +71,7 @@ public:
     DOM::DOMString identifier() const;
 
     /**
-     * <code> behind </code> indicates whether the behind identifier
+     * \c behind indicates whether the behind identifier
      * has been set.
      *
      */
@@ -81,9 +81,8 @@ public:
      * A method to set the angle value with a specified unit. This
      * method will unset any previously set identifiers values.
      *
-     * @param unitType The unitType could only be one of <code>
-     * CSS_DEG </code> , <code> CSS_RAD </code> or <code> CSS_GRAD
-     * </code> ).
+     * @param unitType The unitType could only be one of
+     * \c CSS_DEG , \c CSS_RAD or \c CSS_GRAD ).
      *
      * @param floatValue The new float value of the angle.
      *
@@ -101,8 +100,8 @@ public:
      * Used to retrieved the float value of the azimuth property.
      *
      * @param unitType The unit type can be only an angle unit type (
-     * <code> CSS_DEG </code> , <code> CSS_RAD </code> or <code>
-     * CSS_GRAD </code> ).
+     * \c CSS_DEG , \c CSS_RAD or
+     * \c CSS_GRAD ).
      *
      * @return The float value.
      *
@@ -114,8 +113,8 @@ public:
 
     /**
      * Setting the identifier for the azimuth property will unset any
-     * previously set angle value. The value of <code> azimuthType
-     * </code> is set to <code> CSS_IDENT </code>
+     * previously set angle value. The value of \c azimuthType
+     * is set to \c CSS_IDENT
      *
      * @param identifier The new identifier. If the identifier is
      * "leftwards" or "rightward", the behind attribute is ignored.
@@ -124,7 +123,7 @@ public:
      *
      * @return
      * @exception DOMException
-     * SYNTAX_ERR: Raised if the specified <code> identifier </code>
+     * SYNTAX_ERR: Raised if the specified \c identifier
      * has a syntax error and is unparsable.
      *
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this property is
@@ -138,7 +137,7 @@ public:
 class CSS2BackgroundPositionImpl;
 
 /**
- * The <code> CSS2BackgroundPosition </code> interface represents the
+ * The \c CSS2BackgroundPosition interface represents the
  * <a
  * href="http://www.w3.org/TR/REC-CSS2/colors.html#propdef-background-position">
  * background-position </a> CSS Level 2 property.
@@ -158,13 +157,13 @@ public:
 
     /**
      * A code defining the type of the horizontal value. It would be
-     * one <code> CSS_PERCENTAGE </code> , <code> CSS_EMS </code> ,
-     * <code> CSS_EXS </code> , <code> CSS_PX </code> , <code> CSS_CM
-     * </code> , <code> CSS_MM </code> , <code> CSS_IN </code> ,
-     * <code> CSS_PT </code> , <code> CSS_PC </code> , <code>
-     * CSS_IDENT </code> , <code> CSS_INHERIT </code> . If one of
-     * horizontal or vertical is <code> CSS_IDENT </code> or <code>
-     * CSS_INHERIT </code> , it's guaranteed that the other is the
+     * one \c CSS_PERCENTAGE , \c CSS_EMS ,
+     * \c CSS_EXS , \c CSS_PX , \c CSS_CM ,
+     * \c CSS_MM , \c CSS_IN ,
+     * \c CSS_PT , \c CSS_PC ,
+     * \c CSS_IDENT , \c CSS_INHERIT . If one of
+     * horizontal or vertical is \c CSS_IDENT or
+     * \c CSS_INHERIT , it's guaranteed that the other is the
      * same.
      *
      */
@@ -172,21 +171,21 @@ public:
 
     /**
      * A code defining the type of the horizontal value. The code can
-     * be one of the following units : <code> CSS_PERCENTAGE </code> ,
-     * <code> CSS_EMS </code> , <code> CSS_EXS </code> , <code> CSS_PX
-     * </code> , <code> CSS_CM </code> , <code> CSS_MM </code> ,
-     * <code> CSS_IN </code> , <code> CSS_PT </code> , <code> CSS_PC
-     * </code> , <code> CSS_IDENT </code> , <code> CSS_INHERIT </code>
-     * . If one of horizontal or vertical is <code> CSS_IDENT </code>
-     * or <code> CSS_INHERIT </code> , it's guaranteed that the other
+     * be one of the following units : \c CSS_PERCENTAGE ,
+     * \c CSS_EMS , \c CSS_EXS , \c CSS_PX
+     *  , \c CSS_CM , \c CSS_MM ,
+     * \c CSS_IN , \c CSS_PT , \c CSS_PC
+     * , \c CSS_IDENT , \c CSS_INHERIT
+     * . If one of horizontal or vertical is \c CSS_IDENT
+     * or \c CSS_INHERIT , it's guaranteed that the other
      * is the same.
      *
      */
     unsigned short verticalType() const;
 
     /**
-     * If <code> horizontalType </code> is <code> CSS_IDENT </code> or
-     * <code> CSS_INHERIT </code> , this attribute contains the string
+     * If \c horizontalType is \c CSS_IDENT or
+     * \c CSS_INHERIT , this attribute contains the string
      * representation of the ident, otherwise it contains an empty
      * string.
      *
@@ -194,23 +193,23 @@ public:
     DOM::DOMString horizontalIdentifier() const;
 
     /**
-     * If <code> verticalType </code> is <code> CSS_IDENT </code> or
-     * <code> CSS_INHERIT </code> , this attribute contains the string
+     * If \c verticalType is \c CSS_IDENT or
+     * \c CSS_INHERIT , this attribute contains the string
      * representation of the ident, otherwise it contains an empty
-     * string. The value is <code> "center" </code> if only the
-     * horizontalIdentifier has been set. The value is <code>
-     * "inherit" </code> if the horizontalIdentifier is <code>
-     * "inherit" </code> .
+     * string. The value is \c "center" if only the
+     * horizontalIdentifier has been set. The value is
+     * \c "inherit" if the horizontalIdentifier is
+     * \c "inherit" .
      *
      */
     DOM::DOMString verticalIdentifier() const;
 
     /**
      * This method is used to get the float value in a specified unit
-     * if the <code> horizontalPosition </code> represents a length or
+     * if the \c horizontalPosition represents a length or
      * a percentage. If the float doesn't contain a float value or
-     * can't be converted into the specified unit, a <code>
-     * DOMException </code> is raised.
+     * can't be converted into the specified unit, a
+     * \c DOMException is raised.
      *
      * @param horizontalType The specified unit.
      *
@@ -225,10 +224,10 @@ public:
 
     /**
      * This method is used to get the float value in a specified unit
-     * if the <code> verticalPosition </code> represents a length or a
+     * if the \c verticalPosition represents a length or a
      * percentage. If the float doesn't contain a float value or can't
-     * be converted into the specified unit, a <code> DOMException
-     * </code> is raised. The value is <code> 50% </code> if only the
+     * be converted into the specified unit, a \c DOMException
+     * is raised. The value is \c 50% if only the
      * horizontal value has been specified.
      *
      * @param verticalType The specified unit.
@@ -245,7 +244,7 @@ public:
     /**
      * This method is used to set the horizontal position with a
      * specified unit. If the vertical value is not a percentage or a
-     * length, it sets the vertical position to <code> 50% </code> .
+     * length, it sets the vertical position to \c 50% .
      *
      * @param horizontalType The specified unit (a length or a
      * percentage).
@@ -266,7 +265,7 @@ public:
     /**
      * This method is used to set the vertical position with a
      * specified unit. If the horizontal value is not a percentage or
-     * a length, it sets the vertical position to <code> 50% </code> .
+     * a length, it sets the vertical position to \c 50% .
      *
      * @param verticalType The specified unit (a length or a
      * percentage).
@@ -287,9 +286,9 @@ public:
     /**
      * Sets the identifiers. If the second identifier is the empty
      * string, the vertical identifier is set to his default value (
-     * <code> "center" </code> ). If the first identfier is <code>
-     * "inherit </code> , the second identifier is ignored and is set
-     * to <code> "inherit" </code> .
+     * \c "center" ). If the first identfier is
+     * \c "inherit , the second identifier is ignored and is set
+     * to \c "inherit" .
      *
      * @param horizontalIdentifier The new horizontal identifier.
      *
@@ -311,7 +310,7 @@ public:
 class CSS2BorderSpacingImpl;
 
 /**
- * The <code> CSS2BorderSpacing </code> interface represents the <a
+ * The \c CSS2BorderSpacing interface represents the <a
  * href="http://www.w3.org/TR/REC-CSS2/tables.html#propdef-border-spacing">
  * border-spacing </a> CSS Level 2 property.
  *
@@ -329,32 +328,32 @@ public:
     ~CSS2BorderSpacing();
 
     /**
-     * The A code defining the type of the value as defined in <code>
-     * CSSValue </code> . It would be one of <code> CSS_EMS </code> ,
-     * <code> CSS_EXS </code> , <code> CSS_PX </code> , <code> CSS_CM
-     * </code> , <code> CSS_MM </code> , <code> CSS_IN </code> ,
-     * <code> CSS_PT </code> , <code> CSS_PC </code> or <code>
-     * CSS_INHERIT </code> .
+     * The A code defining the type of the value as defined in
+     * \c CSSValue . It would be one of \c CSS_EMS ,
+     * \c CSS_EXS , \c CSS_PX , \c CSS_CM
+     * , \c CSS_MM , \c CSS_IN ,
+     * \c CSS_PT , \c CSS_PC or
+     * \c CSS_INHERIT .
      *
      */
     unsigned short horizontalType() const;
 
     /**
-     * The A code defining the type of the value as defined in <code>
-     * CSSValue </code> . It would be one of <code> CSS_EMS </code> ,
-     * <code> CSS_EXS </code> , <code> CSS_PX </code> , <code> CSS_CM
-     * </code> , <code> CSS_MM </code> , <code> CSS_IN </code> ,
-     * <code> CSS_PT </code> , <code> CSS_PC </code> or <code>
-     * CSS_INHERIT </code> .
+     * The A code defining the type of the value as defined in
+     * \c CSSValue . It would be one of \c CSS_EMS ,
+     * \c CSS_EXS , \c CSS_PX , \c CSS_CM
+     *  , \c CSS_MM , \c CSS_IN ,
+     * \c CSS_PT , \c CSS_PC or
+     * \c CSS_INHERIT .
      *
      */
     unsigned short verticalType() const;
 
     /**
      * This method is used to get the float value in a specified unit
-     * if the <code> horizontalSpacing </code> represents a length. If
+     * if the \c horizontalSpacing represents a length. If
      * the float doesn't contain a float value or can't be converted
-     * into the specified unit, a <code> DOMException </code> is
+     * into the specified unit, a \c DOMException is
      * raised.
      *
      * @param horizontalType The specified unit.
@@ -370,10 +369,10 @@ public:
 
     /**
      * This method is used to get the float value in a specified unit
-     * if the <code> verticalSpacing </code> represents a length. If
+     * if the \c verticalSpacing represents a length. If
      * the float doesn't contain a float value or can't be converted
-     * into the specified unit, a <code> DOMException </code> is
-     * raised. The value is <code> 0 </code> if only the horizontal
+     * into the specified unit, a \c DOMException is
+     * raised. The value is \c 0 if only the horizontal
      * value has been specified.
      *
      * @param verticalType The specified unit.
@@ -390,7 +389,7 @@ public:
     /**
      * This method is used to set the horizontal spacing with a
      * specified unit. If the vertical value is a length, it sets the
-     * vertical spacing to <code> 0 </code> .
+     * vertical spacing to \c 0 .
      *
      * @param horizontalType The specified unit.
      *
@@ -410,7 +409,7 @@ public:
     /**
      * This method is used to set the vertical spacing with a
      * specified unit. If the horizontal value is not a length, it
-     * sets the vertical spacing to <code> 0 </code> .
+     * sets the vertical spacing to \c 0 .
      *
      * @param verticalType The specified unit.
      *
@@ -428,8 +427,8 @@ public:
     void setVerticalSpacing ( const unsigned short verticalType, const float value );
 
     /**
-     * Set this property as inherit. <code> horizontalType </code> and
-     * <code> verticalType </code> will be inherited.
+     * Set this property as inherit. \c horizontalType and
+     * \c verticalType will be inherited.
      *
      * @return
      */
@@ -440,7 +439,7 @@ public:
 class CSS2CounterIncrementImpl;
 
 /**
- * The <code> CSS2CounterIncrement </code> interface represents a
+ * The \c CSS2CounterIncrement interface represents a
  * imple value for the <a
  * href="http://www.w3.org/TR/REC-CSS2/generate.html#propdef-counter-increment">
  * counter-increment </a> CSS Level 2 property.
@@ -496,7 +495,7 @@ public:
 class CSS2CounterResetImpl;
 
 /**
- * The <code> CSS2CounterReset </code> interface represents a simple
+ * The \c CSS2CounterReset interface represents a simple
  * value for the <a
  * href="http://www.w3.org/TR/REC-CSS2/generate.html#propdef-counter-reset">
  * counter-reset </a> CSS Level 2 property.
@@ -553,7 +552,7 @@ class CSS2CursorImpl;
 class CSSValueList;
 
 /**
- * The <code> CSS2Cursor </code> interface represents the <a
+ * The \c CSS2Cursor interface represents the <a
  * href="http://www.w3.org/TR/REC-CSS2/ui.html#propdef-cursor"> cursor
  * </a> CSS Level 2 property.
  *
@@ -572,12 +571,12 @@ public:
 
     /**
      * A code defining the type of the property. It would one of
-     * <code> CSS_UNKNOWN </code> or <code> CSS_INHERIT </code> . If
-     * the type is <code> CSS_UNKNOWN </code> , then <code> uris
-     * </code> contains a list of URIs and <code> predefinedCursor
-     * </code> contains an ident. Setting this attribute from <code>
-     * CSS_INHERIT </code> to <code> CSS_UNKNOWN </code> will set the
-     * <code> predefinedCursor </code> to <code> "auto" </code> .
+     * \c CSS_UNKNOWN or \c CSS_INHERIT . If
+     * the type is \c CSS_UNKNOWN , then \c uris
+     * contains a list of URIs and \c predefinedCursor
+     * contains an ident. Setting this attribute from
+     * \c CSS_INHERIT to \c CSS_UNKNOWN will set the
+     * \c predefinedCursor to \c "auto" .
      *
      */
     unsigned short cursorType() const;
@@ -588,8 +587,8 @@ public:
     void setCursorType( const unsigned short  );
 
     /**
-     * <code> uris </code> represents the list of URIs ( <code>
-     * CSS_URI </code> ) on the cursor property. The list can be
+     * \c uris represents the list of URIs (
+     * \c CSS_URI ) on the cursor property. The list can be
      * empty.
      *
      */
@@ -620,7 +619,7 @@ class CSS2FontFaceSrcImpl;
 class CSSValueList;
 
 /**
- * The <code> CSS2Cursor </code> interface represents the <a
+ * The \c CSS2Cursor interface represents the <a
  * href="http://www.w3.org/TR/REC-CSS2/fonts.html#descdef-src"> src
  * </a> CSS Level 2 descriptor.
  *
@@ -686,7 +685,7 @@ class CSS2FontFaceWidthsImpl;
 class CSSValueList;
 
 /**
- * The <code> CSS2Cursor </code> interface represents a simple value
+ * The \c CSS2Cursor interface represents a simple value
  * for the <a
  * href="http://www.w3.org/TR/REC-CSS2/fonts.html#descdef-widths">
  * widths </a> CSS Level 2 descriptor.
@@ -733,7 +732,7 @@ public:
 class CSS2PageSizeImpl;
 
 /**
- * The <code> CSS2Cursor </code> interface represents the <a
+ * The \c CSS2Cursor interface represents the <a
  * href="http://www.w3.org/TR/REC-CSS2/page.html#propdef-size"> size
  * </a> CSS Level 2 descriptor.
  *
@@ -752,12 +751,12 @@ public:
 
     /**
      * A code defining the type of the width of the page. It would be
-     * one of <code> CSS_EMS </code> , <code> CSS_EXS </code> , <code>
-     * CSS_PX </code> , <code> CSS_CM </code> , <code> CSS_MM </code>
-     * , <code> CSS_IN </code> , <code> CSS_PT </code> , <code> CSS_PC
-     * </code> , <code> CSS_IDENT </code> , <code> CSS_INHERIT </code>
-     * . If one of width or height is <code> CSS_IDENT </code> or
-     * <code> CSS_INHERIT </code> , it's guaranteed that the other is
+     * one of \c CSS_EMS , \c CSS_EXS ,
+     * \c CSS_PX , \c CSS_CM , \c CSS_MM
+     * , \c CSS_IN , \c CSS_PT , \c CSS_PC
+     * , \c CSS_IDENT , \c CSS_INHERIT
+     * . If one of width or height is \c CSS_IDENT or
+     * \c CSS_INHERIT , it's guaranteed that the other is
      * the same.
      *
      */
@@ -765,20 +764,20 @@ public:
 
     /**
      * A code defining the type of the height of the page. It would be
-     * one of <code> CSS_EMS </code> , <code> CSS_EXS </code> , <code>
-     * CSS_PX </code> , <code> CSS_CM </code> , <code> CSS_MM </code>
-     * , <code> CSS_IN </code> , <code> CSS_PT </code> , <code> CSS_PC
-     * </code> , <code> CSS_IDENT </code> , <code> CSS_INHERIT </code>
-     * . If one of width or height is <code> CSS_IDENT </code> or
-     * <code> CSS_INHERIT </code> , it's guaranteed that the other is
+     * one of \c CSS_EMS , \c CSS_EXS ,
+     * \c CSS_PX , \c CSS_CM , \c CSS_MM
+     * , \c CSS_IN , \c CSS_PT , \c CSS_PC
+     * , \c CSS_IDENT , \c CSS_INHERIT
+     * . If one of width or height is \c CSS_IDENT or
+     * \c CSS_INHERIT , it's guaranteed that the other is
      * the same.
      *
      */
     unsigned short heightType() const;
 
     /**
-     * If <code> width </code> is <code> CSS_IDENT </code> or <code>
-     * CSS_INHERIT </code> , this attribute contains the string
+     * If \c width is \c CSS_IDENT or
+     * \c CSS_INHERIT , this attribute contains the string
      * representation of the ident, otherwise it contains an empty
      * string.
      *
@@ -787,9 +786,9 @@ public:
 
     /**
      * This method is used to get the float value in a specified unit
-     * if the <code> widthType </code> represents a length. If the
+     * if the \c widthType represents a length. If the
      * float doesn't contain a float value or can't be converted into
-     * the specified unit, a <code> DOMException </code> is raised.
+     * the specified unit, a \c DOMException is raised.
      *
      * @param widthType The specified unit.
      *
@@ -804,9 +803,9 @@ public:
 
     /**
      * This method is used to get the float value in a specified unit
-     * if the <code> heightType </code> represents a length. If the
+     * if the \c heightType represents a length. If the
      * float doesn't contain a float value or can't be converted into
-     * the specified unit, a <code> DOMException </code> is raised. If
+     * the specified unit, a \c DOMException is raised. If
      * only the width value has been specified, the height value is
      * the same.
      *
@@ -823,7 +822,7 @@ public:
 
     /**
      * This method is used to set the width position with a specified
-     * unit. If the <code> heightType </code> is not a length, it sets
+     * unit. If the \c heightType is not a length, it sets
      * the height position to the same value.
      *
      * @param widthType The specified unit.
@@ -843,7 +842,7 @@ public:
 
     /**
      * This method is used to set the height position with a specified
-     * unit. If the <code> widthType </code> is not a length, it sets
+     * unit. If the \c widthType is not a length, it sets
      * the width position to the same value.
      *
      * @param heightType The specified unit.
@@ -882,7 +881,7 @@ public:
 class CSS2PlayDuringImpl;
 
 /**
- * The <code> CSS2PlayDuring </code> interface represents the <a
+ * The \c CSS2PlayDuring interface represents the <a
  * href="http://www.w3.org/TR/REC-CSS2/aural.html#propdef-play-during">
  * play-during </a> CSS Level 2 property.
  *
@@ -900,21 +899,21 @@ public:
     ~CSS2PlayDuring();
 
     /**
-     * A code defining the type of the value as define in <code>
-     * CSSvalue </code> . It would be one of <code> CSS_UNKNOWN
-     * </code> , <code> CSS_INHERIT </code> , <code> CSS_IDENT </code>
+     * A code defining the type of the value as define in
+     * \c CSSvalue . It would be one of \c CSS_UNKNOWN
+     * , \c CSS_INHERIT , \c CSS_IDENT
      * .
      *
      */
     unsigned short playDuringType() const;
 
     /**
-     * One of <code> "inherit" </code> , <code> "auto" </code> ,
-     * <code> "none" </code> or the empty string if the <code>
-     * playDuringType </code> is <code> CSS_UNKNOWN </code> . On
-     * setting, it will set the <code> uri </code> to the empty string
-     * and <code> mix </code> and <code> repeat </code> to <code>
-     * false </code> .
+     * One of \c "inherit" , \c "auto" ,
+     * \c "none" or the empty string if the
+     * \c playDuringType is \c CSS_UNKNOWN . On
+     * setting, it will set the \c uri to the empty string
+     * and \c mix and \c repeat to
+     * \c false .
      *
      */
     DOM::DOMString playDuringIdentifier() const;
@@ -932,9 +931,8 @@ public:
     void setPlayDuringIdentifier( const DOM::DOMString & );
 
     /**
-     * The sound specified by the <code> uri </code> . It will set the
-     * <code> playDuringType </code> attribute to <code> CSS_UNKNOWN
-     * </code> .
+     * The sound specified by the \c uri . It will set the
+     * \c playDuringType attribute to \c CSS_UNKNOWN .
      *
      */
     DOM::DOMString uri() const;
@@ -952,8 +950,8 @@ public:
     void setUri( const DOM::DOMString & );
 
     /**
-     * <code> true </code> if the sound should be mixed. It will be
-     * ignored if the attribute doesn't contain a <code> uri </code> .
+     * \c true if the sound should be mixed. It will be
+     * ignored if the attribute doesn't contain a \c uri .
      *
      */
     bool mix() const;
@@ -968,8 +966,8 @@ public:
     void setMix( const bool  );
 
     /**
-     * <code> true </code> if the sound should be repeated. It will be
-     * ignored if the attribute doesn't contain a <code> uri </code> .
+     * \c true if the sound should be repeated. It will be
+     * ignored if the attribute doesn't contain a \c uri .
      *
      */
     bool repeat() const;
@@ -988,30 +986,30 @@ public:
 class CSS2PropertiesImpl;
 
 /**
- * The <code> CSS2Properties </code> interface represents a
+ * The \c CSS2Properties interface represents a
  * convenience mechanism for retrieving and setting properties within
- * a <code> CSSStyleDeclaration </code> . The attributes of this
+ * a \c CSSStyleDeclaration . The attributes of this
  * interface correspond to all the <a
  * href="http://www.w3.org/TR/REC-CSS2/propidx.html"> properties
  * specified in CSS2 </a> . Getting an attribute of this interface is
- * equivalent to calling the <code> getPropertyValue </code> method of
- * the <code> CSSStyleDeclaration </code> interface. Setting an
- * attribute of this interface is equivalent to calling the <code>
- * setProperty </code> method of the <code> CSSStyleDeclaration
- * </code> interface.
+ * equivalent to calling the \c getPropertyValue method of
+ * the \c CSSStyleDeclaration interface. Setting an
+ * attribute of this interface is equivalent to calling the
+ * \c setProperty method of the \c CSSStyleDeclaration
+ * interface.
  *
- *  A compliant implementation is not required to implement the <code>
- * CSS2Properties </code> interface. If an implementation does
+ *  A compliant implementation is not required to implement the
+ * \c CSS2Properties interface. If an implementation does
  * implement this interface, the expectation is that language-specific
- * methods can be used to cast from an instance of the <code>
- * CSSStyleDeclaration </code> interface to the <code> CSS2Properties
- * </code> interface.
+ * methods can be used to cast from an instance of the
+ * \c CSSStyleDeclaration interface to the \c CSS2Properties
+ * interface.
  *
  *  If an implementation does implement this interface, it is expected
  * to understand the specific syntax of the shorthand properties, and
- * apply their semantics; when the <code> margin </code> property is
- * set, for example, the <code> marginTop </code> , <code> marginRight
- * </code> , <code> marginBottom </code> and <code> marginLeft </code>
+ * apply their semantics; when the \c margin property is
+ * set, for example, the \c marginTop , \c marginRight
+ * , \c marginBottom and \c marginLeft
  * properties are actually being set by the underlying implementation.
  *
  *  When dealing with CSS "shorthand" properties, the shorthand
@@ -1025,26 +1023,26 @@ class CSS2PropertiesImpl;
  * then the empty string should be returned for the shorthand
  * property.
  *
- *  For example, querying for the <code> font </code> property should
+ *  For example, querying for the \c font property should
  * not return "normal normal normal 14pt/normal Arial, sans-serif",
  * when "14pt Arial, sans-serif" suffices (the normals are initial
  * values, and are implied by use of the longhand property).
  *
  *  If the values for all the longhand properties that compose a
  * particular string are the initial values, then a string consisting
- * of all the initial values should be returned (e.g. a <code>
- * border-width </code> value of "medium" should be returned as such,
+ * of all the initial values should be returned (e.g. a
+ * \c border-width value of "medium" should be returned as such,
  * not as "").
  *
  *  For some shorthand properties that take missing values from other
- * sides, such as the <code> margin </code> , <code> padding </code> ,
- * and <code> border-[width|style|color] </code> properties, the
+ * sides, such as the \c margin , \c padding ,
+ * and \c border-[width|style|color] properties, the
  * minimum number of sides possible should be used, i.e., "0px 10px"
  * will be returned instead of "0px 10px 0px 10px".
  *
  *  If the value of a shorthand property can not be decomposed into
- * its component longhand properties, as is the case for the <code>
- * font </code> property with a value of "menu", querying for the
+ * its component longhand properties, as is the case for the
+ * \c font property with a value of "menu", querying for the
  * values of the component longhand properties should return the empty
  * string.
  *
@@ -2653,7 +2651,7 @@ class CSS2TextShadowImpl;
 class CSSValue;
 
 /**
- * The <code> CSS2TextShadow </code> interface represents a simple
+ * The \c CSS2TextShadow interface represents a simple
  * value for the <a
  * href="http://www.w3.org/TR/REC-CSS2/text.html#propdef-text-shadow">
  * text-shadow </a> CSS Level 2 property.
@@ -2679,21 +2677,21 @@ public:
     CSSValue color() const;
 
     /**
-     * The horizontal position of the text shadow. <code> 0 </code> if
+     * The horizontal position of the text shadow. \c 0 if
      * no length has been specified.
      *
      */
     CSSValue horizontal() const;
 
     /**
-     * The vertical position of the text shadow. <code> 0 </code> if
+     * The vertical position of the text shadow. \c 0 if
      * no length has been specified.
      *
      */
     CSSValue vertical() const;
 
     /**
-     * The blur radius of the text shadow. <code> 0 </code> if no
+     * The blur radius of the text shadow. \c 0 if no
      * length has been specified.
      *
      */

@@ -38,7 +38,7 @@ class CSSRule;
 class CSSValue;
 
 /**
- * The <code> CSSStyleDeclaration </code> interface represents a
+ * The \c CSSStyleDeclaration interface represents a
  * single <a href="http://www.w3.org/TR/REC-CSS2/syndata.html#block">
  * CSS declaration block </a> . This interface may be used to
  * determine the style properties currently set in a block or to set
@@ -46,12 +46,12 @@ class CSSValue;
  *
  *  While an implementation may not recognize all CSS properties
  * within a CSS declaration block, it is expected to provide access to
- * all specified properties through the <code> CSSStyleDeclaration
- * </code> interface. Furthermore, implementations that support a
+ * all specified properties through the \c CSSStyleDeclaration
+ * interface. Furthermore, implementations that support a
  * specific level of CSS should correctly handle <a
  * href="http://www.w3.org/TR/REC-CSS2/about.html#shorthand"> CSS
  * shorthand </a> properties for that level. For a further discussion
- * of shorthand properties, see the <code> CSS2Properties </code>
+ * of shorthand properties, see the \c CSS2Properties
  * interface.
  *
  */
@@ -123,8 +123,8 @@ public:
      * declaration block. This method returns null if the property is
      * a <a href="http://www.w3.org/TR/REC-CSS2/about.html#shorthand">
      * shorthand </a> property. Shorthand property values can only be
-     * accessed and modified as strings, using the <code>
-     * getPropertyValue </code> and <code> setProperty </code>
+     * accessed and modified as strings, using the
+     * \c getPropertyValue and \c setProperty
      * methods.
      *
      * @param propertyName The name of the CSS property. See the <a
@@ -132,8 +132,8 @@ public:
      * index </a> .
      *
      * @return Returns the value of the property if it has been
-     * explicitly set for this declaration block. Returns the <code>
-     * null </code> if the property has not been set.
+     * explicitly set for this declaration block. Returns the
+     * \c null if the property has not been set.
      *
      */
     CSSValue getPropertyCSSValue ( const DOM::DOMString &propertyName );
@@ -160,15 +160,15 @@ public:
 
     /**
      * Used to retrieve the priority of a CSS property (e.g. the
-     * <code> "important" </code> qualifier) if the property has been
+     * \c "important" qualifier) if the property has been
      * explicitly set in this declaration block.
      *
      * @param propertyName The name of the CSS property. See the <a
      * href="http://www.w3.org/TR/REC-CSS2/propidx.html"> CSS property
      * index </a> .
      *
-     * @return A string representing the priority (e.g. <code>
-     * "important" </code> ) if one exists. The empty string if none
+     * @return A string representing the priority (e.g.
+     * \c "important" ) if one exists. The empty string if none
      * exists.
      *
      */
@@ -184,8 +184,8 @@ public:
      *
      * @param value The new value of the property.
      *
-     * @param priority The new priority of the property (e.g. <code>
-     * "important" </code> ).
+     * @param priority The new priority of the property (e.g.
+     * \c "important" ).
      *
      * @return
      *
@@ -230,7 +230,7 @@ protected:
 class CSSValueImpl;
 
 /**
- * The <code> CSSValue </code> interface represents a simple or a
+ * The \c CSSValue interface represents a simple or a
  * complexe value.
  *
  */
@@ -302,7 +302,7 @@ class CSSValueListImpl;
 class CSSValue;
 
 /**
- * The <code> CSSValueList </code> interface provides the absraction
+ * The \c CSSValueList interface provides the absraction
  * of an ordered collection of CSS values.
  *
  */
@@ -321,9 +321,9 @@ public:
     ~CSSValueList();
 
     /**
-     * The number of <code> CSSValue </code> s in the list. The range
-     * of valid values indices is <code> 0 </code> to <code> length-1
-     * </code> inclusive.
+     * The number of \c CSSValue s in the list. The range
+     * of valid values indices is \c 0 to \c length-1
+     * inclusive.
      *
      */
     unsigned long length() const;
@@ -335,8 +335,8 @@ public:
      *
      * @param index Index into the collection.
      *
-     * @return The style rule at the <code> index </code> position in
-     * the <code> CSSValueList </code> , or <code> null </code> if
+     * @return The style rule at the \c index position in
+     * the \c CSSValueList , or \c null if
      * that is not valid index.
      *
      */
@@ -353,14 +353,14 @@ class RGBColor;
 class Rect;
 
 /**
- * The <code> CSSPrimitiveValue </code> interface represents a single
+ * The \c CSSPrimitiveValue interface represents a single
  * <a href="http://www.w3.org/TR/REC-CSS2/syndata.html#values"> CSS
  * value </a> . This interface may be used to determine the value of a
  * specific style property currently set in a block or to set a
  * specific style properties explicitly within the block. An instance
- * of this interface can be obtained from the <code>
- * getPropertyCSSValue </code> method of the <code>
- * CSSStyleDeclaration </code> interface.
+ * of this interface can be obtained from the
+ * \c getPropertyCSSValue method of the
+ * \c CSSStyleDeclaration interface.
  *
  */
 class CSSPrimitiveValue : public CSSValue
@@ -421,18 +421,18 @@ public:
      * A method to set the float value with a specified unit. If the
      * property attached with this value can not accept the specified
      * unit or the float value, the value will be unchanged and a
-     * <code> DOMException </code> will be raised.
+     * \c DOMException will be raised.
      *
      * @param unitType A unit code as defined above. The unit code can
-     * only be a float unit type (e.g. <code> NUMBER </code> , <code>
-     * PERCENTAGE </code> , <code> CSS_EMS </code> , <code> CSS_EXS
-     * </code> , <code> CSS_PX </code> , <code> CSS_PX </code> ,
-     * <code> CSS_CM </code> , <code> CSS_MM </code> , <code> CSS_IN
-     * </code> , <code> CSS_PT </code> , <code> CSS_PC </code> ,
-     * <code> CSS_DEG </code> , <code> CSS_RAD </code> , <code>
-     * CSS_GRAD </code> , <code> CSS_MS </code> , <code> CSS_S </code>
-     * , <code> CSS_HZ </code> , <code> CSS_KHZ </code> , <code>
-     * CSS_DIMENSION </code> ).
+     * only be a float unit type (e.g. \c NUMBER ,
+     * \c PERCENTAGE , \c CSS_EMS , \c CSS_EXS
+     * , \c CSS_PX , \c CSS_PX ,
+     * \c CSS_CM , \c CSS_MM , \c CSS_IN
+     * , \c CSS_PT , \c CSS_PC ,
+     * \c CSS_DEG , \c CSS_RAD ,
+     * \c CSS_GRAD , \c CSS_MS , \c CSS_S
+     * , \c CSS_HZ , \c CSS_KHZ ,
+     * \c CSS_DIMENSION  ).
      *
      * @param floatValue The new float value.
      *
@@ -450,19 +450,19 @@ public:
     /**
      * This method is used to get a float value in a specified unit.
      * If this CSS value doesn't contain a float value or can't be
-     * converted into the specified unit, a <code> DOMException
-     * </code> is raised.
+     * converted into the specified unit, a \c DOMException
+     * is raised.
      *
      * @param unitType A unit code to get the float value. The unit
-     * code can only be a float unit type (e.g. <code> CSS_NUMBER
-     * </code> , <code> CSS_PERCENTAGE </code> , <code> CSS_EMS
-     * </code> , <code> CSS_EXS </code> , <code> CSS_PX </code> ,
-     * <code> CSS_PX </code> , <code> CSS_CM </code> , <code> CSS_MM
-     * </code> , <code> CSS_IN </code> , <code> CSS_PT </code> ,
-     * <code> CSS_PC </code> , <code> CSS_DEG </code> , <code> CSS_RAD
-     * </code> , <code> CSS_GRAD </code> , <code> CSS_MS </code> ,
-     * <code> CSS_S </code> , <code> CSS_HZ </code> , <code> CSS_KHZ
-     * </code> , <code> CSS_DIMENSION </code> ).
+     * code can only be a float unit type (e.g. \c CSS_NUMBER
+     * , \c CSS_PERCENTAGE , \c CSS_EMS
+     * , \c CSS_EXS , \c CSS_PX ,
+     * \c CSS_PX , \c CSS_CM , \c CSS_MM
+     * , \c CSS_IN , \c CSS_PT ,
+     * \c CSS_PC , \c CSS_DEG , \c CSS_RAD
+     * , \c CSS_GRAD , \c CSS_MS ,
+     * \c CSS_S , \c CSS_HZ , \c CSS_KHZ
+     * , \c CSS_DIMENSION ).
      *
      * @return The float value in the specified unit.
      *
@@ -478,17 +478,17 @@ public:
     /**
      * A method to set the string value with a specified unit. If the
      * property attached to this value can't accept the specified unit
-     * or the string value, the value will be unchanged and a <code>
-     * DOMException </code> will be raised.
+     * or the string value, the value will be unchanged and a
+     * \c DOMException will be raised.
      *
      * @param stringType A string code as defined above. The string
-     * code can only be a string unit type (e.g. <code> CSS_URI
-     * </code> , <code> CSS_IDENT </code> , <code> CSS_INHERIT </code>
-     * and <code> CSS_ATTR </code> ).
+     * code can only be a string unit type (e.g. \c CSS_URI
+     * , \c CSS_IDENT , \c CSS_INHERIT
+     * and \c CSS_ATTR ).
      *
-     * @param stringValue The new string value. If the <code>
-     * stringType </code> is equal to <code> CSS_INHERIT </code> , the
-     * <code> stringValue </code> should be <code> inherit </code> .
+     * @param stringValue The new string value. If the
+     * \c stringType is equal to \c CSS_INHERIT , the
+     * \c stringValue should be \c inherit .
      *
      * @return
      * @exception DOMException
@@ -504,13 +504,13 @@ public:
 
     /**
      * This method is used to get the string value in a specified
-     * unit. If the CSS value doesn't contain a string value, a <code>
-     * DOMException </code> is raised.
+     * unit. If the CSS value doesn't contain a string value, a
+     * \c DOMException is raised.
      *
      * @return The string value in the current unit. The current
-     * <code> valueType </code> can only be a string unit type (e.g.
-     * <code> CSS_URI </code> , <code> CSS_IDENT </code> and <code>
-     * CSS_ATTR </code> ).
+     * \c valueType can only be a string unit type (e.g.
+     * \c CSS_URI , \c CSS_IDENT and
+     * \c CSS_ATTR ).
      *
      * @exception DOMException
      * INVALID_ACCESS_ERR: Raises if the CSS value doesn't contain a
@@ -522,9 +522,9 @@ public:
 
     /**
      * This method is used to get the Counter value. If this CSS value
-     * doesn't contain a counter value, a <code> DOMException </code>
+     * doesn't contain a counter value, a \c DOMException
      * is raised. Modification to the corresponding style property can
-     * be achieved using the <code> Counter </code> interface.
+     * be achieved using the \c Counter interface.
      *
      * @return The Counter value.
      *
@@ -538,9 +538,9 @@ public:
 
     /**
      * This method is used to get the Rect value. If this CSS value
-     * doesn't contain a rect value, a <code> DOMException </code> is
+     * doesn't contain a rect value, a \c DOMException is
      * raised. Modification to the corresponding style property can be
-     * achieved using the <code> Rect </code> interface.
+     * achieved using the \c Rect interface.
      *
      * @return The Rect value.
      *
@@ -554,9 +554,9 @@ public:
 
     /**
      * This method is used to get the RGB color. If this CSS value
-     * doesn't contain a RGB color value, a <code> DOMException
-     * </code> is raised. Modification to the corresponding style
-     * property can be achieved using the <code> RGBColor </code>
+     * doesn't contain a RGB color value, a \c DOMException
+     * is raised. Modification to the corresponding style
+     * property can be achieved using the \c RGBColor
      * interface.
      *
      * @return the RGB color value.
@@ -573,7 +573,7 @@ public:
 
 
 /**
- * The <code> RGBColor </code> interface is used to represent any <a
+ * The \c RGBColor interface is used to represent any <a
  * href="http://www.w3.org/TR/REC-CSS2/syndata.html#value-def-color">
  * RGB color </a> value. This interface reflects the values in the
  * underlying style property. Hence, modifications made through this
@@ -624,7 +624,7 @@ protected:
 class RectImpl;
 
 /**
- * The <code> Rect </code> interface is used to represent any <a
+ * The \c Rect interface is used to represent any <a
  * href="http://www.w3.org/TR/REC-CSS2/visufx.html#value-def-shape">
  * rect </a> value. This interface reflects the values in the
  * underlying style property. Hence, modifications made through this
@@ -681,7 +681,7 @@ protected:
 class CounterImpl;
 
 /**
- * The <code> Counter </code> interface is used to represent any <a
+ * The \c Counter interface is used to represent any <a
  * href="http://www.w3.org/TR/REC-CSS2/syndata.html#value-def-counter">
  * counter or counters function </a> value. This interface reflects
  * the values in the underlying style property. Hence, modifications

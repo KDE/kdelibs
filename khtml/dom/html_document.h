@@ -47,7 +47,7 @@ class Element;
 class HTMLElement;
 
 /**
- * An <code> HTMLDocument </code> is the root of the HTML hierarchy
+ * An \c HTMLDocument is the root of the HTML hierarchy
  * and holds the entire content. Beside providing access to the
  * hierarchy, it also provides some convenience methods for accessing
  * certain sets of information from the document.
@@ -96,8 +96,8 @@ public:
     ~HTMLDocument();
 
     /**
-     * The title of a document as specified by the <code> TITLE
-     * </code> element in the head of the document.
+     * The title of a document as specified by the \c TITLE
+     * element in the head of the document.
      *
      */
     DOMString title() const;
@@ -129,9 +129,9 @@ public:
 
     /**
      * The element that contains the content for the document. In
-     * documents with <code> BODY </code> contents, returns the <code>
-     * BODY </code> element, and in frameset documents, this returns
-     * the outermost <code> FRAMESET </code> element.
+     * documents with \c BODY contents, returns the
+     * \c BODY element, and in frameset documents, this returns
+     * the outermost \c FRAMESET element.
      *
      */
     HTMLElement body() const;
@@ -142,25 +142,25 @@ public:
     void setBody(const HTMLElement &);
 
     /**
-     * A collection of all the <code> IMG </code> elements in a
-     * document. The behavior is limited to <code> IMG </code>
+     * A collection of all the \c IMG elements in a
+     * document. The behavior is limited to \c IMG
      * elements for backwards compatibility.
      *
      */
     HTMLCollection images() const;
 
     /**
-     * A collection of all the <code> OBJECT </code> elements that
-     * include applets and <code> APPLET </code> ( deprecated )
+     * A collection of all the \c OBJECT elements that
+     * include applets and \c APPLET ( deprecated )
      * elements in a document.
      *
      */
     HTMLCollection applets() const;
 
     /**
-     * A collection of all <code> AREA </code> elements and anchor (
-     * <code> A </code> ) elements in a document with a value for the
-     * <code> href </code> attribute.
+     * A collection of all \c AREA elements and anchor (
+     * \c A ) elements in a document with a value for the
+     * \c href attribute.
      *
      */
     HTMLCollection links() const;
@@ -172,12 +172,12 @@ public:
     HTMLCollection forms() const;
 
     /**
-     * A collection of all the anchor ( <code> A </code> ) elements in
-     * a document with a value for the <code> name </code> attribute.
+     * A collection of all the anchor ( \c A ) elements in
+     * a document with a value for the \c name attribute.
      * Note. For reasons of backwards compatibility, the returned set
-     * of anchors only contains those anchors created with the <code>
-     * name </code> attribute, not those created with the <code> id
-     * </code> attribute.
+     * of anchors only contains those anchors created with the
+     * \c name attribute, not those created with the \c id
+     * attribute.
      *
      */
     HTMLCollection anchors() const;
@@ -186,8 +186,8 @@ public:
      * The cookies associated with this document. If there are none,
      * the value is an empty string. Otherwise, the value is a string:
      * a semicolon-delimited list of "name, value" pairs for all the
-     * cookies associated with the page. For example, <code>
-     * name=value;expires=date </code> .
+     * cookies associated with the page. For example,
+     * \c name=value;expires=date .
      *
      */
     DOMString cookie() const;
@@ -215,7 +215,7 @@ public:
     void open (  );
 
     /**
-     * Closes a document stream opened by <code> open() </code> and
+     * Closes a document stream opened by \c open() and
      * forces rendering.
      *
      * @return
@@ -224,8 +224,8 @@ public:
     void close (  );
 
     /**
-     * Write a string of text to a document stream opened by <code>
-     * open() </code> . The text is parsed into the document's
+     * Write a string of text to a document stream opened by
+     * \c open() . The text is parsed into the document's
      * structure model.
      *
      * @param text The string to be parsed into some structure in the
@@ -238,7 +238,7 @@ public:
 
     /**
      * Write a string of text followed by a newline character to a
-     * document stream opened by <code> open() </code> . The text is
+     * document stream opened by \c open() . The text is
      * parsed into the document's structure model.
      *
      * @param text The string to be parsed into some structure in the
@@ -251,10 +251,9 @@ public:
 
     /**
      * Returns the (possibly empty) collection of elements whose
-     * <code> name </code> value is given by <code> elementName
-     * </code> .
+     * \c name value is given by \c elementName .
      *
-     * @param elementName The <code> name </code> attribute value for
+     * @param elementName The \c name attribute value for
      * an element.
      *
      * @return The matching elements.
@@ -281,8 +280,8 @@ public:
     /**
      * Not part of the DOM
      *
-     * A collection of all the <code>IMG</code>, <code>OBJECT</code>,
-     * <code>AREA</code>, <code>A</code>, forms and anchor elements of
+     * A collection of all the \c IMG, \c OBJECT,
+     * \c AREA, \c A, forms and anchor elements of
      * a document.
      */
     HTMLCollection all() const;

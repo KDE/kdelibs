@@ -88,7 +88,7 @@ public:
 
     /**
      * Comma-separated list of lengths, defining an active region
-     * geometry. See also <code> shape </code> for the shape of the
+     * geometry. See also \c shape for the shape of the
      * region. See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/objects.html#adef-coords">
      * coords attribute definition </a> in HTML 4.0.
@@ -130,7 +130,7 @@ public:
 
     /**
      * The shape of the active area. The coordinates are given by
-     * <code> coords </code> . See the <a
+     * \c coords . See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/objects.html#adef-shape">
      * shape attribute definition </a> in HTML 4.0.
      *
@@ -411,7 +411,7 @@ public:
     HTMLCollection areas() const;
 
     /**
-     * Names the map (for use with <code> usemap </code> ). See the <a
+     * Names the map (for use with \c usemap ). See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/objects.html#adef-name-MAP">
      * name attribute definition </a> in HTML 4.0.
      *

@@ -40,7 +40,7 @@ class NodeImpl;
 class DocumentImpl;
 
 /**
- * The <code> StyleSheet </code> interface is the abstract base
+ * The \c StyleSheet interface is the abstract base
  * interface for any type of style sheet. It represents a single style
  * sheet associated with a structured document. In HTML, the
  * StyleSheet interface represents either an external style sheet,
@@ -69,14 +69,14 @@ public:
     /**
      * This specifies the style sheet language for this style sheet.
      * The style sheet language is specified as a content type (e.g.
-     * "text/css"). The content type is often specified in the <code>
-     * ownerNode </code> . A list of registered content types can be
+     * "text/css"). The content type is often specified in the
+     * \c ownerNode . A list of registered content types can be
      * found at <a
      * href="ftp://ftp.isi.edu/in-notes/iana/assignments/media-types/">
      * ftp://ftp.isi.edu/in-notes/iana/assignments/media-types/ </a> .
      * Also see the <a
      * href="http://www.w3.org/TR/REC-html40/struct/links.html#adef-type-A">
-     * type attribute definition </a> for the <code> LINK </code>
+     * type attribute definition </a> for the \c LINK
      * element in HTML 4.0, and the type pseudo-attribute for the XML
      * <a href="http://www.w3.org/TR/xml-stylesheet"> style sheet
      * processing instruction </a> .
@@ -85,8 +85,8 @@ public:
     DOM::DOMString type() const;
 
     /**
-     * <code> false </code> if the style sheet is applied to the
-     * document. <code> true </code> if it is not. Modifying this
+     * \c false if the style sheet is applied to the
+     * document. \c true if it is not. Modifying this
      * attribute may cause a reresolution of style for the document.
      *
      */
@@ -99,8 +99,8 @@ public:
 
     /**
      * The node that associates this style sheet with the document.
-     * For HTML, this may be the corresponding <code> LINK </code> or
-     * <code> STYLE </code> element. For XML, it may be the linking
+     * For HTML, this may be the corresponding \c LINK or
+     * \c STYLE element. For XML, it may be the linking
      * processing instruction. For style sheets that are included by
      * other style sheets, this attribute has a value of null.
      *
@@ -122,7 +122,7 @@ public:
      * attribute is its location. For inline style sheets, the value
      * of this attribute is null. See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/links.html#adef-href">
-     * href attribute definition </a> for the <code> LINK </code>
+     * href attribute definition </a> for the \c LINK
      * element in HTML 4.0, and the href pseudo-attribute for the XML
      * <a href="http://www.w3.org/TR/xml-stylesheet"> style sheet
      * processing instruction </a> .
@@ -131,10 +131,10 @@ public:
     DOM::DOMString href() const;
 
     /**
-     * The advisory title. The title is often specified in the <code>
-     * ownerNode </code> . See the <a
+     * The advisory title. The title is often specified in the
+     * \c ownerNode . See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/global.html#adef-title">
-     * title attribute definition </a> for the <code> LINK </code>
+     * title attribute definition </a> for the \c LINK
      * element in HTML 4.0, and the title pseudo-attribute for the XML
      * <a href="http://www.w3.org/TR/xml-stylesheet"> style sheet
      * processing instruction </a> .
@@ -144,9 +144,9 @@ public:
 
     /**
      * The intended destination media for style information. The media
-     * is often specified in the <code> ownerNode </code> . See the <a
+     * is often specified in the \c ownerNode . See the <a
      * href="http://www.w3.org/TR/REC-html40/present/styles.html#adef-media">
-     * media attribute definition </a> for the <code> LINK </code>
+     * media attribute definition </a> for the \c LINK
      * element in HTML 4.0, and the media pseudo-attribute for the XML
      * <a href="http://www.w3.org/TR/WD-xml-stylesheet"> style sheet
      * processing instruction </a> .
@@ -198,7 +198,7 @@ class CSSRule;
 class CSSRuleList;
 
 /**
- * The <code> CSSStyleSheet </code> interface is a concrete interface
+ * The \c CSSStyleSheet interface is a concrete interface
  * used to represent a CSS style sheet i.e. a style sheet whose
  * content type is "text/css".
  *
@@ -218,15 +218,14 @@ public:
     ~CSSStyleSheet();
 
     /**
-     * If this style sheet comes from an <code> @import </code> rule,
-     * the <code> ownerRule </code> attribute will contain the <code>
-     * CSSImportRule </code> . In that case, the <code> ownerNode
-     * </code> attribute in the <code> StyleSheet </code> interface
-     * will be <code> null </code> . If the style sheet comes from an
-     * element or a processing instruction, the <code> ownerRule
-     * </code> attribute will be <code> null </code> and the <code>
-     * ownerNode </code> attribute will contain the <code> Node
-     * </code> .
+     * If this style sheet comes from an \c @import rule,
+     * the \c ownerRule attribute will contain the
+     * \c CSSImportRule . In that case, the \c ownerNode
+     * attribute in the \c StyleSheet interface
+     * will be \c null . If the style sheet comes from an
+     * element or a processing instruction, the \c ownerRule
+     * attribute will be \c null and the
+     * \c ownerNode attribute will contain the \c Node .
      *
      */
     CSSRule ownerRule() const;
@@ -262,7 +261,7 @@ public:
      *
      * @exception DOMException
      * HIERARCHY_REQUEST_ERR: Raised if the rule cannot be inserted at
-     * the specified index e.g. if an <code> @import </code> rule is
+     * the specified index e.g. if an \c @import rule is
      * inserted after a standard rule set or other at-rule.
      *
      *  INDEX_SIZE_ERR: Raised if the specified index is not a valid
@@ -302,7 +301,7 @@ class StyleSheetListImpl;
 class StyleSheet;
 
 /**
- * The <code> StyleSheetList </code> interface provides the
+ * The \c StyleSheetList interface provides the
  * abstraction of an ordered collection of style sheets.
  *
  */
@@ -319,9 +318,9 @@ public:
     ~StyleSheetList();
 
     /**
-     * The number of <code> StyleSheet </code> in the list. The range
-     * of valid child stylesheet indices is <code> 0 </code> to <code>
-     * length-1 </code> inclusive.
+     * The number of \c StyleSheet in the list. The range
+     * of valid child stylesheet indices is \c 0 to
+     * \c length-1 inclusive.
      *
      */
     unsigned long length() const;
@@ -331,8 +330,8 @@ public:
      *
      * @param index Index into the collection
      *
-     * @return The style sheet at the <code> index </code> position in
-     * the <code> StyleSheetList </code> , or <code> null </code> if
+     * @return The style sheet at the \c index position in
+     * the \c StyleSheetList , or \c null if
      * that is not a valid index.
      *
      */
@@ -354,7 +353,7 @@ class CSSRule;
 class CSSStyleSheet;
 
 /**
- * The <code> MediaList </code> interface provides the abstraction of
+ * The \c MediaList interface provides the abstraction of
  * an ordered collection of media, without defining or constraining
  * how this collection is implemented. All media are lowercase
  * strings.

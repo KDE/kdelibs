@@ -159,7 +159,7 @@ public:
     void setType( const DOMString & );
 
     /**
-     * Reset sequence number when used in <code> OL </code> See the <a
+     * Reset sequence number when used in \c OL See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/lists.html#adef-value-LI">
      * value attribute definition </a> in HTML 4.0. This attribute is
      * deprecated in HTML 4.0.

@@ -207,7 +207,7 @@ public:
 class DOMString;
 
 /**
- * For the <code> H1 </code> to <code> H6 </code> elements. See the <a
+ * For the \c H1 to \c H6 elements. See the <a
  * href="http://www.w3.org/TR/REC-html40/struct/global.html#edef-H1">
  * H1 element definition </a> in HTML 4.0.
  *

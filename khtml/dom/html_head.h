@@ -91,7 +91,7 @@ public:
 class HTMLLinkElementImpl;
 
 /**
- * The <code> LINK </code> element specifies a link to an external
+ * The \c LINK element specifies a link to an external
  * resource, and defines this document's relationship to that resource
  * (or vice versa). See the <a
  * href="http://www.w3.org/TR/REC-html40/struct/links.html#edef-LINK">

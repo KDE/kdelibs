@@ -42,27 +42,27 @@ class NamedAttrMapImpl;
 class DocumentImpl;
 
 /**
- * The <code> Attr </code> interface represents an attribute in an
- * <code> Element </code> object. Typically the allowable values for
+ * The \c Attr interface represents an attribute in an
+ * \c Element object. Typically the allowable values for
  * the attribute are defined in a document type definition.
  *
- *  <code> Attr </code> objects inherit the <code> Node </code>
+ *  \c Attr objects inherit the \c Node
  * interface, but since they are not actually child nodes of the
  * element they describe, the DOM does not consider them part of the
- * document tree. Thus, the <code> Node </code> attributes <code>
- * parentNode </code> , <code> previousSibling </code> , and <code>
- * nextSibling </code> have a null value for <code> Attr </code>
+ * document tree. Thus, the \c Node attributes
+ * \c parentNode , \c previousSibling , and
+ * \c nextSibling have a null value for \c Attr
  * objects. The DOM takes the view that attributes are properties of
  * elements rather than having a separate identity from the elements
  * they are associated with; this should make it more efficient to
  * implement such features as default attributes associated with all
- * elements of a given type. Furthermore, <code> Attr </code> nodes
- * may not be immediate children of a <code> DocumentFragment </code>
- * . However, they can be associated with <code> Element </code> nodes
- * contained within a <code> DocumentFragment </code> . In short,
- * users and implementors of the DOM need to be aware that <code> Attr
- * </code> nodes have some things in common with other objects
- * inheriting the <code> Node </code> interface, but they also are
+ * elements of a given type. Furthermore, \c Attr nodes
+ * may not be immediate children of a \c DocumentFragment
+ * . However, they can be associated with \c Element nodes
+ * contained within a \c DocumentFragment . In short,
+ * users and implementors of the DOM need to be aware that \c Attr
+ * nodes have some things in common with other objects
+ * inheriting the \c Node interface, but they also are
  * quite distinct.
  *
  *  The attribute's effective value is determined as follows: if this
@@ -72,15 +72,15 @@ class DocumentImpl;
  * then that default value is the attribute's effective value;
  * otherwise, the attribute does not exist on this element in the
  * structure model until it has been explicitly added. Note that the
- * <code> nodeValue </code> attribute on the <code> Attr </code>
+ * \c nodeValue attribute on the \c Attr
  * instance can also be used to retrieve the string version of the
  * attribute's value(s).
  *
  *  In XML, where the value of an attribute can contain entity
- * references, the child nodes of the <code> Attr </code> node provide
+ * references, the child nodes of the \c Attr node provide
  * a representation in which entity references are not expanded. These
- * child nodes may be either <code> Text </code> or <code>
- * EntityReference </code> nodes. Because the attribute type may be
+ * child nodes may be either \c Text or
+ * \c EntityReference nodes. Because the attribute type may be
  * unknown, there are no tokenized attribute values.
  *
  */
@@ -113,24 +113,24 @@ public:
 
     /**
      * If this attribute was explicitly given a value in the original
-     * document, this is <code> true </code> ; otherwise, it is <code>
-     * false </code> . Note that the implementation is in charge of
+     * document, this is \c true ; otherwise, it is
+     * \c false . Note that the implementation is in charge of
      * this attribute, not the user. If the user changes the value of
      * the attribute (even if it ends up having the same value as the
-     * default value) then the <code> specified </code> flag is
-     * automatically flipped to <code> true </code> . To re-specify
+     * default value) then the \c specified flag is
+     * automatically flipped to \c true . To re-specify
      * the attribute as the default value from the DTD, the user must
      * delete the attribute. The implementation will then make a new
-     * attribute available with <code> specified </code> set to <code>
-     * false </code> and the default value (if one exists).
+     * attribute available with \c specified set to
+     * \c false and the default value (if one exists).
      *
      *  In summary: <ulist> <item> If the attribute has an assigned
-     * value in the document then <code> specified </code> is <code>
-     * true </code> , and the value is the assigned value.
+     * value in the document then \c specified is
+     * \c true , and the value is the assigned value.
      *
      *  </item> <item> If the attribute has no assigned value in the
-     * document and has a default value in the DTD, then <code>
-     * specified </code> is <code> false </code> , and the value is
+     * document and has a default value in the DTD, then
+     * \c specified is \c false , and the value is
      * the default value in the DTD.
      *
      *  </item> <item> If the attribute has no assigned value in the
@@ -148,7 +148,7 @@ public:
      * string. Character and general entity references are replaced
      * with their values.
      *
-     *  On setting, this creates a <code> Text </code> node with the
+     *  On setting, this creates a \c Text node with the
      * unparsed contents of the string.
      *
      */
@@ -178,26 +178,26 @@ class DOMString;
 
 /**
  * By far the vast majority of objects (apart from text) that authors
- * encounter when traversing a document are <code> Element </code>
+ * encounter when traversing a document are \c Element
  * nodes. Assume the following XML document: &lt;elementExample
  * id=&quot;demo&quot;&gt; &lt;subelement1/&gt;
  * &lt;subelement2&gt;&lt;subsubelement/&gt;&lt;/subelement2&gt;
  * &lt;/elementExample&gt;
  *
- *  When represented using DOM, the top node is an <code> Element
- * </code> node for &quot;elementExample&quot;, which contains two
- * child <code> Element </code> nodes, one for &quot;subelement1&quot;
+ *  When represented using DOM, the top node is an \c Element
+ * node for &quot;elementExample&quot;, which contains two
+ * child \c Element nodes, one for &quot;subelement1&quot;
  * and one for &quot;subelement2&quot;. &quot;subelement1&quot;
  * contains no child nodes.
  *
  *  Elements may have attributes associated with them; since the
- * <code> Element </code> interface inherits from <code> Node </code>
- * , the generic <code> Node </code> interface method <code>
- * getAttributes </code> may be used to retrieve the set of all
- * attributes for an element. There are methods on the <code> Element
- * </code> interface to retrieve either an <code> Attr </code> object
+ * \c Element interface inherits from \c Node
+ * , the generic \c Node interface method
+ * \c getAttributes may be used to retrieve the set of all
+ * attributes for an element. There are methods on the \c Element
+ * interface to retrieve either an \c Attr object
  * by name or an attribute value by name. In XML, where an attribute
- * value may contain entity references, an <code> Attr </code> object
+ * value may contain entity references, an \c Attr object
  * should be retrieved to examine the possibly fairly complex sub-tree
  * representing the attribute value. On the other hand, in HTML, where
  * all attributes have simple string values, methods to directly
@@ -224,11 +224,11 @@ public:
 
     /**
      * The name of the element. For example, in: &lt;elementExample
-     * id=&quot;demo&quot;&gt; ... &lt;/elementExample&gt; , <code>
-     * tagName </code> has the value <code> &quot;elementExample&quot;
-     * </code> . Note that this is case-preserving in XML, as are all
-     * of the operations of the DOM. The HTML DOM returns the <code>
-     * tagName </code> of an HTML element in the canonical uppercase
+     * id=&quot;demo&quot;&gt; ... &lt;/elementExample&gt; ,
+     * \c tagName has the value \c &quot;elementExample&quot;
+     * . Note that this is case-preserving in XML, as are all
+     * of the operations of the DOM. The HTML DOM returns the
+     * \c tagName of an HTML element in the canonical uppercase
      * form, regardless of the case in the source HTML document.
      *
      */
@@ -239,7 +239,7 @@ public:
      *
      * @param name The name of the attribute to retrieve.
      *
-     * @return The <code> Attr </code> value as a string, or the empty
+     * @return The \c Attr value as a string, or the empty
      * string if that attribute does not have a specified or default
      * value.
      *
@@ -254,10 +254,10 @@ public:
      * recognized as an entity reference) is treated as literal text,
      * and needs to be appropriately escaped by the implementation
      * when it is written out. In order to assign an attribute value
-     * that contains entity references, the user must create an <code>
-     * Attr </code> node plus any <code> Text </code> and <code>
-     * EntityReference </code> nodes, build the appropriate subtree,
-     * and use <code> setAttributeNode </code> to assign it as the
+     * that contains entity references, the user must create an
+     * \c Attr node plus any \c Text and
+     * \c EntityReference nodes, build the appropriate subtree,
+     * and use \c setAttributeNode to assign it as the
      * value of an attribute.
      *
      * @param name The name of the attribute to create or alter.
@@ -290,12 +290,12 @@ public:
     void removeAttribute ( const DOMString &name );
 
     /**
-     * Retrieves an <code> Attr </code> node by name.
+     * Retrieves an \c Attr node by name.
      *
      * @param name The name of the attribute to retrieve.
      *
-     * @return The <code> Attr </code> node with the specified
-     * attribute name or <code> null </code> if there is no such
+     * @return The \c Attr node with the specified
+     * attribute name or \c null if there is no such
      * attribute.
      *
      */
@@ -305,24 +305,24 @@ public:
      * Adds a new attribute. If an attribute with that name is already
      * present in the element, it is replaced by the new one.
      *
-     * @param newAttr The <code> Attr </code> node to add to the
+     * @param newAttr The \c Attr node to add to the
      * attribute list.
      *
-     * @return If the <code> newAttr </code> attribute replaces an
+     * @return If the \c newAttr attribute replaces an
      * existing attribute with the same name, the previously existing
-     * <code> Attr </code> node is returned, otherwise <code> null
-     * </code> is returned.
+     * \c Attr node is returned, otherwise \c null
+     * is returned.
      *
      * @exception DOMException
-     * WRONG_DOCUMENT_ERR: Raised if <code> newAttr </code> was
+     * WRONG_DOCUMENT_ERR: Raised if \c newAttr was
      * created from a different document than the one that created the
      * element.
      *
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
      *
-     *  INUSE_ATTRIBUTE_ERR: Raised if <code> newAttr </code> is
-     * already an attribute of another <code> Element </code> object.
-     * The DOM user must explicitly clone <code> Attr </code> nodes to
+     *  INUSE_ATTRIBUTE_ERR: Raised if \c newAttr is
+     * already an attribute of another \c Element object.
+     * The DOM user must explicitly clone \c Attr nodes to
      * re-use them in other elements.
      *
      */
@@ -331,31 +331,31 @@ public:
     /**
      * Removes the specified attribute.
      *
-     * @param oldAttr The <code> Attr </code> node to remove from the
-     * attribute list. If the removed <code> Attr </code> has a
+     * @param oldAttr The \c Attr node to remove from the
+     * attribute list. If the removed \c Attr has a
      * default value it is immediately replaced.
      *
-     * @return The <code> Attr </code> node that was removed.
+     * @return The \c Attr node that was removed.
      *
      * @exception DOMException
      * NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
      *
-     *  NOT_FOUND_ERR: Raised if <code> oldAttr </code> is not an
+     *  NOT_FOUND_ERR: Raised if \c oldAttr is not an
      * attribute of the element.
      *
      */
     Attr removeAttributeNode ( const Attr &oldAttr );
 
     /**
-     * Returns a <code> NodeList </code> of all descendant elements
+     * Returns a \c NodeList of all descendant elements
      * with a given tag name, in the order in which they would be
-     * encountered in a preorder traversal of the <code> Element
-     * </code> tree.
+     * encountered in a preorder traversal of the \c Element
+     * tree.
      *
      * @param name The name of the tag to match on. The special value
      * "*" matches all tags.
      *
-     * @return A list of matching <code> Element </code> nodes.
+     * @return A list of matching \c Element nodes.
      *
      */
     NodeList getElementsByTagName ( const DOMString &name );

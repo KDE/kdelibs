@@ -87,7 +87,7 @@ public:
 
     /**
      * Comma-separated list of lengths, defining an active region
-     * geometry. See also <code> shape </code> for the shape of the
+     * geometry. See also \c shape for the shape of the
      * region. See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/objects.html#adef-coords">
      * coords attribute definition </a> in HTML 4.0.
@@ -167,7 +167,7 @@ public:
 
     /**
      * The shape of the active area. The coordinates are given by
-     * <code> coords </code> . See the <a
+     * \c coords . See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/objects.html#adef-shape">
      * shape attribute definition </a> in HTML 4.0.
      *
@@ -407,14 +407,14 @@ public:
 class HTMLQuoteElementImpl;
 
 /**
- * For the <code> Q </code> and <code> BLOCKQUOTE </code> elements.
+ * For the \c Q and \c BLOCKQUOTE elements.
  * See the <a
  * href="http://www.w3.org/TR/REC-html40/struct/text.html#edef-Q"> Q
  * element definition </a> in HTML 4.0.
  *
  * Note: The DOM is not quite consistent here. They also define the
- * HTMLBlockQuoteElement interface, to represent the <code>BLOCKQUOTE</code>
- * element. To resolve ambiquities, we use this one for the <code>Q</code>
+ * HTMLBlockQuoteElement interface, to represent the \c BLOCKQUOTE
+ * element. To resolve ambiquities, we use this one for the \c Q
  * element only.
  */
 class HTMLQuoteElement : public HTMLElement

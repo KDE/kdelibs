@@ -63,7 +63,7 @@ public:
     ~HTMLButtonElement();
 
     /**
-     * Returns the <code> FORM </code> element containing this
+     * Returns the \c FORM element containing this
      * control. Returns null if this control is not within the context
      * of a form.
      *
@@ -182,7 +182,7 @@ public:
 
 class HTMLFormElementImpl;
 /**
- * The <code> FORM </code> element encompasses behavior similar to a
+ * The \c FORM element encompasses behavior similar to a
  * collection and an element. It provides direct access to the
  * contained input elements as well as the attributes of the form
  * element. See the <a
@@ -351,7 +351,7 @@ public:
 
     /**
      * Stores the initial control value (i.e., the initial value of
-     * <code> value </code> ).
+     * \c value ).
      *
      */
     DOMString defaultValue() const;
@@ -362,8 +362,8 @@ public:
     void setDefaultValue( const DOMString & );
 
     /**
-     * When <code> type </code> has the value "Radio" or "Checkbox",
-     * stores the initial value of the <code> checked </code>
+     * When \c type has the value "Radio" or "Checkbox",
+     * stores the initial value of the \c checked
      * attribute.
      *
      */
@@ -437,8 +437,8 @@ public:
     void setAlt( const DOMString & );
 
     /**
-     * Describes whether a radio or check box is checked, when <code>
-     * type </code> has the value "Radio" or "Checkbox". The value is
+     * Describes whether a radio or check box is checked, when
+     * \c type has the value "Radio" or "Checkbox". The value is
      * TRUE if explicitly set. Represents the current state of the
      * checkbox or radio button. See the <a
      * href="http://www.w3.org/TR/REC-html40/interact/forms.html#adef-checked">
@@ -466,8 +466,8 @@ public:
     void setDisabled( bool );
 
     /**
-     * Maximum number of characters for text fields, when <code> type
-     * </code> has the value "Text" or "Password". See the <a
+     * Maximum number of characters for text fields, when \c type
+     * has the value "Text" or "Password". See the <a
      * href="http://www.w3.org/TR/REC-html40/interact/forms.html#adef-maxlength">
      * maxlength attribute definition </a> in HTML 4.0.
      *
@@ -494,7 +494,7 @@ public:
     void setName( const DOMString & );
 
     /**
-     * This control is read-only. When <code> type </code> has the
+     * This control is read-only. When \c type has the
      * value "text" or "password" only. See the <a
      * href="http://www.w3.org/TR/REC-html40/interact/forms.html#adef-readonly">
      * readonly attribute definition </a> in HTML 4.0.
@@ -533,7 +533,7 @@ public:
     void setSize( long );
 
     /**
-     * When the <code> type </code> attribute has the value "Image",
+     * When the \c type attribute has the value "Image",
      * this attribute specifies the location of the image to be used
      * to decorate the graphical submit button. See the <a
      * href="http://www.w3.org/TR/REC-html40/interact/forms.html#adef-src">
@@ -614,16 +614,16 @@ public:
     void focus (  );
 
     /**
-     * Select the contents of the text area. For <code> INPUT </code>
-     * elements whose <code> type </code> attribute has one of the
+     * Select the contents of the text area. For \c INPUT
+     * elements whose \c type attribute has one of the
      * following values: "Text", "File", or "Password".
      *
      */
     void select (  );
 
     /**
-     * Simulate a mouse-click. For <code> INPUT </code> elements whose
-     * <code> type </code> attribute has one of the following values:
+     * Simulate a mouse-click. For \c INPUT elements whose
+     * \c type attribute has one of the following values:
      * "Button", "Checkbox", "Radio", "Reset", or "Submit".
      */
     void click (  );
@@ -670,7 +670,7 @@ public:
 
     /**
      * This attribute links this label with another form control by
-     * <code> id </code> attribute. See the <a
+     * \c id attribute. See the <a
      * href="http://www.w3.org/TR/REC-html40/interact/forms.html#adef-for">
      * for attribute definition </a> in HTML 4.0.
      *
@@ -687,7 +687,7 @@ public:
 
 class HTMLLegendElementImpl;
 /**
- * Provides a caption for a <code> FIELDSET </code> grouping. See the
+ * Provides a caption for a \c FIELDSET grouping. See the
  * <a
  * href="http://www.w3.org/TR/REC-html40/interact/forms.html#edef-LEGEND">
  * LEGEND element definition </a> in HTML 4.0.
@@ -729,7 +729,7 @@ public:
     void setAccessKey( const DOMString & );
 
     /**
-     * Text alignment relative to <code> FIELDSET </code> . See the <a
+     * Text alignment relative to \c FIELDSET . See the <a
      * href="http://www.w3.org/TR/REC-html40/interact/forms.html#adef-align-LEGEND">
      * align attribute definition </a> in HTML 4.0. This attribute is
      * deprecated in HTML 4.0.
@@ -853,7 +853,7 @@ public:
     void setValue( const DOMString & );
 
     /**
-     * The number of options in this <code> SELECT </code> .
+     * The number of options in this \c SELECT .
      *
      */
     long length() const;
@@ -864,7 +864,7 @@ public:
     HTMLFormElement form() const;
 
     /**
-     * The collection of <code> OPTION </code> elements contained by
+     * The collection of \c OPTION elements contained by
      * this element.
      *
      */
@@ -884,8 +884,8 @@ public:
     void setDisabled( bool );
 
     /**
-     * If true, multiple <code> OPTION </code> elements may be
-     * selected in this <code> SELECT </code> . See the <a
+     * If true, multiple \c OPTION elements may be
+     * selected in this \c SELECT . See the <a
      * href="http://www.w3.org/TR/REC-html40/interact/forms.html#adef-multiple">
      * multiple attribute definition </a> in HTML 4.0.
      *
@@ -939,8 +939,8 @@ public:
     void setTabIndex( long );
 
     /**
-     * Add a new element to the collection of <code> OPTION </code>
-     * elements for this <code> SELECT </code> .
+     * Add a new element to the collection of \c OPTION
+     * elements for this \c SELECT .
      *
      * @param element The element to add.
      *
@@ -951,8 +951,8 @@ public:
     void add ( const HTMLElement &element, const HTMLElement &before );
 
     /**
-     * Remove an element from the collection of <code> OPTION </code>
-     * elements for this <code> SELECT </code> . Does nothing if no
+     * Remove an element from the collection of \c OPTION
+     * elements for this \c SELECT . Does nothing if no
      * element has the given index.
      *
      * @param index The index of the item to remove.
@@ -1000,7 +1000,7 @@ public:
 
     /**
      * Stores the initial control value (i.e., the initial value of
-     * <code> value </code> ).
+     * \c value ).
      *
      */
     DOMString defaultValue() const;
@@ -1139,7 +1139,7 @@ public:
     void focus (  );
 
     /**
-     * Select the contents of the <code> TEXTAREA </code> .
+     * Select the contents of the \c TEXTAREA .
      */
     void select (  );
 };
@@ -1175,7 +1175,7 @@ public:
     HTMLFormElement form() const;
 
     /**
-     * Stores the initial value of the <code> selected </code>
+     * Stores the initial value of the \c selected
      * attribute.
      *
      */
@@ -1193,8 +1193,8 @@ public:
     DOMString text() const;
 
     /**
-     * The index of this <code> OPTION </code> in its parent <code>
-     * SELECT </code> .
+     * The index of this \c OPTION in its parent
+     * \c SELECT .
      *
      */
     long index() const;

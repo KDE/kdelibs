@@ -272,7 +272,7 @@ public:
     ~HTMLObjectElement();
 
     /**
-     * Returns the <code> FORM </code> element containing this
+     * Returns the \c FORM element containing this
      * control. Returns null if this control is not within the context
      * of a form.
      *
@@ -280,7 +280,7 @@ public:
     HTMLFormElement form() const;
 
     /**
-     * Applet class file. See the <code> code </code> attribute for
+     * Applet class file. See the \c code attribute for
      * HTMLAppletElement.
      *
      */
@@ -334,8 +334,8 @@ public:
     void setBorder( const DOMString & );
 
     /**
-     * Base URI for <code> classid </code> , <code> data </code> , and
-     * <code> archive </code> attributes. See the <a
+     * Base URI for \c classid , \c data , and
+     * \c archive attributes. See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/objects.html#adef-codebase-OBJECT">
      * codebase attribute definition </a> in HTML 4.0.
      *
@@ -348,7 +348,7 @@ public:
     void setCodeBase( const DOMString & );
 
     /**
-     * Content type for data downloaded via <code> classid </code>
+     * Content type for data downloaded via \c classid
      * attribute. See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/objects.html#adef-codetype">
      * codetype attribute definition </a> in HTML 4.0.
@@ -468,7 +468,7 @@ public:
     void setTabIndex( long );
 
     /**
-     * Content type for data downloaded via <code> data </code>
+     * Content type for data downloaded via \c data
      * attribute. See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/objects.html#adef-type-OBJECT">
      * type attribute definition </a> in HTML 4.0.
@@ -549,7 +549,7 @@ public:
 class HTMLParamElementImpl;
 
 /**
- * Parameters fed to the <code> OBJECT </code> element. See the <a
+ * Parameters fed to the \c OBJECT element. See the <a
  * href="http://www.w3.org/TR/REC-html40/struct/objects.html#edef-PARAM">
  * PARAM element definition </a> in HTML 4.0.
  *
@@ -584,8 +584,8 @@ public:
     void setName( const DOMString & );
 
     /**
-     * Content type for the <code> value </code> attribute when <code>
-     * valuetype </code> has the value "ref". See the <a
+     * Content type for the \c value attribute when
+     * \c valuetype has the value "ref". See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/objects.html#adef-type-PARAM">
      * type attribute definition </a> in HTML 4.0.
      *
@@ -611,7 +611,7 @@ public:
     void setValue( const DOMString & );
 
     /**
-     * Information about the meaning of the <code> value </code>
+     * Information about the meaning of the \c value
      * attribute value. See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/objects.html#adef-valuetype">
      * valuetype attribute definition </a> in HTML 4.0.

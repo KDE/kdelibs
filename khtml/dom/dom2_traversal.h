@@ -51,10 +51,10 @@ class CustomNodeFilterImpl;
  * Instances of these iterators are created by calling
  * DocumentTraversal.createNodeIterator().
  *
- *  Any Iterator that returns nodes may implement the <code>
- * NodeIterator </code> interface. Users and vendor libraries may also
- * choose to create Iterators that implement the <code> NodeIterator
- * </code> interface.
+ *  Any Iterator that returns nodes may implement the
+ * \c NodeIterator interface. Users and vendor libraries may also
+ * choose to create Iterators that implement the \c NodeIterator
+ * interface.
  *
  */
 class NodeIterator
@@ -111,8 +111,8 @@ public:
      * the Iterator in the set. After a NodeIterator is created, the
      * first call to nextNode() returns the first node in the set.
      *
-     * @return The next <code> Node </code> in the set being iterated
-     * over, or <code> null </code> if there are no more members in
+     * @return The next \c Node in the set being iterated
+     * over, or \c null if there are no more members in
      * that set.
      *
      * @exception Exceptions from user code
@@ -126,8 +126,8 @@ public:
      * Returns the previous node in the set and moves the position of
      * the Iterator backwards in the set.
      *
-     * @return The previous <code> Node </code> in the set being
-     * iterated over, or <code> null </code> if there are no more
+     * @return The previous \c Node in the set being
+     * iterated over, or \c null if there are no more
      * members in that set.
      *
      * @exception Exceptions from user code
@@ -160,7 +160,7 @@ protected:
 
 /**
  * Filters are objects that know how to "filter out" nodes. If an
- * Iterator or <code> TreeWalker </code> is given a filter, before it
+ * Iterator or \c TreeWalker is given a filter, before it
  * returns the next node, it applies the filter. If the filter says to
  * accept the node, the Iterator returns it; otherwise, the Iterator
  * looks for the next node and pretends that the node that was
@@ -318,12 +318,12 @@ protected:
 };
 
 /**
- * <code> TreeWalker </code> objects are used to navigate a document
+ * \c TreeWalker objects are used to navigate a document
  * tree or subtree using the view of the document defined by its
- * <code> whatToShow </code> flags and any filters that are defined
- * for the <code> TreeWalker </code> . Any function which performs
- * navigation using a <code> TreeWalker </code> will automatically
- * support any view defined by a <code> TreeWalker </code> .
+ * \c whatToShow flags and any filters that are defined
+ * for the \c TreeWalker . Any function which performs
+ * navigation using a \c TreeWalker will automatically
+ * support any view defined by a \c TreeWalker .
  *
  *  Omitting nodes from the logical view of a subtree can result in a
  * structure that is substantially different from the same subtree in
@@ -421,12 +421,12 @@ public:
     Node parentNode();
 
     /**
-     * Moves the <code> TreeWalker </code> to the first child of the
+     * Moves the \c TreeWalker to the first child of the
      * current node, and returns the new node. If the current node has
-     * no children, returns <code> null </code> , and retains the
+     * no children, returns \c null , and retains the
      * current node.
      *
-     * @return The new node, or <code> null </code> if the current
+     * @return The new node, or \c null if the current
      * node has no children.
      *
      * @exception Exceptions from user code
@@ -437,12 +437,12 @@ public:
     Node firstChild();
 
     /**
-     * Moves the <code> TreeWalker </code> to the last child of the
+     * Moves the \c TreeWalker to the last child of the
      * current node, and returns the new node. If the current node has
-     * no children, returns <code> null </code> , and retains the
+     * no children, returns \c null , and retains the
      * current node.
      *
-     * @return The new node, or <code> null </code> if the current
+     * @return The new node, or \c null if the current
      * node has no children.
      *
      * @exception Exceptions from user code
@@ -453,12 +453,12 @@ public:
     Node lastChild();
 
     /**
-     * Moves the <code> TreeWalker </code> to the previous sibling of
+     * Moves the \c TreeWalker to the previous sibling of
      * the current node, and returns the new node. If the current node
-     * has no previous sibling, returns <code> null </code> , and
+     * has no previous sibling, returns \c null , and
      * retains the current node.
      *
-     * @return The new node, or <code> null </code> if the current
+     * @return The new node, or \c null if the current
      * node has no previous sibling.
      *
      * @exception Exceptions from user code
@@ -469,12 +469,12 @@ public:
     Node previousSibling();
 
     /**
-     * Moves the <code> TreeWalker </code> to the next sibling of the
+     * Moves the \c TreeWalker to the next sibling of the
      * current node, and returns the new node. If the current node has
-     * no next sibling, returns <code> null </code> , and retains the
+     * no next sibling, returns \c null , and retains the
      * current node.
      *
-     * @return The new node, or <code> null </code> if the current
+     * @return The new node, or \c null if the current
      * node has no next sibling.
      *
      * @exception Exceptions from user code
@@ -485,12 +485,12 @@ public:
     Node nextSibling();
 
     /**
-     * Moves the <code> TreeWalker </code> to the previous node in
+     * Moves the \c TreeWalker to the previous node in
      * document order relative to the current node, and returns the
      * new node. If the current node has no previous node, returns
-     * <code> null </code> , and retains the current node.
+     * \c null , and retains the current node.
      *
-     * @return The new node, or <code> null </code> if the current
+     * @return The new node, or \c null if the current
      * node has no previous node.
      *
      * @exception Exceptions from user code
@@ -501,12 +501,12 @@ public:
     Node previousNode();
 
     /**
-     * Moves the <code> TreeWalker </code> to the next node in
+     * Moves the \c TreeWalker to the next node in
      * document order relative to the current node, and returns the
-     * new node. If the current node has no next node, returns <code>
-     * null </code> , and retains the current node.
+     * new node. If the current node has no next node, returns
+     * \c null , and retains the current node.
      *
-     * @return The new node, or <code> null </code> if the current
+     * @return The new node, or \c null if the current
      * node has no next node.
      *
      * @exception Exceptions from user code
@@ -533,7 +533,7 @@ protected:
 // Document
 
 /**
- * <code> DocumentTraversal </code> contains methods that creates
+ * \c DocumentTraversal contains methods that creates
  * Iterators to traverse a node and its children in document order
  * (depth first, pre-order traversal, which is equivalent to the order
  * in which the start tags occur in the text representation of the
@@ -563,7 +563,7 @@ public:
      * Iterator. See the description of Iterator for the set of
      * possible values. These flags can be combined using OR.
      *
-     *  These flags can be combined using <code> OR </code> .
+     *  These flags can be combined using \c OR .
      *
      * @param filter The Filter to be used with this TreeWalker, or
      * null to indicate no filter.
@@ -571,7 +571,7 @@ public:
      * @param entityReferenceExpansion The value of this flag
      * determines whether entity reference nodes are expanded.
      *
-     * @return The newly created <code> NodeIterator </code> .
+     * @return The newly created \c NodeIterator .
      *
      *
     NodeIterator createNodeIterator ( const Node &root, long whatToShow,
@@ -582,7 +582,7 @@ public:
      * specified node.
      *
      * @param root The node which will serve as the root for the
-     * <code> TreeWalker </code> . The currentNode of the TreeWalker
+     * \c TreeWalker . The currentNode of the TreeWalker
      * is set to this node. The whatToShow flags and the NodeFilter
      * are not considered when setting this value; any node type will
      * be accepted as the root. The root must not be null.
@@ -592,7 +592,7 @@ public:
      * Iterator. See the description of TreeWalker for the set of
      * possible values. These flags can be combined using OR.
      *
-     *  These flags can be combined using <code> OR </code> .
+     *  These flags can be combined using \c OR .
      *
      * @param filter The Filter to be used with this TreeWalker, or
      * null to indicate no filter.
@@ -600,7 +600,7 @@ public:
      * @param entityReferenceExpansion The value of this flag
      * determines whether entity reference nodes are expanded.
      *
-     * @return The newly created <code> TreeWalker </code> .
+     * @return The newly created \c TreeWalker .
      *
      * @exception DOMException
      * Raises the exception NOT_SUPPORTED_ERR if the specified root

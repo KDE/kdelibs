@@ -115,9 +115,9 @@ public:
 // --------------------------------------------------------------------------
 
 /**
- * An <code> HTMLCollection </code> is a list of nodes. An individual
- * node may be accessed by either ordinal index or the node's <code>
- * name </code> or <code> id </code> attributes. Note: Collections in
+ * An \c HTMLCollection is a list of nodes. An individual
+ * node may be accessed by either ordinal index or the node's
+ * \c name or \c id attributes. Note: Collections in
  * the HTML DOM are assumed to be live meaning that they are
  * automatically updated when the underlying document is changed.
  *
@@ -157,27 +157,27 @@ public:
      * @param index The index of the node to be fetched. The index
      * origin is 0.
      *
-     * @return The <code> Node </code> at the corresponding position
-     * upon success. A value of <code> null </code> is returned if the
+     * @return The \c Node at the corresponding position
+     * upon success. A value of \c null is returned if the
      * index is out of range.
      *
      */
     Node item ( unsigned long index ) const;
 
     /**
-     * This method retrieves a <code> Node </code> using a name. It
-     * first searches for a <code> Node </code> with a matching <code>
-     * id </code> attribute. If it doesn't find one, it then searches
-     * for a <code> Node </code> with a matching <code> name </code>
+     * This method retrieves a \c Node using a name. It
+     * first searches for a \c Node with a matching
+     * \c id attribute. If it doesn't find one, it then searches
+     * for a \c Node with a matching \c name
      * attribute, but only on those elements that are allowed a name
      * attribute.
      *
-     * @param name The name of the <code> Node </code> to be fetched.
+     * @param name The name of the \c Node to be fetched.
      *
-     * @return The <code> Node </code> with a <code> name </code> or
-     * <code> id </code> attribute whose value corresponds to the
+     * @return The \c Node with a \c name or
+     * \c id attribute whose value corresponds to the
      * specified string. Upon failure (e.g., no node with this name
-     * exists), returns <code> null </code> .
+     * exists), returns \c null .
      *
      */
     Node namedItem ( const DOMString &name ) const;

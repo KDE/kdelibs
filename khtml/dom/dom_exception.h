@@ -41,11 +41,11 @@ namespace DOM {
  * (either for logical reasons, because data is lost, or because the
  * implementation has become unstable). In general, DOM methods return
  * specific error values in ordinary processing situation, such as
- * out-of-bound errors when using <code> NodeList </code> .
+ * out-of-bound errors when using \c NodeList .
  *
  *  Implementations may raise other exceptions under other
  * circumstances. For example, implementations may raise an
- * implementation-dependent exception if a <code> null </code>
+ * implementation-dependent exception if a \c null
  * argument is passed.
  *
  *  Some languages and object systems do not support the concept of

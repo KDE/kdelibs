@@ -81,8 +81,8 @@ public:
 class HTMLTableCellElementImpl;
 
 /**
- * The object used to represent the <code> TH </code> and <code> TD
- * </code> elements. See the <a
+ * The object used to represent the \c TH and \c TD
+ * elements. See the <a
  * href="http://www.w3.org/TR/REC-html40/struct/tables.html#edef-TD">
  * TD element definition </a> in HTML 4.0.
  *
@@ -212,7 +212,7 @@ public:
     void setColSpan( long  );
 
     /**
-     * List of <code> id </code> attribute values for header cells.
+     * List of \c id attribute values for header cells.
      * See the <a
      * href="http://www.w3.org/TR/REC-html40/struct/tables.html#adef-headers">
      * headers attribute definition </a> in HTML 4.0.
@@ -312,7 +312,7 @@ public:
 class HTMLTableColElementImpl;
 
 /**
- * Regroups the <code> COL </code> and <code> COLGROUP </code>
+ * Regroups the \c COL and \c COLGROUP
  * elements. See the <a
  * href="http://www.w3.org/TR/REC-html40/struct/tables.html#edef-COL">
  * COL element definition </a> in HTML 4.0.
@@ -428,8 +428,8 @@ class DOMString;
 /**
  * The create* and delete* methods on the table allow authors to
  * construct and modify tables. HTML 4.0 specifies that only one of
- * each of the <code> CAPTION </code> , <code> THEAD </code> , and
- * <code> TFOOT </code> elements may exist in a table. Therefore, if
+ * each of the \c CAPTION , \c THEAD , and
+ * \c TFOOT elements may exist in a table. Therefore, if
  * one exists, and the createTHead() or createTFoot() method is
  * called, the method returns the existing THead or TFoot element. See
  * the <a
@@ -455,7 +455,7 @@ public:
     ~HTMLTableElement();
 
     /**
-     * Returns the table's <code> CAPTION </code> , or void if none
+     * Returns the table's \c CAPTION , or void if none
      * exists.
      *
      */
@@ -467,8 +467,8 @@ public:
     void setCaption( const HTMLTableCaptionElement & );
 
     /**
-     * Returns the table's <code> THEAD </code> , or <code> null
-     * </code> if none exists.
+     * Returns the table's \c THEAD , or \c null
+     * if none exists.
      *
      */
     HTMLTableSectionElement tHead() const;
@@ -479,8 +479,8 @@ public:
     void setTHead( const HTMLTableSectionElement & );
 
     /**
-     * Returns the table's <code> TFOOT </code> , or <code> null
-     * </code> if none exists.
+     * Returns the table's \c TFOOT , or \c null
+     * if none exists.
      *
      */
     HTMLTableSectionElement tFoot() const;
@@ -492,8 +492,8 @@ public:
 
     /**
      * Returns a collection of all the rows in the table, including
-     * all in <code> THEAD </code> , <code> TFOOT </code> , all <code>
-     * TBODY </code> elements.
+     * all in \c THEAD , \c TFOOT , all
+     * \c TBODY elements.
      *
      */
     HTMLCollection rows() const;
@@ -630,7 +630,7 @@ public:
     /**
      * Create a table header row or return an existing one.
      *
-     * @return A new table header element ( <code> THEAD </code> ).
+     * @return A new table header element ( \c THEAD ).
      *
      */
     HTMLElement createTHead (  );
@@ -646,7 +646,7 @@ public:
     /**
      * Create a table footer row or return an existing one.
      *
-     * @return A footer element ( <code> TFOOT </code> ).
+     * @return A footer element ( \c TFOOT ).
      *
      */
     HTMLElement createTFoot (  );
@@ -662,7 +662,7 @@ public:
     /**
      * Create a new table caption object or return an existing one.
      *
-     * @return A <code> CAPTION </code> element.
+     * @return A \c CAPTION element.
      *
      */
     HTMLElement createCaption (  );
@@ -759,8 +759,8 @@ public:
     void setRowIndex( long  );
 
     /**
-     * The index of this row, relative to the current section ( <code>
-     * THEAD </code> , <code> TFOOT </code> , or <code> TBODY </code>
+     * The index of this row, relative to the current section (
+     * \c THEAD , \c TFOOT , or \c TBODY
      * ).
      *
      */
@@ -856,7 +856,7 @@ public:
     void setVAlign( const DOMString & );
 
     /**
-     * Insert an empty <code> TD </code> cell into this row.
+     * Insert an empty \c TD cell into this row.
      * If index is -1 or equal to the number of cells, the new
      * cell is appended.
      *
@@ -887,8 +887,8 @@ class HTMLElement;
 class DOMString;
 
 /**
- * The <code> THEAD </code> , <code> TFOOT </code> , and <code> TBODY
- * </code> elements.
+ * The \c THEAD , \c TFOOT , and \c TBODY
+ * elements.
  *
  */
 class HTMLTableSectionElement : public HTMLElement
@@ -912,8 +912,8 @@ public:
     ~HTMLTableSectionElement();
 
     /**
-     * Horizontal alignment of data in cells. See the <code> align
-     * </code> attribute for HTMLTheadElement for details.
+     * Horizontal alignment of data in cells. See the \c align
+     * attribute for HTMLTheadElement for details.
      *
      */
     DOMString align() const;
@@ -950,8 +950,8 @@ public:
     void setChOff( const DOMString & );
 
     /**
-     * Vertical alignment of data in cells. See the <code> valign
-     * </code> attribute for HTMLTheadElement for details.
+     * Vertical alignment of data in cells. See the \c valign
+     * attribute for HTMLTheadElement for details.
      *
      */
     DOMString vAlign() const;
