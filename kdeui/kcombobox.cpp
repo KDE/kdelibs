@@ -230,7 +230,7 @@ void KComboBox::aboutToShowMenu()
     m_pContextMenu->setItemEnabled( id, hasMarkedText );
     id = m_pContextMenu->insertItem( i18n("Paste"), this, SLOT(paste()) );
     // m_pContextMenu->setItemEnabled( id, );
-    m_pContextMenu->insertItem( i18n("Clear"), this, SLOT(clear()) );
+    id = m_pContextMenu->insertItem( i18n("Clear"), this, SLOT(clear()) );
     m_pContextMenu->setItemEnabled( id, hasText );
     m_pContextMenu->insertSeparator();
     if( m_bShowModeChanger && m_pCompObj != 0 )
