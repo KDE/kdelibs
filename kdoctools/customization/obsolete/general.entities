@@ -371,6 +371,11 @@
 <!ENTITY XML	"<trademark>XML</trademark>">
 <!ENTITY XSL	"<trademark>XSL</trademark>">
 
+<!-- Defaults, do NOT add anything to this without checking with the docbook
+     team.  -->
+
+<!ENTITY package "This application isn't part of a KDE package">
+
 <!-- Obsolete entities -->
 <!-- Put them here; they will be removed at some stage -->
 <!ENTITY artsbuilder	"<application>aRts-builder</application>">
