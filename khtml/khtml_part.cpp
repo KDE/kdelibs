@@ -32,6 +32,7 @@
 #include "misc/khtmldata.h"
 #include "html/html_miscimpl.h"
 #include "html/html_inlineimpl.h"
+#include "html/html_formimpl.h"
 #include "rendering/render_frames.h"
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
@@ -462,7 +463,6 @@ DOM::HTMLDocumentImpl *KHTMLPart::docImpl() const
 void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
 {
   kdDebug(300) << "slotData: " << data.size() << endl;
-  //kdDebug(300) << "data = " << data.data() << endl << endl;
   // The first data ?
   if ( !d->m_workingURL.isEmpty() )
   {
@@ -532,6 +532,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_doc->ref();
   d->m_doc->attach( d->m_view );
   d->m_doc->setURL( m_url.url() );
+  d->m_doc->setRestoreState(args.docState());
   d->m_doc->open();
   // clear widget
   d->m_view->resizeContents( 0, 0 );
@@ -1496,8 +1497,18 @@ void KHTMLPart::saveState( QDataStream &stream )
 {
   stream << m_url << (Q_INT32)d->m_view->contentsX() << (Q_INT32)d->m_view->contentsY();
 
+  // Save the state of the document (Most notably the state of any forms)
+  QStringList docState;
+  if (d->m_doc)
+  {
+     docState = d->m_doc->state();
+  }
+  stream << docState;
+
+  // Save font data
   stream << fontSizes() << d->m_fontBase;
   
+  // Save frame data
   stream << (Q_UINT32)d->m_frames.count();
 
   QStringList frameNameLst, frameServiceTypeLst, frameServiceNameLst;
@@ -1531,14 +1542,16 @@ void KHTMLPart::saveState( QDataStream &stream )
 void KHTMLPart::restoreState( QDataStream &stream )
 {
   KURL u;
-  Q_INT32 xOffset; int yOffset;
+  Q_INT32 xOffset; 
+  Q_INT32 yOffset;
   Q_UINT32 frameCount;
-  QStringList frameNames, frameServiceTypes, frameServiceNames;
+  QStringList frameNames, frameServiceTypes, docState, frameServiceNames;
   KURL::List frameURLs;
   QValueList<QByteArray> frameStateBuffers;
   QValueList<int> fSizes;
 
   stream >> u >> xOffset >> yOffset;
+  stream >> docState;
   
   stream >> fSizes >> d->m_fontBase;
   setFontSizes( fSizes );
@@ -1548,6 +1561,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
   d->m_bComplete = false;
 
+  kdDebug() << "restoreState() docState.count() = " << docState.count() << endl;
   kdDebug() << "m_url " << debugString( m_url.url() ) << " <-> " << debugString( u.url() ) << endl;
   kdDebug() << "m_frames.count() " << d->m_frames.count() << " <-> " << frameCount << endl;
 
@@ -1636,6 +1650,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     KParts::URLArgs args( d->m_extension->urlArgs() );
     args.xOffset = xOffset;
     args.yOffset = yOffset;
+    args.setDocState(docState);
     d->m_extension->setURLArgs( args );
     openURL( u );
   }
@@ -1720,7 +1735,7 @@ void KHTMLPartBrowserExtension::saveState( QDataStream &stream )
 
 void KHTMLPartBrowserExtension::restoreState( QDataStream &stream )
 {
-  kdDebug(300) << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< restoreState!" << endl;
+  kdDebug(300) << "restoreState!" << endl;
   m_part->restoreState( stream );
 }
 

@@ -26,6 +26,9 @@
 #include "dom_nodeimpl.h"
 #include "dom_string.h"
 
+#include <qlist.h>
+#include <qstringlist.h>
+
 class KHTMLView;
 
 namespace khtml {
@@ -86,11 +89,27 @@ public:
     khtml::CSSStyleSelector *styleSelector() { return m_styleSelector; }
     virtual void createSelector();
 
+    // Used to maintain list of all elements in the document
+    // that want to save and restore state.
+    // Returns the state the element should restored to.
+    QString registerElement(ElementImpl *);
+
+    // Used to maintain list of all forms in document
+    void removeElement(ElementImpl *);
+
+    // Query all registered elements for their state
+    QStringList state();
+    
+    // Set the state the document should restore to
+    void setRestoreState( const QStringList &s) { m_state = s; }
+
     KHTMLView *view() const { return m_view; }
 
 protected:
     khtml::CSSStyleSelector *m_styleSelector;
     KHTMLView *m_view;
+    QList<ElementImpl> m_registeredElements;    
+    QStringList m_state;
 };
 
 class DocumentFragmentImpl : public NodeImpl

@@ -68,12 +68,12 @@ long HTMLFormElementImpl::length() const
     return 0;
 }
 
-void HTMLFormElementImpl::submit(  )
-{
-    kdDebug(300) << "submit pressed!" << endl;
-    if(!view) return;
 
-    QString formData;
+QString HTMLFormElementImpl::formData()
+{
+    kdDebug(300) << "form: saveSate()" << endl;
+
+    QString form_data;
     bool first = true;
 
     RenderFormElement *current = formElements.first();
@@ -86,23 +86,34 @@ void HTMLFormElementImpl::submit(  )
             if(enc.length())
             {
                 if(!first)
-                    formData += '&';
-                formData += enc;
+                    form_data += '&';
+                form_data += enc;
                 first = false;
             }
         }
 	
 	current = formElements.next();
     }
+    return form_data;
+}
 
-    kdDebug(300) << "formdata = " << formData << "\npost = " << post << endl;
+
+
+void HTMLFormElementImpl::submit(  )
+{
+    kdDebug(300) << "submit pressed!" << endl;
+    if(!view) return;
+
+    QString form_data = formData();
+
+    kdDebug(300) << "formdata = " << form_data << "\npost = " << post << endl;
     if(post)
     {
-        view->part()->submitForm( "post", url.string(), formData.latin1(),
+        view->part()->submitForm( "post", url.string(), form_data.latin1(),
                                   target.string() );
     }
     else
-        view->part()->submitForm( "get", url.string(), formData.latin1(),
+        view->part()->submitForm( "get", url.string(), form_data.latin1(),
                                   target.string() );
 }
 
@@ -412,6 +423,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImp
 
 HTMLInputElementImpl::~HTMLInputElementImpl()
 {
+    ownerDocument()->removeElement(this);
 }
 
 const DOMString HTMLInputElementImpl::nodeName() const
@@ -442,6 +454,14 @@ DOMString HTMLInputElementImpl::type() const
 {
     // ###
     return DOMString();
+}
+
+QString HTMLInputElementImpl::state( )
+{
+   RenderFormElement *formElement = dynamic_cast<RenderFormElement *>(m_render);
+   if (formElement)
+      return formElement->state();
+   return QString::null;
 }
 
 void HTMLInputElementImpl::blur(  )
@@ -602,6 +622,13 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
     	    m_render = f;
 	    m_render->ref();
             kdDebug(300) << "adding " << m_render->renderName() << " as child of " << r->renderName() << endl;
+            QString state = document->registerElement(this);
+            if ( !state.isEmpty())
+            {
+               kdDebug(300) << "Restoring InputElem name=" << _name.string() <<
+                            " state=" << state << endl; 
+               f->restoreState( state ); 
+            }
 
 	    r->addChild(m_render);
 	}
@@ -735,6 +762,14 @@ void HTMLSelectElementImpl::add( const HTMLElement &/*element*/, const HTMLEleme
 
 void HTMLSelectElementImpl::remove( long /*index*/ )
 {
+}
+
+QString HTMLSelectElementImpl::state( )
+{
+   RenderFormElement *formElement = dynamic_cast<RenderFormElement *>(m_render);
+   if (formElement)
+      return formElement->state();
+   return QString::null;
 }
 
 void HTMLSelectElementImpl::blur(  )
@@ -918,6 +953,13 @@ DOMString HTMLTextAreaElementImpl::type() const
     return DOMString();
 }
 
+QString HTMLTextAreaElementImpl::state( )
+{
+   RenderFormElement *formElement = dynamic_cast<RenderFormElement *>(m_render);
+   if (formElement)
+      return formElement->state();
+   return QString::null;
+}
 
 void HTMLTextAreaElementImpl::blur(  )
 {

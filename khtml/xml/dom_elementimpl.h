@@ -122,6 +122,9 @@ public:
     void setAttribute ( int id, const DOMString &value );
     void setAttribute ( AttributeList list );
 
+    // State of the element.
+    virtual QString state() { return QString::null; }
+
     virtual void attach(KHTMLView *w);
     
     virtual DOMString toHTML(DOMString _string);

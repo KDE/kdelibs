@@ -86,6 +86,12 @@ public:
      * for submitting
      */
     virtual QString encoding() = 0;
+    
+    /*
+     * state() and restoreState() are complimentary functions.
+     */
+    virtual QString state() { return QString::null; }
+    virtual void restoreState(const QString &) { }; 
 
     virtual void reset() = 0;
     virtual void setChecked(bool) {}
@@ -160,6 +166,9 @@ public:
     virtual QString encoding();
     virtual void reset();
     virtual void setChecked(bool);
+
+    virtual QString state();
+    virtual void restoreState(const QString &);
 };
 
 
@@ -177,6 +186,9 @@ public:
     virtual void reset();
     virtual void setChecked(bool);
     virtual QString encoding();
+
+    virtual QString state();
+    virtual void restoreState(const QString &);
 
  public slots:	
     void slotClicked();
@@ -277,6 +289,8 @@ public:
     virtual void reset();
 
     virtual void setValue(const DOMString &value);
+    virtual QString state();
+    virtual void restoreState(const QString &);
 
     virtual const char *renderName() const { return "RenderLineEdit"; }
 
@@ -404,6 +418,9 @@ public:
     virtual void reset();
     virtual QString encoding();
 
+    virtual QString state();
+    virtual void restoreState(const QString &);
+
 protected:
     unsigned  m_size;
     bool m_multiple;
@@ -427,6 +444,9 @@ public:
 
     virtual void reset();
     virtual QString encoding();
+
+    virtual QString state();
+    virtual void restoreState(const QString &);
 };
 
 // -------------------------------------------------------------------------

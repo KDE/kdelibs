@@ -61,6 +61,8 @@ public:
     void submit (  );
     void reset (  );
 
+    QString formData( );
+
     virtual void parseAttribute(Attribute *attr);
 
     virtual void attach(KHTMLView *w);
@@ -71,6 +73,7 @@ public:
 
     void registerFormElement(khtml::RenderFormElement *);
     void removeFormElement(khtml::RenderFormElement *);
+    
 
 protected:
     DOMString url;
@@ -209,6 +212,8 @@ public:
 
     DOMString type() const;
 
+    QString state();
+
     void blur();
     void focus();
     void select();
@@ -292,6 +297,9 @@ public:
 
     void add ( const HTMLElement &element, const HTMLElement &before );
     void remove ( long index );
+
+    QString state();
+
     void blur (  );
     void focus (  );
 
@@ -383,6 +391,8 @@ public:
     void setTabIndex( long );
 
     DOMString type() const;
+
+    QString state();
 
     void blur (  );
     void focus (  );

@@ -357,6 +357,36 @@ void DocumentImpl::createSelector()
     m_styleSelector = new CSSStyleSelector(this);
 }
 
+// Used to maintain list of all forms in document
+QString DocumentImpl::registerElement(ElementImpl *e)
+{
+   m_registeredElements.append(e);
+   QString state;
+   if (!m_state.isEmpty())
+   {
+      state = m_state.first();
+      m_state.remove(m_state.begin());
+   }
+   return state;
+}
+
+// Used to maintain list of all forms in document
+void DocumentImpl::removeElement(ElementImpl *e)
+{
+   m_registeredElements.removeRef(e);
+}
+
+QStringList DocumentImpl::state()
+{
+   QStringList s;
+   for( ElementImpl *e = m_registeredElements.first(); 
+        e; e = m_registeredElements.next())
+   {
+       s.append(e->state());
+   }
+   return s;
+}
+
 // ------------------------------------------------------------------------
 
 DocumentFragmentImpl *DocumentImpl::createDocumentFragment(  )

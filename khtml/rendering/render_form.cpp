@@ -40,6 +40,7 @@
 
 #include "dom_nodeimpl.h"
 #include "dom_textimpl.h"
+#include "dom_docimpl.h"
 
 #include "html/html_formimpl.h"
 #include "misc/htmlhashes.h"
@@ -249,6 +250,17 @@ void RenderCheckBox::setChecked(bool checked)
     static_cast<QCheckBox*>(m_widget)->setChecked(checked);
 }
 
+QString RenderCheckBox::state()
+{
+   return static_cast<QCheckBox *>(m_widget)->isChecked() ?
+             QString::fromLatin1("on") : 
+             QString::fromLatin1("off");
+}
+
+void RenderCheckBox::restoreState(const QString &state)
+{
+   static_cast<QCheckBox *>(m_widget)->setChecked(state == "on");
+}
 
 void RenderCheckBox::reset()
 {
@@ -280,9 +292,22 @@ QString RenderRadioButton::encoding()
     return encoding;
 }
 
+
 void RenderRadioButton::setChecked(bool checked)
 {
     static_cast<QRadioButton *>(m_widget)->setChecked(checked);
+}
+
+QString RenderRadioButton::state()
+{
+   return static_cast<QRadioButton *>(m_widget)->isChecked() ?
+             QString::fromLatin1("on") : 
+             QString::fromLatin1("off");
+}
+
+void RenderRadioButton::restoreState(const QString &state)
+{
+   static_cast<QRadioButton *>(m_widget)->setChecked(state == "on");
 }
 
 void RenderRadioButton::reset()
@@ -454,6 +479,17 @@ QString RenderLineEdit::encoding()
         encoding += encodeString( static_cast<QLineEdit *>(m_widget)->text() );
     }
     return encoding;
+}
+
+QString RenderLineEdit::state()
+{
+   // Make sure the string is not empty!
+   return static_cast<QLineEdit *>(m_widget)->text()+".";
+}
+
+void RenderLineEdit::restoreState(const QString &state)
+{
+   static_cast<QLineEdit *>(m_widget)->setText(state.left(state.length()-1));
 }
 
 void RenderLineEdit::layout(bool)
@@ -663,6 +699,15 @@ void RenderSelect::close()
     reset();
     layout();
 
+    // Restore state
+    QString state = f->ownerDocument()->registerElement(f);
+    if ( !state.isEmpty())
+    {
+       kdDebug(300) << "Restoring SelectElem name=" << m_name.string() <<
+                            " state=" << state << endl; 
+       restoreState( state ); 
+    }
+
     RenderFormElement::close();
 }
 
@@ -701,9 +746,9 @@ QString RenderSelect::encoding()
 
     if(m_name.isEmpty() || m_gform->disabled()) return encoding;
 
+    QString prefix = encodeString( m_name.string() );
+    prefix += '=';
     if(m_multiple || m_size > 1) {
-        QString prefix = encodeString( m_name.string() );
-        prefix += '=';
 
         KListBox* w = static_cast<KListBox*>(m_widget);
 
@@ -711,6 +756,7 @@ QString RenderSelect::encoding()
 
         NodeImpl* current = f->firstChild();
         int i = 0;
+        bool first = true;
         while(current) {
             if( w->isSelected(i) && current->id() == ID_OPTION ) {
                 HTMLOptionElementImpl* p = static_cast<HTMLOptionElementImpl*>(current);
@@ -721,6 +767,11 @@ QString RenderSelect::encoding()
                 else
                     encoding += prefix + encodeString(p->m_value.string());
 
+                if (first)
+                {
+                   first = false;
+                   prefix = '&' + prefix;
+                }
             }
             current = current->nextSibling();
             i++;
@@ -731,9 +782,6 @@ QString RenderSelect::encoding()
         QComboBox* w = static_cast<QComboBox*>(m_widget);
         HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_gform);
 
-        encoding = encodeString( m_name.string() );
-        encoding += '=';
-
         NodeImpl* current = f->firstChild();
         int i = 0;
         while(current) {
@@ -741,22 +789,107 @@ QString RenderSelect::encoding()
                 HTMLOptionElementImpl* p = static_cast<HTMLOptionElementImpl*>(current);
 
                 if(p->m_value.isNull())
-                    encoding += encodeString(w->currentText());
+                    encoding += prefix + encodeString(w->currentText());
                 else
-                    encoding += encodeString(p->m_value.string());
+                    encoding += prefix + encodeString(p->m_value.string());
 
                 break;
             }
             current = current->nextSibling();
             i++;
         }
-        if (!current)
-            // we didn't find it, something strange is going on here
-            encoding = QString::null;
     }
 
     return encoding;
 }
+
+
+QString RenderSelect::state()
+{
+    QString state;
+
+    if(m_multiple || m_size > 1) {
+
+        KListBox* w = static_cast<KListBox*>(m_widget);
+
+        HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_gform);
+
+        NodeImpl* current = f->firstChild();
+        int i = 0;
+        while(current) {
+            if (current->id() == ID_OPTION)
+            {
+               if( w->isSelected(i)) 
+                  state += "X";
+               else
+                  state += "O";
+            }
+            current = current->nextSibling();
+            i++;
+        }
+    }
+    else
+    {
+        QComboBox* w = static_cast<QComboBox*>(m_widget);
+        HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_gform);
+
+        NodeImpl* current = f->firstChild();
+        int i = 0;
+        while(current) {
+            if (current->id() == ID_OPTION )
+            {
+               if( i == w->currentItem()) 
+                  state += "X";
+               else
+                  state += "O";
+            }
+            current = current->nextSibling();
+            i++;
+        }
+    }
+
+    return state;
+}
+
+void RenderSelect::restoreState(const QString &state)
+{
+    if(m_multiple || m_size > 1) {
+
+        KListBox* w = static_cast<KListBox*>(m_widget);
+
+        HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_gform);
+
+        NodeImpl* current = f->firstChild();
+        int i = 0;
+        while(current) {
+            if (current->id() == ID_OPTION)
+            {
+               w->setSelected(i, (state[i] == 'X'));
+            }
+            current = current->nextSibling();
+            i++;
+        }
+    }
+    else
+    {
+        QComboBox* w = static_cast<QComboBox*>(m_widget);
+        HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_gform);
+
+        NodeImpl* current = f->firstChild();
+        int i = 0;
+        while(current) {
+            if (current->id() == ID_OPTION )
+            {
+               if (state[i] == 'X')
+                  w->setCurrentItem(i);
+            }
+            current = current->nextSibling();
+            i++;
+        }
+    }
+
+}
+
 
 // -------------------------------------------------------------------------
 
@@ -835,6 +968,18 @@ QString RenderTextArea::encoding()
     return encoding;
 }
 
+QString RenderTextArea::state()
+{
+   // Make sure the string is not empty!
+   return static_cast<TextAreaWidget *>(m_widget)->text()+".";
+}
+
+void RenderTextArea::restoreState(const QString &state)
+{
+   static_cast<TextAreaWidget *>(m_widget)->setText(state.left(state.length()-1));
+}
+
+
 void RenderTextArea::close( )
 {
     HTMLTextAreaElementImpl *f = static_cast<HTMLTextAreaElementImpl*>(m_gform);
@@ -844,6 +989,15 @@ void RenderTextArea::close( )
 
     reset();
     layout();
+
+    // Restore state
+    QString state = f->ownerDocument()->registerElement(f);
+    if ( !state.isEmpty())
+    {
+       kdDebug(300) << "Restoring TextAreaElem name=" << m_name.string() <<
+                            " state=" << state << endl; 
+       restoreState( state ); 
+    }
 
     RenderFormElement::close();
 }
