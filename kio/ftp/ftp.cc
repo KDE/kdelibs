@@ -55,7 +55,8 @@
 #include <kinstance.h>
 #include <kmimemagic.h>
 #include <kmimetype.h>
-#include <ksock.h>
+#include <kextsock.h>
+#include <ksockaddr.h>
 
 #define FTP_LOGIN QString::fromLatin1("anonymous")
 #define FTP_PASSWD QString::fromLatin1("kde-user@kde.org")
@@ -90,7 +91,9 @@ Ftp::Ftp( const QCString &pool, const QCString &app )
     : SlaveBase( "ftp", pool, app )
 {
   dirfile = 0L;
-  sControl = sData = sDatal = 0;
+  m_extControl = sData = sDatal = 0;
+  sControl = -1;
+  ksControl = NULL;
   m_bLoggedOn = false;
   m_bFtpStarted = false;
   kdDebug(7102) << "Ftp::Ftp()" << endl;
@@ -221,11 +224,14 @@ void Ftp::closeConnection()
     {
       (void) ftpSendCmd( "quit", '2' );
       free( nControl );
-      ::close( sControl );
+      if (ksControl != NULL)
+	delete ksControl;
+      //      ::close( sControl );
       sControl = 0;
     }
   }
 
+  m_extControl = 0;
   m_bLoggedOn = false;
   m_bFtpStarted = false;
   //ready()
@@ -240,7 +246,7 @@ void Ftp::setHost( const QString& _host, int _port, const QString& _user, const 
   if ( !_user.isEmpty() )
   {
       user = _user;
-      pass = _pass.isEmpty() ? QString::null:_pass;
+      pass = _pass.isEmpty() ? QString::null : _pass;
   }
   else
   {
@@ -296,45 +302,48 @@ void Ftp::openConnection()
  */
 bool Ftp::connect( const QString &host, unsigned short int port )
 {
-  ksockaddr_in sin;
   struct servent *pse;
   int on = 1;
-
-  memset( &sin, 0, sizeof( sin ) );
 
   if ( port == 0 && ( pse = getservbyname( "ftp", "tcp" ) ) == NULL )
     port = 21;
   else if ( port == 0 )
     port = ntohs(pse->s_port);
 
-  if (!KSocket::initSockaddr(&sin, host.ascii(), port)) {
-    error( ERR_UNKNOWN_HOST, host );
-    return false;
-  }
+  // require an Internet Socket
+  ksControl = new KExtendedSocket(host, port, KExtendedSocket::inetSocket);
+  if (ksControl == NULL)
+    {
+      error( ERR_OUT_OF_MEMORY, QString::null );
+      return false;
+    }
+  if (ksControl->connect() < 0)
+    {
+      if (ksControl->status() == IO_LookupError)
+	error(ERR_UNKNOWN_HOST, host);
+      else
+	error(ERR_COULD_NOT_CONNECT, host);
+      delete ksControl;
+      ksControl = NULL;
+      return false;
+    }
+  sControl = ksControl->fd();
 
-  sControl = socket( get_sin_family(sin), SOCK_STREAM, IPPROTO_TCP );
-  if ( sControl == 0 ) {
-    error( ERR_COULD_NOT_CREATE_SOCKET, host );
-    return false;
-  }
   if ( setsockopt( sControl, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on) ) == -1 )
   {
-    ::close( sControl );
+    //    ::close( sControl );
+    delete ksControl;
+    ksControl = NULL;
     error( ERR_COULD_NOT_CREATE_SOCKET, host );
-    return false;
-  }
-
-  if ( ::connect(sControl, (struct sockaddr *)&sin, sizeof(sin)) == -1)
-  {
-    ::close( sControl );
-    error( ERR_COULD_NOT_CONNECT, host );
     return false;
   }
 
   nControl = (netbuf*)calloc(1,sizeof(netbuf));
   if (nControl == NULL)
   {
-    ::close( sControl );
+    //    ::close( sControl );
+    delete ksControl;
+    ksControl = NULL;
     error( ERR_OUT_OF_MEMORY, QString::null );
     return false;
   }
@@ -342,7 +351,9 @@ bool Ftp::connect( const QString &host, unsigned short int port )
 
   if ( readresp() != '2' )
   {
-    ::close( sControl );
+    //    ::close( sControl );
+    delete ksControl;
+    ksControl = NULL;
     free( nControl );
     error( ERR_COULD_NOT_CONNECT, host );
     return false;
@@ -568,31 +579,25 @@ bool Ftp::ftpOpenPASVDataConnection()
   int i[6], j;
   unsigned char n[6];
   int on=1;
-  union {
-    struct sockaddr sa;
-    struct sockaddr_in in;
-  } sin;
   struct linger lng = { 1, 120 };
+  KExtendedSocket ks;
+  KSocketAddress *sa = ksControl->peerAddress();
+  QString host;
+
+  // Check that we can do PASV
+  if (sa != NULL && sa->family() != PF_INET)
+    return false;		// no PASV for non-PF_INET connections
 
   m_bPasv = true;
-  sDatal = socket( AF_INET, SOCK_STREAM, 0 );
-  if ( (setsockopt( sDatal,SOL_SOCKET,SO_REUSEADDR,(char*)&on, sizeof(on) ) == -1)
-       || (sDatal < 0) )
-  {
-    ::close( sDatal );
-    return false;
-  }
 
   /* Let's PASsiVe*/
   if (!(ftpSendCmd("PASV",'2')))
   {
-    ::close( sDatal );
     return false;
   }
 
   if (sscanf(rspbuf, "%*[^(](%d,%d,%d,%d,%d,%d)",&i[0], &i[1], &i[2], &i[3], &i[4], &i[5]) != 6)
   {
-    ::close( sDatal );
     return false;
   }
 
@@ -601,14 +606,21 @@ bool Ftp::ftpOpenPASVDataConnection()
     n[j] = (unsigned char) (i[j] & 0xff);
   }
 
-  memset( &sin,0, sizeof(sin) );
-  sin.in.sin_family = AF_INET;
-  memcpy( &sin.in.sin_addr, &n[0], (size_t) 4 );
-  memcpy( &sin.in.sin_port, &n[4], (size_t) 2 );
+  // Make hostname
+  host.sprintf("%d.%d.%d.%d", i[0], i[1], i[2], i[3]);
+  // port number is given in network byte order
+  ks.setAddress(host, ntohs(i[5] << 8 | i[4]));
+  ks.setSocketFlags(KExtendedSocket::noResolve);
 
-  if( ::connect( sDatal, &sin.sa, sizeof(sin) ) == -1)
+  if (ks.connect() < 0)
+    {
+      return false;
+    }
+
+  sDatal = ks.fd();
+  if ( (setsockopt( sDatal,SOL_SOCKET,SO_REUSEADDR,(char*)&on, sizeof(on) ) == -1)
+       || (sDatal < 0) )
   {
-    ::close( sDatal );
     return false;
   }
 
@@ -616,8 +628,125 @@ bool Ftp::ftpOpenPASVDataConnection()
     kdError(7102) << "Keepalive not allowed" << endl;
   if ( setsockopt(sDatal, SOL_SOCKET,SO_LINGER, (char *) &lng,(int) sizeof (lng)) < 0 )
     kdError(7102) << "Linger mode was not allowed." << endl;
+
+  ks.release();
   return true;
 }
+
+/*
+ * ftpOpenEPSVDataConnection - opens a data connection via EPSV
+ */
+bool Ftp::ftpOpenEPSVDataConnection()
+{
+  // for SO_LINGER
+  int on=1;
+  struct linger lng = { 1, 120 };
+
+  KExtendedSocket ks;
+  KSocketAddress *sa = ksControl->peerAddress();
+  int portnum;
+  // we are sure sa is a KInetSocketAddress, because we asked for KExtendedSocket::inetSocket
+  // when we connected
+  KInetSocketAddress *sin = (KInetSocketAddress*)sa;
+
+  if (m_extControl & epsvUnknown || sa == NULL)
+    return false;
+
+  m_bPasv = true;
+  if (!(ftpSendCmd("EPSV", '2')))
+    {
+      // unknown command?
+      if (rspbuf[0] == '5')
+	{
+	  kdDebug(7102) << "disabling use of EPSV" << endl;
+	  m_extControl |= epsvUnknown;
+	}
+      return false;
+    }
+
+  if (sscanf(rspbuf, "%*[^|]|||%d|", &portnum) != 1)
+    {
+      // invalid response?
+      return false;
+    }
+
+  ks.setSocketFlags(KExtendedSocket::noResolve);
+  ks.setAddress(sin->prettyHost(), portnum);
+
+  if (ks.connect() < 0)
+    {
+      return false;
+    }
+
+  sDatal = ks.fd();
+  if ( (setsockopt( sDatal,SOL_SOCKET,SO_REUSEADDR,(char*)&on, sizeof(on) ) == -1)
+       || (sDatal < 0) )
+  {
+    return false;
+  }
+
+  if ( setsockopt(sDatal, SOL_SOCKET,SO_KEEPALIVE, (char *) &on, (int) sizeof(on)) < 0 )
+    kdError(7102) << "Keepalive not allowed" << endl;
+  if ( setsockopt(sDatal, SOL_SOCKET,SO_LINGER, (char *) &lng,(int) sizeof (lng)) < 0 )
+    kdError(7102) << "Linger mode was not allowed." << endl;
+
+  ks.release();
+  return true;
+}
+
+/*
+ * ftpOpenEPRTDataConnection
+ */
+bool Ftp::ftpOpenEPRTDataConnection()
+{
+  KExtendedSocket ks;
+  // yes, we are sure this is a KInetSocketAddress
+  KInetSocketAddress *sin = (KInetSocketAddress*)ksControl->localAddress();
+
+  m_bPasv = false;
+
+  if (m_extControl & eprtUnknown || sin == NULL)
+    return false;
+  ks.setHost(sin->prettyHost());
+  ks.setPort(0);		// setting port to 0 will make us bind to a random, free port
+  ks.setSocketFlags(KExtendedSocket::noResolve | KExtendedSocket::passiveSocket |
+		    KExtendedSocket::inetSocket);
+
+  if (ks.listen(1) < 0)
+    {
+      error(ERR_COULD_NOT_LISTEN, m_host);
+      return false;
+    }
+
+  sin = (KInetSocketAddress*)ks.localAddress();
+  if (sin == NULL)
+    // error ?
+    return false;
+
+  //  QString command = QString::fromLatin1("eprt |%1|%2|%3|").arg(sin->ianaFamily())
+  //  .arg(sin->prettyHost())
+  //  .arg(sin->port());
+  QCString command;
+  command.sprintf("eprt |%d|%s|%d|", sin->ianaFamily(),
+		  sin->prettyHost().latin1(), sin->port());
+
+  // FIXME! Encoding for hostnames?
+  if (!ftpSendCmd(command, '2'))
+    {
+      // unknown command?
+      if (rspbuf[0] == '5')
+	{
+	  kdDebug(7102) << "disabling use of EPRT" << endl;
+	  m_extControl |= eprtUnknown;
+	}
+      return false;
+    }
+
+  sDatal = ks.fd();
+  ks.release();
+  return true;
+}
+   
 
 /*
  * ftpOpenDataConnection - set up data connection
@@ -639,17 +768,30 @@ bool Ftp::ftpOpenDataConnection()
   char buf[64];
   int on = 1;
 
-  ////////////// First try PASV mode
+  ////////////// First try passive (EPSV & PASV) modes
 
+  if (ftpOpenEPSVDataConnection())
+    return true;
   if (ftpOpenPASVDataConnection())
     return true;
 
-  ////////////// Fallback : non-PASV mode
+  // if we sent EPSV ALL already and it was accepted, then we can't
+  // use active connections any more
+  if (m_extControl & epsvAllSent)
+    return false;
+
+  if (ftpOpenEPRTDataConnection())
+    return true;
+
+  ////////////// Fallback : PORT mode
   m_bPasv = false;
 
   l = sizeof(sin);
   if ( getsockname( sControl, &sin.sa, &l ) < 0 )
     return false;
+  if (sin.sa.sa_family != PF_INET)
+    return false;		// wrong family
+
   sDatal = socket( PF_INET, SOCK_STREAM, IPPROTO_TCP );
   if ( sDatal == 0 )
   {

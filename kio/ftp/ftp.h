@@ -34,6 +34,8 @@
 #include <qstring.h>
 #include <kio/slavebase.h>
 
+class KExtendedSocket;
+
 struct FtpEntry
 {
   QString name;
@@ -169,6 +171,14 @@ private:
   /**
    * Used by @ref openCommand
    */
+  bool ftpOpenEPSVDataConnection();
+  /**
+   * Used by @ref openCommand
+   */
+  bool ftpOpenEPRTDataConnection();
+  /**
+   * Used by @ref openCommand
+   */
   bool ftpOpenDataConnection();
   /**
    * ftpAcceptConnect - wait for incoming connection
@@ -248,6 +258,16 @@ private: // data members
   bool m_bPersistent;
 
   size_t m_size;
+
+  enum
+  {
+    epsvUnknown = 0x01,
+    epsvAllUnknown = 0x02,
+    eprtUnknown = 0x04,
+    epsvAllSent = 0x10
+  };
+  int m_extControl;
+  KExtendedSocket *ksControl;
 
 };
 
