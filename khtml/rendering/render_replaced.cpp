@@ -151,7 +151,10 @@ RenderWidget::~RenderWidget()
 {
     KHTMLAssert( refCount() <= 0 );
 
-    delete m_widget;
+    if(m_widget) {
+        m_widget->hide();
+        m_widget->deleteLater();
+    }
 }
 
 void  RenderWidget::resizeWidget( QWidget *widget, int w, int h )
