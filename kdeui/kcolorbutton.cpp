@@ -150,6 +150,8 @@ void KColorButton::keyPressEvent( QKeyEvent *e )
     KColorDrag::decode( QApplication::clipboard()->data( QClipboard::Clipboard ), color );
     setColor( color );
   }
+  else
+    QPushButton::keyPressEvent( e );
 }
 
 void KColorButton::mousePressEvent( QMouseEvent *e)
