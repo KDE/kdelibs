@@ -187,6 +187,7 @@ void scanDirectory(FileInfoList &fileEntries, const QString &name, const QString
 
 int main(int argc, char **argv)
 {
+   KLocale::setMainCatalogue("kdelibs");
    KCmdLineArgs::init( argc, argv, appName, description, version, true);
 
    KCmdLineArgs::addCmdLineOptions( options );
