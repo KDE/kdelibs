@@ -55,6 +55,7 @@ using namespace DOM;
 #include "kjserrordlg.h"
 
 #include <kjs/function.h>
+#include <kjs/internal.h>
 
 #include "htmlpageinfo.h"
 
@@ -3933,7 +3934,7 @@ void KHTMLPart::submitFormAgain()
 
 void KHTMLPart::submitFormProxy( const char *action, const QString &url, const QByteArray &formData, const QString &_target, const QString& contentType, const QString& boundary )
 {
-  submitForm(action, url, formData, _target, contentType, boundary); 
+  submitForm(action, url, formData, _target, contentType, boundary);
 }
 
 void KHTMLPart::submitForm( const char *action, const QString &url, const QByteArray &formData, const QString &_target, const QString& contentType, const QString& boundary )
