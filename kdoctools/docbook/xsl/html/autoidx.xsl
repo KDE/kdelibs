@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE xsl:stylesheet [
 
+<!ENTITY lowercase "abcdefghijklmnopqrstuvwxyz">
+<!ENTITY uppercase "ABCDEFGHIJKLMNOPQRSTUVWXYZ">
+
 <!ENTITY primary   'concat(primary/@sortas, primary[not(@sortas)])'>
 <!ENTITY secondary 'concat(secondary/@sortas, secondary[not(@sortas)])'>
 <!ENTITY tertiary  'concat(tertiary/@sortas, tertiary[not(@sortas)])'>
@@ -40,12 +43,9 @@
      I think I understand it :-) Anyway, I've hacked it a bit, so the
      bugs are mine. -->
 
-<xsl:variable name="lowercase" select="'abcdefghijklmnopqrstuvwxyz'"/>
-<xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
-
 <xsl:key name="letter"
          match="indexterm"
-         use="translate(substring(&primary;, 1, 1),$lowercase,$uppercase)"/>
+         use="translate(substring(&primary;, 1, 1),&lowercase;,&uppercase;)"/>
 
 <xsl:key name="primary"
          match="indexterm"
@@ -83,13 +83,13 @@
 
 <xsl:template name="generate-index">
   <xsl:variable name="terms" select="//indexterm[count(.|key('letter',
-                                     translate(substring(&primary;, 1, 1),$lowercase,$uppercase))[1]) = 1]"/>
+                                     translate(substring(&primary;, 1, 1),&lowercase;,&uppercase;))[1]) = 1]"/>
 
   <xsl:variable name="alphabetical"
-                select="$terms[contains(concat($lowercase, $uppercase),
+                select="$terms[contains(concat(&lowercase;, &uppercase;),
                                         substring(&primary;, 1, 1))]"/>
-  <xsl:variable name="others" select="$terms[not(contains(concat($lowercase,
-                                                 $uppercase),
+  <xsl:variable name="others" select="$terms[not(contains(concat(&lowercase;,
+                                                 &uppercase;),
                                              substring(&primary;, 1, 1)))]"/>
   <div class="index">
     <xsl:if test="$others">
@@ -109,7 +109,7 @@
       </div>
     </xsl:if>
     <xsl:apply-templates select="$alphabetical[count(.|key('letter',
-                                 translate(substring(&primary;, 1, 1),$lowercase,$uppercase))[1]) = 1]"
+                                 translate(substring(&primary;, 1, 1),&lowercase;,&uppercase;))[1]) = 1]"
                          mode="index-div">
       <xsl:sort select="&primary;"/>
     </xsl:apply-templates>
@@ -117,10 +117,10 @@
 </xsl:template>
 
 <xsl:template match="indexterm" mode="index-div">
-  <xsl:variable name="key" select="translate(substring(&primary;, 1, 1),$lowercase,$uppercase)"/>
+  <xsl:variable name="key" select="translate(substring(&primary;, 1, 1),&lowercase;,&uppercase;)"/>
   <div class="indexdiv">
     <h3>
-      <xsl:value-of select="translate($key, $lowercase, $uppercase)"/>
+      <xsl:value-of select="translate($key, &lowercase;, &uppercase;)"/>
     </h3>
     <dl>
       <xsl:apply-templates select="key('letter', $key)[count(.|key('primary', &primary;)[1]) = 1]"
@@ -225,14 +225,17 @@
     </xsl:when>
     <xsl:otherwise>
       <a>
+        <xsl:variable name="title">
+          <xsl:apply-templates select="&section;" mode="title.markup"/>
+        </xsl:variable>
+
         <xsl:attribute name="href">
           <xsl:call-template name="href.target">
             <xsl:with-param name="object" select="&section;"/>
           </xsl:call-template>
         </xsl:attribute>
-        <xsl:apply-templates select="&section;" mode="title.content">
-          <xsl:with-param name="text-only" select="'1'"/>
-        </xsl:apply-templates>
+
+        <xsl:value-of select="$title"/> <!-- text only -->
       </a>
     </xsl:otherwise>
   </xsl:choose>
@@ -283,9 +286,11 @@
 </xsl:template>
 
 <xsl:template match="*" mode="index-title-content">
-  <xsl:apply-templates select="&section;" mode="title.content">
-    <xsl:with-param name="text-only" select="'1'"/>
-  </xsl:apply-templates>
+  <xsl:variable name="title">
+    <xsl:apply-templates select="&section;" mode="title.markup"/>
+  </xsl:variable>
+
+  <xsl:value-of select="$title"/>
 </xsl:template>
 
 </xsl:stylesheet>

@@ -289,6 +289,7 @@ component that contains them.
 
 <!-- ==================================================================== -->
 <xsl:param name="chapter.autolabel" select="1" doc:type='boolean'/>
+<xsl:param name="appendix.autolabel" select="1" doc:type='boolean'/>
 
 <doc:param name="chapter.autolabel" xmlns="">
 <refpurpose>Are chapters and appendixes enumerated?</refpurpose>
@@ -680,7 +681,7 @@ be used.
 </doc:param>
 
 <!-- ==================================================================== -->
-<xsl:param name="use.extensions" select="'1'" doc:type='boolean'/>
+<xsl:param name="use.extensions" select="'0'" doc:type='boolean'/>
 
 <doc:param name="use.extensions" xmlns="">
 <refpurpose>Enable extensions</refpurpose>
@@ -722,7 +723,7 @@ have, surprise, line numbers.
 <!-- ==================================================================== -->
 <xsl:param name="linenumbering.extension" select="'1'" doc:type='boolean'/>
 
-<doc:param name="saxon.linenumbering" xmlns="">
+<doc:param name="linenumbering.extension" xmlns="">
 <refpurpose>Enable the line numbering extension</refpurpose>
 <refdescription>
 <para>If true, verbatim environments (elements that have the
@@ -862,7 +863,7 @@ in the CALS table.
 <!-- ==================================================================== -->
 <xsl:param name="tablecolumns.extension" select="'1'" doc:type='boolean'/>
 
-<doc:param name="saxon.tablecolumns" xmlns="">
+<doc:param name="tablecolumns.extension" xmlns="">
 <refpurpose>Enable the table columns extension function</refpurpose>
 <refdescription>
 <para>The table columns extension function adjusts the widths of table
@@ -875,7 +876,7 @@ in the CALS table.
 <!-- ==================================================================== -->
 <xsl:param name="generate.set.toc" select='1' doc:type='boolean'/>
 
-<doc:param name="" xmlns="">
+<doc:param name="generate.set.toc" xmlns="">
 <refpurpose>FIXME:</refpurpose>
 <refdescription>
 <para>FIXME:
@@ -886,7 +887,7 @@ in the CALS table.
 <!-- ==================================================================== -->
 <xsl:param name="generate.book.toc" select='1' doc:type='boolean'/>
 
-<doc:param name="" xmlns="">
+<doc:param name="generate.book.toc" xmlns="">
 <refpurpose>FIXME:</refpurpose>
 <refdescription>
 <para>FIXME:
@@ -897,7 +898,7 @@ in the CALS table.
 <!-- ==================================================================== -->
 <xsl:param name="generate.part.toc" select='1' doc:type='boolean'/>
 
-<doc:param name="" xmlns="">
+<doc:param name="generate.part.toc" xmlns="">
 <refpurpose>FIXME:</refpurpose>
 <refdescription>
 <para>FIXME:
@@ -908,7 +909,7 @@ in the CALS table.
 <!-- ==================================================================== -->
 <xsl:param name="generate.reference.toc" select='1' doc:type='boolean'/>
 
-<doc:param name="" xmlns="">
+<doc:param name="generate.reference.toc" xmlns="">
 <refpurpose>FIXME:</refpurpose>
 <refdescription>
 <para>FIXME:
@@ -919,7 +920,7 @@ in the CALS table.
 <!-- ==================================================================== -->
 <xsl:param name="generate.preface.toc" select='1' doc:type='boolean'/>
 
-<doc:param name="" xmlns="">
+<doc:param name="generate.preface.toc" xmlns="">
 <refpurpose>FIXME:</refpurpose>
 <refdescription>
 <para>FIXME:
@@ -930,7 +931,7 @@ in the CALS table.
 <!-- ==================================================================== -->
 <xsl:param name="generate.chapter.toc" select='1' doc:type='boolean'/>
 
-<doc:param name="" xmlns="">
+<doc:param name="generate.chapter.toc" xmlns="">
 <refpurpose>FIXME:</refpurpose>
 <refdescription>
 <para>FIXME:
@@ -941,7 +942,7 @@ in the CALS table.
 <!-- ==================================================================== -->
 <xsl:param name="generate.appendix.toc" select='1' doc:type='boolean'/>
 
-<doc:param name="" xmlns="">
+<doc:param name="generate.appendix.toc" xmlns="">
 <refpurpose>FIXME:</refpurpose>
 <refdescription>
 <para>FIXME:
@@ -952,7 +953,7 @@ in the CALS table.
 <!-- ==================================================================== -->
 <xsl:param name="generate.article.toc" select='1' doc:type='boolean'/>
 
-<doc:param name="" xmlns="">
+<doc:param name="generate.article.toc" xmlns="">
 <refpurpose>FIXME:</refpurpose>
 <refdescription>
 <para>FIXME:
@@ -963,7 +964,7 @@ in the CALS table.
 <!-- ==================================================================== -->
 <xsl:param name="generate.section.toc" select='0' doc:type='boolean'/>
 
-<doc:param name="" xmlns="">
+<doc:param name="generate.section.toc" xmlns="">
 <refpurpose>FIXME:</refpurpose>
 <refdescription>
 <para>FIXME:
@@ -974,7 +975,7 @@ in the CALS table.
 <!-- ==================================================================== -->
 <xsl:param name="generate.index" select='1' doc:type='boolean'/>
 
-<doc:param name="" xmlns="">
+<doc:param name="generate.index" xmlns="">
 <refpurpose>FIXME:</refpurpose>
 <refdescription>
 <para>FIXME:
@@ -997,7 +998,7 @@ in the CALS table.
 <xsl:param name="callout.unicode.start.character" select="10102"
            doc:type='integer'/>
 
-<doc:param name="callout.graphics.number.limit" xmlns="">
+<doc:param name="callout.unicode.start.character" xmlns="">
 <refpurpose>Number of the largest callout graphic</refpurpose>
 <refdescription>
 <para>If <parameter>callout.graphics</parameter>
@@ -1016,7 +1017,7 @@ be used.
 <xsl:param name="callout.unicode.number.limit" select="'10'"
            doc:type='integer'/>
 
-<doc:param name="callout.graphics.number.limit" xmlns="">
+<doc:param name="callout.unicode.number.limit" xmlns="">
 <refpurpose>Number of the largest callout graphic</refpurpose>
 <refdescription>
 <para>If <parameter>callout.graphics</parameter>

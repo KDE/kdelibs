@@ -777,10 +777,7 @@
 </xsl:template>
 
 <xsl:template name="preface.titlepage.recto">
-  <div xsl:use-attribute-sets="preface.titlepage.recto.style">
-<xsl:call-template name="component.title">
-<xsl:with-param name="node" select="ancestor-or-self::preface[1]"/>
-</xsl:call-template></div>
+  <xsl:apply-templates mode="preface.titlepage.recto.auto.mode" select="(prefaceinfo/title|docinfo/title|title)[1]"/>
   <xsl:apply-templates mode="preface.titlepage.recto.auto.mode" select="(prefaceinfo/subtitle|docinfo/subtitle|subtitle)[1]"/>
   <xsl:apply-templates mode="preface.titlepage.recto.auto.mode" select="prefaceinfo/corpauthor|docinfo/corpauthor"/>
   <xsl:apply-templates mode="preface.titlepage.recto.auto.mode" select="prefaceinfo/authorgroup|docinfo/authorgroup"/>
@@ -826,6 +823,12 @@
   <!-- if an element isn't found in this mode, -->
   <!-- try the generic titlepage.mode -->
   <xsl:apply-templates select="." mode="titlepage.mode"/>
+</xsl:template>
+
+<xsl:template match="title" mode="preface.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="preface.titlepage.recto.style">
+<xsl:apply-templates select="." mode="preface.titlepage.recto.mode"/>
+</div>
 </xsl:template>
 
 <xsl:template match="subtitle" mode="preface.titlepage.recto.auto.mode">
@@ -1980,6 +1983,153 @@
 <xsl:template match="abstract" mode="simplesect.titlepage.recto.auto.mode">
 <div xsl:use-attribute-sets="simplesect.titlepage.recto.style">
 <xsl:apply-templates select="." mode="simplesect.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
+<xsl:template name="bibliography.titlepage.recto">
+  <div xsl:use-attribute-sets="bibliography.titlepage.recto.style">
+<xsl:call-template name="component.title">
+<xsl:with-param name="node" select="ancestor-or-self::bibliography[1]"/>
+</xsl:call-template></div>
+  <xsl:apply-templates mode="bibliography.titlepage.recto.auto.mode" select="(bibliographyinfo/subtitle|docinfo/subtitle|subtitle)[1]"/>
+</xsl:template>
+
+<xsl:template name="bibliography.titlepage.verso">
+</xsl:template>
+
+<xsl:template name="bibliography.titlepage.separator">
+</xsl:template>
+
+<xsl:template name="bibliography.titlepage.before.recto">
+</xsl:template>
+
+<xsl:template name="bibliography.titlepage.before.verso">
+</xsl:template>
+
+<xsl:template name="bibliography.titlepage">
+  <div class="titlepage">
+    <xsl:call-template name="bibliography.titlepage.before.recto"/>
+    <xsl:call-template name="bibliography.titlepage.recto"/>
+    <xsl:call-template name="bibliography.titlepage.before.verso"/>
+    <xsl:call-template name="bibliography.titlepage.verso"/>
+    <xsl:call-template name="bibliography.titlepage.separator"/>
+  </div>
+</xsl:template>
+
+<xsl:template match="*" mode="bibliography.titlepage.recto.mode">
+  <!-- if an element isn't found in this mode, -->
+  <!-- try the generic titlepage.mode -->
+  <xsl:apply-templates select="." mode="titlepage.mode"/>
+</xsl:template>
+
+<xsl:template match="*" mode="bibliography.titlepage.verso.mode">
+  <!-- if an element isn't found in this mode, -->
+  <!-- try the generic titlepage.mode -->
+  <xsl:apply-templates select="." mode="titlepage.mode"/>
+</xsl:template>
+
+<xsl:template match="subtitle" mode="bibliography.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="bibliography.titlepage.recto.style">
+<xsl:apply-templates select="." mode="bibliography.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
+<xsl:template name="glossary.titlepage.recto">
+  <xsl:apply-templates mode="glossary.titlepage.recto.auto.mode" select="(glossaryinfo/title|docinfo/title|title)[1]"/>
+  <xsl:apply-templates mode="glossary.titlepage.recto.auto.mode" select="(glossaryinfo/subtitle|docinfo/subtitle|subtitle)[1]"/>
+</xsl:template>
+
+<xsl:template name="glossary.titlepage.verso">
+</xsl:template>
+
+<xsl:template name="glossary.titlepage.separator">
+</xsl:template>
+
+<xsl:template name="glossary.titlepage.before.recto">
+</xsl:template>
+
+<xsl:template name="glossary.titlepage.before.verso">
+</xsl:template>
+
+<xsl:template name="glossary.titlepage">
+  <div class="titlepage">
+    <xsl:call-template name="glossary.titlepage.before.recto"/>
+    <xsl:call-template name="glossary.titlepage.recto"/>
+    <xsl:call-template name="glossary.titlepage.before.verso"/>
+    <xsl:call-template name="glossary.titlepage.verso"/>
+    <xsl:call-template name="glossary.titlepage.separator"/>
+  </div>
+</xsl:template>
+
+<xsl:template match="*" mode="glossary.titlepage.recto.mode">
+  <!-- if an element isn't found in this mode, -->
+  <!-- try the generic titlepage.mode -->
+  <xsl:apply-templates select="." mode="titlepage.mode"/>
+</xsl:template>
+
+<xsl:template match="*" mode="glossary.titlepage.verso.mode">
+  <!-- if an element isn't found in this mode, -->
+  <!-- try the generic titlepage.mode -->
+  <xsl:apply-templates select="." mode="titlepage.mode"/>
+</xsl:template>
+
+<xsl:template match="title" mode="glossary.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="glossary.titlepage.recto.style">
+<xsl:apply-templates select="." mode="glossary.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
+<xsl:template match="subtitle" mode="glossary.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="glossary.titlepage.recto.style">
+<xsl:apply-templates select="." mode="glossary.titlepage.recto.mode"/>
+</div>
+</xsl:template>
+
+<xsl:template name="index.titlepage.recto">
+  <div xsl:use-attribute-sets="index.titlepage.recto.style">
+<xsl:call-template name="component.title">
+<xsl:with-param name="node" select="ancestor-or-self::index[1]"/>
+</xsl:call-template></div>
+  <xsl:apply-templates mode="index.titlepage.recto.auto.mode" select="(indexinfo/subtitle|docinfo/subtitle|subtitle)[1]"/>
+</xsl:template>
+
+<xsl:template name="index.titlepage.verso">
+</xsl:template>
+
+<xsl:template name="index.titlepage.separator">
+</xsl:template>
+
+<xsl:template name="index.titlepage.before.recto">
+</xsl:template>
+
+<xsl:template name="index.titlepage.before.verso">
+</xsl:template>
+
+<xsl:template name="index.titlepage">
+  <div class="titlepage">
+    <xsl:call-template name="index.titlepage.before.recto"/>
+    <xsl:call-template name="index.titlepage.recto"/>
+    <xsl:call-template name="index.titlepage.before.verso"/>
+    <xsl:call-template name="index.titlepage.verso"/>
+    <xsl:call-template name="index.titlepage.separator"/>
+  </div>
+</xsl:template>
+
+<xsl:template match="*" mode="index.titlepage.recto.mode">
+  <!-- if an element isn't found in this mode, -->
+  <!-- try the generic titlepage.mode -->
+  <xsl:apply-templates select="." mode="titlepage.mode"/>
+</xsl:template>
+
+<xsl:template match="*" mode="index.titlepage.verso.mode">
+  <!-- if an element isn't found in this mode, -->
+  <!-- try the generic titlepage.mode -->
+  <xsl:apply-templates select="." mode="titlepage.mode"/>
+</xsl:template>
+
+<xsl:template match="subtitle" mode="index.titlepage.recto.auto.mode">
+<div xsl:use-attribute-sets="index.titlepage.recto.style">
+<xsl:apply-templates select="." mode="index.titlepage.recto.mode"/>
 </div>
 </xsl:template>
 

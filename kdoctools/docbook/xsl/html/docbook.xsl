@@ -24,6 +24,11 @@
 <xsl:include href="../lib/lib.xsl"/>
 <xsl:include href="../common/l10n.xsl"/>
 <xsl:include href="../common/common.xsl"/>
+<xsl:include href="../common/labels.xsl"/>
+<xsl:include href="../common/titles.xsl"/>
+<xsl:include href="../common/subtitles.xsl"/>
+<xsl:include href="../common/gentext.xsl"/>
+<xsl:include href="param.xsl"/>
 <xsl:include href="autotoc.xsl"/>
 <xsl:include href="lists.xsl"/>
 <xsl:include href="callout.xsl"/>
@@ -52,7 +57,6 @@
 <xsl:include href="synop.xsl"/>
 <xsl:include href="titlepage.xsl"/>
 <xsl:include href="titlepage.templates.xsl"/>
-<xsl:include href="param.xsl"/>
 <xsl:include href="pi.xsl"/>
 
 <!-- ==================================================================== -->
@@ -105,9 +109,10 @@
                                      |$node/referenceinfo)[1]"/>
 
   <title>
-    <xsl:apply-templates select="$node" mode="title.ref">
-      <xsl:with-param name="text-only" select="'1'"/>
-    </xsl:apply-templates>
+    <xsl:variable name="title">
+      <xsl:apply-templates select="$node" mode="title.markup"/>
+    </xsl:variable>
+    <xsl:value-of select="$title"/> <!-- text only -->
   </title>
 
   <xsl:if test="$html.stylesheet">
@@ -134,11 +139,19 @@
   <xsl:param name="node" select="."/>
 </xsl:template>
 
+<xsl:template name="user.header.navigation">
+  <xsl:param name="node" select="."/>
+</xsl:template>
+
 <xsl:template name="user.header.content">
   <xsl:param name="node" select="."/>
 </xsl:template>
 
 <xsl:template name="user.footer.content">
+  <xsl:param name="node" select="."/>
+</xsl:template>
+
+<xsl:template name="user.footer.navigation">
   <xsl:param name="node" select="."/>
 </xsl:template>
 

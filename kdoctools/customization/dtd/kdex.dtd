@@ -89,7 +89,7 @@ catalog errors I'd rather stay away from (they're easy to fix though).
 
 <!ENTITY % DocBookDTD	    PUBLIC
   "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"         >
+  "../../docbook/xml-dtd-4.1.2/docbookx.dtd"         >
 %DocBookDTD;
 
 

@@ -38,23 +38,29 @@
                                         |ancestor::sect3
                                         |ancestor::sect4
                                         |ancestor::sect5)[last()]"/>
-  <xsl:call-template name="section.heading">
-    <xsl:with-param name="section" select="$section"/>
-    <xsl:with-param name="level">
-      <xsl:call-template name="section.level">
-        <xsl:with-param name="node" select="$section"/>
-      </xsl:call-template>
-    </xsl:with-param>
-    <xsl:with-param name="title">
-      <xsl:apply-templates select="$section" mode="title.ref">
-        <xsl:with-param name="label-wrapper" select="'span'"/>
-        <xsl:with-param name="label-wrapper-class" select="'label'"/>
-        <xsl:with-param name="title-wrapper" select="'span'"/>
-        <xsl:with-param name="title-wrapper-class" select="'title'"/>
-        <xsl:with-param name="allow-anchors" select="'1'"/>
-      </xsl:apply-templates>
-    </xsl:with-param>
-  </xsl:call-template>
+
+  <xsl:variable name="level">
+    <xsl:call-template name="section.level">
+      <xsl:with-param name="node" select="$section"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:element name="h{$level}">
+    <xsl:attribute name="class">title</xsl:attribute>
+    <xsl:if test="$css.decoration != '0'">
+      <xsl:if test="$level&lt;3">
+        <xsl:attribute name="style">clear: all</xsl:attribute>
+      </xsl:if>
+    </xsl:if>
+    <a>
+      <xsl:attribute name="name">
+        <xsl:call-template name="object.id">
+          <xsl:with-param name="object" select="$section"/>
+        </xsl:call-template>
+      </xsl:attribute>
+    </a>
+    <xsl:apply-templates select="$section" mode="object.title.markup"/>
+  </xsl:element>
 </xsl:template>
 
 <xsl:template match="sect1">

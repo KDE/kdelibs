@@ -20,28 +20,12 @@
   <!-- if the index is completely empty, skip it. -->
 
   <xsl:if test="count(*)>0 or $generate.index != '0'">
-    <div class="{name(.)}">
-      <xsl:call-template name="component.separator"/>
-      <xsl:choose>
-        <xsl:when test="./title">
-          <xsl:apply-templates select="./title" mode="component.title.mode"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <h2 class="title">
-            <a>
-              <xsl:attribute name="name">
-                <xsl:call-template name="object.id"/>
-              </xsl:attribute>
-              <xsl:call-template name="gentext.element.name"/>
-            </a>
-          </h2>
-        </xsl:otherwise>
-      </xsl:choose>
+    <xsl:variable name="id">
+      <xsl:call-template name="object.id"/>
+    </xsl:variable>
 
-      <xsl:if test="./subtitle">
-        <xsl:apply-templates select="./subtitle" mode="component.title.mode"/>
-      </xsl:if>
-
+    <div id="{$id}" class="{name(.)}">
+      <xsl:call-template name="index.titlepage"/>
       <xsl:apply-templates/>
 
       <xsl:if test="count(indexentry) = 0 and count(indexdiv) = 0">

@@ -1,11 +1,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:saxon="http://icl.com/saxon"
-                xmlns:lxslt="http://xml.apache.org/xslt"
-                xmlns:xalanredirect="org.apache.xalan.xslt.extensions.Redirect"
                 xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
 		version="1.0"
-                exclude-result-prefixes="doc"
-                extension-element-prefixes="saxon xalanredirect lxslt">
+                exclude-result-prefixes="doc">
 
 <xsl:import href="docbook.xsl"/>
 
@@ -377,60 +373,68 @@ is system dependent.)</para>
 
     <xsl:if test="$home">
       <link rel="home">
+        <xsl:variable name="home-title">
+          <xsl:apply-templates select="$home" mode="title.markup"/>
+        </xsl:variable>
+
         <xsl:attribute name="href">
           <xsl:call-template name="href.target">
             <xsl:with-param name="object" select="$home"/>
           </xsl:call-template>
         </xsl:attribute>
         <xsl:attribute name="title">
-          <xsl:apply-templates select="$home" mode="title.ref">
-            <xsl:with-param name="text-only" select="'1'"/>
-          </xsl:apply-templates>
+          <xsl:value-of select="$home-title"/> <!-- node-set ==> text only! -->
         </xsl:attribute>
       </link>
     </xsl:if>
 
     <xsl:if test="$up">
       <link rel="up">
+        <xsl:variable name="up-title">
+          <xsl:apply-templates select="$up" mode="title.markup"/>
+        </xsl:variable>
+
         <xsl:attribute name="href">
           <xsl:call-template name="href.target">
             <xsl:with-param name="object" select="$up"/>
           </xsl:call-template>
         </xsl:attribute>
         <xsl:attribute name="title">
-          <xsl:apply-templates select="$up" mode="title.ref">
-            <xsl:with-param name="text-only" select="'1'"/>
-          </xsl:apply-templates>
+          <xsl:value-of select="$up-title"/> <!-- node-set ==> text only! -->
         </xsl:attribute>
       </link>
     </xsl:if>
 
     <xsl:if test="$prev">
       <link rel="previous">
+        <xsl:variable name="prev-title">
+          <xsl:apply-templates select="$prev" mode="title.markup"/>
+        </xsl:variable>
+
         <xsl:attribute name="href">
           <xsl:call-template name="href.target">
             <xsl:with-param name="object" select="$prev"/>
           </xsl:call-template>
         </xsl:attribute>
         <xsl:attribute name="title">
-          <xsl:apply-templates select="$prev" mode="title.ref">
-            <xsl:with-param name="text-only" select="'1'"/>
-          </xsl:apply-templates>
+          <xsl:value-of select="$prev-title"/> <!-- node-set ==> text only! -->
         </xsl:attribute>
       </link>
     </xsl:if>
 
     <xsl:if test="$next">
       <link rel="next">
+        <xsl:variable name="next-title">
+          <xsl:apply-templates select="$next" mode="title.markup"/>
+        </xsl:variable>
+
         <xsl:attribute name="href">
           <xsl:call-template name="href.target">
             <xsl:with-param name="object" select="$next"/>
           </xsl:call-template>
         </xsl:attribute>
         <xsl:attribute name="title">
-          <xsl:apply-templates select="$next" mode="title.ref">
-            <xsl:with-param name="text-only" select="'1'"/>
-          </xsl:apply-templates>
+          <xsl:value-of select="$next-title"/> <!-- node-set ==> text only! -->
         </xsl:attribute>
       </link>
     </xsl:if>
@@ -450,7 +454,7 @@ is system dependent.)</para>
       <table width="100%">
         <tr>
           <th colspan="3" align="center">
-            <xsl:apply-templates select="." mode="title.ref"/>
+            <xsl:apply-templates select="." mode="title.markup"/>
           </th>
         </tr>
         <tr>
@@ -462,7 +466,9 @@ is system dependent.)</para>
                     <xsl:with-param name="object" select="$prev"/>
                   </xsl:call-template>
                 </xsl:attribute>
-                <xsl:call-template name="gentext.nav.prev"/>
+                <xsl:call-template name="gentext">
+                  <xsl:with-param name="key">nav-prev</xsl:with-param>
+                </xsl:call-template>
               </a>
             </xsl:if>
             <xsl:text>&#160;</xsl:text>
@@ -470,7 +476,7 @@ is system dependent.)</para>
           <th width="60%" align="center">
             <xsl:choose>
               <xsl:when test="count($up) > 0 and $up != $home">
-                <xsl:apply-templates select="$up" mode="title.ref"/>
+                <xsl:apply-templates select="$up" mode="title.markup"/>
               </xsl:when>
               <xsl:otherwise>&#160;</xsl:otherwise>
             </xsl:choose>
@@ -484,7 +490,9 @@ is system dependent.)</para>
                     <xsl:with-param name="object" select="$next"/>
                   </xsl:call-template>
                 </xsl:attribute>
-                <xsl:call-template name="gentext.nav.next"/>
+                <xsl:call-template name="gentext">
+                  <xsl:with-param name="key">nav-next</xsl:with-param>
+                </xsl:call-template>
               </a>
             </xsl:if>
           </td>
@@ -516,7 +524,9 @@ is system dependent.)</para>
                     <xsl:with-param name="object" select="$prev"/>
                   </xsl:call-template>
                 </xsl:attribute>
-                <xsl:call-template name="gentext.nav.prev"/>
+                <xsl:call-template name="gentext">
+                  <xsl:with-param name="key">nav-prev</xsl:with-param>
+                </xsl:call-template>
               </a>
             </xsl:if>
             <xsl:text>&#160;</xsl:text>
@@ -530,7 +540,9 @@ is system dependent.)</para>
                       <xsl:with-param name="object" select="$home"/>
                     </xsl:call-template>
                   </xsl:attribute>
-                  <xsl:call-template name="gentext.nav.home"/>
+                  <xsl:call-template name="gentext">
+                    <xsl:with-param name="key">nav-home</xsl:with-param>
+                  </xsl:call-template>
                 </a>
               </xsl:when>
               <xsl:otherwise>&#160;</xsl:otherwise>
@@ -545,7 +557,9 @@ is system dependent.)</para>
                     <xsl:with-param name="object" select="$next"/>
                   </xsl:call-template>
                 </xsl:attribute>
-                <xsl:call-template name="gentext.nav.next"/>
+                <xsl:call-template name="gentext">
+                  <xsl:with-param name="key">nav-next</xsl:with-param>
+                </xsl:call-template>
               </a>
             </xsl:if>
           </td>
@@ -553,7 +567,7 @@ is system dependent.)</para>
 
         <tr>
           <td width="40%" align="left">
-            <xsl:apply-templates select="$prev" mode="title.ref"/>
+            <xsl:apply-templates select="$prev" mode="title.markup"/>
             <xsl:text>&#160;</xsl:text>
           </td>
           <td width="20%" align="center">
@@ -565,7 +579,9 @@ is system dependent.)</para>
                       <xsl:with-param name="object" select="$up"/>
                     </xsl:call-template>
                   </xsl:attribute>
-                  <xsl:call-template name="gentext.nav.up"/>
+                  <xsl:call-template name="gentext">
+                    <xsl:with-param name="key">nav-up</xsl:with-param>
+                  </xsl:call-template>
                 </a>
               </xsl:when>
               <xsl:otherwise>&#160;</xsl:otherwise>
@@ -573,7 +589,7 @@ is system dependent.)</para>
           </td>
           <td width="40%" align="right">
             <xsl:text>&#160;</xsl:text>
-            <xsl:apply-templates select="$next" mode="title.ref"/>
+            <xsl:apply-templates select="$next" mode="title.markup"/>
           </td>
         </tr>
       </table>
@@ -675,13 +691,6 @@ is system dependent.)</para>
     </xsl:call-template>
   </xsl:variable>
 
-  <xsl:message>
-    <xsl:text>Writing </xsl:text>
-    <xsl:value-of select="$filename"/>
-    <xsl:text> for </xsl:text>
-    <xsl:value-of select="name(.)"/>
-  </xsl:message>
-
   <xsl:call-template name="write.chunk">
     <xsl:with-param name="filename" select="$filename"/>
     <xsl:with-param name="content">
@@ -706,16 +715,16 @@ is system dependent.)</para>
     </xsl:call-template>
 
     <body xsl:use-attribute-sets="body.attrs">
+      <xsl:call-template name="user.header.navigation"/>
+
       <xsl:call-template name="header.navigation">
 	<xsl:with-param name="prev" select="$prev"/>
 	<xsl:with-param name="next" select="$next"/>
       </xsl:call-template>
 
       <xsl:call-template name="user.header.content"/>
-  
-      <div id="bodytext">
-        <xsl:apply-imports/>
-      </div>
+
+      <xsl:apply-imports/>
 
       <xsl:call-template name="user.footer.content"/>
 
@@ -723,6 +732,8 @@ is system dependent.)</para>
 	<xsl:with-param name="prev" select="$prev"/>
 	<xsl:with-param name="next" select="$next"/>
       </xsl:call-template>
+
+      <xsl:call-template name="user.footer.navigation"/>
     </body>
   </html>
 </xsl:template>

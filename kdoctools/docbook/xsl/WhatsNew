@@ -1,28 +1,374 @@
-Changes since version 1.33 (2001-03-16)
+Changes since version 1.35 (0000-00-00)
 
 Changes to docbook/*
 
-  | 2001-03-18  Norman Walsh  <ndw@nwalsh.com>
+  | 2001-04-04  Norman Walsh  <ndw@nwalsh.com>
   | 
-  | 	* RELEASE-NOTES: Updated
+  | 	* VERSION: Version 1.36 released.
   | 
-  | 	* VERSION: Version 1.34 released.
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore, Makefile: Misc. cleanup in preparation for
+  | 	  making a distrib
+  | 
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* BUGS, Makefile, README.CVS, TODO, VERSION: New file.
+  | 
+  | 	* Makefile: Make common files
+  | 
+
+Changes to docbook/common/*
+
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* gentext.xsl, labels.xsl, titles.xsl: Fix bug 412487, make
+  | 	  XSL-generated callout marks honor callout mark parameters
+  | 
+  | 	* titles.xsl: Restore no.anchor.mode and suppress footnotes in
+  | 	  no.anchor.mode
+  | 
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore, Makefile: New file.
+  | 
+  | 	* common.xsl, gentext.xsl, l10n.xml, l10n.xsl, labels.xsl,
+  | 	  subtitles.xsl, titles.xsl: New file.
+  | 
+  | 	* gentext.xsl: Commented out debugging messages
+  | 
+  | 	* l10n.dtd: New file.
+  | 
+
+Changes to docbook/docsrc/*
+
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* Makefile, jrefhtml.xsl, xsl2jref.xsl: Documentation fixes
+  | 
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* Makefile, copyright.xml, documentation.xml, extensions.xml,
+  | 	  jrefhtml.xsl, legalnotice.xml, publishing.xml,
+  | 	  reference.xml, template-example.xml, template-example.xsl,
+  | 	  templates.xml, warranty.xml, xsl2jref.xsl: New file.
+  | 
+
+Changes to docbook/extensions/*
+
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore, Makefile, prj.el: New file.
   | 
 
 Changes to docbook/fo/*
 
-  | 2001-03-18  Norman Walsh  <ndw@nwalsh.com>
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
   | 
-  | 	* autotoc.xsl: Support articles in TOCs
+  | 	* callout.xsl: Fix bug 412487, make XSL-generated callout
+  | 	  marks honor callout mark parameters
+  | 
+  | 	* param.xsl: Documentation fixes
+  | 
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore, Makefile, admon.xsl, autoidx.xsl, autotoc.xsl,
+  | 	  biblio.xsl, block.xsl, callout.xsl, component.xsl,
+  | 	  division.xsl, docbook.xsl, fo.xsl, footnote.xsl, fop.xsl,
+  | 	  formal.xsl, glossary.xsl, graphics.xsl, index.xsl, info.xsl,
+  | 	  inline.xsl, keywords.xsl, lists.xsl, math.xsl,
+  | 	  pagesetup.xsl, param.xsl, pi.xsl, qandaset.xsl,
+  | 	  refentry.xsl, sections.xsl, synop.xsl, table.xsl,
+  | 	  titlepage.templates.xml, titlepage.xsl, toc.xsl,
+  | 	  verbatim.xsl, xref.xsl: New file.
+  | 
+  | 	* Makefile: Use the cvstools version of saxon
   | 
 
 Changes to docbook/html/*
 
-  | 2001-03-18  Norman Walsh  <ndw@nwalsh.com>
+  | 2001-04-04  Norman Walsh  <ndw@nwalsh.com>
   | 
-  | 	* autotoc.xsl: Support articles in TOCs
+  | 	* chunk-common.xsl: Move xsl:message about chunks into the
+  | 	  chunker modules
   | 
-  | 	* chunk-common.xsl, param.xsl: Support ID as filename; fix bug
-  | 	  in generation of filenames for articles in sets
+  | 	* chunker.xsl: Support indent and doctype public/system on
+  | 	  chunks (for Saxon, anyway, Xalan's multiple-document
+  | 	  extension doesn't seem to support this)
+  | 
+  | 	* xtchunker.xsl: Use xsl:choose to support xml, html, and text
+  | 	  output methods
+  | 
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* callout.xsl: Fix bug 412487, make XSL-generated callout
+  | 	  marks honor callout mark parameters
+  | 
+  | 	* chunk-common.xsl: Remove unnecessary xmlns declarations
+  | 
+  | 	* chunker.xsl: Patch to make saxon not produce xml version=1.1
+  | 	  documents
+  | 
+  | 	* param.xsl: Documentation fixes
+  | 
+  | 	* qandaset.xsl: Apply patch 412510 by Jon Willeke, make xref
+  | 	  to Question work correctly
+  | 
+  | 	* xref.xsl: Remove unnecessary parameter assignment
+  | 
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore, Makefile, admon.xsl, autoidx.xsl, autotoc.xsl,
+  | 	  biblio.xsl, block.xsl, callout.xsl, changebars.xsl,
+  | 	  chunk-common.xsl, chunk.xsl, chunker.xsl, component.xsl,
+  | 	  division.xsl, docbook.xsl, ebnf.xsl, footnote.xsl,
+  | 	  formal.xsl, glossary.xsl, graphics.xsl, html.xsl, index.xsl,
+  | 	  info.xsl, inline.xsl, keywords.xsl, lists.xsl, math.xsl,
+  | 	  param.xsl, pi.xsl, qandaset.xsl, refentry.xsl, sections.xsl,
+  | 	  synop.xsl, table.xsl, titlepage.templates.xml,
+  | 	  titlepage.xsl, toc.xsl, verbatim.xsl, xref.xsl, xtchunk.xsl,
+  | 	  xtchunker.xsl: New file.
+  | 
+  | 	* Makefile: Use the cvstools version of saxon
+  | 
+
+Changes to docbook/images/*
+
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* caution.gif, caution.png, caution.tif, home.png,
+  | 	  important.gif, important.png, important.tif, next.png,
+  | 	  note.gif, note.png, note.tif, prev.png, tip.gif, tip.png,
+  | 	  tip.tif, toc-blank.png, toc-minus.png, toc-plus.png, up.png,
+  | 	  warning.gif, warning.png, warning.tif: New file.
+  | 
+
+Changes to docbook/lib/*
+
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* lib.xsl: Documentation fixes
+  | 
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* lib.xsl: New file.
+  | 
+
+Changes to docbook/xhtml/*
+
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* chunk.xsl, docbook.xsl, xtchunk.xsl: Support MathML and
+  | 	  chunking properly
+  | 
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* docbook.xsl, xtchunk.xsl: New file.
+  | 
+
+Changes to docbook/template/*
+
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* README, biblioentry.xsl, testtemplate.xml, titlepage.xsl:
+  | 	  New file.
+  | 
+
+Changes to docbook/doc/*
+
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore, Makefile, book.xsl, jrefhtml.xsl, reference.xsl:
+  | 	  New file.
+  | 
+  | 	* Makefile: Misc. cleanup in preparation for making a distrib
+  | 
+
+Changes to docbook/htmlhelp/*
+
+  | 2001-04-04  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* README, htmlhelp-common.xsl, htmlhelp.xsl, langcodes.xml,
+  | 	  xthtmlhelp.xsl: New file.
+  | 
+
+Changes to docbook/javahelp/*
+
+  | 2001-04-04  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* javahelp-common.xsl, javahelp.xsl, xtjavahelp.xsl: New file.
+  | 
+
+Changes to docbook/docsrc/common/*
+
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* Makefile: Documentation fixes
+  | 
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore, Makefile: New file.
+  | 
+
+Changes to docbook/docsrc/lib/*
+
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* Makefile: Documentation fixes
+  | 
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore, Makefile: New file.
+  | 
+
+Changes to docbook/docsrc/html/*
+
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* Makefile: Documentation fixes
+  | 
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore, Makefile: New file.
+  | 
+
+Changes to docbook/docsrc/fo/*
+
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* Makefile: Documentation fixes
+  | 
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore, Makefile: New file.
+  | 
+
+Changes to docbook/docsrc/template/*
+
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* Makefile: Documentation fixes
+  | 
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore, Makefile: New file.
+  | 
+
+Changes to docbook/extensions/saxon6/*
+
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore: New file.
+  | 
+
+Changes to docbook/extensions/saxon61/*
+
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore: New file.
+  | 
+
+Changes to docbook/extensions/saxon551/*
+
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore: New file.
+  | 
+
+Changes to docbook/extensions/xalan2/*
+
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore: New file.
+  | 
+
+Changes to docbook/images/callouts/*
+
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* 1.png, 10.png, 2.png, 3.png, 4.png, 5.png, 6.png, 7.png,
+  | 	  8.png, 9.png: New file.
+  | 
+
+Changes to docbook/doc/lib/*
+
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore, Makefile: New file.
+  | 
+
+Changes to docbook/doc/common/*
+
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore, Makefile: New file.
+  | 
+
+Changes to docbook/doc/html/*
+
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore, Makefile: New file.
+  | 
+
+Changes to docbook/doc/fo/*
+
+  | 2001-04-03  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* .cvsignore, Makefile: New file.
+  | 
+
+Changes to docbook/htmlhelp/doc/*
+
+  | 2001-04-04  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* htmlhelp.xml: New file.
+  | 
+
+Changes to docbook/extensions/saxon6/com/nwalsh/saxon/*
+
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* CVS.java, Callout.java, CalloutEmitter.java,
+  | 	  ColumnScanEmitter.java, ColumnUpdateEmitter.java,
+  | 	  CopyEmitter.java, FormatCallout.java,
+  | 	  FormatGraphicCallout.java, FormatTextCallout.java,
+  | 	  FormatUnicodeCallout.java, LineCountEmitter.java,
+  | 	  NumberLinesEmitter.java, Table.java, Text.java,
+  | 	  TextFactory.java, Verbatim.java, package.html: New file.
+  | 
+
+Changes to docbook/extensions/saxon61/com/nwalsh/saxon/*
+
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* CVS.java, Callout.java, CalloutEmitter.java,
+  | 	  ColumnScanEmitter.java, ColumnUpdateEmitter.java,
+  | 	  CopyEmitter.java, FormatCallout.java,
+  | 	  FormatGraphicCallout.java, FormatTextCallout.java,
+  | 	  FormatUnicodeCallout.java, LineCountEmitter.java,
+  | 	  NumberLinesEmitter.java, Table.java, Text.java,
+  | 	  TextFactory.java, Verbatim.java, package.html: New file.
+  | 
+
+Changes to docbook/extensions/saxon551/com/nwalsh/saxon/*
+
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* CVS.java, Callout.java, FormatCallout.java,
+  | 	  FormatGraphicCallout.java, FormatTextCallout.java,
+  | 	  FormatUnicodeCallout.java, Text.java, TextFactory.java,
+  | 	  Verbatim.java, package.html: New file.
+  | 
+
+Changes to docbook/extensions/xalan2/com/nwalsh/xalan/*
+
+  | 2001-04-02  Norman Walsh  <ndw@nwalsh.com>
+  | 
+  | 	* CVS.java, Callout.java, FormatCallout.java,
+  | 	  FormatGraphicCallout.java, FormatTextCallout.java,
+  | 	  FormatUnicodeCallout.java, Func.java, Params.java,
+  | 	  Table.java, Text.java, Verbatim.java, package.html: New
+  | 	  file.
   | 
 

@@ -1,30 +1,5 @@
-2001-03-11  Norman Walsh  <ndw@nwalsh.com>
+2001-04-02  Norman Walsh  <ndw@nwalsh.com>
 
-	* caution.tif, important.tif, note.tif, tip.tif, warning.tif: 
-	RenderX patches
-
-2001-03-09  Norman Walsh  <ndw@nwalsh.com>
-
-	* caution.tif: branches:  1.1.2;
-	file caution.tif was initially added on branch renderx-patches.
-
-	* caution.tif, important.tif, note.tif, tip.tif, warning.tif: 
-	New file.
-
-	* important.tif: branches:  1.1.2;
-	file important.tif was initially added on branch renderx-patches.
-
-	* note.tif: branches:  1.1.2;
-	file note.tif was initially added on branch renderx-patches.
-
-	* tip.tif: branches:  1.1.2;
-	file tip.tif was initially added on branch renderx-patches.
-
-	* warning.tif: branches:  1.1.2;
-	file warning.tif was initially added on branch renderx-patches.
-
-2000-10-11  Norman Walsh  <ndw@nwalsh.com>
-
-	* caution.png, home.png, important.png, next.png, note.png, prev.png, tip.png, toc-blank.png, toc-minus.png, toc-plus.png, up.png, warning.png: 
+	* caution.gif, caution.png, caution.tif, home.png, important.gif, important.png, important.tif, next.png, note.gif, note.png, note.tif, prev.png, tip.gif, tip.png, tip.tif, toc-blank.png, toc-minus.png, toc-plus.png, up.png, warning.gif, warning.png, warning.tif: 
 	New file.
 

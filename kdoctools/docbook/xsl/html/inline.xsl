@@ -673,7 +673,16 @@
 
 <!-- ==================================================================== -->
 
-<xsl:template match="pob|street|city|state|postcode|country|phone|fax|otheraddr">
+<xsl:template match="pob|street|city|state|postcode|country|otheraddr">
+  <xsl:call-template name="inline.charseq"/>
+</xsl:template>
+
+<xsl:template match="phone|fax">
+  <xsl:call-template name="inline.charseq"/>
+</xsl:template>
+
+<!-- in Addresses, for example -->
+<xsl:template match="honorific|firstname|surname|lineage|othername">
   <xsl:call-template name="inline.charseq"/>
 </xsl:template>
 

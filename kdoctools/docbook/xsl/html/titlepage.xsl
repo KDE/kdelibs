@@ -44,6 +44,15 @@
 <xsl:attribute-set name="appendix.titlepage.recto.style"/>
 <xsl:attribute-set name="appendix.titlepage.verso.style"/>
 
+<xsl:attribute-set name="bibliography.titlepage.recto.style"/>
+<xsl:attribute-set name="bibliography.titlepage.verso.style"/>
+
+<xsl:attribute-set name="glossary.titlepage.recto.style"/>
+<xsl:attribute-set name="glossary.titlepage.verso.style"/>
+
+<xsl:attribute-set name="index.titlepage.recto.style"/>
+<xsl:attribute-set name="index.titlepage.verso.style"/>
+
 <xsl:attribute-set name="section.titlepage.recto.style"/>
 <xsl:attribute-set name="section.titlepage.verso.style"/>
 
@@ -113,7 +122,7 @@
   <div class="{name(.)}">
     <xsl:call-template name="formal.object.heading">
       <xsl:with-param name="title">
-        <xsl:apply-templates select="." mode="title.ref"/>
+        <xsl:apply-templates select="." mode="title.markup"/>
       </xsl:with-param>
     </xsl:call-template>
     <xsl:apply-templates mode="titlepage.mode"/>
@@ -227,7 +236,9 @@
   <xsl:variable name="holders" select="holder"/>
 
   <p class="{name(.)}">
-    <xsl:call-template name="gentext.element.name"/>
+    <xsl:call-template name="gentext">
+      <xsl:with-param name="key" select="'Copyright'"/>
+    </xsl:call-template>
     <xsl:call-template name="gentext.space"/>
     <xsl:call-template name="dingbat">
       <xsl:with-param name="dingbat">copyright</xsl:with-param>
@@ -278,8 +289,10 @@
 <xsl:template match="edition" mode="titlepage.mode">
   <p class="{name(.)}">
     <xsl:apply-templates mode="titlepage.mode"/>
-    <xsl:text> </xsl:text>
-    <xsl:call-template name="gentext.element.name"/>
+    <xsl:call-template name="gentext.space"/>
+    <xsl:call-template name="gentext">
+      <xsl:with-param name="key" select="'Edition'"/>
+    </xsl:call-template>
   </p>
 </xsl:template>
 
@@ -464,7 +477,11 @@
     <table border="1" width="100%" summary="Revision history">
       <tr>
         <th align="left" valign="top" colspan="{$numcols}">
-          <b><xsl:call-template name="gentext.element.name"/></b>
+          <b>
+            <xsl:call-template name="gentext">
+              <xsl:with-param name="key" select="'RevHistory'"/>
+            </xsl:call-template>
+          </b>
         </th>
       </tr>
       <xsl:apply-templates mode="titlepage.mode">
@@ -483,8 +500,10 @@
   <tr>
     <td align="left">
       <xsl:if test="$revnumber">
-        <xsl:call-template name="gentext.element.name"/>
-        <xsl:text> </xsl:text>
+        <xsl:call-template name="gentext">
+          <xsl:with-param name="key" select="'Revision'"/>
+        </xsl:call-template>
+        <xsl:call-template name="gentext.space"/>
         <xsl:apply-templates select="$revnumber[1]" mode="titlepage.mode"/>
       </xsl:if>
     </td>
