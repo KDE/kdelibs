@@ -159,7 +159,17 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     if(m_printSpecial && !isInline() && m_visible)
         printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
-    // 2. print floats and other non-flow objects
+
+    // 2. print contents
+    RenderObject *child = firstChild();
+    while(child != 0)
+    {
+        if(!child->isFloating() && !child->isPositioned())
+            child->print(p, _x, _y, _w, _h, _tx, _ty);
+        child = child->nextSibling();
+    }
+
+    // 3. print floats and other non-flow objects
     if(specialObjects)
     {
         SpecialObject* r;
@@ -171,15 +181,6 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
                 o->print(p, _x, _y, _w, _h, _tx , _ty);
             }
         }
-    }
-
-    // 3. print contents
-    RenderObject *child = firstChild();
-    while(child != 0)
-    {
-        if(!child->isFloating() && !child->isPositioned())
-            child->print(p, _x, _y, _w, _h, _tx, _ty);
-        child = child->nextSibling();
     }
 
 #ifdef BOX_DEBUG
