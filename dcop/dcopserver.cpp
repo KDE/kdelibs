@@ -407,11 +407,20 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 		// handle a multicast.
 		QDictIterator<DCOPConnection> aIt(appIds);
 		int l = app.length()-1;
+		if (conn->waitingOn)
+                {
+                   if ( opcode == DCOPReplyDelayed )  
+			qWarning("DCOPServer::DCOPReplyDelayed from waiting application!");
+		   else
+			qWarning("DCOPServer::DCOPSend from waiting application!");
+                }
 		for ( ; aIt.current(); ++aIt)
 		    {
 			DCOPConnection *client = aIt.current();
 			if (!l || (strncmp(client->appId.data(), app.data(), l) == 0))
 			    {
+				if (client->waitingOn)
+				   qWarning("DCOPServer::DCOPSend to waiting application!");
 				IceGetHeader(client->iceConn, majorOpcode, DCOPSend,
 					     sizeof(DCOPMsg), DCOPMsg, pMsg);
 				int datalen = ba.size();
@@ -435,6 +444,10 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	    DCOPConnection* target = appIds.find( app );
 	    int datalen = ba.size();
 	    if ( target ) {
+		if (target->waitingOn)
+		   qWarning("DCOPServer::DCOPCall to waiting application!");
+		if (conn->waitingOn)
+		   qWarning("DCOPServer::DCOPCall from waiting application!");
 		target->waitingForReply.append( iceConn );
 		conn->waitingOn = target->iceConn;
 		IceGetHeader( target->iceConn, majorOpcode, DCOPCall,
@@ -731,10 +744,10 @@ void DCOPServer::removeConnection( void* data )
 	if (iceConn)
 	    {
 		DCOPConnection* target = clients.find( iceConn );
-// 		if (target->waitingOn != conn->iceConn)
-// 		    qDebug("DCOP: waitingForReply list corrupted.");
+ 		if (target->waitingOn != conn->iceConn)
+ 		    qWarning("DCOP: waitingForReply list corrupted.");
 		target->waitingOn = 0L;
-// 		qDebug("DCOP aborting call from '%s' to '%s'", target->appId.data(), conn->appId.data() );
+ 		qWarning("DCOP aborting call from '%s' to '%s'", target->appId.data(), conn->appId.data() );
 		QByteArray reply;
 		DCOPMsg *pMsg;
 		IceGetHeader( iceConn, majorOpcode, DCOPReplyFailed,
@@ -750,10 +763,10 @@ void DCOPServer::removeConnection( void* data )
 	if (iceConn)
 	    {
 		DCOPConnection* target = clients.find( iceConn );
-// 		if (target->waitingOn != conn->iceConn)
-// 		    qDebug("DCOP waitingForDelayedReply list corrupt.");
+ 		if (target->waitingOn != conn->iceConn)
+ 		    qWarning("DCOP waitingForDelayedReply list corrupt.");
 		target->waitingOn = 0L;
-// 		qDebug("DCOP aborting (delayed) call from '%s' to '%s'", target->appId.data(), conn->appId.data() );
+ 		qWarning("DCOP aborting (delayed) call from '%s' to '%s'", target->appId.data(), conn->appId.data() );
 		QByteArray reply;
 		DCOPMsg *pMsg;
 		IceGetHeader( iceConn, majorOpcode, DCOPReplyFailed,
