@@ -375,7 +375,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
         notifyByPassivePopup( text, fromApp, checkWinId( fromApp, winId ));
 
     else if ( present & KNotifyClient::Messagebox )
-        notifyByMessagebox( text, level );
+        notifyByMessagebox( text, level, checkWinId( fromApp, winId ));
 
     if ( present & KNotifyClient::Logfile ) // && QFile(file).isWritable()
         notifyByLogfile( text, file );
@@ -520,7 +520,7 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname, int e
     return false;
 }
 
-bool KNotify::notifyByMessagebox(const QString &text, int level)
+bool KNotify::notifyByMessagebox(const QString &text, int level, WId winId)
 {
     // ignore empty messages
     if ( text.isEmpty() )
@@ -530,16 +530,16 @@ bool KNotify::notifyByMessagebox(const QString &text, int level)
     switch( level ) {
     default:
     case KNotifyClient::Notification:
-        KMessageBox::information( 0, text, i18n("Notification"), 0, false );
+        KMessageBox::informationWId( winId, text, i18n("Notification"), 0, false );
         break;
     case KNotifyClient::Warning:
-        KMessageBox::sorry( 0, text, i18n("Warning"), false );
+        KMessageBox::sorryWId( winId, text, i18n("Warning"), false );
         break;
     case KNotifyClient::Error:
-        KMessageBox::error( 0, text, i18n("Error"), false );
+        KMessageBox::errorWId( winId, text, i18n("Error"), false );
         break;
     case KNotifyClient::Catastrophe:
-        KMessageBox::error( 0, text, i18n("Catastrophe!"), false );
+        KMessageBox::errorWId( winId, text, i18n("Catastrophe!"), false );
         break;
     }
 

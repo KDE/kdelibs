@@ -70,7 +70,7 @@ k_dcop:
 
 private:
 	bool notifyBySound(const QString &sound, const QString &appname, int eventId);
-	bool notifyByMessagebox(const QString &text, int level);
+	bool notifyByMessagebox(const QString &text, int level, WId winId);
 	bool notifyByLogfile(const QString &text, const QString &file);
 	bool notifyByStderr(const QString &text);
 	bool notifyByPassivePopup(const QString &text, const QString &appName,
