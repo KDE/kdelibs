@@ -436,7 +436,7 @@ void TransferJob::slotRedirection( const KURL &url)
     {
        kdDebug(7007) << "TransferJob::slotRedirection: CYCLIC REDIRECTION!" << endl;
        m_error = ERR_CYCLIC_LINK;
-       m_errorText = m_url.url();
+       m_errorText = m_url.prettyURL();
     }
     else
     {
@@ -934,7 +934,7 @@ bool KIO::link( const QString & linkDest, const KURL & destUrl, bool overwriteEx
         {
             // Some error occured while we tried to symlink
             KMessageBox::sorry( 0L, i18n( "Failed to make symlink from \n%1\nto\n%2\n" ).
-                                arg(linkDest).arg(destUrl.url()) );
+                                arg(linkDest).arg(destUrl.prettyURL()) );
             return false;
         }
     }
@@ -1475,7 +1475,7 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     QString existingDest = (*it).uDest.path();
     QString newPath;
     RenameDlg_Result r = Observer::self()->open_RenameDlg( this, i18n("Directory already exists"),
-                                         (*it).uSource.url(), existingDest, mode, newPath,
+                                         (*it).uSource.prettyURL(), existingDest, mode, newPath,
                                          (*it).size, destsize,
                                          (*it).ctime, destctime,
                                          (*it).mtime, destmtime );
@@ -1668,7 +1668,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             mode = (RenameDlg_Mode) ( mode | M_SINGLE );
         res = Observer::self()->open_RenameDlg( this, m_conflictError == ERR_FILE_ALREADY_EXIST ?
                                 i18n("File already exists") : i18n("Already exists as a directory"),
-                              (*it).uSource.url(), (*it).uDest.path(), mode, newPath,
+                                (*it).uSource.prettyURL(), (*it).uDest.path(), mode, newPath,
                               (*it).size, destsize,
                               (*it).ctime, destctime,
                               (*it).mtime, destmtime );
