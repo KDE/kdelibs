@@ -56,7 +56,7 @@ class KToolBoxManager;
   *
   * KToolBar uses a global config group to load toolbar settings on
   * construction. It will reread this config group on a
-  * @ref KApplication::apearanceChanged() signal.
+  * @ref KApplication::appearanceChanged() signal.
   *
   * BUGS: Sometimes flickers on auto resize, no workaround has yet been
   * found for this.
@@ -738,7 +738,7 @@ signals:
     void clicked(int id);
 
     /**
-     * Emitted when button @pid is double-clicked.
+     * Emitted when button @p id is double-clicked.
      *
      * Note: you will always
      * recive two @ref clicked() , @ref pressed() and @ref released() signals.
