@@ -97,3 +97,12 @@
 <!ENTITY LGPLNotice	    PUBLIC
   "-//GNU//DOCUMENT GNU Lesser General Public License Notice//EN"
   CDATA SGML							     >
+<!ENTITY FDL                PUBLIC
+  "-//GNU//DOCUMENT GNU Free Documentation License V1.1//EN"
+  CDATA SGML               -- http://www.gnu.org/copyleft/fdl.html -->
+<!ENTITY FDLNotice          PUBLIC
+  "-//GNU//DOCUMENT GNU Free Documentation Notice//EN"
+  CDATA SGML                                                         >
+<!-- Use in a document prologue only -->
+<!ENTITY % FDLSlots         PUBLIC
+  "-//KDE//ENTITIES KDE FDL 1.1 Slot Filler Entities//EN"            >

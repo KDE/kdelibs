@@ -108,3 +108,5 @@ PUBLIC "-//GNU//DOCUMENT GNU Free Documentation License V1.1//EN"
        "common/fdl-license"
 PUBLIC "-//GNU//DOCUMENT GNU Free Documentation Notice//EN"
        "common/fdl-notice"
+PUBLIC "-//KDE//ENTITIES KDE FDL 1.1 Slot Filler Entities//EN"
+       "common/fdl-entities"  -- not external but best place --
