@@ -189,7 +189,9 @@ void B2Style::polish(QWidget *w)
     if ( !w->isTopLevel() ) {
         if (w->inherits("QPushButton")
             || w->inherits("QComboBox")
-            || w->inherits("QSlider"))
+            || w->inherits("QSlider")
+            || w->inherits("QRadioButton")
+            || w->inherits("QCheckBox"))
             w->setAutoMask(true);
     }
 }
@@ -199,7 +201,9 @@ void B2Style::unPolish(QWidget *w)
     if ( !w->isTopLevel() ) {
         if (w->inherits("QPushButton")
             || w->inherits("QComboBox")
-            || w->inherits("QSlider"))
+            || w->inherits("QSlider")
+            || w->inherits("QRadioButton")
+            || w->inherits("QCheckBox"))
             w->setAutoMask(false);
     }
 }                              
@@ -628,6 +632,16 @@ void B2Style::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     }
 }
 
+void B2Style::drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
+                                         int h, bool)
+{
+    static QBitmap maskBmp(13, 13, radiomask_bits, true);
+    p->fillRect(x, y, w, h, Qt::color0);
+    p->setPen(Qt::color1);
+    p->drawPixmap(x, y, maskBmp);
+}
+
+
 QSize B2Style::indicatorSize() const
 {
     return(QSize(13, 13));
@@ -669,6 +683,12 @@ void B2Style::drawIndicator(QPainter *p, int x, int y, int w, int h,
         p->drawPixmap(3, 3, xBmp);
     }
     
+}
+
+void B2Style::drawIndicatorMask(QPainter *p, int x, int y, int w, int h, int)
+{
+    // needed for some reason by KHtml, even tho it's all filled ;P
+    p->fillRect(x, y, w, h, Qt::color1);
 }
 
 void B2Style::drawSliderGrooveMask(QPainter *p, int x, int y, int w, int h,

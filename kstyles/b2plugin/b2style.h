@@ -87,10 +87,13 @@ public:
     void drawIndicator(QPainter* p, int x, int y, int w, int h,
                        const QColorGroup &g, int state, bool down = FALSE,
                        bool enabled = TRUE );
+    void drawIndicatorMask(QPainter *p, int x, int y, int w, int h, int);
     QSize exclusiveIndicatorSize() const;
     void drawExclusiveIndicator(QPainter* p,  int x, int y, int w, int h,
                                 const QColorGroup &g, bool on,
                                 bool down = FALSE, bool enabled =  TRUE );
+    void drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
+                                    int h, bool);
     void drawComboButton(QPainter *p, int x, int y, int w, int h,
                          const QColorGroup &g, bool sunken = FALSE,
                          bool editable = FALSE, bool enabled = TRUE,
