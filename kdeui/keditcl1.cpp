@@ -31,6 +31,7 @@
 #include <klocale.h>
 #include <kapp.h>
 #include <kfontdialog.h>
+#include <qtimer.h>
 
 #include "keditcl.h"
 

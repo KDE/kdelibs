@@ -335,10 +335,9 @@ QSize KCharSelect::sizeHint()
 //==================================================================
 void KCharSelect::setFont(const QString &_font)
 {
-  int i = fontList.find(_font.ascii());
-  if (i != -1)
+  if (int i = fontList.contains(_font))
     {
-      fontCombo->setCurrentItem(i);
+      fontCombo->setCurrentItem(i-1);
       charTable->setFont(_font);
     }
   else
@@ -367,7 +366,7 @@ void KCharSelect::fillFontCombo()
   char** fontNames_copy;
   QString qfontname;
 
-  bool have_installed = kapp->getKDEFonts(&fontList);
+  bool have_installed = kapp->getKDEFonts(fontList);
 
   if (!have_installed)
     {
@@ -408,8 +407,8 @@ void KCharSelect::fillFontCombo()
 	    {
 	      if (qfontname != "nil")
 		{
-		  if (fontList.find(qfontname.ascii()) == -1)
-		    fontList.inSort(qfontname.ascii());
+		  if (!fontList.contains(qfontname))
+		    fontList.append(qfontname);
 		}
 	    }
 
@@ -419,7 +418,8 @@ void KCharSelect::fillFontCombo()
       XFreeFontNames(fontNames_copy);
     }
 
-  fontCombo->insertStrList(fontList);
+  fontList.sort();
+  fontCombo->insertStringList(fontList);
 }
 
 //==================================================================

@@ -115,7 +115,7 @@ protected:
   QComboBox *fontCombo;
   QSpinBox *tableSpinBox;
   KCharSelectTable *charTable;
-  QStrList fontList;
+  QStringList fontList;
 
 protected slots:
   void fontSelected(const QString &_font);
