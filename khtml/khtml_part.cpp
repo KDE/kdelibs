@@ -5467,6 +5467,8 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       pix = KMimeType::pixmapForURL(u, 0, KIcon::Desktop, KIcon::SizeMedium);
     }
 
+    u.setPass(QString::null);
+
     KURLDrag* urlDrag = new KURLDrag( u, img ? 0 : d->m_view->viewport() );
     if ( !d->m_referrer.isEmpty() )
       urlDrag->metaData()["referrer"] = d->m_referrer;
@@ -5485,7 +5487,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 
     stopAutoScroll();
     if(drag)
-        drag->drag();
+      drag->drag();
 
     // when we finish our drag, we need to undo our mouse press
     d->m_bMousePressed = false;
