@@ -50,7 +50,16 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	vnd.sun.xml.impress.template.desktop vnd.sun.xml.draw.template.desktop \
 	vnd.stardivision.chart.desktop vnd.stardivision.draw.desktop \
 	vnd.stardivision.math.desktop vnd.stardivision.writer-global.desktop vnd.sun.xml.writer.master.desktop \
-	x-xliff.desktop x-7z.desktop xml.desktop x-webarchive.desktop  x-mimearchive.desktop
+	x-xliff.desktop x-7z.desktop xml.desktop x-webarchive.desktop  x-mimearchive.desktop \
+	vnd.oasis.opendocument.drawing-template.desktop \
+	vnd.oasis.opendocument.drawing.desktop \
+	vnd.oasis.opendocument.formula.desktop \
+	vnd.oasis.opendocument.presentation-template.desktop \
+	vnd.oasis.opendocument.presentation.desktop \
+	vnd.oasis.opendocument.spreadsheet-template.desktop \
+	vnd.oasis.opendocument.spreadsheet.desktop \
+	vnd.oasis.opendocument.text-template.desktop \
+	vnd.oasis.opendocument.text.desktop
 
 mimetypeapplicationdatadir = $(kde_mimedir)/application
 
