@@ -113,11 +113,7 @@ struct IconRec
 
 void kimgio_ico_read(QImageIO *io)
 {
-    QFile f(io->fileName());
-    if (!f.open(IO_ReadOnly))
-        return;
-    
-    QDataStream ico(&f);
+    QDataStream ico(io->ioDevice());
     ico.setByteOrder(QDataStream::LittleEndian);
     IcoHeader hdr;
     ico >> hdr.reserved >> hdr.type >> hdr.count;
@@ -159,7 +155,7 @@ void kimgio_ico_read(QImageIO *io)
 	}
 	kdDebug() << "Using: " << preferred << endl;
 	IconRec header = iconList[preferred];
-    f.at(header.dibOffset);
+    ico.device()->at(header.dibOffset);
     BMP_INFOHDR dibHeader;
     ico >> dibHeader;
     QByteArray dibData(header.dibSize - dibHeader.biSize + BMP_WIN);
@@ -168,7 +164,7 @@ void kimgio_ico_read(QImageIO *io)
     dibHeader.biSize = BMP_WIN;
     dibHeader.biHeight = header.height;
     dib << dibHeader;
-    f.readBlock(dibData.data() + BMP_WIN, dibData.size() - BMP_WIN);
+    ico.device()->readBlock(dibData.data() + BMP_WIN, dibData.size() - BMP_WIN);
     dib.device()->at(0);
     
     QImage icon;
