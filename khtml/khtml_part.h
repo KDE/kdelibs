@@ -267,7 +267,7 @@ public:
    * Return if plugins are enabled/disabled.
    */
   bool pluginsEnabled() const;
-  
+
   /**
    * Should images be loaded automatically? Default is @p true.
    *
@@ -347,7 +347,7 @@ public:
    * Paints the HTML page to a QPainter. See @ref KHTMLView::paint for details
    */
   void paint(QPainter *, const QRect &, int = 0, bool * = 0);
-  
+
   /**
    * Mainly used internally.
    *
@@ -608,7 +608,7 @@ public:
   bool frameExists( const QString &frameName );
 
   bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
-  
+
 signals:
   /**
    * Emitted if the cursor is moved over an URL.
@@ -807,11 +807,13 @@ private slots:
 
   void slotSelectAll();
 
+protected:
+    // @internal
+    void emitSelectionChanged();
+
 private:
   void startAutoScroll();
   void stopAutoScroll();
-
-  void emitSelectionChanged();
 
   void init( KHTMLView *view, GUIProfile prof );
 

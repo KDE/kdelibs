@@ -2,10 +2,12 @@
 #include "khtml_ext.h"
 #include "khtmlview.h"
 #include "khtml_pagecache.h"
+#include "rendering/render_form.h"
 
 #include <qapplication.h>
 #include <qclipboard.h>
 #include <qpopupmenu.h>
+#include <qlineedit.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -22,13 +24,19 @@
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
 {
-  m_part = parent;
-  setURLDropHandlingEnabled( true );
+    m_part = parent;
+    setURLDropHandlingEnabled( true );
+
+    enableAction( "cut", false );
+    enableAction( "copy", false );
+    enableAction( "paste", false );
+
+    m_connectedToClipboard = false;
 }
 
 int KHTMLPartBrowserExtension::xOffset()
 {
-  return m_part->view()->contentsX();
+    return m_part->view()->contentsX();
 }
 
 int KHTMLPartBrowserExtension::yOffset()
@@ -48,13 +56,120 @@ void KHTMLPartBrowserExtension::restoreState( QDataStream &stream )
   m_part->restoreState( stream );
 }
 
+void KHTMLPartBrowserExtension::editableWidgetFocused( QWidget *widget )
+{
+    m_editableFormWidget = widget;
+    updateEditActions();
+
+    if ( !m_connectedToClipboard && m_editableFormWidget )
+    {
+        connect( QApplication::clipboard(), SIGNAL( dataChanged() ),
+                 this, SLOT( updateEditActions() ) );
+
+        if ( m_editableFormWidget->inherits( "QLineEdit" ) )
+            connect( m_editableFormWidget, SIGNAL( textChanged( const QString & ) ),
+                     this, SLOT( updateEditActions() ) );
+        else if ( m_editableFormWidget->inherits( "QMultiLineEdit" ) )
+            connect( m_editableFormWidget, SIGNAL( textChanged() ),
+                     this, SLOT( updateEditActions() ) );
+
+        m_connectedToClipboard = true;
+    }
+}
+
+void KHTMLPartBrowserExtension::editableWidgetBlurred( QWidget *widget )
+{
+    QWidget *oldWidget = m_editableFormWidget;
+
+    m_editableFormWidget = widget;
+    enableAction( "cut", false );
+    enableAction( "paste", false );
+    m_part->emitSelectionChanged();
+
+    if ( m_connectedToClipboard )
+    {
+        disconnect( QApplication::clipboard(), SIGNAL( dataChanged() ),
+                    this, SLOT( updateEditActions() ) );
+
+        if ( oldWidget )
+        {
+            if ( oldWidget->inherits( "QLineEdit" ) )
+                disconnect( oldWidget, SIGNAL( textChanged( const QString & ) ),
+                            this, SLOT( updateEditActions() ) );
+            else if ( oldWidget->inherits( "QMultiLineEdit" ) )
+                disconnect( oldWidget, SIGNAL( textChanged() ),
+                            this, SLOT( updateEditActions() ) );
+        }
+
+        m_connectedToClipboard = false;
+    }
+}
+
+void KHTMLPartBrowserExtension::cut()
+{
+    ASSERT( m_editableFormWidget );
+    if ( !m_editableFormWidget )
+        return; // shouldn't happen
+
+    if ( m_editableFormWidget->inherits( "QLineEdit" ) )
+        static_cast<QLineEdit *>( &(*m_editableFormWidget) )->cut();
+    else if ( m_editableFormWidget->inherits( "QMultiLineEdit" ) )
+        static_cast<QMultiLineEdit *>( &(*m_editableFormWidget) )->cut();
+}
+
 void KHTMLPartBrowserExtension::copy()
 {
   kdDebug( 6050 ) << "************! KHTMLPartBrowserExtension::copy()" << endl;
-  // get selected text and paste to the clipboard
-  QString text = m_part->selectedText();
-  QClipboard *cb = QApplication::clipboard();
-  cb->setText(text);
+  if ( !m_editableFormWidget )
+  {
+      // get selected text and paste to the clipboard
+      QString text = m_part->selectedText();
+      QClipboard *cb = QApplication::clipboard();
+      cb->setText(text);
+  }
+  else
+  {
+      if ( m_editableFormWidget->inherits( "QLineEdit" ) )
+          static_cast<QLineEdit *>( &(*m_editableFormWidget) )->copy();
+      else if ( m_editableFormWidget->inherits( "QMultiLineEdit" ) )
+          static_cast<QMultiLineEdit *>( &(*m_editableFormWidget) )->copy();
+  }
+}
+
+void KHTMLPartBrowserExtension::paste()
+{
+    ASSERT( m_editableFormWidget );
+    if ( !m_editableFormWidget )
+        return; // shouldn't happen
+
+    if ( m_editableFormWidget->inherits( "QLineEdit" ) )
+        static_cast<QLineEdit *>( &(*m_editableFormWidget) )->paste();
+    else if ( m_editableFormWidget->inherits( "QMultiLineEdit" ) )
+        static_cast<QMultiLineEdit *>( &(*m_editableFormWidget) )->paste();
+}
+
+void KHTMLPartBrowserExtension::updateEditActions()
+{
+    if ( !m_editableFormWidget )
+    {
+        enableAction( "cut", false );
+        enableAction( "paste", false );
+        return;
+    }
+
+    // ### duplicated from KonqMainWindow::slotClipboardDataChanged
+    QMimeSource *data = QApplication::clipboard()->data();
+    enableAction( "paste", data->provides( "text/plain" ) );
+
+    bool hasSelection = false;
+
+    if ( m_editableFormWidget->inherits( "QLineEdit" ) )
+        hasSelection = static_cast<QLineEdit *>( &(*m_editableFormWidget) )->hasMarkedText();
+    else if ( m_editableFormWidget->inherits( "khtml::TextAreaWidget" ) )
+        hasSelection = static_cast<khtml::TextAreaWidget *>( &(*m_editableFormWidget) )->hasMarkedText();
+
+    enableAction( "copy", hasSelection );
+    enableAction( "cut", hasSelection );
 }
 
 void KHTMLPartBrowserExtension::reparseConfiguration()

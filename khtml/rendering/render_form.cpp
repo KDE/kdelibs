@@ -43,9 +43,12 @@
 
 #include "rendering/render_form.h"
 #include "rendering/render_style.h"
+#include "rendering/render_root.h"
 #include <assert.h>
 
 #include "khtmlview.h"
+#include "khtml_part.h"
+#include "khtml_ext.h"
 
 using namespace khtml;
 
@@ -122,6 +125,31 @@ void RenderFormElement::slotClicked()
 {
     DOM::NodeImpl::MouseEvent dummy( 0, DOM::NodeImpl::MouseClick );
     m_element->mouseEventHandler( &dummy, true);
+}
+
+void RenderFormElement::editableWidgetFocused( QWidget *widget )
+{
+    KHTMLPartBrowserExtension *ext = browserExt();
+    if ( ext )
+        ext->editableWidgetFocused( widget );
+}
+
+void RenderFormElement::editableWidgetBlurred( QWidget *widget )
+{
+    KHTMLPartBrowserExtension *ext = browserExt();
+    if ( ext )
+        ext->editableWidgetBlurred( widget );
+}
+
+KHTMLPartBrowserExtension *RenderFormElement::browserExt() const
+{
+    RenderRoot *renderRoot = root();
+
+    if ( !renderRoot )
+        return 0;
+
+    KHTMLPart *part = static_cast<KHTMLView *>( renderRoot->view() )->part();
+    return static_cast<KHTMLPartBrowserExtension *>( part->browserExtension() );
 }
 
 // -------------------------------------------------------------------------
@@ -494,6 +522,17 @@ void RenderLineEdit::select()
     static_cast<LineEditWidget*>(m_widget)->selectAll();
 }
 
+void RenderLineEdit::slotFocused()
+{
+    editableWidgetFocused( m_widget );
+    RenderFormElement::slotFocused();
+}
+
+void RenderLineEdit::slotBlurred()
+{
+    editableWidgetBlurred( m_widget );
+    RenderFormElement::slotBlurred();
+}
 
 // ---------------------------------------------------------------------------
 
@@ -594,12 +633,19 @@ void RenderFileButton::slotTextChanged(const QString &string)
 
 void RenderFileButton::slotBlurred()
 {
-    if (sender() != m_edit && sender() != m_button)
+    const QObject *senderObj = sender();
+
+    if (senderObj != m_edit && senderObj != m_button)
         return;
 
-    if ((sender() == m_edit && m_button->hasFocus()) ||
-        (sender() == m_button && m_edit->hasFocus()))
+    if ((senderObj == m_edit && m_button->hasFocus()) ||
+        (senderObj == m_button && m_edit->hasFocus()))
+    {
+        if ( senderObj == m_edit )
+            editableWidgetBlurred( m_edit );
+
         m_haveFocus = true;
+    }
     else {
         m_haveFocus = false;
         RenderFormElement::slotBlurred();
@@ -608,11 +654,17 @@ void RenderFileButton::slotBlurred()
 
 void RenderFileButton::slotFocused()
 {
-    if (sender() != m_edit && sender() != m_button)
+    const QObject *senderObj = sender();
+
+    if (senderObj != m_edit && senderObj != m_button)
         return;
 
     if (!m_haveFocus)
         RenderFormElement::slotFocused();
+
+    if ( senderObj == m_edit )
+        editableWidgetFocused( m_edit );
+
     m_haveFocus = true;
 }
 
@@ -1169,6 +1221,18 @@ void RenderTextArea::slotTextChanged()
 void RenderTextArea::select()
 {
     static_cast<TextAreaWidget *>(m_widget)->selectAll();
+}
+
+void RenderTextArea::slotFocused()
+{
+    editableWidgetFocused( m_widget );
+    RenderFormElement::slotFocused();
+}
+
+void RenderTextArea::slotBlurred()
+{
+    editableWidgetBlurred( m_widget );
+    RenderFormElement::slotBlurred();
 }
 
 // ---------------------------------------------------------------------------

@@ -2,6 +2,9 @@
 #define __khtml_ext_h__
 
 #include "khtml_part.h"
+
+#include <qguardedptr.h>
+
 #include <kaction.h>
 
 /**
@@ -22,13 +25,24 @@ public:
   virtual void saveState( QDataStream &stream );
   virtual void restoreState( QDataStream &stream );
 
-public slots:
-  void copy();
-  void reparseConfiguration();
-  void print();
+    // internal
+    void editableWidgetFocused( QWidget *widget );
+    void editableWidgetBlurred( QWidget *widget );
 
+public slots:
+    void cut();
+    void copy();
+    void paste();
+    void reparseConfiguration();
+    void print();
+
+    // internal . updates the state of the cut/copt/paste action based
+    // on whether data is available in the clipboard
+    void updateEditActions();
 private:
-  KHTMLPart *m_part;
+    KHTMLPart *m_part;
+    QGuardedPtr<QWidget> m_editableFormWidget;
+    bool m_connectedToClipboard;
 };
 
 class KHTMLPartBrowserHostExtension : public KParts::BrowserHostExtension
