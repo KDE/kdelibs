@@ -104,8 +104,7 @@
 ## Documentation / Web
 
 - improve kdoc comments everywhere
-- add a section "what runs natively with artsd, faked via artsdsp, and
-  not at all" to the aRts FAQ
+- write incomplete sections in The aRts Handbook; improve formatting
 
 ## Misc
 
