@@ -1191,6 +1191,8 @@ KJSO FrameArray::get(const UString &p) const
   int len = frames.count();
   if (p == "length")
     return Number(len);
+  else if (p== "location") // non-standard property, but works in NS and IE
+    return Window::retrieve( part )->get( "location" );
 
   // check for the name or number
   KParts::ReadOnlyPart *frame = part->findFrame(p.qstring());
