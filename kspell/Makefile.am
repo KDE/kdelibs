@@ -23,7 +23,8 @@
 INCLUDES=  $(all_includes)
 
 lib_LTLIBRARIES  = libkspell.la
-libkspell_la_LDFLAGS = -version-info 3:0
+libkspell_la_LDFLAGS = -version-info 3:0 $(all_libraries)
+libkspell_la_LIBADD = ../kdeui/libkdeui.la
 
 include_HEADERS = kspell.h ksconfig.h kprocio.h kspelldlg.h
 noinst_HEADERS = version.h

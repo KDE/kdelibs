@@ -56,7 +56,7 @@ include_HEADERS = \
 	sections.h
 
 libkab_la_LDFLAGS = -version-info 3:0 $(X_LDFLAGS) $(QT_LDFLAGS) $(USER_LDFLAGS)
-libkab_la_LIBADD  = -lXext $(LIB_QT)
+libkab_la_LIBADD  = ../kfile/libkfile.la
 
 # just to make sure, automake makes them 
 libkab_la_METASOURCES = AssertDialog.moc AssertDialogData.moc DialogBase.moc \
