@@ -59,6 +59,7 @@ public:
    * @return the full path of the requested pixmap.  
    */
   static QString pixmapFileForMimeType( const char *_mime_type, bool _mini );
+
   /**
    * May return 0L if the pixmap and the default pixmap is not available
    */
@@ -67,14 +68,7 @@ public:
    * @return the full path of the requested icon.
    */
   static QString pixmapFile( const char *_pixmap, bool _mini );
-  /**
-   * May return 0L if the pixmap is not available
-   */
-  //  static QPixmap defaultPixmap( bool _mini );
-  /**
-   * May return 0L if the pixmap is not available
-   */
-  static QPixmap wallpaperPixmap( const char *_wallpaper );
+
 };
 
 #endif
