@@ -243,6 +243,7 @@
 <!ENTITY konsole	"<application>Konsole</application>">
 <!ENTITY kontact	"<application>Kontact</application>">
 <!ENTITY kooka	"<application>Kooka</application>">
+<!ENTITY kopete	"<application>Kopete</application>">
 <!ENTITY korganizer	"<application>KOrganizer</application>">
 <!ENTITY korn	"<application>KOrn</application>">
 <!ENTITY koshell	"<application>KOShell</application>">
