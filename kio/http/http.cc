@@ -6,7 +6,6 @@
 //  Portions Copyright 2000 George Staikos <staikos@kde.org>
 //  (mostly SSL related)
 //
-#undef EXTRA_DEBUG
 
 #ifdef HAVE_LIBZ
 #define DO_GZIP
@@ -34,7 +33,7 @@
 #include <sys/wait.h>
 
 #ifdef HAVE_SYS_SELECT_H
-#include <sys/select.h>		// Needed on some systems.
+#include <sys/select.h>         // Needed on some systems.
 #endif
 
 #include <assert.h>
@@ -115,9 +114,7 @@ int kdemain( int argc, char **argv )
   KLocale::setMainCatalogue("kdelibs");
   KInstance instance( "kio_http" );
 
-#ifdef EXTRA_DEBUG
-  kdDebug(7103) << "Starting " << getpid() << endl;
-#endif
+  kdDebug(7113) << "Starting " << getpid() << endl;
 
   if (argc != 4)
   {
@@ -128,10 +125,10 @@ int kdemain( int argc, char **argv )
   // Launch the cookiejar if not already running
   KConfig *cookieConfig = new KConfig("kcookiejarrc", false, false);
   if( cookieConfig->hasGroup("Browser Settings/HTTP") &&
-	  !cookieConfig->hasGroup("Cookie Policy") )
-  	cookieConfig->setGroup("Browser Settings/HTTP");
+          !cookieConfig->hasGroup("Cookie Policy") )
+        cookieConfig->setGroup("Browser Settings/HTTP");
   else
-  	cookieConfig->setGroup("Cookie Policy");
+        cookieConfig->setGroup("Cookie Policy");
   if( cookieConfig->readBoolEntry( "Cookies", true ) )
   {
      QString error;
@@ -193,16 +190,12 @@ const char *create_digest_auth (const char *header, const char *user, const char
       p += 7;
       while( p[i] != '"' ) i++;
       realm = QCString( p, i );
-#ifdef EXTRA_DEBUG
-      kdDebug(7103) << "Realm is :" << realm.data() << ":" << endl;
-#endif
+      kdDebug(7113) << "Realm is :" << realm.data() << ":" << endl;
     } else if (strncasecmp(p, "algorith=\"", 10)==0) {
       p+=10;
       while (p[i] != '"' ) i++;
       algorithm = QCString(p, i);
-#ifdef EXTRA_DEBUG
-      kdDebug(7103) << "Algorithm is :" << algorithm.data() << ":" << endl;
-#endif
+      kdDebug(7113) << "Algorithm is :" << algorithm.data() << ":" << endl;
     } else if (strncasecmp(p, "algorithm=\"", 11)==0) {
       p+=11;
       while (p[i] != '"') i++;
@@ -319,12 +312,12 @@ bool revmatch(const char *host, const char *nplist)
       hptr = shptr;
       // Try to find another domain or host in the list
       while ( --nptr>=nplist && *nptr!=',' && *nptr!=' ')
-	;
+        ;
       while ( --nptr>=nplist && (*nptr==',' || *nptr==' '))
-	;
+        ;
     } else {
       if ( nptr==nplist || nptr[-1]==',' || nptr[-1]==' ') {
-	return true;
+        return true;
       }
       hptr-=2;
     }
@@ -573,7 +566,7 @@ ssize_t HTTPProtocol::write (const void *buf, size_t nbytes)
   if ((n = ::write(m_sock, buf, nbytes)) != (int)nbytes)
     {
       if (n == -1 && errno == EINTR)
-	goto keeptrying;
+        goto keeptrying;
     }
   return n;
 }
@@ -766,9 +759,7 @@ HTTPProtocol::http_openConnection()
 
     // do we still want a proxy after all that?
     if( m_state.do_proxy ) {
-#ifdef EXTRA_DEBUG
-      kdDebug(7103) << "http_openConnection " << m_strProxyHost << " " << m_iProxyPort << endl;
-#endif
+      kdDebug(7113) << "http_openConnection " << m_strProxyHost << " " << m_iProxyPort << endl;
       // yep... open up a connection to the proxy instead of our host
       if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost.latin1(), m_iProxyPort)) {
         error(ERR_UNKNOWN_PROXY_HOST, m_strProxyHost);
@@ -1006,9 +997,7 @@ bool HTTPProtocol::http_open()
   if ( m_request.offset > 0 ) {
     sprintf(c_buffer, "Range: bytes=%li-\r\n", m_request.offset);
     header += c_buffer;
-#ifdef EXTRA_DEBUG
-    kdDebug(7103) << "kio_http : Range = " << c_buffer << endl;
-#endif
+    kdDebug(7113) << "kio_http : Range = " << c_buffer << endl;
   }
 
 
@@ -1067,17 +1056,13 @@ bool HTTPProtocol::http_open()
   // process has just started and we check if it is cached.
   if (!m_state.passwd.isNull() && !m_state.user.isNull())
   {
-#ifdef EXTRA_DEBUG
-    kdDebug(7103) << "(" << getpid() << ") Saved state authentication: m_state.user = " << m_state.user << ", m_state.passwd = " << m_state.passwd << endl;
-#endif
+    kdDebug(7113) << "(" << getpid() << ") Saved state authentication: m_state.user = " << m_state.user << ", m_state.passwd = " << m_state.passwd << endl;
     user     = m_state.user;
     password = m_state.passwd;
   }
   else
   {
-#ifdef EXTRA_DEBUG
-    kdDebug(7103) << "(" << getpid() << ")  Checking cached authentication" << endl;
-#endif
+    kdDebug(7113) << "(" << getpid() << ")  Checking cached authentication" << endl;
     // we have just started... check if we are in a "state" of
     // authentication and didn't even know it
     QString realm;
@@ -1105,9 +1090,7 @@ bool HTTPProtocol::http_open()
       m_state.passwd = password;
     }
   }
-#ifdef EXTRA_DEBUG
-  kdDebug(7103) << "(" << getpid() << "): Cached auth for realm " << m_strRealm << ": user= " << user << ", pass= " << password << ", auth_type = " << auth_type << endl;
-#endif
+  kdDebug(7113) << "(" << getpid() << "): Cached auth for realm " << m_strRealm << ": user= " << user << ", pass= " << password << ", auth_type = " << auth_type << endl;
 
   // check if we need to login
   if (!password.isNull() || !user.isNull()) {
@@ -1125,14 +1108,14 @@ bool HTTPProtocol::http_open()
   if( m_state.do_proxy ) {
     if( m_strProxyUser != "" && m_strProxyPass != "" ) {
       if (ProxyAuthentication == AUTH_None || ProxyAuthentication == AUTH_Basic) {
-	header += create_basic_auth("Proxy-Authorization", m_strProxyUser.latin1(), m_strProxyPass.latin1() );
+        header += create_basic_auth("Proxy-Authorization", m_strProxyUser.latin1(), m_strProxyPass.latin1() );
       } else {
-	if (ProxyAuthentication == AUTH_Digest) {
-	  header += create_digest_auth("Proxy-Authorization",
-				       m_strProxyUser.latin1(),
-				       m_strProxyPass.latin1(),
-				       m_strProxyAuthString.latin1());
-	}
+        if (ProxyAuthentication == AUTH_Digest) {
+          header += create_digest_auth("Proxy-Authorization",
+                                       m_strProxyUser.latin1(),
+                                       m_strProxyPass.latin1(),
+                                       m_strProxyAuthString.latin1());
+        }
       }
     }
   }
@@ -1140,9 +1123,7 @@ bool HTTPProtocol::http_open()
   if (!moreData)
      header += "\r\n";  /* end header */
 
-#ifdef EXTRA_DEBUG
-  kdDebug(7103) << "(" << getpid() << ") Sending header: \n===\n" << header << "\n===" << endl;
-#endif
+  kdDebug(7113) << "(" << getpid() << ") Sending header: \n===\n" << header << "\n===" << endl;
   // now that we have our formatted header, let's send it!
   bool sendOk;
   sendOk = (write(header.latin1(), header.length()) == (ssize_t) header.length());
@@ -1195,9 +1176,7 @@ bool HTTPProtocol::readHeader()
         error( ERR_CONNECTION_BROKEN, m_state.hostname );
         return false;
      }
-#ifdef EXTRA_DEBUG
-     kdDebug(7103) << "readHeader: returning mimetype " << buffer << endl;
-#endif
+     kdDebug(7113) << "readHeader: returning mimetype " << buffer << endl;
      m_strMimeType = QString::fromUtf8( buffer).stripWhiteSpace();
      mimeType(m_strMimeType);
      return true;
@@ -1239,7 +1218,7 @@ bool HTTPProtocol::readHeader()
      {
         http_closeConnection();
         if ( !http_open() )
-	   return false;
+           return false;
         if (!waitForHeader(m_sock, RESPONSE_TIMEOUT))
         {
            // No response error
@@ -1274,20 +1253,16 @@ bool HTTPProtocol::readHeader()
     // if there was only a newline then continue
     if (!len)
     {
-#ifdef EXTRA_DEBUG
-      kdDebug(7103) << "Got header (" << getpid() << "): --empty--" << endl;
-#endif
+      kdDebug(7113) << "Got header (" << getpid() << "): --empty--" << endl;
       continue;
     }
 
-#ifdef EXTRA_DEBUG
-    kdDebug(7103) << "Got header (" << getpid() << "): \"" << buffer << "\"" << endl;
-#endif
+    kdDebug(7113) << "Got header (" << getpid() << "): \"" << buffer << "\"" << endl;
 
     // are we allowd to resume?  this will tell us
     if (strncasecmp(buffer, "Accept-Ranges:", 14) == 0) {
       if (strncasecmp(trimLead(buffer + 14), "none", 4) == 0)
-	m_bCanResume = false;
+        m_bCanResume = false;
     }
 
     else if (strncasecmp(buffer, "Cache-Control:", 14) == 0) {
@@ -1392,7 +1367,7 @@ bool HTTPProtocol::readHeader()
 
       // unauthorized access
       if ((code == 401) || (code == 407)) {
-	unauthorized = true;
+        unauthorized = true;
         m_bCachedWrite = false; // Don't put in cache
       }
       // server side errors
@@ -1408,28 +1383,28 @@ bool HTTPProtocol::readHeader()
       else if ((code >= 400) && (code <= 499)) {
 #if 0
 #warning To be fixed! error terminates the job!
-	// Let's first send an error message
-	// this will be moved to slotErrorPage(), when it will be written
-	error(ERR_ACCESS_DENIED, m_state.hostname);
+        // Let's first send an error message
+        // this will be moved to slotErrorPage(), when it will be written
+        error(ERR_ACCESS_DENIED, m_state.hostname);
 #endif
-	// Tell that we will only get an error page here.
-	errorPage();
+        // Tell that we will only get an error page here.
+        errorPage();
         m_bCachedWrite = false; // Don't put in cache
       }
       else if (code == 100)
       {
-	// We got 'Continue' - ignore it
+        // We got 'Continue' - ignore it
         cont = true;
       }
       else if (code == 304)
       {
-	// 304 Not Modified
-	// The value in our cache is still valid.
+        // 304 Not Modified
+        // The value in our cache is still valid.
         cacheValidated = true;
       }
       else if ((code == 301) || (code == 307))
       {
-	// 301 Moved permanently
+        // 301 Moved permanently
         // 307 Temporary Redirect
         if (m_request.method == HTTP_POST)
         {
@@ -1440,7 +1415,7 @@ bool HTTPProtocol::readHeader()
       }
       else if ((code == 302) || (code == 303))
       {
-	// 302 Found
+        // 302 Found
         // 303 See Other
         if (m_request.method != HTTP_HEAD)
         {
@@ -1492,9 +1467,9 @@ bool HTTPProtocol::readHeader()
     else if (m_HTTPrev == HTTP_11) {
       // let them tell us if we should stay alive or not
       if (strncasecmp(buffer, "Connection:", 11) == 0) {
-	if (strncasecmp(trimLead(buffer + 11), "Close", 5) == 0) {
-	  m_bKeepAlive = false;
-	} else if (strncasecmp(trimLead(buffer + 11), "Keep-Alive", 10)==0) {
+        if (strncasecmp(trimLead(buffer + 11), "Close", 5) == 0) {
+          m_bKeepAlive = false;
+        } else if (strncasecmp(trimLead(buffer + 11), "Keep-Alive", 10)==0) {
 #ifdef DO_SSL
           // Don't do persistant connections with SSL.
           if (!m_bUseSSL)
@@ -1502,21 +1477,21 @@ bool HTTPProtocol::readHeader()
 #else
           m_bKeepAlive = true;
 #endif
-	}
+        }
 
       }
 
       // what kind of encoding do we have?  transfer?
       else if (strncasecmp(buffer, "Transfer-Encoding:", 18) == 0) {
-	// If multiple encodings have been applied to an entity, the
-	// transfer-codings MUST be listed in the order in which they
-	// were applied.
-	addEncoding(trimLead(buffer + 18), m_qTransferEncodings);
+        // If multiple encodings have been applied to an entity, the
+        // transfer-codings MUST be listed in the order in which they
+        // were applied.
+        addEncoding(trimLead(buffer + 18), m_qTransferEncodings);
       }
 
       // md5 signature
       else if (strncasecmp(buffer, "Content-MD5:", 12) == 0) {
-	m_sContentMD5 = strdup(trimLead(buffer + 12));
+        m_sContentMD5 = strdup(trimLead(buffer + 12));
       }
     }
 
@@ -1592,7 +1567,7 @@ bool HTTPProtocol::readHeader()
       m_strRealm = m_state.hostname;
 
     if (!openPassDlg( i18n( "Authorization is required for <b>%1</b> at <b>%2</b>").arg( m_strRealm ).arg( m_request.hostname ) ,
-    				  m_request.user, m_request.passwd, m_strRealm + "@" + m_request.hostname )) {
+                                  m_request.user, m_request.passwd, m_strRealm + "@" + m_request.hostname )) {
       error(ERR_ACCESS_DENIED, m_state.hostname);
       return false;
     }
@@ -1607,9 +1582,7 @@ bool HTTPProtocol::readHeader()
   // We need to do a redirect
   else if (!locationStr.isEmpty() && !noRedirect)
   {
-#ifdef EXTRA_DEBUG
-    kdDebug(7103) << "request.url is " << m_request.url.url() << " locationstr " << locationStr.data() << endl;
-#endif
+    kdDebug(7113) << "request.url is " << m_request.url.url() << " locationstr " << locationStr.data() << endl;
 
     KURL u(m_request.url, locationStr);
     if(u.isMalformed()) {
@@ -1645,7 +1618,7 @@ bool HTTPProtocol::readHeader()
 
   // We can't handle "bzip2" encoding (yet). So if we get something with
   // bzip2 encoding, we change the mimetype to "application/x-bzip2".
-  // Note for future changes: some web-servers send both "bzip2" as 
+  // Note for future changes: some web-servers send both "bzip2" as
   //   encoding and "application/x-bzip2" as mimetype. That is wrong.
   //   currently that doesn't bother us, because we remove the encoding
   //   and set the mimetype to x-bzip2 anyway.
@@ -1654,7 +1627,7 @@ bool HTTPProtocol::readHeader()
      m_qContentEncodings.remove(m_qContentEncodings.fromLast());
      m_strMimeType = QString::fromLatin1("application/x-bzip2");
   }
- 
+
   // Convert some common mimetypes to standard KDE mimetypes
   if (m_strMimeType == "application/x-targz")
      m_strMimeType = QString::fromLatin1("application/x-tgz");
@@ -1666,7 +1639,7 @@ bool HTTPProtocol::readHeader()
          (m_request.url.path().right(4) == ".tar"))
         m_strMimeType = QString::fromLatin1("application/x-tgz");
   }
-  
+
   // Some webservers say "text/plain" when they mean "application/x-bzip2"
   if (m_strMimeType == "text/plain")
   {
@@ -1702,12 +1675,10 @@ bool HTTPProtocol::readHeader()
         m_bCachedWrite = false; // Error creating cache entry.
   }
 
-#ifdef EXTRA_DEBUG
   if (m_bCachedWrite)
-    kdDebug(7103) << "Cache, adding \"" << m_request.url.url() << "\"" << endl;
+    kdDebug(7113) << "Cache, adding \"" << m_request.url.url() << "\"" << endl;
   else
-    kdDebug(7103) << "Cache, not adding \"" << m_request.url.url() << "\"" << endl;
-#endif
+    kdDebug(7113) << "Cache, not adding \"" << m_request.url.url() << "\"" << endl;
 
   return true;
 }
@@ -1820,9 +1791,7 @@ bool HTTPProtocol::sendBody()
 
    char c_buffer[64];
    sprintf(c_buffer, "Content-Length: %d\r\n\r\n", length);
-#ifdef EXTRA_DEBUG
-   kdDebug( 7103 ) << "POST: " << c_buffer << endl;
-#endif
+   kdDebug( 7113 ) << "POST: " << c_buffer << endl;
 
    bool sendOk;
    sendOk = (write(c_buffer, strlen(c_buffer)) == (ssize_t) strlen(c_buffer));
@@ -1866,17 +1835,13 @@ void HTTPProtocol::http_close()
   }
   if (!m_bKeepAlive)
      http_closeConnection();
-#ifdef EXTRA_DEBUG
   else
-     kdDebug(7103) << "http_close: keep alive" << endl;
-#endif
+     kdDebug(7113) << "http_close: keep alive" << endl;
 }
 
 void HTTPProtocol::http_closeConnection()
 {
-#ifdef EXTRA_DEBUG
-  kdDebug(7103) << "http_closeConnection: closing (" << getpid() << ")" << endl;
-#endif
+  kdDebug(7113) << "http_closeConnection: closing (" << getpid() << ")" << endl;
   m_bKeepAlive = false; // Just in case.
   if ( m_fsocket )
     fclose( m_fsocket );
@@ -1950,6 +1915,7 @@ static HTTPProtocol::CacheControl parseCacheControl(const QString &cacheControl)
 // Returns only the file size, that's all kio_http can guess.
 void HTTPProtocol::stat(const KURL& url)
 {
+  kdDebug() << "HTTPProtocol::stat " << url.prettyURL() << endl;
   if (m_request.hostname.isEmpty())
     error( KIO::ERR_INTERNAL, "stat: No host specified!");
 
@@ -2105,6 +2071,7 @@ void HTTPProtocol::cache_update( const KURL& url, bool no_cache, time_t expireDa
 
 void HTTPProtocol::mimetype( const KURL& url )
 {
+  kdDebug() << "HTTPProtocol::mimetype " << url.prettyURL() << endl;
   if (m_request.hostname.isEmpty())
      //error( KIO::ERR_INTERNAL, "http MIMETYPE: No host specified!");
      error( KIO::ERR_UNKNOWN_HOST, "No host specified!");
@@ -2148,7 +2115,7 @@ void HTTPProtocol::special( const QByteArray &data)
       KURL url;
       bool no_cache;
       time_t expireDate;
-      stream >> url >> no_cache >> expireDate; 
+      stream >> url >> no_cache >> expireDate;
       cache_update( url, no_cache, expireDate );
       break;
     }
@@ -2345,9 +2312,7 @@ int HTTPProtocol::readChunked()
         return -1;
      }
   }
-#ifdef EXTRA_DEBUG
-  kdDebug(7103) << "Chunk header = \"" << m_bufReceive.data() << "\"" << endl;
-#endif
+  kdDebug(7113) << "Chunk header = \"" << m_bufReceive.data() << "\"" << endl;
   if (eof())
   {
      kdDebug(7103) << "EOF on Chunk header" << endl;
@@ -2358,9 +2323,7 @@ int HTTPProtocol::readChunked()
   if ((chunkSize < 0) || (chunkSize > MAX_CHUNK_SIZE))
      return -1;
 
-#ifdef EXTRA_DEBUG
-  kdDebug(7103) << "Chunk size = " << chunkSize << " bytes" << endl;
-#endif
+  kdDebug(7113) << "Chunk size = " << chunkSize << " bytes" << endl;
 
   if (chunkSize == 0)
   {
@@ -2373,9 +2336,7 @@ int HTTPProtocol::readChunked()
         kdDebug(7103) << "gets() failure on Chunk trailer" << endl;
         return -1;
       }
-#ifdef EXTRA_DEBUG
-      kdDebug(7103) << "Chunk trailer = \"" << m_bufReceive.data() << "\"" << endl;
-#endif
+      kdDebug(7113) << "Chunk trailer = \"" << m_bufReceive.data() << "\"" << endl;
     }
     while (strlen(m_bufReceive.data()) != 0);
 
@@ -2397,9 +2358,7 @@ int HTTPProtocol::readChunked()
 
      int bytesReceived = read( m_bufReceive.data()+totalBytesReceived, bytesToReceive );
 
-#ifdef EXTRA_DEBUG
-     kdDebug(7103) << "Read from chunk got " << bytesReceived << " bytes" << endl;
-#endif
+     kdDebug(7113) << "Read from chunk got " << bytesReceived << " bytes" << endl;
 
      if (bytesReceived == -1)
         return -1; // Failure.
@@ -2407,9 +2366,7 @@ int HTTPProtocol::readChunked()
      totalBytesReceived += bytesReceived;
      bytesToReceive -= bytesReceived;
 
-#ifdef EXTRA_DEBUG
-     kdDebug(7103) << "Chunk has " << totalBytesReceived << " bytes, " << bytesToReceive << " bytes to go" << endl;
-#endif
+     kdDebug(7113) << "Chunk has " << totalBytesReceived << " bytes, " << bytesToReceive << " bytes to go" << endl;
   }
   while(bytesToReceive > 0);
 
@@ -2585,10 +2542,10 @@ bool HTTPProtocol::readBody( )
       QString enc = m_qTransferEncodings.last();
       m_qTransferEncodings.remove(m_qTransferEncodings.fromLast());
       if ( enc == "gzip" ) {
-	decodeGzip();
+        decodeGzip();
       }
       else if( enc == "deflate" ) {
-	decodeDeflate();
+        decodeDeflate();
       }
     }
 
@@ -2600,7 +2557,7 @@ bool HTTPProtocol::readBody( )
     // prior to checking the Content-MD5 value against the received entity.
 #ifdef DO_MD5
     MD5Update(&context, (const unsigned char*)big_buffer.data(),
-	       big_buffer.size());
+               big_buffer.size());
 #endif
 
     // now decode all of the content encodings
@@ -2615,10 +2572,10 @@ bool HTTPProtocol::readBody( )
       QString enc = m_qContentEncodings.last();
       m_qContentEncodings.remove(m_qContentEncodings.fromLast());
       if ( enc == "gzip" ) {
-	decodeGzip();
+        decodeGzip();
       }
       else if( enc == "deflate" ) {
-	decodeDeflate();
+        decodeDeflate();
       }
     }
     sz = sendData();
@@ -2683,7 +2640,7 @@ HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader )
    QDataStream stream(params, IO_WriteOnly);
    stream << url << cookieHeader << windowId;
    if (!m_dcopClient->send("kcookiejar", "kcookiejar",
-	"addCookies(QString, QCString, long)", params))
+        "addCookies(QString, QCString, long)", params))
    {
       kdWarning(7103) << "Can't communicate with cookiejar!" << endl;
    }
@@ -2697,7 +2654,7 @@ HTTPProtocol::findCookies( const QString &url)
    QDataStream stream(params, IO_WriteOnly);
    stream << url;
    if (!m_dcopClient->call("kcookiejar", "kcookiejar",
-	"findCookies(QString)", params, replyType, reply))
+        "findCookies(QString)", params, replyType, reply))
    {
       kdWarning(7103) << "Can't communicate with cookiejar!" << endl;
       return QString::null;
@@ -2771,7 +2728,7 @@ HTTPProtocol::checkCacheEntry( bool readWrite)
    CEF = dir + "/" + CEF;
 
    m_state.cef = CEF;
-   
+
    const char *mode = (readWrite ? "r+" : "r");
 
    FILE *fs = fopen( CEF.latin1(), mode); // Open for reading and writing
@@ -2854,7 +2811,7 @@ HTTPProtocol::checkCacheEntry( bool readWrite)
    return 0;
 }
 
-void 
+void
 HTTPProtocol::updateExpireDate(time_t expireDate)
 {
    FILE *fs = checkCacheEntry(true);
