@@ -114,6 +114,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     enableClipper(true);
     viewport()->setMouseTracking(true);
     viewport()->setBackgroundMode(NoBackground);
+    viewport()->setFocusProxy(this);
 
     KImageIO::registerFormats();
 
@@ -364,6 +365,8 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     QCursor c = KCursor::arrowCursor();
     if ( !mev.innerNode.isNull() && mev.innerNode.handle()->style() ) {
+	kdDebug()<<"Mouse over:"<<mev.innerNode.handle()->nodeValue().string()<<endl;
+	kdDebug()<<"setting cursor to:"<<mev.innerNode.handle()->style()->cursor()<<endl;
         switch( mev.innerNode.handle()->style()->cursor() ) {
         case CURSOR_AUTO:
             if ( mev.url.length() && const_cast<KHTMLSettings *>(m_part->settings())->changeCursor() )
@@ -513,6 +516,7 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
 
 bool KHTMLView::focusNextPrevChild( bool next )
 {
+    kdDebug()<<"KHTMLView::focusNextPrevChild("<<(next?"forward":"backward")<<");\n";
     if (!gotoLink(next))
 	m_part->overURL(QString(), 0);
     else
@@ -548,11 +552,8 @@ bool KHTMLView::gotoLink()
 
 bool KHTMLView::gotoLink(HTMLElementImpl *n)
 {
-    kdDebug(6000)<<"                :Link found:"<<n<<"\n";
-    if(d->currentNode) d->currentNode->blur();
     if(!n)
         {
-            kdDebug(6000)<<"end of link list reached.\n";
             d->currentNode = 0;
             return false;
         }
@@ -565,6 +566,11 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
     if (d->linkPressed)
         n->setKeyboardFocus(DOM::ActivationActive);
     //calculate x- and ypos
+
+    QRect bounds = n->getRect();
+
+    kdDebug() << "KHTMLView::gotoLink: Bounding rectangle:" << bounds.x() <<":"<< bounds.y() <<":"<< bounds.width() <<":"<< bounds.height() << "\n";
+
     int x = 0, y = 0;
     n->getAnchorPosition(x,y);
 
@@ -578,15 +584,28 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
 
     borderX = borderY = 30;
 
+    int curHeight = clipper()->height();
+    int curWidth = clipper()->width();
+
+    if (ye-y>curHeight-borderY)
+    {
+	ye  = y + curHeight - borderY;
+    }
+
+    if (xe-x>curWidth-borderX)
+    {
+	xe = x + curHeight - borderX;
+    }
+
     // is ypos of target above upper border?
     if (y < contentsY() + borderY)
         {
             deltay = y - contentsY() - borderY;
         }
-    // is ypos of target below lower border:
-    else if (ye + borderY > contentsY() + height())
+    // is ypos of target below lower border?
+    else if (ye + borderY > contentsY() + curHeight)
         {
-            deltay = ye + borderY - ( contentsY() + height() );
+            deltay = ye + borderY - ( contentsY() + curHeight );
         }
     else
         deltay = 0;
@@ -597,32 +616,33 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
             deltax = x - contentsX() - borderX;
         }
     // is xpos of target right of the view's right border?
-    else if (xe + borderX > contentsX() + width())
+    else if (xe + borderX > contentsX() + curWidth)
         {
-            deltax = xe + borderX - ( contentsX() + width() );
+            deltax = xe + borderX - ( contentsX() + curWidth );
         }
     else
         deltax = 0;
 
-    if (!d->currentNode)
+    if (false && !d->currentNode)
     {
         scrollBy(deltax, deltay);
         d->currentNode = n;
+	kdDebug()<<"KHTMLView::gotoLink: new Node selected!"<<endl;
 	d->newNode = 0;
-	HTMLAnchorElementImpl *anchor = 0;
+	HTMLAreaElementImpl *anchor = 0;
 
-        if ( d->currentNode && d->currentNode->id() == ID_A )
-            anchor = static_cast<HTMLAnchorElementImpl *>( d->currentNode );
+        if ( n && ( n->id() == ID_A || n->id() == ID_AREA ) )
+            anchor = static_cast<HTMLAreaElementImpl *>( n );
 
-	if (anchor) m_part->overURL(anchor->areaHref().string(), 0);
+	if (anchor && !anchor->areaHref().isNull()) m_part->overURL(anchor->areaHref().string(), 0);
 	else m_part->overURL(QString(), 0);
         return true;
     }
 
-    int maxx = width()-borderX;
-    int maxy = height()-borderY;
+    int maxx = curWidth-borderX;
+    int maxy = curHeight-borderY;
 
-    kdDebug(6000) << "contentsX: " << contentsX() <<" contentsY: "<< contentsY() << " x: " << x << " y: "<< y << " width: " << xe-x << " height: " << ye-y << " deltax: " << deltax << " deltay: " << deltay << " maxx: " << maxx << " maxy: " << maxy << "\n";
+    //    kdDebug(6000) << "contentsX: " << contentsX() <<" contentsY: "<< contentsY() << " x: " << x << " y: "<< y << " width: " << xe-x << " height: " << ye-y << " deltax: " << deltax << " deltay: " << deltay << " maxx: " << maxx << " maxy: " << maxy << "\n";
 
     int scrollX,scrollY;
 
@@ -640,17 +660,18 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
         scrollY=-scrollY;
 
     // only set cursor to new node if scrolling could make
-    // the link completely visible
+    // the link completely visible.
     if ( (scrollX!=maxx) && (scrollY!=maxy) )
     {
         d->currentNode = n;
+	kdDebug()<<"KHTMLView::gotoLink: new Node selected!"<<endl;
 	d->newNode = 0;
-	HTMLAnchorElementImpl *anchor = 0;
 
-        if ( d->currentNode && d->currentNode->id() == ID_A )
-            anchor = static_cast<HTMLAnchorElementImpl *>( d->currentNode );
+	HTMLAreaElementImpl *anchor = 0;
+        if ( n && ( n->id() == ID_A || n->id() == ID_AREA ) )
+            anchor = static_cast<HTMLAreaElementImpl *>( n );
 
-	if (anchor) m_part->overURL(anchor->areaHref().string(), 0);
+	if (anchor && !anchor->areaHref().isNull()) m_part->overURL(anchor->areaHref().string(), 0);
 	else m_part->overURL(QString(), 0);
     }
     return true;
@@ -661,9 +682,8 @@ bool KHTMLView::gotoLink(bool forward)
     if (!m_part->xmlDocImpl())
         return false;
 
-    // ### what if direction changed since last move ?
-    // exchange currentNode and newNode ? (try)
-
+    // if direction changed since last move, swap newNode and currentNode
+    // ### enable dir change also when !d->currentNode
     if (d->currentNode && d->newNode && (d->newNode != m_part->xmlDocImpl()->findNextLink(d->currentNode, forward)))
     {
 	d->currentNode->blur();
@@ -673,21 +693,31 @@ bool KHTMLView::gotoLink(bool forward)
     }
 
     // we are already busy moving to a node.
-    // in this case, don't try to navigate any further.
+    // in this case, scroll to it, but don't try
+    // to find any further target node.
     if (d->newNode)
 	return gotoLink(d->newNode);
 
+    if (d->currentNode)
+	d->currentNode->blur();
+
     // currently, no node is targeted.
-    // find a new node, else return false:
+    // find a new node
     d->newNode = m_part->xmlDocImpl()->findNextLink(d->currentNode, forward);
 
-    // none found ? blur and abort
-    if (d->newNode == 0)
+    // none found ? abort
+    if (!d->newNode)
     {
-	if (d->currentNode)
-	    d->currentNode->blur();
 	d->currentNode = 0;
 	return false;
+    }
+    else if (!d->currentNode)
+    {
+	// we're just about entering the view, so let's set reasonable initial values.
+	if (forward)
+	    setContentsPos(contentsX(), 0);
+	else
+	    setContentsPos(contentsX(), contentsHeight());
     }
 
     // activate new node.
