@@ -697,22 +697,23 @@ void RenderPartObject::updateWidget()
         url = o->url;
         serviceType = o->serviceType;
     	if(serviceType.isEmpty() || serviceType.isNull()) {
-	   if(!o->classId.isEmpty())
-	       serviceType = "application/x-activex-handler";
-	   // We have a clsid, means this is activex (Niko)
-	
-           if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000")))
-	   {
-	       // It is ActiveX, but the nsplugin system handling
-	       // should also work, that's why we don't override the
-	       // serviceType with application/x-activex-handler
-	       // but let the KTrader in khtmlpart::createPart() detect
-	       // the user's preference: launch with activex viewer or
-	       // with nspluginviewer (Niko) 
-	       serviceType = "application/x-shockwave-flash";
+           if(!o->classId.isEmpty()) {
+              // We have a clsid, means this is activex (Niko)
+              serviceType = "application/x-activex-handler";
+              url = "dummy"; // Not needed, but KHTMLPart aborts the request if empty
            }
-	   else if(o->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA"))) 
-	       serviceType = "audio/x-pn-realaudio-plugin";
+
+           if(o->classId.contains(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000"))) {
+              // It is ActiveX, but the nsplugin system handling
+              // should also work, that's why we don't override the
+              // serviceType with application/x-activex-handler
+              // but let the KTrader in khtmlpart::createPart() detect
+              // the user's preference: launch with activex viewer or
+              // with nspluginviewer (Niko) 
+              serviceType = "application/x-shockwave-flash";
+           }
+           else if(o->classId.contains(QString::fromLatin1("CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA")))
+              serviceType = "audio/x-pn-realaudio-plugin";
 
            // TODO: add more plugins here
         }
@@ -764,8 +765,8 @@ void RenderPartObject::updateWidget()
 
         params.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
         params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
-	params.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) ); 
-	params.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) ); 
+        params.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) ); 
+        params.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) ); 
 
         part->requestObject( this, url, serviceType, params );
      } else
@@ -785,19 +786,19 @@ void RenderPartObject::updateWidget()
 
         embed->param.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
         embed->param.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
-	embed->param.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) ); 
-	embed->param.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) ); 
+        embed->param.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) ); 
+        embed->param.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) ); 
 
-	// Check if serviceType can be handled by ie. nsplugin
-	// else default to the activexhandler if there is a classid
-	// and a codebase, where we may download the ocx if it's missing (Niko)
-	bool retval = part->requestObject( this, url, serviceType, embed->param );
+        // Check if serviceType can be handled by ie. nsplugin
+        // else default to the activexhandler if there is a classid
+        // and a codebase, where we may download the ocx if it's missing (Niko)
+        bool retval = part->requestObject( this, url, serviceType, embed->param );
 
-	if(!retval && !o->classId.isEmpty() && !( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ).isEmpty() )
-	{
-	    serviceType = "application/x-activex-handler";
-	    part->requestObject( this, url, serviceType, embed->param );
-	}
+        if(!retval && !o->classId.isEmpty() && !( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ).isEmpty() )
+        {
+           serviceType = "application/x-activex-handler";
+           part->requestObject( this, url, serviceType, embed->param );
+        }
      }
   } else if ( m_obj->id() == ID_EMBED ) {
 
