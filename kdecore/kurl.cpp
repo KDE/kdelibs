@@ -142,7 +142,7 @@ KURL::KURL( KURL & _base_url, const char * _rel_url )
     // Check if relative URL has the same protocol as parent (base URL)	
     bool same_protocol = ( sep_loc <= 0 ) ? false : ( relURL.mid(0, sep_loc) == _base_url.protocol_part );
     // check if "_rel_url" is an absolute URL (RFC 2396).	
-    if (relURL.find(QRegExp("^[a-zA-Z][a-zA-Z0-9\\+\\.\\-]*://")) == 0 ||
+    if (relURL.find(QRegExp("^[a-zA-Z][a-zA-Z0-9\\+\\.\\-]*://")) == 0 || relURL.find("man", 0, false) == 0 ||
 	(relURL.find(QRegExp("^[a-zA-Z][a-zA-Z0-9\\+\\.\\-]*:/?[a-zA-Z0-9%_!~'();:@&=$,\\?\\*\\+\\.\\-]")) == 0 &&
 	!same_protocol ))
         parse( _rel_url );
