@@ -227,7 +227,7 @@ public:
 
     // Other methods (not part of DOM)
 
-    virtual unsigned short id() const { return m_id; };
+    virtual unsigned int cssTagId() const { return m_cssTagId; };
     virtual bool isXMLElementNode() const;
 
 protected:
@@ -235,7 +235,7 @@ protected:
     DOMStringImpl *m_tagName;
     DOMStringImpl *m_localName;
 
-    unsigned short m_id;
+    unsigned short m_cssTagId;
 };
 
 

@@ -122,7 +122,7 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
         m_styleSheet->parseString(aStr);
         m_styleSheet->setNonCSSHints();
         if (attached())
-            getDocument()->createSelector();
+            getDocument()->updateStyleSheets();
         break;
     }
     case ATTR_ONLOAD:
@@ -172,7 +172,7 @@ void HTMLBodyElementImpl::attach()
 //     if ( m_bgSet && !m_fgSet )
 //         addCSSProperty(CSS_PROP_COLOR, "black");
 
-    ownerDocument()->createSelector();
+    ownerDocument()->updateStyleSheets();
 
     setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
 

@@ -29,17 +29,18 @@
 #include "dom/dom_string.h"
 
 class KHTMLSettings;
+class KHTMLView;
+class KURL;
 
 namespace DOM {
     class ElementImpl;
-    class DocumentImpl;
-    class HTMLDocumentImpl;
     class StyleSheetImpl;
     class CSSStyleRuleImpl;
     class CSSStyleSheetImpl;
     class CSSSelector;
     class CSSStyleDeclarationImpl;
     class CSSProperty;
+    class StyleSheetListImpl;
 }
 
 namespace khtml
@@ -107,7 +108,8 @@ namespace khtml
 	 * Also takes into account special cases for HTML documents,
 	 * including the defaultStyle (which is html only)
 	 */
-	CSSStyleSelector( DOM::DocumentImpl *doc );
+	CSSStyleSelector( KHTMLView *view, QString userStyleSheet, DOM::StyleSheetListImpl *styleSheets, const KURL &url,
+                          bool _strictParsing );
 	/**
 	 * same as above but for a single stylesheet.
 	 */

@@ -503,7 +503,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                 doc = static_cast<CSSStyleSheetImpl*>(root)->doc();
             if ( doc && !doc->isHTMLDocument() ) {
                 const DOMString s = tag;
-                cs->tag = doc->elementId(s.implementation());
+                cs->tag = doc->cssTagId(s.implementation());
             }
             else {
                 int tagID = khtml::getTagID(tag.lower().ascii(), tag.length());
@@ -511,7 +511,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                     cs->tag = tagID;
                 } else if (doc && !(tag.isEmpty())) {
                     const DOMString s = tag;
-                    cs->tag = doc->elementId(s.implementation());
+                    cs->tag = doc->cssTagId(s.implementation());
                 } else {
                     kdWarning() << "Error in CSS" << endl;
                 }

@@ -86,8 +86,8 @@ AttrImpl::AttrImpl(DocumentPtr *doc, int id)
 {
 }
 
-AttrImpl::AttrImpl(DocumentPtr *doc, const DOMString &namespaceURI,
-                   const DOMString &qualifiedName)
+AttrImpl::AttrImpl(DocumentPtr *doc, const DOMString &/*namespaceURI*/,
+                   const DOMString &/*qualifiedName*/)
     : NodeImpl(doc),
       _name(0),
       _value(0),
@@ -990,7 +990,8 @@ XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_tagName) : Elem
     m_prefix = 0;
     m_namespaceURI = 0;
 
-    m_id = ownerDocument()->elementId(_tagName);
+    // Get the CSS tag ID for this element (maintained in the document's local name -> css tag id map)
+    m_cssTagId = ownerDocument()->cssTagId(_tagName);
 }
 
 XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, DOMStringImpl *_namespaceURI) : ElementImpl(doc)
@@ -1024,9 +1025,8 @@ XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, 
         m_prefix = 0;
     }
 
-    // m_id for XMLElementImpl is only used for CSS calculations. Currently with CSS there is
-    // no way to specify namespaces or prefixes, it it is based only on the node name
-    m_id = ownerDocument()->elementId(m_localName);
+    // Get the CSS tag ID for this element (maintained in the document's local name -> css tag id map)
+    m_cssTagId = ownerDocument()->cssTagId(m_localName);
 }
 
 XMLElementImpl::~XMLElementImpl()

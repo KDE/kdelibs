@@ -138,6 +138,7 @@ public:
     virtual NodeImpl *addChild(NodeImpl *newChild);
 
     virtual unsigned short id() const { return 0; };
+    virtual unsigned int cssTagId() const { return 0; };
 
     enum MouseEventType {
         MousePress,

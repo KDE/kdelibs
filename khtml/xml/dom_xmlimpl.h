@@ -150,7 +150,7 @@ public:
     StyleSheetImpl *sheet() const;
     void checkStyleSheet();
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
-    virtual void setStyleSheet(StyleSheetImpl* sheet);
+    virtual void setStyleSheet(CSSStyleSheetImpl* sheet);
 
 protected:
     DOMStringImpl *m_target;

@@ -72,8 +72,6 @@ HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, Docum
 */
     connect( KHTMLFactory::vLinks(), SIGNAL( cleared()),
              SLOT( slotHistoryChanged() ));
-
-    m_styleSelector = new CSSStyleSelector(this);
 }
 
 HTMLDocumentImpl::~HTMLDocumentImpl()

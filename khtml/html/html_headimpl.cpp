@@ -122,7 +122,8 @@ void HTMLLinkElementImpl::attach()
         if( m_media.isNull() || m_media.contains("screen") || m_media.contains("all") || m_media.contains("print") )
         {
             m_loading = true;
-            HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(ownerDocument());
+            //HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(ownerDocument());
+            DocumentImpl *doc = ownerDocument();
             // we must have a doc->docLoader() !
             QString chset = getAttribute( ATTR_CHARSET ).string();
             m_cachedSheet = doc->docLoader()->requestStyleSheet(m_url, chset);
@@ -131,13 +132,13 @@ void HTMLLinkElementImpl::attach()
     }
     HTMLElementImpl::attach();
 
-    getDocument()->createSelector();
+    getDocument()->updateStyleSheets();
 }
 
 void HTMLLinkElementImpl::detach()
 {
     if ( sheet() )
-        getDocument()->createSelector();
+        getDocument()->updateStyleSheets();
 
     HTMLElementImpl::detach();
 }
@@ -182,7 +183,7 @@ void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DO
     
     m_loading = false;
 
-    if ( sheet() )  getDocument()->createSelector();
+    getDocument()->updateStyleSheets();
 }
 
 bool HTMLLinkElementImpl::isLoading() const
@@ -196,7 +197,7 @@ bool HTMLLinkElementImpl::isLoading() const
 
 void HTMLLinkElementImpl::sheetLoaded()
 {
-    getDocument()->createSelector();
+    getDocument()->updateStyleSheets();
 }
 
 StyleSheetImpl *HTMLLinkElementImpl::sheet() const
@@ -374,7 +375,7 @@ bool HTMLStyleElementImpl::isLoading() const
 
 void HTMLStyleElementImpl::sheetLoaded()
 {
-    getDocument()->createSelector();
+    getDocument()->updateStyleSheets();
 }
 
 void HTMLStyleElementImpl::reparseSheet()
@@ -393,18 +394,18 @@ void HTMLStyleElementImpl::reparseSheet()
     m_sheet = new CSSStyleSheetImpl(this);
     m_sheet->ref();
     m_sheet->parseString( text, (ownerDocument()->parseMode() == DocumentImpl::Strict) );
-    getDocument()->createSelector();
+    getDocument()->updateStyleSheets();
 }
 
 void HTMLStyleElementImpl::attach()
 {
-    if (m_sheet) getDocument()->createSelector();
+    if (m_sheet) getDocument()->updateStyleSheets();
     HTMLElementImpl::attach();
 }
 
 void HTMLStyleElementImpl::detach()
 {
-    if (m_sheet) getDocument()->createSelector();
+    if (m_sheet) getDocument()->updateStyleSheets();
     HTMLElementImpl::detach();
 }
 

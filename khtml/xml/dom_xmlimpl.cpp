@@ -27,6 +27,8 @@
 #include "dom_docimpl.h"
 #include "dom_stringimpl.h"
 #include "dom_exception.h"
+#include "dom_elementimpl.h"
+#include "dom_textimpl.h"
 
 using namespace DOM;
 
@@ -271,6 +273,9 @@ bool NotationImpl::childTypeAllowed( unsigned short /*type*/ )
 
 // -------------------------------------------------------------------------
 
+// ### need a way of updating these properly whenever child nodes of the processing instruction
+// change or are added/removed
+
 ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentPtr *doc) : NodeBaseImpl(doc)
 {
     m_target = 0;
@@ -433,14 +438,14 @@ void ProcessingInstructionImpl::setStyleSheet(const DOM::DOMString &url, const D
 	m_cachedSheet->deref(this);
     m_cachedSheet = 0;
 
-    getDocument()->createSelector();
+    getDocument()->updateStyleSheets();
 }
 
-void ProcessingInstructionImpl::setStyleSheet(StyleSheetImpl* sheet)
+void ProcessingInstructionImpl::setStyleSheet(CSSStyleSheetImpl* sheet)
 {
     if (m_sheet)
         m_sheet->deref();
-    m_sheet = static_cast<CSSStyleSheetImpl*>(sheet);
+    m_sheet = sheet;
     if (m_sheet)
         m_sheet->ref();
 }

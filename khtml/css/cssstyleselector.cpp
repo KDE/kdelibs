@@ -75,10 +75,11 @@ static int selectorDynamicState;
 static CSSStyleSelector::Encodedurl *encodedurl;
 
 
-CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
+CSSStyleSelector::CSSStyleSelector( KHTMLView *view, QString userStyleSheet, StyleSheetListImpl *styleSheets,
+                                    const KURL &url, bool _strictParsing )
 {
-    strictParsing = doc->parseMode() == DocumentImpl::Strict;
-    if(!defaultStyle) loadDefaultStyle(doc->view() ? doc->view()->part()->settings() : 0);
+    strictParsing = _strictParsing;
+    if(!defaultStyle) loadDefaultStyle(view ? view->part()->settings() : 0);
 
     selectors = 0;
     selectorCache = 0;
@@ -86,30 +87,32 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
     userStyle = 0;
     userSheet = 0;
 
-
-    if ( !doc->userStyleSheet().isEmpty() ) {
+    if ( !userStyleSheet.isEmpty() ) {
         userSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl *)0);
-        userSheet->parseString( DOMString( doc->userStyleSheet() ) );
+        userSheet->parseString( DOMString( userStyleSheet ) );
 
         userStyle = new CSSStyleSelectorList();
-        userStyle->append( userSheet, doc->view() ? doc->view()->mediaType() : "all" );
+        userStyle->append( userSheet, view ? view->mediaType() : "all" );
     }
 
     // add stylesheets from document
     authorStyle = new CSSStyleSelectorList();
-    StyleSheetListImpl* ss = doc->styleSheets();
 
-    QListIterator<StyleSheetImpl> it( ss->styleSheets );
-    for ( ; it.current(); ++it )
-        if( it.current()->isCSSStyleSheet() )
-     	    authorStyle->append( static_cast<CSSStyleSheetImpl*>( it.current() ), doc->view() ? doc->view()->mediaType() : "all" );
+
+    QListIterator<StyleSheetImpl> it( styleSheets->styleSheets );
+    for ( ; it.current(); ++it ) {
+        if ( it.current()->isCSSStyleSheet() ) {
+            authorStyle->append( static_cast<CSSStyleSheetImpl*>( it.current() ),
+                                 view ? view->mediaType() : "all" );
+        }
+    }
 
     buildLists();
 
     //kdDebug( 6080 ) << "number of style sheets in document " << authorStyleSheets.count() << endl;
     //kdDebug( 6080 ) << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl;
 
-    KURL u = doc->URL();
+    KURL u = url;
 
     u.setQuery( QString::null );
     u.setRef( QString::null );
@@ -196,13 +199,13 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     CSSOrderedPropertyList *pseudoProps = new CSSOrderedPropertyList;
 
     // try to sort out most style rules as early as possible.
-    int id = e->id();
+    int cssTagId = e->cssTagId();
     int smatch = 0;
     int schecked = 0;
 
     for ( unsigned int i = 0; i < selectors_size; i++ ) {
 	int tag = selectors[i]->tag;
-	if ( id == tag || tag == -1 ) {
+	if ( cssTagId == tag || tag == -1 ) {
 	    ++schecked;
 
 	    checkSelector( i, e );
@@ -260,7 +263,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
         }
 
         if ( pseudoProps->count() != 0 ) {
-            //qDebug("%d applying %d pseudo props", e->id(), pseudoProps->count() );
+            //qDebug("%d applying %d pseudo props", e->cssTagId(), pseudoProps->count() );
             CSSOrderedProperty *ordprop = pseudoProps->first();
             while( ordprop ) {
                 RenderStyle *pseudoStyle;
@@ -489,7 +492,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
     if(!e)
         return false;
 
-    if(e->id() != sel->tag && sel->tag != -1) return false;
+    if(e->cssTagId() != uint(sel->tag) && sel->tag != -1) return false;
 
     if(sel->attr)
     {

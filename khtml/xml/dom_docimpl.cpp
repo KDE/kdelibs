@@ -232,7 +232,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeI
     : NodeBaseImpl( new DocumentPtr() )
 {
     document->doc = this;
-    m_styleSelector = 0;
+
     m_paintDeviceMetrics = 0;
 
     m_view = v;
@@ -266,6 +266,9 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeI
     m_listenerTypes = 0;
     m_styleSheets = new StyleSheetListImpl;
     m_styleSheets->ref();
+
+    m_styleSelector = new CSSStyleSelector( m_view, m_usersheet, m_styleSheets, m_url,
+                                            pMode == Strict );
     m_windowEventListeners.setAutoDelete(true);
 }
 
@@ -774,13 +777,6 @@ void DocumentImpl::applyChanges(bool,bool force)
 {
     if ( !m_render && attached() ) return;
 
-    // ### move the following two lines to createSelector????
-    delete m_styleSelector;
-    m_styleSelector = 0;
-
-    m_styleSelector = new CSSStyleSelector(this);
-    if(!m_render) return;
-
     recalcStyle();
 
     // a style change can influence the children, so we just go
@@ -811,8 +807,8 @@ void DocumentImpl::setChanged(bool b)
 
 void DocumentImpl::recalcStyle()
 {
-    QTime qt;
-    qt.start();
+    //QTime qt;
+    //qt.start();
     if( !m_render ) return;
     setStyle(new RenderStyle());
     m_style->setDisplay(BLOCK);
@@ -889,7 +885,11 @@ void DocumentImpl::attach(KHTMLView *w)
         m_docLoader->m_part = w->part();
         setPaintDevice( m_view );
     }
-    if(!m_styleSelector) createSelector();
+
+    // Create a style selector based on all of the stylesheets in the document
+    updateStyleSheets();
+
+    // Create the rendering tree
     m_render = new RenderRoot(w);
     recalcStyle();
 
@@ -1022,7 +1022,7 @@ void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString
     m_sheet->parseString(sheet);
     m_loadingSheet = false;
 
-    createSelector();
+    updateStyleSheets();
 }
 
 void DocumentImpl::setUserStyleSheet( const QString& sheet )
@@ -1283,8 +1283,24 @@ bool DocumentImpl::prepareMouseEvent( int _x, int _y,
 // DOM Section 1.1.1
 bool DocumentImpl::childAllowed( NodeImpl *newChild )
 {
-// ### maximum of one Element
-// ### maximum of one DocumentType
+    // Documents may contain a maximum of one Element child
+    if (newChild->nodeType() == Node::ELEMENT_NODE) {
+        NodeImpl *c;
+        for (c = firstChild(); c; c = c->nextSibling()) {
+            if (c->nodeType() == Node::ELEMENT_NODE)
+                return false;
+        }
+    }
+
+    // Documents may contain a maximum of one DocumentType child
+    if (newChild->nodeType() == Node::DOCUMENT_TYPE_NODE) {
+        NodeImpl *c;
+        for (c = firstChild(); c; c = c->nextSibling()) {
+            if (c->nodeType() == Node::DOCUMENT_TYPE_NODE)
+                return false;
+        }
+    }
+
     return childTypeAllowed(newChild->nodeType());
 }
 
@@ -1310,22 +1326,39 @@ NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
     return 0;
 }
 
-unsigned short DocumentImpl::elementId(DOMStringImpl *_name)
+unsigned short DocumentImpl::cssTagId(DOMStringImpl *_name)
 {
-    unsigned short id = 0;
-    // note: this does not take namespaces into account, as it is only really used for css at the moment
+    // Each document maintains a mapping of tag name -> id for every tag name encountered
+    // in the document. This is used for CSS style calculations for performance reasons,
+    // as comparisons can be done on integer ids rather than strings.
+    //
+    // For tag names that are lowercase and correspond to a HTML element name, the value
+    // defined in misc/htmltags.h is used. These are the same values that are returned by
+    // cssTagId() for HTML elements.
+    //
+    // For uppercase or non-html tag names, the value corresponding to the position in the
+    // m_elementNames array is used.
+    //
+    // Note: namespaces are not taken into account when assigning these ids, as namespaces
+    // are not currently supported by CSS (see http://www.w3.org/TR/css3-namespace/).
+    //
+    // This function determines the css tag id for the given element name (adding to the
+    // m_elementNames array if necessary), and returns the new id.
 
-    if (_name->isLower()) // use the html id instead (if one exists)
+    unsigned short id = 0;
+
+    // First see if it's lowercase and a HTML element name
+    if (_name->isLower())
         id = khtml::getTagID(DOMString(_name).string().ascii(), _name->l);
     if (id)
         return id;
 
-    // first try and find the element
+    // Look in the m_elementNames array for the name
     for (id = 0; id < m_elementNameCount; id++)
         if (!strcmp(m_elementNames[id],_name))
             return id+1000;
 
-    // we don't have it yet, assign it an id
+    // Name not found in m_elementNames, so let's add it
     if (m_elementNameCount+1 > m_elementNameAlloc) {
         m_elementNameAlloc += 100;
         DOMStringImpl **newNames = new DOMStringImpl* [m_elementNameAlloc];
@@ -1337,14 +1370,16 @@ unsigned short DocumentImpl::elementId(DOMStringImpl *_name)
         }
         m_elementNames = newNames;
     }
+
     id = m_elementNameCount++;
     m_elementNames[id] = _name;
     _name->ref();
+
     // we add 1000 to the XML element id to avoid clashes with HTML element ids
     return id+1000;
 }
 
-DOMStringImpl *DocumentImpl::elementName(unsigned short _id) const
+DOMStringImpl *DocumentImpl::cssTagName(unsigned short _id) const
 {
     if (_id >= 1000)
         return m_elementNames[_id-1000];
@@ -1358,8 +1393,17 @@ StyleSheetListImpl* DocumentImpl::styleSheets()
     return m_styleSheets;
 }
 
-void DocumentImpl::createSelector()
+void DocumentImpl::updateStyleSheets()
 {
+    // Called when one or more stylesheets in the document may have been added, removed or changed.
+    //
+    // Creates a new style selector and assign it to this document. This is done by iterating
+    // through all nodes in document (or those before <BODY> in a HTML document), searching
+    // for stylesheets. Stylesheets can be contained in <LINK>, <STYLE> or <BODY> elements,
+    // as well as processing instructions (XML documents only). A list is constructed from
+    // these which is used to create the a new style selector which collates all of the
+    // stylesheets found and is used to calculate the derived styles for all rendering objects.
+
     if ( !m_render || !attached() ) return;
 
     QList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
@@ -1367,40 +1411,70 @@ void DocumentImpl::createSelector()
     NodeImpl *n;
     for (n = this; n; n = n->traverseNextNode()) {
     	StyleSheetImpl *sheet = 0;
+
     	if (n->nodeType() == Node::PROCESSING_INSTRUCTION_NODE)
         {
+            // Processing instruction (XML documents only)
             ProcessingInstructionImpl* pi = static_cast<ProcessingInstructionImpl*>(n);
             sheet = pi->sheet();
             if (!sheet && !pi->localHref().isEmpty())
             {
+                // Processing instruction with reference to an element in this document - e.g.
+                // <?xml-stylesheet href="#mystyle">, with the element
+                // <foo id="mystyle">heading { color: red; }</foo> at some location in
+                // the document
                 ElementImpl* elem = getElementById(pi->localHref());
-                if (elem->firstChild() && elem->firstChild()->isTextNode())
-                {
-                    DOMString sheetText= static_cast<TextImpl*>(elem->firstChild())->data();
-                    sheet = new CSSStyleSheetImpl(this);
-                    sheet->parseString(sheetText);
-                    pi->setStyleSheet(sheet);
+                if (elem) {
+                    DOMString sheetText("");
+                    NodeImpl *c;
+                    for (c = elem->firstChild(); c; c = c->nextSibling()) {
+                        if (c->nodeType() == Node::TEXT_NODE || c->nodeType() == Node::CDATA_SECTION_NODE)
+                            sheetText += c->nodeValue();
+                    }
+
+                    CSSStyleSheetImpl *cssSheet = new CSSStyleSheetImpl(this);
+                    cssSheet->parseString(sheetText);
+                    pi->setStyleSheet(cssSheet);
+                    sheet = cssSheet;
                 }
             }
 
         }
-    	else if (n->id() == ID_LINK)
+    	else if (n->id() == ID_LINK) {
+            // <LINK> element
 	    sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
-    	else if (n->id() == ID_STYLE)
+        }
+    	else if (n->id() == ID_STYLE) {
+            // <STYLE> element
 	    sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
-    	else if (n->id() == ID_BODY)
+        }
+    	else if (n->id() == ID_BODY) {
+            // <BODY> element (doesn't contain styles as such but vlink="..." and friends
+            // are treated as style declarations)
 	    sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
+        }
 
 	if (sheet) {
 	    sheet->ref();
 	    m_styleSheets->styleSheets.append(sheet);
 	}
+
+        // For HTML documents, stylesheets are not allowed within/after the <BODY> tag. So we
+        // can stop searching here.
 	if (isHTMLDocument() && n->id() == ID_BODY)
 	    break;
     }
+
+    // De-reference all the stylesheets in the old list
     QListIterator<StyleSheetImpl> it(oldStyleSheets);
     for (; it.current(); ++it)
 	it.current()->deref();
+
+    // Create a new style selector
+    delete m_styleSelector;
+    m_styleSelector = new CSSStyleSelector( m_view, m_usersheet, m_styleSheets, m_url,
+                                            pMode == Strict );
+
     applyChanges(true,true);
 }
 

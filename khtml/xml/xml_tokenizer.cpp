@@ -453,7 +453,7 @@ void XMLTokenizer::executeScripts()
 
     // All scripts have finished executing, so calculate the style for the document and close
     // the last element
-    m_doc->document()->createSelector();
+    m_doc->document()->updateStyleSheets();
     m_doc->document()->renderer()->close();
 
     // We are now finished parsing

@@ -42,6 +42,7 @@ public:
 
     DOMString tagName() const;
     virtual ushort id() const = 0;
+    virtual unsigned int cssTagId() const { return id(); };
 
     virtual void parseAttribute(AttrImpl *token);
 

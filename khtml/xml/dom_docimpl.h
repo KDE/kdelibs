@@ -152,7 +152,7 @@ public:
 
 
     khtml::CSSStyleSelector *styleSelector() { return m_styleSelector; }
-    void createSelector();
+    void updateStyleSheets();
 
     // Used to maintain list of all elements in the document
     // that want to save and restore state.
@@ -260,8 +260,8 @@ public:
     virtual bool childTypeAllowed( unsigned short nodeType );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 
-    unsigned short elementId(DOMStringImpl *_name);
-    DOMStringImpl *elementName(unsigned short _id) const;
+    unsigned short cssTagId(DOMStringImpl *_name);
+    DOMStringImpl *cssTagName(unsigned short _id) const;
 
     StyleSheetListImpl* styleSheets();
 
