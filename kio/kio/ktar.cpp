@@ -62,7 +62,8 @@ KTar::KTar( const QString& filename, const QString & _mimetype )
         //kdDebug() << "KTar::KTar mimetype=" << mimetype << endl;
 
         // Don't move to prepareDevice - the other constructor theoretically allows ANY filter
-        if (mimetype == "application/x-tgz" || mimetype == "application/x-targz") // the latter is deprecated but might still be around
+        if ( mimetype == "application/x-tgz" || mimetype == "application/x-targz" || // the latter is deprecated but might still be around
+             mimetype == "application/x-webarchive" )
             // that's a gzipped tar file, so ask for gzip filter
             mimetype = "application/x-gzip";
         else if ( mimetype == "application/x-tbz" ) // that's a bzipped2 tar file, so ask for bz2 filter
