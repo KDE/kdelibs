@@ -42,7 +42,7 @@
  */
 class KServiceType : public KSycocaEntry
 {
-  K_SYCOCATYPE( KST_KServiceType, KSycocaEntry );
+  K_SYCOCATYPE( KST_KServiceType, KSycocaEntry )
   
 public:
   typedef KSharedPtr<KServiceType> Ptr;
