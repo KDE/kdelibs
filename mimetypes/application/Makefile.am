@@ -63,7 +63,8 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	vnd.oasis.opendocument.text-template.desktop \
 	vnd.oasis.opendocument.text.desktop \
 	vnd.oasis.opendocument.image.desktop \
-	vnd.oasis.opendocument.chart.desktop
+	vnd.oasis.opendocument.chart.desktop \
+	x-java-jnlp-file.desktop
 
 mimetypeapplicationdatadir = $(kde_mimedir)/application
 
