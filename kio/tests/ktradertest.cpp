@@ -1,8 +1,8 @@
 
 #include <kcmdlineargs.h>
 #include <ktrader.h>
-#include <kdebug.h>
 #include <kapp.h>
+#include <stdio.h>
 
 static KCmdLineOptions options[] =
 {
@@ -36,22 +36,21 @@ int main( int argc, char **argv )
   if ( args->count() == 4 )
     preference = QString::fromLocal8Bit( args->arg( 3 ) );
 
-
-  kdDebug() << "query is : " << query << endl;
-  kdDebug() << "genericServiceType is : " << genericServiceType << endl;
-  kdDebug() << "constraint is : " << constraint << endl;
-  kdDebug() << "preference is : " << preference << endl;
+  printf( "query is : %s\n", query.local8Bit().data() );
+  printf( "genericServiceType is : %s\n", genericServiceType.local8Bit().data() );
+  printf( "constraint is : %s\n", constraint.local8Bit().data() );
+  printf( "preference is : %s\n", preference.local8Bit().data() );
   
   KTrader::OfferList offers = KTrader::self()->query( query, genericServiceType, constraint, preference );
   
-  kdDebug() << "got " << offers.count() << " offers." << endl;
+  printf("got %d offers.\n", offers.count());
   
   int i = 0;
   KTrader::OfferList::ConstIterator it = offers.begin();
   KTrader::OfferList::ConstIterator end = offers.end();
-  for (; it != end; ++it )
+  for (; it != end; ++it, ++i )
   {
-    kdDebug() << "---- Offer " << ++i << " ----" << endl;
+    printf("---- Offer %d ----\n", i);
     QStringList props = (*it)->propertyNames();
     QStringList::ConstIterator propIt = props.begin();
     QStringList::ConstIterator propEnd = props.end();
@@ -61,12 +60,12 @@ int main( int argc, char **argv )
       
       if ( !prop.isValid() )
       {
-        kdDebug() << "Invalid property " << *propIt << endl;
+        printf("Invalid property %s\n", (*propIt).local8Bit().data());
 	continue;
       }
       
       QString outp = *propIt;
-      outp += " : ";
+      outp += " : '";
       
       switch ( prop.type() )
       {
@@ -80,7 +79,7 @@ int main( int argc, char **argv )
       }
 
       if ( !outp.isEmpty() )
-        kdDebug() << outp << endl;
+        printf("%s'\n", outp.local8Bit().data());
     }
   }
 }
