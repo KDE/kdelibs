@@ -356,7 +356,19 @@ void ElementImpl::applyChanges()
 {
     delete m_style;
     m_style = document->styleSelector()->styleForElement(this);
-    if(m_render) m_render->setStyle(m_style);
+    if(!m_render) return;
+    
+    m_render->setStyle(m_style);
+
+    // a style change can influence the children, so we just go 
+    // through them and trigger an appplyChanges there too
+    NodeImpl *n = _first;
+    while(n) {
+	n->applyChanges();
+	n = n->nextSibling();
+    }
+    m_render->updateSize();
+    m_render->repaint();
 }
 
 DOMString ElementImpl::toHTML(DOMString _string)
