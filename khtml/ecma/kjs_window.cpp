@@ -1535,7 +1535,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
            KCodecs::base64Encode( in, out );
        in.resetRawData( binData, s.size() );
        UChar *d = new UChar[out.size()];
-       for (int i = 0; i < out.size(); i++)
+       for (uint i = 0; i < out.size(); i++)
            d[i].uc = (uchar) out[i];
        UString ret(d, out.size(), false /*no copy*/);
        return String(ret);
