@@ -63,7 +63,6 @@ class ZoomInterface
 /** tries to get the zoom interface of t   
   * @return a pointer to the interface, otherwise 0
   * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
-  * @see ZoomInterface
   * @since 3.2
 */
 template<class T>

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          textcolumninterface.h  -  description
+                          charcolumninterface.h  -  description
                              -------------------
     begin                : Fri Sep 12 2003
     copyright            : (C) 2003 by Friedrich W. H. Kossebau
@@ -15,8 +15,8 @@
  ***************************************************************************/
 
 
-#ifndef TEXTCOLUMNINTERFACE_H
-#define TEXTCOLUMNINTERFACE_H
+#ifndef CHARCOLUMNINTERFACE_H
+#define CHARCOLUMNINTERFACE_H
 
 #include <qstring.h>
 
@@ -24,13 +24,13 @@ namespace KHE
 {
 
 /**
- * @short A simple interface for the access to the text column of a hex edit widget
+ * @short A simple interface for the access to the char column of a hex edit widget
  *
  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
- * @see createBytesEditWidget()
+ * @see createBytesEditWidget(), charColumnInterface()
  * @since 3.2
  */
-class TextColumnInterface
+class CharColumnInterface
 {
   public:
     /** encoding used to display the symbols in the text column */
@@ -40,9 +40,9 @@ class TextColumnInterface
       LocalEncoding=0,
       /** extended ASCII encoding, also known as Latin1 */
       ISO8859_1Encoding=1,
-//      /** don't use; not implemented: the most common EBCDIC codepage */
-//      CECP1047Encoding=2,
-      /** don't use; this should enable extension without breaking binary compatibility */
+      /** @internal not implemented: the most common EBCDIC codepage */
+      CECP1047Encoding=2,
+      /** @internal enables extension without breaking binary compatibility */
       MaxEncodingId=0xFFFF
     };
 
@@ -86,19 +86,18 @@ class TextColumnInterface
 };
 
 
-/** tries to get the textcolumn interface of t 
+/** tries to get the charcolumn interface of t
   * @return a pointer to the interface, otherwise 0
   * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
-  * @see TextColumnInterface
   * @since 3.2
   */
 template<class T>
-TextColumnInterface *textColumnInterface( T *t )
+CharColumnInterface *charColumnInterface( T *t )
 {
   if( !t )
     return 0;
 
-  return static_cast<TextColumnInterface*>( t->qt_cast("KHE::TextColumnInterface") );
+  return static_cast<CharColumnInterface*>( t->qt_cast("KHE::CharColumnInterface") );
 }
 
 }

@@ -151,7 +151,6 @@ class BytesEditInterface
 /** tries to get the bytesedit interface of t   
   * @return a pointer to the interface, otherwise 0
   * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
-  * @see BytesEditInterface
   * @since 3.2
 */
 template<class T>
@@ -169,8 +168,8 @@ inline BytesEditInterface *bytesEditInterface( T *t )
   *
   * \code
   * #include <khexedit/byteseditinterface.h>
-  * #include <khexedit/hexcolumninterface.h>
-  * #include <khexedit/textcolumninterface.h>
+  * #include <khexedit/valuecolumninterface.h>
+  * #include <khexedit/charcolumninterface.h>
   * #include <khexedit/clipboardinterface.h>
   * ...
   *
@@ -188,20 +187,20 @@ inline BytesEditInterface *bytesEditInterface( T *t )
   *   BytesEdit->setReadOnly( false );
   *   BytesEdit->setAutoDelete( true );
   *
-  *   KHE::HexColumnInterface *HexColumn = KHE::hexColumnInterface( BytesEditWidget );
-  *   if( HexColumn )
+  *   KHE::ValueColumnInterface *ValueColumn = KHE::valueColumnInterface( BytesEditWidget );
+  *   if( ValueColumn )
   *   {
-  *     HexColumn->setCoding( KHE::HexColumnInterface::BinaryCoding );
-  *     HexColumn->setByteSpacingWidth( 2 );
-  *     HexColumn->setNoOfGroupedBytes( 4 );
-  *     HexColumn->setGroupSpacingWidth( 12 );
+  *     ValueColumn->setCoding( KHE::ValueColumnInterface::BinaryCoding );
+  *     ValueColumn->setByteSpacingWidth( 2 );
+  *     ValueColumn->setNoOfGroupedBytes( 4 );
+  *     ValueColumn->setGroupSpacingWidth( 12 );
   *   }
   *
-  *   KHE::TextColumnInterface *TextColumn = KHE::textColumnInterface( BytesEditWidget );
-  *   if( TextColumn )
+  *   KHE::CharColumnInterface *CharColumn = KHE::charColumnInterface( BytesEditWidget );
+  *   if( CharColumn )
   *   {
-  *     TextColumn->setShowUnprintable( false );
-  *     TextColumn->setSubstituteChar( '*' );
+  *     CharColumn->setShowUnprintable( false );
+  *     CharColumn->setSubstituteChar( '*' );
   *   }
   *   KHE::ClipboardInterface *Clipboard = KHE::clipboardInterface( BytesEditWidget );
   *   if( Clipboard )
@@ -216,7 +215,7 @@ inline BytesEditInterface *bytesEditInterface( T *t )
   * @param Name    identifier
   * @return a pointer to the widget, otherwise 0
   * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
-  * @see BytesEditInterface, HexColumnInterface, TextColumnInterface, ZoomInterface, ClipboardInterface
+  * @see BytesEditInterface, ValueColumnInterface, CharColumnInterface, ZoomInterface, ClipboardInterface
   * @since 3.2
   */
 inline QWidget *createBytesEditWidget( QWidget *Parent = 0, const char *Name = 0 )

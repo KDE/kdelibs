@@ -1,5 +1,5 @@
 /***************************************************************************
-                          hexcolumninterface.h  -  description
+                          valuecolumninterface.h  -  description
                              -------------------
     begin                : Fri Sep 12 2003
     copyright            : (C) 2003 by Friedrich W. H. Kossebau
@@ -15,21 +15,21 @@
  ***************************************************************************/
 
 
-#ifndef HEXCOLUMNINTERFACE_H
-#define HEXCOLUMNINTERFACE_H
+#ifndef VALUECOLUMNINTERFACE_H
+#define VALUECOLUMNINTERFACE_H
 
 namespace KHE
 {
 
 /**
- *  Interface for the hex value displaying column of a hexedit widget
+ *  Interface for the value displaying column of a hexedit widget
  *
  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
- * @see createBytesEditWidget(), hexColumnInterface()
+ * @see createBytesEditWidget(), valueColumnInterface()
  * @since 3.2
  */
 
-class HexColumnInterface
+class ValueColumnInterface
 {
   public:
     /** collection of ids for the different numeric codings of a byte */
@@ -43,7 +43,7 @@ class HexColumnInterface
       OctalCoding=2,
       /** bit by bit coding */
       BinaryCoding=3,
-      /** don't use; this should enable extension without breaking binary compatibility */
+      /** @internal enables extension without breaking binary compatibility */
       MaxCodingId=0xFFFF
     };
 
@@ -62,7 +62,7 @@ class HexColumnInterface
       /** we try to fit as many bytes into the width as possible, with minimum of 1 byte
         */
       FullSizeUsage=2,
-      /** don't use; this should enable extension without breaking binary compatibility */
+      /** @internal enables extension without breaking binary compatibility */
       MaxResizeStyleId=0xFF
     };
 
@@ -151,19 +151,18 @@ class HexColumnInterface
 };
 
 
-/** tries to get the hexcolumn interface of t 
+/** tries to get the valuecolumn interface of t 
   * @return a pointer to the interface, otherwise 0
   * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
-  * @see HexColumnInterface
   * @since 3.2
 */
 template<class T>
-HexColumnInterface *hexColumnInterface( T *t )
+ValueColumnInterface *valueColumnInterface( T *t )
 {
   if( !t )
     return 0;
 
-  return static_cast<HexColumnInterface*>( t->qt_cast("KHE::HexColumnInterface") );
+  return static_cast<ValueColumnInterface*>( t->qt_cast("KHE::ValueColumnInterface") );
 }
 
 }

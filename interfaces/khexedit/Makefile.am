@@ -4,7 +4,7 @@ servicetype_DATA = kbytesedit.desktop
 
 # the interfaces
 khexeditinclude_HEADERS = byteseditinterface.h \
-                          hexcolumninterface.h textcolumninterface.h \
+                          valuecolumninterface.h charcolumninterface.h \
                           zoominterface.h clipboardinterface.h
 
 khexeditincludedir = $(includedir)/khexedit
