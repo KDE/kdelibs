@@ -30,7 +30,7 @@ bin_PROGRAMS = kio_uiserver kmailservice ktelnetservice
 #libkioslave_la_LIBADD = ../kdeui/libkdeui.la
 #libkioslave_la_SOURCES = slavebase.cpp connection.cpp passdlg.cpp
 
-libksycoca_la_LDFLAGS = -version-info 4:0 -no-undefined
+libksycoca_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 4:0 -no-undefined
 libksycoca_la_LIBADD = ./libkio.la
 
 libksycoca_la_SOURCES = \

@@ -31,7 +31,7 @@ libkmedia2_la_LDFLAGS = -no-undefined -version-info 1:0
 
 libartswavplayobject_la_SOURCES = wavplayobject_impl.cc
 libartswavplayobject_la_LIBADD  = $(top_builddir)/arts/mcop/libmcop.la \
-								  libsoundserver_idl.la $(FLOWLIBS)
+                                  libsoundserver_idl.la $(FLOWLIBS)
 libartswavplayobject_la_LDFLAGS = -no-undefined -module
 
 
@@ -40,13 +40,13 @@ libartswavplayobject_la_LDFLAGS = -no-undefined -module
 bin_PROGRAMS = artsd artsplay artscat artswrapper artsshell
 
 artsd_LDADD = libsoundserver_idl.la $(FLOWLIBS) \
-              $(top_builddir)/arts/mcop_mt/libmcop_mt.la
+              $(top_builddir)/arts/mcop_mt/libmcop_mt.la $(USE_THREADS) $(LIBPTHREAD)
 artsd_SOURCES = soundserverv2_impl.cc soundserver_impl.cc simplesoundserver_impl.cc artsd.cc cpuusage.cc samplestorage_impl.cc
 
 artscat_LDADD = libsoundserver_idl.la $(FLOWLIBS)
 artscat_SOURCES = artscat.cc
 
-artsplay_LDADD = libsoundserver_idl.la
+artsplay_LDADD = libsoundserver_idl.la 
 artsplay_SOURCES = artsplay.cc
 
 artswrapper_OBJS = artswrapper.o

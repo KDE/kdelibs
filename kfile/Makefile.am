@@ -47,7 +47,7 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
 
 EXTRA_DIST = NOTES
 
-libkfile_la_LDFLAGS = -no-undefined -version-info 4:0
+libkfile_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined -version-info 4:0
 libkfile_la_LIBADD =  $(LIB_KSYCOCA)
 
 servicetype_DATA = kpropsdlgplugin.desktop
@@ -58,8 +58,8 @@ check_PROGRAMS = kfstest kurlrequestertest
 kfstest_SOURCES =  kfstest.cpp
 kurlrequestertest_SOURCES =  kurlrequestertest.cpp
 
-kfstest_LDFLAGS = $(KDE_RPATH)
+kfstest_LDFLAGS = $(KDE_RPATH) $(KDE_MT_LDFLAGS)
 kfstest_LDADD = libkfile.la
 
-kurlrequestertest_LDFLAGS = $(KDE_RPATH)
+kurlrequestertest_LDFLAGS = $(KDE_RPATH) $(KDE_MT_LDFLAGS)
 kurlrequestertest_LDADD = libkfile.la

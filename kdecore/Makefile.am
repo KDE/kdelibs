@@ -74,7 +74,7 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp kapplication.cpp \
 	kxmessages.cpp kstartupinfo.cpp kcatalogue.cpp \
 	kmultipledrag.cpp kstaticdeleter.cpp
 
-libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 4:0 -no-undefined
+libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 4:0 -no-undefined
 libkdecore_la_LIBADD = ../libltdl/libltdlc.la $(LIB_XEXT) $(LIB_DCOP) $(LIB_DMALLOC) $(LIBRESOLV) $(LIBXINERAMA)
 
 libkdecore_la_METASOURCES = AUTO
@@ -116,6 +116,6 @@ parser: kentities.gperf
 bin_PROGRAMS = kde-config
 kde_config_SOURCES = kde-config.cpp
 kde_config_LDADD = ./libkdecore.la
-kde_config_LDFLAGS = $(KDE_RPATH)
+kde_config_LDFLAGS = $(KDE_RPATH) $(KDE_MT_LDFLAGS)
 
 DISTCLEANFILES = kde-config.cpp

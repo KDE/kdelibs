@@ -24,7 +24,8 @@ bin_PROGRAMS = kdeinit kdeinit_wrapper kshell kdeinit_shutdown lnusertemp kwrapp
 kdeinit_SOURCES = kinit.cpp setproctitle.cpp
 
 # NOTE: We link against all common libraries even if we don't need them ourselves.
-kdeinit_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS)  $(KDE_RPATH)
+kdeinit_LDFLAGS = $(KDE_MT_LDFLAGS) $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) \
+                  $(KDE_RPATH)
 kdeinit_LDADD = $(LIB_DCOP) $(LIB_DMALLOC) $(LIB_KPARTS) $(LIB_KSYCOCA) \
 		$(LIB_KDEUI) $(LIB_KIO) $(LIB_KDECORE) $(LIBUTIL)
 

@@ -13,5 +13,5 @@ libkmid_la_SOURCES  = midiout.cc player.cc track.cc midimapper.cc \
 	fmout.cc gusout.cc alsaout.cc voiceman.cc mt32togm.cc notearray.cc \
 	libkmid.cc
 
-libkmid_la_LDFLAGS = -version-info 0:95  -no-undefined
+libkmid_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 0:95  -no-undefined
 libkmid_la_LIBADD = $(LIBASOUND) $(LIB_KDECORE)
