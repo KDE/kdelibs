@@ -25,19 +25,20 @@
 #include <sys/stat.h>
 #include <qdir.h>
 #include <qfiledialog.h>
+#include <qlayout.h>
 #include <qstringlist.h>
 #include <qwidget.h>
 
-#include "kfiledialog.h"
-#include "kfileiconview.h"
+#include <kfiledialog.h>
+#include <kfileiconview.h>
 #include <kmessagebox.h>
 #include <kconfig.h>
 #include <kapp.h>
 #include <kurl.h>
-#include <qlayout.h>
-#include "kdiroperator.h"
-#include "kfilewidget.h"
+#include <kdiroperator.h>
+#include <kfilewidget.h>
 #include <kfile.h>
+
 
 int main(int argc, char **argv)
 {
@@ -67,7 +68,7 @@ int main(int argc, char **argv)
     } else if (argv1 == QString::fromLatin1("dirs"))
 	name1 = KFileDialog::getExistingDirectory();
     else{
-	KFileDialog dlg(QString::null, 
+	KFileDialog dlg(QString::null,
 			QString::fromLatin1("*|All files\n"
 					    "*.lo *.o *.la|All libtool files"),
 			0, 0, true);
@@ -87,8 +88,8 @@ int main(int argc, char **argv)
 		debug("Selected URL: %s", (*it).url().latin1());
 		++it;
 	    }
-				    
-	    
+				
+	
 	    name1 = dlg.selectedURL().url();
 	}
     }

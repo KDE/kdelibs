@@ -9,13 +9,11 @@ TODO-List for the KFileDialog and associated classes (in order of importance)
 - implement KFile::PreviewInfo
 - remember directory when entering it, when coming back, set it as current
 - history of last files/dirs
-- flag for local files only (or what about KRemoteFile?)
+- what about KRemoteFile?
 - add private d struct everywhere
 - separate KDirOperator, location-combo, filter-combo etc. from KFileDialog
   to another widget (everything besides OK/Cancel buttons).
-- add ~/Desktop to default-dir combo
-  (partly have that on my hdd, but that has to be completely reorganized)
-- show icons in combos
+- indent hierarchical items in dir-combo
 - implement in-place editing (rename) + make it configurable in all views
 - make a simple fileview based on QListBox
 - drag&drop support for the views (somehow into baseclass KFileView?)

@@ -89,7 +89,7 @@ KDirOperator::KDirOperator(const QString& dirName,
 
     KConfig *c = KGlobal::config();
     KConfigGroupSaver sa(c, ConfigGroup);
-    showHidden = c->readBoolEntry(QString::fromLatin1("ShowHidden"),
+    bool showHidden = c->readBoolEntry(QString::fromLatin1("ShowHidden"),
 				       DefaultShowHidden);
 
     // action stuff
@@ -186,8 +186,7 @@ void KDirOperator::slotSimpleView()
 
 void KDirOperator::slotToggleHidden( bool show )
 {
-    showHidden = show;
-    dir->setShowHiddenFiles( showHidden );
+    dir->setShowHiddenFiles( show );
 }
 
 void KDirOperator::slotToggleMixDirsAndFiles()
@@ -689,7 +688,7 @@ void KDirOperator::connectView(KFileView *view)
     reverseAction->setChecked( fileView->isReversed() );
     dirsFirstAction->setChecked((sorting & QDir::DirsFirst)== QDir::DirsFirst);
     caseInsensitiveAction->setChecked( (sorting & QDir::IgnoreCase ) == QDir::IgnoreCase );
-    showHiddenAction->setChecked( showHiddenFiles() );
+    // showHiddenAction->setChecked( showHiddenFiles() );
     separateDirsAction->setChecked( (viewKind & KFile::SeparateDirs) == KFile::SeparateDirs);
 
     shortAction->setChecked( (fileView->viewName() == i18n("Short View")));
@@ -901,7 +900,7 @@ void KDirOperator::setupActions()
 				 this, SLOT( mkdir() ), this, "mkdir");
     reloadAction->setText( i18n("Reload") );
 
-    
+
     // the sort menu actions
     sortActionMenu = new KActionMenu( i18n("Sorting"), this, "sorting menu");
     byNameAction = new KRadioAction( i18n("By Name"), 0,
@@ -922,19 +921,19 @@ void KDirOperator::setupActions()
     byDateAction->setExclusiveGroup( sortGroup );
     bySizeAction->setExclusiveGroup( sortGroup );
 
-    
+
     dirsFirstAction = new KToggleAction( i18n("Directories first"), 0,
 					 this, "dirs first");
     caseInsensitiveAction = new KToggleAction(i18n("Case insensitive"), 0,
 					      this, "case insensitive" );
 
-    connect( dirsFirstAction, SIGNAL( toggled( bool ) ), 
+    connect( dirsFirstAction, SIGNAL( toggled( bool ) ),
 	     SLOT( slotToggleDirsFirst() ));
-    connect( caseInsensitiveAction, SIGNAL( toggled( bool ) ), 
+    connect( caseInsensitiveAction, SIGNAL( toggled( bool ) ),
 	     SLOT( slotToggleIgnoreCase() ));
 
-    
-    
+
+
     // the view menu actions
     viewActionMenu = new KActionMenu( i18n("View"), this, "view menu" );
     shortAction = new KRadioAction( i18n("Short View"), 0,
@@ -953,14 +952,14 @@ void KDirOperator::setupActions()
     shortAction->setExclusiveGroup( viewGroup );
     detailedAction->setExclusiveGroup( viewGroup );
 
-    connect( shortAction, SIGNAL( toggled( bool ) ), 
+    connect( shortAction, SIGNAL( toggled( bool ) ),
 	     SLOT( slotSimpleView() ));
-    connect( detailedAction, SIGNAL( toggled( bool ) ), 
+    connect( detailedAction, SIGNAL( toggled( bool ) ),
 	     SLOT( slotDetailedView() ));
-    connect( showHiddenAction, SIGNAL( toggled( bool ) ), 
+    connect( showHiddenAction, SIGNAL( toggled( bool ) ),
 	     SLOT( slotToggleHidden( bool ) ));
 
-    
+
     // insert them into the actionCollection
     myActionCollection = new QActionCollection( this, "action collection" );
     myActionCollection->insert( actionMenu );

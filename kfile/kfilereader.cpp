@@ -101,6 +101,7 @@ void KFileReader::init()
 
     myAutoUpdate = false;
     myDirtyFlag  = true;
+    showHidden   = false;
     myJob= 0;
     myEntries.setAutoDelete(true);
     myNewEntries.setAutoDelete(false);

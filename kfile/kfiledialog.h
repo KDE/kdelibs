@@ -396,7 +396,7 @@ protected:
 
 protected slots:
     void urlEntered(const KURL&);
-    void comboActivated(int);
+    void comboActivated(const QString& url);
     void toolbarCallback(int);
     void toolbarPressedCallback(int);
     void filterChanged();
@@ -463,49 +463,47 @@ private:
 };
 
 
-#if 0
 class KDirComboBox : public QComboBox
 {
-    // Q_OBJECT
+    Q_OBJECT
 
 public:
     KDirComboBox( QWidget *parent=0, const char *name=0 );
     ~KDirComboBox();
 
     /**
-     * sets the current url
+     * sets the current url -> it will be shown in the combo, as well as all
+     * parent directories of it.
      */
-    void setCurrentURL( const QString& url );
+    void setCurrentURL( const KURL& url );
 
-    // signals:
+signals:
     /**
      * emitted when an item was clicked at
      * @param url is the url of the now current item. If it is a local url,
      * it won't have a protocol (file:/), otherwise it will.
      */
-    urlActivated( const QString& url );
+    void urlActivated( const QString& url );
 
-    // protected slots:
+protected slots:
     void slotActivated( int );
 
 protected:
     struct _KDirComboItem {
+	QString text;
 	QString url;
 	QPixmap icon;
-	int id;
     };
     typedef _KDirComboItem KDirComboItem;
     QList<KDirComboItem> itemList;
+    QMap<int,KDirComboItem*> itemMapper;
 
     KDirComboItem *rootItem;
     KDirComboItem *homeItem;
     KDirComboItem *desktopItem;
 
-    static QPixmap *dirPix;
-    static QPixmap *opendirPix;
-
+    QPixmap opendirPix;
+    QString desktopDir;
 };
-
-#endif
 
 #endif

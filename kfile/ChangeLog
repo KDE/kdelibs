@@ -1,3 +1,12 @@
+Thu Feb 17 19:09:54 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfiledialog.{cpp,h} (KDirComboBox): 
+	Added KDirComboBox and replaced the directory combobox with it. It
+	even does something now :) Items need to be indented tho.
+
+	* kfilereader.cpp, kdiroperator.{cpp,h}: 
+	fixed showHidden default
+
 Tue Feb 15 14:21:41 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kfile.h (class KFile): 

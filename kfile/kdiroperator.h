@@ -51,7 +51,7 @@ class KDirOperator : public QWidget {
     virtual ~KDirOperator();
 
     void setShowHiddenFiles ( bool s ) { showHiddenAction->setChecked( s ); }
-    bool showHiddenFiles () const { return showHidden; }
+    bool showHiddenFiles () const { return showHiddenAction->isChecked(); }
 
     void close();
 
@@ -138,9 +138,6 @@ class KDirOperator : public QWidget {
 
 
  private:
-    // represents the check box. Initialized by "ShowHidden"
-    bool showHidden;
-
     /**
      * Contains all URLs you can reach with the back button.
      */

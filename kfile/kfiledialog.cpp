@@ -40,6 +40,7 @@
 #include <qstrlist.h>
 #include <qtabdialog.h>
 #include <qtextstream.h>
+#include <qtooltip.h>
 #include <qtimer.h>
 
 #include <kapp.h>
@@ -57,17 +58,18 @@
 #include <ktoolbarbutton.h>
 #include <kurl.h>
 
-#include "kfileview.h"
-#include "krecentdocument.h"
-#include "kfiledialogconf.h"
-#include "kfiledialog.h"
-#include "kfileiconview.h"
-#include "kfiledetailview.h"
-#include "kcombiview.h"
 #include "config-kfile.h"
-#include "kfilefilter.h"
-#include "kfilebookmark.h"
-#include "kdiroperator.h"
+
+#include <kfileview.h>
+#include <krecentdocument.h>
+#include <kfiledialogconf.h>
+#include <kfiledialog.h>
+#include <kfileiconview.h>
+#include <kfiledetailview.h>
+#include <kcombiview.h>
+#include <kfilefilter.h>
+#include <kfilebookmark.h>
+#include <kdiroperator.h>
 
 enum Buttons { HOTLIST_BUTTON,
 	       PATH_COMBO, CONFIGURE_BUTTON };
@@ -106,6 +108,7 @@ struct KFileDialogPrivate
 
     QLabel *locationLabel;
     QLabel *filterLabel;
+    KDirComboBox *pathCombo;
 };
 
 QString *KFileDialog::lastDirectory; // to set the start path
@@ -122,6 +125,11 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     setMainWidget( d->mainWidget );
 
     d->myStatusLine = 0;
+    KDirComboBox *combo = new KDirComboBox( this, "path combo" );
+    connect( combo, SIGNAL( urlActivated( const QString&  )), 
+	     this,  SLOT( comboActivated( const QString& )));
+    QToolTip::add( combo, i18n("Quick directories") );
+    d->pathCombo = combo;
 
     // I hard code this for now
     d->acceptOnlyExisting = false;
@@ -201,10 +209,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     connect(toolbar, SIGNAL(pressed(int)),
     	    this, SLOT(toolbarPressedCallback(int)));
 
-    toolbar->insertCombo(i18n("The path"), PATH_COMBO, false,
-			 SIGNAL(activated(int)),
-			 this, SLOT(comboActivated(int)),
-			 true, i18n("Quick Directories"));
+    toolbar->insertWidget(PATH_COMBO, 70, d->pathCombo);
 
     toolbar->setItemAutoSized (PATH_COMBO);
     toolbar->setBarPos(KToolBar::Top);
@@ -566,44 +571,8 @@ void KFileDialog::setURL(const KURL& url, bool clearforward)
 // Protected
 void KFileDialog::urlEntered(const KURL& url)
 {
-    kDebugInfo(kfile_area, "urlEntered %s", debugString(url.url()));
-    toolbar->getCombo(PATH_COMBO)->clear();
-
-    KURL tmpURL = QString::fromLatin1("/");
-    static QString desktop=QDir::homeDirPath()+QString::fromLatin1("/Desktop");
-    KIconLoader::Size small = KIconLoader::Small;
-    QComboBox *combo = toolbar->getCombo( PATH_COMBO );
-    combo->insertItem( KMimeType::pixmapForURL( tmpURL, 0, small ),
-		       i18n("Root Directory /") );
-    // list.append(i18n("Root Directory (%1:)").arg(url.protocol()));
-    // list.append(i18n("Desktop"));
-    tmpURL.setPath( desktop );
-    combo->insertItem( KMimeType::pixmapForURL( tmpURL, 0, small ), desktop );
-
+    d->pathCombo->setCurrentURL( url );
     const QString urlstr = url.url(1);
-
-    kDebugInfo(kfile_area, debugString(urlstr));
-#if 0
-    int pos = urlstr.find('/', 0); // getting past the protocol
-
-    while( pos >= 0 ) {
-	int newpos = urlstr.find('/', pos + 1);
-	if (newpos < 0)
-	    break;
-
-	tmpURL.setPath( urlstr.right
-	QString tmp = urlstr.mid(pos + 1, newpos - pos - 1);
-	list.append(tmp);
-	pos = newpos;
-    }
-
-    QStringList::ConstIterator it = list.begin();
-    for ( ; it != list.end(); ++it )
-	combo->insertItem( KMimeType::pixmapForURL( *it, 0, KIconLoader::Small,
-						    *it ));
-#endif
-
-    //    toolbar->getCombo(PATH_COMBO)->insertStringList(list);
 
     // add item to visitedDirs.
     if( !visitedDirs->contains(urlstr) ) {
@@ -638,9 +607,10 @@ void KFileDialog::urlEntered(const KURL& url)
 	     this, SLOT( locationChanged(const QString&) ));
 }
 
-void KFileDialog::comboActivated(int)
+void KFileDialog::comboActivated( const QString& url)
 {
     kDebugInfo(kfile_area, "comboActivated");
+    setURL( url );
 }
 
 void KFileDialog::addToBookmarks() // SLOT
@@ -793,7 +763,7 @@ void KFileDialog::setSelection(const QString& name)
 	    kDebugInfo(kfile_area, "filename %s", debugString(filename));
 	    d->selection = filename;
 	}
-	d->filename = KURL(ops->url(), filename).url(); // TODO make filename an url
+	d->filename = KURL(ops->url(), filename).url(); // FIXME make filename an url
 	locationEdit->setEditText(d->filename);
     }
 }
@@ -828,7 +798,7 @@ void KFileDialog::completion() // SLOT
 	    connect( locationEdit, SIGNAL( textChanged( const QString& )),
 		     this, SLOT( locationChanged( const QString& ) ));
 	} else {
-	    warning("no complete");
+	    warning("no completion");
 	}
     }
 }
@@ -1099,18 +1069,130 @@ KFile::Mode KFileDialog::mode() const
     return ops->mode();
 }
 
-//////////////////7
+///////////////////
 
-/*
 KDirComboBox::KDirComboBox( QWidget *parent, const char *name )
     : QComboBox( parent, name )
 {
+    itemList.setAutoDelete( true );
+    
+    desktopDir = QDir::homeDirPath() + QString::fromLocal8Bit("/Desktop");
+    
+    rootItem = new KDirComboItem;
+    homeItem = new KDirComboItem;
+    desktopItem = new KDirComboItem;
+    
+    rootItem->url = QDir::rootDirPath();
+    rootItem->text = i18n("Root Directory: %1").arg(rootItem->url);
+    rootItem->icon = KMimeType::pixmapForURL( rootItem->url, 0, 
+					      KIconLoader::Small );
+
+    homeItem->url = QDir::homeDirPath();
+    homeItem->text = i18n("Home Directory: %1").arg(homeItem->url);
+    homeItem->icon = KMimeType::pixmapForURL( homeItem->url, 0, 
+					      KIconLoader::Small );
+    
+    desktopItem->url= desktopDir;
+    desktopItem->text = i18n("Desktop: %1").arg(desktopDir);
+    desktopItem->icon = KMimeType::pixmapForURL( desktopItem->url, 0, 
+						 KIconLoader::Small );
+    
+    connect( this, SIGNAL( activated( int )), SLOT( slotActivated( int )));
+    opendirPix = KGlobal::iconLoader()->loadIcon( QString::fromLocal8Bit("folder_open"), KIconLoader::Small );
 }
 
 KDirComboBox::~KDirComboBox()
 {
+    delete rootItem;
+    delete homeItem;
+    delete desktopItem;
 }
-*/
+
+
+void KDirComboBox::setCurrentURL( const KURL& url )
+{
+    if ( url.isEmpty() )
+	return;
+    
+    itemList.clear();
+    QString urlstr = url.path( +1 ); // we want a / at the end
+    bool isLocal = url.isLocalFile();
+    bool underDesktop = isLocal && urlstr.find( desktopDir ) == 0;
+    int startpos = 0;
+    int protopos = url.url().find( '/', 0 );
+    KDirComboItem *item = 0L;
+
+    if ( underDesktop )
+	startpos = desktopDir.length();
+    
+    int pos = startpos;
+
+    // split the URL into directories and create KDirComboItems out of them
+    while( pos >= 0 ) {
+	int newpos = urlstr.find('/', pos + 1);
+	if (newpos < 0)
+	    break;
+
+	item = new KDirComboItem;
+	item->url = urlstr.left( newpos );
+	if ( !isLocal ) // prepend the protocol // FIXME (user, pass)
+	    item->url.prepend( url.url().left( protopos ) );
+
+	// item->icon = KMimeType::pixmapForURL(item->url, 0, KIconLoader::Small);
+	item->icon = opendirPix;
+	item->text = urlstr.mid(pos + 1, newpos - pos -1);
+
+	itemList.append( item );
+	pos = newpos;
+	
+	// debug("url: %s, text: %s", item->url.ascii(), item->text.ascii());
+    }
+    
+    clear();
+
+    int id = 0;
+    // Desktop
+    insertItem( desktopItem->icon, desktopItem->text, id );
+    itemMapper.insert( id, desktopItem );
+    
+    // Root
+    if ( !underDesktop ) {
+	id = count();
+	if ( url.path( -1 ) == QDir::rootDirPath() )
+	    insertItem( opendirPix, rootItem->text, id );
+	else
+	    insertItem( rootItem->icon, rootItem->text, id );
+	itemMapper.insert( id, rootItem );
+    }
+    
+    // Dirs
+    QListIterator<KDirComboItem> it( itemList );
+    for ( ; (item = it.current()); ++it ) {
+	id = count();
+	insertItem( item->icon, item->text, id );
+	itemMapper.insert( id, item );
+    }
+
+    int current = count() -1;
+    
+    // Root below Dirs
+    if ( underDesktop ) {
+	id = count();
+	insertItem( rootItem->icon, rootItem->text, id );
+	itemMapper.insert( id, rootItem );
+    }
+
+    setCurrentItem( current );
+}
+
+void KDirComboBox::slotActivated( int index )
+{
+    KDirComboItem *item = itemMapper[ index ];
+    
+    if ( item )
+	emit urlActivated( item->url );
+}
+
 
 ///////////////////
 
