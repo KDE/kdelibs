@@ -21,7 +21,8 @@ KDE_CXXFLAGS = $(USE_EXCEPTIONS)
 
 noinst_LTLIBRARIES = libkhtmlmisc.la
 libkhtmlmisc_la_SOURCES = \
-	decoder.cpp    khtmldata.cpp  khtmlfont.cpp  khtmlio.cpp
+	decoder.cpp    khtmldata.cpp  khtmlfont.cpp  khtmlio.cpp \
+	htmlhases.cpp
 
 libkhtmlmisc_la_METASOURCES = AUTO
 
@@ -30,7 +31,7 @@ include_HEADERS = \
 
 noinst_HEADERS = \
 	decoder.h      khtmlfont.h    khtmllayout.h \
-	khtmldata.h    stringit.h
+	khtmldata.h    stringit.h     htmlhashes.h
 
 libkhtmlmisc_la_LDFLAGS = -version-info 3:0
 
