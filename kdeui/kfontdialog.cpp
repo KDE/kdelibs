@@ -386,14 +386,18 @@ void KFontChooser::style_chosen_slot(const QString& style)
 {
   QString style_string = style;
 
-  if ( style_string.find(i18n("Italic")) != -1)
+  if ( style_string.contains(i18n("Italic"))||
+       style_string.contains(i18n("Bold Italic")) )
     selFont.setItalic(true);
   else
     selFont.setItalic(false);
-  if ( style_string.find(i18n("Bold")) != -1)
+
+  if ( style_string.contains(i18n("Bold")) ||
+       style_string.contains(i18n("Bold Italic")) )
     selFont.setBold(true);
   else
     selFont.setBold(false);
+
   emit fontSelected(selFont);
 }
 
@@ -601,6 +605,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.69  2001/09/22 19:53:57  mueller
+* fixes for QT_NO_COMPAT
+*
 * Revision 1.68  2001/08/29 15:25:38  bero
 * _WS_X11_ -> Q_WS_X11
 * _WS_QWS_ -> Q_WS_QWS
