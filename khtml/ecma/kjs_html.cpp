@@ -922,6 +922,14 @@ bool KJS::HTMLElement::hasProperty(const UString &p, bool recursive) const
     return recursive && DOMElement::hasProperty(p, true);
 }
 
+String KJS::HTMLElement::toString() const
+{
+  if (node.elementId() == ID_A)
+    return UString(static_cast<const DOM::HTMLAnchorElement&>(node).href());
+  else
+    return DOMElement::toString();
+}
+
 List *KJS::HTMLElement::eventHandlerScope() const
 {
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);

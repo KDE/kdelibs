@@ -66,6 +66,7 @@ namespace KJS {
     virtual void tryPut(const UString &p, const KJSO& v);
     virtual bool hasProperty(const UString &p, bool recursive = true) const;
     virtual const TypeInfo* typeInfo() const { return &info; }
+    virtual String toString() const;
     virtual List *eventHandlerScope() const;
     static const TypeInfo info;
   };
