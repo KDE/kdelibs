@@ -43,6 +43,7 @@ RenderImage::RenderImage(RenderStyle *style)
 {
     bComplete = true;
     setLayouted(false);
+    setParsing(false);
 }
 
 RenderImage::~RenderImage()
@@ -53,14 +54,16 @@ void RenderImage::setPixmap( const QPixmap &p )
 {
 
     // Image dimensions have been changed, recalculate layout
-    //kdDebug(300) << "Image: recalculating layout" << endl;
+    //kdDebug(300) << "Image: setPixmap" << endl;
     if(p.width() != pixmap.width() || p.height() != pixmap.height())
     {
+	//kdDebug(300) << "Image: newSize" << endl;
 	pixmap = p;
 	setLayouted(false);
+	setMinMaxKnown(false);
 	layout();
 	// the updateSize() call should trigger a repaint too
-	if(m_parent) m_parent->updateSize();
+	containingBlock()->updateSize();
 	repaintRectangle(0, 0, m_width, m_height); //should not be needed!
     }
     else
@@ -74,7 +77,7 @@ void RenderImage::setPixmap( const QPixmap &p )
 void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 {
     // add offset for relative positioning
-    if(isRelPositioned()) 
+    if(isRelPositioned())
 	relativePositionOffset(_tx, _ty);
 
     //kdDebug(300) << "Image::printObject (" << width() << "/" << height() << ")" << endl;

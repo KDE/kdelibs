@@ -280,7 +280,7 @@ void RenderBox::absolutePosition(int &xPos, int &yPos)
 
 void RenderBox::updateSize()
 {
-//    kdDebug(300) << renderName() << "(RenderBox) " << this << " ::updateSize()" << endl;
+    //kdDebug(300) << renderName() << "(RenderBox) " << this << " ::updateSize()" << endl;
 
     int oldMin = m_minWidth;
     int oldMax = m_maxWidth;
@@ -296,11 +296,9 @@ void RenderBox::updateSize()
     	updateHeight();
 }
 
-#include <stdlib.h>
-
 void RenderBox::updateHeight()
 {
-//    kdDebug(300) << renderName() << "(RenderBox) " << this << " ::updateHeight()" << endl;
+    //kdDebug(300) << renderName() << "(RenderBox) " << this << " ::updateHeight()" << endl;
 
     if (parsing())
     {
@@ -314,13 +312,8 @@ void RenderBox::updateHeight()
 	int oldHeight = m_height;
 	setLayouted(false);
 	layout(true);
-/*	if (m_height > 500)
-	{
-	    if(rand()%10)
-	    	return;
-	}   		*/
-	if(m_height != oldHeight)
-	{
+
+	if(m_height != oldHeight) {
 	    if(containingBlock() != this) containingBlock()->updateHeight();
 	} else {
 	    repaint();

@@ -180,8 +180,8 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	DOMString script = getAttribute(id);
 	if(script.length())
 	{
-	    view->part()->executeScript( script.string() );
 	    kdDebug(300) << "emit executeScript( " << script.string() << " )" << endl;
+	    view->part()->executeScript( script.string() );
 	}
     }
     setMouseInside(inside);

@@ -54,7 +54,7 @@ void RenderRoot::calcWidth()
 void RenderRoot::layout(bool deep)
 {
     if (deep)
-    	RenderFlow::layout(true);        
+    	RenderFlow::layout(true);
 
     // resize so that body height >= viewport height
     if (style()->htmlHacks())
@@ -144,7 +144,7 @@ void RenderRoot::updateHeight()
 
     int oldHeight = m_height;
     layout(true);	
-    if(m_height != oldHeight)
+    if(m_height != oldHeight || m_height == m_view->visibleHeight())
     {
 //    	kdDebug(300) << "resizing " << m_width << "," << m_height << endl;
     	m_view->resizeContents(m_width,m_height);
