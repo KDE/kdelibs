@@ -85,6 +85,19 @@ class KConfig;
 * @li toolbar - Toolbar pictures.
 * @li wallpaper - Wallpapers.
 *
+* KStandardDirs supports the following environment variables:
+*
+* KDEDIRS: This may set an additional number of directories to 
+*          search for resources. The directories should be seperated
+*          by ':'. The directories are searched in the order they are 
+*          specified.
+* KDEDIR:  Used for backwards compatibility. As KDEDIRS but only a single
+*          directory may be specified. If KDEDIRS is set KDEDIR is 
+*          ignored.
+* KDEHOME: The directory where changes are saved to. This directory is
+*          used to search for resources first. If KDEHOME is not 
+*          specified it defaults to "$HOME/.kde"
+*
 **/
 class KStandardDirs
 {
