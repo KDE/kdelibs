@@ -485,6 +485,8 @@ void HTMLFormElementImpl::submit(  )
         if (havePassword && !haveTextarea ) {
             KWallet::Wallet* w = view->part()->wallet();
             if (w)  {
+                if (!w->hasFolder(KWallet::Wallet::FormDataFolder()))
+                    w->createFolder(KWallet::Wallet::FormDataFolder());
                 w->setFolder(KWallet::Wallet::FormDataFolder());
                 bool login_changed = false;
                 if ( !doesnotexist ) {
