@@ -8,8 +8,6 @@ SUBDIRS = customization
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(bindir)
-	$(INSTALL_SCRIPT) $(DESTDIR)$(bindir)
-# Removed "$(srcdir)/patches/db2ps" argument. Will it create problems, Stephan?
 #	-patch $(TEX_MF)/web2c/texmf.cnf $(srcdir)/patches/texmf.cnf
 	/usr/bin/install-catalog --add /etc/sgml/sgml-docbook-3.1.cat /usr/share/sgml/docbook/kde-customization-0.1/catalog
 
