@@ -21,14 +21,15 @@
 #include <qfile.h>
 #include <qtextstream.h>
 
+#include <kabapi.h>
 #include <kaboutdata.h>
 #include <kapplication.h>
-#include <kdebug.h>
-#include <klocale.h>
 #include <kcmdlineargs.h>
-#include <kabapi.h>
-#include <kglobal.h>
 #include <kconfig.h>
+#include <kdebug.h>
+#include <kglobal.h>
+#include <klocale.h>
+#include <kmessagebox.h>
 #include <kstandarddirs.h>
 
 #include "addressbook.h"
@@ -290,7 +291,9 @@ void importKab( KABC::AddressBook *ab, bool override )
   QString fileName = KGlobal::dirs()->saveLocation( "data", "kab/" );
   fileName += "addressbook.kab";
   if (!QFile::exists( fileName )) {
-    kdDebug() << "No KDE 2 addressbook found." << endl;
+    KMessageBox::error( 0, "<qt>" + i18n( "Address book file <b>%1</b> not found! Make sure the old address book is located there and you have read permission for this file." )
+                        .arg( fileName ) + "</qt>" );
+    kdDebug(5700) << "No KDE 2 addressbook found." << endl;
     return;
   }
 
