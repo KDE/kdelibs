@@ -66,7 +66,7 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
   QStringList lst;
   lst.append( _url );
 
-  const KSharedPtr<KService> offer = KServiceProvider::getServiceProvider()->service( _mimetype );
+  const KSharedPtr<KService> offer = KServiceProvider::getServiceProvider()->serviceByServiceType( _mimetype );
   
   if ( !offer )
   {
@@ -587,7 +587,7 @@ bool KFileManager::openFileManagerWindow( const char *_url )
   return true; // assume kfmclient succeeded
 }
 
-const KSharedPtr<KService> KServiceProvider::service( const char *mime_type )
+const KSharedPtr<KService> KServiceProvider::serviceByServiceType( const char *mime_type )
 {
   KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers( mime_type );
 
@@ -598,6 +598,17 @@ const KSharedPtr<KService> KServiceProvider::service( const char *mime_type )
   }
 
   KService *s = (KService*)( *offers.begin() ).service();
+  s->ref();
+  return KSharedPtr<KService>( s );
+}
+
+const KSharedPtr<KService> KServiceProvider::serviceByName( const QString &name )
+{
+  KService *s = KService::service( name );
+  
+  if ( !s )
+    return 0L;
+    
   s->ref();
   return KSharedPtr<KService>( s );
 }

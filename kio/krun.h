@@ -209,7 +209,8 @@ public:
   KServiceProvider() { pServiceProvider = this; }
   virtual ~KServiceProvider() {};
   
-  virtual const KSharedPtr<KService> service( const char *mime_type );
+  virtual const KSharedPtr<KService> serviceByServiceType( const char *mime_type );
+  virtual const KSharedPtr<KService> serviceByName( const QString &name );
   
   static KServiceProvider * getServiceProvider() {
     if (!pServiceProvider)

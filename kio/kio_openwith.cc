@@ -13,7 +13,6 @@
 #include <ktreelist.h>
 #include <ktopwidget.h>
 #include <kiconloader.h>
-#include <kservices.h>
 #include <kmimemagic.h>
 #include <kdebug.h>
 #include <kstddirs.h>
@@ -22,6 +21,7 @@
 #include <stdio.h>
 
 #include "kio_openwith.h"
+#include "krun.h"
 
 #define SORT_SPEC (QDir::DirsFirst | QDir::Name | QDir::IgnoreCase)
 
@@ -215,7 +215,7 @@ void KApplicationTree::highlighted(int index)
       !( item->exec.isEmpty() ) &&
       !( item->appname.isEmpty() ) )
 
-    emit highlighted( item->appname.data(), item->exec.data() );
+    emit highlighted( item->appname, item->exec );
 
 }
 
@@ -225,7 +225,7 @@ void KApplicationTree::selected(int index)
   KAppTreeListItem *item = (KAppTreeListItem *)tree->itemAt( index );
 
   if( ( !item->directory ) && !( item->exec.isEmpty() ) && !( item->appname.isEmpty() ) )
-     emit selected( item->appname.data(), item->exec.data() );
+     emit selected( item->appname, item->exec );
   else
     tree->expandOrCollapseItem( index );
 }
@@ -363,7 +363,7 @@ void OpenWithDlg::resizeEvent(QResizeEvent *)
 
 void OpenWithDlg::slotSelected( const QString& _name, const QString& _exec )
 {
-  m_pService = KService::service( _name );
+  m_pService = KServiceProvider::getServiceProvider()->serviceByName( _name );
   if ( !m_pService )
     edit->setText( _exec );
   else
@@ -382,7 +382,7 @@ void OpenWithDlg::slotOK()
 {
   if( haveApp )
   {
-    m_pService = KService::service( qName );
+    m_pService = KServiceProvider::getServiceProvider()->serviceByName( qName );
   }
 
   haveApp = false;

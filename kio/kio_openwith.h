@@ -11,9 +11,10 @@
 #include <kapp.h>
 #include <ktreelist.h>
 #include <kurlcompletion.h>
+#include "kservices.h"
+#include <ksharedptr.h>
 
 class KApplicationTree;
-class KService;
 
 /**
  */
@@ -36,7 +37,7 @@ public:
    * @return the value the user entered
    */
   QString text() { return edit->text(); }
-  KService* service() { return m_pService; }
+  KSharedPtr<KService> service() { return m_pService; }
   
 public slots:
   /**
@@ -73,7 +74,7 @@ protected:
   QPushButton *cancel;
   QPushButton* browse;
 
-  KService *m_pService;
+  KSharedPtr<KService> m_pService;
 };
 
 class KAppTreeListItem : public KTreeListItem
@@ -135,8 +136,8 @@ public slots:
   void selected(int index);
   void highlighted(int index);
 signals:
-  void selected( const char *_name, const char *_exec );
-  void highlighted( const char *_name, const char *_exec );
+  void selected( const QString &_name, const QString &_exec );
+  void highlighted( const QString &_name, const QString &_exec );
 };
 
 #endif
