@@ -41,7 +41,8 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     : KIconView(parent, name), KFileView()
 {
     setViewName( i18n("Icon View") );
-    
+    myIconSize = KIconLoader::Small;
+
     toolTip = 0;
     setResizeMode( Adjust );
     setArrangement( TopToBottom );
@@ -149,7 +150,7 @@ void KFileIconView::insertItem( KFileViewItem *i )
 {
     KFileIconViewItem *item =
 	new KFileIconViewItem( (QIconView*)this, i->name(),
-			       i->pixmap(), i);
+			       i->pixmap( myIconSize ), i);
 
     i->setViewItem( this, item );
 }
@@ -192,7 +193,7 @@ void KFileIconView::updateView( bool b )
 	KFileIconViewItem *item = static_cast<KFileIconViewItem*>(QIconView::firstItem());
 	if ( item ) {
 	    do {
-		item ->setPixmap( const_cast<KFileViewItem*>(item->fileInfo())->pixmap() );
+		item ->setPixmap( const_cast<KFileViewItem*>(item->fileInfo())->pixmap( myIconSize ) );
 		item = static_cast<KFileIconViewItem *>(item->nextItem());
 	    } while ( item != 0L );
 	}
@@ -206,7 +207,7 @@ void KFileIconView::updateView( const KFileViewItem *i )
 	return;
     KFileIconViewItem *item = (KFileIconViewItem*)it;
     if ( item )
-	item ->setPixmap( item->fileInfo()->pixmap() );
+	item ->setPixmap( item->fileInfo()->pixmap( myIconSize ) );
 }
 
 #include "kfileiconview.moc"

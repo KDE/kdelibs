@@ -1,3 +1,11 @@
+Sun Jan 30 22:20:14 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfileviewitem.cpp (pixmap): 
+	fixed some issues for different pixmap sizes
+
+	* kfileiconview.{h,cpp} (setPixmapSize):
+	added configurability for different pixmap sizes
+
 Sun Jan 30 16:49:12 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kfileview.h + all views:

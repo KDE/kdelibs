@@ -116,8 +116,17 @@ public:
      * @param size specifies the size of the icon.
      * The default icon is only available in small size, so far.
      */
-    QPixmap pixmap( KIconLoader::Size size = KIconLoader::Small ) const;
+    QPixmap pixmap( KIconLoader::Size size ) const;
 
+    /**
+     * Returns a pixmap for this file. The only semantic difference to the 
+     * other pixmap() method is that the last used Pixmap-size will be used.
+     * E.g. if you call pixmap( KIconLoader::Large ) once, you can refer to
+     * this pixmap thru this method without specifying the size.
+     * The default size is KIconLoader::Small
+     */
+    QPixmap pixmap() { return pixmap( myPixmapSize ); }
+    
     /**
       * Returns a string of the date of the file.
       */
@@ -127,7 +136,7 @@ public:
      * Returns the modification time of the file.
      */
     time_t mTime() const { return myDate_t; }
-    
+
     /**
       * Returns the access permissions for the file as a string.
       */
@@ -222,7 +231,7 @@ private:
 
     mutable const QPixmap *myPixmap;
     mutable bool myPixmapDirty;
-    KIconLoader::Size myPixmapSize;
+    mutable KIconLoader::Size myPixmapSize;
     KMimeType::Ptr myMimeType;
 
     // cache for passwd and group entries

@@ -435,33 +435,35 @@ QString KFileViewItem::mimeType()
     return myMimeType->name();
 }
 
+
 QPixmap KFileViewItem::pixmap( KIconLoader::Size size ) const
 {
     if ( !myPixmapDirty ) {
 	if ( myPixmapSize != size || !myPixmap ) {
 	    delete myPixmap;
-	    myPixmap = new QPixmap(
-				   KGlobal::iconLoader()->loadIcon(defaultIcon(), size,
-									      0L, false));
+	    if ( !myMimeType )
+		myPixmap = new QPixmap( KGlobal::iconLoader()->loadIcon(defaultIcon(), size, 0L, false));
+	    else
+		myPixmap = new QPixmap( myMimeType->pixmap( url(), size ));
 	}
     }
 
     else  { // pixmap dirty, we shall load the pixmap according to our mimetype
 	QString icon = myMimeType->icon( url(), true );
-	if ( icon != defaultIcon() || (size == mySize) || !myPixmap ) {
+	if ( icon != defaultIcon() || (size != myPixmapSize) || !myPixmap ) {
 	
 	    if ( icon.isEmpty() )
 		icon = defaultIcon();
 	
-	    QPixmap temp = KGlobal::iconLoader()->loadIcon(icon, size);
 	    delete myPixmap;
-	    myPixmap = new QPixmap( temp );
-	
+	    myPixmap = new QPixmap(KGlobal::iconLoader()->loadIcon(icon,size));
+	    
 	    // we either have found the correct pixmap, or there is none,
 	    // anyway, we won't ever search for one again
 	    myPixmapDirty = false;
 	}
     }
+    myPixmapSize = size;
     return *myPixmap;
 }
 

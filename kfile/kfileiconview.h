@@ -26,6 +26,7 @@ class QWidget;
 class QLabel;
 
 #include <kiconview.h>
+#include <kiconloader.h>
 #include "kfileview.h"
 
 class KFileIconViewItem : public QIconViewItem
@@ -67,6 +68,9 @@ public:
 
     virtual void insertItem( KFileViewItem *i );
     virtual void clearSelection();
+    
+    void setIconSize( KIconLoader::Size size );
+    KIconLoader::Size iconSize() const { return myIconSize; }
 
 protected:
     virtual void highlightItem(const KFileViewItem *);
@@ -81,6 +85,7 @@ private slots:
 private:
     QLabel *toolTip;
     int th;
+    KIconLoader::Size myIconSize;
 
 };
 
