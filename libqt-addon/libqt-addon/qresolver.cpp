@@ -922,7 +922,7 @@ QString QResolver::domainToUnicode(const QString& asciiDomain)
   QStringList::Iterator it;
   for (it = input.begin(); it != input.end(); it++)
     {
-      QString label = ToUnicode(*it);
+      QString label = ToUnicode(*it).lower();
 
       // ToUnicode can't fail
       if (!retval.isEmpty())
