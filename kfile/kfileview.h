@@ -419,8 +419,14 @@ protected:
      */
     QDir::SortSpec mySorting;
     
-private:
+    /**
+     * You should probably never change this variable, but call sortReversed().
+     * It's here for the combi-view, that needs to set the sorting without
+     * resorting (the childviews do that themselves).
+     */
     bool reversed;
+
+private:
     static QDir::SortSpec defaultSortSpec;
     KFile::SortMode mySortMode;
     QString viewname;
