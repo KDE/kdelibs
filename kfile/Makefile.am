@@ -23,6 +23,8 @@ lib_LTLIBRARIES  = libkfile.la
 
 METASOURCES = AUTO
 
+SUBDIRS = . acl_prop_page
+
 include_HEADERS = kfiledialog.h kfileviewitem.h kfilebookmark.h  \
 	kfilereader.h kdiroperator.h kfileview.h \
 	booktoken.h kfiledetailview.h kcombiview.h \
@@ -31,7 +33,8 @@ include_HEADERS = kfiledialog.h kfileviewitem.h kfilebookmark.h  \
 	kurlcombobox.h kurlrequesterdlg.h kopenwith.h kpropsdlg.h \
 	kicondialog.h kdirsize.h kpreviewwidgetbase.h kimagefilepreview.h
 
-noinst_HEADERS = kfiledialogconf.h kfilefilter.h config-kfile.h krecentdirs.h
+noinst_HEADERS = kfiledialogconf.h kfilefilter.h config-kfile.h krecentdirs.h 
+
 kfstest_SOURCES =  kfstest.cpp
 libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
 	kfilereader.cpp kfileviewitem.cpp booktoken.cpp \
