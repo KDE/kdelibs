@@ -187,7 +187,7 @@ void TabWidget::insertTab ( QWidget * child, const QString & label, int index)
 
 void TabWidget::insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index )
 {
-  KTabWidget::insertTab(child,iconset,label,index);
+  QTabWidget::insertTab(child,iconset,label,index);
   showPage(child);
   maybeShow();
   tabBar()->repaint();
