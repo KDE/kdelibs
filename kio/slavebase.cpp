@@ -41,6 +41,7 @@
 #include <ksock.h>
 #include <kcrash.h>
 #include <kdesu/client.h>
+#include <klocale.h>
 #include <kprotocolmanager.h>
 
 #include "slavebase.h"
