@@ -284,21 +284,15 @@ QString KFileInfo::dateTime(time_t _time) {
     time_t now = time(0);
     t.setTime_t(_time);
 
-    /* isn't there a sprintf modifier for this? */
-    QString number;
-    number.setNum(t.date().day());
-    if (number.length() < 2)
-	number = " " + number;
-
     QString sTime;
     if (_time > now || now - _time >= 365 * 24 * 60 * 60)
 	sTime.sprintf(" %04d", t.date().year());
     else
 	sTime.sprintf("%02d:%02d", t.time().hour(), t.time().minute());
 
-    QString month = ("   " + *months[t.date().month() - 1]).right(3);
-    QString text = QString("%1 %2 %3").arg(month).
-	arg(number).arg(sTime);
+    QString text = QString("%1 %2 %3").
+      arg(months[t.date().month() - 1]->left(3), 3).
+      arg(t.date().day(), 2).arg(sTime);
 
     return text;
 }

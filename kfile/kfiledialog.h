@@ -59,7 +59,7 @@ class KFileFilter;
  *
  * The dialog has been designed to allow applications to customise it
  * by subclassing. It uses geometry management to ensure that subclasses
- * can easily add children which will be incorperated into the layout.
+ * can easily add children which will be incorporated into the layout.
  *
  * @short A file selection dialog
  *
@@ -386,7 +386,7 @@ private:
 
 /**
  * The KDirDialog widget provides a user (and developer) friendly way to
- * select directories. It is a specalised KFileDialog.
+ * select directories. It is a specialised KFileDialog.
  *
  * You will usually want to use one of the two static methods
  * KFileDialog::getDirectory.
