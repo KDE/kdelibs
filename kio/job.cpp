@@ -62,13 +62,18 @@ using namespace KIO;
 
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( packedArgs, IO_WriteOnly ); stream
 
-Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0)
+Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0)
 {
     // All jobs delete themselves after emiting 'result'.
 
     // Notify the UI Server and get an id
     if (showProgressInfo)
+    {
         id = Observer::self()->newJob( this );
+        // Connect global progress info signal
+        connect( this, SIGNAL( percent( KIO::Job*, unsigned long ) ),
+                 Observer::self(), SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
+    }
 }
 
 void Job::addSubjob(Job *job)
@@ -124,7 +129,7 @@ void Job::showErrorDialog( QWidget * parent )
 SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
                      bool showProgressInfo )
   : Job(showProgressInfo), m_slave(0), m_packedArgs(packedArgs),
-    m_url(url), m_command(command), m_totalSize(0), m_percent(0)
+    m_url(url), m_command(command), m_totalSize(0)
 {
     if (m_url.isMalformed())
     {
@@ -800,8 +805,8 @@ bool KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 //////////
 
 ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString _prefix) :
-    SimpleJob(u, CMD_LISTDIR, QByteArray()),
-    recursive(_recursive), prefix(_prefix)
+    SimpleJob(u, CMD_LISTDIR, QByteArray(), showProgressInfo),
+    recursive(_recursive), prefix(_prefix), m_processedEntries(0)
 {
     // We couldn't set the args when calling the parent constructor,
     // so do it now.
@@ -810,7 +815,10 @@ ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString 
 
 void ListJob::slotListEntries( const KIO::UDSEntryList& list )
 {
-    emit processedSize( this, list.count() );
+    // Emit progress info (takes care of emit processedSize and percent)
+    m_processedEntries += list.count();
+    slotProcessedSize( m_processedEntries );
+
     if (recursive) {
 	UDSEntryListIterator it(list);
 
@@ -893,11 +901,6 @@ void ListJob::slotResult( KIO::Job * job )
     removeSubjob( job );
 }
 
-void ListJob::slotTotalEntries( unsigned long count )
-{
-    emit totalSize( this, count );
-}
-
 ListJob *KIO::listDir( const KURL& url, bool showProgressInfo )
 {
     ListJob * job = new ListJob(url, showProgressInfo);
@@ -923,7 +926,7 @@ void ListJob::start(Slave *slave)
 CopyJob::CopyJob( const KURL::List& src, const KURL& dest, bool move, bool showProgressInfo )
   : Job(), m_move(move),
     destinationState(DEST_NOT_STATED), state(STATE_STATING),
-      m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0), m_percent(0), m_srcList(src), m_dest(dest),
+      m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0), m_srcList(src), m_dest(dest),
       m_bAutoSkip( false ), m_bOverwriteAll( false )
 {
   if ( showProgressInfo ) {
@@ -943,8 +946,6 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, bool move, bool showP
 
     connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
 	     Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
-    connect( this, SIGNAL( percent( KIO::Job*, unsigned long ) ),
-	     Observer::self(), SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
 
     connect( this, SIGNAL( copying( KIO::Job*, const KURL& , const KURL& ) ),
 	     Observer::self(), SLOT( slotCopying( KIO::Job*, const KURL&, const KURL& ) ) );
@@ -1711,7 +1712,7 @@ CopyJob *KIO::move( const KURL::List& src, const KURL& dest, bool showProgressIn
 }
 
 DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
-    : Job(), m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0), m_percent(0), m_srcList(src), m_shred(shred)
+    : Job(), m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0), m_srcList(src), m_shred(shred)
 {
   if ( showProgressInfo ) {
     connect( this, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),
@@ -1730,8 +1731,6 @@ DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
 
     connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
 	     Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
-    connect( this, SIGNAL( percent( KIO::Job*, unsigned long ) ),
-	     Observer::self(), SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
 
     connect( this, SIGNAL( deleting( KIO::Job*, const KURL& ) ),
 	     Observer::self(), SLOT( slotDeleting( KIO::Job*, const KURL& ) ) );

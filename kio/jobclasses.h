@@ -113,6 +113,13 @@ namespace KIO {
          */
         void result( KIO::Job *job );
 
+        /**
+         * Progress signal showing the overall progress of the job
+         * This is valid for any kind of job, and allows using a
+         * a progress bar very easily (see @ref KProgress)
+         */
+        void percent( KIO::Job *job, unsigned long percent );
+
     protected slots:
         /**
          * Called whenever a subjob finishes.
@@ -141,6 +148,7 @@ namespace KIO {
         QList<Job> subjobs;
         int m_error;
         QString m_errorText;
+        unsigned long m_percent;
         int id; // for uiserver
     };
 
@@ -181,9 +189,21 @@ namespace KIO {
         Slave *slave() { return m_slave; }
 
     signals:
+        /**
+         * Emitted when we know the size of this job (data size for transfers,
+         * number of entries for listings).
+         */
         void totalSize( KIO::Job *, unsigned long size );
+
+        /**
+         * Regularly emitted to show the progress of this job
+         * (current data size for transfers, entries listed).
+         */
         void processedSize( KIO::Job *, unsigned long size );
-        void percent( KIO::Job *, unsigned long percent );
+
+        /**
+         * Emitted to display information about the speed of this job.
+         */
         void speed( KIO::Job *, unsigned long bytes_per_second );
 
     protected slots:
@@ -211,7 +231,6 @@ namespace KIO {
         KURL m_url;
         int m_command;
         unsigned long m_totalSize;
-        unsigned long m_percent;
     };
 
     // Stat Job
@@ -352,11 +371,22 @@ namespace KIO {
         virtual void slotResult( KIO::Job *job );
 
     signals:
+        /**
+         * Emitted when we know the size of this job (data size for transfers,
+         * number of entries for listings).
+         */
         void totalSize( KIO::Job *, unsigned long size );
-        void processedSize( KIO::Job *, unsigned long size );
-        void percent( KIO::Job *, unsigned long percent );
-        void speed( KIO::Job *, unsigned long bytes_per_second );
 
+        /**
+         * Regularly emitted to show the progress of this job
+         * (current data size for transfers, entries listed).
+         */
+        void processedSize( KIO::Job *, unsigned long size );
+
+        /**
+         * Emitted to display information about the speed of this job.
+         */
+        void speed( KIO::Job *, unsigned long bytes_per_second );
 
     protected:
         void startCopyJob();
@@ -388,18 +418,22 @@ namespace KIO {
     signals:
         /**
          * This signal emits the entry found by the job while listing.
+         * The progress signals aren't specific to ListJob. It simply
+         * uses SimpleJob's @ref processedSize (number of entries listed) and
+         * @ref totalSize (total number of entries, if known),
+         * as well as percent.
          */
         void entries( KIO::Job *, const KIO::UDSEntryList& );
 
     protected slots:
         virtual void slotResult( KIO::Job *job );
         void slotListEntries( const KIO::UDSEntryList& list );
-        void slotTotalEntries( unsigned long count );
         void gotEntries( KIO::Job * subjob, const KIO::UDSEntryList& list );
 
     private:
         bool recursive;
         QString prefix;
+        unsigned long m_processedEntries;
     };
 
     struct CopyInfo
@@ -431,8 +465,6 @@ namespace KIO {
         void processedFiles( KIO::Job *, unsigned long files );
         void processedDirs( KIO::Job *, unsigned long dirs );
 
-        void percent( KIO::Job *, unsigned long percent );
-
         void speed( KIO::Job *, unsigned long bytes_per_second );
 
         void copying( KIO::Job *, const KURL& from, const KURL& to );
@@ -443,6 +475,7 @@ namespace KIO {
         void creatingDir( KIO::Job *, const KURL& dir );
         void renaming( KIO::Job *, const KURL& old_name, const KURL& new_name );
 
+        // ?
         void canResume( KIO::Job *, bool can_resume );
 
     protected:
@@ -474,7 +507,6 @@ namespace KIO {
         unsigned long m_totalSize;
         unsigned long m_processedSize;
         unsigned long m_fileProcessedSize;
-        unsigned long m_percent;
         QValueList<CopyInfo> files;
         QValueList<CopyInfo> dirs;
         KURL::List dirsToRemove;
@@ -506,8 +538,6 @@ namespace KIO {
         void processedFiles( KIO::Job *, unsigned long files );
         void processedDirs( KIO::Job *, unsigned long dirs );
 
-        void percent( KIO::Job *, unsigned long percent );
-
         void deleting( KIO::Job *, const KURL& file );
 
     protected:
@@ -527,7 +557,6 @@ namespace KIO {
         unsigned long m_totalSize;
         unsigned long m_processedSize;
         unsigned long m_fileProcessedSize;
-        unsigned long m_percent;
         KURL::List files;
         KURL::List symlinks;
         KURL::List dirs;
