@@ -2,12 +2,16 @@
 <kpartgui name="khtmlpart">
 <MenuBar>
  <Menu name="view">
-  <Action name="viewDocumentSource"/>
-  <Action name="viewFrameSource"/>
-  <Action name="saveBackground"/>
-  <Action name="saveDocument"/>
-  <Action name="saveFrame"/>
-  <Action name="setEncoding"/>
+  <Action name="viewDocumentSource" />
+  <Action name="viewFrameSource" />
+  <Action name="saveBackground" />
+  <Action name="saveDocument" />
+  <Action name="saveFrame" />
+  <Action name="setEncoding" />
  </Menu>
 </MenuBar>
+<ToolBar name="mainToolBar">
+ <Action name="incFontSizes" />
+ <Action name="decFontSizes" />
+</ToolBar>
 </kpartgui>

@@ -80,6 +80,7 @@ namespace khtml
     RenderPart *m_frame;
     QGuardedPtr<KParts::ReadOnlyPart> m_part;
     QGuardedPtr<KParts::BrowserExtension> m_extension;
+    QString m_serviceName;
     QString m_serviceType;
     QStringList m_services;
     bool m_bCompleted;
@@ -112,6 +113,7 @@ public:
     m_bClearing = false;
     m_bCleared = false;
     m_userSheet = QString::null;
+    m_fontBase = 0;
   }
   ~KHTMLPartPrivate()
   {
@@ -154,6 +156,8 @@ public:
   KAction *m_paSaveDocument;
   KAction *m_paSaveFrame;
   KSelectAction *m_paSetEncoding;
+  KAction *m_paIncFontSizes;
+  KAction *m_paDecFontSizes;
 
   KParts::PartManager *m_manager;
 
@@ -164,6 +168,8 @@ public:
     DOM::DOMString m_userSheetUrl;
 
   QString m_popupMenuXML;
+
+  int m_fontBase;
 };
 
 namespace khtml {
@@ -190,7 +196,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 : KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
 {
   khtml::Cache::ref();
-  
+
   setInstance( KHTMLFactory::instance() );
   setXMLFile( "khtml.rc" );
 
@@ -219,13 +225,16 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
   d->m_paSetEncoding->setItems( encodings );
   d->m_paSetEncoding->setCurrentItem(0);
 
+  d->m_paIncFontSizes = new KAction( i18n( "Increase Font Sizes" ), "viewmag+", 0, this, SLOT( slotIncFontSizes() ), actionCollection(), "incFontSizes" );
+  d->m_paDecFontSizes = new KAction( i18n( "Decrease Font Sizes" ), "viewmag-", 0, this, SLOT( slotDecFontSizes() ), actionCollection(), "decFontSizes" );
+  
   connect( this, SIGNAL( completed() ),
 	   this, SLOT( updateActions() ) );
   connect( this, SIGNAL( started( KIO::Job * ) ),
 	   this, SLOT( updateActions() ) );
 
   d->m_popupMenuXML = KXMLGUIFactory::readConfigFile( locate( "data", "khtml/khtml_popupmenu.rc", KHTMLFactory::instance() ) );
-  
+
   connect( khtml::Cache::loader(), SIGNAL( requestDone() ),
 	   this, SLOT( checkCompleted() ) );
 }
@@ -583,6 +592,8 @@ void KHTMLPart::end()
 
 void KHTMLPart::checkCompleted()
 {
+  int requests = 0;
+
   if ( d->m_bParsing || d->m_bComplete )
     return;
 
@@ -592,7 +603,7 @@ void KHTMLPart::checkCompleted()
     if ( !it.data().m_bCompleted )
       return;
 
-  int requests = khtml::Cache::loader()->numRequests( m_url.url() );
+  requests = khtml::Cache::loader()->numRequests( m_url.url() );
   kdDebug() << "number of loader requests: " << requests << endl;
   if ( requests > 0 )
     return;
@@ -627,7 +638,7 @@ QString KHTMLPart::baseTarget() const
   return d->m_baseTarget;
 }
 
-KURL KHTMLPart::completeURL( const QString &url, const QString &target )
+KURL KHTMLPart::completeURL( const QString &url, const QString &/*target*/ )
 {
   // WABA: The following check is necassery to fix forms which don't set
   // an action URL in the believe that it default to the same URL as
@@ -1017,7 +1028,7 @@ void KHTMLPart::slotSaveBackground()
     KURL destURL( dlg->selectedURL());
     if ( !destURL.isMalformed() )
     {
-      KIO::Job *job = KIO::file_copy( backgroundURL, destURL );
+      /*KIO::Job *job = */KIO::file_copy( backgroundURL, destURL );
       // TODO connect job result, to display errors
     }
   }
@@ -1044,7 +1055,7 @@ void KHTMLPart::slotSaveDocument()
      KURL destURL( dlg->selectedURL() );
       if ( !destURL.isMalformed() )
       {
-        KIO::Job *job = KIO::file_copy( url(), destURL );
+        /*KIO::Job *job = */ KIO::file_copy( url(), destURL );
         // TODO connect job result, to display errors
       }
   }
@@ -1133,6 +1144,7 @@ void KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
     args.serviceType = child->m_serviceType;
 
   child->m_args = args;
+  child->m_serviceName = QString::null;
 
   if ( args.serviceType.isEmpty() )
     child->m_run = new KHTMLRun( this, child, url );
@@ -1146,7 +1158,7 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
 
   if ( !child->m_services.contains( mimetype ) )
   {
-    KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), mimetype, child->m_services );
+    KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), mimetype, child->m_serviceName, child->m_services );
 
     if ( !part )
       return;
@@ -1222,9 +1234,14 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
   child->m_part->openURL( url );
 }
 
-KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const QString &mimetype, QStringList &serviceTypes )
+KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const QString &mimetype, QString &serviceName, QStringList &serviceTypes )
 {
-  KTrader::OfferList offers = KTrader::self()->query( mimetype, "'KParts/ReadOnlyPart' in ServiceTypes" );
+  QString constr = QString::fromLatin1( "('KParts/ReadOnlyPart' in ServiceTypes)" );
+
+  if ( !serviceName.isEmpty() )
+    constr.append( QString::fromLatin1( "and ( Name == '%1' )" ).arg( serviceName ) );
+
+  KTrader::OfferList offers = KTrader::self()->query( mimetype, constr );
 
   assert( offers.count() >= 1 );
 
@@ -1250,6 +1267,7 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *
     return res;
 
   serviceTypes = service->serviceTypes();
+  serviceName = service->name();
 
   return res;
 }
@@ -1478,7 +1496,7 @@ void KHTMLPart::saveState( QDataStream &stream )
 
   stream << (Q_UINT32)d->m_frames.count();
 
-  QStringList frameNameLst, frameServiceTypeLst;
+  QStringList frameNameLst, frameServiceTypeLst, frameServiceNameLst;
   KURL::List frameURLLst;
   QValueList<QByteArray> frameStateBufferLst;
 
@@ -1488,6 +1506,7 @@ void KHTMLPart::saveState( QDataStream &stream )
   {
     frameNameLst << (*it).m_name;
     frameServiceTypeLst << (*it).m_serviceType;
+    frameServiceNameLst << (*it).m_serviceName;
     if ( (*it).m_part )
       frameURLLst << (*it).m_part->url();
     else
@@ -1502,7 +1521,7 @@ void KHTMLPart::saveState( QDataStream &stream )
     frameStateBufferLst << state;
   }
 
-  stream << frameNameLst << frameServiceTypeLst << frameURLLst << frameStateBufferLst;
+  stream << frameNameLst << frameServiceTypeLst << frameServiceNameLst << frameURLLst << frameStateBufferLst;
 }
 
 void KHTMLPart::restoreState( QDataStream &stream )
@@ -1510,12 +1529,12 @@ void KHTMLPart::restoreState( QDataStream &stream )
   KURL u;
   Q_INT32 xOffset; int yOffset;
   Q_UINT32 frameCount;
-  QStringList frameNames, frameServiceTypes;
+  QStringList frameNames, frameServiceTypes, frameServiceNames;
   KURL::List frameURLs;
   QValueList<QByteArray> frameStateBuffers;
 
-  stream >> u >> xOffset >> yOffset >> frameCount >> frameNames >> frameServiceTypes >> frameURLs
-         >> frameStateBuffers;
+  stream >> u >> xOffset >> yOffset >> frameCount >> frameNames >> frameServiceTypes >> frameServiceNames
+	 >> frameURLs >> frameStateBuffers;
 
   d->m_bComplete = false;
 
@@ -1532,10 +1551,11 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
     QStringList::ConstIterator fNameIt = frameNames.begin();
     QStringList::ConstIterator fServiceTypeIt = frameServiceTypes.begin();
+    QStringList::ConstIterator fServiceNameIt = frameServiceNames.begin();
     KURL::List::ConstIterator fURLIt = frameURLs.begin();
     QValueList<QByteArray>::ConstIterator fBufferIt = frameStateBuffers.begin();
 
-    for (; fIt != fEnd; ++fIt, ++fNameIt, ++fServiceTypeIt, ++fURLIt, ++fBufferIt )
+    for (; fIt != fEnd; ++fIt, ++fNameIt, ++fServiceTypeIt, ++fServiceNameIt, ++fURLIt, ++fBufferIt )
     {
       khtml::ChildFrame *child = &(*fIt);
 
@@ -1545,6 +1565,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
       {
         child->m_bPreloaded = true;
 	child->m_name = *fNameIt;
+	child->m_serviceName = *fServiceNameIt;
 	processObjectRequest( child, *fURLIt, *fServiceTypeIt );
       }
 
@@ -1571,14 +1592,16 @@ void KHTMLPart::restoreState( QDataStream &stream )
     QStringList::ConstIterator fNameEnd = frameNames.end();
 
     QStringList::ConstIterator fServiceTypeIt = frameServiceTypes.begin();
+    QStringList::ConstIterator fServiceNameIt = frameServiceNames.begin();
     KURL::List::ConstIterator fURLIt = frameURLs.begin();
     QValueList<QByteArray>::ConstIterator fBufferIt = frameStateBuffers.begin();
 
-    for (; fNameIt != fNameEnd; ++fNameIt, ++fServiceTypeIt, ++fURLIt, ++fBufferIt )
+    for (; fNameIt != fNameEnd; ++fNameIt, ++fServiceTypeIt, ++fServiceNameIt, ++fURLIt, ++fBufferIt )
     {
       khtml::ChildFrame newChild;
       newChild.m_bPreloaded = true;
       newChild.m_name = *fNameIt;
+      newChild.m_serviceName = *fServiceNameIt;
 
       kdDebug() << debugString( *fNameIt ) << " ---- " << debugString( *fServiceTypeIt ) << endl;
 
@@ -1631,6 +1654,37 @@ void KHTMLPart::slotSelectionChanged()
   emit d->m_extension->enableAction( "copy", hasSelection() );
   emit d->m_extension->selectionInfo( selectedText() );
 }
+
+void KHTMLPart::slotIncFontSizes()
+{
+  updateFontSize( ++d->m_fontBase );
+} 
+
+void KHTMLPart::slotDecFontSizes()
+{
+  updateFontSize( --d->m_fontBase ); 
+} 
+
+void KHTMLPart::updateFontSize( int add )
+{
+  resetFontSizes(); 
+  QValueList<int> sizes = fontSizes();
+  
+  QValueList<int>::Iterator it = sizes.begin();
+  QValueList<int>::Iterator end = sizes.end();
+  for (; it != end; ++it )
+    (*it) += add*4;
+  
+  setFontSizes( sizes );
+  
+  // HACK until khtml supports setting the font size dynamically
+  KParts::URLArgs args( d->m_extension->urlArgs() );
+  args.reload = true;
+  
+  closeURL();
+  d->m_extension->setURLArgs( args );
+  openURL( m_url );
+} 
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )

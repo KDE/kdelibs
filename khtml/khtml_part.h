@@ -178,8 +178,6 @@ public:
   void autoloadImages( bool enable );
   bool autoloadImages() const;
 
-
-
   /**
    * Clears the widget and prepares it for new content.
    * If you want @ref url() to return
@@ -461,22 +459,7 @@ protected:
   /**
    * @internal
    */
-  virtual void requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName );
-
-  /**
-   * @internal
-   */
-  virtual void requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType );
-
-  /**
-   * @internal
-   */
-  virtual void requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
-
-  /**
-   * @internal
-   */
-  virtual void processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype );
+  void processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype );
 
   /**
    * @internal
@@ -492,7 +475,7 @@ protected:
    * @internal
    */
   virtual KParts::ReadOnlyPart *createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name,
-					    const QString &mimetype, QStringList &serviceTypes );
+					    const QString &mimetype, QString &serviceName, QStringList &serviceTypes );
 
   /**
    * @internal
@@ -524,7 +507,7 @@ protected:
    */
   virtual void drawContentsHook(QPainter *) {}
 
-protected slots:
+private slots:
   /**
    * @internal
    */
@@ -568,7 +551,9 @@ protected slots:
    */
   virtual void slotSetEncoding();
 
-private slots:
+  void slotIncFontSizes();
+  void slotDecFontSizes();
+
   /**
    * @internal
    */
@@ -588,10 +573,27 @@ private slots:
 
   void slotSelectionChanged();
 
-private slots:
   void checkCompleted();
 private:
   void clear();
+
+  void updateFontSize( int add );
+
+  /**
+   * @internal
+   */
+  void requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName );
+
+  /**
+   * @internal
+   */
+  void requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType );
+
+  /**
+   * @internal
+   */
+  void requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
+
 
   DOM::HTMLDocumentImpl *docImpl() const;
   khtml::ChildFrame *frame( const QObject *obj );
