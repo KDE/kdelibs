@@ -1,1 +1,1 @@
-SUBDIRS = highcolor themes light kthemestyle pics riscos utils
+SUBDIRS = highcolor themes light kthemestyle pics riscos utils keramik
