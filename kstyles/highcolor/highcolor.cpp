@@ -50,6 +50,7 @@
 #include "highcolor.moc"
 #include "bitmaps.h"
 
+//#define DEBUG_MENUS
 
 // -- Style Plugin Interface -------------------------
 class HighColorStylePlugin : public QStylePlugin
@@ -445,6 +446,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			break;
 		}
 
+
 		case PE_ScrollBarAddPage:
 		case PE_ScrollBarSubPage: {
 			p->setPen(cg.shadow());
@@ -556,10 +558,12 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 				grayBmp   = QBitmap(13, 13, radiooff_gray_bits,   true);
 				dgrayBmp  = QBitmap(13, 13, radiooff_dgray_bits,  true);
 				centerBmp = QBitmap(13, 13, radiooff_center_bits, true);
+				centerBmp.setMask( centerBmp );
 			}
 
-			// Surrouding background
-			p->fillRect(r, cg.brush(QColorGroup::Background));
+			// Bevel
+			kColorBitmaps(p, cg, r.x(), r.y(), &lightBmp , &grayBmp,
+						  NULL, &dgrayBmp);
 			
 			// The center fill of the indicator (grayed out when disabled)
 			if ( enabled )
@@ -568,11 +572,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 				p->setPen( cg.background() );
 			
 			p->drawPixmap( r.x(), r.y(), centerBmp );
-			
-			// Bevel
-			kColorBitmaps(p, cg, r.x(), r.y(), &lightBmp , &grayBmp,
-						  NULL, &dgrayBmp);
-
+						
 			// Indicator "dot"
 			if ( on ) {
 				QColor color = flags & Style_NoChange ?
@@ -590,10 +590,14 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 		}
 
 
-		// Draw the exclusive indicator (radio button) mask.
+		// RADIOBUTTON (exclusive indicator) mask
+		// -------------------------------------------------------------------
 		case PE_ExclusiveIndicatorMask: {
-			if (maskBmp.isNull())
+			if (maskBmp.isNull()) {
 				maskBmp = QBitmap(13, 13, radiomask_bits, true);
+				maskBmp.setMask(maskBmp);
+			}
+				
 			p->setPen(Qt::color1);
 			p->drawPixmap(r.x(), r.y(), maskBmp);
 			break;
@@ -1106,7 +1110,7 @@ void HighColorStyle::drawControl( ControlElement element,
 						         &cg.brush(QColorGroup::Midlight) );
 			else
 				p->fillRect( r, cg.button() );
-
+			
 			// Do we have an icon?
 			if ( mi->iconSet() ) {
 				QRect cr( reverse ? x+w - checkcol : x, y, checkcol, h );
@@ -1154,10 +1158,15 @@ void HighColorStyle::drawControl( ControlElement element,
 
 			// Time to draw the menu item label...
 			int xm = itemFrame + checkcol + itemHMargin; // X position margin
-			int xp = reverse ?
-					x + tab + rightBorder + itemHMargin + itemFrame :
+			
+			int xp = reverse ? // X position
+					x + tab + rightBorder + itemHMargin + itemFrame - 1 :
 					x + xm;
+			
 			int offset = reverse ? -1 : 1;	// Shadow offset for etched text
+			
+			// Label width (minus the width of the accelerator portion)
+			int tw = w - xm - tab - arrowHMargin - itemHMargin * 3 - itemFrame + 1; 
 
 			// Set the color for enabled and disabled text (used for both active and inactive menu items)
 			p->setPen( enabled ? cg.buttonText() : cg.mid() );
@@ -1176,10 +1185,10 @@ void HighColorStyle::drawControl( ControlElement element,
 				// Draw etched text if we're inactive and the menu item is disabled
 				if ( !enabled && !active ) {
 					p->setPen( cg.light() );
-					mi->custom()->paint( p, cg, active, enabled, xp+offset, y+m+1, w-xm-tab+1, h-2*m );
+					mi->custom()->paint( p, cg, active, enabled, xp+offset, y+m+1, tw, h-2*m );
 					p->setPen( discol );
 				}
-				mi->custom()->paint( p, cg, active, enabled, xp, y+m, w-xm-tab+1, h-2*m );
+				mi->custom()->paint( p, cg, active, enabled, xp, y+m, tw, h-2*m );
 				p->restore();
 			}
 			else {
@@ -1194,9 +1203,13 @@ void HighColorStyle::drawControl( ControlElement element,
 
 					// Does the menu item have a tabstop? (for the accelerator text)
 					if ( t >= 0 ) {
-						int tabx = reverse ? x + rightBorder + itemFrame :
+						int tabx = reverse ? x + rightBorder + itemHMargin + itemFrame :
 							x + w - tab - rightBorder - itemHMargin - itemFrame;
 
+#ifdef DEBUG_MENUS
+						p->drawRect( QRect( tabx, y+m, tab, h-2*m) );
+#endif
+						
 						// Draw the right part of the label (accelerator text)
 						if ( !enabled && !active ) {
 							// Draw etched text if we're inactive and the menu item is disabled
@@ -1208,15 +1221,19 @@ void HighColorStyle::drawControl( ControlElement element,
 						s = s.left( t );
 					}
 
+#ifdef DEBUG_MENUS
+					p->drawRect( QRect(xp, y+m, tw, h-2*m) ); 
+#endif
+					
 					// Draw the left part of the label (or the whole label if there's no accelerator)
 					if ( !enabled && !active ) {
 						// Etched text again for inactive disabled menu items...
 						p->setPen( cg.light() );
-						p->drawText( xp+offset, y+m+1, w-xm-tab+1, h-2*m, text_flags, s, t );
+						p->drawText( xp+offset, y+m+1, tw, h-2*m, text_flags, s, t );
 						p->setPen( discol );
 					}
 
-					p->drawText( xp, y+m, w-xm-tab+1, h-2*m, text_flags, s, t );
+					p->drawText( xp, y+m, tw, h-2*m, text_flags, s, t );
 
 				}
 
@@ -1253,7 +1270,7 @@ void HighColorStyle::drawControl( ControlElement element,
 					QColorGroup g2( discol, cg.highlight(), white, white,
 									enabled ? white : discol, discol, white );
 
-					drawPrimitive( arrow, p, QRect(xp, y + h / 2 - dim / 2,dim, dim),
+					drawPrimitive( arrow, p, QRect(xp, y + h / 2 - dim / 2, dim, dim),
 									g2, Style_Enabled );
 				} else
 					drawPrimitive( arrow, p, QRect(xp, y + h / 2 - dim / 2, dim, dim),
@@ -1917,9 +1934,9 @@ int HighColorStyle::styleHint( StyleHint sh, const QWidget *w, const QStyleOptio
 {
 	switch (sh)
 	{
-		// We don't want any spacing below the menu bar thanks
+		// We don't want any spacing below the menu bar when highcolor
 		case SH_MainWindow_SpaceBelowMenuBar:
-			return 0;
+			return (highcolor ? 0 : 1);
 
 		case SH_EtchDisabledText:
 		case SH_Slider_SnapToValue:
