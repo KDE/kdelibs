@@ -383,7 +383,7 @@ void RenderBox::updateHeight()
 
 void RenderBox::position(int x, int y, int, int, int, bool)
 {
-    m_x = x;
+    m_x = x + marginLeft();
     m_y = y;
     // ### paddings
     //m_width = width;
@@ -511,7 +511,13 @@ void RenderBox::calcWidth()
 	m_marginLeft = 0;
 	m_marginRight = 0;
 	
-	if (w.type == Variable)
+        if (isInline() && !isReplaced())
+        {
+	    m_marginLeft = ml.minWidth(cw);
+	    m_marginRight = mr.minWidth(cw);            
+            return;
+        }
+	else if (w.type == Variable)
 	{
 //	    kdDebug( 6040 ) << "variable" << endl;
 	    m_marginLeft = ml.minWidth(cw);
@@ -533,7 +539,7 @@ void RenderBox::calcWidth()
             calcHorizontalMargins(ml,mr,cw);
 
 	}
-	if (cw != m_width + m_marginLeft + m_marginRight && !isFloating())
+	if (cw != m_width + m_marginLeft + m_marginRight && !isFloating() && !isInline())
 	{
     	    if (style()->direction()==LTR)
 		m_marginRight = cw - m_width - m_marginLeft;

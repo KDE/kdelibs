@@ -732,7 +732,10 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 	if(r->obj->isText())
 	    r->width = static_cast<RenderText *>(r->obj)->width(r->start, r->stop-r->start);
 	else
-	    r->width = r->obj->width();
+        {
+            r->obj->calcWidth();
+	    r->width = r->obj->width()+r->obj->marginLeft()+r->obj->marginRight();
+        }
 	totWidth += r->width;
 	r = runs.next();
     }
