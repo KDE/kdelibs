@@ -285,13 +285,12 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
                 QString aOutputFileName = kDebug_data->config->readEntry(aKey, "kdebug.dbg");
 
                 const int BUFSIZE = 4096;
-                char buf[BUFSIZE] = "";
-                buf[BUFSIZE-1] = '\0';
+                char buf[BUFSIZE];
 		int nSize;
                 if ( !kDebug_data->aAreaName.isEmpty() )
-		    nSize = snprintf( buf, BUFSIZE-1, "%s: %s", kDebug_data->aAreaName.ascii(), data);
+		    nSize = snprintf( buf, BUFSIZE, "%s: %s", kDebug_data->aAreaName.ascii(), data);
 		else
-		    nSize = snprintf( buf, BUFSIZE-1, "%s", data);
+		    nSize = snprintf( buf, BUFSIZE, "%s", data);
 
                 QFile aOutputFile( aOutputFileName );
                 aOutputFile.open( IO_WriteOnly | IO_Append );
@@ -364,8 +363,7 @@ kdbgstream &kdbgstream::form(const char *format, ...)
     char buf[4096];
     va_list arguments;
     va_start( arguments, format );
-    buf[sizeof(buf)-1] = '\0';
-    vsnprintf( buf, sizeof(buf)-1, format, arguments );
+    vsnprintf( buf, sizeof(buf), format, arguments );
     va_end(arguments);
     *this << buf;
     return *this;
