@@ -2467,7 +2467,7 @@ void KHTMLPart::findTextNext()
   //d->m_paFindNext->setEnabled( d->m_find != 0L  ); // true, except when completely done
 }
 
-void KHTMLPart::slotHighlight( const QString &text, int index, int length )
+void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
 {
   //kdDebug(6050) << "slotHighlight index=" << index << " length=" << length << endl;
   QValueList<KHTMLPartPrivate::StringPortion>::Iterator it = d->m_stringPortions.begin();
@@ -5059,8 +5059,11 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     }
   }
 #ifndef QT_NO_CLIPBOARD
-  if ((d->m_guiProfile == BrowserViewGUI) && (_mouse->button() == MidButton) && (event->url().isNull()))
-     d->m_extension->pasteRequest();
+  if ((d->m_guiProfile == BrowserViewGUI) && (_mouse->button() == MidButton) && (event->url().isNull())) {
+    KHTMLPart *p = this;
+    while (p->parentPart()) p = p->parentPart();
+    p->d->m_extension->pasteRequest();
+  }
 #endif
 
 #ifndef KHTML_NO_SELECTION
