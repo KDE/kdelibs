@@ -278,7 +278,7 @@ Object FunctionObjectImp::construct(ExecState *exec, const List &args)
   Object prototype = objCons.construct(exec,List::empty());
   prototype.put(exec,"constructor",fimp,DontEnum|DontDelete|ReadOnly);
   fimp->put(exec,"prototype",prototype,DontEnum|DontDelete|ReadOnly);
-  fimp->put(exec,"arguments",Null());
+  fimp->put(exec,"arguments",Null(),DontEnum|DontDelete|ReadOnly);
   return ret;
 }
 

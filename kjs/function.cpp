@@ -115,7 +115,7 @@ Value FunctionImp::call(ExecState *exec, Object &thisObj, const List &args)
   if (codeType() == FunctionCode) {
     assert(ctx->activationObject().inherits(&ActivationImp::info));
     Object argsObj = static_cast<ActivationImp*>(ctx->activationObject().imp())->argumentsObject();
-    put(newExec,"arguments", argsObj);
+    put(newExec,"arguments", argsObj, DontDelete|DontEnum|ReadOnly);
     pushArgs(newExec,argsObj);
   }
 
