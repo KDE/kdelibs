@@ -76,7 +76,7 @@ void RenderBox::setStyle(RenderStyle *_style)
         break;
     default:
         setPositioned(false);
-        if(_style->isFloating()) {
+        if(!isTableCell() && _style->isFloating()) {
             setFloating(true);
         } else {
             if(_style->position() == RELATIVE)
