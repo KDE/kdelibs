@@ -213,8 +213,10 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     int pbHeight;
     if(paintBuffer)
 	pbHeight = paintBuffer->height();
-    else
+    else {
+	paintBuffer = new QPixmap( visibleWidth(),PAINT_BUFFER_HEIGHT );
 	pbHeight = PAINT_BUFFER_HEIGHT;
+    }
     
     if(d->useSlowRepaints) {
 	//kdDebug(0) << "using slow repaints" << endl;

@@ -177,7 +177,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
     switch(child->style()->display())
     {
     case TABLE_CAPTION:
-        tCaption = static_cast<RenderTableCaption *>(child);            
+        tCaption = static_cast<RenderTableCaption *>(child);
 	break;
     case TABLE_COLUMN:
     case TABLE_COLUMN_GROUP:
@@ -1191,6 +1191,9 @@ void RenderTable::calcRowHeight(int r)
     if ( rowHeights[r+1] < rowHeights[r] )
 	rowHeights[r+1] = rowHeights[r];
 	
+#if 0
+    // calcHeight does that for us.... (lars)
+    
     // html tables with percent height are relative to view
     if (r+1 == (int)totalRows)
     {
@@ -1214,7 +1217,8 @@ void RenderTable::calcRowHeight(int r)
 	if (rowHeights[r+1]<th)
 	    rowHeights[r+1]=th;
     }	
-
+#endif
+    
 }
 
 void RenderTable::layout()
@@ -1242,7 +1246,7 @@ void RenderTable::layout()
 
     setCellWidths();
 
-    
+
     // ### collapse caption margin, left, right
     if(tCaption && tCaption->style()->captionSide() != CAPBOTTOM)
     {
@@ -1268,8 +1272,8 @@ void RenderTable::layout()
         tCaption->setXPos(tCaption->marginLeft());
 	tCaption->layout();
 	m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
-    }    
-    
+    }
+
     //kdDebug(0) << "table height: " << m_height << endl;
 
     calcHeight();
@@ -1483,17 +1487,17 @@ int RenderTable::borderTopExtra()
 {
     if (tCaption && tCaption->style()->captionSide()!=CAPBOTTOM)
         return -(tCaption->height() + tCaption->marginBottom() +  tCaption->marginTop());
-    else 
+    else
         return 0;
-    
+
 }
-               
+
 int RenderTable::borderBottomExtra()
 {
     if (tCaption && tCaption->style()->captionSide()==CAPBOTTOM)
         return -(tCaption->height() + tCaption->marginBottom() +  tCaption->marginTop());
-    else 
-        return 0;        
+    else
+        return 0;
 }
 
 
