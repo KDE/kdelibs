@@ -374,11 +374,18 @@ public:
     void resetAutoSaveSettings();
 
     /**
+     * @return the current autosave setting, i.e. true if setAutoSaveSettings() was called,
+     * false by default or if resetAutoSaveSettings() was called.
+     * @since 3.1
+     */
+    bool autoSaveSettings() const;
+
+    /**
      * Read settings for statusbar, menubar and toolbar from their respective
      * groups in the config file and apply them.
      *
      * @param config Config file to read the settings from.
-     * @param groupName Group name to use. If not specified, the last used 
+     * @param groupName Group name to use. If not specified, the last used
      * group name is used.
      */
     void applyMainWindowSettings(KConfig *config, const QString &groupName = QString::null);
@@ -388,7 +395,7 @@ public:
      * groups in the config file @p config.
      *
      * @param config Config file to save the settings to.
-     * @param groupName Group name to use. If not specified, the last used 
+     * @param groupName Group name to use. If not specified, the last used
      * group name is used
      */
     void saveMainWindowSettings(KConfig *config, const QString &groupName = QString::null);
@@ -437,7 +444,7 @@ public:
     bool initialGeometrySet() const;
 
     /**
-     * @return the size the mainwindow should have so that the central 
+     * @return the size the mainwindow should have so that the central
      * widget will be of @p size.
      */
     QSize sizeForCentralWidgetSize(QSize size);

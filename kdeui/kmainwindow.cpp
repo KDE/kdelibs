@@ -233,7 +233,7 @@ void KMainWindow::initKMainWindow(const char *name)
     setCaption( kapp->caption() );
     // attach dcop interface
     d->m_interface = new KMainWindowInterface(this);
-    
+
     if (!kapp->authorize("movable_toolbars"))
         setDockWindowsMovable(false);
 }
@@ -655,7 +655,7 @@ void KMainWindow::setStandardToolBarMenuEnabled( bool enable )
 
 	d->toolBarHandler = new KDEPrivate::ToolBarHandler( this );
 
-	if ( factory() ) 
+	if ( factory() )
 	    factory()->addClient( d->toolBarHandler );
     } else {
 	if ( !d->toolBarHandler )
@@ -843,6 +843,11 @@ void KMainWindow::resetAutoSaveSettings()
     d->autoSaveSettings = false;
 }
 
+bool KMainWindow::autoSaveSettings() const
+{
+    return d->autoSaveSettings;
+}
+
 void KMainWindow::resizeEvent( QResizeEvent * )
 {
     if ( d->autoSaveWindowSize )
@@ -890,7 +895,7 @@ void KMainWindow::shuttingDown()
        queryExit();
        reentrancy_protection = false;
     }
-    
+
 }
 
 KMenuBar *KMainWindow::internalMenuBar()
