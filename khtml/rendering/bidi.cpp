@@ -650,7 +650,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
     kdDebug(6041) << "reached end of line current=" << current.pos << ", eor=" << eor.pos << endl;
 #endif
     if ( !emptyRun ) {
-	if ( eor != last && dir != context->dir )
+	if ( eor != last && !(dir == context->dir) )
 	    appendRun();
 	eor = last;
 	appendRun();
