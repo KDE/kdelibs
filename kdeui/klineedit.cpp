@@ -88,60 +88,54 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
 void KLineEdit::rotateText( const QString& input, int dir )
 {
     KCompletion* comp = completionObject();
-    if( comp != 0 )
+    QString str;
+    int len = text().length();
+    if( hasMarkedText() && !input.isNull() )
     {
-        QString str;
-        int len = text().length();
-        if( hasMarkedText() && !input.isNull() )
+        str = text();
+        if( input == str ) return; // Skip rotation if same text
+        int pos = str.find( markedText() );
+        int index = input.find( str.remove( pos , markedText().length() ) );
+        if( index == -1 ) return;
+        else if( index == 0 ) str = input;
+        validateAndSet( str, cursorPosition(), pos, str.length() );
+    }
+    else
+    {
+        QStringList list = comp->items();
+        int index = list.findIndex( text() );
+        if( index == -1 )
         {
-            str = text();
-            if( input == str ) return; // Skip rotation if same text
-            int pos = str.find( markedText() );
-            int index = input.find( str.remove( pos , markedText().length() ) );
-            if( index == -1 ) return;
-            else if( index == 0 ) str = input;
-            validateAndSet( str, cursorPosition(), pos, str.length() );
+            index = ( dir == 1 ) ? 0 : list.count()-1;
+            str = ( len == 0 ) ? list[index] : input;
         }
         else
         {
-            QStringList list = comp->items();
-            int index = list.findIndex( text() );
-            if( index == -1 )
-            {
-                index = ( dir == 1 ) ? 0 : list.count()-1;
-                str = ( len == 0 ) ? list[index] : input;
-            }
-            else
-            {
-                index += dir;
-                if( index >= (int)list.count() ) index = 0; // rotate back to beginning
-                else if( index < 0  ) index = list.count() - 1; // rotate back to the end
-                str = list[index];
-            }
-            setText( str );
+            index += dir;
+            if( index >= (int)list.count() ) index = 0; // rotate back to beginning
+            else if( index < 0  ) index = list.count() - 1; // rotate back to the end
+            str = list[index];
         }
+        setText( str );
     }
 }
 
 void KLineEdit::makeCompletion( const QString& text )
 {
-    if( completionObject() != 0 )
-    {
-        QString match = completionObject()->makeCompletion( text );
-        // If no match or the same match, simply return
-        // without completing.
-        if( match.length() == 0 || match == text )
-            return;
+    QString match = completionObject()->makeCompletion( text );
+    // If no match or the same match, simply return
+    // without completing.
+    if( match.length() == 0 || match == text )
+        return;
 
-        if( completionMode() == KGlobalSettings::CompletionShell )
-        {
-            setText( match );
-        }
-        else
-        {
-            int pos = cursorPosition();
-            validateAndSet( match, pos, pos, match.length() );
-        }
+    if( completionMode() == KGlobalSettings::CompletionShell )
+    {
+        setText( match );
+    }
+    else
+    {
+        int pos = cursorPosition();
+        validateAndSet( match, pos, pos, match.length() );
     }
 }
 
