@@ -107,7 +107,7 @@ public:
     // Default weight for an 'action' widget (ie, pushbuttons)
     ACTION_ELEMENT_WEIGHT = 50,
     // Default weight for group boxes (low priority)
-    GROUP_BOX_WEIGHT = 0,
+    GROUP_BOX_WEIGHT = -2000,
     // Default weight for menu titles
     MENU_TITLE_WEIGHT = 250,
     // Additional weight for KDE standard accelerators

@@ -232,6 +232,10 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
                 continue;
             }
         }
+        // we possibly reserved an accel, but we won't set it as it looks silly
+        if ( dynamic_cast<QGroupBox*>( it->m_widget ) )
+             continue;
+
         kdDebug(125) << "write " << cnt << " " << it->m_widget->className() << " " <<contents[cnt].accelerated() << endl;
 
         int tprop = it->m_widget->metaObject()->findProperty("text", true);
@@ -316,7 +320,7 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
 
   if (dynamic_cast<QComboBox*>(w) || dynamic_cast<QLineEdit*>(w) ||
       dynamic_cast<QTextEdit*>(w) || dynamic_cast<QTextView*>(w) ||
-      dynamic_cast<QSpinBox*>(w) || dynamic_cast<QGroupBox*>(w))
+      dynamic_cast<QSpinBox*>(w))
       return;
 
   // now treat 'ordinary' widgets
