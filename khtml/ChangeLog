@@ -1,5 +1,31 @@
 2004-06-22  Germain Garand  <germain@ebooksfrance.org>
 
+        Scope: Inline-blocks inlining. Merge Webcore improvements for 
+        Fieldset/Legend
+
+        * css/html4.css: Legend => display: block.
+
+        * html/html_formimpl.{cpp,h} (addChild): remove.
+
+        * rendering/render_block.cpp:
+        (setStyle): do not overwrite inline status
+        (makeChildrenNonInline): change assert
+        (layoutBlock): account for inline-blocks
+        (layoutBlockChildren): ditto
+        (clearFloats): ditto. bail out.
+
+        * rendering/render_box.cpp:
+        (calcWidth): fix logic. cf.css1/test43.htm
+        (calcHeight): fix logic
+
+        * rendering/render_form.cpp:
+        (layoutLegend): merges from WebCore-125
+        (findLegend): ditto
+        (paintBoxDecorations): ditto
+        (setStyle): cf.webcore/fast/forms/007.html
+
+2004-06-22  Germain Garand  <germain@ebooksfrance.org>
+
         Scope: avoid leaking placeholder InlineBoxes. Cleanups.
 
         * rendering/bidi.cpp (Bidinext): simplified logic. Do not return each 

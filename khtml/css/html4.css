@@ -354,7 +354,7 @@ FORM {
 }
 
 LEGEND {
-        display: inline-block;
+        display: block;
         padding-left: 2px;
         padding-right: 2px;
         border: none;

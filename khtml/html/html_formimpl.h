@@ -217,11 +217,8 @@ public:
 
     virtual Id id() const;
     virtual void attach();
-    virtual NodeImpl *addChild(NodeImpl *child);
     virtual void parseAttribute(AttributeImpl *attr);
 
-protected:
-    NodeImpl *m_legend;
 };
 
 // -------------------------------------------------------------------------

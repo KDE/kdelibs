@@ -70,7 +70,6 @@ RenderBlock::~RenderBlock()
 void RenderBlock::setStyle(RenderStyle* _style)
 {
     RenderFlow::setStyle(_style);
-    setInline(false);
     setReplaced( style()->display() == INLINE_BLOCK );
 
     m_pre = ( _style->whiteSpace() == PRE );
@@ -291,7 +290,7 @@ void RenderBlock::makeChildrenNonInline(RenderObject *insertionPoint)
     // means that we cannot coalesce inlines before |insertionPoint| with inlines following
     // |insertionPoint|, because the new child is going to be inserted in between the inlines,
     // splitting them.
-    KHTMLAssert(!isInline());
+    KHTMLAssert(isReplacedBlock() || !isInline());
     KHTMLAssert(!insertionPoint || insertionPoint->parent() == this);
 
     m_childrenInline = false;
@@ -503,7 +502,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
         layoutBlockChildren( relayoutChildren );
 
     // Expand our intrinsic height to encompass floats.
-    if ( hasOverhangingFloats() && (isFloatingOrPositioned() || style()->hidesOverflow()) )
+    if ( hasOverhangingFloats() && (isInlineBlockOrInlineTable() || isFloatingOrPositioned() || style()->hidesOverflow()) )
         m_height = floatBottom() + borderBottom() + paddingBottom();
 
     int oldHeight = m_height;
@@ -607,7 +606,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
     // For now we only worry about the top border/padding.  We will update the variable's
     // value when it comes time to check against the bottom border/padding.
     bool canCollapseWithChildren = !isCanvas() && !isRoot() && !isPositioned() &&
-        !isFloating() && !isTableCell() && !style()->hidesOverflow();
+        !isFloating() && !isTableCell() && !style()->hidesOverflow() && !isInlineBlockOrInlineTable();
     bool canCollapseTopWithChildren = canCollapseWithChildren && (m_height == 0);
 
     // Whether or not we are a quirky container, i.e., do we collapse away top and bottom
@@ -1692,7 +1691,7 @@ RenderBlock::clearFloats()
     if (m_floatingObjects)
         m_floatingObjects->clear();
 
-    if (isFloating() || isPositioned()) return;
+    if (isFloating() || isPositioned() || isInlineBlockOrInlineTable()) return;
 
     RenderObject *prev = previousSibling();
 

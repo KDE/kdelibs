@@ -637,8 +637,9 @@ void RenderBox::calcWidth()
     }
     else
     {
+        bool treatAsReplaced = isReplaced() && !isInlineBlockOrInlineTable();
         Length w;
-        if ( isInline() && isReplaced () )
+        if (treatAsReplaced)
             w = Length( calcReplacedWidth(), Fixed );
         else
             w = style()->width();
@@ -658,12 +659,12 @@ void RenderBox::calcWidth()
         m_marginLeft = 0;
         m_marginRight = 0;
 
-        if (isInline())
+        if (isInline() && !isInlineBlockOrInlineTable())
         {
             // just calculate margins
             m_marginLeft = ml.minWidth(cw);
             m_marginRight = mr.minWidth(cw);
-            if (isReplaced())
+            if (treatAsReplaced)
             {
                 m_width = w.width(cw);
                 m_width += paddingLeft() + paddingRight() + style()->borderLeftWidth() + style()->borderRightWidth();
@@ -676,7 +677,7 @@ void RenderBox::calcWidth()
         else
         {
             LengthType widthType, minWidthType, maxWidthType;
-            if (isInline() && isReplaced()) {
+            if (treatAsReplaced) {
                 m_width = w.width(cw);
                 m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
                 widthType = w.type();
@@ -808,7 +809,7 @@ void RenderBox::calcHeight()
     else
     {
         Length h;
-        if ( isReplaced() && !isBlockFlow() )
+        if ( isReplaced() && !isBlockFlow() && !isInlineBlockOrInlineTable() )
             h = Length( calcReplacedHeight(), Fixed );
         else
             h = style()->height();

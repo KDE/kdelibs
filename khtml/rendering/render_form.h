@@ -286,13 +286,16 @@ class RenderFieldset : public RenderBlock
 {
 public:
     RenderFieldset(DOM::HTMLGenericFormElementImpl *element);
-
+    
     virtual const char *renderName() const { return "RenderFieldSet"; }
+    virtual RenderObject* layoutLegend(bool relayoutChildren);
+    virtual void setStyle(RenderStyle* _style);
+
 protected:
     virtual void paintBoxDecorations(PaintInfo& pI, int _tx, int _ty);
     void paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w,
                                   int h, const RenderStyle *style, int lx, int lw);
-    bool findLegend( int &lx, int &ly, int &lw, int &lh);
+    RenderObject* findLegend();
 };
 
 // -------------------------------------------------------------------------

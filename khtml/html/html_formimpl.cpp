@@ -1012,7 +1012,7 @@ void HTMLButtonElementImpl::attach()
 // -------------------------------------------------------------------------
 
 HTMLFieldSetElementImpl::HTMLFieldSetElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
-    : HTMLGenericFormElementImpl(doc, f), m_legend(0)
+    : HTMLGenericFormElementImpl(doc, f)
 {
 }
 
@@ -1039,17 +1039,6 @@ void HTMLFieldSetElementImpl::attach()
     }
     HTMLGenericFormElementImpl::attach();
     _style->deref();
-}
-
-NodeImpl *HTMLFieldSetElementImpl::addChild(NodeImpl *child)
-{
-    if(!m_legend && child->id() == ID_LEGEND) {
-        int exceptioncode = 0;
-        NodeImpl* r = insertBefore( child, firstChild(), exceptioncode );
-        m_legend = child;
-        return r;
-    }
-    return HTMLGenericFormElementImpl::addChild(child);
 }
 
 void HTMLFieldSetElementImpl::parseAttribute(AttributeImpl *attr)

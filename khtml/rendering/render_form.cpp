@@ -569,71 +569,48 @@ RenderFieldset::RenderFieldset(HTMLGenericFormElementImpl *element)
 {
 }
 
-bool RenderFieldset::findLegend( int &lx, int &ly, int &lw, int &lh)
+RenderObject* RenderFieldset::layoutLegend(bool relayoutChildren)
 {
-    RenderObject *r = this, *ref = 0;
-    int minx = 0, curx = 0, maxw = 0;
-    if( r->firstChild() && r->firstChild()->element() &&
-        r->firstChild()->element()->id() == ID_LEGEND)
-            r = r->firstChild();
-    else
-        return false;
-    if(!r->firstChild() || r->isFloatingOrPositioned())
-        return false;
-    ly = r->yPos();
-    minx = r->width();
-    curx = r->xPos();
-    lh = r->height();
-    ref = r;
-
-    while(r) {
-        if(r->firstChild())
-            r = r->firstChild();
-        else if(r->nextSibling())
-            r = r->nextSibling();
-        else {
-            RenderObject *next = 0;
-            while(!next) {
-                r = r->parent();
-                if(!r || r == (RenderObject *)ref ) goto end;
-                next = r->nextSibling();
-            }
-            r = next;
-        }
-        if(r->isFloatingOrPositioned())
-            continue;
-        curx += r->xPos();
-        if(r->width() && curx<minx)
-             minx = curx;
-        if(curx-minx+r->width() > maxw) {
-                maxw = curx-minx+r->width();
-        }
-        if(!r->childrenInline())
-            curx -= r->xPos();
+    RenderObject* legend = findLegend();
+    if (legend) {
+        if (relayoutChildren)
+            legend->setLayouted( false );
+        if ( !legend->layouted() )
+            legend->layout();
+        int xPos = borderLeft() + paddingLeft() + legend->marginLeft();
+        if (style()->direction() == RTL)
+            xPos = m_width - paddingRight() - borderRight() - legend->width() - legend->marginRight();
+        int b = borderTop();
+        int h = legend->height();
+        legend->setPos(xPos, kMax((b-h)/2, 0));
+        m_height = kMax(b,h) + paddingTop();
     }
-    end:
-        lx = minx - ref->paddingLeft();
-        lw = maxw + ref->paddingLeft() + ref->paddingRight();
-        if(lx < 0 || lx+lw > width())
-            return false;
-        return !!maxw;
+    return legend;
+}
+
+RenderObject* RenderFieldset::findLegend()
+{
+    for (RenderObject* legend = firstChild(); legend; legend = legend->nextSibling()) {
+      if (!legend->isFloatingOrPositioned() && legend->element() &&
+          legend->element()->id() == ID_LEGEND)
+        return legend;
+    }
+    return 0;
 }
 
 void RenderFieldset::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
 {
     //kdDebug( 6040 ) << renderName() << "::paintDecorations()" << endl;
 
+    RenderObject* legend = findLegend();
+    if (!legend)
+        return RenderBlock::paintBoxDecorations(pI, _tx, _ty);
+
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();
-    int lx = 0, ly = 0, lw = 0, lh = 0;
-    bool legend = findLegend(lx, ly, lw, lh);
-
-    if(legend) {
-        int yOff = ly + lh/2 - borderTop()/2;
-        h -= yOff;
-        _ty += yOff;
-    }
-    _ty -= borderTopExtra();
+    int yOff = (legend->yPos() > 0) ? 0 : (legend->height()-borderTop())/2;
+    h -= yOff;
+    _ty += yOff - borderTopExtra();
 
     int my = kMax(_ty,pI.r.y());
     int end = kMin( pI.r.y() + pI.r.height(),  _ty + h );
@@ -641,12 +618,8 @@ void RenderFieldset::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
 
     paintBackground(pI.p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
 
-    if ( style()->hasBorder() ) {
-	if ( legend )
-	    paintBorderMinusLegend(pI.p, _tx, _ty, w, h, style(), lx, lw);
-	else
-	    paintBorder(pI.p, _tx, _ty, w, h, style());
-    }
+    if ( style()->hasBorder() )
+	    paintBorderMinusLegend(pI.p, _tx, _ty, w, h, style(), legend->xPos(), legend->width());
 }
 
 void RenderFieldset::paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w, int h,
@@ -715,6 +688,18 @@ void RenderFieldset::paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w
 		   ignore_top?0:style->borderTopWidth(),
 		   ignore_bottom?0:style->borderBottomWidth());
     }
+}
+
+void RenderFieldset::setStyle(RenderStyle* _style)
+{
+    RenderBlock::setStyle(_style);
+
+    // WinIE renders fieldsets with display:inline like they're inline-blocks.  For us,
+    // an inline-block is just a block element with replaced set to true and inline set
+    // to true.  Ensure that if we ended up being inline that we set our replaced flag
+    // so that we're treated like an inline-block.
+    if (isInline())
+        setReplaced(true);
 }
 
 // -------------------------------------------------------------------------
@@ -809,7 +794,6 @@ RenderLabel::RenderLabel(HTMLGenericFormElementImpl *element)
 RenderLegend::RenderLegend(HTMLGenericFormElementImpl *element)
     : RenderBlock(element)
 {
-    setInline(false);
 }
 
 // -------------------------------------------------------------------------------
