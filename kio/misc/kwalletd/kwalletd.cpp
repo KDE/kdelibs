@@ -302,7 +302,7 @@ bool contains = false;
 		}
 
 		// watch the side effect of the deref()
-		if (contains && (w->deref() == 0 || force)) {
+		if ((contains && w->deref() == 0) || force) {
 			_wallets.remove(handle);
 			if (force) {
 				invalidateHandle(handle);
@@ -596,9 +596,13 @@ return -1;
 
 void KWalletD::slotAppUnregistered(const QCString& app) {
 	if (_handles.contains(app)) {
-		QValueList<int> *l = &_handles[app];
-		for (QValueList<int>::Iterator i = l->begin(); i != l->end(); i++) {
-			close(*i, false);
+		QValueList<int> l = _handles[app];
+		for (QValueList<int>::Iterator i = l.begin(); i != l.end(); i++) {
+			_handles[app].remove(*i);
+			KWallet::Backend *w = _wallets.find(*i);
+			if (w && 0 == w->deref()) {
+				close(w->walletName(), true);
+			}
 		}
 		_handles.remove(app);
 	}
