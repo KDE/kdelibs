@@ -76,6 +76,7 @@ public:
     QValueList<Arts::PlayObject> playObjects;
 
     bool useExternal;
+    bool useArts;
     int volume;
     QTimer *playTimer;
 };
@@ -103,20 +104,96 @@ int main(int argc, char **argv)
     KUniqueApplication app;
     app.disableSessionManagement();
 
-    // setup mcop communication
-    Arts::Dispatcher dispatcher;
+    // KNotify is started on KDE startup and on demand (using 
+    // KNotifClient::startDaemon()) whenever a KNotify event occurs. Especially
+    // KWin may fire many events (e.g. when a window pops up). When we have
+    // problems with aRts or the installation, we might get an infinite loop
+    // of knotify crashing, popping up the crashhandler window and kwin firing
+    // another event, starting knotify again...
+    // We try to prevent this by tracking our startup and offer options to
+    // abort this.
+    
+    KConfigGroup config( KGlobal::config(), "StartProgress" );
+    bool useArts = config.readBoolEntry( "Use Arts", true );
+    bool ok = config.readBoolEntry( "Arts Init", true );
+
+    if ( useArts && !ok )
+    {
+        if ( KMessageBox::questionYesNo(
+                 0L,
+                 i18n("On last startup, KNotify crashed while creating "
+                      "Arts::Dispatcher. Do you want to try again or disable "
+                      "aRts Sound output?"),
+                 i18n("KNotify Problem"),
+                 i18n("Try again"),
+                 i18n("Disable aRts output"),
+                 "KNotifyStartProgress",
+                 0 /* don't call KNotify :) */ 
+                 )
+             == KMessageBox::No )
+        {
+            useArts = false;
+        }
+    }
+
+    // when ArtsDispatcher crashes, we know it the next start.
+    config.writeEntry( "Arts Init", false );
+    config.writeEntry( "Use Arts", useArts );
+    config.sync();
+    
+    Arts::Dispatcher *dispatcher = 0L;
+    if ( useArts )
+        // setup mcop communication
+        dispatcher = new Arts::Dispatcher();
+        
+    // ok, seemed to work.
+    config.writeEntry("Arts Init", useArts );
+    config.sync();
+
+    ok = config.readBoolEntry( "KNotify Init", true );
+    if ( useArts && !ok )
+    {
+        if ( KMessageBox::questionYesNo(
+                 0L,
+                 i18n("On last startup, KNotify crashed while instantiating "
+                      "KNotify. Do you want to try again or disable "
+                      "aRts Sound output?"),
+                 i18n("KNotify Problem"),
+                 i18n("Try again"),
+                 i18n("Disable aRts output"),
+                 "KNotifyStartProgress",
+                 0 /* don't call KNotify :) */
+                 )
+             == KMessageBox::No )
+        {
+            useArts = false;
+            delete dispatcher;
+            dispatcher = 0L;
+        }
+    }
+    
+    // when KNotify instantiation crashes, we know it the next start.
+    config.writeEntry( "KNotify Init", false );
+    config.writeEntry( "Use Arts", useArts );
+    config.sync();
 
     // start notify service
-    KNotify notify;
+    KNotify notify( useArts );
+    
+    config.writeEntry( "KNotify Init", true );
+    config.sync();
+    
     app.dcopClient()->setDefaultObject( "Notify" );
     app.dcopClient()->setDaemonMode( true );
     // kdDebug() << "knotify starting" << endl;
 
-    return app.exec();
+    int ret = app.exec();
+    delete dispatcher;
+    return ret;
 }
 
 
-KNotify::KNotify()
+KNotify::KNotify( bool useArts )
     : QObject(), DCOPObject("Notify")
 {
     d = new KNotifyPrivate;
@@ -124,6 +201,7 @@ KNotify::KNotify()
     d->globalEvents = new KConfig("knotify/eventsrc", true, false, "data");
     d->globalConfig = new KConfig("knotify.eventsrc", true, false);
     d->externalPlayerProc = 0;
+    d->useArts = useArts;
 
     d->volume = 100;
 
@@ -147,7 +225,7 @@ KNotify::~KNotify()
 
 void KNotify::loadConfig() {
     // load external player settings
-    KConfig *kc = kapp->config();
+    KConfig *kc = KGlobal::config();
     kc->setGroup("Misc");
     d->useExternal = kc->readBoolEntry( "Use external player", false );
     d->externalPlayer = kc->readEntry("External player");
@@ -481,13 +559,15 @@ void KNotify::connectSoundServer()
 {
     static bool firstTime = true;
 
+    if ( !d->useArts )
+        return;
+    
     /*
      * obtain an object reference to the soundserver - if we're doing it
      * for the first time, retry sometimes, so it will work during the
      * startup sequence, even if artsd is started some time after the first
      * process requests knotify to do some notifications
      */
-    Arts::SoundServerV2 result;
     d->soundServer = Arts::Reference("global:Arts_SoundServerV2");
     if ( firstTime && d->soundServer.isNull() )
         for( int tries=0; tries<7; tries++ )

@@ -33,10 +33,8 @@ Q_OBJECT
 K_DCOP
 
 public:
-	KNotify();
+	KNotify( bool useArts );
 	~KNotify();
-
-	static void crashHandler(int);
 
 protected:
 k_dcop:
