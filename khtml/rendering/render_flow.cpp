@@ -311,7 +311,7 @@ void RenderFlow::layoutBlockChildren()
     RenderFlow *prevFlow = 0;
 
     int prevMargin = 0;
-    if(isTableCell() && child)
+    if(isTableCell() && child && !child->isPositioned())
         prevMargin = -child->marginTop();
 
     //QTime t;
