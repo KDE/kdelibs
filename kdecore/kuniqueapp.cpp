@@ -35,6 +35,7 @@
 #include <kcmdlineargs.h>
 #include <kstddirs.h>
 #include <kaboutdata.h>
+#include <kwin.h>
 #include "kdebug.h"
 #include "kuniqueapp.h"
 
@@ -416,6 +417,7 @@ int KUniqueApplication::newInstance(QValueList<QCString> /*params*/)
 
 int KUniqueApplication::newInstance()
 {
+  KWin::setActiveWindow(mainWidget()->winId());
   return 0; // do nothing in default implementation
 }
 
