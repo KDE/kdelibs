@@ -45,6 +45,8 @@ protected slots:
 
 private:
     KWinModule* kwin_module;
+    class KWindowListMenuPrivate;
+    KWindowListMenuPrivate *d;
 };
 
 #endif
