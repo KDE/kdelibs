@@ -229,7 +229,7 @@ public:
                    bool enabled, const QString&_text, int index=-1);
 
   /**
-   * Inserts a KLined. You have to specify signals and slots to
+   * Inserts a KLineEdit. You have to specify signals and slots to
    * which KLineEdit will be connected. KLineEdit has all slots QLineEdit
    * has, plus signals @ref KLineEdit::completion and @ref KLineEdit::rotation
    * KLineEdit can be set to autoresize itself to full free width
