@@ -809,7 +809,7 @@ private:
           != KMainWindow::classNameOfToplevel( n ))\
       {\
         kdDebug(200) << "RESTORE() - unknown window class "\
-          << KMainWindow::classNameOfTopLevel( n ) << " in session saved data!";\
+          << KMainWindow::classNameOfToplevel( n ) << " in session saved data!";\
       }\
       else\
         (new type)->restore(n);\
