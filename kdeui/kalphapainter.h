@@ -71,5 +71,7 @@ class KAlphaPainter
   static bool draw(QPainter *p, const QPixmap &icon, const QPixmap &background,
 			int x, int y, int bgx=0, int bgy=0);
 
-
+private:
+  class KAlphaPainterPrivate;
+  KAlphaPainterPrivate *d;
 };
