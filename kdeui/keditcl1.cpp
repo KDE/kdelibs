@@ -25,6 +25,7 @@
 #include <qtimer.h>
 
 #include <kapp.h>
+#include <kdebug.h>
 #include <kcmenumngr.h>
 #include <kfontdialog.h>
 #include <klocale.h>
@@ -442,14 +443,14 @@ void  KEdit::dragMoveEvent(QDragMoveEvent* e) {
 
 void  KEdit::dragEnterEvent(QDragEnterEvent* e) {
 
-  debug("KEdit::dragEnterEvent()");
+  kdDebug() << "KEdit::dragEnterEvent()" << endl;
   e->accept(QUriDrag::canDecode(e) || QTextDrag::canDecode(e));
 }
 
 
 void  KEdit::dropEvent(QDropEvent* e) {
 
-  debug("KEdit::dropEvent()");
+  kdDebug() << "KEdit::dropEvent()" << endl;
 
   if(QUriDrag::canDecode(e)) {
    emit gotUrlDrop(e);
