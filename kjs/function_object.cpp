@@ -114,7 +114,7 @@ Value FunctionProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &a
 		      "    [native code]\n}\n");
     }
     else {
-      result = Undefined();
+      result = String("[function]");
     }
     }
     break;
