@@ -172,14 +172,6 @@ bool KAccel::insertItem( const char* descr, const char * action,
 					   const char * keyCode, bool configurable )
 {
 	uint iKeyCode = stringToKey( keyCode );
-// 	if ( iKeyCode == 0 ) {
-// 		QString str;
-// 		str.sprintf(
-// 			"KAccel : cannot insert item with invalid key string %s", keyCode );
-// 		warning(str);
-// 		return FALSE;
-// 	}
-	
 	return insertItem( descr, action, iKeyCode, configurable );
 }
 

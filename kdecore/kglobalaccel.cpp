@@ -155,8 +155,6 @@ bool KGlobalAccel::grabKey( uint keysym, uint mod ) {
 	if (do_not_grab)
 	  return true;
 
-	debug("KGlobalAccel::grabKey");
-	
 	if (!keysym || !XKeysymToKeycode(qt_xdisplay(), keysym)) return false;
 	if (!NumLockMask){
 		XModifierKeymap* xmk = XGetModifierMapping(qt_xdisplay());
@@ -174,8 +172,6 @@ bool KGlobalAccel::grabKey( uint keysym, uint mod ) {
 	XSync(qt_xdisplay(),0);
 	XErrorHandler savedErrorHandler=XSetErrorHandler(XGrabErrorHandler);
 	
-	debug("Will grab key and variants with keyboard locks: %d, %d", keysym, mod);
-
 	XGrabKey(qt_xdisplay(),
 		XKeysymToKeycode(qt_xdisplay(), keysym), mod,
 		qt_xrootwin(), True,
@@ -195,8 +191,6 @@ bool KGlobalAccel::grabKey( uint keysym, uint mod ) {
 
 	XSync(qt_xdisplay(),0);
 	XSetErrorHandler(savedErrorHandler);
-	
-	debug("       grabbed");
 	
 	if (grabFailed) {
 		// FIXME: ungrab all successfull grabs!
@@ -233,14 +227,6 @@ bool KGlobalAccel::insertItem( const char* descr, const char * action,
 					   const char * keyCode, bool configurable )
 {
 	uint iKeyCode = stringToKey( keyCode );
-// 	if ( iKeyCode == 0 ) {
-// 		QString str;
-// 		str.sprintf(
-// 			"KGlobalAccel : cannot insert item with invalid key string %s", keyCode );
-// 		warning( str );
-// 		return FALSE;
-// 	}
-	
 	return insertItem(descr, action, iKeyCode, configurable);
 }
 
@@ -347,7 +333,6 @@ void KGlobalAccel::setEnabled( bool activate )
 
 void KGlobalAccel::setItemEnabled( const char * action, bool activate )
 {	
-	debug("KGlobalAccel::setItemEnabled");
 
     KKeyEntry *pEntry = aKeyDict[ action ];
 	if ( !pEntry ) {
@@ -441,8 +426,6 @@ bool KGlobalAccel::ungrabKey( uint keysym, uint mod ) {
 	if (do_not_grab)
 	  return true;
 
-	debug("KGlobalAccel::ungrabKey");
-	
 	if (!keysym||!XKeysymToKeycode(qt_xdisplay(), keysym)) return false;
 	if (!NumLockMask){
 		XModifierKeymap* xmk = XGetModifierMapping(qt_xdisplay());
@@ -460,8 +443,6 @@ bool KGlobalAccel::ungrabKey( uint keysym, uint mod ) {
 	XSync(qt_xdisplay(),0);
 	XErrorHandler savedErrorHandler=XSetErrorHandler(XGrabErrorHandler);
 	
-	debug("Will ungrab key and variants with keyboard locks: %d, %d", keysym, mod);
-
 	XUngrabKey(qt_xdisplay(),
 		XKeysymToKeycode(qt_xdisplay(), keysym), mod,
 		qt_xrootwin());
@@ -514,41 +495,26 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 	uint mod=event_->xkey.state & (ControlMask | ShiftMask | Mod1Mask);
 	uint keysym= XKeycodeToKeysym(qt_xdisplay(), event_->xkey.keycode, 0);
 	
-	//	debug("Key press event :: mod = %d, sym =%d", mod, keysym );
-
-// 	KKeyEntry *pEntry =0;
-// 	const char *action;
 
 	QDictIterator<KKeyEntry> *aKeyIt = new QDictIterator<KKeyEntry>( aKeyDict );
 	aKeyIt->toFirst();
 #define pE aKeyIt->current()
-	while( pE ) { //&&
-		//( mod != keyToXMod( pE->aCurrentKeyCode )
-		//	|| keysym != keyToXSym( pE->aCurrentKeyCode ) ) ) {
+	while( pE ) { 
 		int kc = pE->aCurrentKeyCode;
-		// 		if( mod == keyToXMod( kc ) ) debug("That's the right modifier");
-		// 		if( keysym == keyToXSym( kc ) ) debug("That's the right symbol");
 		if ( mod == keyToXMod( kc ) && keysym == keyToXSym( kc ) ) {
-		//pEntry = pE;
-		//action = aKeyIt->currentKey();
-		//break;
-		debug("Found key in dictionary for action %s", aKeyIt->currentKey());
 		break;
 		}
 		++*aKeyIt;
 	}
 	
 	if ( !pE ) {
-	  //		debug("Null KeyEntry object");
 		return false;
 	}
 	
 	if ( !pE ) {
-		debug("KeyEntry object not enabled");
 		return false;
 	}
 
-	debug("KGlobalAccel:: event action %s", aKeyIt->currentKey() );
 
 	XAllowEvents(qt_xdisplay(), AsyncKeyboard, CurrentTime);
 	XUngrabKeyboard(qt_xdisplay(), CurrentTime);
@@ -557,7 +523,6 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 	emit activated();
 	disconnect( this, SIGNAL( activated() ), pE->receiver, pE->member );
 
-//    warning("Signal has been sent!");
 	return true;
 }
 
@@ -581,18 +546,14 @@ uint keyToXMod( uint keyCode )
 
 uint keyToXSym( uint keyCode )
 {
-  //	debug("keyToXSym");
 	char *toks[4], *next_tok;
 	int nb_toks = 0;
 	char sKey[200];
 
 	uint keysym = 0;
 	QString s = keyToString( keyCode);
-	//s= s.lower();
 	
 	strncpy(sKey, (const char *)s.data(), 200);
-	
-	//	debug("Find key %s", sKey );
 	
 	if ( s.isEmpty() ) return keysym;
 	
@@ -611,7 +572,6 @@ uint keyToXSym( uint keyCode )
 	// Fill the keycode with infos
 	bool  keyFound = FALSE;
 	for ( int i=0; i<nb_toks; i++ ) {
-	  //		debug("%d", i);
 		if ( strcmp( toks[i], "SHIFT" ) != 0 &&
 			 strcmp( toks[i], "CTRL" ) != 0 &&
 			 strcmp( toks[i], "ALT" ) != 0 ) {
@@ -623,15 +583,12 @@ uint keyToXSym( uint keyCode )
 		   if (keysym == NoSymbol){
 		     keysym = XStringToKeysym( toks[i] );
 		   }
-		   //		   debug("Key = %s, sym = %d", toks[i], keysym );
 		   if ( keysym == NoSymbol ) {
-		     //		   	debug("Keysym no symbol (%d)", NoSymbol);
 			return 0;
 		  }
 		}
 	}
 	
-	//debug("Return %d", keysym);
 	return keysym;
 }
 
