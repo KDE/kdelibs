@@ -149,6 +149,7 @@ void KPrinter::init(bool restore, QPrinter::PrinterMode m)
 	d->m_restore = restore;
 	d->m_previewonly = false;
 	d->m_parentId = 0;
+	d->m_pagesize = 0;
 
 	// initialize QPrinter wrapper
 	d->m_wrapper = new KPrinterWrapper(this, m);
