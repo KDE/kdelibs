@@ -118,6 +118,8 @@ void ASyncPort::processedPacket(GenericDataPacket *packet)
 
 void ASyncPort::sendPacket(GenericDataPacket *packet)
 {
+	bool sendOk = false;
+
 #ifdef DEBUG_ASYNC_TRANSFER
 	cout << "port::sendPacket" << endl;
 #endif
@@ -134,13 +136,14 @@ void ASyncPort::sendPacket(GenericDataPacket *packet)
 			cout << "sending notification " << n.ID << endl;
 #endif
 			NotificationManager::the()->send(n);
-			sent.push_back(packet);
+			sendOk = true;
 		}
 	}
+
+	if(sendOk)
+		sent.push_back(packet);
 	else
-	{
 		stream->freePacket(packet);
-	}
 }
 
 //----------------------- Port interface ------------------------------------
