@@ -1,3 +1,4 @@
+AM_CPPFLAGS = -D_KDEPRINT_COMPILE
 
 if include_cups_SUBDIR
 CUPSSUBDIR=cups

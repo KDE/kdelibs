@@ -1,3 +1,5 @@
+AM_CPPFLAGS = -D_KDEPRINT_COMPILE
+
 INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kdeprint $(all_includes)
 
 kde_module_LTLIBRARIES = kdeprint_lpdunix.la

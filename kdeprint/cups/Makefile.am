@@ -1,3 +1,5 @@
+AM_CPPFLAGS = -D_KDEPRINT_COMPILE
+
 SUBDIRS = cupsdconf2
 
 INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kio -I$(top_srcdir)/kfile -I$(top_srcdir)/kdeprint -I$(top_srcdir)/kdeprint/management $(all_includes)
@@ -41,7 +43,7 @@ miscdir = $(kde_datadir)/kdeprint
 EXTRA_DIST = postscript.ppd.gz
 
 install-data-local:
-	if test -n "$(cups_modeldir)" && test ! -f $(cups_modeldir)/postscript.ppd.gz; then \
+	if test -n "$(cups_modeldir)"; then \
 		$(INSTALL_DATA) $(srcdir)/postscript.ppd.gz $(DESTDIR)$(cups_modeldir)/postscript.ppd.gz || true ;\
 	fi
 
