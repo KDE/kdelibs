@@ -25,5 +25,6 @@ Comment[sv]=RLPR-miljö (LPD-fjärrservrar)
 Comment[uk]=Оточення RLPR (віддалені сервери LPD)
 Comment[xh]=RLPR Imeko-bume ye RLPR (Abancedisi be LPD ababeka kude)
 Comment[zh_TW]=RLPR 環境(遠端 LPD 伺服器)
+Comment[zu]=Indalo ye RLPR (yabalekeleli Abakude be LPD)
 DetectUris=exec:/rlpr
 DetectPrecedence=0

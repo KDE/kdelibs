@@ -30,6 +30,7 @@ Name[sv]=Inkapslade Postscript-bilder
 Name[uk]=Вбудовані зображення PostScript
 Name[xh]=Imifanekiso yokushicilelweyo okuposwayo engafakelwayo
 Name[zh_TW]=封裝後的 Postscript 影像
+Name[zu]=Izithombe Zesikripti esidlulele Esifakwe ephaketheni
 Read=true
 Write=true
 Suffices=eps,EPS

@@ -26,5 +26,6 @@ Comment[sv]=LPR/LPRNG-skrivarsystem
 Comment[uk]=Система друку LPR/LPRng
 Comment[xh]=LPR/LPRng Indlela Yokushicilela
 Comment[zh_TW]=LPR/LPRng 列印系統
+Comment[zu]=Indlela yokusebenzisa Yokushicilela ye LPR/LPRng 
 DetectUris=service:/printer
 DetectPrecedence=0
