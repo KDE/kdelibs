@@ -26,6 +26,7 @@
 
 #include <qcstring.h>
 #include <qdir.h>
+#include <qfile.h>
 #include <kdebug.h>
 
 #include "ktar.h"
@@ -278,19 +279,19 @@ void KTarBase::writeDir( const QString& name, const QString& user, const QString
   if ( dirName.length() > 99 )
   {
     strcpy( buffer, "././@LongLink" );
-    fillBuffer( buffer, "     0", dirName.length()+1, 'L', user.ascii(), group.ascii() );
+    fillBuffer( buffer, "     0", dirName.length()+1, 'L', user.local8Bit(), group.local8Bit() );
     write( buffer, 0x200 );
     memset( buffer, 0, 0x200 );
-    strcpy( buffer, dirName.ascii() );
+    strcpy( buffer, QFile::encodeName(dirName) );
     // write long name
     write( buffer, 0x200 );
     // not even needed to reclear the buffer, tar doesn't do it
   }
   else
     // Write name
-    strcpy( buffer, dirName.ascii() );
+    strcpy( buffer, QFile::encodeName(dirName) );
 
-  fillBuffer( buffer, " 40755", 0, 0x35, user.ascii(), group.ascii());
+  fillBuffer( buffer, " 40755", 0, 0x35, user.local8Bit(), group.local8Bit());
 
   // Write header
   write( buffer, 0x200 );
@@ -341,20 +342,20 @@ void KTarBase::writeFile( const QString& name, const QString& user, const QStrin
   if ( fileName.length() > 99 )
   {
     strcpy( buffer, "././@LongLink" );
-    fillBuffer( buffer, "     0", fileName.length()+1, 'L', user.ascii(), group.ascii() );
+    fillBuffer( buffer, "     0", fileName.length()+1, 'L', user.local8Bit(), group.local8Bit() );
     write( buffer, 0x200 );
 
     memset( buffer, 0, 0x200 );
-    strcpy( buffer, fileName.ascii() );
+    strcpy( buffer, QFile::encodeName(fileName) );
     // write long name
     write( buffer, 0x200 );
     // not even needed to reclear the buffer, tar doesn't do it
   }
   else
     // Write name
-    strcpy( buffer, fileName.ascii() );
+    strcpy( buffer, QFile::encodeName(fileName) );
 
-  fillBuffer( buffer, "100644", size, 0x30, user.ascii(), group.ascii() );
+  fillBuffer( buffer, "100644", size, 0x30, user.local8Bit(), group.local8Bit() );
 
   // Write header
   write( buffer, 0x200 );
@@ -487,7 +488,7 @@ bool KTarGz::open( int mode )
     return false;
   }
 
-  m_f = gzopen( m_filename.ascii(), m );
+  m_f = gzopen( QFile::encodeName(m_filename), m );
   if ( !m_f )
     return false;
 
