@@ -810,7 +810,7 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
                 Ok, false, KGuiItem()),
     m_folderTree(0), m_mgr(mgr), m_editType(editType)
 {
-  setButtonOKText( (editType == InsertionMode) ? i18n( "Add" ) : i18n( "Update" ) );
+  setButtonOK( KGuiItem((editType == InsertionMode) ? i18n( "Add" ) : i18n( "Update" )) );
   if (editType == InsertionMode)
     setButtonText( User1, i18n( "New Folder..." ) );
 
