@@ -29,6 +29,7 @@
 #include <klocale.h>
 #include <kbuttonbox.h>
 #include <kstddirs.h>
+#include <kseparator.h>
 
 #include "passdlg.h"
 
@@ -162,13 +163,10 @@ void PasswordDialog::init( const QString& prompt, const QString& user,
 
     // Row 9: Add spacer
     m_pLay->addRowSpacing( 9, 4 );
+
     // Row 10: Add a separator
-    hbox = new QHBox( this );
-    lbl = new QLabel( hbox );
-    lbl->setFrameStyle( QFrame::HLine|QFrame::Raised );
-    lbl->setAlignment( Qt::AlignVCenter | Qt::AlignCenter );
-    lbl->setFixedHeight( lbl->sizeHint().height() );
-    m_pLay->addMultiCellWidget( hbox, 10, 10, 0, 2 );
+    KSeparator* sep = new KSeparator( KSeparator::HLine, hbox);
+    m_pLay->addMultiCellWidget( sep, 10, 10, 0, 2 );
 
     // Row 11: Add spacer
     m_pLay->addRowSpacing( 11, 1 );
