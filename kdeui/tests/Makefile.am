@@ -24,7 +24,7 @@ LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 # Please keep sorted
 check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
-	kcolortest kcolordlgtest \
+	kcolortest kcolordlgtest kcomboboxtest \
 	kcontainertest kdatepicktest kdialogbasetest \
 	kdualcolortest kfontdialogtest \
 	knewgradienttest kgradienttest khashtest \
@@ -54,6 +54,7 @@ kbuttonboxtest_SOURCES = kbuttonboxtest.cpp
 kcharselecttest_SOURCES = kcharselecttest.cpp
 kcolordlgtest_SOURCES = kcolordlgtest.cpp
 kcolortest_SOURCES = kcolortest.cpp
+kcomboboxtest_SOURCES = kcomboboxtest.cpp
 kcontainertest_SOURCES = kcontainertest.cpp
 kdatepicktest_SOURCES = kdatepicktest.cpp
 kdialogbasetest_SOURCES = kdialogbasetest.cpp
