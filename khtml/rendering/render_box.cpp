@@ -597,7 +597,7 @@ short RenderBox::calcReplacedWidth(bool* ieHack) const
     }
     case Percent:
     {
-        RenderObject* p = parent();
+        //RenderObject* p = parent();
         int cw = containingBlockWidth();
         if ( cw )
             width = w.minWidth( cw );
