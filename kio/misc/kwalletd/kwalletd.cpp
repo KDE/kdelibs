@@ -48,8 +48,6 @@ extern "C" {
    KDEDModule *create_kwalletd(const QCString &name) {
 	   return new KWalletD(name);
    }
-
-   void *__kde_do_unload;
 }
 
 
