@@ -1684,7 +1684,7 @@ void KateDocument::readConfig(KConfig *config)
   }
 
   config->setGroup("Kate View");
-  m_dynWordWrap = config->readBoolEntry( "DynamicWordWrap", false );
+  m_dynWordWrap = config->readBoolEntry( "DynamicWordWrap", true );
   m_lineNumbers = config->readBoolEntry( "LineNumbers", false );
   m_iconBar = config->readBoolEntry( "Iconbar", false );
   m_foldingBar = config->readBoolEntry( "FoldingMarkers", true );
