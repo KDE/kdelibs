@@ -90,14 +90,14 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 	_ty += m_render->yPos();
 
 	inside = true;
-	innerNode = this;
         if( (_y < _ty ) || (_y > _ty + m_render->height() ) ||
 	    (_x < _tx ) || (_x > _tx + m_render->width() ) )
         {
             inside = false;
 	    //kdDebug( 6030 ) << "not inside the block element!" << endl;
         }
-
+	else
+	  innerNode = this;
 
     }
 
