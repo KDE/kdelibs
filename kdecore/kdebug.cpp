@@ -22,6 +22,8 @@
 #include "kdebugdialog.h"
 #include "kdebug.h"
 #include "kapp.h"
+#include "kglobal.h"
+#include "kstddirs.h"
 
 #include <qfile.h>
 #include <qmessagebox.h>
@@ -57,12 +59,6 @@ static QList<KDebugEntry> *KDebugCache;
 
 static QString getDescrFromNum(unsigned short _num)
 {
-  QString data, filename(KApplication::kde_configdir()+"/kdebug.areas");
-  QFile file(filename);
-  QTextStream *ts;
-  unsigned long number, space;
-  bool longOK;
-
   if (!KDebugCache)
       KDebugCache = new QList<KDebugEntry>;
 
@@ -73,13 +69,18 @@ static QString getDescrFromNum(unsigned short _num)
 	  }
   }
 
+  QString data, filename(locate("config","kdebug.areas"));
+  QFile file(filename);
   if (!file.open(IO_ReadOnly)) {
     warning("Couldn't open %s", filename.ascii());
     file.close();
     return "";
   }
 
-  ts = new QTextStream(&file);
+  unsigned long number, space;
+  bool longOK;
+
+  QTextStream *ts = new QTextStream(&file);
   while (!ts->eof()) {
     data=ts->readLine().stripWhiteSpace().copy();
 
@@ -115,7 +116,7 @@ static QString getDescrFromNum(unsigned short _num)
 
     data.remove(0, space); data=data.stripWhiteSpace();
 
-    if (KDebugCache->count() <= MAX_CACHE)
+    if (KDebugCache->count() >= MAX_CACHE)
       KDebugCache->removeFirst();
     KDebugCache->append(new KDebugEntry(number,data.copy()));
     delete ts;
