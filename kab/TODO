@@ -23,8 +23,8 @@ PS: I am still looking for volunteers who try writing the import filters.
   - what else?
 ° enhance the telephone numbers section, using home/work/..., 
   fixed/mobile, and so on
-° better dialog to enter the birthday, especially directly
-° some functions in the main display, like clickable parts 
+° [done] better dialog to enter the birthday, especially directly
+° [done] some functions in the main display, like clickable parts 
   (email/talk addresses, possibly telephony support?),
   possibly using KURLLabel
 ° configurable sorting order (already prepared)
@@ -35,8 +35,8 @@ PS: I am still looking for volunteers who try writing the import filters.
   HELP WANTED: Does anybody know how to do that?
 ° send mail to a bunch of people at once using the keywords and the search 
   functionality. 
-° IMPORTANT: Possibility to use different files and, most important, common 
-  addressbooks for different people.
+° [done] IMPORTANT: Possibility to use different files and, most important, 
+  common addressbooks for different people.
 --------------------------------------------------------------------------------
-                                                    Mirko Sucker, September 1998.
+                                                     Mirko Sucker, January 2000.
 
