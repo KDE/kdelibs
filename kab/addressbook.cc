@@ -804,7 +804,7 @@ AddressBook::add(const Entry& entry, KabKey& key, bool update)
   // -----
   if(theEntries==0)
     {
-	kdDebug() << "AddressBook::add: no entries section." << endl;
+      kdDebug() << "AddressBook::add: no entries section." << endl;
       return NoFile;
     }
   newEntry=new Section;
@@ -843,6 +843,7 @@ AddressBook::add(const Entry& entry, KabKey& key, bool update)
 	    rc=InternError;
 	} else {
 	  key=nextKey;
+	  emit(changed());
 	  rc=NoError;
 	}
       if(update) updateMirrorMap();
@@ -895,6 +896,7 @@ AddressBook::change(const KabKey& key, const Entry& entry)
     } else {
       oldEntry->clear();
       rc=makeSectionFromEntry(entry, *oldEntry);
+      emit(changed());
     }
   // -----
   if(locked!=PermDenied)
@@ -932,6 +934,7 @@ AddressBook::remove(const KabKey& key)
   if(theEntries->remove(key.getKey()))
     {
       rc=NoError;
+      emit(changed());
     } else {
       rc=NoSuchEntry;
     }
