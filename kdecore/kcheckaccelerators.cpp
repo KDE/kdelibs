@@ -87,7 +87,7 @@ KCheckAccelerators::KCheckAccelerators( QObject* parent )
       if( cuts.count() > 0 )
         key = int(cuts.seq(0).qt());
     }
-    alwaysShow = KGlobal::config()->readBoolEntry( "AlwaysShowCheckAccelerators", true );
+    alwaysShow = KGlobal::config()->readBoolEntry( "AlwaysShowCheckAccelerators", false );
     autoCheck = KGlobal::config()->readBoolEntry( "AutoCheckAccelerators", true );
     connect( &autoCheckTimer, SIGNAL( timeout()), SLOT( autoCheckSlot()));
 }
@@ -106,7 +106,7 @@ bool KCheckAccelerators::eventFilter( QObject * , QEvent * e) {
     }
     if( autoCheck
         && ( e->type() == QEvent::ChildInserted ||
-             e->type() == QEvent::ChildRemoved ))
+             e->type() == QEvent::ChildRemoved ) )
     {
         autoCheckTimer.start( 100, true ); // 100 ms
     }
@@ -123,7 +123,7 @@ void KCheckAccelerators::autoCheckSlot()
         return;
     }
     block = true;
-    checkAccelerators( true );
+    checkAccelerators( !alwaysShow );
     block = false;
 }
 
@@ -159,7 +159,8 @@ void KCheckAccelerators::slotDisableCheck(bool on)
         autoCheckSlot();
 }
 
-void KCheckAccelerators::checkAccelerators( bool automatic ) {
+void KCheckAccelerators::checkAccelerators( bool automatic )
+{
     QWidget* actWin = qApp->activeWindow();
     if ( !actWin )
         return;
