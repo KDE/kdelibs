@@ -108,7 +108,11 @@ typedef unsigned int	*pt_entry_t;
 # endif
 
 # ifndef SPT_PADCHAR
-#  define SPT_PADCHAR	' '
+#  ifdef _AIX
+#   define SPT_PADCHAR	'\0'
+#  else
+#   define SPT_PADCHAR	' '
+#  endif
 # endif
 
 #endif /* SPT_TYPE != SPT_NONE && SPT_TYPE != SPT_BUILTIN */
