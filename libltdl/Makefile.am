@@ -2,11 +2,10 @@
 
 AUTOMAKE_OPTIONS = no-dependencies foreign
 
+include_HEADERS= ltdl.h
+
 if INSTALL_LTDL
-include_HEADERS = ltdl.h
 lib_LTLIBRARIES = libltdl.la
-else
-noinst_HEADERS = ltdl.h
 endif
 
 if CONVENIENCE_LTDL
