@@ -130,6 +130,8 @@ public:
   /** The resize event. Simply resizes the main widget to the whole
       widgets client size. */
   void resizeEvent(QResizeEvent*);
+  /** Open the popup window at position pos. */
+  void popup(const QPoint &pos);
   /** Execute the popup window. */
   int exec(QPoint p);
   /** Dito. */

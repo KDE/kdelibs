@@ -579,20 +579,43 @@ KPopupFrame::resizeEvent(QResizeEvent*)
     }
 }
 
-int
-KPopupFrame::exec(QPoint p)
+void KPopupFrame::popup(const QPoint &pos)
 {
-  return exec(p.x(), p.y());
+  // Make sure the whole popup is visible. 
+  QWidget* desktop = QApplication::desktop();
+  int sw = desktop->width();
+  int sh = desktop->height();
+  int x = pos.x();
+  int y = pos.y();
+  int w = width();
+  int h = height();
+  if (x+w > sw)
+    x = sw - w;
+  if (y+h > sh)
+    y = sh - h;
+  if (x < 0)
+    x = 0;
+  if (y < 0)
+    y = 0;
+  
+  // Pop the thingy up.
+  move(x, y);
+  show();
+}
+
+int
+KPopupFrame::exec(QPoint pos)
+{
+  popup(pos);
+  repaint();
+  qApp->enter_loop();
+  hide();
+  return result;
 }
 
 int
 KPopupFrame::exec(int x, int y)
 {
-  move(x, y);
-  show();
-  repaint();
-  qApp->enter_loop();
-  hide();
-  return result;
+  return exec(QPoint(x, y));
 }
 
