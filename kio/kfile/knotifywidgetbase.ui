@@ -403,7 +403,7 @@
                         <cstring>m_playerButton</cstring>
                     </property>
                     <property name="text">
-                        <string>Player Settings...</string>
+                        <string>Player Settings</string>
                     </property>
                 </widget>
             </hbox>
