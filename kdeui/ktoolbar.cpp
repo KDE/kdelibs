@@ -1326,15 +1326,11 @@ bool KToolBar::highlight() const
 void KToolBar::hide()
 {
     QToolBar::hide();
-    if ( mainWindow() && mainWindow()->inherits( "KMainWindow" ) )
-        static_cast<KMainWindow *>(mainWindow())->setSettingsDirty();
 }
 
 void KToolBar::show()
 {
     QToolBar::show();
-    if ( mainWindow() && mainWindow()->inherits( "KMainWindow" ) )
-        static_cast<KMainWindow *>(mainWindow())->setSettingsDirty();
 }
 
 void KToolBar::resizeEvent( QResizeEvent *e )

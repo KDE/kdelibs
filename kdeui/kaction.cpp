@@ -74,12 +74,6 @@
 * or by calling setWidget() if the widget wasn't known when the object was
 * initially constructed (as in KXMLGUIClient and KParts::PartBase)
 *
-* Main Window pointer:
-* The KMainWindow* is used during destruction.  If it is flagged that KMainWindow
-* is destroying itself, then KAction::~KAction shouldn't unplug itself.
-* This is set when the Focus Widget pointer is set.
-* <not yet implemented>
-*
 * Shortcuts:
 * An action's shortcut will not not be connected unless a focus widget has
 * been specified in KActionCollection.
@@ -89,7 +83,6 @@
 * It is set by KXMLGUIFactory.
 */
 
-static KAccel* s_kaccelXML = 0;
 static QFontDatabase *fontDataBase = 0;
 
 static void cleanupFontDatabase()
@@ -427,14 +420,12 @@ On Read XML: [via setShortcut()]
 
 KAccel* KAction::kaccelCurrent()
 {
-  KAccel* kaccel = 0;
-
-  if( s_kaccelXML )
-    kaccel = s_kaccelXML;
+  if( m_parentCollection && m_parentCollection->builderKAccel() )
+    return m_parentCollection->builderKAccel();
   else if( m_parentCollection && m_parentCollection->kaccel() )
-    kaccel = m_parentCollection->kaccel();
-
-  return kaccel;
+    return m_parentCollection->kaccel();
+  else
+    return 0L;
 }
 
 // Only to be called from initPrivate()
@@ -2833,8 +2824,8 @@ int KToolBarPopupAction::plug( QWidget *widget, int index )
 KPopupMenu *KToolBarPopupAction::popupMenu() const
 {
     if ( !m_popup ) {
-	KToolBarPopupAction *that = const_cast<KToolBarPopupAction*>(this);
-	that->m_popup = new KPopupMenu;
+        KToolBarPopupAction *that = const_cast<KToolBarPopupAction*>(this);
+        that->m_popup = new KPopupMenu;
     }
     return m_popup;
 }
@@ -2864,7 +2855,7 @@ int KToggleToolBarAction::plug( QWidget* w, int index )
 {
   if (kapp && !kapp->authorizeKAction(name()))
       return -1;
-      
+
   if ( !m_toolBar ) {
     // Note: topLevelWidget() stops too early, we can't use it.
     QWidget * tl = w;
@@ -2875,7 +2866,7 @@ int KToggleToolBarAction::plug( QWidget* w, int index )
     KMainWindow * mw = dynamic_cast<KMainWindow *>(tl); // try to see if it's a kmainwindow
 
     if ( mw )
-	m_toolBar = mw->toolBar( m_toolBarName );
+        m_toolBar = mw->toolBar( m_toolBarName );
   }
 
   if( m_toolBar ) {
@@ -2898,6 +2889,9 @@ void KToggleToolBarAction::setChecked( bool c )
     } else {
       m_toolBar->hide();
     }
+    QMainWindow* mw = m_toolBar->mainWindow();
+    if ( mw && mw->inherits( "KMainWindow" ) )
+      static_cast<KMainWindow *>( mw )->setSettingsDirty();
   }
   KToggleAction::setChecked( c );
 }
@@ -3038,7 +3032,7 @@ public:
     //m_bOneKAccelOnly = false;
     //m_iWidgetCurrent = 0;
     m_bAutoConnectShortcuts = true;
-    m_widget = m_builderWidget = 0;
+    m_widget = 0;
     m_kaccel = m_builderKAccel = 0;
     m_dctHighlightContainers.setAutoDelete( true );
     m_highlight = false;
@@ -3056,9 +3050,8 @@ public:
   QValueList<KActionCollection*> m_docList;
   QWidget *m_widget;
   KAccel *m_kaccel;
-  QWidget *m_builderWidget;
   KAccel *m_builderKAccel;
- 
+
   QAsciiDict<KAction> m_actionDict;
   QPtrDict< QPtrList<KAction> > m_dctHighlightContainers;
   bool m_highlight;
@@ -3162,24 +3155,17 @@ bool KActionCollection::addDocCollection( KActionCollection* pDoc )
 
 void KActionCollection::beginXMLPlug( QWidget *widget )
 {
-	kdDebug(129) << "KActionCollection::beginXMLPlug( buildWidget = " << widget << " ): this = " <<  this << " d->m_kaccel = " << d->m_kaccel << endl;
-	if( d->m_builderWidget )
-		kdWarning() << "KActionCollection::beginXMLPlug() already called!" << endl;
+	kdDebug(129) << "KActionCollection::beginXMLPlug( buildWidget = " << widget << " ): this = " <<  this << " d->m_builderKAccel = " << d->m_builderKAccel << endl;
 
-	d->m_builderWidget = widget;
-
-	if( d->m_kaccel )
-		s_kaccelXML = d->m_kaccel;
-	else if( d->m_builderWidget ) {
-		d->m_builderKAccel = new KAccel( d->m_builderWidget, this, "KActionCollection-BuilderKAccel" );
-		s_kaccelXML = d->m_builderKAccel;
+	if( widget && !d->m_builderKAccel ) {
+            d->m_builderKAccel = new KAccel( widget, this, "KActionCollection-BuilderKAccel" );
 	}
 }
 
 void KActionCollection::endXMLPlug()
 {
 	kdDebug(129) << "KActionCollection::endXMLPlug(): this = " <<  this << endl;
-	s_kaccelXML = 0;
+	//s_kaccelXML = 0;
 }
 
 void KActionCollection::prepareXMLUnplug()
@@ -3187,7 +3173,6 @@ void KActionCollection::prepareXMLUnplug()
 	kdDebug(129) << "KActionCollection::prepareXMLUnplug(): this = " <<  this << endl;
 	unplugShortcuts( d->m_kaccel );
 
-	d->m_builderWidget = 0;
 	if( d->m_builderKAccel ) {
 		unplugShortcuts( d->m_builderKAccel );
 		delete d->m_builderKAccel;
@@ -3338,6 +3323,7 @@ KAction* KActionCollection::take( KAction* action ) { return _take( action ); }
 void KActionCollection::clear()                     { _clear(); }
 KAccel* KActionCollection::accel()                  { return kaccel(); }
 const KAccel* KActionCollection::accel() const      { return kaccel(); }
+KAccel* KActionCollection::builderKAccel() const    { return d->m_builderKAccel; }
 
 KAction* KActionCollection::action( const char* name, const char* classname ) const
 {

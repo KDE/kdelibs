@@ -1637,12 +1637,12 @@ public:
     virtual ~KToggleToolBarAction();
 
     virtual int plug( QWidget*, int index = -1 );
-    
+
     KToolBar *toolBar() { return m_toolBar; }
 
 public slots:
     virtual void setChecked( bool );
-    
+
 private:
     QCString               m_toolBarName;
     QGuardedPtr<KToolBar>  m_toolBar;
@@ -1666,7 +1666,7 @@ public:
      * when plugged. This action may only be plugged into
      * a toolbar.
      */
-    KWidgetAction( QWidget* widget, const QString& text, 
+    KWidgetAction( QWidget* widget, const QString& text,
                    const KShortcut& cut,
                    const QObject* receiver, const char* slot,
                    KActionCollection* parent, const char* name );
@@ -1678,7 +1678,7 @@ public:
     QWidget* widget() { return m_widget; }
 
     void setAutoSized( bool );
-    
+
     /**
      * Plug the action. The widget passed to the constructor
      * will be reparented to w, which must inherit KToolBar.
@@ -1742,7 +1742,7 @@ public:
    * You only need to call this if a null pointer was passed in the constructor.
    */
   virtual void setWidget( QWidget *widget );
-  
+
   /**
    * This indicates whether new actions which are created in this collection
    * should have their keyboard shortcuts automatically connected on
@@ -1750,9 +1750,9 @@ public:
    * This is automatically done by KParts.  The default is 'true'.
    */
   void setAutoConnectShortcuts( bool );
-  
+
   bool isAutoConnectShortcuts();
-  
+
   /**
    * This sets the default shortcut scope for new actions created in this
    * collection.  The default is ScopeUnspecified.  Ideally the default
@@ -1760,7 +1760,7 @@ public:
    * compatibility problems.
    */
   void setDefaultScope( KAction::Scope );
-  
+
   /**
    * Doc/View model.  This lets you add the action collection of a document
    * to a view's action collection.
@@ -1785,6 +1785,8 @@ public:
   KAccel* kaccel();
   const KAccel* kaccel() const;
 
+  /** @internal, for KAction::kaccelCurrent() */
+  KAccel* builderKAccel() const;
   /** Returns the KAccel object associated with widget #. */
   //KAccel* widgetKAccel( uint i );
   //const KAccel* widgetKAccel( uint i ) const;
@@ -1835,7 +1837,7 @@ signals:
   void clearStatusText();
 
 private:
-  /** 
+  /**
    * @internal Only to be called by KXMLGUIFactory::addClient().
    * When actions are being connected, KAction needs to know what
    * widget it should connect widget-scope actions to, and what
@@ -1846,7 +1848,7 @@ private:
   /** @internal.  Only to be called by KXMLGUIFactory::removeClient() */
   void prepareXMLUnplug();
   void unplugShortcuts( KAccel* kaccel );
-  
+
   void _clear();
   void _insert( KAction* );
   void _remove( KAction* );
