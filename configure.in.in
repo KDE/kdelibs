@@ -152,8 +152,6 @@ LIB_KIO='$(top_builddir)/kio/libkio.la'
 AC_SUBST(LIB_KIO)
 LIB_KPARTS='$(top_builddir)/kparts/libkparts.la'
 AC_SUBST(LIB_KPARTS)
-LIB_KAB='$(top_builddir)/kab/libkab.la'
-AC_SUBST(LIB_KAB)
 LIB_KHTML='$(top_builddir)/khtml/libkhtml.la'
 AC_SUBST(LIB_KHTML)
 LIB_DCOP='$(top_builddir)/dcop/libDCOP.la'
