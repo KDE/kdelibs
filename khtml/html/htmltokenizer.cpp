@@ -1084,7 +1084,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 prePos = 0;
                 break;
             case ID_SCRIPT:
-                if (!brokenScript && beginTag) {
+                if (beginTag) {
                     searchStopper = scriptEnd;
                     searchStopperLen = 8;
                     script = true;
@@ -1461,7 +1461,7 @@ void HTMLTokenizer::end()
 void HTMLTokenizer::finish()
 {
     // do this as long as we don't find matching comment ends
-    while((script || comment || server) && scriptCode && scriptCodeSize)
+    while((title || script || comment || server) && scriptCode && scriptCodeSize)
     {
         // we've found an unmatched comment start
         if (comment)
@@ -1476,9 +1476,8 @@ void HTMLTokenizer::finish()
         scriptCode[ scriptCodeSize + 1 ] = 0;
         int pos;
         QString food;
-        if (server || style || script) {
+        if (title || style || script)
             food.setUnicode(scriptCode, scriptCodeSize);
-        }
         else if (server) {
             food = "<";
             food += QString(scriptCode, scriptCodeSize);
