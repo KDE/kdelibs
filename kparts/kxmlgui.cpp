@@ -411,6 +411,14 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 
 bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
 {
+  QListIterator<XMLGUIContainerNode> childIt( node->children );
+  while ( childIt.current() )
+    // removeRecursive returns true in case the container really got deleted
+    if ( removeRecursive( childIt.current() ) )
+      node->children.removeRef( childIt.current() );
+    else
+      ++childIt;
+
   QMap<QString,int>::Iterator defaultMergingIt = node->mergingIndices.find( d->m_defaultMergingName );
   QMap<QString,int>::Iterator mergingIt = node->mergingIndices.find( d->m_servantName );
   QMap<QString,int>::Iterator mergingEnd = node->mergingIndices.end();
@@ -454,14 +462,6 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
       }
       else
         ++clientIt;
-
-  QListIterator<XMLGUIContainerNode> childIt( node->children );
-  while ( childIt.current() )
-    // removeRecursive returns true in case the container really got deleted
-    if ( removeRecursive( childIt.current() ) )
-      node->children.removeRef( childIt.current() );
-    else
-      ++childIt;
   
   if ( node->clients.count() == 0 && node->children.count() == 0 && node->container &&
        node->servant == m_servant )
