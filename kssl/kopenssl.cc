@@ -129,6 +129,7 @@ static int (*K_i2d_PKCS7_fp)(FILE*,PKCS7*) = NULL;
 static PKCS7* (*K_d2i_PKCS7_fp)(FILE*,PKCS7**) = NULL;
 static PKCS7* (*K_PKCS7_dup)(PKCS7*) = NULL;
 static STACK_OF(X509_NAME) *(*K_SSL_load_client_CA_file)(const char*) = NULL;
+static STACK_OF(X509_INFO) *(*K_PEM_X509_INFO_read)(FILE*, STACK_OF(X509_INFO)*, pem_password_cb*, void*) = NULL;
 #endif
 };
 
@@ -333,6 +334,7 @@ KConfig *cfg;
       K_d2i_PKCS7 = (PKCS7* (*)(PKCS7**,unsigned char**,long)) _cryptoLib->symbol("d2i_PKCS7");
       K_d2i_PKCS7_fp = (PKCS7 *(*)(FILE *,PKCS7**)) _cryptoLib->symbol("d2i_PKCS7_fp");
       K_PKCS7_dup = (PKCS7* (*)(PKCS7*)) _cryptoLib->symbol("PKCS7_dup");
+      K_PEM_X509_INFO_read = (STACK_OF(X509_INFO) *(*)(FILE*, STACK_OF(X509_INFO)*, pem_password_cb*, void *)) _cryptoLib->symbol("PEM_X509_INFO_read");
 #endif
    }
 
@@ -1016,6 +1018,12 @@ PKCS7 *KOpenSSLProxy::PKCS7_dup(PKCS7 *p7) {
 
 STACK_OF(X509_NAME) *KOpenSSLProxy::SSL_load_client_CA_file(const char *file) {
    if (K_SSL_load_client_CA_file) return (K_SSL_load_client_CA_file)(file);
+   else return NULL;
+}
+
+
+STACK_OF(X509_INFO) *KOpenSSLProxy::PEM_X509_INFO_read(FILE *fp, STACK_OF(X509_INFO) *sk, pem_password_cb *cb, void *u) {
+   if (K_PEM_X509_INFO_read) return (K_PEM_X509_INFO_read)(fp,sk,cb,u);
    else return NULL;
 }
 

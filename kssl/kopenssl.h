@@ -631,6 +631,11 @@ public:
     */
    STACK_OF(X509_NAME) *SSL_load_client_CA_file(const char *file);
 
+   /*
+    * Load a file of PEM encoded objects.
+    */
+   STACK_OF(X509_INFO) *PEM_X509_INFO_read(FILE *fp, STACK_OF(X509_INFO) *sk,
+		           pem_password_cb *cb, void *u);
 
 
 #endif
