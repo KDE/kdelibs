@@ -90,14 +90,15 @@ public:
      */
     static void visualActivate(QWidget *, QRect);
 
-private:
-    void toGray(QImage &image, float value);
-    void colorize(QImage &image, const QColor &col, float value);
-    void deSaturate(QImage &image, float value);
-    void toGamma(QImage &image, float value);
-    void semiTransparent(QImage &image);
-    void semiTransparent(QPixmap &pixmap);
+    static void toGray(QImage &image, float value);
+    static void colorize(QImage &image, const QColor &col, float value);
+    static void deSaturate(QImage &image, float value);
+    static void toGamma(QImage &image, float value);
+    static void semiTransparent(QImage &image);
+    static void semiTransparent(QPixmap &pixmap);
+    static void overlay(QImage &src, QImage &overlay);
 
+private:
     int mEffect[6][3];
     float mValue[6][3];
     QColor mColor[6][3];

@@ -31,8 +31,6 @@
 #include <kicontheme.h>
 #include "kiconeffect.h"
 
-#include <config.h>
-
 KIconEffect::KIconEffect()
 {
     init();
@@ -121,12 +119,12 @@ QImage KIconEffect::apply(QImage image, int group, int state)
 {
     if (state >= KIcon::LastState)
     {
-	kdDebug(264) << "Illegal icon state: " << state << "\n";
+	kdDebug(265) << "Illegal icon state: " << state << "\n";
 	return image;
     }
     if (group >= KIcon::LastGroup)
     {
-	kdDebug(264) << "Illegal icon group: " << group << "\n";
+	kdDebug(265) << "Illegal icon group: " << group << "\n";
 	return image;
     }
     return apply(image, mEffect[group][state], mValue[group][state],
@@ -137,7 +135,7 @@ QImage KIconEffect::apply(QImage image, int effect, float value, QColor col, boo
 {
     if (effect >= LastEffect )
     {
-	kdDebug(264) << "Illegal icon effect: " << effect << "\n";
+	kdDebug(265) << "Illegal icon effect: " << effect << "\n";
 	return image;
     }
     if (value > 1.0)
@@ -170,12 +168,12 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int group, int state)
 {
     if (state >= KIcon::LastState)
     {
-	kdDebug(264) << "Illegal icon state: " << state << "\n";
+	kdDebug(265) << "Illegal icon state: " << state << "\n";
 	return pixmap;
     }
     if (group >= KIcon::LastGroup)
     {
-	kdDebug(264) << "Illegal icon group: " << group << "\n";
+	kdDebug(265) << "Illegal icon group: " << group << "\n";
 	return pixmap;
     }
     return apply(pixmap, mEffect[group][state], mValue[group][state],
@@ -190,7 +188,7 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
 
     if (effect >= LastEffect )
     {
-	kdDebug(264) << "Illegal icon effect: " << effect << "\n";
+	kdDebug(265) << "Illegal icon effect: " << effect << "\n";
 	return result;
     }
 
@@ -384,7 +382,7 @@ QImage KIconEffect::doublePixels(QImage src)
     QImage dst;
     if (src.depth() == 1)
     {
-	kdDebug(264) << "image depth 1 not supported\n";
+	kdDebug(265) << "image depth 1 not supported\n";
 	return dst;
     }
 
@@ -426,6 +424,120 @@ QImage KIconEffect::doublePixels(QImage src)
 	}
     }
     return dst;
+}
+
+void KIconEffect::overlay(QImage &src, QImage &overlay)
+{
+    if (src.depth() != overlay.depth())
+    {
+	kdDebug(265) << "Image depth src != overlay!\n";
+	return;
+    }
+    if (src.size() != overlay.size())
+    {
+	kdDebug(265) << "Image size src != overlay\n";
+	return;
+    }
+    if (!overlay.hasAlphaBuffer())
+    {
+	kdDebug(265) << "Overlay doesn't have alpha buffer!\n";
+	return;
+    }
+
+    int i, j;
+
+    // We don't do 1 bpp
+
+    if (src.depth() == 1)
+    {
+	kdDebug(265) << "1bpp not supported!\n";
+	return;
+    }
+
+    // Overlay at 8 bpp doesn't use alpha blending
+
+    if (src.depth() == 8)
+    {
+	if (src.numColors() + overlay.numColors() > 255)
+	{
+	    kdDebug(265) << "Too many colors in src + overlay!\n";
+	    return;
+	}
+
+	// Find transparent pixel in overlay
+	int trans;
+	for (trans=0; trans<overlay.numColors(); trans++)
+	{
+	    if (qAlpha(overlay.color(trans)) == 0)
+	    {
+		kdDebug(265) << "transparent pixel found at " << trans << "\n";
+		break;
+	    }
+	}
+	if (trans == overlay.numColors())
+	{
+	    kdDebug(265) << "transparent pixel not found!\n";
+	    return;
+	}
+
+	// Merge color tables
+	int nc = src.numColors();
+	src.setNumColors(nc + overlay.numColors());
+	for (i=0; i<overlay.numColors(); i++)
+	{
+	    src.setColor(nc+i, overlay.color(i));
+	}
+
+	// Overwrite nontransparent pixels.
+	unsigned char *oline, *sline;
+	for (i=0; i<src.height(); i++)
+	{
+	    oline = overlay.scanLine(i);
+	    sline = src.scanLine(i);
+	    for (j=0; j<src.width(); j++)
+	    {
+		if (oline[j] != trans)
+		    sline[j] = oline[j]+nc;
+	    }
+	}
+    }
+
+    // Overlay at 32 bpp does use alpha blending
+
+    if (src.depth() == 32)
+    {
+	QRgb *oline, *sline;
+	int r1, g1, b1, a1; 
+	int r2, g2, b2, a2;
+
+	for (i=0; i<src.height(); i++)
+	{
+	    oline = (QRgb *) overlay.scanLine(i);
+	    sline = (QRgb *) src.scanLine(i);
+
+	    for (j=0; j<src.width(); j++)
+	    {
+		r1 = qRed(oline[j]);
+		g1 = qGreen(oline[j]);
+		b1 = qBlue(oline[j]);
+		a1 = qAlpha(oline[j]);
+
+		r2 = qRed(sline[j]); 
+		g2 = qGreen(sline[j]); 
+		b2 = qBlue(sline[j]);
+		a2 = qAlpha(sline[j]);
+
+		r2 = (a1 * r1 + (0xff - a1) * r2) >> 8;
+		g2 = (a1 * g1 + (0xff - a1) * g2) >> 8;
+		b2 = (a1 * b1 + (0xff - a1) * b2) >> 8;
+		a2 = QMAX(a1, a2);
+
+		sline[j] = qRgba(r2, g2, b2, a2);
+	    }
+	}
+    }
+    
+    return;
 }
 
     void
