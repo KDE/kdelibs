@@ -106,9 +106,9 @@ struct KFileDialogPrivate
     // the geometry managment
     QBoxLayout *boxLayout;
     QWidget *mainWidget;
-    
+
     QLabel *locationLabel;
-    
+
     // @deprecated remove in KDE4
     QLabel *filterLabel;
     KURLComboBox *pathCombo;
@@ -122,7 +122,7 @@ struct KFileDialogPrivate
     KURL::List urlList; //the list of selected urls
 
     QStringList mimetypes; //the list of possible mimetypes to save as
-    
+
     // indicates if the location edit should be kept or cleared when changing
     // directories
     bool keepLocation :1;
@@ -145,7 +145,7 @@ struct KFileDialogPrivate
     QString fileClass;
 
     KFileBookmarkHandler *bookmarkHandler;
-    
+
     // the ID of the path drop down so subclasses can place their custom widgets properly
     int m_pathComboIndex;
 };
@@ -176,7 +176,7 @@ KFileDialog::~KFileDialog()
 
     if (d->urlBar)
     {
-        if ( d->initializeSpeedbar && d->urlBar->isModified() ) 
+        if ( d->initializeSpeedbar && d->urlBar->isModified() )
         {
             QString oldGroup = config->group();
             config->setGroup( ConfigGroup );
@@ -663,7 +663,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     d->initializeSpeedbar = config->readBoolEntry( "Set speedbar defaults",
                                                    true );
     d->completionLock = false;
-    
+
     QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
     toolbar = new KToolBar( d->mainWidget, "KFileDialog::toolbar", true);
     toolbar->setFlat(true);
@@ -679,11 +679,11 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     QWhatsThis::add( d->pathCombo, i18n("<qt>Commonly used locations are listed here. "
                                         "This includes standard locations, such as your home directory, as well as "
                                         "locations that have been visited recently.") + autocompletionWhatsThisText);
-    
+
     KURL u;
     u.setPath( QDir::rootDirPath() );
     QString text = i18n("Root Directory: %1").arg( u.path() );
-    d->pathCombo->addDefaultURL( u, 
+    d->pathCombo->addDefaultURL( u,
                                  KMimeType::pixmapForURL( u, 0, KIcon::Small ),
                                  text );
 
@@ -696,15 +696,15 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     docPath.setPath( KGlobalSettings::documentPath() );
     if ( u.path(+1) != docPath.path(+1) ) {
         text = i18n("Documents: %1").arg( docPath.path( +1 ) );
-        d->pathCombo->addDefaultURL( u, 
+        d->pathCombo->addDefaultURL( u,
                                      KMimeType::pixmapForURL( u, 0, KIcon::Small ),
                                      text );
     }
 
     u.setPath( KGlobalSettings::desktopPath() );
     text = i18n("Desktop: %1").arg( u.path( +1 ) );
-    d->pathCombo->addDefaultURL( u, 
-                                 KMimeType::pixmapForURL( u, 0, KIcon::Small ), 
+    d->pathCombo->addDefaultURL( u,
+                                 KMimeType::pixmapForURL( u, 0, KIcon::Small ),
                                  text );
 
     u.setPath( "/tmp" );
@@ -760,7 +760,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
                    KDirOperator::FileActions |
                    KDirOperator::ViewActions);
     KActionCollection *coll = ops->actionCollection();
-    
+
     // plug nav items into the toolbar
     coll->action( "up" )->plug( toolbar );
     coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent directory.<p>"
@@ -775,14 +775,14 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     coll->action( "mkdir" )->setShortcut(Key_F10);
     coll->action( "mkdir" )->plug( toolbar );
     coll->action( "mkdir" )->setWhatsThis(i18n("Click this button to create a new directory."));
-    
+
     d->bookmarkHandler = new KFileBookmarkHandler( this );
     toolbar->insertButton(QString::fromLatin1("bookmark"),
                           (int)HOTLIST_BUTTON, true,
                           i18n("Bookmarks"));
     toolbar->getButton(HOTLIST_BUTTON)->setPopup( d->bookmarkHandler->menu(),
                                                   true);
-    QWhatsThis::add(toolbar->getButton(HOTLIST_BUTTON), 
+    QWhatsThis::add(toolbar->getButton(HOTLIST_BUTTON),
                     i18n("<qt>This button allows you to bookmark specific locations. "
                          "Click on this button to open the bookmark menu where you may add, "
                          "edit or select a bookmark.<p>"
@@ -790,7 +790,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
                          "like bookmarks elsewhere in KDE.</qt>"));
     connect( d->bookmarkHandler, SIGNAL( openURL( const QString& )),
              SLOT( enterURL( const QString& )));
-    
+
     KToggleAction *showSidebarAction =
         new KToggleAction(i18n("Show Quick Access Navigation Panel"), Key_F9, coll,"toggleSpeedbar");
     connect( showSidebarAction, SIGNAL( toggled( bool ) ),
@@ -798,7 +798,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
     KActionMenu *menu = new KActionMenu( i18n("Configure"), "configure", this, "extra menu" );
     menu->setWhatsThis(i18n("<qt>This is the configuration menu for the file dialog. "
-                            "Various options can be accessed from this menu including: <ul>" 
+                            "Various options can be accessed from this menu including: <ul>"
                             "<li>how files are sorted in the list</li>"
                             "<li>types of view, including icon and list</li>"
                             "<li>showing of hidden files</li>"
@@ -819,12 +819,12 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     menu->insert( coll->action( "preview" ));
     coll->action( "separate dirs" )->setShortcut(Key_F12);
     menu->insert( coll->action( "separate dirs" ));
-    
+
     menu->setDelayed( false );
     connect( menu->popupMenu(), SIGNAL( aboutToShow() ),
              ops, SLOT( updateSelectionDependentActions() ));
     menu->plug( toolbar );
-    
+
     /*
      * ugly little hack to have a 5 pixel space between the buttons
      * and the combo box
@@ -834,14 +834,14 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     spacerWidget->setMaximumWidth(spacingHint());
     d->m_pathComboIndex = toolbar->insertWidget(-1, -1, spacerWidget);
     toolbar->insertWidget(PATH_COMBO, 0, d->pathCombo);
-    
+
 
     toolbar->setItemAutoSized (PATH_COMBO);
     toolbar->setIconText(KToolBar::IconOnly);
     toolbar->setBarPos(KToolBar::Top);
     toolbar->setMovingEnabled(false);
     toolbar->adjustSize();
-    
+
     d->pathCombo->setCompletionObject( ops->dirCompletionObject(), false );
 
     connect( d->pathCombo, SIGNAL( urlActivated( const KURL&  )),
@@ -858,7 +858,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     QString whatsThisText;
     if (d->operationMode == KFileDialog::Saving)
     {
-        whatsThisText = i18n("<qt>This is the name to save the file as.") + 
+        whatsThisText = i18n("<qt>This is the name to save the file as.") +
                         autocompletionWhatsThisText;
     }
     else if (ops->mode() & KFile::Files)
@@ -866,18 +866,18 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
         whatsThisText = i18n("<qt>This is the list of files to open. More than "
                              "one file can be specified by listing several "
                              "files, separated by spaces.") +
-                        autocompletionWhatsThisText;    
+                        autocompletionWhatsThisText;
     }
     else
     {
         whatsThisText = i18n("<qt>This is the name of the file to open.") +
                         autocompletionWhatsThisText;
     }
-    
+
     // the Location label/edit
     d->locationLabel = new QLabel(i18n("&Location:"), d->mainWidget);
     QWhatsThis::add(d->locationLabel, whatsThisText);
-    locationEdit = new KURLComboBox(KURLComboBox::Files, true, 
+    locationEdit = new KURLComboBox(KURLComboBox::Files, true,
                                     d->mainWidget, "LocationEdit");
     d->locationLabel->setBuddy(locationEdit);
     QWhatsThis::add(locationEdit, whatsThisText);
@@ -933,7 +933,7 @@ void KFileDialog::initSpeedbar()
     d->urlBar = new KURLBar( true, d->mainWidget, "url bar" );
     connect( d->urlBar, SIGNAL( activated( const KURL& )),
              SLOT( enterURL( const KURL& )) );
-    
+
     d->urlBar->readConfig( KGlobal::config(), "KFileDialog Speedbar" );
 
     if ( d->initializeSpeedbar ) {
@@ -946,7 +946,7 @@ void KFileDialog::initSpeedbar()
             u.setPath( KGlobalSettings::documentPath() );
             d->urlBar->insertItem( u, i18n("Documents"), false, "document" );
         }
-        
+
         u.setPath( QDir::homeDirPath() );
         d->urlBar->insertItem( u, i18n("Home Directory"), false,
                                "folder_home" );
@@ -973,7 +973,7 @@ void KFileDialog::initSpeedbar()
     if ( d->urlBar )
         d->urlBar->setCurrentItem( d->url );
     setSelection(d->url.url()); // ### move that into show() as well?
-    
+
     d->urlBarLayout->insertWidget( 0, d->urlBar );
 }
 
@@ -1001,7 +1001,7 @@ void KFileDialog::initGUI()
     lafBox->addWidget(d->cancelButton, 1, 2, AlignVCenter);
 
     lafBox->setColStretch(1, 4);
-    
+
     vbox->addSpacing(3);
 
     setTabOrder(ops,  locationEdit);
@@ -1161,7 +1161,7 @@ void KFileDialog::enterURL( const QString& url )
 void KFileDialog::toolbarCallback(int) // SLOT
 {
     /*
-     * yes, nothing uses this anymore. 
+     * yes, nothing uses this anymore.
      * it used to be used to show the configure dialog
      */
 }
@@ -1222,8 +1222,8 @@ void KFileDialog::setSelection(const QString& url)
             locationEdit->setCurrentItem( 0 );
             locationEdit->setEditText( filename );
 
-            // tell the line edit that it has been edited 
-            // otherwise we won't know this was set by the user 
+            // tell the line edit that it has been edited
+            // otherwise we won't know this was set by the user
             // and it will be ignored if there has been an
             // auto completion. this caused bugs where automcompletion
             // would start, the user would pick something from the
@@ -1392,8 +1392,9 @@ QString KFileDialog::getExistingDirectory(const QString& startDir,
 KURL KFileDialog::getImageOpenURL( const QString& startDir, QWidget *parent,
                                    const QString& caption)
 {
+    QStringList mimetypes = KImageIO::mimeTypes( KImageIO::Reading );
     KFileDialog dlg(startDir,
-                    KImageIO::pattern( KImageIO::Reading ),
+                    mimetypes.join(" "),
                     parent, "filedialog", true);
     dlg.setOperationMode( Opening );
     dlg.setCaption( caption.isNull() ? i18n("Open") : caption );
@@ -1647,7 +1648,7 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
 
     // show or don't show the speedbar
     toggleSpeedbar( kc->readBoolEntry(ShowSpeedbar, true) );
-    
+
     int w1 = minimumSize().width();
     int w2 = toolbar->sizeHint().width() + 10;
     if (w1 < w2)
@@ -1777,7 +1778,7 @@ void KFileDialog::toggleSpeedbar( bool show )
             initSpeedbar();
 
         d->urlBar->show();
-            
+
         // check to see if they have a home item defined, if not show the home button
         KURLBarItem *urlItem = static_cast<KURLBarItem*>( d->urlBar->listBox()->firstItem() );
         KURL homeURL;
@@ -1797,11 +1798,11 @@ void KFileDialog::toggleSpeedbar( bool show )
     {
         if (d->urlBar)
             d->urlBar->hide();
-        
+
         if ( !ops->actionCollection()->action( "home" )->isPlugged( toolbar ) )
             ops->actionCollection()->action( "home" )->plug( toolbar, 3 );
     }
-    
+
     static_cast<KToggleAction *>(actionCollection()->action("toggleSpeedbar"))->setChecked( show );
 }
 
