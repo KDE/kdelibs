@@ -392,11 +392,16 @@ void KListViewSearchLineWidget::polish()
     QToolButton *clearSearchButton = new QToolButton(this);
     clearSearchButton->setIconSet(icon);
 
-    new QLabel(i18n("S&earch"), this, "kde toolbar widget");
+    new QLabel(i18n("S&earch:"), this);
 
     d->searchLine = createSearchLine(d->listView);
 
     connect(clearSearchButton, SIGNAL(clicked()), d->searchLine, SLOT(clear()));
+}
+
+KListViewSearchLine *KListViewSearchLineWidget::searchLine() const
+{
+    return d->searchLine;
 }
 
 #include "klistviewsearchline.moc"
