@@ -425,7 +425,7 @@ const char* KURL::filename( bool _isReference )
 	  return ref_part.data() + pos + 1;
     }
     
-  if ( path_part.data()[0] == 0 )
+  if ( path_part.isEmpty() )
 	return "";
 
   if ( path_part.data()[0] == '/' && path_part.data()[1] == 0 )
