@@ -1481,7 +1481,7 @@ void CopyJob::slotResultStating( Job *job )
             // Probably : src doesn't exist. Well, over some protocols (e.g. FTP)
             // this info isn't really reliable (thanks to MS FTP servers).
             // We'll assume a file, and try to download anyway.
-            kdDebug() << "Error while stating source. Activating hack" << endl;
+            kdDebug(7007) << "Error while stating source. Activating hack" << endl;
             subjobs.remove( job );
             assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
             struct CopyInfo info;

@@ -33,6 +33,8 @@
 #include <stdlib.h>
 #include <kapp.h>
 
+const int KDEBUG_KSHRED = 7026;
+
 KShred::KShred(QString fileName)
 {
   if (fileName.isEmpty())
@@ -153,7 +155,7 @@ bool
 KShred::shred(QString fileName)
 {
 
-  kdDebug() << "KShred: shredding '" << fileName.local8Bit() << endl;
+  kdDebug(KDEBUG_KSHRED) << "KShred: shredding '" << fileName.local8Bit() << endl;
   if (fileName.isEmpty())
     return false;
 
@@ -217,7 +219,7 @@ KShred::shred()
                            {'\266', '\333', '\155'}, {'\333', '\155', '\266'}};
   QString msg = i18n("Shredding:  pass %1 of 35");
  
-  kdDebug() << "KShred::shred" << endl;
+  kdDebug(KDEBUG_KSHRED) << "KShred::shred" << endl;
 
   emit processedSize(0);
 
@@ -231,18 +233,18 @@ KShred::shred()
     else
     {
       emit infoMessage(msg.arg(iteration));
-      kdDebug() << "KShred::shred " << iteration++ << endl;
+      kdDebug(KDEBUG_KSHRED) << "KShred::shred " << iteration++ << endl;
     }
 
   if (!fillbyte((unsigned int) 0x55))     // '0x55' is 01010101
     return false;
   emit infoMessage(msg.arg(iteration));
-  kdDebug() << "KShred::shred " << iteration++ << endl;
+  kdDebug(KDEBUG_KSHRED) << "KShred::shred " << iteration++ << endl;
 
   if (!fillbyte((unsigned int) 0xAA))     // '0xAA' is 10101010
     return false;
   emit infoMessage(msg.arg(iteration));
-  kdDebug() << "KShred::shred " << iteration++ << endl;
+  kdDebug(KDEBUG_KSHRED) << "KShred::shred " << iteration++ << endl;
 
   for (unsigned int ctr = 0; ctr < 3; ctr++)
     if (!fillpattern(p[ctr], 3))  // '0x92', '0x49', '0x24'
@@ -250,7 +252,7 @@ KShred::shred()
     else
     {
       emit infoMessage(msg.arg(iteration));
-      kdDebug() << "KShred::shred " << iteration++ << endl;
+      kdDebug(KDEBUG_KSHRED) << "KShred::shred " << iteration++ << endl;
     }
 
   for (unsigned int ctr = 0; ctr <= 255 ; ctr += 17)
@@ -259,7 +261,7 @@ KShred::shred()
     else
     {
       emit infoMessage(msg.arg(iteration));
-      kdDebug() << "KShred::shred " << iteration++ << endl;
+      kdDebug(KDEBUG_KSHRED) << "KShred::shred " << iteration++ << endl;
     }
 
   for (unsigned int ctr = 0; ctr < 6; ctr++)
@@ -268,7 +270,7 @@ KShred::shred()
     else
     {
       emit infoMessage(msg.arg(iteration));
-      kdDebug() << "KShred::shred " << iteration++ << endl;
+      kdDebug(KDEBUG_KSHRED) << "KShred::shred " << iteration++ << endl;
     }
 
   for (int ctr = 0; ctr < 4; ctr++)
@@ -277,7 +279,7 @@ KShred::shred()
     else
     {
       emit infoMessage(msg.arg(iteration));
-      kdDebug() << "KShred::shred " << iteration++ << endl;
+      kdDebug(KDEBUG_KSHRED) << "KShred::shred " << iteration++ << endl;
     }
 
   if (!file->remove())

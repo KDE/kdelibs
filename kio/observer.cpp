@@ -2,6 +2,8 @@
    Copyright (C) 2000 Matej Koss <koss@miesto.sk>
                       David Faure <faure@kde.org>
 
+   $Id$
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
@@ -17,11 +19,12 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <assert.h>
+
 #include <kdebug.h>
 #include <kapp.h>
 #include <dcopclient.h>
 #include <kurl.h>
-#include <assert.h>
 
 #include "jobclasses.h"
 #include "observer.h"
@@ -34,6 +37,8 @@ template class QIntDict<KIO::Job>;
 
 Observer * Observer::s_pObserver = 0L;
 
+const int KDEBUG_OBSERVER = 7007; // Should be 7028
+
 Observer::Observer() : DCOPObject("KIO::Observer")
 {
     // Register app as able to receive DCOP messages
@@ -44,7 +49,7 @@ Observer::Observer() : DCOPObject("KIO::Observer")
 
     if ( !kapp->dcopClient()->isApplicationRegistered( "kio_uiserver" ) )
     {
-        kdDebug() << "Starting kio_uiserver" << endl;
+        kdDebug(KDEBUG_OBSERVER) << "Starting kio_uiserver" << endl;
         QString error;
         int ret = KApplication::startServiceByDesktopPath( "kio_uiserver.desktop",
                                                              QStringList(), &error );
@@ -52,13 +57,13 @@ Observer::Observer() : DCOPObject("KIO::Observer")
         {
             kdError() << "Couldn't start kio_uiserver from kio_uiserver.desktop: " << error << endl;
         } else
-            kdDebug() << "startServiceByDesktopPath returned " << ret << endl;
+            kdDebug(KDEBUG_OBSERVER) << "startServiceByDesktopPath returned " << ret << endl;
 
     }
     if ( !kapp->dcopClient()->isApplicationRegistered( "kio_uiserver" ) )
-        kdDebug() << "The application kio_uiserver is STILL NOT REGISTERED" << endl;
+        kdDebug(KDEBUG_OBSERVER) << "The application kio_uiserver is STILL NOT REGISTERED" << endl;
     else
-        kdDebug() << "kio_uiserver registered" << endl;
+        kdDebug(KDEBUG_OBSERVER) << "kio_uiserver registered" << endl;
 
     m_uiserver = new UIServer_stub( "kio_uiserver", "UIServer" );
 }
@@ -107,49 +112,49 @@ MetaData Observer::metadata( int progressId )
 
 void Observer::slotTotalSize( KIO::Job* job, unsigned long size )
 {
-//   kdDebug() << "** Observer::slotTotalSize " << job << " " << size << endl;
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotTotalSize " << job << " " << size << endl;
   m_uiserver->totalSize( job->progressId(), size );
 }
 
 void Observer::slotTotalFiles( KIO::Job* job, unsigned long files )
 {
-//   kdDebug() << "** Observer::slotTotalFiles " << job << " " << files << endl;
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotTotalFiles " << job << " " << files << endl;
   m_uiserver->totalFiles( job->progressId(), files );
 }
 
 void Observer::slotTotalDirs( KIO::Job* job, unsigned long dirs )
 {
-//   kdDebug() << "** Observer::slotTotalDirs " << job << " " << dirs << endl;
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotTotalDirs " << job << " " << dirs << endl;
   m_uiserver->totalDirs( job->progressId(), dirs );
 }
 
 void Observer::slotProcessedSize( KIO::Job* job, unsigned long size )
 {
-//   kdDebug() << "** Observer::slotProcessedSize " << job << " " << job->progressId() << " " << size << endl;
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotProcessedSize " << job << " " << job->progressId() << " " << size << endl;
   m_uiserver->processedSize( job->progressId(), size );
 }
 
 void Observer::slotProcessedFiles( KIO::Job* job, unsigned long files )
 {
-//   kdDebug() << "** Observer::slotProcessedFiles " << job << " " << files << endl;
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotProcessedFiles " << job << " " << files << endl;
   m_uiserver->processedFiles( job->progressId(), files );
 }
 
 void Observer::slotProcessedDirs( KIO::Job* job, unsigned long dirs )
 {
-//   kdDebug() << "** Observer::slotProcessedDirs " << job << " " << dirs << endl;
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotProcessedDirs " << job << " " << dirs << endl;
   m_uiserver->processedDirs( job->progressId(), dirs );
 }
 
 void Observer::slotSpeed( KIO::Job* job, unsigned long bytes_per_second )
 {
-//   kdDebug() << "** Observer::slotSpeed " << job << " " << bytes_per_second << endl;
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotSpeed " << job << " " << bytes_per_second << endl;
   m_uiserver->speed( job->progressId(), bytes_per_second );
 }
 
 void Observer::slotPercent( KIO::Job* job, unsigned long percent )
 {
-//   kdDebug() << "** Observer::slotPercent " << job << " " << percent << endl;
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotPercent " << job << " " << percent << endl;
   m_uiserver->percent( job->progressId(), percent );
 }
 
@@ -160,31 +165,31 @@ void Observer::slotInfoMessage( KIO::Job* job, const QString & msg )
 
 void Observer::slotCopying( KIO::Job* job, const KURL& from, const KURL& to )
 {
-//   kdDebug() << "** Observer::slotCopying " << job << " " << from.url() << " " << to.url() << endl;
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotCopying " << job << " " << from.url() << " " << to.url() << endl;
   m_uiserver->copying( job->progressId(), from, to );
 }
 
 void Observer::slotMoving( KIO::Job* job, const KURL& from, const KURL& to )
 {
-//   kdDebug() << "** Observer::slotMoving " << job << " " << from.url() << " " << to.url() << endl;
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotMoving " << job << " " << from.url() << " " << to.url() << endl;
   m_uiserver->moving( job->progressId(), from, to );
 }
 
 void Observer::slotDeleting( KIO::Job* job, const KURL& url )
 {
-//   kdDebug() << "** Observer::slotDeleting " << job << " " << url.url() << endl;
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotDeleting " << job << " " << url.url() << endl;
   m_uiserver->deleting( job->progressId(), url );
 }
 
 void Observer::slotCreatingDir( KIO::Job* job, const KURL& dir )
 {
-//   kdDebug() << "** Observer::slotCreatingDir " << job << " " << dir.url() << endl;
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotCreatingDir " << job << " " << dir.url() << endl;
   m_uiserver->creatingDir( job->progressId(), dir );
 }
 
 void Observer::slotCanResume( KIO::Job* job, unsigned long offset )
 {
-//   kdDebug() << "** Observer::slotCanResume " << job << " " << offset << endl;
+  //kdDebug(KDEBUG_OBSERVER) << "** Observer::slotCanResume " << job << " " << offset << endl;
   m_uiserver->canResume( job->progressId(), offset );
 }
 
@@ -222,7 +227,7 @@ bool Observer::openPassDlg( const QString& prompt, QString& user,
 
 bool Observer::openPassDlg( KIO::AuthInfo& info )
 {
-  kdDebug(7007) << "Observer::openPassDlg: User= " << info.username
+  kdDebug(KDEBUG_OBSERVER) << "Observer::openPassDlg: User= " << info.username
                 << ", Message= " << info.prompt << endl;
   QCString replyType;
   QByteArray data, replyData;
@@ -246,7 +251,7 @@ bool Observer::openPassDlg( KIO::AuthInfo& info )
       return true;
     }
   }
-  kdDebug(7007) << "Observer::openPassDlg call failed!" << endl;
+  kdDebug(KDEBUG_OBSERVER) << "Observer::openPassDlg call failed!" << endl;
   return false;
 }
 
@@ -269,10 +274,10 @@ int Observer::messageBox( int progressId, int type, const QString &text,
         int result;
         QDataStream _reply_stream( replyData, IO_ReadOnly );
         _reply_stream >> result;
-        kdDebug(7007) << "Observer::messageBox got result " << result << endl;
+        kdDebug(KDEBUG_OBSERVER) << "Observer::messageBox got result " << result << endl;
         return result;
     }
-    kdDebug(7007) << "Observer::messageBox call failed" << endl;
+    kdDebug(KDEBUG_OBSERVER) << "Observer::messageBox call failed" << endl;
     return 0;
 }
 
@@ -288,7 +293,7 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
                                            time_t mtimeDest
                                            )
 {
-  kdDebug(7007) << "Observer::open_RenameDlg" << endl;
+  kdDebug(KDEBUG_OBSERVER) << "Observer::open_RenameDlg" << endl;
   /*
   QByteArray resultArgs = m_uiserver->open_RenameDlg( job ? job->progressId() : 0, caption, src, dest, mode,
                                                       sizeSrc, sizeDest,
@@ -323,10 +328,10 @@ RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
     QDataStream stream2( res, IO_ReadOnly );
     Q_UINT8 result;
     stream2 >> result >> newDest;
-    kdDebug(7007) << "UIServer::open_RenameDlg returned " << result << "," << newDest << endl;
+    kdDebug(KDEBUG_OBSERVER) << "UIServer::open_RenameDlg returned " << result << "," << newDest << endl;
     return (RenameDlg_Result) result;
   }
-  kdDebug(7007) << "open_RenameDlg call failed" << endl;
+  kdDebug(KDEBUG_OBSERVER) << "open_RenameDlg call failed" << endl;
   return R_CANCEL;
 }
 
@@ -334,7 +339,7 @@ SkipDlg_Result Observer::open_SkipDlg( KIO::Job * job,
                                        bool _multi,
                                        const QString& _error_text )
 {
-  kdDebug(7007) << "Observer::open_SkipDlg" << endl;
+  kdDebug(KDEBUG_OBSERVER) << "Observer::open_SkipDlg" << endl;
   //int result = m_uiserver->open_SkipDlg( job ? job->progressId() : 0, (int)_multi, _error_text );
   int result;
   QByteArray data, replyData;
@@ -348,10 +353,10 @@ SkipDlg_Result Observer::open_SkipDlg( KIO::Job * job,
   {
     QDataStream stream( replyData, IO_ReadOnly );
     stream >> result;
-    kdDebug(7007) << "UIServer::open_SkipDlg returned " << result << endl;
+    kdDebug(KDEBUG_OBSERVER) << "UIServer::open_SkipDlg returned " << result << endl;
     return (SkipDlg_Result) result;
   }
-  kdDebug(7007) << "open_SkipDlg call failed" << endl;
+  kdDebug(KDEBUG_OBSERVER) << "open_SkipDlg call failed" << endl;
   return S_CANCEL;
 }
 

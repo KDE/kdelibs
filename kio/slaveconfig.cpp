@@ -97,7 +97,7 @@ SlaveConfigProtocol* SlaveConfigPrivate::findProtocolConfig(const QString &_prot
    return scp;   
 }
 
-void SlaveConfigPrivate::readConfigProtocolHost(const QString &_protocol, SlaveConfigProtocol *scp, const QString &host)
+void SlaveConfigPrivate::readConfigProtocolHost(const QString &, SlaveConfigProtocol *scp, const QString &host)
 {
    MetaData *metaData = new MetaData;
    scp->host.replace(host, metaData);

@@ -98,8 +98,10 @@ void KRun::shellQuote( QString &_str )
 pid_t KRun::run( const KService& _service, const KURL::List& _urls )
 {
   kdDebug(7010) << "KRun::run " << _service.desktopEntryPath() << endl;
-  if (!_urls.isEmpty())
+
+  if (!_urls.isEmpty()) {
     kdDebug(7010) << "First url " << _urls.first().url() << endl;
+  }
 
   QString exec = _service.exec();
   QString miniicon = _service.icon();
@@ -764,7 +766,7 @@ void KRun::killJob()
 {
   if ( m_job )
   {
-    kdDebug() << "KRun::killJob run=" << this << " m_job=" << m_job << endl;
+    kdDebug(7010) << "KRun::killJob run=" << this << " m_job=" << m_job << endl;
     m_job->kill();
     m_job = 0L;
   }
@@ -845,9 +847,9 @@ KProcessRunner::slotProcessExited(KProcess * p)
   if (p != process_)
     return; // Eh ?
 
-  kdDebug() << "slotProcessExited " << binName << endl;
-  kdDebug() << "normalExit " << process_->normalExit() << endl;
-  kdDebug() << "exitStatus " << process_->exitStatus() << endl;
+  kdDebug(7010) << "slotProcessExited " << binName << endl;
+  kdDebug(7010) << "normalExit " << process_->normalExit() << endl;
+  kdDebug(7010) << "exitStatus " << process_->exitStatus() << endl;
   if ( !binName.isEmpty() && process_->normalExit()
           && ( process_->exitStatus() == 127 || process_->exitStatus() == 1 ) )
   {
