@@ -114,11 +114,24 @@ short RenderButton::baselinePosition( bool f ) const
 
 // -------------------------------------------------------------------------------
 
+CheckBoxWidget::CheckBoxWidget(QWidget *parent)
+    : QCheckBox(parent, "__khtml")
+{
+}
+
+bool CheckBoxWidget::event(QEvent *e)
+{
+    QCheckBox::event(e);
+    return true;
+}
+
+// -------------------------------------------------------------------------------
+
 
 RenderCheckBox::RenderCheckBox(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QCheckBox* b = new QCheckBox(view()->viewport(), "__khtml");
+    QCheckBox* b = new CheckBoxWidget(view()->viewport());
     b->setAutoMask(true);
     b->setMouseTracking(true);
     setQWidget(b);
@@ -153,10 +166,23 @@ void RenderCheckBox::slotStateChanged(int state)
 
 // -------------------------------------------------------------------------------
 
+RadioButtonWidget::RadioButtonWidget(QWidget *parent)
+    : QRadioButton(parent, "__khtml")
+{
+}
+
+bool RadioButtonWidget::event(QEvent *e)
+{
+    QRadioButton::event(e);
+    return true;
+}
+
+// -------------------------------------------------------------------------------
+
 RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QRadioButton* b = new QRadioButton(view()->viewport(), "__khtml");
+    QRadioButton* b = new RadioButtonWidget(view()->viewport());
     b->setMouseTracking(true);
     setQWidget(b);
 }
@@ -183,11 +209,24 @@ void RenderRadioButton::calcMinMaxWidth()
 
 // -------------------------------------------------------------------------------
 
+FormButtonWidget::FormButtonWidget(QWidget *parent)
+    : QPushButton(parent, "__khtml")
+{
+}
+
+bool FormButtonWidget::event(QEvent *e)
+{
+    QPushButton::event(e);
+    return true;
+}
+
+// -------------------------------------------------------------------------------
+
 
 RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QPushButton* p = new QPushButton(view()->viewport(), "__khtml");
+    QPushButton* p = new FormButtonWidget(view()->viewport());
     setQWidget(p);
     p->setAutoMask(true);
     p->setMouseTracking(true);
@@ -410,7 +449,8 @@ bool LineEditWidget::event( QEvent *e )
             }
         }
     }
-    return false;
+
+    return true;
 }
 
 void LineEditWidget::mouseMoveEvent(QMouseEvent *e)
@@ -704,10 +744,23 @@ void RenderFieldset::setStyle(RenderStyle* _style)
 
 // -------------------------------------------------------------------------
 
+FileButtonWidget::FileButtonWidget(QWidget *w, const char *name)
+    : KURLRequester(w, name)
+{
+}
+
+bool FileButtonWidget::event(QEvent *e)
+{
+    KURLRequester::event(e);
+    return true;
+}
+
+// -------------------------------------------------------------------------
+
 RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     : RenderFormElement(element)
 {
-    KURLRequester* w = new KURLRequester( view()->viewport(), "__khtml" );
+    KURLRequester* w = new FileButtonWidget( view()->viewport(), "__khtml" );
 
     connect(w->lineEdit(), SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(w->lineEdit(), SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
@@ -821,10 +874,10 @@ bool ComboBoxWidget::event(QEvent *e)
 	    ke->accept();
 	    return true;
 	default:
-	    return false;
+	    return true;
 	}
     }
-    return false;
+    return true;
 }
 
 bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
@@ -850,6 +903,21 @@ bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
 	}
     }
     return KComboBox::eventFilter(dest, e);
+}
+
+// -------------------------------------------------------------------------
+
+ListBoxWidget::ListBoxWidget(QWidget *parent, bool multiple)
+    : KListBox(parent, "blah")
+{
+    setMouseTracking(true);
+    setSelectionMode(multiple ? QListBox::Extended : QListBox::Single);
+}
+
+bool ListBoxWidget::event(QEvent *e)
+{
+    KListBox::event(e);
+    return true;    
 }
 
 // -------------------------------------------------------------------------
@@ -1143,14 +1211,11 @@ void RenderSelect::setOptionsChanged(bool _optionsChanged)
 
 KListBox* RenderSelect::createListBox()
 {
-    KListBox *lb = new KListBox(view()->viewport());
-    lb->setSelectionMode(m_multiple ? QListBox::Extended : QListBox::Single);
-    // ### looks broken
-    //lb->setAutoMask(true);
+    KListBox *lb = new ListBoxWidget(view()->viewport(), m_multiple);
     connect( lb, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
-//     connect( lb, SIGNAL( clicked( QListBoxItem * ) ), this, SLOT( slotClicked() ) );
+
+    // ### is this necessary and wanted?
     m_ignoreSelectEvents = false;
-    lb->setMouseTracking(true);
 
     return lb;
 }
@@ -1526,7 +1591,22 @@ bool TextAreaWidget::event( QEvent *e )
             }
         }
     }
-    return KTextEdit::event( e );
+
+    bool retval = KTextEdit::event( e );
+
+    if (!retval && e->type()==QEvent::KeyPress)
+    {
+	QKeyEvent *ke = static_cast<QKeyEvent*>(e);
+	bool isTab =  ((ke->key()==Key_Tab && !(ke->state() & Qt::ControlButton) && !(ke->state() &Qt::AltButton) )
+		       || ke->key()==Key_BackTab);
+	
+	if (isTab)
+	{
+	    return false;
+	}
+    }
+
+    return true;
 }
 
 // -------------------------------------------------------------------------

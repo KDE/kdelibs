@@ -783,13 +783,14 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
-
-    //kdDebug( 6000 ) << "\nmousePressEvent: x=" << xm << ", y=" << ym << endl;
+    //kdDebug( 6000 ) << "mousePressEvent: viewport=("<<_mouse->x()<<"/"<<_mouse->y()<<"), contents=(" << xm << "/" << ym << ")\n";
 
     d->isDoubleClick = false;
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MousePress );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
+
+    //kdDebug(6000) << "innerNode="<<mev.innerNode.nodeName().string()<<endl;
 
     if (d->clickCount > 0 &&
         QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance())
@@ -869,9 +870,7 @@ static inline void forwardPeripheralEvent(khtml::RenderWidget* r, QMouseEvent* m
     r->absolutePosition(absx, absy);
     QPoint p(x-absx, y-absy);
     QMouseEvent fw(me->type(), p, me->button(), me->state());
-    QWidget* w = r->widget();
-    if(w)
-        static_cast<khtml::RenderWidget::EventPropagator*>(w)->sendEvent(&fw);
+    r->element()->dispatchMouseEvent(&fw);
 }
 
 void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
@@ -1617,37 +1616,6 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
  				    pe->rect().width(), pe->rect().height());
 		}
 		break;
-	    case QEvent::MouseMove:
-	    case QEvent::MouseButtonPress:
-	    case QEvent::MouseButtonRelease:
-	    case QEvent::MouseButtonDblClick: {
-		if (w->parentWidget() == view && !::qt_cast<QScrollBar *>(w)) {
-		    QMouseEvent *me = static_cast<QMouseEvent *>(e);
-		    QPoint pt = (me->pos() + w->pos());
-		    QMouseEvent me2(me->type(), pt, me->button(), me->state());
-
-		    if (e->type() == QEvent::MouseMove)
-			viewportMouseMoveEvent(&me2);
-		    else if(e->type() == QEvent::MouseButtonPress)
-			viewportMousePressEvent(&me2);
-		    else if(e->type() == QEvent::MouseButtonRelease)
-			viewportMouseReleaseEvent(&me2);
-		    else
-			viewportMouseDoubleClickEvent(&me2);
-		    block = true;
-                }
-		break;
-	    }
-	    case QEvent::KeyPress:
-	    case QEvent::KeyRelease:
-		if (w->parentWidget() == view && !::qt_cast<QScrollBar *>(w)) {
-		    QKeyEvent *ke = static_cast<QKeyEvent *>(e);
-		    if (e->type() == QEvent::KeyPress)
-			keyPressEvent(ke);
-		    else
-			keyReleaseEvent(ke);
-		    block = true;
-		}
 	    default:
 		break;
 	    }
@@ -2501,7 +2469,7 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
         QScrollView::viewportWheelEvent( e );
 
         QMouseEvent *tempEvent = new QMouseEvent( QEvent::MouseMove, QPoint(-1,-1), QPoint(-1,-1), Qt::NoButton, e->state() );
-        emit viewportMouseMoveEvent ( tempEvent );
+        viewportMouseMoveEvent ( tempEvent );
         delete tempEvent;
     }
 
