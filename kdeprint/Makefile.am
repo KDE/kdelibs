@@ -37,8 +37,8 @@ testpage_DATA = testprint.ps
 testpagedir = $(kde_datadir)/kdeprint
 
 # parser and scanner
-maticparser.cpp: matic.h maticparser.yy
-	bison -d -p matic maticparser.yy -o maticparser.cpp
+$(srcdir)/maticparser.cpp: matic.h maticparser.yy
+	bison -d -p matic $(srcdir)/maticparser.yy -o $(srcdir)/maticparser.cpp
 
 maticscanner.cpp: matic.h maticparser.cpp maticscanner.ll
 	flex -omaticscanner.cpp -Pmatic maticscanner.ll

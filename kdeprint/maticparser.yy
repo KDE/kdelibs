@@ -16,12 +16,17 @@ extern MHash	*main_hash;
 /**********************/
 /* Bison declarations */
 /**********************/
-
+%{
+#ifndef maticparser_cpp_h
+%}
 %union {
 	QString	*string;
 	MHash	*hash;
 	int	num;
 }
+%{
+#endif 
+%}
 
 %token <string> STRING
 %token <string> UNDEF

@@ -1,5 +1,5 @@
 
-/*  A Bison parser, made from maticparser.yy
+/*  A Bison parser, made from ../../kdeprint/maticparser.yy
     by GNU Bison version 1.28  */
 
 #define YYBISON 1  /* Identify Bison output.  */
@@ -16,7 +16,7 @@
 #define	VAR	259
 #define	NUM	260
 
-#line 5 "maticparser.yy"
+#line 5 "../../kdeprint/maticparser.yy"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,13 +26,19 @@
 
 extern int	line_count;
 extern MHash	*main_hash;
+#line 19 "../../kdeprint/maticparser.yy"
 
-#line 20 "maticparser.yy"
+#ifndef maticparser_cpp_h
+
+#line 22 "../../kdeprint/maticparser.yy"
 typedef union {
 	QString	*string;
 	MHash	*hash;
 	int	num;
 } YYSTYPE;
+#line 27 "../../kdeprint/maticparser.yy"
+
+#endif 
 #include <stdio.h>
 
 #ifndef __cplusplus
@@ -97,8 +103,8 @@ static const short yyrhs[] = {    20,
 
 #if YYDEBUG != 0
 static const short yyrline[] = { 0,
-    39,    40,    43,    44,    45,    46,    49,    50,    51,    52,
-    55,    56,    59,    60,    63,    64
+    44,    45,    48,    49,    50,    51,    54,    55,    56,    57,
+    60,    61,    64,    65,    68,    69
 };
 #endif
 
@@ -161,7 +167,7 @@ static const short yycheck[] = {     4,
     14,    14,     5,     8,    22,     2
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/lib/bison.simple"
+#line 3 "/usr/share/bison.simple"
 /* This file comes from bison-1.28.  */
 
 /* Skeleton output parser for bison,
@@ -191,6 +197,11 @@ static const short yycheck[] = {     4,
   when the %semantic_parser declaration is not specified in the grammar.
   It was written by Richard Stallman by simplifying the hairy parser
   used when %semantic_parser is specified.  */
+
+#ifndef YYPARSE_RETURN_TYPE
+#define YYPARSE_RETURN_TYPE int
+#endif
+
 
 #ifndef YYSTACK_USE_ALLOCA
 #ifdef alloca
@@ -375,7 +386,7 @@ __yy_memcpy (char *to, char *from, unsigned int count)
 #endif
 #endif
 
-#line 217 "/usr/lib/bison.simple"
+#line 222 "/usr/share/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -399,13 +410,15 @@ __yy_memcpy (char *to, char *from, unsigned int count)
 /* Prevent warning if -Wstrict-prototypes.  */
 #ifdef __GNUC__
 #ifdef YYPARSE_PARAM
-int yyparse (void *);
+YYPARSE_RETURN_TYPE
+yyparse (void *);
 #else
-int yyparse (void);
+YYPARSE_RETURN_TYPE
+yyparse (void);
 #endif
 #endif
 
-int
+YYPARSE_RETURN_TYPE
 yyparse(YYPARSE_PARAM_ARG)
      YYPARSE_PARAM_DECL
 {
@@ -433,7 +446,9 @@ yyparse(YYPARSE_PARAM_ARG)
 #endif
 
   int yystacksize = YYINITDEPTH;
+#ifndef YYSTACK_USE_ALLOCA
   int yyfree_stacks = 0;
+#endif
 
 #ifdef YYPURE
   int yychar;
@@ -518,6 +533,7 @@ yynewstate:
       if (yystacksize >= YYMAXDEPTH)
 	{
 	  yyerror("parser stack overflow");
+#ifndef YYSTACK_USE_ALLOCA
 	  if (yyfree_stacks)
 	    {
 	      free (yyss);
@@ -526,6 +542,7 @@ yynewstate:
 	      free (yyls);
 #endif
 	    }
+#endif	    
 	  return 2;
 	}
       yystacksize *= 2;
@@ -704,72 +721,72 @@ yyreduce:
   switch (yyn) {
 
 case 1:
-#line 39 "maticparser.yy"
+#line 44 "../../kdeprint/maticparser.yy"
 { main_hash = new MHash(new QString("Driver"),yyvsp[0].hash); ;
     break;}
 case 2:
-#line 40 "maticparser.yy"
+#line 45 "../../kdeprint/maticparser.yy"
 { main_hash->addHash(yyvsp[0].hash); ;
     break;}
 case 3:
-#line 43 "maticparser.yy"
+#line 48 "../../kdeprint/maticparser.yy"
 { yyval.hash = new MHash(yyvsp[-3].string,yyvsp[0].num); ;
     break;}
 case 4:
-#line 44 "maticparser.yy"
+#line 49 "../../kdeprint/maticparser.yy"
 { yyval.hash = new MHash(yyvsp[-3].string,yyvsp[0].string); ;
     break;}
 case 5:
-#line 45 "maticparser.yy"
+#line 50 "../../kdeprint/maticparser.yy"
 { yyval.hash = new MHash(yyvsp[-3].string,(QString*)0); ;
     break;}
 case 6:
-#line 46 "maticparser.yy"
+#line 51 "../../kdeprint/maticparser.yy"
 { yyvsp[0].hash->name = yyvsp[-3].string; yyval.hash = yyvsp[0].hash; ;
     break;}
 case 7:
-#line 49 "maticparser.yy"
+#line 54 "../../kdeprint/maticparser.yy"
 { yyval.hash = new MHash((QString*)0,(QString*)0); ;
     break;}
 case 8:
-#line 50 "maticparser.yy"
+#line 55 "../../kdeprint/maticparser.yy"
 { yyval.hash = new MHash((QString*)0,(QString*)0); ;
     break;}
 case 9:
-#line 51 "maticparser.yy"
+#line 56 "../../kdeprint/maticparser.yy"
 { yyval.hash = yyvsp[-1].hash; ;
     break;}
 case 10:
-#line 52 "maticparser.yy"
+#line 57 "../../kdeprint/maticparser.yy"
 { yyval.hash = yyvsp[-1].hash; ;
     break;}
 case 11:
-#line 55 "maticparser.yy"
+#line 60 "../../kdeprint/maticparser.yy"
 { yyval.hash = yyvsp[0].hash; ;
     break;}
 case 12:
-#line 56 "maticparser.yy"
+#line 61 "../../kdeprint/maticparser.yy"
 { yyval.hash = yyvsp[0].hash; ;
     break;}
 case 13:
-#line 59 "maticparser.yy"
+#line 64 "../../kdeprint/maticparser.yy"
 { yyval.hash = new MHash((QString*)0,yyvsp[0].hash); ;
     break;}
 case 14:
-#line 60 "maticparser.yy"
+#line 65 "../../kdeprint/maticparser.yy"
 { yyvsp[-2].hash->addHash(yyvsp[0].hash); yyval.hash = yyvsp[-2].hash; ;
     break;}
 case 15:
-#line 63 "maticparser.yy"
+#line 68 "../../kdeprint/maticparser.yy"
 { yyvsp[-1].hash->name = yyvsp[-3].string; yyval.hash = yyvsp[-1].hash; ;
     break;}
 case 16:
-#line 64 "maticparser.yy"
+#line 69 "../../kdeprint/maticparser.yy"
 { yyval.hash = new MHash(yyvsp[-3].string,yyvsp[-1].string); ;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 543 "/usr/lib/bison.simple"
+#line 554 "/usr/share/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -967,6 +984,7 @@ yyerrhandle:
 
  yyacceptlab:
   /* YYACCEPT comes here.  */
+#ifndef YYSTACK_USE_ALLOCA
   if (yyfree_stacks)
     {
       free (yyss);
@@ -975,10 +993,12 @@ yyerrhandle:
       free (yyls);
 #endif
     }
+#endif
   return 0;
 
  yyabortlab:
   /* YYABORT comes here.  */
+#ifndef YYSTACK_USE_ALLOCA
   if (yyfree_stacks)
     {
       free (yyss);
@@ -987,9 +1007,10 @@ yyerrhandle:
       free (yyls);
 #endif
     }
+#endif    
   return 1;
 }
-#line 67 "maticparser.yy"
+#line 72 "../../kdeprint/maticparser.yy"
 
 
 /********/

@@ -2,7 +2,7 @@
 #define KMJOBVIEWER_H
 
 #include <kmainwindow.h>
-#include <kdeprint/kmprinterpage.h>
+#include "kmprinterpage.h"
 
 class KMJobManager;
 class KMJob;
