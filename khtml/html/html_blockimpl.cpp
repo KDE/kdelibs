@@ -144,13 +144,16 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
             n.sprintf("%dpx", (_s/ 2)+(_s ? 1 : 0));
             addCSSProperty(CSS_PROP_BORDER_TOP_WIDTH, DOMString(n));
         }
-        else
-            addCSSLength(CSS_PROP_BORDER_WIDTH, s);
+        else {
+            QString w;
+            w.setNum(_s/2);
+            addCSSLength(CSS_PROP_BORDER_BOTTOM_WIDTH, DOMString(w));
+            addCSSLength(CSS_PROP_BORDER_TOP_WIDTH, DOMString(w));
+        }
 	break;
     }
     case ATTR_WIDTH:
     {
-
         // cheap hack to cause linebreaks
         // khtmltests/html/strange_hr.html
         QString vstr = attr->value().string();
