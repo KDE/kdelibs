@@ -87,8 +87,8 @@ public slots:
     void slotCancel();     // Deletes the PropertiesDialog instance
 
 signals:
-    /// Notify about changes in properties and rnameings.
    /**
+     Notify about changes in properties and renamings.
      For example the root widget needs to be informed about renameing. Otherwise
      it would consider the renamed icon a new icon and would move it to the upper left
      corner or something like that.
@@ -97,7 +97,10 @@ signals:
      If the name did not change, _name is 0L.
      */
     void propertiesChanged( const QString& _url, const QString& _new_name );
-    void propertiesCancel();
+    /** 
+     * Notify that we have finished with the properties (be it Apply or Cancel)
+     */
+    void propertiesClosed();
     
 protected:
     /// Inserts all pages in the dialog.

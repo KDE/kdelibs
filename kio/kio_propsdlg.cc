@@ -140,13 +140,13 @@ void PropertiesDialog::slotApply()
     */
 
     // make sure the desktop icon get's unselected
-    emit  propertiesCancel();
+    emit propertiesClosed();
     delete this;
 }
 
 void PropertiesDialog::slotCancel(){
    
-  emit  propertiesCancel();
+  emit propertiesClosed();
   delete this;
 }
 
