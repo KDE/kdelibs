@@ -241,7 +241,8 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
    }
    else if (fun == "reparseConfiguration()")
    {
-     KProtocolManager::self().scanConfig();
+      KProtocolManager::self().scanConfig();
+      return true;
    }
    if (KUniqueApplication::process(fun, data, replyType, replyData))
    {
