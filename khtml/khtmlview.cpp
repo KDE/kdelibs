@@ -408,7 +408,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     {
 	m_part->popupMenu( m_strSelectedURL );
     }
-    else if ( _mouse->button() == MidButton )
+    else if ( _mouse->button() == MidButton && !m_strSelectedURL.isEmpty() )
     {
       KURL u( m_part->url(), m_strSelectedURL );
       if ( !u.isMalformed() )
