@@ -48,6 +48,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.85  1999/10/09 09:48:44  kalle
+// more get killing
+// You need to cvs update your libc (joke!)
+//
 // Revision 1.84  1999/10/08 23:23:23  bero
 // ktopwidget.h removals
 //
@@ -1097,57 +1101,45 @@ static const int motifItemVMargin       = 4;    // menu item ver text margin
 
 void KStyleMenuBarInternal::drawContents(QPainter *p)
 {
+
     KStyle *stylePtr = kapp->kstyle();
     if(!stylePtr)
         QMenuBar::drawContents(p);
     else{
+        int i, x, y, nlitems;
+        QFontMetrics fm = fontMetrics();
         stylePtr->drawKMenuBar(p, 0, 0, width(), height(), colorGroup(),
                                NULL);
 
-        unsigned int i;
-        int w, h, x=2, y=2, nlitems=0;
-        QMenuItem *mi;
-        QFontMetrics fm = fontMetrics();
-
-        QListIterator<QMenuItem>it(*mitems);
-        for(i=0; it.current(); ++i, ++it){
-            mi = it.current();
-            if(!mi)
-                warning("Menuitem is NULL!");
-
-            w=0, h=0;
-            if (mi->pixmap()){
+        for(i=0, nlitems=0, x=2, y=2; i < (int)mitems->count(); ++i, ++nlitems)
+        {
+            int h=0;
+            int w=0;
+            QMenuItem *mi = mitems->at(i);
+            if(mi->pixmap()){
                 w = mi->pixmap()->width();
                 h = mi->pixmap()->height();
             }
-            else if (!mi->text().isNull()){
-                w = fm.width(mi->text())
-                    - fm.minLeftBearing()
-                    - fm.minRightBearing()
+            else if(!mi->text().isEmpty()){
+                QString s = mi->text();
+                w = fm.width(s) - fm.minLeftBearing() - fm.minRightBearing()
                     + 2*motifItemHMargin;
+                w -= s.contains('&')*fm.width('&');
+                w += s.contains("&&")*fm.width('&');
                 h = fm.height() + motifItemVMargin;
             }
-            /*
-            else if (mi->isSeparator()){
-                separator = i;
-            }
+
             if (!mi->isSeparator()){
-                if (x + w + motifBarFrame - max_width > 0 && nlitems > 0){
+                if (x + w + motifBarFrame - width() > 0 && nlitems > 0 ){
                     nlitems = 0;
                     x = motifBarFrame + motifBarHMargin;
                     y += h + motifBarHMargin;
-                    separator = -1;
                 }
-                if (y + h + 2*motifBarFrame > max_height)
-                    max_height = y + h + 2*motifBarFrame;
-            } */
-
-            // Draw the item
+            }
             stylePtr->drawKMenuItem(p, x, y, w, h, mi->isEnabled()  ?
                                     palette().normal() : palette().disabled(),
-                                    i == (unsigned int)actItem, mi, NULL);
+                                    i == actItem, mi, NULL);
             x += w;
-            nlitems++;
         }
     }
 }
