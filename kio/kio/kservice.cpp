@@ -737,7 +737,8 @@ QString KService::storageId() const
 
 QString KService::locateLocal()
 {
-  if (d->menuId.isEmpty() || desktopEntryPath().startsWith(".hidden"))
+  if (d->menuId.isEmpty() || desktopEntryPath().startsWith(".hidden") || 
+      (!desktopEntryPath().startsWith("/") && d->categories.isEmpty()))
      return KDesktopFile::locateLocal(desktopEntryPath());
      
   return ::locateLocal("xdgdata-apps", d->menuId);
