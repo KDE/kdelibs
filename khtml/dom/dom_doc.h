@@ -109,6 +109,8 @@ public:
      */
     Document(bool);
     Document(const Document &other);
+    Document(const Node &other) : Node()
+	     {(*this)=other;}
 
     Document & operator = (const Node &other);
     Document & operator = (const Document &other);
@@ -348,6 +350,8 @@ class DocumentFragment : public Node
 public:
     DocumentFragment();
     DocumentFragment(const DocumentFragment &other);
+    DocumentFragment(const Node &other) : Node()
+         {(*this)=other;}
 
     DocumentFragment & operator = (const Node &other);
     DocumentFragment & operator = (const DocumentFragment &other);
@@ -380,6 +384,8 @@ public:
     DocumentType();
     DocumentType(const DocumentType &other);
 
+    DocumentType(const Node &other) : Node()
+         {(*this)=other;}
     DocumentType & operator = (const Node &other);
     DocumentType & operator = (const DocumentType &other);
 

@@ -43,6 +43,8 @@ class HTMLBaseFontElement : public HTMLElement
 public:
     HTMLBaseFontElement();
     HTMLBaseFontElement(const HTMLBaseFontElement &other);
+    HTMLBaseFontElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLBaseFontElement(HTMLBaseFontElementImpl *impl);
 public:

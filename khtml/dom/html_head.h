@@ -41,6 +41,8 @@ class HTMLBaseElement : public HTMLElement
 public:
     HTMLBaseElement();
     HTMLBaseElement(const HTMLBaseElement &other);
+    HTMLBaseElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLBaseElement(HTMLBaseElementImpl *impl);
 public:
@@ -94,6 +96,8 @@ class HTMLIsIndexElement : public HTMLElement
 public:
     HTMLIsIndexElement();
     HTMLIsIndexElement(const HTMLIsIndexElement &other);
+    HTMLIsIndexElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLIsIndexElement(HTMLIsIndexElementImpl *impl);
 public:
@@ -143,6 +147,8 @@ class HTMLLinkElement : public HTMLElement
 public:
     HTMLLinkElement();
     HTMLLinkElement(const HTMLLinkElement &other);
+    HTMLLinkElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLLinkElement(HTMLLinkElementImpl *impl);
 public:
@@ -287,6 +293,8 @@ class HTMLMetaElement : public HTMLElement
 public:
     HTMLMetaElement();
     HTMLMetaElement(const HTMLMetaElement &other);
+    HTMLMetaElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLMetaElement(HTMLMetaElementImpl *impl);
 public:
@@ -364,6 +372,8 @@ class HTMLScriptElement : public HTMLElement
 public:
     HTMLScriptElement();
     HTMLScriptElement(const HTMLScriptElement &other);
+    HTMLScriptElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLScriptElement(HTMLScriptElementImpl *impl);
 public:
@@ -476,6 +486,8 @@ class HTMLStyleElement : public HTMLElement
 public:
     HTMLStyleElement();
     HTMLStyleElement(const HTMLStyleElement &other);
+    HTMLStyleElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLStyleElement(HTMLStyleElementImpl *impl);
 public:
@@ -538,6 +550,8 @@ class HTMLTitleElement : public HTMLElement
 public:
     HTMLTitleElement();
     HTMLTitleElement(const HTMLTitleElement &other);
+    HTMLTitleElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLTitleElement(HTMLTitleElementImpl *impl);
 public:

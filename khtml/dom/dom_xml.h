@@ -54,6 +54,8 @@ class CDATASection : public Text
 public:
     CDATASection();
     CDATASection(const CDATASection &other);
+    CDATASection(const Node &other) : Text()
+         {(*this)=other;}
 
     CDATASection & operator = (const Node &other);
     CDATASection & operator = (const CDATASection &other);
@@ -107,6 +109,8 @@ class Entity : public Node
 public:
     Entity();
     Entity(const Entity &other);
+    Entity(const Node &other) : Node()
+         {(*this)=other;}
 
     Entity & operator = (const Node &other);
     Entity & operator = (const Entity &other);
@@ -169,6 +173,8 @@ class EntityReference : public Node
 public:
     EntityReference();
     EntityReference(const EntityReference &other);
+    EntityReference(const Node &other) : Node()
+         {(*this)=other;}
 
     EntityReference & operator = (const Node &other);
     EntityReference & operator = (const EntityReference &other);
@@ -198,6 +204,8 @@ class Notation : public Node
 public:
     Notation();
     Notation(const Notation &other);
+    Notation(const Node &other) : Node()
+         {(*this)=other;}
 
     Notation & operator = (const Node &other);
     Notation & operator = (const Notation &other);
@@ -231,6 +239,8 @@ class ProcessingInstruction : public Node
 public:
     ProcessingInstruction();
     ProcessingInstruction(const ProcessingInstruction &other);
+    ProcessingInstruction(const Node &other) : Node()
+         {(*this)=other;}
 
     ProcessingInstruction & operator = (const Node &other);
     ProcessingInstruction & operator = (const ProcessingInstruction &other);

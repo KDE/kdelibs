@@ -45,6 +45,8 @@ class HTMLAppletElement : public HTMLElement
 public:
     HTMLAppletElement();
     HTMLAppletElement(const HTMLAppletElement &other);
+    HTMLAppletElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLAppletElement(HTMLAppletElementImpl *impl);
 public:
@@ -231,6 +233,8 @@ class HTMLObjectElement : public HTMLElement
 public:
     HTMLObjectElement();
     HTMLObjectElement(const HTMLObjectElement &other);
+    HTMLObjectElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLObjectElement(HTMLObjectElementImpl *impl);
 public:
@@ -497,6 +501,8 @@ class HTMLParamElement : public HTMLElement
 public:
     HTMLParamElement();
     HTMLParamElement(const HTMLParamElement &other);
+    HTMLParamElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLParamElement(HTMLParamElementImpl *impl);
 public:

@@ -67,6 +67,9 @@ class HTMLElement : public Element
 public:
     HTMLElement();
     HTMLElement(const HTMLElement &other);
+    HTMLElement(const Node &other) : Element()
+         {(*this)=other;}
+
 protected:
     HTMLElement(HTMLElementImpl *impl);
 public:

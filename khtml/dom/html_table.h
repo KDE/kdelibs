@@ -44,6 +44,8 @@ class HTMLTableCaptionElement : public HTMLElement
 public:
     HTMLTableCaptionElement();
     HTMLTableCaptionElement(const HTMLTableCaptionElement &other);
+    HTMLTableCaptionElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLTableCaptionElement(HTMLTableCaptionElementImpl *impl);
 public:
@@ -86,6 +88,8 @@ class HTMLTableCellElement : public HTMLElement
 public:
     HTMLTableCellElement();
     HTMLTableCellElement(const HTMLTableCellElement &other);
+    HTMLTableCellElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLTableCellElement(HTMLTableCellElementImpl *impl);
 public:
@@ -312,6 +316,8 @@ class HTMLTableColElement : public HTMLElement
 public:
     HTMLTableColElement();
     HTMLTableColElement(const HTMLTableColElement &other);
+    HTMLTableColElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLTableColElement(HTMLTableColElementImpl *impl);
 public:
@@ -427,6 +433,9 @@ class HTMLTableElement : public HTMLElement
 public:
     HTMLTableElement();
     HTMLTableElement(const HTMLTableElement &other);
+    HTMLTableElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
+
 protected:
     HTMLTableElement(HTMLTableElementImpl *impl);
 public:
@@ -699,6 +708,9 @@ class HTMLTableRowElement : public HTMLElement
 public:
     HTMLTableRowElement();
     HTMLTableRowElement(const HTMLTableRowElement &other);
+    HTMLTableRowElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
+
 protected:
     HTMLTableRowElement(HTMLTableRowElementImpl *impl);
 public:
@@ -850,6 +862,10 @@ class HTMLTableSectionElement : public HTMLElement
 public:
     HTMLTableSectionElement();
     HTMLTableSectionElement(const HTMLTableSectionElement &other);
+    HTMLTableSectionElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
+
+
 protected:
     HTMLTableSectionElement(HTMLTableSectionElementImpl *impl);
 public:

@@ -47,6 +47,8 @@ class HTMLDListElement : public HTMLElement
 public:
     HTMLDListElement();
     HTMLDListElement(const HTMLDListElement &other);
+    HTMLDListElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLDListElement(HTMLDListElementImpl *impl);
 public:
@@ -85,6 +87,8 @@ class HTMLDirectoryElement : public HTMLElement
 public:
     HTMLDirectoryElement();
     HTMLDirectoryElement(const HTMLDirectoryElement &other);
+    HTMLDirectoryElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLDirectoryElement(HTMLDirectoryElementImpl *impl);
 public:
@@ -122,6 +126,9 @@ class HTMLLIElement : public HTMLElement
 public:
     HTMLLIElement();
     HTMLLIElement(const HTMLLIElement &other);
+    HTMLLIElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
+
 protected:
     HTMLLIElement(HTMLLIElementImpl *impl);
 public:
@@ -174,6 +181,9 @@ class HTMLMenuElement : public HTMLElement
 public:
     HTMLMenuElement();
     HTMLMenuElement(const HTMLMenuElement &other);
+    HTMLMenuElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
+
 protected:
     HTMLMenuElement(HTMLMenuElementImpl *impl);
 public:
@@ -211,6 +221,8 @@ class HTMLOListElement : public HTMLElement
 public:
     HTMLOListElement();
     HTMLOListElement(const HTMLOListElement &other);
+    HTMLOListElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLOListElement(HTMLOListElementImpl *impl);
 public:
@@ -277,6 +289,8 @@ class HTMLUListElement : public HTMLElement
 public:
     HTMLUListElement();
     HTMLUListElement(const HTMLUListElement &other);
+    HTMLUListElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLUListElement(HTMLUListElementImpl *impl);
 public:

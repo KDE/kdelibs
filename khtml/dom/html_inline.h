@@ -41,6 +41,8 @@ class HTMLAnchorElement : public HTMLElement
 public:
     HTMLAnchorElement();
     HTMLAnchorElement(const HTMLAnchorElement &other);
+    HTMLAnchorElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLAnchorElement(HTMLAnchorElementImpl *impl);
 public:
@@ -243,6 +245,8 @@ class HTMLBRElement : public HTMLElement
 public:
     HTMLBRElement();
     HTMLBRElement(const HTMLBRElement &other);
+    HTMLBRElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLBRElement(HTMLBRElementImpl *impl);
 public:
@@ -284,6 +288,8 @@ class HTMLFontElement : public HTMLElement
 public:
     HTMLFontElement();
     HTMLFontElement(const HTMLFontElement &other);
+    HTMLFontElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLFontElement(HTMLFontElementImpl *impl);
 public:
@@ -351,6 +357,8 @@ class HTMLIFrameElement : public HTMLElement
 public:
     HTMLIFrameElement();
     HTMLIFrameElement(const HTMLIFrameElement &other);
+    HTMLIFrameElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLIFrameElement(HTMLIFrameElementImpl *impl);
 public:
@@ -514,6 +522,8 @@ class HTMLModElement : public HTMLElement
 public:
     HTMLModElement();
     HTMLModElement(const HTMLModElement &other);
+    HTMLModElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLModElement(HTMLModElementImpl *impl);
 public:
@@ -570,6 +580,8 @@ class HTMLQuoteElement : public HTMLElement
 public:
     HTMLQuoteElement();
     HTMLQuoteElement(const HTMLQuoteElement &other);
+    HTMLQuoteElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLQuoteElement(HTMLQuoteElementImpl *impl);
 public:

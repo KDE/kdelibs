@@ -75,6 +75,8 @@ public:
      */
     HTMLDocument(KHTMLView *parent);
     HTMLDocument(const HTMLDocument &other);
+    HTMLDocument(const Node &other) : Document()
+         {(*this)=other;}
 protected:
     HTMLDocument(HTMLDocumentImpl *impl);
 public:

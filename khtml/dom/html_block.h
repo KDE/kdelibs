@@ -39,6 +39,8 @@ class HTMLBlockquoteElement : public HTMLElement
 public:
     HTMLBlockquoteElement();
     HTMLBlockquoteElement(const HTMLBlockquoteElement &other);
+    HTMLBlockquoteElement(const Node &other) : HTMLElement()
+        {(*this)=other;}
 protected:
     HTMLBlockquoteElement(HTMLBlockquoteElementImpl *impl);
 public:
@@ -78,6 +80,8 @@ class HTMLDivElement : public HTMLElement
 public:
     HTMLDivElement();
     HTMLDivElement(const HTMLDivElement &other);
+    HTMLDivElement(const Node &other) : HTMLElement()
+        {(*this)=other;}
 protected:
     HTMLDivElement(HTMLDivElementImpl *impl);
 public:
@@ -118,6 +122,8 @@ class HTMLHRElement : public HTMLElement
 public:
     HTMLHRElement();
     HTMLHRElement(const HTMLHRElement &other);
+    HTMLHRElement(const Node &other) : HTMLElement()
+        {(*this)=other;}
 protected:
     HTMLHRElement(HTMLHRElementImpl *impl);
 public:
@@ -201,6 +207,8 @@ class HTMLHeadingElement : public HTMLElement
 public:
     HTMLHeadingElement();
     HTMLHeadingElement(const HTMLHeadingElement &other);
+    HTMLHeadingElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLHeadingElement(HTMLHeadingElementImpl *impl);
 public:
@@ -241,6 +249,8 @@ class HTMLParagraphElement : public HTMLElement
 public:
     HTMLParagraphElement();
     HTMLParagraphElement(const HTMLParagraphElement &other);
+    HTMLParagraphElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLParagraphElement(HTMLParagraphElementImpl *impl);
 public:
@@ -280,6 +290,8 @@ class HTMLPreElement : public HTMLElement
 public:
     HTMLPreElement();
     HTMLPreElement(const HTMLPreElement &other);
+    HTMLPreElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLPreElement(HTMLPreElementImpl *impl);
 public:

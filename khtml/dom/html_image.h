@@ -41,6 +41,8 @@ class HTMLAreaElement : public HTMLElement
 public:
     HTMLAreaElement();
     HTMLAreaElement(const HTMLAreaElement &other);
+    HTMLAreaElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLAreaElement(HTMLAreaElementImpl *impl);
 public:
@@ -177,6 +179,8 @@ class HTMLImageElement : public HTMLElement
 public:
     HTMLImageElement();
     HTMLImageElement(const HTMLImageElement &other);
+    HTMLImageElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLImageElement(HTMLImageElementImpl *impl);
 public:
@@ -378,6 +382,8 @@ class HTMLMapElement : public HTMLElement
 public:
     HTMLMapElement();
     HTMLMapElement(const HTMLMapElement &other);
+    HTMLMapElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLMapElement(HTMLMapElementImpl *impl);
 public:

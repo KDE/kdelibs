@@ -45,6 +45,8 @@ class CharacterData : public Node
 public:
     CharacterData();
     CharacterData(const CharacterData &other);
+    CharacterData(const Node &other) : Node()
+         {(*this)=other;}
 
     CharacterData & operator = (const Node &other);
     CharacterData & operator = (const CharacterData &other);
@@ -213,6 +215,8 @@ class Comment : public CharacterData
 public:
     Comment();
     Comment(const Comment &other);
+    Comment(const Node &other) : CharacterData()
+         {(*this)=other;}
 
     Comment & operator = (const Node &other);
     Comment & operator = (const Comment &other);
@@ -253,6 +257,8 @@ class Text : public CharacterData
 public:
     Text();
     Text(const Text &other);
+    Text(const Node &other) : CharacterData()
+         {(*this)=other;}
 
     Text & operator = (const Node &other);
     Text & operator = (const Text &other);

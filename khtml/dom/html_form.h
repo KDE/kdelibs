@@ -44,6 +44,8 @@ class HTMLButtonElement : public HTMLElement
 public:
     HTMLButtonElement();
     HTMLButtonElement(const HTMLButtonElement &other);
+    HTMLButtonElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLButtonElement(HTMLButtonElementImpl *impl);
 public:
@@ -152,6 +154,8 @@ class HTMLFieldSetElement : public HTMLElement
 public:
     HTMLFieldSetElement();
     HTMLFieldSetElement(const HTMLFieldSetElement &other);
+    HTMLFieldSetElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLFieldSetElement(HTMLFieldSetElementImpl *impl);
 public:
@@ -198,6 +202,8 @@ class HTMLFormElement : public HTMLElement
 public:
     HTMLFormElement();
     HTMLFormElement(const HTMLFormElement &other);
+    HTMLFormElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLFormElement(HTMLFormElementImpl *impl);
 public:
@@ -328,6 +334,8 @@ class HTMLInputElement : public HTMLElement
 public:
     HTMLInputElement();
     HTMLInputElement(const HTMLInputElement &other);
+    HTMLInputElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLInputElement(HTMLInputElementImpl *impl);
 public:
@@ -618,6 +626,8 @@ class HTMLLabelElement : public HTMLElement
 public:
     HTMLLabelElement();
     HTMLLabelElement(const HTMLLabelElement &other);
+    HTMLLabelElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLLabelElement(HTMLLabelElementImpl *impl);
 public:
@@ -679,6 +689,8 @@ class HTMLLegendElement : public HTMLElement
 public:
     HTMLLegendElement();
     HTMLLegendElement(const HTMLLegendElement &other);
+    HTMLLegendElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLLegendElement(HTMLLegendElementImpl *impl);
 public:
@@ -739,6 +751,8 @@ class HTMLOptGroupElement : public HTMLElement
 public:
     HTMLOptGroupElement();
     HTMLOptGroupElement(const HTMLOptGroupElement &other);
+    HTMLOptGroupElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLOptGroupElement(HTMLOptGroupElementImpl *impl);
 public:
@@ -791,6 +805,8 @@ class HTMLSelectElement : public HTMLElement
 public:
     HTMLSelectElement();
     HTMLSelectElement(const HTMLSelectElement &other);
+    HTMLSelectElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLSelectElement(HTMLSelectElementImpl *impl);
 public:
@@ -968,6 +984,8 @@ class HTMLTextAreaElement : public HTMLElement
 public:
     HTMLTextAreaElement();
     HTMLTextAreaElement(const HTMLTextAreaElement &other);
+    HTMLTextAreaElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLTextAreaElement(HTMLTextAreaElementImpl *impl);
 public:
@@ -1138,6 +1156,8 @@ class HTMLOptionElement : public HTMLElement
 public:
     HTMLOptionElement();
     HTMLOptionElement(const HTMLOptionElement &other);
+    HTMLOptionElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLOptionElement(HTMLOptionElementImpl *impl);
 public:

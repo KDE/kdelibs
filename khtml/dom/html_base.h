@@ -41,6 +41,8 @@ class HTMLBodyElement : public HTMLElement
 public:
     HTMLBodyElement();
     HTMLBodyElement(const HTMLBodyElement &other);
+    HTMLBodyElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLBodyElement(HTMLBodyElementImpl *impl);
 public:
@@ -152,6 +154,8 @@ class HTMLFrameElement : public HTMLElement
 public:
     HTMLFrameElement();
     HTMLFrameElement(const HTMLFrameElement &other);
+    HTMLFrameElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLFrameElement(HTMLFrameElementImpl *impl);
 public:
@@ -285,6 +289,8 @@ class HTMLFrameSetElement : public HTMLElement
 public:
     HTMLFrameSetElement();
     HTMLFrameSetElement(const HTMLFrameSetElement &other);
+    HTMLFrameSetElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLFrameSetElement(HTMLFrameSetElementImpl *impl);
 public:
@@ -337,6 +343,8 @@ class HTMLHeadElement : public HTMLElement
 public:
     HTMLHeadElement();
     HTMLHeadElement(const HTMLHeadElement &other);
+    HTMLHeadElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLHeadElement(HTMLHeadElementImpl *impl);
 public:
@@ -376,6 +384,8 @@ class HTMLHtmlElement : public HTMLElement
 public:
     HTMLHtmlElement();
     HTMLHtmlElement(const HTMLHtmlElement &other);
+    HTMLHtmlElement(const Node &other) : HTMLElement()
+         {(*this)=other;}
 protected:
     HTMLHtmlElement(HTMLHtmlElementImpl *impl);
 public:
