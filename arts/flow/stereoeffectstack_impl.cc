@@ -98,6 +98,8 @@ public:
 	}
 	long insertTop(StereoEffect effect, const string& name)
 	{
+		arts_return_val_if_fail(!effect.isNull(),0);
+
 		disconnect();
 		EffectEntry *e = new EffectEntry();
 		e->effect = effect;
@@ -109,6 +111,8 @@ public:
 	}
 	long insertBottom(StereoEffect effect, const string& name)
 	{
+		arts_return_val_if_fail(!effect.isNull(),0);
+
 		disconnect();
 		EffectEntry *e = new EffectEntry();
 		e->effect = effect;
@@ -121,6 +125,8 @@ public:
 
 	void remove(long ID)
 	{
+		arts_return_if_fail(ID != 0);
+
 		bool found = false;
 		disconnect();
 		list<EffectEntry *>::iterator ei = fx.begin();

@@ -92,10 +92,10 @@ void BusManager::reBuild(Bus *bus)
 	list<BusClient *>::iterator client,server;
 	long channels = 2;
 
-	artsdebug("rebuilding bus %s\n",bus->name.c_str());
-	artsdebug(" - %ld channels\n",channels);
-	artsdebug(" - %d clients\n",bus->clients.size());
-	artsdebug(" - %d servers\n",bus->servers.size());
+	arts_debug("rebuilding bus %s",bus->name.c_str());
+	arts_debug(" - %ld channels",channels);
+	arts_debug(" - %d clients",bus->clients.size());
+	arts_debug(" - %d servers",bus->servers.size());
 
 	// clean room approach: delete old channels, and make a new
 	//                      Synth_MULTI_ADD for summing up the data on the bus
@@ -160,7 +160,7 @@ void BusManager::erase(BusClient *busclient)
 			if(bus->clients.empty() && bus->servers.empty())
 			{
 				// obsolete bus, remove
-				artsdebug("removing obsolete bus %s\n",bus->name.c_str());
+				arts_debug("removing obsolete bus %s",bus->name.c_str());
 				_busList.erase(bi);
 				delete bus;
 			}

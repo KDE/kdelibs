@@ -21,6 +21,7 @@
     */
 
 #include "resample.h"
+#include "debug.h"
 #include <iostream.h>
 #include <math.h>
 #include <assert.h>
@@ -65,17 +66,23 @@ void Resampler::updateSampleSize()
 
 void Resampler::setStep(double newStep)
 {
+	arts_return_if_fail(newStep > 0);
+
 	step = newStep;
 }
 
 void Resampler::setChannels(int newChannels)
 {
+	arts_return_if_fail(newChannels == 1 || newChannels == 2);
+
 	channels = newChannels;
 	updateSampleSize();
 }
 
 void Resampler::setBits(int newBits)
 {
+	arts_return_if_fail(newBits == 8 || newBits == 16);
+
 	bits = newBits;
 	updateSampleSize();
 }
