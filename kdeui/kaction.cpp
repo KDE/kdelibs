@@ -14,6 +14,8 @@
 #include<kconfigbase.h>
 
 #include<kaction.h>
+#include<kdebug.h>
+#include<klocale.h>
 //#include<kconfigbase.h>
 
 KAction::KAction( const char *desc, 
@@ -252,7 +254,7 @@ bool KAction::readConfig( const KConfigBase& cfg )
 	QString key = pfx + "Key";
 	if( cfg.hasKey( key ) ) {
 		QString key = cfg.readEntry( key );
-		int ck = keyToString( key );
+		int ck = stringToKey( key );
 		if( ck != 0 ) {
 			setAccel( ck );
 		}
