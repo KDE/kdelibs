@@ -45,8 +45,8 @@ include_HEADERS = khtmlview.h khtml_part.h
 
 noinst_HEADERS = design.h testkhtml.h
 
-libkhtml_la_LDFLAGS = -version-info 3:0 -module
-libkhtml_la_LIBADD = ./misc/libkhtmlmisc.la ./dom/libkhtmldom.la ./css/libkhtmlcss.la ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la ./rendering/libkhtmlrender.la ./java/libkjava.la ../kimgio/libkimgio.la ../kio/libkio.la $(top_builddir)/kparts/libkparts.la $(top_builddir)/kfile/libkfile.la
+libkhtml_la_LDFLAGS = -version-info 3:0 -module -no-undefined
+libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la ./rendering/libkhtmlrender.la ./css/libkhtmlcss.la ./misc/libkhtmlmisc.la ./dom/libkhtmldom.la ./java/libkjava.la ../kimgio/libkimgio.la ../kio/libkio.la $(top_builddir)/kparts/libkparts.la $(top_builddir)/kfile/libkfile.la
 
 INCLUDES = -I$(srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop -I$(srcdir)/misc \
