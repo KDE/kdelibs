@@ -370,7 +370,7 @@ void KProtocolManager::setProxyFor( const QString& protocol, const QString& _pro
 }
 
 QString KProtocolManager::userAgentForHost( const QString& hostname )
-{  
+{
   QStringList list = KProtocolManager::userAgentList();
   QString user_agent = DEFAULT_USERAGENT_STRING;
   int host_len = hostname.length();
@@ -381,7 +381,7 @@ QString KProtocolManager::userAgentForHost( const QString& hostname )
     for( ; it != list.end(); ++it)
     {
       QStringList split;
-      int pos = (*it).find("::"); 
+      int pos = (*it).find("::");
       if ( pos == -1 )
       {
         pos = (*it).find(':');
@@ -393,32 +393,19 @@ QString KProtocolManager::userAgentForHost( const QString& hostname )
       }
       else
         split = QStringList::split("::", (*it));
-      /*        
-	Ignore entries with the following conditions:	  
-	    1.) Old wildcard entry "*"
-	    2.) Any similar but not equal domain match.  That is there
-	        is an entry, for example, for "developer.kde.org" while
-	        the requested url is "www.kde.org".  Though both end with
-	        the same domain name they are not really a match since the
-	        UA string is set for a very specific domain. On the other
-	        hand ".kde.org" or "kde.org" will work fine.
-	    3.) A match that starts with a leading "." when only one of it
-	        is present.  This is to effectively eliminate a ".com" or
-	        ".net" or a ".org" entry which will be the same thing as the
-	        older QRegExp matching and the default entry. (DA)
-      */
+
       QString match = split[0];
       int match_len = match.length();
       if ( match.isEmpty() || split[1].isEmpty() || match_len > host_len ||
            (match.contains( '.' ) == 1 && match[0] == '.') )
         continue;
-      
+
       // We look for a reverse domain name match...
       int rev_match = match.findRev(hostname, -1, false) + host_len;
       if ( rev_match == match_len )
       {
         user_agent = split[1];
-	break;
+        break;
       }
     }
   }
@@ -442,8 +429,8 @@ QStringList KProtocolManager::userAgentList()
   for( int i = 0; i < entries; i++ )
   {
     entry = cfg->readEntry( QString("Entry%1").arg(i), "" );
-	// Ignore wildcard matches...
-	if( !entry.isEmpty() && !entry.startsWith("*") )
+    // Ignore wildcard matches...
+    if( !entry.isEmpty() && !entry.startsWith("*") )
       settingsList.append(entry);
   }
   return settingsList;
