@@ -32,17 +32,48 @@ KPTagsPage::KPTagsPage(bool ro, QWidget *parent, const char *name)
 : KPrintDialogPage(parent, name)
 {
 
-	QString whatsThisAdditionalTagsTable = i18n(" <qt><p>You may send additional messages to the operator(s) of your"
+	//WhatsThis strings.... (added by pfeifle@kde.org)
+	QString whatsThisAdditionalTagsTable = i18n(" <qt><p><b>Additional Tags</b></p>"
+						" You may send additional commands to the CUPS server via this editable list. "
+						" There are 3 purposes for this:"
+						" <ul>"
+						" <li>Use any current or future standard CUPS job option not supported by the "
+						" KDEPrint GUI. </li>"
+						" <li>Control any custom job option you may want to support in custom CUPS filters "
+						" and backends plugged into the CUPS filtering chain.</li> "
+						" <li>Send short messages to the operators of your production printers in your "
+						" <em>Central Repro Department</em>."
+						" </ul> "
+						" <p><b>Standard CUPS job options:</b> A complete list of standard CUPS job "
+						" options is in the <a href=\"http://localhost:631/sum.html\">CUPS User Manual</a>. "
+						" Mappings of the kprinter user interface widgets to respective CUPS job option "
+						" names are named in the various <em>WhatsThis</em> help items..</p>"
+						" <p><b>Custom CUPS job options:</b> CUPS print servers may be customized with additional "
+						" print filters and backends which understand custom job options. You can specify such "
+						" custome job options here. If in doubt, ask your system administrator..</p>"
+						" <p><b> </b></p>"
+						" <p><b>Operator Messages:</b> You may send additional messages to the operator(s) of your"
 						" production printers (e.g. in your <em>Central Repro Department</p>)"
-						" Your messages can be read by the operator(s) (or yourself) by viewing"
-						" the <em>\"Job IPP Report\"</em> for the respective job.</p>"
-						" <b>Examples:</b><br><pre>"
-						" <em>Call_after_completion</em> (Name) -- <em>Joe User, phone extension 1234</em> (Value)<br>"
-						" <em>Mail_after_completion</em> (Name) -- <em>Jill User &lt;juser@somecompany.com&gt;</em> (Value)<br>"
-						" <em>Deliver_after_completion</em> (Name) -- <em>to Marketing Department</em> (Value)"
+						" Messages can be read by the operator(s) (or yourself) by viewing"
+						" the <em>\"Job IPP Report\"</em> for the job.</p>"
+						" <b>Examples:</b><br>"
+						" <pre>"
+						" A standard CUPS job option:<br> "
+						"   <em>(Name) number-up</em>                -- <em>(Value) 9</em>                     <br>"
+						" <br>"
+						" A job option for custom CUPS filters or backends:<br> "
+						"   <em>(Name) DANKA_watermark</em>          -- <em>(Value) Company_Confidential</em>   <br>"
+						" <br>"
+						" A message to the operator(s):<br> "
+						"   <em>(Name) Deliver_after_completion</em> -- <em>(Value) to_Marketing_Departm.</em><br>"
 						" </pre>"
-						" <p><b>Note:</b> the \"Name\" field must not include spaces or tabs."
-					        " </qt>" );
+						" <p><b>Note:</b> the fields must not include spaces, tabs or quotes. You may need to "
+						" double-click on a field to edit it."
+						" <p><b>Warning:</b> Do not use such standard CUPS option names which also can be used "
+						" through the KDEPrint GUI. Results may be  unpredictable if they conflict, "
+						" or if they are sent multiple times. For all options supported by the GUI, please do use "
+						" the GUI. (Each GUI element's  'WhatsThis' names the related CUPS option name.) </p> "
+						" </qt>" );
 	setTitle(i18n("Additional Tags"));
 	setOnlyRealPrinters(true);
 
@@ -81,7 +112,7 @@ bool KPTagsPage::isValid(QString& msg)
 			continue;
 		else if (tag.find(re) != -1)
 		{
-			msg = i18n("The tag name must not contain any spaces: <b>%1</b>.").arg(tag);
+			msg = i18n("The tag name must not contain any spaces, tabs or quotes: <b>%1</b>.").arg(tag);
 			return false;
 		}
 	}
