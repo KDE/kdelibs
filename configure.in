@@ -29,7 +29,6 @@ dnl libtool is only for C, so I must force him
 dnl to find the correct flags for C++
 ac_save_cc=$CC
 CC=$CXX
-enable_static=no 
 AM_PROG_LIBTOOL dnl for libraries
 CC=$ac_save_cc
 
