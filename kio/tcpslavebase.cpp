@@ -848,6 +848,7 @@ int TCPSlaveBase::verifyCertificate()
           rc = 1;
           setMetaData("ssl_action", "accept");
         } else {
+          /*
 	  if (d->militantSSL) {
 	          return -1;
           }
@@ -861,6 +862,11 @@ int TCPSlaveBase::verifyCertificate()
             rc = -1;
             setMetaData("ssl_action", "reject");
           }
+          */
+          setMetaData("ssl_action", "accept");
+          rc = 1;   // Let's accept this now.  It's bad, but at least the user
+                    // will see potential attacks in KDE3 with the pseudo-lock
+                    // icon on the toolbar, and can investigate with the RMB
         }
       } else {
 	if (d->militantSSL) {
