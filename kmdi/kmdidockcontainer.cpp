@@ -563,7 +563,7 @@ void KMdiDockContainer::load( QDomElement& dockEl )
 		if ( el.tagName() == "overlapMode" )
 		{
 			if ( el.attribute( "overlapMode" ) != "false" )
-				activateOverlapMode( m_tb->width() );
+				activateOverlapMode( m_horizontal?m_tb->width():m_tb->height() );
 			else
 				deactivateOverlapMode();
 		}
@@ -675,7 +675,7 @@ void KMdiDockContainer::load( KConfig* cfg, const QString& group_or_prefix )
 	cfg->setGroup( group_or_prefix + QString( "::%1" ).arg( parent() ->name() ) );
 
 	if ( cfg->readEntry( "overlapMode" ) != "false" )
-		activateOverlapMode( m_tb->width() );
+		activateOverlapMode( m_horizontal?m_tb->width():m_tb->height() );
 	else
 		deactivateOverlapMode();
 
