@@ -129,7 +129,7 @@ int main(int argc, char **argv) {
                 exe = locate( "exe", "xmllint" );
         }
         if ( !::access( QFile::encodeName( exe ), X_OK ) ) {
-            FILE *xmllint = popen( QString( exe + " --catalogs --valid --nowarning --noout %1 2>&1" ).arg( file.fileName() ).local8Bit().data(), "r");
+            FILE *xmllint = popen( QString( exe + " --catalogs --valid --noout %1 2>&1" ).arg( file.fileName() ).local8Bit().data(), "r");
             bool noout = true;
             while ( !feof( xmllint ) ) {
                 int c;
