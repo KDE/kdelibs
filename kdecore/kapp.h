@@ -485,7 +485,7 @@ protected:
    */
   static QString kdedir();
 
-private slots:
+protected slots:
   void appHelpActivated();
   void aboutKDE();
   void aboutApp();
@@ -645,6 +645,11 @@ private:
 #endif
 
 // $Log$
+// Revision 1.80  1999/05/28 07:44:15  pbrown
+// some cleanups to KConfig, including only calling rollback() when there are
+// actually dirty entries to roll back.  Minor cleanups to KDE font list
+// stuff in kapp.
+//
 // Revision 1.79  1999/05/25 16:17:24  kulow
 // two changes:
 //   kde_icondir() has been removed. Use locate("icon", pixmap) instead
