@@ -40,7 +40,9 @@ enum Encoding {
   KS_E_LATIN8=7,
   KS_E_LATIN9=8,
   KS_E_LATIN15=9,
-  KS_E_UTF8=10
+  KS_E_UTF8=10,
+  KS_E_KOI8R=11,
+  KS_E_KOI8U=12 
 };
 
 enum KSpellClients {

@@ -132,6 +132,12 @@ KSpell::KSpell (QWidget *_parent, QString _caption,
   case KS_E_UTF8:
       codec = QTextCodec::codecForName("UTF-8");
       break;
+  case KS_E_KOI8R:
+      codec = QTextCodec::codecForName("KOI8-R");
+      break;
+  case KS_E_KOI8U:
+      codec = QTextCodec::codecForName("KOI8-U");
+      break;
   default:
      break;
   }
@@ -251,7 +257,14 @@ KSpell::startIspell()
       case KS_E_UTF8:
         *proc << "-Tutf8";
         break;
+
+      case KS_E_KOI8U:
+	*proc << "-w\'"; // add ' as a word char
+	break;
+
       }
+
+  
 
 
   /*

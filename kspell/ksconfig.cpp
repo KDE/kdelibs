@@ -116,6 +116,9 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   encodingcombo->insertItem ("ISO 8859-9");
   encodingcombo->insertItem ("ISO 8859-15");
   encodingcombo->insertItem ("UTF-8");
+  encodingcombo->insertItem ("KOI8-R"); 
+  encodingcombo->insertItem ("KOI8-U"); 
+
   connect (encodingcombo, SIGNAL (activated(int)), this,
 	   SLOT (sChangeEncoding(int)));
   glay->addMultiCellWidget (encodingcombo, 3, 3, 1, 2);
@@ -223,6 +226,9 @@ KSpellConfig::interpret (QString &fname, QString &lname,
   else if (fname=="espa~nol" || fname=="espanol") {
     lname="es"; hname=i18n("Spanish");
   }
+  else if (fname=="dansk") {
+    lname="da"; hname=i18n("Danish");
+  }
   else if (fname=="deutsch") {
     lname="de"; hname=i18n("German");
   }
@@ -258,6 +264,9 @@ KSpellConfig::interpret (QString &fname, QString &lname,
   }
   else if (fname=="swiss") {
     lname="de"; hname=i18n("Swiss German");
+  }
+  else if (fname=="ukrainian") {
+    lname="uk"; hname=i18n("Ukrainian");
   }
   else {
     lname=""; hname=i18n("Unknown");
