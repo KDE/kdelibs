@@ -488,7 +488,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 		if (fn == _dot || fn == _dotdot || fn.at(fn.length() - 1) == '~')
 		    continue;
 
-		if (pathExp.search(fn) == -1)
+		if ( !pathExp.exactMatch(fn) )
 		    continue; // No match
 		QString rfn = relPart+fn;
 		fn = prefix + fn;
