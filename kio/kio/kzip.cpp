@@ -19,8 +19,10 @@
 */
 
 #include <qfile.h>
+#include <qdir.h>
 #include <kdebug.h>
 #include <kmimetype.h>
+#include <zlib.h>
 
 //#include <kfilterdev.h>
 //#include <kfilterbase.h>
@@ -36,48 +38,16 @@ class KZip::KZipPrivate
 public:
     KZipPrivate() {}
     QStringList dirList;
+    unsigned long m_crc;
 };
 
-KZip::KZip( const QString& filename, const QString & _mimetype )
+KZip::KZip( const QString& filename )
     : KArchive( 0L )
 {
-    kdDebug(7040) << "KZip(filename, _mimetype) reached." << endl;
+    kdDebug(7040) << "KZip(filename) reached." << endl;
     m_filename = filename;
-    d = new KZipPrivate; //holds a QStringList
-    QString mimetype( _mimetype );
-    bool forced = true;
-    if ( mimetype.isEmpty() )
-    {
-        mimetype = KMimeType::findByFileContent( filename )->name();
-        kdDebug(7040) << "KZip::KZip mimetype=" << mimetype << endl;
-	if ( mimetype != "application/x-zip")
-	{
-	    // Something else. Check if it's not really zip though
-	    //(e.g. for KOffice docs)
-    	    QFile file( filename );
-    	    if (!file.exists())
-	    {
-		mimetype = "application/x-zip";
-	    }
-	    else
-	    {
-		if ( file.open( IO_ReadOnly ) )
-    	        {
-    	    	    unsigned char firstByte = file.getch();
-    		    unsigned char secondByte = file.getch();
-        	    unsigned char thirdByte = file.getch();
-        	    unsigned char fourthByte = file.getch();
-        	    if ( firstByte == 'P' && secondByte == 'K' && thirdByte == 3
-	    	        && fourthByte == 4)
-        	            mimetype = "application/x-zip";
-		}
-	    }
-	    // no need to close file, the QFile destructor does it
-            forced = false;
-	}
-    }
-    kdDebug(7040) << "detected mimetype: " << mimetype << endl;
-    prepareDevice( filename, mimetype, forced );
+    d = new KZipPrivate;
+    setDevice( new QFile( filename ) );
 }
 
 KZip::KZip( QIODevice * dev )
@@ -85,19 +55,6 @@ KZip::KZip( QIODevice * dev )
 {
     kdDebug(7040) << "KZip::KZip( QIODevice * dev) reached." << endl;
     d = new KZipPrivate;
-    setDevice( new KZipFilter( dev ) );
-
-}
-
-void KZip::prepareDevice( const QString & filename,
-                            const QString & mimetype, bool /*forced*/ )
-{
-    kdDebug(7040) << "preparedevice reached." << endl;
-    if( "application/x-zip" == mimetype )
-	setDevice( new KZipFilter( filename ) );
-    else
-        kdError() << "KZip: got mimetype: " << mimetype
-		<< ", don't know what to do with it. " << endl;
 }
 
 KZip::~KZip()
@@ -110,7 +67,9 @@ KZip::~KZip()
         delete device(); // we created it ourselves
     delete d;
 }
-void KZip::setOrigFileName( const QCString & fileName )
+
+#if 0
+void KZip::setOrigFileName( const QCString & /*fileName*/ )
 {
     kdDebug(7040) << "setorigfilename reached." << endl;
     if ( !isOpened() || mode() != IO_WriteOnly )
@@ -118,8 +77,9 @@ void KZip::setOrigFileName( const QCString & fileName )
         qWarning( "KZip::setOrigFileName: File must be opened for writing first.\n");
         return;
     }
-    //// TODO static_cast<KZipFilter *>(device())->setOrigFileName( fileName );
+    //// TODO
 }
+#endif
 
 bool KZip::openArchive( int mode )
 {
@@ -128,24 +88,36 @@ bool KZip::openArchive( int mode )
         return true;
 
     d->dirList.clear();
-    KZipFilter* dev = static_cast<KZipFilter *>(device());
+    char buffer[0x201];
 
-    KArchiveEntry* e;
-    KArchiveDirectory* tdir;
+    // Check that it's a valid ZIP file
+    // KArchive::open() opened the underlying device already.
+    QIODevice* dev = device();
+    int n = dev->readBlock( buffer, 4 );
+    if ( n < 4 )
+    {
+        kdWarning(7040) << "Zip file too small " << m_filename << endl;
+        return false;
+    }
+    if ( buffer[0] != 'P' || buffer[1] != 'K' || buffer[2] != 3 || buffer[3] != 4 )
+    {
+        kdWarning(7040) << "Not a Zip file " << m_filename << endl;
+        return false;
+    }
 
     uint size=0; // size of archive
     uint esize=0;// uncompressed size of file
     uint csize=0;// compressed size of file
     uint offset=0; // begin of central header
     uint eoffset=0;
-    char buffer[0x201];
-    bool b=false;
-    int  n=0;
+
     size = dev->size();
     kdDebug(7040) << "KArchive::size()" << size << endl;
-    b = (dev->at( size - 6)); //location of offset of start of central directry
+    bool b = (dev->at( size - 6)); //location of offset of start of central directry
 			    // FIXME works only if archive contains no comment
     kdDebug(7040) << "dev->at() " << dev->at() << endl;
+    if ( !b )
+        return false;
     n = dev->readBlock( buffer , 4);
 //    kdDebug(7040) << "buf1: " << buffer << endl;
 //    kdDebug(7040) << "kzip.cpp reached." << endl;
@@ -175,10 +147,9 @@ bool KZip::openArchive( int mode )
 
 	    if (n < 46) kdDebug(7040) << "shit2" << endl; // not long enough for valid entry
 
-	    QString str( QString::fromLocal8Bit(buffer) );
-	    QString name( buffer + 46);
 	    int namelen = (uchar)buffer[29] * 256 + (uchar)buffer[28];
-	    // only in central header ! see below.	
+	    QString name( QString::fromLocal8Bit(buffer+46, namelen) );
+	    // only in central header ! see below.
     	    int extralen = (uchar)buffer[31] * 256 + (uchar)buffer[30];
 	    int commlen = (uchar)buffer[33] * 256 + (uchar)buffer[32];
 	    int cmethod = (uchar)buffer[11] * 256 + (uchar)buffer[10];
@@ -216,40 +187,49 @@ bool KZip::openArchive( int mode )
 	    kdDebug(7040) << "csize: " << csize << endl;
 	    kdDebug(7040) << "buffer[29]: " << buffer[29] << endl;
 
-	    QString nam = name.left(namelen);
-	    QString nm;
+            bool isdir = false;
+            int access = 0777; // TODO available in zip file?
+            int time = 1234; // TODO fill time field
+	    QString entryName;
 
-            int pos = nam.findRev( '/' );
+            if ( name.right(1) == "/" ) // Entries with a trailing slash are directories
+            {
+                isdir = true;
+                name = name.left( name.length() - 1 );
+                access |= S_IFDIR;
+            }
+
+            int pos = name.findRev( '/' );
+            if ( pos == -1 )
+                entryName = name;
+            else
+                entryName = name.mid( pos + 1 );
+            Q_ASSERT( !entryName.isEmpty() );
+
+            KArchiveEntry* entry;
+            if ( isdir )
+                entry = new KArchiveDirectory( this, entryName, access, time, rootDir()->user(), rootDir()->group(), QString::null );
+            else
+            {
+	        entry = new KArchiveFile( this, entryName, access, time, rootDir()->user(), rootDir()->group(), QString::null,
+                                      eoffset, esize );
+	        //kdDebug(7040) << "KArchiveFile created" << endl;
+                list.append( KZipFileEntry(eoffset, cmethod, csize) );
+            }
+
             if ( pos == -1 )
             {
-	        nm = nam;
-//	        kdDebug(7040) << "name: " << name << endl;
-//		kdDebug(7040) << "nam: " << nam << endl;
-	        kdDebug(7040) << "nm: " << nm << endl;
-		// fill time field
-	        e = new KArchiveFile( this, nm, 0777, 1234, rootDir()->user(), rootDir()->group(), "",
-                          eoffset, esize );
-	        kdDebug(7040) << "KArchiveFile created" << endl;
-	        rootDir()->addEntry(e);
-		// set pos in KZipFilter
-		dev->setEntry(eoffset, cmethod, csize);
+	        rootDir()->addEntry(entry);
 	    }
             else
 	    {
-		tdir= findOrCreate(nam.left(pos));
-        	nm = nam.mid( pos + 1 );
-	        kdDebug(7040) << "name: " << name << endl;
-		kdDebug(7040) << "nam: " << nam << endl;
-	        kdDebug(7040) << "nm: " << nm << endl;
-		// fill time field
-	        e = new KArchiveFile( this, nm, 0777, 1234, rootDir()->user(), rootDir()->group(), "",
-                          eoffset, esize );
-		kdDebug(7040) << "KArchiveFile created" << endl;
-	        tdir->addEntry(e);
-		// set pos in KZipFilter
-		dev->setEntry(eoffset, cmethod, csize);
-
+                // In some tar files we can find dir/./file => call cleanDirPath
+                QString path = QDir::cleanDirPath( name.left( pos ) );
+                // Ensure container directory exists, create otherwise
+                KArchiveDirectory * tdir = findOrCreate( path );
+	        tdir->addEntry(entry);
 	    }
+
 	    //calculate offset to next entry
 	    kdDebug(7040) << "offset before: " << offset << endl;
 	    offset = offset + 46 + commlen + extralen + namelen;
@@ -282,7 +262,7 @@ bool KZip::closeArchive()
     char buffer[ 0x201 ];
     uLong crc = crc32(0L, Z_NULL, 0);
 
-    Q_LONG centraldiroffset = static_cast<KZipFilter *>(device())->at();
+    Q_LONG centraldiroffset = device()->at();
     kdDebug(7040) << "closearchive: centraldiroffset: " << centraldiroffset << endl;
     Q_LONG atbackup = device()->at();
     KZipFileList::iterator it;
@@ -295,11 +275,11 @@ bool KZip::closeArchive()
 //	    << " encoding: "<< (*it).encoding() << endl;
         memset( buffer, 0, 0x200 );
 
-        uLong crc = (*it).crc32();
-	buffer[ 0 ] = (uchar)(crc % 256); //crc checksum
-        buffer[ 1 ] = (uchar)((crc / 256) % 256);
-	buffer[ 2 ] = (uchar)((crc / (256*256)) % 256);
-        buffer[ 3 ] = (uchar)((crc / (256*256*256))% 256);
+        uLong mycrc = (*it).crc32();
+	buffer[ 0 ] = (uchar)(mycrc % 256); //crc checksum
+        buffer[ 1 ] = (uchar)((mycrc / 256) % 256);
+	buffer[ 2 ] = (uchar)((mycrc / (256*256)) % 256);
+        buffer[ 3 ] = (uchar)((mycrc / (256*256*256))% 256);
 
         int mysize1 = (*it).csize();
 	buffer[ 4 ] = (uchar)(mysize1 % 256); //compressed file size
@@ -348,11 +328,11 @@ bool KZip::closeArchive()
         buffer[ 14 ] = 0; //dummy last mod file date
 	buffer[ 15 ] = 0;
 
-        uLong crc = (*it).crc32();
-	buffer[ 16 ] = (uchar)(crc % 256); //crc checksum
-        buffer[ 17 ] = (uchar)((crc / 256) % 256);
-	buffer[ 18 ] = (uchar)((crc / (256*256)) % 256);
-        buffer[ 19 ] = (uchar)((crc / (256*256*256))% 256);
+        uLong mycrc = (*it).crc32();
+	buffer[ 16 ] = (uchar)(mycrc % 256); //crc checksum
+        buffer[ 17 ] = (uchar)((mycrc / 256) % 256);
+	buffer[ 18 ] = (uchar)((mycrc / (256*256)) % 256);
+        buffer[ 19 ] = (uchar)((mycrc / (256*256*256))% 256);
 
         int mysize1 = (*it).csize();
 	buffer[ 20 ] = (uchar)(mysize1 % 256); //compressed file size
@@ -400,8 +380,7 @@ bool KZip::closeArchive()
 	crc = crc32(crc, (Bytef *)buffer, i);
 	device()->writeBlock( buffer, i);
     }
-    Q_LONG centraldirendoffset = static_cast<KZipFilter *>
-			(device())->at();
+    Q_LONG centraldirendoffset = device()->at();
     kdDebug(7040) << "closearchive: centraldirendoffset: "
 		<< centraldirendoffset << endl;
     kdDebug(7040) << "closearchive: device()->at(): "
@@ -455,8 +434,8 @@ bool KZip::closeArchive()
     return true;
 }
 
-bool KZip::prepareWriting( const QString& name, const QString& user,
-						const QString& group, uint size )
+bool KZip::prepareWriting( const QString& name, const QString& /*user*/,
+						const QString& /*group*/, uint size )
 {
     kdDebug(7040) << "prepareWriting reached." << endl;
     if ( !isOpened() )
@@ -474,22 +453,19 @@ bool KZip::prepareWriting( const QString& name, const QString& user,
     KZipFileEntry * e = new KZipFileEntry();
     e->setFilename(name);
     e->setUSize(size);
+    // ## TODO pass a new arg, "int encoding", and define an enum for the values
     if ( name == "meta.xml") // openoffice meta.xml is not compressed
 			    // to allow indexing of the stored file,
 			    // so we will do it too.
 	e->setEncoding( 0 ); //stored
     else
 	e->setEncoding( 8 ); //deflated
-    e->setHeaderStart( static_cast<KZipFilter *>(device())->at() );
-    e->setStart( static_cast<KZipFilter *>(device())->at()
-		    + 30 + name.length() );
+    e->setHeaderStart( device()->at() );
+    e->setStart( device()->at() + 30 + name.length() );
         kdDebug(7040) << "wrote file start: " << e->start()
 		<< " name: " << name << endl;
     // write out zip header
     list.append ( *e );
-
-     static_cast<KZipFilter *>(device())->setEntry( e->start(),
-    					e->encoding(), 123);
 
     actualFile = list.end();
     --actualFile;
@@ -546,12 +522,12 @@ bool KZip::prepareWriting( const QString& name, const QString& user,
 
     // Write header
     bool b= (device()->writeBlock( buffer, name.length() + 30 )
-	    == name.length() + 30);
-    static_cast<KZipFilter *>(device())->setcrc( 0L );
+	    == (Q_LONG)(name.length() + 30) );
+    d->m_crc = 0L;
     return b;
 }
 
-bool KZip::doneWriting( uint size )
+bool KZip::doneWriting( uint /*size*/ )
 {
     kdDebug(7040) << "donewriting reached." << endl;
     kdDebug(7040) << "filename: " << (*actualFile).filename() << endl;
@@ -560,18 +536,17 @@ bool KZip::doneWriting( uint size )
     kdDebug(7040) << "headerstart: " << (*actualFile).headerstart() << endl;
 //    kdDebug(7040) << ": " << (*actualFile).csize() << endl;
 //    kdDebug(7040) << "headerstart: " << (*actualFile).headerstart() << endl;
-    int csize = static_cast<KZipFilter *>(device())->at() -
+    int csize = device()->at() -
         (*actualFile).headerstart() - 30 -
 	(*actualFile).filename().length();
-	(*actualFile).setCSize(csize);
+    (*actualFile).setCSize(csize);
     kdDebug(7040) << "filename: " << (*actualFile).filename() << endl;
     kdDebug(7040) << "usize: " << (*actualFile).usize() << endl;
     kdDebug(7040) << "csize: " << (*actualFile).csize() << endl;
     kdDebug(7040) << "headerstart: " << (*actualFile).headerstart() << endl;
 
-    kdDebug(7040) << "crc: " <<
-	    static_cast<KZipFilter *>(device())->getcrc() << endl;
-    (*actualFile).setCRC32(static_cast<KZipFilter *>(device())->getcrc());
+    kdDebug(7040) << "crc: " << d->m_crc << endl;
+    (*actualFile).setCRC32( d->m_crc );
 
     return true;
 }
@@ -579,40 +554,11 @@ bool KZip::doneWriting( uint size )
 void KZip::virtual_hook( int id, void* data )
 { KArchive::virtual_hook( id, data ); }
 
-
-
-KZipFilter::KZipFilter(const QString& filename)
+Q_LONG KZip::readBlock(char * c, long unsigned int i)
 {
-    dev = new QFile ( filename );
-}
-
-KZipFilter::KZipFilter(QIODevice * _dev)
-{
-    dev = _dev;
-}
-
-bool KZipFilter::open(int _mode)
-{
-    return dev->open(_mode);
-}
-void KZipFilter::close()
-{
-    dev->close();
-}
-void KZipFilter::flush()
-{
-    dev->flush();
-}
-Q_ULONG KZipFilter::size() const
-{
-    return dev->size();
-}
-
-Q_LONG KZipFilter::readBlock(char * c, long unsigned int i)
-{
-    bool doinflate=false;
     int cmethod=0;
     Q_LONG csize=0;
+    QIODevice* dev = device();
     int pos=dev->at();
 	kdDebug(7040) << "readblock. pos: " << pos <<" size: " << i << endl;
     KZipFileList::iterator it;
@@ -633,7 +579,7 @@ Q_LONG KZipFilter::readBlock(char * c, long unsigned int i)
     {
         // Inflate contents!
         QByteArray * dataBuffer = new QByteArray( csize );
-	dev->readBlock( reinterpret_cast<char *>(dataBuffer->data() ), csize);
+	dev->readBlock( dataBuffer->data(), csize);
         z_stream d_stream;      /* decompression stream */
 
         d_stream.zalloc = ( alloc_func ) 0;
@@ -668,25 +614,25 @@ Q_LONG KZipFilter::readBlock(char * c, long unsigned int i)
     else
     {
 	kdError() << "This zip file contains files compressed with method "
-	    << cmethod <<", this method is currently not supported by kio_zip,"
+	    << cmethod <<", this method is currently not supported by KZip,"
 	    <<" please use a command-line tool to handle this file." << endl;
 	return 0;
     }
 }
-Q_LONG KZipFilter::writeBlock(const char * c, long unsigned int i)
+
+Q_LONG KZip::writeBlock(const char * c, long unsigned int i)
 {
 //    kdDebug(7040) << "filter:writeblock: m_pos before: " << m_pos << endl;
 
-    bool dodeflate=false;
+    QIODevice* dev = device();
     int cmethod=0;
-    Q_LONG csize=0;
     int pos=dev->at();
     kdDebug(7040) << "writeblock. dev->at() : " << pos <<" size: " << i << endl;
     KZipFileList::iterator it;
     KZipFileList::iterator it2;
     // crc to be calculated over uncompressed stuff...
     // and they didn't mention it in their docs...
-    crc=crc32(crc, (const Bytef *) c , i);
+    d->m_crc = crc32(d->m_crc, (const Bytef *) c , i);
     for (it= list.begin(); it !=list.end(); ++it )
     {
 //	kdDebug(7040) << "kzipfilter writeblock : offset: " << (*it).start()
@@ -701,7 +647,7 @@ Q_LONG KZipFilter::writeBlock(const char * c, long unsigned int i)
     if (cmethod == 8) //zip deflate
     {
 	    kdDebug(7040) << "compression part reached... " << endl;
-	    kdDebug(7040) << "crc : " << QString::number( crc , 16) << endl;
+	    kdDebug(7040) << "crc : " << QString::number( d->m_crc , 16) << endl;
         // Deflate contents!
         QByteArray * dataBuffer = new QByteArray( i + 100 );
         z_stream d_stream;      /* decompression stream */
@@ -727,14 +673,14 @@ Q_LONG KZipFilter::writeBlock(const char * c, long unsigned int i)
         err = deflate( &d_stream, Z_FINISH );
         if ( err == Z_STREAM_END )
             kdDebug(7040) << "Z_STREAM_END " << endl;
-        else
+        else if ( err < 0 )
             kdWarning(7040) << "writeBlock: zlib deflate returned error " << err << endl;
 
         kdDebug(7040) << "compression part 6: total_out: " <<
             d_stream.total_out << endl;
 	(*it2).setCSize( d_stream.total_out );
         Q_LONG l;
-        kdDebug(7040) << "crc after : " << QString::number( crc , 16) << endl;
+        kdDebug(7040) << "crc after : " << QString::number( d->m_crc , 16) << endl;
         l=dev->writeBlock((const char *)dataBuffer->data(),
 				d_stream.total_out);
         kdDebug(7040) << "compressed written: " << l << endl;
@@ -744,51 +690,12 @@ Q_LONG KZipFilter::writeBlock(const char * c, long unsigned int i)
     else if (cmethod == 0)
     {
         Q_LONG l;
-//	    kdDebug(7040) << "crc uncompressed : " << QString::number( crc , 16) << endl;
+//	    kdDebug(7040) << "crc uncompressed : " << QString::number( d->m_crc , 16) << endl;
         l=dev->writeBlock(c, i);
 //        kdDebug(7040) << "uncompressed written: " << l << endl;
-//	    kdDebug(7040) << "crc uncompressed after: " << QString::number( crc , 16) << endl;
+//	    kdDebug(7040) << "crc uncompressed after: " << QString::number( d->m_crc , 16) << endl;
         return l;
 
     }
+    return -1;
 }
-
-int KZipFilter::getch()
-{
-    return dev->getch();
-}
-
-int KZipFilter::putch(int i)
-{
-    return dev->putch(i);
-}
-
-int KZipFilter::ungetch(int i)
-{
-    return dev->ungetch(i);
-}
-
-Q_ULONG KZipFilter::at() const
-{
-    return dev->at();
-}
-
-bool KZipFilter::at ( Offset pos )
-{
-    return dev->at( pos);
-}
-
-bool KZipFilter::atEnd () const
-{
-    return dev->atEnd();
-}
-
-bool KZipFilter::setEntry(Q_LONG start, int encoding, Q_LONG csize)
-{
-    kdDebug(7040) << "setentry called." << endl;
-    kdDebug(7040) << "setentry: start: " << start << " encoding: " << encoding <<
-	" csize: " << csize << endl;
-    list.append( KZipFileEntry(start, encoding, csize));
-    return true;
-}
-

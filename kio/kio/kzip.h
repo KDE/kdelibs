@@ -27,58 +27,10 @@
 #include <qdict.h>
 #include <qvaluelist.h>
 #include <karchive.h>
-#include <zlib.h>
-
-class KZipFileEntry;
-
-// Directly "ported" from the tar stuff to support zip file format.
 
 /**
- * @short A class for reading/writing zip archives.
- * @author Holger Schroeder <holger-kde@holgis.net>
+ * @internal
  */
-class KZipFilter : public QIODevice
-{
-/*
-    this class gives transparent acces to a compressed zip file,
-    dependant on where you start reading in the file,
-    so when extracting the directory structure, it gives back the
-    raw data, but when you read an included file starting on its
-    well-defined startpoint, you will get it extracted.
-    (a bit of a hack, but it should work ;) )
-*/
-
-public:
-    KZipFilter(const QString& filename);
-    KZipFilter(QIODevice * dev);
-
-    bool open(int);
-    void close();
-    void flush();
-    Offset size() const;
-    Q_LONG readBlock(char *, long unsigned int);
-    Q_LONG writeBlock(const char *, long unsigned int);
-    int getch();
-    int putch(int);
-    int ungetch(int);
-    Offset at () const;
-//    Q_LONG getpos () const;
-
-    bool at ( Offset pos );
-    bool atEnd () const;
-
-    bool setEntry(Q_LONG start, int encoding,Q_LONG csize);
-    uLong getcrc() {return crc; }
-    void setcrc(uLong _crc) { crc= _crc; }
-
-private:
-    typedef QValueList<KZipFileEntry> KZipFileList;
-    QIODevice * dev;
-    KZipFileList list;
-//    Q_LONG m_pos;
-    uLong crc;
-};
-
 class KZipFileEntry
 {
 public:
@@ -90,7 +42,7 @@ public:
     Q_LONG start() const {return st; }
     int encoding() const {return enc; }
     Q_LONG csize() const {return cs; }
-    uLong crc32() const {return crc; }
+    unsigned long crc32() const {return crc; }
 
     QString filename() const {return fn; }
     Q_LONG usize() const {return us; }
@@ -99,7 +51,7 @@ public:
     void setStart(Q_LONG start) { st=start; }
     void setEncoding(int encoding) { enc=encoding; }
     void setCSize(Q_LONG csize) { cs=csize; }
-    void setCRC32(uLong crc32) {crc=crc32; }
+    void setCRC32(unsigned long crc32) {crc=crc32; }
 
     void setFilename(QString filename) { fn=filename; }
     void setUSize(Q_LONG usize) { us=usize; }
@@ -109,7 +61,7 @@ private:
     Q_LONG st;
     int enc;
     Q_LONG cs;
-    uLong crc;
+    unsigned long crc;
 
     QString fn;
     Q_LONG us;
@@ -118,7 +70,10 @@ private:
 };
 
 
-
+/**
+ * @short A class for reading/writing zip archives.
+ * @author Holger Schroeder <holger-kde@holgis.net>
+ */
 class KZip : public KArchive
 {
 public:
@@ -126,15 +81,9 @@ public:
      * Creates an instance that operates on the given filename.
      * using the compression filter associated to given mimetype.
      *
-     * @param filename is a local path (e.g. "/home/weis/myfile.zip")
-     * @param mimetype Only "application/x-zip" is supported by KZip.
-     * If the mimetype is ommitted, it will be determined from the filename.
-     * If something else than application/x-zip is found, the resulting KZip will be invalid.
-     * In summary, if you know for sure that the file is a zip file, you will
-     * save time by passing application/x-zip as parameter. Otherwise, let KZip
-     * check the file.
+     * @param filename is a local path (e.g. "/home/holger/myfile.zip")
      */
-    KZip( const QString& filename, const QString & mimetype = QString::null );
+    KZip( const QString& filename );
 
     /**
      * Creates an instance that operates on the given device.
@@ -156,19 +105,7 @@ public:
      */
     QString fileName() { return m_filename; }
 
-    /**
-     * Special function for setting the "original file name" in the gzip header,
-     * when writing a tar.gz file. It appears when using in the "file" command,
-     * for instance. Should only be called if the underlying device is a KFilterDev!
-     *
-     * FIXME: useful for zip ?
-     */
-    void setOrigFileName( const QCString & fileName );
-
-    /**
-     * @internal Not needed for zip
-     */
-    virtual bool writeDir( const QString&, const QString&, const QString& ) { return true; }
+    //void setOrigFileName( const QCString & fileName );
 
     virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size );
     virtual bool doneWriting( uint size );
@@ -183,25 +120,19 @@ protected:
     virtual bool openArchive( int mode );
     virtual bool closeArchive();
 
+    /**
+     * @internal Not needed for zip
+     */
+    virtual bool writeDir( const QString&, const QString&, const QString& ) { return true; }
+
 private:
-    /**
-     * @internal
-     */
-    void prepareDevice( const QString & filename, const QString & mimetype, bool forced = false );
-
-    /**
-     * @internal
-     * Fills @p buffer for writing a file as required by the tar format
-     * Has to be called LAST, since it does the checksum
-     * (normally, only the name has to be filled in before)
-     * @param mode is expected to be 6 chars long, [uname and gname 31].
-     */
-    void fillBuffer( char * buffer, const char * mode, int size, char typeflag, const char * uname, const char * gname );
-
-    QString m_filename;
+    /////// Temporary
+    Q_LONG readBlock(char *, long unsigned int);
+    Q_LONG writeBlock(const char *, long unsigned int);
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
+    QString m_filename;
     class KZipPrivate;
     KZipPrivate * d;
     typedef QValueList<KZipFileEntry> KZipFileList;
