@@ -485,7 +485,7 @@ QString KProtocolInfo::proxiedBy( const QString& _protocol )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
-    return false;
+    return QString::null;
 
   return prot->d->proxyProtocol;
 }
