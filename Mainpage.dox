@@ -49,6 +49,9 @@
 	* - <a href="kutils/html/index.html"><b>kutils</b></a>
         *   (<a href="kutils/html/classes.html">classes</a>)\n
 	*   <i>High-level utils, like search/replace support.</i>
+	* - <a href="arts/html/index.html"><b>arts</b></a>
+        *   (<a href="arts/html/classes.html">classes</a>)\n
+	*   <i>KDE bindings for arts including knotify.</i>
 	*
 	* More information about the KDE architecture in form of tutorials, HOWTOs,
 	* and FAQs can be found at

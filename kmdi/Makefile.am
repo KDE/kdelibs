@@ -13,4 +13,5 @@ include_HEADERS = kmdichildarea.h kmdichildfrm.h kmdichildfrmcaption.h kmdidefin
 METASOURCES = AUTO
 
 DOXYGEN_REFERENCES = kdecore kdeui kparts kutils
+include ../admin/Doxyfile.am
 

@@ -1,2 +1,5 @@
 SUBDIRS = kde knotify message
-DIST_SUBDIRS = $(SUBDIRS)
+
+DOXYGEN_REFERENCES = kio kdecore kdeui
+include ../admin/Doxyfile.am
+
