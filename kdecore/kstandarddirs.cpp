@@ -1325,8 +1325,12 @@ bool KStandardDirs::addCustomized(KConfig *config)
     QString group = QString::fromLatin1("Directories");
     config->setGroup(group);
     QString userMapFile = config->readEntry("userProfileMapFile");
+    QString profileDirsPrefix = config->readEntry("profileDirsPrefix");
+    if (!profileDirsPrefix.isEmpty() && !profileDirsPrefix.endsWith("/"))
+       profileDirsPrefix.append('/');
 
     QStringList profiles = lookupProfiles(userMapFile);
+    QString profile;
     
     bool priority = false;
     while(true)
@@ -1337,6 +1341,14 @@ bool KStandardDirs::addCustomized(KConfig *config)
         {
             addPrefix(*it, priority);
 	    addXdgConfigPrefix(*it+"/etc/xdg", priority);
+	}
+	// If there are no prefixes defined, check if there is a directory
+	// for this profile under <profileDirsPrefix>
+	if (list.isEmpty() && !profile.isEmpty() && !profileDirsPrefix.isEmpty())
+	{
+	    QString dir = profileDirsPrefix + profile;
+	    addPrefix(dir, priority);
+	    addXdgConfigPrefix(dir+"/etc/xdg", priority);
 	}
 
         // iterating over all entries in the group Directories
@@ -1359,7 +1371,8 @@ bool KStandardDirs::addCustomized(KConfig *config)
         }
         if (profiles.isEmpty())
            break;
-        group = QString::fromLatin1("Directories-%1").arg(profiles.back());
+        profile = profiles.back();
+        group = QString::fromLatin1("Directories-%1").arg(profile);
         profiles.pop_back();
         priority = true;
     }
