@@ -531,7 +531,7 @@ QString whatstr;
   grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, tabAuth), 4, 4, 0, 5);
 
 
-  grid->addMultiCellWidget(new QLabel(i18n("Host Authentication:"), tabAuth), 5, 5, 0, 1);
+  grid->addMultiCellWidget(new QLabel(i18n("Host authentication:"), tabAuth), 5, 5, 0, 1);
   hostAuthList = new QListView(tabAuth);
   grid->addMultiCellWidget(hostAuthList, 6, 13, 0, 5);
   hostAuthList->addColumn(i18n("Host"));
