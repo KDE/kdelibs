@@ -757,8 +757,8 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
         currentItem()->setSelected(false);
         currentItem()->repaint();
 //        emit selectionChanged();
-     };
-  };
+     }
+  }
 
   QPoint p( contentsToViewport( e->pos() ) );
   QListViewItem *at = itemAt (p);
