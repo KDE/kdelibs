@@ -1,30 +1,10 @@
 #ifndef _DCOPCLIENT_H
 #define _DCOPCLIENT_H
 
-extern "C" {
-#include <X11/ICE/ICElib.h>
-#include <X11/ICE/ICEutil.h>
-#include <X11/ICE/ICEmsg.h>
-#include <X11/ICE/ICEproto.h>
-}
-
 #include <qobject.h>
 #include <qstring.h>
-#include <qsocketnotifier.h>
 
-#include <dcopglobal.h>
-
-/**
- * Callback for ICE.
- */
-static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
-			       int opcode, unsigned long length, Bool swap,
-			       IceReplyWaitInfo *replyWait,
-			       Bool *replyWaitRet);
-
-static IcePoVersionRec DCOPVersions[] = {
-  { DCOPVersionMajor, DCOPVersionMinor,  DCOPProcessMessage }
-};
+class DCOPClientPrivate;
 
 class DCOPClient : public QObject
 {
@@ -44,23 +24,27 @@ class DCOPClient : public QObject
   virtual ~DCOPClient();
 
   /**
-   * Attach to the DCOP server.
-   * @return true if attaching was successful.
-   */
-  bool attach();
-
-  /**
    * specify the address of a server to use upon attaching.
    * if no server address is ever specified, attach will try its best to
    * find the server anyway.
    */
-  static void setServerAddress(const QString &addr)
-    { serverAddr = addr; }
+  static void setServerAddress(const QString &addr);
+
+  /**
+   * Attach to the DCOP server.
+   * @return true if attaching was successful.
+   */
+  bool attach();
   
   /**
    * Detach from the DCOP server.
    */
   bool detach();
+
+  /**
+   * return the socket over which DCOP is communicating with the server.
+   */
+  int socket() const;
 
   /**
    * send a data block to the server.
@@ -96,18 +80,6 @@ class DCOPClient : public QObject
 		       QByteArray &replyData);
 
   /**
-   * ping a remote application to see if it is running.
-   * @return true if the remote application is running, otherwise false.
-   */
-  bool ping(QString remApp);
-
- public slots:
-
- protected slots:
-  void processSocketData(int socknum);
-
- protected:
-  /**
    * receive a piece of data from the server.
    * @param app the application the data was intended for.  Should be
    *        equal to our appId that we passed when the DCOPClient was
@@ -122,33 +94,24 @@ class DCOPClient : public QObject
 		       QByteArray &replyData);
 
   /**
-   * process a message received via ICE.
-   * @internal (very)
+   * ping a remote application to see if it is running.
+   * @return true if the remote application is running, otherwise false.
    */
-  void processIceMessage(IceConn iceConn, int opcode,
-			 unsigned long length, Bool swap,
-			 IceReplyWaitInfo *replyWait, 
-			 Bool *replyWaitRet);
+  bool ping(QString remApp);
+
+ public slots:
+
+ protected slots:
+  void processSocketData(int socknum);
+
+ protected:
 
  private:
-  QString appId;
-  IceConn iceConn;
-  int majorOpcode; // major opcode negotiated w/server and used to tag all comms.
+  /**
+   * this is only public so that ICE callbacks work.  Don't touch.
+   */
+  DCOPClientPrivate *d;
 
-  int majorVersion, minorVersion; // protocol versions negotiated w/server
-  char *vendor, *release; // information from server
-
-  static QString serverAddr; // location of server in ICE-friendly format.
-  QSocketNotifier *notifier;
-};
-
-class MyClient : public DCOPClient
-{
-  Q_OBJECT
-public:
-  MyClient(QString appId) : DCOPClient(appId) {}
-  bool process(const QString &fun, const QByteArray &data,
-	       QByteArray &replyData);
 };
 
 #endif
