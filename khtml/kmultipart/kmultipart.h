@@ -23,6 +23,7 @@
 #include <kparts/part.h>
 #include <kparts/factory.h>
 #include <kparts/browserextension.h>
+#include <kaboutdata.h>
 
 class KHTMLPart;
 class KInstance;
