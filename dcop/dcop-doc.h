@@ -13,8 +13,7 @@ beyond that it does not require any other libraries. Because of this,
 it is extremely lightweight, enabling it to be linked into all KDE
 applications with low overhead.
 
-Model:
-------
+@sect Model:
 
 The model is simple.  Each application using DCOP is a client.  They
 communicate to each other through a DCOP server, which functions like
@@ -36,8 +35,7 @@ has the additional benefit of type safety.
 The manual method is covered first, followed by the automatic IDL method.
 
 
-Establishing the Connection:
-----------------------------
+@sect Establishing the Connection:
 
 KApplication has gained a method called "KApplication::dcopClient()"
 which returns a pointer to a DCOPClient instance.  The first time this
@@ -78,8 +76,7 @@ equal to kapp->name(). You can retrieve the registered DCOP client
 by calling kapp->dcopClient().
 
 
-Sending Data to a Remote Application:
--------------------------------------
+@sect Sending Data to a Remote Application:
 
 To actually communicate, you have one of two choices.  You may either
 call the "send" or the "call" method.  Both methods require three
@@ -146,8 +143,7 @@ else {
 </pre>
 
 
-Receiving Data via DCOP:
-------------------------
+@sect Receiving Data via DCOP:
 
 Currently the only real way to receive data from DCOP is to multiply
 inherit from the normal class that you are inheriting (usually some
@@ -185,8 +181,7 @@ bool BarObject::process(const QCString &fun, const QByteArray &data,
 </pre>
 
 
-Receiving Calls and processing them:
-------------------------------------
+@sect Receiving Calls and processing them:
 
 If your applications is able to process incoming function calls
 right away the above code is all you need. When your application
@@ -236,8 +231,7 @@ slotProcessingDone(DCOPClientTransaction *myTransaction, const QString &result)
 </pre>
 
 
-Using the dcopidl compiler:
----------------------------
+@sect Using the dcopidl compiler:
 
 dcopidl makes setting up a DCOP server easy. Instead of having to implement
 the process() method and unmarshalling (retrieving from QByteArray) parameters
@@ -364,8 +358,7 @@ manually. To use a stub, add MyInterface.stub to the SOURCES list of
 your Makefile.am. The stub class will then be called MyInterface_stub.
 
 
-Inter-user communication:
--------------------------
+@sect Inter-user communication:
 
 Sometimes it might be interesting to use DCOP between processes
 belonging to different users, e.g. a frontend process running
@@ -399,8 +392,7 @@ NOTE: DCOP communication is not encrypted, so please do not
 pass important information around this way.
 
 
-Conclusion:
------------
+@sect Conclusion:
 
 Hopefully this document will get you well on your way into the world of
 inter-process communication with KDE!  Please direct all comments and/or
