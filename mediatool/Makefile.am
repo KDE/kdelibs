@@ -26,7 +26,7 @@ MEDIATOOLPATCH	 =	91
 INCLUDES = $(all_includes) 
 libmediatool_la_SOURCES = kaudio.cpp chunk.c connect.c eventcounter.c filename.c
 
-include_HEADERS= 	kaudio.h
+include_HEADERS= 	mediatool.h kaudio.h
 
 libmediatool_la_LDFLAGS = -version-info 3:0 $(all_libraries)
 libmediatool_la_LIBADD = $(LIB_QT) $(LIBCOMPAT)
