@@ -79,12 +79,12 @@ KGuiItem KStdGuiItem::ok()
 
 KGuiItem KStdGuiItem::cancel()
 {
-  return KGuiItem( i18n( "&Cancel" ), "cancel", i18n( "Cancel operation" ) );
+  return KGuiItem( i18n( "&Cancel" ), "button_cancel", i18n( "Cancel operation" ) );
 }
 
 KGuiItem KStdGuiItem::yes()
 {
-  return KGuiItem( i18n( "&Yes" ), "ok", i18n( "Yes" ) );
+  return KGuiItem( i18n( "&Yes" ), "button_ok", i18n( "Yes" ) );
 }
 
 KGuiItem KStdGuiItem::no()
