@@ -250,6 +250,49 @@ public:
    */
   void invokeBrowser( const QString &url );
 
+  /**
+   * Starts a service based on the (translated) name of the service.
+   *
+   * @param URL - if not empty this URL is passed to the service
+   *
+   * @return an error code indicating success (== 0) or failure (> 0).
+   * @return On success, 'dcopService' contains the DCOP name under which
+   *         this service is available. If empty, the service does
+   *         not provide DCOP services.
+   * @return On failure, 'error' contains a description of the error
+   *         that occured.   
+   */
+  static int startServiceByName( const QString& _name, const QString &URL,
+                                 QCString &dcopService, QString &error );
+  /**
+   * Starts a service based on the desktop path of the service.
+   *
+   * @param URL - if not empty this URL is passed to the service
+   *
+   * @return an error code indicating success (== 0) or failure (> 0).
+   * @return On success, 'dcopService' contains the DCOP name under which
+   *         this service is available. If empty, the service does
+   *         not provide DCOP services.
+   * @return On failure, 'error' contains a description of the error
+   *         that occured.   
+   */
+  static int startServiceByDesktopPath( const QString& _name, 
+              const QString &URL, QCString &dcopService, QString &error );
+
+  /**
+   * Starts a service based on the desktop name of the service.
+   *
+   * @param URL - if not empty this URL is passed to the service
+   *
+   * @return an error code indicating success (== 0) or failure (> 0).
+   * @return On success, 'dcopService' contains the DCOP name under which
+   *         this service is available. If empty, the service does
+   *         not provide DCOP services.
+   * @return On failure, 'error' contains a description of the error
+   *         that occured.   
+   */
+  static int startServiceByDesktopName( const QString& _name, 
+              const QString &URL, QCString &dcopService, QString &error );
 
   /**
    * Retrieve the current KDE style object if a plugin is in use,
@@ -580,6 +623,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.133  2000/01/12 02:39:35  dsweet
+// doc cleaning
+//
 // Revision 1.132  2000/01/09 23:01:22  waba
 // WABA: AboutData is taken from KCmdLineArgs.
 //

@@ -1216,7 +1216,83 @@ void KApplication::invokeBrowser( const QString &url )
 
 }
 
+static int
+startServiceInternal( const QCString &function, 
+                      const QString& _name, const QString &URL,
+                      QCString &dcopService, QString &error )
+{
+   typedef struct serviceResult 
+   {
+      int result;
+      QCString dcopName;
+      QString error;
+   };
 
+   // Register app as able to send DCOP messages
+   DCOPClient *dcopClient;
+   if (kapp)
+      dcopClient = kapp->dcopClient();
+   else
+      dcopClient = new DCOPClient;
+   
+   if (!dcopClient->isAttached())
+   {
+      if (!dcopClient->attach())
+      {
+         error = i18n("Could not register with DCOP.\n");
+         return -1;
+      }
+   }
+   QByteArray params;
+   QDataStream stream(params, IO_WriteOnly);
+   stream << _name << URL;
+   QCString replyType;
+   QByteArray replyData;
+   if (!dcopClient->call("klauncher", "klauncher", 
+	function, params, replyType, replyData))
+   {
+	error = i18n("KLauncher could not be reached via DCOP.\n");
+        if (!kapp)
+           delete dcopClient;
+        return -1;
+   }
+   if (!kapp)
+      delete dcopClient;
+
+   QDataStream stream2(replyData, IO_ReadOnly);
+   serviceResult result;
+   stream2 >> result.result >> result.dcopName >> result.error;
+   dcopService = result.dcopName;
+   error = result.error;
+   return result.result;
+}
+
+int
+KApplication::startServiceByName( const QString& _name, const QString &URL,
+                              QCString &dcopService, QString &error )
+{
+   return startServiceInternal( 
+                      "start_service_by_name(QString,QString)", 
+                      _name, URL, dcopService, error);
+}
+
+int
+KApplication::startServiceByDesktopPath( const QString& _name, const QString &URL,
+                              QCString &dcopService, QString &error )
+{
+   return startServiceInternal( 
+                      "start_service_by_desktop_path(QString,QString)", 
+                      _name, URL, dcopService, error);
+}
+
+int
+KApplication::startServiceByDesktopName( const QString& _name, const QString &URL,
+                              QCString &dcopService, QString &error )
+{
+   return startServiceInternal( 
+                      "start_service_by_desktop_name(QString,QString)", 
+                      _name, URL, dcopService, error);
+}
 
 
 bool KApplication::kdeFonts(QStringList &fontlist) const
