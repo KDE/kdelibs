@@ -33,6 +33,26 @@
 
 static void mapToCupsOptions(const QMap<QString,QString>& opts, QString& cmd);
 
+static QSize rangeToSize(const QString& s)
+{
+	QString	range = s;
+	int	p(-1);
+	int	from, to;
+
+	if ((p=range.find(',')) != -1)
+		range.truncate(p);
+	if ((p=range.find('-')) != -1)
+	{
+		from = range.left(p).toInt();
+		to = range.right(range.length()-p-1).toInt();
+	}
+	else if (!range.isEmpty())
+		from = to = range.toInt();
+	else
+		from = to = 0;
+
+	return QSize(from,to);
+}
 //******************************************************************************************************
 
 KCupsPrinterImpl::KCupsPrinterImpl(QObject *parent, const char *name)
