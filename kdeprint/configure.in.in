@@ -25,9 +25,10 @@ EOF
 if AC_TRY_EVAL(ac_link) && test -x conftest; then
   ac_have_new_cups=`./conftest`
 else
-  AC_MSG_ERROR([Unable to compile test program. See config.log for more informations])
-  echo "configure: failed program was:" >&AC_FD_CC
-  cat conftest.c >&AC_FD_CC
+dnl don't bail out if not found!
+dnl  AC_MSG_ERROR([Unable to compile test program. See config.log for more informations])
+dnl  echo "configure: failed program was:" >&AC_FD_CC
+dnl  cat conftest.c >&AC_FD_CC
   ac_have_new_cups="no"
 fi
 rm -f conftest*
@@ -57,7 +58,7 @@ if test "$ac_use_cups" = "yes"; then
   else
     AC_MSG_RESULT(cups-config not found, using default libraries: $kde_cups_libs. You should consider upgrading CUPS)
   fi
-  AC_CHECK_LIB(cups,cupsServer,[ac_cups_libs=1],[ac_cups_libs=0],$kde_cups_libs)
+  KDE_CHECK_LIB(cups,cupsServer,[ac_cups_libs=1],[ac_cups_libs=0],"$LIBDL $LIBSOCKET")
   if test "$ac_cups_libs" = "0"; then
     AC_MSG_WARN(CUPS library not found. CUPS support disabled)
     ac_use_cups="no"
