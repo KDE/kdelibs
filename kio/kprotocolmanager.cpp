@@ -32,12 +32,14 @@
 // CACHE SETTINGS
 #define DEFAULT_MAX_CACHE_SIZE          5120          //  5 MB
 #define DEFAULT_MAX_CACHE_AGE           60*60*24*14   // 14 DAYS
+#define DEFAULT_EXPIRE_TIME             60*30         // 1/2 hour
 
 // DEFAULT TIMEOUT VALUE FOR REMOTE AND PROXY CONNECTION
 // AND RESPONSE WAIT PERIOD.  NOTE: CHANGING THESE VALUES
 // ALSO CHANGES THE DEFAULT ESTABLISHED INITIALLY.
 #define DEFAULT_RESPONSE_TIMEOUT         60           //  1 MIN
 #define DEFAULT_CONNECT_TIMEOUT          20           // 20 SEC
+#define DEFAULT_READ_TIMEOUT             15           // 15 SEC
 #define DEFAULT_PROXY_CONNECT_TIMEOUT    10           // 10 SEC
 
 // MINIMUM TIMEOUT VALUE ALLOWED
@@ -65,7 +67,7 @@ int KProtocolManager::readTimeout()
 {
   KConfig *cfg = config();
   cfg->setGroup( QString::null );
-  return cfg->readNumEntry( "ReadTimeout", 15 ); // 15 seconds
+  return cfg->readNumEntry( "ReadTimeout", DEFAULT_READ_TIMEOUT ); // 15 seconds
 }
 
 bool KProtocolManager::markPartial()
@@ -171,7 +173,7 @@ int KProtocolManager::maxCacheSize()
 {
   KConfig *cfg = config();
   cfg->setGroup( "Cache Settings" );
-  return cfg->readNumEntry( "MaxCacheSize", DEFAULT_MAX_CACHE_SIZE );
+  return cfg->readNumEntry( "MaxCacheSize", DEFAULT_MAX_CACHE_SIZE ); // 5 MB
 }
 
 QString KProtocolManager::ftpProxy()
