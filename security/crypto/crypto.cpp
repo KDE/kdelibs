@@ -1080,7 +1080,7 @@ void KCryptoConfig::save()
      cacfg->writeEntry("code", x->getCode());
   }
 
-  // FIXME: regenerate the CA list here
+  genCAList();
 
   config->setGroup("Auth");
   QString whichAuth = config->readEntry("AuthMethod", "none");
@@ -1195,6 +1195,20 @@ const KAboutData* KCryptoConfig::aboutData() const {
      about->addAuthor("Carsten Pfeiffer", 0, "pfeiffer@kde.org");
      return about;
 } 
+
+
+void KCryptoConfig::genCAList() {
+
+  for (CAItem *x = static_cast<CAItem *>(caList->firstChild()); x;
+               x = static_cast<CAItem *>(x->nextSibling())) {
+     if (x->getCode() || x->getEmail() || x->getSite()) {
+     //   cacfg->setGroup(x->configName());
+     //   cacfg->writeEntry("x509", x->getCert());
+     }
+  }
+
+}
+
 
 
 void KCryptoConfig::slotCWcompatible() {

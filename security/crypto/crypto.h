@@ -275,6 +275,7 @@ public slots:
 private:
 
   void setAuthCertLists();
+  void genCAList();
 
   QTabWidget *tabs;
   QWidget *tabSSL, *tabOSSL;
