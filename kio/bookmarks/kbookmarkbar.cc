@@ -234,38 +234,43 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
         if (found = (b && (*it)->isPlugged(ttb, b->id())), found)
             break;
 
-    // no button found
-    // TODO - this possibly happens on short toolbars,
-    //        what should happen in that case?
-    if (!found)
-        return false;
-
-    index = ttb->itemIndex(b->id());
-    QRect r = b->geometry();
-    kdDebug(7043) << "found " << b << " at " << r << " with index " << index << endl;
-    kdDebug(7043) << "id was == " << b->id() << endl;
-
-    // if in 0th position or in second half of button then we are done
-    if (pos.x() > ((r.left() + r.right())/2) || index == 0)
+    if (found)
     {
-        a = (*it);
-        tb = ttb;
-        return true;
+        index = ttb->itemIndex(b->id());
+        QRect r = b->geometry();
+
+        kdDebug(7043) << "found " << b << " at " << r << " with index " << index << endl;
+        kdDebug(7043) << "id was == " << b->id() << endl;
+
+        // if in 0th position or in second half of button then we are done
+        if (pos.x() > ((r.left() + r.right())/2) || index == 0)
+        {
+            a = (*it);
+            tb = ttb;
+            return true;
+        }
+     
+        // else we jump to the previous index
+        index--;
+    }
+    else
+    {
+        return false;
     }
 
-    index--;
-    // we have the index now work out the rest
     int id = ttb->idAt(index);
-    kdDebug(7043) << "id for prev index == " << id << endl;
 
-    // don't drop on our own seperator, 
-    // if found we are already prev anyway
-    if (id == -9999) // fixme
+    // don't drop on our own seperator
+    // drop after it, i.e, go back again
+    if (id == -9999) // fixme with define for num?
     {
         index++;
         return false;
     }
 
+    kdDebug(7043) << "id for prev index == " << id << endl;
+
+    // search for the button at the given index
     b = ttb->getButton(id);
     Q_ASSERT(id == b->id());
     it.toFirst();
@@ -274,11 +279,9 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
     for (; (*it); ++it )
         if (found = (*it)->isPlugged(ttb, id), found)
             break;
-    // this case is probably bad, umm... assert?
-    if (!found)
-        return false;
-    a = (*it);
+    Q_ASSERT(found);
     tb = ttb;
+    a = (*it);
     index = ttb->itemIndex(id);
     kdDebug(7043) << "new index = " << index << endl;
     return found;
@@ -286,7 +289,7 @@ static bool findDestAction(QPoint pos, QPtrList<KAction> actions,
 
 bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
     static int sepIndex;
-    static int sepId = -9999; // fixme
+    static int sepId = -9999; // fixme with define for num?
     static KToolBar* tb = 0;
     static KAction* a = 0;
     if ( e->type() == QEvent::DragLeave )
