@@ -531,7 +531,7 @@ CSSRuleList::CSSRuleList(CSSRuleListImpl *i)
 CSSRuleList::CSSRuleList(StyleListImpl */*i*/)
 {
 //    ###
-//    impl = ?
+    impl = 0;
 }
 
 CSSRuleList &CSSRuleList::operator = (const CSSRuleList &other)
