@@ -1,7 +1,7 @@
 // -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Stephan Kulow <coolo@kde.org>
-    Copyright (C) 1999-2001 Hans Petter Bieker <bieker@kde.org>
+    Copyright (C) 1999-2003 Hans Petter Bieker <bieker@kde.org>
     Copyright (c) 2002 Lukas Tinkl <lukas@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -35,6 +35,7 @@ class KConfig;
 class KConfigBase;
 class KLocalePrivate;
 class KCatalogue;
+class KCalendarSystem;
 
 #ifndef I18N_NOOP
 #define I18N_NOOP(x) (x)
@@ -438,39 +439,33 @@ public:
    * @since 3.1
    */
   int weekStartDay() const;
-
+  
   /**
-   * Returns a string containing the name of the month name.
+   * Returns a pointer to the calendar system object.
    *
-   * @param i the month number of the year starting at 1/January.
-   * @param shortName we will return the short version of the string.
-   *
-   * @return The name of the month
+   * @return the current calendar system instance
+   * @since 3.2
    */
-  QString monthName(int i, bool shortName = false) const;
+  const KCalendarSystem * calendar() const;
 
   /**
-   * Returns a string containing the possessive form of the month name.
-   * ("of January", "of February", etc.)
-   * It's needed in long format dates in some languages.
+   * Returns the name of the calendar system that is currently being
+   * used by the system.
    *
-   * @param i the month number of the year starting at 1/January.
-   * @param shortName we will return the short version of the string.
-   *
-   * @return The possessive form of the name of the month
-   * @since 3.1
-  */
-  QString monthNamePossessive(int i, bool shortName = false) const;
-
-  /**
-   * Returns a string containing the name of the week day.
-   *
-   * @param i the day number of the week starting at 1/Monday.
-   * @param shortName we will return the short version of the string.
-   *
-   * @return The name of the day
+   * @return the name of the calendar system
+   * @since 3.2
    */
-  QString weekDayName(int i, bool shortName = false) const;
+  QString calendarType() const;
+
+  /**
+   * Changes the current calendar system to the calendar specified.
+   * Currently is "gregorian" and "hijri" supported. If the calendar 
+   * system specified is not found, gregorian will be used.
+   *
+   * @param calendarType the name of the calendar type
+   * @since 3.2
+   */
+  void setCalendar(const QString & calendarType);
 
   /**
    * Returns a string formated to the current locale's conventions
@@ -941,6 +936,45 @@ public:
 #ifdef KDE_NO_COMPAT
 private:
 #endif
+  /**
+   * @deprecated
+   *
+   * Returns a string containing the name of the month name.
+   *
+   * @param i the month number of the year starting at 1/January.
+   * @param shortName we will return the short version of the string.
+   *
+   * @return The name of the month
+   */
+  QString monthName(int i, bool shortName = false) const;
+
+  /**
+   * @deprecated
+   *
+   * Returns a string containing the possessive form of the month name.
+   * ("of January", "of February", etc.)
+   * It's needed in long format dates in some languages.
+   *
+   * @param i the month number of the year starting at 1/January.
+   * @param shortName we will return the short version of the string.
+   *
+   * @return The possessive form of the name of the month
+   * @since 3.1
+  */
+  QString monthNamePossessive(int i, bool shortName = false) const;
+
+  /**
+   * @deprecated
+   *
+   * Returns a string containing the name of the week day.
+   *
+   * @param i the day number of the week starting at 1/Monday.
+   * @param shortName we will return the short version of the string.
+   *
+   * @return The name of the day
+   */
+  QString weekDayName(int i, bool shortName = false) const;
+
   /**
    * @deprecated
    *
