@@ -31,7 +31,7 @@ class KJScript;
 class QString;
 class QConstString;
 
-#if defined(__GNUC__) && (__GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 96))
+#if defined(__GNUC__)
 #define KJS_PACKED __attribute__((__packed__))
 #else
 #define KJS_PACKED
@@ -49,7 +49,7 @@ namespace KJS {
    * representation is compatible to XChar2b and QChar. It's therefore
    * possible to exchange data with X and Qt with shallow copies.
    */
-  struct KJS_PACKED UChar {
+  struct UChar {
     /**
      * Construct a character with value 0.
      */ 
@@ -99,7 +99,7 @@ namespace KJS {
     friend bool operator<(const UString& s1, const UString& s2);
     unsigned char hi;
     unsigned char lo;
-  };
+  } KJS_PACKED;
 
   /**
    * @short Dynamic reference to a string character.
