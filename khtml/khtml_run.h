@@ -23,7 +23,7 @@
 #ifndef __khtml_run_h__
 #define __khtml_run_h__
 
-#include <krun.h>
+#include <kparts/browserrun.h>
 #include <kurl.h>
 #include <kservice.h>
 #include <kparts/browserextension.h>
@@ -35,38 +35,26 @@ namespace khtml
   struct ChildFrame;
 };
 
-class KHTMLRun : public KRun
+class KHTMLRun : public KParts::BrowserRun
 {
   Q_OBJECT
 public:
-  KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url, 
+  KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url,
             const KParts::URLArgs &args, bool hideErrorDialog );
 
   virtual void foundMimeType( const QString &mimetype );
 
-  KHTMLPart *part() const { return m_part; }
-  KParts::URLArgs urlArgs() const { return m_args; }
+  //KHTMLPart *htmlPart() const;
 
 protected:
-  virtual void scanFile();
+  virtual void handleError( KIO::Job * job );
 
-  bool allowExecution( const QString &serviceType, const KURL &url );
-  bool isExecutable( const QString &serviceType );
+  virtual void save( const KURL & url, const QString & suggestedFilename );
   bool askSave( const KURL & url, KService::Ptr offer, const QString & mimeType, const QString & suggestedFilename );
 
-protected slots:
-  void slotKHTMLScanFinished(KIO::Job *job);
-  void slotKHTMLMimetype(KIO::Job *job, const QString &type);
-  void slotStatResult( KIO::Job *job );
-
 private:
-  void handleError();
-
-  KHTMLPart *m_part;
-  KParts::URLArgs m_args;
   khtml::ChildFrame *m_child;
-  QString m_suggestedFilename;
-  bool m_hideErrorDialog;
+  bool m_bHideErrorDialog;
 };
 
 #endif
