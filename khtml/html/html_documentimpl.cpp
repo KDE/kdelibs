@@ -62,10 +62,12 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
     bodyElement = 0;
     htmlElement = 0;
 
+/* dynamic history stuff to be fixed later (pfeiffer)
     connect( KHTMLFactory::vLinks(), SIGNAL( inserted( const QString& )),
 	     SLOT( slotHistoryChanged() ));
     connect( KHTMLFactory::vLinks(), SIGNAL( removed( const QString& )),
 	     SLOT( slotHistoryChanged() ));
+*/
     connect( KHTMLFactory::vLinks(), SIGNAL( cleared()),
 	     SLOT( slotHistoryChanged() ));
 }
@@ -79,10 +81,12 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
 
     m_styleSelector = new CSSStyleSelector(this);
 
+/*
     connect( KHTMLFactory::vLinks(), SIGNAL( inserted( const QString& )),
 	     SLOT( slotHistoryChanged() ));
     connect( KHTMLFactory::vLinks(), SIGNAL( removed( const QString& )),
 	     SLOT( slotHistoryChanged() ));
+*/
     connect( KHTMLFactory::vLinks(), SIGNAL( cleared()),
 	     SLOT( slotHistoryChanged() ));
 }
