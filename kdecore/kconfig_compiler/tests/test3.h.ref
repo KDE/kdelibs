@@ -89,6 +89,31 @@ class Test3 : public KConfigSkeleton
       return mBlahBlahItem;
     }
 
+    /**
+      Set MyPassword
+    */
+    void setMyPassword( const QString & v )
+    {
+      if (!isImmutable( "MyPassword" ))
+        mMyPassword = v;
+    }
+
+    /**
+      Get MyPassword
+    */
+    QString myPassword() const
+    {
+      return mMyPassword;
+    }
+
+    /**
+      Get Item object corresponding to MyPassword()
+    */
+    ItemPassword *myPasswordItem()
+    {
+      return mMyPasswordItem;
+    }
+
   protected:
 
     // General
@@ -97,11 +122,13 @@ class Test3 : public KConfigSkeleton
     // Blah
     int mBlubb;
     QString mBlahBlah;
+    QString mMyPassword;
 
   private:
     ItemBool *mAutoSaveItem;
     ItemInt *mBlubbItem;
     ItemString *mBlahBlahItem;
+    ItemPassword *mMyPasswordItem;
 };
 
 }

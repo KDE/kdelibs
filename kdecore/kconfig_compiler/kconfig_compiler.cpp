@@ -531,6 +531,7 @@ QString param( const QString &type )
     else if ( type == "IntList" )     return "const QValueList<int> &";
     else if ( type == "Enum" )        return "int";
     else if ( type == "Path" )        return "const QString &";
+    else if ( type == "Password" )    return "const QString &";
     else {
         kdWarning()<<"Error, kconfig_compiler doesn't support the \""<< type <<"\" type!"<<endl;
         return "QString"; //For now, but an assert would be better
@@ -559,6 +560,7 @@ QString cppType( const QString &type )
     else if ( type == "IntList" )     return "QValueList<int>";
     else if ( type == "Enum" )        return "int";
     else if ( type == "Path" )        return "QString";
+    else if ( type == "Password" )    return "QString";
     else {
         kdWarning()<<"Error, kconfig_compiler doesn't support the \""<< type <<"\" type!"<<endl;
         return "QString"; //For now, but an assert would be better
@@ -584,6 +586,7 @@ QString defaultValue( const QString &type )
     else if ( type == "IntList" )     return "QValueList<int>()";
     else if ( type == "Enum" )        return "0";
     else if ( type == "Path" )        return "\"\""; // Use empty string, not null string!
+    else if ( type == "Password" )    return "\"\""; // Use empty string, not null string!
     else {
         kdWarning()<<"Error, kconfig_compiler doesn't support the \""<< type <<"\" type!"<<endl;
         return "QString"; //For now, but an assert would be better

@@ -19,6 +19,8 @@ Test3::Test3(  )
   addItem( mBlubbItem );
   mBlahBlahItem = new KConfigSkeleton::ItemString( currentGroup(), "BlahBlah", mBlahBlah, "a string" );
   addItem( mBlahBlahItem );
+  mMyPasswordItem = new KConfigSkeleton::ItemPassword( currentGroup(), "MyPassword", mMyPassword );
+  addItem( mMyPasswordItem );
 }
 
 Test3::~Test3()

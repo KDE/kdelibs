@@ -18,6 +18,7 @@
     <entry type="String" name="BlahBlah">
       <default>a string</default>
     </entry>
+    <entry type="Password" name="MyPassword"/>
   </group>
 
 </kcfg>
