@@ -21,6 +21,7 @@ NotepadPart::NotepadPart( QWidget * parentWidget )
   m_edit->show(); // don't forget this !
   setWidget( m_edit );
   (void)new KAction( i18n( "Search and replace" ), 0, actionCollection(), "searchreplace" );
+  // TODO connect m_edit->changed to setModified()
 }
 
 NotepadPart::~NotepadPart()
@@ -50,6 +51,19 @@ bool NotepadPart::openFile()
   }
 
   return true;
+}
+
+bool NotepadPart::save()
+{
+  QFile f(m_file);
+  QString s;
+  if ( f.open(IO_WriteOnly) ) {
+    QTextStream t( &f );
+    t << m_edit->text();
+    f.close();
+  } else
+    return false;
+  return saveToURL();
 }
 
 QString NotepadPart::configFile() const

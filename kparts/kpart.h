@@ -8,26 +8,11 @@
 
 #include "kxmlgui.h"
 
+class KPartHost;
 class KPlugin;
 class QWidget;
 class QAction;
 class QActionCollection;
-
-/**
- * This interface allows a Part to access what "host" has to offer it :
- * containers (menubar, toolbars, ...), getting and setting the window caption...
- */
-class KPartHost
-{
-public:
-  KPartHost() {}
-  virtual ~KPartHost() {}
-
-  virtual QWidget *topLevelContainer( const QString &name ) = 0;
-
-  virtual QString windowCaption() = 0;
-  virtual void setWindowCaption( const QString &caption ) = 0;
-};
 
 class KPart : public QObject
 {
@@ -79,6 +64,10 @@ private:
     QActionCollection m_collection;
 };
 
+/**
+ * Base class for any "viewer" part.
+ * You need to implement openFile().
+ */
 class KReadOnlyPart : public KPart
 {
   Q_OBJECT
@@ -89,7 +78,7 @@ public:
   virtual void init();
 
   // Don't reimplement this one, reimplement openFile
-  virtual bool openURL( const QString &url );
+  virtual bool openURL( const KURL &url );
   virtual const KURL & url() const { return m_url; }
 
 signals:
@@ -103,18 +92,36 @@ protected slots:
   void slotJobError( int, int, const char * );
 
 protected:
-  // Reimplement this, to open m_file
+  /**
+   * Reimplement this, to open m_file
+   */
   virtual bool openFile() = 0;
+
+  /**
+   * @internal
+   * Automatically called before opening another URL
+   */
   virtual void closeURL();
 
-  // Remote (or local) url
+  /**
+   * Remote (or local) url - the one displayed to the user
+   */
   KURL m_url;
-  // Local file
+  /**
+   * Local file - the only one the part implementation should deal with
+   */
   QString m_file;
-  // If true, m_file is a temp file that needs to be deleted later
+  /**
+   * If true, m_file is a temp file that needs to be deleted later
+   */
   bool m_bTemp;
 };
 
+/**
+ * Base class for an "editor" part.
+ * Anything that can open a URL, allow modifications, and save
+ * (to the same URL or a different one)
+ */
 class KReadWritePart : public KReadOnlyPart
 {
   Q_OBJECT
@@ -122,13 +129,63 @@ public:
   KReadWritePart( const char *name = 0 );
   virtual ~KReadWritePart();
 
-  virtual bool isModified() const = 0;
-  virtual void setModified( bool modified = true ) = 0;
+  virtual bool isModified() { return m_bModified; }
 
-  virtual bool save( const QString &url ) = 0;
-  // to re_upload the file
+  /**
+   * Call setModified() whenever the contents gets modified
+   */
+  virtual void setModified( bool modified = true ) { m_bModified = modified; }
+
+  /**
+   * Save the file at the location it was opened.
+   * In the implementation, save to m_file and then "return saveToURL();"
+   * (You might want to ask for a confirmation first...)
+   * saveToURL() takes care of resetting the modified flag as well, so
+   * you should really call it :)
+   */
+  virtual bool save() = 0;
+  /**
+   * Save the file to a new location.
+   * Calls save(), no need to reimplement
+   */
+  virtual bool saveAs( const KURL &url );
+
+protected:
+  /**
+   * Uploads the file, if m_url is remote.
+   * This will emit started(), and completed() or canceled(),
+   * in case you want to provide feedback
+   */
+  virtual bool saveToURL();
+
+protected slots:
+  void slotUploadFinished( int _id );
+  void slotUploadError( int, int, const char * );
+
+private:
+  bool m_bModified;
 };
 
+
+/**
+ * This interface allows a Part to access what its "host" has to offer it :
+ * containers (menubar, toolbars, ...), getting and setting the window caption...
+ */
+class KPartHost
+{
+public:
+  KPartHost() {}
+  virtual ~KPartHost() {}
+
+  virtual QWidget *topLevelContainer( const QString &name ) = 0;
+
+  virtual QString windowCaption() = 0;
+  virtual void setWindowCaption( const QString &caption ) = 0;
+};
+
+/**
+ * @internal
+ */
 class KPartGUIServant : public QObject, public KXMLGUIServant
 {
   Q_OBJECT

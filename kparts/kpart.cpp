@@ -132,8 +132,10 @@ void KReadOnlyPart::init()
 {
 }
 
-bool KReadOnlyPart::openURL( const QString &url )
+bool KReadOnlyPart::openURL( const KURL &url )
 {
+  if ( url.isMalformed() )
+    return false;
   emit started();
   closeURL();
   m_url = url;
@@ -155,7 +157,7 @@ bool KReadOnlyPart::openURL( const QString &url )
     connect( job, SIGNAL( sigFinished (int) ), this, SLOT( slotJobFinished (int) ) );
     connect( job, SIGNAL( sigError( int, int, const char * ) ),
              this, SLOT( slotJobError ( int, int, const char * ) ) );
-    job->copy( url, m_file );
+    job->copy( m_url.url(), m_file );
     return true;
   }
 }
@@ -183,15 +185,51 @@ void KReadOnlyPart::slotJobError( int, int, const char * text )
 //////////////////////////////////////////////////
 
 KReadWritePart::KReadWritePart( const char *name )
- : KReadOnlyPart( name )
+ : KReadOnlyPart( name ), m_bModified( false )
 {
 }
 
 KReadWritePart::~KReadWritePart()
 {
+  // parent destructor will delete temp file
 }
 
-// TODO closeURL : if ( isModified && m_bTemp) => uploads (asking confirmation first)
+bool KReadWritePart::saveAs( const KURL & kurl )
+{
+  if (kurl.isMalformed())
+      return false;
+  m_url = kurl; // Store where to upload in saveToURL
+  return save() && saveToURL(); // Save local file and upload local file
+}
+
+bool KReadWritePart::saveToURL()
+{
+  if ( m_url.isLocalFile() )
+  {
+    m_bModified = false;
+    return true; // Nothing to do
+  }
+  else
+  {
+    KIOJob * job = new KIOJob;
+    connect( job, SIGNAL( sigFinished (int) ), this, SLOT( slotUploadFinished (int) ) );
+    connect( job, SIGNAL( sigError( int, int, const char * ) ),
+             this, SLOT( slotUploadError ( int, int, const char * ) ) );
+    job->copy( m_file, m_url.url() );
+    return true;
+  }
+}
+
+void KReadWritePart::slotUploadFinished( int /*_id*/ )
+{
+  m_bModified = false;
+  emit completed();
+}
+
+void KReadWritePart::slotUploadError( int, int, const char * text )
+{
+  emit canceled( QString(text) );
+}
 
 //////////////////////////////////////////////////
 
