@@ -88,8 +88,7 @@ struct KStartupInfoPrivate
     
 KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P, const char* name_P )
     : QObject( parent_P, name_P ), 
-        d(0L),
-        clean_on_cantdetect( clean_on_cantdetect_P ), timeout( 60 )
+        clean_on_cantdetect( clean_on_cantdetect_P ), timeout( 60 ), d(0L)
     {
     if (!KApplication::kApplication()) return;
     if (!KApplication::kApplication()->getDisplay()) return;
