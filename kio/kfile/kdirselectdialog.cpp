@@ -92,6 +92,8 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     d->urlCombo->setCompletionObject( comp, true );
     d->urlCombo->setAutoDeleteCompletionObject( true );
     d->urlCombo->setDuplicatesEnabled( false );
+    connect( d->urlCombo, SIGNAL( textChanged( const QString& ) ),
+             SLOT( slotComboTextChanged( const QString& ) ));
 
 
     d->startURL = KFileDialog::getStartURL( startDir, d->recentDirClass );
@@ -136,7 +138,7 @@ void KDirSelectDialog::setCurrentURL( const KURL& url )
     root.setPath( "/" );
 
     d->startURL = url;
-    if ( !d->branch || 
+    if ( !d->branch ||
          url.protocol() != d->branch->url().protocol() ||
          url.host() != d->branch->url().host() )
     {
@@ -161,7 +163,7 @@ void KDirSelectDialog::setCurrentURL( const KURL& url )
     d->dirsToList.clear();
     QString path = url.path(+1);
     int pos = path.length();
-    
+
     if ( path.isEmpty() ) // e.g. ftp://host.com/ -> just list the root dir
         d->dirsToList.push( root );
 
@@ -276,10 +278,10 @@ void KDirSelectDialog::slotCurrentChanged()
 {
     if ( d->comboLocked )
         return;
-    
+
     KFileTreeViewItem *current = view()->currentKFileTreeViewItem();
     KURL u = current ? current->url() : (d->branch ? d->branch->rootUrl() : KURL());
-    
+
     if ( u.isValid() )
     {
         if ( u.isLocalFile() )
@@ -319,6 +321,31 @@ KFileTreeBranch * KDirSelectDialog::createBranch( const KURL& url )
 
     return branch;
 }
+
+void KDirSelectDialog::slotComboTextChanged( const QString& text )
+{
+    if ( d->branch )
+    {
+        KURL url = KURL::fromPathOrURL( text );
+        KFileTreeViewItem *item = d->branch->findTVIByURL( url );
+        if ( item )
+        {
+            view()->setCurrentItem( item );
+            view()->setSelected( item, true );
+            view()->ensureItemVisible( item );
+            return;
+        }
+    }
+    
+    QListViewItem *item = view()->currentItem();
+    if ( item )
+    {
+        item->setSelected( false );
+        // 2002/12/27, deselected item is not repainted, so force it
+        item->repaint(); 
+    }
+}
+
 
 // static
 KURL KDirSelectDialog::selectDirectory( const QString& startDir,
