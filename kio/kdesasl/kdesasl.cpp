@@ -120,9 +120,9 @@ QByteArray KDESasl::getBinaryResponse(const QByteArray &aChallenge, bool aBase64
     KCodecs::base64Encode(getBinaryResponse(ba, FALSE), ba);
     return ba;
   }
-  if (stricmp(mMethod, "PLAIN") == 0) return getPlainResponse();
-  if (stricmp(mMethod, "LOGIN") == 0) return getLoginResponse();
-  if (stricmp(mMethod, "CRAM-MD5") == 0) return getCramMd5Response(aChallenge);
+  if (qstricmp(mMethod, "PLAIN") == 0) return getPlainResponse();
+  if (qstricmp(mMethod, "LOGIN") == 0) return getLoginResponse();
+  if (qstricmp(mMethod, "CRAM-MD5") == 0) return getCramMd5Response(aChallenge);
   return QByteArray();
 }
 
