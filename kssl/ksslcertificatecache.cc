@@ -282,7 +282,9 @@ return s;
 
 
 QDataStream& operator>>(QDataStream& s, KSSLCertificateCache::KSSLCertificatePolicy& p) {
-  s >> (Q_UINT32)p;
+  Q_UINT32 ui;
+  s >> ui;
+  p = (KSSLCertificateCache::KSSLCertificatePolicy) ui;
 return s;
 }
 
