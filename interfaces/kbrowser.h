@@ -31,6 +31,17 @@ class KFileItem;
 typedef QList<KFileItem> KFileItemList;
 
 class QString;
+class KConfig;
+
+class ViewPropertiesExtension : public QObject
+{
+  Q_OBJECT
+public:
+  ViewPropertiesExtension( QObject *parent, const char *name = 0 ) : QObject( parent, name ) {}
+
+  virtual void saveLocalProperties() = 0;
+  virtual void savePropertiesAsDefault() = 0;
+};
 
 class PrintingExtension : public QObject
 {
