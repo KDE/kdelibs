@@ -255,16 +255,12 @@ void KeramikStyle::polish(QApplication* app)
 void KeramikStyle::polish(QWidget* widget)
 {
 	// Put in order of highest occurance to maximise hit rate
-	if ( widget->inherits( "QPushButton" ))
+	if ( widget->inherits( "QPushButton" )  || widget->inherits( "QComboBox" ) )
 	{
 		widget->installEventFilter(this);
-//		widget->setBackgroundMode( NoBackground );
+		if ( widget->inherits( "QComboBox" ) )
+			widget->setBackgroundMode( NoBackground );
 	}	 
-	else if (widget->inherits( "QComboBox" ) )
-	{
-		widget->setBackgroundMode( NoBackground );
-	}
-
 	else if ( widget->inherits( "QMenuBar" ) || widget->inherits( "QPopupMenu" ) )
 		widget->setBackgroundMode( NoBackground );
 
@@ -301,19 +297,14 @@ void KeramikStyle::polish(QWidget* widget)
 
 void KeramikStyle::unPolish(QWidget* widget)
 {
-	if ( widget->inherits( "QPushButton" ) )
+	if ( widget->inherits( "QPushButton" ) || widget->inherits( "QComboBox"  ) )
 	{
-//		widget->setBackgroundMode( PaletteBase );
+		if ( widget->inherits( "QComboBox" ) )
+			widget->setBackgroundMode( PaletteButton );
+	
 		widget->removeEventFilter(this);
 		
 	}	 
-#if 0	
-	else if (widget->inherits( "QComboBox" ) )
-	{
-		widget->setBackgroundMode( PaletteBase );
-		//widget->setBackgroundMode( NoBackground );
-	}
-#endif
 	else if ( widget->inherits( "QMenuBar" ) || widget->inherits( "QPopupMenu" ) )
 		widget->setBackgroundMode( PaletteBackground );
 
@@ -471,21 +462,22 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 					parent = static_cast<QWidget*>(parent->parent());
 				}
 
-		//		QRect r  = widget->rect();
 				QRect pr = parent->rect();
 				bool horiz_grad = pr.width() > pr.height();
 
 				// Check if the parent is a QToolbar, and use its orientation, else guess.
 				QToolBar* tb = dynamic_cast<QToolBar*>(parent);
 				if (tb) horiz_grad = tb->orientation() == Qt::Horizontal;
-				
+                                
 				Keramik::GradientPainter::renderGradient( p,
 						QRect(0, 0, pr.width(), pr.height()),
 						parent->colorGroup().button(), horiz_grad, false , x_offset, y_offset);
-
+                                           
 				//Draw and blend the actual bevel..
 				Keramik::RectTilePainter( name, false ).draw(p, r, cg.button(), cg.background(), 
 					disabled, Keramik::TilePainter::PaintFullBlend  );
+					
+				
 			}
 			else
 				Keramik::RectTilePainter( name, false ).draw(p, r, cg.button(), cg.background(), disabled, pmode()  );
@@ -736,6 +728,10 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			// GENERAL PANELS
 			// -------------------------------------------------------------------
 		case PE_Panel:
+		{
+			KStyle::drawPrimitive(pe, p, r, cg, flags, opt);
+			break;
+		}
 		case PE_WindowFrame:
 		{
 			bool sunken  = flags & Style_Sunken;
@@ -1473,7 +1469,20 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 		case CC_ComboBox:
 		{
 			const QComboBox* cb = static_cast< const QComboBox* >( widget );
+			QPixmap buf;
+			QPainter* p2 = p;
+			
 			QRect br = r;
+			
+			if (controls == SC_All)
+			{
+				buf.resize(r.width(), r.height() );
+				br.setX(0);
+				br.setY(0);
+				p2 = new QPainter(&buf);
+			}
+                        
+			
 			if ( br.width() >= 28 && br.height() > 20 ) br.addCoords( 0, -2, 0, 0 );
 			if ( controls & SC_ComboBoxFrame )
 			{
@@ -1482,7 +1491,11 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 				{
 					toolbarBlendWidget = widget;
 				}
-				drawPrimitive( PE_ButtonCommand, p, br, cg, flags );
+				
+				if ( widget == hoverWidget )
+					flags |= Style_MouseOver;
+					
+				drawPrimitive( PE_ButtonCommand, p2, br, cg, flags );
 				
 				toolbarBlendWidget = 0;
 			}
@@ -1506,14 +1519,14 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				QPointArray a;
 
 				a.setPoints(QCOORDARRLEN(keramik_combo_arrow), keramik_combo_arrow);
-				p->save();
+				p2->save();
 
 				a.translate( ar.x() + ar.width() / 2, ar.y() + ar.height() / 2 );
-				p->setPen( cg.buttonText() );
-				p->drawLineSegments( a );
-				p->restore();
+				p2->setPen( cg.buttonText() );
+				p2->drawLineSegments( a );
+				p2->restore();
 
-				Keramik::ScaledPainter( keramik_ripple ).draw( p, rr, cg.button(), Qt::black, disabled, Keramik::TilePainter::PaintFullBlend );
+				Keramik::ScaledPainter( keramik_ripple ).draw( p2, rr, cg.button(), Qt::black, disabled, Keramik::TilePainter::PaintFullBlend );
 			}
 
 			if ( controls & SC_ComboBoxEditField )
@@ -1522,16 +1535,16 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				{
 					QRect er = visualRect( querySubControlMetrics( CC_ComboBox, widget, SC_ComboBoxEditField ), widget );
 					er.addCoords( -2, -2, 2, 2 );
-					p->fillRect( er, cg.base() );
-					drawPrimitive( PE_PanelLineEdit, p, er, cg );
-					Keramik::RectTilePainter( keramik_frame_shadow, false, false, 2, 2 ).draw( p, er, cg.button(), 
+					p2->fillRect( er, cg.base() );
+					drawPrimitive( PE_PanelLineEdit, p2, er, cg );
+					Keramik::RectTilePainter( keramik_frame_shadow, false, false, 2, 2 ).draw( p2, er, cg.button(), 
 						Qt::black, false, pmodeFullBlend() );
 				}
 				else if ( cb->hasFocus() )
 				{
 					QRect re = QStyle::visualRect(subRect(SR_ComboBoxFocusRect, cb), widget);
-					p->fillRect( re, cg.brush( QColorGroup::Highlight ) );
-					drawPrimitive( PE_FocusRect, p, re, cg,
+					p2->fillRect( re, cg.brush( QColorGroup::Highlight ) );
+					drawPrimitive( PE_FocusRect, p2, re, cg,
 					Style_FocusAtBorder, QStyleOption( cg.highlight() ) );
 				}
 				// QComboBox draws the text on its own and uses the painter's current colours
@@ -1545,6 +1558,13 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 					p->setPen( cg.text() );
 					p->setBackgroundColor( cg.button() );
 				}
+			}
+			
+			if (p2 != p)
+			{
+				p2->end();
+				delete p2;
+				p->drawPixmap(r.x(), r.y(), buf);
 			}
 
 			break;
@@ -2054,10 +2074,11 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 	return KStyle::querySubControlMetrics( control, widget, subcontrol, opt );
 }
 
+
 #include <config.h>
 
 #ifdef HAVE_X11_EXTENSIONS_SHAPE_H
-//Xlib headers are a mess -> include them down here (any way to ensure thta we go second in enable-final order?)
+//Xlib headers are a mess -> include them down here (any way to ensure that we go second in enable-final order?)
 #include  <X11/Xlib.h>
 #include <X11/extensions/shape.h>
 #endif 
@@ -2069,28 +2090,28 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 
 	if ( !object->isWidgetType() ) return false;
 
-	if ( object->inherits("QPushButton") )
+	if ( object->inherits("QPushButton") || object->inherits("QComboBox") )
 	{
-	    if ( (event->type() == QEvent::Enter) && static_cast<QWidget*>(object)->isEnabled())
-    	    {
-		    QWidget* button = static_cast<QWidget*>(object);
-		    hoverWidget = button;
-		    button->repaint( false );
-	    } 
-	    else if ( (event->type() == QEvent::Leave) && (object == hoverWidget) && object->inherits("QPushButton") ) 
-	    {
-		QWidget* button = static_cast<QWidget*>(object);
-		hoverWidget = 0;
-		button->repaint( false );
-	    }	
-	    
-	    return false;
-	}	
+		if ( (event->type() == QEvent::Enter) && static_cast<QWidget*>(object)->isEnabled())
+		{
+			QWidget* button = static_cast<QWidget*>(object);
+			hoverWidget = button;
+			button->repaint( false );
+		} 
+		else if ( (event->type() == QEvent::Leave) && (object == hoverWidget) ) 
+		{
+			QWidget* button = static_cast<QWidget*>(object);
+			hoverWidget = 0;
+			button->repaint( false );
+		}
+		return false;
+	}
 	else if ( event->type() == QEvent::Paint && object->inherits( "QLineEdit" ) )
 	{
 		static bool recursion = false;
 		if (recursion )
 			return false;
+
 		recursion = true;
 		object->event( static_cast< QPaintEvent* >( event ) );
 		QWidget* widget = static_cast< QWidget* >( object );
