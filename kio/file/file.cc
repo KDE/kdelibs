@@ -380,6 +380,9 @@ void FileProtocol::copy( const QString &src, const QString &dest,
 	{
 	    int n = fread( buffer, 1, 2048, f );
 
+	    // delay loop
+// 	    for ( int ij = 0; ij < 500000; ij++ );
+
             if (n == -1)
             {
                error( KIO::ERR_COULD_NOT_READ, src);
