@@ -81,12 +81,14 @@ protected slots:
 
 protected:
     void showEvent( QShowEvent* );
+    void resizeEvent( QResizeEvent* );
     bool eventFilter(QObject *, QEvent *);
 
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
     void setTopLevelMenuInternal(bool top_level = true);
+    void updateKMenubarSize();
     class KMenuBarPrivate;
     KMenuBarPrivate *d;
 };

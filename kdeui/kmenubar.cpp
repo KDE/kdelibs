@@ -189,8 +189,19 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
     return QMenuBar::eventFilter( obj, ev );
 }
 
-
 void KMenuBar::showEvent( QShowEvent *e )
+{
+    updateKMenubarSize();
+    QMenuBar::showEvent(e);
+}
+
+void KMenuBar::resizeEvent( QResizeEvent *e )
+{
+    updateKMenubarSize();
+    QMenuBar::resizeEvent(e);
+}
+
+void KMenuBar::updateKMenubarSize()
 {
     if ( d->topLevel ) {
         KConfigGroup xineramaConfig(KGlobal::config(),"Xinerama");
@@ -199,10 +210,12 @@ void KMenuBar::showEvent( QShowEvent *e )
         QRect area = QApplication::desktop()->screenGeometry(screen);
         QMenuBar::setGeometry(area.left(), area.top()-frameWidth()-2, area.width(), heightForWidth( area.width() ) );
 #ifndef Q_WS_QWS //FIXME
-        KWin::setStrut( winId(), 0, 0, height()-frameWidth()-2, 0 );
+        int strut_height = height()-frameWidth()-2;
+        if( strut_height < 0 )
+            strut_height = 0;
+        KWin::setStrut( winId(), 0, 0, strut_height, 0 );
 #endif
     }
-    QMenuBar::showEvent(e);
 }
 
 void KMenuBar::setGeometry( int x, int y, int w, int h )
