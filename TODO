@@ -180,3 +180,6 @@ an alternative help->contents action)
   enums, make the geometry handling less spaghetti like and extend the API so
   requests for things like re-reading the config of a KPanelExtension can be
   done by its parent.
+
+- Fix KURLRequester API to use KURL for urls instead of QString to make clear that
+  we work with URLs and not with paths.
