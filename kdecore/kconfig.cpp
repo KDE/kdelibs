@@ -115,7 +115,6 @@ QStringList KConfig::groupList() const
          if (!aIt.key().bDefault && !(*aIt).bDeleted)
          {
             retList.append(QString::fromUtf8(group));
-            aIt++;
             break; // Grou is non-empty, added, next gropup
          }
          ++aIt;
