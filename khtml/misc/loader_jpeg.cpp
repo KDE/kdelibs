@@ -137,7 +137,7 @@ extern "C" {
 #endif
 
         if(skipbytes < src->bytes_in_buffer)
-            memcpy(src->buffer, src->next_input_byte+skipbytes, src->bytes_in_buffer - skipbytes);
+            memmove(src->buffer, src->next_input_byte+skipbytes, src->bytes_in_buffer - skipbytes);
 
         src->bytes_in_buffer -= skipbytes;
         src->valid_buffer_len = src->bytes_in_buffer;
@@ -450,8 +450,8 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
     qDebug("bytes_in_buffer is now %d", jsrc.bytes_in_buffer);
     qDebug("consumed %d bytes", consumed);
 #endif
-    if(jsrc.bytes_in_buffer)
-        memcpy(jsrc.buffer, jsrc.next_input_byte, jsrc.bytes_in_buffer);
+    if(jsrc.bytes_in_buffer && jsrc.buffer != jsrc.next_input_byte)
+        memmove(jsrc.buffer, jsrc.next_input_byte, jsrc.bytes_in_buffer);
     jsrc.valid_buffer_len = jsrc.bytes_in_buffer;
     return consumed;
 }
