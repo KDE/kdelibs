@@ -27,6 +27,7 @@
 #include <qcursor.h>
 #include <qwidgetlist.h>
 #include <qtabwidget.h>
+#include <qstyle.h>
 
 #ifndef NO_KDE2
 #include <kconfig.h>
@@ -48,16 +49,6 @@
 #include <stdlib.h>
 
 #define DOCK_CONFIG_VERSION "0.0.5"
-
-static const char* const close_xpm[]={
-"5 5 2 1",
-"# c black",
-". c None",
-"#...#",
-".#.#.",
-"..#..",
-".#.#.",
-"#...#"};
 
 static const char* const dockback_xpm[]={
 "5 5 2 1",
@@ -228,23 +219,25 @@ KDockWidgetHeader::KDockWidgetHeader( KDockWidget* parent, const char* name )
   drag = new KDockWidgetHeaderDrag( this, parent );
 
   closeButton = new KDockButton_Private( this, "DockCloseButton" );
-  closeButton->setPixmap( const_cast< const char** >(close_xpm));
-  closeButton->setFixedSize(9,9);
+  closeButton->setPixmap( style().stylePixmap (QStyle::SP_TitleBarCloseButton , this));
+  closeButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( closeButton, SIGNAL(clicked()), parent, SIGNAL(headerCloseButtonClicked()));
   connect( closeButton, SIGNAL(clicked()), parent, SLOT(undock()));
 
   stayButton = new KDockButton_Private( this, "DockStayButton" );
   stayButton->setToggleButton( true );
-  stayButton->setPixmap( const_cast< const char** >(not_close_xpm));
-  stayButton->setFixedSize(9,9);
+  stayButton->setPixmap( const_cast< const char** >(not_close_xpm) );
+  stayButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( stayButton, SIGNAL(clicked()), this, SLOT(slotStayClicked()));
 
   dockbackButton = new KDockButton_Private( this, "DockbackButton" );
   dockbackButton->setPixmap( const_cast< const char** >(dockback_xpm));
-  dockbackButton->setFixedSize(9,9);
+  dockbackButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( dockbackButton, SIGNAL(clicked()), parent, SIGNAL(headerDockbackButtonClicked()));
   connect( dockbackButton, SIGNAL(clicked()), parent, SLOT(dockBack()));
 
+  stayButton->hide();
+  
   layout->addWidget( drag );
   layout->addWidget( dockbackButton );
   layout->addWidget( stayButton );
@@ -268,7 +261,7 @@ void KDockWidgetHeader::setTopLevel( bool isTopLevel )
     drag->setEnabled( true );
   } else {
     dockbackButton->hide();
-    stayButton->show();
+    stayButton->hide();
     closeButton->show();
   }
   layout->activate();
