@@ -1,3 +1,7 @@
+This is the kdelibs distribution. It is covered (since Saturday, 21st
+June 1997) by the GNU Library General License Version 2 or later (at
+your option). Please see the file COPYING.LIB for more information.
+
 IMPORTANT: You need to set the environment variable QTDIR to your Qt
 directory, and you should set the environment variable KDEDIR to the
 directory you want to install the KDE files to.  

@@ -5,6 +5,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.4  1997/05/08 22:53:18  kalle
+ * Kalle:
+ * KPixmap gone for good
+ * Eliminated static objects from KApplication and HTML-Widget
+ *
  * Revision 1.1.1.1  1997/04/13 14:42:42  cvsuser
  * Source imported
  *
@@ -327,8 +332,10 @@ void KEdit::mouseReleaseEvent (QMouseEvent* e){
 }
 
 
-int KEdit::saveFile(){
-
+int KEdit::saveFile()
+{
+  struct stat st;
+  int stat_ok = -1;
 
     QFile file(filename);
 
@@ -338,6 +345,9 @@ int KEdit::saveFile(){
     if(!modified) {
       return KEDIT_OK;
     }
+
+	if( file.exists() )
+	  stat_ok = stat( filename, &st );
 
     if( !file.open( IO_WriteOnly | IO_Truncate )) {
       QMessageBox::message("Sorry","Could not create the file\n","OK");
@@ -352,6 +362,9 @@ int KEdit::saveFile(){
     modified = FALSE;    
     file.close();
     
+	if( stat_ok == 0 )
+	  chmod( filename, st.st_mode & 07777 );
+
     return KEDIT_OK;
 
 }

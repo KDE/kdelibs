@@ -24,6 +24,7 @@
 #include <qapp.h>
 #include <qdir.h>
 #include <qpainter.h>
+#include <qwmatrix.h>
 
 #include "kiconloader.h"
 #include "kiconloader.moc"
@@ -68,31 +69,40 @@ void KIconLoaderCanvas::loadDir( QString dir_name, QString filter )
 
   QPixmap *new_xpm;
   it.toFirst();
+  QApplication::setOverrideCursor( waitCursor );
   for( ; it.current(); ++it )
     {
       new_xpm = new QPixmap;
       current = it.current();
       new_xpm->load( dir_name + '/' + current );
       if( new_xpm->isNull() )
-	{
-	  delete new_xpm;
-	  continue;
-	}
-      if( new_xpm->width() > 70 || new_xpm->height() > 70 )
-	{
-	  delete new_xpm;
-	  continue;
-	}
+		{
+		  delete new_xpm;
+		  continue;
+		}
+      if( new_xpm->width() > 60 || new_xpm->height() > 60 )
+		{ // scale pixmap to a size of 60*60
+		  QWMatrix m;
+		  float scale;
+		  if( new_xpm->width() > new_xpm->height() )
+			scale = 60 / (float) new_xpm->width();
+		  else
+			scale = 60 / (float) new_xpm->height();
+		  m.scale( scale, scale );
+		  *new_xpm = new_xpm->xForm(m);
+		}
       max_width  = ( max_width  > new_xpm->width()  ? max_width  : new_xpm->width() );
       max_height = ( max_height > new_xpm->height() ? max_height : new_xpm->height() );
       name_list.append(current);
       pixmap_list.append(new_xpm);
     }
+  QApplication::restoreOverrideCursor();
   setNumCols( width() / (max_width+4) );
   setNumRows( name_list.count() / numCols() + 1 );
   setCellWidth(max_width+4);
   setCellHeight(max_height+4);
   setTopLeftCell(0,0);
+  sel_id = 0;
 }
 
 void KIconLoaderCanvas::paintCell( QPainter *p, int r, int c )
@@ -146,13 +156,14 @@ void KIconLoaderCanvas::mouseDoubleClickEvent( QMouseEvent * )
   emit doubleClicked();
 }
 
-void KIconLoaderCanvas::resizeEvent( QResizeEvent * )
+void KIconLoaderCanvas::resizeEvent( QResizeEvent * e)
 {
   if( !isVisible() )
     return;
   setNumCols( width() / (max_width+4) );
   setNumRows( name_list.count() / numCols() + 1 );
-  repaint();
+  QTableView::resizeEvent(e);
+  repaint(TRUE);
 }
 
 //----------------------------------------------------------------------
@@ -162,23 +173,23 @@ void KIconLoaderCanvas::resizeEvent( QResizeEvent * )
 KIconLoaderDialog::KIconLoaderDialog ( QWidget *parent=0, const char *name=0 )
   : QDialog( parent, name, TRUE )
 {
+  setCaption("Select Icon");
   QFont font("Helvetica", 12, QFont::Bold);
-  QLabel *text = new QLabel(this);
-  text->setFont(font);
-  text->setText("Select icon:");
-  text->setGeometry(10, 10, 100, 30);
   //---
   i_filter = new QLineEdit(this);
-  i_filter->setGeometry(310, 13, 150, 24);
+  i_filter->setGeometry(310, 8, 150, 24);
   //---
   l_filter = new QLabel( "Filter:", this );
-  l_filter->setGeometry( 310 - 50, 13, 40, 24 );
+  l_filter->setGeometry( 310 - 50, 8, 40, 24 );
   //---
   canvas = new KIconLoaderCanvas(this);
-  canvas->setGeometry(10, 50, 450, 115);
+  canvas->setGeometry(10, 38, 450, 124);
   //---
   l_name = new QLabel("", this);
-  l_name->setGeometry(10, 165, canvas->width(), 30);
+  l_name->setGeometry(10, 165, 110, 24);
+  //---
+  cb_dirs = new QComboBox(FALSE, this);
+  cb_dirs->setGeometry(10, 8, 230, 24);
   //---
   ok = new QPushButton( "Ok", this );
   cancel = new QPushButton( "Cancel", this );
@@ -191,6 +202,7 @@ KIconLoaderDialog::KIconLoaderDialog ( QWidget *parent=0, const char *name=0 )
   connect( canvas, SIGNAL(nameChanged(const char *)), l_name, SLOT(setText(const char *)) );
   connect( canvas, SIGNAL(doubleClicked()), this, SLOT(accept()) );
   connect( i_filter, SIGNAL(returnPressed()), this, SLOT(filterChanged()) );
+  connect( cb_dirs, SIGNAL(activated(const char *)), this, SLOT(dirChanged(const char*)) );
   resize( 470, 250 );
   setMinimumSize( 470, 250 );
 }
@@ -207,7 +219,7 @@ int KIconLoaderDialog::exec(QString filter)
   setResult( 0 );
   if( filter != i_filter->text() )
     {
-      canvas->loadDir( dir_name, filter );
+      canvas->loadDir( cb_dirs->currentText(), filter );
       i_filter->setText( filter );
     }
   show();
@@ -218,18 +230,23 @@ void KIconLoaderDialog::resizeEvent( QResizeEvent * )
 {
   int w = width();
   int h = height();
-  canvas->resize( w-20, h - 145 );
-  l_name->resize( canvas->width(), l_name->height() );
-  l_name->move( canvas->x(), canvas->y()+canvas->height()+10 );
-  i_filter->move( w - 160, i_filter->y() );
-  l_filter->move( w - 160 - 50, l_filter->y() );
-  ok->move( 65, h - 50  );
-  cancel->move( w - 65 - 80, h - 50 );
+  canvas->resize( w - 20, h - 106 );
+  l_name->resize( canvas->width(), 24 );
+  l_name->move( 10, 38 + canvas->height() );
+  i_filter->move( w - 160, 8 );
+  l_filter->move( w - 200, 8 );
+  ok->move( 65, h - 40  );
+  cancel->move( w - 145, h - 40 );
 }
 
 void KIconLoaderDialog::filterChanged()
 {
-  canvas->loadDir( dir_name, i_filter->text() );
+  canvas->loadDir( cb_dirs->currentText(), i_filter->text() );
+}
+
+void KIconLoaderDialog::dirChanged(const char * dir)
+{
+  canvas->loadDir( dir, i_filter->text() );
 }
 
 //----------------------------------------------------------------------
@@ -238,13 +255,24 @@ void KIconLoaderDialog::filterChanged()
 
 KIconLoader::KIconLoader( KConfig *conf, const QString &app_name, const QString &var_name )
 {
-  debug( "KIconLoader( a, b, c ) is obsolete. Please use KIconloader()" );
+  //debug( "KIconLoader( a, b, c ) is obsolete. Please use KIconloader()" );
   pix_dialog = NULL;
   caching = FALSE;
   config = conf;
   config->setGroup(app_name);
-  pixmap_path = config->readEntry(var_name);
+  if( !readListConf( var_name, pixmap_dirs, ':' ) )
+    {
+      QString temp = KApplication::kdedir();
+      if( temp.isNull() )
+		{
+		  debug("KDE: KDEDIR not set. Using '/usr/local/lib/kde' as default.");
+		  temp = "/usr/local/lib/kde";
+		}
+      temp += "/lib/pics";
+      pixmap_dirs.append(temp);                          // using KDEDIR/lib/pics as default
+    }
   name_list.setAutoDelete(TRUE);
+  pixmap_dirs.setAutoDelete(TRUE);
   pixmap_list.setAutoDelete(TRUE);
 }
  
@@ -252,11 +280,23 @@ KIconLoader::KIconLoader( )
 {
   pix_dialog = NULL;
   caching = FALSE;
-  pixmap_path = NULL;
+  config = KApplication::getKApplication()->getConfig();
+  config->setGroup("KDE Setup");
+  if( !readListConf( "IconPath", pixmap_dirs, ':' ) )
+    {
+      QString temp = KApplication::kdedir();
+      if( temp.isNull() )
+		{
+		  debug("KDE: KDEDIR not set. Using '/usr/local/lib/kde' as default.");
+		  temp = "/usr/local/lib/kde";
+		}
+      temp += "/lib/pics";
+      pixmap_dirs.append(temp);                          // using KDEDIR/lib/pics as default
+    }
   name_list.setAutoDelete(TRUE);
+  pixmap_dirs.setAutoDelete(TRUE);
   pixmap_list.setAutoDelete(TRUE);
 }
- 
  
 KIconLoader::~KIconLoader()
 {
@@ -271,9 +311,26 @@ QPixmap KIconLoader::loadIcon ( const QString &name )
   int index;
   if ( (index = name_list.find(name)) < 0)
     {  
+      QString full_path;
+      QFileInfo finfo;
       pix = new QPixmap;
-	  QString Location = KApplication::findFile( name );
-	  new_xpm.load( Location );
+      if( name.left(1) == '/' )
+		full_path = name;
+      else
+		{
+		  QStrListIterator it( pixmap_dirs );
+		  while ( it.current() )
+			{
+			  full_path = it.current();
+			  full_path += '/';
+			  full_path += name;
+			  finfo.setFile( full_path );
+			  if ( finfo.exists() )
+				break;
+			  ++it;
+			}
+		}
+      new_xpm.load( full_path );
       *pix = new_xpm;
       if( pix->isNull() )
 		{
@@ -295,19 +352,19 @@ QPixmap KIconLoader::loadIcon ( const QString &name )
 QPixmap KIconLoader::selectIcon(QString &name, const QString &filter)
 {
   if( pix_dialog == NULL )
-    pix_dialog = new KIconLoaderDialog;
-  if( pixmap_path )
-	pix_dialog->setDir( pixmap_path );
-  else // sanity check. This should be solved in a better manner.
-	pix_dialog->setDir( "/" );
-
-  pix_dialog->setDir( pixmap_path );
-  QPixmap pixmap;
-  QString pix_name;
-  if( pix_dialog->exec(filter) )
     {
-      pix_name = pix_dialog->getCurrent();
-      pixmap = loadIcon( pix_name );
+      pix_dialog = new KIconLoaderDialog;
+      pix_dialog->setDir( &pixmap_dirs );
+    }
+  QPixmap pixmap;
+  QString pix_name, old_filter;
+  old_filter = pix_dialog->getFilter();
+  if( !caching || old_filter.isEmpty() )
+    old_filter = filter;
+  if( pix_dialog->exec(old_filter) )
+    {
+      if( (pix_name = pix_dialog->getCurrent()) )
+		pixmap = loadIcon( pix_name );
     }
   name = pix_name;
   if( !caching )
@@ -334,6 +391,36 @@ void KIconLoader::setCaching( bool b )
   pix_dialog = NULL;
 }
 
+int KIconLoader::readListConf( QString key, QStrList &list, char sep = ',' )
+{
+  if( !config->hasKey( key ) )
+    return 0;
+  QString str_list, value;
+  str_list = config->readEntry(key);
+  if(str_list.isEmpty())
+    return 0;
+  list.clear();
+  int i;
+  int len = str_list.length();
+  for( i = 0; i < len; i++ )
+    {
+      if( str_list[i] != sep && str_list[i] != '\\' )
+        {
+          value += str_list[i];
+          continue;
+        }
+      if( str_list[i] == '\\' )
+        {
+          i++;
+          value += str_list[i];
+          continue;
+        }
+      list.append(value);
+      value.truncate(0);
+    }
+  list.append(value);
+  return list.count();
+}
 
 
 

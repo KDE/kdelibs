@@ -34,6 +34,7 @@
 #include <qlabel.h>
 #include <qlined.h>
 #include <qpushbt.h>
+#include <qcombo.h>
 
 #include <kapp.h>
 
@@ -46,9 +47,9 @@ public:
   ~KIconLoaderCanvas ();
 
   void loadDir(QString dir_name, QString filter);
-  QString getCurrent() { return name_list.at(sel_id); }
+  QString getCurrent() { if(name_list.isEmpty()) return NULL; return name_list.at(sel_id); }
 
-signals:
+  signals:
   void nameChanged( const char * );
   void doubleClicked();
 
@@ -77,23 +78,25 @@ public:
   ~KIconLoaderDialog ();
 
   QString getCurrent() { return canvas->getCurrent(); }
-  void setDir( QString n ) { dir_name = n; }
+  void setDir( const QStrList *l ) { cb_dirs->clear(); cb_dirs->insertStrList(l); }
   int exec(QString filter);
+  QString getFilter() { return i_filter->text(); }
 
-protected slots:
-  void filterChanged();
-
+ protected slots:
+ void filterChanged();
+  void dirChanged(const char *);
+  
 protected:
   virtual void resizeEvent( QResizeEvent *e );
 
   KIconLoaderCanvas *canvas;
-  QString            dir_name;
   QLabel            *l_name;
   QLineEdit         *i_filter;
   QLabel            *l_filter;
   QPushButton       *ok;
   QPushButton       *cancel;
   QLabel            *text;
+  QComboBox         *cb_dirs;
 };
 
 /// Load icons from disk
@@ -118,10 +121,10 @@ public:
 	 group is the name of a group in a config file.
 	 key is the name of an entry within this group.
 	 
-	 Normaly group == "Icons" and key == "Path"
+	 Normaly group == "KDE Setup" and key == "IconPath"
 	 Example for an entry in .kderc:
-	 [Icons]
-	 Path=/usr/local/lib/kde/lib/pics
+	 [KDE Setup]
+	 IconPath=/usr/local/lib/kde/lib/pics:/usr/local/lib/kde/lib/pics/toolbar
 	 
 	 This gives KIconLoader the path to search the icons in.
 	 
@@ -130,14 +133,14 @@ public:
 	 [MyApplication]
 	 PixmapPath=/..../my_pixmap_path
 	 and call KIconLoader( config, "MyApplication", "PixmapPath" ).
-*/
+  */
   KIconLoader ( KConfig *conf, const QString &app_name, const QString &var_name );
 
   /**
 	 There now exists a simple-to-use version of KIconLoader. If you
- 	 create a KIconLoader without giving arguments, findFile() will
- 	 be used for locating icons.
-	 */
+ 	 create a KIconLoader without giving arguments, KIconLoader searches for 
+	 the path in [KDE Setup]:IconPath=... as a default.
+  */
   KIconLoader();
 
   /// Destructor
@@ -168,7 +171,7 @@ public:
 	 The argument filter specifies a filter for the names of the icons to 
 	 display. For example "*" displays all icons and "mini*" displays only 
 	 those icons which names start with 'mini'.
-	 */
+  */
   QPixmap selectIcon( QString &name, const QString &filter);
 
   /// Turn caching on or off
@@ -184,9 +187,11 @@ public:
   void    setCaching( bool b );
 
 protected:
+  int  readListConf  ( QString key, QStrList &list, char sep = ',' );
+
   KConfig           *config;
-  QString            pixmap_path;
   QStrList           name_list;
+  QStrList           pixmap_dirs;
   QList<QPixmap>     pixmap_list;
   KIconLoaderDialog *pix_dialog;
   bool               caching;

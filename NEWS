@@ -1,3 +1,7 @@
+21.06.97:	KEdit keeps file permissions when saving
+			KIconLoader patch
+			*** FROM NOW ON LGPL ***
+
 30.05.97:	signal handler for reaping zombie help processes reinstalls itself
 			patch to KIconLoader by Christian Esken
 			slightly better look for KTabCtl
