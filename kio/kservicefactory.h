@@ -24,6 +24,7 @@
 
 #include "kservice.h"
 #include "ksycocafactory.h"
+#include <assert.h>
 
 class KSycoca;
 class KSycocaDict;
@@ -47,12 +48,23 @@ public:
   /**
    * Construct a KService from a config file.
    */
-  virtual KSycocaEntry *createEntry(const QString &file);
+  virtual KSycocaEntry *createEntry(const QString &, const char *) 
+    { assert(0); return 0; }
 
   /**
-   * Find a service
+   * Find a service (by name, e.g. "Terminal")
    */
   KService * findServiceByName( const QString &_name );
+
+  /**
+   * Find a service (by desktop file name, e.g. "konsole")
+   */
+  KService * findServiceByDesktopName( const QString &_name );
+
+  /**
+   * Find a service ( by desktop path, e.g. "System/konsole.desktop")
+   */
+  KService * findServiceByDesktopPath( const QString &_name );
 
   /**
    * @return the services supporting the given service type
@@ -72,6 +84,10 @@ public:
 protected:
   KService * createService(int offset);
   int m_offerListOffset;
+  KSycocaDict *m_nameDict;
+  int m_nameDictOffset;
+  KSycocaDict *m_relNameDict;
+  int m_relNameDictOffset;
 
 private:
   static KServiceFactory *_self;

@@ -54,6 +54,7 @@ public:
     * @return the position of the factory in the sycoca file
     */
    int offset() { return mOffset; }
+
    /**
     * @return the dict, for special use by KBuildSycoca
     */
@@ -63,18 +64,12 @@ public:
     * Construct an entry from a config file.
     * To be implemented in the real factories.
     */
-   virtual KSycocaEntry *createEntry(const QString &file) = 0;
+   virtual KSycocaEntry *createEntry(const QString &file, const char *resource) = 0;
 
    /**
     * Add an entry
     */
-   void addEntry(KSycocaEntry *newEntry);
-   /**
-    * Clear the whole factory - called after saving
-    * Destroys every entry since the list and the dict are autodelete
-    * Keeps the paths.
-    */
-   void clear();
+   virtual void addEntry(KSycocaEntry *newEntry);
 
    /**
     * Saves all entries it maintains as well as index files
@@ -99,10 +94,9 @@ public:
    virtual void saveHeader(QDataStream &str);
 
    /**
-    * @return the path for which this factory is responsible.
-    *         Please note that the return value may not have a trailing '/'.
+    * @return the resources for which this factory is responsible.
     */
-   virtual const QStringList * pathList() const { return m_pathList; }
+   virtual const QStringList * resourceList() const { return m_resourceList; }
 
 private:
    int mOffset;
@@ -113,7 +107,7 @@ protected:
    int m_endEntryOffset;
    QDataStream *m_str;
 
-   QStringList *m_pathList;
+   QStringList *m_resourceList;
    KSycocaEntryDict *m_entryDict;
    KSycocaDict *m_sycocaDict;
 };

@@ -54,10 +54,17 @@ public:
    */
   KMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 
 	     const QString& _comment, const QStringList& _patterns );
+
   /**
-   * Construct a mimetype and take all informations from a @ref KSimpleConfig object.
+   * Construct a mimetype and take all informations from a config file.
    */
   KMimeType( const QString & _fullpath );
+
+  /**
+   * Construct a mimetype and take all informations from a desktop file.
+   */
+  KMimeType( KDesktopFile *config );
+
   /**
    * @internal construct a service from a stream. 
    * The stream must already be positionned at the correct offset
@@ -214,9 +221,10 @@ class KFolderType : public KMimeType
   K_SYCOCATYPE( KST_KFolderType, KMimeType )
 
 public:
-  KFolderType( const QString & _fullpath, const QString& _type, const QString& _icon, const QString& _comment,
-  	       const QStringList& _patterns );
-  KFolderType( const QString & _fullpath ) : KMimeType( _fullpath ) { }
+//  KFolderType( const QString & _fullpath, const QString& _type, const QString& _icon, const QString& _comment,
+//  	       const QStringList& _patterns );
+//  KFolderType( const QString & _fullpath ) : KMimeType( _fullpath ) { }
+  KFolderType( KDesktopFile *config) : KMimeType( config ) { }
   KFolderType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
 
   virtual QString icon( const QString& _url, bool _is_local ) const;
@@ -244,9 +252,10 @@ public:
     ServiceType m_type;
   };
   
-  KDEDesktopMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 
-                      const QString& _comment, const QStringList& _patterns );
-  KDEDesktopMimeType( const QString & _fullpath ) : KMimeType( _fullpath ) { }
+//  KDEDesktopMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 
+//                      const QString& _comment, const QStringList& _patterns );
+//  KDEDesktopMimeType( const QString & _fullpath ) : KMimeType( _fullpath ) { }
+  KDEDesktopMimeType( KDesktopFile *config) : KMimeType( config ) { }
   KDEDesktopMimeType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
 
   virtual QString icon( const QString& _url, bool _is_local ) const;
@@ -299,9 +308,10 @@ class KExecMimeType : public KMimeType
   K_SYCOCATYPE( KST_KExecMimeType, KMimeType )
 
 public:
-  KExecMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 
-                 const QString& _comment, const QStringList& _patterns );
-  KExecMimeType( const QString & _fullpath ) : KMimeType( _fullpath ) { }
+//  KExecMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 
+//                 const QString& _comment, const QStringList& _patterns );
+//  KExecMimeType( const QString & _fullpath ) : KMimeType( _fullpath ) { }
+  KExecMimeType( KDesktopFile *config) : KMimeType( config ) { }
   KExecMimeType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
 };
 

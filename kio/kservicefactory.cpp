@@ -33,12 +33,31 @@ KServiceFactory::KServiceFactory()
  : KSycocaFactory( KST_KServiceFactory )
 {
    m_offerListOffset = 0;
+   m_nameDictOffset = 0;
+   m_relNameDictOffset = 0;
    if (m_str)
    {
       // Read Header
       Q_INT32 i;
       (*m_str) >> i;
+      m_nameDictOffset = i; 
+      (*m_str) >> i;
+      m_relNameDictOffset = i; 
+      (*m_str) >> i;
       m_offerListOffset = i; 
+  
+      int saveOffset = m_str->device()->at();
+      // Init index tables
+      m_nameDict = new KSycocaDict(m_str, m_nameDictOffset);
+      // Init index tables
+      m_relNameDict = new KSycocaDict(m_str, m_relNameDictOffset);
+      saveOffset = m_str->device()->at(saveOffset);
+   }
+   else
+   {
+      // Build new database
+      m_nameDict = new KSycocaDict();
+      m_relNameDict = new KSycocaDict();
    }
    _self = this;
 }
@@ -46,23 +65,8 @@ KServiceFactory::KServiceFactory()
 KServiceFactory::~KServiceFactory()
 {
    _self = 0L;
-}
-
-KSycocaEntry * KServiceFactory::createEntry( const QString& file )
-{
-  // Just a backup file ?
-  if ( file.right(1) == "~" || file.right(4) == ".bak" || ( file[0] == '%' && file.right(1) == "%" ) )
-      return 0;
-
-  KService * serv = new KService( file );
-
-  if ( serv->isValid() )
-     return serv;
-  else {
-     kDebugWarning( 7012, "Invalid Service : %s", file.ascii() );
-     delete serv;
-     return 0L;
-  }
+   delete m_nameDict;
+   delete m_relNameDict;
 }
 
 KServiceFactory * KServiceFactory::self()
@@ -87,6 +91,52 @@ KService * KServiceFactory::findServiceByName(const QString &_name)
 
    // Check whether the dictionary was right.
    if (newService && (newService->name() != _name))
+   {
+      // No it wasn't...
+      delete newService;
+      newService = 0; // Not found
+   }
+   return newService;
+}
+
+KService * KServiceFactory::findServiceByDesktopName(const QString &_name)
+{
+   if (!m_nameDict) return 0; // Error!
+
+   // Warning : this assumes we're NOT building a database
+   // But since findServiceByName isn't called in that case...
+   // [ see KServiceTypeFactory for how to do it if needed ]
+
+   int offset = m_nameDict->find_string( _name );
+   if (!offset) return 0; // Not found
+
+   KService * newService = createService(offset);
+
+   // Check whether the dictionary was right.
+   if (newService && (newService->desktopEntryName() != _name))
+   {
+      // No it wasn't...
+      delete newService;
+      newService = 0; // Not found
+   }
+   return newService;
+}
+
+KService * KServiceFactory::findServiceByDesktopPath(const QString &_name)
+{
+   if (!m_relNameDict) return 0; // Error!
+
+   // Warning : this assumes we're NOT building a database
+   // But since findServiceByName isn't called in that case...
+   // [ see KServiceTypeFactory for how to do it if needed ]
+
+   int offset = m_relNameDict->find_string( _name );
+   if (!offset) return 0; // Not found
+
+   KService * newService = createService(offset);
+
+   // Check whether the dictionary was right.
+   if (newService && (newService->desktopEntryPath() != _name))
    {
       // No it wasn't...
       delete newService;

@@ -47,11 +47,6 @@ KSycoca::KSycoca()
    {
       kapp->dcopClient()->attach();
    }
-   if (!kapp->dcopClient()->isRegistered())
-   {
-      debug("registering as dcopclient...");
-      kapp->dcopClient()->registerAs( kapp->name() ); 
-   }
 }
 
 void KSycoca::openDatabase()
@@ -173,6 +168,7 @@ void KSycoca::checkVersion()
    {
       // Do this even if aVersion > KSYCOCA_VERSION (e.g. when downgrading KDE)
       kDebugError( 7011, "Outdated database ! Stop kded and restart it !" );
+      kDebugError( 7011, "Found version %d, expecting version %d.", aVersion, KSYCOCA_VERSION );
       abort();
    }
 }

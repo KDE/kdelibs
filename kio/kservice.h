@@ -29,7 +29,7 @@
 #include <qvariant.h>
 
 #include <kiconloader.h>
-#include <ksimpleconfig.h>
+#include <kdesktopfile.h>
 
 #include "ksycocaentry.h"
 #include "ksycocatype.h"
@@ -54,25 +54,16 @@ public:
   typedef const QSharedPtr<QVariant> PropertyPtr;
 
   /**
-   * Constructor.  You may pass in arguments to create a service with
-   * specific properties
-   */
-  /*
-    Commented out, to see if it's really used
-  KService( const QString& _name, const QString& _exec, const QString &_corbaexec,
-            const QString& _icon, const QStringList& _lstServiceTypes,
-	    const QString& _comment = QString::null, bool _allow_as_default = true,
-	    const QString& _path = QString::null, const QString& _terminal = QString::null,
-	    const QString& _file = QString::null, const QString& _act_mode = QString::null,
-	    const QStringList& _repoids = QStringList(),
-	    const QString& _lib = QString::null, int _minor = 0, int _major = 0, 
-            const QStringList& _deps = QStringList());
-  */
-  /**
    * Construct a service and take all informations from a config file
    * @param _fullpath full path to the config file
+   * @param _relpath relative path wrt to $KDEDIRS/+resource
    */
   KService( const QString & _fullpath );
+
+  /**
+   * Construct a service and take all informations from a desktop file
+   */
+  KService( KDesktopFile *config );
 
   /**
    * @internal construct a service from a stream. 
@@ -132,11 +123,40 @@ public:
    * tty-oriented program).
    */
   QString terminalOptions() const { return m_strTerminalOptions; }
+
   /**
    * @return the path to the location where the service desktop entry
    * is stored.
+   *
+   * This is a relative path if the desktop entry was found in any
+   * of the locations pointed to by $KDEDIRS (e.g. "Internet/kppp.desktop")
+   * It is a full path if the desktop entry originates from another
+   * location.
    */
-  QString zzz() const;
+  QString desktopEntryPath() const { return m_strDesktopEntryPath; }
+
+  /**
+   * @return the filename of the service desktop entry without any 
+   * extension. E.g. "kppp"
+   */
+  QString desktopEntryName() const { return m_strDesktopEntryName; }
+
+  /**
+   * @li None - This service has no DCOP support
+   * @li Unique - This service provides a unique DCOP service.
+   *              The service name is equal to the desktopEntryName.
+   * @li Multi - This service provides a DCOP service which can be run
+   *             with multiple instances in parallel. The service name of
+   *             an instance is equal to the desktopEntryName + "-" +
+   *             the PID of the process.
+   */
+  enum DCOPServiceType_t { DCOP_None = 0, DCOP_Unique, DCOP_Multi };
+ 
+  /**
+   * @return The DCOPServiceType supported by this service.
+   */
+  DCOPServiceType_t DCOPServiceType() const { return m_DCOPServiceType; }
+
   /**
    * @return the working directory to run the program in
    */
@@ -145,32 +165,12 @@ public:
    * @return the descriptive comment for the service, if there is one.
    */
   QString comment() const { return m_strComment; }
-  /**
-   * @return the command that the CORBA based service executes.
-   *         (usually something like "myapp --server" )
-   */
-  //  QString CORBAExec() const { return m_strCORBAExec; }
-  /**
-   * @return the CORBA activation mode for the service, if there is one.
-   *         (to be used for the IMR)
-   */
-  //QString activationMode() const { return m_strActivationMode; }
-  /**
-   * @return the CORBA Repository IDs for the service, if there are any.
-   */
-  //QStringList repoIds() const { return m_lstRepoIds; }
-
-  /**
-   * @return the relative path to the desktop entry file responsible for
-   *         this service.
-   * For instance Internet/kppp.desktop
-   */
-  QString relativeFilePath() const { return m_strRelativeFilePath; }
 
   /**
    * @return the service types that this service supports
    */
   QStringList serviceTypes() const { return m_lstServiceTypes; }
+
   /**
    * @param _service is the name of the service type you are
    *        interested in determining whether this services supports.
@@ -220,11 +220,93 @@ public:
   virtual void save( QDataStream& );
 
   /**
+   * Starts a service.
+   *
+   * @param URL - if not empty this URL is passed to the service
+   *
+   * @return an error code indicating success (== 0) or failure (> 0).
+   * @return On success, 'dcopService' contains the DCOP name under which
+   *         this service is available. If empty, the service does
+   *         not provide DCOP services.
+   * @return On failure, 'error' contains a description of the error
+   *         that occured.   
+   */
+  int startService( const QString &URL, QCString &dcopService, QString &error );
+
+  /**
+   * @depreciated Use serviceByXXX instead!
    * @return a pointer to the requested service or 0 if the service is
    *         unknown.
    * VERY IMPORTANT : don't store the result in a KService * !
    */
   static Ptr service( const QString& _name );
+
+  /**
+   * @return a pointer to the requested service or 0 if the service is
+   *         unknown.
+   * VERY IMPORTANT : don't store the result in a KService * !
+   */
+  static Ptr serviceByName( const QString& _name );
+
+  /**
+   * Starts a service based on the (translated) name of the service.
+   *
+   * @param URL - if not empty this URL is passed to the service
+   *
+   * @return an error code indicating success (== 0) or failure (> 0).
+   * @return On success, 'dcopService' contains the DCOP name under which
+   *         this service is available. If empty, the service does
+   *         not provide DCOP services.
+   * @return On failure, 'error' contains a description of the error
+   *         that occured.   
+   */
+  static int startServiceByName( const QString& _name, const QString &URL,
+                                 QCString &dcopService, QString &error );
+
+  /**
+   * @return a pointer to the requested service or 0 if the service is
+   *         unknown.
+   * VERY IMPORTANT : don't store the result in a KService * !
+   */
+  static Ptr serviceByDesktopPath( const QString& _name );
+
+  /**
+   * Starts a service based on the desktop path of the service.
+   *
+   * @param URL - if not empty this URL is passed to the service
+   *
+   * @return an error code indicating success (== 0) or failure (> 0).
+   * @return On success, 'dcopService' contains the DCOP name under which
+   *         this service is available. If empty, the service does
+   *         not provide DCOP services.
+   * @return On failure, 'error' contains a description of the error
+   *         that occured.   
+   */
+  static int startServiceByDesktopPath( const QString& _name, 
+              const QString &URL, QCString &dcopService, QString &error );
+
+  /**
+   * @return a pointer to the requested service or 0 if the service is
+   *         unknown.
+   * VERY IMPORTANT : don't store the result in a KService * !
+   */
+  static Ptr serviceByDesktopName( const QString& _name );
+
+  /**
+   * Starts a service based on the desktop name of the service.
+   *
+   * @param URL - if not empty this URL is passed to the service
+   *
+   * @return an error code indicating success (== 0) or failure (> 0).
+   * @return On success, 'dcopService' contains the DCOP name under which
+   *         this service is available. If empty, the service does
+   *         not provide DCOP services.
+   * @return On failure, 'error' contains a description of the error
+   *         that occured.   
+   */
+  static int startServiceByDesktopName( const QString& _name, 
+              const QString &URL, QCString &dcopService, QString &error );
+
 
   /**
    * @return the whole list of services. Useful for being able to
@@ -233,29 +315,36 @@ public:
    */
   static List allServices();
 
+protected:
+
+  void init(KDesktopFile *config);
+
+  /**
+   * Internal function which does the actual work for startService....()
+   */
+  static  int startServiceInternal( 
+              const QCString &function, const QString& _name, 
+              const QString &URL, QCString &dcopService, QString &error );
+
+
 private:
   QString m_strType;
   QString m_strName;
   QString m_strExec;
-  QString m_strCORBAExec;
   QString m_strIcon;
   QString m_strTerminalOptions;
   QString m_strPath;
   QString m_strComment;
-  QString m_strActivationMode;
-  QStringList m_lstRepoIds;
   QString m_strLibrary;
   int m_libraryMajor;
   int m_libraryMinor;
   QStringList m_lstLibraryDeps;
   QStringList m_lstServiceTypes;
   bool m_bAllowAsDefault;
-  QString m_strRelativeFilePath;
+  QString m_strDesktopEntryPath;  
+  QString m_strDesktopEntryName;  
+  DCOPServiceType_t m_DCOPServiceType;
   QMap<QString,QVariant> m_mapProps;
   bool m_bValid;
 };
-
-//QDataStream& operator>>( QDataStream& _str, KService& s );
-//QDataStream& operator<<( QDataStream& _str, KService& s );
-
 #endif

@@ -28,7 +28,7 @@
 template class QDict<KSycocaEntry>;
 
 KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
- : m_pathList(0), m_entryDict(0), m_sycocaDict(0)
+ : m_resourceList(0), m_entryDict(0), m_sycocaDict(0)
 {
   if (!KSycoca::self()->isBuilding()) // read-only database ?
    {
@@ -54,30 +54,23 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
    {
       // Build new database!
       m_str = 0;
-      m_pathList = new QStringList();
+      m_resourceList = new QStringList();
       m_entryDict = new KSycocaEntryDict();
       m_entryDict->setAutoDelete(true);
       m_sycocaDict = new KSycocaDict();
       m_beginEntryOffset = 0;
       m_endEntryOffset = 0;
 
-      // m_pathList will be filled in by inherited constructors
+      // m_resourceList will be filled in by inherited constructors
    }
    KSycoca::self()->addFactory(this);
 }
 
 KSycocaFactory::~KSycocaFactory()
 {
-   delete m_pathList;
+   delete m_resourceList;
    delete m_entryDict;
    delete m_sycocaDict;
-}
-
-void KSycocaFactory::clear()
-{
-  if (!m_sycocaDict) return; // Error!
-  m_sycocaDict->clear();
-  m_entryDict->clear();
 }
 
 void
@@ -139,19 +132,6 @@ KSycocaFactory::addEntry(KSycocaEntry *newEntry)
    if (!m_sycocaDict) return; // Error!
 
    QString name = newEntry->name();
-   //kDebugInfo( 7011, QString("SycocaFactory : adding entry %1").arg(name) );
-   KSycocaEntry * oldEntry = (*m_entryDict)[ name ];
-   // If there is any previous entry with the same name (e.g. local .desktop file)
-   // don't do anything
-   // This is because local dirs are parsed BEFORE global dirs.
-   if ( oldEntry )
-   {
-     //kDebugInfo( 7011, QString("SycocaFactory : keeping old entry, and deleting new one") );
-     delete newEntry;
-   }
-   else
-   {
-     m_entryDict->insert( name, newEntry );
-     m_sycocaDict->add( name, newEntry );
-   }
+   m_entryDict->insert( name, newEntry );
+   m_sycocaDict->add( name, newEntry );
 }

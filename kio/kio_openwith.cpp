@@ -479,7 +479,7 @@ void KOpenWithDlg::slotOK()
     else
       serviceName = keepExec;
   } else
-    serviceName = m_pService->relativeFilePath();
+    serviceName = m_pService->desktopEntryPath();
   
   if (serviceName.right(8) != ".desktop")
     serviceName += ".desktop";

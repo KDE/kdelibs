@@ -113,21 +113,6 @@ void KMimeType::errorMissingMimeType( const QString& _type )
   QString tmp = i18n( "Could not find mime type\n%1" ).arg( _type );
 
   KMessageBoxWrapper::sorry( 0, tmp );
-
-  // We can't emulate missing mimetypes anymore...
-  /*
-  QStringList dummy;
-
-  KMimeType *e;
-  if ( _type == "inode/directory" )
-    e = new KFolderType( _type, "unknown.png", "", dummy );
-  else if ( _type == "application/x-desktop" )
-    e = new KDEDesktopMimeType( _type, "unknown.png", "", dummy);
-  else if ( _type == "application/x-executable" || _type == "application/x-shellscript" )
-    e = new KExecMimeType( _type, "unknown.png", "", dummy );
-  else
-    e = new KMimeType( _type, "unknown.png", "", dummy );
-  */
 }
 
 KMimeType::Ptr KMimeType::mimeType( const QString& _name )
@@ -242,16 +227,24 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 
 KMimeType::KMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 
                       const QString& _comment, const QStringList& _patterns )
-  : KServiceType( _fullpath, _type, _icon, _comment, "mime" )
+  : KServiceType( _fullpath, _type, _icon, _comment )
 {
   m_lstPatterns = _patterns;
 }
 
-KMimeType::KMimeType( const QString & _fullpath ) : KServiceType( _fullpath, "mime" )
+KMimeType::KMimeType( const QString & _fullpath ) : KServiceType( _fullpath )
 {
-  KSimpleConfig _cfg( _fullpath, true);
-  _cfg.setDesktopGroup();
+  KDesktopFile _cfg( _fullpath, true );
   m_lstPatterns = _cfg.readListEntry( "Patterns", ';' );
+
+  if ( !isValid() )
+    kDebugWarning( 7009, "mimetype not valid '%s' (missing entry in the file ?)", m_strName.ascii());
+}
+
+KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config )
+{
+  config->setDesktopGroup();
+  m_lstPatterns = config->readListEntry( "Patterns", ';' );
 
   if ( !isValid() )
     kDebugWarning( 7009, "mimetype not valid '%s' (missing entry in the file ?)", m_strName.ascii());
@@ -332,11 +325,13 @@ QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode,
  *
  ******************************************************/
 
+#if 0
 KFolderType::KFolderType( const QString & _fullpath, const QString& _type, const QString& _icon, 
                           const QString& _comment, const QStringList& _patterns )
   : KMimeType( _fullpath, _type, _icon, _comment, _patterns )
 {
 }
+#endif
 
 QString KFolderType::icon( const QString& _url, bool _is_local ) const
 {
@@ -422,11 +417,13 @@ QString KFolderType::comment( const KURL& _url, bool _is_local ) const
  *
  ******************************************************/
 
+#if 0
 KDEDesktopMimeType::KDEDesktopMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 
                                         const QString& _comment, const QStringList& _patterns )
   : KMimeType( _fullpath, _type, _icon, _comment, _patterns )
 {
 }
+#endif
 
 QString KDEDesktopMimeType::icon( const QString& _url, bool _is_local ) const
 {
@@ -781,8 +778,10 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
  *
  ******************************************************/
 
+#if 0
 KExecMimeType::KExecMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 
                               const QString& _comment, const QStringList& _patterns )
   : KMimeType( _fullpath, _type, _icon, _comment, _patterns )
 {
 }
+#endif

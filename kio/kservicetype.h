@@ -54,14 +54,18 @@ public:
    * specific properties
    */
   KServiceType( const QString & _fullpath, const QString& _name,
-                const QString& _icon, const QString& _comment, 
-                const char * _resource = "servicetypes" );
+                const QString& _icon, const QString& _comment);
   /**
-   * Construct a service type and take all informations from a @ref KSimpleConfig object.
-   * @param _fullpath set to "" if calling from a inherited constructor
-   * and reimplement determineRelativePath in the inherited class.
+   * Construct a service type and take all informations from a config file.
+   * @param _fullpath set to "" if calling from a inherited constructor.
    */
-  KServiceType( const QString & _fullpath, const char *_resource = "servicetypes" );
+  KServiceType( const QString & _fullpath );
+  
+  /**
+   * Construct a service type and take all informations from a deskop file.
+   */
+  KServiceType( KDesktopFile *config);
+  
   /**
    * @internal construct a service from a stream. 
    * The stream must already be positionned at the correct offset
@@ -94,7 +98,7 @@ public:
    *         this servicetype.
    * For instance inode/directory.desktop, or kpart.desktop
    */
-  QString relativeFilePath() const { return m_strRelativeFilePath; }
+  QString desktopEntryPath() const { return m_strDesktopEntryPath; }
 
   virtual PropertyPtr property( const QString& _name ) const;
   virtual QStringList propertyNames() const;
@@ -139,12 +143,15 @@ public:
   static List allServiceTypes();
 
 protected:
+  void init( KDesktopFile *config );
+
+protected:
   QString m_strName;
   QString m_strIcon;
   QString m_strComment;
   QMap<QString,QVariant> m_mapProps;
   QMap<QString,QVariant::Type> m_mapPropDefs;
-  QString m_strRelativeFilePath;
+  QString m_strDesktopEntryPath;
 
   bool m_bValid;
 };

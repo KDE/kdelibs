@@ -128,7 +128,7 @@ KSycocaDict::find_string(const QString &key )
        //kDebugInfo( 7011, QString(">> %1 %2").arg(offset,8,16).arg(dupkey));
        if (dupkey == key) return offset;
    }
-   kDebugWarning( 7011, "Not found!");
+   //kDebugWarning( 7011, "Not found!");
 
    return 0;
 }

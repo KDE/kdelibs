@@ -32,36 +32,47 @@ template QDataStream& operator<< <QString, QVariant>(QDataStream&, const QMap<QS
 template QDataStream& operator>> <QString, QVariant::Type>(QDataStream&, QMap<QString, QVariant::Type>&);
 template QDataStream& operator<< <QString, QVariant::Type>(QDataStream&, const QMap<QString, QVariant::Type>&);
 
-KServiceType::KServiceType( const QString & _fullpath, const char *_resource )
+KServiceType::KServiceType( const QString & _fullpath)
 {
-  m_strRelativeFilePath = KSycoca::determineRelativePath( _fullpath, _resource );
-  KSimpleConfig config( _fullpath, true );
-  config.setDesktopGroup();
+  KDesktopFile config( _fullpath );
+
+  init(&config);
+}
+
+KServiceType::KServiceType( KDesktopFile *config )
+{
+  init(config);
+}
+ 
+void
+KServiceType::init( KDesktopFile *config)
+{
+  m_strDesktopEntryPath = config->filename();
 
   // Is it a mimetype ?
-  m_strName = config.readEntry( "MimeType" );
+  m_strName = config->readEntry( "MimeType" );
 
   // Or is it a servicetype ?
   if ( m_strName.isEmpty() )
   {
-    m_strName = config.readEntry( "X-KDE-ServiceType" );
+    m_strName = config->readEntry( "X-KDE-ServiceType" );
   }
 
-  m_strComment = config.readEntry( "Comment" );
-  m_bDeleted = config.readBoolEntry( "Hidden", false );
-  m_strIcon = config.readEntry( "Icon" );
+  m_strComment = config->readComment();
+  m_bDeleted = config->readBoolEntry( "Hidden", false );
+  m_strIcon = config->readIcon();
 
-  QStringList tmpList = config.groupList();
+  QStringList tmpList = config->groupList();
   QStringList::Iterator gIt = tmpList.begin();
 
   for( ; gIt != tmpList.end(); ++gIt )
   {
     if ( (*gIt).find( "Property::" ) == 0 )
     {
-      config.setGroup( *gIt );
+      config->setGroup( *gIt );
       m_mapProps.insert( (*gIt).mid( 10 ),
-			 config.readPropertyEntry( "Value",
-						 QVariant::nameToType( config.readEntry( "Type" ) ) ) );
+			 config->readPropertyEntry( "Value",
+			 QVariant::nameToType( config->readEntry( "Type" ) ) ) );
     }
   }
 
@@ -70,9 +81,9 @@ KServiceType::KServiceType( const QString & _fullpath, const char *_resource )
   {
     if( (*gIt).find( "PropertyDef::" ) == 0 )
     {
-      config.setGroup( *gIt );
+      config->setGroup( *gIt );
       m_mapPropDefs.insert( (*gIt).mid( 13 ),
-			    QVariant::nameToType( config.readEntry( "Type" ) ) );
+			    QVariant::nameToType( config->readEntry( "Type" ) ) );
     }
   }
 
@@ -80,9 +91,9 @@ KServiceType::KServiceType( const QString & _fullpath, const char *_resource )
 }
 
 KServiceType::KServiceType( const QString & _fullpath, const QString& _type,
-                            const QString& _icon, const QString& _comment, const char *_resource )
+                            const QString& _icon, const QString& _comment )
 {
-  m_strRelativeFilePath = KSycoca::determineRelativePath( _fullpath, _resource );
+  m_strDesktopEntryPath = _fullpath;
   m_strName = _type;
   m_strIcon = _icon;
   m_strComment = _comment;
@@ -99,7 +110,7 @@ KServiceType::load( QDataStream& _str )
 {
   Q_INT8 b;
   _str >> m_strName >> m_strIcon >> m_strComment >> m_mapProps >> m_mapPropDefs
-       >> b >> m_strRelativeFilePath;
+       >> b >> m_strDesktopEntryPath;
   m_bValid = b;
 }
 
@@ -110,7 +121,7 @@ KServiceType::save( QDataStream& _str )
   // Warning adding/removing fields here involves a binary incompatible change - update version
   // number in ksycoca.h
   _str << m_strName << m_strIcon << m_strComment << m_mapProps << m_mapPropDefs
-       << (Q_INT8)m_bValid << m_strRelativeFilePath;
+       << (Q_INT8)m_bValid << m_strDesktopEntryPath;
 }
 
 KServiceType::~KServiceType()

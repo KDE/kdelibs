@@ -35,8 +35,44 @@ main(int argc, char *argv[])
      debug("Not found !");
    }
      
-   debug("Trying to look for Konqueror");
-   KService::Ptr se = KService::service("Konqueror");
+   debug("Trying to look for Desktop Pager");
+   KService::Ptr se = KService::service("Desktop Pager");
+   if ( se )
+   {
+     debug("Found it !");
+     debug(QString("Comment is %1").arg(se->comment()));
+   }
+   else
+   {
+     debug("Not found !");
+   }
+
+   debug("Trying to look for kpager");
+   se = KService::service("kpager");
+   if ( se )
+   {
+     debug("Found it !");
+     debug(QString("Comment is %1").arg(se->comment()));
+   }
+   else
+   {
+     debug("Not found !");
+   }
+
+   debug("Trying to look for System/kpager.desktop");
+   se = KService::service("System/kpager.desktop");
+   if ( se )
+   {
+     debug("Found it !");
+     debug(QString("Comment is %1").arg(se->comment()));
+   }
+   else
+   {
+     debug("Not found !");
+   }
+
+   debug("Trying to look for System/fake-entry.desktop");
+   se = KService::service("System/fake-entry.desktop");
    if ( se )
    {
      debug("Found it !");

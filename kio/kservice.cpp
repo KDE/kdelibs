@@ -1,6 +1,6 @@
 /*  This file is part of the KDE libraries
- *  Copyright (C) 1999 Waldo Bastian <bastian@kde.org>
- *                     David Faure   <faure@kde.org>
+ *  Copyright (C) 1999, 2000 Waldo Bastian <bastian@kde.org>
+ *  Copyright (C) 1999       David Faure   <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -33,6 +33,7 @@
 #include <kapp.h>
 #include <kdebug.h>
 #include <klocale.h>
+#include <dcopclient.h>
 
 #include "kservicefactory.h"
 #include "kservicetypefactory.h"
@@ -41,92 +42,110 @@
 #include "kuserprofile.h"
 #include "ksycoca.h"
 
-/*
-  Commented out, to see if it's really used...
-
-KService::KService( const QString& _name, const QString& _exec, const QString &_corbaexec,
-                    const QString& _icon, const QStringList& _lstServiceTypes,
-		    const QString& _comment, bool _allow_as_default,
-		    const QString& _path, const QString& _terminal,
-		    const QString&, const QString& _act_mode,
-		    const QStringList& _repo_ids,
-		    const QString& _lib, int _minor, int _major, const QStringList& deps )
-{
-  // Is this constructor useful ?
-  m_bValid = true;
-
-  m_strType = "Application"; // hack
-  m_strName = _name;
-  m_strExec = _exec;
-  m_strCORBAExec = _corbaexec;
-  m_strIcon = _icon;
-  m_strComment = _comment;
-  m_lstServiceTypes = _lstServiceTypes;
-  m_strPath = _path;
-  m_strTerminalOptions = _terminal;
-  m_bAllowAsDefault = _allow_as_default;
-  m_strActivationMode = _act_mode;
-  m_lstRepoIds = _repo_ids;
-  m_strLibrary = _lib;
-  m_libraryMajor = _major;
-  m_libraryMinor = _minor;
-  m_lstLibraryDeps = deps;
-}
-*/
-
 KService::KService( const QString & _fullpath )
 {
-  KSimpleConfig config( _fullpath, true );
+  KDesktopFile config( _fullpath );
 
+  init(&config);
+}
+
+KService::KService( KDesktopFile *config )
+{
+  init(config);
+}
+
+void
+KService::init( KDesktopFile *config )
+{
   m_bValid = true;
 
-  config.setDesktopGroup();
-  m_strType = config.readEntry( "Type" );
+  m_strDesktopEntryPath = config->filename();
+
+  config->setDesktopGroup();
+  m_strType = config->readEntry( "Type" );
   if ( m_strType.isEmpty() )
   {
     kDebugWarning( 7012, QString("The desktop entry file %1 has no Type=... entry. "
-            "It should be \"Application\", or \"Service\"").arg( _fullpath ) );
+            "It should be \"Application\", or \"Service\"")
+            .arg( m_strDesktopEntryPath ) );
     m_bValid = false;
     return;
   }
   if ( m_strType != "Application" && m_strType != "Service" )
   {
     kDebugWarning( 7012, QString("The desktop entry file %1 has Type=%2 "
-            "instead of \"Application\" or \"Service\"").arg( _fullpath ).arg(m_strType) );
+            "instead of \"Application\" or \"Service\"")
+            .arg( m_strDesktopEntryPath ).arg(m_strType) );
     m_bValid = false;
     return;
   }
-  m_strExec = config.readEntry( "Exec" );
-  m_strName = config.readEntry( "Name" );
+  QString resource = config->resource();
+
+  if ( (m_strType == "Application") && 
+       (!resource.isEmpty()) &&
+       (resource != "apps"))
+  {
+    kDebugWarning( 7012, QString("The desktop entry file %1 has Type=%2 "
+            "but is located under \"%3\" instead of \"apps\"")
+            .arg( m_strDesktopEntryPath ).arg(m_strType).arg( resource ));
+    m_bValid = false;
+    return;
+  }
+
+  if ( (m_strType == "Service") && 
+       (!resource.isEmpty()) &&
+       (resource != "services"))
+  {
+    kDebugWarning( 7012, QString("The desktop entry file %1 has Type=%2 "
+            "but is located under \"%3\" instead of \"services\"")
+            .arg( m_strDesktopEntryPath ).arg(m_strType).arg( resource ));
+    m_bValid = false;
+    return;
+  }
+
+  m_strExec = config->readEntry( "Exec" );
+  m_strName = config->readEntry( "Name" );
   if ( m_strName.isEmpty() )
   {
     m_bValid = false;
     return;
   }
 
-  m_strIcon = config.readEntry( "Icon", "unknown.png" );
-  m_strTerminalOptions = config.readEntry( "TerminalOptions" );
-  m_strPath = config.readEntry( "Path" );
-  m_strComment = config.readEntry( "Comment" );
-  m_bDeleted = config.readBoolEntry( "Hidden", false );
-  m_strCORBAExec = config.readEntry( "X-KDE-CORBAExec" );
-  m_strActivationMode = config.readEntry( "X-KDE-ActivationMode", "UNIX" );
-  m_lstRepoIds = config.readListEntry( "X-KDE-RepoIds" );
-  m_strLibrary = config.readEntry( "X-KDE-Library" );
-  m_libraryMajor = config.readNumEntry( "X-KDE-LibraryMajor", 0 );
-  m_libraryMinor = config.readNumEntry( "X-KDE-LibraryMinor", 0 );
-  m_lstLibraryDeps = config.readListEntry( "X-KDE-LibraryDependencies" );
-  m_lstServiceTypes = config.readListEntry( "ServiceTypes" );
+  m_strIcon = config->readEntry( "Icon", "unknown.png" );
+  m_strTerminalOptions = config->readEntry( "TerminalOptions" );
+  m_strPath = config->readEntry( "Path" );
+  m_strComment = config->readEntry( "Comment" );
+  m_bDeleted = config->readBoolEntry( "Hidden", false );
+  m_strLibrary = config->readEntry( "X-KDE-Library" );
+  m_libraryMajor = config->readNumEntry( "X-KDE-LibraryMajor", 0 );
+  m_libraryMinor = config->readNumEntry( "X-KDE-LibraryMinor", 0 );
+  m_lstLibraryDeps = config->readListEntry( "X-KDE-LibraryDependencies" );
+  m_lstServiceTypes = config->readListEntry( "ServiceTypes" );
   // For compatibility with KDE 1.x
-  m_lstServiceTypes += config.readListEntry( "MimeType", ';' );
+  m_lstServiceTypes += config->readListEntry( "MimeType", ';' );
 
-  m_strRelativeFilePath = KSycoca::determineRelativePath( _fullpath, 
-                                       m_strType == "Application" ? "apps" : "services" );
+  QString dcopServiceType = config->readEntry("X-DCOP-ServiceType").lower();
+  if (dcopServiceType == "unique")
+     m_DCOPServiceType = DCOP_Unique;
+  else if (dcopServiceType == "multi")
+     m_DCOPServiceType = DCOP_Multi;
+  else
+     m_DCOPServiceType = DCOP_None;
+
+  QString name = m_strDesktopEntryPath;
+  int pos = name.findRev('/');
+  if (pos != -1)
+     name = name.mid(pos+1);
+  pos = name.find('.');
+  if (pos != -1)
+     name = name.left(pos);
+
+  m_strDesktopEntryName = name;
   
   if ( m_strType == "Application" )
     // Specify AllowDefault = false to explicitely forbid it.
     // Most service files don't have that field, so true is the default
-    m_bAllowAsDefault = config.readBoolEntry( "AllowDefault", true );
+    m_bAllowAsDefault = config->readBoolEntry( "AllowDefault", true );
   else
     // Doesn't exist for generic services, since KRun has to be able
     // to run the default service. It can't run a lib...
@@ -143,7 +162,7 @@ KService::KService( const QString & _fullpath )
       QMap<QString,QVariant::Type>::ConstIterator pit = pd.begin();
       for( ; pit != pd.end(); ++pit )
       {
-	m_mapProps.insert( pit.key(), config.readPropertyEntry( pit.key(), pit.data() ) );
+	m_mapProps.insert( pit.key(), config->readPropertyEntry( pit.key(), pit.data() ) );
       }
     }
   }
@@ -168,12 +187,17 @@ QPixmap KService::pixmap( KIconLoader::Size _size, QString * _path ) const
 void KService::load( QDataStream& s )
 {
   Q_INT8 b;
+  Q_INT8 dst;
 
-  s >> m_strType >> m_strName >> m_strExec /*>> m_strCORBAExec */ >> m_strRelativeFilePath
-    >> m_strIcon >> m_strTerminalOptions
+  s >> m_strType >> m_strName >> m_strExec >> m_strIcon 
+    >> m_strTerminalOptions
     >> m_strPath >> m_strComment >> m_lstServiceTypes >> b >> m_mapProps
-    >> m_strActivationMode >> m_strLibrary >> m_libraryMajor >> m_libraryMinor >> m_lstRepoIds;
+    >> m_strLibrary >> m_libraryMajor >> m_libraryMinor 
+    >> dst
+    >> m_strDesktopEntryPath >> m_strDesktopEntryName;
+
   m_bAllowAsDefault = b;
+  m_DCOPServiceType = (DCOPServiceType_t) dst;
 
   m_bValid = true;
 }
@@ -182,13 +206,16 @@ void KService::save( QDataStream& s )
 {
   KSycocaEntry::save( s );
   Q_INT8 b = m_bAllowAsDefault;
+  Q_INT8 dst = (Q_INT8) m_DCOPServiceType;
 
   // Warning adding/removing fields here involves a binary incompatible change - update version 
   // number in ksycoca.h
-  s << m_strType << m_strName << m_strExec /* << m_strCORBAExec */ << m_strRelativeFilePath
-    << m_strIcon << m_strTerminalOptions
+  s << m_strType << m_strName << m_strExec << m_strIcon 
+    << m_strTerminalOptions
     << m_strPath << m_strComment << m_lstServiceTypes << b << m_mapProps
-    << m_strActivationMode << m_strLibrary << m_libraryMajor << m_libraryMinor << m_lstRepoIds;
+    << m_strLibrary << m_libraryMajor << m_libraryMinor 
+    << dst
+    << m_strDesktopEntryPath << m_strDesktopEntryName;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const
@@ -215,8 +242,6 @@ KService::PropertyPtr KService::property( const QString& _name ) const
     p = new QVariant( m_strName );
   else if ( _name == "Exec" )
     p = new QVariant( m_strExec );
-  else if ( _name == "CORBAExec" )
-    p = new QVariant( m_strCORBAExec );
   else if ( _name == "Icon" )
     p = new QVariant( m_strIcon );
   else if ( _name == "TerminalOptions" )
@@ -225,10 +250,6 @@ KService::PropertyPtr KService::property( const QString& _name ) const
     p = new QVariant( m_strPath );
   else if ( _name == "Comment" )
     p = new QVariant( m_strComment );
-  else if ( _name == "ActivationMode" )
-    p = new QVariant( m_strActivationMode );
-  else if ( _name == "RepoIds" )
-    p = new QVariant( m_lstRepoIds );
   else if ( _name == "ServiceTypes" )
     p = new QVariant( m_lstServiceTypes );
   else if ( _name == "AllowAsDefault" )
@@ -268,20 +289,23 @@ QStringList KService::propertyNames() const
   res.append( "Comment" );
   res.append( "Icon" );
   res.append( "Exec" );
-  res.append( "CORBAExec" );
   res.append( "TerminalOptions" );
   res.append( "Path" );
   res.append( "File" );
   res.append( "ServiceTypes" );
   res.append( "AllowAsDefault" );
-  res.append( "RepoIds" );
-  res.append( "ActivationMode" );
   res.append( "Library" );
   res.append( "LibraryMajor" );
   res.append( "LibraryMinor" );
   res.append( "LibraryDependencies" );
 
   return res;
+}
+
+int
+KService::startService( const QString &URL, QCString &dcopService, QString &error)
+{
+   return startServiceByDesktopPath( desktopEntryPath(), URL, dcopService, error);
 }
 
 KService::List KService::allServices()
@@ -292,5 +316,110 @@ KService::List KService::allServices()
 KService::Ptr KService::service( const QString& _name )
 {
   KService * s = KServiceFactory::self()->findServiceByName( _name );
+
+  if (!s)
+      s = KServiceFactory::self()->findServiceByDesktopName( _name );
+  if (!s)
+      s = KServiceFactory::self()->findServiceByDesktopPath( _name );
+    
   return KService::Ptr( s );
 }
+
+KService::Ptr KService::serviceByName( const QString& _name )
+{
+  KService * s = KServiceFactory::self()->findServiceByName( _name );
+  return KService::Ptr( s );
+}
+
+KService::Ptr KService::serviceByDesktopPath( const QString& _name )
+{
+  KService * s = KServiceFactory::self()->findServiceByDesktopPath( _name );
+  return KService::Ptr( s );
+}
+
+KService::Ptr KService::serviceByDesktopName( const QString& _name )
+{
+  KService * s = KServiceFactory::self()->findServiceByDesktopName( _name );
+  return KService::Ptr( s );
+}
+
+int
+KService::startServiceByName( const QString& _name, const QString &URL,
+                              QCString &dcopService, QString &error )
+{
+   return startServiceInternal( 
+                      "start_service_by_name(QString,QString)", 
+                      _name, URL, dcopService, error);
+}
+
+int
+KService::startServiceByDesktopPath( const QString& _name, const QString &URL,
+                              QCString &dcopService, QString &error )
+{
+   return startServiceInternal( 
+                      "start_service_by_desktop_path(QString,QString)", 
+                      _name, URL, dcopService, error);
+}
+
+int
+KService::startServiceByDesktopName( const QString& _name, const QString &URL,
+                              QCString &dcopService, QString &error )
+{
+   return startServiceInternal( 
+                      "start_service_by_desktop_name(QString,QString)", 
+                      _name, URL, dcopService, error);
+}
+
+
+
+int
+KService::startServiceInternal( const QCString &function, 
+                                const QString& _name, const QString &URL,
+                                QCString &dcopService, QString &error )
+{
+   typedef struct serviceResult 
+   {
+      int result;
+      QCString dcopName;
+      QString error;
+   };
+
+   // Register app as able to send DCOP messages
+   DCOPClient *dcopClient;
+   if (kapp)
+      dcopClient = kapp->dcopClient();
+   else
+      dcopClient = new DCOPClient;
+   
+   if (!dcopClient->isAttached())
+   {
+      if (!dcopClient->attach())
+      {
+         error = i18n("Could not register with DCOP.\n");
+         return -1;
+      }
+   }
+   QByteArray params;
+   QDataStream stream(params, IO_WriteOnly);
+   stream << _name << URL;
+   QCString replyType;
+   QByteArray replyData;
+   if (!dcopClient->call("klauncher", "klauncher", 
+	function, params, replyType, replyData))
+   {
+	error = i18n("KLauncher could not be reached via DCOP.\n");
+        if (!kapp)
+           delete dcopClient;
+        return -1;
+   }
+   if (!kapp)
+      delete dcopClient;
+
+   QDataStream stream2(replyData, IO_ReadOnly);
+   serviceResult result;
+   stream2 >> result.result >> result.dcopName >> result.error;
+   dcopService = result.dcopName;
+   error = result.error;
+   return result.result;
+}
+
