@@ -244,7 +244,7 @@ void RenderFlow::repaint(bool immediate)
         if (firstLineBox() && firstLineBox()->topOverflow() < 0) {
             int ow = style() ? style()->outlineWidth() : 0;
             repaintRectangle(-ow, -ow+firstLineBox()->topOverflow(),
-                             overflowWidth()+ow*2, overflowHeight()+ow*2, immediate);
+                             effectiveWidth()+ow*2, effectiveHeight()+ow*2, immediate);
         }
         else
             return RenderBox::repaint(immediate);

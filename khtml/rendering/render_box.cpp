@@ -577,13 +577,14 @@ void RenderBox::repaint(bool immediate)
     if( isInline() && !isReplaced() )
     {
 	RenderObject* p = parent();
-	while( p && p->isInline() && !p->isReplaced() )
+	Q_ASSERT(p);
+	while( p->isInline() && !p->isReplaced() )
 	    p = p->parent();
-        p->repaintRectangle( -ow, -ow, p->overflowWidth()+ow*2, p->overflowHeight()+ow*2, immediate);
+        p->repaintRectangle( -ow, -ow, p->effectiveWidth()+ow*2, p->effectiveHeight()+ow*2, immediate);
     }
     else
     {
-        repaintRectangle( -ow, -ow, overflowWidth()+ow*2, overflowHeight()+ow*2, immediate);
+        repaintRectangle( -ow, -ow, effectiveWidth()+ow*2, effectiveHeight()+ow*2, immediate);
     }
 }
 

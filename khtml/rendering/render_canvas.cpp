@@ -604,40 +604,22 @@ int RenderCanvas::docHeight() const
         h = m_height;
     else
         h = 0;
-#if 1
+
     RenderObject *fc = firstChild();
     if(fc) {
         int dh = fc->overflowHeight() + fc->marginTop() + fc->marginBottom();
-        int lowestPos = firstChild()->lowestPosition();
+        int lowestPos = firstChild()->lowestPosition(false);
+// kdDebug(6040) << "h " << h << " lowestPos " << lowestPos << " dh " << dh << " fc->rh " << fc->effectiveHeight() << " fc->height() " << fc->height() << endl;
         if( lowestPos > dh )
             dh = lowestPos;
         if( dh > h )
             h = dh;
     }
-#endif
 
     RenderLayer *layer = m_layer;
     int y = 0;
-    while ( layer ) {
-	h = kMax( h, layer->yPos() + layer->height() );
-	h = kMax( h, layer->yPos() + layer->renderer()->overflowHeight() );
-	if ( layer->firstChild() ) {
-	    y += layer->yPos();
-	    layer = layer->firstChild();
-	} else if ( layer->nextSibling() )
-	    layer = layer->nextSibling();
-	else {
-	    while ( layer ) {
-		layer = layer->parent();
-		if ( layer )
-		    y -= layer->yPos();
-		if ( layer && layer->nextSibling() ) {
-		    layer = layer->nextSibling();
-		    break;
-		}
-	    }
-	}
-    }
+    h = kMax( h, layer->yPos() + layer->height() );
+// kdDebug(6040) << "h " << h << " layer(" << layer->renderer()->renderName() << "@" << layer->renderer() << ")->height " << layer->height() << " lp " << (layer->yPos() + layer->height()) << " height() " << layer->renderer()->height() << " rh " << layer->renderer()->effectiveHeight() << endl;
     return h;
 }
 
@@ -649,39 +631,20 @@ int RenderCanvas::docWidth() const
     else
         w = 0;
 
-#if 1
     RenderObject *fc = firstChild();
     if(fc) {
-        int dw = fc->overflowWidth() + fc->marginLeft() + fc->marginRight();
-        int rightmostPos = fc->rightmostPosition();
+        int dw = fc->effectiveWidth() + fc->marginLeft() + fc->marginRight();
+        int rightmostPos = fc->rightmostPosition(false);
+// kdDebug(6040) << "w " << w << " rightmostPos " << rightmostPos << " dw " << dw << " fc->rw " << fc->effectiveWidth() << " fc->width() " << fc->width() << endl;
         if( rightmostPos > dw )
             dw = rightmostPos;
         if( dw > w )
             w = dw;
     }
-#endif
 
     RenderLayer *layer = m_layer;
     int x = 0;
-    while ( layer ) {
-	w = kMax( w, layer->xPos() + layer->width() );
-	w = kMax( w, layer->xPos() + layer->renderer()->overflowWidth() );
-	if ( layer->firstChild() ) {
-	    x += layer->xPos();
-	    layer = layer->firstChild();
-	} else if ( layer->nextSibling() )
-	    layer = layer->nextSibling();
-	else {
-	    while ( layer ) {
-		layer = layer->parent();
-		if ( layer )
-		    x -= layer->xPos();
-		if ( layer && layer->nextSibling() ) {
-		    layer = layer->nextSibling();
-		    break;
-		}
-	    }
-	}
-    }
+    w = kMax( w, layer->xPos() + layer->width() );
+// kdDebug(6040) << "w " << w << " layer(" << layer->renderer()->renderName() << ")->width " << layer->width() << " rm " << (layer->xPos() + layer->width()) << " width() " << layer->renderer()->width() << " rw " << layer->renderer()->effectiveWidth() << endl;
     return w;
 }
