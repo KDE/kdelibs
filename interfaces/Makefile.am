@@ -2,7 +2,7 @@
 
 SUBDIRS = ktexteditor
 
-INCLUDES = -I$(top_srcdir)/kio -I$(top_srcdir) $(all_includes)
+INCLUDES = -I$(top_srcdir) $(all_includes)
 
 lib_LTLIBRARIES = libkregexpeditor.la
 
