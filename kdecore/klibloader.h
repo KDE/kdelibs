@@ -167,7 +167,7 @@ public:
      *
      *                 You can, however, give a library name ending in ".so"
      *                 (or whatever is used on your platform), and the library
-     *                 will be loaded without resolving dependencies. USE WITH CARE :)
+     *                 will be loaded without resolving dependencies. Use with caution.
      * @return the KLibFactory, or 0 if the library does not exist or it does
      *         not have a factory
      * @see library
@@ -188,7 +188,7 @@ public:
      *
      *                 You can, however, give a library name ending in ".so"
      *                 (or whatever is used on your platform), and the library
-     *                 will be loaded without resolving dependencies. USE WITH CARE :)
+     *                 will be loaded without resolving dependencies. Use with caution.
      * @return KLibrary is invalid (0) when the library couldn't be dlopened. in such
      * a case you can retrieve the error message by calling KLibLoader::lastErrorMessage()
      *
@@ -212,7 +212,7 @@ public:
      *
      *                 You can, however, give a library name ending in ".so"
      *                 (or whatever is used on your platform), and the library
-     *                 will be loaded without resolving dependencies. USE WITH CARE :)
+     *                 will be loaded without resolving dependencies. Use with caution.
      * @return KLibrariy is invalid (0) when the library couldn't be dlopened. in such
      * a case you can retrieve the error message by calling KLibLoader::lastErrorMessage()
      *
@@ -241,7 +241,7 @@ public:
      *
      *                 You can, however, give a library name ending in ".so"
      *                 (or whatever is used on your platform), and the library
-     *                 will be loaded without resolving dependencies. USE WITH CARE :)
+     *                 will be loaded without resolving dependencies. Use with caution.
      */
     virtual void unloadLibrary( const char *libname );
 
