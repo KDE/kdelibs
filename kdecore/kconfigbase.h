@@ -794,9 +794,6 @@ public:
    * Delete the entry specified by @p pKey in the current group.
    *
    * @param pKey The key to delete.
-   * @param bPersistent If @p bPersistent is false, the entry's dirty
-   * flag will not be set and thus the entry will not be written to
-   * disk at deletion time.
    * @param bGlobal     If @p bGlobal is true, the pair is not removed from the
    *  application specific config file, but to the global KDE config file.
    * @param bNLS        If @p bNLS is true, the key with the locale tag is removed.
