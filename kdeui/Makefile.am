@@ -21,7 +21,7 @@
 
 INCLUDES= -I$(top_srcdir)/kdecore -I$(top_srcdir)/kfile $(QT_INCLUDES) $(X_INCLUDES) 
 EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm
-DISTCLEANFILES = $(libkdeui_METASOURCES)
+DISTCLEANFILES = $(libkdeui_la_METASOURCES)
 
 lib_LTLIBRARIES = libkdeui.la
 libkdeui_la_LDFLAGS = -version-info 2:0  
@@ -51,7 +51,7 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kdbtn.cpp knotebook.cpp ktabbar.cpp kwizard.cpp kcontainer.cpp \
 		kkeydialog.cpp kurllabel.cpp kruler.cpp kquickhelp.cpp kcursor.cpp
 
-libkdeui_METASOURCES = USE_AUTOMOC
+libkdeui_la_METASOURCES = USE_AUTOMOC
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm question.xpm \
 	arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	

@@ -33,7 +33,7 @@ noinst_HEADERS = chunk.h
 libmediatool_la_LDFLAGS = -version-info 2:0 
 libmediatool_la_LIBADD = $(LIBCOMPAT)
 
-libmediatool_METASOURCES = USE_AUTOMOC
+libmediatool_la_METASOURCES = USE_AUTOMOC
 
-DISTCLEANFILES = $(libmediatool_METASOURCES)
+DISTCLEANFILES = $(libmediatool_la_METASOURCES)
 

@@ -22,7 +22,7 @@
 
 INCLUDES=  -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui $(QT_INCLUDES) $(X_INCLUDES)
 
-DISTCLEANFILES = $(libkspell_METASOURCES)
+DISTCLEANFILES = $(libkspell_la_METASOURCES)
 
 lib_LTLIBRARIES  = libkspell.la
 libkspell_la_LDFLAGS = -version-info 2:0
@@ -30,5 +30,5 @@ libkspell_la_LDFLAGS = -version-info 2:0
 include_HEADERS = kspell.h ksconfig.h kprocio.h kspelldlg.h
 libkspell_la_SOURCES = kspelldlg.cpp kspell.cpp ksconfig.cpp kprocio.cpp
 
-libkspell_METASOURCES = USE_AUTOMOC
+libkspell_la_METASOURCES = USE_AUTOMOC
 

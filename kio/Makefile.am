@@ -17,7 +17,7 @@
 #    Boston, MA 02111-1307, USA.
 
 INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -I$(top_srcdir)/kdeutils $(QT_INCLUDES) $(X_INCLUDES) 
-DISTCLEANFILES = $(libkio_METASOURCES)
+DISTCLEANFILES = $(libkio_la_METASOURCES)
 
 lib_LTLIBRARIES = libkio.la
 libkio_la_LDFLAGS = -version-info 2:0
@@ -31,7 +31,7 @@ libkio_la_SOURCES = kio_connection.cc kio_base.cc kio_rename_dlg.cc \
 	kio_job.cc kregistry.cc kio_linedit_dlg.cc kio_paste.cc \
 	kio_openwith.cc
 
-libkio_METASOURCES = USE_AUTOMOC cc
+libkio_la_METASOURCES = USE_AUTOMOC cc
 
 include_HEADERS = kio_connection.h kio_base.h kio_rename_dlg.h \
 	kio_filter.h kio_dlg.h kio_skip_dlg.h  kio_interface.h \

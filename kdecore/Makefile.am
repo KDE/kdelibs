@@ -18,7 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 INCLUDES = $(QT_INCLUDES) $(X_INCLUDES)
-DISTCLEANFILES = $(libkdecore_METASOURCES)
+DISTCLEANFILES = $(libkdecore_la_METASOURCES)
 EXTRA_DIST = convert_key.c charsets.config
 lib_LTLIBRARIES = libkdecore.la
 
@@ -44,7 +44,7 @@ libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 libkdecore_la_LDFLAGS = -version-info 2:0
 # libkdecore_la_LIBADD = 
 
-libkdecore_METASOURCES = USE_AUTOMOC
+libkdecore_la_METASOURCES = USE_AUTOMOC
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/kdecore
 

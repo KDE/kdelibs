@@ -21,9 +21,9 @@ INCLUDES= -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -I$(top_srcdir)/kfmlib $
 
 lib_LTLIBRARIES  = libkfile.la
 
-DISTCLEANFILES = $(libkfile_METASOURCES) 
+DISTCLEANFILES = $(libkfile_la_METASOURCES) 
 
-libkfile_METASOURCES = USE_AUTOMOC
+libkfile_la_METASOURCES = USE_AUTOMOC
 
 include_HEADERS = kfiledialog.h kfileinfo.h kfilebookmark.h  \
 	kremotefile.h kdir.h kdirlistbox.h kfileinfocontents.h \

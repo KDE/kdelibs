@@ -21,9 +21,9 @@
 lib_LTLIBRARIES = libkhtmlw.la
 libkhtmlw_la_SOURCES = jscript.cpp html.cpp htmlobj.cpp htmlfont.cpp htmlform.cpp htmltoken.cpp htmlframe.cpp htmlview.cpp htmlclue.cpp debug.cpp htmldata.cpp htmltable.cpp htmliter.cpp htmlchain.cpp
 
-libkhtmlw_METASOURCES = USE_AUTOMOC
+libkhtmlw_la_METASOURCES = USE_AUTOMOC
 
-DISTCLEANFILES = $(libkhtmlw_METASOURCES)
+DISTCLEANFILES = $(libkhtmlw_la_METASOURCES)
 
 include_HEADERS = jscript.h html.h htmlobj.h htmlfont.h htmlform.h \
 	htmltoken.h htmlframe.h htmlview.h htmlclue.h htmldata.h \
