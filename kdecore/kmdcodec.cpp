@@ -1295,10 +1295,10 @@ void KMD4::finalize()
   m_finalized = true;
 }
 
-bool KMD4::verify( const KMD5::Digest& digest)
+bool KMD4::verify( const KMD4::Digest& digest)
 {
     finalize();
-    return (0 == memcmp(rawDigest(), digest, sizeof(KMD5::Digest)));
+    return (0 == memcmp(rawDigest(), digest, sizeof(KMD4::Digest)));
 }
 
 bool KMD4::verify( const QCString& hexdigest)

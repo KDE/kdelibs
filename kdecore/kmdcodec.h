@@ -571,6 +571,12 @@ private:
   KMD5Private* d;
 };
 
+/**
+ * @short An adapted C++ implementation of the MD4 Message-Digest algorithm.
+ * @since 3.4
+ *
+ * The class usage is the same as KMD5.
+ */
 class KDECORE_EXPORT KMD4
 {
 public:
@@ -648,7 +654,7 @@ public:
   /**
    * Calling this function will reset the calculated message digest.
    * Use this method to perform another message digest calculation
-   * without recreating the KMD5 object.
+   * without recreating the KMD4 object.
    */
   void reset();
 
@@ -666,7 +672,7 @@ public:
    *
    * @param bin an array of 16 characters ( char[16] )
    */
-  void rawDigest( KMD5::Digest& bin );
+  void rawDigest( KMD4::Digest& bin );
 
   /**
    * Returns the value of the calculated message digest in
@@ -689,7 +695,7 @@ public:
    * returns true if the calculated digest for the given
    * message matches the given one.
    */
-  bool verify( const KMD5::Digest& digest);
+  bool verify( const KMD4::Digest& digest);
 
   /**
    * @overload
@@ -709,7 +715,7 @@ protected:
   void finalize();
 
 private:
-  KMD4(const KMD5& u);
+  KMD4(const KMD4& u);
   KMD4& operator=(const KMD4& md);
 
   void init();
