@@ -79,8 +79,8 @@ ResourceConfigDlg::ResourceConfigDlg( QWidget *parent, const QString& type,
   KButtonBox *mButtonBox = new KButtonBox( this );
 
   mButtonBox->addStretch();
-  mbuttonOk = mButtonBox->addButton( i18n( "&OK" ), this, SLOT( accept() ) );
-  mbuttonOk->setFocus();
+  mButtonOk = mButtonBox->addButton( i18n( "&OK" ), this, SLOT( accept() ) );
+  mButtonOk->setFocus();
   mButtonBox->addButton( i18n( "&Cancel" ), this, SLOT( reject() ) );
   mButtonBox->layout();
   connect( mName, SIGNAL( textChanged ( const QString & )),this, SLOT( slotNameChanged( const QString &)));
@@ -88,11 +88,10 @@ ResourceConfigDlg::ResourceConfigDlg( QWidget *parent, const QString& type,
   slotNameChanged( mName->text());
 }
 
-void ResourceConfigDlg::slotNameChanged( const QString &text)
+void ResourceConfigDlg::slotNameChanged( const QString &text )
 {
-    mbuttonOk->setEnabled( !text.isEmpty() );
+  mButtonOk->setEnabled( !text.isEmpty() );
 }
-
 
 int ResourceConfigDlg::exec()
 {
