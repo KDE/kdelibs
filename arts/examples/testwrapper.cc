@@ -63,7 +63,7 @@ public:
 };
 REGISTER_IMPLEMENTATION(B_impl);
 
-#define CALLS 100000000
+#define CALLS 50000000
 
 void check(const char *name,bool passed)
 {
@@ -141,6 +141,12 @@ D afunc(D arg)
 	return arg;
 }
 
+D_base *afunc_old(D_base *arg)
+{
+	arg->value(42);
+	return arg->_copy();
+}
+
 void test2()
 {
 	// test cache invalidation
@@ -157,7 +163,37 @@ void test2()
 	A a = afunc(d);
 	assert(active_d_objects == 1);
 	check("SmartWrapper as argument",a.value()==42 && b.value()==42 && d.value()==42);
-	
+}
+
+/*
+  this test checks the speed difference for paramters and arguments with and
+  without SmartWrappers
+*/
+void test3()
+{
+	int i;
+
+	/* "old" calls */
+	benchmark(BENCH_BEGIN);
+
+	D_var d_oldstyle = D_base::_create(), d_oldreturn;
+	for(i=0;i<CALLS;i++) d_oldreturn = afunc_old(d_oldstyle);
+	assert(d_oldreturn->value() == 42);
+
+	float oldspeed = (float)CALLS/benchmark(BENCH_END);
+
+	/* "new" calls */
+	benchmark(BENCH_BEGIN);
+
+	D d_newstyle, d_newreturn;
+	for(i=0;i<CALLS;i++) d_newreturn = afunc(d_newstyle);
+	assert(d_newreturn.value() == 42);
+
+	float newspeed = (float)CALLS/benchmark(BENCH_END);
+
+	check("speed for params & returncodes",oldspeed < newspeed * 2.0);
+	cout << "  -> old " << (long)(oldspeed) << " calls/sec" << endl;
+	cout << "  -> new " << (long)(newspeed) << " calls/sec" << endl;
 }
 
 int main()
@@ -170,6 +206,8 @@ int main()
 	test2();
 	assert(active_d_objects == 0);
 	test1();
+	assert(active_d_objects == 0);
+	test3();
 	assert(active_d_objects == 0);
 
 	return 0;

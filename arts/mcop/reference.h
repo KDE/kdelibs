@@ -94,9 +94,11 @@ protected:
 		inline Pool(Object_base* (*cor)())
 			: creator(cor), created(false), count(1), base(0) {}
 		inline void Inc() {count++;}
-		inline bool Dec() {
-			if (--count==0) {delete this; return true;}
-			return false;
+		inline void Dec() {
+			if (--count==0) {
+				if(base) base->_release();
+				delete this;
+			}
 		}
 		inline void checkcreate() {
 			if (!created) {base = creator(); created=true;}

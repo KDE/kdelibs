@@ -123,10 +123,15 @@ ScheduleNode *Object::_node()
 	return _scheduleNode;
 }
 
+void *Object::_cast(unsigned long iid)
+{
+	if(iid == Object::_IID) return (Object *)this;
+	return 0;
+}
+
 void *Object::_cast(std::string interface)
 {
-	if(interface == "Object") return (Object *)this;
-	return 0;
+	return _cast(MCOPUtils::makeIID(interface));
 }
 
 bool Object::_error()
@@ -846,3 +851,12 @@ void Object_stub::_sendCustomMessage(Buffer *buffer)
 	_connection->qSendBuffer(buffer);
 }
 
+unsigned long Object::_IID = MCOPUtils::makeIID("Object");
+
+/*
+static class StartupClass_object :public StartupClass {
+	void startup() {
+		Object::_IID = MCOPUtils::makeIID("Object");
+	}
+} static_StartupClass_object;
+*/

@@ -47,6 +47,7 @@ private:
 
 protected:
 	struct ObjectStreamInfo;
+	static unsigned long _IID;	// interface ID
 
 	Object();
 	virtual ~Object();
@@ -120,7 +121,8 @@ public:
 	virtual vector<std::string> _defaultPortsOut() const;
 
 	// cast operation
-	virtual void *_cast(std::string interface);
+	virtual void *_cast(unsigned long iid);
+	void *_cast(std::string interface);
 
 	/*
 	 * when this is true, a fatal communication error has occured (of course

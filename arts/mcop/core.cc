@@ -748,7 +748,7 @@ InterfaceRepo_base *InterfaceRepo_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
 	assert(skel);
-	InterfaceRepo_base *castedObject = (InterfaceRepo_base *)skel->_cast("InterfaceRepo");
+	InterfaceRepo_base *castedObject = (InterfaceRepo_base *)skel->_cast(InterfaceRepo_base::_IID);
 	assert(castedObject);
 	return castedObject;
 }
@@ -788,10 +788,10 @@ vector<std::string> InterfaceRepo_base::_defaultPortsOut() const {
 	return ret;
 }
 
-void *InterfaceRepo_base::_cast(std::string interface)
+void *InterfaceRepo_base::_cast(unsigned long iid)
 {
-	if(interface == "InterfaceRepo") return (InterfaceRepo_base *)this;
-	if(interface == "Object") return (Object *)this;
+	if(iid == InterfaceRepo_base::_IID) return (InterfaceRepo_base *)this;
+	if(iid == Object::_IID) return (Object *)this;
 	return 0;
 }
 
@@ -943,11 +943,13 @@ Object_base* InterfaceRepo::_Creator() {
 	return InterfaceRepo_base::_create();
 }
 
+unsigned long InterfaceRepo_base::_IID = MCOPUtils::makeIID("InterfaceRepo");
+
 FlowSystemSender_base *FlowSystemSender_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
 	assert(skel);
-	FlowSystemSender_base *castedObject = (FlowSystemSender_base *)skel->_cast("FlowSystemSender");
+	FlowSystemSender_base *castedObject = (FlowSystemSender_base *)skel->_cast(FlowSystemSender_base::_IID);
 	assert(castedObject);
 	return castedObject;
 }
@@ -987,10 +989,10 @@ vector<std::string> FlowSystemSender_base::_defaultPortsOut() const {
 	return ret;
 }
 
-void *FlowSystemSender_base::_cast(std::string interface)
+void *FlowSystemSender_base::_cast(unsigned long iid)
 {
-	if(interface == "FlowSystemSender") return (FlowSystemSender_base *)this;
-	if(interface == "Object") return (Object *)this;
+	if(iid == FlowSystemSender_base::_IID) return (FlowSystemSender_base *)this;
+	if(iid == Object::_IID) return (Object *)this;
 	return 0;
 }
 
@@ -1049,11 +1051,13 @@ Object_base* FlowSystemSender::_Creator() {
 	return FlowSystemSender_base::_create();
 }
 
+unsigned long FlowSystemSender_base::_IID = MCOPUtils::makeIID("FlowSystemSender");
+
 FlowSystemReceiver_base *FlowSystemReceiver_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
 	assert(skel);
-	FlowSystemReceiver_base *castedObject = (FlowSystemReceiver_base *)skel->_cast("FlowSystemReceiver");
+	FlowSystemReceiver_base *castedObject = (FlowSystemReceiver_base *)skel->_cast(FlowSystemReceiver_base::_IID);
 	assert(castedObject);
 	return castedObject;
 }
@@ -1093,10 +1097,10 @@ vector<std::string> FlowSystemReceiver_base::_defaultPortsOut() const {
 	return ret;
 }
 
-void *FlowSystemReceiver_base::_cast(std::string interface)
+void *FlowSystemReceiver_base::_cast(unsigned long iid)
 {
-	if(interface == "FlowSystemReceiver") return (FlowSystemReceiver_base *)this;
-	if(interface == "Object") return (Object *)this;
+	if(iid == FlowSystemReceiver_base::_IID) return (FlowSystemReceiver_base *)this;
+	if(iid == Object::_IID) return (Object *)this;
 	return 0;
 }
 
@@ -1162,11 +1166,13 @@ Object_base* FlowSystemReceiver::_Creator() {
 	return FlowSystemReceiver_base::_create();
 }
 
+unsigned long FlowSystemReceiver_base::_IID = MCOPUtils::makeIID("FlowSystemReceiver");
+
 FlowSystem_base *FlowSystem_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
 	assert(skel);
-	FlowSystem_base *castedObject = (FlowSystem_base *)skel->_cast("FlowSystem");
+	FlowSystem_base *castedObject = (FlowSystem_base *)skel->_cast(FlowSystem_base::_IID);
 	assert(castedObject);
 	return castedObject;
 }
@@ -1206,10 +1212,10 @@ vector<std::string> FlowSystem_base::_defaultPortsOut() const {
 	return ret;
 }
 
-void *FlowSystem_base::_cast(std::string interface)
+void *FlowSystem_base::_cast(unsigned long iid)
 {
-	if(interface == "FlowSystem") return (FlowSystem_base *)this;
-	if(interface == "Object") return (Object *)this;
+	if(iid == FlowSystem_base::_IID) return (FlowSystem_base *)this;
+	if(iid == Object::_IID) return (Object *)this;
 	return 0;
 }
 
@@ -1452,11 +1458,13 @@ Object_base* FlowSystem::_Creator() {
 	return FlowSystem_base::_create();
 }
 
+unsigned long FlowSystem_base::_IID = MCOPUtils::makeIID("FlowSystem");
+
 GlobalComm_base *GlobalComm_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
 	assert(skel);
-	GlobalComm_base *castedObject = (GlobalComm_base *)skel->_cast("GlobalComm");
+	GlobalComm_base *castedObject = (GlobalComm_base *)skel->_cast(GlobalComm_base::_IID);
 	assert(castedObject);
 	return castedObject;
 }
@@ -1496,10 +1504,10 @@ vector<std::string> GlobalComm_base::_defaultPortsOut() const {
 	return ret;
 }
 
-void *GlobalComm_base::_cast(std::string interface)
+void *GlobalComm_base::_cast(unsigned long iid)
 {
-	if(interface == "GlobalComm") return (GlobalComm_base *)this;
-	if(interface == "Object") return (Object *)this;
+	if(iid == GlobalComm_base::_IID) return (GlobalComm_base *)this;
+	if(iid == Object::_IID) return (Object *)this;
 	return 0;
 }
 
@@ -1625,11 +1633,13 @@ Object_base* GlobalComm::_Creator() {
 	return GlobalComm_base::_create();
 }
 
+unsigned long GlobalComm_base::_IID = MCOPUtils::makeIID("GlobalComm");
+
 TmpGlobalComm_base *TmpGlobalComm_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
 	assert(skel);
-	TmpGlobalComm_base *castedObject = (TmpGlobalComm_base *)skel->_cast("TmpGlobalComm");
+	TmpGlobalComm_base *castedObject = (TmpGlobalComm_base *)skel->_cast(TmpGlobalComm_base::_IID);
 	assert(castedObject);
 	return castedObject;
 }
@@ -1669,14 +1679,11 @@ vector<std::string> TmpGlobalComm_base::_defaultPortsOut() const {
 	return ret;
 }
 
-void *TmpGlobalComm_base::_cast(std::string interface)
+void *TmpGlobalComm_base::_cast(unsigned long iid)
 {
-	if(interface == "TmpGlobalComm") return (TmpGlobalComm_base *)this;
-
-	void *result;
-	result = GlobalComm_base::_cast(interface);
-	if(result) return result;
-
+	if(iid == TmpGlobalComm_base::_IID) return (TmpGlobalComm_base *)this;
+	if(iid == GlobalComm_base::_IID) return (GlobalComm_base *)this;
+	if(iid == Object::_IID) return (Object *)this;
 	return 0;
 }
 
@@ -1718,6 +1725,8 @@ TmpGlobalComm_skel::TmpGlobalComm_skel()
 Object_base* TmpGlobalComm::_Creator() {
 	return TmpGlobalComm_base::_create();
 }
+
+unsigned long TmpGlobalComm_base::_IID = MCOPUtils::makeIID("TmpGlobalComm");
 
 static IDLFileReg IDLFileReg_core("core",
     "IDLFile:010000000000000000040000000c0000004865616465724d61676963000100"

@@ -31,6 +31,7 @@
 #include "objectmanager.h"
 #include "idlfilereg.h"
 #include "asyncstream.h"
+#include "mcoputils.h"
 
 /* define this to see what mcop transfers around */
 #undef DEBUG_IO

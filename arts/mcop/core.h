@@ -280,6 +280,8 @@ public:
 
 class InterfaceRepo_base : virtual public Object {
 public:
+	static unsigned long _IID; // interface ID
+
 	static InterfaceRepo_base *_create(const std::string& subClass = "InterfaceRepo");
 	static InterfaceRepo_base *_fromString(std::string objectref);
 	static InterfaceRepo_base *_fromReference(ObjectReference ref, bool needcopy);
@@ -293,7 +295,7 @@ public:
 	virtual vector<std::string> _defaultPortsIn() const;
 	virtual vector<std::string> _defaultPortsOut() const;
 
-	void *_cast(std::string interface);
+	void *_cast(unsigned long iid);
 
 	virtual long insertModule(const ModuleDef& newModule) = 0;
 	virtual void removeModule(long moduleID) = 0;
@@ -337,7 +339,7 @@ private:
 	InterfaceRepo_base *cache;
 	inline InterfaceRepo_base *_method_call() {
 		_pool->checkcreate();
-		cache=(InterfaceRepo_base *)_pool->base->_cast("InterfaceRepo");
+		cache=(InterfaceRepo_base *)_pool->base->_cast(InterfaceRepo_base::_IID);
 		assert(cache);
 		cacheOK=true;
 		return cache;
@@ -354,17 +356,16 @@ public:
 	inline InterfaceRepo& operator=(const InterfaceRepo& target) {
 		if (_pool == target._pool) return *this;
 		cacheOK=false;
-		Object_base *sav = _pool->base;
-		if (_pool->Dec() && sav) sav->_release();
+		_pool->Dec();
 		_pool = target._pool;
 		_pool->Inc();
 		return *this;
 	}
 	inline ~InterfaceRepo() {
-	if (!_pool) return;
-		Object_base *sav = _pool->base;
-		if (_pool->Dec() && sav) sav->_release();
-		_pool = 0;
+		if(_pool) {
+			_pool->Dec();
+			_pool = 0;
+		}
 	}
 	inline operator InterfaceRepo_base*() {return (cacheOK)?cache:_method_call();}
 
@@ -376,6 +377,8 @@ public:
 
 class FlowSystemSender_base : virtual public Object {
 public:
+	static unsigned long _IID; // interface ID
+
 	static FlowSystemSender_base *_create(const std::string& subClass = "FlowSystemSender");
 	static FlowSystemSender_base *_fromString(std::string objectref);
 	static FlowSystemSender_base *_fromReference(ObjectReference ref, bool needcopy);
@@ -389,7 +392,7 @@ public:
 	virtual vector<std::string> _defaultPortsIn() const;
 	virtual vector<std::string> _defaultPortsOut() const;
 
-	void *_cast(std::string interface);
+	void *_cast(unsigned long iid);
 
 	virtual void processed() = 0;
 };
@@ -427,7 +430,7 @@ private:
 	FlowSystemSender_base *cache;
 	inline FlowSystemSender_base *_method_call() {
 		_pool->checkcreate();
-		cache=(FlowSystemSender_base *)_pool->base->_cast("FlowSystemSender");
+		cache=(FlowSystemSender_base *)_pool->base->_cast(FlowSystemSender_base::_IID);
 		assert(cache);
 		cacheOK=true;
 		return cache;
@@ -444,17 +447,16 @@ public:
 	inline FlowSystemSender& operator=(const FlowSystemSender& target) {
 		if (_pool == target._pool) return *this;
 		cacheOK=false;
-		Object_base *sav = _pool->base;
-		if (_pool->Dec() && sav) sav->_release();
+		_pool->Dec();
 		_pool = target._pool;
 		_pool->Inc();
 		return *this;
 	}
 	inline ~FlowSystemSender() {
-	if (!_pool) return;
-		Object_base *sav = _pool->base;
-		if (_pool->Dec() && sav) sav->_release();
-		_pool = 0;
+		if(_pool) {
+			_pool->Dec();
+			_pool = 0;
+		}
 	}
 	inline operator FlowSystemSender_base*() {return (cacheOK)?cache:_method_call();}
 
@@ -463,6 +465,8 @@ public:
 
 class FlowSystemReceiver_base : virtual public Object {
 public:
+	static unsigned long _IID; // interface ID
+
 	static FlowSystemReceiver_base *_create(const std::string& subClass = "FlowSystemReceiver");
 	static FlowSystemReceiver_base *_fromString(std::string objectref);
 	static FlowSystemReceiver_base *_fromReference(ObjectReference ref, bool needcopy);
@@ -476,7 +480,7 @@ public:
 	virtual vector<std::string> _defaultPortsIn() const;
 	virtual vector<std::string> _defaultPortsOut() const;
 
-	void *_cast(std::string interface);
+	void *_cast(unsigned long iid);
 
 	virtual long receiveHandlerID() = 0;
 };
@@ -514,7 +518,7 @@ private:
 	FlowSystemReceiver_base *cache;
 	inline FlowSystemReceiver_base *_method_call() {
 		_pool->checkcreate();
-		cache=(FlowSystemReceiver_base *)_pool->base->_cast("FlowSystemReceiver");
+		cache=(FlowSystemReceiver_base *)_pool->base->_cast(FlowSystemReceiver_base::_IID);
 		assert(cache);
 		cacheOK=true;
 		return cache;
@@ -531,17 +535,16 @@ public:
 	inline FlowSystemReceiver& operator=(const FlowSystemReceiver& target) {
 		if (_pool == target._pool) return *this;
 		cacheOK=false;
-		Object_base *sav = _pool->base;
-		if (_pool->Dec() && sav) sav->_release();
+		_pool->Dec();
 		_pool = target._pool;
 		_pool->Inc();
 		return *this;
 	}
 	inline ~FlowSystemReceiver() {
-	if (!_pool) return;
-		Object_base *sav = _pool->base;
-		if (_pool->Dec() && sav) sav->_release();
-		_pool = 0;
+		if(_pool) {
+			_pool->Dec();
+			_pool = 0;
+		}
 	}
 	inline operator FlowSystemReceiver_base*() {return (cacheOK)?cache:_method_call();}
 
@@ -550,6 +553,8 @@ public:
 
 class FlowSystem_base : virtual public Object {
 public:
+	static unsigned long _IID; // interface ID
+
 	static FlowSystem_base *_create(const std::string& subClass = "FlowSystem");
 	static FlowSystem_base *_fromString(std::string objectref);
 	static FlowSystem_base *_fromReference(ObjectReference ref, bool needcopy);
@@ -563,7 +568,7 @@ public:
 	virtual vector<std::string> _defaultPortsIn() const;
 	virtual vector<std::string> _defaultPortsOut() const;
 
-	void *_cast(std::string interface);
+	void *_cast(unsigned long iid);
 
 	virtual void startObject(Object_base * node) = 0;
 	virtual void stopObject(Object_base * node) = 0;
@@ -611,7 +616,7 @@ private:
 	FlowSystem_base *cache;
 	inline FlowSystem_base *_method_call() {
 		_pool->checkcreate();
-		cache=(FlowSystem_base *)_pool->base->_cast("FlowSystem");
+		cache=(FlowSystem_base *)_pool->base->_cast(FlowSystem_base::_IID);
 		assert(cache);
 		cacheOK=true;
 		return cache;
@@ -628,17 +633,16 @@ public:
 	inline FlowSystem& operator=(const FlowSystem& target) {
 		if (_pool == target._pool) return *this;
 		cacheOK=false;
-		Object_base *sav = _pool->base;
-		if (_pool->Dec() && sav) sav->_release();
+		_pool->Dec();
 		_pool = target._pool;
 		_pool->Inc();
 		return *this;
 	}
 	inline ~FlowSystem() {
-	if (!_pool) return;
-		Object_base *sav = _pool->base;
-		if (_pool->Dec() && sav) sav->_release();
-		_pool = 0;
+		if(_pool) {
+			_pool->Dec();
+			_pool = 0;
+		}
 	}
 	inline operator FlowSystem_base*() {return (cacheOK)?cache:_method_call();}
 
@@ -652,6 +656,8 @@ public:
 
 class GlobalComm_base : virtual public Object {
 public:
+	static unsigned long _IID; // interface ID
+
 	static GlobalComm_base *_create(const std::string& subClass = "GlobalComm");
 	static GlobalComm_base *_fromString(std::string objectref);
 	static GlobalComm_base *_fromReference(ObjectReference ref, bool needcopy);
@@ -665,7 +671,7 @@ public:
 	virtual vector<std::string> _defaultPortsIn() const;
 	virtual vector<std::string> _defaultPortsOut() const;
 
-	void *_cast(std::string interface);
+	void *_cast(unsigned long iid);
 
 	virtual bool put(const std::string& variable, const std::string& value) = 0;
 	virtual std::string get(const std::string& variable) = 0;
@@ -707,7 +713,7 @@ private:
 	GlobalComm_base *cache;
 	inline GlobalComm_base *_method_call() {
 		_pool->checkcreate();
-		cache=(GlobalComm_base *)_pool->base->_cast("GlobalComm");
+		cache=(GlobalComm_base *)_pool->base->_cast(GlobalComm_base::_IID);
 		assert(cache);
 		cacheOK=true;
 		return cache;
@@ -724,17 +730,16 @@ public:
 	inline GlobalComm& operator=(const GlobalComm& target) {
 		if (_pool == target._pool) return *this;
 		cacheOK=false;
-		Object_base *sav = _pool->base;
-		if (_pool->Dec() && sav) sav->_release();
+		_pool->Dec();
 		_pool = target._pool;
 		_pool->Inc();
 		return *this;
 	}
 	inline ~GlobalComm() {
-	if (!_pool) return;
-		Object_base *sav = _pool->base;
-		if (_pool->Dec() && sav) sav->_release();
-		_pool = 0;
+		if(_pool) {
+			_pool->Dec();
+			_pool = 0;
+		}
 	}
 	inline operator GlobalComm_base*() {return (cacheOK)?cache:_method_call();}
 
@@ -745,6 +750,8 @@ public:
 
 class TmpGlobalComm_base : virtual public GlobalComm_base {
 public:
+	static unsigned long _IID; // interface ID
+
 	static TmpGlobalComm_base *_create(const std::string& subClass = "TmpGlobalComm");
 	static TmpGlobalComm_base *_fromString(std::string objectref);
 	static TmpGlobalComm_base *_fromReference(ObjectReference ref, bool needcopy);
@@ -758,7 +765,7 @@ public:
 	virtual vector<std::string> _defaultPortsIn() const;
 	virtual vector<std::string> _defaultPortsOut() const;
 
-	void *_cast(std::string interface);
+	void *_cast(unsigned long iid);
 
 };
 
@@ -794,7 +801,7 @@ private:
 	TmpGlobalComm_base *cache;
 	inline TmpGlobalComm_base *_method_call() {
 		_pool->checkcreate();
-		cache=(TmpGlobalComm_base *)_pool->base->_cast("TmpGlobalComm");
+		cache=(TmpGlobalComm_base *)_pool->base->_cast(TmpGlobalComm_base::_IID);
 		assert(cache);
 		cacheOK=true;
 		return cache;
@@ -812,17 +819,10 @@ public:
 		if (_pool == target._pool) return *this;
 		GlobalComm::cacheOK=false;
 		cacheOK=false;
-		Object_base *sav = _pool->base;
-		if (_pool->Dec() && sav) sav->_release();
+		_pool->Dec();
 		_pool = target._pool;
 		_pool->Inc();
 		return *this;
-	}
-	inline ~TmpGlobalComm() {
-	if (!_pool) return;
-		Object_base *sav = _pool->base;
-		if (_pool->Dec() && sav) sav->_release();
-		_pool = 0;
 	}
 	inline operator TmpGlobalComm_base*() {return (cacheOK)?cache:_method_call();}
 

@@ -50,6 +50,13 @@ public:
 	 */
 	static std::string readConfigEntry(const std::string& key,
 										const std::string& defaultValue = "");
+
+	/**
+	 * Makes an interface ID from string - if the given string is already
+	 * known, the returned IID will be the one returned last time. If not,
+	 * a new IID is generated
+	 */
+	static unsigned long makeIID(const std::string& interfaceName);
 };
 
 #endif /* MCOPUTILS_H */

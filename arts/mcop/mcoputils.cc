@@ -27,6 +27,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <config.h>
+#include <map>
 	
 using namespace std;
 
@@ -101,4 +102,21 @@ string MCOPUtils::readConfigEntry(const string& key, const string& defaultValue)
 		return config.readEntry(key,defaultValue);
 	}
 	return defaultValue;
+}
+
+/** IID generation **/
+
+unsigned long MCOPUtils::makeIID(const string& interfaceName)
+{
+	static map<string, unsigned long> *iidmapobj = 0;
+	static unsigned long nextiid = 1;
+
+	if(!iidmapobj) iidmapobj = new map<string,unsigned long>;
+
+	map<string,unsigned long>& iidmap = *iidmapobj;
+
+	if(!iidmap[interfaceName])
+		iidmap[interfaceName] = nextiid++;
+
+	return iidmap[interfaceName];
 }

@@ -1000,6 +1000,26 @@ vector<std::string> allParents(InterfaceDef& iface)
 	return ret;
 }
 
+// generate a list of all parents - without repetitions
+vector<string> allParentsUnique(InterfaceDef& iface)
+{
+	map<string,bool> done;
+	vector<string> parents = allParents(iface),result;
+	vector<string>::iterator i;
+
+	for(i=parents.begin();i!=parents.end();i++)
+	{	
+		string& name = *i;
+		if(!done[name])
+		{
+			result.push_back(name);
+			done[name] = true;
+		}
+	}
+
+	return result;
+}
+
 void doInterfacesHeader(FILE *header)
 {
 	list<InterfaceDef *>::iterator ii;
@@ -1019,6 +1039,7 @@ void doInterfacesHeader(FILE *header)
 
 		fprintf(header,"class %s_base : %s {\n",d->name.c_str(),inherits.c_str());
 		fprintf(header,"public:\n");
+		fprintf(header,"\tstatic unsigned long _IID; // interface ID\n\n");
 		fprintf(header,"\tstatic %s_base *_create(const std::string& subClass"
 						" = \"%s\");\n", d->name.c_str(),d->name.c_str());
 		fprintf(header,"\tstatic %s_base *_fromString(std::string objectref);\n",
@@ -1039,7 +1060,7 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\n");
 
 		// Casting
-		fprintf(header,"\tvoid *_cast(std::string interface);\n\n");
+		fprintf(header,"\tvoid *_cast(unsigned long iid);\n\n");
 
 		/* attributes (not for streams) */
 		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
@@ -1249,8 +1270,9 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\t%s_base *cache;\n",d->name.c_str());
 		fprintf(header,"\tinline %s_base *_method_call() {\n",d->name.c_str());
 		fprintf(header,"\t\t_pool->checkcreate();\n");
-		fprintf(header,"\t\tcache=(%s_base *)_pool->base->_cast(\"%s\");\n",
-									d->name.c_str(),d->name.c_str());
+		fprintf(header,"\t\tcache="
+							"(%s_base *)_pool->base->_cast(%s_base::_IID);\n",
+							d->name.c_str(),d->name.c_str());
 		fprintf(header,"\t\tassert(cache);\n");
 		fprintf(header,"\t\tcacheOK=true;\n");
 		fprintf(header,"\t\treturn cache;\n");
@@ -1297,23 +1319,21 @@ void doInterfacesHeader(FILE *header)
 				done.push_back(*si);
 		}
 		fprintf(header,"\t\tcacheOK=false;\n");
-		fprintf(header,"\t\tObject_base *sav = _pool->base;\n");
-		fprintf(header,"\t\tif (_pool->Dec() && sav) sav->_release();\n");
+		fprintf(header,"\t\t_pool->Dec();\n");
 		fprintf(header,"\t\t_pool = target._pool;\n");
 		fprintf(header,"\t\t_pool->Inc();\n");
 		fprintf(header,"\t\treturn *this;\n");
 		fprintf(header,"\t}\n");
-		
-		// destructor - take care of reference counting
-		// TODO: check if its better to move _release() call into
-		// _pool->Dec() instead!
-		fprintf(header,"\tinline ~%s() {\n", d->name.c_str());
-		fprintf(header,"\tif (!_pool) return;\n");
-		fprintf(header,"\t\tObject_base *sav = _pool->base;\n");
-		fprintf(header,"\t\tif (_pool->Dec() && sav) sav->_release();\n");
-		fprintf(header,"\t\t_pool = 0;\n");
-		fprintf(header,"\t}\n");
-		
+
+		if(parents.empty()) /* no parents -> need to free pool self */
+		{
+			fprintf(header,"\tinline ~%s() {\n",d->name.c_str());
+			fprintf(header,"\t\tif(_pool) {\n");
+			fprintf(header,"\t\t\t_pool->Dec();\n");
+			fprintf(header,"\t\t\t_pool = 0;\n");
+			fprintf(header,"\t\t}\n");
+			fprintf(header,"\t}\n");
+		}
 		// conversion to string
 //		fprintf(header,"\tinline std::string toString() const {return _method_call()->_toString();}\n");
 		// conversion to _base* object
@@ -1362,7 +1382,7 @@ void doInterfacesHeader(FILE *header)
 			if (md->name == "constructor") {
 				fprintf(header,"\tinline %s(%s) : "
 					"SmartWrapper(%s_base::_create()) {\n"
-					"\t\tcache=(%s_base *)_pool->base->_cast(\"%s\");\n"
+					"\t\tcache=(%s_base *)_pool->base->_cast(%s_base::_IID);\n"
 					"\t\tassert(cache);\n"
 					"\t\tcacheOK=true;\n"
 					"\t\tcache->constructor(%s);\n\t}\n",
@@ -1517,7 +1537,8 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"\tObject_skel *skel = "
 							"ObjectManager::the()->create(subClass);\n");
 		fprintf(source,"\tassert(skel);\n");
-		fprintf(source,"\t%s_base *castedObject = (%s_base *)skel->_cast(\"%s\");\n",
+		fprintf(source,"\t%s_base *castedObject = "
+							"(%s_base *)skel->_cast(%s_base::_IID);\n",
 							d->name.c_str(),d->name.c_str(),d->name.c_str());
 		fprintf(source,"\tassert(castedObject);\n");
 		fprintf(source,"\treturn castedObject;\n");
@@ -1597,31 +1618,22 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"\treturn ret;\n}\n\n");
 
 		/** _cast operation **/
-		fprintf(source,"void *%s_base::_cast(std::string interface)\n",
+		vector<std::string> parentCast = allParentsUnique(*d);
+
+		fprintf(source,"void *%s_base::_cast(unsigned long iid)\n",
 			d->name.c_str());
 		fprintf(source,"{\n");
-		fprintf(source,"\tif(interface == \"%s\") return (%s_base *)this;\n",
+		fprintf(source,"\tif(iid == %s_base::_IID) return (%s_base *)this;\n",
 			d->name.c_str(),d->name.c_str());
 
-		if(d->inheritedInterfaces.size())
+		vector<std::string>::iterator pci;
+		for(pci = parentCast.begin(); pci != parentCast.end();pci++)
 		{
-			vector<string>::iterator ii = d->inheritedInterfaces.begin();
-			fprintf(source,"\n\tvoid *result;\n");
-			while(ii != d->inheritedInterfaces.end())
-			{
-				fprintf(source,"\tresult = %s_base::_cast(interface);\n",
-					ii->c_str());
-				fprintf(source,"\tif(result) return result;\n\n");
-
-				ii++;
-			}
+			string& pc = *pci;
+			fprintf(source,"\tif(iid == %s_base::_IID) "
+							"return (%s_base *)this;\n",pc.c_str(),pc.c_str());
 		}
-		else
-		{
-			fprintf(source,"\tif(interface == \"Object\") "
-							"return (Object *)this;\n");
-		}
-
+		fprintf(source,"\tif(iid == Object::_IID) return (Object *)this;\n");
 		fprintf(source,"\treturn 0;\n");
 		fprintf(source,"}\n\n");
 
@@ -1831,7 +1843,10 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"Object_base* %s::_Creator() {\n",d->name.c_str());
 		fprintf(source,"\treturn %s_base::_create();\n",d->name.c_str());
 		fprintf(source,"}\n\n");
-		
+
+		// IID
+		fprintf(source,"unsigned long %s_base::_IID = "
+			"MCOPUtils::makeIID(\"%s\");\n\n",d->name.c_str(),d->name.c_str());
 	}
 }
 
