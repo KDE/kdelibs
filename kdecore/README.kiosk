@@ -122,10 +122,10 @@ they should be seperated by commas (',').
 
 To restrict access to function the kdeglobals file should contain the 
 group "[KDE Action Restrictions]", each action can then restricted by 
-adding <action>="true". E.g. to disable the action "shell access" one 
+adding <action>="true". E.g. to disable the action "shell_access" one 
 would add:
 [KDE Action Restrictions]
-shell access=false
+shell_access=false
 
 Actions that refer to menu and toolbar actions are prefixed with action/' the
 following standard actions are defined:
@@ -211,12 +211,12 @@ will disables all application entries that require root access.
 
 The most important task is to define a managable number of actions that can be 
 disabled. Actions should be defined in a generic way, "open konsole" would be
-too specific, a better definition of an action would be "shell access". 
+too specific, a better definition of an action would be "shell_access". 
 It should be noted that such an action might affect KDE features which aren't
-directly associated with "shell access". There are various locations in the 
+directly associated with "shell_access". There are various locations in the 
 file system where creating a .desktop file would effectively allow the user to 
 execute arbitrary commands. This raises the question whether such features 
-should be disabled as part of the "shell access" action or whether it should 
+should be disabled as part of the "shell_access" action or whether it should 
 get its own action definition, e.g. "custom .desktop files".
 
 Other defined actions:
