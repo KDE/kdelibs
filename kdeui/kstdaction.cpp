@@ -286,6 +286,14 @@ KToggleAction *showToolbar( const QObject *recvr, const char *slot, KActionColle
 
 }
 
+KToggleToolBarAction *showToolbar( const char* toolBarName, KActionCollection* parent, const char *name )
+{
+    KToggleToolBarAction *ret;
+    ret = new KToggleToolBarAction(toolBarName, i18n("Show &Toolbar"), parent,
+                            name ? name : stdName(ShowToolbar));
+    return ret;
+}
+
 KToggleAction *showStatusbar( const QObject *recvr, const char *slot,
                                          KActionCollection* parent, const char *name )
 {

@@ -24,6 +24,7 @@ class KAction;
 class KActionCollection;
 class KRecentFilesAction;
 class KToggleAction;
+class KToggleToolBarAction;
 
 /**
  * Convenience methods to access all standard KDE actions.
@@ -451,7 +452,12 @@ namespace KStdAction
 	*/
 	KToggleAction *showToolbar(const QObject *recvr, const char *slot,
 					KActionCollection* parent, const char *name = 0 );
-
+	/**
+	* Show/Hide the primary toolbar.
+	*/
+	KToggleToolBarAction *showToolbar(const char* toolBarName,
+					KActionCollection* parent, const char *name = 0 );
+	
 	/**
 	* Show/Hide the statusbar.
 	*/
