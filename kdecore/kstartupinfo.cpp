@@ -103,8 +103,8 @@ KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P, const
 
     d = new KStartupInfoPrivate;
     d->wm_module = new KWinModule( this );
-    connect( d->wm_module, SIGNAL( windowAdded( WId )), SLOT( window_added( WId )));
-    connect( d->wm_module, SIGNAL( systemTrayWindowAdded( WId )), SLOT( window_added( WId )));
+    connect( d->wm_module, SIGNAL( windowAdded( WId )), SLOT( slot_window_added( WId )));
+    connect( d->wm_module, SIGNAL( systemTrayWindowAdded( WId )), SLOT( slot_window_added( WId )));
     connect( &d->msgs, SIGNAL( gotMessage( const QString& )), SLOT( got_message( const QString& )));
     d->cleanup = new QTimer( this );
     connect( d->cleanup, SIGNAL( timeout()), SLOT( startups_cleanup()));
@@ -127,6 +127,36 @@ void KStartupInfo::got_message( const QString& msg_P )
         got_remove_startup_info( msg.mid( 7 ));
     }
 
+// if the application stops responding for a while, KWinModule may get
+// the information about the already mapped window before KXMessages
+// actually gets the info about the started application (depends
+// on their order in X11 event filter in KApplication)
+// simply delay info from KWinModule a bit
+namespace
+{
+class DelayedWindowEvent
+    : public QCustomEvent
+    {
+    public:
+	DelayedWindowEvent( WId w_P )
+	    : QCustomEvent( QEvent::User + 15 ), w( w_P ) {}
+	Window w;
+    };
+}
+
+void KStartupInfo::slot_window_added( WId w_P )
+    {
+    kapp->postEvent( this, new DelayedWindowEvent( w_P ));
+    }
+    
+void KStartupInfo::customEvent( QCustomEvent* e_P )
+    {
+    if( e_P->type() == QEvent::User + 15 )
+	window_added( static_cast< DelayedWindowEvent* >( e_P )->w );
+    else
+	QObject::customEvent( e_P );
+    }
+    
 void KStartupInfo::window_added( WId w_P )
     {
     KStartupInfoId id;

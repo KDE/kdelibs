@@ -210,11 +210,14 @@ class KStartupInfo
 	 * @param data the notification data
 	 */
         void gotRemoveStartup( const KStartupInfoId& id, const KStartupInfoData& data );
+    protected:
+	virtual void customEvent( QCustomEvent* e_P );
     private slots:
         void startups_cleanup();
         void startups_cleanup_no_age();
         void got_message( const QString& msg );
         void window_added( WId w );
+	void slot_window_added( WId w );
     private:
         friend class KStartupInfoPrivate;
         void got_startup_info( const QString& msg_P, bool update_only_P );
