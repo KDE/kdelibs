@@ -225,6 +225,7 @@ public:
     DOMStringImpl *elementName(unsigned short _id) const;
 
     StyleSheetListImpl* styleSheets();
+    void updateStyleSheets();
     
     ElementImpl *focusNode();
     void setFocusNode(ElementImpl *);
@@ -254,8 +255,6 @@ public:
     void addListenerType(ListenerType listenerType) { m_listenerTypes = m_listenerTypes | listenerType; }
 
     CSSStyleDeclarationImpl *getOverrideStyle(ElementImpl *elt, DOMStringImpl *pseudoElt);
-    void registerStyleSheet(StyleSheetImpl *sheet);
-    void deregisterStyleSheet(StyleSheetImpl *sheet);
 
 signals:
     virtual void finishedParsing();

@@ -117,7 +117,7 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
             m_styleSheet = new CSSStyleSheetImpl(this,0,true);
             m_styleSheet->ref();
             if (attached())
-		getDocument()->registerStyleSheet(m_styleSheet);
+		getDocument()->updateStyleSheets();
         }
         QString aStr;
 	if ( attr->attrId == ATTR_LINK )
@@ -175,7 +175,7 @@ void HTMLBodyElementImpl::attach()
     r->addChild( m_render, _next ? _next->renderer() : 0 );
 
     if (m_styleSheet)
-	getDocument()->registerStyleSheet(m_styleSheet);
+	getDocument()->updateStyleSheets();
 
     HTMLElementImpl::attach();
 
@@ -192,7 +192,7 @@ bool HTMLBodyElementImpl::prepareMouseEvent(int _x, int _y, int _tx, int _ty, Mo
 void HTMLBodyElementImpl::detach()
 {
     if (m_styleSheet)
-	getDocument()->deregisterStyleSheet(m_styleSheet);
+	getDocument()->updateStyleSheets();
     HTMLElementImpl::detach();
 }
 

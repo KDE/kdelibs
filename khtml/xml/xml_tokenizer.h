@@ -30,9 +30,6 @@
 #include <qlist.h>
 #include <qvaluelist.h>
 
-#include "misc/loader.h"
-#include "misc/loader_client.h"
-
 namespace DOM {
     class DocumentImpl;
     class NodeImpl;
@@ -128,32 +125,5 @@ protected:
 
 
 };
-
-class XMLStyleSheetLoader : public khtml::CachedObjectClient
-{
-public:
-    XMLStyleSheetLoader(DocumentPtr *_doc, DOM::DOMString url);
-    virtual ~XMLStyleSheetLoader();
-    virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
-protected:
-    DocumentPtr *m_doc;
-    khtml::CachedCSSStyleSheet *m_cachedSheet;
-};
-
-class XMLAttributeReader : public QXmlDefaultHandler
-{
-public:
-    XMLAttributeReader(QString _attrString);
-    virtual ~XMLAttributeReader();
-    QXmlAttributes readAttrs(bool &ok);
-    bool startElement(const QString& namespaceURI, const QString& localName, const QString& qName, const QXmlAttributes& atts);
-
-protected:
-    QXmlAttributes attrs;
-    QString m_attrString;
-};
-
-
-
 
 #endif

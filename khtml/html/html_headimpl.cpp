@@ -144,14 +144,14 @@ void HTMLLinkElementImpl::attach()
 
     StyleSheetImpl *s = sheet();
     if (s)
-	ownerDocument()->registerStyleSheet(s);
+	ownerDocument()->updateStyleSheets();
 }
 
 void HTMLLinkElementImpl::detach()
 {
     StyleSheetImpl *s = sheet();
     if (s)
-	ownerDocument()->deregisterStyleSheet(s);
+	ownerDocument()->updateStyleSheets();
     HTMLElementImpl::detach();
 }
 
@@ -186,9 +186,9 @@ void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DO
 
     StyleSheetImpl *s = sheet();
     if (s)
-	ownerDocument()->registerStyleSheet(s);
+	ownerDocument()->updateStyleSheets();
 
-    if(!isLoading()) sheetLoaded();
+    sheetLoaded();
 }
 
 bool HTMLLinkElementImpl::isLoading() const
@@ -202,7 +202,7 @@ bool HTMLLinkElementImpl::isLoading() const
 
 void HTMLLinkElementImpl::sheetLoaded()
 {
-    ownerDocument()->createSelector();
+    ownerDocument()->updateStyleSheets();
 }
 
 StyleSheetImpl *HTMLLinkElementImpl::sheet() const
@@ -400,7 +400,7 @@ bool HTMLStyleElementImpl::isLoading() const
 
 void HTMLStyleElementImpl::sheetLoaded()
 {
-    ownerDocument()->createSelector();
+    ownerDocument()->updateStyleSheets();
 }
 
 void HTMLStyleElementImpl::reparseSheet()
@@ -416,27 +416,25 @@ void HTMLStyleElementImpl::reparseSheet()
 
     kdDebug( 6030 ) << "style: parsing sheet '" << text.string() << "'" << endl;
 
-    if(m_sheet) {
-	ownerDocument()->deregisterStyleSheet(m_sheet);
+    if(m_sheet)
 	m_sheet->deref();
-    }
     m_sheet = new CSSStyleSheetImpl(this);
     m_sheet->ref();
     m_sheet->parseString( text, (ownerDocument()->parseMode() == DocumentImpl::Strict) );
-    ownerDocument()->registerStyleSheet(m_sheet);
+    ownerDocument()->updateStyleSheets();
 }
 
 void HTMLStyleElementImpl::attach()
 {
     if (m_sheet)
-	ownerDocument()->registerStyleSheet(m_sheet);
+	ownerDocument()->updateStyleSheets();
     HTMLElementImpl::attach();
 }
 
 void HTMLStyleElementImpl::detach()
 {
     if (m_sheet)
-	ownerDocument()->deregisterStyleSheet(m_sheet);
+	ownerDocument()->updateStyleSheets();
     HTMLElementImpl::detach();
 }
 

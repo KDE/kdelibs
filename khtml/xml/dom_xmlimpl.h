@@ -26,6 +26,10 @@
 
 #include "dom_nodeimpl.h"
 #include "css_stylesheetimpl.h"
+#include "misc/loader.h"
+#include "misc/loader_client.h"
+
+#include <qxml.h>
 
 namespace DOM {
 
@@ -93,7 +97,7 @@ protected:
 };
 
 
-class ProcessingInstructionImpl : public NodeBaseImpl
+class ProcessingInstructionImpl : public NodeBaseImpl, khtml::CachedObjectClient
 {
 public:
     ProcessingInstructionImpl(DocumentPtr *doc);
@@ -110,13 +114,28 @@ public:
     virtual bool childTypeAllowed( unsigned short type );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
     StyleSheetImpl *sheet() const;
+    void checkStyleSheet();
+    virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
 
 protected:
     DOMStringImpl *m_target;
     DOMStringImpl *m_data;
+    khtml::CachedCSSStyleSheet *m_cachedSheet;
+    CSSStyleSheetImpl *m_sheet;
 };
 
+class XMLAttributeReader : public QXmlDefaultHandler
+{
+public:
+    XMLAttributeReader(QString _attrString);
+    virtual ~XMLAttributeReader();
+    QXmlAttributes readAttrs(bool &ok);
+    bool startElement(const QString& namespaceURI, const QString& localName, const QString& qName, const QXmlAttributes& atts);
 
+protected:
+    QXmlAttributes attrs;
+    QString m_attrString;
+};
 
 }; //namespace
 

@@ -250,6 +250,8 @@ ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentPtr *doc) : NodeBas
 {
     m_target = 0;
     m_data = 0;
+    m_sheet = 0;
+    m_cachedSheet = 0;
 }
 
 ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentPtr *doc, DOMString _target, DOMString _data) : NodeBaseImpl(doc)
@@ -260,6 +262,8 @@ ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentPtr *doc, DOMString
     m_data = _data.implementation();
     if (m_data)
         m_data->ref();
+    m_sheet = 0;
+    m_cachedSheet = 0;
 }
 
 ProcessingInstructionImpl::~ProcessingInstructionImpl()
@@ -268,6 +272,10 @@ ProcessingInstructionImpl::~ProcessingInstructionImpl()
         m_target->deref();
     if (m_data)
         m_data->deref();
+    if (m_cachedSheet)
+	m_cachedSheet->deref(this);
+    if (m_sheet)
+	m_sheet->deref();
 }
 
 const DOMString ProcessingInstructionImpl::nodeName() const
@@ -315,11 +323,84 @@ NodeImpl *ProcessingInstructionImpl::cloneNode ( bool /*deep*/, int &/*exception
     return new ProcessingInstructionImpl(docPtr(),m_target,m_data);
 }
 
-StyleSheetImpl *ProcessingInstructionImpl::sheet() const
+void ProcessingInstructionImpl::checkStyleSheet()
 {
-    // ###
-    return 0;
+    if (m_target && DOMString(m_target) == "xml-stylesheet") {
+        // see http://www.w3.org/TR/xml-stylesheet/
+        // ### check that this occurs only in the prolog
+        // ### support stylesheet included in a fragment of this (or another) document
+        // ### make sure this gets called when adding from javascript
+        XMLAttributeReader attrReader(DOMString(m_data).string());
+        bool attrsOk;
+        QXmlAttributes attrs = attrReader.readAttrs(attrsOk);
+        if (!attrsOk)
+            return;
+        if (attrs.value("type") != "text/css")
+            return;
+
+        DOMString href = attrs.value("href");
+/*        if (href[0]=='#')
+            sheetElemId.append(href.string().mid(1)); // ###
+        else {*/
+            // ### some validation on the URL?
+	    // ### make sure doc->baseURL() is not empty?
+	    // ### FIXME charset
+	    if (m_cachedSheet)
+		m_cachedSheet->deref(this);		
+	    m_cachedSheet = ownerDocument()->docLoader()->requestStyleSheet(href, ownerDocument()->baseURL(), QString::null);
+	    m_cachedSheet->ref( this );
+//        }
+
+    }
 }
 
+StyleSheetImpl *ProcessingInstructionImpl::sheet() const
+{
+    return m_sheet;
+}
 
+void ProcessingInstructionImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
+{
+    if (m_sheet)
+	m_sheet->deref();
+    m_sheet = new CSSStyleSheetImpl(ownerDocument(), url);
+    m_sheet->parseString(sheet);
+    m_sheet->ref();
+    ownerDocument()->updateStyleSheets();
+    if (m_cachedSheet)
+	m_cachedSheet->deref(this);
+    m_cachedSheet = 0;
+}
 
+// -------------------------------------------------------------------------
+
+XMLAttributeReader::XMLAttributeReader(QString _attrString)
+{
+    m_attrString = _attrString;
+}
+
+XMLAttributeReader::~XMLAttributeReader()
+{
+}
+
+QXmlAttributes XMLAttributeReader::readAttrs(bool &ok)
+{
+    // parse xml file
+    QXmlInputSource source;
+    source.setData("<?xml version=\"1.0\"?><attrs "+m_attrString+" />");
+    QXmlSimpleReader reader;
+    reader.setContentHandler( this );
+    ok = reader.parse( source );
+    return attrs;
+}
+
+bool XMLAttributeReader::startElement(const QString& /*namespaceURI*/, const QString& localName,
+                                      const QString& /*qName*/, const QXmlAttributes& atts)
+{
+    if (localName == "attrs") {
+        attrs = atts;
+        return true;
+    }
+    else
+        return false; // we shouldn't have any other elements
+}

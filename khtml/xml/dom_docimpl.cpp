@@ -1275,6 +1275,35 @@ StyleSheetListImpl* DocumentImpl::styleSheets()
     return m_styleSheets;
 }
 
+void DocumentImpl::updateStyleSheets()
+{
+    QList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
+    m_styleSheets->styleSheets.clear();
+    NodeImpl *n;
+    for (n = this; n; n = n->traverseNextNode()) {
+    	StyleSheetImpl *sheet = 0;
+    	if (n->nodeType() == Node::PROCESSING_INSTRUCTION_NODE)
+	    sheet = static_cast<ProcessingInstructionImpl*>(n)->sheet();
+    	else if (n->id() == ID_LINK)
+	    sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
+    	else if (n->id() == ID_STYLE)
+	    sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
+    	else if (n->id() == ID_BODY)
+	    sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
+	
+	if (sheet) {
+	    sheet->ref();
+	    m_styleSheets->styleSheets.append(sheet);
+	}
+	if (isHTMLDocument() && n->id() == ID_BODY)
+	    break;
+    }
+    QListIterator<StyleSheetImpl> it(oldStyleSheets);
+    for (; it.current(); ++it)
+	it.current()->deref();
+    applyChanges(true,true);
+}
+
 void DocumentImpl::setFocusNode(ElementImpl *n)
 {
     // ### add check for same Document
@@ -1360,20 +1389,6 @@ EventImpl *DocumentImpl::createEvent(const DOMString &eventType, int &exceptionc
 CSSStyleDeclarationImpl *DocumentImpl::getOverrideStyle(ElementImpl */*elt*/, DOMStringImpl */*pseudoElt*/)
 {
     return 0; // ###
-}
-
-void DocumentImpl::registerStyleSheet(StyleSheetImpl *sheet)
-{
-    m_styleSheets->add(sheet);
-    setChanged(true);
-    applyChanges(true,true);
-}
-
-void DocumentImpl::deregisterStyleSheet(StyleSheetImpl *sheet)
-{
-    m_styleSheets->remove(sheet);
-    setChanged(true);
-    applyChanges(true,true);
 }
 
 // ----------------------------------------------------------------------------

@@ -171,29 +171,9 @@ bool XMLHandler::processingInstruction(const QString &target, const QString &dat
     if (m_currentNode->nodeType() == Node::TEXT_NODE)
         exitText();
     // ### handle exceptions
-    m_currentNode->addChild(m_doc->document()->createProcessingInstruction(target,data));
-
-    if (target == "xml-stylesheet") {
-        // see http://www.w3.org/TR/xml-stylesheet/
-        // ### check that this occurs only in the prolog
-        // ### support stylesheet included in a fragment of this (or another) document
-        XMLAttributeReader attrReader(data);
-        bool attrsOk;
-        QXmlAttributes attrs = attrReader.readAttrs(attrsOk);
-        if (!attrsOk)
-            return false;
-        if (attrs.value("type") != "text/css")
-            return false;
-
-        DOMString href = attrs.value("href");
-        if (href[0]=='#')
-            sheetElemId.append(href.string().mid(1));
-        else
-            // ### some validation on the URL?
-            (void) new XMLStyleSheetLoader(m_doc,href);
-
-    }
-
+    ProcessingInstructionImpl *pi = m_doc->document()->createProcessingInstruction(target,data);
+    m_currentNode->addChild(pi);
+    pi->checkStyleSheet();
     return true;
 }
 
@@ -249,8 +229,7 @@ void XMLHandler::exitText()
     //                kdDebug() << sheet.string() << endl;
                     CSSStyleSheetImpl *styleSheet = new CSSStyleSheetImpl(m_doc->document());
                     styleSheet->parseString(sheet);
-                    m_doc->document()->registerStyleSheet( styleSheet );
-                    m_doc->document()->applyChanges();
+                    m_doc->document()->updateStyleSheets();
                 }
             }
         }
@@ -454,67 +433,6 @@ void XMLTokenizer::notifyFinished(CachedObject *finishedObj)
         m_view->part()->executeScript(scriptSource.string());
         executeScripts();
     }
-}
-
-//------------------------------------------------------------------------------
-
-XMLStyleSheetLoader::XMLStyleSheetLoader(DocumentPtr *_doc, DOM::DOMString url)
-{
-    m_doc = _doc;
-    if ( m_doc ) m_doc->ref();
-
-    // ### make sure doc->baseURL() is not empty?
-    // ### FIXME charset
-    m_cachedSheet = m_doc->document()->docLoader()->requestStyleSheet(url, m_doc->document()->baseURL(), QString::null);
-    m_cachedSheet->ref( this );
-}
-
-XMLStyleSheetLoader::~XMLStyleSheetLoader()
-{
-    if ( m_doc ) m_doc->deref();
-    if ( m_cachedSheet ) m_cachedSheet->deref(this);
-}
-
-void XMLStyleSheetLoader::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
-{
-    CSSStyleSheetImpl *styleSheet = new CSSStyleSheetImpl(m_doc->document(), url);
-    styleSheet->parseString(sheet);
-    m_doc->document()->registerStyleSheet( styleSheet );
-    m_doc->document()->applyChanges();
-    delete this;
-}
-
-//------------------------------------------------------------------------------
-
-XMLAttributeReader::XMLAttributeReader(QString _attrString)
-{
-    m_attrString = _attrString;
-}
-
-XMLAttributeReader::~XMLAttributeReader()
-{
-}
-
-QXmlAttributes XMLAttributeReader::readAttrs(bool &ok)
-{
-    // parse xml file
-    QXmlInputSource source;
-    source.setData("<?xml version=\"1.0\"?><attrs "+m_attrString+" />");
-    QXmlSimpleReader reader;
-    reader.setContentHandler( this );
-    ok = reader.parse( source );
-    return attrs;
-}
-
-bool XMLAttributeReader::startElement(const QString& /*namespaceURI*/, const QString& localName,
-                                      const QString& /*qName*/, const QXmlAttributes& atts)
-{
-    if (localName == "attrs") {
-        attrs = atts;
-        return true;
-    }
-    else
-        return false; // we shouldn't have any other elements
 }
 
 #include "xml_tokenizer.moc"
