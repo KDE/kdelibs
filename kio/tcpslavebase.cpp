@@ -78,16 +78,14 @@ ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
            // ugliness alert!!  calling read() so many times can't be good...
            int clen=0;
            char *buf=data;
-           char mybuf[2]={0,0};
            while (clen < len) {
-              d->kssl->read(mybuf, 1);
-              if (*mybuf == '\r') // Ignore!
-                 continue;
-              if (*mybuf == '\n')
-                 break;
-              *buf++ = *mybuf;
+              d->kssl->read(buf, 1);
               clen++;
+              if (*buf == '\n')
+                 break;
+              buf++;
            }
+           buf++;
            *buf=0; 
            return clen;
         }
