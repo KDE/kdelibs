@@ -924,7 +924,6 @@ void KHTMLPart::clear()
   delete d->m_decoder;
 
   d->m_decoder = 0;
-  d->m_haveEncoding = false;
 
   if ( d->m_view )
     d->m_view->clear();
@@ -1029,13 +1028,14 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
     d->m_ssl_cert_state = d->m_job->queryMetaData("ssl_cert_state");
     //
     QString charset = d->m_job->queryMetaData("charset");
-    if ( !charset.isEmpty() )
+    if ( !charset.isEmpty() && !d->m_haveEncoding ) // only use information if the user didn't override the settings
     {
        QFont f(settings()->stdFontName());
        KGlobal::charsets()->setQFont(f, KGlobal::charsets()->charsetForEncoding(charset) );
        d->m_charset = f.charSet();
        d->m_settings->setCharset( d->m_charset );
        d->m_haveCharset = true;
+       d->m_encoding = charset;
     }
 
   }
@@ -1425,12 +1425,8 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
     d->m_encoding = name;
     d->m_haveEncoding = override;
 
-    // ### hack!!!!
-    if(!d->m_settings->charset() == QFont::Unicode)
-    {
-        d->m_charset = KGlobal::charsets()->charsetForEncoding(name);
-        d->m_settings->setCharset( d->m_charset );
-    }
+    d->m_charset = KGlobal::charsets()->charsetForEncoding(name);
+    d->m_settings->setCharset( d->m_charset );
 
     if( !m_url.isEmpty() ) {
         // reload document
