@@ -72,6 +72,7 @@
 #include <kshell.h>
 #include <kprotocolinfo.h>
 #include <kkeynative.h>
+#include <kmdcodec.h>
 
 #if defined Q_WS_X11
 #include <kstartupinfo.h>
@@ -2301,7 +2302,27 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
 #ifndef Q_WS_WIN
 // on win32, for invoking browser we're using win32 API
 // see kapplication_win.cpp
-void KApplication::invokeMailer(const QString &to, const QString &cc, const QString &bcc,
+
+static QString simpleRFC2047Encode( const QString &email )
+{
+  int end = email.findRev( '>' );
+
+  if ( end == -1 ) // no part to encode
+    return email;
+
+  int index = end - email.length() - 1;
+  int begin = email.findRev( '<', index );
+
+  QString address = email.mid( begin + 1, end - begin - 1 );
+  QString name = email.left( begin ).stripWhiteSpace();
+
+  QString result = QString( "=?utf8?b?%1?= <%2>" )
+                   .arg( KCodecs::base64Encode( name.utf8(), false ), address );
+
+  return result;
+}
+
+void KApplication::invokeMailer(const QString &_to, const QString &cc, const QString &bcc,
                                 const QString &subject, const QString &body,
                                 const QString & /*messageFile TODO*/, const QStringList &attachURLs,
                                 const QCString& startup_id )
@@ -2314,9 +2335,22 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
    config.setGroup( QString("PROFILE_%1").arg(group) );
    QString command = config.readPathEntry("EmailClient");
 
+   QString to;
    if (command.isEmpty() || command == QString::fromLatin1("kmail")
-       || command.endsWith("/kmail"))
+       || command.endsWith("/kmail")) {
      command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b --body %B --attach %A -- %t");
+
+     if ( !_to.isEmpty() )
+     {
+       const QStringList tos = QStringList::split( ',', _to );
+       for (QStringList::ConstIterator it = tos.begin(); it != tos.end(); ++it) {
+         to += simpleRFC2047Encode( *it ) + ", ";
+       }
+
+       to.truncate( to.length() - 2 ); // strip last commata
+     }
+   } else
+    to = _to;
 
    if (config.readBoolEntry("TerminalClient", false))
    {
