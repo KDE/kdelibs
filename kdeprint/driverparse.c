@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <dlfcn.h>
+#include <unistd.h>
 
 char	**files = NULL;
 int	nfiles = 0, maxfiles = 0;
@@ -158,6 +159,41 @@ int getMaticPrinterInfos(const char *base, const char *id, char *make, char *mod
 	int in_autodetect = 0;
 
 	snprintf(filePath, 256, "%s/%s.xml", base, id);
+	if ( access( filePath, F_OK ) != 0 )
+	{
+		/* file doesn't seem to exists, see if Foomatic ID translation file can help */
+		const char *c;
+		char ID1[ 256 ], ID2[ 256 ];
+		int found = 0;
+
+		/* Locate the actual ID part in the given "id" argument whose format is "printer/<ID>" */
+		c = id;
+		while ( *c && *c != '/' )
+			c++;
+		c++;
+		/* Translation file is usually /usr/share/foomatic/db/oldprinterids */
+		snprintf( filePath, 256, "%s/../oldprinterids", base );
+		if ( ( xmlFile = fopen( filePath, "r" ) ) == NULL )
+			return 0;
+		/* Look for possible translated ID */
+		while ( !feof( xmlFile ) )
+		{
+			if ( fscanf( xmlFile, "%256s %256s", ID1, ID2 ) == 2 )
+			{
+				if ( strcmp( c, ID1 ) == 0 )
+				{
+					snprintf( filePath, 256, "%s/printer/%s.xml", base, ID2 );
+					found = 1;
+					break;
+				}
+			}
+			else
+				break;
+		}
+		fclose( xmlFile );
+		if ( !found )
+			return 0;
+	}
 	xmlFile = fopen(filePath, "r");
 	if (xmlFile == NULL)
 		return 0;
