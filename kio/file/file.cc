@@ -571,7 +571,7 @@ void FileProtocol::createUDSEntry( const QString & filename, const QString & pat
 	}
 	
 	type = buff.st_mode & S_IFMT; // extract file type
-	access = buff.st_mode & 0x1FF; // extract permissions
+	access = buff.st_mode & 07777; // extract permissions
 
 	atom.m_uds = KIO::UDS_FILE_TYPE;
 	atom.m_long = type;
