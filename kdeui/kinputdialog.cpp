@@ -77,12 +77,6 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
       SLOT( slotEditTextChanged( const QString & ) ) );
   connect( this, SIGNAL( user1Clicked() ), d->m_lineEdit, SLOT( clear() ) );
 
-  if ( value.isNull() )
-  {
-      enableButtonOK( false );
-      enableButton( User1, false );
-  }
-
   slotEditTextChanged( value );
   setMinimumWidth( 350 );
 }
@@ -162,7 +156,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   if ( editable )
   {
     connect( d->m_comboBox, SIGNAL( textChanged( const QString & ) ),
-      SLOT( updateButtons( const QString & ) ) );
+      SLOT( slotUpdateButtons( const QString & ) ) );
     connect( this, SIGNAL( user1Clicked() ),
       d->m_comboBox, SLOT( clearEdit() ) );
   }
@@ -239,7 +233,11 @@ QString KInputDialog::getText( const QString &caption, const QString &label,
 
   QString result;
   if ( _ok )
-    result = dlg->lineEdit()->text().stripWhiteSpace();
+    result = dlg->lineEdit()->text();
+
+  // A validator may explicitly allow leading and trailing spaces
+  if ( !validator )
+    result = result.stripWhiteSpace();
 
   delete dlg;
   return result;
@@ -334,8 +332,7 @@ QStringList KInputDialog::getItemList( const QString &caption,
     *ok = _ok;
 
   QStringList result;
-
-  if ( ok )
+  if ( _ok )
   {
     for ( unsigned int i=0; i<list.count(); ++i )
       if ( dlg->listBox()->isSelected( i ) )
@@ -362,7 +359,7 @@ void KInputDialog::slotEditTextChanged( const QString &text )
   enableButton( User1, !text.isEmpty() );
 }
 
-void KInputDialog::updateButtons( const QString &text )
+void KInputDialog::slotUpdateButtons( const QString &text )
 {
   enableButton( Ok, !text.isEmpty() );
   enableButton( User1, !text.isEmpty() );

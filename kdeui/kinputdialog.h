@@ -78,7 +78,7 @@ class KInputDialog : public KDialogBase
   private slots:
 
     void slotEditTextChanged( const QString& );
-    void updateButtons( const QString& );
+    void slotUpdateButtons( const QString& );
 
   public:
 
