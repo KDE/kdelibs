@@ -35,8 +35,8 @@ namespace DOM {
 class DomShared
 {
 public:
-  DomShared() { _ref = 0; }
-  virtual ~DomShared() {}
+  DomShared() : _ref( 0 ) {}
+  virtual ~DomShared();
 
   /* Overload this function if you wan't a different deletion behaviour
    */

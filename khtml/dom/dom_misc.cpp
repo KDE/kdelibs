@@ -24,6 +24,12 @@
 #include "dom_misc.h"
 using namespace DOM;
 
+DomShared::~DomShared()
+{
+  // deliberately left blank
+}
+
+
 bool DomShared::deleteMe()
 {
   if(_ref <= 0)  return true;
