@@ -819,7 +819,7 @@ void RenderFlow::layoutInlineChildren()
 		    ++start;
 	    }
 	    end = findNextLineBreak(start);
-	    if(end == start && start.obj->isText()  && start.current() == '\n') {
+	    if(end == start && start.obj && start.obj->isText()  && start.current() == '\n') {
 		// empty line, somthing like <br><br>
 		m_height += start.obj->style()->font().pointSize();
 	    } else
@@ -827,6 +827,7 @@ void RenderFlow::layoutInlineChildren()
 	    newLine();
 	    ++end;
 	}
+	startEmbed->deref();
     }
     m_height += toAdd;
 
