@@ -56,6 +56,8 @@ public:
    */
   KRun( const KURL& _url, mode_t _mode = 0,
 	bool _is_local_file = false, bool _auto_delete = true );
+  //BCI: add bool for showProgressInfo ! (default value true)
+
   virtual ~KRun();
 
   bool hasError() const { return m_bFault; }
