@@ -275,8 +275,8 @@ void KIconLoaderDialog::init()
   connect( canvas, SIGNAL(interrupted()), this, SLOT(needReload()) );
   connect( i_filter, SIGNAL(returnPressed()), this, SLOT(filterChanged()) );
   connect( cb_dirs, SIGNAL(activated(const QString&)), this, SLOT(dirChanged(const QString&)) );
-  changeDirs(KGlobal::dirs()->getResourceDirs("toolbar"));
-
+  changeDirs(KGlobal::dirs()->getResourceDirs("icon"));
+  
   resize( 470, 350 );
   setMinimumSize( 470, 250 );
 }
