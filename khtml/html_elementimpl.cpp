@@ -203,10 +203,14 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type )
     }
 }
 
+// I don't like this way of implementing the method, but I didn't find any 
+// other way. Lars
 void HTMLElementImpl::getAbsolutePosition(int &xPos, int &yPos)
 {
     if(_parent)
+    {
 	_parent->getAbsolutePosition( xPos, yPos );
+    }
     else
 	xPos = yPos = -1;
 }
@@ -1263,7 +1267,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 #ifdef PAR_DEBUG
     printf("calcParagraph end\n");
 #endif
-//    descent += 4;    
+//    descent += 4;
     return retval;
 }
 

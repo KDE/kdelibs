@@ -23,9 +23,12 @@
 // -------------------------------------------------------------------------
 
 #include <qfontinfo.h>
+#include <qstack.h>
 
 #include <stdio.h>
 
+#include "khtmltext.h"
+#include "dom_textimpl.h"
 #include "dom_string.h"
 #include "html_inline.h"
 #include "html_inlineimpl.h"
@@ -36,7 +39,7 @@ using namespace DOM;
 #include "khtmlstyle.h"
 #include "khtmltokenizer.h"
 
-HTMLAnchorElementImpl::HTMLAnchorElementImpl(DocumentImpl *doc) 
+HTMLAnchorElementImpl::HTMLAnchorElementImpl(DocumentImpl *doc)
 : HTMLAreaElementImpl(doc)
 {
 }
@@ -94,9 +97,9 @@ bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTy
     bool inside = false;
 
     NodeImpl *child = firstChild();
-    while(child != 0) 
+    while(child != 0)
     {
-	if(child->mouseEvent(_x, _y, button, type, _tx, _ty, _url)) 
+	if(child->mouseEvent(_x, _y, button, type, _tx, _ty, _url))
 	{
 	    inside = true;
 	    break;
@@ -127,6 +130,66 @@ void HTMLAnchorElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
+// I don't like this way of implementing the method, but I didn't find any 
+// other way. Lars
+void HTMLAnchorElementImpl::getAnchorPosition(int &xPos, int &yPos)
+{
+    if(_parent)
+    {
+	_parent->getAbsolutePosition( xPos, yPos );
+	// now we need to get the postion of this element. As it's
+	// not positioned, we use the first child which is positioned
+	NodeImpl *current = firstChild();
+	QStack<NodeImpl> nodeStack;
+	bool found = false;
+	while(1)
+	{
+	    if(!current)
+	    {
+		if(nodeStack.isEmpty()) break;
+		current = nodeStack.pop();
+	    }
+	    else if(current->isRendered())
+	    {
+		found = true;
+		break;
+	    }	
+
+	    NodeImpl *child = current->firstChild();
+	    if(child)
+	    {	
+		nodeStack.push(current);
+		current = child;
+	    }
+	    else
+	    {
+		current = current->nextSibling();
+	    }
+	}
+	if(found)
+	{
+	    if(current->isTextNode())
+	    {
+		TextImpl *t = static_cast<TextImpl *>(current);
+		if(!t->first) return;
+		printf("text is at: %d/%d\n", t->first->x, t->first->y);
+		xPos += t->first->x;
+		yPos += t->first->y;
+	    }
+	    else
+	    {
+		xPos += current->getXPos();
+		yPos += current->getYPos();
+	    }      
+	}
+	else
+	{
+	    xPos = yPos = 0;
+	}
+    }
+    else
+	xPos = yPos = -1;
+}
 // -------------------------------------------------------------------------
 
 HTMLBRElementImpl::HTMLBRElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
@@ -149,7 +212,7 @@ ushort HTMLBRElementImpl::id() const
 
 // -------------------------------------------------------------------------
 
-HTMLFontElementImpl::HTMLFontElementImpl(DocumentImpl *doc) 
+HTMLFontElementImpl::HTMLFontElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
 {
 }
@@ -187,7 +250,7 @@ void HTMLFontElementImpl::setStyle(CSSStyle *currentStyle)
     if(s != 0)
     {
 	int num = s.toInt();
-	if ( *s.unicode() == '+' || 
+	if ( *s.unicode() == '+' ||
 	     *s.unicode() == '-' )
 	    currentStyle->font.size = pSettings->fontBaseSize + num;
 	else
@@ -267,7 +330,7 @@ ushort HTMLModElementImpl::id() const
 
 // -------------------------------------------------------------------------
 
-HTMLQuoteElementImpl::HTMLQuoteElementImpl(DocumentImpl *doc) 
+HTMLQuoteElementImpl::HTMLQuoteElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
 {
 }

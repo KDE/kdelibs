@@ -110,7 +110,7 @@ unsigned long HTMLCollectionImpl::calcLength(NodeImpl *current) const
 		if(e->id() == ID_AREA)
 		    len++;
 		break;
-	    case FORM_ELEMENTS: 
+	    case FORM_ELEMENTS:
 		switch(e->id())
 		{
 		case ID_INPUT:
@@ -202,7 +202,7 @@ NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len)
 		if(e->id() == ID_AREA)
 		    len++;
 		break;
-	    case FORM_ELEMENTS: 
+	    case FORM_ELEMENTS:
 		switch(e->id())
 		{
 		case ID_INPUT:
@@ -251,7 +251,7 @@ NodeImpl *HTMLCollectionImpl::item( unsigned long index )
     return getItem(base->firstChild(), index, pos);
 }
 
-NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id, 
+NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
 					    const DOMString &name )
 {
 
@@ -300,7 +300,7 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
 		if(e->id() == ID_AREA)
 		    check = true;
 		break;
-	    case FORM_ELEMENTS: 
+	    case FORM_ELEMENTS:
 		switch(e->id())
 		{
 		case ID_INPUT:
@@ -332,11 +332,19 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
 	    default:
 		printf("Error in HTMLCollection, wrong tagId!\n");
 	    }
-	    if(check && e->getAttribute(attr_id) == name) return current;
-	    NodeImpl *retval;
+	    if(check && e->getAttribute(attr_id) == name)
+	    {
+		printf("found node: %p %p %d\n", e, current, e->id());
+		return current;
+	    }
+	    NodeImpl *retval = 0;
 	    if(deep && current->firstChild())
 		retval = getNamedItem(current->firstChild(), attr_id, name);
-	    if(retval) return retval;
+	    if(retval) 
+	    {	
+		printf("got a return value %p\n", retval);
+		return retval;
+	    }
 	}
 	current = current->nextSibling();
     }
@@ -348,7 +356,7 @@ NodeImpl *HTMLCollectionImpl::namedItem( const DOMString &name )
     NodeImpl *n;
     n = getNamedItem(base->firstChild(), ATTR_ID, name);
     if(n) return n;
-    return getNamedItem(base->firstChild(), ATTR_ID, name);
+    return getNamedItem(base->firstChild(), ATTR_NAME, name);
 }
 
 

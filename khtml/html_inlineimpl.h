@@ -54,9 +54,10 @@ public:
     virtual void setStyle(CSSStyle *style);
 
     virtual void parseAttribute(Attribute *attr);
-    virtual bool mouseEvent( int x, int y, int button, MouseEventType, 
+    virtual bool mouseEvent( int x, int y, int button, MouseEventType,
 			     int _tx, int _ty, DOMString &url);
 
+    void getAnchorPosition(int &xPos, int &yPos);
 };
 
 // -------------------------------------------------------------------------
