@@ -742,7 +742,7 @@ KToolBar *KTMainWindow::toolBar( const QString& name )
 
     if ( factory() ) {
 	QWidget *widget = factory()->container( name, this );
-	if ( widget->inherits("KToolBar") )
+	if ( widget && widget->inherits("KToolBar") )
 	    result = (KToolBar*)widget;
     }
     return result;
@@ -898,11 +898,11 @@ void KTMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
     // make sure to have an empty GUI
     if ( kmenubar )
       kmenubar->clear();
-    
+
     toolbars.setAutoDelete( true );
     toolbars.clear();
     toolbars.setAutoDelete( false );
-    
+
     // we always want a help menu
     if (d->m_helpMenu == 0)
         d->m_helpMenu = new KHelpMenu(this, instance()->aboutData(), true,
@@ -941,7 +941,7 @@ void KTMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
       // this code should probably go into a separate method in KTMainWindow.
       // there's just one problem: I'm bad in finding names ;-) , so
       // I skipped this ;-)
-    
+
       QDomDocument doc = domDocument();
 
       QDomElement e = doc.documentElement().firstChild().toElement();
