@@ -47,7 +47,7 @@ public:
 				     DesktopNames |
 				     ActiveWindow |
 				     WorkArea |
-				     KDEDockingWindows,
+				     KDESystemTrayWindows,
 				     -1, false
 				     )
     {
@@ -66,12 +66,12 @@ public:
 
     QValueList<WId> windows;
     QValueList<WId> stackingOrder;
-    QValueList<WId> dockWindows;
+    QValueList<WId> systemTrayWindows;
 
     void addClient(Window);
     void removeClient(Window);
-    void addDockWin(Window);
-    void removeDockWin(Window);
+    void addSystemTrayWin(Window);
+    void removeSystemTrayWin(Window);
 
     bool x11Event( XEvent * ev );
 
@@ -119,9 +119,9 @@ bool KWinModule::hasWId(WId w) const
     return d->windows.contains( w );
 }
 
-const QValueList<WId>& KWinModule::dockWindows() const
+const QValueList<WId>& KWinModule::systemTrayWindows() const
 {
-    return d->dockWindows;
+    return d->systemTrayWindows;
 }
 
 bool KWinModulePrivate::x11Event( XEvent * ev )
@@ -186,18 +186,18 @@ void KWinModulePrivate::removeClient(Window w)
     for ( module = modules.first(); module; module = modules.next() )
 	emit module->windowRemoved( w );
 }
-void KWinModulePrivate::addDockWin(Window w)
+void KWinModulePrivate::addSystemTrayWin(Window w)
 {
-    dockWindows.append( w );
+    systemTrayWindows.append( w );
     for ( module = modules.first(); module; module = modules.next() )
-	emit module->dockWindowAdded( w );
+	emit module->systemTrayWindowAdded( w );
 }
 
-void KWinModulePrivate::removeDockWin(Window w)
+void KWinModulePrivate::removeSystemTrayWin(Window w)
 {
-    dockWindows.remove( w );
+    systemTrayWindows.remove( w );
     for ( module = modules.first(); module; module = modules.next() )
-	emit module->dockWindowRemoved( w );
+	emit module->systemTrayWindowRemoved( w );
 }
 
 int KWinModule::currentDesktop() const

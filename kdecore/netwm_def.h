@@ -41,7 +41,7 @@ struct NETPoint {
        Constructor to initialize this point to 0,0
     **/
     NETPoint() : x(0), y(0) { }
-    
+
     /**
        Public data member.
     **/
@@ -64,7 +64,7 @@ struct NETSize {
        Constructor to initialize this size to 0x0
     **/
     NETSize() : width(0), height(0) { }
-    
+
     /**
        Public data member.
     **/
@@ -108,7 +108,7 @@ struct NETIcon {
        Constructor to initialize this icon to 0x0 with data=0
     **/
     NETIcon() : data(0) { }
-    
+
     /**
        Size of the icon.
 
@@ -138,7 +138,7 @@ struct NETStrut {
        Constructor to initialize this struct to 0,0,0,0
     **/
     NETStrut() : left(0), right(0), top(0), bottom(0) { }
-    
+
     /**
        Left border of the strut.
            **/
@@ -336,8 +336,8 @@ public:
 
        Extended KDE protocols and properties (NOT STANDARD):
 
-       @li KDEDockingWindows
-       @li WMKDEDockWinFor
+       @li KDESystemTrayWindows
+       @li WMKDESystemTrayWinFor
        @li WMKDEFrameStrut
     **/
 
@@ -355,7 +355,7 @@ public:
 	WorkArea            = 1<<9,
 	SupportingWMCheck   = 1<<10,
 	VirtualRoots        = 1<<11,
-	KDEDockingWindows   = 1<<12, // NOT STANDARD
+	KDESystemTrayWindows   = 1<<12, // NOT STANDARD
 	CloseWindow         = 1<<13,
 	WMMoveResize        = 1<<14,
 
@@ -371,7 +371,7 @@ public:
 	WMPid               = 1<<23,
 	WMHandledIcons      = 1<<24,
 	WMPing              = 1<<25,
-	WMKDEDockWinFor     = 1<<26, // NOT STANDARD
+	WMKDESystemTrayWinFor     = 1<<26, // NOT STANDARD
 	XAWMState           = 1<<27,  // NOT STANDARD
 	WMKDEFrameStrut     = 1<<28 // NOT STANDARD
 

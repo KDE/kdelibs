@@ -86,13 +86,13 @@ struct NETRootInfoPrivate {
     RArray<NETRect> workarea;
     RArray<NETSize> geometry;
     Window active;
-    Window *clients, *stacking, *virtual_roots, *kde_docking_windows;
+    Window *clients, *stacking, *virtual_roots, *kde_system_tray_windows;
     RArray<const char *> desktop_names;
     int number_of_desktops;
     int current_desktop;
 
     unsigned long clients_count, stacking_count, virtual_roots_count,
-	kde_docking_windows_count;
+	kde_system_tray_windows_count;
 
     // the list of supported protocols shouldn't change, but NET clients will
     // need to read this property to know what is supported...
@@ -123,7 +123,7 @@ struct NETWinInfoPrivate {
     int desktop;
     int pid;
     int handled_icons;
-    Window kde_dockwin_for;
+    Window kde_system_tray_win_for;
 
     unsigned long properties;
 

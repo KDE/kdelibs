@@ -162,14 +162,14 @@ public:
     int clientListStackingCount() const;
 
     /**
-       Returns an array of Window id's, which contain all KDE docking windows.
+       Returns an array of Window id's, which contain all KDE system tray windows.
     **/
-    const Window *kdeDockingWindows() const;
+    const Window *kdeSystemTrayWindows() const;
 
     /**
-       Returns the number of windows in the kdeDockingWindows array.
+       Returns the number of windows in the kdeSystemTrayWindows array.
     **/
-    int kdeDockingWindowsCount() const;
+    int kdeSystemTrayWindowsCount() const;
 
     /**
        Returns the size of the specified desktop.
@@ -250,7 +250,7 @@ public:
     void setClientListStacking(Window *windows, unsigned int count);
 
     /**
-       Sets the list of KDE docking windows on the root window.
+       Sets the list of KDE system tray windows on the root window.
 
        Taken arguments:
 
@@ -258,7 +258,7 @@ public:
 
        @li count - the number of windows in the array.
     **/
-    void setKDEDockingWindows(Window *windows, unsigned int count);
+    void setKDESystemTrayWindows(Window *windows, unsigned int count);
 
     /**
        Sets the current desktop to the specified desktop.
@@ -364,19 +364,19 @@ protected:
 
     /**
        A Client should subclass NETRootInfo and reimeplement this function when
-       it wants to know when a docking window has been added.  This is a KDE 2.0
+       it wants to know when a system tray window has been added.  This is a KDE 2.0
        extension.
     **/
-    // virtual void addDockWin(Window window) { }
-    virtual void addDockWin(Window) { }
+    // virtual void addSystemTrayWin(Window window) { }
+    virtual void addSystemTrayWin(Window) { }
 
     /**
        A Client should subclass NETRootInfo and reimplement this function when
-       it wants to know when a docking window has been removed.  This is a KDE 2.0
+       it wants to know when a system tray window has been removed.  This is a KDE 2.0
        extension.
     **/
-    // virtual void removeDockWin(Window window) { }
-    virtual void removeDockWin(Window) { }
+    // virtual void removeSystemTrayWin(Window window) { }
+    virtual void removeSystemTrayWin(Window) { }
 
     /**
        A Window Manager should subclass NETRootInfo and reimplement this function
@@ -554,7 +554,7 @@ public:
        Returns a Window id, telling the window manager which window we are
        representing.
     **/
-    Window kdeDockWinFor() const;
+    Window kdeSystemTrayWinFor() const;
 
     /**
        Returns the mapping state for the window (see the NET base class
@@ -618,9 +618,9 @@ public:
     void setHandledIcons(Bool handled);
 
     /**
-       Set which window we are representing as a dock window.
+       Set which window we are representing as a system tray window.
     **/
-    void setKDEDockWinFor(Window window);
+    void setKDESystemTrayWinFor(Window window);
 
     /**
        Set the frame decoration strut.  This is a KDE 2.0 extension to aid in

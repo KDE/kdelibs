@@ -168,12 +168,12 @@ void KWin::invokeContextHelp()
     ContextWidget w;
 }
 
-void KWin::setDockWindowFor( WId dockWin, WId forWin )
+void KWin::setSystemTrayWindowFor( WId trayWin, WId forWin )
 {
-    NETWinInfo info( qt_xdisplay(), dockWin, qt_xrootwin(), 0 );
+    NETWinInfo info( qt_xdisplay(), trayWin, qt_xrootwin(), 0 );
     if ( !forWin )
 	forWin = qt_xrootwin();
-    info.setKDEDockWinFor( forWin );
+    info.setKDESystemTrayWinFor( forWin );
 }
 void KWin::setActiveWindow( WId win)
 {
@@ -381,7 +381,7 @@ void KWin::setCurrentDesktop( int desktop )
 void KWin::iconifyWindow( WId win, bool animation)
 {
     if ( !animation )
-	sendClientMessageToRoot( win, kde_wm_change_state, IconicState, 1 ); 
+	sendClientMessageToRoot( win, kde_wm_change_state, IconicState, 1 );
     XIconifyWindow( qt_xdisplay(), win, qt_xscreen() );
 }
 
@@ -389,7 +389,7 @@ void KWin::iconifyWindow( WId win, bool animation)
 void KWin::deIconifyWindow( WId win, bool animation )
 {
     if ( !animation )
-	sendClientMessageToRoot( win, kde_wm_change_state, NormalState, 1 ); 
+	sendClientMessageToRoot( win, kde_wm_change_state, NormalState, 1 );
     XMapWindow( qt_xdisplay(), win );
 }
 

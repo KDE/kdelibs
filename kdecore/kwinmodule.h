@@ -96,9 +96,9 @@ public:
     bool hasWId(WId) const;
 
     /**
-     * Retrieves a list of the dock windows.
+     * Retrieves a list of the system tray windows.
      **/
-    const QValueList<WId>& dockWindows() const;
+    const QValueList<WId>& systemTrayWindows() const;
 
     /**
      * Returns the current virtual desktop
@@ -109,7 +109,7 @@ public:
      * Returns the number of  virtual desktops
      **/
     int numberOfDesktops() const;
-    
+
     /**
      * Returns the currently active window, or 0 if no window is active.
      **/
@@ -157,12 +157,12 @@ signals:
     /**
    * Add a dock window
    */
-    void dockWindowAdded(WId);
+    void systemTrayWindowAdded(WId);
 
     /**
    * Remove a dock window
    */
-    void dockWindowRemoved(WId);
+    void systemTrayWindowRemoved(WId);
 
     /**
    * The workarea has changed
@@ -174,9 +174,9 @@ signals:
      * can be obtained with windowsSorted()
      */
     void stackingOrderChanged();
-    
-    
-    /** 
+
+
+    /**
      * The window changed.
      *
      * The unsigned int parameter contains the NET properties that
@@ -184,7 +184,7 @@ signals:
      */
     void windowChanged(WId, unsigned int );
 
-    /** 
+    /**
      * The window changed somehow.
      */
     void windowChanged(WId );

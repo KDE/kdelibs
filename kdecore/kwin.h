@@ -48,7 +48,7 @@
  *
  * In addition, it encapsulates KDE functionality not yet provided by
  * the NET hints.  Currently that is invokeContextHelp() and
- * setDockWindowFor() only.
+ * setSystemTrayWindowFor() only.
  *
  * @short Class for interaction with the windowmanager.
  * @authors Matthias Ettrich (ettrich@kde.org)
@@ -72,11 +72,12 @@ public:
 
 
     /**
-     * Makes @p dockWin a dock window for @p forWin.
+     * Makes @p trayWin a system tray window for @p forWin.
      *
-     * A dock window serves as an icon replacement.
+     * A system tray window serves as an icon replacement. It's
+     * displayed inside the panel's system tray.
      */
-    static void setDockWindowFor( WId dockWin, WId forWin );
+    static void setSystemTrayWindowFor( WId trayWin, WId forWin );
 
 
     struct Info
@@ -180,24 +181,24 @@ public:
      * See NETRootInfo.
      */
     static void setCurrentDesktop( int desktop );
-    
-    
-    /** 
+
+
+    /**
      * Iconifies a window. Compatible to XIconifyWindow but has an
      * additional parameter @p animation.
      *
      * @ref deIconifyWindow()
      */
     static void iconifyWindow( WId win, bool animation = true  );
-    
-    /** 
+
+    /**
      * DeIconifies a window. Compatible to XMapWindow but has an
      * additional parameter @p animation.
      *
      * @ref iconifyWindow()
      */
     static void deIconifyWindow( WId win, bool animation = true );
-    
+
 };
 
 #endif

@@ -48,7 +48,7 @@ static Atom net_active_window        = 0;
 static Atom net_workarea             = 0;
 static Atom net_supporting_wm_check  = 0;
 static Atom net_virtual_roots        = 0;
-static Atom net_kde_docking_windows  = 0;
+static Atom net_kde_system_tray_windows  = 0;
 
 // root window messages
 static Atom net_close_window         = 0;
@@ -65,7 +65,7 @@ static Atom net_wm_icon_geometry     = 0;
 static Atom net_wm_icon              = 0;
 static Atom net_wm_pid               = 0;
 static Atom net_wm_handled_icons     = 0;
-static Atom net_wm_kde_docking_window_for = 0;
+static Atom net_wm_kde_system_tray_window_for = 0;
 static Atom net_wm_kde_frame_strut   = 0;
 
 // application protocols
@@ -183,8 +183,8 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_PID",
 	    "_NET_WM_HANDLED_ICONS",
 	    "_NET_WM_PING",
-	    "_NET_KDE_DOCKING_WINDOWS",
-	    "_NET_KDE_DOCKING_WINDOW_FOR",
+	    "_NET_KDE_SYSTEM_TRAY_WINDOWS",
+	    "_NET_KDE_SYSTEM_TRAY_WINDOW_FOR",
 	    "WM_STATE",
 	    "_NET_WM_KDE_FRAME_STRUT"
 	    };
@@ -216,8 +216,8 @@ static void create_atoms(Display *d) {
 	    &net_wm_pid,
 	    &net_wm_handled_icons,
 	    &net_wm_ping,
-	    &net_kde_docking_windows,
-	    &net_wm_kde_docking_window_for,
+	    &net_kde_system_tray_windows,
+	    &net_wm_kde_system_tray_window_for,
 	    &xa_wm_state,
 	    &net_wm_kde_frame_strut
 	    };
@@ -379,8 +379,8 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
     p->active = None;
     p->clients = p->stacking = p->virtual_roots = (Window *) 0;
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
-    p->kde_docking_windows = 0;
-    p->kde_docking_windows_count = 0;
+    p->kde_system_tray_windows = 0;
+    p->kde_system_tray_windows_count = 0;
 
     role = WindowManager;
 
@@ -421,8 +421,8 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
     p->active = None;
     p->clients = p->stacking = p->virtual_roots = (Window *) 0;
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
-    p->kde_docking_windows = 0;
-    p->kde_docking_windows_count = 0;
+    p->kde_system_tray_windows = 0;
+    p->kde_system_tray_windows_count = 0;
 
     role = Client;
 
@@ -514,22 +514,22 @@ void NETRootInfo::setClientListStacking(Window *windows, unsigned int count) {
 }
 
 
-void NETRootInfo::setKDEDockingWindows(Window *windows, unsigned int count) {
+void NETRootInfo::setKDESystemTrayWindows(Window *windows, unsigned int count) {
     if (role != WindowManager) return;
 
-    p->kde_docking_windows_count = count;
-    if (p->kde_docking_windows) delete [] p->kde_docking_windows;
-    p->kde_docking_windows = nwindup(windows, count);
+    p->kde_system_tray_windows_count = count;
+    if (p->kde_system_tray_windows) delete [] p->kde_system_tray_windows;
+    p->kde_system_tray_windows = nwindup(windows, count);
 
 #ifdef    NETWMDEBUG
-    fprintf(stderr, "NETRootInfo::setKDEDockingWindows: setting list with %ld windows\n",
-	    p->kde_docking_windows_count);
+    fprintf(stderr, "NETRootInfo::setKDESystemTrayWindows: setting list with %ld windows\n",
+	    p->kde_system_tray_windows_count);
 #endif
 
-    XChangeProperty(p->display, p->root, net_kde_docking_windows, XA_WINDOW, 32,
+    XChangeProperty(p->display, p->root, net_kde_system_tray_windows, XA_WINDOW, 32,
 		    PropModeReplace,
-		    (unsigned char *) p->kde_docking_windows,
-		    p->kde_docking_windows_count);
+		    (unsigned char *) p->kde_system_tray_windows,
+		    p->kde_system_tray_windows_count);
 }
 
 
@@ -765,8 +765,8 @@ void NETRootInfo::setSupported(unsigned long pr) {
     if (p->protocols & VirtualRoots)
 	atoms[pnum++] = net_virtual_roots;
 
-    if (p->protocols & KDEDockingWindows)
-	atoms[pnum++] = net_kde_docking_windows;
+    if (p->protocols & KDESystemTrayWindows)
+	atoms[pnum++] = net_kde_system_tray_windows;
 
     if (p->protocols & CloseWindow)
 	atoms[pnum++] = net_close_window;
@@ -804,8 +804,8 @@ void NETRootInfo::setSupported(unsigned long pr) {
     if (p->protocols & WMPing)
 	atoms[pnum++] = net_wm_ping;
 
-    if (p->protocols & WMKDEDockWinFor)
-	atoms[pnum++] = net_wm_kde_docking_window_for;
+    if (p->protocols & WMKDESystemTrayWinFor)
+	atoms[pnum++] = net_wm_kde_system_tray_window_for;
 
     if (p->protocols & WMKDEFrameStrut)
 	atoms[pnum++] = net_wm_kde_frame_strut;
@@ -1085,17 +1085,17 @@ unsigned long NETRootInfo::event(XEvent *event) {
 	Bool done = False;
 	Bool compaction = False;
 	while (! done) {
-	    
+	
 #ifdef   NETWMDEBUG
 	    fprintf(stderr, "NETRootInfo::event: loop fire\n");
 #endif
-	    
+	
 	    if (pe.xproperty.atom == net_client_list)
 		dirty |= ClientList;
 	    else if (pe.xproperty.atom == net_client_list_stacking)
 		dirty |= ClientListStacking;
-	    else if (pe.xproperty.atom == net_kde_docking_windows)
-		dirty |= KDEDockingWindows;
+	    else if (pe.xproperty.atom == net_kde_system_tray_windows)
+		dirty |= KDESystemTrayWindows;
 	    else if (pe.xproperty.atom == net_desktop_names)
 		dirty |= DesktopNames;
 	    else if (pe.xproperty.atom == net_workarea)
@@ -1206,8 +1206,8 @@ void NETRootInfo::update(unsigned long dirty) {
 	}
     }
 
-    if (dirty & KDEDockingWindows) {
-	if (XGetWindowProperty(p->display, p->root, net_kde_docking_windows,
+    if (dirty & KDESystemTrayWindows) {
+	if (XGetWindowProperty(p->display, p->root, net_kde_system_tray_windows,
 			       0l, (long) BUFSIZE, False, XA_WINDOW, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
@@ -1216,24 +1216,24 @@ void NETRootInfo::update(unsigned long dirty) {
 
 		qsort(wins, nitems_ret, sizeof(Window), wcmp);
 
-		if (p->kde_docking_windows) {
+		if (p->kde_system_tray_windows) {
 		    if (role == Client) {
 			unsigned long new_index = 0, new_count = nitems_ret;
 			unsigned long old_index = 0,
-				      old_count = p->kde_docking_windows_count;
+				      old_count = p->kde_system_tray_windows_count;
 
 			while(old_index < old_count || new_index < new_count) {
 			    if (old_index == old_count) {
-				addDockWin(wins[new_index++]);
+				addSystemTrayWin(wins[new_index++]);
 			    } else if (new_index == new_count) {
-				removeDockWin(p->kde_docking_windows[old_index++]);
+				removeSystemTrayWin(p->kde_system_tray_windows[old_index++]);
 			    } else {
-				if (p->kde_docking_windows[old_index] <
+				if (p->kde_system_tray_windows[old_index] <
 				    wins[new_index]) {
-				    removeDockWin(p->kde_docking_windows[old_index++]);
+				    removeSystemTrayWin(p->kde_system_tray_windows[old_index++]);
 				} else if (wins[new_index] <
-					   p->kde_docking_windows[old_index]) {
-				    addDockWin(wins[new_index++]);
+					   p->kde_system_tray_windows[old_index]) {
+				    addSystemTrayWin(wins[new_index++]);
 				} else {
 				    new_index++;
 				    old_index++;
@@ -1242,17 +1242,17 @@ void NETRootInfo::update(unsigned long dirty) {
 			}
 		    }
 
-		    delete [] p->kde_docking_windows;
+		    delete [] p->kde_system_tray_windows;
 		} else {
 		    unsigned long n;
 		    for (n = 0; n < nitems_ret; n++) {
-			addDockWin(wins[n]);
+			addSystemTrayWin(wins[n]);
 		    }
 		}
 
-		p->kde_docking_windows_count = nitems_ret;
-		p->kde_docking_windows =
-		    nwindup(wins, p->kde_docking_windows_count);
+		p->kde_system_tray_windows_count = nitems_ret;
+		p->kde_system_tray_windows =
+		    nwindup(wins, p->kde_system_tray_windows_count);
 	    }
 
 	    XFree(data_ret);
@@ -1581,13 +1581,13 @@ int NETRootInfo::clientListStackingCount() const {
 }
 
 
-const Window *NETRootInfo::kdeDockingWindows() const {
-    return p->kde_docking_windows;
+const Window *NETRootInfo::kdeSystemTrayWindows() const {
+    return p->kde_system_tray_windows;
 }
 
 
-int NETRootInfo::kdeDockingWindowsCount() const {
-    return p->kde_docking_windows_count;
+int NETRootInfo::kdeSystemTrayWindowsCount() const {
+    return p->kde_system_tray_windows_count;
 }
 
 
@@ -1680,7 +1680,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->visible_name = (char *) 0;
     p->desktop = p->pid = p->handled_icons = 0;
     p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
-    p->kde_dockwin_for = 0;
+    p->kde_system_tray_win_for = 0;
 
     p->properties = properties;
     p->icon_count = 0;
@@ -1907,13 +1907,13 @@ void NETWinInfo::setHandledIcons(Bool handled) {
 }
 
 
-void NETWinInfo::setKDEDockWinFor(Window window) {
+void NETWinInfo::setKDESystemTrayWinFor(Window window) {
     if (role != Client) return;
 
-    p->kde_dockwin_for = window;
-    XChangeProperty(p->display, p->window, net_wm_kde_docking_window_for,
+    p->kde_system_tray_win_for = window;
+    XChangeProperty(p->display, p->window, net_wm_kde_system_tray_window_for,
 		    XA_CARDINAL, 32, PropModeReplace,
-		    (unsigned char *) &(p->kde_dockwin_for), 1);
+		    (unsigned char *) &(p->kde_system_tray_win_for), 1);
 }
 
 
@@ -2013,11 +2013,11 @@ unsigned long NETWinInfo::event(XEvent *event) {
 	Bool done = False;
 	Bool compaction = False;
 	while (! done) {
-	    
+	
 #ifdef    NETWMDEBUG
 	    fprintf(stderr, "NETWinInfo::event: loop fire\n");
 #endif
-	    
+	
 	    if (pe.xproperty.atom == net_wm_name)
 		dirty |= WMName;
 	    else if (pe.xproperty.atom == net_wm_visible_name)
@@ -2038,8 +2038,8 @@ unsigned long NETWinInfo::event(XEvent *event) {
 		dirty |= WMDesktop;
 	    else if (pe.xproperty.atom == net_wm_kde_frame_strut)
 		dirty |= WMKDEFrameStrut;
-	    else if (pe.xproperty.atom == net_wm_kde_docking_window_for)
-		dirty |= WMKDEDockWinFor;
+	    else if (pe.xproperty.atom == net_wm_kde_system_tray_window_for)
+		dirty |= WMKDESystemTrayWinFor;
 	    else {
 		
 #ifdef    NETWMDEBUG
@@ -2219,17 +2219,17 @@ void NETWinInfo::update(unsigned long dirty) {
 	readIcon(p);
     }
 
-    if (dirty & WMKDEDockWinFor) {
-	p->kde_dockwin_for = 0;
-	if (XGetWindowProperty(p->display, p->window, net_wm_kde_docking_window_for,
+    if (dirty & WMKDESystemTrayWinFor) {
+	p->kde_system_tray_win_for = 0;
+	if (XGetWindowProperty(p->display, p->window, net_wm_kde_system_tray_window_for,
 			       0l, 1l, False, XA_WINDOW, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == XA_WINDOW && format_ret == 32 &&
 		nitems_ret == 1) {
-		p->kde_dockwin_for = *((Window *) data_ret);
-		if ( p->kde_dockwin_for == 0 )
-		    p->kde_dockwin_for = p->root;
+		p->kde_system_tray_win_for = *((Window *) data_ret);
+		if ( p->kde_system_tray_win_for == 0 )
+		    p->kde_system_tray_win_for = p->root;
 	    }
 
 	    XFree(data_ret);
@@ -2312,8 +2312,8 @@ Bool NETWinInfo::handledIcons() const {
 }
 
 
-Window NETWinInfo::kdeDockWinFor() const {
-    return p->kde_dockwin_for;
+Window NETWinInfo::kdeSystemTrayWinFor() const {
+    return p->kde_system_tray_win_for;
 }
 
 
