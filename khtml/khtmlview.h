@@ -198,6 +198,7 @@ protected:
 
 protected slots:
     void slotPaletteChanged();
+    void slotScrollBarMoved();
 
 private:
     /**

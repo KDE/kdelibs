@@ -1059,7 +1059,11 @@ void KHTMLPart::setAutoloadImages( bool enable )
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "images_display", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
 
   if ( d->m_paLoadImages ) {
+#if QT_VERSION < 300
+    QList<KAction> lst;
+#else
     QPtrList<KAction> lst;
+#endif
     lst.append( d->m_paLoadImages );
     plugActionList( "loadImages", lst );
   }
@@ -3609,9 +3613,15 @@ QStringList KHTMLPart::frameNames() const
   return res;
 }
 
+#if QT_VERSION < 300
+QList<KParts::ReadOnlyPart> KHTMLPart::frames() const
+{
+  QList<KParts::ReadOnlyPart> res;
+#else
 QPtrList<KParts::ReadOnlyPart> KHTMLPart::frames() const
 {
   QPtrList<KParts::ReadOnlyPart> res;
+#endif
 
   ConstFrameIt it = d->m_frames.begin();
   ConstFrameIt end = d->m_frames.end();
@@ -4081,7 +4091,11 @@ void KHTMLPart::guiActivateEvent( KParts::GUIActivateEvent *event )
 
     if ( !d->m_settings->autoLoadImages() && d->m_paLoadImages )
     {
+#if QT_VERSION < 300
+        QList<KAction> lst;
+#else
         QPtrList<KAction> lst;
+#endif
         lst.append( d->m_paLoadImages );
         plugActionList( "loadImages", lst );
     }

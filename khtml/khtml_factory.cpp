@@ -36,7 +36,11 @@
 
 #include <kdebug.h>
 
+#if QT_VERSION < 300
+template class QList<KHTMLPart>;
+#else
 template class QPtrList<KHTMLPart>;
+#endif
 
 extern "C"
 {
@@ -63,7 +67,11 @@ unsigned long int KHTMLFactory::s_refcnt = 0;
 KInstance *KHTMLFactory::s_instance = 0;
 KAboutData *KHTMLFactory::s_about = 0;
 KHTMLSettings *KHTMLFactory::s_settings = 0;
+#if QT_VERSION < 300
+QList<KHTMLPart> *KHTMLFactory::s_parts = 0;
+#else
 QPtrList<KHTMLPart> *KHTMLFactory::s_parts = 0;
+#endif
 
 KHTMLFactory::KHTMLFactory( bool clone )
 {
@@ -145,7 +153,11 @@ void KHTMLFactory::deref()
 void KHTMLFactory::registerPart( KHTMLPart *part )
 {
     if ( !s_parts )
+#if QT_VERSION < 300
+        s_parts = new QList<KHTMLPart>;
+#else
         s_parts = new QPtrList<KHTMLPart>;
+#endif
 
     if ( !s_parts->containsRef( part ) )
     {

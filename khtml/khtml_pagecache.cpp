@@ -36,8 +36,11 @@
 #define KHTML_PAGE_CACHE_SIZE 12
 #endif
 
+#if QT_VERSION < 300
+template class QList<KHTMLPageCacheDelivery>;
+#else
 template class QPtrList<KHTMLPageCacheDelivery>;
-
+#endif
 class KHTMLPageCacheEntry
 {
   friend class KHTMLPageCache;
@@ -66,8 +69,13 @@ class KHTMLPageCachePrivate
 public:
   long newId;
   QIntDict<KHTMLPageCacheEntry> dict;
+#if QT_VERSION < 300
+  QList<KHTMLPageCacheDelivery> delivery;
+  QList<KHTMLPageCacheEntry> expireQueue;
+#else
   QPtrList<KHTMLPageCacheDelivery> delivery;
   QPtrList<KHTMLPageCacheEntry> expireQueue;
+#endif
   bool deliveryActive;
 };
 

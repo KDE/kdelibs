@@ -56,9 +56,14 @@
 
 #define PAINT_BUFFER_HEIGHT 128
 
+#if QT_VERSION < 300
+template class QList<KHTMLView>;
+QList<KHTMLView> *KHTMLView::lstViews = 0L;
+#else
 template class QPtrList<KHTMLView>;
-
 QPtrList<KHTMLView> *KHTMLView::lstViews = 0L;
+#endif
+
 
 using namespace DOM;
 using namespace khtml;
@@ -100,6 +105,7 @@ public:
         vmode = QScrollView::AlwaysOff;
         hmode = QScrollView::AlwaysOff;
 #endif
+        scrollBarMoved = false;
         ignoreWheelEvents = false;
 	borderX = 30;
 	borderY = 30;
@@ -118,8 +124,9 @@ public:
     // the node that was selected when enter was pressed
     ElementImpl *originalNode;
 
-    bool borderTouched;
-    bool borderStart;
+    bool borderTouched:1;
+    bool borderStart:1;
+    bool scrollBarMoved:1;
 
     QScrollView::ScrollBarMode vmode;
     QScrollView::ScrollBarMode hmode;
@@ -181,6 +188,8 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     QScrollView::setVScrollBarMode(d->vmode);
     QScrollView::setHScrollBarMode(d->hmode);
     connect(kapp, SIGNAL(kdisplayPaletteChanged()), this, SLOT(slotPaletteChanged()));
+    connect(verticalScrollBar()  , SIGNAL(valueChanged(int)), this, SLOT(slotScrollBarMoved()));
+    connect(horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(slotScrollBarMoved()));
 
     // initialize QScrollview
     enableClipper(true);
@@ -222,7 +231,11 @@ KHTMLView::~KHTMLView()
 void KHTMLView::init()
 {
     if ( lstViews == 0L )
+#if QT_VERSION < 300
+        lstViews = new QList<KHTMLView>;
+#else
         lstViews = new QPtrList<KHTMLView>;
+#endif
     lstViews->setAutoDelete( FALSE );
     lstViews->append( this );
 
@@ -790,22 +803,40 @@ bool KHTMLView::gotoLink(bool forward)
     {
 	d->borderStart = forward;
 	d->borderTouched = true;
-
+        
 	if (contentsY() != (forward?0:(contentsHeight()-visibleHeight())))
         {
-	    setContentsPos(contentsX(), (forward?0:contentsHeight()));
-	    if (nextTarget)
-	    {
-		QRect nextRect = nextTarget->getRect();
-		if (nextRect.top()  < contentsY() ||
-		    nextRect.bottom() > contentsY()+visibleHeight())
-		    return true;
-	    }
-	    else return true;
-	}
+            if (d->scrollBarMoved)
+            {
+                ElementImpl *candidate = 0;
+                while (candidate = m_part->xmlDocImpl()->findNextLink(candidate, forward))
+                {
+                    QRect candrect = candidate->getRect();
+                    if (candrect.left() > contentsX() && candrect.top() > contentsY() &&
+                        candrect.right() < contentsX() + visibleWidth() && candrect.bottom() < contentsY() + visibleHeight())
+                    {
+                        m_part->xmlDocImpl()->setFocusNode(candidate);
+                        emit m_part->nodeActivated(Node(candidate));
+                        d->scrollBarMoved = false;
+                        return true;
+                    }
+                }
+                kdDebug() << "ARGL! no visible node available\n";
+            }
+
+            setContentsPos(contentsX(), (forward?0:contentsHeight()));
+            if (nextTarget)
+            {
+                QRect nextRect = nextTarget->getRect();
+                if (nextRect.top()  < contentsY() ||
+                    nextRect.bottom() > contentsY()+visibleHeight())
+                    return true;
+            }
+            else return true;
+        }
     }
 
-    if (!nextTarget || (!currentNode && d->borderStart != forward))
+    if (!currentNode && d->borderStart != forward)
 	nextTarget = 0;
 
     QRect nextRect;
@@ -1186,4 +1217,9 @@ void KHTMLView::focusOutEvent( QFocusEvent *e )
 {
     m_part->stopAutoScroll();
     QScrollView::focusOutEvent( e );
+}
+
+void KHTMLView::slotScrollBarMoved()
+{
+  d->scrollBarMoved = true;
 }

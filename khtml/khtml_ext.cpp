@@ -477,7 +477,11 @@ QStringList KHTMLPartBrowserHostExtension::frameNames() const
   return m_part->frameNames();
 }
 
+#if QT_VERSION < 300
+const QList<KParts::ReadOnlyPart> KHTMLPartBrowserHostExtension::frames() const
+#else
 const QPtrList<KParts::ReadOnlyPart> KHTMLPartBrowserHostExtension::frames() const
+#endif
 {
   return m_part->frames();
 }
