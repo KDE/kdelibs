@@ -56,6 +56,11 @@ public:
 
   Type inputType( const QString& protocol ) const;
   Type outputType( const QString& protocol ) const;
+  /**
+   * @return the list of fields this protocol returns when listing
+   * The current possibilities are
+   * Name, Type, Size, Date, AccessDate, CreationDate, Access, Owner, Group, Link, URL, MimeType
+   */
   QStringList listing( const QString& protocol ) const;
   bool isSourceProtocol( const QString& protocol ) const;
   bool isHelperProtocol( const QString& protocol ) const;
