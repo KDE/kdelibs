@@ -31,6 +31,10 @@ static int registered = 0;
 extern "C" void kimgio_init_jpeg();
 #endif
 
+#ifdef LINKED_tiff
+extern "C" void kimgio_init_tiff();
+#endif
+
 extern "C" void kimgio_init_krl();
 
 #ifdef HAVE_QIMGIO
@@ -89,6 +93,10 @@ void kimgioRegister()
 
 #ifdef LINKED_jpeg
 	kimgio_init_jpeg();
+#endif
+
+#ifdef LINKED_tiff
+	kimgio_init_tiff();
 #endif
 
 #ifdef HAVE_QIMGIO
