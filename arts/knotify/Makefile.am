@@ -1,5 +1,5 @@
 
-INCLUDES= -I$(includedir)/arts -I$(top_srcdir)/arts/kde $(all_includes)
+INCLUDES= -I$(top_srcdir)/arts/kde -I$(includedir)/arts $(all_includes)
 
 ####### Files
 

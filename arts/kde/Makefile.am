@@ -1,6 +1,5 @@
-INCLUDES = -I$(includedir)/arts \
-           -I$(top_builddir)/arts/kde \
-           -I$(top_srcdir) $(all_includes)
+INCLUDES = -I$(top_builddir)/arts/kde \
+           -I$(top_srcdir) -I$(includedir)/arts $(all_includes)
 
 lib_LTLIBRARIES = libartskde.la
 libartskde_la_SOURCES = artskde.cc kioinputstream_impl.cpp kplayobject.cc \
