@@ -23,6 +23,4 @@ METASOURCES = AUTO
 DOXYGEN_REFERENCES = kdecore kdeui kio
 include ../admin/Doxyfile.am
 
-#SUBDIRS = dialogservice
 # vim: et
-
