@@ -41,11 +41,11 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 {
     toolTip = 0;
     setResizeMode( Adjust );
-    setArangment( TopToBottom );
+    setArrangement( TopToBottom );
     setItemTextPos( Right );
     setGridX( 120 );
     setWordWrapIconText( FALSE );
-    setAligning( TRUE );
+    setAutoArrange( TRUE );
 
     connect( this, SIGNAL( doubleClicked(QIconViewItem *) ),
 	     SLOT( selected( QIconViewItem *) ) );
