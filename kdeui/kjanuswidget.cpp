@@ -176,7 +176,7 @@ QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header )
     QFrame *page = new QFrame( mTabControl, "page" );
     if( page == 0 ) { return( 0 ); }
 
-    page->setEnabled(false);
+    //page->setEnabled(false);
     page->hide();
 
     mTabControl->addTab( page, itemName );
@@ -194,7 +194,7 @@ QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header )
     QFrame *page = new QFrame( this, "page" );
     if( page == 0 ) { return(0); }
 
-    page->setEnabled( false );
+    //page->setEnabled( false );
     //page->setFocusPolicy( StrongFocus );
     mPageList->append( page );
     mPageStack->addWidget( page, 0 );
