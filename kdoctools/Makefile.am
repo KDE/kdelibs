@@ -1,10 +1,10 @@
 
-INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kioslave -I$(top_srcdir)/kioslave/gzip -I$(top_srcdir)/kioslave/bzip2 $(all_includes) $(LIBXML_CFLAGS) $(LIBXSLT_CFLAGS)
+INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kioslave -I$(top_srcdir)/kioslave/bzip2 $(all_includes) $(LIBXML_CFLAGS) $(LIBXSLT_CFLAGS)
 LDFLAGS = $(KDE_RPATH) $(LIBXML_RPATH) $(LIBXSLT_RPATH) $(all_libraries)
 AM_CPPFLAGS = -DSRCDIR="\"$(shell (cd $(srcdir) && pwd))\"" 
 
 FILTER_LIBS = $(LIB_KSYCOCA) $(LIBBZ2)
-FILTER_sources = kgzipfilter.cpp kbzip2filter.cpp
+FILTER_sources = kbzip2filter.cpp
 
 ####### Files
 
@@ -51,9 +51,6 @@ install-data-local:
 uninstall-local:
 	-rm -rf $(DESTDIR)$(kde_datadir)/ksgmltools2/customization	
 	-rm -rf $(DESTDIR)$(kde_datadir)/ksgmltools2/docbook
-
-kgzipfilter.cpp: 
-	-$(LN_S) $(srcdir)/../kioslave/gzip/kgzipfilter.cpp .
 
 kbzip2filter.cpp:
 	-$(LN_S) $(srcdir)/../kioslave/bzip2/kbzip2filter.cpp .

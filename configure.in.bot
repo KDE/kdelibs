@@ -34,6 +34,17 @@ if test -z "$LIBPCRE"; then
   all_tests=bad
 fi
 
+if test -z "$LIBBZ2"; then
+  echo ""
+  echo "You're missing bzip2 development files."
+  echo "KDE won't be able to provide a help ioslave (help://) without it,"
+  echo "so if you want helpfiles you should consider installing it."
+  echo "Have a look at http://sourceware.cygnus.com/bzip2/ for sources, "
+  echo "or find a binary package for your platform."
+  echo ""
+  all_tests=bad
+fi
+
 if test -z "$LIBXML_CFLAGS"; then
   echo ""
   echo "You're missing libxml2 2.4.8 or later."

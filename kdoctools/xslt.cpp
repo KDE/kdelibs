@@ -286,15 +286,7 @@ static KFilterBase *findFilterByFileName( const QString &filename )
     if ( filter )
         return filter;
 
-    if ( filename.right( 4 ) == ".bz2" ) {
-#if defined( HAVE_BZIP2_SUPPORT )
-        filter = new KBzip2Filter;
-#endif
-    }
-
-    if ( !filter )
-        filter = new KGzipFilter;
-
+    filter = new KBzip2Filter;
     return filter;
 }
 

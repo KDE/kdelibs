@@ -60,6 +60,18 @@ if test -n "$HELP_SUBDIR"; then
   fi
 fi
 
+AC_DEFUN(KDOCTOOLS_CHECK_BZIP2,
+[
+AC_REQUIRE([AC_FIND_BZIP2])
+AC_MSG_CHECKING([for present bzip2 support])
+if test -z "$LIBBZ2"; then
+	AC_MSG_RESULT([no - disabling doc compiler])
+	HELP_SUBDIR=
+else
+	AC_MSG_RESULT([ok])
+fi
+])
+
 if test -n "$HELP_SUBDIR"; then  
   MEINPROC='KDELIBS_UNINSTALLED=yes $(top_builddir)/kdoctools/meinproc'
   KDE_XSL_STYLESHEET='$(top_srcdir)/kdoctools/customization/kde-chunk.xsl'
