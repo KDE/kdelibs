@@ -780,28 +780,28 @@ inline Q_UINT32 KMD5::I (Q_UINT32 x, Q_UINT32 y, Q_UINT32 z)
     return y ^ (x | ~z);
 }
 
-inline void KMD5::FF ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
+void KMD5::FF ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
                        Q_UINT32 x, Q_UINT32  s, Q_UINT32 ac )
 {
     a += F(b, c, d) + x + ac;
     a = rotate_left (a, s) +b;
 }
 
-inline void KMD5::GG ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
+void KMD5::GG ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
                  Q_UINT32 x, Q_UINT32 s, Q_UINT32 ac)
 {
     a += G(b, c, d) + x + ac;
     a = rotate_left (a, s) +b;
 }
 
-inline void KMD5::HH ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
+void KMD5::HH ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
                  Q_UINT32 x, Q_UINT32 s, Q_UINT32 ac )
 {
     a += H(b, c, d) + x + ac;
     a = rotate_left (a, s) +b;
 }
 
-inline void KMD5::II ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
+void KMD5::II ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
                  Q_UINT32 x, Q_UINT32 s, Q_UINT32 ac )
 {
     a += I(b, c, d) + x + ac;
