@@ -275,10 +275,14 @@ KMimeType::Ptr KFileDialog::currentFilterMimeType()
 
 void KFileDialog::setPreviewWidget(const QWidget *w) {
     ops->setPreviewWidget(w);
+    ops->clearHistory();
+    d->hasView = true;
 }
 
 void KFileDialog::setPreviewWidget(const KPreviewWidgetBase *w) {
     ops->setPreviewWidget(w);
+    ops->clearHistory();
+    d->hasView = true;
 }
 
 // FIXME: check for "existing" flag here?
@@ -563,8 +567,6 @@ void KFileDialog::slotStatResult(KIO::Job* job)
 
 void KFileDialog::accept()
 {
-    qDebug("* accept!");
-
     setResult( QDialog::Accepted ); // parseSelectedURLs() checks that
 
     *lastDirectory = ops->url();
