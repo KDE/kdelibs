@@ -161,7 +161,7 @@ QString KURIFilterData::iconName()
                 QString exeName = m_pURI.url();
                 exeName = exeName.mid( exeName.findRev( '/' ) + 1 ); // strip path if given
                 KService::Ptr service = KService::serviceByDesktopName( exeName );
-                if (service)
+                if (service && service->icon() != QString::fromLatin1( "unknown" ))
                     m_strIconName = service->icon();
                 // Try to find an icon with the same name as the binary (useful for non-kde apps)
                 else if ( !KGlobal::iconLoader()->loadIcon( exeName, KIcon::NoGroup, 16, KIcon::DefaultState, 0, true ).isNull() )
