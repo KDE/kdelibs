@@ -7,12 +7,12 @@
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
- 
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
- 
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -30,10 +30,6 @@
 #include <config.h>
 #endif
 
-#ifdef HAVE_LIBASOUND
-#include <linux/asequencer.h>
-#include <sys/asoundlib.h>
-
 /**
  * @short Sends MIDI events to a MIDI devices using ALSA
  * @version 0.9.5 17/01/2000
@@ -45,27 +41,6 @@ class AlsaOut : public MidiOut
 
   protected:
 
-#ifdef HAVE_LIBASOUND
-  snd_seq_t *handle;
-  int  client;
-  int  queue;
-  snd_seq_addr_t *src;
-  snd_seq_addr_t *tgt;
-
-  snd_seq_event_t *ev; 
-  int tPCN;
-
-  int tgtclient;
-  int tgtport;
-  char *tgtname;
-
-  void eventInit(snd_seq_event_t *ev);
-  void eventSend(snd_seq_event_t *ep);
-  void timerEventSend(int type);
-
-#endif
-
-//#ifdef HANDLETIMEINDEVICES
 /**
  * @internal
  * Total number of devices.
@@ -83,13 +58,12 @@ class AlsaOut : public MidiOut
   double lasttime;
   double begintime;
 
-  int    rate;
+  int    m_rate;
 /**
  * @internal
  * A "constant" used to convert from milliseconds to the computer rate
  */
-  double convertrate; 
-//#endif
+  double convertrate;
 
   long int time;
 
@@ -137,7 +111,7 @@ class AlsaOut : public MidiOut
   virtual void initDev	();
 
   /**
-   * @return the device type of the object. This is to identify the 
+   * @return the device type of the object. This is to identify the
    * inherited class that a given object is polymorphed to.
    * The returned value is one of these :
    *
@@ -147,23 +121,21 @@ class AlsaOut : public MidiOut
    * @li KMID_GUS if it's a @ref GUSOut object
    *
    * which are defined in midispec.h
-   * 
+   *
    * @see #deviceName
    */
   int          deviceType () const { return devicetype; };
 
   /**
-   * Returns the name and type of this MIDI device. 
+   * Returns the name and type of this MIDI device.
    * @see #deviceType
    */
   virtual const char * deviceName (void) const;
 
-#ifdef HANDLETIMEINDEVICES
   /**
    * @internal
    */
-  int  rate	(void) { return rate; };
-#endif
+  int  rate	(void) { return m_rate; };
 
   /**
    * See @ref DeviceManager::noteOn()
@@ -198,7 +170,7 @@ class AlsaOut : public MidiOut
   /**
    * See @ref DeviceManager::chnController()
    */
-  virtual void chnController	( uchar chn, uchar ctl , uchar v ); 
+  virtual void chnController	( uchar chn, uchar ctl , uchar v );
 
   /**
    * See @ref DeviceManager::sysex()
@@ -221,18 +193,18 @@ class AlsaOut : public MidiOut
 
   /**
    * Change all channel volume events multiplying it by this percentage correction
-   * Instead of forcing a channel to a fixed volume, this method allows to 
+   * Instead of forcing a channel to a fixed volume, this method allows to
    * music to fade out even when it was being played softly.
    * @param volper is an integer value, where 0 is quiet, 100 is used to send
    * an unmodified value, 200 play music twice louder than it should, etc.
-   */ 
-  virtual void setVolumePercentage ( int volper ) 
+   */
+  virtual void setVolumePercentage ( int volper )
   { volumepercentage = volper; };
 
   /**
    * Returns true if everything's ok and false if there has been any problem
    */
-  int ok (void) 
+  int ok (void)
   { if (seqfd<0) return 0;
     return (_ok>0);
   };
@@ -248,12 +220,11 @@ class AlsaOut : public MidiOut
    * If i==1 syncronizes by cleaning the buffer instead of sending it (in fact,
    * this is what syncronizing really means :-) )
    */
-  virtual void sync        (int i=0);  
+  virtual void sync        (int i=0);
 //#endif
 
   class AlsaOutPrivate;
   AlsaOutPrivate *di;
 };
-#endif // HAVE_LIBASOUND
 
 #endif // _ALSAOUT_H
