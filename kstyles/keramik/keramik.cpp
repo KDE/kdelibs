@@ -181,7 +181,8 @@ QPixmap KeramikStyle::stylePixmap(StylePixmap stylepixmap,
 #define loader Keramik::PixmapLoader::the()
 
 KeramikStyle::KeramikStyle() 
-	:KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar ), maskMode(false),kickerMode(false)
+	:KStyle( AllowMenuTransparency | FilledFrameWorkaround /*| DisableMenuBlend*/, ThreeButtonScrollBar ), maskMode(false),
+		toolbarBlendMode(false), toolbarBlendHorizontal(true), kickerMode(false)
 {}
 
 KeramikStyle::~KeramikStyle()
@@ -374,7 +375,14 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			}
 				
 			//p->fillRect( r, cg.background() );
-			Keramik::RectTilePainter( name, false ).draw(p, r, cg.button(), cg.background(), disabled, pmode()  );
+			if (toolbarBlendMode)
+			{
+				Keramik::GradientPainter::renderGradient( p, r, cg.button(), toolbarBlendHorizontal ); 
+				Keramik::RectTilePainter( name, false ).draw(p, r, cg.button(), cg.background(), 
+					disabled, Keramik::TilePainter::PaintFullBlend  );
+			}
+			else
+				Keramik::RectTilePainter( name, false ).draw(p, r, cg.button(), cg.background(), disabled, pmode()  );
 			
 			break;
 
@@ -442,6 +450,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		case PE_ScrollBarSlider:
 		{
 			bool horizontal = flags & Style_Horizontal;
+			bool active = ( flags & Style_Active ) || ( flags & Style_Down );
 			int name = KeramikSlider1;
 			unsigned int count = 3;
 
@@ -471,7 +480,10 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			                loader.size( keramik_scrollbar_vbar+KeramikSlider3 ).height() + 2 ) )
 					count = 5;
 
-			Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, cg.highlight(), cg.background(), false, pmode() );
+			//if (!active)
+				Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, cg.highlight(), cg.background(), false, pmode() );
+			//else
+			//	Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, cg.highlight().light(110), cg.background(), false, pmode() );
 			break;
 		}
 
@@ -922,7 +934,17 @@ void KeramikStyle::drawControl( ControlElement element,
 			if ( static_cast< const QPushButton* >( widget )->isDefault( ) )
 				drawPrimitive( PE_ButtonDefault, p, r, cg, flags );
 			else
+			{
+				if (widget->parent() && widget->parent()->inherits("QToolBar"))
+				{
+					toolbarBlendMode = true;
+					toolbarBlendHorizontal = static_cast<QToolBar*>(widget->parent())->orientation() == Horizontal;
+				}
+				
 				drawPrimitive( PE_ButtonCommand, p, r, cg, flags );
+				
+				toolbarBlendMode = false;
+			}
 			
 			break;
 
@@ -1183,7 +1205,7 @@ void KeramikStyle::drawControl( ControlElement element,
 					text_flags |= reverse ? AlignRight : AlignLeft;
 					
 					//QColor draw = cg.text();
-					QColor draw = active && enabled ? cg.highlightedText () : cg.text();
+					QColor draw = (active && enabled) ? cg.highlightedText () : cg.text();
 					p->setPen(draw);     
 
 
@@ -1193,7 +1215,7 @@ void KeramikStyle::drawControl( ControlElement element,
 							x + w - tab - rightBorder - itemHMargin - itemFrame;
 
 						// Draw the right part of the label (accelerator text)
-						if ( etchtext && !enabled && !active ) {
+						if ( etchtext && !enabled ) {
 							// Draw etched text if we're inactive and the menu item is disabled
 							p->setPen( cg.light() );
 							p->drawText( tabx+offset, y+m+1, tab, h-2*m, text_flags, s.mid( t+1 ) );
@@ -1205,7 +1227,7 @@ void KeramikStyle::drawControl( ControlElement element,
 
 					// Draw the left part of the label (or the whole label 
 					// if there's no accelerator)
-					if ( etchtext && !enabled && !active ) {
+					if ( etchtext && !enabled ) {
 						// Etched text again for inactive disabled menu items...
 						p->setPen( cg.light() );
 						p->drawText( xp+offset, y+m+1, tw, h-2*m, text_flags, s, t );
@@ -1323,7 +1345,15 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			QRect br = r;
 			if ( br.width() >= 28 && br.height() > 20 ) br.addCoords( 0, -2, 0, 0 );
 			if ( controls & SC_ComboBoxFrame )
+			{
+				if (widget->parent() && widget->parent()->inherits("QToolBar"))
+				{
+					toolbarBlendMode = true;
+					toolbarBlendHorizontal = static_cast<QToolBar*>(widget->parent())->orientation() == Horizontal;
+				}
 				drawPrimitive( PE_ButtonCommand, p, br, cg, flags );
+				toolbarBlendMode = false;
+			}
 				
 			// don't draw the focus rect etc. on the mask
 			if ( cg.button() == color1 && cg.background() == color0 ) break;
@@ -1367,12 +1397,10 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				}
 				else if ( cb->hasFocus() )
 				{
-                    QRect re = QStyle::visualRect(
-                                subRect(SR_ComboBoxFocusRect, cb), widget);
-
+					QRect re = QStyle::visualRect(subRect(SR_ComboBoxFocusRect, cb), widget);
 					p->fillRect( re, cg.brush( QColorGroup::Highlight ) );
-                    drawPrimitive( PE_FocusRect, p, re, cg,
-                                   Style_FocusAtBorder, QStyleOption( cg.highlight() ) );
+					drawPrimitive( PE_FocusRect, p, re, cg,
+					Style_FocusAtBorder, QStyleOption( cg.highlight() ) );
 				}
 				// QComboBox draws the text on its own and uses the painter's current colours
 				if ( cb->hasFocus() )
@@ -1447,7 +1475,8 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 					p->setClipRect( slider.x(), slider.y(), addpage.right() - slider.x() + 1, slider.height() );
 				else
 					p->setClipRect( slider.x(), slider.y(), slider.width(), addpage.bottom() - slider.y() + 1 );
-				drawPrimitive( PE_ScrollBarSlider, p, slider, cg, flags );
+				drawPrimitive( PE_ScrollBarSlider, p, slider, cg, 
+					flags | ( ( active == SC_ScrollBarSlider ) ? Style_Down : 0 )  );
 			}
 			p->setClipping( false );
 

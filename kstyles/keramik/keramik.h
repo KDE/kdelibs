@@ -120,7 +120,9 @@ public:
 					const QStyleOption& = QStyleOption::Default ) const;*/
 
 protected:
-	mutable bool maskMode; //Ugly round trip flag to permit masking wiht little code;
+	mutable bool maskMode; //Ugly round trip flag to permit masking with little code;
+	mutable bool toolbarBlendMode; //Ditto for blending with toolbars..
+	mutable bool toolbarBlendHorizontal; //The orientation
 	bool eventFilter( QObject* object, QEvent* event );
 	
 	Keramik::TilePainter::PaintMode pmode() const
