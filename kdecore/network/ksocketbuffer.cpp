@@ -229,10 +229,12 @@ Q_LONG KSocketBuffer::consumeBuffer(char *destbuffer, Q_LONG maxlen, bool discar
     }
 
   if (discard)
-    m_offset = offset;
+    {
+      m_offset = offset;
+      m_length -= copied;
+      assert(m_length >= 0);
+    }
 
-  m_length -= copied;
-  assert(m_length >= 0);
   return copied;
 }
 
