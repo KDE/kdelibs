@@ -19,8 +19,8 @@
 
 	*/
 
-#include <kdebug.h>
 #include "kplayobject.moc"
+#include <kdebug.h>
 
 using namespace Arts;
 
