@@ -412,7 +412,7 @@ QString whatstr;
   tabOSSL = new QFrame(this);
   QBoxLayout *vbox = new QVBoxLayout(tabOSSL, KDialog::marginHint(), KDialog::spacingHint());
 
-  oInfo = new QVButtonGroup(i18n("Path to your OpenSSL shared libraries"), tabOSSL);
+  oInfo = new QVButtonGroup(i18n("Path to OpenSSL Shared Libraries"), tabOSSL);
   vbox->addWidget(oInfo);
   oPath = new KURLRequester(oInfo);
   oPath->setMode(KFile::Directory);
