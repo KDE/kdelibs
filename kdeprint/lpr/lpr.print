@@ -12,6 +12,7 @@ Comment[he]=מערכת ההדפסה LPR/LPRng
 Comment[ko]=LPR/LPRng 인쇄 시스템
 Comment[mt]=Sistema tal-ipprintjar LPR/LPRng
 Comment[pt_BR]=Sistema de Impressão LPR/LPRng
+Comment[ro]=Sistem de tipărire LPR/LPRng
 Comment[sv]=LPR/LPRNG-skrivarsystem
 DetectUris=service:/printer
 DetectPrecedence=0
