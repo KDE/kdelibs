@@ -426,6 +426,15 @@ void KonfUpdate::gotFile(const QString &_file)
       // Close old file.
       delete oldConfig1;
       oldConfig1 = 0;
+
+      oldConfig2->setGroup("$Version");
+      QStringList ids = oldConfig2->readListEntry("update_info");
+      QString cfg_id = currentFilename + ":" + id;
+      if (!ids.contains(cfg_id) && !skip)
+      {
+         ids.append(cfg_id);
+         oldConfig2->writeEntry("update_info", ids);
+      }
       oldConfig2->sync();
       delete oldConfig2;
       oldConfig2 = 0;
@@ -446,6 +455,14 @@ void KonfUpdate::gotFile(const QString &_file)
    if (!newFile.isEmpty())
    {
       // Close new file.
+      newConfig->setGroup("$Version");
+      QStringList ids = newConfig->readListEntry("update_info");
+      QString cfg_id = currentFilename + ":" + id;
+      if (!ids.contains(cfg_id) && !skip)
+      {
+         ids.append(cfg_id);
+         newConfig->writeEntry("update_info", ids);
+      }
       newConfig->sync();
       delete newConfig;
       newConfig = 0;
@@ -469,28 +486,34 @@ void KonfUpdate::gotFile(const QString &_file)
    
    if (!oldFile.isEmpty())
    {
-      oldConfig1 = new KConfig(oldFile, true, false);
       oldConfig2 = new KConfig(oldFile, false, false);
+      QString cfg_id = currentFilename + ":" + id;
+      oldConfig2->setGroup("$Version");
+      QStringList ids = oldConfig2->readListEntry("update_info");
+      if (ids.contains(cfg_id))
+      {
+         skip = true;
+         newFile = QString::null;
+         log() << currentFilename << ": Skipping update '" << id << "'" << endl;
+      }
+
       if (!newFile.isEmpty())
       {
          newConfig = new KConfig(newFile, false, false);
+         newConfig->setGroup("$Version");
+         ids = newConfig->readListEntry("update_info");
+         if (ids.contains(cfg_id))
+         {
+            skip = true;
+            log() << currentFilename << ": Skipping update '" << id << "'" << endl;
+         }
       }
       else
       {
          newConfig = oldConfig2;
       }
-      newConfig->setGroup("$Version");
-      QStringList ids = newConfig->readListEntry("update_info");
-      QString cfg_id = currentFilename + ":" + id;
-      if (!ids.contains(cfg_id))
-      {
-         ids.append(cfg_id);
-         newConfig->writeEntry("update_info", ids);
-      }
-      else
-      {
-         skip = true;
-      }
+
+      oldConfig1 = new KConfig(oldFile, true, false);
    }
    else
    {
@@ -699,12 +722,14 @@ void KonfUpdate::gotScript(const QString &_script)
    if (!oldConfig1)
    {
       log() << currentFilename << ": !! Script without previous File specification in line " << m_lineCount << " : '" << m_line << "'" << endl;
+      skip = true;
       return;
    }
 
    if (script.isEmpty())
    {
       log() << currentFilename << ": !! Script fails to specifiy filename in line " << m_lineCount << " : '" << m_line << "'" << endl;
+      skip = true;
       return;
    } 
 
@@ -719,6 +744,7 @@ void KonfUpdate::gotScript(const QString &_script)
       if (path.isEmpty())
       {
         log() << currentFilename << ": !! Script '" << script << "' not found in line " << m_lineCount << " : '" << m_line << "'" << endl;
+        skip = true;
         return;
       }
    }
