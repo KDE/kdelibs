@@ -275,7 +275,7 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
             }
         }
 
-        if ( depth() <= 16 ) {
+        if ( depth() > 16 ) {
 
             if( depth() == 16 ) ncols = 32;
             if ( ncols < 2 || ncols > 256 ) ncols = 3;
@@ -325,7 +325,8 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
         }
         paint.end();
     }
-    else{
+    else if ( direction == Diagonal ) 
+      {
         // Diagonal gradient code inspired by BlackBox (mosfet)
         // BlackBox is (C) Brad Hughes, <bhughes@tcac.net>
         QImage image(width(), height(), 32);
@@ -341,9 +342,9 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
         gfd = (float)gDiff/w;
         bfd = (float)bDiff/w;
         for (x = 0; x < width(); x++, rd+=rfd, gd+=gfd, bd+=bfd) {
-            xtable[x][0] = (unsigned char) (rd);
-            xtable[x][1] = (unsigned char) (gd);
-            xtable[x][2] = (unsigned char) (bd);
+            xtable[x][0] = (unsigned char) rd;
+            xtable[x][1] = (unsigned char) gd;
+            xtable[x][2] = (unsigned char) bd;
         }
         rfd = (float)rDiff/h;
         gfd = (float)gDiff/h;
@@ -351,9 +352,9 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
 
         rd = gd = bd = 0;
         for (y = 0; y < height(); y++, rd+=rfd, gd+=gfd, bd+=bfd) {
-            ytable[y][0] = ((unsigned char) rd);
-            ytable[y][1] = ((unsigned char) gd);
-            ytable[y][2] = ((unsigned char) bd);
+            ytable[y][0] = (unsigned char) rd;
+            ytable[y][1] = (unsigned char) gd;
+            ytable[y][2] = (unsigned char) bd;
         }
 
         for (y = 0; y < height(); y++) {
@@ -383,6 +384,75 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
         else
             convertFromImage(image);
     }
+    else if ( direction == Pyramidal ) 
+      {
+	QImage image(width(), height(), 32);
+        float rfd, gfd, bfd;
+
+        unsigned char xtable[width()][3], ytable[height()][3];
+        unsigned int w = width(), h = height();
+
+        register unsigned int x, y;
+
+        rfd = (float)rDiff/w;
+        gfd = (float)gDiff/w;
+        bfd = (float)bDiff/w;
+
+	int rSign = rDiff>0? 1: -1;
+	int gSign = gDiff>0? 1: -1;
+	int bSign = bDiff>0? 1: -1;
+
+        float rd = -(float)rDiff/2;
+	float gd = -(float)gDiff/2;
+	float bd = -(float)bDiff/2;
+
+        for (x = 0; x < width(); x++, rd+=rfd, gd+=gfd, bd+=bfd) {
+            xtable[x][0] = (unsigned char) abs((int)rd);
+            xtable[x][1] = (unsigned char) abs((int)gd);
+            xtable[x][2] = (unsigned char) abs((int)bd);
+        }
+
+        rfd = (float)rDiff/h;
+        gfd = (float)gDiff/h;
+        bfd = (float)bDiff/h;
+
+	rd = -(float)rDiff/2;
+	gd = -(float)gDiff/2;
+	bd = -(float)bDiff/2;
+
+        for (y = 0; y < height(); y++, rd+=rfd, gd+=gfd, bd+=bfd) {
+            ytable[y][0] = (unsigned char) abs((int)rd);
+            ytable[y][1] = (unsigned char) abs((int)gd);
+            ytable[y][2] = (unsigned char) abs((int)bd);
+        }
+
+        for (y = 0; y < height(); y++) {
+            unsigned int *scanline = (unsigned int *)image.scanLine(y);
+            for (x = 0; x < width(); x++) {
+                scanline[x] = qRgb(rca + rSign * (xtable[x][0] + ytable[y][0]),
+                                   gca + gSign * (xtable[x][1] + ytable[y][1]),
+                                   bca + bSign * (xtable[x][2] + ytable[y][2]));
+            }
+        }
+        if(depth() <= 16 ) {
+            if( depth() == 16 )
+                ncols = 32;
+            if ( ncols < 2 || ncols > 256 )
+                ncols = 3;
+            QColor *dPal = new QColor[ncols];
+            for (int i=0; i<ncols; i++) {
+                dPal[i].setRgb ( rca + rDiff * i / ( ncols - 1 ),
+                                 gca + gDiff * i / ( ncols - 1 ),
+                                 bca + bDiff * i / ( ncols - 1 ) );
+            }
+            kFSDither dither(dPal, ncols);
+            image = dither.dither(image);
+            convertFromImage(image);
+            delete [] dPal;
+        }
+        else
+            convertFromImage(image);
+      }
 }
 
 void KPixmap::gradientFill(QColor ca, QColor cb, bool upDown, int ncols)
