@@ -610,7 +610,9 @@ private slots:
    * @internal
    */
   void slotAutoScroll();
-  
+
+  void slotPrintFrame();
+
 private:
   void startAutoScroll();
   void stopAutoScroll();

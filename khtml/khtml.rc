@@ -11,6 +11,7 @@
   <Action name="saveDocument" />
   <Action name="saveFrame" />
   <Action name="setEncoding" />
+  <Action name="printFrame" group="print" />
  </Menu>
 </MenuBar>
 <ToolBar name="mainToolBar">

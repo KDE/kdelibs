@@ -79,6 +79,7 @@
 #include <qclipboard.h>
 #include <qapplication.h>
 #include <qdragobject.h>
+#include <qmetaobject.h>
 
 namespace khtml
 {
@@ -177,6 +178,7 @@ public:
   KAction *m_paDecFontSizes;
   KAction *m_paLoadImages;
   KAction *m_paFind;
+  KAction *m_paPrintFrame;
 
   KParts::PartManager *m_manager;
 
@@ -286,6 +288,8 @@ void KHTMLPart::init( KHTMLView *view )
   d->m_paDecFontSizes = new KAction( i18n( "Decrease Font Sizes" ), "viewmag-", 0, this, SLOT( slotDecFontSizes() ), actionCollection(), "decFontSizes" );
 
   d->m_paFind = KStdAction::find( this, SLOT( slotFind() ), actionCollection(), "find" );
+  
+  d->m_paPrintFrame = new KAction( i18n( "Print Frame" ), "fileprint", 0, this, SLOT( slotPrintFrame() ), actionCollection(), "printFrame" );
 
   /*
     if ( !autoloadImages() )
@@ -1358,6 +1362,16 @@ void KHTMLPart::updateActions()
     
   d->m_paFind->setEnabled( enableFind );
 
+  bool enablePrintFrame = false;
+  
+  if ( frame )
+  {
+    QObject *ext = frame->child( 0, "KParts::BrowserExtension" );
+    if ( ext )
+      enablePrintFrame = ext->metaObject()->slotNames().contains( "print()" );
+  }
+  
+  d->m_paPrintFrame->setEnabled( enablePrintFrame );
   
   QString bgURL;
   
@@ -1468,7 +1482,7 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
 	       this, SIGNAL( setStatusBarText( const QString & ) ) );
     }
 
-    child->m_extension = (KParts::BrowserExtension *)part->child( 0L, "KParts::BrowserExtension" );
+    child->m_extension = static_cast<KParts::BrowserExtension *>( part->child( 0L, "KParts::BrowserExtension" ) );
 
     if ( child->m_extension )
     {
@@ -2350,6 +2364,23 @@ void KHTMLPart::slotFind()
 
   delete findDlg;
 }
+
+void KHTMLPart::slotPrintFrame()
+{
+  if ( d->m_frames.count() == 0 )
+    return;
+  
+  KParts::Part *frame = partManager()->activePart();
+  
+  KParts::BrowserExtension *ext = static_cast<KParts::BrowserExtension *>( frame->child( 0, "KParts::BrowserExtension" ) );
+  
+  if ( !ext )
+    return;
+  
+  QMetaData *mdata = ext->metaObject()->slot( "print()" );
+  if ( mdata )
+    (ext->*(mdata->ptr))();
+} 
 
 void KHTMLPart::startAutoScroll()
 {
