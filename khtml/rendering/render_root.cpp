@@ -237,6 +237,7 @@ void RenderRoot::close()
     setLayouted( false );
     if (m_view) {
         m_view->layout();
+	repaint();
     }
     //printTree();
 }
