@@ -53,6 +53,8 @@ namespace KJS {
   // TODO: -0
 };
 
+#define I18N_NOOP(s) s
+
 using namespace KJS;
 
 const TypeInfo Imp::info = { "Imp", AbstractType, 0, 0, 0 };
@@ -857,6 +859,35 @@ Object Error::createObject(ErrorType e, const char *m, int l)
   if (!context->hadError())
     context->setError(err);
 
+  const struct ErrorStruct {
+      ErrorType e;
+      const char *s;
+  } errtab[] = {
+      { GeneralError, I18N_NOOP("General error") },
+      { EvalError, I18N_NOOP("Evaluation error") },
+      { RangeError, I18N_NOOP("Range error") },
+      { ReferenceError, I18N_NOOP("Reference error") },
+      { SyntaxError, I18N_NOOP("Syntax error") },
+      { TypeError, I18N_NOOP("Type error") },
+      { URIError, I18N_NOOP("URI error") },
+      { (ErrorType)0, 0 }
+  };
+  
+  const char *estr = I18N_NOOP("Unknown error");
+  const ErrorStruct *estruct = errtab;
+  while (estruct->e) {
+      if (estruct->e == e) {
+	  estr = estruct->s;
+	  break;
+      }
+      estruct++;
+  }
+
+  if (l >= 0)
+      fprintf(stderr, "JS: %s at line %d.\n", estr, l);
+  else
+      fprintf(stderr, "JS: %s.\n", estr);
+  
   return err;
 }
 
