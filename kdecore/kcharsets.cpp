@@ -35,6 +35,8 @@
 #include <qmap.h>
 #include <qcstring.h>
 
+#include <assert.h>
+
 #define CHARSETS_COUNT 33
 
 static const char * const language_names[] = {
@@ -405,6 +407,52 @@ QString KCharsets::toEntity(const QChar &ch)
     QString ent;
     ent.sprintf("&#0x%x;", ch.unicode());
     return ent;
+}
+
+QString KCharsets::resolveEntities( const QString &input )
+{
+    QString text = input;
+    const QChar *p = text.unicode();
+    const QChar *end = p + text.length();
+    const QChar *ampersand = 0;
+    bool scanForSemicolon = false;
+
+    for ( ; p < end; ++p ) {
+        QChar ch = *p;
+
+        if ( ch == '&' ) {
+            ampersand = p;
+            scanForSemicolon = true;
+            continue;
+        }
+
+        if ( ch != ';' || scanForSemicolon == false )
+            continue;
+
+        assert( ampersand );
+
+        scanForSemicolon = false;
+
+        const QChar *entityBegin = ampersand + 1;
+
+        uint entityLength = p - entityBegin;
+        if ( entityLength == 0 )
+            continue;
+
+        QChar entityValue = KCharsets::fromEntity( QConstString( entityBegin, entityLength ).string() );
+        if ( entityValue.isNull() )
+            continue;
+
+        uint ampersandPos = ampersand - text.unicode();
+
+        text[ ampersandPos ] = entityValue;
+        text.remove( ampersandPos + 1, entityLength + 1 );
+        p = text.unicode() + ampersandPos;
+        end = text.unicode() + text.length();
+        ampersand = 0;
+    }
+
+    return text;
 }
 
 QStringList KCharsets::availableEncodingNames()

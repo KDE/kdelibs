@@ -93,6 +93,12 @@ public:
     static QString toEntity(const QChar &ch);
 
     /**
+     * Scans the given string for entities (like &amp;amp;) and resolves them
+     * using fromEntity.
+     */
+    static QString resolveEntities( const QString &text );
+
+    /**
      * Lists all available encodings as names.
      */
     QStringList availableEncodingNames();
