@@ -346,40 +346,47 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
         QImage image(width(), height(), 32);
         float rfd, gfd, bfd;
         float rd = rca, gd = gca, bd = bca;
+        int w = width()*2;
+        int h = height()*2;
 
-        unsigned char xtable[width()][3], ytable[height()][3];
-        unsigned int w = width() * 2, h = height() * 2;
+        unsigned char *xtable[3];
+        unsigned char *ytable[3];
 
-        register unsigned int x, y;
+        register int x, y;
 
         rfd = (float)rDiff/w;
         gfd = (float)gDiff/w;
         bfd = (float)bDiff/w;
 
-	int dir;
+        int dir;
+        xtable[0] = new unsigned char[width()];
+        xtable[1] = new unsigned char[width()];
+        xtable[2] = new unsigned char[width()];
         for (x = 0; x < width(); x++, rd+=rfd, gd+=gfd, bd+=bfd) {
-	    dir = direction == Diagonal? x : width() - x - 1;
-            xtable[dir][0] = (unsigned char) rd;
-            xtable[dir][1] = (unsigned char) gd;
-            xtable[dir][2] = (unsigned char) bd;
+            dir = direction == Diagonal? x : width() - x - 1;
+            xtable[0][dir] = (unsigned char) rd;
+            xtable[1][dir] = (unsigned char) gd;
+            xtable[2][dir] = (unsigned char) bd;
         }
         rfd = (float)rDiff/h;
         gfd = (float)gDiff/h;
         bfd = (float)bDiff/h;
-
         rd = gd = bd = 0;
+        ytable[0] = new unsigned char[height()];
+        ytable[1] = new unsigned char[height()];
+        ytable[2] = new unsigned char[height()];
         for (y = 0; y < height(); y++, rd+=rfd, gd+=gfd, bd+=bfd) {
-            ytable[y][0] = (unsigned char) rd;
-            ytable[y][1] = (unsigned char) gd;
-            ytable[y][2] = (unsigned char) bd;
+            ytable[0][h] = (unsigned char) rd;
+            ytable[1][h] = (unsigned char) gd;
+            ytable[2][h] = (unsigned char) bd;
         }
 
         for (y = 0; y < height(); y++) {
             unsigned int *scanline = (unsigned int *)image.scanLine(y);
             for (x = 0; x < width(); x++) {
-                scanline[x] = qRgb(xtable[x][0] + ytable[y][0],
-                                   xtable[x][1] + ytable[y][1],
-                                   xtable[x][2] + ytable[y][2]);
+                scanline[x] = qRgb(xtable[0][x] + ytable[0][y],
+                                   xtable[1][x] + ytable[1][y],
+                                   xtable[2][x] + ytable[2][y]);
             }
         }
         if(depth() < 15 ) {
@@ -398,7 +405,15 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
         }
         else
             convertFromImage(image);
+
+        delete [] xtable[0];
+        delete [] xtable[1];
+        delete [] xtable[2];
+        delete [] ytable[0];
+        delete [] ytable[1];
+        delete [] ytable[2];
     }
+
 }
 
 void KPixmap::gradientFill(QColor ca, QColor cb, bool upDown, int ncols)
