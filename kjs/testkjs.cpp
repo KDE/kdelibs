@@ -59,8 +59,8 @@ int main(int argc, char **argv)
     bool ret = kjs->evaluate(code);
     if (kjs->errorType() != 0)
       printf("%s returned error %d\n", file, kjs->errorType());
-    else
-      printf("returned %s\n", ret ? "TRUE" : "FALSE");
+    else if (kjs->returnValue())
+      printf("returned a value\n");
 
     fclose(f);
   }

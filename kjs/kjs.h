@@ -31,6 +31,7 @@ namespace KJS {
   class Global;
   class KJSO;
   class Object;
+  class Imp;
   class KJScriptImp;
 };
 
@@ -65,6 +66,8 @@ public:
    * once the state (global variables, functions etc.) will be preserved
    * between each call.
    * @param code is a string containing the code to be executed.
+   * @return True if the code was evaluated successfully, false if an error
+   * occured.
    */
   bool evaluate(const char *code);
   /**
@@ -87,6 +90,11 @@ public:
    * @ref KJScript::evaluate.
    */
   void clear();
+  /**
+   * @return Return value from the last call to @ref evaluate(). Null if there
+   * hasn't been any.
+   */
+  KJS::Imp *returnValue() const;
   /**
    * @return Return code from last call to @ref evaluate(). 0 on success.
    */

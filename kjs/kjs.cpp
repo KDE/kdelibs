@@ -66,6 +66,11 @@ void KJScript::clear()
   rep->clear();
 }
 
+Imp *KJScript::returnValue() const
+{
+  return rep->retVal;
+}
+
 int KJScript::errorType() const
 {
   return rep->errType;

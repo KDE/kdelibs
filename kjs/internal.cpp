@@ -396,7 +396,8 @@ KJScriptImp* KJScriptImp::curr = 0L;
 KJScriptImp::KJScriptImp()
   : initialized(false),
     glob(0L),
-    exVal(0L)
+    exVal(0L),
+    retVal(0L)
 {
   KJScriptImp::curr = this;
   lex = new Lexer();
@@ -422,6 +423,7 @@ void KJScriptImp::init()
   KJScriptImp::curr = this;
 
   exVal = 0L;
+  retVal = 0L;
 
   if (!initialized) {
     collector = Collector::init();
@@ -430,6 +432,7 @@ void KJScriptImp::init()
     firstNode = 0L;
     progNode = 0L;
     recursion = 0;
+    errMsg = "";
     initialized = true;
   } else
     Collector::attach(collector);
@@ -443,6 +446,7 @@ void KJScriptImp::clear()
     Node::deleteAllNodes(&firstNode, &progNode);
 
     exVal = 0L;
+    retVal = 0L;
 
     delete con; con = 0L;
     Collector::attach(collector);
@@ -488,8 +492,6 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV)
   KJSO res = progNode->evaluate();
   recursion--;
   
-  bool retVal = true;
-  
   if (context->hadError()) {
     /* TODO */
     errType = 99;
@@ -500,17 +502,18 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV)
     errMsg = "";
 
     // catch return value
+    retVal = 0L;
     if (res.isA(CompletionType)) {
       Completion *com = static_cast<Completion*>(&res);
       if (com->isValueCompletion())
-	retVal = com->value().toBoolean().value();
+	retVal = com->value().imp();
     }
   }
 
   if (progNode)
     progNode->deleteStatements();
 
-  return ((errType == 0) && retVal);
+  return !errType;
 }
 
 bool PropList::contains(const UString &name)

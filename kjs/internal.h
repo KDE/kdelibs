@@ -253,6 +253,7 @@ namespace KJS {
     int errType;
     const char *errMsg;
     Imp *exVal;
+    Imp *retVal;
     int recursion;
   };
 
