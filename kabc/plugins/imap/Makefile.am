@@ -8,7 +8,7 @@ kde_module_LTLIBRARIES = kabc_imap.la
 kabc_imap_la_SOURCES = resourceimap.cpp
 
 kabc_imap_la_LDFLAGS	= $(all_libraries) -module $(KDE_PLUGIN)
-kabc_imap_la_LIBADD	= -lkabc $(LIB_KDEUI)
+kabc_imap_la_LIBADD	= ../../../kabc/libkabc.la ../../../kdeui/libkdeui.la
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
