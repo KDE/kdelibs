@@ -345,7 +345,6 @@ QStringList KService::propertyNames() const
   res.append( "Terminal" );
   res.append( "TerminalOptions" );
   res.append( "Path" );
-  res.append( "File" );
   res.append( "ServiceTypes" );
   res.append( "AllowAsDefault" );
   res.append( "InitialPreference" );

@@ -43,19 +43,26 @@ public:
 		 int _pref, bool _default );
 
   bool operator< ( const KServiceOffer& ) const;
+  /**
+   * Is it allowed to use this service for default actions
+   * (e.g. Left Click in a file manager, or KRun in general)
+   */
   bool allowAsDefault() const { return m_bAllowAsDefault; }
-  int preference() const { return m_iPreference; }
-  KService::Ptr service() const { return m_pService; }
-  bool isValid() const { return m_iPreference >= 0; }
-
-private:
   /**
    * The bigger this number is, the better is this service.
    */
-  int m_iPreference;
+  int preference() const { return m_iPreference; }
   /**
-   * Is it allowed to use this service for default actions.
+   * The service which this offer is about.
    */
+  KService::Ptr service() const { return m_pService; }
+  /**
+   * Whether the entry is valid
+   */
+  bool isValid() const { return m_iPreference >= 0; }
+
+private:
+  int m_iPreference;
   bool m_bAllowAsDefault;
   KService::Ptr m_pService;
 };
@@ -81,7 +88,8 @@ public:
   OfferList offers() const;
 
   /**
-   * @return the service type for which this profile is responsible.
+   * @return the service type_s_ for which this profile is responsible.
+   * @internal - you're not supposed to call this !
    */
   QString serviceType() const { return m_strServiceType; }
 
@@ -89,18 +97,48 @@ public:
    * @return the preferred service (convenience method)
    * @param needApp if we need an service of type Application
    * (as opposed to any service, including non-app services)
+   * @deprecated, see the other @ref preferredService.
    */
-  static KService::Ptr preferredService( const QString & _serviceType, bool needApp );
+  static KService::Ptr preferredService( const QString & serviceType, bool needApp );  // ### remove in KDE 3.0
+
+  /**
+   * @return the preferred service (convenience method)
+   * for _serviceType and _genericServiceType (Application, type of component, or empty).
+   *
+   * preferredService(m,true) is equivalent to preferredService(m,"Application")
+   * preferredService(m,false) is equivalent to preferredService(m,QString::null)
+   * This call allows e.g. preferredService(m,"KParts/ReadOnlyPart").
+   */
+  static KService::Ptr preferredService( const QString & serviceType, const QString & genericServiceType );
 
   /**
    * @return the profile for the requested service type.
    */
-  static KServiceTypeProfile* serviceTypeProfile( const QString& _servicetype );
+  static KServiceTypeProfile* serviceTypeProfile( const QString& servicetype );
+  /**
+   * @return the profile for the requested service type.
+   */
+  static KServiceTypeProfile* serviceTypeProfile( const QString& servicetype, const QString & genericServiceType );
+  // BCI : merge into one, with genericServiceType = QString::null
 
   /**
-   * @return the offers associated with a given servicetype
+   * @return the offers associated with a given servicetype, sorted by preference
+   * This is what KTrader uses to get the list of offers, before applying the
+   * constraints and preferences.
    */
-  static OfferList offers( const QString& _servicetype );
+  static OfferList offers( const QString& servicetype );
+
+  /**
+   * @return the offers associated with the combination of two service types
+   * This is almost like an "blah in ServiceTypes" constraint in the Trader,
+   * but the difference is that to order the offers, we will look at entries
+   * specifically for those two service types. Typically, this is used for
+   * getting the list of embeddable components that can handle a given mimetype.
+   * In that case, @p servicetype is the mimetype and @p genericServiceType is "KParts/ReadOnlyPart".
+   */
+  static OfferList offers( const QString& servicetype, const QString& genericServiceType );
+
+  //BCI : merge both offers methods, and genericServiceType = QString::null
 
   static const QList<KServiceTypeProfile>& serviceTypeProfiles() { return *s_lstProfiles; }
 
@@ -114,7 +152,7 @@ protected:
    * Constructor is called when the user profile is read for the
    * first time.
    */
-  KServiceTypeProfile( const QString& _servicetype );
+  KServiceTypeProfile( const QString& _servicetype, const QString& _genericServiceType );
 
   /**
    * Add a service to this profile.
@@ -144,8 +182,12 @@ private:
 
   /**
    * ServiceType of this profile.
+   * For BCI reasons, this is actually m_strServiceType + "%!%" + m_strGenericServiceType
    */
   QString m_strServiceType;
+
+  ///BCI m_strGenericServiceType;
+  ///BCI: d pointer
 
   static void initStatic();
   static QList<KServiceTypeProfile>* s_lstProfiles;

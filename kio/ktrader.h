@@ -108,7 +108,7 @@ public:
     virtual ~KTrader();
 
     /**
-     * The main (and almost only) function in the KTrader class.
+     * The main function in the KTrader class.
      *
      * It will return a list of services that match your
      * specifications.  The only required parameter is the service
@@ -126,7 +126,7 @@ public:
      * The keys used in the query (Type, ServiceType, Exec) are all
      * fields found in the .desktop files.
      *
-     * @param servicetype A service type like 'text/plain' or 'text/html'.
+     * @param servicetype A service type like 'text/plain', 'text/html', or 'KOfficePlugin'.
      * @param constraint  A constraint to limit the choices returned.
      * @param preferences Indicates a particular preference to return.
      *
@@ -135,6 +135,20 @@ public:
     virtual OfferList query( const QString& servicetype,
 			     const QString& constraint = QString::null,
 			     const QString& preferences = QString::null) const;
+
+    /**
+     * A variant of query, that takes two service types as an input.
+     * It is not exactly the same as adding the second service type
+     * in the constraints of the other query call, because this one
+     * takes into account user preferences for this combination of service types.
+     *
+     * Typically, this is used for getting the list of embeddable components
+     * that can handle a given mimetype.
+     * In that case, @p servicetype is the mimetype and @p servicetype2 is "KParts/ReadOnlyPart".
+     */
+    OfferList query( const QString& servicetype, const QString& servicetype2,
+                     const QString& constraint /*= QString::null*/,
+                     const QString& preferences /*= QString::null*/) const;
 
     /**
      * This is a static pointer to a @ref KTrader instance.

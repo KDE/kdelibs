@@ -99,7 +99,14 @@ KTrader::~KTrader()
 }
 
 KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _constraint,
-					const QString& _preferences ) const
+                                   const QString& _preferences ) const
+{
+    return query( _servicetype, QString::null, _constraint, _preferences );
+}
+
+KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _servicetype2,
+                                   const QString& _constraint,
+                                   const QString& _preferences ) const
 {
   // TODO: catch errors here
   ParseTreeBase::Ptr constr;
@@ -115,7 +122,7 @@ KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _
   KTrader::OfferList ret;
 
   // Get all services of this service type.
-  lst = KServiceTypeProfile::offers( _servicetype );
+  lst = KServiceTypeProfile::offers( _servicetype, _servicetype2 );
   if ( lst.count() == 0 )
     return ret;
 

@@ -29,6 +29,8 @@
 
 template class QList<KServiceTypeProfile>;
 
+#define HACK_ST_SEPARATOR "%!%"
+
 /*********************************************
  *
  * KServiceTypeProfile
@@ -63,15 +65,16 @@ void KServiceTypeProfile::initStatic()
     if ( pService ) {
       QString application = pService->name();
       QString type = config.readEntry( "ServiceType" );
+      QString type2 = config.readEntry( "GenericServiceType", "Application" );
       int pref = config.readNumEntry( "Preference" );
 
       if ( !type.isEmpty() && pref >= 0 )
       {
         KServiceTypeProfile* p =
-          KServiceTypeProfile::serviceTypeProfile( type );
+          KServiceTypeProfile::serviceTypeProfile( type, type2 );
 
         if ( !p )
-          p = new KServiceTypeProfile( type );
+          p = new KServiceTypeProfile( type, type2 );
 
         bool allow = config.readBoolEntry( "AllowAsDefault" );
         p->addService( application, pref, allow );
@@ -83,13 +86,26 @@ void KServiceTypeProfile::initStatic()
 //static
 KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _servicetype )
 {
+    return offers( _servicetype, QString::null );
+}
+
+//static
+KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _servicetype, const QString& _genericServiceType )
+{
   OfferList offers;
 
-  kdDebug(7010) << "KServiceTypeProfile::offers( " << _servicetype << ")" << endl;
-  KServiceTypeProfile* profile = serviceTypeProfile( _servicetype );
+  kdDebug(7010) << "KServiceTypeProfile::offers( " << _servicetype << "," << _genericServiceType << " )" << endl;
+  KServiceTypeProfile* profile = serviceTypeProfile( _servicetype, _genericServiceType );
   if ( profile )
   {
     kdDebug(7010) << "Found profile, returning " << profile->offers().count() << " offers" << endl;
+    return profile->offers();
+  }
+  // Try the other way round, order is not like size, it doesn't matter.
+  profile = serviceTypeProfile( _genericServiceType, _servicetype );
+  if ( profile )
+  {
+    kdDebug(7010) << "Found profile after switching, returning " << profile->offers().count() << " offers" << endl;
     return profile->offers();
   }
 
@@ -98,30 +114,31 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
   QValueListIterator<KService::Ptr> it = list.begin();
   for( ; it != list.end(); ++it )
   {
-    bool allow = (*it)->allowAsDefault();
-    KServiceOffer o( (*it), (*it)->initialPreference(), allow );
-    offers.append( o );
-    kdDebug(7010) << "Appending offer " << (*it)->name() << " allow-as-default=" << allow << endl;
+      if (_genericServiceType.isEmpty() /*no constraint*/ || (*it)->hasServiceType( _genericServiceType ))
+      {
+          bool allow = (*it)->allowAsDefault();
+          KServiceOffer o( (*it), (*it)->initialPreference(), allow );
+          offers.append( o );
+          kdDebug(7010) << "Appending offer " << (*it)->name() << " allow-as-default=" << allow << endl;
+      }
   }
 
   qBubbleSort( offers );
 
-  // debug code, please leave for debugging
+  // debug code, comment if you wish but don't remove.
   kdDebug(7010) << "Sorted list:" << endl;
   OfferList::Iterator itOff = offers.begin();
   for( ; itOff != offers.end(); ++itOff )
-  {
     kdDebug(7010) << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << endl;
-  }
 
   return offers;
 }
 
-KServiceTypeProfile::KServiceTypeProfile( const QString& _servicetype )
+KServiceTypeProfile::KServiceTypeProfile( const QString& _servicetype, const QString& _genericServiceType )
 {
   initStatic();
 
-  m_strServiceType = _servicetype;
+  m_strServiceType = _servicetype + HACK_ST_SEPARATOR + _genericServiceType;
 
   s_lstProfiles->append( this );
 }
@@ -166,11 +183,18 @@ bool KServiceTypeProfile::allowAsDefault( const QString& _service ) const
 
 KServiceTypeProfile* KServiceTypeProfile::serviceTypeProfile( const QString& _servicetype )
 {
+    return serviceTypeProfile(_servicetype, QString::null);
+}
+
+KServiceTypeProfile* KServiceTypeProfile::serviceTypeProfile( const QString& _servicetype, const QString& _genericServiceType )
+{
   initStatic();
+
+  QString hackedType = _servicetype + HACK_ST_SEPARATOR + _genericServiceType;
 
   QListIterator<KServiceTypeProfile> it( *s_lstProfiles );
   for( ; it.current(); ++it )
-    if ( it.current()->serviceType() == _servicetype )
+    if ( it.current()->serviceType() == hackedType )
       return it.current();
 
   return 0;
@@ -181,30 +205,35 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
 {
   OfferList offers;
 
-  KService::List list = KServiceType::offers( m_strServiceType );
+  int posHack = m_strServiceType.find( HACK_ST_SEPARATOR );
+  QString serviceType = m_strServiceType.left( posHack );
+  QString genericServiceType = m_strServiceType.mid( posHack + strlen(HACK_ST_SEPARATOR) );
+  //kdDebug(7010) << "KServiceTypeProfile::offers serviceType=" << serviceType << " genericServiceType=" << genericServiceType << endl;
+  KService::List list = KServiceType::offers( serviceType );
   QValueListIterator<KService::Ptr> it = list.begin();
   for( ; it != list.end(); ++it )
   {
-    if ( (*it)->hasServiceType( m_strServiceType ) )
-    {
-      QMap<QString,Service>::ConstIterator it2 = m_mapServices.find( (*it)->name() );
-
-      if( it2 != m_mapServices.end() )
+    if ( (*it)->hasServiceType( serviceType ) ) // we don't necessarily trust the profile on that.
+      if ( genericServiceType.isEmpty() || (*it)->hasServiceType( genericServiceType ) )
       {
-      	if ( it2.data().m_iPreference > 0 ) {
-          bool allow = (*it)->allowAsDefault();
-          if ( allow )
-            allow = it2.data().m_bAllowAsDefault;
-          KServiceOffer o( (*it), it2.data().m_iPreference, allow );
+        QMap<QString,Service>::ConstIterator it2 = m_mapServices.find( (*it)->name() );
+
+        if( it2 != m_mapServices.end() )
+        {
+          if ( it2.data().m_iPreference > 0 ) {
+            bool allow = (*it)->allowAsDefault();
+            if ( allow )
+              allow = it2.data().m_bAllowAsDefault;
+            KServiceOffer o( (*it), it2.data().m_iPreference, allow );
+            offers.append( o );
+          }
+        }
+        else
+        {
+          KServiceOffer o( (*it), 1, (*it)->allowAsDefault() );
           offers.append( o );
         }
       }
-      else
-      {
-	KServiceOffer o( (*it), 1, (*it)->allowAsDefault() );
-	offers.append( o );
-      }
-    }
   }
 
   qBubbleSort( offers );
@@ -214,16 +243,20 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
 
 KService::Ptr KServiceTypeProfile::preferredService( const QString & _serviceType, bool needApp )
 {
-  OfferList lst = offers( _serviceType );
+    return preferredService( _serviceType, needApp ? "Application" : QString::null );
+}
+
+KService::Ptr KServiceTypeProfile::preferredService( const QString & _serviceType, const QString & _genericServiceType )
+{
+  OfferList lst = offers( _serviceType, _genericServiceType );
 
   OfferList::Iterator itOff = lst.begin();
-  // Look for the first one that is allowed as default and
+  // Look for the first one that is allowed as default
   for( ; itOff != lst.end(); ++itOff )
   {
       if ((*itOff).allowAsDefault())
       {
-          if (!needApp || (*itOff).service()->type() == "Application")
-              return (*itOff).service();
+          return (*itOff).service();
       }
       else break; // The allowed-as-default are first anyway
   }
@@ -256,6 +289,7 @@ KServiceOffer::KServiceOffer( KService::Ptr _service, int _pref, bool _default )
   m_iPreference = _pref;
   m_bAllowAsDefault = _default;
 }
+
 
 bool KServiceOffer::operator< ( const KServiceOffer& _o ) const
 {
