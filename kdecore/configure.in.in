@@ -164,7 +164,7 @@ AM_CONFIG_HEADER(kdecore/kdemacros.h)
 
 SVGICONS=
 	
-KDE_FIND_PATH(libart2-config, LIBART_CONFIG, [${prefix}/bin ${exec_prefix}/bin /usr/local/bin /opt/local/bin], [
+KDE_FIND_PATH(libart2-config, LIBART_CONFIG, [${prefix}/bin ${exec_prefix}/bin], [
   AC_MSG_WARN([Could not find libart anywhere, check http://www.levien.com/libart/])
 ])
 

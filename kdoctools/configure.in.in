@@ -2,7 +2,7 @@
 # don't use it yet
 HELP_SUBDIR=kdoctools
 
-KDE_FIND_PATH(xml2-config, XML_CONFIG, [${prefix}/bin ${exec_prefix}/bin /usr/local/bin /opt/local/bin], [
+KDE_FIND_PATH(xml2-config, XML_CONFIG, [${prefix}/bin ${exec_prefix}/bin], [
   AC_MSG_WARN([Could not find libxml2 anywhere, check ftp://xmlsoft.org/ for libxml >= 2.4.8. (we also keep a version of it in kdesupport for CVS users' convience)])
   HELP_SUBDIR=
 ])
@@ -23,7 +23,7 @@ if test -n "$XML_CONFIG"; then
      LIBXML_RPATH=`echo $LIBXML_RPATH | sed -e "s/-L/-R/g"`
      LIBXML_CFLAGS="`$XML_CONFIG --cflags`"
 
-     KDE_FIND_PATH(xmllint, XMLLINT, [${prefix}/bin ${exec_prefix}/bin /usr/local/bin /opt/local/bin], [XMLLINT=""])
+     KDE_FIND_PATH(xmllint, XMLLINT, [${prefix}/bin ${exec_prefix}/bin], [XMLLINT=""])
      AC_DEFINE_UNQUOTED(XMLLINT, "$XMLLINT", [Defines the executable of xmllint])
   else
      AC_MSG_WARN([You need at least libxml 2.4.8])
@@ -33,7 +33,7 @@ fi
 
 if test -n "$HELP_SUBDIR"; then
 
-  KDE_FIND_PATH(xslt-config, XSLT_CONFIG, [${prefix}/bin ${exec_prefix}/bin /usr/local/bin /opt/local/bin], [
+  KDE_FIND_PATH(xslt-config, XSLT_CONFIG, [${prefix}/bin ${exec_prefix}/bin], [
     AC_MSG_WARN([Could not find libxslt anywhere, check ftp://xmlsoft.org/ for libxslt >= 1.0.7. (we also keep a version of it in kdesupport for CVS users' convience)])
     HELP_SUBDIR=
   ])

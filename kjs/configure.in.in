@@ -22,7 +22,7 @@ AC_DEFUN([AC_CHECK_PCREPOSIX],
 
  if test "$with_pcre" = "yes"; then
 
-    KDE_FIND_PATH(pcre-config, PCRE_CONFIG, [${prefix}/bin /usr/local/bin /opt/local/bin], [PCRE_CONFIG="" ])
+    KDE_FIND_PATH(pcre-config, PCRE_CONFIG, [${exec_prefix}/bin ${prefix}/bin], [PCRE_CONFIG="" ])
     if test -n "$PCRE_CONFIG" && $PCRE_CONFIG --libs >/dev/null 2>&1; then
         LIBPCRE=`$PCRE_CONFIG --libs-posix | sed -e "s,-L/usr/lib ,,"`
         PCRECFLAGS=`$PCRE_CONFIG --cflags`
