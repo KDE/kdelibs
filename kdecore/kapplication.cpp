@@ -72,6 +72,7 @@
 #include <qptrdict.h>
 #include <kmacroexpander.h>
 #include <kshell.h>
+#include <kprotocolinfo.h>
 
 #include <kstartupinfo.h>
 
@@ -242,16 +243,18 @@ public:
                       checkEqual(destHost, destHostEqual);
                    }
 
-     bool baseMatch(const KURL &url)
+     bool baseMatch(const KURL &url, const QString &protClass)
      {
         if (baseProtWildCard)
         {
-           if (!baseProt.isEmpty() && !url.protocol().startsWith(baseProt))
+           if ( !baseProt.isEmpty() && !url.protocol().startsWith(baseProt) && 
+                (protClass.isEmpty() || (protClass != baseProt)) )
               return false;
         }
         else
         {
-           if (url.protocol() != baseProt)
+           if ( (url.protocol() != baseProt) && 
+                (protClass.isEmpty() || (protClass != baseProt)) )
               return false;
         }
         if (baseHostWildCard)
@@ -277,21 +280,24 @@ public:
         return true;
      }
 
-     bool destMatch(const KURL &url, const KURL &base)
+     bool destMatch(const KURL &url, const QString &protClass, const KURL &base, const QString &baseClass)
      {
         if (destProtEqual)
         {
-           if (url.protocol() != base.protocol())
+           if ( (url.protocol() != base.protocol()) &&
+                (protClass.isEmpty() || baseClass.isEmpty() || protClass != baseClass) )
               return false;
         }
         else if (destProtWildCard)
         {
-           if (!destProt.isEmpty() && !url.protocol().startsWith(destProt))
+           if ( !destProt.isEmpty() && !url.protocol().startsWith(destProt) && 
+                (protClass.isEmpty() || (protClass != destProt)) )
               return false;
         }
         else
         {
-           if (url.protocol() != destProt)
+           if ( (url.protocol() != destProt) && 
+                (protClass.isEmpty() || (protClass != destProt)) )
               return false;
         }
         if (destHostWildCard)
@@ -2474,49 +2480,26 @@ void KApplication::initUrlActionRestrictions()
 //  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
 //  ("list", QString::null, QString::null, QString::null, "file", QString::null, QDir::homeDirPath(), true));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("link", QString::null, QString::null, QString::null, "http", QString::null, QString::null, true));
+  ("link", QString::null, QString::null, QString::null, ":internet", QString::null, QString::null, true));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("link", QString::null, QString::null, QString::null, "ftp", QString::null, QString::null, true));
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("link", QString::null, QString::null, QString::null, "news", QString::null, QString::null, true));
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("link", QString::null, QString::null, QString::null, "mailto", QString::null, QString::null, true));
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", QString::null, QString::null, QString::null, "http", QString::null, QString::null, true));
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", QString::null, QString::null, QString::null, "ftp", QString::null, QString::null, true));
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", QString::null, QString::null, QString::null, "mailto", QString::null, QString::null, true));
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", QString::null, QString::null, QString::null, "rtsp", QString::null, QString::null, true));
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", QString::null, QString::null, QString::null, "mms", QString::null, QString::null, true));
+  ("redirect", QString::null, QString::null, QString::null, ":internet", QString::null, QString::null, true));
 
-  // We allow redirections to file: but not from http:, redirecting to file:
+  // We allow redirections to file: but not from internet protocols, redirecting to file:
   // is very popular among io-slaves and we don't want to break them
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", QString::null, QString::null, QString::null, "file", QString::null, QString::null, true));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", "http", QString::null, QString::null, "file", QString::null, QString::null, false));
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", "ftp", QString::null, QString::null, "file", QString::null, QString::null, false));
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", "webdav", QString::null, QString::null, "file", QString::null, QString::null, false));
+  ("redirect", ":internet", QString::null, QString::null, "file", QString::null, QString::null, false));
 
-  // Lan may redirect everywhere
+  // local protocols may redirect everywhere
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", "lan", QString::null, QString::null, QString::null, QString::null, QString::null, true));
+  ("redirect", ":local", QString::null, QString::null, QString::null, QString::null, QString::null, true));
 
-  // devices:/ kioslave may redirect everywhere
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", "devices", QString::null, QString::null, QString::null, QString::null, QString::null, true));
-
-  // info:/ kioslave may redirect to help:/
-  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", "info", QString::null, QString::null, "help", QString::null, QString::null, true));
-
+  // Anyone may redirect to about:
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", QString::null, QString::null, QString::null, "about", QString::null, QString::null, true));
+
+  // Anyone may redirect to itself, cq. within it's own group
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", QString::null, QString::null, QString::null, "=", QString::null, QString::null, true));
 
@@ -2568,16 +2551,18 @@ bool KApplication::authorizeURLAction(const QString &action, const KURL &_baseUR
 
   KURL baseURL(_baseURL);
   baseURL.setPath(QDir::cleanDirPath(baseURL.path()));
+  QString baseClass = KProtocolInfo::protocolClass(baseURL.protocol());
   KURL destURL(_destURL);
   destURL.setPath(QDir::cleanDirPath(destURL.path()));
+  QString destClass = KProtocolInfo::protocolClass(destURL.protocol());
 
   for(KApplicationPrivate::URLActionRule *rule = d->urlActionRestrictions.first();
       rule; rule = d->urlActionRestrictions.next())
   {
      if ((result != rule->permission) && // No need to check if it doesn't make a difference
          (action == rule->action) &&
-         rule->baseMatch(baseURL) &&
-         rule->destMatch(destURL, baseURL))
+         rule->baseMatch(baseURL, baseClass) &&
+         rule->destMatch(destURL, destClass, baseURL, baseClass))
      {
         result = rule->permission;
      }
