@@ -52,8 +52,30 @@
 #include <unistd.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <X11/Xlib.h>
 
 #include "bitmaps.h"
+
+
+bool TransMenuHandler::eventFilter(QObject *obj, QEvent *ev)
+{
+    static QWidget w(NULL, NULL,  WType_Popup  | WRepaintNoErase);
+    QPopupMenu *p = (QPopupMenu *)obj;
+    if(ev->type() == QEvent::Show){
+        QApplication::syncX();
+        KPixmap pix = QPixmap::grabWindow(qt_xrootwin(),
+                                          p->x(), p->y(), p->width(), p->height());
+        KPixmapEffect::intensity(pix, -0.70);
+        p->setBackgroundPixmap(pix);
+    }
+    else if(ev->type() == QEvent::Hide){
+        p->move(-1000, -1000);
+        QApplication::syncX();
+        p->setBackgroundPixmap(QPixmap());
+
+    }
+    return(false);
+}
 
 GradientSet::GradientSet(const QColor &baseColor)
 {
@@ -117,7 +139,6 @@ GradientSet::~GradientSet()
     }
 }
 
-
 MegaStyle::MegaStyle()
     :KStyle()
 {
@@ -125,6 +146,7 @@ MegaStyle::MegaStyle()
     setButtonDefaultIndicatorWidth(0);
     gDict.setAutoDelete(true);
     highcolor = QPixmap::defaultDepth() > 8;
+    menuHandler = new TransMenuHandler(this);
 }
 
 MegaStyle::~MegaStyle()
@@ -165,9 +187,9 @@ void MegaStyle::polish(QPalette &)
 void MegaStyle::polish(QWidget *w)
 {
     if(qstrcmp(w->name(), "qt_viewport") == 0 ||
-       w->testWFlags(WType_Popup) || w->inherits("KDesktop"))
+       w->testWFlags(WType_Popup) || w->inherits("KDesktop")
+       || w->inherits("PanelButtonBase"))
         return;
-
 
     if(w->backgroundMode() == QWidget::PaletteBackground ||
        w->backgroundMode() == QWidget::PaletteButton &&
@@ -176,7 +198,8 @@ void MegaStyle::polish(QWidget *w)
         w->setBackgroundMode(QWidget::X11ParentRelative);
     }
 
-    if(w->isTopLevel() || w->inherits("QWorkspaceChild")
+    if((w->isTopLevel() && ! w->inherits("QPopupMenu")) ||
+       w->inherits("QWorkspaceChild")
        || w->inherits("KCModule") || w->inherits("QPushButton") ||
        w->inherits("ProxyWidget"))
         w->installEventFilter(this);
@@ -203,10 +226,12 @@ void MegaStyle::polish(QWidget *w)
 void MegaStyle::unPolish(QWidget *w)
 {
     if(qstrcmp(w->name(), "qt_viewport") == 0 ||
-       w->testWFlags(WType_Popup) || w->inherits("KDesktop"))
+       w->testWFlags(WType_Popup) || w->inherits("KDesktop")
+       || w->inherits("PanelButtonBase"))
         return;
 
-    if (w->isTopLevel() || w->inherits("QWorkspaceChild") ||
+    if ((w->isTopLevel() && ! w->inherits("QPopupMenu")) ||
+        w->inherits("QWorkspaceChild") ||
         w->inherits("KCModule") || w->inherits("ProxyWidget")){
         w->removeEventFilter(this);
         w->setBackgroundPixmap(QPixmap());
@@ -346,13 +371,11 @@ void MegaStyle::drawPushButton(QPushButton *btn, QPainter *p)
     bool sunken = btn->isOn() || btn->isDown();
     QColorGroup g = btn->colorGroup();
     int x = r.x(), y = r.y(), w = r.width(), h = r.height();
-
     if(sunken)
         kDrawBeButton(p, x, y, w, h, g, true,
                       &g.brush(QColorGroup::Mid));
     else {
 	if (btn != highlightWidget) {
-	    // -----
 	    if(highcolor){
 		int x2 = x+w-1;
 		int y2 = y+h-1;
@@ -1471,6 +1494,8 @@ void MegaStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                                        -1, &g.text() );
 }
 
+
+/*
 void MegaStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
                                      int tab, QMenuItem* mi,
                                      const QPalette& pal, bool act,
@@ -1493,21 +1518,8 @@ static const int windowsRightBorder     = 12;
 
         int checkcol = maxpmw;
 
-        /*if(vDark)
-        {
-            int x2 = x+w-1;
-            int y2 = y+h-1;
-            p->setPen(itemg.mid());
-            p->drawLine(x, y, x2, y);
-            p->drawLine(x, y, x, y2);
-            p->setPen(itemg.dark());
-            p->drawLine(x, y2, x2, y2);
-            p->drawLine(x2, y, x2, y2);
-            p->drawTiledPixmap(x+1, y+1, w-2, h-2, *vDark);
-        }
-        else*/
-            qDrawShadePanel(p, x, y, w, h, itemg, true, 1,
-                            &itemg.brush(QColorGroup::Midlight));
+        qDrawShadePanel(p, x, y, w, h, itemg, true, 1,
+                        &itemg.brush(QColorGroup::Midlight));
 
         if ( mi->iconSet() ) {
             QIconSet::Mode mode = dis? QIconSet::Disabled : QIconSet::Normal;
@@ -1572,6 +1584,103 @@ static const int windowsRightBorder     = 12;
     else
         KStyle::drawPopupMenuItem(p, checkable, maxpmw, tab, mi, pal, act,
                                   enabled, x, y, w, h);
+}*/
+
+void MegaStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
+                                     int tab, QMenuItem* mi,
+                                     const QPalette& pal, bool act,
+                                     bool enabled, int x, int y, int w, int h)
+{
+static const int motifItemFrame         = 2;
+static const int motifItemHMargin       = 3;
+static const int motifItemVMargin       = 2;
+static const int motifArrowHMargin      = 6;
+static const int windowsRightBorder     = 12;
+
+    maxpmw = QMAX( maxpmw, 20 );
+
+    if ( p->font() == KGlobalSettings::generalFont() )
+        p->setFont( KGlobalSettings::menuFont() );
+
+    bool dis = !enabled;
+    QColorGroup itemg = dis ? pal.disabled() : pal.active();
+
+    int checkcol = maxpmw;
+    if(act){
+        qDrawShadePanel(p, x, y, w, h, itemg, true, 1,
+                        &itemg.brush(QColorGroup::Midlight));
+    }
+    else if(((QWidget*)p->device())->backgroundPixmap()){
+        p->drawPixmap(x, y, *((QWidget*)p->device())->backgroundPixmap(),
+                      x, y, w, h);
+    }
+    if ( mi->iconSet() ) {
+        QIconSet::Mode mode = dis? QIconSet::Disabled : QIconSet::Normal;
+        if (!dis)
+            mode = QIconSet::Active;
+        QPixmap pixmap = mi->iconSet()->pixmap(QIconSet::Small, mode);
+        int pixw = pixmap.width();
+        int pixh = pixmap.height();
+        QRect cr(x, y, checkcol, h);
+        QRect pmr(0, 0, pixw, pixh);
+        pmr.moveCenter( cr.center() );
+        p->setPen(itemg.highlightedText());
+        p->drawPixmap(pmr.topLeft(), pixmap );
+
+    }
+    else if(checkable) {
+        int mw = checkcol + motifItemFrame;
+        int mh = h - 2*motifItemFrame;
+        if (mi->isChecked()){
+            drawCheckMark( p, x + motifItemFrame,
+                           y+motifItemFrame, mw, mh, itemg, act, dis );
+        }
+    }
+    p->setPen(act ? Qt::black : Qt::white);
+
+    QColor discol;
+    if (dis) {
+        discol = itemg.mid();
+        p->setPen(discol);
+    }
+    int xm = motifItemFrame + checkcol + motifItemHMargin;
+    QString s = mi->text();
+    if (!s.isNull()) {
+        int t = s.find( '\t' );
+        int m = motifItemVMargin;
+        const int text_flags = AlignVCenter|ShowPrefix | DontClip | SingleLine;
+        if(!act){
+            QFont fnt = p->font();
+            fnt.setBold(true);
+            p->setFont(fnt);
+        }
+        if (t >= 0) {
+            p->drawText(x+w-tab-windowsRightBorder-motifItemHMargin-motifItemFrame+1,
+                        y+m+1, tab, h-2*m, text_flags, s.mid( t+1 ));
+        }
+        p->drawText(x+xm, y+m, w-xm-tab+1, h-2*m, text_flags, s, t);
+        if(!act)
+            p->setFont( KGlobalSettings::menuFont() );
+    } else if (mi->pixmap()) {
+        QPixmap *pixmap = mi->pixmap();
+        if (pixmap->depth() == 1)
+            p->setBackgroundMode(OpaqueMode);
+        p->drawPixmap( x+xm, y+motifItemFrame, *pixmap);
+        if (pixmap->depth() == 1)
+            p->setBackgroundMode(TransparentMode);
+    }
+    if (mi->popup()) {
+        int dim = (h-2*motifItemFrame) / 2;
+        if (!dis)
+            discol = itemg.text();
+        QColorGroup g2(discol, itemg.highlight(),
+                       white, white,
+                       dis ? discol : white,
+                       discol, white);
+        drawArrow(p, RightArrow, true,
+                  x+w - motifArrowHMargin - motifItemFrame - dim,  y+h/2-dim/2,
+                  dim, dim, itemg, TRUE);
+    }
 }
 
 int MegaStyle::popupMenuItemHeight(bool /*checkable*/, QMenuItem *mi,
@@ -1611,12 +1720,16 @@ void MegaStyle::drawFocusRect(QPainter *p, const QRect &r,
 
 void MegaStyle::polishPopupMenu(QPopupMenu *mnu)
 {
-    KConfig *config = KGlobal::config();
-    QString oldGrp = config->group();
-    config->setGroup("B2");
 
+    qWarning("Polishing popup menu");
+    /*
+    QObject::connect(mnu, SIGNAL(aboutToShow()), menuHandler,
+                     SLOT(aboutToShowSlot()));
+    QObject::connect(mnu, SIGNAL(aboutToHide()), menuHandler,
+                     SLOT(aboutToHideSlot()));
+                     */
+    mnu->installEventFilter(menuHandler);
     KStyle::polishPopupMenu(mnu);
-    config->setGroup(oldGrp);
 }
 
 void MegaStyle::drawTab(QPainter *p, const QTabBar *tabBar, QTab *tab,
@@ -1918,8 +2031,5 @@ void MegaStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
     }
 
 }
-
-
-//#include "mega.moc"
 
 /* vim: set noet sw=8 ts=8: */

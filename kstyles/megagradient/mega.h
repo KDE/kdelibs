@@ -10,6 +10,7 @@
 #include <qscrollbar.h>
 #include <qbitmap.h>
 #include <qintdict.h>
+#include <kpixmap.h>
 #include <limits.h>
 
 /*-
@@ -41,7 +42,6 @@
  *
  */
 
-class KPixmap;
 
 enum GradientType{VSmall=0, VMed, VLarge, HMed, HLarge};
 
@@ -55,7 +55,17 @@ public:
 private:
     KPixmap *gradients[5];
     QColor c;
-};                   
+};
+
+class TransMenuHandler : public QObject
+{
+public:
+    TransMenuHandler(QObject *parent)
+        : QObject(parent){;}
+    ~TransMenuHandler(){;}
+protected:
+    bool eventFilter(QObject *obj, QEvent *ev);
+};
 
 class MegaStyle : public KStyle
 {
@@ -187,6 +197,7 @@ private:
     QBitmap dgrayBmp;
     QBitmap maskBmp;
     QBitmap xBmp;
+    TransMenuHandler *menuHandler;
 
     QIntDict<GradientSet>gDict;
 };
