@@ -377,6 +377,16 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
       mime = KMimeType::mimeType( d->m_guessedMimeType );
   else
       mime = m_pMimeType;
+
+  // Support for gzipped files
+  if ( mime->name() == "application/x-gzip" && m_url.fileName().right(3) == ".gz" )
+  {
+      QString subFileName = m_url.path().left( m_url.path().length() - 3 );
+      kdDebug() << "KFileItem::pixmap subFileName=" << subFileName << endl;
+      mime = KMimeType::findByURL( subFileName, 0, m_bIsLocalURL );
+      _state |= KIcon::ZipOverlay;
+  }
+
   QPixmap p = mime->pixmap( m_url, KIcon::Desktop, _size, _state );
   if (p.isNull())
       kdWarning() << "Pixmap not found for mimetype " << m_pMimeType->name() << endl;
