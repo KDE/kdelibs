@@ -1,11 +1,16 @@
+debian/tmp/usr/lib/kde3/dcopserver.*
 debian/tmp/usr/lib/kde3/kabc_dir.*
 debian/tmp/usr/lib/kde3/kabc_file.*
 debian/tmp/usr/lib/kde3/kabc_ldap.*
 debian/tmp/usr/lib/kde3/kabc_net.*
 debian/tmp/usr/lib/kde3/kabcformat_binary.*
 debian/tmp/usr/lib/kde3/kabcformat_vcard2.*
+debian/tmp/usr/lib/kde3/kbuildsycoca.*
 debian/tmp/usr/lib/kde3/kbzip2filter.*
 debian/tmp/usr/lib/kde3/kcm_kresources.*
+debian/tmp/usr/lib/kde3/kconf_update.*
+debian/tmp/usr/lib/kde3/kcookiejar.*
+debian/tmp/usr/lib/kde3/kded.*
 debian/tmp/usr/lib/kde3/kded_kcookiejar.*
 debian/tmp/usr/lib/kde3/kded_kdeprintd.*
 debian/tmp/usr/lib/kde3/kded_kpasswdserver.*
@@ -17,6 +22,7 @@ debian/tmp/usr/lib/kde3/kdeprint_lpdunix.*
 debian/tmp/usr/lib/kde3/kdeprint_lpr.*
 debian/tmp/usr/lib/kde3/kdeprint_rlpr.*
 debian/tmp/usr/lib/kde3/kdeprint_tool_escputil.*
+debian/tmp/usr/lib/kde3/kfileaudiopreview.*
 debian/tmp/usr/lib/kde3/kgzipfilter.*
 debian/tmp/usr/lib/kde3/khtmlimagepart.*
 debian/tmp/usr/lib/kde3/kimg_eps.*
@@ -31,8 +37,11 @@ debian/tmp/usr/lib/kde3/kio_ftp.*
 debian/tmp/usr/lib/kde3/kio_ghelp.*
 debian/tmp/usr/lib/kde3/kio_help.*
 debian/tmp/usr/lib/kde3/kio_http.*
+debian/tmp/usr/lib/kde3/kio_http_cache_cleaner.*
 debian/tmp/usr/lib/kde3/kio_metainfo.*
+debian/tmp/usr/lib/kde3/kio_uiserver.*
 debian/tmp/usr/lib/kde3/kjavaappletviewer.*
+debian/tmp/usr/lib/kde3/klauncher.*
 debian/tmp/usr/lib/kde3/ktexteditor_insertfile.*
 debian/tmp/usr/lib/kde3/ktexteditor_isearch.*
 debian/tmp/usr/lib/kde3/ktexteditor_kdatatool.*
@@ -53,6 +62,14 @@ debian/tmp/usr/lib/libkatepartinterfaces.so.*
 debian/tmp/usr/lib/libkdecore.so.*
 debian/tmp/usr/lib/libkdefakes.so.*
 debian/tmp/usr/lib/libkdefx.so.*
+debian/tmp/usr/lib/libkdeinit_dcopserver.so.*
+debian/tmp/usr/lib/libkdeinit_kbuildsycoca.so.*
+debian/tmp/usr/lib/libkdeinit_kconf_update.so.*
+debian/tmp/usr/lib/libkdeinit_kcookiejar.so.*
+debian/tmp/usr/lib/libkdeinit_kded.so.*
+debian/tmp/usr/lib/libkdeinit_kio_http_cache_cleaner.so.*
+debian/tmp/usr/lib/libkdeinit_kio_uiserver.so.*
+debian/tmp/usr/lib/libkdeinit_klauncher.so.*
 debian/tmp/usr/lib/libkdeprint.so.*
 debian/tmp/usr/lib/libkdeprint_management.la
 debian/tmp/usr/lib/libkdeprint_management.so.*
@@ -76,3 +93,4 @@ debian/tmp/usr/lib/libktexteditor.so.*
 debian/tmp/usr/lib/libkutils.so.*
 debian/tmp/usr/lib/libshellscript.so.*
 debian/tmp/usr/lib/libvcard.so.*
+debian/tmp/usr/lib/libvcards.so.*
