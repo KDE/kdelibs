@@ -80,6 +80,7 @@
 #include <dcopclient.h>
 #include <kservice.h>
 #include <krfcdate.h>
+#include <kmessagebox.h>
 
 using namespace KIO;
 
@@ -737,7 +738,7 @@ bool HTTPProtocol::checkSSL()
   // Check if we need to pop up a dialog box to the user
   if ( metaData( "ssl_activate_warnings" ) == "TRUE" )
   {
-    kdDebug() << "*** SSL WARNINGS ACTIVATED ***" << endl;
+    kdDebug() << "SSL warnings activated" << endl;
     bool ssl_was_in_use = metaData( "ssl_was_in_use" ) == "TRUE";
     kdDebug() << "ssl_was_in_use: " << ssl_was_in_use << endl;
 
@@ -752,8 +753,19 @@ bool HTTPProtocol::checkSSL()
     {
       kdDebug() << "ENTERING SSL" << endl;
       kdDebug() << "DIALOG BOX HERE [calling kio_uiserver]" << endl;
-      // TODO
-      // (and emit some error (user aborted), and return false, if the user says no)
+      int result = messageBox( WarningYesNo,
+                               i18n("You are about to enter secure mode."
+                                    " All transmissions will be encrypted unless"
+                                    " otherwise noted.\nThis means that no third"
+                                    " party will be able to easily observe your"
+                                    " data in transfer."),
+                               i18n("Security information"),
+                               i18n("Display SSL Information"),
+                               i18n("Continue") );
+      if ( result == KMessageBox::Yes )
+      {
+        // TODO show ssl info (how ? new dlg box ? or using kssl ?)
+      }
     }
 #else
 
@@ -765,9 +777,21 @@ bool HTTPProtocol::checkSSL()
       cfg.setGroup("Warnings");
       if ( cfg.readBoolEntry("OnLeave", true ) )
       {
-        // TODO
-        kdDebug() << "DIALOG BOX HERE [calling kio_uiserver]" << endl;
-        // (and emit some error (user aborted), and return false, if the user says no)
+        int result = messageBox(WarningContinueCancel,
+                                i18n("You are about to leave secure mode. "
+                                     "Transmissions will no longer be "
+                                     "encrypted.\nThis means that a "
+                                     "third party could observe your data "
+                                     "in transfer."),
+                                i18n("Security information"),
+                                i18n("Continue Loading"));
+        if ( result == KMessageBox::Cancel )
+        {
+          kdDebug(7103) << "Cancelling the loading" << endl;
+          error( ERR_USER_CANCELED, "ssl" );
+          return false;
+        }
+
       }
     }
 #endif
