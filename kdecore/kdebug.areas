@@ -340,6 +340,8 @@
 30515        rtffilter
 30516        pdffilter
 30517        applixgraphics-filter
+30518        openoffice-filter
+30519        import-export-openoffice-filter-lib
 31000        koffice
 32001        kword
 32002        kword (formatting)
