@@ -237,17 +237,20 @@ void NodeImpl::recursive( QChar *&htmlText, long &currentLength, long &offset, i
             for( uint j=0; j<lmap; j++ )
             {
                 attr = static_cast<AttrImpl*>(attrs->item(i,exceptioncode));
-                unsigned long lname = attr->name().length();
-                unsigned long lvalue = attr->value().length();
-                while( (currentLength - offset) <= (signed)(i*2+lattrs+lname+lvalue+4) )
+		if(attr)
+		{
+            	    unsigned long lname = attr->name().length();
+	    	    unsigned long lvalue = attr->value().length();
+    	    	    while( (currentLength - offset) <= (signed)(i*2+lattrs+lname+lvalue+4) )
                     increaseStringLength( htmlText, currentLength, offset, stdInc);
-                memcpy(htmlText+offset+i+lattrs+1, &SPACE, 2);                 // prints a space
-                memcpy(htmlText+offset+i+lattrs+2, attr->name().stringPtr(), lname*2);
-                memcpy(htmlText+offset+i+lattrs+lname+2, &EQUALS, 2);          // prints =
-                memcpy(htmlText+offset+i+lattrs+lname+3, &QUOTE, 2);           // prints "
-                memcpy(htmlText+offset+i+lattrs+lname+4, attr->value().stringPtr(), lvalue*2);
-                memcpy(htmlText+offset+i+lattrs+lname+lvalue+4, &QUOTE, 2);    // prints "
-                lattrs += lname + lvalue + 4;
+	            memcpy(htmlText+offset+i+lattrs+1, &SPACE, 2);                 // prints a space
+    		    memcpy(htmlText+offset+i+lattrs+2, attr->name().stringPtr(), lname*2);
+    	            memcpy(htmlText+offset+i+lattrs+lname+2, &EQUALS, 2);          // prints =
+            	    memcpy(htmlText+offset+i+lattrs+lname+3, &QUOTE, 2);           // prints "
+            	    memcpy(htmlText+offset+i+lattrs+lname+4, attr->value().stringPtr(), lvalue*2);
+            	    memcpy(htmlText+offset+i+lattrs+lname+lvalue+4, &QUOTE, 2);    // prints "
+            	    lattrs += lname + lvalue + 4;
+		}
             }
             offset += lattrs;
         }
