@@ -43,7 +43,7 @@
  */
 class KMimeType : public KServiceType
 {
-  K_SYCOCATYPE( KST_KMimeType, KServiceType );
+  K_SYCOCATYPE( KST_KMimeType, KServiceType )
 
 public:
   typedef KSharedPtr<KMimeType> Ptr;
@@ -211,7 +211,7 @@ protected:
  */
 class KFolderType : public KMimeType
 {
-  K_SYCOCATYPE( KST_KFolderType, KMimeType );
+  K_SYCOCATYPE( KST_KFolderType, KMimeType )
 
 public:
   KFolderType( const QString & _fullpath, const QString& _type, const QString& _icon, const QString& _comment,
@@ -231,7 +231,7 @@ public:
  */
 class KDEDesktopMimeType : public KMimeType
 {
-  K_SYCOCATYPE( KST_KDEDesktopMimeType, KMimeType );
+  K_SYCOCATYPE( KST_KDEDesktopMimeType, KMimeType )
 
 public:
   enum ServiceType { ST_MOUNT, ST_UNMOUNT, /* ST_PROPERTIES, */ ST_USER_DEFINED };
@@ -296,7 +296,7 @@ protected:
  */
 class KExecMimeType : public KMimeType
 {
-  K_SYCOCATYPE( KST_KExecMimeType, KMimeType );
+  K_SYCOCATYPE( KST_KExecMimeType, KMimeType )
 
 public:
   KExecMimeType( const QString & _fullpath, const QString& _type, const QString& _icon, 

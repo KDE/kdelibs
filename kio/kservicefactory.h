@@ -36,7 +36,7 @@ class KSycocaDict;
  */
 class KServiceFactory : public KSycocaFactory
 {
-  K_SYCOCAFACTORY( KST_KServiceFactory );
+  K_SYCOCAFACTORY( KST_KServiceFactory )
 public:
   /**
    * Create factory

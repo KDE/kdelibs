@@ -39,6 +39,8 @@
 #include <ksavefile.h>
 #include <unistd.h>
 
+#include <stdlib.h>
+
 KBuildSycoca::KBuildSycoca() 
   : KSycoca( true )
 {

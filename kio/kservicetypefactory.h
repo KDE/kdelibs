@@ -42,7 +42,7 @@ class KExecMimeType;
  */
 class KServiceTypeFactory : public KSycocaFactory
 {
-  K_SYCOCAFACTORY( KST_KServiceTypeFactory );
+  K_SYCOCAFACTORY( KST_KServiceTypeFactory )
 public:
   /**
    * Create factory
@@ -54,7 +54,7 @@ public:
   /**
    * Not meant to be called at this level
    */
-  virtual KSycocaEntry *createEntry(const QString &) { assert(0); }
+  virtual KSycocaEntry *createEntry(const QString &) { assert(0); return 0; }
 
   /**
    * Find a service type in the database file (allocates it)

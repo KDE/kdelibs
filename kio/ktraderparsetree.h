@@ -109,8 +109,8 @@ public:
 
 class ParseTreeBase : public KShared
 {
-  typedef KSharedPtr<ParseTreeBase> Ptr;
 public:
+  typedef KSharedPtr<ParseTreeBase> Ptr;
   ParseTreeBase() { }
 
   virtual bool eval( ParseContext *_context ) const = 0;

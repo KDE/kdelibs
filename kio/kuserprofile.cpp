@@ -27,7 +27,7 @@
 #include <qtl.h>
 #include <qsmartptr.h>
 
-template QList<KServiceTypeProfile>;
+template class QList<KServiceTypeProfile>;
 
 /*********************************************
  *

@@ -11,7 +11,7 @@
 
 #include "ktar.h"
 
-template QDict<KTarEntry>;
+template class QDict<KTarEntry>;
 
 KTar::KTar( const QString& filename )
 {

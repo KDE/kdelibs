@@ -31,6 +31,7 @@
 #include <kdebug.h>
 #include <kstddirs.h>
 #include <assert.h>
+#include <stdlib.h>
 
 // Read-only constructor
 KSycoca::KSycoca() 
