@@ -138,7 +138,7 @@
 <!ENTITY Bernd.Gehrmann '<personname><firstname>Bernd</firstname><surname>Gehrmann</surname></personname>'>
 <!ENTITY Bernd.Gehrmann.mail '<email>bernd@mail.berlios.de</email>'>
 <!ENTITY Michael.Goffioul '<personname><firstname>Michael</firstname><surname>Goffioul</surname></personname>'>
-<!ENTITY Michael.Goffioul.mail '<email>goffioul@imec.be</email>'>
+<!ENTITY Michael.Goffioul.mail '<email>kdeprint@swing.be</email>'>
 <!ENTITY Robert.Gogolok '<personname><firstname>Robert</firstname><surname>Gogolok</surname></personname>'>
 <!ENTITY Robert.Gogolok.mail '<email>mail@robert-gogolok.de</email>'>
 <!ENTITY Kurt.Granroth '<personname><firstname>Kurt</firstname><surname>Granroth</surname></personname>'>

@@ -1,7 +1,7 @@
 /*****************************************************************
 
 Copyright (c) 1996-2000 the kicker authors. See file AUTHORS.
-          (c) 2001 Michael Goffioul <goffioul@imec.be>
+          (c) 2001 Michael Goffioul <kdeprint@swing.be>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -47,7 +47,7 @@ class KPanelMenuPrivate;
  * $KDEDIR/share/apps/kicker/menuext/.
  *
  * @short Base class to build dynamically loaded menu entries for the K-menu, or the panel.
- * @author The kicker maintainer, Michael Goffioul <goffioul@imec.be>
+ * @author The kicker maintainer, Michael Goffioul <kdeprint@swing.be>
  */
 class KPanelMenu : public KPopupMenu
 {

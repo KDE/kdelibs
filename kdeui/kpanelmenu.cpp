@@ -1,7 +1,7 @@
 /*****************************************************************
 
 Copyright (c) 1996-2000 the kicker authors. See file AUTHORS.
-          (c) Michael Goffioul <goffioul@imec.be>
+          (c) Michael Goffioul <kdeprint@swing.be>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
