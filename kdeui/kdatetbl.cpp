@@ -171,8 +171,6 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
   QPen pen;
   int w=cellWidth();
   int h=cellHeight();
-  QBrush brushBlue(KGlobalSettings::activeTitleColor());
-  QBrush brushLightblue(KGlobalSettings::baseColor());
   QFont font=KGlobalSettings::generalFont();
   // -----
 
@@ -188,21 +186,25 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
          ( daynum == 6 && calendar->calendarName() == "gregorian" ) )
           normalday=false;
 
+			QBrush brushTitle();
+ 			QBrush brushInvertTitle(colorGroup().base());
+			QColor titleColor(isEnabled()?( KGlobalSettings::activeTitleColor() ):( KGlobalSettings::inactiveTitleColor() ) );
+			QColor textColor(isEnabled()?( KGlobalSettings::activeTextColor() ):( KGlobalSettings::inactiveTextColor() ) );
       if (!normalday)
         {
-          painter->setPen(KGlobalSettings::baseColor());
-          painter->setBrush(brushLightblue);
+          painter->setPen(textColor);
+          painter->setBrush(textColor);
           painter->drawRect(0, 0, w, h);
-          painter->setPen(KGlobalSettings::activeTitleColor());
+          painter->setPen(titleColor);
         } else {
-          painter->setPen(KGlobalSettings::activeTitleColor());
-          painter->setBrush(brushBlue);
+          painter->setPen(titleColor);
+          painter->setBrush(titleColor);
           painter->drawRect(0, 0, w, h);
-          painter->setPen(KGlobalSettings::activeTextColor());
+          painter->setPen(textColor);
         }
       painter->drawText(0, 0, w, h-1, AlignCenter,
                         calendar->weekDayName(daynum, true), -1, &rect);
-      painter->setPen(KGlobalSettings::textColor());
+      painter->setPen(colorGroup().text());
       painter->moveTo(0, h-1);
       painter->lineTo(w-1, h-1);
       // ----- draw the weekday:
@@ -218,7 +220,9 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
         { // we are either
           // ° painting a day of the previous month or
           // ° painting a day of the following month
-          painter->setPen(gray);
+          // TODO: don't hardcode gray here! Use a color with less contrast to the background than normal text.
+          painter->setPen( colorGroup().mid() );
+//          painter->setPen(gray);
         } else { // paint a day of the current month
           if ( d->useCustomColors )
           {
@@ -242,9 +246,9 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
               }
               painter->setPen( mode->fgColor );
             } else
-              painter->setPen(KGlobalSettings::textColor());
+              painter->setPen(colorGroup().text());
           } else //if ( firstWeekDay < 4 ) // <- this doesn' make sense at all!
-          painter->setPen(KGlobalSettings::textColor());
+          painter->setPen(colorGroup().text());
         }
 
       pen=painter->pen();
@@ -253,26 +257,22 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       if(offset<1)
         offset+=7;
       int d = calendar->day(date);
-      if( (offset+d) == (pos+1) )
+      if( ((offset+d) == (pos+1)) && hasFocus())
         {
-          if(hasFocus())
-            { // draw the currently selected date
-              painter->setPen(KGlobalSettings::highlightColor());
-              painter->setBrush(KGlobalSettings::highlightColor());
-              pen=white;
-            } else {
-              painter->setPen(KGlobalSettings::calculateAlternateBackgroundColor(KGlobalSettings::highlightColor()));
-              painter->setBrush(KGlobalSettings::calculateAlternateBackgroundColor(KGlobalSettings::highlightColor()));
-              pen=white;
-            }
+           // draw the currently selected date
+           painter->setPen(colorGroup().highlight());
+           painter->setBrush(colorGroup().highlight());
+           pen=colorGroup().highlightedText();
         } else {
-          painter->setBrush(KGlobalSettings::baseColor());
-          painter->setPen(KGlobalSettings::baseColor());
+          painter->setBrush(paletteBackgroundColor());
+          painter->setPen(paletteBackgroundColor());
+//          painter->setBrush(colorGroup().base());
+//          painter->setPen(colorGroup().base());
         }
 
       if ( pCellDate == QDate::currentDate() )
       {
-         painter->setPen(KGlobalSettings::textColor());
+         painter->setPen(colorGroup().text());
       }
 
       if ( paintRect ) painter->drawRect(0, 0, w, h);
