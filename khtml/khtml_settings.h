@@ -27,7 +27,7 @@ class KConfig;
 /**
  * Settings for the HTML veiw
  * We need this in konqueror since we need to call reparseConfiguration
- * on the static instance (even when we don't have an HTML view any longer).  
+ * on the static instance (even when we don't have an HTML view any longer).
  */
 class KonqHTMLSettings
 {
@@ -37,22 +37,15 @@ protected:
    */
   KonqHTMLSettings();
 
+  void init();
+
   /** Called by constructor and reparseConfiguration */
-  void init( KConfig * config );
+  void init( KConfig * config, bool reset = true );
 
   /** Destructor. Don't delete any instance by yourself. */
   virtual ~KonqHTMLSettings() {};
 
 public:
-
-  /**
-   * The static instance of KonqHTMLSettings
-   */
-  static KonqHTMLSettings * defaultHTMLSettings();
-  /**
-   * Reparse the configuration to update the already-created instances
-   */
-  static void reparseConfiguration();
 
   // Behaviour settings
   bool changeCursor() { return m_bChangeCursor; }
@@ -95,7 +88,7 @@ private:
   bool m_bEnableJavaScript;
   QString m_strJavaPath;
 
-  static KonqHTMLSettings * s_HTMLSettings;
+  //  static KonqHTMLSettings * s_HTMLSettings;
 private:
   // There is no copy constructors. Use the static method
   KonqHTMLSettings( const KonqHTMLSettings &);

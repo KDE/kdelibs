@@ -37,7 +37,7 @@ AM_CPPFLAGS = -DQT_NO_ASCII_CAST -DQT_NO_COMPAT
 SUBDIRS = misc dom css xml html rendering java . ecma
 
 lib_LTLIBRARIES = libkhtml.la
-libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp
+libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp khtml_settings.cc
 
 libkhtml_la_METASOURCES = AUTO
 

@@ -26,6 +26,6 @@
 
 // KEEP IN SYNC WITH konqdefaults.h in kdebase/libkonq!
 // lets be modern .. -- Bernd
-#define DEFAULT_VIEW_FONT "helvetica"
-#define DEFAULT_VIEW_FIXED_FONT "courier"
-#define DEFAULT_VIEW_FONT_SIZE 12
+#define HTML_DEFAULT_VIEW_FONT "helvetica"
+#define HTML_DEFAULT_VIEW_FIXED_FONT "courier"
+#define HTML_DEFAULT_VIEW_FONT_SIZE 12
