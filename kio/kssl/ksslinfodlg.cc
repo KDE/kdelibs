@@ -54,7 +54,7 @@ private:
     KComboBox *_chain;
     KSSLCertificate *_cert;
     KSSLCertificate::KSSLValidationList _cert_ksvl;
-        
+
     bool inQuestion;
 
     QLabel *_serialNum;
@@ -223,7 +223,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
     layout->addWidget(d->_csl = new QLabel("", this), 2, 1);
 
     update();
-    
+
     layout->addWidget(new QLabel(i18n("Valid from:"), this), 3, 0);
     layout->addWidget(d->_validFrom = new QLabel("", this), 3, 1);
     layout->addWidget(new QLabel(i18n("Valid until:"), this), 4, 0);
@@ -278,7 +278,7 @@ QPalette cspl;
    d->_validUntil->setText(x->getNotAfter());
 
    cspl = d->_csl->palette();
-   
+
    KSSLCertificate::KSSLValidation ksv;
    KSSLCertificate::KSSLValidationList ksvl;
    if ((x == d->_cert) && !d->_cert_ksvl.isEmpty()) {
@@ -296,7 +296,7 @@ QPalette cspl;
 	 }
       }
       ksvl << ksv;
-   } 
+   }
 
    if (ksv != KSSLCertificate::Ok) {
       cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
@@ -312,7 +312,7 @@ QPalette cspl;
          errorStr.append('\n');
       errorStr += KSSLCertificate::verifyText(*it);
    }
-                                  
+
    d->_csl->setText(errorStr);
    d->_csl->setMinimumSize(d->_csl->sizeHint());
 
@@ -346,7 +346,7 @@ KSSLCertBox *KSSLInfoDlg::certInfoWidget(QWidget *parent, const QString &certNam
 }
 
 
-KSSLCertBox::KSSLCertBox(QWidget *parent, const char *name, WFlags f) 
+KSSLCertBox::KSSLCertBox(QWidget *parent, const char *name, WFlags f)
 :            QScrollView(parent, name, f)
 {
     _frame = NULL;
@@ -384,7 +384,7 @@ void KSSLCertBox::setValues(QString certName, QWidget *mailCatcher) {
         new QLabel(tmp, _frame);
     }
     if (!(tmp = cert.getValue("ST")).isEmpty()) {
-        label = new QLabel(i18n("State:"), _frame);
+        label = new QLabel(i18n("Federal State","State:"), _frame);
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         new QLabel(tmp, _frame);
     }
