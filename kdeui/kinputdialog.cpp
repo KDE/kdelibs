@@ -274,7 +274,7 @@ int KInputDialog::getInteger( const QString &caption, const QString &label,
     int value, int minValue, int maxValue, int step, bool *ok,
     QWidget *parent, const char *name )
 {
-  return getInteger( caption, label, value, minValue, maxValue, step, 
+  return getInteger( caption, label, value, minValue, maxValue, step,
     10, ok, parent, name );
 }
 
@@ -312,7 +312,10 @@ QString KInputDialog::getItem( const QString &caption, const QString &label,
 {
   KInputDialog *dlg = new KInputDialog( caption, label, list, current,
     editable, parent, name );
-
+  if ( !editable)
+  {
+      connect( dlg->listBox(),  SIGNAL(doubleClicked ( QListBoxItem *)), dlg, SLOT( slotOk()));
+  }
   bool _ok = ( dlg->exec() == Accepted );
 
   if ( ok )
