@@ -34,7 +34,10 @@ int main(int argc, char** argv)
     {
       pix=bg;
       about.setBackgroundTile(&pix);
-      about.showBaseFrameTile(true);
+      about.showTile( true );
+      about.enableLinkedHelp( true );
+
+      //about.showBaseFrameTile(true);
     } else {
       debug("main: No tile loaded.");
     }

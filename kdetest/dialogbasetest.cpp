@@ -1,5 +1,6 @@
 #include <kapp.h>
-#include <dialogbase.h>
+#include <kdialogbase.h>
+
 #include <qstring.h>
 #include <qtextview.h>
 
@@ -41,7 +42,7 @@ int main(int argc, char** argv)
      
      If you want to derive it, you still can, moving all code shown here 
      inside of your new class. */
-  DialogBase dialog;
+  KDialogBase dialog;
   /* Set a help chapter. If you do not set one, the link is not shown, and the 
      upper part of the frame shrinks as much as possible. The help window "
      "will of course only pop up if you correctly installed kdebase. */
@@ -56,7 +57,8 @@ int main(int argc, char** argv)
      It is important that your main widget is created with the dialog object
      as its parent! */
   QTextView view(text, QString::null, &dialog);
-  view.setMinimumSize(400, view.heightForWidth(400)+20);
+  //view.setMinimumSize(400, view.heightForWidth(400)+20);
+  view.setMinimumSize( 250, 300 );
   dialog.setMainWidget(&view);
   /* After finishing the setup of your main widget, the dialog needs to be 
      adjusted. It is not done automatically, since the layout of the main 
