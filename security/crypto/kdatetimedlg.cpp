@@ -27,7 +27,7 @@
 #include <qlabel.h>
 #include <klocale.h>
 #include <kdebug.h>
-#include <kdatepik.h>
+#include <kdatepicker.h>
 #include <qpushbutton.h>
 #include <qdatetime.h>
 #include <knuminput.h>

@@ -57,7 +57,7 @@
 #include <kmessagebox.h>
 #include <kpassdlg.h>
 #include <kseparator.h>
-#include <kdatepik.h>
+#include <kdatepicker.h>
 #include <kurllabel.h>
 #include <kmdcodec.h>
 #include <kgenericfactory.h>
