@@ -155,7 +155,7 @@ void BusManager::erase(BusClient *busclient)
 		{
 			if((*server) == busclient)
 			{
-				bus->clients.erase(server);
+				bus->servers.erase(server);
 				server = bus->servers.begin();
 				found++;
 			}
