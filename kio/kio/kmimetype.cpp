@@ -213,7 +213,21 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
         // Found something - can we trust it ? (e.g. don't trust *.pl over HTTP, could be anything)
         if ( _is_local_file || _url.hasSubURL() || // Explicitly trust suburls
 	     KProtocolInfo::determineMimetypeFromExtension( _url.protocol() ) )
-          return mime;
+	{
+	    if ( _is_local_file) {
+	    	QVariant subtypes = mime->property("X-KDE-HasSubtypes");
+  	    	if (subtypes.isValid() && subtypes.toString() == "true" ) 
+	    	{    	            
+		    if(_fast_mode) return defaultMimeTypePtr();
+		    KMimeMagicResult* result = 
+				    KMimeMagic::self()->findFileType( path );
+
+    	  	    if ( result && result->isValid() ) 
+		    	return mimeType( result->mimeType() );		
+	    	} 
+	    }
+	    return mime;
+  	}
       }
 
       static const QString& dotdesktop = KGlobal::staticQString(".desktop");
@@ -369,6 +383,14 @@ void KMimeType::init( KDesktopFile * config )
   QString XKDEIsAlso = QString::fromLatin1("X-KDE-IsAlso");
   if ( config->hasKey( XKDEIsAlso ) )
     m_mapProps.insert( XKDEIsAlso, config->readEntry( XKDEIsAlso ) );
+  
+  QString XKDEHasSubtypes = QString::fromLatin1("X-KDE-HasSubtypes");
+  if ( config->hasKey( XKDEHasSubtypes ) )
+  {
+    m_mapProps.insert( XKDEHasSubtypes, config->readEntry( XKDEHasSubtypes ) );
+    
+  }
+  
 }
 
 KMimeType::KMimeType( QDataStream& _str, int offset ) : KServiceType( _str, offset )
