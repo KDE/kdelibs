@@ -29,6 +29,7 @@
 #include <qpainter.h>
 #include <qrect.h>
 #include <qtabwidget.h>
+#include <qtabbar.h>
 
 #include <kapplication.h>
 #include <kglobal.h>
@@ -51,6 +52,15 @@ template class QPtrList<KAboutContributor>;
 #include "kaboutdialog.moc"
 #include "kaboutdialog_private.moc"
 // ##############################################################
+
+class KAboutTabWidget : public QTabWidget
+{
+public:
+    KAboutTabWidget( QWidget* parent ) : QTabWidget( parent ) {}
+    QSize sizeHint() const {
+	return QTabWidget::sizeHint().expandedTo( tabBar()->sizeHint() + QSize(4,4) );
+    }
+};
 
 
 
@@ -359,7 +369,7 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent,
 
   if( layoutType & AbtTabbed )
   {
-    mPageTab = new QTabWidget( this );
+    mPageTab = new KAboutTabWidget( this );
     if( mPageTab == 0 ) { return; }
     hbox->addWidget( mPageTab, 10 );
   }
@@ -414,24 +424,13 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent,
 
 void KAboutContainerBase::show( void )
 {
-    // 2000-18-01 Espen Sand: The entire function will be removed
-    // 2000 25 7 Matthias Ettrich: this may very well be, but without
-    // this hack, the initial layout is broken. Probably a bug in
-    // KDialogBase?
-
-    if( mPageTab != 0 )  {
-	mPageTab->setMinimumWidth( mPageTab->sizeHint().width() );
-    }
-    mTopLayout->activate(); // This must be done after everything else.
     QWidget::show();
 }
 
-
 QSize KAboutContainerBase::sizeHint( void ) const
 {
-  return( minimumSize() );
+    return minimumSize().expandedTo( QSize( QWidget::sizeHint().width(), 0 ) );
 }
-
 
 void KAboutContainerBase::fontChange( const QFont &/*oldFont*/ )
 {
