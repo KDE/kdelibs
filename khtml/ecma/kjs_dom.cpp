@@ -141,6 +141,8 @@ KJSO DOMNode::tryGet(const UString &p) const
     result = new DOMNodeFunc(node, DOMNodeFunc::RemoveEventListener);
   else if (p == "dispatchEvent") // from the EventTarget interface
     result = new DOMNodeFunc(node, DOMNodeFunc::DispatchEvent);
+  else if (p == "contains")
+    result = new DOMNodeFunc(node, DOMNodeFunc::Contains);
   else if (p == "onabort")
     result = getListener(DOM::EventImpl::ABORT_EVENT);
   else if (p == "onblur")
@@ -323,7 +325,6 @@ List *DOMNode::eventHandlerScope() const
 Completion DOMNodeFunc::tryExecute(const List &args)
 {
   KJSO result;
-
   switch (id) {
     case HasChildNodes:
       result = Boolean(node.hasChildNodes());
@@ -359,6 +360,17 @@ Completion DOMNodeFunc::tryExecute(const List &args)
     case ReplaceChild:
       result = getDOMNode(node.replaceChild(toNode(args[0]), toNode(args[1])));
       break;
+    case Contains:
+    {
+        int exceptioncode=0;
+	DOM::Node other = toNode(args[0]);
+	if (!other.isNull() && node.nodeType()==DOM::Node::ELEMENT_NODE)
+	{
+	    DOM::NodeBaseImpl *impl = static_cast<DOM::NodeBaseImpl *>(node.handle());
+	    bool retval = !impl->checkNoOwner(other.handle(),exceptioncode);
+	    result = Boolean(retval && exceptioncode == 0);
+	}
+    }
   }
 
   return Completion(ReturnValue, result);
@@ -625,6 +637,9 @@ const TypeInfo DOMElement::info = { "Element", HostType,
 
 KJSO DOMElement::tryGet(const UString &p) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMElement::tryGet " << p.qstring().latin1() << endl;
+#endif
   DOM::Element element = static_cast<DOM::Element>(node);
 
   if (p == "tagName")
