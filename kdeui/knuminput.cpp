@@ -28,8 +28,6 @@
  *  Boston, MA 02111-1307, USA.
  */
 
-#define _ISOC99_SOURCE 1 /* for round to be visible */
-
 #include <config.h>
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
@@ -37,13 +35,6 @@
 #include <assert.h>
 #include <math.h>
 #include <algorithm>
-
-using std::min;
-using std::max;
-using std::swap;
-
-// glibc 2.1 compatibility
-inline double round(double d) { return rint(d); }
 
 #include <qlabel.h>
 #include <qlineedit.h>
@@ -304,7 +295,7 @@ void KIntNumInput::init(int val, int _base)
 
 void KIntNumInput::setReferencePoint( int ref ) {
     // clip to valid range:
-    ref = min( maxValue(), max( minValue(),  ref ) );
+    ref = kMin( maxValue(), kMax( minValue(),  ref ) );
     d->referencePoint = ref;
 }
 
@@ -327,7 +318,8 @@ void KIntNumInput::slotEmitRelativeValueChanged( int value ) {
 
 void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
 {
-    if ( upper < lower ) swap( upper, lower );
+    upper = kMax(upper, lower);
+    lower = kMin(upper, lower);
     m_spin->setMinValue(lower);
     m_spin->setMaxValue(upper);
     m_spin->setLineStep(step);
@@ -484,7 +476,7 @@ void KIntNumInput::setValue(int val)
 void KIntNumInput::setRelativeValue( double r ) {
     if ( !d->referencePoint ) return;
     ++d->blockRelative;
-    setValue( int( round( d->referencePoint * r ) ) );
+    setValue( int( d->referencePoint * r + 0.5 ) );
     --d->blockRelative;
 }
 
@@ -555,14 +547,14 @@ KDoubleNumInput::KDoubleNumInput(KNumInput *below,
 KDoubleNumInput::KDoubleNumInput(double value, QWidget *parent, const char *name)
     : KNumInput(parent, name)
 {
-    init(value, min(0.0, value), max(0.0, value), 0.01, 2 );
+    init(value, kMin(0.0, value), kMax(0.0, value), 0.01, 2 );
 }
 
 KDoubleNumInput::KDoubleNumInput(KNumInput* below, double value, QWidget* parent,
                                  const char* name)
     : KNumInput(below, parent, name)
 {
-    init( value, min(0.0, value), max(0.0, value), 0.01, 2 );
+    init( value, kMin(0.0, value), kMax(0.0, value), 0.01, 2 );
 }
 
 KDoubleNumInput::~KDoubleNumInput()
@@ -713,7 +705,7 @@ void KDoubleNumInput::setRelativeValue( double r )
 void KDoubleNumInput::setReferencePoint( double ref )
 {
     // clip to valid range:
-    ref = min( maxValue(), max( minValue(), ref ) );
+    ref = kMin( maxValue(), kMax( minValue(), ref ) );
     d->referencePoint = ref;
 }
 
@@ -894,7 +886,7 @@ struct KDoubleSpinBox::Private {
       return INT_MIN;
     } else {
       *ok = true;
-      return int( round( value * f ) );
+      return int( value * f + 0.5 );
     }
   }
 
@@ -943,7 +935,8 @@ void KDoubleSpinBox::setAcceptLocalizedNumbers( bool accept ) {
 
 void KDoubleSpinBox::setRange( double lower, double upper, double step,
 			       int precision ) {
-  if ( lower > upper ) swap(lower,upper);
+  lower = kMin(upper, lower);
+  upper = kMax(upper, lower);
   setPrecision( precision, true ); // disable bounds checking, since
   setMinValue( lower );            // it's done in set{Min,Max}Value
   setMaxValue( upper );            // anyway and we want lower, upper
@@ -974,7 +967,7 @@ int KDoubleSpinBox::maxPrecision() const {
     // ==> 10^precision < INT_MAX / maxAbsValue
     // ==> precision < log10 ( INT_MAX / maxAbsValue )
     // ==> maxPrecision = floor( log10 ( INT_MAX / maxAbsValue ) );
-    double maxAbsValue = max( abs(minValue()), abs(maxValue()) );
+    double maxAbsValue = kMax( fabs(minValue()), fabs(maxValue()) );
     if ( maxAbsValue == 0 ) return 6; // return arbitrary value to avoid dbz...
 
     return int( floor( log10( double(INT_MAX) / maxAbsValue ) ) );
@@ -1031,7 +1024,7 @@ void KDoubleSpinBox::setLineStep( double step ) {
   if ( step > maxValue() - minValue() )
     base::setLineStep( 1 );
   else
-    base::setLineStep( max( d->mapToInt( step, &ok ), 1 ) );
+    base::setLineStep( kMax( d->mapToInt( step, &ok ), 1 ) );
 }
 
 QString KDoubleSpinBox::mapValueToText( int value ) {
