@@ -17,5 +17,5 @@ libartscbackend_la_LDFLAGS = -no-undefined -module
 libartscbackend_la_LIBADD = $(FLOWLIBS) \
     $(top_builddir)/arts/soundserver/libsoundserver_idl.la
 
-artsincludedir = $(includedir)/arts
-artsinclude_HEADERS = artsc.h
+artscincludedir = $(includedir)/artsc
+artscinclude_HEADERS = artsc.h

@@ -22,7 +22,7 @@ do
 	  flags="$flags -L@kde_libraries@ -ldl -lartsc"
 	  ;;
     --cflags)
-	  flags="$flags -I@kde_includes@ -I@kde_includes@/arts"
+	  flags="$flags -I@kde_includes@/artsc"
 	  ;;
     --version)
 	  echo 0.9.5

@@ -104,8 +104,6 @@ enum arts_parameter_t_enum {
  */
 typedef enum arts_parameter_t_enum arts_parameter_t;
 
-/*typedef arts_parameter_t_enum arts_parameter_t;*/
-
 /**
  * initializes the aRts C API, and connects to the sound server
  * 
