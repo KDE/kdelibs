@@ -1,5 +1,4 @@
 
-KDEDIR = /usr/share/sgml/docbook/kde-customization-0.1/
 SUBDIRS = stylesheets common
 
 cat_DATA = catalog
