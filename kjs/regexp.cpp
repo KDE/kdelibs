@@ -44,7 +44,7 @@ UString RegExp::match(const UString &s, int, int *pos)
   if (regexec(&preg, s.ascii(), 10, rmatch, 0)) {
     if (pos)
       *pos = -1;
-    return "";
+    return UString::null;
   }
 
   if (pos)

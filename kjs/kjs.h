@@ -99,6 +99,8 @@ public:
    * to the evaluate() calls.
    */
   bool call(const KJS::UString &func, const KJS::List &args);
+  bool call(const KJS::KJSO &scope, const KJS::UString &func,
+	    const KJS::List &args);
   /**
    * Clear the interpreter's memory. Otherwise, function declarations
    * and global variables will be remembered after each invokation of

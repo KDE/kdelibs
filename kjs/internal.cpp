@@ -627,25 +627,18 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
   return !errType;
 }
 
-bool KJScriptImp::call(const UString &func, const List &args)
+bool KJScriptImp::call(Imp *scope, const UString &func, const List &args)
 {
   init();
-  Context *ctx = Context::current();
-  const List *chain = ctx->pScopeChain();
-  ListIterator scope = chain->begin();
-  while (scope != chain->end()) {
-    if (scope->hasProperty(func))
-	break;
-    scope++;
-  }
-  if (scope == chain->end()) {
+  if (!scope)
+    scope = Global::current().imp();
+  if (!scope->hasProperty(func)) {
 #ifndef NDEBUG
       fprintf(stderr, "couldn't resolve function name %s. call() failed\n",
 	      func.ascii());
 #endif
       return false;
   }
-
   KJSO v = scope->get(func);
   if (!v.isA(ConstructorType)) {
 #ifndef NDEBUG

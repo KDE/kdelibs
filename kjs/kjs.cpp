@@ -67,7 +67,13 @@ bool KJScript::evaluate(const KJSO &thisV,
 
 bool KJScript::call(const KJS::UString &func, const List &args)
 {
-  return rep->call(func, args);
+  return rep->call(0, func, args);
+}
+
+bool KJScript::call(const KJSO &scope, const KJS::UString &func,
+		    const KJS::List &args)
+{
+  return rep->call(scope.imp(), func, args);
 }
 
 void KJScript::clear()

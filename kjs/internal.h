@@ -294,7 +294,7 @@ namespace KJS {
     void clear();
     bool evaluate(const UChar *code, unsigned int length, Imp *thisV = 0,
 		  bool onlyCheckSyntax = false);
-    bool call(const UString &func, const List &args);
+    bool call(Imp *scope, const UString &func, const List &args);
   public:
     ProgramNode *progNode;
     Node *firstNode;
