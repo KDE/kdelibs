@@ -204,7 +204,7 @@ i18n is no longer a macro<P>
 
   KApplication::getApplication()-&gt;getLocale()-&gt;translate<P>
 
-  but a function on it's own. klocale is obsolete and replace every call
+  but a function on its own. klocale is obsolete and replace every call
   to klocale-&gt;translate with i18n.<P>
 
   The return value of i18n is also no longer a const char*,
@@ -256,7 +256,7 @@ i18n is no longer a macro<P>
   command line help. It is now required that your application
   specifies at least:<P>
 <UL>
-	<LI>It's name.
+	<LI>Its name.
 	<LI>A short description what it does. (e.g. 1 line)
 	<LI>A version.
 	<LI>All command line options that it supports.
@@ -545,10 +545,10 @@ by KMessageBox.<P>
 
 <H3><A NAME="KCombo">KCombo</A></H3>
 
-KCombo has been removed.  Use QComboBox instead, it is completely
+KCombo has been removed.  Use KComboBox instead, it is completely
 compatible with the old KCombo API.  The method that you may have problems
 with is the old KCombo::setText.  This has been renamed to
-KCombo::setEditText.<P>
+KComboBox::setEditText.<P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
@@ -625,10 +625,9 @@ class is just a namespace, so you can either inherit from it, or reference
 the constants as KIO::UDS_XXX. The names of all of the classes have been
 changed to start with a 'k', this prevents namespace pollution. This should
 not cause too many problems as most of the KIO classes now inherit the
-namespace. Finally you should not longer include userpaths.h, it has been
-renamed to kuserpaths.h, the old include will work for a while, but you
-will get a warning message. If you have any questions about the changes
-then mail me (<A HREF="mailto:rich@kde.org">rich@kde.org</A>).<P>
+namespace. Finally you should not longer include userpaths.h, its methods
+have been moved to kglobalsettings.h. If you have any questions about the 
+changes then mail me (<A HREF="mailto:rich@kde.org">rich@kde.org</A>).<P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
@@ -802,7 +801,7 @@ Werner Trobin &lt;<A HREF="mailto:wtrobin@carinthia.com">wtrobin@carinthia.com</
 
 <H3><A NAME="ImageEffects">Image effects</A></H3>
 
-The kFSDither class is now gone.  It's functionality was moved to
+The kFSDither class is now gone.  Its functionality was moved to
 KImageEffect::dither().  Whereas before, you would done:<P>
 <TABLE>
   <TR>
