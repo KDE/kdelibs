@@ -1291,7 +1291,7 @@ void KApplication::invokeHelp( const QString& anchor,
    }
 }
 
-void KApplication::invokeHTMLHelp_x( const QString& _filename, const QString& topic ) const
+void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topic ) const
 {
    warning("invoking HTML help is deprecated! use docbook and invokeHelp!");
   
