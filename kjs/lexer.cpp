@@ -63,7 +63,7 @@ int kjsyylex()
 Lexer::Lexer()
   : yylineno(0),
     size8(128), size16(128), restrKeyword(false),
-    stackToken(-1), pos(0),
+    stackToken(-1), lastToken(-1), pos(0),
     code(0), length(0),
 #ifndef KJS_PURE_ECMA
     bol(true),
@@ -98,6 +98,7 @@ void Lexer::setCode(const UChar *c, unsigned int len)
   restrKeyword = false;
   delimited = false;
   stackToken = -1;
+  lastToken = -1;
   pos = 0;
   code = c;
   length = len;
@@ -464,6 +465,9 @@ int Lexer::lex()
   }
 #endif
 
+  if (state != Identifier && eatNextIdentifier)
+    eatNextIdentifier = false;
+
   restrKeyword = false;
   delimited = false;
   yylloc.first_line = yylineno; // ???
@@ -471,27 +475,46 @@ int Lexer::lex()
 
   switch (state) {
   case Eof:
-    return 0;
+    token = 0;
+    break;
   case Other:
     if(token == '}' || token == ';') {
       delimited = true;
     }
-    return token;
+    break;
   case Identifier:
     if ((token = Lookup::find(&mainTable, buffer16, pos16)) < 0) {
+      // Lookup for keyword failed, means this is an identifier
+      // Apply anonymous-function hack below (eat the identifier)
+      if (eatNextIdentifier) {
+        eatNextIdentifier = false;
+        UString debugstr(buffer16, pos16); fprintf(stderr,"Anonymous function hack: eating identifier %s\n",debugstr.ascii());
+        token = lex();
+        break;
+      }
       /* TODO: close leak on parse error. same holds true for String */
       kjsyylval.ustr = new UString(buffer16, pos16);
-      return IDENT;
+      token = IDENT;
+      break;
     }
+
+    eatNextIdentifier = false;
+    // Hack for "f = function somename() { ... }", too hard to get into the grammar
+    if (token == FUNCTION && lastToken == '=' )
+      eatNextIdentifier = true;
+
     if (token == CONTINUE || token == BREAK ||
 	token == RETURN || token == THROW)
       restrKeyword = true;
-    return token;
+    break;
   case String:
-    kjsyylval.ustr = new UString(buffer16, pos16); return STRING;
+    kjsyylval.ustr = new UString(buffer16, pos16);
+    token = STRING;
+    break;
   case Number:
     kjsyylval.dval = dval;
-    return NUMBER;
+    token = NUMBER;
+    break;
   case Bad:
     fprintf(stderr, "yylex: ERROR.\n");
     return -1;
@@ -499,6 +522,8 @@ int Lexer::lex()
     assert(!"unhandled numeration value in switch");
     return -1;
   }
+  lastToken = token;
+  return token;
 }
 
 bool Lexer::isWhiteSpace() const

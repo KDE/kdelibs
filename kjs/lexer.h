@@ -83,7 +83,9 @@ namespace KJS {
     bool delimited;
     bool skipLF;
     bool skipCR;
+    bool eatNextIdentifier;
     int stackToken;
+    int lastToken;
 
     State state;
     void setDone(State s);
@@ -123,11 +125,6 @@ namespace KJS {
 
     // current and following unicode characters
     unsigned short current, next1, next2, next3;
-
-    struct keyword {
-      const char *name;
-      int token;
-    };
 
     // for future extensions
     class LexerPrivate;
