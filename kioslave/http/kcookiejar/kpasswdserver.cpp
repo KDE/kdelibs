@@ -315,12 +315,17 @@ KPasswdServer::findAuthInfoItem(const QString &key, const KIO::AuthInfo &info)
           continue;
        }
           
-       if (!info.verifyPath)
-          return current;
-
-       QString path1 = current->url.path(+1);
-       if (path2.startsWith(path1))
-          return current;
+       if (info.verifyPath)
+       {
+          QString path1 = current->url.path(+1);
+          if (path2.startsWith(path1))
+             return current;
+       }
+       else
+       {
+          if (current->realmValue == info.realmValue)
+             return current;
+       }
           
        current = authList->next();
    }
