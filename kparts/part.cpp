@@ -154,7 +154,7 @@ void Part::setManager( PartManager *manager )
   m_manager = manager;
 }
 
-PartManager *Part::manager()
+PartManager *Part::manager() const
 {
   return m_manager;
 }

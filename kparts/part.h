@@ -167,7 +167,7 @@ public:
     /**
      * Returns the part manager handling this part, if any (0L otherwise).
      */
-    PartManager * manager();
+    PartManager * manager() const;
 
     /**
      * @internal
