@@ -675,8 +675,8 @@ void RenderPartObject::updateWidget()
               // render embed object
               url = embed->url;
               serviceType = embed->serviceType;
-          }
-          serviceType = objbase->serviceType;
+          } else
+              serviceType = objbase->serviceType;
           if(serviceType.isEmpty() && !objbase->classId.isEmpty()) {
 
               // We have a clsid, means this is activex (Niko)
