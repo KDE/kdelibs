@@ -22,11 +22,25 @@
 #include <kglobal.h>
 #include <qsqlpropertymap.h>
 #include <qobjectlist.h>
-#ifndef NDEBUG
-#include "kdebug.h"
-#endif
 #include <kconfig.h>
 #include <kapplication.h>
+
+/**
+ * Macro function to warn developers when they are making calls
+ * that can never return anything of value
+ */ 
+#ifndef NDEBUG
+#include "kdebug.h"
+#define functionCallOrderCheck(functionName, returnValue) \
+  if(!d->retrievedSettings){ \
+      kdDebug(180) << "KAutoConfig::"functionName"() was called before " \
+      "KAutoConfig::retrieveSettings().  This should NEVER happen.  " \
+      "Please Fix." << endl; \
+    return returnValue; \
+  }
+#else
+#define functionCallOrderCheck(functionName, returnValue)
+#endif
 
 class KAutoConfig::KAutoConfigPrivate {
 
@@ -45,7 +59,7 @@ public:
   // Child widgets of widgets to ignore
   QPtrList<QWidget> ignore;
 
-  // reset to false after saveSettings returns true.
+  // Reset to false after saveSettings returns true.
   bool changed;
 
 #ifndef NDEBUG
@@ -105,14 +119,13 @@ bool KAutoConfig::retrieveSettings(bool trackChanges){
 #ifndef NDEBUG
   if(d->retrievedSettings){
       kdDebug(180) << "This should not happen.  Function "
-       "KAutoConfig::retrieveSettings() called more then once, returning "
-       "first.  It is not recommended unless you know the implementation "
-       "details of KAutoConfig and what this breaks.  Please fix." << endl;
+       "KAutoConfig::retrieveSettings() was called more then once, returning "
+       "false.  Please fix." << endl;
     return false;
   }
   d->retrievedSettings = true;
 #endif
-
+  
   if(trackChanges){
     // QT
     changedMap.insert("QButton", SIGNAL(stateChanged(int)));
@@ -159,7 +172,7 @@ bool KAutoConfig::retrieveSettings(bool trackChanges){
 
   // Go through all of the children of the widgets and find all known widgets
   QPtrListIterator<QWidget> it( d->widgets );
-  QWidget *widget = 0;
+  QWidget *widget;
   bool usingDefaultValues = false;
   while ( (widget = it.current()) != 0 ) {
     ++it;
@@ -170,19 +183,12 @@ bool KAutoConfig::retrieveSettings(bool trackChanges){
 }
 
 bool KAutoConfig::saveSettings() {
-#ifndef NDEBUG
-  if(!d->retrievedSettings){
-      kdDebug(180) << "KAutoConfig::saveSettings() called before "
-      "KAutoConfig::retrieveSettings().  This should NEVER happen.  "
-      "Please Fix." << endl;
-    return false;
-  }
-#endif
+  functionCallOrderCheck("saveSettings", false);
 
   QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
   // Go through all of the widgets
   QPtrListIterator<QWidget> it( d->widgets );
-  QWidget *widget = 0;
+  QWidget *widget;
   while ( (widget = it.current()) != 0 ) {
     ++it;
     config->setGroup(d->groups[widget]);
@@ -224,19 +230,12 @@ bool KAutoConfig::saveSettings() {
 }
 
 bool KAutoConfig::hasChanged() const {
-#ifndef NDEBUG
-  if(!d->retrievedSettings){
-    kdDebug(180) << "KAutoConfig::hasChanged() called before "
-      "KAutoConfig::retrieveSettings().  This should NEVER happen.  "
-      "Please Fix." << endl;
-    return false;
-  }
-#endif
+  functionCallOrderCheck("hasChanged", false);
 
   QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
   // Go through all of the widgets
   QPtrListIterator<QWidget> it( d->widgets );
-  QWidget *widget = 0;
+  QWidget *widget;
   while ( (widget = it.current()) != 0 ) {
     ++it;
     config->setGroup(d->groups[widget]);
@@ -250,6 +249,7 @@ bool KAutoConfig::hasChanged() const {
       QVariant savedValue = config->readPropertyEntry(groupWidget->name(),
       defaultValue);
 
+      // Return once just one item is found to have changed.
       if((currentValue == defaultValue && savedValue != currentValue) ||
          (savedValue != currentValue))
         return true;
@@ -259,19 +259,12 @@ bool KAutoConfig::hasChanged() const {
 }
 
 bool KAutoConfig::isDefault() const {
-#ifndef NDEBUG
-  if(!d->retrievedSettings){
-    kdDebug(180) << "KAutoConfig::isDefault() called before "
-      "KAutoConfig::retrieveSettings().  This should NEVER happen.  "
-      "Please Fix." << endl;
-    return false;
-  }
-#endif
+  functionCallOrderCheck("isDefault", false);
 
   QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
   // Go through all of the widgets
   QPtrListIterator<QWidget> it( d->widgets );
-  QWidget *widget = 0;
+  QWidget *widget;
   while ( (widget = it.current()) != 0 ) {
     ++it;
     config->setGroup(d->groups[widget]);
@@ -291,20 +284,13 @@ bool KAutoConfig::isDefault() const {
   return true;
 }
 
-void KAutoConfig::resetSettings(){
-#ifndef NDEBUG
-  if(!d->retrievedSettings){
-    kdDebug(180) << "KAutoConfig::resetSettings() called before "
-      "KAutoConfig::retrieveSettings().  This should NEVER happen.  "
-      "Please Fix." << endl;
-    return;
-  }
-#endif
+void KAutoConfig::resetSettings() const {
+  functionCallOrderCheck("resetSettings",);
 
   QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
   // Go through all of the widgets
   QPtrListIterator<QWidget> it( d->widgets );
-  QWidget *widget = 0;
+  QWidget *widget;
   while ( (widget = it.current()) != 0 ) {
     ++it;
     config->setGroup(d->groups[widget]);
@@ -321,6 +307,31 @@ void KAutoConfig::resetSettings(){
       }
     }
   }
+}
+
+void KAutoConfig::reloadSettings() const {
+  functionCallOrderCheck("reloadSettings", );
+
+  QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
+  // Go through all of the widgets
+  QPtrListIterator<QWidget> it( d->widgets );
+  QWidget *pageWidget;
+  while ( (pageWidget = it.current()) != 0 ) {
+    ++it;
+    config->setGroup(d->groups[pageWidget]);
+
+    // Go through the known widgets of this page and reload
+    QPtrListIterator<QWidget> it( d->autoWidgets[pageWidget] );
+    QWidget *widget;
+    while ( (widget = it.current()) != 0 ){
+      ++it;
+      QVariant defaultSetting = d->defaultValues[widget];
+      QVariant setting = 
+        config->readPropertyEntry(widget->name(), defaultSetting);
+      propertyMap->setProperty(widget, setting);
+    }
+  }
+  d->changed = false;
 }
 
 bool KAutoConfig::parseChildren(const QWidget *widget,

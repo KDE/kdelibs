@@ -103,7 +103,7 @@ signals:
    * @see settingsChanged()
    */
   void settingsChanged( QWidget *widget );
-	
+
   /**
    * If retrieveSettings() was told to track changes then if
    * any known setting was changed this signal will be emitted.  Note
@@ -122,7 +122,7 @@ public:
    * @param parent - Parent object.
    * @param name - Object name.
    */ 
-  KAutoConfig( KConfig *kconfig, QObject *parent=0, const char *name=0 );	
+  KAutoConfig( KConfig *kconfig, QObject *parent=0, const char *name=0 );
  
   /**
    * Constructor.
@@ -192,12 +192,10 @@ public:
    * @param signal - The signal (with "SIGNAL()" wrapper) that should be called.
    */ 
   inline void addWidgetChangedSignal( const QString &widgetName,
-		  const QCString &signal){
+                                      const QCString &signal ){
     changedMap.insert( widgetName, signal );
   }
 
-
-public slots:
   /**
    * Traverse the specified widgets, retrieving the settings for all known
    * widgets that aren't being ignored and storing the default values.
@@ -208,22 +206,36 @@ public slots:
    */ 
   bool retrieveSettings( bool trackChanges=false );
   
+public slots:
   /**
    * Traverse the specified widgets, saving the settings for all known
    * widgets that aren't being ignored. retrieveSettings() must be called
    * before this function to build the list of known widgets and default values.
    * @return bool - True if any settings were changed.
+   *
+   * Example use: User clicks Ok or Apply button in a configure dialog.
    */ 
   bool saveSettings();
 
   /**
-   * Traverse the specified widgets, reseting the settings to their default
+   * Traverse the specified widgets, reseting the widgets to their default
    * values for all known widgets that aren't being ignored.
    * retrieveSettings() must be called before this function to build
    * the list of known widgets and default values.
+   *
+   * Example use: User clicks Default button in a configure dialog.
    */
-  void resetSettings(); 
+  void resetSettings() const;
 
+  /**
+   * Traverse the specified widgets, reloading the settings for all known
+   * widgets that aren't being ignored.
+   * retrieveSettings() must be called before this function to build
+   * the list of known widgets and default values.
+   *
+   * Example use: User clicks Reset button in a configure dialog.
+   */
+  void reloadSettings() const; 
 
 protected:
   /**
@@ -248,8 +260,7 @@ protected:
    * @see retrieveSettings()
    */ 
   bool parseChildren( const QWidget *widget,
-		  QPtrList<QWidget>&currentGroup, bool trackChanges );
-
+                      QPtrList<QWidget>&currentGroup, bool trackChanges );
 
 private:
   class KAutoConfigPrivate;
