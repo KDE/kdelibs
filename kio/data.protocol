@@ -14,6 +14,7 @@ Description[eu]=Datu URLen (rfc2397) kioslave-a
 Description[fr]=Un module d'entrée / sortie pour les URI de données (rfc2397)
 Description[hu]=KDE-protokoll adat-URI-k használataához (RFC 2397)
 Description[is]=kioslave fyrir gagnaslóðir (rfc2397)
+Description[lt]=Antrinė KDE programa duomenų URI (rfc2397)
 Description[nb]=kioslave for data URIs (rfc2397)
 Description[nds]=Een kioslave för Daten-URIs (rfc2397)
 Description[nl]=Een kioslave voor data-URI-adressen (rfc2397)
