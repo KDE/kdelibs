@@ -714,6 +714,9 @@ EOF
       if test $ac_cv_prog_cxx_g = yes; then
         CXXFLAGS="-g"
       fi
+      if test "$ac_cv_prog_CC" = "yes"; then
+        CXXFLAGS="$CXXFLAGS -pto"
+      fi
     else
       if test "$GXX" = "yes"; then
          CXXFLAGS="-O2"
