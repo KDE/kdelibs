@@ -177,6 +177,7 @@ void KDualColorButton::dropEvent(QDropEvent *ev)
             bg.setColor(c);
             emit(bgChanged(c));
         }
+        repaint(false);
     }
 }
 
