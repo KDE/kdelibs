@@ -42,7 +42,8 @@ include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
 		kthemestyle.h kcharselect.h kcolordrag.h \
 		qxembed.h knumvalidator.h knumlineedit.h \
 		kdialog.h \
-		dialogbase.h kaboutdialog.h kpixmapeffect.h
+		dialogbase.h kaboutdialog.h kpixmapeffect.h \
+		kauthicon.h
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
@@ -63,7 +64,8 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp  \
 		kthemebase.cpp kcharselect.cpp \
 		kcolordrag.cpp qxembed.cpp \
 		knumvalidator.cpp knumlineedit.cpp kdialog.cpp \
-		dialogbase.cpp kaboutdialog.cpp kpixmapeffect.cpp
+		dialogbase.cpp kaboutdialog.cpp kpixmapeffect.cpp \
+		kauthicon.cpp
 
 libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	kcolordlg.moc kcombo.moc kcontainer.moc kcontrol.moc \
@@ -78,7 +80,7 @@ libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	kaccelmenu.moc klineeditdlg.moc kurlcompletion.moc kthemebase.moc \
 	kthemestyle.moc kcharselect.moc kcolordrag.moc \
 	qxembed.moc knumlineedit.moc kdialog.moc \
-	dialogbase.moc kaboutdialog.moc
+	dialogbase.moc kaboutdialog.moc kauthicon.moc
 
 data_DATA = arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	
 datadir = $(kde_datadir)/kde/pics
