@@ -65,19 +65,27 @@ int main( int argc, char *argv[] )
     int i, test;
     new KApplication( argc, argv, "MyApplication" );
 
-    ExampleWidget w;
-    w.show();    
+    ExampleWidget *w = new ExampleWidget();
+    w->show();    
+    w->deleteLater();
 
     QStringList list; list.append("Hello"); list.append("World");
 
     for( test = 1; true; test++)
     {
-       for( int count = 0; count < 3; count++)
-       {
          switch(test)
          {
 case 1:
-  i = KMessageBox::questionYesNo(0, "<p>Do you have a printer? thisisaverylongdkldhklghklghklashgkllasghkdlsghkldfghklsabla bla bbla bla. It also has <a href=http://www.kde.org>this URL</a>.</p>");
+  i = KMessageBox::warningContinueCancel(w, 
+                "You are about to <Print>.\n"
+		"Are you sure?",
+                "Print", QString::fromLatin1("&Print"), "dontask", false);
+  i = KMessageBox::warningContinueCancel(0, 
+                "You are about to <Print>.\n"
+		"Are you sure?",
+                "Print", QString::fromLatin1("&Print"), "dontask", KMessageBox::AllowLink);
+  i = KMessageBox::questionYesNo(0, "<p>Do you have a printer? thisisaverylongdkldhklghklghklashgkllasghkdlsghkldfghklsabla bla bbla bla. It also has <a href=http://www.kde.org>this URL</a>.</p>",
+  	QString("Bla"), QString("Yes"), QString("No"), "bla", KMessageBox::AllowLink);
   break;
 
 case 2:
@@ -214,7 +222,6 @@ default:
          } // Switch
 
          showResult(test, i);
-      } // Count
     } // Test
 }
 
