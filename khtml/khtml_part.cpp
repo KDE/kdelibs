@@ -3677,7 +3677,7 @@ void KHTMLPart::saveState( QDataStream &stream )
   int focusNodeNumber;
   if (!d->m_focusNodeRestored)
       focusNodeNumber = d->m_focusNodeNumber;
-  else if (d->m_doc->focusNode())
+  else if (d->m_doc && d->m_doc->focusNode())
       focusNodeNumber = d->m_doc->nodeAbsIndex(d->m_doc->focusNode());
   else
       focusNodeNumber = -1;
