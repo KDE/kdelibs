@@ -119,10 +119,15 @@ void KMInstancePage::slotNew()
 	QString	name = QInputDialog::getText(i18n("Instance name"),i18n("Enter name for new instance (leave untouched for default):"),i18n("(Default)"),&ok,this);
 	if (ok)
 	{
-		if (name == i18n("(Default)"))
-			name = QString::null;
-		KMFactory::self()->virtualManager()->create(m_printer,name);
-		setPrinter(m_printer);
+		if (name.find(QRegExp("\\s")) != -1)
+			KMessageBox::error(this, i18n("Instance name may not contain any space!"));
+		else
+		{
+			if (name == i18n("(Default)"))
+				name = QString::null;
+			KMFactory::self()->virtualManager()->create(m_printer,name);
+			setPrinter(m_printer);
+		}
 	}
 
 	KMTimer::releaseTimer();
@@ -158,12 +163,17 @@ void KMInstancePage::slotCopy()
 		QString	name = QInputDialog::getText(i18n("Instance name"),i18n("Enter name for new instance (leave untouched for default):"),i18n("(Default)"),&ok,this);
 		if (ok)
 		{
-			if (src == i18n("(Default)"))
-				src = QString::null;
-			if (name == i18n("(Default)"))
-				name = QString::null;
-			KMFactory::self()->virtualManager()->copy(m_printer,src,name);
-			setPrinter(m_printer);
+			if (name.find(QRegExp("\\s")) != -1)
+				KMessageBox::error(this, i18n("Instance name may not contain any space!"));
+			else
+			{
+				if (src == i18n("(Default)"))
+					src = QString::null;
+				if (name == i18n("(Default)"))
+					name = QString::null;
+				KMFactory::self()->virtualManager()->copy(m_printer,src,name);
+				setPrinter(m_printer);
+			}
 		}
 	}
 
