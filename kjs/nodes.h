@@ -486,6 +486,7 @@ namespace KJS {
     virtual bool deref();
     virtual ~LogicalNotNode();
     virtual Value value(ExecState *exec) const;
+    virtual bool toBoolean(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr;

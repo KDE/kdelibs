@@ -1152,6 +1152,12 @@ bool LogicalNotNode::deref()
 }
 
 // ECMA 11.4.9
+bool LogicalNotNode::toBoolean(ExecState *exec) const
+{
+  return !expr->toBoolean(exec);
+}
+
+// could remove this
 Value LogicalNotNode::value(ExecState *exec) const
 {
   bool b = expr->toBoolean(exec);
