@@ -25,20 +25,22 @@
 
 #include <qtextcodec.h>
 
+namespace khtml {
 /**
  * @internal
  */
-class KHTMLDecoder
+class Decoder
 {
 public:
-    KHTMLDecoder();
-    ~KHTMLDecoder();
+    Decoder();
+    ~Decoder();
 
     void setEncoding(const char *encoding);
     const char *encoding() const;
 
     QString decode(const char *data, int len);
 
+    bool visuallyOrdered() { return visualRTL; }
 protected:
     // codec used for decoding. default is Latin1.
     QTextCodec *codec;
@@ -51,4 +53,5 @@ protected:
     bool visualRTL;
 };
 
+};
 #endif

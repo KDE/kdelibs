@@ -20,8 +20,8 @@
  *
  * $Id$
  */
-#define DEBUG_LAYOUT
-#define BIDI_DEBUG
+//#define DEBUG_LAYOUT
+//#define BIDI_DEBUG
 
 #include "render_text.h"
 #include "dom_stringimpl.h"
@@ -384,6 +384,9 @@ short RenderText::verticalPositionHint() const
 
 void RenderText::position(int x, int y, int from, int len, int width, bool reverse)
 {
+    // ### should not be needed!!!
+    if(len == 0) return;
+
     QChar *ch;
     bool deleteChar = false;
     if(reverse)

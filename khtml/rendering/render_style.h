@@ -97,7 +97,7 @@ public:
     	data = d.data;
 
 	data->ref();
-	    
+	
 	return *this;
     }
 
@@ -111,15 +111,15 @@ class SharedData
 public:
     SharedData() { _ref=0; counter++; }
     virtual ~SharedData() { counter--; }
-    
+
     void ref() { _ref++;  }
     void deref() { if(_ref) _ref--; if(_ref<=0) delete this; }
     bool hasOneRef() { //printf("ref=%d\n",_ref);
-    	return _ref==1; } 
-  
+    	return _ref==1; }
+
     static int counter;
 protected:
-    unsigned int _ref;     
+    unsigned int _ref;
 };
 
 
@@ -150,12 +150,12 @@ struct LengthBox
 	bottom=len;
 	return len;
     }
-    
+
     bool operator==(const LengthBox& o) const
     {
     	return left==o.left && right==o.right && top==o.top && bottom==o.bottom;
     }
-    
+
 
     bool nonZero() const { return left.value!=0 || right.value!=0 || top.value!=0 || bottom.value!=0; }
 };
@@ -191,12 +191,12 @@ public:
 	width = 3; // medium is default value
 	style = BNONE;
     }
-    unsigned short width;    
+    unsigned short width;
     QColor color;
     EBorderStyle style : 4;
 
     bool nonZero() const { return width!=0 && style!=BNONE; }
-    
+
     bool operator==(const BorderValue& o) const
     {
     	return width==o.width && style==o.style && color==o.color;
@@ -216,7 +216,7 @@ public:
     {
     	return left.nonZero() || right.nonZero() || top.nonZero() || bottom.nonZero();	
     }
-    
+
     bool operator==(const BorderData& o) const
     {
     	return left==o.left && right==o.right && top==o.top && bottom==o.bottom;
@@ -233,7 +233,7 @@ public:
     virtual ~StyleSurroundData()
     {
     }
-    
+
     StyleSurroundData(const StyleSurroundData& o ) : SharedData()
     {
     	offset = o.offset;
@@ -246,10 +246,10 @@ public:
     LengthBox margin;
     LengthBox padding;
     BorderData border;
-    
+
     bool operator==(const StyleSurroundData& o) const
     {
-    	return offset==o.offset && margin==o.margin && 
+    	return offset==o.offset && margin==o.margin &&
 	    padding==o.padding && border==o.border;
     }
 };
@@ -268,7 +268,7 @@ public:
     virtual ~StyleBoxData()
     {
     }
-    
+
     StyleBoxData(const StyleBoxData& o ) : SharedData()
     {
     	width = o.width;
@@ -278,7 +278,7 @@ public:
 	min_height = o.min_height;
 	max_height = o.max_height;	
     }
-    
+
 
     // copy and assignment
 //    StyleBoxData(const StyleBoxData &other);
@@ -288,10 +288,10 @@ public:
     {
 
     }
-    
+
     bool operator==(const StyleBoxData& o) const
     {
-    	return 
+    	return
 	    	width == o.width &&
 		height == o.height &&
 		min_width == o.min_width &&
@@ -338,26 +338,26 @@ public:
     {
 	colspan = 1;
     }
-    
+
     virtual ~StyleVisualData() {
     }
-    
+
     StyleVisualData(const StyleVisualData& o ) : SharedData()
     {
     	clip = o.clip;
 	colspan = o.colspan;
 	counter_increment = o.counter_increment;
 	counter_reset = o.counter_reset;
-    }    
-    
+    }
+
     bool operator==(const StyleVisualData& o) const
     {
-    	return 
+    	return
 	    clip == o.clip &&
 	    colspan == o.colspan &&
 	    counter_increment == o.counter_increment &&
 	    counter_reset == o.counter_reset;
-    }       
+    }
 
     LengthBox clip;
 
@@ -380,29 +380,29 @@ class StyleBackgroundData : public SharedData
 public:
     StyleBackgroundData()
     {
-	image = 0;    
+	image = 0;
     }
-    
+
     virtual ~StyleBackgroundData()
     {
     }
-    
+
     StyleBackgroundData(const StyleBackgroundData& o ) : SharedData()
     {
     	color = o.color;
 	image = o.image;
 	x_position = o.x_position;
 	y_position = o.y_position;
-    }      
-    
+    }
+
     bool operator==(const StyleBackgroundData& o) const
     {
-    	return 
+    	return
 	    color == o.color &&
 	    image == o.image &&
 	    x_position == o.x_position &&
 	    y_position == o.y_position;
-    }    
+    }
 
     QColor color;
     CachedImage *image;
@@ -447,11 +447,11 @@ public:
 	indent = Length(0, Fixed);
 	border_spacing = 0;
 	style_image = 0;
-    }   
-    
+    }
+
     StyleInheritedData() { setDefaultValues(); }
     virtual ~StyleInheritedData() { }
-    
+
     StyleInheritedData(const StyleInheritedData& o ) : SharedData()
     {
 	indent = o.indent;
@@ -462,27 +462,27 @@ public:
 	font = o.font;
 	color = o.color;
 	decoration_color = o.decoration_color;
-    }        
-    
+    }
+
     bool operator==(const StyleInheritedData& o) const
     {
     	return memcmp(this, &o, sizeof(*this))==0;
-    }    
+    }
 
     Length indent;
     Length line_height;
 
     unsigned int letter_spacing : 8;
-    unsigned int word_spacing : 8;              
-    
+    unsigned int word_spacing : 8;
+
     short border_spacing;
-    
+
     CachedImage *style_image;
-    
+
     QFont font;
     QColor color;
-    QColor decoration_color; 
-    
+    QColor decoration_color;
+
 };
 
 
@@ -529,30 +529,30 @@ protected:
 
 
 // inherit
-    bool _border_collapse : 1 ;    
+    bool _border_collapse : 1 ;
     EEmptyCell _empty_cells : 2 ;
-    ECaptionSide _caption_side : 2;    
-    EListStyleType _list_style_type : 5 ;    
-    EListStylePosition _list_style_position :1;        
-    EVisiblity _visiblity : 2;    
+    ECaptionSide _caption_side : 2;
+    EListStyleType _list_style_type : 5 ;
+    EListStylePosition _list_style_position :1;
+    EVisiblity _visiblity : 2;
     ETextAlign _text_align : 2;
     EDirection _direction : 1;
     EWhiteSpace _white_space : 2;
-    int _text_decoration : 4;    
-    
+    int _text_decoration : 4;
+    bool _visuallyOrdered : 1;
 
 // don't inherit
 
     EOverflow _overflow : 4 ;
     EVerticalAlign _vertical_align : 8;
     EClear _clear : 2;
-    ETableLayout _table_layout : 1;    
+    ETableLayout _table_layout : 1;
     EBackgroundRepeat _bg_repeat : 2;
     bool _bg_attachment : 1;
     EPosition _position : 2;
     EFloat _floating : 2;
-    
-    static RenderStyle* _default;        
+
+    static RenderStyle* _default;
 
 // non-inherited attributes
     DataRef<StyleBoxData> box;
@@ -564,7 +564,7 @@ protected:
     DataRef<StyleInheritedData> inherited;
 
     static const QColor undefinedColor;
-    
+
     void setBitDefaults();
 
 public:
@@ -572,13 +572,12 @@ public:
     RenderStyle(const RenderStyle&);
     RenderStyle(const RenderStyle* inheritParent);
     ~RenderStyle();
-    
-    
+
     bool operator==(const RenderStyle& other) const;
     void mergeData(RenderStyle* other);
-    
+
     static int counter;
-    
+
     /**
      * Intantiates new style object following the
      * css2 inheritance rules.
@@ -590,6 +589,9 @@ public:
     bool        hasPadding() { return surround->padding.nonZero(); }
     bool        hasBorder() { return surround->border.hasBorder(); }
     bool        hasOffset() { return surround->offset.nonZero(); }
+
+    bool visuallyOrdered() { return _visuallyOrdered; }
+    void setVisuallyOrdered(bool b) { _visuallyOrdered = b; }
 
 // attribute getter methods
 

@@ -108,7 +108,7 @@ public:
   QGuardedPtr<KHTMLView> m_view;
   KHTMLPartBrowserExtension *m_extension;
   DOM::HTMLDocumentImpl *m_doc;
-  KHTMLDecoder *m_decoder;
+  khtml::Decoder *m_decoder;
   KJSProxy *m_jscript;
   bool m_bJScriptEnabled;
   bool m_bJavaEnabled;
@@ -481,7 +481,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 void KHTMLPart::write( const char *str, int len )
 {
   if ( !d->m_decoder )
-    d->m_decoder = new KHTMLDecoder();
+    d->m_decoder = new khtml::Decoder();
 
   if ( len == 0 )
     return;
@@ -490,6 +490,7 @@ void KHTMLPart::write( const char *str, int len )
     len = strlen( str );
 
   QString decoded = d->m_decoder->decode( str, len );
+  if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
   d->m_doc->write( decoded );
 }
 

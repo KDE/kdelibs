@@ -308,6 +308,11 @@ void HTMLDocumentImpl::detach()
     NodeBaseImpl::detach();
 }
 
+void HTMLDocumentImpl::setVisuallyOrdered()
+{
+    if(!m_style) return;
+    m_style->setVisuallyOrdered(true);
+}
 void HTMLDocumentImpl::createSelector()
 {
     //printf("document::createSelector\n");

@@ -106,6 +106,9 @@ public:
      */
     virtual void specialHandler(BiDiObject */*special*/) {}
 
+    void setVisualOrdering(bool b) { m_visualOrdering = b; }
+    bool visualOrdering() { return m_visualOrdering; }
+
 protected:
 
     /**
@@ -139,6 +142,7 @@ protected:
     bool m_ignoreNewline;
     bool m_ignoreLeadingSpaces;
     bool m_ignoreTrailingSpaces;
+    bool m_visualOrdering;
 
 private:
     void breakLines(int xOff, int yOff);

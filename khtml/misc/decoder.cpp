@@ -24,13 +24,15 @@
 // $Id$
 
 #include "decoder.h"
+using namespace khtml;
+
 #include "htmlhashes.h"
 #include <qregexp.h>
 
 #include <ctype.h>
 #include <stdio.h> // for the printf debug messages
 
-KHTMLDecoder::KHTMLDecoder()
+Decoder::Decoder()
 {
     codec = QTextCodec::codecForName("ISO 8859-1");
 printf("INIT HTML Codec name= %s\n", codec->name());
@@ -39,11 +41,11 @@ printf("INIT HTML Codec name= %s\n", codec->name());
     beginning = true;
     visualRTL = false;
 }
-KHTMLDecoder::~KHTMLDecoder()
+Decoder::~Decoder()
 {
 }
 
-void KHTMLDecoder::setEncoding(const char *_encoding)
+void Decoder::setEncoding(const char *_encoding)
 {
     enc = _encoding;
     codec = QTextCodec::codecForName(enc);
@@ -59,12 +61,12 @@ void KHTMLDecoder::setEncoding(const char *_encoding)
     }
 }
 
-const char *KHTMLDecoder::encoding() const
+const char *Decoder::encoding() const
 {
     return enc;
 }
 
-QString KHTMLDecoder::decode(const char *data, int len)
+QString Decoder::decode(const char *data, int len)
 {
     // this is not completely efficient, since the function might go
     // through the html head several times...
@@ -133,7 +135,7 @@ QString KHTMLDecoder::decode(const char *data, int len)
 			    endpos++;
 			
 			enc = str.mid(pos, endpos-pos);
-			printf("KHTMLDecoder: found charset: %s\n", enc.data());
+			printf("Decoder: found charset: %s\n", enc.data());
 			setEncoding(enc);
 			goto found;
 		    }
@@ -181,6 +183,7 @@ QString KHTMLDecoder::decode(const char *data, int len)
     else
 	out = codec->toUnicode(data, len);
 
+#if 0
     // ### this is still broken
     if(visualRTL)
     {
@@ -195,6 +198,7 @@ QString KHTMLDecoder::decode(const char *data, int len)
 	middle += QChar(0x202c);
 	out.replace(QRegExp(middle), " ");
     }
+#endif
 
     // the hell knows, why the output does sometimes have a QChar::null at
     // the end...

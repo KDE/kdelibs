@@ -50,7 +50,9 @@ RenderStyle::setBitDefaults()
     _position = STATIC;
     _floating = FNONE;
     _bg_repeat = REPEAT;
-    _bg_attachment = SCROLL; 
+    _bg_attachment = SCROLL;
+
+    _visuallyOrdered = false;
 }
 
 
@@ -80,9 +82,9 @@ RenderStyle::RenderStyle()
 	
 	inherited = _default->inherited;
     }
-      
+
     setBitDefaults();
-    
+
     _display = INLINE;
 }
 
@@ -92,9 +94,9 @@ RenderStyle::RenderStyle(const RenderStyle& other)
     counter++;
     box = other.box;
     visual = other.visual;
-    background = other.background;    
+    background = other.background;
     surround = other.surround;
-    
+
     inherited = other.inherited;
 
     _border_collapse = other._border_collapse;
@@ -115,8 +117,9 @@ RenderStyle::RenderStyle(const RenderStyle& other)
     _position = other._position;
     _floating = other._floating;
     _bg_repeat = other._bg_repeat;
-    _bg_attachment = other._bg_attachment; 
-    
+    _bg_attachment = other._bg_attachment;
+    _visuallyOrdered = other._visuallyOrdered;
+
     _display = other._display;
 }
 
@@ -129,7 +132,7 @@ RenderStyle::RenderStyle(const RenderStyle* inheritParent)
     background = _default->background;
 
     inherited = inheritParent->inherited;
-    
+
     setBitDefaults();
 
     _border_collapse = inheritParent->_border_collapse;
@@ -141,7 +144,8 @@ RenderStyle::RenderStyle(const RenderStyle* inheritParent)
     _text_align = inheritParent->_text_align;
     _direction = inheritParent->_direction;
     _text_decoration = inheritParent->_text_decoration;
-    _white_space = inheritParent->_white_space;      
+    _white_space = inheritParent->_white_space;
+    _visuallyOrdered = inheritParent->_visuallyOrdered;
 
     _display = INLINE;
 }
@@ -159,18 +163,18 @@ bool RenderStyle::operator==(const RenderStyle& other) const
     	*background.get() == *other.background.get() &&
         *surround.get() == *other.surround.get() &&
 	
-    	*inherited.get() == *other.inherited.get() &&    
+    	*inherited.get() == *other.inherited.get() &&
         _display == other._display;
 }
 
 void RenderStyle::mergeData(RenderStyle* other)
 {
-    if ( box.get()!=other->box.get() &&  
+    if ( box.get()!=other->box.get() &&
     	*box.get() == *other->box.get()) {
     	box=other->box;
 //	printf("STYLE box merge \n");
 	}
-    if (visual.get()!=other->visual.get() && 
+    if (visual.get()!=other->visual.get() &&
     	*visual.get() == *other->visual.get()) {
     	visual=other->visual;
 //	printf("STYLE visual merge \n");
@@ -180,12 +184,12 @@ void RenderStyle::mergeData(RenderStyle* other)
     	background=other->background;
 //	printf("STYLE bg merge \n");
 	}
-    if (surround.get()!=other->surround.get() && 
+    if (surround.get()!=other->surround.get() &&
     	*surround.get() == *other->surround.get()) {
     	surround=other->surround;
 //	printf("STYLE surround merge \n");
 	}
-    if (inherited.get()!=other->inherited.get() && 
+    if (inherited.get()!=other->inherited.get() &&
     	*inherited.get() == *other->inherited.get()) {
     	inherited=other->inherited;
 //	printf("STYLE text merge \n");

@@ -97,6 +97,7 @@ RenderFlow::RenderFlow(RenderStyle* style)
     setIgnoreNewline(false);
     if(m_style->whiteSpace() == PRE)
 	setIgnoreLeadingSpaces(false);
+    setVisualOrdering(m_style->visuallyOrdered());
 
     m_isAnonymous = false;
 

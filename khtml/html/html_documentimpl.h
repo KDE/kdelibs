@@ -90,6 +90,9 @@ public:
 
     bool headLoaded();
 
+    // to get visually ordered hebrew and arabic pages right
+    void setVisuallyOrdered();
+
 protected:
     void clear();
 

@@ -343,6 +343,7 @@ BiDiParagraph::BiDiParagraph()
     m_ignoreNewline = true;
     m_ignoreLeadingSpaces = true;
     m_ignoreTrailingSpaces = true;
+    m_visualOrdering = false;
 }
 
 BiDiParagraph::~BiDiParagraph()
@@ -560,6 +561,8 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
     }
 #endif
 
+    if(!m_visualOrdering)
+    {
     int count = d->line.count() - 1;
 
     while(levelHigh >= levelLow)
@@ -588,7 +591,7 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
 	}
 	levelHigh--;
     }
-
+    }
 #ifdef BIDI_DEBUG
     printf("visual order is:\n");
     QListIterator<BiDiWord> it3(d->line);
@@ -699,7 +702,10 @@ void BiDiParagraph::layoutLine(unsigned char levelLow, unsigned char levelHigh, 
 	    spaces--;
 	}
 	w->width += add;
-	w->object->position(xPos, w->yOffset, w->from, w->len, w->width, w->level%2);
+	if(!m_visualOrdering)
+	    w->object->position(xPos, w->yOffset, w->from, w->len, w->width, w->level%2);
+	else
+	    w->object->position(xPos, w->yOffset, w->from, w->len, w->width, false);
 	xPos += w->width;
     }
 
