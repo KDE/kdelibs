@@ -48,10 +48,10 @@ class KProcessPrivate;
  *to worry about UN*X signal handling issues and zombie process reaping.
  *
  *Basically, this class distinguishes three different ways of running
- *child processes: 
+ *child processes:
  *
  *@li  KProcess::DontCare -- The child process is invoked and both the child
- *process and the parent process continue concurrently. 
+ *process and the parent process continue concurrently.
  *
  *Starting a  DontCare child process means that the application is
  *not interested in any notification to determine whether the
@@ -71,7 +71,7 @@ class KProcessPrivate;
  *for programs with a GUI.)
  *
  *KProcess also provides several functions for determining the exit status
- *and the pid of the child process it represents. 
+ *and the pid of the child process it represents.
  *
  *Furthermore it is possible to supply command-line arguments to the process
  *in a clean fashion (no null -- terminated stringlists and such...)
@@ -82,10 +82,10 @@ class KProcessPrivate;
  *
  *proc << "my_executable";
  *proc << "These" << "are" << "the" << "command" << "line" << "args";
- *QApplication::connect(&proc, SIGNAL(processExited(KProcess *)), 
+ *QApplication::connect(&proc, SIGNAL(processExited(KProcess *)),
  *                      pointer_to_my_object, SLOT(my_objects_slot));
  *proc.start();
- *</pre>  
+ *</pre>
  *
  *This will start "my_executable" with the commandline arguments "These"...
  *
@@ -141,7 +141,7 @@ class KProcess : public QObject
 
 public:
 
-  /** 
+  /**
    * Modes in which the communication channel can be opened.
    *
    * If communication for more than one channel is required,
@@ -149,7 +149,7 @@ public:
    * communication with stdout as well as with stdin, you would
    * specify @p Stdin @p | @p Stdout
    *
-   * If @p NoRead is specified in conjunction with @p Stdout, 
+   * If @p NoRead is specified in conjunction with @p Stdout,
    * no data is actually read from @p Stdout but only
    * the signal @ref childOutput(int fd) is emitted.
    */
@@ -157,8 +157,8 @@ public:
 					   AllOutput = 6, All = 7,
 					   NoRead };
 
-  /** 
-   * Run-modes for a child process.       
+  /**
+   * Run-modes for a child process.
    *
    * @see  KProcess
   */
@@ -172,11 +172,11 @@ public:
    *
    *  If the process is running when the destructor for this class
    *  is called, the child process is killed with a SIGKILL, but
-   *  only if the run mode is not of type @p DontCare. 
+   *  only if the run mode is not of type @p DontCare.
    *  Processes started as @p DontCare keep running anyway.
   */
   virtual ~KProcess();
- 
+
   /**
    @deprecated
 
@@ -185,7 +185,7 @@ public:
 
 	 Sets the executable to be started with this KProcess object.
 	 Returns false if the process is currently running (in that
-	 case the executable remains unchanged.) 
+	 case the executable remains unchanged.)
 
 	 @see operator<<
 
@@ -193,9 +193,9 @@ public:
   bool setExecutable(const QString& proc);
 
 
-  /** 
+  /**
    * Sets the executable and the command line argument list for this process.
-   *  
+   *
    * For example, doing an "ls -l /usr/local/bin" can be achieved by:
    *  <pre>
    *  KProcess p;
@@ -206,15 +206,15 @@ public:
    **/
   KProcess &operator<<(const QString& arg);
 
-  /** 
+  /**
    * Clear a command line argument list that has been set by using
    * the "operator<<".
   */
   void clearArguments();
 
-  /** Start the process. 
-   *  For a detailed description of the 
-   *  various run modes and communication semantics, have a look at the 
+  /** Start the process.
+   *  For a detailed description of the
+   *  various run modes and communication semantics, have a look at the
    *  general description of the @ref KProcess class.
    *
    *  The following problems could cause @ref KProcess:start() to
@@ -232,7 +232,7 @@ public:
    *  @return @p true on success, @p false on error
    *  (see above for error conditions)
    **/
-  virtual bool start(RunMode  runmode = NotifyOnExit, 
+  virtual bool start(RunMode  runmode = NotifyOnExit,
   	Communication comm = NoCommunication);
 
   /**
@@ -256,26 +256,26 @@ public:
    *
    *  Calling it before any child process has been started by this
    *  KProcess instance causes getPid() to return 0.
-   **/    
+   **/
   pid_t getPid();
 
   /**
    * Suspend processing of data from stdout of the child process.
    */
   void suspend();
-   
+
   /**
    * Resume processing of data from stdout of the child process.
    */
   void resume();
 
-  /** 
+  /**
    * @return @p true if the process has already finished and has exited
    *  "voluntarily", ie: it has not been killed by a signal.
   */
   bool normalExit();
 
-  /** 
+  /**
    * Retrieve the exit status of the process.
    *
    * Please use
@@ -284,9 +284,9 @@ public:
    * this function because if the process did not exit normally,
    * it does not have a valid exit status.
   */
-  int  exitStatus(); 
+  int  exitStatus();
 
-   
+
   /**
    *	 Transmit data to the child process's stdin.
    *
@@ -296,15 +296,15 @@ public:
    *
    *     @li Communication to stdin has not been requested in the @ref start() call.
    *
-   *     @li Transmission of data to the child process by a previous call to 
-   * @ref writeStdin() is still in progress. 
+   *     @li Transmission of data to the child process by a previous call to
+   * @ref writeStdin() is still in progress.
    *
    * Please note that the data is sent to the client asynchronousely,
    * so when this function returns, the data might not have been
-   * processed by the child process. 
+   * processed by the child process.
    *
    * If all the data has been sent to the client, the signal
-   * @ref wroteStdin() will be emitted. 
+   * @ref wroteStdin() will be emitted.
    *
    * Please note that you must not free "buffer" or call @ref writeStdin()
    * again until either a @ref wroteStdin() signal indicates that the
@@ -315,7 +315,7 @@ public:
 
   /**
    * This causes the stdin file descriptor of the child process to be
-   * closed indicating an "EOF" to the child. 
+   * closed indicating an "EOF" to the child.
    *
    * @return @p false if no communication to the process's stdin
    *  had been specified in the call to @ref start().
@@ -353,30 +353,30 @@ public:
    * The default is @p false : drop privileges
    */
   void setRunPrivileged(bool keepPrivileges);
- 
+
   /**
    * Returns whether the started process will drop any
    * setuid/segid privileges or whether it will keep them
    */
   bool runPrivileged();
 
-signals: 
+signals:
 
   /**
    * Emitted after the process has terminated when
    * the process was run in the @p NotfiyOnExit  (==default option to
-   * @ref start()) or the @ref Block mode. 
-   **/     
+   * @ref start()) or the @ref Block mode.
+   **/
   void processExited(KProcess *proc);
 
- 
+
   /**
    * Emitted, when output from the child process has
-   * been received on stdout. 
+   * been received on stdout.
    *
    *  To actually get
    * these signals, the respective communication link (stdout/stderr)
-   * has to be turned on in @ref start(). 
+   * has to be turned on in @ref start().
    *
    * @param buffer The data received.
    * @param buflen The number of bytes that are available.
@@ -405,7 +405,7 @@ signals:
    * been received on stderr.
    * To actually get
    * these signals, the respective communication link (stdout/stderr)
-   * has to be turned on in @ref start(). 
+   * has to be turned on in @ref start().
    *
    * @param buffer The data received.
    * @param buflen The number of bytes that are available.
@@ -418,7 +418,7 @@ signals:
   /**
    * Emitted after all the data that has been
    * specified by a prior call to @ref writeStdin() has actually been
-   * written to the child process. 
+   * written to the child process.
    **/
   void wroteStdin(KProcess *proc);
 
@@ -437,7 +437,7 @@ protected slots:
   */
   void slotChildError(int fdno);
   /*
-	Slot functions for capturing stdout and stderr of the child 
+	Slot functions for capturing stdout and stderr of the child
   */
 
 
@@ -460,8 +460,8 @@ protected:
      not modify this data member directly from derived classes.
   */
   RunMode run_mode;
-  /** 
-     true if the process is currently running. You should not 
+  /**
+     true if the process is currently running. You should not
      modify this data member directly from derived classes. For
      reading the value of this data member, please use "isRunning()"
      since "runs" will probably be made private in later versions
@@ -469,7 +469,7 @@ protected:
   */
   bool runs;
 
-  /** 
+  /**
       The PID of the currently running process (see "getPid()").
       You should not modify this data member in derived classes.
       Please use "getPid()" instead of directly accessing this
@@ -478,9 +478,9 @@ protected:
   */
   pid_t pid;
 
-  /** The process' exit status as returned by "waitpid". You should not 
+  /** The process' exit status as returned by "waitpid". You should not
       modify the value of this data member from derived classes. You should
-      rather use "getStatus()" than accessing this data member directly
+      rather use @ref exitStatus than accessing this data member directly
       since it will probably be made private in further versions of
       KProcess.
   */
@@ -493,7 +493,7 @@ protected:
 
   /*
 	Functions for setting up the sockets for communication.
-	setupCommunication 
+	setupCommunication
 	-- is called from "start" before "fork"ing.
 	commSetupDoneP
 	-- completes communcation socket setup in the parent
@@ -505,18 +505,18 @@ protected:
   */
 
   /**
-    This function is called from "KProcess::start" right before a "fork" takes 
+    This function is called from "KProcess::start" right before a "fork" takes
     place. According to
     the "comm" parameter this function has to initialize the "in", "out" and
     "err" data member of KProcess.
 
     This function should return 0 if setting the needed communication channels
-    was successful. 
+    was successful.
 
     The default implementation is to create UNIX STREAM sockets for the communication,
     but you could overload this function and establish a TCP/IP communication for
-    network communication, for example. 
-  */      
+    network communication, for example.
+  */
   virtual int setupCommunication(Communication comm);
 
   /**
@@ -531,7 +531,7 @@ protected:
      implementation of "setupCommunication" in @ref kprocess.cpp.
   */
   virtual int commSetupDoneP();
- 
+
   /**
      Called right after a (successful) fork, but before an "exec" on the child
      process' side. It usually just closes the unused communication ends of
@@ -546,9 +546,9 @@ protected:
      calls commClose to close all open communication channels to this
      process and emits the "processExited" signal (if the process was
      not running in the "DontCare" mode).
-  */ 
-  virtual void processHasExited(int state); 
-  
+  */
+  virtual void processHasExited(int state);
+
   /**
      Should clean up the communication links to the child after it has
      exited. Should be called from "processHasExited".
@@ -561,19 +561,19 @@ protected:
    */
   int out[2];
   int in[2];
-  int err[2]; 
+  int err[2];
 
   /**
    * The socket notifiers for the above socket descriptors.
    */
   QSocketNotifier *innot;
   QSocketNotifier *outnot;
-  QSocketNotifier *errnot; 
+  QSocketNotifier *errnot;
 
   /**
      Lists the communication links that are activated for the child
      process.  Should not be modified from derived classes.
-  */ 
+  */
   Communication communication;
 
   /**
@@ -589,7 +589,7 @@ protected:
      "@ref receivedStderr"
   */
   int childError(int fdno);
-   
+
   // information about the data that has to be sent to the child:
 
   const char *input_data;  // the buffer holding the data
@@ -639,7 +639,7 @@ class KShellProcessPrivate;
 
 *   @short A class derived from @ref KProcess to start child
 *   	processes through a shell.	
-*   @author Christian Czezakte <e9025461@student.tuwien.ac.at> 
+*   @author Christian Czezakte <e9025461@student.tuwien.ac.at>
 *   @version $Id$
 */
 class KShellProcess: public KProcess
@@ -662,12 +662,12 @@ public:
    */
   ~KShellProcess();
 
-  /** 
+  /**
     Starts up the process. -- For a detailed description
     have a look at the "start" member function and the detailed
     description of @ref KProcess .
   */
-  virtual bool start(RunMode  runmode = NotifyOnExit, 
+  virtual bool start(RunMode  runmode = NotifyOnExit,
 		  Communication comm = NoCommunication);
 
   /**
@@ -680,13 +680,13 @@ public:
 
 private:
 
-  /** 
+  /**
    * Searches for a valid shell. See the general description of this
    * class for information on how the search is actually performed.
   */
   QCString searchShell();
 
-  /** 
+  /**
    * Used by @ref searchShell in order to find out whether the shell found
    * is actually executable at all.
   */
