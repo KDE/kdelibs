@@ -455,9 +455,8 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
 }
 
 // NOTE: this *never* uses the cache!
-void KDirListerCache::updateDirectory( const KURL& _d )
+void KDirListerCache::updateDirectory( const KURL& _dir )
 {
-  KURL _dir( _d.url(-1) );
   kdDebug(7004) << k_funcinfo << _dir.prettyURL() << endl;
 
   // TODO: if _dir is in itemsCached update it as well!
@@ -735,10 +734,9 @@ void KDirListerCache::slotResult( KIO::Job* j )
 
   if ( job->error() )
   {
-    job->showErrorDialog();
-
     for ( kdl = listers->first(); kdl; kdl = listers->next() )
     {
+      kdl->handleError( job );
       emit kdl->canceled( job->url() );
       if ( --kdl->d->numJobs == 0 )
       {
@@ -861,11 +859,11 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
 
   if ( job->error() )
   {
-    //don't bother the user
-    //job->showErrorDialog();
-
     for ( kdl = listers->first(); kdl; kdl = listers->next() )
     {
+      //don't bother the user
+      //kdl->handleError( job );
+      
       emit kdl->canceled( url );
       if ( --kdl->d->numJobs == 0 )
       {
@@ -1062,6 +1060,9 @@ KDirLister::KDirLister( bool _delayedMimeTypes )
   d->urlChanged = false;
   d->delayedMimeTypes = _delayedMimeTypes;
 
+  d->autoErrorHandling = true;
+  d->errorParent = 0;
+
   d->numJobs = 0;
   d->rootFileItem = 0;
 
@@ -1150,6 +1151,23 @@ void KDirLister::setDirOnlyMode( bool _dirsOnly )
   d->dirOnlyMode = _dirsOnly;
 }
 
+bool KDirLister::autoErrorHandlingEnabled()
+{
+  return d->autoErrorHandling;
+}
+
+void KDirLister::setAutoErrorHandlingEnabled( bool enable, QWidget* parent )
+{
+  d->autoErrorHandling = enable;
+  d->errorParent = parent;
+}
+
+void KDirLister::handleError( KIO::Job *job )
+{
+  if ( d->autoErrorHandling )
+    job->showErrorDialog( d->errorParent );
+}
+
 const KURL& KDirLister::url() const
 {
   return d->url;
@@ -1158,8 +1176,6 @@ const KURL& KDirLister::url() const
 void KDirLister::emitChanges()
 {
   // FIXME TODO!!
-  for ( KURL::List::Iterator it = d->lstDirs.begin(); it != d->lstDirs.end(); ++it )
-    s_pCache->updateDirectory( *it );
 }
 
 void KDirLister::updateDirectory( const KURL& _u )
@@ -1286,17 +1302,17 @@ bool KDirLister::matchesMimeFilter( const KFileItem *item ) const
 
 bool KDirLister::validURL( const KURL& _url ) const
 {
-  // FIXME: THIS IS UGLY! Do not open a message box here!! (Michael)
-  //        return a bool in openURL instead!!
-
   if ( _url.isMalformed() )
   {
-    QString tmp = i18n("Malformed URL\n%1").arg( _url.prettyURL() );
-    KMessageBox::error( (QWidget*)0L, tmp );
+    if ( d->autoErrorHandling )
+    {
+      QString tmp = i18n("Malformed URL\n%1").arg( _url.prettyURL() );
+      KMessageBox::error( d->errorParent, tmp );
+    }
     return false;
   }
 
-  // TODO: perhaps verify that this is really a directory?
+  // TODO: verify that this is really a directory?
 
   return true;
 }

@@ -53,6 +53,9 @@ public:
   bool isShowingDotFiles;
   bool dirOnlyMode;
 
+  bool autoErrorHandling;
+  QWidget *errorParent;
+
   bool delayedMimeTypes;
   bool urlChanged;
 
