@@ -360,47 +360,25 @@ void KFileMetaPropsPlugin::applyChanges()
     // we depend on having the correct widget type here
     kdDebug(250) << "wanna add " << item->info.key().latin1() << endl;
     kdDebug(250) << "validator class is " << item->vclass.latin1() << endl;
-    switch (item->info.type())
-    {
-      case QVariant::Int:
-      {
+
+    if (item->widget->inherits("QSpinBox")) {
         QSpinBox* w = static_cast<QSpinBox*>(item->widget);
         item->info.setValue(QVariant(w->value()));
-        break;
-      }
-      case QVariant::Bool:
-      {
+    }
+    else if (item->widget->inherits("QCheckBox")) {
         QCheckBox* w = static_cast<QCheckBox*>(item->widget);
         item->info.setValue(QVariant(w->isChecked()));
-        break;
-      }
-      case QVariant::CString:
-      {
-        if (item->vclass == "KChoiceValidator")
-        {
-          KComboBox* w = static_cast<KComboBox*>(item->widget);
-          item->info.setValue(QVariant(w->currentText().local8Bit()));
-        }
-        else
-        {
-          QLineEdit* w = static_cast<QLineEdit*>(item->widget);
-          item->info.setValue(QVariant(w->text().local8Bit()));
-        }
-        break;
-      }
-      default:
-      {
-        if (item->vclass == "KChoiceValidator")
-        {
-          KComboBox* w = static_cast<KComboBox*>(item->widget);
+    }
+    else if (item->widget->inherits("QComboBox")) {
+          QComboBox* w = static_cast<QComboBox*>(item->widget);
           item->info.setValue(QVariant(w->currentText()));
-        }
-        else
-        {
+    }
+    else if (item->widget->inherits("QLineEdit")) {
           QLineEdit* w = static_cast<QLineEdit*>(item->widget);
           item->info.setValue(QVariant(w->text()));
-        }
-      }
+    }
+    else {
+        kdDebug(250) << "unrecognized widget type. i'm a monster." << endl;
     }
     
   }
