@@ -78,15 +78,14 @@ font-weight: bold;
 }
 
 
-/* Nice link colors for the main text 
-   Setting text-decoration seems to fix a nasty redraw problem in KHC */
+/* Nice link colors for the main text */
 
 :link { color: rgb(170,0,0);
         background: white none; /* should be inherit */ }
 :visited { color: rgb(170,0,85);
            background: white none; /* should be inherit */ }
-:active { color: rgb(170,0,0);
-          background: white none; /* should be inherit */ }
+/* :active { color: rgb(170,0,0);
+          background: white none;  should be inherit  } */
 
 .navLeft {
 text-align: left;
