@@ -38,8 +38,10 @@ int KProcessController::refCount;
 
 void KProcessController::ref()
 {
-  if( !refCount )
+  if( !refCount ) {
     theKProcessController = new KProcessController;
+    setupHandlers();
+  }
   refCount++;
 }
 
@@ -47,6 +49,7 @@ void KProcessController::deref()
 {
   refCount--;
   if( !refCount ) {
+    resetHandlers();
     delete theKProcessController;
     theKProcessController = 0;
   }
@@ -70,14 +73,10 @@ KProcessController::KProcessController()
   notifier->setEnabled( true );
   QObject::connect( notifier, SIGNAL(activated(int)),
                     SLOT(slotDoHousekeeping()));
-
-  setupHandlers();
 }
 
 KProcessController::~KProcessController()
 {
-  resetHandlers();
-
   delete notifier;
 
   close( fd[0] );
