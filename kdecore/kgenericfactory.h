@@ -154,7 +154,7 @@ KInstance *KGenericFactoryBase<T>::instance()
  *         ...
  *     };
  *
- *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;MyPlugin&gt; );
+ *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;MyPlugin&gt; )
  * \endcode
  */
 template <class Product, class ParentType = QObject>
