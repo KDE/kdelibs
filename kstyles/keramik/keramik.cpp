@@ -1309,9 +1309,9 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 				else
 					Keramik::CenteredPainter( "spinbox-arrow-up" ).draw( p, br.x(), br.y() + 3, br.width(), br.height() / 2 );
 				if ( active & SC_SpinWidgetDown )
-					Keramik::CenteredPainter( "spinbox-pressed-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2 , br.width(), br.height() / 2 - 6 );
+					Keramik::CenteredPainter( "spinbox-pressed-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2 , br.width(), br.height() / 2 - 8 );
 				else
-					Keramik::CenteredPainter( "spinbox-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2, br.width(), br.height() / 2 - 6 );
+					Keramik::CenteredPainter( "spinbox-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2, br.width(), br.height() / 2 - 8 );
 			}
 
 			if ( controls & SC_SpinWidgetFrame )
@@ -1380,6 +1380,7 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 		// -------------------------------------------------------------------
 		case CC_ToolButton: {
 			const QToolButton *toolbutton = (const QToolButton *) widget;
+			bool onToolbar = widget->parentWidget() && widget->parentWidget()->inherits( "QToolBar" );
 
 			QRect button, menuarea;
 			button   = querySubControlMetrics(control, widget, SC_ToolButton, opt);
@@ -1397,7 +1398,7 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			{
 				// If we're pressed, on, or raised...
 				if (bflags & (Style_Down | Style_On | Style_Raised))
-					drawPrimitive(PE_ButtonTool, p, button, cg, bflags, opt);
+					drawPrimitive(onToolbar ? PE_ButtonTool : PE_ButtonCommand, p, button, cg, bflags, opt);
 
 				// Check whether to draw a background pixmap
 				else if ( toolbutton->parentWidget() &&
