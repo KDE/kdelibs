@@ -72,7 +72,7 @@ EditEntryDialog::EditEntryDialog(PrintcapEntry *entry, QWidget *parent, const ch
 		setCaption(i18n("Printcap Entry: %1").arg(entry->name));
 		m_fields = entry->fields;
 		m_aliases->setText(entry->aliases.join("|"));
-		QListViewItem	*root = new QListViewItem(m_view, entry->name), *item(0);
+		QListViewItem	*root = new QListViewItem(m_view, entry->name), *item = 0;
 		root->setSelectable(false);
 		root->setOpen(true);
 		root->setPixmap(0, SmallIcon("fileprint"));

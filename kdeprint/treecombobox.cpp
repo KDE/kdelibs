@@ -52,7 +52,7 @@ TreeListBoxItem::TreeListBoxItem(QListBox *lb, const QPixmap& pix, const QString
 		}
 		// search last "child" of the parent item, to put the new one
 		// at the end
-		TreeListBoxItem	*childItem = static_cast<TreeListBoxItem*>(parentItem), *prevItem(0);
+		TreeListBoxItem	*childItem = static_cast<TreeListBoxItem*>(parentItem), *prevItem = 0;
 		while (childItem->next())
 		{
 			TreeListBoxItem	*nextItem = static_cast<TreeListBoxItem*>(childItem->next());

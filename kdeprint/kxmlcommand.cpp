@@ -682,7 +682,7 @@ int KXmlCommandManager::insertCommand(QStringList& list, const QString& filterna
 	preload();
 
 	int	pos(0);
-	KXmlCommand	*f1 = command(filtername), *f2(0);
+	KXmlCommand	*f1 = command(filtername), *f2 = 0;
 	if (f1 && f1->inputMimeTypes().count() > 0)
 	{
 		QString	mimetype = f1->inputMimeTypes()[0];

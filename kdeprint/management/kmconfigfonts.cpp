@@ -156,7 +156,7 @@ void KMConfigFonts::slotRemove()
 
 void KMConfigFonts::slotUp()
 {
-	QListViewItem	*citem = m_fontpath->selectedItem(), *nitem(0);
+	QListViewItem	*citem = m_fontpath->selectedItem(), *nitem = 0;
 	if (!citem || !citem->itemAbove())
 		return;
 	nitem = new QListViewItem(m_fontpath, citem->itemAbove()->itemAbove(), citem->text(0));
@@ -166,7 +166,7 @@ void KMConfigFonts::slotUp()
 
 void KMConfigFonts::slotDown()
 {
-	QListViewItem	*citem = m_fontpath->selectedItem(), *nitem(0);
+	QListViewItem	*citem = m_fontpath->selectedItem(), *nitem = 0;
 	if (!citem || !citem->itemBelow())
 		return;
 	nitem = new QListViewItem(m_fontpath, citem->itemBelow(), citem->text(0));

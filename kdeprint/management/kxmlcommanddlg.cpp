@@ -704,7 +704,7 @@ void KXmlCommandAdvancedDlg::removeItem(QListViewItem *item)
 
 void KXmlCommandAdvancedDlg::slotMoveUp()
 {
-	QListViewItem	*item = m_view->currentItem(), *prev(0);
+	QListViewItem	*item = m_view->currentItem(), *prev = 0;
 	if (item && (prev=findPrev(item)))
 	{
 		QListViewItem	*after(0);
@@ -723,7 +723,7 @@ void KXmlCommandAdvancedDlg::slotMoveUp()
 
 void KXmlCommandAdvancedDlg::slotMoveDown()
 {
-	QListViewItem	*item = m_view->currentItem(), *next(0);
+	QListViewItem	*item = m_view->currentItem(), *next = 0;
 	if (item && (next=findNext(item)))
 	{
 		item->moveItem(next);
