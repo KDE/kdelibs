@@ -1,3 +1,21 @@
+Thu Jul  5 15:11:58 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* FEATURES: updated
+	* libxslt/transform.c: added cdata-section-elements
+	* tests/REC/Makefile.am tests/REC/test-16.1-*: added 2 tests from
+	  the REC
+
+Thu Jul  5 10:44:47 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
+
+	* FEATURES: updated
+	* libxslt/xsltutils.c: do not dump document for which there have
+	  been no generated content
+	* tests/multiple/result.xml tests/namespaces/extra2.out: fixed
+	  test output accordingly
+	* libxslt/transform.c libxslt/preproc.c: added xsl:fallback support
+	* tests/REC/Makefile.am tests/REC/test-15-1.*: xsl:fallback test
+	* tests/xmlspec/Makefile.am tests/docbook/Makefile.am: cleanups
+
 Wed Jul  4 15:15:50 CEST 2001 Daniel Veillard <Daniel.Veillard@imag.fr>
 
 	* libxslt/extension.[ch] libxslt/extra.[ch] libxslt/xsltInternals.h
