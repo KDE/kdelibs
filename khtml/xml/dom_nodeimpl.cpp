@@ -280,7 +280,7 @@ QRect NodeImpl::getRect() const
 
 void NodeImpl::setChanged(bool b)
 {
-    if (b && !changed() && document)
+    if (b && !changed() && ownerDocument())
         ownerDocument()->changedNodes.append(this);
     m_changed = b;
 }
