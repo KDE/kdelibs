@@ -20,7 +20,7 @@ MouseWidget::MouseWidget( QWidget *parent, const char *name, WFlags f )
 {
 }
 
-void 
+void
 MouseWidget::mousePressEvent( QMouseEvent *e )
 {
   mouseButtonDown = TRUE;
@@ -28,11 +28,11 @@ MouseWidget::mousePressEvent( QMouseEvent *e )
   emit newYPos(e->y());
 }
 
-void 
+void
 MouseWidget::mouseReleaseEvent( QMouseEvent * )
 { mouseButtonDown = FALSE; }
 
-void 
+void
 MouseWidget::mouseMoveEvent( QMouseEvent *e )
 {
   if (mouseButtonDown) {
@@ -41,7 +41,7 @@ MouseWidget::mouseMoveEvent( QMouseEvent *e )
   }
 }
 
-void 
+void
 MouseWidget::resizeEvent( QResizeEvent *r )
 {
   emit newWidth(r->size().width());
@@ -124,12 +124,14 @@ KRulerTest::KRulerTest( const char *name )
   lineEdit = new QGroupBox("Value of begin/end", bigwidget);
   lineEdit->setFixedSize(140, 60);
   lineEdit->move(330,4+120);
-  beginMark = new KIntNumInput(-1000, 1000, 1, 0, lineEdit, QString::null, QString::null, false);
+  beginMark = new KIntNumInput(0, lineEdit);
+  beginMark->setRange(-1000, 1000, 1, false);
   beginMark->move(5, 15);
-  beginMark->setFixedSize(60, 20);
-  endMark = new KIntNumInput(-1000, 1000, 1, 0, lineEdit, QString::null, QString::null, false);
+  beginMark->setFixedSize(beginMark->sizeHint());
+  endMark = new KIntNumInput(0, lineEdit);
+  endMark->setRange(-1000, 1000, 1, false);
   endMark->move(5, 35);
-  endMark->setFixedSize(60, 20);
+  endMark->setFixedSize(endMark->sizeHint());
 
   metricstyle = new QButtonGroup("metric styles", bigwidget);
   metricstyle->setFixedSize(100, 120);
@@ -169,40 +171,40 @@ KRulerTest::~KRulerTest()
   delete mainframe;
 }
 
-void 
+void
 KRulerTest::slotNewWidth(int width)
 {
   hruler->setMaxValue(width);
 }
 
-void 
+void
 KRulerTest::slotNewHeight(int height)
 {
   vruler->setMaxValue(height);
 }
 
-void 
+void
 KRulerTest::slotSetTinyMarks(bool set)
 {
   hruler->showTinyMarks(set);
   vruler->showTinyMarks(set);
 }
 
-void 
+void
 KRulerTest::slotSetLittleMarks(bool set)
 {
   hruler->showLittleMarks(set);
   vruler->showLittleMarks(set);
 }
 
-void 
+void
 KRulerTest::slotSetMediumMarks(bool set)
 {
   hruler->showMediumMarks(set);
   vruler->showMediumMarks(set);
 }
 
-void 
+void
 KRulerTest::slotSetBigMarks(bool set)
 {
   hruler->showBigMarks(set);
@@ -218,7 +220,7 @@ KRulerTest::slotSetMStyle(int style)
 
 
 /* --- MAIN -----------------------*/
-int main(int argc, char **argv) 
+int main(int argc, char **argv)
 {
   KApplication *testapp;
   KRulerTest   *window;
