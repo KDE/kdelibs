@@ -28,6 +28,7 @@
 #include "dom_textimpl.h"
 #include "dom_docimpl.h"
 #include "dom2_eventsimpl.h"
+#include "dtd.h"
 
 #include "css/cssstyleselector.h"
 #include "rendering/render_object.h"

@@ -27,8 +27,6 @@
 #include "dom_nodeimpl.h"
 #include "dom/dom_element.h"
 
-#include "dtd.h"
-
 namespace DOM {
 
 class ElementImpl;
@@ -129,9 +127,6 @@ public:
      * attributes. This is always called, whenever an attribute changed
       */
     virtual void parseAttribute(AttrImpl *) {}
-
-    virtual tagStatus startTag() const { return DOM::REQUIRED; }
-    virtual tagStatus endTag() const { return DOM::REQUIRED; }
 
     // not part of the DOM
     DOMString getAttribute ( int id );
