@@ -208,18 +208,18 @@ void KServiceFactory::save( QDataStream& _str, KService *_service )
 {
   _str << _service->name() << _service->exec() << _service->icon() 
        << _service->comment() << _service->path() << _service->terminalOptions()
-       << _service->serviceTypes() << (Q_INT8)_service->allowAsDefault();
+       << _service->serviceTypes() << (Q_INT8)_service->allowAsDefault() << _service->file();
 }
 
 KRegEntry* KServiceFactory::create( KRegistry* _reg, const char *_file, QDataStream& _str )
 {
-  QString name, exec, icon, comment, path, terminal;
+  QString name, exec, icon, comment, path, terminal, file;
   QStrList types;
   Q_INT8 allow;
-  _str >> name >> exec >> icon >> comment >> path >> terminal >> types >> allow;
+  _str >> name >> exec >> icon >> comment >> path >> terminal >> types >> allow >> file;
   
   KService *s = new KService( name, exec, icon, types, comment,
-			      (bool)allow, path, terminal );
+			      (bool)allow, path, terminal, file );
 
   KServiceEntry* e = new KServiceEntry( _reg, _file, s );
   e->load( _str );

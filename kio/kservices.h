@@ -32,7 +32,8 @@ public:
   KService( const char *_name, const char *_exec, const char *_icon,
 	    const QStrList& _lstServiceTypes, const char *_comment = 0L,
 	    bool _allow_as_default = true, const char *_path = 0L,
-	    const char *_terminal = 0L, bool _put_in_list = true );
+	    const char *_terminal = 0L, const char *_file = 0L, 
+	    bool _put_in_list = true );
   ~KService();
   
   const char* name() { return m_strName; }
@@ -41,6 +42,7 @@ public:
   const char* terminalOptions() { return m_strTerminalOptions; }
   const char* path() { return m_strPath; }
   const char* comment() { return m_strComment; }
+  const char* file() { return m_strFile; };
   QStrList& serviceTypes();
   bool hasServiceType( const char *_service );
   bool allowAsDefault() { return m_bAllowAsDefault; }
@@ -68,6 +70,7 @@ protected:
   QString m_strTerminalOptions;
   QString m_strPath;
   QString m_strComment;
+  QString m_strFile;
   QStrList m_lstServiceTypes;
   bool m_bAllowAsDefault;
   

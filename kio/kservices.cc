@@ -176,13 +176,14 @@ KService* KService::parseService( const char *_file, KSimpleConfig &config, bool
   }
   
   return new KService( name, exec, app_icon, types, comment, allowdefault,
-		       path, terminal, _put_in_list );
+		       path, terminal, _file, _put_in_list );
 }
 
 KService::KService( const char *_name, const char *_exec, const char *_icon,
 		    const QStrList& _lstServiceTypes, const char *_comment = 0L,
 		    bool _allow_as_default = true, const char *_path = 0L,
-		    const char *_terminal = 0L, bool _put_in_list )
+		    const char *_terminal = 0L, const char *_file = 0L,
+		    bool _put_in_list )
 {
   initStatic();
   
@@ -207,6 +208,10 @@ KService::KService( const char *_name, const char *_exec, const char *_icon,
     m_strTerminalOptions = _terminal;
   else
     m_strTerminalOptions = "";
+  if ( _file )
+    m_strFile = _file;
+  else
+    m_strFile = "";    
   m_bAllowAsDefault = _allow_as_default;
 }
 
