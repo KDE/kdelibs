@@ -123,6 +123,8 @@ bool KTarBase::open( int mode )
         const char* p = buffer + 0x64;
         while( *p == ' ' ) ++p;
         int access = (int)strtol( p, &dummy, 8 );
+        if (isdir)
+          access |= S_IFDIR; // f*cking broken tar files
 
         // read user and group
         QString user( buffer + 0x109 );
@@ -421,7 +423,7 @@ void KTarBase::fillBuffer( char * buffer,
   buffer[ 0x87 ] = ' '; // space-terminate (no null after)
 
   // Dummy time
-  s.sprintf("%o", time( 0 ) ); // OCT
+  s.sprintf("%lo", time( 0 ) ); // OCT
   s = s.rightJustify( 11, ' ' );
   strcpy( buffer + 0x88, s.data() );
   buffer[ 0x93 ] = ' '; // space-terminate (no null after)
@@ -642,13 +644,26 @@ KTarEntry* KTarDirectory::entry( QString name )
   int pos = name.find( '/' );
   if ( pos == 0 ) // ouch absolute path (see also KTarBase::findOrCreate)
   {
-    name = name.mid( 1 ); // remove leading slash
+    if (name.length()>1)
+    {
+      name = name.mid( 1 ); // remove leading slash
+      pos = name.find( '/' ); // look again
+    }
+    else // "/"
+      return this;
+  }
+  // trailing slash ? -> remove
+  if ( pos != -1 && pos == (int)name.length()-1 )
+  {
+    name = name.left( pos );
     pos = name.find( '/' ); // look again
   }
   if ( pos != -1 )
   {
     QString left = name.left( pos );
     QString right = name.mid( pos + 1 );
+
+    //kdDebug() << "KTarDirectory::entry left=" << left << " right=" << right << endl;
 
     KTarEntry* e = m_entries[ left ];
     if ( !e || !e->isDirectory() )
