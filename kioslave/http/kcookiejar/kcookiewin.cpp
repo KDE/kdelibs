@@ -56,6 +56,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qwhatsthis.h>
 #endif
 
+#include <kidna.h>
 #include <kwin.h>
 #include <klocale.h>
 #include <kglobal.h>
@@ -101,7 +102,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     QLabel* lbl = new QLabel( txt, vBox );
     lbl->setAlignment( Qt::AlignCenter );
     KHttpCookiePtr cookie = cookieList.first();
-    txt = i18n("<b>%1</b>").arg( cookie->host() );
+    txt = i18n("<b>%1</b>").arg( KIDNA::toUnicode(cookie->host()) );
     if (cookie->isCrossDomain())
        txt += i18n(" <b>[Cross Domain!]</b>");
     lbl = new QLabel( txt, vBox );
