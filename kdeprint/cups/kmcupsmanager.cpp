@@ -287,6 +287,8 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 			while (!m_lookupDone && (QDateTime::currentDateTime() < tm))
 				qApp->processEvents();
 
+			kes->cancelAsyncConnect();
+
 			delete kes;
 
 			if (!m_lookupDone)
