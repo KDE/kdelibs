@@ -35,10 +35,10 @@ class Resource;
 template<class T>
 class ManagerListener
 {
-public:
-  virtual void resourceAdded( T* resource ) = 0;
-  virtual void resourceModified( T* resource ) = 0;
-  virtual void resourceDeleted( T* resource ) = 0;
+  public:
+    virtual void resourceAdded( T* resource ) = 0;
+    virtual void resourceModified( T* resource ) = 0;
+    virtual void resourceDeleted( T* resource ) = 0;
 };
 
 // TODO:
@@ -53,145 +53,174 @@ public:
 template<class T>
 class ResourceManager : private ManagerImplListener
 {
-public:
-  ResourceManager<T>( const QString& family ) {
-    factory = ResourceFactory::self( family );
-    // The managerimpl will use the same Factory object as the manager
-    // because of the ResourceFactory::self() pattern
-    manager = new ResourceManagerImpl( family );
-    manager->setListener( this );
-    mListeners = new QPtrList<ManagerListener<T> >;
-  }
+  public:
+    ResourceManager<T>( const QString& family )
+    {
+      mFactory = ResourceFactory::self( family );
+      // The managerimpl will use the same Factory object as the manager
+      // because of the ResourceFactory::self() pattern
+      mManager = new ResourceManagerImpl( family );
+      mManager->setListener( this );
+      mListeners = new QPtrList<ManagerListener<T> >;
+    }
 
-  virtual ~ResourceManager<T>() { 
-    manager->setListener( 0 );
-    delete mListeners;
-  }
+    virtual ~ResourceManager<T>()
+    { 
+      mManager->setListener( 0 );
+      delete mListeners;
+    }
 
-  void sync() {
-    manager->sync();
-  }
+    void sync()
+    {
+      mManager->sync();
+    }
 
-  void add( Resource* resource ) {
-    if ( resource ) manager->add( resource );
-  }
+    void add( Resource* resource )
+    {
+      if ( resource ) mManager->add( resource );
+    }
 
-  void remove( const Resource* resource ) {
-    if ( resource ) manager->remove( resource );
-  }
+    void remove( const Resource* resource )
+    {
+      if ( resource ) mManager->remove( resource );
+    }
 
-  T* standardResource() { return dynamic_cast<T *>( manager->standardResource() ); }
+    T* standardResource()
+    {
+      return dynamic_cast<T *>( mManager->standardResource() );
+    }
 
-  void setStandardResource( const T* resource ) {
-    const Resource* res = static_cast<const Resource *>( resource );
-    if ( res ) manager->setStandardResource( res );
-  }
+    void setStandardResource( const T* resource )
+    {
+      const Resource* res = static_cast<const Resource *>( resource );
+      if ( res ) mManager->setStandardResource( res );
+    }
 
-  void setActive( Resource* resource, bool active ) {
-    if ( resource ) manager->setActive( resource, active );
-  }
+    void setActive( Resource* resource, bool active )
+    {
+      if ( resource ) mManager->setActive( resource, active );
+    }
 
-  // it's very dangerous to return a temporary QPtrList object, and it's very
-  // expensive, as copying a QPtrList is very slow. It's dangerous because people
-  // tend to write QPtrListIterator<T> it( foo->blahList() ); and while it compiles
-  // when returning a QPtrList by value it gives a rather unpleasant effect at run-time.
-  QPtrList<T> resources() { 
-    QPtrList<Resource> list = manager->resources();
-    QPtrList<T> result;
-    Resource* res;
-    for ( res = list.first(); res; res = list.next() ) {
+    // it's very dangerous to return a temporary QPtrList object, and it's very
+    // expensive, as copying a QPtrList is very slow. It's dangerous because
+    // people tend to write QPtrListIterator<T> it( foo->blahList() ); and while
+    // it compiles when returning a QPtrList by value it gives a rather
+    // unpleasant effect at run-time.
+    QPtrList<T> resources()
+    { 
+      QPtrList<Resource> list = mManager->resources();
+      QPtrList<T> result;
+      Resource* res;
+      for ( res = list.first(); res; res = list.next() ) {
+        T* resource = dynamic_cast<T *>( res );
+        if ( resource ) result.append( resource );
+      }
+      return result;
+      // This only gives a warning, but it's too ugly.
+  //    return *reinterpret_cast<QPtrList<T> *>( &mManager->resources() );
+    }
+
+    // Get only active or passive resources
+    QPtrList<T> resources( bool active )
+    { 
+      QPtrList<Resource> list = mManager->resources( active );
+      QPtrList<T> result;
+      Resource* res;
+      for ( res = list.first(); res; res = list.next() ) {
+        T* resource = dynamic_cast<T *>( res );
+        if ( resource ) result.append( resource );
+      }
+      return result;
+  //    return static_cast<QPtrList<T> > ( mManager->resources( active ) );
+    }
+
+    /**
+      Returns a list of the names of the reources managed by the
+      ResourceManager for this family.
+    */
+    QStringList resourceNames() const
+    {
+      return mManager->resourceNames();
+    }
+
+    ResourceConfigWidget *configWidget( const QString& type,
+                                        QWidget *parent = 0 )
+    {
+      return mFactory->resourceConfigWidget( type, parent );
+    }
+
+    /**
+      Creates a new resource of type @param type, with default 
+      settings. The resource is 
+      not added to the manager, the application has to do that.
+      Returns a pointer to a resource object or a null pointer
+      if resource type doesn't exist.
+     
+      @param type   The type of the resource, one of those returned 
+                    by @ref resourceTypeNames()
+    */
+    T *createResource( const QString& type )
+    {
+      return dynamic_cast<T *>( mFactory->resource( type, 0 ) );
+    }
+
+    /**
+      Returns a list of the names of all available resource types.
+    */
+    QStringList resourceTypeNames() const
+    {
+      return mFactory->resourceTypeNames();
+    }
+
+    void resourceChanged( const T* resource )
+    { 
+      const Resource* res = static_cast<const Resource *>( resource );
+      mManager->resourceChanged( res ); 
+    }
+
+    void addListener( ManagerListener<T> * listener )
+    {
+      mListeners->append( listener );
+    }
+
+    void removeListener( ManagerListener<T> * listener )
+    {
+      mListeners->remove( listener );
+    }
+
+    virtual void resourceAdded( Resource* res )
+    {
+      kdDebug(5650) << "ResourceManager::resourceAdded " << res->resourceName() << endl;
       T* resource = dynamic_cast<T *>( res );
-      if ( resource ) result.append( resource );
+      ManagerListener<T> *listener;
+      for ( listener = mListeners->first(); listener; listener = mListeners->next() )
+        listener->resourceAdded( resource );
     }
-    return result;
-    // This only gives a warning, but it's too ugly.
-//    return *reinterpret_cast<QPtrList<T> *>( &manager->resources() );
-  }
 
-  // Get only active or passive resources
-  QPtrList<T> resources( bool active ) { 
-    QPtrList<Resource> list = manager->resources( active );
-    QPtrList<T> result;
-    Resource* res;
-    for ( res = list.first(); res; res = list.next() ) {
+    virtual void resourceModified( Resource* res )
+    {
+      kdDebug(5650) << "ResourceManager::resourceModified " << res->resourceName() << endl;
       T* resource = dynamic_cast<T *>( res );
-      if ( resource ) result.append( resource );
+      ManagerListener<T> *listener;
+      for ( listener = mListeners->first(); listener; listener = mListeners->next() )
+        listener->resourceModified( resource );
     }
-    return result;
-//    return static_cast<QPtrList<T> > ( manager->resources( active ) );
-  }
-
-  /**
-   * Returns a list of the names of the reources managed by the
-   * ResourceManager for this family.
-   */
-  QStringList resourceNames() const { return manager->resourceNames(); }
-
-
-  ResourceConfigWidget *configWidget( const QString& type, QWidget *parent = 0 ) { return factory->resourceConfigWidget( type, parent ); }
-
-  /**
-   * Creates a new resource of type @param type, with default 
-   * settings. The resource is 
-   * not added to the manager, the application has to do that.
-   * Returns a pointer to a resource object or a null pointer
-   * if resource type doesn't exist.
-   *
-   * @param type   The type of the resource, one of those returned 
-   *               by @ref resourceTypeNames()
-   */
-  T *createResource( const QString& type ) {
-    return dynamic_cast<T *>( factory->resource( type, 0 ) );
-  }
-
-  /**
-   * Returns a list of the names of all available resource types.
-   */
-  QStringList resourceTypeNames() const { return factory->resourceTypeNames(); }
-
-  void resourceChanged( const T* resource ) { 
-    const Resource* res = static_cast<const Resource *>( resource );
-    manager->resourceChanged( res ); 
-  }
-
-  void addListener( ManagerListener<T> * listener ) {
-    mListeners->append( listener );
-  }
-
-  void removeListener( ManagerListener<T> * listener ) {
-    mListeners->remove( listener );
-  }
-
-  virtual void resourceAdded( Resource* res ) {
-    kdDebug() << "ResourceManager::resourceAdded " << res->resourceName() << endl;
-    T* resource = dynamic_cast<T *>( res );
-    ManagerListener<T> *listener;
-    for ( listener = mListeners->first(); listener; listener = mListeners->next() )
-      listener->resourceAdded( resource );
-  }
-
-  virtual void resourceModified( Resource* res ) {
-    kdDebug() << "ResourceManager::resourceModified " << res->resourceName() << endl;
-    T* resource = dynamic_cast<T *>( res );
-    ManagerListener<T> *listener;
-    for ( listener = mListeners->first(); listener; listener = mListeners->next() )
-      listener->resourceModified( resource );
-  }
-  virtual void resourceDeleted( Resource* res ) {
-    kdDebug() << "ResourceManager::resourceDeleted " << res->resourceName() << endl;
-    T* resource = dynamic_cast<T *>( res );
-    ManagerListener<T> *listener;
-    for ( listener = mListeners->first(); listener; listener = mListeners->next() ) {
-      kdDebug() << "Notifying a listener to ResourceManager..." << endl;
-      listener->resourceDeleted( resource );
+    
+    virtual void resourceDeleted( Resource* res )
+    {
+      kdDebug(5650) << "ResourceManager::resourceDeleted " << res->resourceName() << endl;
+      T* resource = dynamic_cast<T *>( res );
+      ManagerListener<T> *listener;
+      for ( listener = mListeners->first(); listener; listener = mListeners->next() ) {
+        kdDebug(5650) << "Notifying a listener to ResourceManager..." << endl;
+        listener->resourceDeleted( resource );
+      }
     }
-  }
 
-
-private:
-  ResourceManagerImpl* manager;
-  ResourceFactory* factory;
-  QPtrList<ManagerListener<T> > *mListeners;
+  private:
+    ResourceManagerImpl* mManager;
+    ResourceFactory* mFactory;
+    QPtrList<ManagerListener<T> > *mListeners;
 };
 
 }
