@@ -2,6 +2,14 @@
 Type=ServiceType
 X-KDE-ServiceType=KFilePlugin
 Name=KFile Meta Data Plugin
+Name[az]=KFile Meta Data Əlavəsi
+Name[da]=KFile Metadata-indstik
+Name[es]=Plugin de meta datos KFile
+Name[lv]=KFailu Meta Datu Iespraudnis
+Name[pt]='Plugin' de Meta-Dados do KFile
+Name[pt_BR]='Plugin' de Meta-Dados do KFile
+Name[sk]=Modul KFile pre meta dáta
+Name[xx]=xx
 
 [PropertyDef::PreferredItems]
 Type=QStringList

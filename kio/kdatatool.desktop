@@ -2,6 +2,21 @@
 Type=ServiceType
 X-KDE-ServiceType=KDataTool
 Comment=KDE Data Tool
+Comment[az]=KDE Verilənlər Vasitəsi
+Comment[da]=KDE dataværktøj
+Comment[es]=Herramienta KDE de datos
+Comment[he]=כלי נתונים של KDE
+Comment[hu]=KDE adatkezelő segédprogram
+Comment[lv]=KDE Datu Rīks
+Comment[nl]=KDE Data-gereedschap
+Comment[pt]=Ferramenta de Dados do KDE
+Comment[pt_BR]=Ferramenta de Dados do KDE
+Comment[sk]=Dátový nástroj KDE
+Comment[sv]=KDE-dataverktyg
+Comment[tr]=KDE Veri Aracı
+Comment[xh]=KDE Isixhobo se Data
+Comment[xx]=xx
+Comment[zu]=KDE Ithuluzi Ledata
 
 [PropertyDef::Commands]
 Type=QStringList
