@@ -6,6 +6,7 @@
 <xsl:include href="kde-navig-online.xsl"/>
 <xsl:include href="kde-ttlpg-online.xsl"/>
 <xsl:include href="kde-style.xsl"/>
+<xsl:output encoding="utf-8"/>
 
 <xsl:variable name="KDE_VERSION">1.13</xsl:variable> 
 
