@@ -205,7 +205,7 @@ signals:
     
     /**
      * The stacking order of the window changed. The new order
-     * can be obtained with windowsSorted()
+     * can be obtained with @ref stackingOrder()
      */
     void stackingOrderChanged();
 
