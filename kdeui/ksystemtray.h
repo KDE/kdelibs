@@ -126,7 +126,7 @@ private slots:
 
 private:
     KPopupMenu* menu;
-    KSystemTray* d;
+    KSystemTrayPrivate* d;
     int minimizeRestoreId;
     uint hasQuit :1;
 };
