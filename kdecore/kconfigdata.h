@@ -60,13 +60,15 @@ struct KEntryKey
  */
 inline bool operator <(const KEntryKey &k1, const KEntryKey &k2)
 {
-  if (k1.mGroup != k2.mGroup)
-    return k1.mGroup < k2.mGroup;
+   //saves one strcmp on each call
+   int result=qstrcmp(k1.mGroup.data(),k2.mGroup.data());
+   if (result!=0)
+      return (result<0);     
 
   if (!k1.c_key && k2.c_key)
     return true;
 
-  int result = 0;
+  result = 0;
   if (k1.c_key && k2.c_key)
      result = strcmp(k1.c_key, k2.c_key);
   if (result != 0)
