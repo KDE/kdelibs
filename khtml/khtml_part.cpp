@@ -2181,7 +2181,7 @@ void KHTMLPart::slotViewFrameSource()
 void KHTMLPart::slotSaveBackground()
 {
   // ### what about XML documents? get from CSS?
-  if (!d->m_doc->isHTMLDocument())
+  if (!d->m_doc || !d->m_doc->isHTMLDocument())
     return;
 
   QString relURL = static_cast<HTMLDocumentImpl*>(d->m_doc)->body()->getAttribute( ATTR_BACKGROUND ).string();
