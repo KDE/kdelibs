@@ -72,6 +72,10 @@ public class KJASConsole
                             System.getProperty("java.vendor") );
     }
     
+    public void clear() {
+      txt.setText("");
+    }
+
     public void append(String msg) {
         if (msg == null) {
             return;

@@ -15,6 +15,12 @@ public final class KJASAppletClassLoader
     extends URLClassLoader
 {
     private static Hashtable loaders = new Hashtable();
+
+    public static synchronized void removeLoaders()
+    {
+        loaders.clear();
+    }
+
     public static synchronized KJASAppletClassLoader getLoader( String docBase, String codeBase, String archives )
     {
         SecurityManager security = System.getSecurityManager();

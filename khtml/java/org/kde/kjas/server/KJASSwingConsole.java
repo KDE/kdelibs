@@ -5,10 +5,10 @@
  */
 
 package org.kde.kjas.server;
-import java.io.OutputStream;
-import java.io.FileOutputStream;
 import java.awt.Toolkit;
 import java.awt.Image;
+import java.util.Enumeration;
+import java.util.Properties;
 
 /**
  *
@@ -48,6 +48,7 @@ public class KJASSwingConsole extends javax.swing.JFrame implements Console {
             System.out.println( "WARNING: Security Manager disabled!" );
             textField.setForeground(java.awt.Color.red);
         }
+        showHelp();
     }
     
     /** This method is called from within the constructor to
@@ -125,23 +126,75 @@ public class KJASSwingConsole extends javax.swing.JFrame implements Console {
         char key = evt.getKeyChar();
         switch (key) {
             case 'h':
-                append("Konqueror Java Console Help\n");
-                append("  h: show help\n");
-                append("  g: run garbage collection\n");
-                append("  m: show memory info\n");
-                append("  t: list threads\n");
+                showHelp();
+                break;
             case 'g':
-                append("Running Garbage Collection ...\n");
+                append("Running Garbage Collection ...\n", true);
                 System.gc();
             case 'm': 
-                append("Total Memory: " + Runtime.getRuntime().totalMemory() + " bytes\n"); 
-                append("Free Memory : " + Runtime.getRuntime().freeMemory() + " bytes\n");
+                append("Total Memory: " + Runtime.getRuntime().totalMemory() + " bytes\n", true); 
+                append("Free Memory : " + Runtime.getRuntime().freeMemory() + " bytes\n", true);
+                break;
+            case 'c':
+                clear();
+                break;
+            case 's':
+                showSystemProperties();
                 break;
             case 't':
                 showThreads();
                 break;
+            case 'x':
+                KJASAppletClassLoader.removeLoaders();
+                append("Emptied Classloader Cache\n", true);
+                break;
         }
     }//GEN-LAST:event_textFieldKeyPressed
+
+    private void showHelp() {
+        append("Java VM: " + System.getProperty("java.vendor") + " " + System.getProperty("java.version") + "\n", true);
+        String ph = System.getProperty("http.proxyHost");
+        if (ph != null) {
+            append("Proxy: " + ph + ":" + System.getProperty("java.proxyPort") + "\n", true);
+        }
+        SecurityManager sec = System.getSecurityManager();
+        if (sec == null) {
+            append("WARNING: Security Manager disabled!\n", true);
+        } else {
+            append("SecurityManager=" + sec + "\n", true);
+        }
+        appendSeparator();
+        append("Konqueror Java Console Help\n", true);
+        append("  c: clear console\n", true);
+        append("  g: run garbage collection\n", true);
+        append("  h: show help\n", true);
+        append("  m: show memory info\n", true);
+        append("  s: print system properties\n", true);
+        append("  t: list threads\n", true);
+        append("  x: empty classloader cache\n", true);
+        appendSeparator();
+    }
+
+    private void showSystemProperties() {
+        append("Printing System Properties ...\n", true);
+        appendSeparator();
+        Properties p = System.getProperties();
+        for (Enumeration e = p.keys(); e.hasMoreElements();) {
+            Object key = e.nextElement();
+            if ("line.separator".equals(key)) {
+                String value = (String) p.get(key);
+                StringBuffer unescaped = new StringBuffer(10);
+                for (int i = 0; i < value.length(); i++) {
+                    char c = value.charAt(i);
+                    if (c == '\n') unescaped.append("\\n");
+                    else if (c == '\r') unescaped.append("\\n");
+                    else unescaped.append(c);
+                }
+                append(key + " = " + unescaped + "\n", true);
+            } else append(key + " = " + p.get(key) + "\n", true);
+        }
+        appendSeparator();
+    }
 
     private void showThreads() {
         Thread t = Thread.currentThread();
@@ -152,6 +205,7 @@ public class KJASSwingConsole extends javax.swing.JFrame implements Console {
         }
         g.list();
     }
+
     private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyButtonActionPerformed
         // Add your handling code here:
         textField.selectAll();
@@ -165,7 +219,7 @@ public class KJASSwingConsole extends javax.swing.JFrame implements Console {
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
         // Add your handling code here:
-        textField.setText("");;
+        clear();
     }//GEN-LAST:event_clearButtonActionPerformed
     
     /** Exit the Application */
@@ -177,7 +231,7 @@ public class KJASSwingConsole extends javax.swing.JFrame implements Console {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        new KJASSwingConsole().show();
+        new KJASSwingConsole().setVisible(true);
     }
     
     
@@ -190,8 +244,20 @@ public class KJASSwingConsole extends javax.swing.JFrame implements Console {
     private javax.swing.JButton copyButton;
     // End of variables declaration//GEN-END:variables
 
+    public void clear() {
+        textField.setText("");
+    }
+
+    private void appendSeparator() {
+        append("----------------------------------------------------\n", true);
+    }
+
     public void append(String txt) {
-        if (txt == null || !isVisible()) {
+        append(txt, false);
+    }
+    
+    public void append(String txt, boolean force) {
+        if (txt == null || (!force && !isVisible())) {
             return;
         }
         int length = txt.length();

@@ -12,6 +12,7 @@ package org.kde.kjas.server;
  */
 public interface Console {
     
+    public void clear();
     public void append(String text);
     
     public void setVisible(boolean visible);
