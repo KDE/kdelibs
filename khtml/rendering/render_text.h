@@ -74,7 +74,7 @@ public:
      * of this object's representation?
      */
     bool checkVerticalPoint(int _y, int _ty, int _h, int height)
-    { if((_ty + m_y > _y + _h) || (_ty + m_y + height < _y)) return false; return true; }
+    { if((_ty + m_y > _y + _h) || (_ty + m_y + m_baseline + height < _y)) return false; return true; }
 
     QChar* m_text;
     int m_y;

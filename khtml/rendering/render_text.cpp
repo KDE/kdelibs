@@ -629,8 +629,8 @@ void RenderText::print( QPainter *p, int x, int y, int w, int h,
 
     int s = m_lines.count() - 1;
     if ( s < 0 ) return;
-    if ( ty + m_lines[0]->m_y > y + h ) return;
-    if ( ty + m_lines[s]->m_y + m_lines[s]->m_baseline + m_lineHeight < y ) return;
+   if ( ty + m_lines[0]->m_y > y + h ) return;
+   if ( ty + m_lines[s]->m_y + m_lines[s]->m_baseline + m_lineHeight < y ) return;
 
     printObject(p, x, y, w, h, tx, ty);
 }
