@@ -92,10 +92,13 @@ KCheckAccelerators::KCheckAccelerators( QObject* parent )
     connect( &autoCheckTimer, SIGNAL( timeout()), SLOT( autoCheckSlot()));
 }
 
-bool KCheckAccelerators::eventFilter( QObject * , QEvent * e) {
+bool KCheckAccelerators::eventFilter( QObject * , QEvent * e)
+{
     if ( block )
         return false;
-    if ( e->type() == QEvent::Accel ) {
+
+    switch ( e->type() ) { // just simplify debuggin
+    case QEvent::Accel:
         if ( key && (static_cast<QKeyEvent *>(e)->key() == key) ) {
     	    block = true;
 	    checkAccelerators( false );
@@ -103,12 +106,23 @@ bool KCheckAccelerators::eventFilter( QObject * , QEvent * e) {
 	    static_cast<QKeyEvent *>(e)->accept();
 	    return true;
 	}
-    }
-    if( autoCheck
-        && ( e->type() == QEvent::ChildInserted ||
-             e->type() == QEvent::ChildRemoved ) )
-    {
-        autoCheckTimer.start( 20, true ); // 20 ms
+        break;
+    case QEvent::ChildInserted:
+    case QEvent::ChildRemoved:
+    case QEvent::Resize:
+    case QEvent::LayoutHint:
+    case QEvent::WindowActivate:
+    case QEvent::WindowDeactivate:
+        if( autoCheck )
+            autoCheckTimer.start( 20, true ); // 20 ms
+        break;
+    case QEvent::Timer:
+    case QEvent::MouseMove:
+    case QEvent::Paint:
+        return false;
+    default:
+        // kdDebug(125) << "KCheckAccelerators::eventFilter " << e->type() << " " << autoCheck << endl;
+        break;
     }
     return false;
 }
