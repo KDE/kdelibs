@@ -18,21 +18,55 @@
 
 class KIconEffectPrivate;
 
+/**
+ * Apply effects to icons.
+ */
 class KIconEffect
 {
 public:
     KIconEffect();
     ~KIconEffect();
 
+    /**
+     * Reread configuration.
+     */
     void init();
 
     enum Effects { NoEffect, ToGray, DeSaturate, Emboss, LastEffect };
 
+    /**
+     * Apply an effect to an image. The effect to apply depends on the 
+     * @em group and @em state parameters, and is configured by the user.
+     * @param src The image.
+     * @param group The group for the icon.
+     * @param state The icon's state.
+     * @return An image with the effect applied.
+     */
     QImage apply(QImage src, int group, int state);
+
+    /**
+     * Apply an effect to an image.
+     * @param src The image.
+     * @param effect The effect to apply.
+     * @param value Strength of the effect. 0 <= @em value <= 1.
+     * @return An image with the effect applied.
+     */
     QImage apply(QImage src, int effect, float value);
 
+    /**
+     * Apply an effect to a pixmap.
+     */
     QPixmap apply(QPixmap src, int group, int state);
+
+    /**
+     * Apply an effect to a pixmap.
+     */
     QPixmap apply(QPixmap src, int effect, float value);
+
+    /**
+     * Returns an image twice as large, consisting of 2x2 pixels.
+     */
+    QImage doublePixels(QImage src);
 
 private:
     void toGray(QImage &image);

@@ -161,3 +161,51 @@ void KIconEffect::deSaturate(QImage &img, float value)
 		qAlpha(data[i]));
     }
 }
+
+QImage KIconEffect::doublePixels(QImage src)
+{
+    QImage dst;
+    if (src.depth() == 1)
+    {
+	kdDebug(264) << "image depth 1 not supported\n";
+	return dst;
+    }
+
+    int w = src.width();
+    int h = src.height();
+    dst.create(w*2, h*2, src.depth());
+
+    int x, y;
+    if (src.depth() == 32)
+    {
+	QRgb *l1, *l2;
+	for (y=0; y<h; y++)
+	{
+	    l1 = (QRgb *) src.scanLine(y);
+	    l2 = (QRgb *) dst.scanLine(y*2);
+	    for (x=0; x<w; x++)
+	    {
+		l2[x*2] = l2[x*2+1] = l1[x];
+	    }
+	    memcpy(dst.scanLine(y*2+1), l2, dst.bytesPerLine());
+	}
+    } else
+    {	
+	for (x=0; x<src.numColors(); x++)
+	    dst.setColor(x, src.color(x));
+
+	unsigned char *l1, *l2;
+	for (y=0; y<h; y++)
+	{
+	    l1 = src.scanLine(y);
+	    l2 = dst.scanLine(y*2);
+	    for (x=0; x<w; x++)
+	    {
+		l2[x*2] = l1[x];
+		l2[x*2+1] = l1[x];
+	    }
+	    memcpy(dst.scanLine(y*2+1), l2, dst.bytesPerLine());
+	}
+    }
+    return dst;
+}

@@ -446,16 +446,14 @@ QPixmap KIconLoader::loadIcon(QString name, int group_or_size,
 	return pix;
 
     // Scale the icon if necessary
-    int newsize = img.width();
-    if (icon.type == KIcon::Scalable)
-	newsize = size;
-    if (group_or_size >= 0)
+    if ((icon.type == KIcon::Scalable) && (size != img.width()))
     {
-	if (mpGroups[group_or_size].dblPixels)
-	    newsize *= 2;
+	img = img.smoothScale(size, size);
     }
-    if (newsize != img.width())
-	img = img.smoothScale(newsize, newsize);
+    if ((group_or_size >= 0) && mpGroups[group_or_size].dblPixels)
+    {
+	img = mpEffect->doublePixels(img);
+    }
 
     // Apply effects
     if ((group_or_size >= 0) && (state >= 0))
