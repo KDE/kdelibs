@@ -28,8 +28,6 @@ INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui \
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 check_PROGRAMS = kformulatest \
-        	kopenwithtest \
-		ktartest \
 		khtmltest \
 		kspelltest \
 		kmemtest \
@@ -42,10 +40,6 @@ noinst_HEADERS = KIDLTest.h
 
 kformulatest_SOURCES = kformulatest.cpp
 kformulatest_LDADD = $(LIB_KFORMULA)
-kopenwithtest_SOURCES = kopenwithtest.cpp
-kopenwithtest_LDADD = $(LIB_KIO)
-ktartest_SOURCES = ktartest.cpp
-ktartest_LDADD = $(LIB_KIO)
 khtmltest_SOURCES = khtmltest.cpp
 khtmltest_LDADD = $(LIB_KHTML)
 kspelltest_SOURCES = kspelltest.cpp
