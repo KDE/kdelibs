@@ -237,6 +237,15 @@ bool KProtocolInfo::canDeleteRecursive( const KURL &url )
   return prot->canDeleteRecursive();
 }
 
+KProtocolInfo::FileNameUsedForCopying KProtocolInfo::fileNameUsedForCopying( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return FromURL;
+
+  return prot->fileNameUsedForCopying();
+}
+
 QString KProtocolInfo::defaultMimetype( const KURL &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);

@@ -392,6 +392,25 @@ public:
    */
   static bool canDeleteRecursive( const KURL &url );
 
+  typedef enum { Name, FromURL } FileNameUsedForCopying;
+
+  /**
+   * This setting defines the strategy to use for generating a filename, when
+   * copying a file or directory to another directory. By default the destination
+   * filename is made out of the filename in the source URL. However if the
+   * ioslave displays names that are different from the filename of the URL
+   * (e.g. kio_fonts shows Arial for arial.ttf, or kio_trash shows foo.txt and
+   * uses some internal URL), using Name means that the display name (UDS_NAME)
+   * will be used to as the filename in the destination directory.
+   *
+   * This corresponds to the "fileNameUsedForCopying=" field in the protocol description file.
+   * Valid values for this field are "Name" or "FromURL" (default).
+   *
+   * @param url the url to check
+   * @return how to generate the filename in the destination directory when copying/moving
+   */
+  static FileNameUsedForCopying fileNameUsedForCopying( const KURL &url );
+
   /**
    * Returns default mimetype for this URL based on the protocol.
    *
@@ -629,6 +648,7 @@ protected:
   bool canRenameFromFile() const; // for kprotocolinfo_kdecore
   bool canRenameToFile() const; // for kprotocolinfo_kdecore
   bool canDeleteRecursive() const; // for kprotocolinfo_kdecore
+  FileNameUsedForCopying fileNameUsedForCopying() const; // for kprotocolinfo_kdecore
   static KProtocolInfo* findProtocol(const KURL &url); // for kprotocolinfo_kdecore
 
 protected:

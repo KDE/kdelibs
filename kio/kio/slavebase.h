@@ -212,7 +212,7 @@ public:
     void errorPage();
 
     /**
-     * Call this in mimetype, when you know the mimetype.
+     * Call this in mimetype() and in get(), when you know the mimetype.
      * See mimetype about other ways to implement it.
      */
     void mimeType( const QString &_type );
@@ -318,7 +318,7 @@ public:
      * @since 3.3
      */
     KRemoteEncoding* remoteEncoding();
-    
+
 
     ///////////
     // Commands sent by the job, the slave has to

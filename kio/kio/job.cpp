@@ -2360,7 +2360,6 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
         info.ctime = (time_t) -1;
         info.size = (KIO::filesize_t)-1;
         QString displayName;
-        QString destFileName;
         KURL url;
         bool isDir = false;
         for( ; it2 != (*it).end(); it2++ ) {
@@ -2379,7 +2378,6 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                     break;
                 case UDS_URL:
                     url = KURL((*it2).m_str);
-                    destFileName = url.fileName();
                     break;
                 case UDS_LINK_DEST:
                     info.linkDest = (*it2).m_str;
@@ -2414,12 +2412,13 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                 // Here we _really_ have to add some filename to the dest.
                 // Otherwise, we end up with e.g. dest=..../Desktop/ itself.
                 // (This can happen when dropping a link to a webpage with no path)
-                if ( destFileName.isEmpty() ) {
-                    if ( displayName.isEmpty() )
-                        destFileName = KIO::encodeFileName( info.uSource.prettyURL() );
-                    else
-                        destFileName = displayName;
-                }
+                QString destFileName;
+                if ( KProtocolInfo::fileNameUsedForCopying( url ) == KProtocolInfo::FromURL ) // default
+                    destFileName = url.fileName();
+                else // destination filename taken from UDS_NAME (e.g. for kio_trash)
+                    destFileName = displayName;
+                if ( destFileName.isEmpty() )
+                    destFileName = KIO::encodeFileName( info.uSource.prettyURL() );
                 info.uDest.addPath( destFileName );
             }
             //kdDebug(7007) << " uDest(2)=" << info.uDest << endl;
@@ -2485,8 +2484,13 @@ void CopyJob::statCurrentSrc()
             }
             files.append( info ); // Files and any symlinks
             statNextSrc(); // we could use a loop instead of a recursive call :)
+            return;
         }
-        else if ( m_mode == Move )
+        else if ( m_mode == Move && (
+                // Don't go renaming right away if we need a stat() to find out the destination filename
+                KProtocolInfo::fileNameUsedForCopying( m_currentSrcURL ) == KProtocolInfo::FromURL ||
+                destinationState != DEST_IS_DIR || m_asMethod )
+            )
         {
            // If moving, before going for the full stat+[list+]copy+del thing, try to rename
            // The logic is pretty similar to FileCopyJob::slotStart()
@@ -2510,26 +2514,26 @@ void CopyJob::statCurrentSrc()
               return;
            }
         }
-        else
-        {
-            // if the file system doesn't support deleting, we do not even stat
-            if (m_mode == Move && !KProtocolInfo::supportsDeleting(m_currentSrcURL)) {
-                QGuardedPtr<CopyJob> that = this;
-                KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentSrcURL.prettyURL()));
-                if (that)
-                    statNextSrc(); // we could use a loop instead of a recursive call :)
-                return;
-            }
-            // Stat the next src url
-            Job * job = KIO::stat( m_currentSrcURL, true, 2, false );
-            //kdDebug(7007) << "KIO::stat on " << m_currentSrcURL << endl;
-            state = STATE_STATING;
-            addSubjob(job);
-            m_currentDestURL=m_dest;
-            m_bOnlyRenames = false;
-            d->m_bURLDirty = true;
+
+        // if the file system doesn't support deleting, we do not even stat
+        if (m_mode == Move && !KProtocolInfo::supportsDeleting(m_currentSrcURL)) {
+            QGuardedPtr<CopyJob> that = this;
+            KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentSrcURL.prettyURL()));
+            if (that)
+                statNextSrc(); // we could use a loop instead of a recursive call :)
+            return;
         }
-    } else
+
+        // Stat the next src url
+        Job * job = KIO::stat( m_currentSrcURL, true, 2, false );
+        //kdDebug(7007) << "KIO::stat on " << m_currentSrcURL << endl;
+        state = STATE_STATING;
+        addSubjob(job);
+        m_currentDestURL=m_dest;
+        m_bOnlyRenames = false;
+        d->m_bURLDirty = true;
+    }
+    else
     {
         // Finished the stat'ing phase
         // First make sure that the totals were correctly emitted
