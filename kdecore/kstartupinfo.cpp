@@ -425,6 +425,7 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
     if( info.windowType() != NET::Normal
         && info.windowType() != NET::Override
         && info.windowType() != NET::Unknown
+        && info.windowType() != NET::Dialog
         && info.windowType() != NET::Dock )
 	return NoMatch;
     // lets see if this is a transient
