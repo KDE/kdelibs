@@ -143,10 +143,17 @@ namespace KJS {
     DOMCSSRule(ExecState *, DOM::CSSRule r) : cssRule(r) { }
     virtual ~DOMCSSRule();
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
+    Value getValue(ExecState *exec, int token) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
-    virtual const ClassInfo* classInfo() const { return &info; }
+    void putValue(ExecState *exec, int token, const Value& value, int attr);
+    virtual const ClassInfo* classInfo() const;
     static const ClassInfo info;
-    enum { Item, InsertRule, DeleteRule };
+    static const ClassInfo style_info, media_info, fontface_info, page_info, import_info, charset_info;
+    enum { ParentStyleSheet, Type, CssText, ParentRule,
+           Style_SelectorText, Style_Style,
+           Media_Media, Media_InsertRule, Media_DeleteRule, Media_CssRules,
+           FontFace_Style, Page_SelectorText, Page_Style,
+           Import_Href, Import_Media, Import_StyleSheet, Charset_Encoding };
     DOM::CSSRule toCSSRule() const { return cssRule; }
   protected:
     DOM::CSSRule cssRule;

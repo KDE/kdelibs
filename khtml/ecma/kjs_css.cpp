@@ -578,8 +578,6 @@ Value KJS::getDOMCSSRuleList(ExecState *exec, DOM::CSSRuleList rl)
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMCSSRule::info = { "CSSRule", 0, 0, 0 };
-
 IMPLEMENT_PROTOFUNC(DOMCSSRuleFunc) // Not a proto, but doesn't matter
 
 DOMCSSRule::~DOMCSSRule()
@@ -587,114 +585,183 @@ DOMCSSRule::~DOMCSSRule()
   cssRules.remove(cssRule.handle());
 }
 
-// ### like HTMLElement, this class needs to be split up if we want to use a static hashtable
-Value DOMCSSRule::tryGet(ExecState *exec, const UString &p) const
-{
-  Value result;
+const ClassInfo DOMCSSRule::info = { "CSSRule", 0, &DOMCSSRuleTable, 0 };
+const ClassInfo DOMCSSRule::style_info = { "CSSStyleRule", &DOMCSSRule::info, &DOMCSSStyleRuleTable, 0 };
+const ClassInfo DOMCSSRule::media_info = { "CSSMediaRule", &DOMCSSRule::info, &DOMCSSMediaRuleTable, 0 };
+const ClassInfo DOMCSSRule::fontface_info = { "CSSFontFaceRule", &DOMCSSRule::info, &DOMCSSFontFaceRuleTable, 0 };
+const ClassInfo DOMCSSRule::page_info = { "CSSPageRule", &DOMCSSRule::info, &DOMCSSPageRuleTable, 0 };
+const ClassInfo DOMCSSRule::import_info = { "CSSImportRule", &DOMCSSRule::info, &DOMCSSImportRuleTable, 0 };
+const ClassInfo DOMCSSRule::charset_info = { "CSSCharsetRule", &DOMCSSRule::info, &DOMCSSCharsetRuleTable, 0 };
 
+const ClassInfo* DOMCSSRule::classInfo() const
+{
   switch (cssRule.type()) {
-    case DOM::CSSRule::STYLE_RULE: {
-        DOM::CSSStyleRule rule = static_cast<DOM::CSSStyleRule>(cssRule);
-        if (p == "selectorText") return getString(rule.selectorText());
-        if (p == "style") return getDOMCSSStyleDeclaration(exec,rule.style());
-        break;
-      }
-    case DOM::CSSRule::MEDIA_RULE: {
-        DOM::CSSMediaRule rule = static_cast<DOM::CSSMediaRule>(cssRule);
-        if (p == "media") return getDOMMediaList(exec,rule.media());
-        if (p == "cssRules") return getDOMCSSRuleList(exec,rule.cssRules());
-        if (p == "insertRule") return lookupOrCreateFunction<DOMCSSRuleFunc>(exec,p,this,DOMCSSRule::InsertRule,2,DontDelete|Function);
-        if (p == "deleteRule") return lookupOrCreateFunction<DOMCSSRuleFunc>(exec,p,this,DOMCSSRule::DeleteRule,1,DontDelete|Function);
-        break;
-      }
-    case DOM::CSSRule::FONT_FACE_RULE: {
-        DOM::CSSFontFaceRule rule = static_cast<DOM::CSSFontFaceRule>(cssRule);
-        if (p == "style") return getDOMCSSStyleDeclaration(exec,rule.style());
-        break;
-      }
-    case DOM::CSSRule::PAGE_RULE: {
-        DOM::CSSPageRule rule = static_cast<DOM::CSSPageRule>(cssRule);
-        if (p == "selectorText") return getString(rule.selectorText());
-        if (p == "style") return getDOMCSSStyleDeclaration(exec,rule.style());
-        break;
-      }
-    case DOM::CSSRule::IMPORT_RULE: {
-        DOM::CSSImportRule rule = static_cast<DOM::CSSImportRule>(cssRule);
-        if (p == "href") return getString(rule.href());
-        if (p == "media") return getDOMMediaList(exec,rule.media());
-        if (p == "styleSheet") return getDOMStyleSheet(exec,rule.styleSheet());
-        break;
-      }
-    case DOM::CSSRule::CHARSET_RULE: {
-        DOM::CSSCharsetRule rule = static_cast<DOM::CSSCharsetRule>(cssRule);
-        if (p == "encoding") return getString(rule.encoding());
-        break;
-      }
-    case DOM::CSSRule::UNKNOWN_RULE:
-      break;
+  case DOM::CSSRule::STYLE_RULE:
+    return &style_info;
+  case DOM::CSSRule::MEDIA_RULE:
+    return &media_info;
+  case DOM::CSSRule::FONT_FACE_RULE:
+    return &fontface_info;
+  case DOM::CSSRule::PAGE_RULE:
+    return &page_info;
+  case DOM::CSSRule::IMPORT_RULE:
+    return &import_info;
+  case DOM::CSSRule::CHARSET_RULE:
+    return &charset_info;
+  case DOM::CSSRule::UNKNOWN_RULE:
+  default:
+    return &info;
+  }
+}
+/*
+@begin DOMCSSRuleTable 4
+  type			DOMCSSRule::Type	DontDelete|ReadOnly
+  cssText		DOMCSSRule::CssText	DontDelete|ReadOnly
+  parentStyleSheet	DOMCSSRule::ParentStyleSheet	DontDelete|ReadOnly
+  parentRule		DOMCSSRule::ParentRule	DontDelete|ReadOnly
+@end
+@begin DOMCSSStyleRuleTable 2
+  selectorText		DOMCSSRule::Style_SelectorText	DontDelete
+  style			DOMCSSRule::Style_Style		DontDelete|ReadOnly
+@end
+@begin DOMCSSMediaRuleTable 4
+  media			DOMCSSRule::Media_Media		DontDelete|ReadOnly
+  cssRules		DOMCSSRule::Media_CssRules	DontDelete|ReadOnly
+  insertRule		DOMCSSRule::Media_InsertRule	DontDelete|Function 2
+  deleteRule		DOMCSSRule::Media_DeleteRule	DontDelete|Function 1
+@end
+@begin DOMCSSFontFaceRuleTable 1
+  style			DOMCSSRule::FontFace_Style	DontDelete|ReadOnly
+@end
+@begin DOMCSSPageRuleTable 2
+  selectorText		DOMCSSRule::Page_SelectorText	DontDelete
+  style			DOMCSSRule::Page_Style		DontDelete|ReadOnly
+@end
+@begin DOMCSSImportRuleTable 3
+  href			DOMCSSRule::Import_Href		DontDelete|ReadOnly
+  media			DOMCSSRule::Import_Media	DontDelete|ReadOnly
+  styleSheet		DOMCSSRule::Import_StyleSheet	DontDelete|ReadOnly
+@end
+@begin DOMCSSCharsetRuleTable 1
+  encoding		DOMCSSRule::Charset_Encoding	DontDelete
+@end
+*/
+Value DOMCSSRule::tryGet(ExecState *exec, const UString &propertyName) const
+{
+  const HashTable* table = classInfo()->propHashTable; // get the right hashtable
+  const HashEntry* entry = Lookup::findEntry(table, propertyName);
+  if (entry) {
+    if (entry->attr & Function)
+      return lookupOrCreateFunction<DOMCSSRuleFunc>(exec, propertyName, this, entry->value, entry->params, entry->attr);
+    return getValue(exec, entry->value);
   }
 
-  if (p == "type")
+  // Base CSSRule stuff or parent class forward, as usual
+  return DOMObjectLookupGet<DOMCSSRuleFunc, DOMCSSRule, DOMObject>(exec, propertyName, &DOMCSSRuleTable, this);
+}
+
+Value DOMCSSRule::getValue(ExecState *exec, int token) const
+{
+  switch (token) {
+  case Type:
     return Number(cssRule.type());
-  else if (p == "cssText")
+  case CssText:
     return getString(cssRule.cssText());
-  else if (p == "parentStyleSheet")
+  case ParentStyleSheet:
     return getDOMStyleSheet(exec,cssRule.parentStyleSheet());
-  else if (p == "parentRule")
+  case ParentRule:
     return getDOMCSSRule(exec,cssRule.parentRule());
 
-  return DOMObject::tryGet(exec,p);
-};
+  // for DOM::CSSRule::STYLE_RULE:
+  case Style_SelectorText:
+    return getString(static_cast<DOM::CSSStyleRule>(cssRule).selectorText());
+  case Style_Style:
+    return getDOMCSSStyleDeclaration(exec,static_cast<DOM::CSSStyleRule>(cssRule).style());
+
+  // for DOM::CSSRule::MEDIA_RULE:
+  case Media_Media:
+    return getDOMMediaList(exec,static_cast<DOM::CSSMediaRule>(cssRule).media());
+  case Media_CssRules:
+    return getDOMCSSRuleList(exec,static_cast<DOM::CSSMediaRule>(cssRule).cssRules());
+
+  // for DOM::CSSRule::FONT_FACE_RULE:
+  case FontFace_Style:
+    return getDOMCSSStyleDeclaration(exec,static_cast<DOM::CSSFontFaceRule>(cssRule).style());
+
+  // for DOM::CSSRule::PAGE_RULE:
+  case Page_SelectorText:
+    return getString(static_cast<DOM::CSSPageRule>(cssRule).selectorText());
+  case Page_Style:
+    return getDOMCSSStyleDeclaration(exec,static_cast<DOM::CSSPageRule>(cssRule).style());
+
+  // for DOM::CSSRule::IMPORT_RULE:
+  case Import_Href:
+    return getString(static_cast<DOM::CSSImportRule>(cssRule).href());
+  case Import_Media:
+    return getDOMMediaList(exec,static_cast<DOM::CSSImportRule>(cssRule).media());
+  case Import_StyleSheet:
+    return getDOMStyleSheet(exec,static_cast<DOM::CSSImportRule>(cssRule).styleSheet());
+
+  // for DOM::CSSRule::CHARSET_RULE:
+  case Charset_Encoding:
+    return getString(static_cast<DOM::CSSCharsetRule>(cssRule).encoding());
+
+  default:
+    kdWarning() << "DOMCSSRule::getValue unhandled token " << token << endl;
+  }
+  return Undefined();
+}
 
 void DOMCSSRule::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
 {
-
-  switch (cssRule.type()) {
-    case DOM::CSSRule::STYLE_RULE: {
-        DOM::CSSStyleRule rule = static_cast<DOM::CSSStyleRule>(cssRule);
-        if (propertyName == "selectorText") {
-          rule.setSelectorText(value.toString(exec).string());
-          return;
-        }
-        break;
-      }
-    case DOM::CSSRule::PAGE_RULE: {
-        DOM::CSSPageRule rule = static_cast<DOM::CSSPageRule>(cssRule);
-        if (propertyName == "selectorText") {
-          rule.setSelectorText(value.toString(exec).string());
-          return;
-        }
-        break;
-      }
-    case DOM::CSSRule::CHARSET_RULE: {
-        DOM::CSSCharsetRule rule = static_cast<DOM::CSSCharsetRule>(cssRule);
-        if (propertyName == "encoding") {
-          rule.setEncoding(value.toString(exec).string());
-          return;
-        }
-        break;
-      }
-    default:
-      break;
+  const HashTable* table = classInfo()->propHashTable; // get the right hashtable
+  const HashEntry* entry = Lookup::findEntry(table, propertyName);
+  if (entry) {
+    if (entry->attr & Function) // function: put as override property
+      ObjectImp::put(exec, propertyName, value, attr);
+    else if (entry->attr & ReadOnly == 0) // let DOMObjectLookupPut print the warning if not
+      putValue(exec, entry->value, value, attr);
+    return;
   }
+  DOMObjectLookupPut<DOMCSSRule, DOMObject>(exec, propertyName, value, attr, table, this);
+}
 
-  DOMObject::tryPut(exec,propertyName,value,attr);
+void DOMCSSRule::putValue(ExecState *exec, int token, const Value& value, int)
+{
+  switch (token) {
+  // for DOM::CSSRule::STYLE_RULE:
+  case Style_SelectorText:
+    static_cast<DOM::CSSStyleRule>(cssRule).setSelectorText(value.toString(exec).string());
+    return;
+
+  // for DOM::CSSRule::PAGE_RULE:
+  case Page_SelectorText:
+    static_cast<DOM::CSSPageRule>(cssRule).setSelectorText(value.toString(exec).string());
+    return;
+
+  // for DOM::CSSRule::CHARSET_RULE:
+  case Charset_Encoding:
+    static_cast<DOM::CSSCharsetRule>(cssRule).setEncoding(value.toString(exec).string());
+    return;
+
+  default:
+    kdWarning() << "DOMCSSRule::putValue unhandled token " << token << endl;
+  }
 }
 
 Value DOMCSSRuleFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
   DOM::CSSRule cssRule = static_cast<DOMCSSRule *>(thisObj.imp())->toCSSRule();
-  Value result = Undefined();
 
   if (cssRule.type() == DOM::CSSRule::MEDIA_RULE) {
     DOM::CSSMediaRule rule = static_cast<DOM::CSSMediaRule>(cssRule);
-    if (id == DOMCSSRule::InsertRule)
-      result = Number(rule.insertRule(args[0].toString(exec).string(),args[1].toInteger(exec)));
-    else if (id == DOMCSSRule::DeleteRule)
+    if (id == DOMCSSRule::Media_InsertRule)
+      return Number(rule.insertRule(args[0].toString(exec).string(),args[1].toInteger(exec)));
+    else if (id == DOMCSSRule::Media_DeleteRule)
       rule.deleteRule(args[0].toInteger(exec));
   }
 
-  return result;
+  return Undefined();
 }
 
 Value KJS::getDOMCSSRule(ExecState *exec, DOM::CSSRule r)
@@ -1124,7 +1191,3 @@ Value KJS::getDOMCounter(ExecState *, DOM::Counter c)
     return ret;
   }
 }
-
-
-
-

@@ -123,6 +123,90 @@ const struct HashTable DOMCSSRuleListTable = { 2, 3, DOMCSSRuleListTableEntries,
 
 namespace KJS {
 
+const struct HashEntry DOMCSSRuleTableEntries[] = {
+   { "parentStyleSheet", DOMCSSRule::ParentStyleSheet, DontDelete|ReadOnly, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "type", DOMCSSRule::Type, DontDelete|ReadOnly, 0, &DOMCSSRuleTableEntries[4] },
+   { 0, 0, 0, 0, 0 },
+   { "cssText", DOMCSSRule::CssText, DontDelete|ReadOnly, 0, &DOMCSSRuleTableEntries[5] },
+   { "parentRule", DOMCSSRule::ParentRule, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMCSSRuleTable = { 2, 6, DOMCSSRuleTableEntries, 4 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMCSSStyleRuleTableEntries[] = {
+   { "selectorText", DOMCSSRule::Style_SelectorText, DontDelete|ReadOnly, 0, 0 },
+   { "style", DOMCSSRule::Style_Style, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMCSSStyleRuleTable = { 2, 2, DOMCSSStyleRuleTableEntries, 2 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMCSSMediaRuleTableEntries[] = {
+   { "media", DOMCSSRule::Media_Media, DontDelete|ReadOnly, 0, &DOMCSSMediaRuleTableEntries[4] },
+   { "insertRule", DOMCSSRule::Media_InsertRule, DontDelete|Function, 2, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "deleteRule", DOMCSSRule::Media_DeleteRule, DontDelete|Function, 1, 0 },
+   { "cssRules", DOMCSSRule::Media_CssRules, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMCSSMediaRuleTable = { 2, 5, DOMCSSMediaRuleTableEntries, 4 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMCSSFontFaceRuleTableEntries[] = {
+   { "style", DOMCSSRule::FontFace_Style, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMCSSFontFaceRuleTable = { 2, 1, DOMCSSFontFaceRuleTableEntries, 1 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMCSSPageRuleTableEntries[] = {
+   { "selectorText", DOMCSSRule::Page_SelectorText, DontDelete|ReadOnly, 0, 0 },
+   { "style", DOMCSSRule::Page_Style, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMCSSPageRuleTable = { 2, 2, DOMCSSPageRuleTableEntries, 2 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMCSSImportRuleTableEntries[] = {
+   { 0, 0, 0, 0, 0 },
+   { "href", DOMCSSRule::Import_Href, DontDelete|ReadOnly, 0, &DOMCSSImportRuleTableEntries[3] },
+   { "media", DOMCSSRule::Import_Media, DontDelete|ReadOnly, 0, 0 },
+   { "styleSheet", DOMCSSRule::Import_StyleSheet, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMCSSImportRuleTable = { 2, 4, DOMCSSImportRuleTableEntries, 3 };
+
+}; // namespace
+
+namespace KJS {
+
+const struct HashEntry DOMCSSCharsetRuleTableEntries[] = {
+   { "encoding", DOMCSSRule::Charset_Encoding, DontDelete|ReadOnly, 0, 0 }
+};
+
+const struct HashTable DOMCSSCharsetRuleTable = { 2, 1, DOMCSSCharsetRuleTableEntries, 1 };
+
+}; // namespace
+
+namespace KJS {
+
 const struct HashEntry CSSRuleConstructorTableEntries[] = {
    { "IMPORT_RULE", CSSRuleConstructor::IMPORT_RULE, DontDelete|ReadOnly, 0, 0 },
    { "UNKNOWN_RULE", CSSRuleConstructor::UNKNOWN_RULE, DontDelete|ReadOnly, 0, 0 },
