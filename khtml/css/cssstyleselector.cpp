@@ -966,7 +966,24 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_TEXT_TRANSFORM:
     case CSS_PROP_UNICODE_BIDI:
     case CSS_PROP_VISIBILITY:
+	break;
     case CSS_PROP_WHITE_SPACE:
+        if(!primitiveValue->getIdent()) return;
+
+        EWhiteSpace s;
+        switch(primitiveValue->getIdent()) {
+        case CSS_VAL_NOWRAP:
+            s = NOWRAP;
+            break;
+        case CSS_VAL_PRE:
+            s = PRE;
+            break;
+        case CSS_VAL_NORMAL:
+        default:
+            s = NORMAL;
+            break;
+        }
+        style->setWhiteSpace(s);
 	break;
 
 
@@ -1152,13 +1169,18 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     {
 	if(!primitiveValue) return;
 	int width = computeLength(primitiveValue, style);
-	if( width < 0 ) return;
+// reason : letter or word spacing may be negative.
+//	if( width < 0 ) return;
 	switch(prop->m_id)
 	{
-	case CSS_PROP_MARKER_OFFSET:
 	case CSS_PROP_LETTER_SPACING:
+	    style->setLetterSpacing(width);
+	    break;
 	case CSS_PROP_WORD_SPACING:
+	    style->setWordSpacing(width);
+	    break;
 	    // ### needs the definitions in renderstyle
+	case CSS_PROP_MARKER_OFFSET:
 	default:
 	    return;
 	}

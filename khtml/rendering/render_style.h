@@ -461,6 +461,9 @@ public:
 	font = o.font;
 	color = o.color;
 	decoration_color = o.decoration_color;
+//////////////// patched by S.G. Hwang /////////////////////
+	letter_spacing = 0;
+	word_spacing = 0;	
     }
 
     bool operator==(const StyleInheritedData& o) const
@@ -471,8 +474,11 @@ public:
     Length indent;
     Length line_height;
 
-    unsigned int letter_spacing : 8;
-    unsigned int word_spacing : 8;
+//////////////// patched by S.G. Hwang /////////////////////
+    //unsigned int letter_spacing : 8;
+    //unsigned int word_spacing : 8;
+    int letter_spacing : 8;
+    int word_spacing : 8;
 
     short border_spacing;
 
@@ -654,6 +660,10 @@ public:
     ETextAlign textAlign() { return _text_align; }
     int textDecoration() { return _text_decoration; }
     const QColor &textDecorationColor() { return inherited->decoration_color; }
+///////////  patched by S.G. Hwang ////////////////////////////////////
+    int wordSpacing() { return inherited->word_spacing; }
+    int letterSpacing() { return inherited->letter_spacing; }
+///////////  end of patched ///////////////////////////////////////////
 
     EDirection direction() { return _direction; }
     Length lineHeight() { return inherited->line_height; }
@@ -776,6 +786,10 @@ public:
     void setLineHeight(Length v) { inherited.set()->line_height = v; }
 
     void setWhiteSpace(EWhiteSpace v) { _white_space = v; }
+//////////////////// patched by S.G Hwnag //////////////////////////////
+    void setWordSpacing(int v) { inherited.set()->word_spacing = v; }
+    void setLetterSpacing(int v) { inherited.set()->letter_spacing = v; }
+//////////////////// end of patch //////////////////////////////////////
 
 
     void setBackgroundColor(const QColor & v) {  background.set()->color = v; }
