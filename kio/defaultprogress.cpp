@@ -51,6 +51,7 @@ DefaultProgress::DefaultProgress( bool showNow )
 
   destLabel = new QLabel(this);
   grid->addWidget(destLabel, 1, 2);
+  destLabel->hide();
 
 // why include this waste of space?
 //  topLayout->addSpacing( 10 );
@@ -188,6 +189,7 @@ void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
   mode = Copy;
   sourceLabel->setText( from.url() );
   destLabel->setText( to.url() );
+  destLabel->show();
 }
 
 
@@ -197,6 +199,7 @@ void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
   mode = Move;
   sourceLabel->setText( from.url() );
   destLabel->setText( to.url() );
+  destLabel->show();
 }
 
 
@@ -205,6 +208,7 @@ void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
   setCaption(i18n("Creating directory"));
   mode = Create;
   sourceLabel->setText( dir.url() );
+  destLabel->hide();
 }
 
 
@@ -213,8 +217,29 @@ void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
   setCaption(i18n("Delete file(s) progress"));
   mode = Delete;
   sourceLabel->setText( url.url() );
+  destLabel->hide();
 }
 
+void DefaultProgress::slotStating( KIO::Job*, const KURL& url )
+{
+  setCaption(i18n("Examining file progress"));
+  sourceLabel->setText( url.url() );
+  destLabel->hide();
+}
+
+void DefaultProgress::slotMounting( KIO::Job*, const QString & dev, const QString & point )
+{
+  setCaption(i18n("Mounting %1").arg(dev));
+  sourceLabel->setText( point );
+  destLabel->hide();
+}
+
+void DefaultProgress::slotUnmounting( KIO::Job*, const QString & point )
+{
+  setCaption(i18n("Unmounting"));
+  sourceLabel->setText( point );
+  destLabel->hide();
+}
 
 void DefaultProgress::slotCanResume( KIO::Job*, bool resume )
 {

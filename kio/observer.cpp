@@ -169,6 +169,22 @@ void Observer::slotCanResume( KIO::Job* job, bool can_resume )
   m_uiserver->canResume( job->progressId(), (uint)can_resume );
 }
 
+void Observer::stating( KIO::Job* job, const KURL& url )
+{
+  m_uiserver->stating( job->progressId(), url );
+}
+
+void Observer::mounting( KIO::Job* job, const QString & dev, const QString & point )
+{
+  m_uiserver->mounting( job->progressId(), dev, point );
+}
+
+void Observer::unmounting( KIO::Job* job, const QString & point )
+{
+  m_uiserver->unmounting( job->progressId(), point );
+}
+
+
 bool Observer::authorize( QString& user, QString& pass ,const QString& head, const QString& key )
 {
 //   kdDebug() << "** Observer::authorize " << endl;

@@ -379,13 +379,19 @@ SimpleJob *KIO::mount( bool ro, const char *fstype, const QString& dev, const QS
 {
     KIO_ARGS << int(1) << Q_INT8( ro ? 1 : 0 )
              << fstype << dev << point;
-    return special( KURL("file:/"), packedArgs, showProgressInfo );
+    SimpleJob *job = special( KURL("file:/"), packedArgs, showProgressInfo );
+    if ( showProgressInfo )
+         Observer::self()->mounting( job, dev, point );
+    return job;
 }
 
 SimpleJob *KIO::unmount( const QString& point, bool showProgressInfo )
 {
     KIO_ARGS << int(2) << point;
-    return special( KURL("file:/"), packedArgs, showProgressInfo );
+    SimpleJob *job = special( KURL("file:/"), packedArgs, showProgressInfo );
+    if ( showProgressInfo )
+         Observer::self()->unmounting( job, point );
+    return job;
 }
 
 //////////
@@ -415,6 +421,8 @@ StatJob *KIO::stat(const KURL& url, bool showProgressInfo)
     kdDebug(7007) << "stat " << url.url() << endl;
     KIO_ARGS << url;
     StatJob * job = new StatJob(url, CMD_STAT, packedArgs, showProgressInfo );
+    if ( showProgressInfo )
+      Observer::self()->stating( job, url );
     return job;
 }
 

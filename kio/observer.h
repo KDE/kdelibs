@@ -124,7 +124,7 @@ protected:
 
   static Observer * s_pObserver;
   Observer();
-  virtual ~Observer() {}
+  ~Observer() {}
 
   UIServer_stub * m_uiserver;
 
@@ -132,24 +132,29 @@ protected:
 
 public slots:
 
-  virtual void slotTotalSize( KIO::Job*, unsigned long size );
-  virtual void slotTotalFiles( KIO::Job*, unsigned long files );
-  virtual void slotTotalDirs( KIO::Job*, unsigned long dirs );
+  void slotTotalSize( KIO::Job*, unsigned long size );
+  void slotTotalFiles( KIO::Job*, unsigned long files );
+  void slotTotalDirs( KIO::Job*, unsigned long dirs );
 
-  virtual void slotProcessedSize( KIO::Job*, unsigned long size );
-  virtual void slotProcessedFiles( KIO::Job*, unsigned long files );
-  virtual void slotProcessedDirs( KIO::Job*, unsigned long dirs );
+  void slotProcessedSize( KIO::Job*, unsigned long size );
+  void slotProcessedFiles( KIO::Job*, unsigned long files );
+  void slotProcessedDirs( KIO::Job*, unsigned long dirs );
 
-  virtual void slotSpeed( KIO::Job*, unsigned long bytes_per_second );
-  virtual void slotPercent( KIO::Job*, unsigned long percent );
-  virtual void slotInfoMessage( KIO::Job*, const QString & msg );
+  void slotSpeed( KIO::Job*, unsigned long bytes_per_second );
+  void slotPercent( KIO::Job*, unsigned long percent );
+  void slotInfoMessage( KIO::Job*, const QString & msg );
 
-  virtual void slotCopying( KIO::Job*, const KURL& from, const KURL& to );
-  virtual void slotMoving( KIO::Job*, const KURL& from, const KURL& to );
-  virtual void slotDeleting( KIO::Job*, const KURL& url );
-  virtual void slotCreatingDir( KIO::Job*, const KURL& dir );
+  void slotCopying( KIO::Job*, const KURL& from, const KURL& to );
+  void slotMoving( KIO::Job*, const KURL& from, const KURL& to );
+  void slotDeleting( KIO::Job*, const KURL& url );
+  void slotCreatingDir( KIO::Job*, const KURL& dir );
+  // currently unused
+  void slotCanResume( KIO::Job*, bool can_resume );
 
-  virtual void slotCanResume( KIO::Job*, bool can_resume );
+public:
+  void stating( KIO::Job*, const KURL& url );
+  void mounting( KIO::Job*, const QString & dev, const QString & point );
+  void unmounting( KIO::Job*, const QString & point );
 };
 
 // -*- mode: c++; c-basic-offset: 2 -*-

@@ -74,6 +74,9 @@ public:
   void setMoving( const KURL& from, const KURL& to );
   void setDeleting( const KURL& url );
   void setCreatingDir( const KURL& dir );
+  void setStating( const KURL& url );
+  void setMounting( const QString & dev, const QString & point );
+  void setUnmounting( const QString & point );
 
   void setCanResume( bool );
 
@@ -212,7 +215,12 @@ k_dcop:
   void moving( int id, KURL from, KURL to );
   void deleting( int id, KURL url );
   void creatingDir( int id, KURL dir );
+  void stating( int id, KURL url );
 
+  void mounting( int id, QString dev, QString point );
+  void unmounting( int id, QString point );
+
+  // currently unused
   void canResume( int id, unsigned int can_resume );
 
   /**

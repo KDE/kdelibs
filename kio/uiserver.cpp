@@ -202,6 +202,29 @@ void ProgressItem::setDeleting( const KURL& url ) {
   defaultProgress->slotDeleting( 0, url );
 }
 
+void ProgressItem::setStating( const KURL& url ) {
+  setText( listProgress->lv_operation, i18n("Examining") );
+  setText( listProgress->lv_url, url.url() );
+  setText( listProgress->lv_filename, url.fileName() );
+
+  defaultProgress->slotStating( 0, url );
+}
+
+void ProgressItem::setMounting( const QString& dev, const QString & point ) {
+  setText( listProgress->lv_operation, i18n("Mounting") );
+  setText( listProgress->lv_url, point ); // ?
+  setText( listProgress->lv_filename, dev ); // ?
+
+  defaultProgress->slotMounting( 0, dev, point );
+}
+
+void ProgressItem::setUnmounting( const QString & point ) {
+  setText( listProgress->lv_operation, i18n("Unmounting") );
+  setText( listProgress->lv_url, point ); // ?
+  setText( listProgress->lv_filename, "" ); // ?
+
+  defaultProgress->slotUnmounting( 0, point );
+}
 
 void ProgressItem::setCanResume( bool _resume ) {
   QString tmps;
@@ -534,6 +557,36 @@ void UIServer::creatingDir( int id, KURL dir )
   ProgressItem *item = findItem( id );
   if ( item ) {
     item->setCreatingDir( dir );
+  }
+}
+
+void UIServer::stating( int id, KURL url )
+{
+  kdDebug(7024) << "UIServer::stating " << id << " " << url.url() << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->setStating( url );
+  }
+}
+
+void UIServer::mounting( int id, QString dev, QString point )
+{
+  kdDebug(7024) << "UIServer::mounting " << id << " " << dev << " " << point << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->setMounting( dev, point );
+  }
+}
+
+void UIServer::unmounting( int id, QString point )
+{
+  kdDebug(7024) << "UIServer::unmounting " << id << " " << point << endl;
+
+  ProgressItem *item = findItem( id );
+  if ( item ) {
+    item->setUnmounting( point );
   }
 }
 
