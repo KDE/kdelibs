@@ -2,6 +2,8 @@
 Type=j2k
 Header=^\xFF\x4F
 Name=JPEG 2000-Streams
+Name[pt_BR]=Streams JPEG 2000
+Name[sv]=Jpeg 2000-strömmar
 Read=true
 Write=false
 Suffices=j2k,J2K

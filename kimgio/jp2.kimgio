@@ -5,6 +5,7 @@ Name=JPEG 2000-Pictures
 Name[da]=JPEG 2000-billeder
 Name[fa]=تصاویر JPEG 2000
 Name[hu]=JPEG 2000 képek
+Name[pt_BR]=Figuras JPEG 2000
 Name[sv]=Jpeg 2000-bilder
 Read=true
 Write=false
