@@ -1485,7 +1485,7 @@ private:
 
   enum StatusBarPriority { BarDefaultText, BarHoverText, BarOverrideText };
   void setStatusBarText( const QString& text, StatusBarPriority p);
-
+  
   bool restoreURL( const KURL &url );
   void emitSelectionChanged();
   // Returns whether callingHtmlPart may access this part
@@ -1494,6 +1494,7 @@ private:
   void startAutoScroll();
   void stopAutoScroll();
   void overURL( const QString &url, const QString &target, bool shiftPressed = false );
+  void resetHoverText(); // Undo overURL and reset HoverText
 
   bool processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype );
 

@@ -3505,6 +3505,18 @@ void KHTMLPart::slotClearSelection()
 #endif
 }
 
+void KHTMLPart::resetHoverText()
+{
+   if( !d->m_overURL.isEmpty() ) // Only if we were showing a link
+   {
+     d->m_overURL = d->m_overURLTarget = QString::null;
+     emit onURL( QString::null );
+     // revert to default statusbar text
+     setStatusBarText(QString::null, BarHoverText);
+     emit d->m_extension->mouseOverInfo(0);
+  }
+}
+
 void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shiftPressed*/ )
 {
   KURL u = completeURL(url);
@@ -6240,14 +6252,8 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     }
     else  // Not over a link...
     {
-      if( !d->m_overURL.isEmpty() ) // and we were over a link  -> reset to "default statusbar text"
-      {
-        d->m_overURL = d->m_overURLTarget = QString::null;
-        emit onURL( QString::null );
-        // revert to default statusbar text
-        setStatusBarText(QString::null, BarHoverText);
-        emit d->m_extension->mouseOverInfo(0);
-     }
+      // reset to "default statusbar text"
+      resetHoverText();
     }
   }
   else {

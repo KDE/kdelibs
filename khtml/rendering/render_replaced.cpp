@@ -780,6 +780,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
     case EventImpl::MOUSEOVER_EVENT: {
 	QEvent moe( QEvent::Enter );
 	QApplication::sendEvent(m_widget, &moe);
+	view()->part()->resetHoverText();
 	break;
     }
     default:
