@@ -89,6 +89,7 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
 
 KDatePicker::~KDatePicker()
 {
+  delete d;
 }
 
 void
@@ -458,6 +459,6 @@ bool KDatePicker::hasCloseButton() const
     return (d->closeButton != 0L);
 }
 
-void KDatePicker::virtual_hook( int id, void* data )
+void KDatePicker::virtual_hook( int /*id*/, void* /*data*/ )
 { /*BASE::virtual_hook( id, data );*/ }
 
