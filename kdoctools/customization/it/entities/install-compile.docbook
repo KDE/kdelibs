@@ -7,7 +7,7 @@ seguenti comandi nella directory di base della distribuzione di &kappname;:</par
 </screen>
 
 <para>Dato che &kappname; usa <command>autoconf</command> e
-<command>automake</command>, non dovresti incontrare dei problemi per
+<command>automake</command>, non dovresti incontrare dei problemi a
 compilarlo. Se si verificasse qualche problema,
 per piacere segnalalo alle mailing list di &kde;.</para>
 
