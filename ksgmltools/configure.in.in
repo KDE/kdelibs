@@ -4,7 +4,7 @@ SGML_CATALOGS=
 dnl The order of the directories in this list matters
 AC_DEFUN(KDE_FIND_CAT, 
 [
-   dtd_paths="/usr/lib/sgml/iso-entities-8879.1986 /usr/lib/sgml/docbook-3.1 /usr/lib/sgml/docbook-dtd /usr/lib/sgml/jade /usr/lib/sgml/docbook-stylesheets /usr/lib/sgml /usr/local/share/sgml /etc"
+   dtd_paths="/usr/lib/sgml/iso-entities-8879.1986 /usr/lib/sgml/docbook-3.1 /usr/lib/sgml/docbook-dtd /usr/lib/sgml/jade /usr/lib/sgml/docbook-stylesheets /usr/lib/sgml /usr/local/share/sgml /etc /usr/share/sgml /usr/share/sgml/docbk31"
    AC_FIND_FILE($1, $dtd_paths, CAT)
    if test ! "x$CAT" = "xNO"; then
      SGML_CATALOGS="$SGML_CATALOGS -c $CAT/$1"
@@ -22,6 +22,9 @@ dnl These three lines were added for the FreeBSD setup together with /usr/local/
 KDE_FIND_CAT(docbook/3.1/catalog)
 KDE_FIND_CAT(jade/catalog)
 KDE_FIND_CAT(docbook/dsssl/modular/catalog)
+dnl These two lines are added for SuSE
+KDE_FIND_CAT(jade_dsl/catalog)
+KDE_FIND_CAT(docbkdsl/catalog)
 
 AC_SUBST(SGML_CATALOGS)
 
