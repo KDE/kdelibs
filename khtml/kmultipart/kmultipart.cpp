@@ -144,8 +144,15 @@ bool KMultiPart::openURL( const KURL &url )
 // Yes, libkdenetwork's has such a parser already (MultiPart),
 // but it works on the complete string, expecting the whole data to be available....
 // The version here is asynchronous.
-void KMultiPart::slotData( KIO::Job *, const QByteArray &data )
+void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
 {
+    if (m_boundary.isNull())
+    {
+       QString tmp = job->queryMetaData("media-boundary");
+       kdDebug() << "Got Boundary from kio-http '" << tmp << "'" << endl;
+       m_boundary = QCString("--")+tmp.latin1();
+       m_boundaryLength = m_boundary.length();
+    }
     // Append to m_currentLine until eol
     for ( uint i = 0; i < data.size() ; ++i )
     {
