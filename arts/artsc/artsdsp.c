@@ -67,6 +67,7 @@ static int sndfd = -1;
 static int settings;
 static int arts_init_done = 0;
 static arts_stream_t stream = 0;
+static int frags;
 
 #if defined(HAVE_IOCTL_INT_INT_DOTS)
 typedef int ioctl_request_t;
@@ -191,6 +192,7 @@ int open (const char *pathname, int flags, ...)
     return orig_open (pathname, flags, mode);
 
   settings = 0;
+  frags = 0;
   stream = 0;
 
   artsdspdebug ("aRts: hijacking /dev/dsp open...\n");
@@ -276,10 +278,18 @@ int ioctl (int fd, ioctl_request_t request, ...)
 
 #ifdef SNDCTL_DSP_GETBLKSIZE
         case SNDCTL_DSP_GETBLKSIZE:			/* _SIOWR('P', 4, int) */
-		  if(mmapemu)
-			*arg = 4096;
-		  else
-			*arg = stream?arts_stream_get(stream,ARTS_P_PACKET_SIZE):16384;
+          if(mmapemu)
+            *arg = 4096;
+          else if(stream)
+            *arg = arts_stream_get(stream,ARTS_P_PACKET_SIZE);
+          else
+          {
+            int fragSize = frags & 0x7fff;
+            if(fragSize > 1 && fragSize < 16)
+              *arg = (1 << fragSize);
+            else
+              *arg = 16384; /* no idea ;-) */
+          }
           break;
 #endif
 
@@ -317,8 +327,10 @@ int ioctl (int fd, ioctl_request_t request, ...)
 
 #ifdef SNDCTL_DSP_SETFRAGMENT
         case SNDCTL_DSP_SETFRAGMENT:        /* _SIOWR('P',10, int) */
-		  artsdspdebug("aRts: SNDCTL_DSP_SETFRAGMENT(%x) unsupported\n",*arg);
-		  break;
+          artsdspdebug("aRts: SNDCTL_DSP_SETFRAGMENT(%x) partially supported\n",
+                          *arg);
+          frags = *arg;
+          break;
 #endif
 
 #ifdef SNDCTL_DSP_GETFMTS
@@ -442,10 +454,27 @@ int ioctl (int fd, ioctl_request_t request, ...)
       if (settings == 7 && !stream)
         {
           const char *name = getenv("ARTSDSP_NAME");
+          int fragSize = (frags & 0x7fff);
+          int fragCount = (frags & 0x7fff0000) >> 16;
 
           artsdspdebug ("aRts: creating stream...\n");
           stream = arts_play_stream(speed,bits,channels,name?name:"artsdsp");
 
+          if(fragSize > 1 && fragSize < 16)
+          {
+            /*
+             * if fragment settings are way too large (unrealistic), we
+             * will assume that the user didn't mean it, and let the C API
+             * choose a convenient number >= 3
+             */
+            if(fragCount < 2 || fragCount > 8192
+            || (fragCount * (1 << fragSize)) > 128*1024)
+            {
+              frags = 0x00030000+fragSize;
+            }
+
+            arts_stream_set(stream,ARTS_P_PACKET_SETTINGS,frags);
+          }
 		  if(mmapemu)
 		  {
 		    arts_stream_set(stream,ARTS_P_PACKET_SETTINGS,0x0002000c);
