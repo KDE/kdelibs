@@ -39,7 +39,7 @@ struct KNoteBookProtected
 
 
 KNoteBook::KNoteBook(QWidget *parent, const char *name, bool modal, WFlags f)
- : QWidget(parent, name, modal ? (f | WType_Modal) : f)
+ : KDialog(parent, name, modal, f)
 {
   initMetaObject();
   init();
@@ -630,4 +630,17 @@ void KNoteBook::paintEvent(QPaintEvent *)
 
   paint.end();
 }
+/*
+// Grab QDialogs keypresses if non-modal
+bool KNoteBook::eventFilter( QObject *obj, QEvent *e )
+{
+  if ( e->type() == Event_KeyPress && obj == this && !testWFlags(WType_Modal))
+  {
+    QKeyEvent *k = (QKeyEvent*)e;
+    if(k->key() == Key_Escape || k->key() == Key_Return || k->key() == Key_Enter)
+      return true;
+  }
 
+  return false;
+}
+*/

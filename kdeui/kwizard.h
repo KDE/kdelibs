@@ -20,6 +20,11 @@
 #ifndef __KWIZARD_H
 #define __KWIZARD_H
 
+#define KWIZARD_VERSION_MAJOR 0
+#define KWIZARD_VERSION_MINOR 20
+#define KWIZARD_VERSION (KWIZARD_VERSION_MAJOR * 10) + KWIZARD_VERSION_MINOR
+
+#include <qdialog.h>
 #include <kapp.h>
 #include <qpopmenu.h>
 #include <qlabel.h>
@@ -30,11 +35,33 @@
 #include <qpen.h>
 #include <kdbtn.h>
 #include <kseparator.h>
+
+/**
+* KDialog inherits QDialog. So far the only difference is that if the dialog is modeless
+* and has a parent the default keybindings (escape = reject(), enter = accept() etc.) are
+* disabled.
+* @short KDialog
+* @author Thomas Tanghus <tanghus@earthling.net>
+* @version 0.1
+*/
+class KDialog : public QDialog
+{
+	Q_OBJECT
+
+public:
+/**
+* Constructor. Takes the same arguments as QDialog.
+*/
+	KDialog(QWidget *parent = 0, const char *name = 0, bool modal = false, WFlags f = 0);
+protected:
+        bool eventFilter( QObject *, QEvent * );
+};
+
 struct KWizProtected;
 
 /**
 * KWizardPage holds information about the pages in the wizard. Given as
-* argument to @ref addPage.
+* argument to @ref KWizard#addPage.
 */
 struct KWizardPage
 {
@@ -79,9 +106,9 @@ struct KWizardPage
 * 
 * @short KWizard
 * @author Thomas Tanghus <tanghus@earthling.net>
-* @version 0.1
+* @version 0.2
 */
-class KWizard : public QWidget
+class KWizard : public KDialog
 {
 friend class KNoteBook;
 	Q_OBJECT
@@ -95,6 +122,7 @@ public:
 * Destructor
 */
 	~KWizard();
+
 /**
 * Adds a page to the wizard.
 * The pages are numbered from 0-n where 0 is the page first added and n is the
@@ -104,6 +132,9 @@ public:
 * @return Returns the id of the new page.
 */
         int addPage(KWizardPage *p);
+
+        void setPage(int id, QWidget *w);
+        void setPage(int id, QString title);
 /**
 * En/disable a specified page. If a page is disable its content will be grayd out
 * and it will not receive keyboard input.
