@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.17  1997/08/07 08:50:35  ettrich
+// Matthias: replaced $KDEDIR with kdedir() in the searchpath
+//
 // Revision 1.16  1997/07/27 13:43:57  kalle
 // Even more SGI and SCC patches, security patch for kapp, various fixes for ksock
 //
@@ -171,6 +174,8 @@ void reaper(int)
 // I'm not sure, why this have been removed, but I'm sure, they are
 // needed.
 //
+  rootDropZone = 0L;
+    
 // Revision 1.59  1997/10/16 11:14:27  torben
 // Kalle: Copyright headers
 // kdoctoolbar removed
@@ -187,6 +192,8 @@ void reaper(int)
 // KApplication::tempSaveName() and KApplication::checkRecoverFile()
 // now implemented as documented.
 // The change in kapp.h is only in the documentation and thus *-compatible.
+  rootDropZone = 0L;
+
 //
 // Revision 1.53  1997/10/11 22:39:27  ettrich
 //

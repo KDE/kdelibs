@@ -8,6 +8,7 @@
 
 #include "kurl.h"
 #include <iostream.h>
+#include <qregexp.h>
 
 void KURL::encodeURL( QString& _url ) {
     
@@ -123,7 +124,7 @@ void KURL::parse( const char * _url )
   malformed = FALSE;
 
   if ( _url[0] == '/' ) {
-      encodeURL(url);
+      // encodeURL(url);
       url.insert( 0, "file:");
   };
   
@@ -208,31 +209,34 @@ void KURL::parse( const char * _url )
   
   // find a possible port number
   int p = host_part.find(":");
-  if ( p != -1 ) {
+  if ( p != -1 )
+  {
       port_number = host_part.right( host_part.length() - (p + 1) ).toInt();
       host_part = host_part.left( p );
-  } else
+  }
+  else
       port_number = 0;
 
   // Find the path
   if( pos2 < (int)url.length() && pos2 != -1)
   {
-    int pos3 = url.find( '#', pos2 );
-    // Is there a reference ?
-    if ( pos3 == -1 )
-      path_part = url.mid( pos2, url.length() );
-    else 
-    {
-      path_part = url.mid( pos2, pos3 - pos2 );
-      ref_part = url.mid( pos3 + 1, url.length() );
-      if (path_part.right(1) == "/") // no filename and a reference
-	malformed = true;
-    }
+      QRegExp exp( "[a-zA-Z]+:" );
+      int pos3 = url.findRev( '#' );
+      // Is there a) no reference or b) only a subprotocol like file:/tmp/arch.tgz#tar:/usr/
+      if ( pos3 == -1 || exp.match( url, pos3 + 1 ) != -1 )
+	  path_part = url.mid( pos2, url.length() );
+      else 
+      {
+	  path_part = url.mid( pos2, pos3 - pos2 );
+	  ref_part = url.mid( pos3 + 1, url.length() );
+	  if (path_part.right(1) == "/") // no filename and a reference
+	      malformed = true;
+      }
   }
   else
   {
-	path_part = "/";
-	ref_part = "";
+      path_part = "/";
+      ref_part = "";
   } 
   
   /* ip-schemepart, login, see RFC1738                   */
@@ -255,6 +259,11 @@ KURL::KURL( const char* _protocol, const char* _host,
   detach();
   cleanURL();
 }     
+
+bool KURL::hasSubProtocol()
+{
+    return ( strchr( path(), '#' ) != 0L );
+}
 
 const char* KURL::directory( bool _trailing )
 {
@@ -514,4 +523,44 @@ KURL& KURL::operator=( const char *_url )
 {
   parse( _url );
   return *this;
+}
+
+QString KURL::parentURL()
+{
+    QRegExp exp( "[a-zA-Z]+:" );
+    QString str = url();
+    
+    int i = str.length();
+    while( ( i = str.findRev( "#", i) ) != -1 )
+    {
+	if ( exp.match( str.data(), i + 1 ) != -1 )
+	    return QString( str.left( i ) );
+	i--;
+    }
+        
+    return QString( str.data() );
+}
+
+QString KURL::childURL()
+{
+    QRegExp exp( "[a-zA-Z]+:" );
+    QString str = url();
+    
+    int i = str.length();
+    while( ( i = str.findRev( "#", i) ) != -1 )
+    {
+	if ( exp.match( str.data(), i + 1 ) != -1 )
+	    return QString( str.data() + i + 1 );
+	i--;
+    }
+
+    return QString();
+}
+    
+QString KURL::nestedURL()
+{
+    QString s = childURL().data();
+    if ( s.isEmpty() )
+	return url();
+    return s;
 }

@@ -124,7 +124,14 @@ public:
 * This function returns the reference. 
 *
 * If the URL is "http://www.nowhere/path/file.html#toc", this function 
-* will return #toc#. If there is no reference it returns "".
+* will return "toc". If there is no reference it returns "".
+* If we have some subprotocol in the URL like in 
+* file:/tmp/kde.tgz#tar:/kfm.rpm#rpm:/doc/index.html#section
+* then only the last reference is going to be returned, in this case
+* "section". A URL like
+* file:/tmp/kde.tgz#tar:/kfm.rpm#rpm:/doc/index.html
+* would return "" since there is no reference. The stuff behind
+* the '#' is a subprotocol!
 */
   char* reference() const;
 
@@ -170,7 +177,38 @@ public:
 * will return "file:/tmp/weis/". For more details look at 'directory(...)'
 */
   const char * directoryURL( bool _trailing = TRUE );
-    
+
+    /**
+     * @return TRUE if the URL has a sub protocol. For example file:/tmp/kde.tgz#tar:/kfm/main.cpp
+     *         is a URL with subprotocol. Use this function to check wether some URL really
+     *         references a complete file on your local hard disk and not some special data
+     *         inside the file, like the example shows.
+     */
+    bool hasSubProtocol();
+
+    /**
+     * If the URL has no subprotocol, parentURL behaves like a call to @ref #url.
+     * Otherwise the part of the URL left to the last subprotocol is returned.
+     * For example file:/tmp/kde.tgz#tar:/kfm.rpm#rpm:/doc/index.html#section will return
+     * file:/tmp/kde.tgz#tar:/kfm.rpm. As you can see, the last subprotocol is stripped.
+     * If the original URL is for example file:/httpd/index.html#section
+     * then exact this string is going to be returned.
+     */
+    QString parentURL();
+    /**
+     * This call returnes the other part of the URL, the part that is stripped by @ref #parentURL.
+     * It returns always the right most subprotocol. If there is no subprotocol, the call
+     * to this function returns an empty string. For example a URL 
+     * file:/tmp/kde.tgz#tar:/kfm.rpm#rpm:/doc/index.html#section
+     * would return rpm:/doc/index.html#section.
+     */
+    QString childURL();
+    /**
+     * This function behaves like @ref #childURL, but if there is no subprotocol,
+     * this function returns the same @ref #url returns instead of an empty string.
+     */
+    QString nestedURL();
+
 /**
 * Parse a string.
 */
