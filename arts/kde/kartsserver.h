@@ -54,6 +54,9 @@ signals:
 	void restartedServer(void);
 
 private:
+	KArtsServer(const KArtsServer &rhs);
+	KArtsServer &operator=(const KArtsServer &rhs);
+
 	struct Data;
 	Data *d;
 };
