@@ -289,12 +289,23 @@ void KURLRequester::setMode(unsigned int mode)
        myFileDialog->setMode( d->fileDialogMode );
 }
 
+unsigned int KURLRequester::mode() const
+{
+    return d->fileDialogMode;
+}
+
 void KURLRequester::setFilter(const QString &filter)
 {
     d->fileDialogFilter = filter;
     if (myFileDialog)
        myFileDialog->setFilter( d->fileDialogFilter );
 }
+
+QString KURLRequester::filter( ) const
+{
+    return d->fileDialogFilter;
+}
+
 
 KFileDialog * KURLRequester::fileDialog() const
 {
