@@ -26,14 +26,6 @@
 #include "kcompletion.h"
 #include "kcompletion_private.h"
 
-class KCompletionPrivate
-{
-public:
-  KCompletionPrivate() {
-    hasMultiMatches = false;
-  }
-  bool hasMultiMatches;
-};
 
 KCompletion::KCompletion()
 {
@@ -44,13 +36,11 @@ KCompletion::KCompletion()
     myHasMultipleMatches = false;
     myRotationIndex = 0;
     myOrder = Insertion;
-    d = new KCompletionPrivate;
 }
 
 KCompletion::~KCompletion()
 {
     delete myTreeRoot;
-    delete d;
 }
 
 
@@ -178,24 +168,24 @@ QString KCompletion::makeCompletion( const QString& string )
     myMatches.clear();
     myRotationIndex = 0;
     myHasMultipleMatches = false;
-    d->hasMultiMatches = false;
     myLastMatch = myCurrentMatch;
 
     // in Shell-completion-mode, emit all matches when we get the same
     // complete-string twice
     if ( myCompletionMode == KGlobalSettings::CompletionShell &&
-         string == myLastString )
-    {
-        // Don't use myMatches since calling postProcessMatches()
-        // on myMatches here would interfere with call to
-        // postProcessMatch() during rotation
-        QStringList l = findAllCompletions( string );
-        postProcessMatches( &l );
-        emit matches( l );
-        d->hasMultiMatches = (l.count() > 1);
-        if ( l.isEmpty() )
-            doBeep( NoMatch );
-        return QString::null;
+	 string == myLastString ) {
+	// Don't use myMatches since calling postProcessMatches()
+	// on myMatches here would interfere with call to
+	// postProcessMatch() during rotation
+	
+	QStringList l = findAllCompletions( string );
+	postProcessMatches( &l );
+	emit matches( l );
+
+	if ( l.isEmpty() )
+	    doBeep( NoMatch );
+	    
+	return QString::null;
     }
 
     QString completion = findCompletion( string );
@@ -246,15 +236,6 @@ QStringList KCompletion::allMatches( const QString &text )
 	QStringList l = findAllCompletions( text );
 	postProcessMatches( &l );
 	return l;
-}
-
-bool KCompletion::hasMultipleMatches( bool shellmode ) const
-{
-  if (shellmode)
-    return (myCompletionMode == KGlobalSettings::CompletionShell &&
-            d->hasMultiMatches);
-  else
-    return myHasMultipleMatches;
 }
 
 /////////////////////////////////////////////////////
