@@ -3455,7 +3455,8 @@ void Image::putValueProperty(ExecState *exec, int token, const Value& value, int
     if ( m_onLoadListener )
         m_onLoadListener->deref();
     m_onLoadListener = Window::retrieveActive(exec)->getJSEventListener(value,true);
-    m_onLoadListener->ref();
+    if ( m_onLoadListener )
+        m_onLoadListener->ref();
     break;
   default:
     kdDebug(6070) << "WARNING: Image::putValueProperty unhandled token " << token << endl;
@@ -3473,7 +3474,8 @@ void Image::notifyFinished(khtml::CachedObject * finishedObj)
     Object thisObj( this );
     m_onLoadListener->hackSetThisObj( thisObj );
     m_onLoadListener->handleEvent( e );
-    m_onLoadListener->hackUnsetThisObj();
+    if ( m_onLoadListener ) // #57195
+        m_onLoadListener->hackUnsetThisObj();
     evt->deref();
   }
 }
