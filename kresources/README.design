@@ -5,7 +5,7 @@ KDE RESOURCES
 -------------
 The KDE Resource framework can be used to manage resources of 
 different types, organized in families. The Resource framework is 
-currently used for addressbook resources in kdelibs/libkabc and for 
+currently used for addressbook resources in kdelibs/kabc and for 
 calendar resources in libkcal.
 A resource family represents stores of information of a certain kind
 (appointments, contacts). A resource type class represents a way in 
