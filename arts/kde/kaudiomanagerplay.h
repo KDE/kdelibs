@@ -22,6 +22,7 @@
 
 #include <artsflow.h>
 #include <qstring.h>
+#include <kdelibs_export.h>
 
 class KArtsServer;
 class QString;
@@ -34,7 +35,7 @@ class QString;
  * @author Matthias Kretz <kretz@kde.org>
  * @since 3.2
  */
-class KAudioManagerPlay
+class ARTS_EXPORT KAudioManagerPlay
 {
 	public:
 		KAudioManagerPlay( KArtsServer * server, const QString & title = QString::null );
