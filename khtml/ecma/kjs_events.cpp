@@ -66,12 +66,12 @@ void JSEventListener::handleEvent(DOM::Event &evt)
 
     // Add the event's target element to the scope
     // (and the document, and the form - see KJS::HTMLElement::eventHandlerScope)
-    Object thisObj = Object::dynamicCast(getDOMNode(evt.currentTarget()));
+    Object thisObj = Object::dynamicCast(getDOMNode(exec,evt.currentTarget()));
     List scope;
     List oldScope = listener.scope();
     //if (thisVal.type() != NullType)
     if ( !thisObj.isNull() ) {
-      scope = static_cast<DOMNode*>(thisObj.imp())->eventHandlerScope();
+      scope = static_cast<DOMNode*>(thisObj.imp())->eventHandlerScope(exec);
       if ( !scope.isEmpty() ) {
         List curScope = oldScope.copy();
         curScope.prependList( scope );
@@ -161,9 +161,9 @@ Value DOMEvent::tryGet(ExecState *exec, const UString &p) const
   if (p == "type")
     return String(event.type());
   else if (p == "target")
-    return getDOMNode(event.target());
+    return getDOMNode(exec,event.target());
   else if (p == "currentTarget" || p == "toElement" /*MSIE extension*/)
-    return getDOMNode(event.currentTarget());
+    return getDOMNode(exec,event.currentTarget());
   else if (p == "eventPhase")
     return Number((unsigned int)event.eventPhase());
   else if (p == "bubbles")
@@ -345,7 +345,7 @@ Value DOMMouseEvent::tryGet(ExecState *exec, const UString &p) const
     return Number( (unsigned int)button );
   }
   else if (p == "relatedTarget" || p == "fromElement" /*MSIE extension*/)
-    return getDOMNode(static_cast<DOM::MouseEvent>(event).relatedTarget());
+    return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).relatedTarget());
   else if (p == "initMouseEvent")
     return new DOMMouseEventFunc(static_cast<DOM::MouseEvent>(event),DOMMouseEventFunc::InitMouseEvent);
   else
@@ -424,7 +424,7 @@ DOMMutationEvent::~DOMMutationEvent()
 Value DOMMutationEvent::tryGet(ExecState *exec, const UString &p) const
 {
   if (p == "relatedNode")
-    return getDOMNode(static_cast<DOM::MutationEvent>(event).relatedNode());
+    return getDOMNode(exec,static_cast<DOM::MutationEvent>(event).relatedNode());
   else if (p == "prevValue")
     return String(static_cast<DOM::MutationEvent>(event).prevValue());
   else if (p == "newValue")

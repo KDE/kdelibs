@@ -36,6 +36,8 @@ namespace KJS {
       occur. */
   class DOMObject : public ObjectImp {
   public:
+    DOMObject(const Object &proto) : ObjectImp(proto) {}
+    DOMObject() : ObjectImp() {}
     virtual Value get(ExecState *exec, const UString &propertyName) const;
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const
       { return ObjectImp::get(exec, propertyName); }
@@ -54,7 +56,7 @@ namespace KJS {
       occur. */
   class DOMFunction : public ObjectImp {
   public:
-    DOMFunction() : ObjectImp() {}
+    DOMFunction() : ObjectImp( /* proto? */ ) {}
     virtual Value get(ExecState *exec, const UString &propertyName) const;
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const
       { return ObjectImp::get(exec, propertyName); }
@@ -174,6 +176,59 @@ namespace KJS {
       thisObj->putValue(exec, entry->value, value, attr);
   }
 
+
+  /**
+   * Helpers to define prototype objects (each of which simply implements
+   * the functions for a type of objects).
+   * Sorry for this not being very readable, but it actually saves much copy-n-paste.
+   *
+   * Using those macros is very simple: define the hashtable (e.g. "DOMNodeProtoTable"), then
+   * IMPLEMENT_PROTOFUNC(DOMNodeProtoFunc)
+   * IMPLEMENT_PROTOTYPE("DOMNode",DOMNodeProto,DOMNodeProtoFunc)
+   * and use DOMNodeProto::self(exec) as prototype in the DOMNode constructor.
+   */
+#define IMPLEMENT_PROTOTYPE(Class,ClassProto,ClassFunc) \
+  class ClassProto : public DOMObject { \
+  public: \
+    static Object self(ExecState *exec) \
+    { \
+      Value proto = exec->interpreter()->globalObject().get(exec, "[[" Class ".prototype]]"); \
+      if (proto.type() != UndefinedType) \
+        return Object::dynamicCast(proto); \
+      else \
+      { \
+        Object proto = new ClassProto(exec); \
+        exec->interpreter()->globalObject().put(exec, "[[" Class ".prototype]]", proto); \
+        return proto; \
+      } \
+    } \
+  protected: \
+    ClassProto( ExecState *exec ) \
+    : DOMObject( exec->interpreter()->builtinObjectPrototype() ) {} \
+    \
+  public: \
+    Value get(ExecState *exec, const UString &propertyName) const \
+    { \
+      return DOMObjectLookupGetFunction<ClassFunc,ClassProto,DOMObject>(exec, propertyName, &ClassProto##Table, this ); \
+    } \
+    virtual const ClassInfo *classInfo() const { return &info; } \
+    static const ClassInfo info; \
+  }; \
+  const ClassInfo ClassProto::info = { Class, 0, &ClassProto##Table, 0 };
+
+#define IMPLEMENT_PROTOFUNC(ClassFunc) \
+  class ClassFunc : public DOMFunction { \
+  public: \
+    ClassFunc(ExecState *exec, int i, int len) \
+       : DOMFunction( /*proto? */ ), id(i) { \
+       Value protect(this); \
+       put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum); \
+    } \
+    /** You need to implement that one */ \
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List &args); \
+  private: \
+    int id; \
+  };
 
 }; // namespace
 

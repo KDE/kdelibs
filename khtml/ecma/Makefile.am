@@ -30,8 +30,8 @@ noinst_HEADERS = kjs_html.h kjs_dom.h kjs_window.h kjs_navigator.h \
 	kjs_traversal.h kjs_events.h kjs_views.h kjs_debugwin.h
 
 # HTML module
-kjs_html_la_SOURCES = kjs_html.cpp kjs_dom.cpp kjs_window.cpp \
-	kjs_navigator.cpp kjs_text.cpp kjs_binding.cpp kjs_proxy.cpp \
+kjs_html_la_SOURCES = kjs_binding.cpp kjs_dom.cpp kjs_html.cpp kjs_window.cpp \
+	kjs_navigator.cpp kjs_text.cpp kjs_proxy.cpp \
 	kjs_css.cpp kjs_range.cpp kjs_traversal.cpp kjs_events.cpp \
 	kjs_views.cpp kjs_debugwin.cpp
 kjs_html_la_LDFLAGS = -module -avoid-version $(all_libraries)

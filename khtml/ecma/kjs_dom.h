@@ -32,7 +32,7 @@ namespace KJS {
 
   class DOMNode : public DOMObject {
   public:
-    DOMNode(DOM::Node n) : node(n) { }
+    DOMNode(ExecState *exec, DOM::Node n);
     ~DOMNode();
     virtual Boolean toBoolean(ExecState *) const;
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
@@ -48,7 +48,7 @@ namespace KJS {
     virtual String toString(ExecState *exec) const;
     void setListener(ExecState *exec, int eventId, Value func) const;
     Value getListener(int eventId) const;
-    virtual List eventHandlerScope() const;
+    virtual List eventHandlerScope(ExecState *exec) const;
 
     enum { NodeName, NodeValue, NodeType, ParentNode, ParentElement,
            ChildNodes, FirstChild, LastChild, PreviousSibling, NextSibling,
@@ -67,21 +67,9 @@ namespace KJS {
     DOM::Node node;
   };
 
-  // ### Idea: instead of defining functions in each DOMNode, it would be much better
-  // to define a DOMNodePrototype, which as the functions... This would save
-  // a lot of memory !
-  class DOMNodeFunc : public DOMFunction {
-    friend class DOMNode;
-  public:
-    DOMNodeFunc(ExecState *exec, int id, int len);
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List &);
-  private:
-    int id;
-  };
-
   class DOMNodeList : public DOMObject {
   public:
-    DOMNodeList(DOM::NodeList l) : list(l) { }
+    DOMNodeList(ExecState *, DOM::NodeList l) : list(l) { }
     ~DOMNodeList();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all read-only
@@ -105,7 +93,7 @@ namespace KJS {
 
   class DOMDocument : public DOMNode {
   public:
-    DOMDocument(DOM::Document d) : DOMNode(d) { }
+    DOMDocument(ExecState *exec, DOM::Document d) : DOMNode(exec, d) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     Value getValue(ExecState *exec, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -130,7 +118,7 @@ namespace KJS {
 
   class DOMAttr : public DOMNode {
   public:
-    DOMAttr(DOM::Attr a) : DOMNode(a) { }
+    DOMAttr(ExecState *exec, DOM::Attr a) : DOMNode(exec, a) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     Value getValue(ExecState *exec, int token) const;
@@ -142,7 +130,7 @@ namespace KJS {
 
   class DOMElement : public DOMNode {
   public:
-    DOMElement(DOM::Element e) : DOMNode(e) { }
+    DOMElement(ExecState *exec, DOM::Element e) : DOMNode(exec, e) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -166,7 +154,7 @@ namespace KJS {
 
   class DOMDOMImplementation : public DOMObject {
   public:
-    DOMDOMImplementation(DOM::DOMImplementation i) : implementation(i) { }
+    DOMDOMImplementation(ExecState *,DOM::DOMImplementation i) : implementation(i) { }
     ~DOMDOMImplementation();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all functions
@@ -190,7 +178,7 @@ namespace KJS {
 
   class DOMDocumentType : public DOMNode {
   public:
-    DOMDocumentType(DOM::DocumentType dt) : DOMNode(dt) { }
+    DOMDocumentType(ExecState *exec, DOM::DocumentType dt) : DOMNode(exec, dt) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -199,7 +187,7 @@ namespace KJS {
 
   class DOMNamedNodeMap : public DOMObject {
   public:
-    DOMNamedNodeMap(DOM::NamedNodeMap m) : map(m) { }
+    DOMNamedNodeMap(ExecState *, DOM::NamedNodeMap m) : map(m) { }
     ~DOMNamedNodeMap();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all read-only
@@ -224,7 +212,7 @@ namespace KJS {
 
   class DOMProcessingInstruction : public DOMNode {
   public:
-    DOMProcessingInstruction(DOM::ProcessingInstruction pi) : DOMNode(pi) { }
+    DOMProcessingInstruction(ExecState *exec, DOM::ProcessingInstruction pi) : DOMNode(exec, pi) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -233,7 +221,7 @@ namespace KJS {
 
   class DOMNotation : public DOMNode {
   public:
-    DOMNotation(DOM::Notation n) : DOMNode(n) { }
+    DOMNotation(ExecState *exec, DOM::Notation n) : DOMNode(exec, n) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -242,7 +230,7 @@ namespace KJS {
 
   class DOMEntity : public DOMNode {
   public:
-    DOMEntity(DOM::Entity e) : DOMNode(e) { }
+    DOMEntity(ExecState *exec, DOM::Entity e) : DOMNode(exec, e) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -252,7 +240,7 @@ namespace KJS {
   // Prototype object Node
   class NodePrototype : public DOMObject {
   public:
-    NodePrototype() { }
+    NodePrototype() : DOMObject() { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -262,17 +250,17 @@ namespace KJS {
   // Prototype object DOMException
   class DOMExceptionPrototype : public DOMObject {
   public:
-    DOMExceptionPrototype() { }
+    DOMExceptionPrototype() : DOMObject() { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  Value getDOMNode(DOM::Node n);
-  Value getDOMNamedNodeMap(DOM::NamedNodeMap m);
-  Value getDOMNodeList(DOM::NodeList l);
-  Value getDOMDOMImplementation(DOM::DOMImplementation i);
+  Value getDOMNode(ExecState *exec, DOM::Node n);
+  Value getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMap m);
+  Value getDOMNodeList(ExecState *exec, DOM::NodeList l);
+  Value getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementation i);
   Value getNodePrototype(ExecState *exec);
   Value getDOMExceptionPrototype(ExecState *exec);
 

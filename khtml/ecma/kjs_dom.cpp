@@ -48,8 +48,33 @@ QPtrDict<DOMNodeList> nodeLists;
 QPtrDict<DOMDOMImplementation> domImplementations;
 
 // -------------------------------------------------------------------------
+/*
+@begin DOMNodeProtoTable 11
+  insertBefore	DOMNode::InsertBefore	DontDelete|Function 2
+  replaceChild	DOMNode::ReplaceChild	DontDelete|Function 2
+  removeChild	DOMNode::RemoveChild	DontDelete|Function 1
+  appendChild	DOMNode::AppendChild	DontDelete|Function 1
+  hasAttributes	DOMNode::HasAttributes	DontDelete|Function 0
+  hasChildNodes	DOMNode::HasChildNodes	DontDelete|Function 0
+  cloneNode	DOMNode::CloneNode	DontDelete|Function 1
+#normalize // moved here from Element in DOM2 DOMNode::Normalize
+#supports // new for DOM2 - not yet in khtml  DOMNode::Supports
+# from the EventTarget interface
+  addEventListener	DOMNode::AddEventListener	DontDelete|Function 3
+  removeEventListener	DOMNode::RemoveEventListener	DontDelete|Function 3
+  dispatchEvent		DOMNode::DispatchEvent	DontDelete|Function 1
+  contains	DOMNode::Contains		DontDelete|Function 1
+@end
+*/
+IMPLEMENT_PROTOFUNC(DOMNodeProtoFunc)
+IMPLEMENT_PROTOTYPE("DOMNode",DOMNodeProto,DOMNodeProtoFunc)
 
 const ClassInfo DOMNode::info = { "Node", 0, &DOMNodeTable, 0 };
+
+DOMNode::DOMNode(ExecState *exec, DOM::Node n)
+  : DOMObject(DOMNodeProto::self(exec)), node(n)
+{
+}
 
 DOMNode::~DOMNode()
 {
@@ -62,7 +87,7 @@ Boolean DOMNode::toBoolean(ExecState *) const
 }
 
 /*
-@begin DOMNodeTable 60
+@begin DOMNodeTable 53
   nodeName	DOMNode::NodeName	DontDelete|ReadOnly
   nodeValue	DOMNode::NodeValue	DontDelete
   nodeType	DOMNode::NodeType	DontDelete|ReadOnly
@@ -79,21 +104,6 @@ Boolean DOMNode::toBoolean(ExecState *) const
 #prefix		DOMNode::Prefix		DontDelete
 #localName	DOMNode::LocalName	DontDelete|ReadOnly
   ownerDocument	DOMNode::OwnerDocument	DontDelete|ReadOnly
-#
-  insertBefore	DOMNode::InsertBefore	DontDelete|ReadOnly|Function 2
-  replaceChild	DOMNode::ReplaceChild	DontDelete|ReadOnly|Function 2
-  removeChild	DOMNode::RemoveChild	DontDelete|ReadOnly|Function 1
-  appendChild	DOMNode::AppendChild	DontDelete|ReadOnly|Function 1
-  hasAttributes	DOMNode::HasAttributes	DontDelete|ReadOnly|Function 0
-  hasChildNodes	DOMNode::HasChildNodes	DontDelete|ReadOnly|Function 0
-  cloneNode	DOMNode::CloneNode	DontDelete|ReadOnly|Function 1
-#normalize // moved here from Element in DOM2 DOMNode::Normalize
-#supports // new for DOM2 - not yet in khtml  DOMNode::Supports
-# from the EventTarget interface
-  addEventListener	DOMNode::AddEventListener	DontDelete|ReadOnly|Function 3
-  removeEventListener	DOMNode::RemoveEventListener	DontDelete|ReadOnly|Function 3
-  dispatchEvent		DOMNode::DispatchEvent	DontDelete|ReadOnly|Function 1
-  contains	DOMNode::Contains		DontDelete|ReadOnly|Function 1
 #
   onabort	DOMNode::OnAbort		DontDelete
   onblur	DOMNode::OnBlur			DontDelete
@@ -135,10 +145,10 @@ Value DOMNode::tryGet(ExecState *exec, const UString &propertyName) const
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "DOMNode::tryGet " << propertyName.qstring() << endl;
 #endif
-  return DOMObjectLookupGet<DOMNodeFunc, DOMNode, DOMObject>(exec, propertyName, &DOMNodeTable, this);
+  return DOMObjectLookupGetValue<DOMNode, DOMObject>(exec, propertyName, &DOMNodeTable, this);
 }
 
-Value DOMNode::getValue(ExecState *, int token) const
+Value DOMNode::getValue(ExecState *exec, int token) const
 {
   khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
 
@@ -150,21 +160,21 @@ Value DOMNode::getValue(ExecState *, int token) const
   case NodeType:
     return Number((unsigned int)node.nodeType());
   case ParentNode:
-    return getDOMNode(node.parentNode());
+    return getDOMNode(exec,node.parentNode());
   case ParentElement: // IE only apparently
-    return getDOMNode(node.parentNode());
+    return getDOMNode(exec,node.parentNode());
   case ChildNodes:
-    return getDOMNodeList(node.childNodes());
+    return getDOMNodeList(exec,node.childNodes());
   case FirstChild:
-    return getDOMNode(node.firstChild());
+    return getDOMNode(exec,node.firstChild());
   case LastChild:
-    return getDOMNode(node.lastChild());
+    return getDOMNode(exec,node.lastChild());
   case PreviousSibling:
-    return getDOMNode(node.previousSibling());
+    return getDOMNode(exec,node.previousSibling());
   case NextSibling:
-    return getDOMNode(node.nextSibling());
+    return getDOMNode(exec,node.nextSibling());
   case Attributes:
-    return getDOMNamedNodeMap(node.attributes());
+    return getDOMNamedNodeMap(exec,node.attributes());
 // new for DOM2 - not yet in khtml
 //  case NamespaceURI:
 //    return getString(node.namespaceURI());
@@ -173,7 +183,7 @@ Value DOMNode::getValue(ExecState *, int token) const
 //  case LocalName:
 //    return getString(node.localName());
   case OwnerDocument:
-    return getDOMNode(node.ownerDocument());
+    return getDOMNode(exec,node.ownerDocument());
   case OnAbort:
     return getListener(DOM::EventImpl::ABORT_EVENT);
   case OnBlur:
@@ -239,7 +249,7 @@ Value DOMNode::getValue(ExecState *, int token) const
     case OffsetHeight:
       return rend ? static_cast<Value>(Number(rend->height() ) ) : Value(Undefined());
     case OffsetParent:
-      return getDOMNode(node.parentNode()); // not necessarily correct
+      return getDOMNode(exec,node.parentNode()); // not necessarily correct
     case ClientWidth:
       return rend ? static_cast<Value>(Number(rend->contentWidth())) : Value(Undefined());
     case ClientHeight:
@@ -386,19 +396,12 @@ Value DOMNode::getListener(int eventId) const
 	return Null();
 }
 
-List DOMNode::eventHandlerScope() const
+List DOMNode::eventHandlerScope(ExecState *) const
 {
   return List::empty();
 }
 
-DOMNodeFunc::DOMNodeFunc(ExecState *exec, int i, int l)
-  : DOMFunction(), id(i)
-{
-  Value protect(this);
-  put(exec,"length",Number(l),DontDelete|ReadOnly|DontEnum);
-}
-
-Value DOMNodeFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMNodeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
   DOM::Node node = static_cast<DOMNode *>( thisObj.imp() )->toNode();
   Value result;
@@ -410,7 +413,7 @@ Value DOMNodeFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       result = Boolean(node.hasChildNodes());
       break;
     case DOMNode::CloneNode:
-      result = getDOMNode(node.cloneNode(args[0].toBoolean(exec).value()));
+      result = getDOMNode(exec,node.cloneNode(args[0].toBoolean(exec).value()));
       break;
     case DOMNode::AddEventListener: {
 //        JSEventListener *listener = new JSEventListener(args[1]); // will get deleted when the node derefs it
@@ -429,16 +432,16 @@ Value DOMNodeFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       result = Boolean(node.dispatchEvent(toEvent(args[0])));
       break;
     case DOMNode::AppendChild:
-      result = getDOMNode(node.appendChild(toNode(args[0])));
+      result = getDOMNode(exec,node.appendChild(toNode(args[0])));
       break;
     case DOMNode::RemoveChild:
-      result = getDOMNode(node.removeChild(toNode(args[0])));
+      result = getDOMNode(exec,node.removeChild(toNode(args[0])));
       break;
     case DOMNode::InsertBefore:
-      result = getDOMNode(node.insertBefore(toNode(args[0]), toNode(args[1])));
+      result = getDOMNode(exec,node.insertBefore(toNode(args[0]), toNode(args[1])));
       break;
     case DOMNode::ReplaceChild:
-      result = getDOMNode(node.replaceChild(toNode(args[0]), toNode(args[1])));
+      result = getDOMNode(exec,node.replaceChild(toNode(args[0]), toNode(args[1])));
       break;
     case DOMNode::Contains:
     {
@@ -478,7 +481,7 @@ Value DOMNodeList::tryGet(ExecState *exec, const UString &p) const
     bool ok;
     long unsigned int idx = p.toULong(&ok);
     if (ok)
-      result = getDOMNode(list.item(idx));
+      result = getDOMNode(exec,list.item(idx));
     else {
       DOM::HTMLElement e;
       unsigned long l = list.length();
@@ -486,7 +489,7 @@ Value DOMNodeList::tryGet(ExecState *exec, const UString &p) const
 
       for ( unsigned long i = 0; i < l; i++ )
         if ( ( e = list.item( i ) ).id() == p.string() ) {
-          result = getDOMNode( list.item( i ) );
+          result = getDOMNode(exec, list.item( i ) );
           found = true;
           break;
         }
@@ -512,7 +515,7 @@ Value DOMNodeListFunc::tryCall(ExecState *exec, Object &thisObj, const List &arg
   Value result;
 
   if (id == Item)
-    result = getDOMNode(list.item(args[0].toNumber(exec).intValue()));
+    result = getDOMNode(exec,list.item(args[0].toNumber(exec).intValue()));
   return result;
 }
 
@@ -537,7 +540,7 @@ Value DOMAttr::tryGet(ExecState *exec, const UString &propertyName) const
                                                   &DOMAttrTable, this );
 }
 
-Value DOMAttr::getValue(ExecState *, int token) const
+Value DOMAttr::getValue(ExecState *exec, int token) const
 {
   switch (token) {
   case Name:
@@ -547,7 +550,7 @@ Value DOMAttr::getValue(ExecState *, int token) const
   case ValueProperty:
     return getString(static_cast<DOM::Attr>(node).value());
   case OwnerElement: // DOM2
-    return getDOMNode(static_cast<DOM::Attr>(node).ownerElement());
+    return getDOMNode(exec,static_cast<DOM::Attr>(node).ownerElement());
   }
   return Value(); // not reached
 }
@@ -614,17 +617,17 @@ Value DOMDocument::tryGet(ExecState *exec, const UString &propertyName) const
     exec, propertyName, &DOMDocumentTable, this);
 }
 
-Value DOMDocument::getValue(ExecState *, int token) const
+Value DOMDocument::getValue(ExecState *exec, int token) const
 {
   DOM::Document doc = static_cast<DOM::Document>(node);
 
   switch(token) {
   case DocType:
-    return getDOMNode(doc.doctype());
+    return getDOMNode(exec,doc.doctype());
   case Implementation:
-    return getDOMDOMImplementation(doc.implementation());
+    return getDOMDOMImplementation(exec,doc.implementation());
   case DocumentElement:
-    return getDOMNode(doc.documentElement());
+    return getDOMNode(exec,doc.documentElement());
   default:
     kdWarning() << "DOMDocument::getValue unhandled token " << token << endl;
     return Value();
@@ -648,40 +651,40 @@ Value DOMDocFunction::tryCall(ExecState *exec, Object &thisObj, const List &args
 
   switch(id) {
   case DOMDocument::CreateElement:
-    result = getDOMNode(doc.createElement(s));
+    result = getDOMNode(exec,doc.createElement(s));
     break;
   case DOMDocument::CreateDocumentFragment:
-    result = getDOMNode(doc.createDocumentFragment());
+    result = getDOMNode(exec,doc.createDocumentFragment());
     break;
   case DOMDocument::CreateTextNode:
-    result = getDOMNode(doc.createTextNode(s));
+    result = getDOMNode(exec,doc.createTextNode(s));
     break;
   case DOMDocument::CreateComment:
-    result = getDOMNode(doc.createComment(s));
+    result = getDOMNode(exec,doc.createComment(s));
     break;
   case DOMDocument::CreateCDATASection:
-    result = getDOMNode(doc.createCDATASection(s));  /* TODO: okay ? */
+    result = getDOMNode(exec,doc.createCDATASection(s));  /* TODO: okay ? */
     break;
   case DOMDocument::CreateProcessingInstruction:
-    result = getDOMNode(doc.createProcessingInstruction(args[0].toString(exec).value().string(),
+    result = getDOMNode(exec,doc.createProcessingInstruction(args[0].toString(exec).value().string(),
                                                                  args[1].toString(exec).value().string()));
     break;
   case DOMDocument::CreateAttribute:
-    result = getDOMNode(doc.createAttribute(s));
+    result = getDOMNode(exec,doc.createAttribute(s));
     break;
   case DOMDocument::CreateEntityReference:
-    result = getDOMNode(doc.createEntityReference(args[0].toString(exec).value().string()));
+    result = getDOMNode(exec,doc.createEntityReference(args[0].toString(exec).value().string()));
     break;
   case DOMDocument::GetElementsByTagName:
-    result = getDOMNodeList(doc.getElementsByTagName(s));
+    result = getDOMNodeList(exec,doc.getElementsByTagName(s));
     break;
     /* TODO */
 //  case DOMDocument::ImportNode: // new for DOM2 - not yet in khtml
   case DOMDocument::CreateElementNS: // new for DOM2
-    result = getDOMNode(doc.createElementNS(args[0].toString(exec).value().string(),args[1].toString(exec).value().string()));
+    result = getDOMNode(exec,doc.createElementNS(args[0].toString(exec).value().string(),args[1].toString(exec).value().string()));
     break;
   case DOMDocument::CreateAttributeNS: // new for DOM2
-    result = getDOMNode(doc.createAttributeNS(args[0].toString(exec).value().string(),args[1].toString(exec).value().string()));
+    result = getDOMNode(exec,doc.createAttributeNS(args[0].toString(exec).value().string(),args[1].toString(exec).value().string()));
     break;
 /*  case DOMDocument::GetElementsByTagNameNS: // new for DOM2 - not yet in khtml
   case DOMDocument::GetElementById: // new for DOM2 - not yet in khtml*/
@@ -810,16 +813,16 @@ Value DOMElementFunction::tryCall(ExecState *exec, Object &/*thisObj*/, const Li
       result = Undefined();
       break;
     case GetAttributeNode:
-      result = getDOMNode(element.getAttributeNode(args[0].toString(exec).value().string()));
+      result = getDOMNode(exec,element.getAttributeNode(args[0].toString(exec).value().string()));
       break;
     case SetAttributeNode:
-      result = getDOMNode(element.setAttributeNode((new DOMNode(KJS::toNode(args[0])))->toNode()));
+      result = getDOMNode(exec,element.setAttributeNode((new DOMNode(exec,KJS::toNode(args[0])))->toNode()));
       break;
     case RemoveAttributeNode:
-      result = getDOMNode(element.removeAttributeNode((new DOMNode(KJS::toNode(args[0])))->toNode()));
+      result = getDOMNode(exec,element.removeAttributeNode((new DOMNode(exec,KJS::toNode(args[0])))->toNode()));
       break;
     case GetElementsByTagName:
-      result = getDOMNodeList(element.getElementsByTagName(args[0].toString(exec).value().string()));
+      result = getDOMNodeList(exec,element.getElementsByTagName(args[0].toString(exec).value().string()));
       break;
     case Normalize: {  // this is moved to Node in DOM2
         element.normalize();
@@ -897,9 +900,9 @@ Value DOMDocumentType::tryGet(ExecState *exec, const UString &p) const
   if (p == "name")
     return getString(type.name());
   else if (p == "entities")
-    return getDOMNamedNodeMap(type.entities());
+    return getDOMNamedNodeMap(exec,type.entities());
   else if (p == "notations")
-    return getDOMNamedNodeMap(type.notations());
+    return getDOMNamedNodeMap(exec,type.notations());
 //  else if (p == "publicId") // new for DOM2 - not yet in khtml
 //    return getString(type.publicId());
 //  else if (p == "systemId") // new for DOM2 - not yet in khtml
@@ -919,7 +922,7 @@ DOMNamedNodeMap::~DOMNamedNodeMap()
   namedNodeMaps.remove(map.handle());
 }
 
-Value DOMNamedNodeMap::tryGet(ExecState* /*exec*/, const UString &p) const
+Value DOMNamedNodeMap::tryGet(ExecState* exec, const UString &p) const
 {
   Value result;
 
@@ -946,7 +949,7 @@ Value DOMNamedNodeMap::tryGet(ExecState* /*exec*/, const UString &p) const
   bool ok;
   long unsigned int idx = p.toULong(&ok);
   if (ok)
-    result = getDOMNode(map.item(idx));
+    result = getDOMNode(exec,map.item(idx));
 
   return result;
 }
@@ -957,16 +960,16 @@ Value DOMNamedNodeMapFunction::tryCall(ExecState *exec, Object &/*thisObj*/, con
 
   switch(id) {
     case GetNamedItem:
-      result = getDOMNode(map.getNamedItem(args[0].toString(exec).value().string()));
+      result = getDOMNode(exec,map.getNamedItem(args[0].toString(exec).value().string()));
       break;
     case SetNamedItem:
-      result = getDOMNode(map.setNamedItem((new DOMNode(KJS::toNode(args[0])))->toNode()));
+      result = getDOMNode(exec,map.setNamedItem((new DOMNode(exec,KJS::toNode(args[0])))->toNode()));
       break;
     case RemoveNamedItem:
-      result = getDOMNode(map.removeNamedItem(args[0].toString(exec).value().string()));
+      result = getDOMNode(exec,map.removeNamedItem(args[0].toString(exec).value().string()));
       break;
     case Item:
-      result = getDOMNode(map.item(args[0].toNumber(exec).intValue()));
+      result = getDOMNode(exec,map.item(args[0].toNumber(exec).intValue()));
       break;
 /*    case GetNamedItemNS: // new for DOM2 - not yet in khtml
     case SetNamedItemNS: // new for DOM2 - not yet in khtml
@@ -1034,7 +1037,7 @@ Value DOMEntity::tryGet(ExecState *exec, const UString &p) const
 
 // -------------------------------------------------------------------------
 
-Value KJS::getDOMNode(DOM::Node n)
+Value KJS::getDOMNode(ExecState *exec, DOM::Node n)
 {
   DOMNode *ret = 0;
   if (n.isNull())
@@ -1045,53 +1048,54 @@ Value KJS::getDOMNode(DOM::Node n)
   switch (n.nodeType()) {
     case DOM::Node::ELEMENT_NODE:
       if (static_cast<DOM::Element>(n).isHTMLElement())
-        ret = new HTMLElement(static_cast<DOM::HTMLElement>(n));
+        ret = new HTMLElement(exec, static_cast<DOM::HTMLElement>(n));
       else
-        ret = new DOMElement(static_cast<DOM::Element>(n));
+        ret = new DOMElement(exec, static_cast<DOM::Element>(n));
       break;
     case DOM::Node::ATTRIBUTE_NODE:
-      ret = new DOMAttr(static_cast<DOM::Attr>(n));
+      ret = new DOMAttr(exec, static_cast<DOM::Attr>(n));
       break;
     case DOM::Node::TEXT_NODE:
     case DOM::Node::CDATA_SECTION_NODE:
-      ret = new DOMText(static_cast<DOM::Text>(n));
+      ret = new DOMText(exec, static_cast<DOM::Text>(n));
       break;
     case DOM::Node::ENTITY_REFERENCE_NODE:
-      ret = new DOMNode(n);
+      ret = new DOMNode(exec, n);
       break;
     case DOM::Node::ENTITY_NODE:
-      ret = new DOMEntity(static_cast<DOM::Entity>(n));
+      ret = new DOMEntity(exec, static_cast<DOM::Entity>(n));
       break;
     case DOM::Node::PROCESSING_INSTRUCTION_NODE:
-      ret = new DOMProcessingInstruction(static_cast<DOM::ProcessingInstruction>(n));
+      ret = new DOMProcessingInstruction(exec, static_cast<DOM::ProcessingInstruction>(n));
       break;
     case DOM::Node::COMMENT_NODE:
-      ret = new DOMCharacterData(static_cast<DOM::CharacterData>(n));
+      ret = new DOMCharacterData(exec, static_cast<DOM::CharacterData>(n));
       break;
     case DOM::Node::DOCUMENT_NODE:
       if (static_cast<DOM::Document>(n).isHTMLDocument())
-        ret = new HTMLDocument(static_cast<DOM::HTMLDocument>(n));
+        ret = new HTMLDocument(exec, static_cast<DOM::HTMLDocument>(n));
       else
-        ret = new DOMDocument(static_cast<DOM::Document>(n));
+        ret = new DOMDocument(exec, static_cast<DOM::Document>(n));
+      fprintf(stderr, "created new html/dom document\n");
       break;
     case DOM::Node::DOCUMENT_TYPE_NODE:
-      ret = new DOMDocumentType(static_cast<DOM::DocumentType>(n));
+      ret = new DOMDocumentType(exec, static_cast<DOM::DocumentType>(n));
       break;
     case DOM::Node::DOCUMENT_FRAGMENT_NODE:
-      ret = new DOMNode(n);
+      ret = new DOMNode(exec, n);
       break;
     case DOM::Node::NOTATION_NODE:
-      ret = new DOMNotation(static_cast<DOM::Notation>(n));
+      ret = new DOMNotation(exec, static_cast<DOM::Notation>(n));
       break;
     default:
-      ret = new DOMNode(n);
+      ret = new DOMNode(exec, n);
   }
   nodes.insert(n.handle(),ret);
 
   return ret;
 }
 
-Value KJS::getDOMNamedNodeMap(DOM::NamedNodeMap m)
+Value KJS::getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMap m)
 {
   DOMNamedNodeMap *ret;
   if (m.isNull())
@@ -1099,13 +1103,13 @@ Value KJS::getDOMNamedNodeMap(DOM::NamedNodeMap m)
   else if ((ret = namedNodeMaps[m.handle()]))
     return ret;
   else {
-    ret = new DOMNamedNodeMap(m);
+    ret = new DOMNamedNodeMap(exec, m);
     namedNodeMaps.insert(m.handle(),ret);
     return ret;
   }
 }
 
-Value KJS::getDOMNodeList(DOM::NodeList l)
+Value KJS::getDOMNodeList(ExecState *exec, DOM::NodeList l)
 {
   DOMNodeList *ret;
   if (l.isNull())
@@ -1113,13 +1117,13 @@ Value KJS::getDOMNodeList(DOM::NodeList l)
   else if ((ret = nodeLists[l.handle()]))
     return ret;
   else {
-    ret = new DOMNodeList(l);
+    ret = new DOMNodeList(exec, l);
     nodeLists.insert(l.handle(),ret);
     return ret;
   }
 }
 
-Value KJS::getDOMDOMImplementation(DOM::DOMImplementation i)
+Value KJS::getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementation i)
 {
   DOMDOMImplementation *ret;
   if (i.isNull())
@@ -1127,7 +1131,7 @@ Value KJS::getDOMDOMImplementation(DOM::DOMImplementation i)
   else if ((ret = domImplementations[i.handle()]))
     return ret;
   else {
-    ret = new DOMDOMImplementation(i);
+    ret = new DOMDOMImplementation(exec, i);
     domImplementations.insert(i.handle(),ret);
     return ret;
   }

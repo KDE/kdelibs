@@ -131,11 +131,11 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &, const List &args)
   }
   case GetElementById:
     s = v.toString(exec);
-    result = getDOMNode(doc.getElementById(s.value().string()));
+    result = getDOMNode(exec,doc.getElementById(s.value().string()));
     break;
   case GetElementsByName:
     s = v.toString(exec);
-    result = getDOMNodeList(doc.getElementsByName(s.value().string()));
+    result = getDOMNodeList(exec,doc.getElementsByName(s.value().string()));
     break;
   }
 
@@ -149,7 +149,7 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &, const List &args)
       element = coll.item(u);
     else
       element = coll.namedItem(s.string());
-    result = getDOMNode(element);
+    result = getDOMNode(exec,element);
   }
 
   return result;
@@ -160,6 +160,9 @@ const ClassInfo KJS::HTMLDocument::info = { "HTMLDocument",
 
 bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &p, bool recursive) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug() << "KJS::HTMLDocument::hasProperty " << p.qstring() << endl;
+#endif
   if (p == "title" || p == "referrer" || p == "domain" || p == "URL" ||
       p == "body" || p == "location" || p == "images" || p == "applets" ||
       p == "links" || p == "forms" || p == "anchors" || p == "all" ||
@@ -176,7 +179,7 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &p, bool recu
 Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &p) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "KJS::HTMLDocument::get " << p.qstring() << endl;
+  kdDebug() << "KJS::HTMLDocument::tryGet " << p.qstring() << endl;
 #endif
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
   DOM::HTMLBodyElement body = doc.body();
@@ -189,7 +192,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &p) const
   DOM::HTMLElement element = coll.namedItem(p.string());
   if (!element.isNull() &&
       (element.elementId() == ID_IMG || element.elementId() == ID_FORM))
-    return getDOMNode(element);
+    return getDOMNode(exec,element);
 
   if (p == "title")
     return getString(doc.title());
@@ -200,7 +203,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &p) const
   else if (p == "URL")
     return getString(doc.URL());
   else if (p == "body")
-    return getDOMNode(doc.body());
+    return getDOMNode(exec,doc.body());
   else if (p == "location")
     return Window::retrieveWindow(part)->location();
   else if (p == "images")
@@ -262,7 +265,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &p) const
   else {
     kdDebug() << "KJS::HTMLDocument::tryGet " << p.qstring() << " not found, returning element" << endl;
     if(!element.isNull())
-      return getDOMNode(element);
+      return getDOMNode(exec,element);
     return Undefined();
   }
 }
@@ -277,7 +280,7 @@ void KJS::HTMLDocument::tryPut(ExecState *exec, const UString &propertyName, con
   if (propertyName == "title")
     doc.setTitle(value.toString(exec).value().string());
   else if (propertyName == "body")
-    doc.setBody((new DOMNode(KJS::toNode(value)))->toNode());
+    doc.setBody((new DOMNode(exec, KJS::toNode(value)))->toNode());
   else if (propertyName == "cookie")
     doc.setCookie(value.toString(exec).value().string());
   else if (propertyName == "location") {
@@ -361,7 +364,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
     break;
     case ID_ISINDEX: {
       DOM::HTMLIsIndexElement isindex = element;
-      if      (p == "form")            return getDOMNode(isindex.form()); // type HTMLFormElement
+      if      (p == "form")            return getDOMNode(exec,isindex.form()); // type HTMLFormElement
       else if (p == "prompt")          return getString(isindex.prompt());
     }
     break;
@@ -388,7 +391,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
     case ID_FORM: {
       DOM::HTMLFormElement form = element;
       DOM::Node n = form.elements().namedItem(p.string());
-      if(!n.isNull())  return getDOMNode(n);
+      if(!n.isNull())  return getDOMNode(exec,n);
       else if (p == "elements")        return getHTMLCollection(form.elements());
       else if (p == "length")          return Number(form.length());
       else if (p == "name")            return getString(form.name());
@@ -410,7 +413,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       else if (p == "selectedIndex")   return Number(select.selectedIndex());
       else if (p == "value")           return getString(select.value());
       else if (p == "length")          return Number(select.length());
-      else if (p == "form")            return getDOMNode(select.form()); // type HTMLFormElement
+      else if (p == "form")            return getDOMNode(exec,select.form()); // type HTMLFormElement
       else if (p == "options")         return getSelectHTMLCollection(select.options(), select); // type HTMLCollection
       else if (p == "disabled")        return Boolean(select.disabled());
       else if (p == "multiple")        return Boolean(select.multiple());
@@ -426,7 +429,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
 	bool ok;
 	uint u = p.toULong(&ok);
 	if (ok)
-	  return getDOMNode(select.options().item(u)); // not specified by DOM(?) but supported in netscape/IE
+	  return getDOMNode(exec,select.options().item(u)); // not specified by DOM(?) but supported in netscape/IE
       }
     }
     break;
@@ -438,7 +441,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
     break;
     case ID_OPTION: {
       DOM::HTMLOptionElement option = element;
-      if      (p == "form")            return getDOMNode(option.form()); // type HTMLFormElement
+      if      (p == "form")            return getDOMNode(exec,option.form()); // type HTMLFormElement
       else if (p == "defaultSelected") return Boolean(option.defaultSelected());
       else if (p == "text")            return getString(option.text());
       else if (p == "index")           return Number(option.index());
@@ -452,7 +455,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       DOM::HTMLInputElement input = element;
       if      (p == "defaultValue")    return getString(input.defaultValue());
       else if (p == "defaultChecked")  return Boolean(input.defaultChecked());
-      else if (p == "form")            return getDOMNode(input.form()); // type HTMLFormElement
+      else if (p == "form")            return getDOMNode(exec,input.form()); // type HTMLFormElement
       else if (p == "accept")          return getString(input.accept());
       else if (p == "accessKey")       return getString(input.accessKey());
       else if (p == "align")           return getString(input.align());
@@ -493,14 +496,14 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
          for ( unsigned long i = 0; i < c.length(); i++ )
            if ( static_cast<DOM::Element>( c.item( i ) ).getAttribute( "name" ) == input.name() )
              if ( u-- == 0 )
-               return getDOMNode( c.item( i ) );
+               return getDOMNode(exec, c.item( i ) );
       }
     }
     break;
     case ID_TEXTAREA: {
       DOM::HTMLTextAreaElement textarea = element;
       if      (p == "defaultValue")    return getString(textarea.defaultValue());
-      else if (p == "form")            return getDOMNode(textarea.form()); // type HTMLFormElement
+      else if (p == "form")            return getDOMNode(exec,textarea.form()); // type HTMLFormElement
       else if (p == "accessKey")       return getString(textarea.accessKey());
       else if (p == "cols")            return Number(textarea.cols());
       else if (p == "disabled")        return Boolean(textarea.disabled());
@@ -518,7 +521,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
     break;
     case ID_BUTTON: {
       DOM::HTMLButtonElement button = element;
-      if      (p == "form")            return getDOMNode(button.form()); // type HTMLFormElement
+      if      (p == "form")            return getDOMNode(exec,button.form()); // type HTMLFormElement
       else if (p == "accessKey")       return getString(button.accessKey());
       else if (p == "disabled")        return Boolean(button.disabled());
       else if (p == "name")            return getString(button.name());
@@ -529,19 +532,19 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
     break;
     case ID_LABEL: {
       DOM::HTMLLabelElement label = element;
-      if      (p == "form")            return getDOMNode(label.form()); // type HTMLFormElement
+      if      (p == "form")            return getDOMNode(exec,label.form()); // type HTMLFormElement
       else if (p == "accessKey")       return getString(label.accessKey());
       else if (p == "htmlFor")         return getString(label.htmlFor());
     }
     break;
     case ID_FIELDSET: {
       DOM::HTMLFieldSetElement fieldSet = element;
-      if      (p == "form")            return getDOMNode(fieldSet.form()); // type HTMLFormElement
+      if      (p == "form")            return getDOMNode(exec,fieldSet.form()); // type HTMLFormElement
     }
     break;
     case ID_LEGEND: {
       DOM::HTMLLegendElement legend = element;
-      if      (p == "form")            return getDOMNode(legend.form()); // type HTMLFormElement
+      if      (p == "form")            return getDOMNode(exec,legend.form()); // type HTMLFormElement
       else if (p == "accessKey")       return getString(legend.accessKey());
       else if (p == "align")           return getString(legend.align());
     }
@@ -695,7 +698,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
     break;
     case ID_OBJECT: {
       DOM::HTMLObjectElement object = element;
-      if      (p == "form")            return getDOMNode(object.form()); // type HTMLFormElement
+      if      (p == "form")            return getDOMNode(exec,object.form()); // type HTMLFormElement
       else if (p == "code")            return getString(object.code());
       else if (p == "align")           return getString(object.align());
       else if (p == "archive")         return getString(object.archive());
@@ -714,7 +717,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       else if (p == "vspace")          return getString(object.vspace());
       else if (p == "width")           return getString(object.width());
 //      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return getDOMNode(object.contentDocument()); // type Document
+//        return getDOMNode(exec,object.contentDocument()); // type Document
     }
     break;
     case ID_PARAM: {
@@ -786,9 +789,9 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
     break;
     case ID_TABLE: {
       DOM::HTMLTableElement table = element;
-      if      (p == "caption")         return getDOMNode(table.caption()); // type HTMLTableCaptionElement
-      else if (p == "tHead")           return getDOMNode(table.tHead()); // type HTMLTableSectionElement
-      else if (p == "tFoot")           return getDOMNode(table.tFoot()); // type HTMLTableSectionElement
+      if      (p == "caption")         return getDOMNode(exec,table.caption()); // type HTMLTableCaptionElement
+      else if (p == "tHead")           return getDOMNode(exec,table.tHead()); // type HTMLTableSectionElement
+      else if (p == "tFoot")           return getDOMNode(exec,table.tFoot()); // type HTMLTableSectionElement
       else if (p == "rows")            return getHTMLCollection(table.rows()); // type HTMLCollection
       else if (p == "tBodies")         return getHTMLCollection(table.tBodies()); // type HTMLCollection
       else if (p == "align")           return getString(table.align());
@@ -894,7 +897,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       else if (p == "scrolling")       return getString(frameElement.scrolling());
       else if (p == "src")             return getString(frameElement.src());
 //      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return getDOMNode(frameElement.contentDocument()); // type Document
+//        return getDOMNode(exec,frameElement.contentDocument()); // type Document
     }
     break;
     case ID_IFRAME: {
@@ -903,7 +906,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       // ### security check ?
       else if (p == "document") {
         if ( !iFrame.isNull() )
-          return getDOMNode( static_cast<DOM::HTMLIFrameElementImpl*>(iFrame.handle() )->frameDocument() );
+          return getDOMNode(exec, static_cast<DOM::HTMLIFrameElementImpl*>(iFrame.handle() )->frameDocument() );
 
         return Undefined();
       }
@@ -917,7 +920,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       else if (p == "src")             return getString(iFrame.src());
       else if (p == "width")           return getString(iFrame.width());
 //      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return getDOMNode(iFrame.contentDocument); // type Document
+//        return getDOMNode(exec,iFrame.contentDocument); // type Document
     }
     break;
   }
@@ -938,7 +941,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
   else if ( p == "innerText")
       return getString(element.innerText());
   else if ( p == "document")
-      return getDOMNode(element.ownerDocument());
+      return getDOMNode(exec,element.ownerDocument());
   // ### what about style? or is this used instead for DOM2 stylesheets?
   else
     return DOMElement::tryGet(exec, p);
@@ -964,22 +967,22 @@ String KJS::HTMLElement::toString(ExecState *exec) const
     return DOMElement::toString(exec);
 }
 
-List KJS::HTMLElement::eventHandlerScope() const
+List KJS::HTMLElement::eventHandlerScope(ExecState *exec) const
 {
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 
   List scope;
   // The element is the first one, so that it is the most prioritary
-  scope.append(getDOMNode(element));
+  scope.append(getDOMNode(exec,element));
 
   DOM::Node form = element.parentNode();
   while (!form.isNull() && form.elementId() != ID_FORM)
     form = form.parentNode();
   if (!form.isNull())
-    scope.append(getDOMNode(form));
+    scope.append(getDOMNode(exec,form));
 
   // The document is the last one, so that it is the least prioritary
-  scope.append(getDOMNode(element.ownerDocument()));
+  scope.append(getDOMNode(exec,element.ownerDocument()));
   return scope;
 }
 
@@ -1071,25 +1074,25 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &, const List &a
     case ID_TABLE: {
       DOM::HTMLTableElement table = element;
       if (id == CreateTHead)
-        result = getDOMNode(table.createTHead());
+        result = getDOMNode(exec,table.createTHead());
       else if (id == DeleteTHead) {
         table.deleteTHead();
         result = Undefined();
       }
       else if (id == CreateTFoot)
-        result = getDOMNode(table.createTFoot());
+        result = getDOMNode(exec,table.createTFoot());
       else if (id == DeleteTFoot) {
         table.deleteTFoot();
         result = Undefined();
       }
       else if (id == CreateCaption)
-        result = getDOMNode(table.createCaption());
+        result = getDOMNode(exec,table.createCaption());
       else if (id == DeleteCaption) {
         table.deleteCaption();
         result = Undefined();
       }
       else if (id == InsertRow)
-        result = getDOMNode(table.insertRow(args[0].toNumber(exec).intValue()));
+        result = getDOMNode(exec,table.insertRow(args[0].toNumber(exec).intValue()));
       else if (id == DeleteRow) {
         table.deleteRow(args[0].toNumber(exec).intValue());
         result = Undefined();
@@ -1101,7 +1104,7 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &, const List &a
     case ID_TFOOT: {
       DOM::HTMLTableSectionElement tableSection = element;
       if (id == InsertRow)
-        result = getDOMNode(tableSection.insertRow(args[0].toNumber(exec).intValue()));
+        result = getDOMNode(exec,tableSection.insertRow(args[0].toNumber(exec).intValue()));
       else if (id == DeleteRow) {
         tableSection.deleteRow(args[0].toInt32(exec));
         result = Undefined();
@@ -1111,7 +1114,7 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &, const List &a
     case ID_TR: {
       DOM::HTMLTableRowElement tableRow = element;
       if (id == InsertCell)
-        result = getDOMNode(tableRow.insertCell(args[0].toNumber(exec).intValue()));
+        result = getDOMNode(exec,tableRow.insertCell(args[0].toNumber(exec).intValue()));
       else if (id == DeleteCell) {
         tableRow.deleteCell(args[0].toInt32(exec));
         result = Undefined();
@@ -1126,7 +1129,7 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &, const List &a
 void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v, int attr)
 {
   DOM::DOMString str = v.isA(NullType) ? DOM::DOMString(0) : v.toString(exec).value().string();
-  DOM::Node n = (new DOMNode(KJS::toNode(v)))->toNode();
+  DOM::Node n = (new DOMNode(exec, KJS::toNode(v)))->toNode();
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
   kdDebug() << "KJS::HTMLElement::tryPut " << p.qstring() << " id=" << element.elementId() << " str=" << str.string() << endl;
@@ -1485,7 +1488,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       else if (p == "vspace")          { object.setVspace(str); return; }
       else if (p == "width")           { object.setWidth(str); return; }
 //      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return getDOMNode(object.contentDocument()); // type Document
+//        return getDOMNode(exec,object.contentDocument()); // type Document
     }
     break;
     case ID_PARAM: {
@@ -1633,7 +1636,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       else if (p == "scrolling")       { frameElement.setScrolling(str); return; }
       else if (p == "src")             { frameElement.setSrc(str); return; }
 //      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return getDOMNode(frameElement.contentDocument()); // type Document
+//        return getDOMNode(exec,frameElement.contentDocument()); // type Document
     }
     break;
     case ID_IFRAME: {
@@ -1649,7 +1652,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &p, const Value& v,
       else if (p == "src")             { iFrame.setSrc(str); return; }
       else if (p == "width")           { iFrame.setWidth(str); return; }
 //      else if (p == "contentDocument") // new for DOM2 - not yet in khtml
-//        return getDOMNode(iFrame.contentDocument); // type Document
+//        return getDOMNode(exec,iFrame.contentDocument); // type Document
     }
     break;
   }
@@ -1680,7 +1683,7 @@ HTMLCollection::~HTMLCollection()
   htmlCollections.remove(collection.handle());
 }
 
-Value KJS::HTMLCollection::tryGet(ExecState *, const UString &p) const
+Value KJS::HTMLCollection::tryGet(ExecState *exec, const UString &p) const
 {
   Value result;
 
@@ -1717,7 +1720,7 @@ Value KJS::HTMLCollection::tryGet(ExecState *, const UString &p) const
       node = collection.namedItem(p.string());
 
     element = node;
-    result = getDOMNode(element);
+    result = getDOMNode(exec,element);
   }
 
   return result;
@@ -1729,16 +1732,16 @@ Value KJS::HTMLCollectionFunc::tryCall(ExecState *exec, Object &thisObj, const L
 
   switch (id) {
   case Item:
-    result = getDOMNode(coll.item(args[0].toUInt32(exec)));
+    result = getDOMNode(exec,coll.item(args[0].toUInt32(exec)));
     break;
   case Tags:
   {
     DOM::HTMLElement e = coll.base();
-    result = getDOMNodeList( e.getElementsByTagName( args[0].toString(exec).value().string() ) );
+    result = getDOMNodeList(exec, e.getElementsByTagName( args[0].toString(exec).value().string() ) );
     break;
   }
   case NamedItem:
-    result = getDOMNode(coll.namedItem(args[0].toString(exec).value().string()));
+    result = getDOMNode(exec,coll.namedItem(args[0].toString(exec).value().string()));
     break;
   }
 
@@ -1855,7 +1858,7 @@ Object OptionConstructorImp::construct(ExecState *exec, const List &args)
   if (sz > 3)
     opt.setSelected( args[3].toBoolean(exec).value() );
 
-  return Object::dynamicCast(getDOMNode(opt));
+  return Object::dynamicCast(getDOMNode(exec,opt));
 }
 
 ////////////////////// Image Object ////////////////////////

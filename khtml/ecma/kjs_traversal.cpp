@@ -46,7 +46,7 @@ Value DOMNodeIterator::tryGet(ExecState *exec, const UString &p) const
 {
   DOM::NodeIterator ni(nodeIterator);
   if (p == "root")
-    return getDOMNode(ni.root());
+    return getDOMNode(exec,ni.root());
   else if (p == "whatToShow")
     return Number(ni.whatToShow());
   else if (p == "filter")
@@ -63,16 +63,16 @@ Value DOMNodeIterator::tryGet(ExecState *exec, const UString &p) const
     return DOMObject::tryGet(exec, p);
 }
 
-Value DOMNodeIteratorFunc::tryCall(ExecState *, Object &, const List &)
+Value DOMNodeIteratorFunc::tryCall(ExecState *exec, Object &, const List &)
 {
   Value result;
 
   switch (id) {
     case PreviousNode:
-      result = getDOMNode(nodeIterator.previousNode());
+      result = getDOMNode(exec,nodeIterator.previousNode());
       break;
     case NextNode:
-      result = getDOMNode(nodeIterator.nextNode());
+      result = getDOMNode(exec,nodeIterator.nextNode());
       break;
     case Detach:
       nodeIterator.detach();
@@ -216,7 +216,7 @@ Value DOMTreeWalker::tryGet(ExecState *exec, const UString &p) const
 {
   DOM::TreeWalker tw(treeWalker);
   if (p == "root")
-    return getDOMNode(tw.root());
+    return getDOMNode(exec,tw.root());
   if (p == "whatToShow")
     return Number(tw.whatToShow());
   if (p == "filter")
@@ -224,7 +224,7 @@ Value DOMTreeWalker::tryGet(ExecState *exec, const UString &p) const
   if (p == "expandEntityReferences")
     return Boolean(tw.expandEntityReferences());
   if (p == "currentNode")
-    return getDOMNode(tw.currentNode());
+    return getDOMNode(exec,tw.currentNode());
   if (p == "parentNode")
     return new DOMTreewalkerFunc(treeWalker,DOMTreewalkerFunc::ParentNode);
   if (p == "firstChild")
@@ -253,31 +253,31 @@ void DOMTreeWalker::tryPut(ExecState *exec, const UString &propertyName,
     ObjectImp::put(exec, propertyName, value, attr);
 }
 
-Value DOMTreewalkerFunc::tryCall(ExecState *, Object &, const List &)
+Value DOMTreewalkerFunc::tryCall(ExecState *exec, Object &, const List &)
 {
   Value result;
 
   switch (id) {
     case ParentNode:
-      result = getDOMNode(treeWalker.parentNode());
+      result = getDOMNode(exec,treeWalker.parentNode());
       break;
     case FirstChild:
-      result = getDOMNode(treeWalker.firstChild());
+      result = getDOMNode(exec,treeWalker.firstChild());
       break;
     case LastChild:
-      result = getDOMNode(treeWalker.lastChild());
+      result = getDOMNode(exec,treeWalker.lastChild());
       break;
     case PreviousSibling:
-      result = getDOMNode(treeWalker.previousSibling());
+      result = getDOMNode(exec,treeWalker.previousSibling());
       break;
     case NextSibling:
-      result = getDOMNode(treeWalker.nextSibling());
+      result = getDOMNode(exec,treeWalker.nextSibling());
       break;
     case PreviousNode:
-      result = getDOMNode(treeWalker.previousSibling());
+      result = getDOMNode(exec,treeWalker.previousSibling());
       break;
     case NextNode:
-      result = getDOMNode(treeWalker.nextNode());
+      result = getDOMNode(exec,treeWalker.nextNode());
       break;
   };
 
@@ -328,7 +328,7 @@ short JSNodeFilter::acceptNode(const DOM::Node &n)
     Object acceptNodeFunc = Object::dynamicCast( filter.get(exec, "acceptNode") );
     if (acceptNodeFunc.implementsCall()) {
       List args;
-      args.append(getDOMNode(n));
+      args.append(getDOMNode(exec,n));
       Value result = acceptNodeFunc.call(exec,filter,args);
       return result.toNumber(exec).intValue();
     }

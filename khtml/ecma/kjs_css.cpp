@@ -217,7 +217,7 @@ Value DOMStyleSheet::tryGet(ExecState *exec, const UString &p) const
   else if (p == "disabled")
     return Boolean(styleSheet.disabled());
   else if (p == "ownerNode")
-    return getDOMNode(styleSheet.ownerNode());
+    return getDOMNode(exec,styleSheet.ownerNode());
   else if (p == "parentStyleSheet")
     return getDOMStyleSheet(styleSheet.parentStyleSheet());
   else if (p == "href")

@@ -374,7 +374,7 @@ Value Window::get(ExecState *exec, const UString &p) const
   else if (p == "document") {
     if (isSafeScript(exec))
     {
-      Value val = getDOMNode(m_part->document());
+      Value val = getDOMNode(exec,m_part->document());
       // Cache the value. This also prevents the GC from deleting the document
       // while the window exists (important if the users sets properties on it).
       const_cast<Window*>(this)->ObjectImp::put( exec, UString("document"), val, Internal );
@@ -668,7 +668,7 @@ Value Window::get(ExecState *exec, const UString &p) const
     DOM::HTMLCollection coll = m_part->htmlDocument().all();
     DOM::HTMLElement element = coll.namedItem(p.string());
     if (!element.isNull()) {
-        return getDOMNode(element);
+        return getDOMNode(exec,element);
     }
   }
 

@@ -40,18 +40,18 @@ Value DOMRange::tryGet(ExecState *exec, const UString &p) const
   Value r;
 
   if (p == "startContainer")
-    return getDOMNode(range.startContainer());
+    return getDOMNode(exec,range.startContainer());
   else if (p == "startOffset")
     return Number(range.startOffset());
   else if (p == "endContainer")
-    return getDOMNode(range.endContainer());
+    return getDOMNode(exec,range.endContainer());
   else if (p == "endOffset")
     return Number(range.endOffset());
   else if (p == "collapsed")
     return Boolean(range.collapsed());
   else if (p == "commonAncestorContainer") {
     DOM::Range range2 = range; // avoid const error
-    return getDOMNode(range2.commonAncestorContainer());
+    return getDOMNode(exec,range2.commonAncestorContainer());
   }
   else if (p == "setStart")
     return new DOMRangeFunc(range,DOMRangeFunc::SetStart);
@@ -144,10 +144,10 @@ Value DOMRangeFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       result = Undefined();
       break;
     case ExtractContents:
-      result = getDOMNode(range.extractContents());
+      result = getDOMNode(exec,range.extractContents());
       break;
     case CloneContents:
-      result = getDOMNode(range.cloneContents());
+      result = getDOMNode(exec,range.cloneContents());
       break;
     case InsertNode:
       range.insertNode(toNode(args[0]));

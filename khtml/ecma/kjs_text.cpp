@@ -117,7 +117,7 @@ Value DOMTextFunction::tryCall(ExecState *exec, Object & /*thisObj*/, const List
 
   switch(id) {
     case SplitText:
-      result = getDOMNode(text.splitText(args[0].toNumber(exec).intValue()));
+      result = getDOMNode(exec,text.splitText(args[0].toNumber(exec).intValue()));
       break;
     default:
       result = Undefined();

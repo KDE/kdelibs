@@ -30,7 +30,7 @@ namespace KJS {
 
   class DOMCharacterData : public DOMNode {
   public:
-    DOMCharacterData(DOM::CharacterData d) : DOMNode(d) { }
+    DOMCharacterData(ExecState *exec, DOM::CharacterData d) : DOMNode(exec, d) { }
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -52,7 +52,7 @@ namespace KJS {
 
   class DOMText : public DOMCharacterData {
   public:
-    DOMText(DOM::Text t) : DOMCharacterData(t) { }
+    DOMText(ExecState *exec, DOM::Text t) : DOMCharacterData(exec, t) { }
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;

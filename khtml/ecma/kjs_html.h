@@ -49,7 +49,7 @@ namespace KJS {
 
   class HTMLDocument : public DOMDocument {
   public:
-    HTMLDocument(DOM::HTMLDocument d) : DOMDocument(d) { }
+    HTMLDocument(ExecState *exec, DOM::HTMLDocument d) : DOMDocument(exec, d) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     virtual bool hasProperty(ExecState *exec, const UString &propertyName, bool recursive = true) const;
@@ -59,12 +59,12 @@ namespace KJS {
 
   class HTMLElement : public DOMElement {
   public:
-    HTMLElement(DOM::HTMLElement e) : DOMElement(e) { }
+    HTMLElement(ExecState *exec, DOM::HTMLElement e) : DOMElement(exec, e) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     virtual bool hasProperty(ExecState *exec, const UString &propertyName, bool recursive = true) const;
     virtual String toString(ExecState *exec) const;
-    virtual List eventHandlerScope() const;
+    virtual List eventHandlerScope(ExecState *exec) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };

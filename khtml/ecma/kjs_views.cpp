@@ -39,7 +39,7 @@ DOMAbstractView::~DOMAbstractView()
 Value DOMAbstractView::tryGet(ExecState *exec, const UString &p) const
 {
   if (p == "document")
-    return getDOMNode(abstractView.document());
+    return getDOMNode(exec,abstractView.document());
   else if (p == "getComputedStyle")
     return new DOMAbstractViewFunc(abstractView,DOMAbstractViewFunc::GetComputedStyle);
   else
