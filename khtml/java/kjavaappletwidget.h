@@ -6,7 +6,7 @@
 #include <qwidget.h>
 #include <kjavaappletcontext.h>
 #include <kjavaapplet.h>
-#include <kwm.h>
+#include <kwin.h>
 
 class KWinModule;
 
@@ -181,6 +181,9 @@ private:
 
 /*
  * $Log$
+ * Revision 1.7  2000/06/06 22:53:36  gehrmab
+ * Beauty and wellness for the API documentation
+ *
  * Revision 1.6  2000/03/21 03:44:44  rogozin
  *
  * New Java support has been merged.
