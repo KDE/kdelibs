@@ -293,8 +293,8 @@ char ***
 KCmdLineArgs::qt_argv()
 {
    assert(argsList);
-//   if (!argsList)
-//      KApplication::addCmdLineOptions(); // Lazy bastards!
+   if (!argsList)
+      KApplication::addCmdLineOptions(); // Lazy bastards!
 
    KCmdLineArgs *args = parsedArgs("qt");
    assert(args); // No qt options have been added!

@@ -99,7 +99,25 @@ public:
   KApplication(int& argc, char** argv,
               const QCString& rAppName, bool allowStyles=true, bool GUIenabled=true);
 
-  /** Destructor */
+  /**
+   * Constructor. Takes appname and command line arguments from KCmdLineArgs
+   *
+   * @param allowStyles Set to false to disable the loading on plugin based
+   * styles. This is only useful to applications that do not display a GUI
+   * normally. If you do create an application with allowStyles set to false
+   * that normally runs in the background but under special circumstances
+   * displays widgets call enableStyles() before displaying any widgets.
+   *
+   * @param GUIenabled Set to false to disable all GUI stuff. This implies
+   * no styles either.
+   */
+  KApplication(bool allowStyles=true, bool GUIenabled=true);
+
+  /**
+    * Add Qt and KDE command line options to KCmdLineArgs.
+    */
+  static void addCmdLineOptions();
+  
   virtual ~KApplication();
 
   /** Returns the number of command line arguments, i. e. the length
@@ -367,7 +385,9 @@ private:
   QWidget *smw;
 
   void init( bool GUIenabled );
+
   void parseCommandLine( int&, char** ); // search for special KDE arguments
+  void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
 
   virtual void kdisplaySetPalette();
   virtual void kdisplaySetStyle();
@@ -545,6 +565,11 @@ public:
 #endif
 
 // $Log$
+// Revision 1.128  2000/01/03 15:52:25  waba
+// WABA: Allow to make KApplications without a GUI which saves
+// you a wopping 80Kb. Not that we have a lot of such applications
+// around.
+//
 // Revision 1.127  1999/12/21 17:39:06  faure
 // Here comes the new kDebug. Merged into kdebug.h, but keeping support
 // for kdebug(), for compatibility. Also fixed it to work without a KInstance,

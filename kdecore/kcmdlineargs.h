@@ -135,7 +135,7 @@ public:
   const char *getOption(const char *option);
 
   /**
-   *  Read out a boolean option.
+   *  Read out a boolean option / Check presence of string option.
    *  
    *  @param option the name of the option without '-' or '-no'.
    *
@@ -145,6 +145,11 @@ public:
    *          default is true.
    *          If the option is listed as '-<option>' the
    *          default is false.
+   *
+   *          If the option is listed as '-<option> <arg>'
+   *          this function returns true if the option was present
+   *          and false otherwise.
+   *
    */
   bool isSet(const char *option);
 

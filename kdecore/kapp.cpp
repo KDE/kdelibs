@@ -46,6 +46,7 @@
 #include <kiconloader.h>
 #include <kconfig.h>
 #include <ksimpleconfig.h>
+#include <kcmdlineargs.h>
 
 #include <kstyle.h>
 #include <qplatinumstyle.h>
@@ -182,6 +183,21 @@ KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
 
     init(GUIenabled);
     parseCommandLine( argc, argv );
+}
+
+KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
+  QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(), 
+                GUIenabled ), 
+  KInstance(KCmdLineArgs::appname)
+{
+    if (!GUIenabled)
+       allowStyles = false;
+    useStyles = allowStyles;
+    setName(KCmdLineArgs::appname);
+    pAppData = new KApplicationPrivate;
+
+    init(GUIenabled);
+    parseCommandLine( );
 }
 
 int KApplication::xioErrhandler()
@@ -561,6 +577,68 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 
     }
     pArgc = argc;
+}
+
+static const KCmdLineOptions qt_options[] =
+{
+   { "display <displayname>", I18N_NOOP("Use the X-server display 'displayname'"), 0},
+   { "font <fontname>",  I18N_NOOP("Set default font to 'fontname'"), 0},
+   { 0, 0, 0 }
+};
+ 
+static const KCmdLineOptions kde_options[] =
+{
+   { "caption <caption>",	I18N_NOOP("Use 'caption' as name in the titlebar"), 0},
+   { "icon <icon>",  		I18N_NOOP("Use 'icon' as the application icon"), 0},
+   { "miniicon <icon>", 	I18N_NOOP("Use 'icon' as the icon in the titlebar"), 0},
+   { "restore <number>", 	I18N_NOOP("Restore session and use 'number' for something"), 0},
+   { "dcopserver <server address>", I18N_NOOP("Use the DCOP Server specified by 'server address'"), 0},
+   { 0, 0, 0 }
+};  
+
+void
+KApplication::addCmdLineOptions()
+{
+   KCmdLineArgs::addCmdLineOptions(qt_options, "Qt", "qt");
+   KCmdLineArgs::addCmdLineOptions(kde_options, "KDE", "kde");
+}
+
+void KApplication::parseCommandLine( )
+{
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
+
+    if (args->isSet("caption"))
+    {
+       aCaption = args->getOption("caption");       
+    }
+
+    if (args->isSet("miniicon"))
+    {
+       const char *tmp = args->getOption("miniicon");
+       aMiniIconPixmap = KGlobal::iconLoader()->loadIcon( tmp );
+    }
+
+    if (args->isSet("icon"))
+    {
+       const char *tmp = args->getOption("icon");
+       aIconPixmap = KGlobal::iconLoader()->loadIcon( tmp );
+       if (aMiniIconPixmap.isNull())
+          aMiniIconPixmap = KGlobal::iconLoader()->loadIcon( tmp, KIconLoader::Small);
+    }
+
+    if (args->isSet("restore"))
+    {
+       session_restore_level = QString( args->getOption("restore") ).toInt();
+       delete pSessionConfig; // should be 0 anyway
+       // create a new read-only session config for the restortation
+       pSessionConfig = new KConfig( sessionConfigName(), true, false);
+    }
+
+    if (args->isSet("dcopserver"))
+    {
+       dcopClient()->setServerAddress( args->getOption("dcopserver"));
+    }
+    delete args; // Throw away
 }
 
 QPixmap KApplication::icon() const
