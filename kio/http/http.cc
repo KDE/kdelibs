@@ -333,9 +333,9 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
 
   m_bCanResume = true; // most of http servers support resuming ?
 
-  m_bUseProxy = KProtocolManager::self().useProxy();
+  m_bUseProxy = false;
 
-  if ( m_bUseProxy ) {
+  if ( KProtocolManager::self().useProxy() ) {
 
     // Use the appropriate proxy depending on the protocol
     KURL ur (
@@ -343,12 +343,19 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
       ? KProtocolManager::self().ftpProxy()
       : KProtocolManager::self().httpProxy() );
 
-    m_strProxyHost = ur.host();
-    m_strProxyPort = ur.port();
-    m_strProxyUser = ur.user();
-    m_strProxyPass = ur.pass();
+    if (!ur.isEmpty())
+    {
+      kdDebug(7103) << "Using proxy " << ur.url() << endl;
+      // Set "use proxy" to true if we got a non empty proxy URL
+      m_bUseProxy = true;
 
-    m_strNoProxyFor = KProtocolManager::self().noProxyFor();
+      m_strProxyHost = ur.host();
+      m_strProxyPort = ur.port();
+      m_strProxyUser = ur.user();
+      m_strProxyPass = ur.pass();
+
+      m_strNoProxyFor = KProtocolManager::self().noProxyFor();
+    }
   }
 
   m_bUseCache = KProtocolManager::self().useCache();
@@ -660,7 +667,7 @@ bool HTTPProtocol::http_open()
 
     // do we still want a proxy after all that?
     if( m_state.do_proxy ) {
-      kdDebug(7103) << "http_open 0" << endl;
+      kdDebug(7103) << "http_open " << m_strProxyHost << " " << m_strProxyPort << endl;
       // yep... open up a connection to the proxy instead of our host
       if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost, m_strProxyPort)) {
         error(ERR_UNKNOWN_PROXY_HOST, m_strProxyHost);
