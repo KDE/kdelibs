@@ -22,63 +22,7 @@
 #define KNOTIFY_H
 
 #include <qobject.h>
-#include <qdict.h>
 #include <dcopobject.h>
-
-class KNotifyEntryPrivate;
-class KNotify;
-
-/**
-   A KNotifyEntry describes a complete notification event. Such an event is uniqely
-   identified by its notification name.
-   
-  notification 
-   the notific */
-class KNotifyEntry
-{
-public:
-  /// An enum of all notification presentations. Use an OR operator (|) if you want
-  /// multiple presentation.
-  enum Presentation { None=0, Sound=1, Messagebox=2, Logwindow=4, Logfile=8, Stderr=16 };
-
-  /** Constructs a notification with a certain presentation, a notification message
-      and a sound file. Please note that the sound will only be played, when
-      you specify Sound as part of presentation. */
-  KNotifyEntry(unsigned int presentation, QString message, QCString soundFilename );
-  /** Constructs a notification without sound presentation. Differs from the previous
-      constructor only in the parameters it accepts. Specifying Sound as part of presentation
-      is ignored */
-  KNotifyEntry(unsigned int presentation, QString message);
-  /** Destructor */
-  ~KNotifyEntry();
-
-  void setSound(bool YesNo, QCString soundFilename);
-  void setMessagebox(bool YesNo);
-  void setLogfile(bool YesNo);
-  void setLogwindow(bool YesNo);
-  void setMessage(QString& message);
-  void setStderr(bool YesNo);
-
-  bool sound();
-  bool messagebox();
-  bool logfile();
-  bool logwindow();
-  bool stderr();
-
-
-private:
-  bool i_b_sound;
-  bool i_b_messagebox;
-  bool i_b_logfile;
-  bool i_b_logwindow;
-  bool i_b_stderr;
-
-  // For furter updates
-  KNotifyEntryPrivate *p;
-
-  friend KNotify;
-};
-
 
 class KNotify : public QObject, DCOPObject
 {
@@ -86,24 +30,21 @@ Q_OBJECT
 K_DCOP
 
 public:
-  KNotify();
-  ~KNotify();
+	KNotify();
+//	~KNotify();
 
-  /// Registers a new notification. After that it can be used by clients by using the event name "name"
-  bool registerNotification(QString name, KNotifyEntry *notificationEntry);
-
-  // !!! TODO  bool setLogfile(QCString& logfile);
+	enum Presentation { None=0, Sound=1, Messagebox=2, Logwindow=4, Logfile=8, Stderr=16};
+  
+	// !!! TODO  bool setLogfile(QCString& logfile);
 
 protected:
-
-  void processNotification(QString &val_s_event);
-  bool notifyBySound( KNotifyEntry *ptr_event);
-  bool notifyByMessagebox( KNotifyEntry *ptr_event);
-  bool notifyByLogwindow( KNotifyEntry *ptr_event);
-  bool notifyByLogfile( KNotifyEntry *ptr_event);
-  bool notifyByStderr( KNotifyEntry *ptr_event);
-
-  QDict<KNotifyEntry> *I_events;
+	void processNotification(const QString &event, const QString &fromApp, const QString &text);
+	
+	bool notifyBySound(const QString &sound);
+	bool notifyByMessagebox(const QString &text);
+	bool notifyByLogwindow(const QString &text);
+	bool notifyByLogfile(const QString &text);
+	bool notifyByStderr(const QString &text);
 };
 
 
