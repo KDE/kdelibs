@@ -396,6 +396,7 @@ private:
 
   int m_initWidth;
   int m_initHeight;
+  int m_idCancelItem;
   bool m_bShowList;
   bool m_showStatusBar;
   bool m_showToolBar;
