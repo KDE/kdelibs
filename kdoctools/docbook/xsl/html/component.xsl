@@ -31,6 +31,7 @@
   <xsl:param name="node" select="."/>
   <xsl:variable name="subtitle"
                 select="($node/docinfo/subtitle
+                        |$node/info/subtitle
                         |$node/prefaceinfo/subtitle
                         |$node/chapterinfo/subtitle
                         |$node/appendixinfo/subtitle
@@ -54,6 +55,7 @@
 
 <xsl:template match="dedication" mode="dedication">
   <div class="{name(.)}">
+    <xsl:call-template name="language.attribute"/>
     <xsl:call-template name="dedication.titlepage"/>
     <xsl:apply-templates/>
     <xsl:call-template name="process.footnotes"/>
@@ -81,6 +83,13 @@
 
 <xsl:template match="colophon">
   <div class="{name(.)}">
+    <xsl:call-template name="language.attribute"/>
+    <xsl:if test="$generate.id.attributes != 0">
+      <xsl:attribute name="id">
+        <xsl:call-template name="object.id"/>
+      </xsl:attribute>
+    </xsl:if>
+
     <xsl:call-template name="component.separator"/>
     <xsl:call-template name="component.title"/>
     <xsl:call-template name="component.subtitle"/>
@@ -96,10 +105,27 @@
 
 <xsl:template match="preface">
   <div class="{name(.)}">
+    <xsl:call-template name="language.attribute"/>
+    <xsl:if test="$generate.id.attributes != 0">
+      <xsl:attribute name="id">
+        <xsl:call-template name="object.id"/>
+      </xsl:attribute>
+    </xsl:if>
+
     <xsl:call-template name="component.separator"/>
     <xsl:call-template name="preface.titlepage"/>
-    <xsl:if test="$generate.preface.toc != '0'">
-      <xsl:call-template name="component.toc"/>
+
+    <xsl:variable name="toc.params">
+      <xsl:call-template name="find.path.params">
+        <xsl:with-param name="table" select="normalize-space($generate.toc)"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:if test="contains($toc.params, 'toc')">
+      <xsl:call-template name="component.toc">
+        <xsl:with-param name="toc.title.p" select="contains($toc.params, 'title')"/>
+      </xsl:call-template>
+      <xsl:call-template name="component.toc.separator"/>
     </xsl:if>
     <xsl:apply-templates/>
     <xsl:call-template name="process.footnotes"/>
@@ -114,6 +140,7 @@
 
 <xsl:template match="preface/subtitle
                      |preface/prefaceinfo/subtitle
+                     |preface/info/subtitle
                      |preface/docinfo/subtitle"
               mode="titlepage.mode" priority="2">
   <xsl:call-template name="component.subtitle">
@@ -130,10 +157,26 @@
 
 <xsl:template match="chapter">
   <div class="{name(.)}">
+    <xsl:call-template name="language.attribute"/>
+    <xsl:if test="$generate.id.attributes != 0">
+      <xsl:attribute name="id">
+        <xsl:call-template name="object.id"/>
+      </xsl:attribute>
+    </xsl:if>
+
     <xsl:call-template name="component.separator"/>
     <xsl:call-template name="chapter.titlepage"/>
-    <xsl:if test="$generate.chapter.toc != '0'">
-      <xsl:call-template name="component.toc"/>
+
+    <xsl:variable name="toc.params">
+      <xsl:call-template name="find.path.params">
+        <xsl:with-param name="table" select="normalize-space($generate.toc)"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <xsl:if test="contains($toc.params, 'toc')">
+      <xsl:call-template name="component.toc">
+        <xsl:with-param name="toc.title.p" select="contains($toc.params, 'title')"/>
+      </xsl:call-template>
+      <xsl:call-template name="component.toc.separator"/>
     </xsl:if>
     <xsl:apply-templates/>
     <xsl:call-template name="process.footnotes"/>
@@ -148,6 +191,7 @@
 
 <xsl:template match="chapter/subtitle
                      |chapter/chapterinfo/subtitle
+                     |chapter/info/subtitle
                      |chapter/docinfo/subtitle"
               mode="titlepage.mode" priority="2">
   <xsl:call-template name="component.subtitle">
@@ -163,27 +207,51 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="appendix">
+  <xsl:variable name="ischunk">
+    <xsl:call-template name="chunk"/>
+  </xsl:variable>
+
   <div class="{name(.)}">
-    <xsl:call-template name="component.separator"/>
-    <xsl:call-template name="appendix.titlepage"/>
-    <xsl:if test="$generate.appendix.toc != '0'">
-      <xsl:call-template name="component.toc"/>
+    <xsl:call-template name="language.attribute"/>
+    <xsl:if test="$generate.id.attributes != 0">
+      <xsl:attribute name="id">
+        <xsl:call-template name="object.id"/>
+      </xsl:attribute>
     </xsl:if>
-    <xsl:apply-templates/>
-    <xsl:call-template name="process.footnotes"/>
-  </div>
-</xsl:template>
 
-<xsl:template match="article/appendix">
-  <div class="{name(.)}">
-    <xsl:call-template name="section.heading">
-      <xsl:with-param name="level" select="2"/>
-      <xsl:with-param name="title">
-        <xsl:apply-templates select="." mode="object.title.markup"/>
-      </xsl:with-param>
-    </xsl:call-template>
+    <xsl:choose>
+      <xsl:when test="parent::article and $ischunk = 0">
+        <xsl:call-template name="section.heading">
+          <xsl:with-param name="level" select="1"/>
+          <xsl:with-param name="title">
+            <xsl:apply-templates select="." mode="object.title.markup"/>
+          </xsl:with-param>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="component.separator"/>
+        <xsl:call-template name="appendix.titlepage"/>
+      </xsl:otherwise>
+    </xsl:choose>
+
+    <xsl:variable name="toc.params">
+      <xsl:call-template name="find.path.params">
+        <xsl:with-param name="table" select="normalize-space($generate.toc)"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:if test="contains($toc.params, 'toc')">
+      <xsl:call-template name="component.toc">
+        <xsl:with-param name="toc.title.p" select="contains($toc.params, 'title')"/>
+      </xsl:call-template>
+      <xsl:call-template name="component.toc.separator"/>
+    </xsl:if>
 
     <xsl:apply-templates/>
+
+    <xsl:if test="not(parent::article) or $ischunk != 0">
+      <xsl:call-template name="process.footnotes"/>
+    </xsl:if>
   </div>
 </xsl:template>
 
@@ -195,6 +263,7 @@
 
 <xsl:template match="appendix/subtitle
                      |appendix/appendixinfo/subtitle
+                     |appendix/info/subtitle
                      |appendix/docinfo/subtitle"
               mode="titlepage.mode" priority="2">
   <xsl:call-template name="component.subtitle">
@@ -279,10 +348,30 @@
 
 <xsl:template match="article">
   <div class="{name(.)}">
-    <xsl:call-template name="article.titlepage"/>
-    <xsl:if test="$generate.article.toc != '0'">
-      <xsl:call-template name="component.toc"/>
+    <xsl:call-template name="language.attribute"/>
+    <xsl:if test="$generate.id.attributes != 0">
+      <xsl:attribute name="id">
+        <xsl:call-template name="object.id"/>
+      </xsl:attribute>
     </xsl:if>
+
+    <xsl:call-template name="article.titlepage"/>
+
+    <xsl:variable name="toc.params">
+      <xsl:call-template name="find.path.params">
+        <xsl:with-param name="table" select="normalize-space($generate.toc)"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:call-template name="make.lots">
+      <xsl:with-param name="toc.params" select="$toc.params"/>
+      <xsl:with-param name="toc">
+        <xsl:call-template name="component.toc">
+          <xsl:with-param name="toc.title.p" select="contains($toc.params, 'title')"/>
+        </xsl:call-template>
+      </xsl:with-param>
+    </xsl:call-template>
+
     <xsl:apply-templates/>
     <xsl:call-template name="process.footnotes"/>
   </div>
@@ -296,6 +385,7 @@
 
 <xsl:template match="article/subtitle
                      |article/articleinfo/subtitle
+                     |article/info/subtitle
                      |article/artheader/subtitle"
               mode="titlepage.mode" priority="2">
   <xsl:call-template name="component.subtitle">

@@ -5,17 +5,19 @@
 </refmeta>
 <refnamediv>
 <refname>glossterm.auto.link</refname>
-<refpurpose>Generate links from glossterm to glossentry automatically?</refpurpose>
+<refpurpose>Generate links from glossterm to glossentry automaticaly?</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
-<src:fragment id='glossterm.auto.link.frag'><xsl:param name="glossterm.auto.link" select="'0'"/></src:fragment>
+<src:fragment id='glossterm.auto.link.frag'>
+<xsl:param name="glossterm.auto.link" select="0"/>
+</src:fragment>
 </refsynopsisdiv>
 
 <refsect1><title>Description</title>
 
 <para>If true, a link will be automatically created from glossterm 
-to glossentry for that glossary term. This is useful when your
+to glossentry for that glossary term. This is usefull when your
 glossterm names are consistent and you don't want to add links
 manually.</para>
 <para>If there is <sgmltag class="attribute">linkend</sgmltag> on

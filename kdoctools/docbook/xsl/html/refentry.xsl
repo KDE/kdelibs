@@ -16,11 +16,19 @@
 
 <xsl:template match="reference">
   <div class="{name(.)}">
+    <xsl:call-template name="language.attribute"/>
     <xsl:call-template name="anchor">
       <xsl:with-param name="conditional" select="0"/>
     </xsl:call-template>
     <xsl:call-template name="reference.titlepage"/>
-    <xsl:if test="not(partintro) and $generate.reference.toc != '0'">
+
+    <xsl:variable name="toc.params">
+      <xsl:call-template name="find.path.params">
+        <xsl:with-param name="table" select="normalize-space($generate.toc)"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:if test="not(partintro) and contains($toc.params, 'toc')">
       <xsl:call-template name="division.toc"/>
     </xsl:if>
     <xsl:apply-templates/>
@@ -63,6 +71,7 @@
 
 <xsl:template match="refentry">
   <div class="{name(.)}">
+    <xsl:call-template name="language.attribute"/>
     <xsl:if test="$refentry.separator != 0 and preceding-sibling::refentry">
       <div class="refentry.separator">
         <hr/>
@@ -188,8 +197,34 @@
 <xsl:template match="refsynopsisdiv/title">
 </xsl:template>
 
-<xsl:template match="refsect1|refsect2|refsect3">
-  <xsl:call-template name="block.object"/>
+<xsl:template match="refsynopsisdiv/title" mode="titlepage.mode">
+  <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="refsection|refsect1|refsect2|refsect3">
+  <div class="{name(.)}">
+    <xsl:call-template name="language.attribute"/>
+    <xsl:call-template name="anchor">
+      <xsl:with-param name="conditional" select="0"/>
+    </xsl:call-template>
+    <xsl:apply-templates/>
+  </div>
+</xsl:template>
+
+<xsl:template match="refsection/title">
+  <!-- the ID is output in the block.object call for refsect1 -->
+  <xsl:variable name="level" select="count(ancestor-or-self::refsection)"/>
+  <xsl:variable name="hlevel">
+    <xsl:choose>
+      <xsl:when test="$level &gt; 5">6</xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$level+1"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:element name="h{$hlevel}">
+    <xsl:apply-templates/>
+  </xsl:element>
 </xsl:template>
 
 <xsl:template match="refsect1/title">

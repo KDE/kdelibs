@@ -15,28 +15,42 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="itemizedlist">
-  <xsl:variable name="itemsymbol">
-    <xsl:call-template name="list.itemsymbol"/>
-  </xsl:variable>
-
   <div class="{name(.)}">
     <xsl:call-template name="anchor"/>
     <xsl:if test="title">
-      <xsl:apply-templates select="title"/>
+      <xsl:call-template name="formal.object.heading"/>
     </xsl:if>
-    <ul type="{$itemsymbol}">
+
+    <!-- Preserve order of PIs and comments -->
+    <xsl:apply-templates 
+        select="*[not(self::listitem
+                  or self::title
+                  or self::titleabbrev)]
+                |comment()[not(preceding-sibling::listitem)]
+                |processing-instruction()[not(preceding-sibling::listitem)]"/>
+
+    <ul>
+      <xsl:if test="$css.decoration != 0">
+        <xsl:attribute name="type">
+          <xsl:call-template name="list.itemsymbol"/>
+        </xsl:attribute>
+      </xsl:if>
+
       <xsl:if test="@spacing='compact'">
         <xsl:attribute name="compact">
           <xsl:value-of select="@spacing"/>
         </xsl:attribute>
       </xsl:if>
-      <xsl:apply-templates select="listitem"/>
+      <xsl:apply-templates 
+            select="listitem
+                    |comment()[preceding-sibling::listitem]
+                    |processing-instruction()[preceding-sibling::listitem]"/>
     </ul>
   </div>
 </xsl:template>
 
 <xsl:template match="itemizedlist/title">
-  <p><b><xsl:apply-templates/></b></p>
+  <!-- nop -->
 </xsl:template>
 
 <xsl:template match="itemizedlist/listitem">
@@ -46,20 +60,21 @@
   <xsl:variable name="usemark">
     <xsl:choose>
       <xsl:when test="$override != ''">
-	<xsl:value-of select="$override"/>
+        <xsl:value-of select="$override"/>
       </xsl:when>
       <xsl:otherwise>
-	<xsl:value-of select="$mark"/>
+        <xsl:value-of select="$mark"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
 
   <xsl:variable name="cssmark">
     <xsl:choose>
+      <xsl:when test="$usemark = 'opencircle'">circle</xsl:when>
       <xsl:when test="$usemark = 'bullet'">disc</xsl:when>
       <xsl:when test="$usemark = 'box'">square</xsl:when>
       <xsl:otherwise>
-	<xsl:value-of select="$usemark"/>
+        <xsl:value-of select="$usemark"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
@@ -67,8 +82,8 @@
   <li>
     <xsl:if test="$css.decoration = '1' and $cssmark != ''">
       <xsl:attribute name="style">
-	<xsl:text>list-style-type: </xsl:text>
-	<xsl:value-of select="$cssmark"/>
+        <xsl:text>list-style-type: </xsl:text>
+        <xsl:value-of select="$cssmark"/>
       </xsl:attribute>
     </xsl:if>
 
@@ -81,46 +96,34 @@
     </xsl:if>
 
     <xsl:choose>
-      <xsl:when test="$show.revisionflag and @revisionflag">
-	<div class="{@revisionflag}">
-	  <xsl:apply-templates/>
-	</div>
+      <xsl:when test="$show.revisionflag != 0 and @revisionflag">
+        <div class="{@revisionflag}">
+          <xsl:apply-templates/>
+        </div>
       </xsl:when>
       <xsl:otherwise>
-	<xsl:apply-templates/>
+        <xsl:apply-templates/>
       </xsl:otherwise>
     </xsl:choose>
   </li>
 </xsl:template>
 
-<xsl:template name="orderedlist-starting-number">
-  <xsl:param name="list" select="."/>
-  <xsl:choose>
-    <xsl:when test="$list/@continuation != 'continues'">1</xsl:when>
-    <xsl:otherwise>
-      <xsl:variable name="prevlist"
-                    select="$list/preceding::orderedlist[1]"/>
-      <xsl:choose>
-        <xsl:when test="count($prevlist) = 0">2</xsl:when>
-        <xsl:otherwise>
-          <xsl:variable name="prevlength" select="count($prevlist/listitem)"/>
-          <xsl:variable name="prevstart">
-            <xsl:call-template name="orderedlist-starting-number">
-              <xsl:with-param name="list" select="$prevlist"/>
-            </xsl:call-template>
-          </xsl:variable>
-          <xsl:value-of select="$prevstart + $prevlength"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:otherwise>
-  </xsl:choose>
-</xsl:template>
-
 <xsl:template match="orderedlist">
+  <xsl:variable name="pi-start">
+    <xsl:call-template name="dbhtml-attribute">
+      <xsl:with-param name="pis"
+                      select="processing-instruction('dbhtml')"/>
+      <xsl:with-param name="attribute" select="'start'"/>
+    </xsl:call-template>
+  </xsl:variable>
+
   <xsl:variable name="start">
     <xsl:choose>
       <xsl:when test="@continuation='continues'">
         <xsl:call-template name="orderedlist-starting-number"/>
+      </xsl:when>
+      <xsl:when test="$pi-start != ''">
+        <xsl:value-of select="$pi-start"/>
       </xsl:when>
       <xsl:otherwise>1</xsl:otherwise>
     </xsl:choose>
@@ -150,32 +153,45 @@
 
   <div class="{name(.)}">
     <xsl:call-template name="anchor"/>
+
     <xsl:if test="title">
-      <xsl:apply-templates select="title"/>
+      <xsl:call-template name="formal.object.heading"/>
     </xsl:if>
+
+    <!-- Preserve order of PIs and comments -->
+    <xsl:apply-templates 
+        select="*[not(self::listitem
+                  or self::title
+                  or self::titleabbrev)]
+                |comment()[not(preceding-sibling::listitem)]
+                |processing-instruction()[not(preceding-sibling::listitem)]"/>
+
     <ol>
-    <xsl:if test="$start != '1'">
-      <xsl:attribute name="start">
-        <xsl:value-of select="$start"/>
-      </xsl:attribute>
-    </xsl:if>
-    <xsl:if test="$numeration != ''">
-      <xsl:attribute name="type">
-	<xsl:value-of select="$type"/>
-      </xsl:attribute>
-    </xsl:if>
-    <xsl:if test="@spacing='compact'">
-      <xsl:attribute name="compact">
-	<xsl:value-of select="compact"/>
-      </xsl:attribute>
-    </xsl:if>
-    <xsl:apply-templates select="listitem"/>
+      <xsl:if test="$start != '1'">
+        <xsl:attribute name="start">
+          <xsl:value-of select="$start"/>
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:if test="$numeration != ''">
+        <xsl:attribute name="type">
+          <xsl:value-of select="$type"/>
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:if test="@spacing='compact'">
+        <xsl:attribute name="compact">
+          <xsl:value-of select="@spacing"/>
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:apply-templates 
+            select="listitem
+                    |comment()[preceding-sibling::listitem]
+                    |processing-instruction()[preceding-sibling::listitem]"/>
     </ol>
   </div>
 </xsl:template>
 
 <xsl:template match="orderedlist/title">
-  <p><b><xsl:apply-templates/></b></p>
+  <!-- nop -->
 </xsl:template>
 
 <xsl:template match="orderedlist/listitem">
@@ -195,13 +211,13 @@
     </xsl:if>
 
     <xsl:choose>
-      <xsl:when test="$show.revisionflag and @revisionflag">
-	<div class="{@revisionflag}">
-	  <xsl:apply-templates/>
-	</div>
+      <xsl:when test="$show.revisionflag != 0 and @revisionflag">
+        <div class="{@revisionflag}">
+          <xsl:apply-templates/>
+        </div>
       </xsl:when>
       <xsl:otherwise>
-	<xsl:apply-templates/>
+        <xsl:apply-templates/>
       </xsl:otherwise>
     </xsl:choose>
   </li>
@@ -257,11 +273,18 @@
   <div class="{name(.)}">
     <xsl:call-template name="anchor"/>
     <xsl:if test="title">
-      <xsl:apply-templates select="title"/>
+      <xsl:call-template name="formal.object.heading"/>
     </xsl:if>
 
     <xsl:choose>
       <xsl:when test="$presentation = 'table'">
+        <!-- Preserve order of PIs and comments -->
+        <xsl:apply-templates 
+          select="*[not(self::varlistentry
+                    or self::title
+                    or self::titleabbrev)]
+                  |comment()[not(preceding-sibling::varlistentry)]
+                  |processing-instruction()[not(preceding-sibling::varlistentry)]"/>
         <table border="0">
           <xsl:if test="$list-width != ''">
             <xsl:attribute name="width">
@@ -273,7 +296,7 @@
               <xsl:value-of select="$table-summary"/>
             </xsl:attribute>
           </xsl:if>
-          <col align="left">
+          <col align="left" valign="top">
             <xsl:if test="$term-width != ''">
               <xsl:attribute name="width">
                 <xsl:value-of select="$term-width"/>
@@ -281,13 +304,26 @@
             </xsl:if>
           </col>
           <tbody>
-            <xsl:apply-templates select="varlistentry" mode="varlist-table"/>
+            <xsl:apply-templates mode="varlist-table"
+              select="varlistentry
+                      |comment()[preceding-sibling::varlistentry]
+                      |processing-instruction()[preceding-sibling::varlistentry]"/>
           </tbody>
         </table>
       </xsl:when>
       <xsl:otherwise>
+        <!-- Preserve order of PIs and comments -->
+        <xsl:apply-templates 
+          select="*[not(self::varlistentry
+                    or self::title
+                    or self::titleabbrev)]
+                  |comment()[not(preceding-sibling::varlistentry)]
+                  |processing-instruction()[not(preceding-sibling::varlistentry)]"/>
         <dl>
-          <xsl:apply-templates select="varlistentry"/>
+          <xsl:apply-templates 
+              select="varlistentry
+                      |comment()[preceding-sibling::varlistentry]
+                      |processing-instruction()[preceding-sibling::varlistentry]"/>
         </dl>
       </xsl:otherwise>
     </xsl:choose>
@@ -295,7 +331,15 @@
 </xsl:template>
 
 <xsl:template match="variablelist/title">
-  <p><b><xsl:apply-templates/></b></p>
+  <!-- nop -->
+</xsl:template>
+
+<xsl:template match="itemizedlist/titleabbrev|orderedlist/titleabbrev">
+  <!--nop-->
+</xsl:template>
+
+<xsl:template match="variablelist/titleabbrev">
+  <!--nop-->
 </xsl:template>
 
 <xsl:template match="listitem" mode="xref">
@@ -314,6 +358,12 @@
     </xsl:when>
     <xsl:otherwise>
       <p>
+        <xsl:if test="@role and $para.propagates.style != 0">
+          <xsl:attribute name="class">
+            <xsl:value-of select="@role"/>
+          </xsl:attribute>
+        </xsl:if>
+
         <xsl:call-template name="anchor"/>
         <xsl:apply-templates/>
       </p>
@@ -348,6 +398,12 @@
     </xsl:call-template>
   </xsl:variable>
   <tr>
+    <xsl:call-template name="tr.attributes">
+      <xsl:with-param name="rownum">
+        <xsl:number from="variablelist" count="varlistentry"/>
+      </xsl:with-param>
+    </xsl:call-template>
+
     <td>
       <xsl:call-template name="anchor"/>
       <xsl:choose>
@@ -400,9 +456,9 @@
 
 <xsl:template match="varlistentry/listitem">
   <xsl:choose>
-    <xsl:when test="$show.revisionflag and @revisionflag">
+    <xsl:when test="$show.revisionflag != 0 and @revisionflag">
       <div class="{@revisionflag}">
-	<xsl:apply-templates/>
+        <xsl:apply-templates/>
       </div>
     </xsl:when>
     <xsl:otherwise>
@@ -419,12 +475,12 @@
   <table class="simplelist" border="0" summary="Simple list">
     <xsl:call-template name="simplelist.vert">
       <xsl:with-param name="cols">
-	<xsl:choose>
-	  <xsl:when test="@columns">
-	    <xsl:value-of select="@columns"/>
-	  </xsl:when>
-	  <xsl:otherwise>1</xsl:otherwise>
-	</xsl:choose>
+        <xsl:choose>
+          <xsl:when test="@columns">
+            <xsl:value-of select="@columns"/>
+          </xsl:when>
+          <xsl:otherwise>1</xsl:otherwise>
+        </xsl:choose>
       </xsl:with-param>
     </xsl:call-template>
   </table>
@@ -476,6 +532,11 @@
 
   <xsl:if test="$cell &lt;= count($members)">
     <tr>
+      <xsl:call-template name="tr.attributes">
+        <xsl:with-param name="row" select="$members[1]"/>
+        <xsl:with-param name="rownum" select="(($cell - 1) div $cols) + 1"/>
+      </xsl:call-template>
+
       <xsl:call-template name="simplelist.horiz.row">
         <xsl:with-param name="cols" select="$cols"/>
         <xsl:with-param name="cell" select="$cell"/>
@@ -503,14 +564,7 @@
           <xsl:apply-templates select="$members[position()=$cell]"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:choose>
-            <xsl:when test="$using.chunker != 0">
-              <xsl:text>&#160;</xsl:text>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:text disable-output-escaping="yes">&amp;nbsp;</xsl:text>
-            </xsl:otherwise>
-          </xsl:choose>
+          <xsl:text>&#160;</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
     </td>
@@ -532,11 +586,16 @@
 
   <xsl:if test="$cell &lt;= $rows">
     <tr>
+      <xsl:call-template name="tr.attributes">
+        <xsl:with-param name="row" select="$members[1]"/>
+        <xsl:with-param name="rownum" select="$cell"/>
+      </xsl:call-template>
+
       <xsl:call-template name="simplelist.vert.row">
-	<xsl:with-param name="cols" select="$cols"/>
-	<xsl:with-param name="rows" select="$rows"/>
-	<xsl:with-param name="cell" select="$cell"/>
-	<xsl:with-param name="members" select="$members"/>
+        <xsl:with-param name="cols" select="$cols"/>
+        <xsl:with-param name="rows" select="$rows"/>
+        <xsl:with-param name="cell" select="$cell"/>
+        <xsl:with-param name="members" select="$members"/>
       </xsl:call-template>
     </tr>
     <xsl:call-template name="simplelist.vert">
@@ -562,14 +621,7 @@
           <xsl:apply-templates select="$members[position()=$cell]"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:choose>
-            <xsl:when test="$using.chunker != 0">
-              <xsl:text>&#160;</xsl:text>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:text disable-output-escaping="yes">&amp;nbsp;</xsl:text>
-            </xsl:otherwise>
-          </xsl:choose>
+          <xsl:text>&#160;</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
     </td>
@@ -584,6 +636,7 @@
 </xsl:template>
 
 <xsl:template match="member">
+  <xsl:call-template name="anchor"/>
   <xsl:apply-templates/>
 </xsl:template>
 
@@ -600,17 +653,46 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="procedure">
+  <xsl:variable name="param.placement"
+                select="substring-after(normalize-space($formal.title.placement),
+                                        concat(local-name(.), ' '))"/>
+
+  <xsl:variable name="placement">
+    <xsl:choose>
+      <xsl:when test="contains($param.placement, ' ')">
+        <xsl:value-of select="substring-before($param.placement, ' ')"/>
+      </xsl:when>
+      <xsl:when test="$param.placement = ''">before</xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$param.placement"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <!-- Preserve order of PIs and comments -->
+  <xsl:variable name="preamble"
+        select="*[not(self::step
+                  or self::title
+                  or self::titleabbrev)]
+                |comment()[not(preceding-sibling::step)]
+                |processing-instruction()[not(preceding-sibling::step)]"/>
+
   <div class="{name(.)}">
     <xsl:call-template name="anchor"/>
-    <xsl:if test="title or $formal.procedures != 0">
+
+    <xsl:if test="title and $placement = 'before'">
       <xsl:call-template name="formal.object.heading"/>
     </xsl:if>
-    <xsl:apply-templates select="*[local-name()!='step']"/>
+
+    <xsl:apply-templates select="$preamble"/>
 
     <xsl:choose>
       <xsl:when test="count(step) = 1">
         <ul>
-          <xsl:apply-templates select="step"/>
+          <xsl:apply-templates 
+            select="step
+                    |comment()[preceding-sibling::step]
+                    |processing-instruction()[preceding-sibling::step]"/>
         </ul>
       </xsl:when>
       <xsl:otherwise>
@@ -618,22 +700,22 @@
           <xsl:attribute name="type">
             <xsl:value-of select="substring($procedure.step.numeration.formats,1,1)"/>
           </xsl:attribute>
-          <xsl:apply-templates select="step"/>
+          <xsl:apply-templates 
+            select="step
+                    |comment()[preceding-sibling::step]
+                    |processing-instruction()[preceding-sibling::step]"/>
         </ol>
       </xsl:otherwise>
     </xsl:choose>
+
+    <xsl:if test="title and $placement != 'before'">
+      <xsl:call-template name="formal.object.heading"/>
+    </xsl:if>
   </div>
 </xsl:template>
 
 <xsl:template match="procedure/title">
-</xsl:template>
-
-<xsl:template match="title" mode="procedure.title.mode">
-  <p>
-    <b>
-      <xsl:apply-templates/>
-    </b>
-  </p>
+  <!-- nop -->
 </xsl:template>
 
 <xsl:template match="substeps">
@@ -655,8 +737,19 @@
   </li>
 </xsl:template>
 
+<xsl:template match="stepalternatives">
+  <xsl:call-template name="anchor"/>
+  <ul>
+    <xsl:apply-templates/>
+  </ul>
+</xsl:template>
+
 <xsl:template match="step/title">
-  <xsl:apply-templates select="." mode="procedure.title.mode"/>
+  <p class="title">
+    <b>
+      <xsl:apply-templates/>
+    </b>
+  </p>
 </xsl:template>
 
 <!-- ==================================================================== -->
@@ -670,22 +763,24 @@
     </xsl:call-template>
   </xsl:variable>
 
-  <xsl:call-template name="anchor"/>
+  <div class="{name(.)}">
+    <xsl:call-template name="anchor"/>
 
-  <xsl:choose>
-    <xsl:when test="$presentation = 'table'">
-      <xsl:apply-templates select="." mode="seglist-table"/>
-    </xsl:when>
-    <xsl:when test="$presentation = 'list'">
-      <xsl:apply-templates/>
-    </xsl:when>
-    <xsl:when test="$segmentedlist.as.table != 0">
-      <xsl:apply-templates select="." mode="seglist-table"/>
-    </xsl:when>
-    <xsl:otherwise>
-      <xsl:apply-templates/>
-    </xsl:otherwise>
-  </xsl:choose>
+    <xsl:choose>
+      <xsl:when test="$presentation = 'table'">
+        <xsl:apply-templates select="." mode="seglist-table"/>
+      </xsl:when>
+      <xsl:when test="$presentation = 'list'">
+        <xsl:apply-templates/>
+      </xsl:when>
+      <xsl:when test="$segmentedlist.as.table != 0">
+        <xsl:apply-templates select="." mode="seglist-table"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </div>
 </xsl:template>
 
 <xsl:template match="segmentedlist/title">
@@ -704,7 +799,7 @@
 </xsl:template>
 
 <xsl:template match="seg">
-  <xsl:variable name="segnum" select="position()"/>
+  <xsl:variable name="segnum" select="count(preceding-sibling::seg)+1"/>
   <xsl:variable name="seglist" select="ancestor::segmentedlist"/>
   <xsl:variable name="segtitles" select="$seglist/segtitle"/>
 
@@ -741,7 +836,8 @@
     </xsl:call-template>
   </xsl:variable>
 
-  <xsl:apply-templates select="title" mode="seglist-table"/>
+  <xsl:apply-templates select="title"/>
+
   <table border="0">
     <xsl:if test="$list-width != ''">
       <xsl:attribute name="width">
@@ -755,6 +851,10 @@
     </xsl:if>
     <thead>
       <tr>
+        <xsl:call-template name="tr.attributes">
+          <xsl:with-param name="row" select="segtitle[1]"/>
+          <xsl:with-param name="rownum" select="1"/>
+        </xsl:call-template>
         <xsl:apply-templates select="segtitle" mode="seglist-table"/>
       </tr>
     </thead>
@@ -769,7 +869,14 @@
 </xsl:template>
 
 <xsl:template match="seglistitem" mode="seglist-table">
+  <xsl:variable name="seglinum">
+    <xsl:number from="segmentedlist" count="seglistitem"/>
+  </xsl:variable>
+
   <tr>
+    <xsl:call-template name="tr.attributes">
+      <xsl:with-param name="rownum" select="$seglinum + 1"/>
+    </xsl:call-template>
     <xsl:apply-templates mode="seglist-table"/>
   </tr>
 </xsl:template>
@@ -783,12 +890,8 @@
 <xsl:template match="calloutlist">
   <div class="{name(.)}">
     <xsl:call-template name="anchor"/>
-    <xsl:if test="./title">
-      <p>
-        <b>
-          <xsl:apply-templates select="./title" mode="calloutlist.title.mode"/>
-        </b>
-      </p>
+    <xsl:if test="title">
+      <xsl:call-template name="formal.object.heading"/>
     </xsl:if>
     <xsl:choose>
       <xsl:when test="$callout.list.table != 0">
@@ -806,14 +909,16 @@
 <xsl:template match="calloutlist/title">
 </xsl:template>
 
-<xsl:template match="calloutlist/title" mode="calloutlist.title.mode">
-  <xsl:apply-templates/>
-</xsl:template>
-
 <xsl:template match="callout">
   <xsl:choose>
     <xsl:when test="$callout.list.table != 0">
       <tr>
+        <xsl:call-template name="tr.attributes">
+          <xsl:with-param name="rownum">
+            <xsl:number from="calloutlist" count="callout"/>
+          </xsl:with-param>
+        </xsl:call-template>
+
         <td width="5%" valign="top" align="left">
           <xsl:call-template name="anchor"/>
           <xsl:call-template name="callout.arearefs">
@@ -833,6 +938,31 @@
         </xsl:call-template>
       </dt>
       <dd><xsl:apply-templates/></dd>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="callout/simpara" priority="2">
+  <!-- If a callout contains only a single simpara, don't output
+       the <p> wrapper; this has the effect of creating an li
+       with simple text content. -->
+  <xsl:choose>
+    <xsl:when test="not(preceding-sibling::*)
+                    and not (following-sibling::*)">
+      <xsl:call-template name="anchor"/>
+      <xsl:apply-templates/>
+    </xsl:when>
+    <xsl:otherwise>
+      <p>
+        <xsl:if test="@role and $para.propagates.style != 0">
+          <xsl:attribute name="class">
+            <xsl:value-of select="@role"/>
+          </xsl:attribute>
+        </xsl:if>
+
+        <xsl:call-template name="anchor"/>
+        <xsl:apply-templates/>
+      </p>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
