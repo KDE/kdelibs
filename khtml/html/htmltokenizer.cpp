@@ -717,7 +717,12 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 }
 
                 curchar = src[0].latin1();
-                if( curchar != ' ' && curchar != '>' ) 
+ 
+                // All these can end a tag. 
+                // 
+                if( curchar != '\t' && curchar != '\r' && 
+                    curchar != '\n' && curchar != ' ' && 
+                    curchar != '>' ) 
                 {
                     // this is faster than QChar::lower()
                     if((curchar >= 'A') && (curchar <= 'Z'))
