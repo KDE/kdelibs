@@ -22,7 +22,7 @@
  * $Id$
  */
 
-#define CSS_DEBUG
+//#define CSS_DEBUG
 
 #include "css_stylesheetimpl.h"
 
