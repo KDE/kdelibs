@@ -51,6 +51,8 @@
 #include <ktoolbar.h>
 #include <qdrawutil.h>
 #include <unistd.h>
+#include <klocale.h>
+#include <kiconloader.h>
 
 #include "bitmaps.h"
 
@@ -1843,6 +1845,7 @@ void HCStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
     p->drawLine(x2, y, x2, y2);
 
     const int pxWidth = 20;
+    int textPos = pxWidth;
     QRect br(buttonRect(x, y, w, h));
 
     if ( pixmap && !pixmap->isNull() ) {
@@ -1852,21 +1855,42 @@ void HCStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
             dx++;
             dy++;
         }
-        p->drawPixmap( br.x()+dx, dy, *pixmap );
+        p->drawPixmap( br.x()+dx, dy, *pixmap );        
     }
+
+    QString s2 = text;
+    static QString modStr =
+           QString::fromUtf8("[") + i18n("modified") + QString::fromUtf8("]");
+
+    int modStrPos = s2.find(modStr);
+
+    if (-1 != modStrPos) {
+
+      // +1 because we include a space after the closing brace.
+      s2.remove(modStrPos, modStr.length()+1);
+
+      QPixmap modPixmap = SmallIcon("modified");
+
+      int dx = (pxWidth   - modPixmap.width())  / 2;
+      int dy = (h  - modPixmap.height()) / 2;
+
+      p->drawPixmap(br.x() + textPos + dx, dy, modPixmap);
+
+      textPos += pxWidth;
+    }
+
     p->setPen(sunken ? g.light() : g.buttonText());
 
-    if (!text.isNull()){
-        QString s2 = text;
-        if (p->fontMetrics().width(s2) > br.width()-pxWidth){
+    if (!s2.isEmpty()){
+        if (p->fontMetrics().width(s2) > br.width()-textPos){
             while (s2.length()>0 &&
-                   p->fontMetrics().width(s2) > br.width() - pxWidth
+                   p->fontMetrics().width(s2) > br.width() - textPos
                    - p->fontMetrics().width("...")) {
                 s2.truncate( s2.length() - 1 );
             }
             s2.append("...");
         }
-        p->drawText(br.x()+ pxWidth, 0, w-pxWidth, h,
+        p->drawText(br.x()+ textPos, 0, w-textPos, h,
                     AlignLeft|AlignVCenter, s2);
     }
 }
