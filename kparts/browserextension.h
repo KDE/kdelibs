@@ -170,6 +170,12 @@ signals:
   void openURLRequest( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
+   * Tell the hosting browser that the part opened a new URL (which can be queried via KParts::Part::url() .
+   * This helps the browser to update/create an entry in the history.
+   */
+  void openURLNotify();
+
+  /**
    * Update the URL shown in the browser's location bar to @p url
    */
   void setLocationBarURL( const QString &url );
