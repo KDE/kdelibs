@@ -312,6 +312,11 @@ public:
   
   /** Return the actual positon of the row number num.*/
   int itemPosList(int num);
+
+  /** Get/set font of the table. font() and setFont() apply to the
+    caption only. */
+  const QFont& tableFont(void) const { return lbox.font(); }
+  void setTableFont(const QFont& fnt) { lbox.setFont(fnt); }
   
 signals:
   /** emited when the current item changes (either via setCurrentItem() or via mouse single-click). */
