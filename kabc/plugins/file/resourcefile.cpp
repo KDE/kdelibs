@@ -96,6 +96,8 @@ ResourceFile::~ResourceFile()
 {
   delete mFormat;
   mFormat = 0;
+  delete mLocalTempFile;
+  mLocalTempFile = 0;
 }
 
 void ResourceFile::writeConfig( KConfig *config )
@@ -189,11 +191,11 @@ bool ResourceFile::asyncLoad()
 
   if ( mLocalTempFile ) {
     kdDebug(5700) << "stale temp file dedected " << mLocalTempFile->name() << endl;
-    mLocalTempFile->setAutoDelete( true );
     delete mLocalTempFile;
   }
 
   mLocalTempFile = new KTempFile();
+  mLocalTempFile->setAutoDelete( true );
   mTempFile = mLocalTempFile->name();
 
   KURL dest, src;
@@ -296,6 +298,7 @@ void ResourceFile::fileChanged()
     asyncLoad();
   else {
     load();
+    kdDebug() << "addressBookChanged() " << endl;
     addressBook()->emitAddressBookChanged();
   }
 }
