@@ -59,6 +59,7 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
 				       this );
    }
    
+   m_root->setExpandable( true );
    m_root->setPixmap( 0, pix );
    m_root->setText( 0, name );
 
