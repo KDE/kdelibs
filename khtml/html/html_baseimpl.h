@@ -102,7 +102,6 @@ public:
 protected:
     DOMString url;
     DOMString name;
-    KHTMLView *view;
     KHTMLView *parentWidget;
 
     int marginWidth;

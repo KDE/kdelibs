@@ -203,7 +203,6 @@ bool HTMLBodyElementImpl::prepareMouseEvent(int _x, int _y, int _tx, int _ty, Mo
 HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
-    view = 0;
     parentWidget = 0;
 
     frameBorder = true;
@@ -321,7 +320,6 @@ void HTMLFrameElementImpl::attach()
 void HTMLFrameElementImpl::detach()
 {
     HTMLElementImpl::detach();
-    delete view;
     parentWidget = 0;
 }
 
