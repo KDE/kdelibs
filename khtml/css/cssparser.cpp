@@ -26,8 +26,9 @@
 //#define CSS_AURAL
 //#define CSS_DEBUG_BCKGR
 
-#include "css_stylesheetimpl.h"
+#include <assert.h>
 
+#include "css_stylesheetimpl.h"
 #include "css_stylesheet.h"
 #include "css_rule.h"
 #include "css_ruleimpl.h"
@@ -1204,13 +1205,23 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 		}
 		break;
 	}
-    case CSS_PROP_FLOAT:                // left | right | none | inherit
+    case CSS_PROP_FLOAT:                // left | right | none | inherit + center for buggy CSS
+	{
+        if (cssval) {
+            int id = cssval->id;
+            if (id == CSS_VAL_LEFT || id == CSS_VAL_RIGHT 
+		|| id == CSS_VAL_NONE || id == CSS_VAL_CENTER) {
+				parsedValue = new CSSPrimitiveValueImpl(id);
+			}
+		}
+		break;
+	}
     case CSS_PROP_CLEAR:                // none | left | right | both | inherit
 	{
         if (cssval) {
             int id = cssval->id;
-            if (id == CSS_VAL_LEFT || id == CSS_VAL_RIGHT || id == CSS_VAL_NONE ||
-				(propId == CSS_PROP_CLEAR && id == CSS_VAL_BOTH)) {
+            if (id == CSS_VAL_NONE || id == CSS_VAL_LEFT 
+		|| id == CSS_VAL_RIGHT|| id == CSS_VAL_BOTH) {
 				parsedValue = new CSSPrimitiveValueImpl(id);
 			}
 		}
@@ -1555,7 +1566,8 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     {
         if (cssval) {
             int id = cssval->id;
-            if (id >= CSS_VAL_BASELINE && id <= CSS_VAL_BOTTOM) {
+            if ((id >= CSS_VAL_BASELINE && id <= CSS_VAL_BOTTOM) 
+                || id==CSS_VAL_CENTER) {
                 parsedValue = new CSSPrimitiveValueImpl(id);
             }
         } else {
@@ -2212,6 +2224,9 @@ bool StyleBaseImpl::parse4Values( const QChar *curP, const QChar *endP, const in
 CSSValueImpl *
 StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits)
 {
+    // Everything should be lowercase -> preprocess
+    assert(QString(curP, endP-curP).lower()==QString(curP,endP-curP)); 
+    
     endP--;
     while(*endP == ' ' && endP > curP) endP--;
     const QChar *split = endP;
@@ -2221,7 +2236,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     split++;
 
     QString s(curP, split-curP);
-
+    
     bool isInt = false;
     if(s.find('.') == -1) isInt = true;
 
@@ -2249,7 +2264,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     CSSPrimitiveValue::UnitTypes type = CSSPrimitiveValue::CSS_UNKNOWN;
     int unit = 0;
 
-    switch(split->lower().latin1())
+    switch(split->latin1())
     {
     case '%':
         type = CSSPrimitiveValue::CSS_PERCENTAGE;
@@ -2258,40 +2273,41 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     case 'e':
         split++;
         if(split > endP) break;
-        if(split->latin1() == 'm' || split->latin1() == 'M')
-        {
+        switch(split->latin1())
+	{
+	case 'm':
             type = CSSPrimitiveValue::CSS_EMS;
             unit = LENGTH;
-        }
-        else if(split->latin1() == 'x' || split->latin1() == 'X')
-        {
+            break;
+	case 'x':
             type = CSSPrimitiveValue::CSS_EXS;
             unit = LENGTH;
+            break;
         }
         break;
     case 'p':
         split++;
         if(split > endP) break;
-        if(split->latin1() == 'x' || split->latin1() == 'X')
-        {
+	switch(split->latin1())
+	{
+	case 'x':
             type = CSSPrimitiveValue::CSS_PX;
             unit = LENGTH;
-        }
-        else if(split->latin1() == 't' || split->latin1() == 'T')
-        {
+            break;
+	case 't':
             type = CSSPrimitiveValue::CSS_PT;
             unit = LENGTH;
-        }
-        else if(split->latin1() == 'c' || split->latin1() == 'C')
-        {
+            break;
+	case 'c':
             type = CSSPrimitiveValue::CSS_PC;
             unit = LENGTH;
+            break;
         }
         break;
     case 'c':
         split++;
         if(split > endP) break;
-        if(split->latin1() == 'm' || split->latin1() == 'M')
+        if(split->latin1() == 'm')
         {
             type = CSSPrimitiveValue::CSS_CM;
             unit = LENGTH;
@@ -2300,21 +2316,22 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     case 'm':
         split++;
         if(split > endP) break;
-        if(split->latin1() == 'm' || split->latin1() == 'M')
-        {
+        switch(split->latin1())
+	{
+	case 'm':
             type = CSSPrimitiveValue::CSS_MM;
             unit = LENGTH;
-        }
-        else if(split->latin1() == 's' || split->latin1() == 'S')
-        {
+            break;
+	case 's':
             type = CSSPrimitiveValue::CSS_MS;
             unit = TIME;
+            break;
         }
         break;
     case 'i':
         split++;
         if(split > endP) break;
-        if(split->latin1() == 'n' || split->latin1() == 'N')
+        if(split->latin1() == 'n')
         {
             type = CSSPrimitiveValue::CSS_IN;
             unit = LENGTH;

@@ -1042,6 +1042,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         case CSS_VAL_RIGHT:
             f = FRIGHT; break;
         case CSS_VAL_NONE:
+        case CSS_VAL_CENTER:  //Non standart CSS-Value
             f = FNONE; break;
         default:
             return;
@@ -1789,6 +1790,9 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if(!primitiveValue) return;
         if(primitiveValue->getIdent()) {
             style->setVerticalAlign( (EVerticalAlign) (primitiveValue->getIdent() - CSS_VAL_BASELINE) );
+            return;
+	} else if(primitiveValue->getIdent() == CSS_VAL_CENTER) { // None standard CSS-Value
+            style->setVerticalAlign( MIDDLE );
             return;
         } else {
             int type = primitiveValue->primitiveType();
