@@ -95,8 +95,8 @@ binary-arch:  build
 		--includedir=/usr/include/kde
 	make -C libkmid/ DESTDIR=`pwd`/debian/libkmid-alsa/ install
 	make -C arts/ DESTDIR=`pwd`/debian/libarts-alsa/ install
-	-rm -f `find debian/tmp/libarts-alsa/ -name "knotify.desktop"`
-	-rm -rf debian/tmp/libarts-alsa/usr/share/apps/knotify/
+	-rm -f `find debian/libarts-alsa/ -name "knotify.desktop"`
+	-rm -rf debian/libarts-alsa/usr/share/apps/knotify/
 	-mv debian/libarts-alsa/usr/bin/knotify debian/libkmid-alsa/usr/bin/
 	-mv debian/libarts-alsa/usr/lib/*notify* debian/libkmid-alsa/usr/lib/
 	-mv debian/libarts-alsa/usr/lib/*qtmcop* debian/libkmid-alsa/usr/lib/
