@@ -1489,12 +1489,11 @@ DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *exec, QValueList<DOM
   m_nodes(nodes), m_returnType(returnType)
 {
   // Maybe we should ref (and deref in the dtor) the nodes, though ?
-  kdDebug() << k_funcinfo << endl;
 }
 
 Value DOMNamedNodesCollection::tryGet(ExecState *exec, const UString &propertyName) const
 {
-  kdDebug() << k_funcinfo << propertyName.ascii() << endl;
+  //kdDebug(6070) << k_funcinfo << propertyName.ascii() << endl;
   if (propertyName == "length")
     return Number(m_nodes.count());
   // index?

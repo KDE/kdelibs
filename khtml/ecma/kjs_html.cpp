@@ -86,7 +86,7 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List
       str += args[i].toString(exec);
     if (id == HTMLDocument::WriteLn)
       str += "\n";
-    //kdDebug() << "document.write: " << str.string().string() << endl;
+    //kdDebug(6070) << "document.write: " << str.string().string() << endl;
     doc.write(str.string());
     return Undefined();
   }
@@ -1909,7 +1909,7 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
     exec->setException(err);
     return err;
   }
-  kdDebug() << "KJS::HTMLElementFunction::tryCall " << endl;
+  kdDebug(6070) << "KJS::HTMLElementFunction::tryCall " << endl;
   DOM::HTMLElement element = static_cast<KJS::HTMLElement *>(thisObj.imp())->toElement();
 
   switch (element.elementId()) {
@@ -2805,7 +2805,7 @@ bool KJS::HTMLCollection::hasProperty(ExecState *exec, const UString &p) const
 Value KJS::HTMLCollection::tryGet(ExecState *exec, const UString &propertyName) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug() << "KJS::HTMLCollection::tryGet " << propertyName.ascii() << endl;
+  kdDebug(6070) << "KJS::HTMLCollection::tryGet " << propertyName.ascii() << endl;
 #endif
   if (propertyName == "length")
     return Number(collection.length());
@@ -2961,14 +2961,14 @@ Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, co
       DOM::Document doc = coll.base();
       list = doc.getElementsByTagName(tagName);
 #ifdef KJS_VERBOSE
-      kdDebug() << "KJS::HTMLCollectionProtoFunc::tryCall document.tags(" << tagName.string() << ") -> " << list.length() << " items in node list" << endl;
+      kdDebug(6070) << "KJS::HTMLCollectionProtoFunc::tryCall document.tags(" << tagName.string() << ") -> " << list.length() << " items in node list" << endl;
 #endif
     } else
     {
       DOM::Element e = coll.base();
       list = e.getElementsByTagName(tagName);
 #ifdef KJS_VERBOSE
-      kdDebug() << "KJS::HTMLCollectionProtoFunc::tryCall element.tags(" << tagName.string() << ") -> " << list.length() << " items in node list" << endl;
+      kdDebug(6070) << "KJS::HTMLCollectionProtoFunc::tryCall element.tags(" << tagName.string() << ") -> " << list.length() << " items in node list" << endl;
 #endif
     }
     return getDOMNodeList(exec, list);
