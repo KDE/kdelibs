@@ -186,7 +186,10 @@ public:
           m_ssl_cipher_desc,
           m_ssl_cipher_version,
           m_ssl_cipher_used_bits,
-          m_ssl_cipher_bits;
+          m_ssl_cipher_bits,
+          m_ssl_cert_state,
+          m_ssl_good_from,
+          m_ssl_good_until;
 
   bool m_bComplete;
   bool m_bParsing;
@@ -835,6 +838,9 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
     d->m_ssl_cipher_version = d->m_job->queryMetaData("ssl_cipher_version");
     d->m_ssl_cipher_used_bits = d->m_job->queryMetaData("ssl_cipher_used_bits");
     d->m_ssl_cipher_bits = d->m_job->queryMetaData("ssl_cipher_bits");
+    d->m_ssl_good_from = d->m_job->queryMetaData("ssl_good_from");
+    d->m_ssl_good_until = d->m_job->queryMetaData("ssl_good_until");
+    d->m_ssl_cert_state = d->m_job->queryMetaData("ssl_cert_state");
     //
     QString charset = d->m_job->queryMetaData("charset");
     if ( !charset.isEmpty() )
@@ -1692,6 +1698,12 @@ void KHTMLPart::slotSecurity()
                   << d->m_ssl_cipher_desc
                   << endl
                   << d->m_ssl_cipher_version
+                  << endl
+                  << d->m_ssl_good_from
+                  << endl
+                  << d->m_ssl_good_until
+                  << endl
+                  << d->m_ssl_cert_state
                   << endl;
 
   KSSLInfoDlg *kid = new KSSLInfoDlg(d->m_ssl_in_use, widget());
@@ -1705,7 +1717,8 @@ void KHTMLPart::slotSecurity()
                d->m_ssl_cipher_version,
                d->m_ssl_cipher_used_bits.toInt(),
                d->m_ssl_cipher_bits.toInt(), 
-               (KSSLCertificate::KSSLValidation) 1, QString(""), QString(""));
+               (KSSLCertificate::KSSLValidation) d->m_ssl_cert_state.toInt(), 
+               d->m_ssl_good_from, d->m_ssl_good_until);
   }
   kid->show();
 }
