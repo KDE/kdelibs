@@ -294,6 +294,7 @@ pid_t KRun::run( const QString& _cmd )
   
   // Figure out current desktop
   NETRootInfo rinfo( qt_xdisplay(), NET::CurrentDesktop );
+  rinfo.activate();
   int desktop = rinfo.currentDesktop(); 
 
   KShellProcess proc;
