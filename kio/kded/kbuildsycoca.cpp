@@ -238,8 +238,6 @@ void KBuildSycoca::save()
        factory;
        factory = m_lstFactories->next())
    {
-      kdebug(KDEBUG_INFO, 7020, QString("#2 factory Id = %1, offset = %2") .arg(factory->factoryId()) 
-		.arg(m_str->device()->at(),8,16));
       factory->save(*m_str);
    }
 
@@ -257,7 +255,6 @@ void KBuildSycoca::save()
       Q_INT32 aOffset;
       aId = factory->factoryId();
       aOffset = factory->offset();
-      kdebug(KDEBUG_INFO, 7020, QString("#2 factory Id = %1, offset = %2") .arg(aId) .arg(aOffset,8,16));
       (*m_str) << aId;
       (*m_str) << aOffset;
    }
