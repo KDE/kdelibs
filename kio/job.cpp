@@ -464,6 +464,15 @@ StatJob *KIO::stat(const KURL& url, bool showProgressInfo)
     return job;
 }
 
+SimpleJob *KIO::http_update_cache( const KURL& url, bool no_cache, time_t expireDate)
+{
+    assert( url.protocol() == "http" );
+    // Send http update_cache command (2)
+    KIO_ARGS << (int)2 << url << no_cache << expireDate;
+    SimpleJob * job = new SimpleJob( url, CMD_SPECIAL, packedArgs, false );
+    return job;
+}
+
 //////////
 
 TransferJob::TransferJob( const KURL& url, int command,
@@ -584,7 +593,6 @@ void TransferJob::slotDataReq()
 
 void TransferJob::slotMimetype( const QString& type )
 {
-    kdDebug(7007) << "TransferJob::slotMimetype(" << type << ")" << endl;
     m_mimetype = type;
     emit mimetype( this, m_mimetype);
 }
@@ -633,7 +641,6 @@ void TransferJob::resume()
 void TransferJob::start(Slave *slave)
 {
     assert(slave);
-
     connect( slave, SIGNAL( data( const QByteArray & ) ),
              SLOT( slotData( const QByteArray & ) ) );
 
@@ -691,7 +698,6 @@ void TransferJob::slotSubURLData(KIO::Job*, const QByteArray &data)
 void TransferJob::slotResult( KIO::Job *job)
 {
    // This can only be our suburl.
-   kdDebug(7007) << "TransferJob::slotResult(" << job << ")" << endl;
    assert(job = m_subJob);
    // Did job have an error ?
    if ( job->error() )
@@ -780,7 +786,6 @@ void MimetypeJob::slotFinished( )
 
 MimetypeJob *KIO::mimetype(const KURL& url, bool showProgressInfo )
 {
-    kdDebug(7007) << "mimetype " << url.prettyURL() << endl;
     KIO_ARGS << url;
     MimetypeJob * job = new MimetypeJob(url, CMD_MIMETYPE, packedArgs, showProgressInfo);
     if ( showProgressInfo )

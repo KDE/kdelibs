@@ -120,6 +120,16 @@ namespace KIO {
     SimpleJob *unmount( const QString & point, bool showProgressInfo = true );
 
     /**
+     * HTTP cache update
+     *
+     * @param url Url to update, protocol must be "http".
+     * @param no_cache If true, cache entry for @p url is deleted.
+     * @param expireDate Local machine time indicating when the entry is 
+     * supposed to expire.
+     */
+    SimpleJob *http_update_cache( const KURL& url, bool no_cache, time_t expireDate);
+
+    /**
      * Find all details for one file or directory.
      */
     StatJob * stat( const KURL& url, bool showProgressInfo = true );
