@@ -96,6 +96,10 @@ InfoOutput=4
 [5855]
 InfoOutput=4
 
+# korgac (check)
+[5891]
+InfoOutput=4
+
 # kalarmd check
 [5901]
 InfoOutput=4

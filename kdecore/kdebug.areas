@@ -167,6 +167,8 @@
 5800        libkcal
 5850        korganizer
 5855        korganizer (verbose)
+5890        korgac
+5891        korgac (check)
 5900        kalarmd
 5901        kalarmd (check)
 5950        kalarm
