@@ -1,4 +1,4 @@
-# KDELIBS translation to Slovene language
+# KDELIBS translation to Slovenian language
 # Copyright (C) 1998 Free Software Foundation, Inc.
 # Bla¾ Zupanèiè <blazzupancic@hotmail.com>, 1998.
 #
@@ -6,42 +6,41 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: kdelibs\n"
-"POT-Creation-Date: 1999-04-24 01:02+0200\n"
-"PO-Revision-Date: 1998-09-22 16:18+0100\n"
-"Last-Translator: Bla¾ Zupanèiè <blazzupancic@hotmail.com>\n"
-"Language-Team: Slovenian\n"
+"POT-Creation-Date: 1999-07-27 01:28+0200\n"
+"PO-Revision-Date: 1999-08-09 13:19+0100\n"
+"Last-Translator: Bla¾ Zupanèiè <blaz.zupancic@kiss.uni-lj.si>\n"
+"Language-Team: Slovenian <http://www.lugos.si/delo/slo/KDE-sl/>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: iso-8859-2\n"
+"Content-Type: text/plain; charset=iso-8859-2\n"
+"Content-Transfer-Encoding: 8bit\n"
 
 #: kab/AssertDialog.cpp:29
-#, fuzzy
 msgid "(unknown file)"
-msgstr "neznan"
+msgstr "(neznana datoteka)"
 
 #: kab/AssertDialog.cpp:30
 msgid "(unknown line number)"
-msgstr ""
+msgstr "(neznana ¹tevilka vrstice)"
 
 #: kab/AssertDialog.cpp:31
 msgid "(unknown condition)"
-msgstr ""
+msgstr "(neznano stanje)"
 
 #: kab/AssertDialog.cpp:39
 msgid "You have found a bug in "
-msgstr ""
+msgstr "Na¹li ste hro¹èa v "
 
 #: kab/AssertDialog.cpp:45
 msgid "Ignore the error, possibly causing much more damage"
-msgstr ""
+msgstr "Ne zmeni se za napako, èeprav lahko to povzroèi ¹e veè ¹kode"
 
 #: kab/AssertDialog.cpp:47
 msgid "Kill the application, loosing all data"
-msgstr ""
+msgstr "Zapri program in izgubi vse podatke"
 
 #: kab/AssertDialog.cpp:49
 msgid "Send an email to the application maintainer"
-msgstr ""
+msgstr "Po¹lji elektronsko po¹to vzdr¾evalcu programa"
 
 #: kab/AssertDialog.cpp:51 kab/datepickerdialog.cc:25 kab/kabapi.cc:34
 #: kdeui/kcolordlg.cpp:467 kdeui/kcontrol.cpp:46 kdeui/kcontrol.cpp:51
@@ -57,35 +56,35 @@ msgstr "V redu"
 
 #: kab/AssertDialog.cpp:140
 msgid "The following condition failed:\n"
-msgstr ""
+msgstr "Naslednji pogoj ni bil izpolnjen:\n"
 
 #: kab/AssertDialog.cpp:141
-#, fuzzy
 msgid "In file "
-msgstr "datoteka"
+msgstr "V datoteki"
 
 #: kab/AssertDialog.cpp:141
 msgid ", line "
-msgstr ""
+msgstr ", vrstica "
 
 #: kab/AssertDialog.cpp:212 kab/AssertDialog.cpp:217
 msgid "Error handling error"
-msgstr ""
+msgstr "Napaka pri delu z napako"
 
 #: kab/AssertDialog.cpp:213
-#, fuzzy
 msgid "Could not send message."
-msgstr "Dokumenta mi ni uspelo shraniti.\n"
+msgstr "Sporoèila mi ni uspelo poslati."
 
 #: kab/AssertDialog.cpp:218
 msgid "The author did not publish an email address."
-msgstr ""
+msgstr "Avtor ni objavil elektronskega naslova."
 
 #: kab/DialogBase.cpp:36
 msgid ""
 "If you press the OK button, all changes\n"
 "you made will be used to proceed."
 msgstr ""
+"Èe boste pritisnili gumb V redu, bodo vse va¹e\n"
+"spremembe uporabljene v nadaljevanju."
 
 #: kab/DialogBase.cpp:39
 msgid ""
@@ -93,6 +92,9 @@ msgid ""
 "handed over to the program, but the dialog\n"
 "will not be closed.Use this to try different settings."
 msgstr ""
+"Ko pritisnete gumb Uveljavi, program uporabi nove\n"
+"nastavitve, pogovorno okno pa ostane odprto.\n"
+"Tako lahko preizku¹ate razliène nastavitve."
 
 #: kab/DialogBase.cpp:44
 msgid ""
@@ -102,6 +104,11 @@ msgid ""
 "The program will be in the state before\n"
 "opening the dialog."
 msgstr ""
+"Èe boste pritisnili gumb Preklièi, bodo vse va¹e\n"
+"spremembe razveljavljene in pogovorno okno\n"
+"se bo zaprlo.\n"
+"Program bo ostal v enakem stanju kot\n"
+"je bil na zaèetku."
 
 #: kab/DialogBase.cpp:57 kdeui/kkeydialog.cpp:242 kdeui/knotebook.cpp:247
 #: kdeui/kwizard.cpp:228 po/texts.cpp:36
@@ -109,9 +116,8 @@ msgid "&OK"
 msgstr "&V redu"
 
 #: kab/DialogBase.cpp:58
-#, fuzzy
 msgid "&Apply"
-msgstr "Uveljavi"
+msgstr "&Uveljavi"
 
 #: kab/DialogBase.cpp:59 kdeui/kkeydialog.cpp:245 kdeui/knotebook.cpp:178
 #: kdeui/kwizard.cpp:159 po/texts.cpp:40
@@ -120,138 +126,135 @@ msgstr "&Preklièi"
 
 #: kab/PrintDialog.cpp:26
 msgid "Headline text:"
-msgstr ""
+msgstr "Besedilo naslovne vrstice:"
 
 #: kab/PrintDialog.cpp:27
 msgid "Right footer text:"
-msgstr ""
+msgstr "Besedilo desne noge:"
 
 #: kab/PrintDialog.cpp:28
 msgid "Left footer text:"
-msgstr ""
+msgstr "Besedilo leve noge:"
 
 #: kab/SearchDialog.cpp:47
 msgid "The title"
-msgstr ""
+msgstr "Naslov"
 
 #: kab/SearchDialog.cpp:48
 msgid "The first name"
-msgstr ""
+msgstr "Prvo ime"
 
 #: kab/SearchDialog.cpp:49
 msgid "The additional name"
-msgstr ""
+msgstr "Dodatno ime"
 
 #: kab/SearchDialog.cpp:50
 msgid "The name prefix"
-msgstr ""
+msgstr "Predpona imena"
 
 #: kab/SearchDialog.cpp:51
-#, fuzzy
 msgid "The name"
-msgstr "Pot"
+msgstr "Ime"
 
 #: kab/SearchDialog.cpp:52
 msgid "The formatted name"
-msgstr ""
+msgstr "Oblikovano ime"
 
 #: kab/SearchDialog.cpp:53
 msgid "The address"
-msgstr ""
+msgstr "Naslov"
 
 #: kab/SearchDialog.cpp:54
-#, fuzzy
 msgid "The town"
-msgstr "Pot"
+msgstr "Mesto"
 
 #: kab/SearchDialog.cpp:55
 msgid "The organization"
-msgstr ""
+msgstr "Organizacija"
 
 #: kab/SearchDialog.cpp:56
 msgid "The role"
-msgstr ""
+msgstr "Vloga"
 
 #: kab/SearchDialog.cpp:57
 msgid "The org unit"
-msgstr ""
+msgstr "Org. enota"
 
 #: kab/SearchDialog.cpp:58
 msgid "The org subunit"
-msgstr ""
+msgstr "Org. podenota"
 
 #: kab/SearchDialog.cpp:59
 msgid "The email address"
-msgstr ""
+msgstr "Elektronski naslov"
 
 #: kab/SearchDialog.cpp:60
 msgid "The second email address"
-msgstr ""
+msgstr "Drugi elektronski naslov"
 
 #: kab/SearchDialog.cpp:61
 msgid "The third email address"
-msgstr ""
+msgstr "Tretji elektronski naslov"
 
 #: kab/SearchDialog.cpp:62
 msgid "The telephone number"
-msgstr ""
+msgstr "Telefonska ¹tevilka"
 
 #: kab/SearchDialog.cpp:63
 msgid "The fax number"
-msgstr ""
+msgstr "©tevilka faksa"
 
 #: kab/SearchDialog.cpp:64
 msgid "The modem number"
-msgstr ""
+msgstr "©tevilka modema"
 
 #: kab/SearchDialog.cpp:65
 msgid "The homepage URL"
-msgstr ""
+msgstr "URL domaèe strani"
 
 #: kab/SearchDialog.cpp:66
 msgid "The comment"
-msgstr ""
+msgstr "Komentar"
 
 #: kab/SearchDialog.cpp:74
-#, fuzzy
 msgid "kab: Search entries"
-msgstr "I¹èi datoteko"
+msgstr "kab: I¹èi vnose"
 
 #: kab/SearchDialogMainWidget.cpp:22
 msgid "matches"
-msgstr ""
+msgstr "je podoben"
 
 #: kab/SearchDialogMainWidget.cpp:23
 msgid "Use shell wildcard patterns here"
-msgstr ""
+msgstr "Uporabi znake za zamenjavo"
 
 #: kab/SearchDialogMainWidget.cpp:24
 msgid "Select field to match the pattern"
-msgstr ""
+msgstr "Izberite polje, ki ustreza vzorcu"
 
 #: kab/StringListEditWidget.cpp:30
 msgid "Add a new string"
-msgstr ""
+msgstr "Dodaj nov niz"
 
 #: kab/StringListEditWidget.cpp:31
 msgid "Move this string up"
-msgstr ""
+msgstr "Premakni niz gor"
 
 #: kab/StringListEditWidget.cpp:32
 msgid "Move this string down"
-msgstr ""
+msgstr "Premakni niz dol"
 
 #: kab/StringListEditWidget.cpp:33
 msgid "Delete this string"
-msgstr ""
+msgstr "Izbri¹i niz"
 
 #: kab/StringListSelectAndReorderSet.cpp:34
 msgid "Possible values:"
-msgstr ""
+msgstr "Mo¾ne vrednosti:"
 
 #: kab/StringListSelectAndReorderSet.cpp:35
 msgid "Selected values:"
-msgstr ""
+msgstr "Izbrane vrednosti:"
 
 #: kdecore/kaccel.cpp:223 kfile/kfiledialog.cpp:559 kfile/kfiledialog.cpp:1219
 #: kfile/kfiledialog.cpp:1379 kfile/kfiledialog.cpp:1413 po/texts.cpp:65
@@ -273,11 +276,11 @@ msgstr "Shrani"
 
 #: kdecore/kaccel.cpp:239 po/texts.cpp:115
 msgid "Print"
-msgstr "Tiskaj"
+msgstr "Natisni"
 
 #: kdecore/kaccel.cpp:243 po/texts.cpp:52
 msgid "Quit"
-msgstr "Odidi"
+msgstr "Konèaj"
 
 #: kdecore/kaccel.cpp:247 po/texts.cpp:69
 msgid "Cut"
@@ -285,7 +288,7 @@ msgstr "Izre¾i"
 
 #: kdecore/kaccel.cpp:251 po/texts.cpp:56
 msgid "Copy"
-msgstr "Kopiraj"
+msgstr "Prepi¹i"
 
 #: kdecore/kaccel.cpp:255 po/texts.cpp:58
 msgid "Paste"
@@ -308,9 +311,8 @@ msgid "Replace"
 msgstr "Zamenjaj"
 
 #: kdecore/kaccel.cpp:271 po/texts.cpp:134
-#, fuzzy
 msgid "Insert"
-msgstr "&Vstavi"
+msgstr "Vstavi"
 
 #: kdecore/kaccel.cpp:275 kfile/kfiledialog.cpp:131
 msgid "Home"
@@ -318,17 +320,15 @@ msgstr "Domov"
 
 #: kdecore/kaccel.cpp:279
 msgid "End"
-msgstr ""
+msgstr "Konec"
 
 #: kdecore/kaccel.cpp:283
-#, fuzzy
 msgid "Prior"
-msgstr "Napaka"
+msgstr "Prej¹nji"
 
 #: kdecore/kaccel.cpp:287
-#, fuzzy
 msgid "Next"
-msgstr "&Naslednji"
+msgstr "Naslednji"
 
 #: kdecore/kaccel.cpp:291 kdetest/klocaletest.cpp:102 kdeui/kcolordlg.cpp:463
 #: kdeui/kcontrol.cpp:35 kfile/kfiledialog.cpp:246 kspell/ksconfig.cpp:212
@@ -338,15 +338,15 @@ msgstr "Pomoè"
 
 #: kdecore/kaccel.cpp:589 kdecore/kaccel.cpp:653
 msgid "SHIFT"
-msgstr ""
+msgstr "SHIFT"
 
 #: kdecore/kaccel.cpp:593 kdecore/kaccel.cpp:655
 msgid "CTRL"
-msgstr ""
+msgstr "CTRL"
 
 #: kdecore/kaccel.cpp:597 kdecore/kaccel.cpp:657
 msgid "ALT"
-msgstr ""
+msgstr "ALT"
 
 #: kdecore/kapp.cpp:616 po/texts.cpp:137
 msgid "&Contents"
@@ -377,15 +377,14 @@ msgid ""
 "Please report bugs at http://bugs.kde.org.\n"
 msgstr ""
 "\n"
-"KDE namizno okolje je napisala KDE ekipa -\n"
+"Namizno okolje KDE je napisala ekipa KDE -\n"
 "po celem svetu raz¹irjeno omre¾je programerjev,\n"
 "ki so predani pisanju brezplaènih programov.\n"
 "\n"
-"Na strani http://www.kde.org pa lahko dobite ¹e veè\n"
-"informacij o projektu KDE. Èe ¾elite, se nam lahko\n"
+"Za veè informacij obi¹èite stran http://www.kde.org.Èe ¾elite, se nam lahko "
 "pridru¾ite ali pa podpirate projekt.\n"
 "\n"
-"Prosimo da poroèate o hro¹èih na http://bugs.kde.org.\n"
+"Prosimo poroèajte o hro¹èih na http://buglist.kde.org.\n"
 
 #: kdetest/klocaletest.cpp:100 kdeui/keditcl1.cpp:412 kdeui/keditcl1.cpp:433
 #: kdeui/keditcl1.cpp:494 kdeui/keditcl1.cpp:514 kdeui/keditcl1.cpp:1661
@@ -446,51 +445,51 @@ msgstr "Uveljavi"
 
 #: kdeui/kdatepik.cpp:102
 msgid "January"
-msgstr "Januar"
+msgstr "januar"
 
 #: kdeui/kdatepik.cpp:102
 msgid "February"
-msgstr "Februar"
+msgstr "februar"
 
 #: kdeui/kdatepik.cpp:103
 msgid "March"
-msgstr "Marec"
+msgstr "marec"
 
 #: kdeui/kdatepik.cpp:103
 msgid "April"
-msgstr "April"
+msgstr "april"
 
 #: kdeui/kdatepik.cpp:104 kfile/kfileinfo.cpp:225
 msgid "May"
-msgstr "Maj"
+msgstr "maj"
 
 #: kdeui/kdatepik.cpp:104
 msgid "June"
-msgstr "Junij"
+msgstr "junij"
 
 #: kdeui/kdatepik.cpp:105
 msgid "July"
-msgstr "Julij"
+msgstr "julij"
 
 #: kdeui/kdatepik.cpp:105
 msgid "August"
-msgstr "Avgust"
+msgstr "avgust"
 
 #: kdeui/kdatepik.cpp:106
 msgid "September"
-msgstr "September"
+msgstr "september"
 
 #: kdeui/kdatepik.cpp:106
 msgid "October"
-msgstr "Oktober"
+msgstr "oktober"
 
 #: kdeui/kdatepik.cpp:107
 msgid "November"
-msgstr "November"
+msgstr "november"
 
 #: kdeui/kdatepik.cpp:107
 msgid "December"
-msgstr "December"
+msgstr "december"
 
 #: kdeui/kdatepik.cpp:247
 msgid "(invalid)"
@@ -498,31 +497,31 @@ msgstr "(napaèen)"
 
 #: kdeui/kdatetbl.cpp:49
 msgid "Sun"
-msgstr "Ned"
+msgstr "ned"
 
 #: kdeui/kdatetbl.cpp:49
 msgid "Mon"
-msgstr "Pon"
+msgstr "pon"
 
 #: kdeui/kdatetbl.cpp:49
 msgid "Tue"
-msgstr "Tor"
+msgstr "tor"
 
 #: kdeui/kdatetbl.cpp:50
 msgid "Wed"
-msgstr "Sre"
+msgstr "sre"
 
 #: kdeui/kdatetbl.cpp:50
 msgid "Thu"
-msgstr "Èet"
+msgstr "èet"
 
 #: kdeui/kdatetbl.cpp:50
 msgid "Fri"
-msgstr "Pet"
+msgstr "pet"
 
 #: kdeui/kdatetbl.cpp:51
 msgid "Sat"
-msgstr "Sob"
+msgstr "sob"
 
 #: kab/kabapi.cc:138 kab/widget.cc:832 kab/widget.cc:852 kab/widget.cc:1952
 #: kdeui/keditcl1.cpp:139 kdeui/keditcl1.cpp:168 kdeui/keditcl1.cpp:189
@@ -594,7 +593,7 @@ msgstr "Brez naslova"
 
 #: kdeui/keditcl1.cpp:1560
 msgid "Could not save the document\n"
-msgstr "Dokumenta mi ni uspelo shraniti.\n"
+msgstr "Dokumenta mi ni uspelo shraniti\n"
 
 #: kdeui/keditcl1.cpp:1630
 msgid "Save Document As"
@@ -605,8 +604,8 @@ msgid ""
 "A Document with this Name exists already\n"
 "Do you want to overwrite it ?"
 msgstr ""
-"Dokument s tem imenom ¾e obstaja\n"
-"Ga ¾elite prepisati?"
+"Dokument s tem imenom ¾e obstaja.\n"
+"®elite pisati prek?"
 
 #: kdeui/keditcl1.cpp:1716
 msgid "You do not have write permission to this file.\n"
@@ -627,7 +626,7 @@ msgid ""
 "Continue from the end?"
 msgstr ""
 "Pri¹li ste do zaèetka dokumenta.\n"
-"®elite nadaljevati od konca?"
+"®elite nadaljevati s konca?"
 
 #: kdeui/keditcl2.cpp:682 kdeui/keditcl2.cpp:780
 msgid "Case Sensitive"
@@ -647,7 +646,7 @@ msgstr "Najdi:"
 
 #: kdeui/keditcl2.cpp:778
 msgid "Replace with:"
-msgstr "Zamenjaj s/z:"
+msgstr "Zamenjaj z:"
 
 #: kdeui/keditcl2.cpp:792 kspell/kspelldlg.cpp:38
 msgid "Replace All"
@@ -687,7 +686,7 @@ msgstr "Velikost:"
 
 #: kdeui/kfontdialog.cpp:239 kdeui/kfontdialog.cpp:244
 msgid "Weight:"
-msgstr "Oblika:"
+msgstr "Te¾a:"
 
 #: kdeui/kfontdialog.cpp:251 kdeui/kfontdialog.cpp:256
 msgid "Style:"
@@ -699,7 +698,7 @@ msgstr "Velikost"
 
 #: kdeui/kfontdialog.cpp:322
 msgid "Weight"
-msgstr "Oblika"
+msgstr "Te¾a"
 
 #: kdeui/kfontdialog.cpp:325 kdeui/kfontdialog.cpp:484
 msgid "normal"
@@ -707,11 +706,11 @@ msgstr "navadna"
 
 #: kdeui/kfontdialog.cpp:326 kdeui/kfontdialog.cpp:486
 msgid "bold"
-msgstr "krepka"
+msgstr "polkrepko"
 
 #: kdeui/kfontdialog.cpp:336
 msgid "Style"
-msgstr "Slog"
+msgstr "slog"
 
 #: kdeui/kfontdialog.cpp:339 kdeui/kfontdialog.cpp:497
 #: kdeui/kfontdialog.cpp:526
@@ -721,7 +720,7 @@ msgstr "roman"
 #: kdeui/kfontdialog.cpp:340 kdeui/kfontdialog.cpp:499
 #: kdeui/kfontdialog.cpp:524
 msgid "italic"
-msgstr "po¹even"
+msgstr "kurzivno"
 
 #: kdeui/kfontdialog.cpp:348
 msgid "Charset"
@@ -729,11 +728,11 @@ msgstr "Nabor znakov"
 
 #: kdeui/kfontdialog.cpp:367
 msgid "Dolor Ipse"
-msgstr "Sreèa je opoteèa."
+msgstr "Dolor Ipse"
 
 #: kdeui/kfontdialog.cpp:519
 msgid "Bold"
-msgstr "Krepko"
+msgstr "Polkrepko"
 
 #: kdeui/kfontdialog.cpp:521
 msgid "Normal"
@@ -749,7 +748,7 @@ msgstr "Filter:"
 
 #: kdeui/kkeydialog.cpp:219
 msgid "Configure key bindings"
-msgstr ""
+msgstr "Nastavi vezi s tipkami"
 
 #: kdeui/kkeydialog.cpp:232 kdeui/knotebook.cpp:224 kdeui/kwizard.cpp:205
 #: po/texts.cpp:45
@@ -757,111 +756,116 @@ msgid "&Help"
 msgstr "&Pomoè"
 
 #: kdeui/kkeydialog.cpp:236 po/texts.cpp:136
-#, fuzzy
 msgid "&Defaults"
 msgstr "&Privzeto"
 
 #: kdeui/kkeydialog.cpp:320
 msgid "Current key"
-msgstr ""
+msgstr "Trenutna tipka"
 
 #: kdeui/kkeydialog.cpp:332
-#, fuzzy
 msgid "&Action"
-msgstr "&Lokacija:"
+msgstr "&Uèinek"
 
 #: kdeui/kkeydialog.cpp:366
 msgid "Choose a key for the selected action"
-msgstr ""
+msgstr "Izberite tipko, ki bo imela doloèen uèinek"
 
 #: kdeui/kkeydialog.cpp:393
 msgid "&No key"
-msgstr ""
+msgstr "&Brez tipke"
 
 #: kdeui/kkeydialog.cpp:401
-#, fuzzy
 msgid "&Default key"
-msgstr "&Privzeto"
+msgstr "&Privzeta tipka"
 
 #: kdeui/kkeydialog.cpp:409
-#, fuzzy
 msgid "&Custom key"
-msgstr "Doloèi..."
+msgstr "&Doloèena tipka"
 
 #: kdeui/kkeydialog.cpp:472
 msgid "No keys defined"
-msgstr ""
+msgstr "Tipke niso doloèene"
 
 #: kdeui/kkeydialog.cpp:474
 msgid "Not configurable"
-msgstr ""
+msgstr "Ni nastavljivo"
 
 #: kdeui/kkeydialog.cpp:530
 msgid "Global Keys"
-msgstr ""
+msgstr "Globalne tipke"
 
 #: kdeui/kkeydialog.cpp:562
 msgid "Keys"
-msgstr ""
+msgstr "Tipke"
 
 #: kdeui/kkeydialog.cpp:637 kdeui/kkeydialog.cpp:976
 msgid "Attention : key already used"
-msgstr ""
+msgstr "Pozor: tipka je ¾e uporabljena"
 
 #: kdeui/kkeydialog.cpp:926
 msgid "Press the wanted key"
-msgstr ""
+msgstr "Pritisnite ¾eljeno tipko"
 
 #: kdeui/kkeydialog.cpp:949
 msgid "Undefined key"
-msgstr ""
+msgstr "Nedoloèena tipka"
 
 #: kdeui/kkeydialog.cpp:999
 msgid "Return to end edition"
-msgstr ""
+msgstr "Vrni se na konec"
 
 #: kdeui/kkeydialog.cpp:1009
 msgid "Incorrect key"
-msgstr ""
+msgstr "Napaèna tipka"
 
 #: kdeui/kkeydialog.cpp:1035
-#, c-format
 msgid ""
 "The %s key combination has already been allocated\n"
 "to the global %s action.\n"
 "\n"
 "Please choose a unique key combination."
 msgstr ""
+"Zaporedje tipk %s ima ¾e doloèen\n"
+"globalen uèinek: %s.\n"
+"\n"
+"Prosim izberite ¹e neuporabljeno zaporedje tipk."
 
 #: kdeui/kkeydialog.cpp:1039
 msgid "Global key conflict"
-msgstr ""
+msgstr "Nasprotovanje globalnih tipk"
 
 #: kdeui/kkeydialog.cpp:1062
-#, c-format
 msgid ""
 "The %s key combination has already been allocated\n"
 "to the standard %s action.\n"
 "\n"
 "Please choose a unique key combination."
 msgstr ""
+"Zaporedje tipk %s ima ¾e doloèen\n"
+"standarden uèinek: %s.\n"
+"\n"
+"Prosim izberite ¹e neuporabljeno zaporedje tipk."
 
 #: kdeui/kkeydialog.cpp:1066
 msgid "Standard key conflict"
-msgstr ""
+msgstr "Nasprotovanje standardnih tipk"
 
 #: kdeui/kkeydialog.cpp:1086
-#, c-format
 msgid ""
 "The %s key combination has already been allocated\n"
 "to the %s action.\n"
 "\n"
 "Please choose a unique key combination."
 msgstr ""
+"Zaporedje tipk %s ima ¾e doloèen\n"
+"uèinek: %s.\n"
+"\n"
+"Prosim izberite ¹e neuporabljeno zaporedje tipk."
 
 #: kdeui/kkeydialog.cpp:1090
 msgid "Key conflict"
-msgstr ""
+msgstr "Nasprotovanje tipk"
 
 #: kdeui/kmenubar.cpp:306 kdeui/ktoolbar.cpp:860
 msgid "Top"
@@ -881,7 +885,7 @@ msgstr "Lebdeèe"
 
 #: kdeui/kmenubar.cpp:761 kdeui/ktoolbar.cpp:2071
 msgid "UnFloat"
-msgstr "Nelebdeèe"
+msgstr "Pritrjeno"
 
 #: kdeui/knotebook.cpp:145
 msgid "Trying to add page when no KWizards are added!"
@@ -893,7 +897,7 @@ msgstr "&Privzeto"
 
 #: kdeui/kquickhelp.cpp:203
 msgid "Quickhelp"
-msgstr ""
+msgstr "Hitra pomoè"
 
 #: kdeui/ktoolbar.cpp:288 kdeui/ktoolbar.cpp:340
 msgid "KToolBarButton: pixmap is empty, perhaps some missing file"
@@ -922,7 +926,7 @@ msgstr "Vsebina:"
 
 #: kfile/kfilebookmark.cpp:246
 msgid "<!-- Do not edit this file -->"
-msgstr "<!-- Ne urejaj te datoteke -->"
+msgstr "<!-- Ne spreminjajte te datoteke -->"
 
 #: kab/addressbook.cc:1112 kfile/kfiledetaillist.cpp:36
 msgid "Name"
@@ -954,7 +958,7 @@ msgstr "Naprej"
 
 #: kfile/kfiledialog.cpp:128
 msgid "Up to parent"
-msgstr "Gor do star¹a"
+msgstr "Gor"
 
 #: kfile/kfiledialog.cpp:134 po/texts.cpp:54
 msgid "Reload"
@@ -962,7 +966,7 @@ msgstr "Ponovno nalo¾i"
 
 #: kfile/kfiledialog.cpp:156
 msgid "Bookmarks"
-msgstr "Kazalo"
+msgstr "Zaznamki"
 
 #: kfile/kfiledialog.cpp:160
 msgid "Create new folder"
@@ -990,7 +994,7 @@ msgstr "&Filter:"
 
 #: kfile/kfiledialog.cpp:226
 msgid "Show hidden"
-msgstr "Poka¾i skrite"
+msgstr "Poka¾i skrito"
 
 #: kfile/kfiledialog.cpp:505
 msgid "Error: Not local file"
@@ -1013,8 +1017,8 @@ msgid ""
 "The specified directory does not exist\n"
 "or was not readable."
 msgstr ""
-"Iskana datoteka ne obstaja ali pa\n"
-"se ne da brati."
+"Oznaèen imenik ne obstaja ali pa\n"
+"se ga ne da brati."
 
 #: kfile/kfiledialog.cpp:523 kfile/kfiledialog.cpp:628
 msgid "Dismiss"
@@ -1026,15 +1030,15 @@ msgstr "Shrani kot"
 
 #: kfile/kfiledialog.cpp:597
 msgid "Root Directory"
-msgstr "Korenski imenik"
+msgstr "Osnovni imenik"
 
 #: kfile/kfiledialog.cpp:626
 msgid "The specified directory does not exist or was not readable."
-msgstr "Iskana datoteka ne obstaja ali pa se ne da brati."
+msgstr "Oznaèen imenik ne obstaja ali pa se ga ne da brati."
 
 #: kfile/kfiledialog.cpp:887
 msgid "Create new directory in: "
-msgstr "Naredi nov imenik v:"
+msgstr "Naredi nov imenik v: "
 
 #: kfile/kfiledialog.cpp:890
 msgid "New Directory"
@@ -1042,7 +1046,7 @@ msgstr "Nov imenik"
 
 #: kfile/kfiledialog.cpp:962
 msgid "Add to bookmarks"
-msgstr "Dodaj v kazalo"
+msgstr "Dodaj zaznamek"
 
 #: kfile/kfiledialog.cpp:1253
 msgid "Choose Directory"
@@ -1065,18 +1069,16 @@ msgid "files"
 msgstr "datoteke"
 
 #: kfile/kfiledialog.cpp:1329
-#, c-format
 msgid "%d %s and %d %s"
 msgstr "%d %s in %d %s"
 
 #: kfile/kfiledialog.cpp:1339
 msgid "one directory"
-msgstr "en imenik"
+msgstr "imenik"
 
 #: kfile/kfiledialog.cpp:1341
-#, fuzzy, c-format
 msgid "%d directories"
-msgstr "imeniki"
+msgstr "%d imenikov"
 
 #: kfile/kfiledialogconf.cpp:42
 msgid "Look and Feel"
@@ -1095,8 +1097,8 @@ msgid ""
 "Mario Weilguni <mweilguni@sime.com>\n"
 "and Martin Jones <mjones@kde.org>"
 msgstr ""
-"KDE pogovorno okno za odpiranje datotek\n"
-"so napisali:\n"
+"Pogovorno okno za odpiranje\n"
+"datotek v KDE so napisali:\n"
 "\n"
 "Richard Moore <rich@kde.org>\n"
 "Stephan Kulow <coolo@kde.org>\n"
@@ -1109,7 +1111,7 @@ msgstr ""
 
 #: kfile/kfiledialogconf.cpp:57 po/texts.cpp:32
 msgid "About"
-msgstr "O programu"
+msgstr "O oknu"
 
 #: kfile/kfiledialogconf.cpp:71
 msgid "View style"
@@ -1117,11 +1119,11 @@ msgstr "Naèin gledanja"
 
 #: kfile/kfiledialogconf.cpp:75
 msgid "Show Short View"
-msgstr "Poka¾i kratke opise"
+msgstr "Kratki opisi"
 
 #: kfile/kfiledialogconf.cpp:81
 msgid "Show Detail View"
-msgstr "Poka¾i podrobnosti"
+msgstr "Podrobnosti"
 
 #: kfile/kfiledialogconf.cpp:90
 msgid "Misc"
@@ -1129,11 +1131,11 @@ msgstr "Razno"
 
 #: kfile/kfiledialogconf.cpp:96
 msgid "Show Filter"
-msgstr "Poka¾i filter:"
+msgstr "Poka¾i filter"
 
 #: kfile/kfiledialogconf.cpp:102
 msgid "Show List Labels"
-msgstr "Poka¾i znaèilnosti seznama"
+msgstr "Poka¾i naslove seznamov"
 
 #: kfile/kfiledialogconf.cpp:108
 msgid "Show Hidden"
@@ -1156,9 +1158,8 @@ msgid "Keep dirs first"
 msgstr "Najprej poka¾i imenike"
 
 #: kfile/kfilefilter.cpp:35
-#, fuzzy
 msgid "*|All Files"
-msgstr "Datoteke"
+msgstr "*|Vse datoteke"
 
 #: kfile/kfileinfo.cpp:97 kfile/kfileinfo.cpp:101
 msgid "unknown"
@@ -1166,47 +1167,47 @@ msgstr "neznan"
 
 #: kfile/kfileinfo.cpp:221
 msgid "Jan"
-msgstr "Jan"
+msgstr "jan"
 
 #: kfile/kfileinfo.cpp:222
 msgid "Feb"
-msgstr "Feb"
+msgstr "feb"
 
 #: kfile/kfileinfo.cpp:223
 msgid "Mar"
-msgstr "Mar"
+msgstr "mar"
 
 #: kfile/kfileinfo.cpp:224
 msgid "Apr"
-msgstr "Apr"
+msgstr "apr"
 
 #: kfile/kfileinfo.cpp:226
 msgid "Jun"
-msgstr "Jun"
+msgstr "jun"
 
 #: kfile/kfileinfo.cpp:227
 msgid "Jul"
-msgstr "Jul"
+msgstr "jul"
 
 #: kfile/kfileinfo.cpp:228
 msgid "Aug"
-msgstr "Avg"
+msgstr "avg"
 
 #: kfile/kfileinfo.cpp:229
 msgid "Sep"
-msgstr "Sep"
+msgstr "sep"
 
 #: kfile/kfileinfo.cpp:230
 msgid "Oct"
-msgstr "Okt"
+msgstr "okt"
 
 #: kfile/kfileinfo.cpp:231
 msgid "Nov"
-msgstr "Nov"
+msgstr "nov"
 
 #: kfile/kfileinfo.cpp:232
 msgid "Dec"
-msgstr "Dec"
+msgstr "dec"
 
 #: kab/editentry.cc:64 kfile/kpreview.cpp:187
 msgid "Name:"
@@ -1264,77 +1265,71 @@ msgstr ""
 
 #: kspell/ksconfig.cpp:66
 msgid "Create Root/Affix combinations not in the dictionary"
-msgstr ""
+msgstr "Naredi nove kombinacije koren/pripona, ki jih ¹e ni v slovarju"
 
 #: kspell/ksconfig.cpp:75
 msgid "Consider run-together words as spelling errors"
-msgstr ""
+msgstr "Obravnavaj skupaj pisane besede kot napake"
 
 #: kspell/ksconfig.cpp:92
-#, fuzzy
 msgid "Dictionary"
-msgstr "imenik"
+msgstr "Slovar"
 
 #: kspell/ksconfig.cpp:140
 msgid "Encoding:"
-msgstr ""
+msgstr "Kodni nabor:"
 
 #: kspell/ksconfig.cpp:147
-#, fuzzy
 msgid "Latin1"
-msgstr "&Lokacija:"
+msgstr "Latin1"
 
 #: kspell/ksconfig.cpp:148
 msgid "7-Bit/ASCII"
-msgstr ""
+msgstr "7-bitno/ASCII"
 
 #: kspell/ksconfig.cpp:292
 msgid "English"
-msgstr ""
+msgstr "angle¹ki"
 
 #: kspell/ksconfig.cpp:298
 msgid "Spanish"
-msgstr ""
+msgstr "¹panski"
 
 #: kspell/ksconfig.cpp:304
-#, fuzzy
 msgid "German"
-msgstr "roman"
+msgstr "nem¹ki"
 
 #: kspell/ksconfig.cpp:311
 msgid "Brazilian Portuguese"
-msgstr ""
+msgstr "brazilsko portugalski"
 
 #: kspell/ksconfig.cpp:317
-#, fuzzy
 msgid "Unknown"
-msgstr "neznan"
+msgstr "Neznan"
 
 #: kspell/ksconfig.cpp:348
-#, fuzzy
 msgid "ISpell Default"
-msgstr "Privzeto"
+msgstr "Privzeto za ISpell"
 
 #: kspell/kspelldlg.cpp:58
 msgid "Misspelled Word:"
-msgstr ""
+msgstr "Narobe èrkovana beseda:"
 
 #: kspell/kspelldlg.cpp:68
-#, fuzzy
 msgid "Replacement:"
-msgstr "Zamenjaj"
+msgstr "Zamenjava:"
 
 #: kspell/kspelldlg.cpp:77
 msgid "Suggestions:"
-msgstr ""
+msgstr "Predlogi:"
 
 #: kspell/kspelldlg.cpp:88
 msgid "Ignore"
-msgstr ""
+msgstr "Zanemari"
 
 #: kspell/kspelldlg.cpp:99
 msgid "Ignore All"
-msgstr ""
+msgstr "Zanemari vse"
 
 #: kspell/kspelldlg.cpp:120 po/texts.cpp:86
 msgid "Add"
@@ -1352,7 +1347,7 @@ msgstr "Napaka"
 
 #: po/texts.cpp:25
 msgid "Malformed URL"
-msgstr "Narobe vpisan URL"
+msgstr "Narobe oblikovan URL"
 
 #: po/texts.cpp:29
 msgid "Warning"
@@ -1368,7 +1363,7 @@ msgstr "Vsebina"
 
 #: po/texts.cpp:33
 msgid "A&bout..."
-msgstr "O &programu"
+msgstr "&O programu..."
 
 #: po/texts.cpp:37
 msgid "On"
@@ -1396,15 +1391,15 @@ msgstr "&Uredi"
 
 #: po/texts.cpp:48
 msgid "&Options"
-msgstr "&Nastavitve"
+msgstr "&Mo¾nosti"
 
 #: po/texts.cpp:49
 msgid "View"
-msgstr "Pogled"
+msgstr "Videz"
 
 #: po/texts.cpp:50
 msgid "&View"
-msgstr "Po&gled"
+msgstr "&Videz"
 
 #: po/texts.cpp:51
 msgid "E&xit"
@@ -1412,15 +1407,15 @@ msgstr "&Izhod"
 
 #: po/texts.cpp:53
 msgid "&Quit"
-msgstr "Od&idi"
+msgstr "&Konèaj"
 
 #: po/texts.cpp:57
 msgid "&Copy"
-msgstr "&Kopiraj"
+msgstr "&Prepi¹i"
 
 #: po/texts.cpp:59
 msgid "&Paste"
-msgstr "&Prilepi"
+msgstr "Pri&lepi"
 
 #: po/texts.cpp:60
 msgid "&New Window..."
@@ -1456,11 +1451,11 @@ msgstr "&Odpri..."
 
 #: po/texts.cpp:70
 msgid "&Cut"
-msgstr "Iz&re¾i"
+msgstr "&Izre¾i"
 
 #: po/texts.cpp:71
 msgid "C&ut"
-msgstr "&Izre¾i"
+msgstr "Iz&re¾i"
 
 #: po/texts.cpp:72
 msgid "Font"
@@ -1484,7 +1479,7 @@ msgstr "Shrani kot..."
 
 #: po/texts.cpp:79
 msgid "S&ave as..."
-msgstr "S&hrani kot"
+msgstr "S&hrani kot..."
 
 #: po/texts.cpp:81
 msgid "&Close"
@@ -1492,11 +1487,11 @@ msgstr "&Zapri"
 
 #: po/texts.cpp:82
 msgid "&Print..."
-msgstr "&Tiskaj..."
+msgstr "&Natisni..."
 
 #: po/texts.cpp:84
 msgid "Options"
-msgstr "Nastavitve"
+msgstr "Mo¾nosti"
 
 #: po/texts.cpp:85
 msgid "Remove"
@@ -1520,11 +1515,11 @@ msgstr "Poèisti"
 
 #: po/texts.cpp:91
 msgid "Italic"
-msgstr "Po¹evno"
+msgstr "Kurzivno"
 
 #: po/texts.cpp:92
 msgid "Roman"
-msgstr "Roman"
+msgstr "Pokonèno"
 
 #: po/texts.cpp:94
 msgid "&Undo"
@@ -1568,7 +1563,7 @@ msgstr "&Zaèni"
 
 #: po/texts.cpp:105
 msgid "St&op"
-msgstr "U&stavi"
+msgstr "&Ustavi"
 
 #: po/texts.cpp:106
 msgid "Miscellaneous"
@@ -1588,7 +1583,7 @@ msgstr "&Pisave"
 
 #: po/texts.cpp:110
 msgid "&Reload"
-msgstr "Ponovno &nalo¾i"
+msgstr "&Ponovno nalo¾i"
 
 #: po/texts.cpp:111
 msgid "Files"
@@ -1608,31 +1603,31 @@ msgstr "Videz"
 
 #: po/texts.cpp:116
 msgid "Monday"
-msgstr "Ponedeljek"
+msgstr "ponedeljek"
 
 #: po/texts.cpp:117
 msgid "Tuesday"
-msgstr "Torek"
+msgstr "torek"
 
 #: po/texts.cpp:118
 msgid "Wednesday"
-msgstr "Sreda"
+msgstr "sreda"
 
 #: po/texts.cpp:119
 msgid "Thursday"
-msgstr "Èetrtek"
+msgstr "èetrtek"
 
 #: po/texts.cpp:120
 msgid "Friday"
-msgstr "Petek"
+msgstr "petek"
 
 #: po/texts.cpp:121
 msgid "Saturday"
-msgstr "Sobota"
+msgstr "sobota"
 
 #: po/texts.cpp:122
 msgid "Sunday"
-msgstr "Nedelja"
+msgstr "nedelja"
 
 #: po/texts.cpp:123
 msgid "&Update"
@@ -1640,11 +1635,11 @@ msgstr "Poso&dobi"
 
 #: po/texts.cpp:124
 msgid "Layout"
-msgstr "Ureditev"
+msgstr "Razpored"
 
 #: po/texts.cpp:125
 msgid "Highscore"
-msgstr "©ampijoni"
+msgstr "Prvaki"
 
 #: po/texts.cpp:126
 msgid "&New View"
@@ -1663,9 +1658,8 @@ msgid "<< &Previous"
 msgstr "<< &Prej¹nji"
 
 #: po/texts.cpp:138
-#, fuzzy
 msgid "&About..."
-msgstr "O &programu"
+msgstr "&O programu..."
 
 #: kab/addressbook.cc:90
 msgid ""
@@ -1674,10 +1668,14 @@ msgid ""
 "The program will try to create\n"
 "         "
 msgstr ""
+"Imenik, ki vsebuje uporabnikove informacije za\n"
+"program rokovnik, ne obstaja.\n"
+"Program bo posku¹al narediti\n"
+"         "
 
 #: kab/addressbook.cc:94
 msgid "and store all local files in this directory."
-msgstr ""
+msgstr "in shraniti vse lokalne datoteke v ta imenik."
 
 #: kab/addressbook.cc:98
 msgid ""
@@ -1687,132 +1685,134 @@ msgid ""
 "in your home directory. Run the KDE filemanager\n"
 "kfm once to automatically create it."
 msgstr ""
+"Imenika mi ni uspelo narediti.\n"
+"Verjetno ¹e niste uporabljali KDE in zato\n"
+"nimete lokalnega imenika \".kde\"\n"
+"v svojem domaèem imeniku. Za¾enite KFM,\n"
+"da ga bo samodejno naredil."
 
 #: kab/addressbook.cc:106
 msgid "The directory has been created.\n"
-msgstr ""
+msgstr "Imenik je narejen.\n"
 
 #: kab/addressbook.cc:140
 msgid "No addressbook database file, creating new one."
-msgstr ""
+msgstr "Ne najdem podatkovne zbirke rokovnika, zato delam novo."
 
 #: kab/addressbook.cc:159
 msgid "Tried to load database for creating backup, but failed"
-msgstr ""
+msgstr "Ni mi uspelo nalo¾iti podatkovne zbirke za varnostno kopiranje"
 
 #: kab/addressbook.cc:194
 msgid "Unable to save to backup file."
-msgstr ""
+msgstr "Ne morem shraniti v varnostno kopijo."
 
 #: kab/addressbook.cc:200
 msgid "Unable to reset filename after creating backup."
-msgstr ""
+msgstr "Po varnostnem kopiranju na morem veè spremeniti imena datoteke."
 
 #: kab/addressbook.cc:205
 msgid "Unable to create backup file"
-msgstr ""
+msgstr "Ne morem narediti varnostne kopije"
 
 #: kab/addressbook.cc:263
 msgid "Unable to insert \""
-msgstr ""
+msgstr "Ne morem vstaviti \""
 
 #: kab/addressbook.cc:264
 msgid "\" into configuration section (ignored)."
-msgstr ""
+msgstr "\" v nastavitven razdelek (zanemarjeno)."
 
 #: kab/addressbook.cc:666
 msgid "Unable to add a new entry with available key."
-msgstr ""
+msgstr "Z razpolo¾ljivo tipko ne morem dodati novega vnosa."
 
 #: kab/addressbook.cc:672
 msgid "Cannot find previously created section."
-msgstr ""
+msgstr "Ne najdem prej narejenega razdelka."
 
 #: kab/addressbook.cc:703
 msgid "Unable to create key-value-map for entry."
-msgstr ""
+msgstr "Ne morem narediti tabele vrednosti tipk za vnos."
 
 #: kab/addressbook.cc:989
 msgid "entry without name"
-msgstr ""
+msgstr "vnos brez imena"
 
 #: kab/addressbook.cc:1007
 msgid ""
 "Unable to create new database file (probably permission denied), exiting."
 msgstr ""
+"Ne morem narediti nove podatkovne zbirke (verjetno nimate dovoljenja) - "
+"konèujem."
 
 #: kab/addressbook.cc:1013
 msgid "Cannot create configuration section, exiting."
-msgstr ""
+msgstr "Ne morem narediti nastavitvenega razdelka - konèujem."
 
 #: kab/addressbook.cc:1018
 msgid "Cannot create entries section, exiting."
-msgstr ""
+msgstr "Ne morem narediti razdelka za vnose - konèujem."
 
 #: kab/addressbook.cc:1023
 msgid "Unable to find previously created section, exiting."
-msgstr ""
+msgstr "Ne najdem prej narejenega razdelka - konèujem."
 
 #: kab/addressbook.cc:1031
 msgid "Cannot save newly created database."
-msgstr ""
+msgstr "Ne morem shraniti nove podatkovne zbirke."
 
 #: kab/addressbook.cc:1037
 msgid "Cannot erase database contents."
-msgstr ""
+msgstr "Ne morem izbrisati vsebine podatkovne zbirke."
 
 #: kab/addressbook.cc:1116
 msgid "First name"
-msgstr ""
+msgstr "Prvo ime"
 
 #: kab/addressbook.cc:1120
 msgid "Additional name"
-msgstr ""
+msgstr "Dodatno ime"
 
 #: kab/addressbook.cc:1124
 msgid "Name prefix"
-msgstr ""
+msgstr "Predpona imena"
 
 #: kab/addressbook.cc:1128
 msgid "Formatted name"
-msgstr ""
+msgstr "Oblikovano ime"
 
 #: kab/addressbook.cc:1132
-#, fuzzy
 msgid "Comment"
-msgstr "Vsebina"
+msgstr "Komentar"
 
 #: kab/addressbook.cc:1136
 msgid "Organization"
-msgstr ""
+msgstr "Organizacija"
 
 #: kab/addressbook.cc:1140
-#, fuzzy
 msgid "Unit"
-msgstr "Brez naslova"
+msgstr "Enota"
 
 #: kab/addressbook.cc:1144
-#, fuzzy
 msgid "Subunit"
-msgstr "Ned"
+msgstr "Podenota"
 
 #: kab/addressbook.cc:1148
-#, fuzzy
 msgid "Title"
-msgstr "datoteka"
+msgstr "Naslov"
 
 #: kab/addressbook.cc:1152
-#, fuzzy
 msgid "Role"
-msgstr "imenik"
+msgstr "Vloga"
 
 #: kab/addressbook.cc:1156
 msgid "Birthday"
-msgstr ""
+msgstr "Rojstni dan"
 
 #: kab/addressbook.cc:1160
 msgid "Talk addresses"
-msgstr ""
+msgstr "Naslovi za talk"
 
 #: kab/addressbook.cc:1164
 msgid "Delivery label"
@@ -1820,198 +1820,187 @@ msgstr ""
 
 #: kab/addressbook.cc:1168
 msgid "Email address"
-msgstr ""
+msgstr "Elektronski naslov"
 
 #: kab/addressbook.cc:1172
 msgid "Second email address"
-msgstr ""
+msgstr "Drugi elektronski naslov"
 
 #: kab/addressbook.cc:1176
 msgid "Third email address"
-msgstr ""
+msgstr "Tretji elektronski naslov"
 
 #: kab/addressbook.cc:1180
 msgid "Email addresses"
-msgstr ""
+msgstr "Elektronski naslov"
 
 #: kab/addressbook.cc:1184
-#, fuzzy
 msgid "Address"
-msgstr "Dodaj"
+msgstr "Naslov"
 
 #: kab/addressbook.cc:1188
 msgid "City/Town"
-msgstr ""
+msgstr "Mesto/naselje"
 
 #: kab/addressbook.cc:1192
 msgid "Telephone"
-msgstr ""
+msgstr "Telefon"
 
 #: kab/addressbook.cc:1196
 msgid "Fax number"
-msgstr ""
+msgstr "©tevilka faksa"
 
 #: kab/addressbook.cc:1200
-#, fuzzy
 msgid "Modem number"
-msgstr "November"
+msgstr "©tevilka modema"
 
 #: kab/addressbook.cc:1204
 msgid "Homepage URL"
-msgstr ""
+msgstr "URL domaèe strani"
 
 #: kab/addressbook.cc:1208
 msgid "Zip/postal code"
-msgstr ""
+msgstr "Po¹tna ¹tevilka"
 
 #: kab/addressbook.cc:1212
 msgid "State/province"
-msgstr ""
+msgstr "Obèina"
 
 #: kab/addressbook.cc:1216
-#, fuzzy
 msgid "Country"
-msgstr "Izre¾i"
+msgstr "Dr¾ava"
 
 #: kab/addressbook.cc:1383
 msgid "(unnamed entry)"
-msgstr ""
+msgstr "(neimenovan vnos)"
 
 #: kab/datepickerdialog.cc:34
-#, fuzzy
 msgid "Select birthday"
-msgstr "Izberi pisavo"
+msgstr "Izberite rojstni dan"
 
 #: kab/editentry.cc:38
 msgid "Edit the current entry"
-msgstr ""
+msgstr "Uredite trenutni vnos"
 
 #: kab/editentry.cc:61
-#, fuzzy
 msgid "Title:"
-msgstr "Slog:"
+msgstr "Naslov:"
 
 #: kab/editentry.cc:62
 msgid "First name:"
-msgstr ""
+msgstr "Prvo ime:"
 
 #: kab/editentry.cc:63
 msgid "Additional Name:"
-msgstr ""
+msgstr "Dodatno ime:"
 
 #: kab/editentry.cc:65
 msgid "Formatted Name:"
-msgstr ""
+msgstr "Oblikovano ime:"
 
 #: kab/editentry.cc:88
-#, fuzzy
 msgid "&Name"
-msgstr "Ime"
+msgstr "&Ime"
 
 #: kab/editentry.cc:103
 msgid "Address:"
-msgstr ""
+msgstr "Naslov:"
 
 #: kab/editentry.cc:104
 msgid "Town/City:"
-msgstr ""
+msgstr "Naselje/mesto:"
 
 #: kab/editentry.cc:105
-#, fuzzy
 msgid "State:"
-msgstr "Datum:"
+msgstr "Obèina:"
 
 #: kab/editentry.cc:106
 msgid "Zip/Postal Code:"
-msgstr ""
+msgstr "Po¹tna ¹tevilka:"
 
 #: kab/editentry.cc:107
 msgid "Country:"
-msgstr ""
+msgstr "Dr¾ava:"
 
 #: kab/editentry.cc:130
 msgid "&Address"
-msgstr ""
+msgstr "&Naslov"
 
 #: kab/editentry.cc:145
 msgid "Organization:"
-msgstr ""
+msgstr "Organizacija:"
 
 #: kab/editentry.cc:146
-#, fuzzy
 msgid "Department:"
-msgstr "Zamenjaj"
+msgstr "Oddelek:"
 
 #: kab/editentry.cc:147
 msgid "Sub-Department:"
-msgstr ""
+msgstr "Pododdelek:"
 
 #: kab/editentry.cc:148
-#, fuzzy
 msgid "Job/Role:"
-msgstr "Imeniki:"
+msgstr "Poklic/Vloga:"
 
 #: kab/editentry.cc:169
 msgid "&Organization"
-msgstr ""
+msgstr "&Organizacija"
 
 #: kab/editentry.cc:184
 msgid "Telephone:"
-msgstr ""
+msgstr "Telefon:"
 
 #: kab/editentry.cc:185
 msgid "Fax:"
-msgstr ""
+msgstr "faks:"
 
 #: kab/editentry.cc:186
-#, fuzzy
 msgid "Modem:"
-msgstr "Premakni"
+msgstr "Modem:"
 
 #: kab/editentry.cc:187
 msgid "Homepage (URL):"
-msgstr ""
+msgstr "Domaèa stran (URL):"
 
 #: kab/editentry.cc:200 kab/editentry.cc:418
 msgid "Edit email addresses"
-msgstr ""
+msgstr "Uredi elektronski naslov"
 
 #: kab/editentry.cc:206 kab/editentry.cc:400
 msgid "Edit talk addresses"
-msgstr ""
+msgstr "Uredi naslove za talk"
 
 #: kab/editentry.cc:218
-#, fuzzy
 msgid "&Contact"
-msgstr "&Vsebina"
+msgstr "&Stiki"
 
 #: kab/editentry.cc:239
 msgid "Additional Comment:"
-msgstr ""
+msgstr "Dodatni komentar:"
 
 #: kab/editentry.cc:246
 msgid "Birthday:"
-msgstr ""
+msgstr "Rojstni dan:"
 
 #: kab/editentry.cc:249
 msgid "Double click to set date"
-msgstr ""
+msgstr "Dvokliknite za nastavitev datuma"
 
 #: kab/editentry.cc:256
 msgid "O&thers"
-msgstr ""
+msgstr "O&stalo"
 
 #: kab/kabapi.cc:138
 msgid "Your new entry could not be added."
-msgstr ""
+msgstr "Nisem mogel dodati novega vnosa."
 
 #: kab/searchresults.cc:33
 msgid "search results"
-msgstr ""
+msgstr "rezultati iskanja"
 
 #: kab/widget.cc:144
 msgid "Conversion problem"
-msgstr ""
+msgstr "Te¾ava pri pretvorbi"
 
 #: kab/widget.cc:145
 msgid ""
@@ -2020,16 +2009,21 @@ msgid ""
 "You can use it, but not all features will be\n"
 "supported."
 msgstr ""
+"Kab ni mogel pretvoriti va¹e podatkovne zbirke v\n"
+"novej¹o obliko.\n"
+"Lahko jo uporabljate, vendar brez nekaterih funkcij."
 
 #: kab/widget.cc:163
 msgid ""
 "The application saved the last current entry,\n"
 "but this entry does not exist anymore."
 msgstr ""
+"Program je shranil zadnji vnos,\n"
+"vendar ta veè ne obstaja."
 
 #: kab/widget.cc:229
 msgid "kab: Removed bug warning"
-msgstr ""
+msgstr "kab: Opozorilo o hro¹èu je odstranjeno"
 
 #: kab/widget.cc:230
 msgid ""
@@ -2040,18 +2034,23 @@ msgid ""
 "All configuration values have been reset to\n"
 "its default settings."
 msgstr ""
+"Prej¹nja razlièica kaba je imela napako pri\n"
+"obnovitvi podatkovne zbirke za nove razlièice.\n"
+"Ta napaka je bila odstranjena in ne bo veè imela\n"
+"uèinka. Vse nastavitve so bile ponovno\n"
+"nastavljene na zaèetne vrednosti."
 
 #: kab/widget.cc:248 kab/widget.cc:314 kab/widget.cc:322
 msgid "File handling error"
-msgstr ""
+msgstr "Napaka pri delu z datoteko"
 
 #: kab/widget.cc:249
 msgid "Unable to open database file r/w."
-msgstr ""
+msgstr "Nisem mogel odpreti podatkovne zbirke r/w."
 
 #: kab/widget.cc:257
 msgid "Email storage conversion"
-msgstr ""
+msgstr "Pretvarjanje po¹tnega nabiralnika"
 
 #: kab/widget.cc:258
 msgid ""
@@ -2059,10 +2058,13 @@ msgid ""
 "the new style supporting unlimited numbers\n"
 "of email addresses per entry."
 msgstr ""
+"Kab bo za vse va¹e elektronske naslove\n"
+"omogoèil nov naèin vnosa, ki podpira\n"
+"neomejeno ¹tevilo le-teh."
 
 #: kab/widget.cc:291
 msgid "kab database update"
-msgstr ""
+msgstr "obnovitev kab podatkovne zbirke"
 
 #: kab/widget.cc:292
 msgid ""
@@ -2075,101 +2077,102 @@ msgid ""
 "You will probably need to edit some of your\n"
 "entries to make use of it."
 msgstr ""
+"Prosim upo¹tevajte, da kab sedaj podpira nova\n"
+"polja v naslovih. Ta so:\n"
+"° obèina,\n"
+"° dr¾ava in\n"
+"° po¹tna ¹tevilka.\n"
+"Verjetno boste morali urediti nekatere svoje vnose,\n"
+"da boste lahko ta polja uporabili."
 
 #: kab/widget.cc:315
-#, fuzzy
 msgid "Could not save database after update."
-msgstr "Dokumenta mi ni uspelo shraniti.\n"
+msgstr "Po obnovitvi nisem mogel shraniti podatkovne zbirke."
 
 #: kab/widget.cc:323
 msgid "Unable to reopen database file r/o."
-msgstr ""
+msgstr "Nisem mogel ponovno odpreti podatkovne zbirke r/o."
 
 #: kab/widget.cc:482
-#, fuzzy
 msgid "first entry"
-msgstr "imenik"
+msgstr "prvi vnos"
 
 #: kab/widget.cc:483
-#, fuzzy
 msgid "previous entry"
-msgstr "&Prej¹nji"
+msgstr "prej¹nji vnos"
 
 #: kab/widget.cc:484
-#, fuzzy
 msgid "next entry"
-msgstr "en imenik"
+msgstr "naslednji vnos"
 
 #: kab/widget.cc:485
 msgid "last entry"
-msgstr ""
+msgstr "zadnji vnos"
 
 #: kab/widget.cc:486
 msgid "search entries"
-msgstr ""
+msgstr "i¹èi vnos"
 
 #: kab/widget.cc:487
 msgid "add a new entry"
-msgstr ""
+msgstr "dodaj nov vnos"
 
 #: kab/widget.cc:488
 msgid "change this entry"
-msgstr ""
+msgstr "spremeni vnos"
 
 #: kab/widget.cc:489
 msgid "remove this entry"
-msgstr ""
+msgstr "odstrani vnos"
 
 #: kab/widget.cc:528
 msgid "Switched to first entry."
-msgstr ""
+msgstr "Prvi vnos."
 
 #: kab/widget.cc:560
 msgid "Switched to last entry."
-msgstr ""
+msgstr "Zadnji vnos."
 
 #: kab/widget.cc:621 kab/widget.cc:678 kab/widget.cc:860 kab/widget.cc:922
 msgid "Sorry, file changed."
-msgstr ""
+msgstr "Oprostite, datoteka se je spremenila."
 
 #: kab/widget.cc:625 kab/widget.cc:682 kab/widget.cc:926
-#, fuzzy
 msgid "Permission denied."
-msgstr "Dovoljenja"
+msgstr "Nimate dovoljenja."
 
 #: kab/widget.cc:636
-#, fuzzy
 msgid "Remove entry?"
-msgstr "Odstrani"
+msgstr "Ali odstranim vnos?"
 
 #: kab/widget.cc:637
 msgid "Really remove this entry?"
-msgstr ""
+msgstr "Ali res odstranim vnos?"
 
 #: kab/widget.cc:655
 msgid "Entry deleted."
-msgstr ""
+msgstr "Vnos je izbrisan."
 
 #: kab/widget.cc:694
 msgid "Added a new entry."
-msgstr ""
+msgstr "Dodal sem nov vnos."
 
 #: kab/widget.cc:821
 msgid "Opened browser window."
-msgstr ""
+msgstr "Odprl sem okno brskalnika."
 
 #: kab/widget.cc:824
 msgid "No URL."
-msgstr ""
+msgstr "Ni URL-ja."
 
 #: kab/widget.cc:828 kab/widget.cc:997 kab/widget.cc:1176 kab/widget.cc:1813
 #: kab/widget.cc:2003 kab/widget.cc:2087
 msgid "No entries."
-msgstr ""
+msgstr "Ni vnosov."
 
 #: kab/widget.cc:833
 msgid "The filemanager is busy, please try again."
-msgstr ""
+msgstr "Upravljalnik datotek je zaposlen, prosim poskusite znova."
 
 #: kab/widget.cc:853
 msgid ""
@@ -2177,385 +2180,231 @@ msgid ""
 "locked by another application.\n"
 "kab cannot save it."
 msgstr ""
+"Datoteko rokovnika trenutno\n"
+"uporablja drug program.\n"
+"kab je ne more shraniti."
 
 #: kab/widget.cc:870
 msgid "Database saved successfully."
-msgstr ""
+msgstr "Podatkovna zbirka je bila uspe¹no shranjena."
 
 #: kab/widget.cc:875
 msgid "kab: File error"
-msgstr ""
+msgstr "kab: Napaka v datoteki"
 
 #: kab/widget.cc:875
-#, fuzzy
 msgid "Could not save database."
-msgstr "Dokumenta mi ni uspelo shraniti.\n"
+msgstr "Nisem mogel shraniti podatkovne zbirke."
 
 #: kab/widget.cc:876
-#, fuzzy
 msgid "&Retry"
-msgstr "Obnovi"
+msgstr "&Poskusi znova"
 
 #: kab/widget.cc:876
 msgid "&Ignore"
-msgstr ""
+msgstr "&Zanemari"
 
 #: kab/widget.cc:879
-#, fuzzy
 msgid "Saving cancelled.\n"
-msgstr "Preklièi"
+msgstr "Shranjevanje je preklicano.\n"
 
 #: kab/widget.cc:945
 msgid "Entry changed."
-msgstr ""
+msgstr "Vnos je spremenjen."
 
 #: kab/widget.cc:1041
 msgid "Results"
-msgstr ""
+msgstr "Rezultati"
 
 #: kab/widget.cc:1041
 msgid "No entry matches this."
-msgstr ""
+msgstr "S tem se ne ujema nobeden vnos."
 
 #: kab/widget.cc:1050 kab/widget.cc:1720 kab/widget.cc:1855 kab/widget.cc:2032
 #: kab/widget.cc:2055 kab/widget.cc:2112
 msgid "Rejected."
-msgstr ""
+msgstr "Zavrnjeno."
 
 #: kab/widget.cc:1066
 msgid "Search results window closed."
-msgstr ""
+msgstr "Okno z rezultati iskanja se je zaprlo."
 
 #: kab/widget.cc:1165
 msgid "The talk command must be configured before!"
-msgstr ""
+msgstr "Ukaz talk mora biti nastavljen prej!"
 
 #: kab/widget.cc:1170
 msgid "Talk configuration"
-msgstr ""
+msgstr "Nastavitev programa talk"
 
 #: kab/widget.cc:1171
 msgid "Please configure the parameters for the talk command."
-msgstr ""
+msgstr "Prosim nastavite parametre ukaza talk."
 
 #: kab/widget.cc:1184
 msgid "No talk address."
-msgstr ""
+msgstr "Ne najdem naslovov za talk."
 
 #: kab/widget.cc:1192
 msgid "kab: Talk addresses"
-msgstr ""
+msgstr "kab: Naslovi za talk"
 
 #: kab/widget.cc:1193
 msgid "Available talk addresses:"
-msgstr ""
+msgstr "Razpolo¾ljivi naslovi za talk:"
 
 #: kab/widget.cc:1199 kab/widget.cc:1963
-#, fuzzy
 msgid "Cancelled."
-msgstr "Preklièi"
+msgstr "Preklicano."
 
 #: kab/widget.cc:1222
 msgid "The talk command parameters are wrong."
-msgstr ""
+msgstr "Parametri ukaza talk so napaèni."
 
 #: kab/widget.cc:1234
 msgid ""
 "Talk command failed.\n"
 "Make sure you did setup your talk command and parameter!"
 msgstr ""
+"Ukaz talk ne dela.\n"
+"Preverite, èe ste nastavili ukaz in njegove parametre!"
 
 #: kab/widget.cc:1237
 msgid "Talk program started."
-msgstr ""
+msgstr "Program talk je zagnan."
 
 #: kab/widget.cc:1285
 msgid "Attention: printing is still experimental!"
-msgstr ""
+msgstr "Pozor: tiskanje je ¹e vedno poskusno!"
 
 #: kab/widget.cc:1387 kab/widget.cc:1429
 msgid "Page size problem"
-msgstr ""
+msgstr "Te¾ava z velikostjo strani"
 
 #: kab/widget.cc:1388 kab/widget.cc:1430
 msgid ""
 "The fields you requested to print do\n"
 "not fit into the page width."
 msgstr ""
+"Polja, ki jih ¾elite tiskati\n"
+"presegajo ¹irino strani."
 
 #: kab/widget.cc:1624 kab/widget.cc:2066
 msgid "Printing finished successfully."
-msgstr ""
+msgstr "Uspe¹no sem konèal s tiskanjem."
 
 #: kab/widget.cc:1651
 msgid "kab: Email addresses"
-msgstr ""
+msgstr "kab: Elektronski naslov"
 
 #: kab/widget.cc:1652
 msgid "Available email addresses:"
-msgstr ""
+msgstr "Razpolo¾ljivi elektronski naslovi:"
 
 #: kab/widget.cc:1717
 msgid "kab: Select fields to copy"
-msgstr ""
+msgstr "kab: Izberite polja za prepisovanje"
 
 #: kab/widget.cc:1727
 msgid "Nothing selected."
-msgstr ""
+msgstr "Niè ni izbrano."
 
 #: kab/widget.cc:1785 kab/widget.cc:2049
 msgid "KDE addressbook overview"
-msgstr ""
+msgstr "Pregled KDE imenika"
 
 #: kab/widget.cc:1829
 msgid "Name-Email-Link (!!)"
-msgstr ""
+msgstr "Ime - elektronska po¹ta - povezava (!!)"
 
 #: kab/widget.cc:1831
-#, fuzzy
 msgid "Select table columns"
-msgstr "Izberi ikono"
+msgstr "Izberite stolpce iz tabele"
 
 #: kab/widget.cc:1836
 msgid "Nothing to export."
-msgstr ""
+msgstr "Nièesar ni za izvoz."
 
 #: kab/widget.cc:1865
 msgid "Email link"
-msgstr ""
+msgstr "Elektronska po¹tna povezava"
 
 #: kab/widget.cc:1952
 msgid "Could not find the users home directory."
-msgstr ""
+msgstr "Nisem mogel najti domaèega imenika uporabnikov."
 
 #: kab/widget.cc:1953
 msgid "Intern error!"
-msgstr ""
+msgstr "Notranja napaka!"
 
 #: kab/widget.cc:1973
 msgid "Could not open the file to create the HTML table."
-msgstr ""
+msgstr "Nisem mogel odpreti datoteke za HTML tabelo."
 
 #: kab/widget.cc:2009
 msgid "Printing cancelled."
-msgstr ""
+msgstr "Tiskanje je preklicano."
 
 #: kab/widget.cc:2025
 msgid "kab: Select columns for printing"
-msgstr ""
+msgstr "kab: Izberite stolpce za tiskanje"
 
 #: kab/widget.cc:2038
 msgid "Nothing to print."
-msgstr ""
+msgstr "Nièesar ni za natisniti."
 
 #: kab/widget.cc:2050
 msgid "Page <p>"
-msgstr ""
+msgstr "Stran <s>"
 
 #: kab/widget.cc:2051
 msgid "KDE - the professionals choice."
-msgstr ""
+msgstr "KDE - izbira strokovnjakov."
 
 #: kab/widget.cc:2064
 msgid "Printing failed!"
-msgstr ""
+msgstr "Ni mi uspelo natisniti!"
 
 #: kab/widget.cc:2095
 msgid "Empty email address."
-msgstr ""
+msgstr "Elektronski naslov je prazen."
 
 #: kab/widget.cc:2114
 msgid "No email address."
-msgstr ""
+msgstr "Ni elektronskega naslova."
 
 #: kab/widget.cc:2124
-#, fuzzy
 msgid "Error calling mailer."
-msgstr "Napaka: Datoteka ni lokalna"
+msgstr "Napaka pri klicanju po¹tnega programa"
 
 #: kab/widget.cc:2126
 msgid "Mailer called."
-msgstr ""
+msgstr "Po¹tni program je poklican"
 
 #: kab/widget.cc:2149
 msgid "The mail command must be configured before!"
-msgstr ""
+msgstr "Ukaz mail mora biti nastavljen prej!"
 
 #: kab/widget.cc:2155
 msgid "Mail configuration"
-msgstr ""
+msgstr "Nastavitev programa mail"
 
 #: kab/widget.cc:2156
 msgid "Please configure the parameters for the email command."
-msgstr ""
+msgstr "Prosim nastavite parametre ukaza email."
 
 #: kab/widget.cc:2194
 msgid "The email command parameters are wrong."
-msgstr ""
+msgstr "Parametri ukaza email so napaèni."
 
 #: kab/widget.cc:2206
 msgid ""
 "Email command failed.\n"
 "Make sure you did setup your email command and parameter!"
 msgstr ""
+"Ukaz email ne dela.\n"
+"Preverite, èe ste nastavili ukaz in njegove parametre!"
 
 #: kab/widget.cc:2210
 msgid "Mail program started."
-msgstr ""
-
-#, fuzzy
-#~ msgid "Never"
-#~ msgstr "November"
-
-#, fuzzy
-#~ msgid ""
-#~ "Could not write to\n"
-#~ "%s"
-#~ msgstr "Dokumenta mi ni uspelo shraniti.\n"
-
-#, fuzzy
-#~ msgid ""
-#~ "Could not start process\n"
-#~ "%s"
-#~ msgstr "Dokumenta mi ni uspelo shraniti.\n"
-
-#, fuzzy
-#~ msgid ""
-#~ "Malformed URL\n"
-#~ "%s"
-#~ msgstr "Narobe vpisan URL"
-
-#, fuzzy
-#~ msgid ""
-#~ "The file or directory\n"
-#~ "%s\n"
-#~ "does not exist"
-#~ msgstr "Oznaèena datoteka ne obstaja"
-
-#, fuzzy
-#~ msgid ""
-#~ "Could not make directory\n"
-#~ "%s"
-#~ msgstr "en imenik"
-
-#, fuzzy
-#~ msgid ""
-#~ "Could not enter directory\n"
-#~ "%s"
-#~ msgstr "Dokumenta mi ni uspelo shraniti.\n"
-
-#, fuzzy
-#~ msgid ""
-#~ "Could not change permissions for\n"
-#~ "%s"
-#~ msgstr "Za pisanje v to datoteko nimate dovoljenja.\n"
-
-#, fuzzy
-#~ msgid ""
-#~ "Could not connect to host\n"
-#~ "%s"
-#~ msgstr "Dokumenta mi ni uspelo shraniti.\n"
-
-#, fuzzy
-#~ msgid ""
-#~ "Could not access\n"
-#~ "%s"
-#~ msgstr "Dokumenta mi ni uspelo shraniti.\n"
-
-#~ msgid "Ok"
-#~ msgstr "V redu"
-
-#, fuzzy
-#~ msgid "&Browser"
-#~ msgstr "Brskaj..."
-
-#, fuzzy
-#~ msgid "The file %s does already exist. Do you really want to overwrite it ?"
-#~ msgstr ""
-#~ "Dokument s tem imenom ¾e obstaja\n"
-#~ "Ga ¾elite prepisati?"
-
-#, fuzzy
-#~ msgid "Stalled"
-#~ msgstr "Slog"
-
-#, fuzzy
-#~ msgid "Scanning "
-#~ msgstr "Pozor"
-
-#, fuzzy
-#~ msgid "Creating dir "
-#~ msgstr "Naredi nov imenik"
-
-#, fuzzy
-#~ msgid "Rename"
-#~ msgstr "Odstrani"
-
-#, fuzzy
-#~ msgid "Resume"
-#~ msgstr "Odstrani"
-
-#, fuzzy
-#~ msgid "Resume All"
-#~ msgstr "Zamenjaj vse"
-
-#, fuzzy
-#~ msgid "Malformed URL\n"
-#~ msgstr "Narobe vpisan URL"
-
-#, fuzzy
-#~ msgid "Can not write"
-#~ msgstr "Dokumenta mi ni uspelo shraniti.\n"
-
-#, fuzzy
-#~ msgid "Permission denied!"
-#~ msgstr "Dovoljenja"
-
-#, fuzzy
-#~ msgid "Mount"
-#~ msgstr "Pon"
-
-#, fuzzy
-#~ msgid "Comment:"
-#~ msgstr "Vsebina:"
-
-#, fuzzy
-#~ msgid "Search"
-#~ msgstr "Marec"
-
-#, fuzzy
-#~ msgid "contains"
-#~ msgstr "Vsebina"
-
-#~ msgid "&New"
-#~ msgstr "&Nov"
-
-#~ msgid "&New..."
-#~ msgstr "&Nov..."
-
-#~ msgid "Move"
-#~ msgstr "Premakni"
-
-#~ msgid "&Previous"
-#~ msgstr "&Prej¹nji"
-
-#~ msgid "&Next"
-#~ msgstr "&Naslednji"
-
-#~ msgid "Small"
-#~ msgstr "Majhna"
-
-#~ msgid "Medium"
-#~ msgstr "Srednja"
-
-#~ msgid "Large"
-#~ msgstr "Velika"
-
-#~ msgid "(none)"
-#~ msgstr "(niè)"
-
-#~ msgid "None"
-#~ msgstr "Niè"
-
-#~ msgid "&Ok"
-#~ msgstr "V &redu"
+msgstr "Program za po¹to je zagnan."
