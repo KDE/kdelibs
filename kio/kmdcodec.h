@@ -134,7 +134,7 @@ private:
  *
  * <PRE>
  *  KMD5 context( QCString("ONE") );
- *  printf ( "Raw Digest output: %s", static_cast<char*>(context.rawDigest() );
+ *  printf ( "Raw Digest output: %s", static_cast<char*>(context.rawDigest()) );
  *  printf ( "Hex Digest output: %s", context.hexDigest() );
  * </PRE>
  *
@@ -145,7 +145,7 @@ private:
  *  context.reset();
  *  context.update( QCString("TWO") );
  *  context.update( QCString("THREE") );
- *  printf ( "Raw Digest output: %s", static_cast<char*>(context.rawDigest() );
+ *  printf ( "Raw Digest output: %s", static_cast<char*>(context.rawDigest()) );
  *  printf ( "Hex Digest output: %s", context.hexDigest() );
  * </PRE>
  *
@@ -165,7 +165,7 @@ private:
  *  context.update(QCString("TWO"));
  *  context.update(QCString("THREE"));
  *  context.finalize();
- *  printf ( "Raw Digest output: %s", static_cast<char*>(context.rawDigest() );
+ *  printf ( "Raw Digest output: %s", static_cast<char*>(context.rawDigest()) );
  *  printf ( "Hex Digest output: %s", context.hexDigest() );
  * </PRE>
  *
@@ -186,7 +186,7 @@ public:
   /**
    * ERR_NONE                   no error occured. [default]
    * ERR_ALREADY_FINALIZED      @ref finalize() has already been invoked.
-   * ERR_NOT_YET_FINALIZED      @ref digest() or @ref rawDigest() invoked before finalize().
+   * ERR_NOT_YET_FINALIZED      @ref hexDigest() or @ref rawDigest() invoked before @ref finalize().
    * ERR_CANNOT_READ_FILE       indicates a problem while trying to read the given file.
    * ERR_CANNOT_CLOSE_FILE      indicates a problem while trying to close the given file.
    */

@@ -573,7 +573,7 @@ void KMD5::rawDigest( HASH bin )
 {
     if (!m_finalized)
     {
-        m_error = ERR_ALREADY_FINALIZED;
+        m_error = ERR_NOT_YET_FINALIZED;
         return;
     }
     memcpy( bin, m_digest, 16 );
@@ -593,7 +593,7 @@ void KMD5::hexDigest( HASHHEX hex )
 {
     if (!m_finalized)
     {
-        m_error = ERR_ALREADY_FINALIZED;
+        m_error = ERR_NOT_YET_FINALIZED;
         return;
     }
 
