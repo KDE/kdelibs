@@ -636,11 +636,6 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     }
 }
 
-void KHTMLView::resetCursor()
-{
-    viewport()->unsetCursor();
-}
-
 void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 {
     if ( !m_part->xmlDocImpl() ) return;
