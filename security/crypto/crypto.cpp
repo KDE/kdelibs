@@ -485,9 +485,9 @@ QString whatstr;
   grid->addWidget(new QLabel(i18n("Certificate:"), tabAuth), 15, 0);
 
   authHost = new QLineEdit(tabAuth);
-  grid->addMultiCellWidget(authHost, 14, 14, 1, 3);
+  grid->addMultiCellWidget(authHost, 14, 14, 1, 4);
   hostCertBox = new QComboBox(false, tabAuth);
-  grid->addMultiCellWidget(hostCertBox, 15, 15, 1, 3);
+  grid->addMultiCellWidget(hostCertBox, 15, 15, 1, 4);
 
   hostCertBG = new QHButtonGroup(i18n("Action..."), tabAuth);
   hostSend = new QRadioButton(i18n("Send"), hostCertBG);
@@ -500,7 +500,18 @@ QString whatstr;
   grid->addWidget(authAdd, 17, 4);
   grid->addWidget(authRemove, 17, 5);
 
-  QString strNone = i18n("None");
+  authHost->setEnabled(false);
+  hostCertBox->setEnabled(false);
+  hostCertBG->setEnabled(false);
+  authRemove->setEnabled(false);
+
+  QStringList defCertStrList = KSSLCertificateHome::getCertificateList();
+  defCertStrList.prepend(i18n("None"));
+  defCertBox->insertStringList(defCertStrList);
+  hostCertBox->insertStringList(defCertStrList);
+
+  connect(defCertBox, SIGNAL(activated(int)), this, SLOT(configChanged()));
+  connect(defCertBG, SIGNAL(clicked(int)), this, SLOT(configChanged()));
 
 #else
   nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
@@ -835,6 +846,15 @@ void KCryptoConfig::load()
   else
     defCertBG->setButton(defCertBG->id(defDont));
   
+  QString whichCert = config->readEntry("DefaultCert", "");
+  defCertBox->setCurrentItem(0);
+  for (int i = 0; i < defCertBox->count(); i++) {
+     if (defCertBox->text(i) == whichCert) {
+       defCertBox->setCurrentItem(i);
+       break;
+     }
+  }
+  
   slotOtherCertSelect();
   slotYourCertSelect();
 #endif
@@ -958,6 +978,9 @@ void KCryptoConfig::save()
   else
     config->writeEntry("AuthMethod", "none");
 
+  if (defCertBox->currentItem() == 0)
+     config->writeEntry("DefaultCert", "");
+  else config->writeEntry("DefaultCert", defCertBox->currentText());
 #endif
 
   config->sync();
