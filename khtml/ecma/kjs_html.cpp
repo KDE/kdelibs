@@ -172,7 +172,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     case Referrer:
       return getString(doc.referrer());
     case Domain:
-      return getString(doc.domain());
+      return String(doc.domain());
     case URL:
       return getString(doc.URL());
     case Body:
@@ -1114,7 +1114,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case FormAction:          return getString(form.action());
     case FormEncType:         return getString(form.enctype());
     case FormMethod:          return getString(form.method());
-    case FormTarget:          return getString(form.target());
+    case FormTarget:          return String(form.target());
     }
   }
   break;
@@ -1415,7 +1415,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case ImageHspace:          return Number(image.hspace());
     case ImageIsMap:           return Boolean(image.isMap());
     case ImageLongDesc:        return getString(image.longDesc());
-    case ImageSrc:             return getString(image.src());
+    case ImageSrc:             return String(image.src());
     case ImageUseMap:          return getString(image.useMap());
     case ImageVspace:          return Number(image.vspace());
     case ImageWidth:           return Number(image.width());
@@ -1630,7 +1630,8 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case FrameName:            return getString(frameElement.name());
     case FrameNoResize:        return Boolean(frameElement.noResize());
     case FrameScrolling:       return getString(frameElement.scrolling());
-    case FrameSrc:             return getString(frameElement.src());
+    case FrameSrc:
+    case FrameLocation:        return getString(frameElement.src());
     }
   }
   break;
