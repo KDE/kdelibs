@@ -307,7 +307,6 @@ void KonfUpdate::gotFile(const QString &_file)
    
    if (!oldFile.isEmpty())
    {
-qWarning("Old = %s New = %s", oldFile.latin1(), newFile.latin1());
       oldConfig1 = new KConfig(oldFile, true, false);
       oldConfig2 = new KSimpleConfig(oldFile);
       if (!newFile.isEmpty())
@@ -354,7 +353,7 @@ void KonfUpdate::gotRemoveGroup(const QString &_group)
       return;
    // Delete group.
    oldConfig2->deleteGroup(oldGroup, true);
-   qWarning("Removing group %s (FORCED)", oldGroup.latin1());
+   qWarning("Removing group %s (FORCED)", oldGroup.isEmpty() ? "<empty>" : oldGroup.latin1());
 }
 
 
@@ -392,7 +391,7 @@ void KonfUpdate::gotKey(const QString &_key)
       qWarning("Skipping %s", newKey.latin1());
       return;
    }
-qWarning("Write %s -> %s", newKey.latin1(), value.latin1());
+qWarning("Write %s -> %s", newKey.latin1(), value.isEmpty() ? "<empty>" : value.latin1());
    newConfig->writeEntry(newKey, value);
 
    if (m_bCopy)
@@ -406,7 +405,7 @@ qWarning("Write %s -> %s", newKey.latin1(), value.latin1());
    oldConfig2->setGroup(oldGroup);
    oldConfig2->deleteEntry(oldKey, false);
    if (oldConfig2->deleteGroup(oldGroup, false)) // Delete group if empty.
-      qWarning("Removing group %s", oldGroup.latin1());
+      qWarning("Removing group %s", oldGroup.isEmpty() ? "<empty>" : oldGroup.latin1());
 }
 
 void KonfUpdate::gotRemoveKey(const QString &_key)
@@ -428,13 +427,13 @@ void KonfUpdate::gotRemoveKey(const QString &_key)
    oldConfig1->setGroup(oldGroup);
    if (!oldConfig1->hasKey(oldKey))
       return;
-qWarning("Remove Key '%s'/'%s'", oldGroup.latin1(), oldKey.latin1());
+qWarning("Remove Key '%s'/'%s'", oldGroup.isEmpty() ? "empty" : oldGroup.latin1(), oldKey.latin1());
 
    // Delete old entry
    oldConfig2->setGroup(oldGroup);
    oldConfig2->deleteEntry(oldKey, false);
    if (oldConfig2->deleteGroup(oldGroup, false)) // Delete group if empty.
-      qWarning("Removing group %s", oldGroup.latin1());
+      qWarning("Removing group %s", oldGroup.isEmpty() ? "<empty>" : oldGroup.latin1());
 }
 
 void KonfUpdate::gotAllKeys()
@@ -493,12 +492,20 @@ void KonfUpdate::gotScript(const QString &_script)
       script = _script.left(i).stripWhiteSpace();
       interpreter = _script.mid(i+1).stripWhiteSpace();
    }
-   qWarning("Running script '%s'", script.latin1());
+
    if (!oldConfig1)
    {
       qWarning("Script without file specification.");
       return;
    }
+
+   if (script.isEmpty())
+   {
+      qWarning("No script specified.");
+      return;
+   } 
+   qWarning("Running script '%s'", script.latin1());
+
    QString path = locate("data","kconf_update/"+script);
    if (path.isEmpty())
    {
@@ -571,7 +578,7 @@ void KonfUpdate::gotScript(const QString &_script)
             oldConfig2->setGroup(group);
             oldConfig2->deleteEntry(key, false);
             if (oldConfig2->deleteGroup(group, false)) // Delete group if empty.
-               qWarning("Removing group %s", group.latin1());
+               qWarning("Removing group %s", group.isEmpty() ? "<empty>" : group.latin1());
          }
          else if (line.startsWith("# DELETEGROUP"))
          {
@@ -585,7 +592,7 @@ void KonfUpdate::gotScript(const QString &_script)
                }
             }
             if (oldConfig2->deleteGroup(group, true)) // Delete group
-               qWarning("Removing group %s (FORCED)", group.latin1());
+               qWarning("Removing group %s (FORCED)", group.isEmpty() ? "<empty>" : group.latin1());
           }
        }
      }
