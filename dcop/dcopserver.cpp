@@ -993,6 +993,8 @@ int main( int argc, char* argv[] )
     signal(SIGTERM, sighandler);
     signal(SIGPIPE, SIG_IGN);
 
+    unsetenv("SESSION_MANAGER");
+ 
     QApplication a( argc, argv, false );
 
     IceSetIOErrorHandler (IoErrorHandler );
