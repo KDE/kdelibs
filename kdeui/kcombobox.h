@@ -254,7 +254,7 @@ signals:
     *
     * Note that this signal is NOT emitted if the completion
     * mode is set to CompletionNone.
-    */    
+    */
     void textRotation( KCompletionBase::KeyBindingType );
 
 public slots:
@@ -278,6 +278,16 @@ public slots:
     */
     void rotateText( KCompletionBase::KeyBindingType /* type */ );
 
+   /**
+    * Resets the history list iterator.
+    *
+    * Use this function to reset the history iterator.
+    * It is useful in reseting the iterator whenever
+    * this widget is hidden, but not destroyed.
+    *
+    */
+   void resetHistoryIterator() { m_strHistoryIterator = QString::null; }
+
 protected slots:
 
     /**
@@ -298,16 +308,6 @@ protected slots:
     * is left to iterate through the list as usual.
     */
     virtual void makeCompletion( const QString& );
-
-   /**
-    * Resets the history list iterator.
-    *
-    * Use this function to reset the history iterator.
-    * It is useful in reseting the iterator whenever
-    * this widget is hidden, but not destroyed.
-    *
-    */
-   void resetHistoryIterator() { m_strHistoryIterator = QString::null; }
 
 protected:
 
