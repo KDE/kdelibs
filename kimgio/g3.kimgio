@@ -5,6 +5,7 @@ Name=CCITT G3 Fax
 Name[be]=CCITT G3 факс
 Name[eu]=CCITT G3 Faxa
 Name[ga]=Facs CCITT G3
+Name[hu]=CCITT G3 faxfájl
 Name[pt_BR]=CCITT G3 fax
 Read=true
 Write=false

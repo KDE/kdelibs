@@ -1,6 +1,11 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Embedded Java Applet Viewer
+Name[da]=Indlejret Java-applet fremviser
+Name[eu]=Java ikusgailu Exertagarria Appleta
+Name[hu]=Beágyazott megjelenítőprogram Java kisalkalmazásokhoz
+Name[pt_BR]=Visualizador Embutido de Applets Java
+Name[sv]=Inbäddningsbar visare av Java miniprogram
 X-KDE-Library=kjavaappletviewer
 Icon=java
 MimeType=application/x-java-applet;
