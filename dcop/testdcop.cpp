@@ -1,58 +1,48 @@
+#include <kapp.h>
+#include <qbitarray.h>
 #include <dcopclient.h>
+#include <dcopobject.h>
+
+class MyDCOPObject : public DCOPObject
+{
+public:
+  MyDCOPObject(const QString &name) : DCOPObject(name) {}
+  bool process(const QString &fun, const QByteArray &data,
+	       QByteArray &replyData);
+  void function(const QString &arg) { qDebug("function got arg: %s",arg.latin1()); }
+};
+
+bool MyDCOPObject::process(const QString &fun, const QByteArray &data,
+			   QByteArray &replyData)
+{
+  qDebug("in MyDCOPObject::process");
+  if (fun == "aFunction") {
+    QDataStream args(data, IO_ReadOnly);
+    QString arg;
+    args >> arg;
+    function(arg);
+    return true;
+  }
+
+  return false;
+}
 
 int main(int argc, char **argv)
 {
-  QApplication app(argc, argv);
+  KApplication app(argc, argv);
 
-  DCOPClient *client = new MyClient(argv[1]);
-  if (!client->attach())
-    qDebug("could not attach to DCOP server.");
-  else {
-    qDebug("successful attach to DCOP server.");
-  }
+  QByteArray data, reply;
+  DCOPClient *client; client = app.dcopClient();
+  if (!client->call(app.name(), "unknownObj", "unknownFunction", data, reply))
+    qDebug("I couldn't call myself.");
 
-  QByteArray callData, replyData;
-  QDataStream ds(callData, IO_WriteOnly);
-  ds << QString("ALALALALALALALALALALALALALALALALALALALALALALALA");
+  DCOPObject *obj1 = new MyDCOPObject("object1");
 
-  DCOPObject *object1 = new DCOPObject("object1");
+  QDataStream ds(data, IO_WriteOnly);
+  ds << QString("This is the argument string");
 
-  if (argc > 2) {
-    if (!client->call(argv[2], "", "fun1", callData, replyData))
-      qDebug("failed RPC");
-    else {
-      QDataStream gotit(replyData, IO_ReadOnly);
-      if (!gotit.atEnd()) {
-	QString s;
-	gotit >> s;
-	qDebug("got back an string of %s",s.latin1());
-      }
-    }
-
-    if (!client->call(argv[2], "object1", "fun1", callData, replyData))
-      qDebug("failed RPC");
-    else {
-      QDataStream gotit(replyData, IO_ReadOnly);
-      if (!gotit.atEnd()) {
-	QString s;
-	gotit >> s;
-	qDebug("got back an string of %s",s.latin1());
-      }
-    }
-    
-    if (!client->call("DCOPServer", "", "clientList",
-		      replyData, replyData))
-      qDebug("failed to get client Data");
-    else {
-      QDataStream reply(replyData, IO_ReadOnly);
-      QStringList slist;
-      reply >> slist;
-      qDebug("list of clients: ");
-      for (QStringList::ConstIterator it(slist.begin());
-	   it != slist.end(); ++it)
-	qDebug("   %s",(*it).latin1());
-    }
-  }
+  if (!client->call(app.name(), "object1", "aFunction", data, reply))
+    qDebug("I couldn't call myself");
 
   return app.exec();
 }

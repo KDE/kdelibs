@@ -32,6 +32,12 @@ public:
   QSocketNotifier *notifier;
 };
 
+struct ReplyStruct
+{
+  bool result;
+  QByteArray* replyData;
+};
+
 QString DCOPClientPrivate::serverAddr = QString::null;
 
 /**
@@ -46,9 +52,11 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
   DCOPClientPrivate *d = (DCOPClientPrivate *) clientObject;
   DCOPClient *c = d->parent;
 
-  if (opcode == DCOPReply) {
+  if (opcode == DCOPReply || opcode == DCOPReplyFailed) {
     if ( replyWait ) {
-      QByteArray* b = (QByteArray*) replyWait->reply;
+      QByteArray* b = ((ReplyStruct*) replyWait->reply)->replyData;
+      ((ReplyStruct*) replyWait->reply)->result = opcode == DCOPReply;
+
       IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
       b->resize( length );
       IceReadData(iceConn, length, b->data() );
@@ -68,14 +76,14 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     ds >> app >> objId >> fun >> data;
     
     QByteArray replyData;
-    c->receive( app, objId, fun, 
-		data, replyData );
+    bool b = c->receive( app, objId, fun, 
+			 data, replyData );
 
     if (opcode != DCOPCall)
       return;
 
     // we are calling, so we need to set up reply data
-    IceGetHeader( iceConn, 1, DCOPReply, 
+    IceGetHeader( iceConn, 1, b ? DCOPReply : DCOPReplyFailed,
 		  sizeof(DCOPMsg), DCOPMsg, pMsg );
     int datalen = replyData.size();
     pMsg->length += datalen;
@@ -250,17 +258,6 @@ bool DCOPClient::process(const QString &fun, const QByteArray &data,
   return false;
 }
 
-
-bool DCOPClient::isApplicationAttached( const QString& remApp)
-{
-  
-}
-
-QStringList DCOPClient::attachedApplications()
-{
-}
-
-
 bool DCOPClient::receive(const QString &app, const QString &objId, 
 			 const QString &fun, const QByteArray &data,
 			 QByteArray &replyData)
@@ -315,7 +312,9 @@ bool DCOPClient::call(const QString &remApp, const QString &remObjId,
   waitInfo.sequence_of_request = IceLastSentSequenceNumber(d->iceConn);
   waitInfo.major_opcode_of_request = d->majorOpcode;
   waitInfo.minor_opcode_of_request = DCOPCall;
-  waitInfo.reply = (IcePointer) &replyData;
+  ReplyStruct tmp;
+  tmp.replyData = &replyData;
+  waitInfo.reply = (IcePointer) &tmp;
   
   Bool readyRet = False;
   IceProcessMessagesStatus s;
@@ -331,7 +330,7 @@ bool DCOPClient::call(const QString &remApp, const QString &remObjId,
     return false;
   }
 
-  return true;
+  return tmp.result;
 }
 
 void DCOPClient::processSocketData(int socknum)
