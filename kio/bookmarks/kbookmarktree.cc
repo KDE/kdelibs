@@ -64,11 +64,14 @@ QListView* KBookmarkFolderTree::createTree(
 ) {
   QListView *listview = new QListView( parent, name );
 
-  listview->setRootIsDecorated( true );
+  listview->setRootIsDecorated( false );
+  listview->header()->hide();
   listview->addColumn( i18n("Bookmark"), 200 );
   listview->setSorting( -1, false );
   listview->setSelectionMode( QListView::Single );
   listview->setAllColumnsShowFocus( true );
+  listview->setResizeMode( QListView::AllColumns );
+  listview->setMinimumSize( 60, 100 );
 
   recreateTree( listview, mgr );
 
@@ -83,9 +86,10 @@ void KBookmarkFolderTree::recreateTree(
   KBookmarkGroup root = mgr->root();
   KBookmarkFolderTreeItem * rootItem = new KBookmarkFolderTreeItem( listview, root );
   fillGroup( rootItem, root );
-
-  rootItem->QListViewItem::setOpen( true );
+  
+  listview->setFocus();
   listview->setCurrentItem( rootItem );
+  listview->firstChild()->setSelected( true );
 }
 
 QString KBookmarkFolderTree::selectedAddress( QListView *listview )

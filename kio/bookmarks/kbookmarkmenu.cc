@@ -621,19 +621,11 @@ BookmarkEditDialog::BookmarkEditDialog(const QString& title, const QString& url,
   grid->addWidget( m_url, 1, 1 );
   grid->addWidget( new QLabel( m_url, i18n( "Location:" ), m_main ), 1, 0 );
 
-  // TODO move all setup stuff into tree
-
   m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name );
-  m_folderTree->header()->hide();
-  m_folderTree->setRootIsDecorated( false );
-  m_folderTree->setResizeMode( QListView::AllColumns );
-  m_folderTree->setMinimumSize( 60, 100 );
   vert->addWidget( m_folderTree );
 
   connect( this, SIGNAL( user1Clicked() ), SLOT( slotInsertFolder() ) );
 
-  m_folderTree->setFocus();
-  m_folderTree->firstChild()->setSelected( true );
 }
 
 void BookmarkEditDialog::slotOk() { accept(); }
