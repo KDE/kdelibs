@@ -65,7 +65,7 @@ EXTRA_PROGRAMS = testkjs_static testavl
 testkjs_static_SOURCES = testkjs.cpp  $(libkjs_la_SOURCES)
 testkjs_static_LDADD = $(LIBPCRE)
 testavl_SOURCES = testavl.cpp  $(libkjs_la_SOURCES)
-testavl_LDADD = 
+testavl_LDADD = $(LIBPCRE)
 
 ## test program (linked to libkjs)
 check_PROGRAMS = testkjs

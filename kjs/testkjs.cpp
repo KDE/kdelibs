@@ -40,7 +40,7 @@ public:
 
 Value TestFunctionImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
 {
-  fprintf(stderr,"--> %s\n",args[0].toString(exec).value().ascii());
+  fprintf(stderr,"--> %s\n",args[0].toString(exec).ascii());
   return Undefined();
 }
 
@@ -93,12 +93,12 @@ int main(int argc, char **argv)
       if (comp.complType() == Throw) {
         ExecState *exec = interp.globalExec();
         Value exVal = comp.value();
-        char *msg = exVal.toString(exec).value().ascii();
+        char *msg = exVal.toString(exec).ascii();
         int lineno = -1;
         if (exVal.type() == ObjectType) {
           Value lineVal = Object::dynamicCast(exVal).get(exec,"line");
           if (lineVal.type() == NumberType)
-            lineno = int(lineVal.toNumber(exec).value());
+            lineno = int(lineVal.toNumber(exec));
         }
         if (lineno != -1)
           fprintf(stderr,"Exception, line %d: %s\n",lineno,msg);
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
         ret = false;
       }
       else if (comp.complType() == ReturnValue) {
-        char *msg = comp.value().toString(interp.globalExec()).value().ascii();
+        char *msg = comp.value().toString(interp.globalExec()).ascii();
         fprintf(stderr,"Return value: %s\n",msg);
       }
     }
