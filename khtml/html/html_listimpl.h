@@ -42,7 +42,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
+    virtual void parseAttribute(AttributeImpl *);
 
     virtual int start() const { return 1; }
 };
@@ -77,7 +77,7 @@ public:
         : HTMLUListElementImpl(doc), _start(1) {}
 
     virtual Id id() const;
-    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
+    virtual void parseAttribute(AttributeImpl *);
 
     int start() const { return _start; }
 private:
@@ -93,7 +93,7 @@ public:
         : HTMLElementImpl(doc) {}
 
     virtual Id id() const;
-    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
+    virtual void parseAttribute(AttributeImpl *attr);
     virtual void attach();
 };
 

@@ -49,75 +49,6 @@ using namespace khtml;
 
 // ### support prefixes on Attrs
 
-namespace DOM {
-
-// Mini version of AttrImpl. Stores either the id and value of an attribute
-// (in the case of m_attrId != 0), or a pointer to an AttrImpl (if m_attrId == 0)
-// The latter case only happens when the Attr node is requested by some DOM
-// code. In most cases the id and value is all we need to store, which is more
-// memory efficient.
-struct AttributeImpl
-{
-    NodeImpl::Id attrId() const { return m_attrId ? m_attrId : m_data.attr->attrId(); }
-    DOMStringImpl *value() const { return m_attrId ? m_data.value : m_data.attr->val(); }
-    AttrImpl *attr() const { return m_attrId ? 0 : m_data.attr; }
-
-    void setValue(DOMStringImpl *value, ElementImpl *element);
-    AttrImpl *createAttr(ElementImpl *element, DocumentPtr *docPtr);
-    void free();
-
-    NodeImpl::Id m_attrId;
-    union {
-	DOMStringImpl *value;
-	AttrImpl *attr;
-    } m_data;
-};
-
-}; // namespace
-
-void AttributeImpl::setValue(DOMStringImpl *value, ElementImpl *element)
-{
-    assert(value);
-    if (m_attrId) {
-	m_data.value->deref();
-	m_data.value = value;
-	m_data.value->ref();
-	if (element)
-	    element->parseAttribute(m_attrId,value);
-    }
-    else {
-	int exceptioncode;
-	m_data.attr->setValue(value,exceptioncode);
-	// AttrImpl::setValue() calls parseAttribute()
-    }
-}
-
-AttrImpl *AttributeImpl::createAttr(ElementImpl *element, DocumentPtr *docPtr)
-{
-    if (m_attrId) {
-	AttrImpl *attr = new AttrImpl(element,docPtr,m_attrId,m_data.value,0);
-	m_data.value->deref();
-	m_data.attr = attr;
-	m_data.attr->ref();
-	m_attrId = 0;
-    }
-
-    return m_data.attr;
-}
-
-void AttributeImpl::free()
-{
-    if (m_attrId) {
-	m_data.value->deref();
-    }
-    else {
-	m_data.attr->deref();
-	m_data.attr->setElement(0);
-    }
-}
-
-// -------------------------------------------------------------------------
-
 AttrImpl::AttrImpl(ElementImpl* element, DocumentPtr* docPtr, NodeImpl::Id attrId,
 		   DOMStringImpl *value, DOMStringImpl *prefix)
     : NodeBaseImpl(docPtr),
@@ -233,9 +164,52 @@ bool AttrImpl::childTypeAllowed( unsigned short type )
     }
 }
 
+// -------------------------------------------------------------------------
+
 void AttrImpl::setElement(ElementImpl *element)
 {
     m_element = element;
+}
+
+void AttributeImpl::setValue(DOMStringImpl *value, ElementImpl *element)
+{
+    assert(value);
+    if (m_attrId) {
+	m_data.value->deref();
+	m_data.value = value;
+	m_data.value->ref();
+	if (element)
+	    element->parseAttribute(this);
+    }
+    else {
+	int exceptioncode;
+	m_data.attr->setValue(value,exceptioncode);
+	// AttrImpl::setValue() calls parseAttribute()
+    }
+}
+
+AttrImpl *AttributeImpl::createAttr(ElementImpl *element, DocumentPtr *docPtr)
+{
+    if (m_attrId) {
+	AttrImpl *attr = new AttrImpl(element,docPtr,m_attrId,m_data.value,0);
+	m_data.value->deref();
+	m_data.attr = attr;
+	m_data.attr->ref();
+	m_attrId = 0;
+    }
+
+    return m_data.attr;
+}
+
+void AttributeImpl::free()
+{
+    if (m_attrId) {
+	m_data.value->deref();
+    }
+    else {
+	m_data.attr->deref();
+	m_data.attr->setElement(0);
+    }
 }
 
 // -------------------------------------------------------------------------
@@ -332,7 +306,7 @@ void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
         namedAttrMap->setElement(this);
         unsigned long len = namedAttrMap->length();
         for (unsigned long i = 0; i < len; i++)
-            parseAttribute(namedAttrMap->idAt(i),namedAttrMap->valueAt(i));
+            parseAttribute(&namedAttrMap->m_attrs[i]);
     }
 }
 
@@ -535,7 +509,7 @@ void ElementImpl::dispatchAttrRemovalEvent(NodeImpl::Id /*id*/, DOMStringImpl */
 	return;
     //int exceptioncode = 0;
     //dispatchEvent(new MutationEventImpl(EventImpl::DOMATTRMODIFIED_EVENT,true,false,attr,attr->value(),
-    //attr->value(), getDocument()->attrName(attr->attrId()),MutationEvent::REMOVAL),exceptioncode);
+    //attr->value(), getDocument()->attrName(attr->id()),MutationEvent::REMOVAL),exceptioncode);
 }
 
 void ElementImpl::dispatchAttrAdditionEvent(NodeImpl::Id /*id*/, DOMStringImpl */*value*/)
@@ -545,7 +519,7 @@ void ElementImpl::dispatchAttrAdditionEvent(NodeImpl::Id /*id*/, DOMStringImpl *
 	return;
    //int exceptioncode = 0;
    //dispatchEvent(new MutationEventImpl(EventImpl::DOMATTRMODIFIED_EVENT,true,false,attr,attr->value(),
-   //attr->value(),getDocument()->attrName(attr->attrId()),MutationEvent::ADDITION),exceptioncode);
+   //attr->value(),getDocument()->attrName(attr->id()),MutationEvent::ADDITION),exceptioncode);
 }
 
 // -------------------------------------------------------------------------
@@ -638,7 +612,7 @@ NodeImpl *NamedAttrMapImpl::getNamedItem ( NodeImpl::Id id ) const
 	return 0;
 
     for (unsigned long i = 0; i < m_attrCount; i++)
-	if (m_attrs[i].attrId() == id)
+	if (m_attrs[i].id() == id)
 	    return m_attrs[i].createAttr(m_element,m_element->docPtr());
 
     return 0;
@@ -659,7 +633,7 @@ Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, int &exceptioncode )
     }
 
     for (unsigned long i = 0; i < m_attrCount; i++) {
-	if (m_attrs[i].attrId() == id) {
+	if (m_attrs[i].id() == id) {
 	    Node removed(m_attrs[i].createAttr(m_element,m_element->docPtr()));
 	    m_attrs[i].free();
 	    memmove(m_attrs+i,m_attrs+i+1,m_attrCount-i-1);
@@ -716,14 +690,14 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, int &exceptioncode )
     }
 
     for (unsigned long i = 0; i < m_attrCount; i++) {
-	if (m_attrs[i].attrId() == attr->attrId()) {
+	if (m_attrs[i].id() == attr->attrId()) {
 	    // Attribute exists; replace it
 	    Node replaced = m_attrs[i].createAttr(m_element,m_element->docPtr());
 	    m_attrs[i].free();
 	    m_attrs[i].m_attrId = attr->attrId();
 	    m_attrs[i].m_data.attr = attr;
 	    m_attrs[i].m_data.attr->ref();
-	    m_element->parseAttribute(attr->attrId(),attr->nodeValue().implementation());
+	    m_element->parseAttribute(&m_attrs[i]);
 	    attr->setElement(m_element);
 	    // ### dispatch mutation events
 	    return replaced;
@@ -737,7 +711,7 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, int &exceptioncode )
     m_attrs[m_attrCount-1].m_data.attr = attr;
     m_attrs[m_attrCount-1].m_data.attr->ref();
     attr->setElement(m_element);
-    m_element->parseAttribute(attr->attrId(),attr->nodeValue().implementation());
+    m_element->parseAttribute(&m_attrs[m_attrCount-1]);
     // ### dispatch mutation events
 
     return 0;
@@ -765,20 +739,20 @@ unsigned long NamedAttrMapImpl::length(  ) const
 NodeImpl::Id NamedAttrMapImpl::idAt(unsigned long index) const
 {
     assert(index <= m_attrCount);
-    return m_attrs[index].attrId();
+    return m_attrs[index].id();
 }
 
 DOMStringImpl *NamedAttrMapImpl::valueAt(unsigned long index) const
 {
     assert(index <= m_attrCount);
-    return m_attrs[index].value();
+    return m_attrs[index].val();
 }
 
 DOMStringImpl *NamedAttrMapImpl::getValue(NodeImpl::Id id) const
 {
     for (unsigned long i = 0; i < m_attrCount; i++)
-	if (m_attrs[i].attrId() == id)
-	    return m_attrs[i].value();
+	if (m_attrs[i].id() == id)
+	    return m_attrs[i].val();
 
     return 0;
 }
@@ -786,7 +760,7 @@ DOMStringImpl *NamedAttrMapImpl::getValue(NodeImpl::Id id) const
 void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *value)
 {
     for (unsigned long i = 0; i < m_attrCount; i++) {
-	if (m_attrs[i].attrId() == id) {
+	if (m_attrs[i].id() == id) {
 	    if (value) {
 		m_attrs[i].setValue(value,m_element);
 	    }
@@ -813,7 +787,7 @@ void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *value)
     m_attrs[m_attrCount-1].m_data.value = value;
     m_attrs[m_attrCount-1].m_data.value->ref();
     if (m_element)
-	m_element->parseAttribute(id,value);
+	m_element->parseAttribute(&m_attrs[m_attrCount-1]);
     // ### dispatch mutation events
 }
 

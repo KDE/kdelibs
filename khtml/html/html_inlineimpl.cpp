@@ -151,22 +151,22 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 }
 
 
-void HTMLAnchorElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
+void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(id)
+    switch(attr->id())
     {
     case ATTR_HREF:
-        m_hasAnchor = value != 0;
+        m_hasAnchor = attr->val() != 0;
         break;
     case ATTR_TARGET:
-        m_hasTarget = value != 0;
+        m_hasTarget = attr->val() != 0;
         break;
     case ATTR_NAME:
     case ATTR_TITLE:
     case ATTR_REL:
 	break;
     default:
-        HTMLElementImpl::parseAttribute(id,value);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
@@ -177,20 +177,20 @@ NodeImpl::Id HTMLBRElementImpl::id() const
     return ID_BR;
 }
 
-void HTMLBRElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
+void HTMLBRElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(id)
+    switch(attr->id())
     {
     case ATTR_CLEAR:
     {
-        DOMString str = DOMString(value);
+        DOMString str = attr->value();
         if( str.isEmpty() ) str = "none";
         else if( strcasecmp (str,"all")==0 ) str = "both";
         addCSSProperty(CSS_PROP_CLEAR, str);
         break;
     }
     default:
-        HTMLElementImpl::parseAttribute(id,value);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
@@ -220,13 +220,13 @@ NodeImpl::Id HTMLFontElementImpl::id() const
     return ID_FONT;
 }
 
-void HTMLFontElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
+void HTMLFontElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(id)
+    switch(attr->id())
     {
     case ATTR_SIZE:
     {
-        DOMStringImpl* v = value;
+        DOMStringImpl* v = attr->val();
         if(v) {
             const QChar* s = v->s;
             int num = v->toInt();
@@ -258,15 +258,15 @@ void HTMLFontElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
         break;
     }
     case ATTR_COLOR:
-        addHTMLColor(CSS_PROP_COLOR, DOMString(value));
+        addHTMLColor(CSS_PROP_COLOR, attr->value());
         // HTML4 compatibility hack
-        addHTMLColor(CSS_PROP_TEXT_DECORATION_COLOR, DOMString(value));
+        addHTMLColor(CSS_PROP_TEXT_DECORATION_COLOR, attr->value());
         break;
     case ATTR_FACE:
-        addCSSProperty(CSS_PROP_FONT_FAMILY, DOMString(value));
+        addCSSProperty(CSS_PROP_FONT_FAMILY, attr->value());
         break;
     default:
-        HTMLElementImpl::parseAttribute(id,value);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 

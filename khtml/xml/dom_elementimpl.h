@@ -93,6 +93,28 @@ protected:
     DOMStringImpl *m_prefix;
 };
 
+// Mini version of AttrImpl. Stores either the id and value of an attribute
+// (in the case of m_attrId != 0), or a pointer to an AttrImpl (if m_attrId == 0)
+// The latter case only happens when the Attr node is requested by some DOM
+// code. In most cases the id and value is all we need to store, which is more
+// memory efficient.
+struct AttributeImpl
+{
+    NodeImpl::Id id() const { return m_attrId ? m_attrId : m_data.attr->attrId(); }
+    DOMStringImpl *val() const { return m_attrId ? m_data.value : m_data.attr->val(); }
+    DOMString value() const { return val(); }
+    AttrImpl *attr() const { return m_attrId ? 0 : m_data.attr; }
+
+    void setValue(DOMStringImpl *value, ElementImpl *element);
+    AttrImpl *createAttr(ElementImpl *element, DocumentPtr *docPtr);
+    void free();
+
+    NodeImpl::Id m_attrId;
+    union {
+	DOMStringImpl *value;
+	AttrImpl *attr;
+    } m_data;
+};
 
 class ElementImpl : public NodeBaseImpl
 {
@@ -129,7 +151,13 @@ public:
     }
 
     //This is always called, whenever an attribute changed
-    virtual void parseAttribute(NodeImpl::Id /*id*/, DOMStringImpl */*value*/) {}
+    virtual void parseAttribute(AttributeImpl *) {}
+    void parseAttribute(NodeImpl::Id attrId, DOMStringImpl *value) {
+	AttributeImpl aimpl;
+	aimpl.m_attrId = attrId;
+	aimpl.m_data.value = value;
+	parseAttribute(&aimpl);
+    }
 
     // not part of the DOM
     void setAttributeMap ( NamedAttrMapImpl* list );
@@ -191,8 +219,6 @@ public:
 protected:
     Id m_id;
 };
-
-class AttributeImpl;
 
 // the map of attributes of an element
 class NamedAttrMapImpl : public NamedNodeMapImpl

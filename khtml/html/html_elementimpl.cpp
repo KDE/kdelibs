@@ -98,17 +98,17 @@ bool HTMLElementImpl::isInline() const
     }
 }
 
-void HTMLElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
+void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
 {
     DOMString indexstring;
-    switch( id )
+    switch( attr->id() )
     {
     case ATTR_ALIGN:
-        if (value) {
-            if ( strcasecmp(DOMString(value), "middle" ) == 0 )
+        if (attr->val()) {
+            if ( strcasecmp(attr->value(), "middle" ) == 0 )
                 addCSSProperty( CSS_PROP_TEXT_ALIGN, CSS_VAL_CENTER );
             else
-                addCSSProperty(CSS_PROP_TEXT_ALIGN, DOMString(value));
+                addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
         }
         else
             removeCSSProperty(CSS_PROP_TEXT_ALIGN);
@@ -129,7 +129,7 @@ void HTMLElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
         // stylesheet info
         setHasStyle();
         if(!m_styleDecls) createDecl();
-        m_styleDecls->setProperty(DOMString(value));
+        m_styleDecls->setProperty(attr->value());
         setChanged();
         break;
     case ATTR_TABINDEX:
@@ -141,59 +141,59 @@ void HTMLElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
     case ATTR_LANG:
         break;
     case ATTR_DIR:
-        addCSSProperty(CSS_PROP_DIRECTION, DOMString(value));
+        addCSSProperty(CSS_PROP_DIRECTION, attr->value());
         addCSSProperty(CSS_PROP_UNICODE_BIDI, CSS_VAL_EMBED);
         break;
 // standard events
     case ATTR_ONCLICK:
 	setHTMLEventListener(EventImpl::KHTML_ECMA_CLICK_EVENT,
-	    getDocument()->createHTMLEventListener(DOMString(value).string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONDBLCLICK:
 	setHTMLEventListener(EventImpl::KHTML_ECMA_DBLCLICK_EVENT,
-	    getDocument()->createHTMLEventListener(DOMString(value).string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONMOUSEDOWN:
         setHTMLEventListener(EventImpl::MOUSEDOWN_EVENT,
-	    getDocument()->createHTMLEventListener(DOMString(value).string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONMOUSEMOVE:
         setHTMLEventListener(EventImpl::MOUSEMOVE_EVENT,
-	    getDocument()->createHTMLEventListener(DOMString(value).string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONMOUSEOUT:
         setHTMLEventListener(EventImpl::MOUSEOUT_EVENT,
-	    getDocument()->createHTMLEventListener(DOMString(value).string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONMOUSEOVER:
         setHTMLEventListener(EventImpl::MOUSEOVER_EVENT,
-	    getDocument()->createHTMLEventListener(DOMString(value).string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONMOUSEUP:
         setHTMLEventListener(EventImpl::MOUSEUP_EVENT,
-	    getDocument()->createHTMLEventListener(DOMString(value).string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::DOMFOCUSIN_EVENT,
-	    getDocument()->createHTMLEventListener(DOMString(value).string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONKEYDOWN:
         setHTMLEventListener(EventImpl::KHTML_KEYDOWN_EVENT,
-	    getDocument()->createHTMLEventListener(DOMString(value).string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
 	break;
     case ATTR_ONKEYPRESS:
         setHTMLEventListener(EventImpl::KHTML_KEYPRESS_EVENT,
-	    getDocument()->createHTMLEventListener(DOMString(value).string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
 	break;
     case ATTR_ONKEYUP:
         setHTMLEventListener(EventImpl::KHTML_KEYUP_EVENT,
-	    getDocument()->createHTMLEventListener(DOMString(value).string()));
+	    getDocument()->createHTMLEventListener(attr->value().string()));
         break;
 // other misc attributes
     default:
 #ifdef UNSUPPORTED_ATTR
 	kdDebug(6030) << "UATTR: <" << this->nodeName().string() << "> ["
-		      << attr->name().string() << "]=[" << DOMString(value).string() << "]" << endl;
+		      << attr->name().string() << "]=[" << attr->value().string() << "]" << endl;
 #endif
         break;
     }

@@ -48,20 +48,20 @@ NodeImpl::Id HTMLBaseElementImpl::id() const
     return ID_BASE;
 }
 
-void HTMLBaseElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
+void HTMLBaseElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(id)
+    switch(attr->id())
     {
     case ATTR_HREF:
-	m_href = khtml::parseURL(DOMString(value));
+	m_href = khtml::parseURL(attr->value());
 	process();
 	break;
     case ATTR_TARGET:
-	m_target = DOMString(value);
+	m_target = attr->value();
 	process();
 	break;
     default:
-        HTMLElementImpl::parseAttribute(id,value);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
@@ -109,29 +109,29 @@ NodeImpl::Id HTMLLinkElementImpl::id() const
     return ID_LINK;
 }
 
-void HTMLLinkElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
+void HTMLLinkElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch (id)
+    switch (attr->id())
     {
     case ATTR_REL:
-        m_rel = DOMString(value);
+        m_rel = attr->value();
         process();
         break;
     case ATTR_HREF:
-        m_url = getDocument()->completeURL( khtml::parseURL(DOMString(value)).string() );
+        m_url = getDocument()->completeURL( khtml::parseURL(attr->value()).string() );
 	process();
         break;
     case ATTR_TYPE:
-        m_type = DOMString(value);
+        m_type = attr->value();
 	process();
         break;
     case ATTR_MEDIA:
-        m_media = DOMString(value).string().lower();
+        m_media = attr->value().string().lower();
         process();
         break;
     case ATTR_DISABLED: {
         int oldDisabledState = m_disabledState;
-        m_disabledState = (value != 0) ? 2 : 1;
+        m_disabledState = (attr->val() != 0) ? 2 : 1;
         if (oldDisabledState != m_disabledState) {
             // If we change the disabled state while the sheet is still loading, then we have to
             // perform two checks:
@@ -158,7 +158,7 @@ void HTMLLinkElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
         break;
     }
     default:
-        HTMLElementImpl::parseAttribute(id,value);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
@@ -265,22 +265,22 @@ NodeImpl::Id HTMLMetaElementImpl::id() const
     return ID_META;
 }
 
-void HTMLMetaElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
+void HTMLMetaElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(id)
+    switch(attr->id())
     {
     case ATTR_HTTP_EQUIV:
-	m_equiv = DOMString(value);
+	m_equiv = attr->value();
 	process();
 	break;
     case ATTR_CONTENT:
-	m_content = DOMString(value);
+	m_content = attr->value();
 	process();
 	break;
     case ATTR_NAME:
       break;
     default:
-        HTMLElementImpl::parseAttribute(id,value);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
@@ -338,18 +338,18 @@ NodeImpl::Id HTMLStyleElementImpl::id() const
 }
 
 // other stuff...
-void HTMLStyleElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
+void HTMLStyleElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch (id)
+    switch (attr->id())
     {
     case ATTR_TYPE:
-        m_type = DOMString(value).lower();
+        m_type = attr->value().lower();
         break;
     case ATTR_MEDIA:
-        m_media = DOMString(value).string().lower();
+        m_media = attr->value().string().lower();
         break;
     default:
-        HTMLElementImpl::parseAttribute(id,value);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 

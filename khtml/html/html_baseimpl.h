@@ -57,7 +57,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
+    virtual void parseAttribute(AttributeImpl *);
     virtual void attach();
 
     virtual void insertedIntoDocument();
@@ -85,7 +85,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
+    virtual void parseAttribute(AttributeImpl *);
     virtual void attach();
 
     bool noResize() { return noresize; }
@@ -120,7 +120,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
+    virtual void parseAttribute(AttributeImpl *);
     virtual void attach();
 
     virtual void defaultEventHandler(EventImpl *evt);
@@ -184,7 +184,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
+    virtual void parseAttribute(AttributeImpl *attr);
     virtual void attach();
     virtual void recalcStyle( StyleChange ch );
 

@@ -38,15 +38,15 @@ NodeImpl::Id HTMLUListElementImpl::id() const
     return ID_UL;
 }
 
-void HTMLUListElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
+void HTMLUListElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(id)
+    switch(attr->id())
     {
     case ATTR_TYPE:
-        addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, DOMString(value));
+        addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, attr->value());
         break;
     default:
-        HTMLElementImpl::parseAttribute(id,value);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
@@ -71,26 +71,26 @@ NodeImpl::Id HTMLOListElementImpl::id() const
     return ID_OL;
 }
 
-void HTMLOListElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
+void HTMLOListElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(id)
+    switch(attr->id())
     {
     case ATTR_TYPE:
-        if ( strcmp( DOMString(value), "a" ) == 0 )
+        if ( strcmp( attr->value(), "a" ) == 0 )
             addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_LOWER_ALPHA);
-        else if ( strcmp( DOMString(value), "A" ) == 0 )
+        else if ( strcmp( attr->value(), "A" ) == 0 )
             addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_UPPER_ALPHA);
-        else if ( strcmp( DOMString(value), "i" ) == 0 )
+        else if ( strcmp( attr->value(), "i" ) == 0 )
             addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_LOWER_ROMAN);
-        else if ( strcmp( DOMString(value), "I" ) == 0 )
+        else if ( strcmp( attr->value(), "I" ) == 0 )
             addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_UPPER_ROMAN);
-        else if ( strcmp( DOMString(value), "1" ) == 0 )
+        else if ( strcmp( attr->value(), "1" ) == 0 )
             addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_DECIMAL);
         break;
     case ATTR_START:
-            _start = value ? value->toInt() : 1;
+            _start = attr->val() ? attr->val()->toInt() : 1;
     default:
-        HTMLUListElementImpl::parseAttribute(id,value);
+        HTMLUListElementImpl::parseAttribute(attr);
     }
 }
 
@@ -101,30 +101,30 @@ NodeImpl::Id HTMLLIElementImpl::id() const
     return ID_LI;
 }
 
-void HTMLLIElementImpl::parseAttribute(NodeImpl::Id id, DOMStringImpl *value)
+void HTMLLIElementImpl::parseAttribute(AttributeImpl *attr)
 {
-    switch(id)
+    switch(attr->id())
     {
     case ATTR_VALUE:
         if(m_render && m_render->isListItem() && m_render->style()->display() == LIST_ITEM)
-            static_cast<RenderListItem*>(m_render)->setValue(DOMString(value).toInt());
+            static_cast<RenderListItem*>(m_render)->setValue(attr->value().toInt());
         break;
     case ATTR_TYPE:
-        if ( strcmp( DOMString(value), "a" ) == 0 )
+        if ( strcmp( attr->value(), "a" ) == 0 )
             addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_LOWER_ALPHA);
-        else if ( strcmp( DOMString(value), "A" ) == 0 )
+        else if ( strcmp( attr->value(), "A" ) == 0 )
             addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_UPPER_ALPHA);
-        else if ( strcmp( DOMString(value), "i" ) == 0 )
+        else if ( strcmp( attr->value(), "i" ) == 0 )
             addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_LOWER_ROMAN);
-        else if ( strcmp( DOMString(value), "I" ) == 0 )
+        else if ( strcmp( attr->value(), "I" ) == 0 )
             addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_UPPER_ROMAN);
-        else if ( strcmp( DOMString(value), "1" ) == 0 )
+        else if ( strcmp( attr->value(), "1" ) == 0 )
             addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, CSS_VAL_DECIMAL);
         else
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, DOMString(value));
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, attr->value());
         break;
     default:
-        HTMLElementImpl::parseAttribute(id,value);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 

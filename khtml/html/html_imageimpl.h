@@ -43,7 +43,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
+    virtual void parseAttribute(AttributeImpl *);
 
     virtual void attach();
 
@@ -77,7 +77,7 @@ public:
 
     virtual Id id() const;
 
-    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
+    virtual void parseAttribute(AttributeImpl *attr);
 
     bool isDefault() const { return shape==Default; }
 
@@ -110,7 +110,7 @@ public:
 
     virtual DOMString getName() const { return name; }
 
-    virtual void parseAttribute(NodeImpl::Id id, DOMStringImpl *value);
+    virtual void parseAttribute(AttributeImpl *attr);
 
     bool mapMouseEvent(int x_, int y_, int width_, int height_,
                        khtml::RenderObject::NodeInfo& info);
