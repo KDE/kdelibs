@@ -1,0 +1,15 @@
+* implement hundreds of missing functions
+
+* take care of memory leaks
+
+* check if NaN, Inf and -0 support is really possible
+
+* clean up the mess in the KJSO class. ECMAScript requires its own runtime
+  type information which lead to this bloated construct at the first
+  implementation attempt. Create a nicer hierarchy of derived classes.
+
+* consider rewriting the lexer with (f)lex. The automatic semi-colon
+  insertion and Unicode stopped me from doing it this way so far.
+
+* idea for speed optimization: place the AST nodes in a block of pre-allocated
+  memory instead of calling `new' each time.

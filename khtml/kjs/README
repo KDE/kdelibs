@@ -1,0 +1,21 @@
+KJS is yet another attempt to provide KDE with JavaScript support.
+
+At first I'll mainly concentrate on implementing features specified in
+ECMA 262. This standard describes ECMAScript aka JavaScript. The code is
+plastered with ECMA x.y.z comments referring to the respective chapter of
+that paper. You'll find it on http://www.ecma.ch.
+
+The major work coming later will be to implement all the bindings needed
+for integration with the KHTML widget's DOM and the support of all the nifty
+features to control the browser known from Netscape et al.
+
+Don't worry if you get the following warnings during compile. They are
+expected and harmless.
+
+grammar.y contains 1 shift/reduce conflict.
+object.cpp:27: warning: division by zero in `0x000000000000000000000000 / 0.'
+object.cpp:28: warning: division by zero in `0x00000000000000000080ff3f / 0.'
+
+It's certainly too early for any bug reports.
+
+Harri Porten <porten@kde.org>
