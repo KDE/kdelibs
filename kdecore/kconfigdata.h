@@ -25,7 +25,7 @@
 #include <qmap.h> // generic red-black tree class
 
 /**
- * map/dict/list node entry.
+ * map/dict/list config node entry.
  * @internal
  */
 struct KEntry
@@ -34,12 +34,30 @@ struct KEntry
     : mValue(0), bDirty(false), bNLS(false), 
       bGlobal(false), bImmutable(false), bDeleted(false), bExpand(false) {}
   QCString mValue;
-  bool    bDirty :1;  // must the entry be written back to disk?
-  bool    bNLS   :1;  // entry should be written with locale tag
-  bool    bGlobal:1;  // entry should be written to the global config file
-  bool    bImmutable:1; // Entry can not be modified
-  bool    bDeleted:1; // Entry has been deleted
-  bool    bExpand:1;  // Whether to apply dollar expansion
+  /**
+   * Must the entry be written back to disk?
+   */
+  bool    bDirty :1;
+  /**
+   * Entry should be written with locale tag
+   */ 
+  bool    bNLS   :1;
+  /**
+   * Entry should be written to the global config file
+   */ 
+  bool    bGlobal:1;
+  /**
+   * Entry can not be modified.
+   */ 
+  bool    bImmutable:1;
+  /**
+   * Entry has been deleted.
+   */
+  bool    bDeleted:1;
+  /**
+   * Whether to apply dollar expansion or not.
+   */ 
+  bool    bExpand:1;
 };
 
 /**
@@ -53,11 +71,23 @@ struct KEntryKey
 	    const QCString& _key = 0)
       : mGroup(_group), mKey(_key), bLocal(false), bDefault(false),
         c_key(_key.data()) {}
-  QCString mGroup; // the "group" to which this EntryKey belongs
-  QCString mKey;   // the _actual_ key of the entry in question
-  bool    bLocal  :1; // Entry is localised
-  bool    bDefault:1; // Entry indicates default value
-  
+  /**
+   * The "group" to which this EntryKey belongs
+   */ 
+  QCString mGroup;
+  /**
+   * The _actual_ key of the entry in question
+   */ 
+  QCString mKey;
+  /**
+   * Entry is localised or not
+   */ 
+  bool    bLocal  :1;
+  /**
+   * Entry indicates if this is a default value.
+   */ 
+  bool    bDefault:1;
+ 
   const char *c_key;
 };
 
