@@ -138,8 +138,16 @@ QString KSSLCertificateHome::getDefaultCertificateName(KSSLAuthAction *aa) {
 KConfig cfg("cryptodefaults", false);
 
    cfg.setGroup("Auth");
-   if (aa && (cfg.readEntry("AuthMethod", "") == "send")) *aa = AuthSend;
-   if (aa && (cfg.readEntry("AuthMethod", "") == "prompt")) *aa = AuthPrompt;
+   if (aa) {
+      QString am = cfg.readEntry("AuthMethod", "");
+      if (am == "send")
+         *aa = AuthSend;
+      else if (am == "prompt")
+         *aa = AuthPrompt;
+      else 
+         *aa = AuthDont;
+   }
+
 return cfg.readEntry("DefaultCert", "");
 }
 
