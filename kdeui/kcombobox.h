@@ -251,6 +251,14 @@ public:
      */
     bool trapReturnKey() const;
 
+    /**
+    * Re-implemented for internal reasons.  API not affected.
+    *
+    * @reimplemented
+    */
+    virtual bool eventFilter( QObject *, QEvent * );
+
+
 signals:
     /**
     * Emitted when the user presses the Enter key.
@@ -373,11 +381,6 @@ protected:
     * @reimplemented
     */
     virtual void keyPressEvent ( QKeyEvent* );
-
-    /**
-    * @reimplemented
-    */
-    virtual bool eventFilter( QObject *, QEvent * );
 
     /*
     * This function simply sets the lineedit text and

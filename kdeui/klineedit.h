@@ -221,7 +221,14 @@ public:
      *
      * @see setTrapReturnKey ()
      */
-    bool trapReturnKey() const;   
+    bool trapReturnKey() const;
+
+    /**
+    * Re-implemented for internal reasons.  API not affected.
+    *
+    * @reimplemented
+    */
+    virtual bool eventFilter( QObject *, QEvent * );
 
 signals:
 
@@ -315,13 +322,6 @@ protected:
     */
     virtual void mousePressEvent( QMouseEvent * );
     
-    /**
-    * Re-implemented for internal reasons.  API not affected.    
-    *
-    * @reimplemented
-    */
-    virtual bool eventFilter( QObject *, QEvent * );
-
     /*
     * This function simply sets the lineedit text and
     * highlights the text appropriately if the boolean
