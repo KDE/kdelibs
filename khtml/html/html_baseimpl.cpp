@@ -121,7 +121,7 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 	    m_styleSheet = new CSSStyleSheetImpl(this);
 	    m_styleSheet->ref();
 	}
-	QString aStr = "a:vlink { color: " + attr->value().string() + "; }";
+	QString aStr = "a:visited { color: " + attr->value().string() + "; }";
 	m_styleSheet->parseString(aStr);
 	m_styleSheet->setNonCSSHints();
 	break;
