@@ -13,8 +13,8 @@ void KURL::encodeURL( QString& _url ) {
     
     int old_length = _url.length();
    
-    // make a copy of the old one
-    char *new_url = new char[ old_length ];
+    // a worst case approximation
+    char *new_url = new char[ old_length * 3 + 1 ];
     int new_length = 0;
      
     for (int i = 0; i < old_length; i++) {
@@ -32,6 +32,7 @@ void KURL::encodeURL( QString& _url ) {
 	} else
 	    new_url[ new_length++ ] = _url[i];
     };
+
     new_url[new_length]=0;
     _url = new_url;
     delete new_url;
@@ -113,7 +114,7 @@ void KURL::parse( const char * _url )
 
   if ( _url[0] == '/' ) {
       encodeURL(url);
-      url.sprintf( "file:%s", url.data() );
+      url.sprintf( "file:%s/", url.data() );
   };
   
   // We need a : somewhere to determine the protocol
