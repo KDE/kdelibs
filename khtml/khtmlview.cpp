@@ -1099,7 +1099,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
             c = KCursor::ibeamCursor();
         if ( mev.url.length() && m_part->settings()->changeCursor() ) {
             c = m_part->urlCursor();
-            if (mev.url.string().startsWith("mailto:"))
+	    if (mev.url.string().startsWith("mailto:") && mev.url.string().find('@')>0)
                 mailtoCursor = true;
         }
 
@@ -1112,7 +1112,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         break;
     case CURSOR_POINTER:
         c = m_part->urlCursor();
-        if (mev.url.string().startsWith("mailto:"))
+	if (mev.url.string().startsWith("mailto:") && mev.url.string().find('@')>0)
             mailtoCursor = true;
         break;
     case CURSOR_PROGRESS:
