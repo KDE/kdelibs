@@ -14,12 +14,12 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License version 2 as published by the Free Software Foundation.
- *    
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
- *					 
+ *
  * You should have received a copy of the GNU Library General Public License
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -56,14 +56,14 @@ class HighColorStylePlugin : public QStylePlugin
 		HighColorStylePlugin() {}
 		~HighColorStylePlugin() {}
 
-		QStringList keys() const 
-		{ 
-			return QStringList() << "HighColor"; 
+		QStringList keys() const
+		{
+			return QStringList() << "HighColor";
 		}
 
-		QStyle* create( const QString& key ) 
-		{ 
-			if ( key == "highcolor" ) 
+		QStyle* create( const QString& key )
+		{
+			if ( key == "highcolor" )
 				return new HighColorStyle;
 			return 0;
 		}
@@ -99,12 +99,12 @@ GradientSet::~GradientSet()
 			delete gradients[i];
 }
 
-					   
+
 KPixmap* GradientSet::gradient(GradientType type)
 {
-	if (gradients[type]) 
+	if (gradients[type])
 		return gradients[type];
-						    
+
 	switch(type)
 	{
 		case VSmall: {
@@ -114,7 +114,7 @@ KPixmap* GradientSet::gradient(GradientType type)
 												KPixmapEffect::VerticalGradient);
 			}
 			break;
-	
+
 		case VMed: {
 				gradients[VMed] = new KPixmap;
 				gradients[VMed]->resize(18, 34);
@@ -146,7 +146,7 @@ KPixmap* GradientSet::gradient(GradientType type)
 												KPixmapEffect::HorizontalGradient);
 			}
 			break;
-		
+
 		default:
 			break;
 	}
@@ -181,7 +181,7 @@ void HighColorStyle::polish(QWidget* widget)
 
 	if (widget->inherits("QMenuBar")) {
 		widget->setBackgroundMode(QWidget::NoBackground);
-	} 
+	}
 
 }
 
@@ -190,7 +190,7 @@ void HighColorStyle::unPolish(QWidget* widget)
 {
 	if (widget->inherits("QMenuBar")) {
 		widget->setBackgroundMode(QWidget::PaletteBackground);
-	} 
+	}
 
 	winstyle->unPolish(widget);
 }
@@ -254,7 +254,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 							  &cg.brush(QColorGroup::Mid));
 			else if (!(flags & (Style_Raised | Style_Sunken)))
 				p->fillRect(r, cg.button());
-			else if(highcolor) 
+			else if(highcolor)
 			{
 				int x2 = x+w-1;
 				int y2 = y+h-1;
@@ -295,10 +295,10 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			break;
 		}
 
-		
+
 		// BEVELS
 		// -------------------------------------------------------------------
-		case PE_ButtonBevel:	
+		case PE_ButtonBevel:
 		case PE_HeaderSection: {
 			int x,y,w,h;
 			r.rect(&x, &y, &w, &h);
@@ -381,7 +381,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			if (flags & Style_Horizontal) {
 				p->drawLine(x, y, x2, y);
 				p->drawLine(x, y2, x2, y2);
-				renderGradient(p, QRect(x, y+1, w, h-2), 
+				renderGradient(p, QRect(x, y+1, w, h-2),
 							   cg.mid(), false);
 			} else {
 				p->drawLine(x, y, x, y2);
@@ -520,7 +520,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			p->setPen(cg.mid());
 			p->drawLine(x2-1, y+1, x2-1, y2-1);
 			p->drawLine(x+1, y2-1, x2-1, y2-1);
-			p->fillRect(x+3, y+3, w-5, h-5, cg.brush(QColorGroup::Background));	
+			p->fillRect(x+3, y+3, w-5, h-5, cg.brush(QColorGroup::Background));
 			break;
 		}
 
@@ -532,7 +532,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			bool sunken = flags & Style_Sunken;
 			int lw = opt.isDefault() ? pixelMetric(PM_DefaultFrameWidth)
 										: opt.lineWidth();
-			if (lw == 2 && sunken) 
+			if (lw == 2 && sunken)
 			{
 				QPen oldPen = p->pen();
 				int x,y,w,h;
@@ -575,7 +575,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 
 			// ### Qt should specify Style_Horizontal where appropriate
 			renderGradient( p, QRect(r.x()+1, r.y()+1, x2-1, y2-1),
-				cg.background(), (r.width() < r.height()) && 
+				cg.background(), (r.width() < r.height()) &&
 								 (pe != PE_PanelMenuBar) );
 
 			break;
@@ -592,9 +592,9 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 				widget = dynamic_cast<QWidget*>(p->device());
 			else
 				return;		// Don't paint on non-widgets */
-					
+
 			// Check if we are a normal toolbar or a hidden dockwidget.
-			if ( widget->parent() && 
+			if ( widget->parent() &&
 			    (widget->parent()->inherits("QToolBar") ||		// Normal toolbar
 				(widget->parent()->inherits("QMainWindow")) ))	// Collapsed dock
 			{
@@ -662,7 +662,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 		{
 			// ARROWS
 			// -------------------------------------------------------------------
-			if (pe >= PE_ArrowUp && pe <= PE_ArrowLeft) 
+			if (pe >= PE_ArrowUp && pe <= PE_ArrowLeft)
 			{
 				QPointArray a;
 
@@ -782,7 +782,7 @@ void HighColorStyle::drawControl( ControlElement element,
 		{
 			QMenuBar* mb = (QMenuBar*)widget;
 			QRect pr = mb->rect();
-			
+
 			bool active  = flags & Style_Active;
 			bool focused = flags & Style_HasFocus;
 
@@ -790,7 +790,7 @@ void HighColorStyle::drawControl( ControlElement element,
 				qDrawShadePanel(p, r.x(), r.y(), r.width(), r.height(),
 								cg, true, 1, &cg.brush(QColorGroup::Midlight));
 			else
-				renderGradient( p, r, cg.background(), false, 
+				renderGradient( p, r, cg.background(), false,
 								r.x(), r.y()-1, pr.width()-2, pr.height()-2);
 
 		    QCommonStyle::drawControl(element, p, widget, r, cg, flags, opt);
@@ -819,7 +819,7 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 									     SCFlags active,
                                          const QStyleOption& opt ) const
 {
-	switch(control) 
+	switch(control)
 	{
 		// COMBOBOX
 		// -------------------------------------------------------------------
@@ -861,10 +861,10 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 				p->drawLine(x+1, y+2, x+1, y2-2);
 
 				// Get the button bounding box
-				QRect ar = QStyle::visualRect( 
-					querySubControlMetrics(CC_ComboBox, widget, SC_ComboBoxArrow), 
+				QRect ar = QStyle::visualRect(
+					querySubControlMetrics(CC_ComboBox, widget, SC_ComboBoxArrow),
 					widget );
-				
+
 				// Are we enabled?
 				if ( widget->isEnabled() )
 					flags |= Style_Enabled;
@@ -877,10 +877,10 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 			}
 
 			// Draw an edit field if required
-			if ( controls & SC_ComboBoxEditField ) 
+			if ( controls & SC_ComboBoxEditField )
 			{
 				const QComboBox * cb = (const QComboBox *) widget;
-				QRect re = QStyle::visualRect( 
+				QRect re = QStyle::visualRect(
 					querySubControlMetrics( CC_ComboBox, widget,
 						                    SC_ComboBoxEditField), widget );
 
@@ -907,7 +907,7 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 					QRect re =
                     QStyle::visualRect(subRect(SR_ComboBoxFocusRect, cb), widget);
 
-					drawPrimitive( PE_FocusRect, p, re, cg, 
+					drawPrimitive( PE_FocusRect, p, re, cg,
 								   Style_FocusAtBorder, QStyleOption(cg.highlight()));
 				}
 			}
@@ -986,7 +986,7 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 							 slider.width() - 5, slider.height() - 5);
 					drawPrimitive(PE_FocusRect, p, fr, cg, Style_Default);
 				}
-            } 
+            }
             break;
 		}
 
@@ -1007,7 +1007,7 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 			if (active & SC_ToolButtonMenu)
 				mflags |= Style_Down;
 
-			if (controls & SC_ToolButton) 
+			if (controls & SC_ToolButton)
 			{
 				// If we're pressed, on, or raised...
 				if (bflags & (Style_Down | Style_On | Style_Raised))
@@ -1016,24 +1016,24 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 				// Check whether to draw a background pixmap
 				else if ( toolbutton->parentWidget() &&
 						  toolbutton->parentWidget()->backgroundPixmap() &&
-						  !toolbutton->parentWidget()->backgroundPixmap()->isNull() ) 
+						  !toolbutton->parentWidget()->backgroundPixmap()->isNull() )
 				{
 					QPixmap pixmap = *(toolbutton->parentWidget()->backgroundPixmap());
 					p->drawTiledPixmap( r, pixmap, toolbutton->pos() );
-				} 
+				}
 				else if (widget->parent() && widget->parent()->inherits("QToolBar"))
 				{
 					QToolBar* parent = (QToolBar*)widget->parent();
 					QRect pr = parent->rect();
 
-					renderGradient( p, r, cg.background(), 
+					renderGradient( p, r, cg.background(),
 									parent->orientation() == Qt::Vertical,
 									r.x(), r.y(), pr.width()-2, pr.height()-2);
 				}
 			}
 
 			// Draw a toolbutton menu indicator if required
-			if (controls & SC_ToolButtonMenu) 
+			if (controls & SC_ToolButtonMenu)
 			{
 				if (mflags & (Style_Down | Style_On | Style_Raised))
 					drawPrimitive(PE_ButtonDropDown, p, menuarea, cg, mflags, opt);
@@ -1054,8 +1054,8 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 			break;
 		} */
 
-		default: 
-			winstyle->drawComplexControl(control, p, widget, 
+		default:
+			winstyle->drawComplexControl(control, p, widget,
 							r, cg, flags, controls, active, opt);
 			break;
 	}
@@ -1140,7 +1140,7 @@ int HighColorStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 		case PM_IndicatorHeight: {
 			return 13;						// 13x13
 		}
-		
+
 		// SLIDER
 		// -------------------------------------------------------------------
 		case PM_SliderLength:
@@ -1182,7 +1182,7 @@ QRect HighColorStyle::querySubControlMetrics( ComplexControl control,
 {
     QRect ret;
 
-    switch (control) 
+    switch (control)
 	{
 	    case CC_ScrollBar: {
 			const QScrollBar *sb = (const QScrollBar*)widget;
@@ -1193,7 +1193,7 @@ QRect HighColorStyle::querySubControlMetrics( ComplexControl control,
 			int sliderlen;
 
 			// calculate slider length
-			if (sb->maxValue() != sb->minValue()) 
+			if (sb->maxValue() != sb->minValue())
 			{
 				uint range = sb->maxValue() - sb->minValue();
 				sliderlen = (sb->pageStep() * maxlen) /	(range + sb->pageStep());
@@ -1228,31 +1228,31 @@ QRect HighColorStyle::querySubControlMetrics( ComplexControl control,
 					else
 						ret.setRect(0, sbextent, sbextent, sliderstart - sbextent);
 					break;
-	
+
 				case SC_ScrollBarAddPage:
 					// between bottom/right button and slider
 					if (horizontal)
 						ret.setRect(sliderstart + sliderlen, 0,
 								maxlen - sliderstart - sliderlen + sbextent, sbextent);
 					else
-						ret.setRect(0, sliderstart + sliderlen, sbextent, 
+						ret.setRect(0, sliderstart + sliderlen, sbextent,
 								maxlen - sliderstart - sliderlen + sbextent);
 					break;
-	
+
 				case SC_ScrollBarGroove:
 					if (horizontal)
 						ret.setRect(sbextent, 0, sb->width() - sbextent * 3, sb->height());
 					else
 						ret.setRect(0, sbextent, sb->width(), sb->height() - sbextent * 3);
 					break;
-	
+
 				case SC_ScrollBarSlider:
 					if (horizontal)
 						ret.setRect(sliderstart, 0, sliderlen, sbextent);
 					else
 						ret.setRect(0, sliderstart, sbextent, sliderlen);
 					break;
-	
+
 				default:
 					break;
             }
@@ -1290,11 +1290,11 @@ int HighColorStyle::styleHint( StyleHint sh, const QWidget *w, QStyleHintReturn 
 	switch (sh)
 	{
 		// We don't want any spacing below the menu bar thanks
-		case SH_MainWindow_SpaceBelowMenuBar:	
+		case SH_MainWindow_SpaceBelowMenuBar:
 			return 0;
-			
+
 		default:
-			return winstyle->styleHint(sh, w, shr);
+			return winstyle->styleHint(sh, w, QStyleOption::Default, shr);
 	}
 }
 
@@ -1312,30 +1312,30 @@ void HighColorStyle::renderGradient( QPainter* p, const QRect& r,
 	// pwidth, pheight specify the width and height of the parent's pixmap.
 	// We use these to draw parent-relative pixmaps for toolbar buttons
 	// and menubar items.
-	
+
 	GradientSet* grSet = gDict.find( clr.rgb() );
-	
+
 	if (!grSet) {
 		grSet = new GradientSet(clr);
 		gDict.insert( clr.rgb(), grSet );
 	}
 
 	if (horizontal) {
-		
+
 		int width;
-		
+
 		if (pwidth != -1)
 			width = pwidth; 	// Parent relative
 		else
 			width = r.width();
 
-		if (width <= 34) 
+		if (width <= 34)
 			p->drawTiledPixmap(r, *grSet->gradient(HMed), QPoint(px, 0));
 		else if (width <= 52)
 			p->drawTiledPixmap(r, *grSet->gradient(HLarge), QPoint(px, 0));
 		else {
 			KPixmap *hLarge = grSet->gradient(HLarge);
-			
+
 			// Don't draw a gradient if we don't need to
 			if (hLarge->width() > px)
 			{
@@ -1347,17 +1347,17 @@ void HighColorStyle::renderGradient( QPainter* p, const QRect& r,
 				// Draw the remaining fill
 				p->fillRect(r.x()+pixmapWidth, r.y(), r.width()-pixmapWidth, r.height(),
 							clr.dark(110));
-				
+
 			} else
 				p->fillRect(r, clr.dark(110));
 		}
-	
+
 	} else {
 		// Vertical gradient
 		// -----------------
 
 		int height;
-		
+
 		if (pheight != -1)
 			height = pheight;	// Parent relative
 		else
@@ -1383,13 +1383,13 @@ void HighColorStyle::renderGradient( QPainter* p, const QRect& r,
 				// Draw the remaining fill
 				p->fillRect(r.x(), r.y()+pixmapHeight, r.width(), r.height()-pixmapHeight,
 							clr.dark(110));
-				
+
 			} else
 				p->fillRect(r, clr.dark(110));
 		}
 	}
 }
-   
+
 
 // vim: set noet ts=4 sw=4:
 
