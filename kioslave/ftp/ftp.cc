@@ -23,6 +23,7 @@ Ftp::Ftp()
   m_error = 0;
   m_errorText = "";
   m_bLoggedOn = false;
+  m_bFtpStarted = false;
   m_bPersistent = true;
 }
 
@@ -147,12 +148,12 @@ bool Ftp::readresp(char c)
 /*
  * disconnect from remote
  */
-void Ftp::ftpDisconnect()
+void Ftp::ftpDisconnect( bool really )
 {
-  if ( m_bPersistent )
+  if ( m_bPersistent && !really )
     return;
 
-  if ( m_bLoggedOn )
+  if ( m_bLoggedOn || m_bFtpStarted )
   {    
     if( sControl != 0 )
     {
@@ -164,6 +165,7 @@ void Ftp::ftpDisconnect()
   }
 
   m_bLoggedOn = false;
+  m_bFtpStarted = false;
 }
 
 
@@ -196,7 +198,9 @@ bool Ftp::ftpConnect( const char *_host, int _port, const char *_user, const cha
   
   _path = "";
   
-  if ( !ftpConnect2( _host ) )
+  m_bFtpStarted = ftpConnect2( _host );
+
+  if ( !m_bFtpStarted )
   {
     if ( !m_error )
     {

@@ -8,7 +8,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
@@ -48,6 +47,8 @@ int main( int argc, char **argv )
   signal(SIGSEGV,sig_handler2);
 
   //ProtocolManager manager;
+
+  debug( "kio_http : Starting");
 
   Connection parent( 0, 1 );
   
@@ -254,14 +255,27 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
   m_cmd = CMD_NONE;
   m_fsocket = 0L;
   m_sock = 0;
-  m_bUseProxy = false;
   m_bIgnoreJobErrors = false;
   m_bIgnoreErrors = false;
   m_iSavedError = 0;
   m_iSize = 0;
 
   m_bCanResume = true; // most of http servers support resuming ?
-  
+
+  m_bUseProxy = ProtocolManager::self()->getUseProxy();
+
+  if ( m_bUseProxy ) {
+    K2URL ur ( ProtocolManager::self()->getHttpProxy().data() );
+
+    m_strProxyHost = ur.host();
+    m_strProxyPort = ur.port();
+    m_strProxyUser = ur.user();
+    m_strProxyPass = ur.pass();
+
+    m_strNoProxyFor = ProtocolManager::self()->getNoProxyFor().data();
+
+  }
+
   HTTP = HTTP_Unknown;
 }
 
@@ -296,11 +310,19 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
   }
 
   int do_proxy = m_bUseProxy;
+
   if ( do_proxy && !m_strNoProxyFor.empty() ) 
     do_proxy = !revmatch( _url.host(), m_strNoProxyFor.c_str() );    
 
   if( do_proxy )
   {
+    debug( "http_open 0");
+    if( !initSockaddr( &m_proxySockaddr, m_strProxyHost.c_str(), m_strProxyPort ) )
+      {
+	error( ERR_UNKNOWN_PROXY_HOST, m_strProxyHost.c_str() );
+	return false;
+      }
+
     if( ::connect( m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof( m_proxySockaddr ) ) )
     {
       error( ERR_COULD_NOT_CONNECT, m_strProxyHost.c_str() );
@@ -343,6 +365,7 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
 
   if( do_proxy )
   {
+    debug( "http_open 2");
     char buffer[ 64 ];
     sprintf( buffer, ":%i", port );
     command += "http://";
@@ -411,18 +434,20 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
     command+="\r\n";
   }
   
-  /*  if( do_proxy )
-  {
-    if( m_strProxyUser != "" && m_strProxyPass != "" )
-    {
-      char *www_auth = create_generic_auth("Proxy-authorization", m_strProxyUser.c_str(), m_strProxyPass.c_str() );
-      command += www_auth;
-      free(www_auth);
-      }
-  }*/
+  if( do_proxy ) {
+    debug( "http_open 3");
+    if( m_strProxyUser != "" && m_strProxyPass != "" ) {
+      command += create_basic_auth("Proxy-authorization", m_strProxyUser.c_str(),
+				   m_strProxyPass.c_str() );
+    }
+  }
 
   command += "\r\n";  /* end header */
-    
+
+  debug( "http_open 4");
+  debug( "kio_http : ############### HEADER #############\n%s", command.c_str() );
+  debug( "http_open 5");
+
   int n;
 repeat1:
   if ( ( n = write( m_sock, command.c_str(), command.size() ) ) != (int)command.size() )
@@ -1014,7 +1039,9 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
       job.clearError();
 
       m_bIgnoreErrors = true;
+      debug( "slotCopy 0");
       if ( !http_open( u1, 0L, 0, false, offset ) ) {
+	debug( "slotCopy 1");
 	m_bIgnoreErrors = false;
 	/* if ( !m_bGUI )
 	{
@@ -1031,7 +1058,9 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	tmpit++;
 	if( tmpit == files.end() )
 	{
+	  debug( "slotCopy 12");
 	  open_CriticalDlg( "Error", tmp.c_str(), "Cancel" );
+	  debug( "slotCopy 13");
 	  http_close();
 	  clearError();
 	  error( ERR_USER_CANCELED, "" );
@@ -1039,6 +1068,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	  return;
 	}
 	
+	debug( "slotCopy 2");
 	if ( !open_CriticalDlg( "Error", tmp.c_str(), "Continue", "Cancel" ) )
 	{
 	  http_close();
@@ -1055,6 +1085,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
       else
 	m_bIgnoreErrors = false;
 
+      debug( "slotCopy 3");
       // This is a hack, since total size should be the size of all files together
       // while we transmit only the size of the current file here.
       totalSize( m_iSize + offset);

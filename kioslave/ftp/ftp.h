@@ -25,8 +25,6 @@
 #define FTP_BUFSIZ 1024
 #define ACCEPT_TIMEOUT 30
 
-#include <string>
-
 #include <k2url.h>
 
 struct FtpEntry
@@ -84,6 +82,7 @@ private:
   int ftplib_debug;
 
   bool m_bLoggedOn;
+  bool m_bFtpStarted;
 
   bool m_bPersistent;
   
@@ -166,7 +165,7 @@ public:
   /**
    * The counterpart to @ref #ftpConnect
    */
-  void ftpDisconnect();
+  void ftpDisconnect( bool really = false );
  
   bool isConnected() { return m_bLoggedOn; }
 

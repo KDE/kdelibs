@@ -8,7 +8,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <string>
+#include <string.h>
 
 #include <errno.h>
 #include <stdio.h>
@@ -83,10 +83,10 @@ protected:
   bool m_bUseProxy;
   string m_strNoProxyFor;
   string m_strProxyHost;
-  string m_strProxyPort;
+  int m_strProxyPort;
   string m_strProxyUser;
   string m_strProxyPass;
-  struct sockaddr m_proxySockaddr;
+  struct sockaddr_in m_proxySockaddr;
 
   // Stuff to hold various error state information
   int m_iSavedError;

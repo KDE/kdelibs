@@ -22,7 +22,7 @@ int main( int argc, char **argv )
   signal(SIGCHLD,sig_handler);
   signal(SIGSEGV,sig_handler2);
 
-  ProtocolManager manager;
+  //  ProtocolManager manager;
 
   debug( "kio_ftp : Starting");
 
@@ -111,6 +111,7 @@ void FtpProtocol::slotMkdir( const char *_url, int _mode )
     if ( !ftp.ftpConnect( usrc ) )
       {
 	error( ftp.error(), ftp.errorText() );
+	ftp.ftpDisconnect( true );
 	m_cmd = CMD_NONE;
 	return;
       }
@@ -121,6 +122,7 @@ void FtpProtocol::slotMkdir( const char *_url, int _mode )
     if ( !ftp.ftpMkdir( usrc.path() ) )
       {
 	error( ERR_COULD_NOT_MKDIR, url.c_str() );
+	ftp.ftpDisconnect();
 	m_cmd = CMD_NONE;
 	return;
       }
@@ -131,11 +133,13 @@ void FtpProtocol::slotMkdir( const char *_url, int _mode )
 	  if ( !ftp.ftpChmod( usrc.path(), _mode ) )
 	    {
 	      error( ERR_CANNOT_CHMOD, url.c_str() );
+	      ftp.ftpDisconnect();
 	      m_cmd = CMD_NONE;
 	      return;
 	    }
 
 	finished();
+	ftp.ftpDisconnect();
 	return;
       }
   }
@@ -143,11 +147,13 @@ void FtpProtocol::slotMkdir( const char *_url, int _mode )
   if ( S_ISDIR( e->type ) )  // !!! ok ?
   {
     error( ERR_DOES_ALREADY_EXIST, url.c_str() );
+    ftp.ftpDisconnect();
     m_cmd = CMD_NONE;
     return;
   }
     
   error( ERR_COULD_NOT_MKDIR, url.c_str() );
+  ftp.ftpDisconnect();
   m_cmd = CMD_NONE;
   return;
 }
@@ -261,6 +267,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
   if ( !ftp.ftpConnect( usrc ) )
   {
     error( ftp.error(), ftp.errorText() );
+    ftp.ftpDisconnect( true );
     m_cmd = CMD_NONE;
     return;
   }
@@ -348,7 +355,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
   if ( slave.pid() == -1 )
   {
     error( ERR_CANNOT_LAUNCH_PROCESS, exec.c_str() );
-    ftp.ftpDisconnect();
+    ftp.ftpDisconnect( true );
     m_cmd = CMD_NONE;
     return;
   }
@@ -550,8 +557,8 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	// No need to ask the user, so raise an error
 	else
 	{    
-	  ftp.ftpDisconnect();
 	  error( job.errorId(), job.errorText() );
+	  ftp.ftpDisconnect();
 	  m_cmd = CMD_NONE;
 	  return;
 	}
@@ -660,8 +667,8 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	  r = open_SkipDlg( tmp2.c_str(), ( files.size() > 1 ) );
 	  if ( r == S_CANCEL )
 	  {
-	    ftp.ftpDisconnect();
 	    error( ERR_USER_CANCELED, "" );
+	    ftp.ftpDisconnect();
 	    m_cmd = CMD_NONE;
 	    return;
 	  }
@@ -723,8 +730,8 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 
 	  if ( r == R_CANCEL ) 
 	  {
-	    ftp.ftpDisconnect();
 	    error( ERR_USER_CANCELED, "" );
+	    ftp.ftpDisconnect();
 	    m_cmd = CMD_NONE;
 	    return;
 	  }
@@ -777,8 +784,8 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	// No need to ask the user, so raise an error
 	else
 	{    
-	  ftp.ftpDisconnect();
 	  error( currentError, job.errorText() );
+	  ftp.ftpDisconnect();
 	  m_cmd = CMD_NONE;
 	  return;
 	}
@@ -802,8 +809,8 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
    
     if ( !ftp.ftpOpen( tmpurl, Ftp::READ, offset ) )
     {
-      ftp.ftpDisconnect();
       error( ftp.error(), ftp.errorText() );
+      ftp.ftpDisconnect();
       m_cmd = CMD_NONE;
       return;
     }
@@ -814,20 +821,23 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 
     char buffer[ 4096 ];
     int n;
+    int read_size = 0;
     do {
       setup_alarm( ProtocolManager::self()->getReadTimeout() ); // start timeout
       n = ftp.read( buffer, 2048 );
 
       // !!! slow down loop for local testing
-//       for ( int tmpi = 0; tmpi < 800000; tmpi++ ) ;
+//       for ( int tmpi = 0; tmpi < 1000000; tmpi++ ) ;
 
       job.data( buffer, n );
       processed_size += n;
+      read_size += n;
+
       time_t t = time( 0L );
       if ( t - t_last >= 1 )
       {
 	processedSize( processed_size );
-	speed( processed_size / ( t - t_start ) );
+	speed( read_size / ( t - t_start ) );
 	t_last = t;
       }
       
@@ -841,8 +851,8 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
       // An error ?
       if ( job.hasFinished() )
       {
-	ftp.ftpClose();
 	ftp.ftpDisconnect();
+	ftp.ftpClose();
 	finished();
 	m_cmd = CMD_NONE;
 	return;
@@ -861,7 +871,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
     processedSize( processed_size );
     if ( t - t_start >= 1 )
     {
-      speed( processed_size / ( t - t_start ) );
+      speed( read_size / ( t - t_start ) );
       t_last = t;
     }
     processedFiles( ++processed_files );
@@ -904,6 +914,7 @@ void FtpProtocol::slotGetSize( const char* _url ) {
   if ( !ftp.ftpConnect( usrc ) )
   {
     error( ftp.error(), ftp.errorText() );
+    ftp.ftpDisconnect( true );
     m_cmd = CMD_NONE;
     return;
   }
@@ -965,6 +976,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
     if ( !ftp.ftpConnect( udest_orig ) )
       {
 	error( ftp.error(), ftp.errorText() );
+	ftp.ftpDisconnect( true );
 	m_cmd = CMD_NONE;
 	finished();
 	return;
@@ -991,7 +1003,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
       else
 	error( ERR_DOES_ALREADY_EXIST, udest_orig.path() );
       
-      ftp.ftpDisconnect();
+      ftp.ftpDisconnect( true );
       m_cmd = CMD_NONE;
       finished();
       return;
@@ -1009,7 +1021,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
 	else
 	  error( ERR_DOES_ALREADY_EXIST, udest_orig.path() );
 
-	ftp.ftpDisconnect();
+	ftp.ftpDisconnect( true );
 	m_cmd = CMD_NONE;
 	finished();
 	return;
@@ -1047,8 +1059,8 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
   if ( !ftp.ftpOpen( udest, Ftp::WRITE, offset ) ) {
     debug( "kio_ftp : ####################### COULD NOT WRITE %s", udest.path() );
 
-    ftp.ftpDisconnect();
     error( ftp.error(), ftp.errorText() );
+    ftp.ftpDisconnect( true );
     m_cmd = CMD_NONE;
     finished();
     return;
@@ -1060,6 +1072,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
   // Loop until we got 'dataEnd'
   while ( m_cmd == CMD_PUT && dispatch() );
 
+  ftp.ftpDisconnect( true );
   ftp.ftpClose();
 
   if ( (e = ftp.ftpStat( udest )) ) {
@@ -1071,7 +1084,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
 	if ( !ftp.ftpRename( udest.path(), udest_orig.path() ) )
 	  {
 	    error( ERR_CANNOT_RENAME, udest_orig.path() );
-	    ftp.ftpDisconnect();
+	    ftp.ftpDisconnect( true );
 	    m_cmd = CMD_NONE;
 	    finished();
 	    return;
@@ -1085,7 +1098,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
 	if ( !ftp.ftpChmod( udest_orig.path(), _mode ) )
 	  {
 	    error( ERR_CANNOT_CHMOD, udest_orig.path() );
-	    ftp.ftpDisconnect();
+	    ftp.ftpDisconnect( true );
 	    m_cmd = CMD_NONE;
 	    finished();
 	    return;
@@ -1098,7 +1111,8 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
     }
   }
 
-  ftp.ftpDisconnect();
+  ftp.ftpDisconnect( true );
+  ftp.ftpClose();
 
   // We have done our job => finish
   finished();
@@ -1132,7 +1146,6 @@ void FtpProtocol::slotDel( list<string>& _source )
 
     if ( strcmp( usrc.protocol(), "ftp" ) != 0L ) {
       error(ERR_INTERNAL,"kio_ftp got non ftp file for delete command" );
-      error( ERR_INTERNAL, "kio_file got non local file as source in copy command" );
       m_cmd = CMD_NONE;
       return;
     }
