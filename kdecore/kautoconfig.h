@@ -7,7 +7,6 @@
 
 class KConfig;
 class QWidget;
-class QSqlPropertyMap;
 
 /**
  * @author Benjamin C Meyer <ben@meyerhome.net>
@@ -145,7 +144,6 @@ public slots:
 
 protected:
   KConfig *config;
-  QSqlPropertyMap *propertyMap;
   
   /**
    * Recursive function that finds all known children.

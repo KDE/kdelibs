@@ -40,10 +40,12 @@ KAutoConfig::KAutoConfig(QObject *parent, const char *name,
 		         KConfig *kconfig) :
 			 QObject(parent, name), config(kconfig) {
   
-  kapp->installKDEPropertyMap ();
-  propertyMap = new QSqlPropertyMap();
-  propertyMap->insert( "KURLRequester", "url" );
-  propertyMap->insert( "KColorButton", "color" );
+  static bool defaultKDEPropertyMapInstalled = false;
+  if ( !defaultKDEPropertyMapInstalled && kapp ) {
+    kapp->installKDEPropertyMap();
+    defaultKDEPropertyMapInstalled = true;
+  }
+  
   d = new KAutoConfigPrivate();
   
   d->ignoreTheseWidgets.insert("QLabel", new int(1));		 
@@ -79,6 +81,7 @@ void KAutoConfig::retrieveSettings(){
 }
 
 bool KAutoConfig::saveSettings() {
+  QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
   // Go through all of the widgets
   QPtrListIterator<QWidget> it( d->widgets );
   QWidget *widget;
@@ -122,6 +125,7 @@ bool KAutoConfig::saveSettings() {
 }
 
 void KAutoConfig::resetSettings(){
+  QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
   // Go through all of the widgets
   QPtrListIterator<QWidget> it( d->widgets );
   QWidget *widget;
@@ -148,7 +152,8 @@ void KAutoConfig::parseChildren(const QWidget *widget,
   const QPtrList<QObject> *listOfChildren = widget->children();
   if(!listOfChildren)
     return;
-  
+ 
+  QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
   QPtrListIterator<QObject> it( *listOfChildren );
   QObject *object;
   while ( (object = it.current()) != 0 ) {
