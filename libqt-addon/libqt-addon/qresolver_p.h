@@ -40,6 +40,7 @@
 #include <qevent.h>
 
 #include "qtaddon.h"
+#include "qresolver.h"
 
 /* decide whether we need a mutex */
 #if !defined(HAVE_GETPROTOBYNAME_R) || !defined(HAVE_GETSERVBYNAME_R) || !defined(HAVE_GETHOSTBYNAME_R)
