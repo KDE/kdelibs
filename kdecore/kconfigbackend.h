@@ -146,6 +146,13 @@ public:
    */
   bool checkConfigFilesWritable(bool warnUser);
 
+  /**
+   * Returns a lock file object for the configuration file
+   * @param bGlobal If true, returns a lock file object for kdeglobals
+   * @since 3.3
+   */
+  KLockFile::Ptr lockFile( bool bGlobal = false );
+
 #ifdef KDE_NO_COMPAT
 private:
 #endif
@@ -153,13 +160,6 @@ private:
    * @deprecated Use @see fileName() instead
    */
   KDE_DEPRECATED QString filename() const { return mfileName; }
-
-  /**
-   * Returns a lock file object for the configuration file
-   * @param bGlobal If true, returns a lock file object for kdeglobals
-   * @since 3.3
-   */
-  KLockFile::Ptr lockFile( bool bGlobal = false );
 
 protected:
   KConfigBase *pConfig;
