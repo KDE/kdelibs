@@ -31,6 +31,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // We try to implement Netscape Cookies and try to behave us according to
 // RFC2109 as much as we can.
 //
+// We assume cookies do not contain any spaces (Netscape spec.)
+// According to RFC2109 this is allowed though.
+// 
 
 #include <config.h>
 #include <sys/types.h>
@@ -288,7 +291,8 @@ QString KCookieJar::findCookies(const QString &_url)
 // '\n' - Another header follows
 static const char * parseNameValue(const char *header,
                                   QString &Name,
-                                  QString &Value)
+                                  QString &Value, 
+                                  bool keepQuotes=false)
 {
     const char *s = header;
 
@@ -347,7 +351,7 @@ static const char * parseNameValue(const char *header,
         }
     }
 
-    if (*s == '\"')
+    if (!keepQuotes && (*s == '\"'))
     {
         // Parse '"my_value"' part (quoted value)
         s++;  // skip "
@@ -503,7 +507,7 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
         // check for "Set-Cookie"
         if (strncasecmp(cookieStr, "Set-Cookie:", 11) == 0)
         {
-            cookieStr = parseNameValue(cookieStr+11, Name, Value);
+            cookieStr = parseNameValue(cookieStr+11, Name, Value, true);
 
             if (Name.isEmpty())
                 continue;
@@ -738,6 +742,7 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
        }
     }
 
+#if 0
     if ((cookiePtr->name().find('\"') != -1) ||
         (cookiePtr->value().find('\"') != -1))
     {
@@ -745,6 +750,7 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
               cookiePtr->host().latin1(), cookiePtr->domain().latin1());
         return KCookieReject;
     }
+#endif
     // No need to test for empty domain and domain-
     // hostname match since those things have already
     // have been taken care of either at the beginning
@@ -995,9 +1001,9 @@ bool KCookieJar::saveCookies(const QString &_filename)
                 QString domain("\"");
                 domain += cookie->domain();
                 domain += "\"";
-                fprintf(fStream, "%-20s %-20s %-12s %9lu   %2d %-10s \"%s\" %-4i\n",
+                fprintf(fStream, "%-20s %-20s %-12s %9lu   %2d %-10s %s %-4i\n",
 		    cookie->host().latin1(), domain.latin1(), path.latin1(),
-		    (unsigned long) cookie->expireDate(), cookie->protocolVersion(),
+		    (unsigned long) cookie->expireDate(), cookie->protocolVersion()+100,
 		    cookie->name().latin1(), cookie->value().latin1(),
 		    cookie->isSecure());
 		cookie = cookieList->next();
@@ -1015,14 +1021,14 @@ bool KCookieJar::saveCookies(const QString &_filename)
 
 typedef char *charPtr;
 
-static const char *parseField(charPtr &buffer)
+static const char *parseField(charPtr &buffer, bool keepQuotes=false)
 {
     char *result;
-    if (*buffer == '\"')
+    if (!keepQuotes && (*buffer == '\"'))
     {
     	// Find terminating "
-    	buffer++;
-    	result = buffer;
+        buffer++;
+        result = buffer;
         while((*buffer != '\"') && (*buffer))
     	    buffer++;
     }
@@ -1085,7 +1091,13 @@ bool KCookieJar::loadCookies(const QString &_filename)
 	    if (!verStr) continue;
 	    int protVer  = (time_t) strtoul(verStr, 0, 10);
 	    const char *name( parseField(line) );
-	    const char *value( parseField(line) );
+            bool keepQuotes = false;
+            if (protVer >= 100)
+            {
+               protVer -= 100;
+               keepQuotes = true;
+            }
+	    const char *value( parseField(line, keepQuotes) );
 	    bool secure = atoi( parseField(line) );
 		
 

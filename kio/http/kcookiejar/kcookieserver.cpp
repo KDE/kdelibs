@@ -314,7 +314,7 @@ void KCookieServer::checkCookies(KHttpCookie *cookie, bool queue)
 
 void KCookieServer::slotSave()
 {
-   kdDebug(7104) << "3 minutes expired. Saving cookies..." << endl;
+   kdDebug(7104) << "Saving cookies..." << endl;
    delete mTimer;
    mTimer = 0;
    QString filename = locateLocal("appdata", "cookies");
