@@ -203,6 +203,7 @@ public:
     * This may be useful if you want to change the pixmap later without breaking
     * the layout. A possible use of this function is to replace a fileItem icon
     * by a larger pixmap (preview).
+    * @since 3.3
     *
     * @param size The size to use
     */
@@ -210,6 +211,7 @@ public:
     
    /**
     * @return The size set by setPixmapSize() or QSize( 0, 0 )
+    * @since 3.3
     */
     QSize pixmapSize() const;
 
