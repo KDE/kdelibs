@@ -43,6 +43,9 @@ protected:
 	virtual void focusOutEvent(QFocusEvent *);
 	virtual void keyPressEvent(QKeyEvent *e);
 	virtual void paintEvent(QPaintEvent *e);
+	virtual bool event (QEvent *pe);
+
+	void selectNextCell (QListViewItem *pi, int column, bool forward);
 	void terminate(bool commit);
 	QListViewItem *item;
 	int col;

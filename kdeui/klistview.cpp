@@ -92,6 +92,7 @@ public:
       wasShiftEvent (false),
       fullWidth (false),
       sortAscending(true),
+	    tabRename(true),
       sortColumn(0),
       selectionDirection(0),
       tooltipColumn (0),
@@ -137,6 +138,7 @@ public:
   bool wasShiftEvent:1;
   bool fullWidth:1;
   bool sortAscending:1;
+  bool tabRename:1;
 
   int sortColumn;
 
@@ -203,14 +205,126 @@ void KListViewLineEdit::load(QListViewItem *i, int c)
         setFocus();
 }
 
+/*	Helper functions to for
+ *	tabOrderedRename functionality.
+ */
+
+int nextCol (KListView *pl, QListViewItem *pi, int start, int dir)
+{
+	if (pi)
+	{
+		//	Find the next renameable column in the current row
+		for (; ((dir == +1) ? (start < pl->columns()) : (start >= 0)); start += dir)
+			if (pl->isRenameable(start))
+				return start;
+	}
+
+	return -1;
+}
+
+QListViewItem *prevItem (QListViewItem *pi)
+{
+	QListViewItem *pa = pi->itemAbove();
+
+	/*	Does what the QListViewItem::previousSibling()
+	 *	of my dreams would do.
+	 */
+	if (pa && pa->parent() == pi->parent())
+		return pa;
+
+	return NULL;
+}
+
+QListViewItem *lastQChild (QListViewItem *pi)
+{
+	if (pi)
+	{
+		/*	Since there's no QListViewItem::lastChild().
+		 *	This finds the last sibling for the given
+		 *	item.
+		 */
+		for (QListViewItem *pt = pi->nextSibling(); pt; pt = pt->nextSibling())
+			pi = pt;
+	}
+
+	return pi;
+}
+
+void KListViewLineEdit::selectNextCell (QListViewItem *pitem, int column, bool forward)
+{
+	const int ncols = p->columns();
+	const int dir = forward ? +1 : -1;
+	const int restart = forward ? 0 : (ncols - 1);
+	QListViewItem *top = (pitem && pitem->parent())
+		? pitem->parent()->firstChild()
+		: p->firstChild();
+	QListViewItem *pi = pitem;
+
+	terminate();		//	Save current changes
+
+	do
+	{
+		/*	Check the rest of the current row for an editable column,
+		 *	if that fails, check the entire next/previous row. The
+		 *	last case goes back to the first item in the current branch
+		 *	or the last item in the current branch depending on the
+		 *	direction.
+		 */
+		if ((column = nextCol(p, pi, column + dir, dir)) != -1 ||
+			(column = nextCol(p, (pi = (forward ? pi->nextSibling() : prevItem(pi))), restart, dir)) != -1 ||
+			(column = nextCol(p, (pi = (forward ? top : lastQChild(pitem))), restart, dir)) != -1)
+		{
+			if (pi)
+			{
+				p->setCurrentItem(pi);		//	Calls terminate
+				p->rename(pi, column);
+
+				/*	Some listviews may override rename() to
+				 *	prevent certain items from being renamed,
+				 *	if this is done, [m_]item will be NULL
+				 *	after the rename() call... try again.
+				 */
+				if (!item)
+					continue;
+
+				break;
+			}
+		}
+	}
+	while (pi && !item);
+}
+
+#ifdef KeyPress
+#undef KeyPress
+#endif
+
+bool KListViewLineEdit::event (QEvent *pe)
+{
+	if (pe->type() == QEvent::KeyPress)
+	{
+		QKeyEvent *k = (QKeyEvent *) pe;
+
+	    if ((k->key() == Qt::Key_Backtab || k->key() == Qt::Key_Tab) &&
+			p->tabOrderedRenaming() && p->itemsRenameable() &&
+			!(k->state() & ControlButton || k->state() & AltButton))
+		{
+			selectNextCell(item, col,
+				(k->key() == Key_Tab && !(k->state() & ShiftButton)));
+			return true;
+	    }
+	}
+
+	return KLineEdit::event(pe);
+}
+
 void KListViewLineEdit::keyPressEvent(QKeyEvent *e)
 {
-        if(e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter)
-            terminate(true);
-        else if(e->key() == Qt::Key_Escape)
-            terminate(false);
-        else
-            KLineEdit::keyPressEvent(e);
+	if(e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter)
+		terminate(true);
+	else if(e->key() == Qt::Key_Escape)
+		terminate(false);
+	else
+		KLineEdit::keyPressEvent(e);
 }
 
 void KListViewLineEdit::terminate()
@@ -1204,6 +1318,16 @@ bool KListView::showTooltip(QListViewItem *item, const QPoint &, int column) con
 QString KListView::tooltip(QListViewItem *item, int column) const
 {
         return item->text(column);
+}
+
+void KListView::setTabOrderedRenaming(bool b)
+{
+	d->tabRename = b;
+}
+
+bool KListView::tabOrderedRenaming() const
+{
+	return d->tabRename;
 }
 
 void KListView::keyPressEvent (QKeyEvent* e)

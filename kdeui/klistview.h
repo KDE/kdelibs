@@ -567,6 +567,16 @@ public slots:
    */
   void setSelectionModeExt (SelectionModeExt mode);
 
+  /**
+   * Enable/disable tabbing between editable cells
+   */
+  void setTabOrderedRenaming(bool b);
+
+  /**
+   * Returns whether tab ordered renaming is enabled
+   */
+  bool tabOrderedRenaming() const;
+	
 protected:
   /**
    * Determine whether a drop on position @p p would count as
