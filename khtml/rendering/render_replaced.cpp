@@ -75,21 +75,14 @@ short RenderReplaced::calcReplacedWidth(bool* ieHack) const
     }
     case Percent:
     {
-        bool doIEhack = true;
-        const RenderObject* o = this;
-        while ( o->parent() ) {
-            if ( o->isTable() ) {
-                doIEhack = false;
-                break;
-            }
-            o = o->parent();
-        }
-        if ( doIEhack )
-            width = w.minWidth(static_cast<const RenderRoot*>(o)->view()->visibleWidth() );
+        int cw = containingBlockWidth();
+        if ( cw )
+            width = w.minWidth( cw );
         else
             width = intrinsicWidth();
+
         if ( ieHack )
-            *ieHack = doIEhack;
+            *ieHack = cw;
         break;
     }
     case Fixed:
@@ -120,19 +113,18 @@ int RenderReplaced::calcReplacedHeight() const
     break;
     case Percent:
     {
-        bool doIEhack = true;
-        const RenderObject* o = this;
-        while ( o->parent() ) {
-            if ( o->isTable() ) {
-                doIEhack = false;
-                break;
-            }
-            o = o->parent();
+        RenderObject* cb = containingBlock();
+        if ( cb->isBody() )
+            height = h.minWidth( cb->root()->view()->visibleHeight() );
+        else {
+            if ( cb->isTableCell() )
+                cb = cb->containingBlock();
+
+            if ( cb->style()->height().isFixed() )
+                height = h.minWidth( cb->style()->height().value );
+            else
+                height = intrinsicHeight();
         }
-        if ( doIEhack )
-            height = h.minWidth(static_cast<const RenderRoot*>( o)->view()->visibleHeight() );
-        else
-            height = intrinsicHeight();
     }
     break;
     case Fixed:
@@ -153,10 +145,10 @@ void RenderReplaced::calcMinMaxWidth()
     kdDebug( 6040 ) << "RenderReplaced::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
-    bool ieHack = false;
-    int width = calcReplacedWidth(&ieHack);
+    bool isPercent = false;
+    int width = calcReplacedWidth(&isPercent);
 
-    if ( ieHack ) {
+    if ( isPercent ) {
         m_minWidth = 0;
         m_maxWidth = width;
     }
@@ -164,6 +156,16 @@ void RenderReplaced::calcMinMaxWidth()
         m_minWidth = m_maxWidth = width;
         setMinMaxKnown();
     }
+}
+
+int RenderReplaced::lineHeight() const
+{
+    return height();
+}
+
+short RenderReplaced::baselinePosition() const
+{
+    return height();
 }
 
 // -----------------------------------------------------------------------------
