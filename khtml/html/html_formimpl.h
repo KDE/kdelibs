@@ -326,6 +326,8 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
+    virtual bool isSelectable() const { return false; };
+
     virtual tagStatus startTag() const { return LABELStartTag; }
     virtual tagStatus endTag() const { return LABELEndTag; }
 };
