@@ -193,11 +193,9 @@ signals:
   void refreshItems( const KFileItemList & items );
 
   /**
-   * Instruct the view to close itself, since the dir was just deleted
-   * The directory is passed as an argument for views that show multiple
-   * dirs (tree views).
+   * Instruct the view to close itself, since the dir was just deleted.
    */
-  void closeView( const KURL & directory );
+  void closeView();
 
 protected slots:
   // internal slots used by the directory lister (connected to the job)

@@ -516,14 +516,18 @@ void KDirLister::FilesRemoved( const KURL::List & fileList )
     if ( !kit.current() ) // we didn't find it
     {
       // maybe it's the dir we're listing (or a parent of it) ?
-      // Check for dir in m_lstDirs
-      for ( KURL::List::ConstIterator dit = m_lstDirs.begin(); dit != m_lstDirs.end(); ++dit )
-        if ( (*it).isParentOf(*dit) )
+      // Check for dir in m_lstDirs, if in single-URL mode
+      // Do NOT do this if more than one dir. A tree view is never deleted.
+      if ( m_lstDirs.count() == 1 )
+      {
+        if ( (*it).isParentOf(m_lstDirs.first()) )
         {
-          kdDebug(7003) << "emit closeView for " << (*dit).url() << endl;
-          emit closeView( (*dit) );
-          break;
+          kdDebug(7003) << "emit closeView" << endl;
+          stop();
+          emit closeView();
+          return;
         }
+      }
     }
   }
 
