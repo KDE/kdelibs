@@ -1,0 +1,8 @@
+<!-- Contains general entity definitions for the names of the translators.
+     See ../entities/contributor.entities. -->
+
+<!ENTITY Pedro.Morais '<personname><firstname>Pedro</firstname><surname>Morais</surname></personname>'>
+<!ENTITY Pedro.Morais.mail '<email>morais@kde.org</email>'>
+
+<!ENTITY Jose.Pires '<personname><firstname>José</firstname><surname>Pires</surname></personname>'>
+<!ENTITY Jose.Pires.mail '<email>jncp@netcabo.pt</email>'>
