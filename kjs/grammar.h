@@ -22,6 +22,23 @@ typedef union {
   ElisionNode         *eli;
   Operator            op;
 } YYSTYPE;
+
+#ifndef YYLTYPE
+typedef
+  struct yyltype
+    {
+      int timestamp;
+      int first_line;
+      int first_column;
+      int last_line;
+      int last_column;
+      char *text;
+   }
+  yyltype;
+
+#define YYLTYPE yyltype
+#endif
+
 #define	NULLTOKEN	257
 #define	TRUETOKEN	258
 #define	FALSETOKEN	259

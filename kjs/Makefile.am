@@ -50,6 +50,10 @@ parser: $(srcdir)/grammar.y
 	else mv grammar.tab.h grammar.h; fi \
 	else :; fi
 
+## with debugger interface
+debugger: $(libkjs_la_SOURCES) $(kjsinclude_HEADERS) $(noinst_HEADERS)
+	$(MAKE) DEFS="-DKJS_DEBUGGER $(DEFS)" libkjs.la
+
 ## test program
 check_PROGRAMS = testkjs
 testkjs_SOURCES = testkjs.cpp $(libkjs_la_SOURCES)
