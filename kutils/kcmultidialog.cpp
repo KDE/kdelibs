@@ -59,6 +59,19 @@ KCMultiDialog::KCMultiDialog( int dialogFace, const QString & caption, QWidget *
     init();
 }
 
+KCMultiDialog::KCMultiDialog( DialogType dialogFace, WFlags f, QWidget *parent, 
+      const char *name, bool modal, const QString &caption,
+      int buttonMask, ButtonCode defaultButton, bool separator,
+      const KGuiItem &user2, const KGuiItem &user3 ) 
+     : KDialogBase( dialogFace, f, parent, name, modal, caption, buttonMask,
+                    defaultButton, separator, KGuiItem( i18n( "&Reset" ), "undo" ), 
+                    user2, user3 )
+     , dialogface( dialogFace )
+{
+   showButton( User1, false );;
+   init();
+}
+
 inline void KCMultiDialog::init()
 {
     d = 0L;
