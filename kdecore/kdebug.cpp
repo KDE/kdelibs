@@ -46,10 +46,10 @@ public:
   QString descr;
 };
 
-static QList<KDebugEntry> KDebugCache;
+static QList<KDebugEntry> *KDebugCache;
 #define MAX_CACHE 20
 
-QString getDescrFromNum(int _num)
+QString getDescrFromNum(uint _num)
 {
   QString data, filename(KApplication::kde_configdir()+"/kdebug.areas");
   QFile file(filename);
@@ -57,8 +57,11 @@ QString getDescrFromNum(int _num)
   unsigned long number, space;
   bool longOK;
 
+  if (!KDebugCache)
+      KDebugCache = new QList<KDebugEntry>;
+
   KDebugEntry *ent;
-  for (ent=KDebugCache.first(); ent != 0; ent=KDebugCache.next()) {
+  for (ent=KDebugCache->first(); ent != 0; ent=KDebugCache->next()) {
     if (ent->number == _num) {
       return ent->descr.copy();
     }
@@ -106,9 +109,9 @@ QString getDescrFromNum(int _num)
 
     data.remove(0, space); data=data.stripWhiteSpace();
 
-    if (KDebugCache.count() <= MAX_CACHE)
-      KDebugCache.removeFirst();
-    KDebugCache.append(new KDebugEntry(number,data.copy()));
+    if (KDebugCache->count() <= MAX_CACHE)
+      KDebugCache->removeFirst();
+    KDebugCache->append(new KDebugEntry(number,data.copy()));
     delete ts;
     file.close();
     return data.copy();
