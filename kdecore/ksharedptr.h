@@ -76,6 +76,8 @@ public:
   bool operator!= ( const T* p ) const { return ( ptr != p ); }
   bool operator!() const { return ( ptr == 0 ); }
   operator bool() const { return ( ptr != 0 ); }
+  // the non-const version looks stupid, but -pedantic prefers that one
+  operator bool() { return ( ptr != 0 ); }
   operator T*() { return ptr; }
   operator const T*() const { return ptr; }
 
@@ -123,6 +125,7 @@ public:
   bool operator!= ( const T* p ) const { return ( ptr != p ); }
   bool operator!() const { return ( ptr == 0 ); }
   operator bool() const { return ( ptr != 0 ); }
+  operator bool() { return ( ptr != 0 ); }
   operator T*() { return ptr; }
   operator const T*() const { return ptr; }
 
