@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Mark Donohoe (donohoe@kde.org)
-    Copyright (C) 1997 Sven Radej (sven.radej@iname.com)
+    Copyright (C) 1997, 1998 1998 Sven Radej (sven@lisa.exp.univie.ac.at)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -78,8 +78,20 @@ signals:
 
 
 /**
-           * @short KDE statusbar with signals pressed and released
-           */
+ * KStatusBar is widget for displaying status messages. You can insert
+ * text labels or custom widgets. Managing of items is internal. KStatusBar
+ * resizes itself, but positioning is left to KTopLevelWidget (or to you, if
+ * you don't use KTopLevelWidget).<br>
+ * special type of item is a message, a temporary text-message or custom
+ * widget which is displayed on top of other items in full-width. Messages
+ * are visible for specified time, or until you call slot clear().<br>
+ * STILL UNIMPLEMENTED:<br>
+ * It is also possible to replace one item by another, keeping the same
+ * size and position.
+ *
+ * @short KDE statusbar widget
+ * @author Mark Donohoe (donohoe@kde.org) Maintained by Sven Radej <sven@lisa.exp.univie.ac.at>
+ */
 class KStatusBar : public QFrame {
   Q_OBJECT
     
@@ -88,7 +100,13 @@ public:
   enum Position{Top, Left, Bottom, Right, Floating};
   enum InsertOrder{LeftToRight, RightToLeft};
 
+ /**
+  * Constructs KStatusBar object.
+  */
   KStatusBar(QWidget *parent = 0L, const char *name = 0L );
+  /**
+   * Destructor. Deletes all internal objects.
+   */
   ~KStatusBar();
 
   /**
@@ -101,10 +119,9 @@ public:
   int insertItem( const char *text, int ID );
 
   /**
-   * Insert custom widget into the status bar. The widget must have statusbar as parent.
-   * The size is the width of
-   * the widget. However, the last item inserted is always stretched to fit
-   * the window width.
+   * Insert custom widget into the status bar. The widget must have statusbar
+   * as parent. The size is the width of the widget. However, the last item
+   * inserted is always stretched to fit the window width.
    * @see #insertItem
    */
   int insertWidget (QWidget *_widget, int size, int id);
@@ -202,13 +219,17 @@ public slots:
 signals:
   /**
    * Emits when mouse is pressed over llabel id. Connect to this signal
-   * if you want to notice mouse press events
+   * if you want to notice mouse press events. If you want to catch this
+   * signal for your custom widgets, they must not catch  mouse press
+   * events.
    */
   void pressed(int);
 
   /**
    * Emits when mouse is released over item id. Conect to
-   * this signal if you want to receive mouse click
+   * this signal if you want to receive mouse click. If you want to catch
+   * this signal for your custom widgets, they must not catch mouse release
+   * events.
    */
   void released(int);
 
