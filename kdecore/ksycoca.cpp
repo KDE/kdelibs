@@ -32,10 +32,12 @@
 #include <kdebug.h>
 #include <kprocess.h>
 #include <kstandarddirs.h>
+
 #include <assert.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+#include <fcntl.h>
+              
 #ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
 #endif
@@ -102,6 +104,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
    QFile *database = new QFile(path);
    if (database->open( IO_ReadOnly ))
    {
+     fcntl(database->handle(), F_SETFD, FD_CLOEXEC);
      m_sycoca_size = database->size();
 #ifdef HAVE_MMAP
      m_sycoca_mmap = (const char *) mmap(0, m_sycoca_size,
