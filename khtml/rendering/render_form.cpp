@@ -448,9 +448,8 @@ void RenderSubmitButton::calcMinMaxWidth()
     if ( m_widget->style().guiStyle() == Qt::WindowsStyle && h < 26 )
         h = 22;
 #else
-#if defined(Q_CC_GNU)
-#warning Does guiStyle() ever return sth. != MotifStyle on qt/x11????
-#endif
+    if ( m_widget->style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle && h < 26 )
+        h = 22;
 #endif
     QSize s = QSize( w + 8, h ).expandedTo( m_widget->minimumSizeHint()).expandedTo( QApplication::globalStrut() );
 
@@ -605,9 +604,8 @@ void RenderLineEdit::calcMinMaxWidth()
         if ( m_widget->style().guiStyle() == Qt::WindowsStyle && h < 26 )
             h = 22;
 #else
-#if defined(Q_CC_GNU)
-#warning is guiStyle() ever != MotifStyle on qt/x11??
-#endif
+        if ( m_widget->style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle && h < 26 )
+            h = 22;
 #endif
         s = QSize( w + 8, h ).expandedTo( QApplication::globalStrut() );
     } else
@@ -708,9 +706,8 @@ void RenderFileButton::calcMinMaxWidth()
         if ( m_widget->style().guiStyle() == Qt::WindowsStyle && h < 26 )
             h = 22;
 #else
-#if defined(Q_CC_GNU)
-#warning Does guiStyle() ever return sth. != MotifStyle on qt/x11????
-#endif
+        if ( m_widget->style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle && h < 26 )
+            h = 22;
 #endif
         s = QSize( w + 8, h );
     } else
