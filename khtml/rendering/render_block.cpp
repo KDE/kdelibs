@@ -1459,7 +1459,7 @@ RenderBlock::leftRelOffset(int y, int fixedOffset, bool applyTextIndent, int *he
 
     if (applyTextIndent && m_firstLine && style()->direction() == LTR ) {
         int cw=0;
-        if (style()->textIxndent().isPercent())
+        if (style()->textIndent().isPercent())
             cw = containingBlock()->contentWidth();
         left += style()->textIndent().minWidth(cw);
     }
