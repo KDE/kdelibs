@@ -5,6 +5,7 @@ Comment[de]=TeX Dokument
 Comment[nl]=TeX document
 Comment[pl]=Dokument TeX
 Comment[fi]=TeX dokumentti
+Comment[fr]=Document TeX
 Icon=tex.xpm
 Type=MimeType
 MimeType=text/x-tex

@@ -4,6 +4,7 @@ Comment=Character Device
 Comment[de]=Zeichen-Orientiertes Gerät
 Comment[pl]=Urz±dzenie znakowe
 Comment[fi]=Tekstilaite
+Comment[fr]=Périphérique caractère
 Icon=chardevice.xpm
 Type=MimeType
 MimeType=inode/chardevice

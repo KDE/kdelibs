@@ -5,6 +5,7 @@ Comment[de]=Skript
 Comment[nl]=Shellscript 
 Comment[pl]=Skrypt pow³oki
 Comment[fi]=Tulkin skripti
+Comment[fr]=Script shell
 Icon=terminal.xpm
 Type=MimeType
 MimeType=application/x-shellscript
