@@ -709,9 +709,9 @@ HTTPProtocol::http_openConnection()
           return false;
         }
       }
-      #ifdef DO_SSL
+#ifdef DO_SSL
         m_ssl_ip = inet_ntoa(server_name.sin_addr);
-      #endif
+#endif
 
     }
 
@@ -724,6 +724,9 @@ HTTPProtocol::http_openConnection()
       error( ERR_COULD_NOT_CONNECT, m_state.hostname );
       return false;
     }
+    // Tell the application that we are connected, and that the metadata (e.g. ssl) is ready
+    connected();
+    
     return true;
 }
 
@@ -1772,8 +1775,6 @@ void HTTPProtocol::setHost(const QString& host, int port, const QString& user, c
   m_request.user = user;
   m_request.passwd = pass;
   m_request.do_proxy = m_bUseProxy;
-
-  connected();
 }
 
 void HTTPProtocol::slave_status()

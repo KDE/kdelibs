@@ -154,10 +154,7 @@ void Slave::gotAnswer()
 
     if (ok)
     {
-	if (cmd == MSG_CONNECTED)
-	    emit connected();
-	else
-	    dispatch(cmd, data);
+        dispatch(cmd, data);
         slaveconn.connect(this, SLOT(gotInput()));
     }
     else

@@ -153,6 +153,14 @@ namespace KIO {
         void infoMessage( KIO::Job *, const QString & msg );
 
         /**
+         * Emitted when the slave successfully connected to the host.
+         * There is no guarantee the slave will send this. For instance,
+         * kio_file will never. This is especially useful for kio_http,
+         * to know when the metadata is available.
+         */
+        void connected( KIO::Job * );
+
+        /**
          * Progress signal showing the overall progress of the job
          * This is valid for any kind of job, and allows using a
          * a progress bar very easily (see @ref KProgress)
@@ -310,6 +318,11 @@ namespace KIO {
          * Called on a slave's info message
          */
         void slotInfoMessage( const QString & );
+
+        /**
+         * Called on a slave's connected signal
+         */
+        void slotConnected();
 
         /**
          * Forward signal from the slave

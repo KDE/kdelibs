@@ -74,16 +74,6 @@ namespace KIO {
                       const QString &user, const QString &passwd);
 
         /**
-         * Open connection (forced).
-         */
-        void openConnection();
-
-        /**
-         * Close connection (forced).
-         */
-        void closeConnection();
-
-        /**
          * @return Protocol handled by this slave
          */
         QString protocol() { return m_protocol; }

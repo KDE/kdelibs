@@ -296,6 +296,9 @@ void SimpleJob::start(Slave *slave)
     connect( m_slave, SIGNAL( infoMessage( const QString & ) ),
              SLOT( slotInfoMessage( const QString & ) ) );
 
+    connect( m_slave, SIGNAL( connected() ),
+             SLOT( slotConnected() ) );
+
     connect( m_slave, SIGNAL( finished() ),
              SLOT( slotFinished() ) );
 
@@ -373,6 +376,11 @@ void SimpleJob::slotWarning( const QString & errorText )
 void SimpleJob::slotInfoMessage( const QString & msg )
 {
     emit infoMessage( this, msg );
+}
+
+void SimpleJob::slotConnected()
+{
+    emit connected( this );
 }
 
 void SimpleJob::slotTotalSize( unsigned long size )
