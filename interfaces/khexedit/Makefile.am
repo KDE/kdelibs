@@ -1,7 +1,7 @@
 # the service
 kde_module_LTLIBRARIES = libkbyteseditwidget.la
 
-INCLUDES = -I../lib $(all_includes)
+INCLUDES = -I$(srcdir)/../lib $(all_includes)
 
 noinst_HEADERS = kbyteseditwidget.h
 
