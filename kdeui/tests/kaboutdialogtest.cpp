@@ -47,24 +47,24 @@ int main(int argc, char** argv)
 //  	  "<i>(there are no settings to save).</i>");
   about.setCaption("KAboutDialog example");
   about.setVersion("KAboutDialog, Draft Study");
-  about.setHelp("kdehelp/intro.html", "intro", "");
+  about.setHelp("kdehelp/intro.html", "intro");
   // ----- set the application author:
   about.setAuthor
     ("Mirko Sucker", "mirko@kde.org", "", "Initial developer.");
   // ----- set the application maintainer:
   about.setMaintainer("Any One", // name
-		      "anyone@kde.org", // email address 
+		      "anyone@kde.org", // email address
 		      "http://www.anyhere.com", // URL
 		      "Current maintainer."); // description
   // ----- add some contributors:
-  about.addContributor("Some One", "someone@kde.org", "http://www.somehere.com", 
+  about.addContributor("Some One", "someone@kde.org", "http://www.somehere.com",
 		       "Making coffee");
-  about.addContributor("Another One", 
-		       "anotherone@kde.org", 
-		       "http://www.blablax.com", 
+  about.addContributor("Another One",
+		       "anotherone@kde.org",
+		       "http://www.blablax.com",
 		       "Pizza donator");
   // ----- contents of the dialog have changed, adapt sizes:
-  about.adjust(); 
+  about.adjust();
   about.exec();
   // -----
   return 0;

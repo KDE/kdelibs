@@ -14,7 +14,7 @@
 #include <kmenubar.h>
 #include <ktoolbarradiogroup.h>
 #include <kiconloader.h>
-#include <qmultilinedit.h>
+#include <qmultilineedit.h>
 #include "kwindowtest.h"
 
 #include <kglobal.h>

@@ -2,7 +2,7 @@
 #include <qwidget.h>
 #include <qstring.h>
 #include <qmessagebox.h>
-#include <qmultilinedit.h>
+#include <qmultilineedit.h>
 #include <qkeycode.h>
 #include <qpixmap.h>
 
