@@ -1487,8 +1487,8 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	  const struct css_value *cssval1 = findValue( property1.string().ascii(),
 						       property1.string().length());
 	  if ( !cssval1 ) {
-            int properties[2] = { CSS_PROP_BACKGROUND_POSITION_X,
-				  CSS_PROP_BACKGROUND_POSITION_Y };
+            const int properties[2] = { CSS_PROP_BACKGROUND_POSITION_X,
+                                        CSS_PROP_BACKGROUND_POSITION_Y };
             return parseShortHand(curP, endP, properties, 2);
 	  }
 	  const struct css_value *cssval2 = 0;
