@@ -952,9 +952,9 @@ void AutoTableLayout::layout()
     if ( available < 0 ) {
 	int mw = 0;
 	for ( int i = nEffCols-1; i >= 0; i-- )
-	    mw += layoutStruct[i].effMaxWidth - layoutStruct[i].effMinWidth;
+	    mw += layoutStruct[i].calcWidth - layoutStruct[i].effMinWidth;
 	for ( int i = nEffCols-1; i >= 0 && mw > 0; i-- ) {
-	    int minMaxDiff = layoutStruct[i].effMaxWidth-layoutStruct[i].effMinWidth;
+	    int minMaxDiff = layoutStruct[i].calcWidth-layoutStruct[i].effMinWidth;
 	    int reduce = available * minMaxDiff / mw;
 	    layoutStruct[i].calcWidth += reduce;
 	    available -= reduce;
