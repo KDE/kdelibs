@@ -76,6 +76,16 @@ class KFontRequester : public QWidget
     QString title() const { return m_title; }
 
     /**
+     * @return Pointer to the label used for preview.
+     */
+    QLabel *label() const { return m_sampleLabel; }
+
+    /**
+     * @return Pointer to the pushbutton in the widget.
+     */
+    QPushButton *button() const { return m_button; }
+
+    /**
      * Sets the currently selected font in the requester.
      *
      * @param font The font to select.
