@@ -53,7 +53,7 @@ class KCModulePrivate;
  *   }
  * </pre>
  *
- * See kdebase/kcontrol/README for more detailed documentation. 
+ * See kdebase/kcontrol/HOWTO for more detailed documentation.
  *
  * @author Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
  */
@@ -95,7 +95,7 @@ public:
   /**
    * Save the configuration data.
    *
-   * The load module stores the config information as shown
+   * The save method stores the config information as shown
    * in the user interface in the config files.
    *
    * If necessary, this method also updates the running system,
@@ -109,7 +109,7 @@ public:
    * Set the configuration to sensible default values.
    *
    * This method is called when the user clicks the "Default"
-   * button. It should set the display to usefull values.
+   * button. It should set the display to useful values.
    */
   virtual void defaults() {};
 
@@ -138,7 +138,7 @@ public:
    * Returns a the KAboutData for this module
    * This is generally only called for the KBugReport.
    * Override and have it return a pointer to a constant
-   **/
+   */
   virtual const KAboutData *aboutData() const { return 0; }
 
   /**
