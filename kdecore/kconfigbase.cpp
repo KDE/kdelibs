@@ -498,7 +498,7 @@ bool KConfigBase::readBoolEntry( const char *pKey, const bool bDefault ) const
     return bDefault;
   else
     {
-      if( aValue == "true" || aValue == "on" || aValue == "1")
+      if( aValue == "true" || aValue == "on" || aValue == "yes" || aValue == "1" )
         return true;
       else
         {
