@@ -129,64 +129,153 @@ Element::~Element()
 
 DOMString Element::tagName() const
 {
-  if (impl) return ((ElementImpl *)impl)->tagName();
-  return DOMString();
+    if (impl) return ((ElementImpl *)impl)->tagName();
+    return DOMString();
 }
 
 DOMString Element::getAttribute( const DOMString &name )
 {
-  if (impl) return ((ElementImpl *)impl)->getAttribute(name);
-  return DOMString();
+    if (impl) return ((ElementImpl *)impl)->getAttribute(name);
+    return DOMString();
 }
 
 void Element::setAttribute( const DOMString &name, const DOMString &value )
 {
-  if (impl) ((ElementImpl *)impl)->setAttribute(name, value);
+    if (impl) ((ElementImpl *)impl)->setAttribute(name, value);
 }
 
 void Element::removeAttribute( const DOMString &name )
 {
-  if (impl) ((ElementImpl *)impl)->removeAttribute(name);
+    if (impl) ((ElementImpl *)impl)->removeAttribute(name);
 }
 
 Attr Element::getAttributeNode( const DOMString &name )
 {
-  if (impl) return ((ElementImpl *)impl)->getAttributeNode(name);
-  return 0;
+    if (impl) return ((ElementImpl *)impl)->getAttributeNode(name);
+    return 0;
 }
 
 Attr Element::setAttributeNode( const Attr &newAttr )
 {
-  int exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-  Attr r = 0;
-  if (impl)
-      r = ((ElementImpl *)impl)->setAttributeNode((AttrImpl *)newAttr.impl, exceptioncode);
-  if ( exceptioncode )
-      throw DOMException( exceptioncode );
-  return r;
+    int exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+    Attr r = 0;
+    if (impl)
+        r = ((ElementImpl *)impl)->setAttributeNode((AttrImpl *)newAttr.impl, exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return r;
 }
 
 Attr Element::removeAttributeNode( const Attr &oldAttr )
 {
-  int exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-  Attr r = 0;
-  if (impl)
-      r = ((ElementImpl *)impl)->removeAttributeNode((AttrImpl *)oldAttr.impl, exceptioncode);
+    int exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+    Attr r = 0;
+    if (impl)
+        r = ((ElementImpl *)impl)->removeAttributeNode((AttrImpl *)oldAttr.impl, exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return r;
+}
+
+NodeList Element::getElementsByTagName( const DOMString &name )
+{
+    if (impl) return ((ElementImpl *)impl)->getElementsByTagName(name);
+    return 0;
+}
+
+DOMString Element::getAttributeNS( const DOMString &namespaceURI,
+                                   const DOMString &localName)
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode = 0;
+    DOMString r = ((ElementImpl *)impl)->getAttributeNS(namespaceURI,localName,exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return r;
+}
+
+void Element::setAttributeNS( const DOMString &namespaceURI,
+                              const DOMString &qualifiedName, 
+                              const DOMString &value)
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode = 0;
+    ((ElementImpl *)impl)->setAttributeNS(namespaceURI,qualifiedName,value,exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+}
+
+void Element::removeAttributeNS( const DOMString &namespaceURI,
+                                 const DOMString &localName )
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode = 0;
+    ((ElementImpl *)impl)->removeAttributeNS(namespaceURI,localName,exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+}
+
+Attr Element::getAttributeNodeNS( const DOMString &namespaceURI,
+                                  const DOMString &localName )
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+  int exceptioncode = 0;
+  AttrImpl *r = ((ElementImpl *)impl)->getAttributeNodeNS(namespaceURI,localName,exceptioncode);
   if ( exceptioncode )
       throw DOMException( exceptioncode );
   return r;
 }
 
-NodeList Element::getElementsByTagName( const DOMString &name )
+Attr Element::setAttributeNodeNS( const Attr &newAttr )
 {
-  if (impl) return ((ElementImpl *)impl)->getElementsByTagName(name);
-  return 0;
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode = 0;
+    AttrImpl *r = ((ElementImpl *)impl)->setAttributeNodeNS((AttrImpl*)newAttr.handle(),exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return r;
+}
+
+NodeList Element::getElementsByTagNameNS( const DOMString &namespaceURI,
+                                          const DOMString &localName )
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode = 0;
+    NodeListImpl *r = ((ElementImpl *)impl)->getElementsByTagNameNS(namespaceURI,localName,exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return r;
 }
 
 bool Element::hasAttribute( const DOMString& name )
 {
     if (impl) return ((ElementImpl *)impl)->hasAttribute(name);
     return 0;
+}
+
+bool Element::hasAttributeNS( const DOMString &namespaceURI,
+                              const DOMString &localName )
+{
+    if (!impl)
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode = 0;
+    bool r = ((ElementImpl *)impl)->hasAttributeNS(namespaceURI,localName,exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return r;
 }
 
 void Element::normalize()

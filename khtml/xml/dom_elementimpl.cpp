@@ -287,81 +287,9 @@ ElementImpl::~ElementImpl()
     }
 }
 
-bool ElementImpl::isInline() const
-{
-    if(!m_style) return false;
-    return (m_style->display() == khtml::INLINE);
-}
-
-unsigned short ElementImpl::nodeType() const
-{
-    return Node::ELEMENT_NODE;
-}
-
 DOMString ElementImpl::tagName() const
 {
     return nodeName();
-}
-
-DOMString ElementImpl::getAttribute( const DOMString &name ) const
-{
-  // search in already set attributes first
-    int exceptioncode; // ### propogate
-    if(!namedAttrMap) return DOMString();
-    AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name,exceptioncode));
-    if (attr) return attr->value();
-
-    // then search in default attr in case it is not yet set
-    NamedAttrMapImpl* dm = defaultMap();
-    if(!dm) return DOMString();
-    AttrImpl* defattr = static_cast<AttrImpl*>(dm->getNamedItem(name, exceptioncode));
-    if(!defattr || exceptioncode) return DOMString();
-
-    return defattr->value();
-}
-
-bool ElementImpl::hasAttribute( const DOMString &name ) const
-{
-  // search in already set attributes first
-    int exceptioncode;
-    if(!namedAttrMap) return false;
-    AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name,exceptioncode));
-    if (attr) return true;
-
-    // then search in default attr in case it is not yet set
-    NamedAttrMapImpl* dm = defaultMap();
-    if(!dm) return false;
-    AttrImpl* defattr = static_cast<AttrImpl*>(dm->getNamedItem(name, exceptioncode));
-    if(!defattr || exceptioncode) return false;
-    return true;
-}
-
-DOMString ElementImpl::getAttribute( int id ) const
-{
-    // search in already set attributes first
-    if(!namedAttrMap) return DOMString();
-    AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->getIdItem(id));
-    if (attr) return attr->value();
-
-    // then search in default attr in case it is not yet set
-    NamedAttrMapImpl* dm = defaultMap();
-    if(!dm) return DOMString();
-
-    AttrImpl* defattr = static_cast<AttrImpl*>(dm->getIdItem(id));
-    if(!defattr) return DOMString();
-
-    return defattr->value();
-}
-
-AttrImpl *ElementImpl::getAttributeNode ( int index ) const
-{
-    return namedAttrMap ? namedAttrMap->getIdItem(index) : 0;
-}
-
-int ElementImpl::getAttributeCount() const
-{
-    int exceptioncode; // ### propogate
-    return namedAttrMap ? namedAttrMap->length(exceptioncode) : 0;
 }
 
 void ElementImpl::setAttribute( const DOMString &name, const DOMString &value)
@@ -381,6 +309,163 @@ void ElementImpl::setAttribute( const DOMString &name, const DOMString &value)
         else
             namedAttrMap->setNamedItem(new AttrImpl(name,value,docPtr()), exceptioncode);
     }
+}
+
+
+void ElementImpl::removeAttribute( const DOMString &name )
+{
+    int exceptioncode; // ### propogate
+    if(!namedAttrMap) return;
+    namedAttrMap->removeNamedItem(name,exceptioncode);
+}
+
+
+AttrImpl *ElementImpl::getAttributeNode ( int index ) const
+{
+    return namedAttrMap ? namedAttrMap->getIdItem(index) : 0;
+}
+
+Attr ElementImpl::setAttributeNode( AttrImpl *newAttr, int &exceptioncode )
+{
+    exceptioncode = 0;
+    if (!newAttr) {
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return 0;
+    }
+    if(!namedAttrMap) {
+        namedAttrMap = new NamedAttrMapImpl(this);
+        namedAttrMap->ref();
+    }
+    if (newAttr->attrId)
+        return namedAttrMap->setIdItem(newAttr, exceptioncode);
+    else
+        return namedAttrMap->setNamedItem(newAttr, exceptioncode);
+}
+
+Attr ElementImpl::removeAttributeNode( AttrImpl *oldAttr, int &exceptioncode )
+{
+    // ### should we replace with default in map? currently default attrs don't exist in map
+    exceptioncode = 0;
+    if(!namedAttrMap) return 0;
+    return namedAttrMap->removeAttr(oldAttr, exceptioncode);
+}
+
+NodeListImpl *ElementImpl::getElementsByTagName( const DOMString &name )
+{
+    return new TagNodeListImpl( this, name );
+}
+
+DOMString ElementImpl::getAttributeNS( const DOMString &/*namespaceURI*/, const DOMString &/*localName*/,
+                                       int &/*exceptioncode*/ )
+{
+    // ### implement
+    return DOMString();
+}
+
+void ElementImpl::setAttributeNS( const DOMString &/*namespaceURI*/, const DOMString &/*qualifiedName*/, 
+                                  const DOMString &/*value*/, int &/*exceptioncode*/ )
+{
+    // ### implement
+}
+
+void ElementImpl::removeAttributeNS( const DOMString &/*namespaceURI*/, const DOMString &/*localName*/,
+                                     int &/*exceptioncode*/ )
+{
+    // ### implement
+}
+
+AttrImpl *ElementImpl::getAttributeNodeNS ( const DOMString &/*namespaceURI*/, const DOMString &/*localName*/,
+                                            int &/*exceptioncode*/ )
+{
+    // ### implement
+    return 0;
+}
+
+AttrImpl *ElementImpl::setAttributeNodeNS ( AttrImpl */*newAttr*/, int &/*exceptioncode*/ )
+{
+    // ### implement
+    return 0;
+}
+
+NodeListImpl *ElementImpl::getElementsByTagNameNS ( const DOMString &/*namespaceURI*/, const DOMString &/*localName*/,
+                                                    int &/*exceptioncode*/ )
+{
+    // ### implement
+    return 0;
+}
+
+bool ElementImpl::hasAttribute( const DOMString &name ) const
+{
+  // search in already set attributes first
+    int exceptioncode;
+    if(!namedAttrMap) return false;
+    AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name,exceptioncode));
+    if (attr) return true;
+
+    // then search in default attr in case it is not yet set
+    NamedAttrMapImpl* dm = defaultMap();
+    if(!dm) return false;
+    AttrImpl* defattr = static_cast<AttrImpl*>(dm->getNamedItem(name, exceptioncode));
+    if(!defattr || exceptioncode) return false;
+    return true;
+}
+
+
+bool ElementImpl::hasAttributeNS( const DOMString &/*namespaceURI*/, const DOMString &/*localName*/, int &/*exceptioncode*/ )
+{
+    // ### implement
+    return false;
+}
+
+bool ElementImpl::isInline() const
+{
+    if(!m_style) return false;
+    return (m_style->display() == khtml::INLINE);
+}
+
+unsigned short ElementImpl::nodeType() const
+{
+    return Node::ELEMENT_NODE;
+}
+
+DOMString ElementImpl::getAttribute( const DOMString &name ) const
+{
+  // search in already set attributes first
+    int exceptioncode; // ### propogate
+    if(!namedAttrMap) return DOMString();
+    AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name,exceptioncode));
+    if (attr) return attr->value();
+
+    // then search in default attr in case it is not yet set
+    NamedAttrMapImpl* dm = defaultMap();
+    if(!dm) return DOMString();
+    AttrImpl* defattr = static_cast<AttrImpl*>(dm->getNamedItem(name, exceptioncode));
+    if(!defattr || exceptioncode) return DOMString();
+
+    return defattr->value();
+}
+
+DOMString ElementImpl::getAttribute( int id ) const
+{
+    // search in already set attributes first
+    if(!namedAttrMap) return DOMString();
+    AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->getIdItem(id));
+    if (attr) return attr->value();
+
+    // then search in default attr in case it is not yet set
+    NamedAttrMapImpl* dm = defaultMap();
+    if(!dm) return DOMString();
+
+    AttrImpl* defattr = static_cast<AttrImpl*>(dm->getIdItem(id));
+    if(!defattr) return DOMString();
+
+    return defattr->value();
+}
+
+int ElementImpl::getAttributeCount() const
+{
+    int exceptioncode; // ### propogate
+    return namedAttrMap ? namedAttrMap->length(exceptioncode) : 0;
 }
 
 void ElementImpl::setAttribute( int id, const DOMString &value )
@@ -424,13 +509,6 @@ void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
     }
 }
 
-void ElementImpl::removeAttribute( const DOMString &name )
-{
-    int exceptioncode; // ### propogate
-    if(!namedAttrMap) return;
-    namedAttrMap->removeNamedItem(name,exceptioncode);
-}
-
 NodeImpl *ElementImpl::cloneNode ( bool deep, int &exceptioncode )
 {
     ElementImpl *newImpl = ownerDocument()->createElement(tagName());
@@ -467,36 +545,6 @@ AttrImpl *ElementImpl::getAttributeNode( const DOMString &name )
     if(!namedAttrMap) return 0;
     return static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name,exceptioncode));
 
-}
-
-Attr ElementImpl::setAttributeNode( AttrImpl *newAttr, int &exceptioncode )
-{
-    exceptioncode = 0;
-    if (!newAttr) {
-        exceptioncode = DOMException::NOT_FOUND_ERR;
-        return 0;
-    }
-    if(!namedAttrMap) {
-        namedAttrMap = new NamedAttrMapImpl(this);
-        namedAttrMap->ref();
-    }
-    if (newAttr->attrId)
-        return namedAttrMap->setIdItem(newAttr, exceptioncode);
-    else
-        return namedAttrMap->setNamedItem(newAttr, exceptioncode);
-}
-
-Attr ElementImpl::removeAttributeNode( AttrImpl *oldAttr, int &exceptioncode )
-{
-    // ### should we replace with default in map? currently default attrs don't exist in map
-    exceptioncode = 0;
-    if(!namedAttrMap) return 0;
-    return namedAttrMap->removeAttr(oldAttr, exceptioncode);
-}
-
-NodeListImpl *ElementImpl::getElementsByTagName( const DOMString &name )
-{
-    return new TagNodeListImpl( this, name );
 }
 
 short ElementImpl::tabIndex() const

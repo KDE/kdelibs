@@ -98,6 +98,48 @@ public:
     ElementImpl(DocumentPtr *doc);
     ~ElementImpl();
 
+    // DOM methods for Element
+
+    DOMString tagName() const;
+
+    DOMString getAttribute ( const DOMString &name ) const;
+
+    void setAttribute ( const DOMString &name, const DOMString &value);
+
+    void removeAttribute ( const DOMString &name );
+
+    AttrImpl *getAttributeNode ( const DOMString &name );
+
+    Attr setAttributeNode ( AttrImpl *newAttr, int &exceptioncode );
+
+    Attr removeAttributeNode ( AttrImpl *oldAttr, int &exceptioncode );
+
+    NodeListImpl *getElementsByTagName ( const DOMString &name );
+
+    DOMString getAttributeNS ( const DOMString &namespaceURI, const DOMString &localName,
+                               int &exceptioncode );
+
+    void setAttributeNS ( const DOMString &namespaceURI, const DOMString &qualifiedName, 
+                          const DOMString &value, int &exceptioncode );
+
+    void removeAttributeNS ( const DOMString &namespaceURI, const DOMString &localName,
+                             int &exceptioncode );
+
+    AttrImpl *getAttributeNodeNS ( const DOMString &namespaceURI, const DOMString &localName,
+                                   int &exceptioncode );
+
+    AttrImpl *setAttributeNodeNS ( AttrImpl *newAttr, int &exceptioncode );
+
+    NodeListImpl *getElementsByTagNameNS ( const DOMString &namespaceURI, const DOMString &localName,
+                                           int &exceptioncode );
+
+    bool hasAttribute ( const DOMString &name ) const;
+
+    bool hasAttributeNS( const DOMString &namespaceURI, const DOMString &localName,
+                         int &exceptioncode );
+
+    // Other methods
+
     virtual bool isInline() const;
 
     virtual unsigned short nodeType() const;
@@ -105,19 +147,10 @@ public:
 
     virtual bool isHTMLElement() const { return false; }
 
-    DOMString tagName() const;
 
-    DOMString getAttribute ( const DOMString &name ) const;
-    bool hasAttribute ( const DOMString &name ) const;
 
-    void setAttribute ( const DOMString &name, const DOMString &value);
-    void removeAttribute ( const DOMString &name );
 
-    AttrImpl *getAttributeNode ( const DOMString &name );
-    Attr setAttributeNode ( AttrImpl *newAttr, int &exceptioncode );
-    Attr removeAttributeNode ( AttrImpl *oldAttr, int &exceptioncode );
 
-    NodeListImpl *getElementsByTagName ( const DOMString &name );
 
     void normalize ( int &exceptioncode );
 
