@@ -110,7 +110,7 @@ LdapConfigWidget::LdapConfigWidget( int flags, QWidget* parent,
   }
 
   if ( flags & W_VER ) {
-    label = new QLabel( i18n( "LDAP Version:" ), this );
+    label = new QLabel( i18n( "LDAP version:" ), this );
     mVer = new QSpinBox( 2, 3, 1, this, "kcfg_ldapver" );
     mVer->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Preferred ) );
     mVer->setValue( 3 );
@@ -147,7 +147,7 @@ LdapConfigWidget::LdapConfigWidget( int flags, QWidget* parent,
     mainLayout->addMultiCellWidget( mDn, 7, 7, 1, 1 );
     //without host query doesn't make sense
     if ( mHost ) {
-      QPushButton *dnquery = new QPushButton( i18n( "Query server" ), this );
+      QPushButton *dnquery = new QPushButton( i18n( "Query Server" ), this );
       connect( dnquery, SIGNAL( clicked() ), SLOT( mQueryDNClicked() ) );
       mainLayout->addMultiCellWidget( dnquery, 7, 7, 2, 3 );
     }
@@ -184,7 +184,7 @@ LdapConfigWidget::LdapConfigWidget( int flags, QWidget* parent,
     mSimple = new QRadioButton( i18n( "Simple" ), authbox, "kcfg_ldapsimple" );
     mSASL = new QRadioButton( i18n( "SASL" ), authbox, "kcfg_ldapsasl" );
 
-    label = new QLabel( i18n( "SASL Mechanism:" ), authbox );
+    label = new QLabel( i18n( "SASL mechanism:" ), authbox );
     mMech = new KComboBox( false, authbox, "kcfg_ldapsaslmech" );
     mMech->setEditable( true );
     mMech->insertItem( "DIGEST-MD5" );
@@ -193,7 +193,7 @@ LdapConfigWidget::LdapConfigWidget( int flags, QWidget* parent,
 
     //without host query doesn't make sense
     if ( mHost ) {
-      mQueryMech = new QPushButton( i18n( "Query server" ), authbox );
+      mQueryMech = new QPushButton( i18n( "Query Server" ), authbox );
       connect( mQueryMech, SIGNAL( clicked() ), SLOT( mQueryMechClicked() ) );
     }
 
@@ -271,7 +271,7 @@ void LdapConfigWidget::sendQuery()
     this, SLOT( loadResult( KIO::Job* ) ) );
 
   if ( mProg == NULL )
-    mProg = new KProgressDialog( this, 0, i18n("LDAP query"), _url.prettyURL(), true );
+    mProg = new KProgressDialog( this, 0, i18n("LDAP Query"), _url.prettyURL(), true );
   else
     mProg->setLabel( _url.prettyURL() );
   mProg->progressBar()->setValue( 0 );
