@@ -261,10 +261,12 @@
 <!ENTITY kpovmodeler	"<application>KPovModeler</application>">
 <!ENTITY kppp	"<application>KPPP</application>">
 <!ENTITY kpresenter	"<application>KPresenter</application>">
+<!ENTITY krdc	"<application>Remote Desktop Connection</application>">
 <!ENTITY kreatecd	"<application>KreateCD</application>">
 <!ENTITY krec	"<application>KRec</application>">
 <!ENTITY kregexpeditor	"<application>KRegExpEditor</application>">
 <!ENTITY kreversi	"<application>KReversi</application>">
+<!ENTITY krfb	"<application>Desktop Sharing</application>">
 <!ENTITY krita	"<application>Krita</application>">
 <!ENTITY kruler	"<application>KRuler</application>">
 <!ENTITY ksame	"<application>KSame</application>">
