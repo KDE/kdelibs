@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/illustrator
+Icon=postscript
+Patterns=*.ai;*.AI;
+Comment=Illustrator Document
