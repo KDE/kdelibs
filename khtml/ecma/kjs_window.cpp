@@ -21,7 +21,6 @@
 #include <qtimer.h>
 #include <qinputdialog.h>
 #include <qstringlist.h>
-#include <qptrdict.h>
 #include <qpaintdevicemetrics.h>
 #include <qapplication.h>
 #include <dom_string.h>
@@ -52,9 +51,10 @@
 
 using namespace KJS;
 
-static QPtrDict<Window> *window_dict = 0L;
-
 namespace KJS {
+
+typedef QMap<KHTMLPart *, Window *> WindowMap;
+static WindowMap *window_map = 0L;
 
 ////////////////////// History Object ////////////////////////
 
@@ -157,14 +157,29 @@ Window::Window(KHTMLPart *p)
   : part(p), screen(0), history(0), frames(0), loc(0),
     openedByJS(false), winq(0L)
 {
+  //kdDebug() << "Window::Window this=" << this << " part=" << part << endl;
 }
 
 Window::~Window()
 {
-  window_dict->remove(part);
-  if (window_dict->isEmpty()) {
-    delete window_dict;
-    window_dict = 0L;
+  //kdDebug() << "Window::~Window this=" << this << " part=" << part << endl;
+  // part may be 0L here (due to QGuardedPtr), so look up the Window pointer instead.
+  WindowMap::Iterator it = window_map->begin();
+  bool found = false;
+  for ( ; it != window_map->end() ; ++it )
+    if ( it.data() == this )
+    {
+      //kdDebug() << "Window::~Window removing from map" << endl;
+      window_map->remove( it );
+      found = true;
+      break;
+    }
+  if ( !found )
+    kdWarning() << "Window " << this << " not found in window_map!" << endl;
+
+  if (window_map->isEmpty()) {
+    delete window_map;
+    window_map = 0L;
   }
   delete winq;
 }
@@ -173,14 +188,17 @@ Window *Window::retrieve(KHTMLPart *p)
 {
   if (!p)
     kdWarning(6070) << "Window::retrieve(0)" << endl;
-  Window *w;
-  if (!window_dict)
-    window_dict = new QPtrDict<Window>;
-  else if ((w = window_dict->find(p)) != 0L)
-    return w;
+  if (!window_map)
+    window_map = new WindowMap;
+  else
+  {
+    WindowMap::Iterator it = window_map->find( p );
+    if ( it != window_map->end() )
+      return it.data();
+  }
 
-  w = new Window(p);
-  window_dict->insert(p, w);
+  Window *w = new Window(p);
+  window_map->insert(p, w);
 
   return w;
 }
@@ -205,14 +223,19 @@ void Window::mark(Imp *)
   if (loc && !loc->refcount)
     loc->mark();
 
-  // Mark all Window objects from the dict. Necessary to keep
+  // Mark all Window objects from the map. Necessary to keep
   // existing window properties, such as 'opener'.
-  if (window_dict)
+  if (window_map)
   {
-     QPtrDictIterator<Window> it( *window_dict );
-     for ( ; it.current() ; ++it )
-       if (it.current() != this && !it.current()->refcount)
-         it.current()->mark();
+     WindowMap::Iterator it = window_map->begin();
+     for ( ; it != window_map->end() ; ++it )
+     {
+       if (it.data() != this && !it.data()->refcount)
+       {
+         //kdDebug() << "Window::mark marking window from dict " << it.data() << endl;
+         it.data()->mark();
+       }
+     }
   }
 }
 
@@ -235,7 +258,7 @@ bool Window::hasProperty(const UString &p, bool recursive) const
       p == "DOMException" ||
       p == "frames" ||
       p == "history" ||
-    //  p == "event" || 
+    //  p == "event" ||
       p == "innerHeight" ||
       p == "innerWidth" ||
       p == "length" ||
