@@ -732,10 +732,9 @@ void KJScriptImp::init()
       hook = next = prev = this;
     }
 
-    if (!glob.imp()) {
+    if (!glob.imp())
       glob = new GlobalImp();
-      initGlobal(glob.imp());
-      }
+    initGlobal(glob.imp());
     con = new Context();
     recursion = 0;
     errMsg = "";
@@ -760,7 +759,6 @@ void KJScriptImp::clear()
     retVal = 0L;
 
     delete con; con = 0L;
-    glob = 0;
 
     Collector::collect();
 
