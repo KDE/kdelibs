@@ -117,8 +117,7 @@ KPluginInfo::KPluginInfo( const KService::Ptr service )
     d->service = service;
     d->specfile = service->desktopEntryPath();
 
-    QVariant tmp = service->property( "Hidden" );
-    if( tmp.isValid() && tmp.toBool() == true )
+    if ( service->isDeleted() )
     {
         d->hidden = true;
         return;
@@ -136,7 +135,7 @@ KPluginInfo::KPluginInfo( const KService::Ptr service )
     d->license = service->property( "X-KDE-PluginInfo-License" ).toString();
     d->dependencies =
         service->property( "X-KDE-PluginInfo-Depends" ).toStringList();
-    tmp = service->property( "X-KDE-PluginInfo-EnabledByDefault" );
+    QVariant tmp = service->property( "X-KDE-PluginInfo-EnabledByDefault" );
     d->enabledbydefault = tmp.isValid() ? tmp.toBool() : false;
 }
 
