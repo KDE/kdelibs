@@ -40,11 +40,13 @@
  * and fully implemented.
  *
  * @short Class for interaction with the windowmanager.
- * @author Matthias Ettrich (ettrich@kde.org)
+ * @authors Matthias Ettrich (ettrich@kde.org), Rik Hemsley <rik@kde.org>
 */
 class KWin
 {
 public:
+
+  enum AnchorEdge { Top, Bottom, Left, Right };
 
     /**
      * Rerieve the number of virtual desktops.
@@ -125,6 +127,13 @@ public:
      */
     static void invokeContextHelp();
 
+    /**
+     * Add the window @p win to the list of those that should be avoided
+     * when maximising, mapping new windows etc.
+     *
+     * Use @p edge to specify which edge your window is stuck to.
+     */
+    static void avoid(WId win, AnchorEdge edge);
 };
 
 #endif

@@ -338,3 +338,29 @@ void KWin::invokeContextHelp()
 {
     ContextWidget w;
 }
+
+void KWin::avoid(WId win, AnchorEdge edge)
+{
+  qDebug("KWin::avoid()");
+
+  Atom avoidAtom = XInternAtom(qt_xdisplay(), "_NET_AVOID_SPEC", False);
+
+  XTextProperty avoidProp;
+
+  char * anchorEdge;
+
+  switch (edge) {
+    case Top:     anchorEdge = "N"; break;
+    case Bottom:  anchorEdge = "S"; break;
+    case Right:   anchorEdge = "E"; break;
+    case Left:    anchorEdge = "W"; break;
+  }
+
+  Status status = XStringListToTextProperty(&anchorEdge, 1, &avoidProp);
+
+  if (0 != status)
+    XSetTextProperty(qt_xdisplay(), win, &avoidProp, avoidAtom);
+  else
+    qDebug("KWin::avoid(): Couldn't set text property");
+}
+
