@@ -177,6 +177,7 @@ KAccelShortcutList::KAccelShortcutList( KGlobalAccel* pAccel )
 KAccelShortcutList::KAccelShortcutList( KAccelActions& actions, bool bGlobal )
 : m_actions( actions )
 {
+	d=new KAccelShortcutListPrivate;
 	m_bGlobal = bGlobal;
 }
 
