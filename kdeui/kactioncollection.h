@@ -89,9 +89,16 @@ public:
    * should have their keyboard shortcuts automatically connected on
    * construction.  Set to 'false' if you will be loading XML-based settings.
    * This is automatically done by KParts.  The default is 'true'.
+   * @see isAutoConnectShortcuts()
    */
   void setAutoConnectShortcuts( bool );
 
+  /**
+   * This indicates whether new actions which are created in this collection
+   * have their keyboard shortcuts automatically connected on
+   * construction.
+   * @see setAutoConnectShortcuts()
+   */
   bool isAutoConnectShortcuts();
 
   /**
@@ -120,10 +127,12 @@ public:
 
   /** @deprecated  Deprecated because of ambiguous name.  Use kaccel() */
   virtual KAccel* accel();
+  /** @deprecated  Deprecated because of ambiguous name.  Use kaccel() */
   virtual const KAccel* accel() const;
 
   /** Returns the KAccel object of the most recently set widget. */
   KAccel* kaccel();
+  /** Returns the KAccel object of the most recently set widget. Const version for convenience. */
   const KAccel* kaccel() const;
 
   /** @internal, for KAction::kaccelCurrent() */
@@ -132,14 +141,34 @@ public:
   //KAccel* widgetKAccel( uint i );
   //const KAccel* widgetKAccel( uint i ) const;
 
-  /* Returns the number of actions in the collection **/
+  /** Returns the number of actions in the collection */
   virtual uint count() const;
   bool isEmpty() const { return count() == 0; }
+  /**
+   * Return the KAction* at position "index" in the action collection.
+   * @see count()
+   */
   virtual KAction* action( int index ) const;
+  /**
+   * Find an action (optionally, of a given subclass of KAction) in the action collection.
+   * @param name Name of the KAction.
+   * @param classname Name of the KAction subclass.
+   * @return A pointer to the first KAction in the collection which matches the parameters or
+   * null if nothing matches.
+   */
   virtual KAction* action( const char* name, const char* classname = 0 ) const;
 
+  /** Returns a list of all the groups of all the KActions in this action collection.
+   * @see KAction::group()
+   * @see KAction::setGroup()
+   */
   virtual QStringList groups() const;
+  /**
+   * Returns the list of actions in a particular managed by this action collection.
+   * @param group The name of the group.
+   */
   virtual KActionPtrList actions( const QString& group ) const;
+  /** Returns the list of actions managed by this action collection. */
   virtual KActionPtrList actions() const;
 
   /**
@@ -152,6 +181,7 @@ public:
   bool writeShortcutSettings( const QString& sConfigGroup = QString::null, KConfigBase* pConfig = 0 ) const;
 
   void setInstance( KInstance *instance );
+  /** The instance with which this class is associated. */
   KInstance *instance() const;
 
   /**
@@ -159,19 +189,70 @@ public:
    * is stored in.
    */
   void setXMLFile( const QString& );
+  /** The rc file in which the current configuration is stored. */
   const QString& xmlFile() const;
 
+  /**
+   * Enable highlighting notification for specific KActions.
+   * @see connectHighlight()
+   * @see disconnectHighlight()
+   * @see actionHighlighted()
+   * @see actionHighlighted()
+   * @see highlightingEnabled()
+   */
   void setHighlightingEnabled( bool enable );
+  /**
+   * Return whether highlighting notifications are enabled.
+   * @see connectHighlight()
+   * @see disconnectHighlight()
+   * @see actionHighlighted()
+   * @see setHighlightingEnabled()
+   * @see actionHighlighted()
+   */
   bool highlightingEnabled() const;
 
+  /**
+   * Call this function if you want to receive a signal whenever a KAction is highlighted in a menu or a toolbar.
+   * @param container A container in which the KAction is plugged (must inherit QPopupMenu or KToolBar)
+   * @param action The action you are interested in
+   * @see disconnectHighlight()
+   * @see actionHighlighted()
+   * @see setHighlightingEnabled()
+   * @see highlightingEnabled()
+   * @see actionHighlighted()
+   */
   void connectHighlight( QWidget *container, KAction *action );
+  /**
+   * Disconnect highlight notifications for a particular pair of contianer and action.
+   * @param container A container in which the KAction is plugged (must inherit QPopupMenu or KToolBar)
+   * @param action The action you are interested in
+   * @see connectHighlight()
+   * @see actionHighlighted()
+   * @see setHighlightingEnabled()
+   * @see highlightingEnabled()
+   * @see actionHighlighted()
+   */
   void disconnectHighlight( QWidget *container, KAction *action );
 
 signals:
   void inserted( KAction* );
   void removed( KAction* );
 
+  /** Emitted when "action" is highlighted.
+   * @see connectHighlight()
+   * @see disconnectHighlight()
+   * @see actionHighlighted()
+   * @see setHighlightingEnabled()
+   * @see highlightingEnabled()
+   */
   void actionHighlighted( KAction *action );
+  /** Emitted when "action" is highlighed or loses highlighting.
+   * @see connectHighlight()
+   * @see disconnectHighlight()
+   * @see actionHighlighted()
+   * @see setHighlightingEnabled()
+   * @see highlightingEnabled()
+   */
   void actionHighlighted( KAction *action, bool highlight );
 
   void actionStatusText( const QString &text );
@@ -209,18 +290,18 @@ public:
   KActionCollection( QObject *parent, const char *name = 0, KInstance *instance = 0 );
 
   void insert( KAction* );
-  
+
   /**
-   * Removes an action from the collection and deletes it.
+   * @deprecated Removes an action from the collection and deletes it.
    * @param action The KAction to remove.
-   */ 
+   */
   void remove( KAction* action );
-  
+
   /**
-   * Removes an action from the collection.
+   * @deprecated Removes an action from the collection.
    * @return NULL if not found else returns action.
    * @param action the KAction to remove.
-   */ 
+   */
   KAction* take( KAction* action );
 
   KActionCollection operator+ ( const KActionCollection& ) const;
