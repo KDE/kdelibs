@@ -432,18 +432,13 @@ TextEventImpl::TextEventImpl(QKeyEvent *key, AbstractViewImpl *view)
   // (and e.g. space would make it scroll down)
   //qKeyEvent->ignore();
 
-  if (key->type() == QEvent::KeyRelease)
-  {
-      Q_ASSERT( !key->isAutoRepeat());
-      m_id = KHTML_KEYUP_EVENT;
-  }
-  else // key->type() == QEvent::KeyPress
-  {
-      if (key->isAutoRepeat())
-          m_id = KHTML_KEYPRESS_EVENT;
-      else
-          m_id = KHTML_KEYDOWN_EVENT;
-  }
+  // see KHTMLView::dispatchKeyEvent()
+  if( key->isAutoRepeat())
+    m_id = KHTML_KEYPRESS_EVENT;
+  else if( key->type() == QEvent::KeyPress )
+    m_id = KHTML_KEYDOWN_EVENT;
+  else if( key->type() == QEvent::KeyRelease )
+    m_id = KHTML_KEYUP_EVENT;
 
   m_detail = key->count();
 

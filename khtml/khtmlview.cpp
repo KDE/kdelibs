@@ -890,16 +890,47 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     }
 }
 
-bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke, bool keypress )
+bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
 {
     if (!m_part->xmlDocImpl())
         return false;
     // Pressing and releasing a key should generate keydown, keypress and keyup events
     // Holding it down should generated keydown, keypress (repeatedly) and keyup events
-    // TODO this passes to QScrollView even autorepeat keyrelease events that could be
-    // filtered out by khtml if there was a matching dom event for it
-    if( !keypress && _ke->isAutoRepeat())
-        return false; // filter out
+    // The problem here is that Qt generates two autorepeat events (keyrelease+keypress)
+    // for autorepeating, while DOM wants only one autorepeat event (keypress), so one
+    // of the Qt events shouldn't be passed to DOM, but it should be still filtered
+    // out if DOM would filter the autorepeat event. Therefore, DOM autorepeat events
+    // are sent on Qt autorepeat release (because it comes sooner then press), and the following
+    // Qt autorepeat press is filtered out if the release was filtered out.
+    // Moreover, first Qt (non-autorepeat) keypress should generate DOM keydown followed
+    // by DOM keypress.
+    static bool filter_next_autorepeat_press = false;
+    if( _ke->type() == QEvent::KeyPress )
+    {
+        if( _ke->isAutoRepeat())
+        { // ignore autorepeat press and filter out if necessary
+            return filter_next_autorepeat_press;
+        }
+        bool ret = dispatchKeyEventHelper( _ke, false ); // keydown
+        if( dispatchKeyEventHelper( _ke, true )); // keypress
+            ret = true;
+        return ret;
+    }
+    else // QEvent::KeyRelease
+    {
+        if( _ke->isAutoRepeat())
+        {
+            bool ret = dispatchKeyEventHelper( _ke, true ); // keypress
+            filter_next_autorepeat_press = ret;
+            return ret;
+        }
+        else
+            return dispatchKeyEventHelper( _ke, false ); // keyup
+    }
+}
+
+bool KHTMLView::dispatchKeyEventHelper( QKeyEvent *_ke, bool keypress )
+{
     DOM::NodeImpl* keyNode = m_part->xmlDocImpl()->focusNode();
     QKeyEvent k(_ke->type(), _ke->key(), _ke->ascii(), _ke->state(),
                 _ke->text(),
@@ -932,16 +963,8 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     }
 #endif // KHTML_NO_CARET
 
-    // Send keydown event
-    bool accepted = dispatchKeyEvent( _ke, false );
-
-    // Send keypress event
-    // (IE sends the keyPress directly after the keyDown).
-    if ( dispatchKeyEvent( _ke, true ) )
-        accepted = true;
-
-    // If either keydown or keypress was accepted by a widget, or canceled by JS, stop here.
-    if ( accepted ) {
+    if ( dispatchKeyEvent( _ke )) {
+        // If either keydown or keypress was accepted by a widget, or canceled by JS, stop here.
         _ke->accept();
         return;
     }
@@ -1080,7 +1103,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 {
     // Send keyup event
-    if ( dispatchKeyEvent( _ke, false ) )
+    if ( dispatchKeyEvent( _ke ) )
     {
         _ke->accept();
         return;
