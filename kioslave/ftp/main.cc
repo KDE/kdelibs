@@ -1645,8 +1645,3 @@ again:
   return 0;
 }
 
-
-void openFileManagerWindow( const char * )
-{
-  assert( 0 );
-}
