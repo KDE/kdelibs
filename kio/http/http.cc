@@ -730,7 +730,10 @@ bool HTTPProtocol::checkSSL()
         if ( result == KMessageBox::Cancel )
         {
           kdDebug(7103) << "Cancelling the loading" << endl;
-          error( ERR_USER_CANCELED, "ssl" );
+          if (m_bErrorPage)
+             errorPage();
+          else
+             error( ERR_USER_CANCELED, "ssl" );
           return false;
         }
 
@@ -1441,7 +1444,6 @@ bool HTTPProtocol::readHeader()
            error(ERR_DOES_NOT_EXIST, m_request.url.url());
            return false;
         }
-        errorPage();
         m_bCachedWrite = false; // Don't put in cache
         mayCache = false;
       }
@@ -1686,8 +1688,16 @@ bool HTTPProtocol::readHeader()
   {
     if ( m_responseCode == 401 || m_responseCode == 407 )
     {
-        http_closeConnection();  // Close the connection first
-        return false;
+        if ( getAuthorization() )
+        {
+           http_closeConnection();
+           return false; // Try again.
+        }
+
+        if (m_bError)
+           return false; // Error out
+
+        // Show error page...
     }
     m_bUnauthorized = false;
   }
@@ -3284,7 +3294,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
 
     if (!readHeader())
     {
-        if ( m_bError || ( m_bUnauthorized && !getAuthorization() ) )
+        if ( m_bError )
             return false;
     }
     else
@@ -3413,8 +3423,11 @@ bool HTTPProtocol::getAuthorization()
     }
     if ( prompt && !retryPrompt() )
     {
-      error(ERR_USER_CANCELED, QString::null);
-      return result;
+      if (m_bErrorPage)
+         errorPage();
+      else
+         error(ERR_USER_CANCELED, QString::null);
+      return false;
     }
   }
   else
@@ -3483,11 +3496,14 @@ bool HTTPProtocol::getAuthorization()
       default:
         break;
     }
+    return true;
   }
-  else
-    error( ERR_USER_CANCELED, QString::null );
 
-  return result;
+  if (m_bErrorPage)
+     errorPage();
+  else
+     error( ERR_USER_CANCELED, QString::null );
+  return false;
 }
 
 void HTTPProtocol::saveAuthorization()
