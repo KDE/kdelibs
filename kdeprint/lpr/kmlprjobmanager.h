@@ -23,14 +23,19 @@
 #include "kmjobmanager.h"
 
 class LpqHelper;
+class LpcHelper;
 
 class KMLprJobManager : public KMJobManager
 {
 public:
 	KMLprJobManager(QObject *parent = 0, const char *name = 0);
+	
+	int actions();
 
 protected:
 	bool listJobs(const QString&, JobType);
+	LpcHelper* lpcHelper();
+	bool sendCommandSystemJob(const QPtrList<KMJob>&, int, const QString& = QString::null);
 
 private:
 	LpqHelper	*m_lpqhelper;

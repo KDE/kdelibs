@@ -24,6 +24,8 @@
 #include <qmap.h>
 #include "kmprinter.h"
 
+class KMJob;
+
 class LpcHelper : public QObject
 {
 public:
@@ -33,16 +35,17 @@ public:
 	KMPrinter::PrinterState state(const QString&) const;
 	KMPrinter::PrinterState state(KMPrinter*) const;
 	void updateStates();
-	
+
 	bool enable(KMPrinter*, QString&);
 	bool disable(KMPrinter*, QString&);
+	bool removeJob(KMJob*, QString&);
 
 protected:
 	bool changeState(const QString&, bool, QString&);
 
 private:
 	QMap<QString, KMPrinter::PrinterState>	m_state;
-	QString	m_exepath;
+	QString	m_exepath, m_lprmpath;
 };
 
 #endif

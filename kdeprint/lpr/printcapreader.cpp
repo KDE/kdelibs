@@ -53,13 +53,11 @@ QString PrintcapReader::nextLine()
         if (m_stream.atEnd())
             return QString::null;
         else
-        {
             line = m_stream.readLine().stripWhiteSpace();
-            if (line.right(1) == "\\")
-            {
-                line = line.left(line.length()-1).stripWhiteSpace() + nextLine();
-            }
-        }
+    }
+    if (line.right(1) == "\\")
+    {
+        line = line.left(line.length()-1).stripWhiteSpace() + nextLine();
     }
     return line;
 }
@@ -120,13 +118,14 @@ PrintcapEntry* PrintcapReader::nextEntry()
         name = buf.left(p);
         fields = buf.right(buf.length()-p-1);
     }
-    
+
     // construct the printcap entry
     if (!name.isEmpty())
     {
         PrintcapEntry   *entry = new PrintcapEntry;
         QStringList l = QStringList::split('|', name, false);
         entry->name = l[0];
+        entry->comment = comment;
         // kdDebug() << "Printer: " << entry->name << endl;
         // kdDebug() << "Aliases:" << endl;
         for (uint i=1; i<l.count(); i++)

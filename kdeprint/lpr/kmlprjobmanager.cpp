@@ -18,10 +18,14 @@
  **/
 
 #include "kmlprjobmanager.h"
+#include "kmlprmanager.h"
 #include "lpqhelper.h"
+#include "lpchelper.h"
 #include "kmjob.h"
+#include "lprsettings.h"
 
 #include <qptrlist.h>
+#include <klocale.h>
 
 KMLprJobManager::KMLprJobManager(QObject *parent, const char *name)
 : KMJobManager(parent, name)
@@ -38,4 +42,41 @@ bool KMLprJobManager::listJobs(const QString& prname, JobType)
 	for (; it.current(); ++it)
 		addJob(it.current());
 	return false;
+}
+
+LpcHelper* KMLprJobManager::lpcHelper()
+{
+	return static_cast<KMLprManager*>(KMManager::self())->lpcHelper();
+}
+
+int KMLprJobManager::actions()
+{
+	if (LprSettings::self()->mode() == LprSettings::LPR)
+		return KMJob::Remove;
+	else
+		// FIXME
+		return 0;
+}
+
+bool KMLprJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int action, const QString& arg)
+{
+	QString	msg;
+	QPtrListIterator<KMJob>	it(jobs);
+	bool	status(true);
+	for (; it.current() && status; ++it)
+	{
+		switch (action)
+		{
+			case KMJob::Remove:
+				status = lpcHelper()->removeJob(it.current(), msg);
+				break;
+			default:
+				status = false;
+				msg = i18n("Unsupported operation.");
+				break;
+		}
+	}
+	if (!status && !msg.isEmpty())
+		KMManager::self()->setErrorMsg(msg);
+	return status;
 }

@@ -19,6 +19,7 @@
 
 #include "lpchelper.h"
 #include "kpipeprocess.h"
+#include "kmjob.h"
 
 #include <kstandarddirs.h>
 #include <qtextstream.h>
@@ -49,6 +50,7 @@ LpcHelper::LpcHelper(QObject *parent, const char *name)
 	QString	PATH = getenv("PATH");
 	PATH.append(":/usr/sbin:/usr/local/sbin:/sbin:/opt/sbin:/opt/local/sbin");
 	m_exepath = KStandardDirs::findExe("lpc", PATH);
+	m_lprmpath = KStandardDirs::findExe("lprm");
 }
 
 LpcHelper::~LpcHelper()
@@ -129,5 +131,22 @@ bool LpcHelper::changeState(const QString& printer, bool state, QString& msg)
 		msg = i18n("Printer %1 does not exist.").arg(printer);
 	else
 		msg = i18n("Unknown error: %1").arg(result.replace(QRegExp("\\n"), " "));
+	return false;
+}
+
+bool LpcHelper::removeJob(KMJob *job, QString& msg)
+{
+	if (m_lprmpath.isEmpty())
+	{
+		msg = i18n("The executable lprm couldn't be find in your PATH.");
+		return false;
+	}
+	QString	result = execute(m_lprmpath + " -P" + job->printer() + " " + QString::number(job->id()));
+	if (result.find("dequeued") != -1)
+		return true;
+	else if (result.find("Permission denied") != -1)
+		msg = i18n("Permission denied.");
+	else
+		msg = i18n("Execution of lprm failed: %1").arg(result);
 	return false;
 }
