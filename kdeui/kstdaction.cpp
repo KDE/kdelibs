@@ -84,7 +84,7 @@ const KStdActionInfo g_rgActionInfo[] =
 	{ Home,          KStdAccel::Home, "go_home", 0, 0, "gohome" },
 	{ Prior,         KStdAccel::Prior, "go_previous", I18N_NOOP("&Previous Page"), 0, "previous" },
 	{ Next,          KStdAccel::Next, "go_next", I18N_NOOP("&Next Page"), 0, "next" },
-	{ Goto,          KStdAccel::AccelNone, "go_goto", I18N_NOOP("&Go to..."), 0, 0 },
+	{ Goto,          KStdAccel::AccelNone, "go_goto", I18N_NOOP("&Go To..."), 0, 0 },
 	{ GotoPage,      KStdAccel::AccelNone, "go_goto_page", I18N_NOOP("&Go to Page..."), 0, "goto" },
 	{ GotoLine,      KStdAccel::GotoLine, "go_goto_line", I18N_NOOP("&Go to Line..."), 0, 0 },
 	{ FirstPage,     KStdAccel::AccelNone, "go_first", I18N_NOOP("&First Page"), 0, "top" },

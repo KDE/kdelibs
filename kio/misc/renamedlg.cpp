@@ -94,46 +94,46 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
   d->src = _src;
   d->dest = _dest;
   d->plugin = false;
-  
+
 
   setCaption( _caption );
 
-  d->b0 = new QPushButton( i18n( "Cancel" ), this );
+  d->b0 = new QPushButton( i18n( "&Cancel" ), this );
   connect(d->b0, SIGNAL(clicked()), this, SLOT(b0Pressed()));
 
   if ( ! (_mode & M_NORENAME ) ) {
-      d->b1 = new QPushButton( i18n( "Rename" ), this );
+      d->b1 = new QPushButton( i18n( "&Rename" ), this );
       d->b1->setEnabled(false);
-      d->b8 = new QPushButton( i18n( "Propose" ), this );
+      d->b8 = new QPushButton( i18n( "&Propose" ), this );
       connect(d->b8, SIGNAL(clicked()), this, SLOT(b8Pressed()));
       connect(d->b1, SIGNAL(clicked()), this, SLOT(b1Pressed()));
   }
 
   if ( ( _mode & M_MULTI ) && ( _mode & M_SKIP ) ) {
-    d->b2 = new QPushButton( i18n( "Skip" ), this );
+    d->b2 = new QPushButton( i18n( "&Skip" ), this );
     connect(d->b2, SIGNAL(clicked()), this, SLOT(b2Pressed()));
 
-    d->b3 = new QPushButton( i18n( "Auto Skip" ), this );
+    d->b3 = new QPushButton( i18n( "&Auto Skip" ), this );
     connect(d->b3, SIGNAL(clicked()), this, SLOT(b3Pressed()));
   }
 
   if ( _mode & M_OVERWRITE ) {
-    d->b4 = new QPushButton( i18n( "Overwrite" ), this );
+    d->b4 = new QPushButton( i18n( "&Overwrite" ), this );
     connect(d->b4, SIGNAL(clicked()), this, SLOT(b4Pressed()));
 
     if ( _mode & M_MULTI ) {
-      d->b5 = new QPushButton( i18n( "Overwrite All" ), this );
+      d->b5 = new QPushButton( i18n( "O&verwrite All" ), this );
       connect(d->b5, SIGNAL(clicked()), this, SLOT(b5Pressed()));
     }
   }
 
   if ( _mode & M_RESUME ) {
-    d->b6 = new QPushButton( i18n( "Resume" ), this );
+    d->b6 = new QPushButton( i18n( "&Resume" ), this );
     connect(d->b6, SIGNAL(clicked()), this, SLOT(b6Pressed()));
 
     if ( _mode & M_MULTI )
       {
-	d->b7 = new QPushButton( i18n( "Resume All" ), this );
+	d->b7 = new QPushButton( i18n( "R&esume All" ), this );
 	connect(d->b7, SIGNAL(clicked()), this, SLOT(b7Pressed()));
       }
   }

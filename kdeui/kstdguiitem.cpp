@@ -106,7 +106,7 @@ KGuiItem KStdGuiItem::save()
 
 KGuiItem KStdGuiItem::dontSave()
 {
-  return KGuiItem( i18n( "&Don't save" ), "filedontsave",
+  return KGuiItem( i18n( "&Don't Save" ), "filedontsave",
                    i18n( "Don't save data" ) );
 }
 

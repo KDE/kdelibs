@@ -285,7 +285,7 @@ void DefaultProgress::slotSpeed( KIO::Job*, unsigned long bytes_per_second )
 void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
 {
   if ( d->noCaptionYet ) {
-    setCaption(i18n("Copy file(s) progress"));
+    setCaption(i18n("Copy File(s) Progress"));
     d->noCaptionYet = false;
   }
   mode = Copy;
@@ -299,7 +299,7 @@ void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
 void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
 {
   if ( d->noCaptionYet ) {
-    setCaption(i18n("Move file(s) progress"));
+    setCaption(i18n("Move File(s) Progress"));
     d->noCaptionYet = false;
   }
   mode = Move;
@@ -313,7 +313,7 @@ void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
 void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
 {
   if ( d->noCaptionYet ) {
-    setCaption(i18n("Creating directory"));
+    setCaption(i18n("Creating Directory"));
     d->noCaptionYet = false;
   }
   mode = Create;
@@ -325,7 +325,7 @@ void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
 void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
 {
   if ( d->noCaptionYet ) {
-    setCaption(i18n("Delete file(s) progress"));
+    setCaption(i18n("Delete File(s) Progress"));
     d->noCaptionYet = false;
   }
   mode = Delete;
@@ -336,7 +336,7 @@ void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
 void DefaultProgress::slotTransferring( KIO::Job*, const KURL& url )
 {
   if ( d->noCaptionYet ) {
-    setCaption(i18n("Loading progress"));
+    setCaption(i18n("Loading Progress"));
     d->noCaptionYet = false;
   }
   sourceLabel->setText(url.prettyURL());
@@ -345,7 +345,7 @@ void DefaultProgress::slotTransferring( KIO::Job*, const KURL& url )
 
 void DefaultProgress::slotStating( KIO::Job*, const KURL& url )
 {
-  setCaption(i18n("Examining file progress"));
+  setCaption(i18n("Examining File Progress"));
   sourceLabel->setText(url.prettyURL());
   setDestVisible( false );
 }

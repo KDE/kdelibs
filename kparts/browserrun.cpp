@@ -225,7 +225,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
     }
     int choice = KMessageBox::questionYesNoCancel(
         0L, question, QString::null,
-        i18n("Save to disk"), i18n("Open"),
+        i18n("&Save to Disk"), i18n("&Open"),
         QString::fromLatin1("askSave")+ mimeType ); // dontAskAgainName
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
 }
@@ -244,7 +244,7 @@ void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename
 
     dlg->setKeepLocation( true );
 
-    dlg->setCaption(i18n("Save as"));
+    dlg->setCaption(i18n("Save As"));
 
     dlg->setSelection( suggestedFilename.isEmpty() ? url.fileName() : suggestedFilename );
     if ( dlg->exec() )
