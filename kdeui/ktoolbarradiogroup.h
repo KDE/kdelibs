@@ -34,6 +34,8 @@ class KToolBarRadioGroupPrivate;
  *                          KToolBarRadioGroup                                  *
  *************************************************************************/
  /**
+  * @short Class for group of radio butons in toolbar.
+  *
   * KToolBarRadioGroup is class for group of radio butons in toolbar.
   * Take toggle buttons which you already inserted into toolbar,
   * create KToolBarRadioGroup instance and add them here.
@@ -43,7 +45,6 @@ class KToolBarRadioGroupPrivate;
   * "go down" and those who "go up".
   *
   * @author Sven Radej <radej@kde.org>
-  * @short Class for group of radio butons in toolbar.
   */
 class KDEUI_EXPORT KToolBarRadioGroup : public QObject
 {
