@@ -37,14 +37,16 @@ int main ( int argc, char **argv)
     soc->enableCompletion();
     soc->setCompletionMode( KGlobal::CompletionAuto );
     soc->setEnableMultipleInsertion( false );
-    soc->autoHighlightItems( true );
+    soc->autoHighlightItems();
+    soc->autoSelectItems();
     QObject::connect( soc, SIGNAL( clicked( int ) ), soc, SLOT( setSelectedItem( int ) ) );
     // Popuplate the select-only list box
     QStringList list;
     list <<i18n("Stone") <<i18n("Tree") <<i18n("Peables") <<i18n("Ocean") <<i18n("Sand") <<i18n("Chips") <<i18n("Computer") <<i18n("Mankind");
-    soc->insertStringList( list );
+    list.sort();
     // This is to test a feature that does not currently work.
     soc->completionObject()->setItems( list );
+    soc->insertStringList( list );
 
     // Insert the widgets into the layout manager.
     vbox->addWidget( lblrw );
