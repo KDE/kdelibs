@@ -25,6 +25,8 @@
 #include <kimageeffect.h>
 #include <kdebug.h>
 #include <stdlib.h>
+#include <qcursor.h>
+#include <qapplication.h>
 
 KPixmapRegionSelectorWidget::KPixmapRegionSelectorWidget( QWidget *parent, 
       const char *name) : QWidget( parent, name)
@@ -128,13 +130,23 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
       QMouseEvent *mev= (QMouseEvent *)(ev);
       //kdDebug() << QString("click at  %1,%2").arg( mev->x() ).arg( mev->y() ) << endl;
 
+      QCursor cursor;
+
       if ( m_selectedRegion.contains( mev->pos() ) 
           && m_selectedRegion!=m_originalPixmap.rect() )
+      {
          m_state=Moving;
+         cursor.setShape( Qt::SizeAllCursor );
+      }
       else
+      {
          m_state=Resizing;
+         cursor.setShape( Qt::CrossCursor );
+      }
+      QApplication::setOverrideCursor(cursor);
 
       m_tempFirstClick=mev->pos();
+      
 
       return TRUE;
    }
@@ -205,6 +217,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
          resetSelection();
 
       m_state=None;
+      QApplication::restoreOverrideCursor(); 
 
       return TRUE;
    }
