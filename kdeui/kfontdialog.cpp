@@ -71,41 +71,27 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   xlfdBox = new QGroupBox(i18n("Actual Font"), this);
   layout->addWidget(xlfdBox);
 
-  QGridLayout *box1Layout = new QGridLayout(box1, 7, 5, 5);
+  QGridLayout *box1Layout = new QGridLayout(box1, 5, 3, 10);
 
   // some spacing at the top
-  box1Layout->addRowSpacing(0, 15);
-
-  // space on either side
-  box1Layout->addColSpacing(0, 10);
-  box1Layout->addColSpacing(6, 10);
-  box1Layout->setColStretch(6, 1);
+  box1Layout->addRowSpacing(0, 10);
 
   // first, create the labels across the top
   QLabel *familyLabel = new QLabel(box1, "familyLabel");
-  box1Layout->addWidget(familyLabel, 1, 1);
   familyLabel->setText( i18n("Font:") );
-  MINSIZE(familyLabel);
-
-  // space between listboxes
-  box1Layout->addColSpacing(2, 5);
+  box1Layout->addWidget(familyLabel, 1, 0, AlignLeft);
 
   QLabel *styleLabel = new QLabel(box1, "styleLabel");
   styleLabel->setText(i18n("Font style:"));
-  MINSIZE(styleLabel);
-  box1Layout->addWidget(styleLabel, 1, 3);
-
-  // space between listboxes
-  box1Layout->addColSpacing(4, 5);
+  box1Layout->addWidget(styleLabel, 1, 1, AlignLeft);
 
   QLabel *sizeLabel = new QLabel(box1, "sizeLabel");
-  box1Layout->addWidget(sizeLabel, 1, 5);
   sizeLabel->setText("Size:");
-  MINSIZE(sizeLabel);
+  box1Layout->addWidget(sizeLabel, 1, 2, AlignLeft);
 
   // now create the actual boxes that hold the info
   familyListBox = new QListBox(box1, "familyListBox");
-  box1Layout->addWidget(familyListBox, 2, 1);
+  box1Layout->addWidget(familyListBox, 2, 0);
   connect(familyListBox, SIGNAL(highlighted(const QString &)),
 	  SLOT(family_chosen_slot(const QString &)));
   if (fontList.count() != 0) {
@@ -113,14 +99,11 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   } else
     fillFamilyListBox(onlyFixed);
 
-  // right now, Qt seems to be having trouble with sizeHint() for listboxes,
-  // so we will just set a sane height.  FIX ME
-    //  familyListBox->setRowMode(8);
-  //  MINSIZE(familyListBox);
-  familyListBox->setFixedSize(180,140);
+  familyListBox->setMinimumWidth(familyListBox->sizeHint().width());
+  familyListBox->setMinimumHeight(familyListBox->sizeHint().height() / 2);
 
   styleListBox = new QListBox(box1, "styleListBox");
-  box1Layout->addWidget(styleListBox, 2, 3);
+  box1Layout->addWidget(styleListBox, 2, 1);
   styleListBox->insertItem(i18n("Regular"));
   styleListBox->insertItem(i18n("Italic"));
   styleListBox->insertItem(i18n("Bold"));
@@ -128,12 +111,9 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 
   connect(styleListBox, SIGNAL(highlighted(const QString &)),
 	  SLOT(style_chosen_slot(const QString &)));
-  //  styleListBox->setRowMode(8);
-  //  MINSIZE(styleListBox);
-  styleListBox->setFixedSize(100,140);
 
   sizeListBox = new QListBox(box1, "sizeListBox");
-  box1Layout->addWidget(sizeListBox, 2, 5);
+  box1Layout->addWidget(sizeListBox, 2, 2);
 
   const char *c[] = {"4",  "5",  "6",  "7",
 	       "8",  "9",  "10", "11",
@@ -144,29 +124,25 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 	       0};
   for(int i = 0; c[i] != 0; i++)
     sizeListBox->insertItem(c[i]);
+  sizeListBox->setMinimumWidth(sizeListBox->sizeHint().width() / 2);
 
   connect( sizeListBox, SIGNAL(highlighted(const QString&)),
 	  SLOT(size_chosen_slot(const QString&)) );
-  //  sizeListBox->setRowMode(8);
-  //  MINSIZE(sizeListBox);
-  sizeListBox->setFixedSize(50,140);
 
   QLabel *charsetLabel = new QLabel(box1, "charsetLabel");
-  box1Layout->addWidget(charsetLabel, 3, 1, Qt::AlignRight);
   charsetLabel->setText(i18n("Character set:"));
-  MINSIZE(charsetLabel);
+  box1Layout->addWidget(charsetLabel, 3, 0, AlignRight);
 
   charsetsCombo = new QComboBox(true, box1, "charsetsCombo");
-  box1Layout->addMultiCellWidget(charsetsCombo, 3, 3, 2, 3);
+  box1Layout->addMultiCellWidget(charsetsCombo, 3, 3, 1, 2);
 
   charsetsCombo->setInsertionPolicy(QComboBox::NoInsertion);
   connect(charsetsCombo, SIGNAL(activated(const QString&)),
 	  SLOT(charset_chosen_slot(const QString&)));
-  MINSIZE(charsetsCombo);
 
   sampleEdit = new KLineEdit(box1, "sampleEdit");
   sampleEdit->setAlignment(Qt::AlignCenter);
-  box1Layout->addMultiCellWidget(sampleEdit, 4, 4, 1, 5);
+  box1Layout->addMultiCellWidget(sampleEdit, 4, 4, 0, 2);
   QFont tmpFont(selFont);
   tmpFont.setPointSize(24);
   sampleEdit->setFont(tmpFont);
@@ -174,7 +150,6 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 
   connect(this, SIGNAL(fontSelected(const QFont &)),
 	  SLOT(displaySample(const QFont &)));
-  MINSIZE(sampleEdit);
   sampleEdit->setFont(selFont);
 
   box1Layout->addRowSpacing(5, 15);
@@ -486,6 +461,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.41  1999/06/14 10:56:28  kulow
+* some more warnings fixed
+*
 * Revision 1.40  1999/06/12 21:43:58  knoll
 * kapp->xxxFont() -> KGlobal::xxxFont()
 *
