@@ -759,7 +759,7 @@ void RenderTableSection::addCell( RenderTableCell *cell )
 	cCol++;
 #endif
 
-//     qDebug("adding cell at %d/%d span=(%d/%d)",  cRow, cCol, rSpan, cSpan );
+//      qDebug("adding cell at %d/%d span=(%d/%d)",  cRow, cCol, rSpan, cSpan );
 
     if ( rSpan == 1 ) {
 	// we ignore height settings on rowspan cells
@@ -808,8 +808,10 @@ void RenderTableSection::addCell( RenderTableCell *cell )
 	}
 	int r = 0;
 	while ( r < rSpan ) {
-	    //qDebug("adding cell at %d, %d",  cRow + r, cCol );
-	    cellAt( cRow + r, cCol ) = cell;
+	    if ( !cellAt( cRow + r, cCol ) ) {
+// 		qDebug("    adding cell at %d, %d",  cRow + r, cCol );
+		cellAt( cRow + r, cCol ) = cell;
+	    }
 	    r++;
 	}
 	cCol++;
