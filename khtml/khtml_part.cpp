@@ -1180,10 +1180,10 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( url.isEmpty() )
     return;
   
-  // Security check on the link. (DA)
-  KURL u( url );
-  if ( !u.protocol().isNull() && !m_url.protocol().isNull() &&
-       ( u.protocol().lower() == "cgi" || u.protocol().lower() == "file" ) &&
+  // Security check on the link.
+  // KURL u( url ); Wrong!! Relative URL could be mis-interpreted!!! (DA)
+  if ( !cURL.protocol().isNull() && !m_url.protocol().isNull() &&
+       ( cURL.protocol().lower() == "cgi" || cURL.protocol().lower() == "file" ) &&
        m_url.protocol().lower() != "file" && m_url.protocol().lower() != "cgi" )
   {
     KMessageBox::error( 0,
