@@ -85,7 +85,7 @@ class KCardFactory {
    *@returns all the KCardImplementations libraries currently installed, and the type
    *subType and subSubType supported by each one
    */
-  QStringList & getImplentationList() const ;
+  QStringList & getImplementationList() const ;
 
  protected:
 

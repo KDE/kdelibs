@@ -148,7 +148,7 @@ KCardImplementation * KCardFactory::getCard (const QString & slot)
   
 }
 
-QStringList & KCardFactory::getImplentationList()const{
+QStringList & KCardFactory::getImplementationList()const{
 
      return _implementationList;
 
