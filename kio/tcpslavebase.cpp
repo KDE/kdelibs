@@ -757,7 +757,9 @@ int TCPSlaveBase::verifyCertificate()
    //  - entering SSL
    if (!isChild && metaData("ssl_was_in_use") == "FALSE" &&
                                         d->kssl->settings()->warnOnEnter()) {
-            int result = messageBox( WarningYesNo, i18n("You are about to "
+     int result;
+     do {
+                result = messageBox( WarningYesNo, i18n("You are about to "
                                                         "enter secure mode.  "
                                                         "All transmissions "
                                                         "will be encrypted "
@@ -773,10 +775,19 @@ int TCPSlaveBase::verifyCertificate()
                                                    i18n("Continue") );
       if ( result == KMessageBox::Yes )
       {
-         // Force sending of the metadata
-         // sendMetaData();  Do not call this function!!
-         messageBox( SSLMessageBox, theurl );
+          if (!d->dcc) {
+             d->dcc = new DCOPClient;
+             d->dcc->attach();
+          }
+          QByteArray data, ignore;
+          QCString ignoretype;
+          QDataStream arg(data, IO_WriteOnly);
+          arg << theurl << mOutgoingMetaData;
+          d->dcc->call("kio_uiserver", "UIServer",
+                       "showSSLInfoDialog(QString,KIO::MetaData)",
+                       data, ignoretype, ignore);
       }
+      } while (result != KMessageBox::No);
    }
 
    //  - mixed SSL/nonSSL
