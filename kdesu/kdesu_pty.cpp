@@ -37,6 +37,9 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/ioctl.h>
+#if defined(__osf__)
+#include <pty.h>
+#endif
 
 #include <qglobal.h>
 #include <qcstring.h>

@@ -1,3 +1,4 @@
+#include <config.h>
 #include "kjavaappletserver.h"
 #include "kjavaappletcontext.h"
 #include "kjavaprocess.h"
