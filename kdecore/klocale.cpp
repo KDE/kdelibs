@@ -30,7 +30,7 @@
 #include <qdir.h>
 /**
   * Stephan: I don't want to put this in an extra header file, since
-  * this would make people think, they can use it within C files, but
+  * this would let people think, they can use it within C files, but
   * this is not the case.
   **/
 
@@ -80,7 +80,7 @@ KLocale::KLocale( const char *_catalogue )
     strcpy(catalogue, _catalogue);
     
     QString languages;
-    const char *g_lang = getenv("LANG");
+    const char *g_lang = getenv("KDE_LANG");
     
     if (! g_lang ) {
 
@@ -93,9 +93,15 @@ KLocale::KLocale( const char *_catalogue )
     } else
       languages = g_lang;
     
-    if (languages.isEmpty())
-	languages = "C";
-    else languages += ":C";
+    g_lang = getenv("LANG");
+
+    if (languages.isEmpty() || (languages == "C")) {
+	if (g_lang)
+	    languages = g_lang;
+	else
+	    languages = "C";
+    } else 
+	languages += ":C";
     
     QString directory = KApplication::kde_localedir();
     
@@ -131,10 +137,10 @@ KLocale::~KLocale()
 
 const char *KLocale::translate(const char *msgid)
 {
-    char *text = k_dcgettext( catalogue, msgid, lang.data() );
+    char *text = k_dcgettext( catalogue, msgid, lang);
 
     if (text == msgid) // just compare the pointers
-	text = k_dcgettext( SYSTEM_MESSAGES, msgid, lang.data() );
+	text = k_dcgettext( SYSTEM_MESSAGES, msgid, lang);
    
     return text;
 }
