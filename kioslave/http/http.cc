@@ -200,8 +200,6 @@ void HTTPProtocol::resetSessionSettings()
   // Do not reset the URL on redirection if the proxy
   // URL, username or password has not changed!
   KURL proxy = config()->readEntry("UseProxy");
-  // Normalize host name to ascii
-  proxy.setHost(QString::fromLatin1(KIDNA::toAscii(proxy.host())));
 
   if ( m_strProxyRealm.isEmpty() || !proxy.isValid() ||
        m_proxyURL.host() != proxy.host() ||
@@ -335,10 +333,9 @@ void HTTPProtocol::resetSessionSettings()
   m_bFirstRequest = false;
 }
 
-void HTTPProtocol::setHost( const QString& _host, int port,
+void HTTPProtocol::setHost( const QString& host, int port,
                             const QString& user, const QString& pass )
 {
-  QString host = QString::fromLatin1(KIDNA::toAscii(_host));
   kdDebug(7113) << "(" << m_pid << ") Hostname is now: " << host << endl;
   
   // Reset the webdav-capable flags for this host
@@ -346,7 +343,7 @@ void HTTPProtocol::setHost( const QString& _host, int port,
     m_davHostOk = m_davHostUnsupported = false;
 
   m_request.hostname = host;
-  m_request.pretty_hostname = KIDNA::toUnicode(_host);
+  m_request.pretty_hostname = KIDNA::toUnicode(host);
   m_request.port = (port == 0) ? m_iDefaultPort : port;
   m_request.user = user;
   m_request.passwd = pass;
@@ -354,11 +351,9 @@ void HTTPProtocol::setHost( const QString& _host, int port,
   m_bIsTunneled = false;
 }
 
-bool HTTPProtocol::checkRequestURL( KURL& u )
+bool HTTPProtocol::checkRequestURL( const KURL& u )
 {
   kdDebug (7113) << "(" << m_pid << ") HTTPProtocol::checkRequestURL:  " << u.url() << endl;
-  // Normalize host name to ascii
-  u.setHost(QString::fromLatin1(KIDNA::toAscii(u.host())));
 
   m_request.url = u;
 
@@ -489,9 +484,8 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
   return true;
 }
 
-void HTTPProtocol::stat(const KURL& _url)
+void HTTPProtocol::stat(const KURL& url)
 {
-  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::stat " << url.prettyURL()
                 << endl;
 
@@ -522,9 +516,8 @@ void HTTPProtocol::stat(const KURL& _url)
   davStatList( url );
 }
 
-void HTTPProtocol::listDir( const KURL& _url )
+void HTTPProtocol::listDir( const KURL& url )
 {
-  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::listDir " << url.url()
                 << endl;
 
@@ -671,9 +664,8 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
   }
 }
 
-void HTTPProtocol::davGeneric( const KURL& _url, KIO::HTTP_METHOD method )
+void HTTPProtocol::davGeneric( const KURL& url, KIO::HTTP_METHOD method )
 {
-  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davGeneric " << url.url()
                 << endl;
 
@@ -1091,9 +1083,8 @@ void HTTPProtocol::davFinished()
   finished();
 }
 
-void HTTPProtocol::mkdir( const KURL& _url, int )
+void HTTPProtocol::mkdir( const KURL& url, int )
 {
-  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::mkdir " << url.url()
                 << endl;
 
@@ -1114,9 +1105,8 @@ void HTTPProtocol::mkdir( const KURL& _url, int )
     davError();
 }
 
-void HTTPProtocol::get( const KURL& _url )
+void HTTPProtocol::get( const KURL& url )
 {
-  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::get " << url.url()
                 << endl;
 
@@ -1140,9 +1130,8 @@ void HTTPProtocol::get( const KURL& _url )
   retrieveContent();
 }
 
-void HTTPProtocol::put( const KURL &_url, int, bool, bool)
+void HTTPProtocol::put( const KURL &url, int, bool, bool)
 {
-  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::put " << url.prettyURL()
                 << endl;
 
@@ -1158,10 +1147,8 @@ void HTTPProtocol::put( const KURL &_url, int, bool, bool)
   retrieveHeader( true );
 }
 
-void HTTPProtocol::copy( const KURL& _src, const KURL& _dest, int, bool overwrite )
+void HTTPProtocol::copy( const KURL& src, const KURL& dest, int, bool overwrite )
 {
-  KURL src(_src);
-  KURL dest(_dest);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::copy " << src.prettyURL()
                 << " -> " << dest.prettyURL() << endl;
 
@@ -1189,10 +1176,8 @@ void HTTPProtocol::copy( const KURL& _src, const KURL& _dest, int, bool overwrit
     davError();
 }
 
-void HTTPProtocol::rename( const KURL& _src, const KURL& _dest, bool overwrite )
+void HTTPProtocol::rename( const KURL& src, const KURL& dest, bool overwrite )
 {
-  KURL src(_src);
-  KURL dest(_dest);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::rename " << src.prettyURL()
                 << " -> " << dest.prettyURL() << endl;
 
@@ -1200,11 +1185,12 @@ void HTTPProtocol::rename( const KURL& _src, const KURL& _dest, bool overwrite )
     return;
 
   // destination has to be "http://..."
-  dest.setProtocol( "http" );
+  KURL newDest = dest;
+  newDest.setProtocol( "http" );
 
   m_request.method = DAV_MOVE;
   m_request.path = src.path();
-  m_request.davData.desturl = dest.url();
+  m_request.davData.desturl = newDest.url();
   m_request.davData.overwrite = overwrite;
   m_request.query = QString::null;
   m_request.cache = CC_Reload;
@@ -1218,9 +1204,8 @@ void HTTPProtocol::rename( const KURL& _src, const KURL& _dest, bool overwrite )
     davError();
 }
 
-void HTTPProtocol::del( const KURL& _url, bool )
+void HTTPProtocol::del( const KURL& url, bool )
 {
-  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::del " << url.prettyURL()
                 << endl;
 
@@ -1243,9 +1228,8 @@ void HTTPProtocol::del( const KURL& _url, bool )
     davError();
 }
 
-void HTTPProtocol::post( const KURL& _url )
+void HTTPProtocol::post( const KURL& url )
 {
-  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::post "
                 << url.prettyURL() << endl;
 
@@ -1261,10 +1245,9 @@ void HTTPProtocol::post( const KURL& _url )
   retrieveContent();
 }
 
-void HTTPProtocol::davLock( const KURL& _url, const QString& scope,
+void HTTPProtocol::davLock( const KURL& url, const QString& scope,
                             const QString& type, const QString& owner )
 {
-  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davLock "
                 << url.prettyURL() << endl;
 
@@ -1328,9 +1311,8 @@ void HTTPProtocol::davLock( const KURL& _url, const QString& scope,
     davError();
 }
 
-void HTTPProtocol::davUnlock( const KURL& _url )
+void HTTPProtocol::davUnlock( const KURL& url )
 {
-  KURL url(_url);
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davUnlock "
                 << url.prettyURL() << endl;
 
@@ -3646,10 +3628,8 @@ void HTTPProtocol::slave_status()
   slaveStatus( m_state.hostname, (m_iSock != -1) );
 }
 
-void HTTPProtocol::mimetype( const KURL& _url )
+void HTTPProtocol::mimetype( const KURL& url )
 {
-  KURL url(_url);
-  
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::mimetype: "
                 << url.prettyURL() << endl;
 
@@ -4225,10 +4205,8 @@ QString HTTPProtocol::findCookies( const QString &url)
 /******************************* CACHING CODE ****************************/
 
 
-void HTTPProtocol::cacheUpdate( const KURL& _url, bool no_cache, time_t expireDate)
+void HTTPProtocol::cacheUpdate( const KURL& url, bool no_cache, time_t expireDate)
 {
-  KURL url(_url);
-
   if ( !checkRequestURL( url ) )
       return;
 

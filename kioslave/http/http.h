@@ -240,7 +240,7 @@ public:
 
   void post( const KURL& url );
   void multiGet(const QByteArray &data);
-  bool checkRequestURL( KURL& );
+  bool checkRequestURL( const KURL& );
   void cacheUpdate( const KURL &url, bool nocache, time_t expireDate);
 
 protected slots:
