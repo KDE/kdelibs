@@ -1488,6 +1488,7 @@ public:
 
   virtual KAction* action( int index ) const;
   virtual uint count() const;
+  bool isEmpty() const { return count() == 0; }
   virtual KAction* action( const char* name, const char* classname = 0 ) const;
 
   virtual QStringList groups() const;
