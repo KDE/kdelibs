@@ -6,7 +6,7 @@ write images in extra formats. Current formats include:
 
 JPEG	<read>
 XV	<read> <write>
-EPS	<read>
+EPS	<read> <write>
 NETPBM	<incomplete>
 PNG	<read> <write, only with newer libraries>
 TIFF	<read>

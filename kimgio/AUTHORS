@@ -3,3 +3,4 @@ Dirk Schoenberger <> -- eps, netpbm readers
 Torben Weis <weis@kde.org> -- XV format reader/writer
 Thomas Tanghus <tanghus@kde.org> -- PNG writer
 Antonio Larossa	<larossa@kde.org> -- initial version of KRL reader
+Sven Wiegand <SWiegand@tfh-berlin.de> -- eps output filter (from KSnapshot)

@@ -3,6 +3,14 @@
 #include <qimage.h>
 #include <qiodevice.h>
 #include <qstring.h>
+#include <qdatastream.h>
+#include <qtextstream.h>
+#include <qfile.h>
+#include <qpainter.h>
+#include <qprinter.h>
+#include <qpaintdevicemetrics.h>
+#include <qstring.h>
+#include <kapp.h>
 
 #include "eps.h"
 
@@ -129,10 +137,70 @@ void kimgio_epsf_read (QImageIO *image)
 	return;
 }
 
-void kimgio_epsf_write( QImageIO * )
+// Sven Wiegand <SWiegand@tfh-berlin.de> -- eps output filter (from KSnapshot)
+void kimgio_epsf_write( QImageIO *imageio )
 {
-	// TODO: implement this
-	warning( "kimgio_epsf_write: not yet implemented" );
+  QPrinter	 psOut;
+  QPainter	 p;
+
+  // making some definitions (papersize, output to file, filename):
+  psOut.setCreator( "KDE " KDE_VERSION_STRING  );
+  psOut.setOutputToFile( TRUE );
+
+  // Make up a name for the temporary file
+  QString tempname;
+  tempname = tmpnam(NULL); 
+
+  psOut.setOutputFileName(tempname);
+
+  // painting the pixmap to the "printer" which is a file
+  p.begin( &psOut );
+
+  //	 p.translate( 0, 0 );
+  QPixmap img;
+  img.convertFromImage(imageio->image());
+
+  p.drawPixmap( QPoint( 0, 0 ), img );
+  p.end();
+
+  // write BoundingBox to File
+  QFile		 inFile(tempname);
+  QFile		 outFile(imageio->fileName());
+  QString		 szBoxInfo;
+
+  szBoxInfo.sprintf("%sBoundingBox: 0 0 %d %d\n%sEndComments\n",
+		    "%%", img.width(),
+		    img.height(), "%%" );
+
+  inFile.open( IO_ReadOnly );
+  outFile.open( IO_WriteOnly );
+
+  QTextStream in( &inFile );
+  QTextStream out( &outFile );
+  QString		 szInLine;
+  int			 nFilePos;
+
+  do{
+    nFilePos = inFile.at();
+    szInLine = in.readLine();
+    out << szInLine << '\n';
+  }
+  while( szInLine != "%%EndComments" );
+
+  if( outFile.at( nFilePos ) ){
+    out << szBoxInfo;
+  }
+
+  while( !in.eof() ){
+    szInLine = in.readLine();
+    out << szInLine << '\n';
+  }
+
+  inFile.close();
+  outFile.close();
+
+  unlink( tempname );
+  imageio->setStatus(0);
 }
 
 extern "C" void kimgio_init_eps() {
