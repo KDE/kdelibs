@@ -68,7 +68,7 @@ bool KSSLPeerInfo::certMatchesAddress() {
   if (cn.startsWith("*")) {   // stupid wildcard cn
      QRegExp cnre(cn, false, true);
 #if QT_VERSION < 300
-     if (!cnre.match(d->host->nodeName())) return true;
+     if (cnre.match(d->host->nodeName()) >= 0) return true;
 #else
      if (cnre.exactMatch(d->host->nodeName())) return true;
 #endif
