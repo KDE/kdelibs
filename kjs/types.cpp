@@ -24,6 +24,7 @@
 #include "object.h"
 #include "types.h"
 #include "internal.h"
+#include "operations.h"
 #include "nodes.h"
 
 using namespace KJS;
@@ -74,6 +75,16 @@ int Number::intValue() const
 {
   assert(rep);
   return (int)((NumberImp*)rep)->value();
+}
+
+bool Number::isNaN() const
+{
+  return KJS::isNaN(((NumberImp*)rep)->value());
+}
+
+bool Number::isInf() const
+{
+  return KJS::isInf(((NumberImp*)rep)->value());
 }
 
 String::String(const UString &s) : KJSO(new StringImp(UString(s))) { }

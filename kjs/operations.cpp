@@ -18,16 +18,48 @@
  *  Boston, MA 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
+
+#ifndef HAVE_FUNC_ISINF
+#ifdef HAVE_IEEEFP_H
+#include <ieeefp.h>
+#endif
+#endif /* HAVE_FUNC_ISINF */
 
 #include "object.h"
 #include "types.h"
 #include "operations.h"
 
 using namespace KJS;
+
+bool KJS::isNaN(double d)
+{
+#ifdef HAVE_FUNC_ISNAN
+  return isnan(d);
+#else
+  return !(d == d);
+#endif
+}
+
+bool KJS::isInf(double d)
+{
+#ifdef HAVE_FUNC_ISINF
+  return isinf(d);
+#else
+#ifdef HAVE_FUNC_FINITE
+  return !finite(d) && d == d;
+#else
+  return false;
+#endif /* HAVE_FUNC_FINITE */
+#endif /* HAVE_FUNC_ISINF */
+}
 
 // ECMA 11.9.3
 bool KJS::equal(const KJSO& v1, const KJSO& v2)

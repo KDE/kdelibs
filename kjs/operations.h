@@ -25,6 +25,14 @@
 
 namespace KJS {
 
+  /**
+   * @return True if d is not a number (platform support required).
+   */
+  bool isNaN(double d);
+  /**
+   * @return True if d is infinite (platform support required).
+   */
+  bool isInf(double d);
   bool equal(const KJSO& v1, const KJSO& v2);
   /**
    * This operator performs an abstract relational comparision of the two

@@ -47,7 +47,7 @@ class GlobalFunc : public InternalFunctionImp {
 public:
   GlobalFunc(int i) : id(i) { }
   Completion execute(const List &c);
-  enum { Eval, ParseInt, ParseFloat };
+  enum { Eval, ParseInt, ParseFloat, IsNaN, IsFinite };
 private:
   int id;
 };
@@ -126,6 +126,8 @@ GlobalImp::GlobalImp()
   put("eval", Function(new GlobalFunc(GlobalFunc::Eval)));
   put("parseInt", Function(new GlobalFunc(GlobalFunc::ParseInt)));
   put("parseFloat", Function(new GlobalFunc(GlobalFunc::ParseFloat)));
+  put("isNaN", Function(new GlobalFunc(GlobalFunc::IsNaN)));
+  put("isFinite", Function(new GlobalFunc(GlobalFunc::IsFinite)));
 
   // other properties
   put("Math", Object(new Math()), DontEnum);
@@ -183,6 +185,11 @@ Completion GlobalFunc::execute(const List &args)
     double d = 0.0;
     sscanf(str.value().ascii(), "%lf", &d);
     res = Number(d);
+  } else if (id == IsNaN) {
+    res = Boolean(args[0].toNumber().isNaN());
+  } else if (id == IsFinite) {
+    Number n = args[0].toNumber();
+    res = Boolean(!n.isNaN() && !n.isInf());
   }
 
   return Completion(Normal, res);

@@ -73,6 +73,8 @@ namespace KJS {
     virtual ~Number();
     double value() const;
     int intValue() const;
+    bool isNaN() const;
+    bool isInf() const;
   private:
     Number(NumberImp *d);
   };
