@@ -19,7 +19,6 @@ AM_CONFIG_HEADER(config.h) dnl at the distribution this done
 
 dnl Checks for programs.
 AC_CHECK_COMPILERS
-libtool_enable_static=no
 KDE_PROG_LIBTOOL
 
 dnl find out some variables (not supported yet)

@@ -1042,6 +1042,8 @@ ac_save_cc=$CC
 ac_save_cflags=$CFLAGS
 CC=$CXX
 CFLAGS=$CXXFLAGS
+AM_ENABLE_SHARED(yes)
+AM_ENABLE_STATIC(no)
 AM_PROG_LIBTOOL dnl for libraries
 CC=$ac_save_cc
 CFLAGS=$ac_save_cflags
