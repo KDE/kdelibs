@@ -59,6 +59,9 @@
   * this number is zero or unspecified, the instance (e.g. application) name
   * will be used.
   *
+  * A utility function for printing out "errno" is provided, similar to the
+  * POSIX perror() function. It uses the "Error" level: kDebugPError.
+  *
   * A separate program with a small configuration dialog box
   * will soon be written, to let one assign actions to each debug level on an
   * area by area basis.
@@ -76,6 +79,8 @@ void kDebugError( bool cond, unsigned short area, const char* fmt, ... );
 void kDebugFatal( const char* fmt, ... );
 void kDebugFatal( unsigned short area, const char* fmt, ... );
 void kDebugFatal( bool cond, unsigned short area, const char* fmt, ... );
+void kDebugPError( const char* msg );
+void kDebugPError( unsigned short area, const char* msg );
 
 #ifdef NDEBUG
 inline void kDebugInfo( const char* , ... ) {}

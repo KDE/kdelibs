@@ -33,6 +33,8 @@
 #include <stdlib.h>	// abort
 #include <stdarg.h>	// vararg stuff
 #include <syslog.h>
+#include <errno.h>
+#include <string.h>
 #include <kconfig.h>
 
 #ifdef HAVE_CONFIG_H
@@ -342,7 +344,7 @@ void kDebugError( unsigned short area, const char* fmt, ... )
     va_end( arguments );
 }
 
-void kDebugEror( bool cond, unsigned short area, const char* fmt, ... )
+void kDebugError( bool cond, unsigned short area, const char* fmt, ... )
 {
   if(cond)
     {
@@ -378,6 +380,16 @@ void kDebugFatal( bool cond, unsigned short area, const char* fmt, ... )
       kDebugBackend( KDEBUG_INFO, area, fmt, arguments );
       va_end( arguments );
     }
+}
+
+void kDebugPError( const char* msg )
+{
+    kDebugError( "%s: %s", msg, strerror(errno) );
+}
+
+void kDebugPError( unsigned short area, const char* msg )
+{
+    kDebugError( area, "%s: %s", msg, strerror(errno) );
 }
 
 // For compatibility
