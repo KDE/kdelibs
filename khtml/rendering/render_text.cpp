@@ -521,11 +521,23 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             }
         }
 
+        TextSlave* s;
+        int minx =  1000000;
+        int maxx = -1000000;
+        int outlinebox_y = m_lines[si]->m_y;
+
+        RenderStyle* outlineStyle = 0;
+//        if (hasKeyboardFocus == DOM::ActivationActive)
+//            outlineStyle = style()->getPseudoStyle(RenderStyle::ACTIVE);
+//        if (!outlineStyle && hasKeyboardFocus == DOM::ActivationPassive) {
+//        outlineStyle = style()->getPseudoStyle(RenderStyle::FOCUS);
+        if (!outlineStyle && style()->outlineWidth())
+            outlineStyle = style();
 
         // run until we find one that is outside the range, then we
         // know we can stop
         do {
-            TextSlave* s = m_lines[si];
+            s = m_lines[si];
             RenderStyle* _style = pseudoStyle && s->m_firstLine ? pseudoStyle : style();
 
             if(_style->font() != p->font())
@@ -547,7 +559,6 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 s->printDecoration(p, tx, ty, d);
             }
 
-
             if (selectionState() != SelectionNone && endPos > 0)
             {
                 //kdDebug(6040) << this << " printSelection with startPos=" << startPos << " endPos=" << endPos << endl;
@@ -564,8 +575,24 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 startPos -= diff;
                 //kdDebug(6040) << this << " startPos now " << startPos << ", endPos now " << endPos << endl;
             }
+            if(outlineStyle) {
+                if(outlinebox_y == s->m_y) {
+                    if(minx > s->m_x)  minx = s->m_x;
+                    if(maxx < s->m_x+s->m_width) maxx = s->m_x+s->m_width;
+                }
+                else {
+                    printOutline(p, tx+minx, ty+outlinebox_y, maxx-minx, s->m_height, outlineStyle);
+                    outlinebox_y = s->m_y;
+                    minx = s->m_x;
+                    maxx = s->m_x+s->m_width;
+                }
+            }
         } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y, ty, h));
 
+        if(outlineStyle)
+            printOutline(p, tx+minx, ty+outlinebox_y, maxx-minx, s->m_height, outlineStyle);
+
+// ### get rid of this
         if (hasKeyboardFocus!=DOM::ActivationOff)
         {
             si = firstSi;
@@ -582,14 +609,6 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
                 if(s->checkVerticalPoint(y, ty, h))
                     s->printActivation(p, tx, ty);
-
-#if 0
-                int diff;
-                if(si < (int) m_lines.count()-1 && !m_lines[si+1]->m_reversed) // ### no RTL
-                    diff = m_lines[si+1]->m_text - s->m_text;
-                else
-                    diff = s->m_len;
-#endif
 
             } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y, ty, h));
         }

@@ -169,7 +169,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     if(specialObjects)
 	printSpecialObjects( p,  _x, _y, _w, _h, _tx , _ty);
 
-    if(style()->outlineWidth())
+    if(!isInline() && style()->outlineWidth())
         printOutline(p, _tx, _ty, width(), height(), style());
 
 #ifdef BOX_DEBUG
