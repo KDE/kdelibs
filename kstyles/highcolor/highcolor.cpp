@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * KDE3 HighColor Style (version 0.99)
+ * KDE3 HighColor Style (version 1.0)
  * Copyright (C) 2001-2002 Karol Szwed      <gallium@kde.org>
  *           (C) 2001-2002 Fredrik Höglund  <fredrik@kde.org> 
  *
@@ -94,6 +94,7 @@ static const int itemHMargin     = 3;
 static const int itemVMargin     = 0;
 static const int arrowHMargin    = 6;
 static const int rightBorder     = 12;
+static const char* kdeToolbarWidget = "kde toolbar widget";
 
 // ---------------------------------------------------------------------------
 
@@ -194,6 +195,9 @@ void HighColorStyle::polish(QWidget* widget)
 		widget->setBackgroundMode(QWidget::NoBackground);
 	} else if (type == HighColor && widget->inherits("QToolBarExtensionWidget")) {
 		widget->installEventFilter(this);
+	} else if (type == HighColor && !qstrcmp( widget->name(), kdeToolbarWidget) ) {
+		widget->setBackgroundMode( NoBackground );	// We paint the whole background.
+		widget->installEventFilter(this);
 	}
 
 	KStyle::polish( widget );
@@ -209,6 +213,9 @@ void HighColorStyle::unPolish(QWidget* widget)
 		widget->setBackgroundMode(QWidget::PaletteBackground);
 	} else if (type == HighColor && widget->inherits("QToolBarExtensionWidget")) {
 		widget->removeEventFilter(this);
+	} else if (type == HighColor && !qstrcmp( widget->name(), kdeToolbarWidget) ) {
+		widget->removeEventFilter(this);
+		widget->setBackgroundMode( PaletteBackground );
 	}
 
 	KStyle::unPolish( widget );
@@ -1867,6 +1874,38 @@ bool HighColorStyle::eventFilter( QObject *object, QEvent *event )
 				  (object == hoverWidget) ) {
 			hoverWidget = 0L;
 			button->repaint( false );
+		}
+	} else if ( object->parent() && !qstrcmp( object->name(), kdeToolbarWidget ) )
+	{
+		// Draw a gradient background for custom widgets in the toolbar
+		// that have specified a "kde toolbar widget" name.
+
+		if (event->type() == QEvent::Paint ) {
+			// Find the top-level toolbar of this widget, since it may be nested in other
+			// widgets that are on the toolbar.
+			QWidget *widget = static_cast<QWidget*>(object);
+			QWidget *parent = static_cast<QWidget*>(object->parent());
+			int x_offset = widget->x(), y_offset = widget->y();
+			while (parent && parent->parent() && !qstrcmp( parent->name(), kdeToolbarWidget ) )
+			{
+				x_offset += parent->x();
+				y_offset += parent->y();
+				parent = static_cast<QWidget*>(parent->parent());
+			}
+
+			QRect r  = widget->rect();
+			QRect pr = parent->rect();
+			bool horiz_grad = pr.width() < pr.height();
+
+			// Check if the parent is a QToolbar, and use its orientation, else guess.
+			QToolBar* tb = dynamic_cast<QToolBar*>(parent);
+			if (tb) horiz_grad = tb->orientation() == Qt::Vertical;
+
+			QPainter p( widget );
+			renderGradient(&p, r, parent->colorGroup().button(), horiz_grad,
+					x_offset, y_offset, pr.width(), pr.height());
+
+			return false;	// Now draw the contents
 		}
 	} else if ( object->parent() &&
 			(toolbar = dynamic_cast<QToolBar*>(object->parent())) )

@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * KDE3 HighColor Style (version 0.99)
+ * KDE3 HighColor Style (version 1.0)
  * Copyright (C) 2001-2002 Karol Szwed      <gallium@kde.org>
  *           (C) 2001-2002 Fredrik Höglund  <fredrik@kde.org> 
  *
