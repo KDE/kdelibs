@@ -653,6 +653,7 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 			dest = ptr + 1; // unknown attribute, ignore
                         *dest++ = 0xEFFF; /* ignore */
 			tag = SearchEqual; // go to next attribute
+	                discard = SpaceDiscard; // discard spaces before '='
 		    } 
 		    else
 		    {
@@ -664,6 +665,7 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 			*dest++ = a->id;
 			
 			tag = SearchEqual;
+	                discard = SpaceDiscard; // discard spaces before '='
 		    }		
 		}
 		break;

@@ -34,6 +34,7 @@
 class HTMLFramePanner;
 class HTMLFrameSet;
 class KHTMLView;
+class QStringList;
 
 class HTMLFramePanner : public QFrame
 {
@@ -76,15 +77,17 @@ class HTMLFrameSet : public QWidget
     friend class KHTMLWidget;
 public:
     HTMLFrameSet( QWidget *_parent,
-                  QString _cols, QString _rows,
+                  const QString &_cols, const QString &_rows,
                   int _frameBorder, bool _bAllowResize);
     ~HTMLFrameSet();
+
+    bool isValid() { return valid; }
     
     void append( QWidget *_w );
 
     virtual void parse();
   
-    virtual int calcSize( QString s, int _max );
+    virtual int calcSize( int _max );
 
     KHTMLView* getSelectedFrame();
 
@@ -99,21 +102,34 @@ public:
      *         or -1 for the default width.
      */
     int getFrameBorder() { return frameBorder; }
-  
+
 protected:
+    QStringList *parseSizeStrings( const QString &sizes);
+        
+    /*
+     * Flag indicating whether creation was succesfull.
+     * Use isValid() to check after construction.
+     */
+    bool valid;
+
     virtual void resizeEvent( QResizeEvent* _ev );
     
     QList<QWidget> widgetList;
 
     HTMLFramePanner::Orientation orientation;
 
-    QString cols;
-    QString rows;
+    QStringList *elementSizes;
     
     /**
      * Array that holds the layout information for all embedded frames.
      */
     QArray<int> size;
+
+    /**
+     * Store rows and cols for later use
+     */
+    QString rows, cols;
+
     /**
      * Amount of frames as mentioned in the COLS or ROWS tag.
      */

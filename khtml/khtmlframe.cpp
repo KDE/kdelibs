@@ -26,67 +26,114 @@
 
 #include "khtmlframe.h"
 
+#include <qstringlist.h>
+
 #include "khtml.h"
 #include "khtmlview.h"
 #include "khtmltoken.h"
 
-#include <strings.h>
 #include <stdlib.h>
 
 HTMLFrameSet::HTMLFrameSet( QWidget *_parent, 
-			    QString _cols, QString _rows,
+			    const QString &_cols, const QString &_rows,
 			    int _frameBorder, bool _bAllowResize)
-    : QWidget( _parent ), size(0)
+    : QWidget( _parent ), size(0), rows(_rows), cols(_cols)
 {
     lastPanner = 0L;
     
     frameBorder = _frameBorder;
     bAllowResize = _bAllowResize;
-    cols = _cols.ascii();
-    rows = _rows.ascii();
     
     widgetList.setAutoDelete( TRUE );
     
     cFrames = 0;
+    valid = false;
+
+    printf("FRAMESET: Cols = \"%s\" Rows = \"%s\"\n", 
+	_cols.ascii() ? _cols.ascii() : "", 
+	_rows.ascii() ? _rows.ascii() : "");
     
     // Calculate amount of frames
     int nrCols = 0;
-    
+    int nrRows = 0;
+    QStringList *colSizes=0;    
+    QStringList *rowSizes=0;
+    elementSizes = 0;
+    elements = 0;
+
     if ( !cols.isEmpty() )
     {
-        nrCols++;
-	const char *p = cols.latin1();
-        while ( ( p = strchr( p, ',' ) ) != 0 ) { p++; nrCols++; }
+        colSizes = parseSizeStrings( _cols );
+        nrCols = colSizes->count();
     }
-    int nrRows = 0;
     
-    if ( !rows.isEmpty() )
+    if ( (nrCols < 2) && (!rows.isEmpty()) )
     {
-        nrRows++;
-	const char *p = rows.latin1();
-        while ( ( p = strchr( p, ',' ) ) != 0 ) { p++; nrRows++; }
+        rowSizes = parseSizeStrings( _rows );
+        nrRows = rowSizes->count();
     }
+
+    printf("FRAMESET: #Cols = %d #Rows = %d\n", nrCols, nrRows); 
 
     if (nrCols > nrRows)
     {
-        elements = nrCols;
 	orientation = Vertical;
+        elementSizes = colSizes;
+        if (rowSizes)
+            delete rowSizes;
     }
     else
     {
-        elements = nrRows;
 	orientation = Horizontal;
+        elementSizes = rowSizes;
+        if (colSizes)
+            delete colSizes;
     }
-    size.resize( elements );   
+   
+    if (elementSizes && elementSizes->count())
+    {
+        elements = elementSizes->count();
+        size.resize( elements );   
+        valid = true;
+    }
 }
 
 HTMLFrameSet::~HTMLFrameSet()
 {
     widgetList.clear();
+    if (elementSizes)
+        delete elementSizes;
 }
+
+QStringList *
+HTMLFrameSet::parseSizeStrings( const QString &sizes)
+{
+   QString remaining = sizes;
+   QStringList *sizeList = new QStringList();
+
+   for(;;)
+   {
+      int pos = remaining.find(',');
+      if (pos == -1)
+      {
+          sizeList->append( remaining );
+          break;
+      }
+      sizeList->append( remaining.left(pos) );
+      remaining = remaining.mid(pos+1);
+   }
+   return sizeList;
+}
+
 
 void HTMLFrameSet::append( QWidget *_w )
 {
+    if (cFrames == elements)
+    {
+        // More frames then expected!
+        return;
+    }
+
     // Add the 2. child of the last panner if there is one.
     if ( lastPanner != 0L )
     {
@@ -157,13 +204,11 @@ void HTMLFrameSet::resizeEvent( QResizeEvent* )
 
     if ( orientation == Vertical )
     {
-      printf("Calculating col widths...");
-      elements = calcSize( cols, width() );
+      elements = calcSize( width() );
     }
     else
     {
-      printf("Calculating row heights...");
-      elements = calcSize( rows, height() );
+      elements = calcSize( height() );
     }
      
 
@@ -212,60 +257,42 @@ void HTMLFrameSet::resizeEvent( QResizeEvent* )
     debug("Done Set");
 }
 
-int HTMLFrameSet::calcSize( QString s, int _max )
+int HTMLFrameSet::calcSize( int _max )
 {	
-    printf("Calculating size ( %s ) elements = %d", s.data(), elements );
+    if (!elements)
+        return 0;
 
     QArray<int> value(elements);
     QArray<int> mode(elements);
 
     int i = 0;
-    
-    if (!s.isEmpty())
+    for( QStringList::ConstIterator it = elementSizes->begin();
+         (it != elementSizes->end());
+         it++, i++)
     {
-      StringTokenizer st;
-      QChar separ [] = { ',', 0x0 };
-      st.tokenize( HTMLString( s ), separ );
-      while ( st.hasMoreTokens() )
-      {
-	if ( i == elements )
-	    break;
-	
-	HTMLString token = st.nextToken();
-	if ( token.length() )
+        QString token = *it;
+        int percent;
+	if ( token.contains('%') )
 	{
-            int percent;
-	    printf("WIDTH='%s'\n",token.string().ascii());
-	    value[i] = token.toInt();
-	    if ( token.percentage(percent) )
-	    {
-		mode[i] = 1;
-		value[i] = ( percent * _max ) / 100;
-	    }
-	    else if ( ustrchr( token.unicode(), '*' ) )
-	    {
-		if ( value[i] == 0 )
-		    value[i] = 1;
-		mode[i] = 2;
-	    }
-	    else
-		mode[i] = 0;
-	    
-	    i++;
+            int pos = token.find('%');
+            percent = token.left(pos).toInt();
+	    mode[i] = 1;
+	    value[i] = ( percent * _max ) / 100;
 	}
-      }
+	else if ( token.contains('*') )
+	{
+            int pos = token.find('*');
+            value[i] = token.left(pos).toInt();
+	    if ( value[i] == 0 )
+		value[i] = 1;
+	    mode[i] = 2;
+	}
+	else 
+        {
+            value[i] = token.toInt();
+	    mode[i] = 0;
+        }
     }
-
-    while (i < elements)
-    {
-       mode[i] = 2;
-       value[i] = 1;
-       i++;
-    }
-
-    printf("*************** CALC SIZE elements = %i ******************",i);
-    
-    printf("max. width=%i   max. height=%i",width(),height() );
 
     bool joker = false;
     
@@ -278,7 +305,6 @@ int HTMLFrameSet::calcSize( QString s, int _max )
 	    joker = true;
     }
     
-    printf("s1 = %i\n", s1);
     int k;
     if ( s1 <= _max && !joker )
     {
@@ -287,7 +313,6 @@ int HTMLFrameSet::calcSize( QString s, int _max )
 	for ( k = 0; k < elements; k++ )
 	{
 	    size[k] = ( value[k] * _max ) / s1;
-	    printf("%i %i %i -> %i\n",value[k],_max,s1,size[k] );
 	}
 
 	// Calculate the error
@@ -296,7 +321,6 @@ int HTMLFrameSet::calcSize( QString s, int _max )
 	{
 	    s2 += size[k];
 	}
-	printf("Error is %i\n",_max - s2);
 	// Add the error to the last frame
 	size[ elements - 1 ] += _max - s2;
     }
@@ -351,27 +375,20 @@ int HTMLFrameSet::calcSize( QString s, int _max )
 	    if ( mode[k] == 0 || mode[k] == 1 )
 		s2 += size[k];
 	}
-	printf("Error is %i",_max - s2);
 	// Add the error to the last frame
 	size[ elements - 1 ] += _max - s2;	
     }
 
-    for ( k = 0; k < elements; k++ )
-	printf("SIZE[%d]=%i\n", k, size[k]);
-	
     return i;
 }
 
 KHTMLView* HTMLFrameSet::getSelectedFrame()
 {
-  printf(">>>>>>>>>>>>>>>>>>>>>>>>>>> Frame 1 <<<<<<<<<<<<<<<<<<<<<<<<\n");
     QWidget *w;
     for ( w = widgetList.first(); w != 0L; w = widgetList.next() )
     {
-      printf(">>>>>>>>>>>>>>>>>>>>>>>>>>> Frame 2 '%s'<<<<<<<<<<<<<<<<<<<<<<<<\n",w->className());
       if ( w->inherits( "KHTMLView" ) )
       {
-	printf(">>>>>>>>>>>>>>>>>>>>>>>>>>> Frame 3 <<<<<<<<<<<<<<<<<<<<<<<<\n");
 	KHTMLView *v = (KHTMLView*)w;
 	KHTMLView *ret = v->getSelectedView();
 	if ( ret )
@@ -379,7 +396,6 @@ KHTMLView* HTMLFrameSet::getSelectedFrame()
       }
     }
     
-    printf(">>>>>>>>>>>>>>>>>>>>>>>>>>> Frame 4 <<<<<<<<<<<<<<<<<<<<<<<<\n");
     return 0L;
 }
 

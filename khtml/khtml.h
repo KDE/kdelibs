@@ -909,6 +909,10 @@ protected:
     void buildFrameSet(SavedPage *p, QString *s);
     void buildFrameTree(SavedPage *p, HTMLFrameSet *f);
 
+    /*
+     * funciton used internally for getAllText
+     */
+    void getFrameSetText( QString &_str, HTMLFrameSet *f);
 
     /*
      * This is the URL that the cursor is currently over

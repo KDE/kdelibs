@@ -982,12 +982,35 @@ void KHTMLWidget::getSelectedText( QString &_str )
     clue->getSelectedText( _str, false );
 }
 
+void KHTMLWidget::getFrameSetText( QString &_str, HTMLFrameSet *f)
+{
+    for( QWidget *w = f->widgetList.first(); w != 0;
+         w = f->widgetList.next() )
+    {
+        if ( w->inherits( "KHTMLView" ) )
+        {
+            KHTMLView *v = (KHTMLView*)w;
+            _str += "\n[FRAME]\n";
+            v->getAllText( _str );
+	}
+	else if(strcmp(w->className(),"HTMLFrameSet") == 0 )
+	{
+	    HTMLFrameSet *frameSet = (HTMLFrameSet *)w;
+            getFrameSetText( _str, frameSet);
+	}
+    }
+}
+
 void KHTMLWidget::getAllText( QString &_str )
 {
-    if ( clue == 0 )
-	return;
-    
-    clue->getSelectedText( _str, true );
+
+    if ( clue )
+        clue->getSelectedText( _str, true );
+
+    if(isFrameSet() && frameSet)
+    {
+        getFrameSetText( _str, frameSet );
+    }    
 }
 
 // Print the current document to the printer.

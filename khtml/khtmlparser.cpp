@@ -1569,8 +1569,8 @@ void KHTMLParser::parseTagEmbed(void)
 
 void KHTMLParser::parseTagFrameset(void)
 {
-    HTMLString cols = HTMLString();
-    HTMLString rows = HTMLString();
+    QString cols;
+    QString rows;
     int frameBorder = 1;
     bool bAllowResize = true;
 
@@ -1583,11 +1583,11 @@ void KHTMLParser::parseTagFrameset(void)
     {
 	if ( token->id == ATTR_COLS )
 	{
-	    cols = token->value();
+	    cols = token->value().string();
 	}
 	else if ( token->id == ATTR_ROWS )
 	{
-	    rows = token->value();
+	    rows = token->value().string();
 	}
 	else if ( token->id == ATTR_FRAMEBORDER )
 	{
@@ -1606,12 +1606,24 @@ void KHTMLParser::parseTagFrameset(void)
        // This is the toplevel frameset
        frameSet = new HTMLFrameSet( HTMLWidget, cols, rows, 
        				    frameBorder, bAllowResize );
+       if (!frameSet->isValid())
+       {
+           delete frameSet;
+           frameSet = oldFrameSet;
+           return;
+       }
     }
     else
     { 
        // This is a nested frameset
        frameSet = new HTMLFrameSet( oldFrameSet, cols, rows,
        				    frameBorder, bAllowResize );
+       if (!frameSet->isValid())
+       {
+           delete frameSet;
+           frameSet = oldFrameSet;
+           return;
+       }
        oldFrameSet->append(frameSet);
     }
     HTMLWidget->addFrameSet( frameSet);
