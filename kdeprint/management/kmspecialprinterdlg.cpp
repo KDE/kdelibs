@@ -40,7 +40,7 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	setCaption(i18n("Add special printer"));
 
 	// widget creation
-	QPushButton	*m_ok = new QPushButton(i18n("OK"), this);
+	m_ok = new QPushButton(i18n("OK"), this);
 	QPushButton	*m_cancel = new QPushButton(i18n("Cancel"), this);
 	connect(m_ok,SIGNAL(clicked()),SLOT(accept()));
 	connect(m_cancel,SIGNAL(clicked()),SLOT(reject()));
@@ -48,6 +48,7 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	QPushButton	*m_browse = new QPushButton(i18n("Browse"), this);
 	connect(m_browse,SIGNAL(clicked()),SLOT(slotBrowse()));
 	m_name = new QLineEdit(this);
+	connect(m_name, SIGNAL(textChanged ( const QString & )),this,SLOT(slotTextChanged(const QString & )));
 	m_description = new QLineEdit(this);
 	m_location = new QLineEdit(this);
 	m_command = new QLineEdit(this);
@@ -109,9 +110,13 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	l3->addStretch(1);
 	l3->addWidget(m_ok);
 	l3->addWidget(m_cancel);
-
+	m_ok->setEnabled(!m_name->text().isEmpty());
 	// resize dialog
 	resize(400,100);
+}
+void KMSpecialPrinterDlg::slotTextChanged(const QString & text)
+{
+  m_ok->setEnabled(!text.isEmpty());
 }
 
 void KMSpecialPrinterDlg::done(int result)

@@ -27,6 +27,7 @@ class QLineEdit;
 class QCheckBox;
 class KIconButton;
 class KEditListBox;
+class QPushButton;
 
 class KMSpecialPrinterDlg : public KDialog
 {
@@ -43,12 +44,13 @@ protected:
 protected slots:
 	virtual void done(int);
 	void slotBrowse();
-
+	void slotTextChanged(const QString & text);
 private:
 	QLineEdit	*m_name, *m_description, *m_location, *m_command, *m_extension;
 	QCheckBox	*m_usefile;
 	KIconButton	*m_icon;
 	KEditListBox	*m_require;
+	QPushButton     *m_ok;
 };
 
 #endif
