@@ -225,8 +225,16 @@ bool KTar::openArchive( int mode )
             // read type flag
             char typeflag = buffer[ 0x9c ];
             // '0' for files, '1' hard link, '2' symlink, '5' for directory (and 'L' for longlink)
+            // and 'D' for GNU tar extension DUMPDIR
             if ( typeflag == '1' )
                 isdir = true;
+
+            bool isDumpDir = false;
+            if ( typeflag == 'D' )
+            {
+                isdir = false;
+                isDumpDir = true;
+            }
             //bool islink = ( typeflag == '1' || typeflag == '2' );
             //kdDebug() << "typeflag=" << typeflag << " islink=" << islink << endl;
 
@@ -248,17 +256,26 @@ bool KTar::openArchive( int mode )
                 while( *p == ' ' ) ++p;
                 int size = (int)strtol( p, &dummy, 8 );
 
-                // Let's hack around hard links. Our classes don't support that, so make them symlinks
-                if ( typeflag == '1' )
+                // for isDumpDir we will skip the additional info about that dirs contents 
+                if ( isDumpDir )
                 {
-                    size = nm.length(); // in any case, we don't want to skip the real size, hence this resetting of size
-                    kdDebug() << "HARD LINK, setting size to " << size << endl;
+		    e = new KArchiveDirectory( this, nm, access, time, user, group, symlink );
                 }
+		else
+		{
+            
+                    // Let's hack around hard links. Our classes don't support that, so make them symlinks
+                    if ( typeflag == '1' )
+                    {
+                        size = nm.length(); // in any case, we don't want to skip the real size, hence this resetting of size
+                        kdDebug() << "HARD LINK, setting size to " << size << endl;
+                    }
 
-                //kdDebug() << "KArchive::open file " << nm << " size=" << size << endl;
+                    //kdDebug() << "KArchive::open file " << nm << " size=" << size << endl;
 
-                e = new KArchiveFile( this, nm, access, time, user, group, symlink,
-                                      dev->at(), size );
+                    e = new KArchiveFile( this, nm, access, time, user, group, symlink,
+                                          dev->at(), size );
+		}			  
 
                 // Skip contents + align bytes
                 int rest = size % 0x200;
