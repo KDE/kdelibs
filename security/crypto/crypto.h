@@ -298,6 +298,8 @@ private:
 
   KConfig *config;
   KSimpleConfig *policies, *pcerts, *authcfg;
+
+  bool ___lehack;       // to hack around a lineedit problem
 };
 
 #endif

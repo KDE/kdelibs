@@ -174,6 +174,7 @@ QGridLayout *grid;
 QBoxLayout *top = new QVBoxLayout(this);
 QString whatstr;
 
+  ___lehack = false;
   otherCertDelList.setAutoDelete(true);
   yourCertDelList.setAutoDelete(true);
   authDelList.setAutoDelete(true);
@@ -1689,7 +1690,9 @@ if (x) {
    break;
   }
 
+  ___lehack = true;
   authHost->setText(x->configName());
+  ___lehack = false;
   hostCertBox->setCurrentItem(0);
 
   QString theCert = x->getCertName();
@@ -1710,6 +1713,7 @@ if (x) {
 
 
 void KCryptoConfig::slotAuthText(const QString &t) {
+if (___lehack) return;
 HostAuthItem *x = static_cast<HostAuthItem *>(hostAuthList->selectedItem());
 
 if (x) {
@@ -1928,6 +1932,24 @@ bool noneDef, noneHost;
   }
 
   if (!noneHost && hostCertBox->currentItem() == 0) configChanged();
+
+  // Update the host entries too
+  for (HostAuthItem *x = 
+        static_cast<HostAuthItem *>(hostAuthList->firstChild()); 
+                                                              x;
+             x = static_cast<HostAuthItem *>(x->nextSibling())) {
+     QString newValue = "";
+     for (int i = 1; i < hostCertBox->count(); i++) {
+        if (hostCertBox->text(i) == x->getCertName()) {
+           newValue = x->getCertName();
+           break;
+        }
+     }
+     if (newValue != x->getCertName()) configChanged();
+     x->setCertName(newValue);
+  }
+
+  
 }
 
 
