@@ -166,36 +166,36 @@ class KCmdLineArgsPrivate;
  *  only check for the long option.
  *
  *  With the above options a command line could look like:
- *  <pre>
+ *  \code
  *     myapp -a -c 4800 --display localhost:0.0 --nooption5 -d /tmp/file
- *  </pre>
+ *  \endcode
  *
  *  Long binary options can be in the form 'option' and 'nooption'.
  *  A command line may contain the same binary option multiple times,
  *  the last option determines the outcome:
- *  <pre>
+ *  \code
  *     myapp --nooption4 --option4 --nooption4
- *  </pre>
+ *  \endcode
  *  is the same as:
- *  <pre>
+ *  \code
  *     myapp --nooption4
- *  </pre>
+ *  \endcode
  *
  *  Normally if an option value is provided multiple times only the last
  *  value is used:
- *  <pre>
+ *  \code
  *     myapp -c 1200 -c 2400 -c 4800
- *  </pre>
+ *  \endcode
  *  is usually the same as:
- *  <pre>
+ *  \code
  *     myapp -c 4800
- *  </pre>
+ *  \endcode
  *
  *  However, an application can choose to use all values specified as well.
  *  E.g. to specify a number of directories to use:
- *  <pre>
+ *  \code
  *     myapp -I /usr/include -I /opt/kde/include -I /usr/X11/include
- *  </pre>
+ *  \endcode
  *  When an application does this it should mention this in the description
  *  of the option. @ref getOptionList()
  *
@@ -391,9 +391,9 @@ public:
    *
    *  The option must have a corresponding KCmdLineOptions entry
    *  of the form:
-   *  <pre>
+   *  \code
    *    { "option \<argument>", I18N_NOOP("Description"), "default" }
-   *  </pre>
+   *  \endcode
    *
    *  @param option The name of the option without '-'.
    *
@@ -409,9 +409,9 @@ public:
    *
    *  The option must have a corresponding KCmdLineOptions entry
    *  of the form:
-   *  <pre>
+   *  \code
    *    { "option \<argument>", I18N_NOOP("Description"), "default" }
-   *  </pre>
+   *  \endcode
    *
    *  @param option The name of the option without '-'.
    *
