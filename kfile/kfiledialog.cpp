@@ -441,7 +441,7 @@ void KFileDialog::slotOk()
 	}
     }
 
-    bool dirOnly = !(mode() & (KFile::KFile::File | KFile::Files));
+    bool dirOnly = !(mode() & (KFile::File | KFile::Files));
 
     // we can use our kfileitems, no need to parse anything
     if ( items && !locationEdit->lineEdit()->edited() &&
