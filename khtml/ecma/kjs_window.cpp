@@ -395,7 +395,7 @@ Value Window::get(ExecState *exec, const UString &p) const
     case Name:
       return String(m_part->name());
     case _Navigator:
-      return new Navigator(m_part);
+      return new Navigator(exec, m_part);
 #ifdef Q_WS_QWS
     case _Konqueror:
       return new Konqueror(m_part);

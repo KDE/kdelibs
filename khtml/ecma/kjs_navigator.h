@@ -29,10 +29,9 @@ namespace KJS {
 
   class Navigator : public ObjectImp {
   public:
-    Navigator(KHTMLPart *p) : ObjectImp(), m_part(p) { }
+    Navigator(ExecState *exec, KHTMLPart *p);
     virtual Value get(ExecState *exec, const UString &propertyName) const;
     Value getValue(ExecState *exec, int token) const;
-    virtual UString toString(ExecState *exec) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { AppCodeName, AppName, AppVersion, Language, UserAgent, Platform,
