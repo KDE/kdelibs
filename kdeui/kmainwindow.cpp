@@ -388,9 +388,7 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
               factory_->resetContainer( e.tagName(), true );
       }
 
-      // ### We cannot free the DOM document here, because then the toolbar state saving
-      // doesn't work (Simon)
-//      conserveMemory();
+      conserveMemory();
     }
 
     setUpdatesEnabled( true );
