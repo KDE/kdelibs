@@ -318,6 +318,15 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
         }
     }
 
+    if ( bOrigExists && !_overwrite && !_resume)
+    {
+        if (S_ISDIR(buff_orig.st_mode))
+            error( KIO::ERR_DIR_ALREADY_EXIST, dest_orig );
+        else
+            error( KIO::ERR_FILE_ALREADY_EXIST, dest_orig );
+        return;
+    }
+
     int result;
     QString dest;
     QCString _dest;
@@ -335,15 +344,6 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
         {
             if (dest.isEmpty())
             {
-                if ( bOrigExists && !_overwrite && !_resume)
-                {
-                    if (S_ISDIR(buff_orig.st_mode))
-                      error( KIO::ERR_DIR_ALREADY_EXIST, dest_orig );
-                    else
-                      error( KIO::ERR_FILE_ALREADY_EXIST, dest_orig );
-                    return;
-                }
-
                 if (bMarkPartial)
                 {
                     kdDebug(7101) << "Appending .part extension to " << dest_orig << endl;
