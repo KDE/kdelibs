@@ -1,6 +1,6 @@
 # KDE Config File
 [Protocol]
-exec=kio_http
+lib=kio_http
 protocol=https
 input=none
 output=filesystem
