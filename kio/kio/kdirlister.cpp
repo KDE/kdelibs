@@ -1299,22 +1299,16 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
     }
 
     // Form the complete url
-    KURL u( jobUrl );
-    u.addPath( name );
-    //kdDebug(7004) << "slotUpdateResult : found " << name << endl;
-
-    // Find this item
-    bool found = false;
-    if ( (tmp = fileItems[u.url()]) )
-    {
-      tmp->mark();
-      found = true;
-    }
-
     item = new KFileItem( *it, jobUrl, delayedMimeTypes, true  );
 
-    if ( found )
+    QString url = item->url().url();
+    //kdDebug(7004) << "slotUpdateResult : look for " << url << endl;
+
+    // Find this item
+    if ( (tmp = fileItems[url]) )
     {
+      tmp->mark();
+
       // check if something changed for this file
       if ( !tmp->cmp( *item ) )
       {
