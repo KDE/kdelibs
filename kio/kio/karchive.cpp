@@ -26,9 +26,14 @@
 #include <pwd.h>
 #include <assert.h>
 
+#include <qptrlist.h>
+#include <qptrstack.h>
+#include <qvaluestack.h>
+#include <qmap.h>
 #include <qcstring.h>
 #include <qdir.h>
 #include <qfile.h>
+
 #include <kdebug.h>
 #include <kurl.h>
 #include <kmimetype.h>
@@ -40,11 +45,24 @@
 
 template class QDict<KArchiveEntry>;
 
+
 class KArchive::KArchivePrivate
 {
 public:
     KArchiveDirectory* rootDir;
 };
+
+class PosSortedPtrList : public QPtrList<KArchiveFile> {
+protected:
+    int compareItems( QPtrCollection::Item i1,
+                      QPtrCollection::Item i2 )
+    {
+        int pos1 = static_cast<KArchiveFile*>( i1 )->position();
+        int pos2 = static_cast<KArchiveFile*>( i2 )->position();
+        return ( pos1 - pos2 );
+    }
+};
+
 
 ////////////////////////////////////////////////////////////////////////
 /////////////////////////// KArchive ///////////////////////////////////
@@ -275,9 +293,9 @@ QIODevice *KArchiveFile::device() const
     return new KLimitedIODevice( archive()->device(), m_pos, m_size );
 }
 
-void KArchiveFile::copyTo(const QDir& dest)
+void KArchiveFile::copyTo(const QString& dest)
 {
-  QFile f( dest.absPath() + "/"  + name() );
+  QFile f( dest + "/"  + name() );
   f.open( IO_ReadWrite | IO_Truncate );
   f.writeBlock( data() );
   f.close();
@@ -356,21 +374,57 @@ void KArchiveDirectory::addEntry( KArchiveEntry* entry )
   m_entries.insert( entry->name(), entry );
 }
 
-void KArchiveDirectory::copyTo(const QDir& dest, bool recursiveCopy )
+void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy )
 {
-  KArchiveEntry* cur;
-  QDictIterator<KArchiveEntry> it( m_entries );
+  QDir root;
 
-  dest.mkdir(dest.absPath());
-  for ( ; it.current(); ++it ) {
-    cur = it.current();
-    if ( cur->isFile() )
-      dynamic_cast<KArchiveFile*>( cur )->copyTo( dest );
+  PosSortedPtrList fileList;
+  QMap<int, QString> fileToDir;
 
-    if ( cur->isDirectory() )
-      if ( recursiveCopy )
-        dynamic_cast<KArchiveDirectory*>( cur )
-            ->copyTo(QDir(dest.absPath().append("/").append(it.currentKey())));
+  QStringList::Iterator it;
+
+  // placeholders for iterated items
+  KArchiveDirectory* curDir;
+  QString curDirName;
+
+  QStringList dirEntries;
+  KArchiveEntry* curEntry;
+  KArchiveFile* curFile;
+
+
+  QPtrStack<KArchiveDirectory> dirStack;
+  QValueStack<QString> dirNameStack;
+
+  dirStack.push( this );     // init stack at current directory
+  dirNameStack.push( dest ); // ... with given path
+  do {
+    curDir = dirStack.pop();
+    root.mkdir(curDirName);
+    curDirName = dirNameStack.pop();
+
+    dirEntries = curDir->entries();
+    for ( it = dirEntries.begin(); it != dirEntries.end(); ++it ) {
+      curEntry = curDir->entry(*it);
+      if ( curEntry->isFile() ) {
+        curFile = dynamic_cast<KArchiveFile*>( curEntry );
+        fileList.append( curFile );
+        fileToDir.insert( curFile->position(), curDirName );
+      }
+
+      if ( curEntry->isDirectory() )
+        if ( recursiveCopy ) {
+          dirStack.push( dynamic_cast<KArchiveDirectory*>( curEntry ) );
+          dirNameStack.push( curDirName + "/" + curEntry->name() );
+        }
+    }
+  } while (!dirStack.isEmpty());
+
+  fileList.sort();  // sort on m_pos, so we have a linear access
+
+  KArchiveFile* f;
+  for ( f = fileList.first(); f; f = fileList.next() ) {
+    int pos = f->position();
+    f->copyTo( fileToDir[pos] );
   }
 }
 

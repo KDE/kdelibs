@@ -31,8 +31,6 @@
 class KArchiveDirectory;
 class KArchiveFile;
 
-class QDir;
-
 /**
  * @short generic class for reading/writing archives
  * @author David Faure <faure@kde.org>
@@ -284,7 +282,7 @@ public:
      */
     virtual bool isFile() const { return true; }
 
-    void copyTo(const QDir& dest);
+    void copyTo(const QString& dest);
 
 private:
     int m_pos; // TODO use Q_LONG in KDE-4.0
@@ -333,7 +331,7 @@ public:
      */
     virtual bool isDirectory() const { return true; }
 
-    void copyTo(const QDir& dest, bool recursive = true);
+    void copyTo(const QString& dest, bool recursive = true);
 
 private:
     QDict<KArchiveEntry> m_entries;
