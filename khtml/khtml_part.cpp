@@ -2108,8 +2108,10 @@ void KHTMLPart::checkCompleted()
 
   if ( !d->m_redirectURL.isEmpty() )
   {
-    // Do not start redirection for frames here! That action is
+    // DA: Do not start redirection for frames here! That action is
     // deferred until the parent emits a completed signal.
+    // DF: The test for == Object is due to the test in processObjectRequest before
+    // connecting to slotParentCompleted.
     if ( parentPart() == 0 )
       d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
 
@@ -4066,23 +4068,20 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
              this, SLOT( slotChildStarted( KIO::Job *) ) );
     connect( part, SIGNAL( completed() ),
              this, SLOT( slotChildCompleted() ) );
-    if ( child->m_type != khtml::ChildFrame::Object )
+    connect( part, SIGNAL( completed(bool) ),
+             this, SLOT( slotChildCompleted(bool) ) );
+    connect( part, SIGNAL( setStatusBarText( const QString & ) ),
+                this, SIGNAL( setStatusBarText( const QString & ) ) );
+    if ( part->inherits( "KHTMLPart" ) )
     {
-      connect( part, SIGNAL( completed(bool) ),
-               this, SLOT( slotChildCompleted(bool) ) );
-      connect( part, SIGNAL( setStatusBarText( const QString & ) ),
-               this, SIGNAL( setStatusBarText( const QString & ) ) );
-      if ( part->inherits( "KHTMLPart" ) )
-      {
-          connect( this, SIGNAL( completed() ),
-                   part, SLOT( slotParentCompleted() ) );
-          connect( this, SIGNAL( completed(bool) ),
-                   part, SLOT( slotParentCompleted() ) );
-          // As soon as the child's document is created, we need to set its domain
-          // (but we do so only once, so it can't be simply done in the child)
-          connect( part, SIGNAL( docCreated() ),
-                   this, SLOT( slotChildDocCreated() ) );
-      }
+      connect( this, SIGNAL( completed() ),
+               part, SLOT( slotParentCompleted() ) );
+      connect( this, SIGNAL( completed(bool) ),
+               part, SLOT( slotParentCompleted() ) );
+      // As soon as the child's document is created, we need to set its domain
+      // (but we do so only once, so it can't be simply done in the child)
+      connect( part, SIGNAL( docCreated() ),
+               this, SLOT( slotChildDocCreated() ) );
     }
 
     child->m_extension = KParts::BrowserExtension::childObject( part );
@@ -4979,7 +4978,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
 
-//   kdDebug( 6050 ) << "restoreStakte() docState.count() = " << docState.count() << endl;
+//   kdDebug( 6050 ) << "restoreState() docState.count() = " << docState.count() << endl;
 //   kdDebug( 6050 ) << "m_url " << m_url.url() << " <-> " << u.url() << endl;
 //   kdDebug( 6050 ) << "m_frames.count() " << d->m_frames.count() << " <-> " << frameCount << endl;
 
