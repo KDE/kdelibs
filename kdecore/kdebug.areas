@@ -218,6 +218,9 @@
 8104        kompare (list view)
 8105        kompare (nav view)
 8106        kompare (connect widget)
+8107        kbabel
+8108        kbabel (search)
+8109        catalogmanager
 
 # kdevelop
 9000        kdevelop (core)
