@@ -309,7 +309,7 @@ void KFileDetailView::setSortIndicator()
 void KFileDetailView::ensureItemVisible( const KFileViewItem *i )
 {
     if ( !i )
-	return false;
+	return;
     KFileListViewItem *item = (KFileListViewItem*) i->viewItem( this );
     if ( item )
 	KListView::ensureItemVisible( item );
