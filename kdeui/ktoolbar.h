@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.45  1998/11/21 19:27:20  radej
+// sven: doubleClicked signal for buttons.
+//
 // Revision 1.44  1998/11/11 14:32:11  radej
 // sven: *Bars can be made flat by MMB (Like in Netscape, but this works)
 //
@@ -833,7 +836,7 @@ protected:
   void leaveEvent (QEvent *e);
   
   
-protected slots:
+private slots:
   void ButtonClicked(int);
   void ButtonDblClicked( int id );
   void ButtonPressed(int);
