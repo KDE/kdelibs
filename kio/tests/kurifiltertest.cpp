@@ -301,12 +301,18 @@ int main(int argc, char **argv)
     }
 
     filter( "$KDEHOME/share", kdehome+"/share", KURIFilterData::LOCAL_DIR );
-    KStandardDirs::makeDir( "/tmp/a+plus" );
-    filter( "/tmp/a+plus", "/tmp/a+plus", KURIFilterData::LOCAL_DIR );
+    KStandardDirs::makeDir( kdehome+"/a+plus" );
+    filter( "$KDEHOME/a+plus", kdehome+"/a+plus", KURIFilterData::LOCAL_DIR );
 
     // BR 27788
     KStandardDirs::makeDir( kdehome+"/share/Dir With Space" );
     filter( "$KDEHOME/share/Dir With Space", kdehome+"/share/Dir With Space", KURIFilterData::LOCAL_DIR );
+
+    // support for name filters (BR 93825)
+    filter( "$KDEHOME/*.txt", kdehome+"/*.txt", KURIFilterData::LOCAL_DIR );
+    // but let's check that a directory with * in the name still works
+    KStandardDirs::makeDir( kdehome+"/share/Dir*With*Stars" );
+    filter( "$KDEHOME/share/Dir*With*Stars", kdehome+"/share/Dir*With*Stars", KURIFilterData::LOCAL_DIR );
 
     filter( "$HOME/$KDEDIR/kdebase/kcontrol/ebrowsing", 0, KURIFilterData::ERROR );
     filter( "$1/$2/$3", "http://www.google.com/search?q=$1/$2/$3&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );  // can be used as bogus or valid test. Currently triggers default search, i.e. google
