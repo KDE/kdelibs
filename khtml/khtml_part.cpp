@@ -1961,7 +1961,7 @@ void KHTMLPopupGUIClient::slotSaveLinkAs()
   if ( d->m_url.filename( false ).isEmpty() )
     d->m_url.setFileName( "index.html" );
 
-  saveURL( d->m_khtml->widget(), i18n( "&Save Link As" ), d->m_url );
+  saveURL( d->m_khtml->widget(), i18n( "Save Link As" ), d->m_url );
 }
 
 void KHTMLPopupGUIClient::slotSaveImageAs()
