@@ -134,6 +134,7 @@ public:
 
   /**
    * Reads the value of an entry specified by @p pKey in the current group.
+   * If you want to read a path, please use readPathEntry.
    *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found.
@@ -737,6 +738,8 @@ public:
    *
    * This is stored in the most specific config file when destroying the
    * config object or when calling sync().
+   *
+   * If you want to write a path, please use writePathEntry.
    *
    * @param pKey         The key to write.
    * @param pValue       The value to write.
