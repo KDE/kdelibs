@@ -266,6 +266,11 @@ k_dcop:
    */
   void setListMode( bool list );
 
+  /**
+   * Show a SSL Information Dialog
+   */
+  void showSSLInfoDialog(const QString &url, const KIO::MetaData &data);
+
 protected slots:
 
   void slotUpdate();

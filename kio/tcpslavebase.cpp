@@ -21,6 +21,9 @@
 #include <kmessagebox.h>
 
 #include <klocale.h>
+#include <dcopclient.h>
+#include <qcstring.h>
+#include <qdatastream.h>
 
 using namespace KIO;
 
@@ -33,6 +36,7 @@ public:
   KSSLCertificateCache *cc;
   QString host;
   QString ip;
+  DCOPClient *dcc;
 };
 
 
@@ -61,12 +65,14 @@ void TCPSlaveBase::doConstructorStuff()
         d->ip = "";
         d->cc = NULL;
         d->usingTLS = false;
+	d->dcc = NULL;
 }
 
 TCPSlaveBase::~TCPSlaveBase()
 {
 	CleanSSL();
         if (d->usingTLS) delete d->kssl;
+        if (d->dcc) delete d->dcc;
         delete d;
 }
 
@@ -367,8 +373,20 @@ bool _IPmatchesCN;
                 }
 
                 if (result == KMessageBox::Yes) {
-                   sendMetaData();
-                   messageBox( SSLMessageBox, theurl );
+                   //sendMetaData();
+                   //messageBox( SSLMessageBox, theurl );
+                   if (!d->dcc) {
+                      d->dcc = new DCOPClient;
+                      d->dcc->attach();
+                   }
+                   QByteArray data, ignore;
+                   QCString ignoretype;
+                   QDataStream arg(data, IO_WriteOnly);
+                   arg << theurl << mOutgoingMetaData;
+                   d->dcc->call("kio_uiserver", 
+                                "UIServer", 
+                                "showSSLInfoDialog(QString,KIO::MetaData)",
+                                data, ignoretype, ignore);
                 } 
              } while (result == KMessageBox::Yes);
 

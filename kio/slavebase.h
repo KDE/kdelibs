@@ -784,6 +784,9 @@ protected:
 
     Connection * m_pConnection;
 
+    MetaData mOutgoingMetaData;
+    MetaData mIncomingMetaData;
+
 private:
     bool storeAuthInfo( const QCString&, const QCString&, const AuthInfo& );
 
@@ -793,8 +796,6 @@ private:
     Connection *appconn;
     QString mPoolSocket;
     QString mAppSocket;
-    MetaData mOutgoingMetaData;
-    MetaData mIncomingMetaData;
     bool mConnectedToApp;
     SlaveBasePrivate *d;
 };

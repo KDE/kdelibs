@@ -828,12 +828,34 @@ int UIServer::messageBox( int progressId, int type, const QString &text, const Q
             kdDebug(7024) << "Showing SSL Info dialog" << endl;
             kid->exec();
             kdDebug(7024) << "SSL Info dialog closed" << endl;
+            // This doesn't have to get deleted.  It deletes on it's own.
             return 1; // whatever
         }
         default:
             kdWarning() << "UIServer::messageBox unknown type " << type << endl;
             return 0;
     }
+}
+
+void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta)
+{
+   KSSLInfoDlg *kid = new KSSLInfoDlg(meta["ssl_in_use"].upper()=="TRUE", 0L /*parent?*/, 0L, true);
+   kid->setup( meta["ssl_peer_cert_subject"],
+               meta["ssl_peer_cert_issuer"],
+               meta["ssl_peer_ip"],
+               url, // the URL
+               meta["ssl_cipher"],
+               meta["ssl_cipher_desc"],
+               meta["ssl_cipher_version"],
+               meta["ssl_cipher_used_bits"].toInt(),
+               meta["ssl_cipher_bits"].toInt(),
+               KSSLCertificate::KSSLValidation(meta["ssl_cert_state"].toInt()),
+               meta["ssl_good_from"],
+               meta["ssl_good_until"] );
+   kdDebug(7024) << "Showing SSL Info dialog" << endl;
+   kid->exec();
+   kdDebug(7024) << "SSL Info dialog closed" << endl;
+   // Don't delete kid!!
 }
 
 QByteArray UIServer::open_RenameDlg( int id,
