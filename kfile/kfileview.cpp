@@ -399,22 +399,22 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
             // sort = static_cast<QDir::SortSpec>(KFileView::defaultSortSpec & QDir::SortByMask);
 
 	    switch (sort) {
-	    case QDir::Unsorted:
-		bigger = true;  // nothing
-		break;
-	    case QDir::Size:
-		bigger = (fi1->size() > fi2->size());
-		break;
-	    case QDir::Time:
-		bigger = (fi1->time(KIO::UDS_MODIFICATION_TIME) >
-			  fi2->time(KIO::UDS_MODIFICATION_TIME));
-		break;
 	    case QDir::Name:
 	    default:
 		if ( (mySorting & QDir::IgnoreCase) == QDir::IgnoreCase )
 		    bigger = (fi1->name( true ) > fi2->name( true ));
 		else
 		    bigger = (fi1->name() > fi2->name());
+		break;
+	    case QDir::Time:
+		bigger = (fi1->time(KIO::UDS_MODIFICATION_TIME) >
+			  fi2->time(KIO::UDS_MODIFICATION_TIME));
+		break;
+	    case QDir::Size:
+		bigger = (fi1->size() > fi2->size());
+		break;
+	    case QDir::Unsorted:
+		bigger = true;  // nothing
 		break;
 	    }
 	}
