@@ -16,12 +16,6 @@ class QFont;
 /**
 * Accessors to KDE global objects.
 * 
-* This class is never instantiated. Instead, it is initialized by
-* @ref KApplication.
-*
-* WARNING: Do NOT access these functions without first constructing a 
-* @ref KApplication object.
-* 
 * @author Sirtaj Singh Kang (taj@kde.org)
 * @version $Id$
 */
@@ -60,7 +54,6 @@ public:
 	static  QFont           *_generalFont;
 	static  QFont           *_fixedFont;
 
-
 protected:
 	friend class KApplication;
 
@@ -70,9 +63,6 @@ protected:
 	 */
 	static void freeAll();
 
-	static bool newAppConfig();
-	static bool addedConfig;
-	
 };
 
 #endif // SSK_KGLOBAL_H

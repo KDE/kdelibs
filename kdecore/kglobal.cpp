@@ -18,8 +18,6 @@
 
 #include <qfont.h>
 
-bool KGlobal::addedConfig = false;
-
 KApplication *KGlobal::kApp()
 {
 //	assert( kapp != 0 ); 	// This would be good, but not practical
@@ -33,13 +31,9 @@ KStandardDirs *KGlobal::dirs()
 		_dirs = new KStandardDirs( );
 		_dirs->addKDEDefaults();
 		if( kapp )
-		    _dirs->addResourceType("appdata", KStandardDirs::kde_data_relative()
+		    _dirs->addResourceType("appdata", KStandardDirs::kde_default("data")
 					   + kapp->name() + "/");
-		if (!addedConfig && _config) {
-		    if (_dirs->addCustomized(_config))
-			_config->reparseConfiguration();
-		    addedConfig = true;
-		}
+
 	}
 
 	return _dirs;
@@ -52,12 +46,6 @@ KConfig	*KGlobal::config()
 		_config = new KConfig(QString(kapp->name()) + "rc");
 	    else
 		_config = new KConfig();
-
-	    if (!addedConfig && _dirs) {
-		if (_dirs->addCustomized(_config))
-		    _config->reparseConfiguration();
-		addedConfig = true;
-	    }
 	}
 
 	return _config;

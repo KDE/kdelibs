@@ -255,9 +255,7 @@ public:
 	 * @param dir absolute path of the directory to be made
 	 * @param mode directory permissions
 	 */
-	static bool makeDir(const QString& dir, int mode = 0777);
-
-	static QString kde_data_relative();
+	static bool makeDir(const QString& dir, int mode = 0755);
 
 	static QString kde_default(const QString& type);
 
@@ -276,7 +274,8 @@ public:
 	// Disallow assignment and copy-construction
 	KStandardDirs( const KStandardDirs& );
 	KStandardDirs& operator= ( const KStandardDirs& );
-     
+
+	bool addedCustoms;
 };
 
 /**

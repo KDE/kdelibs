@@ -20,6 +20,13 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.57  1999/06/21 06:22:48  tibirna
+   CT: let's see some icons.
+
+   (Yepppeee!! Finaly doing real coding and testing. This feels waaaay cool :-)
+
+   And, BTW, I officially switched to KDE-2.0 this night :-)
+
    Revision 1.56  1999/06/20 12:34:55  kulow
    some fix for loadApplicationIcon.
 
@@ -206,16 +213,16 @@ void KIconLoader::initPath()
     KGlobal::dirs()->addResourceType("icon", "/share/icons/large");
   
   KGlobal::dirs()->addResourceType("toolbar", 
-                                   KStandardDirs::kde_data_relative() + 
+                                   KStandardDirs::kde_default("data") + 
                                    appname + "/toolbar/");
   
   if ( large )
     KGlobal::dirs()->addResourceType("toolbar", 
-                                     KStandardDirs::kde_data_relative() +
+                                     KStandardDirs::kde_default("data") +
                                      appname + "/pics/large");
   
   KGlobal::dirs()->addResourceType("toolbar", 
-                                   KStandardDirs::kde_data_relative() +
+                                   KStandardDirs::kde_default("data") +
                                    appname + "/pics/");
 }
 

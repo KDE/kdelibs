@@ -34,7 +34,7 @@ static const char* types[] = {"html", "icon", "mini", "apps", "sound",
 static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
 
-KStandardDirs::KStandardDirs( const QString& )
+KStandardDirs::KStandardDirs( const QString& ) : addedCustoms(false)
 {
     dircache.setAutoDelete(true);
     relatives.setAutoDelete(true);
@@ -315,11 +315,6 @@ static int tokenize( QStringList& tokens, const QString& str,
 	return tokens.count();
 }
 
-QString KStandardDirs::kde_data_relative()
-{
-    return kde_default("data");
-}
-
 QString KStandardDirs::kde_default(const QString& type) {
     if (type == "data")
 	return "share/apps/";
@@ -375,7 +370,7 @@ QString KStandardDirs::getSaveLocation(const QString& type,
 	    debug("save location %s doesn't exist", fullPath.ascii());
 	    return local;
 	}
-	if(!makeDir(fullPath, 0600)) {
+	if(!makeDir(fullPath, 0700)) {
 	    debug("failed to create %s", fullPath.ascii());
 	    return local;
 	}
@@ -412,8 +407,10 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
         if (stat(base.ascii(), &st) != 0)
         {
            // Directory does not exist....
-           if ( mkdir(base.ascii(), (mode_t) mode) != 0)
-             return false; // Couldn't create it :-(
+	  if ( mkdir(base.ascii(), (mode_t) mode) != 0) {
+	    perror("trying to create local folder");
+	    return false; // Couldn't create it :-(
+	  }
         }
         i = pos + 1;
     }
@@ -450,6 +447,9 @@ void KStandardDirs::addKDEDefaults()
 
 bool KStandardDirs::addCustomized(KConfig *config)
 {
+    if (!addedCustoms)
+        return false;
+
     uint configdirs = getResourceDirs("config").count();
     KConfigGroupSaver(config, "Directories");
     QStringList list;
@@ -466,6 +466,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
 	    debug("adding custom dir %s", it2.data().ascii());
 	}
     }
+    addedCustoms = true;
     return (getResourceDirs("config").count() != configdirs);
 }
 

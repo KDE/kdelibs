@@ -65,6 +65,16 @@ KConfig::KConfig( const QString& fileName,
   isCached = true;
   parseConfigFiles();
 
+  // we let KStandardDirs add custom user config files. It will
+  // do this only once. So only the first call ever to this constructor
+  // will anything else than return here
+  // We have to do it here as configuration files may appear after
+  // customized directories have been added. Since this makes only
+  // sense for config directories, addCustomized returns true only
+  // if new config directories appeared
+  if (KGlobal::dirs()->addCustomized(this))
+    reparseConfiguration();
+
   // cache flushing setup
   //  cacheTimer = new QTimer(this, "cacheTimer");
   //  connect(cacheTimer, SIGNAL(timeout()), SLOT(flushCache()));
@@ -76,8 +86,7 @@ KConfig::~KConfig()
 {
   sync();
 
-  if (backEnd)
-    delete backEnd;
+  delete backEnd;
 }
 
 void KConfig::rollback(bool bDeep)
