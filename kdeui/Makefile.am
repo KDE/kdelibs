@@ -20,7 +20,7 @@
 
 
 INCLUDES= $(all_includes)
-EXTRA_DIST = $(data_DATA) CHANGES.kdatepicker USERS.kdatepicker
+EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker
 
 #uncomment that if the menus look strange
 AM_CPPFLAGS = -DQT2_WORKAROUND
