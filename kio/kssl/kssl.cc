@@ -465,6 +465,7 @@ int KSSL::peek(void *buf, int len) {
 #ifdef KSSL_HAVE_SSL
 	if (!m_bInit)
 		return -1;
+	// FIXME: enhance to work the way read() does below, handling errors
 return d->kossl->SSL_peek(d->m_ssl, buf, len);
 #else
 return -1;
@@ -475,15 +476,22 @@ return -1;
 int KSSL::read(void *buf, int len) {
 #ifdef KSSL_HAVE_SSL
 	int rc = 0;
+	int maxIters = 10;
 
 	if (!m_bInit)
 		return -1;
 
+read_again:
 	rc = d->kossl->SSL_read(d->m_ssl, (char *)buf, len);
 	if (rc <= 0) {
 		int err = d->kossl->SSL_get_error(d->m_ssl, rc);
 
 		if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
+			kdDebug(7029) << "SSL read() returning 0: " << err << endl;
+			if (maxIters-- > 0) {
+				::usleep(20000); // 20ms sleep
+				goto read_again;
+			}
 			return 0;
 		}
 
@@ -508,12 +516,14 @@ int KSSL::write(const void *buf, int len) {
 	if (!m_bInit)
 		return -1;
 
-int rc = d->kossl->SSL_write(d->m_ssl, (const char *)buf, len);
+write_again:
+	int rc = d->kossl->SSL_write(d->m_ssl, (const char *)buf, len);
 	if (rc <= 0) {      // OpenSSL returns 0 on error too
 		int err = d->kossl->SSL_get_error(d->m_ssl, rc);
 
 		if (err == SSL_ERROR_WANT_WRITE) {
-			return 0;
+			::usleep(20000); // 20ms sleep
+			goto write_again;
 		}
 
 		kdDebug(7029) << "SSL WRITE ERROR: " << err << endl;
