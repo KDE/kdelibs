@@ -29,13 +29,13 @@ class QVBox;
  *
  * The most basic use of KPassivePopup displays a popup containing a piece of text:
  * \code
- *    KPassivePopup::message( &quot;This is the message&quot;, this );
+ *    KPassivePopup::message( "This is the message", this );
  * \endcode
  * We can create popups with titles and icons too, as this example shows:
  * \code
  *    QPixmap px;
- *    px.load( &quot;hi32-app-logtracker.png&quot; );
- *    KPassivePopup::message( &quot;Some title&quot;, &quot;This is the main text&quot;, px, this );
+ *    px.load( "hi32-app-logtracker.png" );
+ *    KPassivePopup::message( "Some title", "This is the main text", px, this );
  * \endcode
  * For more control over the popup, you can use the setView(QWidget *) method
  * to create a custom popup.
@@ -43,11 +43,11 @@ class QVBox;
  *    KPassivePopup *pop = new KPassivePopup( parent );
  *
  *    QVBox *vb = new QVBox( pop );
- *    (void) new QLabel( &quot;&lt;b>Isn't this great?&lt;/b>&quot;, vb );
+ *    (void) new QLabel( vb, "<b>Isn't this great?</b>" );
  *
  *    QHBox *box = new QHBox( vb );
- *    (void) new QPushButton( &quot;Yes&quot;, box );
- *    (void) new QPushButton( &quot;No&quot;, box );
+ *    (void) new QPushButton( box, "Yes" );
+ *    (void) new QPushButton( box, "No" );
  *
  *    pop->setView( vb );
  *    pop->show();
@@ -224,11 +224,11 @@ protected:
     virtual void mouseReleaseEvent( QMouseEvent *e );
 
     /**
-     * If no relative window (e.g. taskbar button, system tray window) is
+     * If no relative window (eg taskbar button, system tray window) is
      * available, use this rectangle (pass it to moveNear()).
      * Basically KWinModule::workArea() with width and height set to 0
      * so that moveNear uses the upper-left position.
-     * @return The QRect to be passed to moveNear() ifno other is
+     * @return The QRect to be passed to moveNear() if no other is
      * available.
      */
     QRect defaultArea() const;
