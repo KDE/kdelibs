@@ -78,5 +78,10 @@ cvs-local:
 cvs-dist-local:
 	cd libltdl && automake --gnits --add-missing -i &&  autoconf
 
+# Rule for generating HTML documentation [you need kdoc installed]
+# Don't forget to run qt2kdoc first (qt2kdoc $QTDIR/doc/html)
+# The kdelibs docu will end up in ./srcdoc/
 kdedoc:
-	makekdedoc -p'--skip-internal'
+	cd $(top_srcdir) && \
+	makekdedoc -p'--skip-internal' --outputdir=$(top_builddir)/srcdoc
+
