@@ -4530,7 +4530,7 @@ khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
     return 0L;
 }
 
-#define DEBUG_FINDFRAME
+//#define DEBUG_FINDFRAME
 
 bool KHTMLPart::checkFrameAccess(KHTMLPart *callingHtmlPart)
 {
