@@ -419,6 +419,15 @@ int TCPSlaveBase::startTLS()
         return -1;
     }
 
+    if ( !d->realHost.isEmpty() )
+    {
+      kdDebug(7029) << "Setting real hostname: " << d->realHost << endl;
+      d->kssl->setPeerHost(d->realHost);
+    } else {
+      kdDebug(7029) << "Setting real hostname: " << d->host << endl;
+      d->kssl->setPeerHost(d->host);
+    }
+
     certificatePrompt();
 
     int rc = d->kssl->connect(m_iSock);
@@ -509,7 +518,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
   }
 
   QString ourHost;
-  if (d->realHost.length() > 0)
+  if (!d->realHost.isEmpty())
      ourHost = d->realHost;
   else ourHost = d->host;
 
@@ -695,7 +704,7 @@ int TCPSlaveBase::verifyCertificate()
     bool doAddHost = false;
     QString ourHost;
 
-    if (d->realHost.length() > 0)
+    if (!d->realHost.isEmpty())
         ourHost = d->realHost;
     else ourHost = d->host;
 
@@ -1148,15 +1157,18 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
     kdDebug(7029) << "TCPSlaveBase::doSSLHandShake: " << endl;
     QString msgHost = d->host;
 
-    if ( !d->realHost.isNull() )
+    d->kssl->reInitialize();
+
+    certificatePrompt();
+
+    if ( !d->realHost.isEmpty() )
     {
-      kdDebug(7029) << "Setting real hostname: " << d->realHost << endl;
-      d->kssl->setPeerHost(d->realHost);
       msgHost = d->realHost;
     }
 
-    d->kssl->reInitialize();
-    certificatePrompt();
+    kdDebug(7029) << "Setting real hostname: " << msgHost << endl;
+    d->kssl->setPeerHost(msgHost);
+
     d->status = d->kssl->connect(m_iSock);
     if (d->status < 0) {
         CloseDescriptor();
@@ -1164,7 +1176,9 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
             error( ERR_COULD_NOT_CONNECT, msgHost);
         return false;
     }
+
     setMetaData("ssl_in_use", "TRUE");
+
     int rc = verifyCertificate();
     if ( rc != 1 ) {
         d->status = -1;
@@ -1173,6 +1187,7 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
             error( ERR_COULD_NOT_CONNECT, msgHost);
         return false;
     }
+
     d->needSSLHandShake = false;
 
     d->savedMetaData = mOutgoingMetaData;

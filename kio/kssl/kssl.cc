@@ -166,6 +166,8 @@ bool KSSL::initialize() {
   //        use as the default anyways, so I'm not changing it yet.
   d->lastInitTLS = false;
 
+  m_pi.reset();
+
   if (m_cfg->sslv2() && m_cfg->sslv3())
     d->m_meth = d->kossl->SSLv23_client_method();
   else if (m_cfg->sslv3())

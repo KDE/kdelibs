@@ -136,3 +136,10 @@ void KSSLPeerInfo::extractDomains(const QString &fqdn, QStringList &domains)
     // list for fqdn == CN checks
     domains.append(fqdn);
 }
+
+
+void KSSLPeerInfo::reset() {
+   d->peerHost = QString::null;
+}
+
+

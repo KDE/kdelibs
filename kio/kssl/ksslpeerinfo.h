@@ -39,6 +39,8 @@ public:
   bool certMatchesAddress();
 
   void setPeerHost(QString host = QString::null);
+
+  void reset();
   
  
 protected:
