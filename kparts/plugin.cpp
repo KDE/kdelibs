@@ -149,14 +149,14 @@ Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
         return 0;
     }
     QObject* obj = f->create( parent, libname, "KParts::Plugin" );
-    if ( !obj || !obj->inherits("KParts::Plugin" ) )
+    if ( obj && !obj->inherits("KParts::Plugin" ) )
     {
         kdError(1000) << "The library does not feature an object of class Plugin" << endl;
         delete obj;
         return 0;
     }
 
-    return (Plugin*)obj;
+    return dynamic_cast<Plugin *>( obj );
 }
 
 QList<KParts::Plugin> Plugin::pluginObjects( QObject *parent )
