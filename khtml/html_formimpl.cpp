@@ -879,7 +879,7 @@ void HTMLInputElementImpl::calcMinMaxWidth()
 
     if(w)
 	minWidth = w->width();
-    else
+    else if (_type != HIDDEN)
 	printf("InputElement: no Widget!!!\n");
     maxWidth = minWidth;
 
@@ -1086,6 +1086,11 @@ void HTMLSelectElementImpl::attach(KHTMLWidget *_view)
 void HTMLSelectElementImpl::layout( bool )
 {
     if(!w) return;
+
+    if(_size > 1 || _multiple)
+      static_cast<QListBox *>(w)->clear();
+    else
+      static_cast<QComboBox *>(w)->clear();
 
     QStack<NodeImpl> nodeStack;
     NodeImpl *current = _first;

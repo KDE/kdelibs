@@ -420,6 +420,16 @@ void KHTMLParser::insertNode(NodeImpl *n)
 		return;
 	    }
 	}
+	case ID_TEXT:
+	    // ignore text inside the following elements.
+	    switch(current->id())
+	    {
+	    case ID_SELECT:
+		return;
+	    default:
+		break;
+	    }
+	    break;
 	default:
 	    break;
 	}
