@@ -19,6 +19,8 @@
 #include "kstdguiitem.h"
 
 #include <kiconloader.h>
+#include <kconfig.h>
+#include <kglobal.h>
 #include <kguiitem.h>
 #include <klocale.h>
 
@@ -36,11 +38,11 @@ KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
   case DontSave : return dontSave();
   case SaveAs   : return saveAs();
   case Apply    : return apply();
-  default       : return KGuiItem(); 
+  default       : return KGuiItem();
   };
 }
 
-QString KStdGuiItem::stdItem( StdItem ui_enum ) 
+QString KStdGuiItem::stdItem( StdItem ui_enum )
 {
   switch (ui_enum ) {
   case Ok       : return QString::fromLatin1("ok");
@@ -52,56 +54,65 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
   case DontSave : return QString::fromLatin1("dontSave");
   case SaveAs   : return QString::fromLatin1("saveAs");
   case Apply    : return QString::fromLatin1("apply");
-  default       : return QString::null; 
+  default       : return QString::null;
   };
 }
-
 KGuiItem KStdGuiItem::ok()
 {
-  return KGuiItem(i18n("&OK"), QIconSet(), "ok", i18n("Accept settings"),
+  return KGuiItem(i18n("&OK"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("ok" ) : QIconSet()  , "ok",
+          i18n("Accept settings"),
           i18n(""  "If you press the <b>OK<b> button, all changes\n"
-                    "you made will be used to proceed ") );
+                    "you made will be used to proceed ") ); 
 }
+
 
 KGuiItem KStdGuiItem::cancel()
 {
-  return KGuiItem(i18n("&Cancel"), QIconSet(), "cancel", i18n("Cancel operation") );
+  return KGuiItem(i18n("&Cancel"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("cancel" ) : QIconSet(),
+                  "cancel", i18n("Cancel operation") );
 }
 
 KGuiItem KStdGuiItem::yes()
 {
-  return KGuiItem(i18n("&Yes"), QIconSet(), "yes" );
+  return KGuiItem(i18n("&Yes"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("yes" ) : QIconSet(),
+                   "yes" );
 }
 
 KGuiItem KStdGuiItem::no()
 {
-  return KGuiItem(i18n("&No"), QIconSet(), "no"  );
+  return KGuiItem(i18n("&No"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("no" ) : QIconSet(),
+                   "no"  );
 }
 
 KGuiItem KStdGuiItem::discard()
 {
-  return KGuiItem(i18n("&Discard"), QIconSet(), "discard", i18n("Discard changes"),
-          i18n("Pressing this button will discard all recent changes") );
+  return KGuiItem(i18n("&Discard"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("discard" ) : QIconSet(),
+                  "discard", i18n("Discard changes"),
+                  i18n("Pressing this button will discard all recent changes") );
 }
 
 KGuiItem KStdGuiItem::save()
 {
-  return KGuiItem(i18n("&Save"), QIconSet(), "save", i18n("Save data") );
+  return KGuiItem(i18n("&Save"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("filesave" ) : QIconSet(),
+                  "save", i18n("Save data") );
 }
 
 KGuiItem KStdGuiItem::dontSave()
 {
-  return KGuiItem(i18n("&Don't save"), QIconSet(), "dontSave", i18n("Don't save data") );
+  return KGuiItem(i18n("&Don't save"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("filedontsave" ) : QIconSet(),
+                  "dontSave", i18n("Don't save data") );
 }
 
 KGuiItem KStdGuiItem::saveAs()
 {
-  return KGuiItem(i18n("Save &As..."), QIconSet(), "saveAs" );
+  return KGuiItem(i18n("Save &As..."), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("saveas" ) : QIconSet(),
+                  "saveAs" );
 }
 
 KGuiItem KStdGuiItem::apply()
 {
-  return KGuiItem(i18n("&Apply"), QIconSet(), "apply", i18n("Apply settings"),
+  return KGuiItem(i18n("&Apply"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("apply" ) : QIconSet(),
+          "apply", i18n("Apply settings"),
           i18n(""
                "When clicking <b>Apply<b>, the settings will be\n"
                "handed over to the program, but the dialog\n"

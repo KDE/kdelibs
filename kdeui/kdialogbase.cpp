@@ -34,6 +34,8 @@
 
 #include <kapplication.h>
 #include <klocale.h>
+#include <kconfig.h>
+#include <kiconloader.h>
 #include <kglobal.h>
 #include <kseparator.h>
 #include <kurllabel.h>
@@ -514,6 +516,8 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
 				 const KGuiItem &user1, const KGuiItem &user2,
 				 const KGuiItem &user3 )
 {
+  bool showIcons = KConfigGroup( KGlobal::config(), "KDE" ).readBoolEntry("showIcons", false );  
+  qWarning("%d", showIcons );
   if( buttonMask == 0 )
   {
     d->mButton.box = 0;
@@ -535,11 +539,17 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   if( d->mButton.mask & Help )
   {
     QPushButton *pb = d->mButton.append( Help, i18n("&Help") );
+    if( showIcons )
+      pb->setIconSet( SmallIconSet("help") );
+
     connect( pb, SIGNAL(clicked()), this, SLOT(slotHelp()) );
   }
   if( d->mButton.mask & Default )
   {
     QPushButton *pb = d->mButton.append( Default, i18n("&Default") );
+    if( showIcons )
+      pb->setIconSet( SmallIconSet("defaults") );
+
     connect( pb, SIGNAL(clicked()), this, SLOT(slotDefault()) );
   }
   if( d->mButton.mask & Details )
@@ -583,27 +593,37 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   if( d->mButton.mask & Ok )
   {
     QPushButton *pb = d->mButton.append( Ok, i18n("&OK") );
+    if( showIcons )
+      pb->setIconSet( SmallIconSet("ok") );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotOk()) );
   }
   if( d->mButton.mask & Apply )
   {
     QPushButton *pb = d->mButton.append( Apply, i18n("&Apply") );
+    if( showIcons )
+      pb->setIconSet( SmallIconSet("apply") );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotApply()) );
     connect( pb, SIGNAL(clicked()), this, SLOT(applyPressed()) );
   }
   if( d->mButton.mask & Try )
   {
     QPushButton *pb = d->mButton.append( Try, i18n("&Try") );
+    if( showIcons )
+      pb->setIconSet( SmallIconSet("try") );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotTry()) );
   }
   if( d->mButton.mask & Cancel )
   {
     QPushButton *pb = d->mButton.append( Cancel, i18n("&Cancel") );
+    if( showIcons )
+      pb->setIconSet( SmallIconSet("cancel") );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotCancel()) );
   }
   if( d->mButton.mask & Close )
   {
     QPushButton *pb = d->mButton.append( Close, i18n("&Close") );
+    if( showIcons )
+      pb->setIconSet( SmallIconSet("close") );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotClose()) );
   }
 
