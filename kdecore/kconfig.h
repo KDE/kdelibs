@@ -237,7 +237,7 @@ inline bool KConfig::hasGroup(const QString &_pGroup) const
 {
   //  cacheCheck();
 
-  KEntryKey groupKey = { _pGroup, QString() };
+  KEntryKey groupKey = { _pGroup, "" };
   return aEntryMap.contains(groupKey);
 }
 
