@@ -381,7 +381,7 @@ int rc = -1;
 		return rc;
 	}
 
-	DCOPReply r = _dcopRef->call("writeEntry", _handle, _folder, key, value, long(entryType));
+	DCOPReply r = _dcopRef->call("writeEntry", _handle, _folder, key, value, int(entryType));
 	if (r.isValid()) {
 		r.get(rc);
 	}
@@ -474,7 +474,7 @@ return rc;
 
 
 Wallet::EntryType Wallet::entryType(const QString& key) {
-long rc = 0;
+int rc = 0;
 
 	if (_handle == -1) {
 		return Wallet::Unknown;
@@ -482,7 +482,7 @@ long rc = 0;
 
 	DCOPReply r = _dcopRef->call("entryType", _handle, _folder, key);
 	if (r.isValid()) {
-		r.get(rc, "long int");
+		r.get(rc);
 	}
 
 return static_cast<EntryType>(rc);
