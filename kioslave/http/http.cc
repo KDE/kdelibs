@@ -2659,7 +2659,7 @@ bool HTTPProtocol::readHeader()
 
           char* bufStart = dispositionBuf;
 
-          while ( *dispositionBuf != ';' )
+          while ( *dispositionBuf && *dispositionBuf != ';' )
             dispositionBuf++;
 
           if ( dispositionBuf > bufStart )
@@ -2669,7 +2669,7 @@ bool HTTPProtocol::readHeader()
               bufStart++;
 
             // Skip any trailing quotes as well as white spaces...
-            while ( *dispositionBuf == ' ' || *dispositionBuf == '"')
+            while ( *(dispositionBuf-1) == ' ' || *(dispositionBuf-1) == '"')
               dispositionBuf--;
 
             if ( dispositionBuf > bufStart )
@@ -2682,7 +2682,7 @@ bool HTTPProtocol::readHeader()
         {
           char *bufStart = dispositionBuf;
 
-          while ( *dispositionBuf != ';' )
+          while ( *dispositionBuf && *dispositionBuf != ';' )
             dispositionBuf++;
 
           if ( dispositionBuf > bufStart )
@@ -2698,10 +2698,12 @@ bool HTTPProtocol::readHeader()
       if ( !disposition.isEmpty() )
       {
         int pos = disposition.findRev( '/' );
+        
         if( pos > -1 )
           disposition = disposition.mid(pos+1);
-        kdDebug(7113) << "(" << m_pid << ") (" << m_pid << ") Content-Disposition: "
-                      << disposition << endl;
+        
+        kdDebug(7113) << "(" << m_pid << ") Content-Disposition: "
+                      << disposition<< endl;
       }
     }
     else if (strncasecmp(buf, "Proxy-Connection:", 17) == 0) {
@@ -3267,6 +3269,8 @@ bool HTTPProtocol::sendBody()
 
 void HTTPProtocol::httpClose()
 {
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose" << endl;
+
   if (m_fcache)
   {
      fclose(m_fcache);
@@ -3479,15 +3483,16 @@ void HTTPProtocol::decodeGzip()
   // eek. This is no fun for progress indicators.
   QByteArray ar;
 
-  char tmp_buf[1024], *filename=strdup("/tmp/kio_http.XXXXXX");
-  signed long len;
   int fd;
+  signed long len;
+  char tmp_buf[1024];
 
   kdDebug(7103) << "decode gzip" << endl;
 
   // Siince I can't figure out how to do the mem to mem
   // gunzipping, this should suffice.  It just writes out
   // the gzip'd data to a file.
+  char *filename = strdup("/tmp/kio_http.XXXXXX");
   fd=mkstemp(filename);
   ::write(fd, m_bufEncodedData.data(), m_bufEncodedData.size());
   lseek(fd, 0, SEEK_SET);
@@ -3876,9 +3881,10 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
       else if ( enc == "deflate" )
         decodeDeflate();
     }
-
-    uint bytesReceived = m_bufEncodedData.size();
+    
     uint bytesToSend = MAX_IPC_SIZE;
+    uint bytesReceived = m_bufEncodedData.size();
+
     if ( !dataInternal )
       totalSize( bytesReceived );
 
