@@ -102,6 +102,7 @@ int main(int argc, char *argv[])
 
     KCrash::setCrashHandler( crashHandler );
     KGlobal::locale()->insertCatalogue("klock");
+    KGlobal::locale()->insertCatalogue("kscreensaver");
 
     DemoWindow *demoWidget = 0;
     Window saveWin = 0;
