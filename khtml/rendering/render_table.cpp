@@ -201,7 +201,8 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
             o = beforeChild;
         else {
 	    RenderObject *lastBox = beforeChild;
-	    while ( lastBox && lastBox->parent()->isAnonymousBox() && !lastBox->isTableSection() )
+	    while ( lastBox && lastBox->parent()->isAnonymousBox() && 
+		    !lastBox->isTableSection() && lastBox->style()->display() != TABLE_CAPTION )
 		lastBox = lastBox->parent();
 	    if ( lastBox && lastBox->isAnonymousBox() ) {
 		lastBox->addChild( child, beforeChild );
