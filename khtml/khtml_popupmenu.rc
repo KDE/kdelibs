@@ -1,5 +1,5 @@
-<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu">
-<Menu name="popupmenu" >
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="1">
+<Menu name="popupmenu">
  <Action name="reloadframe" group="reload" />
  <Action name="savelinkas" />
  <Action name="saveimageas" />
