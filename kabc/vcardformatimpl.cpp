@@ -24,7 +24,6 @@
 #include <kdebug.h>
 #include <kmdcodec.h>
 #include <kstandarddirs.h>
-#include <ktempfile.h>
 
 #include <VCard.h>
 
@@ -839,20 +838,11 @@ void VCardFormatImpl::addPictureValue( VCARD::VCard *vcard, VCARD::EntityType ty
   if ( pic.isIntern() ) {
     QImage img = pic.data();
     if ( intern ) { // only for vCard export we really write the data inline
-      /*
-       * Since QImage can't export it's data as QByteArray we have to save it
-       * to file first and reread it again.
-       */
-      KTempFile tmpFile;
-      img.save( tmpFile.name(), pic.type().utf8() );
-      QFile file( tmpFile.name() );
-      if ( file.open( IO_ReadOnly ) ) {
-        QByteArray data = file.readAll();
-        cl.setValue( new TextValue( KCodecs::base64Encode( data ) ) );
-        file.close();
-      }
+      QByteArray data;
+      QDataStream stream( data, IO_WriteOnly );
 
-      tmpFile.unlink();
+      stream << img;
+      cl.setValue( new TextValue( KCodecs::base64Encode( data ) ) );
     } else { // save picture in cache
       QString dir;
       if ( type == EntityPhoto )
