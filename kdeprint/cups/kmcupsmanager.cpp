@@ -656,6 +656,36 @@ bool KMCupsManager::configureServer(QWidget *parent)
 	return result;
 }
 
+QStringList KMCupsManager::detectLocalPrinters()
+{
+	QStringList	list;
+	IppRequest	req;
+	req.setOperation(CUPS_GET_DEVICES);
+	if (req.doRequest("/"))
+	{
+		QString	desc, uri, printer;
+		ipp_attribute_t	*attr = req.first();
+		while (attr)
+		{
+			QString	attrname(attr->name);
+			if (attrname == "device-info") desc = attr->values[0].string.text;
+			else if (attrname == "device-make-and-model") printer = attr->values[0].string.text;
+			else if (attrname == "device-uri") uri = attr->values[0].string.text;
+			if (attrname.isEmpty() || attr == req.last())
+			{
+				if (!uri.isEmpty())
+				{
+					if (printer == "Unknown") printer = QString::null;
+					list << uri << desc << printer;
+				}
+				uri = desc = printer = QString::null;
+			}
+			attr = attr->next;
+		}
+	}
+	return list;
+}
+
 //*****************************************************************************************************
 
 void extractMaticData(QString& buf, const QString& filename)

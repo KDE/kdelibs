@@ -56,6 +56,7 @@ public:
 
 	bool restartServer();
 	bool configureServer(QWidget *parent = 0);
+	QStringList detectLocalPrinters();
 
 protected:
 	// the real printer listing job is done here
