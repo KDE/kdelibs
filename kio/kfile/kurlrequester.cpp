@@ -338,12 +338,11 @@ QString KURLRequester::filter( ) const
 KFileDialog * KURLRequester::fileDialog() const
 {
     if ( !myFileDialog ) {
-	QWidget *p = parentWidget();
-	myFileDialog = new KFileDialog( QString::null, QString::null, p,
-					"file dialog", true );
+        QWidget *p = parentWidget();
+        myFileDialog = new KFileDialog( QString::null, d->fileDialogFilter, p,
+                                        "file dialog", true );
 
-	myFileDialog->setMode( d->fileDialogMode );
-        myFileDialog->setFilter( d->fileDialogFilter );
+        myFileDialog->setMode( d->fileDialogMode );
         myFileDialog->setCaption( caption() );
     }
 
