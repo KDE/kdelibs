@@ -1002,16 +1002,30 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
           if (pos >= 0) {
             key = s.left(pos).stripWhiteSpace().lower();
             val = s.mid(pos + 1).stripWhiteSpace().lower();
-            if (key == "left" || key == "screenx")
-              winargs.x = val.toInt();
-            else if (key == "top" || key == "screeny")
-              winargs.y = val.toInt();
-            else if (key == "height")
+	    QRect screen = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(widget));
+            if (key == "left" || key == "screenx") {
+              winargs.x = val.toInt() + screen.x();
+	      if (winargs.x < screen.x() || winargs.x > screen.right())
+		  winargs.x = screen.x(); // only safe choice until size is determined
+            } else if (key == "top" || key == "screeny") {
+              winargs.y = val.toInt() + screen.y();
+	      if (winargs.y < screen.y() || winargs.y > screen.bottom())
+		  winargs.y = screen.y(); // only safe choice until size is determined
+            } else if (key == "height") {
               winargs.height = val.toInt() + 4;
-            else if (key == "width")
+	      if (winargs.height > screen.height())  // should actually check workspace
+		  winargs.height = screen.height();
+              if (winargs.height < 100)
+		  winargs.height = 100;
+            } else if (key == "width") {
               winargs.width = val.toInt() + 4;
-            else
+	      if (winargs.width > screen.width())    // should actually check workspace
+		  winargs.width = screen.width();
+              if (winargs.width < 100)
+		  winargs.width = 100;
+            } else {
               goto boolargs;
+	    }
             continue;
           } else {
             // leaving away the value gives true

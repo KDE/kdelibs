@@ -1299,7 +1299,7 @@ int DocumentImpl::nodeAbsIndex(NodeImpl *node)
     assert(node->getDocument() == this);
 
     int absIndex = 0;
-    for (NodeImpl *n = node; n != this; n = n->traversePreviousNode())
+    for (NodeImpl *n = node; n && n != this; n = n->traversePreviousNode())
 	absIndex++;
     return absIndex;
 }
