@@ -5,58 +5,58 @@ Area codes for KDebug system
 
 101-1000 kdelibs
 
-101-110 KApplication
-111-120 KConfig
-151-200 widgets
-151-160 KTopLevelWidget
-201-300 khtmlw
-301-400 jscript
-401-500 libmediatool
-501-600 libkfm
-601-700 libkwm
-701-800 kspall
+	101-199 kdecore
+		101-110 KApplication
+		111-120	KConfig
+		125	KAccel
+		151-200 widgets
+		151-160 KTopLevelWidget
+	201-300 khtmlw
+	301-400 jscript
+	401-500 libmediatool
+	501-600 libkfm
+	601-700 libkwm
+	701-800	kspell
 
 1000-30000 applications
-1001-1100 kwm
-1101-1200 kpanel
-1201-1300 kfm
-1301-1400 kcalc
-1401-1500 kedit
-1501-1600 khexdit
-1601-1700 kdisplay
-1701-1800 kscreensavers
-1801-1900 kdehelp
-1901-2000 kfind
-2001-2100 kdm
-2101-2200 kfontmanager
-2201-2300 klogout
-2301-2400 kvt
-2401-2500 kacli
-2501-2600 karm
-2601-2700 kfax
-2701-2800 kghostview
-2801-2900 kjots
-2901-3000 knotes
-3001-3100 kpaint
-3101-3200 kpat
-3201-3300 kreversi
-3301-3400 krn
-3401-3500 kmail
-3501-3600 kscd
-3601-3700 ktetris
-3701-3800 kview
-3801-3900 ksamba
-3901-4000 ktalk
-4001-4100 kirc
-4101-4200 kciv
-4201-4250 krot
-4251-4260 khidaq
+	1001-1100 kwm
+	1101-1200 kpanel
+	1201-1300 kfm
+	1301-1400 kcalc
+	1401-1500 kedit
+	1501-1600 khexdit
+	1601-1700 kdisplay
+	1701-1800 kscreensavers
+	1801-1900 kdehelp
+	1901-2000 kfind
+	2001-2100 kdm
+	2101-2200 kfontmanager
+	2201-2300 klogout
+	2301-2400 kvt
+	2401-2500 kacli
+	2501-2600 karm
+	2601-2700 kfax
+	2701-2800 kghostview
+	2801-2900 kjots
+	2901-3000 knotes
+	3001-3100 kpaint
+	3101-3200 kpat
+	3201-3300 kreversi
+	3301-3400 krn
+	3401-3500 kmail
+	3501-3600 kscd
+	3601-3700 ktetris
+	3701-3800 kview
+	3801-3900 ksamba
+	3901-4000 ktalk
+	4001-4100 kirc
+	4101-4200 kciv
+	4201-4250 krot
+	4251-4260 khidaq
 
 30001-65534 koffice
-
-30001-31000 kxcl
-31001-32000 kword
-32001-33000 kpresenter
-33001-34000 klyx
-34001-35000 kchart
-
+	30001-31000 kxcl
+	31001-32000 kword
+	32001-33000 kpresenter
+	33001-34000 klyx
+	34001-35000 kchart
