@@ -53,6 +53,8 @@ void KPipeProcess::close()
 	if (m_pipe != NULL)
 	{
 		QFile::close();
+		/* pipe must be close to be sure the process is terminated */
+		pclose( m_pipe );
 		m_pipe = NULL;
 	}
 }
