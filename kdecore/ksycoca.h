@@ -23,6 +23,7 @@
 #include <qobject.h>
 #include <qstringlist.h>
 #include "ksycocatype.h"
+#include <kdelibs.h>
 
 class QDataStream;
 class KSycocaPrivate;
