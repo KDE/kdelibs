@@ -92,7 +92,13 @@ public:
      */
     bool saveAs( const QString & filename, bool toolbarCache = true ) const;
 
-    void updateAccessMetadata( const QString &, bool emitSignal = true );
+    /**
+     * Update access time stamps for a given page.
+     * @param url the accessed/viewed url
+     * @emitSignal iff true emit KBookmarkNotifier signal
+     * @since 3.2
+     */
+    void updateAccessMetadata( const QString &url, bool emitSignal = true );
 
     /**
      * This will return the path that this manager is using to read
@@ -166,9 +172,11 @@ public:
      */
     const QDomDocument & internalDocument() const;
 
-    /** Access to bookmark notifier, for emitting signals.
+    /** 
+     * Access to bookmark notifier, for emitting signals.
      * We need this object to exist in one instance only, so we could
-     * connectDCOP to it by name. */
+     * connectDCOP to it by name. 
+     */
     KBookmarkNotifier& notifier() { return m_notifier; }
 
 public slots:
