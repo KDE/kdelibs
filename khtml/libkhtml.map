@@ -6,6 +6,7 @@
     getAttrName*;
     getValueName*;
     getPropertyName*;
+    cssyyparse*;
     DOM::tagPriority;
     DOM::getPropertyID*;
     DOM::*Impl::*;
