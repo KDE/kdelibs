@@ -73,7 +73,10 @@ public class KJASAppletStub extends Frame
             {
                 public void run()
                 {
-                    setupPanel();
+                    panel = new KJASAppletPanel( appletSize );
+                    add( "Center", panel );
+                    pack();
+                    show();
                 }
             }
         );
@@ -88,14 +91,7 @@ public class KJASAppletStub extends Frame
             {
                 public void run()
                 {
-                    try
-                    {
-                        getAppletClass();
-                    }
-                    catch( ClassNotFoundException e )
-                    {
-                        Main.kjas_err( "Could not load class", e );
-                    }
+                    appletClass = loader.loadClass( className );
                 }
             }
         );
@@ -117,27 +113,6 @@ public class KJASAppletStub extends Frame
         runThread.start();
     }
 
-    private void setupPanel()
-    {
-        panel = new KJASAppletPanel( appletSize );
-        add( "Center", panel );
-        pack();
-        show();
-    }
-
-    private void getAppletClass()
-        throws ClassNotFoundException
-    {
-        try
-        {
-            appletClass = loader.loadClass( className );
-        }
-        catch( ClassNotFoundException e )
-        {
-            Main.kjas_err( "could not load class: " + className, e );
-        }
-    }
-
     private void createApplet()
     {
         while( setupWindowThread.isAlive() || classLoadingThread.isAlive() )
@@ -157,6 +132,8 @@ public class KJASAppletStub extends Frame
         {
             if( appletClass != null )
             {
+                active = true;
+
                 //this order is very important and touchy- be careful when
                 //playing around with it...
                 Main.debug( "Applet #" + appletID + ": class is loaded" );
@@ -211,6 +188,7 @@ public class KJASAppletStub extends Frame
 
         dispose();
         runThread.interrupt();
+        active = false;
     }
 
     public Applet getApplet()
@@ -229,43 +207,61 @@ public class KJASAppletStub extends Frame
      *************************************************************************/
     public void appletResize( int width, int height )
     {
-        if ( (width >= 0) && (height >= 0))
+        if( active )
         {
-            Main.debug( "Applet #" + appletID + ": appletResize to : (" + width + ", " + height + ")" );
-            Main.protocol.sendResizeAppletCmd( context.getID(), appletID, width, height );
-            appletSize = new Dimension( width, height );
+            if ( (width >= 0) && (height >= 0))
+            {
+                Main.debug( "Applet #" + appletID + ": appletResize to : (" + width + ", " + height + ")" );
+                Main.protocol.sendResizeAppletCmd( context.getID(), appletID, width, height );
+                appletSize = new Dimension( width, height );
 
-            app.resize( appletSize );
-            panel.setAppletSize( appletSize );
-            pack();
+                app.resize( appletSize );
+                panel.setAppletSize( appletSize );
+                pack();
+            }
+            else
+                System.err.println( "Applet #" + appletID + ": applet attempted to resize itself to " + width + "," + height );
         }
-        else
-            System.err.println( "Applet #" + appletID + ": applet attempted to resize itself to " + width + "," + height );
     }
 
     public AppletContext getAppletContext()
     {
-        return context;
+        if( active )
+            return context;
+
+        return null;
     }
 
     public URL getCodeBase()
     {
-        return codeBase;
+        if( active )
+            return codeBase;
+
+        return null;
     }
 
     public URL getDocumentBase()
     {
-        return docBase;
+        if( active )
+            return docBase;
+
+        return null;
     }
 
     public String getAppletName()
     {
-        return appletName;
+        if( active )
+            return appletName;
+
+        return null;
     }
 
     public String getParameter( String name )
     {
-        return (String) params.get( name.toUpperCase() );
+        if( active )
+            return (String) params.get( name.toUpperCase() );
+
+        return null;
     }
 
     public boolean isActive()
