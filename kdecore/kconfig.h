@@ -164,6 +164,17 @@ public:
    * @since 3.1
    */
   void checkUpdate(const QString &id, const QString &updateFile);
+
+  /**
+   * Copies all entries from this config object to a new config 
+   * object that will save itself to @p file.
+   * 
+   * Actual saving to @p file happens when the returned object is 
+   * destructed or when sync() is called upon it.
+   *
+   * @param file the new config object will save itself to.
+   */
+  KConfig* copyTo(const QString &file);
     
 protected:
 

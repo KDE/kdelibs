@@ -302,6 +302,30 @@ void KConfig::checkUpdate(const QString &id, const QString &updateFile)
   setGroup(oldGroup);
 }
 
+KConfig* KConfig::copyTo(const QString &file)
+{
+  KConfig *config = new KConfig(QString::null, false, false);
+  config->backEnd->changeFileName(file, "config", false);
+  config->setReadOnly(false);
+  config->bFileImmutable = false;
+  config->backEnd->mConfigState = ReadWrite;
+  
+  QStringList groups = groupList();
+  for(QStringList::ConstIterator it = groups.begin(); 
+      it != groups.end(); ++it)
+  {
+     QMap<QString, QString> map = entryMap(*it);
+     config->setGroup(*it);
+     for (QMap<QString,QString>::Iterator it2  = map.begin();
+          it2 != map.end(); ++it2)
+     {
+        config->writeEntry(it2.key(), it2.data());
+     }
+
+  }
+  return config;
+}
+
 void KConfig::virtual_hook( int id, void* data )
 { KConfigBase::virtual_hook( id, data ); }
 
