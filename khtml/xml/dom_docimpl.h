@@ -157,7 +157,7 @@ public:
     virtual bool isDocumentNode() const { return true; }
     virtual bool isHTMLDocument() const { return false; }
 
-    virtual ElementImpl *createHTMLElement ( const DOMString &tagName );
+    virtual ElementImpl *createHTMLElement ( const DOMString &tagName, int *pExceptioncode );
 
     khtml::CSSStyleSelector *styleSelector() { return m_styleSelector; }
 

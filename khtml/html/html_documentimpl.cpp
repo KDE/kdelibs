@@ -233,9 +233,9 @@ bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
     return (newChild->id() == ID_HTML || newChild->id() == ID_COMMENT);
 }
 
-ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name, int* /*exceptioncode*/ )
+ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name, int* pExceptioncode )
 {
-    return createHTMLElement(name);
+    return createHTMLElement(name, pExceptioncode);
 }
 
 void HTMLDocumentImpl::slotHistoryChanged()
