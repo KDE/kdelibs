@@ -125,7 +125,10 @@ KCrash::defaultCrashHandler (int signal)
 
         // start up on the correct display
         argv[i++] = qstrdup("-display");
-        argv[i++] = XDisplayString(qt_xdisplay());
+        if ( qt_xdisplay() )
+          argv[i++] = XDisplayString(qt_xdisplay());
+        else
+          argv[i++] = getenv("DISPLAY");
 
         // we have already tested this
         argv[i++] = qstrdup("--appname");
