@@ -1,5 +1,6 @@
-<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN">
-<book lang="en">
+<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN"[
+<!ENTITY inst SYSTEM "install-dep.entities">]>
+<book lang="&language;">
       
    <bookinfo>
       <title>KDE Library Reference</title>
@@ -760,9 +761,9 @@ while (!childel.isNull()) {
          </imageobject></mediaobject></screenshot>
       </para>
       <para>
-         The <ulink url="_QTDOCDIR_/qcolordialog.html">QPrintDialog</ulink>:
+         The <ulink url="&QTDOCDIR;/qcolordialog.html">QPrintDialog</ulink>:
          <screenshot><mediaobject><imageobject>
-            <imagedata fileref="_QTDOCDIR_/qprintdlg-m.png" format="png">
+            <imagedata fileref="&QTDOCDIR;/qprintdlg-m.png" format="png">
          </imageobject></mediaobject></screenshot>
       </para>
       <para>

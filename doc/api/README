@@ -22,6 +22,6 @@ to be  adjusted; the DESTDIR variable is for packagers):
     cp doc/api/kdatepicker.png    $KDEDOCDIR/kdeui
     cp doc/api/kfiledialog.png    $KDEDOCDIR/kfile
     cp kio/DESKTOP_ENTRY_STANDARD $KDEDOCDIR/kio
-    sed -e "s#_QTDOCDIR_#$QTDOCDIR#g" doc/api/index.docbook.in > doc/api/index.docbook
+    sed -e "s#_QTDOCDIR_#$QTDOCDIR#g" doc/api/install-dep.entities.in > doc/api/install-dep.entities
     ( cd doc/api && kdb2html `pwd`/index.docbook )
     cp doc/api/HTML/* $KDEDOCDIR
