@@ -176,9 +176,6 @@ class KXMLGUIFactory : public QObject
   QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, int &id,
                             KXMLGUIBuilder **builder );
 
-  KXMLGUI::ContainerClient *findClient( KXMLGUI::ContainerNode *node, const QString &groupName,
-                                      const QValueList<KXMLGUI::MergingIndex>::Iterator &mIt );
-
   void plugActionListRecursive( KXMLGUI::ContainerNode *node );
   void unplugActionListRecursive( KXMLGUI::ContainerNode *node );
 

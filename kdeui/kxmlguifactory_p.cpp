@@ -112,6 +112,37 @@ ContainerNode *ContainerNode::findContainer( const QString &name, const QString 
     return res;
 }
 
+ContainerClient *ContainerNode::findChildContainerClient( KXMLGUIClient *currentGUIClient,
+                                                          const QString &groupName,
+                                                          const MergingIndexList::Iterator &mergingIdx )
+{
+    if ( !clients.isEmpty() )
+    {
+        ContainerClientListIt clientIt( clients );
+
+        for (; clientIt.current(); ++clientIt )
+            if ( clientIt.current()->client == currentGUIClient )
+            {
+                if ( groupName.isEmpty() )
+                    return clientIt.current();
+
+                if ( groupName == clientIt.current()->groupName )
+                    return clientIt.current();
+            }
+    }
+
+    ContainerClient *client = new ContainerClient;
+    client->client = currentGUIClient;
+    client->groupName = groupName;
+
+    if ( mergingIdx != mergingIndices.end() )
+        client->mergingName = (*mergingIdx).mergingName;
+
+    clients.append( client );
+
+    return client;
+}
+
 void ContainerNode::adjustMergingIndices( int offset,
                                           const MergingIndexList::Iterator &it )
 {

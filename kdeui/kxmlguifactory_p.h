@@ -107,7 +107,12 @@ struct ContainerNode
     ContainerNode *findContainer( const QString &_name, bool tag );
     ContainerNode *findContainer( const QString &name, const QString &tagName,
                                   const QPtrList<QWidget> *excludeList,
-                                         KXMLGUIClient *currClient );
+                                  KXMLGUIClient *currClient );
+
+    ContainerClient *findChildContainerClient( KXMLGUIClient *currentGUIClient, 
+                                               const QString &groupName, 
+                                               const MergingIndexList::Iterator &mergingIdx );
+
     void adjustMergingIndices( int offset, const MergingIndexList::Iterator &it );
 };
 
