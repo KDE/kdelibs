@@ -51,4 +51,5 @@ messages:
 EXTRA_DIST = admin bsd-port debian kdelibs.spec.in
 
 dist-hook:
-	cd $(top_distdir) && perl $(top_srcdir)/admin/automoc -padmin
+	cd $(top_distdir) && perl $(top_srcdir)/admin/am_edit -padmin
+
