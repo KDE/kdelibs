@@ -132,6 +132,15 @@ public:
     static bool copy( const KURL& src, const KURL& target );
 
     /**
+     * Alternative method for copying over the network.
+     * Overwrite is false, so this will fail if @p target exists.
+     *
+     * This one takes two URLs and is a direct equivalent
+     * of @ref KIO::copy!.
+     */
+    static bool dircopy( const KURL& src, const KURL& target );
+
+    /**
      * Test whether a URL exists.
      *
      * This is a convenience function for @ref KIO::stat
@@ -203,6 +212,7 @@ private:
     ~NetAccess() {}
     /** Internal methods */
     bool copyInternal(const KURL& src, const KURL& target, bool overwrite);
+    bool dircopyInternal(const KURL& src, const KURL& target, bool overwrite);
     bool statInternal(const KURL & url);
     UDSEntry m_entry;
     bool delInternal(const KURL & url);

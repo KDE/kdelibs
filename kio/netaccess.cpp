@@ -96,6 +96,12 @@ bool NetAccess::copy( const KURL & src, const KURL & target )
   return kioNet.copyInternal( src, target, false /*not overwrite*/ );
 }
 
+bool NetAccess::dircopy( const KURL & src, const KURL & target )
+{
+  NetAccess kioNet;
+  return kioNet.dircopyInternal( src, target, false /*not overwrite*/ );
+}
+
 bool NetAccess::exists( const KURL & url )
 {
   NetAccess kioNet;
@@ -141,6 +147,18 @@ bool NetAccess::copyInternal(const KURL& src, const KURL& target, bool overwrite
   bJobOK = true; // success unless further error occurs
 
   KIO::Job * job = KIO::file_copy( src, target, -1, overwrite );
+  connect( job, SIGNAL( result (KIO::Job *) ),
+           this, SLOT( slotResult (KIO::Job *) ) );
+
+  enter_loop();
+  return bJobOK;
+}
+
+bool NetAccess::dircopyInternal(const KURL& src, const KURL& target, bool overwrite)
+{
+  bJobOK = true; // success unless further error occurs
+
+  KIO::Job * job = KIO::copy( src, target, overwrite );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
 
