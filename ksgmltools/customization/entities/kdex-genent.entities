@@ -112,10 +112,13 @@
 <!ENTITY artsbuilder "<application>aRts-builder</application>">
 <!ENTITY artsd	"<application>artsd</application>">
 <!ENTITY ATAPI	"<acronym>ATAPI</acronym>">
+<!ENTITY autoconf       "<command>autoconf</command>">
+<!ENTITY automake       "<command>automake</command>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
+<!ENTITY cd	"<command>cd</command>">
 <!ENTITY CD	"<acronym>CD</acronym>">
-<!ENTITY CDE	"<acronym>CDE</acronym>">
 <!ENTITY CD-ROM	"<acronym>CD-ROM</acronym>">
+<!ENTITY CDE	"<acronym>CDE</acronym>">
 <!ENTITY CSS	"<trademark>CSS</trademark>">
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY drkonqi	"<application>DrKonqi</application>">
@@ -129,6 +132,7 @@
 <!ENTITY GMT	"<acronym>GMT</acronym>">
 <!ENTITY GNU	"<acronym>GNU</acronym>">
 <!ENTITY GPL	"<acronym>GPL</acronym>">
+<!ENTITY grep   "<command>grep</command>">
 <!ENTITY GUI	"<acronym>GUI</acronym>">
 <!ENTITY Hewlett-Packard	'<trademark class="registered">Hewlett-Packard</trademark>'>
 <!ENTITY HP	'<trademark class="registered">HP</trademark>'>
@@ -176,8 +180,8 @@
 <!ENTITY khelpcenter	"<application>KHelpcenter</application>">
 <!ENTITY khexedit	"<application>KHexedit</application>">
 <!ENTITY kicker	"<application>Kicker</application>">
-<!ENTITY killustrator "<application>KIllustrator</application>">
 <!ENTITY kikbd	"<application>kikbd</application>">
+<!ENTITY killustrator "<application>KIllustrator</application>">
 <!ENTITY kit	"<application>Kit</application>">
 <!ENTITY kivio	"<application>Kivio</application>">
 <!ENTITY kjezz  "<application>KJezzball</application>">
@@ -213,9 +217,9 @@
 <!ENTITY kpat	"<application>KPatience</application>">
 <!ENTITY kpilot	"<application>KPilot</application>">
 <!ENTITY kpm	"<application>Kpm</application>">
-<!ENTITY kpresenter "<application>KPresenter</application>">
 <!ENTITY kpoker	"<application>KPoker</application>">
 <!ENTITY kppp	"<application>kppp</application>">
+<!ENTITY kpresenter "<application>KPresenter</application>">
 <!ENTITY kpresenter "<application>KPresenter</application>">
 <!ENTITY krayon	"<application>Krayon</application>">
 <!ENTITY kreversi	"<application>KReversi</application>">
@@ -248,18 +252,19 @@
 <!ENTITY kuser	"<application>Kuser</application>">
 <!ENTITY kview	"<application>KView</application>">
 <!ENTITY kvt	"<application>kvt</application>">
-<!ENTITY kworldwatch  "<application>KWorldWatch</application>">
-<!ENTITY kword "<application>KWord</application>">
 <!ENTITY kwin	"<application>KWin</application>">
 <!ENTITY kwin4	"<application>K Four Wins</application>">
 <!ENTITY kwm	"<application>kwm</application>">
 <!ENTITY kwmpager	"<application>kwmpager</application>">
+<!ENTITY kword "<application>KWord</application>">
+<!ENTITY kworldwatch  "<application>KWorldWatch</application>">
 <!ENTITY kwrite	"<application>KWrite</application>">
 <!ENTITY kwuftpd	"<application>kwuftpd</application>">
 <!ENTITY LaserJet	'<trademark class="registered">LaserJet</trademark>'>
 <!ENTITY Linux	'<trademark class="registered">Linux</trademark>'>
 <!ENTITY Linux-Mandrake	"<trademark>Linux-Mandrake</trademark>">
 <!ENTITY LinuxPPC	"<trademark>LinuxPPC</trademark>">
+<!ENTITY ls     "<command>ls</command>">
 <!ENTITY lskat	"<application>Lskat</application>">
 <!ENTITY LZW	"<acronym>LZW</acronym>">
 <!ENTITY Mac	'<trademark class="registered">Mac</trademark>'>
@@ -272,9 +277,9 @@
 <!ENTITY Netscape	'<trademark class="registered">Netscape</trademark>'>
 <!ENTITY NeXTSTEP	"<trademark>NeXTSTEP</trademark>">
 <!ENTITY noatun "<application>Noatun</application>">
-<!ENTITY pixie	"<application>Pixie</application>">
 <!ENTITY PalmOS	'<trademark class="registered">Palm OS</trademark>'>
 <!ENTITY PalmPilot      "<productname><trademark>PalmPilot</trademark></productname>">
+<!ENTITY pixie	"<application>Pixie</application>">
 <!ENTITY PostScript	'<trademark class="registered">PostScript</trademark>'>
 <!ENTITY PPP	"<acronym>PPP</acronym>">
 <!ENTITY Qt	"<trademark>Qt</trademark>">
@@ -287,8 +292,8 @@
 <!ENTITY URL	"<acronym>URL</acronym>">
 <!ENTITY windowmaker	"<application>Window Maker</application>">
 <!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
-<!ENTITY XEmacs	"<application>XEmacs</application>">
 <!ENTITY X-Windows	'<trademark class="registered">X Windows</trademark>'>
+<!ENTITY XEmacs	"<application>XEmacs</application>">
 <!ENTITY XHTML	"<trademark>XHTML</trademark>">
 <!ENTITY XML	"<trademark>XML</trademark>">
 <!ENTITY XSL	"<trademark>XSL</trademark>">
