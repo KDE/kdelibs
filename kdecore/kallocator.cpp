@@ -51,7 +51,9 @@ KZoneAllocator::KZoneAllocator(unsigned long _blockSize)
 {
   while (blockSize < _blockSize)
     blockSize <<= 1, log2++;
-  blockOffset = blockSize;
+  /* Make sure, that a block is allocated at the first time allocate()
+     is called (even with a 0 size).  */
+  blockOffset = blockSize + 1;
 }
 
 KZoneAllocator::~KZoneAllocator()
@@ -168,9 +170,6 @@ void KZoneAllocator::delBlock(MemBlock *b)
 void *
 KZoneAllocator::allocate(size_t _size)
 {
-   if (!_size)
-	return 0;
-
    // Use the size of (void *) as alignment
    const size_t alignment = sizeof(void *) - 1;
    _size = (_size + alignment) & ~alignment;   
