@@ -746,6 +746,13 @@ void LightStyleV3::drawPrimitive( PrimitiveElement pe,
 	break;
 
     default:
+	if (pe == PE_HeaderArrow) {
+	    if (flags & Style_Down)
+		pe = PE_ArrowDown;
+	    else
+		pe = PE_ArrowUp;
+	}
+	
 	if (pe >= PE_ArrowUp && pe <= PE_ArrowLeft) {
 	    QPointArray a;
 
