@@ -46,7 +46,7 @@ const QString Wallet::FormDataFolder("Form Data");
 
 
 Wallet::Wallet(int handle, const QString& name)
-: QObject(0L), DCOPObject(0L), d(0L), _name(name), _handle(handle) {
+: QObject(0L), DCOPObject(), d(0L), _name(name), _handle(handle) {
 	_dcopRef = new DCOPRef("kded", "kwalletd");
 
 	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "walletClosed(int)", "slotWalletClosed(int)", false);
