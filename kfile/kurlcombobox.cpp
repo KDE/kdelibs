@@ -221,7 +221,7 @@ void KURLComboBox::setURL( const KURL& url )
     
     setDefaults();
 
-    QListIterator<KURLComboItem> it( itemList );
+    QPtrListIterator<KURLComboItem> it( itemList );
     for( ; it.current(); ++it )
         insertURLItem( it.current() );
 
@@ -277,7 +277,7 @@ void KURLComboBox::setMaxItems( int max )
     if ( count() > myMaximum ) {
         setDefaults();
 
-        QListIterator<KURLComboItem> it( itemList );
+        QPtrListIterator<KURLComboItem> it( itemList );
         int overload = itemList.count() - myMaximum + defaultList.count();
         for ( int i = 0; i <= overload; i++ )
             ++it;
@@ -301,7 +301,7 @@ void KURLComboBox::removeURL( const KURL& url, bool checkDefaultURLs )
 
     blockSignals( true );
     setDefaults();
-    QListIterator<KURLComboItem> it( itemList );
+    QPtrListIterator<KURLComboItem> it( itemList );
     while ( it.current() ) {
         insertURLItem( *it );
         ++it;

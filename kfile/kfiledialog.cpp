@@ -33,7 +33,7 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlineedit.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qlistbox.h>
 #include <qpixmap.h>
 #include <qpopupmenu.h>
@@ -95,7 +95,7 @@ enum Buttons { HOTLIST_BUTTON,
 
 const int idStart = 1;
 
-template class QList<KIO::StatJob>;
+template class QPtrList<KIO::StatJob>;
 
 
 struct KFileDialogPrivate
@@ -131,7 +131,7 @@ struct KFileDialogPrivate
     KURLComboBox *pathCombo;
     QPushButton *okButton, *cancelButton;
 
-    QList<KIO::StatJob> statJobs;
+    QPtrList<KIO::StatJob> statJobs;
 
     // an indicator that we're currently in a completion operation
     // we need to lock some slots for this

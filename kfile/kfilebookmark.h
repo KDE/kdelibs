@@ -48,13 +48,13 @@ public:
 	QString getURL() const {	return url; }
 	int getType() const {	return type; }
 
-	QList<KFileBookmark> &getChildren() 	{ return children; }
+	QPtrList<KFileBookmark> &getChildren() 	{ return children; }
 
 private:
 	QString text;
 	QString url;
 	int type;
-	QList<KFileBookmark> children;
+	QPtrList<KFileBookmark> children;
 
 private:
     class KFileBookmarkPrivate;

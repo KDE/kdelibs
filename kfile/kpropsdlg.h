@@ -274,7 +274,7 @@ private:
   /**
    * List of all plugins inserted ( first one first )
    */
-  QList<KPropsDlgPlugin> m_pageList;
+  QPtrList<KPropsDlgPlugin> m_pageList;
 
 private slots:
   void slotDeleteMyself();

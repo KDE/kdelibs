@@ -452,7 +452,7 @@ void KPropertiesDialog::updateUrl( const KURL& _newUrl )
   m_items.first()->setURL( _newUrl );
   assert(!m_singleUrl.isEmpty());
   // If we have an Exec page, set it dirty, so that a full file is saved locally
-  for ( QListIterator<KPropsDlgPlugin> it(m_pageList); it.current(); ++it )
+  for ( QPtrListIterator<KPropsDlgPlugin> it(m_pageList); it.current(); ++it )
    if ( it.current()->isA("KExecPropsPlugin") )
    {
      kdDebug(250) << "Setting exec page dirty" << endl;
@@ -1038,7 +1038,7 @@ void KFilePropsPlugin::applyChanges()
       connect( job, SIGNAL( renamed( KIO::Job *, const KURL &, const KURL & ) ),
                SLOT( slotFileRenamed( KIO::Job *, const KURL &, const KURL & ) ) );
       // wait for job
-      QWidget dummy(0,0,WType_Modal);
+      QWidget dummy(0,0,WType_Dialog|WShowModal);
       qt_enter_modal(&dummy);
       qApp->enter_loop();
       qt_leave_modal(&dummy);
@@ -1530,7 +1530,7 @@ void KFilePermissionsPropsPlugin::applyChanges()
     connect( job, SIGNAL( result( KIO::Job * ) ),
              SLOT( slotChmodResult( KIO::Job * ) ) );
     // Wait for job
-    QWidget dummy(0,0,WType_Modal);
+    QWidget dummy(0,0,WType_Dialog|WShowModal);
     qt_enter_modal(&dummy);
     qApp->enter_loop();
     qt_leave_modal(&dummy);

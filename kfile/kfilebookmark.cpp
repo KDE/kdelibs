@@ -40,7 +40,7 @@
 #include <strings.h>
 #endif
 
-template class QList<KFileBookmark>;
+template class QPtrList<KFileBookmark>;
 
 //-----------------------------------------------------------------------------
 

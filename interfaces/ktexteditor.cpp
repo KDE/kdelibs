@@ -73,7 +73,7 @@ Document::Document( QObject *parent, const char *name )
 Document::~Document()
 {
   //one never knows...
-  QListIterator<View> it( m_views );
+  QPtrListIterator<View> it( m_views );
 
   for (; it.current(); ++it )
     disconnect( it.current(), SIGNAL( destroyed() ),
@@ -82,7 +82,7 @@ Document::~Document()
   delete d;
 }
 
-QList<View> Document::views() const
+QPtrList<View> Document::views() const
 {
   return m_views;
 }

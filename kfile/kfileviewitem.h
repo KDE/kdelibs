@@ -28,7 +28,7 @@
 
 #include <qdict.h>
 #include <qintdict.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qmap.h>
 #include <qstring.h>
 
@@ -145,7 +145,7 @@ private:
 
 };
 
-typedef QList<KFileViewItem> KFileViewItemList;
-typedef QListIterator<KFileViewItem> KFileViewItemListIterator;
+typedef QPtrList<KFileViewItem> KFileViewItemList;
+typedef QPtrListIterator<KFileViewItem> KFileViewItemListIterator;
 
 #endif // KFILEINFO_H

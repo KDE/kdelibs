@@ -142,7 +142,7 @@ public:
   /*
    * Accessor to the list of views.
    */
-  virtual QList<View> views() const;
+  virtual QPtrList<View> views() const;
 
   /**
    * @return All the text from the requested line.
@@ -217,7 +217,7 @@ protected:
    */
   virtual void removeView( View *view );
 
-  QList<View> m_views;
+  QPtrList<View> m_views;
 
 private slots:
 		

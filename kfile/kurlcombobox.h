@@ -158,8 +158,8 @@ protected:
 	QPixmap pixmap;
     };
     typedef _KURLComboItem KURLComboItem;
-    QList<KURLComboItem> itemList;
-    QList<KURLComboItem> defaultList;
+    QPtrList<KURLComboItem> itemList;
+    QPtrList<KURLComboItem> defaultList;
     QMap<int,const KURLComboItem*> itemMapper;
 
     void init( Mode mode );
