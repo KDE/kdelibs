@@ -682,11 +682,13 @@ public:
 
     /**
    * @return the index of the given item.
+   * @since 3.2
    */
     int itemIndex (int id); // ### KDE4: make this const!
 
     /**
    * @return the id of the item at the given index.
+   * @since 3.2
    */
     int idAt(int index); // ### KDE4: make this const!
 
