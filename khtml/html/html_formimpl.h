@@ -62,9 +62,6 @@ public:
     virtual const DOMString nodeName() const { return "FORM"; }
     virtual ushort id() const;
 
-    virtual tagStatus startTag() const { return FORMStartTag; }
-    virtual tagStatus endTag() const { return FORMEndTag; }
-
     long length() const;
 
     QByteArray formData( );
@@ -196,9 +193,6 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() const { return BUTTONStartTag; }
-    virtual tagStatus endTag() const { return BUTTONEndTag; }
-
     DOMString type() const;
 
     void parseAttribute(AttrImpl *attr);
@@ -230,9 +224,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return FIELDSETStartTag; }
-    virtual tagStatus endTag() const { return FIELDSETEndTag; }
 };
 
 // -------------------------------------------------------------------------
@@ -262,9 +253,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return INPUTStartTag; }
-    virtual tagStatus endTag() const { return INPUTEndTag; }
 
     virtual bool isEnumeratable() const { return inputType() != IMAGE; }
 
@@ -337,9 +325,6 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() const { return LABELStartTag; }
-    virtual tagStatus endTag() const { return LABELEndTag; }
-
     virtual void parseAttribute(AttrImpl *attr);
 
     /**
@@ -361,9 +346,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return LEGENDStartTag; }
-    virtual tagStatus endTag() const { return LEGENDEndTag; }
 };
 
 
@@ -377,9 +359,6 @@ public:
 
     virtual const DOMString nodeName() const { return "SELECT"; }
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return SELECTStartTag; }
-    virtual tagStatus endTag() const { return SELECTEndTag; }
 
     DOMString type() const;
 
@@ -441,9 +420,6 @@ public:
     virtual const DOMString nodeName() const { return "OPTGROUP"; }
     virtual ushort id() const;
 
-    virtual tagStatus startTag() const { return OPTGROUPStartTag; }
-    virtual tagStatus endTag() const { return OPTGROUPEndTag; }
-
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
     virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
     virtual NodeImpl *removeChild ( NodeImpl *oldChild, int &exceptioncode );
@@ -467,9 +443,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return OPTIONStartTag; }
-    virtual tagStatus endTag() const { return OPTIONEndTag; }
 
     DOMString text();
 
@@ -509,9 +482,6 @@ public:
 
     virtual const DOMString nodeName() const { return "TEXTAREA"; }
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return TEXTAREAStartTag; }
-    virtual tagStatus endTag() const { return TEXTAREAEndTag; }
 
     long cols() const { return m_cols; }
 
@@ -558,9 +528,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return ISINDEXStartTag; }
-    virtual tagStatus endTag() const { return ISINDEXEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach();

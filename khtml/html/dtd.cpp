@@ -147,6 +147,110 @@ const unsigned short DOM::tagPriority[] = {
     0, // ID_TEXT
 };
 
+const tagStatus DOM::endTag[] = {
+    REQUIRED,  // 0
+    REQUIRED,  // ID_A == 1
+    REQUIRED,  // ID_ABBR
+    REQUIRED,  // ID_ACRONYM
+    REQUIRED,  // ID_ADDRESS
+    REQUIRED,  // ID_APPLET
+    FORBIDDEN, // ID_AREA
+    REQUIRED,  // ID_B
+    FORBIDDEN, // ID_BASE
+    FORBIDDEN, // ID_BASEFONT
+    REQUIRED,  // ID_BDO
+    REQUIRED,  // ID_BIG
+    REQUIRED,  // ID_BLOCKQUOTE
+    REQUIRED,  // ID_BODY
+    FORBIDDEN, // ID_BR
+    REQUIRED,  // ID_BUTTON
+    REQUIRED,  // ID_CAPTION
+    REQUIRED,  // ID_CENTER
+    REQUIRED,  // ID_CITE
+    REQUIRED,  // ID_CODE
+    FORBIDDEN, // ID_COL
+    OPTIONAL,  // ID_COLGROUP
+    OPTIONAL,  // ID_DD
+    REQUIRED,  // ID_DEL
+    REQUIRED,  // ID_DFN
+    REQUIRED,  // ID_DIR
+    REQUIRED,  // ID_DIV
+    REQUIRED,  // ID_DL
+    OPTIONAL,  // ID_DT
+    REQUIRED,  // ID_EM
+    REQUIRED,  // ID_EMBED
+    REQUIRED,  // ID_FIELDSET
+    REQUIRED,  // ID_FONT
+    REQUIRED,  // ID_FORM
+    FORBIDDEN, // ID_FRAME
+    REQUIRED,  // ID_FRAMESET
+    REQUIRED,  // ID_H1
+    REQUIRED,  // ID_H2
+    REQUIRED,  // ID_H3
+    REQUIRED,  // ID_H4
+    REQUIRED,  // ID_H5
+    REQUIRED,  // ID_H6
+    OPTIONAL,  // ID_HEAD
+    FORBIDDEN, // ID_HR
+    REQUIRED,  // ID_HTML
+    REQUIRED,  // ID_I
+    REQUIRED,  // ID_IFRAME
+    FORBIDDEN, // ID_IMG
+    FORBIDDEN, // ID_INPUT
+    REQUIRED,  // ID_INS
+    FORBIDDEN, // ID_ISINDEX
+    REQUIRED,  // ID_KBD
+    REQUIRED,  // ID_KEYGEN
+    REQUIRED,  // ID__KONQBLOCK
+    REQUIRED,  // ID_LABEL
+    REQUIRED,  // ID_LAYER
+    REQUIRED,  // ID_LEGEND
+    OPTIONAL,  // ID_LI
+    FORBIDDEN, // ID_LINK
+    REQUIRED,  // ID_LISTING
+    REQUIRED,  // ID_MAP
+    REQUIRED,  // ID_MENU
+    FORBIDDEN, // ID_META
+    REQUIRED,  // ID_NOEMBED
+    REQUIRED,  // ID_NOFRAMES
+    REQUIRED,  // ID_NOSCRIPT
+    REQUIRED,  // ID_NOLAYER
+    REQUIRED,  // ID_OBJECT
+    REQUIRED,  // ID_OL
+    REQUIRED,  // ID_OPTGROUP
+    OPTIONAL,  // ID_OPTION
+    OPTIONAL,  // ID_P
+    FORBIDDEN, // ID_PARAM
+    REQUIRED,  // ID_PLAIN
+    REQUIRED,  // ID_PRE
+    REQUIRED,  // ID_Q
+    REQUIRED,  // ID_S
+    REQUIRED,  // ID_SAMP
+    REQUIRED,  // ID_SCRIPT
+    REQUIRED,  // ID_SELECT
+    REQUIRED,  // ID_SMALL
+    REQUIRED,  // ID_SPAN
+    REQUIRED,  // ID_STRIKE
+    REQUIRED,  // ID_STRONG
+    REQUIRED,  // ID_STYLE
+    REQUIRED,  // ID_SUB
+    REQUIRED,  // ID_SUP
+    REQUIRED,  // ID_TABLE
+    OPTIONAL,  // ID_TBODY
+    OPTIONAL,  // ID_TD
+    REQUIRED,  // ID_TEXTAREA
+    OPTIONAL,  // ID_TFOOT
+    OPTIONAL,  // ID_TH
+    OPTIONAL,  // ID_THEAD
+    REQUIRED,  // ID_TITLE
+    OPTIONAL,  // ID_TR
+    REQUIRED,  // ID_TT
+    REQUIRED,  // ID_U
+    REQUIRED,  // ID_UL
+    REQUIRED,  // ID_VAR
+    REQUIRED   // ID_TEXT
+};
+
 
 static const ushort tag_list_0[] = {
     ID_TEXT,
@@ -782,7 +886,7 @@ void DOM::removeForbidden(int tagId, ushort *forbiddenTags)
 }
 
 
-
+#if 0
 
 
 struct attr_priv {
@@ -894,7 +998,6 @@ attr_priv attr_list_13[] = {
     attr_priv(ATTR_HTML, value_13_1, 16)
 };
 
-
 DOMString DOM::findDefAttrNone(ushort)
 {
     return DOMString();
@@ -951,3 +1054,5 @@ DOMString DOM::findDefAttrHTML(ushort id)
 {
     return find_attr(id, attr_list_13);
 }
+
+#endif

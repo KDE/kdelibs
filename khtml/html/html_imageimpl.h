@@ -44,9 +44,6 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() const { return IMGStartTag; }
-    virtual tagStatus endTag() const { return IMGEndTag; }
-
     virtual void parseAttribute(AttrImpl *);
 
     virtual bool prepareMouseEvent( int _x, int _y,
@@ -89,9 +86,6 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() const { return AREAStartTag; }
-    virtual tagStatus endTag() const { return AREAEndTag; }
-
     void parseAttribute(AttrImpl *attr);
 
     bool isDefault() const { return shape==Default; }
@@ -126,9 +120,6 @@ public:
     virtual DOMString getName() const { return name; }
 
     virtual void parseAttribute(AttrImpl *attr);
-
-    virtual tagStatus startTag() const { return MAPStartTag; }
-    virtual tagStatus endTag() const { return MAPEndTag; }
 
     bool mapMouseEvent(int x_, int y_, int width_, int height_,
                        MouseEvent *ev );

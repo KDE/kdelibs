@@ -24,7 +24,7 @@
  */
 
 #undef FORMS_DEBUG
-//#define FORMS_DEBUG
+#define FORMS_DEBUG
 
 #include "html_formimpl.h"
 
@@ -211,12 +211,6 @@ QByteArray HTMLFormElementImpl::formData()
     m_encCharset = codec->name();
     for(unsigned int i=0; i < m_encCharset.length(); i++)
         m_encCharset[i] = m_encCharset[i].latin1() == ' ' ? QChar('-') : m_encCharset[i].lower();
-
-#if 0
-        // users with UTF8 locale should be killed immediately
-        if(!codec || codec->mibEnum() == 106)
-            codec = QTextCodec::codecForMib(4);
-#endif
 
     for(HTMLGenericFormElementImpl *current = formElements.first(); current; current = formElements.next())
     {
@@ -1072,6 +1066,8 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
             if( checked() )
             {
+                qDebug( "ischecked" );
+
                 encoding += fixUpfromUnicode(codec, m_value.string());
                 return true;
             }
@@ -1196,6 +1192,8 @@ void HTMLInputElementImpl::reset()
 
 void HTMLInputElementImpl::setChecked(bool _checked)
 {
+    qDebug( "setChecked( %d )..",_checked );
+
     m_checked = _checked;
     if (m_type == RADIO && m_form && m_checked)
         m_form->radioClicked(this);
@@ -1262,8 +1260,6 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
         if(m_type == RESET)
 	    m_form->reset();
         else {
-            if ( ownerDocument() )
-                ownerDocument()->setFocusNode( this );
             m_activeSubmit = true;
 	    if (!m_form->submit()) {
 		xPos = 0;

@@ -41,9 +41,6 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() const { return AStartTag; }
-    virtual tagStatus endTag() const { return AEndTag; }
-
     DOMString areaHref() const { return href; }
     DOMString targetRef() const { return target; }
 
@@ -76,9 +73,6 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
 
-    virtual tagStatus startTag() const { return BRStartTag; }
-    virtual tagStatus endTag() const { return BREndTag; }
-
     virtual void attach();
 };
 
@@ -93,9 +87,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return FONTStartTag; }
-    virtual tagStatus endTag() const { return FONTEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
     void attach();
@@ -112,9 +103,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return INSStartTag; }
-    virtual tagStatus endTag() const { return INSEndTag; }
 
 protected:
     ushort _id;
@@ -133,9 +121,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return BLOCKQUOTEStartTag; }
-    virtual tagStatus endTag() const { return BLOCKQUOTEEndTag; }
 };
 
 }; //namespace

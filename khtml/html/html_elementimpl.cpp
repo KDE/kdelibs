@@ -26,8 +26,8 @@
 //#define DEBUG_LAYOUT
 //#define PAR_DEBUG
 //#define EVENT_DEBUG
+#include "dtd.h"
 #include "html_elementimpl.h"
-
 #include "html_documentimpl.h"
 #include "htmltokenizer.h"
 
@@ -259,7 +259,7 @@ DOMString HTMLElementImpl::innerText() const
 bool HTMLElementImpl::setInnerHTML( const DOMString &html )
 {
     // the following is in accordance with the definition as used by IE
-    if( endTag() == FORBIDDEN )
+    if( endTag[id()] == FORBIDDEN )
         return false;
     // IE disallows innerHTML on inline elements. I don't see why we should have this restriction, as our
     // dhtml engine can cope with it. Lars
@@ -300,7 +300,7 @@ bool HTMLElementImpl::setInnerHTML( const DOMString &html )
 bool HTMLElementImpl::setInnerText( const DOMString &text )
 {
     // following the IE specs.
-    if( endTag() == FORBIDDEN )
+    if( endTag[id()] == FORBIDDEN )
         return false;
     // IE disallows innerHTML on inline elements. I don't see why we should have this restriction, as our
     // dhtml engine can cope with it. Lars
@@ -385,6 +385,3 @@ const DOMString HTMLGenericElementImpl::nodeName() const
     else
         return getTagName(_id).string().lower();
 }
-
-
-

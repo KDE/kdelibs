@@ -236,7 +236,7 @@ void KHTMLParser::parseToken(Token *t)
         e->setAttributeMap(t->attrs);
 
         // take care of optional close tags
-        if(e->endTag() == DOM::OPTIONAL)
+        if(endTag[e->id()] == DOM::OPTIONAL)
             popBlock(t->id);
     }
 

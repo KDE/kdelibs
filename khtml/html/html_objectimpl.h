@@ -47,9 +47,6 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() const { return APPLETStartTag; }
-    virtual tagStatus endTag() const { return APPLETEndTag; }
-
     virtual void parseAttribute(AttrImpl *token);
 
     virtual void attach();
@@ -77,9 +74,6 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() const { return OBJECTStartTag; }
-    virtual tagStatus endTag() const { return OBJECTEndTag; }
-
     virtual void parseAttribute(AttrImpl *attr);
 
     virtual void attach();
@@ -103,9 +97,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return OBJECTStartTag; }
-    virtual tagStatus endTag() const { return OBJECTEndTag; }
 
     HTMLFormElementImpl *form() const;
 
@@ -134,9 +125,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return PARAMStartTag; }
-    virtual tagStatus endTag() const { return PARAMEndTag; }
 
     virtual void parseAttribute(AttrImpl *token);
 

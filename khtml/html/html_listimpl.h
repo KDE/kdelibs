@@ -44,9 +44,6 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() const { return ULStartTag; }
-    virtual tagStatus endTag() const { return ULEndTag; }
-
     virtual void parseAttribute(AttrImpl *);
 
     virtual void attach();
@@ -64,9 +61,6 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() const { return DIRStartTag; }
-    virtual tagStatus endTag() const { return DIREndTag; }
-
     virtual void attach();
 };
 
@@ -80,9 +74,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return MENUStartTag; }
-    virtual tagStatus endTag() const { return MENUEndTag; }
 
     virtual void attach();
 };
@@ -98,9 +89,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return OLStartTag; }
-    virtual tagStatus endTag() const { return OLEndTag; }
 
     virtual void parseAttribute(AttrImpl *);
 
@@ -123,9 +111,6 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    virtual tagStatus startTag() const { return LIStartTag; }
-    virtual tagStatus endTag() const { return LIEndTag; }
-
     virtual void parseAttribute(AttrImpl *attr);
 
     virtual void attach();
@@ -145,9 +130,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return DLStartTag; }
-    virtual tagStatus endTag() const { return DLEndTag; }
 };
 
 }; //namespace

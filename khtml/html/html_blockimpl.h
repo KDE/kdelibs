@@ -45,9 +45,6 @@ public:
     virtual ushort id() const;
 
     void attach();
-
-    virtual tagStatus startTag() const { return BLOCKQUOTEStartTag; }
-    virtual tagStatus endTag() const { return BLOCKQUOTEEndTag; }
 };
 
 // -------------------------------------------------------------------------
@@ -63,9 +60,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return DIVStartTag; }
-    virtual tagStatus endTag() const { return DIVEndTag; }
 
     void parseAttribute(AttrImpl *token);
 };
@@ -84,9 +78,6 @@ public:
 
     virtual void parseAttribute(AttrImpl *);
 
-    virtual tagStatus startTag() const { return HRStartTag; }
-    virtual tagStatus endTag() const { return HREndTag; }
-
     virtual void attach();
 protected:
     bool noShade : 1;
@@ -103,9 +94,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return H1StartTag; }
-    virtual tagStatus endTag() const { return H1EndTag; }
 
 protected:
     ushort _id;
@@ -128,9 +116,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return PStartTag; }
-    virtual tagStatus endTag() const { return PEndTag; }
 };
 
 // -------------------------------------------------------------------------
@@ -147,10 +132,6 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return PREStartTag; }
-    virtual tagStatus endTag() const { return PREEndTag; }
-
 };
 
 // -------------------------------------------------------------------------
@@ -163,10 +144,7 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-
-    virtual tagStatus startTag() const { return LAYERStartTag; }
-    virtual tagStatus endTag() const { return LAYEREndTag; }
-
+    
     virtual void parseAttribute(AttrImpl *);
 
     bool fixed;
