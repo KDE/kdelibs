@@ -58,19 +58,25 @@
 
 #include <qframe.h>
 
-#include <ksslx509map.h>
-#include <ksslinfodlg.h>
-#include <ksslcertificatecache.h>
 
 #include <kdebug.h>
 
-#include "crypto.h"
-
+#include <config.h>
 #ifdef HAVE_SSL
-#include <openssl/err.h>
+#define crypt _openssl_crypt
 #include <openssl/ssl.h>
+#include <openssl/x509.h>
+#include <openssl/x509v3.h>
+#include <openssl/pem.h>
+#include <openssl/rand.h>
+#include <openssl/err.h>
+#undef crypt
 #endif
 
+#include <ksslall.h>
+#include <kopenssl.h>
+
+#include "crypto.h"
 
 CipherItem::CipherItem( QListView *view, const QString& cipher, int bits,
 			int maxBits, KCryptoConfig *module )
@@ -308,6 +314,7 @@ QString whatstr;
   grid->addWidget(oFind, 1, 5);
   oTest = new QPushButton(i18n("&Test..."), tabOSSL);
   grid->addWidget(oTest, 2, 5);
+  connect(oTest, SIGNAL(clicked()), SLOT(slotTestOSSL()));
 
   connect(oPath, SIGNAL(textChanged(const QString&)), SLOT(configChanged()));
   connect(oFind, SIGNAL(clicked()), SLOT(slotChooseOSSL()));
@@ -1067,7 +1074,25 @@ void KCryptoConfig::slotChooseOSSL() {
 
 
 void KCryptoConfig::slotTestOSSL() {
-// FIXME
+KOSSL::self()->destroy();
+
+if (!KOSSL::self()->hasLibSSL()) {
+   KMessageBox::detailedSorry(this, 
+                              i18n("Failed to load OpenSSL."), 
+                              i18n("libssl was not found or successfully loaded."), 
+                              i18n("OpenSSL"));
+   return;
+}
+
+if (!KOSSL::self()->hasLibCrypto()) {
+   KMessageBox::detailedSorry(this, 
+                              i18n("Failed to load OpenSSL."), 
+                              i18n("libcrypto was not found or successfully loaded."), 
+                              i18n("OpenSSL"));
+   return;
+}
+
+   KMessageBox::information(this, i18n("OpenSSL was successfully loaded."), i18n("OpenSSL"));
 }
 
 
