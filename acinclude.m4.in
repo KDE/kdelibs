@@ -1085,6 +1085,10 @@ dnl this was AC_PROG_CC. I had to include it manualy, since I had to patch it
 
   fi
 
+  case "$host" in 
+  *-*-sysv4.2uw*) CFLAGS="$CFLAGS -D_UNIXWARE";;
+  esac
+
   if test -z "$LDFLAGS" && test "$ac_use_debug_code" = "no" && test "$GCC" = "yes"; then
      LDFLAGS="-s"
   fi
@@ -1187,6 +1191,10 @@ EOF
        fi
     fi
   fi  
+
+    case "$host" in
+      *-*-sysv4.2uw*) CXXFLAGS="$CXXFLAGS -D_UNIXWARE";;
+    esac    
 
 ])
 
