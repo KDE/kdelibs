@@ -1819,8 +1819,18 @@ DOMString HTMLOptionElementImpl::text()
 {
     DOMString label = getAttribute(ATTR_LABEL);
     if (label.isEmpty() && firstChild() && firstChild()->nodeType() == Node::TEXT_NODE) {
-        // ### allow for comments and multiple textnodes in our children
-        return firstChild()->nodeValue();
+	if (firstChild()->nextSibling()) {
+	    DOMString ret = "";
+	    NodeImpl *n = firstChild();
+	    for (; n; n = n->nextSibling()) {
+		if (n->nodeType() == Node::TEXT_NODE ||
+		    n->nodeType() == Node::CDATA_SECTION_NODE)
+		    ret += n->nodeValue();
+	    }
+	    return ret;
+	}
+	else
+	    return firstChild()->nodeValue();
     }
     else
         return label;
