@@ -34,6 +34,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kconfig.h>
+#include <kprocess.h>
 #include <kcrash.h>
 #include <dcopclient.h>
 #include <soundserver.h>
@@ -57,6 +58,7 @@ public:
     QMap<QString, KConfig*> events;
     QMap<QString, KConfig*> configs;
     QString externalPlayer;
+    KProcess *externalPlayerProc;
     Arts::SimpleSoundServer soundServer;
     bool useExternal;
 };
@@ -125,6 +127,7 @@ KNotify::KNotify()
     d->soundServer = Arts::SimpleSoundServer::null();
     d->globalEvents = new KConfig("knotify/eventsrc", true, false, "data");
     d->globalConfig = new KConfig("knotify.eventsrc", true, false);
+    d->externalPlayerProc = 0;
     loadConfig();
 }
 
@@ -133,6 +136,7 @@ KNotify::~KNotify()
     reconfigure();
     delete d->globalEvents;
     delete d->globalConfig;
+    delete d->externalPlayerProc;
     delete d;
 }
 
@@ -262,13 +266,20 @@ bool KNotify::notifyBySound( const QString &sound )
 
     } else if(!d->externalPlayer.isEmpty()) {
         // use an external player to play the sound
-        system( QFile::encodeName( d->externalPlayer ) + " " +
-                QFile::encodeName( soundFile ));
+        KProcess *proc = d->externalPlayerProc;
+        if (!proc)
+        {
+           proc = d->externalPlayerProc = new KProcess;
+        }
+        if (proc->isRunning())
+           return false; // Skip
+        proc->clearArguments();
+        (*proc) << d->externalPlayer << soundFile;
+        proc->start(KProcess::DontCare);
         return true;
     }
     return false;
 }
-
 
 bool KNotify::notifyByMessagebox(const QString &text, int level)
 {
