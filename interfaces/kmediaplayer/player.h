@@ -36,9 +36,10 @@ class Player : public KParts::ReadOnlyPart, public PlayerDCOPObject
 Q_OBJECT
 
 public:
-	// if useGUI is true, then this is a KMediaPlayer/Player (needs a widget)
-	// else it is a KMediaPlayer/Engine (no widget needed)
-	Player(QObject *parent, const char *name, bool useGUI = true);
+	// No GUI Wanted
+	Player(QObject *parent, const char *name);
+	// GUI Wanted
+	Player(QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name);
 	virtual ~Player(void);
 
 	virtual View *view(void) = 0;

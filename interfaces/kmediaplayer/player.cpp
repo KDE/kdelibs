@@ -28,7 +28,15 @@ KMediaPlayer::PlayerDCOPObject::PlayerDCOPObject(void)
 {
 }
 
-KMediaPlayer::Player::Player(QObject *parent, const char *name, bool)
+KMediaPlayer::Player::Player(QWidget *, const char *, QObject *parent, const char *name)
+	: KParts::ReadOnlyPart(parent, name)
+	, currentLooping(false)
+	, currentState(Empty)
+	, d(0)
+{
+}
+
+KMediaPlayer::Player::Player(QObject *parent, const char *name)
 	: KParts::ReadOnlyPart(parent, name)
 	, currentLooping(false)
 	, currentState(Empty)
