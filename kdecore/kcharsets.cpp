@@ -32,7 +32,7 @@
 template class QList<KFontStruct>;
 template class QList<QFont::CharSet>;
 
-#define CHARSETS_COUNT 25
+#define CHARSETS_COUNT 27
 static const char *charsetsStr[CHARSETS_COUNT]={
     "unicode",
     "iso-8859-1",
@@ -54,12 +54,16 @@ static const char *charsetsStr[CHARSETS_COUNT]={
     "eucjp",
     "euckr",
     "set-th-th",
+    "set-gbk",
     "set-zh",
     "set-zh-tw",
+    "set-big5",
     "utf-8",
     "utf-16",
     "Any"
 };
+
+// these can contain wildcard characters. Needed for fontset matching (CJK fonts)
 static const char *xNames[CHARSETS_COUNT]={
     "iso10646-1",
     "iso8859-1",
@@ -79,10 +83,13 @@ static const char *xNames[CHARSETS_COUNT]={
     "iso8859-15",
     "koi8-r",
     "jisx0208.1983-0",
+    /* ### not sure about the next seven ones. Lars */
+    "ksx1001.1997-0",
     "ksc5601.1987-0",
+    "gb2312*",
     "unknown",
     "unknown",
-    "unknown",
+    "big5*-0",
     "utf8",
     "utf16",
     ""  // this will always return true...
@@ -109,8 +116,10 @@ static const QFont::CharSet charsetsIds[CHARSETS_COUNT]={
     QFont::Set_Ja,
     QFont::Set_Ko,
     QFont::Set_Th_TH,
+    QFont::Set_GBK,
     QFont::Set_Zh,
     QFont::Set_Zh_TW,
+    QFont::Set_Big5,
     QFont::Unicode,
     QFont::Unicode,
     QFont::AnyCharSet
@@ -594,7 +603,8 @@ QFont::CharSet KCharsets::xNameToID(QString name) const
     int i = 0;
     while(i < CHARSETS_COUNT)
     {
-	if( name == xNames[i] )
+	QRegExp r(xNames[i]);
+	if( r.match(name) != -1 )
 	    return charsetsIds[i];
 	i++;
     }
