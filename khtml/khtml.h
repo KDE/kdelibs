@@ -23,7 +23,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Main Widget
-// $Id:  $
+// $Id$
 
 #ifndef HTML_H
 #define HTML_H
@@ -44,7 +44,7 @@
 
 class KHTMLWidget;
 class HTMLIterator;
-
+class KHTMLCache;
 
 #include "drag.h"
 #include "khtmldata.h"
@@ -505,16 +505,25 @@ public:
     void setGranularity( int g )
 	{   granularity = g; }
 
+
+    /** if an HTMLObject needs an image, it calls this function.
+     */
+    void requestImage( HTMLObject *obj, const char *_url );
+
     /*
      * If a HTMLObject object needs a file from the web, it
      * calls this function.
+     * if update is true, the htmlobj will be continously updated
+     * as the file is loaded (via the data function)
      */
-    void requestFile( HTMLObject *_obj, const char *_url );
+    void requestFile( HTMLObject *_obj, const char *_url, 
+		      bool update = false );
 
     /*
      * Cancels a previous @ref requestFile.
      */
     void cancelRequestFile( HTMLObject *_obj );
+    void cancelRequestFile( const char *_url );
 
     /*
      * Cancels all @ref requestFile.
@@ -1526,6 +1535,14 @@ protected:
      * Keeps a list of all pending file.
      */
     QDict<HTMLPendingFile> mapPendingFiles;
+
+    /**
+     * caches images.
+     */
+    KHTMLCache *cache;
+
+public:
+    KHTMLCache *imageCache() { return cache; }
 };
 
 #endif // HTML

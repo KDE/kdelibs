@@ -1,6 +1,20 @@
 KHTML CHANGES
 =============
 
+Version 0.20.0  - 6 Nov 1998 (Lars Knoll)
+--------------
+
+Added a memory cache for images. This introduces some source
+incompatible changes, but they are in functions used only internally
+by khtmlw (removed some unneeded functions in HTMLImage).
+Testet it with the recent version of kfm, and everything seems to work well.
+There are still some things left to do:
+  * GIFs are (at the moment not really cached), because I haven't found
+    a nice way to get the size of a QMovie. This has to be solved, because
+    like this the cache looses half of its value.
+  * If the same image is requested by different KHTMLWidget's, a 
+    stopLoading request from one of the widgets might stop the whole loading,
+    even if the other widget still needs it.
 
 Version 0.20.0  - 4 Nov 1998 (Waldo Bastian)
 --------------

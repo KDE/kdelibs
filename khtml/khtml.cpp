@@ -41,6 +41,7 @@
 #include "khtmlchain.h"
 #include "khtmltable.h"
 #include "khtml.h"
+#include "khtmlcache.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,10 +56,6 @@
 #include <qdrawutil.h>
 
 #include <X11/Xlib.h>
-
-//#ifdef HAVE_LIBJPEG
-//#include "jpeg.h"
-//#endif
 
 #define PRINTING_MARGIN		36	// printed margin in 1/72in units
 #define INDENT_SIZE		30
@@ -210,6 +207,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     defaultSettings = new HTMLSettings;
     settings = new HTMLSettings;
 
+    cache = new KHTMLCache(this);
+
     QPalette pal = palette().copy();
     QColorGroup cg = pal.normal();
     QColorGroup newGroup( cg.foreground(), lightGray, cg.light(),
@@ -236,10 +235,15 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     textFindIter = 0;
 }
 
-void KHTMLWidget::requestFile( HTMLObject *_obj, const char *_url )
+void KHTMLWidget::requestImage( HTMLObject *obj, const char *_url )
+{ 
+    cache->requestImage( obj, _url); 
+}
+
+
+void KHTMLWidget::requestFile( HTMLObject *_obj, const char *_url, 
+			       bool update )
 {
-  // waitingFileList.append( _obj );
-  // emit fileRequest( _url );
 
   printf("========================= REQUEST %s  ================\n", _url );
   
@@ -286,6 +290,12 @@ void KHTMLWidget::cancelRequestFile( HTMLObject *_obj )
   const char* u;
   for( u = lst.first(); u != 0L; u = lst.next() )
     mapPendingFiles.remove( u );
+}
+
+void KHTMLWidget::cancelRequestFile( const char *_url )
+{
+  mapPendingFiles.remove( _url );
+  emit cancelFileRequest( _url );
 }
 
 void KHTMLWidget::cancelAllRequests()
@@ -348,7 +358,10 @@ void KHTMLWidget::data( const char *_url, const char *_data, int _len, bool _eof
   }
   
   if ( mapPendingFiles.count() == 0 && !parsing )
+  {
     emit documentDone();
+    cache->flush();
+  }
 }
 
 void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
@@ -363,13 +376,15 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
   
   HTMLObject* o;
   for( o = p->m_lstClients.first(); o != 0L; o = p->m_lstClients.next() )
-    o->fileLoaded( _filename );
+    o->fileLoaded( _url, _filename );
   
   mapPendingFiles.remove( _url );
 
   if ( mapPendingFiles.count() == 0 && !parsing )
+  {
     emit documentDone();
-
+    cache->flush();
+  }
   ///////////////
   // The old code
   ///////////////
@@ -1829,6 +1844,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 	if ( mapPendingFiles.isEmpty() && bgPixmapURL.isEmpty() )
 	{
 	    emit documentDone();
+	    cache->flush();
 	}
 
 	// Now it is time to tell all frames what they should do
@@ -5141,6 +5157,8 @@ KHTMLWidget::~KHTMLWidget()
 	
     for ( int i = memPoolMax; i--;)
     	delete [] memPool[i];
+
+    delete cache;
 }
 
 bool KHTMLWidget::setCharset(const char *name){

@@ -23,7 +23,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Objects
-// $Id:  $
+// $Id$
 
 #ifndef HTMLOBJ_H
 #define HTMLOBJ_H
@@ -189,14 +189,19 @@ public:
 
     virtual void reset() { setPrinted( false ); }
 
+    virtual void setPixmap(QPixmap * ) { };
+    virtual void setMovie( QMovie * ) { };
+
     /********************************
      * These two functions are overloaded by objects that need to have a remote
      * file downloaded, e.g. HTMLImage.
      *
      * fileLoaded is called when the requested file has arrived.
      */
-    virtual void fileLoaded( const char * /* _filename */ ) { }
-    virtual bool fileLoaded( const char* /* _url */, QBuffer& /* _buffer */ ) { return false; }
+    virtual void fileLoaded( const char * /*_url*/, 
+			     const char * /*localfile*/ ) { }
+    virtual bool fileLoaded( const char* /* _url */, QBuffer& /* _buffer */, 
+			     bool /* eof */ = false ) { return false; }
 
     /*
      * returns the url of the file that has been requested.
@@ -561,22 +566,6 @@ protected:
 
 //-----------------------------------------------------------------------------
 
-class HTMLCachedImage
-{
-public:
-    HTMLCachedImage( const char * );
-    virtual ~HTMLCachedImage() { }
-
-    QPixmap* getPixmap() { return pixmap; }
-    const char *getFileName() { return filename.data(); }
-
-protected:
-    QPixmap *pixmap;
-    QString filename;
-};
-
-//-----------------------------------------------------------------------------
-
 class HTMLImage : public QObject, public HTMLObject
 {
     Q_OBJECT
@@ -598,21 +587,17 @@ public:
     virtual int  getAbsY();
 
     virtual void changeImage( const char *_url );
-  
+
+    virtual void setPixmap( QPixmap * );
+    virtual void setMovie( QMovie * );
+
     void setOverlay( const char *ol );
 
     static void cacheImage( const char * );
     static QPixmap* findImage( const char * );
 
-    /* Tells the object the the requested image is available
-     *
-     * The image is on the local disk in the file named '_filename.'
-     */
-    virtual void fileLoaded( const char *_filename );
-    virtual bool fileLoaded( const char* _url, QBuffer& _buffer );
-
     virtual const char *requestedFile()
-       	{	return imageURL.data(); }
+       	{ return imageURL.data(); }
 
     virtual const char* getURL() const { return url; }
     virtual const char* getTarget() const { return target; }
@@ -659,8 +644,6 @@ protected:
     
     KHTMLWidget *htmlWidget;
     
-    static QList<HTMLCachedImage>* pCache;
-
     /*
      * Flag telling wether this image was found in the cache
      * If this flag is set, you may not delete the pixmap since the pixmap
@@ -757,8 +740,10 @@ public:
     HTMLMap( KHTMLWidget *w, const char *_url );
     virtual ~HTMLMap();
 
-    virtual void fileLoaded( const char *_filename );
-    virtual bool fileLoaded( const char* _url, QBuffer& _buffer );
+    virtual void fileLoaded( const char*, 
+			     const char* _filename );
+    virtual bool fileLoaded( const char* _url, QBuffer& _buffer, 
+			     bool = false );
 
     virtual const char *requestedFile()
 	    {	return mapurl; }

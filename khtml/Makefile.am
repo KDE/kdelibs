@@ -19,7 +19,7 @@
 
 
 lib_LTLIBRARIES = libkhtml.la
-libkhtml_la_SOURCES = khtmljscript.cpp khtml.cpp khtmlobj.cpp khtmlfont.cpp khtmlformats.cpp khtmlform.cpp khtmltoken.cpp khtmlframe.cpp khtmlview.cpp khtmlclue.cpp debug.cpp khtmldata.cpp khtmltable.cpp khtmliter.cpp
+libkhtml_la_SOURCES = khtmljscript.cpp khtml.cpp khtmlobj.cpp khtmlfont.cpp khtmlformats.cpp khtmlform.cpp khtmltoken.cpp khtmlframe.cpp khtmlview.cpp khtmlclue.cpp debug.cpp khtmldata.cpp khtmltable.cpp khtmliter.cpp khtmlcache.cpp
 
 SRC_META = khtml.moc khtmlobj.moc khtmlform.moc khtmlframe.moc khtmlview.moc
 khtml.cpp: khtml.moc
@@ -29,7 +29,7 @@ khtmlframe.cpp: khtmlframe.moc
 khtmlview.cpp: khtmlview.moc
 
 DISTCLEANFILES = $(SRC_META)
-include_HEADERS = khtmljscript.h khtml.h khtmlobj.h khtmlfont.h khtmlform.h khtmltoken.h khtmlframe.h khtmlview.h khtmlclue.h khtmldata.h khtmltable.h khtmliter.h
+include_HEADERS = khtmljscript.h khtml.h khtmlobj.h khtmlfont.h khtmlform.h khtmltoken.h khtmlframe.h khtmlview.h khtmlclue.h khtmldata.h khtmltable.h khtmliter.h khtmlcache.h
 noinst_HEADERS = khtmlchain.h khtmlformats.h
 libkhtml_la_LDFLAGS = -version-info 1:0
 
@@ -39,6 +39,14 @@ datadir = $(kde_datadir)/khtml/pics
 EXTRA_DIST = khtml_dnd.xpm
 
 INCLUDES = -I../kdecore -I../kdeui -I../jscript -I../kimgio $(all_includes)
+
+SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
+
+## generate lib documentation
+srcdoc:
+	$(mkinstalldirs) $(SRCDOC_DEST)
+	kdoc -H -d $(SRCDOC_DEST) kdecore \
+	         $(include_HEADERS) -lqt
 
 khtml.moc: khtml.h
 	$(MOC) -o khtml.moc khtml.h 

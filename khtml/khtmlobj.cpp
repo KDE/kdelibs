@@ -22,7 +22,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Objects
-// $Id:  $
+// $Id$
 
 #include <kurl.h>
 #include <kapp.h>
@@ -30,6 +30,7 @@
 #include "khtmlchain.h"
 #include "khtmlobj.h"
 #include "khtml.h"
+#include "khtmlcache.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,7 +49,6 @@
 #include "khtmlobj.moc"
 
 // This will be constructed once and NEVER deleted.
-QList<HTMLCachedImage>* HTMLImage::pCache = 0L;
 int HTMLObject::objCount = 0;
 
 //-----------------------------------------------------------------------------
@@ -1222,41 +1222,16 @@ void HTMLBullet::print( QPainter *_painter, int _tx, int _ty )
 
 //-----------------------------------------------------------------------------
 
-HTMLCachedImage::HTMLCachedImage( const char *_filename )
-{
-    pixmap = new QPixmap();
-    pixmap->load( _filename );
-    filename = _filename;
-}
-
 QPixmap* HTMLImage::findImage( const char *_filename )
 {
-	// Since this method is static, it is possible that pCache has not
-	// yet been initialized. Better be careful.
-	if( !pCache )
-	{
-		pCache = new QList<HTMLCachedImage>;
-		return 0l;
-	}
-
-    HTMLCachedImage *img;
-    for ( img = pCache->first(); img != 0L; img = pCache->next() )
-    {
-	if ( strcmp( _filename, img->getFileName() ) == 0 )
-	    return img->getPixmap();
-    }
-    
-    return 0L;
+    // imitates old behavoir
+    return KHTMLCache::image( _filename );
 }
 
 void HTMLImage::cacheImage( const char *_filename )
 {
-	// Since this method is static, it is possible that pCache has not
-	// yet been initialized. Better be careful.
-	if( !pCache )
-		pCache = new QList<HTMLCachedImage>;
-
-	pCache->append( new HTMLCachedImage( _filename ) );
+    // imitates old behavior
+    KHTMLCache::preload( _filename, KHTMLCache::Persistent );
 }
 
 HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
@@ -1264,9 +1239,6 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 	int _max_width, int _width, int _height, int _percent, int bdr )
     : QObject(), HTMLObject()
 {
-    if ( pCache == 0 )
-	pCache = new QList<HTMLCachedImage>;
-
     pixmap = 0;
     movie = 0;
     overlay = 0;
@@ -1278,6 +1250,7 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
     target = _target;
     
     cached = TRUE;
+    imageURL = _filename;
 
     predefinedWidth = ( _width < 0 && !_percent ) ? false : true;
     predefinedHeight = _height < 0 ? false : true;
@@ -1312,59 +1285,9 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 
     printf("********* IMAGE %s ******\n",_filename );
     
-    if ( _filename[0] != '/' )
-    {
-	KURL kurl( _filename );
-	if ( kurl.isMalformed() )
-	{
-	  warning("Malformed URL '%s'\n", _filename );
-	  return;
-	}
-	
-	if ( strcmp( kurl.protocol(), "file" ) == 0 )
-	{
-	    pixmap = HTMLImage::findImage( kurl.path() );
-	    if ( pixmap == 0 )
-	    {
-// We cannot use QMovie here, because we will load thumbnails which
-// are not in GIF format!
-
-//#ifdef USE_QMOVIE
-//		if ( strstr( kurl.path(), ".gif" ) != 0 )
-//		{
-//		    movie = new QMovie( kurl.path(), 8192 );
-//		    movie->connectUpdate( this, SLOT( movieUpdated( const QRect &) ) );
-//		}
-//		else
-//		{
-//#endif
-		    pixmap = new QPixmap();
-		    pixmap->load( kurl.path() );	    
-//#ifdef USE_QMOVIE
-//		}
-//#endif
-		cached = false;
-	    }
-	}
-	else 
-	{
-	    imageURL = _filename;
-	    bComplete = false;
-	    synchron = TRUE;
-	    htmlWidget->requestFile( this, imageURL.data() );
-	    synchron = FALSE;
-	}
-    }
-    else
-    {
-	pixmap = HTMLImage::findImage( _filename );
-	if ( pixmap == 0 )
-	{
-	    pixmap = new QPixmap();
-	    pixmap->load( _filename );
-	    cached = false;
-	}
-    }
+    synchron = TRUE;
+    htmlWidget->requestImage( this, imageURL.data() );
+    synchron = FALSE;
 
     // Is the image available ?
     if ( pixmap == 0 || pixmap->isNull() )
@@ -1407,41 +1330,13 @@ void HTMLImage::init()
 
 void HTMLImage::changeImage( const char *_url )
 { 
-  KURL u( htmlWidget->getBaseURL(), _url );
-  if ( u.isMalformed() )
-    return;
-
-  if ( !bComplete && !pixmap )
-    htmlWidget->cancelRequestFile( this );
-
+  htmlWidget->imageCache()->free( imageURL, this);
   imageURL = _url;
 
-  if ( u.isLocalFile() )
-  {
-    QPixmap *p = HTMLImage::findImage( _url );
-    if ( p )
-    {
-      if ( pixmap )
-	delete pixmap;
-      pixmap = p;
-    }
-    else
-    {
-      if ( !pixmap )
-	pixmap = new QPixmap();
-      pixmap->load( u.path() );
-      cached = false;
-    }
-
-    bComplete = true;
-  }
-  else
-  {
-    synchron = TRUE;
-    bComplete = false;
-    htmlWidget->requestFile( this, imageURL.data() );
-    synchron = FALSE;
-  }
+  synchron = TRUE;
+  bComplete = false;
+  htmlWidget->requestImage( this, imageURL.data() );
+  synchron = FALSE;
   
   // Is the image available ?
   if ( pixmap == 0 || pixmap->isNull() )
@@ -1458,119 +1353,32 @@ void HTMLImage::changeImage( const char *_url )
     htmlWidget->paintSingleObject( this );
 }
 
+void HTMLImage::setPixmap( QPixmap *p )
+{
+    pixmap = p;
+    init();
+
+    if ( predefinedWidth && predefinedHeight && !synchron )
+	htmlWidget->paintSingleObject( this );
+    else if ( !synchron )
+    {
+	htmlWidget->calcSize();
+	htmlWidget->calcAbsolutePos();
+	htmlWidget->scheduleUpdate( true );
+    }
+}
+
+void HTMLImage::setMovie( QMovie *m )
+{
+  movie = m;
+  movie->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
+}
+
+
 void HTMLImage::setOverlay( const char *_ol )
 {
     // overlays must be cached
     overlay = HTMLImage::findImage( _ol );
-}
-
-bool HTMLImage::fileLoaded( const char* _url, QBuffer& _buffer )
-{
-  bComplete = true;
-  
-  char buffer[ 4 ];
-  buffer[0] = 0;
-  _buffer.open( IO_ReadOnly );
-  _buffer.readBlock( buffer, 3 );
-  _buffer.close();
-    
-  if ( strcmp( buffer, "GIF" ) == 0 )
-  {
-    movie = new QMovie( _buffer.buffer() );
-    movie->connectUpdate( this, SLOT( movieUpdated( const QRect &) ) );
-  }
-  else
-  {
-    pixmap = new QPixmap();
-    pixmap->loadFromData( _buffer.buffer() );	    
-    cached = false;
-
-    if ( pixmap == 0 || pixmap->isNull() )
-      return false;
-  }
-  
-  init();
-
-  // We knew the size during the HTML parsing ?
-  if ( predefinedWidth && predefinedHeight && !synchron )
-    htmlWidget->paintSingleObject( this ); 
-  else if ( !synchron )
-    // We need an update. That means the size and position if
-    // all elements has to be recalculated => return true
-    return true;
-  
-  // No update of sizes and positions needed since we already knew
-  // the size of the image or since we are in synchron mode.
-  return false;
-}
-
-void HTMLImage::fileLoaded( const char *_filename )
-{
-  printf("*********** LOADED %s ******", _filename );
-  
-    bComplete = true;
-
-    char buffer[ 4 ];
-    buffer[0] = 0;
-    FILE *f = fopen( _filename, "rb" );
-    if ( f )
-    {
-      int n = fread( buffer, 1, 3, f );
-      if ( n >= 0 )
-	buffer[ n ] = 0;
-      else
-	buffer[0] = 0;
-      fclose( f );
-    }
-    else
-    {
-      warning( "Could not load %s\n", _filename );
-      perror( "" );
-    }
-    
-    if ( strcmp( buffer, "GIF" ) == 0 )
-    {
-      // Workaround for bug in QMovie
-      // Load the image in memory to avoid vasting file handles
-      struct stat buff;
-      stat( _filename, &buff );
-      int size = buff.st_size;
-      char *p = new char[ size ];
-      FILE *f = fopen( _filename, "rb" );
-      fread( p, 1, size, f );
-      fclose( f );
-      QByteArray arr;
-      arr.duplicate( p, size );
-      delete p;
-      movie = new QMovie( arr, 8192 );
-      // End Workaround
-	// movie = new QMovie( _filename, 8192 );
-      movie->connectUpdate( this, SLOT( movieUpdated( const QRect &) ) );
-    }
-    else
-    {
-	pixmap = new QPixmap();
-	pixmap->load( _filename );	    
-	cached = false;
-
-	if ( pixmap == 0 || pixmap->isNull() )
-	    return;
-
-	init();
-
-	debugM( "Loaded Image: %s, %d, %d, %d\n",  imageURL.data(), predefinedWidth,
-		    predefinedHeight, synchron );
-
-	// We knew the size during the HTML parsing ?
-	if ( predefinedWidth && predefinedHeight && !synchron )
-	    htmlWidget->paintSingleObject( this );
-	else if ( !synchron )
-	{
-	    htmlWidget->calcSize();
-	    htmlWidget->calcAbsolutePos();
-	    htmlWidget->scheduleUpdate( true );
-	}
-    }
 }
 
 int HTMLImage::calcMinWidth()
@@ -1739,21 +1547,13 @@ void HTMLImage::movieUpdated( const QRect & )
 
 HTMLImage::~HTMLImage()
 {
-    if ( !bComplete && !pixmap )
-	htmlWidget->cancelRequestFile( this );
-
-    // if ( !imageURL.isEmpty() && !pixmap )
-    // htmlWidget->cancelRequestFile( this );
-
-    if ( pixmap && !cached )
-	delete pixmap;
 #ifdef USE_QMOVIE
     if ( movie )
     {
 	movie->disconnectUpdate( this, 0 );
-    	delete movie;
     }
 #endif
+   htmlWidget->imageCache()->free( imageURL, this );
 }
 
 //----------------------------------------------------------------------------
@@ -1802,7 +1602,7 @@ HTMLMap::~HTMLMap()
 	htmlWidget->cancelRequestFile( this );
 }
 
-bool HTMLMap::fileLoaded( const char* _url, QBuffer& _buffer )
+bool HTMLMap::fileLoaded( const char* _url, QBuffer& _buffer, bool )
 {
   if ( !_buffer.open( IO_ReadOnly ) )
   {
@@ -1818,7 +1618,7 @@ bool HTMLMap::fileLoaded( const char* _url, QBuffer& _buffer )
 }
 
 // The external map has been downloaded
-void HTMLMap::fileLoaded( const char *_filename )
+void HTMLMap::fileLoaded( const char *, const char *_filename )
 {
   QFile file( _filename );
   if ( !file.open( IO_ReadOnly ) )
