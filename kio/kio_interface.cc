@@ -35,9 +35,9 @@ bool ConnectionSignals::testDir( const char *_url )
   assert( m_pConnection );
   
   int l = strlen( _url );
-  if ( l >= 0xFFFF )
+  if ( l >= m_pConnection->bufferSize() )
     return false;
-  
+
   m_pConnection->send( CMD_TESTDIR, static_cast<const char*>(_url), l + 1 );
   return true;
 }
@@ -47,7 +47,7 @@ bool ConnectionSignals::get( const char *_url )
   assert( m_pConnection );
   
   int l = strlen( _url );
-  if ( l >= 0xFFFF )
+  if ( l >= m_pConnection->bufferSize() )
     return false;
   
   m_pConnection->send( CMD_GET, static_cast<const char*>(_url), l + 1 );
@@ -59,9 +59,9 @@ bool ConnectionSignals::getSize( const char *_url )
   assert( m_pConnection );
   
   int l = strlen( _url );
-  if ( l >= 0xFFFF )
+  if ( l >= m_pConnection->bufferSize() )
     return false;
-  
+
   m_pConnection->send( CMD_GET_SIZE, static_cast<const char*>(_url), l + 1 );
   return true;
 }
@@ -71,9 +71,9 @@ bool ConnectionSignals::put( const char *_url, int _mode, bool _overwrite, bool 
   assert( m_pConnection );
 
   int l = strlen( _url );
-  if ( l >= 0xFFF0 )
+  if ( l >= (m_pConnection->bufferSize()-15) )
     return false;
-  
+
   sprintf( m_pConnection->buffer(), "%c%c%8x_%8x_", '0' + (char)_overwrite,
 	   '0' + (char)_resume, _mode, _size );
   strcpy( m_pConnection->buffer() + 20, _url );
@@ -87,9 +87,9 @@ bool ConnectionSignals::copy( QStringList& _source, const char *_dest )
   assert( m_pConnection );
   
   int l = strlen( _dest );
-  if ( l >= 0xFFFF )
+  if ( l >= m_pConnection->bufferSize() )
     return false;
-  
+
   QStringList::Iterator it = _source.begin();
   for( ; it != _source.end(); ++it )
     if ( !source( (*it) ) )
@@ -105,7 +105,7 @@ bool ConnectionSignals::copy( const char *_source, const char *_dest )
 
   int l1 = strlen( _source );
   int l2 = strlen( _dest );
-  if ( l1 + 1 + l2 + 1 >= 0xFFFF )
+  if ( l1 + 1 + l2 + 1 >= m_pConnection->bufferSize() )
     return false;
   
   memcpy( m_pConnection->buffer(), _source, l1 + 1 );
@@ -120,7 +120,7 @@ bool ConnectionSignals::source( const char *_url )
   assert( m_pConnection );
   
   int l = strlen( _url );
-  if ( l >= 0xFFFF )
+  if ( l >= m_pConnection->bufferSize() )
     return false;
   
   m_pConnection->send( CMD_SOURCE, _url, l + 1 );
@@ -132,7 +132,7 @@ bool ConnectionSignals::move( QStringList& _source, const char *_dest )
   assert( m_pConnection );
 
   int l = strlen( _dest );
-  if ( l >= 0xFFFF )
+  if ( l >= m_pConnection->bufferSize() )
     return false;
   
   QStringList::Iterator it = _source.begin();
@@ -151,7 +151,7 @@ bool ConnectionSignals::move( const char *_source, const char *_dest )
 
   int l1 = strlen( _source );
   int l2 = strlen( _dest );
-  if ( l1 + 1 + l2 + 1 >= 0xFFFF )
+  if ( l1 + 1 + l2 + 1 >= m_pConnection->bufferSize() )
     return false;
   
   memcpy( m_pConnection->buffer(), _source, l1 + 1 );
@@ -181,7 +181,7 @@ bool ConnectionSignals::del( const char *_url )
   assert( m_pConnection );
 
   int l = strlen( _url );
-  if ( l >= 0xFFFF )
+  if ( l >= m_pConnection->bufferSize() )
     return false;
   
   m_pConnection->send( CMD_DEL, static_cast<const char*>(_url), l + 1 );
@@ -194,7 +194,7 @@ bool ConnectionSignals::listDir( const char *_url )
   assert( m_pConnection );
   
   int l = strlen( _url );
-  if ( l >= 0xFFFF )
+  if ( l >= m_pConnection->bufferSize() )
     return false;
   
   m_pConnection->send( CMD_LIST, static_cast<const char*>(_url), l + 1 );
@@ -206,7 +206,7 @@ bool ConnectionSignals::mkdir( const char *_url, int _mode )
   assert( m_pConnection );
 
   int l = strlen( _url );
-  if ( l >= 0xFFF0 )
+  if ( l >= (m_pConnection->bufferSize()-15) )
     return false;
   
   sprintf( m_pConnection->buffer(), "%8x_", _mode );
@@ -263,7 +263,7 @@ bool ConnectionSignals::renamed( const char *_new )
   assert( m_pConnection );
   
   int l = strlen( _new );
-  if ( l >= 0xFFFF )
+  if ( l >= m_pConnection->bufferSize() )
     return false;
   
   m_pConnection->send( MSG_RENAMED, _new, l + 1 );
@@ -339,7 +339,7 @@ bool ConnectionSignals::scanningDir( const char *_dir )
   assert( m_pConnection );
   
   int l = strlen( _dir );
-  if ( l >= 0xFFFF )
+  if ( l >= m_pConnection->bufferSize() )
     return false;
   
   m_pConnection->send( INF_SCANNING_DIR, _dir, l + 1 );
@@ -361,7 +361,7 @@ bool ConnectionSignals::copyingFile( const char *_from, const char *_to )
 
   int l1 = strlen( _from );
   int l2 = strlen( _to );
-  if ( l1 + 1 + l2 + 1 >= 0xFFFF )
+  if ( l1 + 1 + l2 + 1 >= m_pConnection->bufferSize() )
     return false;
   
   memcpy( m_pConnection->buffer(), _from, l1 + 1 );
@@ -376,7 +376,7 @@ bool ConnectionSignals::makingDir( const char *_dir )
   assert( m_pConnection );
   
   int l = strlen( _dir );
-  if ( l >= 0xFFFF )
+  if ( l >= m_pConnection->bufferSize() )
     return false;
   
   m_pConnection->send( INF_MAKING_DIR, _dir, l + 1 );
@@ -388,7 +388,7 @@ bool ConnectionSignals::gettingFile( const char *_url )
   assert( m_pConnection );
   
   int l = strlen( _url );
-  if ( l >= 0xFFFF )
+  if ( l >= m_pConnection->bufferSize() )
     return false;
   
   m_pConnection->send( INF_GETTING_FILE, static_cast<const char*>(_url), l + 1 );
@@ -400,7 +400,7 @@ bool ConnectionSignals::deletingFile( const char *_url )
   assert( m_pConnection );
   
   int l = strlen( _url );
-  if ( l >= 0xFFFF )
+  if ( l >= m_pConnection->bufferSize() )
     return false;
   
   m_pConnection->send( INF_DELETING_FILE, static_cast<const char*>(_url), l + 1 );
@@ -412,7 +412,7 @@ bool ConnectionSignals::redirection( const char *_url )
   assert( m_pConnection );
   
   int l = strlen( _url );
-  if ( l >= 0xFFFF )
+  if ( l >= m_pConnection->bufferSize() )
     return false;
   
   m_pConnection->send( INF_REDIRECTION, static_cast<const char*>(_url), l + 1 );
@@ -431,7 +431,7 @@ bool ConnectionSignals::mimeType( const char *_type )
   assert( m_pConnection );
   
   int l = strlen( _type );
-  if ( l >= 0xFFFF )
+  if ( l >= m_pConnection->bufferSize() )
     return false;
   
   m_pConnection->send( INF_MIME_TYPE, static_cast<const char*>(_type), l + 1 );
@@ -443,7 +443,7 @@ bool ConnectionSignals::unmount( const char *_point )
   assert( m_pConnection );
   
   int l = strlen( _point );
-  if ( l >= 0xFFFF )
+  if ( l >= m_pConnection->bufferSize() )
     return false;
   
   m_pConnection->send( CMD_UNMOUNT, _point, l + 1 );
@@ -467,7 +467,7 @@ bool ConnectionSignals::mount( bool _ro, const char *_fstype, const char* _dev, 
     l3 = strlen( _point );
   else
     _point = "";
-  if ( l1 + 1 + l2 + 1 + l3 + 1 >= 0xFFFF )
+  if ( l1 + 1 + l2 + 1 + l3 + 1 >= m_pConnection->bufferSize() )
     return false;
   
   m_pConnection->buffer()[0] = '0' + (char)_ro;

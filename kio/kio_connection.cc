@@ -4,8 +4,6 @@
 #include <config.h>
 #endif
 
-#include "kio_connection.h"
-
 #include <sys/types.h>
 #include <sys/signal.h>
 #include <sys/time.h>
@@ -23,19 +21,25 @@
 
 #include <iostream.h>
 
-Connection::Connection( int _in_fd, int _out_fd )
+#include "kio_connection.h"
+
+Connection::Connection( int _in_fd, int _out_fd, size_t _buf_len )
 {
-  init( _in_fd, _out_fd );
+  init( _in_fd, _out_fd, _buf_len );
 }
 
 Connection::Connection()
 {
-  m_fin = 0L;
-  m_fout = 0L;
+  m_fin = m_fout = 0L;
   m_pBuffer = 0L;
 }
 
-void Connection::init( int _in_fd, int _out_fd )
+size_t Connection::defaultBufferSize()
+{
+	return 0xFFFF;
+}
+
+void Connection::init( int _in_fd, int _out_fd , size_t _buf_len)
 {
   m_in = _in_fd;
   m_out = _out_fd;
@@ -43,44 +47,40 @@ void Connection::init( int _in_fd, int _out_fd )
   m_fin = fdopen( _in_fd, "rb" );
   m_fout = fdopen( _out_fd, "wb" );
 
-  m_pBuffer = new char[ 0xFFFF ];
+  m_pBuffer = (char *)malloc(_buf_len);
+  m_iBufferSize = _buf_len;
 }
 
 Connection::~Connection()
 {
-  /* close( m_in );
-  close( m_out ); */
+  if (m_fin)
+    fclose(m_fin);
+  if (m_fout)
+    fclose(m_fout);
   
-  if ( m_fin )
-    fclose( m_fin );
-  if ( m_fout )
-    fclose( m_fout );
-  
-  if ( m_pBuffer )
-    delete [] m_pBuffer;
+  if (m_pBuffer)
+    free(m_pBuffer);
 }
 
 int Connection::send( int _cmd, const void *_p, int _len )
 {
-  static char buffer[ 100 ];
+  static char buffer[ 64 ];
   sprintf( buffer, "%4x_%2x_", _len, _cmd );
 
   int n = fwrite( buffer, 1, 8, m_fout );
-  
-  if ( n != 8 )
-  {
+
+  if ( n != 8 ) {
     cerr << "Could not send header\n";
     return 0;
   }
-  
+
   n = fwrite( _p, 1, _len, m_fout );
 
-  if ( n != _len )
-  {
+  if ( n != _len ) {
     cerr << "Could not write data\n";
     return 0;
   }
-  
+
   fflush( m_fout );
 
   return 1;
@@ -89,7 +89,7 @@ int Connection::send( int _cmd, const void *_p, int _len )
 void* Connection::read( int* _cmd, int* _len )
 {
   static char buffer[ 8 ];
-  
+
 again1:
   int n = ::read( m_in, buffer, 8 );
   if ( n == -1 && errno == EINTR )
@@ -142,7 +142,8 @@ again1:
   return m_pBuffer;
 }
 
-Slave::Slave( const char *_cmd ) : Connection()
+Slave::Slave( const char *_cmd ) 
+	: Connection()
 {
   // Indicate an error;
   m_pid = -1;
@@ -154,10 +155,9 @@ Slave::Slave( const char *_cmd ) : Connection()
   if( !buildPipe( &recv_out, &send_out ) ) return;
 
   m_pid = vfork();
-  if( m_pid == 0 )
-  {
-    dup2( recv_in, 0 );	fcntl(0,F_SETFD,0);
-    dup2( send_out, 1 ); fcntl(1,F_SETFD,0);
+  if( m_pid == 0 ) {
+    dup2( recv_in, 0 );	fcntl(0, F_SETFD, 0);
+    dup2( send_out, 1 ); fcntl(1, F_SETFD, 0);
     close( recv_in );
     close( recv_out );
     close( send_in );
@@ -174,7 +174,7 @@ Slave::Slave( const char *_cmd ) : Connection()
   close( recv_in );
   close( send_out );
 
-  init( recv_out, send_in );
+  init( recv_out, send_in, Connection::defaultBufferSize() );
 }
 
 Slave::~Slave()
