@@ -28,6 +28,7 @@
 #include <kiconloader.h>
 #include <klistview.h>
 #include <kservice.h>
+#include <kstandarddirs.h>
 #include <kconfigbase.h>
 #include <kopenwith.h>
 
@@ -136,7 +137,10 @@ KCustomMenuEditor::save(KConfigBase *cfg)
    while(item)
    {
       i++;
-      cfg->writeEntry(QString("Item%1").arg(i), item->s->desktopEntryPath());
+      QString path = item->s->desktopEntryPath();
+      if (!path.startsWith("/") || !KGlobal::dirs()->relativeLocation("xdgdata-apps", path).startsWith("/"))
+         path = item->s->desktopEntryName();
+      cfg->writeEntry(QString("Item%1").arg(i), path);
       item = (Item *) item->nextSibling();
    }
    cfg->writeEntry("NrOfItems", i);
