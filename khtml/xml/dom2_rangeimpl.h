@@ -35,8 +35,10 @@ class RangeImpl : public DomShared
 {
     friend class DocumentImpl;
 public:
-    RangeImpl(DocumentImpl *rootContainer);
-    RangeImpl(NodeImpl *sc, const long so, NodeImpl *ec, const long eo);
+    RangeImpl(DocumentImpl *_ownerDocument);
+    RangeImpl(DocumentImpl *_ownerDocument,
+	      NodeImpl *_startContainer, long _startOffset,
+	      NodeImpl *_endContainer, long _endOffset);
 
     ~RangeImpl();
 
@@ -65,13 +67,13 @@ public:
     DocumentFragmentImpl *masterTraverse(bool contentExtract, int &exceptioncode);
     RangeImpl *cloneRange(int &exceptioncode);
 
-    void setStartAfter( const NodeImpl *refNode, int &exceptioncode );
-    void setEndBefore( const NodeImpl *refNode, int &exceptioncode );
-    void setEndAfter( const NodeImpl *refNode, int &exceptioncode );
-    void selectNode( const NodeImpl *refNode, int &exceptioncode );
-    void selectNodeContents( const NodeImpl *refNode, int &exceptioncode );
+    void setStartAfter( NodeImpl *refNode, int &exceptioncode );
+    void setEndBefore( NodeImpl *refNode, int &exceptioncode );
+    void setEndAfter( NodeImpl *refNode, int &exceptioncode );
+    void selectNode( NodeImpl *refNode, int &exceptioncode );
+    void selectNodeContents( NodeImpl *refNode, int &exceptioncode );
     void surroundContents( NodeImpl *newParent, int &exceptioncode );
-    void setStartBefore( const NodeImpl *refNode, int &exceptioncode );
+    void setStartBefore( NodeImpl *refNode, int &exceptioncode );
 
 protected:
     DocumentImpl *m_ownerDocument;
@@ -86,6 +88,8 @@ private:
     void checkNodeWOffset( NodeImpl *n, int offset, int &exceptioncode) const;
     void checkNodeBA( const NodeImpl *n, int &exceptioncode ) const;
     void checkCommon(int &exceptioncode) const;
+    void setStartContainer(NodeImpl *_startContainer);
+    void setEndContainer(NodeImpl *_endContainer);
 };
 
 }; // namespace

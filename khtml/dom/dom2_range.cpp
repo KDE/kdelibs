@@ -56,7 +56,16 @@ Range::Range(const Range &other)
 
 Range::Range(const Node startContainer, const long startOffset, const Node endContainer, const long endOffset)
 {
-    impl = new RangeImpl(startContainer.handle(),startOffset,endContainer.handle(),endOffset);
+    if (startContainer.isNull() || endContainer.isNull()) {
+	throw DOMException(DOMException::NOT_FOUND_ERR);
+    }
+
+    if (!startContainer.handle()->getDocument() ||
+	startContainer.handle()->getDocument() != endContainer.handle()->getDocument()) {
+	throw DOMException(DOMException::WRONG_DOCUMENT_ERR);	
+    }
+
+    impl = new RangeImpl(startContainer.handle()->getDocument(),startContainer.handle(),startOffset,endContainer.handle(),endOffset);
     impl->ref();
 }
 
@@ -262,7 +271,7 @@ void Range::deleteContents(  )
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    int exceptioncode;
+    int exceptioncode = 0;
     impl->deleteContents(exceptioncode);
     throwException(exceptioncode);
 }
@@ -272,7 +281,7 @@ DocumentFragment Range::extractContents(  )
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    int exceptioncode;
+    int exceptioncode = 0;
     DocumentFragmentImpl *r = impl->extractContents(exceptioncode);
     throwException(exceptioncode);
     return r;
@@ -283,7 +292,7 @@ DocumentFragment Range::cloneContents(  )
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    int exceptioncode;
+    int exceptioncode = 0;
     DocumentFragmentImpl *r = impl->cloneContents(exceptioncode);
     throwException(exceptioncode);
     return r;
