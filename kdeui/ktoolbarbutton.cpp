@@ -42,7 +42,7 @@
 #include <kiconloader.h>
 
 // needed to get our instance
-#include <ktmainwindow.h>
+#include <kmainwindow.h>
 
 template class QIntDict<KToolBarButton>;
 
