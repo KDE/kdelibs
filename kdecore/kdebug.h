@@ -24,9 +24,6 @@
 #include <qstring.h>
 class QWidget;
 
-void kDebugFatal( const char* fmt, ... );
-void kDebugFatal( unsigned short area, const char* fmt, ... );
-
 class kdbgstream;
 class kndbgstream;
 typedef kdbgstream & (*KDBGFUNC)(kdbgstream &); // manipulator function
