@@ -27,7 +27,7 @@
 // $Id$
 
 // #define TOKEN_DEBUG
-//#define TOKEN_PRINT
+#define TOKEN_PRINT
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

@@ -363,6 +363,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	HTMLElementImpl *e;
 	bool ignore = false;
 
+	// switch according to the element to insert
 	switch(id)
 	{
 	    // head elements in the body should be ignored.
@@ -481,6 +482,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    break;
 	}
 
+	// switch on the currently active element
 	switch(current->id())
 	{
 	case ID_HTML:
@@ -519,6 +521,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    {
 	    case ID_COL:
 	    case ID_COLGROUP:
+	    case ID_P:
 		ignore = true;
 		break;
 	    default:
@@ -530,12 +533,32 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	case ID_THEAD:
 	case ID_TFOOT:
 	case ID_TBODY:
-	    e = new HTMLTableRowElementImpl(document);
-	    insertNode(e);
+	    switch(id)
+	    {
+	    case ID_COL:
+	    case ID_COLGROUP:
+	    case ID_P:
+		ignore = true;
+		break;
+	    default:
+		e = new HTMLTableRowElementImpl(document);
+		insertNode(e);
+		break;
+	    }
 	    break;
 	case ID_TR:
-	    e = new HTMLTableCellElementImpl(document, ID_TD);
-	    insertNode(e);
+	    switch(id)
+	    {
+	    case ID_COL:
+	    case ID_COLGROUP:
+	    case ID_P:
+		ignore = true;
+		break;
+	    default:
+		e = new HTMLTableCellElementImpl(document, ID_TD);
+		insertNode(e);
+		break;
+	    }
 	    break;
 	case ID_UL:
 	case ID_OL:
@@ -571,7 +594,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	if(ignore)
 	{
 	    //printf("Exception handler failed in HTMLPArser::insertNode()\n");
-	    throw exception;
+	    return;
 	}
 	
 	insertNode(n);
