@@ -161,20 +161,29 @@ InterfaceDef InterfaceRepo_impl::queryInterface(const string& name)
 				vector<string> *types = offer.getProperty("TypeFile");
 				if(types->size() == 1)
 				{
-					string filename = string(TRADER_DIR)
-					                + "/" + types->front();
+					const vector<string> *path = MCOPUtils::traderPath();
 
-					arts_debug("InterfaceRepo: loading %s", filename.c_str());
+					vector<string>::const_iterator pi = path->begin();
+					while(pi != path->end() && def.name == "")
+					{
+						string filename = *pi++ + "/" + types->front();
 
-					FILE *extfile = fopen(filename.c_str(),"r");
-					Buffer b;
-					int c;
-					while((c = fgetc(extfile)) >= 0) b.writeByte(c);
-					fclose(extfile);
+						FILE *extfile = fopen(filename.c_str(),"r");
+						if(extfile)
+						{
+							arts_debug("InterfaceRepo: loading %s",
+								filename.c_str());
 
-					insertModule(ModuleDef(b));
-					def = queryInterfaceLocal(name);
-					//removeModule(id);
+							Buffer b;
+							int c;
+							while((c = fgetc(extfile)) >= 0) b.writeByte(c);
+							fclose(extfile);
+
+							insertModule(ModuleDef(b));
+							def = queryInterfaceLocal(name);
+							//removeModule(id);
+						}
+					}
 				}
 				delete types;
 			}

@@ -137,3 +137,100 @@ unsigned long MCOPUtils::makeIID(const string& interfaceName)
 
 	return iidmap[interfaceName];
 }
+
+static vector<string> *readPath(const string& name, const string& defaultValue)
+{
+	vector<string> *result = 0;
+	const char *home = getenv("HOME");
+
+	if(home)
+	{
+		string rcname = home + string("/.mcoprc");
+
+		MCOPConfig config(rcname);
+		result = config.readListEntry(name);
+	}
+	if(!result)
+		result = new vector<string>;
+	if(result->empty())
+		result->push_back(defaultValue);
+
+	return result;
+}
+
+const vector<string> *MCOPUtils::extensionPath()
+{
+	static vector<string> *result = 0;
+
+	if(!result) result = readPath("ExtensionPath", EXTENSION_DIR);
+	return result;
+}
+
+const vector<string> *MCOPUtils::traderPath()
+{
+	static vector<string> *result = 0;
+
+	if(!result) result = readPath("TraderPath", TRADER_DIR);
+	return result;
+}
+
+bool MCOPUtils::tokenize(const string& line, string& key,vector<string>& values)
+{
+	string value;
+	enum { sKey, sValue, sValueQuoted, sValueQuotedEscaped, sBad } state;
+
+	state = sKey;
+	for(string::const_iterator i = line.begin(); i != line.end(); i++)
+	{
+		char c = *i;
+		unsigned char uc = static_cast<unsigned char>(c);
+
+		arts_assert(c != '\n');
+
+		if(state == sKey)
+		{
+			if(c == ' ' || c == '\t')
+				; // ignore
+			else if(isalnum(c))
+				key += c;
+			else if(c == '=')
+				state = sValue;
+			else
+				state = sBad;
+		}
+		else if(state == sValue)
+		{
+			if(c == ' ' || c == '\t')
+				; // ignore
+			else if(c == '"')
+				state = sValueQuoted;
+			else if(c == ',')
+			{
+				values.push_back(value);
+				value = "";
+			}
+			else if(uc > 32 && uc < 128)
+				value += c;
+			else
+				state = sBad;
+		}
+		else if(state == sValueQuoted)
+		{
+			if(c == '"')
+				state = sValue;
+			else if(c == '\\')
+				state = sValueQuotedEscaped;
+			else
+				value += c;
+		}
+		else if(state == sValueQuotedEscaped)
+		{
+			value += c;
+			state = sValueQuoted;
+		}
+	}
+	if(state == sValue)
+		values.push_back(value);
+
+	return(state != sBad);
+}

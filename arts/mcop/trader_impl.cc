@@ -91,64 +91,10 @@ TraderOffer_impl::TraderOffer_impl(const string& interfaceName,
 
 	while(getline(file,line))
 	{
-		string key,value;
+		string key;
 		vector<string> values;
-		enum { sKey, sValue, sValueQuoted, sValueQuotedEscaped, sBad } state;
 
-		state = sKey;
-		for(string::iterator i = line.begin(); i != line.end(); i++)
-		{
-			char c = *i;
-			unsigned char uc = static_cast<unsigned char>(c);
-
-			if(c == '\n') arts_warning("newline in trader");
-
-			if(state == sKey)
-			{
-				if(c == ' ' || c == '\t')
-					; // ignore
-				else if(isalnum(c))
-					key += c;
-				else if(c == '=')
-					state = sValue;
-				else
-					state = sBad;
-			}
-			else if(state == sValue)
-			{
-				if(c == ' ' || c == '\t')
-					; // ignore
-				else if(c == '"')
-					state = sValueQuoted;
-				else if(c == ',')
-				{
-					values.push_back(value);
-					value = "";
-				}
-				else if(uc > 32 && uc < 128)
-					value += c;
-				else
-					state = sBad;
-			}
-			else if(state == sValueQuoted)
-			{
-				if(c == '"')
-					state = sValue;
-				else if(c == '\\')
-					state = sValueQuotedEscaped;
-				else
-					value += c;
-			}
-			else if(state == sValueQuotedEscaped)
-			{
-				value += c;
-				state = sValueQuoted;
-			}
-		}
-		if(state == sValue)
-			values.push_back(value);
-
-		if(state != sBad)
+		if(MCOPUtils::tokenize(line,key,values))
 			property[key] = values;
 	}
 
@@ -196,7 +142,10 @@ vector<string>* TraderOffer_impl::getProperty(const string& name)
 
 TraderHelper::TraderHelper()
 {
-	addDirectory(TRADER_DIR);
+	const vector<string> *path = MCOPUtils::traderPath();
+
+	vector<string>::const_iterator pi;
+	for(pi = path->begin(); pi != path->end(); pi++) addDirectory(*pi);
 }
 
 TraderHelper::~TraderHelper()

@@ -71,10 +71,6 @@ as an additional MCOP interface to change config stuff on the fly, as
 restarting will mean that already connected clients (mp3 player) will
 crash/hang).
 
-  => Configuration
-
-- make extension dir runtime configurable (not only compiled in)
-
   => Documentation & Web
 
 - make kdoc classtree available online

@@ -23,6 +23,8 @@
 #include <config.h>
 #include "extensionloader.h"
 #include "startupmanager.h"
+#include "mcoputils.h"
+#include <unistd.h>
 #include <assert.h>
 
 using namespace std;
@@ -36,7 +38,19 @@ ExtensionLoader::ExtensionLoader(const string& filename) :handle(0)
 	if(filename[0] == '/')
 		dlfilename = filename;
 	else
-		dlfilename = string(EXTENSION_DIR) + "/" + filename;
+	{
+		const vector<string> *path = MCOPUtils::extensionPath();
+
+		vector<string>::const_iterator pi;
+		for(pi = path->begin(); pi != path->end(); pi++)
+		{
+			dlfilename = *pi + "/" + filename;
+
+			if(access(dlfilename.c_str(),F_OK) == 0)
+				break;
+		}
+	}
+
 
 	/* this will catch all startup classes here */
 	StartupManager::setExtensionLoader(this);

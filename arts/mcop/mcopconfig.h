@@ -30,6 +30,7 @@
 #define MCOPCONFIG_H
 
 #include <string>
+#include <vector>
 
 namespace Arts {
 
@@ -45,6 +46,7 @@ public:
 
 	std::string readEntry(const std::string& key,
 								const std::string& defaultValue = "");
+	std::vector<std::string> *readListEntry(const std::string& key);
 };
 
 };

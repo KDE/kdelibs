@@ -21,6 +21,7 @@
     */
 
 #include "mcopconfig.h"
+#include "mcoputils.h"
 #include <fstream>
 
 using namespace std;
@@ -42,4 +43,25 @@ string MCOPConfig::readEntry(const string& key, const string& defaultValue)
       		return keyvalue.substr( i+1, keyvalue.size()-(i+1) );
 	}
 	return defaultValue;
+}
+
+vector<string> *MCOPConfig::readListEntry(const string& key)
+{
+	vector<string> *result = new vector<string>;
+
+	ifstream in(filename.c_str());
+	string keyvalue;
+
+	while(in >> keyvalue)
+	{
+		string k;
+
+		MCOPUtils::tokenize(keyvalue,k,*result);
+		if(k == key)
+			return result;
+
+		result->clear();
+	}
+
+	return result;
 }

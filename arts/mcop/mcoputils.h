@@ -31,6 +31,7 @@
 #define MCOPUTILS_H
 
 #include <string>
+#include <vector>
 
 namespace Arts {
 
@@ -66,6 +67,22 @@ public:
 	 * a new IID is generated
 	 */
 	static unsigned long makeIID(const std::string& interfaceName);
+
+	/**
+	 * Returns the directories for the trader to look into
+	 */
+	static const std::vector<std::string> *traderPath();
+
+	/**
+	 * Returns the directories from where extensions can be loaded
+	 */
+	static const std::vector<std::string> *extensionPath();
+
+	/**
+	 * Tokenization of a key = value1, "value 2", "value III" line into the key
+	 * and the values.
+	 */
+	static bool tokenize(const string& line, string& key,vector<string>& values);
 };
 
 };
