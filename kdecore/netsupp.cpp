@@ -192,11 +192,6 @@ static int check_ipv6_stack()
 #endif
 
 
-#if defined(HAVE_GETADDRINFO) && !defined(HAVE_BROKEN_GETADDRINFO)
-
-#define KRF_getaddrinfo		0
-#define KRF_resolver		0
-
 /*
  * Reason for using this function: kde_getaddrinfo
  *
@@ -338,6 +333,11 @@ int kde_getaddrinfo(const char *name, const char *service,
     }
   return err;
 }
+
+#if defined(HAVE_GETADDRINFO) && !defined(HAVE_BROKEN_GETADDRINFO)
+
+#define KRF_getaddrinfo		0
+#define KRF_resolver		0
 
 #else  // !defined(HAVE_GETADDRINFO) || defined(HAVE_BROKEN_GETADDRINFO)
 
