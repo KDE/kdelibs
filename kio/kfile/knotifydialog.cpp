@@ -582,7 +582,7 @@ void KNotifyWidget::openSoundDialog( KURLRequester *requester )
     init = false;
 
     KFileDialog *fileDialog = requester->fileDialog();
-    fileDialog->setCaption( i18n("Select a Soundfile") );
+    fileDialog->setCaption( i18n("Select a Sound File") );
     QStringList filters;
     filters << "audio/x-wav" << "audio/x-mp3" << "application/x-ogg"
             << "audio/x-adpcm";
@@ -620,7 +620,7 @@ void KNotifyWidget::openLogDialog( KURLRequester *requester )
     init = false;
 
     KFileDialog *fileDialog = requester->fileDialog();
-    fileDialog->setCaption( i18n("Select a Logfile") );
+    fileDialog->setCaption( i18n("Select a Log File") );
     QStringList filters;
     filters << "text/x-log" << "text/plain";
     fileDialog->setMimeFilter( filters );
@@ -635,7 +635,7 @@ void KNotifyWidget::openExecDialog( KURLRequester *requester )
     init = false;
 
     KFileDialog *fileDialog = requester->fileDialog();
-    fileDialog->setCaption( i18n("Select a File to execute") );
+    fileDialog->setCaption( i18n("Select a File to Execute") );
     QStringList filters;
     filters << "application/x-executable" << "application/x-shellscript"
             << "application/x-perl" << "application/x-python";
