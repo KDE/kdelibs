@@ -25,7 +25,8 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
                  ktradertest kdefaultprogresstest kclipboardtest kmimemagictest \
                  kfiltertest kiopassdlgtest kscantest kdirlistertest \
                  previewtest kionetrctest kdcopcheck metatest \
-		 kmimefromext kpropsdlgtest kmfitest dataprotocoltest kprotocolinfotest
+		 kmimefromext kpropsdlgtest kmfitest dataprotocoltest \
+		 kprotocolinfotest ksycocaupdatetest
 
 METASOURCES = AUTO
 
@@ -56,6 +57,7 @@ kpropsdlgtest_SOURCES = kpropsdlgtest.cpp
 kmfitest_SOURCES = kmfitest.cpp
 dataprotocoltest_SOURCES = dataprotocoltest.cpp
 kprotocolinfotest_SOURCES = kprotocolinfotest.cpp
+ksycocaupdatetest_SOURCES = ksycocaupdatetest.cpp
 
 # kfile meta stuff. Comment this in, if you want a small
 # metadata plugin test and "make install".
