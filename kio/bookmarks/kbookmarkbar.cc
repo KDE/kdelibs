@@ -192,7 +192,6 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
 
                 action->setProperty( "url", bm.url().url() );
                 action->setProperty( "address", bm.address() );
-                action->setProperty( "readOnly", dptr()->m_readOnly );
 
                 // ummm.... this doesn't appear do anything...
                 action->setToolTip( bm.url().prettyURL() );
