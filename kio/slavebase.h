@@ -173,7 +173,10 @@ public:
      */
     void mimeType( const QString &_type );
 
-    void gettingFile( const QString &_file ); // probably obsolete ?
+    /**
+     * @deprecated Don't use.
+     */
+    void gettingFile( const QString &_file );
 
     /**
      * Call to signal a warning, to be displayed in a dialog box.

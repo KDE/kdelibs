@@ -314,11 +314,9 @@ void SlaveBase::mimeType( const QString &_type)
     ASSERT( (cmd == CMD_NONE) || (cmd == CMD_GET) || (cmd == CMD_SPECIAL) );
 }
 
-// ?
-void SlaveBase::gettingFile( const QString &file)
+// remove in KDE 3.0
+void SlaveBase::gettingFile( const QString & )
 {
-    KIO_DATA << file;
-    m_pConnection->send( INF_GETTING_FILE, data );
 }
 
 void SlaveBase::warning( const QString &_msg)
