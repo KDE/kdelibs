@@ -324,6 +324,7 @@ void SMTP::processLine(QString *line)
         state = DATA;
         writeString = QString::fromLatin1("Subject: %1\r\n").arg(messageSubject);
         writeString += messageHeader;
+        writeString += "\r\n";
         writeString += messageBody;
         writeString += QString::fromLatin1(".\r\n");
         kdDebug() << "out: " << writeString;
