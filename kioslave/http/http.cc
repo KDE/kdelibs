@@ -382,7 +382,8 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
   }
 #endif
   ret=fread(b, 1, nbytes, m_fsocket);
-  if (!ret) m_bEOF=feof(m_fsocket);
+//  if (!ret) m_bEOF=feof(m_fsocket);
+  m_bEOF = feof( m_fsocket );
   return ret;
 }
 
