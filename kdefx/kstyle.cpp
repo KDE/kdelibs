@@ -1182,7 +1182,7 @@ void KStyle::drawComplexControl( ComplexControl control,
 					while ( child && y + child->height() <= 0 )
 					{
 						y += child->totalHeight();
-						child = child->nextSibling();
+						child = nextVisibleSibling(child);
 					}
 
 					int bx = r.width() / 2;
