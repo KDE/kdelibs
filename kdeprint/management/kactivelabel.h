@@ -5,8 +5,6 @@
 
 class KActiveLabel : public QFrame
 {
-	class KActiveToolTip;
-	friend class KActiveToolTip;
 	Q_OBJECT
 public:
 	KActiveLabel(QWidget *parent = 0, const char *name = 0);
@@ -39,6 +37,7 @@ protected:
 private:
 	class KActiveLabelPrivate;
 	class KActiveToolTip;
+	friend class KActiveToolTip;
 	KActiveLabelPrivate	*d;
 };
 
