@@ -23,6 +23,9 @@
 // KDE HTML Widget -- decoder for input stream
 // $Id$
 
+//#define DECODE_DEBUG
+#undef DECODE_DEBUG
+
 #include "decoder.h"
 using namespace khtml;
 
@@ -39,7 +42,9 @@ using namespace khtml;
 Decoder::Decoder()
 {
     m_codec = QTextCodec::codecForName("ISO 8859-1");
-kdDebug( 6005 ) << "INIT HTML Codec name= " << m_codec->name() << endl;
+#ifdef DECODE_DEBUG
+    kdDebug( 6005 ) << "INIT HTML Codec name= " << m_codec->name() << endl;
+#endif
     enc = 0;
     body = false;
     beginning = true;
@@ -52,21 +57,23 @@ Decoder::~Decoder()
 
 void Decoder::setEncoding(const char *_encoding, bool force)
 {
-    //kdDebug(0) << "setEncoding " << force << endl;
+#ifdef DECODE_DEBUG
+    kdDebug(0) << "setEncoding " << force << endl;
+#endif
     enc = _encoding;
     haveEncoding = force;
 
     enc = enc.lower();
     if(enc.isNull() || enc.isEmpty())
-	enc = "iso8859-1";
+        enc = "iso8859-1";
     if(enc == "visual") // hebrew visually ordered
-	enc = "iso8859-8";
+        enc = "iso8859-8";
     m_codec = KGlobal::charsets()->codecForName(enc);
 
-    if(m_codec->mibEnum() == 11)  { 
-	// iso8859-8 (visually ordered) 
-	m_codec = QTextCodec::codecForName("iso8859-8-i");
-	visualRTL = true;
+    if(m_codec->mibEnum() == 11)  {
+        // iso8859-8 (visually ordered)
+        m_codec = QTextCodec::codecForName("iso8859-8-i");
+        visualRTL = true;
     }
 }
 
@@ -81,109 +88,113 @@ QString Decoder::decode(const char *data, int len)
     // through the html head several times...
 
     if(!haveEncoding && !body) {
-	//kdDebug(0) << "looking for charset definition" << endl;
-	// check for UTF-16
-	uchar * uchars = (uchar *) data;
-	if( uchars[0] == 0xfe && uchars[1] == 0xff ||
-	    uchars[0] == 0xff && uchars[1] == 0xfe ) {
-	    enc = "utf16";
-	    m_codec = QTextCodec::codecForName(enc);
-	} else {
+#ifdef DECODE_DEBUG
+        kdDebug(0) << "looking for charset definition" << endl;
+#endif
+        // check for UTF-16
+        uchar * uchars = (uchar *) data;
+        if( uchars[0] == 0xfe && uchars[1] == 0xff ||
+            uchars[0] == 0xff && uchars[1] == 0xfe ) {
+            enc = "utf16";
+            m_codec = QTextCodec::codecForName(enc);
+        } else {
 
-	    // ### hack for a bug in QTextCodec. It cut's the input stream
-	    // in case there are \0 in it. ZDNET has them inside... :-(
-	    char *d = const_cast<char *>(data);
-	    int i = len - 1;
-	    while(i >= 0) {
-		if(*(d+i) == 0) *(d+i) = ' ';
-		i--;
-	    }
-	    buffer += QCString(data, len+1);
-	
-	
-	    // we still don't have an encoding, and are in the head
-	    // the following tags are allowed in <head>:
-	    // SCRIPT|STYLE|META|LINK|OBJECT|TITLE|BASE
-	
-	    const char *ptr = buffer.data();
-	    while(*ptr != '\0')
-	    {
-		if(*ptr == '<') {
-		    bool end = false;
-		    ptr++;
-		    if(*ptr == '/') ptr++, end=true;
-		    char tmp[20];
-		    int len = 0;
-		    while (
-			((*ptr >= 'a') && (*ptr <= 'z') ||
-			 (*ptr >= 'A') && (*ptr <= 'Z') ||
-			 (*ptr >= '0') && (*ptr <= '9'))
-			&& len < 19 )
-		    {
-			tmp[len] = tolower( *ptr );
-			ptr++;
-			len++;
-		    }
-		    int id = khtml::getTagID(tmp, len);
-		    if(end) id += ID_CLOSE_TAG;
-		
-		    switch( id ) {
-		    case ID_META:
-		    {
-			// found a meta tag...
-			//ptr += 5;
-			const char * end = ptr;
-			while(*end != '>' && *end != '\0') end++;
-			if ( *end == '\0' ) break;
-			QCString str( ptr, (end-ptr));
-			str = str.lower();
-			int pos = 0;
-			//if( (pos = str.find("http-equiv", pos)) == -1) break;
-			//if( (pos = str.find("content-type", pos)) == -1) break;
-			if( (pos = str.find("charset", pos)) == -1) break;
-			pos += 7;
-			while( (str[pos] == ' ' || str[pos] == '='
-				|| str[pos] == '"')
-			       && pos < (int)str.length())
-			    pos++;
-			
-			uint endpos = pos;
-			while( (str[endpos] != ' ' || str[endpos] != '"'
-				|| str[endpos] != '>')
-			       && endpos < str.length() )
-			    endpos++;
-			
-			enc = str.mid(pos, endpos-pos);
-			kdDebug( 6005 ) << "Decoder: found charset: " << enc.data() << endl;
-			setEncoding(enc, true);
-			goto found;
-		    }
-		    case ID_SCRIPT:
-		    case (ID_SCRIPT+ID_CLOSE_TAG):
-		    case ID_STYLE:
-		    case (ID_STYLE+ID_CLOSE_TAG):
-		    case ID_LINK:
-		    case (ID_LINK+ID_CLOSE_TAG):
-		    case ID_OBJECT:
-		    case (ID_OBJECT+ID_CLOSE_TAG):
-		    case ID_TITLE:
-		    case (ID_TITLE+ID_CLOSE_TAG):
-		    case ID_BASE:
-		    case (ID_BASE+ID_CLOSE_TAG):
-		    case ID_HTML:
-		    case ID_HEAD:
-		    case 0:
-			break;
-		    default:
-			body = true;
-			goto found;
-		    }
-		}
-		else
-		    ptr++;
-	    }
-	    return QString::null;
-	}
+            // ### hack for a bug in QTextCodec. It cut's the input stream
+            // in case there are \0 in it. ZDNET has them inside... :-(
+            char *d = const_cast<char *>(data);
+            int i = len - 1;
+            while(i >= 0) {
+                if(*(d+i) == 0) *(d+i) = ' ';
+                i--;
+            }
+            buffer += QCString(data, len+1);
+
+
+            // we still don't have an encoding, and are in the head
+            // the following tags are allowed in <head>:
+            // SCRIPT|STYLE|META|LINK|OBJECT|TITLE|BASE
+
+            const char *ptr = buffer.data();
+            while(*ptr != '\0')
+            {
+                if(*ptr == '<') {
+                    bool end = false;
+                    ptr++;
+                    if(*ptr == '/') ptr++, end=true;
+                    char tmp[20];
+                    int len = 0;
+                    while (
+                        ((*ptr >= 'a') && (*ptr <= 'z') ||
+                         (*ptr >= 'A') && (*ptr <= 'Z') ||
+                         (*ptr >= '0') && (*ptr <= '9'))
+                        && len < 19 )
+                    {
+                        tmp[len] = tolower( *ptr );
+                        ptr++;
+                        len++;
+                    }
+                    int id = khtml::getTagID(tmp, len);
+                    if(end) id += ID_CLOSE_TAG;
+
+                    switch( id ) {
+                    case ID_META:
+                    {
+                        // found a meta tag...
+                        //ptr += 5;
+                        const char * end = ptr;
+                        while(*end != '>' && *end != '\0') end++;
+                        if ( *end == '\0' ) break;
+                        QCString str( ptr, (end-ptr));
+                        str = str.lower();
+                        int pos = 0;
+                        //if( (pos = str.find("http-equiv", pos)) == -1) break;
+                        //if( (pos = str.find("content-type", pos)) == -1) break;
+                        if( (pos = str.find("charset", pos)) == -1) break;
+                        pos += 7;
+                        while( (str[pos] == ' ' || str[pos] == '='
+                                || str[pos] == '"')
+                               && pos < (int)str.length())
+                            pos++;
+
+                        uint endpos = pos;
+                        while( (str[endpos] != ' ' || str[endpos] != '"'
+                                || str[endpos] != '>')
+                               && endpos < str.length() )
+                            endpos++;
+
+                        enc = str.mid(pos, endpos-pos);
+#ifdef DECODE_DEBUG
+                        kdDebug( 6005 ) << "Decoder: found charset: " << enc.data() << endl;
+#endif
+                        setEncoding(enc, true);
+                        goto found;
+                    }
+                    case ID_SCRIPT:
+                    case (ID_SCRIPT+ID_CLOSE_TAG):
+                    case ID_STYLE:
+                    case (ID_STYLE+ID_CLOSE_TAG):
+                    case ID_LINK:
+                    case (ID_LINK+ID_CLOSE_TAG):
+                    case ID_OBJECT:
+                    case (ID_OBJECT+ID_CLOSE_TAG):
+                    case ID_TITLE:
+                    case (ID_TITLE+ID_CLOSE_TAG):
+                    case ID_BASE:
+                    case (ID_BASE+ID_CLOSE_TAG):
+                    case ID_HTML:
+                    case ID_HEAD:
+                    case 0:
+                        break;
+                    default:
+                        body = true;
+                        goto found;
+                    }
+                }
+                else
+                    ptr++;
+            }
+            return QString::null;
+        }
     }
 
  found:
@@ -192,29 +203,33 @@ QString Decoder::decode(const char *data, int len)
     if (!m_codec)
     {
         if(enc.isEmpty()) enc = "iso8859-1";
-	m_codec = QTextCodec::codecForName(enc);
+        m_codec = QTextCodec::codecForName(enc);
     }
     QString out;
 
     if(!buffer.isEmpty() && enc != "utf16") {
-	out = m_codec->toUnicode(buffer);
-	buffer = "";
+        out = m_codec->toUnicode(buffer);
+        buffer = "";
     } else {
-	// ### hack for a bug in QTextCodec. It cut's the input stream
-	// in case there are \0 in it. ZDNET has them inside... :-(
-	char *d = const_cast<char *>(data);
-	int i = len - 1;
-	while(i >= 0) {
-	    if(*(d+i) == 0) *(d+i) = ' ';
-	    i--;
-	}
-	out = m_codec->toUnicode(data, len);
+        // ### hack for a bug in QTextCodec. It cut's the input stream
+        // in case there are \0 in it. ZDNET has them inside... :-(
+        char *d = const_cast<char *>(data);
+        int i = len - 1;
+        while(i >= 0) {
+            if(*(d+i) == 0) *(d+i) = ' ';
+            i--;
+        }
+        out = m_codec->toUnicode(data, len);
     }
+
 
     // the hell knows, why the output does sometimes have a QChar::null at
     // the end...
     if(out[out.length()-1] == QChar::null)
-	out.truncate(out.length() - 1);
+        out.truncate(out.length() - 1);
     return out;
 }
 
+
+// -----------------------------------------------------------------------------
+#undef DECODE_DEBUG
