@@ -583,8 +583,7 @@ QString KFileItem::getToolTipText(int maxcount)
 
     tip += start + i18n("Modified:") + mid +
            timeString( KIO::UDS_MODIFICATION_TIME) + end +
-// enable this after 3.0 - it adds an i18n string
-//           start + i18n("Owner:") + mid + user() + " - " + group() + end +
+           start + i18n("Owner:") + mid + user() + " - " + group() + end +
            start + i18n("Permissions:") + mid +
            parsePermissions(m_permissions) + end;
   }
