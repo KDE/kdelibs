@@ -1347,6 +1347,8 @@ void KApplication::parseCommandLine( )
 {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
 
+    if ( !args ) return;
+
     if (args->isSet("config"))
     {
         QString config = QString::fromLocal8Bit(args->getOption("config"));
