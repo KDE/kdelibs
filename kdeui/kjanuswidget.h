@@ -25,9 +25,9 @@
 #include <qwidget.h>
 
 class QLabel;
+class QTabWidget;
 class QWidgetStack;
 
-class KTabCtl;
 class KSeparator;
 
 /**
@@ -185,7 +185,7 @@ class KJanusWidget : public QWidget
     QListView    *mTreeList;
     QWidgetStack *mPageStack;
     QLabel       *mTitleLabel;
-    KTabCtl      *mTabControl;
+    QTabWidget   *mTabControl;
     QFrame       *mPlainPage;
     QWidget      *mSwallowPage;
     QWidget      *mActivePageWidget;

@@ -24,13 +24,13 @@
 #include <qlayout.h>
 #include <qobjectlist.h>
 #include <qsplitter.h>
+#include <qtabwidget.h> 
 #include <qwidgetstack.h>
 
 #include <kapp.h>
 #include <kdialog.h> // Access to some static members
 #include <klocale.h>
 #include <kglobal.h>
-#include <ktabctl.h>
 #include <kseparator.h>
 
 #include "kjanuswidget.h"
@@ -111,7 +111,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     mPageList = new QList<QWidget>;
     if( mPageList == 0 ) { return; }
     
-    mTabControl = new KTabCtl( this );
+    mTabControl = new QTabWidget( this );
     if( mTabControl == 0 ) { return; }
     topLayout->addWidget( mTabControl, 10 );
   }
@@ -176,7 +176,6 @@ QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header )
     QFrame *page = new QFrame( mTabControl, "page" );
     if( page == 0 ) { return( 0 ); }
 
-    //page->setEnabled(false);
     page->hide();
 
     mTabControl->addTab( page, itemName );
@@ -194,8 +193,6 @@ QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header )
     QFrame *page = new QFrame( this, "page" );
     if( page == 0 ) { return(0); }
 
-    //page->setEnabled( false );
-    //page->setFocusPolicy( StrongFocus );
     mPageList->append( page );
     mPageStack->addWidget( page, 0 );
 
