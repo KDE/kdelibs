@@ -717,6 +717,10 @@ DCOPServer::DCOPServer(bool _only_local)
 	    }
 	    fprintf(f, "\n%i\n", getpid());
 	    fclose(f);
+            // Create a link named like the old-style (KDE 2.0) naming
+            QCString compatName(fName);
+            compatName.truncate(compatName.findRev('_'));
+            ::symlink(fName,compatName);
 	}
 
     if (only_local) {
