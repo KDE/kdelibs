@@ -146,14 +146,6 @@ public slots:
   bool saveSettings();
 
   /**
-   * Traverse the specified widgets, to see if anything has changed.
-   * @ref retrieveSettings() must be called before this function to build
-   * the list of known widgets and defaultValues.
-   * @return bool - true if any settings were changed.
-   */
-  bool hasChanged();
-
-  /**
    * Traverse the specified widgets, reseting the settings for all known
    * widgets that aren't being ignored.  @ref retrieveSettings() must be called
    * before this function to build the list of known widgets and defaultValues.
