@@ -48,6 +48,10 @@ int main(int argc, char *argv[])
 
     KApplication a;
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
+    if ( args->count() == 0 ) {
+	KCmdLineArgs::usage();
+	exit( 1 );
+    }
 
     KHTMLFactory *fac = new KHTMLFactory();
 
@@ -88,7 +92,7 @@ int main(int argc, char *argv[])
     khtml::CSSStyleSelector::clear();
     DOM::HTMLMapElementImpl::clear();
     khtml::RenderStyle::cleanup();
-    
+
     delete fac;
     return ret;
 }

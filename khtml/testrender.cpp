@@ -20,7 +20,7 @@
 
 // See testrender.h for a description of this program
 
-#include <iostream.h>
+// #include <iostream.h>
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qprogressbar.h>
@@ -34,6 +34,7 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 #include "testrender.h"
 #include "testrender.moc"
@@ -141,7 +142,7 @@ void TestRender::renderToImage()
     QPainter* tp = new QPainter;
     tp->begin( &paintBuffer );
 
-    int ph = eh-py<PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;	
+    int ph = eh-py<PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;
 
     tp->fillRect(0, py, ew, ph, palette().normal().brush(QColorGroup::Background));
     part->docImpl()->renderer()->print(tp, 0, py, ew, ph, 0, 0);
@@ -154,7 +155,7 @@ void TestRender::renderToImage()
     *logStream << "Error writing to file "+destDir+"/"+filenames.at(fileno)+".png" << endl;
 
 }
-	
+
 static KCmdLineOptions options[] =
 {
   { "+[SourceDir]", I18N_NOOP("dir containing test files"), 0 },
@@ -174,7 +175,7 @@ int main(int argc, char *argv[])
 
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
   if (args->count() < 3) {
-    cerr << "USAGE: testrender <sourcedir> <imagesdir> <logfile>\n";
+    kdError() << "testrender <sourcedir> <imagesdir> <logfile>\n";
     return 0;
   }
 
@@ -182,12 +183,12 @@ int main(int argc, char *argv[])
   QString destDir = args->arg(1);
   QString logFilename = args->arg(2);
   if (!QDir(sourceDir).exists()) {
-    cerr << "ERROR: source dir \"" << sourceDir.latin1() << "\" does not exist\n";
+    kdError() << "source dir \"" << sourceDir.latin1() << "\" does not exist\n";
     return 0;
   }
 
   if (!QDir(destDir).exists()) {
-    cerr << "ERROR: dest dir \"" << destDir.latin1() << "\" does not exist\n";
+    kdError() << "dest dir \"" << destDir.latin1() << "\" does not exist\n";
     return 0;
   }
 
