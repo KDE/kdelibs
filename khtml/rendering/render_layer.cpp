@@ -379,6 +379,7 @@ RenderLayer::setHasHorizontalScrollbar(bool hasScrollbar)
         QScrollView* scrollView = m_object->element()->getDocument()->view();
         m_hBar = new QScrollBar(Qt::Horizontal, scrollView);
         scrollView->addChild(m_hBar, 0, -50000);
+	m_hBar->setBackgroundMode(QWidget::NoBackground);
 	m_hBar->show();
         if (!m_scrollMediator)
             m_scrollMediator = new RenderScrollMediator(this);
@@ -397,6 +398,7 @@ RenderLayer::setHasVerticalScrollbar(bool hasScrollbar)
         QScrollView* scrollView = m_object->element()->getDocument()->view();
         m_vBar = new QScrollBar(Qt::Vertical, scrollView);
         scrollView->addChild(m_vBar, 0, -50000);
+	m_vBar->setBackgroundMode(QWidget::NoBackground);
 	m_vBar->show();
         if (!m_scrollMediator)
             m_scrollMediator = new RenderScrollMediator(this);
@@ -691,7 +693,7 @@ RenderLayer::paint(QPainter *p, int x, int y, int w, int h,
 		if (l->m_hBar)
 		    RenderWidget::paint(p, l->m_hBar, x, y, w, h,
 					l->hBarRect.x(), l->hBarRect.y());
-		if (m_vBar)
+		if (l->m_vBar)
 		    RenderWidget::paint(p, l->m_vBar, x, y, w, h,
 					l->vBarRect.x(), l->vBarRect.y());
 	    }
