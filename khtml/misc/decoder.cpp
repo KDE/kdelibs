@@ -191,7 +191,7 @@ QString Decoder::decode(const char *data, int len)
                 else
                     ptr++;
             }
-            return QString::null;
+            return QString::fromLatin1(data, len);
         }
     }
 
