@@ -515,14 +515,7 @@ void KFontChooser::getFontList( QStringList &list, bool fixed )
     QStringList lstFixed;
     for (QStringList::Iterator it = lstSys.begin(); it != lstSys.end(); ++it)
     {
-        // To get the fixed with info (known as fixed pitch in Qt), we
-        // need to get a QFont or QFontInfo object.  To do this, we
-        // need a family name, style, and point size.
-        QStringList styles(dbase.styles(*it));
-        QStringList::Iterator astyle = styles.begin();
-
-        QFontInfo info(dbase.font(*it, *astyle, 10));
-        if (info.fixedPitch())
+       if (dbase.isFixedPitch(*it))
           lstFixed.append(*it);
     }
 
@@ -673,6 +666,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.72  2001/12/14 10:29:56  lypanov
+* Addition of getFontDiff to KFontDialog.
+*
 * Revision 1.71  2001/10/10 17:40:39  mueller
 * CVS_SILENT: fixincludes
 *
