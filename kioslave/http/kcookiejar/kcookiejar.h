@@ -240,6 +240,18 @@ public:
     void setDomainAdvice(KHttpCookiePtr _cookie, KCookieAdvice _advice);
 
     /**
+     * Get the global advice for cookies
+     *
+     * The returned advice can have the following values:
+     *     - KCookieAccept, accept cookies
+     *     - KCookieReject, reject cookies
+     *     - KCookieAsk, the user decides what to do with cookies
+     *
+     * The global advice is used if the domain has no advice set.
+     */
+    KCookieAdvice getGlobalAdvice() { return m_globalAdvice; }
+
+    /**
      * This function sets the global advice for cookies
      *
      * _advice can have the following values:

@@ -58,8 +58,14 @@ k_dcop:
   void deleteSessionCookiesFor(QString, long);
   void deleteAllCookies();
   void addDOMCookies(QString, QCString, long);
-  void setDomainAdvice(QString, QString);
-  QString getDomainAdvice(QString);
+  /**
+   * Sets the cookie policy for the domain associated with the specified URL.
+   */
+  void setDomainAdvice(QString url, QString advice);
+  /** 
+   * Returns the cookie policy in effect for the specified URL.
+   */
+  QString getDomainAdvice(QString url);
   void reloadPolicy();
   void shutdown();
 

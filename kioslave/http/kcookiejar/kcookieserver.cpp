@@ -233,7 +233,7 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
     delete kw;
     // Save the cookie config if it has changed
     mCookieJar->saveConfig( mConfig );
-
+    
     // Apply the user's choice to all cookies that are currently
     // queued for this host.
     cookie = mPendingCookies->first();
@@ -559,8 +559,10 @@ KCookieServer::setDomainAdvice(QString url, QString advice)
    {
       QStringList domains;
       mCookieJar->extractDomains(fqdn, domains);
-      mCookieJar->setDomainAdvice(domains[1],
+      mCookieJar->setDomainAdvice(domains[0],
                                   KCookieJar::strToAdvice(advice));
+      // Save the cookie config if it has changed
+      mCookieJar->saveConfig( mConfig );
    }
 }
 
@@ -575,7 +577,20 @@ KCookieServer::getDomainAdvice(QString url)
    {
       QStringList domains;
       mCookieJar->extractDomains(fqdn, domains);
-      advice = mCookieJar->getDomainAdvice(domains[1]);
+
+      QStringList::ConstIterator it = domains.fromLast();
+      while ( (advice == KCookieDunno) && (it != domains.end()) )
+      {
+         // Always check advice in both ".domain" and "domain". Note
+         // that we only want to check "domain" if it matches the
+         // fqdn of the requested URL.
+         if ( (*it)[0] == '.' || (*it) == fqdn )
+            advice = mCookieJar->getDomainAdvice(*it);
+
+         it--;
+      }
+      if (advice == KCookieDunno)
+         advice = mCookieJar->getGlobalAdvice();
    }
    return KCookieJar::adviceToStr(advice);
 }
