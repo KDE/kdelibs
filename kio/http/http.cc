@@ -274,10 +274,6 @@ void HTTPProtocol::setHost( const QString& host, int port,
     m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
   m_maxCacheAge = config()->readNumEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
 
-  kdDebug(7103) << "UseCache: " << metaData("UseCache") << endl;
-  kdDebug(7103) << "CacheDir: " << metaData("CacheDir") << endl;
-  kdDebug(7103) << "MaxCacheAge: " << metaData("MaxCacheAge") << endl;
-
   if ( m_bIsSSL )
     setEnableSSLTunnel( m_bIsSSL && m_bUseProxy );
 
@@ -285,10 +281,6 @@ void HTTPProtocol::setHost( const QString& host, int port,
   m_proxyConnTimeout = proxyConnectTimeout();
   m_remoteConnTimeout = connectTimeout();
   m_remoteRespTimeout = responseTimeout();
-
-  kdDebug(7103) << "Timeout proxy = " << m_proxyConnTimeout <<
-                   " connection = " << m_remoteConnTimeout <<
-                   " response = " << m_remoteRespTimeout << endl;
 }
 
 bool HTTPProtocol::checkRequestURL( const KURL& u )
@@ -337,8 +329,6 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
     {
         // Do not save authorization if the current response code is
         // 4xx (client error) or 5xx (server error).
-        kdDebug(7113) << "Previous Response: " << m_prevResponseCode << endl
-                      << "Current Response: " << m_responseCode << endl;
         if ( m_responseCode < 400 &&
             (m_prevResponseCode == 401 || m_prevResponseCode == 407) )
             saveAuthorization();
@@ -461,7 +451,7 @@ keeptrying:
     if (n == -1)
       return -1;
     nbytes -= n;
-    buf += n;
+    (const char *) buf += n;
     bytes_sent += n;
     if (nbytes > 0)
       goto keeptrying;    
@@ -2195,7 +2185,7 @@ bool HTTPProtocol::readBody( )
 
   if (m_bCachedRead)
   {
-    kdDebug( 7113 ) << "HTTPProtocol::readBody: read data from cache!" << endl;
+     kdDebug( 7113 ) << "HTTPProtocol::readBody: read data from cache!" << endl;
 
      char buffer[ MAX_IPC_SIZE ];
      // Jippie! It's already in the cache :-)
@@ -2711,7 +2701,7 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
 
    QString filename = m_state.cef + ".new";  // Create a new cache entryexpireDate
 
-   kdDebug( 7103 ) <<  "creating new cache entry: " << filename << endl;
+//   kdDebug( 7103 ) <<  "creating new cache entry: " << filename << endl;
 
    m_fcache = fopen( filename.latin1(), "w");
    if (!m_fcache)
