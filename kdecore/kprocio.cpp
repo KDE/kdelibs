@@ -41,7 +41,7 @@ KProcIO::KProcIO ( QTextCodec *_codec)
      codec = QTextCodec::codecForName("ISO 8859-1");
      if (!codec)
      {
-        kdError(750) << "Can't create ISO 8859-1 codec!" << endl;
+        kdError(174) << "Can't create ISO 8859-1 codec!" << endl;
      }
   }
 }
@@ -154,7 +154,7 @@ void KProcIO::sent(KProcess *)
 
   if (outbuffer.count()==0)
   {
-     kdDebug(750) << "Empty" << endl;
+     kdDebug(174) << "Empty" << endl;
      writeready=TRUE;
   }
   else
@@ -162,12 +162,12 @@ void KProcIO::sent(KProcess *)
      QByteArray *b = outbuffer.first();
      if (!b)
      {
-        kdDebug(750) << "Closing" << endl;
+        kdDebug(174) << "Closing" << endl;
         closeStdin();
      }
      else
      {
-        kdDebug(750) << "Sending [" << b->size() << "]" << endl;
+        kdDebug(174) << "Sending [" << b->size() << "]" << endl;
         KProcess::writeStdin(b->data(), b->size());
      }
   }
@@ -221,7 +221,7 @@ int KProcIO::readln (QString &line, bool autoAck, bool *partial)
 
   len=recvbuffer.find ('\n',rbi)-rbi;
 
-  kdDebug(750) << "KPIO::readln" << endl;
+  kdDebug(174) << "KPIO::readln" << endl;
 
   //in case there's no '\n' at the end of the buffer
   if ((len<0) && 
