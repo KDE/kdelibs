@@ -6,7 +6,7 @@ if test "x$arts_audiolib_found" = "xno"; then
   echo ""
   echo "You're missing libaudiofile. KDE won't be able to play"
   echo "any sounds without it, so please install it."
-  echo "A copy of libaudiofile you can find in kdesupport"
+  echo "You can find a copy of libaudiofile in the kdesupport module."
   echo ""
   all_tests=bad
 fi
