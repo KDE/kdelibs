@@ -254,7 +254,7 @@ const QString KConfigBase::readEntry( const char* pKey,
   int nDollarPos = aValue.find( '$' );
 
   // detach the QString if you are doing modifications!
-  while( nDollarPos != -1 )
+  if (nDollarPos != -1)
     aValue.detach();
 
   while( nDollarPos != -1 && nDollarPos+1 < aValue.length())
