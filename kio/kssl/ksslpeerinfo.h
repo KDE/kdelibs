@@ -85,6 +85,11 @@ public:
 	void setPeerHost(QString host = QString::null);
 
 	/**
+	 *  Returns the host we are connected to.
+	 */
+	const QString& peerHost() const;
+
+	/**
 	 *  Clear out the host name.
 	 */
 	void reset();

@@ -151,3 +151,7 @@ void KSSLPeerInfo::reset() {
 }
 
 
+const QString& KSSLPeerInfo::peerHost() const {
+	return d->peerHost;
+}
+
