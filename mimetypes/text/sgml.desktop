@@ -1,8 +1,11 @@
 [Desktop Entry]
 MimeType=text/sgml
 Comment=SGML
+Comment[bg]=Документ на SGML
 Comment[eo]=SGML-teskto
-Comment[ro]=Document SGML
+Comment[et]=SGML dokument
+Comment[fr]=Document SGML
+Comment[hu]=SGML fájl
 Comment[ru]=Документ SGML
 Comment[sv]=Dokument i SGML-format
 Icon=txt
