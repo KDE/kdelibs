@@ -19,6 +19,16 @@
 #include <qcursor.h>
 #include <qcolor.h>
 #include <dom_string.h>
+#include <qstring.h>
+#include <qfile.h>
+#include <qobject.h>
+#include <qpushbutton.h>
+#include <qscrollview.h>
+#include <qwidget.h>
+#include "dom/dom2_range.h"
+#include "dom/html_document.h"
+#include "dom/dom_exception.h"
+
 
 int main(int argc, char *argv[])
 {
@@ -27,6 +37,7 @@ int main(int argc, char *argv[])
     //    KHTMLView *doc = new KHTMLWidget(0, 0);
     KHTMLPart *doc = new KHTMLPart;
     doc->widget()->resize(800,500);
+//    doc->widget()->resize(500,300);
     doc->enableJScript(true);
     doc->enableJava(true);
     doc->setCharset("unicode");
@@ -48,14 +59,22 @@ int main(int argc, char *argv[])
     QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
              dummy, SLOT( slotOpenURL( const KURL&, const KParts::URLArgs & ) ) );
 
-    QPushButton *p = new QPushButton(0, 0);
+    QPushButton *p = new QPushButton("&Quit", 0);
     QWidget::connect(p, SIGNAL(pressed()), &a, SLOT(quit()));
     p->show();
+
+
     a.exec();
+
+/*    Range r( doc->htmlDocument().createRange() );
+      r.selectNode( r.getStartContainer().firstChild().lastChild().firstChild() );
+      printf("\nstartContainer: %s\n\n", r.getStartContainer().nodeName().string().ascii() );
+      Node newNode = doc->htmlDocument().firstChild().lastChild().firstChild().firstChild();
+      r.insertNode( newNode );*/
+
     //DOMString htmlContent;
     //doc->htmlDocument().toHTML(&htmlContent);
-    //printf("%s", htmlContent.string().ascii());
-
+    //printf("\n%s\n", htmlContent.string().ascii());
 
     delete p;
     delete doc;
@@ -63,7 +82,4 @@ int main(int argc, char *argv[])
     khtml::Cache::clear();
     //if(KBrowser::lstViews) delete KBrowser::lstViews;
 }
-
-
-
 
