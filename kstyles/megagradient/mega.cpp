@@ -490,7 +490,36 @@ void MegaStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
         ++x1, ++y1;
     }
 
-    // Draw iconset first, if any
+    // If this is a button with an associated popup menu, draw an arrow first
+    if ( btn->popup() )
+    {
+	int dx = menuButtonIndicatorWidth( btn->height() );
+
+	QColorGroup g( btn->colorGroup() );
+	int xx = x1 + w - dx - 4;
+	int yy = y1 - 3;
+	int hh = h + 6;
+
+	if ( !act )
+	{
+	    p->setPen( g.light() );
+	    p->drawLine( xx + 1, yy + 5, xx + 1, yy + hh - 6 );
+	    p->setPen( g.mid() );
+	    p->drawLine( xx, yy + 6, xx, yy + hh - 6 );
+	}
+	else
+	{
+	    p->setPen( g.button() );
+	    p->drawLine( xx, yy + 4, xx, yy + hh - 4 );
+	}
+	drawArrow( p, DownArrow, FALSE,
+		   x1 + w - dx - 2, y1 + 2, dx, h - 4,
+		   btn->colorGroup(),
+		   btn->isEnabled() );
+	w -= dx;
+    }
+
+    // Next, draw iconset, if any
     if ( btn->iconSet() && !btn->iconSet()->isNull() )
     {
 	QIconSet::Mode mode = btn->isEnabled()

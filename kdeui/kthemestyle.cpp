@@ -1039,8 +1039,36 @@ void KThemeStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
     y+=decoWidth(widget);
     w-=decoWidth(widget)*2;
     h-=decoWidth(widget)*2;
+    bool act = btn->isOn() || btn->isDown();
 
-    // Draw iconset first, if any
+    // If this is a button with an associated popup menu, draw an arrow first
+    if ( btn->popup() )
+    {
+	int dx = menuButtonIndicatorWidth( btn->height() );
+
+	QColorGroup g( btn->colorGroup() );
+	int xx = x + w - dx - 4;
+	int yy = y - 3;
+	int hh = h + 6;
+
+	if ( !act )
+	{
+	    p->setPen( g.light() );
+	    p->drawLine( xx, yy + 3, xx, yy + hh - 4 );
+	}
+	else
+	{
+	    p->setPen( g.button() );
+	    p->drawLine( xx, yy + 4, xx, yy + hh - 4 );
+	}
+	drawArrow( p, DownArrow, FALSE,
+		   x + w - dx - 2, y + 2, dx, h - 4,
+		   btn->colorGroup(),
+		   btn->isEnabled() );
+	w -= dx;
+    }
+
+    // Next, draw iconset, if any
     if ( btn->iconSet() && !btn->iconSet()->isNull() )
     {
         QIconSet::Mode mode = btn->isEnabled()
