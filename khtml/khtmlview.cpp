@@ -1025,7 +1025,7 @@ void KHTMLView::print()
         root->setMinMaxKnown( false );
         root->layout();
 
-        bool printHeader = (printer->option("app-khtml-printimages") == "true");
+        bool printHeader = (printer->option("app-khtml-printheader") == "true");
 
         int headerHeight = 0;
         QFont headerFont("helvetica", 8);
