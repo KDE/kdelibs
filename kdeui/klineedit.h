@@ -147,7 +147,7 @@ class KLineEdit : public QLineEdit, public KCompletionBase
     Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
     Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
     Q_PROPERTY( bool trapEnterKeyEvent READ trapReturnKey WRITE setTrapReturnKey )
-
+    Q_PROPERTY( bool enableSqueezedText READ isSqueezedTextEnabled WRITE setEnableSqueezedText )
 
 public:
 
@@ -282,6 +282,21 @@ public:
      */
     virtual void copy() const;
 
+    /**
+     * Enable text squeezing in read-only line edits if text too long.
+     * This only works when the widget is in read-only mode.
+     *
+     * @since 3.2
+     */    
+    void setEnableSqueezedText( bool enable );
+    
+    /**
+     * Returns true if text squeezing is enabled.
+     * This is only valid when the widget is in read-only mode.
+     * @since 3.2
+     */
+    bool isSqueezedTextEnabled() const;
+
 signals:
 
     /**
@@ -389,6 +404,12 @@ public slots:
      */
     void setSqueezedText( const QString &text);
 
+    /**
+     * Re-implemented to enable text squeezing. API is not affected.
+     */
+    virtual void setText ( const QString& );
+    
+    
 protected slots:
 
     /**
@@ -511,6 +532,12 @@ private:
      * an accelerator.
      */
     bool overrideAccel (const QKeyEvent* e);
+
+    /**
+     * Properly sets the squeezed text whenever the widget is 
+     * created or resized.
+     */
+    void setSqueezedText ();
 
     bool m_bEnableMenu;
 

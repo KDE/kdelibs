@@ -57,6 +57,7 @@ public:
         userSelection = true;
         autoSuggest = false;
         disableRestoreSelection = false;
+        enableSqueezedText = false;
 
         if ( !initialized )
         {
@@ -85,6 +86,7 @@ public:
     bool disableRestoreSelection: 1;
     bool handleURLDrops:1;
     bool grabReturnKeyEvents:1;
+    bool enableSqueezedText:1;
 
     int squeezedEnd;
     int squeezedStart;
@@ -131,6 +133,7 @@ void KLineEdit::init()
                       mode == KGlobalSettings::CompletionPopupAuto ||
                       mode == KGlobalSettings::CompletionAuto);
     connect( this, SIGNAL(selectionChanged()), this, SLOT(slotRestoreSelectionColors()));
+    
     QPalette p = palette();
     if ( !d->previousHighlightedTextColor.isValid() )
       d->previousHighlightedTextColor=p.color(QPalette::Normal,QColorGroup::HighlightedText);
@@ -167,7 +170,9 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
 
 void KLineEdit::setCompletedText( const QString& t, bool marked )
 {
-    if ( !d->autoSuggest ) return;
+    if ( !d->autoSuggest )
+      return;
+      
     QString txt = text();
     if ( t != txt )
     {
@@ -262,6 +267,11 @@ void KLineEdit::setReadOnly(bool readOnly)
     {
         d->bgMode = backgroundMode ();
         setBackgroundMode (Qt::PaletteBackground);
+        if (d->enableSqueezedText && d->squeezedText.isEmpty())
+        {
+            d->squeezedText = text();
+            setSqueezedText();
+        }
     }
     else
     {
@@ -276,21 +286,105 @@ void KLineEdit::setReadOnly(bool readOnly)
 
 void KLineEdit::setSqueezedText( const QString &text)
 {
-    //kdDebug() << "setSqueezedText: " << text << ", readOnly ? " << isReadOnly() << endl;
-    
-    if (isReadOnly())
-    {
-        d->squeezedText = text;
-        d->squeezedStart = 0;
-        d->squeezedEnd = 0;
-        QResizeEvent ev(size(), size());
-        resizeEvent(&ev);
-    }
-    else
-    {
+    bool enableSqueezedText = d->enableSqueezedText;
+    d->enableSqueezedText = true;
         setText(text);
-    }
+    d->enableSqueezedText = enableSqueezedText;
 }
+
+void KLineEdit::setEnableSqueezedText( bool enable )
+{
+    d->enableSqueezedText = enable;
+}
+
+bool KLineEdit::isSqueezedTextEnabled() const
+{
+    return d->enableSqueezedText;
+}
+
+void KLineEdit::setText( const QString& text )
+{
+    if( d->enableSqueezedText && isReadOnly() )
+   {
+        d->squeezedText = text;
+        setSqueezedText();
+         return;
+   }
+    
+    QLineEdit::setText( text );
+}
+
+void KLineEdit::setSqueezedText()
+    {
+       d->squeezedStart = 0;
+       d->squeezedEnd = 0;
+       QString fullText = d->squeezedText;
+       QFontMetrics fm(fontMetrics());
+       int labelWidth = size().width() - 2*frameWidth() - 2;
+       int textWidth = fm.width(fullText);
+    
+    if (textWidth > labelWidth) 
+    {
+          // start with the dots only
+          QString squeezedText = "...";
+          int squeezedWidth = fm.width(squeezedText);
+
+          // estimate how many letters we can add to the dots on both sides
+          int letters = fullText.length() * (labelWidth - squeezedWidth) / textWidth / 2;
+          squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
+          squeezedWidth = fm.width(squeezedText);
+
+      if (squeezedWidth < labelWidth) 
+      {
+             // we estimated too short
+             // add letters while text < label
+          do 
+          {
+                letters++;
+                squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
+                squeezedWidth = fm.width(squeezedText);
+             } while (squeezedWidth < labelWidth);
+             letters--;
+             squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
+      } 
+      else if (squeezedWidth > labelWidth) 
+      {
+             // we estimated too long
+             // remove letters while text > label
+          do 
+          {
+               letters--;
+                squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
+                squeezedWidth = fm.width(squeezedText);
+             } while (squeezedWidth > labelWidth);
+          }
+
+      if (letters < 5) 
+      {
+             // too few letters added -> we give up squeezing
+          QLineEdit::setText(fullText);
+      } 
+      else 
+      {
+          QLineEdit::setText(squeezedText);
+             d->squeezedStart = letters;
+             d->squeezedEnd = fullText.length() - letters;
+          }
+
+          QToolTip::remove( this );
+          QToolTip::add( this, fullText );
+
+    } 
+    else 
+    {
+      QLineEdit::setText(fullText);
+
+          QToolTip::remove( this );
+          QToolTip::hide();
+       }
+    
+       setCursorPosition(0);
+    }
 
 void KLineEdit::copy() const
 {
@@ -326,69 +420,80 @@ void KLineEdit::copy() const
 void KLineEdit::resizeEvent( QResizeEvent * ev )
 {
     if (!d->squeezedText.isEmpty())
-    {
-       d->squeezedStart = 0;
-       d->squeezedEnd = 0;
-       QString fullText = d->squeezedText;
-       QFontMetrics fm(fontMetrics());
-       int labelWidth = size().width() - 2*frameWidth() - 2;
-       int textWidth = fm.width(fullText);
-       if (textWidth > labelWidth) {
-          // start with the dots only
-          QString squeezedText = "...";
-          int squeezedWidth = fm.width(squeezedText);
-
-          // estimate how many letters we can add to the dots on both sides
-          int letters = fullText.length() * (labelWidth - squeezedWidth) / textWidth / 2;
-          squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
-          squeezedWidth = fm.width(squeezedText);
-
-          if (squeezedWidth < labelWidth) {
-             // we estimated too short
-             // add letters while text < label
-             do {
-                letters++;
-                squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
-                squeezedWidth = fm.width(squeezedText);
-             } while (squeezedWidth < labelWidth);
-             letters--;
-             squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
-          } else if (squeezedWidth > labelWidth) {
-             // we estimated too long
-             // remove letters while text > label
-             do {
-               letters--;
-                squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
-                squeezedWidth = fm.width(squeezedText);
-             } while (squeezedWidth > labelWidth);
-          }
-
-          if (letters < 5) {
-             // too few letters added -> we give up squeezing
-             setText(fullText);
-          } else {
-             setText(squeezedText);
-             d->squeezedStart = letters;
-             d->squeezedEnd = fullText.length() - letters;
-          }
-
-          QToolTip::remove( this );
-          QToolTip::add( this, fullText );
-
-       } else {
-          setText(fullText);
-
-          QToolTip::remove( this );
-          QToolTip::hide();
-       }
-       setCursorPosition(0);
-    }
+        setSqueezedText();    
+    
     QLineEdit::resizeEvent(ev);
 }
 
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
     KKey key( e );
+    
+    if ( KStdAccel::copy().contains( key ) )
+    {
+        copy();
+        return;
+    }
+    else if ( KStdAccel::paste().contains( key ) )
+    {
+        paste();
+        return;
+    }
+
+    // support for pasting Selection with Shift-Ctrl-Insert
+    else if ( e->key() == Key_Insert &&
+              (e->state() == (ShiftButton | ControlButton)) )
+    {
+#if QT_VERSION >= 0x030100
+        QString text = QApplication::clipboard()->text( QClipboard::Selection);
+#else
+        QClipboard *clip = QApplication::clipboard();
+        bool oldMode = clip->selectionModeEnabled();
+        clip->setSelectionMode( true );
+        QString text = QApplication::clipboard()->text();
+        clip->setSelectionMode( oldMode );
+#endif
+
+        insert( text );
+        deselect();
+        return;
+    }
+
+    else if ( KStdAccel::cut().contains( key ) )
+    {
+        cut();
+        return;
+    }
+    else if ( KStdAccel::undo().contains( key ) )
+    {
+        undo();
+        return;
+    }
+    else if ( KStdAccel::redo().contains( key ) )
+    {
+        redo();
+        return;
+    }
+    else if ( KStdAccel::deleteWordBack().contains( key ) )
+    {
+        cursorWordBackward(true);
+        if ( hasSelectedText() )
+            del();
+
+        e->accept();
+        return;
+    }
+    else if ( KStdAccel::deleteWordForward().contains( key ) )
+    {
+        // Workaround for QT bug where
+        cursorWordForward(true);
+        if ( hasSelectedText() )
+            del();
+
+        e->accept();
+        return;
+    }
+    
 
     // Filter key-events if EchoMode is normal and
     // completion mode is not set to CompletionNone
@@ -668,71 +773,6 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         }
     }
 
-    if ( KStdAccel::copy().contains( key ) )
-    {
-        copy();
-        return;
-    }
-    else if ( KStdAccel::paste().contains( key ) )
-    {
-        paste();
-        return;
-    }
-
-    // support for pasting Selection with Shift-Ctrl-Insert
-    else if ( e->key() == Key_Insert &&
-              (e->state() == (ShiftButton | ControlButton)) )
-    {
-#if QT_VERSION >= 0x030100
-        QString text = QApplication::clipboard()->text( QClipboard::Selection);
-#else
-        QClipboard *clip = QApplication::clipboard();
-        bool oldMode = clip->selectionModeEnabled();
-        clip->setSelectionMode( true );
-        QString text = QApplication::clipboard()->text();
-        clip->setSelectionMode( oldMode );
-#endif
-
-        insert( text );
-        deselect();
-        return;
-    }
-
-    else if ( KStdAccel::cut().contains( key ) )
-    {
-        cut();
-        return;
-    }
-    else if ( KStdAccel::undo().contains( key ) )
-    {
-        undo();
-        return;
-    }
-    else if ( KStdAccel::redo().contains( key ) )
-    {
-        redo();
-        return;
-    }
-    else if ( KStdAccel::deleteWordBack().contains( key ) )
-    {
-        cursorWordBackward(true);
-        if ( hasSelectedText() )
-            del();
-
-        e->accept();
-        return;
-    }
-    else if ( KStdAccel::deleteWordForward().contains( key ) )
-    {
-        // Workaround for QT bug where
-        cursorWordForward(true);
-        if ( hasSelectedText() )
-            del();
-
-        e->accept();
-        return;
-    }
-
     uint selectedLength = selectedText().length();
 
     // Let QLineEdit handle any other keys events.
@@ -986,9 +1026,9 @@ void KLineEdit::makeCompletionBox()
 
 void KLineEdit::userCancelled(const QString & cancelText)
 {
-    if ( completionMode() != KGlobalSettings::CompletionPopupAuto ) setText(cancelText);
-    else
-    if (hasSelectedText() )
+    if ( completionMode() != KGlobalSettings::CompletionPopupAuto )
+      setText(cancelText);
+    else if (hasSelectedText() )
     {
       if (d->userSelection)
         deselect();
