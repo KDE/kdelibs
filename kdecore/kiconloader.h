@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.34  1999/06/17 10:20:24  kulow
+   some changes to make KIconloader flexible enough to let konqueror load
+   kwm icons :)
+
    Revision 1.33  1999/06/16 21:01:24  kulow
    kiconloader doesn't use it's own directories, but use KStandardDirs from now
    on - for this I removed insertDirectory and appendDirectory from it's API.
@@ -258,6 +262,11 @@ public:
 		       bool always_valid=false);
 
 
+  /**
+   * sets the type of icons loadIcon will load. Default is "toolbar"
+   **/
+  void setIconType(const QString &type) { iconType = type; }
+
   /** 
    * Remove an icon from the cache. This is no longer required since @ref
    * QPixmapCache does this for us.
@@ -278,6 +287,7 @@ protected:
 
   QString appname;
   QString varname;
+  QString iconType;
 
 private:
   void initPath();

@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.48  1999/06/17 10:20:24  kulow
+   some changes to make KIconloader flexible enough to let konqueror load
+   kwm icons :)
+
    Revision 1.47  1999/06/16 21:01:23  kulow
    kiconloader doesn't use it's own directories, but use KStandardDirs from now
    on - for this I removed insertDirectory and appendDirectory from it's API.
@@ -177,6 +181,8 @@ void KIconLoader::initPath()
     KGlobal::dirs()->addResourceType("toolbar", 
 				     KStandardDirs::kde_data_relative() + "/pics/");
     
+    // default
+    iconType = "toolbar"; 
 }
 
 KIconLoader::KIconLoader( KConfig *conf,
@@ -241,9 +247,9 @@ QPixmap KIconLoader::loadApplicationMiniIcon ( const QString& name,
 
 QString KIconLoader::getIconPath( const QString& name, bool always_valid)
 {
-    QString full_path = locate("toolbar", name);
+    QString full_path = locate(iconType, name);
     if (full_path.isNull() && always_valid)
-	full_path = locate("toolbar", "unknown.xpm");
+	full_path = locate(iconType, "unknown.xpm");
     
     return full_path;
 }
