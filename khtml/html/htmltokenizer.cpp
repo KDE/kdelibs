@@ -489,7 +489,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 	checkBuffer();
 
 	const QChar &curChar = src[0];
-	
+
 	// decide if quoted or not....
 	if ( curChar == '\"' || curChar == '\'' )
 	{ // we treat " & ' the same in tags
@@ -511,11 +511,15 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 discard = NoneDiscard;
 		pending = NonePending; // remove space at the end of value
 
+		//WABA: This is unreliable. The parser is a state machine.
+		//      You should always assume that src.length() == 1
+		//      and that the next byte is feeded into the
+		//      parser at the next call to parseTag()!
 		// we remove additional quotes directly following the
 		// end of the quoted section. Helps with bad html as
 		// <tag attr="value"" nextattr="..." ...>
-		while(src.length() > 1 &&
-		      (src[1] == '\'' || src[1] == '\"'))
+		while((src.length() > 1) &&
+		      ((src[1] == '\'') || (src[1] == '\"')))
 		    ++src;
 	    }
 	    else
@@ -590,15 +594,15 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		}
 		else
 		{
-		    int len;
+		    int len = dest - buffer;
                     bool beginTag;
 		    QChar *ptr = buffer;
-		    if (*ptr == '/')
+		    if ((len > 0) && (*ptr == '/'))
 		    {
 			// End Tag
 			beginTag = false;
 			ptr++;
-			len = dest - buffer - 1;
+			len--;
 		    }
 		    else
 		    {
@@ -606,10 +610,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 			beginTag = true;
 			// Ignore CR/LF's after a start tag
 			discard = LFDiscard;
-			len = dest - buffer;
 		    }
 		    // limited xhtml support. Accept empty xml tags like <br/>
-		    if(*(dest-1) == '/' && len > 1) len--;
+		    if((len > 1) && (*(dest-1) == '/')) len--;
 		
 		    QConstString tmp(ptr, len);
 		    uint tagID = khtml::getTagID(tmp.string().ascii(), len);
