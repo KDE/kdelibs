@@ -84,7 +84,8 @@ int create_link(const char *file, const char *tmp_dir)
   return 0;
 }
 
-int main(int argc, char **argv)
+
+build_link(const char *tmp_prefix, const char *kde_prefix)
 {
   struct passwd *pw_ent;
   char kde_tmp_dir[PATH_MAX+1];
@@ -105,7 +106,7 @@ int main(int argc, char **argv)
      return 1;
   }
 
-  strcpy(user_tmp_dir, "/tmp/");
+  strcpy(user_tmp_dir, tmp_prefix);
   strcat(user_tmp_dir, pw_ent->pw_name);
 
   if (!kde_home || !kde_home[0])
@@ -144,7 +145,12 @@ int main(int argc, char **argv)
      return 1;
   }  
 
-  strcat(kde_tmp_dir, "/tmp");
+  strcat(kde_tmp_dir, kde_prefix);
+  if (gethostname(kde_tmp_dir+strlen(kde_tmp_dir), PATH_MAX - strlen(kde_tmp_dir) - 1) != 0)
+  {
+     perror("Aborting. Could not determine hostname: ");
+     exit(255);
+  }
 
   result = lstat(kde_tmp_dir, &stat_buf);
   if ((result == 0) && (S_ISDIR(stat_buf.st_mode)))
@@ -156,6 +162,11 @@ int main(int argc, char **argv)
   if ((result == -1) && (errno == ENOENT))
   {
      printf("Creating link %s.\n", kde_tmp_dir);
+     result = create_link(kde_tmp_dir, user_tmp_dir);
+     if (result == 0) return 0; /* Success */
+     unlink(kde_tmp_dir);
+     strcat(user_tmp_dir, "XXXXXX");
+     mktemp(user_tmp_dir);
      return create_link(kde_tmp_dir, user_tmp_dir);
   }
   if ((result == -1) || (!S_ISLNK(stat_buf.st_mode)))
@@ -175,8 +186,35 @@ int main(int argc, char **argv)
   if (strcmp(tmp_buf, user_tmp_dir) != 0)
   {
      fprintf(stderr, "Error: \"%s\" points to \"%s\" instead of \"%s\".\n", kde_tmp_dir, tmp_buf, user_tmp_dir);
+     unlink(kde_tmp_dir);
+     printf("Creating link %s.\n", kde_tmp_dir);
+     result = create_link(kde_tmp_dir, user_tmp_dir);
+     if (result == 0) return 0; /* Success */
+     unlink(kde_tmp_dir);
+     strcat(user_tmp_dir, "XXXXXX");
+     mktemp(user_tmp_dir);
+     return create_link(kde_tmp_dir, user_tmp_dir);
      return 1;
   }
   result = check_tmp_dir(user_tmp_dir);
-  return result;
+  if (result == 0) return 0; /* Success */
+  unlink(kde_tmp_dir);
+  strcat(user_tmp_dir, "XXXXXX");
+  mktemp(user_tmp_dir);
+  return create_link(kde_tmp_dir, user_tmp_dir);
+}
+
+int main(int argc, char **argv)
+{
+  if ((argc != 2) || 
+      ((strcmp(argv[1], "tmp")!=0) && (strcmp(argv[1], "socket")!=0)))
+  {
+     fprintf(stderr, "Usage: lnusertemp tmp|socket\n");
+     return 1;
+  }
+   
+  if (strcmp(argv[1], "tmp") == 0)
+     return build_link("/tmp/kde-", "/tmp-");
+  else
+     return build_link("/tmp/ksocket-", "/socket-");
 }

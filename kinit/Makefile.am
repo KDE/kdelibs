@@ -19,7 +19,7 @@ INCLUDES = -I$(srcdir)/../libltdl/ -I$(srcdir)/../kio/klauncher/ $(all_includes)
 
 SUBDIRS = .
 
-bin_PROGRAMS = kdeinit kdeinit_wrapper mkusertemp lnusertemp
+bin_PROGRAMS = kdeinit kdeinit_wrapper lnusertemp
 
 kdeinit_SOURCES = kinit.cpp setproctitle.cpp
 
@@ -33,5 +33,4 @@ kdeinit_METASOURCES = AUTO
 kdeinit_wrapper_SOURCES = wrapper.c
 kdeinit_wrapper_LDADD = $(LIBSOCKET)
 
-mkusertemp_SOURCES = mkusertemp.c 
 lnusertemp_SOURCES = lnusertemp.c 
