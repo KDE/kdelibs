@@ -55,26 +55,24 @@ class HTMLTokenizer;
 #define TAB_SIZE 8
 
 typedef char * TokenPtr;
-
 //-----------------------------------------------------------------------------
 
 class BlockingToken
 {
 public:
-    enum TokenType { Table, FrameSet, Script, Cell };
-
-    BlockingToken( TokenType tt, TokenPtr t )
-	    {	ttype = tt; tok = t; }
-
+    BlockingToken( int id, TokenPtr t )
+           {   tok_id = id; tok = t; }
+                
     TokenPtr token()
-	    {	return tok; }
-    const char *tokenName();
-
+           {   return tok; }
+    int tokenId()
+           {   return tok_id; }
+                                
 protected:
-    TokenType ttype;
+    int tok_id;
     TokenPtr tok;
 };
-
+                                        
 //-----------------------------------------------------------------------------
 
 class HTMLTokenBuffer
@@ -99,6 +97,8 @@ public:
 
     char* nextToken();
     bool hasMoreTokens();
+
+    char* nextOption();
 
     void first();
 
@@ -141,6 +141,8 @@ protected:
 
     TokenPtr curr;  // Token read next 
     unsigned int tokenBufferCurrIndex; // Index of HTMLTokenBuffer used by next read.
+
+    char *nextOptionPtr;
 
 	// String List
 	//////////////
@@ -291,8 +293,11 @@ inline char *HTMLTokenizer::newString( const char *str, int len )
 inline char* HTMLTokenizer::nextToken()
 {
     if (!curr)
-        return NULL;
-
+    {
+        nextOptionPtr = 0;
+        return 0;
+    }
+    
     char *t = (char *) curr;
     curr += strlen(curr)+1;
 
@@ -300,6 +305,30 @@ inline char* HTMLTokenizer::nextToken()
     {
     	// End of HTMLTokenBuffer, go to next buffer.
 	    nextTokenBuffer();
+    }
+
+    nextOptionPtr = t+2; // Skip: TAG_ESCAPE / ID_xxx
+
+    return t;
+}
+
+inline char* HTMLTokenizer::nextOption()
+{
+    char *t = nextOptionPtr;
+    
+    if (!t)
+        return 0;
+        
+    if (!*t)
+    {
+        nextOptionPtr = 0;
+        return 0;
+    }
+    
+    nextOptionPtr = index(t, TAG_ESCAPE);
+    if (nextOptionPtr)
+    {
+        *nextOptionPtr++ = '\0';
     }
 
     return t;

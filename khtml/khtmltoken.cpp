@@ -37,6 +37,8 @@
 #include <string.h>
 #include <strings.h>
 
+#include "khtmltags.c"
+
 #include <kcharsets.h>
 #include <kapp.h>
 
@@ -53,32 +55,6 @@ static const char *commentStart = "<!--";
 static const char *scriptEnd = "</script>";
 static const char *styleEnd = "</style>";
 static const char *listingEnd = "</listing>";
-
-//-----------------------------------------------------------------------------
-
-const char *BlockingToken::tokenName()
-{
-    switch ( ttype )
-    {
-	case Table:
-		return "</table";
-		break;
-
-	case FrameSet:
-		return "</frameset";
-		break;
-
-	case Script:
-		return "</script";
-		break;
-
-	case Cell:
-		return "</cell";
-		break;
-    }
-
-    return "";
-}
 
 //-----------------------------------------------------------------------------
 
@@ -147,7 +123,6 @@ void HTMLTokenizer::begin()
     title = false;
     charEntity = false;
 }
-
 
 void HTMLTokenizer::addListing(const char *list)
 {
@@ -241,11 +216,8 @@ void HTMLTokenizer::addListing(const char *list)
     
     *dest = TAG_ESCAPE;
     dest++;
-    for(const char *p=listingEnd; *p; p++)
-    {
-       *dest = *p;
-       dest++;
-    }
+    *((unsigned char *)dest) = ID_LISTING + ID_CLOSE_TAG;
+    dest++;
     *dest = 0;
     appendToken( buffer, dest-buffer );
     dest = buffer;
@@ -413,119 +385,145 @@ void HTMLTokenizer::parseTag( const char * &src)
 	} 
 	else if ( *src == '>' && !tquote )
 	{
-            searchCount = 0; // Stop looking for '<!--' sequence
+	    int tagID;
+	    bool startTag;
+	    const char *tagStr;
 
-	    *dest = '>';
-	    *(dest+1) = 0;
+            searchCount = 0; // Stop looking for '<!--' sequence
+	    tag = false;
+	    pending = NonePending; // Ignore pending spaces
+	    src++;
+
+	    *dest = '\0';
 
 	    // make the tag lower case
 	    char *ptr = buffer+2;
 	    if (*ptr == '/')
 	    { 
 	    	// End Tag
+	    	startTag = false;
+	    	ptr++;
 	    	discard = NoneDiscard;
 	    }
 	    else
 	    {
 	    	// Start Tag
+	    	startTag = true;
 	    	// Ignore CR/LF's after a start tag
 	    	discard = LFDiscard;
 	    }
-	    while ( *ptr && *ptr != ' ' )
+
+	    tagStr = ptr;
+	    while (  
+	             ((*ptr >= 'a') && (*ptr <= 'z')) ||
+	             ((*ptr >= 'A') && (*ptr <= 'Z')) ||
+	             ((*ptr >= '0') && (*ptr <= '9'))
+	          )
 	    {
 		*ptr = tolower( *ptr );
 		ptr++;
 	    }
+	    *ptr = '\0';
+	    // tagStr : Tag
+	    // ptr : first argument
 
-	    appendToken( buffer, dest-buffer+1 );
+	    const struct tags *tagPtr = findTag(tagStr, ptr-tagStr);
+            if (!tagPtr)
+            {
+printf("Unknown tag: \"%s\"\n", tagStr);
+               dest = buffer;
+               return; // Unknown tag, ignore
+            }
+            
+            if (dest <= ptr)
+            {
+                dest = ptr+1;
+                *dest = '\0';
+            }
+
+            tagID = tagPtr->id;
+            if (startTag)
+                *((unsigned char *)ptr) = tagID;
+            else
+                *((unsigned char *)ptr) = tagID + ID_CLOSE_TAG;
+            
+            ptr--;
+            *ptr = TAG_ESCAPE;  
+	    appendToken( ptr, dest-ptr );
 	    dest = buffer;
 
-	    tag = false;
-	    pending = NonePending; // Ignore pending spaces
-	    src++;
-
-	    if ( strncmp( buffer+2, "pre", 3 ) == 0 )
+	    if ( tagID == ID_PRE )
 	    {
-		prePos = 0;
-		pre = true;
+                prePos = 0;
+	        pre = startTag;
 	    }
-	    else if ( strncmp( buffer+2, "/pre", 4 ) == 0 )
+	    else if ( tagID == ID_TEXTAREA )
 	    {
-		pre = false;
+		textarea = startTag;
 	    }
-	    else if ( strncmp( buffer+2, "textarea", 8 ) == 0 )
+	    else if ( tagID == ID_TITLE )
 	    {
-		textarea = true;
+		title = startTag;
 	    }
-	    else if ( strncmp( buffer+2, "/textarea", 9 ) == 0 )
+	    else if ( tagID == ID_SCRIPT )
 	    {
-		textarea = false;
+	        if (startTag)
+	        {
+		    script = true;
+                    searchCount = 0;
+                    searchFor = scriptEnd;		
+		    scriptCode = new char[ 1024 ];
+		    scriptCodeSize = 0;
+		    scriptCodeMaxSize = 1024;
+		    parseScript(src);
+		}
 	    }
-	    else if ( strncmp( buffer+2, "title", 5 ) == 0 )
+	    else if ( tagID == ID_STYLE )
 	    {
-		title = true;
+	        if (startTag)
+	        {
+		    style = true;
+                    searchCount = 0;		
+                    searchFor = styleEnd;		
+		    scriptCode = new char[ 1024 ];
+		    scriptCodeSize = 0;
+		    scriptCodeMaxSize = 1024;
+		    parseStyle(src);
+		}
 	    }
-	    else if ( strncmp( buffer+2, "/title", 6 ) == 0 )
+	    else if ( tagID == ID_LISTING )
 	    {
-		title = false;
+	        if (startTag)
+	        {
+		    listing = true;
+                    searchCount = 0;		
+                    searchFor = listingEnd;		
+		    scriptCode = new char[ 1024 ];
+		    scriptCodeSize = 0;
+		    scriptCodeMaxSize = 1024;
+		    parseListing(src);
+		}
 	    }
-	    else if ( strncmp( buffer+2, "script", 6 ) == 0 )
+	    else if ( tagID == ID_SELECT )
 	    {
-		script = true;
-                searchCount = 0;
-                searchFor = scriptEnd;		
-		scriptCode = new char[ 1024 ];
-		scriptCodeSize = 0;
-		scriptCodeMaxSize = 1024;
-		parseScript(src);
+		select = startTag;
 	    }
-	    else if ( strncmp( buffer+2, "style", 5 ) == 0 )
+	    else if (( tagID == ID_FRAMESET ) ||
+           	     ( tagID == ID_CELL ) ||
+                     ( tagID == ID_TABLE ))
 	    {
-		style = true;
-                searchCount = 0;		
-                searchFor = styleEnd;		
-		scriptCode = new char[ 1024 ];
-		scriptCodeSize = 0;
-		scriptCodeMaxSize = 1024;
-		parseStyle(src);
-	    }
-	    else if ( strncmp( buffer+2, "listing", 7 ) == 0 )
-	    {
-		listing = true;
-                searchCount = 0;		
-                searchFor = listingEnd;		
-		scriptCode = new char[ 1024 ];
-		scriptCodeSize = 0;
-		scriptCodeMaxSize = 1024;
-		parseListing(src);
-	    }
-	    else if ( strncmp( buffer+2, "select", 6 ) == 0 )
-	    {
-		select = true;
-	    }
-	    else if ( strncmp( buffer+2, "/select", 7 ) == 0 )
-	    {
-		select = false;
-	    }
-	    else if ( strncmp( buffer+2, "frameset", 8 ) == 0 )
-	    {
-		blocking.append( new BlockingToken( BlockingToken::FrameSet,
-				last ) );
-	    }
-	    else if ( strncmp( buffer+2, "cell", 4 ) == 0 )
-	    {
-		blocking.append( new BlockingToken(BlockingToken::Cell, last) );
-	    }
-	    else if ( strncmp( buffer+2, "table", 5 ) == 0 )
-	    {
-		blocking.append( new BlockingToken( BlockingToken::Table,
-				last ) );
-	    }
-	    else if ( !blocking.isEmpty() && 
-		    strncasecmp( buffer+1, blocking.getLast()->tokenName(),
-			strlen( blocking.getLast()->tokenName() ) ) == 0 )
-	    {
-		blocking.removeLast();
+	        if (startTag)
+	        {
+		    blocking.append( new BlockingToken(tagID, last) );
+		}
+		else
+		{
+	            if ( !blocking.isEmpty() &&  
+	                 (blocking.getLast()->tokenId() == tagID) )
+                    {
+		        blocking.removeLast();
+	            }
+	        }
 	    }
 	    return; // Finished parsing tag!
 	}
@@ -560,12 +558,10 @@ void HTMLTokenizer::parseTag( const char * &src)
 		discard = SpaceDiscard; // ignore leading spaces
 		pending = NonePending;
  		tquote = true;
-		*dest++ = '\"';
 	    }
 	    else if ( tquote )
 	    {
                 tquote = false;
-		*dest++ = '\"';
 		pending = SpacePending; // Add space automatically
 	    }
 	    else
@@ -589,7 +585,13 @@ void HTMLTokenizer::parseTag( const char * &src)
 	{
 	    discard = NoneDiscard;
 	    if (pending)
-	    	addPending();
+	    {
+	        if (tquote)
+	           *dest++ = ' ';
+	        else
+	           *dest++ = TAG_ESCAPE; // Field delimiter
+                pending = NonePending;
+	    }
 
 	    if (searchCount > 0)
 	    {
@@ -649,9 +651,10 @@ void HTMLTokenizer::addPending()
 		    appendToken( buffer, dest-buffer );
 		}
 		dest = buffer;
-		*dest = TAG_ESCAPE;
-		*(dest+1) = '\n';
-		*(dest+2) = 0;
+		*dest++ = TAG_ESCAPE;
+		*((unsigned char *)dest) = ID_NEWLINE;
+		dest++;
+		*dest = 0;
 		appendToken( buffer, 2 );
 		dest = buffer;
 		prePos = 0; 
@@ -821,8 +824,9 @@ void HTMLTokenizer::write( const char *str )
 		else if (!entityValue && !res)
 		{
 		    // ignore the sequence, add it to the buffer as plaintext
-		    memcpy(dest,searchBuffer+1, searchCount);
-		    dest += searchCount;
+		    *dest++ = '&';
+		    memcpy(dest,searchBuffer+2, searchCount-1);
+		    dest += searchCount-1;
 		    if (pre)
 		    	prePos += searchCount;
 		}
@@ -837,6 +841,7 @@ void HTMLTokenizer::write( const char *str )
 		    }
 		    
 		    // add token with the amp-sequence for further conversion
+		    ((unsigned char *)searchBuffer)[1] = ID_ENTITY; 
 		    appendToken(searchBuffer, searchCount+1);
 		    dest = buffer;
 		    // Assume a width of 1

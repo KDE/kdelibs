@@ -40,6 +40,7 @@
 
 #include "kurl.h"
 #include "khtmlclue.h"
+#include "khtmltags.h"
 
 //
 // External Classes
@@ -89,7 +90,7 @@ class KHTMLParser;
 #define TOP_BORDER 10
 #define BOTTOM_BORDER 10
 
-typedef void (KHTMLParser::*parseFunc)(HTMLClue *_clue, const char *str);
+typedef void (KHTMLParser::*tagFunc)();
 
 class KHTMLParser
 {
@@ -111,7 +112,7 @@ public:
      * You can specify two tokens, for example &lt;/li&gt; and &lt;/menu&gt;.
      * You may even set the second one to "" if you dont need it.
      */
-    const char* parseBody( HTMLClue *_clue, const char *[], bool toplevel = FALSE );
+    int parseBody( HTMLClue *_clue, const char *_end, bool toplevel = FALSE );
 
    /**
     * Set document charset.
@@ -144,60 +145,111 @@ protected:
 	/*
 	 * This function creates a new flow adds it to '_clue' and sets 'flow'
 	 */
-	void newFlow(HTMLClue *_clue);
+	void newFlow();
 
 	void insertText(char *str, const HTMLFont * fp);
 
-
-    const char* parseOneToken( HTMLClue *_clue, const char *str );
+    /*
+     * tagID
+     *
+     * The ID of the tag currently being parsed
+     */
+    int tagID;  
 
     /*
-     * Parse marks starting with character, e.g.
-     * &lt;img ...  is processed by KHTMLParser::parseI()
-     * &lt;/ul&gt;     is processed by KHTMLParser::parseU()
+     * Parses the tag set in tagID with options tagOptions
      */
-    void parseA( HTMLClue *_clue, const char *str );
-    void parseB( HTMLClue *_clue, const char *str );
-    void parseC( HTMLClue *_clue, const char *str );
-    void parseD( HTMLClue *_clue, const char *str );
-    void parseE( HTMLClue *_clue, const char *str );
-    void parseF( HTMLClue *_clue, const char *str );
-    void parseG( HTMLClue *_clue, const char *str );
-    void parseH( HTMLClue *_clue, const char *str );
-    void parseI( HTMLClue *_clue, const char *str );
-    void parseJ( HTMLClue *_clue, const char *str );
-    void parseK( HTMLClue *_clue, const char *str );
-    void parseL( HTMLClue *_clue, const char *str );
-    void parseM( HTMLClue *_clue, const char *str );
-    void parseN( HTMLClue *_clue, const char *str );
-    void parseO( HTMLClue *_clue, const char *str );
-    void parseP( HTMLClue *_clue, const char *str );
-    void parseQ( HTMLClue *_clue, const char *str );
-    void parseR( HTMLClue *_clue, const char *str );
-    void parseS( HTMLClue *_clue, const char *str );
-    void parseT( HTMLClue *_clue, const char *str );
-    void parseU( HTMLClue *_clue, const char *str );
-    void parseV( HTMLClue *_clue, const char *str );
-    void parseW( HTMLClue *_clue, const char *str );
-    void parseX( HTMLClue *_clue, const char *str );
-    void parseY( HTMLClue *_clue, const char *str );
-    void parseZ( HTMLClue *_clue, const char *str );
- 
-    /*
-     * This function is called after the <cell> tag.
-     */
-    const char* parseCell( HTMLClue *_clue, const char *attr );
+    void parseOneToken();
 
     /*
-     * parse table
+     * Approx. each tag has its own function
      */
-    const char* parseTable( HTMLClue *_clue, const char * );
+    void parseTagEnd(void);			// Generic end-tag function
 
-    /*
-     * parse input
-     */
-    const char* parseInput( const char * );
-
+    void parseTagA(void);			
+    void parseTagAbbr(void);		
+    void parseTagAcronym(void);		
+    void parseTagAddress(void);
+    void parseTagApplet(void);
+    void parseTagArea(void);
+    void parseTagB(void);
+    void parseTagBase(void);
+    void parseTagBaseFont(void);
+    void parseTagBdo(void);
+    void parseTagBig(void);
+    void parseTagBlockQuote(void);
+    void parseTagBody(void); 
+    void parseTagBr(void);
+    void parseTagButton(void);
+    void parseTagCell(void);
+    void parseTagCenter(void);
+    void parseTagCite(void);
+    void parseTagCode(void);
+    void parseTagDD(void);
+    void parseTagDel(void);
+    void parseTagDfn(void);
+    void parseTagDiv(void);
+    void parseTagDL(void);
+    void parseTagDLEnd(void);
+    void parseTagDT(void);
+    void parseTagEM(void);
+    void parseTagFieldset(void);
+    void parseTagFont(void); 
+    void parseTagForm(void); 
+    void parseTagFormEnd(void); 
+    void parseTagFrame(void); 
+    void parseTagFrameset(void); 
+    void parseTagHeader(void); 		// H1 .. H6
+	void parseTagHeaderEnd(void);   // Handling of end-tag for H1 .. H6
+    void parseTagHead(void); 		// HEAD
+    void parseTagHR(void); 
+    void parseTagI(void); 
+    void parseTagIframe(void); 
+    void parseTagImg(void); 
+    void parseTagInput(void); 
+    void parseTagIns(void); 
+    void parseTagIsindex(void); 
+    void parseTagKbd(void); 
+    void parseTagLabel(void); 
+    void parseTagLegend(void); 
+    // parseTagListing: see parseTagPre
+    void parseTagLi(void);
+    void parseTagLink(void);
+    void parseTagMap(void);
+    void parseTagMeta(void);
+    void parseTagNobr(void);
+    void parseTagNoframes(void);
+    void parseTagNoscript(void);
+    void parseTagObject(void);
+    void parseTagOl(void);
+    void parseTagOptgroup(void);
+    void parseTagOption(void);
+    void parseTagOptionEnd(void);
+    void parseTagP(void); 	
+    void parseTagPEnd(void); 	
+    void parseTagParam(void); 	
+    void parseTagPre(void); 	
+    void parseTagQ(void); 	
+    void parseTagSamp(void); 	
+    void parseTagScript(void); 	
+	void parseTagSelect(void);
+	void parseTagSelectEnd(void);
+	void parseTagSmall(void);
+	void parseTagSpan(void);
+    void parseTagStrike(void); 	
+    void parseTagStrong(void); 	
+    void parseTagStyle(void); 	
+    void parseTagSub(void); 	
+    void parseTagSup(void); 	
+    void parseTagTable(void); 	
+    void parseTagTextarea(void); 	
+    void parseTagTextareaEnd(void); 	
+    void parseTagTitle(void); 	
+    void parseTagTT(void); 	
+    void parseTagU(void); 	
+    void parseTagUL(void); 	
+    void parseTagVar(void); 	
+	
     /*
      * This function is used for convenience only. It inserts a vertical space
      * if this has not already been done. For example
@@ -207,7 +259,7 @@ protected:
      * 'parseBody' to see how to use this function.
      * Assign the return value to 'space_inserted'.
      */
-    bool insertVSpace( HTMLClue *_clue, bool _space_inserted );
+    bool insertVSpace( bool _space_inserted );
 
     /*
      * The <title>...</title>.
@@ -232,13 +284,11 @@ protected:
      */
     QPainter *painter;
 
-#if 0
-// Not yet used
     /*
      * This is the current active HTMLClue.
      */
     HTMLClue *_clue;
-#endif
+
     /*
      * This object contains the complete text. This text is referenced
      * by HTMLText objects for example. So you may not delete
@@ -332,7 +382,7 @@ protected:
 
 	class HTMLStackElem;
 
-    typedef void (KHTMLParser::*blockFunc)(HTMLClue *_clue, HTMLStackElem *stackElem);
+    typedef void (KHTMLParser::*blockFunc)(HTMLStackElem *stackElem);
 
 	class HTMLStackElem
 	{
@@ -370,7 +420,7 @@ protected:
     					  int _miscData1 = 0,
     					  int _miscData2 = 0);
     					  
-     void popBlock( int _id, HTMLClue *_clue);
+     void popBlock( int _id );
  
 	 void freeBlock( void);
     
@@ -378,46 +428,57 @@ protected:
 	  * Code for closing-tag to restore font
 	  * miscData1: bool - if true terminate current flow
 	  */
-    void blockEndFont(HTMLClue *_clue, HTMLStackElem *stackElem);
+    void blockEndFont(HTMLStackElem *stackElem);
 
 	 /*
 	  * Code for closing-tag to end PRE tag
 	  */
-    void blockEndPre(HTMLClue *_clue, HTMLStackElem *stackElem);
+    void blockEndPre(HTMLStackElem *stackElem);
 
 	 /*
 	  * Code for closing-tag to restore font and font-color
 	  */
-    void blockEndColorFont(HTMLClue *_clue, HTMLStackElem *stackElem);
+    void blockEndColorFont(HTMLStackElem *stackElem);
     
 	 /*
 	  * Code for closing-tag to restore indentation
 	  * miscData1: int - previous indentation
 	  */
-    void blockEndIndent(HTMLClue *_clue, HTMLStackElem *stackElem);
+    void blockEndIndent(HTMLStackElem *stackElem);
+
+	 /*
+	  * Code for closing-tag to restore alignment
+	  * miscData1: int - previous alignment
+	  */
+    void blockEndAlign(HTMLStackElem *stackElem);
 
 	 /*
 	  * Code for remove item from listStack and restore indentation
 	  * miscData1: int - previous indentation
 	  * miscData2: bool - if true insert vspace
 	  */
-    void blockEndList(HTMLClue *_clue, HTMLStackElem *stackElem);
+    void blockEndList(HTMLStackElem *stackElem);
 
 	 /*
 	  * Code for close frameset
 	  * miscData1: HTMLFrameSet * - previous frameSet
 	  */
-    void blockEndFrameSet(HTMLClue *_clue, HTMLStackElem *stackElem);
+    void blockEndFrameSet(HTMLStackElem *stackElem);
 
 	 /*
 	  * Code for end of form
 	  */
-    void blockEndForm(HTMLClue *_clue, HTMLStackElem *stackElem);
+    void blockEndForm(HTMLStackElem *stackElem);
+
+	 /*
+	  * Code for end of textarea
+	  */
+    void blockEndTextarea(HTMLStackElem *stackElem);
 
 	 /*
 	  * Code for end of title
 	  */
-    void blockEndTitle(HTMLClue *_clue, HTMLStackElem *stackElem);
+    void blockEndTitle(HTMLStackElem *stackElem);
 
     /*
      * Have we parsed <body> yet?
@@ -474,11 +535,10 @@ protected:
     HTMLClue *flow;
 
     /*
-     * Array of paser functions, e.g.
-     * <img ...  is processed by KHTMLParser::parseI() - parseFuncArray[8]()
-     * </ul>     is processed by KHTMLParser::parseU() - parseFuncArray[20]()
+     * Array of TAG functions, e.g.
+     * <img ...  is processed by tagJumpTable[ID_IMG]
      */
-    static parseFunc parseFuncArray[26];
+    static tagFunc tagJumpTable[ID_MAX+1];
 
     /*
      * Current fontbase, colors, etc.

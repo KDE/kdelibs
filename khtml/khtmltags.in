@@ -18,6 +18,8 @@ cell
 center
 cite
 code
+col
+colgroup
 dd
 del
 dfn
@@ -37,6 +39,7 @@ h3
 h4
 h5
 h6
+head
 hr
 i
 iframe
@@ -76,9 +79,12 @@ style
 sub
 sup
 table
+tbody
 td
 textarea
+tfoot
 th
+thead
 title
 tr
 tt
