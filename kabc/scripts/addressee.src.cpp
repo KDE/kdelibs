@@ -639,7 +639,7 @@ void Addressee::insertCategory( const QString &c )
   detach();
   mData->empty = false;
 
-  if ( mData->categories.contains( c ) ) return;
+  if ( mData->categories.find( c ) != mData->categories.end() ) return;
 
   mData->categories.append( c );
 }
@@ -656,7 +656,7 @@ void Addressee::removeCategory( const QString &c )
 
 bool Addressee::hasCategory( const QString &c ) const
 {
-  return ( mData->categories.contains( c ) );
+  return ( mData->categories.find( c ) != mData->categories.end() );
 }
 
 void Addressee::setCategories( const QStringList &c )
