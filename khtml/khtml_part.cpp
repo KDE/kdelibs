@@ -1324,16 +1324,21 @@ void KHTMLPart::slotRestoreData(const QByteArray &data )
   }
 }
 
+void KHTMLPart::showError( KIO::Job* job )
+{
+    job->showErrorDialog( /*d->m_view*/ ); // TODO show the error text in this part, instead.
+}
+
 void KHTMLPart::slotFinished( KIO::Job * job )
 {
   if (job->error())
   {
     KHTMLPageCache::self()->cancelEntry(d->m_cacheId);
-    job->showErrorDialog( /*d->m_view*/ ); // TODO show the error text in this part, instead.
     d->m_job = 0L;
     emit canceled( job->errorString() );
     // TODO: what else ?
     checkCompleted();
+    showError( job );
     return;
   }
   //kdDebug( 6050 ) << "slotFinished" << endl;
@@ -3298,7 +3303,6 @@ void KHTMLPart::restoreState( QDataStream &stream )
 #endif
   kdDebug(6050)<<"restoring charset to:"<< charset << endl;
 
-
   stream >> fSizes >> d->m_fontBase;
   // ### odd: this doesn't appear to have any influence on the used font
   // sizes :(
@@ -4187,9 +4191,13 @@ void KHTMLPart::selectAll()
 
   if ( !first || !last )
     return;
+#if QT_VERSION < 300
   ASSERT(first->renderer());
   ASSERT(last->renderer());
-
+#else
+  Q_ASSERT(first->renderer());
+  Q_ASSERT(last->renderer());
+#endif
   d->m_selectionStart = first;
   d->m_startOffset = 0;
   d->m_selectionEnd = last;

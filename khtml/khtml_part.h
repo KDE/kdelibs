@@ -191,6 +191,14 @@ public:
   virtual bool closeURL();
 
   /**
+   * is called when a certain error situation (i.e. connection timed out) occured.
+   * default implementation either shows a KIO error dialog or loads a more verbose
+   * error description a as page, depending on the users configuration.
+   * @p job is the job that signaled the error situation
+   */
+  virtual void showError(KIO::Job* job);
+
+  /**
    * Retrieve a reference to the DOM HTML document (for non-HTML documents, returns null)
    */
   DOM::HTMLDocument htmlDocument() const;
