@@ -15,6 +15,7 @@
    $Id$	 
 */
 
+#warning Remove ifndef KAB_BIC in kdelibs/kab/addressbook.h and .cpp next Friday
 #include "addressbook.h"
 #include "qconfigDB.h"
 
@@ -550,26 +551,27 @@ AddressBook::ErrorCode AddressBook::getState()
   // ###########################################################################
 }
 
+#ifndef KAB_BIC
 AddressBook::ErrorCode AddressBook::load(QString filename)
+#else
+AddressBook::ErrorCode AddressBook::load(const QString& filename)
+#endif
 {
   // ----- Remark: Close the file if it could not be loaded!
   // ###########################################################################
   ErrorCode rc=NoError;
   QFileInfo newfile, oldfile;
   // -----
-  if(filename.isEmpty())
-    { // ----- reload the curent data file:
-      filename=data->fileName();
-    }
-  if(filename.isEmpty()) // there was never a filename set:
+  QString fname = (filename.isEmpty()) ? data->fileName() : filename ;
+  if(fname.isEmpty()) // there was never a filename set:
     {
       state=NoFile;
       return NoFile;
     }
   // -----
-  newfile.setFile(filename);
+  newfile.setFile(fname);
   oldfile.setFile(data->fileName());
-  if(isSameFile(filename, data->fileName()))
+  if(isSameFile(fname, data->fileName()))
     { // ----- possibly deleted file:
       if(data->load())
 	{
@@ -611,7 +613,7 @@ AddressBook::ErrorCode AddressBook::load(QString filename)
 	    }
 	}
     } else { // ----- set new filename
-      if(data->setFileName(filename, true, true))
+      if(data->setFileName(fname, true, true))
 	{
 	  if(data->load())
 	    {
@@ -630,11 +632,11 @@ AddressBook::ErrorCode AddressBook::load(QString filename)
 	  if(KMessageBox::questionYesNo
 	     (this,
 	      i18n("The file\n\"")
-	      +filename+"\"\n"+
+	      +fname+"\"\n"+
 	      i18n(" cannot be found. Create a new one?"), i18n("No such file"),
 	      i18n("OK"), i18n("Cancel"))==0)
 	    {
-	      if(createNew(filename)==NoError)
+	      if(createNew(fname)==NoError)
 		{
 		  emit(setStatus(i18n("New file.")));
 		} else { // ----- do not close here, stick with the old file:
@@ -1724,7 +1726,11 @@ AddressBook::loadConfigFile()
 }
 
 AddressBook::ErrorCode
+#ifndef KAB_BIC
 AddressBook::makeVCardFromEntry(const Entry&, QString)
+#else
+AddressBook::makeVCardFromEntry(const Entry&, const QString&)
+#endif
 {
   // ###########################################################################
   return NotImplemented;

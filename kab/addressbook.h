@@ -422,12 +422,16 @@ public:
   ErrorCode getState();
   /** Load the file with the given path. An empty file name reloads the 
    *  currently opened file. */
-  ErrorCode load(QString filename="");
+#ifndef KAB_BIC
+  ErrorCode load(QString filename=QString::null);
+#else
+  ErrorCode load(const QString& filename=QString::null);
+#endif
   /** Save the file to the given path and file name.  An empty file name saves 
    *  to the file where the database has been read from.
    *  If force is true, the method will switch to r/w mode for saving and
    *  back. */
-  ErrorCode save(const QString& filename="", bool force=false);
+  ErrorCode save(const QString& filename=QString::null, bool force=false);
   /** Close this file. 
    *  ::closeFile assures sure that the ::data object is reset no matter of the 
    *  state of the assigned file. 
@@ -501,7 +505,7 @@ public:
   /** Creates a new database with the given file name. If the filename is 
    *  empty, it creates the users standard data file. The method does not load
    *  the new database. */
-  ErrorCode createNew(const QString& filename="");
+  ErrorCode createNew(const QString& filename=QString::null);
   /** Creates the local configuration file. The filename is fixed to
    *  \c kab.config, it will be created in the local kab directory
    *  (\c $HOME/.kde/share/apps/kab). Adapt the global configuration template
@@ -515,7 +519,11 @@ public:
   /** This method parses a vCard and creates an Entry object from it. */
   ErrorCode makeEntryFromVCard(const QString& card, Entry&);
   /** This method creates a vCard string from an entry. */
+#ifndef KAB_BIC
   ErrorCode makeVCardFromEntry(const Entry& entry, QString card);
+#else
+  ErrorCode makeVCardFromEntry(const Entry& entry, const QString& card);
+#endif
   /** Returns the complete path to the user standard file. An empty path
    *  indicates an error, but this should not happen. It is NOT ensured
    *  that the file exists. */
