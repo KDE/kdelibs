@@ -129,7 +129,7 @@ private:
   void searchRemoveCert(KSSLCertificate *cert);
 
   QMap<QString, QPtrVector<KSSLCertificate> > skEmail;
-  QMap<QString, KSSLCertificate *> skKDEKey;
+  QMap<QString, KSSLCertificate *> skMD5Digest;
 };
 
 

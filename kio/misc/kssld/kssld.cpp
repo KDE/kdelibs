@@ -162,7 +162,7 @@ KSSLCNode *node;
 	}
 
 	skEmail.clear();
-	skKDEKey.clear();
+	skMD5Digest.clear();
 }
 
 
@@ -684,7 +684,7 @@ return true;
 ///////////////////////////////////////////////////////////////////////////
 
 void KSSLD::searchAddCert(KSSLCertificate *cert) {
-	skKDEKey.insert(cert->getKDEKey(), cert, TRUE);
+	skMD5Digest.insert(cert->getMD5DigestText(), cert, TRUE);
 
 	QStringList mails;
 	cert->getEmails(mails);
@@ -715,7 +715,7 @@ void KSSLD::searchAddCert(KSSLCertificate *cert) {
 
 
 void KSSLD::searchRemoveCert(KSSLCertificate *cert) {
-	skKDEKey.remove(cert->getKDEKey());
+	skMD5Digest.remove(cert->getMD5DigestText());
 
 	QStringList mails;
 	cert->getEmails(mails);
@@ -757,11 +757,11 @@ QStringList KSSLD::getKDEKeyByEmail(const QString &email) {
 
 
 KSSLCertificate KSSLD::getCertByMD5Digest(const QString &key) {
-	QMap<QString, KSSLCertificate *>::iterator iter = skKDEKey.find(key);
+	QMap<QString, KSSLCertificate *>::iterator iter = skMD5Digest.find(key);
 	
 	kdDebug() << "Searching cert for " << key.latin1() << endl;
 
-	if (iter != skKDEKey.end())
+	if (iter != skMD5Digest.end())
 		return **iter;
 	
 	KSSLCertificate rc; // FIXME: Better way to return a not found condition?
