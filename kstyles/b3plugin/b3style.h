@@ -99,6 +99,7 @@ protected:
 
 private:
     QColorGroup sliderGrp, sliderGrooveGrp, radioOnGrp;
+    bool flatArrow;
 };
 
 #endif

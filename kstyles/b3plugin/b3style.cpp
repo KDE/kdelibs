@@ -11,6 +11,7 @@
 #include <qpalette.h>
 #include <qbitmap.h>
 #include <qtabbar.h>
+#include <kglobalsettings.h>
 
 #include "bitmaps.h"
 
@@ -21,6 +22,7 @@ B3Style::B3Style()
     QString oldGrp = config->group();
     QPalette p = kapp->palette();
     setButtonDefaultIndicatorWidth(0);
+    flatArrow = true;
 }
 
 B3Style::~B3Style()
@@ -76,6 +78,11 @@ void B3Style::polish(QPalette &)
         sliderGrooveGrp.setColor(QColorGroup::Button, tmpColor);
         sliderGrooveGrp.setColor(QColorGroup::Light, QColor(192, 255, 192));
         sliderGrooveGrp.setColor(QColorGroup::Dark, QColor(0, 128, 0));
+    }
+    
+    if(config->hasKey("ArrowStyle")){
+        QString arrow = config->readEntry("ArrowStyle", "Flat");
+        flatArrow = (arrow == "Flat");
     }
     config->setGroup(oldGrp);
 }
@@ -202,44 +209,30 @@ void B3Style::drawComboButton(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool sunken,
                                  bool, bool, const QBrush *fill)
 {
-    // modified from kDrawBeButton in kdeui/kdrawutil
-    QPen oldPen = p->pen();
     int x2 = x+w-1;
     int y2 = y+h-1;
     p->setPen(g.dark());
     p->drawRect(x, y, w, h);
 
-    if(!sunken){
-        p->setPen(g.light());
-        p->drawLine(x+2, y+2, x2-1, y+2);
-        p->drawLine(x+2, y+3, x+2, y2-1);
-    }
-    else{
-        p->setPen(g.mid());
-        p->drawLine(x+2, y+2, x2-1, y+2);
-        p->drawLine(x+2, y+4, x+2, y2-1);
-    }
-
     p->setPen(sunken? g.light() : g.mid());
     p->drawLine(x2-1, y+2, x2-1, y2-1);
-    p->drawLine(x+2, y2-1, x2-1, y2-1);
+    p->drawLine(x+1, y2-1, x2-1, y2-1);
 
-    p->setPen(g.mid());
+    p->setPen(sunken? g.mid() : g.light());
     p->drawLine(x+1, y+1, x2-1, y+1);
-    p->drawLine(x+1, y+2, x+1, y2-1);
-    p->drawLine(x2-2, y+3, x2-2, y2-2);
+    p->drawLine(x+1, y+2, x+1, y2-2);
+
+    p->setPen(g.dark());
+    p->drawPoint(x+1, y+1);
 
     if(fill)
-        p->fillRect(x+4, y+4, w-6, h-6, *fill);
+        p->fillRect(x+2, y+2, w-4, h-4, *fill);
     
-    p->setPen(oldPen);
-
     int arrow_h = h / 3;
     int arrow_w = arrow_h;
     int arrow_x = w - arrow_w - 6;
     int arrow_y = (h - arrow_h) / 2;
-    QPlatinumStyle::drawArrow(p, DownArrow, false, arrow_x, arrow_y,
-                              arrow_w, arrow_h, g, true);
+    drawArrow(p, DownArrow, false, arrow_x, arrow_y, arrow_w, arrow_h, g, true);
 }
 
 void B3Style::drawComboButtonMask(QPainter *p, int x, int y, int w, int h)
@@ -249,6 +242,8 @@ void B3Style::drawComboButtonMask(QPainter *p, int x, int y, int w, int h)
     p->fillRect(x, y, w, h, QBrush(color1, SolidPattern));
     p->setPen(color0);
     p->drawPoint(x, y);
+    p->drawPoint(x, y+1);
+    p->drawPoint(x+1, y);
     p->drawPoint(x2, y);
     p->drawPoint(x, y2);
     p->drawPoint(x2, y2);
@@ -256,12 +251,12 @@ void B3Style::drawComboButtonMask(QPainter *p, int x, int y, int w, int h)
 
 QRect B3Style::comboButtonRect(int x, int y, int w, int h)
 {
-    return(QRect(x+5, y+5, w - (h / 3) - 15, h-9));
+    return(QRect(x+3, y+3, w - (h / 3) - 15, h-6));
 }
 
 QRect B3Style::comboButtonFocusRect(int x, int y, int w, int h)
 {
-    return(QRect(x+5, y+5, w-(h/3)-15, h-9));
+    return(QRect(x+3, y+3, w-(h/3)-15, h-6));
 }
 
 void B3Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
@@ -423,34 +418,34 @@ void B3Style::drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,
 {
     if(horiz){
         int y = r.y() + (r.height()-7)/2;
-        if(r.width() >= 24){
-            int x = r.x() + (r.width()-30)/2;
+        if(r.width() >= 36){
+            int x = r.x() + (r.width()-16)/2;
             drawSBDecoButton(p, x,    y, 4, 7, g);
             drawSBDecoButton(p, x+6,  y, 4, 7, g);
             drawSBDecoButton(p, x+12, y, 4, 7, g);
         }
-        else if(r.width() >= 18 ){
+        else if(r.width() >= 24 ){
             int x = r.x() + (r.width()-10)/2;
             drawSBDecoButton(p, x,   y, 4, 7, g);
             drawSBDecoButton(p, x+6, y, 4, 7, g);
         }
-        else if(r.width() >= 12)
+        else if(r.width() >= 16)
             drawSBDecoButton(p, r.x()+(r.width()-4)/2, y, 4, 7, g);
     }
     else{
         int x = r.x() + (r.width()-7)/2;
-        if(r.height() >= 24 ){
+        if(r.height() >= 36 ){
             int y = r.y() + (r.height()-16)/2;
             drawSBDecoButton(p, x, y,    7, 4, g);
             drawSBDecoButton(p, x, y+6,  7, 4, g);
             drawSBDecoButton(p, x, y+12, 7, 4, g);
         }
-        else if(r.height() >= 18 ){
+        else if(r.height() >= 24 ){
             int y = r.y() + (r.height()-10)/2;
             drawSBDecoButton(p, x, y,   7, 4, g);
             drawSBDecoButton(p, x, y+6, 7, 4, g);
         }
-        else if(r.height() >= 12)
+        else if(r.height() >= 16)
             drawSBDecoButton(p, x, r.y()+(r.height()-4)/2, 7, 4, g);
     }
 }
@@ -478,7 +473,6 @@ void B3Style::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
                                   int &sliderMax, int &sliderLength,
                                   int &buttonDim)
 {
-
     int maxLength;
     int b = 0;
     bool horiz = sb->orientation() == QScrollBar::Horizontal;
@@ -668,7 +662,10 @@ void B3Style::drawArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
                             int y, int w, int h, const QColorGroup &g,
                             bool enabled, const QBrush *fill)
 {
-    qDrawArrow(p, type, Qt::WindowsStyle, down, x, y, w, h, g, enabled);
+    if (flatArrow)
+      qDrawArrow(p, type, Qt::WindowsStyle, down, x, y, w, h, g, enabled);
+    else
+      qDrawArrow(p, type, Qt::MotifStyle, down, x, y, w, h, g, enabled);
 }
 
 void B3Style::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
@@ -859,12 +856,12 @@ static const int motifItemHMargin       = 3;
 static const int motifItemVMargin       = 2;
 static const int motifArrowHMargin      = 6;
 static const int windowsRightBorder     = 12;
+    maxpmw = QMAX( maxpmw, 20 );
+
     if(act){
         bool dis = !enabled;
         QColorGroup itemg = dis ? pal.disabled() : pal.active();
         
-        if (checkable)
-            maxpmw = QMAX( maxpmw, 12 );
         int checkcol = maxpmw;
 
         qDrawShadePanel(p, x, y, w, h, itemg, true, 1,
