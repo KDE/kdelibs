@@ -29,7 +29,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kdockwidgetdemo kdocktabctltest kdockwidgettest \
 	kdualcolortest kfontdialogtest \
 	kgradienttest khashtest kdesattest\
-	kiconloadertest kledtest klineedittest klineeditdlgtest \
+	kledtest klineedittest klineeditdlgtest \
 	kmessageboxtest knuminputtest \
 	kpalettetest \
 	kpopuptest kprogresstest krulertest kseparatortest \
@@ -66,7 +66,6 @@ kdualcolortest_SOURCES = kdualcolortest.cpp
 kfontdialogtest_SOURCES = kfontdialogtest.cpp
 kgradienttest_SOURCES = kgradienttest.cpp
 khashtest_SOURCES = khashtest.cpp
-kiconloadertest_SOURCES = kiconloadertest.cpp
 kledtest_SOURCES = kledtest.cpp
 klineedittest_SOURCES = klineedittest.cpp
 klineeditdlgtest_SOURCES = klineeditdlgtest.cpp
