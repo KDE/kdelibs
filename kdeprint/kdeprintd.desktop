@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Service
+
+X-KDE-ModuleType=Library
+X-KDE-Library=kdeprintd
+X-KDE-FactoryName=kdeprintd
+
+Name=KDE Print Deamon
+Comment=A Print Daemon for KDE
