@@ -21,9 +21,9 @@
 #include <qstringlist.h>
 #include <kapp.h>
 
+// This value has been deprecated!! Use KProtocolManager::defaultUserAgent() instead.
 #define DEFAULT_USERAGENT_STRING \
-QString("Mozilla/5.0 (compatible; Konqueror/")+ KDE_VERSION_STRING+QString("; X11)")
-
+QString("Mozilla/5.0 (Konqueror/%1; compatible MSIE 5.5; X11)").arg(KDE_VERSION_STRING)
 
 class KConfig;
 class KPAC;
@@ -44,6 +44,24 @@ class KPAC;
 class KProtocolManager
 {
 public:
+
+  /** Values to be added to the default user agent string */
+  struct UAMODIFIERS
+  {
+    UAMODIFIERS() {
+      showOS = false;
+      showPlatform = false;
+      showOSVersion = false;
+      showMachine = false;
+      showLanguage = false;
+    }
+    bool showOS;        // if true, the OS value will be included (ex: Linux/FreeBSD)
+    bool showPlatform;  // if true, the platform value will be included (ex: X11)
+    bool showOSVersion; // if true, the OS version will be included (ex: 2.4.1)
+    bool showMachine;   // if true, the processor type will be included (ex: i486)
+    bool showLanguage;  // if true, the language in use will be included (ex: en_US)
+  };
+
   static int readTimeout();
   static bool markPartial();
   static int minimumKeepSize();
@@ -360,11 +378,80 @@ public:
   static void setUserAgentList( const QStringList& /*agentlist*/ );
 
   /**
-   * Returns the list of user agents.
+   * Returns the list of user agents configured for
+   * specific domains.
    *
-   * @return the list of user agent strings.
+   * This function returns the list of site specific user-
+   * agent entries set by the user. The format is:
+   *
+   * site-name::user-agent string::alias (description of user-agent string)
+   *
+   * @return the list of per-site user-agent entries.
    */
   static QStringList userAgentList();
+
+  /**
+   * Sets flags that determine which extra infromation, if any,
+   * will be appended to the default user-agent value.
+   *
+   * See @ref UAMODIFIERS above for details.
+   *
+   * @param mods the modifiers to be enabled.
+   */
+  static void setDefaultUserAgentModifiers( const UAMODIFIERS& );
+
+  /**
+   * Reads the default user-agent modifiers from config file
+   * and sets the values for the supplied argument accordingly.
+   *
+   * @param mod the modifier to be updated with config file values
+   */
+  static void defaultUserAgentModifiers( UAMODIFIERS& );
+
+  /**
+   * Returns the default user-agent value.
+   *
+   * This function returns the default user-agent value
+   * set
+   */
+  static QString defaultUserAgent();
+
+  /**
+   * Returns the default user-agent with the specified extra
+   * identifiers enabled.
+   *
+   * This is a convienence method for modifying the default user-agent
+   * string without affecting the saved values.  Unlike @ref setUserAgentModifier
+   * this method niether reads nor changes the modifiers set in the
+   * config file.  It simply returns the default user-agent after
+   * applying the values of supplied by the modifier argument.
+   *
+   * @param mod values to be applied to default user-agent string.
+   */
+  static QString customDefaultUserAgent( const UAMODIFIERS& );
+
+  /**
+   * Returns true if the user-agent identification should be
+   * sent to remote sites.
+   *
+   * This function is present to respect the user's privacy
+   * concerns and should be respected by all io-slave that
+   * include the user-agent string.
+   *
+   * @return true if user-agent string should be included when
+   * communicating with remote machine
+   */
+  static bool sendUserAgent();
+
+  /**
+   * Sets the flag that determines whether the user agent string will
+   * be sent to remote sites.
+   *
+   * @param values to be applied to default user-agent string.
+   */
+  static void setEnableSendUserAgent( bool );
+
+
 
 private:
   static KConfig *config();
