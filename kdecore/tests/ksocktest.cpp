@@ -84,20 +84,12 @@ main(int argc, char *argv[])
 
    int err;
 
-   QPtrList<KAddressInfo> cns = KExtendedSocket::lookup("www.kde.org", 0, 0, &err);
-   cns.setAutoDelete(true);
-
-   qDebug( "err: %d,cns.count(): %d", err, cns.count() );
-
+   QPtrList<KAddressInfo> cns = KExtendedSocket::lookup("www.kde.org", 0, KExtendedSocket::canonName, &err);
    for (KAddressInfo *x = cns.first(); x; x = cns.next()) {
-       qDebug( "got addrinfo: %p", x );
-
-       // Waldo: is this supposed to fail?
-       if ((*x).canonname()) {
-           qDebug( "found : %s", ( *x ).canonname() );
-
-        }
-     }
+        const char *canon = x->canonname();
+        qWarning( "Lookup: %s", canon ? canon : "<Null>");
+   }
+   check("KExtendedSocket::lookup() canonical", cns.first()->canonname(), "www.kde.org");
 
    KExtendedSocket * sock2 = new KExtendedSocket( "www.kde.org", 80 );
    check( "KExtendedSocket ctor / connect", QString::number( sock2->connect() ), "0" );
