@@ -11,11 +11,13 @@ keramik_la_LIBADD = ../../kdefx/libkdefx.la
 keramik_la_SOURCES = keramik.cpp pixmaploader.cpp
 keramik_la_METASOURCES = AUTO
 
+pixmaploader.cpp: pixmaps.embed
+
 QEMBED = $(QTDIR)/tools/qembed/qembed
 
 PICS := $(shell ls $(srcdir)/pics/*.png 2>/dev/null)
 
-pixmaploader.cpp: pixmaps.embed
+.PHONY: make-embed
 
-pixmaps.embed: $(PICS)
-	$(QEMBED) --images $^ > $@
+make-embed: $(PICS)
+	$(QEMBED) --images $^ > $(srcdir)/pixmaps.embed
