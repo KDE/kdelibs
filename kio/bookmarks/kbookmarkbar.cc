@@ -349,5 +349,50 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
     return false;
 }
 
+// TODO
+// here
+// * fill in below code
+// * make each function passthrough the data via the signals
+// elsewhere
+// * create a kbookmarkmanager of our own, just temporary
+// * connect a dombuilder to the below signals
+// * use this dombuilder to fill in the temp bookmarkmanager
+// konqi
+// * in some cute and inventive way, make konqi use this filtered bookmarkmanager
+
+class ToolbarFilter : private KBookmarkGroupTraverser {
+public:
+    ToolbarFilter() : m_visible(false) { ; }
+    void filterInto( const KBookmarkGroup &grp ) { traverse(grp); }
+private:
+    virtual void visit( const KBookmark & );
+    virtual void visitEnter( const KBookmarkGroup & );
+    virtual void visitLeave( const KBookmarkGroup & );
+signals:
+    void newBookmark( const QString & text, const QCString & url, const QString & additionalInfo );
+    void newFolder( const QString & text, bool open, const QString & additionalInfo );
+    void newSeparator();
+    void endFolder();
+private:
+    bool m_visible;
+    KBookmarkGroup m_group;
+};
+
+void ToolbarFilter::visit( const KBookmark &/*bk*/ ) {
+    // kdDebug() << "visit(" << bk.text() << ")" << endl;
+    // make sure that visit never includes groups, if so, do a isgroup here
+    // if showintoolbar() then insert
+}
+
+void ToolbarFilter::visitEnter( const KBookmarkGroup &/*grp*/ ) {
+    // kdDebug() << "visitEnter(" << grp.text() << ")" << endl;
+    // if showintoolbar() and not already visible then set entergroup and make visible
+}
+
+void ToolbarFilter::visitLeave( const KBookmarkGroup &/*grp*/ ) {
+    // kdDebug() << "visitLeave()" << endl;
+    // if entergroup then make invisible
+}
+
 #undef dptr
 #include "kbookmarkbar.moc"
