@@ -482,6 +482,13 @@ bool KThemeStyle::eventFilter( QObject* object, QEvent* event )
             w->setPalette(pal);
         }
     }
+    if (!qstrcmp(object->name(), "kde toolbar widget") && object->inherits("QLabel"))
+    {
+        QWidget* lb = static_cast<QWidget*>(object);
+        if (lb->backgroundMode() == Qt::PaletteButton)
+            lb->setBackgroundMode(Qt::PaletteBackground);
+        lb->removeEventFilter(this);
+    }
 
     return KStyle::eventFilter(object, event);
 }
@@ -490,6 +497,9 @@ void KThemeStyle::polish( QWidget *w )
 {
     if (w->inherits("QStatusBar"))
          w->setPaletteBackgroundColor(QApplication::palette().color(QPalette::Normal, QColorGroup::Background));
+    if (w->inherits("QLabel") && !qstrcmp(w->name(), "kde toolbar widget"))
+         w->installEventFilter(this);
+
 
     if (w->backgroundPixmap() && !w->isTopLevel())
     {
