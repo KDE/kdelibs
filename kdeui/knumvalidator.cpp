@@ -2,7 +2,10 @@
 **
 ** $Id$
 **
-** Copyright (C) 1999 Glen Parker <glenebob@nwlink.com>
+** KIntValidator, KFloatValidator:
+**   Copyright (C) 1999 Glen Parker <glenebob@nwlink.com>
+** KDoubleValidator:
+**   Copyright (c) 2002 Marc Mutz <mutz@kde.org>
 **
 ** This library is free software; you can redistribute it and/or
 ** modify it under the terms of the GNU Library General Public
@@ -20,12 +23,14 @@
 **
 *****************************************************************************/
 
-#include <qvalidator.h>
 #include <qwidget.h>
+#include <qstring.h>
 
 #include "knumvalidator.h"
 #include <klocale.h>
 #include <kglobal.h>
+#include <kdebug.h>
+
 ///////////////////////////////////////////////////////////////
 //  Implementation of KIntValidator
 //
@@ -280,3 +285,83 @@ double KFloatValidator::top () const
   return _max;
 }
 
+
+
+
+///////////////////////////////////////////////////////////////
+//  Implementation of KDoubleValidator
+//
+
+struct KDoubleValidator::Private {
+  Private( bool accept=true ) : acceptLocalizedNumbers( accept ) {}
+
+  bool acceptLocalizedNumbers;
+};
+
+KDoubleValidator::KDoubleValidator( QObject * parent, const char * name )
+  : QDoubleValidator( parent, name ), d( 0 )
+{
+  d = new Private();
+}
+
+KDoubleValidator::KDoubleValidator( double bottom, double top, int decimals,
+				    QObject * parent, const char * name )
+  : QDoubleValidator( bottom, top, decimals, parent, name ), d( 0 )
+{
+  d = new Private();
+}
+
+bool KDoubleValidator::acceptLocalizedNumbers() const {
+  return d->acceptLocalizedNumbers;
+}
+
+void KDoubleValidator::setAcceptLocalizedNumbers( bool accept ) {
+  d->acceptLocalizedNumbers = accept;
+}
+
+QValidator::State KDoubleValidator::validate( QString & input, int & p ) const {
+  QString s = input;
+  if ( acceptLocalizedNumbers() ) {
+    KLocale * l = KGlobal::locale();
+    // ok, we have to re-format the number to have:
+    // 1. decimalSymbol == '.'
+    // 2. negativeSign  == '-'
+    // 3. positiveSign  == <empty>
+    // 4. thousandsSeparator() == <empty> (we don't check that there
+    //    are exactly three decimals between each separator):
+    QString d = l->decimalSymbol(),
+            n = l->negativeSign(),
+            p = l->positiveSign(),
+            t = l->thousandsSeparator();
+    // first, delete p's and t's:
+    if ( !p.isEmpty() )
+      for ( int idx = s.find( p ) ; idx >= 0 ; idx = s.find( p, idx ) )
+	s.remove( idx, p.length() );
+	
+
+    if ( !t.isEmpty() )
+      for ( int idx = s.find( t ) ; idx >= 0 ; idx = s.find( t, idx ) )
+	s.remove( idx, t.length() );
+
+    // then, replace the d's and n's
+    if ( ( !n.isEmpty() && n.find('.') != -1 ) ||
+	 ( !d.isEmpty() && d.find('-') != -1 ) ) {
+      // make sure we don't replace something twice:
+      kdWarning() << "KDoubleValidator: decimal symbol contains '-' or "
+		     "negative sign contains '.' -> improve algorithm" << endl;
+      return Invalid;
+    }
+
+    if ( !d.isEmpty() && d != "." )
+      for ( int idx = s.find( d ) ; idx >= 0 ; idx = s.find( d, idx + 1 ) )
+	s.replace( idx, d.length(), ".");
+
+    if ( !n.isEmpty() && n != "-" )
+      for ( int idx = s.find( n ) ; idx >= 0 ; idx = s.find( n, idx + 1 ) )
+	s.replace( idx, n.length(), "-" );
+  }
+
+  return base::validate( s, p );
+}
+
+#include "knumvalidator.moc"

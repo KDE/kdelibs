@@ -3,6 +3,7 @@
 ** $Id$
 **
 ** Copyright (C) 1999 Glen Parker <glenebob@nwlink.com>
+** Copyright (C) 2002 Marc Mutz <mutz@kde.org>
 **
 ** This library is free software; you can redistribute it and/or
 ** modify it under the terms of the GNU Library General Public
@@ -24,6 +25,9 @@
 #define __KNUMVALIDATOR_H
 
 #include <qvalidator.h>
+
+class QWidget;
+class QString;
 
 /**
  *  @ref QValidator for integers.
@@ -89,6 +93,8 @@ class KIntValidator : public QValidator {
 class KFloatValidatorPrivate;
 
 /**
+  @obsolete Use @ref KDoubleValidator
+
   @ref QValidator for floating point entry.
   Extends the QValidator class to properly validate double numeric data.
   This can be used by @ref QLineEdit or subclass to provide validated
@@ -155,5 +161,45 @@ class KFloatValidator : public QValidator {
     KFloatValidatorPrivate *d;
 };
 
+/**
+   KDoubleValidator extends @ref QDoubleValidator to be
+   locale-aware. That means that - subject to not being disabled -
+   @ref KLocale::decimalPoint(), @ref KLocale::thousandsSeparator()
+   and @ref KLocale::positiveSign() and @ref KLocale::negativeSign()
+   are respected.
+
+   @short A locale-aware @ref QDoubleValidator
+   @author Marc Mutz <mutz@kde.org>
+   @version $Id: $
+   @see KIntValidator
+**/
+
+class KDoubleValidator : public QDoubleValidator {
+  Q_OBJECT
+  Q_PROPERTY( bool acceptLocalizedNumbers READ acceptLocalizedNumbers WRITE setAcceptLocalizedNumbers )
+public:
+  /** Constuct a locale-aware KDoubleValidator with default range
+      (whatever @ref QDoubleValidator uses for that) and parent @p
+      parent */
+  KDoubleValidator( QObject * parent, const char * name=0 );
+  /** Constuct a locale-aware KDoubleValidator for range [@p bottom,@p
+      top] and a precision of @p decimals decimals after the decimal
+      point.  */
+  KDoubleValidator( double bottom, double top, int decimals,
+		    QObject * parent, const char * name=0 );
+
+  /** Overloaded for internal reasons. The API is not affected. */
+  virtual QValidator::State validate( QString & input, int & pos ) const;
+
+  /** @return whether localized numbers are accepted (default: true) */
+  bool acceptLocalizedNumbers() const;
+  /** Sets whether to accept localized numbers (default: true) */
+  void setAcceptLocalizedNumbers( bool accept );
+
+private:
+  typedef QDoubleValidator base;
+  class Private;
+  Private * d;
+};
 
 #endif

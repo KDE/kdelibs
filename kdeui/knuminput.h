@@ -3,6 +3,7 @@
  *
  *  Copyright (c) 1997 Patrick Dowler <dowler@morgul.fsh.uvic.ca>
  *  Copyright (c) 2000 Dirk A. Mueller <mueller@kde.org>
+ *  Copyright (c) 2002 Marc Mutz <mutz@kde.org>
  *
  *  Requires the Qt widget libraries, available at no cost at
  *  http://www.troll.no/
@@ -33,6 +34,7 @@ class QLabel;
 class QSlider;
 class QLineEdit;
 class QLayout;
+class QValidator;
 
 class KIntSpinBox;
 
@@ -181,6 +183,7 @@ class KIntNumInput : public KNumInput
     Q_PROPERTY( int value READ value WRITE setValue )
     Q_PROPERTY( int minValue READ minValue WRITE setMinValue )
     Q_PROPERTY( int maxValue READ maxValue WRITE setMaxValue )
+    Q_PROPERTY( int referencePoint READ referencePoint WRITE setReferencePoint )
     Q_PROPERTY( QString suffix READ suffix WRITE setSuffix )
     Q_PROPERTY( QString prefix READ prefix WRITE setPrefix )
     Q_PROPERTY( QString specialValueText READ specialValueText WRITE setSpecialValueText )
@@ -235,6 +238,17 @@ public:
      * @return the current value.
      */
     int value() const;
+
+    /**
+     * @return the curent value in units of the @ref referencePoint.
+     */
+    double relativeValue() const;
+
+    /**
+     * @return the current reference point
+     */
+    int referencePoint() const;
+
     /**
      * @return the suffix displayed behind the value.
      * @see #setSuffix()
@@ -302,6 +316,16 @@ public slots:
      */
     void setValue(int);
 
+    /** 
+     * Sets the value in units of the @ref referencePoint
+     */
+    void setRelativeValue(double);
+
+    /**
+     * Sets the reference point for @ref relativeValue.
+     */
+    void setReferencePoint(int);
+
     /**
      * Sets the suffix to @p suffix.
      * Use QString::null to disable this feature.
@@ -335,8 +359,15 @@ signals:
      */
     void valueChanged(int);
 
+    /**
+     * Emitted whenever @ref #valueChanged is. Contains the change
+     * relative to the @ref referencePoint.
+     */
+    void relativeValueChanged(double);
+
 private slots:
     void spinValueChanged(int);
+    void slotEmitRelativeValueChanged(int); 
 
 protected:
     /**
@@ -382,12 +413,16 @@ class KDoubleLine;
  * QSpinBox (the remaining portion is used by the slider). This makes
  * it very simple to have all the sliders in a column be the same size.
  *
- * It uses @ref KFloatValidator validator class. KDoubleNumInput enforces the
- * value to be in the given range.
+ * It uses the @ref KDoubleValidator validator class. KDoubleNumInput
+ * enforces the value to be in the given range, but see the class
+ * documentation of @ref KDoubleSpinBox for the tricky
+ * interrelationship of precision and values. All of what is said
+ * there applies here, too.
  *
- * @see KIntNumInput
+ * @see KIntNumInput, KDoubleSpinBox
  * @short An input control for real numbers, consisting of a spinbox and a slider.
  */
+
 class KDoubleNumInput : public KNumInput
 {
     Q_OBJECT
@@ -401,10 +436,12 @@ class KDoubleNumInput : public KNumInput
 public:
     /**
      * Constructs an input control for double values
-     * with initial value 0.0.
+     * with initial value 0.00.
      */
     KDoubleNumInput(QWidget *parent=0, const char *name=0);
+
     /**
+     * @deprecated (value is rounded to a multiple of 1/100)
      * Constructor
      *
      * @param value  initial value for the control
@@ -414,14 +451,29 @@ public:
     KDoubleNumInput(double value, QWidget *parent=0, const char *name=0);
 
     /**
+     * Constructor
+     *
+     * @param lower lower boundary value
+     * @param upper upper boundary value
+     * @param value  initial value for the control
+     * @param step   step size to use for up/down arrow clicks
+     * @param precision number of digits after the decimal point
+     * @param parent parent QWidget
+     * @param name   internal name for this widget
+     */
+    KDoubleNumInput(double lower, double upper, double value, double step=0.01,
+		    int precision=2, QWidget *parent=0, const char *name=0);
+
+    /**
      * destructor
      */
     virtual ~KDoubleNumInput();
 
     /**
+     * @deprecated (rounds @p value to a mulitple of 1/100)
      * Constructor
      *
-     * put it below other KNumInput
+     * puts it below other KNumInput
      *
      * @param  below
      * @param  value  initial value for the control
@@ -431,24 +483,45 @@ public:
     KDoubleNumInput(KNumInput* below, double value, QWidget* parent=0, const char* name=0);
 
     /**
+     * Constructor
+     *
+     * puts it below other KNumInput
+     *
+     * @param lower lower boundary value
+     * @param upper upper boundary value
+     * @param value  initial value for the control
+     * @param step   step size to use for up/down arrow clicks
+     * @param precision number of digits after the decimal point
+     * @param parent parent QWidget
+     * @param name   internal name for this widget
+     */
+    KDoubleNumInput(KNumInput* below,
+		    double lower, double upper, double value, double step=0.02,
+		    int precision=2, QWidget *parent=0, const char *name=0);
+
+    /**
      * @return the current value.
      */
     double value() const;
+
     /**
      * @return the suffix.
      * @see #setSuffix()
      */
     QString suffix() const;
+
     /**
      * @return the prefix.
      * @see #setPrefix()
      */
     QString prefix() const;
+
     /**
      * @return the precision.
      * @see #setPrecision()
      */
     int precision() const;
+
     /**
      * @return the string displayed for a special value.
      * @see #setSpecialValueText()
@@ -484,6 +557,16 @@ public:
     void setPrecision(int precision);
 
     /**
+     * @return the reference point for @ref #relativeValue calculation
+     */
+    double referencePoint() const;
+
+    /**
+     * @return the current value in units of @ref #referencePoint.
+     */
+    double relativeValue() const;
+
+    /**
      * Sets the special value text. If set, the spin box will display
      * this text instead of the numeric value whenever the current
      * value is equal to @ref #minVal(). Typically this is used for indicating
@@ -511,6 +594,18 @@ public slots:
     void setValue(double);
 
     /**
+     * Sets the value in units of @ref #referencePoint.
+     */
+    void setRelativeValue(double);
+
+    /**
+     * Sets the reference Point to @p ref. It @p ref == 0, emitting of
+     * @ref #relativeValueChanged is blocked and @ref #relativeValue
+     * just returns 0.
+     */
+    void setReferencePoint(double ref);
+
+    /**
      * Sets the suffix to be displayed to @p suffix. Use QString::null to disable
      * this feature. Note that the suffix is attached to the value without any
      * spacing. So if you prefer to display a space separator, set suffix
@@ -533,9 +628,17 @@ signals:
      * by user interaction).
      */
     void valueChanged(double);
+    /**
+     * This is an overloaded member function, provided for
+     * convenience. It essentially behaves like the above function.
+     *
+     * Contains the value in units of @ref #referencePoint.
+     */
+    void relativeValueChanged(double);
 
 private slots:
     void sliderMoved(int);
+    void slotEmitRelativeValueChanged(double);
 
 protected:
 
@@ -549,20 +652,26 @@ protected:
     void resizeEvent ( QResizeEvent * );
     virtual void resetEditBox();
 
+    // ### no longer used, remove when BIC allowed
     KDoubleLine*   edit;
 
     bool     m_range;
     double   m_lower, m_upper, m_step;
+    // ### end no longer used
 
     QSize    m_sizeEdit;
 
     friend class KDoubleLine;
-
 private:
-    void init(double value);
+    void init(double value, double lower, double upper,
+	      double step, int precision);
+    double mapSliderToSpin(int) const;
+    void updateLegacyMembers();
+    // ### no longer used, remove when BIC allowed:
     QString  m_specialvalue, m_prefix, m_suffix;
     double   m_value;
     short    m_precision;
+    // ### end remove when BIC allowed
 
 protected:
     virtual void virtual_hook( int id, void* data );
@@ -575,12 +684,13 @@ private:
 /* ------------------------------------------------------------------------ */
 
 /**
- *  An integer inputline with scrollbar and slider.
+ *  A @ref QSpinBox with support for arbitrary base numbers
+ *  (e.g. hexadecimal).
  *
  *  The class provides an easy interface to use other
  *  numeric systems then the decimal.
  *
- *  @short A spin box widget for non-decimal numbers.
+ *  @short A @ref QSpinBox with support for arbitrary base numbers.
  */
 class KIntSpinBox : public QSpinBox
 {
@@ -660,5 +770,164 @@ private:
 
 /* --------------------------------------------------------------------------- */
 
+/**
+   This class provides a spin box for fractional numbers.
+
+   @sect Parameters
+
+   There are a number of interdependent parameters whose relation to
+   each other you need to understand in order to make successful use
+   of the spin box.
+
+   @li precision: The number of decimals after the decimal point.
+   @li maxValue/minValue: upper and lower bound of the valid range
+   @li lineStep: the size of the step that is taken when the user hits
+                 the up or down buttons
+
+   Since we work with fixed-point numbers internally, the maximum
+   precision is a function of the valid range and vice versa. More
+   precisely, the following relations hold:
+   <pre>
+   max( abs(minValue()), abs(maxValue() ) <= INT_MAX/10^precision
+   maxPrecision = floor( log10( INT_MAX/max(abs(minValue()),abs(maxValue())) ) )
+   </pre>
+
+   Since the value, bounds and step are rounded to the current
+   precision, you may experience that the order of setting above
+   parameters matters. E.g. the following are @em not equivalent (try
+   it!):
+
+   <pre>
+   // sets precision,
+   // then min/max value (rounded to precison and clipped to obtainable range if needed)
+   // then value and lineStep
+   KDoubleSpinBox * spin = new KDoubleSpinBox( 0, 9.999, 0.001, 4.321, 3, this );
+
+   // sets minValue to 0; maxValue to 10.00(!); value to 4.32(!) and only then
+   // increases the precision - too late, since e.g. value has already been rounded...
+   KDpubleSpinBox * spin = new KDoubleSpinBox( this );
+   spin->setMinValue( 0 );
+   spin->setMaxValue( 9.999 );
+   spin->setValue( 4.321 );
+   spin->setPrecision( 3 );
+   </pre>
+
+   @short A spin box for fractional numbers.
+   @author Marc Mutz <mutz@kde.org>
+   @version $Id: $
+**/
+
+class KDoubleSpinBox : public QSpinBox {
+  Q_OBJECT
+  Q_PROPERTY( bool acceptLocalizedNumbers READ acceptLocalizedNumbers WRITE setAcceptLocalizedNumbers )
+  Q_OVERRIDE( double maxValue READ maxValue WRITE setMaxValue )
+  Q_OVERRIDE( double minValue READ minValue WRITE setMinValue )
+  Q_OVERRIDE( double lineStep READ lineStep WRITE setLineStep )
+  Q_OVERRIDE( double value READ value WRITE setValue )
+  Q_PROPERTY( int precision READ precision WRITE setPrecision )
+
+public:
+  /** Constructs a @ref KDoubleSpinBox with parent @p parent and
+      default values for range and value (whatever @ref QRangeControl
+      uses) and precision (2). */
+  KDoubleSpinBox( QWidget * parent=0, const char * name=0 );
+  /** Constructs a @ref KDoubleSpinBox with parent @p parent, range
+      [@p lower,@p upper], @ref lineStep @p step, @ref precision @p
+      precision and initial value @p value. */
+  KDoubleSpinBox( double lower, double upper, double step, double value,
+		  int precision=2, QWidget * parent=0, const char * name=0 );
+
+  virtual ~KDoubleSpinBox();
+
+  /** @return whether the spinbox uses localized numbers */
+  bool acceptLocalizedNumbers() const;
+  /** Sets whether to use and accept localized numbers as returned by
+      @ref KLocale::formatNumber() */
+  virtual void setAcceptLocalizedNumbers( bool accept );
+
+  /** Sets a new range for the spin box values. Note that @p lower, @p
+      upper and @p step are rounded to @p precision decimal points
+      first. */
+  void setRange( double lower, double upper, double step=0.01, int precision=2 );
+
+  /** @return the current number of decimal points displayed. */
+  int precision() const;
+  /** Equivalent to @ref setPrecsion( @p precison, @p false ); Needed
+      since Qt's moc doesn't ignore trailing parameters with default
+      args when searching for a property setter method. */
+  void setPrecision( int precision );
+  /** Sets the number of decimal points to use. Note that there is a
+      tradeoff between the precision used and the available range of
+      values. See the class docs for more.
+      @param precision the new number of decimal points to use
+
+      @param force disables checking of bound violations that can
+             arise if you increase the precision so much that the
+             minimum and maximum values can't be represented
+             anymore. Disabling is useful if you don't want to keep
+             the current min and max values anyway. This is what
+             e.g. @ref setRange() does.
+  **/
+  virtual void setPrecision( int precision, bool force );
+
+  /** @return the cuurent value */
+  double value() const;
+  /** @return the current lower bound */
+  double minValue() const;
+  /** Sets the lower bound of the range to @p value, subject to the
+      contraints that @p value is first rounded to the current
+      precision and then clipped to the maximum representable
+      interval.
+      @see maxValue, minValue, setMaxValue, setRange
+  */
+  void setMinValue( double value );
+  /** @return the current upper bound */
+  double maxValue() const;
+  /** Sets the upper bound of the range to @p value, subject to the
+      contraints that @p value is first rounded to the current
+      precision and then clipped to the maximum representable
+      interval.
+      @see minValue, maxValue, setMinValue, setRange
+  */
+  void setMaxValue( double value );
+
+  /** @return the current step size */
+  double lineStep() const;
+  /** Sets the step size for clicking the up/down buttons to @p step,
+      subject to the constraints that @p step is first rounded to the
+      current precision and then clipped to the meaningful interval
+      [1, @p maxValue - @p minValue]. */
+  void setLineStep( double step );
+
+  /** Overridden to ignore any setValidator() calls. */
+  void setValidator( const QValidator * );
+
+signals:
+  /** Emitted whenever @ref QSpinBox::valueChanged( int ) is emitted. */
+  void valueChanged( double value );
+
+public slots:
+  /** Sets the current value to @p value, cubject to the constraints
+      that @p value is frist rounded to the current precision and then
+      clipped to the interval [@p minvalue(),@p maxValue()]. */
+  virtual void setValue( double value );
+
+protected:
+  virtual QString mapValueToText(int);
+  virtual int mapTextToValue(bool*);
+
+protected slots:
+  void slotValueChanged( int value );
+
+protected:
+ virtual void virtual_hook( int id, void* data );
+private:
+  typedef QSpinBox base; 
+  void updateValidator();
+  int maxPrecision() const;
+
+  class Private;
+  Private * d;
+};
 
 #endif // K_NUMINPUT_H
