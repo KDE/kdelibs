@@ -25,7 +25,7 @@ class testFrame: public KMainWindow
    Q_OBJECT
 public:
    testFrame();
-   void showPath( KURL & );
+   void showPath( const KURL & );
    void setDirOnly( ) { dirOnlyMode = true; }
 public slots:
    void slotPopulateFinished(KFileTreeViewItem *);

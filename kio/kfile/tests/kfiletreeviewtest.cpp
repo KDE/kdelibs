@@ -17,6 +17,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qdir.h>
+
 #include <kglobal.h>
 #include <kiconloader.h>
 #include <kmainwindow.h>
@@ -40,24 +42,27 @@ testFrame::testFrame():KMainWindow(0,"Test FileTreeView"),
    treeView->setAcceptDrops( true );
    treeView->setDropVisualizer( true );
 
-   
+
    /* Connect to see the status bar */
    KStatusBar* sta = statusBar();
    connect( treeView, SIGNAL( onItem( const QString& )),
 	    sta, SLOT( message( const QString& )));
-   
+
    connect( treeView, SIGNAL( dropped( QWidget*, QDropEvent*, KURL::List& )),
 	    this, SLOT( urlsDropped( QWidget*, QDropEvent*, KURL::List& )));
 
    connect( treeView, SIGNAL( dropped( KURL::List&, KURL& )), this,
 	    SLOT( copyURLs( KURL::List&, KURL& )));
-   
+
    treeView->addColumn( "File" );
    treeView->addColumn( "ChildCount" );
    setCentralWidget( treeView );
+   resize( 600, 400 );
+
+   showPath( KURL::fromPathOrURL( QDir::homeDirPath() ));
 }
 
-void testFrame::showPath( KURL &url )
+void testFrame::showPath( const KURL &url )
 {
    QString fname = "TestBranch"; // url.fileName ();
    /* try a user icon */
@@ -66,18 +71,18 @@ void testFrame::showPath( KURL &url )
    QPixmap pixOpen = loader->loadIcon( "contents", KIcon::Small );
 
    KFileTreeBranch *nb = treeView->addBranch( url, fname, pix );
-   
+
    if( nb )
    {
       if( dirOnlyMode ) treeView->setDirOnlyMode( nb, true );
       nb->setOpenPixmap( pixOpen );
-      
+
       connect( nb, SIGNAL(populateFinished(KFileTreeViewItem*)),
 	       this, SLOT(slotPopulateFinished(KFileTreeViewItem*)));
       connect( nb, SIGNAL( directoryChildCount( KFileTreeViewItem *, int )),
 	       this, SLOT( slotSetChildCount( KFileTreeViewItem*, int )));
       // nb->setChildRecurse(false );
-      
+
       nb->setOpen(true);
    }
 
@@ -89,7 +94,7 @@ void testFrame::urlsDropped( QWidget* , QDropEvent* , KURL::List& list )
    KURL::List::ConstIterator it = list.begin();
    for ( ; it != list.end(); ++it ) {
       kdDebug() << "Url dropped: " << (*it).prettyURL() << endl;
-   }  
+   }
 }
 
 void testFrame::copyURLs( KURL::List& list, KURL& to )
@@ -98,8 +103,8 @@ void testFrame::copyURLs( KURL::List& list, KURL& to )
    kdDebug() << "Copy to " << to.prettyURL() << endl;
    for ( ; it != list.end(); ++it ) {
       kdDebug() << "Url: " << (*it).prettyURL() << endl;
-   }  
-   
+   }
+
 }
 
 
@@ -138,7 +143,7 @@ int main(int argc, char **argv)
 
     tf =  new testFrame();
     a.setMainWidget( tf );
-    
+
     if (argc > 1)
     {
        for( int i = 1; i < argc; i++ )
