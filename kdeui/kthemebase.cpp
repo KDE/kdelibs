@@ -257,7 +257,7 @@ KThemeBase::KThemeBase(const QString &configFile)
         config = KGlobal::config();
     else
         config = new KConfig(configFile, configFile);
-    KGlobal::dirs()->addResourceType("kstyle_pixmap", KStandardDirs::kde_data_relative() + "kstyle/pixmaps/");
+    KGlobal::dirs()->addResourceType("kstyle_pixmap", KStandardDirs::kde_default("data") + "kstyle/pixmaps/");
     readConfig(Qt::WindowsStyle);
     cache = new KThemeCache(cacheSize);
 }                            
