@@ -248,7 +248,7 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
     certStoreCTX->error = X509_V_OK;
     rc = d->kossl->X509_verify_cert(certStoreCTX);
     int errcode = certStoreCTX->error;
-    kdDebug(7029) << "KSSL freeing" << endl;
+    //kdDebug(7029) << "KSSL freeing" << endl;
     d->kossl->X509_STORE_CTX_free(certStoreCTX);
     d->kossl->X509_STORE_free(certStore);
     // end of checking code
