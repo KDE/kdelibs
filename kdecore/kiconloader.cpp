@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.56  1999/06/20 12:34:55  kulow
+   some fix for loadApplicationIcon.
+
    Revision 1.55  1999/06/19 22:42:56  kulow
    making Robert's change right
 
@@ -265,7 +268,7 @@ QPixmap KIconLoader::reloadIcon ( const QString& name, int w, int h )
 QPixmap KIconLoader::loadApplicationIcon ( const QString& name, int w, int h )
 {
 	QString path = locate("icon", name);
-	if (path.isEmpty())
+	if (!path.isEmpty()) //CT 21Jun1999 if is *not* empty!!!
           return loadInternal(path, w, h);
 	else
 	  return QPixmap();
