@@ -219,6 +219,8 @@ public:
 
 protected:
     bool modified;
+private:
+    class AuthInfoPrivate* d;
 };
 
 QDataStream& operator<< (QDataStream& s, const AuthInfo& a);

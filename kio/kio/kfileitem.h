@@ -455,6 +455,9 @@ private:
 
   bool m_bMimeTypeKnown:1;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   class KFileItemPrivate;
   KFileItemPrivate * d;
 };

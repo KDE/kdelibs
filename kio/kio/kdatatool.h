@@ -151,6 +151,8 @@ public:
 private:
     KService::Ptr m_service;
     KInstance* m_instance;
+private:
+    class KDataToolInfoPrivate* d;
 };
 
 
@@ -187,6 +189,11 @@ protected:
 private:
     QString m_command;
     KDataToolInfo m_info;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KDataToolActionPrivate* d;
+
 };
 
 /**
@@ -237,6 +244,9 @@ public:
 
 private:
     KInstance * m_instance;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KDataToolPrivate;
     KDataToolPrivate * d;
 };

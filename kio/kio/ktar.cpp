@@ -490,3 +490,7 @@ void KTar::fillBuffer( char * buffer,
   s = s.rightJustify( 7, ' ' );
   strcpy( buffer + 0x94, s.data() );
 }
+
+void KTar::virtual_hook( int id, void* data )
+{ KArchive::virtual_hook( id, data ); }
+

@@ -251,5 +251,8 @@ int PasswordDialog::getNameAndPassword( QString& user, QString& pass, bool* keep
     return ret;
  }
 
+void PasswordDialog::virtual_hook( int id, void* data )
+{ KDialogBase::virtual_hook( id, data ); }
+
 
 #include "passdlg.moc"

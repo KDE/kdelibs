@@ -78,6 +78,10 @@ protected:
   
   QString m_lastProtocol;
   KProtocolInfo::Ptr m_lastInfo;
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  class KProtocolInfoFactoryPrivate* d;
 };
 
 #endif

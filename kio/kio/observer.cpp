@@ -464,4 +464,7 @@ SkipDlg_Result Observer::open_SkipDlg( KIO::Job * job,
   return S_CANCEL;
 }
 
+void Observer::virtual_hook( int id, void* data )
+{ DCOPObject::virtual_hook( id, data ); }
+
 #include "observer.moc"

@@ -133,6 +133,9 @@ private slots:
 private:
     void init( const QString&, const QString&, bool );
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     struct PasswordDialogPrivate;
     PasswordDialogPrivate* d;
 };

@@ -1595,5 +1595,8 @@ void KDirLister::slotClearState()
   d->jobData.clear();
 }
 
+void KDirLister::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kdirlister.moc"
 #include "kdirlister_p.moc"

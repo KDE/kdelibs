@@ -926,6 +926,9 @@ Scheduler* Scheduler::self() {
     return instance;
 }
 
+void Scheduler::virtual_hook( int id, void* data )
+{ DCOPObject::virtual_hook( id, data ); }
+
 
 
 #include "scheduler.moc"

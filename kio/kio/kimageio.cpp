@@ -529,3 +529,10 @@ QString KImageIO::mimeType( const QString& _filename )
 {
   return KMimeType::findByURL( _filename )->name();
 }
+
+void KImageIOFormat::virtual_hook( int id, void* data )
+{ KSycocaEntry::virtual_hook( id, data ); }
+
+void KImageIOFactory::virtual_hook( int id, void* data )
+{ KSycocaFactory::virtual_hook( id, data ); }
+

@@ -833,4 +833,7 @@ QDataStream& operator >>(QDataStream& s, KFileMetaInfo& info )
     return s;
 }
 
+void KFilePlugin::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kfilemetainfo.moc"

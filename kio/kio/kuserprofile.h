@@ -65,6 +65,8 @@ private:
   int m_iPreference;
   bool m_bAllowAsDefault;
   KService::Ptr m_pService;
+private:
+  class KServiceOfferPrivate;
 };
 
 /**
@@ -179,6 +181,8 @@ private:
   static void initStatic();
   static QPtrList<KServiceTypeProfile>* s_lstProfiles;
   static bool s_configurationMode;
+private:
+  class KServiceTypeProfilePrivate* d;
 };
 
 #endif

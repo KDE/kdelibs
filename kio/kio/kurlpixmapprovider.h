@@ -46,14 +46,9 @@ public:
      * Returns a pixmap for @p url with size @p size
      * Uses @ref KMimeType::pixmapForURL()
      */
-    virtual QPixmap pixmapFor( const QString& url, int size = 0 ) {
-	KURL u;
-	if ( url.at(0) == '/' )
-	    u.setPath( url );
-	else
-	    u = url;
-	return KMimeType::pixmapForURL( u, 0, KIcon::Desktop, size );
-    }
+    virtual QPixmap pixmapFor( const QString& url, int size = 0 );
+protected:
+    virtual void virtual_hook( int id, void* data );
 };
 
 

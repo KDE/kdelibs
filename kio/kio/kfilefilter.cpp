@@ -97,3 +97,10 @@ bool KSimpleFileFilter::passesFilter( const KFileItem *item ) const
     
     return true; // passes the filter!
 }
+
+void KFileFilter::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KSimpleFileFilter::virtual_hook( int id, void* data )
+{ KFileFilter::virtual_hook( id, data ); }
+

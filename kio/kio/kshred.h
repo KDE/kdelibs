@@ -155,7 +155,8 @@ class KShred : public QObject {
         unsigned int lastSignalled;
         unsigned int tbpc;
         unsigned int fspc;
-
+    private:
+	class KShredPrivate* d;
 };
 
 #endif

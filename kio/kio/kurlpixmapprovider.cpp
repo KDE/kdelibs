@@ -1,14 +1,15 @@
-/* This file is part of the KDE project
-   Copyright (C) 2000 David Faure <faure@kde.org>
+/* This file is part of the KDE libraries
+
+   Copyright (c) 2000 Carsten Pfeiffer <pfeiffer@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
-   License as published by the Free Software Foundation; either
+   License (LGPL) as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
    Library General Public License for more details.
 
    You should have received a copy of the GNU Library General Public License
@@ -17,20 +18,16 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "kdirnotify.h"
+#include "kurlpixmapprovider.h"
 
-// Needed since DCOP enforces object id uniqueness.
-int KDirNotify::s_serial = 0;
+QPixmap KURLPixmapProvider::pixmapFor( const QString& url, int size ) {
+	KURL u;
+	if ( url.at(0) == '/' )
+	    u.setPath( url );
+	else
+	    u = url;
+	return KMimeType::pixmapForURL( u, 0, KIcon::Desktop, size );
+    }
 
-KDirNotify::KDirNotify()
-  :  DCOPObject( QCString().sprintf("KDirNotify-%d", ++s_serial) )
-{
-}
-
-void KDirNotify::FileRenamed( const KURL &, const KURL & )
-{
-}
-
-void KDirNotify::virtual_hook( int id, void* data )
-{ DCOPObject::virtual_hook( id, data ); }
-
+void KURLPixmapProvider::virtual_hook( int id, void* data )
+{ KPixmapProvider::virtual_hook( id, data ); }

@@ -305,6 +305,8 @@ protected:
   QStringList m_lstPatterns;
 
   static Ptr s_pDefaultType;
+protected:
+  virtual void virtual_hook( int id, void* data );
 };
 
 /**
@@ -326,6 +328,8 @@ public:
   virtual QString icon( const KURL& _url, bool _is_local ) const;
   virtual QString comment( const QString& _url, bool _is_local ) const;
   virtual QString comment( const KURL& _url, bool _is_local ) const;
+protected:
+  virtual void virtual_hook( int id, void* data );
 };
 
 /**
@@ -411,6 +415,8 @@ protected:
   static pid_t runApplication( const KURL& _url, const QString & _serviceFile );
   static pid_t runLink( const KURL& _url, const KSimpleConfig &cfg );
   static pid_t runMimeType( const KURL& _url, const KSimpleConfig &cfg );
+protected:
+  virtual void virtual_hook( int id, void* data );
 };
 
 /**
@@ -426,6 +432,8 @@ public:
   // KExecMimeType( const QString & _fullpath ) : KMimeType( _fullpath ) { }
   KExecMimeType( KDesktopFile *config) : KMimeType( config ) { }
   KExecMimeType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
+protected:
+  virtual void virtual_hook( int id, void* data );
 };
 
 #endif

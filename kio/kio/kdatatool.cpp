@@ -284,4 +284,10 @@ KInstance* KDataTool::instance() const
    return m_instance;
 }
 
+void KDataToolAction::virtual_hook( int id, void* data )
+{ KAction::virtual_hook( id, data ); }
+
+void KDataTool::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kdatatool.moc"

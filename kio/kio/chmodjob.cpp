@@ -252,4 +252,7 @@ ChmodJob *KIO::chmod( const KFileItemList& lstItems, int permissions, int mask,
     return new ChmodJob( lstItems, permissions, mask, newOwnerID, newGroupID, recursive, showProgressInfo );
 }
 
+void ChmodJob::virtual_hook( int id, void* data )
+{ KIO::Job::virtual_hook( id, data ); }
+
 #include "chmodjob.moc"

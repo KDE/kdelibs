@@ -527,3 +527,7 @@ bool KService::allowMultipleFiles() const {
   else
     return false;
 }
+
+void KService::virtual_hook( int id, void* data )
+{ KSycocaEntry::virtual_hook( id, data ); }
+

@@ -75,6 +75,9 @@ private:
 	QChar m_quote_char2;
 	QChar m_escape_char;  
 				
+protected:
+	virtual void virtual_hook( int id, void* data );
+private:
 	KShellCompletionPrivate *d;
 };
 

@@ -523,5 +523,7 @@ void SlaveInterface::sigpipe_handler(int)
     // dispatch will return false and that will trigger ERR_SLAVE_DIED in slave.cpp
 }
 
-#include "slaveinterface.moc"
+void SlaveInterface::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
 
+#include "slaveinterface.moc"

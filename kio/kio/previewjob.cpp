@@ -520,3 +520,6 @@ PreviewJob *KIO::filePreview( const KURL::List &items, int width, int height,
                           scale, save, enabledPlugins, true);
 }
 
+void PreviewJob::virtual_hook( int id, void* data )
+{ KIO::Job::virtual_hook( id, data ); }
+

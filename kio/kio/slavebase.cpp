@@ -1256,3 +1256,7 @@ int SlaveBase::readTimeout()
        return result;
     return DEFAULT_READ_TIMEOUT;
 }
+
+void SlaveBase::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+

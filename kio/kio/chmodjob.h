@@ -69,6 +69,10 @@ namespace KIO {
         bool m_recursive;
         KFileItemList m_lstItems;
         QValueList<ChmodInfo> m_infos;
+    protected:
+	virtual void virtual_hook( int id, void* data );
+    private:
+	class ChmodJobPrivate* d;
     };
 
 

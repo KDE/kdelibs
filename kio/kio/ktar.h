@@ -102,9 +102,12 @@ private:
      */
     void fillBuffer( char * buffer, const char * mode, int size, char typeflag, const char * uname, const char * gname );
 
+    QString m_filename;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KTarPrivate;
     KTarPrivate * d;
-    QString m_filename;
 };
 
 /** Old, deprecated naming */

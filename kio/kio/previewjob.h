@@ -91,6 +91,8 @@ namespace KIO {
         void emitFailed(const KFileItem *item = 0);
         void saveThumbnail(const QByteArray &imgData);
 
+    protected:
+	virtual void virtual_hook( int id, void* data );
     private:
         struct PreviewJobPrivate *d;
     };

@@ -424,6 +424,9 @@ protected:
   virtual void emitItems();
   virtual void emitDeleteItem( KFileItem *item );
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   class KDirListerPrivate;
   KDirListerPrivate *d;
 };

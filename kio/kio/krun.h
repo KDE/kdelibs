@@ -243,6 +243,9 @@ protected:
   bool m_bIsLocalFile;
   mode_t m_mode;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   class KRunPrivate;
   KRunPrivate *d;
 };

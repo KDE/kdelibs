@@ -71,4 +71,7 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
     return 0L;
 }
 
+void KFilterBase::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kfilterbase.moc"

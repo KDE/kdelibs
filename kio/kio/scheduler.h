@@ -310,6 +310,10 @@ namespace KIO {
         SlaveConfig *slaveConfig;
         SessionData *sessionData;
         bool checkOnHold;
+    protected:
+	virtual void virtual_hook( int id, void* data );
+    private:
+	class SchedulerPrivate* d;
 };
 
 };

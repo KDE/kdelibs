@@ -382,8 +382,10 @@ protected:
     QString m_strName;
     double m_dblPriority;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
-    KURIFilterPrivate *d;
+    class KURIFilterPluginPrivate *d;
 };
 
 

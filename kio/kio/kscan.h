@@ -150,6 +150,9 @@ signals:
 private:
     int m_currentId;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KScanDialogPrivate;
     KScanDialogPrivate *d;
 };
@@ -189,7 +192,10 @@ protected:
 
 private:
     KInstance *m_instance;
-
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KScanDialogFactoryPrivate* d;
 };
 
 // baseclass for ocr-dialogs
@@ -215,9 +221,11 @@ signals:
 private:
     int m_currentId;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KOCRDialogPrivate;
     KOCRDialogPrivate *d;
-
 };
 
 
@@ -250,7 +258,10 @@ protected:
 
 private:
     KInstance *m_instance;
-
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KOCRDialogFactory* d;
 };
 
 

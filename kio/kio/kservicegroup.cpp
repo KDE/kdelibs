@@ -307,3 +307,6 @@ KServiceGroup::group(const QString &relPath)
    return KServiceGroupFactory::self()->findGroupByDesktopPath(relPath, true);
 }
 
+void KServiceGroup::virtual_hook( int id, void* data )
+{ KSycocaEntry::virtual_hook( id, data ); }
+

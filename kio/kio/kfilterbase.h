@@ -76,6 +76,10 @@ public:
 protected:
     QIODevice * m_dev;
     bool m_bAutoDel;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KFilterBasePrivate;
 };
 
 #endif

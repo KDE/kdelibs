@@ -20,43 +20,11 @@
  *  Boston, MA 02111-1307, USA.
  */
 
-#ifndef _KPAC_H_
-#define _KPAC_H_
+#include "kpac.h"
 
-class KURL;
-class QString;
-
-/**
- * Proxy Auto Configuration.
- */
-class KPAC
+KPAC::~KPAC()
 {
-public:
-    virtual ~KPAC();
-    /**
-     * Returns the proxy for the @p url or QString::null
-     * if the request should be done unproxied
-     */
-    virtual QString proxyForURL(const KURL &url) = 0;
-    /**
-     * Loads the PAC-script
-     * @param url URL of the script.
-     */
-    virtual bool init(const KURL &url) = 0;
-    /**
-     * Tries to discover a PAC-script and loads it.
-     */
-    virtual bool discover() = 0;
-    /**
-     * Marks @p proxy as down. If the config script returns
-     * alternative proxies or allows a direct connection
-     * as fallback, this proxy will not be returned for
-     * a while.
-     */
-    virtual void badProxy(const QString &proxy) = 0;
-protected:
-    virtual void virtual_hook( int id, void* data );
-};
+}
 
-#endif
-
+void KPAC::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }

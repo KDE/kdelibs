@@ -338,5 +338,9 @@ private:
   bool m_bValid;
   QStringList m_lstKeywords;
   QString m_strInit;
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  class KServicePrivate* d;
 };
 #endif

@@ -205,6 +205,9 @@ private:
 	                  QString filter = QString::null,
 	                  bool no_hidden = false );
 
+protected:
+	virtual void virtual_hook( int id, void* data );
+private:
 	KURLCompletionPrivate *d;
 };
 

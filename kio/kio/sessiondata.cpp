@@ -273,4 +273,7 @@ void SessionData::slotDelAuthData( const QCString& gkey )
     authData->removeData( gkey );
 }
 
+void SessionData::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "sessiondata.moc"

@@ -903,3 +903,16 @@ const QString & KMimeType::defaultMimeType()
         KGlobal::staticQString( "application/octet-stream" );
     return s_strDefaultMimeType;
 }
+
+void KMimeType::virtual_hook( int id, void* data )
+{ KServiceType::virtual_hook( id, data ); }
+
+void KFolderType::virtual_hook( int id, void* data )
+{ KMimeType::virtual_hook( id, data ); }
+
+void KDEDesktopMimeType::virtual_hook( int id, void* data )
+{ KMimeType::virtual_hook( id, data ); }
+
+void KExecMimeType::virtual_hook( int id, void* data )
+{ KMimeType::virtual_hook( id, data ); }
+

@@ -282,6 +282,9 @@ protected:
 
 private:
     int m_progressId;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     SlaveInterfacePrivate *d;
 };
 

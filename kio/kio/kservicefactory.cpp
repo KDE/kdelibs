@@ -255,3 +255,7 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
 }
 
 KServiceFactory *KServiceFactory::_self = 0;
+
+void KServiceFactory::virtual_hook( int id, void* data )
+{ KSycocaFactory::virtual_hook( id, data ); }
+

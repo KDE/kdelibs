@@ -142,3 +142,7 @@ KServiceGroup* KServiceGroupFactory::createEntry(int offset)
 }
 
 KServiceGroupFactory *KServiceGroupFactory::_self = 0;
+
+void KServiceGroupFactory::virtual_hook( int id, void* data )
+{ KSycocaFactory::virtual_hook( id, data ); }
+

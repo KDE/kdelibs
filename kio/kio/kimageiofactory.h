@@ -72,6 +72,8 @@ public:
   bool bLibLoaded;
   void (*mReadFunc)(QImageIO *);
   void (*mWriteFunc)(QImageIO *);
+protected:
+  virtual void virtual_hook( int id, void* data );
 };
 
 class KImageIOFormatList : public KImageIOFormat::List
@@ -131,6 +133,8 @@ protected:
   QString mReadPattern;
   QString mWritePattern;
   QStringList rPath;
+protected:
+    virtual void virtual_hook( int id, void* data );
 };
 
 #endif

@@ -805,3 +805,7 @@ const KFileMetaInfo & KFileItem::metaInfo(bool autoget, int) const
     }
     return d->metaInfo;
 }
+
+void KFileItem::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+

@@ -530,3 +530,7 @@ QString KProtocolInfo::defaultMimetype( const KURL &url )
 
   return prot->m_defaultMimetype;
 }
+
+void KProtocolInfo::virtual_hook( int id, void* data )
+{ KSycocaEntry::virtual_hook( id, data ); }
+

@@ -231,6 +231,8 @@ private:
 private slots:
     void slotResult( KIO::Job * job );
     void slotMimetype( KIO::Job * job, const QString & type );
+private:
+    class NetAccessPrivate* d;
 };
 
 };

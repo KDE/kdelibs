@@ -1169,4 +1169,7 @@ KProcessRunner::slotProcessExited(KProcess * p)
   delete this;
 }
 
+void KRun::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "krun.moc"

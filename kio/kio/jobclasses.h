@@ -331,6 +331,8 @@ namespace KIO {
         QGuardedPtr<QWidget> m_window;
         MetaData m_outgoingMetaData;
         MetaData m_incomingMetaData;
+    protected:
+	virtual void virtual_hook( int id, void* data );
     private:
         class JobPrivate;
         JobPrivate *d;
@@ -459,6 +461,10 @@ namespace KIO {
         KURL m_subUrl;
         int m_command;
         KIO::filesize_t m_totalSize;
+    protected:
+	virtual void virtual_hook( int id, void* data );
+    private:
+	class SimpleJobPrivate* d;
     };
 
     // Stat Job
@@ -516,6 +522,9 @@ namespace KIO {
         KURL m_redirectionURL;
         bool m_bSource;
         short int m_details;
+    protected:
+	virtual void virtual_hook( int id, void* data );
+    private:
         class StatJobPrivate;
         StatJobPrivate *d;
     };
@@ -624,6 +633,10 @@ namespace KIO {
         KURL::List m_redirectionList;
         QString m_mimetype;
         TransferJob *m_subJob;
+    protected:
+	virtual void virtual_hook( int id, void* data );
+    private:
+	class TransferJobPrivate* d;
     };
 
     // MultiGet Job
@@ -679,6 +692,10 @@ namespace KIO {
         QPtrList<GetRequest> m_activeQueue;
         bool b_multiGetActive;
         GetRequest *m_currentEntry;
+    protected:
+	virtual void virtual_hook( int id, void* data );
+    private:
+	class MultiGetJobPrivate* d;
     };
 
     // Mimetype Job
@@ -702,6 +719,10 @@ namespace KIO {
 
     protected slots:
         virtual void slotFinished( );
+    protected:
+	virtual void virtual_hook( int id, void* data );
+    private:
+	class MimetypeJobPrivate* d;
     };
 
     /**
@@ -771,9 +792,12 @@ namespace KIO {
         SimpleJob *m_copyJob;
         TransferJob *m_getJob;
         TransferJob *m_putJob;
-        class FileCopyJobPrivate;
-        FileCopyJobPrivate *d;
         KIO::filesize_t m_totalSize;
+    protected:
+	virtual void virtual_hook( int id, void* data );
+    private:
+	class FileCopyJobPrivate;
+	FileCopyJobPrivate* d;
     };
 
     class ListJob : public SimpleJob {
@@ -816,6 +840,10 @@ namespace KIO {
         QString prefix;
         unsigned long m_processedEntries;
         KURL m_redirectionURL;
+    protected:
+	virtual void virtual_hook( int id, void* data );
+    private:
+	class ListJobPrivate* d;
     };
 
     struct CopyInfo
@@ -950,6 +978,10 @@ namespace KIO {
         //these both are used for progress dialog reporting
         KURL m_currentSrcURL;
         KURL m_currentDestURL;
+    protected:
+	virtual void virtual_hook( int id, void* data );
+    private:
+	class CopyJobPrivate* d;
     };
 
     class DeleteJob : public Job {
@@ -1003,6 +1035,10 @@ namespace KIO {
         KURL::List m_srcListCopy;
         bool m_shred;
         QTimer *m_reportTimer;
+    protected:
+	virtual void virtual_hook( int id, void* data );
+    private:
+	class DeleteJobPrivate* d;
     };
 
 };

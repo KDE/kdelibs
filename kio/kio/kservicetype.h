@@ -166,6 +166,10 @@ protected:
 
   bool m_bValid:1;
   bool m_bDerived:1;
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  class KServiceTypePrivate* d;
 };
 
 //QDataStream& operator>>( QDataStream& _str, KServiceType& s );

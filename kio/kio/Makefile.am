@@ -69,9 +69,9 @@ libkiocore_la_SOURCES = \
 	sessiondata.cpp	scheduler.cpp \
 	connection.cpp \
 	job.cpp global.cpp \
-	slaveconfig.cpp \
+	slaveconfig.cpp kurlpixmapprovider.cpp \
 	netaccess.cpp paste.cpp \
-	kmimemagic.cpp \
+	kmimemagic.cpp kpac.cpp thumbcreator.cpp \
 	tcpslavebase.cpp slavebase.cpp passdlg.cpp \
 	progressbase.cpp defaultprogress.cpp \
 	statusbarprogress.cpp \

@@ -176,5 +176,9 @@ protected:
   bool m_bDeep;
   QString m_strBaseGroupName;
   int m_childCount;
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  class KServiceGroupPrivate* d;
 };
 #endif

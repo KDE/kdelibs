@@ -115,3 +115,6 @@ KProtocolInfoFactory::findProtocol(const KURL &url)
   return findProtocol(protocol);
 }
 
+void KProtocolInfoFactory::virtual_hook( int id, void* data )
+{ KSycocaFactory::virtual_hook( id, data ); }
+

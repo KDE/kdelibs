@@ -3566,4 +3566,35 @@ int CacheInfo::expireDate();
 int CacheInfo::expireTimeout();
 #endif
 
+void Job::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void SimpleJob::virtual_hook( int id, void* data )
+{ KIO::Job::virtual_hook( id, data ); }
+
+void StatJob::virtual_hook( int id, void* data )
+{ SimpleJob::virtual_hook( id, data ); }
+
+void TransferJob::virtual_hook( int id, void* data )
+{ SimpleJob::virtual_hook( id, data ); }
+
+void MultiGetJob::virtual_hook( int id, void* data )
+{ TransferJob::virtual_hook( id, data ); }
+
+void MimetypeJob::virtual_hook( int id, void* data )
+{ TransferJob::virtual_hook( id, data ); }
+
+void FileCopyJob::virtual_hook( int id, void* data )
+{ Job::virtual_hook( id, data ); }
+
+void ListJob::virtual_hook( int id, void* data )
+{ SimpleJob::virtual_hook( id, data ); }
+
+void CopyJob::virtual_hook( int id, void* data )
+{ Job::virtual_hook( id, data ); }
+
+void DeleteJob::virtual_hook( int id, void* data )
+{ Job::virtual_hook( id, data ); }
+
+
 #include "jobclasses.moc"

@@ -191,6 +191,10 @@ namespace KIO {
 	time_t idle_since;
 	KIO::Connection slaveconn;
 	int m_refCount;
+    protected:
+	virtual void virtual_hook( int id, void* data );
+    private:
+	class SlavePrivate* d;
     };
 
 };

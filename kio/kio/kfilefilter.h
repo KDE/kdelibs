@@ -15,6 +15,8 @@ class KFileFilter
 {
 public:
     virtual bool passesFilter( const KFileItem *item ) const = 0;
+protected:
+    virtual void virtual_hook( int id, void* data );
 };
 
 
@@ -52,8 +54,10 @@ private:
     bool                m_filterDotFiles :1;
     bool                m_filterSpecials :1;
     mode_t              m_modeFilter;
-
-
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KSimpleFileFilterPrivate* d;
 };
 
 #endif // KFILEFILTER_H

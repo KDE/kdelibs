@@ -1192,4 +1192,6 @@ bool TCPSlaveBase::userAborted() const {
    return d->userAborted;
 }
 
+void TCPSlaveBase::virtual_hook( int id, void* data )
+{ SlaveBase::virtual_hook( id, data ); }
 

@@ -162,6 +162,10 @@ public:
   void stating( KIO::Job*, const KURL& url );
   void mounting( KIO::Job*, const QString & dev, const QString & point );
   void unmounting( KIO::Job*, const QString & point );
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  class ObserverPrivate* d;
 };
 
 // -*- mode: c++; c-basic-offset: 2 -*-

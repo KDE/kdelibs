@@ -150,11 +150,14 @@ protected:
     void setRootDir( KArchiveDirectory *rootDir );
 
 private:
-    class KArchivePrivate;
-    KArchivePrivate * d;
     QIODevice * m_dev;
     bool m_open;
     char m_mode;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KArchivePrivate;
+    KArchivePrivate * d;
 };
 
 /**
@@ -221,6 +224,10 @@ private:
     QString m_group;
     QString m_symlink;
     KArchive* m_archive;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KArchiveEntryPrivate* d;
 };
 
 /**
@@ -270,6 +277,10 @@ public:
 private:
     int m_pos;
     int m_size;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KArchiveFilePrivate* d;
 };
 
 /**
@@ -312,6 +323,10 @@ public:
 
 private:
     QDict<KArchiveEntry> m_entries;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KArchiveDirectoryPrivate* d;
 };
 
 #endif

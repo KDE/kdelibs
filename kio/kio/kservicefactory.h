@@ -97,6 +97,10 @@ protected:
 
 private:
   static KServiceFactory *_self;
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  class KServiceFactoryPrivate* d;
 };
 
 #endif

@@ -170,4 +170,7 @@ KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _
   return ret;
 }
 
+void KTrader::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "ktrader.moc"

@@ -703,10 +703,11 @@ protected:
     QString       m_mimetype;
     QStringList   m_preferred;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KFilePluginPrivate;
     KFilePluginPrivate *d;
-
 };
 
 ///////////////////////////////////////////////////////////////////

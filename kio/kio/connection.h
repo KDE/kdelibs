@@ -104,6 +104,8 @@ namespace KIO {
 	const char *member;
 	QPtrList<Task> tasks;
         bool m_suspended;
+    private:
+	class ConnectionPrivate* d;
     };
 
 };

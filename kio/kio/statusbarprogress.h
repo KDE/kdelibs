@@ -93,6 +93,10 @@ protected:
   virtual bool eventFilter( QObject *, QEvent * );
   QBoxLayout *box;
   QWidgetStack *stack;
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  class StatusbarProgressPrivate* d;
 };
 
 } /* namespace */

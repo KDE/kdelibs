@@ -58,6 +58,8 @@ protected:
   QString m_strDevice;
   bool m_bShowFilemanagerWindow;
   QString m_desktopFile;
+private:
+  class KAutoMountPrivate* d;
 };
 
 /**
@@ -84,6 +86,8 @@ protected slots:
 private:
   QString m_desktopFile;
   QString m_mountpoint;
+private:
+  class KAutoUnmountPrivate* d;
 };
 
 #endif

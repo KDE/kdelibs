@@ -359,6 +359,10 @@ protected:
   bool m_canCopyToFile;
   QString m_config;
   int m_maxSlaves;
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  class KProtocolInfoPrivate* d;
 };
 
 #endif

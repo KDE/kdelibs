@@ -401,4 +401,7 @@ Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
     return slave;
 }
 
+void Slave::virtual_hook( int id, void* data )
+{ KIO::SlaveInterface::virtual_hook( id, data ); }
+
 #include "slave.moc"

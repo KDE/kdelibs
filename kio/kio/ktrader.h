@@ -172,6 +172,8 @@ protected:
 
 private:
     static KTrader* s_self;
+protected:
+    virtual void virtual_hook( int id, void* data );
 };
 
 #endif

@@ -67,6 +67,8 @@ k_dcop:
 private:
   // @internal
   static int s_serial;
+protected:
+    virtual void virtual_hook( int id, void* data );
 };
 
 #endif

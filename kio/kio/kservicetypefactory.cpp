@@ -278,4 +278,7 @@ KServiceType * KServiceTypeFactory::createEntry(int offset)
 
 KServiceTypeFactory *KServiceTypeFactory::_self = 0;
 
+void KServiceTypeFactory::virtual_hook( int id, void* data )
+{ KSycocaFactory::virtual_hook( id, data ); }
+
 // vim: ts=3 sw=3 et

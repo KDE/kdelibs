@@ -156,5 +156,8 @@ bool StatusbarProgress::eventFilter( QObject *, QEvent *ev ) {
   return false;
 }
 
+void StatusbarProgress::virtual_hook( int id, void* data )
+{ ProgressBase::virtual_hook( id, data ); }
+
 } /* namespace */
 #include "statusbarprogress.moc"

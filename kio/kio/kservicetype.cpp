@@ -294,3 +294,5 @@ KServiceType::List KServiceType::allServiceTypes()
   return KServiceTypeFactory::self()->allServiceTypes();
 }
 
+void KServiceType::virtual_hook( int id, void* data )
+{ KSycocaEntry::virtual_hook( id, data ); }

@@ -304,5 +304,8 @@ QString KShellCompletion::unquote(const QString &text) const
 	return result;
 }
 
+void KShellCompletion::virtual_hook( int id, void* data )
+{ KURLCompletion::virtual_hook( id, data ); }
+
 #include "kshellcompletion.moc"
 
