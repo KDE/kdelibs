@@ -1,8 +1,5 @@
 <!-- This file can be used to include the notice in documentation 
-     <!DOCTYPE book ... [
-      <!ENTITY GPLnotice SYSTEM "common/gpl-notice.docbook">
-      ...
-     ]>
+     <!DOCTYPE book ... >
     ...
      <bookinfo>
        <legalnotice>
@@ -12,8 +9,7 @@
      </bookinfo>
     ...
 
-    Alternatively, you can include the text literally.  If there is
-    sufficient demand, it will be added as an entity to kde.dtd.
+    Alternatively, you can include the text literally.
  -->
 <para>This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as

@@ -6,9 +6,8 @@
       <!ENTITY FDLFCTTitles "title 4, title 5, title 6">
       <!ENTITY % FDLBCT "INCLUDE">
       <!ENTITY FDLBCTTitles "title 7, title 7b">
-      <!ENTITY % FDLNotice PUBLIC
-       "-//KDE//ENTITIES KDE GNU FDL 1.1 Notice Entities//EN">
-      %FDLNotice;
+      <!ENTITY % ents "-//KDE//ENTITIES Application-Variable Entities V1.0//EN">
+      %ents;
       ...
      ]>
     ...

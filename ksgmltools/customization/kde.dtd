@@ -55,14 +55,14 @@
      %rdbhier2; is called in the DocBook DTD
  -->
 <!ENTITY % rdbhier2	    PUBLIC
-  "-//KDE//ELEMENTS KDE DocBook Hierarchy Redeclarations 2 V1.0//EN" >
+  "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN"     >
 <!ENTITY % dbhier.redecl2.module "INCLUDE"			     >
 
 <!-- Modifications in pool
      %rdbpool; is called in the DocBook DTD
  -->
 <!ENTITY % rdbpool	    PUBLIC
-  "-//KDE//ELEMENTS KDE DocBook Pool Redeclarations V1.0//EN"	     >
+  "-//KDE//ELEMENTS DocBook Pool Redeclarations V1.0//EN"	     >
 <!ENTITY % dbpool.redecl.module "INCLUDE"			     >
 
 <!-- For better synopses (eg OO programming languages)		   
@@ -87,5 +87,5 @@
 <!-- Defining extra general entities is allowed.                   -->
 
 <!ENTITY % kde.general.entities	PUBLIC
-  "-//KDE//ENTITIES KDE DocBook General Entity Declarations V1.0//EN">
+  "-//KDE//ENTITIES DocBook General Entity Declarations V1.0//EN"    >
 %kde.general.entities;

@@ -23,7 +23,7 @@
     suggestions, comments, etc. to Frederik Fouvry
     <fouvry@sfs.nphil.uni-tuebingen.de>.
   -- [
-  <!ENTITY % loc-ents PUBLIC "-//KDE//ENTITIES KDE Localisation Style Sheet Entities//EN">
+  <!ENTITY % loc-ents PUBLIC "-//KDE//ENTITIES Localisation Style Sheet Entities//EN">
   %loc-ents;
   <!ENTITY dbmss-html PUBLIC "-//Norman Walsh//DOCUMENT DocBook HTML Stylesheet//EN" CDATA DSSSL>
   <!ENTITY dbmss-print PUBLIC "-//Norman Walsh//DOCUMENT DocBook Print Stylesheet//EN" CDATA DSSSL>
@@ -56,12 +56,12 @@
 
     Refer to this DOCUMENT as
 
-      "-//KDE//DOCUMENT KDE Style Sheet V1.0//EN"
+      "-//KDE//DOCUMENT Style Sheet V1.0//EN"
 
     For instance:
 
       <!DOCTYPE style-sheet PUBLIC "-//James Clark//DTD DSSSL Style Sheet//EN" [
-        <!ENTITY kde.dsl PUBLIC "-//KDE//DOCUMENT KDE Style Sheet V1.0//EN">
+        <!ENTITY kde.dsl PUBLIC "-//KDE//DOCUMENT Style Sheet V1.0//EN">
       ]>
 
     and use kde.cat as the catalogue file.

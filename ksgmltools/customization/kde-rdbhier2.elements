@@ -18,18 +18,19 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     
-    Send suggestions, comments, etc. to Frederik Fouvry <fouvry@sfs.nphil.uni-tuebingen.de>.
+    Send suggestions, comments, etc. to Frederik Fouvry 
+    <fouvry@sfs.nphil.uni-tuebingen.de>.
 
     USAGE
 
     Refer to this DTD as
 
-      "-//KDE//ELEMENTS KDE DocBook Hierarchy Redeclarations 2 V1.0//EN"
+      "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN"
 
     For instance
 
       <!ENTITY % rdbhier2 PUBLIC
-       "-//KDE//ELEMENTS KDE DocBook Hierarchy Redeclarations 2 V1.0//EN">
+       "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN">
 
     It is recommended to use kde.cat as the catalogue file.
 -->

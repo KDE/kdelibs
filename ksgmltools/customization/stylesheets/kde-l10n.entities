@@ -25,12 +25,12 @@
 
     Refer to this file as
 
-      "-//KDE//ENTITIES KDE Localisation Style Sheet Entities//EN"
+      "-//KDE//ENTITIES Localisation Style Sheet Entities//EN"
 
     For instance:
 
       <!DOCTYPE style-sheet PUBLIC "-//James Clark//DTD DSSSL Style Sheet//EN" [
-	<!ENTITY % kde-l10n-languages PUBLIC "-//KDE//ENTITIES KDE Localisation Style Sheet Entities//EN" CDATA SGML>
+	<!ENTITY % kde-l10n-languages PUBLIC "-//KDE//ENTITIES Localisation Style Sheet Entities//EN" CDATA SGML>
  	%kde-l10n-languages;
       ]>
 
@@ -40,7 +40,7 @@
 <!-- To switch off a language: 
      Set the parameter entity here to IGNORE, as well as the parameter
      entity for DBMSS.  It is necessary to do this before it is read
-     from {print,html}/docbook.dsl.  You were warned.  (I would have liked
+     from {print,html}/docbook.dsl.  (I would have liked
      to derive the default value from DBMSS, but I didn't manage to find
      a way to do this.  Maybe later.)
  -->

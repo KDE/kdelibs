@@ -18,18 +18,19 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     
-    Send suggestions, comments, etc. to Frederik Fouvry <fouvry@sfs.nphil.uni-tuebingen.de>.
+    Send suggestions, comments, etc. to Frederik Fouvry 
+    <fouvry@sfs.nphil.uni-tuebingen.de>.
 
     USAGE
 
     Refer to this DTD as
 
-      "-//KDE//ELEMENTS KDE DocBook Pool Redeclarations V1.0//EN"
+      "-//KDE//ELEMENTS DocBook Pool Redeclarations V1.0//EN"
 
     For instance
 
       <!ENTITY % rdbpool PUBLIC
-       "-//KDE//ELEMENTS KDE DocBook Pool Redeclarations V1.0//EN">
+       "-//KDE//ELEMENTS DocBook Pool Redeclarations V1.0//EN">
 
     It is recommended to use kde.cat as the catalogue file.
 -->
@@ -57,6 +58,7 @@
                         |ro|ru|sk|sl|sr|sv|ta|th|tr|uk|x-wa|zh|zh-CN
                         |zh-TW) #IMPLIED">
 <!-- end of KDE languages -->
+<!-- Languages could be made compulsory for books -->
 
 <!-- DocBook Reference Documentation recommends switching these off
      if not used: it massively reduces the ESIS size (~ what you get

@@ -27,19 +27,26 @@ PUBLIC "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN"
        "kde.dtd"
 PUBLIC "-//KDE//DTD DocBook V4.0-Based Variant V1.0//EN"
        "kde-next.dtd"
-PUBLIC "-//KDE//ELEMENTS KDE DocBook Hierarchy Redeclarations 2 V1.0//EN"
+PUBLIC "-//KDE//ELEMENTS DocBook Hierarchy Redeclarations 2 V1.0//EN"
        "kde-rdbhier2.elements"
-PUBLIC "-//KDE//ELEMENTS KDE DocBook Pool Redeclarations V1.0//EN"
+PUBLIC "-//KDE//ELEMENTS DocBook Pool Redeclarations V1.0//EN"
        "kde-rdbpool.elements"
-PUBLIC "-//KDE//ENTITIES KDE DocBook General Entity Declarations V1.0//EN"
+PUBLIC "-//KDE//ENTITIES DocBook General Entity Declarations V1.0//EN"
        "kde-genent.entities"
 
 		  -- DocBook Modular Style Sheets --
 
-PUBLIC "-//KDE//DOCUMENT KDE Style Sheet V1.0//EN"
+PUBLIC "-//KDE//DOCUMENT Style Sheet V1.0//EN"
        "stylesheets/kde.dsl"
-PUBLIC "-//KDE//ENTITIES KDE Localisation Style Sheet Entities//EN"
+PUBLIC "-//KDE//ENTITIES Localisation Style Sheet Entities//EN"
        "stylesheets/kde-l10n.entities"
+
+		      -- KDE General Entities --
+
+PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN"
+       "kde-prologue.entities"
+PUBLIC "-//KDE//ENTITIES GNU FDL 1.1 Notice Entities//EN"
+       "common/fdl-notice.entities"  -- not external but best place --
 
 
 		     -- Various external files --
@@ -62,5 +69,3 @@ PUBLIC "-//GNU//DOCUMENT GNU Free Documentation License V1.1 (HTML)//EN"
        "common/fdl-license.html"
 PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//EN"
        "common/fdl-notice.docbook"
-PUBLIC "-//KDE//ENTITIES KDE GNU FDL 1.1 Notice Entities//EN"
-       "common/fdl-notice.entities"  -- not external but best place --
