@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.23  1998/10/04 11:05:30  neerfeld
+   fixed a bug in loadInternal; fixes the crash of kmenuedit
+
    Revision 1.22  1998/09/01 20:21:25  kulow
    I renamed all old qt header files to the new versions. I think, this looks
    nicer (and gives the change in configure a sense :)
@@ -151,6 +154,12 @@ QPixmap KIconLoader::loadApplicationIcon ( const QString& name, int w, int h )
 }
 
 	// this is trouble since you don't know whether the addPath was
+QPixmap KIconLoader::reloadIcon ( const QString &name, int w, int h ){
+  flush( name );
+	// paths. I hope this will not give us too much of a performance
+  return loadInternal( name, w, h );
+	// hit. Other wise I will have to break binary compatibiliy
+	// -- Bernd
 
 QPixmap KIconLoader::loadMiniIcon ( const QString &name, int w, int h ){
 
@@ -289,6 +298,16 @@ void KIconLoader::addPath(QString path){
     //    fprintf(stderr,"Path %s doesn't exist\n",path.data());
   }
 		pixmap_dirs.insert( pixmap_dirs.begin(), path );
+	}
+	else{
+void KIconLoader::flush( const QString& name  )
+	}
+  int index;
+
+  if( (index = name_list.find(name)) >= 0 ) {
+     name_list.remove( index );
+     pixmap_list.remove( index );
+  }
 
 	warning( "KIconLoader::flush is deprecated." );
 }

@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.14  1998/09/01 20:21:27  kulow
+   I renamed all old qt header files to the new versions. I think, this looks
+   nicer (and gives the change in configure a sense :)
+
    Revision 1.13  1998/08/26 18:37:48  neerfeld
    bug fix for loadInternal;  changed email address
 
@@ -118,6 +122,15 @@ public:
   */
   QPixmap loadIcon( const QString &name, int w = 0, int h = 0 );
 
+
+  /// Load an icon from disk without cache
+  /**
+      Same like loadIcon, except that cached icons will be reloaded.
+      This is useful if the icon has changed on the filesystem and you want to be
+      sure that you get the new version, not the old one from the cache.
+  */
+  QPixmap reloadIcon( const QString &name, int w = 0, int h = 0);
+  
   /// Load an mini icon from disk
   /**
 	 Same like loadIcon, but looks for "mini/name" first.
@@ -161,7 +174,11 @@ public:
     return pixmap_dirs.insert( index, dir_name ); }
   QStrList* getDirList() { return &pixmap_dirs; }
 
-
+  /// Flush cache
+  /**
+      Remove an icon from the cache given it's name
+  */
+  void flush( const QString &name ); 
 
 protected:
   KConfig           *config;
